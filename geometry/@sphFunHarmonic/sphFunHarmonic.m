@@ -3,22 +3,33 @@ classdef sphFunHarmonic < sphFun
 
 properties
 	fhat = [] % harmonic coefficients
-	w = @(v) 1
+end
+properties(Dependent)
+	M
 end
 
 methods
-	function sF = sphFunHarmonic(fhat, varargin)
+	function sF = sphFunHarmonic(fhat)
 	% initialize a spherical function
-		sF.fhat = fhat;
-		if check_option(varargin, 'w')
-			sF.w = get_option(varargin, 'w');
+		fhat = fhat(:);
+		M = ceil(sqrt(length(fhat))-1); % make (M+1)^2 entries
+		fhat = [fhat; zeros((M+1)^2-length(fhat), 1)];
+
+		cutoff = eps; ii = 0; % truncate neglectable coefficients
+		while sum(abs(fhat((M-ii)^2+1:(M+1)^2))) <= cutoff
+			ii = ii+1; 
 		end
+		sF.fhat = fhat(1:(M+1-ii)^2);
+	end
+	function M = get.M(sF)
+		M = sqrt(length(sF.fhat))-1;
 	end
 end
 
 methods (Static = true)
 	sF = approximation(v, y, varargin);
 	sF = quadrature(f, varargin);
+	demo;
 end
 
 end

@@ -1,6 +1,6 @@
 function f =  eval(sF,v)
 %
-% syntax
+% Syntax
 %  f = eval(sF,v)
 %
 % Input
@@ -8,6 +8,7 @@ function f =  eval(sF,v)
 %
 % Output
 %  f - function values
+%
 
 v = v(:);
 M = sqrt(length(sF.fhat))-1;
@@ -25,7 +26,7 @@ nfsft('precompute_x', plan);
 % nfsft
 nfsft('set_f_hat_linear', plan, sF.fhat); % set fourier coefficients
 nfsft('trafo', plan);
-f = sF.w(v).*real(nfsft('get_f', plan));
+f = real(nfsft('get_f', plan));
 
 % finalize nfsft
 nfsft('finalize', plan);

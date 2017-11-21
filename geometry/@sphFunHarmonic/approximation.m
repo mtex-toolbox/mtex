@@ -35,7 +35,7 @@ b = nfsft('get_f_hat_linear', plan);
 % finalize nfsft
 nfsft('finalize', plan);
 
-sF = sphFunHarmonic(fhat, varargin{:});
+sF = sphFunHarmonic(fhat);
 
 end
 

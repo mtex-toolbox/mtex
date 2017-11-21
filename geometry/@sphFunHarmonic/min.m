@@ -1,9 +1,9 @@
 function v = min(sF, varargin)
 %
-%
 % Syntax
 %   min(sF)
 %   sF = min(sF1,sF2)
+%
 
 % pointwise minimum of two spherical harmonics{{{
 if nargin > 1 & isa(varargin{1}, 'sphFunHarmonic')
@@ -15,30 +15,30 @@ end
 
 % minimization of one spherical harmonic
 % parameters{{{
-N = 2^10; % number of points
-lambda = sqrt(N)/10; % regularization parameter
-tau = 1e-8; % tolerance
-mu = 0.4; % in (0, 0.5) for Armijo condition
-kmax = 10; % maximal iterations
-tauLS = 0.5; % in (0, 1) alpha(k+1) = tauLS*alpha(k)
-kmaxLS = 6; % maximal iterations for line search
-TOL = 1e-1;
+N 		= get_option(varargin, 'N', 2^10); % number of points
+lambda 	= get_option(varargin, 'lambda', sqrt(N)/10); % regularization parameter
+tau 	= get_option(varargin, 'tau', 1e-8); % tolerance
+mu 		= get_option(varargin, 'mu', 0.4); % in (0, 0.5) for Armijo condition
+kmax 	= get_option(varargin, 'kmax', 10); % maximal iterations
+tauLS 	= get_option(varargin, 'tauLS', 0.5); % in (0, 1) alpha(k+1) = tauLS*alpha(k)
+kmaxLS 	= get_option(varargin, 'kmaxLS', 6); % maximal iterations for line search
 %}}}
 % initialization{{{
 v = equispacedS2Grid('points', N);
 v = v(:);
 v = v(v.theta > 0.1 & v.theta < pi-0.1); % cant derivate on the poles
 G = sF.grad;
-Gtheta = G.theta.grad;
-Grho = G.rho.grad;
+Gthth = sF.dthetadtheta;
+Gthrh = sF.dthetadrho;
+Grhrh = sF.drhodrho;
 
 g = G.eval(v);
 d = -g;
 k = 1;
 
 H = zeros(2, 2, length(v));
-H(1, :, :) = [Gtheta.theta.eval(v) Gtheta.rho.eval(v)-G.rho.eval(v).*cot(v.theta)]';
-H(2, :, :) = [Gtheta.rho.eval(v)-G.rho.eval(v).*cot(v.theta) Grho.rho.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
+H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
+H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 %}}}
 while 1/length(v)*sum(norm(g)) > tau & k < kmax
 	clf;
@@ -75,8 +75,8 @@ while 1/length(v)*sum(norm(g)) > tau & k < kmax
 	g = G.eval(v);
 
 	H = zeros(2, 2, length(v));
-	H(1, :, :) = [Gtheta.theta.eval(v) Gtheta.rho.eval(v)-G.rho.eval(v).*cot(v.theta)]';
-	H(2, :, :) = [Gtheta.rho.eval(v)-G.rho.eval(v).*cot(v.theta) Grho.rho.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
+	H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
+	H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 
 	dtilde = diag(-sin(alpha.*normd).*normd)*v+diag(cos(alpha.*normd))*d;
 
