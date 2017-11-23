@@ -2,24 +2,26 @@ function demo
 
 %f = @(v) smiley(v);
 %f = @(v) exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*((v.y-cos(pi/3)).^3>0);
-f = @(v) sin(8*v.rho).*sin(8*v.theta);
+%m = vector3d('polar', pi/4, 0);
+%f = @(v) exp(-5*((v.x-m.x).^2+(v.y-m.y).^2+(v.z-m.z).^2));
+%sF = sphFunHarmonic.quadrature(f);
 
-sF = sphFunHarmonic.quadrature(f)
-%sVF = grad(sF);
-%v = min(sF);
+sF = sphFunHarmonic([zeros(1, 53) 1]);
+v = min(sF);
+sVF = sF.grad;
 
-figure(1);
-clf;
-plot3d(sF);
-%hold on;
-%quiver3(sVF);
-%scatter3d(v, ones(3, length(v)));
-%hold off;
+figure(1); clf;
+plot3d(sF); hold on;
+quiver3(sVF);
+scatter3d(v, ones(length(v), 3));
 
-%figure(2);
+%figure(2); clf;
+%plot(sF); hold on;
 %plot(sVF);
 
 end
+
+
 
 function f = smiley(v)%{{{
 
