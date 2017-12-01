@@ -16,8 +16,8 @@ for m = 0:sF.M+1
 end
 
 sF = sphFunHarmonic(fhat);
-%f = @(v) sF.eval(v)./max(sin(v.theta), 0.1);
-%sF = sphFunHarmonic.quadrature(f, 'm', 2*sF.M);
+f = @(v) sF.eval(v)./max(sin(v.theta), 0.01);
+sF = sphFunHarmonic.quadrature(f, 'm', max(2*sF.M, 100));
 
 end
 

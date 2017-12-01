@@ -16,6 +16,7 @@ function sF = approximation(v, y, varargin)
 %
 
 v = v(:);
+y = y(:);
 
 M = get_option(varargin, 'm', ceil(sqrt(length(v)/2)));
 tol = get_option(varargin, 'tol', 1e-6);

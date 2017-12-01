@@ -14,6 +14,6 @@ function sF = abs(sF, varargin)
 M = get_option(varargin, 'm', min(2*sF.M, 500);
 
 f = @(v) abs(sF.eval(v));
-sF = sphFunHarmonic.quadrature(f, 'm', M);
+sF = sphFunHarmonic.quadrature(f, 'm', max(M, 100));
 
 end
