@@ -39,7 +39,7 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 
 % you can uncomment the following line to disable the annotations
-%pfAnnotations = @(varargin) do_nothing;
+%pfAnnotations = @(varargin) [];
 setMTEXpref('pfAnnotations',pfAnnotations);
 
 
@@ -256,8 +256,5 @@ warning('off','MATLAB:divideByZero'); %#ok<RMWRN>
 
 %% end user defined global settings
 %--------------------------------------------------------------------------
-
-  function do_nothing(varargin)
-  end
 
 end
