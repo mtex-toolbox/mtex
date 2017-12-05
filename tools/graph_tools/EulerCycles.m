@@ -14,6 +14,11 @@ numF = size(F,1);
 polyB = zeros(numF,1); % these are positions in B
 tourStart = 1;
 
+if isempty(iB)
+  poly = {};
+  return;
+end
+
 currentiB = iB(1);  % starting vertex
 
 for ipoly = 1:numF
