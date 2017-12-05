@@ -11,7 +11,7 @@ for m = 0:sF.M+1
 		if m+1 == 0 & l == 0
 			b = 0;
 		end
-		fhat_theta(m*(m+1)+l+1) = a*get_fhat(sF.fhat, m-1, l, sF.M)-b*get_fhat(sF.fhat, m+1, l, sF.M);
+		fhat_theta(m*(m+1)+l+1) = a*sF.get_fhat(m, l)-b*sF.get_fhat(m, l);
 	end
 end
 
@@ -29,7 +29,7 @@ for m = 0:sF_theta.M+1
 		if m+1 == 0 & l == 0
 			b = 0;
 		end
-		fhat_theta_theta(m*(m+1)+l+1) = a*get_fhat(sF_theta.fhat, m-1, l, sF.M)-b*get_fhat(sF_theta.fhat, m+1, l, sF.M);
+		fhat_theta_theta(m*(m+1)+l+1) = a*sF.get_fhat(m, l)-b*sF.get_fhat(m, l);
 	end
 end
 
@@ -38,14 +38,4 @@ sF_theta_theta = sphFunHarmonic(fhat_theta_theta);
 f = @(v) (sF_theta_theta.eval(v)-cos(v.theta).*sF_theta.eval(v))./max(sin(v.theta).^2, 0.1);
 sF = sphFunHarmonic.quadrature(f, 'm', max(2*sF.M, 100));
 
-end
-
-
-
-function fhat = get_fhat(fhat, m, l, M)
-if abs(l) <= m & 0 <= m & m <= M
-	fhat = fhat(m*(m+1)+l+1);
-else
-	fhat = 0;
-end
 end

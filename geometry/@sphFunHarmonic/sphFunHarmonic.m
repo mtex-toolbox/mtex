@@ -24,6 +24,13 @@ methods
 	function M = get.M(sF)
 		M = sqrt(length(sF.fhat))-1;
 	end
+	function fhat = get_fhat(sF, m, l)
+		if abs(l) <= m & 0 <= m & m <= sF.M
+			fhat = sF.fhat(m*(m+1)+l+1);
+		else
+			fhat = 0;
+		end
+	end
 end
 
 methods (Static = true)

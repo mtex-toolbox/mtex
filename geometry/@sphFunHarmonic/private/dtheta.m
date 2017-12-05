@@ -11,7 +11,7 @@ for m = 0:sF.M+1
 		if m+1 == 0 & l == 0
 			b = 0;
 		end
-		fhat(m*(m+1)+l+1) = a*get_fhat(sF.fhat, m-1, l, sF.M)-b*get_fhat(sF.fhat, m+1, l, sF.M);
+		fhat(m*(m+1)+l+1) = a*sF.get_fhat(m-1, l)-b*sF.get_fhat(m+1, l);
 	end
 end
 
@@ -19,14 +19,4 @@ sF = sphFunHarmonic(fhat);
 f = @(v) sF.eval(v)./max(sin(v.theta), 0.01);
 sF = sphFunHarmonic.quadrature(f, 'm', max(2*sF.M, 100));
 
-end
-
-
-
-function fhat = get_fhat(fhat, m, l, M)
-if abs(l) <= m & 0 <= m & m <= M
-	fhat = fhat(m*(m+1)+l+1);
-else
-	fhat = 0;
-end
 end

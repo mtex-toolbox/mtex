@@ -66,12 +66,12 @@ while 1/length(v)*sum(norm(g)) > tau & k < kmax
 	alpha = abs(dot(g, d))./(h+lambda*abs(dot(g, d)).*normd);
 	alpha = (alpha < eps)+(alpha >= 0).*alpha;
 	%}}}
-	figure(2); plot(sort(alpha)); ylim([-1, 1]);
-	figure(1); clf;
-	plot3d(sF); hold on;
-	scatter3d(v, ones(3, length(v)));
+%	figure(2); plot(sort(alpha)); ylim([-1, 1]);
+%	figure(1); clf;
+%	plot3d(sF); hold on;
+%	scatter3d(v, ones(3, length(v)));
 %	quiver3(v, diag(alpha)*d);
-	drawnow;
+%	drawnow;
 	% step length by linesearch{{{
 	f0 = sF.eval(v);
 	vd = diag(cos(normd))*v+diag(sin(normd)./normd)*d;
