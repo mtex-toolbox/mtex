@@ -1,10 +1,14 @@
 classdef crystalShape 
-  
+% a class representing crystal shapes based on a paper by Joerg Enderlein,
+% Uni Regensburg, joerg.enderlein@chemie.uni-regensburg.de
+% 
   
   properties
     N % face normals
     V % vertices
     F % faces
+    habitus = 1
+    extension = [1 1 1];
   end
   
   properties (Dependent = true)
@@ -13,23 +17,34 @@ classdef crystalShape
   
   methods
     
-    function cS = crystalShape(N)
+    function cS = crystalShape(N,habitus,extension)
       
       if isa(N,'crystalSymmetry')
         N = basicHKL(cs);
         N = N .* N.dspacing;
       else
-        N = unique(N.symmetrise,'noSymmetry');
+        %N = unique(N.symmetrise,'noSymmetry');
       end
       cS.N = N;
+      
+      if nargin >= 2, cS.habitus = habitus; end
+      if nargin >= 3, cS.extension = extension; end
       
       cS = cS.update;
     end
         
     function cS = update(cS)
 
-      % ensure N is vector3d
-      N = vector3d(cS.N); %#ok<*PROP>
+      % ensure N is vector3d and apply habitus scaling
+      N = cS.N(:); %#ok<*PROP>
+      if cS.habitus >0
+        N = N ./ ((abs(N.h) * cS.extension(1)).^cS.habitus + ...
+          (abs(N.k) * cS.extension(2)).^cS.habitus + ...
+          (abs(N.l) * cS.extension(3)).^cS.habitus).^(1/cS.habitus);
+      end
+      
+      N = unique(vector3d(N.symmetrise));
+            
       tol = 1e-5;
 
       % compute vertices as intersections between all combinations
@@ -98,11 +113,14 @@ classdef crystalShape
       x1 = Miller({6,-1,-5,1},cs);% left positive Trapezohedron
       x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
       
-      % select faces to plot
-      N = [4*m,2*r,1.8*z,1.4*s1,0.6*x1];
-
-      cS = crystalShape(N);
+      % select faces and scale them nicely
+      %N = [4*m,2*r,1.8*z,1.4*s1,0.6*x1];
+      %cS = crystalShape(N,1.2,[1,1.2,1.2]);
       
+      % if we use habitus scaling is implicite
+      N = [m,r,z,s2,x2];
+      cS = crystalShape(N,1.2,[1,1.2,1]);
+   
     end
     
     function cS = hex(cs)
@@ -111,6 +129,32 @@ classdef crystalShape
       
     end
     
+    function cS = topaz      
+      cs = crystalSymmetry('mmm',[0.52854,1,0.47698]);
+      
+      N = Miller({0,0,1},{2,2,3},{2,0,1},{0,2,1},{1,1,0},{1,2,0},{2,2,1},...
+        {0,4,1},cs);
+      
+      cS = crystalShape(N,1.2,[0.3,0.3,1]);
+    end
+
+    function cS = apatite      
+      cs = crystalSymmetry('6/m',[1,1,0.7346],'mineral','apatite');
+      
+      N = Miller({1,0,0},{0,0,1},{1,0,1},{1,0,2},...
+        {2,0,1},{1,1,2},{1,1,1},{2,1,1},{3,1,1},{2,1,0},cs);
+      
+      cS = crystalShape(N,1.2,[0.6,0.6,1]);      
+    end      
+
+    function cS = garnet
+      cs = crystalSymmetry('m3m','mineral','garnet');
+      
+      N = Miller({1,1,0},{2,1,1},cs);
+      
+      cS = crystalShape(N,1.5);      
+    end
+        
     function demo
       
       % import some data
@@ -129,12 +173,12 @@ classdef crystalShape
       plot(grains.boundary,'micronbar','off','figSize','large')
 
       % use quartz crystals 
-      cS = crystalShape.quartz;
+      cS = crystalShape.apatite;
       %cS = crystalShape.hex(ebsd.CS);
       
       % and plot them 
       hold on
-      plot(grains,0.8 * cS,'FaceColor','light blue','DisplayName','Titanium')
+      plot(grains,0.6 * cS,'FaceColor','light blue','DisplayName','Titanium')
       hold off
 
     end
