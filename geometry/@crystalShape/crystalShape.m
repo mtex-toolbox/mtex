@@ -54,7 +54,7 @@ classdef crystalShape
       FE = featureEdges(TR,1e-5)';
       
       % preallocate face list
-      F = nan(length(N),length(N));
+      cS.F = nan(length(N),length(N));
       
       % for all potential faces
       for a = 1:length(N)
@@ -67,7 +67,7 @@ classdef crystalShape
         
         % conect edges to form a polygon
         face = cell2mat(EulerCycles(A.'));
-        F(a,1:length(face)) = face;
+        cS.F(a,1:length(face)) = face;
 
       end
 
@@ -76,8 +76,6 @@ classdef crystalShape
       
       % scale vertices such that maximum distance between them is 1
       cS.V = cS.V(:) ./ max(norm(cS.V)) ./ 2;
-      
-      cS.F = F;
       
     end
     
