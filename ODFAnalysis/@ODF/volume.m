@@ -8,10 +8,12 @@ function v = volume(odf,center,radius,varargin)
 %
 % Syntax
 %   v = volume(odf,center,radius)
+%   v = volume(odf,fibre,radius) % gives the volume with a fibre
 %
 % Input
 %  odf    - @ODF
 %  center - @orientation
+%  fibre  - @fibre
 %  radius - double
 %
 % Options
