@@ -2,7 +2,7 @@ classdef scaleBar < handle
 % Inserts a scale bar on the current ebsd or grain map.
 %
 % Syntax
-%   hg = scaleBar(ebsd, scanunits, ...)
+%   hg = scaleBar(ebsd, scanunits)
 %
 % Input
 %  ebsd      - an mtex ebsd or grain object
@@ -129,10 +129,12 @@ methods
     if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
     
     % we would like to have SBlength beeing a nice number
-    goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length  
-    [~,ind] = min(abs(sBLength-goodValues));
-    sBLength = goodValues(ind);
-    rulerLength = sBLength * factor * sign(diff(dx));
+    if isnan(sB.length)
+      goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
+      [~,ind] = min(abs(sBLength-goodValues));
+      sB.length = goodValues(ind);
+    end
+    rulerLength = sB.length * factor * sign(diff(dx));
 
     % A gap around the bar of 1% of bar length looks nice
     set(sB.txt,'position',[dx(1),dy(1)])
@@ -158,7 +160,7 @@ methods
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
     
     % update text
-    set(sB.txt,'string',[num2str(sBLength) ' ' sBUnit],'HorizontalAlignment', 'Center',...
+    set(sB.txt,'string',[num2str(sB.length) ' ' sBUnit],'HorizontalAlignment', 'Center',...
       'VerticalAlignment', 'baseline','color','w',...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
