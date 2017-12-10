@@ -52,7 +52,6 @@ properties (Access = private)
   ruler
 end
 
-
 properties (Dependent = true)
   visible
 end
@@ -62,10 +61,10 @@ properties (SetObservable)
   backgroundAlpha = 0.6    % background transparency (scalar 0<=a<=1)
   scanUnit        = 'um'   % units of the xy coordinates of the ebsd scan (e.g., 'um')
   lineColor       = 'w'    % border color and text color (ColorSpec)
-  border          = 'off ' % controls whether the box has a border ('on', 'off')
-  borderWidth     = 2      % width of border (scalar)
-  location        = 'sw'   % location of the scale bar ('nw,'ne','sw','se', or [x,y] coordinate vector (len(vector)==2)
-  length          = NaN    % desired scale bar length or array of allowable lengths
+  length          = NaN    % desired scale bar length 
+  % border          = 'off ' % controls whether the box has a border ('on', 'off')
+  % borderWidth     = 2      % width of border (scalar)
+  % location        = 'sw'   % location of the scale bar ('nw,'ne','sw','se', or [x,y] coordinate vector (len(vector)==2)
 end
   
 methods
@@ -93,6 +92,18 @@ methods
         setappdata(hax, 'updatePos', hListener);
       end
     end  
+
+    try
+      addlistener(sB,'length','PostSet', @(x,y) sB.update);
+      addlistener(sB,'scanUnit','PostSet', @(x,y) sB.update);
+      addlistener(sB,'lineColor','PostSet', @(x,y) sB.update);
+      addlistener(sB,'backgroundColor','PostSet', @(x,y) sB.update);
+      addlistener(sB,'backgroundAlpha','PostSet', @(x,y) sB.update);
+      %addlistener(sB,'location','PostSet', @(x,y) sB.update);
+      %addlistener(sB,'borderWidth','PostSet', @(x,y) sB.update);
+      %addlistener(sB,'border','PostSet', @(x,y) sB.update);
+    end
+    
   end
 
   function setOnTop(sB)
@@ -125,7 +136,7 @@ methods
     % Find the range in meters for later determination of magnitude
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
-    [sBLength, sBUnit, factor] = switchUnit(0.3*abs(diff(dx)), sB.scanUnit);   
+    [sBLength, sBUnit, factor] = switchUnit(0.3*abs(diff(dx)), sB.scanUnit);
     if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
     
     % we would like to have SBlength beeing a nice number
@@ -161,7 +172,7 @@ methods
     
     % update text
     set(sB.txt,'string',[num2str(sB.length) ' ' sBUnit],'HorizontalAlignment', 'Center',...
-      'VerticalAlignment', 'baseline','color','w',...
+      'VerticalAlignment', 'baseline','color',sB.lineColor,...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
     % Create line as a patch. The z-coordinate is used to layer the patch over
@@ -170,7 +181,7 @@ methods
       boxx + gapX, boxy+2*gapY; ...
       boxx + gapX + rulerLength, boxy + 2*gapY; ...
       boxx + gapX + rulerLength, boxy + gapY]), ...
-      'Faces',[1 2 3 4], 'FaceColor','w', 'FaceAlpha',1);
+      'Faces',[1 2 3 4], 'FaceColor',sB.lineColor, 'FaceAlpha',1);
         
     sB.setOnTop;
     
