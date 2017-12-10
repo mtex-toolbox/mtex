@@ -1,7 +1,12 @@
-classdef crystalShape 
-% a class representing crystal shapes based on a paper by Joerg Enderlein,
-% Uni Regensburg, joerg.enderlein@chemie.uni-regensburg.de
-% 
+classdef crystalShape
+  % a class representing crystal shapes.
+  %
+  % The code of this class is based on the paper
+  %
+  % Enderlein, J., 1997. A package for displaying crystal morphology.
+  % Mathematica Journal, 7(1).
+  %
+  %
   
   properties
     N % face normals
