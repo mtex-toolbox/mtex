@@ -7,6 +7,7 @@ function f =  eval(sF,v)
 %  v - @vector3d interpolation nodes 
 %
 
+s = size(v);
 v = v(:);
 M = sqrt(length(sF.fhat))-1;
 if M == 0
@@ -24,6 +25,7 @@ nfsft('precompute_x', plan);
 nfsft('set_f_hat_linear', plan, sF.fhat); % set fourier coefficients
 nfsft('trafo', plan);
 f = real(nfsft('get_f', plan));
+f = real(reshape(f, s));
 
 % finalize nfsft
 nfsft('finalize', plan);

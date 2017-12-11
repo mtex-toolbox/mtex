@@ -25,12 +25,18 @@ if check_option(varargin, 'antipodal')
 	if check_option(varargin, 'weights')
 		W = get_option(varargin, 'weights');
 	else
-		[v2, IA] = unique([v; -v]); 
+		[v2, IA, IC] = unique([v; -v]); 
 		W = v2.calcVoronoiArea; % Voronoi weights for symmetrized grid
-		W = W(IA <= length(v)); % going back to originally grid (without antipodal doublings)
-		y = [y; y];
-		y = y(IA(IA <= length(v)));
-		v = v2(IA <= length(v));
+
+		W = W(IC);
+		W = W(1:length(v)); % going back to originally grid
+
+		for j = 1:length(v)-1 % divide weights by two if v and -v exist
+			test = ( abs(IC(j)-IC(length(v)+j+1:end)) <= 1e-6 );
+			if sum(test) > 0
+				W([j find(test)+j]) = 0.5*W([j find(test)+j]); 
+			end
+		end
 	end
 	M = get_option(varargin, 'm', ceil(sqrt(length(v))));
 	M = floor(M/2)*2; % make M even
