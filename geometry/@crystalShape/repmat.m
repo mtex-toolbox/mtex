@@ -1,11 +1,13 @@
 function cS =repmat(cS,n)
 
+% duplicate the faces
+shift = length(cS.V) * repmat((0:n-1),size(cS.F,1),1);
+shift = repmat(shift(:),1,size(cS.F,2));
 
-s.Vertices = cat(1,v{:});
+% shift faces indices
+cS.F = repmat(cS.F,n,1) + shift;
 
-shift = length(v{1}) * repmat((0:length(grains)-1),size(s.Faces,1),1);
-shift = repmat(shift(:),1,size(s.Faces,2));
-
-s.Faces = repmat(s.Faces,length(grains),1) + shift;
+% dublicate vertices 
+cS.V = repmat(cS.V,1,n);
 
 end

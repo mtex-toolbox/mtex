@@ -35,6 +35,10 @@ elseif isa(b,'quaternion')
   
   r = mtimes@quaternion(a,b);
   r.i = bsxfun(@xor,a.i(:),b.i(:).');
+ 
+else
+  
+  r = rotate_outer(b,a);
   
 end
     
