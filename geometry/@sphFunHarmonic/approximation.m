@@ -10,13 +10,16 @@ function sF = approximation(v, y, varargin)
 %
 % Options
 %  M     - maximum degree of the spherical harmonics used to approximate the function
-%  TOL   - tolerance for lsqm
-%  MAXIT - maximum number of iterations for lsqm
+%  to   - tolerance for lsqm
+%  maxIt - maximum number of iterations for lsqm
 %  W     - weight w_n for the node v_n (default: voronoi weights)
 %
 
-[v, IA] = unique(v); v = v(:);
-y = y(IA); y = y(:);
+% make points unique
+[v, IA] = unique(v); 
+v = v(:);
+y = y(IA); 
+y = y(:);
 
 tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
