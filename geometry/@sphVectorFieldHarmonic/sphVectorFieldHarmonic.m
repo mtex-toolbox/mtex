@@ -11,6 +11,7 @@ methods
 
 	function sVF = sphVectorFieldHarmonic(sF_theta, sF_rho, varargin)
 	% initialize a spherical vector field
+	if nargin == 0, return; end
 
 	sVF.theta = sF_theta;
 	sVF.rho = sF_rho;

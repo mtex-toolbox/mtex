@@ -10,6 +10,7 @@ classdef sphVectorFieldTri < sphVectorField & sphTriangulation
     function sVF = sphVectorFieldTri(n,v)
       % initialize a spherical vector field
       
+	  if nargin == 0, return; end
       sVF.vec = v;
       
       if isa(n,'sphTriangulation')
