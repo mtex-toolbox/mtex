@@ -1,4 +1,4 @@
-function v = log(ori,ori_ref)
+function v = log(ori,ori_ref,varargin)
 % the inverse of the exponential map
 %
 % Syntax
@@ -15,7 +15,13 @@ function v = log(ori,ori_ref)
 % See also
 % 
 
-if nargin == 2
+if nargin > 2 && check_option(varargin,'ll')
+  ori_ref = orientation(ori_ref,ori.CS,ori.SS);
+  v = axis(ori,ori_ref) .* angle(ori,ori_ref);
+  return
+end
+
+if nargin >= 2
 
   if isa(ori.CS,'crystalSymmetry')
     ori = inv(ori_ref) .* ori;
@@ -34,3 +40,7 @@ end
 ori = project2FundamentalRegion(ori);
 
 v = log@quaternion(ori);
+
+if nargin>2 && check_option(varargin,'left')
+  v = rotation(ori_ref) .* v;
+end

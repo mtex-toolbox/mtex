@@ -9,8 +9,6 @@ function plot(s,varargin)
 %  cs - crystalSymmetry
 %
 
-
-
 % extract symmetry elements
 rot = rotation(s);
 Improper = isImproper(rot);

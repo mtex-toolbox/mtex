@@ -50,23 +50,23 @@ maxIndex = get_option(varargin,'maxIndex',4);
 % all plane normales
 [h,k,l] =meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
-n2 = mori * n1;
+n2 = reshape(mori * n1,[],1);
 rh2 = round(n2);
 hkl2 = rh2.hkl;
 
 % fit of planes
-omega_h = angle(rh2,n2) + ...
+omega_h = angle(rh2(:),n2(:)) + ...
   (h(:).^2 + k(:).^2 + l(:).^2 + sum(hkl2.^2,2)) * penalty;
 
 % all directions
 [u,v,w] = meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 d1 = Miller(u(:),v(:),w(:),mori.CS,'uvw');
-d2 = mori * d1;
+d2 = reshape(mori * d1,[],1);
 rd2 = round(d2);
 uvw2 = rd2.uvw;
 
 % fit of directions
-omega_d = angle(rd2,d2) + ...
+omega_d = angle(rd2(:),d2(:)) + ...
   (u(:).^2 + v(:).^2 + w(:).^2 + sum(uvw2.^2,2)) * penalty;
 
 % directions should be orthognal to normals
@@ -84,4 +84,3 @@ end
 
 % mori = orientation('map',Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) * orientation('axis',vector3d.rand(1),'angle',1*degree,CS,CS)
 % 
-

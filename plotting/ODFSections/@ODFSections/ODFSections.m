@@ -56,13 +56,16 @@ classdef ODFSections < handle
   
   methods (Hidden = true)
     function secPos = secList(oS, values, center)
-            
-      bounds = [center(:) - oS.tol,center(:) + oS.tol];
       
       % ensure disjoint boxes
-      ind = find(bounds(1:end-1,2) + eps >= bounds(2:end,1));
-      bounds(ind,2) = (2*center(ind) + 1 * center(ind+1)) ./ 3;
-      bounds(ind+1,1) = (center(ind) + 2 * center(ind+1)) ./ 3;
+      if min(diff(center)) < 2*oS.tol
+        oS.tol = 0.99*min(diff(center))/2;
+      end      
+      bounds = [center(:) - oS.tol,center(:) + oS.tol];
+          
+      %ind = find(bounds(1:end-1,2) + eps >= bounds(2:end,1));
+      %bounds(ind,2) = (5*center(ind) + 4 * center(ind+1)) ./ 9;
+      %bounds(ind+1,1) = (4*center(ind) + 5 * center(ind+1)) ./ 9;
                  
       % compute box position
       [~,secPos] = histc(values,reshape(bounds.',[],1));

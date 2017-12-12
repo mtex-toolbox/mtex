@@ -1,12 +1,12 @@
 function v = fibreVolume(odf,h,r,radius,varargin)
 % ratio of orientations with a certain orientation
 %
-% Description
-% returns the ratio of mass of the odf that within a certain
+% Description 
+% returns the ratio of mass of the odf that is within a certain
 % distance from a given fibre
 %
 % Syntax
-%   v = fibreVolume(odf,h,r,radius,<options>)
+%   v = fibreVolume(odf,h,r,radius)
 %
 % Input
 %  odf    - @ODF
@@ -26,9 +26,9 @@ if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-if length(odf.SS) > 1
-  error('Only triclinic specimen symmetry is supported for fibreVolume');
-end
+%if length(odf.SS) > 1
+%  error('Only triclinic specimen symmetry is supported for fibreVolume');
+%end
 
 % get resolution
 res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
@@ -41,13 +41,7 @@ lS2G = length(S2G);
 S2G = S2G(angle(h,Miller(S2G,odf.CS))<radius);
 
 % estimate volume portion of odf space
-%if radius < rotangle_max_z(odf.CS) / 8
-%  % theoretical value
-%  f = length(odf.CS) * (1-cos(radius))./2;
-%else
-  % numerical value
-  f = length(S2G)/lS2G;
-%end  f = numel(S2G)/lS2G;
+f = length(S2G)/lS2G;
 
 % eval odf
 if f==0

@@ -17,9 +17,9 @@ if numel(d) == size(xy,1) || numel(d) == 3*size(xy,1)
   obj.FaceVertexCData = reshape(d,size(xy,1),[]);
   %if size(d,2) == 3, set(get(ax,'parent'),'renderer','opengl');end
   
-  if check_option(varargin,{'transparent','translucent'})
+  if check_option(varargin,{'transparent','translucent','faceAlpha'})
   
-    s = get_option(varargin,{'transparent','translucent'},1,'double');
+    s = get_option(varargin,{'transparent','translucent','faceAlpha'},1,'double');
   
     if size(d,2) == 3 % rgb
       obj.FaceVertexAlphaData = s.*(1-min(d,[],2));

@@ -102,5 +102,8 @@ vdisp('',varargin{:});
 
 % store to EBSD variable
 ebsd.rotations = rot;
+
+% set nan rotations to not indexed
+ebsd.phaseId(isnan(rot(:))) = 1;
     
 end

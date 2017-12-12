@@ -120,6 +120,7 @@ classdef sphericalRegion
         
         theta = linspace(0,pi,10000);
         
+        srho = size(rho);
         [rho,theta] = meshgrid(rho,theta);
         
         v = vector3d('polar',theta,rho);
@@ -128,8 +129,8 @@ classdef sphericalRegion
         
         theta(~ind) = NaN;
         
-        thetaMin = nanmin(theta);
-        thetaMax = nanmax(theta);
+        thetaMin = reshape(nanmin(theta),srho);
+        thetaMax = reshape(nanmax(theta),srho);
    
       else
         

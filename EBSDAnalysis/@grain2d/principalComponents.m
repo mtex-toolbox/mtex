@@ -11,7 +11,7 @@ function [omega,a,b]= principalComponents(grains,varargin)
 %
 % Options
 %  hull  - consider convex hull
-%  area - scale a,b such that the corresponding ellipse has the same area as the grain (default)    - 
+%  area - scale a,b such that the corresponding ellipse has the same area as the grain (default)
 %  boundary - scale a,b such that the corresponding ellipse has the boundary length as the grain
 %
 % See also

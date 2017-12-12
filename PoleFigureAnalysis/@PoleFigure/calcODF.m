@@ -14,31 +14,31 @@ function [odf,alpha] = calcODF(pf,varargin)
 %
 %   odf = calcODF(pf)
 %   odf = calcODF(pf,'halfwidth',5*degree)
-%   odf = calcODF(pf,'ZERO_RANGE')
+%   odf = calcODF(pf,'zero_range')
 %   odf = calcODF(pf,'resolution',2.5*degree)
-% 
+%
 % Input
 %  pf - @PoleFigure
 %
 % Options
-%  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
-%  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
-%  BANDWIDTH         - bandwidth of the ansatz functions (default = max)
-%  ITER_MAX          - maximum number of iterations (default = 11)
-%  ITER_MIN          - minimum number of iterations (default = 5)
-%  REGULARIZATION    - weighting coefficient lambda (default = 0)
-%  ODF_SAVE          - save ODF simultanously
-%  C0                - initial guess (default = [1 1 1 1 ... 1])
+%  kernel            - the ansatz functions (default = de la Vallee Poussin)
+%  kernelwidth | halfwidth - halfwidth of the ansatz functions (default = 2/3 * resolution)
+%  resolution        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
+%  bandwidth         - bandwidth of the ansatz functions (default = max)
+%  iter_max          - maximum number of iterations (default = 11)
+%  iter_min          - minimum number of iterations (default = 5)
+%  regularization    - weighting coefficient lambda (default = 0)
+%  odf_SAVE          - save ODF simultanously
+%  c0                - initial guess (default = [1 1 1 1 ... 1])
 %
 % Flags
-%  ZERO_RANGE        - apply zero range method (default = )
-%  NOGHOSTCORRECTION - omit ghost correction
-%  ENSURE_DESCENT - stop iteration whenever no procress if observed
-%  FORCE_ITER_MAX - allway go until ITER_MAX
-%  RP_VALUES      - calculate RP values during iteration
-%  ODF_TEST       - for testing only
-%  SILENT         - no output
+%  zero_RANGE        - apply zero range method (default = )
+%  noghostcorrection - omit ghost correction
+%  ensure_descent - stop iteration whenever no procress if observed
+%  force_iter_max - allway go until ITER_MAX
+%  rp_values      - calculate RP values during iteration
+%  odf_test       - for testing only
+%  silent         - no output
 %
 % Output
 %  odf    - reconstructed @ODF
@@ -186,7 +186,7 @@ c0 = (1-phon)/length(S3G)*ones(length(S3G),1);
   'EXTERN',P,r,gh,A,c0,w,char(extract_option(varargin,'silent')));
 
 % return ODF
-odf = phon * uniformODF(CS,SS) + ... 
+odf = phon * uniformODF(CS,SS) + ...
   (1-phon) * unimodalODF(S3G,psi,'weights',c./sum(c));
 
 end

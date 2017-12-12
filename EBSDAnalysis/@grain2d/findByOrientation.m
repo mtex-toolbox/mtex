@@ -5,15 +5,15 @@ function grains = findByOrientation( grains,q0, epsilon )
 %   g = findByOrientation(grains,ori,epsilon);
 %
 % Input
-%  grains - @GrainSet
+%  grains - @grain2d
 %  q0 - @quaternion | @rotation | @orientation 
 %  epsilon - searching radius
 %
 % Output
-%  grains - @GrainSet
+%  grains - @grain2d
 %
 % See also
-% EBSD/findByLocation GrainSet/findByOrientation
+% EBSD/findByLocation grain2d/findByOrientation
 
 ind = find(grains.meanOrientation,q0,epsilon);
 

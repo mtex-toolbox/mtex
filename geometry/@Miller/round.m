@@ -2,6 +2,8 @@ function h = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 
 
+sh = size(h);
+
 switch lower(h.dispStyle)
   
   case  'uvw'
@@ -55,3 +57,5 @@ switch lower(h.dispStyle)
   otherwise
     return;
 end
+
+h = reshape(h,sh);

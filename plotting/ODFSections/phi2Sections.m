@@ -58,7 +58,9 @@ classdef phi2Sections < ODFSections
     function [S2Pos,secPos] = project(oS,ori,varargin)
     
       % maybe this can be done more efficiently
-      ori = ori.symmetrise('proper').';
+      if ~check_option(varargin,'noSymmetry')
+        ori = ori.symmetrise('proper').';
+      end
       [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
       secPos = oS.secList(mod(phi2,oS.maxphi2),oS.phi2);

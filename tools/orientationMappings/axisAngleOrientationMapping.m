@@ -8,7 +8,8 @@ classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMappin
   
   methods
     function oM = axisAngleOrientationMapping(varargin)
-      oM = oM@HSVOrientationMapping(varargin{:});
+      oM = oM@orientationMapping(varargin{:});
+      oM.updatesR(disjoint(oM.CS1,oM.CS2));
       oM.center = get_option(varargin,'center',idquaternion);      
     end
   

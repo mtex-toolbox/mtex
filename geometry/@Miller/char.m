@@ -16,9 +16,9 @@ for i = 1:length(m)
   
   abc = m.subSet(i).(m.dispStyle);
   
-  switch m.dispStyle
+  switch lower(m.dispStyle)
 
-    case {'uvw','UVTW'}
+    case {'uvw','uvtw'}
      
       if check_option(varargin,{'tex','latex'})
         leftBracket = '['; %'\left\langle ';

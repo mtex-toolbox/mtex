@@ -40,11 +40,13 @@ else
 
   switch cs.id
     case {19,22,26}
+      cs = rotation(cs);
       ind = v.z < 0;
       vv = cs(2) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
       cs = cs(1:2:end);
     case 18
+      cs = rotation(cs);
       ind = v.z < 0;
       vv = cs(4) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;

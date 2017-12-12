@@ -14,15 +14,13 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
     
     function rgb = Miller2color(oM,h)
       
-      % project to fundamental region
-      h = project2FundamentalRegion(vector3d(h),oM.CS1);   %#ok<ASGLU>
-      [theta,rho] = polar(h(:));
-      rho = rho - rho_min;
-
       % get the bounds of the fundamental region
       sR = oM.CS1.fundamentalSector;
-
-
+      
+      % project to fundamental region
+      h = project2FundamentalRegion(vector3d(h),oM.CS1);
+      [theta,rho] = polar(h(:));
+      
       % special case Laue -1
       if strcmp(oM.CS1.LaueName,'-1')
         maxrho = pi*2/3;
@@ -41,20 +39,13 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
         return
       end
   
-      if any(strcmp(cs.LaueName,{'m-3m','m-3'}))
-
-        maxTheta = maxTheta(rho);
-        
-      else
-        
-        ma
-        
-      end
-
+      [~, maxTheta] = thetaRange(sR,rho);
+      [minRho,maxRho] = sR.rhoRange;
+      
       % compute RGB values
       r = (1-theta./maxTheta);
-      g = theta./maxTheta .* (maxRho - rho) ./ maxRho;
-      b = theta./maxTheta .* rho ./ maxRho;
+      g = theta./maxTheta .* (maxRho - rho) ./ (maxRho-minRho);
+      b = theta./maxTheta .* (rho - minRho) ./ (maxRho-minRho);
 
       rgb = [r(:) g(:) b(:)];
     end

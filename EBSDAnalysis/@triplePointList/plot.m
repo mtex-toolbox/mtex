@@ -1,9 +1,6 @@
 function h = plot(tP,varargin)
 % plot grain boundaries
 %
-% The function plots grain boundaries where the boundary is determined by
-% the function <GrainSet.specialBoundary.html specialBoundary>
-%
 % Syntax
 %   plot(grains.triplePoints)
 %   plot(grains.triplePoints,'color','r')

@@ -38,10 +38,9 @@ ebsd('Forsterite').orientations
 %%
 
 
-% EBSD data is stored in the class <EBSD_index.html EBSD> and in the latter
-% the class <GrainSet_index.html grain> holds modelled grains.
-% The following mindmap may induce an general idea analysing EBSD Data with
-% MTEX.
+% EBSD data is stored in the class <EBSD_index.html EBSD> while grains are
+% stored as variables of type <grain2d_index.html grain2d>. The following
+% mindmap may induce a general idea analysing EBSD Data with MTEX.
 %
 % <<grain.png>>
 %

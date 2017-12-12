@@ -1,6 +1,37 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.5.2 11/2017
+%
+% This is mainly a bug fix release
+%
+% * some more functions get tab completetion for input arguments
+% * the option 'MarkerSize' can also be a vector to allow for varying Markersize
+% * new option 'noSymmetry' for plotPDF and plotSection
+% 
+% *orientation relation ships*
+%
+% * new functions for computing variants and parents for a orientation
+% relation ship *
+% * new predefined orientation relation ship 
+%
+%   gT = GreningerTrojano(csAlpha,csGamma)
+%   ori_childs = ori_parent * inv(gT.variants)
+%   ori_parents = ori_child * gT.parents
+%   
+%
+%% MTEX 4.5.1 08/2017
+%
+% This is mainly a bug fix release
+%
+% * some functions get tab completetion for input arguments
+% * allow different colormaps in one figure
+% * updated interfaces
+% * added Levi Civita permutation tensor
+% * improved round2Miller
+% * grains.boundary('phase2','phase1') rearranges the misorientation to be
+% from phase2 to phase 1
+%
 %% MTEX 4.5 03/2017
 %
 % *3d orientation plots*

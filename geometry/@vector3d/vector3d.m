@@ -167,6 +167,19 @@ classdef vector3d < dynOption
       v = v.setOption('resolution',res);
       
     end
+    
+    function b = isnan(v)
+      b = isnan(v.x) | isnan(v.y) | isnan(v.z);
+    end
+    
+    function b = isinf(v)
+      b = isinf(v.x) | isinf(v.y) | isinf(v.z);
+    end
+    
+    function b = isfinite(v)
+      b = ~(isinf(v) | isnan(v));
+    end
+    
   end
   
   methods (Static = true)

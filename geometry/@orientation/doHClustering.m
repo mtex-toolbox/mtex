@@ -1,9 +1,9 @@
-function [c,center] = cluster(ori,varargin)
+function [c,center] = doHClustering(ori,varargin)
 % sort orientations into clusters
 %
 % Syntax
-%   [c,center] = cluster(ori,'numCluster',n)
-%   [c,center] = cluster(ori,'maxAngle',omega)
+%   [c,center] = doHCluster(ori,'numCluster',n)
+%   [c,center] = doHCluster(ori,'maxAngle',omega)
 %
 % Input
 %  ori - @orientation
@@ -23,17 +23,17 @@ function [c,center] = cluster(ori,varargin)
 %   ori = odf.calcOrientations(3000);
 %
 %   % find the clusters and its centers
-%   tic; [c,centerRec] = cluster(ori,'numCluster',5); toc
+%   tic; [c,centerRec] = calcCluster(ori,'method','hierarchical','numCluster',5); toc
 %
 %   % visualize result
 %   oR = fundamentalRegion(cs)
 %   plot(oR)
 % 
 %   hold on
-%   plot(ori.project2FundamentalRegion,c)
+%   plot(ori,c)
 %   caxis([1,5])
-%   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
-%   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
+%   plot(center,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
+%   plot(centerRec,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
 %   hold off 
 %
 %   %check the accuracy of the recomputed centers
@@ -72,7 +72,7 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   weights = weights(weights~=0);
 
   % apply clustering to grid
-  [~,center] = cluster(S3G,varargin{:},'weights',weights,'exact');
+  [~,center] = doHClustering(S3G,varargin{:},'weights',weights,'exact');
 
   % performe one step 
   d = angle_outer(ori,center);

@@ -2,11 +2,11 @@ function grains = subSet(grains,ind)
 % 
 %
 % Input
-%  grains - @grainSet
+%  grains - @grain2d
 %  ind    - 
 %
 % Ouput
-%  grains - @grainSet
+%  grains - @grain2d
 %
 
 % restrict boundary

@@ -234,6 +234,8 @@ api.clearAllData();
     end
     
     data = applyRotation(data);
+        
+    
     
     
     function data = applyRotation(data)

@@ -2,37 +2,37 @@ function [phi1,Phi,phi2] = project2EulerFR(q,CS1,CS2,varargin)
 % projects quaternions to a fundamental region
 %
 % Syntax
-%   [phi1,Phi,phi2] = project2EulerFR(q,CS)       % to FR around idquaternion
-%   [phi1,Phi,phi2] = project2EulerFR(q,CS,'Bunge')  % to FR around idquaternion
-%   [phi1,Phi,phi2] = project2EulerFR(q,CS,q_ref) % to FR around reference rotation
-%   [phi1,Phi,phi2] = project2EulerFR(q,CS1,CS2)  % misorientation to FR around id
+%   [phi1,Phi,phi2] = project2EulerFR(q,CS)       % Bunge fundamental region
+%   [alpha,beta,gamma] = project2EulerFR(q,CS,'Matthies')  % Matthies fundamental region
+%   [phi1,Phi,phi2] = project2EulerFR(q,CS1,CS2)  % misorientations
 %
 % Input
 %  q        - @quaternion
 %  CS1, CS2 - crystal @symmetry
-%  q_ref    - reference @quaternion single or size(q) == size(q_ref)
 %
 % Output
 %  phi1,Phi,phi2 - Euler angles
 %
 
-[~,Phi,~] = Euler(q);
+% get the fundamental region
+[maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(CS1,CS2);
 
-isPerpZ1 = isnull(dot(CS1.axis,zvector)) & ~isnull(angle(CS1));
-isPerpZ2 = isnull(dot(CS2.axis,zvector)) & ~isnull(angle(CS2));
-ind = Phi > pi/2;
+% symmetrise
+q_sym = (CS2.rotation_special * quaternion(q)).' * CS1.rotation_special;
+q_sym = reshape(q_sym,length(q),[]);
+[phi1_sym,Phi_sym,phi2_sym] = Euler(q_sym,varargin{:});
 
-s = substruct('()',{ind});
-if any(isPerpZ1)
-  q = subsasgn(q,s,q.subSet(ind) * CS1.subSet(find(isPerpZ1,1)));
-elseif any(isPerpZ2)
-  q = subsasgn(q,s,CS2.subSet(find(isPerpZ2,1)) * q.subSet(ind));
-end
+% the simple part
+phi1_sym = mod(phi1_sym,2*pi/CS2.multiplicityZ);
+phi2_sym = mod(phi2_sym,2*pi/CS1.multiplicityZ);
 
-[maxphi1,~,maxphi2] = fundamentalRegionEuler(CS1,CS2);
+% check which are inside the fundamental region
+isInside = phi1_sym <= maxphi1 & phi2_sym <= maxphi2 & Phi_sym <= maxPhi;
 
-% convert to euler angles angles
-[phi1,Phi,phi2] = Euler(q,varargin{:});
+% take the first one
+[~,rowPos] = max(isInside,[],2);
+ind = sub2ind(size(phi1_sym),1:length(q),rowPos.');
 
-phi1 = mod(phi1,maxphi1);
-phi2 = mod(phi2,maxphi2);
+phi1 = reshape(phi1_sym(ind),size(q));
+Phi = reshape(Phi_sym(ind),size(q));
+phi2 = reshape(phi2_sym(ind),size(q));

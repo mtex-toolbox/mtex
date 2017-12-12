@@ -115,7 +115,7 @@ classdef orientationPlot < handle
           'parent',oP.ax);
       else
         % colorize with a specified color
-        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor'})
+        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end

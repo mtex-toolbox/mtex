@@ -1,12 +1,15 @@
 function varargout = subsref(gB,s)
-% access subsets of a GrainSet
+% implements gB(1:10)
 %
 % Syntax
-%   gB(1:10)               % the 10 first boundaries
+%   gB(1:10)                    % the 10 first boundaries
 %   gB('Forsterite','Epidote')  % only Forsterite - Epidote boundaries
-%   grains( ~grains('fe') ) % all grains but Fe
-%                           logical array with size of the complete
-%                           GrainSet
+%   gB(cond)        
+%
+% Input
+%  gB - @grainBoundary
+%  cond - logical array with same size as gB
+%
 
 if strcmp(s(1).type,'()')
   
@@ -16,7 +19,7 @@ if strcmp(s(1).type,'()')
   % change the order of boundary
   phId = find(cellfun(@ischar,s(1).subs),1);
   
-  if ~isempty(phId)
+  if ~isempty(phId) && ~strcmpi(s(1).subs{phId},'indexed')
     ph = s(1).subs{phId};
     alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
     ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...

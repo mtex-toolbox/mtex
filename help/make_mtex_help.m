@@ -4,6 +4,7 @@ function make_mtex_help(varargin)
 
 if check_option(varargin,'clear')
   !find ../doc -exec touch {} \;
+  !rm -r ../doc/html/*
   mtexdata clear
 end
 

@@ -1,5 +1,5 @@
 function ebsd = findByOrientation(ebsd,q0,epsilon)
-% select grains by orientation
+% select ebsd data by orientation
 %
 % Input
 %  ebsd    - @EBSD
@@ -10,7 +10,7 @@ function ebsd = findByOrientation(ebsd,q0,epsilon)
 %  ebsd - @EBSD
 %
 % See also
-% EBSD/findByLocation GrainSet/findByOrientation
+% EBSD/findByLocation grain2d/findByOrientation
 
 ind  = find(ebsd.orientations,q0,epsilon);
 

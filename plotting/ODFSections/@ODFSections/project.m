@@ -35,7 +35,7 @@ if strcmpi(type,'axisangle')
   
   if nargout > 1 && check_option(varargin,'data')
     dat = get_option(varargin,'data');
-    if ~isempty(dat),
+    if ~isempty(dat)
       for i = 1:size(sec,2), data{i} = dat(ind(:,i)); end
     else
       data = repcell([],size(sec));
