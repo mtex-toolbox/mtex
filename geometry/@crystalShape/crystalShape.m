@@ -12,8 +12,8 @@ classdef crystalShape
     N % face normals
     V % vertices
     F % faces
-    habitus = 1
-    extension = [1 1 1];
+    habitus = 1 % describes how visibe mixed hkl faces are
+    extension = [1 1 1]; % describes distance of the faces in dependence of hkl
   end
   
   properties (Dependent = true)
@@ -128,8 +128,15 @@ classdef crystalShape
    
     end
     
-    function cS = hex(cs)
+    
+    function cS = cube(cs)
+      % a very simple cube crystal
+      cS = crystalShape(Miller({1,0,0},cs,'hkl'));
       
+    end
+    
+    function cS = hex(cs)
+      % a very simple hex crystal
       cS = crystalShape(Miller({1,0,0},{0,0,1},cs,'hkl'));
       
     end
