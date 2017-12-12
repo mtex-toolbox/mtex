@@ -25,8 +25,7 @@ else
   else
     [v, W, M2] = quadratureS2Grid(2*M);
   end
-  v = W.*v(:);
-  y = f(v);
+  y = W(:).*f(v(:));
 end
 
 % initialize nfsft

@@ -24,7 +24,7 @@ end
 
 M2 = tmp(index);
 
-data = load([path, files(index).name]);
+data = load([path, filesep, files(index).name]);
 S2G = vector3d('polar', data(:, 1), data(:, 2));
 
 if check_option(varargin, 'gauss')
