@@ -1,12 +1,12 @@
-function sF = calcDensity(v,out,varargin)
+function sF = calcDensity(v,varargin)
 % calculate a density function out of (weighted) unit vectors
 %
 % Syntax
 %
 %   sF = calcDensity(v)
-%   sF = calcDensity(v,[],'weights',w)
-%   sF = calcDensity(v,[],'halfwidth',delta)
-%   sF = calcDensity(v,[],'kernel',psi)
+%   sF = calcDensity(v,'weights',w)
+%   sF = calcDensity(v,'halfwidth',delta)
+%   sF = calcDensity(v,'kernel',psi)
 %    f = calcDensity(v,S2G)
 %
 % Input
@@ -18,7 +18,7 @@ function sF = calcDensity(v,out,varargin)
 %
 % Output
 %  sF  - @sphFun
-%  S2G - @vector3d
+%   f  - function values
 %
 % Options
 %  halfwidth - halfwidth of a kernel
@@ -26,43 +26,21 @@ function sF = calcDensity(v,out,varargin)
 %  weights   - vector of weights, with same length as v
 %
 
-if nargin == 1 || isempty(out)
-  out = equispacedS2Grid('points',10000);
-  generateFun = true;
-else
-  generateFun = false;
-end
-
-% parse some input 
-if isempty(v)
-  sF = zeros(size(out));
-  return
-end
-
+% determine kernel function
 hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',hw));
 c = get_option(varargin,'weights',ones(length(v),1));
-c = c./sum(c);
 
-% evaluate density
-in_theta = fft_theta(v.theta);
-in_rho   = fft_rho(v.rho);
-out_theta= fft_theta(out.theta);
-out_rho  = fft_rho(out.rho);
+% todo strange factor here??
+c = 4*pi*c./sum(c);
 
-gh = [in_rho(:),in_theta(:)].';
-r = [out_rho(:),out_theta(:)].';
-	
-% extract legendre coefficents
-Al = psi.A;
-if check_option(varargin,'antipodal') || v.antipodal || ...
-    out.antipodal
-  Al(2:2:end) = 0;
+% 
+sF = sphFunHarmonic.quadrature(c,v,varargin{:});
+
+%
+sF = conv(sF,psi);
+
+% if required compute function values
+if nargin > 1 && isa(varargin{1},'vector3d')
+  sF = sF.eval(varargin{1}); 
 end
-bw = get_option(varargin,'bandwidth',length(Al));
-Al = Al(1:min(bw,length(Al)));
-  
-sF = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-
-% TODO: generate sphFunHarmonic
-if generateFun, sF = sphFunTri(reshape(out,[],1),sF); end
