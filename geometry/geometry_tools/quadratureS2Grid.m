@@ -1,14 +1,14 @@
 function [S2G, W, M2] = quadratureS2Grid(M, varargin)
 %
-% [S2G, W, M2] = get_quadrature_grid(M) quadrature grid of type gauss
-% [S2G, W, M2] = get_quadrature_grid(M, 'chebyshev') quadrature grid of thype chebyshev
+% Syntax
+%   [S2G, W, M2] = quadratureS2Grid(M) quadrature grid of type gauss
+%   [S2G, W, M2] = quadratureS2Grid(M, 'chebyshev') quadrature grid of type chebyshev
 %
 
-path = mfilename('fullpath');
 if check_option(varargin, 'gauss')
-	path = [mtex_path '/data/quadratureS2Grid_gauss/'];
+  path = fullfile(mtexDataPath,'quadratureS2Grid_gauss');
 else
-	path = [mtex_path '/data/quadratureS2Grid_chebyshev/'];
+	path = fullfile(mtexDataPath,'quadratureS2Grid_chebyshev');
 end
 files = dir( fullfile(path,'*') );
 tmp = {files.name}';
