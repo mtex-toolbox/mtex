@@ -12,8 +12,9 @@ end
 methods
   
   function sF = sphFunHarmonic(fhat)
-        if nargin == 0, return; end
-  % initialize a spherical function
+    % initialize a spherical function
+    
+    if nargin == 0, return; end
   
     fhat = fhat(:);
     M = ceil(sqrt(length(fhat))-1); % make (M+1)^2 entries
