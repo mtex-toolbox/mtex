@@ -7,12 +7,12 @@ end
 
 methods (Abstract = true)
 
-	f = eval(sF, v, varargin)
+  f = eval(sF, v, varargin)
 
 end
 
 methods (Sealed = true)
-	h = plot(sF,varargin)
+  h = plot(sF,varargin)
 end
 
 end

@@ -25,32 +25,32 @@ tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
 
 if check_option(varargin, 'antipodal')
-	if check_option(varargin, 'weights')
-		W = get_option(varargin, 'weights');
-	else
-		[v2, IA, IC] = unique([v; -v]); 
-		W = v2.calcVoronoiArea; % Voronoi weights for symmetrized grid
+  if check_option(varargin, 'weights')
+    W = get_option(varargin, 'weights');
+  else
+    [v2, IA, IC] = unique([v; -v]); 
+    W = v2.calcVoronoiArea; % Voronoi weights for symmetrized grid
 
-		W = W(IC);
-		W = W(1:length(v)); % going back to originally grid
+    W = W(IC);
+    W = W(1:length(v)); % going back to originally grid
 
-		for j = 1:length(v)-1 % divide weights by two if v and -v exist
-			test = ( abs(IC(j)-IC(length(v)+j+1:end)) <= 1e-6 );
-			if sum(test) > 0
-				W([j find(test)+j]) = 0.5*W([j find(test)+j]); 
-			end
-		end
-	end
-	M = get_option(varargin, 'm', ceil(sqrt(length(v))));
-	M = floor(M/2)*2; % make M even
-	mask = sparse((M+1)^2); % only use even polynomial degree
-	for m = 0:2:M
-		mask((m^2+1):(m^2+2*m+1), (m^2+1):(m^2+2*m+1)) = speye(2*m+1);
-	end
+    for j = 1:length(v)-1 % divide weights by two if v and -v exist
+      test = ( abs(IC(j)-IC(length(v)+j+1:end)) <= 1e-6 );
+      if sum(test) > 0
+        W([j find(test)+j]) = 0.5*W([j find(test)+j]); 
+      end
+    end
+  end
+  M = get_option(varargin, 'm', ceil(sqrt(length(v))));
+  M = floor(M/2)*2; % make M even
+  mask = sparse((M+1)^2); % only use even polynomial degree
+  for m = 0:2:M
+    mask((m^2+1):(m^2+2*m+1), (m^2+1):(m^2+2*m+1)) = speye(2*m+1);
+  end
 else
-	M = get_option(varargin, 'm', ceil(sqrt(length(v)/2)));
-	W = get_option(varargin, 'weights', v.calcVoronoiArea);
-	mask = speye((M+1)^2);
+  M = get_option(varargin, 'm', ceil(sqrt(length(v)/2)));
+  W = get_option(varargin, 'weights', v.calcVoronoiArea);
+  mask = speye((M+1)^2);
 end
 
 % initialize nfsft
@@ -67,8 +67,8 @@ nfsft('adjoint', plan);
 b = nfsft('get_f_hat_linear', plan);
 
 [fhat, flag, relres, iter] = lsqr(...
-	@(x, transp_flag) afun(transp_flag, x, plan, W, M, mask), ...
-	b, tol, maxit);
+  @(x, transp_flag) afun(transp_flag, x, plan, W, M, mask), ...
+  b, tol, maxit);
 fhat = mask*fhat;
 
 % finalize nfsft
@@ -83,39 +83,39 @@ end
 function y = afun(transp_flag, x, plan, W, M, mask)
 if strcmp(transp_flag, 'transp')
 
-	x = mask*x;
+  x = mask*x;
 
-%	conjunct nfsft
-	nfsft('set_f_hat_linear', plan, conj(x));
-	nfsft('trafo', plan);
-	f = conj(nfsft('get_f', plan));
+%  conjunct nfsft
+  nfsft('set_f_hat_linear', plan, conj(x));
+  nfsft('trafo', plan);
+  f = conj(nfsft('get_f', plan));
 
-	f = f.*W;
+  f = f.*W;
 
-%	transposed nfsft
-	nfsft('set_f', plan, f);
-	nfsft('adjoint', plan);
-	y = conj(nfsft('get_f_hat_linear', plan));
+%  transposed nfsft
+  nfsft('set_f', plan, f);
+  nfsft('adjoint', plan);
+  y = conj(nfsft('get_f_hat_linear', plan));
 
-	y = mask*y;
+  y = mask*y;
 
 elseif strcmp(transp_flag, 'notransp')
 
-	x = mask*x;
+  x = mask*x;
 
-%	nfsft
-	nfsft('set_f_hat_linear', plan, x);
-	nfsft('trafo', plan);
-	f = nfsft('get_f', plan);
+%  nfsft
+  nfsft('set_f_hat_linear', plan, x);
+  nfsft('trafo', plan);
+  f = nfsft('get_f', plan);
 
-	f = f.*W;
+  f = f.*W;
 
-%	adjoint nfsft
-	nfsft('set_f', plan, f);
-	nfsft('adjoint', plan);
-	y = nfsft('get_f_hat_linear', plan);
+%  adjoint nfsft
+  nfsft('set_f', plan, f);
+  nfsft('adjoint', plan);
+  y = nfsft('get_f_hat_linear', plan);
 
-	y = mask*y;
+  y = mask*y;
 
 end
 end

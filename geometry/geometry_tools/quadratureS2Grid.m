@@ -8,7 +8,7 @@ function [S2G, W, M2] = quadratureS2Grid(M, varargin)
 if check_option(varargin, 'gauss')
   path = fullfile(mtexDataPath,'quadratureS2Grid_gauss');
 else
-	path = fullfile(mtexDataPath,'quadratureS2Grid_chebyshev');
+  path = fullfile(mtexDataPath,'quadratureS2Grid_chebyshev');
 end
 files = dir( fullfile(path,'*') );
 tmp = {files.name}';
@@ -18,8 +18,8 @@ tmp = str2double(tmp);
 tmp2 = (tmp >= M);
 index = find(tmp2, 1);
 if isempty(index)
-	index = length(tmp);
-	warning('M is too large, instead we are giving you the largest quadrature grid we got.');
+  index = length(tmp);
+  warning('M is too large, instead we are giving you the largest quadrature grid we got.');
 end
 
 M2 = tmp(index);
@@ -28,9 +28,9 @@ data = load([path, filesep, files(index).name]);
 S2G = vector3d('polar', data(:, 1), data(:, 2));
 
 if check_option(varargin, 'gauss')
-	W = data(:, 3);
+  W = data(:, 3);
 else
-	W = 4*pi/size(data, 1);
+  W = 4*pi/size(data, 1);
 end
 
 end

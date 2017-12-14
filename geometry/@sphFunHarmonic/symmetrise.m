@@ -16,7 +16,7 @@ function sF = symmetrise(sF, varargin)
 sym = getClass(varargin,'symmetry');
 
 for j = 2:length(sym)
-	sF = sF + sF.rotate(sym(j));
+  sF = sF + sF.rotate(sym(j));
 end
 
 sF = sphFunHarmonicS(sF.fhat, sym) ./ length(sym);

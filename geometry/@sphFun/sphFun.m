@@ -12,9 +12,9 @@ classdef sphFun
     
   end
 
-	methods (Sealed = true)
-		h = plot(sF,varargin)
-	end
+  methods (Sealed = true)
+    h = plot(sF,varargin)
+  end
 end
   
 

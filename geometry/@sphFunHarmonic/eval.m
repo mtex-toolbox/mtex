@@ -11,8 +11,8 @@ s = size(v);
 v = v(:);
 M = sqrt(length(sF.fhat))-1;
 if M == 0
-	f = sF.fhat*ones(size(v));
-	return;
+  f = sF.fhat*ones(size(v));
+  return;
 end
 
 % initialize nfsft
