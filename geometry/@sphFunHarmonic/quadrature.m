@@ -43,6 +43,7 @@ fhat = nfsft('get_f_hat_linear', plan);
 nfsft('finalize', plan);
 
 sF = sphFunHarmonic(fhat);
+sF.M = M;
 
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || v.antipodal 

@@ -1,25 +1,24 @@
-function sFs = symmetrise(sF, varargin)
-% symmetrises a function by s
+function sF = symmetrise(sF, varargin)
+% symmetrises a function with respect to a symmetry 
+%
 % Syntax
-%  sF = sF.symmetrise(s)
-%  sF = sF.symmetrise(s, 'm', M)
+%  sF = sF.symmetrise(cs)
+%  sF = sF.symmetrise(ss)
 %
 % Input
 %  sF - spherical function
-%  s  - symmetrie
+%  cs,ss - @crystalSymmetry, @specimenSymmetry
 %
 % Options
 %  M - minimal degree of the spherical harmonic
 %
 
-s = varargin{1};
-M = get_option(varargin, 'm', min(sF.M, 500));
+sym = getClass(varargin,'symmetry');
 
-sFtmp = sphFunHarmonic(0);
-for j = 1:length(s)
-	sFtmp = sFtmp+sF.rotate(s(j));
+for j = 2:length(sym)
+	sF = sF + sF.rotate(sym(j));
 end
-sFtmp = sFtmp./length(s);
-sFs = sphFunHarmonicS(sFtmp.fhat, s);
+
+sF = sphFunHarmonicS(sF.fhat, sym) ./ length(sym);
 
 end

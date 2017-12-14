@@ -35,6 +35,10 @@ methods
     M = sqrt(length(sF.fhat))-1;
   end
   
+  function sF = set.M(sF,M)
+    sF.fhat((M+1)^2+1:end) = [];
+  end
+  
   function out = get.antipodal(sF)
     
     out = norm(sF - sF.even) < 1e-5;
