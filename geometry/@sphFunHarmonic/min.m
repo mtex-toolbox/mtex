@@ -18,7 +18,7 @@ function v = min(sF, varargin)
 %  
 
 % pointwise minimum of two spherical harmonics{{{
-if nargin > 1 & isa(varargin{1}, 'sphFunHarmonic')
+if ( nargin > 1 ) && ( isa(varargin{1}, 'sphFunHarmonic') )
   if check_option(varargin, 'm')
     f = @(v) 1/2*(sF.eval(v)+varargin{1}.eval(v)-abs(sF.eval(v)-varargin{1}.eval(v), 'm', get_option(varargin, 'm')));
   else
@@ -56,7 +56,7 @@ H = zeros(2, 2, length(v));
 H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
 H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 %}}}
-while 1/length(v)*sum(norm(g)) > tau & k < kmax
+while ( 1/length(v)*sum(norm(g)) > tau ) && ( k < kmax )
   % initial step length{{{
   h = zeros(length(v), 1);
   for ii = 1:length(v)

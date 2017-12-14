@@ -15,7 +15,7 @@ methods
 
   sVF.theta = sF_theta;
   sVF.rho = sF_rho;
-  if nargin > 2 & isa(varargin(1), 'sphFun')
+  if ( nargin > 2 ) && ( isa(varargin(1), 'sphFun') )
     sVF.n = vargin(1);
   else
     sVF.n = 0;
