@@ -22,9 +22,9 @@ methods
     fhat = [fhat; zeros((M+1)^2-length(fhat), 1)];
 
     % truncate neglectable coefficients
-    cutoff = eps; 
+    cutoff = 1e-5; 
     ii = 0;
-    while sum(abs(fhat((M-ii)^2+1:(M+1)^2))) <= cutoff && M > 0
+    while ( sum(abs(fhat((M-ii)^2+1:(M+1)^2))) <= cutoff ) && ( M-ii > 0 )
       ii = ii+1; 
     end
     sF.fhat = fhat(1:(M+1-ii)^2);
