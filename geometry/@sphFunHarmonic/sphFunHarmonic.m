@@ -6,7 +6,8 @@ properties
 end
 
 properties (Dependent=true)
-  M % maximum harmonic degree / bandwidth
+  M          % maximum harmonic degree / bandwidth
+  antipodal  %
 end
 
 methods
@@ -33,6 +34,19 @@ methods
   function M = get.M(sF)
     M = sqrt(length(sF.fhat))-1;
   end
+  
+  function out = get.antipodal(sF)
+    
+    out = norm(sF - sF.even) < 1e-5;
+    
+  end
+  
+  function sF = set.antipodal(sF,value)
+    
+    if value, sF = sF.even; end
+    
+  end
+  
   
   function fhat = get_fhat(sF, m, l)
     if abs(l) <= m && 0 <= m && m <= sF.M

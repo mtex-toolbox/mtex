@@ -46,7 +46,7 @@ sF = sphFunHarmonic(fhat);
 
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || v.antipodal 
-  sF = sF.conv(repmat([1;0],ceil(sF.M/2),1));
+  sF = sF.even;
 end
 
 end
