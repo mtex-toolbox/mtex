@@ -30,7 +30,7 @@ end
 
 % initialize nfsft
 nfsft('precompute', M, 1000, 1, 0);
-plan = nfsft('init_advanced', ceil(M2/2), length(v), 1);
+plan = nfsft('init_advanced', M, length(v), 1);
 nfsft('set_x', plan, [v.rho'; v.theta']); % set vertices
 nfsft('precompute_x', plan);
 

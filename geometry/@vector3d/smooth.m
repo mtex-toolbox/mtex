@@ -73,6 +73,7 @@ for j = 1:numel(sP)
 
   % ----------------- draw contours ------------------------------
 
+  ih = ishold(sP(j).ax);
   hold(sP(j).ax,'on')
 
   % project data
@@ -88,7 +89,9 @@ for j = 1:numel(sP)
   % plot contours
   h = [h,betterContourf(sP(j).hgt,x,y,data,contours,varargin{:})];
   
-  hold(sP(j).ax,'off')
+  if ih == 'false'
+    hold(sP(j).ax,'off')
+  end
   
   % --------------- finalize the plot ---------------------------
 
