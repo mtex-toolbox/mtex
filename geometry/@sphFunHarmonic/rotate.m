@@ -9,7 +9,9 @@ function sF = rotate(sF, rot)
 %  rot - @rotation
 %
 
-f = @(v) sF.eval(v.rotate(rot));
-sF = sphFunHarmonic.quadrature(f, 'M', sF.M);
+if sF.M ~= 0
+  f = @(v) sF.eval(v.rotate(rot));
+  sF = sphFunHarmonic.quadrature(f, 'M', sF.M);
+end
 
 end

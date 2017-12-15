@@ -15,4 +15,10 @@ methods (Sealed = true)
   h = plot(sF,varargin)
 end
 
+methods(Static = true)
+  v = theta(v);
+  v = rho(v);
+  v = n(v);
+end
+
 end

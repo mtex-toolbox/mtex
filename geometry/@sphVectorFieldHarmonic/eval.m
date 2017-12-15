@@ -11,15 +11,13 @@ function f = eval(sVF,v)
 
 v = v(:);
 
-xi_theta = vector3d(cos(v.rho).*cos(v.theta), sin(v.rho).*cos(v.theta), -sin(v.theta));
-xi_rho = vector3d(-sin(v.rho).*sin(v.theta), cos(v.rho).*sin(v.theta), 0);
-if sVF.n == 0
-  f = sVF.theta.eval(v).*xi_theta+...
-    max(sin(v.theta), 0.01).^-2.*sVF.rho.eval(v).*xi_rho;
+if ( sVF.sF_n.M == 0 ) && ( sVF.sF_n.fhat(1) == 0 )
+  f = sVF.sF_theta.eval(v).*sphVectorField.theta(v)+...
+    max(sin(v.theta), 0.01).^-2.*sVF.sF_rho.eval(v).*sphVectorField.rho(v);
 else
-  f = sVF.theta.eval(v).*xi_theta+...
-    max(sin(v.theta), 0.01).^-2.*sVF.rho.eval(v).*xi_rho+...
-    sVF.n.eval(v).*v;
+  f = sVF.sF_theta.eval(v).*sphVectorField.theta(v)+...
+    max(sin(v.theta), 0.01).^-2.*sVF.sF_rho.eval(v).*sphVectorField.rho(v)+...
+    sVF.sF_n.eval(v).*sphVectorField.n(v);
 end
 
 end
