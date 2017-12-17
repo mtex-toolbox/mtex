@@ -1,13 +1,21 @@
-function Z = calcPDF(odf,h,r,varargin)
-% calculate pdf 
+function pdf = calcPDF(odf,h,varargin)
+% calcPDF computed the PDF corresponding to an ODF 
 %
-% calcPDF is a lowlevel function to evaluate the PDF corresponding to an ODF 
-% at a list of crystal and specimen directions
+% Syntax
+%   pdf = calcPDF(odf,h)
+%   pdf = calcPDF(odf,h,'superposition',c)
+%   value = calcPDF(odf,h,r)
+%   ipdf = calcPDF(odf,[],r)
 %
 % Input
 %  odf - @ODF
 %  h   - @Miller / @vector3d crystal directions
 %  r   - @vector3d specimen directions
+%
+% Output
+%  pdf - pole density function @sphFun 
+%  ipdf - inverse pole density function @sphFun 
+%  value
 %
 % Options
 %  superposition - calculate superposed pdf
@@ -18,51 +26,25 @@ function Z = calcPDF(odf,h,r,varargin)
 % See also
 % ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
 
-if nargin == 2 || isempty(r)
-  r = equispacedS2Grid('points',10000);
-  generateFun = true;
-else
-  generateFun = false;  
-end
-
 % check crystal symmetry
-if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
+if isa(h,'Miller'), h = odf.CS.ensureCS(h); end
 
-% superposition coefficients
+% superposed pole figures
 sp = get_option(varargin,'superposition',1);
-
-%
-if length(h) == numel(sp)
-  Z = zeros(length(r),1);
-elseif length(r) == numel(sp)
-  Z = zeros(length(h),1);
-else
-  error('Either h or r must contain only a single value!')
+if length(sp) > 1
+  assert(length(sp) == length(h),'Number of superposition coefficients must coinside with the number of pole figures');
+  varargin = delete_option(varargin,'superposition');
+  pdf = sp(1) * calcPDF(odf,h(1),varargin{:});
+  for i = 2:length(sp)
+    pdf = sp(i) * calcPDF(odf,h(i),varargin{:});
+  end
+  return
 end
-
 
 % cycle through components
-for s = 1:length(sp)
-
-  if length(sp) == 1
-    hh = h;
-  else
-    hh = h(s);
-  end
-  
-  % compute pole density for all portions
-  for i = 1:length(odf.components)
-    Z = Z + odf.weights(i) * sp(s) * ...
-      reshape(calcPDF(odf.components{i},hh,r,varargin{:}),size(Z));
-  end
-end
-
-if generateFun
-  if length(h) == numel(sp)
-    Z = interp(r,Z);
-  else
-    Z = interp(h,Z);
-  end
+pdf = odf.weights(1) * calcPDF(odf.components{1},h,varargin{:});
+for i = 2:length(odf.components)
+  pdf = pdf + odf.weights(i) * calcPDF(odf.components{i},h,varargin{:});
 end
 
 end

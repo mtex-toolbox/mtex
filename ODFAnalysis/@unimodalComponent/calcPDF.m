@@ -11,7 +11,7 @@ if nargin > 2 && min(length(h),length(r)) > 0 && ...
   
 end
 
-if length(h) == 1
+if length(h) == 1 % pole figure
 
   sh = symmetrise(h,'unique');
   pdf = sphFunHarmonic.quadrature(...
@@ -25,7 +25,7 @@ if length(h) == 1
   % maybe we should evaluate
   if nargin > 2 && isa(r,'vector3d'), pdf = pdf.eval(r); end
   
-else
+else % inverse pole figure
 
   sr = symmetrise(r,component.SS,'unique');
   pdf = sphFunHarmonic.quadrature(...
@@ -39,4 +39,8 @@ else
   % maybe we should evaluate
   if isa(h,'vector3d'), pdf = pdf.eval(h); end
   
+end
+
+if ~isnumeric(pdf)
+  pdf.antipodal = component.antipodal;
 end
