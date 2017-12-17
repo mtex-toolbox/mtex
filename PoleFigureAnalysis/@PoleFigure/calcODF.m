@@ -101,8 +101,8 @@ A = psi.A;
 if pf.allR{1}.antipodal
   A(2:2:end) = 0;
 else
-  warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
-end;
+  warning('MTEX:missingFlag','Flag antipodal not set in PoleFigure data!');
+end
 bw = min(get_option(varargin,'bandwidth',length(A)),length(A));
 A = A(1:bw);
 
