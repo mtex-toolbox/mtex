@@ -12,13 +12,13 @@ function h = plot(sF,varargin)
 %
 
 % generate a grid where the function will be plotted
-plotNodes = equispacedS2Grid('resolution',4*degree,'no_center',varargin{:});
+plotNodes = equispacedS2Grid('resolution',5*degree,'no_center',varargin{:});
 
 % evaluate the function on the plotting grid
 values = sF.eval(plotNodes);
 
 % some default plotting settings
-varargin = ['color', 'k', 'arrowSize', 300/(max(norm(values))*length(plotNodes)) varargin];
+varargin = ['color', 'k', 'arrowSize', 0.5*plotNodes.resolution/max(norm(values)) varargin];
 if check_option(varargin,'complete')
   varargin = [varargin,{'removeAntipodal'}];
 end
