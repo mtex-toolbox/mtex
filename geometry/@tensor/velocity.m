@@ -16,8 +16,9 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
-if isempty(x)
-  x = equispacedS2Grid('points',10000);
+if nargin == 1 || isempty(x)
+  M = 48;
+  [x, W] = quadratureS2Grid(2*M);
   generateFun = true;
 else
   generateFun = false;  
@@ -75,11 +76,11 @@ ps1 = vector3d(ps1,'antipodal');
 ps2 = vector3d(ps2,'antipodal');
 
 if generateFun
-  vp = sphFunTri(x,vp);
-  vs1 = sphFunTri(vp,vs1);
-  vs2 = sphFunTri(vp,vs2);
-  
-  pp = sphVectorField(vp,pp);
-  ps1 = sphVectorField(vp,ps1);
-  ps2 = sphVectorField(vp,ps2);
+  vp  = sphFunHarmonic.quadrature(W.*vp,x,'m',M);
+  vs1 = sphFunHarmonic.quadrature(W.*vs1,x,'m',M);
+  vs2 = sphFunHarmonic.quadrature(W.*vs2,x,'m',M);
+    
+  %pp = sphVectorField(vp,pp);
+  %ps1 = sphVectorField(vp,ps1);
+  %ps2 = sphVectorField(vp,ps2);
 end
