@@ -22,12 +22,13 @@ methods
     fhat = [fhat; zeros((M+1)^2-length(fhat), 1)];
 
     % truncate neglectable coefficients
-    cutoff = 1e-5; 
-    ii = 0;
-    while ( sum(abs(fhat((M-ii)^2+1:(M+1)^2))) <= cutoff ) && ( M-ii > 0 )
-      ii = ii+1; 
-    end
-    sF.fhat = fhat(1:(M+1-ii)^2);
+    % this includes a bit of regularisation 
+    m = 1+repelem(0:M,2*(0:M)+1);
+    fh = fhat ./  reshape(m.^2,[],1);
+    fh = sqrt(accumarray(m.',abs(fh).^2));
+    cutoff = max(fh) * 1e-8; 
+    M = find(fh > cutoff,1,'last')-1;
+    sF.fhat = fhat(1:(M+1)^2);
     
   end
   
