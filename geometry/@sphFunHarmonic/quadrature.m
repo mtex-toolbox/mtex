@@ -11,7 +11,7 @@ function sF = quadrature(f, varargin)
 %  f - function handle in vector3d
 %
 % Options
-%  M - minimal degree of the spherical harmonic (default: 100)
+%  M - minimal degree of the spherical harmonic (default: 128)
 %
 
 M = get_option(varargin, 'm', 128);

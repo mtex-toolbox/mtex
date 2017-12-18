@@ -15,14 +15,18 @@ methods
 
     sVF.sF_theta = sF_theta;
     sVF.sF_rho = sF_rho;
-    if ( nargin > 2 ) && ( isa(varargin(1), 'sphFun') )
-      sVF.sF_n = vargin(1);
+    if ( nargin > 2 ) && ( isa(varargin{1}, 'sphFun') )
+      sVF.sF_n = varargin{1};
     else
       sVF.sF_n = sphFunHarmonic(0);
     end
 
   end
 
+end
+
+methods(Static = true)
+  sVF = quadrature(f, varargin)
 end
 
 end

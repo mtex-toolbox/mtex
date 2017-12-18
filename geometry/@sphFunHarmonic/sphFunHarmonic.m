@@ -28,6 +28,7 @@ methods
     fh = sqrt(accumarray(m.',abs(fh).^2));
     cutoff = max(fh) * 1e-8; 
     M = find(fh > cutoff,1,'last')-1;
+    if isempty(M) || ( M < 0 ), M = 0; end
     sF.fhat = fhat(1:(M+1)^2);
     
   end
