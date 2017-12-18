@@ -14,12 +14,13 @@ function q = directionalMagnitude(T,v)
 %
 % See Also
 
-% TODO this should be a function specified by Fourier coefficients
+% return a function if required
 if nargin == 1 || isempty(v)
-  v = equispacedS2Grid('points',10000);
-  generateFun = true;
-else
-  generateFun = false;  
+  q = sphFunHarmonic.quadrature(@(x) directionalMagnitude(T,x),'M',4);
+  
+  if length(T.CS) > 1, q = q.symmetrise(T.CS); end
+  
+  return
 end
 
 % compute tensor products with directions v with respect to all dimensions
@@ -30,8 +31,4 @@ end
 q = T.M;
 if length(v)>1
   q = reshape(q,size(v));
-end
-
-if generateFun
-  q = sphFunTri(v,q);
 end

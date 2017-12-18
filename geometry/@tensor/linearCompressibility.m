@@ -13,12 +13,11 @@ function beta = linearCompressibility(C,x)
 %  beta - linear compressibility in directions v
 %
 
-% TODO this should be a function specified by Fourier coefficients
+% return a function if required
 if nargin == 1 || isempty(x)
-  x = equispacedS2Grid('points',10000);
-  generateFun = true;
-else
-  generateFun = false;  
+  beta = sphFunHarmonic.quadrature(@(x) linearCompressibility(C,x),'M',2);
+  if length(C.CS) > 1, beta = beta.symmetrise(C.CS); end
+  return
 end
 
 % compute the complience
@@ -26,8 +25,3 @@ S = inv(C);
 
 % compute tensor product
 beta = double(EinsteinSum(S,[-1 -2 -3 -3],x,-1,x,-2));
-
-% generate a function if required
-if generateFun
-  beta = sphFunTri(v,beta);
-end
