@@ -2,9 +2,9 @@ classdef S2VectorFieldHarmonic < S2VectorField
 % a class represeneting a function on the sphere
 
 properties
-  sF_theta
-  sF_rho
-  sF_n
+  sF_theta;
+  sF_rho;
+  sF_n;
 end
 
 methods
