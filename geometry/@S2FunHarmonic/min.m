@@ -2,25 +2,25 @@ function v = min(sF, varargin)
 % calculates the minimum of a spherical harminc or the pointwise minimum of two spherical harmonics
 % Syntax
 %   v = min(sF)
-%   v = min(sF, 'm', M)
+%   v = min(sF, 'bandwidth', bandwidth)
 %   sF = min(sF1, sF2)
 %   sF = min(sF1, sF2, 'n', N, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
 %
 % Options
-%  M      - minimal degree of the spherical harmonic
-%  N      -  number of points
-%  LAMBDA -  regularization parameter
-%  TAU    -  tolerance
-%  MU     -  in (0, 0.5) for Armijo condition
-%  KMAX   -  maximal iterations
-%  TAULS  -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
-%  KMAXLS -  maximal iterations for line search
+%  bandwidth  - minimal degree of the spherical harmonic
+%  N          -  number of points
+%  LAMBDA     -  regularization parameter
+%  TAU        -  tolerance
+%  MU         -  in (0, 0.5) for Armijo condition
+%  KMAX       -  maximal iterations
+%  TAULS      -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
+%  KMAXLS     -  maximal iterations for line search
 %  
 
 % pointwise minimum of two spherical harmonics{{{
 if ( nargin > 1 ) && ( isa(varargin{1}, 'S2FunHarmonic') )
-  if check_option(varargin, 'm')
-    f = @(v) 1/2*(sF.eval(v)+varargin{1}.eval(v)-abs(sF.eval(v)-varargin{1}.eval(v), 'm', get_option(varargin, 'm')));
+  if check_option(varargin, 'bandwidth')
+    f = @(v) 1/2*(sF.eval(v)+varargin{1}.eval(v)-abs(sF.eval(v)-varargin{1}.eval(v), 'bandwidth', get_option(varargin, 'bandwidth')));
   else
     f = @(v) 1/2*(sF.eval(v)+varargin{1}.eval(v)-abs(sF.eval(v)-varargin{1}.eval(v)));
   end

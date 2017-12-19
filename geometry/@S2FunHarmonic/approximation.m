@@ -2,17 +2,17 @@ function sF = approximation(nodes, y, varargin)
 % computes a least square problem to get an approximation
 % Syntax
 %  sF = S2FunHarmonic.approximation(S2Grid, f)
-%  sF = S2FunHarmonic.approximation(S2Grid, f, 'm', M, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
+%  sF = S2FunHarmonic.approximation(S2Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
 %
 % Input
 %  S2Grid - grid on the sphere
 %  f      - function values on the grid
 %
 % Options
-%  M     - maximum degree of the spherical harmonics used to approximate the function
-%  to   - tolerance for lsqm
-%  maxIt - maximum number of iterations for lsqm
-%  W     - weight w_n for the node nodes (default: voronoi weights)
+%  bandwidth  - maximum degree of the spherical harmonics used to approximate the function
+%  to         - tolerance for lsqm
+%  maxIt      - maximum number of iterations for lsqm
+%  W          - weight w_n for the node nodes (default: voronoi weights)
 %
 
 % make points unique
@@ -41,30 +41,30 @@ if check_option(varargin, 'antipodal') || nodes.antipodal
       end
     end
   end
-  M = get_option(varargin, 'm', ceil(sqrt(length(nodes))));
-  M = floor(M/2)*2; % make M even
-  mask = sparse((M+1)^2); % only use even polynomial degree
-  for m = 0:2:M
+  bandwidth = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
+  bandwidth = floor(bandwidth/2)*2; % make bandwidth even
+  mask = sparse((bandwidth+1)^2); % only use even polynomial degree
+  for m = 0:2:bandwidth
     mask((m^2+1):(m^2+2*m+1), (m^2+1):(m^2+2*m+1)) = speye(2*m+1);
   end
 else
-  M = get_option(varargin, 'm', ceil(sqrt(length(nodes)/2)));
+  bandwidth = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes)/2)));
   W = get_option(varargin, 'weights', nodes.calcVoronoiArea);
-  mask = speye((M+1)^2);
+  mask = speye((bandwidth+1)^2);
 end
 
 W = sqrt(W);
 
 % initialize nfsft
-nfsft('precompute', M, 1000, 1, 0);
-plan = nfsft('init_advanced', M, length(nodes), 1);
+nfsft('precompute', bandwidth, 1000, 1, 0);
+plan = nfsft('init_advanced', bandwidth, length(nodes), 1);
 nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
 nfsft('precompute_x', plan);
 
 b = W.*y;
 
 fhat = lsqr(...
-  @(x, transp_flag) afun(transp_flag, x, plan, W, M, mask), ...
+  @(x, transp_flag) afun(transp_flag, x, plan, W, mask), ...
   b, tol, maxit);
 fhat = mask*fhat;
 
@@ -77,7 +77,7 @@ end
 
 
 
-function y = afun(transp_flag, x, plan, W, M, mask)
+function y = afun(transp_flag, x, plan, W, mask)
 if strcmp(transp_flag, 'transp')
 
   x = x.*W;

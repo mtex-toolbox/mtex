@@ -5,6 +5,6 @@ function n = norm(sF)
 %  norm(sF)
 %
 
-n = sqrt(sum(abs(sF.fhat).^2));
+n = norm(sF.fhat);
 
 end

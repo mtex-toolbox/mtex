@@ -9,9 +9,9 @@ function sF = rotate(sF, rot)
 %  rot - @rotation
 %
 
-if sF.M ~= 0
+if sF.bandwidth ~= 0
   f = @(v) sF.eval(v.rotate(rot));
-  sF = S2FunHarmonic.quadrature(f, 'M', sF.M);
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
 end
 
 end

@@ -15,17 +15,17 @@ function plotSpektra(sF,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-M = get_option(varargin,'bandwidth',sF.M);
+bandwidth = get_option(varargin,'bandwidth',sF.bandwidth);
 
-m = repelem(0:M,2*(0:M)+1);
+bandwidth = repelem(0:bandwidth,2*(0:bandwidth)+1);
 
-power = sqrt(accumarray(1+m.',abs(sF.fhat).^2));
+power = sqrt(accumarray(1+bandwidth.',abs(sF.fhat).^2));
 
-optionplot(0:M,power,'Marker','o','linestyle',':',...
+optionplot(0:bandwidth,power,'Marker','o','linestyle',':',...
   'parent',mtexFig.gca,varargin{:});
 
 if isNew
-  xlim(mtexFig.gca,[0,M])
+  xlim(mtexFig.gca,[0,bandwidth])
   xlabel(mtexFig.gca,'harmonic degree');
   ylabel(mtexFig.gca,'power');
   drawNow(mtexFig,varargin{:});

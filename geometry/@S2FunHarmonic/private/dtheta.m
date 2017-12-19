@@ -1,7 +1,7 @@
 function sF = dtheta(sF)
 
-fhat = zeros((sF.M+2)^2, 1);
-for m = 0:sF.M+1
+fhat = zeros((sF.bandwidth+2)^2, 1);
+for m = 0:sF.bandwidth+1
   for l = -m:m
     a = (m-1)*sqrt((m^2-l^2)/((2*m-1)*(2*m+1)));
     b = (m+2)*sqrt(((m+1)^2-l^2)/((2*m+1)*(2*m+3)));
@@ -17,6 +17,6 @@ end
 
 sF = S2FunHarmonic(fhat);
 f = @(v) sF.eval(v)./max(sin(v.theta), 0.01);
-sF = S2FunHarmonic.quadrature(f, 'm', max(2*sF.M, 100));
+sF = S2FunHarmonic.quadrature(f, 'm', max(2*sF.bandwidth, 100));
 
 end

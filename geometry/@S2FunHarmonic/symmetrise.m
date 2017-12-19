@@ -12,9 +12,6 @@ function sFs = symmetrise(sF, varargin)
 % Output
 %  sFs - symmetrised @S2Fun
 %
-% Options
-%  M - minimal degree of the spherical harmonic
-%
 
 sym = getClass(varargin,'symmetry');
 

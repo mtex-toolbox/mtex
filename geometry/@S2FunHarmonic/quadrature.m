@@ -3,7 +3,7 @@ function sF = quadrature(f, varargin)
 % Syntax
 %  sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
 %  sF = S2FunHarmonic.quadrature(f)
-%  sF = S2FunHarmonic.quadrature(f, 'm', M)
+%  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
 %
 % Input
 %  values - double
@@ -11,15 +11,15 @@ function sF = quadrature(f, varargin)
 %  f - function handle in vector3d
 %
 % Options
-%  M - minimal degree of the spherical harmonic (default: 128)
+%  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %
 
-M = get_option(varargin, 'm', 128);
+bandwidth = get_option(varargin, 'bandwidth', 128);
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureS2Grid(2*M, 'gauss');
+    [nodes, W] = quadratureS2Grid(2*bandwidth, 'gauss');
   else
-    [nodes, W] = quadratureS2Grid(2*M);
+    [nodes, W] = quadratureS2Grid(2*bandwidth);
   end
   values = f(nodes(:));
 else
@@ -29,8 +29,8 @@ else
 end
 
 % initialize nfsft
-nfsft('precompute', M, 1000, 1, 0);
-plan = nfsft('init_advanced', M, length(nodes), 1);
+nfsft('precompute', bandwidth, 1000, 1, 0);
+plan = nfsft('init_advanced', bandwidth, length(nodes), 1);
 nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
 nfsft('precompute_x', plan);
 
@@ -43,7 +43,7 @@ fhat = nfsft('get_f_hat_linear', plan);
 nfsft('finalize', plan);
 
 sF = S2FunHarmonic(fhat);
-sF.M = M;
+sF.bandwidth = bandwidth;
 
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || nodes.antipodal 

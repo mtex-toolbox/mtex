@@ -11,7 +11,7 @@ function f = eval(sVF,v)
 
 v = v(:);
 
-if ( sVF.sF_n.M == 0 ) && ( sVF.sF_n.fhat(1) == 0 )
+if ( sVF.sF_n.bandwidth == 0 ) && ( sVF.sF_n.fhat(1) == 0 )
   f = sVF.sF_theta.eval(v).*S2VectorField.theta(v)+...
     max(sin(v.theta), 0.01).^-2.*sVF.sF_rho.eval(v).*S2VectorField.rho(v);
 else
