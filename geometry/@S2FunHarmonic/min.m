@@ -4,17 +4,17 @@ function v = min(sF, varargin)
 %   v = min(sF)
 %   v = min(sF, 'bandwidth', bandwidth)
 %   sF = min(sF1, sF2)
-%   sF = min(sF1, sF2, 'n', N, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
+%   sF = min(sF1, sF2, 'startingnodes', NODES, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
 %
 % Options
-%  bandwidth  - minimal degree of the spherical harmonic
-%  N          -  number of points
-%  LAMBDA     -  regularization parameter
-%  TAU        -  tolerance
-%  MU         -  in (0, 0.5) for Armijo condition
-%  KMAX       -  maximal iterations
-%  TAULS      -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
-%  KMAXLS     -  maximal iterations for line search
+%  bandwidth      - minimal degree of the spherical harmonic for pointwise minimum of two @S2FunHarmonic
+%  STARTINGNODES  -  starting nodes of type @vector3d
+%  LAMBDA         -  regularization parameter
+%  TAU            -  tolerance
+%  MU             -  in (0, 0.5) for Armijo condition
+%  KMAX           -  maximal iterations
+%  TAULS          -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
+%  KMAXLS         -  maximal iterations for line search
 %  
 
 % pointwise minimum of two spherical harmonics{{{
@@ -31,8 +31,10 @@ end
 
 % minimization of one spherical harmonic
 % parameters{{{
-N     = get_option(varargin, 'n', 2^10); % number of points
-lambda   = get_option(varargin, 'lambda', sqrt(N)/10); % regularization parameter
+v = get_option(varargin, 'startingnodes', equispacedS2Grid('points', 2^10));
+v = v(:);
+v = v(v.theta > 0.01 & v.theta < pi-0.01); % cant derivate on the poles
+lambda   = get_option(varargin, 'lambda', sqrt(length(v))/10); % regularization parameter
 tau   = get_option(varargin, 'tau', 1e-8); % tolerance
 kmax   = get_option(varargin, 'kmax', 10); % maximal iterations
 mu     = get_option(varargin, 'mu', 0.4); % in (0, 0.5) for Armijo condition
@@ -40,9 +42,6 @@ tauLS   = get_option(varargin, 'tauLS', 0.5); % in (0, 1) alpha(k+1) = tauLS*alp
 kmaxLS   = get_option(varargin, 'kmaxLS', 6); % maximal iterations for line search
 %}}}
 % initialization{{{
-v = equispacedS2Grid('points', N);
-v = v(:);
-v = v(v.theta > 0.01 & v.theta < pi-0.01); % cant derivate on the poles
 G = sF.grad;
 Gthth = sF.dthetadtheta;
 Gthrh = sF.dthetadrho;
@@ -53,8 +52,8 @@ d = -g;
 k = 1;
 
 H = zeros(2, 2, length(v));
-H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
-H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
+H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.sF_rho.eval(v).*cot(v.theta)]';
+H(2, :, :) = [Gthrh.eval(v)-G.sF_rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.sF_theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 %}}}
 while ( 1/length(v)*sum(norm(g)) > tau ) && ( k < kmax )
   % initial step length{{{
@@ -64,14 +63,15 @@ while ( 1/length(v)*sum(norm(g)) > tau ) && ( k < kmax )
   end
   normd = norm(d);
   alpha = abs(dot(g, d))./(h+lambda*abs(dot(g, d)).*normd);
-  alpha = (alpha < eps)+(alpha >= 0).*alpha;
   %}}}
-%  figure(2); plot(sort(alpha)); ylim([-1, 1]);
-%  figure(1); clf;
-%  plot3d(sF); hold on;
-%  scatter3d(v, ones(3, length(v)));
-%  quiver3(v, diag(alpha)*d);
-%  drawnow;
+% TODO: alpha may be negative - why?
+  alpha = (alpha < eps)+(alpha >= 0).*alpha;
+  figure(2); plot(sort(alpha)); ylim([-1, 1]);
+  figure(1); clf;
+  plot(sF); hold on;
+  scatter(v);
+  plot(v, diag(alpha)*d);
+  drawnow;
   % step length by linesearch{{{
   f0 = sF.eval(v);
   vd = diag(cos(normd))*v+diag(sin(normd)./normd)*d;
@@ -95,8 +95,8 @@ while ( 1/length(v)*sum(norm(g)) > tau ) && ( k < kmax )
   g = G.eval(v);
 
   H = zeros(2, 2, length(v));
-  H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
-  H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
+  H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.sF_rho.eval(v).*cot(v.theta)]';
+  H(2, :, :) = [Gthrh.eval(v)-G.sF_rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.sF_theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 
   dtilde = diag(-sin(alpha.*normd).*normd)*vold+diag(cos(alpha.*normd))*d;
 
