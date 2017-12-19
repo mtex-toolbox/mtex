@@ -1,4 +1,4 @@
-function sF = approximation(v, y, varargin)
+function sF = approximation(nodes, y, varargin)
 % computes a least square problem to get an approximation
 % Syntax
 %  sF = S2FunHarmonic.approximation(S2Grid, f)
@@ -12,61 +12,58 @@ function sF = approximation(v, y, varargin)
 %  M     - maximum degree of the spherical harmonics used to approximate the function
 %  to   - tolerance for lsqm
 %  maxIt - maximum number of iterations for lsqm
-%  W     - weight w_n for the node v_n (default: voronoi weights)
+%  W     - weight w_n for the node nodes (default: voronoi weights)
 %
 
 % make points unique
-[v, IA] = unique(v); 
-v = v(:);
+[nodes, IA] = unique(nodes); 
+nodes = nodes(:);
 y = y(IA); 
 y = y(:);
 
-tol = get_option(varargin, 'tol', 1e-6);
+tol = get_option(nodes, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
 
-if check_option(varargin, 'antipodal')
+if check_option(varargin, 'antipodal') || nodes.antipodal 
   if check_option(varargin, 'weights')
     W = get_option(varargin, 'weights');
   else
-    [v2, IA, IC] = unique([v; -v]); 
-    W = v2.calcVoronoiArea; % Voronoi weights for symmetrized grid
+    [nodes2, IA, IC] = unique([nodes; -nodes]); 
+    W = nodes2.calcVoronoiArea; % Voronoi weights for symmetrized grid
 
     W = W(IC);
-    W = W(1:length(v)); % going back to originally grid
+    W = W(1:length(nodes)); % going back to originally grid
 
-    for j = 1:length(v)-1 % divide weights by two if v and -v exist
-      test = ( abs(IC(j)-IC(length(v)+j+1:end)) <= 1e-6 );
+    for j = 1:length(nodes)-1 % divide weights by two if nodes and -nodes exist
+      test = ( abs(IC(j)-IC(length(nodes)+j+1:end)) <= 1e-6 );
       if sum(test) > 0
         W([j find(test)+j]) = 0.5*W([j find(test)+j]); 
       end
     end
   end
-  M = get_option(varargin, 'm', ceil(sqrt(length(v))));
+  M = get_option(varargin, 'm', ceil(sqrt(length(nodes))));
   M = floor(M/2)*2; % make M even
   mask = sparse((M+1)^2); % only use even polynomial degree
   for m = 0:2:M
     mask((m^2+1):(m^2+2*m+1), (m^2+1):(m^2+2*m+1)) = speye(2*m+1);
   end
 else
-  M = get_option(varargin, 'm', ceil(sqrt(length(v)/2)));
-  W = get_option(varargin, 'weights', v.calcVoronoiArea);
+  M = get_option(varargin, 'm', ceil(sqrt(length(nodes)/2)));
+  W = get_option(varargin, 'weights', nodes.calcVoronoiArea);
   mask = speye((M+1)^2);
 end
 
+W = sqrt(W);
+
 % initialize nfsft
 nfsft('precompute', M, 1000, 1, 0);
-plan = nfsft('init_advanced', M, length(v), 1);
-nfsft('set_x', plan, [v.rho'; v.theta']); % set vertices
+plan = nfsft('init_advanced', M, length(nodes), 1);
+nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
 nfsft('precompute_x', plan);
 
-y = W.*y;
+b = W.*y;
 
-% adjoint nfsft
-nfsft('set_f', plan, y);
-nfsft('adjoint', plan);
-b = nfsft('get_f_hat_linear', plan);
-
-[fhat, flag, relres, iter] = lsqr(...
+fhat = lsqr(...
   @(x, transp_flag) afun(transp_flag, x, plan, W, M, mask), ...
   b, tol, maxit);
 fhat = mask*fhat;
@@ -83,19 +80,11 @@ end
 function y = afun(transp_flag, x, plan, W, M, mask)
 if strcmp(transp_flag, 'transp')
 
-  x = mask*x;
+  x = x.*W;
 
-%  conjunct nfsft
-  nfsft('set_f_hat_linear', plan, conj(x));
-  nfsft('trafo', plan);
-  f = conj(nfsft('get_f', plan));
-
-  f = f.*W;
-
-%  transposed nfsft
-  nfsft('set_f', plan, f);
+  nfsft('set_f', plan, x);
   nfsft('adjoint', plan);
-  y = conj(nfsft('get_f_hat_linear', plan));
+  y = (nfsft('get_f_hat_linear', plan));
 
   y = mask*y;
 
@@ -103,19 +92,11 @@ elseif strcmp(transp_flag, 'notransp')
 
   x = mask*x;
 
-%  nfsft
   nfsft('set_f_hat_linear', plan, x);
   nfsft('trafo', plan);
-  f = nfsft('get_f', plan);
+  y = nfsft('get_f', plan);
 
-  f = f.*W;
-
-%  adjoint nfsft
-  nfsft('set_f', plan, f);
-  nfsft('adjoint', plan);
-  y = nfsft('get_f_hat_linear', plan);
-
-  y = mask*y;
+  y = y.*W;
 
 end
 end
