@@ -16,7 +16,7 @@ function yi = interp(v,y,varargin)
 %  vi - interpolation points @vector3d
 %
 % Output
-%  sF - @sphFun
+%  sF - @S2Fun
 %  yi - interpolation values
 %
 
@@ -25,7 +25,7 @@ function yi = interp(v,y,varargin)
 y = y(ind);
 
 if nargin == 2
-  yi = sphFunTri(v,y);
+  yi = S2FunTri(v,y);
   return
 end
 
@@ -40,16 +40,16 @@ if isnumeric(varargin{1})
 
   elseif check_option(varargin,'linear') % linear interpolation
 
-    sF = sphFunTri(v,y);
+    sF = S2FunTri(v,y);
     yi = sF.eval(vi);
 
   elseif check_option(varargin, 'harmonicApproximation')
 
-    sF = sphFunHarmonic(v, y, varargin{:});
+    sF = S2FunHarmonic(v, y, varargin{:});
     yi = sF.eval(vi);
 
   else
-  % TODO: do this in Fourier domain and return a sphFunHarmonic  
+  % TODO: do this in Fourier domain and return a S2FunHarmonic  
 
     res = v.resolution;
     psi = deLaValeePoussinKernel('halfwidth',res/2);
@@ -82,10 +82,10 @@ if isnumeric(varargin{1})
   end
 else % varargin{1} not numeric
   if check_option(varargin, 'harmonicApproximation')
-    yi = sphFunHarmonic.approximation(v, y, varargin{:});
+    yi = S2FunHarmonic.approximation(v, y, varargin{:});
 
   elseif check_option(varargin, 'linear')
-    yi = sphFunTri(v,y);
+    yi = S2FunTri(v,y);
   
   end
   

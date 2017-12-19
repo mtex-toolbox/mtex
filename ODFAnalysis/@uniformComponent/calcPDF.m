@@ -3,7 +3,7 @@ function pdf = calcPDF(~,h,r,varargin)
 
 if isempty(h) || nargin==2 || isempty(r)
   
-  pdf = sphFunHarmonic(1);
+  pdf = S2FunHarmonic(1);
   
 else
   

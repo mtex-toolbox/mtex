@@ -15,7 +15,7 @@ function E = YoungsModulus(C,varargin)
 %
 % Output
 %  E - Youngs modulus
-%  E - @sphFun
+%  E - @S2Fun
 %
 % See also
 % tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor

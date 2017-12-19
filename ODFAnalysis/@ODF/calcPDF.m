@@ -13,8 +13,8 @@ function pdf = calcPDF(odf,h,varargin)
 %  r   - @vector3d specimen directions
 %
 % Output
-%  pdf - pole density function @sphFun 
-%  ipdf - inverse pole density function @sphFun 
+%  pdf - pole density function @S2Fun 
+%  ipdf - inverse pole density function @S2Fun 
 %  value
 %
 % Options

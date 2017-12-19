@@ -17,12 +17,12 @@ function nu = PoissonRatio(C,x,y)
 % generate a function if required
 if nargin == 1 || isempty(x)
   
-  nu = sphFunHarmonic.quadrature(@(v) PoissonRatio(C,v,y),'M',4);
+  nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,v,y),'M',4);
   nu = nu.symmetrise(C.CS);
   
 elseif nargin <= 2 || isempty(y)
 
-  nu = sphFunHarmonic.quadrature(@(v) PoissonRatio(C,x,v),'M',4);
+  nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,x,v),'M',4);
   nu = nu.symmetrise(C.CS);
   
 else

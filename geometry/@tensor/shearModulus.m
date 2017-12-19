@@ -19,12 +19,12 @@ function E = shearModulus(C,h,u)
 % generate a function if required
 if nargin == 1 || isempty(h)
   
-  E = sphFunHarmonic.quadrature(@(v) PoissonRatio(C,v,u),'M',4);
+  E = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,v,u),'M',4);
   E = E.symmetrise(C.CS);
   
 elseif nargin <= 2 || isempty(u)
 
-  E = sphFunHarmonic.quadrature(@(v) PoissonRatio(C,h,v),'M',4);
+  E = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,h,v),'M',4);
   E = E.symmetrise(C.CS);
   
 else

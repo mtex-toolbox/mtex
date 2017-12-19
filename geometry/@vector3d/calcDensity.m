@@ -17,7 +17,7 @@ function sF = calcDensity(v,varargin)
 %  psi - @kernel function, default is de la Vallee Poussin
 %
 % Output
-%  sF  - @sphFun
+%  sF  - @S2Fun
 %   f  - function values
 %
 % Options
@@ -35,7 +35,7 @@ c = get_option(varargin,'weights',ones(length(v),1));
 c = 4*pi*c./sum(c);
 
 % 
-sF = sphFunHarmonic.quadrature(v,c,varargin{:});
+sF = S2FunHarmonic.quadrature(v,c,varargin{:});
 
 %
 sF = conv(sF,psi);

@@ -16,7 +16,7 @@ function q = directionalMagnitude(T,v)
 
 % return a function if required
 if nargin == 1 || isempty(v)
-  q = sphFunHarmonic.quadrature(@(x) directionalMagnitude(T,x),'M',4);
+  q = S2FunHarmonic.quadrature(@(x) directionalMagnitude(T,x),'M',4);
   
   if length(T.CS) > 1, q = q.symmetrise(T.CS); end
   

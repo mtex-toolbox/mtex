@@ -29,7 +29,7 @@ end
 if nargin == 1 || isnumeric(sigma)
   r = equispacedS2Grid('points',10000);
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
-  SF = sphFunTri(r,SF);
+  SF = S2FunTri(r,SF);
     
 elseif isa(sigma,'vector3d')
   

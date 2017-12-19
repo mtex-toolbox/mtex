@@ -27,7 +27,7 @@ for l = 0:even:L
 end
 
 % setup a spherical harmonic function
-pdf = sphFunHarmonic(conj(P_hat));
+pdf = S2FunHarmonic(conj(P_hat));
 
 % evaluate if required
 if length(h) > 1
