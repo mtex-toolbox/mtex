@@ -76,11 +76,11 @@ ps1 = vector3d(ps1,'antipodal');
 ps2 = vector3d(ps2,'antipodal');
 
 if generateFun
-  vp  = sphFunHarmonic.quadrature(W.*vp,x,'m',M);
-  vs1 = sphFunHarmonic.quadrature(W.*vs1,x,'m',M);
-  vs2 = sphFunHarmonic.quadrature(W.*vs2,x,'m',M);
+  vp  = sphFunHarmonic.quadrature(x,vp,'m',M,'weights',W);
+  vs1 = sphFunHarmonic.quadrature(x,vs1,'m',M,'weights',W);
+  vs2 = sphFunHarmonic.quadrature(x,vs2,'m',M,'weights',W);
     
-  %pp = sphVectorField(vp,pp);
-  %ps1 = sphVectorField(vp,ps1);
-  %ps2 = sphVectorField(vp,ps2);
+  %pp = sphVectorFieldHarmonic.quadrature(W.*pp,x,'m',M);
+  %ps1 = sphVectorFieldHarmonic.quadrature(W.*ps1,x,'m',M);
+  %ps2 = sphVectorFieldHarmonic.quadrature(W.*ps2,x,'m',M);
 end

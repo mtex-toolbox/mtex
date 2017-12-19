@@ -15,7 +15,7 @@ if length(h) == 1 % pole figure
 
   sh = symmetrise(h,'unique');
   pdf = sphFunHarmonic.quadrature(...
-    repmat(component.weights(:),1,length(sh)),component.center*sh);
+    component.center*sh,repmat(component.weights(:),1,length(sh)));
   
   pdf = 4 * pi * conv(pdf,component.psi)./ length(sh);
 
@@ -29,7 +29,7 @@ else % inverse pole figure
 
   sr = symmetrise(r,component.SS,'unique');
   pdf = sphFunHarmonic.quadrature(...
-    repmat(component.weights(:),1,length(sr)),inv(component.center)*sr);
+    inv(component.center)*sr,repmat(component.weights(:),1,length(sr)));
   
   pdf = 4 * pi * conv(pdf,component.psi) ./ length(sr);
 

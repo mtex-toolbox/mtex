@@ -35,7 +35,7 @@ c = get_option(varargin,'weights',ones(length(v),1));
 c = 4*pi*c./sum(c);
 
 % 
-sF = sphFunHarmonic.quadrature(c,v,varargin{:});
+sF = sphFunHarmonic.quadrature(v,c,varargin{:});
 
 %
 sF = conv(sF,psi);
