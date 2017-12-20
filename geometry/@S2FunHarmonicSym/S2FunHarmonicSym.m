@@ -1,4 +1,4 @@
-classdef S2FunHarmonicS < S2FunHarmonic
+classdef S2FunHarmonicSym < S2FunHarmonic
 % a class represeneting a symmetrised function on the sphere
 
 properties
