@@ -5,4 +5,4 @@ function sF = even(sF, varargin)
 %  sF = sF.even
 %
 
-sF = sF.conv(repmat([1;0],ceil(sF.bandwidth/2),1));
+sF = sF.conv(repmat([1;0],ceil(sF.bandwidth/2)+1,1));

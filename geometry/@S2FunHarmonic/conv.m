@@ -18,16 +18,16 @@ else
   A = psi.A;
   A = A ./ (2*(0:length(A)-1)+1).';
 end
-A = A(1:min(sF.bandwidth,length(A)));
+A = A(1:min(sF.bandwidth+1,length(A)));
   
 % reduce bandwidth if required
 bandwidth = length(A)-1;
-sF.fhat = sF.fhat(1:(bandwidth+1)^2);
+fhat = sF.fhat(1:(bandwidth+1)^2);
 
 % extend coefficients
 A = repelem(A,2*(0:bandwidth)+1);
 
 % multiplication in harmonic domain
-sF.fhat = A .* sF.fhat;
+sF = S2FunHarmonic(A.*fhat);
 
 end

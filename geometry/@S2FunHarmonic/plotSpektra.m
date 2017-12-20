@@ -17,9 +17,9 @@ function plotSpektra(sF,varargin)
 
 bandwidth = get_option(varargin,'bandwidth',sF.bandwidth);
 
-bandwidth = repelem(0:bandwidth,2*(0:bandwidth)+1);
+m = repelem(0:bandwidth,2*(0:bandwidth)+1);
 
-power = sqrt(accumarray(1+bandwidth.',abs(sF.fhat).^2));
+power = sqrt(accumarray(1+m.',abs(sF.fhat).^2));
 
 optionplot(0:bandwidth,power,'Marker','o','linestyle',':',...
   'parent',mtexFig.gca,varargin{:});
