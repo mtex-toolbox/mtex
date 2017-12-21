@@ -16,14 +16,13 @@ function sVF = quadrature(f, varargin)
 
 M = get_option(varargin, 'm', 128);
 if isa(f,'vector3d')
-  M2 = 2*M;
   v = f(:);
   y = getClass(varargin,'vector3d'); y = y(:); % function values
 else
   if check_option(varargin, 'gauss')
-    [v, W, M2] = quadratureS2Grid(2*M, 'gauss');
+    [v, W] = quadratureS2Grid(2*M, 'gauss');
   else
-    [v, W, M2] = quadratureS2Grid(2*M);
+    [v, W] = quadratureS2Grid(2*M);
   end
   y = W(:).*f(v(:));
 end

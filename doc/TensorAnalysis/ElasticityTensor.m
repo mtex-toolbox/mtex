@@ -21,18 +21,22 @@ cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
 
 %% Young's Modulus
-% Young's modulus is also known as the tensile modulus and measures the stiffness of elastic materials
-% It is computed for a specific direction x by the command <tensor.YoungsModulus.html YoungsModulus>.
+% Young's modulus is also known as the tensile modulus and measures the
+% stiffness of elastic materials. It is computed for a specific direction x
+% by the command <tensor.YoungsModulus.html YoungsModulus>.
 
-x = xvector;
-E = YoungsModulus(C,x)
+% compute Young's modulus as a directional dependend function
+E = C.YoungsModulus
 
-%%
-% It can be plotted by passing the option *YoungsModulus* to the
-% <tensor.plot.html plot> command.
-
+% plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C.YoungsModulus,'complete','upper')
+
+% Young's modulus for a specific direction 
+E.eval(vector3d.X)
+
+%
+
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -41,13 +45,14 @@ plot(C.YoungsModulus,'complete','upper')
 % It is computed for a specific direction x by the
 % command <tensor.linearCompressibility.html linearCompressibility>.
 
-beta = linearCompressibility(C,x)
+beta = linearCompressibility(C)
 
-%%
-% It can be plotted by passing the option *linearCompressibility* to the
-% <tensor.plot.html plot> command.
+% plot it
+plot(beta,'complete','upper')
 
-plot(C.linearCompressibility,'complete','upper')
+% 
+beta.eval(vector3d.X)
+
 
 %% Christoffel Tensor
 % The Christoffel Tensor is symmetric because of the symmetry of the
