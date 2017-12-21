@@ -6,10 +6,10 @@ properties
 end
 
 methods
-  function sFs = S2FunHarmonicSym(fhat, s)
+  function sF = S2FunHarmonicSym(fhat, s)
     if nargin == 0, return; end
-    sFs.fhat = fhat;
-    sFs.s = s;
+    sF.fhat = fhat;
+    sF.s = s;
   end
   
 end
