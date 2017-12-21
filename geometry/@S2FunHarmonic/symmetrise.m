@@ -20,6 +20,6 @@ for j = 2:length(sym)
   sFs = sFs + sF.rotate(sym(j));
 end
 
-sFs = S2FunHarmonicS(sFs.fhat, sym) ./ length(sym);
+sFs = S2FunHarmonicSym(sFs.fhat, sym) ./ length(sym);
 
 end
