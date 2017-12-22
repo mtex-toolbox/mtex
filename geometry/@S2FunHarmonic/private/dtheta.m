@@ -1,17 +1,13 @@
 function sF = dtheta(sF)
 
+sF.fhat(1) = 0; % exclude some special cases
 fhat = zeros((sF.bandwidth+2)^2, 1);
 for m = 0:sF.bandwidth+1
-  for l = -m:m
-    a = (m-1)*sqrt((m^2-l^2)/((2*m-1)*(2*m+1)));
-    b = (m+2)*sqrt(((m+1)^2-l^2)/((2*m+1)*(2*m+3)));
-    if ( ( m-1 == 0 ) || ( m-1 == -1 ) ) && ( l == 0 )
-      a = 0;
-    end
-    if ( m+1 == 0 ) && ( l == 0 )
-      b = 0;
-    end
-    fhat(m*(m+1)+l+1) = a*sF.get_fhat(m-1, l)-b*sF.get_fhat(m+1, l);
+  if 0 <= m-1
+    fhat(m^2+1:(m+1)^2) = (m-1)*sqrt((m^2-(-m:m)'.^2)/((2*m-1)*(2*m+1))).*[0; sF.fhat((m-1)^2+1:m^2); 0];
+  end
+  if m+1 <= sF.bandwidth
+    fhat(m^2+1:(m+1)^2) = fhat(m^2+1:(m+1)^2)-(m+2)*sqrt(((m+1)^2-(-m:m)'.^2)/((2*m+1)*(2*m+3))).*sF.fhat((m+1)^2+2:(m+2)^2-1);
   end
 end
 

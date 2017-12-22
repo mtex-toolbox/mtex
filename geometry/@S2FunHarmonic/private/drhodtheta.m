@@ -1,5 +1,5 @@
 function sF = drhodtheta(sF)
 
-sF = sF.dtheta.drho();
+sF = sF.dthetadrho;
 
 end
