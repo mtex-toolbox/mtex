@@ -7,7 +7,7 @@ end
 
 properties (Dependent=true)
   bandwidth;  % maximum harmonic degree / bandwidth
-  antipodal;  %
+  antipodal;
 end
 
 methods
@@ -17,10 +17,11 @@ methods
     
     if nargin == 0, return; end
   
-    bandwidth = ceil(sqrt(size(fhat, 1))-1); % make (bandwidth+1)^2 entries
-    sF.fhat = [fhat; zeros((bandwidth+1)^2-size(fhat, 1), size(fhat, 2))];
+    s = size(fhat);
+    bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
+    sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
 
-    sF = sF.truncate;
+    %sF = sF.truncate;
 
   end
   
@@ -29,7 +30,12 @@ methods
   end
   
   function sF = set.bandwidth(sF, bandwidth)
-    sF.fhat((bandwidth+1)^2+1:end) = [];
+    if sF.bandwidth < bandwidth
+      sF.fhat = [sF.fhat; zeros([(bandwidth+1)^2-(sF.bandwidth+1)^2 size(sF)])];
+    elseif sF.bandwidth > bandwidth
+      d = repcell(':', 1, length(size(sF)));
+      sF.fhat((bandwidth+1)^2+1:end, d{:}) = [];
+    end
   end
   
   function out = get.antipodal(sF)
@@ -40,8 +46,11 @@ methods
     if value, sF = sF.even; end
   end
 
-  function d = size(sF)
-    d = [1 size(sF.fhat, 2)];
+  function d = size(sF, varargin)
+    d = size(sF.fhat);
+    d = d(2:end);
+    if length(d) == 1, d = [d 1]; end
+    if nargin > 1, d = d(varargin{1}); end
   end
 
   function n = numel(sF)
