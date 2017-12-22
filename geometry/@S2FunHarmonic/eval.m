@@ -20,11 +20,11 @@ plan = nfsft('init_advanced', sF.bandwidth, length(v), 1);
 nfsft('set_x', plan, [v.rho'; v.theta']); % set vertices
 nfsft('precompute_x', plan);
 
+f = zeros([s numel(sF)]);
 % nfsft
 nfsft('set_f_hat_linear', plan, sF.fhat); % set fourier coefficients
 nfsft('trafo', plan);
-f = nfsft('get_f', plan);
-f = real(reshape(f, s));
+f(:, :, j) = real(reshape(nfsft('get_f', plan), s));
 
 % finalize nfsft
 nfsft('finalize', plan);
