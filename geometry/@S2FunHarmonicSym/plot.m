@@ -12,7 +12,7 @@ function varargout = plot(sF,varargin)
 %
 
 % create a new figure if needed
-[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+%[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % get plotting region
 sR = sF.s.fundamentalSector(varargin{:});
@@ -23,7 +23,7 @@ if isa(sF.s,'crystalSymmetry')
 end
 
 % perform plotting
-[varargout{1:nargout}] = sF.plot@S2Fun(sR,'parent',mtexFig.gca,varargin{:});
+[varargout{1:nargout}] = sF.plot@S2Fun(sR,varargin{:});
 
 
 function txt = tooltip(varargin)

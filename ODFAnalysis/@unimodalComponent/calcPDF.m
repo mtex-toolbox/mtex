@@ -14,28 +14,24 @@ end
 if length(h) == 1 % pole figure
 
   sh = symmetrise(h,'unique');
-  pdf = S2FunHarmonic.quadrature(...
-    component.center*sh,repmat(component.weights(:),1,length(sh)));
-  
+  pdf = S2FunHarmonicSym.quadrature(component.center*sh,...
+    repmat(component.weights(:),1,length(sh)),component.SS);
+
+  % convolve with kernel function
   pdf = 4 * pi * conv(pdf,component.psi)./ length(sh);
 
-  % symmetrise with respect to specimen symmetry
-  pdf = pdf.symmetrise(component.SS);
-  
   % maybe we should evaluate
   if nargin > 2 && isa(r,'vector3d'), pdf = pdf.eval(r); end
   
 else % inverse pole figure
 
   sr = symmetrise(r,component.SS,'unique');
-  pdf = S2FunHarmonic.quadrature(...
-    inv(component.center)*sr,repmat(component.weights(:),1,length(sr)));
+  pdf = S2FunHarmonicSym.quadrature(inv(component.center)*sr,...
+    repmat(component.weights(:),1,length(sr)),component.CS);
   
+  % convolve with kernel function
   pdf = 4 * pi * conv(pdf,component.psi) ./ length(sr);
 
-  % symmetrise with respect to crystal symmetry
-  pdf = pdf.symmetrise(component.CS);
-  
   % maybe we should evaluate
   if isa(h,'vector3d'), pdf = pdf.eval(h); end
   

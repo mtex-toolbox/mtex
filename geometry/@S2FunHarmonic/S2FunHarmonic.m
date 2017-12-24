@@ -7,7 +7,7 @@ end
 
 properties (Dependent=true)
   bandwidth;  % maximum harmonic degree / bandwidth
-  antipodal;
+  antipodal;  %
 end
 
 methods
@@ -25,16 +25,21 @@ methods
 
   end
   
-  function bandwidth = get.bandwidth(sF)
-    bandwidth = sqrt(size(sF.fhat, 1))-1;
+  function n = numArgumentsFromSubscript(varargin)
+    n = 0;
   end
   
-  function sF = set.bandwidth(sF, bandwidth)
-    if sF.bandwidth < bandwidth
-      sF.fhat = [sF.fhat; zeros([(bandwidth+1)^2-(sF.bandwidth+1)^2 size(sF)])];
-    elseif sF.bandwidth > bandwidth
-      d = repcell(':', 1, length(size(sF)));
-      sF.fhat((bandwidth+1)^2+1:end, d{:}) = [];
+  function bandwidth = get.bandwidth(sF)
+    bandwidth = sqrt(size(sF.fhat, 1)) - 1;
+  end
+  
+  function sF = set.bandwidth(sF, bw)
+    
+    bwOld = sF.bandwidth;
+    if bw < bwOld % reduce bandwidth
+      sF.fhat((bw+1)^2+1:end,:) = [];
+    else % add some zeros
+      sF.fhat = [sF.fhat ; zeros([(bw+1)^2-(bwOld+1)^2,size(sF)])];
     end
   end
   

@@ -1,5 +1,5 @@
-function sF = horzcat(sF1, sF2)
+function sF = horzcat(varargin)
 
-sF = cat(2, sF1, sF2);
+  sF = cat(2,varargin{:});
 
 end

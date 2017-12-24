@@ -28,6 +28,7 @@ fhat = sF.fhat(1:(bandwidth+1)^2);
 A = repelem(A,2*(0:bandwidth)+1);
 
 % multiplication in harmonic domain
-sF = S2FunHarmonic(A.*fhat);
+sF.fhat = A .* fhat;
+sF = sF.truncate;
 
 end

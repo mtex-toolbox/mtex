@@ -18,15 +18,20 @@ function h = plot(sF,varargin)
 plotNodes = plotS2Grid(varargin{:});
 
 % evaluate the function on the plotting grid
-sF = subsref(sF, substruct('()', {':'}));
 values = sF.eval(plotNodes);
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
+for j = 1:length(sF)
 
-for j = 1:numel(sF)
+  if j > 1, mtexFig.nextAxis; end
+  
   % plot the function values
-  h = plot(plotNodes,values(j, 1, :, :),'contourf', 'parent', mtexFig.gca, 'upper', varargin{:});
-  mtexFig.nextAxis;
+  h(j) = plot(plotNodes,values(:,j),'parent',mtexFig.gca,'contourf',varargin{:}); %#ok<AGROW>
+  
+end
+
+if isNew % finalize plot
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+  if check_option(varargin,'3d'), fcw(gcf,'-link'); end
 end
 
 % remove output if not required

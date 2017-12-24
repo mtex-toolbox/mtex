@@ -15,6 +15,7 @@ function sFs = symmetrise(sF, varargin)
 
 sym = getClass(varargin,'symmetry');
 
+% TODO: this is very slow
 sFs = sF;
 for j = 2:length(sym)
   sFs = sFs + sF.rotate(sym(j));

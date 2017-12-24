@@ -14,4 +14,8 @@ methods
   
 end
 
+methods (Static = true)
+  sF = quadrature(f, varargin);
+end
+
 end

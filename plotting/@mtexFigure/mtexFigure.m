@@ -127,8 +127,6 @@ classdef mtexFigure < handle
       
     end
     
-    
-    
     function ax = gca(mtexFig)
       % return current axis if exist otherwise create a new one
       

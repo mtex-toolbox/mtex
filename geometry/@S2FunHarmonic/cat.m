@@ -1,17 +1,19 @@
-function sF = cat(d, sF1, sF2)
+function sF = cat(dim,varargin)
+% 
 
-[bandwidth, I] = max([sF1.bandwidth, sF2.bandwidth]);
-if I == 2
-  tmp = sF1;
-  sF1 = sF2;
-  sF2 = tmp;
-end % sF1 has bigger bandwidth
+% remove emtpy arguments
+varargin(cellfun('isempty',varargin)) = [];
+sF = varargin{1};
+bw = sF.bandwidth;
 
-if sF1.bandwidth ~= sF2.bandwidth
-  s = size(sF2);
-  sF2.fhat = [sF2.fhat; zeros([size(sF1.fhat, 1)-size(sF2.fhat, 1), s])];
+for i = 2:numel(varargin)
+
+  bw2 = varargin{i}.bandwidth;
+  if bw > bw2
+    varargin{i}.bandwidth = bw;
+  else
+    sF.bandwidth = bw2;
 end
 
-sF = S2FunHarmonic(cat(d+1, sF1.fhat, sF2.fhat));
-
+  sF.fhat = cat(1+dim, sF.fhat, varargin{i}.fhat);
 end
