@@ -19,8 +19,8 @@ for ic = 1:length(odf.components)
 end
 
 % take random symmetrically equivalent samples
-qcs = quaternion(odf.CS.properGroup);
-qss = quaternion(odf.SS.properGroup);
+qcs = reshape(quaternion(odf.CS.properGroup),[],1);
+qss = reshape(quaternion(odf.SS.properGroup),[],1);
 ics = discretesample(length(qcs),npoints,1);
 iss = discretesample(length(qss),npoints,1);
 
