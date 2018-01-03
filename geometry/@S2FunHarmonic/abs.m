@@ -11,9 +11,10 @@ function sF = abs(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-bandwidth = get_option(varargin, 'bandwidth', min(2*sF.bandwidth, 500);
-
-f = @(v) abs(sF.eval(v));
-sF = S2FunHarmonic.quadrature(f, 'bandwidth', max(bandwidth, 100));
+if check_option(varargin, 'bandwidth')
+  sF = max(sF, -sF, 'bandwidth', get_option(varargin, 'bandwidth'));
+else
+  sF = max(sF, -sF);
+end
 
 end

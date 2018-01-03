@@ -22,13 +22,13 @@ A = A(1:min(sF.bandwidth+1,length(A)));
   
 % reduce bandwidth if required
 bandwidth = length(A)-1;
-fhat = sF.fhat(1:(bandwidth+1)^2);
+sF.bandwidth = bandwidth;
 
 % extend coefficients
 A = repelem(A,2*(0:bandwidth)+1);
 
 % multiplication in harmonic domain
-sF.fhat = A .* fhat;
+sF.fhat = A .* sF.fhat;
 sF = sF.truncate;
 
 end

@@ -4,6 +4,9 @@ function value = mean(sF)
 %  value = mean(sF)
 %
 
-value = sF.fhat(1);
+s = size(sF);
+sF = sF.subSet(':');
+value = real(sF.fhat(1, :));
+value = reshape(value, s);
 
 end

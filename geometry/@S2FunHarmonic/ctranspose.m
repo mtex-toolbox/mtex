@@ -1,4 +1,6 @@
-function sF = ctranspose(sF)
-% transpose function
+function sF = transpose(sF)
+% ctransposes S2FunHarmonic
 
-sF.fhat = conj(sF.fhat);
+sF = conj(sF.');
+
+end

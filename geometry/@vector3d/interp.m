@@ -21,8 +21,11 @@ function yi = interp(v,y,varargin)
 %
 
 % we need unqiue input data
+s = size(y);
+y = reshape(y, length(v), []);
 [v,ind] = unique(v);
-y = y(ind);
+y = y(ind, :);
+y = reshape(y, [length(v) s(2:end)]);
 
 if nargin == 2
   yi = S2FunTri(v,y);

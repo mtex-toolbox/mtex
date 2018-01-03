@@ -16,10 +16,11 @@ function sF = approximation(nodes, y, varargin)
 %
 
 % make points unique
-[nodes, IA] = unique(nodes); 
-nodes = nodes(:);
-y = y(IA); 
-y = y(:);
+s = size(y);
+y = reshape(y, length(nodes), []);
+[nodes,ind] = unique(nodes);
+y = y(ind, :);
+y = reshape(y, [length(nodes) s(2:end)]);
 
 tol = get_option(nodes, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
@@ -41,32 +42,40 @@ if check_option(varargin, 'antipodal') || nodes.antipodal
       end
     end
   end
-  bandwidth = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
-  bandwidth = floor(bandwidth/2)*2; % make bandwidth even
-  mask = sparse((bandwidth+1)^2); % only use even polynomial degree
-  for m = 0:2:bandwidth
+  bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
+  bw = floor(bw/2)*2; % make bandwidth even
+  mask = sparse((bw+1)^2); % only use even polynomial degree
+  for m = 0:2:bw
     mask((m^2+1):(m^2+2*m+1), (m^2+1):(m^2+2*m+1)) = speye(2*m+1);
   end
 else
-  bandwidth = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes)/2)));
+  bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes)/2)));
   W = get_option(varargin, 'weights', nodes.calcVoronoiArea);
-  mask = speye((bandwidth+1)^2);
+  mask = speye((bw+1)^2);
 end
 
-W = sqrt(W);
+W = sqrt(W(:));
 
 % initialize nfsft
-nfsft('precompute', bandwidth, 1000, 1, 0);
-plan = nfsft('init_advanced', bandwidth, length(nodes), 1);
+nfsft('precompute', bw, 1000, 1, 0);
+plan = nfsft('init_advanced', bw, length(nodes), 1);
 nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
 nfsft('precompute_x', plan);
 
 b = W.*y;
 
-[fhat, flag] = lsqr(...
-  @(x, transp_flag) afun(transp_flag, x, plan, W, mask), ...
-  b, tol, maxit);
-fhat = mask*fhat;
+s = size(b);
+b = reshape(b, s(1), []);
+num = size(b, 2);
+
+fhat = zeros((bw+1)^2, num);
+for index = 1:num
+  [fhat(:, index), flag] = lsqr(...
+    @(x, transp_flag) afun(transp_flag, x, plan, W, mask), ...
+    b(:, index), tol, maxit);
+  fhat(:, index) = mask*fhat(:, index);
+end
+fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
 
 % finalize nfsft
 nfsft('finalize', plan);
