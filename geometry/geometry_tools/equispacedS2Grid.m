@@ -43,11 +43,11 @@ bounds = getPolarRange(varargin{:});
 if check_option(varargin,'points') % calculate resolution
   ntheta = N2ntheta(fix(get_option(varargin,'points')),...
     bounds.VR{2},bounds.VR{4}-bounds.VR{3});%Check this 
-  res =  bounds.VR{2} / ntheta;
+  res =  (bounds.VR{2}-bounds.VR{1}) / ntheta;
 else
   res = get_option(varargin,'resolution',2.5*degree);
   res =  2* bounds.VR{2} / round(2 * bounds.VR{2} / res);
-  ntheta = fix(round(2 * bounds.VR{2} / res + ...
+  ntheta = fix(round(2 * (bounds.VR{2}-bounds.VR{1}) / res + ...
     check_option(varargin,'no_center') )/2);
 end
 
