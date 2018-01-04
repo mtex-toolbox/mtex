@@ -35,7 +35,7 @@ nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
 nfsft('precompute_x', plan);
 
 s = size(values);
-values = reshape(values, s(1), []);
+values = reshape(values, length(nodes), []);
 num = size(values, 2);
 
 fhat = zeros((bw+1)^2, num);
@@ -45,11 +45,14 @@ for index = 1:num
   nfsft('adjoint', plan);
   fhat(:, index) = nfsft('get_f_hat_linear', plan);
 end
-fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
 
 % finalize nfsft
 nfsft('finalize', plan);
 
+% maybe we have a multivariate function
+try
+  fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
+end
 sF = S2FunHarmonic(fhat);
 sF.bandwidth = bw;
 
