@@ -29,7 +29,7 @@ if nargin>1 && isa(varargin{1},'double') || isa(varargin{1},'S2Fun')
   varargin{2} = -varargin{2};
 end
 
-[varargout{1:nargout}] = max(varargin{:});
+[varargout{1:nargout}] = min(varargin{:});
 
 varargout{1} = - varargout{1};
 
