@@ -12,8 +12,9 @@ for i = 2:numel(varargin)
   if bw > bw2
     varargin{i}.bandwidth = bw;
   else
+    bw = bw2;
     sF.bandwidth = bw2;
-end
+  end
 
   sF.fhat = cat(1+dim, sF.fhat, varargin{i}.fhat);
 end
