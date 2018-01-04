@@ -16,20 +16,20 @@ function sVF = quadrature(f, varargin)
 
 M = get_option(varargin, 'm', 128);
 if isa(f,'vector3d')
-  v = f(:);
-  y = getClass(varargin,'vector3d'); y = y(:); % function values
+  v = f;
+  y = getClass(varargin,'vector3d'); % function values
+  y = y.xyz;
+  sF = S2FunHarmonic.quadrature(v, y, varargin{:});
+%  sF = S2FunHarmonic.approximation(v, y, varargin{:});
 else
-  if check_option(varargin, 'gauss')
-    [v, W] = quadratureS2Grid(2*M, 'gauss');
-  else
-    [v, W] = quadratureS2Grid(2*M);
-  end
-  y = W(:).*f(v(:));
+  sF = S2FunHarmonic.quadrature(@(v) g(v), varargin{:});
 end
 
-sVF = S2VectorFieldHarmonic( ...
-  S2FunHarmonic.quadrature(dot(y, S2VectorField.theta(v)), v), ...
-  S2FunHarmonic.quadrature(dot(y, S2VectorField.rho(v)), v), ...
-  S2FunHarmonic.quadrature(dot(y, S2VectorField.n(v)), v));
+sVF = S2VectorFieldHarmonic(sF);
+
+function g = g(v)
+g = f(v);
+g = g.xyz;
+end
 
 end
