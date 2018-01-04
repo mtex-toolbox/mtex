@@ -6,6 +6,6 @@ function sF = mtimes(sF1, sF2)
 %  sF = sF1 * a
 %
 
-sF = times(sF1, sF2);
+warning('not implemented yet; use .* instead');
 
 end

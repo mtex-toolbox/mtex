@@ -5,6 +5,9 @@ function n = norm(sF)
 %  norm(sF)
 %
 
-n = norm(sF.fhat);
+s = size(sF);
+sF = sF.subSet(':');
+n = sqrt(sum(abs(sF.fhat(1, :)).^2, 1));
+n = reshape(n, s);
 
 end
