@@ -5,10 +5,7 @@ function sVF = rdivide(sVF1, sVF2)
 %
 
 if isnumeric(sVF2)
-  sVF = S2VectorFieldHarmonic( ...
-    sVF1.sF_theta./sVF2, ...
-    sVF1.sF_rho./sVF2, ...
-    sVF1.sF_theta./sVF2);
+  sVF = sVF1.*(1./sVF2)
 end
 
 end

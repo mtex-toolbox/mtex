@@ -9,9 +9,6 @@ function sVF = rotate(sVF, rot)
 %  rot - @rotation
 %
 
-sVF = S2VectorFieldHarmonic( ...
-  sVF.sF_theta.rotate(rot), ...
-  sVF.sF_rho.rotate(rot), ...
-  sVF.sF_n.rotate(rot));
+sVF.sF = rotate(sVF.sF, rot);
 
 end

@@ -4,9 +4,6 @@ function sVF = uminus(sVF)
 %  sVF = -sVF
 %
 
-sVF = S2VectorFieldHarmonic( ...
-  -sVF.sF_theta, ...
-  -sVF.sF_rho, ...
-  -sVF.sF_n);
+sVF.sF = -sVF.sF;
 
 end

@@ -1,4 +1,4 @@
-function sF = mtimes(sF1, sF2)
+function sVF = mtimes(sVF1, sVF2)
 %
 % Syntax
 %  sF = sF1*sF2
@@ -6,6 +6,12 @@ function sF = mtimes(sF1, sF2)
 %  sF = sF1*a
 %
 
-sF = times(sF1, sF2);
+if isnumeric(sVF1)
+  sVF = sVF2;
+  sVF.sF = sVF.sF.*sVF1;
+elseif isnumeric(sVF2)
+  sVF = sVF1;
+  sVF.sF = sVF.sF.*sVF2;
+end
 
 end

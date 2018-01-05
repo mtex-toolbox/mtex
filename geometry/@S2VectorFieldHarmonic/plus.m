@@ -7,21 +7,20 @@ function sVF = plus(sVF1, sVF2)
 %
 
 if isa(sVF1, 'vector3d')
-  sVF = S2VectorFieldHarmonic(  ...
-    sVF2.sF_theta+sVF1.theta, ...
-    sVF2.sF_rho+sVF1.rho, ...
-    sVF2.sF_n+norm(sVF1));
-
+  sVF = sVF2;
+  sVF.x = sVF.x+sVF1.x;
+  sVF.y = sVF.y+sVF1.y;
+  sVF.z = sVF.z+sVF1.z;
+  
 elseif isa(sVF2, 'vector3d')
-  sVF = S2VectorFieldHarmonic(  ...
-    sVF1.sF_theta+sVF2.theta, ...
-    sVF1.sF_rho+sVF2.rho, ...
-    sVF1.sF_n+norm(sVF2));
+  sVF = sVF1;
+  sVF.x = sVF.x+sVF2.x;
+  sVF.y = sVF.y+sVF2.y;
+  sVF.z = sVF.z+sVF2.z;
 
 else
-  sVF.sF_theta = sVF1.sF_theta+sVF2.sF_theta;
-  sVF.sF_rho = sVF1.sF_theta+sVF2.sF_theta;
-  sVF.sF_n = sVF1.sF_theta+sVF2.sF_theta;
+  sVF = sVF1;
+  sVF.sF = sVF1.sF+sVF2.sF;
 
 end
 
