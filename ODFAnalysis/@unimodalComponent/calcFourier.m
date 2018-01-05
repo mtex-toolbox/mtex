@@ -74,7 +74,7 @@ if getMTEXpref('extern',false)
   
 else % call mex file
   
-  plan = nfsoftmex('init',length(A)-1,size(g,2),0,0,6,1000,3*(length(A)-1));
+  plan = nfsoftmex('init',length(A)-1,size(g,2),0,0,4,1000,2*ceil(1.5*(length(A)+1)));
   nfsoftmex('set_x',plan,flipud(g));
   nfsoftmex('set_f',plan,c(:));
   nfsoftmex('precompute',plan);

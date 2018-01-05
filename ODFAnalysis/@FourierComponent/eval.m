@@ -38,7 +38,7 @@ else
 
   L = double(L);
   % create plan
-  plan = nfsoftmex('init',L,length(ori),0,0,6,1000,3*L);
+  plan = nfsoftmex('init',L,length(ori),0,0,4,1000,2*ceil(1.5*L));
     
   % set nodes
   nfsoftmex('set_x',plan,flipud(g));
