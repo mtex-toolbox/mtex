@@ -22,6 +22,9 @@ end
 %v = v .* reshape(data,size(v));
 [varargout{1:nargout}] = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
 
+% colormap
+colormap(ax,getMTEXpref('defaultColorMap'));
+
 shading(ax,'interp');
 axis(ax,'equal','vis3d','off');
 
