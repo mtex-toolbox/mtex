@@ -76,9 +76,9 @@ ps1 = vector3d(ps1,'antipodal');
 ps2 = vector3d(ps2,'antipodal');
 
 if generateFun
-  vp  = S2FunHarmonic.quadrature(x,vp,'m',M,'weights',W);
-  vs1 = S2FunHarmonic.quadrature(x,vs1,'m',M,'weights',W);
-  vs2 = S2FunHarmonic.quadrature(x,vs2,'m',M,'weights',W);
+  vp  = S2FunHarmonic.quadrature(x,vp,'bandwidth',M,'weights',W);
+  vs1 = S2FunHarmonic.quadrature(x,vs1,'bandwidth',M,'weights',W);
+  vs2 = S2FunHarmonic.quadrature(x,vs2,'bandwidth',M,'weights',W);
     
   %pp = S2VectorFieldHarmonic.quadrature(W.*pp,x,'m',M);
   %ps1 = S2VectorFieldHarmonic.quadrature(W.*ps1,x,'m',M);
