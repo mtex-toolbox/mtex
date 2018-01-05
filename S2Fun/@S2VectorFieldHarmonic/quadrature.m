@@ -20,7 +20,6 @@ if isa(f,'vector3d')
   y = getClass(varargin,'vector3d'); % function values
   y = y.xyz;
   sF = S2FunHarmonic.quadrature(v, y, varargin{:});
-%  sF = S2FunHarmonic.approximation(v, y, varargin{:});
 else
   sF = S2FunHarmonic.quadrature(@(v) g(v), varargin{:});
 end
