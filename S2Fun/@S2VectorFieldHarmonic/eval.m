@@ -10,5 +10,6 @@ function f = eval(sVF,v)
 %
 
 f = vector3d(sVF.sF.eval(v)');
+f = f';
 
 end

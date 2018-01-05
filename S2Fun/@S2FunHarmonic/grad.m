@@ -7,9 +7,17 @@ function sVF = grad(sF, varargin) % gradient
 %  sVF - @sphericalVectorFieldHarmonic
 %
 
+if nargin == 3
+  Gth = varargin{2};
+  Grh = varargin{1};
+else
+  Gth = sF.dtheta;
+  Grh = sF.drho;
+end
+
 f = @(v) ...
-  sF.dthetasin.eval(v)./sin(v.theta).*S2VectorField.theta(v)+ ...
-  sF.drho.eval(v)./(sin(v.theta).^2).*S2VectorField.rho(v);
+  Gth.eval(v)./(sin(v.theta).^2).*S2VectorField.rho(v)+ ...
+  Grh.eval(v).*S2VectorField.theta(v);
 %                       ^
 %                       |
 %              from the metrix tensor

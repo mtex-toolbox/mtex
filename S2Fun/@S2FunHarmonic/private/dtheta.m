@@ -1,4 +1,4 @@
-function sF = dthetasin(sF)
+function sF = dtheta(sF)
 
 s = size(sF);
 sF = reshape(sF, []);
@@ -15,8 +15,8 @@ for m = 0:sF.bandwidth+1
 end
 
 sF = S2FunHarmonic(fhat);
+f = @(v) sF.eval(v)./max(sin(v.theta), 0.01);
+sF = S2FunHarmonic.quadrature(f, 'bandwidth', max(2*sF.bandwidth, 100));
 sF = reshape(sF, s);
-%f = @(v) sF.eval(v)./max(sin(v.theta), 0.01);
-%sF = S2FunHarmonic.quadrature(f, 'bandwidth', max(2*sF.bandwidth, 100));
 
 end
