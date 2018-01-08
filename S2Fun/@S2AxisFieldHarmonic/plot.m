@@ -15,7 +15,7 @@ plotNodes = equispacedS2Grid('resolution',10*degree,'no_center',varargin{:});
 values = sAF.eval(plotNodes);
 
 % some default plotting settings
-varargin = ['color', 'k', 'arrowSize', 'maxHeadSize', 0, ...
+varargin = ['color', 'k', 'maxHeadSize', 0, 'arrowSize', ...
   0.5*plotNodes.resolution/max(norm(values)) varargin];
 if check_option(varargin,'complete')
   varargin = [varargin,{'removeAntipodal'}];
