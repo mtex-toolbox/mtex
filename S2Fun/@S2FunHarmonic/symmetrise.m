@@ -13,12 +13,25 @@ function sFs = symmetrise(sF, varargin)
 %  sFs - symmetrised @S2Fun
 %
 
+if sF.bandwidth == 0
+  sFs = S2FunHarmonicSym(sF.fhat, sym);
+  return;
+end
+
 sym = getClass(varargin,'symmetry');
 
-% TODO: this is very slow
-sFs = sF;
+f = @(v) sF.eval(v);
 for j = 2:length(sym)
-  sFs = sFs + sF.rotate(sym(j));
+  f = @(v) [f(v) sF.eval(rotate(v, sym(j)))];
+end
+
+sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
+sFs = S2FunHarmonic(0);
+figure(2);
+plot(sF);
+
+for j = 1:length(sF)
+  sFs = sFs+subSet(sF, j);
 end
 
 sFs = S2FunHarmonicSym(sFs.fhat, sym) ./ length(sym);
