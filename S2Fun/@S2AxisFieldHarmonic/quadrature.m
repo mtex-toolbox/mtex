@@ -1,13 +1,13 @@
-function sVF = quadrature(f, varargin)
+function sAF = quadrature(f, varargin)
 %
 % Syntax
-%  sF = S2VectorField.quadrature(v, value)
-%  sF = S2VectorField.quadrature(f)
-%  sF = S2VectorField.quadrature(f, 'bandwidth', M)
+%  sF = S2AxisField.quadrature(v, value)
+%  sF = S2AxisField.quadrature(f)
+%  sF = S2AxisField.quadrature(f, 'bandwidth', M)
 %
 % Input
-%  value - @vector3d
-%  v - @vector3d
+%  v - @vector3d 
+%  value - @vector3d (antipodal)
 %  f - function handle in @vector3d
 %
 % Options
@@ -24,7 +24,7 @@ else
   sF = S2FunHarmonic.quadrature(@(nodes) g(nodes), varargin{:});
 end
 
-sVF = S2AxisFieldHarmonic(sF);
+sAF = S2AxisFieldHarmonic(sF);
 
 function Ma = g(nodes)
 v = f(nodes);

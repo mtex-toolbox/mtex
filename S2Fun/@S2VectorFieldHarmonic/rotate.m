@@ -5,8 +5,11 @@ function sVF = rotate(sVF, rot)
 %  sVF = sVF.rotate(rot)
 %
 % Input
-%  sVF - @S2FunHarmonic
+%  sVF - @S2VectorFieldHarmonic
 %  rot - @rotation
+%
+% Output
+%   sVF - @S2VectorFieldHarmonic
 %
 
 sVF.sF = rotate(sVF.sF, rot);

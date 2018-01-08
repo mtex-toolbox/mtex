@@ -2,12 +2,13 @@ function sVF = cross(sVF1, sVF2, varargin)
 % pointwise cross product
 %
 % Syntax
-%  sVF = cross(sVF1, sVF2)
+%   sVF = cross(sVF1, sVF2)
 %
 % Input
-%  sVF1, sVF2 - @S2VectorField
+%   sVF1, sVF2 - @S2VectorField
+%
 % Output
-%  sVFv - @S2VectorField
+%   sVF - @S2VectorFieldHarmonic
 %
 
 if isa(sVF1, 'vector3d')

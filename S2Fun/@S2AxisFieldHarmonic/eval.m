@@ -4,9 +4,10 @@ function f = eval(sVF,v)
 %  f = eval(sF,v)
 %
 % Input
-%  v - interpolation nodes
+%  v - @vector3d interpolation nodes
 %
 % Output
+%   f - @vector3d
 %
 
 xyz = zeros(length(v),3);

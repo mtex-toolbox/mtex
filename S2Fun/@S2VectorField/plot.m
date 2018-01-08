@@ -1,21 +1,18 @@
-function h = plot(sF,varargin)
+function h = plot(sVF,varargin)
+% plot spherical vector field
 %
 % Syntax
-%
-% Input
-%
-% Output
-%
-% Options
+%   plot(sVF)
 %
 % See also
+%   S2VectorField/quiver3
 %
 
 % generate a grid where the function will be plotted
 plotNodes = equispacedS2Grid('resolution',10*degree,'no_center',varargin{:});
 
 % evaluate the function on the plotting grid
-values = sF.eval(plotNodes);
+values = sVF.eval(plotNodes);
 
 % some default plotting settings
 varargin = ['color', 'k', 'arrowSize', ...
@@ -25,7 +22,12 @@ if check_option(varargin,'complete')
 end
 
 % plot the function values
-h = quiver(plotNodes,values,varargin{:});
+if check_option(varargin, '3d')
+  varargin = ['maxHeadSize', 0, varargin];
+  h = quiver3(plotNodes,values,varargin{:});
+else
+  h = quiver(plotNodes,values,varargin{:});
+end
 
 % remove output if not required
 if nargout == 0, clear h; end

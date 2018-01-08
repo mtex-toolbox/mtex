@@ -1,17 +1,20 @@
 function sVF = quadrature(f, varargin)
 %
 % Syntax
-%  sF = S2VectorField.quadrature(v, value)
-%  sF = S2VectorField.quadrature(f)
-%  sF = S2VectorField.quadrature(f, 'm', M)
+%   sVF = S2VectorField.quadrature(v, value)
+%   sVF = S2VectorField.quadrature(f)
+%   sVF = S2VectorField.quadrature(f, 'm', M)
 %
 % Input
-%  value - @vector3d
-%  v - @vector3d
-%  f - function handle in @vector3d
+%   value - @vector3d
+%   v - @vector3d
+%   f - function handle in @vector3d
+%
+% Output
+%   sVF - @S2VectorFieldHarmonic
 %
 % Options
-%  M - degree of the spherical harmonic (default: 128)
+%   M - degree of the spherical harmonic (default: 128)
 %
 
 M = get_option(varargin, 'm', 128);

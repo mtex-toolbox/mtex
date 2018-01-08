@@ -25,7 +25,7 @@ methods
         sF(1).eval(v)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
         sF(2).eval(v).*S2VectorField.theta(v);
 
-      sVF = S2VectorFieldHarmonic.quadrature(f);
+      sVF = S2VectorFieldHarmonic.quadrature(@(v) f(v));
     end
 
   end

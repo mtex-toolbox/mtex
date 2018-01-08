@@ -1,5 +1,5 @@
 classdef S2AxisFieldHarmonic
-% a class represeneting a function on the sphere
+% a class represeneting a axis field on the sphere
 
 properties
   sF;

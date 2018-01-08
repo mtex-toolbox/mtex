@@ -1,8 +1,11 @@
 function sF = norm(sVF)
-% norm of the gradient on the sphere
+% pointwise norm of the vectorfield
 %
 % Syntax
 %  norm(sVF)
+%
+% Output
+%   sF - S2FunHarmonic
 %
 
 sF = S2FunHarmonic.quadrature(@(v) norm(sVF.eval(v)));

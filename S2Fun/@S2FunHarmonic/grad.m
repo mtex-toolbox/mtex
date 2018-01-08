@@ -7,16 +7,7 @@ function sVF = grad(sF)
 %  sVF - @sphericalVectorFieldHarmonic
 %
 
-Gth = sF.dtheta;
-Grh = sF.drho;
-
-f = @(v) ...
-  Gth.eval(v)./(sin(v.theta).^2).*S2VectorField.rho(v)+ ...
-  Grh.eval(v).*S2VectorField.theta(v);
-%                       ^
-%                       |
-%              from the metrix tensor
-
-sVF = S2VectorFieldHarmonic.quadrature(f);
+sF = [sF.drho sF.dtheta];
+sVF = S2VectorFieldHarmonic(sF);
 
 end

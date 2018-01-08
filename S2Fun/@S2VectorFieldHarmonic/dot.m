@@ -5,13 +5,13 @@ function sF = dot(sVF1, sVF2, varargin)
 %   d = dot(sVF1, sVF2)
 %
 % Input
-%  sVF1, sVF2 - @S2VectorField
+%   sVF1, sVF2 - @S2VectorField
 %
 % Options
-%  M - degree of the spherical harmonic
+%   M - degree of the spherical harmonic
 %
 % Output
-%  sF - @S2Fun
+%   sF - @S2Fun
 
 if isa(sVF1, 'vector3d')
   f = @(v) dot(sVF1, sVF2.eval(v));

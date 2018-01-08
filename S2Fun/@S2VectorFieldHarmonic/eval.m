@@ -1,12 +1,13 @@
 function f = eval(sVF,v)
 %
 % syntax
-%  f = eval(sF,v)
+%   f = eval(sVF,v)
 %
 % Input
-%  v - interpolation nodes
+%   v - @vector3d interpolation nodes
 %
 % Output
+%   f - @vector3d
 %
 
 f = vector3d(sVF.sF.eval(v)');

@@ -27,8 +27,6 @@ end
 
 sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
 sFs = S2FunHarmonic(0);
-figure(2);
-plot(sF);
 
 for j = 1:length(sF)
   sFs = sFs+subSet(sF, j);
