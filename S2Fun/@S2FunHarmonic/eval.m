@@ -9,7 +9,9 @@ function f =  eval(sF,v)
 
 v = v(:);
 if sF.bandwidth == 0
-  f = ones(size(v))*sF.fhat;
+size(sF.fhat)
+size(v)
+  f = ones(size(v)).*sF.fhat;
   return;
 end
 

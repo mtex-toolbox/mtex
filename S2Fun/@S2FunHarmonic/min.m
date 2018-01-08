@@ -1,4 +1,4 @@
-function [f,v] = min(sF, varargin)
+function [v,f] = min(sF, varargin)
 % calculates the minimum of a spherical harminc or the pointwise minimum of two spherical harmonics
 %
 % Syntax
@@ -43,17 +43,21 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'S2FunHarmonic') )
   v = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
 
 % pointwise minimum of spherical harmonics
-elseif ( nargin > 1 ) && ( isa(varargin{1}, 'double') )
+elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   f = @(v) min(sF.eval(v), varargin{1});
   bw = get_option(varargin, 'bandwidth', max(100, min(500, 2*sF.bandwidth)));
   v = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
   
 elseif length(sF) == 1
-  [f, v] = simultaniousCG(sF, varargin{:});
+  [v, f] = simultaniousCG(sF, varargin{:});
   
 else
   s = size(sF);
-  d = find(s ~= 1); % first non-singelton dimension
+  if nargin < 2
+    d = find(s ~= 1); % first non-singelton dimension
+  else
+    d = varargin{2};
+  end
   f = @(v) min(sF.eval(v), [], d(1)+1);
   bw = get_option(varargin, 'bandwidth', max(100, min(500, 2*sF.bandwidth)));
   v = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
