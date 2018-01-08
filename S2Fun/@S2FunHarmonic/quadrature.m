@@ -10,6 +10,9 @@ function sF = quadrature(f, varargin)
 %  nodes - @vector3d
 %  f - function handle in vector3d (first dimension has to be the evaluations)
 %
+% Output
+%   sF - @S2FunHarmonic
+%
 % Options
 %  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %

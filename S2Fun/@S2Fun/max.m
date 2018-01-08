@@ -4,15 +4,14 @@ function varargout = max(varargin)
 %
 % Syntax
 %   v = max(sF)       % the global maximum of a spherical function
-%   [v,pos] = max(sF) % the position where the maximum is atained
+%   [v,pos] = max(sF) % the position where the maximum(s) is(are) atained
 %
 %   [v,pos] = max(sF,'numLocal',5) % the 5 largest local maxima
 %
 %   sF = max(sF, c) % maximum of a spherical functions and a constant
 %   sF = max(sF1, sF2) % maximum of two spherical functions
 %
-%   % compute the maximum of a multivariate function along dim
-%   sF = max(sFmulti,[],dim)
+%   sF = max(sFmulti,[],dim) % compute the maximum of a multivariate function along dim
 %
 % Input
 %  sF, sF1, sF2 - @S2Fun
@@ -22,10 +21,11 @@ function varargout = max(varargin)
 % Output
 %  v - double
 %  pos - @vector3d
+%  sF - @S2Fun
 %
 
 varargin{1} = -varargin{1};
-if nargin>1 && ( isa(varargin{1},'double') || isa(varargin{1},'S2Fun' ))
+if nargin>1 && ( ~isempty(varargin{1}) && isa(varargin{1},'double') || isa(varargin{1},'S2Fun' ))
   varargin{2} = -varargin{2};
 end
 

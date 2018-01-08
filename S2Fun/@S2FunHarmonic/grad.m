@@ -1,4 +1,4 @@
-function sVF = grad(sF, varargin) % gradient
+function sVF = grad(sF)
 % calculates the gradiet of a spherical harmonic
 % Syntax
 %  sVF = grad(sF)
@@ -7,13 +7,8 @@ function sVF = grad(sF, varargin) % gradient
 %  sVF - @sphericalVectorFieldHarmonic
 %
 
-if nargin == 3
-  Gth = varargin{2};
-  Grh = varargin{1};
-else
-  Gth = sF.dtheta;
-  Grh = sF.drho;
-end
+Gth = sF.dtheta;
+Grh = sF.drho;
 
 f = @(v) ...
   Gth.eval(v)./(sin(v.theta).^2).*S2VectorField.rho(v)+ ...

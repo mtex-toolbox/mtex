@@ -1,14 +1,17 @@
 function h = contourf(sF,varargin)
+% spherical filled contour plot
 %
 % Syntax
+%   contourf(sF)
 %
 % Input
-%
-% Output
+%  sF - @S2Fun
 %
 % Options
+%  contours - number of contours
 %
 % See also
+%   S2Fun/plot S2Fun/contour
 %
 
 % plot the function values

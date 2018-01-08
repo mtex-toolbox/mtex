@@ -5,6 +5,13 @@ function sF = rdivide(sF1, sF2)
 %  sF = sF1/a
 %  sF = a/sF1
 %
+% Input
+%   sF1, sF2 - @S2FunHarmonic
+%   a - double
+%
+% Output
+%   sF - @S2FunHarmonic
+%
 
 if isnumeric(sF1)
   f = @(v) sF1./sF2.eval(v);

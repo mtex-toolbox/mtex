@@ -1,14 +1,15 @@
 function h = plot(sF,varargin)
+% plot spherical Function
 %
 % Syntax
+%   plot(sF)
 %
-% Input
-%
-% Output
-%
-% Options
+% Flags
+%  contourf - sF as filled contours
+%  contour  - sF as contours
 %
 % See also
+%   S2Fun/contour S2Fun/contourf S2Fun/pcolor S2Fun/plot3d
 %
 
 % create a new figure if needed

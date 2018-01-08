@@ -10,6 +10,9 @@ function sF = conv(sF, psi)
 %  psi - @kernel
 %  A - double - list of Legendre coeficients
 %
+% Output
+%   sF - @S2FunHarmonic
+%
 
 % extract Legendre coefficients
 if isa(psi,'double')

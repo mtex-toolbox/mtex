@@ -2,7 +2,6 @@ function plotSpektra(sF,varargin)
 % plots Fourier coefficients of a spherical function
 %
 % Syntax
-%
 %   plotSpectra(sF)
 %
 % Input

@@ -1,5 +1,5 @@
 function sF = cat(dim,varargin)
-% 
+% overloads cat
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];

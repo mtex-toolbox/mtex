@@ -5,7 +5,10 @@ function sF = abs(sF, varargin)
 %  sF = abs(sF, 'bandwidth', bandwidth)
 %
 % Input
-%  sF - spherical function
+%  sF - @S2FunHarmonic
+%
+% Output
+%  sF - @S2FunHarmonic
 %
 % Options
 %  bandwidth - minimal degree of the spherical harmonic

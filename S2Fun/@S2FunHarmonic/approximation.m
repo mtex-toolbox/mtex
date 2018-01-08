@@ -6,7 +6,7 @@ function sF = approximation(nodes, y, varargin)
 %
 % Input
 %  S2Grid - grid on the sphere
-%  f      - function values on the grid
+%  f      - function values on the grid (may be multidimensional)
 %
 % Options
 %  bandwidth  - maximum degree of the spherical harmonics used to approximate the function

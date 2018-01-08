@@ -1,14 +1,14 @@
 function h = pcolor(sF,varargin)
+% spherical contour plot
 %
 % Syntax
+%   pcolor(sF)
 %
 % Input
-%
-% Output
-%
-% Options
+%  sF - @S2Fun
 %
 % See also
+% S2Fun/plot S2Fun/contourf
 %
 
 % plot the function values

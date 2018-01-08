@@ -1,5 +1,5 @@
 function varargout = subsref(sF,s)
-%overloads subsref
+% overloads subsref
 
 switch s(1).type
   case '()'

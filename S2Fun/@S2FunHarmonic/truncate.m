@@ -1,6 +1,16 @@
 function sF = truncate(sF)
 % truncate neglectable coefficients
 % this includes a bit of regularisation 
+% 
+% Syntax
+%   sF = truncate(sF)
+%
+% Input
+%   sF - S2FunHarmonic
+%
+% Output
+%   sF - S2FunHarmonic
+%
 
 m = 1+repelem((0:sF.bandwidth)', 2*(0:sF.bandwidth)+1, 1);
 fh = abs(sF.fhat./m.^2).^2;

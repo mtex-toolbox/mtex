@@ -1,4 +1,5 @@
 function sF = drhodrho(sF)
+% second derivative in direction rho
 
 s = size(sF);
 sF = reshape(sF, []);

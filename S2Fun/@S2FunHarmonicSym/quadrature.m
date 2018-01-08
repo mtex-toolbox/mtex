@@ -6,12 +6,15 @@ function sFs = quadrature(varargin)
 %  sF = S2FunHarmonicSym.quadrature(f, 'bandwidth', bandwidth,CS)
 %
 % Input
-%  values - double
+%  values - double (first dimension has to be the evaluations)
 %  nodes - @vector3d
-%  f - function handle in vector3d
+%  f - function handle in vector3d (first dimension has to be the evaluations)
+%
+% Output
+%   sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - maximal degree of the spherical harmonic (default: 128)
+%  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %
 
 % extract symmetry

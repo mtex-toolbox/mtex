@@ -2,11 +2,14 @@ function sF = rotate(sF, rot)
 % rotate a function by a rotation
 %
 % Syntax
-%  sF = sF.rotate(rot)
+%   sF = sF.rotate(rot)
 %
 % Input
-%  sF - @S2FunHarmonic
-%  rot - @rotation
+%   sF - @S2FunHarmonic
+%   rot - @rotation
+%
+% Output 
+%   sF - @S2FunHarmonic
 %
 
 if sF.bandwidth ~= 0

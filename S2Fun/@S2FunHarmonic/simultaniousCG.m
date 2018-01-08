@@ -26,9 +26,10 @@ function [f,v] = min(sF, varargin)
 % parameters{{{
 v = get_option(varargin, 'startingnodes', equispacedS2Grid('points', 2^9));
 v = v(:);
+v = v(v.theta > 0.01 & v.theta < pi-0.01);
 lambda   = get_option(varargin, 'lambda', sqrt(length(v))/10); % regularization parameter
 tau   = get_option(varargin, 'tau', 1e-8); % tolerance
-kmax   = get_option(varargin, 'kmax', 8); % maximal iterations
+kmax   = get_option(varargin, 'kmax', 10); % maximal iterations
 mu     = get_option(varargin, 'mu', 0.4); % in (0, 0.5) for Armijo condition
 tauLS   = get_option(varargin, 'tauLS', 0.5); % in (0, 1) alpha(k+1) = tauLS*alpha(k)
 kmaxLS   = get_option(varargin, 'kmaxLS', 6); % maximal iterations for line search
@@ -36,7 +37,7 @@ kmaxLS   = get_option(varargin, 'kmaxLS', 6); % maximal iterations for line sear
 % initialization{{{
 sF = sF.truncate;
 D = [sF.dtheta sF.drho sF.dthetadtheta sF.drho sF.drhodrho];
-G = sF.grad(subSet(D, 1), subSet(D, 2));
+G = S2VectorFieldHarmonic(subSet(D, 2:-1:1));
 g = G.eval(v);
 d = -g;
 k = 1;
@@ -57,12 +58,14 @@ while true
   alpha = abs(dot(g, d))./(h+lambda*abs(dot(g, d)).*normd);
   %}}}
 % TODO: alpha may be negative - why?
-  alpha = (alpha < eps)+(alpha >= 0).*alpha;
-%    figure(11); plot(sort(alpha)); ylim([-1, 1]);
-%    figure(10); clf;
-%    plot(sF); hold on;
-%    scatter(v);
-%    drawnow;
+%  figure(2); plot(sort(alpha)); ylim([-1, 1]);
+%  figure(1); clf; hold on;
+%  plot(sF);
+%  scatter(v, 'MarkerColor', 'k');
+%  scatter(v(alpha < 0), 'MarkerColor', 'r');
+%  quiver(v, d, 'ArrowSize', 0.1, 'color', 'k');
+%  hold off;
+  alpha = (alpha < 0)+(alpha >= 0).*alpha;
 % step length by linesearch{{{
   f0 = sF.eval(v);
   vd = diag(cos(normd))*v+diag(sin(normd)./normd)*d;
@@ -105,7 +108,7 @@ while true
       betan(ii) = [g(ii).theta g(ii).rho]*H(:, :, ii)*[dtilde(ii).theta; dtilde(ii).rho];
       betad(ii) = [dtilde(ii).theta dtilde(ii).rho]*H(:, :, ii)*[dtilde(ii).theta; dtilde(ii).rho];
     end
-    d = -g+diag((abs(betad) > eps).*betan./betad)*dtilde;
+    d = -g+diag((abs(betad) > 0).*betan./betad)*dtilde;
     d = diag(double(dot(g, d) >= 0))*(-g)+diag(double(dot(g, d) < 0))*d; % enforce descent direction
   else
     d = -g;
@@ -119,7 +122,7 @@ if check_option(varargin, 'numLocal')
   n = get_option(varargin, 'numLocal');
   n = min(length(v), n);
   f = f(1:n);
-  pos = pos(I(1:n));
+  v = v(I(1:n));
 else
   n = sum(f-f(1) < 0.01);
   f = f(1);

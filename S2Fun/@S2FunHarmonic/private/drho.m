@@ -1,4 +1,5 @@
 function sF = drho(sF);
+% first derivative in direction rho
 
 s = size(sF);
 sF = reshape(sF, []);

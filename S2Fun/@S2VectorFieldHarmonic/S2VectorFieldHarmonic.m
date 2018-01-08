@@ -19,6 +19,13 @@ methods
 
     if length(sF) == 3
       sVF.sF = sF(:);
+
+    elseif length(sF) == 2
+      f = @(v) ...
+        sF(1).eval(v)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
+        sF(2).eval(v).*S2VectorField.theta(v);
+
+      sVF = S2VectorFieldHarmonic.quadrature(f);
     end
 
   end

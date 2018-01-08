@@ -1,4 +1,5 @@
 function sF = dthetadtheta(sF)
+% second derivative in direction theta
 
 s = size(sF);
 sF = reshape(sF, []);
