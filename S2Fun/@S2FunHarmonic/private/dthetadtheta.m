@@ -32,7 +32,7 @@ sF_theta_theta = S2FunHarmonic(fhat_theta_theta);
 
 
 f = @(v) (sF_theta_theta.eval(v)-cos(v.theta).*sF_theta.eval(v))./max(sin(v.theta).^2, 0.1);
-sF = S2FunHarmonic.quadrature(f, 'bandwidth', max(2*sF.bandwidth, 100));
+sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
 sF = reshape(sF, s);
 
 end

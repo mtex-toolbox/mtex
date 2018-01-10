@@ -16,8 +16,6 @@ for m = 0:sF.bandwidth+1
 end
 
 sF = S2FunHarmonic(fhat);
-f = @(v) sF.eval(v)./max(sin(v.theta), eps);
-sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
 sF = reshape(sF, s);
 
 end
