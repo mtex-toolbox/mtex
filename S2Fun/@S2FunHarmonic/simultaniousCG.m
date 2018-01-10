@@ -1,19 +1,18 @@
-function [f,v] = min(sF, varargin)
+function [f,v] = simultaniousCG(sF, varargin)
 % calculates the minimum of a spherical harminc
 % Syntax
-%   [v,pos] = min(sF) % the position where the minimum is atained
+%   [v,pos] = simultaniousCG(sF) % the position where the minimum is atained
 %
-%   [v,pos] = min(sF,'numLocal',5) % the 5 largest local minima
+%   [v,pos] = simultaniousCG(sF,'numLocal',5) % the 5 largest local minima
 %
 %   % with all options
-%   [v,pos] = min(sF, 'startingnodes', NODES, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
+%   [v,pos] = simultaniousCG(sF, 'startingnodes', NODES, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
 %
 % Output
 %  v - double
 %  pos - @vector3d
 %
 % Options
-%  bw             - minimal degree of the spherical harmonic for pointwise minimum of two @S2FunHarmonic
 %  STARTINGNODES  -  starting nodes of type @vector3d
 %  LAMBDA         -  regularization parameter
 %  TAU            -  tolerance
