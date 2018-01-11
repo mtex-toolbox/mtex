@@ -49,7 +49,8 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   v = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
   
 elseif length(sF) == 1
-  [v, f] = simultaniousCG(sF, varargin{:});
+  [v, f] = steepestDescent(sF, varargin{:});
+%  [v, f] = simultaniousCG(sF, varargin{:});
   
 else
   s = size(sF);
