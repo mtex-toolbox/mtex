@@ -20,10 +20,41 @@ function sFs = quadrature(varargin)
 % extract symmetry
 sym = getClass(varargin,'symmetry',specimenSymmetry);
 
-% 
+if sym.isLaue
+  symX = sym.properSubGroup;
+  varargin = [varargin,'antipodal'];
+else
+  symX = sym;
+end
+
+% symmetrise the input
+if isa(varargin{1},'vector3d') % nodes values
+  
+  % symmetrise nodes
+  varargin{1} = symX * varargin{1};
+  
+  % symmetries values
+  varargin{2} = repmat(reshape(varargin{2},1,[]),length(symX),1);
+  
+  % symmetrise weights
+  if check_option(varargin,'weights')
+    w = get_option(varargin,'weights') ./ length(symX);
+    w = repmat(reshape(w,1,[]),length(symX),1);
+    varargin = set_option(varargin,'weights',w);
+  else
+    varargin = set_option(varargin,'weights',1/length(symX));
+  end
+  
+else % function handle
+
+  % symmetrise function handle
+  f = varargin{1};
+  varargin{1} = @(v) mean(reshape(f(sym*v),length(symX),[]));
+  
+end
+
 sF = S2FunHarmonic.quadrature(varargin{:});
 
-% symmetrise the result
-sFs = sF.symmetrise(sym);
+sFs = S2FunHarmonicSym(sF.fhat,sym);
 
 end
