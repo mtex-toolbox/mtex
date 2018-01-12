@@ -42,7 +42,7 @@ C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
 %%
 % Compute seismic velocities as functions on the sphere
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,[]);
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C);
 
 %% Plotting section
 % Here we set preference for a nice plot.

@@ -49,7 +49,7 @@ else % function handle
 
   % symmetrise function handle
   f = varargin{1};
-  varargin{1} = @(v) mean(reshape(f(sym*v),length(symX),[]));
+  varargin{1} = @(v) mean(reshape(f(symX*v),length(symX),[]));
   
 end
 
