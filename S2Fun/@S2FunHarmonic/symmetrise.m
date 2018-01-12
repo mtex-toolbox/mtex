@@ -13,25 +13,31 @@ function sFs = symmetrise(sF, varargin)
 %  sFs - symmetrised @S2Fun
 %
 
-if sF.bandwidth == 0
-  sFs = S2FunHarmonicSym(sF.fhat, sym);
+% extract symmetry
+sym = getClass(varargin,'symmetry');
+
+% maybe we can set antipodal and save some time
+if sym.isLaue
+  symX = sym.properSubGroup;
+  varargin = [varargin,'antipodal'];
+else
+  symX = sym;
+end
+
+% maybe there is nothing to do
+if sF.bandwidth == 0 || length(symX) == 1
+  sFs = S2FunHarmonicSym(sF.fhat, sym, varargin{:});
   return;
 end
 
-sym = getClass(varargin,'symmetry');
-
+% define a symmetrized evaluation function
 f = @(v) sF.eval(v);
-for j = 2:length(sym)
-  f = @(v) [f(v) sF.eval(rotate(v, sym(j)))];
-end
+fsym = @(v) mean(reshape(f(symX * v),length(symX),[]));
 
-sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
-sFs = S2FunHarmonic(0);
+% compute Fourier coefficients by quadrature
+sF = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
 
-for j = 1:length(sF)
-  sFs = sFs+subSet(sF, j);
-end
-
-sFs = S2FunHarmonicSym(sFs.fhat, sym) ./ length(sym);
+% set up S2FunHarmonicSym
+sFs = S2FunHarmonicSym(sF.fhat,sym);
 
 end
