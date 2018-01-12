@@ -9,7 +9,7 @@ function f =  eval(sF,v)
 % Output
 %
 
-bario = calcBario(sF,v);
+bario = calcBario(sF.tri,v);
 
 f = bario * sF.values(:);
 

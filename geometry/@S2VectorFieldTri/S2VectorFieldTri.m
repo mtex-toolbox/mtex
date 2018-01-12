@@ -1,7 +1,8 @@
-classdef S2VectorFieldTri < S2VectorField & S2Triangulation
+classdef S2VectorFieldTri < S2VectorField
 % a class represeneting a function on the sphere
   
   properties
+    tri       % S2Triangulation
     vec = []  % function values
   end
   
@@ -10,22 +11,15 @@ classdef S2VectorFieldTri < S2VectorField & S2Triangulation
     function sVF = S2VectorFieldTri(n,v)
       % initialize a spherical vector field
       
-    if nargin == 0, return; end
+      if nargin == 0, return; end
+      
       sVF.vec = v;
       
-      if isa(n,'S2Triangulation')
-      
-        sVF.vertices = n.vertices;
-        sVF.edges = n.edges;
-        sVF.T= n.T;
-        sVF.A_V= n.A_V;
-        sVF.neighbours = n.neighbours;
-        
+      if isa(n,'tririangulation')
+        sVF.tri = n;
       else
-        sVF.vertices = n;
-        sVF = sVF.update;
+        sVF.tri = S2Triangulation(n);
       end
-      
            
     end
     

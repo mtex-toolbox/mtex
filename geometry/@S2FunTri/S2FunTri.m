@@ -1,8 +1,13 @@
-classdef S2FunTri < S2Fun & S2Triangulation
+classdef S2FunTri < S2Fun
 % a class represeneting a function on the sphere
   
   properties
+    tri          % S2Triangulation
     values = []  % function values
+  end
+  
+  properties (Dependent = true)
+    vertices
   end
   
   methods
@@ -12,29 +17,28 @@ classdef S2FunTri < S2Fun & S2Triangulation
       
       sF.values = v;
       
-      if isa(n,'S2Triangulation')
-      
-        sF.vertices = n.vertices;
-        sF.edges = n.edges;
-        sF.T= n.T;
-        sF.A_V= n.A_V;
-        sF.neighbours = n.neighbours;
-        
+      if isa(n,'tririangulation')
+        sF.tri = n;
       else
-        sF.vertices = n;
-        sF = sF.update;
+        sF.tri = S2Triangulation(n);
       end
-
     end
     
-    function value = entropy(sF)
+    function v = get.vertices(S2F)
+      v = S2F.tri.vertices;
     end
+    
+    function S2F = set.vertices(S2F,v)
+      S2F.tri.vertices = v;
+      S2F.tri.update;
+    end
+
   end    
 
   
   methods (Static = true)
     
-    function demo
+    function sF = demo
       
       %mtexdata dubna;
       
@@ -44,7 +48,7 @@ classdef S2FunTri < S2Fun & S2Triangulation
        
       odf = SantaFe;
       
-      v = equispacedS2Grid('points',10000,'upper');
+      v = equispacedS2Grid('points',1000);
       
       values = odf.calcPDF(Miller(1,0,0,odf.CS),v);
       

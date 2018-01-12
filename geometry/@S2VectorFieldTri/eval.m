@@ -1,15 +1,17 @@
-function f =  eval(sVF,v)
+function v =  eval(sVF,nodes)
 %
-% syntax
-%  f = eval(sF,v)
+% Syntax
+%   v = eval(sFV,nodes)
 %
 % Input
-%  v - interpolation nodes
+%  sFV - @S2VectorField
+%  nodes - interpolation nodes @vector3d
 %
 % Output
+%  v - @vector3d
 %
 
-bario = calcBario(sVF,v);
+bario = calcBario(sVF.tri,nodes);
 
 if sVF.vec.antipodal
   
@@ -17,17 +19,16 @@ if sVF.vec.antipodal
   m = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
   M = bario * m;
   
-  xyz = zeros(length(v),3);
-  for i = 1:length(v)
+  xyz = zeros(length(nodes),3);
+  for i = 1:length(nodes)
     MLocal = reshape(M(i,[1 2 4 2 3 5 4 5 6]),3,3);
     [xyz(i,:),~,~] = svds(MLocal,1);
   end
   
-  f = vector3d(xyz.','antipodal');
+  v = vector3d(xyz.','antipodal');
   
 else
-  f = bario * sVF.vec(:);
+  v = bario * sVF.vec(:);
 end
-  
-  
+
 end

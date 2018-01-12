@@ -34,10 +34,10 @@ classdef S2Triangulation
       
       V = sT.vertices(T);
 
-            
       sT.edges = normalize(cross(V(:,[2 3 1]),V(:,[3 1 2])));
             
-      sT.midPoints = cross(V(:,1)-V(:,2),V(:,2)-V(:,3));
+      %sT.midPoints = cross(V(:,1)-V(:,2),V(:,2)-V(:,3));
+      sT.midPoints = normalize(V(:,1) + V(:,2) + V(:,3));
       
       % adjacency matrix for the vertices
       % A(i,j) > 0 if the vertices i and j have a edge in common
