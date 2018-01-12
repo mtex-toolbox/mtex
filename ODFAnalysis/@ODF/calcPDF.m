@@ -44,7 +44,7 @@ end
 % cycle through components
 pdf = odf.weights(1) * calcPDF(odf.components{1},h,varargin{:});
 for i = 2:length(odf.components)
-  pdf = pdf + odf.weights(i) * calcPDF(odf.components{i},h,varargin{:});
+  pdf = pdf + reshape(odf.weights(i) * calcPDF(odf.components{i},h,varargin{:}),size(pdf));
 end
 
 end
