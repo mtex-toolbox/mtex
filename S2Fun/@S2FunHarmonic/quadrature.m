@@ -32,10 +32,10 @@ else
 end
 
 % initialize nfsft
-nfsft('precompute', bw, 1000, 1, 0);
-plan = nfsft('init_advanced', bw, length(nodes), 1);
-nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-nfsft('precompute_x', plan);
+nfsftmex('precompute', bw, 1000, 1, 0);
+plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+nfsftmex('precompute_x', plan);
 
 s = size(values);
 values = reshape(values, length(nodes), []);
@@ -44,13 +44,13 @@ num = size(values, 2);
 fhat = zeros((bw+1)^2, num);
 for index = 1:num
   % adjoint nfsft
-  nfsft('set_f', plan, W(:) .* values(:, index));
-  nfsft('adjoint', plan);
-  fhat(:, index) = nfsft('get_f_hat_linear', plan);
+  nfsftmex('set_f', plan, W(:) .* values(:, index));
+  nfsftmex('adjoint', plan);
+  fhat(:, index) = nfsftmex('get_f_hat_linear', plan);
 end
 
 % finalize nfsft
-nfsft('finalize', plan);
+nfsftmex('finalize', plan);
 
 % maybe we have a multivariate function
 try

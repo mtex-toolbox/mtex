@@ -57,10 +57,10 @@ end
 W = sqrt(W(:));
 
 % initialize nfsft
-nfsft('precompute', bw, 1000, 1, 0);
-plan = nfsft('init_advanced', bw, length(nodes), 1);
-nfsft('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-nfsft('precompute_x', plan);
+nfsftmex('precompute', bw, 1000, 1, 0);
+plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+nfsftmex('precompute_x', plan);
 
 b = W.*y;
 
@@ -78,7 +78,7 @@ end
 fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
 
 % finalize nfsft
-nfsft('finalize', plan);
+nfsftmex('finalize', plan);
 
 sF = S2FunHarmonic(fhat);
 
@@ -91,9 +91,9 @@ if strcmp(transp_flag, 'transp')
 
   x = x.*W;
 
-  nfsft('set_f', plan, x);
-  nfsft('adjoint', plan);
-  y = (nfsft('get_f_hat_linear', plan));
+  nfsftmex('set_f', plan, x);
+  nfsftmex('adjoint', plan);
+  y = nfsftmex('get_f_hat_linear', plan);
 
   y = mask*y;
 
@@ -101,9 +101,9 @@ elseif strcmp(transp_flag, 'notransp')
 
   x = mask*x;
 
-  nfsft('set_f_hat_linear', plan, x);
-  nfsft('trafo', plan);
-  y = nfsft('get_f', plan);
+  nfsftmex('set_f_hat_linear', plan, x);
+  nfsftmex('trafo', plan);
+  y = nfsftmex('get_f', plan);
 
   y = y.*W;
 
