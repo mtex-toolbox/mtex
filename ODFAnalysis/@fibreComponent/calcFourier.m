@@ -13,7 +13,7 @@ r = repmat(r,length(component.CS),1);
 f_hat = zeros(deg2dim(length(A)),1);
 for l = 0:min(L,length(A)-1)
   hat = component.weights * 4*pi / (2*l+1) * A(l+1) *...
-    sphericalY(l,h.theta,h.rho).' * conj(sphericalY(l,r.theta,r.rho));
+    sphericalY(l,h).' * conj(sphericalY(l,r));
   
   hat = hat';
   

@@ -47,9 +47,10 @@ function test
 % for a certain position 
 theta = 45*degree;
 rho = 10*degree;
+v = vector3d('polar',theta,rho)
 l = 30;
 
-Y = sphericalY(l,theta,rho);
+Y = sphericalY(l,v);
 
 YYref = Y.'* Y;
 
@@ -63,7 +64,7 @@ for L = 0:2*l
   %cg = sphericalClebschGordan(l,L,'plusConvention');
   cg = sphericalClebschGordan(l,L);
   cg = (2*l+1) ./ sqrt(4*pi*(2*L+1)) * cg;
-  Y = repmat(sphericalY(L,theta,rho),2*l+1,1);
+  Y = repmat(sphericalY(L,v),2*l+1,1);
   
   % generate the matrix Y_l^(k+k')
   DY = flipud(full(spdiags(Y,-L:L,2*l+1,2*l+1)));
