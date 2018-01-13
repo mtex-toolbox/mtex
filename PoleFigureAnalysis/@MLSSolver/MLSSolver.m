@@ -3,18 +3,19 @@ classdef MLSSolver
   %   Detailed explanation goes here
   
   properties
-    pf % pole figure data
+    pf   % @poleFigure data
     nfftPlan
-    psi
+    psi  % @kernel 
     
-    c % coefficients
+    c % current coefficients
+    gh
   end
   
   properties (Dependent = true)
   end
   
   methods
-    function obj = MLSSolver(inputArg1,inputArg2)
+    function obj = MLSSolver(pf)
       %MLSSOLVER Construct an instance of this class
       %   Detailed explanation goes here
       obj.Property1 = inputArg1 + inputArg2;
