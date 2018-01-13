@@ -3,7 +3,9 @@ function pdf = calcPDF(component,h,r,varargin)
 
 % use only even Fourier coefficients?
 even = 1 + (check_option(varargin,'antipodal') ...
-  || r.antipodal || h.antipodal || component.CS.isLaue);
+  || h.antipodal || component.CS.isLaue);
+if nargin > 2, even = even || r.antipodal; end
+
 
 % bandwidth
 L = get_option(varargin,'bandwidth',component.bandwidth);
