@@ -39,7 +39,11 @@ if isa(varargin{1},'vector3d') % nodes values
   % symmetrise weights
   if check_option(varargin,'weights')
     w = get_option(varargin,'weights') ./ length(symX);
-    w = repmat(reshape(w,1,[]),length(symX),1);
+    if length(w) == 1
+      w = w * ones(size(varargin{2}));
+    else
+      w = repmat(reshape(w,1,[]),length(symX),1);
+    end
     varargin = set_option(varargin,'weights',w);
   else
     varargin = set_option(varargin,'weights',1/length(symX));

@@ -87,7 +87,7 @@ mtexFig = mtexFigure('position',[0 0 1000 1000]);
 %**************************************************************************
 
 % Plot P-wave velocity (km/s)
-plot(vp,'contourf','parent',mtexFig.gca)
+plot(vp,'contourf','parent',mtexFig.gca,'complete','upper')
 
 mtexTitle('Vp (km/s)',titleOpt{:})
 
@@ -115,7 +115,7 @@ mtexFig.nextAxis
 
 % Plot S-wave anisotropy (percent)
 AVs = 200*(vs1-vs2)./(vs1+vs2);
-plot(AVs,'contourf','parent',mtexFig.gca);
+plot(AVs,'contourf','parent',mtexFig.gca,'complete','upper');
 mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 
 % Max percentage anisotropy
@@ -141,7 +141,7 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(AVs,'contourf','parent',mtexFig.gca);
+plot(AVs,'contourf','parent',mtexFig.gca,'complete','upper');
 mtexTitle('Vs1 polarization',titleOpt{:})
 
 hold on
@@ -153,7 +153,7 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(vs1,'contourf','parent',mtexFig.gca,'doNotDraw');
+plot(vs1,'contourf','parent',mtexFig.gca,'doNotDraw','complete','upper');
 mtexTitle('Vs1 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
@@ -177,7 +177,7 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(vs2,'contourf','parent',mtexFig.gca,'doNotDraw');
+plot(vs2,'contourf','parent',mtexFig.gca,'doNotDraw','complete','upper');
 mtexTitle('Vs2 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
@@ -201,7 +201,7 @@ hold off
 mtexFig.nextAxis
 
 dVs = vs1-vs2;
-plot(dVs,'contourf','parent',mtexFig.gca);
+plot(dVs,'contourf','parent',mtexFig.gca,'complete','upper');
 mtexTitle('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
 
 % Max percentage anisotropy
@@ -222,7 +222,7 @@ hold off
 mtexFig.nextAxis
 
 vpvs1 = vp./vs1;
-plot(vpvs1,'contourf','parent',mtexFig.gca);
+plot(vpvs1,'contourf','parent',mtexFig.gca,'complete','upper');
 mtexTitle('Vp/Vs1',titleOpt{:})
 
 % Percentage anisotropy
@@ -244,7 +244,7 @@ hold off
 mtexFig.nextAxis
 
 vpvs2 = vp./vs2;
-plot(vpvs2,'contourf','parent',mtexFig.gca);
+plot(vpvs2,'contourf','parent',mtexFig.gca,'complete','upper');
 mtexTitle('Vp/Vs2',titleOpt{:})
 
 % Percentage anisotropy
