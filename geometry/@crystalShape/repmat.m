@@ -1,4 +1,6 @@
-function cS =repmat(cS,n)
+function cS =repmat(cS,varargin)
+
+n = prod([varargin{:}]);
 
 % duplicate the faces
 shift = length(cS.V) * repmat((0:n-1),size(cS.F,1),1);

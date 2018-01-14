@@ -80,7 +80,11 @@ for i = 1:numel(sP)
   end
     
   % ------- colorcoding according to the first argument -----------
-  if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
+  if ~isempty(varargin) && isa(varargin{1},'crystalShape')
+    
+    h(i) = plot([x(:),y(:)] + varargin{1},'parent', sP(i).hgt,varargin{:});
+  
+  elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
       
     % extract colorpatchArgs{3:end}coding
     cdata = varargin{1};
