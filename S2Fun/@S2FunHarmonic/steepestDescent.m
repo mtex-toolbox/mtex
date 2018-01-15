@@ -18,20 +18,20 @@ function [f,v] = steepestDescent(sF, varargin)
 
 % parameters{{{
 tau   = get_option(varargin, 'tau', 1e-8); % tolerance
-kmax  = get_option(varargin, 'kmax', 4); % maximal iterations
+kmax  = get_option(varargin, 'kmax', 6); % maximal iterations
 mu    = get_option(varargin, 'mu', 0.4); % in (0, 0.5) for Armijo condition
 tauLS = get_option(varargin, 'tauLS', 0.75); % in (0, 1) alpha(k+1) = tauLS*alpha(k)
-kmaxLS= get_option(varargin, 'kmaxLS', 6); % maximal iterations for line search
+kmaxLS= get_option(varargin, 'kmaxLS', 8); % maximal iterations for line search
 v = get_option(varargin, 'startingnodes', equispacedS2Grid('points', 2^10));
 v = v(:);
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
 %}}}
 
-%actual steepest descent{{{
+% actual steepest descent{{{
 for k = 0:kmax
 % debug{{{
 %  clf; hold on;
-%  plot(sF);
+%  plot(sF, 'complete');
 %  scatter(v, 'MarkerSize', 10, 'MarkerColor', 'k');
 %  pause(1);
 %}}}
@@ -39,7 +39,7 @@ for k = 0:kmax
   d = -sF.grad(v);
   normd = norm(d);
   if  sum(normd)/length(v) < tau, break; end
-  alpha = 3*v.resolution/max(normd)*normd;
+  alpha = normd/max(normd);
 % step length by linesearch{{{
   f0 = sF.eval(v);
   vd = diag(cos(normd))*v+diag(sin(normd)./max(normd, 1e-5))*d;
@@ -57,7 +57,7 @@ for k = 0:kmax
     if allgood == true, break; end
   end
 %}}}
-  [v, I] = unique(valphad, 'tolerance', 0.01);
+  [v, I] = unique(valphad, 'tolerance', 0.005);
 end
 %}}}
 
