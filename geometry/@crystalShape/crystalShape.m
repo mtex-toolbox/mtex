@@ -195,6 +195,18 @@ classdef crystalShape
 
     end
     
+    function demo2
+      cS  = crystalShape.quartz
+      cs = cS.CS;
+      ori = orientation.rand(100,cS.CS)
+      
+      plotSection(ori,0.6*(ori*cS),'sigma','sections',8)
+      hold on
+      %plotSection(ori,0.6*(ori*cS(cs.aAxisRec)),'sigma','sections',8,'faceColor','red')
+      plotSection(ori,0.6*(ori*cS(cS.N(2))),'sigma','sections',8,'faceColor','red')
+      hold off
+      
+    end
   end
     
 end
