@@ -8,6 +8,8 @@ function h = quiver3(sVF,varargin)
 %   S2VectorField/plot
 %
 
+
+plotEmptySphere;
 % plot the function values
 h = plot(sVF,'3d',varargin{:});
 

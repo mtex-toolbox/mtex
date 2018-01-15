@@ -31,17 +31,18 @@ methods
 
   end
 
-  function x = get.x(sVF), x = SVF(1); end
-  function y = get.y(sVF), y = SVF(2); end
-  function z = get.z(sVF), z = SVF(3); end
-  function set.x(sVF, x), SVF(1) = x; end
-  function set.y(sVF, y), SVF(2) = y; end
-  function set.z(sVF, z), SVF(3) = z; end
+  function x = get.x(sVF), x = sVF.sF(1); end
+  function y = get.y(sVF), y = sVF.sF(2); end
+  function z = get.z(sVF), z = sVF.sF(3); end
+  function sVF = set.x(sVF, x), sVF.sF(1) = x; end
+  function sVF = set.y(sVF, y), sVF.sF(2) = y; end
+  function sVF = set.z(sVF, z), sVF.sF(3) = z; end
 
 end
 
 methods(Static = true)
   sVF = quadrature(f, varargin)
+  sVF = approximation(f, varargin)
 end
 
 end

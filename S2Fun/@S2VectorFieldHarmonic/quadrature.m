@@ -3,7 +3,7 @@ function sVF = quadrature(f, varargin)
 % Syntax
 %   sVF = S2VectorField.quadrature(v, value)
 %   sVF = S2VectorField.quadrature(f)
-%   sVF = S2VectorField.quadrature(f, 'm', M)
+%   sVF = S2VectorField.quadrature(f, 'bandwidth', bw)
 %
 % Input
 %   value - @vector3d
@@ -14,10 +14,9 @@ function sVF = quadrature(f, varargin)
 %   sVF - @S2VectorFieldHarmonic
 %
 % Options
-%   M - degree of the spherical harmonic (default: 128)
+%   bw - degree of the spherical harmonic (default: 128)
 %
 
-M = get_option(varargin, 'm', 128);
 if isa(f,'vector3d')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
