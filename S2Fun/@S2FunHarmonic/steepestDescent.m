@@ -16,6 +16,8 @@ function [f,v] = steepestDescent(sF, varargin)
 %  STARTINGNODES  -  starting nodes of type @vector3d
 %  
 
+sF = sF.truncate;
+
 % parameters
 res = get_option(varargin,'resolution',0.025*degree);
 kmax  = get_option(varargin, 'kmax', 20); % maximal iterations
