@@ -40,7 +40,7 @@ mtexColorbar
 % Most often, the polarization is illustrated as surface magnitude
 
 close all
-plot(P,'3d')
+surf(P.directionalMagnitude)
 
 %%
 % Note, that for directions of negative polarization the surface is mapped
@@ -52,12 +52,12 @@ plot(P,'3d')
 % the surface because it can easily be described as an analytical
 % solution. We just specify the plane normal vector
 
-plot(P,'section',zvector)
+plotSection(P.directionalMagnitude,vector3d.Z)
 
 %%
 % so we are plotting the polarization in the xy-plane, or the yz-plane with
 
-plot(P,'section',xvector)
+plotSection(P.directionalMagnitude,vector3d.X)
 
 %% Mean Tensor Calculation 
 % Let us import some data, which was originally published by Mainprice, D.,
@@ -84,7 +84,7 @@ mtexColorbar
 %
 
 close all
-plot(Pm,'complete','upper')
+plot(Pm)
 mtexColorbar
 
 setMTEXpref('defaultColorMap',WhiteJetColorMap)

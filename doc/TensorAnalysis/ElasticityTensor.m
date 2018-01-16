@@ -66,7 +66,7 @@ beta.eval(vector3d.X)
 % It is computed for a specific direction x by the
 % command <tensor.ChristoffelTensor.html ChristoffelTensor>.
 
-T = ChristoffelTensor(C,x)
+T = ChristoffelTensor(C,vector3d.X)
 
 %% Elastic Wave Velocity
 % The Christoffel tensor is the basis for computing the direction dependent
@@ -83,8 +83,8 @@ C = addOption(C,'density',rho)
 % Then the velocities are computed by the command <tensor.velocity.html
 % velocity>
 
-%[vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
-[vp,vs1,vs2] = velocity(C)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
+
 
 %%
 % In order to visualize these quantities, there are several possibilities.
@@ -97,7 +97,7 @@ plot(vp,'complete','upper')
 % Next, we plot on the top of this plot the p-wave polarization direction.
 
 hold on
-plot(C,'PlotType','velocity','ps1','complete','upper')
+plot(pp)
 hold off
 
 %%
@@ -107,7 +107,7 @@ hold off
 plot(vs1-vs2,'complete','upper')
 
 hold on
-plot(C,'PlotType','velocity','ps1','complete','upper')
+plot(ps1)
 hold off
 
 
