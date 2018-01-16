@@ -44,7 +44,8 @@ methods
   end
   
   function out = get.antipodal(sF)
-    out = (prod(norm(sF - sF.even) < 1e-5) > 0);
+    sF = truncate(sF);
+    out = (prod(norm(sF - sF.even) < 1e-5*norm(sF)) > 0);
   end
   
   function sF = set.antipodal(sF,value)

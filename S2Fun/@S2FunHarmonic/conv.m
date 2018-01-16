@@ -32,6 +32,5 @@ A = repelem(A,2*(0:bandwidth)+1);
 
 % multiplication in harmonic domain
 sF.fhat = A .* sF.fhat;
-sF = sF.truncate;
 
 end

@@ -6,3 +6,5 @@ function sF = even(sF, varargin)
 %
 
 sF = sF.conv(repmat([1;0],ceil(sF.bandwidth/2)+1,1));
+
+end
