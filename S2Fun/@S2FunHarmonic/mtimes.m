@@ -12,7 +12,7 @@ if isnumeric(sF1)
 elseif isnumeric(sF2)
   sF = sF1;
   sF.fhat = sF2 * sF.fhat;
-elseif
+else
   warning('not implemented yet; use .* instead');
 end
 
