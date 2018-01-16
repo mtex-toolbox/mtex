@@ -5,7 +5,7 @@
 % Definition via function values
 %
 
-nodes = equispacedS2Grid; nodes = nodes(:); % get some interpolation nodes
+nodes = equispacedS2Grid('points', 1e5); nodes = nodes(:); % get some interpolation nodes
 f = @(v) vector3d('polar', sin(3*v.theta), v.rho+pi/2);
 y = f(nodes); % example function values
 sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)

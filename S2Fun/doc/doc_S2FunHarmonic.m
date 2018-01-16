@@ -5,7 +5,7 @@
 % Definition via function values
 %
 
-nodes = equispacedS2Grid; nodes = nodes(:); % get some interpolation nodes
+nodes = equispacedS2Grid('points', 1e5); nodes = nodes(:); % get some interpolation nodes
 y = smiley(nodes); % example function values
 sF1 = interp(nodes, y, 'harmonicApproximation') % same as S2FunHarmonic.approximation(nodes, y)
 
@@ -25,14 +25,21 @@ plot(sF1); % same as contourf(sF1)
 snapnow;
 contour(sF1, 'LineWidth', 2);
 snapnow;
+pcolor(sF1);
+snapnow;
 plot3d(sF2);
+snapnow;
+surf(sF2);
+snapnow;
+v = zvector;
+plotSection(sF2, v.Z);
 snapnow;
 
 %%
 % plotting the fourier coefficients
 %
 
-plotSpektra(sF1, 'LineWidth', 3);
+plotSpektra(sF1);
 set(gca,'FontSize', 20);
 snapnow;
 
@@ -67,10 +74,10 @@ sF1.^sF2; 2.^sF1; sF2.^4;
 [maxvalue, maxnodes] = max(sF1);
 [minvalue, minnodes] = min(sF1); % same as steepestDescent(sF1)
 maxvalue, minvalue
-plot(sF1);
+plot3d(sF1);
 hold on;
-scatter(maxnodes, 'MarkerColor', 'r', 'MarkerSize', 10);
-scatter(minnodes, 'MarkerColor', 'b', 'MarkerSize', 10);
+scatter3d(maxnodes, 'MarkerColor', 'k', 'MarkerSize', 10);
+scatter3d(minnodes, 'MarkerColor', 'b', 'MarkerSize', 10);
 hold off;
 snapnow;
 
