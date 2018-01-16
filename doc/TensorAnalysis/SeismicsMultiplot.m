@@ -6,12 +6,10 @@
 %
 %% Contents
 %
-%
 %% Crystal Symmetry and definition of the elastic stiffness tensor
 % 
 % crystal symmetry - Orthorhombic mmm
-% Olivine structure 
-% (4.7646 10.2296 5.9942 90.00 90.00 90.00) - Orthorhombic
+% Olivine structure (4.7646 10.2296 5.9942 90.00 90.00 90.00)
 
 cs_tensor = crystalSymmetry('mmm',[4.7646,10.2296,5.9942],...
   'x||a','z||c','mineral','Olivine');
@@ -35,23 +33,20 @@ M = [[320.5  68.15  71.6     0     0     0];...
 % Define density (g/cm3)
 rho=3.355;
 
-% Define tenor object in MTEX
+% Define tensor object in MTEX
 % Cij -> Cijkl - elastic stiffness tensor
 C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
 
 %%
 % Compute seismic velocities as functions on the sphere
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C);
+[vp,vs1,vs2,pp,ps1,ps2] = C.velocity;
 
 %% Plotting section
 % Here we set preference for a nice plot.
 
-% plotting convention - plot X-axis to north
+% plotting convention - plot a-axis to east
 plota2east;
-
-% close all open graphics
-close all
 
 % set colour map to seismic color map : blue2redColorMap
 setMTEXpref('defaultColorMap',blue2redColorMap)
@@ -88,7 +83,6 @@ mtexFig = mtexFigure('position',[0 0 1000 1000]);
 
 % Plot P-wave velocity (km/s)
 plot(vp,'contourf','parent',mtexFig.gca,'complete','upper')
-
 mtexTitle('Vp (km/s)',titleOpt{:})
 
 % extrema
@@ -98,14 +92,14 @@ mtexTitle('Vp (km/s)',titleOpt{:})
 % percentage anisotropy
 AVp = 200*(maxVp-minVp) / (maxVp+minVp);
 
-% N.B. x and y reversed in subplot
-xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
-
 % mark maximum with black square and minimum with white circle
 hold on
 plot(maxVpPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
 plot(minVpPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
+
+% subTitle
+xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
 
 %% AVS : Plot S-wave anisotropy percentage for each proppagation direction
 % defined as AVs = 200*(Vs1-Vs2)/(Vs1+Vs2)
@@ -122,8 +116,7 @@ mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 [maxAVs,maxAVsPos] = max(AVs);
 [minAVs,minAVsPos] = min(AVs);
 
-AVsS = ['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')];
-xlabel(AVsS,titleOpt{:})
+xlabel(['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
@@ -132,7 +125,6 @@ plot(minAVsPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 % mark crystal axes
-hold on
 text([xvector,yvector,zvector],{'[100] ','[010] ','[001]'},...
   'backgroundcolor','w','parent',mtexFig.gca,'doNotDraw');
 

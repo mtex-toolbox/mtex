@@ -48,6 +48,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.angle_outer.html">angle_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.arrow3d.html">arrow3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDelaunay.html">calcDelaunay</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDensity.html">calcDensity</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcQuadratureWeights.html">calcQuadratureWeights</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoi.html">calcVoronoi</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoiArea.html">calcVoronoiArea</tocitem>
@@ -59,6 +60,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross.html">cross</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross_outer.html">cross_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.ctranspose.html">ctranspose</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.det.html">det</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot.html">dot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot_outer.html">dot_outer</tocitem>
@@ -71,7 +73,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.interp.html">interp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isPerp.html">isPerp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isempty.html">isempty</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.kernelDensityEstimation.html">kernelDensityEstimation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.length.html">length</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.line.html">line</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.mean.html">mean</tocitem>
@@ -84,6 +85,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.orthProj.html">orthProj</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.pcolor.html">pcolor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.perp.html">perp</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.planeIntersect.html">planeIntersect</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.plot.html">plot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.plot3d.html">plot3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.plotCustom.html">plotCustom</tocitem>
@@ -91,6 +93,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.polar.html">polar</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver.html">quiver</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver3.html">quiver3</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.refine.html">refine</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.region.html">region</tocitem>
@@ -580,10 +583,8 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.ne.html">ne</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.numel.html">numel</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.plot.html">plot</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.plotS2Grid.html">plotS2Grid</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.plus.html">plus</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.quadric.html">quadric</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.quiverGrid.html">quiverGrid</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.real.html">real</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate.html">rotate</tocitem>
@@ -635,6 +636,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="nanquaternion.html">nanquaternion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="plotS2Grid.html">plotS2Grid</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="plotSO3Grid.html">plotSO3Grid</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quadratureS2Grid.html">quadratureS2Grid</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="randq.html">randq</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="randv.html">randv</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="reflection.html">reflection</tocitem>
@@ -978,9 +980,9 @@
          </tocitem>
          <tocitem target="ElasticityTensor.html">The Elasticity Tensor<tocitem target="ElasticityTensor.html#4">Import an Elasticity Tensor</tocitem>
             <tocitem target="ElasticityTensor.html#5">Young's Modulus</tocitem>
-            <tocitem target="ElasticityTensor.html#7">Linear Compressibility</tocitem>
-            <tocitem target="ElasticityTensor.html#9">Christoffel Tensor</tocitem>
-            <tocitem target="ElasticityTensor.html#10">Elastic Wave Velocity</tocitem>
+            <tocitem target="ElasticityTensor.html#6">Linear Compressibility</tocitem>
+            <tocitem target="ElasticityTensor.html#7">Christoffel Tensor</tocitem>
+            <tocitem target="ElasticityTensor.html#8">Elastic Wave Velocity</tocitem>
          </tocitem>
          <tocitem target="PlasticDeformation.html">Schmid Factor Analysis<tocitem target="PlasticDeformation.html#3">Geometric Definition</tocitem>
             <tocitem target="PlasticDeformation.html#11">Stress Tensor</tocitem>
@@ -991,9 +993,8 @@
             <tocitem target="PiezoElectricity.html#11">Mean Tensor Calculation</tocitem>
          </tocitem>
          <tocitem target="SeismicsMultiplot.html">Seismic velocities and anisotropy<tocitem target="SeismicsMultiplot.html#3">Crystal Symmetry and definition of the elastic stiffness tensor</tocitem>
-            <tocitem target="SeismicsMultiplot.html#5">compute maximum and minimum velocities</tocitem>
             <tocitem target="SeismicsMultiplot.html#6">Plotting section</tocitem>
-            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each propagation direction</tocitem>
+            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each proppagation direction</tocitem>
             <tocitem target="SeismicsMultiplot.html#9">S1 Polarization: Plot fastest S-wave (Vs1) polarization directions</tocitem>
             <tocitem target="SeismicsMultiplot.html#10">Vs1 : Plot Vs1 velocities (km/s)</tocitem>
             <tocitem target="SeismicsMultiplot.html#11">Vs2 : Plot Vs2 velocities (km/s)</tocitem>
@@ -1074,34 +1075,35 @@
             <tocitem target="ColorCodingEBSD_demo.html#10">Colorcoding according to inverse pole figure</tocitem>
          </tocitem>
       </tocitem>
-      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.5.1 08/2017</tocitem>
-            <tocitem target="changelog.html#2">MTEX 4.5 03/2017</tocitem>
-            <tocitem target="changelog.html#3">MTEX 4.4   01/2017</tocitem>
-            <tocitem target="changelog.html#4">MTEX 4.3.2 07/2016</tocitem>
-            <tocitem target="changelog.html#5">MTEX 4.3 - 03/2016</tocitem>
-            <tocitem target="changelog.html#6">MTEX 4.2 - 11/2015</tocitem>
-            <tocitem target="changelog.html#7">MTEX 4.1 - 09/2015</tocitem>
-            <tocitem target="changelog.html#8">MTEX 4.0.0 - 10/2014</tocitem>
-            <tocitem target="changelog.html#9">MTEX 3.5.0 - 12/2013</tocitem>
-            <tocitem target="changelog.html#10">MTEX 3.4.2 - 06/2013</tocitem>
-            <tocitem target="changelog.html#11">MTEX 3.4.1 - 04/2013</tocitem>
-            <tocitem target="changelog.html#12">MTEX 3.4.0 - 03/2013</tocitem>
-            <tocitem target="changelog.html#13">MTEX 3.3.2 - 01/2013</tocitem>
-            <tocitem target="changelog.html#14">MTEX 3.3.1 - 07/2012</tocitem>
-            <tocitem target="changelog.html#15">MTEX 3.3.0 - 06/2012</tocitem>
-            <tocitem target="changelog.html#16">MTEX 3.2.3 - 03/2012</tocitem>
-            <tocitem target="changelog.html#17">MTEX 3.2.1 - 11/2011</tocitem>
-            <tocitem target="changelog.html#18">MTEX 3.2 - 05/2011</tocitem>
-            <tocitem target="changelog.html#19">MTEX 3.1 - 03/2011</tocitem>
-            <tocitem target="changelog.html#20">MTEX 3.0 - 10/2010</tocitem>
-            <tocitem target="changelog.html#21">MTEX 2.0 - 10/2009</tocitem>
-            <tocitem target="changelog.html#22">MTEX 1.2 - 05/2009</tocitem>
-            <tocitem target="changelog.html#23">MTEX 1.1 - 12/2008</tocitem>
-            <tocitem target="changelog.html#24">MTEX 1.0 - 06/2008</tocitem>
-            <tocitem target="changelog.html#25">MTEX 0.4 - 04/2008</tocitem>
-            <tocitem target="changelog.html#26">MTEX 0.3 - 10/2007</tocitem>
-            <tocitem target="changelog.html#27">MTEX 0.2 - 07/2007</tocitem>
-            <tocitem target="changelog.html#28">MTEX 0.1 - 03/2007</tocitem>
+      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.5.2 11/2017</tocitem>
+            <tocitem target="changelog.html#2">MTEX 4.5.1 08/2017</tocitem>
+            <tocitem target="changelog.html#3">MTEX 4.5 03/2017</tocitem>
+            <tocitem target="changelog.html#4">MTEX 4.4   01/2017</tocitem>
+            <tocitem target="changelog.html#5">MTEX 4.3.2 07/2016</tocitem>
+            <tocitem target="changelog.html#6">MTEX 4.3 - 03/2016</tocitem>
+            <tocitem target="changelog.html#7">MTEX 4.2 - 11/2015</tocitem>
+            <tocitem target="changelog.html#8">MTEX 4.1 - 09/2015</tocitem>
+            <tocitem target="changelog.html#9">MTEX 4.0.0 - 10/2014</tocitem>
+            <tocitem target="changelog.html#10">MTEX 3.5.0 - 12/2013</tocitem>
+            <tocitem target="changelog.html#11">MTEX 3.4.2 - 06/2013</tocitem>
+            <tocitem target="changelog.html#12">MTEX 3.4.1 - 04/2013</tocitem>
+            <tocitem target="changelog.html#13">MTEX 3.4.0 - 03/2013</tocitem>
+            <tocitem target="changelog.html#14">MTEX 3.3.2 - 01/2013</tocitem>
+            <tocitem target="changelog.html#15">MTEX 3.3.1 - 07/2012</tocitem>
+            <tocitem target="changelog.html#16">MTEX 3.3.0 - 06/2012</tocitem>
+            <tocitem target="changelog.html#17">MTEX 3.2.3 - 03/2012</tocitem>
+            <tocitem target="changelog.html#18">MTEX 3.2.1 - 11/2011</tocitem>
+            <tocitem target="changelog.html#19">MTEX 3.2 - 05/2011</tocitem>
+            <tocitem target="changelog.html#20">MTEX 3.1 - 03/2011</tocitem>
+            <tocitem target="changelog.html#21">MTEX 3.0 - 10/2010</tocitem>
+            <tocitem target="changelog.html#22">MTEX 2.0 - 10/2009</tocitem>
+            <tocitem target="changelog.html#23">MTEX 1.2 - 05/2009</tocitem>
+            <tocitem target="changelog.html#24">MTEX 1.1 - 12/2008</tocitem>
+            <tocitem target="changelog.html#25">MTEX 1.0 - 06/2008</tocitem>
+            <tocitem target="changelog.html#26">MTEX 0.4 - 04/2008</tocitem>
+            <tocitem target="changelog.html#27">MTEX 0.3 - 10/2007</tocitem>
+            <tocitem target="changelog.html#28">MTEX 0.2 - 07/2007</tocitem>
+            <tocitem target="changelog.html#29">MTEX 0.1 - 03/2007</tocitem>
          </tocitem>
          <tocitem target="bugs.html">List of Known Bugs<tocitem target="bugs.html#2">Open Issues</tocitem>
          </tocitem>
