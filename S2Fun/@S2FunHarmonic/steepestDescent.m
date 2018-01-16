@@ -24,7 +24,7 @@ kmax  = get_option(varargin, 'kmax', 20); % maximal iterations
 isAntipodal = {'','antipodal'};
 v = get_option(varargin, 'startingnodes', ...
   equispacedS2Grid('points', min(1000000,2*sF.bandwidth^2), isAntipodal{sF.antipodal+1}));
-v = v(:);
+v = rmOption(v(:),'resolution');
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
 
 % possible steplength
