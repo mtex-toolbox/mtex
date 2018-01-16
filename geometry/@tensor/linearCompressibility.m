@@ -15,8 +15,7 @@ function beta = linearCompressibility(C,x)
 
 % return a function if required
 if nargin == 1 || isempty(x)
-  beta = S2FunHarmonic.quadrature(@(x) linearCompressibility(C,x),'M',2);
-  if length(C.CS) > 1, beta = beta.symmetrise(C.CS); end
+  beta = S2FunHarmonicSym.quadrature(@(x) linearCompressibility(C,x),'M',2,C.CS);
   return
 end
 

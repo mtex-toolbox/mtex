@@ -19,14 +19,12 @@ function E = shearModulus(C,h,u)
 % generate a function if required
 if nargin == 1 || isempty(h)
   
-  E = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,v,u),'M',4);
-  E = E.symmetrise(C.CS);
-  
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,u),'M',4,C.CS);
+    
 elseif nargin <= 2 || isempty(u)
 
-  E = S2FunHarmonic.quadrature(@(v) PoissonRatio(C,h,v),'M',4);
-  E = E.symmetrise(C.CS);
-  
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,h,v),'M',4,C.CS);
+    
 else
 
   % compute the compliance tensor
