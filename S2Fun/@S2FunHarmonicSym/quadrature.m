@@ -8,13 +8,14 @@ function sFs = quadrature(varargin)
 % Input
 %  values - double (first dimension has to be the evaluations)
 %  nodes - @vector3d
+%  w - double quadrature weights
 %  f - function handle in vector3d (first dimension has to be the evaluations)
 %
 % Output
 %   sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - minimal degree of the spherical harmonic (default: 128)
+%  bandwidth - maximum degree of the spherical harmonic (default: 128)
 %
 
 % extract symmetry
@@ -53,7 +54,7 @@ else % function handle
 
   % symmetrise function handle
   f = varargin{1};
-  varargin{1} = @(v) mean(reshape(f(symX*v),length(symX),[]));
+  varargin{1} = @(v) mean(reshape(f(symX*v),length(symX),[]),1);
   
 end
 
