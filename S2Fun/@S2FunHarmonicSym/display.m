@@ -9,7 +9,17 @@ end
 
 disp([' size: ' size2str(sFs)]);
 disp([' bandwidth: ' num2str(sFs.bandwidth)]);
-disp([' symmetrie: ' sFs.s.LaueName]);
+
+% display symmetry
+if isa(sFs.s,'crystalSymmetry')
+  if isempty(sFs.CS.mineral)
+    disp([' symmetry: ',char(sFs.CS,'verbose')]);
+  else
+    disp([' mineral: ',char(sFs.CS,'verbose')]);
+  end
+else
+    disp([' symmetry: ',char(sFs.SS)]);
+end
 
 if sFs.antipodal, disp(' antipodal: true'); end
 
