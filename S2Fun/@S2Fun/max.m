@@ -25,7 +25,7 @@ function varargout = max(varargin)
 %
 
 varargin{1} = -varargin{1};
-if nargin>1 && ( ~isempty(varargin{1}) && isa(varargin{1},'double') || isa(varargin{1},'S2Fun' ))
+if nargin>1 && ( ~isempty(varargin{2}) && isa(varargin{2},'double') || isa(varargin{2},'S2Fun' ))
   varargin{2} = -varargin{2};
 end
 
