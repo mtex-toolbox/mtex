@@ -48,7 +48,7 @@ C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
 % Here we set preference for a nice plot.
 
 % plotting convention - plot X-axis to north
-plotx2north;
+plota2east;
 
 % close all open graphics
 close all
@@ -103,8 +103,8 @@ xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpPos,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpPos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% AVS : Plot S-wave anisotropy percentage for each proppagation direction
@@ -125,16 +125,16 @@ mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 AVsS = ['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')];
 xlabel(AVsS,titleOpt{:})
 
+% mark maximum with black square and minimum with white circle
+hold on
+plot(maxAVsPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minAVsPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+hold off
+
 % mark crystal axes
 hold on
 text([xvector,yvector,zvector],{'[100] ','[010] ','[001]'},...
   'backgroundcolor','w','parent',mtexFig.gca,'doNotDraw');
-
-% mark maximum with black square and minimum with white circle
-hold on
-plot(maxAVsPos,blackMarker{:},'parent',mtexFig.gca)
-plot(minAVsPos,whiteMarker{:},'parent',mtexFig.gca)
-hold off
 
 %% S1 Polarization: Plot fastest S-wave (Vs1) polarization directions
 
@@ -168,8 +168,8 @@ plot(ps1,'linewidth',2,'color','black','parent',mtexFig.gca)
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxS1pos,blackMarker{:},'parent',mtexFig.gca)
-plot(minS1pos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS1pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minS1pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vs2 : Plot Vs2 velocities (km/s)
@@ -191,8 +191,8 @@ plot(ps2,'linewidth',2,'color','black','parent',mtexFig.gca)
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxS2pos,blackMarker{:},'parent',mtexFig.gca)
-plot(minS2pos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS2pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minS2pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% dVs : Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations
@@ -212,8 +212,8 @@ xlabel(['Max dVs (km/s) = ',num2str(maxdVs,'%6.2f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxdVsPos,blackMarker{:},'parent',mtexFig.gca)
-plot(mindVsPos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxdVsPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(mindVsPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vp/Vs1 : Plot Vp/Vs1 ratio (no units)
@@ -234,8 +234,8 @@ xlabel(['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpVs1Pos,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpVs1Pos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs1Pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpVs1Pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vp/Vs2 : Plot Vp/Vs2 ratio (no units)
@@ -256,8 +256,8 @@ xlabel(['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpVs2Pos,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpVs2Pos,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs2Pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpVs2Pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %%
