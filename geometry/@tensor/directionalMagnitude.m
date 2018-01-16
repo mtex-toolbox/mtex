@@ -16,7 +16,7 @@ function q = directionalMagnitude(T,v)
 
 % return a function if required
 if nargin == 1 || isempty(v)
-  q = S2FunHarmonicSym.quadrature(@(x) directionalMagnitude(T,x),'M',4,T.CS);
+  q = S2FunHarmonicSym.quadrature(@(x) directionalMagnitude(T,x),'bandwidth',4,T.CS);
   
   return
 end

@@ -15,7 +15,7 @@ function beta = linearCompressibility(C,x)
 
 % return a function if required
 if nargin == 1 || isempty(x)
-  beta = S2FunHarmonicSym.quadrature(@(x) linearCompressibility(C,x),'M',2,C.CS);
+  beta = S2FunHarmonicSym.quadrature(@(x) linearCompressibility(C,x),'bandwidth',2,C.CS);
   return
 end
 

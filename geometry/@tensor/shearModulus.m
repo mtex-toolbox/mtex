@@ -19,11 +19,11 @@ function E = shearModulus(C,h,u)
 % generate a function if required
 if nargin == 1 || isempty(h)
   
-  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,u),'M',4,C.CS);
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,u),'bandwidth',4,C.CS);
     
 elseif nargin <= 2 || isempty(u)
 
-  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,h,v),'M',4,C.CS);
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,h,v),'bandwidth',4,C.CS);
     
 else
 

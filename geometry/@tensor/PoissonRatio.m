@@ -17,11 +17,11 @@ function nu = PoissonRatio(C,x,y)
 % generate a function if required
 if nargin == 1 || isempty(x)
   
-  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,y),'M',4,C.CS);
+  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,y),'bandwidth',4,C.CS);
     
 elseif nargin <= 2 || isempty(y)
 
-  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,x,v),'M',4,C.CS);
+  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,x,v),'bandwidth',4,C.CS);
     
 else
 
