@@ -196,9 +196,11 @@ classdef sphericalPlot < handle
     end
     
     
-    function updateBounds(sP)      
+    function updateBounds(sP,delta)
       % compute bounding box
 
+      if nargin == 1, delta = 0.02; end
+      
       if isa(sP.proj,'plainProjection')
       
         sP.bounds = sP.sphericalRegion.polarRange / degree;
@@ -215,7 +217,7 @@ classdef sphericalPlot < handle
       end
         
       % set bounds to axes
-      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
+      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*delta ;
       sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
             
       set(sP.ax,'DataAspectRatio',[1 1 1],'XLim',...

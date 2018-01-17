@@ -83,6 +83,7 @@ for i = 1:numel(sP)
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
     h(i) = plot([x(:),y(:)] + varargin{1},'parent', sP(i).hgt,varargin{:});
+    sP(i).updateBounds(0.1);
   
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
       
