@@ -63,39 +63,36 @@ classdef crystalShape
       % take only those inside the polyhedron
       V = V(all(dot_outer(V,N) <= 1 + tol,2));
       V = unique(V);
-
-      % convert to double
-      N = squeeze(double(N(:)));
       
-      % triangulation
-      DT = delaunayTriangulation(squeeze(double(V)));
-      [FBtri,V] = freeBoundary(DT);
-      TR = triangulation(FBtri,V);
-      FE = featureEdges(TR,1e-5)';
+      % triangles of the convex hull of vertices
+      T = convhull(squeeze(double(V)));
       
       % preallocate face list
       cS.F = nan(length(N),length(N));
       
-      % for all potential faces
-      for a = 1:length(N)
-        
-        % which vertices belong to face a ?
-        B = find(V * N(a,:).' > 1-tol).';
-        
-        % which featureEdges belong to face a ?
-        A = FE(:,all(ismember(FE,B)));
-        
-        % conect edges to form a polygon
-        face = cell2mat(EulerCycles(A.'));
-        cS.F(a,1:length(face)) = face;
+      % incidence matrix vertices - faces / normals
+      I_VN = dot_outer(V,N) > 1 - tol;
 
+      % for all potential faces
+      for in = 1:length(N)
+          
+        % vertices of triangles with exactly 2 points in the face N(in)
+        V_in = T(sum(reshape(I_VN(T,in),[],3),2)==2,:);
+        
+        % take only those points of Kf that belongs to C (delete the others)
+        V_in(~I_VN(V_in,in)) = NaN;
+        V_in=sort(V_in,2);
+        V_in(:,3)=[];
+        
+        % connect edges to form a polygon
+        face = cell2mat(EulerCycles(V_in));
+        cS.F(in,1:length(face)) = face;
+        
       end
 
       % write back to class as vector3d
-      cS.V = vector3d(V.');
-      
-      % scale vertices such that maximum distance between them is 1
-      cS.V = cS.V(:) ./ max(norm(cS.V)) ./ 2;
+      % and scale vertices such that maximum distance between them is 1
+      cS.V = V(:) ./ max(norm(V)) ./ 2;
       
     end
     
@@ -166,6 +163,15 @@ classdef crystalShape
       
       cS = crystalShape(N,1.5);      
     end
+    
+    function cS = olivine      
+      cs = crystalSymmetry('mmm',[4.762 10.225 5.994],'mineral','olivine');
+    
+      N = Miller({1,1,0},{1,2,0},{0,1,0},{1,0,1},{0,2,1},{0,0,1},cs);
+      
+      cS = crystalShape(N,2.0,[6.0,1.0,6.0]);
+    end 
+        
         
     function demo
       
@@ -198,12 +204,12 @@ classdef crystalShape
     function demo2
       cS  = crystalShape.quartz
       cs = cS.CS;
-      ori = orientation.rand(100,cS.CS)
+      ori = orientation.rand(200,cs)
       
       plotSection(ori,0.6*(ori*cS),'sigma','sections',8)
       hold on
       %plotSection(ori,0.6*(ori*cS(cs.aAxisRec)),'sigma','sections',8,'faceColor','red')
-      plotSection(ori,0.6*(ori*cS(cS.N(2))),'sigma','sections',8,'faceColor','red')
+      plotSection(ori,0.6*(ori*cS(cS.N(2).symmetrise)),'sigma','sections',8,'faceColor',[1 0.7 0.7])     
       hold off
       
     end
