@@ -6,7 +6,13 @@ switch s(1).type
     
     if isa(s(1).subs{1},'vector3d')
       
-      N = unique(cS.N.symmetrise,'noSymmetry');
+      N = cS.N(:);
+      if cS.habitus >0
+        N = N ./ ((abs(N.h) * cS.extension(1)).^cS.habitus + ...
+          (abs(N.k) * cS.extension(2)).^cS.habitus + ...
+          (abs(N.l) * cS.extension(3)).^cS.habitus).^(1/cS.habitus);
+      end
+      N = unique(N.symmetrise,'noSymmetry');
       
       ind = any(angle_outer(N,s(1).subs{1},'noSymmetry')<1*degree,2);
       
