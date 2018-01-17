@@ -1,9 +1,11 @@
 <?xml version='1.0' encoding="utf-8"?>
 <toc version="2.0">
 
-    <tocitem target="doc_S2FunHarmonic.html">S2Fun
+    <tocitem target="index.html">S2Fun
         <tocitem target="doc_S2FunHarmonic.html">S2FunHarmonic</tocitem>
-        <tocitem target="doc_S2VectorFieldHarmonic">S2VectorField</tocitem>
+        <tocitem target="doc_S2VectorFieldHarmonic.html">S2VectorFieldHarmonic</tocitem>
+        <tocitem target="doc_S2AxisFieldHarmonic.html">S2AxisFieldHarmonic</tocitem>
+        <tocitem target="doc_S2FunHarmonicSym.html">S2FunHarmonicSym</tocitem>
     </tocitem>
 
 </toc>
