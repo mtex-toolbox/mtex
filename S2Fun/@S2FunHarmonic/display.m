@@ -7,9 +7,8 @@ if ~check_option(varargin,'skipHeader')
     ' ' docmethods(inputname(1))]);
 end
 
-disp([' size: ' size2str(sF)]);
+if length(sF) > 1, disp([' size: ' size2str(sF)]); end
 disp([' bandwidth: ' num2str(sF.bandwidth)]);
-
 if sF.antipodal, disp(' antipodal: true'); end
 
 end

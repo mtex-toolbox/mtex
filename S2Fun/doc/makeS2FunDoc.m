@@ -1,9 +1,12 @@
 function makeS2FunDoc
 
-list = {'doc_index', 'doc_S2FunHarmonic', 'doc_S2FunHarmonicSym', 'doc_S2VectorFieldHarmonic', 'doc_S2AxisFieldHarmonic'};
+[filepath,name,ext] = fileparts(mfilename('fullpath'));
+list = dir(fullfile(filepath, '*.m'));
 
 for j = 1:length(list)
-  publish(list{j}, 'maxHeight', 300)
+  if ~strcmp(list(j).name, [name '.m'])
+    publish(list(j).name, 'maxHeight', 200)
+  end
 end
 
 end
