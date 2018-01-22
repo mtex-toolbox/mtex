@@ -1,15 +1,15 @@
-%% *Unimodal |S2FunHarmonic|*
+%% Univariate |S2FunHarmonic|
 %
-%% *Defning a |S2FunHarmonic|*
+%% Defning a |S2FunHarmonic|
 %
 %%
 % *Definition via function values*
 %
-% At first we need some vertices
+% At first you need some vertices
 nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 %%
-% Next we define function values for the vertices
+% Next you define function values for the vertices
 y = smiley(nodes);
 %%
 % Now the actual command to get |sF1| of type |S2FunHarmonic|
@@ -18,24 +18,31 @@ sF1 = interp(nodes, y, 'harmonicApproximation')
 % * The |bandwith| propertie shows the maximal polynomial degree of the function.  Internally for a given bandwith there are stored $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
 % * The |antipodal| flag shows that $f(v) = f(-v)$ holds for all $v\in\bf S^2$.
 %
-% For the same result we could also run |S2FunHarmonic.approximation(nodes, y)| and give some additional options (<matlab:doc('S2FunHarmonic/approximation') See here>).
+% For the same result you could also run |S2FunHarmonic.approximation(nodes, y)| and give some additional options (<matlab:doc('S2FunHarmonic/approximation') see here>).
 
 %%
 % *Definition via function handle*
 %
-% If we have a function handle for the function we could create a |S2FunHarmonic| via quadrature.
+% If you have a function handle for the function you could create a |S2FunHarmonic| via quadrature.
 % At first lets define a function handle which takes <matlab:doc(vector3d) |vector3d|> as an argument and returns double:
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 %% 
-% Now we call the quadrature command to get |sF2| of type |S2FunHarmonic|
+% Now you can call the quadrature command to get |sF2| of type |S2FunHarmonic|
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 %%
-% * if we would leave the |'bandwidth'| option empty the default bandwidth would be considered, which is 128.
-% * The quadrature is faster than the approximation, becaus we don't have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
+% * If you would leave the |'bandwidth'| option empty the default bandwidth would be considered, which is 128.
+% * The quadrature is faster than the approximation, because it doesn not have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
+% * For more options <matlab:doc('S2FunHarmonic/quadrature') see here>.
 
+%%
+% *Definition via Fourier-coefficients*
+%
+% If you already know the Fourier-coefficients, you can simply hand them as a collumn vector to the constructor of |S2FunHarmonic|
+fhat = rand(25, 1);
+sF3 = S2FunHarmonic(fhat)
 
-%% *Operations*
+%% Operations
 % The idea of |S2Fun| is to calculate with functions like MATLAB(R) does with vectors and matrices.
 %
 % *Basic arithmecic operations*
@@ -70,11 +77,14 @@ abs(sF1);
 %%
 % * as default |min| or |max| returns the smallest or the biggest value (global optima) with all nodes for which the value is obtained
 % * with the option |min(sF1, 'numLocal', n)| the |n| nodes with the belonging biggest or smallest values are returned
-% * |min(sF1)| is the same as running |steepestDescent(sF1)|
+% * |min(sF1)| is the same as running <matlab:doc('S2Funharmonic/steepestDescent') |steepestDescent(sF1)|>
 %%
 % min/max of two functions in the pointwise sense
 %
 min(sF1, sF2);
+
+%%
+% * See all options of min/max <matlab:doc('S2FunHarmonic/min') here>
 
 %%
 % *Other operations*
@@ -102,7 +112,7 @@ sFs = symmetrise(sF1, cs);
 %%
 % *Gradient*
 %%
-% Caculate the gradient as a function |G| of type |S2VectorFieldHarmonic|
+% Caculate the gradient as a function |G| of type <VectorField.html |S2VectorFieldHarmonic|>
 %
 G = grad(sF1);
 
@@ -112,14 +122,14 @@ nodes = vector3d.rand(100);
 grad(sF1, nodes);
 
 
-%% *Visualization*
+%% Visualization
 % There are different ways to visualize a |S2FunHarmonic|
 %
 % The default |plot|-command
 plot(sF1); 
 
 %%
-% * |plot(sF1)| is the same same as |contourf(sF1)|
+% * |plot(sF1)| is the same as |contourf(sF1)|
 
 %%
 % nonfilled contour plot
@@ -139,11 +149,9 @@ surf(sF2);
 
 %%
 % Plot the intersection of the surf plot with a plane with normal vector |v|
-v = zvector;
-plotSection(sF2, v.Z);
+plotSection(sF2, zvector);
 
 %%
 % plotting the fourier coefficients
 plotSpektra(sF1);
 set(gca,'FontSize', 20);
-snapnow;

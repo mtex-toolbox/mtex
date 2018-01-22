@@ -15,13 +15,13 @@
 %
 % $$f\colon \bf S^2\to \bf R$$
 %
-% but also multimodal function 
+% but also multivariate function 
 %
 % $$ f\colon \bf S^2\to \bf R^n $$.
 %
 %% <symmetrisedFunction.html *|S2FunHarmonicSym|*>
 %
-% |S2FunHarmonic| is an extension of the |S2FunHarmonic| class for which one can store the symmetry with the function.
+% |S2FunHarmonic| is an extension of the |S2FunHarmonic| class for which you can store the symmetry with the function.
 % Various commands are adapted to the symmetry in regards to performance and general function handling.
 % For instance the |plot| command only plots the function on the important part of the sphere.
 %
@@ -32,7 +32,7 @@
 % $$ f\colon \bf S^2\to\bf R^3 $$
 %
 % wich then is interpreted as a vector field.
-% For instance the gradient of an unimodal |S2Fun| can return a |S2VectorFieldHarmonic|.
+% For instance the gradient of an univariate |S2Fun| can return a |S2VectorFieldHarmonic|.
 %
 %% <AxisField.html *|S2AxisFieldHarmonic|*>
 %
