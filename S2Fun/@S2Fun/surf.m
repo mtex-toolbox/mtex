@@ -15,7 +15,7 @@ for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
   [x,y,z] = double(abs(d(:, :, j)).*S2);
     
-  h = surf(x,y,z,'parent',mtexFig.gca);
+  h = surf(x,y,z,'parent',mtexFig.gca, varargin{:});
   set(h,'CData',d(:, :, j))
   axis equal
   optiondraw(h,varargin{:});
