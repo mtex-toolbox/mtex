@@ -56,6 +56,7 @@ methods
     S2G.thetaGrid = thetaGrid;
     S2G.rhoGrid = rhoGrid;
     S2G.res = get_option(varargin,'resolution',2*pi);
+    S2G.antipodal = check_option(varargin,'antipodal');
   end
 
   function v = vector3d(S2G)

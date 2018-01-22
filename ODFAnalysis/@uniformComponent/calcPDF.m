@@ -1,4 +1,12 @@
-function Z = calcPDF(~,h,r,varargin)
+function pdf = calcPDF(~,h,r,varargin)
 % calculate pdf 
 
-Z = ones(size(h) .* size(r));
+if isempty(h) || nargin==2 || isempty(r)
+  
+  pdf = S2FunHarmonic(1);
+  
+else
+  
+  pdf = ones(size(h) .* size(r));
+  
+end

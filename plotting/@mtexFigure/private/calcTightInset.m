@@ -23,7 +23,9 @@ if strcmpi(get(ax,'visible'),'off')% || strcmpi(get(ax,'XColor'),'none')
   
   % consider text labels
   txt = findall(ax,'type','text','unit','data');
-  s = get(txt,'string'); ind = cellfun(@isempty,s);
+  s = get(txt,'string');
+  if ~iscell(s), s = {s}; end
+  ind = cellfun(@isempty,s);
   txt = txt(~ind);
   if ~isempty(txt)
     pos = ensurecell(get(txt,'position'));

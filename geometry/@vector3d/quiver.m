@@ -58,4 +58,9 @@ for j = 1:numel(sP)
   set(sP(j).ax,'nextPlot',holdState);
 end
 
+if strcmpi(holdState,'replace') && isappdata(sP(1).parent,'mtexFig')
+  mtexFig = getappdata(sP(1).parent,'mtexFig');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+end
+
 if nargout == 0, clear('h'); end

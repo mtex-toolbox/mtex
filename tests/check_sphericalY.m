@@ -7,7 +7,7 @@ S2G = equispacedS2Grid('points',100);
 
 for l = 1:L
   
-  Y1 = sphericalY(l,theta,rho);
+  Y1 = sphericalY(l,S2G);
   Y2 = sphericalYNFFT(theta,rho,l);
  
   e(l) = norm(Y1(:)-Y2(:))./numel(Y1);

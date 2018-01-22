@@ -64,11 +64,37 @@ end
 function c_hat = gcA2fourier(g,c,A)
 
 % run NFSOFT
-if length(A)< 3, A = [A;0]; end
-f = call_extern('odf2fc','EXTERN',g,c,A);
+if getMTEXpref('extern',false)
+  
+  if length(A)< 3, A = [A;0]; end
+  f = call_extern('odf2fc','EXTERN',g,c,A);
       
-% extract result
-c_hat = complex(f(1:2:end),f(2:2:end));
+  % extract result
+  c_hat = complex(f(1:2:end),f(2:2:end));
+  
+else % call mex file
+  
+  plan = nfsoftmex('init',length(A)-1,size(g,2),0,0,4,1000,2*ceil(1.5*(length(A)+1)));
+  nfsoftmex('set_x',plan,flipud(g));
+  nfsoftmex('set_f',plan,c(:));
+  nfsoftmex('precompute',plan);
+  nfsoftmex('adjoint',plan);
+  c_hat = nfsoftmex('get_f_hat',plan);
+  nfsoftmex('finalize',plan);
+  
+  for l = 1:length(A)-1
+    
+   [k1,k2] = meshgrid(-l:l,-l:l);
+   k1(k1>0) = 0;
+   k2(k2>0) = 0;
+   s = (-1).^k1 .* (-1).^k2;
+   
+   ind = (deg2dim(l)+1):deg2dim(l+1);
+   c_hat(ind) = A(l+1)*s.*reshape(c_hat(ind),2*l+1,2*l+1);
+   
+  end
+  
+end
 
 end
 

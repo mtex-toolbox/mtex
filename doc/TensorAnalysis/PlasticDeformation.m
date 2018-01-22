@@ -11,7 +11,7 @@
 CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
 
 %%
-% Since Nickel is fcc a dominat slip system is given by the slip plane
+% Since Nickel is fcc a dominant slip system is given by the slip plane
 % normal
 
 n = Miller(1,1,1,CS,'hkl')
@@ -22,7 +22,7 @@ n = Miller(1,1,1,CS,'hkl')
 d = Miller(0,-1,1,CS,'uvw')
 
 %%
-% For a simple shear in the z - direction
+% For tension in direction 123
 r = normalize(vector3d(1,2,3))
 
 %%
@@ -30,7 +30,7 @@ r = normalize(vector3d(1,2,3))
 %
 tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
 
-%% 
+%%
 % The same computation can be performed by defining the slip system as an
 % MTEX variable
 
@@ -46,15 +46,15 @@ sS.SchmidFactor(r)
 % <slipSystem_SchmidFactor.html SchmidFactor> returns the Schmid factor as
 % a spherical function
 
-%will be part of MTEX 4.5
-% SF = sS.SchmidFactor 
+%will be part of MTEX 4.6
+% SF = sS.SchmidFactor
 
 % plot the Schmid factor in dependency of the tension direction
-%will be part of MTEX 4.5
-%plot(SF) 
+%will be part of MTEX 4.6
+%plot(SF)
 
-%will be part of MTEX 4.5
-%[SFMax,pos] = max(SF) 
+%will be part of MTEX 4.6
+%[SFMax,pos] = max(SF)
 
 %% Stress Tensor
 % Instead by the tension direction the stress might be specified by a
@@ -76,8 +76,8 @@ sSAll = sS.symmetrise('antipodal')
 
 %%
 % The option |antipodal| indicates that Burgers vectors in oposite
-% direction should not be distinguished. 
-% Now 
+% direction should not be distinguished.
+% Now
 
 tau = sSAll.SchmidFactor(r)
 
@@ -191,7 +191,7 @@ plot(grains,SFMax)
 mtexColorbar
 
 %%
-% Next we want to visualize the active slip systems. 
+% Next we want to visualize the active slip systems.
 
 % take the active slip system and rotate it in specimen coordinates
 sSactive = grains.meanOrientation .* sS(active);
@@ -241,4 +241,5 @@ quiver(grains,sSactive.trace,'color','b')
 
 % and the slip direction
 quiver(grains,sSactive.b,'color','r')
+
 hold off

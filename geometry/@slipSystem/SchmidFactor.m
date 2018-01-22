@@ -26,7 +26,12 @@ if check_option(varargin,'relative')
 end
 
 % Schmid factor with respect to a tension direction
-if isa(sigma,'vector3d')
+if nargin == 1 || isnumeric(sigma)
+  r = equispacedS2Grid('points',10000);
+  SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
+  SF = S2FunTri(r,SF);
+    
+elseif isa(sigma,'vector3d')
   
   r = sigma.normalize;
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');

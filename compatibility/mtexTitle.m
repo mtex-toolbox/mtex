@@ -1,4 +1,4 @@
-function varargout = mtexTitle(s,varargin)
+function h = mtexTitle(s,varargin)
 %TITLE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -21,10 +21,12 @@ end
 s = ['\bf{' regexprep(s,'\$([^\$]*)\$','\$\\mathbf{$1}\$') '}'];
 s = strrep(s,'$$','');
 s = strrep(s,'%','\%');
-[varargout{1:nargout}] = optiondraw(title(ax,s,...
+h = optiondraw(title(ax,s,...
   'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1)),varargin{:});
 
 set(get(ax,'Title'),'Visible','on');
+
+if nargout == 0, clear h; end
 
 end
 

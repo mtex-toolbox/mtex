@@ -73,10 +73,7 @@ if isNew % finalize plot
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
   
-  if check_option(varargin,'3d')  
-    datacursormode off
-    fcw(gcf,'-link');
-  end
+  if check_option(varargin,'3d'), fcw(gcf,'-link'); end
   
   
 end

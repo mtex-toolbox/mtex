@@ -79,7 +79,8 @@ end
 
 theta = S1Grid(theta,bounds.FR{1},bounds.FR{2});
 
-S2G = S2Grid(theta,rhGrid);
+if identified, opt = {'antipodal'}; else, opt = {}; end
+S2G = S2Grid(theta,rhGrid,opt{:});
 S2G = S2G.setOption('resolution',res);
 
 end

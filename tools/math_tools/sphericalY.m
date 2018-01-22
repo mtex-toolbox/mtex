@@ -1,23 +1,24 @@
-function Y = sphericalY(l, theta, rho,varargin)
+function Y = sphericalY(l, v, varargin)
 % spherical harmonics of degree l
 %
 % Description
-% Y = sphericalY(l,theta,rho) return a vector Y = (Y_l^-l,...,Y_l^l) of the
-% spherical harmonics of degree l using the Condon-Shortley phase
-% convention
+% Y = sphericalY(l,vs) return a vector Y = (Y_l^-l,...,Y_l^l) of the
+% spherical harmonics of degree l using the Condon-Shortley phase convention
+%
+% Syntax
+%   Y = sphericalY(l, v)
 %
 % Input
-%  l     - degree
-%  theta - polar angle
-%  rho   - azimuth angle
+%  l - harmonic degree
+%  v - @vector3d
 %
 % Output
-%  Y - (2l+1) x numel(theta,rho) matrix of function values
+%  Y - (2l+1) x length(v) matrix of function values
 %
 % See also
 % wignerD
 
-if isa(theta,'vector3d'), [theta,rho] = polar(theta); end
+[theta,rho] = polar(v);
 
 % try NFSFT version
 if check_option(varargin,'nfsft') && l > 0
