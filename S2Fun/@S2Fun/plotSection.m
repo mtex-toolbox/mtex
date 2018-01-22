@@ -21,15 +21,17 @@ end
 
 S2 = axis2quat(sec,omega)*axis2quat(orth(sec),eta)*sec;
     
-d = sF.eval(S2);
+d = reshape(sF.eval(S2),length(S2), []);
     
 if isa(d,'double') && ~isreal(d), d = real(d);end
-
-x = d(:).*cos(omega(:));
-y = d(:).*sin(omega(:));
-  
-h = plot(x,y);
-axis equal
-optiondraw(h,varargin{:});
+for j = 1:length(sF)
+  if j > 1, mtexFig.nextAxis; end
+  x = d(:, j).*cos(omega(:));
+  y = d(:, j).*sin(omega(:));
+    
+  h = plot(x,y,'parent',mtexFig.gca);
+  axis equal
+  optiondraw(h,varargin{:});
+end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
