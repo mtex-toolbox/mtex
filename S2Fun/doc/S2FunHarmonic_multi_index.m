@@ -2,17 +2,17 @@
 % This site assumes you have read the documentation for univariate |S2FunHarmonic|, as we are not covering content which is already in there.
 %
 %% Structural conventions of the input and output of multivariate S2FunHarmonic
-% * the structure of the nodes is always interpretes as a collumn vector
+% * the structure of the nodes is always interpreted as a column vector
 % * the node index is the first dimension
 % * the dimensions of the S2FunHarmonic itself is counted from the second dimension
 %
-% For example you got four nodes $v_1, v_2, v_3$ and $v_4$ and six functions $f_1, f_2, f_3, f_4, f_5$ and $f_6$, which you want to store in a 3x2 array, then the following sheme applies to function evaluations:
+% For example you got four nodes $v_1, v_2, v_3$ and $v_4$ and six functions $f_1, f_2, f_3, f_4, f_5$ and $f_6$, which you want to store in a 3x2 array, then the following scheme applies to function evaluations:
 %
 % $$ F(:, :, 1) = \pmatrix{f_1(v_1) & f_2(v_1) & f_3(v_1) \cr f_1(v_2) & f_2(v_2) & f_3(v_2) \cr f_1(v_3) & f_2(v_3) & f_3(v_3) \cr f_1(v_4) & f_2(v_4) & f_3(v_4)} \quad\mathrm{and}\quad F(:, :, 2) = \pmatrix{f_4(v_1) & f_5(v_1) & f_6(v_1) \cr f_4(v_2) & f_5(v_2) & f_6(v_2) \cr f_4(v_3) & f_5(v_3) & f_6(v_3) \cr f_4(v_4) & f_5(v_4) & f_6(v_4)}. $$
 %
-% For the intern Fourier-coefficient matrix the first dimension is reseverd for for the Fourier-coefficients of a single function; the dimension of the functions itself begin again with the second dimension.
+% For the intern Fourier-coefficient matrix the first dimension is reserved for for the Fourier-coefficients of a single function; the dimension of the functions itself begin again with the second dimension.
 %
-% If $\bf{\hat f}_1, \bf{\hat f}_2, \bf{\hat f}_3, \bf{\hat f}_4, \bf{\hat f}_5$ and $\bf{\hat f}_6$ would be the collumn vectors of the Fourier-coefficients of the functions above, internally they would be stored in $\hat F$ as follows.
+% If $\bf{\hat f}_1, \bf{\hat f}_2, \bf{\hat f}_3, \bf{\hat f}_4, \bf{\hat f}_5$ and $\bf{\hat f}_6$ would be the column vectors of the Fourier-coefficients of the functions above, internally they would be stored in $\hat F$ as follows.
 % $$ \hat F(:, :, 1) = \pmatrix{\bf{\hat f}_1 & \bf{\hat f}_2 & \bf{\hat f}_3} \quad\mathrm{and}\quad \hat F(:, :, 2) = \pmatrix{\bf{\hat f}_4 & \bf{\hat f}_5 & \bf{\hat f}_6}. $$
 %
 %
@@ -36,7 +36,7 @@ sF1 = S2FunHarmonic.approximation(nodes, y)
 % *Definition via function handle*
 %
 % If we have a function handle for the function we could create a |S2FunHarmonic| via quadrature.
-% At first lets define a function handle which takes <matlab:doc(vector3d) |vector3d|> as an argument and returns double:
+% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
 
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
 %% 
@@ -59,7 +59,7 @@ sF3 = S2FunHarmonic(eye(9))
 %%
 % *Some default matrix and vector operations*
 %
-% You can cancatenate and refer to functions as matlab does with vectors and matrices
+% You can concatenate and refer to functions as Matlab does with vectors and matrices
 
 sF4 = [sF1; sF2];
 sF4(2:3);
@@ -81,7 +81,7 @@ sF3 = reshape(sF3, 3, []);
 %%
 % *min/max*
 %
-% If the |min| or |max| command gets a multivariate |S2FunHarmonic| the pointwise minimum or maximimum is calculated along the first non-singelton dimension if not specified otherwise.
+% If the |min| or |max| command gets a multivariate |S2FunHarmonic| the pointwise minimum or maximum is calculated along the first non-singelton dimension if not specified otherwise.
 %
 
 min(sF3);
@@ -123,6 +123,6 @@ surf(sF3);
 plotSection(sF1, zvector);
 
 %%
-% plotting the fourier coefficients
+% plotting the Fourier coefficients
 plotSpektra(sF2);
 set(gca,'FontSize', 20);

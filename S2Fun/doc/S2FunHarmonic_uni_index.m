@@ -15,16 +15,16 @@ y = smiley(nodes);
 % Now the actual command to get |sF1| of type |S2FunHarmonic|
 sF1 = interp(nodes, y, 'harmonicApproximation')
 %%
-% * The |bandwith| propertie shows the maximal polynomial degree of the function.  Internally for a given bandwith there are stored $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
+% * The |bandwidth| property shows the maximal polynomial degree of the function.  Internally for a given bandwidth there are stored $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
 % * The |antipodal| flag shows that $f(v) = f(-v)$ holds for all $v\in\bf S^2$.
 %
-% For the same result you could also run |S2FunHarmonic.approximation(nodes, y)| and give some additional options (<matlab:doc('S2FunHarmonic/approximation') see here>).
+% For the same result you could also run |S2FunHarmonic.approximation(nodes, y)| and give some additional options (<S2FunHarmonic.approximation.html see here>).
 
 %%
 % *Definition via function handle*
 %
 % If you have a function handle for the function you could create a |S2FunHarmonic| via quadrature.
-% At first lets define a function handle which takes <matlab:doc(vector3d) |vector3d|> as an argument and returns double:
+% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 %% 
@@ -32,20 +32,20 @@ f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 %%
 % * If you would leave the |'bandwidth'| option empty the default bandwidth would be considered, which is 128.
-% * The quadrature is faster than the approximation, because it doesn not have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
-% * For more options <matlab:doc('S2FunHarmonic/quadrature') see here>.
+% * The quadrature is faster than the approximation, because it does not have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
+% * For more options <S2FunHarmonic.quadrature.html see here>.
 
 %%
 % *Definition via Fourier-coefficients*
 %
-% If you already know the Fourier-coefficients, you can simply hand them as a collumn vector to the constructor of |S2FunHarmonic|
+% If you already know the Fourier-coefficients, you can simply hand them as a column vector to the constructor of |S2FunHarmonic|
 fhat = rand(25, 1);
 sF3 = S2FunHarmonic(fhat)
 
 %% Operations
-% The idea of |S2Fun| is to calculate with functions like MATLAB(R) does with vectors and matrices.
+% The idea of |S2Fun| is to calculate with functions like Matlab does with vectors and matrices.
 %
-% *Basic arithmecic operations*
+% *Basic arithmetic operations*
 %
 %%
 % addition/subtraction
@@ -77,14 +77,14 @@ abs(sF1);
 %%
 % * as default |min| or |max| returns the smallest or the biggest value (global optima) with all nodes for which the value is obtained
 % * with the option |min(sF1, 'numLocal', n)| the |n| nodes with the belonging biggest or smallest values are returned
-% * |min(sF1)| is the same as running <matlab:doc('S2Funharmonic/steepestDescent') |steepestDescent(sF1)|>
+% * |min(sF1)| is the same as running <S2Funharmonic.steepestDescent.html |steepestDescent(sF1)|>
 %%
 % min/max of two functions in the pointwise sense
 %
 min(sF1, sF2);
 
 %%
-% * See all options of min/max <matlab:doc('S2FunHarmonic/min') here>
+% * See all options of min/max <S2FunHarmonic.min.html here>
 
 %%
 % *Other operations*
@@ -107,17 +107,17 @@ cs = crystalSymmetry('6/m');
 sFs = symmetrise(sF1, cs);
 
 %%
-% * |sFs| is of type <symmetrisedFunction.html |S2FunHarmonicSym|>
+% * |sFs| is of type <S2FunHarmonicSym_index.html |S2FunHarmonicSym|>
 
 %%
 % *Gradient*
 %%
-% Caculate the gradient as a function |G| of type <VectorField.html |S2VectorFieldHarmonic|>
+% Calculate the gradient as a function |G| of type <S2VectorFieldHarmonic_index.html |S2VectorFieldHarmonic|>
 %
 G = grad(sF1);
 
 %%
-% The direct evaluation of the gradient is faster and returns <matlab:doc(vector3d) |vector3d|>
+% The direct evaluation of the gradient is faster and returns <vector3d_index.html |vector3d|>
 nodes = vector3d.rand(100);
 grad(sF1, nodes);
 
@@ -152,6 +152,6 @@ surf(sF2);
 plotSection(sF2, zvector);
 
 %%
-% plotting the fourier coefficients
+% plotting the Fourier coefficients
 plotSpektra(sF1);
 set(gca,'FontSize', 20);

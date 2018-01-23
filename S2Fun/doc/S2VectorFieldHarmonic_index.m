@@ -19,7 +19,7 @@ sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
 % *Definition via function handle*
 %
 % If you have a function handle for the function you could create a |S2VectorFieldHarmonic| via quadrature.
-% At first lets define a function handle which takes <matlab:doc(vector3d) |vector3d|> as an argument and returns also <matlab:doc(vector3d) |vector3d|>:
+% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns also <vector3d_index.html |vector3d|>:
 
 f = @(v) vector3d(v.x, v.y, 0*v.x);
 %% 
@@ -41,7 +41,7 @@ sVF4 = S2VectorFieldHarmonic(sF)
 %
 %%
 %
-% *Basic arithmecic operations*
+% *Basic arithmetic operations*
 %
 %%
 % addition/subtraction
