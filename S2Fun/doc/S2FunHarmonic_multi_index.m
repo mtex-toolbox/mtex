@@ -79,6 +79,15 @@ size(sF2);
 sF3 = reshape(sF3, 3, []);
 
 %%
+% *|sum| and |mean|*
+%
+% If you do not specify further options to |sum| or |mean| it gives you the integral or the mean value back for each function.
+% You can also calculate the conventional sum or the meanvalue over a dimension of a multivariate |S2FunHarmonic|.
+
+sum(sF1, 1);
+sum(sF3, 2);
+
+%%
 % *min/max*
 %
 % If the |min| or |max| command gets a multivariate |S2FunHarmonic| the pointwise minimum or maximum is calculated along the first non-singelton dimension if not specified otherwise.

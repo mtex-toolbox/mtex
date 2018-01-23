@@ -1,5 +1,5 @@
 %% *|S2VectorFieldHarmonic|*
-%% Defning a |S2VectorFieldHarmonic|
+%% Defining a |S2VectorFieldHarmonic|
 %
 %%
 % *Definition via function values*
@@ -10,7 +10,7 @@ nodes = nodes(:);
 %%
 % Next you define function values for the vertices
 f = @(v) vector3d('polar', sin(3*v.theta), v.rho+pi/2);
-y = f(nodes); % example function values
+y = f(nodes);
 %%
 % Now the actual command to get |sVF1| of type |S2VectorFieldHarmonic|
 sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
@@ -23,7 +23,7 @@ sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
 
 f = @(v) vector3d(v.x, v.y, 0*v.x);
 %% 
-% Now you can call the quadrature command to get |sF2| of type |S2FunHarmonic|
+% Now you can call the quadrature command to get |sVF2| of type |S2VectorFieldHarmonic|
 sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
 
 %%

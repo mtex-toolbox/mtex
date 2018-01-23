@@ -1,6 +1,6 @@
 %% Univariate |S2FunHarmonic|
 %
-%% Defning a |S2FunHarmonic|
+%% Defining a |S2FunHarmonic|
 %
 %%
 % *Definition via function values*
@@ -95,6 +95,10 @@ norm(sF1);
 %%
 % calculate the mean value of a function
 mean(sF1);
+
+%%
+% calculate the surface integral value of a function
+sum(sF1);
 
 %%
 % rotate a function
