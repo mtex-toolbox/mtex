@@ -1,6 +1,174 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.0.0 03/2018
+%
+% *Replace alle executables by two mex files*
+%
+% In MTEX many functionalities are based on the non equispaced fast Fourier
+% transform. Until now this dependency was kept under the hood, or more
+% precisely, hidden in external executable files which often caused
+% troubles on MAC systems. Starting with MTEX 5.0. all the executables have
+% been replaced by two mex files provided by the NFFT package. This
+% change (hopefully) comes with the following advantages
+%
+% * better combatibility with MAC systems
+% * increased preformance, e.g., due to multi core suport
+% * better maintainability, as all MTEX code is now Matlab code
+%
+% *Spherical functions*
+%
+% Many functions in MTEX compute directional dependent properties, e.g.
+% pole figures, inverse pole figures, wave velocities, density distribution
+% of misorientation axis or boundary normals. Until now those functions
+% took as an input a of vector of directions and gave as an output a
+% corresponding vector of function values, e.g. the command
+%
+%   pfi = calcPDF(odf,Miller(1,0,0,odf.CS),r)
+%
+% returns for a list of specimen directions |r| the corresponding list of
+% pole figure intensities |pfi| for the ODF |odf|. Starting with MTEX 5.0 it
+% is possible to ommit the list of specimen directions |r| or replace it by
+% an empty list |[]|. In this case the command
+%
+%   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
+%
+% returns a <S2Fun_index.html spherical function> |pdf| also called pole
+% density function. One can evaluate this spherical function using the
+% command <S2FunHarmonic.eval.html eval> at the list of specimen directions
+% |r| to obtain the pole figure intensities
+%
+%   pfi = pdf.eval(r)
+%
+% However, there are much more operations that can be performed on
+% spherical functions:
+%
+%   % compute with spherical functions as with ordinary numbers
+%   pdf3 = 5 * pdf1 + 3 * pdf2
+%   pdf = max(pdf,0) % repace of negative entries by 0
+%   pdf = abs(pdf) % take the absolute value
+%   sum(pdf) % the integral of the pole figure
+%   sum(pdf.^2) % the integral of the pole figure squares - also called pole figure index
+%   
+%   % plotting
+%   plot(pdf)
+%   plot3(pdf) % plot in 3d
+%
+%   % detect maximum value
+%   [value,pos] = max(pdf)
+%
+%  For a complete list of functions reade <S2FunHarmonic_index.html here>.
+%
+% *Symmetry aware spherical functions*
+%
+% Since most of the directional dependent properties obbeys additional
+% symmetry properties the class <S2FunHarmonic_index.html S2FunHarmonic>
+% has been extendet to symmetry are spherical functions
+% <S2FunHarmonicSym_index.html S2FunHarmonicSym>.
+%
+% *Multivariate spherical functions, vector fields and spherical axis fields*
+%
+% In some case it is useful that a spherical function gives not only one
+% value for a certain direction but several values. This is aquivalent to
+% have concatenate several univariate spherical function to one
+% multivariate function. This can be acomplished by 
+%
+%   S2Fmulti = [S2F1,S2F2,S2F3]
+%
+% which gives a spherical function with 3 values per direction. More
+% information how to work multivariate functions can be found
+% <S2FunMulti.html here>. 
+%
+% If we interprete the 3 values of |S2multi| as x, y, and, z coordinate of
+% a 3 dimensional vector the function |S2multi| can essentially by seen as
+% a spherical vector field associating to each direction a three
+% dimensional vector. The most important example of such a vector field is
+% the gradient of a spherical function:
+%
+%   g = S2F1.grad
+%
+% The resulting variable |g| is of type <S2VectorField_index.html
+% S2VectorField>. A complete list of functions available for vector fields
+% can be found  <S2VectorField_index.html here>.
+%
+% Another example for vector fields are polarisation directions |pp|,
+% |ps1|, |ps2| as computed by
+%
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
+%
+% The main difference is, that polarisation directions are antipodal, i.e.
+% one can not distinguish between the polarisation direction |d| and |-d|.
+% In MTEX we call vector fields with antipodal values are represented by
+% variables of typ <AxisFieldHarm_index.html AxisField>.
+%
+% *Crystal shapes*
+%
+% MTEX 5.0 introduces a new class <crystalShape_index.html crystalShape>.
+% This class allows to plot 3-dimensional representations of crystals on
+% top of EBSD maps, pole figures and ODF sections. The syntax is as follows
+%
+%   % define the crystal symmetry
+%   cs = loadCIF('quartz');
+% 
+%   % define the faces of the crystal
+%   m = Miller({1,0,-1,0},cs);  % hexagonal prism
+%   r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usally bigger then z
+%   z = Miller({0,1,-1,1},cs);  % negative rhomboedron
+%   s2 = Miller({1,1,-2,1},cs); % right tridiagonal bipyramid
+%   x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
+%   N = [m,r,z,s2,x2];
+%
+%   % define the crystal shape
+%   habitus = 1.2; % determines the overal shape
+%   extension = [1,1.2,1]; % determines the extension of the crystal in x,y,z direction
+%   cS = crystalShape(N,habitus,extension);
+%
+%   plot(cS)
+%   plot(x,y,cS)
+%   plot(grains,cS)
+%   plot(ebsd,cS)
+%   plotPDF(ori,ori*cS)
+%
+% *ODF component analysis*
+%
+% MTEX 5.0 allows for decomposing ODF into components using the command
+% <ODF.calcComponents.html calcComponents>. In its simplest form
+%
+%   [mods,weights] = calcComponents(odf)
+%
+% returns a list of modal orientaions |mods| and a list of weights which
+% sum up to one. A more advanced call is
+%
+%   [modes, weights,centerId] = calcComponents(odf,'seed',oriList)
+%
+% which returns in centerId also for each orientation from |oriList| to
+% which component it belongs.
+% 
+% *Clustering of orientations
+%
+% The ODF component analysis is used as the new default algorithm in
+% <orientation.calcCluster.html calcCluster> for orientations. The idea is
+% to compute an ODF out of the orientations and call
+% <ODF.calcComponents.html calcComponents> with
+%
+%   [center,~,centerId] = calcComponents(odf,'seed',ori)
+%
+% Then |center| are the cluster center and |centerId| gives for each
+% orientation to which cluster it belongs. Substantional in this method is
+% the choise of the kernel halfwidth used for ODF computation. This can be
+% adjusted by
+%
+%   [c,center] = calcCluster(ori,'halfwidth',2.5*degree)
+%
+% *Other new functions*
+%
+% * <ODF.grad.html odf.grad> computes the gradient of an ODF at some
+% orientation
+% * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
+% properties
+% * <ODF.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * allow to change the length of the scaleBar in EBSD plots
+%
 %% MTEX 4.5.2 11/2017
 %
 % This is mainly a bug fix release
