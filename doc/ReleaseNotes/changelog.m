@@ -33,7 +33,7 @@
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
 %
-% returns a <S2Funharmonic_index.html spherical function> |pdf| also called pole
+% returns a <S2FunHarmonic_index.html spherical function> |pdf| also called pole
 % density function. One can evaluate this spherical function using the
 % command <S2FunHarmonic.eval.html eval> at the list of specimen directions
 % |r| to obtain the pole figure intensities
