@@ -3,17 +3,17 @@
 %
 %% MTEX 5.0.0 03/2018
 %
-% *Replace alle executables by two mex files*
+% *Replace all executables by two mex files*
 %
 % In MTEX many functionalities are based on the non equispaced fast Fourier
-% transform. Until now this dependency was kept under the hood, or more
-% precisely, hidden in external executable files which often caused
-% troubles on MAC systems. Starting with MTEX 5.0. all the executables have
-% been replaced by two mex files provided by the NFFT package. This
+% transform (<http://www.nfft.org NFFT>). Until now this dependency was kept under
+% the hood, or more precisely, hidden in external executable files which often
+% caused troubles on MAC systems. Starting with MTEX 5.0. all the executables
+% have been replaced by two mex files provided by the NFFT package. This
 % change (hopefully) comes with the following advantages
 %
-% * better combatibility with MAC systems
-% * increased preformance, e.g., due to multi core suport
+% * better compatibility with MAC systems
+% * increased preformance, e.g., due to multi core support
 % * better maintainability, as all MTEX code is now Matlab code
 %
 % *Spherical functions*
@@ -21,7 +21,7 @@
 % Many functions in MTEX compute directional dependent properties, e.g.
 % pole figures, inverse pole figures, wave velocities, density distribution
 % of misorientation axis or boundary normals. Until now those functions
-% took as an input a of vector of directions and gave as an output a
+% took as an input an of vector of directions and gave as an output a
 % corresponding vector of function values, e.g. the command
 %
 %   pfi = calcPDF(odf,Miller(1,0,0,odf.CS),r)
@@ -40,15 +40,15 @@
 %
 %   pfi = pdf.eval(r)
 %
-% However, there are much more operations that can be performed on
+% However, there are many more operations that can be performed on
 % spherical functions:
 %
 %   % compute with spherical functions as with ordinary numbers
 %   pdf3 = 5 * pdf1 + 3 * pdf2
 %   pdf = max(pdf,0) % repace of negative entries by 0
 %   pdf = abs(pdf) % take the absolute value
-%   sum(pdf) % the integral of the pole figure
-%   sum(pdf.^2) % the integral of the pole figure squares - also called pole figure index
+%   mean(pdf) % the integral of the pole figure
+%   mean(pdf.^2) % the integral of the pole figure squares - also called pole figure index
 %   
 %   % plotting
 %   plot(pdf)
@@ -57,21 +57,20 @@
 %   % detect maximum value
 %   [value,pos] = max(pdf)
 %
-%  For a complete list of functions reade <S2FunHarmonic_index.html here>.
+%  For a complete list of functions read <S2FunHarmonic_index.html here>.
 %
 % *Symmetry aware spherical functions*
 %
-% Since most of the directional dependent properties obbeys additional
+% Since most of the directional dependent properties obey additional
 % symmetry properties the class <S2FunHarmonic_index.html S2FunHarmonic>
-% has been extendet to symmetry are spherical functions
-% <S2FunHarmonicSym_index.html S2FunHarmonicSym>.
+% has been extended to symmetry in the <S2FunHarmonicSym_index.html S2FunHarmonicSym> class.
 %
 % *Multivariate spherical functions, vector fields and spherical axis fields*
 %
-% In some case it is useful that a spherical function gives not only one
-% value for a certain direction but several values. This is aquivalent to
+% In some cases it is useful that a spherical function gives not only one
+% value for a certain direction but several values. This is equivalent to
 % have concatenate several univariate spherical function to one
-% multivariate function. This can be acomplished by 
+% multivariate function. This can be accomplished by 
 %
 %   S2Fmulti = [S2F1,S2F2,S2F3]
 %
@@ -79,8 +78,8 @@
 % information how to work multivariate functions can be found
 % <S2FunMulti.html here>. 
 %
-% If we interprete the 3 values of |S2multi| as x, y, and, z coordinate of
-% a 3 dimensional vector the function |S2multi| can essentially by seen as
+% If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
+% a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
 % a spherical vector field associating to each direction a three
 % dimensional vector. The most important example of such a vector field is
 % the gradient of a spherical function:
@@ -99,7 +98,7 @@
 % The main difference is, that polarisation directions are antipodal, i.e.
 % one can not distinguish between the polarisation direction |d| and |-d|.
 % In MTEX we call vector fields with antipodal values are represented by
-% variables of typ <AxisFieldHarm_index.html AxisField>.
+% variables of type <AxisFieldHarm_index.html AxisField>.
 %
 % *Crystal shapes*
 %
