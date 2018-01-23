@@ -33,7 +33,7 @@
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
 %
-% returns a <S2Fun_index.html spherical function> |pdf| also called pole
+% returns a <S2Funharmonic_index.html spherical function> |pdf| also called pole
 % density function. One can evaluate this spherical function using the
 % command <S2FunHarmonic.eval.html eval> at the list of specimen directions
 % |r| to obtain the pole figure intensities
@@ -47,8 +47,8 @@
 %   pdf3 = 5 * pdf1 + 3 * pdf2
 %   pdf = max(pdf,0) % repace of negative entries by 0
 %   pdf = abs(pdf) % take the absolute value
-%   mean(pdf) % the integral of the pole figure
-%   mean(pdf.^2) % the integral of the pole figure squares - also called pole figure index
+%   sum(pdf) % the integral of the pole figure
+%   sum(pdf.^2) % the integral of the pole figure squares - also called pole figure index
 %   
 %   % plotting
 %   plot(pdf)
@@ -98,7 +98,7 @@
 % The main difference is, that polarisation directions are antipodal, i.e.
 % one can not distinguish between the polarisation direction |d| and |-d|.
 % In MTEX we call vector fields with antipodal values are represented by
-% variables of type <AxisFieldHarm_index.html AxisField>.
+% variables of type <S2AxisFieldHarmonic_index.html AxisField>.
 %
 % *Crystal shapes*
 %
@@ -143,7 +143,7 @@
 % which returns in centerId also for each orientation from |oriList| to
 % which component it belongs.
 % 
-% *Clustering of orientations
+% *Clustering of orientations*
 %
 % The ODF component analysis is used as the new default algorithm in
 % <orientation.calcCluster.html calcCluster> for orientations. The idea is
@@ -152,7 +152,7 @@
 %
 %   [center,~,centerId] = calcComponents(odf,'seed',ori)
 %
-% Then |center| are the cluster center and |centerId| gives for each
+% Then |center| are the clusters center and |centerId| gives for each
 % orientation to which cluster it belongs. Substantional in this method is
 % the choise of the kernel halfwidth used for ODF computation. This can be
 % adjusted by
