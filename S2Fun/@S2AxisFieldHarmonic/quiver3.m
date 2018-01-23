@@ -1,5 +1,5 @@
 function h = quiver3(sAF,varargin)
-% 3-dimensional quiver spherical vector field
+% 3-dimensional quiver spherical axis field
 %
 % Syntax
 %   quiver3(sAF)
@@ -8,6 +8,8 @@ function h = quiver3(sAF,varargin)
 %   S2VectorField/plot
 %
 
+
+plotEmptySphere;
 % plot the function values
 h = plot(sAF,'3d',varargin{:});
 

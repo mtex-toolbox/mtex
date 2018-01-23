@@ -1,5 +1,5 @@
 function h = quiver(sAF,varargin)
-% quiver spherical vector field
+% quiver spherical axis field
 %
 % Syntax
 %   quiver3(sAF)
