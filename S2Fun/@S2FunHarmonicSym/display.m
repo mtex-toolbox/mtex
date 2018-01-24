@@ -7,8 +7,7 @@ if ~check_option(varargin,'skipHeader')
     ' ' docmethods(inputname(1))]);
 end
 
-disp([' size: ' size2str(sFs)]);
-disp([' bandwidth: ' num2str(sFs.bandwidth)]);
+if length(sFs)> 1, disp([' size: ' size2str(sFs)]);end
 
 % display symmetry
 if isa(sFs.s,'crystalSymmetry')
@@ -21,6 +20,7 @@ else
     disp([' symmetry: ',char(sFs.SS)]);
 end
 
+disp([' bandwidth: ' num2str(sFs.bandwidth)]);
 if sFs.antipodal, disp(' antipodal: true'); end
 
 end
