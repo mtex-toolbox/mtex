@@ -1,8 +1,8 @@
 function sF = abs(sF, varargin)
 % absolute value of a function
 % Syntax
-%  sF = abs(sF)
-%  sF = abs(sF, 'bandwidth', bandwidth)
+%   sF = abs(sF)
+%   sF = abs(sF, 'bandwidth', bandwidth)
 %
 % Input
 %  sF - @S2FunHarmonic

@@ -2,7 +2,7 @@ function n = norm(sF)
 % the L2 norm of a spherical function
 %
 % Syntax
-%  norm(sF)
+%   norm(sF)
 %
 
 s = size(sF);

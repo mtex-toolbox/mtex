@@ -1,7 +1,7 @@
 function sF = uminus(sF)
 %
 % Syntax
-%  sF = -sF
+%   sF = -sF
 %
 
 sF.fhat = -sF.fhat;

@@ -1,9 +1,9 @@
 function sF = quadrature(f, varargin)
 %
 % Syntax
-%  sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
-%  sF = S2FunHarmonic.quadrature(f)
-%  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
+%   sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
+%   sF = S2FunHarmonic.quadrature(f)
+%   sF = S2FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
 %
 % Input
 %  values - double (first dimension has to be the evaluations)
@@ -11,7 +11,7 @@ function sF = quadrature(f, varargin)
 %  f - function handle in vector3d (first dimension has to be the evaluations)
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 % Options
 %  bandwidth - minimal degree of the spherical harmonic (default: 128)

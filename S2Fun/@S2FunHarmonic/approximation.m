@@ -1,8 +1,8 @@
 function sF = approximation(nodes, y, varargin)
 % computes a least square problem to get an approximation
 % Syntax
-%  sF = S2FunHarmonic.approximation(S2Grid, f)
-%  sF = S2FunHarmonic.approximation(S2Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
+%   sF = S2FunHarmonic.approximation(S2Grid, f)
+%   sF = S2FunHarmonic.approximation(S2Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
 %
 % Input
 %  S2Grid - grid on the sphere

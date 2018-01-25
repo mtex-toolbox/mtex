@@ -1,7 +1,7 @@
 function sF = power(sF1,sF2)
 %
 % Syntax
-%  sF = sF1.^a
+%   sF = sF1.^a
 %
 
 if isnumeric(sF1)

@@ -1,16 +1,16 @@
 function sF = rdivide(sF1, sF2)
 %
 % Syntax
-%  sF = sF1/sF2
-%  sF = sF1/a
-%  sF = a/sF1
+%   sF = sF1/sF2
+%   sF = sF1/a
+%   sF = a/sF1
 %
 % Input
-%   sF1, sF2 - @S2FunHarmonic
-%   a - double
+%  sF1, sF2 - @S2FunHarmonic
+%  a - double
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 
 if isnumeric(sF1)

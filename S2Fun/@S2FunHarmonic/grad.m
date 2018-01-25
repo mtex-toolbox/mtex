@@ -1,11 +1,17 @@
 function sVF = grad(sF, varargin)
 % calculates the gradiet of a spherical harmonic
+%
 % Syntax
-%  sVF = grad(sF)
-%  sVF = grad(sF, v)
+%   sVF = grad(sF) % returns the gradient as a spherical vector field 
+%   g = grad(sF, v) % return the gradient in point v as vector3d
+%
+% Input
+%  sF - @S2FunHarmonic
+%  v - @vector3d
 %
 % Output
 %  sVF - @sphericalVectorFieldHarmonic
+%    g - @vector3d
 %
 
 

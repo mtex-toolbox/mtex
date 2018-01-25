@@ -2,8 +2,8 @@ function sFs = symmetrise(sF, varargin)
 % symmetrises a function with respect to a symmetry 
 %
 % Syntax
-%  sFs = sF.symmetrise(cs)
-%  sFs = sF.symmetrise(ss)
+%   sFs = sF.symmetrise(cs)
+%   sFs = sF.symmetrise(ss)
 %
 % Input
 %  sF - @S2Fun

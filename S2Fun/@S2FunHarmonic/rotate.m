@@ -5,11 +5,11 @@ function sF = rotate(sF, rot)
 %   sF = sF.rotate(rot)
 %
 % Input
-%   sF - @S2FunHarmonic
-%   rot - @rotation
+%  sF - @S2FunHarmonic
+%  rot - @rotation
 %
 % Output 
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 
 if sF.bandwidth ~= 0

@@ -6,10 +6,10 @@ function sF = truncate(sF)
 %   sF = truncate(sF)
 %
 % Input
-%   sF - S2FunHarmonic
+%  sF - S2FunHarmonic
 %
 % Output
-%   sF - S2FunHarmonic
+%  sF - S2FunHarmonic
 %
 
 m = 1+repelem((0:sF.bandwidth)', 2*(0:sF.bandwidth)+1, 1);

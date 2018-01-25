@@ -1,16 +1,23 @@
 function value = sum(sF, varargin)
 % calculates the integral for an univariate S2Fun or sums up along a specified dimension fo a multimodal S2Fun
+%
 % Syntax
-%  value = sum(sF)
-%  sF = sum(sF, d)
+%   value = sum(sF)
+%   sF = sum(sF, d)
 %
-% Options
-%   d - dimension to take the sum over
+% Input
+%  sF - @S2FunHarmonic
+%  d - dimension to take the sum value over
 %
-% Example
-%   sF is a 3x3 S2Fun
-%     sum(sF) returns a 3x3 matrix with the integrals of each function
-%     sum(sF, 1) returns a 1x3 S2Fun wich contains the pointwise sums along the first dimension
+% Output
+%  sF - S2FunHarmonic
+%  value - double
+%
+% Description
+%
+% sF is a 3x3 S2Fun
+% sum(sF) returns a 3x3 matrix with the integrals of each function
+% sum(sF, 1) returns a 1x3 S2Fun wich contains the pointwise sums along the first dimension
 %
 
 if nargin == 1

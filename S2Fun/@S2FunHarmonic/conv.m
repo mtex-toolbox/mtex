@@ -2,8 +2,8 @@ function sF = conv(sF, psi)
 % spherical convolution of sF with a radial function psi 
 %
 % Syntax
-%  sF = conv(sF, psi)
-%  sF = conv(sF, A)
+%   sF = conv(sF, psi)
+%   sF = conv(sF, A)
 %
 % Input
 %  sF - @S2FunHarmonic

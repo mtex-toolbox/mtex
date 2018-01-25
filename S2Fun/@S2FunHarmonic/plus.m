@@ -1,9 +1,10 @@
 function sF = plus(sF1, sF2)
+% impements sF1 + sF2
 %
 % Syntax
-%  sF = sF1+sF2
-%  sF = a+sF1
-%  sF = sF1+a
+%   sF = sF1+sF2
+%   sF = a+sF1
+%   sF = sF1+a
 %
 
 if isnumeric(sF1) && length(sF1) == 1
