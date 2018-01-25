@@ -42,7 +42,8 @@ methods
 end
 
 methods(Static = true)
-  sVF = quadrature(f, varargin)
+  sAF = quadrature(f, varargin)
+  sAF = approximation(v, y, varargin)
 end
 
 end
