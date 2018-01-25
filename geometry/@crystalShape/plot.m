@@ -4,6 +4,7 @@ function h = plot(cS,varargin)
 % Syntax
 %   plot(cS)  % colorize by phase
 %   plot(x,y,cS)
+%   plot(x,y,z,cS)
 %   plot(xy,cS)
 %   plot(cS,'faceColor','red','faceAlpha',0.5,'edgeColor','k') % colorize by property
 %
@@ -20,15 +21,22 @@ function h = plot(cS,varargin)
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-% get position of provided
+% get position if provided
 if isnumeric(cS)
-  xy = cS;
+  xyz = cS;
   if isnumeric(varargin{1})
-    xy = [xy(:),varargin{1}(:)];
-    cS = xy + varargin{2};
+    xyz = [xyz(:),varargin{1}(:)];
+    if isnumeric(varargin{2})
+      z = varargin{2};
+      xyz = [xyz,repmat(z(:),size(xyz,1)/numel(z),1)];
+      cS = varargin{3};
+    else
+      cS = varargin{2};
+    end    
   else
-    cS = xy + varargin{1};
+    cS = varargin{1};
   end        
+  cS = xyz + cS;
 end
 
 % extract color
@@ -43,15 +51,16 @@ elseif ischar(fc) && any(strcmpi(fc,colorNames))
 end  
 varargin = set_option(varargin,'FaceColor',fc);
 
+% make a nice axis if not yet done
+if isNew
+  axis('equal','vis3d','off');
+  fcw
+  view(3);
+end
+
 % do plot
 V = reshape(double(cS.V),[],3);
 h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
-
-if isNew
-  view(45,0)
-  axis('equal','vis3d');
-  fcw
-end
 
 if nargout == 0, clear h;end
 

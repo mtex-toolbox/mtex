@@ -51,9 +51,9 @@ if nargin>1 && isnumeric(varargin{1})
 
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
-  xy = grains.centroid;
   scaling = sqrt(grains.area);
-
+  xy = [grains.centroid,scaling];
+  
   h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
     'parent', mP.ax,varargin{:});
   

@@ -103,7 +103,7 @@ classdef crystalShape
     
     function d = get.diameter(cS)
       V = repmat(cS.V,1,length(cS.V));
-      d = max(norm(V - V.'));
+      d = max(max(norm(V - V.')));
     end
     
     function cS = set.diameter(cS,d)
