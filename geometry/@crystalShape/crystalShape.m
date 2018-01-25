@@ -18,6 +18,7 @@ classdef crystalShape
   
   properties (Dependent = true)
     CS % crystal symmetry
+    diameter
   end
   
   methods
@@ -99,6 +100,16 @@ classdef crystalShape
     function cs = get.CS(cS)
       cs = cS.N.CS;
     end
+    
+    function d = get.diameter(cS)
+      V = repmat(cS.V,1,length(cS.V));
+      d = max(norm(V - V.'));
+    end
+    
+    function cS = set.diameter(cS,d)
+      cS.V = cS.V * (d/cS.diameter);
+    end
+    
   end
 
   methods (Static = true)
