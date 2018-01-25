@@ -5,7 +5,7 @@ function sVF = rdivide(sVF1, sVF2)
 %
 
 if isnumeric(sVF2)
-  sVF = sVF1.*(1./sVF2)
+  sVF = sVF1.*(1./sVF2);
 end
 
 end
