@@ -77,7 +77,7 @@ abs(sF1);
 %%
 % * as default |min| or |max| returns the smallest or the biggest value (global optima) with all nodes for which the value is obtained
 % * with the option |min(sF1, 'numLocal', n)| the |n| nodes with the belonging biggest or smallest values are returned
-% * |min(sF1)| is the same as running <S2Funharmonic.steepestDescent.html |steepestDescent(sF1)|>
+% * |min(sF1)| is the same as running <S2Funharmonic.steepestDescent.html |steepestDescent|>|(sF1)|
 %%
 % min/max of two functions in the pointwise sense
 %
@@ -97,7 +97,7 @@ norm(sF1);
 mean(sF1);
 
 %%
-% calculate the surface integral value of a function
+% calculate the surface integral of a function
 sum(sF1);
 
 %%
@@ -129,22 +129,22 @@ grad(sF1, nodes);
 %% Visualization
 % There are different ways to visualize a |S2FunHarmonic|
 %
-% The default |plot|-command
+% The default |plot|-command be default plots the function on the upper hemisphere
 plot(sF1); 
 
 %%
 % * |plot(sF1)| is the same as |contourf(sF1)|
 
 %%
-% nonfilled contour plot
+% nonfilled contour plot plots only the contour lines
 contour(sF1, 'LineWidth', 2);
 
 %%
-% color plot without contours
+% color plot without the contour lines
 pcolor(sF1);
 
 %%
-% 3D plot which you can rotate around
+% 3D plot of a sphere colored accordingly to the function values.
 plot3d(sF2);
 
 %%

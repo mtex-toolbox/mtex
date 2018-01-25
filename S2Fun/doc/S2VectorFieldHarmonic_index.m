@@ -9,8 +9,7 @@ nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 %%
 % Next you define function values for the vertices
-f = @(v) vector3d('polar', sin(3*v.theta), v.rho+pi/2);
-y = f(nodes);
+y = vector3d('polar', sin(3*nodes.theta), nodes.rho+pi/2);
 %%
 % Now the actual command to get |sVF1| of type |S2VectorFieldHarmonic|
 sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
@@ -27,9 +26,9 @@ f = @(v) vector3d(v.x, v.y, 0*v.x);
 sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
 
 %%
-% *Definition via |S2FunHarmonic|
+% *Definition via <S2FunHarmonic_index |S2FunHarmonic|>*
 %
-% If you directly call the constructor with a multivariate |S2FunHarmonic sF| with two or three entries it will create a |S2VectorFieldHarmonic| with |sF(1)| the polar angle and |sF(2)| the azimuth or |sF(1), sF(2)| and |sF(3)| the $x,y$ and $z$ component.
+% If you directly call the constructor with a multivariate <S2FunHarmonic_multi_index |S2FunHarmonic sF|> with two or three entries it will create a |S2VectorFieldHarmonic| with |sF(1)| the polar angle and |sF(2)| the azimuth or |sF(1), sF(2)| and |sF(3)| the $x,y$ and $z$ component.
 
 sF = S2FunHarmonic(rand(10, 2));
 sVF3 = S2VectorFieldHarmonic(sF)
@@ -94,6 +93,6 @@ plot(sVF1);
 % * same as quiver(sVF1)
 
 %%
-% 3D plot which you can rotate around
+% 3D plot of a sphere with the vectors on itself
 clf;
 quiver3(sVF2);

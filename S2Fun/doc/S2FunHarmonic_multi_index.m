@@ -1,10 +1,10 @@
 %% *Multivariate |S2FunHarmonic|*
 % This site assumes you have read the documentation for univariate |S2FunHarmonic|, as we are not covering content which is already in there.
 %
-%% Structural conventions of the input and output of multivariate S2FunHarmonic
+%% Structural conventions of the input and output of multivariate |S2FunHarmonic|
 % * the structure of the nodes is always interpreted as a column vector
 % * the node index is the first dimension
-% * the dimensions of the S2FunHarmonic itself is counted from the second dimension
+% * the dimensions of the |S2FunHarmonic| itself is counted from the second dimension
 %
 % For example you got four nodes $v_1, v_2, v_3$ and $v_4$ and six functions $f_1, f_2, f_3, f_4, f_5$ and $f_6$, which you want to store in a 3x2 array, then the following scheme applies to function evaluations:
 %
@@ -17,7 +17,7 @@
 %
 %
 
-%% Defining a multivariate S2FunHarmonic
+%% Defining a multivariate |S2FunHarmonic|
 %
 %%
 % *Definition via function values*
@@ -36,7 +36,7 @@ sF1 = S2FunHarmonic.approximation(nodes, y)
 % *Definition via function handle*
 %
 % If we have a function handle for the function we could create a |S2FunHarmonic| via quadrature.
-% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
+% At first let us define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
 
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
 %% 
@@ -81,8 +81,8 @@ sF3 = reshape(sF3, 3, []);
 %%
 % *|sum| and |mean|*
 %
-% If you do not specify further options to |sum| or |mean| it gives you the integral or the mean value back for each function.
-% You can also calculate the conventional sum or the meanvalue over a dimension of a multivariate |S2FunHarmonic|.
+% If you do not specify further options to |sum| or |mean| they give you the integral or the mean value back for each function.
+% You could also calculate the conventional sum or the meanvalue over a dimension of a multivariate |S2FunHarmonic|.
 
 sum(sF1, 1);
 sum(sF3, 2);
@@ -105,22 +105,22 @@ min(sF3);
 %% Visualization
 % There are different ways to visualize a multivariate |S2FunHarmonic|
 %
-% The default |plot|-command
+% The default |plot|-command be default plots the functions on the upper hemisphere
 plot(sF1); 
 
 %%
-% * |plot(sF1)| is the same same as |contourf(sF1)|
+% * |plot(sF1)| is the same as |contourf(sF1)|
 
 %%
-% nonfilled contour plot
+% nonfilled contour plot plots only the contour lines
 contour(sF2, 'LineWidth', 2);
 
 %%
-% color plot without contours
+% color plot without the contour lines
 pcolor(sF3);
 
 %%
-% 3D plot which you can rotate around
+% 3D plot of a sphere colored accordingly to the function values.
 plot3d(sF2);
 
 %%
