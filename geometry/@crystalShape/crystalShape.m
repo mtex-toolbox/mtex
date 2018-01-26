@@ -12,7 +12,7 @@ classdef crystalShape
     N % face normals
     V % vertices
     F % faces
-    habitus = 1 % describes how visibe mixed hkl faces are
+    habitus = 0 % describes how visibe mixed hkl faces are
     extension = [1 1 1]; % describes distance of the faces in dependence of hkl
   end
   
@@ -102,7 +102,7 @@ classdef crystalShape
     end
     
     function d = get.diameter(cS)
-      V = repmat(cS.V,1,length(cS.V));
+      V = repmat(cS.V(:,1),1,size(cS.V,1));
       d = max(max(norm(V - V.')));
     end
     
