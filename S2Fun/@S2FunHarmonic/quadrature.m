@@ -31,6 +31,11 @@ else
   W = get_option(varargin,'weights',1);
 end
 
+if isempty(nodes)
+  sF = S2FunHarmonic(0);
+  return
+end
+
 % initialize nfsft
 nfsftmex('precompute', bw, 1000, 1, 0);
 plan = nfsftmex('init_advanced', bw, length(nodes), 1);
