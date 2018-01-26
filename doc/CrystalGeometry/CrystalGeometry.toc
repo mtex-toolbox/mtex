@@ -3,6 +3,7 @@ Rotations
 CrystalSymmetries
 CrystalDirections
 CrystalOrientations
+crystalShape_index
 Misorientations
 fibre_index
 AxialDirectional
