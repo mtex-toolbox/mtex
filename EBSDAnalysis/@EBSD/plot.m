@@ -83,7 +83,7 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
-  plot(ebsd.prop.x,ebsd.prop.y,cS.diameter,ebsd.orientations * cS,varargin{2:end});
+  plot(ebsd.prop.x,ebsd.prop.y,zUpDown * cS.diameter,ebsd.orientations * cS,varargin{2:end});
   
 else % phase plot
 

@@ -82,7 +82,7 @@ for i = 1:numel(sP)
   % ------- colorcoding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot([x(:),y(:)] + varargin{1},'parent', sP(i).hgt,varargin{:});
+    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).hgt,varargin{2:end});
     sP(i).updateBounds(0.1);
   
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
