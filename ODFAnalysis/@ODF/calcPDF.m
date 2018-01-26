@@ -13,9 +13,9 @@ function pdf = calcPDF(odf,h,varargin)
 %  r   - @vector3d specimen directions
 %
 % Output
-%  pdf - pole density function @S2Fun 
-%  ipdf - inverse pole density function @S2Fun 
-%  value
+%  pdf - pole density function @S2FunHarmonicSym
+%  ipdf - inverse pole density function @S2FunHarmonicSym
+%  value - double
 %
 % Options
 %  superposition - calculate superposed pdf
