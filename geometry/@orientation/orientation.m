@@ -255,7 +255,7 @@ methods (Static = true)
       Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = Pitch(csGamma,csAlpha)
+  function mori = Pitsch(csGamma,csAlpha)
     %
     % Syntax:
     %   mori = Pitch(csGamma,csAlpha)
@@ -283,7 +283,10 @@ methods (Static = true)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
     % cube cube
-    mori = inv(orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
+    %mori = inv(orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
+
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
+      Miller(5,12,17,csGamma,'uvw'),Miller(17,17,7,csAlpha,'uvw'));
     
   end
   
