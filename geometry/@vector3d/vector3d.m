@@ -223,13 +223,29 @@ classdef vector3d < dynOption
     function v = rand( varargin )
       % vector of random vector3d
 
-      if nargin < 2, varargin = [varargin 1]; end
+      sR = extractSphericalRegion(varargin{:});
 
-      theta = acos(2*(rand(varargin{:})-0.5));
-      rho   = 2*pi*rand(varargin{:});
+      lastNum = find(~cellfun(@isnumeric,[varargin,{{}}]),1);
+      s = [varargin{1:lastNum-1} 1 1];
+      n = prod(s);
+      
+      if isempty(sR.N)
+        N = n;
+      else
+        N = ceil(100 + 1.5 * n /sR.volume);
+      end
+
+      theta = acos(2*(rand(N,1)-0.5));
+      rho   = 2*pi*rand(N,1);
 
       v = vector3d('theta',theta,'rho',rho);
-
+            
+      ind = find(sR.checkInside(v));
+      ind = ind(1:n);
+      
+      v = reshape(v.subSet(ind),s);
+      v.antipodal = check_option(varargin,'antipodal');
+      
     end
     
     function varargout = load(fname,varargin)

@@ -83,6 +83,10 @@ if identified, opt = {'antipodal'}; else, opt = {}; end
 S2G = S2Grid(theta,rhGrid,opt{:});
 S2G = S2G.setOption('resolution',res);
 
+% restrict to spherical region if specified
+sR = getClass(varargin,'sphericalRegion');
+if ~isempty(sR), S2G = S2G.subGrid(sR.checkInside(S2G)); end
+
 end
 
 % ---------------------------------------------------------

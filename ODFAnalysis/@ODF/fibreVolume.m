@@ -35,8 +35,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 
 % discretisation
 sR = odf.CS.fundamentalSector;  
-S2G = equispacedS2Grid('resolution',res,varargin{:});
-S2G(~sR.checkInside(S2G)) = [];
+S2G = equispacedS2Grid(sR,'resolution',res,varargin{:});
 lS2G = length(S2G);
 S2G = S2G(angle(h,Miller(S2G,odf.CS))<radius);
 

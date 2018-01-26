@@ -18,10 +18,9 @@ function [f,v] = steepestDescent(sF, varargin)
 
 % parameters
 if ~check_option(varargin, 'startingnodes')
-  sR = sF.s.fundamentalSector;
-  v = equispacedS2Grid('points',min(1000000,2*sF.bandwidth^2));
-  v = v(sR.checkInside(v));
   
+  v = equispacedS2Grid(sF.s.fundamentalSector,'points',min(1000000,2*sF.bandwidth^2));
+    
   if isa(sF.s,'crystalSymmetry')
     v = Miller(v, sF.s);
   end
