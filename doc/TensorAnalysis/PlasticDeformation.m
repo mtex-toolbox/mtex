@@ -44,17 +44,18 @@ sS.SchmidFactor(r)
 %%
 % Ommiting the tension direction r the command
 % <slipSystem_SchmidFactor.html SchmidFactor> returns the Schmid factor as
-% a spherical function
+% a <S2FunHarmonic_index.html spherical function>
 
-%will be part of MTEX 4.6
-% SF = sS.SchmidFactor
+SF = sS.SchmidFactor
 
 % plot the Schmid factor in dependency of the tension direction
-%will be part of MTEX 4.6
-%plot(SF)
+plot(SF)
 
-%will be part of MTEX 4.6
-%[SFMax,pos] = max(SF)
+% find the tension directions with the maximum Schmid factor
+[SFMax,pos] = max(SF)
+
+% and annotate them
+annotate(pos)
 
 %% Stress Tensor
 % Instead by the tension direction the stress might be specified by a
@@ -94,7 +95,7 @@ sSAll(id)
 % directions
 
 % define a grid of tension directions
-r = plotS2Grid('resolution',0.5*degree,'upper')
+r = plotS2Grid('resolution',0.5*degree,'upper');
 
 % compute the Schmid factors for all slip systems and all tension
 % directions
@@ -141,6 +142,17 @@ quiver(r,sSAll(id).n,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 hold on
 quiver(r,sSAll(id).b.normalize,'ArrowSize',0.1,'LineWidth',2,'Color','g');
 hold off
+
+%%
+% If we perform this computation in terms of spherical functions we obtain
+
+% ommiting |r| gives us a list of 12 spherical functions
+tau = sSAll.SchmidFactor
+
+% now we take the max of the absolute value over all these functions
+contourf(max(abs(tau),[],1))
+mtexColorbar
+
 
 %% The Schmid factor for EBSD data
 % So far we have always assumed that the stress tensor is already given
