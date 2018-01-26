@@ -1,0 +1,9 @@
+{
+"loadCIF":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath=*.cif"}
+     ]
+}
+}
