@@ -1,21 +1,23 @@
-function d = Mv(solver)
+function I = Mv(solver,c,i)
 % forward operator
+%
+% Input
+%  c - coefficients
+%  alpha - 
 %
 % Input
 %   alpha
 %   c
 %   nfft_plan
 
-%int ip,iP;
+% compute Fourier coefficients
+nfsftmex('set_f', solver.nfft_gh(i), c);
+nfsftmex('adjoint', solver.nfft_gh(i));
+fhat = nfsftmex('get_f_hat_linear', solver.nfft_gh(i));
 
-% pdf_trafo for all pole figures
-% d_i = alpha_i Psi_i * c
-for (ip=0,iP=0;ip<ths->NP;iP+=ths->pdf[ip].lr,ip++)
+% evaluate Fourier series at pole figure points r
+nfsftmex('set_f_hat_linear', solver.nfft_r(i), fhat);
+nfsftmex('trafo', solver.nfft_r(i));
+I = nfsftmex('get_f', solver.nfft_r(i));
   
-  v_cp_a_x_double(ths->c_temp,alpha[ip],c,ths->lc);
-  
-  pdf_trafo(&ths->pdf[ip],ths->c_temp,d+iP);
-  
-end
-
-end
+end  

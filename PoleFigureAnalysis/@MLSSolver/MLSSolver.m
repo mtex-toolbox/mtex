@@ -1,18 +1,25 @@
-classdef MLSSolver
+classdef MLSSolver < handle
   %MLSSOLVER Summary of this class goes here
   %   Detailed explanation goes here
   
   properties
     pf   % @poleFigure data
-    nfftPlan
+    
     psi  % @kernel 
     
     c % current coefficients
     gh
   end
   
+  properties (Private = true)
+    nfft_gh % list of nfft plans
+    nnft_r  % list of nfft plans
+  end
+  
   properties (Dependent = true)
   end
+  
+  
   
   methods
     function obj = MLSSolver(pf)
