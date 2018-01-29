@@ -29,9 +29,9 @@ tol = get_option(varargin,'tolerance',1e-7);
 
 % find duplicates points
 try
-  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true);
+  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,varargin{:});
 catch
-  [~,m,n] = unique(round(xyz./tol),'rows');
+  [~,m,n] = unique(round(xyz./tol),'rows',varargin{:});
 end
 
 % remove duplicated points
