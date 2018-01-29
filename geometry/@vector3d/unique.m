@@ -27,16 +27,12 @@ end
 
 tol = get_option(varargin,'tolerance',1e-7);
 
-% allow to pass stable or first
-opt=[];
-if check_option(varargin,'stable')
-    opt='stable';  
-end
+
 % find duplicates points
 try
-  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,opt);
+  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true);
 catch
-  [~,m,n] = unique(round(xyz./tol),'rows',opt);
+  [~,m,n] = unique(round(xyz./tol),'rows');
 end
 
 % remove duplicated points
