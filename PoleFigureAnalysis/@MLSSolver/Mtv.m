@@ -2,7 +2,7 @@ function d = Mtv(solver,I,i)
 % forward operator
 %
 % Input
-%  P
+%  I
 %  alpha
 %
 % Output
@@ -10,13 +10,17 @@ function d = Mtv(solver,I,i)
 %  d
   
 % compute Fourier coefficients
-nfsftmex('set_f', solver.nfft_r(i), I{i});
-nfsftmex('adjoined', solver.nfft_r(i));
+nfsftmex('set_f', solver.nfft_r(i), I);
+nfsftmex('adjoint', solver.nfft_r(i));
 fhat = nfsftmex('get_f_hat_linear', solver.nfft_r(i));
+
+% convolution with kernel function
+fhat = fhat .* solver.A;
 
 % evaluate Fourier series at pole figure points g h_i
 nfsftmex('set_f_hat_linear', solver.nfft_gh(i), fhat);
 nfsftmex('trafo', solver.nfft_gh(i));
-d = reshape(nfsftmex('get_f', solver.nfft_gh(i)),solver.nr(i),[]);
+d = real(nfsftmex('get_f', solver.nfft_gh(i)));
+d = reshape(d,length(solver.c),[]) * solver.refl{i}.';
 
 end
