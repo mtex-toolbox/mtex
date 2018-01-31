@@ -179,7 +179,7 @@ classdef fibre
       f = fibre(ori1,ori2,varargin{:});
     end
         
-    function f = fit(ori,varargin)
+    function [f,lambda] = fit(ori,varargin)
       % determines the fibre that fits best a list of orientations
       % 
       % Syntax
@@ -189,10 +189,10 @@ classdef fibre
       %  ori1, ori2, ori - @orientation
       %
       % Output
-      %  f - @fibre
-      %
+      %  f       - @fibre
+      %  lambda  - eigenvalues of the orientation tensor
       
-      [~,~,~,eigv] = mean(ori);
+      [~,~,lambda,eigv] = mean(ori);
       
       ori = orientation(quaternion(eigv(:,1:2)),ori.CS,ori.SS);
       f = fibre(ori(1),ori(2),'full',varargin{:});
