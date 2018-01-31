@@ -17,12 +17,16 @@ nfsftmex('precompute', bw, 1000, 1, 0);
 % extend coefficients
 solver.A = repelem(A,2*(0:bw)+1);
 
+% free previously allocated nfft plans
+solver.free_nfft;
+
 % set up gh nfft's
 for i = 1:pf.numPF
   
   [symh,l] = symmetrise(pf.allH{i},'antipodal');
   % TODO: consider specimen symmetry and the case of no antipodal symmetry
   gh = solver.S3G * symh; % S3G x symh
+  
   solver.nfft_gh(i) = nfsftmex('init_advanced', bw, length(gh), 1);
   nfsftmex('set_x', solver.nfft_gh(i), [gh.rho(:)'; gh.theta(:)']); % set vertices
   nfsftmex('precompute_x', solver.nfft_gh(i));

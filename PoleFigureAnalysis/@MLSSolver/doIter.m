@@ -27,12 +27,6 @@ for i = 1:n
   v = v - vti + alpha(i) * (vti.' * c) * solver.a{i};
 end
 
-% --------- Testing ------------
-% tc = alpha(1) * solver.Mv(c,1);
-% plot(solver.pf.allR{1},tc)
-
-% -----------------------------
-
 % step 11 - MRNDS specific gradient modification tc = c .* v 
 tc = c .* v;
 
@@ -66,7 +60,8 @@ for i = 1:n
   u{i} = (talpha(i) ./ denom(i)) * u{i} + (tau * alpha(i) / denom(i)) * tu{i};
   err(i) = norm(u{i}) ./ norm(solver.pf.allI{i}(:));
 end
-disp(err)
+format = [' ' repmat('  %1.2f',1,n) '\n'];
+fprintf(format,err)
 
 % step 19 - alpha_i <- alpha_i talpha_i / denom 
 alpha = alpha .* talpha ./ denom;

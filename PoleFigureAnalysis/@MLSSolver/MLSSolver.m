@@ -53,14 +53,19 @@ classdef MLSSolver < handle
       tic
       solver = MLSSolver;
       solver.pf = pf;
-      solver.S3G = equispacedSO3Grid(pf.CS,'resolution',5*degree);
-      solver.psi = deLaValeePoussinKernel('halfwidth',5*degree);
+      solver.S3G = equispacedSO3Grid(pf.CS,'resolution',2.5*degree);
+      solver.psi = deLaValeePoussinKernel('halfwidth',2.5*degree);
       solver.weights = repcell(1,numPF(pf),1);
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       
       solver.init
       solver.initIter
-      for i = 1:10, solver.doIter; end
+      for i = 1:5, solver.doIter; end     
+      for i = 1:5
+        solver.initIter
+        solver.doIter; 
+      end
+      odfrec = solver.odf;
       delete(solver);
       toc
       
