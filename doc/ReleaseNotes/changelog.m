@@ -57,7 +57,7 @@
 %   % detect maximum value
 %   [value,pos] = max(pdf)
 %
-%  For a complete list of functions read <S2FunHarmonic_index.html here>.
+% For a complete list of functions read <S2FunHarmonic_index.html here>.
 %
 % *Symmetry aware spherical functions*
 %
