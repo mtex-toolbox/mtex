@@ -28,14 +28,27 @@ classdef MLSSolver < handle
   
   methods
     function obj = MLSSolver(varargin)
+      % constructore
       
     end
 
+    function delete(solver)
+      % destructor
+
+      % free all nfft plans
+      for i = 1:length(solver.nfft_gh)
+        nfsftmex('finalize',solver.nfft_gh(i));
+      end
+
+      for i = 1:length(solver.nfft_r)
+        nfsftmex('finalize',solver.nfft_r(i));
+      end
+
+    end
     
     function odf = get.odf(solver)
       odf = unimodalODF(solver.S3G,solver.psi,'weights',solver.c./sum(solver.c));
     end
-    
     
   end
   
@@ -60,15 +73,10 @@ classdef MLSSolver < handle
       
       solver.init
       solver.initIter
-      for i = 1:5, solver.doIter; end     
-      for i = 1:5
-        solver.initIter
-        solver.doIter; 
-      end
+      for i = 1:7, solver.doIter; end     
       odfrec = solver.odf;
       delete(solver);
       toc
-      
       
     end
     

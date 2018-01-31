@@ -57,11 +57,8 @@ denom = alpha * tau + talpha;
 
 % step 18 - u_i = talpha_i/denom u_i + tau*alpha_i/denom tu_i
 for i = 1:n
-  u{i} = (talpha(i) ./ denom(i)) * u{i} + (tau * alpha(i) / denom(i)) * tu{i};
-  err(i) = norm(u{i}) ./ norm(solver.pf.allI{i}(:));
+  u{i} = (talpha(i) ./ denom(i)) * u{i} + (tau * alpha(i) / denom(i)) * tu{i}; 
 end
-format = [' ' repmat('  %1.2f',1,n) '\n'];
-fprintf(format,err)
 
 % step 19 - alpha_i <- alpha_i talpha_i / denom 
 alpha = alpha .* talpha ./ denom;
