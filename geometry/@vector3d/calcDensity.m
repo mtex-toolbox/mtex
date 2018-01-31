@@ -60,7 +60,7 @@ else
 
   % normalize
   if ~check_option(varargin,'noNormalization')
-    sF = sF ./ sF.fhat(1);
+    sF = sqrt(4*pi) * sF ./ sF.fhat(1);
   end
 
   %

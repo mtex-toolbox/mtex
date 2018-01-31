@@ -32,7 +32,10 @@ if maxAngle < pi/2/CS.multiplicityZ
   return
 end
 
-if ~isa(SS,'symmetry')
+% extract specimen symmetry if provided
+if nargin == 1
+  SS = specimenSymmetry('1');
+elseif ~isa(SS,'symmetry')
   varargin = [{SS},varargin];
   SS = specimenSymmetry('1');
 end
