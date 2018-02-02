@@ -32,7 +32,7 @@ method = get_option(varargin,'method',default);
 switch method
   case 'Fourier'
     odf = FourierODF(odf);
-    t = odf.weights * odf.components{1}.norm;
+    t = abs(odf.weights) * odf.components{1}.norm;
   case 'quadrature'
     
     % get approximation grid
