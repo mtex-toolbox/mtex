@@ -59,7 +59,6 @@ p();
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
 setMTEXpref('DataPath',fullfile(local_path,'data'));
-setMTEXpref('architecture',computer('arch'));
 setMTEXpref('version',MTEXversion);
 setMTEXpref('generatingHelpMode',false);
 p();
@@ -151,7 +150,7 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-exclPath = {'c','data','help','templates','nfft'};
+exclPath = {'data','help','templates','nfft'};
 
 if ~MATLABverLessThan('8.1')
   exclPath = [exclPath,'8.4'];

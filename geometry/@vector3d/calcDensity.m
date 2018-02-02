@@ -30,44 +30,19 @@ function sF = calcDensity(v,varargin)
 hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',hw));
 
-if getMTEXpref('extern',false)
+sF = 4*pi * S2FunHarmonic.quadrature(v,ones(size(v)),varargin{:});
 
-  % legendre coefficents
-  if check_option(varargin,'antipodal') || v.antipodal
-    Al = psi.A; Al(2:2:end) = 0;
-  end
-  Al = Al(1:min(400,length(Al)));
+% normalize
+if ~check_option(varargin,'noNormalization')
+  sF = sqrt(4*pi) * sF ./ sF.fhat(1);
+end
 
-  % out - nodes to become r
-  r  = [fft_rho(varargin{1}.rho(:)),fft_theta(varargin{1}.theta(:))].';
+% convolute with kernel function
+sF = conv(sF,psi);
 
-  % in - nodes to become gh
-  gh = [fft_rho(v.rho(:)),fft_theta(v.theta(:))].';
+% if required compute function values
+if nargin > 1 && isa(varargin{1},'vector3d')
+  sF = sF.eval(varargin{1});
+end
 
-  % normalization
-  c = get_option(varargin,'weights',ones(length(v),1));
-  
-  % normalize
-  if ~check_option(varargin,'noNormalization')
-    c = c ./ sum(c(:));
-  end
-  
-  sF = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-  
-else
-  
-  sF = 4*pi * S2FunHarmonic.quadrature(v,ones(size(v)),varargin{:});
-
-  % normalize
-  if ~check_option(varargin,'noNormalization')
-    sF = sqrt(4*pi) * sF ./ sF.fhat(1);
-  end
-
-  %
-  sF = conv(sF,psi);
-
-  % if required compute function values
-  if nargin > 1 && isa(varargin{1},'vector3d')
-    sF = sF.eval(varargin{1});
-  end
 end
