@@ -25,9 +25,12 @@ elseif o1.SS ~= o2.SS
   
 end
 
-
-
-
-
 o1.components = [o1.components(:);o2.components(:)];
 o1.weights = [o1.weights(:);o2.weights(:)];
+
+%if any(cellfun(@(x) isa(x,'FourierComponent'),o1.components))
+%  o1 = FourierODF(o1);
+%end
+
+
+
