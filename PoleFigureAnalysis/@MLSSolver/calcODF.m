@@ -46,7 +46,8 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
   function do_iterate
 
     solver.initIter;
-    for iter = 1:7 %solver.iterMax
+    lasterr = inf;
+    for iter = 1:solver.iterMax
   
       % one step
       solver.doIter;
@@ -56,6 +57,8 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
         err(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:));
       end
       fprintf(format,xnum2str(iter,[],2),err);  
+      if (lasterr-err)/err < 0.05, break; end
+      lasterr = err;
     end
   end
 % -------------------------------------------------------------------
