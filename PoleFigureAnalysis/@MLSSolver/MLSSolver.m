@@ -78,8 +78,11 @@ classdef MLSSolver < pf2odfSolver
       solver.ghostCorrection = ~check_option(varargin,'noGhostCorrection');
 
       % compute quadrature weights
-      solver.weights = cellfun(@(r) calcQuadratureWeights(r),solver.pf.allR,'UniformOutput',false);
-      
+      if length(solver.SS) == 1
+        solver.weights = cellfun(@(r) calcQuadratureWeights(r),solver.pf.allR,'UniformOutput',false);
+      else
+        solver.weights = num2cell(1./length(pf,[]));
+      end
     end
 
     function delete(solver)

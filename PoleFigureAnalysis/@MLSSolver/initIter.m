@@ -17,7 +17,7 @@ for i = 1:numPF(solver.pf)
   % todo: regularization
   
   % step 5 u_i = (alpha_i Psi_i c - I_i) .* weights
-  solver.u{i} = (solver.Mv(solver.c,i) * solver.alpha(i) - I_i);% .* solver.weights{i};
+  solver.u{i} = (solver.Mv(solver.c,i) * solver.alpha(i) - I_i) .* solver.weights{i};
   
 end
 

@@ -19,7 +19,7 @@ tu = cell(size(u));
 v = zeros(size(c));
 for i = 1:n
   % step 9 - vt_i  = alpha_i * \Psi_i (u_i odot w_i)
-  vti = alpha(i) * solver.Mtv(u{i},i);
+  vti = alpha(i) * solver.Mtv(u{i}.*solver.weights{i},i);
   
   % step 10 - v = vt - alpha_i * <vt,c> * a_i
   v = v - vti + alpha(i) * (vti.' * c) * solver.a{i};
@@ -38,7 +38,7 @@ end
 
 % step 14 tu_i = talpha_i Psi_i tc - I_i
 for i = 1:n
-  tu{i} = (talpha(i) * solver.Mv(tc,i) - solver.pf.allI{i}(:));% .* solver.weights{i};  
+  tu{i} = (talpha(i) * solver.Mv(tc,i) - solver.pf.allI{i}(:)) .* solver.weights{i};  
 end
 
 % step 15 - maximum stepsize

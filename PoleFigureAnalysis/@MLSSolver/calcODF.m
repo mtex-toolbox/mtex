@@ -54,7 +54,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
   
       % compute residual error
       for i = 1:solver.pf.numPF
-        err(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:));
+        err(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:) .*solver.weights{i} );
       end
       fprintf(format,xnum2str(iter,[],2),err);  
       if (lasterr-err)/err < 0.05, break; end
