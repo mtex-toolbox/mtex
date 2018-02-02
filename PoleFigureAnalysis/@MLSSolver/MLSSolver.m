@@ -35,7 +35,8 @@ classdef MLSSolver < pf2odfSolver
       if nargin == 0, return; end
       
       % ensure intensities are non negative
-      solver.pf = unique(max(pf,0));
+      %solver.pf = unique(max(pf,0));
+      solver.pf = max(pf,0);
 
       % normalize very different polefigures
       mm = max(pf.intensities(:));
@@ -109,11 +110,15 @@ classdef MLSSolver < pf2odfSolver
     
     function check
       
-      cs = crystalSymmetry('1');
-      odf = unimodalODF(orientation('Euler',20*degree,40*degree,60*degree,cs));
-      r = equispacedS2Grid('upper','antipodal');
+      cs = crystalSymmetry('222');
+      odf = unimodalODF(orientation.id(cs));
+      r = equispacedS2Grid('upper','antipodal','resolution',5*degree);
       h = Miller({1,0,0},{1,1,1},{1,1,0},cs);
       pf = calcPoleFigure(odf,h,r);
+      odf = calcODF(pf)
+      
+      plotPDF(odf,h)
+      plotFibre(odf,fibre.alpha(cs))
       
       mtexdata dubna
       tic
