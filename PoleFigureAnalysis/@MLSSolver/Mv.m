@@ -23,5 +23,8 @@ fhat = 4*pi * fhat .* solver.A;
 nfsftmex('set_f_hat_linear', solver.nfft_r(i), fhat);
 nfsftmex('trafo', solver.nfft_r(i));
 I = real(nfsftmex('get_f', solver.nfft_r(i)));
+
+% sum up specimen symmetry
+I = mean(reshape(I,[],length(solver.pf,i)),1).';
   
 end  

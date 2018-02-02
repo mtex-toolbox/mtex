@@ -9,8 +9,12 @@ function d = Mtv(solver,I,i)
 %
 %  d
   
+% extend specimen symmetry
+lss = length(solver.SS.properGroup);
+I_ext = repmat(I.',lss,1)./lss;
+
 % compute Fourier coefficients
-nfsftmex('set_f', solver.nfft_r(i), I);
+nfsftmex('set_f', solver.nfft_r(i), I_ext);
 nfsftmex('adjoint', solver.nfft_r(i));
 fhat = nfsftmex('get_f_hat_linear', solver.nfft_r(i));
 

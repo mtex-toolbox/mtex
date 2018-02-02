@@ -23,24 +23,24 @@ solver.free_nfft;
 % set up gh nfft's
 for i = 1:pf.numPF
   
+  % TODO: consider the case of no antipodal symmetry
   [symh,l] = symmetrise(pf.allH{i},'antipodal');
-  % TODO: consider specimen symmetry and the case of no antipodal symmetry
-  gh = solver.S3G * symh; % S3G x symh
+  
+  % compute points in the pole figure
+  gh = solver.S3G * symh; % S3G x SS x symh
   
   solver.nfft_gh(i) = nfsftmex('init_advanced', bw, length(gh), 1);
   nfsftmex('set_x', solver.nfft_gh(i), [gh.rho(:)'; gh.theta(:)']); % set vertices
   nfsftmex('precompute_x', solver.nfft_gh(i));
   
   % set up superposition coefficients
-  solver.refl{i} = repelem(pf.c{i},l);
+  solver.refl{i} = repelem(pf.c{i}./l, l);
 end
 
 % set up  r nfft's
 for i = 1:pf.numPF
-  r = solver.pf.allR{i}(:);
+  r = solver.SS.properGroup * solver.pf.allR{i};
   solver.nfft_r(i) = nfsftmex('init_advanced', bw, length(r), 1);
-  nfsftmex('set_x', solver.nfft_r(i), [r.rho'; r.theta']); % set vertices
+  nfsftmex('set_x', solver.nfft_r(i), [r.rho(:).'; r.theta(:).']); % set vertices
   nfsftmex('precompute_x', solver.nfft_r(i));
 end
-
-
