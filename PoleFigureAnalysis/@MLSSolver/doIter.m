@@ -80,13 +80,13 @@ end
 % the candidates
 nc = 200;
 tau = reshape(tauMax * 0.95.^(0:nc-1),[],1);
-%tau = [-tau;0;flipud(tau)]; nc = 2*nc+1;
+%tau = 10*[-tau;0;flipud(tau)]; nc = 2*nc+1;
 
 % the line functional
-J = sum((repmat(A,nc,1) + 2*tau*B + tau * C)./(tau * alpha + repmat(talpha,nc,1)).^2,2);
+J = sum((repmat(A,nc,1) + 2*tau*B + tau.^2 * C)./(tau * alpha + repmat(talpha,nc,1)).^2,2);
 
 % minimize it
-[~,id] = max(J);
+[~,id] = min(J);
 tau = tau(id);
 
 end
