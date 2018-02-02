@@ -46,20 +46,30 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
   function do_iterate
 
     solver.initIter;
-    lasterr = inf;
+    % compute residual error
+    
+    lasterr = showError;
     for iter = 1:solver.iterMax
   
       % one step
       solver.doIter;
   
       % compute residual error
-      for i = 1:solver.pf.numPF
-        err(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:) .*solver.weights{i} );
-      end
-      fprintf(format,xnum2str(iter,[],2),err);  
+      err = showError;
       if (lasterr-err)/err < 0.05, break; end
       lasterr = err;
     end
+    
+    function e = showError
+      for i = 1:solver.pf.numPF
+        e(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:) .*solver.weights{i} );
+      end
+      if ~check_option(varargin,'silent') && ~getMTEXpref('generatingHelpMode')
+        fprintf(format,xnum2str(0,[],2),e);
+      end
+      e = sqrt(sum(e.^2));
+    end
+    
   end
 % -------------------------------------------------------------------
 end
