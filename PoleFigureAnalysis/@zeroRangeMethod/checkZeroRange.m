@@ -10,13 +10,13 @@ function isZero = checkZeroRange(zrm,ori,i,varargin)
 %  zrm - @zeroRangeMethod
 %  ori - @orientation
 %  v   - @vector3d
-%  i   - 
+%  i   - check in the i-th pole figure
 %
 
 if isa(ori,'orientation')
   
   % start with complete grid
-  isZero = zeros(size(ori));
+  isZero = false(size(ori));
   
   % loop over pole figures
   for i = 1:zrm.pf.numPF

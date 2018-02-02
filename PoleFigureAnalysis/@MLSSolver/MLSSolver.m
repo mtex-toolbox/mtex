@@ -1,20 +1,24 @@
-classdef MLSSolver < handle
-  % modified least squares solver MLSSOLVER Summary of this class goes here
-  %   Detailed explanation goes here
+classdef MLSSolver < pf2odfSolver
+% modified least squares solver
+%
+%
+%
   
   properties
-    pf  % poleFigure data       
-    psi  % kernel function
-    S3G  % SO3Grid
-    c    % current coefficients
+    psi     % kernel function
+    S3G     % SO3Grid
+    c       % current coefficients
     weights % cell
+    zrm     % zero range method
+    ghostCorrection = 1
+    iterMax = 10; % max number of iterations
   end
   
-  properties %(Access = private)
-    nfft_gh % list of nfft plans
-    nfft_r  % list of nfft plans
-    A       % legendre coefficients of the kernel function
-    refl    % cell
+  properties (Access = private)
+    nfft_gh  % list of nfft plans
+    nfft_r   % list of nfft plans
+    A        % legendre coefficients of the kernel function
+    refl     % cell
     u
     a
     alpha
@@ -23,12 +27,58 @@ classdef MLSSolver < handle
   properties (Dependent = true)
     odf % the reconstructed @ODF
   end
-  
-  
-  
+    
   methods
-    function obj = MLSSolver(varargin)
-      % constructore
+    function solver = MLSSolver(pf,varargin)
+      % constructor
+      
+      if nargin == 0, return; end
+      
+      % ensure intensities are non negative
+      solver.pf = unique(max(pf,0));
+
+      % normalize very different polefigures
+      mm = max(pf.intensities(:));
+
+      for i = 1:pf.numPF
+        if mm > 5*max(pf.allI{i}(:))
+          pf.allI{i} = pf.allI{i} * mm/5/max(pf.allI{i}(:));
+        end
+      end
+      
+      % generate discretization of orientation space
+      solver.S3G = getClass(varargin,'SO3Grid');
+      if isempty(solver.S3G)
+        if pf.allR{1}.isOption('resolution')
+          res = pf.allR{1}.resolution;
+        else
+          res = 5*degree;
+        end
+        res = get_option(varargin,'resolution',res);
+        solver.S3G = equispacedSO3Grid(solver.pf.CS,solver.pf.SS,'resolution',res);
+      end
+      
+      % zero range method
+      if check_option(varargin,{'ZR','zero_range'})
+        solver.zrm = zeroRangeMethod(solver.pf);
+      end
+        
+      % get kernel
+      psi = deLaValeePoussinKernel('halfwidth',...
+        get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},solver.S3G.resolution,'double'));
+      solver.psi = getClass(varargin,'kernel',psi);
+            
+      % get other options
+      solver.iterMax = get_option(varargin,'ITERMAX',solver.iterMax);
+  
+      % start vector
+      solver.c = get_option(varargin,'C0',[]);
+      
+      % ghost correction
+      solver.ghostCorrection = ~check_option(varargin,'noGhostCorrection');
+
+      % compute quadrature weights
+      solver.weights = cellfun(@(r) calcQuadratureWeights(r),solver.pf.allR,'UniformOutput',false);
       
     end
 
@@ -72,9 +122,7 @@ classdef MLSSolver < handle
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       
       solver.init
-      solver.initIter
-      for i = 1:7, solver.doIter; end     
-      odfrec = solver.odf;
+      odf = solver.calcODF;
       delete(solver);
       toc
       
@@ -83,4 +131,3 @@ classdef MLSSolver < handle
   end
   
 end
-

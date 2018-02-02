@@ -1,8 +1,6 @@
 function doIter(solver)
+% perform one iteration step of the modified least squares algorithm
 %
-%
-% 
-% 
 
 % extract from class for quicker access
 c = solver.c;

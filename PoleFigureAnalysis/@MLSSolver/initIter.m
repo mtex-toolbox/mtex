@@ -1,5 +1,10 @@
 function initIter(solver)
 
+% maybe no starting vector of coefficients has been specified
+if isempty(solver.c)
+  solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
+end
+
 for i = 1:numPF(solver.pf)
   % step 2
   I_i = solver.pf.allI{i}(:);
@@ -12,7 +17,7 @@ for i = 1:numPF(solver.pf)
   % todo: regularization
   
   % step 5 u_i = (alpha_i Psi_i c - I_i) .* weights
-  solver.u{i} = (solver.Mv(solver.c,i) * solver.alpha(i) - I_i) .* solver.weights{i};
+  solver.u{i} = (solver.Mv(solver.c,i) * solver.alpha(i) - I_i);% .* solver.weights{i};
   
 end
 

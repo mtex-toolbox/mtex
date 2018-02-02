@@ -17,7 +17,7 @@ nfsftmex('adjoint', solver.nfft_gh(i));
 fhat = nfsftmex('get_f_hat_linear', solver.nfft_gh(i));
 
 % convolution with kernel function
-fhat = 8*pi * fhat .* solver.A;
+fhat = 4*pi * fhat .* solver.A;
 
 % evaluate Fourier series at pole figure points r
 nfsftmex('set_f_hat_linear', solver.nfft_r(i), fhat);
