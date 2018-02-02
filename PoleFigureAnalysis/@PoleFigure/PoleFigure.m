@@ -135,8 +135,16 @@ classdef PoleFigure < dynProp & dynOption
       [varargout{1:nargout}] = size(pf.r,varargin{:});
     end
     
-    function varargout = length(pf,varargin)
-      [varargout{1:nargout}] = length(pf.r,varargin{:});
+    function varargout = length(pf,ip)
+      if nargin == 2
+        if isempty(ip)
+          varargout{1} = cellfun(@length,pf.allR);
+        else
+          [varargout{1:nargout}] = length(pf.allR{ip});
+        end
+      else
+        [varargout{1:nargout}] = length(pf.r);
+      end
     end
     
     function n = numPF(pf)
