@@ -19,55 +19,42 @@ if component.antipodal || check_option(varargin,'antipodal')
   return
 end
 
-% set parameter
+% extract bandwidth
 L = dim2deg(length(component.f_hat));
-L = int32(min(L,get_option(varargin,'bandwidth',L)));
+L = min(L,get_option(varargin,'bandwidth',L));
 Ldim = deg2dim(double(L+1));
 
-% export to Euler angle
-g = Euler(ori,'nfft'); %[alpha';beta';gamma'];
-	
-f_hat = [real(component.f_hat(1:Ldim)),imag(component.f_hat(1:Ldim))].';
+% create plan
+plan = nfsoftmex('init',L,length(ori),0,0,4,1000,2*ceil(1.5*L));
 
-% run NFSOFT
-if getMTEXpref('extern',false)
+% set nodes
+nfsoftmex('set_x',plan,Euler(ori,'nfft'));
 
-  f = call_extern('fc2odf','intern',L,'EXTERN',g,f_hat);
-  
-else
+% node-dependent precomputation
+nfsoftmex('precompute',plan);
 
-  L = double(L);
-  % create plan
-  plan = nfsoftmex('init',L,length(ori),0,0,4,1000,2*ceil(1.5*L));
+fhat = component.f_hat(1:Ldim);
+for l = 1:L
     
-  % set nodes
-  nfsoftmex('set_x',plan,flipud(g));
-
-  % node-dependent precomputation
-  nfsoftmex('precompute',plan);
-
-  fhat = component.f_hat(1:Ldim);
-  for l = 1:L
+  [k1,k2] = meshgrid(-l:l,-l:l);
+  k1(k1>0) = 0;
+  k2(k2>0) = 0;
+  s = (-1).^k1 .* (-1).^k2;
     
-    [k1,k2] = meshgrid(-l:l,-l:l);
-    k1(k1>0) = 0;
-    k2(k2>0) = 0;
-    s = (-1).^k1 .* (-1).^k2;
-    
-    ind = (deg2dim(l)+1):deg2dim(l+1);
-    fhat(ind) = s.*reshape(fhat(ind),2*l+1,2*l+1);
-  end
+  ind = (deg2dim(l)+1):deg2dim(l+1);
+  fhat(ind) = s.*reshape(fhat(ind),2*l+1,2*l+1);
+end
   
-  % set Fourier coefficients
-  nfsoftmex('set_f_hat',plan,fhat);
+% set Fourier coefficients
+nfsoftmex('set_f_hat',plan,fhat);
   
-  % transform
-  nfsoftmex('trafo',plan);
+% transform
+nfsoftmex('trafo',plan);
 
-  % get function values
-  f = real(nfsoftmex('get_f',plan));
+% get function values
+f = real(nfsoftmex('get_f',plan));
 
-  % kill plan
-  nfsoftmex('finalize',plan);
+% kill plan
+nfsoftmex('finalize',plan);
   
 end

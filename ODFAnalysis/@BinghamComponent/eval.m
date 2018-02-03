@@ -17,12 +17,9 @@ for iA = 1:size(ASym,1)
   h = dot_outer(g,ASym(iA,:)).^2;
   h = h * component.kappa;
   
-  if isfinite(C) % fast way  1/1F1.*exp(h)
-    fz = 1./C.*exp(h);  
-  else
-    fz = call_extern('evalmhyper','INTERN',d,'EXTERN',component.kappa,h); 
-  end
-  
+  % fast way  1/1F1.*exp(h)
+  fz = 1./C.*exp(h);
+    
   f = f + reshape(fz, size(f))./ size(ASym,1);
   
 end 
