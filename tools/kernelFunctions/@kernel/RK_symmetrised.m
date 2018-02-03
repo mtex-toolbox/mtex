@@ -39,7 +39,7 @@ else                                   % inverse pole figure
   lh = length(CS);
 end
 
-if length(in)*length(out)>50000000
+if length(in)*length(out)>500000000
   qwarning(['possible to large Matrix: ',int2str(length(in)*length(out))]);
 end
 M = zeros(length(out),size(in,1));
