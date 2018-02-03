@@ -4,7 +4,7 @@ function make_mtex_help(varargin)
 
 if check_option(varargin,'clear')
   !rm -r ../html/*
-  !rm -r tmp/*
+  !rm -r ./tmp/*
   mtexdata clear
 end
 
@@ -35,6 +35,7 @@ set(0,'DefaultFigureColor','white');
 %
 
 mtexFunctionFiles = [...
+  DocFile( fullfile(mtex_path,'S2Fun')) ...
   DocFile( fullfile(mtex_path,'EBSDAnalysis')) ...
   DocFile( fullfile(mtex_path,'ODFAnalysis')) ...
   DocFile( fullfile(mtex_path,'PoleFigureAnalysis')) ...
@@ -43,10 +44,11 @@ mtexFunctionFiles = [...
   DocFile( fullfile(mtex_path,'interfaces')) ...
   DocFile( fullfile(mtex_path,'tools')) ];
 
-%mtexFunctionFiles = exclude(mtexFunctionFiles,'Patala');
+
 
 mtexDocFiles = ...
   DocFile( fullfile(mtex_path,'doc'));
+mtexDocFiles = exclude(mtexDocFiles,'makeDoc','html');
 
 mtexHelpFiles = [mtexFunctionFiles mtexDocFiles];
 
