@@ -28,8 +28,7 @@ Ldim = deg2dim(double(L+1));
 plan = nfsoftmex('init',L,length(ori),0,0,4,1000,2*ceil(1.5*L));
 
 % set nodes
-g = Euler(ori,'nfft'); %[alpha';beta';gamma'];
-nfsoftmex('set_x',plan,flipud(g));
+nfsoftmex('set_x',plan,Euler(ori,'nfft'));
 
 % node-dependent precomputation
 nfsoftmex('precompute',plan);
