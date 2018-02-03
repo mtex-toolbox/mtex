@@ -3,8 +3,8 @@ function make_mtex_help(varargin)
 %
 
 if check_option(varargin,'clear')
-  !find ../doc -exec touch {} \;
-  !rm -r ../doc/html/*
+  !rm -r ../html/*
+  !rm -r tmp/*
   mtexdata clear
 end
 
@@ -15,12 +15,11 @@ setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
 warning off
-addpath(fullfile(pwd,'..','..','doc'))
-addpath(fullfile(pwd,'..','..','doc','tools'))
+addpath(fullfile(pwd,'..','..','..','makeDoc'))
+addpath(fullfile(pwd,'..','..','..','makeDoc','tools'))
 warning on
 
 %
-
 plotx2east
 plotzOutOfPlane
 
@@ -57,7 +56,7 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
 
 
 outputDir = fullfile(mtex_path,'doc','html');
-tempDir = fullfile(mtex_path,'help','tmp');
+tempDir = fullfile(mtex_path,'doc','makeDoc','tmp');
 
 
 % make productpage
@@ -72,7 +71,7 @@ makeToolboxXML('name','MTEX',...
 copy(mtexGeneralFiles,outputDir)
 
 % 
-productpage = DocFile(fullfile(mtex_path,'help','general','mtex_product_page.html'));
+productpage = DocFile(fullfile(mtex_path,'doc','makeDoc','general','mtex_product_page.html'));
 copy(productpage,outputDir)
 
 % make function reference overview pages
@@ -100,19 +99,11 @@ options.tempDir = tempDir;
 
 view(mtexDocFiles,options)
 
-
 %
 deadlink(mtexDocFiles,outputDir);
 
 % Enable search in documentation
-% (also F1 Help in recent matlab)
-
 builddocsearchdb(outputDir);
-%copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
-
-
-% Build the help.jar
-%system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
 % set back mtex options
 setMTEXpref('generatingHelpMode',false);
