@@ -12,9 +12,12 @@
 % have been replaced by two mex files provided by the NFFT package. This
 % change (hopefully) comes with the following advantages
 %
-% * better compatibility with MAC systems
+% * better compatibility with MAC systems, no SIP disabled required
 % * increased preformance, e.g., due to multi core support
 % * better maintainability, as all MTEX code is now Matlab code
+% * the pole figure to ODF inversion algorithm is now entirely implemented
+% in Matlab making it simple to tweak it or add more suffisticated
+% inversion algorithms
 %
 % *Spherical functions*
 %
