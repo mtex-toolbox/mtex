@@ -107,10 +107,6 @@ if nargout == 0
   cprintf(d,'-L','  ','-Lc',labels);
   disp(' ');
 
-elseif check_option(varargin,'nfft')
-
-  varargout{1} = [gamma(:),beta(:),alpha(:)].';
-
 elseif nargout <= 2
 
   varargout{1} = [alpha(:),beta(:),gamma(:)];

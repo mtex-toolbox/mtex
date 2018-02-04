@@ -20,33 +20,21 @@ if component.antipodal || check_option(varargin,'antipodal')
 end
 
 % extract bandwidth
-L = dim2deg(length(component.f_hat));
-L = min(L,get_option(varargin,'bandwidth',L));
+L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
 Ldim = deg2dim(double(L+1));
 
 % create plan
-plan = nfsoftmex('init',L,length(ori),0,0,4,1000,2*ceil(1.5*L));
+nfsoft_flags = 2^4;
+plan = nfsoftmex('init',L,length(ori),nfsoft_flags,0,4,1000,2*ceil(1.5*L));
 
 % set nodes
-nfsoftmex('set_x',plan,Euler(ori,'nfft'));
+nfsoftmex('set_x',plan,Euler(ori,'nfft').');
 
 % node-dependent precomputation
 nfsoftmex('precompute',plan);
-
-fhat = component.f_hat(1:Ldim);
-for l = 1:L
-    
-  [k1,k2] = meshgrid(-l:l,-l:l);
-  k1(k1>0) = 0;
-  k2(k2>0) = 0;
-  s = (-1).^k1 .* (-1).^k2;
-    
-  ind = (deg2dim(l)+1):deg2dim(l+1);
-  fhat(ind) = s.*reshape(fhat(ind),2*l+1,2*l+1);
-end
-  
+ 
 % set Fourier coefficients
-nfsoftmex('set_f_hat',plan,fhat);
+nfsoftmex('set_f_hat',plan,component.f_hat(1:Ldim));
   
 % transform
 nfsoftmex('trafo',plan);
