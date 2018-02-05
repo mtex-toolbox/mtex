@@ -64,6 +64,11 @@ classdef deLaValeePoussinKernel < kernel
       % the radon transformed kernel function at 
       value  = (1+psi.kappa) * ((1+t)/2).^psi.kappa;
     end
+    
+    function value = DRK(psi,t)
+      % the radon transformed kernel function at 
+      value  = psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 * ((1+t)/2).^(psi.kappa-1);
+    end
         
     function hw = halfwidth(psi)
       hw = 2*acos(0.5^(1/2/psi.kappa));
