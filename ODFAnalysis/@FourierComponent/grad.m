@@ -16,7 +16,7 @@ function g = grad(component,ori,varargin)
 %
 % 
 
-if isempty(ori), f = []; return; end
+if isempty(ori), g = vector3d; return; end
 
 % extract bandwidth
 L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
@@ -67,7 +67,7 @@ nfsoftmex('trafo',plan);
 % get function values
 f_phi2 = nfsoftmex('get_f',plan);
 
-%% ------------------------ f_Phi ---------------------------
+%% ------------------------ f_theta ---------------------------
 fhat = zeros();
 for l = 1:L
     
@@ -75,15 +75,19 @@ for l = 1:L
   ind = (deg2dim(l)+1):deg2dim(l+1);
   
   % b
-  fhat(ind) = k1 .* k2 ./ n./(n+1) .* component.f_hat(ind);
-  
-  % a_n-1
-  a = (n-1)/n*(2*n-1) * sqrt((n^2 - k1.^2) .* (n^2 - k2.^2));
-  fhat(ind) = fhat(ind) + a .* fhat(pre);
+  fhat(ind) = k1 .* k2 ./ l./(l+1) .* component.f_hat(ind);
   
   % c
-  c  = (n+1)/(n + 2)*(2*n + 3) * sqrt(((n+1)^2 - k1.^2) .* ((n+1)^2 - k2.^2));
-  fhat(ind) = fhat(ind) + a .* fhat(next);
+  if l<L
+    next = (deg2dim(l+1)+1):deg2dim(l+2);
+    c  = (l+1)/(l + 2)*(2*l + 3) * sqrt(((l+1)^2 - k1.^2) .* ((l+1)^2 - k2.^2));
+    fhat(ind) = fhat(ind) + c .* fhat(next(inner(l+1)));
+  end
+  
+  % a_n-1
+  last = (deg2dim(l-1)+1):deg2dim(l);
+  a = (l-1)/l*(2*l-1) * sqrt((l^2 - k1.^2) .* (l^2 - k2.^2));
+  fhat(ind(inner(l))) = fhat(ind(inner(l))) + a .* fhat(last);
   
 end
   
@@ -104,5 +108,24 @@ nfsoftmex('finalize',plan);
 g = f_phi1 * vector3d.Z + ...
   f_phi2 .* (ori * vector3d.Z) + ...
   f_Phi .* rotate(vector3d.Y,abg(:,1));
+
+end
+
+%%
+function id = inner(n)
+ [k1,k2] = meshgrid(-n:n);
+ id = abs(k1)<n & abs(k2)<n;
+end
+
+function testing
+
+cs = crystalSymmetry('1');
+ref = orientation.id(cs);
+odf = unimodalODF(ref);
+
+fodf = FourierODF(odf)
+
+
+
 
 end
