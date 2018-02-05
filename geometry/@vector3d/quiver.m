@@ -46,13 +46,10 @@ for j = 1:numel(sP)
     arrowSize = 0;
   end
   
-  options = {arrowSize,'MaxHeadSize',mhs,'parent',sP(j).hgt};
+  varargin = set_option(varargin,'parent',sP(j).hgt);
+  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSize,'MaxHeadSize',mhs),varargin{:});     %#ok<AGROW>
   
-  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,options{:}),varargin{:});     %#ok<AGROW>
-  
-
   % finalize the plot
-
   % add annotations
   sP(j).plotAnnotate(varargin{:})
   set(sP(j).ax,'nextPlot',holdState);
