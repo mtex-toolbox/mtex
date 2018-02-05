@@ -19,11 +19,9 @@ function mdf = calcMDF(odf1,varargin)
 % EBSD/calcODF
 
 % Kernel method
-if check_option(varargin,'kernelMethod') && isa(odf1,'unimodalODF') && ...
-    (isa(varargin{1},'unimodalODF') || ~isa(varargin{1},'ODF'))
-
-  % TODO
-  mdf = calcMDF(odf1,varargin{:});
+if check_option(varargin,'kernelMethod') 
+  
+  mdf = calcMDF(odf1.components{1},varargin{1}.components{1});
   
 else % Fourier method
   
