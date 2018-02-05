@@ -65,12 +65,16 @@ classdef sigmaSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       % plot data
+      if isa(oS.SS,'crystalSymmetry')
+        varargin = [oS.SS.plotOptions,varargin];
+      end
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.sigma(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
       if (isempty(oS.grid) || length(oS.grid) < sec) && ~check_option(varargin,'noGrid')
-      
-        r = equispacedS2Grid(oS.sR,'resolution',15*degree);
+                    
+        fak = sqrt(length(oS.SS));
+        r = equispacedS2Grid(oS.sR,'resolution',15*degree / fak);
       
         [theta,rho] = polar(r);
         rot = rotation('Euler',rho,theta,-rho,'ZYZ');
@@ -78,7 +82,7 @@ classdef sigmaSections < ODFSections
         vF = rotation('axis',r,'angle',oS.sigma(sec)) .* rot * xvector;
       
         hold on
-        oS.grid(sec) = quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1,'color',0.7*[1 1 1],'HitTest','off');
+        oS.grid(sec) = quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1/fak,'color',0.7*[1 1 1],'HitTest','off');
         hold off
       end
     end
