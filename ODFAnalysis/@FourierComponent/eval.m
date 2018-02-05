@@ -11,13 +11,8 @@ function f = eval(component,ori,varargin)
 
 if isempty(ori), f = []; return; end
 
-% TODO: this can be done better!!!
-if component.antipodal || check_option(varargin,'antipodal')
-  varargin = delete_option(varargin,'antipodal');
-  component.antipodal = false;
-  f = 0.5 * (eval(component,ori,varargin{:}) + eval(component,inv(ori),varargin{:}));
-  return
-end
+% maybe we should set antipodal
+component.antipodal = check_option(varargin,'antipodal') || ori.antipodal;
 
 % extract bandwidth
 L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
