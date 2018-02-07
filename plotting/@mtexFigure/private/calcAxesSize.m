@@ -13,6 +13,8 @@ if nargin <= 2, nc = mtexFig.ncols; nr = mtexFig.nrows; end
 
 % compute axes lenght ratio
 axesSize = get(mtexFig.children(1),'PlotBoxAspectRatio');
+[~,rm] = min(axesSize);
+axesSize(rm) = [];
 if find(get(mtexFig.children(1),'CameraUpVector'))==1
   axesRatio = axesSize(1)/axesSize(2);
 else
