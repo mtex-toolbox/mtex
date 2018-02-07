@@ -12,7 +12,7 @@ function f = eval(component,ori,varargin)
 if isempty(ori), f = []; return; end
 
 % maybe we should set antipodal
-component.antipodal = check_option(varargin,'antipodal') || ori.antipodal;
+component.antipodal = check_option(varargin,'antipodal') || (isa(ori,'orientation') && ori.antipodal);
 
 % extract bandwidth
 L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
