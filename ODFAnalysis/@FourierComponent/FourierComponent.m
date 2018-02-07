@@ -41,7 +41,7 @@ classdef FourierComponent < ODFComponent
     end
     
     function component = set.bandwidth(component,L)
-      newLength = deg2dim(L);
+      newLength = deg2dim(L+1);
       oldLength = numel(component.f_hat);
       if newLength > oldLength
         component.f_hat(oldLength+1:newLength) = 0;
