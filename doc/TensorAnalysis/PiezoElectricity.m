@@ -53,11 +53,17 @@ surf(P.directionalMagnitude)
 % solution. We just specify the plane normal vector
 
 plotSection(P.directionalMagnitude,vector3d.Z)
+xlabel('x')
+ylabel('y')
+drawNow(gcm)
 
 %%
 % so we are plotting the polarization in the xy-plane, or the yz-plane with
 
 plotSection(P.directionalMagnitude,vector3d.X)
+ylabel('y')
+zlabel('z')
+drawNow(gcm)
 
 %% Mean Tensor Calculation 
 % Let us import some data, which was originally published by Mainprice, D.,
