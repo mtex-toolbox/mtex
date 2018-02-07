@@ -12,6 +12,7 @@ properties(Dependent = true)
   xz;
   yz;
   zz;
+  bandwidth
 end
 
 methods
@@ -26,18 +27,19 @@ methods
 
   end
 
-  function xx = get.xx(sVF), xx = sVF(1); end
-  function xy = get.xy(sVF), xy = sVF(1); end
-  function yy = get.yy(sVF), yy = sVF(1); end
-  function xz = get.xz(sVF), xz = sVF(1); end
-  function yz = get.yz(sVF), yz = sVF(1); end
-  function zz = get.zz(sVF), zz = sVF(1); end
-  function sVF = set.xx(sVF, xx), sVF(1) = xx; end
-  function sVF = set.xy(sVF, xy), sVF(1) = xy; end
-  function sVF = set.yy(sVF, yy), sVF(1) = yy; end
-  function sVF = set.xz(sVF, xz), sVF(1) = xz; end
-  function sVF = set.yz(sVF, yz), sVF(1) = yz; end
-  function sVF = set.zz(sVF, zz), sVF(1) = zz; end
+  function bw = get.bandwidth(sVF), bw = sVF.sF.bandwidth; end
+  function xx = get.xx(sVF), xx = sVF.sF(1); end
+  function xy = get.xy(sVF), xy = sVF.sF(2); end
+  function yy = get.yy(sVF), yy = sVF.sF(3); end
+  function xz = get.xz(sVF), xz = sVF.sF(4); end
+  function yz = get.yz(sVF), yz = sVF.sF(5); end
+  function zz = get.zz(sVF), zz = sVF.sF(6); end
+  function sVF = set.xx(sVF, xx), sVF.sF(1) = xx; end
+  function sVF = set.xy(sVF, xy), sVF.sF(2) = xy; end
+  function sVF = set.yy(sVF, yy), sVF.sF(3) = yy; end
+  function sVF = set.xz(sVF, xz), sVF.sF(4) = xz; end
+  function sVF = set.yz(sVF, yz), sVF.sF(5) = yz; end
+  function sVF = set.zz(sVF, zz), sVF.sF(6) = zz; end
 
 end
 
