@@ -39,7 +39,7 @@ if 10*length(component.center)*length(component.SS)*length(component.CS) >= L^3
     % symmetrize specimen symmetry
     A(1:end) = 1;
     c = ones(1,length(component.SS));
-    f_hat = multiply(gcA2fourier(f_hat,component.SS,c,A),length(A)-1);
+    f_hat = multiply(f_hat,gcA2fourier(component.SS,c,A),length(A)-1);
   end
   
   if component.antipodal
