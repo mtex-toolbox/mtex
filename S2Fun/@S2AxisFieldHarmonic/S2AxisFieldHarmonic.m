@@ -44,6 +44,9 @@ end
 methods(Static = true)
   sAF = quadrature(f, varargin)
   sAF = approximation(v, y, varargin)
+  function sAF = normal
+    sAF = S2AxisFieldHarmonic.quadrature(@(v) v,'bandwidth',2);
+  end
 end
 
 end
