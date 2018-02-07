@@ -22,24 +22,29 @@ end
 S2 = axis2quat(sec,omega)*axis2quat(orth(sec),eta)*sec;
     
 d = reshape(sF.eval(S2),length(S2), []);
-delta = max(d) / 20;
+delta = max(d) / 200 * get_option(varargin,'linewidth',1);
 
 if isa(d,'double') && ~isreal(d), d = real(d);end
 for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
 
-  if check_option(varargin,'pcolor')
-    x = [d(:, j)+delta,d(:, j)-delta] .* sin(omega(:));
-    y = [d(:, j)+delta,d(:, j)-delta] .* cos(omega(:));
+  if strcmpi(get_option(varargin,'color'),'interp')
+    varargin = delete_option(varargin,'color',1);
+    x = [d(:, j)+delta,d(:, j)-delta] .* S2.x;
+    y = [d(:, j)+delta,d(:, j)-delta] .* S2.y;
+    z = [d(:, j)+delta,d(:, j)-delta] .* S2.z;
     
-    h = surface(x,y,zeros(size(x)),[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
+    h = surface(x,y,z,[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
+    
   else
-    x = d(:, j).*cos(omega(:));
-    y = d(:, j).*sin(omega(:));
+    x = d(:, j).*S2.x;
+    y = d(:, j).*S2.y;
+    z = d(:, j).*S2.z;
     
-    h = plot(x,y,'parent',mtexFig.gca);
+    h = plot3(x,y,z,'parent',mtexFig.gca);
   end
-  axis equal
+  view(mtexFig.gca,squeeze(double(sec)));
+  set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
   optiondraw(h,varargin{:});
 end
 

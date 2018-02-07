@@ -36,14 +36,23 @@ h = [];
 for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
 
-  x = d(:, j).*sin(omega(:));
-  y = d(:, j).*cos(omega(:));
-    
-  h = quiver(x,y,v.x,v.y,'parent',mtexFig.gca);
-  h = [h,quiver(x,y,-v.x,-v.y,'parent',mtexFig.gca)]; %#ok<AGROW>
+  x = d(:, j).*S2.x;
+  y = d(:, j).*S2.y;
+  z = d(:, j).*S2.z;
+  
+  if v.antipodal
+    opt = {'showArrowHead',false};
+    h = [h,quiver3(x,y,z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:})]; %#ok<AGROW>
+  else
+    opt = {};
+  end
+  
+  h = [h,quiver3(x,y,z,v.x,v.y,v.z,'parent',mtexFig.gca,opt{:})];
+  
   
 end
-axis equal
 optiondraw(h,varargin{:});
+view(mtexFig.gca,squeeze(double(sec)));
+set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
