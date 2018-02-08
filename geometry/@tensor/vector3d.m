@@ -15,4 +15,5 @@ if T.rank ~= 1
   error('Only rank one tensors can be converted into vectors')
 end
   
-v = vector3d(T.M(1,:,:,:),T.M(2,:,:,:),T.M(3,:,:,:));
+v = vector3d(T.M(1,:),T.M(2,:),T.M(3,:));
+v = reshape(v,size(T));
