@@ -11,9 +11,11 @@ if check_option(varargin,'parent')
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
-  if isappdata(ax,'sphericalPlot') && ishold(ax)
+  if isappdata(ax(end),'sphericalPlot') && ishold(ax(end))
   
-    sP = getappdata(ax,'sphericalPlot');
+    for i = 1:length(ax)
+      sP(i) = getappdata(ax(i),'sphericalPlot');
+    end
     
   else % set up a new spherical axes if required
     

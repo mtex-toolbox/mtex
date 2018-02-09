@@ -1,4 +1,4 @@
-function varargout = plot(sR,varargin)
+function [h,ax] = plot(sR,varargin)
 % plots a spherical region
 %
 % This function is called by all spherical plot methods to plot the outer
@@ -10,6 +10,7 @@ function varargout = plot(sR,varargin)
 % initialize spherical plots
 sP = newSphericalPlot(sR,varargin{:});
 
+h = [];
 for j = 1:numel(sP)
   
   % ensure sector is at this hemisphere TODO
@@ -46,7 +47,11 @@ for j = 1:numel(sP)
 end
 
 % give handles back
-if nargout > 0, varargout{1} = h; end
+if nargout == 0
+  clear h;
+else
+  ax = [sP.ax];
+end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 

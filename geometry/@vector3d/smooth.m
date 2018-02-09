@@ -1,4 +1,4 @@
-function h = smooth(v,varargin)
+function [h,ax] = smooth(v,varargin)
 %
 % Syntax
 %
@@ -111,7 +111,11 @@ if isappdata(sP(1).parent,'mtexFig')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if nargout == 0, clear h; end
+if nargout == 0
+  clear h; 
+else
+  ax = [sP.ax];
+end
 
 end
 

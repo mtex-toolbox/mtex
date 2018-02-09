@@ -83,7 +83,7 @@ classdef axisAngleSections < ODFSections
       % plot outer boundary
       if isempty(findall(ax,'tag','outerBoundary'))
         opt = oS.jointCS.plotOptions;
-        plot(fundamentalSector(oS.jointCS,varargin{:}),'hold',...
+        [~,cax] = plot(fundamentalSector(oS.jointCS,varargin{:}),'hold',...
           'TR',['\omega = ' int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
           'doNotDraw','tag','outerBoundary','noLabel',...
           'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',opt{:});
@@ -91,9 +91,11 @@ classdef axisAngleSections < ODFSections
       
       % rescale the axes according to actual volume      
       if oS.volumeScaling
-        sP = getappdata(ax,'sphericalPlot');
-        bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
-        set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
+        for ax = cax(:).'
+          sP = getappdata(ax,'sphericalPlot');
+          bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
+          set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
+        end
       end
           
       hold on
@@ -101,7 +103,7 @@ classdef axisAngleSections < ODFSections
       % plot data
       %v(~oS.axesSectors{sec}.checkInside(v)) = vector3d.nan;
       v.opt.region = oS.axesSectors{sec};
-      h = plot(v,data{:},'parent',m.children,varargin{:},'doNotDraw');
+      h = plot(v,data{:},'parent',cax,varargin{:},'doNotDraw');
       
       % plot inner boundary
       if isempty(findall(ax,'tag','innerBoundary'))

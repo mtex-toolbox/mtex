@@ -45,22 +45,17 @@ pfAnnotations = getMTEXpref('pfAnnotations');
 
 for i = 1:length(h)
   
-  if i==1
-    cId = 1;
-  else
-    mtexFig.nextAxis; 
-    cId = mtexFig.currentId;
-  end
+  if i>1, mtexFig.nextAxis; end
 
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  r.plot(p,'smooth','doNotDraw','hold',varargin{:});
+  [~,caxes] = r.plot(p,'smooth','doNotDraw','hold',varargin{:});
   
   % plot annotations
-  for cax = reshape(mtexFig.children(cId:mtexFig.currentId),1,[])
+  for cax = caxes(:).'
     pfAnnotations('parent',cax,'doNotDraw');
   end
   

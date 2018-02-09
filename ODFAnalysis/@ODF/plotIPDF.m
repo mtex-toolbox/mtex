@@ -29,6 +29,7 @@ if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 for i = 1:length(r)
+  
   if i>1, mtexFig.nextAxis; end
 
   % compute inverse pole figures
@@ -37,10 +38,8 @@ for i = 1:length(r)
   % plot
   mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
   h.plot(p,'hold','doNotDraw','smooth',varargin{:});
-  
 
 end
-
 
 if isNew % finalize plot
   
