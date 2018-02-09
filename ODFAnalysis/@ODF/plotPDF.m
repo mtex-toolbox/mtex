@@ -42,18 +42,27 @@ r = plotS2Grid(sR,varargin{:});
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 pfAnnotations = getMTEXpref('pfAnnotations');
-  
+
 for i = 1:length(h)
   
-  if i>1, mtexFig.nextAxis; end
+  if i==1
+    cId = 1;
+  else
+    mtexFig.nextAxis; 
+    cId = mtexFig.currentId;
+  end
 
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
-  r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
-  pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-
-  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
+  % plot the pole figure
+  r.plot(p,'smooth','doNotDraw','hold',varargin{:});
+  
+  % plot annotations
+  for cax = reshape(mtexFig.children(cId:mtexFig.currentId),1,[])
+    pfAnnotations('parent',cax,'doNotDraw');
+    mtexTitle(cax,char(h{i},'LaTeX'));
+  end
   
 end
 

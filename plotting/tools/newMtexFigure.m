@@ -88,7 +88,7 @@ else % use an existing figure
       mtexFig.currentAxes = get(p,'parent');
     end
   else
-    mtexFig.currentId = 1;
+  %  mtexFig.currentId = 1;
   end
 end
 
