@@ -41,7 +41,7 @@ for j = 1:length(sF)
   z = d(:, j).*S2.z;
   
   if v.antipodal
-    opt = {'showArrowHead',false};
+    opt = {'showArrowHead','off'};
     h = [h,quiver3(x,y,z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:})]; %#ok<AGROW>
   else
     opt = {};
