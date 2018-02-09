@@ -97,7 +97,9 @@ classdef mtexFigure < handle
         dcm_obj = datacursormode(mtexFig.parent);
         set(dcm_obj,'SnapToDataVertex','off')
         set(dcm_obj,'UpdateFcn',ensurecell(get_option(varargin,'datacursormode')));
-        datacursormode on;      
+        if ~check_option(varargin,'3d')
+          datacursormode on;
+        end
       end
       
       set(mtexFig.parent,'DefaultAxesCreateFcn',...
@@ -126,8 +128,6 @@ classdef mtexFigure < handle
       end
       
     end
-    
-    
     
     function ax = gca(mtexFig)
       % return current axis if exist otherwise create a new one

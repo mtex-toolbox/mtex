@@ -19,16 +19,9 @@ function v = plotS2Grid(varargin)
 % See also
 % equispacedS2Grid regularS2Grid
 
-
 % get spherical region
-if nargin>0 && isa(varargin{1},'sphericalRegion')
-  sR = varargin{1};
-else
-  sR = sphericalRegion(varargin{:});
-end
+sR = extractSphericalRegion(varargin{:});
   
-% TODO: extract options 'antipodal','lower','upper'
-
 % get resolution
 res = get_option(varargin,'resolution',1*degree);
 

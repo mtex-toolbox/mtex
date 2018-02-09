@@ -16,6 +16,14 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
+if nargin == 1 || isempty(x)
+  M = 48;
+  [x, W] = quadratureS2Grid(2*M);
+  generateFun = true;
+else
+  generateFun = false;  
+end
+
 % take density from tensor if not specified differently
 if nargin == 3
 elseif isfield(C.opt,'density')
@@ -37,7 +45,6 @@ vs2 = zeros(size(x));
 pp = zeros(3,length(x));
 ps1 = zeros(3,length(x));
 ps2 = zeros(3,length(x));
-
 
 % for each direction
 for i = 1:length(x)
@@ -63,6 +70,18 @@ for i = 1:length(x)
 
 end
 
-pp = vector3d(pp,'antipodal');
-ps1 = vector3d(ps1,'antipodal');
+pp = vector3d(pp, 'antipodal');
+ps1 = vector3d(ps1, 'antipodal');
 ps2 = vector3d(ps2,'antipodal');
+
+if generateFun
+  vp  = S2FunHarmonicSym.quadrature(x,vp,C.CS,'bandwidth',M,'weights',W);
+  vs1 = S2FunHarmonicSym.quadrature(x,vs1,C.CS,'bandwidth',M,'weights',W);
+  vs2 = S2FunHarmonicSym.quadrature(x,vs2,C.CS,'bandwidth',M,'weights',W);
+    
+  pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W);
+  ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W);
+  ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W);
+end
+
+end

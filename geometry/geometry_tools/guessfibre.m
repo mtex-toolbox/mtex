@@ -21,7 +21,7 @@ if isa(g1,'ODF')
     
   qmax = rotation(max(g1,2,varargin{:})); %get to maximum rotations
    
-  if length(qmax) <2,
+  if length(qmax) <2
     error('to less maxima in the odf, probably no fibre...')
   end
   

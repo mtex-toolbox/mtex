@@ -4,7 +4,7 @@ function tq = log(q,u)
 % Syntax
 %   v = log(q)       % tangential vector as vector3d
 %   v = log(q,q_ref) % tangential vector as vector3d
-%   M = logMat(q) % return tangential vector as (skew symmetric) matrix
+%   M = logm(q) % return tangential vector as (skew symmetric) matrix
 %
 % Input
 %  q - @quaternion

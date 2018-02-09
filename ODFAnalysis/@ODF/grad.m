@@ -1,16 +1,22 @@
 function g = grad(odf,ori,varargin)
 % gradient of odf at orientation ori
 %
+% Syntax
+%
+%   g = odf.grad(ori) % compute the gradient
+%
+%   % go 5 degree in direction of the gradient
+%   ori_new = exp(ori,5*degree*normalize(g)) 
 %
 % Input
 %  odf - @ODF
 %  ori - @orientation
 %
 % Output
-%  g - gradient of the ODF at the orientations ori
+%  g - @vector3d gradient of the ODF at the orientations ori
 %
 % See also
-% ODF/eval
+% ODF/eval orientation/exp
 
 if isa(ori,'orientation') && (odf.CS.Laue ~= ori.CS.Laue || ...
     odf.SS.Laue ~= ori.SS.Laue)

@@ -22,7 +22,7 @@ ebsd(grains(grains.grainSize<=2)) = [];
 
 
 % smooth them
-grains = grains.smooth
+grains = grains.smooth(5)
 
 % visualize the grains
 plot(grains,grains.meanOrientation)
@@ -120,7 +120,7 @@ hold off
 mergedGrains(16).id
 
 %%
-% Hence, we can find all childs of common grain 16 by 
+% Hence, we can find all childs of grain 16 by 
 
 childs = grains(parentId == mergedGrains(16).id)
 

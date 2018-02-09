@@ -63,9 +63,9 @@ isSilent = check_option(varargin,'silent');
 % for all strain tensors do
 for i = 1:size(y,2)
   
-  % determine coefficients b with A * b = y and such that sum |b_j| is
-  % minimal. This is equivalent to the requirement b>=0 and CRSS*b -> min
-  % which is the linear programming problem solved below
+  % determine coefficients b with A * b = y and such that sum |CRSS_j *
+  % b_j| is minimal. This is equivalent to the requirement b>=0 and CRSS*b
+  % -> min which is the linear programming problem solved below
   try
     b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
   end

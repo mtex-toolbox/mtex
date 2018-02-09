@@ -13,6 +13,12 @@ function beta = linearCompressibility(C,x)
 %  beta - linear compressibility in directions v
 %
 
+% return a function if required
+if nargin == 1 || isempty(x)
+  beta = S2FunHarmonicSym.quadrature(@(x) linearCompressibility(C,x),'bandwidth',2,C.CS);
+  return
+end
+
 % compute the complience
 S = inv(C);
 

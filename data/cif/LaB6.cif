@@ -1,0 +1,91 @@
+data_global
+_amcsd_formula_title 'B6La'
+loop_
+_publ_author_name
+'Eliseev A'
+'Efremmov V'
+'Kuzmicheva G'
+'Konovalova E'
+'Lazorenko V'
+'Paderno Y'
+'Khlyustova S'
+_journal_name_full 'Kristallografiya'
+_journal_volume 31 
+_journal_year 1986
+_journal_page_first 803
+_journal_page_last 805
+_publ_section_title
+;
+ X-ray structural investigation of single crystals of lanthanum, cerium,
+ and samarium hexaborides
+ _cod_database_code 1000057
+;
+_database_code_amcsd 0014189
+_chemical_formula_sum 'La B6'
+_cell_length_a 4.1570
+_cell_length_b 4.1570
+_cell_length_c 4.1570
+_cell_angle_alpha 90
+_cell_angle_beta 90
+_cell_angle_gamma 90
+_cell_volume 71.836
+_exptl_crystal_density_diffrn      4.710
+_symmetry_space_group_name_H-M 'P m 3 m'
+loop_
+_space_group_symop_operation_xyz
+  'x,y,z'
+  'z,-x,y'
+  '-y,z,-x'
+  'x,-y,z'
+  '-z,x,-y'
+  'y,-z,x'
+  '-x,y,-z'
+  'x,-z,-y'
+  '-z,y,x'
+  'y,-x,-z'
+  '-x,z,y'
+  'z,-y,-x'
+  '-y,x,z'
+  'x,z,y'
+  '-z,-y,-x'
+  'y,x,z'
+  '-x,-z,-y'
+  'z,y,x'
+  '-y,-x,-z'
+  'z,x,-y'
+  '-y,-z,x'
+  'x,y,-z'
+  '-z,-x,y'
+  'y,z,-x'
+  '-x,-y,z'
+  '-z,x,y'
+  'y,-z,-x'
+  '-x,y,z'
+  'z,-x,-y'
+  '-y,z,x'
+  'x,-y,-z'
+  '-x,z,-y'
+  'z,-y,x'
+  '-y,x,-z'
+  'x,-z,y'
+  '-z,y,-x'
+  'y,-x,z'
+  '-x,-z,y'
+  'z,y,-x'
+  '-y,-x,z'
+  'x,z,-y'
+  '-z,-y,x'
+  'y,x,-z'
+  '-z,-x,-y'
+  'y,z,x'
+  '-x,-y,-z'
+  'z,x,y'
+  '-y,-z,-x'
+loop_
+_atom_site_label
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+La   0.00000   0.00000   0.00000
+B   0.19750   0.50000   0.50000
+

@@ -11,7 +11,8 @@
 % visualizing sharp data. Let us consider the following data set which
 % restricts to the calcite phase
 
-plotx2east
+% plotting conventions
+plotx2east, plotb2east
 mtexdata sharp
 
 ebsd = ebsd('calcite');
@@ -85,21 +86,6 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 oM.maxAngle = 7.5*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
-
-%%
-
-ebsd = ebsd.gridify;
-
-F = infimalConvolutionFilter;
-F.lambda = 0.02; %smoothing parameter for the gradient
-F.mu = 0.01;% smoothing parameter for the hessian
-
-ebsd_smoothed = smooth(ebsd,F);
-
-plot(ebsd_smoothed,oM.orientation2color(ebsd_smoothed.orientations))
-
-
-
 %%
 % You may play around with the option |maxAngle| to obtain better
 % results. As for interpretation keep in mind that white color represents
@@ -110,10 +96,10 @@ plot(ebsd_smoothed,oM.orientation2color(ebsd_smoothed.orientations))
 
 plot(oM,'resolution',0.25*degree)
 
-% TODO: Check this!!!
-%hold on
-%plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
-%hold off
+% plot orientations into the color key
+hold on
+plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
+hold off
 %%
 % observe how in the inverse pole figure the orientations are scattered
 % closely around the white center. Together with the fact that the

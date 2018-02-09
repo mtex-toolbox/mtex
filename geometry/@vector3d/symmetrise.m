@@ -30,7 +30,7 @@ if nargout > 1
   keepAnti = check_option(varargin,'keepAntipodal');
   
   for i=1:length(v)
-	
+  
     u = v.subSet(i);
     sym = [sym,S(1)];
     

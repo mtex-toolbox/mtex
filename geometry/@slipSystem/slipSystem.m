@@ -98,6 +98,17 @@ classdef slipSystem
       end
     end
     
+    function str = char(sS,varargin)
+      
+      for i = 1:length(sS)
+        str{i} = [char(sS.n(i),varargin{:}),char(sS.b(i),varargin{:})];
+        str{i} = strrep(str{i},'$$','');
+      end
+      if i == 1, str = char(str); end
+      
+      
+    end
+    
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end

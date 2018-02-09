@@ -11,7 +11,7 @@
 CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
 
 %%
-% Since Nickel is fcc a dominat slip system is given by the slip plane
+% Since Nickel is fcc a dominant slip system is given by the slip plane
 % normal
 
 n = Miller(1,1,1,CS,'hkl')
@@ -22,7 +22,7 @@ n = Miller(1,1,1,CS,'hkl')
 d = Miller(0,-1,1,CS,'uvw')
 
 %%
-% For a simple shear in the z - direction
+% For tension in direction 123
 r = normalize(vector3d(1,2,3))
 
 %%
@@ -30,7 +30,7 @@ r = normalize(vector3d(1,2,3))
 %
 tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
 
-%% 
+%%
 % The same computation can be performed by defining the slip system as an
 % MTEX variable
 
@@ -44,17 +44,18 @@ sS.SchmidFactor(r)
 %%
 % Ommiting the tension direction r the command
 % <slipSystem_SchmidFactor.html SchmidFactor> returns the Schmid factor as
-% a spherical function
+% a <S2FunHarmonic_index.html spherical function>
 
-%will be part of MTEX 4.5
-% SF = sS.SchmidFactor 
+SF = sS.SchmidFactor
 
 % plot the Schmid factor in dependency of the tension direction
-%will be part of MTEX 4.5
-%plot(SF) 
+plot(SF)
 
-%will be part of MTEX 4.5
-%[SFMax,pos] = max(SF) 
+% find the tension directions with the maximum Schmid factor
+[SFMax,pos] = max(SF)
+
+% and annotate them
+annotate(pos)
 
 %% Stress Tensor
 % Instead by the tension direction the stress might be specified by a
@@ -76,8 +77,8 @@ sSAll = sS.symmetrise('antipodal')
 
 %%
 % The option |antipodal| indicates that Burgers vectors in oposite
-% direction should not be distinguished. 
-% Now 
+% direction should not be distinguished.
+% Now
 
 tau = sSAll.SchmidFactor(r)
 
@@ -94,7 +95,7 @@ sSAll(id)
 % directions
 
 % define a grid of tension directions
-r = plotS2Grid('resolution',0.5*degree,'upper')
+r = plotS2Grid('resolution',0.5*degree,'upper');
 
 % compute the Schmid factors for all slip systems and all tension
 % directions
@@ -141,6 +142,17 @@ quiver(r,sSAll(id).n,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 hold on
 quiver(r,sSAll(id).b.normalize,'ArrowSize',0.1,'LineWidth',2,'Color','g');
 hold off
+
+%%
+% If we perform this computation in terms of spherical functions we obtain
+
+% ommiting |r| gives us a list of 12 spherical functions
+tau = sSAll.SchmidFactor
+
+% now we take the max of the absolute value over all these functions
+contourf(max(abs(tau),[],1))
+mtexColorbar
+
 
 %% The Schmid factor for EBSD data
 % So far we have always assumed that the stress tensor is already given
@@ -191,7 +203,7 @@ plot(grains,SFMax)
 mtexColorbar
 
 %%
-% Next we want to visualize the active slip systems. 
+% Next we want to visualize the active slip systems.
 
 % take the active slip system and rotate it in specimen coordinates
 sSactive = grains.meanOrientation .* sS(active);
@@ -241,4 +253,5 @@ quiver(grains,sSactive.trace,'color','b')
 
 % and the slip direction
 quiver(grains,sSactive.b,'color','r')
+
 hold off

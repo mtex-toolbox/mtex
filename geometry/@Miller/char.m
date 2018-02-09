@@ -79,5 +79,7 @@ for j = 1:length(i)
   
   if comma && j < length(i)
     s = [s,','];
+  elseif any(i>9)
+    s = [s,' '];
   end
 end

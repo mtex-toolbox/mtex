@@ -77,7 +77,7 @@ ind = randperm(pf.length,100);
 % Next we multiply the intensity at these positions by a random value
 % between 3 and 4
 factor = 3+rand(100,1);
-pf(ind).intensities = pf(ind).intensities .* factor;
+pf(ind).intensities = pf(ind).intensities(:) .* factor;
 
 % Let's check the result
 plot(pf)

@@ -48,10 +48,10 @@ plot(oM,'resolution',0.5*degree)
 % texture gradient within the grain.
 
 % plot the grain
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,oM.orientation2color(ebsd.orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 %% SUB: The Mean Filter
@@ -67,10 +67,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 %%
@@ -86,10 +86,10 @@ ebsd_smoothed = smooth(ebsd,F)
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 %% SUB: The Median Filter
@@ -142,10 +142,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 % the smoothing parameter determined during smoothing is
@@ -164,10 +164,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 
@@ -185,10 +185,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 

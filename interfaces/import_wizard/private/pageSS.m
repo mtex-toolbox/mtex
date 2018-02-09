@@ -292,7 +292,7 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
 
   function cdata = localLoadPNG(fname)
     
-    [cdata,map,alpha] = imread(fullfile(mtex_path,'help','general',fname)); %#ok<ASGLU>
+    [cdata,map,alpha] = imread(fullfile(mtex_path,'doc','makeDoc','general',fname)); %#ok<ASGLU>
     %cdata = ind2rgb( cdata, map )
     
     alpha = double(alpha);

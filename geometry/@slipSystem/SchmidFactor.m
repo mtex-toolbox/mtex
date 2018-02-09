@@ -3,6 +3,7 @@ function SF = SchmidFactor(sS,sigma,varargin)
 %
 % Syntax
 %
+%   SFfun = SchmidFactor(sS) % returns spherical function
 %   SF = SchmidFactor(sS,v)
 %   SF = SchmidFactor(sS,sigma)
 %   SF = SchmidFactor(sS,sigma,'relative')
@@ -13,8 +14,9 @@ function SF = SchmidFactor(sS,sigma,varargin)
 %  sigma - stress @tensor
 %
 % Output
+%  SFfun - size(sS) x 1 list of @S2FunHarmonic
 %  SF - size(sS) x size(sigma) matrix of Schmid factors
-%
+%   
 
 b = sS.b.normalize; %#ok<*PROPLC>
 n = sS.n.normalize;
@@ -26,7 +28,11 @@ if check_option(varargin,'relative')
 end
 
 % Schmid factor with respect to a tension direction
-if isa(sigma,'vector3d')
+if nargin == 1 || isnumeric(sigma)
+  
+  SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),'bandwidth',64);
+    
+elseif isa(sigma,'vector3d')
   
   r = sigma.normalize;
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');

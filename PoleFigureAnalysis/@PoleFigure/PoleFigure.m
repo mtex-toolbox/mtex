@@ -13,6 +13,7 @@ classdef PoleFigure < dynProp & dynOption
     h                   % crystal direction of single pole figure
     r                   % specimen directions
     intensities         % diffraction intensities
+    antipodal
   end
   
   methods
@@ -119,13 +120,31 @@ classdef PoleFigure < dynProp & dynOption
         end
       end
     end
+
+    function out = get.antipodal(pf)
+      out = pf.allR{1}.antipodal;
+    end
+    
+    function pf = set.antipodal(pf,value)
+      for i = 1:pf.numPF
+        pf.allR{i}.antipodal = value;
+      end
+    end
     
     function varargout = size(pf,varargin)
       [varargout{1:nargout}] = size(pf.r,varargin{:});
     end
     
-    function varargout = length(pf,varargin)
-      [varargout{1:nargout}] = length(pf.r,varargin{:});
+    function varargout = length(pf,ip)
+      if nargin == 2
+        if isempty(ip)
+          varargout{1} = cellfun(@length,pf.allR);
+        else
+          [varargout{1:nargout}] = length(pf.allR{ip});
+        end
+      else
+        [varargout{1:nargout}] = length(pf.r);
+      end
     end
     
     function n = numPF(pf)

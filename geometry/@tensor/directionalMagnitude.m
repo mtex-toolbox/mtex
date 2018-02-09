@@ -14,6 +14,13 @@ function q = directionalMagnitude(T,v)
 %
 % See Also
 
+% return a function if required
+if nargin == 1 || isempty(v)
+  q = S2FunHarmonicSym.quadrature(@(x) directionalMagnitude(T,x),'bandwidth',4,T.CS);
+  
+  return
+end
+
 % compute tensor products with directions v with respect to all dimensions
 while T.rank > 0
   T = EinsteinSum(T,[-1 1:T.rank-1],v.normalize,-1);

@@ -1,6 +1,18 @@
 function varargout = plot(v,varargin)
-% plot three dimensional vector
+% plot vectors as two dimensional projections on the sphere
 %
+% Syntax
+%   plot(v)
+%   plot(v,value)
+%   plot(v,rgb)
+%   plot(v,'MarkerSize',10)
+%   plot(v,'contourf')
+%   plot(v,'contour')
+%
+% Input
+%   v - @vector3d
+%   value - values to be displayed
+%   rgb - 
 %
 % Options
 %  Marker          
@@ -12,6 +24,7 @@ function varargout = plot(v,varargin)
 %  smooth   - plot point cloud as colored density
 %  contourf - plot point cloud as filled contours
 %  contour  - plot point cloud as contours
+%
 
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
