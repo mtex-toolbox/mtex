@@ -27,7 +27,7 @@ for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
     
   % plot the function values
-  h = [h,plot(plotNodes,values(:,j),'contourf',varargin{:})]; %#ok<AGROW>
+  h = [h,plot(plotNodes,values(:,j),'contourf','hold',varargin{:})]; %#ok<AGROW>
   
 end
 

@@ -87,8 +87,8 @@ else % use an existing figure
     else
       mtexFig.currentAxes = get(p,'parent');
     end
-  else
-  %  mtexFig.currentId = 1;
+  elseif ~check_option(varargin,'hold')
+    mtexFig.currentId = 1;
   end
 end
 

@@ -56,12 +56,12 @@ for i = 1:length(h)
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
+  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   r.plot(p,'smooth','doNotDraw','hold',varargin{:});
   
   % plot annotations
   for cax = reshape(mtexFig.children(cId:mtexFig.currentId),1,[])
     pfAnnotations('parent',cax,'doNotDraw');
-    mtexTitle(cax,char(h{i},'LaTeX'));
   end
   
 end
