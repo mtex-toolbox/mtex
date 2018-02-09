@@ -36,7 +36,7 @@ nfsoftmex('precompute',plan);
 %% step 1: f_phi1 
 Ldim = deg2dim(double(L+1));
 fhat = component.f_hat(1:Ldim);
-for l = 1:L-1
+for l = 0:L-1
   [k1,~] = meshgrid(-l:l,-l:l);
   ind = (deg2dim(l)+1):deg2dim(l+1);
   fhat(ind) = -1i * k1(:) .* fhat(ind);
@@ -53,7 +53,7 @@ f_phi1 = nfsoftmex('get_f',plan);
 
 %% step 2: f_phi2
 fhat = component.f_hat(1:Ldim);
-for l = 1:L-1    
+for l = 0:L-1    
   [~,k2] = meshgrid(-l:l,-l:l);
   ind = (deg2dim(l)+1):deg2dim(l+1);
   fhat(ind) = -1i * k2(:) .* fhat(ind);  
@@ -127,6 +127,27 @@ ref = orientation.id(cs);
 odf = unimodalODF(ref,'halfwidth',80*degree);
 
 fodf = FourierODF(odf)
+
+omega = linspace(0,40)
+rot = rotation('axis',yvector,'angle',omega*degree)
+%rot = rotation('axis',yvector,'angle',5*degree)
+
+g1 = odf.grad(rot)
+g2  =fodf.grad(rot)
+
+
+%plot(norm(odf.grad(rot))
+
+
+
+end
+
+function testing2
+
+cs = crystalSymmetry('1');
+odf = fibreODF(Miller(0,0,1,cs),vector3d.Z,'halfwidth',80*degree);
+fodf = FourierODF(odf)
+
 
 omega = linspace(0,40)
 rot = rotation('axis',yvector,'angle',omega*degree)
