@@ -6,30 +6,53 @@
 % *Definition via function values*
 %
 % At first you need some vertices
-nodes = equispacedS2Grid('points', 1e5);
+nodes = equispacedS2Grid('resolution',3*degree);
 nodes = nodes(:);
 %%
 % Next you define function values for the vertices
 y = smiley(nodes);
+
+% plot the discrete data
+plot(nodes,y,'upper')
+
 %%
 % Now the actual command to get |sF1| of type |S2FunHarmonic|
 sF1 = interp(nodes, y, 'harmonicApproximation')
+
+% plot the spherical function
+plot(sF1)
+
 %%
-% * The |bandwidth| property shows the maximal polynomial degree of the function.  Internally for a given bandwidth there are stored $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
-% * The |antipodal| flag shows that $f(v) = f(-v)$ holds for all $v\in\bf S^2$.
+% * The |bandwidth| property shows the maximal polynomial degree of the
+% function.Internally for a given bandwidth there are stored
+% $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
+% * The |antipodal| flag shows that $f(v) = f(-v)$ holds for all $v\in\bf
+% S^2$.
 %
-% For the same result you could also run |S2FunHarmonic.approximation(nodes, y)| and give some additional options (<S2FunHarmonic.approximation.html see here>).
+% For the same result you could also run
+% |S2FunHarmonic.approximation(nodes, y)| and give some additional options
+% (<S2FunHarmonic.approximation.html see here>).
 
 %%
 % *Definition via function handle*
 %
-% If you have a function handle for the function you could create a |S2FunHarmonic| via quadrature.
-% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
+% If you have a function handle for the function you could create a
+% |S2FunHarmonic| via quadrature. At first lets define a function handle
+% which takes <vector3d_index.html |vector3d|> as an argument and returns
+% double:
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
+
+% plot the function at discrete points
+plot(nodes,f(nodes))
+
+
 %% 
 % Now you can call the quadrature command to get |sF2| of type |S2FunHarmonic|
-sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
+sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 150)
+
+plot(sF2)
+
 %%
 % * If you would leave the |'bandwidth'| option empty the default bandwidth would be considered, which is 128.
 % * The quadrature is faster than the approximation, because it does not have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
