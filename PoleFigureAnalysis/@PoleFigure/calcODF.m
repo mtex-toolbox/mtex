@@ -14,7 +14,7 @@ function [odf,alpha] = calcODF(varargin)
 %
 %   odf = calcODF(pf)
 %   odf = calcODF(pf,'halfwidth',5*degree)
-%   odf = calcODF(pf,'zero_range')
+%   odf = calcODF(pf,'zeroRange')
 %   odf = calcODF(pf,'resolution',2.5*degree)
 %
 % Input

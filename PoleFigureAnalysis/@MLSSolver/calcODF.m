@@ -56,7 +56,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
   
       % compute residual error
       err = showError;
-      if (lasterr-err)/err < 0.05, break; end
+      if (lasterr-err)/err < 0.05 && iter > solver.iterMin, break; end
       lasterr = err;
     end
     
