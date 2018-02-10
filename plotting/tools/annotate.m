@@ -4,7 +4,7 @@ function annotate(obj,varargin)
 washold = getHoldState;
 hold on
 aS = getMTEXpref('annotationStyle');
-plot(obj,aS{:},varargin{:});
+plot(obj,aS{:},'add2all',varargin{:});
 hold(washold);
 
 end

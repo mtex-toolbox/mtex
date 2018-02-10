@@ -30,24 +30,28 @@ if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
 
 for i = 1:length(r)
   
-  if i>1, mtexFig.nextAxis; end
+  mtexFig.nextAxis;
 
   % compute inverse pole figures
   p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
 
   % plot
   mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
-  h.plot(p,'hold','doNotDraw','smooth',varargin{:});
+  [~,caxes] = h.plot(p,'doNotDraw','smooth',varargin{:});
 
+  % plot annotations
+  for cax = caxes(:).'
+    setappdata(cax,'inversePoleFigureDirection',r(i));
+    set(cax,'tag','ipdf');
+    setappdata(cax,'CS',odf.CS);
+    setappdata(cax,'SS',odf.SS);
+  end
+  
 end
 
 if isNew % finalize plot
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-  setappdata(gcf,'inversePoleFigureDirection',r);
-  setappdata(gcf,'CS',odf.CS);
-  setappdata(gcf,'SS',odf.SS);
-  set(gcf,'tag','ipdf');
   set(gcf,'Name',['Inverse Pole Figures of ',inputname(1)]);
 
 end

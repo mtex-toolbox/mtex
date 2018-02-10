@@ -45,26 +45,27 @@ pfAnnotations = getMTEXpref('pfAnnotations');
 
 for i = 1:length(h)
   
-  if i>1, mtexFig.nextAxis; end
+  % create a new axis
+  mtexFig.nextAxis;
 
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  [~,caxes] = r.plot(p,'smooth','doNotDraw','hold',varargin{:});
+  [~,caxes] = r.plot(p,'smooth','doNotDraw',varargin{:});
   
   % plot annotations
   for cax = caxes(:).'
     pfAnnotations('parent',cax,'doNotDraw');
+    setappdata(cax,'h',h{i});
+    set(cax,'tag','pdf');
+    setappdata(cax,'SS',odf.SS);
   end
   
 end
 
 if isNew % finalize plot
-  set(gcf,'tag','pdf');
-  setappdata(gcf,'SS',odf.SS);
-  setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   dcm = mtexFig.dataCursorMenu;

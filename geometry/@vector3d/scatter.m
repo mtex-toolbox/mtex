@@ -1,4 +1,4 @@
-function h = scatter(v,varargin)
+function [h,ax] = scatter(v,varargin)
 %
 % Syntax
 %   scatter(v)              % plot the directions v
@@ -177,7 +177,11 @@ for i = 1:numel(sP)
   end
 end
 
-if nargout == 0, clear h;end
+if nargout == 0
+  clear h;
+else
+  ax = [sP.ax];
+end
 
 end
 

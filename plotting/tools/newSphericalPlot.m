@@ -73,13 +73,17 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
   end
   mtexFig.drawNow(varargin{:});
           
-else % add to or overide existing axes
+elseif check_option(varargin,'add2all') % add to or overide existing axes
     
   for i = 1:numel(mtexFig.children)
     
     sP(i) = getappdata(mtexFig.children(i),'sphericalPlot'); %#ok<AGROW>
     
   end
+  
+else
+  
+  sP = getappdata(mtexFig.currentAxes,'sphericalPlot');
   
 end
 
