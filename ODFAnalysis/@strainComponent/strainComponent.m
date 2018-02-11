@@ -47,12 +47,11 @@ classdef strainComponent < ODFComponent
       SS = false;
     end
 
-    
   end  
 end
 
 % Testing Code
-% cs = crystalSymmetry('1');
+% cs = crystalSymmetry('222');
 % sS = slipSystem(Miller(1,0,0,cs,'uvw'),Miller(0,1,0,cs,'hkl'))
 % sS1 = slipSystem(Miller(0,1,0,cs,'uvw'),Miller(1,0,0,cs,'hkl'))
 % sS2 = slipSystem(Miller(0,0,1,cs,'uvw'),Miller(1,0,0,cs,'hkl'))

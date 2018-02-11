@@ -25,7 +25,10 @@ q1 = hr2quat(h,r);
 res = get_option(varargin,'resolution',1*degree);
 omega = -pi:res:pi;
 
-q2 = axis2quat(h,omega);
-
-q = q1 * q2;
-
+if length(h)>1
+  q2 = axis2quat(r,omega);
+  q = (q2 * q1).';
+else
+  q2 = axis2quat(h,omega);
+  q = q1 * q2;
+end
