@@ -87,31 +87,35 @@ classdef axisAngleSections < ODFSections
           'TR',['\omega = ' int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
           'doNotDraw','tag','outerBoundary','noLabel',...
           'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',opt{:});
-      end
-      
-      % rescale the axes according to actual volume      
-      if oS.volumeScaling
+        
+        % for all generated axes
         for ax = cax(:).'
-          sP = getappdata(ax,'sphericalPlot');
-          bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
-          set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
-        end
-      end
+        
+          % rescale the axes according to actual volume
+          if oS.volumeScaling
+            sP = getappdata(ax,'sphericalPlot');
+            bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
+            set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))                        
+          end
           
-      hold on
-                  
-      % plot data
-      %v(~oS.axesSectors{sec}.checkInside(v)) = vector3d.nan;
-      v.opt.region = oS.axesSectors{sec};
-      h = plot(v,data{:},'parent',cax,varargin{:},'doNotDraw');
-      
-      % plot inner boundary
-      if isempty(findall(ax,'tag','innerBoundary'))
-        varargin = extract_option(varargin,{'color'});
-        plot(oS.axesSectors{sec},'parent',ax,'color','k',varargin{:},...
-          'doNotDraw','tag','innerBoundary','hitTest','off');
+          % plot inner boundary
+          if isempty(findall(ax,'tag','innerBoundary'))
+            opt= extract_option(varargin,{'color'});
+            plot(oS.axesSectors{sec},'parent',ax,'color','k',opt{:},...
+              'doNotDraw','tag','innerBoundary','hitTest','off');
+          end
+        end
+        
+      else
+        cax = ax;
       end
-      hold off
+            
+      v.opt.region = oS.axesSectors{sec};
+      
+      % plot data into all axes
+      for ax = cax(:).'
+        h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw');
+      end
 
     end
   end

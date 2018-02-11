@@ -100,18 +100,18 @@ end
 
 mtexFig.CLim('equal');
 
-if isNew || check_option(varargin,'figSize')
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+%if isNew || check_option(varargin,'figSize')
+mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
-  dcm = datacursormode(mtexFig.parent);
-  set(dcm,'enable','on')  
-  hcmenu = get(dcm,'UIContextMenu') ;
-  uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
-  set(dcm,'UIContextMenu',hcmenu)
+dcm = datacursormode(mtexFig.parent);
+set(dcm,'enable','on')
+hcmenu = get(dcm,'UIContextMenu') ;
+uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
+set(dcm,'UIContextMenu',hcmenu)
 
-  set(dcm,'UpdateFcn',@tooltip)
+set(dcm,'UpdateFcn',@tooltip)
      
-end
+%end
 
 
 % --------------- Tooltip function -------------------------------

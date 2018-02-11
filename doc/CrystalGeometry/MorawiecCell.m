@@ -52,9 +52,9 @@ hold off
 
 plotSection(rotZ,'MarkerColor','b','axisAngle',(30:30:180)*degree)
 hold on
-plotSection(rotX,'MarkerColor','g')
+plot(rotX,'MarkerColor','g','add2all')
 hold on
-plotSection(rotY,'MarkerColor','r')
+plot(rotY,'MarkerColor','r','add2all')
 hold off
 
 %% Crystal Symmetries
