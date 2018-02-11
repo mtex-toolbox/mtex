@@ -16,6 +16,11 @@ function g = grad(component,ori,varargin)
 %
 % $$s(g1_i) = sum_j c_j DK(g1_i,g2_j) $$
 
+if check_option(varargin,'check')
+  g = grad@ODFComponent(component,ori,varargin{:});
+  return
+end
+
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(ori);
@@ -49,7 +54,7 @@ for issq = 1:length(qSS)
   v = sparse(i,j,v,length(center),length(ori)) .* spfun(@psi.DK,d);
   
   % sum over all neighbours
-  g = g - v.' * component.weights(:);
+  g = g - v.' * component.weights(:) ./ 2 ./ pi;
   
 end
 
