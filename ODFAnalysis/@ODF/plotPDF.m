@@ -37,7 +37,8 @@ for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
-r = plotS2Grid(sR,varargin{:});
+rAll = plotS2Grid(sR,varargin{:});
+rUpper = plotS2Grid(sR,'upper',varargin{:});
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
@@ -49,11 +50,16 @@ for i = 1:length(h)
   if ~isstruct(mtexFig), mtexFig.nextAxis; end
 
   % compute pole figures
-  p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
+  if all(angle(h{i},-h{i})<1e-2)
+    rLocal = rUpper;
+  else
+    rLocal = rAll;
+  end
+  p = ensureNonNeg(odf.calcPDF(h{i},rLocal,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  [~,caxes] = r.plot(p,'smooth','doNotDraw',varargin{:});
+  [~,caxes] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
   
   % plot annotations
   for cax = caxes(:).'
