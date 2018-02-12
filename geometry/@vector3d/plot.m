@@ -32,7 +32,7 @@ if check_option(varargin,'add2all')
   if isempty(gcm)
     ax = gca;
   else
-    ax = mtexFig.gca;
+    ax = mtexFig.children;
   end
   ax = get_option(varargin,'parent',ax);
   varargin = delete_option(varargin,'parent',1);

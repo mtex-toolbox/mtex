@@ -171,7 +171,7 @@ ss * orientation('euler',0,0,pi/4,cs,ss) * cs
 h = Miller({1,0,-1,0},{1,1,-2,0},{1,0,-1,1},{1,1,-2,1},{0,0,0,1},cs);
 
 for i = 1:length(h)
-  plot(h(i),'symmetrised','labeled','backgroundColor','w','doNotDraw','grid')
+  plot(h(i),'symmetrised','labeled','backgroundColor','w','doNotDraw','grid','upper')
   hold all
 end
 hold off
