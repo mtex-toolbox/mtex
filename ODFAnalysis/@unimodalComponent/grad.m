@@ -21,7 +21,6 @@ if check_option(varargin,'check')
   return
 end
 
-
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(ori);
 center = component.center(:);
