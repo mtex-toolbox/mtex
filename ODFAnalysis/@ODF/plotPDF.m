@@ -46,7 +46,7 @@ pfAnnotations = getMTEXpref('pfAnnotations');
 for i = 1:length(h)
   
   % create a new axis
-  mtexFig.nextAxis;
+  if ~isstruct(mtexFig), mtexFig.nextAxis; end
 
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));

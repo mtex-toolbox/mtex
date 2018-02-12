@@ -16,6 +16,8 @@ function plot(oS,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});
+add2all = check_option(varargin,'add2all');
+varargin = delete_option(varargin,'add2all');
 
 % extract orientations
 if nargin>1 && isa(varargin{1},'quaternion')
@@ -70,7 +72,13 @@ if exist('ori','var') || isempty(oS.plotGrid)
       iv.phi1 = iv.phi1(ind);
       iv.phi2 = iv.phi2(ind);
     end
+    
     plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    % maybe there is also a lower hemisphere
+    if oS.upperAndLower && add2all
+      mtexFig.nextAxis;
+      plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    end
     
   end
   
