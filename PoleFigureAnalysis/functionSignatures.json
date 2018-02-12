@@ -1,0 +1,29 @@
+{
+"calcODF":
+{
+    "inputs":
+    [
+        {"name":"pf", "kind":"required",   "type":"PoleFigure"},
+        {"name":"halfwidth", "kind":"namevalue", "type":"double"},
+	{"name":"iterMax", "kind":"namevalue", "type":"double"},
+	{"name":"iterMin", "kind":"namevalue", "type":"double"},
+	{"name":"resolution", "kind":"namevalue", "type":"double"},
+        {"name":"kernel", "kind":"namevalue", "type":"kernel"},
+        {"name":"weights", "kind":"namevalue", "type":"double"},
+        {"name":"method", "kind":"flag", "type":"choices={'MLSM', 'WIMV', 'Bunge'}"},
+        {"name":"method2", "kind":"flag", "type":"choices={'zeroRange','noGhostCorrection'}"}
+    ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"pf", "kind":"required",   "type":"PoleFigure"},
+        {"name":"minmax", "kind":"flag"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
+	{"name":"drawing", "kind":"flag", "type":"choices={'contour', 'contourf', 'smooth','scatter'}"}
+    ]
+}
+}

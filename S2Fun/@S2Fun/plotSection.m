@@ -22,7 +22,12 @@ end
 S2 = axis2quat(sec,omega)*axis2quat(orth(sec),eta)*sec;
     
 d = reshape(sF.eval(S2),length(S2), []);
-delta = max(d) / 200 * get_option(varargin,'linewidth',1);
+delta = getappdata(mtexFig.gca,'delta');
+if isempty(delta)
+  delta = max(d) / 200 ;
+  setappdata(mtexFig.gca,'delta',delta);
+end
+delta = delta * get_option(varargin,'linewidth',1);
 
 if isa(d,'double') && ~isreal(d), d = real(d);end
 for j = 1:length(sF)
