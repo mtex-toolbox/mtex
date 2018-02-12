@@ -7,13 +7,13 @@ classdef ODFSections < handle
   %   cs = crystalSymmetry('222')
   %   oS = axisAngleSections(cs,cs)
   %   ori = oS.makeGrid('resolution');
-  %   oM = patalaOrientationMapping(cs,cs)
+  %   oM = PatalaColorKey(cs,cs)
   %   rgb = oM.orientation2color(ori);
   %   plot(oS,rgb,'surf')
   %
   %   plot(oS,ori)
   %
-  %   ori = orientation(randq(100),cs,cs)
+  %   ori = orientation.rand(100,cs,cs)
   %   plot(oS,ori)
   
   properties
@@ -28,7 +28,11 @@ classdef ODFSections < handle
     CS % crystal symmetry
     SS % specimen symmetry
   end
-    
+   
+  properties (Access = protected)
+    upperAndLower = false % whether upper AND lower hemispheres are displayed
+  end
+  
   methods
     function oS = ODFSections(CS1,varargin)
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);

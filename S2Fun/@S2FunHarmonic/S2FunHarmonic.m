@@ -68,6 +68,7 @@ end
 methods (Static = true)
   sF = approximation(v, y, varargin);
   sF = quadrature(f, varargin);
+  sF = regularisation(nodes,y,lambda,varargin);
 end
 
 end

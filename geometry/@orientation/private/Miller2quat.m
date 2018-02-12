@@ -20,7 +20,7 @@ function quat = Miller2quat(v1,v2,CS)
 %
 % See also
 % quaternion_index quaternion/quaternion
-% vec42quat hr2quat idquaternion 
+% vec42quat hr2quat quaternion.id 
 
 % !!! TODO !!!!
 

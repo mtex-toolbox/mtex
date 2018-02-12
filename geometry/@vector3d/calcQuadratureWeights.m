@@ -42,6 +42,9 @@ else
   wmax = 2*quantile(w(:),0.8);
   w(w>wmax) = 1 * max(w(w<=wmax));
   
+  % normalize
+  w = w ./ sum(w);
+  
 end
 
 if any(isnan(w(:))) || any(imag(w(:))), w = 1./length(v);end

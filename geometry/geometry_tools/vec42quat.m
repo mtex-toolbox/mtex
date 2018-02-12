@@ -15,7 +15,7 @@ function q = vec42quat(u1,v1,u2,v2)
 %
 % See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
-% euler2quat hr2quat idquaternion 
+% euler2quat hr2quat
 
 
 u1 = vector3d(u1); v1 = vector3d(v1);

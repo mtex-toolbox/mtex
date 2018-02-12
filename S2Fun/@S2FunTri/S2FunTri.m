@@ -8,27 +8,39 @@ classdef S2FunTri < S2Fun
   
   properties (Dependent = true)
     vertices
+    antipodal
   end
   
   methods
     
-    function sF = S2FunTri(n,v)      
+    function sF = S2FunTri(nodes,values)      
       % initialize a spherical function
       
-      sF.values = v;
-      
-      if isa(n,'tririangulation')
-        sF.tri = n;
-      else
-        sF.tri = S2Triangulation(n);
+      if isa(nodes,'function_handle')
+        n = equispacedS2Grid('resolution',1.5*degree);
+        values = nodes(n);
+        nodes = n;
       end
+            
+      if isa(nodes,'S2Triangulation')
+        sF.tri = nodes;
+      else
+        sF.tri = S2Triangulation(nodes);
+      end
+      
+      sF.values = values;
     end
     
     function v = get.vertices(S2F)
       v = S2F.tri.vertices;
     end
     
+    function v = get.antipodal(S2F)
+      v = S2F.tri.antipodal;
+    end
+    
     function S2F = set.vertices(S2F,v)
+      if ~isempty(S2F.values), S2F.values = S2F.eval(v); end
       S2F.tri.vertices = v;
       S2F.tri.update;
     end

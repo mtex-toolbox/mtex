@@ -31,7 +31,7 @@ end
 [inner2,right] = extractSym(b);
 
 % ensure inner symmetries coincide
-if inner1 ~= inner2
+if inner1.Laue ~= inner2.Laue
   if isa(a,'orientation')
     a = a.transformReferenceFrame(inner2);
   elseif all(isnull(min(angle_outer(inner2,a))))

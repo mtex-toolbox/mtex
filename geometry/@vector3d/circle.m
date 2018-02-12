@@ -1,10 +1,14 @@
 function h = circle(normals,varargin)
 % annotated a circle
 %
+% Syntax
+%
+%   circle(n)
+%   circle(n,omega)
+%
 % Input
 %  n     - a normal @vector3d
-%  omega - an opening angle around n (default pi/2) (GreatCircle)
-%         an @vector3d
+%  omega - opening angle around n (default pi/2)  great circle
 %
 % Options
 %
@@ -27,7 +31,7 @@ for i = 1:length(normals)
   c = axis2quat(n,(0:1:360)*degree) * axis2quat(orth(n),omega)*n;
   
   % plot circles
-  h = [h,line(c,varargin{:},'hold')]; %#ok<AGROW>
+  h = [h,line(c,varargin{:},'hold','doNotDraw')]; %#ok<AGROW>
   
 end
 

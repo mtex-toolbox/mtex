@@ -24,7 +24,7 @@ for i =1:length(interfaces)
     if numel(args) > 1, options = args{2};end
     
     interfaceName = regexp(interfaces{i},'_(.*).m','tokens');
-    interface = {interface{:},char(interfaceName{1})};
+    interface = [interface(:)',{char(interfaceName{1})}];
   catch
   end
 end
@@ -50,7 +50,7 @@ if isempty(interface)
     %disp(' ');
     %disp(lasterr); %#ok<LERR>
     %disp(' ');
-    error('Could not detect file format. Please contact one of the maintainers of MTEX and send him a copy of your data files.');
+    error('Could not detect file format. You may ask for help in the MTEX forum (https://groups.google.com/forum/#!forum/mtexmail).');
   end
   
   if isempty(d)

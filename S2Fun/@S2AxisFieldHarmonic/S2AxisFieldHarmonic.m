@@ -1,4 +1,4 @@
-classdef S2AxisFieldHarmonic
+classdef S2AxisFieldHarmonic < S2AxisField
 % a class represeneting a axis field on the sphere
 
 properties
@@ -47,7 +47,7 @@ methods(Static = true)
   sAF = quadrature(f, varargin)
   sAF = approximation(v, y, varargin)
   function sAF = normal
-    sAF = S2AxisFieldHarmonic.quadrature(@(v) v,'bandwidth',2);
+    sAF = S2AxisFieldHarmonic.quadrature(@(v) v(:),'bandwidth',2);
   end
 end
 

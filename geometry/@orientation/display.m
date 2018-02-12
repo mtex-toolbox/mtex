@@ -27,6 +27,11 @@ if o.antipodal
 end
   
 
-if length(o) < 30 && ~isempty(o), Euler(o);end
+if length(o) < 20 && ~isempty(o)
+  Euler(o);
+else
+  %disp('  <a href="matlab:Euler(o)">show Euler angles</a>')
+  disp(' ')
+end
 
-disp(' ')
+

@@ -318,11 +318,10 @@ hold off
 
 mtexdata single
 
-oM = ipdfHSVOrientationMapping(ebsd);
-oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-oM.maxAngle = 5*degree;
+ipfKey = axisAngleColorKey(ebsd);
+ipfKey.oriRef = mean(ebsd.orientations);
 
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
 % We obeserve that the are no rapid changes in the orientation which would
@@ -333,13 +332,13 @@ grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
 figure
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold on
 plot(grains_high.boundary)
 hold off
 
 figure
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold on
 plot(grains_low.boundary)
 hold off
@@ -361,14 +360,13 @@ grains = calcGrains(ebsd('indexed'))
 
 % smooth grains to remove staircase effect
 grains_FMC = smooth(grains_FMC);
-grains = smooth(grains);
 
 %%
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
 %plot(ebsd,oM.orientation2color(ebsd.orientations))
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 % start overide mode
 hold on
@@ -376,4 +374,72 @@ plot(grains_FMC.boundary,'linewidth',1.5)
 
 % stop overide mode
 hold off
+
+%% TESTING OMLY
+% Below this is some testing code as the FMC method does not work so
+% satisfactory in the present example
+
+
+F = halfQuadraticFilter
+F.alpha = 0.01;
+F.eps = 1e-5;
+F.tol = 1e-10;
+
+ebsdS = smooth(ebsd('indexed'),F)
+
+
+
+
+%%
+[grains_FMC,ebsdS.grainId] = calcGrains(ebsdS('indexed'),'FMC',2)
+
+% smooth grains to remove staircase effect
+grains_FMC = smooth(grains_FMC)
+
+%%
+
+plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
+
+
+hold on
+plot(grains_FMC.boundary)
+hold off
+
+
+%%
+
+
+[grains,ebsdS.grainId] = calcGrains(ebsdS('indexed'),'angle',0.5*degree);
+ebsdS(grains(grains.grainSize<=3)) = [];
+
+[grains,ebsdS.grainId] = calcGrains(ebsdS('indexed'),'angle',0.25*degree);
+grains
+
+
+%%
+
+plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
+
+
+hold on
+plot(grains.boundary)
+hold off
+
+
+%%
+
+ori = ebsdS('indexed').orientations;
+meanOri = mean(ori)
+grainId = ebsdS('indexed').grainId;
+
+v = axis(ori,meanOri) .* angle(ori,meanOri);
+
+vv = v(grainId==2);
+scatter3(v.x,v.y,v.z,10*ones(size(grainId)),grainId,'filled')
+fcw
+hold on
+scatter3(vv.x,vv.y,vv.z,10,'MarkerFaceColor','red')
+
+
+
 

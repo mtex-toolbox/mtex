@@ -1,8 +1,9 @@
-function h = plot(f,varargin)
+function varargout = plot(f,varargin)
+% plot a fibre
 
 o = f.orientation(varargin{:});
 
-if isempty(o), h = []; return; end
+if isempty(o), varargout = cell(1,nargout); return; end
 
 if isa(o,'orientation')
 
@@ -18,8 +19,6 @@ if isa(o,'orientation')
   end
 end
 
-h = line(o,varargin{:});
-
-if nargout == 0, clear h; end
+[varargout{1:nargout}] = line(o,varargin{:});
 
 end

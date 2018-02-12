@@ -10,6 +10,10 @@ function [h,mP] = plot(grains,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
+% Options
+%  noBoundary  - do not plot boundaries 
+%  displayName - name used in legend
+%
 % See also
 % EBSD/plot grainBoundary/plot
 
@@ -27,16 +31,20 @@ end
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
   
-  oM = ipdfHSVOrientationMapping(varargin{1});
+  oM = ipfColorKey(varargin{1});
   varargin{1} = oM.orientation2color(varargin{1});
   disp('  I''m going to colorize the orientation data with the ');
   disp('  standard MTEX colorkey. To view the colorkey do:');
   disp(' ');
-  disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
+  disp('  oM = ipfColorKey(ori_variable_name)')
   disp('  plot(oM)')
 end
 
 plotBoundary = true;
+% allow to plot grain faces only without boundaries
+if check_option(varargin,'noBoundary')
+plotBoundary = false;
+end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})

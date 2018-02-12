@@ -10,7 +10,7 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = '];
 else
   h = [];
-end;
+end
 
 if isempty(odf)
   disp([h doclink('ODF_index','ODF') ' ' docmethods(inputname(1))]);

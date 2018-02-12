@@ -16,7 +16,7 @@ function varargout = find(S2G,v,varargin)
 % Output
 %  ind     - int32        
 
-  
+% TODO: implement faster find for regular S2Grid
 d = [];
 if checkOption(S2G,'antipodal'), v = [v(:),-v(:)]; end
 
@@ -36,7 +36,7 @@ if nargin == 2
   
   ind = S2Grid_find(ytheta,int32(iytheta),yrho,prho,xtheta,xrho);
     
-  if check_option(S2G,'antipodal')
+  if S2G.antipodal
     ind = reshape(ind,[],2);
         
     d = abs(dot(S2G(ind),v));

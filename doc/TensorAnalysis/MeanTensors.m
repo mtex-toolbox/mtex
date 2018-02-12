@@ -55,7 +55,7 @@ csGlaucophane = crystalSymmetry('2/m',[9.5334,17.7347,5.3008],...
   [90.00,103.597,90.00]*degree,'X||a*','Z||c','mineral','Glaucophane');
 
 % define the tensor
-CGlaucophane = tensor(MGlaucophane,csGlaucophane)
+CGlaucophane = stiffnessTensor(MGlaucophane,csGlaucophane)
 
 %%
 % Epidote elastic stiffness (Cij) Tensor in GPa
@@ -78,7 +78,7 @@ csEpidote= crystalSymmetry('2/m',[8.8877,5.6275,10.1517],...
   [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
 
 % define the tensor
-CEpidote = tensor(MEpidote,csEpidote)
+CEpidote = stiffnessTensor(MEpidote,csEpidote)
 
 %% The Average Tensor from EBSD Data
 % The Voigt, Reuss, and Hill averages for all phases are computed by

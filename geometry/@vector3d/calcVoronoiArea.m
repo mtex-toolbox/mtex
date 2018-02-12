@@ -1,5 +1,5 @@
 function [area,centroids] = calcVoronoiArea(v,varargin)
-% compute the area of the Voronoi decomposition
+% compute the spherical area of the Voronoi decomposition
 %
 % Input
 %  v - @vector3d
@@ -12,12 +12,13 @@ function [area,centroids] = calcVoronoiArea(v,varargin)
 % incomplete -
 
 v = reshape(v,[],1);
+N = length(v);
 
 % in case of antipodal symmetry - add antipodal points
-antipodal = v.antipodal;
+antipodal = v.antipodal || check_option(varargin, 'antipodal');
 if antipodal
-  v = [v;-v];
   v.antipodal = false;
+  [v,~,IC] = unique([v;-v]);
 end
 
 [V,C] = calcVoronoi(v);
@@ -56,6 +57,12 @@ area = zeros(size(nd));
 area(nd) = A(1:nnz(nd));
 
 if antipodal
-  area = sum(reshape(area,[],2),2);
+  idx = ( accumarray(IC,ones(size(IC))) == 2 ); % find all double occurences
+  area(idx) = area(idx)/2; % halve their weight
+  area = area(IC); % go back to original order
+  area = area(1:N); % only the original nodes
 end
+
+
+
 

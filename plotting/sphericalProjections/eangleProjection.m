@@ -1,5 +1,5 @@
 classdef eangleProjection < sphericalProjection
-  %equal area projection
+  % stereographic, conformal or equal angle projection
   
   methods 
         
@@ -21,7 +21,7 @@ classdef eangleProjection < sphericalProjection
       ind = ~sP.sR.checkInside(v);
       rho(ind) = rho(ind) + pi;
       
-      % formula for equal area projection
+      % formula for stereographic projection
       r =  tan(theta/2);
             
       % compute coordinates
@@ -31,7 +31,9 @@ classdef eangleProjection < sphericalProjection
     end
     
     function v = iproject(sP,x,y)
-      v = vector3d('theta',x*degree,'rho',y*degree);
+      rho = atan2(y,x);
+      theta = 2*atan(sqrt(x.^2 + y.^2));
+      v = vector3d('theta',theta,'rho',rho);
     end
     
   end

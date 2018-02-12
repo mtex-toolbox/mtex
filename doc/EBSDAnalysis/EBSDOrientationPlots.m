@@ -50,7 +50,7 @@ plotSection(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 % orientation space, i.e., either in axis/angle parameterization or in Rodrigues
 % parameterization.
 
-scatter(ebsd('Fo').orientations,'center',idquaternion)
+scatter(ebsd('Fo').orientations)
 
 %%
 % Here, the optional option 'center' specifies the center of the unique

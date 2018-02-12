@@ -26,8 +26,11 @@ classdef sphericalRegion
       % default syntax sphericalRegion(N,alpha)
       if nargin>=1 && isa(varargin{1},'vector3d')
         sR.N = normalize(varargin{1});
-        if nargin>=2 && isa(varargin{1},'double')
+        if nargin>=2 && isa(varargin{2},'double')
           sR.alpha = varargin{2};
+          if length(sR.alpha) == 1
+            sR.alpha = repmat(sR.alpha,size(sR.N));
+          end
         else
           sR.alpha = zeros(size(sR.N));
         end

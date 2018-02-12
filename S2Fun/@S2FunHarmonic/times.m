@@ -21,7 +21,7 @@ elseif isnumeric(sF2)
   sF.fhat = sF.fhat*sF2;
 else
   f = @(v) sF1.eval(v) .* sF2.eval(v);
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF1.bandwidth + sF2.bandwidth);
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', min(getMTEXpref('maxBandwidth'),sF1.bandwidth + sF2.bandwidth));
 end
 
 end

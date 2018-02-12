@@ -4,7 +4,7 @@ function init(solver,varargin)
 pf = solver.pf;
 
 % kernel coefficents
-A = solver.psi.A;
+A = solver.psi.A(:);
 A = A ./ (2*(0:length(A)-1)+1).';
 if pf.antipodal
   A(2:2:end) = 0;

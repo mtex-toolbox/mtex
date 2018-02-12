@@ -12,6 +12,7 @@ classdef MLSSolver < pf2odfSolver
     zrm     % zero range method
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
+    iterMin = 5; % max number of iterations
   end
   
   properties (Access = private)
@@ -60,7 +61,7 @@ classdef MLSSolver < pf2odfSolver
       end
       
       % zero range method
-      if check_option(varargin,{'ZR','zero_range'})
+      if check_option(varargin,{'ZR','zero_range','zeroRange'})
         solver.zrm = zeroRangeMethod(solver.pf);
       end
         
@@ -70,7 +71,8 @@ classdef MLSSolver < pf2odfSolver
       solver.psi = getClass(varargin,'kernel',psi);
             
       % get other options
-      solver.iterMax = get_option(varargin,'ITERMAX',solver.iterMax);
+      solver.iterMin = get_option(varargin,'iterMin',solver.iterMin);
+      solver.iterMax = get_option(varargin,'iterMax',solver.iterMax);
   
       % start vector
       solver.c = get_option(varargin,'C0',[]);

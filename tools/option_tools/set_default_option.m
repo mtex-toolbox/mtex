@@ -1,20 +1,20 @@
 function out_list = set_default_option(option_list,preserve,option,varargin)
 % set option in option list if not yet present
 %
-%% Syntax
-%  value = set_default_option(option_list,preserve,option,value) -
-%  value = set_default_option(option_list,preserve,{option1,option2,option3}) -
+% Syntax
+%   value = set_default_option(option_list,preserve,option,value) -
+%   value = set_default_option(option_list,preserve,{option1,option2,option3}) -
 %
-%% Input
+% Input
 %  option_list   - Cell Array
 %  preserve      - options to be preserved
 %  option        - String
 %  value         - some type
 %
-%% Output
+% Output
 %  out_list      - Cell Array
 %
-%% See also
+% See also
 % check_option get_option delete_option
 
 if nargin == 2

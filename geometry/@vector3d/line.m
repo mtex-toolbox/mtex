@@ -25,10 +25,11 @@ if nargin > 1 && isa(varargin{1},'vector3d')
   % add a nan after each segment
   v = [v;vector3d.nan(1,length(v1))];
 
+  varargin = delete_option(varargin,{'label','labeled'},[1,0]);
   [varargout{1:nargout}] = line(v,varargin{:});
   
   return
 end
 
 [varargout{1:nargout}] = scatter(reshape(v,[],1),varargin{:},'edgecolor',...
-  get_option(varargin,{'color','linecolor'},'k'),'Marker','none');
+  get_option(varargin,{'color','linecolor'},'k'),'Marker','none','scatter_resolution',1*degree);

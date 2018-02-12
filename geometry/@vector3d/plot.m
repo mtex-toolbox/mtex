@@ -26,6 +26,30 @@ function varargout = plot(v,varargin)
 %  contour  - plot point cloud as contours
 %
 
+% maybe we should add this do all subplots
+if check_option(varargin,'add2all')
+  mtexFig = gcm;
+  if isempty(gcm)
+    ax = gca;
+  else
+    ax = mtexFig.children;
+  end
+  ax = get_option(varargin,'parent',ax);
+  varargin = delete_option(varargin,'parent',1);
+  varargin = delete_option(varargin,'add2all');
+  
+  h = [];
+  for i = 1:length(ax)
+    h = [h,plot(v,varargin{:},'parent',ax(i))]; %#ok<AGROW>
+  end
+  
+  if nargout >=1, varargout{1} = h; end
+  if nargout >=2, varargout{2} = ax; end
+  
+  return
+end
+
+
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
   'line','plane','circle','surf','pcolor','custom','3d','scatter3d'};

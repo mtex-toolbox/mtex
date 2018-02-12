@@ -68,6 +68,7 @@ if ~check_option(varargin,'cell'), c = strcat(c{:});end
 function s=barchar(i,varargin)
 
 comma = check_option(varargin,'commasep');
+space = check_option(varargin,'spacesep');
 i = round(i);
 s = '';
 for j = 1:length(i)
@@ -79,6 +80,9 @@ for j = 1:length(i)
   
   if comma && j < length(i)
     s = [s,','];
+  elseif space && j < length(i)
+    s = [s,' '];
+    if i(j+1)>=0, s = [s,' ']; end
   elseif any(i>9)
     s = [s,' '];
   end

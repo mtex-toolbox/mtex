@@ -73,7 +73,7 @@ r = normalize(r);
 qr = quaternion(0,r);
 qh = quaternion(0,h);
 
-q1 = idquaternion - qr*qh;
+q1 = quaternion.id - qr*qh;
 q2 = qr+qh;
 
 if isnull(norm(h-r))
@@ -82,7 +82,7 @@ if isnull(norm(h-r))
   q3 = quaternion(0,v1);
   q4 = quaternion(0,v2);
 else
-  q3 = idquaternion + qr*qh;
+  q3 = quaternion.id + qr*qh;
   q4 = qr-qh;
 end
 

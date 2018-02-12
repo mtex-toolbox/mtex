@@ -55,8 +55,8 @@ q.d(notInside) = qn.d;
 
 % some testing code
 % cs = crystalSymmetry('432')
-% q = randq(100,1);
-% q_ref = randq(100,1);
+% q = quaternion.rand(100,1);
+% q_ref = quaternion.rand(100,1);
 % q_proj = project2FR_ref(q,quaternion(cs),q_ref);
 % hist(angle(q_proj,q_ref)/degree)
 

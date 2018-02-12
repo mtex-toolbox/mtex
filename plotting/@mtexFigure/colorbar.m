@@ -13,7 +13,7 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
       mtexFig.cBarAxis(i) = addColorbar(mtexFig.children(i),varargin{:});
     end
     
-  end
+  end  
   
   % adjust width of the colorbars
   pos = ensurecell(get(mtexFig.cBarAxis,'position'));
@@ -46,7 +46,11 @@ if nargout == 1, h = mtexFig.cBarAxis; end
     % if lower bound is close to zero - make it exactly zero
     c = get(peer,'CLim');
     if abs(c(1) / (c(2)-c(1)))<1e-3
-      set(peer,'CLim',[0,c(2)]);
+      try
+        assert(strcmp(get(peer,'ColorScale'),'log'));
+      catch
+        set(peer,'CLim',[0,c(2)]);
+      end
     end
     
     fs = getMTEXpref('FontSize');

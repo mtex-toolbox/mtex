@@ -81,7 +81,7 @@ classdef sphericalPlot < handle
         
         set(ax,'XTick',[],'YTick',[]);
         try
-          %set(ax,'XColor','none','YColor','none');
+          set(ax,'XColor','none','YColor','none');
           xlabel(ax,[],'visible','on','color','k');
           ylabel(ax,[],'visible','on','color','k');
         end
@@ -190,8 +190,10 @@ classdef sphericalPlot < handle
   
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
+        isLine = strcmp(get(childs,'type'),'line');
   
-        set(sP.hgt,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
+        set(sP.hgt,'Children',[childs(istext); sP.boundary(:); sP.grid(:);...
+          childs(isLine & ~isgrid & ~istext);childs(~isLine & ~isgrid & ~istext)]);
       end
     end
     

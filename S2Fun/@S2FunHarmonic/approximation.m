@@ -26,22 +26,7 @@ tol = get_option(nodes, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
 
 if check_option(varargin, 'antipodal') || nodes.antipodal 
-  if check_option(varargin, 'weights')
-    W = get_option(varargin, 'weights');
-  else
-    [nodes2, IA, IC] = unique([nodes; -nodes]); 
-    W = nodes2.calcVoronoiArea; % Voronoi weights for symmetrized grid
-
-    W = W(IC);
-    W = W(1:length(nodes)); % going back to originally grid
-
-    for j = 1:length(nodes)-1 % divide weights by two if nodes and -nodes exist
-      test = ( abs(IC(j)-IC(length(nodes)+j+1:end)) <= 1e-6 );
-      if sum(test) > 0
-        W([j find(test)+j]) = 0.5*W([j find(test)+j]); 
-      end
-    end
-  end
+  nodes.antipodal = true;
   bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
   bw = floor(bw/2)*2; % make bandwidth even
   mask = sparse((bw+1)^2); % only use even polynomial degree
@@ -50,10 +35,15 @@ if check_option(varargin, 'antipodal') || nodes.antipodal
   end
 else
   bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes)/2)));
-  W = get_option(varargin, 'weights', nodes.calcVoronoiArea);
   mask = speye((bw+1)^2);
 end
 
+W = get_option(varargin, 'weights');
+if isempty(W) 
+  W = nodes.calcVoronoiArea;
+else
+  W = W(ind);
+end
 W = sqrt(W(:));
 
 % initialize nfsft

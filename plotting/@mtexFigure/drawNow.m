@@ -67,7 +67,7 @@ end
 figSize = figSize - sum(reshape(mtexFig.figTightInset,2,2),2).';
 
 % compute layout
-if ~check_option(varargin,'keepAxisSize')
+if ~check_option(varargin,'keepAxisSize') || isempty(mtexFig.axisWidth)
   [mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
   [mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
 else

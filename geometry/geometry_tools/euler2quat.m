@@ -24,7 +24,7 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %
 % See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat
-% vec42quat hr2quat idquaternion
+% vec42quat hr2quat
 
 % maybe euler angles are given as a matrix
 if nargin == 1 && size(alpha,2)==3

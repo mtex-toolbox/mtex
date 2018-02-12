@@ -16,12 +16,31 @@ function h = text(v,varargin)
 %
 % See also
 
+if check_option(varargin,'add2all')
+  mtexFig = gcm;
+  if isempty(gcm)
+    ax = gca;
+  else
+    ax = mtexFig.children;
+  end
+  ax = get_option(varargin,'parent',ax);
+  varargin = delete_option(varargin,'parent',1);
+  varargin = delete_option(varargin,'add2all');
+  
+  for i = 1:length(ax)
+    text(v,varargin{:},'parent',ax(i));
+  end
+  
+  return
+end
+
+
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
 interpreter = getMTEXpref('textInterpreter');
 fs = getMTEXpref('FontSize');
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 
 if check_option(varargin,'textAboveMarker')
   aboveBelow = -5;

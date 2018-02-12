@@ -1,4 +1,4 @@
-function h = smooth(v,varargin)
+function [h,ax] = smooth(v,varargin)
 %
 % Syntax
 %
@@ -14,7 +14,7 @@ function h = smooth(v,varargin)
 h = [];
 
 % initialize spherical plot
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 for j = 1:numel(sP)
@@ -46,7 +46,7 @@ for j = 1:numel(sP)
     if size(S2G,1) == 1 || size(S2G,2) == 1
 
       S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
-      cdata = interp(v,cdata,S2G,'cutOutside');
+      cdata = interp(v,cdata,S2G,'cutOutside',varargin{:});
       
     elseif ~isa(sP(j).proj,'plainProjection')
       
@@ -93,7 +93,7 @@ for j = 1:numel(sP)
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange); end
 
   % colormap
-  colormap(sP(j).ax,getMTEXpref('defaultColorMap'));
+  mtexColorMap(sP(j).ax,getMTEXpref('defaultColorMap'));
 
   % bring grid in front
   sP(j).doGridInFront;
@@ -103,7 +103,7 @@ for j = 1:numel(sP)
 end
 
 % set styles
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 optiondraw(h,varargin{:});
 
 if isappdata(sP(1).parent,'mtexFig')
@@ -111,7 +111,11 @@ if isappdata(sP(1).parent,'mtexFig')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if nargout == 0, clear h; end
+if nargout == 0
+  clear h; 
+else
+  ax = [sP.ax];
+end
 
 end
 

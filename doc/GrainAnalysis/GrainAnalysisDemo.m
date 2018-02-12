@@ -65,8 +65,8 @@ hold off
 % colored according to the false color map of its inverse polefigure
 
 close all
-oM = ipdfHSVOrientationMapping(ebsd_region('Quartz'));
-plot(oM,'Position',[825 100 300 300])
+ipfKey = ipfColorKey(ebsd_region('Quartz'));
+plot(ipfKey,'Position',[825 100 300 300])
 
 
 %%

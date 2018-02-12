@@ -19,6 +19,7 @@ classdef crystalShape
   properties (Dependent = true)
     CS % crystal symmetry
     diameter
+    faceArea
   end
   
   methods
@@ -49,7 +50,7 @@ classdef crystalShape
           (abs(N.l) * cS.extension(3)).^cS.habitus).^(1/cS.habitus);
       end
       
-      N = unique(vector3d(N.symmetrise));
+      N = unique(vector3d(N.symmetrise),'stable');
             
       tol = 1e-5;
 
@@ -108,6 +109,14 @@ classdef crystalShape
     
     function cS = set.diameter(cS,d)
       cS.V = cS.V * (d/cS.diameter);
+    end
+    
+    function fA = get.faceArea(cS)
+      fA = zeros(size(cS.F,1),1);
+      for i = 1:length(fA)
+        VId = cS.F(i,:); VId = VId(~isnan(VId));
+        fA(i) = polyArea(cS.V(VId));
+      end
     end
     
   end

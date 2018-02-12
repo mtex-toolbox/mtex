@@ -89,15 +89,13 @@ h5writeatt(fname,[root '/Orientations'],'Mapping','Active');
 h5create(fname,[root '/PhaseIndex'],[1 n],'Datatype','uint8','ChunkSize',[1 chnk],opts{:});
 h5write(fname, [root '/PhaseIndex'],ebsd.phase(:).');
 
-fn = fields(ebsd.options);
+fn = fields(ebsd.prop);
 
 
-if all(isfield(ebsd.options,{'x','y','z'}))
-  coords = [ebsd.x,ebsd.y,ebsd.z];
-elseif all(isfield(ebsd.options,{'x','y'}))
-  coords = [ebsd.x,ebsd.y];
-else
-  coords = [];
+if all(isfield(ebsd.prop,{'x','y','z'}))
+  coords = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
+elseif all(isfield(ebsd.prop,{'x','y'}))
+  coords = [ebsd.prop.x,ebsd.prop.y];
 end
 
 if ~isempty(coords)
@@ -113,7 +111,7 @@ end
 
 for k=1:numel(fn)
   
-  p = ebsd.options.(fn{k});
+  p = ebsd.prop.(fn{k});
   
   if any(strcmp(fn{k},{'x','y','z'}))
     

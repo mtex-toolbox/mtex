@@ -22,7 +22,7 @@ psi = deLaValeePoussinKernel('halfwidth',...
 w = calcDensity(pf.r,S2G,'kernel',psi,'noNormalization');
 
 mw = psi.RK(1);
-%w = max(RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry)*0.25,w);
+%w = max(RK(k,quaternion.id,xvector,xvector,1,symmetry,symmetry)*0.25,w);
 %plot(S2G,min(w,mw))
   
 % c - coefficients

@@ -33,10 +33,10 @@ if nargin > 1 && isnumeric(varargin{1})
 end
 
 % initial resolution
-res = 5*degree;
+res = get_option(varargin,'resolution',5*degree);
 
 % target resolution
-targetRes = get_option(varargin,'resolution',0.25*degree);
+targetRes = get_option(varargin,'accuracy',0.25*degree);
 
 
 % initial seed

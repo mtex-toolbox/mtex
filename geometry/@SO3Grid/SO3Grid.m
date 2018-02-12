@@ -36,7 +36,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) SO3Grid < orientation
 
       S3G.alphabeta = alphabeta;
       S3G.gamma = gamma;
-      S3G.center = get_option(varargin,'center',idquaternion);
+      S3G.center = get_option(varargin,'center',quaternion.id);
       S3G.resolution = get_option(varargin,'resolution',2*pi);
     end
   end

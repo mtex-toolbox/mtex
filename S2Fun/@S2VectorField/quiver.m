@@ -1,17 +1,19 @@
-function h = quiver(sVF,varargin)
+function varargout = quiver(sVF,varargin)
 % quiver spherical vector field
 %
 % Syntax
 %   quiver3(sVF)
 %
+% Options
+%  normalized - normalize vectors
+%  arrowSize
+%  maxHeadSize
+
 % See also
 %   S2VectorField/plot
 %
 
 % plot the function values
-h = plot(sVF,varargin{:});
-
-% remove output if not required
-if nargout == 0, clear h; end
+[varargout{1:nargout}] = plot(sVF,varargin{:});
 
 end

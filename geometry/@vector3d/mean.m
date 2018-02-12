@@ -24,17 +24,16 @@ function m = mean(v,varargin)
 v = v.normalize;
 if check_option(varargin,'antipodal') || v.antipodal
   
-  % find first non singular dimension
-  if nargin > 1 && isnumeric(varargin{1}),
-    d = varargin{1};
-  else
-    d = find(size(v.x)~=1, 1 );     
-  end
+  varargin = delete_option(varargin,'antipodal');
   
-  M = [v.x(:) v.y(:) v.z(:)];
-  M = M.' * M;
-  [u,~,~] = svds(M,1);
-  m = vector3d(u(1),u(2),u(3),'antipodal');
+  xx = mean(v.x.^2,varargin{:});
+  xy = mean(v.x.*v.y,varargin{:});
+  xz = mean(v.x.*v.z,varargin{:});
+  yy = mean(v.y.^2,varargin{:});
+  yz = mean(v.y.*v.z,varargin{:});
+  zz = mean(v.z.^2,varargin{:});
+  
+  [m,~] = eig3(xx,xy,xz,yy,yz,zz,'largest');  
   
 else
   m = sum(v,varargin{:});

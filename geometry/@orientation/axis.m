@@ -71,6 +71,7 @@ if nargin >= 2 && isa(varargin{1},'orientation')
   % given by o2 * l(il) * q.axis or equivalently by  
   a = q2 .* r(irMax) .* axis@quaternion(q);
 
+  a.antipodal = check_option(varargin,'antipodal');     
  
 else
    

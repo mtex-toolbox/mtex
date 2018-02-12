@@ -228,7 +228,7 @@ mir.isImproper
 % rotation in Rodriguez space.
 
 % define 100 random rotations
-rot = randq(100)
+rot = rotation.rand(100)
 
 % and plot the Rodriguez space
 scatter(rot)

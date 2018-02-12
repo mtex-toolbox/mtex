@@ -1,4 +1,4 @@
-function h = scatter(v,varargin)
+function [h,ax] = scatter(v,varargin)
 %
 % Syntax
 %   scatter(v)              % plot the directions v
@@ -26,9 +26,9 @@ function h = scatter(v,varargin)
 
 % initialize spherical plots
 opt = delete_option(varargin,...
-  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'});
+  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 
 h = [];
 
@@ -177,7 +177,11 @@ for i = 1:numel(sP)
   end
 end
 
-if nargout == 0, clear h;end
+if nargout == 0
+  clear h;
+else
+  ax = [sP.ax];
+end
 
 end
 

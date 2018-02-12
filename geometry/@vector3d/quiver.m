@@ -17,7 +17,7 @@ function h = quiver(v, d, varargin )
 % See also
 
 % initialize spherical plot
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 v = vector3d(v);
@@ -35,18 +35,18 @@ for j = 1:numel(sP)
   
   % project data
   if check_option(varargin,'centered') || mhs == 0
-    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),'removeAntipodal',varargin{:});
   else
-    [x0,y0] = project(sP(j).proj,normalize(v),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),'removeAntipodal',varargin{:});
   end
 
   if ~check_option(varargin,'autoArrowSize')
     arrowSize = 0;
   end
   
-  varargin = delete_option(varargin,'parent');
+  varargin = delete_option(varargin,'parent',1);
   h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSize,'MaxHeadSize',mhs,'parent',sP(j).hgt),varargin{:});     %#ok<AGROW>
   
   % finalize the plot

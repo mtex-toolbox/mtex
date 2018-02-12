@@ -152,11 +152,12 @@ function setMTEXPath(local_path)
 
 exclPath = {'data','makeDoc','templates','nfft'};
 
-if ~MATLABverLessThan('8.1')
-  exclPath = [exclPath,'8.4'];
-end
+if ~MATLABverLessThan('8.4'), exclPath = [exclPath,'8.4']; end
+if ~MATLABverLessThan('8.5'), exclPath = [exclPath,'8.5']; end
 
+warning off
 addpath_recurse(local_path,exclPath);
+warning on
 
 end
 

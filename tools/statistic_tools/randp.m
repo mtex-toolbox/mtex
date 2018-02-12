@@ -1,6 +1,11 @@
 function r = randp(lambda)
 % randp(lambda) returns Poisson distributed Vector with mean lambda
 
+try
+  r = poissrnd(lambda);
+  return
+end
+
 lambda   = reshape(lambda,1,[]);
 aktiv    = find(lambda > 1e-10);
 ll       = log(lambda(aktiv));

@@ -1,4 +1,4 @@
-function [ori,options] = loadOrientation_generic(fname,varargin)
+function [ori,S] = loadOrientation_generic(fname,varargin)
 % load Orientation data from generic text files
 %
 % Description
@@ -24,6 +24,10 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % Input
 %  fname - file name (text files only)
 %
+% Output
+%  ori - @orientation
+%  S - struct with fields for the additional columns
+%
 % Options
 %  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - postions of the columns to be imported
@@ -33,7 +37,6 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
 %  PASSIVE           - 
-%
 %
 % Example
 %
@@ -47,12 +50,16 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % See also
 % loadOrientation
 
+isCheck = check_option(varargin,'check');
+
 try
-
   % load data
-  [d,options,header,c] = load_generic(char(fname),varargin{:});
-
-  varargin = options;
+  if ~isnumeric(fname)
+    [d,options,header,c] = load_generic(char(fname),varargin{:});
+    varargin = options;
+  else
+    d = fname;
+  end
 
   % no data found
   if size(d,1) < 1 || size(d,2) < 3
@@ -61,95 +68,30 @@ try
 
   % no options given -> ask
   if ~check_option(varargin,'ColumnNames')
+
     options = generic_wizard('data',d(1:end<101,:),'type','Orientation','header',header,'columns',c);
     if isempty(options), ori = []; return; end
-    varargin = [options,varargin];  
+    varargin = [options,varargin];
+
   end
 
-  names = lower(get_option(varargin,'ColumnNames'));
-  cols = get_option(varargin,'Columns',1:length(names));
+  loader = loadHelper(d,varargin{:});
 
-  assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+  q = loader.getRotations();
 
-  [names, m] = unique(names);
-  cols = cols(m);
-
-  istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-  layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
-
-  euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
-  bunge = lower({'Phi1' 'Phi' 'Phi2'});
-  quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
-
-  if istype(names,euler) || istype(names,bunge) % Euler angles specified
-  
-    if istype(names,euler)
-      layout = layoutcol(names,euler);
-    else
-      layout = layoutcol(names,bunge);
-    end
-  
-    %extract options
-    dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-  
-    % eliminate nans
-    if ~check_option(varargin,'keepNaN')
-      d(any(isnan(d(:,layout)),2),:) = [];
-    end
-  
-    % eliminate rows where angle is 4*pi
-    ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
-    d(ind,:) = [];
-  
-    % extract data
-    alpha = d(:,layout(1))*dg;
-    beta  = d(:,layout(2))*dg;
-    gamma = d(:,layout(3))*dg;
-  
-    assert(all((beta >=0 & beta <= pi &...
-      alpha >= -2*pi & alpha <= 4*pi &...
-      gamma > -2*pi & gamma<4*pi) | ...
-      isnan(alpha)));
-  
-    % check for choosing
-    if max([alpha(:);beta(:);gamma(:)]) < 10*degree
-      warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
-    end
-  
-    % transform to quaternions
-    noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
-    q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
-  
-  elseif istype(names,quat) % import quaternion
-  
-    layout = layoutcol(names,quat);
-    d(any(isnan(d(:,layout)),2),:) = [];
-  
-    q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
-  
-  else
-  
-    error('You should at least specify three Euler angles or four quaternion components!');
-  
-  end
-
+  % correct for passive rotation
   if check_option(varargin,{'passive','passive rotation'}), q = inv(q); end
-  % In some software, selecting/partitioning data points is done by setting
-  % the phase value to -1. All phase values must be positive integers in
-  % mtex. To fix this, add a 'dummy' phase to contain the excluded points.
   
-  % return varargin as options
-  options = varargin;
+  % extract additional properties
+  S = loader.getOptions();
 
   % set up ori variable
   CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
   SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
   ori = orientation(q,CS,SS);
 
+  if isCheck, S = options; end
+  
 catch
   interfaceError(fname)
 end
-
-function str = stripws(str)
-
-str = strrep(str,' ','');

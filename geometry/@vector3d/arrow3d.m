@@ -16,6 +16,10 @@ else
   ax = gca;
 end
 
+if vec.antipodal || check_option(varargin,'antipodal')
+  vec = [vec,-vec];
+end
+
 % do not change caxis
 cax = caxis(ax);
 
@@ -52,10 +56,11 @@ end
 caxis(ax,cax);
 
 % set axis to 3d
-axis(ax,'equal','vis3d','off');
+%axis(ax,'equal','vis3d','off');
 
 % st box limits
-bounds = [-1 1] * max(norm(vec(:)));
-set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
+bounds = [-1 1] * max(max(norm(vec)));
+set(ax,'XLim',bounds,'YLim',bounds,'ZLim',bounds);
+%set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
 
 if nargout == 0, clear h;end

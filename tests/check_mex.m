@@ -61,10 +61,10 @@ tic
 find(x,quaternion(y),5*degree);
 toc
 
-find(x,idquaternion,20*degree)
+find(x,quaternion.id,20*degree)
 
 q = axis2quat(xvector+yvector,45*degree);
-q = idquaternion;
+q = quaternion.id;
 
 sx = quaternion(subGrid(x,find(x,q,10*degree)));
 

@@ -1,9 +1,21 @@
 function [mtexFig,newFigure] = newMtexFigure(varargin)
-% 
+% set uo a new plotting figure
+%
+% Syntax
+%
+%   newMtexFigure()
+%
+% Input
+%
+% Options
+%
+
+mtexFig = gcm;
 
 % check hold state
-newFigure = ~isappdata(gcf,'mtexFig') || check_option(varargin,'newFigure') || ...
-  (strcmp(getHoldState,'off') && ~check_option(varargin,{'hold','parent'}));
+newFigure = isempty(mtexFig) || check_option(varargin,'newFigure') || ...
+  (strcmp(getHoldState,'off') && ~check_option(varargin,{'hold','parent','add2all'}) ...
+  && ~isempty(get(mtexFig.currentAxes,'Children')));
 
 % check tag
 if ~newFigure && check_option(varargin,'ensureTag') && ...
@@ -87,7 +99,7 @@ else % use an existing figure
     else
       mtexFig.currentAxes = get(p,'parent');
     end
-  else
+  elseif check_option(varargin,'add2all')
     mtexFig.currentId = 1;
   end
 end

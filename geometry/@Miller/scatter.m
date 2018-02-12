@@ -40,7 +40,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
         
       if check_option(varargin,'label')
         label = ensurecell(get_option(varargin,'label'));
-        label = rep(label,l);
+        label = repelem(label,l);
         varargin = set_option(varargin,'label',label);
       end
       

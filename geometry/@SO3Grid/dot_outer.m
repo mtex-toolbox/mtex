@@ -47,7 +47,7 @@ else
   
   % correct for specimen symmetry
   if check_option(varargin,'nospecimensymmetry')
-    qss = idquaternion;
+    qss = quaternion.id;
     palpha = 2*pi;
   else
     qss = quaternion(rotation_special(S3G.SS));

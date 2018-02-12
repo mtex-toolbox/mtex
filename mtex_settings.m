@@ -24,7 +24,7 @@ setMTEXpref('aAxisDirection',''); % undefined
 
 % default figure size, possible values are a factor between 0 and 1 or
 % 'tiny', 'small', 'normal', 'large', 'huge'
-setMTEXpref('figSize','normal');
+setMTEXpref('figSize','large');
 
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
@@ -48,7 +48,7 @@ setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
 
 % default fontsize
-setMTEXpref('FontSize',13);
+setMTEXpref('FontSize',15);
 
 % default annotation style
 setMTEXpref('annotationStyle',...
@@ -166,6 +166,7 @@ setMTEXpref('memory',500*1024);
 %
 setMTEXpref('FFTAccuracy',1E-2);
 
+setMTEXpref('maxBandwidth',512);
 
 %% degree character
 % MTEX sometimes experences problems when printing the degree character

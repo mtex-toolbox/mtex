@@ -16,7 +16,7 @@ function [M,b,eps] = calcInvTaylor(mori,sS,varargin)
 % Example
 %   
 %   % define 10 percent strain
-%   eps = 0.1 * tensor(diag([1 -0.75 -0.25]),'name','strain')
+%   eps = 0.1 * strainTensor(diag([1 -0.75 -0.25]))
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')

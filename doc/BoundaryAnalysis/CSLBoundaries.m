@@ -12,10 +12,10 @@ mtexdata csl
 plotx2east
 
 % grain segementation
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % grain smoothing
-grains = smooth(grains,2) 
+grains = smooth(grains,2);
 
 % plot the result
 plot(grains,grains.meanOrientation)
@@ -104,7 +104,7 @@ hold off
 % Mason, and C. A. Schuh, 2012, for details. The coresponding orientation
 % to color mapping is implemented into MTEX as
 
-oM = patalaOrientationMapping(gB)
+moriKey = PatalaColorKey(gB)
 
 %%
 % Colorizing the grain boundaries is now straight forward
@@ -118,7 +118,7 @@ hold on
 plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
 
 hold on
-plot(gB,oM.orientation2color(gB.misorientation),'linewidth',2)
+plot(gB,moriKey.orientation2color(gB.misorientation),'linewidth',2)
 hold off
 
 %%
@@ -126,20 +126,17 @@ hold off
 % random boundary misorientations on top of it. Note that in this plot
 % misorientations |mori| and |inv(mori)| are associated.
 
-plot(oM,'axisAngle',(5:5:60)*degree)
+plot(moriKey,'axisAngle',(5:5:60)*degree)
 
-hold on
-plot(gB.misorientation,'points',300,...
+plot(gB.misorientation,'points',300,'add2all',...
   'MarkerFaceColor','none','MarkerEdgeColor','w')
-hold off
-
 
 %% Misorientations in the 3d fundamental zone
 % We can also look at the boundary misorienations in the 3 dimensional
 % fundamental orientation zone. 
 
 % compute the boundary of the fundamental zone
-oR = fundamentalRegion(oM.CS1,oM.CS2,'antipodal');
+oR = fundamentalRegion(moriKey.CS1,moriKey.CS2,'antipodal');
 close all
 plot(oR)
 

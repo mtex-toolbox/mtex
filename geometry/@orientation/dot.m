@@ -33,28 +33,28 @@ if isa(o1,'orientation')
     % it is also possible to compute the misorientation angle between two
     % orientations of differernt phase. In this case the symmetry becomes
     % the product of both symmetries
-    if o1.CS ~= o2.CS 
+    if o1.CS.Laue ~= o2.CS.Laue 
       
       % this makes only sense when comparing orientations
       assert(isa(o1.CS,'crystalSymmetry') && isa(o1.CS,'crystalSymmetry') ...
-       && isa(o1.SS,'specimenSymmetry') && o2.SS == o1.SS,...
+       && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
        'Symmetry missmatch');
             
       isLaue = isLaue || o2.CS.isLaue;
       qcs = o1.CS' * o2.CS;
       qcs = unique(qcs(:));
-      qss = idRotation;
+      qss = rotation.id;
     
-    elseif o1.SS ~= o2.SS % comparing inverse orientations
+    elseif o1.SS.Laue ~= o2.SS.Laue % comparing inverse orientations
       
       assert(isa(o1.SS,'crystalSymmetry') && isa(o1.SS,'crystalSymmetry') ...
-       && isa(o1.CS,'specimenSymmetry') && o2.CS == o1.CS,...
+       && isa(o1.CS,'specimenSymmetry') && o2.CS.Laue == o1.CS.Laue,...
        'Symmetry missmatch');
             
       isLaue = isLaue || o2.SS.isLaue;
       qss = o1.SS' * o2.SS;
       qss = unique(qss(:));
-      qcs = idRotation;
+      qcs = rotation.id;
     end
   end
 else
@@ -113,15 +113,15 @@ end
 
 % some testing code
 % cs = crystalSymmetry('3m1')
-% ori = orientation([idRotation,-idRotation],cs)
+% ori = [1,-1] .* orientation.id(cs)
 % dot(ori,fliplr(ori))
 % dot(ori,ori(2))
 % dot(ori(2),cs(2))
 % ori
 % cs2 = crystalSymmetry('m-3m')
-% ori1 = orientation(randq(20,20),cs)
-% ori2 = orientation(randq(20,20),cs2)
-% ori3 = orientation(randq(5,5),cs,cs2)
+% ori1 = orientation.rand(20,20,cs)
+% ori2 = orientation.rand(20,20,cs2)
+% ori3 = orientation.rand(5,5,cs,cs2)
 % hist((angle(ori1(1),ori2(1)) - angle(inv(ori1(1)).*ori2(1)))/degree)
 % ori01 = orientation('Euler',290*degree,100*degree,250*degree,cs)
 % ori02 = orientation('Euler',280*degree,90*degree,90*degree,cs2)

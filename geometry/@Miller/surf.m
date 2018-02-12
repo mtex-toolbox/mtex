@@ -1,4 +1,4 @@
-function h = surf(m,cdata,varargin)
+function varargout = surf(m,cdata,varargin)
 %
 % Syntax
 %
@@ -12,6 +12,4 @@ function h = surf(m,cdata,varargin)
 %
 
 varargin = [m.CS.plotOptions,varargin];
-h = surf@vector3d(m,cdata,varargin{:},m.CS);
-
-if nargout == 0, clear h; end
+[varargout{1:nargout}] = surf@vector3d(m,cdata,varargin{:},m.CS);

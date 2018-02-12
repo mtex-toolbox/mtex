@@ -18,6 +18,9 @@ function sF = quadrature(f, varargin)
 %
 
 bw = get_option(varargin, 'bandwidth', 128);
+
+if isa(f,'S2Fun'), f = @(v) f.eval(v); end
+
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureS2Grid(2*bw, 'gauss');
@@ -29,6 +32,17 @@ else
   nodes = f(:);
   values = varargin{1};
   W = get_option(varargin,'weights',1);
+  
+  if length(nodes)>100000 && length(values) == length(nodes) && length(W)==1
+    % TODO: use a regular grid here and a faster search
+    n2 = equispacedS2Grid('resolution',0.5*degree);
+    id = find(n2,nodes);
+    values = accumarray(id,values,[length(n2),1]);
+    
+    id = values>0;
+    nodes = reshape(n2.subGrid(id),[],1);
+    values = values(id);    
+  end
 end
 
 if isempty(nodes)

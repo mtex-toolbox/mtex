@@ -7,7 +7,7 @@ function h = mtexTitle(s,varargin)
 %s = ['$\mathbf{' s '}$'];
 
 if check_option(varargin,'noTitle'), return; end
-varargin = delete_option(varargin,{'position','color'});
+varargin = delete_option(varargin,{'position','color'},1);
 
 if ishandle(s)
   ax = s;
@@ -26,7 +26,11 @@ h = optiondraw(title(ax,s,...
 
 set(get(ax,'Title'),'Visible','on');
 
+try
+  mtexFig = getappdata(get(ax,'Parent'),'mtexFig');
+  drawNow(mtexFig,varargin{:});
+end
+
 if nargout == 0, clear h; end
 
 end
-

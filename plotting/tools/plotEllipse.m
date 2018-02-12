@@ -3,8 +3,8 @@ function plotEllipse(cxy,a,b,omega,varargin)
 %
 % Syntax
 %
-%  [omega,a,b] = principalComponents(grains);
-%  plotEllipse(grains.centroid,a,b,omega,'lineColor','r')
+%   [omega,a,b] = principalComponents(grains);
+%   plotEllipse(grains.centroid,a,b,omega,'lineColor','r')
 %
 % Input
 %  cxy - center of the ellipse 
@@ -27,7 +27,7 @@ y = (repmat(cxy(:,2),1,101) + sin(omega) .* a * sin(phi) + cos(omega) .* b * cos
 
 % plot
 c = get_option(varargin,'lineColor','k');
-h = optiondraw(line(x(:),y(:),'color',c),varargin);
+h = optiondraw(line(x(:),y(:),'color',c),varargin{:});
 
 % if no DisplayName is set remove from legend
 if ~check_option(varargin,'DisplayName')

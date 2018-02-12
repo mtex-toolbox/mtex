@@ -13,9 +13,9 @@ function v =  eval(sVF,nodes)
 
 bario = calcBario(sVF.tri,nodes);
 
-if sVF.vec.antipodal
+if sVF.values.antipodal
   
-  [x,y,z] = double(sVF.vec);
+  [x,y,z] = double(sVF.values);
   m = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
   M = bario * m;
   
@@ -28,7 +28,7 @@ if sVF.vec.antipodal
   v = vector3d(xyz.','antipodal');
   
 else
-  v = bario * sVF.vec(:);
+  v = bario * sVF.values(:);
 end
 
 end

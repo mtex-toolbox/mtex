@@ -1,4 +1,4 @@
-function out_list = delete_option(option_list,option,nparams,type)
+function option_list = delete_option(option_list,options,nparams)
 % clear options in option list
 %
 % Syntax
@@ -6,8 +6,8 @@ function out_list = delete_option(option_list,option,nparams,type)
 %   value = set_option(option_list,option,nparams)
 %
 % Input
-%  option_list - Cell Array
-%  option      - String
+%  option_list - cell array
+%  option      - char or cell array
 %  nparams     - number of parameters (optional)
 %
 % Output
@@ -16,28 +16,29 @@ function out_list = delete_option(option_list,option,nparams,type)
 % See also
 % check_option get_option set_option
 
+
+if nargin == 2, nparams = 0; end
+if length(options) > length(nparams)
+  nparams = repmat(nparams,size(options));
+end
+
 i = 1;
 while i<=length(option_list)
 
+  if ~isa(option_list{i},'char')
+    i = i + 1;
+    continue;
+  end
+  
+  pos = find(strcmpi(option_list{i},options),1);
+  
   % found match
-  if (isa(option_list{i},'char') && any(strcmpi(option_list{i},option)))
-
-    if nargin == 3    
-      % delete specified number of parameters
-      option_list(i:i+nparams) = [];      
-    else       
-      
-      % delete until the next character
-      next = cellfun(@ischar,option_list(i+1:end));
-      if any(next)
-        option_list(i:i-1+find(next,1,'first')) = [];
-      else
-        option_list(i:end) = [];
-      end
-    end       
+  if ~isempty(pos)
+   
+    % delete specified number of parameters
+    option_list(i:i+nparams(pos)) = [];
+    
   else
     i = i+1;
   end
 end
-
-out_list = option_list;

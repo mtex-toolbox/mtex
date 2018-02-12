@@ -19,16 +19,15 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   ebsd = ebsd(largeGrains(1))
 %
 %   figure
-%   plot(largeGrains(1).boundary,'linewidth',2)
+%   plot(largeGrains(1).boundary,'linewidth',2,'micronbar','off')
 %   hold on
-%   oM = ipdfHSVOrientationMapping(ebsd);
-%   oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-%   oM.maxAngle = 1.5*degree;
+%   oM = axisAngleColorKey(ebsd);
+%   oM.oriRef = mean(ebsd.orientations);
 %   plot(ebsd,oM.orientation2color(ebsd.orientations))
 %   hold off
 %
-%   ebsd_smoothed = smooth(ebsd.gridify)
-%   plot(ebsd_smoothed('indexed'),oM.orientation2color(ebsd_smoothed('indexed').orientations))
+%   ebsd_smoothed = smooth(ebsd,'fill',grains)
+%   plot(ebsd_smoothed('indexed'),oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 %   hold on
 %   plot(largeGrains(1).boundary,'linewidth',2)
 %   hold off
@@ -67,7 +66,7 @@ end
 % loop through all grains or phases
 for id = 1:length(grainIds)
 
-  progress(id,length(grainIds));
+  progress(id,length(grainIds),' denoising EBSD data: ');
   
   % the values to be smoothed
   ind = grainId == grainIds(id); 

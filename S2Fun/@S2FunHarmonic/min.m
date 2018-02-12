@@ -1,13 +1,10 @@
 function [v,f] = min(sF, varargin)
-% calculates the minimum of a spherical harminc or the pointwise minimum of two spherical harmonics
+% global, local and pointwise minima of spherical functions
 %
 % Syntax
 %   [v,pos] = min(sF) % the position where the minimum is atained
 %
 %   [v,pos] = min(sF,'numLocal',5) % the 5 largest local minima
-%
-%   % with all options
-%   [v,pos] = min(sF, 'startingnodes', NODES, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
 %
 %   sF = min(sF, c) % minimum of a spherical functions and a constant
 %   sF = min(sF1, sF2) % minimum of two spherical functions
@@ -26,15 +23,13 @@ function [v,f] = min(sF, varargin)
 %  pos - @vector3d
 %
 % Options
-%  bw             - minimal degree of the spherical harmonic for pointwise minimum of two @S2FunHarmonic
-%  STARTINGNODES  -  starting nodes of type @vector3d
-%  LAMBDA         -  regularization parameter
-%  TAU            -  tolerance
-%  MU             -  in (0, 0.5) for Armijo condition
-%  KMAX           -  maximal iterations
-%  TAULS          -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
-%  KMAXLS         -  maximal iterations for line search
-%  
+%  kmax - number of iterations
+%  numLocal      - number of peaks to return
+%  startingNodes - @vector3d
+%  tolerance     - minimum distance between two peaks
+%  resolution    - minimum step size 
+%  maxStepSize   - maximm step size
+%
 
 % pointwise minimum of spherical harmonics
 if ( nargin > 1 ) && ( isa(varargin{1}, 'S2FunHarmonic') )
@@ -50,7 +45,6 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   
 elseif length(sF) == 1
   [v, f] = steepestDescent(sF, varargin{:});
-%  [v, f] = simultaniousCG(sF, varargin{:});
   
 else
   s = size(sF);

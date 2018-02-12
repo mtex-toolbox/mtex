@@ -13,7 +13,13 @@ switch s(1).type
         
     if isempty(b)
       
-      s(1).subs = {~s(1).subs{1}};
+      if islogical(s(1).subs{1})
+        s(1).subs = {~s(1).subs{1}};
+      else
+        id = true(size(gB));
+        id(s(1).subs{1}) = false;
+        s(1).subs = {id};
+      end
       gB = subsref(gB,s(1));      
       
     else

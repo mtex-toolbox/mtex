@@ -3,24 +3,49 @@ classdef S2VectorFieldTri < S2VectorField
   
   properties
     tri       % S2Triangulation
-    vec = []  % function values
+    values = vector3d  % function values
+  end
+  
+  properties (Dependent = true)
+    vertices
+    antipodal
   end
   
   methods
     
-    function sVF = S2VectorFieldTri(n,v)
+    function sVF = S2VectorFieldTri(nodes,values)
       % initialize a spherical vector field
       
       if nargin == 0, return; end
       
-      sVF.vec = v;
-      
-      if isa(n,'tririangulation')
-        sVF.tri = n;
-      else
-        sVF.tri = S2Triangulation(n);
+      if isa(nodes,'function_handle')
+        n = equispacedS2Grid('resolution',1.5*degree);
+        values = nodes(n);
+        nodes = n;
       end
            
+      if isa(nodes,'S2Triangulation')
+        sVF.tri = nodes;
+      else
+        sVF.tri = S2Triangulation(nodes);
+      end
+      
+      sVF.values = values;
+      
+    end
+    
+    function v = get.vertices(S2F)
+      v = S2F.tri.vertices;
+    end
+    
+    function v = get.antipodal(S2F)
+      v = S2F.tri.antipodal;
+    end
+    
+    function S2F = set.vertices(S2F,v)
+      if ~isempty(S2F.values), S2F.values = S2F.eval(v); end
+      S2F.tri.vertices = v;
+      S2F.tri.update;
     end
     
   end

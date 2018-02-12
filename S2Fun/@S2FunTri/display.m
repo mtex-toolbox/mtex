@@ -3,7 +3,7 @@ function display(sF,varargin)
 
 if ~check_option(varargin,'skipHeader')
   disp(' ');
-  disp([inputname(1) ' = ' doclink('S2FunTri_index','spherical function') ...
+  disp([inputname(1) ' = ' doclink('S2FunTri_index','S2FunTri') ...
     ' ' docmethods(inputname(1))]);
   disp(' ')
 end

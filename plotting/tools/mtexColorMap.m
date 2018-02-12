@@ -2,7 +2,8 @@ function mtexColorMap(arg1,varargin)
 % define an MTEX colormap
 
 % get input
-if ishandle(arg1) 
+if length(arg1)==1 && ishandle(arg1) &&...
+    (isa(arg1,'axis') || isa(arg1,'matlab.graphics.axis.Axes') || isa(arg1,'matlab.ui.Figure'))
   ax = arg1;
   name = varargin{1};
 else
@@ -23,9 +24,11 @@ if ischar(name)
     if isempty(which(name))
       error('unknown colormap name');      
     end
+  end
+  try
     map = feval(name);
-  else
-    map = colormap(name);
+  catch
+    map = feval(lower(name));
   end
 else
   map = name;

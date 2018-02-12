@@ -67,7 +67,7 @@ try
   theta = (ntheta-1:-1:0) .* rhoStep .* degree;
   assert(numel(theta)>4);
   
-  theta = rep(theta,nrho)';
+  theta = repelem(theta,nrho)';
   r = vector3d('polar',theta,rho); 
   
   % append last pole figure

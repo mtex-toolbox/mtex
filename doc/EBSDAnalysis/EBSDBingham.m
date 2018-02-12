@@ -51,7 +51,7 @@ plotPDF(odf,h,'antipodal','silent');
 %% The bipolar case and unimodal distribution
 % First, we define some unimodal odf
 
-odf_spherical = unimodalODF(idquaternion,crystalSymmetry,specimenSymmetry,'halfwidth',20*degree)
+odf_spherical = unimodalODF(orientation.id(cs),'halfwidth',20*degree)
 
 %%
 %

@@ -1,5 +1,5 @@
 classdef orthographicProjection < sphericalProjection
-  %equal area projection
+  %orthographic projection
   
   methods 
         
@@ -8,7 +8,7 @@ classdef orthographicProjection < sphericalProjection
   
       [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
 
-      % formula for equal area projection
+      % formula for orthographic projection
       r =  sin(theta);
             
       % compute coordinates

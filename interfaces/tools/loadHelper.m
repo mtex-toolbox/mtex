@@ -184,7 +184,7 @@ layoutCol       = @(a) columns(cell2mat(...
 unit = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
 
 varargin = delete_option(varargin,{'ColumnNames','Columns'},1);
-varargin = delete_option(varargin,{'radians','radiant','radiand'},0);
+varargin = delete_option(varargin,{'radians','radiant','radiand'});
 
 
 params.ColumnNames       = columnNames;

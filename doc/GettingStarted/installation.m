@@ -11,12 +11,20 @@
 %
 % Since MTEX is a MATLAB toolbox <http://www.mathworks.com MATLAB> has to
 % be installed in order to use MTEX. It works fine with the student version
-% and does not require any additional toolboxes, addons or packages. Check
-% the table below to see whether MTEX will run on your Matlab version.
+% and does not require any additional toolboxes, addons or packages. There
+% are some very few exceptions like GND and Taylor computation that
+% currently require the optimization toolbox to be installed. Check the
+% table below to see whether MTEX will run with your Matlab version.
 %
 % <html>
 % <table border=0 align="center">
 % <tr><td>Matlab</td>
+% <td>2018b</td>
+% <td>2018a</td>
+% <td>2017b</td>
+% <td>2017a</td>
+% <td>2016b</td>
+% <td>2016a</td>
 % <td>2015b</td>
 % <td>2015a</td>
 % <td>2014b</td>
@@ -31,7 +39,36 @@
 % <td>2010a</td>
 % </tr>
 % <tr>
+% <td>MTEX 5.1</td>
+% <td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% <td>(&#10004;)</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% </tr>
+% <tr>
+% <td>MTEX 5.0</td>
+% <td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% <td>(&#10004;)</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% </tr>
+% <tr>
+% <td>MTEX 4.X</td>
+% <td>-</td><td>-</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
+% <td>&#10004;</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% <td>(&#10004;)</td><td>(&#10004;)</td><td>(&#10004;)</td>
+% </tr>
+% <tr>
 % <td>MTEX 4.1</td>
+% <td>-</td><td>-</td>
+% <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>(&#10004;)</td><td>(&#10004;)</td>
@@ -39,21 +76,24 @@
 % </tr>
 % <tr>
 % <td>MTEX 4.0</td>
-% <td>-</td><td>&#10004;</td><td>&#10004;</td>
+% <td>-</td><td>-</td>
+% <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>(&#10004;)</td><td>(&#10004;)</td>
 % <td>(&#10004;)</td><td>(&#10004;)</td><td>(&#10004;)</td>
 % </tr>
 % <tr>
 % <td>MTEX 3.5</td>
-% <td>-</td><td>-</td><td>-</td>
+% <td>-</td><td>-</td>
+% <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % </tr>
 % <tr>
 % <td>MTEX 3.3</td>
-% <td>-</td><td>-</td><td>-</td>
+% <td>-</td><td>-</td>
+% <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>
 % <td>&#10004;</td><td>&#10004;</td><td>&#10004;</td>

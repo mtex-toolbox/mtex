@@ -48,6 +48,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
     solver.initIter;
     % compute residual error
     
+    iter = 0;
     lasterr = showError;
     for iter = 1:solver.iterMax
   
@@ -56,7 +57,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
   
       % compute residual error
       err = showError;
-      if (lasterr-err)/err < 0.05, break; end
+      if (lasterr-err)/err < 0.05 && iter > solver.iterMin, break; end
       lasterr = err;
     end
     
@@ -65,7 +66,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
         e(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:) .*solver.weights{i} );
       end
       if ~check_option(varargin,'silent') && ~getMTEXpref('generatingHelpMode')
-        fprintf(format,xnum2str(0,[],2),e);
+        fprintf(format,xnum2str(iter,[],2),e);
       end
       e = sqrt(sum(e.^2));
     end

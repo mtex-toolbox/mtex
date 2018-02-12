@@ -15,19 +15,29 @@ function h = plot(sF,varargin)
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+%
+if sF.antipodal, varargin = [varargin,'antipodal']; end
+
 % generate a grid where the function will be plotted
 plotNodes = plotS2Grid(varargin{:});
 
 % evaluate the function on the plotting grid
-values = sF.eval(plotNodes);
+values = reshape(sF.eval(plotNodes),[],length(sF));
 
-for j = 1:length(sF)
+if check_option(varargin,'rgb')
+  
+  h = plot(plotNodes,values,'surf','hold',varargin{:});
 
-  if j > 1, mtexFig.nextAxis; end
+else
+  h = [];
+  for j = 1:length(sF)
+
+    if j > 1, mtexFig.nextAxis; end
+    
+    % plot the function values
+    h = [h,plot(plotNodes,values(:,j),'contourf','hold',varargin{:})]; %#ok<AGROW>
   
-  % plot the function values
-  h(j) = plot(plotNodes,values(:,j),'parent',mtexFig.gca,'contourf',varargin{:}); %#ok<AGROW>
-  
+  end
 end
 
 if isNew % finalize plot

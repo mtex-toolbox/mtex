@@ -14,6 +14,10 @@ function [v,m,n] = unique(v,varargin)
 %  v - @vector3d
 %  m -
 %  n -
+%
+% Option
+%  stable - prevent sorting
+%
 
 x = v.x(:);
 y = v.y(:);
@@ -29,9 +33,9 @@ tol = get_option(varargin,'tolerance',1e-7);
 
 % in case it should not be sorted
 if check_option(varargin,'stable')
-varargin = {'stable'};
+  varargin = {'stable'};
 else
-varargin= {};   
+  varargin= {};
 end
 % find duplicates points
 try

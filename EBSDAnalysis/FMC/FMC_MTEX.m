@@ -6,7 +6,7 @@ N     = size(fmc.A_D,1);
 
 q     = inv(fmc.O(i)).*fmc.O(j);
 
-d     = abs(dot(q,idquaternion));
+d     = abs(dot(q,quaternion.id));
 checkSym = d < cos(20/2*degree);
 if any(checkSym)
   d(checkSym) = max(abs(dot_outer(q(checkSym),fmc.CS)),[],2);

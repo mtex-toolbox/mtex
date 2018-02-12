@@ -4,8 +4,12 @@ function r = times(a,b)
 if isnumeric(a) % (-1) * rot -> inversion
   
   assert(all(abs(a(:))==1),'Rotations can be multiplied only by 1 or -1');
-  r = b; 
-  r.i = xor(r.i,a==-1);
+  r = b;
+  r.a = r.a .* ones(size(a));
+  r.b = r.b .* ones(size(a));
+  r.c = r.c .* ones(size(a));
+  r.d = r.d .* ones(size(a));
+  r.i = xor(b.i,a==-1);
   
 elseif isnumeric(b) % rot * (-1) -> inversion
   

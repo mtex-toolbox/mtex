@@ -5,6 +5,11 @@ function [S2G, W, M2] = quadratureS2Grid(M, varargin)
 %   [S2G, W, M2] = quadratureS2Grid(M, 'chebyshev') quadrature grid of type chebyshev
 %
 
+
+persistent S2G_p;
+persistent W_p;
+persistent M2_p;
+
 if check_option(varargin, 'gauss')
   path = fullfile(mtexDataPath,'quadratureS2Grid_gauss');
 else
@@ -24,13 +29,27 @@ end
 
 M2 = tmp(index);
 
-data = load([path, filesep, files(index).name]);
-S2G = vector3d('polar', data(:, 1), data(:, 2));
+if ~isempty(M2_p) && M2_p == M2
+  S2G = S2G_p;
+  W = W_p;
+  M2 = M2_p;
 
-if check_option(varargin, 'gauss')
-  W = data(:, 3);
 else
-  W = 4*pi/size(data, 1);
+
+  data = load([path, filesep, files(index).name]);
+  S2G = vector3d('polar', data(:, 1), data(:, 2));
+
+  if check_option(varargin, 'gauss')
+    W = data(:, 3);
+  else
+    W = 4*pi/size(data, 1);
+  end
+  
+  % store the data
+  S2G_p = S2G;
+  W_p = W;
+  M2_p = M2;
+    
 end
 
 end

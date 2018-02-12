@@ -84,13 +84,25 @@ classdef quaternion
         
     function q = rand(varargin)
       
-      if nargin < 2, varargin = [varargin 1]; end
+      if check_option(varargin,'maxAngle')
+        
+        v = vector3d.rand(varargin{:});
+        
+        omega = linspace(0,get_option(varargin,'maxAngle'),1e4);
+        id = discretesample(sin(omega).^2,varargin{1});
+        omega = omega(id);
+        
+        q = axis2quat(v,omega(:));
+        
+      else
+        if nargin < 2, varargin = [varargin 1]; end
 
-      alpha = 2*pi*rand(varargin{:});
-      beta  = acos(2*(rand(varargin{:})-0.5));
-      gamma = 2*pi*rand(varargin{:});
+        alpha = 2*pi*rand(varargin{:});
+        beta  = acos(2*(rand(varargin{:})-0.5));
+        gamma = 2*pi*rand(varargin{:});
 
-      q = euler2quat(alpha,beta,gamma);
+        q = euler2quat(alpha,beta,gamma);
+      end
     end
     
   end
