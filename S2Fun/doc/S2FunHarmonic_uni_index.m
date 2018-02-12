@@ -6,14 +6,14 @@
 % *Definition via function values*
 %
 % At first you need some vertices
-nodes = equispacedS2Grid('resolution',3*degree);
+nodes = equispacedS2Grid('resolution',3*degree,'antipodal');
 nodes = nodes(:);
 %%
 % Next you define function values for the vertices
 y = smiley(nodes);
 
 % plot the discrete data
-plot(nodes,y,'upper')
+plot(nodes,y)
 
 %%
 % Now the actual command to get |sF1| of type |S2FunHarmonic|
