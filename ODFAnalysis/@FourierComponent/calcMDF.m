@@ -19,14 +19,26 @@ end
 
 function testing
 cs1 = crystalSymmetry('321');
-cs2 = crystalSymmetry('432');
+cs2 = crystalSymmetry('222');
 
 odf2 = unimodalODF(orientation.copper(cs1));
 odf1 = unimodalODF(orientation.copper2(cs2));
-mdf1 = calcMDF(odf2,odf1,'kernelMethod')
+mdf1 = calcMDF(odf1,odf2,'kernelMethod')
 
-mdf2 = calcMDF(odf2,odf1)
+mdf2 = calcMDF(odf1,odf2)
 figure(1);plotSection(mdf1,'sigma')
+
 figure(2);plotSection(mdf2,'sigma')
+
+mori = mdf2.discreteSample(100);
+
+hold on
+cS = crystalShape.quartz;
+plot(mori,0.1*(mori.project2FundamentalRegion*cS))
+hold off
+
+
+
+
 
 end
