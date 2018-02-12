@@ -8,8 +8,8 @@ rot = rotation('matrix',rot.');
 
 % define a misorientation such that ori * mori
 % alignes slip normal n with X and slip direction d with Y
-mori = orientation('map',component.sS.n,vector3d.X,...
-  component.sS.b,vector3d.Y,component.CS,component.CS);
+mori = orientation('map',component.sS.n,vector3d.Y,...
+  component.sS.b,vector3d.X,component.CS,component.CS);
 
 % Euler angles 
 % in the paper these are phi, theta, psi
