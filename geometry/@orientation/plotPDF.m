@@ -57,7 +57,7 @@ if isNew
   if isa(o.SS,'specimenSymmetry')
     pfAnnotations = getMTEXpref('pfAnnotations');
   else
-    1;
+    pfAnnotations = @(varargin) 1;
   end
   set(mtexFig.parent,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 else
@@ -93,6 +93,11 @@ for i = 1:length(h)
   end
   r = reshape(o.SS * o * sh,[],1);
   opt = replicateMarkerSize(varargin,length(o.SS)*length(sh));
+  
+  % maybe we can restric ourselfs to the upper hemisphere
+  if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
+    opt = [opt,'upper'];
+  end
   
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));

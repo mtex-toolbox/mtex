@@ -38,7 +38,11 @@ for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
 rAll = plotS2Grid(sR,varargin{:});
-rUpper = plotS2Grid(sR,'upper',varargin{:});
+if any(rAll.z(:) < 1e-2) && any(rAll.z(:) > 1e-2) && ~check_option(varargin,'complete')
+  rUpper = plotS2Grid(sR,'upper',varargin{:});
+else
+  rUpper = rAll;
+end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
@@ -49,12 +53,13 @@ for i = 1:length(h)
   % create a new axis
   if ~isstruct(mtexFig), mtexFig.nextAxis; end
 
-  % compute pole figures
+  % maybe we need only one hemisphere
   if all(angle(h{i},-h{i})<1e-2)
     rLocal = rUpper;
   else
     rLocal = rAll;
   end
+  % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},rLocal,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
