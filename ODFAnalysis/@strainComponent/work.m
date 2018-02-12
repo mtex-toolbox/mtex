@@ -8,7 +8,7 @@ sS2 = slipSystem(Miller(1,0,0,cs,'uvw'),Miller(0,0,1,cs,'hkl'))
 sS3 = slipSystem(Miller(0,0,1,cs,'uvw'),Miller(0,1,0,cs,'hkl'))
 
 % the macroscopic strain tensor
-epsilon = tensor([0.25 0 0; 0 0.25 0; 0 0 -0.5],'name','strain')
+epsilon = 0.5*tensor([0.5 0 0; 0 0.5 0; 0 0 -1],'name','strain')
 
 % now the components are entirely defined by slip system and strain tensor
 odf1 = strainSBF(sS1,epsilon)
@@ -29,6 +29,20 @@ figure(1)
 plotPDF(odf1,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
+figure(2)
+plotPDF(odf2,h,'resolution',2*degree,'colorRange','equal')
+mtexColorbar
+
+figure(3)
+plotPDF(odf3,h,'resolution',2*degree,'colorRange','equal')
+mtexColorbar
+
+%%
+
+figure(4)
+plotPDF(odf1 + odf3,h,'resolution',2*degree,'colorRange','equal')
+mtexColorbar
+
 %%
 
 figure(2)
@@ -46,11 +60,13 @@ mtexColorbar
 
 figure(1)
 plotIPDF(odf1,xvector,'complete','resolution',2*degree)
+annotate(h,'labeled')
 figure(2)
 plotIPDF(odf2,xvector,'complete','resolution',2*degree)
+annotate(h,'labeled')
 figure(3)
-plotIPDF(odf2,xvector,'complete','resolution',2*degree)
-
+plotIPDF(odf3,xvector,'complete','resolution',2*degree)
+annotate(h,'labeled')
 
 %%
 
