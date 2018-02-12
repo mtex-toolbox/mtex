@@ -15,6 +15,9 @@ function h = plot(sF,varargin)
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+%
+if sF.antipodal, varargin = [varargin,'antipodal']; end
+
 % generate a grid where the function will be plotted
 plotNodes = plotS2Grid(varargin{:});
 
