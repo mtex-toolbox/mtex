@@ -64,16 +64,14 @@ for i = 1:length(h)
   
   % plot the pole figure
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  [~,caxes] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
+  [~,cax] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
   
   % plot annotations
-  for cax = caxes(:).'
-    pfAnnotations('parent',cax,'doNotDraw');
-    setappdata(cax,'h',h{i});
-    set(cax,'tag','pdf');
-    setappdata(cax,'SS',odf.SS);
-  end
-  
+  pfAnnotations('parent',cax,'doNotDraw','add2all');
+  set(cax,'tag','pdf');
+  setappdata(cax,'h',h{i});
+  setappdata(cax,'SS',odf.SS);
+    
 end
 
 if isNew % finalize plot

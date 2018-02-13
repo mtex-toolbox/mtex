@@ -37,15 +37,13 @@ for i = 1:length(r)
 
   % plot
   mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
-  [~,caxes] = h.plot(p,'doNotDraw','smooth',varargin{:});
+  [~,cax] = h.plot(p,'doNotDraw','smooth',varargin{:});
 
-  % plot annotations
-  for cax = caxes(:).'
-    setappdata(cax,'inversePoleFigureDirection',r(i));
-    set(cax,'tag','ipdf');
-    setappdata(cax,'CS',odf.CS);
-    setappdata(cax,'SS',odf.SS);
-  end
+  % store geometry
+  set(cax,'tag','ipdf');
+  setappdata(cax,'inversePoleFigureDirection',r(i));
+  setappdata(cax,'CS',odf.CS);
+  setappdata(cax,'SS',odf.SS);
   
 end
 

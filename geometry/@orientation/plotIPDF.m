@@ -69,17 +69,15 @@ for ir = 1:length(r)
   
   %  plot  
   if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
-  [~,caxes] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
+  [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
   
   % plot annotations
-  for cax = caxes(:).'
-    setappdata(cax,'inversePoleFigureDirection',r(ir));
-    set(cax,'tag','ipdf');
-    setappdata(cax,'CS',ori.CS);
-    setappdata(cax,'SS',ori.SS);
-  end
-      
+  setappdata(cax,'inversePoleFigureDirection',r(ir));
+  set(cax,'tag','ipdf');
+  setappdata(cax,'CS',ori.CS);
+  setappdata(cax,'SS',ori.SS);
+        
   % TODO: unifyMarkerSize
 
 end

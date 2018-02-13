@@ -102,16 +102,14 @@ for i = 1:length(h)
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
-  [~,ax] = r.plot(repmat(data,[length(o.SS) length(sh)]),...
+  [~,cax] = r.plot(repmat(data,[length(o.SS) length(sh)]),...
     o.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
 
   % plot annotations
-  for cax = ax(:).'
-    pfAnnotations('parent',cax,'doNotDraw');
-    setappdata(cax,'h',h{i});
-    set(cax,'tag','pdf');
-    setappdata(cax,'SS',o.SS);
-  end
+  pfAnnotations('parent',cax,'doNotDraw','add2all');
+  setappdata(cax,'h',h{i});
+  set(cax,'tag','pdf');
+  setappdata(cax,'SS',o.SS);
   
   % TODO: unifyMarkerSize
 

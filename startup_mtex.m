@@ -156,7 +156,9 @@ if ~MATLABverLessThan('8.1')
   exclPath = [exclPath,'8.4'];
 end
 
+warning off
 addpath_recurse(local_path,exclPath);
+warning on
 
 end
 
