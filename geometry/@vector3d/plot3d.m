@@ -1,4 +1,4 @@
-function varargout = plot3d(v,data,varargin)
+function [h,ax] = plot3d(v,data,varargin)
 % plot spherical data
 %
 % Syntax
@@ -20,7 +20,7 @@ end
 
 % plot
 %v = v .* reshape(data,size(v));
-[varargout{1:nargout}] = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
+h = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
 
 % colormap
 colormap(ax,getMTEXpref('defaultColorMap'));

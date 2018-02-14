@@ -81,7 +81,7 @@ classdef sphericalPlot < handle
         
         set(ax,'XTick',[],'YTick',[]);
         try
-          %set(ax,'XColor','none','YColor','none');
+          set(ax,'XColor','none','YColor','none');
           xlabel(ax,[],'visible','on','color','k');
           ylabel(ax,[],'visible','on','color','k');
         end

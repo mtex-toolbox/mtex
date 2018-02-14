@@ -56,31 +56,28 @@ hold off % next plot command deletes all plots
 
 plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
-hold all
-plotPDF(ori,h,'antipodal','DisplayName','EBSD 1',...
-  'MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
-hold all
-plotPDF(ori_rotated,h,'DisplayName','EBSD 2',...
-  'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
-hold off
 
-legend('show','location','southeast')
+plot(ori,'DisplayName','EBSD 1',...
+  'MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w','add2all')
+
+plot(ori_rotated,'DisplayName','EBSD 2',...
+  'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k','add2all');
+
+legend('show','location','northeast')
 
 %%
 % and, of course, you can do the same with ODF plots:
 
 plot(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
-hold all
-plot(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
-plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
-hold off
+plot(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w','add2all')
+plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k','add2all');
 
 %% Add Miller Indices to an Inverse Pole Figure Plot
 % Next, we are going to add some Miller indices to an inverse pole figure
 % plot.
 
-plotIPDF(odf,xvector);
+plotIPDF(odf,xvector,'noLabel');
 mtexColorMap white2black
 
 hold all % keep plot
@@ -89,6 +86,8 @@ plot(Miller(1,1,-2,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')
 hold off % next plot command deletes all plots
+
+
 
 %% Combining different plots in one figure
 % The next example demonstrates how to arrange arbitrary plots into one

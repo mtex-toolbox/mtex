@@ -35,32 +35,54 @@ if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 argin_check([h{:}],'Miller');
 for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
+
+
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
-r = plotS2Grid(sR,varargin{:});
+rAll = plotS2Grid(sR,varargin{:});
+if any(rAll.z(:) < 1e-2) && any(rAll.z(:) > 1e-2) && ~check_option(varargin,'complete')
+  rUpper = plotS2Grid(sR,'upper',varargin{:});
+else
+  rUpper = rAll;
+end
+if isa(odf.SS,'crystalSymmetry')
+  rAll = Miller(rAll,odf.CS);
+  rUpper = Miller(rUpper,odf.CS);
+  pfAnnotations = @(varargin) [];
+else
+  pfAnnotations = getMTEXpref('pfAnnotations');
+end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
-pfAnnotations = getMTEXpref('pfAnnotations');
-  
+
 for i = 1:length(h)
   
-  if i>1, mtexFig.nextAxis; end
+  % create a new axis
+  if ~isstruct(mtexFig), mtexFig.nextAxis; end
 
+  % maybe we need only one hemisphere
+  if all(angle(h{i},-h{i})<1e-2)
+    rLocal = rUpper;
+  else
+    rLocal = rAll;
+  end
   % compute pole figures
-  p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
+  p = ensureNonNeg(odf.calcPDF(h{i},rLocal,varargin{:},'superposition',c{i}));
   
-  r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
-  pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-
+  % plot the pole figure
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
+  [~,cax] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
   
+  % plot annotations
+  pfAnnotations('parent',cax,'doNotDraw','add2all');
+  set(cax,'tag','pdf');
+  setappdata(cax,'h',h{i});
+  setappdata(cax,'SS',odf.SS);
+    
 end
 
 if isNew % finalize plot
-  set(gcf,'tag','pdf');
-  setappdata(gcf,'SS',odf.SS);
-  setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   dcm = mtexFig.dataCursorMenu;

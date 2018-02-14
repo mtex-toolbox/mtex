@@ -1,4 +1,4 @@
-function h = contourf( v, data, varargin )
+function varargout = contourf( v, data, varargin )
 % spherical filled contour plot
 %
 % Syntax
@@ -24,11 +24,11 @@ end
 % seperately to avoid artefacts
 if verLessThan('matlab','8.5')
  
-  h = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
+  [varargout{1:nargout}] = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
 
-  h = [h,v.smooth(data,'contours',10,'fill','off','LineStyle','-','LineColor','k','hold',varargin{:})];
+  v.smooth(data,'contours',10,'fill','off','LineStyle','-','LineColor','k','hold',varargin{:});
 else
-  h = v.smooth(data,'contours',10,'LineStyle','-','LineColor','k',varargin{:});
+  [varargout{1:nargout}] = v.smooth(data,'contours',10,'LineStyle','-','LineColor','k',varargin{:});
 end
 
 if nargout == 0, clear h; end

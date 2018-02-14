@@ -82,7 +82,7 @@ mtexFig = mtexFigure('position',[0 0 1000 1000]);
 %**************************************************************************
 
 % Plot P-wave velocity (km/s)
-plot(vp,'contourf','parent',mtexFig.gca,'complete','upper')
+plot(vp,'contourf','complete','upper')
 mtexTitle('Vp (km/s)',titleOpt{:})
 
 % extrema
@@ -94,8 +94,8 @@ AVp = 200*(maxVp-minVp) / (maxVp+minVp);
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpPos.symmetrise,blackMarker{:})
+plot(minVpPos.symmetrise,whiteMarker{:})
 hold off
 
 % subTitle
@@ -109,7 +109,7 @@ mtexFig.nextAxis
 
 % Plot S-wave anisotropy (percent)
 AVs = 200*(vs1-vs2)./(vs1+vs2);
-plot(AVs,'contourf','parent',mtexFig.gca,'complete','upper');
+plot(AVs,'contourf','complete','upper');
 mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 
 % Max percentage anisotropy
@@ -120,24 +120,24 @@ xlabel(['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxAVsPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minAVsPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxAVsPos.symmetrise,blackMarker{:})
+plot(minAVsPos.symmetrise,whiteMarker{:})
 hold off
 
 % mark crystal axes
 text([xvector,yvector,zvector],{'[100] ','[010] ','[001]'},...
-  'backgroundcolor','w','parent',mtexFig.gca,'doNotDraw');
+  'backgroundcolor','w','doNotDraw');
 
 %% S1 Polarization: Plot fastest S-wave (Vs1) polarization directions
 
 % create a new axis
 mtexFig.nextAxis
 
-plot(AVs,'contourf','parent',mtexFig.gca,'complete','upper');
+plot(AVs,'contourf','complete','upper');
 mtexTitle('Vs1 polarization',titleOpt{:})
 
 hold on
-plot(ps1,'linewidth',2,'color','black','parent',mtexFig.gca,'doNotDraw')
+plot(ps1,'linewidth',2,'color','black','doNotDraw')
 hold off
 
 %% Vs1 : Plot Vs1 velocities (km/s)
@@ -145,7 +145,7 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(vs1,'contourf','parent',mtexFig.gca,'doNotDraw','complete','upper');
+plot(vs1,'contourf','doNotDraw','complete','upper');
 mtexTitle('Vs1 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
@@ -156,12 +156,12 @@ AVs1=200*(maxS1-minS1)./(maxS1+minS1);
 xlabel(['Vs1 Anisotropy = ',num2str(AVs1,'%6.1f')],titleOpt{:}) 
 
 hold on
-plot(ps1,'linewidth',2,'color','black','parent',mtexFig.gca)
+plot(ps1,'linewidth',2,'color','black')
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxS1pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minS1pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS1pos.symmetrise,blackMarker{:})
+plot(minS1pos.symmetrise,whiteMarker{:})
 hold off
 
 %% Vs2 : Plot Vs2 velocities (km/s)
@@ -169,7 +169,7 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(vs2,'contourf','parent',mtexFig.gca,'doNotDraw','complete','upper');
+plot(vs2,'contourf','doNotDraw','complete','upper');
 mtexTitle('Vs2 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
@@ -179,12 +179,12 @@ AVs2=200*(maxS2-minS2)./(maxS2+minS2);
 xlabel(['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')],titleOpt{:})
 
 hold on
-plot(ps2,'linewidth',2,'color','black','parent',mtexFig.gca)
+plot(ps2,'linewidth',2,'color','black')
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxS2pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minS2pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS2pos.symmetrise,blackMarker{:})
+plot(minS2pos.symmetrise,whiteMarker{:})
 hold off
 
 %% dVs : Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations
@@ -193,7 +193,7 @@ hold off
 mtexFig.nextAxis
 
 dVs = vs1-vs2;
-plot(dVs,'contourf','parent',mtexFig.gca,'complete','upper');
+plot(dVs,'contourf','complete','upper');
 mtexTitle('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
 
 % Max percentage anisotropy
@@ -204,8 +204,8 @@ xlabel(['Max dVs (km/s) = ',num2str(maxdVs,'%6.2f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxdVsPos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(mindVsPos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxdVsPos.symmetrise,blackMarker{:})
+plot(mindVsPos.symmetrise,whiteMarker{:})
 hold off
 
 %% Vp/Vs1 : Plot Vp/Vs1 ratio (no units)
@@ -214,7 +214,7 @@ hold off
 mtexFig.nextAxis
 
 vpvs1 = vp./vs1;
-plot(vpvs1,'contourf','parent',mtexFig.gca,'complete','upper');
+plot(vpvs1,'contourf','complete','upper');
 mtexTitle('Vp/Vs1',titleOpt{:})
 
 % Percentage anisotropy
@@ -226,8 +226,8 @@ xlabel(['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpVs1Pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpVs1Pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs1Pos.symmetrise,blackMarker{:})
+plot(minVpVs1Pos.symmetrise,whiteMarker{:})
 hold off
 
 %% Vp/Vs2 : Plot Vp/Vs2 ratio (no units)
@@ -236,7 +236,7 @@ hold off
 mtexFig.nextAxis
 
 vpvs2 = vp./vs2;
-plot(vpvs2,'contourf','parent',mtexFig.gca,'complete','upper');
+plot(vpvs2,'contourf','complete','upper');
 mtexTitle('Vp/Vs2',titleOpt{:})
 
 % Percentage anisotropy
@@ -248,8 +248,8 @@ xlabel(['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(maxVpVs2Pos.symmetrise,blackMarker{:},'parent',mtexFig.gca)
-plot(minVpVs2Pos.symmetrise,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs2Pos.symmetrise,blackMarker{:})
+plot(minVpVs2Pos.symmetrise,whiteMarker{:})
 hold off
 
 %%
