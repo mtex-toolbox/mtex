@@ -12,10 +12,10 @@ mtexdata csl
 plotx2east
 
 % grain segementation
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % grain smoothing
-grains = smooth(grains,2) 
+grains = smooth(grains,2);
 
 % plot the result
 plot(grains,grains.meanOrientation)
@@ -128,11 +128,8 @@ hold off
 
 plot(oM,'axisAngle',(5:5:60)*degree)
 
-hold on
-plot(gB.misorientation,'points',300,...
+plot(gB.misorientation,'points',300,'add2all',...
   'MarkerFaceColor','none','MarkerEdgeColor','w')
-hold off
-
 
 %% Misorientations in the 3d fundamental zone
 % We can also look at the boundary misorienations in the 3 dimensional

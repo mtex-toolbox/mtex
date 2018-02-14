@@ -24,7 +24,7 @@ f = fibre(ori1,ori2)
 plot(ori1,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
 hold on
 plot(ori2,'MarkerSize',10,'MarkerFaceColor','b','MarkerEdgeColor','k')
-plot(f)
+plot(f,'linewidth',3,'linecolor','g')
 hold off
 
 
