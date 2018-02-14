@@ -35,6 +35,8 @@ if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 argin_check([h{:}],'Miller');
 for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
+
+
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
 rAll = plotS2Grid(sR,varargin{:});
@@ -43,10 +45,16 @@ if any(rAll.z(:) < 1e-2) && any(rAll.z(:) > 1e-2) && ~check_option(varargin,'com
 else
   rUpper = rAll;
 end
+if isa(odf.SS,'crystalSymmetry')
+  rAll = Miller(rAll,odf.CS);
+  rUpper = Miller(rUpper,odf.CS);
+  pfAnnotations = @(varargin) [];
+else
+  pfAnnotations = getMTEXpref('pfAnnotations');
+end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
-pfAnnotations = getMTEXpref('pfAnnotations');
 
 for i = 1:length(h)
   
