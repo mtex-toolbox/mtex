@@ -30,20 +30,17 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 % arguments are the ODF to be plotted and the <Miller_index.html Miller
 % indice> of the crystal directions you want to have pole figures for.
 
-plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
+plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
 
 %%
-% By default the <ODF.plotPDF.html plotPDF> command plots only the upper 
-% hemisphere of each pole sphere. In order to plot upper and lower
-% hemisphere you can do the following
+% While the first two  pole figures are plotted on the upper hemisphere
+% only the (11-21) has been plotted for the upper and lower hemisphere. The
+% reason for this behaviour is that MTEX automatically detects that the
+% first two pole figures coincide on the upper and lower hemisphere while
+% the (11-21) pole figure does not. In order to plot all pole figures with
+% upper and lower hemisphere we can do
 
-mtexFig = mtexFigure;
-
-plotPDF(odf,Miller(1,1,-2,1,cs),'TR','upper','parent',mtexFig.nextAxis)
-
-plotPDF(odf,Miller(1,1,-2,1,cs),'TR','lower','parent',mtexFig.nextAxis)
-
-mtexFig.drawNow
+plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs),'complete')
 
 %%
 % We see that in general upper and lower hemisphere of the pole figure do
@@ -58,14 +55,7 @@ mtexFig.drawNow
 %
 % In MTEX antipodal symmetry can be enforced by the use the option *antipodal*.
 
-mtexFig = mtexFigure;
-
-plotPDF(odf,Miller(1,1,-2,1,cs),'TR','upper','antipodal','parent',mtexFig.nextAxis)
-
-plotPDF(odf,Miller(1,1,-2,1,cs),'TR','lower','antipodal','parent',mtexFig.nextAxis)
-
-mtexFig.drawNow
-
+plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
 
 %% Inverse Pole Figures
 % Plotting inverse pole figures is analogously to plotting pole figures
@@ -73,15 +63,25 @@ mtexFig.drawNow
 % <ODF.plotIPDF.html plotIPDF> and you to specify specimen directions and
 % not crystal directions.
 
+plotIPDF(odf,[xvector,zvector])
+
+%%
+% Imposing antipodal symmetry to the inverse pole figures halfes the
+% fundamental region
+
 plotIPDF(odf,[xvector,zvector],'antipodal')
-annotate(Miller(1,0,-1,0,odf.CS,'UVTW'),'labeled')
 
 %%
 % By default MTEX always plots only the fundamental region with respect to
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
-plotIPDF(odf,[xvector,zvector],'antipodal','complete')
+plotIPDF(odf,[xvector,zvector],'complete','upper')
+
+%%
+% This illustrates also more clearly the effect of the antipodal symmetry
+
+plotIPDF(odf,[xvector,zvector],'complete','antipodal','upper')
 
 %% ODF Sections
 %
@@ -160,6 +160,7 @@ plotAxisDistribution(mdf)
 % and the distribution of the missorientation angles and compare them to a
 % uniform ODF
 
+close all
 plotAngleDistribution(mdf)
 hold all
 plotAngleDistribution(cs,cs)

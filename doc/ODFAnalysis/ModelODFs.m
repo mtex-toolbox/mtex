@@ -23,10 +23,7 @@
 % adding and subtracting arbitrary ODFs. Model ODFs may be used as
 % references for ODFs estimated from pole figure data or EBSD data and are
 % instrumental for <PoleFigureSimulation_demo.html pole figure simulations>
-% and <EBSDSimulation_demo.html single orientation simulations>. These
-% relationships are visualized in the following chart.
-%
-% <<odf.png>>
+% and <EBSDSimulation_demo.html single orientation simulations>. 
 
 %% The Uniform ODF
 %
@@ -67,29 +64,18 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 
 %% Fibre ODFs
-% A fibre is a rotation mapping a <Miller_index.html crystal direction> $h
-% \in S^2$ onto a <vector3d_index.html specimen direction> $r \in S^2$,
-% i.e.
-%
-% $$g*h = r.$$
-%
-% A fibre ODF may be written as
-%
-% $$f(g; h,r) = \psi(\angle(g*h,r)),\quad g \in SO(3),$$
-%
-% with an arbitrary <kernel_index.html radially symmetrial
-% function> $\psi$. In order to define a fibre ODF one needs
-%
-% * a <Miller_index.html crystal direction> *h0*
-% * a <vector3d_index.html specimen direction> *r0*
-% * a <kernel_index.html kernel> function *psi* defining the shape
-% * the crystal and specimen <symmetry_index.html symmetry>
+% A fibre is represented in MTEX by a variable of type <fibre_index.html
+% fibre>. 
 
-h = Miller(0,0,1,cs);
-r = xvector;
-odf = fibreODF(h,r,ss,psi)
+% define the fibre to be the beta fibre
+f = fibre.beta(cs)
 
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
+% define a fibre ODF
+odf = fibreODF(f,ss,psi)
+
+% plot the odf in 3d
+plot3d(odf)
+
 
 %% ODFs given by Fourier coefficients
 %
