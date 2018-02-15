@@ -116,9 +116,9 @@ api.Progress.enableFinish(false);
 
   function localFinishCallback(varargin)
     
-    WizardFinish(api);
+    e = WizardFinish(api);
     
-    close(api.hFigure);
+    if ~e, close(api.hFigure); end
     
   end
 
@@ -206,6 +206,3 @@ api.Progress.enableFinish(false);
   end
 
 end
-
-
-

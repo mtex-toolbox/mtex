@@ -12,14 +12,15 @@ classdef patalaOrientationMapping < orientationMapping
   methods
    
     function oM = patalaOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+      % patala orientation mapping is only defined for grain exchange
+      % symmetry -> antipodal
+      oM = oM@orientationMapping(varargin{:},'antipodal');
     end
     
     function rgb = orientation2color(oM,mori) 
 
-      q = quaternion(mori.project2FundamentalRegion('antipodal'));
-
-      v = Rodrigues(rotation('axis',q.axis,'angle',q.angle));
+      % convert in Rodrigues Frank space
+      v = Rodrigues(mori.project2FundamentalRegion('antipodal'));
 
       % this is to adjust to the "correct" fundamental sector
       v = rotate(v,-oM.CS1.bAxis.rho);

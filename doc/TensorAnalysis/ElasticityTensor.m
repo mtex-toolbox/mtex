@@ -21,18 +21,22 @@ cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
 
 %% Young's Modulus
-% Young's modulus is also known as the tensile modulus and measures the stiffness of elastic materials
-% It is computed for a specific direction x by the command <tensor.YoungsModulus.html YoungsModulus>.
+% Young's modulus is also known as the tensile modulus and measures the
+% stiffness of elastic materials. It is computed for a specific direction x
+% by the command <tensor.YoungsModulus.html YoungsModulus>.
 
-x = xvector;
-E = YoungsModulus(C,x)
+% compute Young's modulus as a directional dependend function
+E = C.YoungsModulus
 
-%%
-% It can be plotted by passing the option *YoungsModulus* to the
-% <tensor.plot.html plot> command.
-
+% plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
-plot(C,'PlotType','YoungsModulus','complete','upper')
+plot(C.YoungsModulus,'complete','upper')
+
+% Young's modulus for a specific direction 
+E.eval(vector3d.X)
+
+%
+
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -41,13 +45,14 @@ plot(C,'PlotType','YoungsModulus','complete','upper')
 % It is computed for a specific direction x by the
 % command <tensor.linearCompressibility.html linearCompressibility>.
 
-beta = linearCompressibility(C,x)
+beta = linearCompressibility(C)
 
-%%
-% It can be plotted by passing the option *linearCompressibility* to the
-% <tensor.plot.html plot> command.
+% plot it
+plot(beta,'complete','upper')
 
-plot(C,'PlotType','linearCompressibility','complete','upper')
+% 
+beta.eval(vector3d.X)
+
 
 %% Christoffel Tensor
 % The Christoffel Tensor is symmetric because of the symmetry of the
@@ -61,7 +66,7 @@ plot(C,'PlotType','linearCompressibility','complete','upper')
 % It is computed for a specific direction x by the
 % command <tensor.ChristoffelTensor.html ChristoffelTensor>.
 
-T = ChristoffelTensor(C,x)
+T = ChristoffelTensor(C,vector3d.X)
 
 %% Elastic Wave Velocity
 % The Christoffel tensor is the basis for computing the direction dependent
@@ -78,29 +83,31 @@ C = addOption(C,'density',rho)
 % Then the velocities are computed by the command <tensor.velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
+
 
 %%
 % In order to visualize these quantities, there are several possibilities.
 % Let us first plot the direction dependent wave speed of the p-wave
 
-plot(C,'PlotType','velocity','vp','complete','upper')
+
+plot(vp,'complete','upper')
 
 %%
 % Next, we plot on the top of this plot the p-wave polarization direction.
 
 hold on
-plot(C,'PlotType','velocity','pp','complete','upper')
+plot(pp)
 hold off
 
 %%
 % Finally, we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
-plot(C,'PlotType','velocity','vs1-vs2','complete','upper')
+plot(vs1-vs2,'complete','upper')
 
 hold on
-plot(C,'PlotType','velocity','ps1','complete','upper')
+plot(ps1)
 hold off
 
 

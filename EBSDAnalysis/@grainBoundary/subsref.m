@@ -1,18 +1,39 @@
 function varargout = subsref(gB,s)
-% access subsets of a GrainSet
+% implements gB(1:10)
 %
 % Syntax
-%   gB(1:10)               % the 10 first boundaries
+%   gB(1:10)                    % the 10 first boundaries
 %   gB('Forsterite','Epidote')  % only Forsterite - Epidote boundaries
-%   grains( ~grains('fe') ) % all grains but Fe
-%                           logical array with size of the complete
-%                           GrainSet
+%   gB(cond)        
+%
+% Input
+%  gB - @grainBoundary
+%  cond - logical array with same size as gB
+%
 
 if strcmp(s(1).type,'()')
   
   ind = subsind(gB,s(1).subs);
   gB = subSet(gB,ind);
- 
+
+  % change the order of boundary
+  phId = find(cellfun(@ischar,s(1).subs),1);
+  
+  if ~isempty(phId) && ~strcmpi(s(1).subs{phId},'indexed')
+    ph = s(1).subs{phId};
+    alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
+    ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...
+      strcmpi(alt_mineral(:),ph);
+    phId = find(ph,1);
+    
+    % if a phase is specified flip boundaries such that the phase becomes
+    % first
+    if ~ischar(gB.CSList{phId})
+      gB = flip(gB,gB.phaseId(:,1) ~= phId);
+    end
+  end
+  
+    
   % is there something more to do?
   if numel(s)>1
     s = s(2:end);

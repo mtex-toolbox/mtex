@@ -1,6 +1,18 @@
 function varargout = plot(v,varargin)
-% plot three dimensional vector
+% plot vectors as two dimensional projections on the sphere
 %
+% Syntax
+%   plot(v)
+%   plot(v,value)
+%   plot(v,rgb)
+%   plot(v,'MarkerSize',10)
+%   plot(v,'contourf')
+%   plot(v,'contour')
+%
+% Input
+%   v - @vector3d
+%   value - values to be displayed
+%   rgb - 
 %
 % Options
 %  Marker          
@@ -12,6 +24,27 @@ function varargout = plot(v,varargin)
 %  smooth   - plot point cloud as colored density
 %  contourf - plot point cloud as filled contours
 %  contour  - plot point cloud as contours
+%
+
+% maybe we should add this do all subplots
+if check_option(varargin,'add2all')
+  mtexFig = gcm;
+  if isempty(gcm)
+    ax = gca;
+  else
+    ax = mtexFig.children;
+  end
+  ax = get_option(varargin,'parent',ax);
+  varargin = delete_option(varargin,'parent',1);
+  varargin = delete_option(varargin,'add2all');
+  
+  for i = 1:length(ax)
+    plot(v,varargin{:},'parent',ax(i));
+  end
+  
+  return
+end
+
 
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...

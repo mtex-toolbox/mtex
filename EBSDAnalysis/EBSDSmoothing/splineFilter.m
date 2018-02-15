@@ -21,7 +21,7 @@ classdef splineFilter < EBSDFilter
       tq = log(q,quaternion(qmean));      
 
       % perform smoothing
-      if F.robust, rob = {'robust'}; else rob = {}; end
+      if F.robust, rob = {'robust'}; else, rob = {}; end
       [tq,F.alpha] = smoothn({tq.x,tq.y,tq.z},F.alpha,rob{:});
             
       % project back to orientation space

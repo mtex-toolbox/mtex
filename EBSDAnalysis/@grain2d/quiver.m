@@ -19,15 +19,24 @@ function h = quiver(grains,dir,varargin)
 
 xy = grains.centroid;
 
+if ~check_option(varargin,'noScaling')
+  
+  dir = 0.2*grains.diameter .* normalize(dir) * ...
+    get_option(varargin,'autoScaleFactor',1);
+  varargin = [varargin,'autoScale','off','linewidth',2];
+else
+  varargin = [{'linewidth',2,'autoScaleFactor',0.25},varargin];
+end
+  
 if check_option(varargin,'antipodal') || dir.antipodal
 
-  varargin = [{'MaxHeadSize',0,'linewidth',2,'autoScaleFactor',0.25},varargin];
+  varargin = [{'MaxHeadSize',0},varargin];
   xy = [xy;xy];
   dir = [dir(:);-dir(:)];
   
 else
   
-  varargin = [{'MaxHeadSize',5,'linewidth',2,'autoScaleFactor',0.25},varargin];
+  %varargin = [{'MaxHeadSize',5},varargin];
     
 end
  

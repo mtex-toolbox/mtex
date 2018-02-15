@@ -16,6 +16,25 @@ function h = text(v,varargin)
 %
 % See also
 
+if check_option(varargin,'add2all')
+  mtexFig = gcm;
+  if isempty(gcm)
+    ax = gca;
+  else
+    ax = mtexFig.children;
+  end
+  ax = get_option(varargin,'parent',ax);
+  varargin = delete_option(varargin,'parent',1);
+  varargin = delete_option(varargin,'add2all');
+  
+  for i = 1:length(ax)
+    text(v,varargin{:},'parent',ax(i));
+  end
+  
+  return
+end
+
+
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
@@ -66,7 +85,7 @@ for j = 1:numel(sP)
       s = ['$' s '$']; %#ok<AGROW>
     end
 
-    if check_option(varargin,'addMarkerSpacing'),
+    if check_option(varargin,'addMarkerSpacing')
       
       xy = [x(i),y(i)];
       tag = {'UserData',xy,'tag'};

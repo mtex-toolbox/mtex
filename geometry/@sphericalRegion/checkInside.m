@@ -9,6 +9,10 @@ if (sR.antipodal || check_option(varargin,'antipodal')) && ...
   return
 end
 
+if check_option(varargin,'removeAntipodal')
+  v.antipodal = false;
+end
+
 % verify all conditions are satisfies
 inside = true(size(v));
 v = normalize(vector3d(v));
@@ -17,4 +21,3 @@ for i = 1:length(sR.N)
 end
  
 end
- 

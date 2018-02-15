@@ -1,0 +1,49 @@
+{
+"loadEBSD":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"},
+        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+    ]
+},
+"loadEBSD_ang":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath=*.ang"},
+        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+    ]
+},
+"loadEBSD_ctf":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath=*.ctf"},
+        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+    ]
+},
+"loadPoleFigure":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"},
+        {"name":"superposition", "kind":"namevalue", "type":"cell"}
+    ]
+},
+"loadODF":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"},
+        {"name":"CS", "kind":"namevalue", "type":"crystalSymmetry"}
+    ]
+},
+"loadOrientation":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"}
+    ]
+}
+}

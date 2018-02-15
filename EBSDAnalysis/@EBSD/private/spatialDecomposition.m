@@ -62,14 +62,25 @@ function dummyCoordinates = calcBoundary(X,unitCell,varargin)
 dummyCoordinates = [];
 
 % specify a bounding polyogn
-boundary = get_option(varargin,'boundary','hull',{'char','double'});
+method = get_option(varargin,'boundary','hull',{'char','double'});
 
-if ischar(boundary)
+if ischar(method)
   
-  switch lower(boundary)
+  switch lower(method)
+    case 'tight'
+      x = X(:,1);  y = X(:,2);      
+      
+      k = boundary(x,y,1);
+      
+      % erase all linear dependend points
+      angle = atan2( x(k(1:end-1))-x(k(2:end)),...
+        y(k(1:end-1))-y(k(2:end)) );      
+      k = k([true; abs(diff(angle))>eps; true]);
+      
+      boundingX = X(k,:);      
     case {'hull','convexhull'}
       x = X(:,1);  y = X(:,2);
-
+      
       k = convhull(x,y);
       
       % erase all linear dependend points
@@ -96,9 +107,9 @@ if ischar(boundary)
       
   end
   
-elseif isa(boundary,'double')
+elseif isa(method,'double')
   
-  boundingX = boundary;
+  boundingX = method;
   
 end
 
@@ -161,12 +172,14 @@ for k=1:size(boundingX,1)-1
    
     tmpX = tmpX( ~(right | left) ,:);
      
-    if edgeLength(k)/size(tmpX,1) < radius/3, 
+    if edgeLength(k)/size(tmpX,1) < radius/3
       break;
-    elseif m < 2^7, 
+    elseif m < 2^7
       m = m*2;
-    else
+    elseif m < 2^7+100
       m = m+10; 
+    else
+      break;
     end
     
   end
@@ -176,5 +189,11 @@ for k=1:size(boundingX,1)-1
 end
   
 dummyCoordinates = unique(dummyCoordinates,'first','rows');
+
+% remove those points which are inside the b
+
+id = inpolygon(dummyCoordinates(:,1),dummyCoordinates(:,2),boundingX(:,1),boundingX(:,2));
+
+dummyCoordinates(id,:) = [];
 
 end

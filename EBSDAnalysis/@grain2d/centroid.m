@@ -1,7 +1,8 @@
 function [x,y] = centroid(grains)
-% calculates the barycenters of the grain polygons
+% calculates the barycenters of the grain boundary
 %
 
+% initalize x,y values
 x = zeros(size(grains)); y = x;
 
 faceOrder = [grains.poly{:}];

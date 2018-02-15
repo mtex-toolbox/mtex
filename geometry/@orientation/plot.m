@@ -29,23 +29,31 @@ elseif isappdata(mtexFig.parent,'ODFSections')
   
 end
 
+if check_option(varargin,'add2all')
+  allAxes = mtexFig.children;
+else
+  allAxes = get_option(varargin,'parent',mtexFig.currentAxes);
+end
+varargin = delete_option(varargin,{'add2all','parent'});
+
 % plotting
-switch get(mtexFig.parent,'tag')
+for ax = allAxes(:).'
+  switch get(ax,'tag')
   
-  case 'pdf' % pole figure annotations
+    case 'pdf' % pole figure annotations
       
-    plotPDF(ori,[],varargin{:});
+      plotPDF(ori,[],varargin{:},'parent',ax,'noTitle');
     
-  case 'ipdf' % inverse pole figure annotations
+    case 'ipdf' % inverse pole figure annotations
       
-    plotIPDF(ori,[],varargin{:});
+      plotIPDF(ori,[],varargin{:},'parent',ax,'noTitle');
   
-  case 'odf' % ODF sections plot
+    case 'odf' % ODF sections plot
     
-    plotSection(ori,varargin{:});
+      plotSection(ori,varargin{:},'parent',ax);
     
-  otherwise
+    otherwise
     
-    scatter(ori,varargin{:});              
-    
+      scatter(ori,varargin{:},'parent',ax);
+  end
 end

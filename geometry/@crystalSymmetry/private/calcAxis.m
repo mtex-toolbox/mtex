@@ -59,10 +59,12 @@ alignOpt(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],alignOpt(flipthem
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(alignOpt,'z\|\|'))) && ...
     nnz(cell2mat(regexpi(alignOpt,'[xy]\|\|')))<=1
-  if all(cellfun(@isempty,regexpi(alignOpt,'[xy]\|\|[abc]\*')))
-    alignOpt = [alignOpt,{'Z||c*'}];
-  else
+  
+  p = '[xy]\|\|[abc]'; % check for something like x||a 
+  if all(cellfun(@isempty,regexpi(alignOpt,['(?!' p '\*)' p])))
     alignOpt = [alignOpt,{'Z||c'}];
+  else
+    alignOpt = [alignOpt,{'Z||c*'}];
   end
 end
 

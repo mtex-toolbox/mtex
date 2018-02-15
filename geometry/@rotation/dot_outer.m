@@ -21,5 +21,5 @@ if ~isempty(rot1) && ~isempty(rot2)
     d(rot1.i,:) = 0;
   end
 else
-		d = [];
+    d = [];
 end

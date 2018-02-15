@@ -21,7 +21,8 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 %
  
 % convert to FourierODF
-if ~isa(odf,'BinghamODF') && ~check_option(varargin,'quadrature')
+if ~any(cellfun(@(x) isa(x,'BinghamComponent'),odf.components)) ...
+    && ~check_option(varargin,'quadrature')
   odf = FourierODF(odf,T.rank);
 end
 

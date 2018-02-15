@@ -130,11 +130,16 @@ classdef kernel
       % convolution of kernel functions
             
       L = min(psi1.bandwidth,psi2.bandwidth);     
-      l = 0:L;
+      l = (0:L).';
 
       psi = kernel(psi1.A(1:L+1) .* psi2.A(1:L+1) ./ (2*l+1));    
     end
          
+    function c = char(psi)
+      c = ['custom, halfwidth ' ...
+        xnum2str(psi.halfwidth/degree) mtexdegchar];
+    end
+    
     function psi = mpower(psi,p)
       % self convolution
 

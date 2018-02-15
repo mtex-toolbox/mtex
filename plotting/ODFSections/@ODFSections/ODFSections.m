@@ -4,7 +4,7 @@ classdef ODFSections < handle
   %
   % Example
   %
-  %   cs = crystalSymmetry('mmm')
+  %   cs = crystalSymmetry('222')
   %   oS = axisAngleSections(cs,cs)
   %   ori = oS.makeGrid('resolution');
   %   oM = patalaOrientationMapping(cs,cs)
@@ -28,12 +28,21 @@ classdef ODFSections < handle
     CS % crystal symmetry
     SS % specimen symmetry
   end
-    
+   
+  properties (Access = protected)
+    upperAndLower = false % whether upper AND lower hemispheres are displayed
+  end
+  
   methods
     function oS = ODFSections(CS1,varargin)
-      oS.CS1 = CS1.properGroup;
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);
-      oS.CS2 = CS2.properGroup;
+      if check_option(varargin,'pointGroup')
+        oS.CS1 = CS1;
+        oS.CS2 = CS2;
+      else
+        oS.CS1 = CS1.properGroup;
+        oS.CS2 = CS2.properGroup;
+      end
       oS.tol = get_option(varargin,'tolerance',5*degree);
     end
         
@@ -51,13 +60,16 @@ classdef ODFSections < handle
   
   methods (Hidden = true)
     function secPos = secList(oS, values, center)
-            
-      bounds = [center(:) - oS.tol,center(:) + oS.tol];
       
       % ensure disjoint boxes
-      ind = find(bounds(1:end-1,2) + eps >= bounds(2:end,1));
-      bounds(ind,2) = (2*center(ind) + 1 * center(ind+1)) ./ 3;
-      bounds(ind+1,1) = (center(ind) + 2 * center(ind+1)) ./ 3;
+      if min(diff(center)) < 2*oS.tol
+        oS.tol = 0.99*min(diff(center))/2;
+      end      
+      bounds = [center(:) - oS.tol,center(:) + oS.tol];
+          
+      %ind = find(bounds(1:end-1,2) + eps >= bounds(2:end,1));
+      %bounds(ind,2) = (5*center(ind) + 4 * center(ind+1)) ./ 9;
+      %bounds(ind+1,1) = (4*center(ind) + 5 * center(ind+1)) ./ 9;
                  
       % compute box position
       [~,secPos] = histc(values,reshape(bounds.',[],1));

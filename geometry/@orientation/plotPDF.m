@@ -21,44 +21,44 @@ function plotPDF(o,varargin)
 % Flags
 %  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
+%  noSymmetry - ignore symmetricaly equivalent points
 %
 % See also
 % orientation/plotIPDF S2Grid/plot savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[mtexFig,isNew] = newMtexFigure('ensureTag','pdf',...
-  'ensureAppdata',{{'SS',o.SS}},...
-  'datacursormode',@tooltip,varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
-elseif nargin > 2 && isa(varargin{2},'Miller')
+elseif nargin > 2 && (isa(varargin{2},'Miller') || (iscell(varargin{2}) && isa(varargin{2}{1},'Miller')))
   [data,varargin] = extract_data(length(o),varargin);
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
   data = [];
 end
 
-h = getappdata(mtexFig.parent,'h');
-
-if isNew || isempty(h) || ~isa(mtexFig,'mtexFigure') % for a new plot 
-  
+if isNew || ~isa(mtexFig,'mtexFigure') % for a new plot 
   h = varargin{1};
   varargin(1) = [];
   if ~iscell(h), h = vec2cell(h);end 
-  argin_check([h{:}],{'Miller'});  
-  for i = 1:length(h)
-    h{i} = o.CS.ensureCS(h{i});
-  end    
-  setappdata(mtexFig.parent,'h',h);
-    
+else
+  h = {getappdata(mtexFig.currentAxes,'h')};
 end
 
+% all h should by Miller and have the right symmetry
+argin_check([h{:}],{'Miller'});
+for i = 1:length(h), h{i} = o.CS.ensureCS(h{i}); end
+
 if isNew
-  pfAnnotations = getMTEXpref('pfAnnotations');
+  if isa(o.SS,'specimenSymmetry')
+    pfAnnotations = getMTEXpref('pfAnnotations');
+  else
+    pfAnnotations = @(varargin) 1;
+  end
   set(mtexFig.parent,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 else
   pfAnnotations = @(varargin) 1;
@@ -86,18 +86,30 @@ for i = 1:length(h)
   if i>1, mtexFig.nextAxis; end
 
   % compute specimen directions
-  sh = symmetrise(h{i});
+  if check_option(varargin,'noSymmetry')
+    sh = h{i};
+  else
+    sh = symmetrise(h{i});
+  end
   r = reshape(o.SS * o * sh,[],1);
-    
-  r.plot(repmat(data,[length(o.SS) length(sh)]),o.SS.fundamentalSector(varargin{:}),...
-    'parent',mtexFig.gca,'doNotDraw',varargin{:});
+  opt = replicateMarkerSize(varargin,length(o.SS)*length(sh));
+  
+  % maybe we can restric ourselfs to the upper hemisphere
+  if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
+    opt = [opt,'upper'];
+  end
+  
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
-  
-  if isa(o.SS,'specimenSymmetry')
-    pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-  end
+  [~,cax] = r.plot(repmat(data,[length(o.SS) length(sh)]),...
+    o.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+
+  % plot annotations
+  pfAnnotations('parent',cax,'doNotDraw','add2all');
+  setappdata(cax,'h',h{i});
+  set(cax,'tag','pdf');
+  setappdata(cax,'SS',o.SS);
   
   % TODO: unifyMarkerSize
 
@@ -123,4 +135,13 @@ end
 
 end
 
+function opt = replicateMarkerSize(opt,n)
+
+ms = get_option(opt,'MarkerSize');
+if length(ms)>1 && n > 1
+  ms = repmat(ms(:).',n,1);
+  opt = set_option(opt,'MarkerSize',ms);
+end
+  
+end
 

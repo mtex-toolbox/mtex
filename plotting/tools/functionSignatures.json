@@ -1,0 +1,21 @@
+{
+"annotate":
+{
+    "inputs":
+    [
+        {"name":"obj", "kind":"required"},
+        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkeEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"label", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
+},
+"mtexColorMap":
+{
+    "inputs":
+    [
+        {"name":"map", "kind":"required",   "type":"choices=getColormaps"}
+     ]
+}
+}

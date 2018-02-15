@@ -46,7 +46,7 @@ for i = 1:length(odf.components)
   ori = [ori,calcModes(odf.components{i},res)];     %#ok<AGROW>
 end
   
-if isempty(ori),
+if isempty(ori)
   ori = equispacedSO3Grid(odf.CS,odf.SS,'resolution',res);
 end
 
@@ -121,7 +121,7 @@ for k=1:length(cx)-1
   ls(id) = true;  
   ids(k) = ls(:,k)==0;
   
-  if nnz(ids)>=num, break,end;
+  if nnz(ids)>=num, break,end
 end
 
 % the retrived maximas

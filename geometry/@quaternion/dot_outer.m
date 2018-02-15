@@ -16,7 +16,7 @@ if ~isempty(g1) && ~isempty(g2)
   q2 = [g2.a(:) g2.b(:) g2.c(:) g2.d(:)];
   
   d = q1*q2';
-		
+    
 else
-		d = [];
+    d = [];
 end

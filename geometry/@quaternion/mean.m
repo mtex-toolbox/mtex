@@ -3,12 +3,12 @@ function [qm, lambda, V] = mean(q,varargin)
 %
 % Syntax
 %
-%   [m, lambda, V] = mean(q,varargin)
+%   [m, lambda, V] = mean(q)
+%   [m, lambda, V] = mean(q,'robust')
+%   [m, lambda, V] = mean(q,'weights',weights)
 %
 % Input
 %  q        - list of @quaternion
-%
-% Options
 %  weights  - list of weights
 %
 % Output
@@ -22,12 +22,13 @@ function [qm, lambda, V] = mean(q,varargin)
 T = qq(q,varargin{:});
 [V, lambda] = eig(T);
 l = diag(lambda);
-pos = find(max(l)==l,1);
+[~,pos] = max(l);
 qm = quaternion(V(:,pos));
 
 if check_option(varargin,'robust') && length(q)>4
   omega = angle(qm,q);
   id = omega < quantile(omega,0.8);
+  if ~any(id), return; end
   varargin = delete_option(varargin,'robust');
   [qm,lambda, V] = mean(q.subSet(id),varargin{:});
   

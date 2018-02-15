@@ -1,15 +1,15 @@
 classdef slipSystem
-  % class representing slip systems
-  %
-  % Syntax
-  %   sS = slipSystem(b,n)
-  %   sS = slipSystem(b,n,CRSS)
-  %
-  % Input
-  %  b - @Miller - Burgers vector or slip direction
-  %  n - @Miller - slip plane normal
-  %  CRSS - critical resolved shear stress
-  %
+% class representing slip systems
+%
+% Syntax
+%   sS = slipSystem(b,n)
+%   sS = slipSystem(b,n,CRSS)
+%
+% Input
+%  b - @Miller Burgers vector or slip direction
+%  n - @Miller slip plane normal
+%  CRSS - critical resolved shear stress
+%
   
   properties    
     b % slip direction or burgers vector
@@ -34,6 +34,8 @@ classdef slipSystem
       %  n - @Miller - slip plane normal
       %  CRSS - critical resolved shear stress
       %
+      
+      if nargin == 0, return; end
       
       assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
         'Slip direction and plane normal should be orthogonal!')
@@ -96,6 +98,17 @@ classdef slipSystem
       end
     end
     
+    function str = char(sS,varargin)
+      
+      for i = 1:length(sS)
+        str{i} = [char(sS.n(i),varargin{:}),char(sS.b(i),varargin{:})];
+        str{i} = strrep(str{i},'$$','');
+      end
+      if i == 1, str = char(str); end
+      
+      
+    end
+    
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end
@@ -126,13 +139,13 @@ classdef slipSystem
     end
          
     function sS = prismaticA(cs,varargin)
-      %⟨2-1-1 0⟩{01-10}
+      %<2-1-1 0>{01-10}
       sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,0,cs,'hkil'),varargin{:});
     end
     
     function sS = prismatic2A(cs,varargin)
     %2nd order prismatic compound <a> slip system in hexagonal lattice:
-    %⟨01-10⟩{2-1-10}
+    %<01-10>{2-1-10}
     sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'),varargin{:});
     end
     

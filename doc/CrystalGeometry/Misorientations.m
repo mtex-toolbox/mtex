@@ -40,7 +40,7 @@ angle(ori1, ori2) ./ degree
 % Note that the misorientation angle is computed by default modulo crystal
 % symmetry, i.e., the angle is always the smallest angles between all
 % possible pairs of symmetrically equivalent orientations. In our example
-% this means that symmetrisation of one orienation has no impact on the
+% this means that symmetrisation of one orientation has no impact on the
 % angle
 
 angle(ori1, ori2.symmetrise) ./ degree
@@ -51,12 +51,12 @@ angle(ori1, ori2.symmetrise) ./ degree
 angle(ori1, ori2.symmetrise,'noSymmetry')./ degree
 
 %%
-% We see that smallest angle indeed coincides with the angle computed
+% We see that the smallest angle indeed coincides with the angle computed
 % before.
 
 %% Misorientations
 % Remember that both orientations ori1 and ori2 map crystal coordinates
-% into specimen coordinates. Hence, the product of an inverse orientation
+% onto specimen coordinates. Hence, the product of an inverse orientation
 % with another orientation transfers crystal coordinates from one crystal
 % reference frame into crystal coordinates with respect to another crystal
 % reference frame. This transformation is called misorientation
@@ -67,7 +67,7 @@ mori = inv(ori1) * ori2
 % In the present case the misorientation describes the coordinate transform
 % from the reference frame of grain 80 into the reference frame of crystal
 % 70. Take as an example the plane {11-20} with respect to the grain 80.
-% Then the plane in grain 70 which aligned parallel to this plane can be
+% Then the plane in grain 70 which alignes parallel to this plane can be
 % computed by
 
 round(mori * Miller(1,1,-2,0,CS))
@@ -85,7 +85,8 @@ round(inv(mori) * Miller(2,-1,-1,0,CS))
 % misorientation is a twinning misorientation. Lets analyse whether there
 % are some more alignments between major lattice planes.
 
-m = Miller({1,-1,0,0},{1,1,-2,0},{1,-1,0,1},{0,0,0,1},CS);
+%m = Miller({1,-1,0,0},{1,1,-2,0},{1,-1,0,1},{0,0,0,1},CS);
+m = Miller({1,-1,0,0},{1,1,-2,0},{-1,0,1,1},{0,0,0,1},CS);
 
 % cycle through all major lattice planes
 close all
@@ -111,9 +112,9 @@ legend({},'location','SouthEast','FontSize',13);
 % plane {1-100} to {0001} and {0001} to {0-661}. Lets compute the angles
 % explicitly
 
-angle(mori * Miller(1,1,-2,0,CS),Miller(1,1,-2,0,CS)) / degree
-angle(mori * Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) / degree
-angle(mori * Miller(0,0,0,1,CS) ,Miller(1,0,-1,0,CS)) / degree
+angle(mori * Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS)) / degree
+angle(mori * Miller(1,0,-1,-1,CS),Miller(1,-1,0,1,CS)) / degree
+angle(mori * Miller(0,0,0,1,CS) ,Miller(1,0,-1,0,CS),'noSymmetry') / degree
 angle(mori * Miller(1,1,-2,2,CS),Miller(1,0,-1,0,CS)) / degree
 angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 

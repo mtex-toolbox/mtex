@@ -2,10 +2,12 @@ function [o, q, lambda, eigv]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
-%   [m, q, lambda, V]  = mean(o)
+%   [m, q, lambda, V] = mean(ori)
+%   [m, q, lambda, V] = mean(ori,'robust')
+%   [m, q, lambda, V] = mean(ori,'weights',weights)
 %
 % Input
-%  o        - list of @orientation
+%  ori      - list of @orientation
 %
 % Options
 %  weights  - list of weights
@@ -33,13 +35,17 @@ q_mean = get_option(varargin,'q0',quaternion(o,find(~isnan(o.a),1)));
 old_mean = [];
 q = quaternion(o);
 
-% iterate mean
-iter = 1;
-while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
-  old_mean = q_mean;
-  q = project2FundamentalRegion(q,o.CS,old_mean);
-  [q_mean, lambda, eigv] = mean(q,varargin{:});
-  iter = iter + 1;
+if ~check_option(varargin,'noSymmetry')
+  % iterate mean
+  iter = 1;
+  while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
+    old_mean = q_mean;
+    q = project2FundamentalRegion(q,o.CS,old_mean);
+    [q_mean, lambda, eigv] = mean(q,varargin{:});
+    iter = iter + 1;
+  end
+else
+  [q_mean, lambda, eigv] = mean@quaternion(o,varargin{:});
 end
 
 q = reshape(q,size(o));

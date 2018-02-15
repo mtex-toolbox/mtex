@@ -1,16 +1,22 @@
 function plot(pf,varargin)
 % plot pole figure
 %
-% plots the diffraction intensities
+% Syntax
+%   plot(pf)
+%   plot(pf{1})         % plot only the first pole figure
+%   plot(pf,'contour')  % contour plot
+%   plot(pf,'contourf') % filled contour plot
+%   plot(pf,'smooth')   % smooth plot
+%   plot(pf,'minmax')   % show min and max
+%   mtexColorbar        % show colorbar
 %
 % Input
 %  pf - @PoleFigure
 %
-% Options
-%  background   - plot background data
+
 %
 % See also
-% S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
+% vector3d/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 

@@ -3,7 +3,9 @@ function [v,m,n] = unique(v,varargin)
 %
 % Syntax
 %   v = unique(v) % find disjoined elements of the vector v
-%   [v,m,n] = unique(v,varargin)] %
+%   v = unique(v,'tolerance',0.01) % use tolerance 0.01
+%   [v,m,n] = unique(v,varargin)] 
+%    
 %
 % Input
 %  v - @vector3d
@@ -25,8 +27,18 @@ end
 
 tol = get_option(varargin,'tolerance',1e-7);
 
+% in case it should not be sorted
+if check_option(varargin,'stable')
+varargin = {'stable'};
+else
+varargin= {};   
+end
 % find duplicates points
-[ignore,m,n] = unique(round(xyz./tol),'rows'); %#ok<ASGLU>
+try
+  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,varargin{:});
+catch
+  [~,m,n] = unique(round(xyz./tol),'rows',varargin{:});
+end
 
 % remove duplicated points
 v.x = v.x(m);

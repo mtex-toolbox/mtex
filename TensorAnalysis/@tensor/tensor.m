@@ -120,11 +120,21 @@ classdef tensor < dynOption
   end
   
   methods (Static = true)
-    
-    function T = diag(d,varargin)
-      T = tensor(diag(d),varargin{:});
+    function eps = leviCivita
+      % the Levi Civita permutation tensor
+      
+      eps = zeros(3,3,3);
+      eps(1,2,3) = 1;
+      eps(3,1,2) = 1;
+      eps(2,3,1) = 1;
+      
+      eps(1,3,2) = -1;
+      eps(3,2,1) = -1;
+      eps(2,1,3) = -1;
+      
+      eps = tensor(eps,'name','Levi Cevita');
+      
     end
-    
   end
   
 end

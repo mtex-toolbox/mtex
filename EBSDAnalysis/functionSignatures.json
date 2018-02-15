@@ -1,0 +1,67 @@
+{
+"calcGrains":
+{
+    "inputs":
+    [
+        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+	{"name":"method", "kind":"flag", "type":"choices={'custom', 'angle','FMC'}"},
+        {"name":"unitCell", "kind":"flag"}
+    ]
+},
+"rotate":
+{
+    "inputs":
+    [
+        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+	{"name":"rot", "kind":"required",   "type":"choices={'double','rotation'}"},
+	{"name":"method", "kind":"flag", "type":"choices={'keepXY', 'keepEuler'}"},
+	{"name":"center", "kind":"namevalue", "type":"double"}
+    ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"boundary", "kind":"required",   "type":"grainBoundary"},
+        {"name":"lineColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"lineWidth", "kind":"namevalue", "type":"double"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+        {"name":"label", "kind":"namevalue", "type":"string"},
+	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
+	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
+	{"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+	{"name":"FaceColor", "kind":"namevalue", "type":"double"},
+	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
+	{"name":"unitCell", "kind":"flag"}
+    ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"grains", "kind":"required",   "type":"grain2d"},
+        {"name":"lineColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"lineWidth", "kind":"namevalue", "type":"double"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
+	{"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+	{"name":"FaceColor", "kind":"namevalue", "type":"double"}
+    ]
+}
+}

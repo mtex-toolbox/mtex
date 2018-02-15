@@ -16,10 +16,7 @@ function pf = loadPoleFigure_uxd(fname,varargin)
 fid = efopen(fname);
 
 try
-  % first line comment
-  comment = fgetl(fid);
-  [p,comment] = fileparts(fname);
-  
+ 
   lastTh = [];  
   npf = 1;
   
@@ -29,7 +26,7 @@ try
     header = textscan(fid,'_%s %q%*s%*s','Delimiter','=','CommentStyle',';');
     
     % read data
-    data = textscan(fid,'%f %f');
+    data = textscan(fid,'%f'); data = data{1};
     
     % THETA
     th = readfield(header,'THETA');
@@ -52,17 +49,17 @@ try
     theta = str2double(readfield(header,'KHI'))*degree;
     assert(theta>=0 && theta<=90*degree);
     
-    % append data
-    if all(isnan(data{2}))
-      d = [d;data{1}]; %#ok<AGROW>
-      rho = linspace(0,2*pi,numel(data{1})+1).';
-      rho(end)=[];
+    % if every second data value increases by a constant value
+    % this polar angle
+    if ~any(diff(diff(data(1:2:end))))
+      rho = data(1:2:end)*degree;
+      data = data(2:2:end);      
     else
-      d = [d;data{2}]; %#ok<AGROW>
-      rho = data{1}*degree;
+      rho = linspace(0,2*pi,numel(data)+1).';
+      rho(end)=[];
     end
-    r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>
-    
+    d = [d;data]; %#ok<AGROW>
+    r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>   
   end
   
   % append last pole figure

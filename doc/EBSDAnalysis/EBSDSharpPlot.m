@@ -11,7 +11,8 @@
 % visualizing sharp data. Let us consider the following data set which
 % restricts to the calcite phase
 
-plotx2east
+% plotting conventions
+plotx2east, plotb2east
 mtexdata sharp
 
 ebsd = ebsd('calcite');
@@ -95,10 +96,10 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 plot(oM,'resolution',0.25*degree)
 
-% TODO: Check this!!!
-%hold on
-%plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
-%hold off
+% plot orientations into the color key
+hold on
+plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
+hold off
 %%
 % observe how in the inverse pole figure the orientations are scattered
 % closely around the white center. Together with the fact that the

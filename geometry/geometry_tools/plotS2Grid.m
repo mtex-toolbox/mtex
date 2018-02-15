@@ -19,16 +19,9 @@ function v = plotS2Grid(varargin)
 % See also
 % equispacedS2Grid regularS2Grid
 
-
 % get spherical region
-if nargin>0 && isa(varargin{1},'sphericalRegion')
-  sR = varargin{1};
-else
-  sR = sphericalRegion(varargin{:});
-end
+sR = extractSphericalRegion(varargin{:});
   
-% TODO: extract options 'antipodal','lower','upper'
-
 % get resolution
 res = get_option(varargin,'resolution',1*degree);
 
@@ -59,7 +52,7 @@ else
   % generate grid
   dtheta = thetaMax - thetaMin;
   % ensure an odd number of points to have some points at the equator
-  ntheta = 2*round(max(dtheta./res./2))+1;
+  ntheta = max(3,2*round(max(dtheta./res./2))+1);
   
   theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
   

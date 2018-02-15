@@ -69,6 +69,12 @@ methods
     elseif ~isempty(varargin) && ischar(varargin{1}) && strcmpi(varargin{1},'map')
       if isa(varargin{2},'Miller'), o.CS = varargin{2}.CS; end
       if isa(varargin{3},'Miller'), o.SS = varargin{3}.CS; end
+    else
+      try %#ok<TRYNC>
+        a = get_option(varargin,'axis');
+        o.CS = a.CS;
+        o.SS = a.CS;
+      end
     end
     if ~isempty(sym), o.CS = sym{1};end
     if length(sym) > 1, o.SS = sym{2};end
@@ -207,49 +213,84 @@ methods (Static = true)
     ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
   end
 
-  function mori = orientation.Bain(csAlpha,csGamma)    
-    mori = orientation('map',Miller(1,0,0,csAlpha),Miller(1,0,0,csGamma),...
-      Miller(0,1,1,csAlpha,'uvw'),Miller(0,1,0,csGamma,'uvw'));
+  function mori = Bain(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = Bain(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
+    
+    mori = orientation('map',Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
+      Miller(0,1,0,csGamma,'uvw'),Miller(0,1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.KurdjumovSachs(csAlpha,csGamma)
+  function mori = KurdjumovSachs(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = KurdjumovSachs(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(-1,-1,1,csAlpha,'uvw'),Miller(-1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(-1,0,1,csGamma,'uvw'),Miller(-1,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.NishiyamaWassermann(csAlpha,csGamma)
+  function mori = NishiyamaWassermann(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = NishiyamaWassermann(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(0,-1,1,csAlpha,'uvw'),Miller(1,1,-2,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.Pitch(csAlpha,csGamma)
+  function mori = Pitsch(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = Pitch(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
-    mori = orientation('map',Miller(1,0,1,csAlpha),Miller(0,1,0,csGamma),...
-      Miller(-1,1,1,csAlpha,'uvw'),Miller(1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
+      Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
+  
+    %mori = orientation('map',Miller(1,1,0,csGamma),Miller(1,1,1,csAlpha),...
+    %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
+  
   end
   
+  function mori = GreningerTrojano(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = GreningerTrojano(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
+    % cube cube
+    %mori = inv(orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
+
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
+      Miller(5,12,17,csGamma,'uvw'),Miller(17,17,7,csAlpha,'uvw'));
+    
+  end
   
-  
-  function ori = exp(T,varargin)
     
-    % make sure T is an antisymmetric tensor
-    T = antiSym(tensor(T));
-    
-    % form the gradient vector
-    v = vector3d(T{3,2},-T{3,1},T{2,1});
-    
-    % compute the orientation 
-    ori = orientation(expquat(v),varargin{:});
-    
-    % if T was with respect to crystal reference frame
-    % ori becomes an misorientation
-    if isa(T.CS,'crystalSymmetry')
-      ori.CS = T.CS;
-      ori.SS = T.CS;
-    end
-  end    
 end
 
 end

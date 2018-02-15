@@ -18,7 +18,7 @@ if check_option(varargin,'noSymmetry')
 else
   v = vector3d(symmetrise(m,varargin{:}));
   
-  [tmp1,tmp2,pos] = unique(v); %#ok<ASGLU>
+  [tmp1,tmp2,pos] = unique(v,varargin{:}); %#ok<ASGLU>
 
   [tmp,ndx,pos] = unique(min(reshape(pos,size(v)),[],1)); %#ok<ASGLU>
  

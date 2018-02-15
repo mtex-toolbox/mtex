@@ -21,7 +21,7 @@ qSS = unique(quaternion(SS));
 if check_option(varargin,'exact')
   epsilon = pi;
 else 
-  epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3));
+  epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3.5));
 end
 
 % how to use sparse matrix representation 

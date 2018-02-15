@@ -14,7 +14,16 @@ mtexdata forsterite
 plotx2east
 
 ebsd = ebsd('indexed');
-[grains,ebsd.grainId] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd);
+
+% remove very small grains
+ebsd(grains(grains.grainSize<=5)) = [];
+
+% and recompute grains
+[grains,ebsd.grainId] = calcGrains(ebsd);
+
+% smooth the grains a bit
+grains =smooth(grains,4)
 
 %% The grain boundary
 % The grain boundary of a list of grains can be extracted by
@@ -26,20 +35,20 @@ plot(gB)
 %%
 % Accordingly, we can access the grain boundary of a specific grain by
 
-grains(931).boundary
+grains(267).boundary
 
-plot(grains(931).boundary)
+plot(grains(267).boundary)
 
 %%
 % let's combine it with the orientation measurements inside
 
 % define the colorcoding such that the meanorientation becomes white
-oM = ipdfHSVOrientationMapping(grains(931));
-oM.inversePoleFigureDirection = grains(931).meanOrientation * oM.whiteCenter;
+oM = ipdfHSVOrientationMapping(grains(267));
+oM.inversePoleFigureDirection = grains(267).meanOrientation * oM.whiteCenter;
 oM.maxAngle = 5*degree;
 
-% get the ebsd data of grain 931
-ebsd_931 = ebsd(grains(931));
+% get the ebsd data of grain 267
+ebsd_931 = ebsd(grains(267));
 
 % plot the orientation data
 hold on
@@ -78,40 +87,47 @@ plot(grains.innerBoundary,'linecolor','r','linewidth',2)
 
 close all
 gB_Fo = grains.boundary('Fo','Fo');
-plot(grains,'translucent',.3)
+plot(grains,'translucent',.3,'micronbar','off')
 legend off
 hold on
 plot(gB_Fo,gB_Fo.misorientation.angle./degree,'linewidth',1.5)
 hold off
-mtexColorbar
+mtexColorbar('title','misorientation angle')
 
 %%
 % The more sophisticated way is to colorize the misorientation space and
 % apply the color to the respective grain boundaries. 
 
-
 close all
-plot(grains,'translucent',.3)
+plot(grains,'translucent',.3,'micronbar','off')
 legend off
 hold on
 
+% this reorders the boundary segement a a connected graph which results in
+% a smoother plot
+gB_Fo = gB_Fo.reorder;
+
 oM = patalaOrientationMapping(gB_Fo);
 
-plot(grains.boundary)
+plot(gB_Fo,'linewidth',4)
+% on my computer setting the renderer to painters gives a much more
+% pleasent result
+set(gcf,'Renderer','painters') 
 hold on
 
-plot(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',1.5)
+plot(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',2)
 
 hold off
 
-% plot the colorcoding
-% plot(oM)
+%%
+% Lets visualize the color key as axis angle sections through the
+% misorientation space
+
+plot(oM)
 
 %% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain
-% boundaries after some special property. This is done by the command
-% <GrainSet.specialBoundary.html specialBoundary>, which will be invoked
-% by the plotting routine.
+% boundaries after some special property. 
 %%
 % We can mark grain boundaries after its misorientation angle is in a
 % certain range
@@ -131,15 +147,10 @@ hist(mAngle)
 plot(gB,'linecolor','k')
 
 hold on
-plot(gB_Fo(id==1),'linecolor','b','linewidth',2)
-plot(gB_Fo(id==2),'linecolor','g','linewidth',2)
-plot(gB_Fo(id==3),'linecolor','r','linewidth',2)
-plot(gB_Fo(id==4),'linecolor','r','linewidth',2)
-
-legend('>40^\circ',...
-  '20^\circ-40^\circ',...
-  '10^\circ-20^\circ',...
-  '< 10^\circ')
+plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','>40^\circ')
+plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','20^\circ-40^\circ')
+plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','10^\circ-20^\circ')
+plot(gB_Fo(id==4),'linecolor','y','linewidth',2,'DisplayName','< 10^\circ')
 
 hold off
 
@@ -152,13 +163,12 @@ hold on
 
 ind = angle(gB_Fo.misorientation.axis,xvector)<5*degree;
 
-plot(gB_Fo(ind),'linecolor','b','linewidth',2)
+plot(gB_Fo(ind),'linecolor','b','linewidth',2,'DisplayName','[100]')
 
-legend('>5^\circ','[100]')
 
 %% 
-% Or we mark a special rotation between neighboured grains. If a
-% linecolor is not specified, then the boundary is colorcoded after its angular
+% Or we mark a special rotation between neighboured grains. If a linecolor
+% is not specified, then the boundary is colorcoded after its angular
 % difference to the given rotation.
 
 rot = rotation('axis',vector3d(1,1,1),'angle',60*degree);
@@ -167,38 +177,11 @@ ind = angle(gB_Fo.misorientation,rot)<10*degree;
 close all
 plot(gB)
 hold on
-plot(gB_Fo(ind),'linewidth',1.5,'linecolor','r')
+plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r')
 
 legend('>2^\circ','60^\circ/[001]')
 
 
-%%
-% In the same manner, we can classify after predefined special rotations,
-% e.g. coincident site lattice (CSL) for cubic crystals. Additionaly, we
-% specify a searching radius with the option |'delta'|, in this way, we
-% control how far the misorientation of the boundary segment is actually
-% away from the specified rotation.
-% TODO
-
-% close all
-% plot(gB)
-% 
-% 
-% hold on
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(3))<2*degree),...
-%   'linecolor','b','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(5))<4*degree),...
-%   'linecolor','m','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(7))<4*degree),...
-%   'linecolor','g','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(11))<4*degree),...
-%   'linecolor','r','linewidth',2)
-% 
-% legend('>2^\circ',...
-%   '\Sigma 3',...
-%   '\Sigma 5',...
-%   '\Sigma 7',...
-%   '\Sigma 11')
 
 %%
 % Another kind of special boundaries is tilt and twist boundaries. We can

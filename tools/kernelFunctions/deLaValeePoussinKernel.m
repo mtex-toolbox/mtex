@@ -47,12 +47,27 @@ classdef deLaValeePoussinKernel < kernel
     
     function value = K(psi,co2)
       % the kernel function on SO(3)
+      % K(omega) = C * cos(omega/2)^(2*kappa)
       value   =  psi.C * co2.^(2*psi.kappa);      
     end
   
+    function value = DK(psi,co2)
+      % the derivative of the kernel function
+      % DK(omega) = - kappa * C * sin(omega/2)*cos(omega/2)^(2kappa-1)
+      
+      %value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
+      value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
+      
+    end
+    
     function value = RK(psi,t)
       % the radon transformed kernel function at 
       value  = (1+psi.kappa) * ((1+t)/2).^psi.kappa;
+    end
+    
+    function value = DRK(psi,t)
+      % the radon transformed kernel function at 
+      value  = psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 .* ((1+t)/2).^(psi.kappa-1);
     end
         
     function hw = halfwidth(psi)

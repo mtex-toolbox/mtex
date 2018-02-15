@@ -1,6 +1,10 @@
 function [ebsd,filter] = smooth(ebsd,varargin)
 % smooth spatial EBSD data
 %
+% Synatx
+%   ebsd = ebsd.gridify
+%   ebsd = smooth(ebsd)
+%
 % Input
 %  ebsd - @EBSD
 %
@@ -98,5 +102,8 @@ vdisp('',varargin{:});
 
 % store to EBSD variable
 ebsd.rotations = rot;
+
+% set nan rotations to not indexed
+ebsd.phaseId(isnan(rot(:))) = 1;
     
 end

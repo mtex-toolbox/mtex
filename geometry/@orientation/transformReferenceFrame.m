@@ -28,8 +28,10 @@ end
 M = transformationMatrix(ori.CS,cs1);
 
 % check symmetries are compatible
-if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01
-  warning('Symmetry missmatch!')
+if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01 || ...
+    all(norm(ori.CS.axes - cs1.axes)./norm(cs1.axes)<10^-2) || ...
+    (~isempty(ori.CS.mineral) && ~isempty(cs1.mineral) && ~strcmpi(ori.CS.mineral,cs1.mineral))
+  warning('Symmetry missmatch! The following crystal frames seem to be different\n\n  %s and %s \n',char(ori.CS,'verbose'),char(cs1,'verbose'));
 end
 
 rot = rotation(ori) * rotation('matrix',M^-1);

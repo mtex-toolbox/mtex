@@ -79,7 +79,12 @@ if nargin>1 && isnumeric(varargin{1})
   
   h = plotUnitCells([ebsd.prop.x(:), ebsd.prop.y(:)],...
     property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
-
+  
+elseif nargin>1 && isa(varargin{1},'crystalShape')
+  
+  cS = varargin{1};
+  plot(ebsd.prop.x,ebsd.prop.y,zUpDown * cS.diameter,ebsd.orientations * cS,varargin{2:end});
+  
 else % phase plot
 
   for k=1:numel(ebsd.phaseMap)

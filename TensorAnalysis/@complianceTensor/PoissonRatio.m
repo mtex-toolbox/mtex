@@ -14,9 +14,21 @@ function nu = PoissonRatio(C,x,y)
 % $$\nu = \frac{-S_{ijkl} x_i x_j y_k y_l}{S_{mnop} x_m x_n x_o x_p}$$ 
 %
 
-% compute the complience
-S = inv(C);
+% generate a function if required
+if nargin == 1 || isempty(x)
+  
+  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,y),'bandwidth',4,C.CS);
+    
+elseif nargin <= 2 || isempty(y)
 
-% compute tensor product
-nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
+  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,x,v),'bandwidth',4,C.CS);
+    
+else
+
+  % compute the complience
+  S = inv(C);
+
+  % compute tensor product
+  nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
     double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,x,-3,x,-4));
+end

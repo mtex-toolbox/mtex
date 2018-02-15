@@ -1,8 +1,5 @@
 %% Slip Transmition
-% How to analyse slip transmition at grain boundaries
-%
-%%
-%
+% How to analyse slip transmission at grain boundaries
 %
 %% Open in Editor
 %
@@ -42,7 +39,7 @@ sS = sS.symmetrise;
 
 %
 q = 0.5;
-eps = tensor.diag([-q 1 -(1-q)],'name','strain');
+eps = tensor(diag([-q 1 -(1-q)]),'name','strain');
 
 [M,b,ori] = calcTaylor(inv(grains.meanOrientation).*eps,sS);
 

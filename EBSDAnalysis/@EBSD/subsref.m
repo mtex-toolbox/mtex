@@ -7,9 +7,17 @@ function varargout = subsref(ebsd,s)
 %   ebsd(1:end)       - returns 
 %
 
-if strcmp(s(1).type,'()')
+
+
+if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
-  ind = subsind(ebsd,s(1).subs);
+  if strcmp(s(1).type,'{}')
+    ind = ebsd.id2ind(s(1).subs{1});
+  else
+    ind = subsind(ebsd,s(1).subs);
+  end
+  
+  
   ebsd = subSet(ebsd,ind);
     
   % is there something more to do?

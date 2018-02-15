@@ -16,8 +16,21 @@ function E = shearModulus(C,h,u)
 % See also
 % tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
-% compute the compliance tensor
-S = inv(C);
+% generate a function if required
+if nargin == 1 || isempty(h)
+  
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,u),'bandwidth',4,C.CS);
+    
+elseif nargin <= 2 || isempty(u)
 
-% compute directional magnitude
-E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,h,v),'bandwidth',4,C.CS);
+    
+else
+
+  % compute the compliance tensor
+  S = inv(C);
+
+  % compute shear modulus
+  E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));
+  
+end

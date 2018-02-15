@@ -1,12 +1,15 @@
 function varargout = subsref(gB,s)
-% access subsets of a GrainSet
+% implements tP(1:10)
 %
 % Syntax
-%   gB(1:10)               % the 10 first boundaries
-%   gB('Forsterite','Epidote')  % only Forsterite - Epidote boundaries
-%   grains( ~grains('fe') ) % all grains but Fe
-%                           logical array with size of the complete
-%                           GrainSet
+%   tP(1:10)               % the 10 first triple points
+%   tP('Forsterite','Epidote')  % only Forsterite - Epidote triple points
+%   tP(cond)        
+%
+% Input
+%  tP - @triplePointList
+%  cond - logical array with same size as gB
+%
 
 if strcmp(s(1).type,'()')
   

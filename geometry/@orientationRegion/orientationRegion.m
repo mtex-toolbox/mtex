@@ -14,15 +14,20 @@ classdef orientationRegion
   properties (Dependent = true)
     CS1
     CS2
+    E % list of edges
+    faceCenter
   end
   
   methods
         
-    function oR = orientationRegion(N,varargin)
+    function oR = orientationRegion(varargin)
       %
 
-      if nargin > 0 && ~check_option(varargin,'complete') 
-        oR.N = N;
+      if nargin > 0 
+        if isa(varargin{1},'quaternion') && ~isa(varargin{1},'symmetry') && ~check_option(varargin,'complete') 
+          oR.N = varargin{1};
+          varargin{1} = [];
+        end
       end
       
       % compute vertices
@@ -40,6 +45,30 @@ classdef orientationRegion
       CS = oR.V.SS;
     end
     
+    function E = get.E(oR)
+      
+      % extract the vertices
+      left = oR.F;
+      right = cellfun(@(x) circshift(x,1), oR.F,'UniformOutput',false);
+      E = [vertcat(left{:}),vertcat(right{:})];
+      
+    end
+    
+    function c = get.faceCenter(oR)
+      
+      if oR.antipodal
+        c = orientation.nan(oR.CS1,oR.CS2,'antipodal');
+      else
+        c = orientation.nan(oR.CS1,oR.CS2);
+      end
+      for j = 1:length(oR.F)
+        
+        c(j) = mean(oR.V(unique(oR.F{j})),'noSymmetry');
+        
+      end
+      
+    end
+    
   end
   
-  end
+end

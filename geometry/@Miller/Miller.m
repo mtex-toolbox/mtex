@@ -1,14 +1,37 @@
 classdef Miller < vector3d
-  %(InferiorClasses = {?vector3d,?S2Grid})
-
+% define a crystal direction by Miller indice
+%
+% Syntax
+%   m = Miller(h,k,l,cs) 
+%   m = Miller(h,k,l,cs,'hkl') 
+%   m = Miller(h,k,l,cs,'pole') 
+%   m = Miller(h,k,i,l,cs) 
+%   m = Miller('(hkl)',cs) 
+%   m = Miller(u,v,w,cs,'uvw') 
+%   m = Miller(u,v,t,w,cs,'uvw') 
+%   m = Miller(u,v,w,cs,'direction') 
+%   m = Miller('[uvw]',cs) 
+%   m = Miller('[uvw]\[uvw],cs) 
+%   m = Miller('(hkl)\(hkl),cs) 
+%   m = Miller(x,cs) % transform vector3d to Miller
+%
+% Input
+%  h,k,l,i(optional) - Miller indice of the plane normal
+%  uw,v,w,t(optional) - Miller indice of a direction
+%  x  - @vector3d
+%  cs - crystal @symmetry
+%
+% See also
+% vector3d_index symmetry_index
+  
   properties
     dispStyle = 'hkl' % output convention hkl or uvw
   end
-
+  
   properties (Access = private)
-    CSprivate % crystal symmetry
+    CSprivate = crystalSymmetry % crystal symmetry
   end
-
+  
   properties (Dependent = true)
     CS        % crystal symmetry
     hkl       % direct coordinates
@@ -26,9 +49,9 @@ classdef Miller < vector3d
     T
     W
   end
+  
+  methods
     
-methods
-
     function m = Miller(varargin)
       % define a crystal direction by Miller indice
       %
@@ -55,6 +78,8 @@ methods
       %
       % See also
       % vector3d_index symmetry_index
+      
+      if nargin == 0, return; end
       
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);

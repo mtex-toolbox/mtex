@@ -65,6 +65,8 @@ try
   end
   
   theta = (ntheta-1:-1:0) .* rhoStep .* degree;
+  assert(numel(theta)>4);
+  
   theta = rep(theta,nrho)';
   r = vector3d('polar',theta,rho); 
   

@@ -16,7 +16,7 @@ function id = findByLocation( grains, pos )
 %  hold on, plot(grains(id).boundary,'linecolor','r','lineWidth',2), hold off
 %
 % See also
-% EBSD/findByLocation GrainSet/findByOrientation
+% EBSD/findByLocation grain2d/findByOrientation
 
 poly = grains.poly;
 

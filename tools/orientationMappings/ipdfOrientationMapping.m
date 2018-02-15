@@ -22,7 +22,7 @@ classdef ipdfOrientationMapping < orientationMapping
     function plot(oM,varargin)
       
       
-      [mtexFig,isNew] = newMtexFigure(varargin);
+      [mtexFig,isNew] = newMtexFigure(varargin{:});
 
       % init plotting grid
       sR = getClass(varargin,'sphericalRegion',oM.CS1.fundamentalSector(varargin{:}));
@@ -38,15 +38,16 @@ classdef ipdfOrientationMapping < orientationMapping
       else
         defaultPlotCMD = 'pcolor';
       end
-      plot(h,d,defaultPlotCMD,varargin{:});
+      mtexTitle(mtexFig.gca,char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
+      [~,caxes] = plot(h,d,defaultPlotCMD,varargin{:});
             
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
         
       set(mtexFig.parent,'name',['IPF key for ' name])      
-      set(mtexFig.parent,'tag','ipdf')
-      setappdata(mtexFig.parent,'CS',oM.CS1);
-      setappdata(mtexFig.parent,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
+      set(caxes,'tag','ipdf')
+      setappdata(caxes,'CS',oM.CS1);
+      setappdata(caxes,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
       
       % annotate crystal directions
       if check_option(varargin,'3d')
@@ -65,7 +66,10 @@ classdef ipdfOrientationMapping < orientationMapping
         end
         if isNew, fcw; end                
       end
-      mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+      
+      try
+        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+      end
 
     end
         

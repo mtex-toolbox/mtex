@@ -121,6 +121,7 @@ classdef grain2d < phaseList & dynProp
     
     function grains = set.V(grains,V)
       grains.boundary.V = V;
+      grains.innerBoundary.V = V;
       
       % update V in triple points
       tP = grains.triplePoints;
@@ -139,6 +140,10 @@ classdef grain2d < phaseList & dynProp
     function id2ind = get.id2ind(grains)
       id2ind = zeros(max(grains.id),1);
       id2ind(grains.id) = 1:length(grains);
+    end
+    
+    function varargout = size(grains,varargin)
+      [varargout{1:nargout}] = size(grains.id,varargin{:});
     end
     
     function ori = get.meanOrientation(grains)

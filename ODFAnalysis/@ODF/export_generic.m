@@ -32,13 +32,17 @@ fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
 fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
 
 % get SO3Grid
-S3G = getClass(varargin,'SO3Grid',regularSO3Grid(CS,SS,varargin{:}));
+if any(cellfun(@(x) isa(x,'SO3Grid'),varargin))
+  S3G = getClass(varargin,'SO3Grid');
+  d = Euler(S3G,varargin{:});
+else
+  [S3G,~,~,d] = regularSO3Grid(CS,SS,varargin{:});
+end
 
 % evaluate ODF
 v = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % build up matrix to be exported
-d = Euler(S3G,varargin{:});
 d = mod(d,2*pi);
 if ~check_option(varargin,'radians'), d = d./degree;end
 

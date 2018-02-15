@@ -29,12 +29,8 @@ for ih = 1:size(hSym,1)
     c = (A1 .*  A2) * component.kappa;
 
     bc = sqrt(b.^2 + c.^2);
-    if isfinite(C)
-      Z = Z + reshape(exp(a) ./ C .* besseli(0,bc),size(Z));
-    else
-      Z = Z + reshape(call_extern('evalmhyper','INTERN',d,'EXTERN',component.kappa,a,bc),size(Z));
-    end
-          
+    Z = Z + reshape(exp(a) ./ C .* besseli(0,bc),size(Z));
+              
   end
 end
 

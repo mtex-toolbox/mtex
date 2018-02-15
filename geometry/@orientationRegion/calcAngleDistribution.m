@@ -23,9 +23,9 @@ else
 end
 
 ad = zeros(size(omega));
-S2G = equispacedS2Grid('resolution',0.5*degree);
 sR = oR.axisSector;
-S2G = S2G.subSet(sR.checkInside(S2G));
+S2G = equispacedS2Grid(sR,'resolution',0.5*degree);
+
 for i = 1:length(omega)
   sR = oR.axisSector(omega(i));
   ad(i) = 2 * volume(sR,S2G) * sin(omega(i)/2)^2;

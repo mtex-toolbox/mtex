@@ -1,4 +1,4 @@
-function h = smooth(v,varargin)
+function [h,ax] = smooth(v,varargin)
 %
 % Syntax
 %
@@ -14,7 +14,8 @@ function h = smooth(v,varargin)
 h = [];
 
 % initialize spherical plot
-sP = newSphericalPlot(v,varargin{:},'doNotDraw');
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 for j = 1:numel(sP)
   
@@ -32,7 +33,7 @@ for j = 1:numel(sP)
     if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end
     S2G = plotS2Grid(sR);
 
-    cdata = kernelDensityEstimation(v(:),S2G,'halfwidth',5*degree,varargin{:});    
+    cdata = calcDensity(v(:),S2G,'halfwidth',5*degree,varargin{:});    
     cdata = reshape(cdata,size(S2G));
     
   end
@@ -72,22 +73,19 @@ for j = 1:numel(sP)
 
   % ----------------- draw contours ------------------------------
 
+  washold = ishold(sP(j).ax);
   hold(sP(j).ax,'on')
 
   % project data
   [x,y] = project(sP(j).proj,S2G,'removeAntipodal');
 
   % extract non nan data
-  %ind = ~isnan(x);
-  %x = submatrix(x,ind);
-  %y = submatrix(y,ind);
-  %data = reshape(submatrix(cdata,ind),size(x));
   data = reshape(cdata,size(x));
 
   % plot contours
-  h = [h,betterContourf(sP(j).hgt,x,y,data,contours,varargin{:})];
+  h = [h,betterContourf(sP(j).hgt,x,y,data,contours,varargin{:})]; %#ok<AGROW>
   
-  hold(sP(j).ax,'off')
+  if ~washold, hold(sP(j).ax,'off'); end
   
   % --------------- finalize the plot ---------------------------
 
@@ -113,7 +111,11 @@ if isappdata(sP(1).parent,'mtexFig')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if nargout == 0, clear h; end
+if nargout == 0
+  clear h; 
+else
+  ax = [sP.ax];
+end
 
 end
 

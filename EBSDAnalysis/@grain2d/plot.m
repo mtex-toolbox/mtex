@@ -36,6 +36,8 @@ if nargin>1 && isa(varargin{1},'orientation')
   disp('  plot(oM)')
 end
 
+plotBoundary = true;
+
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
   
@@ -46,6 +48,16 @@ if nargin>1 && isnumeric(varargin{1})
   
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+
+elseif nargin>1 && isa(varargin{1},'crystalShape')
+  
+  scaling = sqrt(grains.area);
+  xy = [grains.centroid,scaling*zUpDown];
+  
+  h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
+    'parent', mP.ax,varargin{:});
+  
+  plotBoundary = false;
   
 elseif check_option(varargin,'FaceColor')
   
@@ -83,11 +95,13 @@ else % otherwise phase plot
 end
 
 % we have to plot grain boundary individually
-hold on
-hh = plot(grains.boundary,varargin{:});
-set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-hold off
-
+if plotBoundary
+  hold on
+  hh = plot(grains.boundary,varargin{:});
+  set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  hold off
+end
+  
 if check_option(varargin,'DisplayName') 
   legend('-DynamicLegend','location','NorthEast');
 end
@@ -168,8 +182,8 @@ for p=numel(Parts):-1:1
     obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
   end
 
-  if check_option(varargin,{'transparent','translucent'})
-    s = get_option(varargin,{'transparent','translucent'},1,'double');
+  if check_option(varargin,{'transparent','translucent','FaceAlpha'})
+    s = get_option(varargin,{'transparent','translucent','FaceAlpha'},1,'double');
     dg = obj.FaceVertexCData;
     if size(d,2) == 3 % rgb
       obj.FaceVertexAlphaData = s.*(1-min(dg,[],2));

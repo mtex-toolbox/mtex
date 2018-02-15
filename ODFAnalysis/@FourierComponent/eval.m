@@ -11,23 +11,33 @@ function f = eval(component,ori,varargin)
 
 if isempty(ori), f = []; return; end
 
-% TODO: this can be done better!!!
-if component.antipodal || check_option(varargin,'antipodal')
-  varargin = delete_option(varargin,'antipodal');
-  component.antipodal = false;
-  f = 0.5 * (eval(component,ori,varargin{:}) + eval(component,inv(ori),varargin{:}));
-  return
-end
+% maybe we should set antipodal
+component.antipodal = check_option(varargin,'antipodal') || (isa(ori,'orientation') && ori.antipodal);
 
-% set parameter
-L = dim2deg(length(component.f_hat));
-L = int32(min(L,get_option(varargin,'bandwidth',L)));
+% extract bandwidth
+L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
 Ldim = deg2dim(double(L+1));
 
-% export to Euler angle
-g = Euler(ori,'nfft');
-	
-f_hat = [real(component.f_hat(1:Ldim)),imag(component.f_hat(1:Ldim))].';
+% create plan
+nfsoft_flags = 2^4;
+plan = nfsoftmex('init',L,length(ori),nfsoft_flags,0,4,1000,2*ceil(1.5*L));
 
-% run NFSOFT
-f = call_extern('fc2odf','intern',L,'EXTERN',g,f_hat);
+% set nodes
+nfsoftmex('set_x',plan,Euler(ori,'nfft').');
+
+% node-dependent precomputation
+nfsoftmex('precompute',plan);
+ 
+% set Fourier coefficients
+nfsoftmex('set_f_hat',plan,component.f_hat(1:Ldim));
+  
+% transform
+nfsoftmex('trafo',plan);
+
+% get function values
+f = real(nfsoftmex('get_f',plan));
+
+% kill plan
+nfsoftmex('finalize',plan);
+  
+end

@@ -12,8 +12,8 @@ function G = shift(G,delta)
 
 for i = 1:length(G)
     G(i).points = G(i).points + delta;
-		if G(i).periodic
-			G(i).points = mod(G(i).points - G(i).min ,G(i).max-G(i).min) + G(i).min;
-		end	
+    if G(i).periodic
+      G(i).points = mod(G(i).points - G(i).min ,G(i).max-G(i).min) + G(i).min;
+    end  
 end
 

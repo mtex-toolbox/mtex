@@ -2,8 +2,8 @@ classdef S2Grid < vector3d
 %
 % Syntax
 %   S2Grid(theta,rho)      % fills a Sphere with N--nodes
-%   regularS2Grid(...)     % construct regular polar and azimuthal spacing
-%   equispacedS2Grid(...)  % construct equispaced nodes
+%   regularS2Grid('resolution',5*degree)     % construct regular polar and azimuthal spacing
+%   equispacedS2Grid('resolution',5*degree)  % construct equispaced nodes
 %
 % Input
 %  nodes      - @vector3d
@@ -56,6 +56,7 @@ methods
     S2G.thetaGrid = thetaGrid;
     S2G.rhoGrid = rhoGrid;
     S2G.res = get_option(varargin,'resolution',2*pi);
+    S2G.antipodal = check_option(varargin,'antipodal');
   end
 
   function v = vector3d(S2G)

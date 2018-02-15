@@ -43,7 +43,8 @@ q.d(notInside) = qn.d;
 
 % next we have to project the rotational axis into the fundamental sector
 % the coresponds to the disjoint symmetry
-axis = project2FundamentalRegion(q.axis,disjoint(CS1.properGroup,CS2.properGroup),varargin{:});
+axis = project2FundamentalRegion(q.axis,...
+  properGroup(disjoint(CS1,CS2)),varargin{:});
 q = axis2quat(axis,q.angle);
 
 % some testing code

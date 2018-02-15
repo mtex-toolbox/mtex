@@ -52,9 +52,9 @@ hold off
 
 plotSection(rotZ,'MarkerColor','b','axisAngle',(30:30:180)*degree)
 hold on
-plotSection(rotX,'MarkerColor','g')
+plot(rotX,'MarkerColor','g','add2all')
 hold on
-plotSection(rotY,'MarkerColor','r')
+plot(rotY,'MarkerColor','r','add2all')
 hold off
 
 %% Crystal Symmetries
@@ -80,9 +80,7 @@ mtexdata forsterite
 %%
 % we can visualize the Forsterite orientations by
 
-hold on
-plot(ebsd('Fo').orientations)
-hold off
+plot(ebsd('Fo').orientations,'axisAngle')
 
 %%
 % We see that all orientations are automatically projected inside the
@@ -111,9 +109,9 @@ plot(rotate(oR,largeGrain.meanOrientation))
 % orientation
 ori = ori.project2FundamentalRegion(largeGrain.meanOrientation)
 
-hold on
-plot(ori)
-hold off
+
+plot(ori,'axisAngle')
+
 
 
 %% Fundamental regions of misorientations

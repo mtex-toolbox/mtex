@@ -16,6 +16,8 @@ function plot(oS,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});
+add2all = check_option(varargin,'add2all');
+varargin = delete_option(varargin,'add2all');
 
 % extract orientations
 if nargin>1 && isa(varargin{1},'quaternion')
@@ -70,7 +72,13 @@ if exist('ori','var') || isempty(oS.plotGrid)
       iv.phi1 = iv.phi1(ind);
       iv.phi2 = iv.phi2(ind);
     end
+    
     plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    % maybe there is also a lower hemisphere
+    if oS.upperAndLower && add2all
+      mtexFig.nextAxis;
+      plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    end
     
   end
   
@@ -100,18 +108,18 @@ end
 
 mtexFig.CLim('equal');
 
-if isNew || check_option(varargin,'figSize')
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+%if isNew || check_option(varargin,'figSize')
+mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
-  dcm = datacursormode(mtexFig.parent);
-  set(dcm,'enable','on')  
-  hcmenu = get(dcm,'UIContextMenu') ;
-  uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
-  set(dcm,'UIContextMenu',hcmenu)
+dcm = datacursormode(mtexFig.parent);
+set(dcm,'enable','on')
+hcmenu = get(dcm,'UIContextMenu') ;
+uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
+set(dcm,'UIContextMenu',hcmenu)
 
-  set(dcm,'UpdateFcn',@tooltip)
+set(dcm,'UpdateFcn',@tooltip)
      
-end
+%end
 
 
 % --------------- Tooltip function -------------------------------

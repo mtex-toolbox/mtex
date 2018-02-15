@@ -23,7 +23,9 @@ if strcmpi(get(ax,'visible'),'off')% || strcmpi(get(ax,'XColor'),'none')
   
   % consider text labels
   txt = findall(ax,'type','text','unit','data');
-  s = get(txt,'string'); ind = cellfun(@isempty,s);
+  s = get(txt,'string');
+  if ~iscell(s), s = {s}; end
+  ind = cellfun(@isempty,s);
   txt = txt(~ind);
   if ~isempty(txt)
     pos = ensurecell(get(txt,'position'));
@@ -65,7 +67,15 @@ end
      tiPos = tiPos(1:2) + tiPos(3:4);
         
    catch
-     tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     l = get(mtexFig.cBarAxis(1),'Label');
+     s = get(l,'String');
+     if isempty(s)
+       tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     elseif get(l,'Rotation') == 0
+       tiPos = [3.5,3.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     else
+       tiPos = [5.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     end
    end
    pos(pos>0) = pos(pos>0) + tiPos(pos>0) + 10;
     

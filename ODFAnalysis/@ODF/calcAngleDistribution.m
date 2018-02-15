@@ -28,7 +28,7 @@ if ~check_option(varargin,'fast')
   iS3G = 0;
   cs1 = odf.CS;
   cs2 = odf.SS;
-  csD = disjoint(cs1,cs2);
+  csD = properGroup(disjoint(cs1,cs2));
   
   % the angle distribution of the uniformODF
   if check_option(varargin,'omega')

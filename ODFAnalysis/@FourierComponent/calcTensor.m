@@ -15,7 +15,7 @@ TReuss.CS = specimenSymmetry;
 for l = 0:min(T.rank,component.bandwidth)
   
   % calc Fourier coefficient of odf
-  odf_hat = Fourier(component,'order', l)./(2*l+1);
+  f_hat = Fourier(component,'order', l)./(2*l+1);
   
   % Voigt mean
   if check_option(varargin,{'Voigt','Hill'})
@@ -24,7 +24,7 @@ for l = 0:min(T.rank,component.bandwidth)
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],odf_hat,[-1 -2]);
+    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],f_hat,[-2 -1]);
         
   end
   
@@ -35,7 +35,7 @@ for l = 0:min(T.rank,component.bandwidth)
     T_hat = Fourier(Tinv,'order',l);
     
     % mean Tensor is the product of both
-    TReuss = TReuss + EinsteinSum(T_hat,[1:T.rank -1 -2],odf_hat,[-1 -2]);
+    TReuss = TReuss + EinsteinSum(T_hat,[1:T.rank -1 -2],f_hat,[-2 -1]);
         
   end
 end

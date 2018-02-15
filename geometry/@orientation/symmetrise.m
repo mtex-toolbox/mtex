@@ -1,12 +1,21 @@
-function o = symmetrise(o,varargin)	
+function o = symmetrise(o,varargin)  
 % all crystallographically equivalent orientations
 
 ap = o.antipodal;
-CS = o.CS;
-if check_option(varargin,'proper')
-  o.CS = CS.properGroup;
+
+if nargin > 1 && isa(varargin{1},'symmetry')
+  CS = varargin{1};
+  SS = getClass(varargin(2:end),'symmetry',specimenSymmetry);
+else
+  CS = o.CS;
+  SS = o.SS;
 end
-o = orientation(symmetrise@rotation(o,o.CS,o.SS),CS,o.SS);
+
+if check_option(varargin,'proper')
+  CS = CS.properGroup;
+  SS = SS.properGroup;
+end
+o = orientation(symmetrise@rotation(o,CS,SS),o.CS,o.SS);
 
 o.antipodal = ap;
 

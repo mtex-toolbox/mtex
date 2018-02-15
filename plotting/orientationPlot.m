@@ -1,24 +1,23 @@
 classdef orientationPlot < handle
-  %ODFSECTIONS Summary of this class goes here
-  %   Detailed explanation goes here
-  %
-  % Example
-  %
-  %   cs = crystalSymmetry('mmm')
-  %   oS = axisAnglePlot(cs,cs)
-  %   ori = oS.makeGrid('resolution');
-  %   oM = patalaOrientationMapping(cs,cs)
-  %   rgb = oM.orientation2color(ori);
-  %   plot(oS,rgb,'surf')
-  %
-  %   plot(oS,ori)
-  %
-  %   ori = orientation(randq(100),cs,cs)
-  %   plot(oS,ori)
+% ODFSECTIONS 
+%
+% Example
+%
+%   cs = crystalSymmetry('mmm')
+%   oS = axisAngleSections(cs,cs)
+%   ori = oS.makeGrid('resolution');
+%   oM = patalaOrientationMapping(cs,cs)
+%   rgb = oM.orientation2color(ori);
+%   plot(oS,rgb,'surf')
+%
+%   hold on
+%   ori = orientation(randq(100),cs,cs)
+%   plot(oS,ori)
   
   properties
     CS1 % crystal symmetry of phase 1
     CS2 % crystal symmetry of phase 2
+    antipodal = false
     ax
     fRMode % restrict2FundamentalRegion | project2FundamentalRegion | ignoreFundamentalRegion
     plotGrid
@@ -36,6 +35,11 @@ classdef orientationPlot < handle
       oP.CS1 = CS1.properGroup;
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);
       oP.CS2 = CS2.properGroup;
+      
+      if oP.CS1 == oP.CS2
+        oP.antipodal = check_option(varargin,'antipodal');
+      end
+      
       oP.fRMode = char(extract_option(varargin,...
         {'restrict2FundamentalRegion','project2FundamentalRegion','ignoreFundamentalRegion'}));
       if isempty(oP.fRMode)
@@ -60,7 +64,12 @@ classdef orientationPlot < handle
       % plot orientations into 3d space
 
       % ensure correct symmetry
-      ori = oP.CS1.ensureCS(ori);
+      if isa(ori,'orientation')
+        ori = oP.CS1.ensureCS(ori);
+      else
+        ori = orientation(ori,oP.CS1,oP.CS2);
+      end
+      ori.antipodal = oP.antipodal;
       
       % extract data
       if nargin > 2 && isnumeric(varargin{1})
@@ -106,7 +115,7 @@ classdef orientationPlot < handle
           'parent',oP.ax);
       else
         % colorize with a specified color
-        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor'})
+        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end

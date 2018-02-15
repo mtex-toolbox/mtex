@@ -10,6 +10,10 @@ classdef fibre
   %
   %   plotPDF(f,Miller(1,0,0,cs))
   %
+  %   f = fibre(o1,o2) % the fibre from o1 to o2
+  %   f=  fibre(h,r)   % the fibre mapping h to r    
+  
+  %
   % *Predefined fibres*
   %
   %  * fibre.alpha
@@ -21,9 +25,9 @@ classdef fibre
   %
   
   properties
-    o1 % starting point
-    o2 % end point (o2 = o1 means full fibre)
-    h  % gradient in id, i.e., ori = o1 * rot(h,omega)
+    o1 = orientation % starting point
+    o2 = orientation % end point (o2 = o1 means full fibre)
+    h = Miller  % gradient in id, i.e., ori = o1 * rot(h,omega)
   end
   
   properties (Dependent = true)
@@ -38,6 +42,8 @@ classdef fibre
   methods
     function f = fibre(o1,varargin)
 
+      if nargin == 0, return; end
+      
       % define a fibre as all o with o*h = r
       if isa(o1,'vector3d')
         f.o1 = orientation('map',o1,varargin{:});
@@ -173,7 +179,7 @@ classdef fibre
       f = fibre(ori1,ori2,varargin{:});
     end
         
-    function f = fit(ori,varargin)
+    function [f,lambda] = fit(ori,varargin)
       % determines the fibre that fits best a list of orientations
       % 
       % Syntax
@@ -183,10 +189,10 @@ classdef fibre
       %  ori1, ori2, ori - @orientation
       %
       % Output
-      %  f - @fibre
-      %
+      %  f       - @fibre
+      %  lambda  - eigenvalues of the orientation tensor
       
-      [~,~,~,eigv] = mean(ori);
+      [~,~,lambda,eigv] = mean(ori);
       
       ori = orientation(quaternion(eigv(:,1:2)),ori.CS,ori.SS);
       f = fibre(ori(1),ori(2),'full',varargin{:});

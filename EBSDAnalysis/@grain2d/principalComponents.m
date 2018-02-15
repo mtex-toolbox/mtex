@@ -1,16 +1,21 @@
-function [ev,ew]= principalComponents(grains,varargin)
+function [omega,a,b]= principalComponents(grains,varargin)
 % returns the principalcomponents of grain polygon, without Holes
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  cmp   - angle of components as complex
-%  v     - length of axis
+%  omega - angle of the ellipse
+%  a     - length largest axis
+%  b     - length smallest axis
 %
+% Options
+%  hull  - consider convex hull
+%  area - scale a,b such that the corresponding ellipse has the same area as the grain (default)
+%  boundary - scale a,b such that the corresponding ellipse has the boundary length as the grain
 %
 % See also
-% grain2d/plotEllipse
+% plotEllipse
 %
 
 % ignore holes
@@ -22,24 +27,48 @@ V = grains.V;
 % centroids
 c = grains.centroid;
 
-ew = zeros(2,2,numel(poly));
-ev = zeros(2,2,numel(poly));
+omega = zeros(size(poly));
+a = zeros(size(poly));
+b = zeros(size(poly));
+
 for k=1:numel(poly)
   
   % center polygon in centroid
   Vg = bsxfun(@minus,V(poly{k},:), c(k,:));
   
+  %
+  if check_option(varargin,{'hull','boundary'})
+    ind = convhulln(Vg);
+    Vg = Vg(ind(:,1),:);
+  end
+  
   % compute length of line segments
-  ind = poly{k};
-  dist = sqrt(sum((V(ind(1:end-1),:) - V(ind(2:end),:)).^2,2));
-  weight = ([dist;0] + [0;dist])./2;
+  dist = sqrt(sum((Vg(1:end-1,:) - Vg(2:end,:)).^2,2));
+  dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
   
+  %phi = atan2(Vg(:,2),Vg(:,1));
+  %dist = mod(diff(phi([1:end 1]))+pi,2*pi)-pi;
+  %dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
+    
   % weight vertices according to half the length of the adjacent faces
-  Vg = bsxfun(@times,Vg, weight);
-  
+  v = bsxfun(@times,Vg(1:end-1,:), dist./mean(dist));
+      
   % pca
-  [ev(:,:,k), ew(:,:,k)] = svd(Vg'*Vg);
-  ew(:,:,k)  = nthroot(2*sqrt(2).*ew(:,:,k),2)./(nthroot(size(Vg,1),2));
+  [ev, ew] = svd(v'*v);
+  
+  % compute the orientation of the ellipse
+  omega(k) = atan2(ev(2),ev(1));
+  
+  % extract the eigenvectors and scale them  such that area of the
+  % corresponding ellipse is equal to the grain area
+  if check_option(varargin,'boundary') % boundary length fit
+    [~,E] = ellipke(sqrt(ew(1).^2 - ew(4)^2)./ew(1));
+    scaling = sum(dist) ./ ew(1) ./ 4 ./ E;
+  else % area fit   
+    scaling = sqrt(polySgnArea(Vg(:,1),Vg(:,2)) ./ ew(1) ./ ew(4) ./pi);
+  end
+  a(k) = ew(1) .* scaling;
+  b(k) = ew(4) .* scaling;
 end
 
 end

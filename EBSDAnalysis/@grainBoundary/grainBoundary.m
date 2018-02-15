@@ -29,9 +29,10 @@ classdef grainBoundary < phaseList & dynProp
     misorientation % misorientation between adjecent measurements to a boundary
     direction      % direction of the boundary segment
     midPoint       % x,y coordinates of the midpoint of the segment
-    I_VF           % incidence matrix vertices - faces
-    I_FG           % incidence matrix faces - grains
-    A_F            % adjecency matrix faces - faces
+    I_VF           % incidence matrix vertices - edges
+    I_FG           % incidence matrix edges - grains
+    A_F            % adjecency matrix edges - edges
+    A_V            % adjecency matrix vertices - vertices
     segmentId      % connected component id
     segmentSize    % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
@@ -91,9 +92,9 @@ classdef grainBoundary < phaseList & dynProp
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
-      
+
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);      
+      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
       
     end
 
@@ -161,6 +162,13 @@ classdef grainBoundary < phaseList & dynProp
     function A_F = get.A_F(gB)
       I_VF = gB.I_VF; %#ok<PROP>
       A_F = I_VF.' * I_VF; %#ok<PROP>
+      n = length(A_F);
+      A_F(sub2ind(size(A_F),1:n,1:n)) = 0;
+    end
+    
+    function A_V = get.A_V(gB)
+      A_V = sparse(gB.F(:,1),gB.F(:,2),1:size(gB.F,1),size(gB.V,1),size(gB.V,1)) ...
+        + sparse(gB.F(:,2),gB.F(:,1),1:size(gB.F,1),size(gB.V,1),size(gB.V,1));
     end
     
     %function tp = get.triplePoints(gB)
