@@ -1,5 +1,5 @@
 function v = rdivide(v1,d)
-% scalar division
+% scalar division v ./ s
 
 if isnumeric(d)
   v = v1;

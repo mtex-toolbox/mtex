@@ -10,6 +10,9 @@ function quiverSection(sF,sVF,sec,varargin)
 %  v   - @vector3d 
 %  sVF - @S2VectorField
 %
+% Option
+%  normalized - normalize vectors before plotting
+%
 % Output
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
@@ -29,6 +32,7 @@ else
   v = sVF.eval(S2);
 end
 v = v(:);
+if check_option(varargin,'normalized'), v = v.normalized; end
     
 d = reshape(sF.eval(S2),length(S2), []);
 
