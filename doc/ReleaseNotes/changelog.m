@@ -36,8 +36,8 @@
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
 %
-% returns a <S2FunHarmonic_index.html spherical function> |pdf| also called pole
-% density function. One can evaluate this spherical function using the
+% returns a <S2FunHarmonic_index.html spherical function> |pdf| also called
+% pole density function. One can evaluate this spherical function using the
 % command <S2FunHarmonic.eval.html eval> at the list of specimen directions
 % |r| to obtain the pole figure intensities
 %
@@ -59,6 +59,9 @@
 %
 %   % detect maximum value
 %   [value,pos] = max(pdf)
+%
+%   % compute the eigen values and eigen vectors
+%   [e,v] = eig(pdf)
 %
 % For a complete list of functions read <S2FunHarmonic_index.html here>.
 %
@@ -161,6 +164,26 @@
 % adjusted by
 %
 %   [c,center] = calcCluster(ori,'halfwidth',2.5*degree)
+%
+% *Improved spherical plotting*
+%
+% In MTEX 4.X it was not possible to display the upper and lower hemisphere
+% in pole figure plots, inverse pole figure plots or ODF section plots.
+% This was a server restriction as for certain symmetries both hemispheres
+% do not have to coincide. In MTEX 5.0 this restriction has been overcome.
+% MTEX automatically detects whether the upper and lower hemisphere are
+% symmetrically equivalent and decides whether both hemispheres needs to be
+% plotted. As in the previous version of MTEX this can be controlled by the
+% options |upper|, |lower| and |complete|.
+%
+% As a consequence the behaviour of MTEX figures have changed slightly. By
+% default MTEX now always plots into the last axis. In order to annotate
+% orintations or directions to all axes in a figure use the new option
+% |add2all|.
+%
+%  plotIPDF(SantaFe,[xvector,yvector+zvector])
+%  [~,ori] = max(SantaFe)
+%  plot(ori,'add2all')
 %
 % *Other new functions*
 %
