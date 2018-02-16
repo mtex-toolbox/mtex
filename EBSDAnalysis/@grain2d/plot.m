@@ -42,7 +42,7 @@ end
 
 plotBoundary = true;
 % allow to plot grain faces only without boundaries
-if check_option(varagin,'noBoundary')
+if check_option(varargin,'noBoundary')
 plotBoundary = false;
 end
 
