@@ -35,7 +35,7 @@ rho=3.355;
 
 % Define tensor object in MTEX
 % Cij -> Cijkl - elastic stiffness tensor
-C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
+C = stiffnessTensor(M,cs_tensor,'density',rho)
 
 %%
 % Compute seismic velocities as functions on the sphere
