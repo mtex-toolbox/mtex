@@ -1,9 +1,10 @@
-function E = shearModulus(C,h,u)
+function varargout = shearModulus(C,varargin)
 % shear modulus for an elasticity tensor
 %
-% Description
-%
-% $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
+% Syntax
+%   E = shearModulus(C,h,u)
+%   E = shearModulus(C,[],u)
+%   E = shearModulus(C,h,[])
 %
 % Input
 %  C - elastic @stiffnessTensor
@@ -13,11 +14,12 @@ function E = shearModulus(C,h,u)
 % Output
 %  E - shear modulus
 %
+% Description
+%
+% $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
+%
 % See also
 % tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
-% compute the compliance tensor
-S = inv(C);
-
-% compute directional magnitude
-E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));
+% take formula using complience
+[varargout{1:nargout}] = shearModulus(inv(C),varargin{:});

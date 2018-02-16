@@ -1,4 +1,4 @@
-function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
+function varargout = velocity(C,varargin)
 % computes the elastic wave velocity(km/s) from
 % the elastic stiffness Cijkl tensor and density (g/cm3)
 %
@@ -16,53 +16,5 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
-% take density from tensor if not specified differently
-if nargin == 3
-elseif isfield(C.opt,'density')
-  rho = C.opt.density;
-else
-  rho = 1;
-  warning(['No density given! For computing wave velocities '...
-    'the material density has to be specified. ' ...
-    'I''m going to use the density rho=1.']);        
-end
-
-% compute ChristoffelTensor
-E = ChristoffelTensor(C,x);
-
-% from output
-vp = zeros(size(x));
-vs1 = zeros(size(x));
-vs2 = zeros(size(x));
-pp = zeros(3,length(x));
-ps1 = zeros(3,length(x));
-ps2 = zeros(3,length(x));
-
-
-% for each direction
-for i = 1:length(x)
-
-  % compute eigenvalues
-  [V,D] = eig(E.M(:,:,i));
-  
-  % compute wavespeeds
-  D = sqrt(diag(D)/rho);
-  
-  % and sort them
-  [D,ind] = sort(D);
-
-  % the speeds
-  vp(i) = D(3);
-  vs1(i) = D(2);
-  vs2(i) = D(1);
-  
-  % the polarisation axes
-  pp(:,i) = V(:,ind(3));
-  ps1(:,i) = V(:,ind(2));
-  ps2(:,i) = V(:,ind(1));
-
-end
-
-pp = vector3d(pp,'antipodal');
-ps1 = vector3d(ps1,'antipodal');
-ps2 = vector3d(ps2,'antipodal');
+% take formula using complience
+[varargout{1:nargout}] = velocity(inv(C),varargin{:});

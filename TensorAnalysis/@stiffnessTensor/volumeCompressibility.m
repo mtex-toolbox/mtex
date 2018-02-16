@@ -1,9 +1,8 @@
-function beta = volumeCompressibility(C)
-% computes the volume compressibility of an elasticity tensor
+function varargout = volumeCompressibility(C,varargin)
+% volume compressibility of an elasticity stiffness tensor
 %
-% Description
-%
-% $$\beta(x) = S_{iikk}$$
+% Syntax
+%   beta = volumeCompressibility(C)
 %
 % Input
 %  C - elastic stiffness @tensor
@@ -11,9 +10,10 @@ function beta = volumeCompressibility(C)
 % Output
 %  beta - volume compressibility
 %
+% Description
+%
+% $$\beta(x) = S_{iikk}$$
+%
 
-% compute the complience
-S = inv(C);
-
-% compute tensor product
-beta = double(EinsteinSum(S,[-1 -1 -2 -2]));
+% take formula using complience
+[varargout{1:nargout}] = volumeCompressibility(inv(C),varargin{:});

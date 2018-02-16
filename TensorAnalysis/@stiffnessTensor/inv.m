@@ -8,4 +8,4 @@ function S = inv(C)
 %  S - @complianceTensor
 %
 
-S = complianceTensor(inv(C));
+S = complianceTensor(inv@tensor(C));

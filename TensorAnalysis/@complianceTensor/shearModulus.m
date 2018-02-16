@@ -1,9 +1,10 @@
-function E = shearModulus(C,h,u)
-% shear modulus for an elasticity tensor
+function E = shearModulus(S,h,u)
+% shear modulus for an compliance tensor
 %
-% Description
-%
-% $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
+% Syntax
+%   E = shearModulus(S,h,u)
+%   E = shearModulus(S,[],u)
+%   E = shearModulus(S,h,[])
 %
 % Input
 %  C - elastic @stiffnessTensor
@@ -13,22 +14,23 @@ function E = shearModulus(C,h,u)
 % Output
 %  E - shear modulus
 %
+% Description
+%
+% $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
+%
 % See also
 % tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
 % generate a function if required
 if nargin == 1 || isempty(h)
   
-  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,v,u),'bandwidth',4,C.CS);
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,v,u),'bandwidth',4,S.CS);
     
 elseif nargin <= 2 || isempty(u)
 
-  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(C,h,v),'bandwidth',4,C.CS);
+  E = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,h,v),'bandwidth',4,S.CS);
     
 else
-
-  % compute the compliance tensor
-  S = inv(C);
 
   % compute shear modulus
   E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));

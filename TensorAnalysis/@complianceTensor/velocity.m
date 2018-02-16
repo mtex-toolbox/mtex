@@ -1,6 +1,11 @@
-function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
-% computes the elastic wave velocity(km/s) from
-% the elastic stiffness Cijkl tensor and density (g/cm3)
+function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
+% computes the elastic wave velocity(km/s) from the elastic stiffness Cijkl
+% tensor and density (g/cm3)
+%
+% Syntax
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S)
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x)
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
 %
 % Input
 %  C   - elasticity @stiffnessTensor Cijkl (UNITS GPa) @tensor
@@ -26,8 +31,8 @@ end
 
 % take density from tensor if not specified differently
 if nargin == 3
-elseif isfield(C.opt,'density')
-  rho = C.opt.density;
+elseif isfield(S.opt,'density')
+  rho = S.opt.density;
 else
   rho = 1;
   warning(['No density given! For computing wave velocities '...
@@ -36,7 +41,7 @@ else
 end
 
 % compute ChristoffelTensor
-E = ChristoffelTensor(C,x);
+E = ChristoffelTensor(S,x);
 
 % from output
 vp = zeros(size(x));
@@ -75,9 +80,9 @@ ps1 = vector3d(ps1, 'antipodal');
 ps2 = vector3d(ps2,'antipodal');
 
 if generateFun
-  vp  = S2FunHarmonicSym.quadrature(x,vp,C.CS,'bandwidth',M,'weights',W);
-  vs1 = S2FunHarmonicSym.quadrature(x,vs1,C.CS,'bandwidth',M,'weights',W);
-  vs2 = S2FunHarmonicSym.quadrature(x,vs2,C.CS,'bandwidth',M,'weights',W);
+  vp  = S2FunHarmonicSym.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W);
+  vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W);
+  vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W);
     
   pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W);
   ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W);

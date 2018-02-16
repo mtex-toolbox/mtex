@@ -13,4 +13,4 @@ function E = ChristoffelTensor(C,n)
 % See also
 % tensor/directionalMagnitude tensor/rotate
 
-E = ChristoffelTensor(EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2));
+E = ChristoffelTensor(tensor(EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2)));

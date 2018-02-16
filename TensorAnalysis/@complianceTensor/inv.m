@@ -8,4 +8,4 @@ function C = inv(S)
 %  C - @stiffnessTensor
 %
 
-C = stiffnessTensor(inv(S));
+C = stiffnessTensor(inv@tensor(S));

@@ -1,10 +1,10 @@
-function E = ChristoffelTensor(C,n)
+function varargout = ChristoffelTensor(S,varargin)
 % Christoffel tensor of an elasticity tensor for a given direction
 %
 % Formula: E_jk = C_ijkl n_j n_l
 %
 % Input
-%  C - elatic stiffness @tensor
+%  S - elatic compliance @tensor
 %  x - list of @vector3d
 %
 % Output
@@ -13,6 +13,5 @@ function E = ChristoffelTensor(C,n)
 % See also
 % tensor/directionalMagnitude tensor/rotate
 
-E = EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2);
-
-E.opt.name = 'Christoffel';
+% take formula using stiffness
+[varargout{1:nargout}] = ChristoffelTensor(inv(S),varargin{:});
