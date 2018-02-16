@@ -41,7 +41,7 @@ if ~isNew && isappdata(mtexFig.gca,'orientationPlot')
 end
 
 % basic 3d settings
-if isNew
+if isNew || isempty(get(mtexFig.gca,'children'))
   fcw;
   view(mtexFig.gca,3);
   grid(mtexFig.gca,'on');
