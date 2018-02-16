@@ -1,4 +1,4 @@
-function beta = linearCompressibility(C,x)
+function varargout = linearCompressibility(C,varargin)
 % computes the linear compressibility of an elasticity tensor
 %
 % Description
@@ -6,15 +6,12 @@ function beta = linearCompressibility(C,x)
 % $$\beta(x) = S_{ijkk} x_i x_j$$
 %
 % Input
-%  C - elastic stiffnessTensor
+%  C - elastic @stiffnessTensor
 %  x - list of @vector3d
 %
 % Output
 %  beta - linear compressibility in directions v
 %
 
-% compute the complience
-S = inv(C);
-
-% compute tensor product
-beta = double(EinsteinSum(S,[-1 -2 -3 -3],x,-1,x,-2));
+% compute linear compressibility from complience
+[varargout{1:nargout}] = linearCompressibility(inv(C),varargin{:});

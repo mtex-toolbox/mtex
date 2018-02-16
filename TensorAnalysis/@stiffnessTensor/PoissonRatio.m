@@ -1,4 +1,4 @@
-function nu = PoissonRatio(C,x,y)
+function varargout = PoissonRatio(C,varargin)
 % computes the Poisson ratio of an elasticity tensor
 %
 % Input
@@ -15,8 +15,4 @@ function nu = PoissonRatio(C,x,y)
 %
 
 % compute the complience
-S = inv(C);
-
-% compute tensor product
-nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
-    double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,x,-3,x,-4));
+[varargout{1:nargout}] = PoissonRatio(inv(C),varargin{:});
