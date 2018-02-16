@@ -14,6 +14,10 @@ function [v,m,n] = unique(v,varargin)
 %  v - @vector3d
 %  m -
 %  n -
+%
+% Option
+%  stable - prevent sorting
+%
 
 x = v.x(:);
 y = v.y(:);
