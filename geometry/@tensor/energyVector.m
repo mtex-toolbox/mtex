@@ -1,4 +1,4 @@
-function E = velocityVector(C,x,V,P,rho)
+function E = energyVector(C,x,V,P,rho)
 % Calculates Energy velocity vector (km/s)
 %
 % Description
