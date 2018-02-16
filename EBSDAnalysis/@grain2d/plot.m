@@ -10,6 +10,10 @@ function [h,mP] = plot(grains,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
+% Options
+%  noBoundary  - do not plot boundaries 
+%  displayName - name used in legend
+%
 % See also
 % EBSD/plot grainBoundary/plot
 
@@ -37,6 +41,10 @@ if nargin>1 && isa(varargin{1},'orientation')
 end
 
 plotBoundary = true;
+% allow to plot grain faces only without boundaries
+if check_option(varagin,'noBoundary')
+plotBoundary = false;
+end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
