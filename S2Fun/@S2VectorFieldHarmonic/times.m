@@ -6,12 +6,12 @@ function sVF = times(sVF1,sVF2)
 %  sVF = sVF1.*a
 %
 
-if isnumeric(sVF1)
+if isnumeric(sVF1) || isa(sVF1,'S2Fun')
   sVF = sVF2;
-  sVFsF = sVF.sF.*sVF1;
-elseif isnumeric(sVF2)
+  sVF.sF = sVF.sF.*sVF1;
+elseif isnumeric(sVF2) || isa(sVF2,'S2Fun')
   sVF = sVF1;
-  sV.sF = sVF.sF.*sVF2;
+  sVF.sF = sVF.sF.*sVF2;
 end
 
 end

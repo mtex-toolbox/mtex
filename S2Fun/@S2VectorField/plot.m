@@ -4,15 +4,22 @@ function h = plot(sVF,varargin)
 % Syntax
 %   plot(sVF)
 %
-% See also
-%   S2VectorField/quiver3
+% Options
+%  normalized - normalize vectors
+%  arrowSize
+%  maxHeadSize
 %
+% See also
+% S2VectorField/quiver3
+%  
 
 % generate a grid where the function will be plotted
 plotNodes = equispacedS2Grid('resolution',10*degree,'no_center',varargin{:});
 
 % evaluate the function on the plotting grid
 values = sVF.eval(plotNodes);
+
+if check_option(varargin,'normalized'), values = values.normalize; end
 
 % some default plotting settings
 varargin = ['color', 'k', 'arrowSize', ...

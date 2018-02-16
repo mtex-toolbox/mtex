@@ -17,5 +17,6 @@ for i = 1:length(v)
   [xyz(i,:),~,~] = svds(MLocal,1);
 end
 f = vector3d(xyz.','antipodal');
+f = f(:);
 
 end
