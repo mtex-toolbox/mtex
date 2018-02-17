@@ -23,15 +23,13 @@ if ischar(name)
     if isempty(which(name))
       error('unknown colormap name');      
     end
-    map = feval(name);
-  else
-    map = colormap(name);
   end
+  map = feval(name);
 else
   map = name;
 end
 
 % apply the colormap
-for i = 1:length(ax), colormap(ax(i),map); end
+for i = 1:length(ax), set(ax(i),'colormap',map); end
 
 end
