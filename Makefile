@@ -1,7 +1,7 @@
 
 
 # rule for making release
-RNAME = mtex-5.0.beta6
+RNAME = mtex-5.0.0
 RDIR = ../releases
 release:
 	rm -rf $(RDIR)/$(RNAME)*
@@ -17,4 +17,3 @@ release:
 	rm -rf $(RDIR)/$(RNAME).zip
 
 	cd $(RDIR); zip -rq  $(RNAME).zip $(RNAME)
-
