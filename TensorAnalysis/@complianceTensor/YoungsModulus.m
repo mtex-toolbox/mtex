@@ -1,4 +1,4 @@
-function E = YoungsModulus(C,varargin)
+function E = YoungsModulus(S,varargin)
 % Young's modulus for an elasticity tensor
 %
 % Description
@@ -15,13 +15,10 @@ function E = YoungsModulus(C,varargin)
 %
 % Output
 %  E - Youngs modulus
-%  E - @S2Fun
+%  E - @S2FunHarmonic
 %
 % See also
 % tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor
-
-% compute the compliance tensor
-S = inv(C);
 
 % compute directional magnitude
 E = 1./directionalMagnitude(S,varargin{:});

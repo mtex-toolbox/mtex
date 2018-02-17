@@ -42,6 +42,7 @@ classdef tensor < dynOption
         T.opt = M.opt;
         
         % extract additional properties
+        varargin = delete_option(varargin,'doubleConvention');
         T = T.setOption(varargin{:});
         return
       end
@@ -120,6 +121,11 @@ classdef tensor < dynOption
   end
   
   methods (Static = true)
+    
+    function T = load(varargin)
+      T = loadTensor(varargin{:});
+    end
+    
     function eps = leviCivita
       % the Levi Civita permutation tensor
       

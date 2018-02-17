@@ -18,7 +18,7 @@ fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
-C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
+C = stiffnessTensor.load(fname,cs)
 
 %% Young's Modulus
 % Young's modulus is also known as the tensile modulus and measures the

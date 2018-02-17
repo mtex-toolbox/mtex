@@ -10,6 +10,11 @@ classdef stressTensor < tensor
   
    
   methods (Static = true)
+
+    function sigma = load(varargin)
+      T = load@tensor(varargin{:});
+      sigma = stressTensor(T);
+    end
     
     function sT = uniaxial(v)
       % define uniaxial stress tensor

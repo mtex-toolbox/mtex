@@ -39,19 +39,6 @@ switch T.rank
     T.M = tensor24(M,T.doubleConvention);
 end
 
-% change the name
-if isOption(T,'name')
-  if any(strfind(T.opt.name,'stiffness'))
-    T.opt.name = strrep(T.opt.name,'stiffness','compliance');
-  elseif any(strfind(T.opt.name,'compliance'))
-    T.opt.name = strrep(T.opt.name,'compliance','stiffness');
-  elseif any(strfind(T.opt.name,'inverse'))
-    T.opt.name = strrep(T.opt.name,'inverse ','');
-  else
-    T.opt.name = ['inverse ' T.opt.name];
-  end
-end
-
 % change the unit
 if isOption(T,'unit')
   slash = strfind(T.opt.unit,'/');

@@ -4,7 +4,7 @@ function display(T,varargin)
 disp(' ');
 
 % collect top line
-h = doclink('tensor_index','tensor');
+h = doclink('tensor_index',class(T));
 if isOption(T,'name'), h = [T.getOption('name'),' ',h];end
 
 if check_option(varargin,'vname')
@@ -89,6 +89,8 @@ end
 function c = c2char(c)
 if isnumeric(c)
   c = num2str(c);
+elseif islogical(c)
+  if c, c = 'true'; else c = 'false'; end
 else
   c = char(c);
 end
