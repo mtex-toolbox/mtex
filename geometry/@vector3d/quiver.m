@@ -35,11 +35,11 @@ for j = 1:numel(sP)
   
   % project data
   if check_option(varargin,'centered') || mhs == 0
-    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),'removeAntipodal',varargin{:});
   else
-    [x0,y0] = project(sP(j).proj,normalize(v),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),'removeAntipodal',varargin{:});
   end
 
   if ~check_option(varargin,'autoArrowSize')
