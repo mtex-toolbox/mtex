@@ -105,7 +105,7 @@ xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
 % defined as AVs = 200*(Vs1-Vs2)/(Vs1+Vs2)
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 % Plot S-wave anisotropy (percent)
 AVs = 200*(vs1-vs2)./(vs1+vs2);
@@ -131,7 +131,7 @@ text([xvector,yvector,zvector],{'[100] ','[010] ','[001]'},...
 %% S1 Polarization: Plot fastest S-wave (Vs1) polarization directions
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 plot(AVs,'contourf','complete','upper');
 mtexTitle('Vs1 polarization',titleOpt{:})
@@ -143,7 +143,7 @@ hold off
 %% Vs1 : Plot Vs1 velocities (km/s)
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 plot(vs1,'contourf','doNotDraw','complete','upper');
 mtexTitle('Vs1 (km/s)',titleOpt{:})
@@ -167,7 +167,7 @@ hold off
 %% Vs2 : Plot Vs2 velocities (km/s)
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 plot(vs2,'contourf','doNotDraw','complete','upper');
 mtexTitle('Vs2 (km/s)',titleOpt{:})
@@ -190,7 +190,7 @@ hold off
 %% dVs : Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 dVs = vs1-vs2;
 plot(dVs,'contourf','complete','upper');
@@ -211,7 +211,7 @@ hold off
 %% Vp/Vs1 : Plot Vp/Vs1 ratio (no units)
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 vpvs1 = vp./vs1;
 plot(vpvs1,'contourf','complete','upper');
@@ -233,7 +233,7 @@ hold off
 %% Vp/Vs2 : Plot Vp/Vs2 ratio (no units)
 
 % create a new axis
-mtexFig.nextAxis
+nextAxis
 
 vpvs2 = vp./vs2;
 plot(vpvs2,'contourf','complete','upper');
