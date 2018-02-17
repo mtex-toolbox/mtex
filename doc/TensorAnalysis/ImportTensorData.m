@@ -13,10 +13,12 @@
 import_wizard('tensor'); 
 
 %% The generic interface
-
+%
+% The most comfortable way to import a tensor is by using the command
+% |tensorName.load|
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
-C = loadTensor(fname,cs,'name','ellastic stiffness','unit','Pa','interface','generic')
+C = stiffnessTensor.load(fname,cs)

@@ -13,7 +13,10 @@
 % display pole figure plots with RD on top and ND west
 plotx2north
 
+% store old annotation style
 storepfA = getMTEXpref('pfAnnotations');
+
+% set new annotation style to display RD and ND
 pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 
@@ -26,9 +29,9 @@ cs = crystalSymmetry('432');
 % define a family of slip systems
 sS = slipSystem.fcc(cs);
 
-% some strain
+% some plane strain
 q = 0;
-epsilon = tensor(diag([1 -q -(1-q)]),'name','strain')
+epsilon = strainTensor(diag([1 -q -(1-q)]))
 
 % define a crystal orientation
 ori = orientation('Euler',0,30*degree,15*degree,cs)
@@ -68,6 +71,8 @@ sP.plot(mori.angle./degree,'smooth')
 mtexColorbar
 
 %%
+% Display the crystallographic spin in sigma sections
+
 sP = sigmaSections(cs,specimenSymmetry);
 oriGrid = sP.makeGrid('resolution',2.5*degree);
 [M,~,mori] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
@@ -75,22 +80,28 @@ sP.plot(mori.angle./degree,'smooth')
 mtexColorbar
 
 %% Most active slip direction
+% Next we consider a real world data set. 
 
 mtexdata csl
 
+% compute grains
 grains = calcGrains(ebsd('indexed'));
+grains = smooth(grains,5);
 
 % remove small grains
 grains(grains.grainSize <= 2) = []
 
 %%
+% Next we apply the Taylor model to each grain of our data set
 
 % some strain
 q = 0;
-epsilon = tensor(diag([1 -q -(1-q)]),'name','strain')
+epsilon = strainTensor(diag([1 -q -(1-q)]))
 
+% consider fcc slip systems
 sS = symmetrise(slipSystem.fcc(grains.CS));
 
+% apply Taylor model
 [M,b,mori] = calcTaylor(inv(grains.meanOrientation)*epsilon,sS);
 
 %%
@@ -127,9 +138,9 @@ plot(sSGrains.b)
 % define some random orientations
 ori = orientation.rand(10000,cs);
 
-% 30 percent strain
+% 30 percent plane strain
 q = 0;
-epsilon = 0.3 * tensor(diag([1 -q -(1-q)]),'name','strain');
+epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
 
 % 
 numIter = 10;
@@ -156,6 +167,8 @@ mtexColorbar
 setMTEXpref('pfAnnotations',storepfA);
 
 %% Inverse Taylor
+% 
+% Use with care!
 
 oS = axisAngleSections(cs,cs,'antipodal');
 oS.angles = 10*degree;

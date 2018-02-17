@@ -37,7 +37,7 @@ fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','olivine');
 
-C = loadTensor(fname,cs,'name','stiffness')
+C = stiffnessTensor.load(fname,cs)
 
 
 %% Visualization

@@ -16,7 +16,7 @@ CS = crystalSymmetry('32', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Qu
 
 fname = fullfile(mtexDataPath,'tensor', 'Single_RH_quartz_poly.P');
 
-P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interface','P','DoubleConvention')
+P = tensor.load(fname,CS,'propertyname','piecoelectricity','unit','C/N','DoubleConvention')
 
 %% Plotting the magnitude surface
 % The default plot of the magnitude, which indicates, in which direction we
