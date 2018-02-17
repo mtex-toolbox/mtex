@@ -11,7 +11,7 @@ function r = equivalentRadius(grains)
 %  grains - @grain2d
 %
 % Output
-%  r  - radius
+%  r  - radius (in measurement units)
 %
 % See also
 % grain2d/deltaarea grain2d/equivalentPerimeter grain2d/paris

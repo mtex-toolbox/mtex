@@ -1,6 +1,17 @@
 function grains = smooth(grains,iter,varargin)
-% constraint laplacian smoothing of grains
+% constraint laplacian smoothing of grain boundaries 
+% and inner boundaries.
 %
+% Input
+%  grains - @grain2d
+%  iter   - number of iterations (optional, default: 1)
+%
+% Output
+%  grains - @grain2d
+%
+% Options
+%  'gauss','exp','umbrella' or 'rate' - interpoaltion methods (default: 'rate')
+%  second_order, S2 - second order smoothing
 
 if nargin < 2 || isempty(iter), iter = 1; end
 

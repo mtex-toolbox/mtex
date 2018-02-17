@@ -5,7 +5,7 @@ function A = area(grains,varargin)
 %  grains - @grain2d
 %
 % Output
-%  A  - list of areas
+%  A  - list of areas (in measurement units)
 %
 
 A = zeros(length(grains.poly),1);
