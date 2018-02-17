@@ -59,7 +59,7 @@ end
 for i = 1:length(h)
   
   % create a new axis
-  if ~isstruct(mtexFig), mtexFig.nextAxis; end
+  if ~isstruct(mtexFig) && i>1, mtexFig.nextAxis; end
 
   % maybe we need only one hemisphere
   if all(angle(h{i},-h{i})<1e-2)

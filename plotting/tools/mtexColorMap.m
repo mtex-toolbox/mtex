@@ -24,7 +24,7 @@ if ischar(name)
       error('unknown colormap name');      
     end
   end
-  map = feval(name);
+  map = feval(lower(name));
 else
   map = name;
 end

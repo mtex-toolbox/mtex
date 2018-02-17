@@ -30,7 +30,7 @@ if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
 
 for i = 1:length(r)
   
-  mtexFig.nextAxis;
+  if i>1, mtexFig.nextAxis; end
 
   % compute inverse pole figures
   p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
