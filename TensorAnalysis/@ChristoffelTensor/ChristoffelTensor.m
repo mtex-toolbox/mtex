@@ -10,6 +10,9 @@ classdef ChristoffelTensor < tensor
   
    
   methods (Static = true)
-  
+    function C = load(varargin)
+      T = load@tensor(varargin{:});
+      C = ChristoffelTensor(T);
+    end
   end
 end

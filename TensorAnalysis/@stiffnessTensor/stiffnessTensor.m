@@ -12,6 +12,9 @@ classdef stiffnessTensor < tensor
   
    
   methods (Static = true)
-  
+    function C = load(varargin)
+      T = load@tensor(varargin{:});
+      C = stiffnessTensor(T);
+    end
   end
 end

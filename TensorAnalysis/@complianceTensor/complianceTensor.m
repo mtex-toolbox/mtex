@@ -11,6 +11,9 @@ classdef complianceTensor < tensor
   
    
   methods (Static = true)
-  
+    function C = load(varargin)
+      T = load@tensor(varargin{:});
+      C = complianceTensor(T);
+    end
   end
 end

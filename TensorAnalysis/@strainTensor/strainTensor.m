@@ -11,6 +11,11 @@ classdef strainTensor < tensor
    
   methods (Static = true)
     
+    function eps = load(varargin)
+      T = load@tensor(varargin{:});
+      eps = strainTensor(T);
+    end
+    
     function eps = simpleShear()
     end
     
