@@ -46,7 +46,9 @@ for j = 1:length(sF)
   
   if v.antipodal
     opt = {'showArrowHead','off'};
-    h = [h,quiver3(x,y,z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:})]; %#ok<AGROW>
+    hh = quiver3(x,y,z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:});
+    set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    h = [h,hh]; %#ok<AGROW>
   else
     opt = {};
   end
