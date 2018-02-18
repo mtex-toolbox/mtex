@@ -211,10 +211,12 @@
 % We also introduced two new functions <S2Fun/plotSection.html plotSection>
 % and <S2Fun/quiverSection.html quiverSection> to visualize spherical
 % functions restricted to a plane. As an exaple one can now plot the
-% slowness surfaceses of wave velocities with
+% slowness surfaceses of wave velocities in the plane perpendicular to Y
+% with
 %
-%  
-% see <> for more information.
+%   plotSection(1./vp,vector3d.Y)
+%
+% see <ElasticityTensor.html here> for more information.
 %
 % *Other new functions*
 %
