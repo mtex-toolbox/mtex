@@ -24,12 +24,16 @@ if ischar(name)
       error('unknown colormap name');      
     end
   end
-  map = feval(lower(name));
+  try
+    map = feval(name);
+  catch
+    map = feval(lower(name));
+  end
 else
   map = name;
 end
 
 % apply the colormap
-for i = 1:length(ax), set(ax(i),'colormap',map); end
+for i = 1:length(ax), colormap(ax(i),map); end
 
 end
