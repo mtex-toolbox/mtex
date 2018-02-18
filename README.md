@@ -60,4 +60,4 @@ explained above.
 License
 =======
 
-See `LICENSE.txt` for MTEX's licensing information.
+See `COPYING.txt` for MTEX's licensing information.
