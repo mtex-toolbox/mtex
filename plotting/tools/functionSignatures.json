@@ -10,5 +10,12 @@
         {"name":"label", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
     ]
+},
+"mtexColorMap":
+{
+    "inputs":
+    [
+        {"name":"map", "kind":"required",   "type":"choices=getColormaps"}
+     ]
 }
 }

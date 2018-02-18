@@ -3,5 +3,5 @@ function q = reshape(q,varargin)
 
 q.a = reshape(q.a,varargin{:});
 q.b = reshape(q.b,varargin{:});
-q.c =	reshape(q.c,varargin{:});
+q.c =  reshape(q.c,varargin{:});
 q.d = reshape(q.d,varargin{:});

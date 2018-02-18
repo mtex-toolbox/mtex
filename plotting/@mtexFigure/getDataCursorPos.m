@@ -23,7 +23,7 @@ ax = get(target,'Parent');
 
 if ~isgraphics(ax,'axes')
   M = get(ax,'matrix');
-  pos = M(1:2,1:2) * pos(1:2).';
+  %pos = M(1:2,1:2).' * pos(1:2).';
   ax = get(ax,'parent');
 end
 

@@ -80,7 +80,7 @@ plot(sSGrain.b,'contourf')
 %% Resolved shear stress
 % We could do the same as above with a more general stress tensor. However,
 % the result is a bit different. 
-% TODO: why do the directions do not point towards east???
+% TODO: why the directions do not point towards east???
 
 % more general syntax for the same stress tensor
 sigma = stressTensor.uniaxial(xvector);
@@ -132,14 +132,12 @@ hold on
 quiver(grains,sSGrain.b,'displayName','slip direction')
 hold off
 
-
 %% Plot m' in misorientation space
 % Since m' depends on the misorientation only why may plot it directly in
 % misorientation space
 
 % set up an axis angle plot
 sP = axisAngleSections(sSBasal.CS,sSBasal.CS);
-
 
 % generate a grid of misorientations
 moriGrid = sP.makeGrid;

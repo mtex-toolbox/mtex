@@ -1,0 +1,240 @@
+#------------------------------------------------------------------------------
+#$Date: 2010-01-30 13:59:17 +0000 (Sat, 30 Jan 2010) $
+#$Revision: 966 $
+#$URL: svn://cod.ibt.lt/cod/cif/9/9008460.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_9008460
+_space_group_IT_number           225
+_symmetry_space_group_name_Hall  '-F 4 2 3'
+_symmetry_space_group_name_H-M   'F m -3 m'
+_[local]_cod_cif_authors_sg_H-M  'F m 3 m'
+loop_
+_publ_author_name
+'Wyckoff R W G'
+_publ_section_title
+;
+ Second edition. Interscience Publishers, New York, New York
+ Cubic closest packed, ccp, structure
+;
+_journal_name_full               'Crystal Structures'
+_journal_page_first              7
+_journal_page_last               83
+_journal_volume                  1
+_journal_year                    1963
+_chemical_formula_sum            Al
+_chemical_name_mineral           Aluminum
+_cell_angle_alpha                90
+_cell_angle_beta                 90
+_cell_angle_gamma                90
+_cell_length_a                   4.04958
+_cell_length_b                   4.04958
+_cell_length_c                   4.04958
+_cell_volume                     66.409
+loop_
+_symmetry_equiv_pos_as_xyz
+x,y,z
+x,1/2+y,1/2+z
+1/2+x,y,1/2+z
+1/2+x,1/2+y,z
+z,-x,y
+z,1/2-x,1/2+y
+1/2+z,-x,1/2+y
+1/2+z,1/2-x,y
+-y,z,-x
+-y,1/2+z,1/2-x
+1/2-y,z,1/2-x
+1/2-y,1/2+z,-x
+x,-y,z
+x,1/2-y,1/2+z
+1/2+x,-y,1/2+z
+1/2+x,1/2-y,z
+-z,x,-y
+-z,1/2+x,1/2-y
+1/2-z,x,1/2-y
+1/2-z,1/2+x,-y
+y,-z,x
+y,1/2-z,1/2+x
+1/2+y,-z,1/2+x
+1/2+y,1/2-z,x
+-x,y,-z
+-x,1/2+y,1/2-z
+1/2-x,y,1/2-z
+1/2-x,1/2+y,-z
+x,-z,-y
+x,1/2-z,1/2-y
+1/2+x,-z,1/2-y
+1/2+x,1/2-z,-y
+-z,y,x
+-z,1/2+y,1/2+x
+1/2-z,y,1/2+x
+1/2-z,1/2+y,x
+y,-x,-z
+y,1/2-x,1/2-z
+1/2+y,-x,1/2-z
+1/2+y,1/2-x,-z
+-x,z,y
+-x,1/2+z,1/2+y
+1/2-x,z,1/2+y
+1/2-x,1/2+z,y
+z,-y,-x
+z,1/2-y,1/2-x
+1/2+z,-y,1/2-x
+1/2+z,1/2-y,-x
+-y,x,z
+-y,1/2+x,1/2+z
+1/2-y,x,1/2+z
+1/2-y,1/2+x,z
+x,z,y
+x,1/2+z,1/2+y
+1/2+x,z,1/2+y
+1/2+x,1/2+z,y
+-z,-y,-x
+-z,1/2-y,1/2-x
+1/2-z,-y,1/2-x
+1/2-z,1/2-y,-x
+y,x,z
+y,1/2+x,1/2+z
+1/2+y,x,1/2+z
+1/2+y,1/2+x,z
+-x,-z,-y
+-x,1/2-z,1/2-y
+1/2-x,-z,1/2-y
+1/2-x,1/2-z,-y
+z,y,x
+z,1/2+y,1/2+x
+1/2+z,y,1/2+x
+1/2+z,1/2+y,x
+-y,-x,-z
+-y,1/2-x,1/2-z
+1/2-y,-x,1/2-z
+1/2-y,1/2-x,-z
+z,x,-y
+z,1/2+x,1/2-y
+1/2+z,x,1/2-y
+1/2+z,1/2+x,-y
+-y,-z,x
+-y,1/2-z,1/2+x
+1/2-y,-z,1/2+x
+1/2-y,1/2-z,x
+x,y,-z
+x,1/2+y,1/2-z
+1/2+x,y,1/2-z
+1/2+x,1/2+y,-z
+-z,-x,y
+-z,1/2-x,1/2+y
+1/2-z,-x,1/2+y
+1/2-z,1/2-x,y
+y,z,-x
+y,1/2+z,1/2-x
+1/2+y,z,1/2-x
+1/2+y,1/2+z,-x
+-x,-y,z
+-x,1/2-y,1/2+z
+1/2-x,-y,1/2+z
+1/2-x,1/2-y,z
+-z,x,y
+-z,1/2+x,1/2+y
+1/2-z,x,1/2+y
+1/2-z,1/2+x,y
+y,-z,-x
+y,1/2-z,1/2-x
+1/2+y,-z,1/2-x
+1/2+y,1/2-z,-x
+-x,y,z
+-x,1/2+y,1/2+z
+1/2-x,y,1/2+z
+1/2-x,1/2+y,z
+z,-x,-y
+z,1/2-x,1/2-y
+1/2+z,-x,1/2-y
+1/2+z,1/2-x,-y
+-y,z,x
+-y,1/2+z,1/2+x
+1/2-y,z,1/2+x
+1/2-y,1/2+z,x
+x,-y,-z
+x,1/2-y,1/2-z
+1/2+x,-y,1/2-z
+1/2+x,1/2-y,-z
+-x,z,-y
+-x,1/2+z,1/2-y
+1/2-x,z,1/2-y
+1/2-x,1/2+z,-y
+z,-y,x
+z,1/2-y,1/2+x
+1/2+z,-y,1/2+x
+1/2+z,1/2-y,x
+-y,x,-z
+-y,1/2+x,1/2-z
+1/2-y,x,1/2-z
+1/2-y,1/2+x,-z
+x,-z,y
+x,1/2-z,1/2+y
+1/2+x,-z,1/2+y
+1/2+x,1/2-z,y
+-z,y,-x
+-z,1/2+y,1/2-x
+1/2-z,y,1/2-x
+1/2-z,1/2+y,-x
+y,-x,z
+y,1/2-x,1/2+z
+1/2+y,-x,1/2+z
+1/2+y,1/2-x,z
+-x,-z,y
+-x,1/2-z,1/2+y
+1/2-x,-z,1/2+y
+1/2-x,1/2-z,y
+z,y,-x
+z,1/2+y,1/2-x
+1/2+z,y,1/2-x
+1/2+z,1/2+y,-x
+-y,-x,z
+-y,1/2-x,1/2+z
+1/2-y,-x,1/2+z
+1/2-y,1/2-x,z
+x,z,-y
+x,1/2+z,1/2-y
+1/2+x,z,1/2-y
+1/2+x,1/2+z,-y
+-z,-y,x
+-z,1/2-y,1/2+x
+1/2-z,-y,1/2+x
+1/2-z,1/2-y,x
+y,x,-z
+y,1/2+x,1/2-z
+1/2+y,x,1/2-z
+1/2+y,1/2+x,-z
+-z,-x,-y
+-z,1/2-x,1/2-y
+1/2-z,-x,1/2-y
+1/2-z,1/2-x,-y
+y,z,x
+y,1/2+z,1/2+x
+1/2+y,z,1/2+x
+1/2+y,1/2+z,x
+-x,-y,-z
+-x,1/2-y,1/2-z
+1/2-x,-y,1/2-z
+1/2-x,1/2-y,-z
+z,x,y
+z,1/2+x,1/2+y
+1/2+z,x,1/2+y
+1/2+z,1/2+x,y
+-y,-z,-x
+-y,1/2-z,1/2-x
+1/2-y,-z,1/2-x
+1/2-y,1/2-z,-x
+loop_
+_atom_site_label
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Al 0.00000 0.00000 0.00000
+_cod_database_code 9008460

@@ -11,9 +11,11 @@ if check_option(varargin,'parent')
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
-  if isappdata(ax,'sphericalPlot') && ishold(ax)
+  if isappdata(ax(end),'sphericalPlot') && ishold(ax(end))
   
-    sP = getappdata(ax,'sphericalPlot');
+    for i = 1:length(ax)
+      sP(i) = getappdata(ax(i),'sphericalPlot');
+    end
     
   else % set up a new spherical axes if required
     
@@ -34,7 +36,9 @@ end
 % create a new mtexFigure or get a reference to it
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isNew || ~isappdata(mtexFig.children(1),'sphericalPlot')
+%~check_option(varargin,'add2all') ||
+
+if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
 
   % get spherical region
   sR = getPlotRegion(v,varargin{:});
@@ -69,13 +73,17 @@ if isNew || ~isappdata(mtexFig.children(1),'sphericalPlot')
   end
   mtexFig.drawNow(varargin{:});
           
-else % add to or overide existing axes
+elseif check_option(varargin,'add2all') % add to or overide existing axes
     
   for i = 1:numel(mtexFig.children)
     
     sP(i) = getappdata(mtexFig.children(i),'sphericalPlot'); %#ok<AGROW>
     
   end
+  
+else
+  
+  sP = getappdata(mtexFig.currentAxes,'sphericalPlot');
   
 end
 
@@ -86,7 +94,7 @@ function sR = getPlotRegion(varargin)
 % returns spherical region to be plotted
 
 % default values from the vectors to plot
-if isa(varargin{1},'vector3d'),
+if isa(varargin{1},'vector3d')
   sR = varargin{1}.region(varargin{2:end});
 else
   sR = sphericalRegion;

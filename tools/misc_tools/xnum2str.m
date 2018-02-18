@@ -1,4 +1,4 @@
-function s = xnum2str(n,m)
+function s = xnum2str(n,m,width)
 % convert number to string
 %
 % Syntax
@@ -11,7 +11,7 @@ function s = xnum2str(n,m)
 % Output
 % s - string
 
-if nargin == 1, m = n;end
+if nargin == 1 || isempty(m), m = n;end
 if length(n) > 1
   s = num2str(n(1));
   for i = 2:length(n)
@@ -54,3 +54,7 @@ end
 % eliminate ending point and meaningles minus
 if s(end) == '.', s = s(1:end-1);end
 if strcmp(s,'-0'), s = '0';end
+
+if nargin == 3
+  s = [repmat(' ',1,max(0,width-length(s))) s];
+end

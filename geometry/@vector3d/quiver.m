@@ -35,27 +35,29 @@ for j = 1:numel(sP)
   
   % project data
   if check_option(varargin,'centered') || mhs == 0
-    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),'removeAntipodal',varargin{:});
   else
-    [x0,y0] = project(sP(j).proj,normalize(v),varargin{:});
-    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),varargin{:});
+    [x0,y0] = project(sP(j).proj,normalize(v),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),'removeAntipodal',varargin{:});
   end
 
   if ~check_option(varargin,'autoArrowSize')
     arrowSize = 0;
   end
   
-  options = {arrowSize,'MaxHeadSize',mhs,'parent',sP(j).ax};
+  varargin = delete_option(varargin,'parent');
+  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSize,'MaxHeadSize',mhs,'parent',sP(j).hgt),varargin{:});     %#ok<AGROW>
   
-  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,options{:}),varargin{:});     %#ok<AGROW>
-  
-
   % finalize the plot
-
   % add annotations
   sP(j).plotAnnotate(varargin{:})
   set(sP(j).ax,'nextPlot',holdState);
+end
+
+if strcmpi(holdState,'replace') && isappdata(sP(1).parent,'mtexFig')
+  mtexFig = getappdata(sP(1).parent,'mtexFig');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 if nargout == 0, clear('h'); end

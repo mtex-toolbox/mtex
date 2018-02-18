@@ -12,11 +12,11 @@ function qq = mpower(q,n)
 
 if n < 0, q = ctranspose(q);end
 
-qq = 1;
+qq = q.id;
 
 for i = 1:abs(n)
   
-  qq  = qq * q;
+  qq  = qq .* q;
   
 end
 

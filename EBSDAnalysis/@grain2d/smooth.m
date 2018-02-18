@@ -1,11 +1,22 @@
 function grains = smooth(grains,iter,varargin)
-% constraint laplacian smoothing of grains
+% constraint laplacian smoothing of grain boundaries 
+% and inner boundaries.
 %
+% Input
+%  grains - @grain2d
+%  iter   - number of iterations (optional, default: 1)
+%
+% Output
+%  grains - @grain2d
+%
+% Options
+%  'gauss','exp','umbrella' or 'rate' - interpoaltion methods (default: 'rate')
+%  second_order, S2 - second order smoothing
 
 if nargin < 2 || isempty(iter), iter = 1; end
 
 % compute incidence matrix vertices - faces
-I_VF = grains.boundary.I_VF;
+I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 
 % compute vertice adjacency matrix
 A_V = I_VF * I_VF';

@@ -85,6 +85,13 @@ classdef rotation < quaternion & dynOption
               
             case 'matrix'
               
+              rot.i = false(size(varargin{2},3),1);
+              for i = 1:size(varargin{2},3)
+                rot.i(i) = det(varargin{2}(:,:,i))<0;
+                if rot.i(i)
+                  varargin{2}(:,:,i) = -varargin{2}(:,:,i);
+                end
+              end
               quat = mat2quat(varargin{2:end});
 
             case 'fibre'

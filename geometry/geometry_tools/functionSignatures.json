@@ -1,0 +1,9 @@
+{
+"loadCIF":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"}
+     ]
+}
+}

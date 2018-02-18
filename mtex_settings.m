@@ -39,7 +39,7 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 
 % you can uncomment the following line to disable the annotations
-%pfAnnotations = @(varargin) do_nothing;
+%pfAnnotations = @(varargin) [];
 setMTEXpref('pfAnnotations',pfAnnotations);
 
 
@@ -154,25 +154,6 @@ setMTEXpref('mtexMethodsAdvise',true)
 % by default turn LaTeX on only on Windows or Mac
 setMTEXpref('textInterpreter','LaTeX');
 
-%% Workaround for NFFT bug
-% comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
-% earlier
-
-% setMTEXpref('nfft_bug',false);
-% setMTEXpref('nfft_bug',true);
-
-%% architecture
-% this is usefull if the arcitecture is not automatically recognized by
-% MTEX
-
-%setMTEXpref('architecture','maci64');
-
-%% default maximum iteration depth for calcODF
-% change this value if you want to have another maximum iteration depth to
-% be default
-
-setMTEXpref('ITER_MAX',11);
-
 %% available memory
 % change this value to specify the total amount of free ram
 % on your system in kilobytes. By default this is set to 500 MB.
@@ -185,9 +166,6 @@ setMTEXpref('memory',500*1024);
 %
 setMTEXpref('FFTAccuracy',1E-2);
 
-%% path for temporary files
-
-setMTEXpref('tempdir',tempdir);
 
 %% degree character
 % MTEX sometimes experences problems when printing the degree character
@@ -198,57 +176,6 @@ degree_char = native2unicode([194 176],'UTF-8');
 
 setMTEXpref('degreeChar',degree_char);
 
-%% debugging
-% comment out to turn on debugging
-
-setMTEXpref('debugMode',false);
-%setMTEXpref('debugMode',true);
-
-
-%% log file
-
-[status,host] = unix('hostname');
-[status,user] = unix('whoami');
-host = host(isletter(host));
-
-if ispc,  user = regexprep(user,{host(1:end-1), filesep},''); end
-setMTEXpref('logfile',[getMTEXpref('tempdir'),'output_',host(isletter(host)),'_',user(isletter(user)),'.log']);
-
-
-%% commands to be executed before the external c program
-
-setMTEXpref('prefix_cmd','');
-
-% --- setting the priorty -----------------------
-% Sometimes it makes sense to run nice in front to lower the priority of
-% the calculations
-
-% on linux machines
-%setMTEXpref('prefix_cmd','nice -n 19 ');
-
-% on windows machines
-%setMTEXpref('prefix_cmd','start /low /b /wait ');
-% 'start' runs any programm on windows, the option /low sets the process priorty,
-% option /b disables the console window, and the option /wait is required
-% that matlab waits until calculations are done
-
-% --- open in external window -------------------
-% Sometimes it is also usefull to have the job running in a seperate console window.
-
-% on linux machines
-%setMTEXpref('prefix_cmd','/usr/X11R6/bin/xterm -iconic -e ');
-% The specified option -iconic cause xterm to open in the background.
-% The option -e is necassary to run a program in the terminal.
-
-% on windows machines
-%setMTEXpref('prefix_cmd','start /wait ');
-
-
-%% commands to be executed after the external c program
-% this might be usefull when redirecting the output or close brackets
-
-setMTEXpref('postfix_cmd','');
-
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 warning('off','MATLAB:divideByZero'); %#ok<RMWRN>
@@ -256,8 +183,5 @@ warning('off','MATLAB:divideByZero'); %#ok<RMWRN>
 
 %% end user defined global settings
 %--------------------------------------------------------------------------
-
-  function do_nothing(varargin)
-  end
 
 end

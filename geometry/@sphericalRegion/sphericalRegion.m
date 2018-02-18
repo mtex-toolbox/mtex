@@ -11,9 +11,9 @@ classdef sphericalRegion
 %
   
   properties
-    N = vector3d     % the normal vectors of the bounding circles
-    alpha = [] % the cosine of the bounding circle
-    antipodal = false
+    N = vector3d       % the normal vectors of the bounding circles
+    alpha = []         % the cosine of the bounding circle
+    antipodal = false  % used for check_inside
   end
   
   
@@ -31,7 +31,9 @@ classdef sphericalRegion
         else
           sR.alpha = zeros(size(sR.N));
         end
-      else      
+      elseif nargin>=1 && isa(varargin{1},'sphericalRegion')
+        sR = varargin{1};
+      else
         sR.N = vector3d;
         sR.alpha = [];
       end
@@ -226,9 +228,7 @@ classdef sphericalRegion
 
       else
       
-        v = equispacedS2Grid('resolution',1*degree);
-        v = v(sR.checkInside(v));
-      
+        v = equispacedS2Grid(sR,'resolution',1*degree);
         c = mean(v);
       
         if norm(c) < 1e-4

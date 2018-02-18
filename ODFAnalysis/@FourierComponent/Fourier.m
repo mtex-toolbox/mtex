@@ -39,7 +39,6 @@ if check_option(varargin,'order')
   return
 end
 
-
 f_hat = component.f_hat;
 L = dim2deg(numel(f_hat));
 

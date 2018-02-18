@@ -1,4 +1,4 @@
-function h = surf(v,cdata,varargin)
+function [h,ax] = surf(v,cdata,varargin)
 %
 % Syntax
 %
@@ -43,4 +43,4 @@ for j = 1:numel(sP)
   sP(j).doGridInFront;
 end
 
-if nargout == 0, clear h; end
+if nargout == 0, clear h; else, ax = [sP.ax]; end

@@ -23,9 +23,11 @@ if ischar(name)
     if isempty(which(name))
       error('unknown colormap name');      
     end
+  end
+  try
     map = feval(name);
-  else
-    map = colormap(name);
+  catch
+    map = feval(lower(name));
   end
 else
   map = name;

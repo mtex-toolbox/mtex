@@ -1,4 +1,4 @@
-function f = symmetrise(f,varargin)	
+function f = symmetrise(f,varargin)  
 % all crystallographically equivalent fibres
 
 if isa(f.h,'Miller')

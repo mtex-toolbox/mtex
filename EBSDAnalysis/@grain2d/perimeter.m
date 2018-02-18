@@ -11,7 +11,7 @@ function  peri = perimeter(grains,varargin)
 %  grains - @grain2d
 %
 % Output
-%  peri - perimeter
+%  peri - perimeter (in measurement units)
 %
 % See also
 % grain2d/equivalentPerimeter

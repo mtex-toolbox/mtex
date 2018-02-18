@@ -121,6 +121,7 @@ classdef grain2d < phaseList & dynProp
     
     function grains = set.V(grains,V)
       grains.boundary.V = V;
+      grains.innerBoundary.V = V;
       
       % update V in triple points
       tP = grains.triplePoints;

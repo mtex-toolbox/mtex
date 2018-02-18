@@ -18,7 +18,7 @@ omega = round(rot.angle./degree);
 [uaxis, ~, id] = unique(axis,'antipodal');
 
 % initalize plot
-sP = newSphericalPlot([zvector,-zvector],varargin{:},s.plotOptions{:});
+sP = newSphericalPlot(zvector,'upper',varargin{:},s.plotOptions{:});
 
 % scale symbol size according to bounds
 d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));

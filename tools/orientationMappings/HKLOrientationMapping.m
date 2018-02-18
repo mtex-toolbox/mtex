@@ -39,7 +39,7 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
         return
       end
   
-      [~, maxTheta] = thetaRange(sR,rho);
+      [~, maxTheta] = sR.thetaRange;
       [minRho,maxRho] = sR.rhoRange;
       
       % compute RGB values

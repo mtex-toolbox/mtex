@@ -1,4 +1,4 @@
-function [S3G,S2G,sec] = regularSO3Grid(CS,varargin)
+function [S3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
 % regular grid in Euler orientation space
 %
 % Syntax
@@ -95,9 +95,11 @@ end
     
 % define grid
 S3G = orientation('Euler',sec_angle,theta,rho,convention,CS,SS);
-
 % store gridding, @TODO: check when its required, this is required for
 % export
+if nargout == 4
+  angles = [sec_angle(:),theta(:),rho(:)];
+end
 % S2G = [sec_angle(:),theta(:),rho(:)];
 
 end

@@ -15,7 +15,7 @@ function d = dot(v1,v2,varargin)
 %  d - double
 
 % if second argument is Miller call corresponding method
-if isa(v2,'Miller')
+if ~isa(v2,'vector3d') || isa(v2,'Miller') 
   d = dot(v2,v1,varargin{:});
   return
 end

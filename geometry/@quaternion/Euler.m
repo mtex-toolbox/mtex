@@ -107,17 +107,6 @@ if nargout == 0
   cprintf(d,'-L','  ','-Lc',labels);
   disp(' ');
 
-elseif check_option(varargin,'nfft')
-
-  alpha = fft_rho(alpha);
-  if getMTEXpref('nfft_bug')
-    beta  = fft_theta(-beta);
-  else
-    beta  = fft_theta(beta);
-  end
-  gamma = fft_rho(gamma);
-  varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
-
 elseif nargout <= 2
 
   varargout{1} = [alpha(:),beta(:),gamma(:)];

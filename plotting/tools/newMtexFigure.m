@@ -1,9 +1,12 @@
 function [mtexFig,newFigure] = newMtexFigure(varargin)
 % 
 
+mtexFig = gcm;
+
 % check hold state
-newFigure = ~isappdata(gcf,'mtexFig') || check_option(varargin,'newFigure') || ...
-  (strcmp(getHoldState,'off') && ~check_option(varargin,{'hold','parent'}));
+newFigure = isempty(mtexFig) || check_option(varargin,'newFigure') || ...
+  (strcmp(getHoldState,'off') && ~check_option(varargin,{'hold','parent','add2all'}) ...
+  && ~isempty(get(mtexFig.currentAxes,'Children')));
 
 % check tag
 if ~newFigure && check_option(varargin,'ensureTag') && ...
@@ -17,7 +20,18 @@ ad = get_option(varargin,'ensureAppdata');
 if ~newFigure
   try
     for i = 1:length(ad)
-      if ~isappdata(gcf,ad{i}{1}) || (~isempty(ad{i}{2}) && ~all(getappdata(gcf,ad{i}{1}) == ad{i}{2}))
+      if isappdata(gcf,ad{i}{1}) && ~isempty(ad{i}{2})
+        ad_stored = getappdata(gcf,ad{i}{1});
+        if isa(ad{i}{2},'symmetry')
+          ad{i}{2} = ad{i}{2}.Laue;
+          ad_stored = ad_stored.Laue;
+        end
+        if ~all(ad_stored == ad{i}{2})
+          newFigure = true;
+          warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+          break
+        end
+      elseif ~isappdata(gcf,ad{i}{1})
         newFigure = true;
         warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
         break
@@ -76,7 +90,7 @@ else % use an existing figure
     else
       mtexFig.currentAxes = get(p,'parent');
     end
-  else
+  elseif check_option(varargin,'add2all')
     mtexFig.currentId = 1;
   end
 end

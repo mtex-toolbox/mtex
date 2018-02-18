@@ -28,7 +28,11 @@ classdef ODFSections < handle
     CS % crystal symmetry
     SS % specimen symmetry
   end
-    
+   
+  properties (Access = protected)
+    upperAndLower = false % whether upper AND lower hemispheres are displayed
+  end
+  
   methods
     function oS = ODFSections(CS1,varargin)
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);

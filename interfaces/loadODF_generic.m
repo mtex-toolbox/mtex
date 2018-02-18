@@ -1,10 +1,9 @@
 function [odf,options] = loadODF_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
-% Description 
+% Description
 %
-% *loadEBSD_txt* is a generic function that reads any txt or exel files of
-% diffraction intensities that are of the following format
+% *loadEBSD_txt* loads an ODF from any txt or exel files are of the following format
 %
 %  alpha_1 beta_1 gamma_1 weight_1
 %  alpha_2 beta_2 gamma_2 weight_2
@@ -15,25 +14,29 @@ function [odf,options] = loadODF_generic(fname,varargin)
 %  alpha_M beta_M gamma_M weight_m
 %
 % The assoziation of the columns as Euler angles, phase informationl, etc.
-% is specified by the options |ColumnNames| and |Columns|. The files can be
+% is specified by the options |ColumnNames| and |Columns|. The file can
 % contain any number of header lines.
 %
 % Syntax
-%   odf   = loadODF_generic(fname,<options>)
+%   cs = crystalSymmetry('432')
+%   odf   = loadODF_generic(fname,'cs',cs,'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'})
 %
 % Input
 %  fname - file name (text files only)
 %
 % Options
-%  ColumnNames  - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
+%  ColumnNames  - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns      - postions of the columns to be imported
-%  RADIANS      - treat input in radiand
-%  DELIMITER    - delimiter between numbers
-%  HEADER       - number of header lines
+%  radians      - treat input in radiand
+%  delimiter    - delimiter between numbers
+%  header       - number of header lines
 %  ZXZ, BUNGE   - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ZYZ, ABG     - [alpha beta gamma] Euler angle in Mathies convention
 %
-% 
+% Flags
+%  interp       - determine the ODF by interpolation the weights
+%  density      - determine the ODF as the density of the orientations
+%
 % Example
 %
 %    fname = fullfile(mtexDataPath,'ODF','odf.txt');
@@ -41,7 +44,7 @@ function [odf,options] = loadODF_generic(fname,varargin)
 %      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
 %      'Columns',[1,2,3,4])
 %
-% See also
+  % See also
 % import_wizard loadODF ODF_demo
 
 % get options
@@ -62,7 +65,7 @@ end
 
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
-  
+
   options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'columns',c);
   if isempty(options), odf = []; return; end
   varargin = [options,varargin];
@@ -78,7 +81,7 @@ weights = loader.getColumnData({'weights','weight'});
 
 % if no weights given - set to one
 if isempty(weights), weights = ones(size(q)); end
-   
+
 % return varargin as options
 options = varargin;
 if ischeck, odf = uniformODF;return;end
@@ -100,18 +103,18 @@ end
 method = get_flag(varargin,{'interp','density'},defaultMethod);
 
 switch method
-  
+
   case 'density'
-    
+
     % load single orientations
     if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-      
+
     % calc ODF
-    odf = calcODF(ori,'weights',weights,'silent',varargin{:});    
-    
+    odf = calcODF(ori,'weights',weights,'silent',varargin{:});
+
   case 'interp'
-  
+
     disp('  Interpolating the ODF. This might take some time...')
     odf = ODF.interp(ori,weights,varargin{:});
-        
+
 end

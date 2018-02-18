@@ -1,5 +1,5 @@
 function [d] = diameter(grains)
-% diameter of a grain 
+% diameter of a grain in measurement units
 % longest distance between any two vertices of the grain boundary
 
 % do extract this as it is much faster

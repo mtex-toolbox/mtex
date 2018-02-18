@@ -1,0 +1,92 @@
+function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
+% computes the elastic wave velocity(km/s) from the elastic stiffness Cijkl
+% tensor and density (g/cm3)
+%
+% Syntax
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S)
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x)
+%   [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
+%
+% Input
+%  C   - elasticity @stiffnessTensor Cijkl (UNITS GPa) @tensor
+%  x   - list of propagation directions (@vector3d)
+%  rho - material density (UNITS g/cm3)
+%
+% Output
+%  vp  - velocity of the p--wave (UNITS km/s)
+%  vs1 - velocity of the s1--wave (UNITS km/s)
+%  vs2 - velocity of the s2--wave (UNITS km/s)
+%  pp  - polarisation of the p--wave (particle movement, vibration direction)
+%  ps1 - polarisation of the s1--wave (particle movement, vibration direction)
+%  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
+%
+
+if nargin == 1 || isempty(x)
+  M = 48;
+  [x, W] = quadratureS2Grid(2*M);
+  generateFun = true;
+else
+  generateFun = false;  
+end
+
+% take density from tensor if not specified differently
+if nargin == 3
+elseif isfield(S.opt,'density')
+  rho = S.opt.density;
+else
+  rho = 1;
+  warning(['No density given! For computing wave velocities '...
+    'the material density has to be specified. ' ...
+    'I''m going to use the density rho=1.']);        
+end
+
+% compute ChristoffelTensor
+E = ChristoffelTensor(S,x);
+
+% from output
+vp = zeros(size(x));
+vs1 = zeros(size(x));
+vs2 = zeros(size(x));
+pp = zeros(3,length(x));
+ps1 = zeros(3,length(x));
+ps2 = zeros(3,length(x));
+
+% for each direction
+for i = 1:length(x)
+
+  % compute eigenvalues
+  [V,D] = eig(E.M(:,:,i));
+  
+  % compute wavespeeds
+  D = sqrt(diag(D)/rho);
+  
+  % and sort them
+  [D,ind] = sort(D);
+
+  % the speeds
+  vp(i) = D(3);
+  vs1(i) = D(2);
+  vs2(i) = D(1);
+  
+  % the polarisation axes
+  pp(:,i) = V(:,ind(3));
+  ps1(:,i) = V(:,ind(2));
+  ps2(:,i) = V(:,ind(1));
+
+end
+
+pp = vector3d(pp, 'antipodal');
+ps1 = vector3d(ps1, 'antipodal');
+ps2 = vector3d(ps2,'antipodal');
+
+if generateFun
+  vp  = S2FunHarmonicSym.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W);
+  vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W);
+  vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W);
+    
+  pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W);
+  ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W);
+  ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W);
+end
+
+end

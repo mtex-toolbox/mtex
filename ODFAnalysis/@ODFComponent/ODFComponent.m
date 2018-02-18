@@ -4,6 +4,7 @@ classdef ODFComponent
 % Description
 % This is an abstract class. Subclasses are uniformODF, unimodalODF,
 % fibreODF, BinghamODF and FourierODF
+%
 
   properties (Abstract)
     CS % crystal symmetry

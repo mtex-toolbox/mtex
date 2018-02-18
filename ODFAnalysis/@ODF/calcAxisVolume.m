@@ -18,15 +18,14 @@ function v = calcAxisVolume(odf,axis,radius,varargin)
 % get resolution for quadrature
 res = get_option(varargin,'resolution',min(radius/5,2.5*degree));
 
-% define a grid for quadrature
-h = equispacedS2Grid('resolution',res,varargin{:});
-
-% restrict to fundamental region
+% find fundamental region
 sym = properGroup(disjoint(odf.CS,odf.SS));
 if odf.antipodal || check_option(varargin,'antipodal')
   sym = sym.Laue;
 end
-h= h(sym.fundamentalSector.checkInside(h));
+
+% define a grid for quadrature
+h = equispacedS2Grid(sym.fundamentalSector,'resolution',res,varargin{:});
 
 % find those within the ball
 ind = angle(Miller(axis,sym),Miller(h,sym)) < radius+1e-5;

@@ -8,7 +8,7 @@ if ~ishold && isappdata(gcf,'axes')
 end
 
 % logarithmic plot?
-if check_option(varargin,'logarithmic')
+if check_option(varargin,{'logarithmic','log'})
   h = semilogy(x,y);
 else
   h = plot(x,y);

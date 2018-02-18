@@ -14,6 +14,10 @@ function [v,m,n] = unique(v,varargin)
 %  v - @vector3d
 %  m -
 %  n -
+%
+% Option
+%  stable - prevent sorting
+%
 
 x = v.x(:);
 y = v.y(:);
@@ -27,11 +31,17 @@ end
 
 tol = get_option(varargin,'tolerance',1e-7);
 
+% in case it should not be sorted
+if check_option(varargin,'stable')
+varargin = {'stable'};
+else
+varargin= {};   
+end
 % find duplicates points
 try
-  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true);
+  [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,varargin{:});
 catch
-  [~,m,n] = unique(round(xyz./tol),'rows');
+  [~,m,n] = unique(round(xyz./tol),'rows',varargin{:});
 end
 
 % remove duplicated points

@@ -10,6 +10,10 @@ function [h,mP] = plot(grains,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
+% Options
+%  noBoundary  - do not plot boundaries 
+%  displayName - name used in legend
+%
 % See also
 % EBSD/plot grainBoundary/plot
 
@@ -36,6 +40,12 @@ if nargin>1 && isa(varargin{1},'orientation')
   disp('  plot(oM)')
 end
 
+plotBoundary = true;
+% allow to plot grain faces only without boundaries
+if check_option(varargin,'noBoundary')
+plotBoundary = false;
+end
+
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
   
@@ -46,6 +56,16 @@ if nargin>1 && isnumeric(varargin{1})
   
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+
+elseif nargin>1 && isa(varargin{1},'crystalShape')
+  
+  scaling = sqrt(grains.area);
+  xy = [grains.centroid,scaling*zUpDown];
+  
+  h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
+    'parent', mP.ax,varargin{:});
+  
+  plotBoundary = false;
   
 elseif check_option(varargin,'FaceColor')
   
@@ -83,11 +103,13 @@ else % otherwise phase plot
 end
 
 % we have to plot grain boundary individually
-hold on
-hh = plot(grains.boundary,varargin{:});
-set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-hold off
-
+if plotBoundary
+  hold on
+  hh = plot(grains.boundary,varargin{:});
+  set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  hold off
+end
+  
 if check_option(varargin,'DisplayName') 
   legend('-DynamicLegend','location','NorthEast');
 end

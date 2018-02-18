@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding="utf-8"?>
+<toc version="2.0">
+
+  <tocitem target="S2Fun_index.html">S2Fun
+    <tocitem target="S2FunHarmonic_index.html">S2FunHarmonic
+      <tocitem target="S2FunHarmonic_uni_index.html">univariate</tocitem>
+      <tocitem target="S2FunHarmonic_multi_index.html">multivariate</tocitem>
+    </tocitem>
+    <tocitem target="S2FunHarmonicSym_index.html">S2FunHarmonicSym</tocitem>
+    <tocitem target="S2VectorFieldHarmonic_index.html">S2VectorFieldHarmonic</tocitem>
+    <tocitem target="S2AxisFieldHarmonic_index.html">S2AxisFieldHarmonic</tocitem>
+  </tocitem>
+
+</toc>

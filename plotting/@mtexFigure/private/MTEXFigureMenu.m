@@ -76,19 +76,6 @@ uimenu(fs,'label','18 points','callback',{@setFontSize,18});
 uimenu(fs,'label','19 points','callback',{@setFontSize,19});
 uimenu(fs,'label','20 points','callback',{@setFontSize,20});
 
-
-function [cm,cmd] = getColormaps
-
-fnd = dir([mtex_path filesep 'tools' filesep 'colormaps' filesep '*ColorMap.m']);
-
-% remove extension to create command
-cmd = cellfun(@(x) x(1:end-2),{fnd.name},'UniformOutput',false);
-
-% remove ColorMap
-cm = cellfun(@(x) x(1:end-8),cmd,'UniformOutput',false);
-
-end
-
 % -------------- Callbacks ---------------------------
 
 % export
@@ -109,7 +96,6 @@ set(o,'FontSize',fs);
 set(obj,'checked','on');
 
 end
-
 
 % Grid Visibility
 function setVisible(obj,event,varargin)

@@ -2,6 +2,7 @@ function v = volume(sR,S2G)
 % volume of a spherical region
 %
 %
+% TODO: make this better!!
 % formula: v = S - (n-2)*pi
 % where S is the sum of the interior angles and n is the number of vertices
 

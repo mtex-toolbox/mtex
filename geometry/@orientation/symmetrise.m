@@ -1,4 +1,4 @@
-function o = symmetrise(o,varargin)	
+function o = symmetrise(o,varargin)  
 % all crystallographically equivalent orientations
 
 ap = o.antipodal;

@@ -6,7 +6,6 @@ function startup_mtex(varargin)
 % mtex_settings.m in this directory.
 %
 
-
 % this is a bugfix for MATLAB having very high cpu load on idle
 if isunix && ~ismac
   try
@@ -15,7 +14,6 @@ if isunix && ~ismac
     %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType([]);
   end
 end
-
 
 % Check MATLAB version
 % --------------------
@@ -61,7 +59,6 @@ p();
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
 setMTEXpref('DataPath',fullfile(local_path,'data'));
-setMTEXpref('architecture',computer('arch'));
 setMTEXpref('version',MTEXversion);
 setMTEXpref('generatingHelpMode',false);
 p();
@@ -153,13 +150,15 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-exclPath = {'c','data','help','templates'};
+exclPath = {'data','makeDoc','templates','nfft'};
 
 if ~MATLABverLessThan('8.1')
   exclPath = [exclPath,'8.4'];
 end
 
+warning off
 addpath_recurse(local_path,exclPath);
+warning on
 
 end
 
