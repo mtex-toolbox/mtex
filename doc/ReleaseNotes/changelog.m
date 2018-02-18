@@ -13,10 +13,10 @@
 % change (hopefully) comes with the following advantages
 %
 % * better compatibility with MAC systems, no SIP disabled required
-% * increased preformance, e.g., due to multi core support
+% * increased performance, e.g., due to multi core support
 % * better maintainability, as all MTEX code is now Matlab code
 % * the pole figure to ODF inversion algorithm is now entirely implemented
-% in Matlab making it simple to tweak it or add more suffisticated
+% in Matlab making it simple to tweak it or add more sophisticated
 % inversion algorithms
 %
 % *Spherical functions*
@@ -165,6 +165,29 @@
 %
 %   [c,center] = calcCluster(ori,'halfwidth',2.5*degree)
 %
+% *New tensor classes*
+%
+% With MTEX 5.0 we start introducing specific tensor classes. So far we
+% included the following classes
+%
+% * <stiffnessTensor_index.html stiffnessTensor>
+% * <complianceTensor_index.html complianceTensor>
+% * <strainTensor_index.html strainTensor>
+% * <stressTensor_index.html stressTensor>
+% * <ChristoffelTensor_index.html ChristoffelTensor>
+%
+% more tensors are supposed to be included in the future. The central
+% advantage is that tensor specific behaviour and functions can now better
+% be implemented and documented, e.g., that the inverse of the compliance
+% tensor is the stiffness tensor and vice versa. For user the important
+% change is that e.g. the stiffness tensor is now defined by
+%
+%   C = stiffnessTensor(M,cs)
+%
+% instead of the depreciated syntax
+%
+%   C = tensor(M,cs,'name','ellastic stiffness','unit','GPA')
+%
 % *Improved spherical plotting*
 %
 % In MTEX 4.X it was not possible to display the upper and lower hemisphere
@@ -184,6 +207,14 @@
 %  plotIPDF(SantaFe,[xvector,yvector+zvector])
 %  [~,ori] = max(SantaFe)
 %  plot(ori,'add2all')
+%
+% We also introduced two new functions <S2Fun/plotSection.html plotSection>
+% and <S2Fun/quiverSection.html quiverSection> to visualize spherical
+% functions restricted to a plane. As an exaple one can now plot the
+% slowness surfaceses of wave velocities with
+%
+%  
+% see <> for more information.
 %
 % *Other new functions*
 %
