@@ -34,7 +34,8 @@ function plotPDF(o,varargin)
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
-elseif nargin > 2 && (isa(varargin{2},'Miller') || (iscell(varargin{2}) && isa(varargin{2}{1},'Miller')))
+elseif (nargin > 1 && ~(isa(varargin{1},'Miller') || ...
+    (iscell(varargin{2}) && isa(varargin{2}{1},'Miller'))))
   [data,varargin] = extract_data(length(o),varargin);
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else

@@ -31,7 +31,7 @@ function plotIPDF(ori,varargin)
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
-elseif nargin > 2 && isa(varargin{2},'vector3d')
+elseif nargin > 1 && ~isa(varargin{1},'vector3d')
   [data,varargin] = extract_data(length(ori),varargin);
   data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
 else
