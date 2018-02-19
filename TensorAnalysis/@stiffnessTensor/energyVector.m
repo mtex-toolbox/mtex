@@ -30,7 +30,7 @@ function E = energyVector(C,x,V,P,rho)
 
 % return a function if required
 if isempty(x)
-  E = S2VectorFieldHarmonic.quadrature(@(x) velocityVector(C,x,V.eval(x),P.eval(x),rho),'bandwidth',P.bandwidth,C.CS);
+  E = S2VectorFieldHarmonic.quadrature(@(x) energyVector(C,x,V.eval(x),P.eval(x),rho),'bandwidth',P.bandwidth,C.CS);
   return
 end
 
