@@ -6,12 +6,12 @@ function sF = conv(sF, psi)
 %   sF = conv(sF, A)
 %
 % Input
-%  sF - @S2FunHarmonic
+%  sF  - @S2FunHarmonic
 %  psi - @kernel
-%  A - double - list of Legendre coeficients
+%  A   - double list of Legendre coeficients
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 
 % extract Legendre coefficients
