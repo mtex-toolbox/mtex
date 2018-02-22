@@ -11,18 +11,19 @@ function v =  eval(sVF,nodes)
 %  v - @vector3d
 %
 
+% compute bariocentric coordinates for interpolation
 bario = calcBario(sVF.tri,nodes);
 
+% interpolate in the space of symmetric 3x3 matrixes
 [x,y,z] = double(sVF.values);
 m = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
 M = bario * m;
 
-xyz = zeros(length(nodes),3);
-for i = 1:length(nodes)
-  MLocal = reshape(M(i,[1 2 4 2 3 5 4 5 6]),3,3);
-  [xyz(i,:),~,~] = svds(MLocal,1);
-end
+% go back to vectors by computing the eigen vectors of the interpolated 3x3
+% matrices
+[v,~] =  eig3(M(:,1),M(:,2),M(:,4),M(:,3),M(:,5),M(:,6));
 
-v = vector3d(xyz.','antipodal');
+% take only the largest eigenvector
+v = v(3,:).';
 
 end
