@@ -39,11 +39,11 @@ else
 end
 
 % find inverse pole figure direction
-if isNew || ~isa(mtexFig,'mtexFigure')
-  r = varargin{1};
-else
+r = [];
+if ~isempty(mtexFig.currentAxes)
   r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection');
 end
+if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
 %  subsample if needed 

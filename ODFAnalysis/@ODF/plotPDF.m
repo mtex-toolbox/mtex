@@ -35,8 +35,6 @@ if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 argin_check([h{:}],'Miller');
 for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
-
-
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
 rAll = plotS2Grid(sR,varargin{:});

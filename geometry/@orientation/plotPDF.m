@@ -35,19 +35,23 @@ if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 elseif (nargin > 1 && ~(isa(varargin{1},'Miller') || ...
-    (iscell(varargin{2}) && isa(varargin{2}{1},'Miller'))))
+    (nargin > 2 && iscell(varargin{2}) && isa(varargin{2}{1},'Miller'))))
   [data,varargin] = extract_data(length(o),varargin);
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
   data = [];
 end
 
-if isNew || ~isa(mtexFig,'mtexFigure') % for a new plot 
+% find crystal directions
+h = [];
+if ~isempty(mtexFig.currentAxes), h = getappdata(mtexFig.currentAxes,'h'); end
+
+if isempty(h) % for a new plot 
   h = varargin{1};
   varargin(1) = [];
   if ~iscell(h), h = vec2cell(h);end 
 else
-  h = {getappdata(mtexFig.currentAxes,'h')};
+  h = {h};
 end
 
 % all h should by Miller and have the right symmetry
