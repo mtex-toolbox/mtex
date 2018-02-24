@@ -11,7 +11,10 @@ end
 
 % maybe ODFSection is specified directly
 oS = getClass(varargin,'ODFSections');
-if ~isempty(oS), return; end
+if ~isempty(oS)
+  setappdata(mtexFig.parent,'ODFSections',oS);
+  return; 
+end
 
 if isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry')
   default = 'phi2';
