@@ -61,7 +61,7 @@ annotate(pos)
 % Instead by the tension direction the stress might be specified by a
 % stress tensor
 
-sigma = tensor([0 0 0; 0 0 0; 0 0 1],'name','stress')
+sigma = stressTensor.uniaxial(vector3d.Z)
 
 %%
 % Then the Schmid factor for the slip system |sS| and the stress tensor
@@ -136,11 +136,11 @@ tau = sSAll.SchmidFactor(r);
 
 % plot active slip plane in red
 hold on
-quiver(r,sSAll(id).n,'ArrowSize',0.2,'LineWidth',2,'Color','r');
+quiver(r,sSAll(id).n,'ArrowSize',0.25,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
 hold on
-quiver(r,sSAll(id).b.normalize,'ArrowSize',0.1,'LineWidth',2,'Color','g');
+quiver(r,sSAll(id).b.normalize,'ArrowSize',0.12,'LineWidth',2,'Color','g');
 hold off
 
 %%
@@ -150,7 +150,7 @@ hold off
 tau = sSAll.SchmidFactor
 
 % now we take the max of the absolute value over all these functions
-contourf(max(abs(tau),[],1))
+contourf(max(abs(tau),[],1),'upper')
 mtexColorbar
 
 
@@ -163,11 +163,15 @@ mtexColorbar
 
 mtexdata csl
 
-grains = calcGrains(ebsd);
+% take some subset
+ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
 
-plot(ebsd,ebsd.orientations)
+grains = calcGrains(ebsd);
+grains = smooth(grains,5);
+
+plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on
-plot(grains.boundary)
+plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
@@ -199,8 +203,8 @@ SF = sSLocal.SchmidFactor(sigma);
 [SFMax,active] = max(SF,[],2);
 
 % plot the maximum Schmid factor
-plot(grains,SFMax)
-mtexColorbar
+plot(grains,SFMax,'micronbar','off','linewidth',2)
+mtexColorbar location southoutside
 
 %%
 % Next we want to visualize the active slip systems.
