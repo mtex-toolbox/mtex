@@ -197,6 +197,7 @@ sSLocal = grains.meanOrientation * sS
 % Computing the Schmid faktor we end up with a matrix of the same size
 
 % compute Schmid factor
+sigma = stressTensor.uniaxial(vector3d.Z)
 SF = sSLocal.SchmidFactor(sigma);
 
 % take the maxium allong the rows
@@ -230,7 +231,7 @@ hold off
 % Next we want to demonstrate the alternative route
 
 % rotate the stress tensor into crystal coordinates
-sigmaLocal = rotate(sigma,inv(grains.meanOrientation))
+sigmaLocal = inv(grains.meanOrientation) * sigma
 
 %%
 % This becomes a list of stress tensors with respect to crystal coordinates
@@ -259,3 +260,28 @@ quiver(grains,sSactive.trace,'color','b')
 quiver(grains,sSactive.b,'color','r')
 
 hold off
+
+%% Strain based analysis on the same data set
+
+eps = strainTensor(diag([1,0,-1]))
+
+epsCrystal = inv(grains.meanOrientation) * eps
+
+[M, b, mori] = calcTaylor(epsCrystal, sS);
+
+plot(grains,M,'micronbar','off')
+mtexColorbar southoutside
+
+%%
+
+[ bMax , bMaxId ] = max( b , [ ] , 2 ) ;
+sSGrains = grains.meanOrientation .* sS(bMaxId) ;
+hold on
+quiver ( grains , sSGrains.b)
+quiver ( grains , sSGrains.trace)
+hold off
+
+
+
+
+
