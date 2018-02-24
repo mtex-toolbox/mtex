@@ -64,7 +64,7 @@
 {
     "inputs":
     [
-        {"name":"ori", "kind":"required", "type":"vector3d"},
+        {"name":"vec", "kind":"required", "type":"vector3d"},
         {"name":"antipodal", "kind":"flag"},
         {"name":"contourf", "kind":"flag"},
         {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
@@ -73,7 +73,9 @@
         {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
         {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
         {"name":"label", "kind":"namevalue", "type":"string"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+	{"name":"grid", "kind":"flag"},
+	{"name":"hemisphere", "kind":"flag", "type":"choices={'upper','lower'}"}
     ]
 },
 "plotPDF":

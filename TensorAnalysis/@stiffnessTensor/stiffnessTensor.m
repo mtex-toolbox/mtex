@@ -4,7 +4,7 @@ classdef stiffnessTensor < tensor
     function sT = stiffnessTensor(varargin)
 
       varargin = set_default_option(varargin,{},'unit','GPa');
-      sT = sT@tensor(varargin{:},'name','stiffness');
+      sT = sT@tensor(varargin{:});
       sT.doubleConvention = false;
       
     end

@@ -11,7 +11,7 @@ function SF = SchmidFactor(sS,sigma,varargin)
 % Input
 %  sS - list of @slipSystem
 %  v  - @vector3d list of tension direction
-%  sigma - stress @tensor
+%  sigma - @stressTensor
 %
 % Output
 %  SFfun - size(sS) x 1 list of @S2FunHarmonic
@@ -38,7 +38,7 @@ elseif isa(sigma,'vector3d')
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
   
 % Schmid factor with respect to a stress tensor
-elseif isa(sigma,'tensor')
+elseif isa(sigma,'stressTensor')
   
   if length(sigma) == 1
     SF = double(EinsteinSum(sigma,[-1,-2],n,-1,b,-2));
