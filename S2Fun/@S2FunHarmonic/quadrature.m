@@ -29,6 +29,17 @@ else
   nodes = f(:);
   values = varargin{1};
   W = get_option(varargin,'weights',1);
+  
+  if length(nodes)>100000 && length(values) == length(nodes) && length(W)==1
+    % TODO: use a regular grid here and a faster search
+    n2 = equispacedS2Grid('resolution',0.5*degree);
+    id = find(n2,nodes);
+    values = accumarray(id,values,[length(n2),1]);
+    
+    id = values>0;
+    nodes = reshape(n2.subGrid(id),[],1);
+    values = values(id);    
+  end
 end
 
 if isempty(nodes)
