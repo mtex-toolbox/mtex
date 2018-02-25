@@ -19,7 +19,7 @@ function plotSection(ori,varargin)
 % vector3d/scatter saveFigure 
 
 if check_option(varargin,{'contour','contourf','smooth'})
-  warning('Using the options contour, contourf or smooth in orientation sections plots is not recommented. Computing an ODF and plotting it is usually miuch better');
+  warning('Using the options contour, contourf or smooth in orientation sections plots is not recommented. Computing an ODF and plotting it is usually much better');
 end
 
 if ori.antipodal, varargin = [varargin,'antipodal']; end
