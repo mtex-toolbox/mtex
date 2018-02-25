@@ -9,7 +9,7 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 %  q = T_i1i2i3...id v_i1 v_i2 v_i3 ... v_id
 %
 % Input
-%  sigma - stress @tensor
+%  sigma -  @stressTensor
 %  m - normal vector the the slip or twinning plane
 %  n - Burgers vector (slip) or twin shear direction (twinning)
 %

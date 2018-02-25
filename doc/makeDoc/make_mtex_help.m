@@ -5,7 +5,7 @@ function make_mtex_help(varargin)
 if check_option(varargin,'clear')
   !rm -r ../html/*
   !rm -r ./tmp/*
-  mtexdata clear
+%  mtexdata clear
 end
 
 clear

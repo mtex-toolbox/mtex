@@ -31,7 +31,7 @@ function plotIPDF(ori,varargin)
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
-elseif nargin > 2 && isa(varargin{2},'vector3d')
+elseif nargin > 1 && ~isa(varargin{1},'vector3d')
   [data,varargin] = extract_data(length(ori),varargin);
   data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
 else
@@ -39,11 +39,11 @@ else
 end
 
 % find inverse pole figure direction
-if isNew || ~isa(mtexFig,'mtexFigure')
-  r = varargin{1};
-else
+r = [];
+if ~isempty(mtexFig.currentAxes)
   r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection');
 end
+if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
 %  subsample if needed 

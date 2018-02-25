@@ -32,7 +32,7 @@ else
   v = sVF.eval(S2);
 end
 v = v(:);
-if check_option(varargin,'normalized'), v = v.normalized; end
+if check_option(varargin,'normalized'), v = v.normalize; end
     
 d = reshape(sF.eval(S2),length(S2), []);
 

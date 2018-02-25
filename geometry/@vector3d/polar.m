@@ -12,7 +12,11 @@ if isfield(v.opt,'theta')
   theta = v.opt.theta;
   rho = v.opt.rho;  
 else
-  rho = mod(atan2(v.y,v.x),2*pi);
+  %rho = mod(atan2(v.y,v.x),2*pi);
+  % the next two lines do exactly the same but are a bit faster
+  rho = atan2(v.y,v.x);
+  rho = rho + (rho<0)*2*pi;
+  
   theta = acos(v.z./r);
 end
 

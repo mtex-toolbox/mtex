@@ -48,7 +48,7 @@ setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
 
 % default fontsize
-setMTEXpref('FontSize',13);
+setMTEXpref('FontSize',15);
 
 % default annotation style
 setMTEXpref('annotationStyle',...

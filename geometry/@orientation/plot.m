@@ -42,11 +42,11 @@ for ax = allAxes(:).'
   
     case 'pdf' % pole figure annotations
       
-      plotPDF(ori,[],varargin{:},'parent',ax,'noTitle');
+      plotPDF(ori,varargin{:},'parent',ax,'noTitle');
     
     case 'ipdf' % inverse pole figure annotations
       
-      plotIPDF(ori,[],varargin{:},'parent',ax,'noTitle');
+      plotIPDF(ori,varargin{:},'parent',ax,'noTitle');
   
     case 'odf' % ODF sections plot
     

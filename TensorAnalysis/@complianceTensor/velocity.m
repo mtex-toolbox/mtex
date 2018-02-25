@@ -1,4 +1,4 @@
-function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
+function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,varargin)
 % computes the elastic wave velocity(km/s) from the elastic stiffness Cijkl
 % tensor and density (g/cm3)
 %
@@ -21,16 +21,23 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
-if nargin == 1 || isempty(x)
-  M = 48;
-  [x, W] = quadratureS2Grid(2*M);
-  generateFun = true;
+if nargin == 2 && isa(varargin{1},'vector3d')
+  x = varargin{1};
+  generateFun = false;
 else
-  generateFun = false;  
+  if check_option(varargin,'harmonic')
+    M = 48;
+    [x, W] = quadratureS2Grid(2*M);
+    generateFun = 1;
+  else
+    x = equispacedS2Grid('resolution',1.5*degree);
+    generateFun = 2;
+  end
 end
 
 % take density from tensor if not specified differently
 if nargin == 3
+  rho = varargin{2};
 elseif isfield(S.opt,'density')
   rho = S.opt.density;
 else
@@ -43,43 +50,17 @@ end
 % compute ChristoffelTensor
 E = ChristoffelTensor(S,x);
 
-% from output
-vp = zeros(size(x));
-vs1 = zeros(size(x));
-vs2 = zeros(size(x));
-pp = zeros(3,length(x));
-ps1 = zeros(3,length(x));
-ps2 = zeros(3,length(x));
-
-% for each direction
-for i = 1:length(x)
-
-  % compute eigenvalues
-  [V,D] = eig(E.M(:,:,i));
+% compute eigenvalues
+[V,D] = eig3(E.M(1,1,:),E.M(1,2,:),E.M(1,3,:),E.M(2,2,:),E.M(2,3,:),E.M(3,3,:));
   
-  % compute wavespeeds
-  D = sqrt(diag(D)/rho);
+% compute wavespeeds
+D = sqrt(D)/rho;
+vp = D(3,:); vs1 = D(2,:); vs2 = D(1,:);
   
-  % and sort them
-  [D,ind] = sort(D);
+% the polarisation axes
+pp = V(3,:); ps1 = V(2,:); ps2 = V(1,:);
 
-  % the speeds
-  vp(i) = D(3);
-  vs1(i) = D(2);
-  vs2(i) = D(1);
-  
-  % the polarisation axes
-  pp(:,i) = V(:,ind(3));
-  ps1(:,i) = V(:,ind(2));
-  ps2(:,i) = V(:,ind(1));
-
-end
-
-pp = vector3d(pp, 'antipodal');
-ps1 = vector3d(ps1, 'antipodal');
-ps2 = vector3d(ps2,'antipodal');
-
-if generateFun
+if generateFun == 1
   vp  = S2FunHarmonicSym.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W);
   vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W);
   vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W);
@@ -87,6 +68,14 @@ if generateFun
   pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W);
   ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W);
   ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W);
+elseif generateFun == 2
+  vp  = S2FunTri(x,vp);
+  vs1 = S2FunTri(vp.tri,vs1);
+  vs2 = S2FunTri(vp.tri,vs2);
+  
+  pp = S2AxisFieldTri(vp.tri,pp);
+  ps1 = S2AxisFieldTri(vp.tri,ps1);
+  ps2 = S2AxisFieldTri(vp.tri,ps2);  
 end
 
 end

@@ -3,7 +3,7 @@ classdef strainTensor < tensor
   methods
     function sT = strainTensor(varargin)
 
-      sT = sT@tensor(varargin{:},'name','strain');
+      sT = sT@tensor(varargin{:});
       
     end
   end

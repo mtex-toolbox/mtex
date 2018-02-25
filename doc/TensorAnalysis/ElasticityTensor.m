@@ -128,6 +128,7 @@ optSec = {'color','interp','linewidth',6,'doNotDraw'};
 % options for quiver
 optQuiver = {'linewidth',2,'autoScaleFactor',0.35,'doNotDraw'};
 optQuiverProp = {'color','k','linewidth',2,'autoScaleFactor',0.25,'doNotDraw'};
+prop = S2VectorFieldHarmonic.normal; % the propagation direction
 
 % wave velocyties
 close all

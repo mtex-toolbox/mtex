@@ -61,7 +61,7 @@ annotate(pos)
 % Instead by the tension direction the stress might be specified by a
 % stress tensor
 
-sigma = tensor([0 0 0; 0 0 0; 0 0 1],'name','stress')
+sigma = stressTensor.uniaxial(vector3d.Z)
 
 %%
 % Then the Schmid factor for the slip system |sS| and the stress tensor
@@ -136,11 +136,11 @@ tau = sSAll.SchmidFactor(r);
 
 % plot active slip plane in red
 hold on
-quiver(r,sSAll(id).n,'ArrowSize',0.2,'LineWidth',2,'Color','r');
+quiver(r,sSAll(id).n,'ArrowSize',0.25,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
 hold on
-quiver(r,sSAll(id).b.normalize,'ArrowSize',0.1,'LineWidth',2,'Color','g');
+quiver(r,sSAll(id).b.normalize,'ArrowSize',0.12,'LineWidth',2,'Color','g');
 hold off
 
 %%
@@ -150,7 +150,7 @@ hold off
 tau = sSAll.SchmidFactor
 
 % now we take the max of the absolute value over all these functions
-contourf(max(abs(tau),[],1))
+contourf(max(abs(tau),[],1),'upper')
 mtexColorbar
 
 
@@ -163,11 +163,15 @@ mtexColorbar
 
 mtexdata csl
 
-grains = calcGrains(ebsd);
+% take some subset
+ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
 
-plot(ebsd,ebsd.orientations)
+grains = calcGrains(ebsd);
+grains = smooth(grains,5);
+
+plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on
-plot(grains.boundary)
+plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
@@ -193,14 +197,15 @@ sSLocal = grains.meanOrientation * sS
 % Computing the Schmid faktor we end up with a matrix of the same size
 
 % compute Schmid factor
+sigma = stressTensor.uniaxial(vector3d.Z)
 SF = sSLocal.SchmidFactor(sigma);
 
 % take the maxium allong the rows
 [SFMax,active] = max(SF,[],2);
 
 % plot the maximum Schmid factor
-plot(grains,SFMax)
-mtexColorbar
+plot(grains,SFMax,'micronbar','off','linewidth',2)
+mtexColorbar location southoutside
 
 %%
 % Next we want to visualize the active slip systems.
@@ -226,7 +231,7 @@ hold off
 % Next we want to demonstrate the alternative route
 
 % rotate the stress tensor into crystal coordinates
-sigmaLocal = rotate(sigma,inv(grains.meanOrientation))
+sigmaLocal = inv(grains.meanOrientation) * sigma
 
 %%
 % This becomes a list of stress tensors with respect to crystal coordinates
@@ -255,3 +260,28 @@ quiver(grains,sSactive.trace,'color','b')
 quiver(grains,sSactive.b,'color','r')
 
 hold off
+
+%% Strain based analysis on the same data set
+
+eps = strainTensor(diag([1,0,-1]))
+
+epsCrystal = inv(grains.meanOrientation) * eps
+
+[M, b, mori] = calcTaylor(epsCrystal, sS);
+
+plot(grains,M,'micronbar','off')
+mtexColorbar southoutside
+
+%%
+
+[ bMax , bMaxId ] = max( b , [ ] , 2 ) ;
+sSGrains = grains.meanOrientation .* sS(bMaxId) ;
+hold on
+quiver ( grains , sSGrains.b)
+quiver ( grains , sSGrains.trace)
+hold off
+
+
+
+
+

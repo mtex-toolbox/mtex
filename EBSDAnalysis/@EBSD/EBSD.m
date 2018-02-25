@@ -26,7 +26,6 @@ classdef EBSD < phaseList & dynProp & dynOption
   properties
     id = []               % unique id's starting with 1    
     rotations = rotation  % rotations without crystal symmetry
-    A_D = []              % adjecency matrix of the measurement points
   end
   
   % general properties
@@ -37,9 +36,12 @@ classdef EBSD < phaseList & dynProp & dynOption
    
   properties (Dependent = true)
     orientations    % rotation including symmetry
-    weights         % is this realy needed?
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
+  end
+  
+  properties (Access = protected)
+    A_D = []              % adjecency matrix of the measurement points
   end
   
   methods
@@ -153,18 +155,6 @@ classdef EBSD < phaseList & dynProp & dynOption
             
     end
            
-    function w = get.weights(ebsd)
-      if ebsd.isProp('weights')
-        w = ebsd.prop.weights;
-      else
-        w = ones(size(ebsd));
-      end      
-    end
-    
-    function ebsd = set.weights(ebsd,weights)
-      ebsd.prop.weights = weights;
-    end
-    
 %     function dx = get.dx(ebsd)
 %       uc = ebsd.unitCell;
 %       if size(uc,1) == 4

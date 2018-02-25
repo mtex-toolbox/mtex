@@ -7,7 +7,7 @@ function [ad,omega] = calcAngleDistribution(cs,varargin)
 %   [ad,omega] = calcAngleDistribution(cs1,omega)
 %
 % Input
-%  cs - crystal @symmetry
+%  cs -  @crystalSymmetry
 %  omega - angle
 %
 % Ouput

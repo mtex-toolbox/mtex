@@ -10,6 +10,7 @@ classdef S2Triangulation
     A_V       % adjacency matrix of the vertices
     A_T       % adjacency matrix of the triangles
     neighbours % 
+    antipodal = false;
   end
   
   methods

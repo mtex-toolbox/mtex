@@ -2,16 +2,13 @@ function d = dot(sF1, sF2)
 % inner product 
 %
 % Syntax
-%   sF = conv(sF, psi)
-%   sF = conv(sF, A)
+%   sF = dot(sF1, sF1)
 %
 % Input
-%  sF - @S2FunHarmonic
-%  psi - @kernel
-%  A - double - list of Legendre coeficients
+%  sF1, sF2   - @S2FunHarmonic
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 
 bw = min(sF1.bandwidth,sF2.bandwidth);

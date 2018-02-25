@@ -96,7 +96,8 @@ hold off
 % In the same manner we may visualize grain orientations and grains size
 % within pole figures
 
-plotPDF(grains(isBig).meanOrientation,0.002*cSGrains,Miller({1,0,-1,0},{0,0,0,1},ebsd.CS))
+plotPDF(grains(isBig).meanOrientation,Miller({1,0,-1,0},{0,0,0,1},ebsd.CS),'contour')
+plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 
 %%
 % or even within ODF sections
@@ -108,10 +109,7 @@ odf = calcODF(ebsd.orientations);
 plotSection(odf,'sigma','contour')
 
 % and on top of it the crystal shapes
-hold on
-plot(grains(isBig).meanOrientation,0.002*cSGrains)
-hold off
-
+plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 
 %% Twinning relationships
 % We may also you crystal shapes to illustrate twinning relation ships

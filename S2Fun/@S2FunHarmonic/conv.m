@@ -6,19 +6,19 @@ function sF = conv(sF, psi)
 %   sF = conv(sF, A)
 %
 % Input
-%  sF - @S2FunHarmonic
+%  sF  - @S2FunHarmonic
 %  psi - @kernel
-%  A - double - list of Legendre coeficients
+%  A   - double list of Legendre coeficients
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonic
 %
 
 % extract Legendre coefficients
 if isa(psi,'double')
-  A = psi;  
+  A = psi(:);  
 else
-  A = psi.A;
+  A = psi.A(:);
   A = A ./ (2*(0:length(A)-1)+1).';
 end
 A = A(1:min(sF.bandwidth+1,length(A)));
