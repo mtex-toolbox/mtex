@@ -40,7 +40,7 @@ C = stiffnessTensor(M,cs_tensor,'density',rho)
 %%
 % Compute seismic velocities as functions on the sphere
 
-[vp,vs1,vs2,pp,ps1,ps2] = C.velocity;
+[vp,vs1,vs2,pp,ps1,ps2] = C.velocity('harmonic');
 
 %% Plotting section
 % Here we set preference for a nice plot.
