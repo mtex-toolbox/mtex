@@ -1,13 +1,33 @@
-function [lambda,v] = eig3(a11,a12,a13,a22,a23,a33)
+function [lambda,v] = eig3(M,a12,a13,a22,a23,a33)
 % eigenvalue and vectors of a symmetric 3x3 matrix
 %
 % Syntax
 %
+%   lambda = eig3(M)
+%
+%   lambda = eig3(a11,a12,a13,a22,a23,a33)
+%
+%
+%   [v,lambda] = eig3(a11,a12,a13,a22,a23,a33)
+%
 % Input
+%  M - array of symmetric 3x3 matrix
+%  a11, a12,a13,a22,a23,a33 - vector of matrix elements
 %
 % Output
+%  lambda - eigen values
+%  v - eigen vectors
 %
 
+% get input
+if nargin == 1
+  a11 = M(1,1,:); a12 = M(1,2,:); a13 = M(1,3,:);
+  a22 = M(2,2,:); a23 = M(2,3,:); a33 = M(3,3,:);
+else
+  a11 = M;
+end
+
+% input should be column vectors
 a11 = a11(:).'; a12 = a12(:).'; a13 = a13(:).';
 a22 = a22(:).'; a23 = a23(:).'; a33 = a33(:).';
 
@@ -59,7 +79,6 @@ if nargout > 1
     
   end
   v.x = x; v.y = y; v.z = z;
-  
   
   %a1 = vector3d(a11-lambda(1),a12,a13);
   %a2 = vector3d(a12,a22-lambda(1),23);
