@@ -1,37 +1,59 @@
-function rgb = spectralTransmission(nMin,nMax,p,thickness,varargin)
+function rgb = spectralTransmission(rI,vprop,thickness,varargin)
+%
 % Syntax
+%   rgb = spectralTransmission(rI,vprop,p,thickness)
+%
+%   rgb = spectralTransmission(rI,vprop,p,thickness,'polarizationDirection',p)
+%
+%   rgb = spectralTransmission(rI,vprop,p,thickness,'tau',tau)
 %
 %
 % Input
-%  nMin,nMax - birefringence
+%  rI - @refractiveIndexTensor
+%  vprop - propagation direction
+%  thickness - 
 %  p - direction of the polarizer
-%  thikness - 
 %  tau - angle between polarizer and analyzer
 %
+% Example
+%   thickness = 10000;
+%   rI = refractiveIndexTensor.calcite
+%   vprop = plotS2Grid;
+%   rgb = spectralTransmission(rI,vprop,thickness);
+%   plot3d(vprop,rgb./100)
 
-rgb = csvread('ciexyz31_1.csv')';%CIE_1931_XYZ to RGB 65 whitepoint
+% compute birefringence
+[n,nMin] = rI.birefringence(vprop);
+
+% for spectrum to rgb convertion
+rgbMap = csvread('ciexyz31_1.csv');%CIE_1931_XYZ to RGB 65 whitepoint
 %X_Y_Z_convert = csvread('sbrgb10w.csv',0 ,1)';%Stiles & Burch
 
 % first column is wavelength
-lambda = 1./rgb(:,1);
+invLambda = 1./rgbMap(:,1).';
 
 % second to fourth line are RGB values - |lambda| x 3
-rgb(:,1) = [];
+rgbMap(:,1) = [];
 
-% 
-phi = angle(p,nMin);
+% extract polarization direction
+if check_option(varargin,'polarizationDirection')
+  phi = angle(get_option(varargin,'polarizationDirection'),nMin);
+  phi = repmat(phi(:).',length(invLambda),1);
+else
+  phi = 0;
+end
 
 % angle between polarizer and analyzer
 tau = get_option(varargin,'tau',45*degree);
 
 % path difference between fast and slow waves
-delta = (nMax - nMin) .* thickness;
+delta = n .* thickness;
 
 % compute spectra - |nMin| x |lambda|
-Ls = cos(phi).^2 - sin(2*(tau -phi(:))) * sin(2*tau) * sin(delta(:) * lambda).^2;
+spectra = cos(phi).^2 - sin(2*(tau -phi(:))) * sin(2*tau) * sin(delta(:) * invLambda).^2;
 
 % spectra to color -> |nMin| x 3
-L_XYZ = Ls * rgb;
+rgb = spectra * rgbMap;
 
 %Adobe RGB
 AdobeRGB = [2.04414 -0.5649 -0.3447;...
