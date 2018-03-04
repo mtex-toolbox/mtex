@@ -28,9 +28,15 @@ classdef refractiveIndexTensor < tensor
       
       vprop = plotS2Grid;
       
+      figure(1)
       n = rI.birefringence(vprop);
       
       plot3d(vprop,n)
+      
+      figure(2)
+      thickness = 10000;
+      rgb = spectralTransmission(rI,vprop,thickness);
+      plot3d(vprop,rgb./100)
       
     end
   end

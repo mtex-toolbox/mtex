@@ -26,7 +26,7 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 [n,nMin] = rI.birefringence(vprop);
 
 % for spectrum to rgb convertion
-rgbMap = csvread('ciexyz31_1.csv');%CIE_1931_XYZ to RGB 65 whitepoint
+rgbMap = csvread(fullfile(mtex_path,'plotting','tools','ciexyz31_1.csv'));%CIE_1931_XYZ to RGB 65 whitepoint
 %X_Y_Z_convert = csvread('sbrgb10w.csv',0 ,1)';%Stiles & Burch
 
 % first column is wavelength
