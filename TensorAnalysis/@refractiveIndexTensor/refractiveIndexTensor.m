@@ -18,6 +18,11 @@ classdef refractiveIndexTensor < tensor
       rI = refractiveIndexTensor(diag([1.66 1.66 1.486]),cs);
     end
     
+    function rI = olivin
+      cs = loadCIF('olivin.cif');
+      rI = refractiveIndexTensor(diag([1.640 1.660 1.680]),cs);
+    end
+    
     function test
       rI = refractiveIndexTensor.calcite;
       

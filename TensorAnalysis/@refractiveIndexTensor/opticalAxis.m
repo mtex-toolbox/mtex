@@ -11,6 +11,15 @@ function oA = opticalAxis(rI)
 %  oA - @vector3d
 %
 
-[lambda,v] = eig3(rI());
+[v,lambda] = eig3(rI.M);
 
-
+if lambda(1) == lambda(3)
+  disp('  No optical axes. Refractive index tensor is isotropic');
+elseif lambda(1) == lambda(2)
+  oA = reshape(v(1,:),size(rI));
+elseif lambda(2) == lambda(3)
+  oA = reshape(v(3,:),size(rI));
+else
+  oA = reshape(sqrt((lambda(3)-lambda(2))./(lambda(3)-lambda(1))) .* v(3,:),[],1) * [-1 1] ...
+    + repmat(reshape(sqrt((lambda(2)-lambda(1))./(lambda(3)-lambda(1))) .* v(1,:),[],1),1,2);
+end
