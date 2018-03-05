@@ -5,10 +5,10 @@ function [theta,rho] = polar(S2G,varargin)
 %  S2G - S2Grid
 %  indece - int32 (optional)
 % Output
-% [theta,rho] - double
+%  theta, rho - double
 
 theta = double([S2G.thetaGrid]);
-theta = rep(theta,GridLength(S2G.rhoGrid));
+theta = repelem(theta,GridLength(S2G.rhoGrid));
 rho = double([S2G.rhoGrid]);
 theta = reshape(theta,size(S2G));
 rho = reshape(rho,size(S2G));

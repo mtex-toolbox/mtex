@@ -26,7 +26,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
       if numel(strings)==1
         strings = repcell(strings{1},length(m),1);
       else
-        strings = strings(rep(1:numel(strings),l));
+        strings = strings(repelem(1:numel(strings),l));
       end
       varargin{1} = strings;  
     end  

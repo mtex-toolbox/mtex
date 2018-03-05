@@ -24,8 +24,8 @@ end
 
 % symmetrise - only crytsal symmetry
 [h,l] = symmetrise(component.h.normalize);
-r = rep(component.r.normalize,l);
-w = rep(component.weights./l,l);
+r = repelem(component.r.normalize,l);
+w = repelem(component.weights./l,l);
 
 g = vector3d.zeros(size(ori));
 for i = 1:length(h)
