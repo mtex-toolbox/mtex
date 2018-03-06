@@ -38,7 +38,7 @@ rgbMap(:,1) = [];
 % extract polarization direction
 if check_option(varargin,'polarizationDirection')
   phi = angle(get_option(varargin,'polarizationDirection'),nMin);
-  phi = repmat(phi(:).',length(invLambda),1);
+  phi = repmat(phi(:),1,length(invLambda));
 else
   phi = 0;
 end
@@ -50,7 +50,7 @@ tau = get_option(varargin,'tau',45*degree);
 delta = n .* thickness;
 
 % compute spectra - |nMin| x |lambda|
-spectra = cos(phi).^2 - sin(2*(tau -phi(:))) * sin(2*tau) * sin(delta(:) * invLambda).^2;
+spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* sin(delta(:) * invLambda).^2;
 
 % spectra to color -> |nMin| x 3
 rgb = spectra * rgbMap;

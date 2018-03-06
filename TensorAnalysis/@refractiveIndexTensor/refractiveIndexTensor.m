@@ -39,6 +39,20 @@ classdef refractiveIndexTensor < tensor
       plot3d(vprop,rgb./100)
       
     end
+    
+    function test2
+      mtexdata fo
+      
+      rI = refractiveIndexTensor.olivin;
+      
+      oM = spectralTransmissionOrientationMapping(rI,1000);
+      oM.polarizer = vector3d.Y;
+      
+      plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations)./100)
+      
+    end
+    
+    
   end
 
 end
