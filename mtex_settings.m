@@ -24,7 +24,7 @@ setMTEXpref('aAxisDirection',''); % undefined
 
 % default figure size, possible values are a factor between 0 and 1 or
 % 'tiny', 'small', 'normal', 'large', 'huge'
-setMTEXpref('figSize','normal');
+setMTEXpref('figSize','large');
 
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')

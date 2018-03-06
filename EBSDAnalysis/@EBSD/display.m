@@ -1,4 +1,4 @@
-function  display(ebsd,varargin)
+function display(ebsd,varargin)
 % standard output
 
 disp(' ');

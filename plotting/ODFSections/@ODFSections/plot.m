@@ -100,7 +100,7 @@ else
       secS2Grid = oS.plotGrid;
     end
     
-    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,varargin{:});
+    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,'pcolor',varargin{:});
     
   end
       
