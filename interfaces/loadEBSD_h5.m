@@ -1,10 +1,10 @@
-function ebsd = loadEBSD_h5(fname,varargin)
+function [ebsd, header] = loadEBSD_h5(fname,varargin)
 
 if ~exist(fname,'file'), error(['File ' fname ' not found!']); end
 
 ginfo = locFindEBSDGroups(fname);
   
-if numel(ginfo) > 1
+if numel(ginfo) > 0
   
   groupNames = {ginfo.Name};
   
@@ -16,19 +16,21 @@ if numel(ginfo) > 1
   end
   
   if nnz(patternMatch) == 0
-    [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
+    if length(ginfo) > 1
+      [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
     
-    if ok
-      ginfo = ginfo(sel);
-    else
-      return
+      if ok
+        ginfo = ginfo(sel);
+      else
+        return
+      end
     end
   else
     ginfo = ginfo(patternMatch);
   end
 end
 
-assert(numel(ginfo) > 1);
+assert(numel(ginfo) > 0);
   
 if check_option(varargin,'check'), ebsd = EBSD; return; end
 
@@ -51,14 +53,20 @@ try
       
       name = strrep(name,'X_Position','x');
       name = strrep(name,'Y_Position','y');
+      name = strrep(name,'X_SAMPLE','x');
+      name = strrep(name,'Y_SAMPLE','y');
+      
+      name = regexprep(name,'phi','Phi','ignorecase');
+      name = regexprep(name,'phi1','phi1','ignorecase');
+      name = regexprep(name,'phi2','phi2','ignorecase');
       
       props.(name) = data(:);
     end
 
-    rot = rotation('Euler',props.Phi1,props.Phi,props.Phi2);
+    rot = rotation('Euler',props.phi1*degree,props.Phi*degree,props.phi2*degree);
     phases = props.Phase;
     
-    props = rmfield(props,{'Phi','Phi1','Phi2','Phase'});
+    props = rmfield(props,{'Phi','phi1','phi2','Phase'});
         
     ebsd = EBSD(rot,phases,CS,'options',props);
      
@@ -66,6 +74,11 @@ try
     ebsd = ebsd(ind);
     ebsd.unitCell = calcUnitCell([ebsd.prop.x,ebsd.prop.y]);
     
+    if length(kGroup.Groups) > 1
+      header = h5group2struct(fname,kGroup.Groups(2));
+    else
+      header = [];
+    end
     
   end      
 end
@@ -106,30 +119,45 @@ end
 end
 
 
+
 function CS = locReadh5Phase(fname,group)
 % load phase informations from h5 file
   
 group = group.Groups(strcmp([group.Name '/Header'],{group.Groups.Name})); 
-group = group.Groups(strcmp([group.Name '/Phase'],{group.Groups.Name}));
+token = [group.Name '/Phase'];
+group = group.Groups(strncmp(token,{group.Groups.Name},length(token)));
 
 for iphase = 1:numel(group.Groups)
   
-  mineral = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/MaterialName'])));
+  try
+    mineral = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/MaterialName'])));
+  catch
+    mineral = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/Name'])));
+  end
   formula = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/Formula'])));
-  abc(1) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant a']);
-  abc(2) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant b']);
-  abc(3) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant c']);
   
-  abg(1) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant alpha']);
-  abg(2) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant beta']);
-  abg(3) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant gamma']);
+  try
+    lattice(1) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant a']);
+    lattice(2) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant b']);
+    lattice(3) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant c']);
   
-  pointGroup = h5read(fname,[group.Groups(iphase).Name '/Point Group']);
-  pointGroup = regexp(char(pointGroup),'\[([1-6m/\-]*)\]','tokens');
-  pointGroup = pointGroup{1};
+    lattice(4) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant alpha']);
+    lattice(5) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant beta']);
+    lattice(6) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant gamma']);
+   
+    pointGroup = h5read(fname,[group.Groups(iphase).Name '/Point Group']);
+    pointGroup = regexp(char(pointGroup),'\[([1-6m/\-]*)\]','tokens');
+    spaceGroup = pointGroup{1};
+    
+  catch
+    lattice = h5read(fname,[group.Groups(iphase).Name '/LatticeConstants']);
+
+    spaceGroup = h5read(fname,[group.Groups(iphase).Name '/SpaceGroup']);
+    spaceGroup = strrep(spaceGroup,'#ovl','-');
+  end
   
   try  
-    CS{iphase} = crystalSymmetry(pointGroup,double(abc),double(abg)*degree,'mineral',mineral);
+    CS{iphase} = crystalSymmetry(spaceGroup,double(lattice(1:3)),double(lattice(4:6))*degree,'mineral',mineral);
   catch
     CS{iphase} = 'notIndexed';
   end

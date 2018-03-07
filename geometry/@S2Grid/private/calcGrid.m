@@ -5,10 +5,10 @@ function G = calcGrid(Gtheta,Grho)
 %  theta, rho - S1Grid
 %
 % output
-%  vector3d
+%  S2G - @vector3d
 
 theta = double(Gtheta);
-theta = rep(theta,GridLength(Grho));
+theta = repelem(theta,GridLength(Grho));
 rho = double(Grho);
 
 G = vector3d('polar',theta,rho);

@@ -7,7 +7,7 @@ function T = EinsteinSum(T1,dimT1,varargin)
 %
 % Syntax
 %   % sumation against dimension 1 and 2
-%   C = EinsteinSum(E,[1 --1 2 --2],v,--1,v,--2) 
+%   C = EinsteinSum(E,[1 -1 2 -2],v,-1,v,-2) 
 %
 % Input
 %  T1,T2 - @tensor

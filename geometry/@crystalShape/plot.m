@@ -62,7 +62,7 @@ end
 V = reshape(double(cS.V),[],3);
 h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
 
-drawNow(mtexFig,varargin{:})
+if isNew, drawNow(mtexFig,varargin{:}); end
 
 if nargout == 0, clear h;end
 
