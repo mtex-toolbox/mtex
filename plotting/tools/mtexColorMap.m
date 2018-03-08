@@ -2,7 +2,7 @@ function mtexColorMap(arg1,varargin)
 % define an MTEX colormap
 
 % get input
-if ishandle(arg1) 
+if length(arg)==1 && ishandle(arg1) && isa(arg1,'axis')
   ax = arg1;
   name = varargin{1};
 else
