@@ -54,7 +54,7 @@ E = ChristoffelTensor(S,x);
 [V,D] = eig3(E.M(1,1,:),E.M(1,2,:),E.M(1,3,:),E.M(2,2,:),E.M(2,3,:),E.M(3,3,:));
   
 % compute wavespeeds
-D = sqrt(D)/rho;
+D = sqrt(D./rho);
 vp = D(3,:); vs1 = D(2,:); vs2 = D(1,:);
   
 % the polarisation axes
