@@ -32,19 +32,48 @@ for i = 1:length(h)
 
   % todo: scaling might not be correct
   g = g + w(i) * component.psi.DRK(dot(ori*h(i),r(i))) .* ...
-    cross(ori * h(i), r(i));
+    cross(h(i),inv(ori) * r(i));
 end
 end
 
 function test
 
+cs = crystalSymmetry('1');
+odf = fibreODF(Miller(0,0,1,cs),vector3d.Z);
+omega = linspace(-20,20)*degree;
+omega = 15 *degree;
+ref = orientation('axis',vector3d(1,0,10),'angle',omega,cs)
+
+
+g1 = odf.grad(ref)
+g2 = odf.grad(ref,'check','delta',0.05*degree)
+  
+plot(omega./degree,[g1.x,g2.x])
+
+omega2 = linspace(-5,5)*degree;
+ori1 = ref * rotation('axis',g1,'angle',omega2);
+ori2 = ref * rotation('axis',g2,'angle',omega2);
+ori3 = ref * rotation('axis',normalize(g1+g2),'angle',omega2);
+%ori4 = ref * rotation('axis',normalize(g1-g2),'angle',omega2);
+ori4 = ref * rotation('axis',vector3d(-1,2,0),'angle',omega2);
+
+plot(omega2./degree,[odf.eval(ori1(:)),odf.eval(ori2(:)),odf.eval(ori3(:)),odf.eval(ori4(:))])
+
+
+
+end
+
+function test2
+
   cs = crystalSymmetry('321');
   odf = fibreODF(Miller(1,2,3,cs),vector3d(-1,3,2));
   
-  ref = orientation.rand(10,cs)
+  ref = orientation.rand(1000,cs)
   
-  odf.grad(ref)
-  odf.grad(ref,'check')
+  g1 = odf.grad(ref)
+  g2 = odf.grad(ref,'check','delta',0.05*degree)
+  
+  hist(norm(g1-g2)./degree)
   
   ref = orientation.id(cs) * cs(5);
   

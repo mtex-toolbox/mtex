@@ -14,9 +14,9 @@ function g = grad(component,ori,varargin)
 
 delta = get_option(varargin,'delta',1*degree);
 
-rot = rotation('axis',[xvector,yvector,zvector],'angle',delta);
+rot = rotation('axis',[xvector,yvector,zvector],'angle',delta/2);
 
 %f = component.eval([ori(:),(rot*ori).']);
-f = component.eval([ori(:),ori*rot]);
+f = component.eval([ori*inv(rot),ori*rot]);
 
-g = vector3d(f(:,2)-f(:,1),f(:,3)-f(:,1),f(:,4)-f(:,1)) ./ delta;
+g = vector3d(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3)) ./ delta;
