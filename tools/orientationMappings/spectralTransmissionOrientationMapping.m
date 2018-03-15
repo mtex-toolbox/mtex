@@ -5,12 +5,12 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
     thickness               % thickness of the sample
     vprop = vector3d.Z;     % propagation direction in specimen coordinates
     polarizer = vector3d.X; % direction of the polarizer in specimen coordinates
-    tau = 45*degree;        % angle between polarizer and analyzer
+    phi = 90*degree;        % angle between polarizer and analyzer
   end
 
   
   methods
-    function oM = spectralTransmissionOrientationMapping(rI,thickness)
+    function oM = spectralTransmissionOrientationMapping(rI,thickness,varargin)
 
       oM.rI = rI;
       oM.CS1 = rI.CS;
@@ -18,7 +18,7 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
 
     end
     
-    function rgb = orientation2color(oM,ori)
+    function rgb = orientation2color(oM,ori,varargin)
       
       % compute propagation sdirection in crystal coordinates
       propCS = inv(ori) .* oM.vprop;
@@ -27,7 +27,10 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
       pCS = inv(ori) .* oM.polarizer;
       
       % compute spectral transmission
-      rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'polarizationDirection',pCS,'tau',oM.tau);
+            % this option should be for circular polarisiton
+          %rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'phi',oM.phi);
+      
+          rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'polarizationDirection',pCS,'phi',oM.phi);
       
     end
     
