@@ -144,6 +144,12 @@ catch %#ok<CTCH>
   error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
 end
 
+if T1.rank == 0
+  T = T1.M;
+  return
+end
+
+
 % remove name and unit
 T = T1.rmOption('name','unit');
   
