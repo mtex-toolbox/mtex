@@ -44,7 +44,7 @@ for issq = 1:length(qSS)
   [i,j] = find(d>cos(epsilon/2));
   
   % the normalized logarithm
-  v = log(center(i),reshape(qSS(issq) * q2(j),[],1),varargin{:});
+  v = log(center(i(:)),reshape(qSS(issq) * q2(j),[],1),varargin{:});
   nv = norm(v);
   v(nv>0) = v(nv>0)./nv(nv>0);
   

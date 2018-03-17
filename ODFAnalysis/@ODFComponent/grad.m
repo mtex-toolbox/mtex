@@ -12,11 +12,11 @@ function g = grad(component,ori,varargin)
 %  g - @vector3d
 %
 
-delta = get_option(varargin,'delta',1*degree);
+delta = get_option(varargin,'delta',0.1*degree);
 
 rot = rotation('axis',[xvector,yvector,zvector],'angle',delta/2);
 
 %f = component.eval([ori(:),(rot*ori).']);
-f = component.eval([ori*inv(rot),ori*rot]);
+f = reshape(component.eval([ori*inv(rot),ori*rot]),length(ori),[]);
 
 g = vector3d(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3)) ./ delta;

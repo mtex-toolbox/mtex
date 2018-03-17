@@ -1,4 +1,4 @@
-function mtexdata(name,varargin)
+function S = mtexdata(name,varargin)
 % load of data provided with mtex and often used in documentation
 %
 % Syntax
