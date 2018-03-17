@@ -20,4 +20,4 @@ function T = EinsteinSum(v,varargin)
 % See also
 %
 
-T = EinsteinSum(tensor(v).varargin{:});
+T = EinsteinSum(tensor(v),varargin{:});

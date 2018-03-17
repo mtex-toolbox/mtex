@@ -125,6 +125,10 @@ classdef tensor < dynOption
     function T = load(varargin)
       T = loadTensor(varargin{:});
     end
+
+    function T = eye(varargin)
+      T = tensor(eye(3));
+    end
     
     function eps = leviCivita
       % the Levi Civita permutation tensor
