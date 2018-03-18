@@ -28,9 +28,9 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
       
       % compute spectral transmission
             % this option should be for circular polarisiton
-          %rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'phi',oM.phi);
+          rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'phi',oM.phi);
       
-          rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'polarizationDirection',pCS,'phi',oM.phi);
+          %rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'polarizationDirection',pCS,'phi',oM.phi);
       
     end
     

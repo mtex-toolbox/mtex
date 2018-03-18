@@ -5,7 +5,7 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 %
 %   rgb = spectralTransmission(rI,vprop,p,thickness,'polarizationDirection',p)
 %
-%   rgb = spectralTransmission(rI,vprop,p,thickness,'tau',tau)
+%   rgb = spectralTransmission(rI,vprop,p,thickness,'phi',phi)
 %
 %
 % Input
@@ -32,26 +32,26 @@ rgbMap = csvread(fullfile(mtex_path,'plotting','tools','ciexyz31_1.csv'));%CIE_1
 % first column is wavelength
 invLambda = 1./rgbMap(:,1).';
 
-% second to fourth line are RGB values - |lambda| x 3
+% second to fourth column are RGB values - |lambda| x 3
 rgbMap(:,1) = [];
 
 % extract polarization direction
 if check_option(varargin,'polarizationDirection')
-  phi = angle(get_option(varargin,'polarizationDirection'),nMin);
-  phi = repmat(phi(:),1,length(invLambda));
+  tau = angle(get_option(varargin,'polarizationDirection'),nMin);
+  tau = repmat(tau(:),1,length(invLambda));
 else
-  phi = 0;
+  tau = 45*degree;
 end
 
 % angle between polarizer and analyzer
-tau = get_option(varargin,'tau',45*degree);
+phi = get_option(varargin,'phi',90*degree);
 
 % path difference between fast and slow waves
 delta = n .* thickness;
 
 % compute spectra - |nMin| x |lambda|
-spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* sin(delta(:) * invLambda).^2;
-
+spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* sin(delta(:).* invLambda*pi()).^2;
+%Ls(i,:) = (cosd(phi(j)))^2 - sind(2*(tau -phi(j)))*sind(2*tau)*(sind((Delta./visible_spectrum(i))*180)).^2;
 % spectra to color -> |nMin| x 3
 rgb = spectra * rgbMap;
 
@@ -64,6 +64,6 @@ AdobeRGB = [2.04414 -0.5649 -0.3447;...
 %L_RGB =[2.6423 -1.2234 -0.3930; -1.1120 2.0590 0.0160; 0.0822 -0.2807 1.4560]*L_XYZ;%colormatch RGB
 %L_RGB_initial = 0.17697*[ 3.240479 -1.537150 -0.498535 ; -0.969256  1.875992  0.041556;  0.055648 -0.204043  1.057311 ]*L_XYZ;%function from the internett
 
-rgb = rgb * AdobeRGB.';
+rgb = rgb * AdobeRGB.'/100;
 
 end
