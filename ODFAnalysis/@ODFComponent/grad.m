@@ -12,7 +12,7 @@ function g = grad(component,ori,varargin)
 %  g - @vector3d
 %
 
-delta = get_option(varargin,'delta',0.1*degree);
+delta = get_option(varargin,'delta',0.05*degree);
 
 rot = rotation('axis',[xvector,yvector,zvector],'angle',delta/2);
 

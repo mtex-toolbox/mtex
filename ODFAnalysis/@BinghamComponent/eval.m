@@ -1,10 +1,6 @@
 function f = eval(component,g,varargin)
 % evaluate an odf at orientation g
 
-% get precision
-d = int32(get_option(varargin,{'prec','precision'},64,'double'));
-
-
 ASym = quaternion(symmetrise(component.A));
 
 C = mhyper(component.kappa);
@@ -18,7 +14,7 @@ for iA = 1:size(ASym,1)
   h = h * component.kappa;
   
   % fast way  1/1F1.*exp(h)
-  fz = 1./C.*exp(h);
+  fz = 1./C .* exp(h);
     
   f = f + reshape(fz, size(f))./ size(ASym,1);
   
