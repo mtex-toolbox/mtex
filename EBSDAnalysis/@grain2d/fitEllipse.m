@@ -49,7 +49,7 @@ u02=sum((V(:,2)-yb).^2)/n;
 u11=sum( (V(:,1)-xb).*(V(:,2)-yb) )/n; 
 
  % directions
-omega(i)= 0.5*atan(2*u11/(u20-u02));
+omega(i)= 0.5*atan2(2*u11,u20-u02);
 % axes; - eigenvalues of [u20 u11; u11 u02]
 a(i)=sqrt(2*( u20+u02+sqrt(4*u11^2+(u20-u02).^2 ))/u11);
 b(i)=sqrt(2*( u20+u02-sqrt(4*u11^2+(u20-u02).^2 ))/u11);
