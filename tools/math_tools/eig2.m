@@ -30,9 +30,16 @@ end
 % input should be column vectors
 a11 = a11(:).'; a12 = a12(:).'; a22 = a22(:).';
 
+id = a12>0;
+
 % compute the eigen values
-lambda = [2 * ( a11 + a22 + sqrt( 4*a12.^2 + (a11-a22).^2 )) ./a12,  ...
-  2 * ( a11 + a22 - sqrt(4*a12.^2 + (a11-a22).^2 ))./a12];
+tr = a11(id) + a22(id);
+D = sqrt( 4*a12(id).^2 + (a11(id)-a22(id)).^2 );
+lambda(id,:) = 2./a12(id) * (repmat(tr,1,2) + [D -D]);
+
+% the special case of a diagonal matrix
+lambda(~id,1) = max(a11(~id),a22(~id));
+lambda(~id,2) = min(a11(~id),a22(~id));
 
 if nargout > 1
 
