@@ -20,30 +20,28 @@ function [omega,a,b]= principalComponents(grains,varargin)
 % ignore holes
 poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput',false);
 
-% vertices
+% extract vertices
 V = grains.V;
 
 % centroids
 c = grains.centroid;
 
-omega = zeros(size(poly));
-a = zeros(size(poly));
-b = zeros(size(poly));
-
+% loop over all grains
+omega = zeros(size(poly)); a = omega; b = omega;
 for k=1:numel(poly)
   
   % center polygon in centroid
-  Vg = bsxfun(@minus,V(poly{k},:), c(k,:));
+  Vg = V(poly{k},:) - repmat(c(k,:),length(poly{k}),1);
   
   % compute length of line segments
   dist = sqrt(sum((Vg(1:end-1,:) - Vg(2:end,:)).^2,2));
   dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
      
   % weight vertices according to half the length of the adjacent faces
-  v = bsxfun(@times,Vg(1:end-1,:), dist);
+  Vg = Vg(1:end-1,:) .* [dist,dist];
       
   % compute eigen values and vectors
-  [omega(k), ew] = eig2(v'*v,'angle');
+  [omega(k), ew] = eig2(Vg' * Vg,'angle');
     
   % halfaxes are square roots of the eigenvalues
   a(k) = sqrt(ew(1)); b(k) = sqrt(ew(2));
@@ -57,7 +55,7 @@ else % area fit
   scaling = sqrt(grains.area ./ a ./ b ./pi);
 end
 
-% scale halfaxes
+% scale half axes
 a = a .* scaling; b = b .* scaling;
 
 end
