@@ -46,10 +46,9 @@ yb= sum(V(:,2))/n;
 
 u20=sum((V(:,1)-xb).^2)/n;
 u02=sum((V(:,2)-yb).^2)/n;
-u11=abs(sum( (V(:,1)-xb).*(V(:,2)-yb) )/n); % since this can be negative
-                                            % but we like real angles
+u11=sum( (V(:,1)-xb).*(V(:,2)-yb) )/n; 
 
-                                            % directions
+ % directions
 omega(i)= 0.5*atan(2*u11/(u20-u02));
 % axes; - eigenvalues of [u20 u11; u11 u02]
 a(i)=sqrt(2*( u20+u02+sqrt(4*u11^2+(u20-u02).^2 ))/u11);
