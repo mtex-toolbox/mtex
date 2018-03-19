@@ -101,6 +101,8 @@ if ~getMTEXpref('generatingHelpMode')
   evalin('base',fld{end});
 end
 
+if nargout == 0, clear S; end
+
 % -----------------------------------------------------------------------
 function data = listmtexdata
 
