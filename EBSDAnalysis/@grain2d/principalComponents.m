@@ -38,13 +38,9 @@ for k=1:numel(poly)
   % compute length of line segments
   dist = sqrt(sum((Vg(1:end-1,:) - Vg(2:end,:)).^2,2));
   dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
-  
-  %phi = atan2(Vg(:,2),Vg(:,1));
-  %dist = mod(diff(phi([1:end 1]))+pi,2*pi)-pi;
-  %dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
-    
+     
   % weight vertices according to half the length of the adjacent faces
-  v = bsxfun(@times,Vg(1:end-1,:), dist./mean(dist));
+  v = bsxfun(@times,Vg(1:end-1,:), dist);
       
   % compute eigen values and vectors
   [omega(k), ew] = eig2(v'*v,'angle');
