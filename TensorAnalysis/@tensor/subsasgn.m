@@ -14,6 +14,8 @@ switch s.type
     
   case '{}'
     
+    s.type = '()';
+    s.subs = [s.subs,repcell(':',1,ndims(T))];
     if T.rank == 4
       M = tensor42(T.M,T.doubleConvention);
       M = subsasgn(M,s,b);

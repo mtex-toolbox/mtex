@@ -30,9 +30,9 @@ if strcmp(s(1).type,'{}')
   
 elseif strcmp(s(1).type,'()')
 
-  s.subs = [repcell(':',1,T.rank) s.subs];
+  s(1).subs = [repcell(':',1,T.rank) s(1).subs];
     
-  T.M = subsref(T.M,s);
+  T.M = subsref(T.M,s(1));
       
   if numel(s)==1
     varargout{1} = T;

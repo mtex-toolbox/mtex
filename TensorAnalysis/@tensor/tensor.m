@@ -121,7 +121,7 @@ classdef tensor < dynOption
   end
   
   methods (Static = true)
-    
+
     function T = load(varargin)
       T = loadTensor(varargin{:});
     end
