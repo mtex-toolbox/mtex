@@ -1,30 +1,23 @@
-function T = times(T1,T2)
+function T1 = times(T1,T2)
 % multiply a tensor by a scalar
 
 if isa(T2,'double')
+
+  T2 = reshape(T2,[ones(1,T1.rank) size(T2)]);
   
-  T = EinsteinSum(T1,1:T1.rank,T2,[]);
-  
+  % TODO: later use T1.M = T1.M .*T2;
+  T1.M = bsxfun(@times,T1.M, T2);
+
 elseif isa(T1,'double')
   
-  T = times(T2,T1);
+  T1 = times(T2,T1);
 
 elseif isa(T1,'tensor') && isa(T2,'tensor')
   
-  if T1.rank < T2.rank
-    r = size(T2.M);
-    r(1:T1.rank) = 1;
-    T1.M = repmat(T1.M,r);
-    T1.rank = T2.rank;
-  elseif T1.rank > T2.rank
-    r = size(T1.M);
-    r(1:T2.rank) = 1;
-    T2.M = repmat(T2.M,r);
-    T2.rank = T1.rank;
-  end
+  assert(T1.rank == T2.rank,'Rank of the tensors should be the same.');
   
-  T = T1;
-  T.M = T.M .* T2.M;
+  % TODO: later use T1.M = T1.M .*T2.M;
+  T1.M = bsxfun(@times,T1.M, T2.M);
 
 else
   
