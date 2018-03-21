@@ -32,6 +32,7 @@ dT = curvature(dS.dislocationTensor);
 options = optimset('algorithm','interior-point','Display','off',...
   'TolX',10^-12,'TolFun',10^-12);
 
+rho = nan(size(dS));
 for i = 1:length(kappa)
 
   % try to find coefficients
