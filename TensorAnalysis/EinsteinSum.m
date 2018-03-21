@@ -21,6 +21,11 @@ function T = EinsteinSum(varargin)
 %
 
 M1 = 1; dimT1 = [];
+try 
+  CS = varargin{1}.CS; 
+catch
+  CS = [];
+end
 
 % for each tensor in varargin
 while ~isempty(varargin) && ~ischar(varargin{1})
@@ -84,7 +89,7 @@ M1 = reshape(M1,s(rDel+1:end));
 if rOut == 0
   T = M1; 
 else
-  T = tensor(M1,'rank',rOut,varargin{:});
+  T = tensor(M1,CS,'noCheck','rank',rOut,varargin{:});
 end
 
 end
