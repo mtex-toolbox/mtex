@@ -22,9 +22,9 @@ function T = EinsteinSum(varargin)
 
 M1 = 1; dimT1 = [];
 try 
-  CS = varargin{1}.CS; 
+  CS = {varargin{1}.CS}; 
 catch
-  CS = [];
+  CS = {};
 end
 
 % for each tensor in varargin
@@ -83,13 +83,13 @@ for i = 1:rDel, M1 = sum(M1,i); end
 
 % and remove these leading dimensions
 s = size(M1);
-M1 = reshape(M1,s(rDel+1:end));
+M1 = reshape(M1,[s(rDel+1:end) 1 1]);
 
 % rank 0 tensor should become double
 if rOut == 0
   T = M1; 
 else
-  T = tensor(M1,CS,'noCheck','rank',rOut,varargin{:});
+  T = tensor(M1,CS{:},'noCheck','rank',rOut,varargin{:});
 end
 
 end
