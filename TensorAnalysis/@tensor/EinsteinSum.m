@@ -1,4 +1,4 @@
-function T = EinsteinSum(T1,dimT1,varargin)
+function T = EinsteinSum(varargin)
 % tensor multiplication according to Einstein summation convention
 %
 % Description
@@ -20,7 +20,7 @@ function T = EinsteinSum(T1,dimT1,varargin)
 % See also
 %
 
-M1 = T1.M;
+M1 = 1; dimT1 = [];
 
 % for each tensor in varargin
 while ~isempty(varargin) && ~ischar(varargin{1})
@@ -40,6 +40,9 @@ while ~isempty(varargin) && ~ischar(varargin{1})
     M2 = permute(M2,[3 1 2]);
   end
  
+  %
+  [M2,dimT2] = innerSum(M2,dimT2);
+  
   % reorder T1 such that [-rDel ... -3 -2 -1  1 2 3 .. rOut x x x]
   rOut = max([0,dimT1,dimT2]);
   rDel = -min([0,dimT1,dimT2]);
@@ -84,4 +87,48 @@ else
   T = tensor(M1,'rank',rOut,varargin{:});
 end
 
+end
+
+%%
+function [M,ind] = innerSum(M,ind)
+
+% find indices to be summed
+[a,b] = findDouble(ind);
+
+if isempty(a), return;end
+
+ind([a,b]) = [];
+
+% remember size of matrix
+sM = size(M);
+sM([a,b]) = [];
+
+% make a,b the first two dimensions
+order = 1:max([ndims(M) a b]);
+order([a b]) = [];
+order = [a b order];
+M = permute(M,order);
+
+% reduces multiple remove dimensions to one
+M = reshape(M,3^numel(a),3^numel(b),[]);
+
+% sum along the diagonal of the first two dimensions
+N = zeros(1,1,size(M,3));
+for l = 1:3^numel(a)
+  N = N + M(l,l,:);
+end
+
+% reshape back
+M = reshape(N,[sM 1 1]);
+
+end
+
+%%
+function [a,b] = findDouble(x)
+
+d = bsxfun(@minus,x,x') == 0 & bsxfun(@times,x<0,x'<0);
+d = d & ~tril(ones(size(d)));
+[a,b] = find(d);
+a = a'; b = b';
+ 
 end

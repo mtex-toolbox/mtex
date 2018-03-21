@@ -12,5 +12,3 @@ function alpha = dislocationTensor(dS)
 %
 
 alpha = dislocationTensor(dyad(dS.b, dS.l.normalize)); 
-
-alpha = reshape(alpha,size(dS));
