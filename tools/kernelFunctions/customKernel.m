@@ -11,8 +11,8 @@ classdef customKernel < kernel
       
       % extract parameter and halfwidth
       if nargin == 0, return;end
-        
-      psi.K = fun;
+      
+      psi.fun = fun;
       psi.A = calcFourier(fun,varargin{:});
                 
     end

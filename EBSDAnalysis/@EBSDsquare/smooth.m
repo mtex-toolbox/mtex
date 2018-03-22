@@ -67,7 +67,7 @@ end
 % loop through all grains or phases
 for id = 1:length(grainIds)
 
-  progress(id,length(grainIds));
+  progress(id,length(grainIds),' denoising EBSD data: ');
   
   % the values to be smoothed
   ind = grainId == grainIds(id); 
