@@ -49,6 +49,7 @@ classdef mtexFigure < handle
     cby = 0           % colorbar height
     tightInset = [0,0,0,0] % is added to axisSize
     figTightInset = [10,10,10,10] % is added to figSize
+    layoutMode = 'auto' % set to user to fix it
   end
   
   properties (Dependent = true)        
@@ -85,6 +86,13 @@ classdef mtexFigure < handle
         getMTEXpref('innerPlotSpacing'));
       mtexFig.keepAspectRatio = get_option(varargin,'keepAspectRatio',true);
         
+      mtexFig.nrows = get_option(varargin,'nrows',1);
+      mtexFig.ncols = get_option(varargin,'ncols',1);
+      if check_option(varargin,{'nrows','ncols'})
+        mtexFig.layoutMode = 'user';
+      end
+      
+      
       set(mtexFig.parent,'color',[1 1 1],'nextPlot','replace');
       setappdata(mtexFig.parent,'mtexFig',mtexFig);
       

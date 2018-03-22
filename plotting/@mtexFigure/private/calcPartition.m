@@ -10,6 +10,11 @@ function [ncols,nrows] = calcPartition(mtexFig,figSize,varargin)
 %  nrows - number of rows
 
 
+if ~strcmp(mtexFig.layoutMode,'auto')
+  ncols = mtexFig.ncols; nrows = mtexFig.nrows;
+  return
+end
+
 % start with one row partition
 nrows = 1; ncols = numel(mtexFig.children);
 axisWidth = calcAxesSize(mtexFig,figSize,ncols,nrows);
