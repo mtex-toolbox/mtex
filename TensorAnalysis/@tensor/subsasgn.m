@@ -2,11 +2,11 @@ function T = subsasgn(T,s,b)
 % overloads subsasgn
 
 
-switch s.type
+switch s(1).type
 
   case '()'
   
-   s.subs = [repcell(':',1,T.rank) s.subs]; 
+   s(1).subs = [repcell(':',1,T.rank) s(1).subs]; 
     
    b = tensor(b);
    
@@ -14,8 +14,8 @@ switch s.type
     
   case '{}'
     
-    s.type = '()';
-    s.subs = [s.subs,repcell(':',1,ndims(T))];
+    s(1).type = '()';
+    s(1).subs = [s(1).subs,repcell(':',1,ndims(T))];
     if T.rank == 4
       M = tensor42(T.M,T.doubleConvention);
       M = subsasgn(M,s,b);
