@@ -20,6 +20,6 @@ kappa = dyad(ebsd.gradientX,tensor([1;0;0])) + ...
 kappa{:,3} = NaN;
 
 % make it a curvature tensor
-kappa = curvatureTensor(kappa);
+kappa = curvatureTensor(kappa,'unit',['1/' ebsd.scanUnit]);
 
 end

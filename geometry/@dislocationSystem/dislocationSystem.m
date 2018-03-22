@@ -35,11 +35,11 @@ classdef dislocationSystem
       if isa(sS,'slipSystem')
         
         % define edge dislocations
-        dS.b = sS.b;
+        dS.b = 0.5 * sS.b;
         dS.l = round(cross(sS.b,sS.n));
         
         % define screw dislocations
-        b = unique(dS.b,'antipodal','noSymmetry');
+        b = unique(sS.b,'antipodal','noSymmetry');
         dS.b = [dS.b;b];
         dS.l = [dS.l;b];
         
@@ -76,7 +76,7 @@ classdef dislocationSystem
     end
     
     function isScrew = get.isScrew(dS)
-      isScrew = angle(dS.b,dS.l) < 1e-5;
+      isScrew = angle(dS.b,dS.l,'noSymmetry') < 1e-5;
     end
     
         

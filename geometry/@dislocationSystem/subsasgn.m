@@ -1,7 +1,7 @@
 function dS = subsasgn(dS,s,value)
 % overloads subsasgn
 
-if ~isa(dS,'slipSystem') && ~isempty(value)
+if ~isa(dS,'dislocationSystem') && ~isempty(value)
   dS = value;
   dS.b.x = [];
   dS.b.y = [];
@@ -24,8 +24,8 @@ switch s(1).type
       dS.u = subsasgn(dS.u,s(1),[]);
     else
       dS.b = subsasgn(dS.b,s(1),value.b);
-      dS.l = subsasgn(dS.l,s(1),value.n);
-      dS.u = subsasgn(dS.u,s(1),value.CRSS);
+      dS.l = subsasgn(dS.l,s(1),value.l);
+      dS.u = subsasgn(dS.u,s(1),value.u);
     end
   otherwise
     
