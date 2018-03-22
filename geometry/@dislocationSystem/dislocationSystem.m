@@ -100,8 +100,7 @@ classdef dislocationSystem
       
       if any(dS.isEdge(:))
         
-        disp(' ');
-        disp([' edge dislocations: ',int2str(sum(dS.isEdge))]);
+        disp([' edge dislocations : ',size2str(submatrix(ones(size(dS)),dS.isEdge))]);
         
         if isa(dS.CS,'crystalSymmetry')
           matrix = [arrayfun(toChar,dS.b(dS.isEdge),'UniformOutput',false),...
@@ -110,15 +109,16 @@ classdef dislocationSystem
         
           cprintf(matrix,'-L',' ','-Lc',...
             {'Burgers vector' 'line vector' 'energy'},'-d','  ','-ic',true);
-
+          disp(' ');
+          
         end
        
       end
       
       if any(dS.isScrew(:))
 
-        disp(' ');
-        disp([' screw dislocations: ',int2str(sum(dS.isScrew))]);
+        
+        disp([' screw dislocations: ',size2str(submatrix(ones(size(dS)),dS.isScrew))]);
         
         if isa(dS.CS,'crystalSymmetry')
           matrix = [arrayfun(toChar,dS.l(dS.isScrew),'UniformOutput',false),...
@@ -126,6 +126,7 @@ classdef dislocationSystem
         
           cprintf(matrix,'-L',' ','-Lc',...
             {'Burgers vector' 'energy'},'-d','  ','-ic',true);
+          disp(' ');
         end
       end
 
