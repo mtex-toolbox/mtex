@@ -70,9 +70,9 @@ while ~isempty(varargin) && ~ischar(varargin{1})
   M1 = ipermute(M1,order1);
   M2 = ipermute(M2,order2);
   
-  % TODO: later use M = M1 .* M2;
+  % TODO: later use M1 = M1 .* M2;
   M1 = bsxfun(@times, M1, M2); 
-  
+
   % setup dimT1
   dimT1 = [-rDel:-1,1:rOut];
   
