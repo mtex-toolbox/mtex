@@ -2,16 +2,34 @@ function sFs = symmetrise(sF, varargin)
 % symmetrises a function with respect to a symmetry 
 %
 % Syntax
-%   sFs = sF.symmetrise(cs)
-%   sFs = sF.symmetrise(ss)
+%
+%   % symmetrise with respect to a crystal or specimen symmetry
+%   sFs = symmetrise(sF,cs)
+%   sFs = symmetrise(sF,ss)
+%
+%   % symmetrise with respect to an axis
+%   sFs = symmetrise(sF,d)
 %
 % Input
-%  sF - @S2Fun
+%  sF    - @S2FunHarmonic
 %  cs,ss - @crystalSymmetry, @specimenSymmetry
+%  d     - @vector3d
 %
 % Output
-%  sFs - symmetrised @S2Fun
+%  sFs - symmetrised @S2FunHarmonic
 %
+
+% symmetrise with respect to an axis
+if isa(varargin{1},'vector3d')
+  
+  % rotate sF such that varargin{1} -> z
+  
+  % set all Fourier coefficients f_hat(l,k)=0 for k ~= 0
+  
+  % rotate sF back
+  
+end
+
 
 % extract symmetry
 sym = getClass(varargin,'symmetry');
