@@ -282,7 +282,7 @@ methods (Static = true)
     %  csGamma - parent @crystalSymmetry (cubic fcc)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
-    % cube cube
+    
     mori = inv(orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
     
   end
