@@ -1,6 +1,5 @@
 function v = discreteSample(S2Fun,n,varargin)
-% global or local maximum of one; or the pointwise maximum of two spherical
-% functions
+% takes a random sample of n directions from S2Fun
 %
 % Syntax
 %  v = discreteSample(S2Fun,n)
