@@ -1,4 +1,4 @@
-classdef spectralTransmissionOrientationMapping < orientationMapping
+classdef spectralTransmissionOrientationMappingCP < orientationMapping
 
   properties
     rI                      % refractiveIndexTensor
@@ -10,7 +10,7 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
 
   
   methods
-    function oM = spectralTransmissionOrientationMapping(rI,thickness,varargin)
+    function oM = spectralTransmissionOrientationMappingCP(rI,thickness,varargin)
 
       oM.rI = rI;
       oM.CS1 = rI.CS;
@@ -24,13 +24,11 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
       propCS = inv(ori) .* oM.vprop;
       
       % compute polarization direction in crystal coordinates
-      pCS = (inv(ori) .* oM.polarizer);
+      pCS = inv(ori) .* oM.polarizer;
       
       % compute spectral transmission
             % this option should be for circular polarisiton
-          %rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'phi',oM.phi);
-      
-          rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'polarizationDirection',pCS,'phi',oM.phi);
+          rgb = spectralTransmission(oM.rI,propCS,oM.thickness,'phi',oM.phi);
       
     end
     

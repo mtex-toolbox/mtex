@@ -23,7 +23,7 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 %   plot3d(vprop,rgb./100)
 
 % compute birefringence
-[n,nMin] = rI.birefringence(vprop);
+[n,nMin,nMax] = rI.birefringence(vprop);
 
 % for spectrum to rgb convertion
 rgbMap = csvread(fullfile(mtex_path,'plotting','tools','ciexyz31_1.csv'));%CIE_1931_XYZ to RGB 65 whitepoint
@@ -37,7 +37,8 @@ rgbMap(:,1) = [];
 
 % extract polarization direction
 if check_option(varargin,'polarizationDirection')
-  tau = angle(get_option(varargin,'polarizationDirection'),nMin);
+  polarizer = (get_option(varargin,'polarizationDirection'));
+  tau = (angle(nMin,polarizer,'noSymmetry'));
   tau = repmat(tau(:),1,length(invLambda));
 else
   tau = 45*degree;
