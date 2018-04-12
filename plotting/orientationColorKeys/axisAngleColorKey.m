@@ -14,7 +14,12 @@ classdef axisAngleColorKey < orientationColorKey
       oM.oriRef = get_option(varargin,'center',...
         orientation.id(oM.CS1,oM.CS2));
       
-      oM.dirMapping = HSVDirectionMapping(specimenSymmetry);
+      if isa(oM.CS2,'specimenSymmetry')
+        sym = specimenSymmetry;
+      else
+        sym = properGroup(disjoint(oM.CS1,oM.CS2));
+      end
+      oM.dirMapping = HSVDirectionMapping(sym);
 
     end
   
@@ -24,7 +29,7 @@ classdef axisAngleColorKey < orientationColorKey
       v = axis(ori,oM.oriRef);
       
       if isinf(oM.maxAngle)
-        maxAngle = quantile(reshape(omega,[],1),0.95); %#ok<*PROP>
+        maxAngle = quantile(reshape(omega,[],1),0.8); %#ok<*PROPLC,*PROP>
       else
         maxAngle = oM.maxAngle;
       end
@@ -35,5 +40,10 @@ classdef axisAngleColorKey < orientationColorKey
       rgb = oM.dirMapping.direction2color(v,'grayValue',gray);
       
     end
+    
+    function plot(key,varargin)
+      plot(key.dirMapping,varargin{:});
+    end
+    
   end
 end

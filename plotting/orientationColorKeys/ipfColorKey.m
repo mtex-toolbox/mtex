@@ -1,4 +1,4 @@
-classdef ipfOrientationMapping < orientationMapping
+classdef ipfColorKey < orientationColorKey
   % defines an orientation mapping based on a certain inverse pole figure
   %   Detailed explanation goes here
   
@@ -9,8 +9,8 @@ classdef ipfOrientationMapping < orientationMapping
     
   methods
     
-    function oM = ipfOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+    function oM = ipfColorKey(varargin)
+      oM = oM@orientationColorKey(varargin{:});
       
       if isa(oM.CS2,'crystalSymmetry')
         oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);

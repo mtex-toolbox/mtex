@@ -1,4 +1,4 @@
-classdef ipfCenterOrientationMapping < ipfOrientationMapping
+classdef ipfSpotKey < ipfColorKey
   % 
   % Maps an individual color to each given crystal directions being 
   % parallel to a specimen direction (fibre)
@@ -15,8 +15,8 @@ classdef ipfCenterOrientationMapping < ipfOrientationMapping
   end
   
   methods
-    function oM = ipfCenterOrientationMapping(varargin)
-      oM = oM@ipfOrientationMapping(varargin{:});
+    function oM = ipfSpotKey(varargin)
+      oM = oM@ipfColorKey(varargin{:});
       
       oM.center = get_option(varargin,'center',Miller(0,0,1,oM.CS1));
       oM.CS1 = oM.center.CS;
