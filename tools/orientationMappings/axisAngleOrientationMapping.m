@@ -1,32 +1,39 @@
-classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMapping
+classdef axisAngleOrientationMapping < orientationMapping
   % 
   %   Detailed explanation goes here
   
   properties
-    center = idquaternion    
+    dirMapping % direction mapping
+    oriRef 
+    maxAngle = inf
   end
   
   methods
     function oM = axisAngleOrientationMapping(varargin)
       oM = oM@orientationMapping(varargin{:});
-      oM.updatesR(disjoint(oM.CS1,oM.CS2));
-      oM.center = get_option(varargin,'center',idquaternion);      
+      oM.oriRef = get_option(varargin,'center',...
+        orientation.id(oM.CS1,oM.CS2));
+      
+      oM.dirMapping = HSVDirectionMapping(specimenSymmetry);
+
     end
   
     function rgb = orientation2color(oM,ori)
       
-      ori = ori.project2FundamentalRegion(oM.center);
+      omega = angle(ori,oM.oriRef);
+      v = axis(ori,oM.oriRef);
       
       if isinf(oM.maxAngle)
-        maxAngle = max(reshape(ori.angle,[],1)); %#ok<*PROP>
+        maxAngle = quantile(reshape(omega,[],1),0.95); %#ok<*PROP>
       else
         maxAngle = oM.maxAngle;
       end
        
-      gray = ori.angle./maxAngle;
-      gray(gray > 1) = NaN;
+      gray = min(1,omega./maxAngle);
+      %gray(gray > 1) = NaN;
       
-      rgb = h2color(oM,ori.axis,'grayValue',gray);
+      
+      rgb = oM.dirMapping.direction2color(v,'grayValue',gray);
       
     end
   end

@@ -1,4 +1,4 @@
-classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
+classdef ipfCenterOrientationMapping < ipfOrientationMapping
   % 
   % Maps an individual color to each given crystal directions being 
   % parallel to a specimen direction (fibre)
@@ -15,8 +15,8 @@ classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
   end
   
   methods
-    function oM = ipdfCenterOrientationMapping(varargin)
-      oM = oM@ipdfOrientationMapping(varargin{:});
+    function oM = ipfCenterOrientationMapping(varargin)
+      oM = oM@ipfOrientationMapping(varargin{:});
       
       oM.center = get_option(varargin,'center',Miller(0,0,1,oM.CS1));
       oM.CS1 = oM.center.CS;

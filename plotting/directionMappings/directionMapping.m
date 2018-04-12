@@ -14,7 +14,7 @@ classdef directionMapping < handle
       dM.sR = sym.fundamentalSector;
     end
     
-    function plot(dM,varargin)
+    function [h,caxes] = plot(dM,varargin)
       
       
       [mtexFig,isNew] = newMtexFigure(varargin{:});
@@ -36,7 +36,7 @@ classdef directionMapping < handle
         defaultPlotCMD = 'pcolor';
       end
       
-      [~,caxes] = plot(v,d,defaultPlotCMD,varargin{:});
+      [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:});
             
       setappdata(caxes,'CS',dM.sym);
             
@@ -61,6 +61,8 @@ classdef directionMapping < handle
       try
         mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
+      
+      if nargout == 0, clear h caxes; end
     end        
   end
   

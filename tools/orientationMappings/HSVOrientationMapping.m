@@ -21,7 +21,8 @@ classdef HSVOrientationMapping < orientationMapping
     grayValue = [0.2 0.5]
     grayGradient = 0.5 % 0.25
     maxAngle = inf
-    sR = sphericalRegion    
+    sR = sphericalRegion
+    colorSym % 
   end
 
   properties %(Access = private)
@@ -39,22 +40,29 @@ classdef HSVOrientationMapping < orientationMapping
         warning(['Not a topological correct colormap! Please use the point group ' char(oM.CS1.properGroup)]);
       end
       
-      oM.updatesR(oM.CS1);
+      oM.colorSym = get_option(varargin,'colorSym',disjoint(oM.CS1,oM.CS2));
+      
+      oM.updatesR;
     end
 
   end
   
   methods (Access=protected)
                 
-    function updatesR(oM,cs)
+    function updatesR(oM)
       % spherical region to be colorized
 
+      cs = oM.colorSym;
       oM.sR = cs.fundamentalSector;
       r30 = rotation('axis',zvector,'angle',[30,-30]*degree);
 
       % symmetry dependent settings
       switch cs.id
-        case 1, oM.refl = cs.axes(3);                            % 1
+        case 1, if isa(cs,'crystalSymmetry')                     % 1
+            oM.refl = cs.axes(3);
+          else
+            oM.refl = vector3d.Z;
+          end
         case {3,9}                                               % 211, 112  
           oM.refl = -rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',90*degree));
         case 6                                                   % 121
@@ -92,11 +100,11 @@ classdef HSVOrientationMapping < orientationMapping
     function rgb = h2color(oM,h,varargin)
       
       h.antipodal = false;
-      h = h.project2FundamentalRegion(oM.CS1);
+      h = h.project2FundamentalRegion(oM.colorSym);
       
       if oM.maxAngle < inf
         
-        wC = project2FundamentalRegion(oM.whiteCenter,oM.CS1);
+        wC = project2FundamentalRegion(oM.whiteCenter,oM.colorSym);
         if angle(vector3d.Z,vector3d(wC)) < 1*degree
           owC = orth(wC);
         else
@@ -104,14 +112,14 @@ classdef HSVOrientationMapping < orientationMapping
         end
         
         h.antipodal = false;
-        h = project2FundamentalRegion(vector3d(h),oM.CS1,wC);
+        h = project2FundamentalRegion(vector3d(h),oM.colorSym,wC);
         
         rho = angle(h,owC,vector3d(wC));        
         radius = max(0,1 - angle(h,wC) ./ oM.maxAngle);
       
       else
         
-        wC = oM.whiteCenter.project2FundamentalRegion(oM.CS1); %#ok<*PROP>
+        wC = oM.whiteCenter.project2FundamentalRegion(oM.colorSym); %#ok<*PROP>
         switchWB = false;
       
         % copy to the reduced sector
@@ -131,7 +139,11 @@ classdef HSVOrientationMapping < orientationMapping
       
         % compute angle of the points "sh" relative to the center point "center"
         % this should be between 0 and 1
-        ref = vector3d(oM.CS1.aAxisRec);
+        if isa(oM.colorSym,'crystalSymmetry')
+          ref = vector3d(oM.colorSym.aAxisRec);
+        else
+          ref = xvector;
+        end
         [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,ref,'maxAngle',oM.maxAngle);
 
               
