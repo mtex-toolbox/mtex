@@ -1,4 +1,4 @@
-classdef axisAngleOrientationMapping < orientationMapping
+classdef axisAngleColorKey < orientationColorKey
   % 
   %   Detailed explanation goes here
   
@@ -9,8 +9,8 @@ classdef axisAngleOrientationMapping < orientationMapping
   end
   
   methods
-    function oM = axisAngleOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+    function oM = axisAngleColorKey(varargin)
+      oM = oM@orientationColorKey(varargin{:});
       oM.oriRef = get_option(varargin,'center',...
         orientation.id(oM.CS1,oM.CS2));
       
@@ -31,7 +31,6 @@ classdef axisAngleOrientationMapping < orientationMapping
        
       gray = min(1,omega./maxAngle);
       %gray(gray > 1) = NaN;
-      
       
       rgb = oM.dirMapping.direction2color(v,'grayValue',gray);
       

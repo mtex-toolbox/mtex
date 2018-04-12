@@ -1,10 +1,10 @@
-classdef TSLOrientationMapping < ipfOrientationMapping
+classdef ipfTSLKey < ipfColorKey
   % orientation mapping as it is used by TSL and HKL software
       
   methods
-    function oM =TSLOrientationMapping(varargin)
+    function oM =ipfTSLKey(varargin)
 
-      oM = oM@ipfOrientationMapping(varargin{:}); 
+      oM = oM@ipfColorKey(varargin{:}); 
       oM.dirMap = TSLDirectionMapping(oM.CS1);
       
     end

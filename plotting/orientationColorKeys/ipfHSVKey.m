@@ -1,4 +1,4 @@
-classdef ipfHSVOrientationMapping < ipfOrientationMapping
+classdef ipfHSVKey < ipfColorKey
 % defines an orientation mapping based on a certain inverse pole figure
   
 properties (Dependent = true)
@@ -12,8 +12,8 @@ end
  
 methods
     
-  function oM = ipfHSVOrientationMapping(varargin)
-    oM = oM@ipfOrientationMapping(varargin{:});
+  function oM = ipfHSVKey(varargin)
+    oM = oM@ipfColorKey(varargin{:});
   end
   
   
