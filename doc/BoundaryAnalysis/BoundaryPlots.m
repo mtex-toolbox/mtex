@@ -42,17 +42,21 @@ plot(grains(267).boundary)
 %%
 % let's combine it with the orientation measurements inside
 
-% define the colorcoding such that the meanorientation becomes white
-oM = ipdfHSVOrientationMapping(grains(267));
-oM.inversePoleFigureDirection = grains(267).meanOrientation * oM.whiteCenter;
-oM.maxAngle = 5*degree;
+% select axisAngle color key. this colorizes the mean orientation gray and
+% deviations from the mean orientation according to the misorientation axis
+% where saturation increases with the misorientation angle
+ipfKey = axisAngleColorKey(grains(267));
+
+% set the reference orientation to be the grain mean orientation
+ipfKey.oriRef = grains(267).meanOrientation;
+ipfKey.maxAngle = 4*degree;
 
 % get the ebsd data of grain 267
-ebsd_931 = ebsd(grains(267));
+ebsd_267 = ebsd(grains(267));
 
 % plot the orientation data
 hold on
-plot(ebsd_931,oM.orientation2color(ebsd_931.orientations))
+plot(ebsd_267,ipfKey.orientation2color(ebsd_267.orientations))
 hold off
 
 
@@ -107,7 +111,7 @@ hold on
 % a smoother plot
 gB_Fo = gB_Fo.reorder;
 
-oM = patalaOrientationMapping(gB_Fo);
+ipfKey = patalaOrientationMapping(gB_Fo);
 
 plot(gB_Fo,'linewidth',4)
 % on my computer setting the renderer to painters gives a much more
@@ -115,7 +119,7 @@ plot(gB_Fo,'linewidth',4)
 set(gcf,'Renderer','painters') 
 hold on
 
-plot(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',2)
+plot(gB_Fo,ipfKey.orientation2color(gB_Fo.misorientation),'linewidth',2)
 
 hold off
 
@@ -123,7 +127,7 @@ hold off
 % Lets visualize the color key as axis angle sections through the
 % misorientation space
 
-plot(oM)
+plot(ipfKey)
 
 %% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain

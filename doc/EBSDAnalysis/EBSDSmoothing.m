@@ -31,27 +31,27 @@ hold off
 % With the default colormap, we can not distinguish any orientation gradient
 % within the grain. Let's adapt the colormap to this specific grain
 
-oM = ipdfHSVOrientationMapping(ebsd);
+ipfKey = ipfHSVKey(ebsd);
 
 % set inversePoleFigureDirection  such that the mean orientation is
 % colorized white
-oM.inversePoleFigureDirection = grains(id).meanOrientation * oM.whiteCenter;
+ipfKey.inversePoleFigureDirection = grains(id).meanOrientation * ipfKey.whiteCenter;
 
 % concentrate the colors around the mean orientation
-oM.maxAngle = 1.5*degree;
+ipfKey.maxAngle = 1.5*degree;
 
 % plot the colormap
-plot(oM,'resolution',0.5*degree)
+plot(ipfKey,'resolution',0.25*degree)
 
 %%
 % With the new colormap, we can clearly see the noise overlapping the
 % texture gradient within the grain.
 
 % plot the grain
-plot(ebsd,oM.orientation2color(ebsd.orientations),'micronbar','off')
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 %% SUB: The Mean Filter
@@ -67,10 +67,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 %%
@@ -86,10 +86,10 @@ ebsd_smoothed = smooth(ebsd,F)
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 %% SUB: The Median Filter
@@ -107,10 +107,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 %% SUB: The Kuwahara Filer
@@ -125,10 +125,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 %% SUB: The Smoothing Spline Filter
@@ -142,10 +142,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 % the smoothing parameter determined during smoothing is
@@ -164,10 +164,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 
@@ -185,10 +185,10 @@ ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
-  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+  ipfKey.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
 
 hold on
-plot(oneGrain.boundary)
+plot(oneGrain.boundary,'linewidth',2)
 hold off
 
 
@@ -207,7 +207,7 @@ ind = discretesample(length(ebsd),round(length(ebsd)*50/100));
 ebsdNaN(ind).orientations = orientation(nanquaternion,ebsd.CS);
 
 % plot the reduced data
-plot(ebsdNaN,oM.orientation2color(ebsdNaN.orientations))
+plot(ebsdNaN,ipfKey.orientation2color(ebsdNaN.orientations))
 hold on
 plot(oneGrain.boundary,'micronbar','off')
 hold off
@@ -217,20 +217,23 @@ hold off
 
 % interpolate the missing data with the smoothing spline filter
 ebsdNaN_smoothed = smooth(ebsdNaN,splineFilter);
-plot(ebsdNaN_smoothed('indexed'),oM.orientation2color(ebsdNaN_smoothed('indexed').orientations))
+color = ipfKey.orientation2color(ebsdNaN_smoothed('indexed').orientations);
+plot(ebsdNaN_smoothed('indexed'),color,'micronbar','off')
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 %%
 % We may plot the misorientation angle between the interpolated
 % orientations and the measured orientations
 
-plot(ebsd_smoothed('indexed'),angle(ebsdNaN_smoothed('indexed').orientations,ebsd_smoothed('indexed').orientations)./degree)
+omega = angle(ebsdNaN_smoothed('indexed').orientations, ...
+  ebsd_smoothed('indexed').orientations);
+plot(ebsd_smoothed('indexed'),omega./degree,'micronbar','off')
 mtexColorbar
 
 hold on
-plot(oneGrain.boundary,'micronbar','off')
+plot(oneGrain.boundary)
 hold off
 
 %% SUB: A real world example
@@ -247,8 +250,18 @@ plot(ebsd('Di'),ebsd('Di').orientations)
 % compute grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree);
 
+
+% remove small grains
+ebsd(grains(grains.grainSize < 3)) = [];
+
+% and repeat the grain computation
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree);
+
+%
+grains = smooth(grains,5);
+
 % plot the boundary of all grains
-plot(grains.boundary,'linewidth',1.5)
+plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
@@ -258,7 +271,9 @@ hold off
 % grain or not, the |grain| variable has to be passed as an additional
 % argument.
 
-F = splineFilter;
+F = halfQuadraticFilter;
+F.alpha = 0.01;
+F.eps = 0.001;
 ebsd_smoothed = smooth(ebsd('indexed'),F,'fill',grains);
 
 plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)
@@ -277,27 +292,45 @@ hold off
 % the misorientation to the meanorientation. We observe that the mis2mean
 % varies smoothly also within the regions of not indexed orientations.
 
-% compute mis2mean for the interpolated orientations
-[~,~,ebsd_smoothed.mis2mean] = calcGrains(ebsd_smoothed,'angle',10*degree);
-
 % plot mis2mean for all phases
-oM = ipdfHSVOrientationMapping(ebsd_smoothed('Fo').CS,ebsd_smoothed('Fo').CS);
-oM.maxAngle = 5*degree;
-plot(ebsd_smoothed('Fo'),oM.orientation2color(ebsd_smoothed('Fo').mis2mean))
+ipfKey = axisAngleColorKey(ebsd_smoothed('Fo'));
+ipfKey.oriRef = grains(ebsd_smoothed('fo').grainId).meanOrientation;
+ipfKey.maxAngle = 2.5*degree;
+
+color = ipfKey.orientation2color(ebsd_smoothed('Fo').orientations);
+plot(ebsd_smoothed('Fo'),color,'micronbar','off')
 
 hold on
+ipfKey.oriRef = grains(ebsd_smoothed('En').grainId).meanOrientation;
 
-oM = ipdfHSVOrientationMapping(ebsd_smoothed('En').CS,ebsd_smoothed('En').CS);
-oM.maxAngle = 5*degree;
-plot(ebsd_smoothed('En'),oM.orientation2color(ebsd_smoothed('En').mis2mean))
+plot(ebsd_smoothed('En'),ipfKey.orientation2color(ebsd_smoothed('En').orientations))
 
-oM = ipdfHSVOrientationMapping(ebsd_smoothed('Di').CS,ebsd_smoothed('Di').CS);
-oM.maxAngle = 5*degree;
-plot(ebsd_smoothed('Di'),oM.orientation2color(ebsd_smoothed('Di').mis2mean))
 
 % plot boundary
-plot(grains.boundary,'linewidth',1.5)
+plot(grains.boundary,'linewidth',4)
+plot(grains('En').boundary,'lineWidth',4,'lineColor','r')
 hold off
+
+%%
+% For comparison
+
+ipfKey.oriRef = grains(ebsd('fo').grainId).meanOrientation;
+ipfKey.maxAngle = 2.5*degree;
+
+color = ipfKey.orientation2color(ebsd('Fo').orientations);
+plot(ebsd('Fo'),color,'micronbar','off')
+
+hold on
+ipfKey.oriRef = grains(ebsd('En').grainId).meanOrientation;
+
+plot(ebsd('En'),ipfKey.orientation2color(ebsd('En').orientations))
+
+
+% plot boundary
+plot(grains.boundary,'linewidth',4)
+plot(grains('En').boundary,'lineWidth',4,'lineColor','r')
+hold off
+
 
 %%
 % If no |grain| variable is passed to the smoothing command the not indexed

@@ -28,6 +28,14 @@ plotx2east
 % perform grain segmentation
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'threshold',5*degree);
 
+% remove small grains
+ebsd(grains(grains.grainSize<5)) = [];
+
+% repeat grain reconstruction
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'threshold',5*degree);
+
+% smooth the grain boundaries a bit
+grains = smooth(grains,5);
 
 %% Intragranular misorientations
 % The intragranular misorientation is automatically computed while
@@ -46,31 +54,86 @@ xlabel('Misorientation angles in degree')
 
 close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
-mtexColorMap WhiteJet
+mtexColorMap hot
 mtexColorbar
 hold on
 plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
 
 %%
-% In order to visualize the misorientation by an ipdf colorcoding, we first
-% define an orientation to colormapping and set the |colorStretching| to
-% increase the contrast around the white center. Note that the
-% inversPoleFigureDirection of the ipdf map is automatically set to the
-% white center to colorize grains with a small texture gradient with light
-% colors.
+% In order to visualize the misorientation axis we have two choices. We can
+% consider the misorientation axis either with respect to the crystal
+% reference frame or with the specimen reference frame. The misorientation
+% axes with respect to the crystal reference frame can be computed via
 
-oM = ipdfHSVOrientationMapping(mori)
-oM.colorStretching = 5;
-
-plot(oM,'noTitle')
+mori.axis
 
 %%
+% The axes are unique up to crystal symmetry. Accordingly, the
+% corresponding color key needs to colorize only the fundamental sector.
+% This is done by
+
+% define the color key
+oM = axisAngleColorKey(mori);
+
+plot(oM)
 
 
-plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').mis2mean))
+%%
+% We see that according to the above color key orientation gradients with
+% respect to the (001) axis will be  displayed in red, spins around the
+% (010) will be displayed in green and spins around the (100) axis will be
+% displayed in blue. Pixels with no misorientation will be displayed in
+% gray and as the misorientation angle increases the color gets more
+% saturated.
+
+plot(ebsd('Forsterite'),oM.orientation2color(mori))
+
 hold on
-plot(grains.boundary,'edgecolor','k','linewidth',.5)
+plot(grains.boundary,'edgecolor','k','linewidth',2)
+hold off
+
+
+%%
+% The misorientation axis with respect to the specimen coordinate system
+% can unfortunaltely not be computed from the misorientation alone.
+% Therefore, we require the pair consisting of grain mean orientation and
+% the orientation of the pixel.
+%
+% Lets computed first for every pixel the corresponding reference
+% orientation, i.e. the mean orientation of the grain the pixel belongs to.
+
+oriRef = grains(ebsd('Forsterite').grainId).meanOrientation
+
+%%
+% Now the misorientation axis with respect to the specimen reference system
+% is computed via
+
+v = axis(ebsd('Forsterite').orientations,oriRef)
+
+
+%%
+% With respect to the specimen reference frame the misorientation axes are
+% unique and not symmetry has to be considered. Accordingly, our color key
+% will contain the entire sphere.
+be colored black or white 
+oM = axisAngleColorKey(ebsd('Forsterite'));
+plot(oM)
+
+plot(discreteSample(v,1000),'add2all','MarkerSize',2,'MarkerEdgeColor','black')
+
+%%
+% With respect to the above color key rotations around the 001 specimen
+% direction will become visible as a black to white gradient while
+% rotations around the 100 directions will show up as a red to magenta
+% gradient.
+
+oM.oriRef = oriRef;
+
+color = oM.orientation2color(ebsd('Forsterite').orientations);
+plot(ebsd('Forsterite'),color,'micronbar','off')
+hold on
+plot(grains.boundary,'edgecolor','k','linewidth',2)
 hold off
 
 
@@ -99,7 +162,7 @@ hold on
 plot(grains.boundary)
 plot(bnd_FoFo,bnd_FoFo.misorientation.angle./degree,'linewidth',2)
 mtexColorMap blue2red
-mtexColorbar
+mtexColorbar('title','misorientation angle')
 hold off
 
 
@@ -179,25 +242,28 @@ legend('-dynamicLegend','Location','northwest') % update legend
 
 %% The axis distribution
 % 
-% Let's start here with the uncorrelated axis distribution, which depends
-% only on the underlying ODFs. 
+% Let's start with the boundary misorientation axis distribution
 
 close all
-mtexFig = newMtexFigure;
-mori = calcMisorientation(ebsd('Fo'));
-plotAxisDistribution(mori,'smooth','parent',mtexFig.gca)
-mtexTitle('uncorrelated axis distribution')
-mtexFig.drawNow('figSize','normal')
-
-%%
-% We may plot the axes of the boundary misorientations directly into this
-% plot
-
-mtexFig.nextAxis
-plotAxisDistribution(bnd_FoFo.misorientation,'smooth','parent',mtexFig.gca)
+plotAxisDistribution(bnd_FoFo.misorientation,'smooth')
 mtexTitle('boundary axis distribution')
-mtexColorbar
 
 %%
-% This shows a much stronger preference of the (1,1,1) axis in comparison
-% to the uncorrelated distribution.
+% Next we plot with the uncorrelated axis distribution, which depends
+% only on the underlying ODFs. 
+
+nextAxis
+mori = calcMisorientation(ebsd('Fo'));
+plotAxisDistribution(mori,'smooth')
+mtexTitle('uncorrelated axis distribution')
+
+%%
+% and finally the axis misorientation distribution of a random texture
+
+nextAxis
+plotAxisDistribution(ebsd('Fo').CS,ebsd('Fo').CS,'antipodal')
+mtexTitle('random texture')
+mtexColorMap parula
+setColorRange('equal')
+mtexColorbar('multiples of random distribution')
+

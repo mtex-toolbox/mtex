@@ -46,14 +46,14 @@ ebsd = loadEBSD(fname,'CS',cs,...
 % It assigns a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
 
-oM = ipdfHSVOrientationMapping(ebsd);
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+ipfKey = ipfColorKey(ebsd);
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
 % In order to understand the color coding, one can plot the coloring of the
 % corresponding inverse pole figure via
 
-plot(oM)
+plot(ipfKey)
 hold on
 plotIPDF(ebsd('Fe').orientations,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
 hold off

@@ -33,16 +33,16 @@
 %
 %
 %% Assigning the Euler angles to the RGB values
-% Using the Euler angles as the RGB values is probably the simplest
-% way of mapping an orientation to a color. In MTEX such a color map is
-% defined as a variable of type <orientationMapping.html orientatiomMapping>
+% Using the Euler angles as the RGB values is probably the simplest way of
+% mapping an orientation to a color. In MTEX such a color key is defined as
+% a variable of type <orientationColorKey.html orientatiomColorKey>
 
 % we have to set up a crystal symmetry first, as it defines the fundamental
 % region for the Euler angles
 cs = crystalSymmetry('432')
 
 % thise defins the orientation map
-oM = BungeRGBOrientationMapping(cs)
+oM = BungeColorKey(cs)
 
 %%
 % Given an arbitrary orientation
@@ -76,7 +76,7 @@ plot(oM,'sections',6,'sigma')
 % pole figures. The following orientation map assigns a color to each
 % direction of the fundamental sector of the inverse pole figure
 
-oM = ipdfHSVOrientationMapping(cs)
+oM = ipfHSVKey(cs)
 
 plot(oM)
 
@@ -127,7 +127,7 @@ plot(ebsd)
 % Note that we can pass the phase we want to color instead of the crysta
 % symmetry
 
-oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+oM = ipfHSVKey(ebsd('Forsterite'))
 
 %%
 % We may also want to set the inverse pole figure direction. This is done by
@@ -166,7 +166,7 @@ hold off
 % this restricts the crystal symmetries used for visualization
 % to proper rotations
 ebsd('Forsterite').CS = ebsd('Forsterite').CS.properGroup;
-oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+oM = ipfHSVKey(ebsd('Forsterite'))
 
 %
 plot(oM)
