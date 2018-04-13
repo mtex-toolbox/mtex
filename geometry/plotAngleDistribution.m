@@ -64,7 +64,7 @@ else
   
     % bin size given?
     if max(obj.angle) < maxOmega/2, maxOmega = max(obj.angle);end
-    nbins = round(maxOmega/get_option(varargin,'resolution',5*degree));
+    nbins = max(15,round(maxOmega/get_option(varargin,'resolution',5*degree)));
     
     % compute bins
     bins = linspace(-eps,maxOmega+0.01,nbins);
