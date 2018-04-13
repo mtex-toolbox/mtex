@@ -85,9 +85,11 @@ plot(grains.innerBoundary,'linecolor','r','linewidth',2)
 
 
 %% SUB: Misorientation
-% Basically there are two ways to visualize misorientations along the grain
-% boundary. The simplest way is to colorize the grain boundaries
-% with respect to the misorientation angle.
+% The boundary misorientation is the misorientation between the two
+% neighboring pixels of a boundary segment. Depending of the misorientation
+% angle one distinguishes between high angle and low angle grain
+% boundaries. In MTEX we can visualize the boundary misorientation angle by
+% the commands
 
 close all
 gB_Fo = grains.boundary('Fo','Fo');
@@ -99,8 +101,11 @@ hold off
 mtexColorbar('title','misorientation angle')
 
 %%
-% The more sophisticated way is to colorize the misorientation space and
-% apply the color to the respective grain boundaries. 
+% In order to visuale the full misorientation, i.e., axis and angle, one
+% has to define a corresponding color key. One option is the color key
+% described in the paper by S. Patala, J. K. Mason, and C. A. Schuh,
+% |Improved representations of misorientation information for grain
+% boundary|, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
 
 close all
 plot(grains,'translucent',.3,'micronbar','off')
@@ -111,15 +116,15 @@ hold on
 % a smoother plot
 gB_Fo = gB_Fo.reorder;
 
-ipfKey = patalaOrientationMapping(gB_Fo);
+ipfKey = PatalaColorKey(gB_Fo);
 
-plot(gB_Fo,'linewidth',4)
+plot(gB_Fo,'linewidth',6)
 % on my computer setting the renderer to painters gives a much more
 % pleasent result
-set(gcf,'Renderer','painters') 
+%set(gcf,'Renderer','painters') 
 hold on
 
-plot(gB_Fo,ipfKey.orientation2color(gB_Fo.misorientation),'linewidth',2)
+plot(gB_Fo,ipfKey.orientation2color(gB_Fo.misorientation),'linewidth',4)
 
 hold off
 
