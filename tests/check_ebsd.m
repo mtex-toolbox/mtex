@@ -5,7 +5,7 @@
 
 for i = 1:5
 
-  ebsd = calcEBSD(SantaFe,10^i);
+  ebsd = discreteSample(SantaFe,10^i);
 
   odf = calcODF(ebsd);
 
