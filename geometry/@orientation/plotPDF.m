@@ -44,7 +44,7 @@ end
 
 % find crystal directions
 h = [];
-if ~isempty(mtexFig.currentAxes), h = getappdata(mtexFig.currentAxes,'h'); end
+try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
 
 if isempty(h) % for a new plot 
   h = varargin{1};
