@@ -4,14 +4,16 @@ function sF = conv(sF, psi, varargin)
 % Syntax
 %   sF = conv(sF, psi)
 %   sF = conv(sF, A)
+%   SO3F = conv(sF1, sF2)
 %
 % Input
-%  sF  - @S2FunHarmonic
+%  sF, sF1, sF1 - @S2FunHarmonic
 %  psi - @kernel
 %  A   - double list of Legendre coeficients
 %
 % Output
 %  sF - @S2FunHarmonic
+%  SO3F - @ODF
 %
 
 if isa(psi,'S2FunHarmonic')
