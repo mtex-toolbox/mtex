@@ -154,7 +154,9 @@ classdef mtexFigure < handle
     end
     
     function set.currentAxes(mtexFig,ax)
-      set(mtexFig.parent,'CurrentAxes',ax);
+      try
+        set(mtexFig.parent,'CurrentAxes',ax);
+      end
     end
         
     function id = get.currentId(mtexFig)
