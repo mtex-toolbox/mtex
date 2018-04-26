@@ -1,4 +1,4 @@
-function sF = conv(sF, psi)
+function sF = conv(sF, psi, varargin)
 % spherical convolution of sF with a radial function psi 
 %
 % Syntax
@@ -17,7 +17,7 @@ function sF = conv(sF, psi)
 if isa(psi,'S2FunHarmonic')
   
   sF2 = psi;
-  bw = min(sF.bandwidth,sF2.bandwidth);
+  bw = get_option(varargin,'bandwidth',min(sF.bandwidth,sF2.bandwidth));
   
   fhat = [];
   for l = 0:bw
