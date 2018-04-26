@@ -18,6 +18,9 @@ function sF = quadrature(f, varargin)
 %
 
 bw = get_option(varargin, 'bandwidth', 128);
+
+if isa(f,'S2Fun'), f = @(v) f.eval(v); end
+
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureS2Grid(2*bw, 'gauss');
