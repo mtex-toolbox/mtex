@@ -13,7 +13,7 @@ classdef customKernel < kernel
       if nargin == 0, return;end
       
       psi.fun = fun;
-      psi.A = calcFourier(fun,varargin{:});
+      psi.A = calcFourier(psi,512,varargin{:});
                 
     end
   
