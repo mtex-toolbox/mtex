@@ -1,4 +1,4 @@
-function sFs = symmetrise(sF, varargin)
+function [sFs,psi] = symmetrise(sF, varargin)
 % symmetrises a function with respect to a symmetry 
 %
 % Syntax
@@ -33,6 +33,7 @@ if isa(varargin{1},'vector3d')
   M = sF.bandwidth;
   sFs.bandwidth = M;
   sFs.fhat((0:M).^2+(1:M+1)) = sF.fhat((0:M).^2+(1:M+1));
+  psi = kernel(real(sF.fhat((0:M).^2+(1:M+1))));
   
   % rotate sF back
   if varargin{1} ~= zvector
