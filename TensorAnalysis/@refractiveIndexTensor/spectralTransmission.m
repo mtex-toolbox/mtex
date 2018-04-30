@@ -38,7 +38,10 @@ rgbMap(:,1) = [];
 % extract polarization direction
 if check_option(varargin,'polarizationDirection')
   polarizer = (get_option(varargin,'polarizationDirection'));
-  tau = (angle(nMin,polarizer,'noSymmetry'));
+  polarizer = reshape(polarizer,polarizer.length,1);
+%   tau = dot(nMin.normalize,polarizer.normalize);
+%   tau = real(acos(tau));
+  tau = (angle(nMin,polarizer,'noSymmetry','antipodal'));
   tau = repmat(tau(:),1,length(invLambda));
 else
   tau = 45*degree;
