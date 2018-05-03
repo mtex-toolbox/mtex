@@ -24,7 +24,7 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
       propCS = inv(ori) .* oM.vprop;
       
       % compute polarization direction in crystal coordinates
-      pCS = inv(ori) .* oM.polarizer;
+      pCS = (inv(ori) .* oM.polarizer);
       
       % compute spectral transmission
             % this option should be for circular polarisiton
