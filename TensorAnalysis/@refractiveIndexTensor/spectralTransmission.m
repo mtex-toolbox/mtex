@@ -22,6 +22,15 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 %   rgb = spectralTransmission(rI,vprop,thickness);
 %   plot3d(vprop,rgb./100)
 
+
+% maybe we should compute a spherical function this works only for a fixed
+% polarization direction
+if isempty(vprop)
+  rgb = S2FunHarmonic.quadrature(@(v) spectralTransmission(rI,v,thickness,varargin{:}),...
+    'bandwidth',get_option(varargin,'bandwidth',32));
+  return
+end
+
 % compute birefringence
 [n,nMin,nMax] = rI.birefringence(vprop);
 
@@ -54,7 +63,8 @@ phi = get_option(varargin,'phi',90*degree);
 delta = n .* thickness;
 
 % compute spectra - |nMin| x |lambda|
-spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* sin(delta(:).* invLambda*pi()).^2;
+spectra = sin(delta(:).* invLambda*pi()).^2;
+spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* spectra;
 %Ls(i,:) = (cosd(phi(j)))^2 - sind(2*(tau -phi(j)))*sind(2*tau)*(sind((Delta./visible_spectrum(i))*180)).^2;
 % spectra to color -> |nMin| x 3
 rgb = spectra * rgbMap;
