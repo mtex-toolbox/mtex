@@ -147,6 +147,22 @@
 % In MTEX we call vector fields with antipodal values are represented by
 % variables of type <S2AxisFieldHarmonic_index.html AxisField>.
 %
+% *Scalar tensor properties are returned as spherical functions*
+%
+% Any scalar or vectorial property of a tensor is not returned as a
+% spherical function or spherical vector field. Examples are the velocity
+% properties mentioned above, Youngs modulus, shear modulus, Poisson ration
+% etc. In particular, plotting those directional dependend quantities is as
+% simple as
+%
+%   plot(C.YoungsModulus)
+%
+% This makes the old syntax
+%
+%   plot(C,'plotType','YoungsModulus')
+%
+% obsolete. It is not supported anymore.  
+%
 % *Crystal shapes*
 %
 % MTEX 5.0 introduces a new class <crystalShape_index.html crystalShape>.
