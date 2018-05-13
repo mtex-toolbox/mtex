@@ -1,4 +1,4 @@
-function rgb = spectralTransmission(rI,vprop,thickness,varargin)
+function rgb = spectralTransmission(rI,vprop,varargin)
 %
 % Syntax
 %   rgb = spectralTransmission(rI,vprop,p,thickness)
@@ -6,6 +6,8 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 %   rgb = spectralTransmission(rI,vprop,p,thickness,'polarizationDirection',p)
 %
 %   rgb = spectralTransmission(rI,vprop,p,thickness,'phi',phi)
+%
+%   plot(rI.spectralTransmission(thickness))
 %
 %
 % Input
@@ -16,15 +18,22 @@ function rgb = spectralTransmission(rI,vprop,thickness,varargin)
 %  tau - angle between polarizer and analyzer
 %
 % Example
-%   thickness = 10000;
+%   thickness = 20000;
 %   rI = refractiveIndexTensor.calcite
-%   vprop = plotS2Grid;
-%   rgb = spectralTransmission(rI,vprop,thickness);
-%   plot3d(vprop,rgb./100)
+%   plot(rI.spectralTransmission(thickness),'rgb','3d')
+%
 
 
 % maybe we should compute a spherical function this works only for a fixed
 % polarization direction
+if isnumeric(vprop) && ~isempty(vprop)
+  thickness = vprop;
+  vprop = [];
+else
+  thickness = varargin{1};
+  varargin(1) = [];
+end
+
 if isempty(vprop)
   rgb = S2FunHarmonic.quadrature(@(v) spectralTransmission(rI,v,thickness,varargin{:}),...
     'bandwidth',get_option(varargin,'bandwidth',32));
@@ -48,12 +57,10 @@ rgbMap(:,1) = [];
 if check_option(varargin,'polarizationDirection')
   polarizer = (get_option(varargin,'polarizationDirection'));
   polarizer = reshape(polarizer,polarizer.length,1);
-%   tau = dot(nMin.normalize,polarizer.normalize);
-%   tau = real(acos(tau));
   tau = (angle(nMin,polarizer,'noSymmetry','antipodal'));
   tau = repmat(tau(:),1,length(invLambda));
 else
-  tau = 45*degree;
+  tau = get_option(varargin,'tau',45*degree);
 end
 
 % angle between polarizer and analyzer
