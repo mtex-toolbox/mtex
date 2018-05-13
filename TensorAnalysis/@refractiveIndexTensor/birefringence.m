@@ -1,11 +1,36 @@
 function [n,nMin,nMax] = birefringence(rI,vprop)
+% 
 %
 % Syntax
 %
+%   [n,nMin,nMax] = birefringence(rI,vprop)
+%
 % Input
-%  vprop - propagation direction
-%  rI
-    
+%  rI    - @refractiveIndexTensor
+%  vprop - propagation direction @vector3d
+
+%
+% Output
+%  n - MISSING
+%  nMin - MISSING
+%  nMax - MISSING
+%
+
+% generate function ?
+if nargin == 1 || isempty(vprop)
+  
+  M = 48;
+  [vprop, W] = quadratureS2Grid(2*M);
+  
+  [n,nMin,nMax] = birefringence(rI,vprop);
+  
+  n = S2FunHarmonicSym.quadrature(vprop,n,rI.CS,'bandwidth',M,'weights',W);
+  nMin = S2AxisFieldHarmonic.quadrature(vprop,nMin,'bandwidth',M,'weights',W);
+  nMax = S2AxisFieldHarmonic.quadrature(vprop,nMax,'bandwidth',M,'weights',W);
+  
+  return
+end
+
 % first we need two arbitrary orthogonal directions orthogonal to vprop
 p1 = orth(vprop(:));
 p2 = rotation('axis',vprop(:),'angle',90*degree) .* p1;
