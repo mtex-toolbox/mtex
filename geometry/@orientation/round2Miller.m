@@ -1,21 +1,29 @@
 function [n1,n2,d1,d2] = round2Miller(mori,varargin)
-% find lattice alignements for arbitrary misorientations
+% find lattice alignements for arbitrary orientations and misorientations
 %
 % Description
 %
+% Given an orienation ori find [hkl](uvw) such that ori * [hkl] = Z and ori
+% * (uvw) = X.
+% 
 % Given a misorientation mori find corresponding face normals n1, n2 and
 % crystal directions d1, d2, i.e., such that mori * n1 = n2 and mori * d1 =
 % d2.
 %
 % Syntax
+%
+%   [uvw,hkl] = round2Miller(ori)
+%
 %   [n1,n2,d1,d2] = round2Miller(mori)
 %   [n1,n2,d1,d2] = round2Miller(mori,'penalty',0.01)
 %   [n1,n2,d1,d2] = round2Miller(mori,'maxIndex',6)
 %
 % Input
+%   ori - @orientation
 %  mori - mis@orientation
 %
 % Output
+%  uvw,hkl - @Miller
 %  n1,n2,d1,d2 - @Miller
 %
 % Example
@@ -30,6 +38,40 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 %
 % See also
 % CSL
+
+if isa(mori.SS,'specimenSymmetry')
+  
+  hkl = mori \ vector3d.Z;
+  hkl.dispStyle = 'hkl';
+  hkl = round(hkl);
+
+  uvw = mori \ vector3d.X;
+  if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
+    uvw.dispStyle = 'UVTW';
+  else
+    uvw.dispStyle = 'uvw';
+  end
+  uvw = round(uvw);
+     
+  if nargout == 0
+    if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
+      d = [hkl.hkl uvw.UVTW ];
+      d(abs(d) < 1e-10) = 0;
+      format = {'H' 'K' 'I' 'L' '| U' 'V' 'T' 'W'};
+    else
+      d = [hkl.hkl uvw.uvw];
+      d(abs(d) < 1e-10) = 0;
+      format = { 'H' 'K' 'L' '| U' 'V' 'W'};
+    end
+    cprintf(d,'-L','  ','-Lc',format);
+  else
+    n1 = hkl;
+    n2 = uvw;
+  end
+  
+  return  
+end
+
 
 % maybe more then one orientation should be transformed
 if length(mori) > 1
