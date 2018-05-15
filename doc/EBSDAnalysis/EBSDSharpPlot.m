@@ -162,7 +162,7 @@ grains = smooth(grains,5);
 
 
 % use for the reference orientation the grain mean orientation
-ipfKey.oriRef = grains.meanOrientation(ebsdS('indexed').grainId);
+ipfKey.oriRef = grains(ebsdS('indexed').grainId).meanOrientation;
 %ipfKey.oriRef = mean(ebsdS('indexed').orientations);
 
 plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations),'micronbar','off')

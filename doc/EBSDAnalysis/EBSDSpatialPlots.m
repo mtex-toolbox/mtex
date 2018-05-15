@@ -172,7 +172,7 @@ hold off
 % we can easily extend the colorcoding
 
 ipfKey.center = [Miller(0,0,1,csFo),Miller(0,1,1,csFo),Miller(1,1,1,csFo),...
-  Miller(11,4,4,csFo), Miller(5,0,2,csFo) , Miller(5,5,2,csFo)]
+  Miller(11,4,4,csFo), Miller(5,0,2,csFo) , Miller(5,5,2,csFo)];
 
 ipfKey.color = [[1 0 0];[0 1 0];[0 0 1];[1 0 1];[1 1 0];[0 1 1]];
 
@@ -221,10 +221,10 @@ mtexColorbar
 % |'opengl'|.
 
 close all;
-plot(ebsd,ebsd.bc)
-mtexColorMap white2black
+plot(ebsd,ebsd.bc,'micronbar','off')
+mtexColorMap black2white
 
-ipfKey = spotColorKey(csFo);
+ipfKey = ipfSpotKey(csFo);
 ipfKey.inversePoleFigureDirection = zvector;
 ipfKey.center = Miller(1,1,1,csFo);
 ipfKey.color = [0 0 1];

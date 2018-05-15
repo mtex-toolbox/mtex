@@ -37,12 +37,11 @@ plot(gB)
 
 grains(267).boundary
 
-plot(grains(267).boundary)
+plot(grains(267).boundary,'lineWidth',2,'micronbar','off')
 
 %%
-% let's combine it with the orientation measurements inside
-
-% select axisAngle color key. this colorizes the mean orientation gray and
+% Let's combine it with the orientation measurements inside
+% select axisAngle color key. This colorizes the mean orientation gray and
 % deviations from the mean orientation according to the misorientation axis
 % where saturation increases with the misorientation angle
 ipfKey = axisAngleColorKey(grains(267));

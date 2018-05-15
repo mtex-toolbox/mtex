@@ -116,7 +116,7 @@ v = axis(ebsd('Forsterite').orientations,oriRef)
 % With respect to the specimen reference frame the misorientation axes are
 % unique and not symmetry has to be considered. Accordingly, our color key
 % will contain the entire sphere.
-be colored black or white 
+
 oM = axisAngleColorKey(ebsd('Forsterite'));
 plot(oM)
 
