@@ -66,9 +66,9 @@ for ir = 1:length(r)
   h = ori(:) \ rSym;
   
   %  plot  
-  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
   [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
+  if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
   
   % plot annotations
   setappdata(cax,'inversePoleFigureDirection',r(ir));
