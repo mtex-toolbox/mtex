@@ -85,10 +85,12 @@ classdef mtexFigure < handle
       mtexFig.innerPlotSpacing = get_option(varargin,'innerPlotSpacing',...
         getMTEXpref('innerPlotSpacing'));
       mtexFig.keepAspectRatio = get_option(varargin,'keepAspectRatio',true);
-        
-      mtexFig.nrows = get_option(varargin,'nrows',1);
-      mtexFig.ncols = get_option(varargin,'ncols',1);
-      if check_option(varargin,{'nrows','ncols'})
+      
+      colrow = get_option(varargin,'layout',[1 1]);
+      mtexFig.nrows = get_option(varargin,'nrows',colrow(1));
+      mtexFig.ncols = get_option(varargin,'ncols',colrow(2));
+      
+      if check_option(varargin,{'nrows','ncols','layout'})
         mtexFig.layoutMode = 'user';
       end
       
@@ -154,7 +156,9 @@ classdef mtexFigure < handle
     end
     
     function set.currentAxes(mtexFig,ax)
-      set(mtexFig.parent,'CurrentAxes',ax);
+      try
+        set(mtexFig.parent,'CurrentAxes',ax);
+      end
     end
         
     function id = get.currentId(mtexFig)

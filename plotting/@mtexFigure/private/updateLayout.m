@@ -32,16 +32,34 @@ for i = 1:length(mtexFig.children)
   
   % position the colorbars
   if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
-    
+
     resizeColorBar(mtexFig.cBarAxis(i))
-  
-  elseif ~isempty(mtexFig.cBarAxis) && i == numel(mtexFig.children) 
-    
-    resizeColorBar(mtexFig.cBarAxis)
     
   end
 end
 
+if length(mtexFig.cBarAxis)==1 && i>1
+  pos = get(mtexFig.cBarAxis,'position');
+  
+  if pos(4)>pos(3) %Vertical bar
+    
+    pos(4) = mtexFig.nrows * mtexFig.axisHeight + ...
+      (mtexFig.nrows-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4])));
+    pos(2) = axisPos(2)+1;
+    pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing)+ ...
+      sum(mtexFig.tightInset([2,4])) + mtexFig.outerPlotSpacing;
+
+  else  %Horizontal bar
+    
+    pos(3)=mtexFig.ncols*(mtexFig.axisWidth) + ...
+      (mtexFig.ncols-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([1,3]))); %c_bar width
+    pos(2) = mtexFig.outerPlotSpacing + 2*pos(4);%axisPos(2) - 2*pos(4);
+    pos(1) = mtexFig.outerPlotSpacing + mtexFig.tightInset(1); %c_bar left
+    
+  end
+  set(mtexFig.cBarAxis,'position',pos);
+end
+  
 % revert figure units
 set(mtexFig.parent,'Units',old_units);
 
@@ -57,7 +75,7 @@ set(mtexFig.parent,'Units',old_units);
     else % horizonal
       set(cBar,'position',...
         [axisPos(1),...
-        axisPos(2)-2*pos(4),...
+        axisPos(2)-mtexFig.tightInset(2)+2*mtexFig.innerPlotSpacing,...
         mtexFig.axisWidth-1,pos(4)]);
     end
   end

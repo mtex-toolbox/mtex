@@ -93,7 +93,7 @@ for j = 1:numel(sP)
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange); end
 
   % colormap
-  colormap(sP(j).ax,getMTEXpref('defaultColorMap'));
+  mtexColorMap(sP(j).ax,getMTEXpref('defaultColorMap'));
 
   % bring grid in front
   sP(j).doGridInFront;

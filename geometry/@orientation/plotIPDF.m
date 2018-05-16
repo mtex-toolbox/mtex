@@ -40,9 +40,7 @@ end
 
 % find inverse pole figure direction
 r = [];
-if ~isempty(mtexFig.currentAxes)
-  r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection');
-end
+try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
 if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
@@ -68,9 +66,9 @@ for ir = 1:length(r)
   h = ori(:) \ rSym;
   
   %  plot  
-  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
   [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
+  if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
   
   % plot annotations
   setappdata(cax,'inversePoleFigureDirection',r(ir));

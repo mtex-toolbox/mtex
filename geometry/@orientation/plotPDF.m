@@ -44,7 +44,7 @@ end
 
 % find crystal directions
 h = [];
-if ~isempty(mtexFig.currentAxes), h = getappdata(mtexFig.currentAxes,'h'); end
+try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
 
 if isempty(h) % for a new plot 
   h = varargin{1};
@@ -104,12 +104,12 @@ for i = 1:length(h)
     opt = [opt,'upper'];
   end
   
-  if ~check_option(varargin,'noTitle')
-    mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  end
+  
   [~,cax] = r.plot(repmat(data,[length(o.SS) length(sh)]),...
     o.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
-
+  
+  if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
+  
   % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');
   setappdata(cax,'h',h{i});

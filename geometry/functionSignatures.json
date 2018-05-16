@@ -12,7 +12,7 @@
         {"name":"mirroring", "kind":"namevalue", "type":"double"},
         {"name":"inversion", "kind":"namevalue", "type":"double"},
         {"name":"rodrigues", "kind":"namevalue", "type":"double"},
-        {"name":"antipodal", "kind":"flag"}
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"}
     ]
 },
 "rotation":
@@ -28,7 +28,7 @@
         {"name":"mirroring", "kind":"namevalue", "type":"double"},
         {"name":"inversion", "kind":"namevalue", "type":"double"},
         {"name":"rodrigues", "kind":"namevalue", "type":"double"},
-        {"name":"antipodal", "kind":"flag"}
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"}
     ]
 },
 "calcODF":
@@ -50,7 +50,7 @@
     "inputs":
     [
         {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag"},
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
@@ -65,7 +65,7 @@
     "inputs":
     [
         {"name":"vec", "kind":"required", "type":"vector3d"},
-        {"name":"antipodal", "kind":"flag"},
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
         {"name":"contourf", "kind":"flag"},
         {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
@@ -83,7 +83,7 @@
     "inputs":
     [
         {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag"},
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
         {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
@@ -98,7 +98,7 @@
     "inputs":
     [
         {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag"},
+        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
         {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},

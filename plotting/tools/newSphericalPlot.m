@@ -124,32 +124,28 @@ end
 % ---------------------------------------------------------
 function proj = getProjection(sR,varargin)
 
-switch get_option(varargin,'projection','earea')
-  case 'plain'
-    
-    proj = plainProjection(sR);
-    
-   case {'stereo','eangle'} % equal angle
-    
-     proj = eangleProjection(sR);
+proj = get_option(varargin,'projection','earea');
 
-  case 'edist' % equal distance
+if ~isa(proj,'sphericalProjection')
+
+  switch proj
+    case 'plain', proj = plainProjection(sR);
     
-    proj = edistProjection(sR);
+    case {'stereo','eangle'}, proj = eangleProjection(sR); % equal angle
+      
+    case 'edist', proj = edistProjection(sR); % equal distance
 
-  case {'earea','schmidt'} % equal area
-
-    proj = eareaProjection(sR);
+    case {'earea','schmidt'}, proj = eareaProjection(sR); % equal area
         
-  case 'orthographic'
-
-    proj = orthographicProjection(sR);
+    case 'orthographic',  proj = orthographicProjection(sR);
     
-  otherwise
+    case 'square',  proj = squareProjection(sR);
+      
+    otherwise
     
-    error('%s\n%s','Unknown projection specified! Valid projections are:',...
-      'plain, stereo, eangle, edist, earea, schmidt, orthographic')
-    
+      error('%s\n%s','Unknown projection specified! Valid projections are:',...
+        'plain, stereo, eangle, edist, earea, schmidt, orthographic','square')
+  end
 end
 
 if ~isa(proj,'plainProjection') && sR.isUpper && sR.isLower  

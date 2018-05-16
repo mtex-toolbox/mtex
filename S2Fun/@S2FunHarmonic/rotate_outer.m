@@ -1,8 +1,8 @@
-function sF = rotate(sF, rot)
+function sF = rotate_outer(sF, rot)
 % rotate a function by a rotation
 %
 % Syntax
-%   sF = sF.rotate(rot)
+%   sF = sF.rotate_outer(rot)
 %
 % Input
 %  sF - @S2FunHarmonic

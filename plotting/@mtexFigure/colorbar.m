@@ -13,7 +13,7 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
       mtexFig.cBarAxis(i) = addColorbar(mtexFig.children(i),varargin{:});
     end
     
-  end
+  end  
   
   % adjust width of the colorbars
   pos = ensurecell(get(mtexFig.cBarAxis,'position'));

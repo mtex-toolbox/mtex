@@ -17,5 +17,18 @@ function varargout = fitEllipse(grains,varargin)
 % 
 % Option
 %  boundary - scale to fit boundary length
+%
+% Example
+%
+% mtexdata csl
+% grains = calcGrains(ebsd('indexed'))
+% grains = smooth(grains,10)
+% plot(ebsd('indexed'),ebsd('indexed').orientations,'micronbar','off')
+% hold on
+% plot(grains.boundary,'lineWidth',2)
+% grains = grains(grains.grainSize>20)
+% [omega,a,b] = fitEllipse(grains(grains));
+% plotEllipse(grains.centroid,a,b,omega,'lineColor','w','linewidth',2)
+% hold off
 
 [varargout{1:nargout}] = principalComponents(grains,varargin{:});
