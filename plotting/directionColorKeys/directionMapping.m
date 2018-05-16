@@ -7,11 +7,18 @@ classdef directionMapping < handle
     sym % 
   end
 
+  properties %(Access = hidden)
+    dir2color % function handle
+  end
+  
   methods
     
     function dM = directionMapping(sym,varargin)
       dM.sym = sym;
       dM.sR = sym.fundamentalSector;
+      
+      dM.dir2color = get_option(varargin,'dir2color');
+
     end
     
     function [h,caxes] = plot(dM,varargin)
@@ -64,10 +71,11 @@ classdef directionMapping < handle
       
       if nargout == 0, clear h caxes; end
     end        
-  end
+   
+    function rgb = direction2color(oM,h,varargin)
+      rgb = oM.dir2color(h,varargin{:});
+    end
   
-  methods (Abstract=true)
-    rgb = direction2color(oM,h,varargin)
   end
-  
+
 end
