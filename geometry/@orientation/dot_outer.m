@@ -1,13 +1,19 @@
-function d = dot_outer(o1,o2,varargin)
+function [d,i,j] = dot_outer(o1,o2,varargin)
 % dot_outer
 %
 % Syntax
+%
+%   d = dot_outer(o1,o2)
+%
+%   [d,i,j] = dot_outer(o1,o2)
 %
 % Input
 %  o1, o2 - @orientation
 %
 % Output
-% d - double of size length(o1) < length(o2)
+%  d - double of size length(o1) < length(o2)
+%  i,j - 
+%  
 %
 % TODO: does not work for orientations of different phase!!
 
@@ -77,7 +83,7 @@ d = abs(q1 * q2.');
 end
 
 
-function d = dot_outer_quat_cs(g1,g2,cs,ss)
+function [d,i,j] = dot_outer_quat_cs(g1,g2,cs,ss)
 % quick version that ignores inversion
 
 g2rot = symmetrise(quaternion(g2),cs,ss).'; % g2 x CS x SS
@@ -86,12 +92,27 @@ q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
 a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
   
 % this is implicite dot_outer
-d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); 
-for k=2:length(cs)*length(ss)
-  d = max(d,abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); % g1 x g2 x CS * SS
+d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); % g1 x g2
+
+if nargout >= 2
+  ij = ones(length(g1),length(2));
+  for k=2:length(cs)*length(ss)
+    dk = abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).']);
+    update = dk > d;
+    ij(update) = k;
+    d(update) = dk;
+  end
+  
+  [i,j] = ind2sub([length(g1) length(2)],ij);
+  
+else
+  for k=2:length(cs)*length(ss)
+    d = max(d,abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); % g1 x g2 x CS * SS
+  end
 end
 
 end
+
 
 function d = dot_outer_i(g1,g2,cs,ss)
 % quick version that includes inversion
