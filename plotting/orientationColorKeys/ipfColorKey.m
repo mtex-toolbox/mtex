@@ -13,7 +13,7 @@ classdef ipfColorKey < orientationColorKey
       oM = oM@orientationColorKey(varargin{:});
       
       if isa(oM.CS2,'crystalSymmetry')
-        oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);
+        oM.inversePoleFigureDirection = Miller(0,0,1,oM.CS2);
       else
         oM.inversePoleFigureDirection = zvector;
       end
@@ -29,7 +29,7 @@ classdef ipfColorKey < orientationColorKey
       [~,caxes] = plot(oM.dirMap,'doNotDraw',varargin{:});
       mtexFig = gcm;
       
-      mtexTitle(mtexFig.gca,char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
+      mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
             
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
