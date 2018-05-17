@@ -15,6 +15,29 @@
 % 
 % *Birefringence*
 %
+% *Color Keys* 
+%
+% In MTEX 5.1 the color keys used for coloring EBSD have been a bit
+% reorganised.
+%
+% * seperate classes for directional color keys. So far these classes are
+% <HSVDirectionKey.html HSVDirectionKey>, <HKLDirectionKey.html
+% HKLDirectionKey>, <TSLDirectionKey.html TSLDirectionKey>. This has become
+% neccesary as some orientation color keys depend directional color keys
+% with different symmetry. 
+%
+% * new color key <axisAngleColorKey.html axisAngleColorKey> that
+% implements the coloring described in K. Thomsen, K. Mehnert, P. W. Trimby
+% and A. Gholinia: Quaternion-based disorientation coloring of orientation
+% maps, Ultramicroscopy, 2017. In central idea is to colorise the
+% misorientation axis with respect to the specimen reference system.
+%
+% * The existing color keys have been renamed for better consistency. The
+% new names are <BungeColorKey.html BungeColorKey>, <ipfHSVKey.html
+% ipfHSVKey>, <ipfHKLKey.html ipfHKLKey>,<ipfTSLKey.html ipfTSLKey>,
+% <ipfSpotKey.html ipfSpotKey>, <spotColorKey.html spotColorKey>,
+% <PatalaColorKey.html PatalaColorKey>
+%
 % *Spherical functions*
 %
 % * new function <S2Fun.discreteSample.html discreteSample> to
