@@ -1,4 +1,4 @@
-function mtexdata(name,varargin)
+function S = mtexdata(name,varargin)
 % load of data provided with mtex and often used in documentation
 %
 % Syntax
@@ -100,6 +100,8 @@ if ~getMTEXpref('generatingHelpMode')
   disp(fld)
   evalin('base',fld{end});
 end
+
+if nargout == 0, clear S; end
 
 % -----------------------------------------------------------------------
 function data = listmtexdata

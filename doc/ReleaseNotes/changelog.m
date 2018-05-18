@@ -1,5 +1,46 @@
-%% MTEX Changelog
+%% MTEX Changelbog
 %
+%
+%% MTEX 5.1.0 04/2018
+%
+% *Dislocation systems* 
+%
+% *Geometrically neccesary dislocations*
+%
+% *Tensor arithmetics*
+%
+% <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
+% det>, <tensor.norm.html norm>, <tensor.mean.html mean>, <tensor.diag.html
+% diag>, <tensor.eye.html eye>,
+% 
+% *Birefringence*
+%
+% *Spherical functions*
+%
+% * new function <S2Fun.discreteSample.html discreteSample> to
+% compute random samples from spherical density functions
+% * new option to <S2FunHarmonic.symmetrise.html symmetrise> to symmetrise
+% a spherical function with respect to an axis
+%
+% *Misc*
+%
+% * new fuction <grain2d.fitEllipse.html fitEllipse> to assign ellipses to
+% grains
+% * the functions <tensor.symmetrise.html tensor/symmetrise> and
+% <S2FunHarmonic.symmetrise.html S2Fun/symmetrise> do support
+% symmetrisation with respect to a certain axis.
+% * the function <quaternion.export.html export> allows to export arbitrary
+% additional properties together with the Euler angles, e.g. the half axes
+% and orientation of the grain ellipses
+% * the function <loadOrientation_generic.html loadOrientation_generic>
+% allows to import arbitrary additional properties together with the
+% orientations, e.g., weights
+% * new option |logarithmic|
+% * new function <ODF.gradient.html ODF/gradient> to compute the gradient
+% of and ODF at a certain orientation
+% * explicitely set the number of rows and columns in a MTEXFigure plot
+% with
+% * EBSD hdf5 interface works now for Bruker data as well
 %
 %% MTEX 5.0.0 03/2018
 %
@@ -105,6 +146,22 @@
 % one can not distinguish between the polarisation direction |d| and |-d|.
 % In MTEX we call vector fields with antipodal values are represented by
 % variables of type <S2AxisFieldHarmonic_index.html AxisField>.
+%
+% *Scalar tensor properties are returned as spherical functions*
+%
+% Any scalar or vectorial property of a tensor is not returned as a
+% spherical function or spherical vector field. Examples are the velocity
+% properties mentioned above, Youngs modulus, shear modulus, Poisson ration
+% etc. In particular, plotting those directional dependend quantities is as
+% simple as
+%
+%   plot(C.YoungsModulus)
+%
+% This makes the old syntax
+%
+%   plot(C,'plotType','YoungsModulus')
+%
+% obsolete. It is not supported anymore.  
 %
 % *Crystal shapes*
 %

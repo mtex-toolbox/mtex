@@ -35,6 +35,7 @@ if check_option(varargin, 'antipodal') || nodes.antipodal
     W = W(IC);
     W = W(1:length(nodes)); % going back to originally grid
 
+    % TODO: this is to slow
     for j = 1:length(nodes)-1 % divide weights by two if nodes and -nodes exist
       test = ( abs(IC(j)-IC(length(nodes)+j+1:end)) <= 1e-6 );
       if sum(test) > 0

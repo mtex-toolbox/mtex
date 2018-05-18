@@ -36,8 +36,8 @@ for i = 1:length(r)
   p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
 
   % plot
-  mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
   [~,cax] = h.plot(p,'doNotDraw','smooth',varargin{:});
+  mtexTitle(cax(1),char(r(i),'LaTeX'));
 
   % store geometry
   set(cax,'tag','ipdf');

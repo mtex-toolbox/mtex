@@ -1,4 +1,4 @@
-function [lambda,v] = eig2(M,a12,a22)
+function [lambda,v] = eig2(M,varargin)
 % eigenvalue and vectors of a symmetric 2x2 matrix
 %
 % Syntax
@@ -7,60 +7,53 @@ function [lambda,v] = eig2(M,a12,a22)
 %
 %   lambda = eig2(a11,a12,a22)
 %
+%
+%   [omega,lambda] = eig2(a11,a12,a22)
+%
 % Input
-%  M - array of symmetric 2x2 matrix
+%  M - array of symmetric 3x3 matrix
 %  a11, a12,a22 - vector of matrix elements
 %
 % Output
 %  lambda - eigen values
 %  v - eigen vectors
+%  omega - angle of the largest eigen vector
 %
 
 % get input
-if nargin == 1
+if nargin == 1 || ischar(varargin{1})
   a11 = M(1,1,:); a12 = M(1,2,:); a22 = M(2,2,:);
 else
-  a11 = M;
+  a11 = M; a12 = varargin{2}; a22 = varargin{3};
 end
 
 % input should be column vectors
 a11 = a11(:).'; a12 = a12(:).'; a22 = a22(:).';
 
-% eigen value compution
-% 0 = (a11 - l)(a22-l) - a12^2 = l^2 - (a11 + a22) l + a11 a22 - a12^2 
-% lambda12 = (a11 + a22)./ 2 +- sqrt((a11 + a22)^2 - 4 a11 a22 + 4a12^2   ) / 2
+id = a12>0;
 
-p = (a11 + a22)./2;
-D = real(sqrt(p.^2 - a11 .* a22 + a12.^2));
-lambda(1,:) = p - D;
-lambda(2,:) = p + D;
+% compute the eigen values
+tr = a11(id) + a22(id);
+D = sqrt( 4*a12(id).^2 + (a11(id)-a22(id)).^2 );
+lambda(id,:) = 2./a12(id) * (repmat(tr,1,2) + [D -D]);
 
-% a first eigen vector
-v(1,1,:) =  -a12;
-v(2,1,:) = a11 - lambda(1,:);
+% the special case of a diagonal matrix
+lambda(~id,1) = max(a11(~id),a22(~id));
+lambda(~id,2) = min(a11(~id),a22(~id));
 
-% its norm
-n = sqrt(v(1,1,:).^2 + v(2,1,:).^2);
+if nargout > 1
 
-% maybe some of them are zero?
-v(1,1,n==0) = 1;
-v(2,1,n==0) = 0;
-n(n==0) = 1;
+  omega = 0.5 * atan2(2*a12,a11-a22);
 
-% the second eigen vector is alway orthogonal
-v(1,2,:) = v(2,1,:);
-v(2,2,:) = -v(1,1,:);
-
-% normalize the eigenvectors
-v = v ./ repmat(reshape(n,1,1,[]),2,2);
-
-%for k = 1:length(a11)   
-%  [v(:,:,k),lambda(:,k)] = eig([a11(k) a12(k); a12(k) a22(k)],'vector');  
-%end
-  
-% for some reason Matlab eig function changes to order outputs if called
-% with two arguments - so we should do the same
-[lambda,v] = deal(v,lambda);
+  if check_option(varargin,'angle')
+    v = omega;
+  else
+    v = [cos(omega) sin(omega)];
+  end
+      
+  % for some reason Matlab eig function changes to order outputs if called
+  % with two arguments - so we should do the same
+  [lambda,v] = deal(v,lambda);
   
 end
 

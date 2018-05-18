@@ -1,5 +1,14 @@
 function [mtexFig,newFigure] = newMtexFigure(varargin)
-% 
+% set uo a new plotting figure
+%
+% Syntax
+%
+%   newMtexFigure()
+%
+% Input
+%
+% Options
+%
 
 mtexFig = gcm;
 

@@ -121,9 +121,13 @@ classdef tensor < dynOption
   end
   
   methods (Static = true)
-    
+
     function T = load(varargin)
       T = loadTensor(varargin{:});
+    end
+
+    function T = eye(varargin)
+      T = tensor(eye(3));
     end
     
     function eps = leviCivita

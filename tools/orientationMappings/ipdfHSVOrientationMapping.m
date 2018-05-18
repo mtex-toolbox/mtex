@@ -1,6 +1,6 @@
 classdef ipdfHSVOrientationMapping < ipdfOrientationMapping & HSVOrientationMapping
-  % defines an orientation mapping based on a certain inverse pole figure
-  %   Detailed explanation goes here
+% defines an orientation mapping based on a certain inverse pole figure
+  
   
   methods
     function oM = ipdfHSVOrientationMapping(varargin)

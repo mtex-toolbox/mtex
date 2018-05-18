@@ -1,19 +1,21 @@
-function T = trace(T)
+function t = trace(T)
 % compute the trace of a rank 2 tensor
 %
 % Synatx
 %
-%   T = trace(T)
+%   t = trace(T)
 %
 % Input
-%  T - rank 2 tensor
+%  T - @tensor
 %
 % Output
-%  T - rank 0 tensor
+%  t - double
 %
 
 if T.rank == 2
-  T = EinsteinSum(T,[-1 -1]);
+  
+  t = EinsteinSum(T,[-1 -1]);
+  
 elseif T.rank > 2
   
   % first dimension -> tensor, second dimension -> multiples of the tensor
@@ -27,9 +29,8 @@ elseif T.rank > 2
   M = sum(M(id,:));
   
   % reshape back
-  T.M = reshape(M,size(T));
-  T.rank = 0;
-  
+  t = reshape(M,size(T));
+    
 else
   error('Trace is only implemented for tensors with rank at least 2')
 end

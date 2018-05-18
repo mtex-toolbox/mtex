@@ -16,7 +16,7 @@ values = sAF.eval(plotNodes);
 
 % some default plotting settings
 varargin = ['color', 'k', 'maxHeadSize', 0, 'arrowSize', ...
-  0.5*plotNodes.resolution/max(norm(values)) varargin];
+  0.4*plotNodes.resolution/max(norm(values)) varargin];
 if check_option(varargin,'complete')
   varargin = [varargin,{'removeAntipodal'}];
 end

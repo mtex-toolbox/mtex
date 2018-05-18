@@ -38,8 +38,8 @@ classdef ipdfOrientationMapping < orientationMapping
       else
         defaultPlotCMD = 'pcolor';
       end
-      mtexTitle(mtexFig.gca,char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
       [~,caxes] = plot(h,d,defaultPlotCMD,varargin{:});
+      mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
             
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end

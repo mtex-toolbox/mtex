@@ -69,8 +69,8 @@ for i = 1:length(h)
   p = ensureNonNeg(odf.calcPDF(h{i},rLocal,varargin{:},'superposition',c{i}));
   
   % plot the pole figure
-  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   [~,cax] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
+  mtexTitle(cax(1),char(h{i},'LaTeX'));
   
   % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');

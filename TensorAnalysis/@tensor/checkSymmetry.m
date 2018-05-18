@@ -1,6 +1,9 @@
 function out = checkSymmetry(T)
- 
+
 out = true;
+
+if T.rank <= 1, return; end
+
 rot = rotation(T.CS);
 
 for i = 2:length(rot)

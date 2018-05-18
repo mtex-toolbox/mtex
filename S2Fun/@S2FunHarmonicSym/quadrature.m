@@ -53,7 +53,11 @@ if isa(varargin{1},'vector3d') % nodes values
 else % function handle
 
   % symmetrise function handle
-  f = varargin{1};
+  if isa(varargin{1},'S2Fun')
+    f = @(v) varargin{1}.eval(v);
+  else
+    f = varargin{1};
+  end
   varargin{1} = @(v) mean(reshape(f(symX*v),length(symX),[]),1);
   
 end

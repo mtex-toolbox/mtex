@@ -1,10 +1,12 @@
-function f = smiley(v)
+function f = smiley(v,varargin)
 
 v = v(:)';
 
 % Radial test function: quadratic spline
-f_r0 = @(z,h) (z>h).*(z-h).^2./(1-h).^2;
-f_r = @(z,h) f_r0(z,h)+f_r0(-z,h); % f has to be even
+f_r = @(z,h) (z>h).*(z-h).^2./(1-h).^2;
+if check_option(varargin,'even')
+  f_r = @(z,h) f_r(z,h)+f_r(-z,h); % f has to be even
+end
 
 x_0 = [pi/2,0; 0.6,-0.6; 0.6,0.6; -0.5,-1; -0.5,-0.5; -0.5,0; -0.5,0.5; -0.5,1];
 h_0 = [0.7; 0.96; 0.96; 0.93; 0.93; 0.93; 0.93; 0.93];

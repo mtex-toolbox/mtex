@@ -39,9 +39,12 @@ if check_option(varargin,'seed')
   modes = reshape(get_option(varargin,'seed'),[],1);
   weights = get_option(varargin,'weights',...
     odf.eval(modes));
-else
+elseif isa(odf.components{end},'unimodalComponent')
   modes = odf.components{end}.center;
   weights = odf.components{end}.weights;
+else
+  modes = equispacedSO3Grid(odf.CS,odf.SS,'resolution',5*degree);
+  weights = ones(length(modes),1) ./ length(modes);
 end
 id = weights>0;
 modes = reshape(modes(id),[],1);
@@ -83,7 +86,7 @@ for k = 1:maxIter
   
   weights = accumarray(id2,weights);
   finished = accumarray(id2,finished,[],@all);
-%  [length(modes), k, sum(finished)]
+  %[length(modes), k, sum(finished)]
 end
 
 % sort components according to volume

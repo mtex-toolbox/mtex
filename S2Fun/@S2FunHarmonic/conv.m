@@ -1,36 +1,57 @@
-function sF = conv(sF, psi)
+function sF = conv(sF, psi, varargin)
 % spherical convolution of sF with a radial function psi 
 %
 % Syntax
 %   sF = conv(sF, psi)
 %   sF = conv(sF, A)
+%   SO3F = conv(sF1, sF2)
 %
 % Input
-%  sF  - @S2FunHarmonic
+%  sF, sF1, sF1 - @S2FunHarmonic
 %  psi - @kernel
 %  A   - double list of Legendre coeficients
 %
 % Output
 %  sF - @S2FunHarmonic
+%  SO3F - @ODF
 %
 
-% extract Legendre coefficients
-if isa(psi,'double')
-  A = psi(:);  
-else
-  A = psi.A(:);
-  A = A ./ (2*(0:length(A)-1)+1).';
-end
-A = A(1:min(sF.bandwidth+1,length(A)));
+if isa(psi,'S2FunHarmonic')
   
-% reduce bandwidth if required
-bandwidth = length(A)-1;
-sF.bandwidth = bandwidth;
+  sF2 = psi;
+  bw = get_option(varargin,'bandwidth',min(sF.bandwidth,sF2.bandwidth));
+  
+  fhat = [];
+  for l = 0:bw
+    fhat = [fhat;reshape(sF.fhat(l^2+1:(l+1)^2) * ...
+      sF2.fhat(l^2+1:(l+1)^2)',[],1)]; %#ok<AGROW>
+  end
+  
+  % extract symmetries if possible
+  CS1 = crystalSymmetry; CS2 = specimenSymmetry;
+  try CS1 = sF.CS; end; try CS2 = sF2.CS; end %#ok<TRYNC>
+    
+  sF = FourierODF(fhat,CS1,CS2);
+    
+else
 
-% extend coefficients
-A = repelem(A,2*(0:bandwidth)+1);
+  % extract Legendre coefficients
+  if isa(psi,'double')
+    A = psi(:);
+  else
+    A = psi.A(:);
+    A = A ./ (2*(0:length(A)-1)+1).';
+  end
+  A = A(1:min(sF.bandwidth+1,length(A)));
+  
+  % reduce bandwidth if required
+  bandwidth = length(A)-1;
+  sF.bandwidth = bandwidth;
 
-% multiplication in harmonic domain
-sF.fhat = A .* sF.fhat;
+  % extend coefficients
+  A = repelem(A,2*(0:bandwidth)+1);
 
+  % multiplication in harmonic domain
+  sF.fhat = A .* sF.fhat;
+  
 end

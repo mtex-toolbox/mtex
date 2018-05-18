@@ -22,7 +22,7 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 plotNodes = plotS2Grid(varargin{:});
 
 % evaluate the function on the plotting grid
-values = sF.eval(plotNodes);
+values = reshape(sF.eval(plotNodes),[],length(sF));
 
 if check_option(varargin,'rgb')
   

@@ -1,4 +1,4 @@
-function [lambda,v] = eig3(M,a12,a13,a22,a23,a33)
+function [lambda,v] = eig3(M,a12,a13,a22,a23,a33,varargin)
 % eigenvalue and vectors of a symmetric 3x3 matrix
 %
 % Syntax
@@ -26,6 +26,8 @@ if nargin == 1
 else
   a11 = M;
 end
+
+s = size(a11);
 
 % input should be column vectors
 a11 = a11(:).'; a12 = a12(:).'; a13 = a13(:).';
@@ -59,9 +61,13 @@ lambda(2,:) = 3 * q - lambda(1,:) - lambda(3,:);     % since trace(A) = eig1 + e
 
 if nargout > 1
   
-  v = vector3d(a12 .* a23 - a13 .* (a22 - lambda),...
-    a13 .* a12 - (a11 - lambda) .* a23,...
-    (a11 - lambda) .* (a22 - lambda) - a12 .* a12,'antipodal');
+  % this is only required for matlab versions prior to 2015
+  b11 = repmat(a11,3,1); b12 = repmat(a12,3,1); b13 = repmat(a13,3,1);
+  b22 = repmat(a22,3,1); b23 = repmat(a23,3,1); b33 = repmat(a33,3,1);
+    
+  v = vector3d(b12 .* b23 - b13 .* (b22 - lambda),...
+    b13 .* b12 - (b11 - lambda) .* b23,...
+    (b11 - lambda) .* (b22 - lambda) - b12 .* b12,'antipodal');
   
   v = v.normalize;
   
@@ -85,6 +91,9 @@ if nargout > 1
   %a3 = vector3d(a13,a23,33-lambda(1));
   
   %cross(a2,a3)
+
+  % return only the largest eigen vector
+  if check_option(varargin,'largest'), v = reshape(v(3,:),s); end
   
   % for some reason Matlab eig function changes to order outputs if called
   % with two arguments - so we should do the same

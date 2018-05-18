@@ -1,5 +1,5 @@
 classdef edistProjection < sphericalProjection
-  %equal area projection
+  %equal distant projection
   
   methods 
         
@@ -31,7 +31,9 @@ classdef edistProjection < sphericalProjection
     end
     
     function v = iproject(sP,x,y)
-      v = vector3d('theta',x*degree,'rho',y*degree);
+      rho = atan2(y,x);
+      theta = sqrt(x.^2 + y.^2);
+      v = vector3d('theta',theta,'rho',rho);
     end
     
   end

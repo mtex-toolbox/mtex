@@ -10,7 +10,7 @@ figTightInset = mtexFig.outerPlotSpacing * [1,1,1,1];
 if isempty(mtexFig.children), return; end
 ax = mtexFig.children(1);
     
-if strcmpi(get(ax,'visible'),'off')% || strcmpi(get(ax,'XColor'),'none')
+if strcmpi(get(ax,'visible'),'off') || strcmpi(get(ax,'XColor'),'none')
   
   xtl = get(ax,'xTickLabel');
   ytl = get(ax,'yTickLabel');

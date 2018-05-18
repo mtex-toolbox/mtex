@@ -25,25 +25,23 @@ function plotPDF(f,varargin)
 % SphericalProjection_demo
 
 % generate a new figure
-[mtexFig,isNew] = newMtexFigure('ensureTag','pdf',...
-  'ensureAppdata',{{'SS',f.SS}},...
-  'datacursormode',@tooltip,varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % extract crystal directions
-h = getappdata(mtexFig.parent,'h');
+h = [];
+try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
 
-if isNew || isempty(h) || ~isa(mtexFig,'mtexFigure') % for a new plot 
-  
+if isempty(h) % for a new plot 
   h = varargin{1};
   varargin(1) = [];
   if ~iscell(h), h = vec2cell(h);end 
-  argin_check([h{:}],{'Miller'});  
-  for i = 1:length(h)
-    h{i} = f.CS.ensureCS(h{i});
-  end    
-  setappdata(mtexFig.parent,'h',h);
-    
+else
+  h = {h};
 end
+  
+% all h should by Miller and have the right symmetry
+argin_check([h{:}],{'Miller'});
+for i = 1:length(h), h{i} = f.CS.ensureCS(h{i}); end
 
 if isNew
   pfAnnotations = getMTEXpref('pfAnnotations');
@@ -60,7 +58,7 @@ for i = 1:length(h)
   % compute specimen directions
   r = f.orientation * h{i};
     
-  r.line('fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
+  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
@@ -68,6 +66,9 @@ for i = 1:length(h)
   if isa(f.SS,'specimenSymmetry')
     pfAnnotations('parent',mtexFig.gca,'doNotDraw');
   end
+  setappdata(cax,'h',h{i});
+  set(cax,'tag','pdf');
+  setappdata(cax,'SS',f.SS);
   
 end
 

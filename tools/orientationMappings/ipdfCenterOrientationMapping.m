@@ -34,10 +34,19 @@ classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
 
         w = oM.psi.RK(dot(h,oM.center(k))) ./ oM.psi.RK(1);
   
-        cdata = rgb2hsv(repmat(oM.color(k,:),length(h),1));
+        if ~any(oM.color(k,:))% fix in case of black       
+        cdata = repmat([0 1 1],length(h),1);
         cdata(:,2) = w(:).*cdata(:,2);
         cdata = reshape(hsv2rgb(cdata),[],3);
+        cdata(:,1)=cdata(:,2);
         rgb = rgb.*cdata;
+        else 
+        cdata = rgb2hsv(repmat(oM.color(k,:),length(h),1));
+        cdata(:,2) = w(:).*cdata(:,2);
+        cdata(:,3) = 1;
+        cdata = reshape(hsv2rgb(cdata),[],3);
+        rgb = rgb.*cdata;
+        end
       end
     end
   end

@@ -89,7 +89,7 @@ end
 % Plot the error in dependency of the number of single orientations.
 
 close all;
-semilogx(10.^(1:length(e)),e)
+loglog(10.^(1:length(e)),e)
 legend('Default','RuleOfThumb','magicRule')
 xlabel('Number of orientations')
 ylabel('Estimation Error')

@@ -1,5 +1,39 @@
-function T = symmetrise(T)
+function T = symmetrise(T,cs)
 % symmetrise a tensor according to its crystal symmetry
+%
+% Syntax
+%   % symmetrise according to a crystal symmetry
+%   T = symmetrise(T,cs)
+%
+%   % symmetrise transversally allong direction d
+%   T = symmetrise(T,d)
+%
+% Input
+%
+%  T  - @tensor
+%  cs - @symmetry
+%  d  - @vector3d
+%
+% Output
+%  T  - @tensor
+%
+
+% extract symmetry
+if nargin == 1, cs = T.CS; end
+  
+% symmetrise transversally
+if isa(cs,'vector3d')
+
+  omega = linspace(0,360,3610) * degree;
+  
+  % all rotations 0 to 360
+  rot = rotation('axis',cs,'angle',omega);
+  
+  % average over all rotations
+  T = reshape(mean(rot * T),size(T));
+  
+  return
+end
 
 % for rank 0 and 1 tensors there is nothing to do
 if T.rank <= 1, return; end
@@ -22,7 +56,7 @@ end
 T.M(T.M==0) = 1i;
 
 % rotate according to symmetry
-T = rotate(T,T.CS);
+T = rotate(T,cs);
 
 % set all entries that contain missing values to NaN
 T.M(~isnull(imag(T.M))) = NaN;
