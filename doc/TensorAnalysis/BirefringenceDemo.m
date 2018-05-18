@@ -132,12 +132,11 @@ nextAxis
 mtexTitle('$\tau = 30^{\circ}$')
 plot(rI.spectralTransmission(thickness,'tau',30*degree),'rgb')
 
-
 nextAxis
 mtexTitle('$\tau = 45^{\circ}$')
 plot(rI.spectralTransmission(thickness,'tau',45*degree),'rgb')
 
-drawNow(gcm)
+ drawNow(gcm,'figSize','normal')
 
 %%
 % Usually, the polarization direction is chosen at angle phi = 90 degree of
@@ -156,7 +155,7 @@ nextAxis
 mtexTitle('$\tau = 45^{\circ}$')
 plot(rI.spectralTransmission(thickness,'tau',45*degree,'phi',90*degree),'rgb')
 
-drawNow(gcm)
+drawNow(gcm,'figSize','normal')
 
 %% Spectral Transmission at Thin Sections
 % All the above computations have been performed in crystal coordinates.
@@ -217,7 +216,7 @@ colorKey  = spectralTransmissionOrientationMapping(rI,thickness);
 % the following are the defaults and can be ommited
 colorKey.propagationDirection = vector3d.Z; 
 colorKey.polarizer = vector3d.X; 
-colorKey.key = 90 * degree;
+colorKey.phi = 90 * degree;
 
 % compute the spectral transmission color of the olivine orientations
 rgb = colorKey.orientation2color(ori);
@@ -234,7 +233,7 @@ plot(ebsd('olivine'), rgb)
 % As usual we me visualize the color key as a colorization of the
 % orientation space, e.g., by plotting it in sigma sections:
 
-plot(oMc,'sigma')
+plot(colorKey,'sigma')
 
 %% Circular Polarizer
 % In order to simulate we a circular polarizer we simply set the polarizer
@@ -254,9 +253,10 @@ plot(ebsd('olivine'), rgb)
 % commment this out to save the result as a animated gif
 % filename = 'testanimated2.gif';
 
+colorKey.polarizer = vector3d.X; 
 figure
-plotHandle = plot(ebsd('olivine'),oMc.orientation2color(ori));
-textHandle = text(750,50,[num2str(omega,'%10.1f') '\circ'],'fontSize',15,...
+plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori));
+textHandle = text(750,50,[num2str(0,'%10.1f') '\circ'],'fontSize',15,...
   'color','w','backGroundColor','k');
 
 % define the step size in degree
@@ -265,10 +265,10 @@ stepSize = 15;
 for omega = 0:stepSize:360-stepSize
     
   % update polarsation direction
-  oMc.polarizer = rotate(vector3d.X, omega * degree);
+  colorKey.polarizer = rotate(vector3d.X, omega * degree);
     
   % update rgb values
-  plotHandle.FaceVertexCData = oMc.orientation2color(ori);
+  plotHandle.FaceVertexCData = colorKey.orientation2color(ori);
   
   % update text
   textHandle.String = [num2str(omega,'%10.1f') '\circ'];

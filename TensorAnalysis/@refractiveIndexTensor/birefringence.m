@@ -39,13 +39,16 @@ B11 = EinsteinSum(rI,[-1 -2],p1,-1,p1,-2);
 B12 = EinsteinSum(rI,[-1 -2],p1,-1,p2,-2);
 B22 = EinsteinSum(rI,[-1 -2],p2,-1,p2,-2);
 
-[v,lambda] = eig2(B11,B12,B22);
+[lambda,v1,v2] = eig2(B11,B12,B22);
 
-n = lambda(2,:) - lambda(1,:);
+n = lambda(:,2) - lambda(:,1);
 if nargout > 1
   
- nMin = sum([p1,p2] .* squeeze(v(:,1,:)).',2);
- nMax = sum([p1,p2] .* squeeze(v(:,2,:)).',2);
+ nMin = sum([p1,p2] .* v1,2); 
+ nMax = sum([p1,p2] .* v2,2); 
+ 
+ %nMin = sum([p1,p2] .* squeeze(v(:,1,:)).',2);
+ %nMax = sum([p1,p2] .* squeeze(v(:,2,:)).',2);
   
 end
 
