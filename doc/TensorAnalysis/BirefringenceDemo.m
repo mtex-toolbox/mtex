@@ -76,13 +76,13 @@ vprop = Miller(1,1,1,cs);
 [dn,nMin,nMax] = rI.birefringence
 
 % plot it
-plot(dn,'complete','upper')
+plot3d(dn,'complete')
 mtexColorbar
 
 % and on top of it the polarization directions
 hold on
-plot(nMin,'color','white')
-plot(nMax)
+quiver3(nMin,'color','white')
+quiver3(nMax)
 hold off
 
 %% The Optical Axis
@@ -94,8 +94,10 @@ vOptical = rI.opticalAxis
 % and check the birefringence is zero
 rI.birefringence(rI.opticalAxis)
 
-% annotate it to the birefringence plot
-annotate(vOptical)
+% annotate them to the birefringence plot
+hold on
+arrow3d(vOptical,'antipodal','facecolor','red')
+hold off
 
 %% Spectral Transmission
 % If white with a certain polarization is transmited though a crystal with
