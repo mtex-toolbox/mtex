@@ -1,9 +1,9 @@
-classdef HKLDirectionMapping < directionMapping
+classdef HKLDirectionKey < directionColorKey
   
   methods
     
-    function dM = HKLDirectionMapping(varargin)
-      dM@directionMapping(varargin{:});
+    function dM = HKLDirectionKey(varargin)
+      dM@directionColorKey(varargin{:});
       dM.sym = dM.sym.Laue;
       dM.sR = dM.sym.fundamentalSector;
     end

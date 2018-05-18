@@ -1,4 +1,4 @@
-classdef directionMapping < handle
+classdef directionColorKey < handle
   % converts directions to rgb values
     
   properties
@@ -13,7 +13,7 @@ classdef directionMapping < handle
   
   methods
     
-    function dM = directionMapping(sym,varargin)
+    function dM = directionColorKey(sym,varargin)
       dM.sym = sym;
       dM.sR = sym.fundamentalSector;
       

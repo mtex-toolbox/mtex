@@ -1,10 +1,10 @@
-classdef TSLDirectionMapping < directionMapping
+classdef TSLDirectionKey < directionColorKey
   % converts directions to rgb values
     
   methods
     
-    function dM = TSLDirectionMapping(varargin)
-      dM@directionMapping(varargin{:});
+    function dM = TSLDirectionKey(varargin)
+      dM@directionColorKey(varargin{:});
       dM.sym = dM.sym.Laue;
       dM.sR = dM.sym.fundamentalSector;
     end

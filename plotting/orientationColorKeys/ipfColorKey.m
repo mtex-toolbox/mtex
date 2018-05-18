@@ -18,8 +18,8 @@ classdef ipfColorKey < orientationColorKey
         oM.inversePoleFigureDirection = zvector;
       end
       
-      oM.dirMap = getClass(varargin,'directionMapping',[]);
-      if isempty(oM.dirMap), oM.dirMap = HSVDirectionMapping(oM.CS1); end
+      oM.dirMap = getClass(varargin,'directionColorKey',[]);
+      if isempty(oM.dirMap), oM.dirMap = HSVDirectionKey(oM.CS1); end
       
     end
     

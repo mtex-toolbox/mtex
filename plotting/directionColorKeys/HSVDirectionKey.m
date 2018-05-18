@@ -1,4 +1,4 @@
-classdef HSVDirectionMapping < directionMapping
+classdef HSVDirectionKey < directionColorKey
   % converts crystal or specimen directions to rgb values
   %
   % The priciple idea is to take the fundamental sector, apply white to the
@@ -28,9 +28,9 @@ classdef HSVDirectionMapping < directionMapping
   
   methods
     
-    function dM = HSVDirectionMapping(varargin)
+    function dM = HSVDirectionKey(varargin)
             
-      dM = dM@directionMapping(varargin{:});
+      dM = dM@directionColorKey(varargin{:});
       if ismember(dM.sym.id,[2,18,26])
         warning(['Not a topological correct colormap! Please use the point group ' char(dM.CS1.properGroup)]);
       end

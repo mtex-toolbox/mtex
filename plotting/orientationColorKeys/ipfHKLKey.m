@@ -4,10 +4,10 @@ classdef ipfHKLKey < ipfColorKey
     
   methods
     function oM = ipfHKLKey(varargin)
-      oM = oM@ColorKey(varargin{:});      
+      oM = oM@ipfColorKey(varargin{:});      
       oM.CS1 = oM.CS1.Laue;
       
-      oM.dirMap = HKLDirectionMapping(oM.CS1);
+      oM.dirMap = HKLDirectionKey(oM.CS1);
     end
         
   end  

@@ -19,7 +19,7 @@ classdef axisAngleColorKey < orientationColorKey
       else
         sym = properGroup(disjoint(oM.CS1,oM.CS2));
       end
-      oM.dirMapping = HSVDirectionMapping(sym);
+      oM.dirMapping = HSVDirectionKey(sym);
 
     end
   

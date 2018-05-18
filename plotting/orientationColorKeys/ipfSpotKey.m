@@ -3,15 +3,15 @@ classdef ipfSpotKey < ipfColorKey
   % Maps an individual color to each given crystal directions being 
   % parallel to a specimen direction (fibre)
   % Properties:
-  % center  - List of crystal directions @Miller
+  % center  - list of crystal directions @Miller
   % color   - n-by-3 list representing RGB values, one for each center
   % psi     - @kernel providing the width and brightness for colored fibre
   % inversePoleFigureDirection - specimen direction @vector3d
   
   properties
-    center
-    color
-    psi
+    center % list of crystal directions @Miller
+    color  % list of RGB values, one for each center
+    psi    % @kernel providing the width and brightness for colored fibre 
   end
   
   methods
