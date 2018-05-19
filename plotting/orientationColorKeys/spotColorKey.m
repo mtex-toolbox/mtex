@@ -1,4 +1,4 @@
-classdef centerOrientationMapping < orientationMapping
+classdef spotColorKey < orientationColorKey
   % 
   %   Detailed explanation goes here
   
@@ -9,8 +9,8 @@ classdef centerOrientationMapping < orientationMapping
   end
   
   methods
-    function oM = centerOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+    function oM = spotColorKey(varargin)
+      oM = oM@orientationColorKey(varargin{:});
       
       oM.center = get_option(varargin,'center',orientation(idRotation,oM.CS1));
       oM.CS1 = oM.center.CS;

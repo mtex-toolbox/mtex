@@ -65,15 +65,15 @@ plot(grains('Fo'),grains('fo').meanOrientation)
 % orientation to color map
 
 % this defines a ipf color key
-oM = ipdfHSVOrientationMapping(grains('Fo'));
+ipfKey = ipfColorKey(grains('Fo'));
 
 %%
 % we can set the inverse pole figure direction and many other properties
 
-oM.inversePoleFigureDirection = xvector;
+ipfKey.inversePoleFigureDirection = xvector;
 
 % compute the colors from the meanorientations
-color = oM.orientation2color(grains('Fo').meanOrientation);
+color = ipfKey.orientation2color(grains('Fo').meanOrientation);
 
 % and use them for plotting
 plot(grains('fo'),color)
@@ -139,7 +139,7 @@ ebsd_maxGrain = ebsd(grains(id));
 %%
 
 % compute the color out of the orientations
-color = oM.orientation2color(ebsd_maxGrain.orientations);
+color = ipfKey.orientation2color(ebsd_maxGrain.orientations);
 
 % plot it
 plot(ebsd_maxGrain, color,'micronbar','off')

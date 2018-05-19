@@ -1,4 +1,4 @@
-classdef patalaOrientationMapping < orientationMapping
+classdef PatalaColorKey < orientationColorKey
 % converts misorientations to rgb values as described in 
 %
 % S. Patala, J. K. Mason, and C. A. Schuh, Improved representations of
@@ -11,10 +11,10 @@ classdef patalaOrientationMapping < orientationMapping
   
   methods
    
-    function oM = patalaOrientationMapping(varargin)
+    function oM = PatalaColorKey(varargin)
       % patala orientation mapping is only defined for grain exchange
       % symmetry -> antipodal
-      oM = oM@orientationMapping(varargin{:},'antipodal');
+      oM = oM@orientationColorKey(varargin{:},'antipodal');
     end
     
     function rgb = orientation2color(oM,mori) 

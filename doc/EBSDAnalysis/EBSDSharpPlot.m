@@ -7,9 +7,8 @@
 %
 
 %% 
-% Using specialized orientation mappings is particularly useful when
-% visualizing sharp data. Let us consider the following data set which
-% restricts to the calcite phase
+% Using advanced color keys is particularly useful when visualizing sharp
+% data. Let us consider the following calcite data set
 
 % plotting conventions
 plotx2east, plotb2east
@@ -17,10 +16,10 @@ mtexdata sharp
 
 ebsd = ebsd('calcite');
 
-oM = ipdfHSVOrientationMapping(ebsd);
+ipfKey = ipfColorKey(ebsd);
 
 close all;
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
 % and have a look into the 100 inverse pole figure.
@@ -65,26 +64,26 @@ cmap(1,:) = [1 0 1];
 colormap(cmap)
 
 %% Sharpening the default colorcoding
-% Next, we want to apply the same ideas as above to the default MTEX
-% color mapping, i.e. we want to stretch the colors such that they cover
-% just the orientations of interest. 
+% Next, we want to apply the same ideas as above to the default MTEX color
+% key, i.e. we want to stretch the colors such that they cover just the
+% orientations of interest.
 
-oM = ipdfHSVOrientationMapping(ebsd.CS.properGroup);
+ipfKey = ipfHSVKey(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the gray spot of the inverse pole figure
-oM.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * oM.whiteCenter;
+ipfKey.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
 
 close all;
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %% 
 % We observe that the orientation map is almost completely gray, except for
 % the  outliers which appears black. Next, we use the option |maxAngle| to
 % increase contrast in the grayish part
 
-oM.maxAngle = 7.5*degree;
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+ipfKey.maxAngle = 7.5*degree;
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
 % You may play around with the option |maxAngle| to obtain better
@@ -94,7 +93,7 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 %
 % Let's have a look at the corresponding color map.
 
-plot(oM,'resolution',0.25*degree)
+plot(ipfKey,'resolution',0.25*degree)
 
 % plot orientations into the color key
 hold on
@@ -105,6 +104,72 @@ hold off
 % closely around the white center. Together with the fact that the
 % transition from white to color is quite rapidly, this gives a high
 % contrast.
+
+
+%%
+% 
+
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
+ebsd(grains(grains.grainSize<=3)) = [];
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
+
+grains = smooth(grains,5);
+
+%%
+
+ipfKey = axisAngleColorKey(ebsd('indexed'));
+
+% use for the reference orientation the grain mean orientation
+ipfKey.oriRef = grains.meanOrientation(ebsd.grainId);
+
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+
+hold on
+plot(grains.boundary,'lineWidth',4)
+hold off
+
+%%
+
+F = halfQuadraticFilter;
+F.alpha = 0.01;
+F.eps = 1e-6;
+F.tol = 1e-10;
+
+ebsdS = smooth(ebsd,F);
+
+% use for the reference orientation the grain mean orientation
+ipfKey.oriRef = grains.meanOrientation(ebsdS('indexed').grainId);
+
+plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
+
+%hold on
+%plot(grains.boundary,'lineWidth',4)
+%hold off
+
+%%
+
+F = infimalConvolutionFilter;
+F.lambda = 0.01;
+F.mu = 0.02;
+
+ebsdS = smooth(ebsd,F);
+
+[grains,ebsdS.grainId] = calcGrains(ebsdS,'angle',1*degree);
+%ebsdS(grains(grains.grainSize<=3)) = [];
+%[grains,ebsdS.grainId] = calcGrains(ebsdS,'angle',1.5*degree);
+
+grains = smooth(grains,5);
+
+
+% use for the reference orientation the grain mean orientation
+ipfKey.oriRef = grains(ebsdS('indexed').grainId).meanOrientation;
+%ipfKey.oriRef = mean(ebsdS('indexed').orientations);
+
+plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations),'micronbar','off')
+
+hold on
+plot(grains.boundary,'lineWidth',4)
+hold off
 
 
 %% 
@@ -142,15 +207,8 @@ hold off
 % plot a grain 
 plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-oM = ipdfHSVOrientationMapping(ebsd);
-oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-oM.maxAngle = 2*degree;
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+ipfKey = ipfHSVKey(ebsd);
+ipfKey.inversePoleFigureDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
+ipfKey.maxAngle = 2*degree;
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold off
-
-%%
-
-ebsd = ebsd.gridify
-
-plot(ebsd,abs(ebsd.gradientX))
-plot(ebsd,abs(ebsd.gradientY))
