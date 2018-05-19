@@ -45,7 +45,7 @@ classdef refractiveIndexTensor < tensor
       
       rI = refractiveIndexTensor.olivin;
       
-      oM = spectralTransmissionOrientationMapping(rI,1000);
+      oM = spectralTransmissionColorKey(rI,1000);
       oM.polarizer = vector3d.Y;
       
       plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations)./100)

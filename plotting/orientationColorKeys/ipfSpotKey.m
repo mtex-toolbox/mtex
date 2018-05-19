@@ -24,7 +24,7 @@ classdef ipfSpotKey < ipfColorKey
       oM.psi = get_option(varargin,'kernel',...
         deLaValeePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
       
-      oM.dirMap = directionMapping(oM.CS1,'dir2color',@(varargin) oM.dir2color(varargin{:}));
+      oM.dirMap = directionColorKey(oM.CS1,'dir2color',@(varargin) oM.dir2color(varargin{:}));
             
     end
   
