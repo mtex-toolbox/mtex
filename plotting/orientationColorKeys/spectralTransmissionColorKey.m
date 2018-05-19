@@ -1,4 +1,4 @@
-classdef spectralTransmissionOrientationMapping < orientationMapping
+classdef spectralTransmissionColorKey < orientationColorKey
 
   properties
     rI                      % refractiveIndexTensor
@@ -10,7 +10,7 @@ classdef spectralTransmissionOrientationMapping < orientationMapping
 
   
   methods
-    function oM = spectralTransmissionOrientationMapping(rI,thickness,varargin)
+    function oM = spectralTransmissionColorKey(rI,thickness,varargin)
 
       oM.rI = rI;
       oM.CS1 = rI.CS;
