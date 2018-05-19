@@ -28,6 +28,19 @@ setMTEXpref('zAxisDirection','outOfPlane');
 plot(ebsd('olivine'),ebsd('olivine').orientations);
 
 
+%% Data Denoising
+
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+ebsd(grains(grains.grainSize < 5)) = [];
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+
+grains = smooth(grains,5);
+
+F = splineFilter;
+
+ebsd = smooth(ebsd,F,'fill',grains);
+
+
 %% The refractive index tensor
 %
 % The refractive index of a material is described by a rank 2 tensor. 
@@ -252,17 +265,22 @@ plot(ebsd('olivine'), rgb)
 
 % commment this out to save the result as a animated gif
 % filename = 'testanimated2.gif';
+vidObj = VideoWriter('olivine.avi','Uncompressed AVI');
+open(vidObj);
 
 colorKey.polarizer = vector3d.X; 
 figure
-plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori));
+plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori),'micronbar','off');
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
 textHandle = text(750,50,[num2str(0,'%10.1f') '\circ'],'fontSize',15,...
-  'color','w','backGroundColor','k');
+  'color','w','backGroundColor', 'k');
 
 % define the step size in degree
-stepSize = 15;
+stepSize = 0.25;
 
-for omega = 0:stepSize:360-stepSize
+for omega = 0:stepSize:90-stepSize
     
   % update polarsation direction
   colorKey.polarizer = rotate(vector3d.X, omega * degree);
@@ -274,6 +292,11 @@ for omega = 0:stepSize:360-stepSize
   textHandle.String = [num2str(omega,'%10.1f') '\circ'];
   
   drawnow
+  
+  if exist('vidObj','var')
+    frame = getframe(gcf);
+    writeVideo(vidObj,frame);
+  end
   
   % Capture the plot as an image
   if exist('filename','var')
@@ -288,6 +311,11 @@ for omega = 0:stepSize:360-stepSize
     end
   end
 end
+
+ if exist('vidObj','var'), close(vidObj); end
+
+
+
 
 
 %% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
