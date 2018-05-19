@@ -247,6 +247,27 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spa
 % rotate only the spatial data about the y-axis
 % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
 
+
+function ebsd = mtexdata_olivine
+
+plotx2east; 
+plotzOutOfPlane
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
+
+% correct data to fit the reference frame
+rot = rotation('Euler',90*degree,180*degree,180*degree);
+ebsd = rotate(ebsd,rot,'keepEuler');
+rot = rotation('Euler',0*degree,0*degree,90*degree);
+ebsd = rotate(ebsd,rot);
+
+% plotting conventions
+setMTEXpref('xAxisDirection','east');
+setMTEXpref('zAxisDirection','outOfPlane');
+
+% rotate only the spatial data about the y-axis
+% ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
+
+
 function ebsd = mtexdata_twins
 
 plotx2east; plotzOutOfPlane

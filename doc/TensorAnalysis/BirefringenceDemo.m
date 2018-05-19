@@ -10,36 +10,24 @@
 % In order to illustarte the effect of birefringence lets consider a
 % olivine data set.
 
-% The imported EBSD map contains mainly Olivine data
-ebsd = loadEBSD('olivineopticalmap.ang')
-cs = ebsd('olivine').CS;
+mtexdata olivine
 
-% correct data to fit the reference frame
-rot = rotation('Euler',90*degree,180*degree,180*degree);
-ebsd = rotate(ebsd,rot,'keepEuler');
-rot = rotation('Euler',0*degree,0*degree,90*degree);
-ebsd = rotate(ebsd,rot);
-
-% plotting conventions
-setMTEXpref('xAxisDirection','east');
-setMTEXpref('zAxisDirection','outOfPlane');
-
-% plot the olivine phase
-plot(ebsd('olivine'),ebsd('olivine').orientations);
-
-
-%% Data Denoising
-
+% reconstruct grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 ebsd(grains(grains.grainSize < 5)) = [];
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
+% some data denoising
 grains = smooth(grains,5);
 
 F = splineFilter;
-
 ebsd = smooth(ebsd,F,'fill',grains);
 
+% plot the olivine phase
+plot(ebsd('olivine'),ebsd('olivine').orientations);
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
 
 %% The refractive index tensor
 %
@@ -63,6 +51,8 @@ ebsd = smooth(ebsd,F,'fill',grains);
 %  n a-axis     0            0
 %  0            n b-axis     0
 %  0            0            n c-axis
+
+cs = ebsd('olivine').CS;
 
 XFo = 0.86; % what is this?
 n_alpha = 1.635*XFo + 1.82  * (1-XFo); % explain these formulae
@@ -224,7 +214,7 @@ plot(ebsd('olivine'),rgb)
 % transmission color key.
 
 % define the colorKey
-colorKey  = spectralTransmissionOrientationMapping(rI,thickness);
+colorKey  = spectralTransmissionColorKey(rI,thickness);
 
 % the following are the defaults and can be ommited
 colorKey.propagationDirection = vector3d.Z; 
@@ -240,7 +230,6 @@ rgb = colorKey.orientation2color(ori);
 %rgb = imadjust(rgb,[],[],.5);
 
 plot(ebsd('olivine'), rgb)
-
 
 %%
 % As usual we me visualize the color key as a colorization of the
@@ -259,14 +248,7 @@ rgb = colorKey.orientation2color(ori);
 
 plot(ebsd('olivine'), rgb)
 
-
-
 %% Illustrating the effect of rotating polarizer and analyser simultanously
-
-% commment this out to save the result as a animated gif
-% filename = 'testanimated2.gif';
-vidObj = VideoWriter('olivine.avi','Uncompressed AVI');
-open(vidObj);
 
 colorKey.polarizer = vector3d.X; 
 figure
@@ -278,7 +260,7 @@ textHandle = text(750,50,[num2str(0,'%10.1f') '\circ'],'fontSize',15,...
   'color','w','backGroundColor', 'k');
 
 % define the step size in degree
-stepSize = 0.25;
+stepSize = 2.5;
 
 for omega = 0:stepSize:90-stepSize
     
@@ -293,182 +275,5 @@ for omega = 0:stepSize:90-stepSize
   
   drawnow
   
-  if exist('vidObj','var')
-    frame = getframe(gcf);
-    writeVideo(vidObj,frame);
-  end
-  
-  % Capture the plot as an image
-  if exist('filename','var')
-    frame = getframe(gcf);
-    im = frame2im(frame);
-    [imind,cm] = rgb2ind(im,256);
-    % Write to the GIF File
-    if omega == 0
-      imwrite(imind,cm,filename,'gif', 'Loopcount',inf,'DelayTime',0.01);
-    else
-      imwrite(imind,cm,filename,'gif','WriteMode','append');
-    end
-  end
 end
 
- if exist('vidObj','var'), close(vidObj); end
-
-
-
-
-
-%% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% I went up to this point 
-% maybe you can explain and document a bit better what you wanted to do
-% below
-
-%%  plot sphere of interference colour with the extinction part
-% somehow it is not posible to do this with the pCS
-
-vprop = plotS2Grid;
-p = xvector;
-% plot xvector along great circles
-rotaxis = xvector;
-greatcirclerotation1 = rotation('axis',rotaxis,'angle',vprop.rho);
-p = rotate(p,greatcirclerotation1);
-rotaxis =yvector;%cross(yvector,vprop);
-greatcirclerotation2 = rotation('axis',rotaxis,'angle',vprop.theta);
-p =rotate(p,greatcirclerotation2);
-filename = 'testanimated4.gif';
-h =figure;
-axis tight manual
-stepSize = 15;
-for omega = 0:stepSize:360
-  rot = rotation('axis',zvector,'angle',omega*degree);
-  polarisationdirection = rot.*p;
-  pCS=polarisationdirection;
-  rgb2 = spectralTransmission(rI,vprop,thickness,'polarizationDirection',pCS);
-  %rgb2 = spectralTransmission(rI,vprop,thickness,'polarizationDirection',polarisationdirection);
-  %rgb2=imadjust(rgb2,[],[],0.5)*1.0;
-  plot3d(vprop,rgb2)
-  az = 55;
-  el = 60;
-  view(az, el);
-  text(0,1.8,3.2,[num2str(omega,'%10.1f') '\circ'],'fontSize',15,'color','w','backGroundColor','k');
-  drawnow
-  % Capture the plot as an image
-  frame = getframe(h);
-  im = frame2im(frame);
-  [imind,cm] = rgb2ind(im,256);
-  % Write to the GIF File
-  if omega == 0
-    imwrite(imind,cm,filename,'gif', 'Loopcount',inf,'DelayTime',0.05);
-  else
-    imwrite(imind,cm,filename,'gif','WriteMode','append');
-  end
-end
-
-
-%%
-opticaxisol = opticalAxis(rI);
-bxa=mean(opticaxisol);
-OA_rotation =  rotation('map',zvector,opticaxisol);
-bxa_rotation = rotation('map',zvector,bxa);
-rI_OA = rotate(rI,OA_rotation(1));
-%rI_OA = rotate(rI,bxa_rotation);%actually BXA
-vprop = plotS2Grid('maxTheta',pi()/2);%5,'minRho',0,'maxRho',365*degree);
-p = xvector;
-%plot xvector along great circles
-rotateZ2vprop=rotation('map',vprop,zvector);
-%p=rotate(p,rotateZ2vprop);
-p = inv(rotateZ2vprop).*p;
-figure
-%scatter(vprop(1:5:end))
-quiver3(vprop(1:15:end),p(1:15:end));
-alpha = angle(p,vprop)/degree;
-figure;plot(vprop,alpha)
-% hold on
-% quiver3(vprop(1:15:end),vprop(1:15:end));
-% hold off
-% figure
-% plot(vprop(1:15:end));
-
-%%
-
-filename = 'testanimated8.gif';
-thickness = 30000;
-h =figure;
-axis tight manual
-for omega = 0:5:360
-rot = rotation('axis',zvector,'angle',omega*degree);
-%polarisationdirection =rot.*p;
-rI_OA_rot =rotate(rI_OA,rot);
-
-pCS=p;
-rgb2 = spectralTransmission(rI_OA_rot,vprop,thickness,'polarizationDirection',pCS);
-   %rgb2 = spectralTransmission(rI,vprop,thickness,'polarizationDirection',polarisationdirection);
-   rgb2=imadjust(rgb2,[],[],0.5)*1.0;
-   plot3d(vprop,rgb2)
-   az = 88;
-   el = 55;
-    view(az, el);
-   text(0,1.5,1.5,[num2str(omega,'%10.1f') '\circ'],'fontSize',15,'color','w','backGroundColor','k');
-   hold on
-   arrow3d(zvector*1.2)
-   hold off
-   drawnow 
-      % Capture the plot as an image 
-      frame = getframe(h); 
-      im = frame2im(frame); 
-      [imind,cm] = rgb2ind(im,256); 
-      % Write to the GIF File 
-      if omega == 0 
-          imwrite(imind,cm,filename,'gif', 'Loopcount',inf,'DelayTime',0.05); 
-      else 
-          imwrite(imind,cm,filename,'gif','WriteMode','append'); 
-      end 
-end     
-
-   
-   %%
-   figure()
-   plot(vprop,rgb2) 
-   %%
-   [nxx,nMinxx,nMaxxx] = birefringence(rI,vprop);
-     
-   figure;quiver3(vprop(1:15:end),nMinxx(1:15:end))
-%%
-vprop = equispacedS2Grid('maxTheta',pi()/2);%5,'minRho',0,'maxRho',365*degree);
-p = xvector;
-%plot xvector along great circles
-rotateZ2vprop=rotation('map',vprop,zvector);
-%p=rotate(p,rotateZ2vprop);
-p = inv(rotateZ2vprop).*p;
-pCS =p;
-x =vprop.x;
-y =vprop.y;
-u =pCS.x;
-v =pCS.y;
-figure
-omega = 3;
-quiver(x(1:omega:end),y(1:omega:end),u(1:omega:end),v(1:omega:end));
-figure
-plot(vprop,abs(pCS.x));mtexColorbar;mtexTitle 'pCS.x'
-nextAxis
-plot(vprop,abs(pCS.y));mtexColorbar;mtexTitle 'pCS.y'
-nextAxis
-plot(vprop,pCS.z);mtexColorbar;mtexTitle 'pCS.z'
-figure
-plot(vprop,(pCS.rho));mtexColorbar;mtexTitle 'pCS.rho'
-nextAxis
-plot(vprop,(pCS.theta));mtexColorbar;mtexTitle 'pCS.theta'
-
-%% failed attempt to make streamlines on the sphere
-number_of_lines = 20;
-[startx, starty]= meshgrid(linspace(min(min(x)),max(max(x)),number_of_lines),linspace(min(min(y)),max(max(y)),number_of_lines));
-% starty = linspace(min(min(y)),max(max(y)),number_of_lines);
-% startx = zeros(size(starty));%starty=starty*pi()/2.1
-h =streamline(x,y,u,v,startx,starty);
-
-%vlines = vector3d(number_of_lines,size(startx))
- %5for i =1:number_of_lines
-vlines = vector3d('polar',h(30).YData,h(30).XData)
- %end
-figure
-plot(vlines)
