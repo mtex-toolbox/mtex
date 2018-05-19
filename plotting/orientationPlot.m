@@ -6,7 +6,7 @@ classdef orientationPlot < handle
 %   cs = crystalSymmetry('mmm')
 %   oS = axisAngleSections(cs,cs)
 %   ori = oS.makeGrid('resolution');
-%   oM = patalaOrientationMapping(cs,cs)
+%   oM = PatalaColorKey(cs,cs)
 %   rgb = oM.orientation2color(ori);
 %   plot(oS,rgb,'surf')
 %

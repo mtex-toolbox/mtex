@@ -1,28 +1,21 @@
-classdef HKLOrientationMapping < ipdfOrientationMapping
-  % defines an orientation mapping based on a certain inverse pole figure
-  %   Detailed explanation goes here
-    
-  properties
-    convention = 'theta'
-  end
+classdef HKLDirectionKey < directionColorKey
   
   methods
-    function oM = HKLOrientationMapping(varargin)
-      oM = oM@ipdfOrientationMapping(varargin{:});      
-      oM.CS1 = oM.CS1.Laue;
-    end
     
-    function rgb = Miller2color(oM,h)
-      
-      % get the bounds of the fundamental region
-      sR = oM.CS1.fundamentalSector;
+    function dM = HKLDirectionKey(varargin)
+      dM@directionColorKey(varargin{:});
+      dM.sym = dM.sym.Laue;
+      dM.sR = dM.sym.fundamentalSector;
+    end
+  
+    function rgb = direction2color(dM,h,varargin)      
       
       % project to fundamental region
-      h = project2FundamentalRegion(vector3d(h),oM.CS1);
+      h = project2FundamentalRegion(vector3d(h),dM.sym);
       [theta,rho] = polar(h(:));
       
       % special case Laue -1
-      if strcmp(oM.CS1.LaueName,'-1')
+      if strcmp(dM.sym.LaueName,'-1')
         maxrho = pi*2/3;
         rrho =  rho+maxrho;
         rrho( rrho> maxrho) = rrho(rrho> maxrho)-pi*2;
@@ -39,8 +32,8 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
         return
       end
   
-      [~, maxTheta] = sR.thetaRange;
-      [minRho,maxRho] = sR.rhoRange;
+      [~, maxTheta] = dM.sR.thetaRange;
+      [minRho,maxRho] = dM.sR.rhoRange;
       
       % compute RGB values
       r = (1-theta./maxTheta);
@@ -49,6 +42,5 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
 
       rgb = [r(:) g(:) b(:)];
     end
-  end
-  
+  end    
 end

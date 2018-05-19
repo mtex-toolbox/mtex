@@ -13,7 +13,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd('phaseName'),ebsd('phaseName').orientation)
 %
 %   % colorize according to custom color
-%   oM = ipdfHSVOrientationMapping(ebsd('phaseName'))
+%   oM = ipfColorKey(ebsd('phaseName'))
 %   color = oM.orientation2color(ebsd('phaseName').orientations);
 %   plot(ebsd('phaseName'),color)
 %
@@ -56,14 +56,14 @@ mP = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
     
-  oM = ipdfHSVOrientationMapping(varargin{1});
+  oM = ipfColorKey(varargin{1});
   varargin{1} = oM.orientation2color(varargin{1});
   
   if ~getMTEXpref('generatingHelpMode')
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
-    disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
+    disp('  oM = ipfColorKey(ori_variable_name)')
     disp('  plot(oM)')
   end
 end

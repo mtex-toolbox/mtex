@@ -1,6 +1,6 @@
-classdef BungeRGBOrientationMapping < orientationMapping
-  % 
-  %   Detailed explanation goes here
+classdef BungeColorKey < orientationColorKey
+  % assigns rgb values to orientations according the the Euler angles
+  
   
   properties
     center = idquaternion
@@ -11,9 +11,9 @@ classdef BungeRGBOrientationMapping < orientationMapping
   
   
   methods
-    function oM = BungeRGBOrientationMapping(varargin)
+    function oM = BungeColorKey(varargin)
       
-      oM = oM@orientationMapping(varargin{:});
+      oM = oM@orientationColorKey(varargin{:});
       
       [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(oM.CS1,oM.CS2);
       

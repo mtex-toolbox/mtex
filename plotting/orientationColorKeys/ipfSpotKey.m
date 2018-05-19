@@ -1,31 +1,34 @@
-classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
+classdef ipfSpotKey < ipfColorKey
   % 
   % Maps an individual color to each given crystal directions being 
   % parallel to a specimen direction (fibre)
   % Properties:
-  % center  - List of crystal directions @Miller
+  % center  - list of crystal directions @Miller
   % color   - n-by-3 list representing RGB values, one for each center
   % psi     - @kernel providing the width and brightness for colored fibre
   % inversePoleFigureDirection - specimen direction @vector3d
   
   properties
-    center
-    color
-    psi
+    center % list of crystal directions @Miller
+    color  % list of RGB values, one for each center
+    psi    % @kernel providing the width and brightness for colored fibre 
   end
   
   methods
-    function oM = ipdfCenterOrientationMapping(varargin)
-      oM = oM@ipdfOrientationMapping(varargin{:});
+    function oM = ipfSpotKey(varargin)
+      oM = oM@ipfColorKey(varargin{:});
       
       oM.center = get_option(varargin,'center',Miller(0,0,1,oM.CS1));
       oM.CS1 = oM.center.CS;
       oM.color = get_option(varargin,'color',[1 0 0]);
       oM.psi = get_option(varargin,'kernel',...
         deLaValeePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
+      
+      oM.dirMap = directionMapping(oM.CS1,'dir2color',@(varargin) oM.dir2color(varargin{:}));
+            
     end
   
-    function rgb = Miller2color(oM,h)
+    function rgb = dir2color(oM,h)
       
       s = size(h);
       rgb = ones(length(h),3);

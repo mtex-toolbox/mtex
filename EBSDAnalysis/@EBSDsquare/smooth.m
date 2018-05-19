@@ -21,7 +21,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   figure
 %   plot(largeGrains(1).boundary,'linewidth',2)
 %   hold on
-%   oM = ipdfHSVOrientationMapping(ebsd);
+%   oM = ipfColorKey(ebsd);
 %   oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 %   oM.maxAngle = 1.5*degree;
 %   plot(ebsd,oM.orientation2color(ebsd.orientations))
