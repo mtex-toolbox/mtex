@@ -90,10 +90,14 @@ function txt = tooltip(empt,eventdata) %#ok<INUSL>
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
 
-rho = atan2(yp,xp);
-rqr = xp^2 + yp^2;
-theta = acos(1-rqr/2);
+ax = get(eventdata,'Target');
+while ~ismember(ax,mtexFig.children), ax = get(ax,'parent'); end
 
-m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
+sP = getappdata(ax,'sphericalPlot');
+m = Miller(sP.proj.iproject(xp,yp),getappdata(ax,'CS'));
 m = round(m);
 txt = char(m,'tolerance',3*degree,'commasep');
+
+end
+
+end
