@@ -28,7 +28,7 @@ v = rmOption(v(:),'resolution');
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
 
 % possible steplength
-omega = 1.25.^(-30:1:15) * degree;
+omega = 1.25.^(-30:1:12) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
 
