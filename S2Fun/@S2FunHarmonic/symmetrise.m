@@ -21,6 +21,9 @@ function [sFs,psi] = symmetrise(sF, varargin)
 
 % symmetrise with respect to an axis
 if isa(varargin{1},'vector3d')
+
+  % start with a zero function
+  sFs = sF; sFs.fhat = 0;
   
   % rotate sF such that varargin{1} -> z
   if varargin{1} ~= zvector
@@ -29,7 +32,6 @@ if isa(varargin{1},'vector3d')
   end
   
   % set all Fourier coefficients f_hat(l,k)=0 for k ~= 0
-  sFs = S2FunHarmonic(0);
   M = sF.bandwidth;
   sFs.bandwidth = M;
   sFs.fhat((0:M).^2+(1:M+1)) = sF.fhat((0:M).^2+(1:M+1));
@@ -37,9 +39,10 @@ if isa(varargin{1},'vector3d')
   
   % rotate sF back
   if varargin{1} ~= zvector
-    sFs = rotate(sFs,inv(rot));
+    sFRot = rotate(sFs,inv(rot));
+    sFs.fhat = sFRot.fhat;
   end
-  
+    
   return;
 end
 
