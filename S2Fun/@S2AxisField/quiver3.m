@@ -8,8 +8,12 @@ function h = quiver3(sAF,varargin)
 %   S2VectorField/plot
 %
 
+% maybe we should an empty sphere as background
+ax = get_option(varargin,'parent',gca);
+if isempty(findall(get(ax,'Children'),'type','Surface'))
+  plotEmptySphere;
+end
 
-plotEmptySphere;
 % plot the function values
 h = plot(sAF,'3d',varargin{:});
 

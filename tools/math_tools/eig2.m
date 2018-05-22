@@ -1,4 +1,4 @@
-function [lambda,v] = eig2(M,varargin)
+function [lambda,v1,v2] = eig2(M,varargin)
 % eigenvalue and vectors of a symmetric 2x2 matrix
 %
 % Syntax
@@ -7,16 +7,17 @@ function [lambda,v] = eig2(M,varargin)
 %
 %   lambda = eig2(a11,a12,a22)
 %
+%   [lambda,v1,v2] = eig2(a11,a12,a22)
 %
-%   [omega,lambda] = eig2(a11,a12,a22)
+%   [lambda,omega] = eig2(a11,a12,a22)
 %
 % Input
-%  M - array of symmetric 3x3 matrix
-%  a11, a12,a22 - vector of matrix elements
+%  M - array of symmetric 2x2 matrix
+%  a11, a12, a22 - vectors of matrix elements
 %
 % Output
 %  lambda - eigen values
-%  v - eigen vectors
+%  v1, v2 - eigen vectors
 %  omega - angle of the largest eigen vector
 %
 
@@ -24,38 +25,64 @@ function [lambda,v] = eig2(M,varargin)
 if nargin == 1 || ischar(varargin{1})
   a11 = M(1,1,:); a12 = M(1,2,:); a22 = M(2,2,:);
 else
-  a11 = M; a12 = varargin{2}; a22 = varargin{3};
+  a11 = M; a12 = varargin{1}; a22 = varargin{2};
 end
 
 % input should be column vectors
-a11 = a11(:).'; a12 = a12(:).'; a22 = a22(:).';
+a11 = a11(:); a12 = a12(:); a22 = a22(:);
 
-id = a12>0;
+% eigen value compution
+% 0 = (a11 - l)(a22-l) - a12^2 = l^2 - (a11 + a22) l + a11 a22 - a12^2 
+% lambda12 = (a11 + a22)./ 2 +- sqrt((a11 + a22)^2 - 4 a11 a22 + 4a12^2   ) / 2
 
-% compute the eigen values
-tr = a11(id) + a22(id);
-D = sqrt( 4*a12(id).^2 + (a11(id)-a22(id)).^2 );
-lambda(id,:) = 2./a12(id) * (repmat(tr,1,2) + [D -D]);
+p = (a11 + a22)./2;
+D = real(sqrt(p.^2 - a11 .* a22 + a12.^2));
+lambda(:,1) = p - D;
+lambda(:,2) = p + D;
 
-% the special case of a diagonal matrix
-lambda(~id,1) = max(a11(~id),a22(~id));
-lambda(~id,2) = min(a11(~id),a22(~id));
-
+% compute eigen vectors
 if nargout > 1
 
-  omega = 0.5 * atan2(2*a12,a11-a22);
-
-  if check_option(varargin,'angle')
-    v = omega;
+  % then angle of the largest eigen vector
+  omega = atan2(a11 - lambda(:,1),-a12);
+ 
+  if nargout == 2
+    v1 = omega;
   else
-    v = [cos(omega) sin(omega)];
+    v1 = [cos(omega) sin(omega)];
+    v2 = [-sin(omega) cos(omega)];
   end
-      
-  % for some reason Matlab eig function changes to order outputs if called
-  % with two arguments - so we should do the same
-  [lambda,v] = deal(v,lambda);
   
 end
+
+end
+
+function test
+
+% generate random symmetric 2x2 matrixes
+N = 10;
+a = rand(3,N);
+
+tic
+[lambda1,v1,v2] = eig2(a(1,:),a(2,:),a(3,:));
+toc
+
+tic
+lambda2 = zeros(N,2);
+V1 = zeros(N,2);
+V2 = zeros(N,2);
+for i = 1:N
+  A = [a(1,i),a(2,i);a(2,i),a(3,i)];
+  [V,lambda2(i,:)] = eig(A,'vector');
+  V1(i,:) = V(:,1);
+  V2(i,:) = V(:,2);
+end
+toc
+
+norm(lambda1 - lambda2) ./ N
+max(abs(1-abs(sum(v1 .* V1,2))))
+max(abs(1-abs(sum(v2 .* V2,2))))
+
 
 end
 

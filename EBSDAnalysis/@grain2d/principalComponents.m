@@ -41,7 +41,7 @@ for k=1:numel(poly)
   Vg = Vg(1:end-1,:) .* [dist,dist];
       
   % compute eigen values and vectors
-  [omega(k), ew] = eig2(Vg' * Vg,'angle');
+  [ew, omega(k)] = eig2(Vg' * Vg);
     
   % halfaxes are square roots of the eigenvalues
   a(k) = sqrt(ew(1)); b(k) = sqrt(ew(2));

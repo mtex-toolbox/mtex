@@ -11,7 +11,7 @@ function varargout = fitEllipse(grains,varargin)
 %  grains   - @grain2d
 %
 % Output:
-%  omega    - angle  giving trend of ellipse long axis
+%  omega    - angle giving trend of ellipse long axis
 %  a        - long axis radius
 %  b        - short axis radius
 % 

@@ -3,7 +3,7 @@ function varargout = plot(f,varargin)
 
 o = f.orientation(varargin{:});
 
-if isempty(o), varargout = cell{1,nargout}; return; end
+if isempty(o), varargout = cell(1,nargout); return; end
 
 if isa(o,'orientation')
 
