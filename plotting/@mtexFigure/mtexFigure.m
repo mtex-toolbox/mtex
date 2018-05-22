@@ -61,7 +61,12 @@ classdef mtexFigure < handle
     outerPlotSpacing  %
     dataCursorMenu    % handle of the data cursor context menu  
   end
-   
+
+  properties (Access = protected)
+    cBarShift
+  end
+  
+  
   methods    
     
     function mtexFig = mtexFigure(varargin)
