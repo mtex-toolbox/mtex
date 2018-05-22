@@ -44,7 +44,7 @@ for k=1:numel(poly)
   [ew, omega(k)] = eig2(Vg' * Vg);
     
   % halfaxes are square roots of the eigenvalues
-  a(k) = sqrt(ew(1)); b(k) = sqrt(ew(2));
+  b(k) = sqrt(ew(1)); a(k) = sqrt(ew(2));
 end
 
 % compute scaling

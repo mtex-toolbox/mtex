@@ -1,5 +1,5 @@
 function [n,nMin,nMax] = birefringence(rI,vprop)
-% 
+% birefringence from refractive index tensor
 %
 % Syntax
 %

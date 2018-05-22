@@ -16,9 +16,10 @@ function [lambda,v1,v2] = eig2(M,varargin)
 %  a11, a12, a22 - vectors of matrix elements
 %
 % Output
-%  lambda - eigen values
-%  v1, v2 - eigen vectors
-%  omega - angle of the largest eigen vector
+%  lambda - eigen values (first column small one, second column large one)
+%  v1 - list of eigen vectors to the smallest eigen value
+%  v2 - list of eigen vectors to the largest eigen value
+%  omega - angle of the largest eigen vector in [0,pi]
 %
 
 % get input
@@ -44,13 +45,13 @@ lambda(:,2) = p + D;
 if nargout > 1
 
   % then angle of the largest eigen vector
-  omega = atan2(a11 - lambda(:,1),-a12);
+  omega = atan2(a12,a11 - lambda(:,1));
  
   if nargout == 2
-    v1 = omega;
+    v1 = mod(omega,pi); % only the range between 0 and pi matters
   else
-    v1 = [cos(omega) sin(omega)];
-    v2 = [-sin(omega) cos(omega)];
+    v1 = [-sin(omega) cos(omega)];
+    v2 = [cos(omega) sin(omega)];
   end
   
 end
