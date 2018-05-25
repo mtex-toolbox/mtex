@@ -32,7 +32,7 @@ classdef HSVDirectionKey < directionColorKey
             
       dM = dM@directionColorKey(varargin{:});
       if ismember(dM.sym.id,[2,18,26])
-        warning(['Not a topological correct colormap! Please use the point group ' char(dM.CS1.properGroup)]);
+        warning(['Not a topological correct colormap! Please use the point group ' char(dM.sym.properGroup)]);
       end
       
       dM.updatesR;
