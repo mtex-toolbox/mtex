@@ -1,5 +1,5 @@
 function [area,centroids] = calcVoronoiArea(v,varargin)
-% compute the area of the Voronoi decomposition
+% compute the spherical area of the Voronoi decomposition
 %
 % Input
 %  v - @vector3d
