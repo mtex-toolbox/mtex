@@ -1,4 +1,4 @@
-function sF = radon(sF, varargin)
+function sF = radon(sF, delta)
 % Radon transform of a spherical function
 %
 % Syntax
@@ -22,10 +22,19 @@ function sF = radon(sF, varargin)
 % (n-1)!! = 1 * 3 * 5 * ... (n-1)
 % n!!     = 2 * 4 * 6 * ... n
 
-A = zeros(sF.bandwidth+1,1);
-A(1) = 1;
-for n = 2:2:sF.bandwidth
-  A(n+1) = -A(n-1) * (n-1)/n;
-end
 
+if nargin == 2
+  
+  A = sum(legendre0(sF.bandwidth,cos(pi/2+delta)),2);
+  
+else
+  A = zeros(sF.bandwidth+1,1);
+  A(1) = 1;
+  for n = 2:2:sF.bandwidth
+    A(n+1) = -A(n-1) * (n-1)/n;
+  end
+  
+end
+  
+  
 sF = conv(sF,A);
