@@ -34,6 +34,7 @@ function [v,f] = min(sF, varargin)
 %  KMAX           -  maximal iterations
 %  TAULS          -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
 %  KMAXLS         -  maximal iterations for line search
+%  tolerance      -  tolerance for nearby nodes to be ignored
 %  
 
 % pointwise minimum of spherical harmonics
