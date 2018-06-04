@@ -1,5 +1,5 @@
 classdef orthographicProjection < sphericalProjection
-  %equal area projection
+  %orthographic projection
   
   methods 
         

@@ -23,11 +23,29 @@ grains = smooth(grains,5);
 F = splineFilter;
 ebsd = smooth(ebsd,F,'fill',grains);
 
+%%
+
 % plot the olivine phase
 plot(ebsd('olivine'),ebsd('olivine').orientations);
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
+
+gg = grains(grains.grainSize > 100);
+gg = gg('o')
+cS = crystalShape.olivine;
+hold on
+plot(gg,0.8*cS)
+hold off
+
+%%
+
+cS = crystalShape.olivine
+
+hold on
+plot(grains('Ol'),0.5*cS)
+hold off
+
 
 %% The refractive index tensor
 %
@@ -61,9 +79,9 @@ n_gamma = 1.670*XFo + 1.879 * (1-XFo);
 rI = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
 %% Birefringence
-% The birefringence describes the difference |dn| in wavespeed between the fastest
-% polarization direction |nMax| and the slowest polarization direction
-% |nMin| for a given propagation direction |vprop|.
+% The birefringence describes the difference |dn| in wavespeed between the
+% fastest polarization direction |nMax| and the slowest polarization
+% direction |nMin| for a given propagation direction |vprop|.
 
 % lets define a propagation direction
 vprop = Miller(1,1,1,cs);
