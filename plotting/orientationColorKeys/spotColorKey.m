@@ -12,7 +12,7 @@ classdef spotColorKey < orientationColorKey
     function oM = spotColorKey(varargin)
       oM = oM@orientationColorKey(varargin{:});
       
-      oM.center = get_option(varargin,'center',orientation(idRotation,oM.CS1));
+      oM.center = get_option(varargin,'center',orientation.id(oM.CS1));
       oM.CS1 = oM.center.CS;
       oM.color = get_option(varargin,'color',[1 0 0]);
       oM.psi = get_option(varargin,'kernel',...

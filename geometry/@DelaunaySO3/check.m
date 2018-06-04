@@ -5,7 +5,7 @@ function check
 
 cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
 ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',20*degree)
-%ori = uorientation(randq(100),cs);
+%ori = orientation.rand(100,cs);
 %ori = orientation(rotation(crystalSymmetry('O')),cs)
 
 % pertube data a bit

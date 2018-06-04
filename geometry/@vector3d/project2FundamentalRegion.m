@@ -75,7 +75,7 @@ inside = sR.checkInside(v);
 v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col));
 
 % some testing code
-% v = randv(100)
+% v = vector3d.rand(100)
 % cs = crystalSymmetry('m-3m')
 % tic; v_proj = project2FundamentalRegion(v,cs); toc
 % sR = cs.fundamentalSector

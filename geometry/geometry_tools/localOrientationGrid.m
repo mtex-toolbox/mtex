@@ -32,7 +32,7 @@ end
 
 % project center to fundamental region 
 % TODO: call project2FundamentalRegion ???
-center = quaternion(get_option(varargin,'center',idRotation));
+center = quaternion(get_option(varargin,'center',rotation.id));
 sym_center = symmetrise(center,CS.properGroup,SS.properGroup);
 [~,ind] = min(angle(sym_center),[],1);
 center = sym_center(ind);

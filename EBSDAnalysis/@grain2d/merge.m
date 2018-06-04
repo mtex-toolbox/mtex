@@ -55,7 +55,7 @@ grainsMerged.id = (1:numNewGrains).';
 grainsMerged.poly = cell(numNewGrains,1);
 grainsMerged.phaseId = zeros(numNewGrains,1);
 grainsMerged.grainSize = zeros(numNewGrains,1);
-grainsMerged.prop.meanRotation = idRotation(numNewGrains,1);
+grainsMerged.prop.meanRotation = rotation.id(numNewGrains,1);
 
 % 5. set new grainIds in grains.boundary
 ind = grains.boundary.grainId > 0;

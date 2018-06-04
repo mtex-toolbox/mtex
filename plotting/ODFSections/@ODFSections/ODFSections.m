@@ -13,7 +13,7 @@ classdef ODFSections < handle
   %
   %   plot(oS,ori)
   %
-  %   ori = orientation(randq(100),cs,cs)
+  %   ori = orientation.rand(100,cs,cs)
   %   plot(oS,ori)
   
   properties

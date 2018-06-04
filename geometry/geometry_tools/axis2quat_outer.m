@@ -14,7 +14,7 @@ function q = axis2quat_outer(v,omega)
 %% Output
 %  q - @quaternion
 %% See also
-%  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat idquaternion 
+%  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat
 
 v = v ./norm(v);
 omega = omega(:)';

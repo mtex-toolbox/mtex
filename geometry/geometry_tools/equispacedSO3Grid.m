@@ -116,7 +116,7 @@ end
 S3G = SO3Grid(ori,alphabeta,gamma,'resolution',res);
 
 if check_option(varargin,'maxAngle')
-  center = get_option(varargin,'center',idquaternion);
+  center = get_option(varargin,'center',quaternion.id);
   S3G = subGrid(S3G,center,maxAngle);
 end
 

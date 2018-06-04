@@ -11,7 +11,7 @@ classdef orientationPlot < handle
 %   plot(oS,rgb,'surf')
 %
 %   hold on
-%   ori = orientation(randq(100),cs,cs)
+%   ori = orientation.rand(100,cs,cs)
 %   plot(oS,ori)
   
   properties

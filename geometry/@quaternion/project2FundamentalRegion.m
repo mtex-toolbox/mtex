@@ -2,7 +2,7 @@ function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 % projects quaternions to a fundamental region
 %
 % Syntax
-%   project2FundamentalRegion(q,CS)       % to FR around idquaternion
+%   project2FundamentalRegion(q,CS)       % to FR
 %   project2FundamentalRegion(q,CS,q_ref) % to FR around reference rotation
 %   project2FundamentalRegion(q,CS1,CS2,q_ref)  % misorientation to FR around id
 %
@@ -20,7 +20,7 @@ function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 % distingish different cases
 if nargin == 2
   
-  q = project2FR_ref(q,CS1,idquaternion);
+  q = project2FR_ref(q,CS1,quaternion.id);
 
 else
   

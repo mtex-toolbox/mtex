@@ -23,7 +23,7 @@ switch symmetry.pointGroups(cs.id).LaueId
   case {2, 5, 8} % 1, 211, 121
     rot = quaternion(cs);
   case {11, 18, 27, 35} % 112, 3, 4, 6
-    rot = idquaternion;
+    rot = quaternion.id;
   case {16, 32, 40} % 222, 422, 622
     rot = symAxis(a1,2);
   case 21 % 321

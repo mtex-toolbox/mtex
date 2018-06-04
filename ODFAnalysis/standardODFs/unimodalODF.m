@@ -39,7 +39,7 @@ if nargin > 0 && isa(varargin{1},'quaternion')
     center = orientation(center,CS,SS);
   end
 else
-  center = orientation(idquaternion,CS,SS);
+  center = orientation.id(CS,SS);
 end
 
 % get kernel

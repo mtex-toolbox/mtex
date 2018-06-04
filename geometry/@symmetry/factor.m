@@ -18,7 +18,7 @@ qs2 = unique(quaternion(s2),'antipodal');
 d = subSet(qs1,is1);
 
 % step 2: compute l
-l = idquaternion;
+l = quaternion.id;
 c = any(isappr(abs(dot_outer(l*d,qs2)),1),1);
 while ~all(c)
   l = [l;subSet(qs2,find(~c,1))]; %#ok<AGROW>
@@ -26,7 +26,7 @@ while ~all(c)
 end
 
 % step 3: compute r
-r = idquaternion;
+r = quaternion.id;
 c = any(isappr(abs(dot_outer(d*r,qs1)),1),1);
 while ~all(c)
   r = [r;subSet(qs1,find(~c,1))]; %#ok<AGROW>

@@ -91,7 +91,7 @@ plotPDF(odf,Miller(1,0,0,odf.CS),'antipodal')
 % ODF up to a given error. The MTEX command to simulate EBSD data is
 % <ODF.calcEBSD.html calcEBSD>, e.g.
 
-ori = calcOrientations(unimodalODF(orientation(idquaternion,cs)),500)
+ori = calcOrientations(unimodalODF(orientation.id(cs)),500)
 plotPDF(ori,Miller(1,0,0,cs),'antipodal','MarkerSize',3)
 
 %% SUB: Demo

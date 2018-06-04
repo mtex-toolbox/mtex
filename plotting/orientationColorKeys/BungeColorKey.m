@@ -3,7 +3,7 @@ classdef BungeColorKey < orientationColorKey
   
   
   properties
-    center = idquaternion
+    center = quaternion.id
     phi1Range
     phi2Range
     PhiRange

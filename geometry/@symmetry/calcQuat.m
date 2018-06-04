@@ -53,7 +53,7 @@ end
 
 % apply inversion
 if size(pg.Inversion ,1) == 2
-  rot = [rot,{[rotation(idquaternion),-rotation(idquaternion)]}];
+  rot = [rot,{[1,-1] .* rotation.id}];
 else
   rot = arrayfun(@(i) rot{i} .* pg.Inversion(i).^(0:length(rot{i})-1) ,...
     1:length(rot),'uniformOutput',false);

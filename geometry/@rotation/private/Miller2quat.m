@@ -20,7 +20,7 @@ function quat = Miller2quat(v1,v2,CS)
 %
 % See also
 % rotation_index quaternion/quaternion 
-% vec42quat hr2quat idquaternion 
+% vec42quat hr2quat
 
 
 if isa(v1,'double')

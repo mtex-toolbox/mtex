@@ -50,7 +50,7 @@ q = axis2quat(axis,q.angle);
 % some testing code
 % cs1 = crystalSymmetry('432')
 % cs2 = crystalSymmetry('32')
-% q = randq(100,1);
+% q = quaternion.rand(100,1);
 % q_proj = project2FRCS2(q,cs1,cs2)
 % hist(q_proj.angle./degree)
 % scatter(q,'markercolor','b')

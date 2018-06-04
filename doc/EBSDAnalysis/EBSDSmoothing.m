@@ -204,7 +204,7 @@ ebsdNaN = ebsd;
 
 % set 50 percent of the orientations to nan
 ind = discretesample(length(ebsd),round(length(ebsd)*50/100));
-ebsdNaN(ind).orientations = orientation(nanquaternion,ebsd.CS);
+ebsdNaN(ind).orientations = orientation.nan(ebsd.CS);
 
 % plot the reduced data
 plot(ebsdNaN,ipfKey.orientation2color(ebsdNaN.orientations))

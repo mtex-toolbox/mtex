@@ -100,17 +100,13 @@ classdef rotation < quaternion & dynOption
 
             case 'inversion'
         
-              quat = idquaternion;
+              quat = quaternion.id;
               rot.i = true;
         
             case {'mirroring','reflection'}
         
               quat = axis2quat(varargin{2},pi);
               rot.i = true(size(quat));
-        
-            case 'random'
-           
-              quat = randq(get_option(varargin,'points',1));
 
             otherwise
               
@@ -152,6 +148,10 @@ classdef rotation < quaternion & dynOption
         
     function r = rand(varargin)
       r = rotation(quaternion.rand(varargin{:}));      
+    end
+    
+    function r = inversion(varargin)
+      r = rotation.id(varargin{:});
     end
     
   end
