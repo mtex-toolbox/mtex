@@ -6,6 +6,11 @@ classdef HKLDirectionKey < directionColorKey
       dM@directionColorKey(varargin{:});
       dM.sym = dM.sym.Laue;
       dM.sR = dM.sym.fundamentalSector;
+      
+      if ismember(dM.sym.id,[2,5,8,11,18,21,24,27,35,42])
+        warning('Not a topological correct colormap! Green to blue colorjumps possible');
+      end
+      
     end
   
     function rgb = direction2color(dM,h,varargin)      

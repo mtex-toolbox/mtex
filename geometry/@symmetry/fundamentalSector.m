@@ -81,9 +81,8 @@ switch cs.id
     N = -getMinAxes(cs);    
   case {7,10} % m11, 1m1, mm1
     N = getMinAxes(cs);    
-  case 5 % 2/m11
-  case 8 % 12/m1
-      N = rotate(N,-90*degree);
+  case {5,8} % 2/m11 12/m1
+    N = [zvector,getMinAxes(cs)];
   case 11
   case 12 % 222
   case {13,14,15} % 2mm, m2m, mm2
