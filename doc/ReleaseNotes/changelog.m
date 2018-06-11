@@ -5,7 +5,42 @@
 %
 % *Dislocation systems* 
 %
+% Starting with version 5.1 MTEX introduces a class representing
+% dislocation systems. Dislocation systems may be edge or screw
+% dislocations and are either defined by its burgers and line vectors
+%
+%   cs = crystalSymmetry('432')
+%   b = Miller(1,0,0,cs,'uvw')
+%   l = Miller(1,-1,-2,cs,'uvw')
+%   dS = dislocationSystem(b,l)
+%
+% by a family of slipsystems
+%
+%   sS = slipSystem.fcc(cs)
+%   dS = dislocationSystem(sS)
+%
+% or as the family of predefined dominant dislocation systems by
+%
+%   dS = dislocationSystem.fcc(cs)
+%
+% More information how to calculate with dislocation systems can be found
+% <dislocationSystem_index.html here>.
+%
 % *Geometrically neccesary dislocations*
+%
+% The newly introduced dislocation systems play an important role when
+% computing geometrically neccesary dislocations from EBSD data. The 
+%
+% # define the dominant <dislocationSystem_index.html dislocation systems>
+% # transform the dislocation systems into specimen coordinates for each
+% pixel of the EBSD map
+% # compute the <curvature tensor> for each pixel in the EBSD map
+% # <curvatureTensor.fitDislocationSystem.html fit the dislocation systems>
+% to the curvature tensors.
+% # compute the total energy in each pixel
+% 
+% The whoole workflow is illustratet in this <script>
+%
 %
 % *Tensor arithmetics*
 %

@@ -1,4 +1,11 @@
-%% Birefrigence
+%% Birefrigence%%
+
+cS = crystalShape.olivine
+
+hold on
+plot(grains('Ol'),0.5*cS)
+hold off
+
 %
 % Birefringence is the optical property of a material having a refractive
 % index that depends on the polarization and propagation direction of
@@ -36,14 +43,6 @@ gg = gg('o')
 cS = crystalShape.olivine;
 hold on
 plot(gg,0.8*cS)
-hold off
-
-%%
-
-cS = crystalShape.olivine
-
-hold on
-plot(grains('Ol'),0.5*cS)
 hold off
 
 
@@ -87,14 +86,14 @@ rI = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 vprop = Miller(1,1,1,cs);
 
 % and compute the birefringence
-[dn,nMin,nMax] = rI.birefringence(vprop)
+[dn,pMin,pMax] = rI.birefringence(vprop)
 
 %%
 % If the polarization direction is ommited the results are spherical
 % functions which can be easily visualized.
 
 % compute the birefringence as a spherical function
-[dn,nMin,nMax] = rI.birefringence
+[dn,pMin,pMax] = rI.birefringence
 
 % plot it
 plot3d(dn,'complete')
@@ -102,8 +101,8 @@ mtexColorbar
 
 % and on top of it the polarization directions
 hold on
-quiver3(nMin,'color','white')
-quiver3(nMax)
+quiver3(pMin,'color','white')
+quiver3(pMax)
 hold off
 
 %% The Optical Axis
