@@ -7,6 +7,7 @@ function h = plot(cS,varargin)
 %   plot(x,y,z,cS)
 %   plot(xy,cS)
 %   plot(cS,'faceColor','red','faceAlpha',0.5,'edgeColor','k') % colorize by property
+%   plot(cS,'faceColor',cS.faceAraea)
 %
 % Input
 %  cS  - @crystalShape

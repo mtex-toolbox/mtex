@@ -6,7 +6,7 @@
 % *Dislocation systems* 
 %
 % Starting with version 5.1 MTEX introduces a class representing
-% dislocation systems. Dislocation systems may be edge or screw
+% dislocation systems. Dislocation systems may be lists of edge or screw
 % dislocations and are either defined by its burgers and line vectors
 %
 %   cs = crystalSymmetry('432')
@@ -29,7 +29,9 @@
 % *Geometrically neccesary dislocations*
 %
 % The newly introduced dislocation systems play an important role when
-% computing geometrically neccesary dislocations from EBSD data. The 
+% computing geometrically neccesary dislocations from EBSD data. The
+% workflow is illustrate the script <GND_demo.html GND_demo> and consists
+% of the following steps:
 %
 % # define the dominant <dislocationSystem_index.html dislocation systems>
 % # transform the dislocation systems into specimen coordinates for each
@@ -39,9 +41,6 @@
 % to the curvature tensors.
 % # compute the total energy in each pixel
 % 
-% The whoole workflow is illustratet in this <script>
-%
-%
 % *Tensor arithmetics*
 %
 % <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
@@ -49,6 +48,11 @@
 % diag>, <tensor.eye.html eye>,
 % 
 % *Birefringence*
+%
+% MTEX 5.1 includes some basic methods to analyze and simulate opticaly
+% isotrope materials. This includes the computation of the optical axis,
+% birefringence and spectral transmission. The new features are
+% demonstrated in <BirefringenceDemo.html BirefringenceDemo>.
 %
 % *Color Keys* 
 %

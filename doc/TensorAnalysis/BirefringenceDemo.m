@@ -1,17 +1,9 @@
-%% Birefrigence%%
-
-cS = crystalShape.olivine
-
-hold on
-plot(grains('Ol'),0.5*cS)
-hold off
-
+%% Birefrigence
 %
 % Birefringence is the optical property of a material having a refractive
 % index that depends on the polarization and propagation direction of
 % light. It is one of the oldest methods to determine orientations of
 % crystals in thin sections of rocks.
-
 
 %% Import Olivine Data
 % In order to illustarte the effect of birefringence lets consider a
@@ -78,9 +70,9 @@ n_gamma = 1.670*XFo + 1.879 * (1-XFo);
 rI = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
 %% Birefringence
-% The birefringence describes the difference |dn| in wavespeed between the
-% fastest polarization direction |nMax| and the slowest polarization
-% direction |nMin| for a given propagation direction |vprop|.
+% The birefringence describes the difference |n| in diffraction index
+% between the fastest polarization direction |pMax| and the slowest
+% polarization direction |pMin| for a given propagation direction |vprop|.
 
 % lets define a propagation direction
 vprop = Miller(1,1,1,cs);
@@ -132,7 +124,7 @@ rgb = rI.spectralTransmission(vprop,thickness,'polarizationDirection',p)
 
 %%
 % Effectively, the rgb value depend only on the angle tau between the
-% polariztzion direction and the slowest polarization direction |nMin|.
+% polariztzion direction and the slowest polarization direction |pMin|.
 % Instead of the polarization direction this angle may be specified
 % directly
 
