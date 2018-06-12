@@ -11,13 +11,19 @@ function S = sym(T,varargin)
 %  S - @tensor
 %
 
+S = T;
+S.M = S.M .* 0;
+
 switch  T.rank
-  case 4
-    error('not yet implemented!');
-    m = tensor42(T.M,T.doubleConvention);
-  case 3
-    error('not yet implemented!');
-    m = tensor32(T.M,T.doubleConvention);
+  case {4,6,8}
+    allP = perms(1:T.rank);
+    for p = allP.'
+      S.M = S.M + permute(T.M,p);
+    end
+    S.M = S.M ./ size(allP,1);
   case 2
     S = 0.5*(T + T');
+  otherwise
+    T.M = T.M .* 0;
+    S = T;
 end
