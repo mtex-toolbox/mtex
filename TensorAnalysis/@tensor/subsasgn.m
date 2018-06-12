@@ -16,11 +16,11 @@ switch s(1).type
     
     s(1).type = '()';
     s(1).subs = [s(1).subs,repcell(':',1,ndims(T))];
-    if T.rank == 4
+    if T.rank == 4 && length(s(1).subs) == 2 + ndims(T)
       M = tensor42(T.M,T.doubleConvention);
       M = subsasgn(M,s,b);
       T.M = tensor24(M,T.doubleConvention);
-    elseif T.rank == 3
+    elseif T.rank == 3 && length(s(1).subs) == 2 + ndims(T)
       M = tensor32(T.M,T.doubleConvention);
       M = subsasgn(M,s,b);
       T.M = tensor23(M,T.doubleConvention);
