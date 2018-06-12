@@ -13,7 +13,7 @@ function ori = localOrientationGrid(CS,SS,maxAngle,varargin)
 
 % get resolution
 if check_option(varargin,'points')
-  res = maxangle/(get_option(varargin,'points')/4)^(1/3);
+  res = maxAngle/(get_option(varargin,'points')/4)^(1/3);
 else
   res = get_option(varargin,'resolution',5*degree);
 end

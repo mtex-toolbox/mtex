@@ -27,17 +27,17 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 % may be we should populate only a ball
 maxAngle = get_option(varargin,'maxAngle',2*pi);
 
-if maxAngle < pi/2/CS.multiplicityZ
-  S3G = localOrientationGrid(CS,SS,maxAngle,varargin{:});
-  return
-end
-
 % extract specimen symmetry if provided
 if nargin == 1
   SS = specimenSymmetry('1');
 elseif ~isa(SS,'symmetry')
   varargin = [{SS},varargin];
   SS = specimenSymmetry('1');
+end
+
+if maxAngle < pi/2/CS.multiplicityZ
+  S3G = localOrientationGrid(CS,SS,maxAngle,varargin{:});
+  return
 end
 
 % get fundamental region
