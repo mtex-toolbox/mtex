@@ -48,7 +48,6 @@ hold off
 % In the case of Olivine the refractive index tensor can be computed as
 % follows.
 % TODO ... some more words
-
 % alpha : b-axis
 % beta  : c-axis
 % gamma : a-axis
