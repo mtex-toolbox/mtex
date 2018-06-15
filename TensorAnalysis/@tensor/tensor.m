@@ -78,7 +78,7 @@ classdef tensor < dynOption
         end
 
         % transform from voigt matrix representation to ordinary rank four tensor
-        if numel(T.M) == 36
+        if size(T.M,1) == 6 && size(T.M,2) == 6
           T.M = tensor24(T.M,T.doubleConvention);
         elseif numel(T.M) == 18
           T.M = tensor23(T.M,T.doubleConvention);
@@ -121,9 +121,51 @@ classdef tensor < dynOption
   end
   
   methods (Static = true)
-    
+
     function T = load(varargin)
       T = loadTensor(varargin{:});
+    end
+
+    function T = eye(varargin)
+      r = get_option(varargin,'rank',2);
+      varargin = delete_option(varargin,'rank');
+      switch r
+        case 2
+          T = tensor(repmat(eye(3),[1,1,varargin{:}]),'rank',2);
+        case 4
+          M = diag([1,1,1,0.5,0.5,0.5]);
+          T = tensor(repmat(M,[1,1,varargin{:}]),'rank',4);
+        otherwise
+          error('Not supported!')
+      end
+    end
+    
+    function T = zeros(varargin)
+      r = get_option(varargin,'rank',2);
+      varargin = delete_option(varargin,'rank');
+      d = [repmat(3,1,r),varargin{:},1];
+      T = tensor(zeros(d),'rank',r);
+    end
+    
+    function T = ones(varargin)
+      r = get_option(varargin,'rank',2);
+      varargin = delete_option(varargin,'rank');
+      d = [repmat(3,1,r),varargin{:},1];
+      T = tensor(ones(d),'rank',r);
+    end
+    
+    function T = nan(varargin)
+      r = get_option(varargin,'rank',2);
+      varargin = delete_option(varargin,'rank');
+      d = [repmat(3,1,r),varargin{:},1];
+      T = tensor(nan(d),'rank',r);
+    end
+    
+    function T = rand(varargin)
+      r = get_option(varargin,'rank',2);
+      varargin = delete_option(varargin,'rank');
+      d = [repmat(3,1,r),varargin{:},1];
+      T = tensor(rand(d),'rank',r);
     end
     
     function eps = leviCivita

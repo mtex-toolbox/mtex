@@ -87,7 +87,7 @@ classdef grainBoundary < phaseList & dynProp
       gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
       
       % compute misrotations
-      gB.misrotation = rotation(idquaternion(size(gB.F,1),1));
+      gB.misrotation = rotation.id(size(gB.F,1),1);
       isNotBoundary = all(gB.ebsdId,2);
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...

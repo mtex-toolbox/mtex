@@ -14,12 +14,15 @@ function [f,v] = steepestDescent(sF, varargin)
 %
 % Options
 %  STARTINGNODES  -  starting nodes of type @vector3d
+%  kmax  -  maximal iterations
+%  tolerance  -  tolerance for nearby nodes to be ignored
 %  
 
 sF = sF.truncate;
 
 % parameters
 res = get_option(varargin,'resolution',0.025*degree);
+TOL = get_option(varargin,'tolerance',degree/4);
 kmax  = get_option(varargin, 'kmax', 20); % maximal iterations
 isAntipodal = {'','antipodal'};
 v = get_option(varargin, 'startingnodes', ...
@@ -28,7 +31,7 @@ v = rmOption(v(:),'resolution');
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
 
 % possible steplength
-omega = 1.25.^(-30:1:15) * degree;
+omega = 1.25.^(-30:1:12) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
 
@@ -52,7 +55,7 @@ for k = 0:kmax
   if all(id == 1), break; end
 
   % maybe we can reduce the number of points a bit
-  [v, I] = unique(v, 'tolerance', 0.005);
+  [v, I] = unique(v, 'tolerance', TOL);
   f = f(I);
   
 end

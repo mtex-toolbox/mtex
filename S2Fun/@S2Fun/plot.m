@@ -22,16 +22,22 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 plotNodes = plotS2Grid(varargin{:});
 
 % evaluate the function on the plotting grid
-values = sF.eval(plotNodes);
+values = reshape(sF.eval(plotNodes),[],length(sF));
 
-h = [];
-for j = 1:length(sF)
-
-  if j > 1, mtexFig.nextAxis; end
-    
-  % plot the function values
-  h = [h,plot(plotNodes,values(:,j),'contourf','hold',varargin{:})]; %#ok<AGROW>
+if check_option(varargin,'rgb')
   
+  h = plot(plotNodes,values,'surf','hold',varargin{:});
+
+else
+  h = [];
+  for j = 1:length(sF)
+
+    if j > 1, mtexFig.nextAxis; end
+    
+    % plot the function values
+    h = [h,plot(plotNodes,values(:,j),'contourf','hold',varargin{:})]; %#ok<AGROW>
+  
+  end
 end
 
 if isNew % finalize plot

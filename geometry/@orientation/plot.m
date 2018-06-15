@@ -1,4 +1,4 @@
-function plot(ori,varargin)
+function varargout = plot(ori,varargin)
 % annotate a orientation to an existing plot
 %
 % Syntax
@@ -18,13 +18,13 @@ function plot(ori,varargin)
 
 if isNew || isappdata(mtexFig.gca,'orientationPlot')
   
-  scatter(ori,varargin{:})
+  [varargout{1:nargout}] = scatter(ori,varargin{:});
   return;
 
 elseif isappdata(mtexFig.parent,'ODFSections')
 
   oS = getappdata(mtexFig.parent,'ODFSections');
-  oS.plot(ori,varargin{:});
+  [varargout{1:nargout}] = oS.plot(ori,varargin{:});
   return
   
 end
@@ -42,18 +42,18 @@ for ax = allAxes(:).'
   
     case 'pdf' % pole figure annotations
       
-      plotPDF(ori,varargin{:},'parent',ax,'noTitle');
+      [varargout{1:nargout}] = plotPDF(ori,varargin{:},'parent',ax,'noTitle');
     
     case 'ipdf' % inverse pole figure annotations
       
-      plotIPDF(ori,varargin{:},'parent',ax,'noTitle');
+      [varargout{1:nargout}] = plotIPDF(ori,varargin{:},'parent',ax,'noTitle');
   
     case 'odf' % ODF sections plot
     
-      plotSection(ori,varargin{:},'parent',ax);
+      [varargout{1:nargout}] = plotSection(ori,varargin{:},'parent',ax);
     
     otherwise
     
-      scatter(ori,varargin{:},'parent',ax);
+      [varargout{1:nargout}] = scatter(ori,varargin{:},'parent',ax);
   end
 end

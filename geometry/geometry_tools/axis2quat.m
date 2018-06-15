@@ -16,7 +16,7 @@ function q = axis2quat(x,y,z,omega)
 % Output
 %  q - @quaternion
 % See also
-%  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat idquaternion 
+%  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat
 
 if nargin == 4
   

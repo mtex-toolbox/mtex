@@ -32,4 +32,4 @@ if nargin > 1 && isa(varargin{1},'vector3d')
 end
 
 [varargout{1:nargout}] = scatter(reshape(v,[],1),varargin{:},'edgecolor',...
-  get_option(varargin,{'color','linecolor'},'k'),'Marker','none');
+  get_option(varargin,{'color','linecolor'},'k'),'Marker','none','scatter_resolution',1*degree);

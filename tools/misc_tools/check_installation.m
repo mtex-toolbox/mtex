@@ -109,7 +109,7 @@ end
 
 try
   S3G = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',100);
-  dot_outer(S3G,idquaternion,'epsilon',pi/4);
+  dot_outer(S3G,quaternion.id,'epsilon',pi/4);
   e = true;
 catch
   e = false;

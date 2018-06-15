@@ -97,7 +97,7 @@ cs = crystalSymmetry('211');
 
 S3G = equispacedSO3Grid(cs,symmetry,'points',3000);
 
-q = randq(1000);
+q = quaternion.rand(1000);
 
 epsilon = 180*degree;
 tic, d1 = dot_outer(S3G,q,'epsilon',epsilon);toc

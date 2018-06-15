@@ -61,7 +61,7 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   if ori.antipodal, aP = {'antipodal'}; else, aP = {}; end
   S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res,aP{:});
 
-  % construct a sparse matrix showing the relatation between both grids
+  % construct a sparse matrix showing the relation between both grids
   M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
 
   % compute weights

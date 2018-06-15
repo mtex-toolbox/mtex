@@ -3,7 +3,7 @@ function t = textureindex(odf,varargin)
 %
 % The tetxure index of an ODF f is defined as:
 %
-% $$ t = -\int f(g)^2 dg$$
+% $$ t = \int f(g)^2 dg$$
 %
 % Input
 %  odf - @ODF 

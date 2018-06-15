@@ -7,6 +7,7 @@ function h = plot(cS,varargin)
 %   plot(x,y,z,cS)
 %   plot(xy,cS)
 %   plot(cS,'faceColor','red','faceAlpha',0.5,'edgeColor','k') % colorize by property
+%   plot(cS,'faceColor',cS.faceAraea)
 %
 % Input
 %  cS  - @crystalShape
@@ -42,14 +43,19 @@ end
 % extract color
 fc = get_option(varargin,'FaceColor',cS.CS.color);
 
-cmap = getMTEXpref('EBSDColors');
-colorNames = getMTEXpref('EBSDColorNames');
-if isempty(fc)
-  fc = 'cyan';
-elseif ischar(fc) && any(strcmpi(fc,colorNames))
-  fc = cmap{strcmpi(fc,colorNames)};
-end  
-varargin = set_option(varargin,'FaceColor',fc);
+if isnumeric(fc) && size(fc,1) == size(cS.F,1)
+  varargin = set_option(varargin,'FaceColor','flat');
+  varargin = [varargin,'FaceVertexCData',fc];
+else
+  cmap = getMTEXpref('EBSDColors');
+  colorNames = getMTEXpref('EBSDColorNames');
+  if isempty(fc)
+    fc = 'cyan';
+  elseif ischar(fc) && any(strcmpi(fc,colorNames))
+    fc = cmap{strcmpi(fc,colorNames)};
+  end
+  varargin = set_option(varargin,'FaceColor',fc);
+end
 
 % make a nice axis if not yet done
 if isNew

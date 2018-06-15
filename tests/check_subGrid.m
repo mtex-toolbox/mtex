@@ -30,11 +30,11 @@ plot(radius/degree,[f',g'])
 return
 
 x = SO3Grid(1000,crystalSymmetry('cubic'));
-dist(x,idquaternion,'epsilon',20*degree);
+dist(x,quaternion.id,'epsilon',20*degree);
 
 q = SO3Grid(res,cs,ss);
-q = subGrid(q,idquaternion,50*degree);
-q = subGrid(q,idquaternion,20*degree);
+q = subGrid(q,quaternion.id,50*degree);
+q = subGrid(q,quaternion.id,20*degree);
 
 %
 

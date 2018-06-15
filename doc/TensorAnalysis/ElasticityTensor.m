@@ -79,7 +79,7 @@ T = ChristoffelTensor(C,vector3d.X)
 % wave velocities of the p, s1, and s2 wave, as well as of the polarization
 % directions. Therefore, we need also the density of the material, e.g.,
 
-rho = 2.3
+rho = 3.355
 
 %%
 % which we can write directly into the ellastic stiffness tensor

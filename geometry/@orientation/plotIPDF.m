@@ -40,9 +40,7 @@ end
 
 % find inverse pole figure direction
 r = [];
-if ~isempty(mtexFig.currentAxes)
-  r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection');
-end
+try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
 if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
@@ -68,9 +66,9 @@ for ir = 1:length(r)
   h = ori(:) \ rSym;
   
   %  plot  
-  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
   [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
+  if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
   
   % plot annotations
   setappdata(cax,'inversePoleFigureDirection',r(ir));
@@ -92,10 +90,14 @@ function txt = tooltip(empt,eventdata) %#ok<INUSL>
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
 
-rho = atan2(yp,xp);
-rqr = xp^2 + yp^2;
-theta = acos(1-rqr/2);
+ax = get(eventdata,'Target');
+while ~ismember(ax,mtexFig.children), ax = get(ax,'parent'); end
 
-m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
+sP = getappdata(ax,'sphericalPlot');
+m = Miller(sP.proj.iproject(xp,yp),getappdata(ax,'CS'));
 m = round(m);
 txt = char(m,'tolerance',3*degree,'commasep');
+
+end
+
+end

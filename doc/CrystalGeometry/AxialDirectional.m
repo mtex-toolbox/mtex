@@ -115,31 +115,31 @@ mtexdata forsterite
 
 %%
 % Now we plot these data with a colorcoding according to the inverse
-% (1,0,0) pole figure. If we use the Laue group for inverse pole figure
+% (100) pole figure. If we use the Laue group for inverse pole figure
 % color coding we add antipodal symmetry to the inverse pole figure
 
-oM = ipdfHSVOrientationMapping(ebsd('fo').CS.Laue);
+ipfKey = ipfColorKey(ebsd('fo').CS.Laue);
 
-% the colorcode
-plot(oM)
+% plot the color key
+plot(ipfKey)
 
 %%
 % Here the colorized data
 
-plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
+plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 
 
 %%
 % If we use the point group of proper rotations this antipodal symmetry is
 % not present and a larger region of the inverse pole figure is colorized
 
-oM = ipdfHSVOrientationMapping(ebsd('fo').CS.properGroup);
+ipfKey = ipfColorKey(ebsd('fo').CS.properGroup);
 
 % the colorcode
-plot(oM)
+plot(ipfKey)
 
 %%
 % Here the colorized data
 
-plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
+plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 

@@ -70,11 +70,11 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 %
 % In the MTEX there is a list of predefined orientations:
 %
-% * [[cubeOrientation.html,cubeOrientation]]
-% * [[gossOrientation.html,gossOrientation]]
-% * [[brassOrientation.html,brassOrientation]]
+% * [[orientation.cube.html,cube]]
+% * [[orientation.goss.html,goss]]
+% * [[orientation.brass.html,brass]]
 
-o = orientation('goss',cs,ss)
+o = orientation.goss(cs,ss)
 
 %% SUB: Rotating Crystal Directions onto Specimen Directions
 %

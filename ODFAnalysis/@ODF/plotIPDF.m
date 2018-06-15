@@ -36,8 +36,8 @@ for i = 1:length(r)
   p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
 
   % plot
-  mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
   [~,cax] = h.plot(p,'doNotDraw','smooth',varargin{:});
+  mtexTitle(cax(1),char(r(i),'LaTeX'));
 
   % store geometry
   set(cax,'tag','ipdf');
@@ -55,11 +55,15 @@ if isNew % finalize plot
 end
 
 % --------------- tooltip function ------------------------------
-function txt = tooltip(varargin)
+function txt = tooltip(obj,event)
 
 [h_local,value] = getDataCursorPos(mtexFig);
 
-h_local = Miller(h_local,getappdata(mtexFig.parent,'CS'),'uvw');
+ax = get(event,'Target');
+while ~ismember(ax,mtexFig.children), ax = get(ax,'parent'); end
+
+
+h_local = Miller(h_local,getappdata(ax,'CS'),'uvw');
 h_local = round(h_local,'tolerance',3*degree);
 txt = [xnum2str(value) ' at ' char(h_local)];
 

@@ -10,7 +10,7 @@ figTightInset = mtexFig.outerPlotSpacing * [1,1,1,1];
 if isempty(mtexFig.children), return; end
 ax = mtexFig.children(1);
     
-if strcmpi(get(ax,'visible'),'off')% || strcmpi(get(ax,'XColor'),'none')
+if strcmpi(get(ax,'visible'),'off') || strcmpi(get(ax,'XColor'),'none')
   
   xtl = get(ax,'xTickLabel');
   ytl = get(ax,'yTickLabel');
@@ -61,7 +61,8 @@ end
    pos = get(mtexFig.cBarAxis(1),'position');
    pos = pos(3:4);
    pos(pos==max(pos)) = 0;
-      
+   fs = get(mtexFig.cBarAxis(1),'FontSize');
+   
    try
      tiPos = get(mtexFig.cBarAxis(1),'tightInset');
      tiPos = tiPos(1:2) + tiPos(3:4);
@@ -70,14 +71,16 @@ end
      l = get(mtexFig.cBarAxis(1),'Label');
      s = get(l,'String');
      if isempty(s)
-       tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+       tiPos = [3.5,1.5] * fs;
      elseif get(l,'Rotation') == 0
-       tiPos = [3.5,3.5]*get(mtexFig.cBarAxis(1),'FontSize');
+       tiPos = [3.5,3.5] * fs;
      else
-       tiPos = [5.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+       tiPos = [5.5,1.5] * fs;
      end
    end
-   pos(pos>0) = pos(pos>0) + tiPos(pos>0) + 10;
+   mtexFig.cBarShift = tiPos(pos>0) + fs / 2;
+   
+   pos(pos>0) = pos(pos>0) + mtexFig.cBarShift + fs / 2;
     
    if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
      tightInset = tightInset + [0,pos(2),pos(1),0];

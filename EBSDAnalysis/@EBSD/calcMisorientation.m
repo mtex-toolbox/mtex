@@ -33,10 +33,11 @@ function [mori,ori2] = calcMisorientation(ebsd1,varargin)
 
 % get second ebsd set
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
-if any(ind)
-  ebsd2 = varargin{find(ind,1)};
-else
+isSamePhase = ~any(ind);
+if isSamePhase
   ebsd2 = ebsd1;
+else
+  ebsd2 = varargin{find(ind,1)};
 end
 
 % function works only for single phases
@@ -72,6 +73,7 @@ i1 = i1(ind); i2 = i2(ind);
 if nargout <= 1
   % compute misorientations
   mori = ebsd1.orientations(i1) .\ ebsd2.orientations(i2);
+  mori.antipodal = isSamePhase;
 else
   mori = ebsd1.orientations(i1);
   ori2 = ebsd2.orientations(i2);

@@ -10,7 +10,7 @@ else
 end
     
 % take random rotational axes
-axis = randv(npoints,1);
+axis = vector3d.rand(npoints);
 
 % take random rotational angles
 M = 1000000;             % discretisation parameter

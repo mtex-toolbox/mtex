@@ -5,6 +5,7 @@ function h = plot(oR,varargin)
 % boundary and adjust the axes limits properly.
 %
 
+lwMinor = get_option(varargin,'lineWidthMinor',0.5);
 if oR.antipodal, varargin = ['antipodal',varargin]; end
 oP = newOrientationPlot(oR.CS1,oR.CS2,'axisAngle','noBoundary',varargin{:});
 hold on
@@ -22,7 +23,7 @@ theta = linspace(0,pi,13);
 r = vector3d('theta',theta.','rho',rho.');
 r(~sR.checkInside(r)) = nan;
 q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
-h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
+h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);
 
 rho = linspace(0,2*pi,25);
 theta = linspace(0,pi,360);
@@ -31,7 +32,7 @@ theta = linspace(0,pi,360);
 r = vector3d('theta',theta,'rho',rho);
 r(~sR.checkInside(r)) = nan;
 q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
-h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
+h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);
 
 % plot a surface
 if ~check_option(varargin,'noSurface')
@@ -73,7 +74,8 @@ if all(size(color) == [length(f),3])
     h4(i) = plot(f(i),'color',color(i,:),'linewidth',3,'noBoundaryCheck','parent',oP.ax);
   end
 else
-  h4 = plot(f,'color',color,'linewidth',1.5,'noBoundaryCheck','parent',oP.ax);
+  lw = get_option(varargin,'linewidth',3);
+  h4 = plot(f,'color',color,'linewidth',lw,'noBoundaryCheck','parent',oP.ax);
 end
 
 hold off

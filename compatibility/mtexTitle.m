@@ -26,7 +26,11 @@ h = optiondraw(title(ax,s,...
 
 set(get(ax,'Title'),'Visible','on');
 
+try
+  mtexFig = getappdata(get(ax,'Parent'),'mtexFig');
+  drawNow(mtexFig,varargin{:});
+end
+
 if nargout == 0, clear h; end
 
 end
-

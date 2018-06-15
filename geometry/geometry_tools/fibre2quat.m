@@ -18,7 +18,7 @@ function q = fibre2quat(h,r,varargin)
 %
 % See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
-% vec42quat euler2quat idquaternion 
+% vec42quat euler2quat
 
 q1 = hr2quat(h,r);
 

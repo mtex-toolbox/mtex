@@ -31,7 +31,7 @@ q = reshape(CS2.subSet(ics2),[],1) .* reshape(q,[],1) .* reshape(CS1.subSet(ics1
 % some testing code
 % cs1 = crystalSymmetry('432')
 % cs2 = crystalSymmetry('32')
-% q_ref = randq(1,1);
-% q = randq(100,1);
+% q_ref = quaternion.rand(1,1);
+% q = quaternion.rand(100,1);
 % q_proj = project2FRCS2_ref(q,cs1,cs2,q_ref);
 % hist((angle(q_proj,q_ref) )/degree)

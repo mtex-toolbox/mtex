@@ -1,6 +1,110 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.1.0 04/2018
+%
+% *Dislocation systems* 
+%
+% Starting with version 5.1 MTEX introduces a class representing
+% dislocation systems. Dislocation systems may be lists of edge or screw
+% dislocations and are either defined by its burgers and line vectors
+%
+%   cs = crystalSymmetry('432')
+%   b = Miller(1,1,0,cs,'uvw')
+%   l = Miller(1,-1,-2,cs,'uvw')
+%   dS = dislocationSystem(b,l)
+%
+% by a family of slipsystems
+%
+%   sS = slipSystem.fcc(cs)
+%   dS = dislocationSystem(sS)
+%
+% or as the family of predefined dominant dislocation systems by
+%
+%   dS = dislocationSystem.fcc(cs)
+%
+% More information how to calculate with dislocation systems can be found
+% <dislocationSystem_index.html here>.
+%
+% *Geometrically neccesary dislocations*
+%
+% The newly introduced dislocation systems play an important role when
+% computing geometrically neccesary dislocations from EBSD data. The
+% workflow is illustrate the script <GND_demo.html GND_demo> and consists
+% of the following steps:
+%
+% # define the dominant <dislocationSystem_index.html dislocation systems>
+% # transform the dislocation systems into specimen coordinates for each
+% pixel of the EBSD map
+% # compute the <curvatureTensor_index.html curvature tensor> for each
+% pixel in the EBSD map
+% # <curvatureTensor.fitDislocationSystems.html fit the dislocation systems>
+% to the curvature tensors.
+% # compute the total energy in each pixel
+% 
+% *Tensor arithmetics*
+%
+% <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
+% det>, <tensor.mean.html mean>, <tensor.diag.html
+% diag>, <tensor.eye.html eye>, <tensor.sym.html sym>
+% 
+% *Birefringence*
+%
+% MTEX 5.1 includes some basic methods to analyze and simulate optically
+% anisotropic materials. This includes the computation of the optical axis,
+% birefringence and spectral transmission. The new features are
+% demonstrated in <BirefringenceDemo.html BirefringenceDemo>.
+%
+% *Color Keys* 
+%
+% In MTEX 5.1 the color keys used for coloring EBSD have been a bit
+% reorganised.
+%
+% * seperate classes for directional color keys. So far these classes are
+% <HSVDirectionKey.html HSVDirectionKey>, <HKLDirectionKey.html
+% HKLDirectionKey>, <TSLDirectionKey.html TSLDirectionKey>. This has become
+% neccesary as some orientation color keys depend directional color keys
+% with different symmetry. 
+%
+% * new color key <axisAngleColorKey.html axisAngleColorKey> that
+% implements the coloring described in K. Thomsen, K. Mehnert, P. W. Trimby
+% and A. Gholinia: Quaternion-based disorientation coloring of orientation
+% maps, Ultramicroscopy, 2017. In central idea is to colorise the
+% misorientation axis with respect to the specimen reference system.
+%
+% * The existing color keys have been renamed for better consistency. The
+% new names are <BungeColorKey.html BungeColorKey>, <ipfHSVKey.html
+% ipfHSVKey>, <ipfHKLKey.html ipfHKLKey>,<ipfTSLKey.html ipfTSLKey>,
+% <ipfSpotKey.html ipfSpotKey>, <spotColorKey.html spotColorKey>,
+% <PatalaColorKey.html PatalaColorKey>
+%
+% *Spherical functions*
+%
+% * new function <S2Fun.discreteSample.html discreteSample> to
+% compute random samples from spherical density functions
+% * new option to <S2FunHarmonic.symmetrise.html symmetrise> to symmetrise
+% a spherical function with respect to an axis
+%
+% *Misc*
+%
+% * new fuction <grain2d.fitEllipse.html fitEllipse> to assign ellipses to
+% grains
+% * the functions <tensor.symmetrise.html tensor/symmetrise> and
+% <S2FunHarmonic.symmetrise.html S2Fun/symmetrise> do support
+% symmetrisation with respect to a certain axis.
+% * the function <quaternion.export.html export> allows to export arbitrary
+% additional properties together with the Euler angles, e.g. the half axes
+% and orientation of the grain ellipses
+% * the function <loadOrientation_generic.html loadOrientation_generic>
+% allows to import arbitrary additional properties together with the
+% orientations, e.g., weights
+% * new option |logarithmic|
+% * new function <ODF.gradient.html ODF/gradient> to compute the gradient
+% of and ODF at a certain orientation
+% * explicitely set the number of rows and columns in a MTEXFigure plot
+% with
+% * EBSD hdf5 interface works now for Bruker data as well
+%
 %% MTEX 5.0.0 03/2018
 %
 % *Replace all executables by two mex files*
@@ -105,6 +209,22 @@
 % one can not distinguish between the polarisation direction |d| and |-d|.
 % In MTEX we call vector fields with antipodal values are represented by
 % variables of type <S2AxisFieldHarmonic_index.html AxisField>.
+%
+% *Scalar tensor properties are returned as spherical functions*
+%
+% Any scalar or vectorial property of a tensor is not returned as a
+% spherical function or spherical vector field. Examples are the velocity
+% properties mentioned above, Youngs modulus, shear modulus, Poisson ration
+% etc. In particular, plotting those directional dependend quantities is as
+% simple as
+%
+%   plot(C.YoungsModulus)
+%
+% This makes the old syntax
+%
+%   plot(C,'plotType','YoungsModulus')
+%
+% obsolete. It is not supported anymore.  
 %
 % *Crystal shapes*
 %

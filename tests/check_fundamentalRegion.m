@@ -8,15 +8,15 @@ for s1 = 1:11
     CS1 = crystalSymmetry(s1);
     CS2 = crystalSymmetry(s2);
     
-    q1 = randq(n);
-    q2 = randq(n);
+    q1 = quaternion.rand(n);
+    q2 = quaternion.rand(n);
     
     o1 = orientation(q1,CS1,symmetry);
     o2 = orientation(q2,CS2,symmetry);
     
     [q,omega] = project2FundamentalRegion(inv(q1).*q2,CS2,CS1);
     
-    w = angle(q,idquaternion);
+    w = angle(q,quaternion.id);
     
     omega2 = angle(o1,o2);
     

@@ -1,4 +1,4 @@
-function sF = dtheta(sF)
+function sF = dthetasin(sF)
 % first derivative in direction theta
 
 s = size(sF);

@@ -71,13 +71,13 @@ classdef halfQuadraticFilter < EBSDFilter
         % Collapse manifold dimensions
         uM = uM | (isnan(q.a));
         % Set all unknowns to nan in u
-        u(uM) = nanquaternion;
+        u(uM) = quaternion.nan;
         % Remember Pixels outside the domain
         outside =  u;
         while any(~(~isnan(u(:).a) | ~dM(:)))
           % Set pixels Outside the domain to NaN, since they should
           % not be used for the initialisation
-          u(~dM) = nanquaternion;
+          u(~dM) = quaternion.nan;
           % Collect the neighborhood of each pixel
           B = reshape(cat(3,u,u([2:end end],:),u(:,[2:end end]),u([1 1:end-1],:),u(:,[1 1:end-1])),[prod(dims),5]);
           setVals = sum(isnan(B(:,2:5).a),2)<4 ...
@@ -97,7 +97,7 @@ classdef halfQuadraticFilter < EBSDFilter
         u( ~dM) = outside(~dM);
         % NaN values outside the domain (the only oney remaining)
         % are set to the identity
-        u(isnan(u.a))=idquaternion;
+        u(isnan(u.a)) = quaternion.id;
       end
       
       u_old = u;

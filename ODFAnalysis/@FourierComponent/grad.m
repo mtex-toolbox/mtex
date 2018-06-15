@@ -1,4 +1,4 @@
-function g = grad(component,ori,varargin)
+function [g,f_phi1,f_Phi,f_phi2] = grad(component,ori,varargin)
 % gradient at orientation g
 %
 % Syntax
@@ -18,12 +18,31 @@ function g = grad(component,ori,varargin)
 
 if isempty(ori), g = vector3d; return; end
 
+% fallback to generic method
+if check_option(varargin,'check')
+  g = grad@ODFComponent(component,ori,varargin{:});
+  return
+end
+
 % extract bandwidth
 L = min(component.bandwidth+1,get_option(varargin,'bandwidth',inf));
 component.bandwidth = L;
 
+% change Fourier coefficients such that we can work with standard convention
+nfsoft_flags = 0;
+for l = 1:L
+  
+ [k1,k2] = meshgrid(-l:l,-l:l);
+ k1(k1>0) = 0;
+ k2(k2>0) = 0;
+ s = (-1).^k1 .* (-1).^k2 .* reshape((-1).^((1:(2*l+1)^2)-1),2*l+1,2*l+1);
+  
+ ind = (deg2dim(l)+1):deg2dim(l+1);
+ component.f_hat(ind) = s.*reshape(component.f_hat(ind),2*l+1,2*l+1);
+end
+
 % create plan
-nfsoft_flags = 2^4;
+%nfsoft_flags = 4;
 plan = nfsoftmex('init',L,length(ori),nfsoft_flags,0,4,1000,2*ceil(1.5*L));
 
 % set nodes
@@ -32,6 +51,7 @@ nfsoftmex('set_x',plan,abg.');
 
 % node-dependent precomputation
 nfsoftmex('precompute',plan);
+
 
 %% step 1: f_phi1 
 Ldim = deg2dim(double(L+1));
@@ -68,7 +88,7 @@ nfsoftmex('trafo',plan);
 % get function values
 f_phi2 = nfsoftmex('get_f',plan);
 
-%% ------------------------ f_theta ---------------------------
+%% step 3: f_theta 
 fhat = zeros(size(fhat));
 for l = 0:L-1
     
@@ -77,13 +97,13 @@ for l = 0:L-1
   
   % b
   if l > 0
-    fhat(ind) = k1(:) .* k2(:) ./ l./(l+1) .* component.f_hat(ind);
+    fhat(ind) = -k1(:) .* k2(:) ./ l./(l+1) .* component.f_hat(ind);
   end
   
   % c
   next = (deg2dim(l+1)+1):deg2dim(l+2);
   c  = (l+2)/(l + 1)/(2*l + 3) * sqrt(((l+1)^2 - k1.^2) .* ((l+1)^2 - k2.^2));
-  fhat(ind) = fhat(ind) + c(:) .* component.f_hat(next(inner(l+1)));
+  fhat(ind) = fhat(ind) - c(:) .* component.f_hat(next(inner(l+1)));
     
   % a_n-1
   if l > 0
@@ -106,10 +126,15 @@ f_Phi = nfsoftmex('get_f',plan) ./ sin(abg(:,2));
 nfsoftmex('finalize',plan);
 
 %% combine result
+% by applying the metric tensor 
 
-g = (f_phi1 + cos(abg(:,2)) .* f_phi2) * vector3d.Z + ...
-  (f_phi2 + cos(abg(:,2)) .* f_phi1) .* (ori' * vector3d.Z) + ...
-  f_Phi .* rotate(vector3d.Y,abg(:,1));
+g = vector3d((real(f_phi1 - cos(abg(:,2)) .* f_phi2) .* (ori' * vector3d.Z) + ...
+  real(f_phi2 - cos(abg(:,2)) .* f_phi1) .* (vector3d.Z)) ./ sin(abg(:,2)).^2) + ...
+  real(f_Phi) .* rotate(vector3d.Y,-abg(:,3));
+
+if max(abs(f_phi1)) < 1e-5, disp('f_phi1 == 0'); end
+if max(abs(f_phi2)) < 1e-5, disp('f_phi2 == 0'); end
+if max(abs(f_Phi)) < 1e-5, disp('f_Phi == 0'); end
 
 end
 
@@ -118,47 +143,4 @@ function id = inner(n)
  [k1,k2] = meshgrid(-n:n);
  id = abs(k1)<n & abs(k2)<n;
  id = id(:);
-end
-
-function testing
-
-cs = crystalSymmetry('1');
-ref = orientation.id(cs);
-odf = unimodalODF(ref,'halfwidth',80*degree);
-
-fodf = FourierODF(odf)
-
-omega = linspace(0,40)
-rot = rotation('axis',yvector,'angle',omega*degree)
-%rot = rotation('axis',yvector,'angle',5*degree)
-
-g1 = odf.grad(rot)
-g2  =fodf.grad(rot)
-
-
-%plot(norm(odf.grad(rot))
-
-
-
-end
-
-function testing2
-
-cs = crystalSymmetry('1');
-odf = fibreODF(Miller(0,0,1,cs),vector3d.Z,'halfwidth',80*degree);
-fodf = FourierODF(odf)
-
-
-omega = linspace(0,40)
-rot = rotation('axis',yvector,'angle',omega*degree)
-rot = rotation('axis',yvector,'angle',5*degree)
-
-odf.grad(rot)
-fodf.grad(rot)
-
-
-%plot(norm(odf.grad(rot))
-
-
-
 end

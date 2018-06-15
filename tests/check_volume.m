@@ -3,7 +3,7 @@
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('1');
 
-odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
+odf = unimodalODF(quaternion.id,cs,ss,'halfwidth',1.5*degree);
 
 %%
 
@@ -15,8 +15,8 @@ r = linspace(1*degree,10*degree,10);
 for i = 1:length(r)
   fprintf('.');
   v(i,1) = volume(odf,q,r(i)); 
-  v(i,2) = volume(odf,idquaternion,r(i)); 
-  %v(i,1) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
+  v(i,2) = volume(odf,quaternion.id,r(i)); 
+  %v(i,1) = volume(uniformODF(cs,ss),quaternion.id,r(i)); 
 end
 fprintf('\n');
 %v(:,2) = length(cs)*(r - sin(r))./pi;
@@ -49,7 +49,7 @@ plot(r/degree,reshape(v,size(v,1),[]));
 %r = linspace(0,100*degree,20);
 %for i = 1:length(r)
 %  v(i,1) = volume(odf,calcModes(odf),r(i));
-%  v(i,2) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
+%  v(i,2) = volume(uniformODF(cs,ss),quaternion.id,r(i)); 
 %end
 
 %plot(r/degree,v);

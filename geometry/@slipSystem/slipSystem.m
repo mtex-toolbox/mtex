@@ -12,7 +12,7 @@ classdef slipSystem
 %
   
   properties    
-    b % slip direction or burgers vector
+    b % slip direction
     n % plane normal 
     CRSS % critical resolved shear stress
   end
@@ -82,7 +82,7 @@ classdef slipSystem
       
       % display coordinates  
       if isa(sS.CS,'crystalSymmetry')
-        if any(strcmp(sS.b.CS.lattice,{'hexagonal','trogonal'}))
+        if any(strcmp(sS.b.CS.lattice,{'hexagonal','trigonal'}))
           d = [sS.b.UVTW sS.n.hkl];
           d(abs(d) < 1e-10) = 0;
           cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});
@@ -120,13 +120,17 @@ classdef slipSystem
     % some predefined slip systems
     % see https://damask.mpie.de/Documentation/CrystalLattice
     
+    function  sS = primitiveCubic(cs,varargin)   
+      sS = slipSystem(Miller(1,0,0,cs,'uvw'),Miller(0,1,0,cs,'hkl'),varargin{:});
+    end
     function sS = fcc(cs,varargin)
       sS = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'),varargin{:});
     end
     
      function sS = bcc(cs,varargin)
       sS = [slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl'),varargin{:}),...
-        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'),varargin{:})];
+        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'),varargin{:}),...
+        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(3,2,1,cs,'hkl'),varargin{:})];
      end
     
      function sS = hcp(cs,varargin)

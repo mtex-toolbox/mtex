@@ -53,22 +53,36 @@ classdef EBSDsquare < EBSD
       % gives the gradient in X direction with respect to specimen
       % coordinate system
       
+      % extract orientations
       ori = ebsd.orientations;
-          
+      
       ori_right = ori(:,[2:end end-1]);
-      gX = ori .* log(ori_right,ori) ./ ebsd.dx;
+      gX = log(ori_right,ori,'left') ./ ebsd.dx;
       gX(:,end) = - gX(:,end);
+      
+      % ignore grain boundaries if possible
+      try
+        gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
+      end
+      
     end
     
     function gY = get.gradientY(ebsd)
       % gives the gradient in Y direction with respect to specimen
       % coordinate system
       
+      % extract orientations
       ori = ebsd.orientations;
           
       ori_up = ori([2:end end-1],:);
-      gY = ori .* log(ori_up,ori) ./ ebsd.dy;
+      gY = log(ori_up,ori,'left') ./ ebsd.dy;
       gY(end,:) = - gY(end,:);
+      
+      % ignore grain boundaries if possible
+      try
+        gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
+      end
+      
     end
     
     % some testing code - gradient can be either in specimen coordinates or
@@ -79,11 +93,9 @@ classdef EBSDsquare < EBSD
     % ori2 = orientation.rand(cs)
     %
     % the following output should be constant
-    % gO = log(ori1,ori2.symmetrise) % but not true for this
-    % gO = log(ori1.symmetrise,ori2) % true for this
-    %
-    % gO = ori2.symmetrise .* log(ori1,ori2.symmetrise) % true for this
-    % gO = ori2 .* log(ori1.symmetrise,ori2) % true for this
+    % gO = log(ori1,ori2.symmetrise,'left') % true for this
+    % gO = log(ori1.symmetrise,ori2,'left') % true for this
+    
     
   end
       

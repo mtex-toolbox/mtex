@@ -34,8 +34,7 @@ if T.rank <= 1 % make a rank 2 tensor out of it
   
   M([1 5 9],:) = d;
   
-  T.M = reshape(M,[3 3 size(T)]);
-  T.rank = 2;
+  T = tensor(reshape(M,[3 3 size(T)]),T.CS,'noCheck','rank',2);
   
 else % extract the diagonal
   
@@ -47,8 +46,6 @@ else % extract the diagonal
   id = 1+3.^(0:(T.rank-1))*repmat(0:2,T.rank,1);
   
   % extract diagonal and reshape back
-  T.M = reshape(M(id,:),[3,size(T)]);
-  T.rank = 1;
-
+  T = tensor(reshape(M(id,:),[3,size(T)]),T.CS,'noCheck','rank',1);
+  
 end
-

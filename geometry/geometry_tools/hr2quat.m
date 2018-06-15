@@ -15,7 +15,7 @@ function q = hr2quat(h,r)
 %
 % See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
-% vec42quat euler2quat idquaternion 
+% vec42quat euler2quat
 
 h = vector3d(h);
 h = h./norm(h);

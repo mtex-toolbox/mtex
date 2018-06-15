@@ -104,7 +104,7 @@ hold off
 % Mason, and C. A. Schuh, 2012, for details. The coresponding orientation
 % to color mapping is implemented into MTEX as
 
-oM = patalaOrientationMapping(gB)
+moriKey = PatalaColorKey(gB)
 
 %%
 % Colorizing the grain boundaries is now straight forward
@@ -118,7 +118,7 @@ hold on
 plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
 
 hold on
-plot(gB,oM.orientation2color(gB.misorientation),'linewidth',2)
+plot(gB,moriKey.orientation2color(gB.misorientation),'linewidth',2)
 hold off
 
 %%
@@ -126,7 +126,7 @@ hold off
 % random boundary misorientations on top of it. Note that in this plot
 % misorientations |mori| and |inv(mori)| are associated.
 
-plot(oM,'axisAngle',(5:5:60)*degree)
+plot(moriKey,'axisAngle',(5:5:60)*degree)
 
 plot(gB.misorientation,'points',300,'add2all',...
   'MarkerFaceColor','none','MarkerEdgeColor','w')
@@ -136,7 +136,7 @@ plot(gB.misorientation,'points',300,'add2all',...
 % fundamental orientation zone. 
 
 % compute the boundary of the fundamental zone
-oR = fundamentalRegion(oM.CS1,oM.CS2,'antipodal');
+oR = fundamentalRegion(moriKey.CS1,moriKey.CS2,'antipodal');
 close all
 plot(oR)
 

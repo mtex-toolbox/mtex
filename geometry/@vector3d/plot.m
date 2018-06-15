@@ -38,9 +38,13 @@ if check_option(varargin,'add2all')
   varargin = delete_option(varargin,'parent',1);
   varargin = delete_option(varargin,'add2all');
   
+  h = [];
   for i = 1:length(ax)
-    plot(v,varargin{:},'parent',ax(i));
+    h = [h,plot(v,varargin{:},'parent',ax(i))]; %#ok<AGROW>
   end
+  
+  if nargout >=1, varargout{1} = h; end
+  if nargout >=2, varargout{2} = ax; end
   
   return
 end
