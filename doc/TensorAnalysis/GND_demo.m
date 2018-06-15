@@ -80,7 +80,7 @@ F.alpha = 0.01;
 ebsd = smooth(ebsd('indexed'),F,'fill',grains);
 
 % plot the denoised data
-ipfKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation
+ipfKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;
 plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations),'micronBar','off','figSize','medium')
 
 hold on
@@ -93,7 +93,7 @@ hold off
 % directional derivatives in x, y and z direction.
 
 % consider only the Fe(alpha) phase 
-ebsd = ebsd('indexed').gridify
+ebsd = ebsd('indexed').gridify;
 
 % compute the curvature tensor
 kappa = ebsd.curvature
@@ -117,42 +117,18 @@ size(kappa12)
 % which results in a variable of the same size as our EBSD map. This allows
 % us to visualize the different components of the curvature tensor
 
-mtexFig = newMtexFigure('nrows',3,'ncols',3,'figSize','huge');
+newMtexFigure('nrows',3,'ncols',3);
 
-plot(ebsd,kappa{1,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{1,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{1,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{2,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{2,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{2,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
+% cycle through all components of the tensor
+for i = 1:3
+  for j = 1:3
+    
+    nextAxis(i,j)
+    plot(ebsd,kappa{i,j},'micronBar','off')
+    hold on; plot(grains.boundary,'linewidth',2); hold off
+    
+  end
+end
 
 % unify the color rage  - you may also use setColoRange equal
 setColorRange([-0.005,0.005])
@@ -160,7 +136,7 @@ drawNow(gcm,'figSize','large')
 
 
 %% The incomplete dislocation density tensor
-% According to Kröner the curvature tensor is directly related to the
+% According to Kroener the curvature tensor is directly related to the
 % dislocation density tensor. 
 
 alpha = kappa.dislocationDensity
@@ -262,47 +238,22 @@ kappa = alpha.curvature
 %%
 % and plot it as we did before
 
-mtexFig = newMtexFigure('nrows',3,'ncols',3,'figSize','huge');
+newMtexFigure('nrows',3,'ncols',3);
 
-plot(ebsd,kappa{1,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
+% cycle through all components of the tensor
+for i = 1:3
+  for j = 1:3
 
-nextAxis
-plot(ebsd,kappa{1,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
+    nextAxis(i,j)
+    plot(ebsd,kappa{i,j},'micronBar','off')
+    hold on; plot(grains.boundary,'linewidth',2); hold off
 
-nextAxis
-plot(ebsd,kappa{1,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
+  end
+end
 
-nextAxis
-plot(ebsd,kappa{2,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{2,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{2,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,1},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,2},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-nextAxis
-plot(ebsd,kappa{3,3},'micronBar','off')
-hold on; plot(grains.boundary,'linewidth',2); hold off
-
-drawNow(gcm,'figSize','large')
 setColorRange([-0.005,0.005])
+drawNow(gcm,'figSize','large');
 
-%saveFigure('uni_curvatureComplete.png')
 
 %% The total dislocation energy 
 % The unit of the densities |h| in our example is 1/um * 1/au where 1/um
