@@ -1,4 +1,4 @@
-%% MTEX Changelbog
+%% MTEX Changelog
 %
 %
 %% MTEX 5.1.0 04/2018
@@ -10,7 +10,7 @@
 % dislocations and are either defined by its burgers and line vectors
 %
 %   cs = crystalSymmetry('432')
-%   b = Miller(1,0,0,cs,'uvw')
+%   b = Miller(1,1,0,cs,'uvw')
 %   l = Miller(1,-1,-2,cs,'uvw')
 %   dS = dislocationSystem(b,l)
 %
@@ -36,16 +36,17 @@
 % # define the dominant <dislocationSystem_index.html dislocation systems>
 % # transform the dislocation systems into specimen coordinates for each
 % pixel of the EBSD map
-% # compute the <curvature tensor> for each pixel in the EBSD map
-% # <curvatureTensor.fitDislocationSystem.html fit the dislocation systems>
+% # compute the <curvatureTensor_index.html curvature tensor> for each
+% pixel in the EBSD map
+% # <curvatureTensor.fitDislocationSystems.html fit the dislocation systems>
 % to the curvature tensors.
 % # compute the total energy in each pixel
 % 
 % *Tensor arithmetics*
 %
 % <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
-% det>, <tensor.norm.html norm>, <tensor.mean.html mean>, <tensor.diag.html
-% diag>, <tensor.eye.html eye>,
+% det>, <tensor.mean.html mean>, <tensor.diag.html
+% diag>, <tensor.eye.html eye>, <tensor.sym.html sym>
 % 
 % *Birefringence*
 %

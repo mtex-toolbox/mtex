@@ -10,8 +10,10 @@ function isZero = checkZeroRange(zrm,ori,i,varargin)
 %  zrm - @zeroRangeMethod
 %  ori - @orientation
 %  v   - @vector3d
-%  i   - check in the i-th pole figure
+%  i   - check in the i~th pole figure
 %
+% Output
+%  isZero - boolean vector of length(ori)
 
 if isa(ori,'orientation')
   

@@ -1,11 +1,11 @@
 function area = polyArea(v,varargin)
-% area of a flat polygon given by vertices v1, v2, ..., v_n-1
+% area of a flat polygon given by vertices v1, v2, ..., v_n
 %
 % Input
 %  v - @vector3d
 %
 % Output
-%  area - area the polygon v1, v2, ..., v_n-1
+%  area - area the polygon v1, v2, ..., v_n
 %
 
 nv = length(v);
