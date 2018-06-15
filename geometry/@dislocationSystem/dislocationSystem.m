@@ -48,7 +48,8 @@ classdef dislocationSystem
         
       else
         
-        omega = angle(b,n,'noSymmetry');
+        b = sS;
+        omega = angle(b,l,'noSymmetry');
         assert(all(omega > pi/2-1e-5 || omega<1e-5),...
           'line vector and burgers vector should be either be orthogonal! or identical')
       
