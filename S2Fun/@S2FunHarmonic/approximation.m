@@ -38,7 +38,12 @@ else
   mask = speye((bw+1)^2);
 end
 
-W = get_option(varargin, 'weights', nodes.calcVoronoiArea);
+W = get_option(varargin, 'weights');
+if isempty(W) 
+  W = nodes.calcVoronoiArea;
+else
+  W = W(ind);
+end
 W = sqrt(W(:));
 
 % initialize nfsft
