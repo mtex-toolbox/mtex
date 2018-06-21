@@ -21,7 +21,7 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,varargin)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
-if nargin == 2 && isa(varargin{1},'vector3d')
+if nargin >= 2 && isa(varargin{1},'vector3d')
   x = varargin{1};
   generateFun = false;
 else
