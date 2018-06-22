@@ -1,5 +1,9 @@
 function MTEXFigureMenu(mtexFig,varargin)
 
+try
+  if isempty(mtexFig.parent.MenuBar), return; end
+end
+
 % create a menu MTEX
 m = uimenu('label','MTEX');
 
