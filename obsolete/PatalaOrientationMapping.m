@@ -1,6 +1,7 @@
-function varargout  = PatalaOrientationMapping(varargin)
+function oM  = PatalaOrientationMapping(varargin)
 
-error('Starting with MTEX 5.1 "PatalaOrientationMapping" has been replaced by "PatalaColorKey".')
+warning('Starting with MTEX 5.1 "PatalaOrientationMapping" has been replaced by "PatalaColorKey".')
+oM = PatalaColorKey(varargin{:});
 
 end
 

@@ -1,6 +1,8 @@
-function varargout  = HKLOrientationMapping(varargin)
+function oM  = HKLOrientationMapping(varargin)
 
-error('Starting with MTEX 5.1 "HKLOrientationMapping" has been replaced by "ipfHKLKey".')
+warning('Starting with MTEX 5.1 "HKLOrientationMapping" has been replaced by "ipfHKLKey".')
+
+oM = ipfHKLKey(varargin{:});
 
 end
 

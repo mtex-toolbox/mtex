@@ -1,6 +1,8 @@
-function varargout  = TSLOrientationMapping(varargin)
+function oM  = TSLOrientationMapping(varargin)
 
-error('Starting with MTEX 5.1 "TSLOrientationMapping" has been replaced by "ipfTSLKey".')
+warning('Starting with MTEX 5.1 "TSLOrientationMapping" has been replaced by "ipfTSLKey".')
+
+oM = ipfTSLKey(varargin{:});
 
 end
 

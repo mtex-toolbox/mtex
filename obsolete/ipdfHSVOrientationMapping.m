@@ -1,6 +1,8 @@
-function varargout  = ipdfHSVOrientationMapping(varargin)
+function oM  = ipdfHSVOrientationMapping(varargin)
 
-error('Starting with MTEX 5.1 "ipdfHSVOrientationMapping" has been replaced by "ipfHSVKey".')
+warning('Starting with MTEX 5.1 "ipdfHSVOrientationMapping" has been replaced by "ipfHSVKey".')
+
+oM = ipfHSVKey(varargin{:});
 
 end
 
