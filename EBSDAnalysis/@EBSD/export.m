@@ -25,7 +25,7 @@ if ~check_option(varargin,{'radians','radiant','radiand'})
 end
 
 % add phase
-d(:,4) = ebsd.phase;
+d(:,4) = reshape(ebsd.phase,1,[]);
 
 % update fieldnames
 fn = [EulerNames.';'phase';fn];
@@ -33,9 +33,9 @@ fn = [EulerNames.';'phase';fn];
 % add properties
 for j = 5:numel(fn)
   if isnumeric(ebsd.prop.(fn{j}))
-    d(:,j) = vertcat(ebsd.prop.(fn{j}));
+    d(:,j) = vertcat(reshape(ebsd.prop.(fn{j}),1,[]));
   elseif isa(ebsd.prop.(fn{j}),'quaternion')
-    d(:,j) = angle(ebsd.prop.(fn{j})) / degree;
+    d(:,j) = angle(reshape(ebsd.prop.(fn{j}),1,[])) / degree;
   end
 end
  
