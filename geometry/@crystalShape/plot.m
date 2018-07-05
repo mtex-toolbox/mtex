@@ -19,6 +19,22 @@ function h = plot(cS,varargin)
 % See also
 % grains/plot
 
+
+if check_option(varargin,'colored')
+  varargin = delete_option(varargin,'colored');
+  
+  C = linspecer(length(cS.N));
+  plot(cS.subSet(cS.N(1).symmetrise),'faceColor',C(1,:),'DisplayName',char(cS.N(1)),varargin{:});
+  hold on
+  for i = 2:length(cS.N)
+    plot(cS.subSet(cS.N(i).symmetrise),'faceColor',C(i,:),'DisplayName',char(cS.N(i)),varargin{:});
+  end
+  hold off
+  legend show
+  return
+end
+
+
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
