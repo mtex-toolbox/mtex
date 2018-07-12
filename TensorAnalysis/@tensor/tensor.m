@@ -51,21 +51,22 @@ classdef tensor < dynOption
       
       if isa(M,'vector3d') % conversion from vector3d
         T.M = shiftdim(double(M),ndims(M));
-        r = 1;
+        T.rank = 1;
         if isa(M,'Miller'), T.CS = M.CS; end
       
       elseif isa(M,'quaternion') % conversion from quaternion
 
         T.M = matrix(M);
-        r = 2;
+        T.rank = 2;
   
       else         % get the tensor entries
 
         T.M = M;
+        T.rank = get_option(varargin,'rank',-1);
 
         % consider the case of a row vector, which is most probably a 1-rank tensor
         if ndims(T.M)==2 && size(T.M,1)==1 && size(T.M,2) > 1 && ...
-            ~check_option(varargin,'rank')
+            abs(T.rank) == 1
   
           disp(' ');
           warning(['I guess you want to define a rank one tensor. ' ...
@@ -74,25 +75,30 @@ classdef tensor < dynOption
             'I''m going to transpose you vector.']);
   
           T.M = T.M.';
+          T.rank = 1;
   
         end
 
         % transform from voigt matrix representation to ordinary rank four tensor
-        if size(T.M,1) == 6 && size(T.M,2) == 6
+        if size(T.M,1) == 6 && size(T.M,2) == 6 && (T.rank == -1 || T.rank == 4)
           T.M = tensor24(T.M,T.doubleConvention);
-        elseif numel(T.M) == 18
+          T.rank = 4;
+        elseif size(T.M,1) == 3 && size(T.M,2) == 6 && (T.rank == -1 || T.rank == 3)
+          if T.rank == -1
+            warning('I guess you want to specify a symmetric rank 3 tensor. Please use the option "rank" to specify the rank explicitly.')
+          end
           T.M = tensor23(T.M,T.doubleConvention);
+          T.rank = 3;
+        elseif T.rank == -1
+          % compute the rank of the tensor by finding the first dimension
+          % that is different from 3
+          T.rank = min([ndims(T.M),find(size(T.M)-3,1,'first')-1]);
+          warning(['The rank of the tensor has been guessed to be ',...
+            int2str(T.rank),'. Please specify the rank explicitely in the future']);
         end
-
-        % compute the rank of the tensor by finding the last dimension
-        % that is length grater then one
-        r = max([1,find(size(T.M)-1,1,'last')]);
   
       end
   
-      T.rank    = get_option(varargin,'rank',r);
-      varargin = delete_option(varargin,'rank',1);
-
       % extract symmetry
       args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
       if ~isempty(args)

@@ -9,6 +9,8 @@ function T = EinsteinSum(varargin)
 %   % sumation against dimension 1 and 2
 %   C = EinsteinSum(E,[1 -1 2 -2],v,-1,v,-2) 
 %
+%   eps = EinsteinSum(C,[-1 1 -2 2],sigma,[-1 -2])
+%
 % Input
 %  T1,T2 - @tensor
 %  dimT1 - vector of indices giving the summation order in tensor 1
