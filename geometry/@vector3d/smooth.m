@@ -46,7 +46,7 @@ for j = 1:numel(sP)
     if size(S2G,1) == 1 || size(S2G,2) == 1
 
       S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
-      cdata = interp(v,cdata,S2G,'cutOutside');
+      cdata = interp(v,cdata,S2G,'cutOutside',varargin{:});
       
     elseif ~isa(sP(j).proj,'plainProjection')
       
