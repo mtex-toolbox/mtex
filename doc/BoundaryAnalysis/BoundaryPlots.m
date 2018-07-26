@@ -155,10 +155,10 @@ hist(mAngle)
 plot(gB,'linecolor','k')
 
 hold on
-plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','>40^\circ')
-plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','20^\circ-40^\circ')
-plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','10^\circ-20^\circ')
-plot(gB_Fo(id==4),'linecolor','y','linewidth',2,'DisplayName','< 10^\circ')
+plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','<30^\circ')
+plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','30^\circ-60^\circ')
+plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','60^\circ-90^\circ')
+plot(gB_Fo(id==4),'linecolor','y','linewidth',2,'DisplayName','> 90^\circ')
 
 hold off
 
