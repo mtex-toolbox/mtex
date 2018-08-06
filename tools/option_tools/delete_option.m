@@ -1,4 +1,4 @@
-function option_list = delete_option(option_list,option,nparams)
+function option_list = delete_option(option_list,options,nparams)
 % clear options in option list
 %
 % Syntax
@@ -18,8 +18,8 @@ function option_list = delete_option(option_list,option,nparams)
 
 
 if nargin == 2, nparams = 0; end
-if length(option_list) > length(nparams)
-  nparams = repmat(nparams,size(option_list));
+if length(options) > length(nparams)
+  nparams = repmat(nparams,size(options));
 end
 
 i = 1;
@@ -30,7 +30,7 @@ while i<=length(option_list)
     continue;
   end
   
-  pos = find(strcmpi(option_list{i},option),1);
+  pos = find(strcmpi(option_list{i},options),1);
   
   % found match
   if ~isempty(pos)
