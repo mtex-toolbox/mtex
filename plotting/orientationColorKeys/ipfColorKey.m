@@ -12,14 +12,18 @@ classdef ipfColorKey < orientationColorKey
     function oM = ipfColorKey(varargin)
       oM = oM@orientationColorKey(varargin{:});
       
+      oM.dirMap = getClass(varargin,'directionColorKey',[]);
+      if isempty(oM.dirMap), oM.dirMap = HSVDirectionKey(oM.CS1); end
+      
       if isa(oM.CS2,'crystalSymmetry')
-        oM.inversePoleFigureDirection = Miller(0,0,1,oM.CS2);
+        try
+          oM.inversePoleFigureDirection = Miller(oM.dirMap.whiteCenter,oM.CS2);
+        catch
+          oM.inversePoleFigureDirection = Miller(0,0,1,oM.CS2);
+        end
       else
         oM.inversePoleFigureDirection = zvector;
       end
-      
-      oM.dirMap = getClass(varargin,'directionColorKey',[]);
-      if isempty(oM.dirMap), oM.dirMap = HSVDirectionKey(oM.CS1); end
       
     end
     
