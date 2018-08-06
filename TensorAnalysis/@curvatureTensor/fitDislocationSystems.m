@@ -23,6 +23,13 @@ function [rho,factor] = fitDislocationSystems(kappa,dS,varargin)
 %  factor - converting rho into units of 1/m^2
 %
 
+% ensure linprog is working
+try
+  linprog(0,0,0);
+catch
+  error('Optimization Toolbox not found. The funtion fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
+end
+
 
 % ensure we consider also negative line vector
 dS = [dS,-dS];
