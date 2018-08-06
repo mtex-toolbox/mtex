@@ -51,7 +51,7 @@
 % *Birefringence*
 %
 % MTEX 5.1 includes some basic methods to analyze and simulate optically
-% anisotropic materials. This includes the computation of the optical axis,
+% isotropic materials. This includes the computation of the optical axis,
 % birefringence and spectral transmission. The new features are
 % demonstrated in <BirefringenceDemo.html BirefringenceDemo>.
 %
