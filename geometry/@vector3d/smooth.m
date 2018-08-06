@@ -14,7 +14,7 @@ function [h,ax] = smooth(v,varargin)
 h = [];
 
 % initialize spherical plot
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 for j = 1:numel(sP)
@@ -103,7 +103,7 @@ for j = 1:numel(sP)
 end
 
 % set styles
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 optiondraw(h,varargin{:});
 
 if isappdata(sP(1).parent,'mtexFig')

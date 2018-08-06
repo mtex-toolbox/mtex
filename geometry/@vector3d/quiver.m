@@ -17,7 +17,7 @@ function h = quiver(v, d, varargin )
 % See also
 
 % initialize spherical plot
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 v = vector3d(v);
@@ -46,7 +46,7 @@ for j = 1:numel(sP)
     arrowSize = 0;
   end
   
-  varargin = delete_option(varargin,'parent');
+  varargin = delete_option(varargin,'parent',1);
   h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSize,'MaxHeadSize',mhs,'parent',sP(j).hgt),varargin{:});     %#ok<AGROW>
   
   % finalize the plot

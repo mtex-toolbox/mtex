@@ -18,7 +18,7 @@ for j = 1:numel(sP)
  
   %if all(sR.checkInside(sP(j).sphericalRegion.N)) && ~isempty(sP(j).boundary)
   if ~isempty(sP(j).boundary) && sR == sP(j).sphericalRegion
-    varargin = delete_option(varargin,'parent');
+    varargin = delete_option(varargin,'parent',1);
     h = optiondraw(sP(j).boundary,varargin{:});
     continue; 
   end
@@ -36,7 +36,7 @@ for j = 1:numel(sP)
     x(~sR.checkInside(v))=NaN;
                 
     % plot
-    varargin = delete_option(varargin,'parent');
+    varargin = delete_option(varargin,'parent',1);
     h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).hgt,...
       'color',[0.2 0.2 0.2],'linewidth',1.5,'hitTest','off'),varargin{:});
     

@@ -40,7 +40,7 @@ sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
 interpreter = getMTEXpref('textInterpreter');
 fs = getMTEXpref('FontSize');
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 
 if check_option(varargin,'textAboveMarker')
   aboveBelow = -5;

@@ -26,9 +26,9 @@ function [h,ax] = scatter(v,varargin)
 
 % initialize spherical plots
 opt = delete_option(varargin,...
-  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'});
+  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
-varargin = delete_option(varargin,'parent');
+varargin = delete_option(varargin,'parent',1);
 
 h = [];
 

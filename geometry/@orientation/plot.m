@@ -34,7 +34,7 @@ if check_option(varargin,'add2all')
 else
   allAxes = get_option(varargin,'parent',mtexFig.currentAxes);
 end
-varargin = delete_option(varargin,{'add2all','parent'});
+varargin = delete_option(varargin,{'add2all','parent'},[0,1]);
 
 % plotting
 for ax = allAxes(:).'

@@ -36,7 +36,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'off')
   
   % set styles
-  varargin = delete_option(varargin,'parent');
+  varargin = delete_option(varargin,'parent',1);
   optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
   
   % bring grid in front

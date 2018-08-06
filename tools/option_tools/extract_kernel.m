@@ -1,7 +1,7 @@
 function [k, hw, options]= extract_kernel(g,varargin)
 
 
-if nargin == 2, 
+if nargin == 2
   varargin = varargin{:}; 
   if ~iscell(varargin)
     varargin = {varargin};
@@ -10,9 +10,9 @@ end
 
 k = get_option(varargin,'kernel',[],'kernel');
 
-if isempty(k), 
+if isempty(k) 
   hw = get_option(varargin,'halfwidth');
-  if isempty(hw), 
+  if isempty(hw)
     [a, b] = mean(g);
     hw = max(prod(1-b) ,2*degree);
   end
@@ -22,7 +22,8 @@ else
   hw = gethw(k);
 end
 
-if nargout > 2, 
+if nargout > 2
   res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
-  options = set_option(varargin,'kernel',k,'RESOLUTION',res); 
+  options = set_option(varargin,'kernel',k); 
+  options = set_option(options,'RESOLUTION',res); 
 end

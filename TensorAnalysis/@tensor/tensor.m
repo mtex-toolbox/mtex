@@ -134,7 +134,7 @@ classdef tensor < dynOption
 
     function T = eye(varargin)
       r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
       switch r
         case 2
           T = tensor(repmat(eye(3),[1,1,varargin{:}]),'rank',2);
@@ -148,28 +148,28 @@ classdef tensor < dynOption
     
     function T = zeros(varargin)
       r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(zeros(d),'rank',r);
     end
     
     function T = ones(varargin)
       r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(ones(d),'rank',r);
     end
     
     function T = nan(varargin)
       r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(nan(d),'rank',r);
     end
     
     function T = rand(varargin)
       r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(rand(d),'rank',r);
     end

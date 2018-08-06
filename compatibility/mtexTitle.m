@@ -7,7 +7,7 @@ function h = mtexTitle(s,varargin)
 %s = ['$\mathbf{' s '}$'];
 
 if check_option(varargin,'noTitle'), return; end
-varargin = delete_option(varargin,{'position','color'});
+varargin = delete_option(varargin,{'position','color'},1);
 
 if ishandle(s)
   ax = s;
