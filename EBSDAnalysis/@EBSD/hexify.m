@@ -20,6 +20,10 @@ function [ebsdGrid,newId,h,axis,odd] = hexify(ebsd,varargin)
 %  odd - which rows are shifted right or down, even 0 or odd 1
 
 % generate regular grid
+
+if size(ebsd.unitCell,1)~= 6
+    error('Data not from hex grid sampling')
+end
 prop = ebsd.prop;
 ext = ebsd.extend;
 [h,I]=max(ebsd.unitCell(:));
