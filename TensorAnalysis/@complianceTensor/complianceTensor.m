@@ -3,7 +3,7 @@ classdef complianceTensor < tensor
   methods
     function sT = complianceTensor(varargin)
       
-      varargin = set_default_option(varargin,{},'unit','1/GPa','doubleConvention',true);
+      varargin = set_default_option(varargin,{},'unit','1/GPa','doubleConvention');
       sT = sT@tensor(varargin{:});
       
     end
