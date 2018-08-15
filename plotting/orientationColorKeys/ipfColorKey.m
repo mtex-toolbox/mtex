@@ -37,8 +37,10 @@ classdef ipfColorKey < orientationColorKey
             
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
-        
-      set(mtexFig.parent,'name',['IPF key for ' name])      
+      
+      try
+        set(mtexFig.parent,'name',['IPF key for ' name])
+      end
       set(caxes,'tag','ipdf')
       setappdata(caxes,'CS',oM.CS1);
       setappdata(caxes,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
