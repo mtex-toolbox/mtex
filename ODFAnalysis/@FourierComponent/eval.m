@@ -29,7 +29,9 @@ Ldim = deg2dim(double(L+1));
 % create plan
 if isempty(plan)
 
-  nfsoft_flags = 2^4;
+  % 2^4 -> nfsoft-represent
+  % 2^2 -> nfsoft-use-DPT
+  nfsoft_flags = bitor(2^4,4);
   plan = nfsoftmex('init',L,length(ori),nfsoft_flags,0,4,1000,2*ceil(1.5*L));
 
   % set nodes

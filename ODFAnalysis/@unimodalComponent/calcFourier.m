@@ -58,7 +58,9 @@ end
 
 function c_hat = gcA2fourier(g,c,A)
 
-nfsoft_flags = 2^4;
+% 2^4 -> nfsoft-represent
+% 2^2 -> nfsoft-use-DPT
+nfsoft_flags = bitor(2^4,4);
 plan = nfsoftmex('init',length(A)-1,length(g),nfsoft_flags,0,4,1000,2*ceil(1.5*(length(A)+1)));
 nfsoftmex('set_x',plan,Euler(g,'nfft').');
 nfsoftmex('set_f',plan,c(:));

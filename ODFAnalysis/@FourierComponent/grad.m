@@ -28,8 +28,11 @@ end
 L = min(component.bandwidth+1,get_option(varargin,'bandwidth',inf));
 component.bandwidth = L;
 
+% 2^4 -> nfsoft-represent
+% 2^2 -> nfsoft-use-DPT
+nfsoft_flags = 2^2;
+
 % change Fourier coefficients such that we can work with standard convention
-nfsoft_flags = 0;
 for l = 1:L
   
  [k1,k2] = meshgrid(-l:l,-l:l);
