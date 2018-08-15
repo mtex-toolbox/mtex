@@ -35,4 +35,5 @@ k = f.eval(N);
 %psi = kernel(A ./ A(1));
 
 
-
+% psi should actually be defined by
+% psi = S2KernelHandle(@(x) x^2);
