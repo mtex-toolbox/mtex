@@ -5,6 +5,12 @@ function ind = subsind(ebsd,subs)
 if numel(subs)==2 && all(cellfun(@isnumeric, subs))
   ind = ebsd.findByLocation([subs{:}]);
   return
+elseif numel(subs)==2 && ischar(subs{1}) && strcmpi(subs{1},'id')
+  ind = ebsd.id2ind(subs{2});
+  if any(ind(:)==0)
+    error('No data with the specified ids in the data set');
+  end
+  return
 else
   ind = true(length(ebsd),1);
 end
