@@ -59,7 +59,7 @@ classdef tensor < dynOption
         T.M = matrix(M);
         T.rank = 2;
   
-      else         % get the tensor entries
+      else % get the tensor entries
 
         T.M = M;
         T.rank = get_option(varargin,'rank',-1);

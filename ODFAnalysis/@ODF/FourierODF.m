@@ -6,6 +6,7 @@ if length(odf.components) == 1 && isa(odf.components{1},'FourierComponent')
 end
 
 f_hat = calcFourier(odf,varargin{:});
+f_hat(1) = real(f_hat(1));
 
 if abs(f_hat(1)) > 1e-10
   odf.weights = f_hat(1);
