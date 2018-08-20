@@ -158,10 +158,11 @@ classdef kernel
     function A = cutA(psi)
       % cut of Chebyshev coefficients when they are sufficently small
       
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);
+      epsilon = getMTEXpref('FFTAccuracy',1E-2) / 150;
       A = psi.A(:);
+      A = A ./ ((1:length(A)).^2).';
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
-      A = A(1:min([ind+1,length(A)]));
+      A = psi.A(1:min([ind+1,length(A)]));
     end
     
     function A = calcFourier(psi,L,maxAngle)
