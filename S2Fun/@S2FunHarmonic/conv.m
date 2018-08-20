@@ -16,10 +16,15 @@ function sF = conv(sF, psi, varargin)
 %  SO3F - @ODF
 %
 
-if isa(psi,'S2FunHarmonic')
+if isa(psi,'S2Fun')
   
-  sF2 = psi;
-  bw = get_option(varargin,'bandwidth',min(sF.bandwidth,sF2.bandwidth));
+  if isa(psi,'S2FunHarmonic')
+    sF2 = psi;
+    bw = get_option(varargin,'bandwidth',min(sF.bandwidth,sF2.bandwidth));
+  else
+    bw = get_option(varargin,'bandwidth',sF.bandwidth);
+    sF2 = S2FunHarmonic.quadrature(psi,'bandwidth',bw);
+  end
   
   fhat = [];
   for l = 0:bw
