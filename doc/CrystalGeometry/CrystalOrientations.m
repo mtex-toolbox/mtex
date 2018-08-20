@@ -31,7 +31,7 @@ ss = specimenSymmetry('orthorhombic');
 % well known possibility is  so called *Euler angles*. Here two
 % conventions are commonly used:
 %
-% SUB: Bunge Euler angle convention
+%% SUB: Bunge Euler angle convention
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
 % in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
@@ -42,44 +42,38 @@ ss = specimenSymmetry('orthorhombic');
 
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
-%%
-% SUB: Matthies Euler angle convention
+%% SUB: Matthies Euler angle convention
 %
 % In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
 
 o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
-%%
-% SUB: Axis angle parametrisation
+%% SUB: Axis angle parametrisation
 %
 % Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
 
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
 
-%%
-% SUB: Miller indice
+%% SUB: Miller indice
 %
 % There is also a Miller indice convention for defining crystal orientations.
 
 o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
-%%
-% SUB: Four vectors defining a rotation
+%% SUB: Four vectors defining a rotation
 %
 % Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
 % q u1 = v1 and q u2 = v2. 
 
 o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 
-%%
-% SUB: Defining an orientation by a 3 times 3 matrix
+%% SUB: Defining an orientation by a 3 times 3 matrix
 
 o = orientation('matrix',eye(3),cs,ss)
 
-%%
-% SUB: Predefined orientations
+%% SUB: Predefined orientations
 % 
 % Below you find a list of orientations predefined in MTEX:
 
