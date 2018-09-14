@@ -142,11 +142,11 @@ elseif check_option(varargin,{'surf3','slice3'})
 
 end
        
-set(gcf,'renderer','opengl')
+%set(gcf,'renderer','opengl')
   
-axis equal
-axis ([min(x(:)) max(x(:)) min(y(:)) max(y(:))  min(z(:)) max(z(:))])
-grid on
+%axis equal
+%axis ([min(x(:)) max(x(:)) min(y(:)) max(y(:))  min(z(:)) max(z(:))])
+%grid on
   
 end
 
