@@ -46,7 +46,7 @@ classdef S2Kernel
   methods (Static = true)
     function S2K = quadrature(fun,varargin)
       
-      
+      % TODO: implement this using the fpt and the ndct
       t =chebfun(fun);
       B = chebcoeffs(t);
       A = cheb2leg(B);
