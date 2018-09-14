@@ -147,11 +147,11 @@ alpha = kappa.dislocationDensity
 
 alpha(2,3)
 
-%% Fitting Dislocations to the incomplete dislocation density tensor
+%% Crystallographic Dislocations
 % The central idea of Pantleon is that the dislocation density tensor is
-% build up by dislocations with different densities such that the total
-% energy is minimum. Depending on the attomic lattice different
-% dislocattion systems has to be considered. In present case of a body
+% build up by single dislocations with different densities such that the
+% total energy is minimum. Depending on the attomic lattice different
+% dislocattion systems have to be considered. In present case of a body
 % centered cubic (bcc) material 48 edge dislocations and 4 screw
 % dislocations have to be considered. Those principle dislocations are
 % defined in MTEX either by their Burgers and line vectors or by
@@ -162,19 +162,41 @@ dS = dislocationSystem.bcc(ebsd.CS)
 % Here the norm of the Burgers vectors is important
 
 % size of the unit cell
-a = norm(ebsd.CS.aAxis)
+a = norm(ebsd.CS.aAxis);
 
-% for edge dislocations in bcc the norm of the burgers vector is sqrt(3)/2 * a
-[norm(dS(1).b), sqrt(3)/2 * a]
+% in bcc and fcc the norm of the burgers vector is sqrt(3)/2 * a
+[norm(dS(1).b), norm(dS(end).b), sqrt(3)/2 * a]
 
-% for screw dislocations it is sqrt(3) * a
-% Wolfgang: is this correct or is the norm of the Burgers vector for screw
-% dislocations the same as for edge dislocations
-[norm(dS(end).b), sqrt(3) * a]
 
-%%
-% Note that the energy of each dislocation system can be stored in the
-% property |u|
+%% The Energy of Dislocations
+% The energy of each dislocation system can be stored in the property |u|.
+% By default this value it set to 1 but should be changed accoring to the
+% specific model and the specific material.
+%
+% According to Hull & Bacon the energy U of edge and screw dislocations is
+% given by the formulae
+%
+% $$ U_{\text{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
+%
+% $$ U_{\text{edge}} = (1-\nu) U_{\text{screw}} $$
+%
+% where
+% 
+% * |G| is 
+% * |b| is the length of the Burgers vector
+% * |nu| is the Poisson ratio
+% * |R|
+% * |r|
+%
+% In this example we assume 
+
+% 
+%R = 
+%r_0 = 
+%U = norm(dS.b).^2
+
+nu = 0.3;
+
 
 % energy of the edge dislocations
 dS(dS.isEdge).u = 1;
@@ -206,7 +228,7 @@ dS(1).tensor
 dSRot = ebsd.orientations * dS
 
 
-%% Soving the fitting problem
+%% Fitting Dislocations to the incomplete dislocation density tensor
 % Now we are ready for fitting the dislocation tensors to the dislocation
 % densitiy tensor in each pixel of the map. This is done by the command
 % <curvatureTensor.fitDislocationSystems.html fitDislocationSystems>.
