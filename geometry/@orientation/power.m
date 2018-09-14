@@ -22,5 +22,5 @@ if all(n == -1)
 elseif ori.CS ~= ori.SS
   error('The operation ^ is only applicable for misorientation between the same phase')
 else
-  ori = power@rotation(ori,n);
+  ori = power@rotation(ori.project2FundamentalRegion,n);
 end

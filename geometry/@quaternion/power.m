@@ -17,9 +17,22 @@ function q = power(q,n)
 % See also
 % quaternion/ctranspose
 
-nq = expquat(n .* log(q));
 
-q.a = nq.a;
-q.b = nq.b;
-q.c = nq.c;
-q.d = nq.d;
+omega = 2*acos(q.a);
+
+q.a = cos(n*omega/2);
+
+fak = sin(n*omega/2) ./ sin(omega/2);
+fak(~isfinite(fak)) = 1;
+
+q.b = q.b .* fak;
+q.c = q.c .* fak;
+q.d = q.d .* fak;
+
+% old slow algorithm
+%nq = expquat(n .* log(q));
+
+%q.a = nq.a;
+%q.b = nq.b;
+%q.c = nq.c;
+%q.d = nq.d;
