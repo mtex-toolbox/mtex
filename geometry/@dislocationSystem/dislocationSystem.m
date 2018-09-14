@@ -39,7 +39,7 @@ classdef dislocationSystem
         dS.l = round(cross(sS.b,sS.n));
         
         % define screw dislocations
-        b = unique(sS.b,'antipodal','noSymmetry');
+        b = 0.5*unique(sS.b,'antipodal','noSymmetry');
         dS.b = [dS.b;b];
         dS.l = [dS.l;b];
         
