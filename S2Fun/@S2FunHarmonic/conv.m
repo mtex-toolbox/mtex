@@ -8,11 +8,11 @@ function sF = conv(sF, psi, varargin)
 %
 % Input
 %  sF, sF1, sF1 - @S2FunHarmonic
-%  psi - @kernel
-%  A   - double list of Legendre coeficients
+%  psi - @S2Kernel
+%  A   - list of Legendre coeficients
 %
 % Output
-%  sF - @S2FunHarmonic
+%  sF   - @S2FunHarmonic
 %  SO3F - @ODF
 %
 
@@ -45,7 +45,6 @@ else
     A = psi(:);
   else
     A = psi.A(:);
-    A = A ./ (2*(0:length(A)-1)+1).';
   end
   A = A(1:min(sF.bandwidth+1,length(A)));
   
@@ -60,3 +59,6 @@ else
   sF.fhat = A .* sF.fhat;
   
 end
+
+
+
