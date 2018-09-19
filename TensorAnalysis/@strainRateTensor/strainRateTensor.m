@@ -6,7 +6,6 @@ classdef strainRateTensor < tensor
   % R = 0.5*(J - J^T) % rotational part
   %
   
-  
   properties
     
   end
