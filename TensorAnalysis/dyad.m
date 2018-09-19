@@ -14,6 +14,9 @@ function T = dyad(T,n,varargin)
 %  T - @tensor
 %
 
+
+if ~isa(T,'tensor'), T = tensor(T); end
+
 if nargin == 1
   
   % nothing todo
@@ -28,6 +31,7 @@ elseif isnumeric(n)
   
 else
   
+  if ~isa(n,'tensor'), n = tensor(n); end
   T = dyad(EinsteinSum(T,1:T.rank,n,T.rank + (1:n.rank)),varargin{:});
   
 end
