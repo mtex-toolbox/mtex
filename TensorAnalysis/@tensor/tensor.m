@@ -6,7 +6,12 @@ classdef tensor < dynOption
     CS = specimenSymmetry % crystal symmetry
     doubleConvention = false %
   end
-  
+
+  properties (Dependent = true)
+    isSymmetric
+    isSkewSymmetric
+  end
+
   methods
   
     function T = tensor(M,varargin)
@@ -107,6 +112,7 @@ classdef tensor < dynOption
       end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
+      options = delete_option(options,'rank',1);
       
       % extract properties
       T = T.setOption(options{:});
@@ -124,6 +130,23 @@ classdef tensor < dynOption
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end
+
+    function isSym = get.isSymmetric(T)
+
+      if T.rank == 2
+
+        isSym = norm(T - T') ./ norm(T) < 1e-6;
+
+      else
+        
+        error('not yet implemented');
+        
+      end
+      
+
+    end
+
+
   end
   
   methods (Static = true)
@@ -186,7 +209,7 @@ classdef tensor < dynOption
       eps(3,2,1) = -1;
       eps(2,1,3) = -1;
       
-      eps = tensor(eps,'name','Levi Cevita');
+      eps = tensor(eps,'rank',3,'name','Levi Cevita');
       
     end
   end

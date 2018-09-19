@@ -5,7 +5,7 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 %   [M,b,mori] = calcTaylor(eps,sS)
 %
 % Input
-%  eps - strain @tensor list in crystal coordinates
+%  eps - @strainTensor list in crystal coordinates
 %  sS  - @slipSystem list in crystal coordinates
 %
 % Output
@@ -16,7 +16,7 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 % Example
 %   
 %   % define 10 percent strain
-%   eps = 0.1 * tensor(diag([1 -0.75 -0.25]),'name','strain')
+%   eps = 0.1 * strainTensor(diag([1 -0.75 -0.25]))
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')

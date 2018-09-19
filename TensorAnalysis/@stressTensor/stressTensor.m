@@ -16,21 +16,20 @@ classdef stressTensor < tensor
       sigma = stressTensor(T);
     end
     
-    function sT = uniaxial(v)
+    function sigma = uniaxial(v)
       % define uniaxial stress tensor
       %
       % Syntax
-      %   sT = stressTensor.uniaxial(v)
+      %   sigma = stressTensor.uniaxial(v)
       %
       % Input
-      %  v - @vector3d
+      %  v - @vector3d loading direction
       %
       % Output
-      %  sT - @stressTensor
+      %  sigma - @stressTensor
       %
            
-      T = EinsteinSum(tensor(v),1,v,2);
-      sT = stressTensor(T);
+      sigma = stressTensor(dyad(v,2));
 
    end
   end
