@@ -30,7 +30,7 @@ classdef halfQuadraticFilter < EBSDFilter
   properties
     alpha = [0.1,0.1];                      % regularization in x, y direction
     weight = @(t,eps,th) (t<=th)./(t.^2+eps^2).^(1/2); % weight function handle b^*(t,epsilon)
-    eps = 1e-1;                             % parameter for the weight function
+    eps = 1e-2;                             % parameter for the weight function
     tol = 1e-5                              % tolerance for gradient descent
     threshold = 5*degree                    % threshold for subgrain boundaries
   end
