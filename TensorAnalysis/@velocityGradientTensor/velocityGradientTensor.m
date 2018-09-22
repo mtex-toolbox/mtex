@@ -2,7 +2,7 @@ classdef velocityGradientTensor < tensor
   
   methods
     function L = velocityGradientTensor(varargin)
-      L = L@tensor(varargin{:},'rank',2);      
+      L = L@tensor(varargin{:},'rank',2);
     end    
 
     function E = sym(L)
@@ -18,6 +18,34 @@ classdef velocityGradientTensor < tensor
    
   methods (Static = true)
     
+    function L = pureShear(exp,comp,e)
+      % define uniaxial compression tensor
+      %
+      % Syntax
+      %   L = velocityGradientTensor.uniaxialCompression(d,r)
+      %
+      % Input
+      %  exp  - @vector3d expansion direction
+      %  comp - @vector3d compression direction
+      %  e - strain rate
+      %
+      % Output
+      %  L - @velocityGradientTensor
+      %           
+ 
+      if nargin == 2, e = 1; end
+
+      v1 = normalize(exp - comp);
+      v2 = normalize(exp + comp);
+
+      L = 2*velocityGradientTensor(e .* dyad(v1,v2) + dyad(v1,v2)');
+
+      %L = velocityGradientTensor.simpleShear(varargin{:});
+      %L = (L + L');
+
+    end
+
+
     function L = simpleShear(v1,v2,e)
       % define uniaxial compression tensor
       %
@@ -25,8 +53,8 @@ classdef velocityGradientTensor < tensor
       %   L = velocityGradientTensor.uniaxialCompression(d,r)
       %
       % Input
-      %  v1 - @vector3d extension direction
-      %  v2 - @vector3d compression direction
+      %  v1 - @vector3d shear direction
+      %  v2 - @vector3d normal direction ???
       %  e - strain rate
       %
       % Output
@@ -39,25 +67,7 @@ classdef velocityGradientTensor < tensor
 
     end
     
-    function L = pureShear(varargin)
-      % define uniaxial compression tensor
-      %
-      % Syntax
-      %   L = velocityGradientTensor.uniaxialCompression(d,r)
-      %
-      % Input
-      %  ext  - @vector3d compression direction
-      %  dist - @vector3d compression direction
-      %  e - strain rate
-      %
-      % Output
-      %  L - @velocityGradientTensor
-      %           
-      
-      L = velocityGradientTensor.simpleShear(varargin{:});
-      L = (L + L');
-
-    end
+    
         
     function L = planeStrain(v1,v2,gamma)
       
