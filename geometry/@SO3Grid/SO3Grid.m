@@ -1,25 +1,35 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) SO3Grid < orientation
+% represent orientations in a gridded structure to allow quick access
 %  
 % Syntax
-%  S3G = SO3Grid(nodes,CS,SS)
-%  S3G = SO3Grid(points,CS,SS)
-%  S3G = SO3Grid(resolution,CS,SS)
+%   S3G = regularSO3Grid(CS)
+%   S3G = regularSO3Grid(CS,SS,'resolution',2.5*degree)     % specify the resolution
+%   S3G = regularSO3Grid(CS,SS,'resolution',5*degree,'ZYZ') % use ZYZ convention
+%   S3G = regularSO3Grid(CS,SS,'phi2','sections',10) % 10 phi2 sections
+%   S3G = regularSO3Grid
+%   S3G = equispacedSO3Grid(CS,SS,'points',n)
+%   S3G = equispacedSO3Grid(CS,'resolution',res)
+%
+%   % fill only a ball with radius of 20 degree
+%   S3G = equispacedSO3Grid(CS,'maxAngle',20*degree)
 %
 % Input
-%  points     - number of nodes
-%  nodes      - @quaternion
-%  resolution - double
-%  CS, SS     - @symmetry groups
+%  CS  - @crystalSymmetry
+%  SS  - @specimenSymmetry
+%   n  - approximate number of points
+%  res - resolution in radiant
+%
+% Ouptut
+%  S3G - @SO3Grid
 %
 % Options
-%  regular    - construct a regular grid
-%  equispaced - construct a equispaced grid%
-%  phi        - use phi
-%  ZXZ, Bunge - Bunge (phi1 Phi phi2) convention
-%  ZYZ, ABG   - Matthies (alpha beta gamma) convention
-%  maxAngle   - only up to maximum rotational angle
-%  center     - with respect to this given center
-
+%  maxAngle - radius of the ball to be filles
+%  center - center of the ball
+%  sections - number of sections
+%
+% Flags
+%  phi1 | Phi | phi2 - sections along which variable
+%
   
   properties
     alphabeta = [];

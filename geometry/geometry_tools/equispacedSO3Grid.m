@@ -11,7 +11,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 % Input
 %  CS  - @crystalSymmetry
 %  SS  - @specimenSymmetry
-%   n  - number of points
+%   n  - approximate number of points
 %  res - resolution in radiant
 %
 % Ouptut
