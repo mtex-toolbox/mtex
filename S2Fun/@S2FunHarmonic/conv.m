@@ -43,8 +43,13 @@ else
   % extract Legendre coefficients
   if isa(psi,'double')
     A = psi(:);
-  else
+  elseif isa(psi,'S2Kernel')
     A = psi.A(:);
+  elseif isa(psi,'kernel')
+    A = psi.A(:);
+    A = A ./ (2*(0:length(A)-1)+1).';
+  else
+    error('wrong second argument');
   end
   A = A(1:min(sF.bandwidth+1,length(A)));
   
