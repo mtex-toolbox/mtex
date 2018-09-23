@@ -137,6 +137,37 @@ plot(grains.boundary,'edgecolor','k','linewidth',2)
 hold off
 
 
+%% Grain orientation spread (GOS)
+
+plot(grains('fo'),grains('fo').GOS./degree,'micronbar','off')
+mtexColorbar
+
+%% Kernel average misorientation (KAM)
+
+KAM = ebsd('fo').KAM;
+plot(ebsd('fo'),KAM);
+mtexColorbar
+hold on
+plot(grains.boundary,'linewidth',2)
+hold off
+
+%% Grain average misorientation (GAM)
+% The grain average misorientation (GAM) is defined as the mean KAM within
+% each grain. The following line can be taken as a blueprint how to average
+% arbitrary properties within grains. The last argument |@nanmean| in this
+% command indicates that the average should be taken as the mean ignoring
+% NaNs. In order to a assign the maximum value to each grain replace this
+% with |@max|.
+
+GAM = accumarray(ebsd('fo').grainId, KAM, size(grains), @nanmean) ./degree;
+
+%%
+
+% plot the GAM 
+plot(grains('fo'),GAM(grains('fo').id),'micronbar','off')
+
+mtexColorbar
+
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
 % <grainBoundary.misorientation.html>
