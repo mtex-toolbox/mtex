@@ -12,11 +12,10 @@ function [fe, qe, F] = finiteStrain(L,n)
 %  qe       - length of ellipse axes
 %
 
-D = expm(L.matrix * n); % deforamtion "matrix"
-F = D*D'; % Finger tensor
-[U,S,~] = svd(F); 
-fe = vector3d(U);
-qe = sqrt(diag(S));
+D = expm(L * n); % deforamtion "matrix"
+F = EinsteinSum(D,[1,-1],D,[2,-1]); % Finger tensor
+[fe,qe] = eig(F);
+qe = sqrt(qe);
 
 end
 
