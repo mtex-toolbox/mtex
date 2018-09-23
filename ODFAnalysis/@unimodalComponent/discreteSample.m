@@ -14,15 +14,17 @@ axis = vector3d.rand(npoints);
 
 % take random rotational angles
 M = 1000000;             % discretisation parameter
-t = linspace(0,1,M);
+
+hw = min(4*component.psi.halfwidth,90*degree);
+t = linspace(cos(hw),1,M);
 
 % compute cummulative distribution function
 c = 4 / pi * cumsum(sqrt(1-t.^2) .* component.psi.K(t)) / M;
 c = c ./ c(end);
 
 r = rand(npoints,1);
-[~,t] = histc(r,c);
-angle = 2 * acos(t ./ M);
+[~,id] = histc(r,c);
+angle = 2 * acos(t(id)).';
 
 q = quaternion(component.center(:),ic) .* axis2quat(axis,angle);
 

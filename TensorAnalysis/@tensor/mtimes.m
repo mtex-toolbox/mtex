@@ -33,7 +33,7 @@ elseif isa(T2,'double')
   end
   
 else
-  
-  error('Wrong type! For tensor product use the command EinsteinSum!')
+
+  error('For product between tensors use the command EinsteinSum!')
   
 end
