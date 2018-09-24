@@ -164,7 +164,7 @@ dS = dislocationSystem.bcc(ebsd.CS)
 % size of the unit cell
 a = norm(ebsd.CS.aAxis);
 
-% in bcc and fcc the norm of the burgers vector is sqrt(3)/2 * a
+% in bcc the norm of the burgers vector is sqrt(3)/2 * a, and in fcc it is a/sqrt(2)
 [norm(dS(1).b), norm(dS(end).b), sqrt(3)/2 * a]
 
 
