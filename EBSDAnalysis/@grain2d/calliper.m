@@ -11,7 +11,7 @@ function [cd, pcd, omega] = calliper(grains,varargin)
 %  omega    - angle giving direction/trend of cd
 %
 % Options:
-%  shortes  - instead of maximum calliper, derive minimum (cd),
+%  shortest  - instead of maximum calliper, derive minimum (cd),
 %             length normal to minimum  (pcd) and trend of minimum calliper
 %             (omega)
 %              
