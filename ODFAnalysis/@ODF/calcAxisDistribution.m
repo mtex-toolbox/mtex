@@ -1,9 +1,9 @@
-function x = calcAxisDistribution(odf,h,varargin)
+function x = calcAxisDistribution(odf,varargin)
 % compute the axis distribution of an ODF or MDF
 %
 % Input
 %  odf - @ODF
-%  h   - @vector3d
+%  h   - @vector3d (optional)
 %
 % Options
 %  smallesAngle - use axis corresponding to the smalles angle
@@ -16,6 +16,12 @@ function x = calcAxisDistribution(odf,h,varargin)
 % See also
 
 [oR,dcs,nSym] = fundamentalRegion(odf.CS,odf.SS,varargin{:});
+
+if nargin > 1 && isa(varargin{1},'vector3d')
+h = varargin{1};
+else
+h = quadratureS2Grid(126);  
+end
 maxOmega = oR.maxAngle(project2FundamentalRegion(h,dcs));
 res = get_option(varargin,'resolution',2.5*degree);
 nOmega = round(max(maxOmega(:))/res);
@@ -34,3 +40,10 @@ f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % sum along axes
 x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);
+
+if (nargin > 1 && ~isa(varargin{1},'vector3d')) || nargin == 1 
+   x = calcDensity(h(:,1),'weights', x,'halfwidth',res/2);
+   x = symmetrise(x,odf.CS,varargin{:});
+end
+
+
