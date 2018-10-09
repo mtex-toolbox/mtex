@@ -28,6 +28,7 @@ for i = 1:length(mtexFig.children)
     1 + figSize(2) - row * ah ...
     + mtexFig.innerPlotSpacing + mtexFig.tightInset(2),...
     mtexFig.axisWidth,mtexFig.axisHeight];
+  axisPos(axisPos<0)=0;
   set(mtexFig.children(i),'Units','Pixel','Position',axisPos);
   
   % position the colorbars
