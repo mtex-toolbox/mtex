@@ -21,5 +21,5 @@ if nargin > 1 && isa(varargin{1},'vector3d')
     x = nSym * (omega - sin(omega)) ./ pi;
 else
     f = @(h) (oR.maxAngle(h) - sin(oR.maxAngle(h))) ./ pi * nSym ;
-    x = S2FunHarmonicSym.quadrature(f,cs);
+    x = S2FunHarmonicSym.quadrature(f,cs,varargin{:});
 end
