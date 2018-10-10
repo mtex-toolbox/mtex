@@ -1,25 +1,27 @@
 function x = calcAxisDistribution(cs,varargin)
 % compute the axis distribution of an uniform ODF or MDF
 %
+% Syntax
+%   value = calcAxisDistribution(cs,a)
+%   adf = calcAxisDistribution(cs)
+%
 % Input
 %  cs - @crystalSymmetry
-%  h  - @vector3d (optional)
+%  h  - @vector3d
 %  
 % Output
-%  x   - values of the axis distribution
-%  or
-%  x   - spherical function
+%  value - values of the axis distribution function at axes a
+%  adf - axes distribution function @S2Fun
 % See also
 
-varargin = delete_option(varargin,'complete');
-[oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
-
 if nargin > 1 && isa(varargin{1},'vector3d')
-    h = varargin{1}; 
-    h = project2FundamentalRegion(h,dcs);
-    omega = oR.maxAngle(h);
-    x = nSym * (omega - sin(omega)) ./ pi;
+  varargin = delete_option(varargin,'complete');
+  [oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
+  h = varargin{1};
+  h = project2FundamentalRegion(h,dcs);
+  omega = oR.maxAngle(h);
+  x = nSym * (omega - sin(omega)) ./ pi;
 else
-    f = @(h) (oR.maxAngle(h) - sin(oR.maxAngle(h))) ./ pi * nSym ;
-    x = S2FunHarmonicSym.quadrature(f,cs,varargin{:});
+  f = @(h) calcAxisDistribution(cs,h,varargin{:});  
+  x = S2FunHarmonicSym.quadrature(f,cs,'bandwidth',128,varargin{:});
 end
