@@ -14,14 +14,15 @@ function x = calcAxisDistribution(cs,varargin)
 %  adf - axes distribution function @S2Fun
 % See also
 
+[oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
+
 if nargin > 1 && isa(varargin{1},'vector3d')
   varargin = delete_option(varargin,'complete');
-  [oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
   h = varargin{1};
   h = project2FundamentalRegion(h,dcs);
   omega = oR.maxAngle(h);
   x = nSym * (omega - sin(omega)) ./ pi;
 else
-  f = @(h) calcAxisDistribution(cs,h,varargin{:});  
-  x = S2FunHarmonicSym.quadrature(f,cs,'bandwidth',128,varargin{:});
+  f = @(h) calcAxisDistribution(dcs,h,varargin{:});  
+  x = S2FunHarmonicSym.quadrature(f,dcs,'bandwidth',128,varargin{:});
 end

@@ -43,7 +43,7 @@ x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);
 
 if (nargin > 1 && ~isa(varargin{1},'vector3d')) || nargin == 1 
    x = calcDensity(h(:,1),'weights', x,'halfwidth',res/2);
-   x = symmetrise(x,odf.CS,varargin{:});
+   x = symmetrise(x,dcs,varargin{:});
 end
 
 
