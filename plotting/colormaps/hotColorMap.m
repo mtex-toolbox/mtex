@@ -1,4 +1,4 @@
-function h = hot(m)
+function h = hotColorMap(m)
 %HOT    Black-red-yellow-white color map
 %   HOT(M) returns an M-by-3 matrix containing a "hot" colormap.
 %   HOT, by itself, is the same length as the current figure's
