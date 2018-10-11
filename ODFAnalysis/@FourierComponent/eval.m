@@ -9,12 +9,13 @@ function f = eval(component,ori,varargin)
 %  f - double
 %
 
-persistent plan;
+persistent keepPlan;
 
 % kill plan
 if check_option(varargin,'killPlan')
-  nfsoftmex('finalize',plan);
-  plan = [];
+  nfsoftmex('finalize',keepPlan);
+  keepPlan = [];
+  return
 end
 
 if isempty(ori), f = []; return; end
@@ -27,6 +28,11 @@ L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
 Ldim = deg2dim(double(L+1));
 
 % create plan
+if check_option(varargin,'keepPlan')
+  plan = keepPlan;
+else
+  plan = [];
+end
 if isempty(plan)
 
   % 2^4 -> nfsoft-represent
@@ -52,9 +58,10 @@ nfsoftmex('trafo',plan);
 f = real(nfsoftmex('get_f',plan));
 
 % kill plan
-if ~check_option(varargin,'keepPlan')
-  nfsoftmex('finalize',plan);
-  plan = [];
+if check_option(varargin,'keepPlan')
+  keepPlan = plan;
+else
+  nfsoftmex('finalize',plan);  
 end
   
 end

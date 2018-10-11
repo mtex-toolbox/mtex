@@ -17,6 +17,15 @@ function sF = quadrature(f, varargin)
 %  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %
 
+persistent keepPlan;
+
+% kill plan
+if check_option(varargin,'killPlan')
+  nfsftmex('finalize',keepPlan);
+  keepPlan = [];
+  return
+end
+
 bw = get_option(varargin, 'bandwidth', 128);
 
 if isa(f,'S2Fun'), f = @(v) f.eval(v); end
@@ -50,11 +59,20 @@ if isempty(nodes)
   return
 end
 
+% create plan
+if check_option(varargin,'keepPlan')
+  plan = keepPlan;
+else
+  plan = [];
+end
+
 % initialize nfsft
-nfsftmex('precompute', bw, 1000, 1, 0);
-plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-nfsftmex('precompute_x', plan);
+if isempty(plan)
+  nfsftmex('precompute', bw, 1000, 1, 0);
+  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+  nfsftmex('precompute_x', plan);
+end
 
 s = size(values);
 values = reshape(values, length(nodes), []);
@@ -68,8 +86,13 @@ for index = 1:num
   fhat(:, index) = nfsftmex('get_f_hat_linear', plan);
 end
 
-% finalize nfsft
-nfsftmex('finalize', plan);
+% kill plan
+if check_option(varargin,'keepPlan')
+  keepPlan = plan;
+else
+  nfsftmex('finalize', plan);
+end
+
 
 % maybe we have a multivariate function
 try
