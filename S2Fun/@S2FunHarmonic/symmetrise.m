@@ -65,7 +65,7 @@ end
 
 % maybe there is nothing to do
 if sF.bandwidth == 0 || length(symX) == 1
-  sFs = S2FunHarmonicSym(sF.fhat, sym, varargin{:});
+  sFs = S2FunHarmonicSym(sF.fhat, sym);
   return;
 end
 

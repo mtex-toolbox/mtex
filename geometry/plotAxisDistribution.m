@@ -29,7 +29,9 @@ function h = plotAxisDistribution(obj,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
+res = 2.5 * degree;
 if isa(obj,'symmetry')
+  res = .5 * degree;
   cs1 = obj;
   if nargin > 1 && isa(varargin{1},'symmetry')
     cs2 = varargin{1};
@@ -60,15 +62,15 @@ else
     
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
-  if isa(obj,'symmetry')
-    h = plotS2Grid(sR,'resolution',.5*degree,varargin{:});
-  else
-    h = plotS2Grid(sR,'resolution',2.5*degree,varargin{:});
-  end
-
+  h = plotS2Grid(sR,'resolution',res,varargin{:});
+  
   % plot  
   varargin = [delete_option(varargin,'complete'),dcs.plotOptions];
-  density = pos(calcAxisDistribution(obj,h,varargin{:}));
+  if isa(obj,'symmetry')
+    density = pos(calcAxisDistribution(cs1,cs2,h,varargin{:}));
+  else
+    density = pos(calcAxisDistribution(obj,h,varargin{:}));
+  end
   h = smooth(h,density,dcs,varargin{:});
 
 end
