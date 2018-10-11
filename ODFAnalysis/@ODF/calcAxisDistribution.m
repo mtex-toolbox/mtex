@@ -1,27 +1,32 @@
 function x = calcAxisDistribution(odf,varargin)
 % compute the axis distribution of an ODF or MDF
 %
-% Input
-%  odf - @ODF
-%  h   - @vector3d (optional)
+% Syntax
 %
-% Options
-%  smallesAngle - use axis corresponding to the smalles angle
-%  largestAngle - use axis corresponding to the largest angle
-%  allAngles    - use all axes
+%   value = calcAxisDistribution(odf)
+%   adf = calcAxisDistribution(odf, a)
+%
+% Input
+%  odf - @ODF orientation or misorientation distribution function
+%  a   - @vector3d rotational axis
 %
 % Output
-%  x   - values of the axis distribution
+%  afd - @S2Fun axis distribution function
+%  value - value of axis distribution function for rotational axis a
 %
 % See also
+% symmetry/calcAxisDistribution
 
 [oR,dcs,nSym] = fundamentalRegion(odf.CS,odf.SS,varargin{:});
 
-if nargin > 1 && isa(varargin{1},'vector3d')
-h = varargin{1};
-else
-h = quadratureS2Grid(126);  
+if nargin == 1 || ~isa(varargin{1},'vector3d')
+  adf = @(h) calcAxisDistribution(odf,h,varargin{:});
+  x = S2FunHarmonicSym.quadrature(adf,dcs,'bandwidth',64,varargin{:});
+  return
 end
+
+h = varargin{1};
+
 maxOmega = oR.maxAngle(project2FundamentalRegion(h,dcs));
 res = get_option(varargin,'resolution',2.5*degree);
 nOmega = round(max(maxOmega(:))/res);
@@ -40,10 +45,3 @@ f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % sum along axes
 x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);
-
-if (nargin > 1 && ~isa(varargin{1},'vector3d')) || nargin == 1 
-   x = calcDensity(h(:,1),'weights', x,'halfwidth',res/2);
-   x = symmetrise(x,dcs,varargin{:});
-end
-
-

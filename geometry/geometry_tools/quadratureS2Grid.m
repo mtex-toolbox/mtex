@@ -42,7 +42,7 @@ else
   if check_option(varargin, 'gauss')
     W = data(:, 3);
   else
-    W = 4*pi/size(data, 1);
+    W = 4*pi/size(data, 1) .* ones(size(S2G));
   end
   
   % store the data

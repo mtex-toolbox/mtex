@@ -12,7 +12,9 @@ function x = calcAxisDistribution(cs,varargin)
 % Output
 %  value - values of the axis distribution function at axes a
 %  adf - axes distribution function @S2Fun
+%
 % See also
+% ODF/calcAxisDistribution
 
 [oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
 varargin = delete_option(varargin,'complete');
