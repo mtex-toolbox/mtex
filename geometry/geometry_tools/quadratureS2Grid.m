@@ -36,7 +36,7 @@ else
     data = load(fullfile(mtexDataPath,'quadratureS2Grid_chebyshev.mat'),name);
   end
 
-  eval(['data = data.' name ';']);
+  data = data.(name);
   S2G = vector3d('polar', data(:, 1), data(:, 2));
   
   if check_option(varargin, 'gauss')
