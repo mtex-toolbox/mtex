@@ -93,7 +93,9 @@ for j = 1:numel(sP)
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange); end
 
   % colormap
-  mtexColorMap(sP(j).ax,getMTEXpref('defaultColorMap'));
+  if ~strcmpi(get_option(varargin,'fill'),'off')
+    mtexColorMap(sP(j).ax,getMTEXpref('defaultColorMap'));
+  end
 
   % bring grid in front
   sP(j).doGridInFront;
@@ -154,6 +156,7 @@ else
   opt = extract_argoption([{'LineStyle','none','Fill','on'},varargin],{'LineStyle','Fill','LineColor'});
   
   [CM,h] = contourf(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
+  [CM,h] = contour(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
   
 end
 
