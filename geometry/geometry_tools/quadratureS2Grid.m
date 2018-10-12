@@ -1,4 +1,4 @@
-function [S2G, W, M2] = quadratureS2Grid(M, varargin)
+function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
 %
 % Syntax
 %   [S2G, W, M2] = quadratureS2Grid(M) quadrature grid of type gauss
@@ -11,45 +11,45 @@ persistent W_p;
 persistent M2_p;
 
 if check_option(varargin, 'gauss')
-  path = fullfile(mtexDataPath,'quadratureS2Grid_gauss');
+  load(fullfile(mtexDataPath,'quadratureS2Grid_gauss.mat'),'gridIndex');
 else
-  path = fullfile(mtexDataPath,'quadratureS2Grid_chebyshev');
+  load(fullfile(mtexDataPath,'quadratureS2Grid_chebyshev.mat'),'gridIndex');
 end
-files = dir( fullfile(path,'*') );
-tmp = {files.name}';
-tmp = char(tmp);
-tmp = mat2cell(tmp(:, 2:5), ones(length(tmp), 1));
-tmp = str2double(tmp);
-tmp2 = (tmp >= M);
-index = find(tmp2, 1);
+index = find(gridIndex.bandwidth >= bandwidth, 1);
 if isempty(index)
-  index = length(tmp);
+  index = size(gridIndex,1);
   warning('M is too large, instead we are giving you the largest quadrature grid we got.');
 end
 
-M2 = tmp(index);
+M2 = gridIndex.bandwidth(index);
 
 if ~isempty(M2_p) && M2_p == M2
   S2G = S2G_p;
   W = W_p;
   M2 = M2_p;
-
+  
 else
-
-  data = load([path, filesep, files(index).name]);
-  S2G = vector3d('polar', data(:, 1), data(:, 2));
-
+  name = cell2mat(gridIndex.name(index));
   if check_option(varargin, 'gauss')
-    W = data(:, 3);
+    data = load(fullfile(mtexDataPath,'quadratureS2Grid_gauss.mat'),name);
+  else
+    data = load(fullfile(mtexDataPath,'quadratureS2Grid_chebyshev.mat'),name);
+  end
+
+  eval(['data = data.' name ';']);
+  S2G = vector3d('polar', data(:, 1), data(:, 2));
+  
+  if check_option(varargin, 'gauss')
+    W = data(:,3);
   else
     W = 4*pi/size(data, 1) .* ones(size(S2G));
-  end
+  end  
+  
   
   % store the data
   S2G_p = S2G;
   W_p = W;
-  M2_p = M2;
-    
+  M2_p = M2;    
 end
 
 end
