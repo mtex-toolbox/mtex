@@ -1,8 +1,8 @@
 function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
 %
 % Syntax
-%   [S2G, W, M2] = quadratureS2Grid(M) quadrature grid of type gauss
-%   [S2G, W, M2] = quadratureS2Grid(M, 'chebyshev') quadrature grid of type chebyshev
+%   [S2G, W, M2] = quadratureS2Grid(M) quadrature grid of type chebyshev
+%   [S2G, W, M2] = quadratureS2Grid(M, 'gauss') quadrature grid of type gauss
 %
 
 
