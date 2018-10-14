@@ -38,10 +38,7 @@ classdef velocityGradientTensor < tensor
       v1 = normalize(exp - comp);
       v2 = normalize(exp + comp);
 
-      L = 2*velocityGradientTensor(e .* dyad(v1,v2) + dyad(v1,v2)');
-
-      %L = velocityGradientTensor.simpleShear(varargin{:});
-      %L = (L + L');
+      L = 2*velocityGradientTensor(e .* (dyad(v1,v2) + dyad(v1,v2)'));
 
     end
 
