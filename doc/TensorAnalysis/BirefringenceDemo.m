@@ -40,9 +40,10 @@ hold off
 
 %% The refractive index tensor
 %
-% The refractive index of a material is described by a rank 2 tensor. 
-% TODO: write some more words ;)
-
+% The refractive index of a material describes the dependence of the
+% speed of light with respect to the propagation direction and the
+% polarization direction. In a linear world this relation ship is modeled
+% by a rank 2 tensor - the so called refractive index tensor.
 
 %%
 % In the case of Olivine the refractive index tensor can be computed as
