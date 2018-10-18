@@ -1,5 +1,5 @@
-function [fe, qe, F] = finiteStrain(L,n)
-% derive finte strain axes and magnitudes
+function [fe, qe, Ea] = finiteStrain(L,n)
+% derive finte strain axes and magnitudes from deformation tensor
 % after n-steps (in strain rate units of L)
 % using the solution of Provost et al.2014 doi:10.1029/2001JB001734
 %
@@ -10,12 +10,22 @@ function [fe, qe, F] = finiteStrain(L,n)
 % Output
 %  fe       - finite strain ellipsoid axis directions (vector3d)
 %  qe       - length of ellipse axes
-%
+%  Ea       - finite strain tensor (Langrange)
 
-D = expm(L * n); % deforamtion "matrix"
-F = EinsteinSum(D,[1,-1],D,[2,-1]); % Finger tensor
-[fe,qe] = eig(F);
-qe = sqrt(qe);
+F = expm(L * n); % this is actually the deformation gradient tensor or Langranian position gradient tensor
+
+C = EinsteinSum(F,[-1,2],F,[-1,1]); % right Cauchy-Green deformation tensor C = F'*F
+
+% Green-Lagrangian strain tensor E = 0.5(C-I) -ref. to undeformed
+Ea = 0.5*(C-eye(3));
+
+% strain ellipsoid parameters from deformation tensor
+% [f,q] = eig(C);
+% q = sqrt(q);
+
+% strain ellipsoid parameters from strain tensor
+[fe,qe] = eig(Ea);
+qe = sqrt(1+2*qe);
 
 end
 
