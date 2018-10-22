@@ -8,6 +8,7 @@ classdef BinghamS2 < S2Fun
     properties (SetAccess=protected)
         N = 1   % normalization constant
         antipodal = 1
+        cEllipse = []
     end
     
     
@@ -67,13 +68,29 @@ classdef BinghamS2 < S2Fun
         % Output
         %  BS2 - @BinghamS2
         %
-        
+        %
+        % Option
+        %  ConfElli - specify the level p (default at 0.95)
+        %             for the confidence ellipse for the mean direction 
+        %             based on Tanaka (1999) https://doi.org/10.1186/BF03351601 
+        %      
+
+ 
         [a,kappa] = eig3(v*v);
         kappa = kappa./sum(kappa);
         Z =estimateZ(kappa);
         BS2 = BinghamS2(Z, a);
         BS2.N = BS2.normalizationConst;
         
+       % add the estimate of confidence level, given as ellipse half
+       % axes e.g.
+       % plot(v)
+       % ellipse(rotation('matrix',BS2.a.xyz'),BS2.cEllipse(1),BS2.cEllipse(2))
+       p = get_option(varargin,'ConfElli',0.95)
+       J = sqrt(chi2inv(p,2))/2;
+       BS2.cEllipse = [J/(-Z(2)*(kappa(3)-kappa(2))), ...
+                            J/(-Z(1)*(kappa(3)-kappa(1)))];
+
         function Z = estimateZ(kappa)
           % adapted from https://github.com/libDirectional/libDirectional
           % Igor Gilitschenski, Gerhard Kurz, Simon J. Julier, Uwe D. Hanebeck,
