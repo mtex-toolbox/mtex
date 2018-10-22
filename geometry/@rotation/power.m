@@ -1,23 +1,23 @@
-function r = power(r,n)
+function rot = power(rot,n)
 % r.^n
 %
 % Syntax
 %
-% r = r^(-1)
-% r = r.^2
-% r = r.^[0,1,2,3]
+% rot = rot^(-1) % inverse rotation
+% rot = rot.^2
+% rot = rot.^[0,1,2,3]
 %
 %
 % Input
-%  r - @rotation
+%  rot - @rotation
 %
 % Output
-%  r - @rotation
+%  rot - @rotation
 %
 % See also
 % rotation/log 
 
-r = power@quaternion(r,n);
+rot = power@quaternion(rot,n);
 
 % change inversion
-r.i = (1-(1-2*r.i).^n)./2;
+rot.i = (1-(1-2*rot.i).^n)./2;

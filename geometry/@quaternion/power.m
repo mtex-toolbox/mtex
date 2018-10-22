@@ -3,7 +3,7 @@ function q = power(q,n)
 %
 % Syntax
 %
-% q = q^(-1)
+% q = q.^(-1)
 % q = q.^2
 % q = q.^[0,1,2,3]
 %
@@ -17,7 +17,12 @@ function q = power(q,n)
 % See also
 % quaternion/ctranspose
 
-
+% ensure q.a is non negative
+s = 1-2*(q.a<0);
+q.a = q.a*s;
+q.b = q.b*s;
+q.c = q.c*s;
+q.d = q.d*s;
 omega = 2*acos(q.a);
 
 q.a = cos(n*omega/2);
