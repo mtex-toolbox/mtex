@@ -24,3 +24,6 @@ v = S2G(discretesample(d,n));
 
 % some local distortions
 v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
+
+% set antipodal if function is antipodal
+if S2Fun.antipodal == 1; v.antipodal = 1; end
