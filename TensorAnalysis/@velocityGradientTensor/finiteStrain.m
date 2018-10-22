@@ -17,7 +17,7 @@ F = expm(L * n); % this is actually the deformation gradient tensor or Langrania
 C = EinsteinSum(F,[-1,2],F,[-1,1]); % right Cauchy-Green deformation tensor C = F'*F
 
 % Green-Lagrangian strain tensor E = 0.5(C-I) -ref. to undeformed
-Ea = 0.5*(C-eye(3));
+Ea = strainTensor(0.5*(C-eye(3)));
 
 % strain ellipsoid parameters from deformation tensor
 % [f,q] = eig(C);
