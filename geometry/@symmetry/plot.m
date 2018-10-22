@@ -4,6 +4,7 @@ function plot(s,varargin)
 % Syntax
 %   plot(cs)
 %   plot(cs,'symbolSize',2)
+%   plot(cs,'symbolSize',2,'mirrorLineWidth',5)
 %
 % Input
 %  cs - crystalSymmetry
@@ -28,7 +29,8 @@ hold on
 
 % plot mirror planes
 mir = Improper & rot.angle>pi-1e-4;
-circle(rot(mir).axis,'linewidth',2,'color','k','doNotDraw');
+mlw = get_option(varargin,'mirrorLineWidth',4);
+circle(rot(mir).axis,'linewidth',mlw,'color','k','doNotDraw');
 
 for i = 1:length(uaxis)
   
