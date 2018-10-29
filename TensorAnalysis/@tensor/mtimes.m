@@ -32,6 +32,11 @@ elseif isa(T2,'double')
     
   end
   
+elseif T1.rank ==2 && T1.rank ==2
+  
+  T = EinsteinSum(T1,[1 -1],T2,[-1 2]);
+  
+  
 else
 
   error('For product between tensors use the command EinsteinSum!')
