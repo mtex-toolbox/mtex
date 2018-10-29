@@ -113,7 +113,7 @@ classdef crystalSymmetry < symmetry
       end
 
       % compute coordinate system
-      s.axes = calcAxis(abc,angles,varargin{:});
+      s.axes = calcAxis(s,abc,angles,varargin{:});
       
       s.mineral = get_option(varargin,'mineral','');
       s.color = get_option(varargin,'color','');
