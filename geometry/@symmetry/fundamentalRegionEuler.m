@@ -2,11 +2,13 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 % get the fundamental region in Euler angles
 %
 % Syntax
+%
+%   [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs)
 %   [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss)
 %
 % Input
-%  cs - crystal @symmetry
-%  ss - specimen @symmetry
+%  cs - @crystalSymmetry
+%  ss - @specimenSymmetry
 %
 % Ouput
 %  maxPhi1 - maximum Euler angle phi_1
@@ -15,6 +17,9 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 %
 % See also
 % symmetry/FundamentalRegion symmetry/FundamentalSector
+
+
+if nargin == 1, ss = specimenSymmetry; end
 
 % phi1
 maxPhi1 = 2*pi/ss.multiplicityZ;
