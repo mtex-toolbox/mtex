@@ -40,7 +40,7 @@ if check_option(varargin,'add2all')
   
   h = [];
   for i = 1:length(ax)
-    h = [h,plot(v,varargin{:},'parent',ax(i))]; %#ok<AGROW>
+    h = [h,plot(v,varargin{:},'parent',ax(i),'doNotDraw')]; %#ok<AGROW>
   end
   
   if nargout >=1, varargout{1} = h; end
