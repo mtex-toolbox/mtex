@@ -5,7 +5,7 @@ classdef refractiveIndexTensor < tensor
     
     
     function rI = refractiveIndexTensor(varargin)
-      rI = rI@tensor(varargin{:});
+      rI = rI@tensor(varargin{:},'rank',2);
       
       % TODO: set up the unit correctly !!!
       

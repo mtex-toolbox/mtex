@@ -62,7 +62,7 @@ cs = ebsd('olivine').CS;
 rI_Fo = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
 %% 
-% For Fayalit the priniple refractive values
+% For Fayalite the priniple refractive values
 
 n_alpha = 1.82; n_beta = 1.869; n_gamma = 1.879;
 
@@ -76,8 +76,8 @@ rI_Fa = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 %%
 % The refractive index of composite materials like Olivine can now be
 % modelled as the weighted sum of the of the refractive index tensors of
-% Forsterite and Fayalit. Lets assume that the relative Forsterite content
-% (volume or mass or atoms ???) is given my
+% Forsterite and Fayalite. Lets assume that the relative Forsterite content
+% (atomic percentage) is sgiven my
 
 XFo = 0.86; % 86 percent Forsterite
 
