@@ -34,40 +34,58 @@ gg = grains(grains.grainSize > 100);
 gg = gg('o')
 cS = crystalShape.olivine;
 hold on
-plot(gg,0.8*cS)
+plot(gg,0.8*cS,'FaceColor','none')
 hold off
-
 
 %% The refractive index tensor
 %
-% The refractive index of a material describes the dependence of the
-% speed of light with respect to the propagation direction and the
-% polarization direction. In a linear world this relation ship is modeled
-% by a rank 2 tensor - the so called refractive index tensor.
+% The refractive index of a material describes the dependence of the speed
+% of light with respect to the propagation direction and the polarization
+% direction. In a linear world this relation ship is modeled by a symmetric
+% rank 2 tensor - the so called refractive index tensor, which is usually
+% given by it principle values: n_alpha, n_beta and n_gamma. In
+% orthorhombic minerals such as olivine the principal values are parallel
+% to the crystallographic axes. Care has to be applied when associating the
+% principle values with the correct axes.
 
 %%
-% In the case of Olivine the refractive index tensor can be computed as
-% follows.
-% TODO ... some more words
-% alpha : b-axis
-% beta  : c-axis
-% gamma : a-axis
-% olivine smallest refractive index (alpha = X = Np : b-axis)
-%     intermediate refractive index (beta  = Y = Nm : c-axis)
-%          largest refractive index (gamma = Z = Ng : a-axis)
-% form matrix in tensor format
-% (1,1) = a-axis (2,2) = b-axis (3,3) = c-axis values of tensor
-%  n a-axis     0            0
-%  0            n b-axis     0
-%  0            0            n c-axis
+% For Forsterite the priniple refractive values are 
+n_alpha = 1.635; n_beta = 1.651; n_gamma = 1.670;
+
+%%
+% with the largest refractive index n_gamma beeing alligned with the
+% a-axis, the intermediate index n_beta with the c-axis and the smallest
+% refractive index n_alpha with the b-axis. Hence, the refractive index
+% tensor for Forsterite takes the form
 
 cs = ebsd('olivine').CS;
+rI_Fo = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
-XFo = 0.86; % what is this?
-n_alpha = 1.635*XFo + 1.82  * (1-XFo); % explain these formulae
-n_beta  = 1.651*XFo + 1.869 * (1-XFo);
-n_gamma = 1.670*XFo + 1.879 * (1-XFo);
-rI = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
+%% 
+% For Fayalit the priniple refractive values
+
+n_alpha = 1.82; n_beta = 1.869; n_gamma = 1.879;
+
+%%
+% are aligned to the crystallograhic axes in an analogous way. Which leads
+% to the refractive index tensor
+
+rI_Fa = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
+
+
+%%
+% The refractive index of composite materials like Olivine can now be
+% modelled as the weighted sum of the of the refractive index tensors of
+% Forsterite and Fayalit. Lets assume that the relative Forsterite content
+% (volume or mass or atoms ???) is given my
+
+XFo = 0.86; % 86 percent Forsterite
+
+%%
+% Then is refractive index tensor becomes
+
+rI = XFo*rI_Fo + (1-XFo) * rI_Fa
+
 
 %% Birefringence
 % The birefringence describes the difference |n| in diffraction index
@@ -148,7 +166,7 @@ nextAxis
 mtexTitle('$\tau = 45^{\circ}$')
 plot(rI.spectralTransmission(thickness,'tau',45*degree),'rgb')
 
- drawNow(gcm,'figSize','normal')
+drawNow(gcm,'figSize','normal')
 
 %%
 % Usually, the polarization direction is chosen at angle phi = 90 degree of
@@ -232,11 +250,6 @@ colorKey.phi = 90 * degree;
 
 % compute the spectral transmission color of the olivine orientations
 rgb = colorKey.orientation2color(ori);
-
-
-% TODO: this command requires the image procession toolbox
-%       can't this be implemented directly?
-%rgb = imadjust(rgb,[],[],.5);
 
 plot(ebsd('olivine'), rgb)
 
