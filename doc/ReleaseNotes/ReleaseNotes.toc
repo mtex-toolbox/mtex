@@ -1,4 +1,2 @@
 changelog
-bugs
-TODO
 mtex_about
