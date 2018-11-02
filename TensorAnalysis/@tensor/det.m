@@ -1,5 +1,5 @@
 function d = det(T)
-% compute the trace of a rank 2 tensors
+% compute the determinants of rank 2 tensors
 %
 % Synatx
 %

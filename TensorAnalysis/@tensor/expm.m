@@ -38,8 +38,3 @@ switch T.rank
     T.M = tensor24(M,T.doubleConvention);
 end
 
-% change the name
-if isOption(T,'name'), T.opt.name = ['exp ' T.opt.name]; end
-
-% change the unit
-if isOption(T,'unit'), T.opt.unit = ['exp ' T.opt.unit]; end

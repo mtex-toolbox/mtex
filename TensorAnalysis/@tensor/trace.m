@@ -1,5 +1,5 @@
 function t = trace(T)
-% compute the trace of a rank 2 tensor
+% compute the traces of a rank 2 tensor
 %
 % Synatx
 %
