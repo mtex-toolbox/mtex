@@ -39,10 +39,7 @@ classdef S2Kernel
     end
     
   end
-  
-  
-  
-  
+    
   methods (Static = true)
     function S2K = quadrature(fun,varargin)
       

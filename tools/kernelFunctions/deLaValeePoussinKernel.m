@@ -16,7 +16,7 @@ classdef deLaValeePoussinKernel < kernel
         hw = get_option(varargin,'halfwidth');
         psi.kappa = 0.5 * log(0.5) / log(cos(hw/2));
       elseif nargin > 0
-          psi.kappa = varargin{1};          
+        psi.kappa = varargin{1};
       end
       
       % extract bandwidth

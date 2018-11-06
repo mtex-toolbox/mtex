@@ -11,8 +11,9 @@ classdef fibre
   %   plotPDF(f,Miller(1,0,0,cs))
   %
   %   f = fibre(o1,o2) % the fibre from o1 to o2
-  %   f=  fibre(h,r)   % the fibre mapping h to r    
-  
+  %
+  %   f = fibre(Miller(0,0,1,cs),vector3d.Z,r) % the fibre (001) || ND
+  %   f = fibre(h,r)   % the fibre with h parallel to r  
   %
   % *Predefined fibres*
   %

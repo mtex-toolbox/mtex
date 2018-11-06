@@ -1,5 +1,12 @@
 %% MTEX Changelog
 %
+%% MTEX 5.2.0 11/2018
+%
+% *Velocity Gradient Tensors*
+%
+% *Spherical Bingham Distribution*
+%
+% * 
 %
 %% MTEX 5.1.0 04/2018
 %

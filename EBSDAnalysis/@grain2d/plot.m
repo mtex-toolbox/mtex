@@ -4,9 +4,11 @@ function [h,mP] = plot(grains,varargin)
 % Syntax
 %   plot(grains)          % colorize by phase
 %   plot(grains,property) % colorize by property
+%   plot(grains,cS)       % visualize crystal shape 
 %
 % Input
 %  grains  - @grain2d
+%  cS - @crystalShape
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
@@ -60,7 +62,7 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  xy = [grains.centroid,scaling*zUpDown];
+  xy = [grains.centroid,2*scaling*zUpDown];
   
   h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
     'parent', mP.ax,varargin{:});
