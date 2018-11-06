@@ -54,7 +54,7 @@ classdef sphericalPlot < handle
         sP.hgt = ax;
         sP.updateBounds;
         axis(ax,'on');
-        set(ax,'box','on');
+        set(ax,'box','on','FontSize',getMTEXpref('FontSize'));
         
         % grid
         sP.plotPlainGrid(varargin{:});
@@ -243,10 +243,11 @@ classdef sphericalPlot < handle
 
       % the labels
       interpreter = getMTEXpref('textInterpreter');
+      fs = getMTEXpref('FontSize');
       xlabel(sP.ax,get_option(varargin,'xlabel','rho'),...
-        'interpreter',interpreter,'FontSize',12);
+        'interpreter',interpreter,'FontSize',fs);
       ylabel(sP.ax,get_option(varargin,'ylabel','theta'),...
-        'interpreter',interpreter,'FontSize',12);
+        'interpreter',interpreter,'FontSize',fs);
       
     end
 
