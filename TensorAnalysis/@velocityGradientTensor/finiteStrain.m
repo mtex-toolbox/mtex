@@ -12,9 +12,11 @@ function [fe, qe, Ea] = finiteStrain(L,n)
 %  qe       - length of ellipse axes
 %  Ea       - finite strain tensor (Langrange)
 
-F = expm(L,n); % this is the deformation gradient tensor or Langranian position gradient tensor
+% compute the deformation gradient tensor or Langranian position gradient tensor
+F = expm(L * n); 
 
-C = EinsteinSum(F,[-1,2],F,[-1,1]); % right Cauchy-Green deformation tensor C = F'*F
+% right Cauchy-Green deformation tensor 
+C = F'*F;
 
 % Green-Lagrangian strain tensor E = 0.5(C-I) -ref. to undeformed
 Ea = strainTensor(0.5*(C-eye(3)));
