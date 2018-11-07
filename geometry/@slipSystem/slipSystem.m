@@ -75,7 +75,7 @@ classdef slipSystem
         end
       end
       
-      disp([' CRSS: ' xnum2str(unique(sS.CRSS))]);
+      if length(sS)>50, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
       disp([' size: ' size2str(sS.b)]);
             
       if length(sS)>50, return; end
@@ -85,11 +85,11 @@ classdef slipSystem
         if any(strcmp(sS.b.CS.lattice,{'hexagonal','trigonal'}))
           d = [sS.b.UVTW sS.n.hkl];
           d(abs(d) < 1e-10) = 0;
-          cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});
+          cprintf([d,sS.CRSS],'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L' 'CRSS'});
         else
           d = [sS.b.uvw sS.n.hkl];
           d(abs(d) < 1e-10) = 0;
-          cprintf(d,'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l'});
+          cprintf([d,sS.CRSS],'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l' 'CRSS'});
         end
       else
         d = round(100*[sS.b.xyz sS.n.xyz])./100;
