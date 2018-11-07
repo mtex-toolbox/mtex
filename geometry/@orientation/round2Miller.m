@@ -64,6 +64,9 @@ if isa(mori.SS,'specimenSymmetry')
       format = { 'H' 'K' 'L' '| U' 'V' 'W'};
     end
     cprintf(d,'-L','  ','-Lc',format);
+  elseif check_option(varargin,'LaTex')
+    n1 = [char(hkl,'LaTex'),char(uvw,'LaTex')];
+    n1 = strrep(n1,'$$','');
   else
     n1 = hkl;
     n2 = uvw;
