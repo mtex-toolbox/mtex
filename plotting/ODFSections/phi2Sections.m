@@ -28,6 +28,8 @@ classdef phi2Sections < ODFSections
       
       % get fundamental plotting region
       [phi1,Phi,oS.maxphi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
+      Phi = get_option(varargin,'maxPhi',Phi);
+      phi1 = get_option(varargin,'maxphi1',phi1);
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',phi1);
             
       % get sections
