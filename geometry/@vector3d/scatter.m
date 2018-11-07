@@ -38,7 +38,7 @@ for i = 1:numel(sP)
   [x,y] = project(sP(i).proj,v,varargin{:});
 
   % check that there is something left to plot
-  if all(isnan(x) | isnan(y)), continue; end
+  %if all(isnan(x) | isnan(y)), continue; end
     
   % add some nans if lines are plotted
   if check_option(varargin,'edgecolor')
