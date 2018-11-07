@@ -50,3 +50,14 @@ hold(ax,'off')
 if nargout == 0, clear h;end
 
 end
+
+
+% since the legend entry for patch object is not nice we draw an
+% invisible scatter dot just for legend
+%if check_option(varargin,'DisplayName')
+%  holdState = get(ax,'nextPlot');
+%  set(ax,'nextPlot','add');
+  %optiondraw(scatter([],[],'parent',ax,'MarkerFaceColor',mfc,...
+  %  'MarkerEdgeColor',mec),varargin{:});%
+  %set(ax,'nextPlot',holdState);
+%end

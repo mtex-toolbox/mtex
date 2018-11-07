@@ -112,15 +112,17 @@ classdef orientationPlot < handle
           'EdgeColor','none',...
           'MarkerSize',get_option(varargin,'MarkerSize',5),...
           'Marker',get_option(varargin,'Marker','o'),...
-          'parent',oP.ax);
+          'parent',oP.ax);                
+        
       else
         % colorize with a specified color
         if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end
-        MFC = get_option(varargin,{'MarkerFaceColor','MarkerColor'},'none');
         MEC = get_option(varargin,{'MarkerEdgeColor','MarkerColor'},'b');
+        if check_option(varargin,'filled'), MFC = MEC; else, MFC = 'none'; end
+        MFC = get_option(varargin,{'MarkerFaceColor','MarkerColor'},MFC);   
   
         h = patch(x(:),y(:),z(:),1,...
           'FaceColor','none',...
@@ -132,6 +134,19 @@ classdef orientationPlot < handle
           'parent',oP.ax);
   
         optiondraw(h,varargin{:});
+        set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        
+        % since the legend entry for patch object is not nice we draw an
+        % invisible scatter dot just for legend
+        if check_option(varargin,'DisplayName')
+          holdState = get(oP.ax,'nextPlot');
+          set(oP.ax,'nextPlot','add');
+          optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
+            'MarkerEdgeColor',MEC),varargin{:});
+          set(oP.ax,'nextPlot',holdState);
+        end
+        
+        
       end
 
       if nargout == 0, clear h;end
