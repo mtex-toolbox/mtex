@@ -11,17 +11,12 @@ classdef BungePlot < orientationPlot
       ylabel(oP.ax,'$\Phi$','Interpreter','LaTeX');
       zlabel(oP.ax,'$\varphi_2$','Interpreter','LaTeX');
       
-      if check_option(varargin,'noFundamentalRegion')
-        [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry,specimenSymmetry);
-      else
-        [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(oP.CS1,oP.CS2);
-      end
-      
       if any(strcmpi(oP.fRMode,{'restrict2FundamentalRegion','project2FundamentalRegion'}))
+        [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(oP.CS1,oP.CS2);
         xlim(oP.ax,[0 maxphi1./degree]);
         ylim(oP.ax,[0 maxPhi./degree]);
         zlim(oP.ax,[0 maxphi2./degree]);
-      else
+      else        
         xlim(oP.ax,[0 360]);
         ylim(oP.ax,[0 180]);
         zlim(oP.ax,[0 360]);
