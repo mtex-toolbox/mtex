@@ -16,16 +16,29 @@ function plotIPDF(ori,varargin)
 % Options
 %  RESOLUTION - resolution of the plots
 %  property   - user defined colorcoding
+%  MarkerSize -  
+%  MarkerFaceColor - 
+%  MarkerEdgeColor - 
 %
 % Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
-%  complete  - plot entire (hemi)--sphere
+%  complete  - ignore fundamental region
+%  upper     - restrict to upper hemisphere
+%  lower     - restrict to lower hemisphere
+%  filled    - fill the marker with current color
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+
+% maybe we should call this function with the option add2all
+if ~isNew && ~check_option(varargin,'parent') && ...
+    ((((ishold(mtexFig.gca) && nargin > 1 && isa(varargin{1},'vector3d') && length(varargin{1})>1))) || check_option(varargin,'add2all'))
+  plot(ori,varargin{:},'add2all');
+  return
+end
 
 % extract data
 if check_option(varargin,'property')

@@ -52,11 +52,11 @@ for ax = allAxes(:).'
     
     case 'pdf' % pole figure annotations
         
-      [varargout{1:nargout}] = plotPDF(odf,getappdata(ax,'h'),varargin{2:end},'parent',ax,'noTitle');
+      [varargout{1:nargout}] = plotPDF(odf,getappdata(ax,'h'),varargin{:},'parent',ax,'noTitle');
         
     case 'ipdf' % inverse pole figure annotations
         
-      [varargout{1:nargout}] = plotIPDF(odf,getappdata(ax,'inversePoleFigureDirection'),varargin{2:end},'parent',ax,'noTitle');
+      [varargout{1:nargout}] = plotIPDF(odf,getappdata(ax,'inversePoleFigureDirection'),varargin{:},'parent',ax,'noTitle');
         
   end
 end

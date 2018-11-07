@@ -16,7 +16,16 @@ function plot(oS,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});
-add2all = check_option(varargin,'add2all');
+
+add2all = check_option(varargin,'add2all') || ...
+  (numSections(oS)>1 && length(mtexFig.children)>1);
+
+if ~isNew && add2all 
+  for axx = mtexFig.children.'
+    hold(axx,'on');
+  end
+  mtexFig.currentId = 1;
+end
 varargin = delete_option(varargin,'add2all');
 
 % extract orientations
@@ -64,7 +73,6 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if s>1, mtexFig.nextAxis; end
     
     ind = find(secAngle == s);
-    if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
     if isa(vec,'vector3d')
       iv = vec(ind);
     else
@@ -72,8 +80,15 @@ if exist('ori','var') || isempty(oS.plotGrid)
       iv.phi1 = iv.phi1(ind);
       iv.phi2 = iv.phi2(ind);
     end
-    
+    if isempty(iv) % make sure we add something for the legend
+      iv = vector3d.nan;
+      if ~isempty(data), secData = {NaN}; end
+    else
+      if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
+    end
+      
     plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    
     % maybe there is also a lower hemisphere
     if oS.upperAndLower && add2all
       mtexFig.nextAxis;

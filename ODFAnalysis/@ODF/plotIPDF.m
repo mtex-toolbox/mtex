@@ -16,7 +16,17 @@ function plotIPDF(odf,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+% create a new figure if needed
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+
 argin_check(r,'vector3d');
+
+% maybe we should call this function with add2all
+if ~isNew && ~check_option(varargin,'parent') && ...
+    ((ishold(mtexFig.gca) && length(r)>1) || check_option(varargin,'add2all'))
+  plot(odf,varargin{:},'add2all');
+  return
+end
 
 % get fundamental sector for the inverse pole figure
 sR = fundamentalSector(odf.CS,varargin{:});
@@ -24,9 +34,6 @@ sR = fundamentalSector(odf.CS,varargin{:});
 % plotting grid
 h = plotS2Grid(sR,varargin{:});
 if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
-
-% create a new figure if needed
-[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 for i = 1:length(r)
   

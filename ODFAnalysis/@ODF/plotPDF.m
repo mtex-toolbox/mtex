@@ -54,6 +54,13 @@ end
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+% maybe we should call this function with the option add2all
+if ~isNew && ~check_option(varargin,'parent') && ...
+    ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
+  plot(odf,varargin{:},'add2all');
+  return
+end
+
 for i = 1:length(h)
   
   % create a new axis

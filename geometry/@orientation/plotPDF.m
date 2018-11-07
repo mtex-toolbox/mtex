@@ -17,11 +17,18 @@ function plotPDF(o,varargin)
 % Options
 %  superposition - plot superposed pole figures
 %  points        - number of points to be plotted
+%  MarkerSize -  
+%  MarkerFaceColor - 
+%  MarkerEdgeColor - 
 %
 % Flags
-%  antipodal - include <AxialDirectional.html antipodal symmetry>
-%  complete  - plot entire (hemi)--sphere
 %  noSymmetry - ignore symmetricaly equivalent points
+%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  complete   - ignore fundamental region
+%  upper      - restrict to upper hemisphere
+%  lower      - restrict to lower hemisphere
+%  filled     - fill the marker with current color
+%
 %
 % See also
 % orientation/plotIPDF S2Grid/plot savefigure
@@ -30,6 +37,22 @@ function plotPDF(o,varargin)
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+ h = [];
+if nargin > 1 
+  if isa(varargin{1},'Miller')
+    h = varargin{1};
+  elseif iscell(varargin{1}) && isa(varargin{2}{1},'Miller')
+    h = varargin{1};
+  end
+end
+  
+% maybe we should call this function with add2all
+if ~isNew && ~check_option(varargin,'parent') && ...
+    ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
+  plot(o,varargin{:},'add2all');
+  return
+end
+  
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
@@ -41,6 +64,7 @@ elseif (nargin > 1 && ~(isa(varargin{1},'Miller')) || ...
 else
   data = [];
 end
+
 
 % find crystal directions
 h = [];
