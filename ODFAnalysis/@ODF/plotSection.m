@@ -21,7 +21,7 @@ function plotSection(odf,varargin)
 % See also
 % saveFigure Plotting
 
-if odf.antipodal, ap = {'antipodal'}; else ap = {}; end
+if odf.antipodal, ap = {'antipodal'}; else, ap = {}; end
 oS = newODFSectionPlot(odf.CS,odf.SS,ap{:},varargin{:});
 
 S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});

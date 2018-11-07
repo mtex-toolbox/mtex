@@ -16,16 +16,17 @@ else
   ax = gca;
 end
 
-v = 1.2.*v;
+scaling = get_option(varargin,'scaling',1.2);
+v = scaling.*v;
 
 h = optiondraw(text(v.x,v.y,v.z,string,'FontSize',15,'parent',ax),...
   'horizontalAlignment','center','verticalAlignment','middle',varargin{:});
 
 % set axis to 3d
-axis(ax,'equal','vis3d','off');
+%axis(ax,'equal','vis3d','off');
 
 % st box limits
-bounds = [-1.2,1.2] * max(norm(v(:)));
-set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
+%bounds = [-1.2,1.2] * max(norm(v(:)));
+%set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
 
 if nargout == 0, clear h;end

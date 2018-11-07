@@ -4,11 +4,21 @@ function varargout = plot(ori,varargin)
 % Syntax
 %   plot(ori)
 %   plot(ori,'label','o1')
+%   plot(ori,'MarkerFaceColor','blue')
+%   plot(ori,'filled')
 %
 % Input
 %  ori - @orientation
 %
 % Options
+%  MarkerFaceColor -
+%  MarkerEdgeColor -
+%  MarkerSize -
+%  label -
+%
+% Flags
+%  filled - 
+%  labeled -
 %
 % See also
 % orientation/scatter orientation/plotPDF orientation/plotODF
