@@ -20,8 +20,17 @@ if islogical(ind)
   grId = grains.boundary.grainId;
   grId(grId>0) = indLarge(grId(grId>0));
   indBd = any(grId,2);
+  %repeat for inner Boundary
+  indinLarge = false(max(grains.innerBoundary.grainId(:)),1);
+  indinLarge(grains.id) = ind;
+  
+  grinId = grains.innerBoundary.grainId;
+  grinId(grinId>0) = indinLarge(grinId(grinId>0));
+  indinnerBd = any(grinId,2);
+
 else
   indBd = any(ismember(grains.boundary.grainId,grains.id(ind)),2);
+  indinnerBd = any(ismember(grains.innerBoundary.grainId,grains.id(ind)),2);
 end
 
 
@@ -35,3 +44,5 @@ grains.grainSize = grains.grainSize(ind);
 
 
 grains.boundary = subSet(grains.boundary,indBd);
+grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
+
