@@ -5,7 +5,6 @@ classdef deformationGradientTensor < tensor
       F = F@tensor(varargin{:},'rank',2);
     end       
   end
-  
 
 end
 
