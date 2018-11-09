@@ -24,7 +24,7 @@ end
 [inner2,right] = extractSym(b);
 
 % ensure inner symmetries coincide
-if inner1 ~= inner2
+if inner1.Laue ~= inner2.Laue
   if isa(inner2,'specimenSymmetry') && isa(inner1,'specimenSymmetry')
   elseif isa(a,'orientation')
     a = a.transformReferenceFrame(inner2);
