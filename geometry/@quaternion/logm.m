@@ -27,7 +27,7 @@ M(1,2,:) = -tq.z;
 M(1,3,:) =  tq.y;
 M(2,3,:) = -tq.x;
 
-T = tensor(M,'rank',2);
+T = spinTensor(M);
 
 if nargin == 2
   warning('check this is working!!')

@@ -31,6 +31,12 @@ classdef spinTensor < tensor
       rot = orientation(Omega);
     end
     
+    function omega = angle(Omega)
+      
+      omega = reshape(sqrt(Omega.M(2,1,:).^2 + Omega.M(3,1,:).^2 + Omega.M(3,2,:).^2),size(Omega));
+      
+    end
+    
     
   end
   
