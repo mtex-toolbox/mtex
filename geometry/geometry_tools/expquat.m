@@ -22,17 +22,19 @@ function q = expquat(tq,q)
 
 % for tensors extract correct matrix entries
 if isa(tq,'tensor') && tq.rank == 2
-  tq = tq{[2,3,6]};
-end
-
-% for matrices extract correct entries
-if isnumeric(tq) && size(tq,1) == 3 && size(tq,2) == 3
-  tq = reshape(tq,9,[]);
-  tq = tq([2 3 6],:);
-end
+  tq = reshape(vector3d(tq{6},-tq{3},tq{2}),size(tq));
+  
+elseif isnumeric(tq) && size(tq,1) == 3 && size(tq,2) == 3
+  
+  % for matrices extract correct entries
+  tq = rehape(vector3d(tq(3,2,:),-tq(3,1,:),tq(2,1,:)),[],1);
+      
+elseif isnumeric(tq)
 
 % generate vector3d as this will become the rotational axis
-if isnumeric(tq), tq = vector3d(reshape(tq,[],3).').'; end
+tq = vector3d(reshape(tq,[],3).').';
+
+end
 
 % norm of the vector is rotational angle
 omega = norm(tq);
