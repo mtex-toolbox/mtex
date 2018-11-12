@@ -15,8 +15,10 @@ mtexFig = newMtexFigure(varargin{:});
 m = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1},cs,'uvw');
 
 m = unique(m);
-options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw'},varargin];
-  
+options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw',...
+  'backgroundColor','w'},varargin];
+if ~check_option(varargin,'complete'), options = [options,{'upper'}]; end  
+
 % plot them
 washold = getHoldState(mtexFig.gca);
 hold(mtexFig.gca,'all')
