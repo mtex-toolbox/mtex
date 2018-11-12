@@ -6,14 +6,29 @@ classdef spinTensor < tensor
       Omega = Omega.antiSym;
     end    
 
+    function v = vector3d(Omega)
+      v = vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:));
+    end
+    
+    
     function rot = rotation(Omega)
       
       rot = rotation(expquat(Omega));
       
     end
     
+    function rot = orientation(Omega)
+      
+      if isa(Omega.CS,'crystalSymmetry')
+        rot = orientation(expquat(Omega),Omega.CS,Omega.CS);
+      else
+        rot = rotation(expquat(Omega));
+      end
+      
+    end
+    
     function rot = exp(Omega)
-      rot = rotation(Omega);
+      rot = orientation(Omega);
     end
     
     
@@ -21,3 +36,4 @@ classdef spinTensor < tensor
   
 
 end
+
