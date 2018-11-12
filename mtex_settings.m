@@ -48,7 +48,14 @@ setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
 
 % default fontsize
-setMTEXpref('FontSize',15);
+fontSize = 15;
+setMTEXpref('FontSize',fontSize);
+set(0,'DefaultAxesFontSize',fontSize);
+
+% defaut marker size
+markerSize = 0.75*fontSize;
+setMTEXpref('markerSize',markerSize);
+set(0,'DefaultLineMarkerSize',markerSize);
 
 % default annotation style
 setMTEXpref('annotationStyle',...
@@ -74,6 +81,9 @@ setMTEXpref('poleFigureExtensions',...
 
 setMTEXpref('EBSDExtensions',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
+
+% set default colors
+%set(0,'DefaultAxesColorOrder',vega10(10))
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by

@@ -59,4 +59,4 @@ plot(v)
 % annotate the ellipse
 ellipse(rotation('matrix',bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...
     'linewidth',2,'lineColor','r','linestyle','-.')
-annotate(bs.a(3),'MarkerSize',15)
+annotate(bs.a(3))
