@@ -12,6 +12,16 @@ function mtex_settings
 %% default global plotting options
 % here you can define default plott options
 
+% default fontsize
+% the next lines try to set the fontsize depending on the screen resolution
+ppi = get(0,'ScreenPixelsPerInch');
+fontSize = round(15 * ppi/100);
+
+% however, you can set the fontsize also to fixed value
+%fontSize = 15;
+setMTEXpref('FontSize',fontSize);
+set(0,'DefaultAxesFontSize',fontSize);
+
 % default plotting of the coordinate axes
 setMTEXpref('xAxisDirection','north');
 setMTEXpref('zAxisDirection','outOfPlane');
@@ -42,17 +52,13 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
 %pfAnnotations = @(varargin) [];
 setMTEXpref('pfAnnotations',pfAnnotations);
 
-
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
 
-% default fontsize
-fontSize = 15;
-setMTEXpref('FontSize',fontSize);
-set(0,'DefaultAxesFontSize',fontSize);
-
 % defaut marker size
+% set the marker size depending on the fontSize
+% but you can change this also to a fixed value
 markerSize = 0.75*fontSize;
 setMTEXpref('markerSize',markerSize);
 set(0,'DefaultLineMarkerSize',markerSize);
@@ -64,7 +70,7 @@ setMTEXpref('annotationStyle',...
 % on some systems Matlab has problems displaying RGB maps with opengl. This
 % tries to turn it off to overcome this problem. You might try to set this
 % to false as this gives usually better graphics performance.
-setMTEXpref('openglBug',true)
+setMTEXpref('openglBug',false)
 
 %% Euler angle convention
 % default Euler angle convention
