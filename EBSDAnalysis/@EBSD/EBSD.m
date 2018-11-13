@@ -55,15 +55,17 @@ classdef EBSD < phaseList & dynProp & dynOption
       
       % copy constructor
       if isa(rot,'EBSD')
-        ebsd.id = rot.id;
-        ebsd.rotations = rot.rotations;
-        ebsd.phaseId = rot.phaseId;
+        ebsd.id = rot.id(:);
+        ebsd.rotations = rot.rotations(:);
+        ebsd.phaseId = rot.phaseId(:);
         ebsd.phaseMap = rot.phaseMap;
         ebsd.CSList = rot.CSList;
         ebsd.unitCell = rot.unitCell;
         ebsd.scanUnit = rot.scanUnit;
         ebsd.A_D = rot.A_D;
-        ebsd.prop = rot.prop;
+        for fn = fieldnames(rot.prop)'
+        ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
+        end
         return
       end
       
