@@ -1,10 +1,12 @@
-function tq = log(q,u)
-% project a quaternion into the tangential space
+function v = log(q,q_ref,varargin)
+% the logarithmic map that translates a rotation into a rotation vector
 %
 % Syntax
-%   v = log(q)       % tangential vector as vector3d
-%   v = log(q,q_ref) % tangential vector as vector3d
-%   M = logm(q) % return tangential vector as (skew symmetric) matrix
+%   v = log(q) % rotation vector with reference to the identical rotation
+%   v = log(q,q_ref) % rotation vector with reference q_ref
+%
+%   v = loq(q,'right')
+%   v = loq(q,'left')
 %
 % Input
 %  q - @quaternion
@@ -14,16 +16,20 @@ function tq = log(q,u)
 %  v - @vector3d
 %
 % See also
-% expquat 
+% quaternion/logm vector3d/exp spinTensor_index
 
 % if reference point for tangential space is given - rotate
-if nargin == 2, q = u' .* q; end
+if nargin >= 2
+  if check_option(varargin,'left')
+    q = q .* q_ref';
+  else
+    q = q_ref' .* q;
+  end
+end
 
 % the logarithm with respect to the identity 
-%q = q .* sign(q.a);
-
 omega = 2 * acos(abs(q.a));
 denum = sqrt(1-q.a.^2);
 omega(denum ~= 0) = omega(denum ~= 0) ./ denum(denum ~= 0);
 
-tq = omega .* vector3d( q.b, q.c, q.d ) .* sign(q.a);
+v = omega .* vector3d( q.b, q.c, q.d ) .* sign(q.a);

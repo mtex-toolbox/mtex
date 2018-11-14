@@ -51,6 +51,9 @@ classdef tensor < dynOption
         T = T.setOption(varargin{:});
         return
       end
+
+      % ensure first argument is not char
+      if ischar(M), varargin = [{M},varargin]; M = []; end
       
       T.doubleConvention = check_option(varargin,'doubleConvention');
       
@@ -68,7 +71,10 @@ classdef tensor < dynOption
 
         T.M = M;
         T.rank = get_option(varargin,'rank',-1);
-
+        if isempty(M)
+          T.M = zeros([repmat(3,1,T.rank),0]);
+        end
+        
         % consider the case of a row vector, which is most probably a 1-rank tensor
         if ndims(T.M)==2 && size(T.M,1)==1 && size(T.M,2) > 1 && ...
             abs(T.rank) == 1

@@ -1,5 +1,5 @@
 function v = log(ori,ori_ref,varargin)
-% the misorientation vector in crystal coordinates 
+% the misorientation vector between two orientations 
 %
 % Description
 %
@@ -7,30 +7,26 @@ function v = log(ori,ori_ref,varargin)
 % exponential map, hence the name log.
 %
 % Syntax
-%   v = log(ori)
+%   m = log(mori) % the misorientation vector in crystal coordinats 
 %
 %   % the misorientation vector in crystal coordinats 
-%   v = log(ori,ori_ref)
+%   m = log(ori,ori_ref)
 %
 %   % the misorientation vector in specimen coordinats
-%   r = ori_ref .* v
-%
+%   v = log(ori,ori_ref,'left')
+%   v = ori_ref .* m
 %
 % Input
+%  mori - misorientation
 %  ori - @orientation
 %  ori_ref - @orientation
 %
 % Output
+%  m - @Miller
 %  v - @vector3d
 %
 % See also
-% 
-
-if nargin > 2 && check_option(varargin,'ll')
-  ori_ref = orientation(ori_ref,ori.CS,ori.SS);
-  v = axis(ori,ori_ref) .* angle(ori,ori_ref);
-  return
-end
+% orientation/logm vector3d/exp Miller/exp
 
 if nargin >= 2
 
@@ -57,36 +53,3 @@ if nargin>2 && check_option(varargin,'left')
 end
 
 end
-
-function test
-  % some testing code
-  
-  cs = crystalSymmetry('321');
-  ori1 = orientation.rand(cs);
-  ori2 = orientation.rand(cs);
-
-  v = log(ori2,ori1);
-  
-  % this should be the same
-  [norm(v),angle(ori1,ori2)] ./ degree
-  
-  % and this too
-  [ori1 * orientation('axis',v,'angle',norm(v)) ,project2FundamentalRegion(ori2,ori1)]
-  
-  % in specimen coordinates
-  r = log(ori2,ori1,'left');
-    
-  % now we have to multiply from the left
-  [rotation('axis',r,'angle',norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
-  
-  % the following output should be constant
-  % gO = log(ori1,ori2.symmetrise) % but not true for this
-  % gO = log(ori1.symmetrise,ori2) % true for this
-  %
-  % gO = ori2.symmetrise .* log(ori1,ori2.symmetrise) % true for this
-  % gO = ori2 .* log(ori1.symmetrise,ori2) % true for this
-  
-end
-
-
-
