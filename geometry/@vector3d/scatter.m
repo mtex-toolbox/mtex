@@ -225,11 +225,13 @@ pos = get(p,'position');
 l = min([pos(3),pos(4)]);
 if l < 0, return; end 
 
+maxSize = getMTEXpref('markerSize');
+
 for i = 1:length(u)
   d = get(u(i),'UserData');
   o = get(u(i),'MarkerSize');
   %n = l/350 * d;
-  n = l/250 * d;
+  n = min(l/250 * d,maxSize);
   if abs((o-n)/o) > 0.05, set(u(i),'MarkerSize',n);end
   
 end
