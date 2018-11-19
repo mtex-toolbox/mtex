@@ -134,16 +134,24 @@ for i = 1:numel(sP)
       h(i) = optiondraw(patch(patchArgs{:},...
         'MarkerFaceColor',mfc,...
         'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
+      
       % remove from legend
       set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-    
+
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend
       if check_option(varargin,'DisplayName')
+        
         holdState = get(sP(i).ax,'nextPlot');
         set(sP(i).ax,'nextPlot','add');
-        optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
-          'MarkerEdgeColor',mec),varargin{:});
+        if check_option(varargin,'edgecolor')
+          line([NaN NaN],[NaN NaN],'color',get_option(varargin,'edgecolor'),...
+          'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
+          'linewidth',get(h(1),'LineWidth'));
+        else
+          optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+            'MarkerEdgeColor',mec),varargin{:});
+        end
         set(sP(i).ax,'nextPlot',holdState);
       end
     end
