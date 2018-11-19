@@ -85,11 +85,11 @@ classdef slipSystem
         if any(strcmp(sS.b.CS.lattice,{'hexagonal','trigonal'}))
           d = [sS.b.UVTW sS.n.hkl];
           d(abs(d) < 1e-10) = 0;
-          cprintf([d,sS.CRSS'],'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L' 'CRSS'});
+          cprintf([d,reshape(sS.CRSS,[],1)],'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L' 'CRSS'});
         else
           d = [sS.b.uvw sS.n.hkl];
           d(abs(d) < 1e-10) = 0;
-          cprintf([d,sS.CRSS'],'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l' 'CRSS'});
+          cprintf([d,reshape(sS.CRSS,[],1)],'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l' 'CRSS'});
         end
       else
         d = round(100*[sS.b.xyz sS.n.xyz])./100;
