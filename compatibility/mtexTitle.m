@@ -1,6 +1,11 @@
 function h = mtexTitle(s,varargin)
-%TITLE Summary of this function goes here
-%   Detailed explanation goes here
+% add a title to an axis or an figure
+%
+% Syntax
+%
+%   mtexTitle('title of the current axis')
+%   mtexTitle('title of all subplots','global')
+%
 
 %s = regexprep(s,'-(\d)','\\bar{$1}');
 %s = regexprep(s,'-(\d)','\\bar{$1}');
@@ -21,10 +26,16 @@ end
 s = ['\bf{' regexprep(s,'\$([^\$]*)\$','\$\\mathbf{$1}\$') '}'];
 s = strrep(s,'$$','');
 s = strrep(s,'%','\%');
-h = optiondraw(title(ax,s,...
-  'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1)),varargin{:});
 
-set(get(ax,'Title'),'Visible','on');
+if check_option(varargin,'global')
+  h = optiondraw(sgtitle(s,...
+    'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.2)),varargin{:});  
+else
+  h = optiondraw(title(ax,s,...
+    'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1)),varargin{:});
+
+  set(get(ax,'Title'),'Visible','on');
+end
 
 try
   mtexFig = getappdata(get(ax,'Parent'),'mtexFig');

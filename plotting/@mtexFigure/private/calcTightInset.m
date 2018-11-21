@@ -92,7 +92,7 @@ end
  % consider sgtitle
  h = findobj(gcf,'Type','subplottext');
  if ~isempty(h)
-   figTightInset(4) = figTightInset(4) + 2*h(1).FontSize;
+   figTightInset(4) = figTightInset(4) + 2.5*h(1).FontSize;
  end
  
 end
