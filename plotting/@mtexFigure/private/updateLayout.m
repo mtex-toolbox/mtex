@@ -47,8 +47,8 @@ if length(mtexFig.cBarAxis)==1 && i>1
     pos(4) = mtexFig.nrows * mtexFig.axisHeight + ...
       (mtexFig.nrows-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4])));
     pos(2) = axisPos(2)+1;
-    pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing)+ ...
-      sum(mtexFig.tightInset([2,4])) + mtexFig.outerPlotSpacing;
+    pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing + ...
+      sum(mtexFig.tightInset([1,3]))) + mtexFig.outerPlotSpacing;
 
   else  %Horizontal bar
     
