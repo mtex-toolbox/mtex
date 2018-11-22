@@ -22,8 +22,8 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute colorcoding ------------------------
 
 % create a new plot
-[mtexFig,isNew] = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
-mP = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
+mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
+[mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -123,7 +123,8 @@ axis(mP.ax,'tight');
 if nargout == 0, clear h;end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
-mtexFig.keepAspectRatio = false;
+
+if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
 
 end
 

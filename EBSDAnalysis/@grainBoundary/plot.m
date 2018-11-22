@@ -18,8 +18,8 @@ function [h,mP] = plot(gB,varargin)
 %
 
 % create a new plot
-[mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
+mtexFig = newMtexFigure(varargin{:});
+[mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if get_option(varargin,'linewidth',0) > 3 || check_option(varargin,'smooth')
   plotOrdered(gB,varargin{:});
@@ -39,7 +39,8 @@ mP.micronBar.setOnTop
 
 if nargout == 0, clear h; end
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
-mtexFig.keepAspectRatio = false;
+
+if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
 
 function plotOrdered(gB,varargin)
 

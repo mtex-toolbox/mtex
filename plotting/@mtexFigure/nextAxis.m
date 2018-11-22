@@ -13,5 +13,8 @@ set(mtexFig.parent,'CurrentAxes',mtexFig.gca);
 
 if nargout > 0, ax = mtexFig.gca;end
 
+% if there are multiple plot aspect ratio should be kept constant
+mtexFig.keepAspectRatio = true;
+
 end
 

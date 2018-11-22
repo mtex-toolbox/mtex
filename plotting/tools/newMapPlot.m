@@ -1,6 +1,8 @@
-function mP = newMapPlot(varargin)
+function [mP,isNew] = newMapPlot(varargin)
 % 
 %
+
+isNew = true;
 
 % case 1: predefined axis
 % -----------------------
@@ -11,6 +13,7 @@ if check_option(varargin,'parent')
   if isappdata(ax,'mapPlot') && ishold(ax)
   
     mP = getappdata(ax,'mapPlot');
+    isNew = false;
     
   else % set up new axes if required
     

@@ -50,8 +50,8 @@ function [h,mP] = plot(ebsd,varargin)
 if isempty(ebsd), return; end
 
 % create a new plot
-[mtexFig,isNew] = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
-mP = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
+mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
+[mP,isNew] = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
@@ -124,7 +124,7 @@ else
   mP.micronBar.setOnTop  
 end
 
-mtexFig.keepAspectRatio = false;
+if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
 
 end
 
