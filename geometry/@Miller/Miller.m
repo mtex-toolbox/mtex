@@ -106,10 +106,6 @@ classdef Miller < vector3d
               
       elseif isa(varargin{1},'vector3d') % vector3d
   
-        if any(norm(varargin{1}) == 0)
-          error('(0,0,0) is not a valid Miller index');
-        end
-        
         [m.x,m.y,m.z] = double(varargin{1});
         m.opt = varargin{1}.opt;
         m.antipodal = varargin{1}.antipodal;
