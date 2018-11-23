@@ -41,7 +41,7 @@ if check_option(varargin,'L2')
 else
   
   % get approximation grid
-  S3G = extract_SO3grid(odf1,varargin{:},'resolution',5*degree);
+  S3G = extract_SO3grid(odf1,'resolution',5*degree,varargin{:});
 
   % eval ODFs
   if evaluated %second ODF allready evaluated
