@@ -24,13 +24,15 @@ if check_option(varargin,'colored')
   varargin = delete_option(varargin,'colored');
   
   C = linspecer(length(cS.N));
-  plot(cS.subSet(cS.N(1).symmetrise),'faceColor',C(1,:),'DisplayName',char(cS.N(1)),varargin{:});
+  plot(cS.subSet(cS.N(1).symmetrise),'faceColor',C(1,:),'DisplayName',...
+    char(round(cS.N(1)),'LaTeX'),varargin{:});
   hold on
   for i = 2:length(cS.N)
-    plot(cS.subSet(cS.N(i).symmetrise),'faceColor',C(i,:),'DisplayName',char(cS.N(i)),varargin{:});
+    plot(cS.subSet(cS.N(i).symmetrise),'faceColor',C(i,:),'DisplayName',...
+      char(round(cS.N(i)),'LaTex'),varargin{:});
   end
   hold off
-  legend show
+  legend('show','interpreter','LaTeX','location','east')
   return
 end
 

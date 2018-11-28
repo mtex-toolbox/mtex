@@ -188,6 +188,25 @@ N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
 cS = crystalShape(N);
 plot(cS)
 
+%% Marking crystal faces
+% We may colorize the faces according to their lattice planes using the
+% command
+
+plot(cS,'colored')
+
+%%
+% or even label the faces directly
+
+plot(cS)
+N = unique(cS.N.symmetrise,'noSymmetry','stable');
+fC = cS.faceCenter;
+
+for i = 1:length(N)
+  text3(fC(i),char(round(N(i)),'latex'),'scaling',1.1,'interpreter','latex')
+end
+
+
+
 %% Defining complicated crystals more simple
 % We see that defining a complicated crystal shape is a tedious work. To
 % this end MTEX allows to model the shape with a habitus and a extension
@@ -203,7 +222,7 @@ N = [m,r,z,s2,x2];
 habitus = 1;
 extension = [1 1 1];
 cS = crystalShape(N,habitus,extension);
-plot(cS)
+plot(cS,'colored')
 
 
 %%
@@ -213,7 +232,7 @@ plot(cS)
 
 extension = [0.9 1.1 1];
 cS = crystalShape(N,habitus,extension);
-plot(cS)
+plot(cS,'colored')
 
 %%
 % Next the habitus parameter describes how close faces with mixed hkl are
@@ -222,14 +241,26 @@ plot(cS)
 
 habitus = 1.1;
 cS = crystalShape(N,habitus,extension);
-plot(cS), snapnow
+plot(cS,'colored'), snapnow
 
 habitus = 1.2;
 cS = crystalShape(N,habitus,extension);
-plot(cS), snapnow
+plot(cS,'colored'), snapnow
 
 habitus = 1.3;
 cS = crystalShape(N,habitus,extension);
-plot(cS)
+plot(cS,'colored')
 
 %% Select Faces
+
+
+%% Gallery of hardcoded crystal shapes
+
+plot(crystalShape.olivine,'colored')
+
+%%
+plot(crystalShape.garnet,'colored')
+
+%%
+
+plot(crystalShape.topaz,'colored')
