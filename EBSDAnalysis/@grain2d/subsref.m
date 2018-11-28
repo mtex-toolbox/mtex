@@ -12,9 +12,15 @@ function varargout = subsref(grains,s)
 %  cond   - logical array with same size as grains
 %
 
-if strcmp(s(1).type,'()')
+if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
-  ind = subsind(grains,s(1).subs);
+  if strcmp(s(1).type,'{}')
+    ind = grains.id2ind(s(1).subs{1});
+  else
+    ind = subsind(grains,s(1).subs);
+  end
+  
+  
   grains = subSet(grains,ind);
  
   % is there something more to do?
