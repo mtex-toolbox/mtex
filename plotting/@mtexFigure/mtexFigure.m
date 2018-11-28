@@ -177,7 +177,9 @@ classdef mtexFigure < handle
     function set.currentId(mtexFig,id)
       
       if id > numel(mtexFig.children) % create a nex axes
-        axes('visible','off','parent',mtexFig.parent);
+        for k = numel(mtexFig.children)+1:id
+          axes('visible','off','parent',mtexFig.parent);
+        end
         set(mtexFig.parent,'nextplot','add');
   
         if numel(mtexFig.children) > mtexFig.ncols * mtexFig.nrows
