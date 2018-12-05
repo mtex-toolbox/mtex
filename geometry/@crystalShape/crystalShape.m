@@ -163,7 +163,7 @@ classdef crystalShape
     
     function cS = hex(cs)
       % a very simple hex crystal
-      cS = crystalShape(Miller({1,0,0},{0,0,1},cs,'hkl'));
+      cS = crystalShape(Miller({1,0,0},{0,0,2},cs,'hkl'));
       
     end
     
