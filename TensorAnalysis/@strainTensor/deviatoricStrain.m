@@ -8,7 +8,7 @@ function epsilon = deviatoricStrain(epsilon,varargin)
 %  e - @strainTensor
 %
 
-p = trace(epsilon);
+p = trace(epsilon)/.3;
 
 epsilon.M(1,1,:) = epsilon.M(1,1,:) - p;
 epsilon.M(2,2,:) = epsilon.M(2,2,:) - p;
