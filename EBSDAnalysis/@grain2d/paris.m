@@ -1,19 +1,20 @@
-function paris = calcParis(grains)
+function p = paris(grains)
 % Percentile Average Relative Indented Surface
 %
-% the paris is a grain boundary curvature function for convexity
+% the paris (Percentile Average Relative Indented Surface) is shape
+% parameter that measures the convexity of a grain
 %
 % Syntax
-%   paris = calcParis(grains)
+%   p = paris(grains)
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  paris - double
+%  p - double
 %
 
-paris = zeros(size(grains));
+p = zeros(size(grains));
 
 % store this in local variables for speed reasons
 X = grains.V(:,1);
@@ -51,7 +52,7 @@ for id = 1:length(grains)
   
   % paris is the relative difference between convex hull perimenter and true
   % perimeter
-  paris(id) = 200*(perimeterGrain - perimeterHull)./perimeterHull;
+  p(id) = 200*(perimeterGrain - perimeterHull)./perimeterHull;
   
 end
 

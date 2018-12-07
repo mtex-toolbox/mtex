@@ -82,7 +82,7 @@ hold off
 % || <grain2d.aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
 % || <grainBoundary.html *grains.boundary*>  || list of boundary segments|| 
 % || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
-% || <grain2d.calcParis.html *grains.calcParis*>  || area difference between grain and its convex hull|| 
+% || <grain2d.paris.html *grains.paris*>  || area difference between grain and its convex hull|| 
 % || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
 % || *grains.CS* || crystal symmetry (single phase only)|| 
 % || <grain2d.diameter.html *grains.diameter*>  || diameter in <grain2d.index.html grains.scanUnit>  || 
@@ -92,8 +92,8 @@ hold off
 % || *grains.grainSize* || number of measurements per grain|| 
 % || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
 % || *grains.id* || grain id|| 
-% || <grainBoundary.html *grains.innBoundary*>  || list of inner boundary segments|| 
-% || *grains.meanOrientation* || meanOrientation (single phase only)|| 
+% || <grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments|| 
+% || *grains.meanOrientation* || meanOrientation (single phase only)||
 % || *grains.mineral* || mineral name (single phase only)|| 
 % || <grain2d.neigbours.html *grains.neighbours*>  || number and ids of neighboring grains  || 
 % || *grains.phase* || phase identifier|| 
