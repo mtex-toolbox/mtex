@@ -1,5 +1,7 @@
 function ebsd = loadEBSD_Oxfordcsv(fname,varargin)
 
+activePassive = {'passive','active'};
+
 ebsd = EBSD;
 
 try
@@ -26,11 +28,18 @@ try
     
   while ~strncmp(s,'Point',5)
     s = fgetl(fid);
+    
+    % extract active passive flag
+    flag = sscanf(s,'Bunge Euler Convention, %f');
+    if ~isempty(flag), activePassive = activePassive{1+flag}; end
     hl = hl + 1;
   end
   colNames = s;
   fclose(fid);
 
+  % passive is default
+  if iscell(activePassive), activePassive = activePassive{1}; end
+  
   if check_option(varargin,'check'); return;end
 
   % extract column names
@@ -39,7 +48,7 @@ try
   
   % read data via generic interface
   ebsd = loadEBSD_generic(fname,'CS',cs,'header',hl+3,'delimiter',',',...
-    'ColumnNames',colNames,'bunge','passive',varargin{:},'keepNaN');
+    'ColumnNames',colNames,'bunge',activePassive,varargin{:},'keepNaN');
 
 catch
   interfaceError(fname)
