@@ -1,59 +1,79 @@
 %% Spin Tensors
 %
-%
 % 
+%% Spin Tensors as Ininitesimal Changes of Rotations
+% 
+% Spin tensors are skew symmetric tensors that can be used to small
+% rotational changes. Lets consider an arbitrary reference rotation
 
-
-% consider an arbitrary rotation
 rot_ref = rotation('Euler',10*degree,20*degree,30*degree)
 
-% next we disturb rot_ref by a rotation about the axis (123)
-rot_123 = rotation('axis',vector3d(1,2,3),'angle',1)
+%%
+% and pertube it by a rotating about the axis (123) and angle delta. Since
+% multiplication of rotations is not communatativ we have to distinguish
+% between left and right pertubations
 
-delta = 10*degree
-angle(rot_123.^delta)./degree
-
-% first we multiply from the right
-rot = rot_ref * rot_123;
+delta = 0.01*degree;
+rot_right = rotation('axis',vector3d(1,2,3),'angle',delta) * rot_ref;
+rot_left = rot_ref * rotation('axis',vector3d(1,2,3),'angle',delta);
 
 %%
-% We can approximate elements of the tangential space at rotation rot_ref
-% by 
+% We may now ask for the first order Taylor coefficients of the pertubation
+% as delta goes to zero which we find by the formula
 % 
-% $$ S = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta}
+% $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta}
 % 
-%disturbing rot_ref by a small rotation
 
-% rotation about the axis (123)
+T_right = (rot_right.matrix - rot_ref.matrix)./delta
+T_left = (rot_left.matrix - rot_ref.matrix)./delta
+
+%%
+% Both matrices |T_right| and |T_left| are elements of the tangential space
+% attached to the reference rotation rot_ref. Those matrices are
+% characterized by the fact that they becomes scew symmetric matrices when
+% multiplied from the left or from the right with the inverse of the
+% reference rotation
+
+S_right_L =  matrix(inv(rot_ref)) * T_right
+S_right_R = T_right * matrix(inv(rot_ref))
+
+S_left_L =  matrix(inv(rot_ref)) * T_left
+S_left_R = T_left * matrix(inv(rot_ref))
+
+
+%% 
+% A scew symmetric 3x3 matrix |S| is essentially determined by its entries
+% $S_{21}$, $S_{31}$ and $S_32$. Writing these values as a vector
+% $(S_32,-S_{31},S_{21})$ we obtain for the matrices |S_right_R| and
+% |S_left_L| exactly the rotational axis of our pertubation
+
+vector3d(spinTensor(S_right_R)) * sqrt(14)
+
+vector3d(spinTensor(S_left_L))  *sqrt(14)
+
+
+%%
+% For the other two matrices those vectors are related to the rotatinal
+% axis by the reference rotation |rot_ref|
+
+rot_ref * vector3d(spinTensor(S_right_L)) * sqrt(14)
+
+inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
+
+%% The Functions Exp and Log
+%
+% The above definition of the spin tensor works only well if the
+% pertupation rotation has small rotational angle. For large pertubations
+% the matrix logarithm 
+
+
+
+% Given a reference rotation rot_ref and a spin vector |s| one could ask
+% for the rotation that is obtained by applying the inifitimal change s to
+% to rot_ref 
+
+
 rot_123 = rotation('axis',vector3d(1,2,3),'angle',1)
-
-%%
-% and devide about the amount of this pertubation
-
-delta = 0.01*degree
-T_right = (matrix(rot_ref * rot_123.^delta) - rot_ref.matrix)./delta
-T_left = (matrix(rot_123.^delta * rot_ref) - rot_ref.matrix)./delta
-
-%%
-
-SR1 =  matrix(inv(rot_ref)) * T_right
-SR2 = T_right * matrix(inv(rot_ref))
-
-SL1 =  matrix(inv(rot_ref)) * T_left
-SL2 = T_left * matrix(inv(rot_ref))
-
-
-%% make it a vector
-
-vR1 = vector3d(spinTensor(SR1))  *sqrt(14)
-vR2 = inv(rot_ref) * vector3d(spinTensor(SR2)) * sqrt(14)
-
-lR1 = rot_ref * vector3d(spinTensor(SL1))  *sqrt(14)
-lR2 = vector3d(spinTensor(SL2)) * sqrt(14)
-
-
-%% logarithm to vector3d
-
 log(rot_ref * rot_123,rot_ref) * sqrt(14)
 
 log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
@@ -61,6 +81,7 @@ log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
 %% logarithm to skew symmetric matrix
 
 S = logm(rot_ref * rot_123,rot_ref)
+
 vector3d(S) * sqrt(14)
 
 S = logm(rot_123 * rot_ref,rot_ref,'left')
@@ -101,20 +122,20 @@ ori = ori_ref * mori_123;
 
 %%
 
-SR1 =  matrix(inv(rot_ref)) * T_right
-SR2 = T_right * matrix(inv(rot_ref))
+S_right_L =  matrix(inv(rot_ref)) * T_right
+S_right_R = T_right * matrix(inv(rot_ref))
 
-SL1 =  matrix(inv(rot_ref)) * T_left
-SL2 = T_left * matrix(inv(rot_ref))
+S_left_L =  matrix(inv(rot_ref)) * T_left
+S_left_R = T_left * matrix(inv(rot_ref))
 
 
 %% make it a vector
 
-vR1 = vector3d(spinTensor(SR1))  *sqrt(14)
-vR2 = inv(rot_ref) * vector3d(spinTensor(SR2)) * sqrt(14)
+vR1 = vector3d(spinTensor(S_right_L))  *sqrt(14)
+vR2 = inv(rot_ref) * vector3d(spinTensor(S_right_R)) * sqrt(14)
 
-lR1 = rot_ref * vector3d(spinTensor(SL1))  *sqrt(14)
-lR2 = vector3d(spinTensor(SL2)) * sqrt(14)
+lR1 = rot_ref * vector3d(spinTensor(S_left_L))  *sqrt(14)
+lR2 = vector3d(spinTensor(S_left_R)) * sqrt(14)
 
 
 %% logarithm to vector3d
