@@ -21,8 +21,10 @@ if length(f)~=1, return; end
 disp([' o1: ' char(f.o1)]);
 if angle(f.o2,f.o1,'noSymmetry')>0
   disp([' o2: ' char(f.o2)]); 
-else
+elseif isa(f.h,'Miller')
   disp([' h: ' char(round(f.h))]);
+else
+  disp([' h: ' char(f.h)]);
 end
 
 return
