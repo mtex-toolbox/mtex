@@ -76,13 +76,13 @@ v1 = hr2quat(zvector,v1) * ...
 v1 = initialSearch(v1);
 
 vdisp('  searching for a second two fold symmetry axes',varargin{:});
-v0 = rotation('axis',v1,'angle',(-45:5:45)*degree) * orth(v1);
+v0 = rotation.byAxisAngle(v1,(-45:5:45)*degree) * orth(v1);
 v2 = initialSearch(v0);
 % refine search
-v2 = rotation('axis',v1,'angle',(-5:.5:5)*degree) * v2;
+v2 = rotation.byAxisAngle(v1,(-5:.5:5)*degree) * v2;
 v2 = initialSearch(v2);
 
-rot = rotation('map',v1,closesAxis(v1),v2,closesAxis(v2));
+rot = rotation.map(v1,closesAxis(v1),v2,closesAxis(v2));
 odf = rotate(odf,rot);
 
 % ------------------- local functions -----------------------------------

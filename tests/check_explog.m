@@ -46,8 +46,8 @@ vv = -odf.grad(ori,'left');
 %%
 
 
-rot1 = rotation('axis',xvector,'angle',30*degree)
-rot2 = rotation('axis',vector3d(1,2,3),'angle',30*degree)
+rot1 = rotation.byAxisAngle(xvector,30*degree)
+rot2 = rotation.byAxisAngle(vector3d(1,2,3),30*degree)
 
 % the matrix is flipped !!
 matrix(rot1)

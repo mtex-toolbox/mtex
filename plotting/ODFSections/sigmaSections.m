@@ -79,7 +79,7 @@ classdef sigmaSections < ODFSections
         [theta,rho] = polar(r);
         rot = rotation.byEuler(rho,theta,-rho,'ZYZ');
 
-        vF = rotation('axis',r,'angle',oS.sigma(sec)) .* rot * xvector;
+        vF = rotation.byAxisAngle(r,oS.sigma(sec)) .* rot * xvector;
 
         hold on
         oS.grid(sec) = quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1/fak,'color',0.7*[1 1 1],'HitTest','off');

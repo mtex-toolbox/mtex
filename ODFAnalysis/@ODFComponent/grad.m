@@ -14,7 +14,7 @@ function g = grad(component,ori,varargin)
 
 delta = get_option(varargin,'delta',0.05*degree);
 
-rot = rotation('axis',[xvector,yvector,zvector],'angle',delta/2);
+rot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
 
 %f = component.eval([ori(:),(rot*ori).']);
 f = reshape(component.eval([ori*inv(rot),ori*rot]),length(ori),[]);

@@ -57,7 +57,7 @@ plotPDF(ebsd('fo').orientations,Miller(1,2,3,CS),'contourf')
 % frame of the entire data set by 5 degree about the z-axis.
 
 % define a rotation
-rot = rotation('axis',zvector,'angle',5*degree);
+rot = rotation.byAxisAngle(zvector,5*degree);
 
 % rotate the EBSD data
 ebsd_rot = rotate(ebsd,rot);

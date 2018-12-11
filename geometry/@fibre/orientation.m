@@ -32,7 +32,7 @@ for i = 1:length(f.h)
   end
   
   % compute orientations
-  ori(:,i) = rotation('axis',r(i),'angle',omega) .* o1(i);
+  ori(:,i) = rotation.byAxisAngle(r(i),omega) .* o1(i);
   
 end
 

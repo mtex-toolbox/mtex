@@ -20,8 +20,8 @@
 % sample ODF which is defined as the superposition of several model ODFs.
 
 cs = crystalSymmetry('cubic');
-mod1 = orientation('axis',xvector,'angle',45*degree,cs);
-mod2 = orientation('axis',yvector,'angle',65*degree,cs);
+mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
+mod2 = orientation.byAxisAngle(yvector,65*degree,cs);
 model_odf = 0.5*uniformODF(cs) + ...
   0.05*fibreODF(Miller(1,0,0,cs),xvector,'halfwidth',10*degree) + ...
   0.05*fibreODF(Miller(0,1,0,cs),yvector,'halfwidth',10*degree) + ...

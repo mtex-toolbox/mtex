@@ -23,9 +23,9 @@
 
 cs = crystalSymmetry('mmm');
 
-orix = orientation('axis',xvector,'angle',90*degree,cs);
-oriy = orientation('axis',yvector,'angle',90*degree,cs);
-oriz = orientation('axis',zvector,'angle',90*degree,cs);
+orix = orientation.byAxisAngle(xvector,90*degree,cs);
+oriy = orientation.byAxisAngle(yvector,90*degree,cs);
+oriz = orientation.byAxisAngle(zvector,90*degree,cs);
 
 odf1 = unimodalODF([orix,oriy,oriz])
 
@@ -34,7 +34,7 @@ odf1 = unimodalODF([orix,oriy,oriz])
 % The second ODF has three modes as well but this times at rotations about
 % the axis (1,1,1) with angles 0, 120, and 240 degrees.
 
-ori = orientation('axis',vector3d(1,1,1),'angle',[0,120,240]*degree,cs);
+ori = orientation.byAxisAngle(vector3d(1,1,1),[0,120,240]*degree,cs);
 odf2 = unimodalODF(ori)
 
 
@@ -237,7 +237,7 @@ plotPDF(odf2,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 % whether odf1 or odf2 is the correct reconstruction. In order to compare
 % odf1 and odf2, we visualize them along the alpha fibre
 
-alphaFibre = orientation('axis',zvector,'angle',(-180:180)*degree,cs);
+alphaFibre = orientation.byAxisAngle(zvector,(-180:180)*degree,cs);
 
 close all
 plot(-180:180,odf1.eval(alphaFibre),'linewidth',2)

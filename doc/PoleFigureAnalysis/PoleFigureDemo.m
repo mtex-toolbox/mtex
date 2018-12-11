@@ -57,7 +57,7 @@ pf_modified = pf(pf.r.theta < 70*degree | pf.r.theta > 75*degree)
 plot(pf_modified)
 
 %%
-rot = rotation('axis', xvector-yvector,'angle',25*degree);
+rot = rotation.byAxisAngle(xvector-yvector,25*degree);
 pf_modified = rotate(pf,rot)
 
 plot(pf_modified)

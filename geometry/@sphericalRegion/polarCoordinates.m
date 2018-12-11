@@ -78,7 +78,7 @@ v = sR.vertices;
 
 n1 = normalize(cross(rx,sR.center));
 
-r = rotation('axis',sR.center,'angle',rho(1:end-1));
+r = rotation.byAxisAngle(sR.center,rho(1:end-1));
 
 n = r * n1;
 

@@ -115,7 +115,7 @@ plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 % We may also you crystal shapes to illustrate twinning relation ships
 
 % define some twinning misorientation
-mori = orientation('axis',Miller({1 0-1 0},ebsd.CS),'angle',34.9*degree)
+mori = orientation.byAxisAngle(Miller({1 0-1 0},ebsd.CS),34.9*degree)
 
 % plot the crystal in ideal orientation
 close all

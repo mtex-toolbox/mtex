@@ -147,7 +147,7 @@ v = v(norm(v)<pi);
 
 %%
 
-ori = orientation('axis',v,'angle',norm(v),cs)
+ori = orientation.byAxisAngle(v,norm(v),cs)
 
 %%
 oR = fundamentalRegion(ori.CS,ori.SS);

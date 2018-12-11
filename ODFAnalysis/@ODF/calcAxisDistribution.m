@@ -35,13 +35,13 @@ nOmega = round(max(maxOmega(:))/res);
 omega = linspace(0,1,nOmega);
 omega = maxOmega(:) * omega(:).'; 
 h = repmat(h(:),1,nOmega);
-S3G = orientation('axis',h,'angle',omega,odf.CS,odf.SS);
+S3G = orientation.byAxisAngle(h,omega,odf.CS,odf.SS);
 
 % quadrature weights
 weights = sin(omega./2).^2 ./ nOmega;
 
 % eval ODF
-f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+f = eval(odf,S3G,varargin{:}); 
 
 % sum along axes
 x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);

@@ -41,7 +41,7 @@ for i = 1:length(vec)
   r = [0,radiTail,radiTail,radiHead,0] .* norm(v);
 
   % a normal vector
-  n = rotate(v.orth,rotation('axis',v,'angle',linspace(0,2*pi,50)));
+  n = rotate(v.orth,rotation.byAxisAngle(v,linspace(0,2*pi,50)));
 
   % the hull of the arrow
   hull = repmat(c,length(n),1) + reshape(n,[],1) * r;

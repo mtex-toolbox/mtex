@@ -62,7 +62,7 @@ classdef axisAnglePlot < orientationPlot
       
       S2G = repmat(S2G,[1 1 size(omega,3)]);
       
-      ori = orientation('axis',S2G,'angle',omega,oP.CS1,oP.CS2);
+      ori = orientation.byAxisAngle(S2G,omega,oP.CS1,oP.CS2);
       
       [oP.plotGrid.x,oP.plotGrid.y,oP.plotGrid.z] = ...
         double(omega ./ degree .* S2G);

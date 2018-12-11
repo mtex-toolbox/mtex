@@ -41,8 +41,8 @@ if isempty(nqa)
 elseif length(nqa)==1
   
   v = perp(nqa);
-  rot = rotation('axis',nqa,'angle',(0:90:270)*degree);
-  oR.V = orientation('axis',rot*v,'angle',pi*ones(4,1),oR.CS1,oR.CS2);
+  rot = rotation.byAxisAngle(nqa,(0:90:270)*degree);
+  oR.V = orientation.byAxisAngle(rot*v,pi*ones(4,1),oR.CS1,oR.CS2);
   oR.F = repcell((1:4).',size(oR.N));
   
   return
@@ -89,10 +89,6 @@ for j = 1:length(Nq)
     %if abs(dot(aNq(order(i)),zvector))>1-1e-6, continue; end
     
     % compute vertice
-    %a = Nqj; a = inv(a) * rotation('axis',a.axis,'angle',pi);
-    %b = oNq(e); b = inv(b) * rotation('axis',b.axis,'angle',pi);
-    %c = oNq(order(i)); c = inv(c) * rotation('axis',c.axis,'angle',pi);
-    %v = cross(a,b,c);
     v = cross(Nqj,oNq(e),oNq(order(i)));
     v = v ./ norm(v);
     if abs(angle(v * Nqj))<1e-5 , continue; end
@@ -130,6 +126,6 @@ end
 
 function q = reciprocal(q)
 
-q = q .* rotation('axis',-q.axis,'angle',pi);
+q = q .* rotation.byAxisAngle(-q.axis,pi);
 
 end

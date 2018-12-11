@@ -33,7 +33,7 @@ if check_option(varargin,{'axisAngle','angle'})
 
   for i = 1:length(sec)
     S2G{i} = plotS2Grid(sym.Laue.fundamentalSector('angle',sec(i)),varargin{:}); %#ok<AGROW>
-    S3G{i} = orientation('axis',S2G{i},'angle',sec(i)); %#ok<AGROW>
+    S3G{i} = orientation.byAxisAngle(S2G{i},sec(i)); %#ok<AGROW>
   end
 
   S3G = [S3G{:}];

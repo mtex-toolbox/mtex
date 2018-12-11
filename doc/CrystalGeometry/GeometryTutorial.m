@@ -35,9 +35,9 @@ plot([v,w])
 %%
 % *Definition*
 rot = rotation.byEuler(10*degree,20*degree,30*degree);
-rot = rotation('axis',xvector,'angle',30*degree);
-rot = rotation('map',xvector,yvector,vector3d(0,1,1),zvector);
-rot = rotation('quaternion',0.5,0.5,0.5,0.5);
+rot = rotation.byAxisAngle(xvector,30*degree);
+rot = rotation.map(xvector,yvector,vector3d(0,1,1),zvector);
+rot = rotation(quaternion(0.5,0.5,0.5,0.5));
 rot = reflection(zvector)
 
 %%

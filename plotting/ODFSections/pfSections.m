@@ -101,7 +101,7 @@ classdef pfSections < ODFSections
       vF = oS.referenceField(r);
 
       if nargin == 3
-        vF = rotation('axis',r,'angle',omega) .* vF;
+        vF = rotation.byAxisAngle(r,omega) .* vF;
       end
 
     end
@@ -141,7 +141,7 @@ classdef pfSections < ODFSections
       N(ind) = yvector;
 
       vF = normalize(r1 - dot(r1,N) .* N);
-      vF = rotation('axis',N,'angle',sign(N.y)*90*degree) .* vF;
+      vF = rotation.byAxisAngle(N,sign(N.y)*90*degree) .* vF;
 
       vF = normalize(vF - dot(vF,r1) .* r1);
 

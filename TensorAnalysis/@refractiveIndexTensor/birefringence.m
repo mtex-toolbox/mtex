@@ -48,7 +48,7 @@ end
 
 % first we need two arbitrary orthogonal directions orthogonal to vprop
 p1 = orth(vprop(:));
-p2 = rotation('axis',vprop(:),'angle',90*degree) .* p1;
+p2 = rotation.byAxisAngle(vprop(:),90*degree) .* p1;
 
 B11 = EinsteinSum(rI,[-1 -2],p1,-1,p1,-2);
 B12 = EinsteinSum(rI,[-1 -2],p1,-1,p2,-2);

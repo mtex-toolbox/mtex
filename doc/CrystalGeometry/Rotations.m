@@ -65,7 +65,7 @@ o
 % A very simple possibility to specify a rotation is to specify the
 % rotation axis and the rotation angle.
 
-o = rotation('axis',xvector,'angle',30*degree)
+o = rotation.byAxisAngle(xvector,30*degree)
 
 %%
 % *Four vectors defining a rotation*
@@ -73,14 +73,14 @@ o = rotation('axis',xvector,'angle',30*degree)
 % Given four vectors u1, v1, u2, v2 there is a unique rotation q such that
 % q u1 = v1 and q u2 = v2.
 
-o = rotation('map',xvector,yvector,zvector,zvector)
+o = rotation.map(xvector,yvector,zvector,zvector)
 
 %%
 % If only two vectors are specified, then the rotation with the smallest
 % angle is returned and gives the rotation from first vector onto the
 % second one.
 
-o = rotation('map',xvector,yvector)
+o = rotation.map(xvector,yvector)
 
 %%
 % *A fibre of rotations*
@@ -91,7 +91,7 @@ o = rotation('map',xvector,yvector)
 
 u = xvector;
 v = yvector;
-o = rotation('fibre',u,v)
+o = rotation(fibre(u,v))
 
 
 %%
@@ -198,7 +198,7 @@ I = - rotation.byEuler(0,0,0)
 % normal of the mirroring plane followed by a inversion we can defined
 % a mirroring about the axis (111) by
 
-mir = -rotation('axis',vector3d(1,1,1),'angle',180*degree)
+mir = -rotation.byAxisAngle(vector3d(1,1,1),180*degree)
 
 %%
 % A convenient shortcut is the command

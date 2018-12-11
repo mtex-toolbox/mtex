@@ -30,15 +30,15 @@ plot(oR_all)
 % Next we plot some orientations into this space
 
 % rotation about the z-axis about 180 degree
-rotZ = orientation('axis',zvector,'angle',180*degree,cs); 
+rotZ = orientation.byAxisAngle(zvector,180*degree,cs); 
 
 hold on
 plot(rotZ,'MarkerColor','b','MarkerSize',10)
 hold off
 
 % rotations about the x- and y-axis about 30,60,90 ... degree
-rotX = orientation('axis',xvector,'angle',(-180:30:180)*degree,cs); 
-rotY = orientation('axis',yvector,'angle',(-180:30:180)*degree,cs); 
+rotX = orientation.byAxisAngle(xvector,(-180:30:180)*degree,cs); 
+rotY = orientation.byAxisAngle(yvector,(-180:30:180)*degree,cs); 
 
 hold on
 plot(rotX,'MarkerColor','r','MarkerSize',10)

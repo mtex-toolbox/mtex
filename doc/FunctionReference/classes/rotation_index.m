@@ -65,7 +65,7 @@ o
 % A very simple possibility to specify a rotation is to specify the
 % rotational axis and the rotational angle.
 
-o = rotation('axis',xvector,'angle',30*degree)
+o = rotation.byAxisAngle(xvector,30*degree)
 
 %%
 % *Four vectors defining a rotation*
@@ -73,13 +73,13 @@ o = rotation('axis',xvector,'angle',30*degree)
 % Given four vectors u1, v1, u2, v2 there is a unique rotations q such that
 % q u1 = v1 and q u2 = v2.
 
-o = rotation('map',xvector,yvector,zvector,zvector)
+o = rotation.map(xvector,yvector,zvector,zvector)
 
 %%
 % If only two vectors are specified the rotation with the smallest angle is
 % returned that maps the first vector onto the second one.
 
-o = rotation('map',xvector,yvector)
+o = rotation.map(xvector,yvector)
 
 %%
 % *A fibre of rotations*
@@ -96,7 +96,7 @@ o = rotation('fibre',u,v)
 %%
 % *Defining a rotation by a 3 times 3 matrix*
 
-o = rotation('matrix',eye(3))
+o = rotation.byMatrix(eye(3))
 
 %%
 % *Defining a rotation by a quaternion*
@@ -105,7 +105,7 @@ o = rotation('matrix',eye(3))
 % components a,b,c,d.
 
 
-o = rotation('quaternion',1,0,0,0)
+o = rotation(quaternion(1,0,0,0))
 
 %%
 % Actually, MTEX represents internally every rotation as a quaternion.

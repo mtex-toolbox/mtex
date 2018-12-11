@@ -33,7 +33,7 @@ for k = ndx
   hkl(end+1,:) = csl(k).axis;
   omega(end+1) = csl(k).angle;
   sigma(end+1) = csl(k).sigma;
-  mori(end+1) = orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),CS,CS);
+  mori(end+1) = orientation.byAxisAngle(vector3d(hkl(end,:)),omega(end),CS,CS);
 end
 
 [mori,id] = unique(mori);

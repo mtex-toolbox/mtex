@@ -20,7 +20,7 @@ if nargin > 1 && isa(varargin{1},'vector3d')
   % the angles
   omega = linspace(0,1,100).' * angle(v1,v2);
   
-  v = rotation('axis',n,'angle',omega) .* repmat(v1,100,1);
+  v = rotation.byAxisAngle(n,omega) .* repmat(v1,100,1);
   
   % add a nan after each segment
   v = [v;vector3d.nan(1,length(v1))];

@@ -27,7 +27,7 @@ if isa(cs,'vector3d')
   omega = linspace(0,360,3610) * degree;
   
   % all rotations 0 to 360
-  rot = rotation('axis',cs,'angle',omega);
+  rot = rotation.byAxisAngle(cs,omega);
   
   % average over all rotations
   T = reshape(mean(rot * T),size(T));

@@ -191,9 +191,9 @@ mori = mdf.calcModes(2)
 % or to plot the MDF along certain fibres
 
 omega = linspace(0,55*degree);
-fibre100 = orientation('axis',xvector,'angle',omega,mdf.CS,mdf.SS)
-fibre111 = orientation('axis',vector3d(1,1,1),'angle',omega,mdf.CS,mdf.SS)
-fibre101 = orientation('axis',vector3d(1,0,1),'angle',omega,mdf.CS,mdf.SS)
+fibre100 = orientation.byAxisAngle(xvector,omega,mdf.CS,mdf.SS)
+fibre111 = orientation.byAxisAngle(vector3d(1,1,1),omega,mdf.CS,mdf.SS)
+fibre101 = orientation.byAxisAngle(vector3d(1,0,1),omega,mdf.CS,mdf.SS)
 
 close all
 plot(omega ./ degree,mdf.eval(fibre100))

@@ -22,7 +22,7 @@ theta = linspace(0,pi,13);
 
 r = vector3d('theta',theta.','rho',rho.');
 r(~sR.checkInside(r)) = nan;
-q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
 h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);
 
 rho = linspace(0,2*pi,25);
@@ -31,7 +31,7 @@ theta = linspace(0,pi,360);
 
 r = vector3d('theta',theta,'rho',rho);
 r(~sR.checkInside(r)) = nan;
-q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
 h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);
 
 % plot a surface
@@ -39,7 +39,7 @@ if ~check_option(varargin,'noSurface')
   r = plotS2Grid(sR,'resolution',1*degree);
   % TODO: do not use maxAngle - because this would allow us to rotate the
   % orientation region
-  q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+  q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
   
   [x,y,z] = oP.project(q,'noBoundaryCheck');  
   h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');

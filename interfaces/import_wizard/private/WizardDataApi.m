@@ -245,9 +245,9 @@ api.clearAllData();
       if getSS('rotOption') > 3
         switch api.Export.getInterface()
           case {'ang','osc'}
-            rot = rotation('axis',xvector+yvector,'angle',180*degree);
+            rot = rotation.byAxisAngle(xvector+yvector,180*degree);
           case {'ctf','crc'}
-            rot = rotation('axis',xvector,'angle',180*degree);
+            rot = rotation.byAxisAngle(xvector,180*degree);
         end
       else
         rot = getSS('rotate');

@@ -11,4 +11,4 @@ m(1) = max(ebsd.prop.x);
 m(2) = max(ebsd.prop.y);
 ebsd = affinetrans(ebsd,[],[0 -m(2)]);
 
-ebsd = rotate(ebsd,rotation('axis',xvector,'angle',pi));
+ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,pi));

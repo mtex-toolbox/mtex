@@ -7,7 +7,7 @@ function ebsd = rotate(ebsd,q,varargin)
 %   ebsd = rotate(ebsd,10*degree) 
 %
 %   % rotate about the x-axis
-%   ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree)) 
+%   ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,180*degree)) 
 %   
 %   % rotate only the spatial data
 %   ebsd = rotate(ebsd,180*degree,'keepEuler')

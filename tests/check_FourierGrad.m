@@ -24,7 +24,7 @@ odf = fibreODF(Miller(0,0,1,cs),vector3d.Z,'halfwidth',40*degree);
 fodf = FourierODF(odf);
 
 omega = linspace(-179,179) * degree;
-ori = rotation('axis',vector3d(0,1,0),'angle',omega);
+ori = rotation.byAxisAngle(vector3d(0,1,0),omega);
 
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
@@ -33,7 +33,7 @@ if max(norm(g1-g2)) < 1e-3, disp(' Test 1 passed'); end
 
 %% test 2
 
-ori = rotation('axis',vector3d(1,2,0),'angle',omega);
+ori = rotation.byAxisAngle(vector3d(1,2,0)s,omega);
 
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
@@ -42,7 +42,7 @@ if max(norm(g1-g2)) < 1e-3, disp(' Test 2 passed'); end
 
 %% test 3 - check last line in grad composition
 
-ori = rotation('axis',vector3d(1,2,3),'angle',omega);
+ori = rotation.byAxisAngle(vector3d(1,2,3),omega);
 
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
@@ -109,7 +109,7 @@ end
 odf = fibreODF(Miller(0,1,0,cs),vector3d.Y,'halfwidth',40*degree);
 fodf = FourierODF(odf);
 
-ori = orientation('axis',vector3d(0,1,100),'angle',omega);
+ori = orientation.byAxisAngle(vector3d(0,1,100),omega);
 
 %odf.grad(rot)
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
@@ -126,7 +126,7 @@ end
 odf = fibreODF(Miller(0,1,0,cs),vector3d.Y,'halfwidth',40*degree);
 fodf = FourierODF(odf);
 
-ori = orientation('axis',vector3d(0,1,100),'angle',omega);
+ori = orientation.byAxisAngle(vector3d(0,1,100),omega);
 
 %odf.grad(rot)
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
@@ -150,7 +150,7 @@ fodf = FourierODF(odf)
 
 omega = linspace(0,40)*degree;
 %omega = 5*degree;
-rot = ref*rotation('axis',vector3d(1,1,1),'angle',omega)
+rot = ref*rotation(vector3d(1,1,1),omega)
 
 g2 = fodf.grad(rot,'check','delta',0.05*degree)
 g3 = odf.grad(rot)
@@ -243,7 +243,7 @@ fodf = FourierODF(odf)
 
 omega = 55*degree
 %omega = linspace(-179,179) * degree;
-ori = rotation('axis',vector3d(-1,1,3),'angle',omega)
+ori = rotation.byAxisAngle(vector3d(-1,1,3),omega)
 %ori = orientation.rand(cs);
 
 %odf.grad(rot)

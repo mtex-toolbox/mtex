@@ -118,7 +118,7 @@ plot(pf)
 % with MTEX one has first to define a rotation, e.e. by
 
 % This defines a rotation around the x-axis about 100 degree
-rot = rotation('axis',xvector,'angle',100*degree);
+rot = rotation.byAxisAngle(xvector,100*degree);
 
 %%
 % Second, the command <PoleFigure_rotate rotate> can be used to rotate the

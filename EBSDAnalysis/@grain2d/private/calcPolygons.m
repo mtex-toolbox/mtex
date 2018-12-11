@@ -37,7 +37,7 @@ function test
 
 cs = crystalSymmetry('1')
 
-ori = orientation('axis',xvector,'angle',[0,90*degree],cs);
+ori = orientation.byAxisAngle(xvector,[0,90*degree],cs);
 
 ori_id = [ 0 1 1 ; ...
   1 0 1;...

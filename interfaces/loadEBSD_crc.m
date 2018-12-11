@@ -32,9 +32,9 @@ end
 
 % change reference frame
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
+  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,180*degree),'keepEuler');
 elseif check_option(varargin,{'convertEuler2SpatialReferenceFrame','wizard'})
-  ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepXY');
+  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,180*degree),'keepXY');
 else
   warning(['.crc and .cpr files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...

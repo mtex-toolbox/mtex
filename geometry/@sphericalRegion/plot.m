@@ -27,7 +27,7 @@ for j = 1:numel(sP)
   omega = linspace(0,2*pi,721);
   for i=1:length(sR.N)
   
-    rot = rotation('axis',sR.N(i),'angle',omega);
+    rot = rotation.byAxisAngle(sR.N(i),omega);
     bigCircle = rotate(orth(sR.N(i)),rot);
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     

@@ -11,4 +11,4 @@ function r = reflection(n)
 %  r - improper @rotation
 %
 
-r = -rotation('axis',n,'angle',pi);
+r = -rotation.byAxisAngle(n,pi);

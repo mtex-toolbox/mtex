@@ -42,7 +42,7 @@ cs = crystalSymmetry('1');
 odf = fibreODF(Miller(0,0,1,cs),vector3d.Z);
 omega = linspace(-20,20)*degree;
 omega = 15 *degree;
-ref = orientation('axis',vector3d(1,0,10),'angle',omega,cs)
+ref = orientation.byAxisAngle(vector3d(1,0,10),omega,cs)
 
 
 g1 = odf.grad(ref)
@@ -51,11 +51,11 @@ g2 = odf.grad(ref,'check','delta',0.05*degree)
 plot(omega./degree,[g1.x,g2.x])
 
 omega2 = linspace(-5,5)*degree;
-ori1 = ref * rotation('axis',g1,'angle',omega2);
-ori2 = ref * rotation('axis',g2,'angle',omega2);
-ori3 = ref * rotation('axis',normalize(g1+g2),'angle',omega2);
-%ori4 = ref * rotation('axis',normalize(g1-g2),'angle',omega2);
-ori4 = ref * rotation('axis',vector3d(-1,2,0),'angle',omega2);
+ori1 = ref * rotation.byAxisAngle(g1,omega2);
+ori2 = ref * rotation.byAxisAngle(g2,omega2);
+ori3 = ref * rotation.byAxisAngle(normalize(g1+g2),omega2);
+%ori4 = ref * rotation.byAxisAngle(normalize(g1-g2),'angle',omega2);
+ori4 = ref * rotation.byAxisAngle(vector3d(-1,2,0),omega2);
 
 plot(omega2./degree,[odf.eval(ori1(:)),odf.eval(ori2(:)),odf.eval(ori3(:)),odf.eval(ori4(:))])
 
@@ -78,7 +78,7 @@ function test2
   ref = orientation.id(cs) * cs(5);
   
   f = S2FunHarmonic.quadrature(@(r) ...
-    odf.eval(rotation('axis',r,'angle',5*degree)*ref));
+    odf.eval(rotation.byAxisAngle(r,5*degree)*ref));
   
   plot(f,'lower')
   

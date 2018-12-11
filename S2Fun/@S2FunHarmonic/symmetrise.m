@@ -29,7 +29,7 @@ if isa(varargin{1},'vector3d')
   
   % rotate sF such that varargin{1} -> z
   if center ~= zvector
-    rot = rotation('axis',cross(center,zvector),'angle',angle(center,zvector));
+    rot = rotation.byAxisAngle(cross(center,zvector),angle(center,zvector));
     sF = rotate(sF,rot);
   end
   

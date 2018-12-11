@@ -58,7 +58,7 @@ plotPDF(odf,Miller(1,0,0,CS))
 
 0.3*odf2 + 0.7*odf3
 
-rot = rotation('axis',yvector,'angle',90*degree);
+rot = rotation.byAxisAngle(yvector,90*degree);
 odf = rotate(odf,rot)
 plotPDF(odf,Miller(1,0,0,CS))
 

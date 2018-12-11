@@ -14,8 +14,8 @@ rot_ref = rotation.byEuler(10*degree,20*degree,30*degree)
 % between left and right pertubations
 
 delta = 0.01*degree;
-rot_right = rotation('axis',vector3d(1,2,3),'angle',delta) * rot_ref;
-rot_left = rot_ref * rotation('axis',vector3d(1,2,3),'angle',delta);
+rot_right = rotation.byAxisAngle(vector3d(1,2,3),delta) * rot_ref;
+rot_left = rot_ref * rotation.byAxisAngle(vector3d(1,2,3),delta);
 
 %%
 % We may now ask for the first order Taylor coefficients of the pertubation
@@ -73,7 +73,7 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 % to rot_ref
 
 
-rot_123 = rotation('axis',vector3d(1,2,3),'angle',1)
+rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
 log(rot_ref * rot_123,rot_ref) * sqrt(14)
 
 log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
@@ -115,7 +115,7 @@ cs = crystalSymmetry('321')
 ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs)
 
 % next we disturb rot_ref by a rotation about the axis (123)
-mori_123 = orientation('axis',Miller(1,2,-3,3,cs),'angle',1)
+mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1)
 
 % first we multiply from the right
 ori = ori_ref * mori_123;
@@ -238,13 +238,13 @@ function test
   [norm(v),angle(ori1,ori2)] ./ degree
 
   % and this too
-  [ori1 * orientation('axis',v,'angle',norm(v)) ,project2FundamentalRegion(ori2,ori1)]
+  [ori1 * orientation.byAxisAngle(v,norm(v)) ,project2FundamentalRegion(ori2,ori1)]
 
   % in specimen coordinates
   r = log(ori2,ori1,'left');
 
   % now we have to multiply from the left
-  [rotation('axis',r,'angle',norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
+  [rotation.byAxisAngle(r,norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
 
   % the following output should be constant
   % gO = log(ori1,ori2.symmetrise) % but not true for this

@@ -21,7 +21,7 @@
      [axes,~] = DSO3.CS.getMinAxes;
      ia = find(isnull(dot(axes,zvector)),1,'first');
      [~,Phi,~] = Euler(ori);
-     ori(Phi > pi/2) = ori(Phi > pi/2) * orientation('axis',axes(ia),'angle',pi,DSO3.CS,DSO3.CS);     
+     ori(Phi > pi/2) = ori(Phi > pi/2) * orientation.byAxisAngle(axes(ia),pi,DSO3.CS,DSO3.CS);     
    end
    
    [phi1,Phi,phi2] = Euler(ori);

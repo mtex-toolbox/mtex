@@ -96,7 +96,7 @@ classdef ipfSections < ODFSections
       vF = oS.referenceField(r);
       
       if nargin == 3
-        vF = rotation('axis',r,'angle',omega-pi/2) .* vF;
+        vF = rotation.byAxisAngle(r,omega-pi/2) .* vF;
       end
       
     end
@@ -126,7 +126,7 @@ classdef ipfSections < ODFSections
       N(ind) = xvector;
       
       vF = normalize(r1 - dot(r1,N) .* N);
-      vF = rotation('axis',N,'angle',-90*degree*sign(N.x)) .* vF;
+      vF = rotation.byAxisAngle(N,-90*degree*sign(N.x)) .* vF;
 
       vF = normalize(vF - dot(vF,r1) .* r1);      
       

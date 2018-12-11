@@ -75,7 +75,7 @@ P = [ 0 0 0 .17 0   0;
 
 T = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
 
-r = rotation('axis',zvector,'angle',-45*degree);
+r = rotation.byAxisAngle(zvector,-45*degree);
 T = rotate(T,r)
 
 %% The Inverse Tensor

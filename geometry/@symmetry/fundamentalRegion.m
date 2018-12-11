@@ -43,7 +43,7 @@ if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
       
     sR = dcs.fundamentalSector(varargin{:});
         
-    N0 = rotation('axis',sR.N,'angle',pi-1e-5);
+    N0 = rotation.byAxisAngle(sR.N,pi-1e-5);
   end
 else
   q = q(~q.isImproper);

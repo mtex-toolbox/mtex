@@ -48,7 +48,7 @@ classdef axisAngleSections < ODFSections
         
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
         ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
-          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s),oS.CS1,oS.CS2);
+          orientation.byAxisAngle(oS.plotGrid{s},oS.angles(s),oS.CS1,oS.CS2);
       end     
     end
 
@@ -71,7 +71,7 @@ classdef axisAngleSections < ODFSections
     end
     
     function ori = iproject(oS,rho,theta,iangle)
-      ori = orientation('axis',vector3d('polar',theta,rho),'angle',...
+      ori = orientation.byAxisAngle(vector3d('polar',theta,rho),...
         oS.angles(iangle),oS.CS,oS.SS);
     end
         

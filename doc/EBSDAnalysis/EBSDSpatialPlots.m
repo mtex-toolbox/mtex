@@ -98,7 +98,7 @@ plot(ipfKey)
 
 %%
 % or cycle of colors red, green, blue by
-ipfKey.colorPostRotation = rotation('axis',zvector,'angle',120*degree);
+ipfKey.colorPostRotation = rotation.byAxisAngle(zvector,120*degree);
 
 plot(ipfKey)
 

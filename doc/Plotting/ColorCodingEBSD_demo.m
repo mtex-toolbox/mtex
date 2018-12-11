@@ -109,7 +109,7 @@ plot(oM)
 
 %%
 % or shift the cycle of colors red, green, blue by
-oM.colorPostRotation = rotation('axis',zvector,'angle',120*degree);
+oM.colorPostRotation = rotation.byAxisAngle(zvector,120*degree);
 
 plot(oM)
 

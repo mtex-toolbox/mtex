@@ -147,7 +147,7 @@ classdef HSVDirectionKey < directionColorKey
       % spherical region to be colorized
 
       oM.sR = oM.sym.fundamentalSector;
-      r30 = rotation('axis',zvector,'angle',[30,-30]*degree);
+      r30 = rotation.byAxisAngle(zvector,[30,-30]*degree);
 
       % symmetry dependent settings
       switch oM.sym.id
@@ -157,9 +157,9 @@ classdef HSVDirectionKey < directionColorKey
             oM.refl = vector3d.Z;
           end
         case {3,9}                                               % 211, 112  
-          oM.refl = -rotate(oM.sR.N,rotation('axis',oM.sym.subSet(2).axis,'angle',90*degree));
+          oM.refl = -rotate(oM.sR.N,rotation.byAxisAngle(oM.sym.subSet(2).axis,90*degree));
         case 6                                                   % 121
-          oM.refl = rotate(oM.sR.N,rotation('axis',-oM.sym.subSet(2).axis,'angle',90*degree));
+          oM.refl = rotate(oM.sR.N,rotation.byAxisAngle(-oM.sym.subSet(2).axis,90*degree));
         case {5}, oM.refl = rotate(oM.sR.N(2),-90*degree);       % 2/m11
         case {8}, oM.refl = rotate(oM.sR.N(2),90*degree); %      % 12/m1
         case {11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree); % 222
@@ -193,7 +193,7 @@ classdef HSVDirectionKey < directionColorKey
   
   methods (Static = true)
    function rot = green2white % rotate green 2 white
-      rot = rotation('axis',xvector,'angle',90*degree); 
+      rot = rotation.byAxisAngle(xvector,90*degree); 
     end
 
     function rot = blue2green % switch blue and green
