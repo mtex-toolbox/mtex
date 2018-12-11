@@ -2,15 +2,40 @@
 %
 %% MTEX 5.2.0 11/2018
 %
-% *Velocity Gradient Tensors*
+% *Faster Fourier Transforms on the Sphere and the Orientation Space*
+%
+% *Plastic Deformations*
+% MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
+% plastic deformations more straight forward.
+%
+% * <velocityGradientTensor_index.html Velocity Gradient Tensors>
+% * <strainRateTensor_index.html strain rate tensor>
+% * <deformationGradientTensor_index.html deformation gradient tensor>
+% * <spinTensor_index.html spin tensor>
+%
+% The relationships between those tensors are explained in the section
+% <PlasticDeformation.html plastic deformations>.
 %
 % *Spherical Bingham Distribution*
 %
-% * 
+% *Tensor Visualisation*
+% * <SeismicVelocitySingleCrystalDemo2d.m>
+%
+% *Improved Figure Layout*
+%
+% * fix layout
+% * plot a fixed positions
+% *
+%
+% * label crystal faces in crystal shapes
+% * calcKearnsFactor
+% * allow to index ebsd data and grains by id
+%
+% ebsd{id}, grains{id}
 %
 %% MTEX 5.1.0 04/2018
 %
-% *Dislocation systems* 
+% *Dislocation systems*
 %
 % Starting with version 5.1 MTEX introduces a class representing
 % dislocation systems. Dislocation systems may be lists of edge or screw
@@ -48,13 +73,13 @@
 % # <curvatureTensor.fitDislocationSystems.html fit the dislocation systems>
 % to the curvature tensors.
 % # compute the total energy in each pixel
-% 
+%
 % *Tensor arithmetics*
 %
 % <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
 % det>, <tensor.mean.html mean>, <tensor.diag.html
 % diag>, <tensor.eye.html eye>, <tensor.sym.html sym>
-% 
+%
 % *Birefringence*
 %
 % MTEX 5.1 includes some basic methods to analyze and simulate optically
@@ -62,7 +87,7 @@
 % birefringence and spectral transmission. The new features are
 % demonstrated in <BirefringenceDemo.html BirefringenceDemo>.
 %
-% *Color Keys* 
+% *Color Keys*
 %
 % In MTEX 5.1 the color keys used for coloring EBSD have been a bit
 % reorganised.
@@ -71,7 +96,7 @@
 % <HSVDirectionKey.html HSVDirectionKey>, <HKLDirectionKey.html
 % HKLDirectionKey>, <TSLDirectionKey.html TSLDirectionKey>. This has become
 % neccesary as some orientation color keys depend directional color keys
-% with different symmetry. 
+% with different symmetry.
 %
 % * new color key <axisAngleColorKey.html axisAngleColorKey> that
 % implements the coloring described in K. Thomsen, K. Mehnert, P. W. Trimby
@@ -163,7 +188,7 @@
 %   pdf = abs(pdf) % take the absolute value
 %   sum(pdf) % the integral of the pole figure
 %   sum(pdf.^2) % the integral of the pole figure squares - also called pole figure index
-%   
+%
 %   % plotting
 %   plot(pdf)
 %   plot3(pdf) % plot in 3d
@@ -187,13 +212,13 @@
 % In some cases it is useful that a spherical function gives not only one
 % value for a certain direction but several values. This is equivalent to
 % have concatenate several univariate spherical function to one
-% multivariate function. This can be accomplished by 
+% multivariate function. This can be accomplished by
 %
 %   S2Fmulti = [S2F1,S2F2,S2F3]
 %
 % which gives a spherical function with 3 values per direction. More
 % information how to work multivariate functions can be found
-% <S2FunMulti.html here>. 
+% <S2FunMulti.html here>.
 %
 % If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
 % a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
@@ -231,7 +256,7 @@
 %
 %   plot(C,'plotType','YoungsModulus')
 %
-% obsolete. It is not supported anymore.  
+% obsolete. It is not supported anymore.
 %
 % *Crystal shapes*
 %
@@ -241,7 +266,7 @@
 %
 %   % define the crystal symmetry
 %   cs = loadCIF('quartz');
-% 
+%
 %   % define the faces of the crystal
 %   m = Miller({1,0,-1,0},cs);  % hexagonal prism
 %   r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usally bigger then z
@@ -275,7 +300,7 @@
 %
 % which returns in centerId also for each orientation from |oriList| to
 % which component it belongs.
-% 
+%
 % *Clustering of orientations*
 %
 % The ODF component analysis is used as the new default algorithm in
@@ -361,17 +386,17 @@
 % * some more functions get tab completetion for input arguments
 % * the option 'MarkerSize' can also be a vector to allow for varying Markersize
 % * new option 'noSymmetry' for plotPDF and plotSection
-% 
+%
 % *orientation relation ships*
 %
 % * new functions for computing variants and parents for a orientation
 % relation ship *
-% * new predefined orientation relation ship 
+% * new predefined orientation relation ship
 %
 %   gT = GreningerTrojano(csAlpha,csGamma)
 %   ori_childs = ori_parent * inv(gT.variants)
 %   ori_parents = ori_child * gT.parents
-%   
+%
 %
 %% MTEX 4.5.1 08/2017
 %
@@ -425,7 +450,7 @@
 %
 % New functions <tensor.diag.html diag>, <tensor.trace.html trace>,
 %
-% *EBSD* 
+% *EBSD*
 %
 % Rotating, flipping of EBSD data is now done with respect to the center of
 % the map. Previously all these opertions where done relatively to the
@@ -520,7 +545,7 @@
 %
 %   % generate orientation clustered around 5 centers
 %   cs = crystalSymmetry('m-3m');
-%   center = orientation.rand(5,cs); 
+%   center = orientation.rand(5,cs);
 %   odf = unimodalODF(center,'halfwidth',5*degree)
 %   ori = odf.calcOrientations(3000);
 %
@@ -530,13 +555,13 @@
 %   % visualize result
 %   oR = fundamentalRegion(cs);
 %   plot(oR)
-% 
+%
 %   hold on
 %   plot(ori.project2FundamentalRegion,c)
 %   caxis([1,5])
 %   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
 %   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
-%   hold off 
+%   hold off
 %
 %% MTEX 4.3.2 07/2016
 %
@@ -571,7 +596,7 @@
 % * <EBSD.quiver.html quiver(ebsd,dir)>
 % * <grain2d.quiver.html quiver(grains,dir)>
 % * <grainBoundary.quiver.html quiver(grains.boundary,dir)>
-% 
+%
 % that allow visualizing directions for EBSD data, grains and at grain
 % boundaries. The input argument |dir| should be a list of |vector3d| and
 % may represent e.g. slip directions, polarization direction, etc.
@@ -584,7 +609,7 @@
 % a regular grid by
 %
 %   ebsd = ebsd.gridify
-% 
+%
 % Missing data are represented as NaN in the regular representation.
 % Gridified EBSD data may be addressed analogously like matrixes, i.e.,
 %
@@ -619,18 +644,18 @@
 % MTEX 4.2 introduces basic functionality for triple junction analysis in
 % grain maps.
 %
-% *Triple points* 
+% *Triple points*
 %
 % Triple points are automatically computed during grain reconstruction and
 % can be accessed by
 %
 %   grains.triplePoints
 %   grains.boundary.triplePoints
-% 
+%
 % More details on how to work with triple points can be found
 % <TriplePoints.html here>.
 %
-% *large EBSD data sets* 
+% *large EBSD data sets*
 %
 % Analyzing large EBSD data sets may be quite annoying due to memory
 % consumption and slow plotting. As a work around MTEX includes a new
@@ -672,7 +697,7 @@
 % In <matlab:edit mtex_settings.m mtex_settings> there is a new option that
 % may help to work around the Matlab opengl bug. Switching it of may give
 % nicer graphics.
-% 
+%
 %   setMTEXpref('openglBug',true)
 %
 % *CSL misorientations*
@@ -702,7 +727,7 @@
 %   oS.phi2 = [ 10*degree, 30*degree, 90*degree ];
 %
 %   plot(odf,oS)
-%  
+%
 % *Ordering of crystal symmetries*
 %
 % One can now check whether a crystal symmetry |cs1| is a subgroup of
@@ -727,7 +752,7 @@
 % Smoothing of EBSD data might be necessary if the orientation data are
 % corrupted by noise which influences the estimation of orientation
 % dependent properties like KAM or GND. The general syntax for smoothing
-% EBSD data is 
+% EBSD data is
 %
 %   ebsd = smooth(ebsd)
 %
@@ -754,7 +779,7 @@
 %
 %   mori = inv(ori1) * ori2;
 %   mori.antipodal = true;
-%   
+%
 %   mdf = calcMDF(odf1,odf2,'antipodal')
 %
 % Antipodal symmetry effects the asymmetric region in orientation space as
@@ -789,7 +814,7 @@
 %   sR = oR.axisSector(omega)
 %
 % *Axis and angle distributions*
-% 
+%
 % Thanks to the implementation of the asymmetric region
 % |plotAxisDistribution| and |plotAngleDistribution| works in MTEX 4.1 for
 % any combination of crystal symmetries.
@@ -804,7 +829,7 @@
 %
 %   plotAxisDistribution(grains.boundary('phase1','phase2').misorientation)
 %   plotAngleDistribution(grains.boundary('phase1','phase2').misorientation)
-%   
+%
 %   mori = calcMisorientation(ebsd('phase1'),ebsd('phase2'))
 %   plotAngleDistribution(mori)
 %   plotAxisDistribution(mori)
@@ -834,7 +859,7 @@
 %   plotSection(mdf,'axisAngle',(15:10:55)*degree,'volumeScaling',false)
 %   plotSection(mdf,'axisAngle',(15:10:55)*degree,'antipodal')
 %
-% *Replace plotODF by a plotSection* 
+% *Replace plotODF by a plotSection*
 %
 % In most cases, you can replace |plotODF| by a|plot|. Only for
 % misorientations, the default plot is |scattered|.
@@ -935,7 +960,7 @@
 %
 %
 %% MTEX 4.0.0 - 10/2014
-% 
+%
 % MTEX 4 is a complete rewrite of the internal class system which was
 % required to keep MTEX compatible with upcoming Matlab releases. Note
 % that MTEX 3.5 will not work on Matlab versions later than 2014a. As a
@@ -981,15 +1006,15 @@
 %
 % *Grain boundaries are now directly accessible*
 %
-% MTEX 4.0 introduces a new type of variables called |grainBoundary| which 
+% MTEX 4.0 introduces a new type of variables called |grainBoundary| which
 % allows to represent arbitrary grain boundaries and to work with them as
 % with grains. The following lines give some examples. Much more is possible.
 %
 %   % select boundary from specific grains
-%   grains.boundary 
+%   grains.boundary
 %
 %   % select boundary by phase transistion
-%   gB = grains.boundary('Forstarite','Enstatite') 
+%   gB = grains.boundary('Forstarite','Enstatite')
 %
 %   % select boundary by misorientation angle
 %   gB(gB.misorientation.angle>100*degree)
@@ -1004,8 +1029,8 @@
 %
 %   plot(obj,data)
 %
-% where obj is the object to be plotted, i.e., EBSD data, grains, 
-% grain boundaries, spherical vectors, pole figures, etc., and the data are 
+% where obj is the object to be plotted, i.e., EBSD data, grains,
+% grain boundaries, spherical vectors, pole figures, etc., and the data are
 % either pure numbers or RGB values describing the color. Examples are
 %
 %   % plot MAD values of EBSD data
@@ -1016,7 +1041,7 @@
 %
 %   % colorize grain boundary according to misorientation angle
 %   gB = grains.boundary('Forsterite','Enstatite')
-%   plot(gB,gB.misorientation.angle)   
+%   plot(gB,gB.misorientation.angle)
 %
 % Colorization according to phase or phase transition is the new default
 % when calling |plot| without data argument, i.e., the following results in
@@ -1026,7 +1051,7 @@
 %
 % In order to colorize ebsd data according to orientations, one has first to
 % define an orientationMapping by
-% 
+%
 %   oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
 %
 % Then one can use the command |oM.orientation2color| to compute RGB values
@@ -1056,9 +1081,9 @@
 %   calcODF(ebsd('Fo').orientations)
 %   volume((ebsd('Fo').orientations)
 %
-% This makes it more easy to apply the same functions to misorientations 
-% to grain mean orientations |grains.meanOrientation|, ebsd misorientation 
-% to mean |mean |ebsd.mis2mean| or boundary misorientations 
+% This makes it more easy to apply the same functions to misorientations
+% to grain mean orientations |grains.meanOrientation|, ebsd misorientation
+% to mean |mean |ebsd.mis2mean| or boundary misorientations
 % |grains.boundary.misorientation|
 %
 % *Different syntax for reconstructing grains from EBSD data*
@@ -1084,8 +1109,8 @@
 %
 % *MTEX 4.0 distinguishes between crystal and specimen symmetry*
 %
-% In MTEX 4.0 two new variable types |specimenSymmetry| and 
-% |crystalSymmetry| have been introduced to distinguish clearly between 
+% In MTEX 4.0 two new variable types |specimenSymmetry| and
+% |crystalSymmetry| have been introduced to distinguish clearly between
 % these two types of symmetry. Calling
 %
 %   cs = symmetry('m-3m')
@@ -1109,7 +1134,7 @@
 %   pf_restrcited = pf(condition)
 %
 % In the same manner, we can also remove all negative intensities
-% 
+%
 %   condition = pf.intensities < 0
 %   pf(condition) = []
 %
@@ -1156,9 +1181,9 @@
 %
 % *Improved graphics*
 %
-% MTEX can now display colorbars next to pole figure, tensor or ODF plots 
+% MTEX can now display colorbars next to pole figure, tensor or ODF plots
 % and offers much more powerfull options to customize the plots with titles,
-% legends, etc. 
+% legends, etc.
 %
 % *Functionality that has been (temporarily) removed*
 %
@@ -1172,7 +1197,7 @@
 % * fibreVolume in the presence of specimen symmetry
 % * Dirichlet kernel
 % * patala colorcoding for some symmetry groups
-% * v.x = 0 
+% * v.x = 0
 % * misorientation analysis is not yet complete
 % * some colormaps, e.g. blue2red switched
 % * histogram of volume fractions of CSL boundaries
@@ -1198,7 +1223,7 @@
 %
 % * grain reconstruction algorithm for highly deformed materials without
 % sharp grain boundaries
-% * publication: C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, 
+% * publication: C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry,
 % L. Bassman, Boundary identification in EBSD data with a generalization of
 % fast multiscale clustering, Ultramicroscopy, 2013, 133:16-25.
 % * implementation: Andrew Loeb
@@ -1214,12 +1239,12 @@
 %
 % * the flags |'north'| and |'south'| are obsolete and have been replaced
 % by |'upper'| and |'lower'|
-% * you can specify the outer boundary for grain reconstruction in 
+% * you can specify the outer boundary for grain reconstruction in
 % nonconvex EBSD data set by the option |'boundary'|
 %
 %   poly = [ [x1,y1];[x2,y2];[xn,yn];[x1,y1] ]
 %   grains = calcGrains(ebsd,'boundary',poly)
-% 
+%
 % * you can select a polygon interactively with the mouse using the command
 %
 %   poly = selectPolygon
