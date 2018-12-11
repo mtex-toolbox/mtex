@@ -3,8 +3,24 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 %
 % This MTEX class represents orientations and misorientations. 
 %
-% orientation('Euler',phi1,Phi,phi2,cs)  defines an orientation in Euler angles
+% Syntax
+%   ori = orientation.byEuler(phi1,Phi,phi2,cs,ss)
+%   ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',cs,ss)
+%   ori = orientation.byMiller([h k l],[u v w],cs,ss)
+%   ori = orientation.byAxisAngle(v,omega,cs,ss)
+%   ori = orientation.byMatrix(A,cs)
+%   ori = orientation.map(u1,v1,u2,v2,cs)
+%   ori = orientation.goss(cs)
+%   ori = orientation.cube(cs)
 %
+% predefined orientations
+% 
+%    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
+%    * 'Goss', 'invGoss'
+%    * 'Copper', 'Copper2'
+%    * 'SR', 'SR2', 'SR3', 'SR4'
+%    * 'Brass', 'Brass2'
+%    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
 
 properties
   
@@ -19,37 +35,20 @@ methods
   function o = orientation(varargin)
     % defines an orientation
     %
-    % Syntax
+    % Syntax   
     %   ori = orientation(rot,cs,ss)
-    %   ori = orientation('Euler',phi1,Phi,phi2,cs,ss)
-    %   ori = orientation('Euler',alpha,beta,gamma,'ZYZ',cs,ss)
-    %   ori = orientation('Miller',[h k l],[u v w],cs,ss)
-    %   ori = orientation(name,cs,ss)
-    %   ori = orientation('axis,v,'angle',omega,cs,ss)
-    %   ori = orientation('matrix',A,cs)
-    %   ori = orientation('map',u1,v1,u2,v2,cs)
-    %   ori = orientation('quaternion',a,b,c,d,cs)
+    %   ori = orientation(quat,cs,ss)
     %
     % Input
-    %  rot       - @rotation
-    %  cs, ss    - @symmetry
-    %  u1,u2     - @Miller
-    %  v, v1, v2 - @vector3d
-    %  name      - named orientation
-    %    currently available:
-    %
-    %    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
-    %    * 'Goss', 'invGoss'
-    %    * 'Copper', 'Copper2'
-    %    * 'SR', 'SR2', 'SR3', 'SR4'
-    %    * 'Brass', 'Brass2'
-    %    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
+    %  rot    - @rotation
+    %  quat   - @quaternion
+    %  cs, ss - @symmetry
     %
     % Ouptut
-    %  ori - @orientation
+    %  ori    - @orientation
     %
     % See also
-    % quaternion_index orientation_index
+    % orientation_index
     
     % find and remove symmetries
     args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
@@ -133,6 +132,12 @@ methods (Static = true)
     ori = orientation(q,varargin{:});
   end
   
+    
+  ori = byMiller(m1,m2,varargin);
+  ori = byEuler(phi1,Phi,phi2,varargin);
+  ori = map(varargin);
+  ori = byAxisAngle(v,omega,varargin);
+    
   function ori = cube(varargin)
     ori = orientation('Euler',0,0,0,varargin{:});
   end

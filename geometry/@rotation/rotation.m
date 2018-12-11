@@ -154,13 +154,13 @@ classdef rotation < quaternion & dynOption
       r = rotation.id(varargin{:});
     end
 
-    function r = map(varargin)
-      if nargin == 4
-        r = rotation(vec42quat(varargin{:}));
-      else
-        r = rotation(hr2quat(varargin{:}));
-      end
-    end
+    r = byMatrix(varargin);
+    
+    r = byEuler(varargin);
+    
+    r = byAxisAngle(varargin);
+    
+    r = map(varargin);
     
   end
   
