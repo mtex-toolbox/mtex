@@ -96,7 +96,7 @@ hold on
 plot(gB11,'lineColor','c','linewidth',2,'DisplayName','CSL 11')
 hold off
 
-%% Colorizing misorientations 
+%% Colorizing misorientations
 % In the previous sections we have checked whether the boundary
 % misorientations belong to certain specific classes of misorientations. In
 % order to analyze the distribution of misorientations we may colorize the
@@ -133,7 +133,7 @@ plot(gB.misorientation,'points',300,'add2all',...
 
 %% Misorientations in the 3d fundamental zone
 % We can also look at the boundary misorienations in the 3 dimensional
-% fundamental orientation zone. 
+% fundamental orientation zone.
 
 % compute the boundary of the fundamental zone
 oR = fundamentalRegion(moriKey.CS1,moriKey.CS2,'antipodal');
@@ -206,6 +206,6 @@ legend('100','111','101')
 %%
 % or to evaluate it in an misorientation directly
 
-mori = orientation('Euler',15*degree,28*degree,14*degree,mdf.CS,mdf.CS)
+mori = orientation.byEuler(15*degree,28*degree,14*degree,mdf.CS,mdf.CS)
 
 mdf.eval(mori)

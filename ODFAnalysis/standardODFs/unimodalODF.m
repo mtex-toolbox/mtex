@@ -7,7 +7,7 @@ function odf = unimodalODF(varargin)
 % shape of the ODF is defined by a @kernel function.
 %
 % Syntax
-%   mod = orientation('Euler',phi1,Phi,phi2,CS,SS)
+%   mod = orientation.byEuler(phi1,Phi,phi2,CS,SS)
 %   odf = unimodalODF(mod) % default halfwidth 10 degree 
 %   odf = unimodalODF(mod,'halfwidth',15*degree) % specify halfwidth
 %   odf = unimodalODF(mod,CS,SS)  % specify crystal and specimen symmetry

@@ -43,3 +43,41 @@ hold off
 vv = -odf.grad(ori,'left');
 
 
+%%
+
+
+rot1 = rotation('axis',xvector,'angle',30*degree)
+rot2 = rotation('axis',vector3d(1,2,3),'angle',30*degree)
+
+% the matrix is flipped !!
+matrix(rot1)
+tensor(rot1)
+
+%%
+
+% the spin tensor
+spin = spinTensor(rot2)
+
+% the spin vector
+v = vector3d(spin)
+v = log(rot2)
+
+%% go back to rotation
+
+% to compare with
+rot2
+
+exp(spin)
+rotation(expquat(v))
+
+
+
+
+
+
+
+
+
+
+
+

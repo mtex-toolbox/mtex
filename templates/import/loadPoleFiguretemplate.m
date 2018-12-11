@@ -64,5 +64,5 @@ pf = correct(pf,{corrections});
 
 %% Correct Data
 
-rot = rotation('Euler',{phi1},{Phi},{phi2});
+rot = rotation.byEuler({phi1},{Phi},{phi2});
 pf = rotate(pf,rot,{rotationOption});

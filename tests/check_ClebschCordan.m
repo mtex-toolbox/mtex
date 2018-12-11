@@ -4,7 +4,7 @@
 %% the reference
 
 % some arbitrary rotation
-g = rotation('Euler',-72*degree,88*degree,134*degree);
+g = rotation.byEuler(-72*degree,88*degree,134*degree);
 
 % we want to express the product of two wigner D functions
 D1 = WignerD(g,'order',1);

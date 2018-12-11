@@ -1,7 +1,7 @@
 %% Model ODFs
 % Describes how to define model ODFs in MTEX, i.e., uniform ODFs, unimodal
 % ODFs, fibre ODFs, Bingham ODFs and ODFs defined by its
-% Fourier coefficients. 
+% Fourier coefficients.
 %
 %% Open in Editor
 %
@@ -12,7 +12,7 @@
 %
 % MTEX provides a very simple way to define model ODFs. Generally, there are
 % five types to describe an ODF in MTEX:
-% 
+%
 % * uniform ODF
 % * unimodal ODF
 % * fibre ODF
@@ -23,7 +23,7 @@
 % adding and subtracting arbitrary ODFs. Model ODFs may be used as
 % references for ODFs estimated from pole figure data or EBSD data and are
 % instrumental for <PoleFigureSimulation_demo.html pole figure simulations>
-% and <EBSDSimulation_demo.html single orientation simulations>. 
+% and <EBSDSimulation_demo.html single orientation simulations>.
 
 %% The Uniform ODF
 %
@@ -65,7 +65,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %% Fibre ODFs
 % A fibre is represented in MTEX by a variable of type <fibre_index.html
-% fibre>. 
+% fibre>.
 
 % define the fibre to be the beta fibre
 f = fibre.beta(cs)
@@ -100,9 +100,9 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %% Bingham ODFs
 %
-% The Bingham quaternion distribution  
+% The Bingham quaternion distribution
 %
-% $$f(g; A,\kappa) = \frac{1}{_1F_1(\frac{1}{2};2;\kappa)} \exp( g^T U^T K U g),\quad g \in S^3$$ 
+% $$f(g; A,\kappa) = \frac{1}{_1F_1(\frac{1}{2};2;\kappa)} \exp( g^T U^T K U g),\quad g \in S^3$$
 %
 % has a (4x4)-orthogonal matrix $U$ and shape parameters $K$ as
 % argument. The (4x4) matrix can be interpreted as 4 orthogonal
@@ -125,7 +125,7 @@ cs = crystalSymmetry('-3m');
 % *Bingham unimodal ODF*
 
 % a modal orientation
-mod = orientation('Euler',45*degree,0*degree,0*degree);
+mod = orientation.byEuler(45*degree,0*degree,0*degree);
 
 % the corresponding Bingham ODF
 odf = BinghamODF(20,mod,cs)

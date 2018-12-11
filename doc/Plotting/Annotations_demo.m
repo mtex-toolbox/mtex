@@ -15,14 +15,14 @@
 
 % this defines some model ODFs
 cs = crystalSymmetry('-3m');
-mod1 = orientation('Euler',30*degree,40*degree,10*degree,cs);
-mod2 = orientation('Euler',10*degree,80*degree,70*degree,cs);
+mod1 = orientation.byEuler(30*degree,40*degree,10*degree,cs);
+mod2 = orientation.byEuler(10*degree,80*degree,70*degree,cs);
 odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2);
 
 % plot some pole figurs
 plotPDF(odf,Miller({1,0,0},{1,1,1},cs))
 
-% and add a colorbar to each pole figure 
+% and add a colorbar to each pole figure
 mtexColorbar
 
 %%
@@ -32,10 +32,10 @@ mtexColorbar
 % set a title to the colorbar to describe the unit.
 
 % delete vertical colorbar
-mtexColorbar              
+mtexColorbar
 
 % add horizontal colorbars
-mtexColorbar('location','southOutSide','title','mrd') 
+mtexColorbar('location','southOutSide','title','mrd')
 
 %%
 % If color range is set to equal in an MTEX figure only one colorbar is
@@ -78,8 +78,8 @@ annotate(mod1,...
 annotate(mod2,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
     'label','B')
-  
-drawNow(gcm,'figSize','normal')  
+
+drawNow(gcm,'figSize','normal')
 
 %%
 % as well as in ODF plots
@@ -91,7 +91,7 @@ annotate(mod1,...
 
 annotate(mod2,...
   'MarkerSize',15,'MarkerEdgeColor','b','MarkerFaceColor','none')
-  
+
 %%
 % or orientation scatter plots
 
@@ -106,7 +106,7 @@ annotate(mod2,...
 %% Legends
 %
 % If you have multiple data in one plot then it makes sense to add a legend
-% saying which color / symbol correspond to which data set. 
+% saying which color / symbol correspond to which data set.
 %
 % The following example compares the Fourier coefficients of the fibre ODF
 % with the Fourier coefficients of an unimodal ODF.
@@ -124,8 +124,8 @@ legend({'Fibre ODF','Unimodal ODF'})
 % Adding a Spherical Grid
 %
 % Sometimes it is useful to have a spherical grid in your plot to make the
-% projection easier to understand or if you need to know some angular relationships. 
-% For this reason, there is the option *grid*, which enables the grid and the 
+% projection easier to understand or if you need to know some angular relationships.
+% For this reason, there is the option *grid*, which enables the grid and the
 % option *grid_res*, which allows to specify the spacing of the grid lines.
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(0,0,1,cs)],'grid','grid_res',15*degree,'antipodal');

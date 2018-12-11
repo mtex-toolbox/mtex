@@ -10,9 +10,9 @@ g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)./norm(g1)) < 1e-2
-  disp(' Fourier gradient test passed'); 
+  disp(' Fourier gradient test passed');
 else
-  disp(' Fourier gradient test failed'); 
+  disp(' Fourier gradient test failed');
 end
 
 return
@@ -48,9 +48,9 @@ g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' Test 3 passed'); 
+  disp(' Test 3 passed');
 else
-  disp(' Test 3 failed'); 
+  disp(' Test 3 failed');
 end
 
 %% test 4 - final f_theta test
@@ -60,9 +60,9 @@ g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' Test 4 passed'); 
+  disp(' Test 4 passed');
 else
-  disp(' Test 4 failed'); 
+  disp(' Test 4 failed');
 end
 
 %% test 5 - f_phi1 test
@@ -70,16 +70,16 @@ end
 odf = fibreODF(Miller(0,1,0,cs),vector3d.Y,'halfwidth',40*degree);
 fodf = FourierODF(odf);
 
-ori = orientation('euler',omega,89.9999*degree,0*degree,cs,'ABG');
+ori = orientation.byEuler(omega,89.9999*degree,0*degree,cs,'ABG');
 
 %odf.grad(rot)
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' f_phi1 test passed'); 
+  disp(' f_phi1 test passed');
 else
-  disp(' f_phi1 test failed'); 
+  disp(' f_phi1 test failed');
 end
 
 
@@ -88,16 +88,16 @@ end
 odf = fibreODF(Miller(0,1,0,cs),vector3d.Y,'halfwidth',40*degree);
 fodf = FourierODF(odf);
 
-ori = orientation('euler',0,89.9999*degree,omega,cs,'ABG');
+ori = orientation.byEuler(0,89.9999*degree,omega,cs,'ABG');
 
 %odf.grad(rot)
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' f_phi2 test passed'); 
+  disp(' f_phi2 test passed');
 else
-  disp(' f_phi2 test failed'); 
+  disp(' f_phi2 test failed');
 end
 
 
@@ -116,9 +116,9 @@ g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' Test 6 passed'); 
+  disp(' Test 6 passed');
 else
-  disp(' Test 6 failed'); 
+  disp(' Test 6 failed');
 end
 
 %% test 6 - f_phi1 - f_phi_2 test
@@ -133,9 +133,9 @@ g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));
 
 if max(norm(g1-g2)) < 1e-2
-  disp(' Test 6 passed'); 
+  disp(' Test 6 passed');
 else
-  disp(' Test 6 failed'); 
+  disp(' Test 6 failed');
 end
 
 %%
@@ -174,10 +174,10 @@ fodf = FourierODF(odf)
 omega = 50*degree;
 %omega = linspace(0,179)*degree;
 %ori = orientation('axis',vector3d(0,1,100),'angle',omega,cs);
-%ori = orientation('euler',0*degree,0.01*degree,omega,cs,'ABG');
+%ori = orientation.byEuler(0*degree,0.01*degree,omega,cs,'ABG');
 
 % f_phi1 test with cos(Phi) == 0 --> ok
-ori = orientation('euler',omega,89.9999*degree,30*degree,cs,'ABG')
+ori = orientation.byEuler(omega,89.9999*degree,30*degree,cs,'ABG')
 
 %%
 % f_phi2 test with cos(Phi) == 1
@@ -189,12 +189,12 @@ omega = 80*degree
 odf = fibreODF(Miller(0,1,0,cs),vector3d.Z,'halfwidth',40*degree);
 fodf = FourierODF(odf)
 
-%ori = orientation('euler',0*degree,omega,[ 90]*degree,cs,'ABG');
+%ori = orientation.byEuler(0*degree,omega,[ 90]*degree,cs,'ABG');
 
 %ori = orientation.rand(100,cs);
 
-ori = orientation('euler',0*degree,90*degree,45*degree,cs,'ABG');
-%ori = orientation('euler',10*degree,80*degree,[ 90]*degree,cs,'ABG');
+ori = orientation.byEuler(0*degree,90*degree,45*degree,cs,'ABG');
+%ori = orientation.byEuler(10*degree,80*degree,[ 90]*degree,cs,'ABG');
 
 g2 = fodf.grad(ori(:))
 g1 = odf.grad(ori(:))
@@ -226,7 +226,7 @@ g2 = odf2.grad(ori3,'check')
 
 %plot([norm(g1-g2)])
 plot([g1.z , g2.z]) % x anfangs ok dann zu schnell negativ
-plot([g1.y,g2.y])   % y - sollte konstant 0 sein 
+plot([g1.y,g2.y])   % y - sollte konstant 0 sein
 plot([g2.z,g1.z])  % z - faktor 4 zu groß
 fodf.eval(ori)
 odf.eval(ori)

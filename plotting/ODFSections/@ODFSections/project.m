@@ -27,12 +27,12 @@ v = repcell(vector3d,length(sec),1);
 
 % ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
-  
+
   for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
     v{i} = axis(o.subSet(ind(:,i)));
   end
-  
+
   if nargout > 1 && check_option(varargin,'data')
     dat = get_option(varargin,'data');
     if ~isempty(dat)
@@ -59,10 +59,10 @@ if strcmpi(type,'omega')
   if hpos > 0
     h = varargin{hpos}(1);
   else
-    h = Miller(0,0,1,o.CS); 
+    h = Miller(0,0,1,o.CS);
   end
   [alpha,beta] = polar(h);
-  q = q*rotation('Euler',beta,alpha,0,'ABG');
+  q = q*rotation.byEuler(beta,alpha,0,'ABG');
 end
 
 [e1,e2,e3] = Euler(q,convention);
@@ -105,9 +105,9 @@ ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
 % construct output
 % TODO check inside?
-for i = 1:size(sec,2)  
+for i = 1:size(sec,2)
   th = e2(ind2(:,i));
-  rh = mod(rho(ind2(:,i)),2*pi);  
+  rh = mod(rho(ind2(:,i)),2*pi);
   v{i} = vector3d('polar',th,rh,varargin{:});
 end
 
@@ -116,7 +116,7 @@ if nargout > 1 && check_option(varargin,'data')
   dat = get_option(varargin,'data');
   if ~isempty(dat)
     dat = repmat(dat,length(o.CS),length(o.SS));
-    
+
     dat = dat(ind);
     for i = 1:size(sec,2)
       data{i} = dat(ind2(:,i));

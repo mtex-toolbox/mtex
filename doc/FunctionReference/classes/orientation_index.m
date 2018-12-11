@@ -12,9 +12,9 @@
 % crystal coordinate system. Since the crystal coordinate system and the
 % specimen coordinate system are well defined only up to crystal symmetry
 % and specimen symmetry, an orientation is in general represented by a class
-% of crystallographically equivalent rotations. In MTEX the class *orientation* 
-% is an inheritance of the class <rotation_index.html rotation>. 
-% In particular, every function that is defined for a rotation is also 
+% of crystallographically equivalent rotations. In MTEX the class *orientation*
+% is an inheritance of the class <rotation_index.html rotation>.
+% In particular, every function that is defined for a rotation is also
 % available for an orientation.
 %
 %% SUB: Defining a Crystal Orientation
@@ -29,7 +29,7 @@ ss = specimenSymmetry('orthorhombic');
 %
 % Now a crystal orientation to a certain <rotation_index.html rotation>
 
-rot = rotation('Euler',30*degree,50*degree,10*degree);
+rot = rotation.byEuler(30*degree,50*degree,10*degree);
 
 %%
 % is defined by
@@ -40,7 +40,7 @@ o = orientation(rot,cs,ss)
 % In order to streamline the definition the arguments to define the
 % rotation can be directly pass to define a orientation:
 
-o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
+o = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
 
 %%
 % Accordingly parameterisations of rotations are also available for
@@ -85,7 +85,7 @@ h = Miller(1,0,0,cs)
 %%
 % be a certain crystal direction and
 
-o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
+o = orientation.byEuler(90*degree,90*degree,0*degree,cs,ss)
 
 %%
 % a crystal orientation. Then the alignment of this crystal direction with
@@ -103,8 +103,8 @@ o \ r
 %
 % Let
 
-o = orientation('Euler',90*degree,0,0,cs,ss);
-rot = rotation('Euler',0,60*degree,0);
+o = orientation.byEuler(90*degree,0,0,cs,ss);
+rot = rotation.byEuler(0,60*degree,0);
 
 %%
 % be a crystal orientation and a rotation of the specimen coordinate

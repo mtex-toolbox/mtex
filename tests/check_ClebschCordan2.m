@@ -4,7 +4,7 @@
 %% the reference
 
 % some arbitrary rotation
-g = rotation('Euler',-72*degree,88*degree,134*degree);
+g = rotation.byEuler(-72*degree,88*degree,134*degree);
 
 % the rotation matrix
 R = matrix(g);

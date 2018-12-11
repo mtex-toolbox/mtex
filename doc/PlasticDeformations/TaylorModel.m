@@ -1,5 +1,5 @@
 %% Taylor Model
-% 
+%
 %
 %%
 %
@@ -8,7 +8,7 @@
 %
 %% Contents
 
-%% 
+%%
 
 % display pole figure plots with RD on top and ND west
 plotx2north
@@ -22,7 +22,7 @@ pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
 
 setMTEXpref('pfAnnotations',pfAnnotations);
 
-%% Set up 
+%% Set up
 % consider cubic crystal symmetry
 cs = crystalSymmetry('432');
 
@@ -34,7 +34,7 @@ q = 0;
 epsilon = strainTensor(diag([1 -q -(1-q)]))
 
 % define a crystal orientation
-ori = orientation('Euler',0,30*degree,15*degree,cs)
+ori = orientation.byEuler(0,30*degree,15*degree,cs)
 
 % compute the Taylor factor
 [M,b,mori] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
@@ -64,7 +64,7 @@ sP.plot(M,'smooth')
 mtexColorbar
 
 
-%% The orientation dependence of the rotation value 
+%% The orientation dependence of the rotation value
 % Compare Fig. 8 of the above paper
 
 sP.plot(mori.angle./degree,'smooth')
@@ -80,7 +80,7 @@ sP.plot(mori.angle./degree,'smooth')
 mtexColorbar
 
 %% Most active slip direction
-% Next we consider a real world data set. 
+% Next we consider a real world data set.
 
 mtexdata csl
 
@@ -125,9 +125,9 @@ quiver(grains,sSGrains.trace,'autoScaleFactor',0.5,'displayName','slip plane tra
 hold off
 
 %%
-% plot the most active slip directions 
+% plot the most active slip directions
 % observe that they point all towards the lower hemisphere - why?
-% they do change if q is changed 
+% they do change if q is changed
 
 figure(2)
 plot(sSGrains.b)
@@ -142,14 +142,14 @@ ori = orientation.rand(10000,cs);
 q = 0;
 epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
 
-% 
+%
 numIter = 10;
 progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
   [M,~,mori] = calcTaylor(ori * epsilon ./ numIter, sS.symmetrise,'silent');
-  
+
   % rotate the individual orientations
   ori = ori .* inv(mori);
   progress(sas,numIter);
@@ -172,7 +172,7 @@ mtexColorbar
 setMTEXpref('pfAnnotations',storepfA);
 
 %% Inverse Taylor
-% 
+%
 % Use with care!
 
 oS = axisAngleSections(cs,cs,'antipodal');
@@ -185,4 +185,3 @@ mori = oS.makeGrid;
 %%
 
 plot(oS,M,'contourf')
-

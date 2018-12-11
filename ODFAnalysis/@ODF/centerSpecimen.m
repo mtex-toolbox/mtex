@@ -29,15 +29,15 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %   %Starting with an synthetic odf with orthorhombic symmetry
 %   CS = crystalSymmetry('cubic')
 %   SS = specimenSymmetry('orthorhombic')
-%   ori = [orientation('euler',135*degree,45*degree,120*degree,CS,SS) ...
-%          orientation('euler', 60*degree, 54.73*degree, 45*degree,CS,SS) ...
-%          orientation('euler',70*degree,90*degree,45*degree,CS,SS)...
-%          orientation('euler',0*degree,0*degree,0*degree,CS,SS)];
+%   ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...
+%          orientation.byEuler( 60*degree, 54.73*degree, 45*degree,CS,SS) ...
+%          orientation.byEuler(70*degree,90*degree,45*degree,CS,SS)...
+%          orientation.byEuler(0*degree,0*degree,0*degree,CS,SS)];
 %
 %   odf = unimodalODF(SS*ori);
 %
 %   %we define a rotational displacement
-%   r2 = rotation('euler', 6*degree,4*degree,0*degree)
+%   r2 = rotation.byEuler( 6*degree,4*degree,0*degree)
 %   odf = rotate(odf,r2);
 %   h = [Miller(0,0,1,CS),Miller(0,1,1,CS),Miller(1,1,1,CS)];
 %   plotPDF(odf,h,'antipodal','complete');

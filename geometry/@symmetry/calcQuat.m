@@ -22,13 +22,13 @@ pg = pg(s.id);
 % compute rotations
 switch pg.LaueId
   case 2 % 1
-    rot = {rotation('Euler',0,0,0)};    
+    rot = {rotation.byEuler(0,0,0)};
   case 5 % 211
     rot = {symAxis(a,2)};
   case 8 % 121
     rot = {symAxis(b,2)};
   case 11 % 112
-    rot = {symAxis(c,2)};    
+    rot = {symAxis(c,2)};
   case 16 % 222
     rot = {symAxis(a,2),symAxis(c,2)};
   case 18 % 3
@@ -37,7 +37,7 @@ switch pg.LaueId
     rot = {symAxis(a1,2),symAxis(c,3)};
   case 24 % 312
     rot = {symAxis(m,2),symAxis(c,3)};
-  case 27 % 4    
+  case 27 % 4
     rot = {symAxis(c,4)};
   case 32 % 4/mmm
     rot = {symAxis(a,2),symAxis(c,4)};
@@ -57,7 +57,7 @@ if size(pg.Inversion ,1) == 2
 else
   rot = arrayfun(@(i) rot{i} .* pg.Inversion(i).^(0:length(rot{i})-1) ,...
     1:length(rot),'uniformOutput',false);
-  
+
 end
 
 % store symmetries

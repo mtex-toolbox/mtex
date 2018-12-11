@@ -31,7 +31,7 @@
 % rotation by Euler angles. The following command defines a rotation by its
 % three Bunge Euler angles
 
-o = rotation('Euler',30*degree,50*degree,10*degree)
+o = rotation.byEuler(30*degree,50*degree,10*degree)
 
 
 %%
@@ -41,7 +41,7 @@ o = rotation('Euler',30*degree,50*degree,10*degree)
 % the default Euler angle convention you to specify the convention as an
 % additional parameter, e.g.
 
-o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
+o = rotation.byEuler(30*degree,50*degree,10*degree,'Roe')
 
 
 %%
@@ -122,7 +122,7 @@ o = rotation(q)
 %
 % Let
 
-o = rotation('Euler',90*degree,90*degree,0*degree)
+o = rotation.byEuler(90*degree,90*degree,0*degree)
 
 %%
 % a certain rotation. Then the rotation of the xvector is computed via
@@ -140,8 +140,8 @@ o \ v
 %
 % Let
 
-rot1 = rotation('Euler',90*degree,0,0);
-rot2 = rotation('Euler',0,60*degree,0);
+rot1 = rotation.byEuler(90*degree,0,0);
+rot2 = rotation.byEuler(0,60*degree,0);
 
 %%
 % be two rotations. Then the rotation defined by applying first rotation
@@ -182,14 +182,14 @@ inv(rot)
 % right handed coordinate system as, e.g. mirroring or inversion.
 % In MTEX the inversion is defined as the negative identy rotation
 
-I = - rotation('Euler',0,0,0)
+I = - rotation.byEuler(0,0,0)
 
 %%
 % Note that this is convenient as both groupings of the operations "-" and
 % "*" should give the same result
 
-- (rotation('Euler',0,0,0) * xvector)
-(- rotation('Euler',0,0,0)) * xvector
+- (rotation.byEuler(0,0,0) * xvector)
+(- rotation.byEuler(0,0,0)) * xvector
 
 %%
 % *Mirroring*

@@ -12,10 +12,10 @@ CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
 
 % some component center
-ori = [orientation('euler',135*degree,45*degree,120*degree,CS,SS) ...
-  orientation('euler', 60*degree, 54.73*degree, 45*degree,CS,SS) ...
-  orientation('euler',70*degree,90*degree,45*degree,CS,SS)...
-  orientation('euler',0*degree,0*degree,0*degree,CS,SS)];
+ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...
+  orientation.byEuler( 60*degree, 54.73*degree, 45*degree,CS,SS) ...
+  orientation.byEuler(70*degree,90*degree,45*degree,CS,SS)...
+  orientation.byEuler(0*degree,0*degree,0*degree,CS,SS)];
 
 % with corresponding weights
 c = [.4,.13,.4,.07];
@@ -32,9 +32,9 @@ plotPDF(odf,h,'antipodal','silent','complete')
 % Next we simulated some EBSD data, rotate them and estimate an ODF from
 % the individual orientations.
 
-% define a sample rotation 
-%rot = rotation('euler',0*degree,0*degree,1*degree);
-rot = rotation('euler',15*degree,12*degree,-5*degree);
+% define a sample rotation
+%rot = rotation.byEuler(0*degree,0*degree,1*degree);
+rot = rotation.byEuler(15*degree,12*degree,-5*degree);
 
 
 % Simulate individual orientations and rotate them.
@@ -73,7 +73,7 @@ pf = loadPoleFigure(fname);
 
 plot(pf,'silent')
 
-%% 
+%%
 % In a second step we compute an ODF from the pole figure data
 
 odf = calcODF(pf,'silent')
@@ -81,11 +81,9 @@ odf = calcODF(pf,'silent')
 plotPDF(odf,h,'antipodal','silent')
 
 %%
-% Finally, we detect the orthotropic symmetry axes a1, a2, a3 by 
+% Finally, we detect the orthotropic symmetry axes a1, a2, a3 by
 
 [~,~,a1,a2] = centerSpecimen(odf,yvector)
 a3 = cross(a1,a2)
 
 annotate([a1,a2,a3],'label',{'RD','TD','ND'},'backgroundcolor','w','MarkerSize',8)
-
-

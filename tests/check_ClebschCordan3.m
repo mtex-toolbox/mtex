@@ -4,7 +4,7 @@
 %% the reference
 
 % some arbitrary rotation
-g = rotation('Euler',-72*degree,-88*degree,-134*degree);
+g = rotation.byEuler(-72*degree,-88*degree,-134*degree);
 
 % we want to express the product of two wigner D functions
 D1 = WignerD(g,'order',1);
@@ -37,4 +37,3 @@ C3 = EinsteinSum(CG3,[1 3 -1],D3,[-1 -2],CG3,[2 4 -2])
 a = reshape(matrix(C0 + C1 + C2 + C3),[9,25]) ./ D1D2_ref;
 
 imagesc(real(a))
-

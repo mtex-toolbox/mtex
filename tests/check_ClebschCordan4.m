@@ -4,7 +4,7 @@
 %% the reference
 
 % some arbitrary rotation
-g = rotation('Euler',-72*degree,-88*degree,-134*degree);
+g = rotation.byEuler(-72*degree,-88*degree,-134*degree);
 
 % we want to express the product of two wigner D functions
 D2 = WignerD(g,'order',2);
@@ -48,7 +48,7 @@ mtexColorMap white2black
 %% the reference
 
 % some arbitrary rotation
-g = rotation('Euler',-72*degree,-88*degree,-134*degree);
+g = rotation.byEuler(-72*degree,-88*degree,-134*degree);
 
 % we want to express the product of four wigner D functions
 D1 = WignerD(g,'order',1);
@@ -62,7 +62,7 @@ T4D1_ref = T2D1_ref(:) * T2D1_ref(:).';
 
 T4D1 = tensor(zeros(repmat(3,1,8)));
 for J = 0:4
-  
+
   DJ = WignerD(g,'order',J);
 
   CGJ = tensor(zeros([repmat(3,1,8),2*J+1,2*J+1]),'rank',10);
@@ -82,12 +82,11 @@ for J = 0:4
     end
   end
   T4D1 = T4D1 + EinsteinSum(CGJ,[1:8 -1 -2],DJ,[-1 -2])
-  
-end  
+
+end
 
 %%
 
 a = reshape(double(T4D1),[3*3*3*3,3*3*3*3]) ./ T4D1_ref;
 
 imagesc(real(a))
-

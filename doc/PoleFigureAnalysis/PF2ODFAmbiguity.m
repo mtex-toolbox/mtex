@@ -16,7 +16,7 @@
 % crystal symmetry. From a theoretical point of view, the number of pole
 % figures should be at a level with the square root of the number of pole
 % points in each pole figure. This is of course far from experimentally
-% possible. 
+% possible.
 %
 % Let's demonstrate the ambiguity due to too few pole figures at the example
 % of two orthorhombic ODFs. The first ODF has three modes at the positions
@@ -82,7 +82,7 @@ plot(pf)
 
 
 %%
-% 2. step: reconstruct an ODF 
+% 2. step: reconstruct an ODF
 odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
@@ -92,7 +92,7 @@ plot(odf,'sigma')
 % first and the second ODF. Actually, any mixture of the two initial ODFs
 % would have been a correct answer. However, the ODF reconstructed by the
 % MTEX algorithm can be seen as the ODF which is closest to the uniform
-% distribution among all admissible ODFs. 
+% distribution among all admissible ODFs.
 
 %%
 % Finally, we increase the number of pole figures by five more crystal
@@ -102,7 +102,7 @@ plot(odf,'sigma')
 h = [h,Miller({0,1,2},{2,0,1},{2,1,0},{0,2,1},{1,0,2},cs)];
 pf = calcPoleFigure(odf1,h,'upper');
 
-% 2. step: reconstruct an ODF 
+% 2. step: reconstruct an ODF
 odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
@@ -114,7 +114,7 @@ plot(odf,'sigma')
 % 1. step: simulate pole figure data for all crystal directions
 pf = calcPoleFigure(odf1,h,'upper');
 
-% 2. step: reconstruct an ODF 
+% 2. step: reconstruct an ODF
 odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
@@ -128,11 +128,11 @@ plot(odf,'sigma')
 cs = crystalSymmetry('-43m')
 
 %%
-% and two rotations 
+% and two rotations
 
-ori1 = orientation('euler',30*degree,60*degree,10*degree,cs)
+ori1 = orientation.byEuler(30*degree,60*degree,10*degree,cs)
 
-ori2 = orientation('euler',30*degree,60*degree,100*degree,cs)
+ori2 = orientation.byEuler(30*degree,60*degree,100*degree,cs)
 
 h = Miller({1,0,0},{1,1,0},{1,1,1},{1,2,3},cs);
 plotPDF(ori1,h,'MarkerSize',12)
@@ -348,8 +348,8 @@ pf = calcPoleFigure(SantaFe,h,'antipodal');
 plot(pf,'MarkerSize',5)
 mtexColorMap LaboTeX
 
-%% 
-% and compute two ODFs from them 
+%%
+% and compute two ODFs from them
 
 % one with Ghost Correction
 rec = calcODF(pf,'silent')
@@ -402,4 +402,3 @@ plotFourier(rec2,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 legend({'true ODF','with ghost correction','without ghost correction'})
 % next plot command overwrites plot
 hold off
-

@@ -7,15 +7,15 @@ function a = axis(o1,varargin)
 %   csHex = crystalSymmetry('hexagonal')
 %
 %   % define two orientations
-%   o1 = orientation('euler',csCube)
-%   o2 = orientation('euler',csHex)
+%   o1 = orientation.byEuler(csCube)
+%   o2 = orientation.byEuler(csHex)
 %
 %   % the misorientation axis with respect to the specimen coordinate
 %   % system is computed by
-%   a = axis(o1,o2)  
+%   a = axis(o1,o2)
 %
 %   % the misorientation axis with respect to csCube is computed by
-%   a = axis(inv(o1)*o2,csCube)  
+%   a = axis(inv(o1)*o2,csCube)
 %
 %   % the misorientation axis with respect to csHex is computed by
 %   a = axis(inv(o1)*o2,csHex)
@@ -36,21 +36,21 @@ function a = axis(o1,varargin)
 % axis(ori1,ori2) should return the misorientation axis in specimen
 % coordinates
 if nargin >= 2 && isa(varargin{1},'orientation')
-  
+
   o2 = varargin{1};
-    
+
   [l,d,r] = factor(o1.CS,o2.CS);
   l = l * d;
   % we are looking for l,r from L and R such that
   % angle(o1*l , o2*r) is minimal
-  % this is equivalent to 
+  % this is equivalent to
   % angle(inv(o2)*o1 , r*inv(l)) is minimal
 
   q1 = quaternion(o1);
   q2 = quaternion(o2);
   q21 = inv(q2).*q1; %#ok<*MINV>
   rl = r * inv(l);
-    
+
   d = -inf;
   irMax = zeros(size(q21));
   ilMax = zeros(size(q21));
@@ -66,36 +66,36 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
   % this projects q21 into the fundamental zone
   q = reshape(inv(r(irMax)),size(q21)) .* q21 .* reshape(l(ilMax),size(q21));
-    
+
   % now the misorientation axis is given by in specimen coordinates is
-  % given by o2 * l(il) * q.axis or equivalently by  
+  % given by o2 * l(il) * q.axis or equivalently by
   a = q2 .* r(irMax) .* axis@quaternion(q);
 
-  a.antipodal = check_option(varargin,'antipodal');     
- 
+  a.antipodal = check_option(varargin,'antipodal');
+
 else
-   
+
   % project to Fundamental region to get the axis with the smallest angle
   if ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);
   end
-  
+
   a = axis@quaternion(o1);
- 
+
   % crystal symmetry specified -> apply it
-  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')  
-    
-    cs = varargin{1};    
-    
+  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
+
+    cs = varargin{1};
+
   else  % no symmetry specified - take the disjoint
-    
+
     cs = properGroup(disjoint(o1.CS,o1.SS));
-    
+
   end
-  
+
   if o1.antipodal, cs = cs.Laue; end
-    
-  % add symmetry to axis  
+
+  % add symmetry to axis
   if isa(cs,'crystalSymmetry'), a = Miller(a,cs); end
- 
+
 end

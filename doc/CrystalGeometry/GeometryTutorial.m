@@ -34,7 +34,7 @@ plot([v,w])
 
 %%
 % *Definition*
-rot = rotation('Euler',10*degree,20*degree,30*degree);
+rot = rotation.byEuler(10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
 rot = rotation('map',xvector,yvector,vector3d(0,1,1),zvector);
 rot = rotation('quaternion',0.5,0.5,0.5,0.5);
@@ -73,7 +73,7 @@ CS = loadCIF('quartz')
 % *Basic Functions*
 
 symmetrise(xvector,SS)
-symmetrise(rotation('Euler',0,0,0),CS,SS)
+symmetrise(rotation.byEuler(0,0,0),CS,SS)
 rotation(CS)
 [alpha_max,bet_max,gamma_max] = fundamentalRegionEuler(CS,SS)
 
@@ -110,7 +110,7 @@ plot([h1,h2],'all','labeled','backGroundColor','w')
 % *Definition*
 
 ori = orientation(rot,CS,SS)
-ori = orientation('Euler',alpha,beta,gamma,CS,SS)
+ori = orientation.byEuler(alpha,beta,gamma,CS,SS)
 ori = orientation('brass',crystalSymmetry('cubic'))
 ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
 
@@ -165,7 +165,7 @@ plot([h1 h2 h3],'all','antipodal')
 % degree. Give the Euler angles of all symmetrically equivalent
 % orientations!
 
-ori = orientation('Euler',30*degree,90*degree,90*degree,CS);
+ori = orientation.byEuler(30*degree,90*degree,90*degree,CS);
 symmetrise(ori)
 
 %%

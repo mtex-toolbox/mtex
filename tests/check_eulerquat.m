@@ -9,7 +9,7 @@ q = [q,-q];
 
 [alpha,beta,gamma] = Euler(q,'Bunge');
 
-qq = rotation('Euler',alpha,beta,gamma,'Bunge');
+qq = rotation.byEuler(alpha,beta,gamma,'Bunge');
 
 e  = abs(dot(q,qq));
 if mean(e) < 0.999
@@ -23,11 +23,11 @@ return
 
 e = 0;
 for i = 1:length(q)
-  
+
   q1 = q(i);
   q2 = mat2quat(matrix(q(i)));
   e(i) = abs(dot(q2,q1));
-  
+
 end
 
 qq = mat2quat(matrix(q));
@@ -39,4 +39,3 @@ if mean(e) < 0.9
 else
   disp('matrix <-> quaternion conversion is ok!')
 end
-  

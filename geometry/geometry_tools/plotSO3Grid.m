@@ -15,7 +15,7 @@ function [S3G,S2G,sec,scaling] = plotSO3Grid(CS,SS,varargin)
 % Output
 %  S3G - @SO3Grid
 %  S2G,axes - list of @vector3d, the plotting directions
-%  phi2 - double 
+%  phi2 - double
 %  scaling - double
 %
 
@@ -33,7 +33,7 @@ if check_option(varargin,{'axisAngle','angle'})
 
   for i = 1:length(sec)
     S2G{i} = plotS2Grid(sym.Laue.fundamentalSector('angle',sec(i)),varargin{:}); %#ok<AGROW>
-    S3G{i} = orientation('axis',S2G{i},'angle',sec(i)); %#ok<AGROW>    
+    S3G{i} = orientation('axis',S2G{i},'angle',sec(i)); %#ok<AGROW>
   end
 
   S3G = [S3G{:}];
@@ -57,35 +57,35 @@ conventions = {...
 
 % sectioning given
 if check_option(varargin,[sectypes{:}])
-  
-  sectype = get_flag(varargin,[sectypes{:}]);  
+
+  sectype = get_flag(varargin,[sectypes{:}]);
   convention = cellfun(@(x) any(strcmpi(x,sectype)),sectypes);
   convention = conventions{convention}{1};
-  
+
 else % convention given
-  
-  convention = get_flag(varargin,[conventions{:}],'Bunge');  
+
+  convention = get_flag(varargin,[conventions{:}],'Bunge');
   sectype = cellfun(@(x) any(strcmpi(x,convention)),conventions);
   sectype = sectypes{sectype}{1};
-    
+
 end
 
 % get bounds
 [max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
-  
+
 % make the sectioning variable to be the last one
 if any(strcmpi(sectype,{'alpha','phi1','Psi'}))
   dummy = max_sec; max_sec = max_rho; max_rho = dummy;
 elseif strcmpi(sectype,'omega')
   max_sec = 2*pi;
 end
-  
+
 % sections
 nsec = get_option(varargin,'sections',min(18,round(max_sec/10/degree)));
 sec = linspace(0,max_sec,nsec+1); sec(end) = [];
 sec = get_option(varargin,sectype,sec,'double');
 nsec = length(sec);
-  
+
 % non sectioning angles
 sR = sphericalRegion('maxTheta',max_theta,'maxRho',max_rho);
 S2G = plotS2Grid(sR,varargin{:});
@@ -105,8 +105,8 @@ switch lower(sectype)
   case {'sigma','omega'}
     [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
 end
-    
+
 % define grid
-S3G = orientation('Euler',sec_angle,theta,rho,convention,CS,SS);
+S3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
 
 end

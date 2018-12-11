@@ -3,7 +3,7 @@ function v = rotate(v,q)
 %
 % Syntax
 %   v = rotate(v,20*degree) % rotation about the z-axis
-%   rot = rotation('Euler',10*degree,20*degree,30*degree)
+%   rot = rotation.byEuler(10*degree,20*degree,30*degree)
 %   v = rotate(v,rot)
 %
 % Description
@@ -27,11 +27,11 @@ s = 2*(x.*b + y.*c + z.*d);
 
 a_2 = 2*a;
 a_n  = a.^2 - n;
-  
+
 v.x = a_2.*(c.* z - y.*d) + s.*b + a_n.*x;
 v.y = a_2.*(d.* x - z.*b) + s.*c + a_n.*y;
 v.z = a_2.*(b.* y - x.*c) + s.*d + a_n.*z;
-  
+
 if isa(q,'rotation')
   if numel(q.i)>1
     i = logical(q.i);
@@ -47,11 +47,11 @@ end
 
 % if output has symmetry set it to Miller
 if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
-   
+
   v = Miller(v,q.SS);
-  
+
 else % convert to vector3d
 
   v = vector3d(v);
-  
+
 end

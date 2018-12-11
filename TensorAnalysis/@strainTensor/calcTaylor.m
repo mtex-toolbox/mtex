@@ -20,7 +20,7 @@ function [M,b,mori,spin] = calcTaylor(eps,sS,varargin)
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')
-%   ori = orientation('Euler',0,30*degree,15*degree,cs)
+%   ori = orientation.byEuler(0,30*degree,15*degree,cs)
 %
 %   % define a slip system
 %   sS = slipSystem.fcc(cs)

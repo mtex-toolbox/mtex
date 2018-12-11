@@ -49,25 +49,25 @@ if ~check_option(varargin,'center'), maxGamma = min(maxGamma,maxAngle);end
 if check_option(varargin,'points')
 
   points = get_option(varargin,'points');
-  
+
   switch CS.LaueName  % special case: cubic symmetry
     case 'm-3'
       points = 3*points;
     case 'm-3m'
       points = 2*points;
   end
-  
+
   % calculate number of subdivisions for the angles alpha,beta,gamma
   res = 2/(points/( maxBeta*maxGamma))^(1/3);
-  
+
   if  maxAngle < pi * 2 && maxAngle < maxBeta
     res = res * maxAngle; % bug: does not work properly for all syms
   end
-  
+
 else
-  
+
   res = get_option(varargin,'resolution',5*degree);
-  
+
 end
 
 alphabeta = equispacedS2Grid('resolution',res,...
@@ -90,7 +90,7 @@ gamma  = dGamma+repmat(gamma.',1,length(alphabeta));
 alpha = repmat(reshape(alpha,1,[]),ap2,1);
 beta  = repmat(reshape(beta,1,[]),ap2,1);
 
-ori = orientation('Euler',alpha,beta,gamma,'ZYZ',CS,SS,varargin{:});
+ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',CS,SS,varargin{:});
 
 gamma = S1Grid(gamma,-maxGamma+dGamma(1,:),...
   maxGamma+dGamma(1,:),'periodic','matrix');
@@ -104,12 +104,12 @@ ind = fundamental_region(ori,CS,specimenSymmetry);
 if nnz(ind) ~= 0
   % eliminate those rotations
   ori(ind) = [];
-  
+
   % eliminate from index set
   gamma = subGrid(gamma,~ind);
   alphabeta  = subGrid(alphabeta,GridLength(gamma)>0);
   gamma(GridLength(gamma)==0) = [];
-  
+
 end
 
 
@@ -142,12 +142,12 @@ c = {};
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
 switch cs.LaueName
-  
+
   case   {'m-3m','m-3'}
-    
+
     c{end+1}.v = vector3d([1 1 1 1 -1 -1 -1 -1],[1 1 -1 -1 1 1 -1 -1],[1 -1 1 -1 1 -1 1 -1]);
     c{end}.h = sqrt(3)/3;
-    
+
     if strcmp(cs.LaueName,'m-3m')
       c{end+1}.v = vector3d([1 -1 0 0 0 0],[0 0 1 -1 0 0],[0 0 0 0 1 -1]);
       c{end}.h = sqrt(2)-1;
@@ -158,7 +158,7 @@ switch ss.LaueName
   case 'mmm'
    c{end+1}.v = vector3d([-1 0],[0 -1],[0 0]);
    c{end}.h = 0;
-end 
+end
 
 % find rotation not part of the fundamental region
 rodrigues = Rodrigues(q); clear q;

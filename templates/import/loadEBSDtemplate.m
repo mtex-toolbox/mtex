@@ -32,5 +32,5 @@ ebsd = loadEBSD(fname,CS,'interface',{interface},{Z},{options});
 
 %% Correct Data
 
-rot = rotation('Euler',{phi1},{Phi},{phi2});
+rot = rotation.byEuler({phi1},{Phi},{phi2});
 ebsd = rotate(ebsd,rot,{rotationOption});

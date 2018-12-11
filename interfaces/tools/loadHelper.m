@@ -29,19 +29,19 @@ loader.getColumnData = @getColumnData;
 
 
   function b = hasColumn(colname)
-    
+
     b = opts.hasMandatory(colname);
-    
+
   end
 
   function d = getColumnData(colname)
-    
+
     d =  data(:,opts.getColumns(colname));
-    
+
   end
 
   function q = getRotations()
-    
+
     conventions = {...
       {'Euler 1' 'Euler 2' 'Euler 3'};
       {'phi1','Phi','phi2'};
@@ -52,111 +52,111 @@ loader.getColumnData = @getColumnData;
       {'Quat real','Quat i','Quat j','Quat k'}; };
     convNames  = {...
       'Euler','Bunge', 'Matthies', 'Roe', 'Kocks', 'Canova', 'Quaternion' };
-    
+
     type = find(cellfun(@(x) opts.hasMandatory(x),conventions),1,'first');
-    
+
     if ~isempty(type)
-      
+
       cols = opts.getColumns(conventions{type});
-      
+
       opts.ColumnNames = delete_option(opts.ColumnNames, ...
         strrep(lower(conventions{type}),' ',''));
-      
+
       %extract options
       dg = opts.Unit;
-      
+
       % eliminate nans
       if ~check_option(opts.Options,'keepNaN')
         data(any(isnan(data(:,cols)),2),:) = [];
       end
-      
+
       % eliminate rows where angle is 4*pi
       ind = abs(data(:,cols(1))*dg-4*pi)<1e-3;
       data(ind,:) = [];
-      
+
       if type <=6
         flag = extract_option([convNames{type} opts.Options],convNames);
-        q = rotation('Euler',data(:,cols(1))*dg,data(:,cols(2))*dg,data(:,cols(3))*dg,...
+        q = rotation.byEuler(data(:,cols(1))*dg,data(:,cols(2))*dg,data(:,cols(3))*dg,...
           flag{:});
       else
         q = rotation('quaternion',...
           data(:,cols(1)),data(:,cols(2)),data(:,cols(3)),data(:,cols(4)));
       end
-      
+
       if check_option(opts.Options,{'passive','passive rotation'})
         q = inv(q);
       end
-      
+
     else
-      
+
       error('You should at least specify three Euler angles or four quaternion components!');
-      
+
     end
-    
+
   end
 
   function v = getVector3d()
-    
+
     conventions = {...
       {'Polar Angle' 'Azimuth Angle'};
       {'Colatitude','Longitude'};
       {'Colattitude','Longitude'}; % for historical reasons
-      {'Latitude','Longitude'};   
+      {'Latitude','Longitude'};
       {'Lattitude','Longitude'};   % for historical reasons
       {'x','y','z'};};
-    
+
     type = find(cellfun(@(x) opts.hasMandatory(x),conventions),1,'first');
-    
-    
+
+
     if ~isempty(type)
-      
+
       cols = opts.getColumns(conventions{type});
-      
+
       opts.ColumnNames = delete_option(opts.ColumnNames, ...
         strrep(lower(conventions{type}),' ',''));
-      
+
       % eliminate nans
       data(any(isnan(data(:,cols)),2),:) = [];
-      
+
       % specimen directions
       if type == 6  % xyz
-        
+
         v = vector3d(data(:,cols).');
-        
+
       else % spherical
-        
+
         theta = data(:,cols(1))*opts.Unit;
         rho   = data(:,cols(2))*opts.Unit;
-        
+
         if type >= 4 % latitude
           theta = pi/2 - theta;
         end
-        
+
         v = vector3d('polar',theta,rho);
-        
+
       end
-      
+
     else
-      
+
       error('MTEX:MISSINGDATA',...
         'You should at least specify the columns of the spherical of cartesian coordinates');
-      
+
     end
-    
+
   end
 
   function options = getOptions(varargin)
-    
+
     opts.ColumnNames = delete_option(opts.ColumnNames,...
       get_option(varargin,'ignoreColumns',[]));
-    
+
     optdata = getColumnData(opts.ColumnNames);
-    
+
     options = [opts.ColumnNames(:)';
       mat2cell(optdata,size(optdata,1),ones(1,size(optdata,2)))];
-    
+
     options = struct(options{:});
-    
+
   end
 
 
@@ -194,10 +194,9 @@ params.Unit              = unit;
 params.Options           = varargin;
 
   function str = stripws(str)
-    
+
     str = strrep(str,' ','');
-    
+
   end
 
 end
-

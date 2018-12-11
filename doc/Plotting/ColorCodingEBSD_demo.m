@@ -24,10 +24,10 @@
 % # the whole colorspace should be used for full contrast
 % # if the orientations are concentrated in a small region of the
 % orientation space, the colorspace should be exhaust by this region
-% 
+%
 % It should be noted that it is impossible to have all the 4 points mentioned above
-% represented by a single colorcoding. This is mainly due the fact that 
-% the orientation space is three dimensional and the colorspace is only two dimensional, 
+% represented by a single colorcoding. This is mainly due the fact that
+% the orientation space is three dimensional and the colorspace is only two dimensional,
 % i.e., there are too few colors to cover the whole orientation space in an unambiguous
 % way. Hence, some compromises have to be accepted and some assumptions have to be made.
 %
@@ -47,7 +47,7 @@ oM = BungeColorKey(cs)
 %%
 % Given an arbitrary orientation
 
-ori = orientation('Euler',10*degree,20*degree,0*degree)
+ori = orientation.byEuler(10*degree,20*degree,0*degree)
 
 %%
 % we can compute the corresponding color as rgb values by
@@ -70,7 +70,7 @@ plot(oM,'sections',6,'phi2')
 plot(oM,'sections',6,'sigma')
 
 
-%% Colorcoding according to inverse pole figure 
+%% Colorcoding according to inverse pole figure
 %
 % The standard way of mapping orientations to colors is based on inverse
 % pole figures. The following orientation map assigns a color to each
@@ -171,7 +171,7 @@ oM = ipfHSVKey(ebsd('Forsterite'))
 %
 plot(oM)
 
-%% 
+%%
 % We observe that the fundamental sector is twice as large as for the
 % original crystal symmetry. Furthermore, the measured Euler angles are
 % not symmetric within this enlarged fundamental sector
@@ -190,4 +190,3 @@ hold off
 color = oM.orientation2color(ebsd('Forsterite').orientations);
 
 plot(ebsd('Forsterite'),color)
-

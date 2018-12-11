@@ -31,9 +31,9 @@ DSO3.tetra([5,DSO3.tetraNeighbour(5,:)],:)
 
 %% check find routine
 
-%[ind,bario] = DSO3.findTetra(orientation('Euler',10*degree,20*degree,5*degree,cs))
+%[ind,bario] = DSO3.findTetra(orientation.byEuler(10*degree,20*degree,5*degree,cs))
 
-[ind,bario] = DSO3.findTetra(orientation('Euler',317*degree,20*degree,0*degree,cs))
+[ind,bario] = DSO3.findTetra(orientation.byEuler(317*degree,20*degree,0*degree,cs))
 
 %%
 
@@ -126,13 +126,13 @@ cs = crystalSymmetry('m-3m');
 
 
 for k = 1:numel(cs)
-  
-  
+
+
   q1 = cs(k)*q;
-  
+
 end
 
-%% define an 
+%% define an
 
 cs = crystalSymmetry('O');
 
@@ -176,7 +176,7 @@ DSO3 = DelaunaySO3(ori)
 
 %%
 
-odf = unimodalODF(orientation('Euler',10*degree,0,0,cs),'halfwidth',20*degree)
+odf = unimodalODF(orientation.byEuler(10*degree,0,0,cs),'halfwidth',20*degree)
 
 %%
 

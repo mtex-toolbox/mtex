@@ -6,7 +6,7 @@ function ori = transformReferenceFrame(ori,cs1,cs2)
 % a, b, c. Typical alignments are x||a and z||c* or x||a* and z||c. This
 % function allows to change the aligment of the reference frame while NOT
 % changing the orientation.
-% 
+%
 % Syntax
 %   ori = ori.transformReferenceFrame(cs)
 %   mori = mori.transformReferenceFrame(cs1,cs2)
@@ -23,7 +23,7 @@ if ~isa(cs1,'crystalSymmetry')
   ori.CS = cs1;
   return
 end
-   
+
 % basis transformation into reference frame
 M = transformationMatrix(ori.CS,cs1);
 
@@ -41,7 +41,7 @@ ori = orientation(rot,cs1,ori.SS);
 % this is some testing code
 % cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
 % cs2 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
-% o = orientation('Euler',30*degree,50*degree,120*degree,cs1)
+% o = orientation.byEuler(30*degree,50*degree,120*degree,cs1)
 % o * Miller(1,0,0,cs1)
 % o2 = transformReferenceFrame(o,cs2)
 % o2 * Miller(1,0,0,cs2)

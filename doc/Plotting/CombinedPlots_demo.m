@@ -1,6 +1,6 @@
 %% Combined Plots
 % Explains how to combine several plots, e.g. plotting on the
-% top of an inverse pole figure some important crystal directions. 
+% top of an inverse pole figure some important crystal directions.
 %
 %% Open in Editor
 %
@@ -26,9 +26,9 @@ hold off
 %%
 % let's simulate some EBSD data
 cs = crystalSymmetry('-3m');
-odf = unimodalODF(orientation('euler',0,0,0,cs));
+odf = unimodalODF(orientation.byEuler(0,0,0,cs));
 ori = calcOrientations(odf,100);
-ori_rotated = calcOrientations(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
+ori_rotated = calcOrientations(rotate(odf,rotation.byEuler(60*degree,60*degree,0*degree)),100);
 
 %%
 % plot them as a scatter plot in axis / angle parametrized orientation
@@ -122,4 +122,3 @@ axesPos = subplot(1,3,3);
 
 % plot the difference pole figure at this position
 plotDiff(odf,pf({1}),'parent',axesPos)
-

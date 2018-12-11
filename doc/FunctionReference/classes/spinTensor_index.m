@@ -1,12 +1,12 @@
 %% Spin Tensors
 %
-% 
+%
 %% Spin Tensors as Ininitesimal Changes of Rotations
-% 
+%
 % Spin tensors are skew symmetric tensors that can be used to small
 % rotational changes. Lets consider an arbitrary reference rotation
 
-rot_ref = rotation('Euler',10*degree,20*degree,30*degree)
+rot_ref = rotation.byEuler(10*degree,20*degree,30*degree)
 
 %%
 % and pertube it by a rotating about the axis (123) and angle delta. Since
@@ -20,9 +20,9 @@ rot_left = rot_ref * rotation('axis',vector3d(1,2,3),'angle',delta);
 %%
 % We may now ask for the first order Taylor coefficients of the pertubation
 % as delta goes to zero which we find by the formula
-% 
+%
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta}
-% 
+%
 
 T_right = (rot_right.matrix - rot_ref.matrix)./delta
 T_left = (rot_left.matrix - rot_ref.matrix)./delta
@@ -41,7 +41,7 @@ S_left_L =  matrix(inv(rot_ref)) * T_left
 S_left_R = T_left * matrix(inv(rot_ref))
 
 
-%% 
+%%
 % A scew symmetric 3x3 matrix |S| is essentially determined by its entries
 % $S_{21}$, $S_{31}$ and $S_32$. Writing these values as a vector
 % $(S_32,-S_{31},S_{21})$ we obtain for the matrices |S_right_R| and
@@ -64,13 +64,13 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 %
 % The above definition of the spin tensor works only well if the
 % pertupation rotation has small rotational angle. For large pertubations
-% the matrix logarithm 
+% the matrix logarithm
 
 
 
 % Given a reference rotation rot_ref and a spin vector |s| one could ask
 % for the rotation that is obtained by applying the inifitimal change s to
-% to rot_ref 
+% to rot_ref
 
 
 rot_123 = rotation('axis',vector3d(1,2,3),'angle',1)
@@ -112,7 +112,7 @@ exp(v,rot_ref,'left')
 cs = crystalSymmetry('321')
 
 % consider an arbitrary rotation
-ori_ref = orientation('Euler',10*degree,20*degree,30*degree,cs)
+ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs)
 
 % next we disturb rot_ref by a rotation about the axis (123)
 mori_123 = orientation('axis',Miller(1,2,-3,3,cs),'angle',1)
@@ -227,35 +227,30 @@ hold off
 
 function test
   % some testing code
-  
+
   cs = crystalSymmetry('321');
   ori1 = orientation.rand(cs);
   ori2 = orientation.rand(cs);
 
   v = log(ori2,ori1);
-  
+
   % this should be the same
   [norm(v),angle(ori1,ori2)] ./ degree
-  
+
   % and this too
   [ori1 * orientation('axis',v,'angle',norm(v)) ,project2FundamentalRegion(ori2,ori1)]
-  
+
   % in specimen coordinates
   r = log(ori2,ori1,'left');
-    
+
   % now we have to multiply from the left
   [rotation('axis',r,'angle',norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
-  
+
   % the following output should be constant
   % gO = log(ori1,ori2.symmetrise) % but not true for this
   % gO = log(ori1.symmetrise,ori2) % true for this
   %
   % gO = ori2.symmetrise .* log(ori1,ori2.symmetrise) % true for this
   % gO = ori2 .* log(ori1.symmetrise,ori2) % true for this
-  
+
 end
-
-
-
-
-

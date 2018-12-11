@@ -21,6 +21,7 @@ fontSize = round(15 * ppi/100);
 %fontSize = 15;
 setMTEXpref('FontSize',fontSize);
 set(0,'DefaultAxesFontSize',fontSize);
+set(0,'DefaultLegendFontSize',fontSize)
 
 % default plotting of the coordinate axes
 setMTEXpref('xAxisDirection','north');

@@ -1,6 +1,6 @@
 %% Misorientations
 % Misorientation describes the relative orientation of two grains with
-% respect to each other. Important concepts are twinnings and 
+% respect to each other. Important concepts are twinnings and
 % CSL (coincidence site lattice),
 %
 %% Open in Editor
@@ -14,7 +14,7 @@
 
 mtexdata twins
 % use only proper symmetry operations
-ebsd('M').CS = ebsd('M').CS.properGroup; 
+ebsd('M').CS = ebsd('M').CS.properGroup;
 grains = calcGrains(ebsd('indexed'),'threshold',5*degree)
 CS = grains.CS; % extract crystal symmetry
 
@@ -63,7 +63,7 @@ angle(ori1, ori2.symmetrise,'noSymmetry')./ degree
 
 mori = inv(ori1) * ori2
 
-%% 
+%%
 % In the present case the misorientation describes the coordinate transform
 % from the reference frame of grain 80 into the reference frame of crystal
 % 70. Take as an example the plane {11-20} with respect to the grain 80.
@@ -91,7 +91,7 @@ m = Miller({1,-1,0,0},{1,1,-2,0},{-1,0,1,1},{0,0,0,1},CS);
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 80 with respect to the 
+  % plot the lattice planes of grains 80 with respect to the
   % reference frame of grain 70
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
@@ -138,7 +138,7 @@ mori.angle / degree
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 80 with respect to the 
+  % plot the lattice planes of grains 80 with respect to the
   % reference frame of grain 70
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
@@ -209,7 +209,7 @@ Mag2Hem = orientation('map',...
 %%
 % Assume a Magnetite grain with orientation
 
-ori_Mag = orientation('Euler',0,0,0,CS_Mag)
+ori_Mag = orientation.byEuler(0,0,0,CS_Mag)
 
 %%
 % Then we can compute all variants of the phase transition by
@@ -221,4 +221,3 @@ symmetrise(ori_Mag) * inv(Mag2Hem)
 
 plotPDF(symmetrise(ori_Mag) * inv(Mag2Hem),...
   Miller({1,0,-1,0},{1,1,-2,0},{0,0,0,1},CS_Hem))
-

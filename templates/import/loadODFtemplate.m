@@ -35,5 +35,5 @@ odf = loadODF(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
 
 %% Correct Data
 
-rot = rotation('Euler',{phi1},{Phi},{phi2});
+rot = rotation.byEuler({phi1},{Phi},{phi2});
 odf = rotate(odf,rot);

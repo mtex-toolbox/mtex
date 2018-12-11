@@ -57,7 +57,7 @@ cs = loadCIF('quartz')
 
 %%
 % or a Bruker phl file. As a phl file contains usually many phases the
-% output is a list of crystal symmetries 
+% output is a list of crystal symmetries
 
 % import a list of crystal symmetries
 cs_list = loadPHL('crystal.phl');
@@ -69,7 +69,7 @@ cs_list{1}
 % *Switching between Point, Laue and purely rotational group*
 %
 % One can easily switch from any symmetry group to the corresponding Laue
-% group by the command 
+% group by the command
 
 cs = crystalSymmetry('Td')
 cs.Laue
@@ -153,15 +153,15 @@ annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 
 %% Calculations
 %
-% applying the specimen symmetry from the left and the crystal symmetry from the 
+% applying the specimen symmetry from the left and the crystal symmetry from the
 % right onto a <orientation_index.html orientation> results in a vector
 % containing all crystallographically equivalent orientations.
 
 % specimen symmetry
-ss = specimenSymmetry('mmm');   
+ss = specimenSymmetry('mmm');
 
 % all crystallographically equivalent orientations
-ss * orientation('euler',0,0,pi/4,cs,ss) * cs  
+ss * orientation.byEuler(0,0,pi/4,cs,ss) * cs
 
 %% Plotting symmetries
 %

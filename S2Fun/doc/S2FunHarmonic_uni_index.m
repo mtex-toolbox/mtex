@@ -125,7 +125,7 @@ sum(sF1);
 
 %%
 % rotate a function
-r = rotation('Euler', [pi/4 0 0]);
+r = rotation.byEuler( [pi/4 0 0]);
 rotate(sF1, r);
 
 %%

@@ -43,8 +43,8 @@ g = SO3Grid(10*degree,cs,ss);
 e = 90*degree;
 qq = quaternion(g);
 q0 = axis2quat(yvector,30*degree);
-q0 = rotation('Euler',70*degree,45*degree,80*degree);
-q1 = rotation('Euler',0*degree,0*degree,0*degree);
+q0 = rotation.byEuler(70*degree,45*degree,80*degree);
+q1 = rotation.byEuler(0*degree,0*degree,0*degree);
 %%
 
 dd = dot_outer(g,...

@@ -3,7 +3,7 @@ function v = rotate_outer(v,q)
 %
 % Syntax
 %   v = rotate_outer(v,20*degree) % rotation about the z-axis
-%   rot = rotation_outer('Euler',10*degree,20*degree,30*degree)
+%   rot = rotation_outer.byEuler(10*degree,20*degree,30*degree)
 %   v = rotate_outer(v,rot)
 %
 % Input
@@ -42,14 +42,11 @@ end
 
 % if output has symmetry set it to Miller
 if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
-   
+
    v = Miller(v,q.SS);
-  
+
 else % convert to vector3d
 
   v = vector3d(v);
-  
+
 end
-
-
-

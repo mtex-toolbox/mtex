@@ -30,7 +30,7 @@ if isa(quat,'quaternion')
   qc = quat.c;
   qd = quat.d;
 elseif find_type(varargin,'symmetry')
-  varargout{1} = orientation('Euler',quat,varargin{:});
+  varargout{1} = orientation.byEuler(quat,varargin{:});
   return
 end
 
@@ -101,7 +101,7 @@ if nargout == 0
     d = [d,i(:)];
     labels = [labels,{'Inv.'}];
   end
-  
+
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);

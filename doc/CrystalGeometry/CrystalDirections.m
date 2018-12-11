@@ -132,7 +132,7 @@ vector3d(m)
 % Miller indices. In addition Miller indices interact with crystal
 % orientations. Consider the crystal orientation
 
-o = orientation('Euler',10*degree,20*degree,30*degree,cs)
+o = orientation.byEuler(10*degree,20*degree,30*degree,cs)
 
 %%
 % Then one can apply it to a crystal direction to find its coordinates with

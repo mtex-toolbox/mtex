@@ -74,7 +74,7 @@ mean(sVF1);
 % Rotation
 %
 
-r = rotation('Euler', [pi/4 0 0]);
+r = rotation.byEuler( [pi/4 0 0]);
 rotate(sVF1, r);
 
 %%

@@ -10,17 +10,17 @@ function [M,b,eps] = calcInvTaylor(mori,sS,varargin)
 %
 % Output
 %  M    - taylor factor
-%  b    - coefficients for the acive slip systems 
+%  b    - coefficients for the acive slip systems
 %  eps  - strain @tensor list in crystal coordinates
 %
 % Example
-%   
+%
 %   % define 10 percent strain
 %   eps = 0.1 * strainTensor(diag([1 -0.75 -0.25]))
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')
-%   ori = orientation('Euler',0,30*degree,15*degree,cs)
+%   ori = orientation.byEuler(0,30*degree,15*degree,cs)
 %
 %   % define a slip system
 %   sS = slipSystem.fcc(cs)
@@ -46,7 +46,7 @@ CRSS = ones(length(sS),1);
 % the orientation gradient tensor to match
 y = reshape(double(log(mori)),[],3).';
 
-% this method applies the dual simplex algorithm 
+% this method applies the dual simplex algorithm
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
 %options = optimoptions('linprog','Algorithm','interior-point','Display','none');
 
@@ -55,12 +55,12 @@ isSilent = check_option(varargin,'silent');
 
 % for all misorientations do
 for i = 1:size(y,2)
-  
+
   % determine coefficients b with R * b = y and such that sum |b_j| is
   % minimal. This is equivalent to the requirement b>=0 and 1*b -> min
   % which is the linear programming problem solved below
   b(i,:) = linprog(CRSS,[],[],R,y(:,i),zeros(size(R,2),1),[],[],options);
-  
+
   % display what we are duing
   if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end

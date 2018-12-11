@@ -23,7 +23,7 @@ classdef gammaSections < ODFSections
       %  sections - number of sections
       %  gamma - explicite section values
       %
-      
+
       oS = oS@ODFSections(varargin{:});
 
       % get fundamental plotting region
@@ -46,7 +46,7 @@ classdef gammaSections < ODFSections
       beta = repmat(oS.plotGrid.theta,[1,1,numel(oS.gamma)]);
       gamma = repmat(reshape(oS.gamma,1,1,[]),[size(oS.plotGrid) 1]);
 
-      ori = orientation('Euler',alpha,beta,gamma,'ZYZ',oS.CS,oS.SS);
+      ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',oS.CS,oS.SS);
 
     end
 
@@ -66,7 +66,7 @@ classdef gammaSections < ODFSections
     end
 
     function ori = iproject(oS,alpha,beta,igamma)
-      ori = orientation('Euler',alpha,beta,oS.gamma(igamma),'ZYZ',oS.CS,oS.SS);
+      ori = orientation.byEuler(alpha,beta,oS.gamma(igamma),'ZYZ',oS.CS,oS.SS);
     end
 
     function h = plotSection(oS,ax,sec,v,data,varargin)

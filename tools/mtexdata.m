@@ -64,25 +64,25 @@ w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
 % try to load
 try
   S = load(file);
-  
+
   % ensure classes where loaded correctly
   assert(all(structfun(@(x) ~isstruct(x),S)));
-    
+
 catch %#ok<CTCH> % if can not load -> import
 
-  if any(ndx) 
+  if any(ndx)
 
     disp(' loading data ...')
     switch list(ndx).type
       case 'ebsd'
-        S.ebsd = feval(['mtexdata_' list(ndx).name]);        
+        S.ebsd = feval(['mtexdata_' list(ndx).name]);
       case 'pf'
         [S.CS,S.h,S.c,S.pf] = feval(['mtexdata_' list(ndx).name]);
     end
     disp([' saving data to ' file])
     save(file,'-struct','S');
   end
-  
+
 end
 
 % restore warning style
@@ -240,7 +240,7 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
 
-plotx2east; 
+plotx2east;
 plotzOutOfPlane
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
 
@@ -250,14 +250,14 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spa
 
 function ebsd = mtexdata_olivine
 
-plotx2east; 
+plotx2east;
 plotzOutOfPlane
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
 
 % correct data to fit the reference frame
-rot = rotation('Euler',90*degree,180*degree,180*degree);
+rot = rotation.byEuler(90*degree,180*degree,180*degree);
 ebsd = rotate(ebsd,rot,'keepEuler');
-rot = rotation('Euler',0*degree,0*degree,90*degree);
+rot = rotation.byEuler(0*degree,0*degree,90*degree);
 ebsd = rotate(ebsd,rot);
 
 % plotting conventions
@@ -278,7 +278,7 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spati
 % -----------------------------------------------------------------------
 function ebsd = mtexdata_single
 
-CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al'); 
+CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
 
 fname = fullfile(mtexDataPath,'EBSD','single_grain_aluminum.txt');
 ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS, ...
@@ -304,4 +304,3 @@ fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
 ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
    'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
    'x' 'y' 'grainId'});
-

@@ -5,7 +5,7 @@ function checkMeanTensor
 
 T = tensor([-1;0;1]);
 
-o = rotation('Euler',150*degree,40*degree,35*degree);
+o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %figure(1)
 %rotate(T,o)
@@ -27,7 +27,7 @@ assert(norm(matrix(T_odf_f)-matrix(rotate(T,o)))<1e-3,'Error checking one rank t
 
 T = tensor(diag([-1 0 1]));
 
-o = rotation('Euler',150*degree,40*degree,35*degree);
+o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %rotate(T,o)
 %figure(1)
@@ -53,7 +53,7 @@ Md =[[-2.30   2.30    0      0.67    0        0  ];...
 
 T = tensor(Md);
 
-o = rotation('Euler',150*degree,40*degree,35*degree);
+o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %rotate(T,o)
 figure(1)
@@ -91,8 +91,8 @@ M(2,2,2,2) = 1;
 M(3,3,3,3) = 1;
 T = tensor(M);
 
-%o = rotation('Euler',150*degree,40*degree,35*degree);
-o = rotation('Euler',0*degree,50*degree,0*degree);
+%o = rotation.byEuler(150*degree,40*degree,35*degree);
+o = rotation.byEuler(0*degree,50*degree,0*degree);
 
 rotate(T,o)
 figure(1)

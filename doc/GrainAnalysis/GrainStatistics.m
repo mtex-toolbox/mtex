@@ -5,7 +5,7 @@
 %
 %% Contents
 %
-%% 
+%%
 % Grains have several intrinsic properties, which can be used for
 % statistical, shape as well as for spatial analysis
 %
@@ -74,7 +74,7 @@ plot(grains(large_grain_id).boundary,'linecolor','green','linewidth',1.5)
 hold off
 
 
-%% Indexing by a Condition 
+%% Indexing by a Condition
 % By the same syntax as above we can also single out grains that satisfy a
 % certain condition. I.e., to access are grains that are at least half as
 % large as the largest grain we can do
@@ -135,10 +135,10 @@ hold off
 % In order to select all grains with a certain orientation one can do
 
 % restrict first to Forsterite phase
-grains_fo = grains('fo') 
+grains_fo = grains('fo')
 
 % the reference orientation
-ori = orientation('Euler',350*degree,50*degree,100*degree,grains('fo').CS)
+ori = orientation.byEuler(350*degree,50*degree,100*degree,grains('fo').CS)
 
 % select all grain with misorientation angle to ori less then 20 degree
 grains_selected = grains_fo(angle(grains_fo.meanOrientation,ori)<20*degree)
@@ -168,7 +168,7 @@ hist(grains)
 % grains. In the case of an outer grain boundary, one of the neighbouring
 % grains has the id zero. We can filter out all these boundary segments by
 
-% ids of the outer boundary segment 
+% ids of the outer boundary segment
 outerBoundary_id = any(grains.boundary.grainId==0,2);
 
 plot(grains)
@@ -197,7 +197,7 @@ grains(grain_id) = []
 
 plot(grains)
 
-%% 
+%%
 % Beside the area, there are various other geometric properties that can be
 % computed for grains, e.g., the <grain2d.perimeter.html perimeter>, the
 % <grain2d.diameter.html diameter>, the <grain2d.equivalentRadius.html
@@ -222,4 +222,3 @@ plot(grains,log(grains.aspectRatio))
 % transitions to a neighbour grain
 
 %[J, T, p ] = joinCount(grains,grains.phase)
-

@@ -17,7 +17,7 @@
 %
 %% SUB: Defining Miller indices
 %
-% Miller indices are defined by three coordinates h, k, l 
+% Miller indices are defined by three coordinates h, k, l
 % (four in the case of trigonal or hexagonal crystal symmetry) and by the
 % corresponding symmetry class. It is also possible to convert a vector3d
 % object into a Miller index.
@@ -50,7 +50,7 @@ plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indices
 m = Miller(1,1,-2,0,cs)
 symmetrise(m)
 
-%% 
+%%
 % As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
@@ -72,11 +72,11 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 % The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
 % m2. This angle in radians is calculated by the function <vector3d.angle.html
-% angle> 
+% angle>
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
-%% 
+%%
 % As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
@@ -91,7 +91,7 @@ vector3d(m)
 
 %%
 % Conversion into spherical coordinates requires the function <vector3d.polar.html
-% polar> 
+% polar>
 
 [theta,rho] = polar(m)
 
@@ -99,7 +99,7 @@ vector3d(m)
 %
 % Given a crystal orientation
 
-o = orientation('Euler',20*degree,30*degree,40*degree,cs)
+o = orientation.byEuler(20*degree,30*degree,40*degree,cs)
 
 %%
 % one can apply it to a crystal direction to find its coordinates with
@@ -107,10 +107,10 @@ o = orientation('Euler',20*degree,30*degree,40*degree,cs)
 
 o * m
 
-%% 
+%%
 % By applying a [[symmetry_index.html,crystal symmetry class]] one obtains
 % the coordinates with respect to the specimen coordinate system of all
-% crystallographically equivalent specimen directions.  
+% crystallographically equivalent specimen directions.
 
 p = o * symmetrise(m);
 plot(p)

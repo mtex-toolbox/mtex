@@ -40,38 +40,38 @@ ss = specimenSymmetry('orthorhombic');
 % "triplet of Euler angles" or simply "Euler angles" and you can find many
 % definitions for them according to different authors.
 
-o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
+o = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
 
 %% SUB: Matthies Euler angle convention
 %
 % In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
 
-o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
+o = orientation.byEuler(30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %% SUB: Axis angle parametrisation
 %
 % Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
 
-o = orientation('axis',xvector,'angle',30*degree,cs,ss)
+o = orientation.byAxisAngle(xvector,30*degree,cs,ss)
 
 %% SUB: Miller indice
 %
 % There is also a Miller indice convention for defining crystal orientations.
 
-o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
+o = orientation.byMiller([1 0 0],[0 1 1],cs,ss)
 
 %% SUB: Four vectors defining a rotation
 %
 % Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
 % q u1 = v1 and q u2 = v2. 
 
-o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
+o = orientation.map(xvector,yvector,zvector,zvector,cs,ss)
 
 %% SUB: Defining an orientation by a 3 times 3 matrix
 
-o = orientation('matrix',eye(3),cs,ss)
+o = orientation.byMatrix(eye(3),cs,ss)
 
 %% SUB: Predefined orientations
 % 
@@ -133,7 +133,7 @@ h = Miller(1,0,0,cs)
 %%
 % and the orientation
 
-o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
+o = orientation.byEuler(90*degree,90*degree,0*degree,cs,ss)
 
 %%
 % Then in specimen coordinates the direction |h| has the coordinates
@@ -150,12 +150,12 @@ inv(o) * r
 % Assume next that the specimen is rotated about the X-axis about 60
 % degree. We may define this rotation by
 
-rot = rotation('Euler',0,60*degree,0);
+rot = rotation.byEuler(0,60*degree,0);
 
 %%
 % Then a given orientation
 
-o = orientation('Euler',90*degree,0,0,cs);
+o = orientation.byEuler(90*degree,0,0,cs);
 
 %%
 % translates into a orientation with respect to the rotated

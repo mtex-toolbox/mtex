@@ -44,36 +44,36 @@ conventions = {...
 
 % sectioning given
 if check_option(varargin,[sectypes{:}])
-  
-  sectype = get_flag(varargin,[sectypes{:}]);  
+
+  sectype = get_flag(varargin,[sectypes{:}]);
   convention = cellfun(@(x) any(strcmpi(x,sectype)),sectypes);
   convention = conventions{convention}{1};
-  
+
 else % convention given
-  
-  convention = get_flag(varargin,[conventions{:}],'Bunge');  
+
+  convention = get_flag(varargin,[conventions{:}],'Bunge');
   sectype = cellfun(@(x) any(strcmpi(x,convention)),conventions);
   sectype = sectypes{sectype}{1};
-    
+
 end
 
 % get bounds
 [max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
-  
+
 % make the sectioning variable to be the last one
 if any(strcmpi(sectype,{'alpha','phi1','Psi'}))
   dummy = max_sec; max_sec = max_rho; max_rho = dummy;
 elseif strcmpi(sectype,'omega')
   max_sec = 2*pi;
 end
-  
+
 % sections
 nsec = get_option(varargin,'SECTIONS',...
   round(max_sec/get_option(varargin,'resolution',5*degree)));
 sec = linspace(0,max_sec,nsec+1); sec(end) = [];
 sec = get_option(varargin,sectype,sec,'double');
 nsec = length(sec);
-  
+
 % no sectioning angles
 S2G = regularS2Grid('maxTheta',max_theta,'maxRho',max_rho,'restrict2MinMax',varargin{:});
 [theta,rho] = polar(S2G);
@@ -92,9 +92,9 @@ switch lower(sectype)
   case {'sigma','omega'}
     [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
 end
-    
+
 % define grid
-S3G = orientation('Euler',sec_angle,theta,rho,convention,CS,SS);
+S3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
 % store gridding, @TODO: check when its required, this is required for
 % export
 if nargout == 4

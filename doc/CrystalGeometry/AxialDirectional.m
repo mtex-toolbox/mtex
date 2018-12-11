@@ -2,7 +2,7 @@
 % MTEX allows to identify antipodal directions to model axes and to
 % identify misorientations with opposite rotational angle. The later is
 % required when working with misorientations between grains of the same
-% phase and the order of the grains is arbitrary. 
+% phase and the order of the grains is arbitrary.
 %
 %% Open in Editor
 %
@@ -69,7 +69,7 @@ annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
 % symmetry is in general not present.
 
 % some prefered orientation
-o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS);
+o = orientation.byEuler(20*degree,30*degree,0,'ZYZ',CS);
 
 % define an unimodal ODF
 odf = unimodalODF(o);
@@ -142,4 +142,3 @@ plot(ipfKey)
 % Here the colorized data
 
 plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
-

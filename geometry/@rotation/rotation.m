@@ -2,8 +2,8 @@ classdef rotation < quaternion & dynOption
 % defines an rotation
 %
 % Syntax
-%   rot = rotation('Euler',phi1,Phi,phi2) -
-%   rot = rotation('Euler',alpha,beta,gamma,'ZYZ') -
+%   rot = rotation.byEuler(phi1,Phi,phi2) -
+%   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ') -
 %   rot = rotation('axis,v,'angle',omega) -
 %   rot = rotation('matrix',A) -
 %   rot = rotation('map',u1,v1) -
@@ -30,13 +30,13 @@ classdef rotation < quaternion & dynOption
   properties
     i = []; % 0 stands for proper rotation, 1 for improper rotation
   end
-  
+
   properties (Dependent = true)
     phi1 % Bunge Euler angle 1
     Phi  % Bunge Euler angle 2
     phi2 % Bunge Euler angle 3
   end
-  
+
   methods
     function rot = rotation(varargin)
 
@@ -50,17 +50,17 @@ classdef rotation < quaternion & dynOption
         rot.i = varargin{1}.i;
         return
       end
-        
-      switch class(varargin{1})        
+
+      switch class(varargin{1})
 
         case {'quaternion','double'}
-       
+
           quat = varargin{1};
-    
+
         case 'char'
 
           switch lower(varargin{1})
-            
+
             case 'axis' % orientation by axis / angle
               quat = axis2quat(get_option(varargin,'axis'),get_option(varargin,'angle'));
 
@@ -68,7 +68,7 @@ classdef rotation < quaternion & dynOption
               quat = euler2quat(varargin{2:end});
 
             case 'map'
-        
+
               if nargin==5
                 quat = vec42quat(varargin{2:end});
               else
@@ -76,15 +76,15 @@ classdef rotation < quaternion & dynOption
               end
 
             case 'quaternion'
-           
+
               quat = quaternion(varargin{2:end});
 
             case 'rodrigues'
-              
+
               quat = rodrigues2quat(varargin{2});
-              
+
             case 'matrix'
-              
+
               rot.i = false(size(varargin{2},3),1);
               for i = 1:size(varargin{2},3)
                 rot.i(i) = det(varargin{2}(:,:,i))<0;
@@ -95,73 +95,73 @@ classdef rotation < quaternion & dynOption
               quat = mat2quat(varargin{2:end});
 
             case 'fibre'
-           
+
               quat = fibre2quat(varargin{2:end});
 
             case 'inversion'
-        
+
               quat = quaternion.id;
               rot.i = true;
-        
+
             case {'mirroring','reflection'}
-        
+
               quat = axis2quat(varargin{2},pi);
               rot.i = true(size(quat));
 
             otherwise
-              
+
               return
           end
 
         otherwise
           error('Type mismatch in rotation!')
       end
-   
+
       [rot.a,rot.b,rot.c,rot.d] = double(quat);
       if isempty(rot.i), rot.i = false(size(quat));end
-   
+
     end
-    
+
     function phi1 = get.phi1(rot)
       [phi1,~,~] = Euler(rot);
     end
-    
+
     function Phi = get.Phi(rot)
       [~,Phi,~] = Euler(rot);
     end
-    
+
     function phi2 = get.phi2(rot)
       [~,~,phi2] = Euler(rot);
     end
-    
+
   end
-  
+
   methods (Static = true)
-    
+
     function r = nan(varargin)
       r = rotation(quaternion.nan(varargin{:}));
     end
-    
+
     function r = id(varargin)
       r = rotation(quaternion.id(varargin{:}));
     end
-        
+
     function r = rand(varargin)
-      r = rotation(quaternion.rand(varargin{:}));      
+      r = rotation(quaternion.rand(varargin{:}));
     end
-    
+
     function r = inversion(varargin)
       r = rotation.id(varargin{:});
     end
 
     r = byMatrix(varargin);
-    
+
     r = byEuler(varargin);
-    
+
     r = byAxisAngle(varargin);
-    
+
     r = map(varargin);
-    
+
   end
-  
+
 end

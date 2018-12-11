@@ -1,6 +1,6 @@
 function ebsd = loadEBSD_dream3d(fname,varargin)
 
-try 
+try
   api = localGetApi(fname);
 catch %#ok<CTCH>
   interfaceError(fname);
@@ -70,13 +70,13 @@ unitCell =  [ ...
 function [opts,e] = localGetFields(api,opts)
 
 for k=1:numel(api.fieldNames)
-  
+
   data = api.readCellData(api.fieldNames{k});
   data = data(api.GoodVoxels,:);
-  
+
   switch api.fieldNames{k}
     case 'EulerAngles'
-      e.Rotations = rotation('Euler',data(:,1),data(:,2),data(:,3),'ZXZ');
+      e.Rotations = rotation.byEuler(data(:,1),data(:,2),data(:,3),'ZXZ');
     case 'Phases'
       e.Phases = data;
     case {'GoodVoxels','Quats'}
@@ -84,8 +84,5 @@ for k=1:numel(api.fieldNames)
       prop = regexprep(api.fieldNames{k},' ','');
       opts.(prop) = data;
   end
-  
+
 end
-
-
-

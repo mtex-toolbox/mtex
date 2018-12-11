@@ -56,7 +56,7 @@ plot(C,'complete','upper')
 % Rotation a tensor is done by the command <tensor.rotate.html rotate>.
 % Let's define a rotation
 
-r = rotation('Euler',45*degree,0*degree,0*degree)
+r = rotation.byEuler(45*degree,0*degree,0*degree)
 
 %%
 % Then the rotated tensor is given by
