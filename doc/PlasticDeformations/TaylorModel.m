@@ -27,7 +27,7 @@ setMTEXpref('pfAnnotations',pfAnnotations);
 cs = crystalSymmetry('432');
 
 % define a family of slip systems
-sS = slipSystem.fcc(cs);
+sS = slipSystem.bcc(cs);
 
 % some plane strain
 q = 0;
@@ -148,16 +148,21 @@ progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  [M,~,mori] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
+  [M,~,mori] = calcTaylor(ori * epsilon ./ numIter, sS.symmetrise,'silent');
   
   % rotate the individual orientations
-  ori = ori .* mori;
+  ori = ori .* inv(mori);
   progress(sas,numIter);
 end
 
 %%
 
 % plot the resulting pole figures
+
+% set new annotation style to display RD and ND
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'RD','TD','ND'},...
+  'BackgroundColor','w','tag','axesLabels',varargin{:});
+setMTEXpref('pfAnnotations',pfAnnotations);
 
 plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
 mtexColorbar
