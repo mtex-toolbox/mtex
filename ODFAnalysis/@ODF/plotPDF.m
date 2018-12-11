@@ -129,8 +129,8 @@ end
 
     [r_local,~,ax] = getDataCursorPos(mtexFig);
     
-    fibre = orientation('fibre',h{mtexFig.children==ax},r_local,odf.CS,odf.SS);
-    f = eval(odf,fibre); %#ok<EVLC>
+    f = orientation(fibre(h{mtexFig.children==ax},r_local,odf.CS,odf.SS));
+    f = eval(odf,f);
 
     [v,vpos] = max(f); %#ok<ASGLU>
 

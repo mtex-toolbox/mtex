@@ -120,7 +120,7 @@ odf1.eval(orientation.byEuler(0*degree,20*degree,30*degree,cs))
 %%
 % For a more complex example let us define a fibre and plot the ODF there.
 
-fibre = orientation('fibre',Miller(1,0,0,cs),yvector);
+fibre = orientation(fibre(Miller(1,0,0,cs),yvector));
 
 plot(odf2.eval(fibre))
 

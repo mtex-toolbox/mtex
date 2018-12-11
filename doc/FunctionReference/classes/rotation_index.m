@@ -90,7 +90,7 @@ o = rotation.map(xvector,yvector)
 
 u = xvector;
 v = yvector;
-o = rotation('fibre',u,v)
+o = rotation(fibre(u,v))
 
 
 %%
