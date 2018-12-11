@@ -102,7 +102,7 @@ mtexColorMap white2black
 % indice). What is its modal orientation in Euler angles?
 
 CS = crystalSymmetry('cubic');
-ori = orientation('Miller',[0 0 1],[3 1 0],CS);
+ori = orientation.byMiller([0 0 1],[3 1 0],CS);
 odf = unimodalODF(ori);
 
 %%

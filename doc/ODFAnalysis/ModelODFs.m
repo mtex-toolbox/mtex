@@ -52,7 +52,7 @@ odf = uniformODF(cs,ss)
 % * a <kernel_index.html kernel> function |psi| defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-ori = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
+ori = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
 odf = unimodalODF(ori,psi)
 
@@ -155,7 +155,7 @@ cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
 
 psi = vonMisesFisherKernel('halfwidth',10*degree);
-mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
+mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 
 odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 

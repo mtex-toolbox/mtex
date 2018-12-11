@@ -62,7 +62,7 @@ o = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
 %
 % There is also a Miller indices convention for defining crystal orientations.
 
-o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
+o = orientation.byMiller([1 0 0],[0 1 1],cs,ss)
 
 
 %%

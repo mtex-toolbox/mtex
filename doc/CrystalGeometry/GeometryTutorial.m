@@ -111,8 +111,8 @@ plot([h1,h2],'all','labeled','backGroundColor','w')
 
 ori = orientation(rot,CS,SS)
 ori = orientation.byEuler(alpha,beta,gamma,CS,SS)
-ori = orientation('brass',crystalSymmetry('cubic'))
-ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
+ori = orientation.brass(crystalSymmetry('cubic'))
+ori = orientation.byMiller([1 0 0],[1 1 1],CS,SS)
 
 %%
 % *Calculations*
@@ -192,4 +192,3 @@ r2 = yvector;
 ori = orientation('map',h1,r1,h2,r2,CS)
 
 ori * [h1,h2]
-
