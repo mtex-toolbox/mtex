@@ -1,5 +1,6 @@
 %% BinghamS2: spherical Bingham distribution function
-% The Bingham distribution on the sphere is an antipodally symmetric
+%
+% The Bingham distribution on the sphere is an antipodal symmetric
 % distribution (Bingham, 1974) with a probabiliy density function given by
 %
 % $p_{b}(\hat{x}\vert AKA^T) = \frac{1}{F(\kappa_{1},\kappa_{2},\kappa_{3})}exp (\hat{x}^T AZA^T \hat{x})$
@@ -20,35 +21,37 @@ Z = [-10 -4 0]
 a = rotation.rand(1).*vector3d([xvector yvector zvector])
 bs2=BinghamS2(Z,a);
 plot(bs2)
+
 %% Meaning of Z
 % k1 = k2 defines a rotationally symmetric point maximum and k2 = 0 defines
 % a girdle distribution.
 close
-p = [0 4 8 12 24]
-a = vector3d([xvector yvector zvector]);
-for j = 1:length(p)
-    for i = 1:length(p)
-        if i >= j
-            Z = [-p(i) -p(j) 0];
-            bs=BinghamS2(Z,a);
-            plot(bs,'minmax','BR',[{['Z1:' num2str(Z(1))]}; {['Z2: ' num2str(Z(2))]}])
-            nextAxis
-        else
-            nextAxis
-        end
+kappa = [0 4 8 12 24];
+mtexFig = newMtexFigure('layout',[length(kappa) length(kappa)]);
+for k2 = kappa
+  for k1 = kappa
+    if k1 >= k2
+      bs=BinghamS2([-k1 -k2 0]);
+      plot(bs,'colorRange',[0,25],'TR',['$\kappa_1$:' num2str(k1)],'BR',['$\kappa_2$: ' num2str(k2)],'doNotDraw')
+      nextAxis
+    else
+      nextAxis
     end
+  end
 end
-f = gcm;
-CLim(f,'equal')
-f.nrows = length(p);f.ncols= length(p); f.layoutMode = 'users';
-f.drawNow;
+CLim(mtexFig,'equal')
+mtexFig.drawNow;
+
 %% Sample directions from a BinghamS2
+
 close
 v = bs2.discreteSample(500)
 plot(bs2)
 hold on
-plot(v)
+plot(v,'MarkerFaceColor','k')
 hold off
+
+
 %% Estimating a BinghamS2 from discrete data
 % We can estimate a BinghamS2 from a list of directions, let's use v
 % Under the assumption of a having a sufficiently large number of points and
