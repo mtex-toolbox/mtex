@@ -20,7 +20,7 @@ function ori = map(varargin)
 % orientation/byEuler
 
 
-ori = orientation(oriation.map(varargin{:}));
+ori = orientation(rotation.map(varargin{:}));
         
 if isa(varargin{1},'Miller'), ori.CS = varargin{1}.CS; end
 if isa(varargin{2},'Miller'), ori.SS = varargin{2}.CS; end

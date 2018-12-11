@@ -1,4 +1,4 @@
-function ori = byMiller(hkl,uvw,CS,varargin)
+function ori = byMiller(hkl,uvw,varargin)
 % define orientations by Miller Bravais indeces
 %
 % Description
@@ -28,7 +28,11 @@ function ori = byMiller(hkl,uvw,CS,varargin)
 
 
 if isa(hkl,'double')
-  if nargin == 2, CS = crystalSymmetry('cubic');end
+  if nargin == 2
+    CS = crystalSymmetry('cubic');
+  else
+    CS = varargin{1};
+  end
   hkl = Miller(hkl(1),hkl(2),hkl(3),CS);
   uvw = Miller(uvw(1),uvw(2),uvw(3),CS);
 end

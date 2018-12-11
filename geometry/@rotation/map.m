@@ -19,9 +19,9 @@ function rot = map(varargin)
 % rotation/byEuler
 
 if nargin == 4
-  quat = vec42quat(varargin{:});  
+  quat = vec42quat(varargin{1:4});  
 else
-  quat = hr2quat(varargin{:});
+  quat = hr2quat(varargin{1:2});
 end
 
 rot = rotation(quat);
