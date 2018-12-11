@@ -66,7 +66,7 @@ mtexColorbar
 % to (2,-1,-1,0) and (-1,0,1,1) parallel to (1,0,-1,1). In MTEX it is
 % defined by
 
-twinning = orientation('map',Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
+twinning = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
   Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS))
 
 %%

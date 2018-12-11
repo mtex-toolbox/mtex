@@ -47,7 +47,7 @@ classdef fibre
 
       % define a fibre as all o with o*h = r
       if isa(o1,'vector3d')
-        f.o1 = orientation('map',o1,varargin{:});
+        f.o1 = orientation.map(o1,varargin{:});
         f.h = o1;
       else
         f.o1 = o1;

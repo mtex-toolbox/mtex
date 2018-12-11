@@ -122,7 +122,7 @@ angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 % Lets define a misorientation that makes a perfect fit between the {11-20}
 % lattice planes and between the {10-11} lattice planes
 
-mori = orientation('map',Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
+mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
   Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS))
 
 % the rotational axis
@@ -202,7 +202,7 @@ CS_Hem = loadCIF('Hematite')
 % literature by {111}_m parallel {0001}_h and {-101}_m parallel {10-10}_h
 % The corresponding misorientation is defined in MTEX by
 
-Mag2Hem = orientation('map',...
+Mag2Hem = orientation.map(...
   Miller(1,1,1,CS_Mag),Miller(0,0,0,1,CS_Hem),...
   Miller(-1,0,1,CS_Mag),Miller(1,0,-1,0,CS_Hem))
 

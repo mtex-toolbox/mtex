@@ -189,6 +189,6 @@ h2 = Miller(2,-1,-1,0,CS);
 r1 = xvector;
 r2 = yvector;
 
-ori = orientation('map',h1,r1,h2,r2,CS)
+ori = orientation.map(h1,r1,h2,r2,CS)
 
 ori * [h1,h2]

@@ -43,7 +43,7 @@ classdef pfSections < ODFSections
       for iOmega = 1:numel(oS.omega)
 
         r2 = oS.vectorField(oS.plotGrid,oS.omega(iOmega));
-        ori(:,:,iOmega) = reshape(orientation('map',oS.h1,oS.plotGrid,oS.h2,r2),size(oS.plotGrid));
+        ori(:,:,iOmega) = reshape(orientation.map(oS.h1,oS.plotGrid,oS.h2,r2),size(oS.plotGrid));
 
       end
 
@@ -78,7 +78,7 @@ classdef pfSections < ODFSections
       r1 = vector3d('polar',theta,rho);
       r2 = oS.vectorField(r1,oS.omega(iOmega));
 
-      ori = orientation('map',oS.h1,r1,oS.h2,r2);
+      ori = orientation.map(soS.h1,r1,oS.h2,r2);
     end
 
     function h = plotSection(oS,ax,sec,v,data,varargin)

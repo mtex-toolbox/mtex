@@ -2,21 +2,19 @@ classdef rotation < quaternion & dynOption
 % defines an rotation
 %
 % Syntax
-%   rot = rotation.byEuler(phi1,Phi,phi2) -
-%   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ') -
-%   rot = rotation('axis,v,'angle',omega) -
-%   rot = rotation('matrix',A) -
-%   rot = rotation('map',u1,v1) -
-%   rot = rotation('map',u1,v1,u2,v2) -
-%   rot = rotation('reflection',b) -
-%   rot = rotation('inversion',b) -
-%   rot = rotation('rodrigues',v) -
-%   rot = rotation('fibre',u1,v1,'resolution',5*degree) -
-%   rot = rotation('quaternion',a,b,c,d) -
-%   rot = rotation(q) -
+%   rot = rotation.byEuler(phi1,Phi,phi2) 
+%   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ') 
+%   rot = rotation.axisAngle(v,omega) 
+%   rot = rotation.matrix(A)
+%   rot = rotation.map(u1,v1)
+%   rot = rotation.map(u1,v1,u2,v2) 
+%   rot = reflection(b)
+%   rot = rotation.inversion 
+%   rot = rotation.byRodrigues(v)
+%   rot = rotation(fibre(u1,v1),'resolution',5*degree)
+%   rot = rotation(quaternion(a,b,c,d))
 %
 % Input
-%  q         - @quaternion
 %  u1,u2     - @vector3d
 %  v, v1, v2 - @vector3d
 %  n         - @vector3d

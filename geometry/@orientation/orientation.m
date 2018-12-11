@@ -227,7 +227,7 @@ methods (Static = true)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
 
-    mori = orientation('map',Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
+    mori = orientation.map(Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
       Miller(0,1,0,csGamma,'uvw'),Miller(0,1,1,csAlpha,'uvw'));
   end
 
@@ -241,7 +241,7 @@ methods (Static = true)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
 
-    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+    mori = orientation.map(Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
       Miller(-1,0,1,csGamma,'uvw'),Miller(-1,-1,1,csAlpha,'uvw'));
   end
 
@@ -255,7 +255,7 @@ methods (Static = true)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
 
-    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+    mori = orientation.map(Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
       Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
 
@@ -269,10 +269,10 @@ methods (Static = true)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
 
-    mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
+    mori = orientation.map(Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
       Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
 
-    %mori = orientation('map',Miller(1,1,0,csGamma),Miller(1,1,1,csAlpha),...
+    %mori = orientation.map(Miller(1,1,0,csGamma),Miller(1,1,1,csAlpha),...
     %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
 
   end
@@ -289,7 +289,7 @@ methods (Static = true)
     % cube cube
     mori = inv(orientation.byEuler(2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
 
-    %mori = orientation('map',Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
+    %mori = orientation.map(Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
     %  Miller(5,12,17,csGamma,'uvw'),Miller(17,17,7,csAlpha,'uvw'));
 
   end

@@ -67,7 +67,7 @@ for j = 1:length(Nq)
   aNq0 = aNq(j0);
   aNqj = Nqj.axis;
   aNq0 = aNq0 - dot(aNq0,aNqj) * aNqj;
-  rot = rotation('map',aNqj,zvector,aNq0,xvector);  
+  rot = rotation.map(aNqj,zvector,aNq0,xvector);  
   aNq = rot * aNq; % the rotated axes
   
   % order the other normals according to

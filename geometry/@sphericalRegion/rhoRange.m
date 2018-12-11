@@ -16,7 +16,7 @@ for i = 1:length(sR.N)
   
   b = vector3d('theta',acos(sR.alpha(i)),'rho',omega);
   
-  rot = rotation('map',zvector,sR.N(i));
+  rot = rotation.map(zvector,sR.N(i));
   
   b = rot * b;
   
