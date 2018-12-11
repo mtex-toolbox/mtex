@@ -3,7 +3,7 @@ classdef stressTensor < tensor
   methods
     function sT = stressTensor(varargin)
 
-      sT = sT@tensor(varargin{:});
+      sT = sT@tensor(varargin{:},'rank',2);
       
     end
   end
