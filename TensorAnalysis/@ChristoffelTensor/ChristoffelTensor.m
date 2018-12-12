@@ -3,7 +3,7 @@ classdef ChristoffelTensor < tensor
   methods
     function sT = ChristoffelTensor(varargin)
 
-      sT = sT@tensor(varargin{:});
+      sT = sT@tensor(varargin{:},'rank',2);
       
     end
   end

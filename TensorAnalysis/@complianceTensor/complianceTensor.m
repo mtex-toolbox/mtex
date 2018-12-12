@@ -4,7 +4,7 @@ classdef complianceTensor < tensor
     function sT = complianceTensor(varargin)
       
       varargin = set_default_option(varargin,{},'unit','1/GPa','doubleConvention');
-      sT = sT@tensor(varargin{:});
+      sT = sT@tensor(varargin{:},'rank',4);
       
     end
   end

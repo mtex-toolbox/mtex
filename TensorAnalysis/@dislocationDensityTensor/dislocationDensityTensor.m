@@ -3,7 +3,7 @@ classdef dislocationDensityTensor < tensor
   
   methods
     function alpha = dislocationDensityTensor(varargin)
-      alpha = alpha@tensor(varargin{:});
+      alpha = alpha@tensor(varargin{:},'rank',2);
     end
   end
   
