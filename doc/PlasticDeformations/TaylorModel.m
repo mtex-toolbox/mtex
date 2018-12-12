@@ -148,7 +148,7 @@ progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  [M,~,mori] = calcTaylor(ori * epsilon ./ numIter, sS.symmetrise,'silent');
+  [M,~,mori] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
 
   % rotate the individual orientations
   ori = ori .* inv(mori);
