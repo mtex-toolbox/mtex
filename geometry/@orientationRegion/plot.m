@@ -81,7 +81,7 @@ end
 hold off
 
 h = [h1,h2,h3,h4];
-for i = 1:4
+for i = 1:length(h)
   set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 end
 if nargout == 0,  clear h; end

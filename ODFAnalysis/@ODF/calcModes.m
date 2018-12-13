@@ -51,7 +51,7 @@ if isempty(ori)
 end
 
 % first evaluation
-f = eval(odf,ori,varargin{:}); %#ok<EVLC>
+f = eval(odf,ori,varargin{:});
 
 % extract 20 largest values
 oriNextSeed = ori(f>=quantile(f(:),-20));
@@ -63,7 +63,7 @@ while res > targetRes
     localOrientationGrid(odf.CS,odf.SS,res,'center',oriNextSeed,'resolution',res/4)];
     
   % evaluate ODF
-  f = eval(odf,ori,varargin{:}); %#ok<EVLC>
+  f = eval(odf,ori,varargin{:});
   
   % extract largest values
   oriNextSeed = ori(f>=quantile(f(:),0));
@@ -83,7 +83,7 @@ function [modes,values] = findMultipleModes(odf,varargin)
 res = get_option(varargin,'resolution',5*degree);
 
 S3G = extract_SO3grid(odf,'resolution',res,varargin{:});
-f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+f = eval(odf,S3G,varargin{:});
 
 
 % eliminate zeros

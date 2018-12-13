@@ -52,4 +52,4 @@
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 
-plot(Miller2quat([-1 -1 -1],[1 -2 1]))
+plot(quaternion.rand(100))

@@ -7,7 +7,7 @@ b = vector3d;
 omega = linspace(0,2*pi,721);
 for i=1:length(sR.N)
   
-  rot = rotation.byAxisAngle(sR.N(i)s,omega);
+  rot = rotation.byAxisAngle(sR.N(i),omega);
   bigCircle = rotate(orth(sR.N(i)),rot);
   v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
   
