@@ -1,7 +1,6 @@
 function ori = byEuler(varargin)
 % define orientations by Euler angles
 %
-%
 % Syntax
 %   ori = orientation.byEuler(phi1,Phi,phi2,CS,SS) % Bunge convention
 %   ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',CS,SS) % Matthies convention

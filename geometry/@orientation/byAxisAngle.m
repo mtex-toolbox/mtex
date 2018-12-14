@@ -1,4 +1,4 @@
-function ori = byAxisAngle(v,omega,varargin)
+function ori = byAxisAngle(axis,angle,varargin)
 % define orientations by rotational axis and rotational angle
 %
 % Syntax
@@ -18,7 +18,7 @@ function ori = byAxisAngle(v,omega,varargin)
 % orientation_index orientation/byEuler orientation/byMatrix orientation/map
 
 
-ori = orientation(axis2quat(v,omega),varargin{:});
+ori = orientation(axis2quat(axis,angle),varargin{:});
 
 % copy crystal symmetry if possible
-if isa(v,'Miller'), ori.CS = v.CS; ori.SS = v.CS; end
+if isa(axis,'Miller'), ori.CS = axis.CS; ori.SS = axis.CS; end

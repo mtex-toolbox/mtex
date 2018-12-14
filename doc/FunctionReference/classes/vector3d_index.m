@@ -64,7 +64,7 @@ w = w + v;
 % Besides the standard linear algebra operations, there are also the
 % following functions available in MTEX.
 %
-%  [[vector3d.angle.html">angle(v1,v2)]] % angle between two specimen  directions
+%  [[vector3d.angle.html,angle(v1,v2)]] % angle between two specimen  directions
 %  [[vector3d.dot.html,dot(v1,v2)]]   % inner product
 %  [[vector3d.cross.html,cross(v1,v2)]] % cross product
 %  [[vector3d.norm.html,norm(v)]]      % length of the specimen directions
@@ -84,4 +84,13 @@ w = w ./ norm(w)
 
 plot([zvector,xvector+yvector+zvector],'labeled')
 
- 
+%% random vectors
+
+
+%% equispaced grids
+
+%% regular grids
+
+%% alginment of the plot
+
+
