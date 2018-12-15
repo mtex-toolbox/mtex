@@ -1,8 +1,8 @@
-function [M,b,mori] = calcTaylor(eps,sS,varargin)
+function [M,b,spin] = calcTaylor(L,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
-%   [M,b,mori] = calcTaylor(eps,sS)
+%   [M,b,spin] = calcTaylor(eps,sS)
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
@@ -10,50 +10,53 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 %
 % Output
 %  M    - taylor factor
-%  b    - coefficients for the acive slip systems 
-%  mori - misorientation
+%  b    - coefficients for the acive slip systems
+%  spin - @spinTensor
 %
 % Example
-%   
+%
 %   % define 10 percent strain
 %   eps = 0.1 * strainTensor(diag([1 -0.75 -0.25]))
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')
-%   ori = orientation('Euler',0,30*degree,15*degree,cs)
+%   ori = orientation.byEuler(0,30*degree,15*degree,cs)
 %
 %   % define a slip system
 %   sS = slipSystem.fcc(cs)
 %
 %   % compute the Taylor factor
-%   [M,b,mori] = calcTaylor(inv(ori)*eps,sS.symmetrise)
+%   [M,b,spin] = calcTaylor(inv(ori)*eps,sS.symmetrise)
 %
 
-% ensure strain is symmetric
-eps = eps.sym;
+% the antisymmetry part of the strainRateTensor is directly the spin increment
+spin = L.antiSym;
+
+% the symmetric part is the strain increment
+E = L.sym;
 
 % compute the deformation tensors for all slip systems
-sSeps = sS.deformationTensor;
+E_sS = sS.deformationTensor;
 
 % initalize the coefficients
-b = zeros(length(eps),length(sS));
+b = zeros(length(E),length(sS));
 
 % critical resolved shear stress - CRSS
 % by now assumed to be identical - might also be stored in sS
 CRSS = sS.CRSS(:);%ones(length(sS),1);
 
-% decompose eps into sum of disclocation tensors, that is we look for
-% coefficients b such that sSepsSym * b = eps
+% decompose E into sum of deformation tensors, i.e., we look for
+% coefficients b such that E_sS * b = E
 
 % since the strain tensor is symmetric we require only 5 entries out of it
-A = reshape(matrix(sSeps.sym),9,[]);
+A = reshape(matrix(E_sS.sym),9,[]);
 A = A([1,2,3,5,6],:);
 
 % the strain coefficients to match
-y = reshape(eps.M,9,[]);
+y = reshape(E.M,9,[]);
 y = y([1,2,3,5,6],:);
 
-% this method applies the dual simplex algorithm 
+% this method applies the dual simplex algorithm
 %options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
 options = optimoptions('linprog','Algorithm','interior-point-legacy','Display','none');
 
@@ -62,7 +65,7 @@ isSilent = check_option(varargin,'silent');
 
 % for all strain tensors do
 for i = 1:size(y,2)
-  
+
   % determine coefficients b with A * b = y and such that sum |CRSS_j *
   % b_j| is minimal. This is equivalent to the requirement b>=0 and CRSS*b
   % -> min which is the linear programming problem solved below
@@ -79,8 +82,6 @@ M = sum(b,2);
 % maybe there is nothing more to do
 if nargout <=2, return; end
 
-% the antisymmetric part of the deformation tensors give the misorientation
-R = reshape(matrix(sSeps.antiSym),9,[]);
-R = [R(6,:);-R(3,:);R(2,:)];
-
-mori = orientation(expquat((R * b.').'),sS.CS,sS.CS);
+% the antisymmetric part of the deformation tensors gives the spin in
+% crystal coordinates
+spin = spinTensor(b*E_sS.antiSym);
