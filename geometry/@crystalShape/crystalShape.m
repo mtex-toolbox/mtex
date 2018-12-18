@@ -167,8 +167,11 @@ classdef crystalShape
       
     end
     
-    function cS = topaz      
-      cs = crystalSymmetry('mmm',[0.52854,1,0.47698]);
+    function cS = topaz(cs)
+      
+      if nargin == 0
+        cs = crystalSymmetry('mmm',[0.52854,1,0.47698]);
+      end
       
       N = Miller({0,0,1},{2,2,3},{2,0,1},{0,2,1},{1,1,0},{1,2,0},{2,2,1},...
         {0,4,1},cs);
@@ -176,8 +179,11 @@ classdef crystalShape
       cS = crystalShape(N,1.2,[0.3,0.3,1]);
     end
 
-    function cS = apatite      
-      cs = crystalSymmetry('6/m',[1,1,0.7346],'mineral','apatite');
+    function cS = apatite(cs)
+      
+      if nargin == 0
+        cs = crystalSymmetry('6/m',[1,1,0.7346],'mineral','apatite');
+      end
       
       N = Miller({1,0,0},{0,0,1},{1,0,1},{1,0,2},...
         {2,0,1},{1,1,2},{1,1,1},{2,1,1},{3,1,1},{2,1,0},cs);
@@ -185,16 +191,22 @@ classdef crystalShape
       cS = crystalShape(N,1.2,[0.6,0.6,1]);      
     end      
 
-    function cS = garnet
-      cs = crystalSymmetry('m3m','mineral','garnet');
+    function cS = garnet(cs)
+      
+      if nargin == 0
+        cs = crystalSymmetry('m3m','mineral','garnet');
+      end
       
       N = Miller({1,1,0},{2,1,1},cs);
       
       cS = crystalShape(N,1.5);      
     end
     
-    function cS = olivine      
-      cs = crystalSymmetry('mmm',[4.762 10.225 5.994],'mineral','olivine');
+    function cS = olivine(cs)
+      
+      if nargin == 0
+        cs = crystalSymmetry('mmm',[4.762 10.225 5.994],'mineral','olivine');
+      end
     
       N = Miller({1,1,0},{1,2,0},{0,1,0},{1,0,1},{0,2,1},{0,0,1},cs);
       
