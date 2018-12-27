@@ -11,7 +11,7 @@
 %
 % Crystal orientations are rotations that describe the alignment of the
 % crystal lattice with respect to a fixed specimen reference frame. Thus
-% they consist of two incredients. First a <rotation_index.html rotation>
+% they consist of two incredients. A <rotation_index.html rotation>
 
 % lets take a random one
 rot = rotation.rand
@@ -219,6 +219,14 @@ symmetrise(ori)
 ss * ori * cs
 
 %%
+% For specific orientations as for the brass orientations symmetrisation
+% leads to multiple identical orientation. This can be prevented by passing
+% the option |unique| to the command <orientation.symmetrise.html
+% symmetrise>
+
+symmetrise(ori,'unique')
+
+%%
 %
 % Note that all operation on orientations are preformed taking all
 % symmetrically equivalent orientations into account. As an example
@@ -243,7 +251,7 @@ angle(ori,symmetrise(orientation.goss(cs)),'noSymmetry') ./ degree
 %% Conversion into Euler angles, matrix, quaternion or Rodrigues vector
 %
 % There are methods to transform quaternion in almost any other
-% parameterization of rotations as they are:
+% of rotations as they are:
 
 % as Euler angles
 ori.phi1, ori.Phi, ori.phi2
@@ -258,4 +266,24 @@ ori.matrix
 ori.Rodrigues
 
 %% Plotting Orientations
-% 
+%
+% Orientations can be visualized in many different ways. The most popular
+% way are <OrientationPoleFigure.html pole figures>
+
+ori = orientation.rand(5,cs);
+plotPDF(ori,Miller({1,0,0},{1,1,1},{1,1,0},cs))
+
+%%
+% Other options are <OrientationInversePoleFigure.html inverse pole
+% figures>, <EulerAngleSections.html sections through the Euler space> and
+% <OrientationPlot3d three dimensional orientation plots>.
+
+% in Euler angle space
+plot(ori,'filled')
+
+
+%%
+% in axis angle space
+plot(ori,'axisAngle','filled')
+
+
