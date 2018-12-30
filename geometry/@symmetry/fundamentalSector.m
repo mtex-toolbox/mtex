@@ -3,11 +3,13 @@ function  sR = fundamentalSector(cs,varargin)
 %
 % Syntax
 %   sR = fundamentalSector(cs)
-%   sR = fundamentalSector(cs,omega) TODO: this should give the fundamental
-%   sector of rotational axes for a specific rotation angle omega
 %
+%   % undamental sector for a specific misorientation angle
+%   sR = fundamentalSector(cs,omega) 
+%   
 % Input
 %  cs - @symmetry
+%  omega - misorientation angle
 %
 % Ouput
 %  sR - @sphericalRegion
@@ -30,7 +32,7 @@ if check_option(varargin,'antipodal'), cs = cs.Laue; end
 
 % if we have an inversion or some symmetry operation no parallel to z
 if any(angle(zvector,symmetrise(zvector,cs))>pi/2+1e-4)  
-  N = zvector; % then we can map everything on the norther hemisphere
+  N = zvector; % then we can map everything on the northern hemisphere
 else
   N = vector3d;
 end
@@ -67,9 +69,23 @@ N = rotate(N,rho);
 % some special cases
 switch cs.id 
   case 0 % symmetry without name - the code below works only in a very specific case
-    N = cs.subSet(cs.isImproper).axis; % take mirror planes
-    ind = angle(N,vector3d(cs.aAxis))< 45*degree;
-    N(ind) = -N(ind);
+    %N = cs.subSet(cs.isImproper).axis; % take mirror planes
+    %ind = angle(N,vector3d(cs.aAxis))< 45*degree;
+    %N(ind) = -N(ind);
+    
+    [axes,mult] = cs.elements;
+    
+    if ~cs.isLaue, axes(mult==2) = []; end
+       
+    % construct all triangles    
+    tri = axes(axes.calcDelaunay);
+    
+    % consider the triangle closest to the z-axis and the first quadrant
+    [~,id] = min(sum(100*tri.theta + abs(mod(tri.rho-rho-pi/4+pi,2*pi)-pi)));
+    
+    sR = sphericalRegion.byVertices(tri(:,id));
+    N = sR.N;
+    
   case 1 % 1       
   case 2 % -1    
     N = zvector;    
