@@ -16,7 +16,8 @@ Improper = isImproper(rot);
 
 axis = rot.axis;
 omega = round(rot.angle./degree);
-[uaxis, ~, id] = unique(axis,'antipodal');
+[uaxis, ~, id] = unique(axis,'antipodal','tolerance',0.1);
+uaxis(uaxis.z < 0) = -uaxis(uaxis.z < 0);
 
 % initalize plot
 sP = newSphericalPlot(zvector,'upper',varargin{:},s.plotOptions{:});
@@ -34,39 +35,36 @@ circle(rot(mir).axis,'linewidth',mlw,'color','k','doNotDraw');
 
 for i = 1:length(uaxis)
   
-  angleP = min(omega(~Improper(:) & id == i & omega(:)>0));
-  angleI = min(omega(Improper(:) & id == i & omega(:)>0));
+  % proper multiplicity
+  multiP = round(360./min(omega(~Improper(:) & id == i & omega(:)>0)));
+  
+  % improper multiplicity
+  multiI = round(360./min(omega(Improper(:) & id == i & omega(:)>0)));
   n = [1,-1].*uaxis(i);
   
-  if isempty([angleP,angleI]), continue; end
+  if isempty([multiP,multiI]), continue; end
     
-  switch min([angleP,angleI])
+  multi = max([multiP,multiI]);
   
-    case 180
-      if angleP == 180
-        plotCustom(n,{@(ax,x,y) ...
-          ellipse(x,y,symbolSize,0.4*symbolSize,pi/2+n(1).rho,'parent',ax,'edgecolor','w')});
-      end      
-    case 120
-      plotCustom(n,{@(ax,x,y) triangle(x,y,1.1*symbolSize,'parent',ax,'edgecolor','w')});
-    case 90
-      plotCustom(n,{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,'edgecolor','w')});        
-      if angleP == 180
-        plotCustom(n,{@(ax,x,y) ...
-          square(x,y,0.9*symbolSize,'parent',ax,'FaceColor','w')});
-        plotCustom(n,{@(ax,x,y) ellipse(x,y,symbolSize,0.4*symbolSize,0,'parent',ax)});      
-      end
-    case 60
-      plotCustom(n,{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,'edgecolor','w')});        
-      if angleP == 120       
-        plotCustom(n,{@(ax,x,y) ...
-          hexagon(x,y,0.9*symbolSize,'parent',ax,'FaceColor','w')});
-        plotCustom(n,{@(ax,x,y) triangle(x,y,0.8*symbolSize,'parent',ax)});      
-      end
-  end  
+  % plot a proper rotation or the exterior of an improper rotation 
+  if multi > 2 || ~isempty(multiP)
+    plotCustom(n,{@(ax,x,y) npoly(x,y,multi,1.1*symbolSize,n(1).rho,'parent',ax,'edgecolor','w','linewidth',2)});
+  end
+  
+  % if the improper multiplicity is larger then the proper multiplicity
+  if multiI > multiP
+    % plot the interior white
+    plotCustom(n,{@(ax,x,y) ...
+      npoly(x,y,multi,0.9*symbolSize,n(1).rho,'parent',ax,'FaceColor','w')});
+    
+    % and on top of it the proper multiplicity - a bit smaller
+    plotCustom(n,{@(ax,x,y) npoly(x,y,multiP,0.9*symbolSize,n(1).rho,'parent',ax)});
+  end
+    
 end
 
-if any(rot(:)==-rotation.id)
+% mark inversion if present
+if s.isLaue
   plotCustom(zvector*[1,-1],{@(ax,x,y) ...
     ellipse(x,y,0.4*symbolSize,0.4*symbolSize,0,'parent',ax,'FaceColor','w','linewidth',2)});
 end
@@ -92,27 +90,19 @@ xy = [sin(omega(:)) .* dx,cos(omega(:)) .* dy];
 xy = (A * xy.').';
 xy = bsxfun(@plus,xy,[cx,cy]);
 
-
 patch('vertices',xy,'faces',1:size(xy,1),varargin{:});
 
 end
 
 %
-function triangle(x,y,d,varargin)
+function npoly(x,y,n,d,angle,varargin)
 
-patch('vertices',[x+[-d;0;d],y+d*sqrt(3)/3*[-1;2;-1]],'faces',1:3,varargin{:});
+if n == 2
+  ellipse(x,y,0.4*d,d,angle,varargin{:});
+else
 
+  omega = angle + pi + linspace(0,2*pi,n+1).';
+  patch('vertices',[x + d * cos(omega), y+d*sin(omega)],'faces',1:n,varargin{:});
 end
-
-function hexagon(x,y,d,varargin)
-
-patch('vertices',[x+d*[0;sqrt(3)/2;sqrt(3)/2;0;-sqrt(3)/2;-sqrt(3)/2],...
-  y+d*[-1;-0.5;0.5;1;0.5;-0.5]],'faces',1:6,varargin{:});
-
-end
-
-function square(x,y,d,varargin)
-
-patch('vertices',[x+[0;d;0;-d],y+[-d;0;d;0]],'faces',1:4,varargin{:});
 
 end
