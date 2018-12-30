@@ -151,6 +151,9 @@ classdef HSVDirectionKey < directionColorKey
 
       % symmetry dependent settings
       switch oM.sym.id
+        case 0
+          sR = oM.sym.Laue.fundamentalSector;
+          oM.refl = setdiff(sR.N,oM.sR.N);
         case 1, if isa(oM.sym,'crystalSymmetry')                     % 1
             oM.refl = oM.sym.axes(3);
           else
