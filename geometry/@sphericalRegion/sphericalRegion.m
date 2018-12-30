@@ -15,8 +15,7 @@ classdef sphericalRegion
     alpha = []         % the cosine of the bounding circle
     antipodal = false  % used for check_inside
   end
-  
-  
+
   
   methods
         
@@ -47,6 +46,7 @@ classdef sphericalRegion
         N = normalize(cross(v,v([2:end,1])));
         sR.N = [sR.N,N];
         sR.alpha = [sR.alpha,zeros(size(N))];      
+        warning('This syntax is obsolete. Use sphericalRegion.byVertices!')
       end
         
       % additional options
@@ -204,8 +204,7 @@ classdef sphericalRegion
     function alpha = innerAngle(sR)
       
       [~,e] = boundary(sR);
-      alpha = pi-angle(sR.N(e(:,1)),sR.N(e(:,2)));
-      
+      alpha = pi-angle(sR.N(e(:,1)),sR.N(e(:,2)));      
       
     end
     
@@ -241,6 +240,11 @@ classdef sphericalRegion
         end
       end
     end
+  end
+  
+  methods (Static = true)
+    sR = byVertices(V,varargin)    
+    sR = triangle(a,b,c,varargin)
   end
 end
 
