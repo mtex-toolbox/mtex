@@ -22,8 +22,12 @@ else
 end
 
 % set new symmetry id
-pG = symmetry.pointGroups;
-s.id = pG(pG(s.id).LaueId).properId;
+try
+  pG = symmetry.pointGroups;
+  s.id = pG(pG(s.id).LaueId).properId;
+catch
+  s.id = 0;
+end
 
 
 

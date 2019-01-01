@@ -155,8 +155,12 @@ else
   % extract style
   opt = extract_argoption([{'LineStyle','none','Fill','on'},varargin],{'LineStyle','Fill','LineColor'});
   
-  [CM,h] = contourf(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
-  [CM,h] = contour(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
+  if ~check_option(varargin,'contour')
+    [CM,h] = contourf(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
+  else
+    [CM,h] = contour(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
+  end
+  
   
 end
 

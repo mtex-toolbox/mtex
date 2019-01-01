@@ -10,12 +10,16 @@
 %
 % The simplest way to define a |S2FunHarmonicSym| is through the symmetrisation of an ordinary <S2FunHarmonic_index |S2FunHarmonic|>.
 
-sF = S2FunHarmonic.quadrature(@(v) smiley(v))
+sF = S2Fun.smiley
 cs = crystalSymmetry('432');
 
 sFs1 = symmetrise(sF, cs);
 
+%%
 % * this symmetrises the function and gives back the result with the symmetry attached
+%
+
+plot(sFs1)
 
 %%
 % *Definition via function handle*
@@ -25,6 +29,7 @@ sFs1 = symmetrise(sF, cs);
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 cs = crystalSymmetry('6/m');
+
 %% 
 % Now you can call the quadrature command to get |sFs2| of type |S2FunHarmonicSym|
 sFs2 = S2FunHarmonicSym.quadrature(f, cs)

@@ -55,10 +55,10 @@ end
 nSym = length(q);
 
 % take +- minimal angles for each axis
-q(abs(q.angle)<1e-5) = [];
+q(abs(q.angle)<1e-3) = [];
 axes = q.axis;
 
-[axes,~,c] = unique(axes);
+[axes,~,c] = unique(axes,'tolerance',1e-3);
 angles = zeros(size(axes));
 
 for i = 1:length(axes)

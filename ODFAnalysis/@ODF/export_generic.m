@@ -40,7 +40,7 @@ else
 end
 
 % evaluate ODF
-v = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+v = eval(odf,S3G,varargin{:});
 
 % build up matrix to be exported
 d = mod(d,2*pi);

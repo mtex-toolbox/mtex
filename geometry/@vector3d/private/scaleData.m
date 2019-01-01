@@ -23,7 +23,7 @@ if minData == maxData
 end
 
 % from options
-if check_option(varargin,{'contourf','contour'},'double')
+if check_option(varargin,{'contourf'},'double')
   
   contours = get_option(varargin,{'contourf','contour'},[],'double');
   colorRange = [contours(1),contours(end)];

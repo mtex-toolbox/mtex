@@ -5,7 +5,7 @@ function s = disjoint(s1,s2)
 if s1 == s2, s = s1; return; end
 
 % check for equal rotations
-[is1,is2] = find(isappr(dot_outer(s1,s2),1));
+[is1,is2] = find(isappr(dot_outer(s1,s2),1,1e-4));
 
 % the trivial cases 
 if numel(is1) == 1, s = crystalSymmetry; return; end 

@@ -1,4 +1,4 @@
-function b = isappr(x,y)
+function b = isappr(x,y,varargin)
 % check double == double
 
-b = isnull(abs(x-y));
+b = isnull(abs(x-y),varargin{:});

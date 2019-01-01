@@ -11,5 +11,11 @@ classdef S2Fun
     f = eval(sF,v,varargin)
     
   end
+  
+  methods (Static = true)
+  
+    S2F = smiley(varargin)
+    
+  end
 
 end
