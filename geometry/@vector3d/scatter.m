@@ -17,6 +17,9 @@ function [h,ax] = scatter(v,varargin)
 %  MarkerEdgeColor   - 'r','g','w','k','b'
 %  MarkerColor       - shortcut for the above two
 %  MarkerSize        - size of the markers in pixel
+%  MarkerAlpha       - transperency setting
+%  MarkerEdgeAlpha   - transperency setting
+%  MarkerFaceAlpha   - transperency setting
 %  DynamicMarkerSize - scale marker size when plot is resized
 %
 % Output
@@ -87,7 +90,7 @@ for i = 1:numel(sP)
   
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
       
-    % extract colorpatchArgs{3:end}coding
+    % extract color coding
     cdata = varargin{1};
     if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
@@ -138,6 +141,28 @@ for i = 1:numel(sP)
       % remove from legend
       set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 
+      % add transperency if required
+      if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+        
+        faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
+        edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
+        
+        pause(0.1);
+        
+        hh = handle(h(i));
+        mh = [hh.MarkerHandle];
+        
+        for j = 1:length(mh)
+          mh(j).FaceColorData(4) = faceAlpha;
+          mh(j).FaceColorType = 'truecoloralpha';
+          
+          mh(j).EdgeColorData(4) = edgeAlpha;
+          mh(j).EdgeColorType = 'truecoloralpha';
+        end
+         
+      end
+      
+      
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend
       if check_option(varargin,'DisplayName')
