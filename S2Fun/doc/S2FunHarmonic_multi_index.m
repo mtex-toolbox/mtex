@@ -27,7 +27,7 @@ nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 %%
 % Next we define function values for the vertices
-y = [smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
+y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 %%
 % Now the actual command to get a 2x1 |sF1| of type |S2FunHarmonic|
 sF1 = S2FunHarmonic.approximation(nodes, y)

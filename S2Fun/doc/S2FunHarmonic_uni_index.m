@@ -10,7 +10,7 @@ nodes = equispacedS2Grid('resolution',3*degree,'antipodal');
 nodes = nodes(:);
 %%
 % Next you define function values for the vertices
-y = smiley(nodes);
+y = S2Fun.smiley(nodes);
 
 % plot the discrete data
 plot(nodes,y)
