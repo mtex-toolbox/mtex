@@ -1,7 +1,6 @@
-%% Crystal Directions
-% Crystal directions are directions relative to a crystal reference frame
-% and are usually defined in terms of Miller indices. This sections
-% explains how to calculate with crystal directions in MTEX.
+%% Miller Indices
+% Miller indices are used to describe directions with respect to the
+% crystal reference system.
 %
 %% Open in Editor
 %
