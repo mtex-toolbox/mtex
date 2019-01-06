@@ -104,17 +104,20 @@ classdef vector3d < dynOption
 
       % ------------------ options ------------------------------
       
-      % antipodal
-      v.antipodal = check_option(varargin,'antipodal');
+      if nargin > 3
+        
+        % antipodal
+        v.antipodal = check_option(varargin,'antipodal')
       
-      % resolution
-      if check_option(varargin,'resolution')
-        v = v.setOption('resolution',get_option(varargin,'resolution'));
+        % resolution
+        if check_option(varargin,'resolution')
+          v = v.setOption('resolution',get_option(varargin,'resolution'));
+        end
+      
+        % normalize
+       if check_option(varargin,'normalize'), v = v ./ norm(v); end
+       
       end
-      
-      % normalize
-      if nargin > 3 && check_option(varargin,'normalize'), v = v ./ norm(v); end
-      
     end
   
     function n = numArgumentsFromSubscript(varargin)

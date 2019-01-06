@@ -51,7 +51,17 @@ classdef rotation < quaternion & dynOption
 
       switch class(varargin{1})
 
-        case {'quaternion','double'}
+        
+        case 'double'
+        
+          rot.a = varargin{1};
+          rot.b = varargin{2};
+          rot.c = varargin{3};
+          rot.d = varargin{4};
+          rot.i = false(size(varargin{1}));
+          return
+          
+        case {'quaternion'}
 
           quat = varargin{1};
 
