@@ -61,10 +61,10 @@ if nargin>1 && isa(varargin{1},'orientation')
   
   if ~getMTEXpref('generatingHelpMode')
     disp('  I''m going to colorize the orientation data with the ');
-    disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp('  standard MTEX ipf colorkey. To view the colorkey do:');
     disp(' ');
-    disp('  oM = ipfColorKey(ori_variable_name)')
-    disp('  plot(oM)')
+    disp('  ipfKey = ipfColorKey(ori_variable_name)')
+    disp('  plot(ipfKey)')
   end
 end
 
