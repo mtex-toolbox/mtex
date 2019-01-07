@@ -107,7 +107,7 @@ classdef vector3d < dynOption
       if nargin > 3
         
         % antipodal
-        v.antipodal = check_option(varargin,'antipodal')
+        v.antipodal = check_option(varargin,'antipodal');
       
         % resolution
         if check_option(varargin,'resolution')
