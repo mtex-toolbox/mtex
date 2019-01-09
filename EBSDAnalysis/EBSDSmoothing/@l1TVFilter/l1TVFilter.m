@@ -12,7 +12,7 @@ classdef l1TVFilter < EBSDFilter
     
     function F = l1TVFilter(alpha)
       if nargin > 0, F.alpha = alpha;end
-      F.lambda = (1:F.maxit).^(-1.2);   
+      F.lambda = (1:1000).^(-1.2);
     end
     
     function ori = smooth(F,ori)
@@ -22,10 +22,13 @@ classdef l1TVFilter < EBSDFilter
                   
       % perform cyclic proximal point algorithm
       qOut = qIn;
+      qOut(isnan(qOut)) = mean(qOut);
       for k = 1:F.maxit
         
-        qOut = proxDist(qOut, qIn, F.lambda(k));
         qOut = proxTVSquare(qOut, F.lambda(k), F.alpha);
+        qOut = proxDist(qOut, qIn, F.lambda(k));
+        
+        %qOut = proxLaplace(qOut, F.lambda(k) *  F.alpha);
         
       end
                         

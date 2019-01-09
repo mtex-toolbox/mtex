@@ -1,12 +1,26 @@
 function [xOut,yOut] = proxTV(xIn,yIn,lambda,varargin)
 
-% compute geodetic distance
-mu = angle(xIn,yIn,varargin{:}) * sqrt(2)/(2*lambda);
+
+t = 2*lambda ./ angle(xIn,yIn,varargin{:});
+t = min(t,0.5);
+
+% add some threshold
+if 0
+  t(mu>10*degree*sqrt(2)/(2*lambda))=0;
+end
 
 % 
-t = 1 ./ (2*mu);
-t(mu<=1) = 0.5;
+%xOut = geodesic(xIn,yIn,t,varargin{:});
+%yOut = geodesic(xIn,yIn,1-t,varargin{:});
 
-% 
-xOut = geodesic(xIn,yIn,t,varargin{:});
-yOut = geodesic(xIn,yIn,1-t,varargin{:});
+% make this explicit for speed reasons
+% rot = exp( t .* log(rot2,rot1), rot1); 
+
+if 1
+  l = log(yIn,xIn);
+  xOut = exp(t .* l,xIn);
+  yOut = exp((1-t) .* l,xIn);
+else % this is not exact but faster  
+  xOut = normalize((1-t).*xIn + t.*yIn);
+  yOut = normalize(t.*xIn + (1-t).*yIn);
+end

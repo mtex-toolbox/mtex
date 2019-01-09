@@ -8,10 +8,7 @@ function x = proxDist(x,v,lambda,varargin)
 %  x - 
 %
 
-mu = angle(v,x) * sqrt(2) ./ lambda;
-
-t = 1 ./ (2*mu);
-t(mu<=1) = 0.5;
+t = lambda ./ angle(v,x);
+t = min(t,0.5);
 
 x = geodesic(x,v,t,varargin{:});
-
