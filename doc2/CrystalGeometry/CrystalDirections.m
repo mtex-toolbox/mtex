@@ -6,9 +6,9 @@
 %
 %% Contents
 %
-%% Definition
+%% Crystal Lattice Directions
 %
-% Since crystal directions are always subject to a certain crystal
+% Since lattice directions are always subject to a certain crystal
 % reference frame, the starting point for any crystal direction is the
 % definition of a variable of type <crystalSymmetry_index.html
 % crystalSymmetry>
@@ -25,10 +25,11 @@ b = cs.bAxis
 c = cs.cAxis
 
 %%
-% A crystal direction |m = u * a + v * b + w * c| is a vector with
-% coordinates u, v, w with respect to these crystallographic axes. In MTEX a
-% crystal direction is represented by a variable of type <Miller_index.html
-% Miller> which is defined by
+% A lattice direction |m = u * a + v * b + w * c| is a vector with
+% coordinates u, v, w with respect to these crystallographic axes. Such a
+% direction is commonly denoted by [uvw] with coordinates u, v, w called
+% Miller indices. In MTEX a lattice direction is represented by a variable
+% of type <Miller_index.html Miller> which is defined by
 
 m = Miller(1,0,1,cs,'uvw')
 
@@ -38,41 +39,71 @@ m = Miller(1,0,1,cs,'uvw')
 
 plot(m,'upper','labeled','grid')
 
-%%
-% Alternatively, a crystal direction may also be defined in the reciprocal
-% space, i.e. with respect to the dual axes a*, b*, c*. The corresponding
-% coordinates are usually denoted by |h|, |k|, |l|. Note that for non
-% Euclidean crystal frames uvw and hkl notations usually lead to different
-% directions.
+%% Crystal Lattice Planes
+%
+% A crystal lattice plane (hkl) is commonly described by its normal vector
+% |n = h * a* + k * b* + l * c*| where a*, b*, c* describes the reciprocal
+% crystal coordinate system. In MTEX a lattice plane is defined by
 
 m = Miller(1,0,1,cs,'hkl')
+
+%%
+% By default lattice planes are plotted as normal directions. Using the
+% option |plane| we may alternatively plot the trace of the lattice plane
+% with the sphere.
+
 hold on
+% the normal direction
 plot(m,'upper','labeled')
-% the corresponding lattice plane
+
+% the trace of the corresponding lattice plane
 plot(m,'plane','linecolor','r','linewidth',2)
 hold off
 
+%%
+% Note that for non Euclidean crystal frames uvw and hkl notations usually
+% lead to different directions.
+%s
 %% Trigonal and Hexagonal Convention
 %
-% In the case of trigonal and hexagonal crystal symmetry, the convention of
-% using four Miller indices h, k, i, l, and U, V, T, W is supported as
-% well.
+% In the case of trigonal and hexagonal crystal symmetry often four digit
+% Miller indices [UVTW] and (HKIL) are used, as they make it more easy to
+% identify symmetrically equivalent directions. This notation is reduntant
+% as the first three Miller indeces always sum up to zero, i.e., $U + V +
+% T = 0$ and $H + K + I = 0$. The syntax is
 
+% import trigonal Quartz lattice structure
 cs = loadCIF('quartz')
+
+% a four digit lattice direction
 m = Miller(2,1,-3,1,cs,'UVTW')
+
+plot(m,'upper','labeled')
+
+n = Miller(1,1,-2,3,cs,'HKIL')
+
+hold on
+plot(n,'upper','labeled')
+hold off
 
 
 %% Symmetrically Equivalent Crystal Directions
 %
-% A simple way to compute all symmetrically equivalent
-% directions to a given crystal direction is provided by the command
-% <Miller.symmetrise.html symmetrise>
+% Since crystal lattices are symmetric lattice directions can be grouped
+% into classes of symmetrically equivalent directions. Those groups can be
+% derived by permuting the Miller indeces (uvw). The class of all
+% directions symmetrically equivalent to (uvw) is commonly denoted by
+% <uvw>, while the class of all lattice planes symmetrically equivalent to
+% the plane (hkl) is denoted by {hkl}. Given a lattice direction or a
+% lattice plane all symmetrically equivalent directions and planes are
+% computed by the command <Miller.symmetrise.html symmetrise>
+% 
 
 symmetrise(m)
 
 %%
-% As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
-% computation
+% As always the keyword <AxialDirectional.html antipodal> adds antipodal
+% symmetry to this computation
 
 symmetrise(m,'antipodal')
 
@@ -84,6 +115,7 @@ symmetrise(m,'antipodal')
 plot(m,'symmetrised','labeled','grid','backgroundcolor','w')
 
 %%
+% 
 % The command [[vector3d.eq.html,eq or ==]] can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
