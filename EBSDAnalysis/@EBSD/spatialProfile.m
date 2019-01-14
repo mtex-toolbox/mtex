@@ -1,56 +1,83 @@
-function [ebsd,distList] = spatialProfile(ebsd,lineX,varargin)
+function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 % select EBSD data along line segments
 % 
 % Syntax
-%   % returns a sorted list of ebsd data along lineX
-%   [ebsd_lineX,dist] = spatialProfile(ebsd,lineX)
+%
+%   ebsdLine = spatialProfile(ebsd,[xStart,xEnd],[yStart yEnd])
+% 
+%   [ebsdLine,dist] = spatialProfile(ebsd,x,y)
+%
+%   xy = ginput(2)
+%   [ebsdLine,dist] = spatialProfile(ebsd,xy)
 %
 % Input
 %  ebsd  - @EBSD
-%  lineX - list of spatial coordinates |[x(:) y(:)]| of if 3d |[x(:) y(:) z(:)]|, 
-%    where $x_i,x_{i+1}$ defines a line segment
+%  xStart, xEnd, yStart, yEnd - double
+%  x, y  - coordinates of the line segments
+%  xy - list of spatial coordinates |[x(:) y(:)]| 
 %
 % Output
-%  ebsd - @EBSD restrcited to the line of interest
+%  ebsdLine - @EBSD restrcited to the line of interest
 %  dist - double distance along the line to the initial point
 %
 % Example
 %
+%   % import data
 %   mtexdata twins
+%
+%   % plot data
 %   plot(ebsd('indexed'),ebsd('indexed').orientations)
-%   lineX = ginput(2)
-%   ebsd_lineX = spatialProfile(ebsd,lineX)
-%   clf; plot(ebsd_lineX.x,angle(ebsd_lineX(1).orientations,ebsd_lineX.orientations)./degree)
-%   xlabel('x'), ylabel('misorientation angle')
+%
+%   % select line coordinates
+%   x = [15.5 27]; y = [20.5 11];
+%
+%   % draw line with some transluency
+%   line(x,y,'color',[0.5 0.5 0.5 0.5],'linewidth',10)
+%
+%   % restrict ebsd data to this line
+%   [ebsdLine,dist] = spatialProfile(ebsd,x,y);
+%
+%   % extract orientations
+%   ori = ebsdLine.orientations;
+%
+%   figure
+%   plot misorienation angle along the profile
+%   plot(dist,angle(ori,ori(1))./degree,'linewidth',2)
+%   xlabel('line'), ylabel('misorientation angle')
 
-if all(isfield(ebsd.prop,{'x','y','z'}))
-  x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
-else
-  x_D = [ebsd.prop.x,ebsd.prop.y];
+% maybe y is given as a second argument
+if nargin >= 3 && isnumeric(varargin{1})
+  lineXY = [lineXY(:),varargin{1}];
 end
 
-radius = unitCellDiameter(ebsd.unitCell)/2;
-
 % work with homogenous coordinates
-x_D(:,end+1) = 1;
+xy1 = [ebsd.prop.x,ebsd.prop.y];
+xy1(:,end+1) = 1;
+
+radius = unitCellDiameter(ebsd.unitCell)/2;
 
 distList = 0;
 idList = [];
 
-dim = size(lineX,2);
-for k=1:size(lineX,1)-1
+dim = size(lineXY,2);
+for k=1:size(lineXY,1)-1
   % setup transformation matrix
   % line from A to B
-  dX = lineX(k+1,:)-lineX(k,:);
   
+  if lineXY(k+1,1)>lineXY(k,1) %x2>x1 && y2<y1 || x2>x1 && y2>y1
+    dX = [lineXY(k+1,1)-lineXY(k,1), - (lineXY(k+1,2)-lineXY(k,2))];
+  else %x2<x1 && y2>y1 || x2<x1 && y2<y1
+    dX = lineXY(k+1,:)-lineXY(k,:);
+  end
+    
   [s,~,D] = svd(dX./norm(dX));
   
   % if s is negative, shift into B, else shift into A
   D(dim+1,dim+1) = 1;
-  D(:,end) =  [-lineX(k+double(s<0),:) 1] * D';
+  D(:,end) =  [-lineXY(k+double(s<0),:) 1] * D';
   
   % homogen linear tranformation
-  x_DX = x_D*D';
+  x_DX = xy1*D';
 
   % detect which ebsd data are close to the current segment
   id =  find(sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
