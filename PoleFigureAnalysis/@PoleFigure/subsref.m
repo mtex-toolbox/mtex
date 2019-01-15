@@ -4,7 +4,7 @@ function varargout = subsref(pf,s)
 if any(strcmp(s(1).type,{'()','{}'}))
     
   if strcmp(s(1).type,'{}') || iscell(s(1).subs{1}) || ...
-      ischar(s(1).subs{1}) || isa(s(1).subs{1},'Miller')
+      (ischar(s(1).subs{1}) && ~strcmp(s(1).subs{1},':')) || isa(s(1).subs{1},'Miller')
   
     pf = pf.select(s(1).subs);
        

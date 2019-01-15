@@ -151,5 +151,15 @@ classdef PoleFigure < dynProp & dynOption
       n = numel(pf.allH);
     end
     
+    function e = end(pf,i,n)
+      % overloaded end function
+
+      if n==1
+        e = numel(pf.r);
+      else
+        e = size(pf.r,i);
+      end
+    end
+    
   end
 end
