@@ -4,15 +4,18 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 % Syntax
 %   oR = fundamentalRegion(cs)
 %   oR = fundamentalRegion(cs1,cs2)
+%   [oR,dcs,nSym] = fundamentalRegion(cs1,cs2)
 %
 % Input
 %  cs,cs1,cs2 - @symmetry
 %
 % Ouput
 %  sR - @orientationRegion
+%  dc - @symmetry intersection between cs1 and cs2 
+%  nSym - number of disjoined symmetry elements in cs2 * cs1
 %
 % Options
-%  antipodal  - wheter mori == inv(mori)
+%  antipodal  - grain exchange symmetry, i.e.,  mori == inv(mori)
 %  LaueGroup  - consider only Laue groups (default)
 %  pointGroup - consider point groups
 %
@@ -30,7 +33,7 @@ if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
   
   q = rotation(cs2) * q;   
   q = q(~q.isImproper);
-  q = unique(quaternion(q));
+  q = unique(quaternion(q),'antipodal');
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
     dcs = disjoint(cs,cs2);
