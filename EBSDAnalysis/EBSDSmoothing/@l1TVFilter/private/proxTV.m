@@ -2,6 +2,7 @@ function [xOut,yOut] = proxTV(xIn,yIn,lambda,varargin)
 
 
 t = 2*lambda ./ angle(xIn,yIn,varargin{:});
+%max(t,[],'all')
 t = min(t,0.5);
 
 % add some threshold
@@ -9,13 +10,8 @@ if 0
   t(mu>10*degree*sqrt(2)/(2*lambda))=0;
 end
 
-% 
-%xOut = geodesic(xIn,yIn,t,varargin{:});
-%yOut = geodesic(xIn,yIn,1-t,varargin{:});
-
-% make this explicit for speed reasons
-% rot = exp( t .* log(rot2,rot1), rot1); 
-
+% xOut = geodesic(xIn,yIn,t,varargin{:});
+% yOut = geodesic(xIn,yIn,1-t,varargin{:});
 if 1
   l = log(yIn,xIn);
   xOut = exp(t .* l,xIn);

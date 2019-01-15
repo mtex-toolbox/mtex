@@ -1,4 +1,4 @@
-function x = proxDist(x,v,lambda,varargin)
+function x = proxl2(x,v,lambda,varargin)
 %
 % Input
 %  x 
@@ -8,7 +8,6 @@ function x = proxDist(x,v,lambda,varargin)
 %  x - 
 %
 
-t = lambda ./ angle(v,x);
-t = min(t,0.5);
+t = lambda ./ (1+lambda);
 
 x = geodesic(x,v,t,varargin{:});
