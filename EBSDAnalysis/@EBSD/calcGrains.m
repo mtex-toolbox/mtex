@@ -13,7 +13,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %
 % Options
 %  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
-%  boundary        - bounds the spatial domain
+%  boundary        - bounds the spatial domain ('convexhull', 'tight')
 %
 % Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice

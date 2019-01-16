@@ -103,7 +103,7 @@ if ischar(method)
       
     otherwise     
       
-      error('uknown boundary type. Available options are ''convexhull'' and ''cube''.');   
+      error('uknown boundary type. Available options are ''convexhull'' ''tight '' and ''cube''.');   
       
   end
   
