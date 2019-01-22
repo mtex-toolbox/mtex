@@ -23,7 +23,7 @@ if isa(sF.s,'crystalSymmetry')
 end
 
 % perform plotting
-[varargout{1:nargout}] = sF.plot@S2Fun(sR,varargin{:});
+[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:});
 
 
 function txt = tooltip(varargin)
