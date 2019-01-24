@@ -2,9 +2,9 @@ function pdf = calcPDF(component,h,r,varargin)
 % calculate pole figure from Fourier coefficients
 
 % use only even Fourier coefficients?
-even = 1 + double((check_option(varargin,'antipodal') ...
-  || h.antipodal || component.CS.isLaue));
-if nargin > 2, even = double(even || r.antipodal); end
+even = check_option(varargin,'antipodal') || h.antipodal || component.CS.isLaue;
+if nargin > 2, even = even || r.antipodal; end
+even = 1 + double(even);
 
 % bandwidth
 L = get_option(varargin,'bandwidth',component.bandwidth);
