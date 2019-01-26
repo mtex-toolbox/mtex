@@ -13,9 +13,23 @@ try
   
   [data,Xstep,Ystep] = oscData( fname );
   
-  loader = loadHelper(data,...
-    'ColumnNames',{'phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal','Fit'},...
-    'Radians');
+  %Need to handle data like prius or EDS
+  nCols=size(data,2);
+  
+  colNames={'phi1','Phi','phi2','x','y','ImageQuality',...
+    'ConfidenceIndex','Phase','SemSignal','Fit'};
+  if nCols > 10
+      for col = length(colNames)+1:nCols
+          colNames{col}=strcat('unknown_',int2str(col)); 
+      end
+      disp('Warning: more column data was passed in than expected. Check your column names make sense!') 
+  elseif nCols < 5
+      error('Error: need to pass in atleast position and orientation data')
+  elseif nCols <9
+      disp('Warning: Less column data was passed in than expected. Check your column names make sense!') 
+  end
+ 
+  loader = loadHelper(data,'ColumnNames',colNames(1:nCols),'Radians');
   
   if Xstep ~= Ystep % probably hexagonal
     unitCell = [...
@@ -182,12 +196,30 @@ if round(((dn/4-2)/10) /n ) ~= 1
 end
 
 % Collect the values for Xstep and Ystep, from the .osc file
+%for some reason there can be a misalignment here
 Xstep = double(fread(fid,1,'single','l'));
-Ystep = double(fread(fid,1,'single','l'));
+if Xstep==0
+   Xstep = double(fread(fid,1,'single','l'));
+   Ystep = double(fread(fid,1,'single','l')); 
+else
+   Ystep = double(fread(fid,1,'single','l'));
+
+end
 
 % Break the data up into an array that resembles the .ang
 % file format being sure to transpose
-data = reshape(double(fread(fid,n*10,'single','l')),10,n)';
+%Problem is on a per version basis, you get different number of columns and
+%depending on your analysis, you may have EDS or Prius columns..
+position = ftell(fid);
+for i=5:30
+    data = reshape(double(fread(fid,n*i,'single','l')),i,n)';
+    if round(data(2,4),4)==round(Xstep,4) && round(data(2,5),4)==0
+        break;
+    end
+    assert(i~=30,'max number of columns reached, formate not handled')
+    fseek(fid,position,'bof');
+end
+% data = reshape(double(fread(fid,n*10,'single','l')),10,n)'; %DS
 
 
 % many thanks to adam shiveley
@@ -278,39 +310,21 @@ headerStop   = strfind(data,headerStop)-1;
 
 headerBytes = data(headerStart+8:headerStop);
 
-if typecast(headerBytes(1:4),'single') == 1
-  nPhase = typecast(headerBytes(5:8),'uint32');
-  headerBytes = headerBytes(9:end);
-else
-  % startPosData = typecast(headerBytes(1:4),'uint32')?
-  % startPosData == headerStart+numel(headerBytes)+21
-  nPhase = typecast(headerBytes(9:12),'uint32');
-  headerBytes = headerBytes(13:end);
+osc_phases = file2cell([mtex_path filesep 'interfaces' filesep 'osc_phases.txt']);
+nPhase=0;
+for i=1:length(osc_phases)
+    phaseLoc=strfind(lower(char(headerBytes)),lower(osc_phases{i}));
+    if ~isempty(phaseLoc)
+        nPhase=nPhase+1; 
+        PhaseStart(nPhase)=phaseLoc;
+        PhaseName{nPhase}=osc_phases{i};
+    end
 end
-
-CS = cell(nPhase,1);
+CS = cell(nPhase,1); %if nPhase is zero then interface catches the error
 
 for k = 1:nPhase
-  
-  %   startOffset = find(headerBytes(p(k)+1:end) > 1,1,'first');
-  
-  %   phaseBytes = headerBytes( p(k)+startOffset : p(k+1) );
-  
-  % char(phaseBytes(1:10))
-  phaseBytes = headerBytes;
-  
-  % bytes used to describe one phase
-  % offset relative to phaseBytes
-  % [1:256]   for phase
-  % [257:260] for symmetrygroup
-  % [261:284] for symmetry cell
-  % [285:288] num hkl
-  % [289:289+3*4*numhkl-1] hkl families int32
-  % formula
-  % next?
-  
-  phaseName  = phaseBytes(1:256);
-  phaseName  = char(phaseName(1:find(phaseName==0,1,'first')-1));
+
+  phaseBytes = headerBytes(PhaseStart:PhaseStart+288);
   
   laueGroup = num2str(typecast(phaseBytes(257:260),'int32'));
   
@@ -318,20 +332,6 @@ for k = 1:nPhase
   axLength  = double(typecast(cellBytes(1:12),'single'));
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
   numHKL    = typecast(phaseBytes(285:288),'int32');
-  
-  % hklFamilies
-  %   hkls      = typecast(phaseBytes(289:(289+3*4*numHKL-1)),'int32');
-  %   hkls      = reshape(hkls,3,[])';
-  
-  if nPhase > 1 % look out for the next phase start
-    
-    formularMarkEnd = [repmat(hex2dec({'01','00','00','00'}),20,1)
-      hex2dec({'02','00','00','00','FF','FF','FF','FF'})]';
-    p =  [strfind(phaseBytes,formularMarkEnd) + numel(formularMarkEnd)];
-    nextPhaseStart = p(1)+4*numHKL+20;
-    
-    headerBytes = headerBytes(nextPhaseStart:end);
-  end
   
   
   % maybe from ang convention? should ask the vendor ...
@@ -354,7 +354,7 @@ for k = 1:nPhase
       end
   end
   
-  CS{k} = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',phaseName,options{:});
+  CS{k} = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},options{:});
   
 end
 
