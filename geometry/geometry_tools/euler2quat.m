@@ -27,7 +27,8 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % vec42quat hr2quat
 
 % maybe euler angles are given as a matrix
-if nargin == 1 && size(alpha,2)==3
+if (nargin == 1 && size(alpha,2)==3) || ...
+   (nargin == 2 && size(alpha,2)==3 && isa(beta,'symmetry'))
 
   gamma = alpha(:,3);
   beta = alpha(:,2);
