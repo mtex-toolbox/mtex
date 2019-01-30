@@ -25,34 +25,41 @@ function plotIPDF(f,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[mtexFig,isNew] = newMtexFigure('ensureTag','ipdf',...
-  'ensureAppdata',{{'CS',f.CS}},...
-  'name',['Inverse Pole figures of ' f.CS.mineral],...
-  'datacursormode',@tooltip,varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-% take inverse pole figure directions from figure
-r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
-
-if isNew || isempty(r) || ~isa(mtexFig,'mtexFigure')
-  
-  r = varargin{1};
-  argin_check(r,'vector3d');
-  setappdata(mtexFig.parent,'inversePoleFigureDirection',r);
-        
+% maybe we should call this function with the option add2all
+if ~isNew && ~check_option(varargin,'parent') && ...
+    ((((ishold(mtexFig.gca) && nargin > 1 && isa(varargin{1},'vector3d') && length(varargin{1})>1))) || check_option(varargin,'add2all'))
+  plot(ori,varargin{:},'add2all');
+  return
 end
+
+% find inverse pole figure direction
+r = [];
+try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
+if isempty(r), r = varargin{1}; end
+argin_check(r,'vector3d');
 
 for ir = 1:length(r)
 
-  % TODO: it might happen that the spherical region needs two axes
-  if ir>1, mtexFig.nextAxis; end  
+  if ir>1, mtexFig.nextAxis; end
   
   % the crystal directions
   h = f.orientation \ r(ir);
+  
+  if ~check_option(varargin,'complete')
+    h = h.project2FundamentalRegion;
+  end
  
   %  plot  
-  h.line('fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
+  [~,cax] = h.line('fundamentalRegion','doNotDraw',varargin{:});
+
+  if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
   
-  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
+  setappdata(cax,'inversePoleFigureDirection',r(ir));
+  set(cax,'tag','ipdf');
+  setappdata(cax,'CS',f.CS);
+  setappdata(cax,'SS',f.SS);
 
 end
 
