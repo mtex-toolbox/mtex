@@ -75,16 +75,19 @@ switch cs.id
     
     [axes,mult] = cs.elements;
     
-    if ~cs.isLaue, axes(mult==2) = []; end
+    if  max(min(1-abs(dot(axes,zvector)),abs(dot(axes,zvector))))>1e-2
+    
+      if ~cs.isLaue, axes(mult==2) = []; end
        
-    % construct all triangles    
-    tri = axes(axes.calcDelaunay);
+      % construct all triangles
+      tri = axes(axes.calcDelaunay);
     
-    % consider the triangle closest to the z-axis and the first quadrant
-    [~,id] = min(sum(100*tri.theta + abs(mod(tri.rho-rho-pi/4+pi,2*pi)-pi)));
+      % consider the triangle closest to the z-axis and the first quadrant
+      [~,id] = min(sum(100*tri.theta + abs(mod(tri.rho-rho-pi/4+pi,2*pi)-pi)));
     
-    sR = sphericalRegion.byVertices(tri(:,id));
-    N = sR.N;
+      sR = sphericalRegion.byVertices(tri(:,id));
+      N = sR.N;
+    end
     
   case 1 % 1       
   case 2 % -1    
