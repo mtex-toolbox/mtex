@@ -125,6 +125,22 @@ classdef fibre
 
   methods (Static = true)
 
+    function f = rand(varargin)
+      
+      n = varargin(cellfun(@isnumeric,varargin));
+      sym = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
+      
+         
+      
+      h = vector3d.rand(n{:});
+      r = vector3d.rand(n{:});
+      f = fibre(h,r);
+      
+      if ~isempty(sym), f.CS = sym{1}; end
+      
+    end
+    
+    
     function f = alpha(varargin)
       % the alpha fibre
       % from: Comprehensive Materials Processing
