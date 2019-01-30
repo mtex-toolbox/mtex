@@ -6,9 +6,7 @@ function oS = newODFSectionPlot(CS,SS,varargin)
 
 if ~isNew
   oS = getappdata(mtexFig.parent,'ODFSections');
-  if ~isempty(oS)
-  return
-  end
+  if ~isempty(oS), return; end
 end
 
 % maybe ODFSection is specified directly
