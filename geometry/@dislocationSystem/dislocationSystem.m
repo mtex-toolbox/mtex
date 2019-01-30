@@ -3,13 +3,13 @@ classdef dislocationSystem
 %
 % Syntax
 %   dS = dislocationSystem(b,l)
-%   dS = slipSystem(sS)
+%   dS = dislocationSystem(sS)
 %
 % Input
 %  b - @Miller Burgers vector
 %  n - @Miller line vector
 %  sS - @slipSystem
-%  pr - poissson ratio
+%  pr - poisson ratio
 %
   
   properties
