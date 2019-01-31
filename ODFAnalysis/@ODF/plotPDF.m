@@ -109,15 +109,15 @@ end
 
   function txt = tooltip(varargin)
 
-    [r_local,v] = getDataCursorPos(mtexFig);
+    [r_local,~,value] = getDataCursorPos(mtexFig);
 
-    txt = [xnum2str(v) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+    txt = [xnum2str(value) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
 
   end
   
   function localPlotFibre(varargin)
 
-    [r_local,~,ax] = getDataCursorPos(mtexFig);
+    [r_local,~,~,ax] = getDataCursorPos(mtexFig);
 
     figure
     f = fibre(h{mtexFig.children==ax},r_local);
@@ -127,7 +127,7 @@ end
 
   function markEquivalent(varargin)
 
-    [r_local,~,ax] = getDataCursorPos(mtexFig);
+    [r_local,~,~,ax] = getDataCursorPos(mtexFig);
     
     f = orientation(fibre(h{mtexFig.children==ax},r_local,odf.CS,odf.SS));
     f = eval(odf,f);

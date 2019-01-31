@@ -131,7 +131,7 @@ end
 % ------------------ Tooltip function -----------------------------
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
-[pos,value] = getDataCursorPos(gcm);
+[pos,~,value] = getDataCursorPos(gcm);
 try
   grain = grains.subSet(findByLocation(grains,[pos(1) pos(2)]));
 catch

@@ -64,7 +64,7 @@ end
 % --------------- tooltip function ------------------------------
 function txt = tooltip(obj,event)
 
-[h_local,value] = getDataCursorPos(mtexFig);
+[h_local,~,value] = getDataCursorPos(mtexFig);
 
 ax = get(event,'Target');
 while ~ismember(ax,mtexFig.children), ax = get(ax,'parent'); end

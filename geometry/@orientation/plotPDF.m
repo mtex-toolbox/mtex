@@ -1,4 +1,4 @@
-function plotPDF(o,varargin)
+function plotPDF(ori,varargin)
 % plot orientations into pole figures
 %
 % Syntax
@@ -49,18 +49,18 @@ end
 % maybe we should call this function with add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
-  plot(o,varargin{:},'add2all');
+  plot(ori,varargin{:},'add2all');
   return
 end
   
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
-  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+  data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
 elseif (nargin > 1 && ~(isa(varargin{1},'Miller')) || ...
     (nargin > 2 && iscell(varargin{2}) && isa(varargin{2}{1},'Miller')))
-  [data,varargin] = extract_data(length(o),varargin);
-  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+  [data,varargin] = extract_data(length(ori),varargin);
+  data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
 else
   data = [];
 end
@@ -80,10 +80,10 @@ end
 
 % all h should by Miller and have the right symmetry
 argin_check([h{:}],{'Miller'});
-for i = 1:length(h), h{i} = o.CS.ensureCS(h{i}); end
+for i = 1:length(h), h{i} = ori.CS.ensureCS(h{i}); end
 
 if isNew
-  if isa(o.SS,'specimenSymmetry')
+  if isa(ori.SS,'specimenSymmetry')
     pfAnnotations = getMTEXpref('pfAnnotations');
   else
     pfAnnotations = @(varargin) 1;
@@ -96,15 +96,15 @@ end
 
 % ------------------ subsample if needed --------------------------
 if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
-    (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
+    (sum(length(ori))*length(ori.CS)*length(ori.SS) > 10000 || check_option(varargin,'points'))
 
-  points = fix(get_option(varargin,'points',10000/length(o.CS)/length(o.SS)));
-  disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
+  points = fix(get_option(varargin,'points',10000/length(ori.CS)/length(ori.SS)));
+  disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
   disp('  You can specify the the number points by the option "points".'); 
   disp('  The option "all" ensures that all data are plotted');
   
-  samples = discretesample(length(o),points);
-  o= o.subSet(samples);
+  samples = discretesample(length(ori),points);
+  ori= ori.subSet(samples);
   if ~isempty(data), data = data(:,samples,:); end
     
 end
@@ -120,17 +120,17 @@ for i = 1:length(h)
   else
     sh = symmetrise(h{i});
   end
-  r = reshape(o.SS * o * sh,[],1);
-  opt = replicateMarkerSize(varargin,length(o.SS)*length(sh));
+  r = reshape(ori.SS * (ori * sh).',[],1);
+  opt = replicateMarkerSize(varargin,length(ori.SS)*length(sh));
   
   % maybe we can restric ourselfs to the upper hemisphere
   if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
-    opt = [opt,'upper'];
+    opt = [opt,'upper']; %#ok<AGROW>
   end
   
   
-  [~,cax] = r.plot(repmat(data,[length(o.SS) length(sh)]),...
-    o.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+  [~,cax] = r.plot(repmat(data,[length(ori.SS)*length(sh) 1]),...
+    ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
   
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
   
@@ -138,7 +138,7 @@ for i = 1:length(h)
   pfAnnotations('parent',cax,'doNotDraw','add2all');
   setappdata(cax,'h',h{i});
   set(cax,'tag','pdf');
-  setappdata(cax,'SS',o.SS);
+  setappdata(cax,'SS',ori.SS);
   
   % TODO: unifyMarkerSize
 
@@ -156,9 +156,13 @@ end
 % ----------- Tooltip function ------------------------
 function txt = tooltip(varargin)
 
-[r_local,id] = getDataCursorPos(mtexFig);
+[r_local,id,value] = getDataCursorPos(mtexFig,length(ori));
 
-txt = ['id ' xnum2str(id) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+txt{1} = ['id = ' xnum2str(id)];
+txt{2} = ['(x,y) = (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+if ~isempty(value)
+  txt{3} = ['value = ' xnum2str(value)];
+end
 
 end
 

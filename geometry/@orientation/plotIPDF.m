@@ -98,19 +98,20 @@ if isNew || check_option(varargin,'figSize')
 end
 
 % --------------- Tooltip function ------------------
-function txt = tooltip(empt,eventdata) %#ok<INUSL>
+function txt = tooltip(varargin)
 
-pos = get(eventdata,'Position');
-xp = pos(1); yp = pos(2);
-
-ax = get(eventdata,'Target');
-while ~ismember(ax,mtexFig.children), ax = get(ax,'parent'); end
-
-sP = getappdata(ax,'sphericalPlot');
-m = Miller(sP.proj.iproject(xp,yp),getappdata(ax,'CS'));
-m = round(m);
-txt = char(m,'tolerance',3*degree,'commasep');
-
+  [r_local,id,value] = getDataCursorPos(mtexFig,length(ori));
+  
+  %id = (id-1)/
+  
+  h_local = round(Miller(r_local,ori.CS));
+  
+  txt{1} = ['id = ' xnum2str(id)];
+  txt{2} = ['(h,k,l) = ' char(h_local,'tolerance',3*degree,'commasep')];
+  if ~isempty(value)
+    txt{3} = ['value = ' xnum2str(value)];
+  end
+  
 end
 
 end

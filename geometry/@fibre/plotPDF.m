@@ -84,9 +84,9 @@ end
 % ----------- Tooltip function ------------------------
 function txt = tooltip(varargin)
 
-[r_local,id] = getDataCursorPos(mtexFig);
+r_local = getDataCursorPos(mtexFig);
 
-txt = ['id ' xnum2str(id) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+txt = ['(' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
 
 end
 
