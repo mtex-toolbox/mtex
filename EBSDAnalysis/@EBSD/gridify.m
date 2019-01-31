@@ -109,7 +109,7 @@ else
 end
   
 % set up indices - columns run first
-[row,col] = meshgrid(0:nRows,0:nCols);
+[col,row] = meshgrid(0:nCols,0:nRows);
 
 % set up coordinates - theoretical values
 if isRowAlignment
@@ -133,7 +133,7 @@ else
   
 end
 
-newId = sub2ind([nCols+1 nRows+1],col,row);
+newId = sub2ind([nRows+1 nCols+1],row,col);
 
 % set phaseId to notIndexed at all empty grid points
 phaseId = nan(size(prop.x));
