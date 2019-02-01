@@ -1,28 +1,28 @@
-function ebsd = reduce(ebsd,fak)
-% reduce ebsd data by a factor
+function ebsd = reduce(ebsd)
+% reduce ebsd data by taking only second pixel
 % 
 % Syntax
 %   ebsd = reduce(ebsd)   % take every second pixel horiz. and vert.
-%   ebsd = reduce(ebsd,3) % take every third pixel horiz. and vert.
 %
 % Input
-%  ebsd - @EBSD
+%  ebsd - @EBSDhex
 %
 % Output
-%  ebsd - @EBSD
+%  ebsd - @EBSDhex
 %
 
-if nargin == 1, fak = 2; end
-
 s = size(ebsd);
-
 
 rows = 1:2:s(1);
 cols = 1:2:2*floor((s(2))/2);
 
 [c,r] = meshgrid(cols,rows);
 
-c = c + iseven(round((r+1)/2));
+if ebsd.isRowAlignment
+  c = c + iseven(round((r+1)/2));
+else
+  r = r + iseven(round((c+1)/2));
+end
 
 ind = sub2ind(s,r,c);
 

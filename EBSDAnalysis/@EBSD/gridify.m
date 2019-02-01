@@ -113,23 +113,23 @@ end
 
 % set up coordinates - theoretical values
 if isRowAlignment
-  prop.x = dHex * sqrt(3) * (col + offset * 0.5 * mod(row,2));
-  prop.y = dHex * 3/2 * row;
+  prop.x = ext(1) + dHex * sqrt(3) * (col + offset * 0.5 * mod(row,2) + 0.5*(offset<0));
+  prop.y = ext(3) + dHex * 3/2 * row;
 else
-  prop.x = dHex * 3/2 * row;  
-  prop.y = dHex * sqrt(3) * (col + offset * 0.5 * mod(row,2));  
+  prop.x = ext(1) + dHex * 3/2 * col;  
+  prop.y = ext(3) + dHex * sqrt(3) * (row + offset * 0.5 * mod(col,2) + 0.5*(offset<0));
 end
 
 % round x,y values stored in ebsd to row / col coordinates
 if isRowAlignment
 
   row = 1+round((ebsd.prop.y-ext(3)) / (3/2*dHex));
-  col = 1+round((ebsd.prop.x-ext(1)) / (sqrt(3)*dHex) - 0.5*offset * iseven(row));
+  col = 1+round((ebsd.prop.x-ext(1)) / (sqrt(3)*dHex) - 0.5*(offset * iseven(row)+(offset<0)));
   
 else
   
   col = 1+round((ebsd.prop.x-ext(1)) / (3/2*dHex));
-  row = 1+round((ebsd.prop.y-ext(3)) / (sqrt(3)*dHex) - 0.5*offset * iseven(col));
+  row = 1+round((ebsd.prop.y-ext(3)) / (sqrt(3)*dHex) - 0.5*(offset * iseven(col)+(offset<0)));
   
 end
 
