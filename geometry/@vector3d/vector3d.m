@@ -5,6 +5,7 @@ classdef vector3d < dynOption
     y = []; % y coordinate
     z = []; % z coordinate
     antipodal = false;
+    isNormalized = false;
   end
     
   properties (Dependent = true)
@@ -35,8 +36,15 @@ classdef vector3d < dynOption
 
       if nargin == 0
       elseif nargin <= 2
-        if isa(varargin{1},'vector3d') % copy-constructor
+        if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>
           v = varargin{1};
+        elseif isa(varargin{1},'vector3d') % copy-constructor
+          v.x = varargin{1}.x;
+          v.y = varargin{1}.y;
+          v.z = varargin{1}.z;
+          v.antipodal = varargin{1}.antipodal;
+          v.isNormalized = varargin{1}.isNormalized;
+          v.opt = varargin{1}.opt;
           return
         elseif isa(varargin{1},'double')
           xyz = varargin{1};

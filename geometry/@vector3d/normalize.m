@@ -12,6 +12,8 @@ function v = normalize(v,flag)
 %  v - @vector3d
 %
 
+if v.isNormalized, return; end
+
 nv = norm(v);
 if nargin == 2 && flag == 1
   id = nv>eps;
@@ -21,3 +23,5 @@ if nargin == 2 && flag == 1
 else
   v = v ./ nv;
 end
+
+v.isNormalized = true;

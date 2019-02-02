@@ -21,3 +21,5 @@ else
     error(['Undefined function or method ''minus'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
   end
 end
+
+v.isNormalized = false;

@@ -15,3 +15,5 @@ else
   v = [v1.x(:).';v1.y(:).';v1.z(:).'] * [v2.x(:),v2.y(:),v2.z(:)];
   %error('the product is not defined. see <a href="matlab: help vector3d/dot">dot</a> or use .*');
 end
+
+v.isNormalized = false;
