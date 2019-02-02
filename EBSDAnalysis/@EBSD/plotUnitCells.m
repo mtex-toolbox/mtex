@@ -1,6 +1,9 @@
-function h = plotUnitCells(xy,d,unitCell,varargin)
+function h = plotUnitCells(ebsd,d,varargin)
 
 ax = get_option(varargin,'parent',gca);
+
+xy = [ebsd.prop.x(:),ebsd.prop.y(:)];
+unitCell = ebsd.unitCell;
 
 if ~isempty(unitCell)
   

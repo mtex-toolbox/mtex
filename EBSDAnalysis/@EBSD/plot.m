@@ -77,8 +77,7 @@ if nargin>1 && isnumeric(varargin{1})
   assert(any(numel(property) == length(ebsd) * [1,3]),...
     'The number of values should match the number of ebsd data!')
   
-  h = plotUnitCells([ebsd.prop.x(:), ebsd.prop.y(:)],...
-    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
+  h = plotUnitCells(ebsd, property, 'parent', mP.ax, varargin{:});
   
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
@@ -95,7 +94,7 @@ else % phase plot
     
     color = ebsd.subSet(ind).color;
     
-    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)], color, ebsd.unitCell,...
+    h(k) = plotUnitCells(ebsd.subSet(ind), color,...
       'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
   
   end
