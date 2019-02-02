@@ -21,7 +21,8 @@ ax = gca;
 datacursormode off
 
 % nor any other interactions
-set(gca,'Interactions',[])
+try set(ax,'Interactions',[]); end
+try ax.Interactions.Enabled = 'off'; end
 
 waitforbuttonpress;
 point1 = get(ax,'CurrentPoint');
