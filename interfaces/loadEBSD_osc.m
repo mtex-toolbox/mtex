@@ -4,7 +4,7 @@ function ebsd = loadEBSD_osc(fname,varargin)
 ebsd = EBSD;
 
 try
-  assertExtension(fname,'.ang');
+  assertExtension(fname,'.osc');
 
   CS = get_option(varargin,'CS',oscHeader(fname));
   
