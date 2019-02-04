@@ -1,5 +1,18 @@
 function dS = cat(dim,varargin)
-% 
+% implement cat for dislocationSystem
+%
+% Syntax 
+%   dS = cat(dim,dS1,dS2,dS3)
+%
+% Input
+%  dim - dimension
+%  dS1, dS2, dS3 - @dislocationSystem
+%
+% Output
+%  dS - @dislocationSystem
+%
+% See also
+% dislocationSystem/horzcat, dislocationSystem/vertcat
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];

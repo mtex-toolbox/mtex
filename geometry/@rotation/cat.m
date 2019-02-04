@@ -1,5 +1,18 @@
 function r = cat(dim,varargin)
+% implement cat for rotation
 %
+% Syntax 
+%   r = cat(dim,r1,r2,r3)
+%
+% Input
+%  dim - dimension
+%  r1, r2, r3 - @rotation
+%
+% Output
+%  r - @rotation
+%
+% See also
+% rotation/horzcat, rotation/vertcat
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];

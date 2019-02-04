@@ -1,5 +1,18 @@
 function f = cat(dim,varargin)
-% 
+% implement cat for fibre
+%
+% Syntax 
+%   f = cat(dim,f1,f2,f3)
+%
+% Input
+%  dim - dimension
+%  f1, f2, f3 - @fibre
+%
+% Output
+%  f - @fibre
+%
+% See also
+% fibre/horzcat, fibre/vertcat
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];

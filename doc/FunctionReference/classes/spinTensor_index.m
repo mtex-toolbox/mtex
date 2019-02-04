@@ -3,14 +3,14 @@
 %
 %% Spin Tensors as Ininitesimal Changes of Rotations
 %
-% Spin tensors are skew symmetric tensors that can be used to small
-% rotational changes. Lets consider an arbitrary reference rotation
+% Spin tensors are skew symmetric tensors that can be used to approximate
+% small rotational changes. Lets consider an arbitrary reference rotation
 
 rot_ref = rotation.byEuler(10*degree,20*degree,30*degree)
 
 %%
 % and pertube it by a rotating about the axis (123) and angle delta. Since
-% multiplication of rotations is not communatativ we have to distinguish
+% multiplication of rotations is not commutativ we have to distinguish
 % between left and right pertubations
 
 delta = 0.01*degree;
@@ -60,41 +60,48 @@ rot_ref * vector3d(spinTensor(S_right_L)) * sqrt(14)
 
 inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 
-%% The Functions Exp and Log
+%% The Functions Log
 %
 % The above definition of the spin tensor works only well if the
 % pertupation rotation has small rotational angle. For large pertubations
-% the matrix logarithm
+% the matrix logarithm is the accurate way to compute the skew symmetric
+% matrix, i.e., the spinTensor, of the rotational change between an
+% reference orientation and another orientation.
 
+rot_123 = rotation.byAxisAngle(vector3d(1,2,3),57.3*degree)
+S = logm(rot_ref * rot_123,rot_ref)
 
+S = logm(rot_123 * rot_ref,rot_ref,'left')
 
-% Given a reference rotation rot_ref and a spin vector |s| one could ask
-% for the rotation that is obtained by applying the inifitimal change s to
-% to rot_ref
+%%
+% Again we may extract the rotational axis directly from the spin tensor
 
+% the rotational axis
+vector3d(S) * sqrt(14)
 
-rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
-log(rot_ref * rot_123,rot_ref) * sqrt(14)
+% the rotational angle in degree
+norm(vector3d(S)) / degree
+
+%% 
+% Alternatively, we may compute the misorientation vector directly by
+
+v = log(rot_ref * rot_123,rot_ref); v * sqrt(14)
 
 log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
 
-%% logarithm to skew symmetric matrix
+%% The Exponential Function Exp
+%
+% The exponential function is the inverse of function of the logarithm and
+% hence it takes a spinTensor or a misorientation vector it turns it into a
+% misorientation.
 
-S = logm(rot_ref * rot_123,rot_ref)
-
-vector3d(S) * sqrt(14)
-
-S = logm(rot_123 * rot_ref,rot_ref,'left')
-vector3d(S) * sqrt(14)
-
-
-%% The other way round
-
-S = logm(rot_ref * rot_123,rot_ref);
+% applying a misorientation directly to the reference orientation
 rot_ref * rot_123
+
+% do the same with spinTensor
 exp(S,rot_ref)
 
-v = log(rot_ref * rot_123,rot_ref);
+% do the same with the misorientation vector
 exp(v,rot_ref)
 
 %%
@@ -175,82 +182,3 @@ exp(v,ori_ref,'left')
 
 
 
-
-v = vector3d.rand(100);
-v.x = 0;
-v = rotation.rand * v + vector3d.rand;
-
-vsave = v;
-
-%%
-
-s = v(1);
-
-% shift to origin
-v = v - s;
-
-% compute normal vector
-[n,~] = eig3(v*v);
-
-
-r = rotation.map(n(1),zvector);
-
-v = r * v;
-
-plot3(v.x,v.y,v.z,'.')
-
-%%
-
-P = [v.x(:),v.y(:)];
-T = delaunayn(P);
-n = size(T,1);
-W = zeros(n,1);
-C=0;
-for m = 1:n
-    sp = P(T(m,:),:);
-    [null,W(m)]=convhulln(sp);
-    C = C + W(m) * mean(sp);
-end
-
-C = vector3d(C(1),C(2),0)./sum(W);
-
-
-
-%%
-
-hold on
-plot3(C.x,C.y,C.z,'MarkerSize',10)
-hold off
-
-
-
-
-function test
-  % some testing code
-
-  cs = crystalSymmetry('321');
-  ori1 = orientation.rand(cs);
-  ori2 = orientation.rand(cs);
-
-  v = log(ori2,ori1);
-
-  % this should be the same
-  [norm(v),angle(ori1,ori2)] ./ degree
-
-  % and this too
-  [ori1 * orientation.byAxisAngle(v,norm(v)) ,project2FundamentalRegion(ori2,ori1)]
-
-  % in specimen coordinates
-  r = log(ori2,ori1,'left');
-
-  % now we have to multiply from the left
-  [rotation.byAxisAngle(r,norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
-
-  % the following output should be constant
-  % gO = log(ori1,ori2.symmetrise) % but not true for this
-  % gO = log(ori1.symmetrise,ori2) % true for this
-  %
-  % gO = ori2.symmetrise .* log(ori1,ori2.symmetrise) % true for this
-  % gO = ori2 .* log(ori1.symmetrise,ori2) % true for this
-
-end

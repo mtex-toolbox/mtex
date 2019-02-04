@@ -1,5 +1,18 @@
 function pf = cat(dim,varargin)
-% 
+% implement cat for PoleFigure
+%
+% Syntax 
+%   pf = cat(dim,pf1,pf2,pf3)
+%
+% Input
+%  dim - dimension
+%  pf1, pf2, pf3 - @PoleFigure
+%
+% Output
+%  pf - @PoleFigure
+%
+% See also
+% PoleFigure/horzcat, PoleFigure/vertcat
 
 % concatenate properties
 pf = cat@dynProp(dim,varargin{:});
