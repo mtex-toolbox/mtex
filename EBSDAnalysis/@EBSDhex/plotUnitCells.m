@@ -2,7 +2,7 @@ function h = plotUnitCells(ebsd,d,varargin)
 % approximate plot of hexagonal ebsd data
 %
 
-if length(ebsd) < 1000000 || check_option(varargin,'exact')
+if length(ebsd) < 100000 || check_option(varargin,'exact')
   h = plotUnitCells@EBSD(ebsd,d,varargin{:});
 else
 
@@ -18,8 +18,7 @@ else
     d = d(:,1:2:end,:);
   end
 
-  h = imagesc(ext(1:2),ext(3:4),d,'parent',ax);
+  h = imagesc(ext(1:2),ext(3:4),d,'parent',ax,'alphaData',~isnan(d(:,:,1)));
+  
   hold off
 end
-
-

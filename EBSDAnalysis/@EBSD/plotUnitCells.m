@@ -1,4 +1,6 @@
 function h = plotUnitCells(ebsd,d,varargin)
+% low level plotting routine for EBSD maps
+%
 
 ax = get_option(varargin,'parent',gca);
 
