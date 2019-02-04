@@ -39,7 +39,6 @@ else
   m = sum(v,varargin{:});
 end
 
-
 m = m .normalize;
 
 end
