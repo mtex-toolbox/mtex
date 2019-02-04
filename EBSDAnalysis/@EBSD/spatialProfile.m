@@ -41,13 +41,13 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   ori = ebsdLine.orientations;
 %
 %   figure
-%   plot misorienation angle along the profile
+%   % plot misorienation angle along the profile
 %   plot(dist,angle(ori,ori(1))./degree,'linewidth',2)
 %   xlabel('line'), ylabel('misorientation angle')
 
 % maybe y is given as a second argument
 if nargin >= 3 && isnumeric(varargin{1})
-  lineXY = [lineXY(:),varargin{1}];
+  lineXY = [lineXY(:),varargin{1}(:)];
 end
 
 % work with homogenous coordinates
