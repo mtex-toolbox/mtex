@@ -27,10 +27,10 @@ alpha = zeros(size(omega));
 ind = omega ~=0;
 alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
 
-if isa(rot_ref,'quaternion')
-  rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
-else
+if nargin > 1 && isa(rot_ref,'rotation')
   rot = rotation(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
+else
+  rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
 end
 
 if nargin >= 2
