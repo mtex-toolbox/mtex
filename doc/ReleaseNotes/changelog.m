@@ -1,8 +1,17 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.0 11/2018
+%% MTEX 5.2.0 2/2019
 %
-% *Faster Fourier Transforms on the Sphere and the Orientation Space*
+% *Speed Improvements*
+%
+% * faster visualization of the large EBSD maps if <EBSD_gridify.html
+% gridify> is used
+% * faster Fourier transforms on the sphere and the orientation space
+%
+% *Support for hexagonal EBSD grids*
+% The function <EBSD_gridify.html gridify> now works also for EBSD data
+% measured on a hexagonal grid. As a consequence denoising and GND
+% computation works now also for those data.
 %
 % *Plastic Deformations*
 % MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
