@@ -33,8 +33,9 @@ classdef ipfColorKey < orientationColorKey
       [~,caxes] = plot(oM.dirMap,'doNotDraw',varargin{:});
       mtexFig = gcm;
       
-      mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
-            
+      %mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
+      mtexTitle(oM.CS1.pointGroup,varargin{:},'global');
+      
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
       
