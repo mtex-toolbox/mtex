@@ -48,7 +48,7 @@ for i = 1:numel(sP)
     
     % find large gaps
     d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
-    ind = find(d > diff(sP(i).bounds([1,3])) / 5);
+    ind = find(d > diff(sP(i).bounds([1,3])) / 20);
     
     % and fill the gaps with nans
     for k = 1:numel(ind)
