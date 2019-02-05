@@ -45,15 +45,14 @@ classdef scaleBar < handle
 %  2012.07.17 EJP - First version submitted for mtex commit. 
 %  2012.07.27 EJP - Added option for specifying scale bar lengths.
 
-properties (Access = private)
-  hgt
-  shadow
-  txt
-  ruler
+properties (Hidden = true)
+  hgt %
 end
 
-properties (Dependent = true)
-  visible
+properties
+  txt                      % handle of the text
+  shadow                   % handle of the shadow
+  ruler                    % handle of the ruler
 end
 
 properties (SetObservable)
@@ -66,6 +65,12 @@ properties (SetObservable)
   % borderWidth     = 2      % width of border (scalar)
   % location        = 'sw'   % location of the scale bar ('nw,'ne','sw','se', or [x,y] coordinate vector (len(vector)==2)
 end
+
+
+properties (Dependent = true)
+  visible
+end
+
   
 methods
 
@@ -75,7 +80,7 @@ methods
     sB.hgt = hgtransform('parent',mP.ax);
     sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
-      'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));    
+      'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
     
     % set resize function
