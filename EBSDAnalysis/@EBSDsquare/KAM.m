@@ -31,10 +31,34 @@ function kam = KAM(ebsd,varargin)
 
 %weights = get_option(varargin,'weights',ones(3));
 
-% get order
-order = get_option(varargin,'order',1);
-[i,j] = meshgrid(-order:order,-order:order);
-weights = (abs(i) + abs(j)) <= order & (abs(i) + abs(j))>0;
+if check_option(varargin,'max')
+  fun = @(a,b) nanmax(a,[],b);
+else
+  fun = @(a,b) nanplus(a,b);
+end
+
+weights = get_option(varargin,'weights',[]);
+
+if isempty(weights)
+
+  % get order
+  order = get_option(varargin,'order',1);
+  [i,j] = meshgrid(-order:order,-order:order);
+  weights = (abs(i) + abs(j)) <= order;
+
+  psi = get_option(varargin,'kernel');
+  if ~isempty(psi)
+    weights = psi(sqrt(ebsd.dy^2 * i.^2 + ebsd.dx^2 * j.^2));
+  end
+else
+  
+  order = (min(size(weights)) -1)/2;
+  
+end
+
+
+% set center to zero
+weights(order+1,order+1) = 0;
 
 % get threshold
 threshold = get_option(varargin,'threshold',10*degree);
@@ -76,8 +100,8 @@ for id = ebsd.indexedPhasesId
       omega( grainId(order+1:end-order,order+1:end-order) ~= ...
         grainId((order+1:end-order)+i,(order+1:end-order)+j) ) = NaN;
       
-      kam = nanplus(kam, omega * weights(order+1+i,order+1+j));
-      count = count + ~isnan(omega) * weights(order+1+i,order+1+j);
+      kam = fun(kam, omega * weights(order+1+i,order+1+j));
+      count = fun(count,~isnan(omega) * weights(order+1+i,order+1+j));
       
     end
   end
