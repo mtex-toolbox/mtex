@@ -4,7 +4,7 @@
 %
 % *Speed Improvements*
 %
-% * faster visualization of the large EBSD maps if <EBSD_gridify.html
+% * much faster visualization of the large EBSD maps if <EBSD_gridify.html
 % gridify> is used
 % * faster Fourier transforms on the sphere and the orientation space
 %
@@ -25,10 +25,15 @@
 % The relationships between those tensors are explained in the section
 % <PlasticDeformation.html plastic deformations>.
 %
-% *Spherical Bingham Distribution*
+% *Spherical Bingham Distribution* 
+%
+% Nativ support for spherical <BinghamS2_index.html Bingham distributions>,
+% including the abbility to <BinghamS2_fit.html fit> them to directional
+% distributions.
 %
 % *Tensor Visualisation*
-% * <SeismicVelocitySingleCrystalDemo2d.m>
+% Improved methods for the vizualisation of ellastic properties, see
+% * <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 %
 % *Improved Figure Layout*
 %

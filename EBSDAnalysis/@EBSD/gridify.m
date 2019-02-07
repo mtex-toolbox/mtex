@@ -1,10 +1,16 @@
 function [ebsdGrid,newId] = gridify(ebsd,varargin)
 % extend EBSD data to an grid
 %
-% Description
-% This function transforms EBSD on non regular grids into regular grids. No
-% interpolation is done herby. Grid points in the regular grid that do not
-% have a correspondence in the regular grid are set to NaN.
+% Description This function transforms unordered EBSD data sets into a
+% matrix shaped regular grid. No interpolation is done herby. Grid points
+% in the regular grid that do not have a correspondence in the regular grid
+% are set to NaN. Having the EBSD data in matrix form has several
+% advantages:
+%
+% * required for <OrientationGradient.html gradient>,
+% <EBSDsquare_curvature.html curvature> and <GND> computation
+% * much faster visualisation of big maps
+% * much faster computation of the kernel average misorientation
 %
 % Syntax
 %   [ebsdGrid,newId] = gridify(ebsd)
@@ -16,7 +22,12 @@ function [ebsdGrid,newId] = gridify(ebsd,varargin)
 %  ebsd - @EBSDSquare data on a regular grid
 %  newId - closest regular grid point for every non regular grid point
 %
-
+% Example
+%
+%   mtexdata twins
+%   ebsdMg = ebsd('Magnesium').gridify 
+%   plot(ebsdMg, ebsdMg.orientations)
+%
 
 if size(ebsd.unitCell,1) == 6
   [ebsdGrid,newId] = hexify(ebsd,varargin{:});
