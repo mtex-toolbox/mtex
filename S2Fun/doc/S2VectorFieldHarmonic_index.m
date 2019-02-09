@@ -9,7 +9,7 @@ nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 %%
 % Next you define function values for the vertices
-y = vector3d('polar', sin(3*nodes.theta), nodes.rho+pi/2);
+y = vector3d.byPolar(sin(3*nodes.theta), nodes.rho+pi/2);
 %%
 % Now the actual command to get |sVF1| of type |S2VectorFieldHarmonic|
 sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)

@@ -26,7 +26,7 @@ v = vector3d(1,1,0);
 
 polar_angle = 60*degree;
 azimuth_angle = 45*degree;
-v = vector3d('polar',polar_angle,azimuth_angle); 
+v = vector3d.byPolar(polar_angle,azimuth_angle); 
 
 %%
 % Finally, one can also define a vector as a linear combination of the

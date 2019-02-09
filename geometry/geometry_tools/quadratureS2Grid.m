@@ -37,7 +37,7 @@ else
   end
 
   data = data.(name);
-  S2G = vector3d('polar', data(:, 1), data(:, 2));
+  S2G = vector3d.byPolar(data(:, 1), data(:, 2));
   
   if check_option(varargin, 'gauss')
     W = data(:,3);

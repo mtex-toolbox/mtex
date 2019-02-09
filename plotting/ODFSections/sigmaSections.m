@@ -54,7 +54,7 @@ classdef sigmaSections < ODFSections
       sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROPLC,*PROP>
       secPos = oS.secList(sigma,oS.sigma);
 
-      S2Pos = vector3d('polar',e2,e1);
+      S2Pos = vector3d.byPolar(e2,e1);
 
     end
 

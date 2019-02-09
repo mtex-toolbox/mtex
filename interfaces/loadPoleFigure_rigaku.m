@@ -28,7 +28,7 @@ try
   % define specimen directions
   theta = (90 - data(:,1))*degree;
   rho = data(:,2) * degree;
-  r = vector3d('polar',theta,rho);
+  r = vector3d.byPolar(theta,rho);
   
   % define crystal directions
   h = string2Miller(fname);

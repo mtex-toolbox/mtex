@@ -15,7 +15,7 @@ function rot = map(varargin)
 %  rot - @rotation
 %
 % See also
-% rotation_index rotation/byMiller rotation/byAxisAngle
+% rotation_index rotation/byMatrix rotation/byAxisAngle
 % rotation/byEuler
 
 if nargin == 4

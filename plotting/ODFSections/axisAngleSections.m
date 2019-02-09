@@ -71,7 +71,7 @@ classdef axisAngleSections < ODFSections
     end
     
     function ori = iproject(oS,rho,theta,iangle)
-      ori = orientation.byAxisAngle(vector3d('polar',theta,rho),...
+      ori = orientation.byAxisAngle(vector3d.byPolar(theta,rho),...
         oS.angles(iangle),oS.CS,oS.SS);
     end
         

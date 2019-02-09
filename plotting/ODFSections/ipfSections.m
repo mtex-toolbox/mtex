@@ -70,7 +70,7 @@ classdef ipfSections < ODFSections
     end
     
     function ori = iproject(oS,rho,theta,iOmega)
-      h1 = vector3d('polar',theta,rho);
+      h1 = vector3d.byPolar(theta,rho);
       h2 = oS.vectorField(h1,oS.omega(iOmega));
       
       ori = orientation.map(h1,oS.r1,h2,oS.r2);      

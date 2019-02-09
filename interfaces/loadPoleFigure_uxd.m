@@ -59,7 +59,7 @@ try
       rho(end)=[];
     end
     d = [d;data]; %#ok<AGROW>
-    r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>   
+    r = [r;vector3d.byPolar(theta,rho)]; %#ok<AGROW>   
   end
   
   % append last pole figure

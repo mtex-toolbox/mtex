@@ -128,7 +128,7 @@ classdef sphericalRegion
         srho = size(rho);
         [rho,theta] = meshgrid(rho,theta);
         
-        v = vector3d('polar',theta,rho);
+        v = vector3d.byPolar(theta,rho);
         
         ind = sR.checkInside(v);
         

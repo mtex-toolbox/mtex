@@ -108,7 +108,7 @@ ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 for i = 1:size(sec,2)
   th = e2(ind2(:,i));
   rh = mod(rho(ind2(:,i)),2*pi);
-  v{i} = vector3d('polar',th,rh,varargin{:});
+  v{i} = vector3d.byPolar(th,rh,varargin{:});
 end
 
 

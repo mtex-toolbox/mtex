@@ -44,7 +44,7 @@ else  % other projections
   
 end
 
-r = vector3d('polar',theta,rho,'antipodal');
+r = vector3d.byPolar(theta,rho,'antipodal');
 
 h  = string2Miller(fname);
 pf = PoleFigure(h,r,data,'comment',comment,varargin{:});
