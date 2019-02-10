@@ -170,6 +170,8 @@ classdef rotation < quaternion & dynOption
 
     r = map(varargin);
 
+    [rot,interface,options] = load(fname,varargin)
+    
   end
 
 end

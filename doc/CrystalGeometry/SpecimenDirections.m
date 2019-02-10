@@ -112,7 +112,7 @@ v ./ norm(v)
 % Large lists of vectors can be imported from a text file by the command
 
 fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
-v = loadVector3d(fname,'ColumnNames',{'polar angle','azimuth angle'})
+v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'})
 
 %%
 % and exported by the command 

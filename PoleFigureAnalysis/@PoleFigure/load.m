@@ -1,26 +1,28 @@
-function [pf,interface,options] = loadPoleFigure(fname,varargin)
+function [pf,interface,options] = load(fname,varargin)
 % import pole figure data 
 %
 % Description
-% *loadPoleFigure* is a high level method for importing pole figure data
+%
+% PoleFigure.load is a high level method for importing pole figure data
 % from external files. It autodetects the format of the file. As parameters
-% the method requires the crystal and specimen @symmetry. Additionally it is
-% sometimes required to pass a list of crystal directions and a list of
-% structure coefficients. See [[ImportPoleFigureData.html,interfaces]] for an
+% the method requires the crystal and specimen @symmetry. Additionally it
+% is sometimes required to pass a list of crystal directions and a list of
+% structure coefficients. See <ImportPoleFigureData.html interfaces> for an
 % example how to import superposed pole figures. In the case of generic
 % ascii files each of which consist of a table containing in each row a
 % specimen direction and a diffraction intensity see
-% <loadPoleFigure_generic.html loadPoleFigure_generic> for additional options.
-% Furthermore, you can specify a comment to be associated with the data.
+% <loadPoleFigure_generic.html loadPoleFigure_generic> for additional
+% options. Furthermore, you can specify a comment to be associated with the
+% data.
 %
 %
 % Syntax
-%   pf = loadPoleFigure(fname)
+%   pf = PoleFigure.load(fname)
 %
 %   fnames = {fname1,...,fnameN}  % define filename(s)
 %   h = {h1,..,hN}                % define crystal directions
 %   c = {c1,..,cN}                % define structure coefficients
-%   pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
+%   pf = PoleFigure.load(fnames,h,cs,ss,'superposition',c)
 %
 % Input
 %  fname     - filename(s)
@@ -30,7 +32,6 @@ function [pf,interface,options] = loadPoleFigure(fname,varargin)
 %
 % Options
 %  interface  - specific interface to be used
-%  comment    - comment to be associated with the data
 %
 % Output
 %  pf - vector of @PoleFigure
@@ -45,6 +46,8 @@ fname = getFileNames(fname);
 if ~check_option(varargin,'interface')
   [interface,options] = check_interfaces(fname{1},'PoleFigure',varargin{:});
   if isempty(interface), return; end
+elseif check_option(varargin,'columnNames')
+  interface = 'generic';
 else
   interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);

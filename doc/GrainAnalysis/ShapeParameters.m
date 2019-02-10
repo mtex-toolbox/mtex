@@ -4,7 +4,7 @@
 %% Grain reconstruction from EBSD data
 %
 % So far grains can be exclusively computed from EBSD data using the command
-% <EBSD_calcGrains.html calcGrains>. In order to demonstrate grain
+% <EBSD.calcGrains.html calcGrains>. In order to demonstrate grain
 % reconstruction we import some EBSD data
 
 mtexdata forsterite

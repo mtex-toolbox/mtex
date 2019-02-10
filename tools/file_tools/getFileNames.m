@@ -2,6 +2,7 @@ function fname = getFileNames(fname)
 % get file names
 
 % read in directory if needed
+try fname = char(fname); end
 if ischar(fname)
   if exist(fname,'dir')
     pname = fname;

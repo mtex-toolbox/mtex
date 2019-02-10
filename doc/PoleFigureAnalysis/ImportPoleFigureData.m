@@ -111,7 +111,7 @@ h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)]};
 c = {1,[0.52 ,1.23]};
 
 % load data
-pf = loadPoleFigure(fnames,h,cs,'superposition',c)
+pf = PoleFigure.load(fnames,h,cs,'superposition',c)
 
 %%
 % Once such a import script for pole figure data has been created, it can
@@ -132,9 +132,9 @@ plot(pf)
 %
 % Once you have written an interface that reads data from certain data
 % files and generates a PoleFigure object you can integrate this method
-% into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then
-% it will be automatically called by the methods loadPoleFigure and
-% import_wizard. Examples how to write such an interface can be found in
-% the directory |MTEX/qta/interfaces|.
+% into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then it
+% will be automatically called by the methods <PoleFigure.load.html
+% PoleFigure.load> and import_wizard. Examples how to write such an
+% interface can be found in the directory |MTEX/qta/interfaces|.
 %
 

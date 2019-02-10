@@ -29,7 +29,7 @@ function [odf,alpha] = calcFEMODF(pf,varargin)
 %
 % See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo
-% loadPoleFigure ImportPoleFigureData examples_index
+% PoleFigure.load ImportPoleFigureData examples_index
 
 tic
 vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})

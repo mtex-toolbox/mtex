@@ -157,10 +157,8 @@ classdef tensor < dynOption
   
   methods (Static = true)
 
-    function T = load(varargin)
-      T = loadTensor(varargin{:});
-    end
-
+    T = load(fname,varargin)
+    
     function T = eye(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);

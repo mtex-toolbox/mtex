@@ -30,7 +30,7 @@ fname = {file names};
 psi = {kernel name}('halfwidth',{halfwidth});
 
 % create an EBSD variable containing the data
-odf = loadODF(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
+odf = ODF.load(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
   'interface',{interface},{options});
 
 %% Correct Data

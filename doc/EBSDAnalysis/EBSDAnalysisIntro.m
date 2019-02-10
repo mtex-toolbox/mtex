@@ -10,12 +10,12 @@
 import_wizard('EBSD')
 
 %%
-% or directly by the command <loadEBSD.html loadEBSD>
+% or directly by the command <EBSD.load.html EBSD.load>
 
 % specify file name
 fname = fullfile(mtexDataPath,'EBSD','Forsterite.ctf');
 
-ebsd = loadEBSD(fname,'convertEuler2SpatialReferenceFrame')
+ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame')
 
 %% Correct EBSD data
 % The EBSD data are now represented by the variable |ebsd|. Which is

@@ -17,8 +17,8 @@
 plotx2north
 
 % import the EBSD data
-ebsd = loadEBSD([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang']);
-%ebsd = loadEBSD('DC06_2biax.ang');
+ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang']);
+%ebsd = EBSD.load('DC06_2biax.ang');
 
 % define the color key
 ipfKey = ipfHSVKey(ebsd);

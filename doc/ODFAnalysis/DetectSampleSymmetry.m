@@ -69,7 +69,7 @@ angle(rot,inv(rot_inv)) / degree
 % estimated from pole figure data. Lets start by importing them
 
 fname = fullfile(mtexDataPath,'PoleFigure','aachen_exp.EXP');
-pf = loadPoleFigure(fname);
+pf = PoleFigure.load(fname);
 
 plot(pf,'silent')
 

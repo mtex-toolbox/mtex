@@ -16,7 +16,7 @@ if ~iscell(fname)
   if isnumeric(fname)
     fname = copyonline(fname);
   end
-  [pathstr, name, ext] = fileparts(fname);
+  [pathstr, name, ext] = fileparts(char(fname));
   
   if isempty(ext), ext = '.cif';end
   if isempty(pathstr) && ~exist([name,ext],'file')

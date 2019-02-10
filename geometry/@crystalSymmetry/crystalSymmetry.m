@@ -177,6 +177,10 @@ classdef crystalSymmetry < symmetry
     end
     
   end
+  
+  methods (Static = true)
+    cs = load(fname,varargin)
+  end
     
 end
 

@@ -25,7 +25,7 @@ h = {Miller(1,0,-1,0,CS),...
 c = {1,[0.52 ,1.23],1};
 
 % import data
-pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
+pf = PoleFigure.load(fname,h,CS,SS,'interface','dubna','superposition',c);
 
 plot(pf)
 mtexColorbar

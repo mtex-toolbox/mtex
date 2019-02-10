@@ -58,10 +58,10 @@ h = { ...
 % *Import the Data*
 
 % create a Pole Figure variable containing the data
-pf = loadPoleFigure(fname,h,CS,SS,'interface','uxd');
+pf = PoleFigure.load(fname,h,CS,SS,'interface','uxd');
 
 % defocusing
-pf_def = loadPoleFigure(fname_def,h,CS,SS,'interface','uxd');
+pf_def = PoleFigure.load(fname_def,h,CS,SS,'interface','uxd');
 
 % correct data
 pf = correct(pf,'def',pf_def);

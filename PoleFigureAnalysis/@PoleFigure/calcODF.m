@@ -41,7 +41,7 @@ function [odf,alpha] = calcODF(varargin)
 %
 % See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo
-% loadPoleFigure ImportPoleFigureData examples_index
+% PoleFigure/load ImportPoleFigureData examples_index
 
 solver = getClass(varargin,'pf2odfSolver');
 if isempty(solver), solver = MLSSolver(varargin{:}); end

@@ -135,7 +135,7 @@ methods (Static = true)
   ori = byAxisAngle(v,omega,varargin);
   ori = byMatrix(M,varargin);
   ori = map(varargin);
-
+  [ori,interface,options] = load(fname,varargin);
 
   function ori = cube(varargin)
     ori = orientation.byEuler(0,0,0,varargin{:});

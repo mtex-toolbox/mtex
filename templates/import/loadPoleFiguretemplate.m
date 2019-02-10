@@ -48,16 +48,16 @@ c = {structural coefficients};
 %% Import the Data
 
 % create a Pole Figure variable containing the data
-pf = loadPoleFigure(fname,h,CS,SS,{structural coefficients},'interface',{interface},{options});
+pf = PoleFigure.load(fname,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
 % background
-pf_bg = loadPoleFigure(fname_bg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
+pf_bg = PoleFigure.load(fname_bg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
 % defocussing
-pf_def = loadPoleFigure(fname_def,h,CS,SS,{structural coefficients},'interface',{interface},{options});
+pf_def = PoleFigure.load(fname_def,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
 % defocussing background
-pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
+pf_defbg = PoleFigure.load(fname_defbg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
 % correct data
 pf = correct(pf,{corrections});

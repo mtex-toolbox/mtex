@@ -1,4 +1,4 @@
-function [odf,interface,options] = loadODF(fname,varargin)
+function [odf,interface,options] = load(fname,varargin)
 % import ebsd data 
 %
 % Description
@@ -8,10 +8,10 @@ function [odf,interface,options] = loadODF(fname,varargin)
 % you can specify a comment to be associated with the data. In the case of
 % generic ascii files each of which consist of a table containing in each
 % row the euler angles of a certain orientation see
-% [[loadODF_generic.html,loadODF_generic]] for additional options.
+% <loadODF_generic.html loadODF_generic> for additional options.
 %
 % Syntax
-%   odf = loadODF(fname,cs,ss)
+%   odf = ODF.load(fname,cs,ss)
 %
 % Input
 %  fname     - filename

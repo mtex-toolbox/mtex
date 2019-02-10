@@ -1,4 +1,15 @@
 {
+"EBSD.load":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"},
+	{"name":"columnNames", "kind":"namevalue", "type":"cell"},
+	{"name":"columns", "kind":"namevalue", "type":"double"},
+	{"name":"interface", "kind":"namevalue", "type":"double"},
+        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+    ]
+},
 "calcGrains":
 {
     "inputs":

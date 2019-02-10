@@ -139,7 +139,7 @@ h = {...
 
 c = {1,1,[0.52 ,1.23],1,1,1,1};
 
-pf = loadPoleFigure(fname,h,'interface','dubna','superposition',c,CS);
+pf = PoleFigure.load(fname,h,'interface','dubna','superposition',c,CS);
 
 % ------------------------------------------------------------------
 function [CS,h,c,pf] = mtexdata_geesthacht
@@ -158,7 +158,7 @@ h = { ...
 
 c = ones(size(h));
 
-pf = loadPoleFigure(fname,h,CS,SS);
+pf = PoleFigure.load(fname,h,CS,SS);
 
 %
 function   [CS,h,c,pf] = mtexdata_ptx
@@ -173,7 +173,7 @@ fname = {...
   [pname '/gt9202.ptx'], ...
   };
 
-pf = loadPoleFigure(fname,CS,SS);
+pf = PoleFigure.load(fname,CS,SS);
 h = pf.allH;
 c = ones(size(h));
 
@@ -184,9 +184,8 @@ CS = {...
   crystalSymmetry('m-3m','mineral','Fe','color','light blue'),...
   crystalSymmetry('m-3m','mineral','Mg','color','light red')};
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),...
-  'CS',CS,'interface','generic' , ...
-  'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),...
+  'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
 
 %
 function ebsd = mtexdata_sharp
@@ -195,7 +194,7 @@ CS = {...
   'notIndexed',...
   crystalSymmetry('-3m',[5,5,17],'mineral','calcite','color','light blue')};
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
   'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
 
 function ebsd = mtexdata_small
@@ -216,7 +215,7 @@ ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','CSL.txt'),'CS',CS,...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_3d
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),...
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),...
   '3d', (0:58)*0.12,'convertEuler2SpatialReferenceFrame');
 
 % ----------------------------------------------------------------------
@@ -234,7 +233,7 @@ ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),'CS',CS, ...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_epidote
 
-ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
+ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
   'convertEuler2SpatialReferenceFrame');
 
 % ----------------------------------------------------------------------
@@ -242,7 +241,7 @@ function ebsd = mtexdata_forsterite
 
 plotx2east;
 plotzOutOfPlane
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
 
 % rotate only the spatial data about the y-axis
 % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
@@ -252,7 +251,7 @@ function ebsd = mtexdata_olivine
 
 plotx2east;
 plotzOutOfPlane
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
 
 % correct data to fit the reference frame
 rot = rotation.byEuler(90*degree,180*degree,180*degree);
@@ -272,7 +271,7 @@ function ebsd = mtexdata_twins
 
 plotx2east; plotzOutOfPlane
 CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium','x||a*')
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------
@@ -281,7 +280,7 @@ function ebsd = mtexdata_single
 CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
 
 fname = fullfile(mtexDataPath,'EBSD','single_grain_aluminum.txt');
-ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS, ...
+ebsd = EBSD.load(fname, 'CS', CS, ...
    'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
   'Columns', [1 2 3 4 5]);
 
@@ -291,7 +290,7 @@ function ebsd = mtexdata_alu
 CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
 
 fname = fullfile(mtexDataPath,'EBSD','polycrystalline_aluminum.txt');
-ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
+ebsd = EBSD.load(fname,'CS', CS,...
    'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
   'Columns', [1 2 3 4 5],'ignorePhase', 0);
 
@@ -301,6 +300,6 @@ function ebsd = mtexdata_titanium
 CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
 
 fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
-ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
+ebsd = EBSD.load(fname,'CS', CS,...
    'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
    'x' 'y' 'grainId'});

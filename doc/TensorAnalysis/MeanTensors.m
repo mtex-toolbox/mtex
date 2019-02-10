@@ -14,7 +14,7 @@ setMTEXpref('defaultColorMap',blue2redColorMap);
 %% Import EBSD Data
 % We start by importing some EBSD data of Glaucophane and Epidote.
 
-ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
+ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],...
   'convertEuler2SpatialReferenceFrame')
 
 %%

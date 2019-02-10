@@ -263,12 +263,7 @@ classdef vector3d < dynOption
       
     end
     
-    function varargout = load(fname,varargin)
-      % load vectors from file
-      
-      [varargout{1:nargout}] = loadVector3d(fname,varargin{:});
-      
-    end
+    [v,interface,options] = load(fname,varargin)
     
     v = byPolar(polarAngle,azimuthAngle)
     

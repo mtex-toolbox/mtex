@@ -101,8 +101,8 @@ plotPDF(ebsd_rot('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 % the interface supports the options |convertSpatial2EulerReferenceFrame|
 % and |convertEuler2SpatialReferenceFrame|, e.g.,
 %
-%   loadEBSD('fname.ang','convertSpatial2EulerReferenceFrame')
-%   loadEBSD('fname.ang','convertEuler2SpatialReferenceFrame')
+%   EBSD.load('fname.ang','convertSpatial2EulerReferenceFrame')
+%   EBSD.load('fname.ang','convertEuler2SpatialReferenceFrame')
 %
 % In the first case the spatial data are changed such that the Euler angles
 % referene frame coincides with the spatial reference frame and in the
