@@ -265,7 +265,7 @@ classdef vector3d < dynOption
     
     [v,interface,options] = load(fname,varargin)
     
-    v = byPolar(polarAngle,azimuthAngle)
+    v = byPolar(polarAngle,azimuthAngle,varargin)
     
   end
 end
