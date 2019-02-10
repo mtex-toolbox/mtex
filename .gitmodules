@@ -1,0 +1,3 @@
+[submodule "extern/jsonlab"]
+	path = extern/jsonlab
+	url = https://github.com/fangq/jsonlab.git
