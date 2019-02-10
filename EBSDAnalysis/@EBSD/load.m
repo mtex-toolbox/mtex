@@ -67,6 +67,7 @@ if check_option(varargin,'interface')
   options = delete_option(varargin,'interface',1);
 elseif check_option(varargin,'columnNames')
   interface = 'generic';
+  options = varargin;
 else
   [interface,options] = check_interfaces(fname{1},'EBSD',varargin{:});
   if isempty(interface), return; end

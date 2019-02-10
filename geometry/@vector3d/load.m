@@ -38,6 +38,7 @@ if check_option(varargin,'interface')
   if isempty(interface), return; end
 elseif check_option(varargin,'columnames')
   interface = 'generic';
+  options = varargin;
 else
   [interface,options] = check_interfaces(fname,'Vector3d',varargin{:});
 end
