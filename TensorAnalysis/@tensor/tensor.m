@@ -48,6 +48,7 @@ classdef tensor < dynOption
         
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
+        varargin = delete_option(varargin,'rank',1);
         T = T.setOption(varargin{:});
         return
       end
