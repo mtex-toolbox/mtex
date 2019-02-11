@@ -80,7 +80,11 @@ classdef crystalSymmetry < symmetry
   methods
     
     function s = crystalSymmetry(varargin)
-    
+
+      % this is for compatibility with using "strings" as input
+      try varargin = controllib.internal.util.hString2Char(varargin); catch, end
+
+      
       s = s@symmetry(varargin{:});
                   
       if nargin > 1
