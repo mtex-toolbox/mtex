@@ -14,7 +14,7 @@ function saveFigure(fname,varargin)
 %  
 
 % no file name given select from dialog
-if nargin == 0, 
+if nargin == 0 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...
     '*.jpg;*.tif;*.png;*.gif;*.bmp;*pgm;*.ppm','Bitmap Image Files';...
     '*.*','All Files' },'Save Image','newfile.pdf');

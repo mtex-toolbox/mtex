@@ -47,7 +47,7 @@ for ir = 1:length(r)
   % the crystal directions
   h = f.orientation \ r(ir);
   
-  if ~check_option(varargin,'complete')
+  if ~check_option(varargin,{'complete','noSymmetry'})
     h = h.project2FundamentalRegion;
   end
  

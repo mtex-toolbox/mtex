@@ -140,7 +140,7 @@ classdef Miller < vector3d
         % set coordinates
         coord = reshape([varargin{1:nparam}],[],nparam);
                 
-        if check_option(varargin,{'uvw','uvtw','direction'});          
+        if check_option(varargin,{'uvw','uvtw','direction'})
           
           if nparam == 3 && ~check_option(varargin,'uvtw')
             m.uvw = coord;
@@ -148,7 +148,7 @@ classdef Miller < vector3d
             m.UVTW = coord;
           end
           
-        elseif check_option(varargin,'xyz');
+        elseif check_option(varargin,'xyz')
           
           m.x = coord(:,1);
           m.y = coord(:,2);
