@@ -32,7 +32,7 @@ classdef BinghamS2 < S2Fun
       if nargin == 1
         BS2.a = [vector3d.X;vector3d.Y;vector3d.Z];
       else
-        BS2.a = a;
+        BS2.a = a.normalize;
       end
       
       % compute normalization constant
@@ -42,7 +42,7 @@ classdef BinghamS2 < S2Fun
     
     function value = eval(BS2,v)
       % evaluate spherical Bingham distribution
-      value = BS2.N * exp(dot_outer(v,BS2.a).^2 * BS2.Z(:));
+      value = BS2.N * exp(dot_outer(v.normalize,BS2.a).^2 * BS2.Z(:));
     end
     
     
