@@ -95,10 +95,10 @@ methods
           otherwise
 
             if exist([varargin{1},'Orientation'],'file')
-
+              
               % there is a file defining this specific orientation
               o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
-
+              
             end
         end
     end
