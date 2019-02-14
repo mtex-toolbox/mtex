@@ -45,7 +45,9 @@ grains = calcGrains(ebsd,'angle',[0 10 5]*degree)
 
 plot(grains.boundary,'color',[0.25 0.1 0.5])
 %TODO: internal grain boundaries
-hold on, plot(grains.boundary,'linecolor','red','linewidth',2)
+hold on
+plot(grains.boundary,'linecolor','red','linewidth',2)
+hold off
 
 %%
 % on application of this would be to take a look on the grainsize
