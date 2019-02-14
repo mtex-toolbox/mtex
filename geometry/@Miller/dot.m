@@ -51,7 +51,7 @@ m1 = symmetrise(m1,varargin{:});
 m2 = repmat(reshape(m2,1,[]),size(m1,1),1);
 
 % vector3d dot product
-d = dot@vecto3d(m1,m2,varargin{:});
+d = dot@vector3d(m1,m2,varargin{:});
 
 % find maximum
 if ~check_option(varargin,'all'), d = reshape(max(d,[],1),s); end
