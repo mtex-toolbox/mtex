@@ -14,12 +14,6 @@ function d = dot(v1,v2,varargin)
 % Output
 %  d - double
 
-% if second argument is Miller call corresponding method
-if ~isa(v2,'vector3d') || isa(v2,'Miller') 
-  d = dot(v2,v1,varargin{:});
-  return
-end
-
 % compute dot product
 xx = v1.x .* v2.x;
 yy = v1.y .* v2.y;
