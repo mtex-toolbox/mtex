@@ -6,8 +6,19 @@
 %% Contents
 %
 %% Theory
-%
-%
+% If a material deforms through the movement of dislocations, re-
+% arrangement of dislocationsto a low-energy configuration may happen
+% during deformation (i.e. in slow, geologic deformation) or 
+% or afterwards (in many metals). In any case, the arrangement of
+% dislocation walls can lead to so-called subgrains boundaries. If such a
+% boundary is composed of edge dislocations, it is called a tilt
+% boundary and the rotation axis relating both parts of the grain at each
+% side can be expected to be within the boudnary plane (ideally parallel to
+% the edge dislocation line). If the boundary is composed of screw 
+% dislocations, the rotation axis should be normal to the boundary. 
+% Between those end-members, there are general boundaries where
+% the rotation axis is not easily realted to the type of dislocations
+% unless further information is available.
 
 %% Data import and grain detection
 % Lets start by loading an MTEX standard data set, reconstuct grains and
@@ -81,7 +92,8 @@ plot(grains(ind).boundary,'lineWidth',2)
 hold off
 
 %% Low angle subgrain boundaries
-% Since we want to investiage the microstructure of the 
+% Since we want to investiage the microtexture of the low angle
+% boundaries, let's segment at a small angle
 
 
 [grains, ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',1.5*degree,'boundary','tight')
@@ -105,7 +117,7 @@ mtexColorMap blue2red
 %% The misorientation axes in crystal coordinats
 % Our next goal is to investiage the misorientation axes at the subgrain
 % boundaries. Lets start by plotting them with respect to the crystal
-% coordinate system while colorizing them according to the misorientatio
+% coordinate system while colorizing them according to the misorientation
 % angle.
 
 plot(gbfo.misorientation.axis,gbfo.misorientation.angle./degree,...
