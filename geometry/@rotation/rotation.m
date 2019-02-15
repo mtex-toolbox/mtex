@@ -40,15 +40,18 @@ classdef rotation < quaternion & dynOption
 
       if nargin == 0, return;end
       
-      switch class(varargin{1})
-
-        case 'rotation' % copy constructor
-          
-          rot.a = varargin{1}.a;
-          rot.b = varargin{1}.b;
-          rot.c = varargin{1}.c;
-          rot.d = varargin{1}.d;
+      if isa(varargin{1},'quaternion')  % copy constructor
+        
+        [rot.a,rot.b,rot.c,rot.d] = double(varargin{1});
+        try
           rot.i = varargin{1}.i;
+        catch
+          rot.i = false(size(rot.a));
+        end
+        return
+      end
+        
+      switch class(varargin{1})
         
         case 'double'
         
@@ -56,12 +59,6 @@ classdef rotation < quaternion & dynOption
           rot.b = varargin{2};
           rot.c = varargin{3};
           rot.d = varargin{4};
-          rot.i = false(size(varargin{1}));
-          
-        case {'quaternion'}
-
-          [rot.a,rot.b,rot.c,rot.d] = double(varargin{1});
-          rot.i = false(size(rot.a));
 
         case 'char'
 
