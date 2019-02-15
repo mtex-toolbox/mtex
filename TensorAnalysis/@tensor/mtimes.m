@@ -32,10 +32,17 @@ elseif isa(T2,'double')
     
   end
   
-elseif T1.rank ==2 && T1.rank ==2
+elseif T1.rank ==2 && isa(T2,'vector3d')
+ 
+  T = vector3d(EinsteinSum(T1,[1 -1],T2,-1));
+   
+elseif T1.rank ==2 && isa(T2,'tensor') && T2.rank ==1
+  
+  T = EinsteinSum(T1,[1 -1],T2,-1);
+  
+elseif T1.rank ==2 && isa(T2,'tensor') && T2.rank ==2
   
   T = EinsteinSum(T1,[1 -1],T2,[-1 2]);
-  
   
 else
 
