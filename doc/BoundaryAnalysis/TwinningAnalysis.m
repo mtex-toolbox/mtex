@@ -62,12 +62,12 @@ mtexColorbar
 % We observe many grain boundaries with a large misorientation angle of
 % about 86 degrees. Those grain boundaries are most likely twin boundaries.
 % To detect them more precisely we define first the twinning as a
-% misorientation, which is reported in literature by  (1,1,-2,0) parallel
+% misorientation, which is reported in literature by (1,1,-2,0) parallel
 % to (2,-1,-1,0) and (-1,0,1,1) parallel to (1,0,-1,1). In MTEX it is
 % defined by
 
 twinning = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
-  Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS))
+  Miller(-1,0,1,1,CS),Miller(-1,1,0,1,CS))
 
 %%
 % The followin lines show that the twinning is actually a rotation about

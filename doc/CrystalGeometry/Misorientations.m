@@ -101,7 +101,7 @@ hold off
 
 % mark the corresponding lattice planes in the twin
 mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
-annotate(mm,'labeled','MarkerSize',5,'figSize','large')
+annotate(mm,'labeled','MarkerSize',5,'figSize','large','textAboveMarker')
 
 % show legend
 legend({},'location','SouthEast','FontSize',13);
@@ -123,7 +123,8 @@ angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 % lattice planes and between the {10-11} lattice planes
 
 mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
-  Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS))
+  Miller(-1,0,1,1,CS),Miller(-1,1,0,1,CS))
+
 
 % the rotational axis
 round(mori.axis)

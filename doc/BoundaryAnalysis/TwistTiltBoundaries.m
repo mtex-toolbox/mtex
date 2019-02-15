@@ -25,7 +25,7 @@ ebsd = ebsd(grains(grains.grainSize>10));
 grains = smooth(grains,5)
 
 % consider only the very big grains
-grains = grains(grains.grainSize>100,'fo');
+grains = grains(grains.grainSize>300,'fo');
 
 %%
 % Colorize the orientations according to their misorientation axis / angle
@@ -33,13 +33,13 @@ grains = grains(grains.grainSize>100,'fo');
 
 
 % sett the color key
-oM = axisAngleColorKey(ebsd('f').CS);
+colorKey = axisAngleColorKey(ebsd('f').CS);
 
 % set reference orientation to be the grain mean orientation
-oM.oriRef = grains{ebsd(grains).grainId}.meanOrientation;
+colorKey.oriRef = grains{ebsd(grains).grainId}.meanOrientation;
 
 % plot orientations according to this color key
-plot(ebsd(grains),oM.orientation2color(ebsd(grains).orientations),'micronbar','off')
+plot(ebsd(grains),colorKey.orientation2color(ebsd(grains).orientations),'micronbar','off')
 
 % plot grain boundaries
 hold on
@@ -50,7 +50,7 @@ text(grains('f'),arrayfun(@num2str,1:length(grains),'uniformOutput',false),'Font
 
 
 % mark one specific grain
-ind = 136;
+ind = 73;
 plot(grains(ind).boundary,'lineColor','red','lineWidth',3)
 hold off
 
@@ -59,7 +59,7 @@ hold off
 % microtexture in more detail.
 
 % restrict the 
-ebsd = ebsd(grains(136));
+ebsd = ebsd(grains(ind));
 %ebsd = ebsd(ebsd.inpolygon([3000,8500,2700,-3100]));
 
 % and denoise a little and fill
@@ -72,8 +72,8 @@ ebsd = ebsd('indexed')
 
 %%
 
-oM.oriRef = mean(ebsd.orientations);
-plot(ebsd,oM.orientation2color(ebsd.orientations),'micronbar','off')
+colorKey.oriRef = mean(ebsd.orientations);
+plot(ebsd,colorKey.orientation2color(ebsd.orientations),'micronbar','off')
 
 % plot grain boundaries
 hold on
@@ -92,7 +92,7 @@ grains = smooth(grains,5)
 gbfo = [grains.boundary('f','f') grains.innerBoundary('f','f')];
 
 % colorize orientation according to their misorientation to the meanorientation
-plot(ebsd,oM.orientation2color(ebsd.orientations),'micronbar','off')
+plot(ebsd,colorKey.orientation2color(ebsd.orientations),'micronbar','off')
 hold on
 
 % colorize subgrain boundaries according to their misorientation angle
@@ -147,31 +147,39 @@ mtexColorbar('Title','Misorientation angle [\circ]','locacation','southoutside')
 % First, we plot some crytsal directions of the grain in a pole figure
 % so we understand the orientation of the grain a little better
 close all
-h= Miller({1,0,0},{0,1,0},{0,0,1},ebsd.CS);
+h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd.CS);
 ori = ebsd.orientations;
-plotPDF(ori,oM.orientation2color(ori),h,'MarkerSize',5)
+plotPDF(ori,colorKey.orientation2color(ori),h,'MarkerSize',5)
 
 %%
-% now we plot the grain with subboundaries colorcoded with the direction mapping 
-%  according to the misorientation axes in crystal coordinates
+% now we plot the grain with subboundaries color coded with the direction
+% mapping according to the misorientation axes in crystal coordinates
 
-plot(ebsd,oM.orientation2color(ori),'faceAlpha',0.3)
+
+plot(ebsd,colorKey.orientation2color(ori),'faceAlpha',0.3)
 hold on
+axisKey = HSVDirectionKey(ori.CS);
+color = axisKey.direction2color(gbfo.misorientation.axis);
 plot(gbfo,'linewidth',6)
-plot(gbfo,colC,'linewidth',4)
+plot(gbfo,color,'linewidth',4)
 hold off
 mtexTitle('misor crystal')
 
 %%
-nextAxis
+% Next we plot the grain with subboundaries colorcoded with the direction
+% mapping according to the misorientation axes in specimen coordinates
 
-% now we add the grain with subboundaries colorcoded with the direction mapping 
-%  according to the misorientation axes in specimen coordinates
-plot(ebsd('f'),ecol,'faceAlpha',0.3)
+plot(ebsd,colorKey.orientation2color(ori),'faceAlpha',0.3)
 hold on
-plot(gbfo,colS,'linewidth',2)
+axisKey = HSVDirectionKey;
+color = axisKey.direction2color(axS);
+plot(gbfo,'linewidth',6)
+plot(gbfo,color,'linewidth',4)
 hold off
 mtexTitle('misor specimen')
+
+
+%%
 
 nextAxis
 nextAxis
@@ -329,7 +337,7 @@ plot(axC,tA/degree,'antipodal','fundamentalRegion')
 nextAxis
 plot(axS,tA/degree,'antipodal','fundamentalRegion')
 
-ecol=oM.orientation2color(ebsd('f').orientations); 
+ecol=colorKey.orientation2color(ebsd('f').orientations); 
 plot(ebsd('f'),ecol,'faceAlpha',0.3)
 hold on
 plot(gbfoSM,tA/degree,'linewidth',4)
@@ -361,11 +369,11 @@ cs=ebsd('f').CS;
 % ecol=om.orientation2color(ebsd('f').orientations); % the colors for ebsd
 
 % yet another color coding to show minor orientation changes within a grain
-oM = axisAngleColorKey(cs,cs);
-oM.oriRef= mean(ebsd('f').orientations);
-oM.maxAngle = 3*degree;
+colorKey = axisAngleColorKey(cs,cs);
+colorKey.oriRef= mean(ebsd('f').orientations);
+colorKey.maxAngle = 3*degree;
 % get the colors in a length(ebsd-by-3 matrix)
-ecol=oM.orientation2color(ebsd('f').orientations); 
+ecol=colorKey.orientation2color(ebsd('f').orientations); 
 
 % Colors for the misorientation axes
 % in crystal coordinates
