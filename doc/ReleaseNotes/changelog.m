@@ -11,7 +11,7 @@
 % *Support for hexagonal EBSD grids*
 % The function <EBSD_gridify.html gridify> now works also for EBSD data
 % measured on a hexagonal grid. As a consequence denoising and GND
-% computation works now also for those data.
+% computation for those data is also on the way.
 %
 % *Plastic Deformations*
 % MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
@@ -33,13 +33,13 @@
 %
 % *Tensor Visualisation*
 % Improved methods for the vizualisation of ellastic properties, see
-% * <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
+% <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 %
 % *Improved Figure Layout*
 %
 % * fix layout
-% * plot a fixed positions
-% *
+% * plot at fixed positions
+% * 
 %
 % * label crystal faces in crystal shapes
 % * calcKearnsFactor

@@ -7,8 +7,8 @@ function a = axis(o1,varargin)
 %   csHex = crystalSymmetry('hexagonal')
 %
 %   % define two orientations
-%   o1 = orientation.byEuler(csCube)
-%   o2 = orientation.byEuler(csHex)
+%   o1 = orientation.byEuler(0,0,0,csCube)
+%   o2 = orientation.byEuler(10*degree,20*degree,30*degree,csHex)
 %
 %   % the misorientation axis with respect to the specimen coordinate
 %   % system is computed by
