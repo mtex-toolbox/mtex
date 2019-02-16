@@ -22,7 +22,7 @@ classdef velocityGradientTensor < tensor
       % define uniaxial compression tensor
       %
       % Syntax
-      %   L = velocityGradientTensor.uniaxialCompression(d,r)
+      %   L = velocityGradientTensor.uniaxialCompression(exp,comp)
       %
       % Input
       %  exp  - @vector3d expansion direction
@@ -66,8 +66,7 @@ classdef velocityGradientTensor < tensor
     
     
         
-    function L = planeStrain(v1,v2,gamma)
-      
+    function L = planeStrain(v1,v2,gamma)      
       L = velocityGradientTensor();
     end
     
@@ -94,19 +93,10 @@ classdef velocityGradientTensor < tensor
       
     end
 
-    function L = spin(omega)
+    function L = spin(varargin)
       % define a spin tensor
       
-      M = zeros([3,3,size(omega)]);
-      M(2,1,:) = omega.z;
-      M(3,1,:) = -omega.y;
-      M(3,2,:) = omega.x;
-
-      M(1,2,:) = -omega.z;
-      M(1,3,:) = omega.y;
-      M(2,3,:) = -omega.x;
-
-      L = velocityGradientTensor(M);
+      L = spinTensor(varargin{:});
 
     end
   end

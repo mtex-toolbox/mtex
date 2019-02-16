@@ -12,6 +12,9 @@ classdef strainRateTensor < velocityGradientTensor
             
       E = E@velocityGradientTensor(varargin{:},'rank',2);
       
+      % ensure it is antisymmetric
+      E.M = 0.5*(E.M + E.M');
+      
     end
     
 
