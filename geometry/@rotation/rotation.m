@@ -66,37 +66,40 @@ classdef rotation < quaternion & dynOption
 
             case 'axis' % orientation by axis / angle
               
-              rot = rotation.byAxisAngle(get_option(varargin,'axis'),get_option(varargin,'angle'));
+              locRot = rotation.byAxisAngle(get_option(varargin,'axis'),get_option(varargin,'angle'));
               
             case 'euler' % orientation by Euler angles
               
-              rot = rotation.byEuler(varargin{2:end});
+              locRot = rotation.byEuler(varargin{2:end});
 
             case 'map'
 
-              rot = rotation.map(varargin{2:end});
+              locRot = rotation.map(varargin{2:end});
               
             case 'quaternion'
 
-              rot = rotation(quaternion(varargin{2:end}));
+              locRot = rotation(quaternion(varargin{2:end}));
 
             case 'rodrigues'
 
-              rot = rotation.byRodrigues(varargin{2});
+              locRot = rotation.byRodrigues(varargin{2});
 
             case 'matrix'
 
-              rot = rotation.byMatrix(varargin{2:end});              
+              locRot = rotation.byMatrix(varargin{2:end});              
 
             case {'mirroring','reflection'}
 
-              rot = reflection(varargin{:});
+              locRot = reflection(varargin{:});
               
             otherwise
 
               error('Wrong rotation syntax!')
           end
-
+          
+          rot.a = locRot.a; rot.b = locRot.b; 
+          rot.c = locRot.c; rot.d = locRot.d; rot.i = locRot.i;
+          
         otherwise
           error('Type mismatch in rotation!')
       end
