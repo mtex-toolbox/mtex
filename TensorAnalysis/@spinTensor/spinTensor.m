@@ -16,7 +16,7 @@ classdef spinTensor < velocityGradientTensor
       Omega = Omega@velocityGradientTensor(varargin{:},'rank',2);
       
       % ensure it is antisymmetric
-      Omega.M = 0.5*(Omega.M - Omega.M');
+      Omega.M = 0.5*(Omega.M - permute(Omega.M,[2 1 3:ndims(Omega.M)]));
       
       if nargin == 0; return; end
       
