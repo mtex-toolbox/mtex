@@ -1,5 +1,5 @@
 function b = eq(sS1,sS2,varargin)
-% ? sS1 == sS2
+% check sS1 == sS2
 %
 % Input
 %  v1, v2 - @vector3d
@@ -17,4 +17,5 @@ if sS1.CS ~= sS2.CS || ...
   return
 end
 
-b = sS1.b == sS2.b & sS1.n == sS2.n;
+b = (eq(sS1.b,sS2.b,varargin{:}) & eq(sS1.n,sS2.n,varargin{:})) | ...
+  (eq(sS1.b,-sS2.b,varargin{:}) & eq(sS1.n,-sS2.n,varargin{:}));
