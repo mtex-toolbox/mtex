@@ -1,11 +1,16 @@
 function plotSection(sF,sec,varargin)
+% 
 %
 % Syntax
-%   plotSection(sF,vector3d.Z)
-%   plotSection(sF,vector3d.Z,pi/3)
+%   N = vector3d.Z;
+%   omega = pi/3;
+%   plotSection(sF,N)
+%   plotSection(sF,N,omega)
 %
 % Input
 %  sF - @S2Fun
+%  N  - normal direction
+%  omega - 
 %
 % Output
 
