@@ -1,9 +1,11 @@
-%% *|S2FunHarmonicSym|*
-% This site only covers on top differences to <S2FunHarmonic_index |S2FunHarmonic|>.
-% For a introduction to the essentials have a look <S2FunHarmonic_index.html here>.
+%% S2FunHarmonicSym
 %
+% S2FunHarmonicSym is an extension of the S2FunHarmonic class which stores the symmetry with the function.
+%
+%% Contents
 
-%% Defining a |S2FunHarmonic|
+%
+%% Defining a S2FunHarmonic
 %
 %%
 % *Definition via symmetrisation*

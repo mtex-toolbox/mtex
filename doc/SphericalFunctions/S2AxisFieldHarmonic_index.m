@@ -1,5 +1,16 @@
-%% *|S2AxisFieldHarmonic|*
-%% Defining a |S2AxisFieldHarmonic|
+%% S2AxisFieldHarmonic
+%
+% S2AxisFieldharmonic handles axis fields on the sphere.
+% Axis can be understood as three-dimensional vectors without direction or length.
+%
+%% Contents
+
+%%
+% S2AxisFieldHarmonic handles functions of the form 
+%
+% $$ f\colon \bf S^2\to\bf R^3_{/<\pm \mathrm{Id}>}. $$
+%
+%% Defining a S2AxisFieldHarmonic
 %
 %%
 % *Definition via function values*

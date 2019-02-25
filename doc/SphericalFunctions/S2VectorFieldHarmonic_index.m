@@ -1,5 +1,10 @@
-%% *|S2VectorFieldHarmonic|*
-%% Defining a |S2VectorFieldHarmonic|
+%% S2VectorFieldHarmonic
+%
+% S2VectorField handles three-dimensional functions on the sphere. For instance the gradient of an univariate S2FunHarmonic can return a S2VectorFieldHarmonic.
+%
+%% Contents
+
+%% Defining a S2VectorFieldHarmonic
 %
 %%
 % *Definition via function values*
