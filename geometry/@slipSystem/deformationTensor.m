@@ -11,4 +11,4 @@ function eps = deformationTensor(sS)
 %  eps - deformationTensor
 %
 
-eps = EinsteinSum(tensor(sS.b.normalize),1,sS.n.normalize,2);
+eps = dyad(sS.b.normalize,sS.n.normalize);
