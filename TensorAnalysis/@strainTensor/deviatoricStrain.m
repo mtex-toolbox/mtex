@@ -8,6 +8,8 @@ function epsilon = deviatoricStrain(epsilon,varargin)
 %  e - @strainTensor
 %
 
+% the calculation essentially ensures that the trace of the resulting
+% tensor is zero
 p = trace(epsilon)./3;
 
 epsilon.M(1,1,:) = epsilon.M(1,1,:) - p;
