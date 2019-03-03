@@ -1,0 +1,9 @@
+{
+"stiffnessTensor.load":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required", "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexDataPath filesep 'stiffnessTensor' filesep '*.json']),'uniformOutput',false)"}
+     ]
+}
+}
