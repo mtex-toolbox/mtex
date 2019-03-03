@@ -59,7 +59,7 @@ argin_check(r,'vector3d');
 
 %  subsample if needed 
 if (length(ori)*length(ori.CS)*length(ori.SS) > 100000 || check_option(varargin,'points')) ...
-    && ~check_option(varargin,{'all','contourf','smooth','contour'})
+    && ~check_option(varargin,{'all','contourf','smooth','contour','pcolor'})
 
   points = fix(get_option(varargin,'points',100000/length(ori.CS)/length(ori.SS)));
   disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);

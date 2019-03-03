@@ -95,7 +95,7 @@ end
 
 
 % ------------------ subsample if needed --------------------------
-if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
+if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
     (sum(length(ori))*length(ori.CS)*length(ori.SS) > 10000 || check_option(varargin,'points'))
 
   points = fix(get_option(varargin,'points',10000/length(ori.CS)/length(ori.SS)));
