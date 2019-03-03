@@ -23,7 +23,7 @@ classdef velocityGradientTensor < tensor
   methods (Static = true)
     
     
-    L = uniaxialCompression(d,e)
+    L = uniaxial(d,e)
     
     L = pureShear(exp,comp,e)
 

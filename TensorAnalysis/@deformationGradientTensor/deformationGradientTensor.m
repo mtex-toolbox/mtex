@@ -14,28 +14,11 @@ classdef deformationGradientTensor < tensor
   end
 
   methods (Static = true)
+  
+    F = pureShear(exp,compr,lambda)
+    F = simpleShear(d,n,e)
+       
     
-    function F = simpleShear(d,n,e)
-      % simple shear deformation tensor
-      %
-      % Syntax
-      %   F = deformationGradientTensor.simpleShear(d,r)
-      %
-      % Input
-      %  d - @vector3d shear direction
-      %  n - @vector3d normal direction
-      %  e - strain rate
-      %
-      % Output
-      %  L - @velocityGradientTensor
-      %           
-    
-      if nargin == 2, e = 1; end
-      
-      F = 2*deformationGradientTensor(e .* dyad(d.normalize,n.normalize)) + ...
-        tensor.eye;
-
-    end   
   end
   
   
