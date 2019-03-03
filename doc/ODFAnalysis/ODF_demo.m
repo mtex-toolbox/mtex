@@ -19,7 +19,7 @@
 
 SS  = specimenSymmetry('orthorhombic');
 CS  = crystalSymmetry('cubic');
-o   = orientation('brass',CS,SS);
+o   = orientation.brass(CS,SS);
 psi = vonMisesFisherKernel('halfwidth',20*degree);
 
 odf1 = unimodalODF(o,CS,SS,psi)
