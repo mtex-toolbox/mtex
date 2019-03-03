@@ -41,7 +41,7 @@ function plotPDF(ori,varargin)
 if nargin > 1 
   if isa(varargin{1},'Miller')
     h = varargin{1};
-  elseif iscell(varargin{1}) && isa(varargin{2}{1},'Miller')
+  elseif iscell(varargin{1}) && isa(varargin{1}{1},'Miller')
     h = varargin{1};
   end
 end
