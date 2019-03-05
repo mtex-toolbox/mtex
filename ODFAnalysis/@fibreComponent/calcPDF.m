@@ -7,7 +7,7 @@ sh = symmetrise(normalize(component.h),varargin{:});
 sr = symmetrise(normalize(component.r),component.SS);
 
 for i = 1:length(sh)
-  dh = dot_outer(sh(i),h,'noSymmetry');
+  dh = dot_outer(sh(i),normalize(h),'noSymmetry');
   for j = 1:length(sr)
     dr = dot_outer(sr(j),r,'noSymmetry');
     Z = Z + component.weights * component.psi.RRK(dh.',dr) / length(sh);
