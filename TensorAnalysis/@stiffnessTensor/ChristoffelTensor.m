@@ -4,7 +4,7 @@ function E = ChristoffelTensor(C,n)
 % Formula: E_jk = C_ijkl n_j n_l
 %
 % Input
-%  C - elatic stiffness @tensor
+%  C - elastic stiffness @tensor
 %  x - list of @vector3d
 %
 % Output
@@ -13,4 +13,5 @@ function E = ChristoffelTensor(C,n)
 % See also
 % tensor/directionalMagnitude tensor/rotate
 
+n = n.normalize;
 E = ChristoffelTensor(tensor(EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2)));
