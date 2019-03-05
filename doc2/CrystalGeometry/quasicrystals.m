@@ -1,3 +1,4 @@
+%% Quasicrystal
 % Aufstellung 1
 % mit fünfzähliger Achse parallel zu z
 %rot5 = rotation.byAxisAngle(zvector,(0:4)*72*degree)

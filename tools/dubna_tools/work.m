@@ -1,3 +1,4 @@
+%% work
 % import spectra
 spec = loadallspectra('~/people/hallas/3914_E1');
 %spec = loadallspectra('./s09');

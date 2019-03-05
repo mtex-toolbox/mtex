@@ -1,3 +1,6 @@
+%% Transparency demo
+%
+%%
 cs = crystalSymmetry('m-3m')
 odf = unimodalODF(orientation.id(cs))
 ori = odf.discreteSample(500)

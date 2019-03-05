@@ -1,0 +1,3 @@
+%% Schmidt Factor
+%
+%%
