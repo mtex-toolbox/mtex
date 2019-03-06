@@ -17,7 +17,7 @@ classdef deformationGradientTensor < tensor
   
     F = pureShear(exp,compr,lambda)
     F = simpleShear(d,n,e)
-       
+    F = uniaxial(d,rate);
     
   end
   
