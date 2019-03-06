@@ -4,14 +4,19 @@ classdef spinTensor < velocityGradientTensor
 %
 %   Omega = spinTensor(v)
 %   Omega = spinTensor(S)
+%   Omega = spinTensor(rot)
+%   Omega = spinTensor(mori)
 %
 % Input
 %  S - skew symmetry matrix
 %  v - @vector3d
+%  rot - @rotation
+%  mori - mis@orientation
   
   
   methods
     function Omega = spinTensor(varargin)
+      
       
       Omega = Omega@velocityGradientTensor(varargin{:},'rank',2);
       

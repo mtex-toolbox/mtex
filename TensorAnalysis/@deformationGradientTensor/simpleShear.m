@@ -11,10 +11,10 @@ function F = simpleShear(d,n,gamma)
 %  gamma - shearing angle, default are 45 degree
 %
 % Output
-%  L - @velocityGradientTensor
+%  L - @deformationGradientTensor
 %
 
-if nargin == 2, gamma = 45*degree; end
+if nargin < 2, gamma = 45*degree; end
 
 F = deformationGradientTensor(tan(gamma) .* dyad(d.normalize,n.normalize)) + ...
   tensor.eye;

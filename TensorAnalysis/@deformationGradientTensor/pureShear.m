@@ -11,10 +11,10 @@ function F = pureShear(exp,compr,lambda)
 %  lambda - stretch ratio
 %
 % Output
-%  F - @velocityGradientTensor
+%  F - @deformationGradientTensor
 %
 
-if nargin == 2, lambda = 2; end
+if nargin < 2, lambda = 2; end
 
 
 rot = orientation.map(xvector,exp,zvector,compr);
