@@ -6,7 +6,7 @@ classdef crystalShape
   % Enderlein, J., 1997. A package for displaying crystal morphology.
   % Mathematica Journal, 7(1).
   %
-  %
+  % we need more :)
   
   properties
     N % face normals
