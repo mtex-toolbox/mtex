@@ -16,7 +16,7 @@ function ori = project2FundamentalRegion(ori,varargin)
 if length(ori.SS) == 1 
   q = project2FundamentalRegion(quaternion(ori),ori.CS,varargin{:});
 else
-  if ori.antipodal, ap = {'antipodal'}; else ap = {}; end
+  if ori.antipodal, ap = {'antipodal'}; else, ap = {}; end
   q = project2FundamentalRegion(quaternion(ori),ori.CS,ori.SS,ap{:},varargin{:});
 end
 

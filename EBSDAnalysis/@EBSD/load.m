@@ -103,5 +103,5 @@ if check_option(varargin,'3d')
   close(hw)
 end
 
-% should we autimatically gridify?
+% should we automatically gridify?
 %ebsd = ebsd.gridify;
