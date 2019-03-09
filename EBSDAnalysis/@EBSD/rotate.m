@@ -1,5 +1,5 @@
-function ebsd = rotate(ebsd,q,varargin)
-% rotate EBSD orientations or spatial data around point of origin
+function ebsd = rotate(ebsd,rot,varargin)
+% rotate EBSD 
 %
 % Syntax
 %
@@ -18,10 +18,10 @@ function ebsd = rotate(ebsd,q,varargin)
 % Input
 %  ebsd - @EBSD
 %  angle - double
-%  q    - @quaternion
+%  q    - @rotation
 %
 % Options
-%  center - [x,y] center of rotation, default is center of the map
+%  center - [x,y] center of rotation, default is (0,0)
 %
 % Flags
 %  keepXY    - rotate only the orientation data, i.e. the Euler angles
@@ -30,39 +30,34 @@ function ebsd = rotate(ebsd,q,varargin)
 % Output
 %  ebsd - @EBSD
 
-if isa(q,'double'), q = axis2quat(zvector,q); end
+if isa(rot,'double'), rot = rotation.byAxisAngle(zvector,rot); end
 
 % rotate the orientations
 if ~check_option(varargin,'keepEuler')
-  ebsd.rotations = rotation(q .* ebsd.rotations);
+  ebsd.rotations = rotation(rot .* ebsd.rotations);
 end
 
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
   
-  center = [mean(ebsd.prop.x(:));mean(ebsd.prop.y(:))];
-  center = get_option(varargin,'center',center);
+  center = get_option(varargin,'center',[0,0]);
   
-  ebsd = affinetrans(ebsd,[],-center(:));
-  if isappr(abs(dot(axis(q),zvector)),1) 
-    % rotation about z
+  ebsd = ebsd - center;
+  
+  % store coordinates as vector3d
+  V = vector3d(ebsd.prop.x,ebsd.prop.y,0);
+  
+  % rotate vertices
+  V = rot * V;
+
+  % store back
+  ebsd.prop.x = V.x(:);
+  ebsd.prop.y = V.y(:);
     
-    omega = dot(axis(q),zvector) * angle(q);
-    A = [cos(omega) -sin(omega);sin(omega) cos(omega)];
-    ebsd = affinetrans(ebsd,A);
-      
-  elseif isappr(angle(q),pi) && isnull(dot(axis(q),zvector)) 
-    % rotation perpendicular to z
-    
-    [x,y,z] = double(axis(q)); 
-    omega = atan2(y,x);
-    
-    A = [cos(2*omega) sin(2*omega);sin(2*omega) -cos(2*omega)];
-    ebsd = affinetrans(ebsd,A);
-    
-  elseif ~isappr(angle(q),0)
-    warning('MTEX:rotate',...
-      'Spatial rotation of EBSD data is only supported for rotations about the z-axis. I''m going to rotate only the orientation data!');
-  end
-  ebsd = affinetrans(ebsd,[],center(:));
+  ebsd = ebsd + center;
+  
+  % rotate the unitcell
+  V = vector3d(ebsd.unitCell(:,1),ebsd.unitCell(:,2),0);
+  V = rot * V;
+  ebsd.unitCell = [V.x(:),V.y(:)];
 end
