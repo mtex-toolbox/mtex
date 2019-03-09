@@ -1,4 +1,14 @@
 {
+
+"crystalSymmetry":
+{
+    "inputs":
+    [
+        {"name":"pointGroup", "kind":"required", "type":"choices={'1','211','121','112','222','3','321','312','4','422','6','622','23','432'}"},
+	{"name":"mineral", "kind":"namevalue", "type":"char"}
+     ]
+},
+
 "vector3d.load":
 {
     "inputs":
