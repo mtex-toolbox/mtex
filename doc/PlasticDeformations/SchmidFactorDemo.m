@@ -267,7 +267,7 @@ eps = strainTensor(diag([1,0,-1]))
 
 epsCrystal = inv(grains.meanOrientation) * eps
 
-[M, b, mori] = calcTaylor(epsCrystal, sS);
+[M, b] = calcTaylor(epsCrystal, sS);
 
 plot(grains,M,'micronbar','off')
 mtexColorbar southoutside

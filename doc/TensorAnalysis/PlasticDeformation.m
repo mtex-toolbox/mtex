@@ -197,7 +197,7 @@ sSLocal = grains.meanOrientation * sS
 % Computing the Schmid faktor we end up with a matrix of the same size
 
 % compute Schmid factor
-sigma = stressTensor.uniaxial(vector3d.Z)
+sigma = stressTensor.uniaxial(vector3d.X)
 SF = sSLocal.SchmidFactor(sigma);
 
 % take the maxium allong the rows
@@ -267,7 +267,7 @@ eps = strainTensor(diag([1,0,-1]))
 
 epsCrystal = inv(grains.meanOrientation) * eps
 
-[M, b, mori] = calcTaylor(epsCrystal, sS);
+[M, b, W] = calcTaylor(epsCrystal, sS);
 
 plot(grains,M,'micronbar','off')
 mtexColorbar southoutside

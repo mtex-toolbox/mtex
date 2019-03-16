@@ -37,7 +37,7 @@ epsilon = strainTensor(diag([1 -q -(1-q)]))
 ori = orientation.byEuler(0,30*degree,15*degree,cs)
 
 % compute the Taylor factor
-[M,b,mori] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
+[M,b,W] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
 
 %% The orientation dependence of the Taylor factor
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
@@ -55,7 +55,7 @@ oriGrid.SS = specimenSymmetry;
 
 % compute Taylor factor for all orientations
 tic
-[M,~,mori] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
+[M,~,W] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
 toc
 
 % plot the taylor factor
@@ -64,10 +64,10 @@ sP.plot(M,'smooth')
 mtexColorbar
 
 
-%% The orientation dependence of the rotation value
+%% The orientation dependence of the spin
 % Compare Fig. 8 of the above paper
 
-sP.plot(mori.angle./degree,'smooth')
+sP.plot(W.angle./degree,'smooth')
 mtexColorbar
 
 %%
@@ -75,8 +75,8 @@ mtexColorbar
 
 sP = sigmaSections(cs,specimenSymmetry);
 oriGrid = sP.makeGrid('resolution',2.5*degree);
-[M,~,mori] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
-sP.plot(mori.angle./degree,'smooth')
+[M,~,W] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
+sP.plot(W.angle./degree,'smooth')
 mtexColorbar
 
 %% Most active slip direction
@@ -102,7 +102,7 @@ epsilon = strainTensor(diag([1 -q -(1-q)]))
 sS = symmetrise(slipSystem.fcc(grains.CS));
 
 % apply Taylor model
-[M,b,mori] = calcTaylor(inv(grains.meanOrientation)*epsilon,sS);
+[M,b,W] = calcTaylor(inv(grains.meanOrientation)*epsilon,sS);
 
 %%
 
@@ -148,10 +148,10 @@ progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  [M,~,mori] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
+  [M,~,W] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
 
   % rotate the individual orientations
-  ori = ori .* inv(mori);
+  ori = ori .* orientation(-W);
   progress(sas,numIter);
 end
 
@@ -178,9 +178,9 @@ setMTEXpref('pfAnnotations',storepfA);
 oS = axisAngleSections(cs,cs,'antipodal');
 oS.angles = 10*degree;
 
-mori = oS.makeGrid;
+ori = oS.makeGrid;
 
-[M,b,eps] = calcInvTaylor(mori,sS.symmetrise);
+[M,b,eps] = calcInvTaylor(ori,sS.symmetrise);
 
 %%
 
