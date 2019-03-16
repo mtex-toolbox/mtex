@@ -91,9 +91,14 @@ classdef tensor < dynOption
   
         end
 
-        % transform from voigt matrix representation to ordinary rank four tensor
+        % transform from voigt or Kelvin matrix representation to ordinary
+        % rank four tensor
         if size(T.M,1) == 6 && size(T.M,2) == 6 && (T.rank == -1 || T.rank == 4)
-          T.M = tensor24(T.M,T.doubleConvention);
+          if check_option(varargin,'Kelvin')
+            T.M = tensor24(T.M,2);
+          else
+            T.M = tensor24(T.M,T.doubleConvention);
+          end
           T.rank = 4;
         elseif size(T.M,1) == 3 && size(T.M,2) == 6 && (T.rank == -1 || T.rank == 3)
           if T.rank == -1
