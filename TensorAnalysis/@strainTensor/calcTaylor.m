@@ -1,4 +1,4 @@
-function [M,b,mori,spin] = calcTaylor(eps,sS,varargin)
+function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
@@ -82,8 +82,5 @@ if nargout <=2, return; end
 % the antisymmetric part of the deformation tensors gives the spin
 % in crystal coordinates
 spin = spinTensor(b*sSeps.antiSym);
-
-% translate spin into misorientation
-mori = orientation(spin);
 
 end
