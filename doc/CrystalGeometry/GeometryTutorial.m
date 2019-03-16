@@ -7,14 +7,14 @@
 % *Definition*
 
 v = vector3d (1 ,0 ,0)                      % Cart . coordinates
-v = vector3d('polar', 20*degree, 10*degree) % polar coordinates
-v = xvector                                 % predefined vector
+v = vector3d.byPolar(20*degree, 10*degree)  % polar coordinates
+v = vector3d.X                              % predefined vector
 
 %%
 % *Calculations*
 
-v = [xvector, yvector]; w = v(1);
-v = 2*xvector - yvector;
+v = [vector3d.X, vector3d.Y]; w = v(1);
+v = 2*vector3d.X - vector3d.Y;
 
 %%
 % *Basic Functions*

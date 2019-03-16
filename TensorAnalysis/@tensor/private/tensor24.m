@@ -8,6 +8,7 @@ M = reshape(M,6*6,[]);
 if doubleconvention
   w = 1./(1+((1:6)>3));
   w = w.' * w;
+  if doubleconvention == 2, w = sqrt(w); end
   w = repmat(w(:),1,size(M,2));
   M = M .* w;
 end

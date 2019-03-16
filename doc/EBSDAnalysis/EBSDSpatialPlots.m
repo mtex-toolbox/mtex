@@ -171,17 +171,22 @@ hold off
 %%
 % we can easily extend the colorcoding
 
-ipfKey.center = [Miller(0,0,1,csFo),Miller(0,1,1,csFo),Miller(1,1,1,csFo),...
-  Miller(11,4,4,csFo), Miller(5,0,2,csFo) , Miller(5,5,2,csFo)];
+% the centers in the inverse pole figure
+ipfKey.center = Miller({0 0 1},{0 1 1},{1 1 1},{11 4 4},{5 0 2},{5 5 2},csFo);
 
+% the correspnding collors
 ipfKey.color = [[1 0 0];[0 1 0];[0 0 1];[1 0 1];[1 1 0];[0 1 1]];
 
-close all;
-plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
+% plot the key
+plot(ipfKey)
+hold on
+plot(ebsd('fo').orientations,'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',3,'points',1000)
+hold off
 
 %%
 
-plot(ipfKey,'complete')
+close all;
+plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 
 %% SUB: Coloring certain orientations
 % We might be interested in locating some special orientation in our

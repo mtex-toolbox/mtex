@@ -1,8 +1,11 @@
 function ext = extend(ebsd)
 % returns the boundings of spatial EBSD data
 %
+% Input
+%  ebsd - @EBSD 
+%
 % Output
-% ext - extend as [xmin xmax ymin ymax]
+%  ext - extend as [xmin xmax ymin ymax]
 %
 
 ext = [nanmin(ebsd.prop.x(:)) nanmax(ebsd.prop.x(:)) ...

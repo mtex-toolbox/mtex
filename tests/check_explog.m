@@ -71,6 +71,38 @@ exp(spin)
 rotation(expquat(v))
 
 
+end
+
+
+function test
+  % some testing code
+
+  cs = crystalSymmetry('321');
+  ori1 = orientation.rand(cs);
+  ori2 = orientation.rand(cs);
+
+  v = log(ori2,ori1);
+
+  % this should be the same
+  [norm(v),angle(ori1,ori2)] ./ degree
+
+  % and this too
+  [ori1 * orientation.byAxisAngle(v,norm(v)) ,project2FundamentalRegion(ori2,ori1)]
+
+  % in specimen coordinates
+  r = log(ori2,ori1,'left');
+
+  % now we have to multiply from the left
+  [rotation.byAxisAngle(r,norm(v)) * ori1 ,project2FundamentalRegion(ori2,ori1)]
+
+  % the following output should be constant
+  % gO = log(ori1,ori2.symmetrise) % but not true for this
+  % gO = log(ori1.symmetrise,ori2) % true for this
+  %
+  % gO = ori2.symmetrise .* log(ori1,ori2.symmetrise) % true for this
+  % gO = ori2 .* log(ori1.symmetrise,ori2) % true for this
+
+end
 
 
 

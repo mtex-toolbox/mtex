@@ -6,7 +6,7 @@ classdef crystalShape
   % Enderlein, J., 1997. A package for displaying crystal morphology.
   % Mathematica Journal, 7(1).
   %
-  %
+  % we need more :)
   
   properties
     N % face normals
@@ -220,7 +220,7 @@ classdef crystalShape
       CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
 
       fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
-      ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
+      ebsd = EBSD.load(fname, 'CS', CS,...
         'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
         'x' 'y' 'grainId'});
 

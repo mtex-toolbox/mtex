@@ -65,9 +65,11 @@ classdef HSVDirectionKey < directionColorKey
       
         % copy to the reduced sector
         h_sR = h;
+        whiteOrBlack = true(size(h));
         for i = 1:length(dM.refl)
           ind = dot(vector3d(h_sR),dM.refl(i))<1e-5;
           h_sR(ind) = reflection(dM.refl(i)) * h_sR(ind);
+          whiteOrBlack = whiteOrBlack & ind;
           
           if dot(wC,dM.refl(i))<1e-5
             wC = reflection(dM.refl(i)) * wC;
@@ -76,7 +78,7 @@ classdef HSVDirectionKey < directionColorKey
         end
       
         % which are white
-        whiteOrBlack = xor(h_sR == h,switchWB);
+        whiteOrBlack = xor(whiteOrBlack,switchWB);
       
         % compute angle of the points "sh" relative to the center point "center"
         % this should be between 0 and 1

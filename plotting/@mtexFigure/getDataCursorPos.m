@@ -1,4 +1,4 @@
-function [pos,value,ax] = getDataCursorPos(mtexFig)
+function [pos,id,value,ax] = getDataCursorPos(mtexFig,maxId)
 % get the position and value of the data cursor
 %
 
@@ -27,32 +27,51 @@ if ~isgraphics(ax,'axes')
   ax = get(ax,'parent');
 end
 
-% get value
-zd = get(target,'zdata');
+% get coordinates
 xd = get(target,'xdata');
 yd = get(target,'ydata');
 
-if size(xd,1) ~= 1 && size(xd,2) == numel(zd)   
+% maybe data are stored in zdata
+try  
+  values = get(target,'zdata');
+catch
+  values = [];
+end
+
+% maybe data are stored in cdata
+if numel(values) ~=  numel(xd) && (numel(values) ~= size(xd,2) || size(xd,1) == 1)
+  try values = get(target,'cdata'); end %#ok<TRYNC>
+end
+
+% for patches take the mean over the vertices, this gives something close
+% to the center
+if size(xd,1) ~= 1 && size(xd,2) == numel(values)   
   xd = mean(xd);
   yd = mean(yd);  
 end
 
-[~,value] = min((xd(:)-pos(1)).^2 + (yd(:)-pos(2)).^2);
+% find closes coordinate
+if numel(xd)>2
+  [~,id] = min((xd(:)-pos(1)).^2 + (yd(:)-pos(2)).^2);
 
-if numel(zd) == numel(xd)
-  value = zd(value); 
-else
-  try %#ok<TRYNC>
-    cd = get(target,'cdata');
-    assert(numel(cd) == numel(xd));
-    value = cd(value);
+  if numel(values) == numel(xd)
+    value = values(id);
+  else
+    value = [];
   end
-end
  
-% for spherical plots convert to polar coordinates
-sP = getappdata(ax,'sphericalPlot');
-if ~isempty(sP)
-  pos = sP.proj.iproject(pos(1),pos(2));
+  % for spherical plots convert to polar coordinates
+  sP = getappdata(ax,'sphericalPlot');
+  if ~isempty(sP)
+    pos = sP.proj.iproject(pos(1),pos(2));
+  end
+else
+  value = [];
+  id = 1;
+end
+
+if nargin > 1
+  id = ceil(id*maxId/numel(xd));
 end
 
 end

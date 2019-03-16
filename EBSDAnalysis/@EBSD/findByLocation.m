@@ -18,13 +18,9 @@ function map = findByLocation( ebsd, xy )
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
-if all(isfield(ebsd.prop,{'x','y','z'}))
-  x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
-elseif all(isfield(ebsd.prop,{'x','y'}))
-  x_D = [ebsd.prop.x,ebsd.prop.y];
-else
-  error('mtex:findByLocation','no Spatial Data!');
-end
+
+x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
+
 
 delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
 

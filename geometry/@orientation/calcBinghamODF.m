@@ -12,7 +12,7 @@ function odf = calcBinghamODF(ori,varargin)
 %  odf - @ODF
 %
 % See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
+% ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
 % maybe there is nothing to do
 if isempty(ori), odf = ODF; return, end

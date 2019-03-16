@@ -15,3 +15,4 @@ v.x = accumarray(subs,v.x,varargin{:});
 v.y = accumarray(subs,v.y,varargin{:});
 v.z = accumarray(subs,v.z,varargin{:});
 
+v.isNormalized = false;

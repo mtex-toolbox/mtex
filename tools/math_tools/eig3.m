@@ -73,15 +73,16 @@ if nargout > 1
   
   % fallback for special cases
   % TODO: this should be done better
-  id = ~(abs(det(v(1,:),v(2,:),v(3,:))) > (1 - 1e-5));  
+  id = ~(abs(det(v(1,:),v(2,:),v(3,:))) > (1 - 1e-5)) | isnan(lambda(1,:));  
   x = v.x; y = v.y; z = v.z;
   for k = find(id)
     
-    [V,~] = eig([a11(k) a12(k) a13(k);...
+    [V,l] = eig([a11(k) a12(k) a13(k);...
       a12(k) a22(k) a23(k); ...
       a13(k) a23(k) a33(k)]);
     
     x(:,k) = V(1,:); y(:,k) = V(2,:); z(:,k) = V(3,:);
+    lambda(:,k) = diag(l);
     
   end
   v.x = x; v.y = y; v.z = z;

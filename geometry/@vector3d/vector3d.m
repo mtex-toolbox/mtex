@@ -5,6 +5,7 @@ classdef vector3d < dynOption
     y = []; % y coordinate
     z = []; % z coordinate
     antipodal = false;
+    isNormalized = false;
   end
     
   properties (Dependent = true)
@@ -35,9 +36,20 @@ classdef vector3d < dynOption
 
       if nargin == 0
       elseif nargin <= 2
-        if isa(varargin{1},'vector3d') % copy-constructor
+        if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>
+          
           v = varargin{1};
+          
+        elseif isa(varargin{1},'vector3d') % copy-constructor
+          
+          v.x = varargin{1}.x;
+          v.y = varargin{1}.y;
+          v.z = varargin{1}.z;
+          v.antipodal = varargin{1}.antipodal;
+          v.isNormalized = varargin{1}.isNormalized;
+          v.opt = varargin{1}.opt;
           return
+          
         elseif isa(varargin{1},'double')
           xyz = varargin{1};
           if all(size(xyz) == [1,3])
@@ -104,17 +116,20 @@ classdef vector3d < dynOption
 
       % ------------------ options ------------------------------
       
-      % antipodal
-      v.antipodal = check_option(varargin,'antipodal');
+      if nargin > 3
+        
+        % antipodal
+        v.antipodal = check_option(varargin,'antipodal');
       
-      % resolution
-      if check_option(varargin,'resolution')
-        v = v.setOption('resolution',get_option(varargin,'resolution'));
+        % resolution
+        if check_option(varargin,'resolution')
+          v = v.setOption('resolution',get_option(varargin,'resolution'));
+        end
+      
+        % normalize
+       if check_option(varargin,'normalize'), v = normalize(v); end
+       
       end
-      
-      % normalize
-      if nargin > 3 && check_option(varargin,'normalize'), v = v ./ norm(v); end
-      
     end
   
     function n = numArgumentsFromSubscript(varargin)
@@ -248,20 +263,9 @@ classdef vector3d < dynOption
       
     end
     
-    function varargout = load(fname,varargin)
-      % load vectors from file
-      
-      [varargout{1:nargout}] = loadVector3d(fname,varargin{:});
-      
-    end
+    [v,interface,options] = load(fname,varargin)
     
-    %function v = polar(polarAngle,azimuthAngle)
-    %  % Syntax
-    %  %
-    %  x = sin(polarAngle).*cos(azimuthAngle);
-    %  y = sin(polarAngle).*sin(azimuthAngle);
-    %  z = cos(polarAngle);
-    %  v = vector3d(x,y,z);
-    %end
+    v = byPolar(polarAngle,azimuthAngle,varargin)
+    
   end
 end

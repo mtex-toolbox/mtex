@@ -50,10 +50,10 @@ if nargout == 0, clear h; end
 
   function txt = tooltip(varargin)
     
-    [r_local,v] = getDataCursorPos(mtexFig);
+    [r_local,~,value] = getDataCursorPos(mtexFig);
     %v = sF.eval(r_local);
     
-    txt = [xnum2str(v) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+    txt = [xnum2str(value) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
   
   end
 

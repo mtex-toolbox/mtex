@@ -1,5 +1,5 @@
 function S = sym(T,varargin)
-% the symmetric part S = 0.5(T + T.') of a tensor
+% the symmetric part S = 0.5(T + T') of a tensor
 %
 % Syntax
 %   S = sym(T)

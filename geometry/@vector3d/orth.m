@@ -7,4 +7,4 @@ function ov = orth(v)
 
 v.y(isnull(v.x)) = -1;
 ov = vector3d(-v.y,v.x,zeros(size(v)));
-ov = ov ./norm(ov);
+ov = normalize(ov);

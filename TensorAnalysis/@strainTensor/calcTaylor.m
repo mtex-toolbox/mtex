@@ -1,17 +1,17 @@
-function [M,b,mori,spin] = calcTaylor(eps,sS,varargin)
+function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
-%   [M,b,mori] = calcTaylor(eps,sS)
+%   [M,b,W] = calcTaylor(eps,sS)
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
 %  sS  - @slipSystem list in crystal coordinates
 %
 % Output
-%  M    - taylor factor
-%  b    - coefficients for the acive slip systems 
-%  mori - misorientation
+%  M - taylor factor
+%  b - vector of slip rates for all slip systems 
+%  W - @spinTensor
 %
 % Example
 %   
@@ -26,8 +26,10 @@ function [M,b,mori,spin] = calcTaylor(eps,sS,varargin)
 %   sS = slipSystem.fcc(cs)
 %
 %   % compute the Taylor factor
-%   [M,b,mori] = calcTaylor(inv(ori)*eps,sS.symmetrise)
+%   [M,b,W] = calcTaylor(inv(ori)*eps,sS.symmetrise)
 %
+%   % update orientation
+%   oriNew = ori .* orientation(-W)
 
 % ensure strain is symmetric
 eps = eps.sym;
@@ -82,8 +84,5 @@ if nargout <=2, return; end
 % the antisymmetric part of the deformation tensors gives the spin
 % in crystal coordinates
 spin = spinTensor(b*sSeps.antiSym);
-
-% translate spin into misorientation
-mori = orientation(spin);
 
 end

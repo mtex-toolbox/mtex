@@ -23,3 +23,5 @@ elseif isa(v2,'vector3d') && isa(v1,'vector3d')
 else
   v = plus(v2,v1);
 end
+
+v.isNormalized = false;

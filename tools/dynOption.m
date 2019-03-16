@@ -11,7 +11,9 @@ classdef dynOption
     % ------------------------------------------
     function dOpt = dynOption(varargin)          
       
-      if nargin==1 && isa(varargin{1},'dynOption')
+      if nargin == 0
+        return
+      elseif nargin==1 && isa(varargin{1},'dynOption')
         dOpt.opt = varargin{1}.opt;
       else
         dOpt.opt = struct(varargin{:});

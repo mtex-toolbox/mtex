@@ -13,25 +13,25 @@ function [r,rho] = polarCoordinates(sR,v,center,ref,varargin)
 % the radius
 % -------------------------------------------------------------------  
 
-v = vector3d(v);
+v = normalize(vector3d(v));
 center = center.normalize;
 vxcenter = normalize(cross(v,center));
 
 if all(isnull(dot(sR.N,center)))
   r = angle(center,v) ./ pi;
 else
-  r = zeros(length(v),length(sR.N));
+  r = inf(length(v),1);
   for i = 1:length(sR.N)
   
     % boundary points
     bc = normalize(cross(vxcenter,sR.N(i)));
     
     % compute distances
-    r(:,i) = angle(-v(:),bc(:))./angle(-center,bc(:));
+    d = angle(-v,bc)./angle(-center,bc);
+    d(isnan(d)) = 1;
+    d(imag(d) ~=0 ) = 0;
+    r = min(r,d(:));
   end
-  r(isnan(r)) = 1;
-  r = min(r,[],2);
-  r(imag(r) ~=0 ) = 0;
 end
 
 % a reference direction for rho = 0

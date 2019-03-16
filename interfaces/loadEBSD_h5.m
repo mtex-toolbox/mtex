@@ -31,8 +31,8 @@ if numel(ginfo) > 0
 end
 
 assert(numel(ginfo) > 0);
-
-if check_option(varargin,'check'), ebsd = EBSD; return; end
+  
+if check_option(varargin,'check'), ebsd = EBSD; header = {}; return; end
 
 try
   for k = 1:numel(ginfo)
@@ -154,6 +154,7 @@ for iphase = 1:numel(group.Groups)
 
     spaceGroup = h5read(fname,[group.Groups(iphase).Name '/SpaceGroup']);
     spaceGroup = strrep(spaceGroup,'#ovl','-');
+    spaceGroup = strrep(spaceGroup,'#sub','');
   end
 
   try

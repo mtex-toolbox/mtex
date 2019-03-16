@@ -12,8 +12,11 @@ classdef stiffnessTensor < tensor
   
    
   methods (Static = true)
-    function C = load(varargin)
-      T = load@tensor(varargin{:});
+    function C = load(fname,varargin)
+      if ~exist(fname,'file')
+        fname = [mtexDataPath filesep 'stiffnessTensor' filesep fname];
+      end
+      T = load@tensor(fname,varargin{:});
       C = stiffnessTensor(T);
     end
   end

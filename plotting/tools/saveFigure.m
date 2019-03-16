@@ -14,7 +14,7 @@ function saveFigure(fname,varargin)
 %  
 
 % no file name given select from dialog
-if nargin == 0, 
+if nargin == 0 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...
     '*.jpg;*.tif;*.png;*.gif;*.bmp;*pgm;*.ppm','Bitmap Image Files';...
     '*.*','All Files' },'Save Image','newfile.pdf');
@@ -74,7 +74,7 @@ else % use export_fig with 50% magnification
     set(gcf,'color','w');
     % prevent smoothing and aliasing on map plot: no new colors should be generated
     if isa(getappdata(gca,'mapPlot'),'mapPlot')
-      %set(gcf,'GraphicsSmoothing','off');
+      set(gcf,'GraphicsSmoothing','off');
       export_fig(gcf,fname,'-m2.5','-a1');
     else
       export_fig(gcf,fname,'-m1.5');

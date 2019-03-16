@@ -25,8 +25,17 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
+  if check_option(varargin,'noQHull')
+  
+    dt = delaunayTriangulation([X;dummyCoordinates]);
+    [V,D] = voronoiDiagram(dt);
+    
+  else
 
+    [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
+            
+  end
+    
   D = D(1:size(X,1));
   
 end
@@ -103,7 +112,7 @@ if ischar(method)
       
     otherwise     
       
-      error('uknown boundary type. Available options are ''convexhull'' and ''cube''.');   
+      error('uknown boundary type. Available options are ''convexhull'' ''tight '' and ''cube''.');   
       
   end
   

@@ -1,5 +1,18 @@
 function sS = cat(dim,varargin)
-% 
+% implement cat for slipSystem
+%
+% Syntax 
+%   sS = cat(dim,sS1,sS2,sS3)
+%
+% Input
+%  dim - dimension
+%  sS1, sS2, sS3 - @slipSystem
+%
+% Output
+%  sS - @slipSystem
+%
+% See also
+% slipSystem/horzcat, slipSystem/vertcat
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];

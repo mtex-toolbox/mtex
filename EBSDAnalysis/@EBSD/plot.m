@@ -61,10 +61,10 @@ if nargin>1 && isa(varargin{1},'orientation')
   
   if ~getMTEXpref('generatingHelpMode')
     disp('  I''m going to colorize the orientation data with the ');
-    disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp('  standard MTEX ipf colorkey. To view the colorkey do:');
     disp(' ');
-    disp('  oM = ipfColorKey(ori_variable_name)')
-    disp('  plot(oM)')
+    disp('  ipfKey = ipfColorKey(ori_variable_name)')
+    disp('  plot(ipfKey)')
   end
 end
 
@@ -77,8 +77,7 @@ if nargin>1 && isnumeric(varargin{1})
   assert(any(numel(property) == length(ebsd) * [1,3]),...
     'The number of values should match the number of ebsd data!')
   
-  h = plotUnitCells([ebsd.prop.x(:), ebsd.prop.y(:)],...
-    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
+  h = plotUnitCells(ebsd, property, 'parent', mP.ax, varargin{:});
   
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
@@ -95,7 +94,7 @@ else % phase plot
     
     color = ebsd.subSet(ind).color;
     
-    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)], color, ebsd.unitCell,...
+    h(k) = plotUnitCells(ebsd.subSet(ind), color,...
       'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
   
   end
@@ -132,7 +131,7 @@ end
 % Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
-[pos,value] = getDataCursorPos(gcm);
+[pos,~,value] = getDataCursorPos(gcm);
 
 try
   id = findByLocation(ebsd,[pos(1) pos(2)]);
@@ -144,7 +143,7 @@ if ~isempty(id)
 
   txt{1} = ['id = '  num2str(id)];
   txt{2} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
-  txt{3} = ['(x,y) = ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
+  txt{3} = ['(x,y) = (', xnum2str(pos(1)) ', ' xnum2str(pos(2)),')'];
   if ebsd.isIndexed(id)
     txt{4} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end

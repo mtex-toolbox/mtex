@@ -1,6 +1,10 @@
 function sigma = deviatoricStress(sigma,varargin)
 % deviatoric stress
 %
+% Syntax
+%
+%   S = deviatoricStress(sigma);
+%
 % Input
 %  sigma - @stressTensor
 %

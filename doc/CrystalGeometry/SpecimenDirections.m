@@ -53,7 +53,7 @@ v.x = 0
 
 polar_angle = 60*degree;
 azimuth_angle = 45*degree;
-v = vector3d('polar',polar_angle,azimuth_angle)
+v = vector3d.byPolar(polar_angle,azimuth_angle)
 
 plotx2east
 plot(v,'grid')
@@ -112,7 +112,7 @@ v ./ norm(v)
 % Large lists of vectors can be imported from a text file by the command
 
 fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
-v = loadVector3d(fname,'ColumnNames',{'polar angle','azimuth angle'})
+v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'})
 
 %%
 % and exported by the command 

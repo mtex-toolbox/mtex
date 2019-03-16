@@ -1,4 +1,6 @@
 function cS =repmat(cS,varargin)
+% implements repmat for crystalShape
+%
 
 n = prod([varargin{:}]);
 

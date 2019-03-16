@@ -1,5 +1,5 @@
 classdef sphericalRegion
-%sphericalRegion implements a region on the sphere
+% sphericalRegion implements a region on the sphere
 % The region is bounded by small circles given by there normal vectors
 % and the maximum inner product, i.e., all points v inside a region
 % satisfy the conditions dot(v, N) <= alpha
@@ -128,7 +128,7 @@ classdef sphericalRegion
         srho = size(rho);
         [rho,theta] = meshgrid(rho,theta);
         
-        v = vector3d('polar',theta,rho);
+        v = vector3d.byPolar(theta,rho);
         
         ind = sR.checkInside(v);
         

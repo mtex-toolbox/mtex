@@ -66,8 +66,9 @@ T.M = real(T.M);
 T.M = nanmean(T.M,T.rank+1);
 
 % check whether something has changed 
-if any(abs(T.M(:)-M_old(:))./max(abs(M_old(:)))>1e-6 & ~isnull(M_old(:)))
-  warning('MTEX:tensor','Tensor does not pose the right symmetry');
+if any(abs(T.M(:)-M_old(:))./max(abs(M_old(:)))>1e-4 & ~isnull(M_old(:)))
+  warning('MTEX:tensor',[T.CS.mineral ' Tensor does not pose the right symmetry']);
+  disp(['Deviation:' xnum2str(nanmax(abs(T.M(:)-M_old(:))))]);
 end
 
 % NaN values become zero again

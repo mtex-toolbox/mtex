@@ -1,5 +1,18 @@
 function q = cat(dim,varargin)
-% 
+% implement cat for quaternion
+%
+% Syntax 
+%   q = cat(dim,q1,q2,q3)
+%
+% Input
+%  dim - dimension
+%  q1, q2, q3 - @quaternion
+%
+% Output
+%  q - @quaternion
+%
+% See also
+% quaternion/horzcat, quaternion/vertcat
 
 q = varargin{1};
 

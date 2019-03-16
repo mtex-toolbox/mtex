@@ -43,6 +43,6 @@ if check_option(varargin,'complete')
   maxPhi2 = 2*pi;
 end
 
-if check_option(varargin,'SO3Grid') && strcmp(cs.LaueName,'m-3m')  
+if check_option(varargin,'SO3Grid') && cs.Laue.id == 45
   maxPhi = pi/3;
 end

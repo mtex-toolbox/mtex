@@ -95,10 +95,10 @@ methods
           otherwise
 
             if exist([varargin{1},'Orientation'],'file')
-
+              
               % there is a file defining this specific orientation
               o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
-
+              
             end
         end
     end
@@ -135,7 +135,7 @@ methods (Static = true)
   ori = byAxisAngle(v,omega,varargin);
   ori = byMatrix(M,varargin);
   ori = map(varargin);
-
+  [ori,interface,options] = load(fname,varargin);
 
   function ori = cube(varargin)
     ori = orientation.byEuler(0,0,0,varargin{:});

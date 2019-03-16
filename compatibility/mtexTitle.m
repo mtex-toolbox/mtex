@@ -27,7 +27,7 @@ s = ['\bf{' regexprep(s,'\$([^\$]*)\$','\$\\mathbf{$1}\$') '}'];
 s = strrep(s,'$$','');
 s = strrep(s,'%','\%');
 
-if check_option(varargin,'global')
+if check_option(varargin,'global') && ~verLessThan('matlab','9.5')
   h = optiondraw(sgtitle(s,...
     'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.2)),varargin{:});  
 else

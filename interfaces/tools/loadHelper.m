@@ -132,7 +132,7 @@ loader.getColumnData = @getColumnData;
           theta = pi/2 - theta;
         end
 
-        v = vector3d('polar',theta,rho);
+        v = vector3d.byPolar(theta,rho);
 
       end
 

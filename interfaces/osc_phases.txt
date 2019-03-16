@@ -1,0 +1,487 @@
+Actinium
+Ag3Sn_Ortho
+AgCd
+AgCu
+Al13Fe4
+Al13Ru4
+Al2CuMg
+Al4.01MnSi0.74
+Al45FeSi
+Al5Fe2
+Al6Ru
+Al7Cu2Fe
+Al8Fe2Si
+Al9Fe2Si2
+AlAu2 (Tetragonal)
+AlCuNi
+AlCu_kappa
+AlFeNi
+AlNi3 (Cubic)
+AlTi3
+Albite-Sodium Calcium Aluminum Silicate
+Albite
+Alumina
+Aluminum Barium Silicon
+Aluminum Calcium Silicate
+Aluminum Copper Iron
+Aluminum Copper Nickel
+Aluminum Iron Silicon
+Aluminum Magnesium (Cubic)
+Aluminum Magnesium (Hexagonal)
+Aluminum Magnesium (Tetragonal)
+Aluminum Manganese (Cubic)
+Aluminum Manganese (Orthorhombic)
+Aluminum Nickel
+Aluminum Nitride Cubic
+Aluminum Nitride Hexagonal
+Aluminum Titanium Vanadium
+Aluminum Titanium
+Aluminum Yttrium Oxide
+Aluminum
+AluminumYttriumOxide
+Amphibole
+Anatase TiO2
+Andalusite
+Andradite garnet
+Anorthite Plagioclase
+Antimony Indium
+Antimony
+Aragonite
+Arsenopyrite
+Au17Sn3
+Au17Sn3_Hex
+AuSn
+Augite
+Austenite
+Azurite
+BCC Generic
+BSCCO 2212
+BSCCO 2223
+Ba-fresnoite
+Ba2ZnSi2O7.
+Barium Platinum Copper Oxide
+Barium Sulfate
+Barium Tetrabismuth Tetratitanium Oxide
+Barium Titanium Oxide
+Barium
+Beryl
+Beryllium Copper
+Beryllium
+Biotite
+Bismuth Iron Oxider
+Bismuth Telluride
+Bismuth
+Bornite
+Boron Titanium
+Boron Zirconium
+Brannerite UTi2O6
+Brookite TiO2
+Ca2(Al(AlSi)O7)
+Ca5(PO4)2(SiO4)6
+CaF2
+CaMg2
+CaO(Al2O3)2
+CaO(Al2O3)6
+CaTiO3
+Cadmium Indium Selenide
+Cadmium Sulphide
+Cadmium Telluride
+Cadmium Zinc Telluride
+Calcium Aluminum Iron Magnesium Silicate
+Calcium Aluminum Silicide
+Calcium Boron Silicate Hydrate
+Calcium Flouride
+Calcium Fluoride
+Calcium Iron Aluminum Silicate
+Calcium Iron Magnesium Aluminum Hydroxide Silicate
+Calcium Iron Magnesium Aluminum Silicon Hydroxide Floride
+Calcium Lanthanum Silicon
+Calcium Magnesium Aluminum Borate Silicate Hydroxide
+Calcium Magnesium Aluminum Iron Silicate Hydroxide
+Calcium Magnesium Aluminum Iron Silicate
+Calcium Magnesium Iron Aluminum Silicate Hydroxide
+Calcium Magnesium Silicate
+Calcium Magnesium Silicide
+Calcium Silicide
+Calcium Silicon Oxide
+Calcium Silicon Titanium Oxide
+Calcium Silicon
+Calcium Sodium Silicate
+Calcium
+Ce (hp)
+Cementite
+Cerium Cobalt Antimonide
+Cerium Lanthanum Silicon
+Cerium Oxide (Cubic)
+Cerium Oxide (Hexagonal)
+Cerium Oxide (Orthorhombic)
+Cerium
+Cesium Chloride
+Cesium
+Chalcocite
+Chi duplex Cr12 Fe32 Mo7 Ni7
+Chlorite
+Chromium Carbide (23_6)
+Chromium Carbide (2_1)
+Chromium Carbide (7_3)
+Chromium Iron Carbide
+Chromium Manganese Oxide
+Chromium Nickel Aluminum
+Chromium Nickel Silicon
+Chromium Nickel
+Chromium Nitride
+Chromium Silicon
+Chromium
+Clinochlore
+Co0.8 Re0.2
+Cobalt (Beta)
+Cobalt (alpha)
+Cobalt Molybdenum (2_3)
+Cobalt Molybdenum (3_1)
+Cobalt Samarium
+Cobalt Tungsten Carbide
+Cobalt Zinc Sulfide
+Cobaltite Ni Co Fe As S
+Copper Iron Sulfide
+Copper Oxide Monoclinic
+Copper Oxide
+Copper Palladium
+Copper Tin (6_5)
+Copper Zinc
+Copper
+Cr Nb Co Laves phase
+Cr2Re3
+CrC2
+CrRe2
+CrV-C
+Cristobalite-tetragonal
+Cu2O
+Cu2Zn
+Cu3Sn
+CuAl2
+CuAl2O4
+CuAlO2
+CuZn_bcc
+Cubanite
+Diamond
+Dibarium Zinc Disilicate
+Dolomite
+Enstatite
+Erbium Oxide
+Erbium Silicon
+Europium
+FCC Generic
+Fe epsilon
+Fe12 La O19
+Fe2NiP
+Fe2P
+Fe2Si
+Fe2SiO4
+Fe3Al2Si3
+Fe3C (Hexagonal)
+Fe7Mo6 _mue-phase
+Fe7Mo6_mu phase
+FeNiP
+Ferrite
+GaN cubic
+GaN hexagonal
+GaP_cub
+Gallium Antimony
+Gallium Arsenide (Orthorhombic)
+Gallium Arsenide
+Gallium Phosphide (Tetragonal)
+Gallium Phosphide
+Gallium
+GdO2
+Germanium
+Gold
+Graphite
+Grossular
+Gypsum
+H2O - ice
+Hafnium Sulfide
+Hafnium_0718959
+Hopeite
+Hydroboracite
+Hydroxylapatite
+InSbMy
+InSnO
+Indium Antimony
+Indium Nitride (Cubic)
+Indium Nitride (Hexagonal)
+Indium Oxide
+Indium Phosphide (Cubic)
+Indium Phosphide (Trigonal)
+Indium
+Iridium
+Iron (Alpha)
+Iron (Delta)
+Iron (Epsilon)
+Iron (Gamma)
+Iron Aluminum Oxide
+Iron Boron
+Iron Chromium Boron
+Iron Chromium Carbide
+Iron Niobium Carbide
+Iron Niobium Silicide
+Iron Oxide
+Iron Samarium Silicide
+Iron Silicate Gamma
+Iron Silicide
+Iron Silicon Oxide
+Iron Silicon
+Iron Titanium Oxide
+Iron Zinc
+Iron di-Silicide
+K-Feldspar
+Krupkaite
+Kyanite
+La2 O3
+LaB6
+Lead Chloride Hydroxide
+Lead Chromium Oxide
+Lead Germanium Oxide
+Lead Oxide
+Lead Sulfide
+Lead
+Lenaite
+LiNbO3
+Lithium Fluoride
+Lithium Hydride
+Lithium Iron Manganese Phosphate
+Lithium
+M23C6
+M7C3 carbide
+Magnesium Aluminum Oxide
+Magnesium Calcium Silicate
+Magnesium Indium Oxide
+Magnesium Iron Aluminum Silicate Hydroxide
+Magnesium Oxide
+Magnesium Silicate Beta
+Magnesium Silicate
+Magnesium Silver
+Magnesium Zinc
+Magnesium
+Manganese Oxide
+Manganese Phosphate Oxide
+Manganese Sulfide
+Manganese
+Marcasite
+Martensite
+Mercury Sulfide
+Mg1.5V2O4 spinel
+Mg3 Fe Al8 Si6
+MgAl2O4
+MgO periclase
+Microcline-Potassium Aluminum Silicate
+Microcline
+Mn3Si5
+MnS2
+Mo2C
+Molybdenum Cobalt (6_7)
+Molybdenum Silicide
+Molybdenum Titanium Carbide
+Molybdenum Titanium
+Molybdenum di-Silicide
+Molybdenum
+Monazite
+Mullite
+Muscovite
+Na-K Plagioclase
+NaCl
+Nb C
+Nb3Sn
+Nb4C3
+Nb5Si3
+NbFe2
+Neodynium Oxide (Cubic)
+Neodynium Oxide (Hexagonal)
+Neodynium Oxide (Trigonal)
+Ni3 Sn4
+Ni3Mn3Si2_hex
+NiCd
+NiMnGa-acta-oprava
+NiSbP_hex
+Nickel Iron Oxide
+Nickel Oxide Cubic
+Nickel Oxide Trigonal
+Nickel Sulfide (Orthorhombic)
+Nickel Sulfide (Trigonal)
+Nickel Sulfide
+Nickel Tantalum Tetragonal
+Nickel Tantalum Trigonal
+Nickel Titanium Cubic
+Nickel Titanium Hexagonal
+Nickel Titanium Trigonal
+Nickel Titanium
+Nickel
+Nickeline
+Niobium Carbide
+Niobium Telluride
+Niobium Titanium (Cubic)
+Niobium Titanium (Hexagonal)
+Niobium Titanium Carbide
+Niobium
+Nitinol
+Omphacite
+PZT
+Palladium
+Pb3Bi2S6 Lilianite
+Pentlandite Ni Fe S
+Picotite
+Platinum
+Plumbogummite
+Plutonium Oxide
+Potassium Bromide
+Potassium Chloride
+Potassium
+Preiswerkite
+Pseudowollastonite
+Pumpellyite
+Pyrite
+Pyrrhotite
+Quartz
+Rhenium
+Rhodium
+Rhodochrosite
+Rhodonite
+Ru
+Rubidium
+Ruthenium Oxide
+Rutile TiO2
+Rutile
+SR2TIO4_mod
+SiAlON_hex
+Sigma CrFeMo
+Silicon Carbide (2H)
+Silicon Carbide (3C)
+Silicon Carbide (4H)
+Silicon Carbide (6H)
+Silicon Carbide Alpha
+Silicon Carbide Beta
+Silicon Germanium
+Silicon Nitride Alpha
+Silicon Nitride Beta
+Silicon Nitride
+Silicon Titanium
+Silicon Tungsten
+Silicon
+Sillimanite
+Silver Bromide
+Silver
+Sodium Calcium Aluminum Silicate Sulfate
+Sodium Calcium Aluminum Silicate
+Sodium Calcium Aluminum Silicon Hydrate
+Sodium Calcium Silicate Hydroxide
+Sodium Calcium Silicate
+Sodium Chloride
+Sodium
+Spherocobaltite
+Spinel-Fe
+Sr2TiO4
+SrLaFeO4
+SrTiO3
+Stibnite
+Strontium Alpha
+Strontium Sulfate
+Strontium Tin Oxide
+Strontium Titanium Oxide
+Strontium Zirconium Oxide
+TaAlNi
+TaC
+TaNi trigonal
+Tantalum Molybdenum Nickel
+Tantalum Nickel
+Tantalum Oxide
+Tantalum
+TestPhase
+Tetrahedrite
+Thallium Bromide
+Thallium Iodide
+Thorite
+Thorium Alpha
+Thorium Oxide
+Ti 6242
+Ti B2
+Ti C N
+Ti N
+Ti2AlN
+Ti2O3
+Ti3O5
+Ti3Pt
+TiAl
+TiAl3
+TiB
+TiB2 test
+TiH2_fcc
+TiN_cubic
+TiNb2_cubic
+TiO2
+TiPt
+Tin Oxide
+Tin
+Titanium (Alpha)
+Titanium (Beta)
+Titanium Boron
+Titanium Carbide
+Titanium Niobium Carbide Nitride
+Titanium Silicide Alpha
+Titanium Silicide
+Titanium Tungsten Carbide
+Tridymite-hex_2
+Triplite
+Tungsten Carbide
+Tungsten
+Tunsgten Silicide
+Uranium (Gamma)
+Uranium Oxide
+Uranium Titanium Oxide_Brannerite
+V Cr C
+VC
+Vanadinite
+Vanadium Phosphide
+Vanadium
+Wollastonite
+Wustite
+Xenotime
+Y-silicate
+Y2Si2O7
+Y2Si2O7_monoclinic
+YAG
+YBCO 123
+YBCO 124
+YBCO 211
+Ytterbium
+ZSM5
+Zinc Oxide
+Zinc Sulfide
+Zinc Telluride
+Zinc
+Zircon
+Zirconia
+Zirconium (Alpha)
+Zirconium (Beta)
+Zirconium Dioxide
+Zirconium Silicate
+ZnS_cub
+ZnS_hex
+Zoisite
+ZrAlO2
+apatite
+baddeleyite-monoclinic
+calcite
+chalcopyrite
+clinopyroxene
+diopside
+feldspar
+garnet (Almandine)
+hematite
+iron epsilon martensite
+magnetite
+olivine Fo92
+pargasite
+plagioclase
+olivine
+spinel
+Face Centered Cubic
+Body Centered Cubic

@@ -41,7 +41,7 @@ q = 0.5;
 eps = strainTensor(diag([-q 1 -(1-q)]));
 
 % and compute Taylor factor as well as the active slip systems
-[M,b,ori] = calcTaylor(inv(grains.meanOrientation).*eps,sS);
+[M,b,W] = calcTaylor(inv(grains.meanOrientation).*eps,sS);
 
 %%
 

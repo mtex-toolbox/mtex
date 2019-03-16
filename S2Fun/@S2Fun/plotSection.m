@@ -1,11 +1,16 @@
 function plotSection(sF,sec,varargin)
+% 
 %
 % Syntax
-%   plotSection(sF,vector3d.Z)
-%   plotSection(sF,vector3d.Z,pi/3)
+%   N = vector3d.Z;
+%   omega = pi/3;
+%   plotSection(sF,N)
+%   plotSection(sF,N,omega)
 %
 % Input
 %  sF - @S2Fun
+%  N  - normal direction
+%  omega - 
 %
 % Output
 
@@ -35,9 +40,13 @@ for j = 1:length(sF)
 
   if strcmpi(get_option(varargin,'color'),'interp')
     varargin = delete_option(varargin,'color',1);
-    x = [d(:, j)+delta,d(:, j)-delta] .* S2.x;
-    y = [d(:, j)+delta,d(:, j)-delta] .* S2.y;
-    z = [d(:, j)+delta,d(:, j)-delta] .* S2.z;
+    
+    dOuter = d(:, j)+delta;
+    dInner = d(:, j)-delta;
+    
+    x = [dOuter .* S2.x, dInner .* S2.x];
+    y = [dOuter .* S2.y, dInner .* S2.y];
+    z = [dOuter .* S2.z, dInner .* S2.z];
     
     h = surface(x,y,z,[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
     

@@ -1,4 +1,11 @@
 {
+"PoleFigure.load":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"}
+    ]
+},
 "calcODF":
 {
     "inputs":

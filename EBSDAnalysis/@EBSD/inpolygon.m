@@ -27,8 +27,7 @@ if numel(xy)==4
   
 end
 
-if ~isempty(ebsd.prop.x)
-  %  check for inside
-  ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+% check for inside
+ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
   
 end

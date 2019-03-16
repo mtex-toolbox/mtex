@@ -49,7 +49,7 @@ if isempty(plan)
 end
  
 % set Fourier coefficients
-nfsoftmex('set_f_hat',plan,component.f_hat(1:Ldim));
+nfsoftmex('set_f_hat',plan,reshape(component.f_hat(1:Ldim),[],1));
   
 % transform
 nfsoftmex('trafo',plan);

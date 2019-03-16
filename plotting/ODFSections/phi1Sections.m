@@ -63,7 +63,7 @@ classdef phi1Sections < ODFSections
 
       secPos = oS.secList(mod(phi1,oS.maxphi1),oS.phi1);
 
-      S2Pos = vector3d('polar',Phi,phi2);
+      S2Pos = vector3d.byPolar(Phi,phi2);
 
     end
 

@@ -11,9 +11,9 @@ persistent W_p;
 persistent M2_p;
 
 if check_option(varargin, 'gauss')
-  load(fullfile(mtexDataPath,'quadratureS2Grid_gauss.mat'),'gridIndex');
+  load(fullfile(mtexDataPath,'vector3d','quadratureS2Grid_gauss.mat'),'gridIndex');
 else
-  load(fullfile(mtexDataPath,'quadratureS2Grid_chebyshev.mat'),'gridIndex');
+  load(fullfile(mtexDataPath,'vector3d','quadratureS2Grid_chebyshev.mat'),'gridIndex');
 end
 index = find(gridIndex.bandwidth >= bandwidth, 1);
 if isempty(index)
@@ -31,13 +31,13 @@ if ~isempty(M2_p) && M2_p == M2
 else
   name = cell2mat(gridIndex.name(index));
   if check_option(varargin, 'gauss')
-    data = load(fullfile(mtexDataPath,'quadratureS2Grid_gauss.mat'),name);
+    data = load(fullfile(mtexDataPath,'vector3d','quadratureS2Grid_gauss.mat'),name);
   else
-    data = load(fullfile(mtexDataPath,'quadratureS2Grid_chebyshev.mat'),name);
+    data = load(fullfile(mtexDataPath,'vector3d','quadratureS2Grid_chebyshev.mat'),name);
   end
 
   data = data.(name);
-  S2G = vector3d('polar', data(:, 1), data(:, 2));
+  S2G = vector3d.byPolar(data(:, 1), data(:, 2));
   
   if check_option(varargin, 'gauss')
     W = data(:,3);

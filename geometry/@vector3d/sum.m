@@ -17,3 +17,5 @@ s.opt = struct; % clear options (espcially required for resolution)
 s.x = sum(v.x,varargin{:});
 s.y = sum(v.y,varargin{:});
 s.z = sum(v.z,varargin{:});
+
+s.isNormalized = false;

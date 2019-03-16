@@ -56,7 +56,7 @@ d = def-defbg;
 % store defocussing in a pole figure variable
 for p=1:length(allH)
   allI{p} = d(p,:);
-  allR{p} = vector3d('polar',theta(p,:),0);
+  allR{p} = vector3d.byPolar(theta(p,:),0);
 end
 
 pf = PoleFigure(allH,allR,allI,varargin{:});

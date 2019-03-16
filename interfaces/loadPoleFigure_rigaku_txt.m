@@ -68,7 +68,7 @@ try
   assert(numel(theta)>4);
   
   theta = repelem(theta,nrho)';
-  r = vector3d('polar',theta,rho); 
+  r = vector3d.byPolar(theta,rho); 
   
   % append last pole figure
   pf = PoleFigure(string2Miller(fname),r,d,varargin{:});

@@ -14,6 +14,9 @@ classdef directionColorKey < handle
   methods
     
     function dM = directionColorKey(sym,varargin)
+      
+      if nargin == 0, sym = specimenSymmetry; end
+      
       dM.sym = sym;
       dM.sR = sym.fundamentalSector;
       

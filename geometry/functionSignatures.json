@@ -1,4 +1,32 @@
 {
+
+"crystalSymmetry":
+{
+    "inputs":
+    [
+        {"name":"pointGroup", "kind":"required", "type":"choices={'1','211','121','112','222','3','321','312','4','422','6','622','23','432'}"},
+	{"name":"mineral", "kind":"namevalue", "type":"char"}
+     ]
+},
+
+"vector3d.load":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"},
+        {"name":"columnNames", "kind":"namevalue", "type":"cell"},
+	{"name":"columns", "kind":"namevalue", "type":"double"}
+    ]
+},
+
+"crystalSymmetry.load":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required", "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"}
+     ]
+},
+
 "orientation":
 {
     "inputs":
@@ -108,4 +136,5 @@
         {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
     ]
 }
+
 }

@@ -35,7 +35,7 @@ try
   theta = sqrt(x.^2 + y.^2)*degree;
   
   % setup specimen directions
-  r = vector3d('polar',theta,rho,'antipodal');
+  r = vector3d.byPolar(theta,rho,'antipodal');
   
   % guess crystal direction
   h = string2Miller(fname);

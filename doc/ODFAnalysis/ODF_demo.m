@@ -6,7 +6,7 @@
 % <uniformODF.html uniformODF>, <unimodalODF.html unimodalODF>,
 % or <fibreODF.html fibreODF> and to all estimated ODF calculated
 % from <PoleFigure_calcODF.html pole figures> or
-% <EBSD_calcODF.html EBSD data>.
+% <EBSD.calcODF.html EBSD data>.
 %
 %
 
@@ -19,7 +19,7 @@
 
 SS  = specimenSymmetry('orthorhombic');
 CS  = crystalSymmetry('cubic');
-o   = orientation('brass',CS,SS);
+o   = orientation.brass(CS,SS);
 psi = vonMisesFisherKernel('halfwidth',20*degree);
 
 odf1 = unimodalODF(o,CS,SS,psi)

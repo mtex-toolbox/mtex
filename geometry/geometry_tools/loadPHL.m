@@ -1,7 +1,7 @@
 function cs = loadPHL(fname)
 % 
 
-[pathstr, name, ext] = fileparts(fname);
+[pathstr, name, ext] = fileparts(char(fname));
   
 if isempty(ext), ext = '.phl';end
 if isempty(pathstr) && ~exist([name,ext],'file')

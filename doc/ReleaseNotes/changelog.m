@@ -1,8 +1,17 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.0 11/2018
+%% MTEX 5.2.0 2/2019
 %
-% *Faster Fourier Transforms on the Sphere and the Orientation Space*
+% *Speed Improvements*
+%
+% * much faster visualization of the large EBSD maps if <EBSD_gridify.html
+% gridify> is used
+% * faster Fourier transforms on the sphere and the orientation space
+%
+% *Support for hexagonal EBSD grids*
+% The function <EBSD_gridify.html gridify> now works also for EBSD data
+% measured on a hexagonal grid. As a consequence denoising and GND
+% computation for those data is also on the way.
 %
 % *Plastic Deformations*
 % MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
@@ -16,16 +25,21 @@
 % The relationships between those tensors are explained in the section
 % <PlasticDeformation.html plastic deformations>.
 %
-% *Spherical Bingham Distribution*
+% *Spherical Bingham Distribution* 
+%
+% Nativ support for spherical <BinghamS2_index.html Bingham distributions>,
+% including the abbility to <BinghamS2_fit.html fit> them to directional
+% distributions.
 %
 % *Tensor Visualisation*
-% * <SeismicVelocitySingleCrystalDemo2d.m>
+% Improved methods for the vizualisation of ellastic properties, see
+% <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 %
 % *Improved Figure Layout*
 %
 % * fix layout
-% * plot a fixed positions
-% *
+% * plot at fixed positions
+% * 
 %
 % * label crystal faces in crystal shapes
 % * calcKearnsFactor

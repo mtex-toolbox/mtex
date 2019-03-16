@@ -70,8 +70,8 @@ import_wizard('EBSD');
 %
 %% The Import Script
 %
-% EBSD data can be also imported by the command <loadEBSD.html loadEBSD>.
-% The |loadEBSD| function automatically detects the data format and imports
+% EBSD data can be also imported by the command <EBSD.load.html EBSD.load>.
+% The |EBSD.load| function automatically detects the data format and imports
 % the data, but it might be necessary to specify the crystal symmetries of
 % all occurring phases and additional information about the format.
 %
@@ -93,7 +93,7 @@ setMTEXpref('zAxisDirection','outOfPlane');
 fname = fullfile(mtexDataPath,'EBSD','Forsterite.ctf');
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,'interface','ctf',...
+ebsd = EBSD.load(fname,CS,'interface','ctf',...
   'convertEuler2SpatialReferenceFrame');
 
 

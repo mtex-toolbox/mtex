@@ -3,4 +3,8 @@ function c = LaueName(s)
 
 pg = symmetry.pointGroups; 
 
-c = pg(pg(s.id).LaueId).Inter;
+if s.id > 0
+  c = pg(pg(s.id).LaueId).Inter;
+else
+  c = 'unknown';
+end

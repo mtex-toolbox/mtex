@@ -59,7 +59,7 @@ matrix(num==0,:) = [];
 
 
 cprintf(matrix,'-L',' ','-Lc',...
-  {'points' 'mineral 1' 'mineral 2' 'mineral 2'},'-d','  ','-ic',true);
+  {'points' 'mineral 1' 'mineral 2' 'mineral 3'},'-d','  ','-ic',true);
 
 %disp(' ');
 %disp(char(dynProp(gB.prop)));

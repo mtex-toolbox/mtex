@@ -120,7 +120,7 @@ fname = [mtexDataPath '/ODF/odf.txt'];
 res = 10*degree;
 
 % load the data
-odf = loadODF(fname,cs,'resolution',res,'Bunge',...
+odf = ODF.load(fname,cs,'resolution',res,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
 
 % plot data

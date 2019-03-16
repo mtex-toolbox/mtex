@@ -27,4 +27,5 @@ M(1,2,:) = -tq.z;
 M(1,3,:) =  tq.y;
 M(2,3,:) = -tq.x;
 
+% make it a spinTensor
 T = spinTensor(M);
