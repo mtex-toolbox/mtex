@@ -59,13 +59,17 @@ classdef EBSDhex < EBSD
       % extract orientations
       ori = ebsd.orientations;
       
-      ori_right = ori(:,[2:end end-1]);
-      gX = log(ori_right,ori,'left') ./ ebsd.dx;
-      gX(:,end) = - gX(:,end);
+      if ebsd.isRowAlignment
+        ori_right = ori(:,[2:end end-1]);
+        gX = log(ori_right,ori,'left') ./ ebsd.dHex;
+        gX(:,end) = - gX(:,end);
       
-      % ignore grain boundaries if possible
-      try
-        gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
+        % ignore grain boundaries if possible
+        try
+          gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
+        end
+      else
+        
       end
       
     end
@@ -77,13 +81,32 @@ classdef EBSDhex < EBSD
       % extract orientations
       ori = ebsd.orientations;
           
-      ori_up = ori([2:end end-1],:);
-      gY = log(ori_up,ori,'left') ./ ebsd.dy;
-      gY(end,:) = - gY(end,:);
+      if ebsd.isRowAlignment
+        ori_up1 = ori([2:end end-1],:);
+        
+        if ebsd.offset == 1
+          ori_up1(1:2:end)
+        end
+        
+        
+        gY = log(ori_up,ori,'left') ./ ebsd.dHex;
+        gY(end,:) = - gY(end,:);
+        
+        ori_up2 = ori([2:2:end end-1],:);
       
-      % ignore grain boundaries if possible
-      try
-        gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
+        try
+          gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
+        end
+              
+      else
+        ori_up = ori([2:end end-1],:);
+        gY = log(ori_up,ori,'left') ./ ebsd.dy;
+        gY(end,:) = - gY(end,:);
+        
+        % ignore grain boundaries if possible
+        try
+          gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
+        end
       end
       
     end
@@ -101,5 +124,6 @@ classdef EBSDhex < EBSD
     
     
   end
+  
       
 end
