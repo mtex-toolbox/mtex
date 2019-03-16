@@ -1,11 +1,25 @@
-function sS = symmetrise(sS,varargin)
+function [sS,id] = symmetrise(sS,varargin)
 % find all symmetrically equivalent slips systems
+%
+% Syntax
+%
+%   sSAll = sS.symmetrise
+%   [sSAll,id] = symmetrise(sS)
+%
+% Input
+%  sS - @slipSystem
+%
+% Output
+%  sSAll - @slipSystem
+%  id    - id of the slipSystem before symmetrisation
+%
 
 if ~isa(sS.b,'Miller'), return; end
 
 b = [];
 n =  [];
 CRSS = [];
+id = [];
 for i = 1:length(sS)
 
   % find all symmetrically equivalent
@@ -21,6 +35,7 @@ for i = 1:length(sS)
   b = [b;mm(r(:))]; %#ok<*AGROW>
   n = [n;nn(c(:))];
   CRSS = [CRSS;repmat(sS.CRSS(i),length(r),1)];
+  id = [id;repmat(i,length(r),1)];
 end
 
 sS.b = b;
