@@ -164,7 +164,7 @@ classdef Miller < vector3d
       end
 
       % add antipodal symmetry ?
-      m.antipodal = check_option(varargin,'antipodal');
+      m.antipodal = m.antipodal | check_option(varargin,'antipodal');
 
     end
     
