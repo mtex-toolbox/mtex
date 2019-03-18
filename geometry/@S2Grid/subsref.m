@@ -4,8 +4,8 @@ function varargout = subsref(S2G,s)
 switch s(1).type
   case '()'
 
-    % subindexing S2Grid is vector3d!!
-    [varargout{1:nargout}] = subsref@vector3d(vector3d(S2G),s);
+    v = vector3d(S2G);
+    [varargout{1:nargout}] = subsref(v,s);
       
   case '.'
 
