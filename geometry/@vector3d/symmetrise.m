@@ -7,6 +7,7 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 %
 % Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  skipAntipodal - do not include antipodal symmetry
 %
 % Output
 %  Sv - symmetrically equivalent vectors
