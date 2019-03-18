@@ -16,13 +16,14 @@ methods
     % initialize a spherical function
     
     if nargin == 0, return; end
-  
-    s = size(fhat);
-    bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
-    sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
-
-    %sF = sF.truncate;
-
+    if isa(fhat,'S2FunHarmonic')       
+      sF.fhat = fhat.fhat;
+    else
+      s = size(fhat);
+      bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
+      sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
+    end
+    
   end
   
   function n = numArgumentsFromSubscript(varargin)
