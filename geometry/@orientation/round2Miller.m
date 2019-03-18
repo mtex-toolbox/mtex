@@ -125,6 +125,18 @@ d1 = d1(id);
 n2 = round(mori * n1);
 d2 = round(mori * d1);
 
+if nargout == 0
+  
+  disp(' ');
+  disp([char(n1) '||' char(n2) '   ' char(d1) '||' char(d2)]);
+  disp(['error: ',xnum2str(0.5*(angle(n2,mori * n1) + angle(d2,mori * d1))./degree),mtexdegchar])
+  disp(' ');  
+  
+  clear n1 s1 n2 d2
+  
+end
+
+
 end
 
 % mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) * orientation('axis',vector3d.rand(1),'angle',1*degree,CS,CS)
