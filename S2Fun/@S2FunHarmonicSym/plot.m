@@ -15,6 +15,7 @@ function varargout = plot(sF,varargin)
 %[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % get plotting region
+if sF.antipodal, varargin = [varargin,'antipodal']; end
 sR = sF.s.fundamentalSector(varargin{:});
 
 % set axes alignment
