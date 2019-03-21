@@ -19,7 +19,7 @@ function v = project2FundamentalRegion(v,cs,varargin)
 
 % antipodal symmetry is nothing else then adding inversion to the symmetry
 % group
-if check_option(varargin,'antipodal'), cs = cs.Laue; end
+if check_option(varargin,'antipodal') || v.antipodal, cs = cs.Laue; end
 
 %get fundamental region
 sR = cs.fundamentalSector(varargin{:});
