@@ -1,31 +1,44 @@
-function plotSection(sF,sec,varargin)
-% 
+function h = plotSection(sF,sec,varargin)
+% plot a section through a spherical function
 %
 % Syntax
-%   N = vector3d.Z;
-%   omega = pi/3;
-%   plotSection(sF,N)
-%   plotSection(sF,N,omega)
+%   N = vector3d.Z; % normal direction
+%   plotSection(sF,N) % plot in equator plane
+%
+%   theta = pi/3;   % polar angle 
+%   plotSection(sF,N,theta) % plot small circle at 30 degree from the north pole
+%
+%   rho = linspace(0,pi); % azimuthal angle
+%   plotSection(sF,N,theta,rho) % plot half small circle at 30 degree
 %
 % Input
 %  sF - @S2Fun
-%  N  - normal direction
-%  omega - 
+%  N  - normal direction of the intersection plane
+%  theta - polar angle of the intersection plane
+%  rho   - azimuthal angle of the points to be plotted  
 %
 % Output
+%
+%
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-
-omega = linspace(0,2*pi,361);
-  
+ 
+% extract polar angle of section
 if nargin > 2 && isnumeric(varargin{1})
   eta = varargin{1};
 else
   eta = pi/2;
 end
 
-S2 = axis2quat(sec,omega)*axis2quat(orth(sec),eta)*sec;
-    
+% extract azimuthal angle of section
+if nargin > 3 && isnumeric(varargin{2})
+  omega = varargin{2};
+else
+  omega = linspace(0,2*pi,361);
+end
+
+S2 = [axis2quat(sec,omega),quaternion.nan(numel(sec))]*axis2quat(orth(sec),eta)*sec;
+
 d = reshape(sF.eval(S2),length(S2), []);
 delta = getappdata(mtexFig.gca,'delta');
 if isempty(delta)
@@ -48,18 +61,24 @@ for j = 1:length(sF)
     y = [dOuter .* S2.y, dInner .* S2.y];
     z = [dOuter .* S2.z, dInner .* S2.z];
     
-    h = surface(x,y,z,[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
+    h{j} = surface(x,y,z,[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
     
   else
     x = d(:, j).*S2.x;
     y = d(:, j).*S2.y;
     z = d(:, j).*S2.z;
     
-    h = plot3(x,y,z,'parent',mtexFig.gca);
+    h{j} = plot3(x,y,z,'parent',mtexFig.gca);
   end
   view(mtexFig.gca,squeeze(double(sec)));
   set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
-  optiondraw(h,varargin{:});
+  optiondraw(h{j},varargin{:});
 end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
+
+if nargout == 0
+  clear h
+else
+  h = [h{:}];
+end
