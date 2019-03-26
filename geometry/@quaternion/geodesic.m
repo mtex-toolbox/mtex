@@ -13,3 +13,15 @@ function rot = geodesic(rot1,rot2,t)
 %
     
 rot = exp( t .* log(rot2,rot1), rot1);
+
+r1IsNaN = isnan(rot1);
+rot.a(r1IsNaN) = rot2.a(r1IsNaN);
+rot.b(r1IsNaN) = rot2.b(r1IsNaN);
+rot.c(r1IsNaN) = rot2.c(r1IsNaN);
+rot.d(r1IsNaN) = rot2.d(r1IsNaN);
+
+r2IsNaN = isnan(rot2);
+rot.a(r2IsNaN) = rot1.a(r2IsNaN);
+rot.b(r2IsNaN) = rot1.b(r2IsNaN);
+rot.c(r2IsNaN) = rot1.c(r2IsNaN);
+rot.d(r2IsNaN) = rot1.d(r2IsNaN);
