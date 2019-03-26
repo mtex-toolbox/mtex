@@ -131,7 +131,8 @@ if nargout == 0, showResult; end
 
 function showResult
     
-  err = 0.5*(angle(n2,mori .* n1) + angle(d2,mori .* d1));
+  mori_exact = orientation.map(n1,n2,d1,d2);
+  err = angle(mori,mori_exact);
   disp(' ');
   for k = 1:length(n1)
     disp([char(n1(k)) ' || ' char(n2(k)) '   ' char(d1(k)) ' || ' char(d2(k)) ...
