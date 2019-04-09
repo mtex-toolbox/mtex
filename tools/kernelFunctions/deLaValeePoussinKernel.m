@@ -1,4 +1,4 @@
-classdef deLaValeePoussinKernel < kernel
+classdef deLaValleePoussinKernel < kernel
   %DELAVALEEPOUSSINKERNEL Summary of this class goes here
   %   Detailed explanation goes here
     
@@ -9,7 +9,7 @@ classdef deLaValeePoussinKernel < kernel
       
   methods
     
-    function psi = deLaValeePoussinKernel(varargin)
+    function psi = deLaValleePoussinKernel(varargin)
       
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')

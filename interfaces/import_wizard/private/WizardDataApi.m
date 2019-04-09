@@ -333,7 +333,7 @@ api.clearAllData();
     Options.SS.rotOption = 1;
     Options.SS.text      = '';
 
-    Options.ODF.psi      = deLaValeePoussinKernel('halfwidth',10*degree);
+    Options.ODF.psi      = deLaValleePoussinKernel('halfwidth',10*degree);
     Options.ODF.exact    = true;
     Options.ODF.approx   = 5;
     Options.ODF.method   = true;

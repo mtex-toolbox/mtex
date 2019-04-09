@@ -4,7 +4,7 @@ classdef fibreComponent < ODFComponent
   properties
     h
     r
-    psi = deLaValeePoussinKernel('halfwidth',10*degree); %todo: replace with S2DelaValleePoussin
+    psi = deLaValleePoussinKernel('halfwidth',10*degree); %todo: replace with S2DelaValleePoussin
     weights = 1;
     SS = specimenSymmetry;
     antipodal = false

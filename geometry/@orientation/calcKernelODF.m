@@ -52,7 +52,7 @@ end
 weights = weights ./ sum(weights(:));
 
 % extract kernel function
-psi = deLaValeePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 hw = psi.halfwidth;
 
