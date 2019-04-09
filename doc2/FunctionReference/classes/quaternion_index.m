@@ -1,4 +1,4 @@
-%% Quaternions (The Class @quaternion)
+%% Quaternions
 % class representing orientations
 %
 %% Contents

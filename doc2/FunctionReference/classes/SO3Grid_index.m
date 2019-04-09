@@ -1,4 +1,4 @@
-%% Discretisation of Orientation Space (The Class SO3Grid)
+%% Discretisation of Orientation Space
 % represents a set of orientations
 %%
 %

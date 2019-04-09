@@ -1,4 +1,4 @@
-%% Discretisation of 2 - Sphere (The Class @S2Grid)
+%% Discretisation of 2 - Sphere
 % represents a grid of nodes on the sphere 
 %
 %% Contents

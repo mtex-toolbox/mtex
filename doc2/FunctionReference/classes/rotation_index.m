@@ -1,4 +1,4 @@
-%% Rotations (The Class @rotation)
+%% Rotations
 % This section describes the class  <rotation.rotation.html *rotation*> and
 % gives an overview on how to work with rotations in MTEX.
 %

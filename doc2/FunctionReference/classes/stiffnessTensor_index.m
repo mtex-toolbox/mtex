@@ -1,4 +1,4 @@
-%% Stiffness Tensor (The Class @stiffnessTensor)
+%% Stiffness Tensor
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

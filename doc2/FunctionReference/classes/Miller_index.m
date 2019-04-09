@@ -1,4 +1,4 @@
-%% Crystal Directions (The Class @Miller)
+%% Crystal Directions
 % This section describes the class *Miller* and gives an overview how to
 % deal with crystal directions in MTEX.
 %

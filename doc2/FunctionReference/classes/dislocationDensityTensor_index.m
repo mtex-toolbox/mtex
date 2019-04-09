@@ -1,4 +1,4 @@
-%% Dislocation Density Tensor (The Class @dislocation DensityTensor)
+%% Dislocation Density Tensor
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

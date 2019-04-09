@@ -1,4 +1,4 @@
-%% Strain Tensor (The Class @strainTensor)
+%% Strain Tensor
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

@@ -1,4 +1,4 @@
-%% Crystal and Specimen Symmetries (The Class @symmetry)
+%% Crystal and Specimen Symmetries
 % This section describes the class *symmetry* and gives an overview how to
 % deal with crystal symmetries in MTEX.
 %

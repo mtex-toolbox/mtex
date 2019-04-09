@@ -1,4 +1,4 @@
-%% Stress Tensors (The Class @stressTensor)
+%% Stress Tensors
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 % 

@@ -1,4 +1,4 @@
-%% Pole Figure Data (The Class @PoleFigure)
+%% Pole Figure Data
 % This section describes the class *PoleFigure* and gives an overview of
 % the functionality MTEX offers to analyze pole figure data.
 % 

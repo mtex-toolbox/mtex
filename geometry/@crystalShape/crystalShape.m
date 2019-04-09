@@ -7,11 +7,20 @@ classdef crystalShape
   % Mathematica Journal, 7(1).
   %
   % we need more :)
+  %
+  % Example
+  %
+  %   mtexdata titanium;
+  %   cS = crystalShape.hex(ebsd.CS)
+  %   close all
+  %   plot(cS)
+  %   
   
   properties
     N % face normals
     V % vertices
-    F % faces
+    F % faces[2019-03-25 11:22:15] ERROR `/images/favicon.ico' not found.
+
     habitus = 0 % describes how visibe mixed hkl faces are
     extension = [1 1 1]; % describes distance of the faces in dependence of hkl
   end

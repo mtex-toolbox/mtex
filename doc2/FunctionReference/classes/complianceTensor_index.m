@@ -1,4 +1,4 @@
-%% Compliance Tensor (The Class @complianceTensor)
+%% Compliance Tensor
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

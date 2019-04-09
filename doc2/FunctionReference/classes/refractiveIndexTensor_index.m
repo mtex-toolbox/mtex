@@ -1,4 +1,4 @@
-%% tensors (The Class @tensor)
+%% tensors
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

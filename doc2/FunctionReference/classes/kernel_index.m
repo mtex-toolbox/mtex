@@ -1,4 +1,4 @@
-%% ODF Shapes (The class @kernel) 
+%% ODF Shapes
 % standard distributions on SO(3)
 %
 %% Contents

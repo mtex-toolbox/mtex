@@ -1,4 +1,4 @@
-%% Slip Systems (The Class @slipSystem)
+%% Slip Systems
 % This section describes the class *slipSystem*.
 %
 %% Open in Editor

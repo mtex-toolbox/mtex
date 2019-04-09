@@ -1,4 +1,4 @@
-%% Electron Backscatter Diffraction Data (The Class @EBSD)
+%% Electron Backscatter Diffraction Data
 % This section describes the class *EBSD* and gives an overview over the
 % functionality that MTEX offers to analyze EBSD data.
 %

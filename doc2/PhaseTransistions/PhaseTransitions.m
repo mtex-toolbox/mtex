@@ -1,3 +1,3 @@
-%% PhaseTransitions
+%% Phase Transitions
 %
 %%

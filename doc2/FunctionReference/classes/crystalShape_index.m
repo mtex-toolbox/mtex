@@ -1,4 +1,4 @@
-%% Crystal Shapes (The Class @crystalShape)
+%% Crystal Shapes
 % How to draw threedimensional representations of crystals.
 %
 %% Open in Editor

@@ -1,4 +1,4 @@
-%% Christoffel Tensors (The Class @ChristoffelTensor)
+%% Christoffel Tensors
 %
 %% PLEASE HELP AND ADD CONTENT HERE
 %

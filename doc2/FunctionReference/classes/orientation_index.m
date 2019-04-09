@@ -1,4 +1,4 @@
-%% Crystal Orientations (The Class @orientation)
+%% Crystal Orientations
 % This sections describes the class *orientation* and gives an overview how
 % to work with crystal orientation in MTEX.
 %

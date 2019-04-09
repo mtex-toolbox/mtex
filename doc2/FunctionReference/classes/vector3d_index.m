@@ -1,4 +1,4 @@
-%% Specimen Directions (The Class @vector3d)
+%% Specimen Directions
 % This section describes the class *vector3d* and gives an overview how to
 % deal with specimen directions in MTEX.
 %
