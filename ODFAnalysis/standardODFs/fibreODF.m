@@ -49,7 +49,7 @@ end
 psi = getClass(varargin,'kernel',[]);
 if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
-  psi = deLaValeePoussinKernel('halfwidth',hw);
+  psi = deLaValeePoussinKernel('halfwidth',hw); % todo: replace with S2DeLaValleePoussin
 end
 
 % get weights

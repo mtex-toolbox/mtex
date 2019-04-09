@@ -55,7 +55,7 @@ if isa(varargin{1},'vector3d')
   else
   
     res = v.resolution;
-    psi = deLaValeePoussinKernel('halfwidth',res/2);
+    psi = S2DeLaValleePoussin('halfwidth',res/2);
 
     % take the 4 closest neighbours for each point
     % TODO: this can be done better
@@ -66,7 +66,7 @@ if isa(varargin{1},'vector3d')
     if check_option(varargin,'inverseDistance')
       M = 1./so(:,1:4); M = min(M,1e10);
     else
-      M = psi.RK(cos(so(:,1:4)));
+      M = psi.eval(cos(so(:,1:4)));
     end
     
     % set point to nan which are to far away

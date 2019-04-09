@@ -27,7 +27,7 @@ function sF = calcDensity(h,varargin)
 %
 
 hw = get_option(varargin,'halfwidth',10*degree);
-psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',hw));
+psi = get_option(varargin,'kernel',S2DeLaValleePoussin('halfwidth',hw));
 
 sF = 4*pi * S2FunHarmonic.quadrature(h,ones(size(h)),varargin{:});
 
