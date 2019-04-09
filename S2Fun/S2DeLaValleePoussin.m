@@ -21,9 +21,6 @@ classdef S2DeLaValleePoussin < S2Kernel
       % extract bandwidth
       L = get_option(varargin,'bandwidth',round(psi.kappa));
             
-      % some constant
-      psi.C = beta(1.5,0.5)/beta(1.5,psi.kappa+0.5);
-      
       % compute Legendre coefficients
       psi.A = ones(1,L+1);
       psi.A(2) = psi.kappa/(psi.kappa+2);
@@ -35,7 +32,7 @@ classdef S2DeLaValleePoussin < S2Kernel
 
       for l=0:L, psi.A(l+1) = (2*l+1) * psi.A(l+1); end
 
-      psi.A = psi.cutA;      
+      psi.A = psi.cutA;
     end
     
     

@@ -6,8 +6,14 @@ classdef S2Kernel
 
   methods
     
-    function S2K = S2Kernel(A)      
-      S2K.A = A(1:min(end,2048));
+    function S2K = S2Kernel(A)   
+      if nargin == 0, return; end
+      
+      if isa(A,'S2Kernel')
+        S2K.A = A.A;
+      else
+        S2K.A = A(1:min(end,2048));
+      end
     end
 
     function v = eval(S2K,x)
