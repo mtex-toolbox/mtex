@@ -24,6 +24,7 @@ function sF = calcDensity(h,varargin)
 %  halfwidth - halfwidth of a kernel
 %  kernel    - specify a kernel
 %  weights   - vector of weights, with same length as v
+%  noSymmetry - ignore symmetry
 %
 
 hw = get_option(varargin,'halfwidth',10*degree);
@@ -40,7 +41,9 @@ end
 sF = conv(sF,psi);
 
 % symmetrise with respect to crystal symmetry
-sF = sF.symmetrise(h.CS);
+if ~check_option(varargin,'noSymmetry')
+  sF = sF.symmetrise(h.CS);
+end
 
 % if required compute function values
 if nargin > 1 && isa(varargin{1},'vector3d')
