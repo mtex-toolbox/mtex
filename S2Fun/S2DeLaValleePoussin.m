@@ -1,21 +1,42 @@
 classdef S2DeLaValleePoussin < S2Kernel
+%
+%
+% Syntax
+%
+%   psi = S2DeLaValleePoussin(20)
+%   psi = S2DeLaValleePoussin('halfwidth',10*degree)
+%
+% Input
+%  kappa
+%
+% Options
+%  halfwidth - angle at which the kernel function has reduced to half its peak value  
+%  bandwidth - 
+%
+% See also
+% S2Kernel
+
+
 
   properties
     kappa % kernel parameter
   end
   
-   
+  properties (Dependent = true)
+    halfwidth % halfwidth of the kernel
+  end
+    
   methods
     
     
     function psi = S2DeLaValleePoussin(varargin)
     
       % extract parameter and halfwidth
-      if check_option(varargin,'halfwidth')
-        hw = get_option(varargin,'halfwidth');
-        psi.kappa = 0.5 * log(0.5) / log(cos(hw/2));
-      elseif nargin > 0
+      if nargin > 0 && isnumeric(varargin{1})
         psi.kappa = varargin{1};
+      else
+        hw = get_option(varargin,'halfwidth',10*degree);
+        psi.kappa = 0.5 * log(0.5) / log(cos(hw/2));
       end
       
       % extract bandwidth
@@ -43,6 +64,13 @@ classdef S2DeLaValleePoussin < S2Kernel
       
     end
     
+    function hw = get.halfwidth(psi)
+            
+      % ((1+hw)/2)^kappa != 0.5
+      hw = acos(2*(0.5)^(1/psi.kappa) - 1);
+      
+    end
+        
   end
   
 end
