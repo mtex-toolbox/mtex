@@ -369,7 +369,7 @@ api.clearAllData();
       for k=1:numel(files)
         newFiles{offset+k} = files{k};
         [newData{offset+k},interface,options] = ...
-          feval(['load' datatype],files(k),interf{:},options{:},'wizard');
+          feval([datatype '.load'],files(k),interf{:},options{:},'wizard');
 
         assertCS(newData);
       end
