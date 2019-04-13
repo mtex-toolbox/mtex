@@ -13,7 +13,7 @@ function odf = smooth(odf,varargin)
 if nargin >= 2 && isa(varargin{1},'kernel')
   psi = varargin{1};
 else
-  psi = deLaValeePoussinKernel('halfwidth',get_option(varargin,'halfwidth',5*degree));
+  psi = deLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',5*degree));
 end
 
 % smooth components

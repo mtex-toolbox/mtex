@@ -16,7 +16,8 @@ if length(h) == 1 % pole figure
 
   sh = symmetrise(h,'unique');
   pdf = S2FunHarmonicSym.quadrature(component.center*sh,...
-    repmat(component.weights(:),1,length(sh)),component.SS,antipodal{:},'symmetrise');
+    repmat(component.weights(:),1,length(sh)),component.SS,antipodal{:},...
+    'symmetrise','bandwidth',component.psi.bandwidth);
 
   % convolve with kernel function
   pdf = 4 * pi * conv(pdf,component.psi)./ length(sh);
@@ -28,7 +29,8 @@ else % inverse pole figure
 
   sr = symmetrise(r,component.SS,'unique');
   pdf = S2FunHarmonicSym.quadrature(inv(component.center)*sr,...
-    repmat(component.weights(:),1,length(sr)),component.CS,antipodal{:},'symmetrise');
+    repmat(component.weights(:),1,length(sr)),component.CS,antipodal{:},...
+    'symmetrise','bandwidth',component.psi.bandwidth);
   
   % convolve with kernel function
   pdf = 4 * pi * conv(pdf,component.psi) ./ length(sr);

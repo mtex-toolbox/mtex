@@ -78,8 +78,13 @@ data = localParsePositions( dataPoints );
 data.commonCountingTime = str2num(...
   dataPoints.getElementsByTagName('commonCountingTime').item(0).getFirstChild.getNodeValue);
 
-data.intensities = str2num(...
-  dataPoints.getElementsByTagName('intensities').item(0).getFirstChild.getNodeValue).';
+try
+  data.intensities = str2num(...
+    dataPoints.getElementsByTagName('intensities').item(0).getFirstChild.getNodeValue).';
+catch
+  data.intensities = str2num(...
+    dataPoints.getElementsByTagName('counts').item(0).getFirstChild.getNodeValue).';
+end
 
 % normalize against measurment time
 data.intensities = data.intensities./data.commonCountingTime;

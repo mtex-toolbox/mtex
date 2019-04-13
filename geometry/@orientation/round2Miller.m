@@ -80,11 +80,13 @@ end
 if length(mori) > 1
   n1 = Miller.nan(size(mori),mori.CS);
   n2 = Miller.nan(size(mori),mori.SS);
-  d1 = Miller.nan(size(mori),mori.CS);
-  d2 = Miller.nan(size(mori),mori.SS);
+  d1 = Miller.nan(size(mori),mori.CS,'uvw');
+  d2 = Miller.nan(size(mori),mori.SS,'uvw');
   for i = 1:length(mori)
     [n1(i),n2(i),d1(i),d2(i)] = round2Miller(mori.subSet(i),varargin{:});
   end
+  
+  if nargout == 0, showResult; end
   return
 end
 
@@ -125,7 +127,26 @@ d1 = d1(id);
 n2 = round(mori * n1);
 d2 = round(mori * d1);
 
+if nargout == 0, showResult; end
+
+function showResult
+    
+  mori_exact = orientation.map(n1,n2,d1,d2);
+  err = angle(mori,mori_exact);
+  disp(' ');
+  for k = 1:length(n1)
+    disp([char(n1(k)) ' || ' char(n2(k)) '   ' char(d1(k)) ' || ' char(d2(k)) ...
+      '   error: ',xnum2str(err(k)./degree),mtexdegchar']);
+  end
+  disp(' ');  
+  
+  clear n1 s1 n2 d2
+    
 end
+
+end
+
+
 
 % mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) * orientation('axis',vector3d.rand(1),'angle',1*degree,CS,CS)
 % 

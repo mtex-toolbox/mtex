@@ -22,6 +22,15 @@ end
 
 % orientation times vector
 if isa(a,'orientation') && ~isa(b,'quaternion')  && ~isnumeric(b)
+  try
+    if a.CS.Laue ~= b.CS.Laue
+      warning('Symmetries %s and %s are different but should be equal',a.CS.pointGroup,b.CS.pointGroup);
+    end
+  catch
+    if isa(a.CS,'crystalSymmetry')
+      warning('Possibly applying an orientation to an object in specimen coordinates!')
+    end
+  end
   r = rotate_outer(b,a);
   return 
 end

@@ -78,7 +78,7 @@ for k = 0:kmax
   if all(id == 1), break; end
 
   % maybe we can reduce the number of points a bit
-  [~,~,I] = unique(v, 'tolerance', tol);
+  [~,~,I] = unique(v, 'tolerance', tol,'noSymmetry');
   v = normalize(accumarray(I,v));
   f = accumarray(I,f,[],@mean);
   

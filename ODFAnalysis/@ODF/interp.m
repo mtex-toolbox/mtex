@@ -25,7 +25,7 @@ res = get_option(varargin,'resolution',3*degree);
 S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res);
 
 % kernel for representing the ODF
-psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',res));
+psi = get_option(varargin,'kernel',deLaValleePoussinKernel('halfwidth',res));
 
 % system matrix
 M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);

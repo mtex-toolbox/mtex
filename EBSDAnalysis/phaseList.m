@@ -288,5 +288,24 @@ classdef phaseList
       end
       
     end
+    
+    function phId = name2id(pL,ph)
+      % convert phase name to id
+              
+      if ischar(ph)
+        alt_mineral = cellfun(@num2str,num2cell(pL.phaseMap),'Uniformoutput',false);
+        ph = strrep(ph,')','\)');
+        ph = strrep(ph,'(','\(');
+        ph = ~cellfun('isempty',regexpi(pL.mineralList(:),['^' ph])) | ...
+          strcmpi(alt_mineral(:),ph);
+        phId = find(ph,1);
+      elseif isa(ph,'symmetry')
+        phId = find(cellfun(@(cs) cs==ph,pL.CSList));
+      else
+        phId = find(ph == pL.phaseMap);
+      end
+      
+    end
+    
   end
 end

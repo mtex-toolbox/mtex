@@ -69,7 +69,7 @@ classdef HSVDirectionKey < directionColorKey
         for i = 1:length(dM.refl)
           ind = dot(vector3d(h_sR),dM.refl(i))<1e-5;
           h_sR(ind) = reflection(dM.refl(i)) * h_sR(ind);
-          whiteOrBlack = whiteOrBlack & ind;
+          whiteOrBlack = whiteOrBlack & ~ind;
           
           if dot(wC,dM.refl(i))<1e-5
             wC = reflection(dM.refl(i)) * wC;
