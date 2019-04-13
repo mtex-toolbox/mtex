@@ -188,26 +188,11 @@ classdef grainBoundary < phaseList & dynProp
     function out = hasPhase(gB,phase1,phase2)
       
       if nargin == 2
-        out = gB.hasPhaseId(convert2Id(phase1));
+        out = gB.hasPhaseId(gB.name2id(phase1));
       else
-        out = hasPhaseId(gB,convert2Id(phase1),convert2Id(phase2));
+        out = hasPhaseId(gB,gB.name2id(phase1),gB.name2id(phase2));
       end
-      
-      function phId = convert2Id(ph)
-        
-        if ischar(ph)
-          alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
-          ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...
-            strcmpi(alt_mineral(:),ph);
-          phId = find(ph,1);        
-        elseif isa(ph,'symmetry')
-          phId = find(cellfun(@(cs) cs==ph,gB.CSList));
-        else
-          phId = find(ph == gB.phaseMap);
-        end
-        
-      end
-      
+
     end
     
     function out = hasPhaseId(gB,phaseId,phaseId2)
