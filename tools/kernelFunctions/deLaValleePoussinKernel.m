@@ -20,7 +20,7 @@ classdef deLaValleePoussinKernel < kernel
       end
       
       % extract bandwidth
-      L = min(1e6,get_option(varargin,'bandwidth',round(psi.kappa)));
+      L = get_option(varargin,'bandwidth',round(psi.kappa));
             
       % some constant
       psi.C = beta(1.5,0.5)/beta(1.5,psi.kappa+0.5);

@@ -59,6 +59,11 @@ classdef rotation < quaternion & dynOption
           rot.b = varargin{2};
           rot.c = varargin{3};
           rot.d = varargin{4};
+          if nargin == 4
+            rot.i = false(size(rot.a));
+          else
+            rot.i = varargin{5};
+          end
 
         case 'char'
 

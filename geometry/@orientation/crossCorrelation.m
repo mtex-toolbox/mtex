@@ -13,7 +13,7 @@ function [psi,c] = crossCorrelation(ori,varargin)
 % ori/calcKernel
 
 for k = 1:15
-  psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
+  psi(k) = deLaValleePoussinKernel('halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
 end
 psi = get_option(varargin,'kernel',psi);
 
@@ -74,7 +74,7 @@ model_odf = 0.5*uniformODF(cs) + ...
 ori= calcOrientation(model_odf,1000);
 
 for k = 1:15
-  psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4));
+  psi(k) = deLaValleePoussinKernel('halfwidth',40*degree/2^(k/4));
 end
 psi
 

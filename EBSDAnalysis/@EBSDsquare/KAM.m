@@ -70,8 +70,10 @@ kam = zeros(size(ebsd));
 count = zeros(size(kam));
 
 % extract grainIds and make them a bit larger
-grainId = nan(size(ebsd)+2*order);
-grainId(order+1:end-order,order+1:end-order) = ebsd.grainId;
+if isfield(ebsd.prop,'grainId')
+  grainId = nan(size(ebsd)+2*order);
+  grainId(order+1:end-order,order+1:end-order) = ebsd.grainId;
+end
 
 % for all phases
 for id = ebsd.indexedPhasesId
@@ -97,8 +99,10 @@ for id = ebsd.indexedPhasesId
       omega(omega > threshold) = NaN;
       
       % avoid grain boundaries
-      omega( grainId(order+1:end-order,order+1:end-order) ~= ...
-        grainId((order+1:end-order)+i,(order+1:end-order)+j) ) = NaN;
+      if isfield(ebsd.prop,'grainId')
+        omega( grainId(order+1:end-order,order+1:end-order) ~= ...
+          grainId((order+1:end-order)+i,(order+1:end-order)+j) ) = NaN;
+      end
       
       kam = fun(kam, omega * weights(order+1+i,order+1+j));
       count = fun(count,~isnan(omega) * weights(order+1+i,order+1+j));

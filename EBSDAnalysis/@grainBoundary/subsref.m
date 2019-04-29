@@ -20,19 +20,14 @@ if strcmp(s(1).type,'()')
   phId = find(cellfun(@ischar,s(1).subs),1);
   
   if ~isempty(phId) && ~strcmpi(s(1).subs{phId},'indexed')
-    ph = s(1).subs{phId};
-    alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
-    ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...
-      strcmpi(alt_mineral(:),ph);
-    phId = find(ph,1);
     
-    % if a phase is specified flip boundaries such that the phase becomes
-    % first
+    phId = gB.name2id(s(1).subs{phId});
+    
+    % if a phase is specified flip boundaries such that the phase becomes first
     if ~ischar(gB.CSList{phId})
       gB = flip(gB,gB.phaseId(:,1) ~= phId);
     end
   end
-  
     
   % is there something more to do?
   if numel(s)>1

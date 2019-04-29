@@ -146,7 +146,7 @@ ipfKey = ipfSpotKey(csFo);
 ipfKey.inversePoleFigureDirection = f.r;
 ipfKey.center = f.h;
 ipfKey.color = [0 0 1];
-ipfKey.psi = deLaValeePoussinKernel('halfwidth',7.5*degree);
+ipfKey.psi = deLaValleePoussinKernel('halfwidth',7.5*degree);
 
 plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 
@@ -196,7 +196,7 @@ plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 ipfKey = spotColorKey(ebsd('Fo'));
 ipfKey.center = mean(ebsd('Forsterite').orientations,'robust');
 ipfKey.color = [0,0,1];
-ipfKey.psi = deLaValeePoussinKernel('halfwidth',20*degree);
+ipfKey.psi = deLaValleePoussinKernel('halfwidth',20*degree);
 
 plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
 
@@ -233,7 +233,7 @@ ipfKey = ipfSpotKey(csFo);
 ipfKey.inversePoleFigureDirection = zvector;
 ipfKey.center = Miller(1,1,1,csFo);
 ipfKey.color = [0 0 1];
-ipfKey.psi = deLaValeePoussinKernel('halfwidth',7.5*degree);
+ipfKey.psi = deLaValleePoussinKernel('halfwidth',7.5*degree);
 
 hold on
 plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations),'FaceAlpha',0.5)
