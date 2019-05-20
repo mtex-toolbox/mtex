@@ -43,7 +43,11 @@ classdef tensor < dynOption
         T.M = M.M;
         T.rank = M.rank;
         T.CS = M.CS;
-        T.doubleConvention = M.doubleConvention;
+        if check_option(varargin,'doubleConvention')
+          T.doubleConvention = true;
+        else
+          T.doubleConvention = M.doubleConvention;
+        end
         T.opt = M.opt;
         
         % extract additional properties
