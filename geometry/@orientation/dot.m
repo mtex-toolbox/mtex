@@ -104,7 +104,7 @@ else
     bsxfun(@times,q1.c,q2.c) + bsxfun(@times,q1.d,q2.d)); %
 
   % consider inversion
-  if isa(q1,'rotation'), d = min(d,~bsxfun(@xor,q1.i,q2.i)); end
+  if isa(q1,'rotation'), d = d .* ~bsxfun(@xor,q1.i,q2.i); end
 
   % take the maximum over all symmetric equivalent
   d = reshape(max(max(d,[],1),[],3),size(o1));
