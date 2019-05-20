@@ -49,7 +49,6 @@ omega = [0,omega];
 
 %base = (2*tol/res)^(1/kmax);
 
-
 % actual steepest descent
 for k = 0:kmax
 

@@ -19,5 +19,12 @@ classdef stiffnessTensor < tensor
       T = load@tensor(fname,varargin{:});
       C = stiffnessTensor(T);
     end
+    
+    function C = eye(varargin)
+      
+      C = stiffnessTensor(tensor.eye(varargin{:},'rank',4));
+      
+    end
+    
   end
 end
