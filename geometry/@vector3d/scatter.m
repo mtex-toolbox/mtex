@@ -153,10 +153,10 @@ for i = 1:numel(sP)
         mh = [hh.MarkerHandle];
         
         for j = 1:length(mh)
-          mh(j).FaceColorData(4) = faceAlpha;
+          mh(j).FaceColorData(4,:) = faceAlpha;
           mh(j).FaceColorType = 'truecoloralpha';
           
-          mh(j).EdgeColorData(4) = edgeAlpha;
+          mh(j).EdgeColorData(4,:) = edgeAlpha;
           mh(j).EdgeColorType = 'truecoloralpha';
         end
          
