@@ -16,7 +16,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %
 % Output
 %  gnd  - dislocation energy
-%  rho  -
+%  rho  - dislocation density per dislocation system
 %
 % See Also
 % GND_demo
