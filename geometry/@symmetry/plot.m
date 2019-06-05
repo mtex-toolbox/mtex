@@ -71,8 +71,14 @@ end
 
 mtexFig = newMtexFigure;
 for ax = mtexFig.children(:).'
-  set(ax,'xlim',1.075*get(ax,'xlim'));
-  set(ax,'ylim',1.075*get(ax,'ylim'));  
+  if length(sP.sphericalRegion.vertices) > 2
+    delta = 0.1*max(sP.bounds([3,4])-sP.bounds([1,2]));
+    set(ax,'xlim',sP.bounds([1,3]) + delta*[-1,1]);
+    set(ax,'ylim',sP.bounds([2,4]) + delta*[-1,1]);
+  else
+    set(ax,'xlim',1.075*sP.bounds([1,3]));
+    set(ax,'ylim',1.075*sP.bounds([2,4]));
+  end
 end
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 
