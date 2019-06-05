@@ -5,6 +5,7 @@ function [h,ax] = scatter(v,varargin)
 %   scatter(v,data)         % colorize directions according to data
 %   scatter(v,'label',text) % plot text below markers
 %   scatter(v,'label',text,'textaboveMarker') % plot text above markers
+%   scatter(v,'numbered')   % plot directions with numbers
 %
 % Input
 %  v     - @vector3d
@@ -200,7 +201,10 @@ for i = 1:numel(sP)
   end
 
   % plot labels
-  if check_option(varargin,{'text','label','labeled'})
+  if check_option(varargin,'numbered')
+    text(v,arrayfun(@int2str,1:length(v),'UniformOutput',false),'parent',sP(i).ax,...
+      'addMarkerSpacing',varargin{:},'doNotDraw');
+  elseif check_option(varargin,{'text','label','labeled'})
     text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,...
       'addMarkerSpacing',varargin{:},'doNotDraw');
   end
