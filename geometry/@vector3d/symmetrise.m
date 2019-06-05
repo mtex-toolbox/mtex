@@ -6,7 +6,7 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 %  S - @symmetry
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  skipAntipodal - do not include antipodal symmetry
 %
 % Output
