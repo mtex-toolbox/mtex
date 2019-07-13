@@ -33,20 +33,24 @@ if isa(hkl,'double')
   else
     CS = varargin{1};
   end
-  hkl = Miller(hkl(1),hkl(2),hkl(3),CS);
-  uvw = Miller(uvw(1),uvw(2),uvw(3),CS);
+  hkl = Miller(hkl(:,1),hkl(:,2),hkl(:,3),CS);
+  uvw = Miller(uvw(:,1),uvw(:,2),uvw(:,3),CS);
 end
 
-hkl = normalize(hkl);
+hkl = normalize(hkl(:));
 uvw = normalize(uvw);
 
 % ensure angle (v1,v2) = 90°
 hkl = vector3d(hkl);
-uvw = symmetrise(uvw);
+uvw = symmetrise(uvw).';
 
-uvw = uvw(isnull(dot(vector3d(hkl),vector3d(uvw)))); uvw = uvw(1);
 
-if isempty(uvw), error('Miller indece have to be orthogonal');end
+[err,id] = min(abs(90 - angle(uvw,hkl(:),'noSymmetry')./degree),[],2);
+uvw = uvw(sub2ind(size(uvw),(1:size(uvw,1)).',id));
+
+if err > 1*degree
+  warning(['Miller indece are not orthogonal. Maximum deviation is ' xnum2str(max(err)) ' degree']);
+end
 
 % hkl -> e3
 q1 = hr2quat(hkl,zvector);
