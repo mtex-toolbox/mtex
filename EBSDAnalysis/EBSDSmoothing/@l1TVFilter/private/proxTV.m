@@ -1,7 +1,7 @@
 function [xOut,yOut] = proxTV(xIn,yIn,lambda,varargin)
 
 
-t = lambda ./ angle(xIn,yIn,varargin{:});
+t = 2*lambda ./ angle(xIn,yIn,varargin{:});
 %max(t,[],'all')
 t = min(t,0.5);
 
