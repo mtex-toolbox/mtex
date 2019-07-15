@@ -39,3 +39,4 @@ if check_option(varargin,'fill'), ebsd = fill(ebsd,varargin{:}); end
 
 % remove nan data used to generate the grid
 ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
+
