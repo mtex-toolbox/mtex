@@ -3,3 +3,4 @@ function plotb2east
 
 setMTEXpref('bAxisDirection','east');
 setMTEXpref('aAxisDirection','');
+setMTEXpref('aStarAxisDirection','');

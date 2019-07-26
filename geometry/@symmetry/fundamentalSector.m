@@ -51,13 +51,16 @@ try
   % the correction angle - for some symmetries this needs to be a multiple
   % of 60 degree - this will be fixed later in the code
   cor = 0;
-  if ~isempty(getMTEXpref('bAxisDirection',[]))
+  if ~isempty(getMTEXpref('aStarAxisDirection',[]))
+    cor = pi/2*(NWSE(getMTEXpref('aStarAxisDirection',[]))-1);
+    rho = cs.aAxisRec.rho - cor;
+  elseif ~isempty(getMTEXpref('bAxisDirection',[]))
     cor = pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
     rho = cs.bAxis.rho - cor;
   elseif ~isempty(getMTEXpref('aAxisDirection',[]))
     cor = pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
     rho = cs.aAxis.rho - cor;
-  else    
+  else
     rho = cs.bAxis.rho;
   end
 
