@@ -8,6 +8,12 @@ end
 % initalize solver
 solver.init;
 
+% get max iterations and min iterations 
+solver.iterMax = get_option(varargin,'iterMax',10);
+solver.iterMin = get_option(varargin,'iterMin',5);
+if solver.iterMax < solver.iterMin
+    solver.iterMax=solver.iterMin;
+end
 % display
 format = [' %s |' repmat('  %1.2f',1,solver.pf.numPF) '\n'];
 
