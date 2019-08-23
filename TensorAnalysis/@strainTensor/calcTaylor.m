@@ -56,8 +56,14 @@ y = reshape(eps.M,9,[]);
 y = y([1,2,3,5,6],:);
 
 % this method applies the dual simplex algorithm 
-%options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
-options = optimoptions('linprog','Algorithm','interior-point-legacy','Display','none');
+if getMTEXpref('mosek',false)
+  param.MSK_IPAR_OPTIMIZER = 'MSK_OPTIMIZER_INTPNT';
+  param.MSK_IPAR_INTPNT_BASIS = 'MSK_BI_NEVER';
+  %param.MSK_DPAR_INTPNT_CO_TOL_REL_GAP = 1.0e-3;  
+else
+  %options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
+  options = optimoptions('linprog','Algorithm','interior-point-legacy','Display','none');
+end
 
 % shall we display what we are doing?
 isSilent = check_option(varargin,'silent');
@@ -69,8 +75,15 @@ for i = 1:size(y,2)
   % b_j| is minimal. This is equivalent to the requirement b>=0 and CRSS*b
   % -> min which is the linear programming problem solved below
   try
-    b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
+    if getMTEXpref('mosek',false)
+      res = msklpopt(CRSS,A,y(:,i),y(:,i),zeros(size(A,2),1),inf(size(A,2),1),...
+        param,'minimize echo(0)');
+      b(i,:) = res.sol.itr.xx;
+    else
+      b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
+    end    
   end
+  
   % display what we are doing
   if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end

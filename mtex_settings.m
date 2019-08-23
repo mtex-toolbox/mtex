@@ -159,6 +159,16 @@ setMTEXpref('phaseColorMap',cmap);
 setMTEXpref('stopOnSymmetryMissmatch',true)
 setMTEXpref('mtexMethodsAdvise',true)
 
+
+%% MOSEK integration
+% <https://www.mosek.com/ MOSEK> provides an alternative to the
+% optimization 
+
+MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
+addpath(MOSEKpath);
+setMTEXpref('mosek',true)
+
+
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting
 
