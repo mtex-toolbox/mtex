@@ -31,10 +31,14 @@ maxStepSize = get_option(varargin,'maxStepSize',inf);
 isAntipodal = sF.antipodal;
 if check_option(varargin, 'startingnodes')
   v = get_option(varargin, 'startingnodes');
+  %v.antipodal = isAntipodal;
+  sR = getClass(varargin,'sphericalRegion');
 else
   antipodalFlag = {'','antipodal'};
   v = equispacedS2Grid('points', min(1000000,2*sF.bandwidth^2), antipodalFlag{isAntipodal+1});
+  sR = sphericalRegion;
 end
+
 
 v = rmOption(v(:),'resolution');
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
@@ -67,15 +71,13 @@ for k = 0:kmax
   v = normalize(line_v(sub2ind(size(line_v),(1:length(v)).',id)));
   
   
-  % project to upper hemisphere if required
-  if isAntipodal
-    ind = v.z<0;
-    v.x(ind) = -v.x(ind); v.y(ind) = -v.y(ind); v.z(ind) = -v.z(ind);
-  end
+  % project to fundamental region;
+  v = v.project2FundamentalRegion;
+
   
   
   if all(id == 1), break; end
-
+  
   % maybe we can reduce the number of points a bit
   [~,~,I] = unique(v, 'tolerance', tol,'noSymmetry');
   v = normalize(accumarray(I,v));
