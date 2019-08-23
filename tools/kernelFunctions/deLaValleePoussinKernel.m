@@ -1,6 +1,13 @@
 classdef deLaValleePoussinKernel < kernel
-  %DELAVALEEPOUSSINKERNEL Summary of this class goes here
-  %   Detailed explanation goes here
+% deLaValleePousinKernel
+%   Detailed explanation goes here
+%
+% Syntax
+%
+%   psi = deLaValleePoussinKernel(100)
+%   psi = deLaValleePoussinKernel('halfwidth',5*degree)
+%
+
     
   properties
     kappa = 90;
