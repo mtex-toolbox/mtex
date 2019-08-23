@@ -117,15 +117,24 @@ for i = 1:numel(sP)
     end
       
   else % --------- colorcoding according to nextStyle -----------------
-      
-    % get color
-    if check_option(varargin,{'MarkerColor','MarkerFaceColor'})
-      mfc = get_option(varargin,'MarkerColor','none');
-      mfc = get_option(varargin,'MarkerFaceColor',mfc);
-    else % cycle through colors
-      [ls,mfc] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
+    
+    % get colors
+    mfc = get_option(varargin,'MarkerColor');
+    mfc = get_option(varargin,'MarkerFaceColor',mfc);
+    if ~ischar(mfc) || ~strcmpi(mfc,'none')
+      mec = mfc;
+    else
+      mec = [];
     end
-    mec = get_option(varargin,'MarkerEdgeColor',mfc);
+    mec = get_option(varargin,'MarkerEdgeColor',mec);
+      
+    if isempty(mfc) || isempty(mec)  % cycle through colors
+      [ls,nextColor] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
+      
+      if isempty(mfc), mfc = nextColor; end
+      if isempty(mec), mec = nextColor; end
+            
+    end
   
     % draw patches
     if numel(MarkerSize) > 1
