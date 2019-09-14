@@ -1,19 +1,26 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.0 2/2019
+%% MTEX 5.2.0 9/2019
 %
 % *Speed Improvements*
 %
 % * much faster visualization of the large EBSD maps if <EBSD_gridify.html
 % gridify> is used
 % * faster Fourier transforms on the sphere and the orientation space
+% * support for <MOSEK
+% https://docs.mosek.com/9.0/toolbox/install-interface.html> as faster
+% replacement for linprog from the Optimization Toolbox
+%
 %
 % *Support for hexagonal EBSD grids*
+%
 % The function <EBSD_gridify.html gridify> now works also for EBSD data
 % measured on a hexagonal grid. As a consequence denoising and GND
 % computation for those data is also on the way.
 %
+%
 % *Plastic Deformations*
+%
 % MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
 % plastic deformations more straight forward.
 %
@@ -25,6 +32,7 @@
 % The relationships between those tensors are explained in the section
 % <PlasticDeformation.html plastic deformations>.
 %
+%
 % *Spherical Bingham Distribution* 
 %
 % Nativ support for spherical <BinghamS2_index.html Bingham distributions>,
@@ -32,6 +40,7 @@
 % distributions.
 %
 % *Tensor Visualisation*
+%
 % Improved methods for the vizualisation of ellastic properties, see
 % <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 %
@@ -39,13 +48,25 @@
 %
 % * fix layout
 % * plot at fixed positions
-% * 
 %
+% *Misc Changes*
+%
+% * compute the volume of a crystal shape
 % * label crystal faces in crystal shapes
+% * new function <std orientation_std.html> for computing the standard
+% deviation of orientations
 % * calcKearnsFactor
-% * allow to index ebsd data and grains by id
+% * allow to index ebsd data and grains by id using {} brackets
 %
-% ebsd{id}, grains{id}
+%   ebsd{id}
+%   grains{id}
+%
+% * new options to scatter
+%
+%   scatter(v,'numbered') % plot vectors with numbers
+%   scatter(v,'MarkerFaceColor','none') % plot vectors with colored empty marks
+%
+%
 %
 %% MTEX 5.1.0 04/2018
 %

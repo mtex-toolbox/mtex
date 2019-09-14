@@ -3,3 +3,4 @@ function plota2west
 
 setMTEXpref('aAxisDirection','west');
 setMTEXpref('bAxisDirection','');
+setMTEXpref('aStarAxisDirection','');

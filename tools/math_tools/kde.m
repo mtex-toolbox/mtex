@@ -1,4 +1,4 @@
-function [bandwidth,density,xmesh,cdf]=kde(data,n,MIN,MAX)
+function [bandwidth,density,xmesh,cdf]=kde(data,n,MIN,MAX,varargin)
 % Reliable and extremely fast kernel density estimator for one-dimensional data;
 %        Gaussian kernel is assumed and the bandwidth is chosen automatically;
 %        Unlike many other implementations, this one is immune to problems
@@ -49,20 +49,24 @@ R=MAX-MIN; dx=R/(n-1); xmesh=MIN+[0:dx:R]; N=length(unique(data));
 initial_data=histc(data,xmesh)/N;  initial_data=initial_data/sum(initial_data);
 a=dct1d(initial_data); % discrete cosine transform of initial data
 
-% now compute the optimal bandwidth^2 using the referenced method
-%I=[1:n-1]'.^2; a2=(a(2:end)/2).^2;
-% use  fzero to solve the equation t=zeta*gamma^[5](t)
-%t_star=root(@(t)fixed_point(t,N,I,a2),N);
-% rule of thumb
-t_star = .28*N^(-2/5);
+if check_option(varargin,'bandwidth')
+  t_star = get_option(varargin,'bandwidth')
+elseif check_option(varargin,'magicNumber')
+  % rule of thumb
+  t_star = get_option(varargin,'magicNumber',.28,'double')*N^(2);
+else
+  % now compute the optimal bandwidth^2 using the referenced method
+  I=[1:n-1]'.^2; a2=(a(2:end)/2).^2;
+  % use  fzero to solve the equation t=zeta*gamma^[5](t)
+  t_star=root(@(t)fixed_point(t,N,I,a2),N);
+end
 
 % smooth the discrete cosine transform of initial data using t_star
 a_t=a.*exp(-[0:n-1]'.^2*pi^2*t_star/2);
 
 % now apply the inverse discrete cosine transform
-if (nargout>1)|(nargout==0)
-    density=idct1d(a_t)/R;
-end
+if (nargout>1)||(nargout==0), density=idct1d(a_t)/R; end
+
 % take the rescaling of the data into account
 bandwidth=sqrt(t_star)*R;
 density(density<0)=eps; % remove negatives due to round-off error
@@ -81,7 +85,7 @@ if nargout>3
 end
 
 end
-%################################################################
+%
 function  out=fixed_point(t,N,I,a2)
 % this implements the function t-zeta*gamma^[l](t)
 l=7;
@@ -96,7 +100,7 @@ end
 
 
 
-%##############################################################
+% ##############################################################
 function out = idct1d(data)
 
 % computes the inverse discrete cosine transform
@@ -114,7 +118,7 @@ out(2:2:nrows) = data(nrows:-1:nrows/2+1);
 %      A. K. Jain, "Fundamentals of Digital Image
 %      Processing", pp. 150-153.
 end
-%##############################################################
+% ##############################################################
 
 function data=dct1d(data)
 % computes the discrete cosine transform of the column vector data

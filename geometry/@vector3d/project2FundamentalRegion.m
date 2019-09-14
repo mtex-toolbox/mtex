@@ -17,6 +17,20 @@ function v = project2FundamentalRegion(v,cs,varargin)
 % Output
 %  v - @vector3d
 
+
+if nargin==1 || ~isa(cs,'symmetry') % no symmetry is provided
+  
+  if v.antipodal || (nargin>1 && check_option([cs,varargin],'antipodal'))
+    
+    ind = v.z<0;
+    v.x(ind) = -v.x(ind);
+    v.y(ind) = -v.y(ind);
+    v.z(ind) = -v.z(ind);
+  end
+  return
+  
+end
+
 % antipodal symmetry is nothing else then adding inversion to the symmetry
 % group
 if check_option(varargin,'antipodal') || v.antipodal, cs = cs.Laue; end

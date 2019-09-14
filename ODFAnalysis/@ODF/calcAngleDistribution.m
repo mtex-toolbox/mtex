@@ -66,7 +66,7 @@ if ~check_option(varargin,'fast')
   end
   
   % evaluate the ODF at the grid
-  f = max(0,eval(odf,S3G)); %#ok<EVLC>
+  f = max(0,eval(odf,S3G));
   
   % integrate
   for k = 1:numel(omega)    
@@ -92,10 +92,8 @@ else
 
   maxangle = max(angles);
 
-
   % perform kernel density estimation
-
-  [bandwidth,density,omega] = kde(angles,2^8,0,maxangle); %#ok<ASGLU>
+  [bandwidth,density,omega] = kde(angles,2^8,0,maxangle,'magicNumber',0.28); %#ok<ASGLU>
 
   density = density ./ mean(density) * pi ./ maxangle;
   

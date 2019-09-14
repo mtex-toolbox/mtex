@@ -170,7 +170,10 @@ classdef crystalSymmetry < symmetry
     function opt = get.plotOptions(cs)
       % rotate the aAxis or bAxis into the right direction
       
-      if ~isempty(getMTEXpref('bAxisDirection',[]))
+      if ~isempty(getMTEXpref('aStarAxisDirection',[]))
+        cor = pi/2*(NWSE(getMTEXpref('aStarAxisDirection',[]))-1);
+        rho = -cs.aAxisRec.rho + cor;
+      elseif ~isempty(getMTEXpref('bAxisDirection',[]))
         rho = -cs.bAxis.rho + pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
       elseif ~isempty(getMTEXpref('aAxisDirection',[]))
         rho = -cs.aAxis.rho + pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);

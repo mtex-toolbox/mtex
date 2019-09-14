@@ -30,6 +30,7 @@ classdef crystalShape
     diameter
     faceArea
     faceCenter
+    volume
   end
   
   methods
@@ -137,6 +138,14 @@ classdef crystalShape
       end
     end
     
+    function cSVol = get.volume(cS) 
+     % get the volume of the shape
+     cSVol = 1/3*sum( ...
+             dot(cS.faceCenter,normalize(unique(vector3d(symmetrise(cS.N)),'stable'))) ...
+             .*cS.faceArea);
+    end
+
+
   end
 
   methods (Static = true)

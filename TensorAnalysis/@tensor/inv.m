@@ -28,7 +28,7 @@ switch T.rank
     M = tensor42(T.M,T.doubleConvention);
         
     % invert the matrix
-    for l = 1:size(M,3)
+    for l = 1:length(T)
       M(:,:,l) = inv(M(:,:,l));
     end
         
