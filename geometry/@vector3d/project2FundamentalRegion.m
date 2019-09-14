@@ -18,9 +18,9 @@ function v = project2FundamentalRegion(v,cs,varargin)
 %  v - @vector3d
 
 
-if nargin==1 || ~isa(cs,'symmetry')
+if nargin==1 || ~isa(cs,'symmetry') % no symmetry is provided
   
-  if v.antipodal || check_option([cs,varargin],'antipodal')
+  if v.antipodal || (nargin>1 && check_option([cs,varargin],'antipodal'))
     
     ind = v.z<0;
     v.x(ind) = -v.x(ind);

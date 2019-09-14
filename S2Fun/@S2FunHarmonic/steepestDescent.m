@@ -40,12 +40,12 @@ else
 end
 
 
+% remove points exactly at the poles
 v = rmOption(v(:),'resolution');
 v = v(v.theta > 0.01 & v.theta < pi-0.01);
 
 % possible steplength
-%omega = 1.25.^(-30:1:12) * degree;
-omega = 1.25.^(-30:1:10) * degree;
+omega = 1.25.^(-30:1:10) * degree; %omega = 1.25.^(-30:1:12) * degree;
 omega(omega<res) = [];
 omega(omega>maxStepSize) = [];
 omega = [0,omega];
@@ -74,6 +74,8 @@ for k = 0:kmax
   % project to fundamental region;
   v = v.project2FundamentalRegion;
 
+  % if antipodal function project everything to upper hemisphere
+  if isAntipodal, v(v.z<0) = -v(v.z<0); end
   
   
   if all(id == 1), break; end
