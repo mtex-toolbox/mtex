@@ -1,4 +1,4 @@
-function [minmax, khs, ghs] = HashinShtrikmanModulus(C,K0,G0)
+function [khs, ghs, minmax] = HashinShtrikmanModulus(C,K0,G0)
 % Hashin Shtrikman moduli 
 %
 % The equations are from Peselnick and Meister 1965 through Watt and
@@ -6,7 +6,7 @@ function [minmax, khs, ghs] = HashinShtrikmanModulus(C,K0,G0)
 %
 % Syntax:
 %
-%   [minmax, khs, ghs] = HashinShtrikmanModulus(C,K0,G0)
+%   [khs, ghs, minmax] = HashinShtrikmanModulus(C,K0,G0)
 %
 % Input
 %  C  - @stiffnessTensor
@@ -19,6 +19,9 @@ function [minmax, khs, ghs] = HashinShtrikmanModulus(C,K0,G0)
 %  minmax - +1 positive definite, -1 for negative definite R
 %
 
+warning('off','MATLAB:singularMatrix');
+warning('off','MATLAB:illConditionedMatrix');
+
 % ensure K0 and G0 have same size
 if numel(G0) == 1, G0 = repmat(G0,size(K0)); end
 
@@ -30,13 +33,14 @@ gamma = (alpha - 3 * beta) ./ 9;
 % set up isotropic elastic matrix 
 C0 = matrix(2 * G0 .* stiffnessTensor.eye,'Voigt');
 
+% C0 = C0 + K0 - 2/3 * G0
 C0(1:3,1:3,:,:) = C0(1:3,1:3,:,:) + shiftdim(K0 - 2/3 * G0,-2);
 
 % take difference between anisotropic and isotropic matrices and take
-% inverse to get the residual compliance matrix (eq 4 & 8 Watt Peselnick
-% 1980)
+% inverse to get the residual compliance matrix (eq 4 & 8 Watt Peselnick 1980)
 R = C - C0;
 H = inv(R);
+
 
 % Subtract the isotropic compliances from the residual compliance matrix
 % and invert back to moduli space.  The matrix B is the moduli matrix that
@@ -72,6 +76,9 @@ ghs = G0 + B2 ./ ( 1 + 2 * beta .* B2 );
 % definite or negative definite regime of the matrix R. Here is a test of
 % the properties of R.  A +1 is returned if positive definite, a -1 is
 % retunred if negative definite.  0 returned otherwise.
+
+warning('on','MATLAB:singularMatrix');
+warning('on','MATLAB:illConditionedMatrix');
 
 minmax = zeros(size(R));
 D = eig(R);
