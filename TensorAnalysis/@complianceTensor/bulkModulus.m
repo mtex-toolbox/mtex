@@ -1,5 +1,5 @@
-function [KV,KR,KVRH] = VRHBulkModulus(S)
-% Voigt-Reuss-Hill elastic bulk moduli
+function [KV,KR,KVRH] = bulkModulus(S)
+% isotropic elastic bulk modulus, Voigt Reuss Hill bounds
 %
 % Syntax
 %
@@ -9,9 +9,9 @@ function [KV,KR,KVRH] = VRHBulkModulus(S)
 %  S - @complianceTensor
 %
 % Output
-%  KV - bulk modulus Voigt average, upper bound
-%  KR - bulk modulus Reuss average, lower bound
-%  KVRH - bulk modulus Voigt Reuss Hill average, ￼
+%  KV - Voigt effective bulk modulus, upper bound
+%  KR - Reuss effective bulk modulus, lower bound
+%  KVRH - Hill effective bulk modulus
 
 % compute stifness tensor as 6x6 matrices
 C = matrix(inv(S),'voigt');
