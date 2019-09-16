@@ -11,7 +11,9 @@ function T = inv(T)
 switch T.rank
 
   case 1
-
+    
+    T.M = 1./T.M;
+    
   case 2
 
     for j = 1:length(T)
