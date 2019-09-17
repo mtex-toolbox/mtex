@@ -24,6 +24,9 @@ if check_option(varargin,'check')
   return
 end
 
+% if bandwidth is zero there is nothing to do
+if component.bandwidth == 0, g = vector3d.zeros(size(ori)); return; end
+
 % extract bandwidth
 L = min(component.bandwidth+1,get_option(varargin,'bandwidth',inf));
 component.bandwidth = L;
@@ -50,6 +53,7 @@ plan = nfsoftmex('init',L,length(ori),nfsoft_flags,0,4,1000,2*ceil(1.5*L));
 
 % set nodes
 abg = Euler(ori,'nfft');
+abg(abs(abg(:,2))<0.0001,2) = 0.0001; % avoid zero beta angle as we are going to divide by it
 nfsoftmex('set_x',plan,abg.');
 
 % node-dependent precomputation
@@ -135,9 +139,9 @@ g = vector3d((real(f_phi1 - cos(abg(:,2)) .* f_phi2) .* (ori' * vector3d.Z) + ..
   real(f_phi2 - cos(abg(:,2)) .* f_phi1) .* (vector3d.Z)) ./ sin(abg(:,2)).^2) + ...
   real(f_Phi) .* rotate(vector3d.Y,-abg(:,3));
 
-if max(abs(f_phi1)) < 1e-5, disp('f_phi1 == 0'); end
-if max(abs(f_phi2)) < 1e-5, disp('f_phi2 == 0'); end
-if max(abs(f_Phi)) < 1e-5, disp('f_Phi == 0'); end
+%if max(abs(f_phi1)) < 1e-5, disp('f_phi1 == 0'); end
+%if max(abs(f_phi2)) < 1e-5, disp('f_phi2 == 0'); end
+%if max(abs(f_Phi)) < 1e-5, disp('f_Phi == 0'); end
 
 end
 
