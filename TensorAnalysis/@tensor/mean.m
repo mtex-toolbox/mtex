@@ -4,7 +4,8 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 % Syntax
 %  T = mean(T)     % mean along the first non singleton dimension
 %  T = mean(T,dim) % mean along dimension dim
-%  [TVoigt, TReus, THill] = mean(T,dim) % Voigt, Reus and Hill averages
+%  [TVoigt, TReus, THill] = mean(T) % Voigt, Reus and Hill averages
+%  TGeometric = mean(T,'geometric') % geometric mean
 %
 %  [TVoigt, TReus, THill] = mean(T,ori,'weights',weights)
 %  [TVoigt, TReus, THill] = mean(T,odf) % mean 
@@ -50,7 +51,7 @@ else % the plain mean
 end
 
 % for the geometric mean take matrix exponential to go back
-if check_option(varargin,'geometricMean'), TVoigt = expm(TVoigt); end
+if check_option(varargin,'geometric'), TVoigt = expm(TVoigt); end
 
 % Reuss average -> the inverse of the mean of the inverses
 if nargout > 1, TReuss = inv(mean(inv(T),varargin{:})); end
