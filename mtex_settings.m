@@ -164,9 +164,9 @@ setMTEXpref('mtexMethodsAdvise',true)
 % <https://www.mosek.com/ MOSEK> provides an alternative to the
 % optimization 
 
-MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
-addpath(MOSEKpath);
-setMTEXpref('mosek',true)
+%MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
+%addpath(MOSEKpath);
+setMTEXpref('mosek',false)
 
 
 %% Turn off Grain Selector
