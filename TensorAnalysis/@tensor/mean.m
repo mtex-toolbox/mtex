@@ -4,11 +4,12 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 % Syntax
 %  T = mean(T)     % mean along the first non singleton dimension
 %  T = mean(T,dim) % mean along dimension dim
-%  [TVoigt, TReus, THill] = mean(T) % Voigt, Reus and Hill averages
+%  TReuss = mean(T,'Reuss') % Reuss average
 %  TGeometric = mean(T,'geometric') % geometric mean
+%  [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
-%  [TVoigt, TReus, THill] = mean(T,ori,'weights',weights)
-%  [TVoigt, TReus, THill] = mean(T,odf) % mean 
+%  [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
+%  [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
 %
 % Input
 %  T - @tensor
@@ -19,8 +20,10 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %
 
 % for the geometric mean take the matrix logarithm before taking the mean
-% this is a strange name for this convention
 if check_option(varargin,'geometric'), T = logm(T); end
+
+% for the Reuss mean take the inverse
+if check_option(varargin,'Reuss'), T = inv(T); end
 
 if nargin > 1 && isa(varargin{1},'rotation')
 
@@ -34,6 +37,7 @@ if nargin > 1 && isa(varargin{1},'rotation')
       
 elseif nargin > 1 && isa(varargin{1},'ODF')
   
+  % this needs to be replaced
   TVoigt = calcTensor(varargin{1},T,varargin{2:end});
   
 else % the plain mean
@@ -52,6 +56,9 @@ end
 
 % for the geometric mean take matrix exponential to go back
 if check_option(varargin,'geometric'), TVoigt = expm(TVoigt); end
+
+% for Reuss take the inverse of the tensor to go back
+if check_option(varargin,'Reuss'), TVoigt = inv(TVoigt); end
 
 % Reuss average -> the inverse of the mean of the inverses
 if nargout > 1, TReuss = inv(mean(inv(T),varargin{:})); end
