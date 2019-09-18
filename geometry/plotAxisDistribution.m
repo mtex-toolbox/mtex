@@ -22,6 +22,7 @@ function h = plotAxisDistribution(obj,varargin)
 % Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %  complete  - plot entire (hemi)--sphere
+%  noLabel   - do not annotate 
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo

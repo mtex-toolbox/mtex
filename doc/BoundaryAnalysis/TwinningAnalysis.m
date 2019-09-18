@@ -59,19 +59,48 @@ plot(gB_MgMg,gB_MgMg.misorientation.angle./degree,'linewidth',2)
 mtexColorbar
 
 %%
-% We observe many grain boundaries with a large misorientation angle of
-% about 86 degrees. Those grain boundaries are most likely twin boundaries.
-% To detect them more precisely we define first the twinning as a
-% misorientation, which is reported in literature by (1,1,-2,0) parallel
-% to (2,-1,-1,0) and (-1,0,1,1) parallel to (1,0,-1,1). In MTEX it is
-% defined by
+% We observe that we have many grain boundaries with misorientation angle
+% larger than 80 degree. In order to investigate the distribution of
+% misorientation angles further we have the look at a misorientation angle
+% histogramm.
 
-twinning = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
-  Miller(-1,0,1,1,CS),Miller(-1,1,0,1,CS))
+histogram(gB_MgMg.misorientation.angle./degree,40)
+xlabel('misorientation angle (degree)')
 
 %%
-% The followin lines show that the twinning is actually a rotation about
-% axis (-2110) and angle 86.3 degree
+% Lets analyze the misorientations corresponding to the peak around 86
+% degree in more detail. Therefore, we consider only those misorientations
+% with misorientation angle between 85 and 87 degree
+
+ind = gB_MgMg.misorientation.angle>85*degree & gB_MgMg.misorientation.angle<87*degree;
+mori = gB_MgMg.misorientation(ind);
+
+%%
+% and observe that when plotted in axis angle domain they form a strong
+% cluster close to one of the corners of the domain.
+
+scatter(mori)
+
+%%
+% We may determin the center of the cluster and check whether it is close
+% to some special orientation relation ship
+
+% determine the mean of the cluster
+mori_mean = mean(mori,'robust')
+
+% determine the closest special orientation relation ship
+round2Miller(mori_mean)
+
+%%
+% Bases on the output above we may now define the special orientation
+% relationship as
+
+twinning = orientation.map(Miller(0,1,-1,-2,CS),Miller(0,-1,1,-2,CS),...
+  Miller(2,-1,-1,0,CS),Miller(2,-1,-1,0,CS))
+
+%%
+% and observe that it is actually a rotation about axis (-1210) and angle
+% 86.3 degree
 
 % the rotational axis
 round(twinning.axis)
@@ -132,11 +161,46 @@ twinId = unique(gB_MgMg(isTwinning).grainId);
 % compute the area fraction
 sum(area(grains(twinId))) / sum(area(grains)) * 100
 
+%%
+% The |parentId| may also used to compute properties of the parent grains
+% by averaging over the corresponding child grain properties.
+
+mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@nanmean)
+
+figure(1)
+plot(grains,grains.GOS ./ degree)
+mtexColorbar
+
+figure(2)
+plot(mergedGrains,mergedGrains.GOS  ./ degree)
+mtexColorbar
+caxis([0,1.5])
+
+%%
+% The above result is a bit unrealistic since the averages are computed
+% between the childs ignoring their relative areas. A better approach is to
+% compute a weighted average by the following lines.
+
+% extract GOS and area
+childGOS = grains.GOS;
+childArea = grains.area;
+
+% compute the weighted averages
+mergedGrains.prop.GOS = accumarray(parentId,1:length(grains),size(mergedGrains),...
+  @(id) nanmeanWeights(childGOS(id),childArea(id)));
+
+figure(3)
+plot(mergedGrains,mergedGrains.GOS  ./ degree)
+mtexColorbar
+caxis([0,1.5])
+
+
 %% Setting Up the EBSD Data for the Merged Grains
 % Note that the Id's of the merged grains does not fit the grainIds
 % stored in the initial ebsd variable. As a consequence, the following
 % command will not give the right result
 
+close all
 plot(mergedGrains(16).boundary,'linewidth',2)
 hold on
 plot(ebsd(mergedGrains(16)),ebsd(mergedGrains(16)).orientations)
