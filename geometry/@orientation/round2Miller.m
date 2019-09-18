@@ -127,6 +127,10 @@ d1 = d1(id);
 n2 = round(mori * n1);
 d2 = round(mori * d1);
 
+% switch to UVTW for trigonal and hexagonal materials
+if any(strcmp(d1.CS.lattice,{'hexagonal','trigonal'})), d1.dispStyle = 'UVTW'; end
+if any(strcmp(d2.CS.lattice,{'hexagonal','trigonal'})), d2.dispStyle = 'UVTW'; end
+
 if nargout == 0, showResult; end
 
 function showResult
