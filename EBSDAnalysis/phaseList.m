@@ -231,7 +231,11 @@ classdef phaseList
       if isempty(cs.color)
         c = cmap{pL.phaseId};
       elseif ischar(cs.color)
-        c = cmap{strcmpi(cs.color,colorNames)};
+        try
+          c = cmap{strcmpi(cs.color,colorNames)};
+        catch
+          [~,c] = colornames(getMTEXpref('colorPalette','CSS'),cs.color);
+        end
       else
         c = cs.color;
       end
