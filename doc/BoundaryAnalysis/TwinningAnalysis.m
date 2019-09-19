@@ -169,6 +169,8 @@ mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@nanme
 
 figure(1)
 plot(grains,grains.GOS ./ degree)
+hold on
+plot(mergedGrains.boundary,'lineColor','white','lineWidth',2)
 mtexColorbar
 
 figure(2)
