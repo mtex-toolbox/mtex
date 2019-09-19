@@ -1,7 +1,7 @@
 function sigma = mtimes(C,eps)
 % tensor product C * eps
 
-if isa(eps,'stressTensor')
+if isa(eps,'strainTensor')
 
   % TODO: check symmetry
   sigma = stressTensor(...
