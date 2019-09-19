@@ -20,6 +20,24 @@ cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
 C = stiffnessTensor.load(fname,cs)
 
+
+%% Hooks Law
+
+
+eps = strainTensor(diag([1,1.1,0.9]),cs)
+
+% the resulting stress
+sigma = C : eps
+
+
+%% Ellastic Energy
+
+% the ellastic energy
+U = sigma : eps
+U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4])
+
+(C : eps) : eps
+
 %% Young's Modulus
 % Young's modulus is also known as the tensile modulus and measures the
 % stiffness of elastic materials. It is computed for a specific direction d
@@ -41,6 +59,8 @@ E.eval(d)
 % or plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C.YoungsModulus,'complete','upper')
+
+
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped

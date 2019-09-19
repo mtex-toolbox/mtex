@@ -64,7 +64,8 @@ end
 
 
 function J = Jy(L)
-v = sqrt(cumsum(2*(L:-1:1)))/2;
+%v = sqrt(cumsum(2*(L:-1:1)))/2;
+v = sqrt(cumsum((L:-1:1)./2));
 v = [v fliplr(v)];
 J = diag(v,1)+diag(-v,-1);
 end

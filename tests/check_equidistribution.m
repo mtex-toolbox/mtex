@@ -6,7 +6,7 @@ hh = symmetrise(h);
 
 q = SO3Grid(5*degree,cs,ss);
 
-k = deLaValeePoussinKernel('halfwidth',10*degree)
+k = deLaValleePoussinKernel('halfwidth',10*degree)
 
 odf = unimodalODF(q,k,cs,ss)
 
@@ -31,7 +31,7 @@ end
 
 q = SO3Grid(q,cs,ss);
 
-k = deLaValeePoussinKernel('halfwidth',10*degree)
+k = deLaValleePoussinKernel('halfwidth',10*degree)
 
 odf = unimodalODF(q,k,cs,ss)
 

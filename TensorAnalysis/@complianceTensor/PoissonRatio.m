@@ -1,18 +1,32 @@
 function nu = PoissonRatio(S,x,y)
-% computes the Poisson ratio of an elasticity tensor
+% Poisson ratio of an elasticity tensor
+%
+% Syntax
+%
+%  nu = PoissonRatio(S,x,y)
+%  nu = PoissonRatio(S) % isotropic case
 %
 % Input
 %  S - elastic @complianceTensor
-%  x - @vector3d
-%  y - @vector3d
+%  x - @vector3d tension direction
+%  y - @vector3d perpendicular direction
 %
 % Output
-%  nu - Poisson ratio in directions x and y
+%  nu - Poisson ratio
 %
 % Remarks
 % 
 % $$\nu = \frac{-S_{ijkl} x_i x_j y_k y_l}{S_{mnop} x_m x_n x_o x_p}$$ 
 %
+
+
+if nargin == 1  % isotrpoic theory
+  
+  S_iso_Voigt = mean(S,uniformODF(S.CS));
+  nu = S_iso_Voigt.PoissonRatio(xvector,yvector);
+  
+  return
+end
 
 % generate a function if required
 if nargin == 1 || isempty(x)

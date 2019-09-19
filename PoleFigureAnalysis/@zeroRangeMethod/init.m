@@ -5,10 +5,10 @@ zrm.pf = getClass(varargin,'PoleFigure',zrm.pf);
 % if no pole figures are specified abbort
 if isempty(zrm.pf), return; end
 
-zrm.psi = getClass(varargin,'kernel', deLaValeePoussinKernel('halfwidth',...
+zrm.psi = getClass(varargin,'kernel', S2DeLaValleePoussin('halfwidth',...
   get_option(varargin,'halfwidth',2*zrm.pf.allR{1}.resolution)));
 
-zrm.threshold = get_option(varargin,'threshold',0.1 * zrm.psi.RK(1));
+zrm.threshold = get_option(varargin,'threshold',0.1 * zrm.psi.eval(1));
 
 zrm.delta = get_option(varargin,'delta',zrm.delta,'double');
 zrm.bg = get_option(varargin,'bg',zrm.delta * max(zrm.pf));

@@ -104,7 +104,7 @@ classdef halfQuadraticFilter < EBSDFilter
       entrance = true;
             
       i = 1;
-      while i < 100 && max(max(angle(u_old,u)))>F.tol || entrance
+      while i < 1000 && max(max(angle(u_old,u)))>F.tol || entrance
         u_old = u;
         entrance = false;
         % Calculate weight

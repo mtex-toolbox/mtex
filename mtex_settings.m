@@ -144,6 +144,8 @@ EBSDColors = {[0.5 0.5 1],[0.5 1 0.5],[1 0.5 0.5],...
 setMTEXpref('EBSDColorNames',EBSDColorNames);
 setMTEXpref('EBSDColors',EBSDColors);
 
+setMTEXpref('colorPalette','CSS');
+
 
 %% Default ColorMap for Phase Plots
 
@@ -158,6 +160,16 @@ setMTEXpref('phaseColorMap',cmap);
 
 setMTEXpref('stopOnSymmetryMissmatch',true)
 setMTEXpref('mtexMethodsAdvise',true)
+
+
+%% MOSEK integration
+% <https://www.mosek.com/ MOSEK> provides an alternative to the
+% optimization 
+
+%MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
+%addpath(MOSEKpath);
+setMTEXpref('mosek',false)
+
 
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting

@@ -1,6 +1,13 @@
-classdef deLaValeePoussinKernel < kernel
-  %DELAVALEEPOUSSINKERNEL Summary of this class goes here
-  %   Detailed explanation goes here
+classdef deLaValleePoussinKernel < kernel
+% deLaValleePousinKernel
+%   Detailed explanation goes here
+%
+% Syntax
+%
+%   psi = deLaValleePoussinKernel(100)
+%   psi = deLaValleePoussinKernel('halfwidth',5*degree)
+%
+
     
   properties
     kappa = 90;
@@ -9,7 +16,7 @@ classdef deLaValeePoussinKernel < kernel
       
   methods
     
-    function psi = deLaValeePoussinKernel(varargin)
+    function psi = deLaValleePoussinKernel(varargin)
       
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')

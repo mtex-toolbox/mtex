@@ -333,7 +333,7 @@ api.clearAllData();
     Options.SS.rotOption = 1;
     Options.SS.text      = '';
 
-    Options.ODF.psi      = deLaValeePoussinKernel('halfwidth',10*degree);
+    Options.ODF.psi      = deLaValleePoussinKernel('halfwidth',10*degree);
     Options.ODF.exact    = true;
     Options.ODF.approx   = 5;
     Options.ODF.method   = true;
@@ -369,7 +369,7 @@ api.clearAllData();
       for k=1:numel(files)
         newFiles{offset+k} = files{k};
         [newData{offset+k},interface,options] = ...
-          feval(['load' datatype],files(k),interf{:},options{:},'wizard');
+          feval([datatype '.load'],files(k),interf{:},options{:},'wizard');
 
         assertCS(newData);
       end

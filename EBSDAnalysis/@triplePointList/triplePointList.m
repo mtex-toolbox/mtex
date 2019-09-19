@@ -79,26 +79,11 @@ classdef triplePointList < phaseList & dynProp
     function out = hasPhase(tP,phase1,phase2,phase3)
       
       if nargin == 2
-        out = tP.hasPhaseId(convert2Id(phase1));
+        out = tP.hasPhaseId(tP.name2id(phase1));
       elseif nargin == 3
-        out = hasPhaseId(tP,convert2Id(phase1),convert2Id(phase2));
+        out = hasPhaseId(tP,tP.name2id(phase1),tP.name2id(phase2));
       else
-        out = hasPhaseId(tP,convert2Id(phase1),convert2Id(phase2),convert2Id(phase3));
-      end
-      
-      function phId = convert2Id(ph)
-        
-        if ischar(ph)
-          alt_mineral = cellfun(@num2str,num2cell(tP.phaseMap),'Uniformoutput',false);
-          ph = ~cellfun('isempty',regexpi(tP.mineralList(:),['^' ph])) | ...
-            strcmpi(alt_mineral(:),ph);
-          phId = find(ph,1);        
-        elseif isa(ph,'symmetry')
-          phId = find(cellfun(@(cs) cs==ph,tP.CSList));
-        else
-          phId = find(ph == tP.phaseMap);
-        end
-        
+        out = hasPhaseId(tP,tP.name2id(phase1),tP.name2id(phase2),tP.name2id(phase3));
       end
       
     end

@@ -19,10 +19,14 @@ function [f,v] = steepestDescent(sF, varargin)
 % parameters
 if ~check_option(varargin, 'startingnodes')
   
-  v = equispacedS2Grid(sF.s.fundamentalSector,'points',min(1000000,2*sF.bandwidth^2));
+  sym =  sF.s;
+  if sF.antipodal, sym = sym.Laue; end
+    
+  sR = sym.fundamentalSector;
+  v = equispacedS2Grid(sR,'points',min(1000000,2*sF.bandwidth^2));
     
   if isa(sF.s,'crystalSymmetry')
-    v = Miller(v, sF.s);
+    v = Miller(v, sym);
   end
   varargin = set_option(varargin, 'startingnodes', v);
 end

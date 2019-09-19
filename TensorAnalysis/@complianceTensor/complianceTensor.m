@@ -15,5 +15,12 @@ classdef complianceTensor < tensor
       T = load@tensor(varargin{:});
       C = complianceTensor(T);
     end
+    
+    function C = eye(varargin)
+      
+      C = complianceTensor(tensor.eye(varargin{:},'rank',4));
+      
+    end
+    
   end
 end

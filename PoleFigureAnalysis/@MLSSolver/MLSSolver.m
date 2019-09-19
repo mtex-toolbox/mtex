@@ -66,7 +66,7 @@ classdef MLSSolver < pf2odfSolver
       end
         
       % get kernel
-      psi = deLaValeePoussinKernel('halfwidth',...
+      psi = S2DeLaValleePoussin('halfwidth',...
         get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},solver.S3G.resolution,'double'));
       solver.psi = getClass(varargin,'kernel',psi);
             
@@ -127,7 +127,7 @@ classdef MLSSolver < pf2odfSolver
       solver = MLSSolver;
       solver.pf = pf;
       solver.S3G = equispacedSO3Grid(pf.CS,'resolution',2.5*degree);
-      solver.psi = deLaValeePoussinKernel('halfwidth',2.5*degree);
+      solver.psi = S2DeLaValleePoussin('halfwidth',2.5*degree);
       solver.weights = repcell(1,numPF(pf),1);
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       

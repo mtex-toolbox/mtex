@@ -1,0 +1,341 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>COLORNAMES Examples</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-07-04"><meta name="DC.source" content="colornames_doc.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>COLORNAMES Examples</h1><!--introduction--><p>The function <a href="https://www.mathworks.com/matlabcentral/fileexchange/48155"><tt>COLORNAMES</tt></a> matches the input RGB values or color names to the closest colors from the selected palette. <tt>COLORNAMES</tt> returns the same outputs whether matching names or RGB:</p><pre>[names,RGB] = colornames(palette,RGB)
+[names,RGB] = colornames(palette,names)</pre><p>This document shows some examples of using <tt>COLORNAMES</tt> to match RGB values or color names. The bonus functions are also explained in this document, together with examples.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Palette Descriptions</a></li><li><a href="#2">Return Palette Names</a></li><li><a href="#3">Return All Color Names and RGB Values for One Palette</a></li><li><a href="#4">Match Color Names</a></li><li><a href="#5">Match Index Number</a></li><li><a href="#6">Match Initial Letter</a></li><li><a href="#7">Match RGB</a></li><li><a href="#8">Match RGB, Selecting the Color Difference Metric</a></li><li><a href="#9">View the Color Difference Metrics in a Figure</a></li><li><a href="#10">View the Palette Colors in 2D</a></li><li><a href="#11">View the Palette Colors in 3D</a></li><li><a href="#12">Unmatched Color Name Error</a></li></ul></div><h2>Palette Descriptions<a name="1"></a></h2><p>Palettes of named colors have been defined by various people and groups, often intended for very different applications. <tt>COLORNAMES</tt> supports a wide selection of common color palettes: a detailed list of the supported palettes is printed in the command window by simply calling <tt>COLORNAMES</tt> with no input arguments and no output arguments:</p><pre class="codeinput">colornames()
+</pre><pre class="codeoutput">               Alphabet     26  An alphabet of 26 clearly distinguishable colors, by Paul Green-Armytage.
+                                Source:  https://eleanormaclure.files.wordpress.com/2011/03/colour-coding.pdf
+             AmstradCPC     27  Amstrad Colour Personal Computer (CPC) with 27 named colors.
+                                Source:  http://www.cpcwiki.eu/index.php/CPC_Palette
+                AppleII     16  The main 16 colors provided by Apple II's Master Color Values.
+                                Source:  http://www.1000bit.it/support/manuali/apple/technotes/iigs/tn.iigs.063.html
+                   Bang    678  Per Bang's RGB color names (678 colors), V2.
+                                Source:  http://www.procato.com/rgb+index/?csv
+                 BS381C     97  British Standard 381C colors, used in identification, coding and other special purposes.
+                                Source:  http://www.e-paint.co.uk/BS381 Colourchart.asp
+                    CGA     16  The main 16 colors provided by IBM's first graphics card, the Color Graphics Adapter.
+                                Source:  https://en.wikipedia.org/wiki/Color_Graphics_Adapter
+                Crayola    222  All simple colors listed on the Crayola website (excludes metallic, glitzer, gel fx).
+                                Source:  http://www.crayola.com/explore-colors/
+                    CSS    141  W3C's Cascading Style Sheets language colors (also HTML, XUL).
+                                Source:  https://drafts.csswg.org/css-color/#named-colors
+                  dvips     68  LaTeX Device Independent file to Post-Script conversion program.
+                                Source:  &lt;texmf&gt;\dvips\base\color.pro
+                 Foster    870  John Foster's summary of Nathan Maroney's "Color Naming Experiment" data.
+                                Source:  http://people.csail.mit.edu/jaffer/Color/CNE-2007.txt
+                  HTML4     16  HyperText Markup Language version 4.01 Basic color keywords.
+                                Source:  http://www.w3.org/TR/REC-html40/types.html#h-6.5
+                   ISCC    267  All 267 colors of the ISCC-NBS System of Color Designation, adjusted for RGB.
+                                Source:  https://www.w3schools.com/colors/colors_nbs.asp
+                  Kelly     22  Approximations of Kenneth L. Kelly's 22 colors of maximum contrast.
+                                Source:  http://www.iscc.org/pdf/PC54_1724_001.pdf
+                MacBeth     24  MacBeth ColorChecker chart of 24 colors (as sRGB).
+                                Source:  http://xritephoto.com/documents/literature/en/ColorData-1p_EN.pdf
+                 MATLAB      8  MATLAB's eight standard named colors.
+                                Source:  http://www.mathworks.com/help/matlab/ref/colorspec.html
+                Natural      6  The Natural Color System's six base colors.
+                                Source:  https://en.wikipedia.org/wiki/Natural_Color_System
+                      R    549  The colors used in R's colors() vector (these are the X11 colors).
+                                Source:  C:\Program Files\R\rw&lt;version&gt;\etc\rgb.txt
+                    RAL    213  All 213 RAL CLASSIC colors. These values have been converted to RGB by RAL.
+                                Source:  http://www.ral-farben.de/content/application-help/all-ral-colours-names/overview-ral-classic-colours.html
+                 Resene   3132  Resene's own RGB values for their "Total Colour System" paints (2010).
+                                Source:  www.resene.co.nz/swatches/download_pencils.xls
+               Resistor     13  Resistor colors specified by IEC 60062:2016.
+                                Source:  https://en.wikipedia.org/wiki/Electronic_color_code
+        SherwinWilliams   1534  Sherwin-Williams' own list of 1534 paint colors.
+                                Source:  https://images.sherwin-williams.com/content_images/sw-pdf-sherwin-williams-color.pdf
+                    SVG    140  W3C's Scalable Vector Graphics (SVG 1.1) recognized color keyword names.
+                                Source:  http://www.w3.org/TR/SVG/types.html#ColorKeywords
+                Tableau     10  Tableau's classic 10 color palette, named here: https://matplotlib.org/gallery/color/named_colors.html.
+                                Source:  https://public.tableau.com/profile/chris.gerrard#!/vizhome/TableauColors/ColorPaletteswithRGBValues
+              Thesaurus    240  Ingrid Sundberg's collection of 240 color "synonyms", with a focus on literature.
+                                Source:  http://ingridsundberg.com/2014/02/04/the-color-thesaurus/
+             Trubetskoy     22  Sasha Trubetskoy's complete list of 20 simple and visually distinct colors, plus black and white.
+                                Source:  https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
+              Wikipedia   1288  Not every color article is listed here. List accessed: 2016-04-08.
+                                Source:  https://en.wikipedia.org/wiki/Lists_of_colors
+                Wolfram     24  Wolfram's classic colors for Mathematica. Newer versions use W3C colors.
+                                Source:  http://reference.wolfram.com/language/guide/Colors.html
+                    X11    549  X Window System names (version 1.2), usually found in &lt;X11root&gt;/lib/X11/rgb.txt. Is used for GNU Emacs, and is the basis of the W3C colorscheme (with some modifications).
+                                Source:  http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/rgb/rgb.txt?rev=1.2
+                 xcolor     19  LaTeX package to support colors in documents.
+                                Source:  &lt;texmf&gt;\tex\latex\xcolor\xcolor.sty
+                   xkcd    949  Color names chosen by internet survey participants. The survey is described and analyzed here: http://blog.xkcd.com/2010/05/03/color-survey-results/ . Some names may not be suitable for work!
+                                Source:  http://xkcd.com/color/rgb.txt
+</pre><h2>Return Palette Names<a name="2"></a></h2><p>To return a cell array of the supported palettes simply call <tt>COLORNAMES</tt> with no input arguments and one output argument:</p><pre class="codeinput">palettes = colornames()
+</pre><pre class="codeoutput">palettes = 
+    'Alphabet'
+    'AmstradCPC'
+    'AppleII'
+    'Bang'
+    'BS381C'
+    'CGA'
+    'Crayola'
+    'CSS'
+    'dvips'
+    'Foster'
+    'HTML4'
+    'ISCC'
+    'Kelly'
+    'MacBeth'
+    'MATLAB'
+    'Natural'
+    'R'
+    'RAL'
+    'Resene'
+    'Resistor'
+    'SherwinWilliams'
+    'SVG'
+    'Tableau'
+    'Thesaurus'
+    'Trubetskoy'
+    'Wikipedia'
+    'Wolfram'
+    'X11'
+    'xcolor'
+    'xkcd'
+</pre><h2>Return All Color Names and RGB Values for One Palette<a name="3"></a></h2><p>Simply call <tt>COLORNAMES</tt> with the name of the required palette:</p><pre class="codeinput">[clr,rgb] = colornames(<span class="string">'MATLAB'</span>)
+</pre><pre class="codeoutput">clr = 
+    'Black'
+    'Blue'
+    'Cyan'
+    'Green'
+    'Magenta'
+    'Red'
+    'White'
+    'Yellow'
+rgb =
+     0     0     0
+     0     0     1
+     0     1     1
+     0     1     0
+     1     0     1
+     1     0     0
+     1     1     1
+     1     1     0
+</pre><h2>Match Color Names<a name="4"></a></h2><p>Each input name is matched to a color name from the requested palette: an input name that does not match any of the color names will throw an error. The matching is very flexible though, as COLORNAMES usually makes a match regardless of spaces between words and character case, although for some palettes space characters may be significant. Note that CamelCase always signifies separate words (words all in one case are considered one word).</p><p>The color names are input as char row vectors and may supplied either within one cell array or as separate input arguments:</p><pre class="codeinput">[clr,rgb] = colornames(<span class="string">'xkcd'</span>,{<span class="string">'red'</span>,<span class="string">'green'</span>,<span class="string">'blue'</span>})
+[clr,rgb] = colornames(<span class="string">'xkcd'</span>,<span class="string">'eggshell'</span>,<span class="string">'eggShell'</span>)
+</pre><pre class="codeoutput">clr = 
+    'Red'
+    'Green'
+    'Blue'
+rgb =
+      0.89804            0            0
+     0.082353       0.6902      0.10196
+     0.011765      0.26275      0.87451
+clr = 
+    'Eggshell'
+    'Egg Shell'
+rgb =
+            1            1      0.83137
+            1      0.98824      0.76863
+</pre><h2>Match Index Number<a name="5"></a></h2><p>Palettes with a leading index number may be matched by just the number, or just the name, or both together:</p><pre class="codeinput">colornames(<span class="string">'CGA'</span>,<span class="string">'9'</span>,<span class="string">'LightBlue'</span>,<span class="string">'9LightBlue'</span>)
+</pre><pre class="codeoutput">ans = 
+    '9 Light Blue'
+    '9 Light Blue'
+    '9 Light Blue'
+</pre><h2>Match Initial Letter<a name="6"></a></h2><p>Palettes Alphabet, MATLAB, and Natural also match the initial letter to the color name (except for 'Black' which is matched by 'k'):</p><pre class="codeinput">colornames(<span class="string">'MATLAB'</span>,<span class="string">'c'</span>,<span class="string">'m'</span>,<span class="string">'y'</span>,<span class="string">'k'</span>)
+</pre><pre class="codeoutput">ans = 
+    'Cyan'
+    'Magenta'
+    'Yellow'
+    'Black'
+</pre><h2>Match RGB<a name="7"></a></h2><p>Each input RGB triple is matched to the closest RGB triple from the requested palette:</p><pre class="codeinput">[clr,rgb] = colornames(<span class="string">'HTML4'</span>, [0,0.2,1;1,0.2,0])
+</pre><pre class="codeoutput">clr = 
+    'Blue'
+    'Red'
+rgb =
+     0     0     1
+     1     0     0
+</pre><h2>Match RGB, Selecting the Color Difference Metric<a name="8"></a></h2><p>Input RGB values are matched using one of several standard, well defined <a href="https://en.wikipedia.org/wiki/Color_difference">color difference</a> metrics known as <img src="colornames_doc_eq13390767122160562571.png" alt="$\Delta E$"> or <i>deltaE</i>. The default color difference is "CIE94", which provides good matching for most palettes and colors. Other deltaE calculations can be selected by using the third input argument:</p><pre class="codeinput">rgb = [0,0.5,1];
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'CIEDE2000'</span>)
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'CIE94'</span>) <span class="comment">% default.</span>
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'CIE76'</span>) <span class="comment">% i.e. CIELAB.</span>
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'DIN99'</span>) <span class="comment">% better than CIELAB.</span>
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'CMCl:c'</span>)
+colornames(<span class="string">'HTML4'</span>,rgb,<span class="string">'RGB'</span>)
+</pre><pre class="codeoutput">ans = 
+    'Gray'
+ans = 
+    'Blue'
+ans = 
+    'Navy'
+ans = 
+    'Gray'
+ans = 
+    'Fuchsia'
+ans = 
+    'Teal'
+</pre><h2>View the Color Difference Metrics in a Figure<a name="9"></a></h2><p>The helper function <tt>COLORNAMES_DELTAE</tt> demonstrates how the different deltaE metrics match the input RGB to the palette colors. Simply select the palette, provide an Nx3 colormap and all deltaE metrics are listed, with the matched colors displayed in the columns below:</p><pre class="codeinput">colornames_deltaE(<span class="string">'HTML4'</span>,jet(16))
+</pre><img vspace="5" hspace="5" src="colornames_doc_01.png" alt=""> <h2>View the Palette Colors in 2D<a name="10"></a></h2><p>The helper function <tt>COLORNAMES_VIEW</tt> plots the palettes in a figure. Drop-down menus select the palette, and also how the colors are sorted. Click on any color to view its hex RGB value (may be approximate).</p><pre class="codeinput">colornames_view(<span class="string">'dvips'</span>,<span class="string">'Lab'</span>)
+</pre><img vspace="5" hspace="5" src="colornames_doc_02.png" alt=""> <h2>View the Palette Colors in 3D<a name="11"></a></h2><p>The helper function <tt>COLORNAMES_CUBE</tt> plots the palettes in a figure. The <a href="http://www.mathworks.com/help/matlab/creating_plots/data-cursor-displaying-data-values-interactively.html">data cursor</a> can be used to view the color names, by clicking on the nodes. Drop-down menus select the palette, and the color space of the colorcube:</p><pre class="codeinput">colornames_cube(<span class="string">'CSS'</span>,<span class="string">'Lab'</span>)
+</pre><img vspace="5" hspace="5" src="colornames_doc_03.png" alt=""> <h2>Unmatched Color Name Error<a name="12"></a></h2><p>If the input color name cannot be matched then <tt>COLORNAMES</tt> will throw an error, and displays color names that are similar to the input string/s:</p><pre class="codeinput">colornames(<span class="string">'CSS'</span>, <span class="string">'bleu'</span>, <span class="string">'blanc'</span>, <span class="string">'rouge'</span>)
+</pre><pre class="codeoutput error">Error using colornames&gt;cnNoMatch (line 311)
+The palette 'CSS' does not contain these colors: 'bleu', 'blanc', 'rouge'.
+
+Palette color names that are similar to the input names:
+bleu                    -&gt; 'Blue', 'Black', 'Peru', 'Plum', 'Red', 'Aqua', 'Beige', 'Bisque'.
+blanc                   -&gt; 'Black', 'Blue', 'Cyan', 'Tan', 'Beige', 'Brown', 'Gray', 'Khaki'.
+rouge                   -&gt; 'Azure', 'Beige', 'Blue', 'Orange', 'Aqua', 'Brown', 'Coral', 'Gold'.
+
+Call COLORNAMES('CSS') to list all color names for that palette,
+or COLORNAMES_VIEW('CSS') to view the palette in a 2D list,
+or COLORNAMES_CUBE('CSS') to view the palette in a 3D cube.
+
+Error in colornames (line 260)
+	cnNoMatch(fnc{idp},cnc,inp(idn==0))
+Error in colornames_doc (line 84)
+colornames('CSS', 'bleu', 'blanc', 'rouge')</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% COLORNAMES Examples
+% The function <https://www.mathworks.com/matlabcentral/fileexchange/48155
+% |COLORNAMES|> matches the input RGB values or color names to the
+% closest colors from the selected palette. |COLORNAMES| returns the
+% same outputs whether matching names or RGB:
+%
+%  [names,RGB] = colornames(palette,RGB)
+%  [names,RGB] = colornames(palette,names)
+%
+% This document shows some examples of using |COLORNAMES| to match
+% RGB values or color names. The bonus functions are also explained in this
+% document, together with examples.
+%% Palette Descriptions
+% Palettes of named colors have been defined by various people and groups,
+% often intended for very different applications. |COLORNAMES| supports a
+% wide selection of common color palettes: a detailed list of the supported
+% palettes is printed in the command window by simply calling |COLORNAMES|
+% with no input arguments and no output arguments:
+colornames()
+%% Return Palette Names
+% To return a cell array of the supported palettes simply call
+% |COLORNAMES| with no input arguments and one output argument:
+palettes = colornames()
+%% Return All Color Names and RGB Values for One Palette
+% Simply call |COLORNAMES| with the name of the required palette:
+[clr,rgb] = colornames('MATLAB')
+%% Match Color Names
+% Each input name is matched to a color name from the requested palette: an
+% input name that does not match any of the color names will throw an error.
+% The matching is very flexible though, as COLORNAMES usually makes a match
+% regardless of spaces between words and character case, although for some
+% palettes space characters may be significant. Note that CamelCase always
+% signifies separate words (words all in one case are considered one word).
+%
+% The color names are input as char row vectors and may supplied either
+% within one cell array or as separate input arguments:
+[clr,rgb] = colornames('xkcd',{'red','green','blue'})
+[clr,rgb] = colornames('xkcd','eggshell','eggShell')
+%% Match Index Number
+% Palettes with a leading index number may be matched by just the number,
+% or just the name, or both together:
+colornames('CGA','9','LightBlue','9LightBlue')
+%% Match Initial Letter
+% Palettes Alphabet, MATLAB, and Natural also match the initial letter to
+% the color name (except for 'Black' which is matched by 'k'):
+colornames('MATLAB','c','m','y','k')
+%% Match RGB
+% Each input RGB triple is matched to the closest RGB triple from the
+% requested palette:
+[clr,rgb] = colornames('HTML4', [0,0.2,1;1,0.2,0])
+%% Match RGB, Selecting the Color Difference Metric
+% Input RGB values are matched using one of several standard, well defined
+% <https://en.wikipedia.org/wiki/Color_difference color difference>
+% metrics known as $\Delta E$ or _deltaE_. The default color difference is
+% "CIE94", which provides good matching for most palettes and colors. Other
+% deltaE calculations can be selected by using the third input argument:
+rgb = [0,0.5,1];
+colornames('HTML4',rgb,'CIEDE2000')
+colornames('HTML4',rgb,'CIE94') % default.
+colornames('HTML4',rgb,'CIE76') % i.e. CIELAB.
+colornames('HTML4',rgb,'DIN99') % better than CIELAB.
+colornames('HTML4',rgb,'CMCl:c')
+colornames('HTML4',rgb,'RGB')
+%% View the Color Difference Metrics in a Figure
+% The helper function |COLORNAMES_DELTAE| demonstrates how the different
+% deltaE metrics match the input RGB to the palette colors. Simply
+% select the palette, provide an Nx3 colormap and all deltaE metrics
+% are listed, with the matched colors displayed in the columns below:
+colornames_deltaE('HTML4',jet(16))
+%% View the Palette Colors in 2D
+% The helper function |COLORNAMES_VIEW| plots the palettes in a figure.
+% Drop-down menus select the palette, and also how the colors are sorted.
+% Click on any color to view its hex RGB value (may be approximate).
+colornames_view('dvips','Lab')
+%% View the Palette Colors in 3D
+% The helper function |COLORNAMES_CUBE| plots the palettes in a figure.
+% The <http://www.mathworks.com/help/matlab/creating_plots/data-cursor-displaying-data-values-interactively.html
+% data cursor> can be used to view the color names, by clicking on the nodes.
+% Drop-down menus select the palette, and the color space of the colorcube:
+colornames_cube('CSS','Lab')
+%% Unmatched Color Name Error
+% If the input color name cannot be matched then |COLORNAMES| will throw an
+% error, and displays color names that are similar to the input string/s:
+colornames('CSS', 'bleu', 'blanc', 'rouge')
+##### SOURCE END #####
+--></body></html>

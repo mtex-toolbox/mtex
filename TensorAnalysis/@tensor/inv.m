@@ -11,7 +11,9 @@ function T = inv(T)
 switch T.rank
 
   case 1
-
+    
+    T.M = 1./T.M;
+    
   case 2
 
     for j = 1:length(T)
@@ -28,7 +30,7 @@ switch T.rank
     M = tensor42(T.M,T.doubleConvention);
         
     % invert the matrix
-    for l = 1:size(M,3)
+    for l = 1:length(T)
       M(:,:,l) = inv(M(:,:,l));
     end
         

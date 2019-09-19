@@ -1,20 +1,21 @@
 function f =  eval(sF,v)
+% evaluates the spherical function at nodes v
 %
-% syntax
+% Syntax
 %  f = eval(sF,v)
 %
 % Input
-%  v - interpolation nodes
+%  sF - @S2FunTri
+%  v - interpolation nodes @vector3d
 %
 % Output
+%  f - function values
 %
 
-bario = calcBario(sF.tri,v);
+bario = calcBario(sF.tri,v(~v.isnan));
 
-f = bario * sF.values(:);
+f = nan(size(v));
+
+f(~v.isnan) = bario * sF.values(:);
 
 end
-
-
-
-

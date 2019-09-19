@@ -18,6 +18,11 @@ classdef strainTensor < tensor
       eps = strainTensor(T);
     end
 
+    function eps = rand(varargin)
+      t = tensor.rand(varargin{:},'rank',2);
+      eps = strainTensor(t.sym);
+    end
+
   end
 end
 

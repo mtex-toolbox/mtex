@@ -13,20 +13,24 @@ function [V,E] = eig(T)
 %  V - 3xM list eigen @vector3d
 %
 
-E = zeros(3,length(T));
-V = zeros(3,3,length(T));
+
 switch T.rank
 
   case 1
   case 2
+    E = zeros(3,length(T));
+    V = zeros(3,3,length(T));
     for i = 1:length(T)
       [V(:,:,i),E(:,i)] = eig(T.M(:,:,i),'vector');
     end
   case 3
   case 4
-    error('no idea what to do!')
-    M = tensor42(T.M);
-    [E,V] = eig(M);
+    E = zeros(6,length(T));
+V = zeros(6,6,length(T));
+    M = tensor42(T.M,T.doubleConvention);
+    for i = 1:length(T)
+      [V(:,:,i),E(:,i)] = eig(M(:,:,i),'vector');
+    end
 end
 
 if nargout <= 1

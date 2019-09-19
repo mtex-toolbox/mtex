@@ -43,7 +43,11 @@ classdef tensor < dynOption
         T.M = M.M;
         T.rank = M.rank;
         T.CS = M.CS;
-        T.doubleConvention = M.doubleConvention;
+        if check_option(varargin,'doubleConvention')
+          T.doubleConvention = true;
+        else
+          T.doubleConvention = M.doubleConvention;
+        end
         T.opt = M.opt;
         
         % extract additional properties
@@ -167,6 +171,7 @@ classdef tensor < dynOption
     
     function T = eye(varargin)
       r = get_option(varargin,'rank',2);
+      [cs,varargin] = getClass(varargin,'symmetry');
       varargin = delete_option(varargin,'rank',1);
       switch r
         case 2
@@ -177,34 +182,43 @@ classdef tensor < dynOption
         otherwise
           error('Not supported!')
       end
+      if ~isempty(cs), T.CS = cs; end
     end
     
     function T = zeros(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
+      [cs,varargin] = getClass(varargin,'symmetry');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(zeros(d),'rank',r);
+      if ~isempty(cs), T.CS = cs; end
     end
     
     function T = ones(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
+      [cs,varargin] = getClass(varargin,'symmetry');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(ones(d),'rank',r);
+      if ~isempty(cs), T.CS = cs; end
     end
     
     function T = nan(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
+      [cs,varargin] = getClass(varargin,'symmetry');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(nan(d),'rank',r);
+      if ~isempty(cs), T.CS = cs; end
     end
     
     function T = rand(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
+      [cs,varargin] = getClass(varargin,'symmetry');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(rand(d),'rank',r);
+      if ~isempty(cs), T.CS = cs; end
     end
     
     function eps = leviCivita

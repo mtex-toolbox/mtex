@@ -10,9 +10,13 @@ elseif isfield(group,pref)
   
   value = group.(pref);
   
-else
+elseif nargin == 2
   
   value = default;
+  
+else
+  
+  value = [];
   
 end
 

@@ -32,7 +32,7 @@ classdef FourierComponent < ODFComponent
       end
       
       % truncate zeros
-      component.bandwidth = find(component.power>1e-10,1,'last');
+      component.bandwidth = find(component.power>1e-10,1,'last')-1;
       
     end
     
@@ -44,7 +44,7 @@ classdef FourierComponent < ODFComponent
       newLength = deg2dim(L+1);
       oldLength = numel(component.f_hat);
       if newLength > oldLength
-        component.f_hat(oldLength+1:newLength) = 0;
+        component.f_hat(oldLength+1:newLength,:) = 0;
       else
         component.f_hat = component.f_hat(1:newLength);
       end
@@ -65,7 +65,7 @@ classdef FourierComponent < ODFComponent
       end
       n = norm(component);
       dd = 0;
-      for l = 1:component.bandwidth-1
+      for l = 1:component.bandwidth
         ind = (deg2dim(l)+1):deg2dim(l+1);
         d = reshape(component.f_hat(ind),2*l+1,2*l+1) - reshape(component.f_hat(ind),2*l+1,2*l+1)';
         dd  = dd + sum(d(:).^2)/(2*l+1);
@@ -79,7 +79,7 @@ classdef FourierComponent < ODFComponent
       if component.CS ~= component.SS
         error('ODF can only be antipodal if both crystal symmetry coincide!')
       end
-      for l = 1:component.bandwidth-1
+      for l = 1:component.bandwidth
         ind = (deg2dim(l)+1):deg2dim(l+1);
         component.f_hat(ind) = 0.5* (reshape(component.f_hat(ind),2*l+1,2*l+1) + ...
           reshape(component.f_hat(ind),2*l+1,2*l+1)');
