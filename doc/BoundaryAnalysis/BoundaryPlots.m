@@ -169,7 +169,8 @@ close all
 plot(gB)
 hold on
 
-ind = angle(gB_Fo.misorientation.axis,xvector)<5*degree;
+rotAxis = Miller(1,0,0,ebsd('Fo').CS,'uvw');
+ind = angle(gB_Fo.misorientation.axis,rotAxis)<5*degree;
 
 plot(gB_Fo(ind),'linecolor','b','linewidth',2,'DisplayName','[100]')
 
@@ -179,16 +180,14 @@ plot(gB_Fo(ind),'linecolor','b','linewidth',2,'DisplayName','[100]')
 % is not specified, then the boundary is colorcoded after its angular
 % difference to the given rotation.
 
-rot = rotation.byAxisAngle(vector3d(1,1,1),60*degree);
+rotAxis = Miller(1,1,1,ebsd('Fo').CS,'uvw');
+rot = orientation.byAxisAngle(rotAxis,60*degree);
 ind = angle(gB_Fo.misorientation,rot)<10*degree;
 
 close all
-plot(gB)
+plot(gB,'DisplayName','>2^\circ')
 hold on
-plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r')
-
-legend('>2^\circ','60^\circ/[001]')
-
+plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r','DisplayName','60^\circ/[111]')
 
 
 %%

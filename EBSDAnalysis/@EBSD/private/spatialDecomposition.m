@@ -78,15 +78,17 @@ if ischar(method)
   switch lower(method)
     case 'tight'
       x = X(:,1);  y = X(:,2);      
-      
-      k = boundary(x,y,1);
+
+      % the value 0.95 adjusts the boundary a little bit towards the convex hull
+      k = boundary(x,y,0.95);
       
       % erase all linear dependend points
       angle = atan2( x(k(1:end-1))-x(k(2:end)),...
         y(k(1:end-1))-y(k(2:end)) );      
       k = k([true; abs(diff(angle))>eps; true]);
       
-      boundingX = X(k,:);      
+      boundingX = X(k,:);
+
     case {'hull','convexhull'}
       x = X(:,1);  y = X(:,2);
       
@@ -96,7 +98,7 @@ if ischar(method)
       angle = atan2( x(k(1:end-1))-x(k(2:end)),...
         y(k(1:end-1))-y(k(2:end)) );      
       k = k([true; abs(diff(angle))>eps; true]);
-      
+            
       boundingX = X(k,:);
       
     case 'cube'

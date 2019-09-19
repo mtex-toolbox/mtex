@@ -31,6 +31,12 @@ classdef stressTensor < tensor
            
       sigma = stressTensor(dyad(v,2));
 
-   end
+    end
+   
+    function sigma = rand(varargin)
+      t = tensor.rand(varargin{:},'rank',2);
+      sigma = stressTensor(t.sym);
+    end
+
   end
 end

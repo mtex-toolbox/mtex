@@ -144,6 +144,8 @@ EBSDColors = {[0.5 0.5 1],[0.5 1 0.5],[1 0.5 0.5],...
 setMTEXpref('EBSDColorNames',EBSDColorNames);
 setMTEXpref('EBSDColors',EBSDColors);
 
+setMTEXpref('colorPalette','CSS');
+
 
 %% Default ColorMap for Phase Plots
 

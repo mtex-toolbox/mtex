@@ -141,7 +141,8 @@ end
 
 if ~isempty(id)
 
-  txt{1} = ['id = '  num2str(id)];
+  txt{1} = ['index = '  num2str(id)];
+  txt{1} = ['Id = '  num2str(ebsd.id(id))];
   txt{2} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
   txt{3} = ['(x,y) = (', xnum2str(pos(1)) ', ' xnum2str(pos(2)),')'];
   if ebsd.isIndexed(id)
