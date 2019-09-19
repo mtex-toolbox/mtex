@@ -25,7 +25,18 @@ if check_option(varargin,'geometric'), T = logm(T); end
 % for the Reuss mean take the inverse
 if check_option(varargin,'Reuss'), T = inv(T); end
 
-if nargin > 1 && isa(varargin{1},'rotation')
+if check_option(varargin,'iso') && T.rank==4
+  
+  % explicit formula for averaging over orientation domain
+  alpha = EinsteinSum(T,[-1 -1 -2 -2]);
+  beta = EinsteinSum(T,[-1 -2 -1 -2]);
+
+  gamma = (2*alpha - beta) / 15;
+  delta = (3*beta - alpha) / 30;
+  
+  TVoigt = 2 * delta * T.eye + gamma * dyad(tensor.eye,tensor.eye);
+
+elseif nargin > 1 && isa(varargin{1},'rotation')
 
   rotT = rotate(T,varargin{1});
   
