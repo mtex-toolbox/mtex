@@ -1,6 +1,11 @@
 function rgb = str2rgb(str)
 % convert str to rgb values
 
+if nargin == 0
+  rgb = ['none';'flat';colornames(getMTEXpref('colorPalette','CSS'))];
+  return;
+end
+
 oldNames = {'light blue','light green','light red',...
   'dark blue','dark green','dark red','Amethyst'};
 

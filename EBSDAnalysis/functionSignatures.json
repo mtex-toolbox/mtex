@@ -34,16 +34,16 @@
     "inputs":
     [
         {"name":"boundary", "kind":"required",   "type":"grainBoundary"},
-        {"name":"lineColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"lineColor", "kind":"namevalue", "type":"choices=str2rgb"},
         {"name":"lineWidth", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
         {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
         {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
         {"name":"label", "kind":"namevalue", "type":"string"},
-	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"}
     ]
 },
 "plot":
@@ -52,13 +52,13 @@
     [
         {"name":"ebsd", "kind":"required",   "type":"EBSD"},
         {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
-	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
-	{"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
-	{"name":"FaceColor", "kind":"namevalue", "type":"double"},
-	{"name":"DisplayName", "kind":"namevalue", "type":"char"},
-	{"name":"unitCell", "kind":"flag"}
+	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
+	      {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+	      {"name":"FaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
+	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
+	      {"name":"unitCell", "kind":"flag"}
     ]
 },
 "plot":
@@ -66,13 +66,13 @@
     "inputs":
     [
         {"name":"grains", "kind":"required",   "type":"grain2d"},
-        {"name":"lineColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"lineColor", "kind":"namevalue", "type":"choices=str2rgb"},
         {"name":"lineWidth", "kind":"namevalue", "type":"double"},
         {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
-	{"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	{"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
-	{"name":"FaceColor", "kind":"namevalue", "type":"double"}
+	      {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
+	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
+	      {"name":"FaceColor", "kind":"namevalue", "type":"choices=str2rgb"}
     ]
 }
 }
