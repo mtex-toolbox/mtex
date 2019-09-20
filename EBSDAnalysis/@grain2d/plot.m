@@ -72,7 +72,7 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
 elseif check_option(varargin,'FaceColor')
   
   % plot polygons
-  color = get_option(varargin,'FaceColor');
+  color = str2rgb(get_option(varargin,'FaceColor'));
   h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
   
   % reactivate legend information

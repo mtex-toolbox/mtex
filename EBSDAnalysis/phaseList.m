@@ -100,13 +100,13 @@ classdef phaseList
       end
       
       % apply colors
-      colorOrder = getMTEXpref('EBSDColorNames');
+      colorOrder = getMTEXpref('PhaseColorOrder');
       nc = numel(colorOrder);
       c = 1;
       
       for ph = 1:numel(pL.phaseMap)
         if isa(pL.CSList{ph},'symmetry') && isempty(pL.CSList{ph}.color)
-          pL.CSList{ph}.color = colorOrder{mod(c-1,nc)+1};
+          pL.CSList{ph}.color = str2rgb(colorOrder{mod(c-1,nc)+1});
           c = c+1;
         end
       end
@@ -213,32 +213,24 @@ classdef phaseList
       
     end
     
-    function c = get.color(pL)
+    function rgb = get.color(pL)
       
       % notindexed phase should be white by default
-      if ~any(pL.isIndexed)
-        c = ones(1,3); 
-        return
-      end
+      if ~any(pL.isIndexed), rgb = ones(1,3); return; end
       
       % ensure single phase and extract symmetry
       cs = pL.CS;
             
-      % extract colormaps
-      cmap = getMTEXpref('EBSDColors');
-      colorNames = getMTEXpref('EBSDColorNames');
-  
+      % if not set use predefined color order
       if isempty(cs.color)
-        c = cmap{pL.phaseId};
-      elseif ischar(cs.color)
-        try
-          c = cmap{strcmpi(cs.color,colorNames)};
-        catch
-          [~,c] = colornames(getMTEXpref('colorPalette','CSS'),cs.color);
-        end
+        colors = getMTEXpref('PhaseColorOrder');
+        rgb = colors{pL.phaseId};
       else
-        c = cs.color;
+        rgb = cs.color;
       end
+      
+      % ensure its numeric
+      rgb = str2rgb(rgb);
       
     end
     

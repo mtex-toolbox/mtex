@@ -119,14 +119,14 @@ for i = 1:numel(sP)
   else % --------- colorcoding according to nextStyle -----------------
     
     % get colors
-    mfc = get_option(varargin,'MarkerColor');
-    mfc = get_option(varargin,'MarkerFaceColor',mfc);
+    mfc = str2rgb(get_option(varargin,'MarkerColor'));
+    mfc = str2rgb(get_option(varargin,'MarkerFaceColor',mfc));
     if ~ischar(mfc) || ~strcmpi(mfc,'none')
       mec = mfc;
     else
       mec = [];
     end
-    mec = get_option(varargin,'MarkerEdgeColor',mec);
+    mec = str2rgb(get_option(varargin,'MarkerEdgeColor',mec));
       
     if isempty(mfc) || isempty(mec)  % cycle through colors
       [ls,nextColor] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
@@ -180,7 +180,7 @@ for i = 1:numel(sP)
         holdState = get(sP(i).ax,'nextPlot');
         set(sP(i).ax,'nextPlot','add');
         if check_option(varargin,'edgecolor')
-          line([NaN NaN],[NaN NaN],'color',get_option(varargin,'edgecolor'),...
+          line([NaN NaN],[NaN NaN],'color',str2rgb(get_option(varargin,'edgecolor')),...
           'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
           'linewidth',get(h(1),'LineWidth'));
         else

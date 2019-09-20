@@ -101,14 +101,24 @@ api.Progress.enableFinish(false);
   function localPlotDataCallback(varargin)
     
     data = api.getDataTransformed();
-    
     figure
     
-    if isa(data,'EBSD') && numel(data.indexedPhasesId) == 1
+    if isa(data,'EBSD') && strcmp('pageSS',char(progressApi.currentPage)) % && numel(data.indexedPhasesId) == 1
       
-      plot(data('indexed'),data('indexed').orientations);
+      counts = accumarray(data.phaseId,1);
+      [~,maxPhaseId] = max(counts(2:end));
+      ind = data.phaseId == (1+maxPhaseId);
+      ori = data(ind).orientations;
+      plot(data(ind),ori);
+      set(gcf,'name',['IPF Z map of phase ' data.CSList{maxPhaseId+1}.mineral])
       
-    else    
+      figure
+      h = ori.CS.basicHKL;
+      plotPDF(ori,h(1:3),'contourf','antipodal');
+      set(gcf,'name',['pole figures of phase ' data.CSList{maxPhaseId+1}.mineral])
+      
+    else
+      
       plot(data,'silent');
     end
     
@@ -121,7 +131,6 @@ api.Progress.enableFinish(false);
     if ~e, close(api.hFigure); end
     
   end
-
 
 
   function gui = localCreateGUIControls()

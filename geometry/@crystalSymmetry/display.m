@@ -16,7 +16,7 @@ end
 
 if ~isempty(s.color)
   props{end+1} = 'color'; 
-  propV{end+1} = s.color;
+  propV{end+1} = rgb2str(s.color);
 end
 
 fn = fieldnames(s.opt);

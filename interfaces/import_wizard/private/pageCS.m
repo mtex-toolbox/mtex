@@ -22,7 +22,7 @@ CS = 'not available';
 
 
 % register callbacks
-set(gui.hColor    ,'Callback',@localUpdateCS);
+set(gui.hColor    ,'ItemStateChangedCallback',@localUpdateCS);
 set(gui.hCrystal  ,'Callback',@localUpdateCS);
 set(gui.hMineral  ,'Callback',@localUpdateCS);
 set(gui.hAxes     ,'Callback',@localUpdateCS);
@@ -82,14 +82,15 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       set(gui.hCS,'Enable','off');
       set(gui.hMineral,'Enable','off');
-      set(gui.hColor,'Enable','off');
+      gui.hColor.setSelectedColor([]);
+      gui.hColor.setEnabled(false);
       
       set(gui.hMineral,'string',CS);
       
     else
       
       set(gui.hMineral,'enable','on');
-      set(gui.hColor,'enable','on');
+      gui.hColor.setEnabled(true);
       set(gui.hCS,'enable','on');
       
       set(gui.hIndexed(1),'Value',1);
@@ -98,9 +99,13 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       csname = strmatch(CS.pointGroup,SymmetryList);
       set(gui.hCrystal,'value',csname(1));
       
-      color = strmatch(CS.color,getMTEXpref('EBSDColorNames'));
-      set(gui.hColor,'value',color(1));
-            
+      if isempty(CS.color)
+        gui.hColor.setSelectedColor([]);
+      else
+        rgb = str2rgb(CS.color);
+        gui.hColor.setSelectedColor(java.awt.Color(rgb(1),rgb(2),rgb(3)));
+      end
+      
       % set alignment
       if any(CS.Laue.id == [2,5,8,11,18,21,24,35,40]) %,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
         set(gui.hAlignment,'enable','on');
@@ -155,13 +160,19 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       al2 = get(gui.hAlignment(2),'Value');
       al = AlignmentList;
       
-      co = getMTEXpref('EBSDColorNames');
-      co = co{get(gui.hColor,'Value')};
+      
+      col = gui.hColor.getSelectedColor;
+      if isempty(col)
+        rgb = col;
+      else
+        rgb = [col.getRed,col.getGreen,col.getBlue]./255;
+      end
+      
       try
         CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
-          'mineral',mineral,'color',co);
+          'mineral',mineral,'color',rgb);
       catch %#ok<CTCH>
-        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',co);
+        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',rgb);
       end
     end
     
@@ -293,18 +304,12 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       'HorizontalAlignment','left',...
       'Position',[m 15 130 15]);
     
-    color = uicontrol(...
-      'Parent',mineralGroup,...
-      'BackgroundColor',[1 1 1],...
-      'FontName','monospaced',...
-      'FontSize',fs,...
-      'HorizontalAlignment','left',...
-      'Position',[rW 15 2*bW 20],...
-      'String',blanks(0),...
-      'Style','popup',...
-      'String',getMTEXpref('EBSDColorNames'),...
-      'Value',1);
-    
+    warning('off','MATLAB:ui:javacomponent:FunctionToBeRemoved');
+    color = com.jidesoft.combobox.ColorComboBox;
+    color = javacomponent(color,[rW 10 2*bW 25],mineralGroup);
+    color.setColorValueVisible(false)
+    warning('on','MATLAB:ui:javacomponent:FunctionToBeRemoved');
+        
     look = uicontrol(...
       'Parent',mineralGroup,...
       'String','Load Cif File',...

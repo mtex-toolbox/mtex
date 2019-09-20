@@ -120,9 +120,9 @@ classdef orientationPlot < handle
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end
-        MEC = get_option(varargin,{'MarkerEdgeColor','MarkerColor'},'b');
+        MEC = str2rgb(get_option(varargin,{'MarkerEdgeColor','MarkerColor'},[0, 0.4470, 0.7410]));
         if check_option(varargin,'filled'), MFC = MEC; else, MFC = 'none'; end
-        MFC = get_option(varargin,{'MarkerFaceColor','MarkerColor'},MFC);   
+        MFC = str2rgb(get_option(varargin,{'MarkerFaceColor','MarkerColor'},MFC));
   
         h = patch(x(:),y(:),z(:),1,...
           'FaceColor','none',...

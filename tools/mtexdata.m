@@ -249,8 +249,6 @@ ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2sp
 
 function ebsd = mtexdata_olivine
 
-plotx2east;
-plotzOutOfPlane
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
 
 % correct data to fit the reference frame

@@ -87,13 +87,12 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
     p = cellfun(@str2num,p)*degree;
     rot  = rotation.byEuler(p(1),p(2),p(3),'ZXZ');
 
+    setSS('rotate',rot);
+    setSS('rotOption',find(cell2mat(get(gui.hEuler2Spatial,'value'))));
+    
     direction = find(cell2mat(get(gui.hXYZ,'value')));
 
     setSS('direction',direction);
-    setSS('rotate',rot);
-    setSS('rotOption',find(cell2mat(get(gui.hEuler2Spatial,'value'))));
-
-
     xaxis = 1 + mod(direction-1,4);
     zaxis = 1 + (direction > 4);
 
@@ -238,17 +237,6 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
       set(euler2spatial(4:5),'backgroundcolor',[.9 .9 0.5])
     end
 
-    %     euler2spatialText = uicontrol(...
-    %       'Parent',scs,...
-    %       'Style','text',...
-    %       'ForeGroundColor','r',...
-    %       'HorizontalAlignment','left',...
-    %       'String','',...
-    %       'Visible','off',...
-    %       'position',[10 5 400 20]);
-
-    %'String',' Warning: This format is known to have incosistent conventions for the Euler angle and the spatial reference',...
-
     plotg = uibuttongroup('title','MTEX Plotting Convention',...
       'Parent',page,...
       'units','pixels',...
@@ -292,7 +280,9 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
 
   function cdata = localLoadPNG(fname)
 
+    warning('off','MATLAB:imagesci:png:libraryWarning');
     [cdata,map,alpha] = imread(fullfile(mtex_path,'doc','makeDoc','general',fname)); %#ok<ASGLU>
+    warning('on','MATLAB:imagesci:png:libraryWarning');
     %cdata = ind2rgb( cdata, map )
 
     alpha = double(alpha);
