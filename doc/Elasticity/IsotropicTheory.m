@@ -1,8 +1,8 @@
 %% Isotropic Elastic Moduli
 %
-% While the linear ellastic model for anisotropic materials is based on the
-% fourth order ellastic stiffness tensor |C| the linear ellastic model for
-% isotropic models is most often developed in terms of the ellastic moduli
+% While the linear elastic model for anisotropic materials is based on the
+% fourth order elastic stiffness tensor |C| the linear elastic model for
+% isotropic models is most often developed in terms of the elastic moduli
 % shear, bulk, Youngs modulus and the Poisson ratio.
 %
 %% The single crystal stiffness tensor
@@ -31,27 +31,27 @@ C = stiffnessTensor(...
 %
 % An isotropic Albite material we assume here to consist of randomly
 % oriented grains forming an uniform (isotropic) texture. In this case the
-% Voigt and Reuss avarages provide upper and lower bounds for the ellastic
+% Voigt and Reuss avarages provide upper and lower bounds for the elastic
 % properties of the material. 
 
 [C_iso_Voigt,C_iso_Reuss,C_iso_Hill] = mean(C,uniformODF(C.CS))
 
-%% The ellastic moduli
+%% The elastic moduli
 %
-% The actual ellastic properties of the material depend on the geometric
+% The actual elastic properties of the material depend on the geometric
 % microstructure and can not be computed without additional knowledge.
 %
 % Based on the Voigt effective stiffness tensor we may now compute upper,
-% directional independend bounds for all ellastic moduli:
+% directional independend bounds for all elastic moduli:
 
 G = C_iso_Voigt.shearModulus
 K = C_iso_Voigt.bulkModulus
 E = C_iso_Voigt.YoungsModulus(xvector)
 nu = C_iso_Voigt.PoissonRatio
 
-%% From the ellastic moduli to the ellastic tensors
+%% From the elastic moduli to the elastic tensors
 %
-% Furthermore, any two of them entirely describe the linear ellastic behaviour
+% Furthermore, any two of them entirely describe the linear elastic behaviour
 % of the material. In particular, we may recover the isotropic stiffness
 % tensor from the bulk and shear moduli alone:
 
@@ -80,7 +80,7 @@ inv(complianceTensor(...
  [   0.0     0.0    0.0    0.0     S44    0.0];...
  [   0.0     0.0    0.0    0.0     0.0    S44]],cs))
 
-%% Formulas between the ellastic moduli
+%% Formulas between the elastic moduli
 % As a consequence, Youngs modulus and the Poisson ratio can be
 % computed directly from the bulk and shear modulus (and vice versa)
 
@@ -123,7 +123,7 @@ sigma = stressTensor(2 * mu * eps + lambda * trace(eps) * tensor.eye)
 % While the Voigt and Reuss bounds are tight without additional
 % assumptions, the extreme cases require a very specific layered
 % microstructure. If one additionally assumes that the material is
-% quasihomogeneous, i.e., it is constant ellastic properties within each
+% quasihomogeneous, i.e., it is constant elastic properties within each
 % subregion that is significantly larger then the grain size, then the
 % Voigt and Reuss bounds are to wide. More narrow bounds for this settings
 % have been established by Hashin and Shtrikman in 1962.

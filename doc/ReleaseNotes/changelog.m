@@ -41,7 +41,7 @@
 %
 % *Tensor Visualisation*
 %
-% Improved methods for the vizualisation of ellastic properties, see
+% Improved methods for the vizualisation of elastic properties, see
 % <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 %
 % *Improved Figure Layout*
@@ -373,7 +373,7 @@
 %
 % instead of the depreciated syntax
 %
-%   C = tensor(M,cs,'name','ellastic stiffness','unit','GPA')
+%   C = tensor(M,cs,'name','elastic stiffness','unit','GPA')
 %
 % *Improved spherical plotting*
 %

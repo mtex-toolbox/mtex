@@ -30,9 +30,9 @@ eps = strainTensor(diag([1,1.1,0.9]),cs)
 sigma = C : eps
 
 
-%% Ellastic Energy
+%% Elastic Energy
 
-% the ellastic energy
+% the elastic energy
 U = sigma : eps
 U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4])
 
@@ -102,7 +102,7 @@ T = ChristoffelTensor(C,vector3d.X)
 rho = 3.355
 
 %%
-% which we can write directly into the ellastic stiffness tensor
+% which we can write directly into the elastic stiffness tensor
 C = addOption(C,'density',rho)
 
 %%
