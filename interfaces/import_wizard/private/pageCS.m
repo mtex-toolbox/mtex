@@ -99,9 +99,13 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       csname = strmatch(CS.pointGroup,SymmetryList);
       set(gui.hCrystal,'value',csname(1));
       
-      rgb = str2rgb(CS.color);
-      gui.hColor.setSelectedColor(java.awt.Color(rgb(1),rgb(2),rgb(3)));
-                  
+      if isempty(CS.color)
+        gui.hColor.setSelectedColor([]);
+      else
+        rgb = str2rgb(CS.color);
+        gui.hColor.setSelectedColor(java.awt.Color(rgb(1),rgb(2),rgb(3)));
+      end
+      
       % set alignment
       if any(CS.Laue.id == [2,5,8,11,18,21,24,35,40]) %,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
         set(gui.hAlignment,'enable','on');
@@ -158,7 +162,11 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       
       col = gui.hColor.getSelectedColor;
-      rgb = [col.getRed,col.getGreen,col.getBlue]./255;
+      if isempty(col)
+        rgb = col;
+      else
+        rgb = [col.getRed,col.getGreen,col.getBlue]./255;
+      end
       
       try
         CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
@@ -296,9 +304,11 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       'HorizontalAlignment','left',...
       'Position',[m 15 130 15]);
     
+    warning('off','MATLAB:ui:javacomponent:FunctionToBeRemoved');
     color = com.jidesoft.combobox.ColorComboBox;
     color = javacomponent(color,[rW 10 2*bW 25],mineralGroup);
     color.setColorValueVisible(false)
+    warning('on','MATLAB:ui:javacomponent:FunctionToBeRemoved');
         
     look = uicontrol(...
       'Parent',mineralGroup,...
