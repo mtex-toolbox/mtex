@@ -51,7 +51,7 @@ else % color given directly
   else
     defColor = 'w';
   end
-  obj.MarkerEdgeColor = get_option(varargin,{'color'},defColor);
+  obj.MarkerEdgeColor = str2rgb(get_option(varargin,{'color'},defColor));
   
 end
 

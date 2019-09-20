@@ -117,8 +117,8 @@ end
   
 else % color given directly
     
-  color = get_option(varargin,{'linecolor','edgecolor','facecolor'},'k');
-
+  color = str2rgb(get_option(varargin,{'linecolor','edgecolor','facecolor'},'k'));
+    
   %p = patch(x,y,'r','faceColor','none','hitTest','off','parent',mP.ax,'EdgeColor',color);
   p = line(x,y,'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
   
@@ -152,7 +152,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
 
 else % color given directly
     
-  obj.EdgeColor = get_option(varargin,{'linecolor','edgecolor','facecolor'},'k');
+  obj.EdgeColor = str2rgb(get_option(varargin,{'linecolor','edgecolor','facecolor'},'k'));
   
 end
 

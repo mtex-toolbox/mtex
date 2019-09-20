@@ -46,7 +46,7 @@ for ip = 1:numel(ebsd.phaseMap)
   end
 
   % color
-  matrix{ip,4} = char(CS.color);
+  matrix{ip,4} = rgb2str(CS.color);
   
   % symmetry
   matrix{ip,5} = CS.pointGroup;

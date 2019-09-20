@@ -234,7 +234,7 @@ classdef phaseList
         try
           c = cmap{strcmpi(cs.color,colorNames)};
         catch
-          [~,c] = colornames(getMTEXpref('colorPalette','CSS'),cs.color);
+          c = str2rgb(cs.color);
         end
       else
         c = cs.color;
