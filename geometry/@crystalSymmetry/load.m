@@ -15,7 +15,7 @@ function cs = load(fname,varargin)
 
 [~, ~, ext] = fileparts(char(fname));
 
-if strcmpi(ext,'phl')
+if strcmpi(ext,'.phl')
   cs = loadPHL(fname,varargin{:});
 else
   cs = loadCIF(fname,varargin{:});

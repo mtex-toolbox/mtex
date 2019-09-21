@@ -140,7 +140,7 @@ classdef rotation < quaternion & dynOption
     end
 
     function r = inversion(varargin)
-      r = rotation.id(varargin{:});
+      r = -rotation.id(varargin{:});
     end
 
     r = byMatrix(varargin);
