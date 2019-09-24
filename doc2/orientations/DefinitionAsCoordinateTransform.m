@@ -1,3 +1,0 @@
-%% Definition as Coordinate Transform
-%
-%%

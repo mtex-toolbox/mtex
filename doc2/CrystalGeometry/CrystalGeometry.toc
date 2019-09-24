@@ -1,7 +1,6 @@
 CrystalSymmetries
-CrystalShapes
-miller
-FundamentalRegionMoraviecCell
-FundamentalSector
 CrystalReferenceSystem
-quasicrystals
+CrystalShapes
+CrystalDirections
+FundamentalSector
+QuasiCrystals

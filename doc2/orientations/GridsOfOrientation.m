@@ -1,3 +1,0 @@
-%% Grids of Orientation
-%
-%%

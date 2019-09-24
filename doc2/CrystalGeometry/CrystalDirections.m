@@ -68,7 +68,7 @@ hold off
 %
 % In the case of trigonal and hexagonal crystal symmetry often four digit
 % Miller indices [UVTW] and (HKIL) are used, as they make it more easy to
-% identify symmetrically equivalent directions. This notation is reduntant
+% identify symmetrically equivalent directions. This notation is redundant
 % as the first three Miller indeces always sum up to zero, i.e., $U + V +
 % T = 0$ and $H + K + I = 0$. The syntax is
 
@@ -80,7 +80,7 @@ m = Miller(2,1,-3,1,cs,'UVTW')
 
 plot(m,'upper','labeled')
 
-n = Miller(1,1,-2,3,cs,'HKIL')
+n = Miller(1,1,-2,3,cs,'hkil')
 
 hold on
 plot(n,'upper','labeled')
@@ -178,3 +178,19 @@ o * m
 
 p = o * symmetrise(m);
 plot(p,'grid')
+
+
+%% Plotting
+%
+% One can also visualize crystal symmetries by plotting the main axes and
+% the corresponding equivalent directions
+
+h = Miller({1,0,-1,0},{1,1,-2,0},{1,0,-1,1},{1,1,-2,1},{0,0,0,1},cs);
+
+for i = 1:length(h)
+  plot(h(i),'symmetrised','labeled','backgroundColor','w','doNotDraw','grid','upper')
+  hold all
+end
+hold off
+
+drawNow(gcm,'figSize','normal')

@@ -1,3 +1,0 @@
-%% Euler Angle Conventions
-%
-%%

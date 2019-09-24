@@ -1,3 +1,0 @@
-%% Orientation Pole Figure
-%
-%%
