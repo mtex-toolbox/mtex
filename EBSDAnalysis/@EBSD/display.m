@@ -69,7 +69,11 @@ disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',ebsd.phase,...
 disp([' Scan unit : ',ebsd.scanUnit]);
 
 if min(ebsd.size) > 1
-  disp([' Grid size : ',size2str(ebsd)]);
+  if size(ebsd.unitCell,1) == 6
+  disp([' Grid size (hex): ',size2str(ebsd)]);
+  else
+  disp([' Grid size (square): ',size2str(ebsd)]);
+  end
 end
 
 disp(' ');
