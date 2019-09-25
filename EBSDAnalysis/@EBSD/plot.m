@@ -28,9 +28,10 @@ function [h,mP] = plot(ebsd,varargin)
 % Options
 %  micronbar - 'on'/'off'
 %  DisplayName - add a legend entry
-%
+%  
 % Flags
 %  points   - plot dots instead of unitcells
+%  exact    - plot exact unitcells, even for large maps
 %
 % Example
 %
