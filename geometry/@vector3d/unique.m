@@ -15,7 +15,7 @@ function [v,m,n] = unique(v,varargin)
 %  m -
 %  n -
 %
-% Option
+% Flags
 %  stable - prevent sorting
 %
 

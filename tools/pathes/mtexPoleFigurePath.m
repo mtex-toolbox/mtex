@@ -1,12 +1,12 @@
 function p = mtexPoleFigurePath
 % returns the default path to PoleFigure data files
 %
-%% Syntax
-% mtexPoleFigurePath -
-% getMTEXpref('PoleFigurePath') - long form of mtexPoleFigurePath
-% setMTEXpref('PoleFigurePath',path) - change the path to Pole Figure files
+% Syntax
+%   mtexPoleFigurePath 
+%   getMTEXpref('PoleFigurePath') % long form of mtexPoleFigurePath
+%   setMTEXpref('PoleFigurePath',path) % change the path to Pole Figure files
 %
-%% See also
+% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 

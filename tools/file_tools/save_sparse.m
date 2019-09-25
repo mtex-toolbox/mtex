@@ -1,10 +1,13 @@
 function [jc,ir,pr] = save_sparse(A)
 % convert sparse matrix to jc, ir, pr
 %
-%% Input
-%  sparse matrix
-%% Output
-% jc, ir, pr
+% Input
+%  A - sparse matrix
+% Output
+%  jc -
+%  ir -
+%  pr -
+%
 
 
 [ir,j,pr] = find(A);

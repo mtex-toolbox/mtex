@@ -3,9 +3,9 @@ function grains = subSet(grains,ind)
 %
 % Input
 %  grains - @grain2d
-%  ind    - 
+%  ind    - indices
 %
-% Ouput
+% Output
 %  grains - @grain2d
 %
 

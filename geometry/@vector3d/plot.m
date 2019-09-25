@@ -15,10 +15,10 @@ function varargout = plot(v,varargin)
 %   rgb - 
 %
 % Options
-%  Marker          
-%  MarkerSize
-%  MarkerFaceColor
-%  MarkerEdgeColor
+%  Marker           - 'square', 'triangle', 'o','diamond' 
+%  MarkerSize       -
+%  MarkerFaceColor  -
+%  MarkerEdgeColor  -
 %
 % Flags
 %  smooth   - plot point cloud as colored density

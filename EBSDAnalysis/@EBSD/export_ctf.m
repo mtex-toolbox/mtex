@@ -5,6 +5,11 @@ function export_ctf(ebsd,fName,varargin)
 % can for instance be opened with Channel 5 and Atex or further converted
 % to 'ang' format for opening with Edax OIM
 %
+% Dr. Frank Niessen, University of Wollongong, Australia, 2019
+% contactnospam@fniessen.com (remove the nospam to make this email address work)
+% Acknowledgements go to Dr. Azdiar A. Gazder, University of Wollongong, Australia
+% Version 1.0 - Published 18/04/2019
+%
 % Syntax
 %
 %   export_ctf(ebsd,fileName)
@@ -22,12 +27,7 @@ function export_ctf(ebsd,fName,varargin)
 %  cprStruct - structure with properties from cpr-file import
 %  flip - rotate ebsd spatial data (not the orientation data)
 %
-% ************************************************************************
-% Dr. Frank Niessen, University of Wollongong, Australia, 2019
-% contactnospam@fniessen.com (remove the nospam to make this email address work)
-% Acknowledgements go to Dr. Azdiar A. Gazder, University of Wollongong, Australia
-% Version 1.0 - Published 18/04/2019
-% ************************************************************************
+
 scrPrnt('SegmentStart','Exporting ''ctf'' file');
 
 % initialize threshold for rounding negative close to 0 x and y coordinates

@@ -2,7 +2,7 @@ function omega = angle_outer(q1,q2,varargin)
 % calcualtes the rotational angle between all rotations q1 and q2
 %
 % Syntax  
-%  omega = angle_outer(q1,q2)
+%   omega = angle_outer(q1,q2)
 %
 % Input
 %  q1, q2 - @quaternion

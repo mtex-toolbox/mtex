@@ -2,7 +2,7 @@ function pf = loadPoleFigure_ana(fname,varargin)
 % import data fom ana file
 %
 % Syntax
-%   pf = loadPoleFigure_ana(fname,<options>)
+%   pf = loadPoleFigure_ana(fname)
 %
 % Input
 %  fname  - filename

@@ -1,15 +1,16 @@
 function x = argin_check(arg,classes)
 % check ar to be of class classes
 %
-%% Syntax
-%  x = argin_check(argument,classesnames)
+% Syntax
+%   x = argin_check(argument,classesnames)
 %
-%% Input
+% Input
 %  argument   - variable
 %  classnames - 
 %
-%% Output
-%  argument
+% Output
+%  argument - 
+%
 
 if ~any(cellfun(@(className) isa(arg,className),ensurecell(classes)))
   

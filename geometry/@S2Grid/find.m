@@ -2,8 +2,8 @@ function varargout = find(S2G,v,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
 % Syntax  
-% ind = find(S2G,v,epsilon) - find all points in a epsilon neighborhood of v
-% ind = find(S2G,v)         - find closest point
+%   ind = find(S2G,v,epsilon) % find all points in a epsilon neighborhood of v
+%   ind = find(S2G,v)         % find closest point
 %
 % Input
 %  S2G     - @S2Grid

@@ -9,7 +9,7 @@ function varargout = PoissonRatio(C,varargin)
 % Output
 %  nu - Poisson ratio in directions x and y
 %
-% Remarks
+% Description
 % 
 % $$\nu = \frac{-S_{ijkl} x_i x_j y_k y_l}{S_{mnop} x_m x_n x_o x_p}$$ 
 %

@@ -7,7 +7,7 @@ function d = dot_outer(g1,g2)
 % Output
 %  d - double
 %
-% Formuala
+% Description
 % cos angle(g1,g2)/2 = dot(g1,g2)
 
 if ~isempty(g1) && ~isempty(g2)

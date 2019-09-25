@@ -1,7 +1,7 @@
 function factor = getUnitScale(unit)
 %
 % Syntax
-% factor = getUnitScale(unit)
+%   factor = getUnitScale(unit)
 %
 % Input
 %  unit - unit of the value (e.g. nm, m, ...)

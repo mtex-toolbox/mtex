@@ -19,7 +19,7 @@ classdef rotation < quaternion & dynOption
 %  v, v1, v2 - @vector3d
 %  n         - @vector3d
 %
-% Ouptut
+% Output
 %  rot - @rotation
 %
 % See also

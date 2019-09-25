@@ -8,7 +8,7 @@ function T = loadTensor_mpod(fname,varargin)
 % Database>
 %
 % Syntax
-%  pf = loadTensor_mpod(fname,cs,ss,<options>)
+%   T = loadTensor_mpod(fname,cs,ss)
 %
 % Input
 %  fname     - filename

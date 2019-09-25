@@ -7,7 +7,7 @@ function rgb = ar2rgb(omega,radius,grayValue,varargin)
 %  grayValue -
 %
 % Output
-%  rgb
+%  rgb       - 
 
 L = (radius(:) - 0.5) .* grayValue(:) + 0.5;
 

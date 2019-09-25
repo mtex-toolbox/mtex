@@ -6,8 +6,8 @@ function E = YoungsModulus(S,varargin)
 % $$E = \frac{1}{S_{ijkl} x_i x_j x_k x_l}$$
 %
 % Syntax
-%  E = YoungsModulus(C)
-%  E = YoungsModulus(C,x)
+%   E = YoungsModulus(C)
+%   E = YoungsModulus(C,x)
 %
 % Input
 %  C - elastic stiffness @tensor

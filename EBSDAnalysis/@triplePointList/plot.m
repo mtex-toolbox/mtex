@@ -10,8 +10,8 @@ function h = plot(tP,varargin)
 %  tP  - @triplePointList
 %  
 % Options
-%  linewidth
-%  linecolor
+%  linewidth - line width
+%  linecolor - line color
 %
 
 % create a new plot

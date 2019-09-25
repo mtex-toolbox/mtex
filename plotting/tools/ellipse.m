@@ -2,8 +2,7 @@ function h = ellipse(r,a,b,varargin)
 % annotate an ellipse in a spherical plot
 %
 % Input
-%  r        -  @rotation i.e. matrix of three orthogonal vectors specifying
-%              ellipse position
+%  r        -  @rotation i.e. matrix of three orthogonal vectors specifying ellipse position
 %  a,b      -  long/short half axes of ellipse in radian
 
 h = [];

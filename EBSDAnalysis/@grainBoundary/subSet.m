@@ -2,10 +2,10 @@ function gB = subSet(gB,ind)
 % restrict boundary
 %
 % Input
-%  gB - @grainBoundary
-%  ind    - 
+%  gB  - @grainBoundary
+%  ind - indices
 %
-% Ouput
+% Output
 %  grains - @grainBoundary
 %
 

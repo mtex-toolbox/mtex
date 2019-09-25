@@ -2,7 +2,7 @@ function pf = loadPoleFigure_pwd(fname,varargin)
 % load D5000 powder data file
 %
 % Syntax
-%   pf = loadPoleFigure_pwd(fname,<options>)
+%   pf = loadPoleFigure_pwd(fname)
 %
 % Input
 %  fname - file name

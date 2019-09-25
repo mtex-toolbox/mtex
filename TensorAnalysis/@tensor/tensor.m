@@ -21,7 +21,7 @@ classdef tensor < dynOption
       % For importing real world data you might want to use the *import_wizard*.
       %
       % Syntax
-      %  T = tensor(M,CS,'name',name,'unit',unit,'propertyname',property)
+      %   T = tensor(M,CS,'name',name,'unit',unit,'propertyname',property)
       %
       % Input
       %  M  - matrix of tensor entries

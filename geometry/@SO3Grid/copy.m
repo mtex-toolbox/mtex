@@ -5,7 +5,7 @@ function S3G = copy(S3G,ind)
 %  S3G    - @SO3Grid
 %  indece - int32
 %
-% See alseo
+% See also
 %  EBSD/delete EBSD/subGrid
 
  S3G.a = S3G.a(ind);

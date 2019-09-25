@@ -8,8 +8,8 @@ function f_hat = Fourier(component,varargin)
 % up to this bandwidth are returned.
 %
 % Syntax  
-%  f_hat = Fourier(odf,'order',L)
-%  f_hat = Fourier(odf,'bandwidth',B)
+%   f_hat = Fourier(odf,'order',L)
+%   f_hat = Fourier(odf,'bandwidth',B)
 %
 % Input
 %  odf  - @ODF

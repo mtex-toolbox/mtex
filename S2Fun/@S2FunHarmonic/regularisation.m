@@ -11,11 +11,9 @@ function sF = regularisation(nodes,y,lambda,varargin)
 %  lambda - parameter for regularisation
 %
 % Options
-%  bandwidth  - maximum degree of the spherical harmonics used to
-%               approximate the function
-%  W          - weight w_n for the node nodes (default: voronoi weights)
-%  What       - weight what_{m,l} for the fourier space (default sobolev
-%               weights for s = 2)
+%  bandwidth  - maximum harmonic degree
+%  W          - weight w_n for the node nodes (default: Voronoi weights)
+%  What       - weight what_{m,l} for the fourier space (default Sobolev weights for s = 2)
 %
 
 [nodes,idx] = unique(nodes(:));

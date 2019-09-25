@@ -9,10 +9,11 @@ function T = directionalMagnitude(T,v)
 %  T - @tensor
 %  v - direction (@vector3d / @Miller)
 %
-% Ouptut
+% Output
 %  q - magnitude of a tensor in direction v
 %
-% See Also
+% See also
+%
 
 % return a function if required
 if nargin == 1 || isempty(v)

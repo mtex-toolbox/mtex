@@ -2,8 +2,8 @@ function [S2G,ind] = subGrid(S2G,v,epsilon)
 % subgrid 
 %
 % Syntax
-%  S2G = subGrid(S2G,Ind)
-%  [S2G,ind] = subGrid(S2G,midpoint,epsilon)
+%   S2G = subGrid(S2G,Ind)
+%   [S2G,ind] = subGrid(S2G,midpoint,epsilon)
 %
 % Input
 %  S2G - S2Grid

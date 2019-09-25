@@ -10,7 +10,7 @@ function c = KLCV(ori,psi,varargin)
 %  PartitionSize - 
 %
 % Output
-%  c
+%  c - 
 %
 % See also
 % orientation/calcODF orientation/calcKernel orientation/BCV

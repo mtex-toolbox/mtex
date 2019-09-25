@@ -13,8 +13,8 @@ function [h,mP] = plot(gB,varargin)
 %  gB     - @grainBoundary
 %  
 % Options
-%  linewidth
-%  linecolor
+%  linewidth - line width
+%  linecolor - line color
 %
 
 % create a new plot

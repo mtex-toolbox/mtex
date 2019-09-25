@@ -2,7 +2,7 @@ function d = dot_outer(m1,m2,varargin)
 % inner product between two Miller indece
 %
 % Syntax
-%  a = dot_outer(m1,m2)
+%   a = dot_outer(m1,m2)
 %
 % Input
 %  m1,m2 - @Miller

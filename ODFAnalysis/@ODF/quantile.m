@@ -2,13 +2,13 @@ function S3G = quantile(odf,varargin)
 % quantile orientations of an ODF
 %
 % Syntax
-%   SO3 = quantile(odf,p,<options>)
+%   SO3 = quantile(odf,p)
 %
 % Input
 %  odf - @ODF
 %  p   - upper quantile, if negative lower quantile
 %
-% See Also
+% See also
 % PoleFigure/quantile
 
 

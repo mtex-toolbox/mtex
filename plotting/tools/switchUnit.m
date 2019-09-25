@@ -3,7 +3,7 @@ function [oval, ounit, factor] = switchUnit(val, unit)
 % For example, 10e3m will give 10km.
 %
 % Syntax
-% [fval funit] = closest_value(val, unit)
+%   [fval funit] = closest_value(val, unit)
 %
 % Input
 %  val  - a value

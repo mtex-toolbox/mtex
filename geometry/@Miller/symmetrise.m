@@ -2,7 +2,7 @@ function varargout = symmetrise(m,varargin)
 % directions symmetrically equivalent to m
 %
 % Syntax
-%  m = symmetrise(m) - @Miller indice symmetrically equivalent to m
+%   m = symmetrise(m) % @Miller indices symmetrically equivalent to m
 %
 % Input
 %  m - @Miller

@@ -2,7 +2,7 @@ function pf = loadPoleFigure_siemens(fname,varargin)
 % load D5000 data file
 %
 % Syntax
-%   pf = loadPoleFigure_D5000(fname,<options>)
+%   pf = loadPoleFigure_D5000(fname)
 %
 % Input
 %  fname - file name

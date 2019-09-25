@@ -13,11 +13,11 @@ function rot = byEuler(varargin)
 %  rot - @rotation
 %
 % Flags
-%  Bunge, ZXZ
-%  ABG, Matthies, ZYZ
-%  Roe
-%  Kocks
-%  Canova
+%  Bunge, ZXZ - 
+%  ABG, Matthies, ZYZ - 
+%  Roe - 
+%  Kocks - 
+%  Canova - 
 %
 % See also
 % rotentation_index rotentation/byMiller rotentation/byAxisAngle

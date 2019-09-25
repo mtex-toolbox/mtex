@@ -2,14 +2,14 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 % mean of a list of tensors
 %
 % Syntax
-%  T = mean(T)     % mean along the first non singleton dimension
-%  T = mean(T,dim) % mean along dimension dim
-%  TReuss = mean(T,'Reuss') % Reuss average
-%  TGeometric = mean(T,'geometric') % geometric mean
-%  [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
+%   T = mean(T)     % mean along the first non singleton dimension
+%   T = mean(T,dim) % mean along dimension dim
+%   TReuss = mean(T,'Reuss') % Reuss average
+%   TGeometric = mean(T,'geometric') % geometric mean
+%   [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
-%  [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
-%  [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
+%   [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
+%   [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
 %
 % Input
 %  T - @tensor

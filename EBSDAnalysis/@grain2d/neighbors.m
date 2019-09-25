@@ -6,15 +6,17 @@ function [counts,pairs] = neighbors(grains)
 %
 % Output
 %  counts - number of neighbors per grain
-%  pairs  - index list of size N x 2, where  
-%    $$N = 2 \sum n_i $$
-%    is the total number of neighborhood relations (without self--reference).
+%  pairs  - index list of size N x 2
 %
-%    pairs(i,:) give the indexes of two neighbored grains, i.e 
+% Description
+% $$N = 2 \sum n_i $$
+% is the total number of neighborhood relations (without self--reference).
 %
-%     neighbor_gr = grains(pairs(1,:))
+% pairs(i,:) give the indexes of two neighbored grains, i.e
 %
-%    selects two neighbored grains.
+%  neighbor_gr = grains(pairs(1,:))
+%
+% selects two neighbored grains.
 %
 
 % extract grainIds for each boundary segment

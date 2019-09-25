@@ -2,13 +2,10 @@ function I = Mv(solver,c,i)
 % forward operator
 %
 % Input
+%  solver - Solver
 %  c - coefficients
-%  alpha - 
+%  i - intensities
 %
-% Input
-%   alpha
-%   c
-%   nfft_plan
 
 % compute Fourier coefficients
 c_ext = c(:) * solver.refl{i};

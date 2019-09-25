@@ -2,6 +2,7 @@ function ori = power(ori,n)
 % ori.^n
 %
 % Syntax
+%   ori = ori.^n
 %
 % ori = ori^(-1)
 % ori = ori.^2

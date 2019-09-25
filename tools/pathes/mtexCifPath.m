@@ -1,12 +1,12 @@
 function p = mtexCifPath
 % returns the default path to crystallographic information files (CIF)
 %
-%% Syntax
-% mtexCifPath -
-% getMTEXpref('CIFPath') - long form of mtexCifPath
-% setMTEXpref('CIFPath',path) - change the path to CIF files
+% Syntax
+%   mtexCifPath 
+%   getMTEXpref('CIFPath') % long form of mtexCifPath
+%   setMTEXpref('CIFPath',path) % change the path to CIF files
 %
-%% See also
+% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 

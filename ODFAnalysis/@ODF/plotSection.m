@@ -13,9 +13,9 @@ function plotSection(odf,varargin)
 %  gamma     - gamma sections
 %  sigma     - sigma = phi1 - phi2 sections
 %  axisAngle - rotational angle sections
-%  smooth
-%  countourf
-%  contour
+%  smooth    - smooth plot
+%  countourf - filled contour plot
+%  contour   - contour plot
 %  contour3, surf3, slice3 - 3d volume plot
 %
 % See also

@@ -2,7 +2,7 @@ function sF = norm(sVF)
 % pointwise norm of the vectorfield
 %
 % Syntax
-%  norm(sVF)
+%   norm(sVF)
 %
 % Output
 %   sF - S2FunTri

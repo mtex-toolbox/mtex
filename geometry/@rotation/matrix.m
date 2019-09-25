@@ -3,7 +3,7 @@ function mat = matrix(rot)
 % converts direction cosine matrix to quaternion
 %
 % Syntax
-%  mat = matrix(q)
+%   mat = matrix(q)
 %
 % Input
 %

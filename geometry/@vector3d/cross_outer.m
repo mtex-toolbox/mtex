@@ -3,8 +3,10 @@ function v = cross_outer(v1,v2)
 %
 % Input
 %  v1,v2 - @vector3d
+%
 % Output
-%  @vector3d
+%  v - @vector3d
+%
 
 % Calculate cross product
 v = v1;

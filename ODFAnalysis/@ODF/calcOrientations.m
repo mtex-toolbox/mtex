@@ -11,7 +11,7 @@ function ori = calcOrientations(odf,points,varargin)
 % Output
 %  ori   - @orientation
 %
-% See Also
+% See also
 % ODF_calcPoleFigure, ODF_calcEBSD
 
 ori = discreteSample(odf,points,varargin{:});

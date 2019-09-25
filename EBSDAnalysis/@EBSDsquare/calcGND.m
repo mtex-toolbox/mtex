@@ -18,7 +18,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %  gnd  - dislocation energy
 %  rho  - dislocation density per dislocation system
 %
-% See Also
+% See also
 % GND_demo
 
 % compute curvature tensors

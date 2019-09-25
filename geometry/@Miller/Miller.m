@@ -16,8 +16,8 @@ classdef Miller < vector3d
 %   m = Miller(x,cs) % transform vector3d to Miller
 %
 % Input
-%  h,k,l,i(optional) - Miller indice of the plane normal
-%  uw,v,w,t(optional) - Miller indice of a direction
+%  h,k,l,i - Miller indice of the plane normal
+%  u,v,w,t - Miller indice of a direction
 %  x  - @vector3d
 %  cs - crystal @symmetry
 %
@@ -35,6 +35,7 @@ classdef Miller < vector3d
   properties (Dependent = true)
     CS        % crystal symmetry
     hkl       % direct coordinates
+    hkil      % direct coordinates
     h
     k
     i
@@ -231,6 +232,14 @@ classdef Miller < vector3d
       
     end
 
+    function hkil = get.hkil(m)
+            
+      hkil = m.hkl;
+            
+    end
+
+    
+    
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
     function i = get.i(m), i = m.hkl(:,3);end

@@ -2,7 +2,7 @@ function r = mldivide(a,b)
 % o \ v 
 %
 % Syntax
-%  h = o \ r
+%   h = o \ r
 %
 % Input
 %  o - @orientation

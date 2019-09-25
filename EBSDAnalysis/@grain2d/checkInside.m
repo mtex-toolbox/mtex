@@ -20,6 +20,7 @@ function isInside = checkInside(grains, xy, varargin)
 %  includeBoundary - points on the boundary are considered as inside
 %  ignoreInclusions - points within inclusions belong to the host grain
 %
+% Description
 % Note, for an EBSD pixel to be inside a grain it has to be completely
 % inside the grain. Pixels at the boundary may belong to no grain.
 %

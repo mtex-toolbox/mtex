@@ -7,11 +7,11 @@ classdef S2DeLaValleePoussin < S2Kernel
 %   psi = S2DeLaValleePoussin('halfwidth',10*degree)
 %
 % Input
-%  kappa
+%  kappa - kernel parameter
 %
 % Options
 %  halfwidth - angle at which the kernel function has reduced to half its peak value  
-%  bandwidth - 
+%  bandwidth - harmonic degree
 %
 % See also
 % S2Kernel

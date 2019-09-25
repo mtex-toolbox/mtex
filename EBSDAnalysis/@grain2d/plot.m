@@ -8,10 +8,10 @@ function [h,mP] = plot(grains,varargin)
 %
 % Input
 %  grains  - @grain2d
-%  cS - @crystalShape
+%  cS      - @crystalShape
 %
-%  PatchProperty - see documentation of patch objects for manipulating the
-%                 apperance, e.g. 'EdgeColor'
+%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+%                
 % Options
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend

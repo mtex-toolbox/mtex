@@ -2,7 +2,7 @@ function pf = loadPoleFigure_plf(fname,varargin)
 % load plf file
 %
 % Syntax
-%   pf = loadPoleFigure_plf(fname,<options>)
+%   pf = loadPoleFigure_plf(fname)
 %
 % Input
 %  fname - file name

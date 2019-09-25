@@ -5,9 +5,9 @@ function cs = load(fname,varargin)
 % to download the file from [[http://www.crystallography.net/cif/,http://www.crystallography.net/cif/]]
 %
 % Syntax
-%  cs = crystalSymmetry.load('5000035.cif') % load from cif file
-%  cs = crystalSymmetry.load('copper.phl') % load from phl file
-%  cs = crystalSymmetry.load(5000035) % lookup online
+%   cs = crystalSymmetry.load('5000035.cif') % load from cif file
+%   cs = crystalSymmetry.load('copper.phl') % load from phl file
+%   cs = crystalSymmetry.load(5000035) % lookup online
 %
 % See also
 % crystalSymmetry_index

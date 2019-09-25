@@ -2,7 +2,7 @@ function ebsd = cat(dim,varargin)
 % overloads [ebsd1,ebsd2,ebsd3..]
 %
 % Syntax 
-% [ebsd(1) ebsd(2)]
+%   [ebsd(1) ebsd(2)]
 % 
 
 % maybe there is nothing to do

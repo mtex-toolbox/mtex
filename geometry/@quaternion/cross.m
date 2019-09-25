@@ -5,7 +5,7 @@ function q = cross(q1, q2, q3)
 %  q1,q2,q3 - @quaternion
 %
 % Output
-%  @quaternion
+%  q - @quaternion
 %
 
 if nargin == 3

@@ -12,7 +12,7 @@ function dir = calcMeanDirection(gB,n)
 % Input
 %  gB - @grainBoundary
 %
-% Ouptput
+% Output
 %  dir - @vector3d
 %
 

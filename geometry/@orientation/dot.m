@@ -8,7 +8,7 @@ function d = dot(o1,o2,varargin)
 %  o1, o2 - @orientation
 %
 % Output
-%  d = cos(omega/2) where omega is the smallest rotational angle of inv(o1)*o2
+%  d - cos(omega/2) where omega is the smallest rotational angle of inv(o1)*o2
 %
 % See also
 % orientation/dot_outer orientation/angle
@@ -35,15 +35,20 @@ if isa(o1,'orientation')
     % the product of both symmetries
     if o1.CS.Laue ~= o2.CS.Laue
 
-      % this makes only sense when comparing orientations
-      assert(isa(o1.CS,'crystalSymmetry') && isa(o1.CS,'crystalSymmetry') ...
-       && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
-       'Symmetry missmatch');
+      try 
+        o2 = o1.CS.ensureCS(o2);
+      catch
+      
+        % this makes only sense when comparing orientations
+        assert(isa(o1.CS,'crystalSymmetry') && isa(o1.CS,'crystalSymmetry') ...
+          && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
+          'Symmetry missmatch');
 
-      isLaue = isLaue || o2.CS.isLaue;
-      qcs = o1.CS' * o2.CS;
-      qcs = unique(qcs(:));
-      qss = rotation.id;
+        isLaue = isLaue || o2.CS.isLaue;
+        qcs = o1.CS' * o2.CS;
+        qcs = unique(qcs(:));
+        qss = rotation.id;
+      end
 
     elseif o1.SS.Laue ~= o2.SS.Laue % comparing inverse orientations
 

@@ -10,12 +10,8 @@ function ebsd = loadEBSD_ACOM(fname,varargin)
 %  fname - file name
 %
 % Flags
-%  convertSpatial2EulerReferenceFrame - change x and y values such that
-%  spatial and Euler reference frame coincide, i.e., rotate them by 180
-%  degree
-%  convertEuler2SpatialReferenceFrame - change the Euler angles such that
-%  spatial and Euler reference frame coincide, i.e., rotate them by 180
-%  degree
+%  convertSpatial2EulerReferenceFrame - change x and y values such that spatial and Euler reference frame coincide, i.e., rotate them by 180  degree
+%  convertEuler2SpatialReferenceFrame - change the Euler angles such that spatial and Euler reference frame coincide, i.e., rotate them by 180  degree
 %
 
 ebsd = EBSD;

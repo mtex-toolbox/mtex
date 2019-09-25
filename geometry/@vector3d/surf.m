@@ -1,8 +1,11 @@
 function [h,ax] = surf(v,cdata,varargin)
 %
 % Syntax
+%   h = surf(v,cdata)
 %
 % Input
+%  c     - @vector3d
+%  cdata - RGB data
 %
 % Output
 %

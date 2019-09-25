@@ -37,11 +37,11 @@ function odf = calcODF(ori,varargin)
 %  order      - order up to which Fourier coefficients are calculated
 %
 % Flags
-%  silent           - no output
-%  exact            - no approximation to a corser grid
-%  Fourier          - force Fourier method
-%  Bingham          - model bingham odf
-%  noFourier        - no Fourier method
+%  silent     - no output
+%  exact      - no approximation to a corser grid
+%  Fourier    - force Fourier method
+%  Bingham    - model bingham odf
+%  noFourier  - no Fourier method
 %
 % See also
 % orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
