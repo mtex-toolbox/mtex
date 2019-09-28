@@ -1,4 +1,0 @@
-TensorArithmetic
-AverageTensors
-piezoelectricity
-BirefringenceDemo
