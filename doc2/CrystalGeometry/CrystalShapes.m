@@ -4,9 +4,7 @@
 %
 %% Open in Editor
 %
-%% Contents
-%
-%% Simple Crystal Shapes
+%% Simple crystal shapes
 %
 % In the case of cubic or hexagonal materials the corresponding crystal are
 % often represented as cubes or hexagons, where the faces correspond to the
@@ -252,7 +250,7 @@ habitus = 1.3;
 cS = crystalShape(N,habitus,extension);
 plot(cS,'colored')
 
-%% Select Faces
+%% Select faces
 % A specific face of the crystal shape may be selected by its normal vector
 
 plot(cS)

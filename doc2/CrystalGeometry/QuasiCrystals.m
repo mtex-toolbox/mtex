@@ -1,4 +1,6 @@
-%% Quasicrystal
+%% Quasi symmetry
+%
+
 % Aufstellung 1
 % mit fünfzähliger Achse parallel zu z
 %rot5 = rotation.byAxisAngle(zvector,(0:4)*72*degree)
@@ -34,7 +36,7 @@ plot(oR)
 %%
 
 
-ipfKey = ipfHSVKey(cs)
+ipfKey = ipfHSVKey(cs);
 
 plot(ipfKey,'complete','upper','projection','eangle','resolution',0.5*degree)
 

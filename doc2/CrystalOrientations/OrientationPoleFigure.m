@@ -38,3 +38,8 @@ plotPDF(ori,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},ori.CS))
 % plotted while for other upper and lower hemisphere are plotted. The
 % reason is that if |h| and |-h| are symmetrically equivalent the upper and
 % lower hemisphere of the pole figure are symmetric as well.
+%
+%% Contour plots
+
+plotPDF(ori,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},ori.CS),'contourf')
+mtexColorbar

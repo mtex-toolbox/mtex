@@ -1,11 +1,6 @@
 %% Crystal Symmetries
 % 
-%
 %% Open in Editor
-%
-%% Contents
-%
-%% Crystallographic Space, Point and Laue Groups
 %
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
@@ -16,7 +11,7 @@
 % are categorized either into 230 space groups, 32 point groups or 11 Laue
 % groups.
 % 
-%% Purely Enatiomorphic (Rotational) Symmetry Groups
+%% Purely enatiomorphic (rotational) symmetry groups
 %
 % There exist exactly 11 symmetry groups consisting of proper rotations
 % only, namely, 1, 2, 222, 3, 32, 4, 422, 6, 622, 32, 432. These are the so
@@ -32,7 +27,7 @@ cs = crystalSymmetry('O')
 
 plot(cs)
 
-%% The Laue Group
+%% Laue groups
 %
 % For any symmetry group we obtain the corresponding Laue group by adding
 % the inversion as an additional symmetry element.
@@ -62,7 +57,7 @@ rotation(cs)
 rotation(cs.Laue)
 
 
-%% The point group
+%% Point groups
 %
 % While the enantiomorphic groups contain exclusivly proper rotations and
 % Laue groups contain a proper and an improper version of each rotation,
@@ -97,7 +92,7 @@ nextAxis
 plot(cs.Laue)
 mtexTitle(char(cs.Laue,'LaTex'))
 
-%% Subgroup of proper rotations
+%% The Subgroup of proper rotations
 %
 % The enantiomorphic group of a given point group is in general not an
 % subgroup, i.e., it does contain symmetry elements that do not belong to

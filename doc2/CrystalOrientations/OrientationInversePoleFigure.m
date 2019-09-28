@@ -29,3 +29,13 @@ plot(h.symmetrise,'fundamentalRegion')
 
 % a pole figure plot
 plotIPDF(ori,[vector3d.X,vector3d.Y,vector3d.Z])
+
+%% Contour plots
+
+plotIPDF(ori,[vector3d.X,vector3d.Y,vector3d.Z],'contourf')
+mtexColorbar
+
+%%
+
+plotIPDF(ori,[vector3d.X,vector3d.Y,vector3d.Z],'contourf','complete','upper')
+mtexColorbar
