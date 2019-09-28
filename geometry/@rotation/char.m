@@ -15,10 +15,10 @@ if length(q) == 1
   else
     degchar = mtexdegchar;
   end
-  
-  s = ['(',xnum2str(alpha/degree,eps),degchar,',',xnum2str(beta/degree,eps),...
-    degchar,',',xnum2str(gamma/degree,eps),degchar,')'];
-  
+
+  s = ['(' xnum2str([alpha,beta,gamma]./degree,...
+    'precision',eps,'delimiter',[degchar ',']) degchar ')'];
+
 else
-  s = ['Rotations: ',num2str(size(q,1)),'x',num2str(size(q,2))];
+  s = ['Rotations: ',size2str(q)];
 end

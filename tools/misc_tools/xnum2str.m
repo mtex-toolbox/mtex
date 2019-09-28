@@ -1,22 +1,33 @@
-function s = xnum2str(n,m,width)
+function s = xnum2str(n,varargin)
 % convert number to string
 %
 % Syntax
 %   s = xnum2str(n)
+%   s = xnum2str(n,'cell')
+%   s = xnum2str(n,'precision',2)
+%   s = xnum2str(n,'fixedWidth',5)
+%   s = xnum2str(n,'delimiter',', ')
 %
 % Input
 %  n - double | int
-%  m - precission
 %
 % Output
 % s - string
+%
 
-if nargin == 1 || isempty(m), m = n;end
+
+m = get_option(varargin,'reference',n);
+
 if length(n) > 1
-  s = num2str(n(1));
-  for i = 2:length(n)
-    s = [s,' ',num2str(n(i))];
+ 
+  del = get_option(varargin,'delimiter',' ');
+  s = arrayfun(@(v) xnum2str(v,varargin),n,'UniformOutput',false);
+  
+  if ~check_option(varargin,'cell')
+    s = [s;repcell(del,1,length(s))];
+    s = [s{1:end-1}];
   end
+    
   return;
 elseif isempty(n)
   n = 0;
@@ -55,6 +66,7 @@ end
 if s(end) == '.', s = s(1:end-1);end
 if strcmp(s,'-0'), s = '0';end
 
-if nargin == 3
+if check_option(varargin,'fixedWidth')
+  width = get_option(varargin,'fixedWidth');
   s = [repmat(' ',1,max(0,width-length(s))) s];
 end
