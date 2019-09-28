@@ -1,3 +1,0 @@
-WaveVelocities
-IsotropicTheory
-SeismicPlots
