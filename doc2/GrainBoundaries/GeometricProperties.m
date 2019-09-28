@@ -1,3 +1,0 @@
-%% Geometric Properties
-%
-%%

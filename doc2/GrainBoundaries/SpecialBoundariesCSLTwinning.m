@@ -1,3 +1,0 @@
-%% Special Boundaries CSL Twinning
-%
-%%
