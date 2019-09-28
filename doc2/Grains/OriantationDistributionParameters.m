@@ -1,3 +1,0 @@
-%% Oriantation Distribution Parameters
-%
-%%

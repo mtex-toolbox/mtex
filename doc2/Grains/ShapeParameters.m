@@ -1,92 +1,182 @@
 %% Shape Parameters
-%% First Steps and Function Overview
-% Get in touch with grains.
 %
-%% Grain reconstruction from EBSD data
-%
-% So far grains can be exclusively computed from EBSD data using the command
-% <EBSD.calcGrains.html calcGrains>. In order to demonstrate grain
-% reconstruction we import some EBSD data
+%%
+% In this section we discuss various geometric properties of grains. We
+% start our discussion by reconstructing the grain structure from a sample
+% EBSD data set.
 
+% load sample EBSD data set
 mtexdata forsterite
-plotx2east
 
-% plot the Forsterite phase colorized according to orientation
-plot(ebsd('fo'),ebsd('fo').orientations)
+% restrict it to a subregion of interest.
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
+% remove all not indexed pixels
+ebsd = ebsd('indexed')
 
-%%
-% When reconstructing grain there are two basic ways how to deal with not
-% indexed measurements. The simplest way is to keep the not indexed pixels
-% separately, i.e., do not assign them to any indexed grain.
-
+% reconstruct grains
 [grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree)
 
-%%
-% We observe that there are not only grains of specific phases but also not
-% indexed grains. Let's add the grain boundaries to the previous plot.
-
-hold on
-plot(grains.boundary)
-hold off
-
-%%
-% The resulting grains contain a lot of holes and one-pixel grains. The
-% second way is to assign not indexed pixels to surrounding grains. In MTEX
-% this is done if the not indexed data are removed from the measurements,
-% i.e.
-
-ebsd = ebsd('indexed') % this removes all not indexed data
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree)
-
-
-%%
-% Now, there are no not indexed grains computed. Let's visualize the result
+% smooth them
+grains = smooth(grains,5);
 
 % plot the orientation data of the Forsterite phase
 plot(ebsd('fo'),ebsd('fo').orientations)
 
 % plot the grain boundary on top of it
 hold on
-plot(grains.boundary)
+plot(grains.boundary,'lineWidth',2)
 hold off
 
 
-% smooth the grains
-grains = smooth(grains);
-
-% plot the orientation data of the Forsterite phase
-plot(ebsd('fo'),ebsd('fo').orientations)
-
-% plot the grain boundary on top of it
-hold on
-plot(grains.boundary)
-hold off
-
-%% Area, Perimeter, Diameter
-
-
-%% Holes
-
-
-%% Neighbours
-
-
-%% Fitted Ellipse
-
-
-%% 
-
-
-
-
-%% Convexity 
+%% Grain size, area, diameter, perimeter and calliper
 %
-% pari
+% Once grains have been reconstructed, several shape parameters can be
+% computed. Those can be visualized either as histograms, or used to
+% colorize an grain map.
+%
+% The most basic properties are grainSize and grain area. Those can be
+% computed by
+
+grains(9).grainSize
+grains(9).area
+
+%%
+% Hereby *grainSize* referes to the number of pixels the belong to a
+% certain grain while *area* represents the actual area measured in (um)^2.
+% Simarly the two one-dimensional meassures *boundarySize* and *perimeter*
+% gives the length of the grain boundary in number of segments and in in
+% um, respectively.
+
+grains(9).boundarySize
+grains(9).perimeter
+
+%%
+% Another, one dimensional measure is the *diameter* which refers to the
+% longest distance between any two boundary points and is given im um as
+% well
+
+grains(9).diameter
+
+%%
+% The diameter is a special case of the caliper or Feret diameter of a
+% grain. By definition the caliper is the length of a grain when projected
+% onto a line. Hence, the length of the longest projection is coincides
+% with the diameter, while the quotient between longest and shortest
+% projection gives an indication about the shape of the grain
+
+grains(9).calliper('longest')
+grains(9).calliper('shortest')
 
 
+%%
+% Another way to investigate the perimeter is using the grain boundary. The
+% first command returns simply the number of boundary segments while the
+% second one gives the total length of the boundary by summing up the
+% length of each individual boundary segment
 
-%% Grain properties
+length(grains(9).boundary)
+sum(grains(9).boundary.segLength)
+
+
+%% Fitted ellipses
+%
+% Many shape parameters refers to ellipses fit to the grains 
+
+[omega,a,b] = grains.fitEllipse;
+plot(grains,'linewidth',4)
+plotEllipse(grains.centroid,a,b,omega,'lineColor','w','linewidth',2)
+
+%%
+% in the above lines the midpoint of the ellipse is given by
+% <grain2d.centroid.html *grains.centroid*>. The variable *omega* is the
+% angle describing the rotation of the ellipses and *a* and *b* are the
+% length of the longest and shortest half axis of the ellipses,
+% respectively. Note, that the ellipses are scalled such that their areas
+% coincide with the actual grain areas.
+%
+%%
+% The quotient a/b between the longest and the shortest axis is called
+% aspect ration and can be computed via
+
+grains(9).aspectRatio
+
+%%
+% The radius and perimeter of the fitted ellipse can be computed by
+
+grains(9).equivalentRadius
+grains(9).equivalentPerimeter
+
+%%
+% Let have a look at the difference between perimeter of the ellipse and
+% perimeter of the grain:
+
+plot(grains,(grains.perimeter - grains.equivalentPerimeter)./grains.perimeter)
+setColorRange([0,0.5])
+mtexColorbar
+
+%%
+% In this plot round shapes will have values close to zero while concave
+% shapes will get large values. A similar measure is the shape factor which
+% is defined as the ratio between the grain perimeter and the equivalent
+% perimeter
+
+plot(grains,grains.shapeFactor)
+setColorRange([1,2])
+mtexColorbar('title','shape factor')
+
+
+%%
+% Another simular measures is the <grain2d.paris.html paris> which stands
+% for Percentile Average Relative Indented Surface and gives the relative
+% difference between the actual perimeter and the perimeter of the convex
+% hull.
+
+plot(grains,grains.paris)
+mtexColorbar('title','paris')
+
+%%
+% A bit strange quantity
+
+plot(grains,log10(2.*grains.equivalentRadius))
+cb = mtexColorbar;
+labels = num2str(round(10.^(cb.Ticks))');
+cb.TickLabels=labels;
+drawNow(gcm)
+
+
+%% Histograms
+%  
+
+close all
+histogram(grains.area)
+xlabel('grain area')
+ylabel('number of grains')
+
+%%
+% Note the large amount of very small grains. 
+% A more realistic histogram we obtain if we do not plot the number of
+% grains at the y-axis but its total area. This can be achieved with the
+% command <grain2d.hist.html hist>
+
+hist(grains,grains.area)
+xlabel('grain area')
+
+%% Scatter plot
+% Scatter plots provide an efficient way to check whether two or more
+% properties are correlated. As an example lets look at the paris and the
+% shape factor
+
+close all
+scatter(grains.paris,grains.shapeFactor)
+xlabel('paris')
+ylabel('shape factor')
+
+%%
+% Obviously, there is a strong correlation between those two quantities.
+
+
+%% List of all geometric grain properties
 %
 % Grains are stored as a long list of several properties. Please find
 % below a table of most of the properties that are stored or can be
@@ -95,60 +185,20 @@ hold off
 % || <grain2d.area.html *grains.area*>  || grain area in square <grain2d.index.html grains.scanUnit>  || 
 % || <grain2d.aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
 % || <grainBoundary.html *grains.boundary*>  || list of boundary segments|| 
+% || <grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments|| 
 % || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
 % || <grain2d.paris.html *grains.paris*>  || area difference between grain and its convex hull|| 
 % || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
-% || *grains.CS* || crystal symmetry (single phase only)|| 
 % || <grain2d.diameter.html *grains.diameter*>  || diameter in <grain2d.index.html grains.scanUnit>  || 
 % || <grain2d.equivalentPerimeter.html *grains.equivalentPerimeter*>  || the perimeter of the fitted ellipse  || 
 % || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || the radius of the fitted ellipse  || 
-% || *grains.GOS* || grain orientation spread|| 
 % || *grains.grainSize* || number of measurements per grain|| 
 % || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
-% || *grains.id* || grain id|| 
-% || <grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments|| 
-% || *grains.meanOrientation* || meanOrientation (single phase only)||
-% || *grains.mineral* || mineral name (single phase only)|| 
 % || <grain2d.neigbours.html *grains.neighbours*>  || number and ids of neighboring grains  || 
-% || *grains.phase* || phase identifier|| 
 % || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in <grain2d.index.html grains.scanUnit>  || 
 % || <grain2d.principalComponents.html *grains.principalComponents*>  || length and width of the fitted ellipse || 
 % || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / perimeter of the fitted ellipse|| 
 % || <triplePoints.html *grains.triplePoints*>  || list of  triple points|| 
 % || *grains.x* || x coordinates of the vertices|| 
 % || *grains.y* || y coordinates of the vertices|| 
-
-%%
-% Those grain properties can be used for colorization. E.g. we may colorize
-% grains according to their area.
-
-plot(grains,grains.area)
-
-%%
-% or a little bit more advanced according to the log quotient between
-% grain size and boundary size.
-
-plot(grains,log(grains.grainSize ./ grains.boundarySize))
-mtexColorbar
-
-%%
-% Note that some properties are available for single phase lists of grains,
-% e.g.
-
-% colorize the Forsterite Phase according to its mean orientation
-plot(grains('Fo'),grains('Fo').meanOrientation)
-
-
-%% Changing lists of grains
-%
-% As with any list in MTEX, one can single out specific grains by conditions
-% using the syntax
-
-% this gives all grains with more the 1000 pixels
-largeGrains = grains(grains.grainSize > 1000)
-
-hold on
-% mark only large Forsterite grains
-plot(largeGrains('Fo').boundary,'linewidth',2,'linecolor','k')
-hold off
 
