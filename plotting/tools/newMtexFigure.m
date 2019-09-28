@@ -104,4 +104,6 @@ else % use an existing figure
   end
 end
 
+if nargout == 0, clear mtexFig; end
+
 end
