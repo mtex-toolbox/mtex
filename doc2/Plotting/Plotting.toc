@@ -1,9 +1,9 @@
 AxesAlignment
-multiplot
-annotations
-export_plotting
+Multiplot
+Annotations
+Export_plotting
 SphericalProjections
-legends
-colormaps
+Legends
+Colormaps
 ContourPlotDemo
 TransparencyDemo
