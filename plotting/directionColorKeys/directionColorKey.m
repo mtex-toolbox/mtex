@@ -17,8 +17,16 @@ classdef directionColorKey < handle
       
       if nargin == 0, sym = specimenSymmetry; end
       
-      dM.sym = sym;
-      dM.sR = sym.fundamentalSector;
+      if isa(sym,'symmetry')
+        dM.sym = sym;
+      else
+        try
+          dM.sym = sym.CS;
+        catch
+          error('No symmetry specified!')
+        end
+      end
+      dM.sR = dM.sym.fundamentalSector;
       
       dM.dir2color = get_option(varargin,'dir2color');
 
