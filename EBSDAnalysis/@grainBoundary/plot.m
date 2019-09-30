@@ -171,7 +171,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   y(end+1) = NaN;
 
   % align the data
-  data = repelem(data(Fid(~isnan(Fid))),2,1);
+  data = repelem(data(Fid(~isnan(Fid)),:),2,1);
   color = nan(length(y),size(data,2));
   color(~isnan(y),:) = data;
 
