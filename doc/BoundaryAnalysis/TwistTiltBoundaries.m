@@ -136,7 +136,7 @@ mtexColorbar('Title','Misorientation angle [\circ]','locacation','southoutside')
 % misorientions. In fact we require the adjecent orientations on both sides
 % of the subgrain boundaries. We can find those by the command
 
-ori_boundary = ebsd(gbfo.ebsdId).orientations
+ori_boundary = ebsd('id',gbfo.ebsdId).orientations
 
 %%
 % which results in a Nx2 matrix of orientations with rows corresponding to
@@ -272,7 +272,7 @@ close
 
 % For the angle between mean boundary trend and misorienation axis
 % we can us md = gbfo.calcMeanDirection(2) for that and plot those as
-% quiver, howver for now, we cannot colorcode the quiver plot, so let's use
+% quiver, however for now, we cannot colorcode the quiver plot, so let's use
 % smooth grain boundaries
 grainsSM =grains.smooth(5);
 gbfoSM=[grainsSM.boundary('f','f') grainsSM.innerBoundary('f','f')];
@@ -332,7 +332,7 @@ cond = gbfo.misorientation.angle<10*degree;
 gbfo = gbfo(cond)
 
 % get the orientations along all 
-ori_boundary=ebsd(gbfo.ebsdId).orientations;
+ori_boundary=ebsd('id',gbfo.ebsdId).orientations;
 axS=axis(ori_boundary(:,1),ori_boundary(:,2));
 axC=gbfo.misorientation.axis;
 

@@ -102,7 +102,7 @@ gB = gB(1:Sampling_N:end);
 
 % the following command gives an Nx2 matrix of orientations which contains
 % for each boundary segment the orientation on both sides of the boundary.
-ori = ebsd(gB.ebsdId).orientations;
+ori = ebsd('id',gB.ebsdId).orientations;
 
 % the misorientation axis in specimen coordinates
 gB_axes = axis(ori(:,1),ori(:,2));

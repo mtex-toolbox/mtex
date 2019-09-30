@@ -54,16 +54,18 @@ classdef triplePointList < phaseList & dynProp
 
         ntP = varargin{k};
         
+        tP.id = [tP.id;ntP.id];
         tP.V = [tP.V;ntP.V];
         tP.grainId = [tP.grainId; ntP.grainId];
-        tP.ebsdId = [tP.ebsdId; ntP.ebsdId];
-        tP.misrotation = [tP.misrotation;ntP.misrotation];
+        tP.boundaryId = [tP.boundaryId; ntP.boundaryId];
+        %tP.ebsdId = [tP.ebsdId; ntP.ebsdId];
+        %tP.misrotation = [tP.misrotation;ntP.misrotation];
         tP.phaseId = [tP.phaseId; ntP.phaseId];        
-  
+          
       end
       
       % remove duplicates
-      [~,ind] = unique(tP.F,'rows');      
+      [~,ind] = unique(tP.V,'rows');      
       tP = tP.subSet(ind);
       
     end
