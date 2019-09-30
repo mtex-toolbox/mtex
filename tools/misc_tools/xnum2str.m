@@ -24,7 +24,7 @@ if length(n) > 1
   s = arrayfun(@(v) xnum2str(v,varargin),n,'UniformOutput',false);
   
   if ~check_option(varargin,'cell')
-    s = [s;repcell(del,1,length(s))];
+    s = [s(:).';repcell(del,1,length(s))];
     s = [s{1:end-1}];
   end
     
