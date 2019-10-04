@@ -1,4 +1,3 @@
-Contribute2Doc
 EBSDTutorial
 GrainTutorial
 PoleFigureTutorial
