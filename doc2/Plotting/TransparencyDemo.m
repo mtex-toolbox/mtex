@@ -1,4 +1,4 @@
-%% Transparency demo
+%% Transparencys
 %
 %%
 cs = crystalSymmetry('m-3m')

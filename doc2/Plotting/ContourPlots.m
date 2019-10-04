@@ -1,4 +1,4 @@
-%% Contour Plot Demo
+%% Contour Plots
 % How to customize contour plots in MTEX
 
 

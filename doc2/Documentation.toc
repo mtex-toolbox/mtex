@@ -1,16 +1,17 @@
 Tutorials
 GeneralConcepts
-Geometry
-CrystalGeometry
-CrystalOrientations
-Misorientations
-ODFAnalysis
-PoleFigureAnalysis
-EBSDAnalysis
-Grains
-GrainBoundaries
-Tensors
-Elasticity
+Vectors
+Rotations
+CrystalGeometry        Symmetries
+CrystalOrientations    Orientations
+Misorientations        Misorientations
+ODFAnalysis            Orientation Distribution Function
+PoleFigureAnalysis     Pole Figures
+EBSDAnalysis           EBSD
+Grains                 Grains 
+GrainBoundaries        Grain Boundaries
+Tensors                Tensors
+Elasticity             
 Plasticity
 PhaseTransitions
 SphericalFunctions

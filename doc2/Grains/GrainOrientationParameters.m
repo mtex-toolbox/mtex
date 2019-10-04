@@ -1,7 +1,7 @@
-%% Oriantation Distribution Parameters
+%% Orientation Parameters
 %
 %%
-
+%
 close all; plotx2east
 
 % import the data
@@ -135,10 +135,7 @@ mtexColorbar
 %% Misorientation Analysis
 % How to analyze misorientations.
 %
-%% Open in Editor
-%
-%% Contents
-%
+
 %% Definition
 %
 % In MTEX the misorientation between two orientations o1, o2 is defined as
@@ -433,8 +430,6 @@ setColorRange('equal')
 mtexColorbar('multiples of random distribution')
 
 
-
-%%
 %% Grain properties
 %
 % Grains are stored as a long list of several properties. Please find

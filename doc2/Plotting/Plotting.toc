@@ -1,9 +1,11 @@
+PlotTypes
 AxesAlignment
+CombinedPlots
 Multiplot
 Annotations
-Export_plotting
+PlottingExport
 SphericalProjections
 Legends
-Colormaps
-ContourPlotDemo
+ColorMaps
+ContourPlots
 TransparencyDemo
