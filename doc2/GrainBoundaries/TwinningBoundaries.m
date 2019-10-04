@@ -1,14 +1,8 @@
 %% Twinning Analysis
-% Explains how to detect and quantify twin boundaries
 %
-%% Open in Editor
-%
-%% Contents
-%
-%% Data import and grain detection
-%
-% Lets import some Magnesium data that are full of grains and segment grain
-% within the data set.
+%%
+% In this section we consider the analysis of twining. Therefore lets start
+% by importing some Magnesium data and reconstructing the grain structure.
 
 % load some example data
 mtexdata twins
@@ -225,7 +219,4 @@ plot(ebsd_merged(mergedGrains(16)),ebsd_merged(mergedGrains(16)).orientations)
 hold on
 plot(mergedGrains(16).boundary,'linewidth',2)
 hold off
-
-
-
 

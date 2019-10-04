@@ -1,10 +1,11 @@
 DefinitionAsCoordinateTransform
-CrystalOrientations
 OrientationSymmetry
+OrientationStandard
 MTEXvsBungeConvention
 OrientationPoleFigure
 OrientationInversePoleFigure
 OrientationVisualization3d
 OrientationVisualizationSections
+OrientationFundamentalRegion
 SpecimenSymmetry
-GridsOfOrientation
+OrientationGrid

@@ -1,3 +1,0 @@
-%% Fundamental region/Moraviec cell
-%
-%%

@@ -1,8 +1,9 @@
 BoundarySelect
 BoundaryPlots
-GeometricProperties
+BoundaryProperties
 TiltAndTwistBoundaries
 CSLBoundaries
 TwinningBoundaries
 TriplePoints
+BoundaryIntersections
 

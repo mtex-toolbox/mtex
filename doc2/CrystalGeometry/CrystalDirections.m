@@ -116,7 +116,7 @@ plot(m,'symmetrised','labeled','grid','backgroundcolor','w')
 
 %%
 % 
-% The command [[vector3d.eq.html,eq or ==]] can be used to check whether
+% The command <vector3d.eq.html eq or == > can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
@@ -159,7 +159,7 @@ vector3d(m)
 %% Calculations
 %
 % Essentially all the operations defined for general directions, i.e. for
-% variables of type [[vector3d_index.html,vector3d]] are also available for
+% variables of type <vector3d_index.html vector3d> are also available for
 % Miller indices. In addition Miller indices interact with crystal
 % orientations. Consider the crystal orientation
 

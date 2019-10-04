@@ -1,80 +1,71 @@
-%% SUB: Classifying special boundaries
-% Actually, it might be more informative, if we classify the grain
-% boundaries after some special property. 
+%% Select Grain Boundaries
+%
 %%
-% We can mark grain boundaries after its misorientation angle is in a
-% certain range
+% In this section we explain how to extract specific grain boundaries.
+% Therefore lets start by importing some EBSD data and reconstructing the
+% grain structure.
 
-close all
+close all; plotx2east
 
-mAngle = gB_Fo.misorientation.angle./ degree;
+% import the data
+mtexdata forsterite
+
+% restrict it to a subregion of interest.
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+
+% remove very small grains
+ebsd(grains(grains.grainSize<=5)) = [];
+
+% and recompute grains
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+
+% smooth the grains a bit
+grains = smooth(grains,4);
 
 %%
+% visualize as a phase map
+plot(ebsd)
+hold on
+plot(grains.boundary,'linewidth',2)
+hold off
 
-hist(mAngle)
-
-[~,id] = histc(mAngle,0:30:120);
 
 %%
+% The output of
 
-plot(gB,'linecolor','k')
+grains.boundary
+
+% tells us the number of boundary segments between the different phsaes.
+% Those segments with notIndexed phase include also those boundary segments
+% where the grains are cutted by the scanning boundary. To restrict the
+% grain boundaries to a specific phase transistion you shall do
 
 hold on
-plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','<30^\circ')
-plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','30^\circ-60^\circ')
-plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','60^\circ-90^\circ')
-plot(gB_Fo(id==4),'linecolor','y','linewidth',2,'DisplayName','> 90^\circ')
-
+plot(grains.boundary('Fo','Fo'),'lineColor','blue','micronbar','off','lineWidth',2)
 hold off
 
 %%
-% Or we mark the rotation axis of the misorientation.
+% Similarly we may select all Forsterite to enstatite boundary segements.
 
-close all
-plot(gB)
 hold on
-
-rotAxis = Miller(1,0,0,ebsd('Fo').CS,'uvw');
-ind = angle(gB_Fo.misorientation.axis,rotAxis)<5*degree;
-
-plot(gB_Fo(ind),'linecolor','b','linewidth',2,'DisplayName','[100]')
-
-
-%% 
-% Or we mark a special rotation between neighboured grains. If a linecolor
-% is not specified, then the boundary is colorcoded after its angular
-% difference to the given rotation.
-
-rotAxis = Miller(1,1,1,ebsd('Fo').CS,'uvw');
-rot = orientation.byAxisAngle(rotAxis,60*degree);
-ind = angle(gB_Fo.misorientation,rot)<10*degree;
-
-close all
-plot(gB,'DisplayName','>2^\circ')
-hold on
-plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r','DisplayName','60^\circ/[111]')
-
+plot(grains.boundary('Fo','En'),'lineColor','darkgreen','micronbar','off','lineWidth',2)
+hold off
 
 %%
-% Another kind of special boundaries is tilt and twist boundaries. We can
-% find a tilt boundary by specifying the crystal form, which is tilted, i.e.
-% the misorientation maps a lattice plane $h$  of on grain onto the others grain
-% lattice plane.
-% 
-% $$ \left( g_1^{-1} * g_2 \right) * h = h, $$
-% 
-% where $g_1, g_2$ are neighbored orientations.
-% TODO
+% Note, that the order of the phase names matter when considering the
+% corresponding misorintations
 
-%close all
-%plot(grains.boundary)
-%hold on
-%plot(grains.boundary,'property',Miller(1,1,1),'delta',2*degree,...
-%  'linecolor','r','linewidth',1.5)
-%plot(grains.boundary,'property',Miller(0,0,1),'delta',2*degree,...
-%  'linecolor','b','linewidth',1.5)
+grains.boundary('Fo','En').misorientation(1)
+grains.boundary('En','Fo').misorientation(1)
+
+%%
+% In the fist case the misorientation returned is from Forsterite to
+% Enstatite and in the second case its exactly the inverse
+
+%% 
+% The selection of grain boundaries according to specific misorientationsm
+% according to twist / tild character or twinning is explained in linked
+% sections.
 %
-%legend('>2^\circ',...
-%  '\{111\}',...
-%  '\{001\}')
-

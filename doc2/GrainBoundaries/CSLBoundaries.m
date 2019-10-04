@@ -1,9 +1,11 @@
 %% CSL Boundaries
-% Explains how to analyze CSL grain boundaries
 %
-%% Data import and grain detection
 %
-% Lets import some iron data and segment grains within the data set.
+%%
+% In this section we consider the analysis of CSL boundaries. Therefore
+% lets start by importing some Iron data and reconstructing the grain
+% structure.
+
 mtexdata csl
 plotx2east
 

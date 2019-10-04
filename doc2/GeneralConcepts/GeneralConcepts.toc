@@ -1,6 +1,5 @@
+Contribute2Doc
 ListsAndIndexing
 Properties
-vectors
-rotations
 DensityEstimation
 ClusterDemo
