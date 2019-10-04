@@ -6,8 +6,8 @@
 %% Class Description 
 % The class *kernel* is needed in MTEX to define the specific form of
 % unimodal and fibre symmetric ODFs. It has to be passed as an argument
-% when calling the methods [[uniformODF.html,uniformODF]] and
-% [[fibreODF.html,fibreODF]]. 
+% when calling the methods <uniformODF.html uniformODF> and
+% <fibreODF.html fibreODF>. 
 %
 %% SUB: Defining a kernel function
 %

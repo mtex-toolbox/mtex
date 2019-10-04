@@ -180,8 +180,8 @@ inv(rot)
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-% * [[quaternion.Euler.html,Euler(rot)]]   in Euler angle
-% * [[quaternion.Rodrigues.html,Rodrigues(rot)]] % in Rodrigues parameter
+% * <quaternion.Euler.html Euler(rot)>   in Euler angle
+% * <quaternion.Rodrigues.html Rodrigues(rot)> % in Rodrigues parameter
 %
 
 [alpha,beta,gamma] = Euler(rot,'Matthies')

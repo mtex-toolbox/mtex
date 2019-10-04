@@ -70,9 +70,9 @@ o = orientation.byMiller([1 0 0],[0 1 1],cs,ss)
 %
 % In the MTEX there is a list of predefined orientations:
 %
-% * [[orientation.cube.html,cube]]
-% * [[orientation.goss.html,goss]]
-% * [[orientation.brass.html,brass]]
+% * <orientation.cube.html cube>
+% * <orientation.goss.html goss>
+% * <orientation.brass.html brass>
 
 o = orientation.goss(cs,ss)
 
@@ -164,8 +164,8 @@ inv(o1)
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-% * [[quaternion.Euler.html,Euler(o)]]   in Euler angle
-% * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
+% * <quaternion.Euler.html Euler(o)>   in Euler angle
+% * <quaternion.Rodrigues.html Rodrigues(o)> % in Rodrigues parameter
 %
 
 [phi1,Phi,phi2] = Euler(o)

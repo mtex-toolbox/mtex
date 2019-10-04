@@ -64,13 +64,13 @@ w = w + v;
 % Besides the standard linear algebra operations, there are also the
 % following functions available in MTEX.
 %
-%  [[vector3d.angle.html,angle(v1,v2)]] % angle between two specimen  directions
-%  [[vector3d.dot.html,dot(v1,v2)]]   % inner product
-%  [[vector3d.cross.html,cross(v1,v2)]] % cross product
-%  [[vector3d.norm.html,norm(v)]]      % length of the specimen directions
-%  [[vector3d.sum.html,sum(v)]]       % sum over all specimen directions in v
-%  [[vector3d.mean.html,mean(v)]]      % mean over all specimen directions in v  
-%  [[vector3d.polar.html,polar(v)]]     % conversion to spherical coordinates
+%  <vector3d.angle.html angle(v1,v2)> % angle between two specimen  directions
+%  <vector3d.dot.html dot(v1,v2)>   % inner product
+%  <vector3d.cross.html cross(v1,v2)> % cross product
+%  <vector3d.norm.html norm(v)>      % length of the specimen directions
+%  <vector3d.sum.html sum(v)>       % sum over all specimen directions in v
+%  <vector3d.mean.html mean(v)>      % mean over all specimen directions in v  
+%  <vector3d.polar.html polar(v)>     % conversion to spherical coordinates
 
 % A simple example for applying the norm function is to normalize a set of
 % specimen directions
@@ -79,7 +79,7 @@ w = w ./ norm(w)
 
 %% SUB: Plotting three dimensionl vectors
 % 
-% The [[vector3d.plot.html,plot]] function allows you to visualize an 
+% The <vector3d.plot.html plot> function allows you to visualize an 
 % arbitrary number of specimen directions in a spherical projection
 
 plot([zvector,xvector+yvector+zvector],'labeled')

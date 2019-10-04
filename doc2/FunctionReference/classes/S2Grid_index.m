@@ -5,7 +5,7 @@
 %
 %% Class Description
 % The class *S2Grid* is used in MTEX to store the set of specimen
-% directions organized in a [[PoleFigure_index.html,pole figure]]. Of 
+% directions organized in a <PoleFigure_index.html pole figure>. Of 
 % central importance is also the plotting method of this class since it is 
 % used by almost all other plotting methods in MTEX to perform spherical 
 % plots. 
@@ -14,7 +14,7 @@
 %
 % There are various ways to define a S2Grid. Next, you find some examples.
 % For a detailed description of possible specifications look for the
-% documentation of the constructor [[S2Grid_index.html,S2Grid]]. 
+% documentation of the constructor <S2Grid_index.html S2Grid>. 
 
 % equidistributions
 S2G = equispacedS2Grid('points',100,'antipodal');  % specified by number of points

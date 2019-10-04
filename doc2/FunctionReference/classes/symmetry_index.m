@@ -23,7 +23,7 @@
 % MTEX supports the *Schoenflies* notation on Laue groups as well as the
 % *international* notation. In the case of noncubic crystal symmetry the
 % length of the crystal axis has to be specified as a second argument to
-% the constructor [[symmetry.symmetry.html,symmtry]] and in the case of
+% the constructor <symmetry.symmetry.html symmtry> and in the case of
 % triclinic crystal symmetry the angles between the axes has to be passed
 % as the third argument. Hence, valid definitions are:
 %

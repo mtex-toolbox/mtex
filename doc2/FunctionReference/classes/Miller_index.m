@@ -2,10 +2,6 @@
 % This section describes the class *Miller* and gives an overview how to
 % deal with crystal directions in MTEX.
 %
-%% Open in Editor
-%
-%% Contents
-%
 %% Class Description
 % Crystal directions are represented in MTEX by the variables of the class
 % *Miller* which in turn represent a direction with respect to the crystal
@@ -108,9 +104,9 @@ o = orientation.byEuler(20*degree,30*degree,40*degree,cs)
 o * m
 
 %%
-% By applying a [[symmetry_index.html,crystal symmetry class]] one obtains
-% the coordinates with respect to the specimen coordinate system of all
-% crystallographically equivalent specimen directions.
+% In order to obtain the coordinates with respect to the specimen
+% coordinate system of all crystallographically equivalent specimen
+% directions we use the command <Miller.symmetrise.html symmetrise>
 
 p = o * symmetrise(m);
 plot(p)
