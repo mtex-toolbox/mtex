@@ -13,6 +13,18 @@ function export(ebsd,fname,varargin)
 
 % TODO
 
+[~,~,ext] = fileparts(fname);
+switch lower(ext)
+  case 'h5'
+    export_h5(ebsd,fname,varargin{:});
+    return
+  case 'ctf'
+    export_ctf(ebsd,fname,varargin{:});
+    return
+  case 'ang'
+end
+
+
 fn = fields(ebsd.prop);
 
 % allocate memory
