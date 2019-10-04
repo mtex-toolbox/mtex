@@ -82,17 +82,17 @@ classdef EBSDhex < EBSD
       ori = ebsd.orientations;
           
       if ebsd.isRowAlignment
-        ori_up1 = ori([2:end end-1],:);
+        ori_up = ori([2:end end-1],:);
         
         if ebsd.offset == 1
-          ori_up1(1:2:end)
+          ori_up(1:2:end)
         end
         
         
         gY = log(ori_up,ori,'left') ./ ebsd.dHex;
         gY(end,:) = - gY(end,:);
         
-        ori_up2 = ori([2:2:end end-1],:);
+        %ori_up2 = ori([2:2:end end-1],:);
       
         try
           gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
