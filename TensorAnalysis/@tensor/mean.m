@@ -5,6 +5,7 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %   T = mean(T)     % mean along the first non singleton dimension
 %   T = mean(T,dim) % mean along dimension dim
 %   TReuss = mean(T,'Reuss') % Reuss average
+%   THill = mean(T,'Hill') % Hill average
 %   TGeometric = mean(T,'geometric') % geometric mean
 %   [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
@@ -46,14 +47,30 @@ elseif nargin > 1 && isa(varargin{1},'rotation')
   % take the mean of the rotated tensors times the weight
   TVoigt = sum(weights .* rotT);
       
-elseif nargin > 1 && isa(varargin{1},'ODF')
+elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
+
+  TVoigt = 0*T;
   
-  % this needs to be replaced
-  TVoigt = calcTensor(varargin{1},T,varargin{2:end});
+  odf = varargin{1};
+  fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
+  
+  for l = 0:min(T.rank,odf.bandwidth)
+  
+    % calc Fourier coefficient of odf
+    ind = deg2dim(l)+(1:(2*l+1)^2);
+    fhat_l = reshape(fhat(ind),2*l+1,2*l+1)./(2*l+1);
+      
+    % calc Fourier coefficients of the tensor
+    T_hat = Fourier(T,'order',l);
+  
+    % mean Tensor is the product of both
+    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]);
+        
+  end
   
 else % the plain mean
 
-  if nargin > 1
+  if nargin > 1 && isnumeric(varargin{1})
     dim = varargin{1};
   else
     dim = 1 + (size(T,1) == 1);
@@ -72,8 +89,11 @@ if check_option(varargin,'geometric'), TVoigt = expm(TVoigt); end
 if check_option(varargin,'Reuss'), TVoigt = inv(TVoigt); end
 
 % Reuss average -> the inverse of the mean of the inverses
-if nargout > 1, TReuss = inv(mean(inv(T),varargin{:})); end
+if nargout > 1 || check_option(varargin,'Hill')
+  opt = delete_option(varargin,'Hill');
+  TReuss = mean(T,opt{:},'Reuss');
+  THill = 0.5*(TVoigt + TReuss);    
+end
     
 % Hill average
-if nargout > 2, THill = 0.5*(TVoigt + TReuss); end
-  
+if check_option(varargin,'Hill'), TVoigt = THill; end
