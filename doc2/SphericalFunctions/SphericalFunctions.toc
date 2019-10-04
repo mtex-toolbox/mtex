@@ -1,2 +1,8 @@
 S2FunOperations
-BinghamS2Distribution
+S2FunBingham
+S2FunQuadrature
+S2FunAxisField
+S2FunVectorField
+S2FunUnivariate
+S2FunSym
+S2FunHarmonicDef

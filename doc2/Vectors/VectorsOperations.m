@@ -32,7 +32,7 @@ u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
 % A simple example for applying the norm function is to normalize a set of
 % specimen directions
 
-w = w ./ norm(w)
+u = u ./ norm(u)
 
 %% Lists of vectors
 %
