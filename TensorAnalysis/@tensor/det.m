@@ -12,10 +12,24 @@ function d = det(T)
 %  d - double
 %
 
-if T.rank == 2
+switch T.rank
+  case 2
 
-  d = det3(T.M);
+    d = det3(T.M);
   
-else
-  error('Trace is only implemented for tensors of rank 2')
+  case 4
+    
+    % convert to a matrix
+    M = tensor42(T.M,2);
+
+    % determinant of the matrix
+    d = zeros(size(T));
+    for l = 1:length(T)
+      d(l) = det(M(:,:,l));
+    end
+
+  otherwise
+    error('Determinant is only implemented for tensors of rank 2 and 4')
+end
+
 end
