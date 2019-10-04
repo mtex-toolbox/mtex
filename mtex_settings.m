@@ -90,7 +90,7 @@ setMTEXpref('EBSDExtensions',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
 
 % set default colors
-%set(0,'DefaultAxesColorOrder',vega10(10))
+%set(0,'DefaultAxesColorOrder',vega20)
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
