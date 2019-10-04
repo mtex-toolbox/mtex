@@ -8,7 +8,7 @@
 mtexdata forsterite
 
 %%
-% These data consist of two indexed phases, _Iron_, and _Magnesium_. The not
+% These data consist of three indexed phases, Forsterite, Enstatite and Diopside. The not
 % indexed phase called _not Indexed_. The phases can be visualized by
 
 close all; plotx2east
