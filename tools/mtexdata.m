@@ -95,11 +95,9 @@ for k=1:numel(fld)
 end
 
 % display
-if ~getMTEXpref('generatingHelpMode')
-  disp([ upper(list(ndx).name) ' data loaded in variables']);
-  disp(fld)
+%if ~getMTEXpref('generatingHelpMode')
   evalin('base',fld{end});
-end
+%end
 
 if nargout == 0, clear S; end
 
