@@ -1,10 +1,6 @@
 %% Rotations
-% This section describes the class  <rotation.rotation.html *rotation*> and
+% This section describes the class  <rotation_index.html *rotation*> and
 % gives an overview on how to work with rotations in MTEX.
-%
-%% Open in Editor
-%
-%% Contents
 %
 %% Class Description
 % The class *rotation* is an inheritance of the class <quaternion_index.html

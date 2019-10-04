@@ -1,13 +1,9 @@
-%% Modify EBSD Data
-% How to correct EBSD data for measurement errors.
-%
-%% Open in Editor
-%
-%% Contents
+%% Select EBSD data
 %
 %%
-% First, let us import some example <mtexdata.html EBSD data>. and plot
-% the raw data
+% In this section we discuss how to select specific EBSD data by certain
+% properties. Let us first import some example <mtexdata.html EBSD data>.
+% and plot the raw data
 
 mtexdata forsterite
 
@@ -19,8 +15,10 @@ close all; plotx2east
 plot(ebsd)
 
 %% Selecting a certain phase
-% In order to restrict the EBSD data to a certain phase just use the
-% mineral name as an index, i.e.
+% After import the EBSD data are stored in the variable |ebsd| which is
+% essentially a long list of x and y values together with phase information
+% and orientations. In order to restrict this list to a certain phase
+% just use the mineral name as an index, i.e.
 
 ebsd('Forsterite')
 

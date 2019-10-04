@@ -4,6 +4,7 @@ EBSDPlotting          Plotting
 EBSDIPFMap            IPF Maps
 EBSDOrientationPlots  Orientation Plots
 EBSDSelect          
+EBSDOrientationAnalysis
 GrainReconstruction   Grain Reconstruction
 EBSDDenoising         Denoising
 EBSD2ODF              ODF Estimation
