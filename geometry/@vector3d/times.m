@@ -1,5 +1,16 @@
 function v = times(v1,v2)
 % .* - componenwtise multiplication
+%
+% Syntax
+%   v = v1 .* v2
+%   v = times(v1,v2) 
+% 
+% Input
+%  v1, v2 - @vector3d
+%
+% Output
+%  v - @vector3d
+%
 
 if isnumeric(v1) || islogical(v1)
   v = v2;

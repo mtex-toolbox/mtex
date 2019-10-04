@@ -4,6 +4,8 @@ function varargout = subsref(grains,s)
 % Syntax
 %   grains(1:10)            % the 10 first grains
 %   grains('Fe')            % only Fe grains
+%   grains('id',5)          % give the grain with id 5 
+%   grains(5)               % give the 5th grain in the list
 %   grains( ~grains('fe') ) % all grains but Fe
 %   grains(cond)        
 %
