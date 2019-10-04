@@ -1,24 +1,18 @@
 %% Average Material Tensors
-% how to calculate average material tensors from ODF and EBSD data
-%%
-% MTEX offers several ways to compute average material tensors from ODFs or EBSD data.
-%
-%% Open in Editor
-%
-%% Contents
 %
 %%
+% MTEX offers several ways to compute average material tensors from ODFs or
+% EBSD data. We start by importing some EBSD data of Glaucophane and
+% Epidote.
+
 % set up a nice colormap
 setMTEXpref('defaultColorMap',blue2redColorMap);
 
-%% Import EBSD Data
-% We start by importing some EBSD data of Glaucophane and Epidote.
-
+% import some EBSD data
 ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],...
-  'convertEuler2SpatialReferenceFrame')
+  'convertEuler2SpatialReferenceFrame');
 
-%%
-% Let's visualize a subset of the data
+% visualize a subset of the data
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 

@@ -1,6 +1,6 @@
 TensorDefinition
 TensorArithmetics
 TensorVisualisation
-AverageTensors
+TensorAverage
 Piezoelectricity
 BirefringenceDemo
