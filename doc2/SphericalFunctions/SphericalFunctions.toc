@@ -1,1 +1,2 @@
-univariateS2Fun
+S2FunOperations
+BinghamS2Distribution
