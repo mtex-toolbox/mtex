@@ -105,7 +105,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
   
   samples = discretesample(length(ori),points);
   ori= ori.subSet(samples);
-  if ~isempty(data), data = data(:,samples,:); end
+  if ~isempty(data), data = data(samples,:,:); end
     
 end
 
