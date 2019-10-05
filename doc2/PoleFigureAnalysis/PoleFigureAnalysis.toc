@@ -1,4 +1,11 @@
-ImportExportPoleFigureAnalysis
-DataCorrection
-ODFReconstruction
-TheAmbiguityProblem
+PoleFigureInput         Import
+PoleFigurePlot          Plot
+PoleFigureCorrection    Modify
+PoleFigureSimulation    Simulation
+PoleFigure2ODF          ODF Reconstruction
+PoleFigure2ODFAmbiguity The Gost Effect
+PoleFigure2ODFGhostCorrection Ghost Correction
+PoleFigureSantaFe       Santa Fe Example
+PoleFigureDubna         Dubna Example
+PoleFigureExport        Export
+
