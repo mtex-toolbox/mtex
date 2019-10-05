@@ -48,7 +48,7 @@ for p = ebsd.indexedPhasesId
 end
  
 % compute the averages
-[varargout{1:nargout}] = mean(TRot ./ length(ebsd),varargin{:});
+[varargout{1:nargout}] = mean(TRot,varargin{:});
  
 end
 

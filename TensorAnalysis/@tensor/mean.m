@@ -36,17 +36,7 @@ if check_option(varargin,'iso') && T.rank==4
   delta = (3*beta - alpha) / 30;
   
   TVoigt = 2 * delta * T.eye + gamma * dyad(tensor.eye,tensor.eye);
-
-elseif nargin > 1 && isa(varargin{1},'rotation')
-
-  rotT = rotate(T,varargin{1});
-  
-  % extract weights
-  weights = get_option(varargin,'weights',1./length(varargin{1}));
-  
-  % take the mean of the rotated tensors times the weight
-  TVoigt = sum(weights .* rotT);
-      
+     
 elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
 
   TVoigt = 0*T;
@@ -68,6 +58,14 @@ elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
         
   end
   
+elseif check_option(varargin,'weights')  % weighted mean
+  
+  % extract weights
+  weights = reshape(get_option(varargin,'weights'),size(T));
+  
+  % take the mean of the rotated tensors times the weight
+  TVoigt = sum(weights .* T);
+  
 else % the plain mean
 
   if nargin > 1 && isnumeric(varargin{1})
@@ -75,7 +73,7 @@ else % the plain mean
   else
     dim = 1 + (size(T,1) == 1);
   end
-      
+  
   dim = dim + T.rank;
   TVoigt = T;
   TVoigt.M = mean(T.M,dim);
