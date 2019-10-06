@@ -1,11 +1,12 @@
-DefinitionAsCoordinateTransform
-OrientationSymmetry
-OrientationStandard
-MTEXvsBungeConvention
-OrientationPoleFigure
-OrientationInversePoleFigure
-OrientationVisualization3d
-OrientationVisualizationSections
-OrientationFundamentalRegion
-SpecimenSymmetry
-OrientationGrid
+DefinitionAsCoordinateTransform  Definition
+OrientationSymmetry              Symmetry
+OrientationStandard              Standard Orientations
+MTEXvsBungeConvention            MTEX vs. Bunge Convention
+OrientationPoleFigure            Pole Figures
+OrientationInversePoleFigure     Inverse Pole Figure
+OrientationVisualization3d       3D Plots
+OrientationVisualizationSections Section Plots
+OrientationFundamentalRegion     Fundamenal Region
+SpecimenSymmetry                 Specimen Symmetry
+OrientationGrid                  Grids 
+OrientationFibre                 Fibres           

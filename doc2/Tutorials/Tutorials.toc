@@ -1,5 +1,5 @@
-EBSDTutorial
-GrainTutorial
-PoleFigureTutorial
-ODFTutorial
+EBSDTutorial       EBSD
+GrainTutorial      Grains
+PoleFigureTutorial Pole Figure Data
+ODFTutorial        ODFs
 ImportFromVPSC

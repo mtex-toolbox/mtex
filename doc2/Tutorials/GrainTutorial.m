@@ -1,63 +1,63 @@
-%% Grain Analysis
+%% Grain Tutorial
 %
 %%
-%  data by Daniel Rutte with Bret Hacker, Stanford.
-%
-% The following script mainly generate the figures shown in "Grain detection
-% from 2d and 3d EBSD data - Specification of the MTEX algorithm" - section "Practical
-% application to a 2d EBSD data set". The only imposed restriction is the size of the
-% data set, which was scaled down.
-%
+% The following script is a quick guide through the grain reconstruction
+% capabilities of MTEX. It uses the same data set as in the corresponding
+% publication
+% <https://www.researchgate.net/publication/51806709_Grain_detection_from_2d_and_3d_EBSD_data-Specification_of_the_MTEX_algorithm
+% Grain detection from 2d and 3d EBSD data>. Data courtasy was by Daniel
+% Rutte and Bret Hacker, Stanford.
 
 mtexdata mylonite
 
-plotx2east
-
-%% Phase map
-% Phase map of multi-phase rock specimen with Andesina (blue), Quartz (red),
-% Biotite (green) and Orthoclase (yellow)
-
+% plot a phase map
 plot(ebsd)
 
-%% Restrict to the region of interest (RoI)
-% the box is given by [xmin ymin xmax-xmin ymax-ymin] and indicates a
-% region of interest (RoI).
+%%
+% The phase map shows a multi-phase rock specimen with Andesina, Quartz,
+% Biotite and Orthoclase. Lets restrict it some smaller region of interest.
+% The box is given by [xmin, ymin, xmax-xmin, ymax-ymin].
 
 region = [19000 1500 4000 1500];
-rectangle('position',region,'edgecolor','r','linewidth',2)
+rectangle('position',region,'edgecolor','k','linewidth',2)
 
 %%
 % to which we restrict the data
 
 ebsd_region = ebsd(inpolygon(ebsd,region))
 
-%% Recover grains
-% Next we reconstruct the grains (and grain boundareis in the region of interest
+%% Grain Reconstruction
+% Next we reconstruct the grains and grain boundareis in the region of
+% interest
 
 grains = calcGrains(ebsd_region,'angle',15*degree)
 
-%% Plot grain boundaries and phase
-% (RoI) Detailed phase map with measurement locations and reconstructed grain
-% boundaries.
-
+% phase map of the region of interest
 plot(ebsd_region)
+
+% the grain boundaries
 hold on
-plot(grains.boundary,'color','k')
+plot(grains.boundary,'color','k','linewidth',1.5)
 hold off
 
 %%
-% (RoI) Individual orientation measurements of quartz together with the grain
-% boundaries.
+% We may also visualize the different quarz orientations together with the
+% grain boundaries.
 
-plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+% phase map
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.4)
+
 hold on
+% quarz orientations as ipf map
 plot(ebsd_region('Quartz'),ebsd_region('Quartz').orientations)
+
+% grain boundaries
 plot(grains.boundary,'color','black');
 legend off
 hold off
 
 %%
-% colored according to the false color map of its inverse polefigure
+% colored according to the following ipf color key
 
 close all
 ipfKey = ipfColorKey(ebsd_region('Quartz'));
@@ -65,20 +65,17 @@ plot(ipfKey,'Position',[825 100 300 300])
 
 
 %%
-% (RoI) The reconstructed grains. The quartz grains are colored according to
-% their mean orientation while the remaining grains are colored according to
-% there phase.
+% Alternatively, we may also colorize the entire quarz grains according to
+% its mean orientations
 
-plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.4)
 hold on
 plot(grains('Quartz'),grains('Quartz').meanOrientation)
 legend off
 
 
-
-
 %% Highlight specific boundaries
-% (RoI) Phase map with grain boundaries highlighted, where adjacent grains have
+% Phase map with grain boundaries highlighted, where adjacent grains have
 % a misorientation with rotational axis close to the c-axis.
 % TODO
 
@@ -95,5 +92,3 @@ hold on
 
 plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')
 hold off
-
-

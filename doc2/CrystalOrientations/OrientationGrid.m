@@ -1,5 +1,6 @@
 %% Grids of Orientation
 % 
+%%
 % In many usecases one is interested in grid of orientations that somehow
 % uniformely cover the orientation space. As there are many different grid
 % there is a seperate topic <SO3GridDemo.html orientation grids>. The
@@ -18,7 +19,7 @@ ori = equispacedSO3Grid(cs,'resolution',5*degree)
 plot(ori,'axisAngle')
 
 
-%%
+%% Check for equidistribution
 %
 
 odf = unimodalODF(ori)

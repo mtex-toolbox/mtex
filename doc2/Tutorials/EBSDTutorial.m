@@ -1,27 +1,25 @@
 %% EBSD Tutorial 
+%
 % A quick guide about how to work with EBSD data in MTEX.
 %
-%% Open in Editor
-%  
-
 %% Data import
 %
 % MTEX allows to import EBSD from all big vendors of EBSD systems. Prefered
 % data formats are text based data files like .ang, .ctf or open binary
-% formats like .hdf5 .h5. Most comfortably EBSD data may be imported using
-% the import wizard, by typing
+% formats like .hdf5 or .h5. Most comfortably, EBSD data may be imported
+% using the import wizard, by typing
 
 import_wizard
 
 %%
-% or by the command <loadEBSD.html loadEBSD>
+% or by the command <EBSD.load.html EBSD.load>
 
 fileName = [mtexDataPath filesep 'EBSD' filesep 'Forsterite.ctf'];
-ebsd = loadEBSD(fileName)
+ebsd = EBSD.load(fileName)
 
 %%
 % As a result the ebsd data are stored in a single variable, here called
-% |ebsd|. This variable contains all relevant information, i.e., the
+% *ebsd*. This variable contains all relevant information, i.e., the
 % spatial coordinates, the orientation information, a description of the
 % crystal symmetries and all other parameters contained in the data file.
 %
@@ -39,7 +37,7 @@ plot(ebsd,'coordinates','on')
 %% 
 % When importing EBSD data a central issue is to align them correctly to a
 % fixed reference frame. This issue is exhaustively discussed in the topic
-% <AliginingEBSDData.html aligning EBSD data>.
+% <EBSDReferenceFrame.html Reference Frame Alignment>.
 %
 %% Orientation Plots
 %
@@ -61,8 +59,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 %%
 % In this standard form a default color coding of the orientations is
 % choosen. A more complete discussion about how to colorize orientations
-% can be found in the topic <orientationColoring.html orientation
-% coloring>.
+% can be found in the topic <EBSDIPFMap.html IPF Maps>.
 
 %% Grain reconstruction
 % 
@@ -70,8 +67,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % structure from EBSD data as described in the paper
 % <https://www.researchgate.net/publication/51806709_Grain_detection_from_2d_and_3d_EBSD_data-Specification_of_the_MTEX_algorithm
 % Grain detection from 2d and 3d EBSD data> and the topic
-% <grainReconstruction.html grain reconstruction>. The standard syntax is
-% as follows
+% <GrainReconstruction.html Grain Reconstruction>. The syntax is
 
 % reconstruct grains with theshold angle 10 degree
 grains = calcGrains(ebsd('indexed'),'theshold',10*degree)
@@ -87,10 +83,10 @@ hold off
 %% Crystal Shapes
 %
 % In order to make the visualization of crystal orientations more intuitive
-% MTEX supports crystal shapes. Those are polyhedrons computed to match the
-% typical shape of ideal crystals. In order to overlay the EBSD map with
-% crystal shapes orienteted accordingly to the orientations of the grains
-% we proceed as follows.
+% MTEX supports <CrystalShapes.html crystal shapes>. Those are polyhedrons
+% computed to match the typical shape of ideal crystals. In order to
+% overlay the EBSD map with crystal shapes orienteted accordingly to the
+% orientations of the grains we proceed as follows.
 
 % define the crystal shape of Forsterite and store it in the variable cS
 cS = crystalShape.olivine(ebsd('Forsterite').CS)
@@ -104,14 +100,12 @@ hold on
 plot(grains('Forsterite'),0.7*cS,'FaceColor',[0.3 0.5 0.3])
 hold off
 
-
-
 %% Pole Figures
 % 
 % One of the most important tools for analysing the orientations in an EBSD
-% map are <poleFigurePlots.html pole figure plots>. Those answer the
-% question into which specimen directions the following fixes crystal
-% directions are oriented.
+% map are <OrientationPoleFigure.html pole figure plots>. Those answer the
+% question with which specimen directions the a fixes crystal
+% directions, here *h*, is aligned
 
 % the fixed crystal directions
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS)
@@ -119,18 +113,14 @@ h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS)
 % plot their positions with respect to specimen coordinates
 plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium')
 
-
-
 %% Inverse Pole Figures
 % 
 % Analogously one can ask for the crystal directions pointing into a fixed
-% specimen direction. This question is answered by <ipfPlots.html inverse
-% pole figures>.
+% specimen direction. This resulting plots are called
+% <OrientationInversePoleFigure.html inverse pole figures>.
 
 % the fixed specimen direction
 r = vector3d.Z;
 
 % plot the position of the z-Axis in crystal coordinates
 plotIPDF(ebsd('Forsterite').orientations,r)
-
-
