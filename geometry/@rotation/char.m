@@ -3,9 +3,9 @@ function s = char(q,eps,varargin)
 
 if nargin>1 && ~isnumeric(eps)
   varargin = [{eps},varargin];
-  eps = 100;  
+  eps = 1;  
 elseif nargin == 1
-  eps = 100;
+  eps = 1;
 end
 
 if length(q) == 1

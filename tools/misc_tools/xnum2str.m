@@ -16,12 +16,12 @@ function s = xnum2str(n,varargin)
 %
 
 
-m = get_option(varargin,'reference',n);
+m = get_option(varargin,'precision',n);
 
 if length(n) > 1
  
   del = get_option(varargin,'delimiter',' ');
-  s = arrayfun(@(v) xnum2str(v,varargin),n,'UniformOutput',false);
+  s = arrayfun(@(v) xnum2str(v,varargin{:}),n,'UniformOutput',false);
   
   if ~check_option(varargin,'cell')
     s = [s(:).';repcell(del,1,length(s))];
