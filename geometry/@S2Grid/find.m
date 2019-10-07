@@ -11,7 +11,7 @@ function varargout = find(S2G,v,varargin)
 %  epsilon - double
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include <AxialDirectional.html antipodal symmetry>
 %
 % Output
 %  ind     - int32        

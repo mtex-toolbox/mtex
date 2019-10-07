@@ -21,7 +21,7 @@ function pdf = calcPDF(odf,h,varargin)
 %  superposition - calculate superposed pdf
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %
 % See also
 % ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure

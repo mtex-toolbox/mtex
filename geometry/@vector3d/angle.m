@@ -14,7 +14,7 @@ function a = angle(v1,v2,varargin)
 %  omega - double
 %
 % Options
-%  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal  - include <AxialDirectional.html antipodal symmetry>
 
 if nargin == 3 && isa(varargin{1},'vector3d')
   

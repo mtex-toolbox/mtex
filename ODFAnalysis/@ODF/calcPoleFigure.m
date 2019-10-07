@@ -17,8 +17,8 @@ function pf = calcPoleFigure(odf,h,varargin)
 %  r   - @vector3d specimen directions
 %
 % Options
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  complete     - do not include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal    - include <AxialDirectional.html,antipodal symmetry>
+%  complete     - do not include <AxialDirectional.html antipodal symmetry>
 %  superposition - [double] superposition weights
 %
 % See also

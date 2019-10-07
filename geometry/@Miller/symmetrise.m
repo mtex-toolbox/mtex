@@ -11,7 +11,7 @@ function varargout = symmetrise(m,varargin)
 %  v - @Miller
 %
 % Options
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  skipAntipodal - do not include antipodal symmetry
 
 [varargout{1:nargout}] = symmetrise(vector3d(m),m.CS,varargin{:});

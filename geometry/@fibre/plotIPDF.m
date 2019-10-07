@@ -18,7 +18,7 @@ function plotIPDF(f,varargin)
 %  property   - user defined colorcoding
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also

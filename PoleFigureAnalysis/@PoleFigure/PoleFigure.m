@@ -22,8 +22,9 @@ classdef PoleFigure < dynProp & dynOption
     function pf = PoleFigure(h,r,intensities,varargin)
       % constructor 
       %
-      % *PoleFigure* is the low level constructor. For importing real world data
-      % you might want to use the predefined [[ImportPoleFigureData.html,interfaces]]
+      % *PoleFigure* is the low level constructor. For importing real world
+      % data you might want to use the predefined
+      % <ImportPoleFigureData.html interfaces>
       %
       % Input
       %  h     - crystal directions (@vector3d | @Miller)

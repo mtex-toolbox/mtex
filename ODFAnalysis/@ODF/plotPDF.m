@@ -16,7 +16,7 @@ function plotPDF(odf,h,varargin)
 %  superposition - plot superposed pole figures
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also

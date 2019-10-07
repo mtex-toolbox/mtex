@@ -19,7 +19,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Example
 %
-%   %find the local maxima of the [[SantaFe.html,SantaFe]] ODF
+%   %find the local maxima of the <SantaFe.html SantaFe> ODF
 %   mode = calcModes(SantaFe)
 %   plotPDF(SantaFe,Miller(0,0,1,mode.CS))
 %   annotate(mode)

@@ -10,7 +10,7 @@ function [ind,d] = find(v,w,epsilon,varargin)
 %  epsilon - double
 %
 % Options
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %
 % Output
 %  ind     - int32        

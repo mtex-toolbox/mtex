@@ -21,7 +21,7 @@ function plotIPDF(ori,varargin)
 %  MarkerEdgeColor - 
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - ignore fundamental region
 %  upper     - restrict to upper hemisphere
 %  lower     - restrict to lower hemisphere

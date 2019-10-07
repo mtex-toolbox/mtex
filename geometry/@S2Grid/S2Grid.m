@@ -22,7 +22,7 @@ classdef S2Grid < vector3d
 % Flags
 %  REGULAR    - generate a regular grid
 %  EQUISPACED - generate equidistribution
-%  ANTIPODAL  - include [[AxialDirectional.html,antipodal symmetry]]
+%  ANTIPODAL  - include <AxialDirectional.html antipodal symmetry>
 %  PLOT       - generate plotting grid
 %  NO_CENTER  - ommit point at center
 %  RESTRICT2MINMAX - restrict margins to min / max
