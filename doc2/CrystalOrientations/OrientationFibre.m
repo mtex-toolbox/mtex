@@ -8,7 +8,7 @@
 
 % define crystal and specimen symmetry
 cs = crystalSymmetry('432');
-ss = specimenSymmetry('222');
+ss = specimenSymmetry('1');
 
 % and two orientations
 ori1 = orientation.cube(cs,ss);
