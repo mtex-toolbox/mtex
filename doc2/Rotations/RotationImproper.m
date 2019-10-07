@@ -1,9 +1,9 @@
 %% Improper Rotations
 %
 %%
-% Improper rotations are coordinate transformations from a left hand into a
-% right handed coordinate system as, e.g. mirroring or inversion.
-% In MTEX the inversion is defined as the negative identy rotation
+% Improper rotations are coordinate transformations from a left handed into
+% a right handed coordinate system as, e.g. a mirroring or hte inversion.
+% In MTEX the inversion is defined as the negative identical rotation
 
 I = - rotation.byEuler(0,0,0)
 
@@ -14,9 +14,7 @@ I = - rotation.byEuler(0,0,0)
 - (rotation.byEuler(0,0,0) * xvector)
 (- rotation.byEuler(0,0,0)) * xvector
 
-%%
-% *Mirroring*
-%
+%% Mirroring
 % As a mirroring is nothing else then a rotation about 180 degree about the
 % normal of the mirroring plane followed by a inversion we can defined
 % a mirroring about the axis (111) by

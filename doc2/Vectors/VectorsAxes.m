@@ -1,12 +1,4 @@
-%% Antipodal Symmetry
-% MTEX allows to identify antipodal directions to model axes and to
-% identify misorientations with opposite rotational angle. The later is
-% required when working with misorientations between grains of the same
-% phase and the order of the grains is arbitrary.
-%
-%% Open in Editor
-%
-%% Contents
+%% Axes and Antipodal Symmetry
 %
 %% Directions vs. Axes
 %
@@ -32,13 +24,15 @@ plot([v1,v2],'label',{'v_1','v_2'})
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
-% Now the direction |v_2| is identified with the direction |-v_2| which
+% Now the direction *v_2* is identified with the direction *-v_2* which
 % plots at the upper hemisphere.
 
 %% The Angle between Directions and Axes
 %
-% Another example, where antipodal symmetry matters is the angle between
-% two vectors. In the absence of antipodal geometry we have
+% As a consequence the angle between two axes *v1*, *v2* will always be the
+% smallest angle between the directions *v1*, *v2* and *v1*, *-v2*, i.e. it
+% will always be smaller than 90 degree. In the absence of antipodal
+% symmetry we obtain
 
 angle(v1,v2) / degree
 
@@ -46,6 +40,24 @@ angle(v1,v2) / degree
 % whereas, if antipodal symmetry is assumed we obtain
 
 angle(v1,v2,'antipodal') / degree
+
+%% Antipodal Symmetry in Density Estimation
+% 
+% Another example, where antipodal symmetry matters is <VectorsDensity.html
+% density estimation>. For ordinary directions we obtain an arbitrary
+% spherical function
+
+v = vector3d.rand(100)
+density = v.calcDensity;
+plot(density)
+
+%%
+% Whereas, if antipodal symmetry is present the resulting density function
+% will have antipodal symmetry as well
+
+density = v.calcDensity('antipodal')
+plot(density,'complete')
+
 
 %% Antipodal Symmetry in Experimental Pole Figures
 %
@@ -106,39 +118,3 @@ plotIPDF(odf,yvector)
 plotIPDF(odf,yvector,'antipodal')
 
 
-%% EBSD Colocoding
-%
-% Antipodal symmetry effects also the colocoding of ebsd plots. Let's first
-% import some data.
-
-mtexdata forsterite
-
-%%
-% Now we plot these data with a colorcoding according to the inverse
-% (100) pole figure. If we use the Laue group for inverse pole figure
-% color coding we add antipodal symmetry to the inverse pole figure
-
-ipfKey = ipfColorKey(ebsd('fo').CS.Laue);
-
-% plot the color key
-plot(ipfKey)
-
-%%
-% Here the colorized data
-
-plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))
-
-
-%%
-% If we use the point group of proper rotations this antipodal symmetry is
-% not present and a larger region of the inverse pole figure is colorized
-
-ipfKey = ipfColorKey(ebsd('fo').CS.properGroup);
-
-% the colorcode
-plot(ipfKey)
-
-%%
-% Here the colorized data
-
-plot(ebsd('fo'),ipfKey.orientation2color(ebsd('fo').orientations))

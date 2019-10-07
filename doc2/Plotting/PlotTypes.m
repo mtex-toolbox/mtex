@@ -32,7 +32,7 @@ scatter(ori)
 % Three-dimensional vectors, Miller indices, spherical grids are plotted as
 % single markers in a spherical projection. The shape, size, and color of
 % the markers can be adjusted using the following parameters (see also
-% [[matlab:doc scattergroupproperties,scattergroup_properties]])
+% <matlab:doc('scattergroupproperties') scattergroup_properties>)
 %
 % |Marker|, |MarkerSize|, |MarkerFaceColor|, |MarkerEdgeColor|
 
@@ -40,7 +40,7 @@ plot(zvector,'Marker','p','MarkerSize',15,'MarkerFaceColor','red','MarkerEdgeCol
 
 %%
 % One can also assign a label to a marker. The main options controlling the label
-% are (see [[matlab:doc text_props,text_properties]])
+% are (see <matlab:doc('text_props') text_properties>)
 %
 % |Label|, |Color|, |BackgroundColor|, |FontSize|
 
@@ -59,8 +59,9 @@ plot(pf)
 %
 % Contour plots are plots consisting only of contour lines and are mainly
 % used for pole figure and ODF plots. The number or exact location of the
-% contour levels can be specified as an option. (See [[matlab:doc
-% contourgroupproperties,contourgroup_properties]] for more options!)
+% contour levels can be specified as an option. See
+% <matlab:doc('contourgroupproperties') contourgroup_properties> for more
+% options!
 
 plotPDF(odf,Miller(1,0,0,cs),'contour',0:0.5:4,'antipodal')
 
@@ -87,7 +88,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','resolution',10*degree)
 % Line plots are used by MTEX for one-dimensional ODF plots, plots of Fourier
 % coefficients and plots of kernel functions.
 % They can be customized by the standard MATLAB linespec
-% options. See [[matlab:doc linespec,linespec]]!
+% options. See <matlab:doc('linespec') linespec>!
 
 f = fibre(Miller(1,0,0,cs),xvector);
 

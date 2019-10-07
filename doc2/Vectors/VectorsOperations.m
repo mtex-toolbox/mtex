@@ -1,9 +1,8 @@
-%% Operations with Rotations
+%% Vector Operations
 %
-%% Calculating with Specimen Directions
-%
-% In MTEX, one can calculate with specimen directions as with ordinary
-% numbers, i.e. we can use the predefined vectors  <xvector.html
+%%
+% In MTEX, one can calculate with three dimensional directions as with
+% ordinary numbers, i.e. we can use the predefined vectors  <xvector.html
 % vector3d.X>, <yvector.html vector3d.Y>, and <zvector.html vector3d.Z> and
 % set
 
@@ -12,7 +11,7 @@ v = vector3d.X + 2*vector3d.Y
 %%
 % Moreover, all basic vector operations as <vector3d.plus.html "+">,
 % <vector3d.minus.html "-">, <vector3d.times.html "*">, <vector3d.dot.html
-% inner product>, <vector3d.cross.html,cross product> are implemented in
+% inner product>, <vector3d.cross.html cross product> are implemented in
 % MTEX.
 
 u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
@@ -21,14 +20,15 @@ u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
 % Besides the standard linear algebra operations, there are also the
 % following functions available in MTEX.
 %
-%  <vector3d.angle.html angle(v1,v2)>  % angle between two specimen  directions
-%  <vector3d.dot.html dot(v1,v2)>      % inner product
-%  <vector3d.cross.html cross(v1,v2)>  % cross product
-%  <vector3d.norm.html norm(v)>        % length of the specimen directions
-%  <vector3d.sum.html sum(v)>          % sum over all specimen directions in v
-%  <vector3d.mean.html mean(v)>        % mean over all specimen directions in v  
-%  <vector3d.polar.html,polar(v)>      % conversion to spherical coordinates
-
+% || <vector3d.angle.html angle(v1,v2)>  || angle between two specimen  directions ||
+% || <vector3d.dot.html dot(v1,v2)>      || inner product ||
+% || <vector3d.cross.html cross(v1,v2)>  || cross product ||
+% || <vector3d.norm.html norm(v)>        || length of the specimen directions ||
+% || <vector3d.normalize.html normalize(v)> || normalize length to 1 ||
+% || <vector3d.sum.html sum(v)>          || sum over all specimen directions in v ||
+% || <vector3d.mean.html mean(v)>        || mean over all specimen directions in v  ||
+% || <vector3d.polar.html,polar(v)>      || conversion to spherical coordinates ||
+%
 % A simple example for applying the norm function is to normalize a set of
 % specimen directions
 
@@ -71,5 +71,3 @@ v(1:5)
 % degree
 
 scatter(v(v.theta<60*degree),'grid','on')
-
-

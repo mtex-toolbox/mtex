@@ -1,7 +1,7 @@
 function v = byPolar(polarAngle,azimuthAngle,varargin)
 % define vector3d by polar angles
 %
-%  Syntax
+% Syntax
 %   v = vector3d.byPolar(polarAngle,azimuthAngle)
 %
 % Input

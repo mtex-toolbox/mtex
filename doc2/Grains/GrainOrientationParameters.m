@@ -148,7 +148,7 @@ mtexColorbar
 
 
 %% The sample data set
-% Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
+% Let us first import some EBSD data
 
 mtexdata forsterite
 plotx2east
@@ -461,3 +461,4 @@ mtexColorbar('multiples of random distribution')
 % || <triplePoints.html *grains.triplePoints*>  || list of  triple points|| 
 % || *grains.x* || x coordinates of the vertices|| 
 % || *grains.y* || y coordinates of the vertices|| 
+%
