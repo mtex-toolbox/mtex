@@ -1,4 +1,4 @@
-PoleFigureInput         Import
+PoleFigureImport        Import
 PoleFigurePlot          Plot
 PoleFigureCorrection    Modify
 PoleFigureSimulation    Simulation
