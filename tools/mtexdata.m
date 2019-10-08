@@ -225,6 +225,8 @@ CS = {...
   crystalSymmetry('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
   crystalSymmetry('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
 
+plotx2east;
+plotzOutOfPlane
 ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),'CS',CS, ...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
 
@@ -268,6 +270,12 @@ function ebsd = mtexdata_twins
 plotx2east; plotzOutOfPlane
 CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium','x||a*')
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
+
+
+function ebsd = mtexdata_copper
+
+plotx2east; plotzOutOfPlane
+ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','copper.osc'),'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------
