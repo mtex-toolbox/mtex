@@ -41,37 +41,47 @@ cs_x2a = crystalSymmetry('321',[1.7,1.7,1.4],'X||a','Z||c');
 
 % visualize the resuls
 plot(cs_x2a)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-annotate(cs.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
-
+annotate(cs_x2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
+annotate(cs_x2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
+annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
+annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 %%
 % In contrast the following command alignes the y axes to the a axes and
 % the z axes to the c axes.
 
 cs_y2a = crystalSymmetry('321',[1.7,1.7,1.4],'y||a','Z||c');
 plot(cs_y2a)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-annotate(cs.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
+annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
+annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
+annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
+annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
 %%
-% We observe that there is visually no difference between these two setups.
-% The reason is that visualizations relative to the crystal reference
-% system, e.g., inverse pole figures, are in MTEX aligned on the screen
-% according to the b-axis. In the above plots the plotting convention is
-% defined as b axis to the east. This can be easily modified with
+% The only difference between the above two plots is the position of the x
+% and y axes. The reason is that visualizations relative to the crystal
+% reference system, e.g., inverse pole figures, are in MTEX aligned on the
+% screen according to the b-axis. 
+%
+% This on secreen alignment can be easily modified by
 
+% change on screen alignment
 plota2east
-cs_y2a = crystalSymmetry('-3m',[1.7,1.7,1.4],'y||a','Z||c');
-plot(cs_x2a)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-annotate(cs.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
+
+% redo last plot
+plot(cs_y2a)
+annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
+annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
+annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
+annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
 % set old default back
 plotb2east
 
 %%
-% The difference between both setups becomes more vsible if we plot crystal
-% shapes in the x, y, z coordinate system
+% It should be stressed that the alignment between the Eucledean crystal
+% axes x, y, z and the crystallographic axes a, b and c is crucial for many
+% computations. The difference between both setups becomes more vsible if
+% we plot crystal shapes in the x, y, z coordinate system
 
 cS_x2a = crystalShape.quartz(cs_x2a)
 

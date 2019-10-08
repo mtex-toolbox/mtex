@@ -1,6 +1,7 @@
-CrystalSymmetries
-CrystalReferenceSystem
-CrystalShapes
-CrystalDirections
-FundamentalSector
-QuasiCrystals
+CrystalSymmetries       Symmetries
+CrystalDirections       Miller Indicies
+CrystalOperations       Operations
+CrystalReferenceSystem  Reference System
+CrystalShapes           Crystal Shapes
+FundamentalSector       Fundamental Sector
+QuasiCrystals           Quasi Symmetries
