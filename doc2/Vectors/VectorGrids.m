@@ -3,13 +3,27 @@
 %%
 %
 
-S2G = regularS2Grid('resolution',5*degree,'upper')
+grid1 = regularS2Grid('resolution',7*degree)
 
-plot(S2G,'upper')
+plot(grid1,'upper')
 
 %%
 % 
 
-S2G = equispacedS2Grid('resolution',5*degree,'upper')
+grid2 = equispacedS2Grid('resolution',7*degree)
 
-plot(S2G,'upper')
+plot(grid2,'upper')
+
+%%
+
+grid3 = HEALPixS2Grid('resolution',7*degree)
+
+plot(grid3,'upper')
+
+%% Comparison of Uniformity
+
+plot([grid1.calcDensity,grid2.calcDensity,grid3.calcDensity],'upper')
+mtexColorbar
+
+%%
+

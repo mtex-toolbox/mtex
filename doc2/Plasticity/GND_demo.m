@@ -176,9 +176,9 @@ a = norm(ebsd.CS.aAxis);
 % According to Hull & Bacon the energy U of edge and screw dislocations is
 % given by the formulae
 %
-% $$ U_{\text{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
+% $$ U_{\mathrm{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
 %
-% $$ U_{\text{edge}} = (1-\nu) U_{\text{screw}} $$
+% $$ U_{\mathrm{edge}} = (1-\nu) U_{\mathrm{screw}} $$
 %
 % where
 % 

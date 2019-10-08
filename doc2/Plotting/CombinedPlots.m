@@ -1,12 +1,9 @@
 %% Combined Plots
+%
+%%
 % Explains how to combine several plots, e.g. plotting on the
 % top of an inverse pole figure some important crystal directions.
 %
-%% Open in Editor
-%
-%% Contents
-%
-
 %% General Principle
 % In order to tell MATLAB to plot one plot right on the top of an older
 % plot one has to use the commands <matlab:doc('hold') hold all> and

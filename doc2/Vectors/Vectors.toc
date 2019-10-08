@@ -2,5 +2,5 @@ VectorsImport      Import
 VectorsExport      Export 
 VectorsOperations  Operations
 VectorDensityEstimation Density Estimation
-VectorAxes         Axes
+VectorsAxes        Axes
 VectorGrids        Spherical Grids
