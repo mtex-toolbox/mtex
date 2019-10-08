@@ -6,6 +6,7 @@ EBSDOrientationPlots  Orientation Plots
 EBSDSelect          
 EBSDOrientationAnalysis
 GrainReconstruction   Grain Reconstruction
+EBSDGrid              Square and Hex Grids
 EBSDDenoising         Denoising
 EBSD2ODF              ODF Estimation
 EBSDOrientationPlots  
