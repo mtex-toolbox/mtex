@@ -149,7 +149,7 @@ if ~isempty(id)
   if ebsd.isIndexed(id)
     txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
-  if ~isempty(ebsd.grainId)
+  try
     txt{5} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)
