@@ -1,5 +1,8 @@
-Contribute2Doc
+changelog
 ListsAndIndexing
+GeneralConceptsConfiguration
+GeneralConceptsOptions
 Properties
 DensityEstimation
 ClusterDemo
+Contribute2Doc
