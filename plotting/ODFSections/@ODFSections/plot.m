@@ -21,7 +21,8 @@ add2all = check_option(varargin,'add2all') || ...
   (numSections(oS)>1 && length(mtexFig.children)>1);
 
 if ~isNew && add2all 
-  for axx = mtexFig.children.'
+  wasHold = ishold;
+  for axx = mtexFig.children.'  
     hold(axx,'on');
   end
   mtexFig.currentId = 1;
@@ -133,7 +134,13 @@ uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquival
 set(dcm,'UIContextMenu',hcmenu)
 
 set(dcm,'UpdateFcn',@tooltip)
-     
+   
+if ~isNew && add2all && ~wasHold 
+  for axx = mtexFig.children.'
+    hold(axx,'off');
+  end
+end
+
 %end
 
 
