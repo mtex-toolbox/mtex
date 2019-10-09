@@ -80,7 +80,7 @@ plot(pf)
 % Make sure that the Miller indices are correctly assigned to the pole
 % figures and that the alignment of the specimen coordinate system, i.e.,
 % X, Y, Z is correct. In case of outliers or misaligned data, you may want
-% to correct your raw data. See <ModifyPoleFigureData.html how to modify
+% to correct your raw data. See <PoleFigureCorrection.html how to modify
 % pole figure data> for further information.
 %
 %% ODF Estimation
@@ -95,10 +95,10 @@ odf = calcODF(pf,'silent')
 %%
 % Note that reconstructing an ODF from pole figure data is a severely ill-
 % posed problem, i.e., it does *not* provide a unique solution. A more
-% throughout the discussion on the ambiguity of ODF reconstruction from pole
-% figure data can be found <PF2ODFAmbiguity.html here>. As a rule of thumb:
-% as more pole figures you have and as more consistent you pole figure data
-% are as better you reconstructed ODF will be.
+% throughout the discussion on the ambiguity of ODF reconstruction from
+% pole figure data can be found <PoleFigure2ODFAmbiguity.html here>. As a
+% rule of thumb: as more pole figures you have and as more consistent you
+% pole figure data are as better you reconstructed ODF will be.
 %
 % To check how well your reconstructed ODF fits the measured pole figure
 % data do

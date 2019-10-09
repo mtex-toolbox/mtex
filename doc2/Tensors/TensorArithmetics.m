@@ -36,7 +36,7 @@ eps = strainTensor(diag([1 0 -1]))
 %
 % and turns it into the stress tensor $\sigma$. In MTEX such tensor
 % products can be computed in its mpst general form by the command
-% <tensor.EinsteinSum.html EinsteinSum>.
+% <EinsteinSum.html EinsteinSum>.
 
 sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 

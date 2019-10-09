@@ -436,29 +436,10 @@ mtexColorbar('multiples of random distribution')
 % below a table of most of the properties that are stored or can be
 % computed for grains
 %
-% || <grain2d.area.html *grains.area*>  || grain area in square <grain2d.index.html grains.scanUnit>  || 
-% || <grain2d.aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
-% || <grainBoundary.html *grains.boundary*>  || list of boundary segments|| 
-% || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
-% || <grain2d.paris.html *grains.paris*>  || area difference between grain and its convex hull|| 
-% || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
-% || *grains.CS* || crystal symmetry (single phase only)|| 
-% || <grain2d.diameter.html *grains.diameter*>  || diameter in <grain2d.index.html grains.scanUnit>  || 
-% || <grain2d.equivalentPerimeter.html *grains.equivalentPerimeter*>  || the perimeter of the fitted ellipse  || 
-% || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || the radius of the fitted ellipse  || 
-% || *grains.GOS* || grain orientation spread|| 
-% || *grains.grainSize* || number of measurements per grain|| 
-% || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
-% || *grains.id* || grain id|| 
-% || <grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments|| 
-% || *grains.meanOrientation* || meanOrientation (single phase only)||
-% || *grains.mineral* || mineral name (single phase only)|| 
-% || <grain2d.neigbours.html *grains.neighbours*>  || number and ids of neighboring grains  || 
-% || *grains.phase* || phase identifier|| 
-% || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in <grain2d.index.html grains.scanUnit>  || 
-% || <grain2d.principalComponents.html *grains.principalComponents*>  || length and width of the fitted ellipse || 
-% || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / perimeter of the fitted ellipse|| 
-% || <triplePoints.html *grains.triplePoints*>  || list of  triple points|| 
-% || *grains.x* || x coordinates of the vertices|| 
-% || *grains.y* || y coordinates of the vertices|| 
+% || *grains.CS* || crystal symmetry (single phase only) || 
+% || *grains.GOS* || grain orientation spread || 
+% || *grains.id* || grain id || 
+% || *grains.meanOrientation* || meanOrientation (single phase only) ||
+% || *grains.mineral* || mineral name (single phase only) || 
+% || *grains.phase* || phase identifier || 
 %

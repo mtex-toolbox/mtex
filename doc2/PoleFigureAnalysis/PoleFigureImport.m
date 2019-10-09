@@ -6,7 +6,7 @@
 % diffraction data. Once such an object has been created the data can be
 % <ModifyPoleFigureData.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
-% <PoleFigure2odf.html PoleFigure to ODF estimation>.
+% <PoleFigure2ODF.html PoleFigure to ODF estimation>.
 %
 %% Importing pole figure data using the import wizard
 %
@@ -39,11 +39,11 @@ import_wizard
 % The import wizard currently supports following pole figure formats:
 %
 % || <loadPoleFigure_ana.html **.ana*>            || EMSE ASCII pole figure format            || 
-% || <loadPoleFigure_dubna.html **.cns*>          || Dubna ASCII pole figure format, regular grid. ||
-% || <loadPoleFigure_cnvindex.html **.cnv*>       || Dubna ASCII pole figure format, experimental grid.||
+% || <loadPoleFigure_dubna.html **.cns*>          || Dubna ASCII pole figure format, regular grid ||
+% || <loadPoleFigure_cnvindex.html **.cnv*>       || Dubna ASCII pole figure format, experimental grid ||
 % || <loadPoleFigure_geesthacht.html **.dat*>     || Geesthacht ASCII pole figure format.     ||
 % || <loadPoleFigure_popla.html **.epf*, **.gpf*> || Popla ASCII pole figure format.          ||
-% || <loadPoleFigure_labotex.html **.epf*, **.ppf*, **.pow **> || LaboTEX ASCII pole figure format.||
+% || <loadPoleFigure_labotex.html **.epf*, **.ppf*, **.pow **> || LaboTEX ASCII pole figure format ||
 % || <loadPoleFigure_aachen_exp.html **.exp*>     || Aachen ASCII pole figure format.         ||
 % || <loadPoleFigure_ibm.html **.ibm*>            || IBM ASCII pole figure format.            ||
 % || <loadPoleFigure_juelich.html **.jul*>        || Juelich ASCII pole figure format.        ||
@@ -59,7 +59,7 @@ import_wizard
 % || <loadPoleFigure_xrdml.html **.xrdml*>        || PANalytical XML data format.             ||
 % || <loadPoleFigure_aachen.html **.**>           || Aachen ASCII pole figure format.         ||
 %
-% See <loadPoleFigure.html loadPoleFigure> for further information or follow
+% See <PoleFigure.load.html PoleFigure.load> for further information or follow
 % the hyperlinks of the table above for an example.
 %
 % If the interface is not automatically recognized, but the data has the
@@ -86,7 +86,7 @@ import_wizard
 %% The Import Script
 %
 % Diffraction data stored in one of the formats above can also be imported
-% using the command <loadPoleFigure.html loadPoleFigure>. It automatically
+% using the command <PoleFigure.load.html PoleFigure.load>. It automatically
 % detects the data format and imports the data. In dependency of the data
 % format, it might be necessary to specify the Miller indices and the
 % structure coefficients. The general syntax is

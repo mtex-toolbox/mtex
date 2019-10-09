@@ -8,8 +8,8 @@
 mtexdata dubna
 
 %%
-% See <ImportPoleFigureData.html interfaces> for more infomation how to import
-% pole figure data and to create a pole figure object. 
+% See <PoleFigureImport.html Import> for more infomation how to import
+% pole figure data and to create a pole figure object.
 
 % plot pole figures
 plot(pf)
@@ -103,8 +103,8 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 %
 % In the following example, the zero range method is applied with a
 % threshold 100. For more options to control the zero range method see the
-% documentation of <PoleFigure.zero_range.html zero_range> or <PoleFigure.plot_zero_range.html
-% plot_zero_range>.
+% documentation of <zeroRangeMethod_index.html zero_range> or
+% <zeroRangeMethod.plot.html zeroRangeMethod.plot>.
 
 odf = calcODF(pf,'zero_range')
 plotPDF(odf,h,'antipodal','silent','superposition',c)
@@ -114,9 +114,9 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 % _Ghost correction_ is a technique first introduced by Matthies that
 % increases the uniform portion of the estimated ODF to reduce the so
 % called _ghost error_. It applies especially useful in the case of week 
-% ODFs. The classical example is the <SantaFe_demo.html SantaFe model
+% ODFs. The classical example is the <SantaFe.html SantaFe model
 % ODF>. An analysis of the approximation error under ghost correction can
-% be found <PoleFigureSimulation_demo.html here>
+% be found <PoleFigureSantaFe.html here>
 %
 %% Theory
 %

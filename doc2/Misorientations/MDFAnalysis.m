@@ -87,7 +87,7 @@ hold off
 %%
 % For computing the exact values see the commands
 % <ODF.calcAngleDistribution.html calcAngleDistribution(mdf)> and
-% <EBSD.calcAngleDistribution.html calcAngleDistribution(grains)>.
+% <orientation.calcAngleDistribution.html calcAngleDistribution(ori)>.
  
 %% SUB: Axis distribution
 %
@@ -105,4 +105,4 @@ plotAxisDistribution(mdf)
 %%
 % For computing the exact values see the commands
 % <ODF.calcAxisDistribution.html calcAxisDistribution(mdf)> and
-% <EBSD.calcAxisDistribution.html calcAxisDistribution(grains)>.
+% <orientation.calcAxisDistribution.html calcAxisDistribution(grains)>.

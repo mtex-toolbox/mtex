@@ -91,17 +91,17 @@ plot(ebsd)
 %
 % MTEX supports the following EBSD data formats:
 %
-% || <loadEBSD_ang.html     .ang> || TSL single orientation files.      ||
-% || <loadEBSD_brukertxt.html .txt> || Bruker single orientation files. ||
-% || <loadEBSD_crc.html     .crc> || single orientation files. ||
-% || <loadEBSD_csv.html     .csv> || Oxford single orientation files.   ||
-% || <loadEBSD_ctf.html     .ctf> || HKL single orientation files.||
-% || <loadEBSD_dream3d.html .txt> || Dream 3d single orientation files.||
-% || <loadEBSD_ang.DRex     .DRex> || single orientation files. ||
-% || <loadEBSD_h5.html     .h5> || single orientation files. ||
-% || <loadEBSD_osc.html     .osc> || single orientation files. ||
-% || <loadEBSD_Oxfordcsv.html .csv> || single orientation files. ||
-% || <loadEBSD_generic.html .txt> || ASCII files with Euler angles as columns. ||
+% || <loadEBSD_ang.html     .ang> || TSL single orientation files.      || 
+% || <loadEBSD_brukertxt.html .txt> || Bruker single orientation files. || 
+% || <loadEBSD_crc.html     .crc> || single orientation files.          || 
+% || <loadEBSD_csv.html     .csv> || Oxford single orientation files.   || 
+% || <loadEBSD_ctf.html     .ctf> || HKL single orientation files.      || 
+% || <loadEBSD_dream3d.html .txt> || Dream 3d single orientation files. || 
+% || <loadEBSD_ang.DRex     .DRex> || single orientation files.         || 
+% || <loadEBSD_h5.html     .h5> || single orientation files.            || 
+% || <loadEBSD_osc.html     .osc> || single orientation files.          || 
+% || <loadEBSD_Oxfordcsv.html .csv> || single orientation files.        || 
+% || <loadEBSD_generic.html .txt> || ASCII files with Euler angles as columns. || 
 %
 % If the data is recognized as an ASCII list of orientations, phase and spatial
 % coordinates in the form 

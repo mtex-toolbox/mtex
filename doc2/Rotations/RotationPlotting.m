@@ -2,7 +2,7 @@
 %
 %%
 %
-% The function <rotation.scatter.html scatter> allows you to visualize a
+% The function <quaternion.scatter.html scatter> allows you to visualize a
 % rotation in Rodriguez space.
 
 % define 100 random rotations
