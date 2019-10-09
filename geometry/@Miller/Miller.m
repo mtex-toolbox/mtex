@@ -173,14 +173,7 @@ classdef Miller < vector3d
       % set dispStyle
       if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
 
-    end
-    
-    
-    function v = vector3d(m)
-      v = vector3d(m.x,m.y,m.z);
-      v.antipodal = m.antipodal;
-      v.opt = m.opt;
-    end
+    end        
     
     % -----------------------------------------------------------
     
