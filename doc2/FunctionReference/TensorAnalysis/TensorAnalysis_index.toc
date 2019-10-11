@@ -12,4 +12,3 @@ ChristoffelTensor_index           ChristoffelTensor
 velocityGradientTensor_index      velocityGradientTensor
 deformationGradientTensor_index   deformationGradientTensor
 dislocationDensityTensor_index    dislocationDensityTensor
-SchmidTensor_index                SchmidTensor
