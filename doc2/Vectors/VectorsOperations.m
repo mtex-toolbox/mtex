@@ -27,7 +27,7 @@ u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
 % || <vector3d.normalize.html normalize(v)> || normalize length to 1 ||
 % || <vector3d.sum.html sum(v)>          || sum over all specimen directions in v ||
 % || <vector3d.mean.html mean(v)>        || mean over all specimen directions in v  ||
-% || <vector3d.polar.html,polar(v)>      || conversion to spherical coordinates ||
+% || <vector3d.polar.html polar(v)>      || conversion to spherical coordinates || 
 %
 % A simple example for applying the norm function is to normalize a set of
 % specimen directions
