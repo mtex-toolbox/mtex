@@ -68,7 +68,7 @@ try
 
     props = rmfield(props,{'Phi','phi1','phi2','Phase'});
 
-    ebsd = EBSD(rot,phases,CS,'options',props);
+    ebsd = EBSD(rot,phases,CS,props);
 
     ind = props.x > -11111;
     ebsd = ebsd(ind);

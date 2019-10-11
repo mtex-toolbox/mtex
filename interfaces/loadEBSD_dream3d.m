@@ -12,7 +12,7 @@ end
 uphases = unique(data.Phases);
 CS = get_option(varargin,'CS',repmat({crystalSymmetry('cubic')},numel(uphases),1));
 
-ebsd = EBSD(data.Rotations,data.Phases,CS,'unitCell', unitCell,'Options',opts);
+ebsd = EBSD(data.Rotations,data.Phases,CS,opts,'unitCell', unitCell);
 
 
 function api = localGetApi(fname)
