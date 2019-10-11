@@ -1,13 +1,6 @@
 %% MTEX vs. Bunge Convention
-% Discusses the differences of the orientations definition by Bunge and
-% MTEX.
 %
-%% Open in Editor
-%
-%% Contents
-%
-%% The different definitions
-%
+%%
 % For histrical reasons MTEX defines orientations in a slightly different
 % way than they have been defined by Bunge. As explained in topic
 % <CrystalOrientations.html orientations> MTEX defines them as coordinate

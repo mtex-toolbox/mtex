@@ -1,14 +1,5 @@
 %% Slip Systems
-% How to analyze slip transmission at grain boundaries
 %
-%%
-%
-%
-%% Open in Editor
-%
-%% Contents
-%
-
 %% Burgers vector and normal directions
 % 
 % Consider hexagonal symmetry of alpha-Titanium
@@ -48,9 +39,4 @@ sSBasalSym = sSBasal.symmetrise('antipodal')
 sSBasalSym.b.norm
 
 %% Rotating slip systems
-
-
-
-
-
 
