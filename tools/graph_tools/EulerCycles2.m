@@ -1,11 +1,14 @@
 function [cycles,Fid] = EulerCycles2(F)
 %
 % Syntax
+%   [cycles,Fid] = EulerCycles2(F)
 %
 % Input
-%
+%  F - nx2 matrix of vertices
 % Output
 %
+%  cycles -  
+%  Fid    -
 
 [~,ind,FF] = unique(F);
 FF = reshape(FF,[],2);

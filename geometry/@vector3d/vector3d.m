@@ -18,21 +18,44 @@ classdef vector3d < dynOption
   methods
     
     function v = vector3d(varargin)
-      % Constructor
+      % constructor of the class vector3d
+      %
+      % Description 
+      % Variables of type vector3d represent three dimensional vectors
+      % given by coordinates x, y, z.
       %
       % Syntax
       %   v = vector3d(x,y,z)
       %   v = vector3d(x,y,z,'antipodal')
-      %   v = vector3d('polar',theta,rho)
+      %   v = vector3d.byPolar(theta,rho)
       %
       % Input
       %  x,y,z - cart. coordinates
       %
+      % Output
+      %  v - @vector3d
+      %
       % Flags
-      %   antipodal - consider vector as an axis and not as an direction
+      %  antipodal - <VectorsAxes.html consider vector as an axis>
       %
       % See also
-      % AxialDirectional
+      % VectorDefinition VectorsOperation VectorsAxes VectorsImport VectorsExport 
+      %
+      % Class Properties
+      %  x, y, z      - cart. coordinates
+      %  isNormalized - whether the vector is a direction
+      %  antipodal    - <VectorsAxes.html whether the vector is an axis>
+      %
+      % Dependent Class Properties
+      %  theta      - polar angle in radiant
+      %  rho        - azimuthal angle in radiant
+      %  resolution - mean distance between the points on the sphere
+      %  xyz        - cart. coordinates as matrix
+      %
+      % Derived Classes
+      %  @Miller - crystal directions
+      %  @S2Grid - sphercial grid
+      %
 
       if nargin == 0
       elseif nargin <= 2

@@ -1,28 +1,4 @@
 classdef Miller < vector3d
-% define a crystal direction by Miller indice
-%
-% Syntax
-%   m = Miller(h,k,l,cs) 
-%   m = Miller(h,k,l,cs,'hkl') 
-%   m = Miller(h,k,l,cs,'pole') 
-%   m = Miller(h,k,i,l,cs) 
-%   m = Miller('(hkl)',cs) 
-%   m = Miller(u,v,w,cs,'uvw') 
-%   m = Miller(u,v,t,w,cs,'uvw') 
-%   m = Miller(u,v,w,cs,'direction') 
-%   m = Miller('[uvw]',cs) 
-%   m = Miller('[uvw]\[uvw],cs) 
-%   m = Miller('(hkl)\(hkl),cs) 
-%   m = Miller(x,cs) % transform vector3d to Miller
-%
-% Input
-%  h,k,l,i - Miller indice of the plane normal
-%  u,v,w,t - Miller indice of a direction
-%  x  - @vector3d
-%  cs - crystal @symmetry
-%
-% See also
-% vector3d_index symmetry_index
   
   properties
     dispStyle = 'hkl' % output convention hkl or uvw
@@ -56,29 +32,39 @@ classdef Miller < vector3d
     function m = Miller(varargin)
       % define a crystal direction by Miller indice
       %
-      % Syntax
-      % m = Miller(h,k,l,cs) -
-      % m = Miller(h,k,l,cs,'hkl') -
-      % m = Miller(h,k,l,cs,'pole') -
-      % m = Miller(h,k,i,l,cs) -
-      % m = Miller('(hkl)',cs) -
-      % m = Miller(u,v,w,cs,'uvw') -
-      % m = Miller(u,v,t,w,cs,'uvw') -
-      % m = Miller(u,v,w,cs,'direction') -
-      % m = Miller('[uvw]',cs) -
-      % m = Miller('[uvw]\[uvw],cs) -
-      % m = Miller('(hkl)\(hkl),cs) -
-      % m = Miller(x,cs) -
+      % Description
+      %  Variables of type Miller represent crystal directions, i.e.,
+      %  directions relative to the crystal coordinate system.
       %
+      % Syntax
+      %   m = Miller(h,k,l,cs)
+      %   m = Miller(H,K,I,L,cs)
+      %   m = Miller(u,v,w,cs,'uvw')
+      %   m = Miller(U,V,T,W,cs,'UVTW')
+      %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
+      %   m = Miller('(hkl)',cs)
+      %   m = Miller('[uvw]',cs)
+      %   m = Miller('[uvw]\[uvw],cs)
+      %   m = Miller('(hkl)\(hkl),cs)
+      %   m = Miller(x,cs)
       %
       % Input
-      %  h,k,l,i(optional) - Miller indice of the plane normal
-      %  u,v,w,t(optional) - Miller indice of a direction
-      %  x  - @vector3d
-      %  cs - crystal @symmetry
+      %  h,k,l   - three digit reciprocal coordinates
+      %  H,K,I,L - four digit reciprocal coordinates
+      %  u,v,w   - three digit direct coordinates
+      %  U,V,T,W - four digit direct coordinates
+      %  x - @vector3d
+      %  cs - @crystalSymmetry
       %
       % See also
-      % vector3d_index symmetry_index
+      % CrystalDirections CrystalOperations CrystalReferenceSystem
+      % CrystalSymmetries FundamentalSector vector3d.vector3d 
+      % crystalSymmetry.crystalSymmetry 
+      %
+      % Class Properties
+      %  CS        - @crystalSymmetry
+      %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
+      %
       
       if nargin == 0, return; end
       
