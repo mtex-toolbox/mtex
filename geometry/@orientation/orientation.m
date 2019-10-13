@@ -1,9 +1,9 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
-% orientation - class representing orientations
 %
-% This MTEX class represents orientations and misorientations.
+% The class *orientation* represents orientations and misorientations.
 %
 % Syntax
+%   ori = orientation(rot)
 %   ori = orientation.byEuler(phi1,Phi,phi2,cs,ss)
 %   ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',cs,ss)
 %   ori = orientation.byMiller([h k l],[u v w],cs,ss)
@@ -13,14 +13,22 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 %   ori = orientation.goss(cs)
 %   ori = orientation.cube(cs)
 %
-% predefined orientations
+% Input
+%  rot    - @rotation
+%  cs, ss - @crystalSymmetry / @specimenSymmetry
 %
-%    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
-%    * 'Goss', 'invGoss'
-%    * 'Copper', 'Copper2'
-%    * 'SR', 'SR2', 'SR3', 'SR4'
-%    * 'Brass', 'Brass2'
-%    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
+% Output
+%  ori    - @orientation
+%
+% Class Properties
+%  CS, SS          - @crystalSymmetry / @specimenSymmetry
+%  antipodal       - grain exchange symmetry for misorientations
+%  phi1, Phi, phi2 - Euler angles
+%  i               - inversion
+%  a, b, c, d      - quaternion components
+%
+% See also
+% DefinitionAsCoordinateTransform CrystalOperations CrystalReferenceSystem
 
 properties
 
@@ -32,23 +40,7 @@ end
 
 methods
 
-  function o = orientation(varargin)
-    % defines an orientation
-    %
-    % Syntax
-    %   ori = orientation(rot,cs,ss)
-    %   ori = orientation(quat,cs,ss)
-    %
-    % Input
-    %  rot    - @rotation
-    %  quat   - @quaternion
-    %  cs, ss - @symmetry
-    %
-    % Ouptut
-    %  ori    - @orientation
-    %
-    % See also
-    % orientation_index
+  function o = orientation(varargin)    
 
     % find and remove symmetries
     args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);

@@ -1,4 +1,37 @@
 classdef Miller < vector3d
+  %
+  % The class *Miller* describes crystal directions, i.e., directions
+  % relative to the crystal coordinate system. Internally, these are stored
+  % with respect to an Eucledean reference system.
+  %
+  % Syntax
+  %   m = Miller(h,k,l,cs)
+  %   m = Miller(H,K,I,L,cs)
+  %   m = Miller(u,v,w,cs,'uvw')
+  %   m = Miller(U,V,T,W,cs,'UVTW')
+  %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
+  %   m = Miller('(hkl)',cs)
+  %   m = Miller('[uvw]',cs)
+  %   m = Miller('[uvw]\[uvw],cs)
+  %   m = Miller('(hkl)\(hkl),cs)
+  %   m = Miller(x,cs)
+  %
+  % Input
+  %  h,k,l   - three digit reciprocal coordinates
+  %  H,K,I,L - four digit reciprocal coordinates
+  %  u,v,w   - three digit direct coordinates
+  %  U,V,T,W - four digit direct coordinates
+  %  x       - @vector3d
+  %  cs      - @crystalSymmetry
+  %
+  % Class Properties
+  %  CS        - @crystalSymmetry
+  %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
+  %
+  % See also
+  % CrystalDirections CrystalOperations CrystalReferenceSystem
+  % CrystalSymmetries FundamentalSector vector3d.vector3d
+  % crystalSymmetry.crystalSymmetry
   
   properties
     dispStyle = 'hkl' % output convention hkl or uvw
@@ -30,41 +63,7 @@ classdef Miller < vector3d
   methods
     
     function m = Miller(varargin)
-      % define a crystal direction by Miller indice
-      %
-      % Description
-      %  Variables of type Miller represent crystal directions, i.e.,
-      %  directions relative to the crystal coordinate system.
-      %
-      % Syntax
-      %   m = Miller(h,k,l,cs)
-      %   m = Miller(H,K,I,L,cs)
-      %   m = Miller(u,v,w,cs,'uvw')
-      %   m = Miller(U,V,T,W,cs,'UVTW')
-      %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
-      %   m = Miller('(hkl)',cs)
-      %   m = Miller('[uvw]',cs)
-      %   m = Miller('[uvw]\[uvw],cs)
-      %   m = Miller('(hkl)\(hkl),cs)
-      %   m = Miller(x,cs)
-      %
-      % Input
-      %  h,k,l   - three digit reciprocal coordinates
-      %  H,K,I,L - four digit reciprocal coordinates
-      %  u,v,w   - three digit direct coordinates
-      %  U,V,T,W - four digit direct coordinates
-      %  x - @vector3d
-      %  cs - @crystalSymmetry
-      %
-      % See also
-      % CrystalDirections CrystalOperations CrystalReferenceSystem
-      % CrystalSymmetries FundamentalSector vector3d.vector3d 
-      % crystalSymmetry.crystalSymmetry 
-      %
-      % Class Properties
-      %  CS        - @crystalSymmetry
-      %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
-      %
+      % constructor
       
       if nargin == 0, return; end
       

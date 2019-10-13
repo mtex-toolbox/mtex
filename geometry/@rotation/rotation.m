@@ -1,29 +1,38 @@
 classdef rotation < quaternion & dynOption
-% defines an rotation
-%
-% Syntax
-%   rot = rotation.byEuler(phi1,Phi,phi2) 
-%   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ') 
-%   rot = rotation.axisAngle(v,omega) 
-%   rot = rotation.matrix(A)
-%   rot = rotation.map(u1,v1)
-%   rot = rotation.map(u1,v1,u2,v2) 
-%   rot = reflection(b)
-%   rot = rotation.inversion 
-%   rot = rotation.byRodrigues(v)
-%   rot = rotation(fibre(u1,v1),'resolution',5*degree)
-%   rot = rotation(quaternion(a,b,c,d))
-%
-% Input
-%  u1,u2     - @vector3d
-%  v, v1, v2 - @vector3d
-%  n         - @vector3d
-%
-% Output
-%  rot - @rotation
-%
-% See also
-% quaternion_index orientation_index
+  % 
+  % The class *rotation* allows to work with three dimensional orthogonal
+  % matrices.
+  %
+  % Syntax
+  %   rot = rotation.byEuler(phi1,Phi,phi2)
+  %   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ')
+  %   rot = rotation.axisAngle(v,omega)
+  %   rot = rotation.matrix(A)
+  %   rot = rotation.map(u1,v1)
+  %   rot = rotation.map(u1,v1,u2,v2)
+  %   rot = reflection(b)
+  %   rot = rotation.inversion
+  %   rot = rotation.byRodrigues(v)
+  %   rot = rotation(fibre(u1,v1),'resolution',5*degree)
+  %   rot = rotation(quaternion(a,b,c,d))
+  %
+  % Input
+  %  phi1, Phi, phi2 - Euler angles
+  %  u1, u2          - @vector3d
+  %  v, v1, v2       - @vector3d
+  %  n               - @vector3d
+  %
+  % Output
+  %  rot - @rotation
+  %
+  % Class Properties
+  %  phi1, Phi, phi2 - Euler angles
+  %  i               - inversion
+  %  a, b, c, d      - quaternion components
+  %
+  % See also
+  % RotationDefinition  RotationOperations RotationPlotting
+  %
 
   properties
     i = []; % 0 stands for proper rotation, 1 for improper rotation
