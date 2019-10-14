@@ -1,29 +1,32 @@
 %% Theory of Misorientations
+%
+%%
 % Misorientation describes the relative orientation of two grains with
 % respect to each other. Important concepts are twinnings and
-% CSL (coincidence site lattice),
-%
-%% Open in Editor
-%
-%% Contents
-%
-%%  The misorientation angle
-% First we import some EBSD data set, compute grains and plot them
-% according to their mean orientation. Next we highlight grain 70 and grain
-% 80
+% CSL (coincidence site lattice) misorientations. To illustrate this
+% concept at a practical example let us first import some Magnesium EBSD
+% data.
 
 mtexdata twins
+
 % use only proper symmetry operations
 ebsd('M').CS = ebsd('M').CS.properGroup;
+
+% compute grains
 grains = calcGrains(ebsd('indexed'),'threshold',5*degree)
 CS = grains.CS; % extract crystal symmetry
 
+%%
+% Next we plot the grains together with their mean orientation and
+% highlight grain 70 and grain 80
+
 plot(grains,grains.meanOrientation,'micronbar','off')
+
 hold on
 plot(grains([74,85]).boundary,'edgecolor','w','linewidth',2)
+hold off
 
 text(grains([74,85]),{'1','2'})
-
 
 %%
 % After extracting the mean orientation of grain 70 and 80

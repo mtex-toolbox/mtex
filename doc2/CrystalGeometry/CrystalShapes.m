@@ -1,8 +1,8 @@
 %% Crystal Shapes
+%
+%%
 % Crystal Shapes are used to visualize crystal orientations, twinning or
 % lattice planes.
-%
-%% Open in Editor
 %
 %% Simple crystal shapes
 %

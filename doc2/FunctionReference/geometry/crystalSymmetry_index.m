@@ -1,4 +1,4 @@
-%% Classes representing Geometry 
+%% The class crystalSymmetry
 %
 %%
 %
