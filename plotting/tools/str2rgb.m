@@ -6,6 +6,14 @@ if nargin == 0
   return;
 end
 
+% replace shortcuts by long color names
+if ischar(str) && length(str)==1
+  longNames = {'red','green','blue','yellow','cyan','black','white','magenta'};
+  shortNames = {'r','g','b','y','c','k','w','m'};
+  str = longNames{strcmpi(str,shortNames)};
+end
+
+
 oldNames = {'light blue','light green','light red',...
   'dark blue','dark green','dark red','Amethyst'};
 
@@ -16,8 +24,7 @@ if isnumeric(str)
   
   rgb = str;
   
-elseif any(strcmpi(str,{'blue','red','black','white','green','yellow',...
-    'cyan','magenta','b','r','k','w','g','y','c','m','none','flat'}))
+elseif any(strcmpi(str,{'none','flat'}))
 
   rgb = str;
 
