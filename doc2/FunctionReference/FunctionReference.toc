@@ -1,6 +1,6 @@
 geometry_index       Geometry
-EBSDAnalysis_index   EBSD
-ODFAnalysis_index    ODF
+EBSDAnalysis_index   EBSD Analysis
+ODFAnalysis_index    ODF Analysis
 PoleFigureAnalysis_index   Pole Figures
 TensorAnalysis_index Tensors
 SphericalFunctions_index          S2Fun

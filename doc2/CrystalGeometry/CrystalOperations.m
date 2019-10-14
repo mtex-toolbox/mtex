@@ -112,7 +112,7 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'noSymmetry') / degree
 %% Calculations
 %
 % Essentially all the operations defined for general directions, i.e. for
-% variables of type <vector3d_index.html vector3d> are also available for
+% variables of type <vector3d.vector3d.html vector3d> are also available for
 % Miller indices. In addition Miller indices interact with crystal
 % orientations. Consider the crystal orientation
 
@@ -125,9 +125,9 @@ ori = orientation.byEuler(10*degree,20*degree,30*degree,cs)
 ori * m1
 
 %%
-% By applying a <symmetry_index.html crystal symmetry> one obtains
-% the coordinates with respect to the specimen coordinate system of all
-% crystallographically equivalent specimen directions.
+% By applying a <crystalSymmetry.crystalSymmetry.html crystal symmetry> one
+% obtains the coordinates with respect to the specimen coordinate system of
+% all crystallographically equivalent specimen directions.
 
 p = ori * symmetrise(m1);
 plot(p,'grid')

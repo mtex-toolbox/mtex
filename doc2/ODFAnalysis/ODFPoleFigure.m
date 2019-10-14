@@ -19,9 +19,9 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 
 %% Pole Figures
-% Plotting some pole figures of an <ODF_index.html ODF> is straight forward
+% Plotting some pole figures of an <ODF.ODF.html ODF> is straight forward
 % using the <ODF.plotPDF.html plotPDF> command. The only mandatory
-% arguments are the ODF to be plotted and the <Miller_index.html Miller
+% arguments are the ODF to be plotted and the <Miller.Miller.html Miller
 % indice> of the crystal directions you want to have pole figures for.
 
 plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))

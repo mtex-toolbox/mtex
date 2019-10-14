@@ -2,7 +2,7 @@
 %
 %%
 % Three dimensional vectors in the Euclidean space are represented by
-% variables of the class <vector3d_index.html *vector3d*>.
+% variables of the class <vector3d.vector3d.html *vector3d*>.
 %
 %% Cartesian Coordinates
 % The standard way to define specimen directions is by its x, y and z

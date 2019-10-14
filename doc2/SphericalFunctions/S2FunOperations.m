@@ -83,16 +83,18 @@ cs = crystalSymmetry('6/m');
 sFs = symmetrise(sF1, cs);
 
 %%
-% * |sFs| is of type <S2FunHarmonicSym_index.html |S2FunHarmonicSym|>
+% * |sFs| is of type <S2FunHarmonicSym.S2FunHarmonicSym.html |S2FunHarmonicSym|>
 
 %%
 % *Gradient*
 %%
-% Calculate the gradient as a function |G| of type <S2VectorFieldHarmonic_index.html |S2VectorFieldHarmonic|>
+% Calculate the gradient as a function |G| of type
+% <S2VectorFieldHarmonic.S2VectorFieldHarmonic.html |S2VectorFieldHarmonic|>
 %
 G = grad(sF1);
 
 %%
-% The direct evaluation of the gradient is faster and returns <vector3d_index.html |vector3d|>
+% The direct evaluation of the gradient is faster and returns
+% <vector3d.vector3d.html |vector3d|>
 nodes = vector3d.rand(100);
 grad(sF1, nodes);

@@ -45,7 +45,7 @@ plot(sF1)
 %
 % If we have a function handle for the function we could create a
 % |S2FunHarmonic| via quadrature. At first lets define a function handle
-% which takes <vector3d_index.html |vector3d|> as an argument and returns
+% which takes <vector3d.vector3d.html |vector3d|> as an argument and returns
 % double:
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
@@ -147,8 +147,10 @@ sF1 = S2FunHarmonic.approximation(nodes, y)
 %%
 % *Definition via function handle*
 %
-% If we have a function handle for the function we could create a |S2FunHarmonic| via quadrature.
-% At first let us define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
+% If we have a function handle for the function we could create a
+% |S2FunHarmonic| via quadrature. At first let us define a function handle
+% which takes <vector3d.vector3d.html |vector3d|> as an argument and returns
+% double:
 
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
 %% 

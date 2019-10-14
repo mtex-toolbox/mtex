@@ -9,7 +9,7 @@ ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'])
 
 %%
 % This command automatically detects the file format and generates a
-% variable of type <EBSD_index.html EBSD> which contains all the
+% variable of type <EBSD.EBSD.html EBSD> which contains all the
 % information of the EBSD data set. Let us quickly do an orientation plot
 % of the Magnesium phase
 
@@ -51,7 +51,7 @@ import_wizard('EBSD')
 % * specimen symmetry and plotting conventions
 % 
 % The import wizard allows you to either creates directly a workspace
-% variable of type <EBSD_index.html EBSD> or to generates an m-file which
+% variable of type <EBSD.EBSD.html EBSD> or to generates an m-file which
 % contains all the customizations and allows you to import the data in
 % future sessions without the import wizzard. This last option is highly
 % recommended as the created script is also a good starting point for

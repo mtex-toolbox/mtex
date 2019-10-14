@@ -43,14 +43,14 @@ mtexColorbar       % create a new colorbar
 %
 % Pole figures and inverse pole figures are much better readable if they
 % include specimen or crystal directions. Using the MTEX command
-% <annotate.html annotate> one can easily add <vector3d_index.html specimen
-% coordinate axes> to a pole figure plot.
+% <annotate.html annotate> one can easily add <vector3d.vector3d.html
+% specimen coordinate axes> to a pole figure plot.
 
 annotate(zvector,'label',{'Z'},'BackgroundColor','w')
 
 %%
 % The command <annotate.html annotate> allows also to mark
-% <Miller_index.html crystal directions> in inverse pole figures.
+% <Miller.Miller.html crystal directions> in inverse pole figures.
 
 plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10)
 mtexColorMap white2black

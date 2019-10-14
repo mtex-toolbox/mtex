@@ -184,8 +184,8 @@ ylabel('shape factor')
 %
 % || <grain2d.area.html *grains.area*>  || grain area in square |grains.scanUnit|  || 
 % || <grain2d.aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
-% || <grainBoundary_index.html *grains.boundary*>  || list of boundary segments || 
-% || <grainBoundary_index.html *grains.innerBoundary*>  || list of inner boundary segments || 
+% || <grainBoundary.grainBoundary.html *grains.boundary*>  || list of boundary segments || 
+% || <grainBoundary.grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments || 
 % || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
 % || <grain2d.paris.html *grains.paris*>  || area difference between grain and its convex hull || 
 % || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
@@ -198,7 +198,7 @@ ylabel('shape factor')
 % || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in |grains.scanUnit| || 
 % || <grain2d.principalComponents.html *grains.principalComponents*>  || length and width of the fitted ellipse || 
 % || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / perimeter of the fitted ellipse || 
-% || <triplePointList_index.html *grains.triplePoints*>  || list of  triple points || 
+% || <triplePointList.triplePointList.html *grains.triplePoints*>  || list of  triple points || 
 % || *grains.x* || x coordinates of the vertices || 
 % || *grains.y* || y coordinates of the vertices || 
 

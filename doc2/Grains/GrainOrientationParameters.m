@@ -29,8 +29,7 @@ ebsd = ebsd('indexed');
 
 %%
 % 
-% The <grain2d_index.html grains> contain. We can
-% access these data by
+% The <grain2d.grain2d.html grains> contain. We can access these data by
 
 grain_selected = grains( grains.grainSize >=  1160)
 ebsd_selected = ebsd(grain_selected)

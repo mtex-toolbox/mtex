@@ -6,7 +6,7 @@
 %
 % Since lattice directions are always subject to a certain crystal
 % reference frame, the starting point for any crystal direction is the
-% definition of a variable of type <crystalSymmetry_index.html
+% definition of a variable of type <crystalSymmetry.crystalSymmetry.html
 % crystalSymmetry>
 
 cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
@@ -25,13 +25,13 @@ c = cs.cAxis
 % coordinates u, v, w with respect to these crystallographic axes. Such a
 % direction is commonly denoted by [uvw] with coordinates u, v, w called
 % Miller indices. In MTEX a lattice direction is represented by a variable
-% of type <Miller_index.html Miller> which is defined by
+% of type <Miller.Miller.html Miller> which is defined by
 
 m = Miller(1,0,1,cs,'uvw')
 
 %%
 % for values |u = 1|, |v = 0|, and, |w = 1|. To plot a crystal direction as
-% a <phericalProjection_index.html spherical projections> do
+% a <phericalProjection.phericalProjection.html spherical projections> do
 
 plot(m,'upper','labeled','grid')
 

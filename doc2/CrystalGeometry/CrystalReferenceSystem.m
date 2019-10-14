@@ -1,9 +1,10 @@
-%% Crystal Reference System
+%% The Crystal Reference System
 %
+%%
 % Commonly the crystal coordinate system is defined by the crystallographic
 % axes a, b, c. The length [a,b,c] and the angles [alpha,beta,gamma]
 % between theses axes needs to be specified when defining a variable of
-% type <CrystalSymmetry_index.html>.
+% type <crystalSymmetry.crystalSymmetry.html crystalSymmetry>.
 %
 
 cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])

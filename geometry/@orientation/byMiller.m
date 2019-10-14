@@ -2,7 +2,7 @@ function ori = byMiller(hkl,uvw,varargin)
 % define orientations by Miller Bravais indeces
 %
 % Description
-% Defines an <orientation_index.html,orientation> |ori|
+% Defines an <orientation.orientation.html orientation> |ori|
 % by Miller indece (hkl) and [uvw] such that |ori * (hkl) = 001| and 
 % |ori * [uvw] = 100|
 %

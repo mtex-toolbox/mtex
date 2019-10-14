@@ -44,7 +44,7 @@ sS.SchmidFactor(r)
 %%
 % Ommiting the tension direction r the command
 % <slipSystem_SchmidFactor.html SchmidFactor> returns the Schmid factor as
-% a <S2FunHarmonic_index.html spherical function>
+% a <S2FunHarmonic.S2FunHarmonic.html spherical function>
 
 SF = sS.SchmidFactor
 

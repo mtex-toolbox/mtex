@@ -3,7 +3,7 @@
 %%
 % This page describes how to use MTEX to estimate an ODF from pole figure
 % data. Starting point of any ODF reconstruction is a
-% <PoleFigure_index.html PoleFigure> object which can be created e.g. by
+% <PoleFigure.PoleFigure.html PoleFigure> object which can be created e.g. by
 
 mtexdata dubna
 
@@ -103,7 +103,7 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 %
 % In the following example, the zero range method is applied with a
 % threshold 100. For more options to control the zero range method see the
-% documentation of <zeroRangeMethod_index.html zero_range> or
+% documentation of <zeroRangeMethod.zeroRangeMethod.html zero_range> or
 % <zeroRangeMethod.plot.html zeroRangeMethod.plot>.
 
 odf = calcODF(pf,'zero_range')

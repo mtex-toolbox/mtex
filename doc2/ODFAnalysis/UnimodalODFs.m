@@ -4,13 +4,13 @@
 %
 % $$f(g; x) = \psi (\angle(g,x)),\quad g \in SO(3),$$
 %
-% is specified by a <kernel_index.html radially symmetrial function> $\psi$
-% centered at a modal <orientation_index.html orientation>, $x\in SO(3)$
-% and. In order to define a unimodal ODF one needs
+% is specified by a <kernel.kernel.html radially symmetrial function>
+% $\psi$ centered at a modal <orientation.orientation.html orientation>,
+% $x\in SO(3)$ and. In order to define a unimodal ODF one needs
 %
-% * a preferred <orientation_index.html orientation> mod1
-% * a <kernel_index.html kernel> function |psi| defining the shape
-% * the crystal and specimen <symmetry_index.html symmetry>
+% * a preferred <orientation.orientation.html orientation> mod1
+% * a <kernel.kernel.html kernel> function |psi| defining the shape
+% * the <crystalSymmetry.crystalSymmetry.html crystal symmetry>
 
 cs = crystalSymmetry('432');
 ori = orientation.byMiller([1,2,2],[2,2,1],cs);

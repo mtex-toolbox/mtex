@@ -9,9 +9,8 @@ function r = mldivide(a,b)
 %  r - @vector3d
 %
 % Output
-%  h - @Miller indice
+%  h - @Miller
 %
-% See also
-% 
+
 
 r = inv(a) * b; %#ok<MINV>

@@ -9,14 +9,14 @@
 % of the same object with respect to a specimen fixed reference frame.
 %
 % In MTEX any orientation consists of two incredients. A
-% <rotation_index.html rotation>
+% <rotation.rotation.html rotation>
 
 % lets take a random one
 rot = rotation.rand
 
 %%
 % and a description of the crystal lattice, which are represented in MTEX
-% by variables of type <crystalSymmetry_index.html crystalSymmetry>
+% by variables of type <crystalSymmetry.crystalSymmetry.html crystalSymmetry>
 
 % lets take cubic crystal symmetry
 cs = crystalSymmetry('cubic')
@@ -28,7 +28,7 @@ ori = orientation(rot,cs)
 
 %%
 % As a consequence a variable of type orientation is at the same time of
-% type <rotation_index.html rotation> and hence allows for all
+% type <rotation.rotation.html rotation> and hence allows for all
 % <RotationOperations.html operations> that are available for rotations.
 %
 %% Crystal coordinates to specimen coordinates
@@ -66,12 +66,12 @@ ori * C
 % Objects that can be translated by orientations from crystal into specimen
 % cooordinates and vice verca include
 %
-% * <Miller_index.html crystal directions>
-% * <tensor_index.html tensors>
-% * <slipSystem_index.html slip systems>
-% * <twinningSystem_index.html twinning systems>
-% * <dislocationSystem_index.html dislocation systems>
-% * <crystalShape_index.html crystal shapes>
+% * <Miller.Miller.html crystal directions>
+% * <tensor.tensor.html tensors>
+% * <slipSystem.slipSystem.html slip systems>
+% * <twinningSystem.twinningSystem.html twinning systems>
+% * <dislocationSystem.dislocationSystem.html dislocation systems>
+% * <crystalShape.crystalShape.html crystal shapes>
 %
 %% Specimen coordinates into crystal coordinates
 %

@@ -2,7 +2,7 @@
 %
 %%
 % Importing pole figure data in MTEX means to create a
-% <PoleFigure_index.html PoleFigure> object from data files containing
+% <PoleFigure.PoleFigure.html PoleFigure> object from data files containing
 % diffraction data. Once such an object has been created the data can be
 % <ModifyPoleFigureData.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
@@ -28,7 +28,7 @@ import_wizard
 %
 % * <CrystalSymmetries.html crystal symmetries> associated with phases 
 % * specimen symmetry and plotting conventions
-% * <Miller_index.html Miller indices> of pole figures.
+% * <Miller.Miller.html Miller indices> of pole figures.
 % 
 % In the end, the imported wizard creates a workspace variable or generates
 % a m-file loading the data automatically. Furthermore appending a template

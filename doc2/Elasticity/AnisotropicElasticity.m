@@ -44,7 +44,7 @@ E = C.YoungsModulus(vector3d.X)
 
 %%
 % If the direction is ommited Youngs modulus is returned as a
-% <S2FunHarmonic_index.html spherical function>.
+% <S2FunHarmonic.S2FunHarmonic.html spherical function>.
 
 % compute Young's modulus as a directional dependend function
 E = C.YoungsModulus

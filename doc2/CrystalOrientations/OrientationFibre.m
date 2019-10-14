@@ -3,7 +3,7 @@
 %% 
 % A fibre in orientation space is essentially a line connecting two
 % orientations and can be represented in MTEX by a single variable of type
-% <fibre_index.html fibre>. To illustrate the definition of a fibre we
+% <fibre.fibre.html fibre>. To illustrate the definition of a fibre we
 % first define *cube* and *goss* orientation
 
 % define crystal and specimen symmetry

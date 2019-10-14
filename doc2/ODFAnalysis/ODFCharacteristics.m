@@ -32,7 +32,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 %%
 % Determine the modalorientation as an
-% <orientation_index.html orientation>:
+% <orientation.orientation.html orientation>:
 center = calcModes(odf3)
 
 %%

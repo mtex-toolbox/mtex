@@ -5,7 +5,7 @@
 % MTEX provides a very simple way to define model ODFs. Generally, there
 % are five different ODF types in MTEX:
 %
-% * <uniformODF_index.html uniform ODFs>
+% * <uniformODF.uniformODF.html uniform ODFs>
 % * <UnimodalODFs.html unimodal ODFs>
 % * <FibreODFs.html fibre ODFs>
 % * <BinghamODFs Bingham ODFs>

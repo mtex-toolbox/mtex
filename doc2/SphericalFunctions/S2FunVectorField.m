@@ -1,6 +1,8 @@
 %% S2VectorFieldHarmonic
 %
-% S2VectorField handles three-dimensional functions on the sphere. For instance the gradient of an univariate S2FunHarmonic can return a S2VectorFieldHarmonic.
+% S2VectorField handles three-dimensional functions on the sphere. For
+% instance the gradient of an univariate S2FunHarmonic can return a
+% S2VectorFieldHarmonic.
 %
 %% Contents
 
@@ -22,12 +24,15 @@ sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
 %%
 % *Definition via function handle*
 %
-% If you have a function handle for the function you could create a |S2VectorFieldHarmonic| via quadrature.
-% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns also <vector3d_index.html |vector3d|>:
+% If you have a function handle for the function you could create a
+% |S2VectorFieldHarmonic| via quadrature. At first lets define a function
+% handle which takes <vector3d.vector3d.html |vector3d|> as an argument and
+% returns also <vector3d_index.html |vector3d|>:
 
 f = @(v) vector3d(v.x, v.y, 0*v.x);
 %% 
-% Now you can call the quadrature command to get |sVF2| of type |S2VectorFieldHarmonic|
+% Now you can call the quadrature command to get |sVF2| of type
+% |S2VectorFieldHarmonic|
 sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
 
 %%

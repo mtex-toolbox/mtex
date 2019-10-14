@@ -2,7 +2,7 @@
 %
 % TODO: extend this
 %%
-% A fibre is represented in MTEX by a variable of type <fibre_index.html
+% A fibre is represented in MTEX by a variable of type <fibre.fibre.html
 % fibre>.
 
 cs = crystalSymmetry.load('Ti-Titanium-alpha.cif')

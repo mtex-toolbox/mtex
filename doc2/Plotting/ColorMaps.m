@@ -10,7 +10,7 @@
 %
 %% A sample ODFs and Simulated Pole Figure Data
 %
-% Let us first define some model <ODF_index.html ODFs> to be plotted later
+% Let us first define some model <ODF.ODF.html ODFs> to be plotted later
 % on.
 
 cs = crystalSymmetry('-3m');

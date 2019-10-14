@@ -28,8 +28,10 @@ sAF1 = S2AxisFieldHarmonic.approximation(nodes, y)
 %%
 % *Definition via function handle*
 %
-% If you have a function handle for the function you could create a |S2AxisFieldHarmonic| via quadrature.
-% At first lets define a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns antipodal <vector3d_index.html |vector3d|>:
+% If you have a function handle for the function you could create a
+% |S2AxisFieldHarmonic| via quadrature. At first lets define a function
+% handle which takes <vector3d.vector3d.html |vector3d|> as an argument and
+% returns antipodal <vector3d.vector3d.html |vector3d|>:
 
 f = @(v) vector3d(v.x, v.y, 0*v.x, 'antipodal');
 %% 

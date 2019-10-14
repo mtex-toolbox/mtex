@@ -2,8 +2,6 @@
 %
 % S2FunHarmonicSym is an extension of the S2FunHarmonic class which stores the symmetry with the function.
 %
-%% Contents
-
 %
 %% Defining a S2FunHarmonic
 %
@@ -26,8 +24,10 @@ plot(sFs1)
 %%
 % *Definition via function handle*
 %
-% If you have a function handle for the function you could create a |S2FunHarmonicSym| via quadrature.
-% At first lets define a symmetry and a function handle which takes <vector3d_index.html |vector3d|> as an argument and returns double:
+% If you have a function handle for the function you could create a
+% |S2FunHarmonicSym| via quadrature. At first lets define a symmetry and a
+% function handle which takes <vector3d.vector3d.html |vector3d|> as an
+% argument and returns double:
 
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 cs = crystalSymmetry('6/m');

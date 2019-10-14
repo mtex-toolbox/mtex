@@ -27,8 +27,8 @@ hold off
 
 %% Property overview
 %
-% A variable of type <grainBoundary_index.html grainBoundary> contains the
-% following properties
+% A variable of type <grainBoundary.grainBoundary.html grainBoundary>
+% contains the following properties
 %
 % || ebsdId         || id of the EBSD pixel on both sides of the grain boundary ||
 % || phaseId        || id of the phase on both sides of the grain boundary ||

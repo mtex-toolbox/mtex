@@ -33,21 +33,21 @@ plot(model_odf,'sections',6,'silent','sigma')
 % In order to simulate pole figure data, the following parameters have to be
 % specified
 %
-% # an arbitrary <ODF_index.html ODF>
-% # a list of <Miller_index.html Miller indece>
-% # a grid of <S2Grid_index.html specimen directions>
+% # an arbitrary <ODF.ODF.html ODF>
+% # a list of <Miller.Miller.html Miller indece>
+% # a grid of <S2Grid.S2Grid.html specimen directions>
 % # superposition coefficients (optional)
 % # the magnitude of error (optional)
 %
 
 %%
-% The list of <Miller_index.html Miller indece>
+% The list of <Miller.Miller.html Miller indece>
 
 h = [Miller(1,1,1,cs),Miller(1,1,0,cs),Miller(1,0,1,cs),Miller(0,1,1,cs),...
   Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 
 %%
-% The <S2Grid_index.html grid> of specimen directions
+% The <S2Grid.S2Grid.html grid> of specimen directions
 
 r = regularS2Grid('resolution',5*degree);
 

@@ -4,7 +4,7 @@
 % crystal symmetries.
 %%
 % Rotations are represented in MTEX by the class *@rotation* which is
-% inherited from the class <quaternion_index.html quaternion> and allow to
+% inherited from the class <quaternion.quaternion.html quaternion> and allow to
 %
 %% Euler Angles
 %
