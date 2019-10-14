@@ -1,22 +1,14 @@
 %% Slip Systems
-% How to analyze slip transmission at grain boundaries
 %
-%%
-%
-%
-%% Open in Editor
-%
-%% Contents
-%
-
-%% Burgers vector and normal directions
-% 
-% Consider hexagonal symmetry of alpha-Titanium
+% Plastic deformation in crystaline materials almost exclusively appears as
+% dislocation along lattice planes. Such deformations are described by the
+% normal vector *n* of the lattice plane and direction *b* of the slip. In
+% the case of hexagonal alpha-Titanium with 
 
 cs = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)')
 
 %%
-% Then basal slip is defined by the Burgers vector (or slip direction)
+% basal slip is defined by the Burgers vector (or slip direction)
 
 b = Miller(2,-1,-1,0,cs,'UVTW')
 
@@ -26,7 +18,7 @@ b = Miller(2,-1,-1,0,cs,'UVTW')
 n = Miller(0,1,-1,0,cs,'HKIL')
 
 %%
-% Accordingly we can define a slip system in MTEX by
+% Putting both incredience together we can define a slip system in MTEX by
 
 sSBasal = slipSystem(b,n)
 
@@ -47,9 +39,30 @@ sSBasalSym = sSBasal.symmetrise('antipodal')
 
 sSBasalSym.b.norm
 
+%% Displacement
+% In linear theory the displacement of a slip system is described by the
+% strain tensor 
+
+sSBasal.deformationTensor
+
+%%
+% This displacement tensor is exactly the same as the so called Schmid
+% tensor
+
+sSBasal.SchmidTensor
+
+
 %% Rotating slip systems
+% By definition the slip system and accordingly the deformation tensor are
+% with the respect to the crystal coordinate system. In order to transform
+% the quantities into specimen coordinates we have to multiply with some
+% grain orientation
 
+% some random grain orientation
+ori = orientation.rand(cs)
 
+% transfer slip system into specimen coordinates
+ori * sSBasal
 
 
 

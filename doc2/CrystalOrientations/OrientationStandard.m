@@ -2,6 +2,8 @@
 %
 %%
 
+
+
 CS = crystalSymmetry('m-3m');
 SS = specimenSymmetry('orthorhombic');
 setMTEXpref('xAxisDirection','north');
@@ -9,6 +11,15 @@ setMTEXpref('zAxisDirection','outofPlane');
 
 
 %% some stadanrd orientations
+% predefined orientations
+%
+%    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
+%    * 'Goss', 'invGoss'
+%    * 'Copper', 'Copper2'
+%    * 'SR', 'SR2', 'SR3', 'SR4'
+%    * 'Brass', 'Brass2'
+%    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
+% defines an orientation
 
 components = [...
   orientation.goss(CS,SS),...

@@ -1,11 +1,9 @@
 %% Triple points
-% how to detect triple points
 %
-%% Calculation of triple points
-%
-% MTEX automatically computes triple points during grain reconstruction.
-% They are acessable similarly to <BoundaryAnalysis.html grain boundaries>
-% as an property of the grain list.
+% Triple points are automaticaly computed during grain reconstruction. They
+% are acessable similarly to <BoundaryAnalysis.html grain boundaries> as
+% the property <triplePointList.triplePointList.html triplePoints> of the
+% grain list.
 
 % import some EBSD data set
 mtexdata small
