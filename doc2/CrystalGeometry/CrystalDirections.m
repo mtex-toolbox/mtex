@@ -1,4 +1,5 @@
 %% Miller Indices
+%
 % Miller indices are used to describe directions with respect to the
 % crystal reference system.
 %
