@@ -4,8 +4,6 @@
 % instance the gradient of an univariate S2FunHarmonic can return a
 % S2VectorFieldHarmonic.
 %
-%% Contents
-
 %% Defining a S2VectorFieldHarmonic
 %
 %%

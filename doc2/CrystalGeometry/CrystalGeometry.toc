@@ -1,4 +1,4 @@
-CrystalSymmetries       Symmetries
+CrystalSymmetries       Crystal Symmetries
 CrystalDirections       Miller Indicies
 CrystalOperations       Operations
 CrystalReferenceSystem  Reference System

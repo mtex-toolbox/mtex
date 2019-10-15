@@ -1,4 +1,5 @@
-DefinitionAsCoordinateTransform  Definition
+OrientationDefinition            Definition
+DefinitionAsCoordinateTransform  Theory
 OrientationSymmetry              Symmetry
 OrientationStandard              Standard Orientations
 MTEXvsBungeConvention            MTEX vs. Bunge Convention
@@ -9,4 +10,6 @@ OrientationVisualizationSections Section Plots
 OrientationFundamentalRegion     Fundamenal Region
 SpecimenSymmetry                 Specimen Symmetry
 OrientationGrid                  Grids 
-OrientationFibre                 Fibres           
+OrientationFibre                 Fibres
+OrientationImport                Import       
+OrientationExport                Export

@@ -2,9 +2,6 @@
 %
 % S2AxisFieldharmonic handles axis fields on the sphere.
 % Axis can be understood as three-dimensional vectors without direction or length.
-%
-%% Contents
-
 %%
 % S2AxisFieldHarmonic handles functions of the form 
 %

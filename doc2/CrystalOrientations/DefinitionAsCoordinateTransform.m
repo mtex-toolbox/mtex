@@ -1,7 +1,6 @@
-%% Coordinate Transform
+%% Crystal Orientation as Coordinate Transformation
 %
-%% Definition
-%
+%% 
 % In MTEX a crystal orientation is defined as the rotation that transforms
 % <CrystalDirections.html crystal coordinates>, i.e., a description of a
 % vector or a tensor with respect to the <CrystalReferenceFrame.html

@@ -1,5 +1,6 @@
-%% Operations
+%% Operations on Spherical Functions
 %
+%%
 % The idea of |S2Fun| is to calculate with spherical functions similarly as
 % Matlab does with vectors and matrices. In order to illustrate this
 % consider the following two spherical functions
@@ -12,13 +13,10 @@ nextAxis
 plot(sF2,'upper')
 
 %% Basic arithmetic operations
-%
-%%
 
 plot(15 * sF1 + sF2,'upper')
 
 %%
-
 
 % addition/subtraction
 sF1+sF2; sF1+2;

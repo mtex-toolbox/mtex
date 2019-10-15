@@ -2,7 +2,7 @@ Tutorials
 GeneralConcepts
 Vectors
 Rotations
-CrystalGeometry        Symmetries
+CrystalGeometry        Crystal Geometry
 CrystalOrientations    Orientations
 Misorientations        Misorientations
 ODFAnalysis            Orientation Distribution Function
