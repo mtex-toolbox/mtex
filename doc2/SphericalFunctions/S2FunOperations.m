@@ -2,7 +2,7 @@
 %
 %%
 % The idea of |S2Fun| is to calculate with spherical functions similarly as
-% Matlab does with vectors and matrices. In order to illustrate this
+% Matlab does with vectors and matrices. In order to illustrate this we
 % consider the following two spherical functions
 
 sF1 = S2Fun.smiley;
@@ -13,86 +13,133 @@ nextAxis
 plot(sF2,'upper')
 
 %% Basic arithmetic operations
+% Now the sum of these two spherical functions is again a spherical
+% function
+
+1 + 15 * sF1 + sF2
 
 plot(15 * sF1 + sF2,'upper')
 
 %%
+% Accordingly, one use all basic operations like '-', '*', '^', '/',
+% <S2Fun.min.html min>, <S2Fun.max.html max>, <S2Fun.abs.html abs>,
+% <S2Fun.sqrt.html sqrt> to compute with variables of type
+% <S2Fun.S2Fun.html S2Fun>
 
-% addition/subtraction
-sF1+sF2; sF1+2;
-sF1-sF2; sF2-4;
+% the maximum between two functions
+plot(max(15*sF1,sF2),'upper');
 
-%%
-% multiplication/division
-sF1.*sF2; 2.*sF1;
-sF1./(sF2+1); 2./sF2; sF2./4;
+nextAxis
+% the minimum between two functions
+plot(min(15*sF1,sF2),'upper');
 
-%%
-% power
-sF1.^sF2; 2.^sF1; sF2.^4;
-
-%%
-% absolute value of a function
-abs(sF1);
-
-
-%%
-% *min/max*
+%% Local Extrema
+% 
+% The obove mentioned functions <S2Fun.min.html min> and <S2Fun.max.html
+% max> have very different use cases
 %
-%%
-% calculates the local min/max of a single function
-[minvalue, minnodes] = min(sF1);
-[maxvalue, maxnodes] = max(sF1);
+% * if two spherical functions are passed as arguments a spherical
+% functions defined as the pointwise min/max between these two functions is
+% computed
+% * if a spherical function and single number are passed as arguments a
+% spherical functions defined as the pointwise min/max between these the
+% function and the value is computed
+% * if only a single spherical function is provided the global maximum /
+% minimum of the function is returned
+% * if additionally the option 'numLocal' is provided the certain number of
+% local minima / maxima is computed
+
+
+plot(15 * sF1 + sF2,'upper')
+
+% compute and mark the global maximum
+[maxvalue, maxnodes] = max(15 * sF1 + sF2);
+annotate(maxnodes)
+
+% compute and mark the local minimum
+[minvalue, minnodes] = min(15 * sF1 + sF2,'numLocal',2);
+annotate(minnodes)
+
+
+%% Integration
+% The surface integral of a spherical function can be computed by either
+% <S2Fun.mean.html mean> or <S2Fun.sum.html sum>. The difference between
+% both commands is that <S2Fun.sum.html sum> normalizes the integral of the
+% identical function on the sphere to $4 \pi$ the command <S2Fun.mean.html mean>
+% normalizes it to one. Compare
+
+mean(sF1)
+
+sum(sF1) / 4 / pi
 
 %%
-% * as default |min| or |max| returns the smallest or the biggest value (global optima) with all nodes for which the value is obtained
-% * with the option |min(sF1, 'numLocal', n)| the |n| nodes with the belonging biggest or smallest values are returned
-% * |min(sF1)| is the same as running <S2Funharmonic.steepestDescent.html |steepestDescent|>|(sF1)|
-%%
-% min/max of two functions in the pointwise sense
+% A practical application of integration is the computation of the
+% $L^2$-norm which is defined for a spherical function $f$ as
 %
-min(sF1, sF2);
-
-%%
-% * See all options of min/max <S2FunHarmonic.min.html here>
-
-%%
-% *Other operations*
-%%
-% calculate the $L^2$-norm, which is only the $l^2$-norm of the Fourier-coefficients
-norm(sF1);
-
-%%
-% calculate the mean value of a function
-mean(sF1);
-
-%%
-% calculate the surface integral of a function
-sum(sF1);
-
-%%
-% rotate a function
-r = rotation.byEuler( [pi/4 0 0]);
-rotate(sF1, r);
-
-%%
-% symmetrise a given function
-cs = crystalSymmetry('6/m');
-sFs = symmetrise(sF1, cs);
-
-%%
-% * |sFs| is of type <S2FunHarmonicSym.S2FunHarmonicSym.html |S2FunHarmonicSym|>
-
-%%
-% *Gradient*
-%%
-% Calculate the gradient as a function |G| of type
-% <S2VectorFieldHarmonic.S2VectorFieldHarmonic.html |S2VectorFieldHarmonic|>
+% $$ \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{\frac{1}{2}} $$
 %
-G = grad(sF1);
+% accordingly we can compute it by
+
+sqrt(sum(sF1.^2))
 
 %%
-% The direct evaluation of the gradient is faster and returns
-% <vector3d.vector3d.html |vector3d|>
-nodes = vector3d.rand(100);
-grad(sF1, nodes);
+% or more efficiently by the command <S2Fun.norm.html norm>
+
+norm(sF1)
+
+%% Differentiation
+%
+% The differential of a spherical function in a specific point is a
+% gradient, i.e., a <vector3d.vector3d.html three dimensional vector> which
+% can be computed by the command <S2Fun.grad.html grad>
+
+grad(sF1,xvector)
+
+%%
+% The gradients of a spherical function in all points form a spherical
+% vector field and are returned by the function <S2Fun.grad.html grad> as a
+% variable of type <S2VectorFieldHarmonic.S2VectorFieldHarmonic.html
+% |S2VectorFieldHarmonic|>
+
+% compute the gradient as a vector field
+G = grad(sF1)
+
+% plot the gradient on top of the function
+plot(sF1,'upper')
+hold on
+plot(G)
+hold off
+
+%%
+% We observe long arrows at the positions of big changes in intensity and
+% almost invisible arrows in regions of constant intensity.
+%
+%% Rotating spherical functions
+% Rotating a spherical function works with the command <S2Fun.rotate.html
+% rotate>
+
+% define a rotation
+rot = rotation.byAxisAngle(yvector,-30*degree)
+
+% plot the rotated spherical function
+plot(rotate(15 * sF1 + sF2,rot),'upper')
+
+
+%%
+% A special case of rotation is symmetrysing it with respect to some
+% symmetry. The following example symmetrises our smily with respect to
+% a two fold axis in z direction 
+
+% define the symmetry
+cs = crystalSymmetry('112');
+
+% compute the symmetrised function
+sFs = symmetrise(sF1, cs)
+
+% plot it
+plota2east
+plot(sFs,'upper','complete')
+
+%%
+% The resulting function is of type <S2FunHarmonicSym.S2FunHarmonicSym.html
+% |S2FunHarmonicSym|> and knows about its symmetry
