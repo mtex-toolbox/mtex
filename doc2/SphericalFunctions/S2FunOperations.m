@@ -76,7 +76,7 @@ sum(sF1) / 4 / pi
 % A practical application of integration is the computation of the
 % $L^2$-norm which is defined for a spherical function $f$ as
 %
-% $$ \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{\frac{1}{2}} $$
+% $$ ||f||_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{\frac{1}{2}} $$
 %
 % accordingly we can compute it by
 
