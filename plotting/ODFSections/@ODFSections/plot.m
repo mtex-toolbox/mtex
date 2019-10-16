@@ -64,7 +64,12 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if ~isempty(data), data = data(samples,:); end
   end
   
-  [vec,secAngle] = project(oS,ori,varargin{:});
+  if length(ori)>1 && ~isempty(data)
+    opt = 'preserveOrder';
+  else
+    opt = '';
+  end
+  [vec,secAngle] = project(oS,ori,opt,varargin{:});
   
   vec.resolution = min(10*degree,max(1*degree,...
     round(500000*degree/(length(oS.SS)*length(oS.CS)*length(ori)).^(1/3))));
