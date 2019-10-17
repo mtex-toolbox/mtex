@@ -1,5 +1,6 @@
 classdef symmetry < rotation
-% an abstract class for crystal and specimen symmetries
+%
+% symmetry is an abstract class for crystal and specimen symmetries
 %
 % Derived Classes
 %  @crystalSymmetry - 
