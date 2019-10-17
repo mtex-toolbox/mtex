@@ -1,4 +1,6 @@
-%% Classes representing Geometry 
+%% Classes Representing Geometry 
 %
 %%
 %
+% <<geometry.svg>>
+% 
