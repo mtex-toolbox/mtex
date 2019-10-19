@@ -1,16 +1,8 @@
 %% Simulating Pole Figure data
-% Simulate arbitrary pole figure data
 %
-%% Open in Editor
-%
-%% Contents
-%
-%% Introduction
-%
-% MTEX allows to _simulate_ an arbitrary number of pole figure data from
-% any ODF. This is quite helpful if you want to analyze the pole figure to
-% ODF estimation routine. Let us start with a model ODF given as the
-% superposition of 6 components.
+% Simulating pole figure data from a given ODF is useful to investigate
+% pole figure to ODF reconstruction routines. Let us start with a model ODF
+% given as the superposition of 6 components.
 
 cs = crystalSymmetry('orthorhombic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
@@ -27,9 +19,7 @@ model_odf = 0.5*uniformODF(cs) + ...
 
 plot(model_odf,'sections',6,'silent','sigma')
 
-
-%% Simulate Pole Figure Data
-%
+%%
 % In order to simulate pole figure data, the following parameters have to be
 % specified
 %
@@ -88,7 +78,7 @@ plot(odf,'sections',6,'silent','sigma')
 calcError(odf,model_odf,'resolution',5*degree)
 
 
-%% Exploration of the relationship between estimation error and number of single orientations
+%% Exploration of the relationship between estimation error and number of pole figures
 %
 % For a more systematic analysis of the estimation error, we vary the number
 % of pole figures used for ODF estimation from 1 to 7 and calculate for any

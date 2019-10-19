@@ -1,18 +1,11 @@
 %% Plotting of Pole Figures
-% Describes various possibilities to visualize pole figure data.
 %
-%% Contents
-%
-%% Open in Editor
-%
-%% Import of Pole Figures
-%
-% Let us start by loading some pole figures.
+% This section describes various possibilities to visualize pole figure
+% data. Lets start by loading some XRD data
 
 mtexdata ptx
 
-%% Visualize the Data
-%
+%% 
 % By default MTEX plots pole figures by drawing a circle at every
 % measurement position of a pole figure and coloring it corresponding to
 % the measured intensity.

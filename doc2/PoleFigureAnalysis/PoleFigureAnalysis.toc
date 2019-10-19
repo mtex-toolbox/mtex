@@ -1,8 +1,8 @@
 PoleFigureImport        Import
 PoleFigurePlot          Plot
 PoleFigureCorrection    Modify
-PoleFigureSimulation    Simulation
 PoleFigure2ODF          ODF Reconstruction
+PoleFigureSimulation    Simulation
 PoleFigure2ODFAmbiguity The Gost Effect
 PoleFigure2ODFGhostCorrection Ghost Correction
 PoleFigureSantaFe       Santa Fe Example

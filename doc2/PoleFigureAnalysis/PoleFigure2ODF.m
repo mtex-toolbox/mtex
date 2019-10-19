@@ -127,3 +127,4 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 % 
 % A precise description of the estimator and the algorithm can be found in
 % the paper _Pole Figure Inversion - The MTEX Algorithm_.
+
