@@ -1,8 +1,8 @@
-%% Definition 
+%% Defining Tensorial Properties
 %
+%% TODO
+% Please extend this chapter.
 %
-
-
 %% Rank zero tensors
 
 M = 5;
@@ -54,21 +54,4 @@ tensor(diag([1,2,3]),'rank',2)
 %%
 
 tensor.leviCivita
-
-
-%% Matter tensors
-
-
-%% Importing a Tensor from a File
-% Especially for higher order tensors, it is more convenient to import the
-% tensor entries from a file. As an example, we load the following
-% elastic stiffness tensor
-
-fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
-
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','olivine');
-
-C = stiffnessTensor.load(fname,cs)
-
-
 

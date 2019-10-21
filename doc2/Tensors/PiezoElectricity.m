@@ -1,16 +1,9 @@
 %% The Piezoelectricity Tensor
-% how to work with piezoelectricity
+%
 %% 
-% This m-file mainly demonstrates how to illustrate the directional
-% magnitude of a tensor with mtex
-%
-%% Open in Editor
-%
-%% Contents
-%
-%%
-% at first, let us import some piezoelectric contents for a quartz
-% specimen.
+% In this chapter we discuss how to compute and visualize piezoellectirc
+% properties. At first, let us import some piezoelectric contents for a
+% quartz specimen.
 
 CS = crystalSymmetry('32', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
 
