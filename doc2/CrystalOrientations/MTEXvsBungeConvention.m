@@ -1,13 +1,13 @@
 %% MTEX vs. Bunge Convention
 %
 %%
-% For histrical reasons MTEX defines orientations in a slightly different
+% For historical reasons MTEX defines orientations in a slightly different
 % way than they have been defined by Bunge. As explained in topic
 % <CrystalOrientations.html orientations> MTEX defines them as coordinate
 % transformations from the crystal reference frame into the specimen
 % reference frame. In contrast to this Bunge orientations are coordinate
 % transformations from the specimen reference frame into the crystal
-% reference frame. Lets demonstrate this at a simple example
+% reference frame. Lets demonstrate this by a simple example:
 
 % consider cubic symmetry
 cs = crystalSymmetry('cubic')
@@ -39,9 +39,20 @@ ori_Bunge * r
 % Since the Euler angles are the most common way to describe orientations
 % MTEX implements them such that the Euler angles of an MTEX orientation
 % coincide with the Euler angles of a Bunge orientation. Thus the Euler
-% angles of orientations in MTEX  agree with the Euler angles reported by
+% angles of orientations in MTEX agree with the Euler angles reported by
 % all common EBSD devices, simulation software, text books and paper.
 %
+
+%% Matrix notation
+%
+% Due to the above explained inverse relationship of orientations defined 
+% in MTEX and in Bunge convention, a matrix generated from an orientation 
+% in MTEX is the inverse, or equivallently, the transpose of the matrix in 
+% Bunge notation.
+
+ori.matrix
+ori_Bunge.matrix^(-1)
+ori_Bunge.matrix'
 
 %% Misorientations
 %
@@ -65,7 +76,7 @@ ori2_Bunge = inv(ori2);
 mori = ori1_Bunge * inv(ori2_Bunge)
 
 %%
-% However, both formula results in exactly the same misorientation. 
+% However, both formula result in exactly the same misorientation. 
 %
 %% Summary
 % 
