@@ -89,6 +89,7 @@ else % otherwise phase plot
     if ~any(ind), continue; end
     
     color = grains.subSet(ind).color;
+    if ischar(color), [~,color] = colornames(getMTEXpref('colorPalette'),color); end
 
     % plot polygons
     h{k} = plotFaces(grains.poly(ind),grains.V,color,...
