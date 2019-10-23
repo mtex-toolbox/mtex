@@ -1,7 +1,8 @@
-GrainReconstruction
-GrainSpatialPlots
-ShapeParameters
-GrainOrientationParameters
-SelectingGrains
-GrainNeighbours
-GrainReconstructionAdvanced
+GrainReconstruction            Reconstruction
+GrainSpatialPlots              Plot
+SelectingGrains                Select
+ShapeParameters                Shape Parameters
+GrainOrientationParameters     Orientation Parameters
+GrainNeighbours                Neighbours
+GrainReconstructionAdvanced    Advanced Reconstruction
+GrainExport                    Export

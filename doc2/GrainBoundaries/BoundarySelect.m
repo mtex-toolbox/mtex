@@ -2,13 +2,13 @@
 %
 %%
 % In this section we explain how to extract specific grain boundaries.
-% Therefore lets start by importing some EBSD data and reconstructing the
+% Therefore we start by importing some EBSD data and reconstructing the
 % grain structure.
 
 close all; plotx2east
 
 % import the data
-mtexdata forsterite
+mtexdata forsterite silent
 
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
@@ -16,7 +16,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % remove very small grains
-ebsd(grains(grains.grainSize<=5)) = [];
+ebsd(grains(grains.grainSize <= 5)) = [];
 
 % and recompute grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
@@ -24,19 +24,18 @@ ebsd(grains(grains.grainSize<=5)) = [];
 % smooth the grains a bit
 grains = smooth(grains,4);
 
-%%
 % visualize as a phase map
 plot(ebsd)
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-
 %%
 % The output of
 
 grains.boundary
 
+%%
 % tells us the number of boundary segments between the different phsaes.
 % Those segments with notIndexed phase include also those boundary segments
 % where the grains are cutted by the scanning boundary. To restrict the

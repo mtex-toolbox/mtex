@@ -1,6 +1,6 @@
 ODFTheory                        Theory
 ODFModeling                      Calculations
-ODFPlot                          Plotting
+ODFPlot                          Plot
 ODFPoleFigure                    Pole Figures
 ODFInversePoleFigure             Inverse Pole Figures
 EulerAngleSections               Euler Angle Section

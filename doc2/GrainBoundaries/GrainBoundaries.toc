@@ -1,9 +1,9 @@
-BoundarySelect
-BoundaryPlots
-BoundaryProperties
-TiltAndTwistBoundaries
-CSLBoundaries
-TwinningBoundaries
-TriplePoints
-BoundaryIntersections
+BoundarySelect             Select
+BoundaryPlots              Plot
+BoundaryProperties         Properties
+TiltAndTwistBoundaries     Twist and Tilt
+CSLBoundaries              CSL
+TwinningBoundaries         Twinning
+TriplePoints               Triple Points
+BoundaryIntersections      Intersections
 

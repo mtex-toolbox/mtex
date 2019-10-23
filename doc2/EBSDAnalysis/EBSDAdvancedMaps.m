@@ -1,9 +1,36 @@
 %% Advanced Color Keys
 %
 %%
-% Besides the recommended color key <ipfHSVKey.html ipfHSVKey> MTEX
-% includes a bunch of other color keys
 %
+% In order to visualize orientation maps one has to assign a color to each
+% possible orientation. As an example, one may think of representing an
+% orientation by its Euler angles ph1, Phi, phi2 and taking these as the
+% RGB values of a color. Of course, there are many other ways to do this.
+% Before presenting all the possibilities MTEX offers to assign a color to
+% each orientation let us shortly summarize what properties we expect from
+% such an assignment.
+%
+% # crystallographic equivalent orientations should have the same color
+% # similar orientations should have similar colors
+% # different orientations should have different colors
+% # the whole colorspace should be used for full contrast
+% # if the orientations are concentrated in a small region of the
+% orientation space, the colorspace should be exhaust by this region
+%
+% It should be noted that it is impossible to have all the 4 points
+% mentioned above be satisfied by a single colorcoding. Hence, some
+% compromises have to be accepted and some assumptions have to be made.
+% While the traditional <EBSDAdvancedMaps.html#2 Euler angle coloring> will
+% assign different colors to similar orientations, i.e. will introduce
+% color jumps and break with the first requirement the default
+% <ipfHSVKey.html MTEX color key> will assign the same color to different
+% orientations. 
+%
+% Hence, there is no perfect color key, but it should be chosen depending
+% on the information one want to extract from the orientation data. To do
+% so MTEX offers the following possibilities:
+%
+% * <ipfHSVKey.html ipfHSVKey> the default color key
 % * <ipfTSLKey.html ipfTSLKey>
 % * <ipfHKLKey.html ipfHKLKey>
 % * <BungeColorKey.html BungeColorKey>
@@ -11,7 +38,9 @@
 % * <axisAngleColorKey.html axisAngleColorKey>
 % * <spotColorKey.html spotColorKey>
 % * <ipfSpotKey.html ipfSpotKey>
-
+%
+% In order to demonstrate these color keys we first import some toy data
+% set.
 
 close all; plotx2east
 mtexdata forsterite
@@ -28,6 +57,15 @@ plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 %%
 
 plot(colorKey)
+
+%%
+% Although this visualization looks very smooth, the orientation map using
+% Euler angles introduces many of color jumps. This becomes obvious when
+% plotting the colors as <SigmaSections.html sigma sections>, i.e., for
+% fixed differences phi_1 - phi_2
+
+plot(colorKey,'sections',6,'sigma')
+
 
 %% Coloring certain orientations
 % We might be interested in locating some special orientation in our

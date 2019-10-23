@@ -1,19 +1,18 @@
-Tutorials
-GeneralConcepts
-Vectors
-Rotations
+Tutorials              Tutorials
+GeneralConcepts        General Concepts
+Vectors                Vectors
+Rotations              Rotations
 CrystalGeometry        Crystal Geometry
 CrystalOrientations    Orientations
 Misorientations        Misorientations
-ODFAnalysis            Orientation Distribution Function
+ODFAnalysis            ODF
 PoleFigureAnalysis     Pole Figures
 EBSDAnalysis           EBSD
 Grains                 Grains 
 GrainBoundaries        Grain Boundaries
 Tensors                Tensors
-Elasticity             
-Plasticity
-PhaseTransitions
-SphericalFunctions
-Plotting
-ColorCodings
+Elasticity             Elasticity
+Plasticity             Plasticity
+PhaseTransitions       Phase Transitions
+SphericalFunctions     Spherical Functions
+Plotting               Plotting

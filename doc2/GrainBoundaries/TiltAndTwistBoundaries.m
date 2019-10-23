@@ -12,7 +12,7 @@
 % the edge dislocation line). If the boundary is composed of screw 
 % dislocations, the rotation axis should be normal to the boundary. 
 % Between those end-members, there are general boundaries where
-% the rotation axis is not easily realted to the type of dislocations
+% the rotation axis is not easily related to the type of dislocations
 % unless further information is available.
 
 %% Data import and grain detection

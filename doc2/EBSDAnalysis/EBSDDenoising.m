@@ -1,13 +1,11 @@
-%% Denoising
+%% Denoising Orientation Maps
 %
 %% TODO
-%
-%% Smoothing a single grain
 %
 % Let's start out analysis by considering a single magnesium grain
 
 % import standard data set
-mtexdata twins
+mtexdata twins silent
 
 % compute grains
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',10*degree);
@@ -17,6 +15,7 @@ mtexdata twins
 oneGrain = grains(id);
 ebsd = ebsd(oneGrain);
 
+% plot the largest grain
 plot(ebsd,ebsd.orientations)
 
 hold on
@@ -50,7 +49,9 @@ hold on
 plot(oneGrain.boundary,'linewidth',2)
 hold off
 
-%% SUB: The Mean Filter
+%%
+% *The Mean Filter*
+%
 % The simplest filter to apply to the orientation data is the
 % |meanFilter| which simply takes the mean of all orientations within a
 % certain neighborhood.
@@ -88,7 +89,9 @@ hold on
 plot(oneGrain.boundary,'linewidth',2)
 hold off
 
-%% SUB: The Median Filter
+%%
+% *The Median Filter*
+%
 % The disadvantage of the mean filter is that is smoothes away all subgrain
 % boundaries and is quite sensitive against outliers. A more robust filter
 % which also preserves subgrain boundaries is the median filter
@@ -109,8 +112,8 @@ hold on
 plot(oneGrain.boundary,'linewidth',2)
 hold off
 
-%% SUB: The Kuwahara Filer
-%
+%%
+% *The Kuwahara Filer*
 %
 
 F = KuwaharaFilter;
@@ -127,7 +130,9 @@ hold on
 plot(oneGrain.boundary,'linewidth',2)
 hold off
 
-%% SUB: The Smoothing Spline Filter
+%%
+% *The Smoothing Spline Filter*
+%
 % The smoothing spline filter is up to now the only filter that
 % automatically calibrates the smoothing parameter
 
@@ -147,7 +152,9 @@ hold off
 % the smoothing parameter determined during smoothing is
 F.alpha
 
-%% SUB: The halfquadratic Filter
+%%
+% *The halfquadratic Filter*
+%
 % The halfquadratic filter differs from the smoothing spline filter by the
 % fact that it better preserves inner grain boundaries. We will see this in
 % a later example.
@@ -166,8 +173,9 @@ hold on
 plot(oneGrain.boundary,'linewidth',2)
 hold off
 
-
-%% SUB: The Infimal Convolution Filter
+%%
+% *The Infimal Convolution Filter*
+%
 % The infimal convolution filter differs from the smoothing spline filter by the
 % fact that it better preserves inner grain boundaries. We will see this in
 % a later example.
@@ -192,7 +200,8 @@ hold off
 % The filters above can also be used to interpolate missindexed
 % orientations.
 %
-%% SUB: A synthetic example
+% *A synthetic example*
+%
 % In the following example, we randomly set 50 percent of the measured
 % orientations to |nan|.
 
@@ -232,7 +241,8 @@ hold on
 plot(oneGrain.boundary)
 hold off
 
-%% SUB: A real world example
+%%
+% *A real world example*
 % Let's consider a subset of the 
 
 close all; plotx2east

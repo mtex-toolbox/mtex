@@ -36,6 +36,13 @@ color = ipfKey.orientation2color(ebsd('Fo').orientations);
 close all
 plot(ebsd('Forsterite'),color)
 
+%%
+% We can also visualize the orientations of the forsterite phase by
+% plotting them into the inverse pole figure map.
+
+plotIPDF(ebsd('Forsterite').orientations,color,ipfKey.inversePoleFigureDirection,...
+  'MarkerSize',6,'MarkerEdgeColor','k')
+
 %% Customizing the color key
 % Orientation color keys usually provide several options to alter the
 % alignment of colors. Let's give some examples
@@ -97,3 +104,20 @@ plot(ipfHKLKey(csFo))
 %%
 % The user should be aware that for certain symmetry groups these color key
 % lead to color jumps.
+
+%% Other Visualitations of Color Keys
+% We may also look at the inverse pole figure sphere in 3d. One can nicely
+% observe how the color map follows the given symmetry group.
+
+close all
+plot(ipfKey,'3d')
+
+%%
+% Alternatively, we may plot the color mapping in 2d together with the
+% symmetry elements
+
+plot(ipfKey,'complete','upper')
+
+hold on
+plot(ipfKey.CS1)
+hold off
