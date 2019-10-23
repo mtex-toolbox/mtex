@@ -7,8 +7,8 @@
 %% Import diffraction data
 % Click on <matlab:import_wizard('PoleFigure') Import pole figure data> to
 % start the import wizard which is a GUI leading you through the import of
-% pole figure data. After finishing the wizard you will end with a script
-% similar to the following one.
+% pole figure data. After finishing the wizard you will end up with a
+% script similar to the following one.
 
 % This script was automatically created by the import wizard. You should
 % run the whole script or parts of it in order to import your data. There
@@ -70,35 +70,54 @@ pf_def = PoleFigure.load(fname_def,h,CS,SS,'interface','uxd');
 % correct data
 pf = correct(pf,'def',pf_def);
 
-%% Plot Raw Data
-% You should run the script section wise to see how MTEX imports the pole
-% figure data. Next, you can plot your data
+%%
+% After running the script the variable *pf* is created which contains all
+% information about the pole figure data. You may plot the data using the
+% command <PoleFigure.plot.html plot>
 
 plot(pf)
 
 %%
-% Make sure that the Miller indices are correctly assigned to the pole
-% figures and that the alignment of the specimen coordinate system, i.e.,
-% X, Y, Z is correct. In case of outliers or misaligned data, you may want
-% to correct your raw data. See <PoleFigureCorrection.html how to modify
-% pole figure data> for further information.
+% By default pole figures are plotted as intensity colored dots for any
+% data point. There are many options to specify the way pole figures are
+% plotted in MTEX. Have a look at the <PoleFigurePlot.html plotting
+% section> for more information.
+%
+% After import make sure that the Miller indices are correctly assigned to
+% the pole figures and that the alignment of the specimen coordinate
+% system, i.e., X, Y, Z is correct. In case of outliers or misaligned data,
+% you may want to correct your raw data. Have a look at the
+% <PoleFigureCorrection.html correction section> for further information.
+% MTEX offers several methods correcting pole figure data, e.g.
+%
+% * rotating pole figures
+% * scaling pole figures
+% * find outliers
+% * remove specific measurements
+% * superpose pole figures
+%
+% As an example we set all negative intensities to zero
+
+pf(pf.intensities<0) = 0;
+plot(pf)
+
 %
 %% ODF Estimation
 %
 % Once your data are in a good shape, i.e. defocusing correction has been
-% done and only few outliers are left you can stop to reconstruct an ODF
-% out of these data. This is done by the command <PoleFigure_calcODF.html
-% calcODF>. 
+% done and only few outliers are left you can reconstruct an ODF out of
+% these data. This is done by the command <PoleFigure.calcODF.html
+% calcODF>.
 
 odf = calcODF(pf,'silent')
 
 %%
 % Note that reconstructing an ODF from pole figure data is a severely ill-
 % posed problem, i.e., it does *not* provide a unique solution. A more
-% throughout the discussion on the ambiguity of ODF reconstruction from
+% throughout discussion on the ambiguity of ODF reconstruction from
 % pole figure data can be found <PoleFigure2ODFAmbiguity.html here>. As a
 % rule of thumb: as more pole figures you have and as more consistent you
-% pole figure data are as better you reconstructed ODF will be.
+% pole figure data are the better your reconstructed ODF will be.
 %
 % To check how well your reconstructed ODF fits the measured pole figure
 % data do
@@ -116,16 +135,12 @@ calcError(odf,pf)
 % In the case of a bad fitting, you may want to tweak the reconstruction
 % algorithm. See <PoleFigure2ODF.html here> for more information.
 
-%% Quantify the Reconstruction Error
-
-
-
 %% Visualize the ODF
+% Finally one can plot the resulting ODF
 
 plot(odf)
 mtexColorMap LaboTeX
 
 %%
 % restore old setting
-
 setMTEXpref('xAxisDirection','east');
