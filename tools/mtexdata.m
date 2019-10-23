@@ -96,8 +96,9 @@ end
 
 % display
 %if ~getMTEXpref('generatingHelpMode')
+if ~check_option(varargin,'silent')
   evalin('base',fld{end});
-%end
+end
 
 if nargout == 0, clear S; end
 
