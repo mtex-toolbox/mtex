@@ -1,2 +1,0 @@
-%% MTEX Toolbox
-%

@@ -1,4 +1,0 @@
-S2FunHarmonic_index
-S2VectorFieldHarmonic_index
-S2AxisFieldHarmonic_index
-S2FunHarmonicSym_index

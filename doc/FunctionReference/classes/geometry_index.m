@@ -1,4 +1,0 @@
-%% Classes representing Geometry 
-%
-%%
-%

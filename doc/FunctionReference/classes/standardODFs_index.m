@@ -1,4 +1,0 @@
-%% Standard ODFs
-% predefined ODFs
-%%
-%

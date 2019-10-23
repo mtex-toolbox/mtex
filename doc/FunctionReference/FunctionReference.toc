@@ -1,3 +1,0 @@
-geometry_index
-QTA_index
-tools_index

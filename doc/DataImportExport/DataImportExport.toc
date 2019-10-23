@@ -1,4 +1,0 @@
-ImportPoleFigureData
-ImportEBSDData
-ODFImportExport
-Templates
