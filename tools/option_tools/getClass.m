@@ -1,8 +1,8 @@
-function [out,list] = getClass(list,className,default)
+function [out,list] = getClass(list,className,default,varargin)
 
 if nargin == 2, default = [];end
 
-match = find(cellfun(@(x) isa(x,className),list),1);
+match = find(cellfun(@(x) isa(x,className),list),1,varargin{:});
 
 if isempty(match)
   out = default;
