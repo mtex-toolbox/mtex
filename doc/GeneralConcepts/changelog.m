@@ -1,6 +1,43 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.0 9/2019
+%% MTEX 5.2.0 10/2019
+%
+% *New Documentation*
+%
+% MTEX got a new homepage which was needed to include a a much more
+% exhaustive online documentation which has now
+%
+% * a sidebar for quick navigation
+% * a search field
+% * a complete function reference to all MTEX functions and classes
+% * UML diagrams illustrating the hierarchy of the classes
+% * much more content
+%
+% The new documentation is not yet perfect though we are working hard to
+% improve it. Thatswhy we are extremely happy for everybody who contributes
+% additions to the documentation. This includes the correction of spelling
+% errors, theoretical parts, examples etc. Check out <Contribute2Doc.html
+% how to contribute to the documentation>.
+%
+% *More Colors*
+%
+% All plotting commands in MTEX support now much more colors. By default
+% all the color names of the CSS palette can be choosen, e.g., aqua,
+% orange, gold, goldenrod, etc. To see a full list of supported colors do
+%
+%  colornames_view
+%
+% The following function have been included to handle colors more
+% efficiently
+%
+% * <str2color.html str2color> convert color str to RGB color
+% * <ind2color.html ind2color> convert index to distrinct RGB colors, good
+% for loops
+%
+% *Improved Import Wizard*
+% 
+% Importing EBSD data using the import wizard allows to interactively
+% realign the data and check with respect to the pole figures.
 %
 % *Speed Improvements*
 %
@@ -10,7 +47,6 @@
 % * support for <MOSEK
 % https://docs.mosek.com/9.0/toolbox/install-interface.html> as faster
 % replacement for linprog from the Optimization Toolbox
-%
 %
 % *Support for hexagonal EBSD grids*
 %
@@ -39,10 +75,14 @@
 % including the abbility to <BinghamS2_fit.html fit> them to directional
 % distributions.
 %
-% *Tensor Visualisation*
+% *Tensors*
 %
-% Improved methods for the vizualisation of elastic properties, see
+% * Improved methods for the vizualisation of elastic properties, see
 % <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
+% * several new functions like <tensor.trace.html trace>, <tensor.svd.html
+% svd>, <tensor.det.html det>, <tensor.colon.html double dot product ":">
+% * the function <tensor.mean.html mean> computes now Voigt, Reuss, Hill
+% and geometric means
 %
 % *Improved Figure Layout*
 %
@@ -51,11 +91,13 @@
 %
 % *Misc Changes*
 %
+% * allow to export EBSD data to *ctf* thanks to Frank Niessen
 % * compute the volume of a crystal shape
 % * label crystal faces in crystal shapes
 % * new function <std orientation_std.html> for computing the standard
 % deviation of orientations
 % * calcKearnsFactor
+% * *grainBoundary.ebsdId* is now the id and not the index of the EBSD data
 % * allow to index ebsd data and grains by id using {} brackets
 %
 %   ebsd{id}
