@@ -1,4 +1,4 @@
-function make_mtex_help(varargin)
+function makeDoc(varargin)
 % build help with the DocHelp Toolbox
 %
 
@@ -79,10 +79,10 @@ copy(productpage,outputDir)
 
 % make function reference overview pages
 
-makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
+%makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 
 % make help toc
-makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
+makeHelpToc(mtexHelpFiles,'DocumentationMatlab','FunctionMainFile','FunctionReference','outputDir',outputDir);
 
 % Publish Function Reference
 publish(mtexFunctionFiles,'outputDir',outputDir,...
@@ -100,10 +100,8 @@ options.outputDir = outputDir;
 options.publishSettings.outputDir = outputDir;
 options.tempDir = tempDir;
 
-view(mtexDocFiles,options)
-
 %
-deadlink(mtexDocFiles,outputDir);
+%deadlink(mtexDocFiles,outputDir);
 
 % Enable search in documentation
 builddocsearchdb(outputDir);
