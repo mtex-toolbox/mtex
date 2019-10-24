@@ -1,8 +1,8 @@
 function f = smiley(v,varargin)
 
-if nargin == 0 || ~isa(v,'vector3d')
-  f = S2FunHarmonic.quadrature(@S2Fun.smiley);
-  return
+if nargin == 0
+  f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v));
+  return;
 end
 
 v = v(:)';

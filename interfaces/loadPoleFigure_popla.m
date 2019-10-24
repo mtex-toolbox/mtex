@@ -2,7 +2,7 @@ function pf = loadPoleFigure_popla(fname,varargin)
 % import data fom Popla file
 %
 % Syntax
-%   pf = loadPoleFigure_popla(fname,<options>)
+%   pf = loadPoleFigure_popla(fname)
 %
 % Input
 %  fname    - filename

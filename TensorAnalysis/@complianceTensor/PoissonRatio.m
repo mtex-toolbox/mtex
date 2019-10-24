@@ -2,9 +2,8 @@ function nu = PoissonRatio(S,x,y)
 % Poisson ratio of an elasticity tensor
 %
 % Syntax
-%
-%  nu = PoissonRatio(S,x,y)
-%  nu = PoissonRatio(S) % isotropic case
+%   nu = PoissonRatio(S,x,y)
+%   nu = PoissonRatio(S) % isotropic case
 %
 % Input
 %  S - elastic @complianceTensor
@@ -14,7 +13,7 @@ function nu = PoissonRatio(S,x,y)
 % Output
 %  nu - Poisson ratio
 %
-% Remarks
+% Description
 % 
 % $$\nu = \frac{-S_{ijkl} x_i x_j y_k y_l}{S_{mnop} x_m x_n x_o x_p}$$ 
 %

@@ -2,6 +2,7 @@ function out = extract_option(option_list,option,types)
 % extract options from option list
 %
 % Syntax
+%   out = extract_option(option_list,option,types)
 %
 % Input
 %  option_list - Cell Array

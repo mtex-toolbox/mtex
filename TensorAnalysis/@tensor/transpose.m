@@ -5,13 +5,13 @@ function T = transpose(T)
 % tensors.
 %
 % Syntax
-%  T = T.'
+%   T_transpose = T.'
 %
 % Input
 %  T - @tensor
 % 
 % Output
-%  T - @tensor
+%  T_transpose - @tensor
 %
 
 T.M = permute(T.M,[1:T.rank T.rank + [2 1] (T.rank + 3):ndims(T.M)]);

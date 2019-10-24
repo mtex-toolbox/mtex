@@ -2,7 +2,7 @@ function q = fibre2quat(h,r,varargin)
 % arbitrary quaternion q with q * h = r 
 %
 % Description
-% The method *fibre2quat* defines a list of [[quaternion_index.html,quaternions]] |q|
+% The method *fibre2quat* defines a list of <quaternion_index.html,quaternions> |q|
 % by a crystal direction |h| and a specimen direction |r| such that 
 % |q * h = r| 
 %

@@ -10,7 +10,7 @@ function F = expm(L,t)
 %  t - time
 %
 % Output
-%  deformationGradientTensor 
+%  F - @deformationGradientTensor
 %
 
 if nargin == 1, t = 1; end

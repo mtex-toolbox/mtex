@@ -56,11 +56,11 @@ end
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
-  data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
+  data = reshape(data,[length(ori) 1 numel(data)/length(ori)]);
 elseif (nargin > 1 && ~(isa(varargin{1},'Miller')) || ...
     (nargin > 2 && iscell(varargin{2}) && isa(varargin{2}{1},'Miller')))
   [data,varargin] = extract_data(length(ori),varargin);
-  data = reshape(data,[1,length(ori) numel(data)/length(ori)]);
+  data = reshape(data,[length(ori) 1 numel(data)/length(ori)]);
 else
   data = [];
 end
@@ -105,7 +105,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
   
   samples = discretesample(length(ori),points);
   ori= ori.subSet(samples);
-  if ~isempty(data), data = data(:,samples,:); end
+  if ~isempty(data), data = data(samples,:,:); end
     
 end
 
@@ -120,7 +120,7 @@ for i = 1:length(h)
   else
     sh = symmetrise(h{i});
   end
-  r = reshape(ori.SS * (ori * sh).',[],1);
+  r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
   opt = replicateMarkerSize(varargin,length(ori.SS)*length(sh));
   
   % maybe we can restric ourselfs to the upper hemisphere
@@ -128,8 +128,7 @@ for i = 1:length(h)
     opt = [opt,'upper']; %#ok<AGROW>
   end
   
-  
-  [~,cax] = r.plot(repmat(data,[length(ori.SS)*length(sh) 1]),...
+  [~,cax] = r.plot(repmat(data,[1 length(ori.SS)*length(sh) 1]),...
     ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
   
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
@@ -172,7 +171,7 @@ function opt = replicateMarkerSize(opt,n)
 
 ms = get_option(opt,'MarkerSize');
 if length(ms)>1 && n > 1
-  ms = repmat(ms(:).',n,1);
+  ms = repmat(ms(:),1,n);
   opt = set_option(opt,'MarkerSize',ms);
 end
   

@@ -2,6 +2,7 @@ function [h,ax] = smooth(v,varargin)
 % low level function for plotting functions on the sphere
 %
 % Syntax
+%   smooth(v,values)
 %
 % Input
 %

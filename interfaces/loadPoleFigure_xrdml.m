@@ -2,7 +2,7 @@ function pf = loadPoleFigure_xrdml(fname,varargin)
 % load xrdMeasurement (xrdml) file
 %
 % Syntax
-%   pf = loadPoleFigure_xrdml(fname,<options>)
+%   pf = loadPoleFigure_xrdml(fname)
 %
 % Input
 %  fname - file name

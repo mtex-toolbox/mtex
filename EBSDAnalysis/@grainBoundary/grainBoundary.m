@@ -33,8 +33,8 @@ classdef grainBoundary < phaseList & dynProp
     I_FG           % incidence matrix edges - grains
     A_F            % adjecency matrix edges - edges
     A_V            % adjecency matrix vertices - vertices
-    segmentId      % connected component id
-    segmentSize    % number of faces that form a segment
+    componentId    % connected component id
+    componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains    
   end
@@ -65,8 +65,10 @@ classdef grainBoundary < phaseList & dynProp
       d = diff([0;fId]);      
       fId = cumsum(d>0) + (d==0)*size(gB.F,1);
             
+      % set the ebsdId temporary to the index - this will be replaced by
+      % the id down in the code
       gB.ebsdId = zeros(size(gB.F,1),2);
-      gB.ebsdId(fId) = eId;      
+      gB.ebsdId(fId) = eId;
             
       % compute grainId
       gB.grainId = zeros(size(gB.F,1),2);
@@ -95,6 +97,9 @@ classdef grainBoundary < phaseList & dynProp
 
       % compute triple points
       gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
+      
+      % store ebsd_id instead of index
+      gB.ebsdId(gB.ebsdId>0) = ebsd.id(gB.ebsdId(gB.ebsdId>0));
       
     end
 
@@ -175,14 +180,14 @@ classdef grainBoundary < phaseList & dynProp
        
     %end
     
-    function segmentId = get.segmentId(gB)
-      segmentId = connectedComponents(gB.A_F).';
+    function componentId = get.componentId(gB)
+      componentId = connectedComponents(gB.A_F).';
     end
     
-    function segmentSize = get.segmentSize(gB)
-      segId = gB.segmentId;
+    function componentSize = get.componentSize(gB)
+      segId = gB.componentId;
       [bincounts,ind] = histc(segId,unique(segId));
-      segmentSize = bincounts(ind);
+      componentSize = bincounts(ind);
     end
     
     function out = hasPhase(gB,phase1,phase2)

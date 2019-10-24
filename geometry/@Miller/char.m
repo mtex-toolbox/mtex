@@ -1,10 +1,10 @@
 function c = char(m,varargin)
 % Miller indece to string
 %
-% Options
-%  no_scopes
-%  latex
-%  commasep
+% Flags
+%  no_scopes - 
+%  latex - 
+%  commasep - 
 
 c = cell(length(m),1);
 

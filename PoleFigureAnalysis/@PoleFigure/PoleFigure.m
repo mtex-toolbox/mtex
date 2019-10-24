@@ -1,4 +1,40 @@
 classdef PoleFigure < dynProp & dynOption
+%
+% The class *PoleFigure* is used to store experimetnal pole figure
+% intensitied, i.e., XRD, synchrotron or neuron data. It provides several
+% <PoleFigureCorrection.html data correction methods> as well as the
+% <PoleFigure2ODF.html reconstruction of an orientation density function
+% (ODF)>. Importing pole figure data is explained in <PoleFigureImport.html
+% this section>.
+%
+% Input
+%  h     - crystal directions (@vector3d | @Miller)
+%  r     - specimen directions (@S2Grid)
+%  intensities - diffraction counts (double)
+%  CS,SS - crystal, specimen @symmetry
+%
+% Options
+%  superposition - weights for superposed crystal directions
+%  background    - background intensities
+%
+% Class Properties
+%  allH - cell of @Miller
+%  allR - cell of @vector3d
+%  allI - cell of diffraction intensities
+%  c    - structure coefficients
+%  SS   - specimen symmetry
+%
+% Dependent Class Properties
+%  CS      - @crystalSymmetry
+%  h       - @Miller direction of single pole figure
+%  r       - specimen directions
+%  intensities - diffraction intensities
+%  antipodal - 
+%
+% See also
+% ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
+% This section describes the class *PoleFigure* and gives an overview of
+% the functionality MTEX offers to analyze pole figure data.
 
   properties
     allH = {}           % crystal directions
@@ -20,23 +56,7 @@ classdef PoleFigure < dynProp & dynOption
   
   
     function pf = PoleFigure(h,r,intensities,varargin)
-      % constructor 
-      %
-      % *PoleFigure* is the low level constructor. For importing real world data
-      % you might want to use the predefined [[ImportPoleFigureData.html,interfaces]]
-      %
-      % Input
-      %  h     - crystal directions (@vector3d | @Miller)
-      %  r     - specimen directions (@S2Grid)
-      %  intensities - diffraction counts (double)
-      %  CS,SS - crystal, specimen @symmetry
-      %
-      % Options
-      %  superposition - weights for superposed crystal directions
-      %  background    - background intensities
-      %
-      % See also
-      % ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
+      % constructor
       
       if nargin == 0, return;end
       

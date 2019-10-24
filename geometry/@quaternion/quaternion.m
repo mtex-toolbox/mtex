@@ -1,5 +1,25 @@
 classdef quaternion
-    
+%
+% The class quaternion realizes the internal representation of rotations
+% and orientations in MTEX. An important difference is that an unit
+% quaternion *q* and its antipodal *-q* are considered as different while
+% the corresponding rotations are equal.
+%
+% Syntax
+%   q = quaternion(a,b,c,d)
+%   q = quaternion.rand
+%   q = quaternion.id
+%   q = quaternion.nan
+%
+% Input
+%  a, b, c, d - double
+%
+% Class Properties
+%  a, b, c, d - quaternion coefficients
+%
+% See also
+% rotation.rotation orientation.orientation
+  
   properties
     a % real part
     b % * i

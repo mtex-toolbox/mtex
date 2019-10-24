@@ -21,20 +21,15 @@ switch T.rank
 
   case 4
 
-    % check for symmetry
-
     % convert to a matrix
-    M = tensor42(T.M,T.doubleConvention);
+    M = tensor42(T.M,2);
 
     % exponential of the matrix
     for l = 1:length(T)
       M(:,:,l) = expm(M(:,:,l));
     end
 
-    %
-    T.doubleConvention = ~T.doubleConvention;
-    
     % convert to back a 4 rank tensor
-    T.M = tensor24(M,T.doubleConvention);
+    T.M = tensor24(M,2);
 end
 

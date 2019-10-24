@@ -1,28 +1,37 @@
 classdef Miller < vector3d
-% define a crystal direction by Miller indice
-%
-% Syntax
-%   m = Miller(h,k,l,cs) 
-%   m = Miller(h,k,l,cs,'hkl') 
-%   m = Miller(h,k,l,cs,'pole') 
-%   m = Miller(h,k,i,l,cs) 
-%   m = Miller('(hkl)',cs) 
-%   m = Miller(u,v,w,cs,'uvw') 
-%   m = Miller(u,v,t,w,cs,'uvw') 
-%   m = Miller(u,v,w,cs,'direction') 
-%   m = Miller('[uvw]',cs) 
-%   m = Miller('[uvw]\[uvw],cs) 
-%   m = Miller('(hkl)\(hkl),cs) 
-%   m = Miller(x,cs) % transform vector3d to Miller
-%
-% Input
-%  h,k,l,i(optional) - Miller indice of the plane normal
-%  uw,v,w,t(optional) - Miller indice of a direction
-%  x  - @vector3d
-%  cs - crystal @symmetry
-%
-% See also
-% vector3d_index symmetry_index
+  %
+  % The class *Miller* describes crystal directions, i.e., directions
+  % relative to the crystal coordinate system. Internally, these are stored
+  % with respect to an Eucledean reference system.
+  %
+  % Syntax
+  %   m = Miller(h,k,l,cs)
+  %   m = Miller(H,K,I,L,cs)
+  %   m = Miller(u,v,w,cs,'uvw')
+  %   m = Miller(U,V,T,W,cs,'UVTW')
+  %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
+  %   m = Miller('(hkl)',cs)
+  %   m = Miller('[uvw]',cs)
+  %   m = Miller('[uvw]\[uvw],cs)
+  %   m = Miller('(hkl)\(hkl),cs)
+  %   m = Miller(x,cs)
+  %
+  % Input
+  %  h,k,l   - three digit reciprocal coordinates
+  %  H,K,I,L - four digit reciprocal coordinates
+  %  u,v,w   - three digit direct coordinates
+  %  U,V,T,W - four digit direct coordinates
+  %  x       - @vector3d
+  %  cs      - @crystalSymmetry
+  %
+  % Class Properties
+  %  CS        - @crystalSymmetry
+  %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
+  %
+  % See also
+  % CrystalDirections CrystalOperations CrystalReferenceSystem
+  % CrystalSymmetries FundamentalSector vector3d.vector3d
+  % crystalSymmetry.crystalSymmetry
   
   properties
     dispStyle = 'hkl' % output convention hkl or uvw
@@ -35,6 +44,7 @@ classdef Miller < vector3d
   properties (Dependent = true)
     CS        % crystal symmetry
     hkl       % direct coordinates
+    hkil      % direct coordinates
     h
     k
     i
@@ -53,31 +63,7 @@ classdef Miller < vector3d
   methods
     
     function m = Miller(varargin)
-      % define a crystal direction by Miller indice
-      %
-      % Syntax
-      % m = Miller(h,k,l,cs) -
-      % m = Miller(h,k,l,cs,'hkl') -
-      % m = Miller(h,k,l,cs,'pole') -
-      % m = Miller(h,k,i,l,cs) -
-      % m = Miller('(hkl)',cs) -
-      % m = Miller(u,v,w,cs,'uvw') -
-      % m = Miller(u,v,t,w,cs,'uvw') -
-      % m = Miller(u,v,w,cs,'direction') -
-      % m = Miller('[uvw]',cs) -
-      % m = Miller('[uvw]\[uvw],cs) -
-      % m = Miller('(hkl)\(hkl),cs) -
-      % m = Miller(x,cs) -
-      %
-      %
-      % Input
-      %  h,k,l,i(optional) - Miller indice of the plane normal
-      %  u,v,w,t(optional) - Miller indice of a direction
-      %  x  - @vector3d
-      %  cs - crystal @symmetry
-      %
-      % See also
-      % vector3d_index symmetry_index
+      % constructor
       
       if nargin == 0, return; end
       
@@ -172,14 +158,7 @@ classdef Miller < vector3d
       % set dispStyle
       if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
 
-    end
-    
-    
-    function v = vector3d(m)
-      v = vector3d(m.x,m.y,m.z);
-      v.antipodal = m.antipodal;
-      v.opt = m.opt;
-    end
+    end        
     
     % -----------------------------------------------------------
     
@@ -231,6 +210,14 @@ classdef Miller < vector3d
       
     end
 
+    function hkil = get.hkil(m)
+            
+      hkil = m.hkl;
+            
+    end
+
+    
+    
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
     function i = get.i(m), i = m.hkl(:,3);end

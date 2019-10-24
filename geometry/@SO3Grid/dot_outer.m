@@ -12,8 +12,7 @@ function d = dot_outer(S3G,q,varargin)
 % Output
 %  d      - sparse matrix
 %
-% Formula
-% cos angle(g1,g2)/2 = dot(g1,g2)
+
 
 if ~isa(S3G,'SO3Grid')
   d = dot_outer(q,S3G,varargin{:}).';

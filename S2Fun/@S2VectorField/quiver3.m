@@ -6,8 +6,8 @@ function varargout = quiver3(sVF,varargin)
 %
 % Options
 %  normalized - normalize vectors
-%  arrowSize
-%  maxHeadSize
+%  arrowSize  - arrow size
+%  maxHeadSize - head size
 
 % See also
 % S2VectorField/plot

@@ -5,7 +5,7 @@ function tP = subSet(tP,ind)
 %  tP  - @grainBoundary
 %  ind - 
 %
-% Ouput
+% Output
 %  grains - @grainBoundary
 %
 

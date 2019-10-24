@@ -21,8 +21,6 @@ for i = 1:numel(info.Datasets)
 end
 cs = cs';
 
-ss = loadSymmetry(fname, '/ebsd/ss');
-
 %% Read unit cell
 unitCell = h5read(fname, '/ebsd/unitCell');
 
@@ -36,12 +34,8 @@ for i = 1:numel(info.Datasets)
   options.(name) = data;
 end
 
-%% Read comment
-comment = h5readatt(fname, '/ebsd', 'comment');
-
 %% Construct EBSD
-ebsd = EBSD(rotations, 'CS', cs, 'SS', ss, 'phase', phases, ...
-            'unitCell', unitCell, 'options', options, 'comment', comment);
+ebsd = EBSD(rotations,phases,cs,options,'unitCell', unitCell);
 
 end
 

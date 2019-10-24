@@ -14,7 +14,8 @@ classdef S2Fun
   
   methods (Static = true)
   
-    S2F = smiley(varargin)
+    s2F = smiley(varargin)
+    s2F = unimodal(v,varargin)
     
   end
 

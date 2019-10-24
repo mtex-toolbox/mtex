@@ -14,7 +14,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 %   n  - approximate number of points
 %  res - resolution in radiant
 %
-% Ouptut
+% Output
 %  S3G - @SO3Grid
 %
 % Options

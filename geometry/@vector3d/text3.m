@@ -1,4 +1,4 @@
-function h = text3(v,string,varargin)
+function h = text3(v,varargin)
 % plot three dimensional arrows
 %
 % Syntax
@@ -19,8 +19,22 @@ end
 scaling = get_option(varargin,'scaling',1.2);
 v = scaling.*v;
 
-h = optiondraw(text(v.x,v.y,v.z,string,'FontSize',15,'parent',ax),...
-  'horizontalAlignment','center','verticalAlignment','middle',varargin{:});
+if check_option(varargin,'labeled')
+  strings = cell(1,length(v));
+  for i = 1:length(v)
+    strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); 
+  end
+else
+  strings = ensurecell(varargin{1});
+  if length(v)>1 && length(strings)==1
+    strings = repmat(strings,length(v),1);
+  end
+end
+
+for i = 1:length(v)
+  h = optiondraw(text(v.x(i),v.y(i),v.z(i),strings{i},'FontSize',15,'parent',ax,'interpreter','LaTeX'),...
+    'horizontalAlignment','center','verticalAlignment','middle',varargin{:});
+end
 
 % set axis to 3d
 %axis(ax,'equal','vis3d','off');

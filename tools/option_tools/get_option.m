@@ -5,7 +5,7 @@ function value = get_option(option_list,option,default,type)
 % value that meets the type condition is returned.
 %
 % Syntax
-%  value = get_option(option_list,option_name,default_option,option_type)
+%   value = get_option(option_list,option_name,default_option,option_type)
 %
 % Input
 %  option_list   - Cell Array

@@ -18,7 +18,7 @@ function m = mean(v,varargin)
 %  m - @vector3d
 %
 % Options
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 % 
 
 v = v.normalize;

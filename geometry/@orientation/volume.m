@@ -6,7 +6,7 @@ function v = volume(ori,center,radius,varargin)
 % one of the orientations as radius
 %
 % Syntax
-%   v = volume(ebsd,center,radius,<options>)
+%   v = volume(ebsd,center,radius)
 %
 % Input
 %  ebsd   - @EBSD

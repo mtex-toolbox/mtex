@@ -1,17 +1,9 @@
 %% Plotting Individual Orientations
 % Basics of the plot types for individual orientations data
 %
-%% Open in Editor
-%
 %% 
 % This section gives an overview over the possibilities that MTEX offers to
-% visualize orientation data.
-%
-%% Contents
-%
-
-%%
-% Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
+% visualize orientation data. Let us first load a sample EBSD data set
 
 mtexdata forsterite
 
@@ -62,7 +54,7 @@ scatter(ebsd('Fo').orientations)
 % commands are also applicable for those objects.
 
 %%
-% Let us consider some grains [[EBSD.calcGrains.html,detected]] from the
+% Let us consider some grains <EBSD.calcGrains.html reconstructed> from the
 % EBSD data
 
 grains = calcGrains(ebsd);
@@ -89,8 +81,8 @@ plotPDF(ebsd('Fo').orientations,ebsd('Fo').mad,h,'antipodal','MarkerSize',4)
 %%
 % or some arbitrary data vector
 
-plotSection(grains('Fo').meanOrientation,grains('Fo').area,...
-  'sigma','sections',9,'MarkerSize',4);
+plotSection(grains('Fo').meanOrientation,log(grains('Fo').area),...
+  'sigma','sections',9,'MarkerSize',10);
   
 %%
 % See also <PlotTypes_demo.html#5, Scatter plots> for more information

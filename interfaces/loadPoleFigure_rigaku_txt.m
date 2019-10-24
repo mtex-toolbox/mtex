@@ -2,7 +2,7 @@ function pf = loadPoleFigure_rigaku_txt(fname,varargin)
 % import data fom ana file
 %
 % Syntax
-%   pf = loadPoleFigure_rigaku_txt(fname,<options>)
+%   pf = loadPoleFigure_rigaku_txt(fname)
 %
 % Input
 %  fname  - filename

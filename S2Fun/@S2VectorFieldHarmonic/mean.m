@@ -1,6 +1,6 @@
 function v = mean(sVF)
 %
-% syntax
+% Syntax
 %   f = mean(sVF)
 %
 % Output

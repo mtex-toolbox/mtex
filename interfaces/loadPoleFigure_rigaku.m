@@ -2,7 +2,7 @@ function pf = loadPoleFigure_rigaku(fname,varargin)
 % import data fom Rigaku SamrtLab txt file
 %
 % Syntax
-%   pf = loadPoleFigure_rigaku(fname,<options>)
+%   pf = loadPoleFigure_rigaku(fname)
 %
 % Input
 %  fname  - filename

@@ -1,9 +1,9 @@
 function sAF = quadrature(f, varargin)
 %
 % Syntax
-%  sF = S2AxisField.quadrature(v, value)
-%  sF = S2AxisField.quadrature(f)
-%  sF = S2AxisField.quadrature(f, 'bandwidth', M)
+%   sF = S2AxisField.quadrature(v, value)
+%   sF = S2AxisField.quadrature(f)
+%   sF = S2AxisField.quadrature(f, 'bandwidth', M)
 %
 % Input
 %  v - @vector3d 

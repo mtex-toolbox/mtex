@@ -2,8 +2,8 @@ function out = checkOption(optStruct,option,value)
 % check for option in option list
 %
 % Syntax
-% out = checkOption(option_list,option_name)
-% out = checkOption(option_list,option_name,value)
+%   out = checkOption(option_list,option_name)
+%   out = checkOption(option_list,option_name,value)
 %
 % Input
 %  option_list - Cell Array

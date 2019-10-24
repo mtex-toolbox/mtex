@@ -9,9 +9,9 @@ function [v,options] = loadVector3d_generic(fname,varargin)
 % contain any number of header lines.
 %
 % Syntax
-%  v   = loadVector3d_generic(fname,'ColumnNames',{'x','y','z'})
-%  v   = loadVector3d_generic(fname,'ColumnNames',{'latitude','longitude'})
-%  v   = loadVector3d_generic(fname,'ColumnNames',{'polar angle','azimuth'})
+%   v   = loadVector3d_generic(fname,'ColumnNames',{'x','y','z'})
+%   v   = loadVector3d_generic(fname,'ColumnNames',{'latitude','longitude'})
+%   v   = loadVector3d_generic(fname,'ColumnNames',{'polar angle','azimuth'})
 %
 % Input
 %  fname - file name (text files only)

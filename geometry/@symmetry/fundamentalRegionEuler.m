@@ -10,7 +10,7 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 %  cs - @crystalSymmetry
 %  ss - @specimenSymmetry
 %
-% Ouput
+% Output
 %  maxPhi1 - maximum Euler angle phi_1
 %  maxPhi  - maximum Euler angle Phi
 %  maxPhi2 - maximum Euler angle phi_2

@@ -19,11 +19,11 @@ function oP = newOrientationPlot(CS1,CS2,varargin)
 %  SS - @specimenSymmetry
 %
 % Flags
-%  Bunge, axisAngle, Rodrigues, homochoric, quaternion, conformal
-%  ignoreFundamentalRegion - plot orientation as they are
-%  project2FundamentalRegion - project orientations to fundamentalRegion (default)
-%  restrict2FundamentalRegion - ignore all orientations outside the fundamentalRegion
-%  noBoundary - do not plot the boundary
+%  Bunge, axisAngle, Rodrigues, homochoric, quaternion, conformal - type of visualization
+%  ignoreFundamentalRegion     - plot orientation as they are
+%  project2FundamentalRegion   - project orientations to fundamentalRegion (default)
+%  restrict2FundamentalRegion  - ignore all orientations outside the fundamentalRegion
+%  noBoundary                  - do not plot the boundary
 %
 
 % create a new mtexFigure or get a reference to it

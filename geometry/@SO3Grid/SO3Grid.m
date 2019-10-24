@@ -19,7 +19,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) SO3Grid < orientation
 %   n  - approximate number of points
 %  res - resolution in radiant
 %
-% Ouptut
+% Output
 %  S3G - @SO3Grid
 %
 % Options

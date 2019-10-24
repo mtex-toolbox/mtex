@@ -1,17 +1,26 @@
 classdef EBSD < phaseList & dynProp & dynOption
-  % constructor
+  % class representing EBSD measurements
   %
-  % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
-  % data. For importing real world data you might want to use the predefined
-  % <ImportEBSDData.html EBSD interfaces>. You can also simulate EBSD data
-  % from an ODF by the command <ODF.calcEBSD.html calcEBSD>.
+  % In MTEX a variable of type *EBSD* is used to store EBSD measurements
+  % as a table with rows containing the orientation, the spatial
+  % coordinates and the phase of each indiviudal measurement.
   %
   % Syntax
-  %   ebsd = EBSD(rotations,phases,CSList)
+  %
+  %   prop.xy = xy;
+  %   prop.mad = mad;
+  %   CSList = {'notIndexed',CS1,CS2,CS3};
+  %   rot = rotation.byEuler(phi1,Phi,phi2);
+  %
+  %   ebsd = EBSD(rot,phaseId,CSList,prop)
+  %   ebsd = EBSD(rot,phaseId,CSList,prop,'unitCell',unitCell)
   %
   % Input
-  %  orientations - @orientation
-  %  CS           - crystal / specimen @symmetry
+  %  rot         - @rotation
+  %  phaseId     - phase as index to CSList
+  %  CS1,CS2,CS3 - @crystalSymmetry
+  %  prop        - struct with properties, xy is mandatory
+  %  unitCell    - vertices a single pixel
   %
   % Options
   %  phase    - specifing the phase of the EBSD object
@@ -19,8 +28,25 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  xy       - spatial coordinates n x 2, where n is the number of input orientations
   %  unitCell - for internal use
   %
+  % Class Properties
+  %  id        - unique id of each pixel
+  %  CSList    - cell list of @crystalSymmetry
+  %  phaseId   - phase of each pixel as entry of CSList
+  %  phase     - phase of each pixel as imported 
+  %  phaseMap  - convert between phase = phaseMap(phaseId)
+  %  rotations - @rotation of each pixel
+  %  x, y      - coordinates of the center of each pixel 
+  %  scanUnit  - unit of the x,y coordinates (um is default)
+  %  prop      - auxilary properties, e.g., MAD, BC, mis2mean
+  %  isIndexed - is pixel indexed or not
+  %  indexedPhaseId - phaseIds of all indexed phases
+  %
+  % Derived Classes
+  %  @EBSDSquare - EBSD data measured on a square grid
+  %  @EBSDHex    - EBSD data measured on a hex grid
+  %
   % See also
-  % ODF/calcEBSD EBSD/calcODF EBSD/load
+  % EBSDImport EBSDSelect EBSDPlotting GrainReconstruction
   
   % properties with as many rows as data
   properties
@@ -41,15 +67,12 @@ classdef EBSD < phaseList & dynProp & dynOption
   end
   
   properties (Access = protected)
-    A_D = []              % adjecency matrix of the measurement points
+    A_D = []        % adjecency matrix of the measurement points
   end
   
   methods
     
-    function ebsd = EBSD(rot,phases,CSList,varargin)
-      %
-      % Syntax 
-      %   EBSD(rot,phases,CSList)
+    function ebsd = EBSD(rot,phases,CSList,prop,varargin)
       
       if nargin == 0, return; end            
       
@@ -64,18 +87,17 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.scanUnit = rot.scanUnit;
         ebsd.A_D = rot.A_D;
         for fn = fieldnames(rot.prop)'
-        ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
+          ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
         end
         return
       end
-      
       
       ebsd.rotations = rotation(rot);
       ebsd = ebsd.init(phases,CSList);      
       ebsd.id = (1:numel(phases)).';
             
       % extract additional properties
-      ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.prop = prop;
                   
       % get unit cell
       if check_option(varargin,'uniCell')
@@ -84,14 +106,6 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd = ebsd.updateUnitCell;
       end
       
-      % remove ignore phases
-      if check_option(varargin,'ignorePhase')
-        
-        del = ismember(ebsd.phaseMap(ebsd.phaseId),get_option(varargin,'ignorePhase',[]));
-        ebsd = subSet(ebsd,~del);
-        
-      end
-            
     end
     
     % --------------------------------------------------------------

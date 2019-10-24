@@ -2,7 +2,7 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 % import data fom aachen xrd file
 %
 % Syntax
-%   pf = loadPoleFigure_xrd(fname,<options>)
+%   pf = loadPoleFigure_xrd(fname)
 %
 % Input
 %  fname  - filename

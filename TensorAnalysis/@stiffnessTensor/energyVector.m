@@ -9,6 +9,10 @@ function E = energyVector(C,x,V,P,varargin)
 %
 % Ve_i = C_ijkl P_j P_l X_k / rho*V
 % 
+% N.B. E_magnitude should be equal or more than plane wave velocity vp, vs1 or vs2
+% 
+% David Mainprice 6/02/2018
+%
 % Syntax
 %   E = energyVector(C,x,v,p)
 %   E = energyVector(C,x,v,p,rho)
@@ -25,11 +29,9 @@ function E = energyVector(C,x,V,P,varargin)
 %  rho - density in g/cm3
 %
 % Output
-%  E = Energy velocity vector (units km/s)
+%  E - Energy velocity vector (units km/s)
 %
-% N.B. E_magnitude should be equal or more than plane wave velocity vp, vs1 or vs2
-% 
-% David Mainprice 6/02/2018
+
 
 % return a function if required
 if isempty(x)

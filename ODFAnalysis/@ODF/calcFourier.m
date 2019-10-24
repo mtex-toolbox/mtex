@@ -20,7 +20,7 @@ function f_hat = calcFourier(odf,varargin)
 %
 
 if nargin > 1 && isnumeric(varargin{1})
-  L = max(varargin{1},4);
+  L = varargin{1};
 else
   L = get_option(varargin,'bandwidth',min(odf.bandwidth,getMTEXpref('maxBandwidth')));
 end

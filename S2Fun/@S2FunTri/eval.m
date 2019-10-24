@@ -2,7 +2,7 @@ function f =  eval(sF,v)
 % evaluates the spherical function at nodes v
 %
 % Syntax
-%  f = eval(sF,v)
+%   f = eval(sF,v)
 %
 % Input
 %  sF - @S2FunTri

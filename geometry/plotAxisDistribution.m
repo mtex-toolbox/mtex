@@ -20,7 +20,7 @@ function h = plotAxisDistribution(obj,varargin)
 %  RESOLUTION - resolution of the plots
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %  noLabel   - do not annotate 
 %

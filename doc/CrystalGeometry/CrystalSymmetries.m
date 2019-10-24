@@ -1,179 +1,178 @@
 %% Crystal Symmetries
-% This section covers the unit cell of a crystal, its space, point and Laue
-% groups as well as alignments of the crystal coordinate system.
-%
+% 
 %% Open in Editor
-%
-%% Contents
-%
-%% Crystallographic Space, Point and Laue Groups
 %
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
 % since the concatenation of to symmetry operations is again a symmetry
-% operation. Crystal symmetries are classified in various ways - either
-% according to the corresponding space group, or the corresponding point
-% group, or the corresponding Laue group. In total there are 32 different
-% point groups and  11 different Laue groups in crystallography.
-% Traditionally, texture analysis software supports only the 11 different
-% Laue groups. Starting with version 4.0 MTEX supports all 32 point groups.
-% A crystal symmetry is stored in MTEX as a variable of type
-% <crystalSymmetry_index.html crystalSymmetry>.
+% operation. 
 %
+% Depending which symmetry operations are coonsidered the symmetry groups
+% are categorized either into 230 space groups, 32 point groups or 11 Laue
+% groups.
+% 
+%% Purely enatiomorphic (rotational) symmetry groups
+%
+% There exist exactly 11 symmetry groups consisting of proper rotations
+% only, namely, 1, 2, 222, 3, 32, 4, 422, 6, 622, 32, 432. These are the so
+% called enatiomorphic groups. All the groups can be defined in MTEX either
+% by its international notation
+
+cs = crystalSymmetry('432')
 
 %%
-% *Defining a Crystal Symmetry by the Name of its Laue Group*
-
-
-cs = crystalSymmetry('m-3m')
-
-plot(cs,'upper')
-
-%%
-% defines a cubic crystal symmetry using the international notation. Of
-% course MTEX understands also the Schoenflies notation
+% or by the Schoenflies notation
 
 cs = crystalSymmetry('O')
-plot(cs,'upper')
+
+plot(cs)
+
+%% Laue groups
+%
+% For any symmetry group we obtain the corresponding Laue group by adding
+% the inversion as an additional symmetry element.
+
+csLaue = union(cs,rotation.inversion)
+
+plot(csLaue)
 
 %%
-% *Defining a Crystal Symmetry by the Name of its Point Group or its Space
-% Group*
+% More directly, the Laue group corresponding to an arbitrary point group
+% can be defined by the command
+
+cs.Laue
+
+%%
+% Since all Laue groups can be derived from the 11 enantiomorphic groups
+% there are also 11 Laue groups, namely -1, 2/m, mmm, -3, -3m, -4/m, 4/mmm,
+% 6/m, 6/mmm, m-3, m-3m.
 %
-% If not the name of a point group was specified but the name of a space
-% group MTEX automatically determines the corresponding point group and
-% assigns it to the variable.
+% The Laue groups have always exactly twice as many symmetry elements as
+% the corresponding enantiomorphic group. As the following example
+% illustrates each symmetry element from the enantiomorphic group occurs
+% two times - with and without inversion - in the corresponding Laue group.
+
+cs = crystalSymmetry('222');
+rotation(cs)
+rotation(cs.Laue)
+
+
+%% Point groups
+%
+% While the enantiomorphic groups contain exclusivly proper rotations and
+% Laue groups contain a proper and an improper version of each rotation,
+% there are also symmetry groups with improper rotations that do not
+% contain the inversion, e.g. the point group mm2
+
+cs = crystalSymmetry('mm2')
+rotation(cs)
+plot(cs)
+
+%%
+% We observe that mm2 has exactly the same rotations as 222 with the only
+% difference that half of them are improper. In fact, we can derive all
+% remaining 10 point groups by replacing half of the rotations of a
+% enantiomorphic group by its improper version. This way the following
+% point groups can be constructed: m, mm2, 3m, -4, 4m2, -42m, -6, 6mm,
+% -6m2, -43m. In total this gives us 11 enantiomorphic + 11 Laue + 10 mixed
+% = 32 point groups.
+%
+% In MTEX we may use the following commands to find the corresponding
+% enantiomorphic group and the corresponding Laue group to any mixed group
+
+cs = crystalSymmetry('-4m2')
+
+mtexFigure('layout',[1 3])
+plot(cs)
+mtexTitle(char(cs,'LaTex'))
+nextAxis
+plot(cs.properGroup)
+mtexTitle(char(cs.properGroup,'LaTex'))
+nextAxis
+plot(cs.Laue)
+mtexTitle(char(cs.Laue,'LaTex'))
+
+%% The Subgroup of proper rotations
+%
+% The enantiomorphic group of a given point group is in general not an
+% subgroup, i.e., it does contain symmetry elements that do not belong to
+% the original point group. If one is interested in the subgroup of proper
+% rotations of a given point group the following command comes into help
+
+plot(cs.properSubGroup)
+mtexTitle(char(cs.properSubGroup,'LaTex'))
+
+%% Alignment of the symmetry operations
+%
+% Although in general only 32 point groups are distingished, some of them
+% allow for different alignments of the symmetry operations with respect to
+% the crystal axes. The following plots show three different alignments of
+% the point group 2mm. Note that the a-axis points in all three case
+% towards south.
+
+mtexFigure('layout',[1 3])
+cs = crystalSymmetry('2mm')
+plot(cs)
+mtexTitle(char(cs,'LaTex'))
+annotate(cs.aAxis,'labeled')
+
+nextAxis
+cs = crystalSymmetry('m2m')
+plot(cs)
+mtexTitle(char(cs,'LaTex'))
+annotate(cs.aAxis,'labeled')
+
+nextAxis
+cs = crystalSymmetry('mm2')
+plot(cs)
+mtexTitle(char(cs,'LaTex'))
+annotate(cs.aAxis,'labeled')
+
+%%
+% Similarly as with mm2, there are different alignements for the point
+% groups 112, 121, 211, 11m, 1m1, m11, 321, 312, 3m1, 31m, etc.
+%
+
+%% Space groups
+%
+% If additionally to the proper and improper rotations also translations
+% are considered as symmetry operations the number of different symmetry
+% groups increases to 320. Those are exhaustivly described in the
+% international table of crystallography. 
+%
+% MTEX currently does not support space groups. If the name of a space
+% group os passed to the command crystalSymmetry, MTEX automatically
+% determines the corresponding point group and assigns it to the variable.
 
 cs = crystalSymmetry('Td');
-plot(cs,'upper')
+plot(cs)
 
-%%
-% *Defining a Crystal Symmetry by a CIF and PHL Files*
+
+%% Computations with symmetries
 %
-% Finally, MTEX allows to define a crystal symmetry by importing a
-% crystallographic information file (*.cif)
+% Using the commands <crystalSymmetry_union.html union> and
+% <crystalSymmetry_disjoint.html disjoint> new symmetries can be computed
+% from two given ones
 
-cs = loadCIF('quartz')
+union(crystalSymmetry('23'),crystalSymmetry('4'))
+
+disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
+
+
+
+%% Import from CIF and PHL files
+%
+% MTEX allows to define a crystal symmetry by importing a crystallographic
+% information file (*.cif)
+
+cs = crystalSymmetry.load('quartz')
 
 %%
 % or a Bruker phl file. As a phl file contains usually many phases the
 % output is a list of crystal symmetries
 
 % import a list of crystal symmetries
-cs_list = loadPHL('crystal.phl');
+cs_list = crystalSymmetry.load('crystal.phl');
 
 % access the first symmetry in list
 cs_list{1}
-
-%%
-% *Switching between Point, Laue and purely rotational group*
-%
-% One can easily switch from any symmetry group to the corresponding Laue
-% group by the command
-
-cs = crystalSymmetry('Td')
-cs.Laue
-
-%%
-% Furthermore, the purely rotational part of the corresponding Laue group
-% can be extracted by the command
-
-cs.properGroup
-
-%%
-% *Extracting the Rotations of a Symmetry Group*
-%
-% All proper and improper rotations of a symmetry group can be extracted by
-% the command
-
-rotation(cs)
-
-%%
-% *Alignment of the Two Fold Axes and the Mirroring Planes*
-%
-% MTEX supports different alignments of two fold axes and mirroring planes.
-% Look at the difference between the following plots. The red dot always marks
-% the a-axis
-
-cs = crystalSymmetry('2mm');
-plot(cs)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-
-figure
-plot(crystalSymmetry('m2m'))
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-
-figure
-plot(crystalSymmetry('mm2'))
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-
-%%
-% The same differences can be found between the symmetry groups 112, 121,
-% 211; 11m, 1m1, m11; 321, 312; 3m1, 31m and -3m1, -31m.
-
-
-%% The Crystal Coordinate System
-%
-% Beside the symmetry group a variable of type <crystalSymmetry_index.html
-% crystalSymmetry> also contains information about the crystal coordinate
-% system. It is specified by a list [a,b,c] of axes length and a list
-% [alpha,beta,gamma] of angles between the axes. For crystal symmetries
-% with fixed angles the last argument can be ommitted. The syntax for a
-% triclinic crystal system is
-
-close all
-cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
-
-%%
-% *Aligning the Orthogonal Crystal Reference Frame to the Crystal Axes*
-%
-% As Euler angles and tensors are usually specified not with respect to a
-% skew crystal coordinate frame but with respect to a orthogonal reference
-% frame the relationship between the latter one to the crystal coordinate
-% system has to be specified. In the case of orthorhombic and cubic crystal
-% frames no choice has to be made. In the case of triclinic, monoclinic,
-% trigonal and hexagonal symmetries one should explicitly define which of
-% the crystal axes a, b, c is parallel to X, Y, Z of the orthogonal
-% reference frame. For the axes of the dual crystal frame the notation a*,
-% b*, c* is used. In order to specify that X is parallel a and Z is
-% parallel to c* the syntax is
-
-cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'X||a','Z||c');
-plot(cs)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-
-%%
-% For trigonal system the other commonly used convention is X parallel to
-% a* and Z parallel to c which reads in MTEX as
-
-cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'X||a*','Z||c');
-plot(cs)
-annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
-
-
-%% Calculations
-%
-% applying the specimen symmetry from the left and the crystal symmetry from the
-% right onto a <orientation_index.html orientation> results in a vector
-% containing all crystallographically equivalent orientations.
-
-% specimen symmetry
-ss = specimenSymmetry('mmm');
-
-% all crystallographically equivalent orientations
-ss * orientation.byEuler(0,0,pi/4,cs,ss) * cs
-
-%% Plotting symmetries
-%
-% One can also visualize crystal symmetries by plotting the main axes and
-% the corresponding equivalent directions
-
-h = Miller({1,0,-1,0},{1,1,-2,0},{1,0,-1,1},{1,1,-2,1},{0,0,0,1},cs);
-
-for i = 1:length(h)
-  plot(h(i),'symmetrised','labeled','backgroundColor','w','doNotDraw','grid','upper')
-  hold all
-end
-hold off
-
-drawNow(gcm,'figSize','normal')

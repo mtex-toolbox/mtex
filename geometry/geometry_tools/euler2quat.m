@@ -2,7 +2,7 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % converts euler angle to quaternion
 %
 % Description
-% The method *euler2quat* defines a [[quaternion_index.html,rotation]]
+% The method *euler2quat* defines a <quaternion_index.html quaternion>
 % by Euler angles. You can choose whether to use the Bunge (phi,Phi,phi2)
 % convention or the Matthies (alpha,beta,gamma) convention.
 %

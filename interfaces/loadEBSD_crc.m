@@ -24,7 +24,7 @@ try
   phases  = loader.getColumnData('Phase');
   options = loader.getOptions('ignoreColumns','phase');
   
-  ebsd = EBSD(q,phases,CS,'unitCell',param.unitCell,'options', options);
+  ebsd = EBSD(q,phases,CS,options,'unitCell',param.unitCell);
   
 catch %#ok<CTCH>
   interfaceError(fname);

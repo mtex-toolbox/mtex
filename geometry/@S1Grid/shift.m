@@ -7,8 +7,9 @@ function G = shift(G,delta)
 % Input
 %  S1G   - @S1Grid
 %  delta - double
+%
 % Output
-%  S1G + delta
+%  S1G - @S1Grid
 
 for i = 1:length(G)
     G(i).points = G(i).points + delta;

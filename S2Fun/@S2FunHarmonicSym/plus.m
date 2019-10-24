@@ -1,7 +1,7 @@
 function sF = plus(sF1,sF2)
 %
 % Syntax
-%  sF = sF1.^a
+%   sF = sF1.^a
 %
 
 % call parent method

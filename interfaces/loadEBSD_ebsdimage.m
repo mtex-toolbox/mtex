@@ -49,8 +49,8 @@ for i = 1:length(splits)
   properties(key) = value;
 end
 
-dx = typecast(sscanf(properties('calibration.dx'), '%lu'), 'double')
-dy = typecast(sscanf(properties('calibration.dy'), '%lu'), 'double')
+dx = typecast(sscanf(properties('calibration.dx'), '%lu'), 'double');
+dy = typecast(sscanf(properties('calibration.dy'), '%lu'), 'double');
 
 if strcmp(properties('calibration.origin.set'), 'true')
   x0 = typecast(sscanf(properties('calibration.x0'), '%lu'), 'double');
@@ -157,9 +157,8 @@ if ~status
 end
 
 % Construct EBSD object
-
-ebsd = EBSD(rotations, 'phase', phases, 'unitCell', unitCell, ...
-            'options', options);
+CSList = {};
+ebsd = EBSD(rotations, phases, CSList, options,'unitCell', unitCell);
 
 end
 

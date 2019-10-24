@@ -10,10 +10,10 @@ function quiverSection(sF,sVF,sec,varargin)
 %  v   - @vector3d 
 %  sVF - @S2VectorField
 %
-% Option
+% Flags
 %  normalized - normalize vectors before plotting
 %
-% Output
+
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 

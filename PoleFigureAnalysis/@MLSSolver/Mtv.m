@@ -2,12 +2,12 @@ function d = Mtv(solver,I,i)
 % forward operator
 %
 % Input
-%  I
-%  alpha
+%  I - intensities
+%  alpha - scaling factors
 %
 % Output
+%  d - result
 %
-%  d
   
 % extend specimen symmetry
 lss = length(solver.SS.properGroup);

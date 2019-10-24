@@ -1,6 +1,10 @@
 function BS2 = fit(v,varargin)
 % function to fit Bingham parameters
 %
+% Description
+% confidence ellipse for the mean direction based on Tanaka
+% (1999) https://doi.org/10.1186/BF03351601
+%
 % Syntax
 %   BS2 = BinghamS2.fit(v)
 %
@@ -12,9 +16,7 @@ function BS2 = fit(v,varargin)
 %
 %
 % Options
-%  ConfElli - specify the level p (default at 0.95)
-%             for the confidence ellipse for the mean direction
-%             based on Tanaka (1999) https://doi.org/10.1186/BF03351601
+%  ConfElli - confidence level p (default at 0.95)
 %
 %
 % Example

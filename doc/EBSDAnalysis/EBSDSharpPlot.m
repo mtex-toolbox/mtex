@@ -1,14 +1,9 @@
-%% Visualizing EBSD data with sharp textures
-% How visualize texture gradients within grains
+%% Sharp Color Keys
 %
-%% Open in Editor
-%
-%% Contents
-%
-
 %% 
-% Using advanced color keys is particularly useful when visualizing sharp
-% data. Let us consider the following calcite data set
+% In this section we discuss color keys that are particular useful when
+% analyzing data with very small deviation in orientation. Let us consider
+% the following calcite data set
 
 % plotting conventions
 plotx2east, plotb2east
@@ -36,7 +31,7 @@ mtexColorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth
-% angle 115 degrees with some outliers at 125 and 130 degree. In order to
+% angle 115 degrees with some outliers at 65 degree. In order to
 % increase the contrast for the main group, we restrict the color range from
 % 110 degree to 120 degree.
 
@@ -106,7 +101,7 @@ hold off
 % contrast.
 
 
-%%
+%% The axis angle color key
 % 
 
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);

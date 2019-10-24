@@ -15,7 +15,7 @@ function varargout = fitEllipse(grains,varargin)
 %  a        - long axis radius
 %  b        - short axis radius
 % 
-% Option
+% Options
 %  boundary - scale to fit boundary length
 %
 % Example

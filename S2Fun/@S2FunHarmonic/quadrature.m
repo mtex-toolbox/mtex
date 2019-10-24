@@ -50,7 +50,8 @@ else
     
     id = values>0;
     nodes = reshape(n2.subGrid(id),[],1);
-    values = values(id);    
+    values = values(id);
+    nodes.antipodal = f.antipodal;
   end
 end
 

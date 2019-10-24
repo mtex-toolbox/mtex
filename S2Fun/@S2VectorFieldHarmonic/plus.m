@@ -1,9 +1,9 @@
 function sVF = plus(sVF1, sVF2)
 %
 % Syntax
-%  sVF = sVF1+sVF2
-%  sVF = a+sVF1
-%  sVF = sVF1+a
+%   sVF = sVF1+sVF2
+%   sVF = a+sVF1
+%   sVF = sVF1+a
 %
 
 if isa(sVF1, 'vector3d')

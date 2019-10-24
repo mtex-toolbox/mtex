@@ -2,8 +2,8 @@ function out = mtimes(a,b)
 % outer quaternion multiplication
 %
 % Syntax
-%  out = a * b
-%  out = a * v
+%   out = a * b
+%   out = a * v
 %
 % Input
 %  a - @SO3Grid

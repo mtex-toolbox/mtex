@@ -1,7 +1,0 @@
-mtexFigure
-mapPlot
-scaleBar
-sphericalPlot
-
-sphericalProjection_index
-ODFSections_index

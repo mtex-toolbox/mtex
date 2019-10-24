@@ -66,7 +66,7 @@ odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
         e(i) = norm(solver.u{i}) ./ norm(solver.pf.allI{i}(:) .*solver.weights{i} );
       end
       if ~check_option(varargin,'silent') && ~getMTEXpref('generatingHelpMode')
-        fprintf(format,xnum2str(iter,[],2),e);
+        fprintf(format,xnum2str(iter,'fixedWidth',2),e);
       end
       e = sqrt(sum(e.^2));
     end

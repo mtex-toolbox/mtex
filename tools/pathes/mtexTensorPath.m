@@ -1,12 +1,12 @@
 function p = mtexTensorPath
 % returns the default path to tensor-files
 %
-%% Syntax
-% mtexTensorPath -
-% getMTEXpref('TensorPath') - long form of mtexTensorPath
-% setMTEXpref('TensorPath',path) - change the path to Tensor files
+% Syntax
+%   mtexTensorPath
+%   getMTEXpref('TensorPath') % long form of mtexTensorPath
+%   setMTEXpref('TensorPath',path) % change the path to Tensor files
 %
-%% See also
+% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 

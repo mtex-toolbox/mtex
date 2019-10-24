@@ -21,12 +21,14 @@ M = axesOld^(-1) * axesNew;
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
 if csNew.id == csOld.id && ...
     norm(MM - eye(3)) / norm(MM) < 1*10^-1
-  disp(' ');
-  disp('  The involved symmetries have different reference systems');
-  disp(['  1: ' char(csOld,'verbose')]);
-  disp(['  2: ' char(csNew,'verbose')]);  
-  disp('  I''m going to transform the data from the first one to the second one');
-  disp(' ');
+  if norm(M - eye(3)) > 1e-4
+    disp(' ');
+    disp('  The involved symmetries have different reference systems');
+    disp(['  1: ' char(csOld,'verbose')]);
+    disp(['  2: ' char(csNew,'verbose')]);
+    disp('  I''m going to transform the data from the first one to the second one');
+    disp(' ');
+  end
   obj = obj.transformReferenceFrame(csNew);
   return
 end

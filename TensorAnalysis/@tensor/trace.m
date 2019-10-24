@@ -16,6 +16,15 @@ if T.rank == 2
   
   t = EinsteinSum(T,[-1 -1]);
   
+elseif T.rank == 4
+  
+  id = [1 11 13 21 25 29 31 41 51 53 57 61 69 71 81];
+  
+  M = reshape(T.M,81,[]);
+  M = M(id,:).' * [1 0.5 0.5 0.5 0.5 0.5 0.5 1  0.5 0.5 0.5 0.5 0.5 0.5 1].';
+  
+  t = reshape(M,size(T));
+  
 elseif T.rank > 2
   
   % first dimension -> tensor, second dimension -> multiples of the tensor

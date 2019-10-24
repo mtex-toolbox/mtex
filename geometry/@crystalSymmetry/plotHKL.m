@@ -7,7 +7,7 @@ function plotHKL(s,varargin)
 % Output
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include <AxialDirectional.html antipodal symmetry>
 
 mtexFig = newMtexFigure(varargin{:});
 

@@ -1,5 +1,5 @@
 function str = regexpsplit(varargin)
-% mimics regexp(a,b,'split') as introduced in MATLAB verssion 
+% mimics regexp(a,b,'split') as introduced in MATLAB version 
 
 
 [a,b] = regexp(varargin{:});

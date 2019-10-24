@@ -13,7 +13,7 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 %  m - normal vector the the slip or twinning plane
 %  n - Burgers vector (slip) or twin shear direction (twinning)
 %
-% Ouptut
+% Output
 %  tauMax - maximum shear stress
 %  m      - active plane
 %  n      - active direction
@@ -22,7 +22,8 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 % Options
 %  symmetrise - consider also all symmetrically equivalent  planes and directions
 %
-% See Also
+% See also
+%
 
 if check_option(varargin,'symmetrise')
   

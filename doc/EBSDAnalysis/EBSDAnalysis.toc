@@ -1,12 +1,18 @@
-EBSDTutorial
-ImportEBSDData file_new
-AligningEBSDData
-EBSDModifyData
-EBSDSmoothing
-AnalyzeEBSDData
-EBSDOrientationPlots
-EBSD2odf
-EBSDBingham
-EBSDSpatialPlots
-EBSDSharpPlot
-EBSDSimulation_demo
+EBSDImport            Import
+EBSDReferenceFrame    Reference Frame
+EBSDPlotting          Plot
+EBSDIPFMap            IPF Maps
+EBSDOrientationPlots  Orientation Plots
+EBSDSelect            Select
+EBSDOrientationAnalysis Orientation Analysis
+GrainReconstruction   Grain Reconstruction
+EBSDGrid              Square and Hex Grids
+EBSDDenoising         Denoising
+EBSD2ODF              ODF Estimation
+EBSDOrientationPlots  Orientation Plots
+EBSDSharpPlot         Sharp Color Keys 
+EBSDAdvancedMaps      Advanced Plotting
+EBSDKAM               KAM
+EBSDProfile           Profiles
+EBSDSimulation        Simulation
+EBSDExport            Export

@@ -1,0 +1,5 @@
+PoleFigureOverview    Overview
+PoleFigure_index      poleFigure
+MLSSolver_index       MLSSolver
+zeroRangeMethod_index zeroRangeMethod
+dubna_tools_index     Dubna Tools

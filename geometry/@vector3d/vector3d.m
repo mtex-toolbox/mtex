@@ -1,5 +1,41 @@
 classdef vector3d < dynOption
-  
+%
+% The class vector3d describes three dimensional vectors, given by
+% their coordinates x, y, z and allows to calculate with them as
+% comfortable as with real numbers.
+%
+% Syntax
+%   v = vector3d(x,y,z)
+%   v = vector3d(x,y,z,'antipodal')
+%   v = vector3d.byPolar(theta,rho)
+%
+% Input
+%  x,y,z - cart. coordinates
+%
+% Output
+%  v - @vector3d
+%
+% Flags
+%  antipodal - <VectorsAxes.html consider vector as an axis>
+%
+% Class Properties
+%  x, y, z      - cart. coordinates
+%  isNormalized - whether the vector is a direction
+%  antipodal    - <VectorsAxes.html whether the vector is an axis>
+%
+% Dependent Class Properties
+%  theta      - polar angle in radiant
+%  rho        - azimuthal angle in radiant
+%  resolution - mean distance between the points on the sphere
+%  xyz        - cart. coordinates as matrix
+%
+% Derived Classes
+%  @Miller - crystal directions
+%  @S2Grid - sphercial grid
+%
+% See also
+% VectorDefinition VectorsOperation VectorsAxes VectorsImport VectorsExport
+
   properties 
     x = []; % x coordinate
     y = []; % y coordinate
@@ -18,22 +54,8 @@ classdef vector3d < dynOption
   methods
     
     function v = vector3d(varargin)
-      % Constructor
-      %
-      % Syntax
-      %   v = vector3d(x,y,z)
-      %   v = vector3d(x,y,z,'antipodal')
-      %   v = vector3d('polar',theta,rho)
-      %
-      % Input
-      %  x,y,z - cart. coordinates
-      %
-      % Flags
-      %   antipodal - consider vector as an axis and not as an direction
-      %
-      % See also
-      % AxialDirectional
-
+      % constructor of the class vector3d
+      
       if nargin == 0
       elseif nargin <= 2
         if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>

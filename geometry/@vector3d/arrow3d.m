@@ -63,4 +63,9 @@ bounds = [-1 1] * max(max(norm(vec)));
 set(ax,'XLim',bounds,'YLim',bounds,'ZLim',bounds);
 %set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
 
+if check_option(varargin,{'label','labeled'})
+  text3(vec,get_option(varargin,'label'),'parent',ax,'scaling',1.1,varargin{:});
+end
+
+
 if nargout == 0, clear h;end

@@ -9,7 +9,7 @@ function v = accumarray(subs,v,varargin)
 %  v - @vwector3d 
 %
 % Output
-%  @vector3d
+%  v - @vector3d
 
 v.x = accumarray(subs,v.x,varargin{:});
 v.y = accumarray(subs,v.y,varargin{:});

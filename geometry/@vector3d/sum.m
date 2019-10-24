@@ -9,7 +9,7 @@ function s = sum(v,varargin)
 %  v - @vector3d 
 %
 % Output
-%  @vector3d
+%  v - @vector3d
 
 % apply sum to each coordinate
 s = v; 

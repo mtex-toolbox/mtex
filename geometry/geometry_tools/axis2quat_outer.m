@@ -1,19 +1,20 @@
 function q = axis2quat_outer(v,omega)
 % rotational axis, roational angle to Quaternion
 %
-%% Decription
-%
+% Decription
 % defines a rotation by a rotational axis and a roational angle
 %
-%% Syntax
-% q = achs2quat(v,omega)
+% Syntax
+%   q = achs2quat(v,omega)
 %
-%% Input
+% Input
 %  v     - rotational axis (@vector3d)
 %  omega - rotational angle
-%% Output
+%
+% Output
 %  q - @quaternion
-%% See also
+%
+% See also
 %  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat
 
 v = v ./norm(v);

@@ -9,7 +9,7 @@ function [ori,interface,options] = load(fname,varargin)
 % the phase information as well as Euler angles.
 %
 % Syntax
-%  ori = orientation.load(fname,cs,'ColumnNames',{'phi1','Phi','phi2'})
+%   ori = orientation.load(fname,cs,'ColumnNames',{'phi1','Phi','phi2'})
 %
 % Input
 %  fname - filename

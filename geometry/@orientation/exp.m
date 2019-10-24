@@ -2,8 +2,8 @@ function ori = exp(ori,v,varargin)
 % exponential function
 %
 % Syntax
-%  ori_2 = exp(ori_1,v)
-%  ori_2 = exp(ori_1,S)
+%   ori_2 = exp(ori_1,v)
+%   ori_2 = exp(ori_1,S)
 %
 % Input
 %  ori_1 - @orientation

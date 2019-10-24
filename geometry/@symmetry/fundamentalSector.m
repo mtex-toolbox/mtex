@@ -11,7 +11,7 @@ function  sR = fundamentalSector(cs,varargin)
 %  cs - @symmetry
 %  omega - misorientation angle
 %
-% Ouput
+% Output
 %  sR - @sphericalRegion
 %
 % Options

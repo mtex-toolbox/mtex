@@ -1,4 +1,11 @@
-S2FunHarmonic_index
-S2VectorFieldHarmonic_index
-S2AxisFieldHarmonic_index
-S2FunHarmonicSym_index
+S2FunConcept       Concept 
+S2FunOperations    Operations
+S2FunPlotting      Plot
+S2FunInterpolation Interpolation
+S2FunHarmonicDef   Harmonic Expansion
+S2FunBingham       Bingham Distribution
+S2FunRadon         Radon Transform
+S2FunVectorField   Vector Field
+S2FunAxisField     Axis Field
+S2FunUnivariate
+S2FunSym           Symmetric Function

@@ -63,9 +63,11 @@ binCenter = 0.5*(bins(1:end-1)+bins(2:end));
 binWidth = 1 + 0.5*size(cumArea,2)>1;
 bar(binCenter,100*cumArea,'BarWidth',binWidth,'parent',mtexFig.gca)
 xlim(mtexFig.gca,[bins(1),bins(end)])
-xlabel(mtexFig.gca,'grain area')
+if all(prop == area)
+  title(mtexFig.gca,'grain size distribution')
+  xlabel(mtexFig.gca,'grain area');
+end
 ylabel(mtexFig.gca,'relative area (%)')
-title(mtexFig.gca,'grain size distribution')
 
 min = grains.mineralList(idList);
 legend(min{:})

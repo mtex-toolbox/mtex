@@ -2,9 +2,8 @@ function v = setdiff(v1,v2,varargin)
 % remove vectors v2 from a set of vectors v1
 %
 % Syntax
-%
-%  v = setdiff(v1,v2)
-%  v = setdiff(v1,v2,'antipodal')
+%   v = setdiff(v1,v2)
+%   v = setdiff(v1,v2,'antipodal')
 %
 % Input
 %  v1, v2 - @vector3d

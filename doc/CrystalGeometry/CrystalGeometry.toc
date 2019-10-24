@@ -1,10 +1,7 @@
-SpecimenDirections
-Rotations
-CrystalSymmetries
-CrystalDirections
-CrystalOrientations
-crystalShape_index
-Misorientations
-fibre_index
-AxialDirectional
-MorawiecCell
+CrystalSymmetries       Crystal Symmetries
+CrystalDirections       Miller Indicies
+CrystalOperations       Operations
+CrystalReferenceSystem  Reference System
+CrystalShapes           Crystal Shapes
+FundamentalSector       Fundamental Sector
+QuasiCrystals           Quasi Symmetries

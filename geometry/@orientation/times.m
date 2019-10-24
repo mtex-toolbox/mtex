@@ -2,9 +2,9 @@ function r = times(a,b)
 % vec = ori .* Miller
 %
 % Syntax
-%  o = o1 .* o2
-%  r = o .* h
-%  h = inv(o) .* r
+%   o = o1 .* o2
+%   r = o .* h
+%   h = inv(o) .* r
 %
 % Input
 %  o - @orientation

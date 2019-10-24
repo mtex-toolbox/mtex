@@ -2,7 +2,7 @@ function pf = loadPoleFigure_scintag(fname,varargin)
 % import data fom scintag ascii file
 %
 % Syntax
-%   pf = loadPoleFigure_scintag(fname,<options>)
+%   pf = loadPoleFigure_scintag(fname)
 %
 % Input
 %  fname    - filename
