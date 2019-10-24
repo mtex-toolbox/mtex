@@ -5,8 +5,8 @@ function value = mPrime(sS1,sS2)
 %
 % The 
 %
-% $$m'=(\vec n_{\text{in}} \cdot \vec n_{\text{out}}) (\vec d_{\text{in}}
-% \cdot \vec d_{\text{out}})$$
+% $$ m'=(\vec n_{\mathrm{in}} \cdot \vec n_{\mathrm{out}}) (\vec
+% d_{\mathrm{in}} \cdot \vec d_{\mathrm{out}}) $$
 % 
 %
 % Syntax
