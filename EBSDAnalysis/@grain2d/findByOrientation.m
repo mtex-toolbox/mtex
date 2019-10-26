@@ -1,13 +1,13 @@
-function grains = findByOrientation( grains,q0, epsilon )
+function grains = findByOrientation( grains,ori, epsilon )
 % select grains by orientation
 %
 % Syntax
-%   g = findByOrientation(grains,ori,epsilon);
+%   grains = findByOrientation(grains,ori,epsilon);
 %
 % Input
-%  grains - @grain2d
-%  q0 - @quaternion | @rotation | @orientation 
-%  epsilon - searching radius
+%  grains  - @grain2d
+%  ori     - @orientation 
+%  epsilon - misorientation angle threshold
 %
 % Output
 %  grains - @grain2d
@@ -15,6 +15,15 @@ function grains = findByOrientation( grains,q0, epsilon )
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
-ind = find(grains.meanOrientation,q0,epsilon);
+if nargin == 2, epsilon = 1*dgree; end
+
+% restrict to the right phase
+if isa(ori,'orientation')
+  phaseId = cellfun(@(cs) isa(cs,'crystalSymmetry') & ori.CS == cs, grains.CSList);
+  grains = subSet(grains,ismember(grains.phaseId,find(phaseId)));
+end
+
+% find grains by their mean orientation
+ind = find(grains.meanOrientation,ori,epsilon);
 
 grains = subSet(grains,any(ind,2));
