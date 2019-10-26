@@ -24,8 +24,7 @@ plot(grains,grains.meanOrientation)
 CS = grains.CS;
 
 %%
-% Now we can extract from the grains its boundary and save it to a separate
-% variable
+% Next we extract the grainboundaries and save them to a separate variable
 
 gB = grains.boundary
 
@@ -58,6 +57,7 @@ mtexColorbar
 % misorientation angles further we have the look at a misorientation angle
 % histogramm.
 
+close all
 histogram(gB_MgMg.misorientation.angle./degree,40)
 xlabel('misorientation angle (degree)')
 
@@ -115,108 +115,10 @@ plot(grains,grains.meanOrientation)
 %plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on
 %plot(gB_MgMg,angle(gB_MgMg.misorientation,twinning),'linewidth',4)
-plot(twinBoundary,'linecolor','w','linewidth',2,'displayName','twin boundary')
-hold off
-
-%% Merge twins along twin boundaries
-% Grains that have a common twin boundary are assumed to inherite
-% from one common grain. To reconstruct those initial grains we merge grains
-% together which have a common twin boundary. This is done by the command
-% <grain2d.merge.html merge>. 
-
-[mergedGrains,parentId] = merge(grains,twinBoundary);
-
-% plot the merged grains
-%plot(ebsd,ebsd.orientations)
-hold on
-plot(mergedGrains.boundary,'linecolor','k','linewidth',2.5,'linestyle','-',...
-  'displayName','merged grains')
-hold off
-
-%% Grain relationships
-% The second output argument |paraentId| of <grain2d.merge.html merge> is a
-% list with the same size as grains which indicates for each grain into
-% which common grain it has been merged. The id of the common grain is
-% usually different from the ids of the merged grains and can be found by
-
-mergedGrains(16).id
-
-%%
-% Hence, we can find all childs of grain 16 by 
-
-childs = grains(parentId == mergedGrains(16).id)
-
-%% Calculate the twinned area
-% We can also answer the question about the relative area of these
-% initial grains that have undergone twinning to total area.
-
-twinId = unique(gB_MgMg(isTwinning).grainId);
-
-% compute the area fraction
-sum(area(grains(twinId))) / sum(area(grains)) * 100
-
-%%
-% The |parentId| may also used to compute properties of the parent grains
-% by averaging over the corresponding child grain properties.
-
-mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@nanmean)
-
-figure(1)
-plot(grains,grains.GOS ./ degree)
-hold on
-plot(mergedGrains.boundary,'lineColor','white','lineWidth',2)
-mtexColorbar
-
-figure(2)
-plot(mergedGrains,mergedGrains.GOS  ./ degree)
-mtexColorbar
-caxis([0,1.5])
-
-%%
-% The above result is a bit unrealistic since the averages are computed
-% between the childs ignoring their relative areas. A better approach is to
-% compute a weighted average by the following lines.
-
-% extract GOS and area
-childGOS = grains.GOS;
-childArea = grains.area;
-
-% compute the weighted averages
-mergedGrains.prop.GOS = accumarray(parentId,1:length(grains),size(mergedGrains),...
-  @(id) nanmeanWeights(childGOS(id),childArea(id)));
-
-figure(3)
-plot(mergedGrains,mergedGrains.GOS  ./ degree)
-mtexColorbar
-caxis([0,1.5])
-
-
-%% Setting Up the EBSD Data for the Merged Grains
-% Note that the Id's of the merged grains does not fit the grainIds
-% stored in the initial ebsd variable. As a consequence, the following
-% command will not give the right result
-
-close all
-plot(mergedGrains(16).boundary,'linewidth',2)
-hold on
-plot(ebsd(mergedGrains(16)),ebsd(mergedGrains(16)).orientations)
+plot(twinBoundary,'linecolor','w','linewidth',4,'displayName','twin boundary')
 hold off
 
 %%
-% In order to update the grainId in the ebsd variable to the merged grains,
-% we proceed as follows.
-
-% copy ebsd data into a new variable to not change the old data
-ebsd_merged = ebsd;
-
-% update the grainIds to the parentIds
-ebsd_merged('indexed').grainId = parentId(ebsd('indexed').grainId)
-
-%%
-% Now the variable |ebsd_merged| can be indexed by the merged grains, i.e.
-
-plot(ebsd_merged(mergedGrains(16)),ebsd_merged(mergedGrains(16)).orientations)
-hold on
-plot(mergedGrains(16).boundary,'linewidth',2)
-hold off
-
+% A common next step is to reconstruct the grain structure parent to
+% twinning by merging the twinned grains. This is explained in detail in
+% the section <GrainMerge.html Merging Grains>.

@@ -1,4 +1,4 @@
 ParentChildVariants
 TransformationTexture
 ParentGrainReconstruction
-GrainMerging
+GrainMerge
