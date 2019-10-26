@@ -1,23 +1,21 @@
 %% Selecting Grains
 %
-% TODO: This help page needs to be improved
-%
 %%
 % In this section we discuss how to select grains by properties. We start
 % our discussion by reconstructing the grain structure from a sample EBSD
 % data set.
 
 % load sample EBSD data set
-mtexdata forsterite
+mtexdata forsterite silent
 
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % remove all not indexed pixels
-ebsd = ebsd('indexed')
+ebsd = ebsd('indexed');
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree)
+[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
 
 % smooth them
 grains = smooth(grains,5);
@@ -30,11 +28,54 @@ hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
 
-%% Accessing individual grains
-% The variable |grains| is essentially a large vector of grains. Thus when
-% applying a function like <Grain2d.area.html area> to this variable we
-% obtain a vector of the same lenght with numbers representing the area of
-% each grain
+%% Selecting grains by mouse
+% The most easiest way to select a grain is by using the mouse and the
+% command <grain2d.selectInteractive.html selectInteractive>
+
+selectInteractive(grains,'lineColor','gold')
+
+%%
+% which allows you to select an arbitrary amount of grains. The index of
+% the selected grains appear as the global variable *indSelected* in your
+% workspace
+
+% this simulates a mouse click
+simulateClick(9000,3500)
+
+global indSelected;
+grains(indSelected)
+
+%% Indexing by orientation or position
+% One can also to select a grain by spatial coordinates without user
+% interaction. This is done using the syntax *grains(x,y)*, i.e.,
+
+x = 12000; y = 4000;
+
+hold on
+plot(grains(x,y).boundary,'linewidth',4,'linecolor','blue')
+
+plot(x,y,'marker','s','markerfacecolor','k',...
+  'markersize',10,'markeredgecolor','w')
+hold off
+
+%%
+% Alternatively one can also select all grains with a certain orientation.
+% Lets find all grains with a similar orientation as the one marked in
+% gold. As threshold we shall use 20 degree
+
+% select grains by orientation
+grains_selected = grains.findByOrientation(grains(indSelected).meanOrientation,20*degree)
+
+hold on
+plot(grains_selected.boundary,'linewidth',4,'linecolor','gold')
+hold off
+
+%% Indexing by a Property
+% In order the generalize the above concept lets remember that the variable
+% |grains| is essentially a large vector of grains. Thus when applying a
+% function like <grain2d.area.html area> to this variable we obtain a
+% vector of the same lenght with numbers representing the area of each
+% grain
 
 grain_area = grains.area;
 
@@ -63,7 +104,7 @@ grains(max_id)
 % and so we can plot it
 
 hold on
-plot(grains(max_id).boundary,'linecolor','red','linewidth',1.5)
+plot(grains(max_id).boundary,'linecolor','red','linewidth',4)
 hold off
 
 %%
@@ -74,22 +115,22 @@ hold off
 
 [sorted_area,sorted_id] = sort(grain_area,'descend');
 
-large_grain_id = sorted_id(1:5);
+large_grain_id = sorted_id(2:5);
 
 hold on
-plot(grains(large_grain_id).boundary,'linecolor','green','linewidth',1.5)
+plot(grains(large_grain_id).boundary,'linecolor','Orange','linewidth',4)
 hold off
 
 
 %% Indexing by a Condition
 % By the same syntax as above we can also single out grains that satisfy a
-% certain condition. I.e., to access are grains that are at least half as
-% large as the largest grain we can do
+% certain condition. I.e., to access are grains that are at least one
+% quarter as large as the largest grain we can do
 
-condition = grain_area > max_area/2;
+condition = grain_area > max_area/4;
 
 hold on
-plot(grains(condition).boundary,'linecolor','red','linewidth',1.5)
+plot(grains(condition).boundary,'linecolor','Yellow','linewidth',4)
 hold off
 
 %%
@@ -111,7 +152,6 @@ plot(grains(condition))
 
 grains('forsterite')
 
-
 %%
 % Logical indexing allows also for more complex queries, e.g. selecting all
 % grains perimeter larger than 6000 and at least 600 measurements within
@@ -128,14 +168,10 @@ plot(selected_grains)
 % Besides, the list of grains the command <EBSD.calcGrains.html calcGrains>
 % returns also two other output arguments. 
 
-
+plot(grains)
 largeGrains = grains(grains.grainSize > 50);
 
 text(largeGrains,largeGrains.id)
-
-
-%%
-
 
 %%
 % The second output argument grainId is a list with the same size as the
@@ -151,51 +187,17 @@ ebsd(grains(33))
 
 ebsd(ebsd.grainId == 33) 
 
-%% Indexing by orientation or position
-% One can also select a grain by its spatial coordinates using the syntax
-% |grains(x,y)|
-
-x = 12000; y = 4000;
-
-plot(grains);
-
-hold on
-
-plot(grains(x,y).boundary,'linewidth',2,'linecolor','r')
-
-plot(x,y,'marker','s','markerfacecolor','k',...
-  'markersize',10,'markeredgecolor','w')
-hold off
-
 %%
-% In order to select all grains with a certain orientation one can do
+% The following picture plots the largest grains together with its
+% individual orientation measurements. 
 
-% restrict first to Forsterite phase
-grains_fo = grains('fo')
-
-% the reference orientation
-ori = orientation.byEuler(350*degree,50*degree,100*degree,grains('fo').CS)
-
-% select all grain with misorientation angle to ori less then 20 degree
-grains_selected = grains_fo(angle(grains_fo.meanOrientation,ori)<20*degree)
-
-plot(grains_selected)
-
-
-%% Changing lists of grains
-%
-% As with any list in MTEX, one can single out specific grains by conditions
-% using the syntax
-
-% this gives all grains with more the 1000 pixels
-largeGrains = grains(grains.grainSize > 1000)
-
+plot(ebsd(grains(max_id)),ebsd(grains(max_id)).orientations)
 hold on
-% mark only large Forsterite grains
-plot(largeGrains('Fo').boundary,'linewidth',2,'linecolor','k')
+plot(grains(max_id).boundary,'lineWidth',2)
 hold off
 
-%% boundary grains
+
+%% Boundary grains
 % Sometimes it is desirable to remove all boundary grains as they might
 % distort grain statistics. To do so one should remember that each grain
 % boundary has a property |grainId| which stores the ids of the neigbouring
@@ -205,6 +207,7 @@ hold off
 % ids of the outer boundary segment
 outerBoundary_id = any(grains.boundary.grainId==0,2);
 
+% plot the outer boundary segments
 plot(grains)
 hold on
 plot(grains.boundary(outerBoundary_id),'linecolor','red','linewidth',2)
