@@ -38,9 +38,12 @@ try axis(mP.ax,'tight'); end
 mP.micronBar.setOnTop
 
 if nargout == 0, clear h; end
-if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 
-if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+% finalize plot
+if ~isstruct(mtexFig)  
+  if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
+  if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+end
 
 function plotOrdered(gB,varargin)
 

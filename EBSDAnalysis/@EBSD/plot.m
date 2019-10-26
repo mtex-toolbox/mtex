@@ -118,13 +118,15 @@ mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
 
 if nargout==0, clear h; end
 
-if isNew
+if isNew && ~isstruct(mtexFig)
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 else
   mP.micronBar.setOnTop  
 end
 
-if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+if ~isstruct(mtexFig)  && length(mtexFig.children)== 1
+  mtexFig.keepAspectRatio = false; 
+end
 
 end
 
