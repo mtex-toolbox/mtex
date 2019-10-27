@@ -1,10 +1,15 @@
-function f = smiley(v,varargin)
+function f = smiley(varargin)
 
-if nargin == 0
-  f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v));
+if nargin == 0 || ~isa(varargin{1},'vector3d')
+  if check_option(varargin,'exact')
+    f = S2FunHandle(@(v) S2Fun.smiley(v));
+  else
+    f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v));
+  end
   return;
 end
 
+v = varargin{1};
 v = v(:)';
 
 % Radial test function: quadratic spline
