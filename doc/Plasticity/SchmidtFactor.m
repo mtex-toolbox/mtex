@@ -32,13 +32,13 @@ tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
 sS = slipSystem(d,n)
 
 %%
-% and using the command <slipSystem_SchmidFactor.html SchmidFactor>
+% and using the command <slipSystem.SchmidFactor.html SchmidFactor>
 
 sS.SchmidFactor(r)
 
 %%
 % Ommiting the tension direction r the command
-% <slipSystem_SchmidFactor.html SchmidFactor> returns the Schmid factor as
+% <slipSystem.SchmidFactor.html SchmidFactor> returns the Schmid factor as
 % a <S2FunHarmonic.S2FunHarmonic.html spherical function>
 
 SF = sS.SchmidFactor

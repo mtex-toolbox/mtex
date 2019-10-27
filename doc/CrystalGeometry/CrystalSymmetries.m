@@ -150,8 +150,8 @@ plot(cs)
 
 %% Computations with symmetries
 %
-% Using the commands <crystalSymmetry_union.html union> and
-% <crystalSymmetry_disjoint.html disjoint> new symmetries can be computed
+% Using the commands <symmetry.union.html union> and
+% <symmetry.disjoint.html disjoint> new symmetries can be computed
 % from two given ones
 
 union(crystalSymmetry('23'),crystalSymmetry('4'))

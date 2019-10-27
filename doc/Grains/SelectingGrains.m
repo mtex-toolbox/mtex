@@ -30,20 +30,21 @@ hold off
 
 %% Selecting grains by mouse
 % The most easiest way to select a grain is by using the mouse and the
-% command <grain2d.selectInteractive.html selectInteractive>
+% command <grain2d.selectInteractive.html selectInteractive> which allows
+% you to select an arbitrary amount of grains. The index of the selected
+% grains appear as the global variable *indSelected* in your workspace
 
 selectInteractive(grains,'lineColor','gold')
-
-%%
-% which allows you to select an arbitrary amount of grains. The index of
-% the selected grains appear as the global variable *indSelected* in your
-% workspace
 
 % this simulates a mouse click
 simulateClick(9000,3500)
 
 global indSelected;
 grains(indSelected)
+
+hold on
+plot(grains(indSelected).boundary,'lineWidth',4,'lineColor','gold')
+hold off
 
 %% Indexing by orientation or position
 % One can also to select a grain by spatial coordinates without user

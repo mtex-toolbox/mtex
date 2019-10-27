@@ -6,7 +6,7 @@
 % <DefinitionAsCoordinateTransform.html Theory> and
 % <MTEXvsBungeConvention.html MTEX vs Bunge Convention>.
 %
-% Technically, a variable of type <orientations.orientations.html
+% Technically, a variable of type <orientation.orientation.html
 % orientation> is nothing else then a <rotation.rotation.html rotation>
 % that is accompanied by a crystal symmetry. Hence, all methods for
 % defining rotations (<RotationDefinition.html as explained here>) are also

@@ -53,7 +53,7 @@ round(cross(d1,d2))
 symmetrise(d2)
 
 %%
-% As always the keyword <AxialDirectional.html antipodal> adds antipodal
+% As always the keyword <VectorsAxes.html antipodal> adds antipodal
 % symmetry to this computation
 
 symmetrise(d2,'antipodal')
@@ -94,7 +94,7 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
 %%
-% As always the keyword <AxialDirectional.html antipodal> adds antipodal
+% As always the keyword <VectorsAxes.html antipodal> adds antipodal
 % symmetry to this computation
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree

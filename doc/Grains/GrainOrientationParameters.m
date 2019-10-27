@@ -299,8 +299,8 @@ plot(grains('fo'),GAM(grains('fo').id),'micronbar','off')
 mtexColorbar
 
 %% Boundary misorientations
-% The misorientation between adjacent grains can be computed by the command
-% <grainBoundary.misorientation.html>
+% The misorientations between adjacent grains are stored for each boundary
+% segment seperately in *grains.boundary.misorientation*
 
 plot(grains)
 

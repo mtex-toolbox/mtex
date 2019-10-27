@@ -38,7 +38,7 @@ plotPDF(odf,Miller(1,1,0,cs),'lower','minmax')
 % Due to Friedel's law measured pole figures are a superposition of the
 % upper and the lower hemisphere (since antipodal directions are
 % associated). In order to plot pole figures as a superposition of the
-% upper and lower hemisphere one has to enforce <AxialDirectional.html
+% upper and lower hemisphere one has to enforce <VectorsAxes.html
 % antipodal symmetry>. This is done by the option *antipodal*.
 
 plotPDF(odf,Miller(1,1,0,cs),'antipodal','minmax')

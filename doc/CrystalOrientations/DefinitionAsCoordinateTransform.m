@@ -3,7 +3,7 @@
 %% 
 % In MTEX a crystal orientation is defined as the rotation that transforms
 % <CrystalDirections.html crystal coordinates>, i.e., a description of a
-% vector or a tensor with respect to the <CrystalReferenceFrame.html
+% vector or a tensor with respect to the <CrystalReferenceSystem.html
 % crystal reference frame>, into specimen coordinates, i.e., a desciption
 % of the same object with respect to a specimen fixed reference frame.
 %
@@ -83,7 +83,7 @@ inv(ori) * r
 % Note, that in literature orientations are often defined to transform
 % specimen coordinates into crystal coordinates, i.e., to coincide with the
 % inverse orientations in MTEX. The consequences of this differences are
-% exhaustivly discussed in the topic <MTEXvsBungeConvemtion.html
+% exhaustivly discussed in the topic <MTEXvsBungeConvention.html
 % orientation convemtions>.
 
 

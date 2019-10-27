@@ -194,7 +194,7 @@ ylabel('shape factor')
 % || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || the radius of the fitted ellipse  || 
 % || *grains.grainSize* || number of measurements per grain || 
 % || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
-% || <grain2d.neigbours.html *grains.neighbours*>  || number and ids of neighboring grains  || 
+% || <grain2d.neigbors.html *grains.neighbors*>  || number and ids of neighboring grains  || 
 % || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in |grains.scanUnit| || 
 % || <grain2d.principalComponents.html *grains.principalComponents*>  || length and width of the fitted ellipse || 
 % || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / perimeter of the fitted ellipse || 

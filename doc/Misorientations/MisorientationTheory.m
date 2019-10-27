@@ -7,13 +7,13 @@
 % concept at a practical example let us first import some Magnesium EBSD
 % data.
 
-mtexdata twins
+mtexdata twins silent
 
 % use only proper symmetry operations
 ebsd('M').CS = ebsd('M').CS.properGroup;
 
 % compute grains
-grains = calcGrains(ebsd('indexed'),'threshold',5*degree)
+grains = calcGrains(ebsd('indexed'),'threshold',5*degree);
 CS = grains.CS; % extract crystal symmetry
 
 %%
@@ -31,8 +31,8 @@ text(grains([74,85]),{'1','2'})
 %%
 % After extracting the mean orientation of grain 70 and 80
 
-ori1 = grains(74).meanOrientation
-ori2 = grains(85).meanOrientation
+ori1 = grains(74).meanOrientation;
+ori2 = grains(85).meanOrientation;
 
 %%
 % we may compute the misorientation angle between both orientations by

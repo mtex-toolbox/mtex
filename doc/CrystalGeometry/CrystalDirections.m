@@ -32,7 +32,7 @@ m = Miller(1,0,1,cs,'uvw')
 
 %%
 % for values |u = 1|, |v = 0|, and, |w = 1|. To plot a crystal direction as
-% a <phericalProjection.phericalProjection.html spherical projections> do
+% a <SphericalProjections.html spherical projections> do
 
 plot(m,'upper','labeled','grid')
 

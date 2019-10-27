@@ -22,7 +22,7 @@ plotPDF(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 
 %% Scatter (Inverse) Pole Figure Plot
 % Accordingly, scatter points in inverse pole figures are produced by the
-% command  <EBSD.plotIPDF.html plotIPDF>.
+% command  <orientation.plotIPDF.html plotIPDF>.
 
 plotIPDF(ebsd('Fo').orientations,xvector)
 

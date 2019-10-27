@@ -35,7 +35,7 @@ xy2 = [31,41]; % end point
 line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linestyle',':','linewidth',4,'color','white')
 
 %%
-% The command <grainBoundary_intersect.html intersect> computes the
+% The command <grainBoundary.intersect.html intersect> computes the
 % intersections of all boundary segments with the given line
 
 [x,y] = grains.boundary.intersect(xy1,xy2);

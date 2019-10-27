@@ -70,5 +70,6 @@ angle(ori,symmetrise(orientation.goss(cs)),'noSymmetry') ./ degree
 
 %%
 % Functions that respect crystal symmetry but allow to switch it off using
-% the flag |noSymmetry| include <orientation_dot.html dot>,
-% <orientation_unique.html unique>, <cluster.html cluster>
+% the flag |noSymmetry| include <orientation.dot.html dot>,
+% <orientation.unique.html unique>, <orientation.calcCluster.html
+% calcCluster>.

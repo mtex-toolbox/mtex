@@ -38,7 +38,7 @@ u = u ./ norm(u)
 %
 % As any other MTEX variable you can combine several vectors to a list of
 % vectors and all bevor mentioned operators operations will work
-% elementwise on a list of vectors. See <WorkinWithLists.html Working with
+% elementwise on a list of vectors. See <ListsAndIndexing.html Working with
 % lists> on how to manipulate lists in Matlab.
 %
 % Using the brackets |v = [v1,v2]| two lists of vectors can be joined to a

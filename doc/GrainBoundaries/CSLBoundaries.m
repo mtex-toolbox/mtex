@@ -64,7 +64,7 @@ hold off
 
 %% Merging grains with common CSL(3) boundary
 % Next we merge all grains together which have a common CSL(3) boundary.
-% This is done with the command <grain2d_merge.html merge>.
+% This is done with the command <grain2d.merge.html merge>.
 
 % this merges the grains
 [mergedGrains,parentIds] = merge(grains,gB3);

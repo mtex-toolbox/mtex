@@ -133,7 +133,7 @@ angle(ori_x2a, ori_y2a) ./ degree
 % In many cases MTEX automatically recognizes different setups and corrects
 % for this. In order to manually transform orientations or tensors from one
 % reference frame into another reference frame one might use the command
-% <orientation_transformReferenceFrame.html transformReferenceFrame>. The
+% <orientation.transformReferenceFrame.html transformReferenceFrame>. The
 % following command transfroms the reference frame of orientation |ori_y2a|
 % into the reference frame |cs_x2a|
 

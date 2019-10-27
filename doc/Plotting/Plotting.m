@@ -6,7 +6,7 @@
 % variable in the most intuitive way. In this way, you can plot three
 % Miller indices, rotations, pole figures, or ODFs. MTEX also offers you a
 % wide range of possibilities to customize your plots, e.g. by changing the
-% <PlotTypes_demo.html plot style>, the <SphericalProjection.html spherical
+% <PlotTypes.html plot style>, the <SphericalProjections.html spherical
 % projection>, the <ColorCoding.html color coding>, or by adding
 % <Annotations.html colorbars or other annotations> to the plot. You can
 % even <CombinedPlots.html combine plots> of different ODFs or EBSD
@@ -34,7 +34,7 @@
 %% Spherical Projections
 % Whenever MTEX plots pole figures, ODFs, or crystal or specimen directions
 % MTEX uses spherical projections to map the spherical data to the plane. By
-% doing so MTEX supports a wide variety of <SphericalProjection.html
+% doing so MTEX supports a wide variety of <SphericalProjections.html
 % spherical projections>, i.e.,
 %
 % * equal area projection (Schmidt)

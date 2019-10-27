@@ -30,7 +30,7 @@
 % The following function have been included to handle colors more
 % efficiently
 %
-% * <str2color.html str2color> convert color str to RGB color
+% * <str2rgb.html str2rgb> convert color str to RGB color
 % * <ind2color.html ind2color> convert index to distrinct RGB colors, good
 % for loops
 %
@@ -41,7 +41,7 @@
 %
 % *Speed Improvements*
 %
-% * much faster visualization of the large EBSD maps if <EBSD_gridify.html
+% * much faster visualization of the large EBSD maps if <EBSD.gridify.html
 % gridify> is used
 % * faster Fourier transforms on the sphere and the orientation space
 % * support for <MOSEK
@@ -50,7 +50,7 @@
 %
 % *Support for hexagonal EBSD grids*
 %
-% The function <EBSD_gridify.html gridify> now works also for EBSD data
+% The function <EBSD.gridify.html gridify> now works also for EBSD data
 % measured on a hexagonal grid. As a consequence denoising and GND
 % computation for those data is also on the way.
 %
@@ -72,7 +72,7 @@
 % *Spherical Bingham Distribution* 
 %
 % Nativ support for spherical <BinghamS2_index.html Bingham distributions>,
-% including the abbility to <BinghamS2_fit.html fit> them to directional
+% including the abbility to <BinghamS2.fit.html fit> them to directional
 % distributions.
 %
 % *Tensors*
@@ -1748,7 +1748,7 @@
 % *Incompatible Changes to Previous Versions*
 %
 % * The flags *reduced* and *axial* have been replaced by the flag
-% <AxialDirectional.html antipodal>
+% <VectorsAxes.html antipodal>
 %
 %% MTEX 1.2 - 05/2009
 %
@@ -1777,7 +1777,7 @@
 %
 % *Incompatible Changes to Previous Versions*
 %
-% * The flag *reduced* has been replaced by the flag <AxialDirectional.html
+% * The flag *reduced* has been replaced by the flag <VectorsAxes.html
 % axial>
 %
 %% MTEX 1.1 - 12/2008
@@ -1882,7 +1882,7 @@
 % *New Support of EBSD Data Analysis*
 %
 % * [[ImportEBSDData.html,Import]] EBSD data from arbitrary data formats.
-% * New class [[EBSD_index.html,EBSD]] to store and manipulate with EBSD
+% * New class <EBSD_index.html EBSD> to store and manipulate with EBSD
 % data.
 % * [[EBSD.plotpdf.html,Plot pole figures]] and inverse pole figures from
 % EBSD data.
@@ -1923,7 +1923,7 @@
 % * new option |ghost correction| in function
 % <PoleFigure.calcODF.html calcODF>
 % * new option |zero range| in function <PoleFigure.calcODF.html calcODF>
-% * new function <loadEBSD.html loadEBSD> to import EBSD data
+% * new function <EBSD.load.html loadEBSD> to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
 % * support of triclinic crystal <symmetry_index.html symmetry> with

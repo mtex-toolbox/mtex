@@ -1,7 +1,7 @@
 %% Triple points
 %
 % Triple points are automaticaly computed during grain reconstruction. They
-% are acessable similarly to <BoundaryAnalysis.html grain boundaries> as
+% are acessable similarly to <GrainBoundaries.html grain boundaries> as
 % the property <triplePointList.triplePointList.html triplePoints> of the
 % grain list.
 

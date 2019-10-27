@@ -54,7 +54,7 @@ grains = calcGrains(ebsd,'angle',10*degree)
 % allows later to analyze the shape of these unindexed regions.
 %
 % To visualize the grains we can plot its boundaries by the command
-% <Grain2d.plotBoundary.html plotBoundary>.
+% <grainBoundary.plot.html plot>.
 
 % start overide mode
 hold on

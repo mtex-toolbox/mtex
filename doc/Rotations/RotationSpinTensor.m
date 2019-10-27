@@ -63,7 +63,7 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 %
 % The above definition of the spin tensor works only well if the
 % pertupation rotation has small rotational angle. For large pertubations
-% the <rotation.logm.html matrix logarithm> provides the correct way to
+% the <quaternion.logm.html matrix logarithm> provides the correct way to
 % translate rotational changes into skew symmetric matrices
 
 S = logm(rot_ref * rot_123,rot_ref)
@@ -78,7 +78,7 @@ vector3d(S) * sqrt(14)
 
 %%
 % More directly this disorientation vector may be computed from two
-% rotations by the command <rotation.log.html log>
+% rotations by the command <quaternion.log.html log>
 
 
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)

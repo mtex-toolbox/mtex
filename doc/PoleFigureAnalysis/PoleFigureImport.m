@@ -4,7 +4,7 @@
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure.PoleFigure.html PoleFigure> object from data files containing
 % diffraction data. Once such an object has been created the data can be
-% <ModifyPoleFigureData.html analyzed and processed> in many ways.
+% <PoleFigureCorrection.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
 % <PoleFigure2ODF.html PoleFigure to ODF estimation>.
 %

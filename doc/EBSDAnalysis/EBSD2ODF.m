@@ -13,12 +13,12 @@ mtexdata forsterite
 odf = calcODF(ebsd('fo').orientations)
 
 %%
-% The function <EBSD.calcODF.html calcODF> implements the ODF estimation from
-% EBSD data in MTEX. The underlying statistical method is called kernel
-% density estimation, which can be seen as a generalized histogram.
-% To be more precise, let's $\psi : SO(3) \to R$ be a radially symmetric,
-% unimodal model ODF. Then the kernel density estimator for the individual
-% orientation data $o_1,o_2,\ldots,o_M$ is defined as
+% The function <orientation.calcODF.html calcODF> implements the ODF
+% estimation from EBSD data in MTEX. The underlying statistical method is
+% called kernel density estimation, which can be seen as a generalized
+% histogram. To be more precise, let's $\psi : SO(3) \to R$ be a radially
+% symmetric, unimodal model ODF. Then the kernel density estimator for the
+% individual orientation data $o_1,o_2,\ldots,o_M$ is defined as
 %
 % $$f(o) = \frac{1}{M} \sum_{i=1}^{M} \psi(o o_i^{-1})$$
 %
@@ -30,7 +30,7 @@ odf = calcODF(ebsd('fo').orientations)
 %% Automatic halfwidth selection
 %
 % MTEX includes an automatic halfwidth selection algorithm which is called
-% by the command <EBSD.calcKernel.html calcKernel>. To work properly, this algorithm 
+% by the command <orientation.calcKernel.html calcKernel>. To work properly, this algorithm 
 % needs spatially independent EBSD data as in the case of this dataset of very rough 
 % EBSD measurements (only one measurement per grain). 
 
@@ -57,8 +57,9 @@ odf = calcODF(ebsd('fo').orientations,'kernel',psi)
 
 
 %%
-% Once an ODF is estimated all the functionality MTEX offers for 
-% <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualization> is available. 
+% Once an ODF is estimated all the functionality MTEX offers for
+% <ODFCharacteristics.html ODF analysis> and <ODFPlot.html ODF
+% visualization> is available.
 
 h = [Miller(1,0,0,odf.CS),Miller(1,1,0,odf.CS),Miller(1,1,1,odf.CS)];
 plotPDF(odf,h,'antipodal','silent')

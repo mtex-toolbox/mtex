@@ -5,7 +5,7 @@
 % coding among all plots. In MTEX this can be achieved in two ways. If the
 % the minimum and maximum value are known then one can specify the color
 % range directly using the options *colorrange* or *contourf*, or the
-% command <setcolorrange.html setcolorrange> is used which allows to set
+% command <setColorRange.html setColorRange> is used which allows to set
 % the color range afterwards.
 %
 %% A sample ODFs and Simulated Pole Figure Data
