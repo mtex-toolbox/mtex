@@ -221,21 +221,13 @@ classdef vector3d < dynOption
   
   methods (Static = true)
     
-    function v = nan(varargin)
-      x = nan(varargin{:});
-      v = vector3d(x,x,x);
-    end
+    v = nan(varargin)
+    v = ones(varargin)
+    v = zeros(varargin)
+    v = rand(varargin)
+    v = byPolar(polarAngle,azimuthAngle,varargin)
+    [v,interface,options] = load(fname,varargin)
     
-    function v = ones(varargin)
-      x = ones(varargin{:});
-      v = vector3d(x,x,x);
-    end
-    
-    function v = zeros(varargin)
-      x = zeros(varargin{:});
-      v = vector3d(x,x,x);
-    end
-        
     function v = X(varargin)
       % the vector (1,0,0)
       %
@@ -255,39 +247,8 @@ classdef vector3d < dynOption
     function v = Z(varargin)
       x = ones(varargin{:});
       v = vector3d(0,0,x);
-    end
+    end    
     
-    function v = rand( varargin )
-      % vector of random vector3d
-
-      sR = extractSphericalRegion(varargin{:});
-
-      lastNum = find(~cellfun(@isnumeric,[varargin,{{}}]),1);
-      s = [varargin{1:lastNum-1} 1 1];
-      n = prod(s);
-      
-      if isempty(sR.N)
-        N = n;
-      else
-        N = ceil(100 + 1.5 * n /sR.volume);
-      end
-
-      theta = acos(2*(rand(N,1)-0.5));
-      rho   = 2*pi*rand(N,1);
-
-      v = vector3d('theta',theta,'rho',rho);
-            
-      ind = find(sR.checkInside(v));
-      ind = ind(1:n);
-      
-      v = reshape(v.subSet(ind),s);
-      v.antipodal = check_option(varargin,'antipodal');
-      
-    end
-    
-    [v,interface,options] = load(fname,varargin)
-    
-    v = byPolar(polarAngle,azimuthAngle,varargin)
     
   end
 end
