@@ -139,7 +139,7 @@
 %
 % The newly introduced dislocation systems play an important role when
 % computing geometrically neccesary dislocations from EBSD data. The
-% workflow is illustrate the script <GND_demo.html GND_demo> and consists
+% workflow is illustrate the script <GND.html GND> and consists
 % of the following steps:
 %
 % # define the dominant <dislocationSystem_index.html dislocation systems>
@@ -153,7 +153,7 @@
 %
 % *Tensor arithmetics*
 %
-% <tensor.dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
+% <dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
 % det>, <tensor.mean.html mean>, <tensor.diag.html
 % diag>, <tensor.eye.html eye>, <tensor.sym.html sym>
 %
@@ -185,7 +185,7 @@
 % new names are <BungeColorKey.html BungeColorKey>, <ipfHSVKey.html
 % ipfHSVKey>, <ipfHKLKey.html ipfHKLKey>,<ipfTSLKey.html ipfTSLKey>,
 % <ipfSpotKey.html ipfSpotKey>, <spotColorKey.html spotColorKey>,
-% <PatalaColorKey.html PatalaColorKey>
+% <PatalaColorKey.PatalaColorKey.html PatalaColorKey>
 %
 % *Spherical functions*
 %
@@ -208,7 +208,7 @@
 % allows to import arbitrary additional properties together with the
 % orientations, e.g., weights
 % * new option |logarithmic|
-% * new function <ODF.gradient.html ODF/gradient> to compute the gradient
+% * new function <ODF.grad.html grad> to compute the gradient
 % of and ODF at a certain orientation
 % * explicitely set the number of rows and columns in a MTEXFigure plot
 % with
@@ -437,15 +437,15 @@
 %  [~,ori] = max(SantaFe)
 %  plot(ori,'add2all')
 %
-% We also introduced two new functions <S2Fun/plotSection.html plotSection>
-% and <S2Fun/quiverSection.html quiverSection> to visualize spherical
+% We also introduced two new functions <S2Fun.plotSection.html plotSection>
+% and <S2Fun.quiverSection.html quiverSection> to visualize spherical
 % functions restricted to a plane. As an exaple one can now plot the
 % slowness surfaceses of wave velocities in the plane perpendicular to Y
 % with
 %
 %   plotSection(1./vp,vector3d.Y)
 %
-% see <ElasticityTensor.html here> for more information.
+% see <AnisotropicTheory.html here> for more information.
 %
 % *Other new functions*
 %
@@ -617,8 +617,8 @@
 %
 % *Clustering of orientations*
 %
-% The new command <orientation.cluster.html cluster> allows to cluster a
-% given set of orientations into a given number of clusters.
+% The new command <orientation.calcCluster.html calcCluster> allows to
+% cluster a given set of orientations into a given number of clusters.
 %
 %   % generate orientation clustered around 5 centers
 %   cs = crystalSymmetry('m-3m');
@@ -706,7 +706,7 @@
 %   ebsd.gradientY
 %
 % as well as an estimate of the geometrically necessary dislocation
-% density (GND) using the command <EBSDSquare.calcGND.html calcGND>
+% density (GND) using the command <EBSDsquare.calcGND.html calcGND>
 %
 %   ebsd.calcGND
 %
@@ -835,7 +835,7 @@
 %
 % This applies the spline filter to the orientation data. Beside the spline
 % filter, many other filters are available. A general discussion on this
-% topic can be found <EBSDSmoothing.html here>. To make use of a different
+% topic can be found <EBSDDenoising.html here>. To make use of a different
 % than the dafault filter use the syntax
 %
 %   F = medianFilter
@@ -1542,7 +1542,8 @@
 %   get(grains,'EBSD')
 %
 % * the grain selector tool for spatial grain plots was removed,
-% nevertheless, grains still can be <GrainSingleAnalysis.html selected spatially>.
+% nevertheless, grains still can be <SelectingGrains.html selected
+% spatially>.
 % * scripts using the old grain engine may not work properly, for more
 % details of the functionalities and functioning of the @GrainSet please
 % see the documentation.
@@ -1551,10 +1552,10 @@
 % *EBSD*
 %
 % The behavior of the |'ignorePhase'| changed. Now it is called in general
-% |'not indexed'| and the not indexed data <ImportEBSDData.html is
-% imported generally>. If the crystal symmetry of an @EBSD phase is set to a
-% string value, it will be treated as not indexed. e.g. mark the first
-% phase as |'not indexed'|
+% |'not indexed'| and the not indexed data <EBSDImport.html is imported
+% generally>. If the crystal symmetry of an @EBSD phase is set to a string
+% value, it will be treated as not indexed. e.g. mark the first phase as
+% |'not indexed'|
 %
 %   CS = {'not indexed',...
 %         symmetry('cubic','mineral','Fe'),...
@@ -1881,36 +1882,31 @@
 %
 % *New Support of EBSD Data Analysis*
 %
-% * [[ImportEBSDData.html,Import]] EBSD data from arbitrary data formats.
+% * Import EBSD data from arbitrary data formats.
 % * New class <EBSD_index.html EBSD> to store and manipulate with EBSD
 % data.
-% * [[EBSD.plotpdf.html,Plot pole figures]] and inverse pole figures from
-% EBSD data.
-% * [[EBSD.calcODF.html,Recover]] ODFs from EBSD data via kernel density
+% * Plot pole figures and inverse pole figures from EBSD data.
+% * Recover ODFs from EBSD data via kernel density
 % estimation.
-% * [[EBSD.calcODF.html,Estimate]] Fourier coefficients from EBSD data.
-% * [[ODF.calcEBSD.html,Simulate]] EBSD data from ODFs.
-% * [[EBSD.export.html,Export]] EBSD data.
+% * Estimate Fourier coefficients from EBSD data.
+% * Simulate EBSD data from ODFs.
+% * Export EBSD data.
 %
 % *New Functions*
 %
-% * [[ODF.fibreVolume.html,fibreVolume]] calculates the
+% * |fibreVolume| calculates the
 % volume fraction within a fibre.
-% * [[ODF.plotFourier.html,plotFourier]] plots the Fourier
-% coefficients of an ODF.
-% * [[setcolorrange.html,setcolorrange]] and the plotting
-% option *colorrange* allow for consistent color coding for arbitrary
-% plots.
+% * |plotFourier| plots the Fourier coefficients of an ODF.
+% * |setcolorrange| and the plotting option *colorrange* allow for
+% consistent color coding for arbitrary plots.
 % * A *colorbar* can be added to any plots.
-% * [[mat2quat.html,mat2quat]] and [[quaternion.quat2mat.html,quat2mat]]
-% convert rotation matrices to quaternions and vice versa.
+% * |mat2quat| and |quat2mat| convert rotation matrices to quaternions and
+% vice versa.
 %
 % *Incompatible Changes With Previous Releases*
 %
-% * New, more flexible syntax for the generation of
-% [[S2Grid_index.html,S2Grids]]
-% * Slightly changed the syntax of [[unimodalODF.html,unimodalODF]] and
-% [[fibreODF.html,fibreODF]].
+% * New, more flexible syntax for the generation of S2Grids
+% * Slightly changed the syntax of |unimodalODF| and |fibreODF|.
 % * Default plotting options are set to {}, i.e. 'antipodal' has to add
 % manually if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
@@ -1918,7 +1914,7 @@
 %
 %% MTEX 0.3 - 10/2007
 %
-% * new function <ODF.Fourier.html fourier> to calculate the
+% * new function |fourier| to calculate the
 % Fourier coefficents of an arbitrary ODF
 % * new option |ghost correction| in function
 % <PoleFigure.calcODF.html calcODF>
@@ -1932,8 +1928,7 @@
 % * new plot option _3d_ for a three-dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitly in all plot functions
-% <ODF.plotodf.html plotodf>,<ODF.plotpdf.html plotpdf> and
-% <ODF.plotipdf.html,plotipdf>
+% plotodf, plotpdf and plotipdf
 % * new plot option _logarithmic_
 % * many bugfixes
 %

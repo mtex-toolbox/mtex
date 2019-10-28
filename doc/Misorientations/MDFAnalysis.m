@@ -2,11 +2,9 @@
 % Explains how to compute and analyze misorientation distribution
 % functions. 
 %
-%% Open in Editor
+%% TODO
+% Please help to redo the section
 %
-%% Contents
-%
-
 %% Computing a misorientation distribution function from EBSD data
 % 
 % Lets import some EBSD data and reconstruct the grains.

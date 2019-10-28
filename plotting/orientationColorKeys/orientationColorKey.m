@@ -1,5 +1,13 @@
 classdef orientationColorKey < handle
   % abstract class for defining (mis)orientation color keys
+  %
+  % Class Properties
+  %  CS1 - @crystalSymmetry
+  %  CS2 - @crystalSymmetry of a second phase for misorientations
+  %  antipodal - logical
+  %
+  % See also
+  % BungeColorKey, ipfColorKey, ipfHSVKey, ipfTSLKey, ipfHKLKey, ipfSpotKey
   
   properties
     CS1 = crystalSymmetry % crystal symmetry

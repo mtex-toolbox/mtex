@@ -12,7 +12,7 @@ csFo = ebsd('Forsterite').CS;
 
 %% The basic setup
 % In order to transform orientations into color one usually defines a
-% <orientationColorKey.orientationColorKey.html orientation color key>
+% <orientationColorKey.html orientation color key>
 % ,e.g,
 
 ipfKey = ipfHSVKey(ebsd('Forsterite').CS)

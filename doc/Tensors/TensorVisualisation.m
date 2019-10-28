@@ -22,4 +22,4 @@ setMTEXpref('defaultColorMap',WhiteJetColorMap)
 %%
 % There are more specialized visualization possibilities for specific
 % tensors, e.g., for the elasticity tensor. See section
-% <ElasticityTensor.ElasticityTensor.html Elasticity Tensor>.
+% <Elasticity.html Elasticity>.

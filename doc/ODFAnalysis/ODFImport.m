@@ -11,7 +11,7 @@
 % Importing ODF data into MTEX means to create an ODF variable from data
 % files containing Euler angles and weights. Once such an variable has been
 % created the data can be analyzed and processed in many ways. See e.g.
-% <ODFCalculations.html ODFCalculations>. The most simplest way to import
+% <ODFCharacteristics.html ODFCalculations>. The most simplest way to import
 % ODF data is to use the import wizard, which can be started either by
 % typing into the command line
 

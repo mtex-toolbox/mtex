@@ -2,7 +2,7 @@ function simulateClick(x,y,ax)
 % simulate a click in the active axis
 %
 % Syntax
-%  simulateClick(x,y)
+%   simulateClick(x,y)
 %
 % Input
 %  x,y - coordinates in the current axis

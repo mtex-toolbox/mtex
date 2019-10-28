@@ -32,7 +32,7 @@ mtexColorbar('location','southOutSide','title','mrd')
 
 %%
 % If color range is set to equal in an MTEX figure only one colorbar is
-% added (see. <ColorCoding_demo.html Color Coding>).
+% added (see. <ColorMaps.html Color Coding>).
 
 mtexColorbar       % delete colorbar
 CLim(gcm,'equal'); % set equal color range to all plots

@@ -7,7 +7,7 @@
 % Miller indices, rotations, pole figures, or ODFs. MTEX also offers you a
 % wide range of possibilities to customize your plots, e.g. by changing the
 % <PlotTypes.html plot style>, the <SphericalProjections.html spherical
-% projection>, the <ColorCoding.html color coding>, or by adding
+% projection>, the <ColorMaps.html color coding>, or by adding
 % <Annotations.html colorbars or other annotations> to the plot. You can
 % even <CombinedPlots.html combine plots> of different ODFs or EBSD
 % data. This way MTEX allows you to create publication-ready plots which
@@ -45,7 +45,7 @@
 %
 %% Color Coding
 % A central issue when interpreting plots is to have a consistent
-% <ColorCoding.html color coding> among all plots. In MTEX this can be
+% <ColorMaps.html color coding> among all plots. In MTEX this can be
 % achieved in two ways. If the minimum and maximum values are known then
 % one can use one of the following syntaxes to have a consistent color
 % coding.

@@ -40,7 +40,7 @@ import_wizard
 %
 % || <loadPoleFigure_ana.html **.ana*>            || EMSE ASCII pole figure format            || 
 % || <loadPoleFigure_dubna.html **.cns*>          || Dubna ASCII pole figure format, regular grid ||
-% || <loadPoleFigure_cnvindex.html **.cnv*>       || Dubna ASCII pole figure format, experimental grid ||
+% || <loadPoleFigure_dubna.html **.cnv*>          || Dubna ASCII pole figure format, experimental grid ||
 % || <loadPoleFigure_geesthacht.html **.dat*>     || Geesthacht ASCII pole figure format.     ||
 % || <loadPoleFigure_popla.html **.epf*, **.gpf*> || Popla ASCII pole figure format.          ||
 % || <loadPoleFigure_labotex.html **.epf*, **.ppf*, **.pow **> || LaboTEX ASCII pole figure format ||
@@ -50,7 +50,7 @@ import_wizard
 % || <loadPoleFigure_nja.html **.nja*>            || Seifert ASCII pole figure format.        ||
 % || <loadPoleFigure_out1.html **.out*>           || Graz ASCII pole figure format.           ||
 % || <loadPoleFigure_plf.html **.plf*>            || Queens Univ. ASCII pole figure format.   ||
-% || <loadPoleFigure_ptx.html **.ptx, *.rpf*>     || Heilbronner ASCII pole figure format.    ||
+% || <loadPoleFigure_siemens.html **.ptx, *.rpf*> || Siemens ASCII pole figure format.    ||
 % || <loadPoleFigure_philips.html **.txt*>        || Philips ASCII pole figure format.        ||
 % || <loadPoleFigure_beartex.html **.xpe, *.xpf*> || BearTex ASCII pole figure format.        ||
 % || <loadPoleFigure_slc.html **.slc*>            || SLC ASCII pole figure format.            ||

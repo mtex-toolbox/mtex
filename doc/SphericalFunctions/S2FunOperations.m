@@ -21,9 +21,9 @@ plot(sF2,'upper')
 plot(15 * sF1 + sF2,'upper')
 
 %%
-% Accordingly, one use all basic operations like '-', '*', '^', '/',
+% Accordingly, one can use all basic operations like '-', '*', '^', '/',
 % <S2Fun.min.html min>, <S2Fun.max.html max>, <S2Fun.abs.html abs>,
-% <S2Fun.sqrt.html sqrt> to compute with variables of type
+% <S2FunHarmonic.sqrt.html sqrt> to compute with variables of type
 % <S2Fun.S2Fun.html S2Fun>
 
 % the maximum between two functions
@@ -83,7 +83,7 @@ sum(sF1) / 4 / pi
 sqrt(sum(sF1.^2))
 
 %%
-% or more efficiently by the command <S2Fun.norm.html norm>
+% or more efficiently by the command <S2FunHarmonic.norm.html norm>
 
 norm(sF1)
 
