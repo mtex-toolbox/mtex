@@ -38,6 +38,7 @@ selectInteractive(grains,'lineColor','gold')
 
 % this simulates a mouse click
 simulateClick(9000,3500)
+pause(0.1)
 
 global indSelected;
 grains(indSelected)
