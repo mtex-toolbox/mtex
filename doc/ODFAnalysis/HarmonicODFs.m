@@ -18,7 +18,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 % Moreover, the decay of the Fourier coefficients is directly related to
 % the smoothness of the ODF. The decay of the Fourier coefficients might
 % also hint for the presents of a ghost effect. See
-% <ghost_demo.html ghost effect>.
+% <PoleFigure2ODFGhostCorrection.html Ghost Correction>.
 
 %%
 % transform into an odf given by Fourier coefficients

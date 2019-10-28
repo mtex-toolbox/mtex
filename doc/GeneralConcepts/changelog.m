@@ -1935,7 +1935,8 @@
 %
 %% MTEX 0.2 - 07/2007
 %
-% * new functions [[ODF.textureindex.html,textureindex]], [[ODF.entropy.html,entropy]], [[ODF.volume.html,volume]]
+% * new functions <ODF.textureindex.html textureindex>, <ODF.entropy.html
+% entropy>, <ODF.volume.html volume>
 % * creatly improved help
 % * improved installation
 % * new options for plotting routines for specific ODF sections
