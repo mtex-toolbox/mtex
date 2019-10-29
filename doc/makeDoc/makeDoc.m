@@ -8,10 +8,11 @@ addpath(fullfile(pwd,'..','..','..','makeDoc'))
 addpath(fullfile(pwd,'..','..','..','makeDoc','tools'))
 warning on
 
-if check_option(varargin,'clear')
+if check_option(varargin,'clear') && ...
+    strcmpi(input('Really want to remove all files? Y/N [N]:','s'),'Y')
   !rm -r ../html/*
   !rm -r ./tmp/*
-%  mtexdata clear
+  % mtexdata clear
 end
 
 % help settings
@@ -25,10 +26,11 @@ set(0,'FormatSpacing','compact')
 set(0,'DefaultFigureColor','white');
 plotx2east
 plotzOutOfPlane
+global mtex_progress; mtex_progress = 0;
 
-outDir = fullfile(mtex_path,'doc','html');
-tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');
-style = fullfile(pwd,'general','publish.xsl');
+options.outDir = fullfile(mtex_path,'doc','html');
+options.tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');
+options.publishSettings.stylesheet = fullfile(pwd,'general','publish.xsl');
 
 % function reference files
 mtexFunctionFiles = [...
@@ -43,8 +45,7 @@ mtexFunctionFiles = [...
   DocFile( fullfile(mtex_path,'tools')) ];
 
 % documentation files
-mtexDocFiles = ...
-  DocFile( fullfile(mtex_path,'doc'));
+mtexDocFiles = DocFile( fullfile(mtex_path,'doc'));
 mtexDocFiles = exclude(mtexDocFiles,'makeDoc','html');
 
 % some files that does not need to be published
@@ -53,30 +54,29 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 productPage = DocFile(fullfile(mtex_path,'doc','makeDoc','general','DocumentationMatlab.html'));
 
-copy([mtexGeneralFiles,productPage],outDir)
+copy([mtexGeneralFiles,productPage],options.outDir)
 
 % make toolbox xml -> will be included into all pages
-makeToolboxXML('general','name','MTEX',...
+xmlDom = makeToolboxXML('general','name','MTEX',...
   'fullname','<b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis',...
   'versionname',getMTEXpref('version'),...
-  'procuctpage','DocumentationMatlab.html')
+  'procuctpage','DocumentationMatlab.html');
 
 % make help toc
-makeHelpToc([mtexFunctionFiles mtexDocFiles],'DocumentationMatlab',fullfile(outDir,'helptoc.xml'));
+makeHelpToc([mtexFunctionFiles mtexDocFiles],'DocumentationMatlab',...
+  fullfile(options.outDir,'helptoc.xml'));
 
 % Publish Function Reference and Doc
-publish(mtexFunctionFiles,'outDir',outDir,'tmpDir',tmpDir,'evalCode',true,'styleSheet',style);
-
-% Publish Doc
-publish(mtexDocFiles,'outDir',outDir,'tmpDir',tmpDir,'evalCode',true,'styleSheet',style);
+publish([mtexFunctionFiles,mtexDocFiles],options);
 
 % check for dead links
 %deadlink(mtexDocFiles,outputDir);
 
 % Enable search in documentation
-builddocsearchdb(outDir);
+builddocsearchdb(options.outDir);
 
 % set back mtex options
 setMTEXpref('generatingHelpMode',false);
+mtex_progress = 1;
 
 end
