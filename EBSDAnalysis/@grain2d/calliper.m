@@ -7,7 +7,7 @@ function [cd, pcd, omega] = calliper(grains,varargin)
 %
 % Output:
 %  cd       - calliper (default = maximum calliper = grain2d/diameter)
-%  pcd      - projection length length normal to cd
+%  pcd      - projection length normal to cd
 %  omega    - angle giving direction/trend of cd
 %
 % Options:
