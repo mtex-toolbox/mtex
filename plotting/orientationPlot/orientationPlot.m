@@ -73,7 +73,7 @@ classdef orientationPlot < handle
       
       % extract data
       if nargin > 2 && isnumeric(varargin{1})
-        data = varargin{1};
+        data = reshape(varargin{1},length(ori),[]);
         varargin(1) = [];
       else
         data = [];
@@ -81,11 +81,12 @@ classdef orientationPlot < handle
 
       % subsample to reduce size
       if (length(ori) > 2000 && ~check_option(varargin,'all')) || check_option(varargin,'points')
+        
         points = fix(get_option(varargin,'points',2000));
         disp(['plot ', int2str(points) ,' random orientations out of ', ...
           int2str(length(ori)),' given orientations']);
         [ori,ind] = discreteSample(ori,fix(points),'withoutReplacement');
-        if ~isempty(data), data = data(ind); end
+        if ~isempty(data), data = data(ind,:); end
       end
       
       % convert to cartesian coordiantes
