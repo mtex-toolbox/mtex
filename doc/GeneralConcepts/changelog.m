@@ -4,7 +4,7 @@
 %
 % *New Documentation*
 %
-% MTEX got a new homepage which was needed to include a a much more
+% MTEX got a new homepage which was needed to include a much more
 % exhaustive online documentation which has now
 %
 % * a sidebar for quick navigation
