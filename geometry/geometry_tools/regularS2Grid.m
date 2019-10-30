@@ -17,7 +17,7 @@ function S2G = regularS2Grid(varargin)
 %  maxTheta   - maximum theta angle (default pi)
 %
 % Flags
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  restrict2MinMax - restrict margins to min / max
 %
 % See also

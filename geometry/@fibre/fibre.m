@@ -2,8 +2,8 @@ classdef fibre
   %
   % Class representing a fibre in orientation space. Examples are alpha,
   % beta or gamma fibres. In general a fibre is defined by a crystal
-  % direction h of type <Miller.html Miller> and a specimen direction
-  % of type <vector3d.html vector3d>.
+  % direction h of type <Miller.Miller.html Miller> and a specimen direction
+  % of type <vector3d.vector3d.html vector3d>.
   %
   % Syntax
   %   cs = crystalSymmetry('432')

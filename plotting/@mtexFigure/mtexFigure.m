@@ -56,8 +56,8 @@ classdef mtexFigure < handle
 %
 % A mtexFigure may have the following children
 %
-% * <mapPlot.mapPlot.html mapPlot> -> micronbar
-% * <sphericalPlot.sphericalPlot.html sphericalPlot> (stored in appdata of axes handle)
+% * <mapPlot.html mapPlot> -> micronbar
+% * <sphericalPlot.html sphericalPlot> (stored in appdata of axes handle)
 % * pfPlot [CS,SS,h]
 % * ipdfPlot [CS]
 % * MillerPlot [r,SS]

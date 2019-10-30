@@ -5,8 +5,8 @@ function  sR = fundamentalSector(cs,varargin)
 %   sR = fundamentalSector(cs)
 %
 %   % undamental sector for a specific misorientation angle
-%   sR = fundamentalSector(cs,omega) 
-%   
+%   sR = fundamentalSector(cs,omega)
+%
 % Input
 %  cs - @symmetry
 %  omega - misorientation angle
@@ -15,7 +15,7 @@ function  sR = fundamentalSector(cs,varargin)
 %  sR - @sphericalRegion
 %
 % Options
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include [[VectorsAxes.html,antipodal symmetry]]
 %
 
 % maybe there is nothing to do
@@ -31,7 +31,7 @@ if check_option(varargin,'antipodal'), cs = cs.Laue; end
 % a first very simple rule for the fundamental region
 
 % if we have an inversion or some symmetry operation no parallel to z
-if any(angle(zvector,symmetrise(zvector,cs))>pi/2+1e-4)  
+if any(angle(zvector,symmetrise(zvector,cs))>pi/2+1e-4)
   N = zvector; % then we can map everything on the northern hemisphere
 else
   N = vector3d;
@@ -70,39 +70,39 @@ end
 N = rotate(N,rho);
 
 % some special cases
-switch cs.id 
+switch cs.id
   case 0 % symmetry without name - the code below works only in a very specific case
     %N = cs.subSet(cs.isImproper).axis; % take mirror planes
     %ind = angle(N,vector3d(cs.aAxis))< 45*degree;
     %N(ind) = -N(ind);
-    
+
     [axes,mult] = cs.elements;
-    
+
     if  max(min(1-abs(dot(axes,zvector)),abs(dot(axes,zvector))))>1e-2
-    
+
       if ~cs.isLaue, axes(mult==2) = []; end
-       
+
       % construct all triangles
       tri = axes(axes.calcDelaunay);
-    
+
       % consider the triangle closest to the z-axis and the first quadrant
       [~,id] = min(sum(100*tri.theta + abs(mod(tri.rho-rho-pi/4+pi,2*pi)-pi)));
-    
+
       sR = sphericalRegion.byVertices(tri(:,id));
       N = sR.N;
     end
-    
-  case 1 % 1       
-  case 2 % -1    
-    N = zvector;    
+
+  case 1 % 1
+  case 2 % -1
+    N = zvector;
   case {3,6,9} % 211, 121, 112
     if isnull(dot(getMinAxes(cs),zvector))
-      N = zvector;    
+      N = zvector;
     end
   case 4
-    N = -getMinAxes(cs);    
+    N = -getMinAxes(cs);
   case {7,10} % m11, 1m1, mm1
-    N = getMinAxes(cs);    
+    N = getMinAxes(cs);
   case {5,8} % 2/m11 12/m1
     N = [zvector,getMinAxes(cs)];
   case 11
@@ -111,28 +111,28 @@ switch cs.id
     N = cs.subSet(cs.isImproper).axis; % take mirror planes
     ind = angle(N,vector3d(cs.aAxis))< 45*degree;
     N(ind) = -N(ind);
-  case 16 % mmm    
+  case 16 % mmm
   case 17 % 3
   case 18 % -3
-  case {19,20,21} % 321, 3m1, -3m1    
+  case {19,20,21} % 321, 3m1, -3m1
     N = rotate(N,-mod(30+round((cor)/degree),60)*degree);
   case {22} % 312
-    N = rotate(N,-mod(30+round((cor)/degree),60)*degree);    
+    N = rotate(N,-mod(30+round((cor)/degree),60)*degree);
   case {23,24} % -31m
-    N = rotate(N,-mod(round((cor)/degree),60)*degree);    
+    N = rotate(N,-mod(round((cor)/degree),60)*degree);
   case 30 %-42m
     N = rotate(N,-45*degree);
-  case {33,34,35,36} % 6, 622    
+  case {33,34,35,36} % 6, 622
   case 38 % -62m
   case 39 % 6m2
     N = rotate(N,-mod(30+round(cor/degree),60)*degree);
-  case 41 % 23    
+  case 41 % 23
     N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),rho);
   case {42,43} % m-3, 432
-    N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],rho);  
+    N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],rho);
   case 44 % -43m
     N = rotate([vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)],rho);
-  case 45 % m-3m    
+  case 45 % m-3m
     N = rotate([vector3d(1,-1,0),vector3d(-1,0,1),yvector],rho);
 end
 
@@ -148,17 +148,17 @@ sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 if check_option(varargin,'angle')
 
   omega = get_option(varargin,'angle');
-  
+
   % the rotational axes of the symmetry
   v = unique(cs.axis); v = [v(:).',-v(:).'];
-  
+
   % the radius of the small circles to excluded
   alpha = min(1,cot(omega./2) .* tan(pi/2 ./ cs.nfold(v)));
-  
+
   % restrict fundamental sector
   sR.N = [sR.N,-v];
   sR.alpha = [sR.alpha,-alpha];
-  
+
 end
 
 sR = sR.cleanUp;

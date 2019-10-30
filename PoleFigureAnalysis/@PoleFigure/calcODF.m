@@ -2,11 +2,11 @@ function [odf,alpha] = calcODF(varargin)
 % PDF to ODF inversion
 %
 % *calcODF* is one of the main function of the MTEX toolbox. It estimates
-% an ODF from given Polefigure intensities by <PoleFigure2odf.html fitting
+% an ODF from given Polefigure intensities by <PoleFigure2ODF.html fitting
 % an ODF that consists of a large number of unimodal ODFs to the data>. It
 % does so by minimizing a least squares functional. The command *calcODF*
-% supports <ghost_demo.html automatic ghost correction> and
-% <dubna_demo.html the zero range method>. The function *calcODF* has
+% supports <PoleFigure2ODFGhostCorrection.html automatic ghost correction> and
+% <PoleFigureDubna.html the zero range method>. The function *calcODF* has
 % several options to control convergence, resolution, smoothing, etc. See
 % below for a complete description.
 %

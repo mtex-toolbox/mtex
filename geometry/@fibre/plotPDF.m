@@ -16,7 +16,7 @@ function plotPDF(f,varargin)
 %  points        - number of points to be plotted
 %
 % Flags
-%  antipodal - include <AxialDirectional.html antipodal symmetry>
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
@@ -31,14 +31,14 @@ function plotPDF(f,varargin)
 h = [];
 try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
 
-if isempty(h) % for a new plot 
+if isempty(h) % for a new plot
   h = varargin{1};
   varargin(1) = [];
-  if ~iscell(h), h = vec2cell(h);end 
+  if ~iscell(h), h = vec2cell(h);end
 else
   h = {h};
 end
-  
+
 % all h should by Miller and have the right symmetry
 argin_check([h{:}],{'Miller'});
 for i = 1:length(h), h{i} = f.CS.ensureCS(h{i}); end
@@ -57,28 +57,28 @@ for i = 1:length(h)
 
   % compute specimen directions
   r = f.orientation * h{i};
-    
+
   [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
-  
+
   if isa(f.SS,'specimenSymmetry')
     pfAnnotations('parent',mtexFig.gca,'doNotDraw');
   end
   setappdata(cax,'h',h{i});
   set(cax,'tag','pdf');
   setappdata(cax,'SS',f.SS);
-  
+
 end
 
 if isNew || check_option(varargin,'figSize')
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if check_option(varargin,'3d')  
+if check_option(varargin,'3d')
   datacursormode off
-  fcw(mtexFig.parent,'-link'); 
+  fcw(mtexFig.parent,'-link');
 end
 
 % ----------- Tooltip function ------------------------
@@ -91,5 +91,3 @@ txt = ['(' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
 end
 
 end
-
-

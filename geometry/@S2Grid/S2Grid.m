@@ -29,7 +29,7 @@ classdef S2Grid < vector3d
 %
 % Flags
 %  lower, uper, complete - restrict hemisphere
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  no_center  - ommit point at center
 %  restrict2minmax - restrict margins to min / max
 %

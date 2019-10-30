@@ -22,7 +22,7 @@ classdef grain2d < phaseList & dynProp
   %  triplePoints  - @triplePoints
   %  grainSize     - number if pixels belonging to the grain
   %  GOS           - grain orientation spread
-  %  meanOrientation - average grain orientation (<GrainOrientationParameter.html only single phase>)
+  %  meanOrientation - average grain orientation (<GrainOrientationParameters.html only single phase>)
   %
   % See also
   % GrainReconstruction GrainSpatialPlots SelectingGrains ShapeParameter

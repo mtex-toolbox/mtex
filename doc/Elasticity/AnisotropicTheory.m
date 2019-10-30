@@ -102,8 +102,8 @@ rho = 3.355
 C = addOption(C,'density',rho)
 
 %%
-% Then the velocities are computed by the command <tensor.velocity.html
-% velocity>
+% Then the velocities are computed by the command
+% <stiffnessTensor.velocity.html velocity>
 
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
 

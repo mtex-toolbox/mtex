@@ -17,8 +17,8 @@ function pf = calcPoleFigure(odf,h,varargin)
 %  r   - @vector3d specimen directions
 %
 % Options
-%  antipodal    - include <AxialDirectional.html,antipodal symmetry>
-%  complete     - do not include <AxialDirectional.html antipodal symmetry>
+%  antipodal    - include <VectorsAxes.html,antipodal symmetry>
+%  complete     - do not include <VectorsAxes.html antipodal symmetry>
 %  superposition - [double] superposition weights
 %
 % See also
@@ -45,14 +45,14 @@ end
 
 % get directions
 if nargin >= 3 && isa(varargin{1},'vector3d')
-  
+
   r = repcell(varargin{1},length(h),1);
-  
+
 elseif nargin >= 3 && iscell(varargin{1}) && ...
     length(varargin{1}) == length(h) && isa(varargin{1}{1},'vector3d')
-  
+
   r = varargin{1};
-  
+
 else
   r = repcell(regularS2Grid(varargin{:}),length(h),1);
 end
@@ -62,10 +62,10 @@ c = ensurecell(get_option(varargin,'superposition',repcell(1,1,length(h))));
 
 % ----- intensities --------------------------
 for ip = 1:length(h)
-  
+
   intensities{ip} = reshape(calcPDF(odf,h{ip},r{ip},varargin{:},...
     'superposition',c{ip}),size(r{ip})); %#ok<AGROW>
-  
+
 end
 
 % set up the pole figures

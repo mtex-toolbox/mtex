@@ -8,7 +8,7 @@ function [ebsdGrid,newId] = gridify(ebsd,varargin)
 % advantages:
 %
 % * required for <OrientationGradient.html gradient>,
-% <EBSDsquare_curvature.html curvature> and <GND> computation
+% <EBSDsquare.curvature.html curvature> and <GND> computation
 % * much faster visualisation of big maps
 % * much faster computation of the kernel average misorientation
 %

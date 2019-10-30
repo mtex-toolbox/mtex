@@ -43,9 +43,9 @@ angle(v1,v2,'antipodal') / degree
 
 %% Antipodal Symmetry in Density Estimation
 % 
-% Another example, where antipodal symmetry matters is <VectorsDensity.html
-% density estimation>. For ordinary directions we obtain an arbitrary
-% spherical function
+% Another example, where antipodal symmetry matters is
+% <VectorsDensityEstimation.html density estimation>. For ordinary
+% directions we obtain an arbitrary spherical function
 
 v = vector3d.rand(100)
 density = v.calcDensity;

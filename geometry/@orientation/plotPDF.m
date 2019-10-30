@@ -17,13 +17,13 @@ function plotPDF(ori,varargin)
 % Options
 %  superposition - plot superposed pole figures
 %  points        - number of points to be plotted
-%  MarkerSize -  
-%  MarkerFaceColor - 
-%  MarkerEdgeColor - 
+%  MarkerSize -
+%  MarkerFaceColor -
+%  MarkerEdgeColor -
 %
 % Flags
 %  noSymmetry - ignore symmetricaly equivalent points
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  complete   - ignore fundamental region
 %  upper      - restrict to upper hemisphere
 %  lower      - restrict to lower hemisphere
@@ -38,21 +38,21 @@ function plotPDF(ori,varargin)
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
  h = [];
-if nargin > 1 
+if nargin > 1
   if isa(varargin{1},'Miller')
     h = varargin{1};
   elseif iscell(varargin{1}) && isa(varargin{1}{1},'Miller')
     h = varargin{1};
   end
 end
-  
+
 % maybe we should call this function with add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
   plot(ori,varargin{:},'add2all');
   return
 end
-  
+
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
@@ -70,10 +70,10 @@ end
 h = [];
 try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
 
-if isempty(h) % for a new plot 
+if isempty(h) % for a new plot
   h = varargin{1};
   varargin(1) = [];
-  if ~iscell(h), h = vec2cell(h);end 
+  if ~iscell(h), h = vec2cell(h);end
 else
   h = {h};
 end
@@ -100,13 +100,13 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
 
   points = fix(get_option(varargin,'points',10000/length(ori.CS)/length(ori.SS)));
   disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
-  disp('  You can specify the the number points by the option "points".'); 
+  disp('  You can specify the the number points by the option "points".');
   disp('  The option "all" ensures that all data are plotted');
-  
+
   samples = discretesample(length(ori),points);
   ori= ori.subSet(samples);
   if ~isempty(data), data = data(samples,:,:); end
-    
+
 end
 
 % plot
@@ -122,34 +122,34 @@ for i = 1:length(h)
   end
   r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
   opt = replicateMarkerSize(varargin,length(ori.SS)*length(sh));
-  
+
   % maybe we can restric ourselfs to the upper hemisphere
   if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
     opt = [opt,'upper']; %#ok<AGROW>
   end
-  
+
   [~,cax] = r.plot(repmat(data,[1 length(ori.SS)*length(sh) 1]),...
     ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
-  
+
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
-  
+
   % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');
   setappdata(cax,'h',h{i});
   set(cax,'tag','pdf');
   setappdata(cax,'SS',ori.SS);
-  
+
   % TODO: unifyMarkerSize
 
 end
 
 if isNew || check_option(varargin,'figSize')
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if check_option(varargin,'3d')  
+if check_option(varargin,'3d')
   datacursormode off
-  fcw(mtexFig.parent,'-link'); 
+  fcw(mtexFig.parent,'-link');
 end
 
 % ----------- Tooltip function ------------------------
@@ -174,6 +174,5 @@ if length(ms)>1 && n > 1
   ms = repmat(ms(:),1,n);
   opt = set_option(opt,'MarkerSize',ms);
 end
-  
-end
 
+end

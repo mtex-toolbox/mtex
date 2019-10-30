@@ -5,7 +5,7 @@ function r = equivalentRadius(grains)
 %
 % $$ r = \sqrt{\frac{A}{\pi}} $$,
 %
-% where $A$ is the <Grain2d.area.html area> of a grain
+% where $A$ is the <grain2d.area.html area> of a grain
 %
 % Input
 %  grains - @grain2d

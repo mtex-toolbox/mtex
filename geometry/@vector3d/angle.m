@@ -14,23 +14,23 @@ function a = angle(v1,v2,varargin)
 %  omega - double
 %
 % Options
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 
 if nargin == 3 && isa(varargin{1},'vector3d')
-  
+
   N = normalize(varargin{1});
   v1 = normalize(v1 - dot(v1,N) .* N);
   v2 = normalize(v2 - dot(v2,N) .* N);
-  
+
   a  = angle(v1,v2);
-  
+
   ind = dot(N,cross(v1,v2))<0;
   a(ind) = 2*pi - a(ind);
-  
+
 else
 
   a = dot(v1.normalize,v2.normalize,varargin{:});
 
   a = real(acos(a));
-  
+
 end

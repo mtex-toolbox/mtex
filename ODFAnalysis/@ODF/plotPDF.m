@@ -16,7 +16,7 @@ function plotPDF(odf,h,varargin)
 %  superposition - plot superposed pole figures
 %
 % Flags
-%  antipodal - include <AxialDirectional.html antipodal symmetry>
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
@@ -62,7 +62,7 @@ if ~isNew && ~check_option(varargin,'parent') && ...
 end
 
 for i = 1:length(h)
-  
+
   % create a new axis
   if ~isstruct(mtexFig) && i>1, mtexFig.nextAxis; end
 
@@ -74,35 +74,35 @@ for i = 1:length(h)
   end
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},rLocal,varargin{:},'superposition',c{i}));
-  
+
   % plot the pole figure
   [~,cax] = rLocal.plot(p,'smooth','doNotDraw',varargin{:});
   mtexTitle(cax(1),char(h{i},'LaTeX'));
-  
+
   % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');
   set(cax,'tag','pdf');
   setappdata(cax,'h',h{i});
   setappdata(cax,'SS',odf.SS);
-    
+
 end
 
 if isNew % finalize plot
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
-  
+
   dcm = mtexFig.dataCursorMenu;
   uimenu(dcm, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
   uimenu(dcm, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
   %mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
   %msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
   %mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
-  
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-  
-  
+
+
   if check_option(varargin,'3d'), fcw(gcf,'-link'); end
-  
-  
+
+
 end
 
 % -------------- Tooltip function ---------------------------------
@@ -114,7 +114,7 @@ end
     txt = [xnum2str(value) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
 
   end
-  
+
   function localPlotFibre(varargin)
 
     [r_local,~,~,ax] = getDataCursorPos(mtexFig);
@@ -128,7 +128,7 @@ end
   function markEquivalent(varargin)
 
     [r_local,~,~,ax] = getDataCursorPos(mtexFig);
-    
+
     f = orientation(fibre(h{mtexFig.children==ax},r_local,odf.CS,odf.SS));
     f = eval(odf,f);
 

@@ -6,7 +6,7 @@ function p = equivalentPerimeter(grains)
 %
 % $$ p = 2 \pi ER $$,
 %
-% where $ER$ is the <Grain2d.equivalentRadius.html equivalent radius> of a
+% where $ER$ is the <grain2d.equivalentRadius.html equivalent radius> of a
 % grain
 %
 % Input

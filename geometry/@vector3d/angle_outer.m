@@ -7,7 +7,7 @@ function a = angle_outer(v1,v2,varargin)
 %  angle  - double
 %
 % Options
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 
 a = dot_outer(v1.normalize,v2.normalize,varargin{:});
 

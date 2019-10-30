@@ -13,7 +13,7 @@ function v = plotS2Grid(varargin)
 %  maxTheta   - maximum theta angle (default pi)
 %
 % Flags
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  restrict2MinMax - restrict margins to min / max
 %
 % See also
@@ -21,7 +21,7 @@ function v = plotS2Grid(varargin)
 
 % get spherical region
 sR = extractSphericalRegion(varargin{:});
-  
+
 % get resolution
 res = get_option(varargin,'resolution',1*degree);
 
@@ -53,11 +53,11 @@ else
   dtheta = thetaMax - thetaMin;
   % ensure an odd number of points to have some points at the equator
   ntheta = max(3,2*round(max(dtheta./res./2))+1);
-  
+
   theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
-  
+
   rho = repmat(rho,ntheta,1);
-  
+
   v = vector3d('theta',theta,'rho',rho);
 end
 

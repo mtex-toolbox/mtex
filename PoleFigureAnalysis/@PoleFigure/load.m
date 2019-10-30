@@ -7,7 +7,7 @@ function [pf,interface,options] = load(fname,varargin)
 % from external files. It autodetects the format of the file. As parameters
 % the method requires the crystal and specimen @symmetry. Additionally it
 % is sometimes required to pass a list of crystal directions and a list of
-% structure coefficients. See <ImportPoleFigureData.html interfaces> for an
+% structure coefficients. See <PoleFigureImport.html interfaces> for an
 % example how to import superposed pole figures. In the case of generic
 % ascii files each of which consist of a table containing in each row a
 % specimen direction and a diffraction intensity see

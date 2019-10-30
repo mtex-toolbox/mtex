@@ -1,5 +1,5 @@
 function pdf = calcPDF(odf,h,varargin)
-% calcPDF computed the PDF corresponding to an ODF 
+% calcPDF computed the PDF corresponding to an ODF
 %
 % Syntax
 %   pdf = calcPDF(odf,h)
@@ -21,7 +21,7 @@ function pdf = calcPDF(odf,h,varargin)
 %  superposition - calculate superposed pdf
 %
 % Flags
-%  antipodal - include <AxialDirectional.html antipodal symmetry>
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 % See also
 % ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
