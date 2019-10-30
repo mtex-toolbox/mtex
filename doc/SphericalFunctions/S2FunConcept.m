@@ -13,8 +13,8 @@ odf = SantaFe;
 pdf = odf.calcPDF(Miller(1,0,0,odf.CS))
 
 %%
-% Since, the variable *pdf* stores all information about this function we
-% may evaluate it for any direction *r*
+% Since, the variable |pdf| stores all information about this function we
+% may evaluate it for any direction |r|
 
 % take a random direction
 r = vector3d.rand;
@@ -45,7 +45,7 @@ annotate(localMax)
 %
 % || harmonic expansion || <S2FunHarmonic.S2FunHarmonic.html S2FunHarmonic> ||
 % || finite elements || <S2FunTri.S2FunTri.html S2FunTri> ||
-% || function handle || <S2FunHandle.S2FunHandle.html S2FunHandle>||
+% || function handle || <S2FunHandle.S2FunHandle.html S2FunHandle> ||
 % || Bingham distribution || <BinghamS2.BinghamS2.html BinghamS2> ||
 %
 % All representations allow for the same operations which are specified for
@@ -56,9 +56,9 @@ annotate(localMax)
 %
 %% Generalizations of Spherical Functions
 %
-% || spherical vector fields || <S2FunHarmonic.S2FunHarmonic.html S2FunHarmonic> ||
-% || spherical axis fields || <S2FunTri.S2FunTri.html S2FunTri> ||
-% || radial spherical functions || <BinghamS2.BinghamS2.html BinghamS2> ||
-% || symmetric spherical functions || <S2FunHandle.S2FunHandle.html S2FunHandle>||
+% || spherical vector fields || <S2FunVectorField.S2FunVectorField.html S2FunVectorField> ||
+% || spherical axis fields || <S2FunAxisField.S2FunAxisField.html S2FunAxisField> ||
+% || radial spherical functions || <S2Kernel.S2Kernel.html S2Kernel> ||
+% || symmetric spherical functions || <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym> ||
 %
 

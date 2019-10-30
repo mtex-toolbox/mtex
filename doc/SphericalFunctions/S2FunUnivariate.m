@@ -1,3 +1,0 @@
-%% univariate S2Fun
-%
-%%

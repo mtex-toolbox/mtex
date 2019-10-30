@@ -6,25 +6,23 @@
 %
 % $$p_{b}(\hat{x}\vert AKA^T) = \frac{1}{F(\kappa_{1},\kappa_{2},\kappa_{3})}exp (\hat{x}^T AZA^T \hat{x})$$
 %
-% where A is an orthognal covariance matrix, and Z a concentration matrix
+% where $A$ is an orthognal covariance matrix, and $Z$ a concentration matrix
 % with $diag(\kappa_{1},\kappa_{2},\kappa_{3})$ with
 % $\kappa_{1} < \kappa_{2} < \kappa_{3}$.
 %
-% In mtex Z is given by Z = [k1,k2,k3] with k3 = 0 and A is given by three
+% In mtex $Z$ is given by |Z = [k1,k2,k3]| with |k3 = 0| and $A$ is given by three
 % orthognal vectors.
 %
-% Bingham, C., An Antipodally Symmetric Distribution on the Sphere, The
-% Annals of Statistics Vol. 2, No. 6 (Nov., 1974), pp. 1201-1225
-% https://www.jstor.org/stable/2958339
+% <https://www.jstor.org/stable/2958339 Bingham, C., An Antipodally Symmetric Distribution on the Sphere, The Annals of Statistics Vol. 2, No. 6 (Nov., 1974), pp. 1201-1225>
 
 % A simple example:
 Z = [-10 -4 0]
 a = rotation.rand(1).*vector3d([xvector yvector zvector])
-bs2=BinghamS2(Z,a);
+bs2 = BinghamS2(Z,a);
 plot(bs2)
 
-%% Meaning of Z
-% k1 = k2 defines a rotationally symmetric point maximum and k2 = 0 defines
+%% Meaning of $Z$
+% $k1 = k2$ defines a rotationally symmetric point maximum and $k2 = 0$ defines
 % a girdle distribution.
 close
 kappa = [0 4 8 12 24];
@@ -62,7 +60,7 @@ hold off
 bs = BinghamS2.fit(v,'confElli',0.99)
 
 %%
-% Lets plot the fitted distribution with the data on on
+% Lets plot the fitted distribution with the data
 
 plot(bs)
 hold on
@@ -78,8 +76,8 @@ hold off
 annotate(bs.a(3),'MarkerFaceColor','red','MarkerSize',10)
 
 %%
-% The orientation of the ellipse is specified by all the pricimple vectors
-% |bs.a| and the a and b axes are computed by the commands |cEllipse|
+% The orientation of the ellipse is specified by all the principle vectors
+% |bs.a| and the a and b axes are computed by the command |cEllipse|
 
 % annotate the ellipse
 ellipse(rotation('matrix',bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...

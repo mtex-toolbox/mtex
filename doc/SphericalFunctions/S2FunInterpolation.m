@@ -1,4 +1,0 @@
-%% Spherical Interpolation and Approximation
-%
-%%
-%

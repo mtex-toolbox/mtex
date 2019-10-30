@@ -60,7 +60,7 @@ plot(pf)
 % Contour plots are plots consisting only of contour lines and are mainly
 % used for pole figure and ODF plots. The number or exact location of the
 % contour levels can be specified as an option. See
-% <matlab:doc('contourgroupproperties') contourgroup_properties> for more
+% <https://de.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.contour-properties.html contourgroup properties> for more
 % options!
 
 plotPDF(odf,Miller(1,0,0,cs),'contour',0:0.5:4,'antipodal')

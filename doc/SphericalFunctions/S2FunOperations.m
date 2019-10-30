@@ -23,8 +23,8 @@ plot(15 * sF1 + sF2,'upper')
 %%
 % Accordingly, one can use all basic operations like '-', '*', '^', '/',
 % <S2Fun.min.html min>, <S2Fun.max.html max>, <S2Fun.abs.html abs>,
-% <S2FunHarmonic.sqrt.html sqrt> to compute with variables of type
-% <S2Fun.S2Fun.html S2Fun>
+% <S2FunHarmonic.sqrt.html sqrt> to calculate with variables of type
+% <S2Fun.S2Fun.html S2Fun>.
 
 % the maximum between two functions
 plot(max(15*sF1,sF2),'upper');
@@ -70,13 +70,13 @@ annotate(minnodes)
 
 mean(sF1)
 
-sum(sF1) / 4 / pi
+sum(sF1) / ( 4 * pi )
 
 %%
 % A practical application of integration is the computation of the
 % $L^2$-norm which is defined for a spherical function $f$ as
 %
-% $$ ||f||_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{\frac{1}{2}} $$
+% $$ ||f||_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{1/2} $$
 %
 % accordingly we can compute it by
 
@@ -90,7 +90,7 @@ norm(sF1)
 %% Differentiation
 %
 % The differential of a spherical function in a specific point is a
-% gradient, i.e., a <vector3d.vector3d.html three dimensional vector> which
+% gradient, i.e., a <vector3d.vector3d.html three-dimensional vector> which
 % can be computed by the command <S2Fun.grad.html grad>
 
 grad(sF1,xvector)
@@ -127,8 +127,8 @@ plot(rotate(15 * sF1 + sF2,rot),'upper')
 
 %%
 % A special case of rotation is symmetrysing it with respect to some
-% symmetry. The following example symmetrises our smily with respect to
-% a two fold axis in z direction 
+% symmetry. The following example symmetrises our smiley with respect to
+% a two fold axis in $z$-direction 
 
 % define the symmetry
 cs = crystalSymmetry('112');
@@ -142,4 +142,4 @@ plot(sFs,'upper','complete')
 
 %%
 % The resulting function is of type <S2FunHarmonicSym.S2FunHarmonicSym.html
-% |S2FunHarmonicSym|> and knows about its symmetry
+% |S2FunHarmonicSym|> and knows about its symmetry.
