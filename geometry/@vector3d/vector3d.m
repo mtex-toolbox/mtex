@@ -34,7 +34,7 @@ classdef vector3d < dynOption
 %  @S2Grid - sphercial grid
 %
 % See also
-% VectorDefinition VectorsOperation VectorsAxes VectorsImport VectorsExport
+% VectorDefinition VectorsOperations VectorsAxes VectorsImport VectorsExport
 
   properties 
     x = []; % x coordinate

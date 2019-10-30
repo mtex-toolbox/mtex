@@ -8,13 +8,18 @@
 %   edit hepPageName
 %
 % This allows you to run through all the commands yourself and investiage
-% the effect of different parameters or different input files. 
+% the effect of different parameters or different input files.
 %
-% Furthermore, this makes it extemely simple for every MTEX user to to
-% contribute to the documentation. Simply send new or improved
-% documentation scripts to the authors and we will happy to incorporate
-% your changes into upcomming version. We are happy about any help,
-% especialy spelling fixes.
+% You can also open and edit the script file directly in Github by clicking
+% on
+% <https://github.com/mtex-toolbox/mtex/blob/develop/doc/GeneralConcepts/Contribute2Doc.m
+% edit page> at the top of each help section. This makes it extremely
+% simple for every MTEX user to contribute to the MTEX documentation. Note
+% that everybody who contributed to MTEX will automatically appear at the
+% <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors
+% page>.
+% 
+% We are happy about any help, especialy spelling fixes.
 % 
 %% Publish command
 %
@@ -25,7 +30,7 @@
 %
 %   publish filename
 %
-% which creates an folder, named 'hmtl', in your current directory where
+% which creates an folder, named 'html', in your current directory where
 % you can find the modified documentation page.
 %
 %% Further processing
