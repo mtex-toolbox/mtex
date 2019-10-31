@@ -56,8 +56,8 @@ annotate(localMax)
 %
 %% Generalizations of Spherical Functions
 %
-% || spherical vector fields || <S2FunVectorField.S2FunVectorField.html S2FunVectorField> ||
-% || spherical axis fields || <S2FunAxisField.S2FunAxisField.html S2FunAxisField> ||
+% || spherical vector fields || <S2VectorField.S2VectorField.html S2VectorField> ||
+% || spherical axis fields || <S2AxisField.S2AxisField.html S2AxisField> ||
 % || radial spherical functions || <S2Kernel.S2Kernel.html S2Kernel> ||
 % || symmetric spherical functions || <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym> ||
 %

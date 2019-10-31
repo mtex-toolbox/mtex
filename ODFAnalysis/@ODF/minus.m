@@ -5,6 +5,6 @@ function odf = minus(o1,o2)
 % get the superposition of two ODFs
 %
 % See also
-% ODF_index ODF/mtimes
+% ODF/ODF ODF/mtimes
 
 odf = o1 + (-1).* o2;

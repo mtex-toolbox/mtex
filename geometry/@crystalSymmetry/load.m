@@ -11,7 +11,7 @@ function cs = load(fname,varargin)
 %   cs = crystalSymmetry.load(5000035) % lookup online
 %
 % See also
-% crystalSymmetry_index
+% crystalSymmetry/crystalSymmetry
 %
 
 [~, ~, ext] = fileparts(char(fname));

@@ -11,7 +11,7 @@ function sR = triangle(a,b,c,varargin)
 %  sR - @sphericalRegion
 %
 % See also
-% sphericalRegion_index
+% sphericalRegion/sphericalRegion
 
 sR = sphericalRegion.byVertices([a,b,c],varargin{:});
 

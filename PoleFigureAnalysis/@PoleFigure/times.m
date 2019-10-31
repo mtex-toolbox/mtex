@@ -5,7 +5,7 @@ function pf = times(arg1,arg2)
 % scale the @PoleFigure pf by the factor x 
 %
 % See also
-% PoleFigure_index PoleFigure/plus PoleFigure/minus
+% PoleFigure/PoleFigure PoleFigure/plus PoleFigure/minus
 
 if isa(arg1,'PoleFigure') 
   pf = arg1;
@@ -19,6 +19,6 @@ if isa(m,'double')
   pf = scale(pf,m);
 elseif isa(m,'quaternion')
   pf = rotate(pf,m);
-elseif isa(m,'PoleFigure');
+elseif isa(m,'PoleFigure')
   for i = 1:pf.numPF, pf.allI{i} = pf.allI{i} .* m.allI{i}; end
 end

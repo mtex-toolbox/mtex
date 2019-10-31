@@ -71,7 +71,7 @@ pf_def = PoleFigure.load(fname_def,h,CS,SS,'interface','uxd');
 pf = correct(pf,'def',pf_def);
 
 %%
-% After running the script the variable *pf* is created which contains all
+% After running the script the variable |pf| is created which contains all
 % information about the pole figure data. You may plot the data using the
 % command <PoleFigure.plot.html plot>
 

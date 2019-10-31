@@ -12,6 +12,6 @@ function pf = rotate_outer(pf,rot,varargin)
 %  pf - rotated @PoleFigure
 %
 % See also
-% rotation_index ODF/rotate
+% rotation/rotation ODF/rotate
 
 pf = rotate(pf,rot,varargin{:});

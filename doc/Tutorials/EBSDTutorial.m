@@ -5,8 +5,8 @@
 %% Data import
 %
 % MTEX allows to import EBSD from all big vendors of EBSD systems. Prefered
-% data formats are text based data files like .ang, .ctf or open binary
-% formats like .hdf5 or .h5. Most comfortably, EBSD data may be imported
+% data formats are text based data files like |.ang|, |.ctf| or open binary
+% formats like |.osc| or |.h5|. Most comfortably, EBSD data may be imported
 % using the import wizard, by typing
 
 import_wizard
@@ -19,7 +19,7 @@ ebsd = EBSD.load(fileName)
 
 %%
 % As a result the ebsd data are stored in a single variable, here called
-% *ebsd*. This variable contains all relevant information, i.e., the
+% |ebsd|. This variable contains all relevant information, i.e., the
 % spatial coordinates, the orientation information, a description of the
 % crystal symmetries and all other parameters contained in the data file.
 %
@@ -105,7 +105,7 @@ hold off
 % One of the most important tools for analysing the orientations in an EBSD
 % map are <OrientationPoleFigure.html pole figure plots>. Those answer the
 % question with which specimen directions the a fixes crystal
-% directions, here *h*, is aligned
+% directions, here |h|, is aligned
 
 % the fixed crystal directions
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS)

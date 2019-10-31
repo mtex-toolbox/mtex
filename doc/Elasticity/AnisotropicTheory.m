@@ -1,6 +1,7 @@
 %% Anisotropic Elasticity
-% how to calculate and plot the elasticity properties
 %
+%% TODO
+% Please help to extend this section.
 %%
 % MTEX offers a very simple way to compute elasticity properties of
 % materials. This includes Young's modulus, linear compressibility,

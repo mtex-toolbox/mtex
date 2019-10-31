@@ -5,7 +5,7 @@ function odf = times(x,y)
 % to scale an ODF
 %
 % See also
-% ODF_index ODF/plus
+% ODF/ODF ODF/plus
 
 if isa(x,'ODF') && isa(y,'double')
   odf = x;

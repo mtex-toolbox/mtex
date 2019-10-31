@@ -27,7 +27,7 @@ function [rot,interface,options] = load(fname,varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index
+% orientation/orientation
 
 if iscell(fname), fname = fname{1};end
 

@@ -21,7 +21,7 @@ plot(sF2,'upper')
 plot(15 * sF1 + sF2,'upper')
 
 %%
-% Accordingly, one can use all basic operations like '-', '*', '^', '/',
+% Accordingly, one can use all basic operations like |-|, |*|, |^|, |/|,
 % <S2Fun.min.html min>, <S2Fun.max.html max>, <S2Fun.abs.html abs>,
 % <S2FunHarmonic.sqrt.html sqrt> to calculate with variables of type
 % <S2Fun.S2Fun.html S2Fun>.

@@ -24,7 +24,7 @@ function ori = byMiller(hkl,uvw,varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index orientation/byEuler orientation/byAxisAngle
+% orientation/orientation orientation/byEuler orientation/byAxisAngle
 
 
 if isa(hkl,'double')

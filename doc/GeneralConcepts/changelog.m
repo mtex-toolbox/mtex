@@ -60,10 +60,10 @@
 % MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
 % plastic deformations more straight forward.
 %
-% * <velocityGradientTensor_index.html Velocity Gradient Tensors>
-% * <strainRateTensor_index.html strain rate tensor>
-% * <deformationGradientTensor_index.html deformation gradient tensor>
-% * <spinTensor_index.html spin tensor>
+% * <velocityGradientTensor.velocityGradientTensor.html Velocity Gradient Tensors>
+% * <strainRateTensor.strainRateTensor.html strain rate tensor>
+% * <deformationGradientTensor.deformationGradientTensor.html deformation gradient tensor>
+% * <spinTensor.spinTensor.html spin tensor>
 %
 % The relationships between those tensors are explained in the section
 % <PlasticDeformation.html plastic deformations>.
@@ -71,7 +71,7 @@
 %
 % *Spherical Bingham Distribution* 
 %
-% Nativ support for spherical <BinghamS2_index.html Bingham distributions>,
+% Nativ support for spherical <BinghamS2.BinghamS2.html Bingham distributions>,
 % including the abbility to <BinghamS2.fit.html fit> them to directional
 % distributions.
 %
@@ -133,7 +133,7 @@
 %   dS = dislocationSystem.fcc(cs)
 %
 % More information how to calculate with dislocation systems can be found
-% <dislocationSystem_index.html here>.
+% <dislocationSystem.dislocationSystem.html here>.
 %
 % *Geometrically neccesary dislocations*
 %
@@ -142,10 +142,10 @@
 % workflow is illustrate the script <GND.html GND> and consists
 % of the following steps:
 %
-% # define the dominant <dislocationSystem_index.html dislocation systems>
+% # define the dominant <dislocationSystem.dislocationSystem.html dislocation systems>
 % # transform the dislocation systems into specimen coordinates for each
 % pixel of the EBSD map
-% # compute the <curvatureTensor_index.html curvature tensor> for each
+% # compute the <curvatureTensor.curvatureTensor.html curvature tensor> for each
 % pixel in the EBSD map
 % # <curvatureTensor.fitDislocationSystems.html fit the dislocation systems>
 % to the curvature tensors.
@@ -249,7 +249,7 @@
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
 %
-% returns a <S2FunHarmonic_index.html spherical function> |pdf| also called
+% returns a <S2FunHarmonic.S2FunHarmonic.html spherical function> |pdf| also called
 % pole density function. One can evaluate this spherical function using the
 % command <S2FunHarmonic.eval.html eval> at the list of specimen directions
 % |r| to obtain the pole figure intensities
@@ -276,13 +276,14 @@
 %   % compute the eigen values and eigen vectors
 %   [e,v] = eig(pdf)
 %
-% For a complete list of functions read <S2FunHarmonic_index.html here>.
+% For a complete list of functions read <S2FunHarmonic.S2FunHarmonic.html here>.
 %
 % *Symmetry aware spherical functions*
 %
 % Since most of the directional dependent properties obey additional
-% symmetry properties the class <S2FunHarmonic_index.html S2FunHarmonic>
-% has been extended to symmetry in the <S2FunHarmonicSym_index.html S2FunHarmonicSym> class.
+% symmetry properties the class <S2FunHarmonic.S2FunHarmonic.html
+% S2FunHarmonic> has been extended to respect symmetry in the class
+% <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym>.
 %
 % *Multivariate spherical functions, vector fields and spherical axis fields*
 %
@@ -295,7 +296,7 @@
 %
 % which gives a spherical function with 3 values per direction. More
 % information how to work multivariate functions can be found
-% <S2FunMulti.html here>.
+% <S2FunMultivariate.html here>.
 %
 % If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
 % a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
@@ -305,9 +306,9 @@
 %
 %   g = S2F1.grad
 %
-% The resulting variable |g| is of type <S2VectorField_index.html
+% The resulting variable |g| is of type <S2VectorField.S2VectorField.html
 % S2VectorField>. A complete list of functions available for vector fields
-% can be found  <S2VectorField_index.html here>.
+% can be found  <S2VectorField.S2VectorField.html here>.
 %
 % Another example for vector fields are polarisation directions |pp|,
 % |ps1|, |ps2| as computed by
@@ -317,7 +318,7 @@
 % The main difference is, that polarisation directions are antipodal, i.e.
 % one can not distinguish between the polarisation direction |d| and |-d|.
 % In MTEX we call vector fields with antipodal values are represented by
-% variables of type <S2AxisFieldHarmonic_index.html AxisField>.
+% variables of type <S2AxisFieldHarmonic.S2AxisFieldHarmonic.html AxisField>.
 %
 % *Scalar tensor properties are returned as spherical functions*
 %
@@ -337,7 +338,7 @@
 %
 % *Crystal shapes*
 %
-% MTEX 5.0 introduces a new class <crystalShape_index.html crystalShape>.
+% MTEX 5.0 introduces a new class <crystalShape.crystalShape.html crystalShape>.
 % This class allows to plot 3-dimensional representations of crystals on
 % top of EBSD maps, pole figures and ODF sections. The syntax is as follows
 %
@@ -399,17 +400,17 @@
 % With MTEX 5.0 we start introducing specific tensor classes. So far we
 % included the following classes
 %
-% * <stiffnessTensor_index.html stiffnessTensor>
-% * <complianceTensor_index.html complianceTensor>
-% * <strainTensor_index.html strainTensor>
-% * <stressTensor_index.html stressTensor>
-% * <ChristoffelTensor_index.html ChristoffelTensor>
+% * <stiffnessTensor.stiffnessTensor.html stiffnessTensor>
+% * <complianceTensor.complianceTensor.html complianceTensor>
+% * <strainTensor.strainTensor.html strainTensor>
+% * <stressTensor.stressTensor.html stressTensor>
+% * <ChristoffelTensor.ChristoffelTensor.html ChristoffelTensor>
 %
 % more tensors are supposed to be included in the future. The central
 % advantage is that tensor specific behaviour and functions can now better
 % be implemented and documented, e.g., that the inverse of the compliance
 % tensor is the stiffness tensor and vice versa. For user the important
-% change is that e.g. the stiffness tensor is now defined by
+% change is that e.g. the stiffness tenssor is now defined by
 %
 %   C = stiffnessTensor(M,cs)
 %
@@ -1690,8 +1691,8 @@
 %
 % This release contains a completely redesigned crystal geometry engine
 % which is thought to be much more intuitive and flexible. In particular,
-% it introduces two new classes <rotation_index.html rotation> and
-% <orientation_index.html orientation> which make it much easier to
+% it introduces two new classes <rotation.rotation.html rotation> and
+% <orientation.orientation.html orientation> which make it much easier to
 % work with crystal orientations. Resulting features are
 %
 % * no more need for quaternions
@@ -1883,7 +1884,7 @@
 % *New Support of EBSD Data Analysis*
 %
 % * Import EBSD data from arbitrary data formats.
-% * New class <EBSD_index.html EBSD> to store and manipulate with EBSD
+% * New class <EBSD.EBSD.html EBSD> to store and manipulate with EBSD
 % data.
 % * Plot pole figures and inverse pole figures from EBSD data.
 % * Recover ODFs from EBSD data via kernel density
@@ -1922,7 +1923,7 @@
 % * new function <EBSD.load.html loadEBSD> to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
-% * support of triclinic crystal <symmetry_index.html symmetry> with
+% * support of triclinic crystal <symmetry.symmetry.html symmetry> with
 % arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three-dimensional spherical plot of pole

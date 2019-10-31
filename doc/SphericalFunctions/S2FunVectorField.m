@@ -25,7 +25,7 @@ sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
 % If you have a function handle for the function you could create a
 % |S2VectorFieldHarmonic| via quadrature. At first lets define a function
 % handle which takes <vector3d.vector3d.html |vector3d|> as an argument and
-% returns also <vector3d_index.html |vector3d|>:
+% returns also <vector3d.vector3d.html |vector3d|>:
 
 f = @(v) vector3d(v.x, v.y, 0*v.x);
 %% 
@@ -34,9 +34,13 @@ f = @(v) vector3d(v.x, v.y, 0*v.x);
 sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
 
 %%
-% *Definition via <S2FunHarmonic_index |S2FunHarmonic|>*
+% *Definition via <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>*
 %
-% If you directly call the constructor with a multivariate <S2FunHarmonic_multi_index |S2FunHarmonic sF|> with two or three entries it will create a |S2VectorFieldHarmonic| with |sF(1)| the polar angle and |sF(2)| the azimuth or |sF(1), sF(2)| and |sF(3)| the $x,y$ and $z$ component.
+% If you directly call the constructor with a multivariate
+% <S2FunHarmonic_multi.S2FunHarmonic_multi |S2FunHarmonic sF|> with two or
+% three entries it will create a |S2VectorFieldHarmonic| with |sF(1)| the
+% polar angle and |sF(2)| the azimuth or |sF(1), sF(2)| and |sF(3)| the
+% $x,y$ and $z$ component.
 
 sF = S2FunHarmonic(rand(10, 2));
 sVF3 = S2VectorFieldHarmonic(sF)

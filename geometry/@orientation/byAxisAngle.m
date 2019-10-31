@@ -15,7 +15,7 @@ function ori = byAxisAngle(axis,angle,varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index orientation/byEuler orientation/byMatrix orientation/map
+% orientation/orientation orientation/byEuler orientation/byMatrix orientation/map
 
 % TODO: better implementation required, call byAxisAngle@rotattion
 

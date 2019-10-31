@@ -11,6 +11,6 @@ function rot = byRodrigues(v,varargin)
 %  rot - @rotation
 %
 % See also
-% rotation_index rotation/byEuler rotation/byMatrix rotation/map
+% rotation/rotentation rotation/byEuler rotation/byMatrix rotation/map
 
 rot = rotation.byAxisAngle(v,atan(norm(v))*2);

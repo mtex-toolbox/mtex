@@ -20,7 +20,7 @@ function rot = byEuler(varargin)
 %  Canova - 
 %
 % See also
-% rotentation_index rotentation/byMiller rotentation/byAxisAngle
+% rotentation/rotentation rotentation/byMiller rotentation/byAxisAngle
 % rotation/map
 
 

@@ -22,7 +22,7 @@ function ori = byEuler(varargin)
 %  Canova -
 %
 % See also
-% orientation_index orientation/byMiller orientation/byAxisAngle
+% orientation/orientation orientation/byMiller orientation/byAxisAngle
 % orientation/map
 
 q = euler2quat(varargin{:});

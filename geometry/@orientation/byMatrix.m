@@ -12,7 +12,7 @@ function ori = byMatrix(varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index orientation/byEuler orientation/byAxisAngle
+% orientation/orientation orientation/byEuler orientation/byAxisAngle
 
 rot = rotation.byMatrix(varargin{:});
 ori = orientation(rot,varargin{:});

@@ -17,6 +17,6 @@ function t = textureindex(odf,varargin)
 %  bandwidth  - bandwidth used for Fourier calculation
 %
 % See also
-% ODF/norm ODF/entropy ODF/volume ODF_index ODF/calcFourier
+% ODF/norm ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
 t = norm(odf,varargin{:}).^2;

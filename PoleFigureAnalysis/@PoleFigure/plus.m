@@ -5,7 +5,7 @@ function pf = plus(pf1,pf2)
 % add two pole figures
 %
 % See also
-% PoleFigure_index PoleFigure/minus PoleFigure/mtimes
+% PoleFigure/PoleFigure PoleFigure/minus PoleFigure/mtimes
 
 
 if isa(pf1,'PoleFigure')

@@ -1,6 +1,7 @@
 %% S2FunHarmonicSym
 %
-% S2FunHarmonicSym is an extension of the S2FunHarmonic class which stores the symmetry with the function.
+% S2FunHarmonicSym is an extension of the S2FunHarmonic class which stores
+% the symmetry with the function.
 %
 %
 %% Defining a S2FunHarmonic
@@ -8,7 +9,8 @@
 %%
 % *Definition via symmetrisation*
 %
-% The simplest way to define a |S2FunHarmonicSym| is through the symmetrisation of an ordinary <S2FunHarmonic_index |S2FunHarmonic|>.
+% The simplest way to define a |S2FunHarmonicSym| is through the
+% symmetrisation of an ordinary <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
 
 sF = S2Fun.smiley
 cs = crystalSymmetry('432');
@@ -16,7 +18,8 @@ cs = crystalSymmetry('432');
 sFs1 = symmetrise(sF, cs);
 
 %%
-% * this symmetrises the function and gives back the result with the symmetry attached
+% * this symmetrises the function and gives back the result with the
+% symmetry attached
 %
 
 plot(sFs1)

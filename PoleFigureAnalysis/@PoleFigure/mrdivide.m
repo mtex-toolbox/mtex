@@ -5,6 +5,6 @@ function pf = mrdivide(arg1,arg2)
 % scale the @PoleFigure pf by the factor x 
 %
 % See also
-% PoleFigure_index PoleFigure/plus PoleFigure/minus
+% PoleFigure/PoleFigure PoleFigure/plus PoleFigure/minus
 
 pf = arg1 ./ arg2;
