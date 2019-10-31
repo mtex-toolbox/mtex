@@ -61,10 +61,8 @@ classdef slipSystem
     function display(sS,varargin)
       % standard output
 
-      disp(' ');
-      disp([inputname(1) ' = ' doclink('slipSystem_index','slipSystem') ...
-        ' ' docmethods(inputname(1))]);      
-
+      displayClass(sS,inputname(1),varargin{:});
+      
       % display symmetry
       if isa(sS.CS,'crystalSymmetry')
         if ~isempty(sS.CS.mineral)

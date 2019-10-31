@@ -1,11 +1,7 @@
 function display(v,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(v,inputname(1),varargin{:});
 
 disp([' size: ' size2str(v)]);
 

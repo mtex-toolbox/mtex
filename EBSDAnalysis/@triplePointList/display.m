@@ -7,15 +7,7 @@ function display(tP,varargin)
 % #ids | mineralLeft | mineralRight
 % ---------------------------------
 
-disp(' ');
-h = doclink('triplePointList_index','triplePointList');
-
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = ' h];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = ' h];
-end;
-disp([h ' ' docmethods(inputname(1))])
+displayClass(tP,inputname(1));
 
 % empty grain boundary set 
 if isempty(tP)

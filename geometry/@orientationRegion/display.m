@@ -1,11 +1,7 @@
 function display(oR,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('orientationRegion_index','orientationRegion') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(oR,inputname(1),varargin{:});
 
 disp(' ');
 

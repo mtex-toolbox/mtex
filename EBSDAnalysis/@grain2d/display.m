@@ -1,16 +1,7 @@
 function  display(grains,varargin)
 % standard output
 
-disp(' ');
-h = doclink('grain2d_index','grain2d');
-
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = ' h];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = ' h];
-end
-
-disp([h ' ' docmethods(inputname(1))])
+displayClass(grains,inputname(1));
 
 disp(' ')
 %disp(char(dynOption(grains)));

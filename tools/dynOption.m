@@ -117,13 +117,11 @@ classdef dynOption
     end
 
     % ------------------------------------------------------
-    function display(dOpt)
+    function display(dOpt,varargin)
       % standard output
 
-      disp(' ');
-      disp([inputname(1) ' = ' doclink('dynOption_index','dynOption') ...
-        ' ' docmethods(inputname(1))]);
-
+      displayClass(dOpt,inputname(1),varargin{:});
+      
       disp(char(dOpt));
   
     end    

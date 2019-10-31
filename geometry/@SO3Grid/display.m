@@ -1,10 +1,7 @@
-function display(N)
+function display(S3G)
 % standard output
 
-disp(' ');
+displayClass(S3G,inputname(1));
 
-disp([inputname(1) ' = ' doclink('SO3Grid_index','SO3Grid') ...
-  ' ' docmethods(inputname(1))]);
-
-disp(['  symmetry: ',char(N.CS),' - ',char(N.SS)]);
-disp(['  grid    : ',char(N)]);
+disp(['  symmetry: ',char(S3G.CS),' - ',char(S3G.SS)]);
+disp(['  grid    : ',char(S3G)]);

@@ -1,11 +1,7 @@
 function display(sAF,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('S2AxisFieldHarmonic_index','S2AxisFieldHarmonic') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(sAF,inputname(1),varargin{:});
 
 disp([' bandwidth: ' num2str(sAF.sF.bandwidth)]);
 

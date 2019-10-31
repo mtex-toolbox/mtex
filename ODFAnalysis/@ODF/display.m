@@ -1,31 +1,16 @@
 function display(odf,varargin)
 % standard output
 
-disp(' ');
-
-% variable name
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = '];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = '];
-else
-  h = [];
-end
-
 if isempty(odf)
-  disp([h doclink('ODF_index','ODF') ' ' docmethods(inputname(1))]);
-  disp(' ');
+  
+  displayClass(odf,inputname(1));
   return
+    
+elseif isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')  
+  displayClass(odf,inputname(1),'MDF');  
+else  
+  displayClass(odf,inputname(1));  
 end
-
-% ODF / MDF
-if isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')
-  h = [h, doclink('MDF_index','MDF')];
-else
-  h = [h,doclink('ODF_index','ODF')];
-end
-
-disp([h ' ' docmethods(inputname(1))]);
 
 % display symmtries and minerals
 if ~isempty(odf.CS), disp(char(odf.CS,'verbose','symmetryType'));end

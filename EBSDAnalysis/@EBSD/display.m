@@ -1,16 +1,7 @@
 function display(ebsd,varargin)
 % standard output
 
-disp(' ');
-h = doclink('EBSD_index','EBSD');
-
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = ' h];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = ' h];
-end
-
-disp([h ' ' docmethods(inputname(1))])
+displayClass(ebsd,inputname(1));
 
 % empty ebsd set 
 if isempty(ebsd)

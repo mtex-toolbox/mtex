@@ -93,10 +93,8 @@ classdef dislocationSystem
         
     function display(dS,varargin)
       % standard output
-
-      disp(' ');
-      disp([inputname(1) ' = ' doclink('dislocationSystem_index','dislocationSystem') ...
-        ' ' docmethods(inputname(1))]);      
+      
+      displayClass(dS,inputname(1),varargin{:});
 
       % display symmetry
       if isa(dS.CS,'crystalSymmetry')
