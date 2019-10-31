@@ -1,7 +1,6 @@
 %% Advanced Color Keys
 %
 %%
-%
 % In order to visualize orientation maps one has to assign a color to each
 % possible orientation. As an example, one may think of representing an
 % orientation by its Euler angles ph1, Phi, phi2 and taking these as the
@@ -62,7 +61,7 @@ plot(colorKey)
 % Although this visualization looks very smooth, the orientation map using
 % Euler angles introduces many of color jumps. This becomes obvious when
 % plotting the colors as <SigmaSections.html sigma sections>, i.e., for
-% fixed differences phi_1 - phi_2
+% fixed differences $\phi_1 - \phi_2$
 
 plot(colorKey,'sections',6,'sigma')
 
@@ -99,8 +98,8 @@ mtexColorbar
 
 
 %% Coloring fibres
-% To color a fibre, one has to specify the crystal direction *h* together
-% with its RGB color and the specimen direction *r*, which should be marked.
+% To color a fibre, one has to specify the crystal direction |h| together
+% with its RGB color and the specimen direction |r|, which should be marked.
 
 % define a fibre
 f = fibre(Miller(1,1,1,csFo),zvector);
@@ -110,12 +109,12 @@ colorKey = ipfSpotKey(csFo);
 colorKey.inversePoleFigureDirection = f.r;
 colorKey.center = f.h;
 colorKey.color = [0 0 1];
-colorKey.psi = deLaValleePoussinKernel('halfwidth',7.5*degree);
+colorKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
 %%
-% the option |halfwidth| controls half of the intensity of the color at a
+% the option |'halfwidth'| controls half of the intensity of the color at a
 % given distance. Here we have chosen the (111)[001] fibre to be drawn in blue,
 % and at 7.5 degrees, where the blue should be only lighter.
 
@@ -152,8 +151,6 @@ hold off
 close all;
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
-
-
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
 % the EBSD data or via the option |'faceAlpha'|. Note that the option
@@ -168,7 +165,7 @@ colorKey = ipfSpotKey(csFo);
 colorKey.inversePoleFigureDirection = zvector;
 colorKey.center = Miller(1,1,1,csFo);
 colorKey.color = [0 0 1];
-colorKey.psi = deLaValleePoussinKernel('halfwidth',7.5*degree);
+colorKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
 
 hold on
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations),'FaceAlpha',0.5)
