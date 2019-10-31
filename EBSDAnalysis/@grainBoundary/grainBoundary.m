@@ -1,14 +1,40 @@
 classdef grainBoundary < phaseList & dynProp
-  % grainBoundary list of grain boundaries in 2-D
-  %
-  % grainBoundary is used to extract, analyze and visualize grain
-  % boundaries in  2-D. 
-  %
-  % gB = grainBoundary() creates an empty list of grain boundaries
-  %
-  % gB = grains.boudary() extracts boundary information
-  % from a list of grains
-  %
+%
+% Variables of type grainBoundary represent lists of grain boundary
+% segments. Those are typically generated during grain reconstruction and
+% are acessable via
+%
+%   grains.boundary
+%
+% Each grain boundary segement stores many properties: its position within
+% the map, the ids of the adjacent grains, the ids of the adjacent EBSD
+% measurements, the grain boundary misorientation, etc. These properties
+% are explained in more detail in the section <BoundaryProperties.html
+% boundary properties>.
+%
+% Class Properties
+%  V            - [x,y] list of vertices 
+%  scanUnit     - scaning unit (default - um)
+%  triplePoints - @triplePointList
+%  F            - list of boundary segments as ids to V
+%  grainId      - id's of the neighboring grains to a boundary segment
+%  ebsdId       - id's of the neighboring ebsd data to a boundary segment
+%  misrotation  - misrotation between neighboring ebsd data to a boundary segment
+%
+% Dependent Class Properties
+%  misorientation - disorientation between neighboring ebsd data to a boundary segment
+%  direction      - direction of the boundary segment as @vector3d
+%  midPoint       - x,y coordinates of the midpoint of the segments
+%  I_VF           - incidence matrix vertices - edges
+%  I_FG           - incidence matrix edges - grains
+%  A_F            - adjecency matrix edges - edges
+%  A_V            - adjecency matrix vertices - vertices
+%  componentId    - connected component id
+%  componentSize  - number of segments that belong to the component
+%  x              - x coordinates of the vertices of the grains
+%  y              - y coordinates of the vertices of the grains    
+%
+
   
   % properties with as many rows as data
   properties
