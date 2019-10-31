@@ -1,9 +1,34 @@
 classdef MLSSolver < pf2odfSolver
-% modified least squares solver
+% 
+% The class MLSSolver implements the modified least squares solver for
+% reconstructing an ODF from arbitrarily scattered pole figure intensities.
+% The resulting ODF is represented as a weighted sum of unimodal
+% components. The shape and the number of component centers can be
+% specified. The algorithm is explained in detail in *A novel pole figure
+% inversion method: specification of the MTEX algorithm*, Hielscher,
+% Schaeben: J. of Appl. Cryst., 41(6), 2008.
 %
+% Syntax
 %
+%   solver = MLSSolver(pf,'resolution',5*degree,'halfwidth',7.5*degree);
+%   [odf,alpha] = solver.calcODF;
 %
-  
+% Class Properties
+%  psi     - @kernel describing the shape of the unimodal components
+%  S3G     - the centers of the unimodal components as @SO3Grid in orientation space
+%  c       - weighting coefficients to the unimodal components
+%  weights - 
+%  zrm     - @zeroRangeMethod
+%  ghostCorrection - whether to use ghost correction
+%  iterMax - max number of iterations
+%  iterMin - min number of iterations
+%
+% Dependent Class Properties
+%  odf - @ODF the reconstructed ODF
+%
+% See also
+% PoleFigureTutorial PoleFigure2ODFAmbiguity PoleFigure2ODFGhostCorrection
+
   properties
     psi     % kernel function
     S3G     % SO3Grid
@@ -66,7 +91,7 @@ classdef MLSSolver < pf2odfSolver
       end
         
       % get kernel
-      psi = S2DeLaValleePoussin('halfwidth',...
+      psi = deLaValleePoussinKernel('halfwidth',...
         get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},solver.S3G.resolution,'double'));
       solver.psi = getClass(varargin,'kernel',psi);
             
@@ -127,7 +152,7 @@ classdef MLSSolver < pf2odfSolver
       solver = MLSSolver;
       solver.pf = pf;
       solver.S3G = equispacedSO3Grid(pf.CS,'resolution',2.5*degree);
-      solver.psi = S2DeLaValleePoussin('halfwidth',2.5*degree);
+      solver.psi = deLaValleePoussinKernel('halfwidth',2.5*degree);
       solver.weights = repcell(1,numPF(pf),1);
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       
