@@ -90,12 +90,12 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 % Beside the resolution you can use the following options to change the
 % default discretization:
 %
-% * *kernel* to specify a specific kernel function
-% * *halfwidth* to take the default kernel with a specific halfwidth
+% * |'kernel'| to specify a specific kernel function
+% * |'halfwidth'| to take the default kernel with a specific halfwidth
 %
 %% Zero Range Method
 %
-% If the flag *zero_range* is set the ODF is forced to be zero at
+% If the flag |'zero_range'| is set the ODF is forced to be zero at
 % all orientation where there is a corresponding zero in the pole figure.
 % This technique is especially useful for sharp ODF with large areas in the
 % pole figure being zero. In this case, the calculation time is greatly

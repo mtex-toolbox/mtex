@@ -25,7 +25,7 @@
 % # sign into <https://github.com GitHub>
 % # open the help page you want to change, e.g., this one
 % # click
-% <https://github.com/mtex-toolbox/mtex-toolbox.github.io/blob/master/pages/documentation/documentation.md
+% <https://github.com/mtex-toolbox/mtex/blob/develop/doc/Documentation.m
 % edit page> which leads you to the file on <https://github.com GitHub>
 % # click the little pencil in the top right corner which allows you to
 % edit the script online

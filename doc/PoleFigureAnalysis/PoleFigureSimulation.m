@@ -15,7 +15,6 @@ model_odf = 0.5*uniformODF(cs) + ...
   0.3*unimodalODF(mod2,'halfwidth',25*degree);
 
 %%
-%
 
 plot(model_odf,'sections',6,'silent','sigma')
 
@@ -40,7 +39,6 @@ h = [Miller(1,1,1,cs),Miller(1,1,0,cs),Miller(1,0,1,cs),Miller(0,1,1,cs),...
 % The <S2Grid.S2Grid.html grid> of specimen directions
 
 r = regularS2Grid('resolution',5*degree);
-
 
 %%
 % Now the pole figures can be simulated using the command
