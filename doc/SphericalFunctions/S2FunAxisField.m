@@ -19,7 +19,7 @@ nodes = nodes(:);
 % Next you define function values for the vertices
 y = vector3d(sin(5*nodes.x), 1, nodes.y, 'antipodal');
 %%
-% Now the actual command to get |sAF1| of type |S2AxisFieldHarmonic|
+% Now the actual command to get |sAF1| of type <S2AxisFieldHarmonic.S2AxisFieldHarmonic |S2AxisFieldHarmonic|>
 sAF1 = S2AxisFieldHarmonic.approximation(nodes, y)
 
 %%
@@ -32,18 +32,18 @@ sAF1 = S2AxisFieldHarmonic.approximation(nodes, y)
 
 f = @(v) vector3d(v.x, v.y, 0*v.x, 'antipodal');
 %% 
-% Now you can call the quadrature command to get |sAF2| of type |S2AxisFieldHarmonic|
+% Now you can call the quadrature command to get |sAF2| of type <S2AxisFieldHarmonic.S2AxisFieldHarmonic |S2AxisFieldHarmonic|>
 sAF2 = S2AxisFieldHarmonic.quadrature(@(v) f(v))
 
 %% Visualization
 %
-% the default |plot|-command
+% One can use the default |plot|-command
 
 plot(sAF1);
 %%
 % * same as quiver(sAF1)
 
 %%
-% 3D plot of a sphere with the axis on itself
+% or use the 3D plot of a sphere with the axis on itself
 clf;
 quiver3(sAF2);

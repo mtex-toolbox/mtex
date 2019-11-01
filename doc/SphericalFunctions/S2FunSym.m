@@ -1,6 +1,6 @@
 %% S2FunHarmonicSym
 %
-% S2FunHarmonicSym is an extension of the S2FunHarmonic class which stores
+% <S2FunHarmonicSym.S2FunHarmonicSym |S2FunHarmonicSym|> is an extension of the <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|> class which stores
 % the symmetry with the function.
 %
 %
@@ -9,7 +9,7 @@
 %%
 % *Definition via symmetrisation*
 %
-% The simplest way to define a |S2FunHarmonicSym| is through the
+% The simplest way to define a <S2FunHarmonicSym.S2FunHarmonicSym |S2FunHarmonicSym|> is through the
 % symmetrisation of an ordinary <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
 
 sF = S2Fun.smiley
@@ -23,6 +23,10 @@ sFs1 = symmetrise(sF, cs);
 %
 
 plot(sFs1)
+
+%%
+% * Note that only the important part with respect to the symmetry is plotted
+% * you can plot the full sphere using the argument |'complete'|
 
 %%
 % *Definition via function handle*

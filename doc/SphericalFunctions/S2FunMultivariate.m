@@ -14,7 +14,7 @@
 %
 % $$ F(:, :, 1) = \pmatrix{f_1(v_1) & f_2(v_1) & f_3(v_1) \cr f_1(v_2) & f_2(v_2) & f_3(v_2) \cr f_1(v_3) & f_2(v_3) & f_3(v_3) \cr f_1(v_4) & f_2(v_4) & f_3(v_4)} \quad\mathrm{and}\quad F(:, :, 2) = \pmatrix{f_4(v_1) & f_5(v_1) & f_6(v_1) \cr f_4(v_2) & f_5(v_2) & f_6(v_2) \cr f_4(v_3) & f_5(v_3) & f_6(v_3) \cr f_4(v_4) & f_5(v_4) & f_6(v_4)}. $$
 %
-% For the intern Fourier-coefficient matrix the first dimension is reserved for for the Fourier-coefficients of a single function; the dimension of the functions itself begin again with the second dimension.
+% For the intern Fourier-coefficient matrix the first dimension is reserved for the Fourier-coefficients of a single function; the dimension of the functions itself begins again with the second dimension.
 %
 % If $\bf{\hat f}_1, \bf{\hat f}_2, \bf{\hat f}_3, \bf{\hat f}_4, \bf{\hat f}_5$ and $\bf{\hat f}_6$ would be the column vectors of the Fourier-coefficients of the functions above, internally they would be stored in $\hat F$ as follows.
 % $$ \hat F(:, :, 1) = \pmatrix{\bf{\hat f}_1 & \bf{\hat f}_2 & \bf{\hat f}_3} \quad\mathrm{and}\quad \hat F(:, :, 2) = \pmatrix{\bf{\hat f}_4 & \bf{\hat f}_5 & \bf{\hat f}_6}. $$
@@ -33,7 +33,7 @@ nodes = nodes(:);
 % Next we define function values for the vertices
 y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 %%
-% Now the actual command to get a 2x1 |sF1| of type |S2FunHarmonic|
+% Now the actual command to get a 2x1 |sF1| of type <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
 sF1 = S2FunHarmonic.approximation(nodes, y)
 
 %%
@@ -46,7 +46,7 @@ sF1 = S2FunHarmonic.approximation(nodes, y)
 
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
 %% 
-% Now we call the quadrature command to get 4x1 |sF2| of type |S2FunHarmonic|
+% Now we call the quadrature command to get 4x1 |sF2| of type <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 
 %%
@@ -71,7 +71,7 @@ sF4 = [sF1; sF2];
 sF4(2:3);
 
 %%
-% You can conjugate the Fourier-coefficients and transpose/ctranspose the multivariate |S2FunHarmonic|.
+% You can conjugate the Fourier-coefficients and transpose/ctranspose the multivariate <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
 
 conj(sF1);
 sF1.';
@@ -102,42 +102,13 @@ sum(sF3, 2);
 min(sF3);
 
 %%
-% *Remark for matrix product*
+% *Remark on the matrix product*
 %
 % At this point the matrix product is implemented per element and not as the usual matrix product.
 
 
 
 %% Visualization of multivariate S2FunHarmonic
-% There are different ways to visualize a multivariate |S2FunHarmonic|
 %
-% The default |plot|-command be default plots the functions on the upper hemisphere
-plot(sF1); 
-
-%%
-% * |plot(sF1)| is the same as |contourf(sF1)|
-
-%%
-% nonfilled contour plot plots only the contour lines
-contour(sF2, 'LineWidth', 2);
-
-%%
-% color plot without the contour lines
-pcolor(sF3);
-
-%%
-% 3D plot of a sphere colored accordingly to the function values.
-plot3d(sF2);
-
-%%
-% 3D plot where the radius of the sphere is transformed according to the function values
-surf(sF3);
-
-%%
-% Plot the intersection of the surf plot with a plane with normal vector |v|
-plotSection(sF1, zvector);
-
-%%
-% plotting the Fourier coefficients
-plotSpektra(sF2);
-set(gca,'FontSize', 20);
+% The same plot commands as for univariate |S2FunHarmonic| work on multivariate as well.
+% The difference is that, now, each component is plotted next to one another.
