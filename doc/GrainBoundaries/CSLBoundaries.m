@@ -200,6 +200,7 @@ plot(omega ./ degree,mdf.eval(fibre111))
 plot(omega ./ degree,mdf.eval(fibre101))
 hold off
 legend('100','111','101')
+xlabel('misorientation angle'); ylabel('density');
 
 %%
 % or to evaluate it in an misorientation directly
