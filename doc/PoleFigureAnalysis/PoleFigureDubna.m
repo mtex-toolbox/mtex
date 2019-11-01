@@ -5,7 +5,7 @@
 % Pole Figure Data.
 
 % specify crystal and specimen symmetry
-CS = crystalSymmetry('-3m',[1.4 1.4 1.5]);
+CS = crystalSymmetry('-3m',[4.9 4.9 5.4]);
 SS = specimenSymmetry;
 
 % specify file names
