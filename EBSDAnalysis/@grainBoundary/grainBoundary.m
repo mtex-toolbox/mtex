@@ -2,7 +2,7 @@ classdef grainBoundary < phaseList & dynProp
 %
 % Variables of type grainBoundary represent lists of grain boundary
 % segments. Those are typically generated during grain reconstruction and
-% are acessable via
+% are accessible via
 %
 %   grains.boundary
 %
