@@ -181,3 +181,35 @@ hold on
 plot(gB_Fo.misorientation,'MarkerFacecolor','black')
 hold off
 
+%%
+% Lets illustrate this color coding also at a iron sample.
+
+% import the data
+mtexdata csl
+
+% grain segementation and smoothing
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+grains = smooth(grains,2);
+
+% and plot image quality + orientation
+plot(ebsd,log(ebsd.prop.iq),'figSize','large')
+mtexColorMap black2white
+CLim(gcm,[.5,5])
+hold on
+plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
+
+% define the color key and colorize the grain boundaries
+colorKey = PatalaColorKey(gB)
+hold on
+plot(gB,colorKey.orientation2color(gB.misorientation),'linewidth',4,'smooth')
+hold off
+
+%%
+% At the end we plot the colorized misorientation space in axis angle
+% sections. Note that in this plot misorientations |mori| and |inv(mori)|
+% are associated.
+
+plot(colorKey,'axisAngle',(5:5:60)*degree)
+
+plot(gB.misorientation,'points',300,'add2all',...
+  'MarkerFaceColor','none','MarkerEdgeColor','w')
