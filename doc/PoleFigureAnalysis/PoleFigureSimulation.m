@@ -1,5 +1,6 @@
 %% Simulating Pole Figure data
 %
+%%
 % Simulating pole figure data from a given ODF is useful to investigate
 % pole figure to ODF reconstruction routines. Let us start with a model ODF
 % given as the superposition of 6 components.
@@ -28,7 +29,6 @@ plot(model_odf,'sections',6,'silent','sigma')
 % # superposition coefficients (optional)
 % # the magnitude of error (optional)
 %
-
 %%
 % The list of <Miller.Miller.html Miller indece>
 
@@ -98,7 +98,7 @@ end
 % Plot the error in dependency of the number of single orientations.
 
 close all;
-plot(1:pf.numPF,e)
+plot(1:pf.numPF,e,'LineWidth',2)
 ylim([0.07 0.32])
 xlabel('Number of Pole Figures');
 ylabel('Reconstruction Error');
