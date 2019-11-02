@@ -30,7 +30,6 @@ end
 
 % plot the function values
 if check_option(varargin, '3d')
-  varargin = ['maxHeadSize', 0, varargin];
   h = quiver3(plotNodes,values,varargin{:});
 else
   h = quiver(plotNodes,values,varargin{:});
