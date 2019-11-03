@@ -98,7 +98,7 @@ hold off
 % fundamental orientation zone.
 
 % compute the boundary of the fundamental zone
-oR = fundamentalRegion(moriKey.CS1,moriKey.CS2,'antipodal');
+oR = fundamentalRegion(ebsd.CS,ebsd.CS,'antipodal');
 close all
 plot(oR)
 

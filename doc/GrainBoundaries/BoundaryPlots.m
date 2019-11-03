@@ -190,6 +190,7 @@ mtexdata csl
 % grain segementation and smoothing
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 grains = smooth(grains,2);
+gB = grains.boundary('iron','iron');
 
 % and plot image quality + orientation
 plot(ebsd,log(ebsd.prop.iq),'figSize','large')
