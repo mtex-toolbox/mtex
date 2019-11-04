@@ -1,50 +1,61 @@
 %% Anisotropic Elasticity
 %
-%% TODO
-% Please help to extend this section.
 %%
-% MTEX offers a very simple way to compute elasticity properties of
-% materials. This includes Young's modulus, linear compressibility,
-% Christoffel tensor, and elastic wave velocities.
-%
-%% Import an Elasticity Tensor
-% Let us start by importing the elastic stiffness tensor of an Olivine
-% crystal in reference orientation from a file.
+% The linear theory of ellasticity in anisotropic materials is essentialy
+% based on the fourth order stiffness tensor |C|. Such a tensor is
+% represented in MTEX by a variable of type
+% <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>. Such a variable
+% can either by set up using a symmetric 6x6 matrix or by importing it from
+% an external file. The following examples does so for the sitiffness
+% tensor for Olivine
 
+% file name
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
+% crytsal symmetry
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
+% define the tentos
 C = stiffnessTensor.load(fname,cs)
 
-
 %% Hooks Law
-
+% The stiffness tensor tensor of a material is defined as the stress the
+% material expreances for a given strain
 
 eps = strainTensor(diag([1,1.1,0.9]),cs)
 
-% the resulting stress
+%%
+% Now Hools law states that the resulting stress can be computed by
+
 sigma = C : eps
 
 
-%% Elastic Energy
+%%
+% The other way the compliance tensor |S = inv(C)| translates stress into
+% strain
+
+inv(C) : sigma
+
+%%
+% The ellastic energy of the strain |eps| can be computed equivalently
+% computed by the following equations
 
 % the elastic energy
 U = sigma : eps
 U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4])
 
-(C : eps) : eps
+U = (C : eps) : eps
 
 %% Young's Modulus
 % Young's modulus is also known as the tensile modulus and measures the
-% stiffness of elastic materials. It is computed for a specific direction d
-% by the command <stiffnessTensor.YoungsModulus.html YoungsModulus>.
+% stiffness of elastic materials. It is computed for a specific direction
+% |d| by the command <stiffnessTensor.YoungsModulus.html YoungsModulus>.
 
 d = vector3d.X
-E = C.YoungsModulus(vector3d.X)
+E = C.YoungsModulus(d)
 
 %%
-% If the direction is ommited Youngs modulus is returned as a
+% If the direction |d| is ommited Youngs modulus is returned as a
 % <S2FunHarmonic.S2FunHarmonic.html spherical function>.
 
 % compute Young's modulus as a directional dependend function
@@ -56,8 +67,6 @@ E.eval(d)
 % or plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C.YoungsModulus,'complete','upper')
-
-
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -76,130 +85,72 @@ plot(beta,'complete','upper')
 % evaluate the function at a specific direction
 beta.eval(d)
 
+%% Poisson Ratio 
+% The rate of compression/ decompression in a direction |n| normal to the
+% pulling direction |p| is called Poisson ration. 
 
-%% Christoffel Tensor
-% The Christoffel Tensor is symmetric because of the symmetry of the
-% elastic constants. The eigenvalues of the 3x3 Christoffel tensor are
-% three positive values of the wave moduli which corresponds to \rho Vp^2 ,
-% \rho Vs1^2 and \rho Vs2^2 of the plane waves propagating in the direction n.
-% The three eigenvectors of this tensor are then the polarization
-% directions of the three waves. Because the Christoffel tensor is
-% symmetric, the polarization vectors are perpendicular to each other.
+% the pulling direction
+p = vector3d.Z;
 
-% It is computed for a specific direction x by the
-% command <tensor.ChristoffelTensor.html ChristoffelTensor>.
+% two orthogonal directions
+n = [vector3d.X,vector3d.Y];
 
-T = ChristoffelTensor(C,vector3d.X)
-
-%% Elastic Wave Velocity
-% The Christoffel tensor is the basis for computing the direction dependent
-% wave velocities of the p, s1, and s2 wave, as well as of the polarization
-% directions. Therefore, we need also the density of the material, e.g.,
-
-rho = 3.355
-
-%%
-% which we can write directly into the elastic stiffness tensor
-C = addOption(C,'density',rho)
-
-%%
-% Then the velocities are computed by the command
-% <stiffnessTensor.velocity.html velocity>
-
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
+% the Poisson ratio
+nu = C.PoissonRatio(p,n)
 
 
 %%
-% In order to visualize these quantities, there are several possibilities.
-% Let us first plot the direction dependent wave speed of the p-wave
+% If we ommit in the call to <stiffnessTensor.PoissonRatio.html
+% |PoissonRatio|> the last argument 
 
-
-plot(vp,'complete','upper')
+nu = C.PoissonRatio(p)
 
 %%
-% Next, we plot on the top of this plot the p-wave polarization direction.
+% we again obtain a spherical function. However, this time it is only
+% meaningfull to evaluate this function at directions perpendicular to the
+% pulling direction |p|. Hence, a good way to visualize this function is to
+% plot it as a section in the x/y plane
 
-hold on
-plot(pp)
+plotSection(nu,p,'color','interp','linewidth',5)
+axis off
+mtexColorbar
+
+%% Shear Modulus
+% The shear modulus is TODO
+
+% shear plane
+n = Miller(0,0,1,cs)
+
+% shear direction
+d = Miller(1,0,0,cs)
+
+G = C.shearModulus(n,d)
+
+%%
+newMtexFigure('layout',[1,3])
+% shear plane
+n = Miller(1,0,0,cs);
+plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
+mtexTitle(char(n))
+axis off
+
+nextAxis
+n = Miller(1,1,0,cs);
+plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
+mtexTitle(char(n))
+
+nextAxis
+n = Miller(1,1,1,cs)
+plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
+mtexTitle(char(n))
 hold off
 
-%%
-% We may even compute with these spherical functions as width ordinary
-% values. E.g. to visualize the speed difference between the s1 and s2
-% waves we do.
+setColorRange('equal')
+mtexColorbar
+drawNow(gcm,'figSize','large')
 
-plot(vs1-vs2,'complete','upper')
-
-hold on
-plot(ps1)
-hold off
-
-%%
-% When projected to a plane the different wave speeds 
-
-planeNormal = vector3d.X;
-
-% options for sections
-optSec = {'color','interp','linewidth',6,'doNotDraw'};
-
-% options for quiver
-optQuiver = {'linewidth',2,'autoScaleFactor',0.35,'doNotDraw'};
-optQuiverProp = {'color','k','linewidth',2,'autoScaleFactor',0.25,'doNotDraw'};
-prop = S2VectorFieldHarmonic.normal; % the propagation direction
-
-% wave velocyties
-close all
-plotSection(vp,planeNormal,optSec{:},'DisplayName','Vp')
-hold on
-plotSection(vs1,planeNormal,optSec{:},'DisplayName','Vs1')
-plotSection(vs2,planeNormal,optSec{:},'DisplayName','Vs2')
-
-% polarisation directions
-quiverSection(vp,pp,planeNormal,'color','c',optQuiver{:},'DisplayName','pp')
-quiverSection(vs1,ps1,planeNormal,'color','g',optQuiver{:},'DisplayName','ps1')
-quiverSection(vs2,ps2,planeNormal,'color','m',optQuiver{:},'DisplayName','ps2')
-
-% plot propagation directions as reference
-quiverSection(vp,prop,planeNormal,optQuiverProp{:},'DisplayName','x')
-quiverSection(vs1,prop,planeNormal,optQuiverProp{:})
-quiverSection(vs2,prop,planeNormal,optQuiverProp{:})
-hold off
-
-axis off tight
-legend('Vp','Vs1','Vs2','pp','ps1','ps2','x','Location','eastOutSide')
-mtexTitle('Phase velocity surface (km/s)')
-
-mtexColorMap blue2red
-mtexColorbar('Title','(km/s)','location','southOutSide')
-
-
-%%
-% Similarly, we can visualize the slowness surfaces (s/km)
-
-% plot slowness surfaces
-plotSection(1./vp,planeNormal,optSec{:},'DisplayName','Vp')
-hold on
-plotSection(1./vs1,planeNormal,optSec{:},'DisplayName','Vs1')
-plotSection(1./vs2,planeNormal,optSec{:},'DisplayName','Vs2')
-
-% polarisation directions
-quiverSection(1./vp,pp,planeNormal,'color','c',optQuiver{:},'DisplayName','pp')
-quiverSection(1./vs1,ps1,planeNormal,'color','g',optQuiver{:},'DisplayName','ps1')
-quiverSection(1./vs2,ps2,planeNormal,'color','m',optQuiver{:},'DisplayName','ps2')
-
-% plot propagation directions as reference
-quiverSection(1./vp,prop,planeNormal,optQuiverProp{:},'DisplayName','x')
-quiverSection(1./vs1,prop,planeNormal,optQuiverProp{:})
-quiverSection(1./vs2,prop,planeNormal,optQuiverProp{:})
-hold off
-axis off tight
-legend('Vp','Vs1','Vs2','pp','ps1','ps2','x','Location','eastOutSide')
-mtexTitle('Slowness surface (km/s)')
-
-mtexColorMap blue2red
-mtexColorbar('Title','(s/km)','location','southOutSide')
-
-%%
-% set back default colormap
-
-setMTEXpref('defaultColorMap',WhiteJetColorMap)
+%% Wave Velocities
+% Since elastic compression and decompression is mechanics of waves
+% traveling through a medium anisotropic compressibility causes also
+% anisotropic waves speeds. The analysis of this anisotropy is explained in
+% the section <WaveVelocities.html wave velocities>.
