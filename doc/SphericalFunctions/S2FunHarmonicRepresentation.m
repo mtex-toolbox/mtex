@@ -1,74 +1,44 @@
 %% S2FunHarmonic
 %
-% S2FunHarmonic is the heart of S2Fun, therefore much effort is put into its functionality.
+% The class <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|> is the heart of S2Fun, therefore, much effort is put into its functionality.
+% So lets cover the mathematical basics.
 %
-%% Contents
-%
-
 %%
-% In the first part we will cover how to deal with univariate functions of the form
+% The general problem is to approximate functions of the form
 %
 % $$f\colon \bf S^2\to \bf R.$$
 
-%% Defining an univariate S2FunHarmonic
 %%
-% *Definition via function values*
+% For that we use linear combinations of spherical harmonics, which constitude a basis of all square-integrable functions on the sphere $L_2(\mathbb S^2)$.
+% The spherical harmonic of degree $m$ and order $l$ is defined by
 %
-% At first we need some vertices
-nodes = equispacedS2Grid('resolution',3*degree,'antipodal');
-nodes = nodes(:);
-%%
-% next we need to define function values for the vertices
-y = S2Fun.smiley(nodes);
-% plot the discrete data
-plot(nodes,y)
-
-%%
-% Finally the actual command to get |sF1| of type |S2FunHarmonic|
-sF1 = interp(nodes, y, 'harmonicApproximation')
-% plot the spherical function
-plot(sF1)
-
-%%
-% * The |bandwidth| property shows the maximal polynomial degree of the
-% function.Internally for a given bandwidth there are stored
-% $(\mathrm{bandwidth}+1)^2$ Fourier-coefficients.
-% * The |antipodal| flag shows that $f(v) = f(-v)$ holds for all $v\in\bf
-% S^2$.
+% $$ Y_{m,l}(\theta, \rho) = \sqrt{\frac{2m+1}{4\pi}P_{m,|l|}(\cos\rho)\mathrm e^{\mathrm i l\theta} $$
 %
-% For the same result we could also run
-% |S2FunHarmonic.approximation(nodes, y)| and give some additional options
-% (<S2FunHarmonic.approximation.html see here>).
-
-%%
-% *Definition via function handle*
+% for $P_{m,|l|}$ being the associated Legendre-Polynomial, $m\in\mathbb N_0$, and $|l|\le m$.
 %
-% If we have a function handle for the function we could create a
-% |S2FunHarmonic| via quadrature. At first lets define a function handle
-% which takes <vector3d.vector3d.html |vector3d|> as an argument and returns
-% double:
-
-f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
-% plot the function at discrete points
-plot(nodes,f(nodes))
-
-
-%% 
-% Now we can call the quadrature command to get |sF2| of type |S2FunHarmonic|
-sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 150)
-
-plot(sF2)
-
-%%
-% * If we would leave the |'bandwidth'| option empty the default bandwidth would be considered, which is 128.
-% * The quadrature is faster than the approximation, because it does not have to solve a system of equations. But the knowledge of the function handle is also a strong requirement.
-% * For more options <S2FunHarmonic.quadrature.html see here>.
-
-%%
-% *Definition via Fourier-coefficients*
+% The first ten spherical harmonics look as follows
 %
-% If we already know the Fourier-coefficients, we can simply hand them as a column vector to the constructor of |S2FunHarmonic|
-fhat = rand(25, 1);
-sF3 = S2FunHarmonic(fhat)
 
+surf(S2FunHarmonic(eye(10)))
+
+%%
+% If you think you remember these from the windows 200 flowerbox screensaver, you are wrong.
+% But they play a fundamental role in the computation of atomic orbital electron configurations and may have appeared in a chemistry book you've seen.
+%
+% Now we seek fot so-called Fourier-coefficients $\hat f = (\hat f_{0,0},\dots,\hat f_{M,M})^T$ such that
+%
+% $$ g(x) = \sum_{m=0}^M\sum{l = -m}^m \hat f_{m,l} Y_{m,l}(x) $$
+%
+% approximates our function.
+% A basic strategy to achieve that is least squares, where we minimize the functional
+% $$ \sum_{n=1}^N|f(x_n)-g(x_n)|^2 $$
+%
+% for some nodes $x_n$, $n=1,\dots,N$, $f(x_n)$ the target function values and $g(x_n)$ our approximation evaluated in the given data nodes.
+%
+% This can be done by the |lsqr| function of Matlab, which efficiently seeks for roots of the derivative of the given functional (also known as normal equation).
+% In the process we have to multiply with the Fourier-matrix
+%
+% $$ F = [Y_{m,l}(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
+%
+% This can be done with the use of the nonequispaced spherical Fourier transform <https://www-user.tu-chemnitz.de/~potts/nfft/nfsft.php NFSFT>.
 
