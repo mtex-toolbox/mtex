@@ -40,7 +40,17 @@ scrPrnt('Step','Collecting data');
 ebsdGrid = ebsd.gridify;                                                   
 
 mtexId2ctfId = [1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,6,6,7,7,7,7,7,7,4,4,...
-  4,5,5,5,5,5,8,8,8,8,8,8,8,8,9,9,10,10,10];
+  4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,10,11,11,11];
+
+
+%Cell-String array with Acquisition parameters
+AcquParam.Str = {'Mag','Coverage','Device','KV','TiltAngle','TiltAxis',...
+  'DetectorOrientationE1','DetectorOrientationE2','DetectorOrientationE3',...
+  'WorkingDistance','InsertionDistance'};
+
+%Cell-String array with Acquisition parameter formats
+AcquParam.Fmt = {'%.4f','%.0f','%s','%.4f','%.4f','%.0f','%.4f','%.4f',...
+  '%.4f','%.4f','%.4f'};
 
 % get microscope acquisition parameters
 cprStruct = getClass(varargin,'struct');
@@ -62,16 +72,7 @@ if isstruct(cprStruct) && isfield(cprStruct,'job') &&  isfield(cprStruct,'semfie
   AcquParam.Data{11} = 0;                        % insertion distance (information not available)
 
 elseif check_option(varargin,'manual') %Manual prompt
-  
-  %Cell-String array with Acquisition parameters
-  AcquParam.Str = {'Mag','Coverage','Device','KV','TiltAngle','TiltAxis',...
-    'DetectorOrientationE1','DetectorOrientationE2','DetectorOrientationE3',...
-    'WorkingDistance','InsertionDistance'};
-
-  %Cell-String array with Acquisition parameter formats
-  AcquParam.Fmt = {'%.4f','%.0f','%s','%.4f','%.4f','%.0f','%.4f','%.4f',...
-    '%.4f','%.4f','%.4f'};
-  
+   
   scrPrnt('SubStep','Insert microscope acquisition parameters manually');
   
   % input dialog box
@@ -87,6 +88,7 @@ elseif check_option(varargin,'manual') %Manual prompt
 else % no microscope data available
   
   scrPrnt('SubStep','Microscope acquisition parameters not available');
+
   AcquParam.Data(1:11) = {0}; % filling in zeros
   
 end
