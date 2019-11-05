@@ -31,6 +31,9 @@ global mtex_progress; mtex_progress = 0;
 options.outDir = fullfile(mtex_path,'doc','html');
 options.tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');
 options.publishSettings.stylesheet = fullfile(pwd,'general','publish.xsl');
+options.xml = [];
+options.LaTex = 'Matlab';
+
 
 % function reference files
 mtexFunctionFiles = [...
@@ -56,8 +59,8 @@ productPage = DocFile(fullfile(mtex_path,'doc','makeDoc','general','Documentatio
 
 copy([mtexGeneralFiles,productPage],options.outDir)
 
-% make toolbox xml -> will be included into all pages
-xmlDom = makeToolboxXML('general','name','MTEX',...
+% make toolbox xml
+makeToolboxXML('general','name','MTEX',...
   'fullname','<b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis',...
   'versionname',getMTEXpref('version'),...
   'procuctpage','DocumentationMatlab.html');
