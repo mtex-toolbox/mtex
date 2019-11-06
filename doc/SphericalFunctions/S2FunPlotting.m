@@ -12,6 +12,8 @@ sF1 = S2Fun.smiley;
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 150)
 
+sF3 = S2FunHarmonic.quadrature(@(v) 0.5+abs(sin(7/2*v.rho)))
+
 %% Smooth Plot
 % The default |plot|-command is a colored plot without contours
 plot(sF1); 
@@ -37,7 +39,9 @@ surf(sF2);
 
 %% Section Plot
 % Plot the intersection of the surf plot with a plane defined by a normal vector |v|
-plotSection(sF2, zvector);
+plotSection(sF3, zvector,'color','interp','linewidth',10)
+colormap spring
+mtexTitle('Flowerpower!')
 
 %% Spectral Plot
 % plotting the Fourier coefficients

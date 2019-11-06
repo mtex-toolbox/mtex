@@ -4,9 +4,12 @@
 %%
 % On this page, we want to cover the topic of function approximation from discrete values on the sphere.
 % To simulate this, we have stored some nodes and corresponding function values which we can load.
+% The csv-file contains the $x$-, $y$-, and $z$-component of the nodes and the function value in the fourth column.
 % 
 
-load(fullfile(mtexDataPath, 'vector3d', 'smiley.mat'));
+data = importdata(fullfile(mtexDataPath, 'vector3d', 'smiley.csv'));
+nodes = vector3d(data.data(:,1:3)')';
+f = data.data(:,4);
 
 %%
 % Note that if you don't have the the nodes and function values stored convieniently in a Matlab-file, you can alway use the <vector3d.load |load|> function of the class <vector3d.vector3d |vector3d|>.
@@ -73,3 +76,34 @@ norm(eval(sF, nodes)-f)
 %%
 % But this may not be of great importance like in the case of function approximation from noisy function values, where we don't know the exact function values anyways.
 
+%%
+%
+% The strategy underlying the |interp(...,'harmonicApproximation')|-command to obtain such an approximation works via spherical harmonics (<S2FunHarmonicRepresentation Basics of spherical harmonics>).
+% For that, we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
+% f_{0,0},\dots,\hat f_{M,M})^T$ such that
+%
+% $$ g(x) = \sum_{m=0}^M\sum_{l = -m}^m \hat f_{m,l} Y_{m,l}(x) $$
+%
+% approximates our function. A basic strategy to achieve this is through
+% least squares, where we minimize the functional 
+%
+% $$ \sum_{n=1}^N|f(x_n)-g(x_n)|^2 $$
+%
+% for the data nodes $x_n$, $n=1,\dots,N$, $f(x_n)$ the target function
+% values and $g(x_n)$ our approximation evaluated in the given data nodes.
+%
+% This can be done by the |lsqr| function of Matlab, which efficiently
+% seeks for roots of the derivative of the given functional (also known as
+% normal equation). In the process we compute the matrix-vector product
+% with the Fourier-matrix multible times, where the Fourier-matrix is given
+% by
+%
+% $$ F = [Y_{m,l}(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
+%
+% This matrix-vector product can be computed efficiently with the use of
+% the nonequispaced spherical Fourier transform
+% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsft.php NFSFT>.
+%
+% We end up with the Fourier-coefficients of our approximation $g$, which
+% describe our approximation.
+%

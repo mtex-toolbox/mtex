@@ -36,8 +36,20 @@ plot(fun)
 % of thumb: smooth functions require only a small cut off degree whereas
 % functions with jumps or sharp edges requires a high cut off degree. If
 % the cut off degree is choosen to small truncation error in the form of
-% high order oscillations are observable.
+% high order oscillations are observable like in the following demonstration
 %
+
+sF = S2FunHarmonic.quadrature(@(v) abs(mod(v.rho, 2*pi/5)-pi/5));
+
+clf;
+for bw = [128 32 8]
+  sFtmp = S2FunHarmonic(sF.fhat(1:(bw+1)^2));
+  nextAxis;
+  contourf(sFtmp, 'upper');
+  mtexTitle(['M = ' num2str(bw)]);
+end
+
+%%
 % The computation of the Fourier coefficients can be done in several ways.
 % Lets first assume that the function $f$ is known explicitely, e.g.,
 % $f({\bf v})=({\bf v} \cdot {\bf x})^3$. In MTEX we can express this as
@@ -55,7 +67,7 @@ S2F = S2FunHarmonic.quadrature(fun)
 plot(S2F,'upper')
 
 %%
-% We observe that by default Fourier coefficients up the harmonic cut of
+% We observe that by default Fourier coefficients up the harmonic cut off
 % degree $M=128$ are computed. This default value can changed using the
 % option |'bandwidth'|. The decay of the Fourier coefficients can be
 % visualized using the command <S2FunHarmonic.plotSpektra.html
@@ -79,52 +91,16 @@ plotSpektra(S2F,'linewidth',2)
 %% 
 % In 
 % The robust estimation of these
-% Fourier coefficients from discrete data is doiscussed in the secion
+% Fourier coefficients from discrete data is discussed in the secion
 % <S2FunApproximationInterpolation.html Spherical Approximation>
 
+%%
 % In particular all
 % operation on those functions are implmented as operations on the Fourier
 % coefficients. 
 %
 % The crucial parameter when representing spherical functions by their
 % harmonic series expansion is the harmonic cut off degree $M$. .
-%
-%%
-% If you think you remember these from the Windows 2000 flowerbox
-% screensaver, you are wrong. But they play a fundamental role in the
-% computation of atomic orbital electron configurations and may have
-% appeared in a chemistry book you've seen.
-%
-% Now we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
-% f_{0,0},\dots,\hat f_{M,M})^T$ such that
-%
-% $$ g(x) = \sum_{m=0}^M\sum_{l = -m}^m \hat f_{m,l} Y_{m,l}(x) $$
-%
-% approximates our function. A basic strategy to achieve this is through
-% least squares, where we minimize the functional $$
-% \sum_{n=1}^N|f(x_n)-g(x_n)|^2 $$
-%
-% for the data nodes $x_n$, $n=1,\dots,N$, $f(x_n)$ the target function
-% values and $g(x_n)$ our approximation evaluated in the given data nodes.
-%
-% This can be done by the |lsqr| function of Matlab, which efficiently
-% seeks for roots of the derivative of the given functional (also known as
-% normal equation). In the process we compute the matrix-vector product
-% with the Fourier-matrix multible times, where the Fourier-matrix is given
-% by
-%
-% $$ F = [Y_{m,l}(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
-%
-% This matrix-vector product can be computed efficiently with the use of
-% the nonequispaced spherical Fourier transform
-% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsft.php NFSFT>.
-%
-% We end up with the Fourier-coefficients of our approximation $g$, which
-% describe our approximation.
-%
-%%
-% There are other variants to obtain these Fourier-coefficients, but we
-% only wanted to give a feel for what they are for.
 %
 %% 
 % To concluse this session we plot the first ten spherical harmonics
