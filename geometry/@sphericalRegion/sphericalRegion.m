@@ -16,6 +16,11 @@ classdef sphericalRegion
 %  N - @vector3d
 %  alpha - double
 %
+% Class Properties
+%  N         - the normal @vector3d of the bounding circles
+%  alpha     - the cosine of the bounding circle
+%  antipodal - 
+%
 % See also
 % VectorGrids
   

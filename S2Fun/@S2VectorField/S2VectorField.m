@@ -18,7 +18,7 @@ end
 methods(Static = true)
   v = theta(v);
   v = rho(v);
-  v = n(v);
+  v = normal(v);
 end
 
 end

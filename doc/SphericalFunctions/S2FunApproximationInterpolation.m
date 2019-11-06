@@ -29,7 +29,8 @@ scatter(nodes, f, 'upper');
 % But we still have to decide what happens inbetween these nodes.
 % For that, we linearly interpolate between them, similarly as Matlat plots a one-dimensional function
 
-plot(rand(10,1), '.-')
+close all
+plot(rand(10,1), '.-','linewidth',2)
 
 %%
 % With some mathematics we can lift this concept to the sphere.

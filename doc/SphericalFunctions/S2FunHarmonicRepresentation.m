@@ -21,11 +21,11 @@
 % associated Legendre-Polynomials.
 %
 %% 
-% Within the class <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|> spherical
-% functions are represented by their Fourier coefficients which are stored
-% in the field |fun.fhat|. As an example lets define a harmonic function
-% which Fourier coefficients $\hat f(0,0) = 1$, $\hat f(1,-1) = 0$, $\hat
-% f(1,0) = 3$ and $\hat f(1,1) = 0$
+% Within the class |@S2FunHarmonic| spherical functions are represented by
+% their Fourier coefficients which are stored in the field |fun.fhat|. As
+% an example lets define a harmonic function which Fourier coefficients
+% $\hat f(0,0) = 1$, $\hat f(1,-1) = 0$, $\hat f(1,0) = 3$ and $\hat f(1,1)
+% = 0$
 
 fun = S2FunHarmonic([1;0;3;0])
 
@@ -58,9 +58,8 @@ fun = @(v) dot(v,vector3d.X).^9;
 
 %%
 % Now we can compute the Harmonic representation this function and turn it
-% into a variable of type <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
-% using the command <S2FunHarmonic.quadrature.html
-% |S2FunHarmonic.quadrature|>
+% into a variable of type |@S2FunHarmonic|s using the command
+% <S2FunHarmonic.quadrature.html |S2FunHarmonic.quadrature|>
 
 S2F = S2FunHarmonic.quadrature(fun)
 

@@ -1,11 +1,6 @@
 function display(gB,varargin)
 % standard output
 %
-%  id  | mineralLeft | mineralRight
-% ---------------------------------
-%
-% #ids | mineralLeft | mineralRight
-% ---------------------------------
 
 displayClass(gB,inputname(1));
 

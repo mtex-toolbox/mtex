@@ -1,9 +1,9 @@
 %% Operations on Spherical Functions
 %
 %%
-% The idea of |S2Fun| is to calculate with spherical functions similarly as
-% Matlab does with vectors and matrices. In order to illustrate this we
-% consider the following two spherical functions
+% The idea of variables of type @S2Fun is to calculate with spherical
+% functions similarly as Matlab does with vectors and matrices. In order to
+% illustrate this we consider the following two spherical functions
 
 sF1 = S2Fun.smiley;
 sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree)
@@ -22,9 +22,9 @@ plot(15 * sF1 + sF2,'upper')
 
 %%
 % Accordingly, one can use all basic operations like |-|, |*|, |^|, |/|,
-% <S2Fun.min.html min>, <S2Fun.max.html max>, <S2Fun.abs.html abs>,
-% <S2FunHarmonic.sqrt.html sqrt> to calculate with variables of type
-% <S2Fun.S2Fun.html S2Fun>.
+% <S2Fun.min.html |min|>, <S2Fun.max.html |max|>, <S2Fun.abs.html |abs|>,
+% <S2FunHarmonic.sqrt.html |sqrt|> to calculate with variables of type
+% @S2Fun.
 
 % the maximum between two functions
 plot(max(15*sF1,sF2),'upper');
@@ -35,8 +35,8 @@ plot(min(15*sF1,sF2),'upper');
 
 %% Local Extrema
 % 
-% The obove mentioned functions <S2Fun.min.html min> and <S2Fun.max.html
-% max> have very different use cases
+% The obove mentioned functions <S2Fun.min.html |min|> and <S2Fun.max.html
+% |max|> have very different use cases
 %
 % * if two spherical functions are passed as arguments a spherical
 % functions defined as the pointwise min/max between these two functions is
@@ -63,10 +63,10 @@ annotate(minnodes)
 
 %% Integration
 % The surface integral of a spherical function can be computed by either
-% <S2Fun.mean.html mean> or <S2Fun.sum.html sum>. The difference between
-% both commands is that <S2Fun.sum.html sum> normalizes the integral of the
-% identical function on the sphere to $4 \pi$ the command <S2Fun.mean.html mean>
-% normalizes it to one. Compare
+% <S2Fun.mean.html |mean|> or <S2Fun.sum.html |sum|>. The difference
+% between both commands is that <S2Fun.sum.html |sum|> normalizes the
+% integral of the identical function on the sphere to $4 \pi$ the command
+% <S2Fun.mean.html |mean|> normalizes it to one. Compare
 
 mean(sF1)
 
@@ -76,14 +76,14 @@ sum(sF1) / ( 4 * pi )
 % A practical application of integration is the computation of the
 % $L^2$-norm which is defined for a spherical function $f$ as
 %
-% $$ ||f||_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{1/2} $$
+% $$ \lVert f \rVert_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{1/2} $$
 %
 % accordingly we can compute it by
 
 sqrt(sum(sF1.^2))
 
 %%
-% or more efficiently by the command <S2FunHarmonic.norm.html norm>
+% or more efficiently by the command <S2FunHarmonic.norm.html |norm|>
 
 norm(sF1)
 
@@ -91,15 +91,14 @@ norm(sF1)
 %
 % The differential of a spherical function in a specific point is a
 % gradient, i.e., a <vector3d.vector3d.html three-dimensional vector> which
-% can be computed by the command <S2Fun.grad.html grad>
+% can be computed by the command <S2Fun.grad.html |grad|>
 
 grad(sF1,xvector)
 
 %%
 % The gradients of a spherical function in all points form a spherical
-% vector field and are returned by the function <S2Fun.grad.html grad> as a
-% variable of type <S2VectorFieldHarmonic.S2VectorFieldHarmonic.html
-% |S2VectorFieldHarmonic|>
+% vector field and are returned by the function <S2Fun.grad.html |grad|> as a
+% variable of type @S2VectorFieldHarmonic.
 
 % compute the gradient as a vector field
 G = grad(sF1)
@@ -116,7 +115,7 @@ hold off
 %
 %% Rotating spherical functions
 % Rotating a spherical function works with the command <S2Fun.rotate.html
-% rotate>
+% |rotate|>
 
 % define a rotation
 rot = rotation.byAxisAngle(yvector,-30*degree)
@@ -141,5 +140,5 @@ plota2east
 plot(sFs,'upper','complete')
 
 %%
-% The resulting function is of type <S2FunHarmonicSym.S2FunHarmonicSym.html
-% |S2FunHarmonicSym|> and knows about its symmetry.
+% The resulting function is of type @S2FunHarmonicSym and knows about its
+% symmetry.

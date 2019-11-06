@@ -1,10 +1,10 @@
 %% Spherical Functions
 %
 %%
-% By a variable of type <S2Fun.S2Fun.html S2Fun> it is possible to
-% represent an entire function on the two dimensional sphere. A typical
-% example of such a function is the pole density function of a given ODF
-% with respect to a fixed crystal direction.
+% By a variable of type @S2Fun it is possible to represent an entire
+% function on the two dimensional sphere. A typical example of such a
+% function is the pole density function of a given ODF with respect to a
+% fixed crystal direction.
 
 % the famouse Santa Fe orientation distribution function
 odf = SantaFe;
@@ -43,22 +43,21 @@ annotate(localMax)
 % In MTEX there exist different ways for representing spherical functions
 % internally. 
 %
-% || harmonic expansion || <S2FunHarmonic.S2FunHarmonic.html S2FunHarmonic> ||
-% || finite elements || <S2FunTri.S2FunTri.html S2FunTri> ||
-% || function handle || <S2FunHandle.S2FunHandle.html S2FunHandle> ||
-% || Bingham distribution || <BinghamS2.BinghamS2.html BinghamS2> ||
+% || harmonic expansion || @S2FunHarmonic ||
+% || finite elements || @S2FunTri ||
+% || function handle || @S2FunHandle ||
+% || Bingham distribution || @BinghamS2 ||
 %
 % All representations allow for the same operations which are specified for
-% the abstact class <S2Fun.S2Fun.html S2Fun>. In particular it is possible
+% the abstact class @S2Fun. In particular it is possible
 % to calculate with spherical functions as with ordinary numbers, i.e., you
 % can add, multiply arbitrary functions, take the mean, integrate them or
 % compute gradients.
 %
 %% Generalizations of Spherical Functions
 %
-% || spherical vector fields || <S2VectorField.S2VectorField.html S2VectorField> ||
-% || spherical axis fields || <S2AxisField.S2AxisField.html S2AxisField> ||
-% || radial spherical functions || <S2Kernel.S2Kernel.html S2Kernel> ||
-% || symmetric spherical functions || <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym> ||
+% || spherical vector fields || @S2VectorField ||
+% || spherical axis fields || @S2AxisField ||
+% || radial spherical functions || @S2Kernel ||
+% || symmetric spherical functions || @S2FunHarmonicSym ||
 %
-
