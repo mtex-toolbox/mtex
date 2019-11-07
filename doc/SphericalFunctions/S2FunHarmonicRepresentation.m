@@ -58,7 +58,7 @@ fun = @(v) dot(v,vector3d.X).^9;
 
 %%
 % Now we can compute the Harmonic representation this function and turn it
-% into a variable of type |@S2FunHarmonic|s using the command
+% into a variable of type |@S2FunHarmonic| using the command
 % <S2FunHarmonic.quadrature.html |S2FunHarmonic.quadrature|>
 
 S2F = S2FunHarmonic.quadrature(fun)
@@ -74,7 +74,8 @@ plot(S2F,'upper')
 % squared moduli of the corresponding Fourier coefficients, i.e.
 % $\sum_{k=-m}^m \lvert \hat f(m,k)\rvert^2$
 
-plotSpektra(S2F,'FontSize',15)
+close all
+plotSpektra(S2F)
 
 %%
 % In the present example we observe that almost all Fourier coefficients
@@ -85,7 +86,7 @@ plotSpektra(S2F,'FontSize',15)
 S2F = S2F.truncate
 
 % power plot
-plotSpektra(S2F,'linewidth',2,'FontSize',15)
+plotSpektra(S2F,'linewidth',2)
 
 %% 
 % In 

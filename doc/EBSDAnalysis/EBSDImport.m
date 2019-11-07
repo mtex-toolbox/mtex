@@ -5,7 +5,7 @@
 % In the most simplest case import can be done by the command
 % <EBSD.load.html EBSD.load>
 
-ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'])
+ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'],'convertEuler2SpatialReferenceFrame')
 
 %%
 % This command automatically detects the file format and generates a

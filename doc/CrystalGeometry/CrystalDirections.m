@@ -40,7 +40,7 @@ plot(m,'upper','labeled','grid')
 %% Crystal Lattice Planes
 %
 % A crystal lattice plane $(hkl)$ is commonly described by its normal
-% vector $\vec n = h \cdot \vec a^* + k \cdot \vec b^* + \ell \times \vec
+% vector $\vec n = h \cdot \vec a^* + k \cdot \vec b^* + \ell \cdot \vec
 % c^*$ where $\vec a^*$, $\vec b^*$ and $\vec c^*$ describe the reciprocal
 % crystal coordinate system. In MTEX a lattice plane is defined by
 

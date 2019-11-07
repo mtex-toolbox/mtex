@@ -1,5 +1,8 @@
 function [mori,ori2] = calcMisorientation(ebsd1,varargin)
-% calculate uncorrelated misorientations between two ebsd phases
+% calculate the uncorrelated misorientations between two ebsd phases
+%
+% For two orientations $g_i$ and $g_j$ the misorientation is defined by 
+% $ m = g_i^{-1} \circ g_j $.
 %
 % Syntax
 %
@@ -21,14 +24,7 @@ function [mori,ori2] = calcMisorientation(ebsd1,varargin)
 %  ebsd - @EBSD
 %
 % Output
-%  m - mis@orientation, such that
-%
-% Description
-%
-% $$ m = g_i^{-1} \cdot \circ g_j $$
-%
-% for two neighboring orientations $g_i$, $g_j$ of the same phase located
-% at a grain boundary.
+%  m - @orientation
 %
 % See also
 %
