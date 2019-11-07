@@ -1,5 +1,11 @@
 %% MTEX Changelog
 %
+%% MTEX 5.2.1 11/2019
+%
+% * bug fix in ODF reconstruction from XRD data
+% * bug fix in EBSD export to ctf
+% * some more minor bug fixes
+%
 %% MTEX 5.2.0 10/2019
 %
 % *New Documentation*
