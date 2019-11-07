@@ -4,7 +4,7 @@ if nargin == 0 || ~isa(varargin{1},'vector3d')
   if check_option(varargin,'exact')
     f = S2FunHandle(@(v) S2Fun.smiley(v));
   else
-    f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v));
+    f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v),varargin{:});
   end
   return;
 end
