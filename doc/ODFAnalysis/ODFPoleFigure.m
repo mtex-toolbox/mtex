@@ -1,7 +1,19 @@
 %% Pole Figures
 %
-%%
-% Let us first define some model ODFs to be plotted later on.
+%% Theory
+% For an orientation distribution function (ODF) $f \colon \mathrm{SO}(3)
+% \to R$ the pole densiry function $P_{\vec h}$ with respect to a fixed
+% crystal direction $\vec h$ is spherical function defined as the integral
+%
+% $$ P_{\vec h}(\vec r) = \int_{g \vec h = \vec r} f(g) dg $$
+%
+% The pole density function $P_{\vec h}(\vec r)$ evaluated at a specimen
+% direction $\vec r$ can be interpreted as the volume percentage of
+% crystals with the crystal lattice planes $\vec h$ beeing normal to the
+% specimen direction $\vec r$. 
+% 
+% In order to illustrate the concept of pole figures at an example lets us
+% first define some model ODFs to be plotted later on.
 
 cs = crystalSymmetry('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
@@ -10,8 +22,6 @@ mod2 = orientation.byEuler(50*degree,30*degree,-30*degree,'ZYZ',cs);
 odf = 0.2*unimodalODF(mod1) ...
   + 0.3*unimodalODF(mod2) ...
   + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
-
-%odf = 0.2*unimodalODF(mod2)
 
 %%
 % and lets switch to the LaboTex colormap

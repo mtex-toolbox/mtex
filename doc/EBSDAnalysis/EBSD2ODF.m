@@ -1,14 +1,14 @@
 %% ODF Estimation from EBSD data
 %
 % In order to discuss ODF estimation from EBSD data we start by loading
-% a sample MTEX data set.s
+% a sample MTEX data set.
 
 mtexdata forsterite
 
 %% ODF Estimation
 %
-% These EBSD datasets consist of two phases, Iron, and Magnesium. The ODF of the Iron
-% phase is computed by the command
+% These EBSD datasets consist of two phases, Iron, and Magnesium. The ODF
+% of the Iron phase is computed by the command
 
 odf = calcODF(ebsd('fo').orientations)
 
@@ -25,14 +25,14 @@ odf = calcODF(ebsd('fo').orientations)
 % The choice of the model ODF $\psi$ and in particular its halfwidth has a
 % great impact in the resulting ODF. If no halfwidth is specified the
 % default halfwidth of 10 degrees is selected.
-
-
+%
 %% Automatic halfwidth selection
 %
 % MTEX includes an automatic halfwidth selection algorithm which is called
-% by the command <orientation.calcKernel.html calcKernel>. To work properly, this algorithm 
-% needs spatially independent EBSD data as in the case of this dataset of very rough 
-% EBSD measurements (only one measurement per grain). 
+% by the command <orientation.calcKernel.html calcKernel>. To work
+% properly, this algorithm needs spatially independent EBSD data as in the
+% case of this dataset of very rough EBSD measurements (only one
+% measurement per grain).
 
 % try to compute an optimal kernel
 psi = calcKernel(ebsd('fo').orientations)

@@ -7,46 +7,48 @@
 %
 % Since lattice directions are always subject to a certain crystal
 % reference frame, the starting point for any crystal direction is the
-% definition of a variable of type <crystalSymmetry.crystalSymmetry.html
-% crystalSymmetry>
+% definition of a variable of type @crystalSymmetry.
 
 cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
   'X||a*','Z||c','mineral','Talc');
 
 %%
 % The variable |cs| containes the geometry of the crystal reference frame
-% and, in particular, the alignment of the crystallographic a,b, and, c axis.
+% and, in particular, the alignment of the crystallographic a,b, and, c
+% axis.
 
 a = cs.aAxis
 b = cs.bAxis
 c = cs.cAxis
 
 %%
-% A lattice direction |m = u * a + v * b + w * c| is a vector with
-% coordinates u, v, w with respect to these crystallographic axes. Such a
-% direction is commonly denoted by [uvw] with coordinates u, v, w called
-% Miller indices. In MTEX a lattice direction is represented by a variable
-% of type <Miller.Miller.html Miller> which is defined by
+% A lattice direction $\vec m = u \cdot \vec a + v \cdot \vec b + w \cdot
+% \vec c$ is a vector with coordinates $u$, $v$, $w$ with respect to these
+% crystallographic axes. Such a direction is commonly denoted by $[uvw]$
+% with coordinates $u$, $v$, $w$ called Miller indices. In MTEX a lattice
+% direction is represented by a variable of type @Miller which is defined
+% by
 
 m = Miller(1,0,1,cs,'uvw')
 
 %%
-% for values |u = 1|, |v = 0|, and, |w = 1|. To plot a crystal direction as
+% for values $u = 1$, $v = 0$, and, $w = 1$. To plot a crystal direction as
 % a <SphericalProjections.html spherical projections> do
 
 plot(m,'upper','labeled','grid')
 
 %% Crystal Lattice Planes
 %
-% A crystal lattice plane (hkl) is commonly described by its normal vector
-% |n = h * a* + k * b* + l * c*| where a*, b*, c* describes the reciprocal
+% A crystal lattice plane $(hkl)$ is commonly described by its normal
+% vector $\vec n = h \cdot \vec a^* + k \cdot \vec b^* + \ell \times \vec
+% c^*$ where $\vec a^*$, $\vec b^*$ and $\vec c^*$ describe the reciprocal
 % crystal coordinate system. In MTEX a lattice plane is defined by
 
 m = Miller(1,0,1,cs,'hkl')
 
 %%
 % By default lattice planes are plotted as normal directions. Using the
-% option |plane| we may alternatively plot the trace of the lattice plane
+% option |'plane'| we may alternatively plot the trace of the lattice plane
 % with the sphere.
 
 hold on
@@ -64,10 +66,10 @@ hold off
 %% Trigonal and Hexagonal Convention
 %
 % In the case of trigonal and hexagonal crystal symmetry often four digit
-% Miller indices [UVTW] and (HKIL) are used, as they make it more easy to
-% identify symmetrically equivalent directions. This notation is redundant
-% as the first three Miller indeces always sum up to zero, i.e., $U + V +
-% T = 0$ and $H + K + I = 0$. The syntax is
+% Miller indices $[UVTW]$ and $(HKIL)$ are used, as they make it more easy
+% to identify symmetrically equivalent directions. This notation is
+% redundant as the first three Miller indeces always sum up to zero, i.e.,
+% $U + V + T = 0$ and $H + K + I = 0$. The syntax is
 
 % import trigonal Quartz lattice structure
 cs = loadCIF('quartz')

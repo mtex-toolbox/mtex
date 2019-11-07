@@ -32,20 +32,20 @@ fun = S2FunHarmonic([1;0;3;0])
 plot(fun)
 
 %%
-% This function has the cut off degree $M=1$. As a rule
-% of thumb: smooth functions require only a small cut off degree whereas
-% functions with jumps or sharp edges requires a high cut off degree. If
-% the cut off degree is choosen to small truncation error in the form of
-% high order oscillations are observable like in the following demonstration
-%
+% This function has the cut off degree $M=1$. As a rule of thumb: smooth
+% functions require only a small cut off degree whereas functions with
+% jumps or sharp edges requires a high cut off degree. If the cut off
+% degree is choosen to small truncation error in the form of high order
+% oscillations are observable like in the following demonstration for the
+% cut off degrees $M=64$ and $M=32$.
 
-sF = S2FunHarmonic.quadrature(@(v) abs(mod(v.rho, 2*pi/5)-pi/5));
+sF = sqrt(abs(S2Fun.smiley('bandwidth',256)));
 
 clf;
-for bw = [128 32 8]
-  sFtmp = S2FunHarmonic(sF.fhat(1:(bw+1)^2));
+for bw = [256 128 64 32 16 8]
+  sF.bandwidth = bw;
   nextAxis;
-  contourf(sFtmp, 'upper');
+  pcolor(sF, 'upper');
   mtexTitle(['M = ' num2str(bw)]);
 end
 
@@ -74,7 +74,7 @@ plot(S2F,'upper')
 % squared moduli of the corresponding Fourier coefficients, i.e.
 % $\sum_{k=-m}^m \lvert \hat f(m,k)\rvert^2$
 
-plotSpektra(S2F)
+plotSpektra(S2F,'FontSize',15)
 
 %%
 % In the present example we observe that almost all Fourier coefficients
@@ -85,7 +85,7 @@ plotSpektra(S2F)
 S2F = S2F.truncate
 
 % power plot
-plotSpektra(S2F,'linewidth',2)
+plotSpektra(S2F,'linewidth',2,'FontSize',15)
 
 %% 
 % In 
@@ -105,4 +105,3 @@ plotSpektra(S2F,'linewidth',2)
 % To concluse this session we plot the first ten spherical harmonics
 
 surf(S2FunHarmonic(eye(10)))
-

@@ -12,7 +12,7 @@
 %
 % There are basicaly two components in an EBSD data set that refers to the
 % specimen reference frame: the spatial coordinates x,y and the Euler
-% angles $\phi_1$, $\Phi$, $phi_2$. The spatial coordinates are important
+% angles $\phi_1$, $\Phi$, $\phi_2$. The spatial coordinates are important
 % when plotting an EBSD map, e.g. by
 
 mtexdata forsterite;
@@ -21,9 +21,9 @@ plotx2east; plotzOutOfPlane
 plot(ebsd,'coordinates','on')
 
 %%
-% In MTEX you can freely adjust the orientation of the map on the screen
-% by adjusting the alignment of the x and y axis, e.g., the following lines
-% will show the map upside down
+% In MTEX you can freely adjust the orientation of the map on the screen by
+% adjusting the alignment of the $x$ and $y$ axis, e.g., the following
+% lines will show the map upside down
 
 plotx2east; plotzIntoPlane
 plot(ebsd,'coordinates','on')
@@ -109,9 +109,9 @@ plotPDF(ebsd_rot('fo').orientations,Miller(1,2,3,CS),'contourf')
 % coresspond to the same reference frame. Since MTEX always assumes these
 % reference frames to be the same it might be neccessary to correct for
 % this misalignment. This can be done by rotating the spatial data or the
-% Euler angles seperately using the options |keepXY| or |keepEuler|. E.g.
-% the following command only effect the spatial coordinates but not the
-% Euler angles
+% Euler angles seperately using the options |'keepXY'| or |'keepEuler'|.
+% E.g. the following command only effect the spatial coordinates but not
+% the Euler angles
 
 % rotate the EBSD data
 ebsd_rot = rotate(ebsd,rot,'keepEuler');
@@ -128,7 +128,7 @@ plotPDF(ebsd_rot('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 % Both *.ctf and *.ang data files are known to use different reference
 % frames for spatial data and Euler angles. To corrrect for misalignment
 % the interface supports the options |convertSpatial2EulerReferenceFrame|
-% and |convertEuler2SpatialReferenceFrame|, e.g.,
+% and |'convertEuler2SpatialReferenceFrame'|, e.g.,
 %
 %   EBSD.load('fname.ang','convertSpatial2EulerReferenceFrame')
 %   EBSD.load('fname.ang','convertEuler2SpatialReferenceFrame')

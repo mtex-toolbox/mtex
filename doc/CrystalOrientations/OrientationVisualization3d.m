@@ -16,7 +16,7 @@ plot(ori)
 % fundamental region. In the case of cubic symmetry this means that the
 % Euler angles $\Phi$ and $\phi_2$ are restricted to 90 degrees. If the
 % orientations should be plotted at their specified Euler angles the option
-% |ignoreFundamentalRegion| has to be used.
+% |'ignoreFundamentalRegion'| has to be used.
 
 plot(ori,'ignoreFundamentalRegion')
 
@@ -30,7 +30,7 @@ plot(ori,'AxisAngle','markerEdgeColor',[0 0 0.8],'markerSize',8)
 %%
 % The orientations are automatically projected into its fundamental region.
 % Again, this can be switched off with the option
-% |ignoreFundamentalRegion|.
+% |'ignoreFundamentalRegion'|.
 
 plot(ori,'axisAngle','ignoreFundamentalRegion','markerEdgeColor',[0 0 0.8],'markerSize',8) 
 

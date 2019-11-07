@@ -13,8 +13,8 @@ classdef sphericalRegion
 %   sR = sphericalRegion(N,'antipodal')
 %
 % Input
-%  N - @vector3d
-%  alpha - double
+%  N     - @vector3d
+%  alpha - double (default is 0 which corresponds to a great circle)
 %
 % Class Properties
 %  N         - the normal @vector3d of the bounding circles

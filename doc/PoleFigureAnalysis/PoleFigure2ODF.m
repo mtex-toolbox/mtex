@@ -3,7 +3,8 @@
 %%
 % This page describes how to use MTEX to estimate an ODF from pole figure
 % data. Starting point of any ODF reconstruction is a
-% <PoleFigure.PoleFigure.html PoleFigure> object which can be created e.g. by
+% <PoleFigure.PoleFigure.html PoleFigure> object which can be created e.g.
+% by
 
 mtexdata dubna
 
@@ -111,12 +112,12 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 
 %% Ghost Corrections
 %
-% _Ghost correction_ is a technique first introduced by Matthies that
-% increases the uniform portion of the estimated ODF to reduce the so
-% called _ghost error_. It applies especially useful in the case of week 
-% ODFs. The classical example is the <SantaFe.html SantaFe model
-% ODF>. An analysis of the approximation error under ghost correction can
-% be found <PoleFigureSantaFe.html here>
+% <PoleFigure2ODFGhostCorrection.html Ghost correction> is a technique
+% first introduced by Matthies that increases the uniform portion of the
+% estimated ODF to reduce the so called _ghost error_. It applies
+% especially useful in the case of week ODFs. The classical example is the
+% <SantaFe.html SantaFe model ODF>. An analysis of the approximation error
+% under ghost correction can be found <PoleFigureSantaFe.html here>
 %
 %% Theory
 %

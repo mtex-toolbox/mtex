@@ -21,14 +21,14 @@ function [mori,ori2] = calcMisorientation(ebsd1,varargin)
 %  ebsd - @EBSD
 %
 % Output
-%  m - @orientation, such that
+%  m - mis@orientation, such that
 %
 % Description
 %
-% $$m = (g{_i}^{--1}*CS^{--1}) * (CS *\circ g_j)$$
+% $$ m = g_i^{-1} \cdot \circ g_j $$
 %
-% for two neighbored orientations $g_i, g_j$ with crystal @symmetry $CS$ of 
-% the same phase located on a grain boundary.
+% for two neighboring orientations $g_i$, $g_j$ of the same phase located
+% at a grain boundary.
 %
 % See also
 %

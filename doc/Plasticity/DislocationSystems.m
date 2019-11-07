@@ -98,14 +98,12 @@ a = norm(cs.aAxis);
 % * |r|
 %
 % In this example we assume 
-
 % 
-%R = 
-%r_0 = 
-%U = norm(dS.b).^2
+% R = 
+% r_0 = 
+% U = norm(dS.b).^2
 
 nu = 0.3;
-
 
 % energy of the edge dislocations
 dS(dS.isEdge).u = 1;

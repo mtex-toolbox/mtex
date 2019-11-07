@@ -1,5 +1,7 @@
 classdef S2Fun
-% a class represeneting a function on the sphere
+% an abstract class representing functions on the sphere
+%
+% 
    
   methods
 

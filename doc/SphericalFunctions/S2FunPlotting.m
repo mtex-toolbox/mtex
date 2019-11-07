@@ -42,8 +42,7 @@ surf(sF2);
 %% Section Plot
 % Plot the intersection of the surf plot with a plane defined by a normal vector |v|
 
-%plotSection(sF3, zvector,'color','interp','linewidth',10)
-plotSection(sF3, vector3d.Z)
+plotSection(sF3, zvector,'color','interp','linewidth',10)
 colormap spring
 mtexTitle('Flowerpower!')
 
@@ -51,8 +50,7 @@ mtexTitle('Flowerpower!')
 % plotting the Fourier coefficients
 
 close all
-plotSpektra(sF1);
-set(gca,'FontSize', 20);
+plotSpektra(sF1,'FontSize',15);
 
 %%
 % The more specific plot options are covered in the respective classes.
