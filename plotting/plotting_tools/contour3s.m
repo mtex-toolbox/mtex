@@ -90,8 +90,7 @@ elseif check_option(varargin,{'surf3','slice3'})
       cdata = [cdata; v(k).*ones(size(faces,1),1)];
     end
     alpha = (cdata./nrm).^2;
-  
-  
+    
     patch('vertices',vert,'faces',fac,'CData',cdata,'FaceColor','flat','FaceAlpha','flat','EdgeColor','none','FaceVertexAlphaData',alpha);
   elseif check_option(varargin,'slice3')
     slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'z');

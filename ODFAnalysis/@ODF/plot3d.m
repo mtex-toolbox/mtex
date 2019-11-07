@@ -8,6 +8,6 @@ oP = newOrientationPlot(odf.CS,odf.SS,ap{:},'project2FundamentalRegion',...
 
 S3G = oP.makeGrid('resolution',2.5*degree,varargin{:});
 
-oP.contour3s(odf.eval(S3G));
+oP.contour3s(odf.eval(S3G),varargin{:});
 
 end
