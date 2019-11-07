@@ -61,7 +61,7 @@ methods
   end
 
   function n = numel(sF)
-    n = prod(size(sF));
+    n = prod(size(sF)); %#ok<PSIZE>
   end
 
 end
