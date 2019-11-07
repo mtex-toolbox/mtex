@@ -5,6 +5,11 @@ function export_ctf(ebsd,fName,varargin)
 % can for instance be opened with Channel 5 and Atex or further converted
 % to 'ang' format for opening with Edax OIM
 %
+% Dr. Frank Niessen, University of Wollongong, Australia, 2019
+% contactnospam@fniessen.com (remove the nospam to make this email address work)
+% Acknowledgements go to Dr. Azdiar A. Gazder, University of Wollongong, Australia
+% Version 1.0 - Published 18/04/2019
+%
 % Syntax
 %
 %   export_ctf(ebsd,fileName)
@@ -20,14 +25,10 @@ function export_ctf(ebsd,fName,varargin)
 % Flags
 %  manual - prompt for manual import of microscopy parameters
 %  cprStruct - structure with properties from cpr-file import
-%  flip - rotate ebsd spatial data (not the orientation data)
+%  flipud - Flip ebsd spatial data upside down (not the orientation data)
+%  fliplr - Flip ebsd spatial data left right (not the orientation data)
 %
-% ************************************************************************
-% Dr. Frank Niessen, University of Wollongong, Australia, 2019
-% contactnospam@fniessen.com (remove the nospam to make this email address work)
-% Acknowledgements go to Dr. Azdiar A. Gazder, University of Wollongong, Australia
-% Version 1.0 - Published 18/04/2019
-% ************************************************************************
+
 scrPrnt('SegmentStart','Exporting ''ctf'' file');
 
 % initialize threshold for rounding negative close to 0 x and y coordinates
@@ -36,20 +37,39 @@ round0Thrsh = 1e-6;
 % pre-processing
 scrPrnt('Step','Collecting data');
 
+if check_option(varargin,'flipud') %Flip spatial ebsd data
+  ebsd = flipud(ebsd);
+  scrPrnt('Step','Flipping EBSD spatial data upside down');
+end
+if check_option(varargin,'fliplr') %Flip spatial ebsd data
+  ebsd = fliplr(ebsd);
+  scrPrnt('Step','Flipping EBSD spatial data left right');
+end
+
 % get gridified version of ebsd map
-ebsdGrid = ebsd.gridify;                                                   
+ebsdGrid = ebsd.gridify;
 
 mtexId2ctfId = [1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,6,6,7,7,7,7,7,7,4,4,...
-  4,5,5,5,5,5,8,8,8,8,8,8,8,8,9,9,10,10,10];
+  4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,10,11,11,11];
+
+
+%Cell-String array with Acquisition parameters
+AcquParam.Str = {'Mag','Coverage','Device','KV','TiltAngle','TiltAxis',...
+  'DetectorOrientationE1','DetectorOrientationE2','DetectorOrientationE3',...
+  'WorkingDistance','InsertionDistance'};
+
+%Cell-String array with Acquisition parameter formats
+AcquParam.Fmt = {'%.4f','%.0f','%s','%.4f','%.4f','%.0f','%.4f','%.4f',...
+  '%.4f','%.4f','%.4f'};
 
 % get microscope acquisition parameters
 cprStruct = getClass(varargin,'struct');
 
 if isstruct(cprStruct) && isfield(cprStruct,'job') &&  isfield(cprStruct,'semfields')
-  
+
   %Cpr-file parameter structure from import
   scrPrnt('SubStep','Microscope acquisition parameters imported from Cpr-parameter structure');
-  AcquParam.Data{1} = cprStruct.job.magnification; 
+  AcquParam.Data{1} = cprStruct.job.magnification;
   AcquParam.Data{2} = cprStruct.job.coverage;
   AcquParam.Data{3} = cprStruct.job.device;
   AcquParam.Data{4} = cprStruct.job.kv; % acceleration voltage
@@ -62,33 +82,25 @@ if isstruct(cprStruct) && isfield(cprStruct,'job') &&  isfield(cprStruct,'semfie
   AcquParam.Data{11} = 0;                        % insertion distance (information not available)
 
 elseif check_option(varargin,'manual') %Manual prompt
-  
-  %Cell-String array with Acquisition parameters
-  AcquParam.Str = {'Mag','Coverage','Device','KV','TiltAngle','TiltAxis',...
-    'DetectorOrientationE1','DetectorOrientationE2','DetectorOrientationE3',...
-    'WorkingDistance','InsertionDistance'};
 
-  %Cell-String array with Acquisition parameter formats
-  AcquParam.Fmt = {'%.4f','%.0f','%s','%.4f','%.4f','%.0f','%.4f','%.4f',...
-    '%.4f','%.4f','%.4f'};
-  
   scrPrnt('SubStep','Insert microscope acquisition parameters manually');
-  
+
   % input dialog box
   answer = inputdlg(strcat(AcquParam.Str,':'),'Input parameters - numeric only',...
-    [1 100],sprintfc('%d',zeros(1,11)));                 
-  
+    [1 100],sprintfc('%d',zeros(1,11)));
+
   % check if terminated
-  if isempty(answer); error('Terminated by user'); end                
-  
+  if isempty(answer); error('Terminated by user'); end
+
   % convert to numbers
-  AcquParam.Data = arrayfun(@str2double, answer, 'Uniform', false);   
+  AcquParam.Data = arrayfun(@str2double, answer, 'Uniform', false);
 
 else % no microscope data available
-  
+
   scrPrnt('SubStep','Microscope acquisition parameters not available');
+
   AcquParam.Data(1:11) = {0}; % filling in zeros
-  
+
 end
 
 % Open ctf file
@@ -114,7 +126,7 @@ fprintf(filePh,'AcqE2\t%.4f\r\n',0);
 fprintf(filePh,'AcqE3\t%.4f\r\n',0);
 
 % write acquisition parameters
-fprintf(filePh,'Euler angles refer to Sample Coordinate system (CS0)!\t');	
+fprintf(filePh,'Euler angles refer to Sample Coordinate system (CS0)!\t');
 for i = 1:length(AcquParam.Str) %Loop over aquisition parameters
   if ~strcmp(AcquParam.Fmt{i},'%s') %if numeric format is required
     AcquParam.Data{i} = num2str(AcquParam.Data{i},AcquParam.Fmt{i});    %Convert number to string
@@ -154,29 +166,63 @@ scrPrnt('Step','Assembling data array');
 % write data header
 fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r\n'); %Data header
 
-if check_option(varargin,'flip') %Flip spatial ebsd data
-  ebsd = rotate(ebsd,180*degree,'keepEuler');
-  scrPrnt('Step','Rotating EBSD spatial data 180 degree');
+%Get data order x
+if ebsdGrid.x(1,1)< ebsdGrid.x(1,2)
+   dim.x = 2;
+elseif ebsdGrid.x(1,1)> ebsdGrid.x(1,2)
+   dim.x = -2;
+elseif ebsdGrid.x(1,1)< ebsdGrid.x(2,1)
+   dim.x = 1;
+elseif ebsdGrid.x(1,1)> ebsdGrid.x(2,1)
+   dim.x = -1;
 end
-A(:,1) = ebsd.phase;
-A(:,2) = ebsd.prop.x;
-A(:,3) = ebsd.prop.y;
+%Get data order y
+if ebsdGrid.y(1,1)< ebsdGrid.y(1,2)
+   dim.y = 2;
+elseif ebsdGrid.y(1,1)> ebsdGrid.y(1,2)
+   dim.y = -2;
+elseif ebsdGrid.y(1,1)< ebsdGrid.y(2,1)
+   dim.y = 1;
+elseif ebsdGrid.y(1,1)> ebsdGrid.y(2,1)
+   dim.y = -1;
+end
+%Gather data
+flds{1} = ebsdGrid.phase;
+flds{2} = ebsdGrid.x;
+flds{3} = ebsdGrid.y;
+flds{4} = ebsdGrid.prop.bands;
+flds{5} = ebsdGrid.prop.error;
+flds{6} = ebsdGrid.rotations.phi1/degree;
+flds{7} = ebsdGrid.rotations.Phi/degree;
+flds{8} = ebsdGrid.rotations.phi2/degree;
+flds{9} = ebsdGrid.prop.mad;
+flds{10} = ebsdGrid.prop.bc;
+flds{11} = ebsdGrid.prop.bs;
 
-% rounding close to 0 X and Y coordinates
-A( abs(A(:,2)) < round0Thrsh,2 ) = 0;
-A( abs(A(:,3)) < round0Thrsh,3 ) = 0;
-A(:,4) = ebsd.prop.bands; % number of bands 
-A(:,5) = ebsd.prop.error; 
-A(:,6) = ebsd.rotations.phi1/degree;
-A(:,7) = ebsd.rotations.Phi/degree;
-A(:,8) = ebsd.rotations.phi2/degree;
-A(:,9) = ebsd.prop.mad; % mean angular deviation
-A(:,10) = ebsd.prop.bc; % band contrast
-A(:,11) = ebsd.prop.bs; % band slope
+%Write data
+A = zeros(ebsdGrid.length,11); %initialize
+for i = 1:length(flds)
+    temp = flds{i};
+    %Transpose matrices if required
+    if abs(dim.x == 2) && abs(dim.y) == 1
+        temp = temp';
+    end
+    %Flip matrices if required
+    if dim.x < 0
+       temp = temp(end:-1:1,:);
+    end
+    if dim.y < 0
+       temp = temp(end:-1:1,:);
+    end
+    %Make vector
+    A(:,i) = reshape(temp,ebsdGrid.length,1);
+end
 
-% change X/Y order
-[~,idx] = sort(A(:,3)); % make x-coordinates increase first
-A = A(idx,:); % assign this convention to all data
+A(find(all([A(:,2)>-round0Thrsh,A(:,2)<round0Thrsh],2)),2) = 0;            %Rounding close to 0 X coordinates
+A(find(all([A(:,3)>-round0Thrsh,A(:,3)<round0Thrsh],2)),3) = 0;            %Rounding close to 0 Y coordinates
+A(isnan(A)) = 0;                                                           %Set NaN to 0
+A(:,2) =  A(:,2) - A(1,2);                                                 %Set first x-value to 0
+A(:,3) =  A(:,3) - A(1,3);                                                 %Set first y-value to 0
 
 % write data array
 scrPrnt('Step','Writing data array to ''ctf'' file');
@@ -184,8 +230,8 @@ fprintf(filePh,'%.0f\t%.4f\t%.4f\t%.0f\t%.0f\t%.4f\t%.4f\t%.4f\t%.4f\t%.0f\t%.0f
 
 % close ctf file
 scrPrnt('Step','Closing file');
-fclose(filePh);                                                            
-scrPrnt('Step','All done',fName);    
+fclose(filePh);
+scrPrnt('Step','All done',fName);
 
 end
 
