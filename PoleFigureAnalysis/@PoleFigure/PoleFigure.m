@@ -136,7 +136,7 @@ classdef PoleFigure < dynProp & dynOption
         cs = cumsum([0,cellfun('prodofsize',pf.allI)]);
         
         for ipf = 1:numel(pf.allI)
-          pf.allI{ipf} = i(cs(ipf)+1:cs(ipf+1));
+          pf.allI{ipf} = reshape(i(cs(ipf)+1:cs(ipf+1)),size(pf.allI{ipf}));
         end
       end
     end
