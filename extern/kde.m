@@ -1,4 +1,4 @@
-function [bandwidth,density,xmesh,cdf]=kde(data,n,MIN,MAX,varargin)
+function [bandwidth,density,xmesh,cdf] = kde(data,n,MIN,MAX,varargin)
 % Reliable and extremely fast kernel density estimator for one-dimensional data;
 %        Gaussian kernel is assumed and the bandwidth is chosen automatically;
 %        Unlike many other implementations, this one is immune to problems

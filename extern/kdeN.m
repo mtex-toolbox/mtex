@@ -1,4 +1,4 @@
-function [pdf,X1,X2]=calcDensity(X,grid,gam)
+function [pdf,X1,X2] = kdeN(X,grid,gam,varargin)
 %% adaptive kernel density estimation in high dimensions;
 %  optimal accuracy/speed tradeoff, controlled via parameter "gam";
 % INPUTS:   X  - data as a 'n' by 'd' vector;
@@ -68,10 +68,12 @@ for iter=1:1500 % begin algorithm
     Eold=ent;
     [w,mu,Sig,del,ent]=regEM(w,mu,Sig,del,X); % update parameters
     err=abs((ent-Eold)/ent); % stopping condition
-    fprintf('Iter.    Tol.      Bandwidth \n');
-    fprintf('%4i    %8.2e   %8.2e\n',iter,err,del);
-    fprintf('----------------------------\n');
-    if (err<10^-4)|(iter>200), break, end
+    if check_option(varargin,'verbose')
+      fprintf('Iter.    Tol.      Bandwidth \n');
+      fprintf('%4i    %8.2e   %8.2e\n',iter,err,del);
+      fprintf('----------------------------\n');
+    end
+    if (err<10^-4)||(iter>200), break, end
 end
 % now output density values at grid
 pdf = probfun(mesh,w,mu,Sig)/prod(scaling); % evaluate density
