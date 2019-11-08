@@ -1,7 +1,7 @@
-function odf = calcODF(ori,varargin)
+function odf = calcDensity(ori,varargin)
 % computes an ODF from individuel orientations
 %
-% The function *calcODF* applies one of the following algorithms to compute
+% The function *calcDensity* applies one of the following algorithms to compute
 % an ODF from a list of orientations.
 %
 % # direct kernel density estimation 
@@ -11,17 +11,17 @@ function odf = calcODF(ori,varargin)
 % Syntax
 %
 %   % use kernel density estimation with a 10 degree kernel
-%   odf = calcODF(ori,'halfwidth',10*degree) 
+%   odf = calcDensity(ori,'halfwidth',10*degree) 
 %
 %   % use grain area as weights for the orientations
-%   odf = calcODF(grains.meanOrientation,'weights',grains.area)
+%   odf = calcDensity(grains.meanOrientation,'weights',grains.area)
 %
 %   % use a specific kernel
 %   psi = AbelPoissonKernel('halfwidth',10*degree)
-%   odf = calcODF(ori,'kernel',psi) 
+%   odf = calcDensity(ori,'kernel',psi) 
 %
 %   % compute the ODF as a Fourier series of order 16
-%   odf = calcODF(ori,'order',16) 
+%   odf = calcDensity(ori,'order',16) 
 %
 % Input
 %  ori  - @orientation
@@ -45,6 +45,13 @@ function odf = calcODF(ori,varargin)
 %
 % See also
 % orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
+
+% TODO this could be done better!!!
+% add grain exchange symmetry
+if check_option(varargin,'antipoal') && ori.CS == ori.SS
+  ori = [ori(:);inv(ori(:))]; 
+end
+
 
 % Bingham ODF estimation
 if check_option(varargin,'bingham')  

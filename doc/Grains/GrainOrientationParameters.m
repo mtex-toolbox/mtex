@@ -378,7 +378,7 @@ legend('show','Location','northwest')
 % distribution is plotted by
 
 % compute the Forsterite ODF 
-odf_Fo = calcODF(ebsd('Fo').orientations,'Fourier')
+odf_Fo = calcDensity(ebsd('Fo').orientations,'Fourier')
 
 % compute the uncorrelated Forsterite to Forsterite MDF
 mdf_Fo_Fo = calcMDF(odf_Fo,odf_Fo)

@@ -48,7 +48,7 @@ try
   
   % check NFSOFT
   ori = orientation.rand(100,crystalSymmetry);
-  odf = calcODF(ori,'Fourier','bandwidth',12);
+  odf = calcDensity(ori,'Fourier','bandwidth',12);
   odf.eval(ori);
   e = 1;
 end

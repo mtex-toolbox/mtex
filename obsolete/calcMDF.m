@@ -51,6 +51,9 @@ function mdf = calcMDF(mori,varargin)
 % See also
 % orientation/calcFourierMDF orientation/calcKernelMDF orientation/calcBinghamMDF ebsd_demo EBSD2mdf EBSDSimulation_demo 
 
+
+warning('The command calcODF is depreciated! Please use calcDensity instead.')
+
 % if orientations have been specified
 if isa(mori.SS,'specimenSymmetry')
   

@@ -120,7 +120,7 @@ hold off
 % function. The option |antipodal| is applied since we want to identify
 % |mori| and |inv(mori)|.
 
-mdf = calcMDF(gB.misorientation,'halfwidth',5*degree,'bandwidth',48)
+mdf = calcDensity(gB.misorientation,'halfwidth',5*degree,'bandwidth',48)
 
 %%
 % Next we can visualize the misorientation distribution function in axis

@@ -10,7 +10,7 @@ mtexdata forsterite
 % These EBSD datasets consist of two phases, Iron, and Magnesium. The ODF
 % of the Iron phase is computed by the command
 
-odf = calcODF(ebsd('fo').orientations)
+odf = calcDensity(ebsd('fo').orientations)
 
 %%
 % The function <orientation.calcODF.html calcODF> implements the ODF
@@ -53,7 +53,7 @@ grains = grains(grains.grainSize>5);
 psi = calcKernel(grains('fo').meanOrientation)
 
 % compute the ODF with the kernel psi
-odf = calcODF(ebsd('fo').orientations,'kernel',psi)
+odf = calcDensity(ebsd('fo').orientations,'kernel',psi)
 
 
 %%
@@ -87,7 +87,7 @@ hw = [1*degree, 2*degree, 4*degree, 8*degree, 16*degree, 32*degree];
 e = zeros(size(hw));
 for i = 1:length(hw)
   
-  odf = calcODF(ori,'halfwidth',hw(i),'silent');
+  odf = calcDensity(ori,'halfwidth',hw(i),'silent');
   e(i) = calcError(modelODF, odf);
   
 end

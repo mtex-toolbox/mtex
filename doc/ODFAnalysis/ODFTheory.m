@@ -7,7 +7,7 @@
 %% 
 
 mtexdata titanium
-odf = calcODF(ebsd.orientations)
+odf = calcDensity(ebsd.orientations)
 
 %% Pole Figures and Values at Specific Orientations
 %

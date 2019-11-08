@@ -108,14 +108,14 @@ cs2 = specimenSymmetry;
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',5*degree)
 ori = odf.calcOrientations(2000);
-odf2 = calcODF(ori,'noFourier','exact','halfwidth',2.5*degree)
+odf2 = calcDensity(ori,'noFourier','exact','halfwidth',2.5*degree)
 
 
 cs2 = crystalSymmetry('432')
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',2.5*degree)
 ori = odf.calcOrientations(1000);
-odf2 = calcODF(ori,'noFourier','exact','halfwidth',3*degree)
+odf2 = calcDensity(ori,'noFourier','exact','halfwidth',3*degree)
 
 
 [modes,vol,cId] = odf2.calcComponents;

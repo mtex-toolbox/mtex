@@ -110,7 +110,7 @@ switch method
     if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
 
     % calc ODF
-    odf = calcODF(ori,'weights',weights,'silent',varargin{:});
+    odf = calcDensity(ori,'weights',weights,'silent',varargin{:});
 
   case 'interp'
 

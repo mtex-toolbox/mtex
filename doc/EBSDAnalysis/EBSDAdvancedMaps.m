@@ -92,7 +92,7 @@ vol = 100 * volume(ebsd('fo').orientations,colorKey.center,20*degree)
 % actually, the colored measurements stress a peak in the ODF
 
 close all
-odf = calcODF(ebsd('fo').orientations,'halfwidth',10*degree,'silent');
+odf = calcDensity(ebsd('fo').orientations,'halfwidth',10*degree,'silent');
 plot(odf,'sections',9,'silent','sigma')
 mtexColorbar
 

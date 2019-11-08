@@ -5,19 +5,49 @@
 %% TODO
 % Please help to redo the section
 %
-%% Computing a misorientation distribution function from EBSD data
-% 
+%% 
+% When speaking about the misorientation distribution function (MDF) one
+% has to differentiate to cases
+%
+% # the boundary (correlated) misorientation distribution function
+% # the uncorelated misorientation distribution function
+%
+% While the first one considers only misorientations at grain boundaries
+% the second one considers misorietation between arbitrary crystal
+% orientations. To illustrate the difference lets consider the following
+% EBSD data set
+
 % Lets import some EBSD data and reconstruct the grains.
 
 mtexdata forsterite
 grains = calcGrains(ebsd)
 
-%% SUB: The boundary misorientation distribution function
-%
-% The boundary misorientation distribution function for the phase
-% transition from Forsterite to Enstatite can be computed by
 
-mdf_boundary = calcODF(grains.boundary('Fo','En').misorientation,'halfwidth',10*degree)
+%% The boundary misorientation distribution function
+%
+% In order to compute the boundary misorientation distribution function for
+% the phase transition from Forsterite to Enstatite we first extract the
+% misorientations along all Forsterite to Enstatite boundary segements
+
+mori_boundary = grains.boundary('Fo','En').misorientation
+
+%%
+% and second compute the corresponding density function using the command
+% <orientation.calcDensity.html calcDensity>
+
+mdf_boundary = calcDensity(mori_boundary,'halfwidth',5*degree)
+
+%%
+
+adf_boundary = mdf_boundary.calcAxisDistribution
+
+plot(adf_boundary)
+
+%%
+
+
+
+
 
 %%
 % The misorientation distribution function can be processed as any other
@@ -25,18 +55,23 @@ mdf_boundary = calcODF(grains.boundary('Fo','En').misorientation,'halfwidth',10*
 
 [v,mori] = max(mdf_boundary)
 
+
 %%
 % or plot the pole figure corresponding to the crystal axis (1,0,0)
 
 plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
 
-%% SUB: The uncorrelated misorientation distribution function
+
+
+
+
+%% The uncorrelated misorientation distribution function
 % 
 % Alternatively the uncorrelated misorientation distribution function can be
 % computed by providing the option *uncorrelated*
 
 mori = calcMisorientation(ebsd('En'),ebsd('Fo'))
-mdf_uncor = calcODF(mori)
+mdf_uncor = calcDensity(mori)
 
 %%
 % Obviously it is different from the boundary misorientation distribution
@@ -48,8 +83,8 @@ plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
 %
 % Let given two odfs
 
-odf_fo = calcODF(ebsd('fo').orientations,'halfwidth',10*degree)
-odf_en = calcODF(ebsd('en').orientations,'halfwidth',10*degree)
+odf_fo = calcDensity(ebsd('fo').orientations,'halfwidth',10*degree)
+odf_en = calcDensity(ebsd('en').orientations,'halfwidth',10*degree)
 
 %%
 % Then the uncorrelated misorientation function between these two ODFs can
@@ -104,3 +139,5 @@ plotAxisDistribution(mdf)
 % For computing the exact values see the commands
 % <ODF.calcAxisDistribution.html calcAxisDistribution(mdf)> and
 % <orientation.calcAxisDistribution.html calcAxisDistribution(grains)>.
+
+aD = calcDensity(axis(grains.boundary('fo','en').misorientation))

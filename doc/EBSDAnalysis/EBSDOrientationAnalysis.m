@@ -69,7 +69,7 @@ f = fibre(Miller(0,1,0,cs),rOrth);
 % we looking only at the 100 pole figure. Finally, let's plot the ODF along
 % this fibre
 
-odf = calcODF(ebsd('Forsterite').orientations)
+odf = calcDensity(ebsd('Forsterite').orientations)
 
 % plot the odf along the fibre
 plot(odf,f)

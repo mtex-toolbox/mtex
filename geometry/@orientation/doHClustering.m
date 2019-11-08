@@ -39,7 +39,7 @@ function [c,center] = doHClustering(ori,varargin)
 %   %check the accuracy of the recomputed centers
 %   min(angle_outer(center,centerRec)./degree)
 %
-%   odfRec = calcODF(ori)
+%   odfRec = calcDensity(ori)
 %   [~,centerRec2] = max(odfRec,5)
 %   min(angle_outer(center,centerRec2)./degree)
 %

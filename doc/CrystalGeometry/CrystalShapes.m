@@ -102,7 +102,7 @@ plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 % or even within ODF sections
 
 % compute the odf 
-odf = calcODF(ebsd.orientations);
+odf = calcDensity(ebsd.orientations);
 
 % plot the odf in sigma sections
 plotSection(odf,'sigma','contour')

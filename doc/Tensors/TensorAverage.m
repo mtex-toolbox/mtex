@@ -91,7 +91,7 @@ CEpidote = stiffnessTensor(MEpidote,csEpidote)
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
 
-odfEpidote = calcODF(ebsd('Epidote').orientations,'halfwidth',10*degree)
+odfEpidote = calcDensity(ebsd('Epidote').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF

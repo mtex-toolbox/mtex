@@ -37,7 +37,7 @@ rot = rotation.byEuler(15*degree,12*degree,-5*degree);
 ori = rot * calcOrientations(odf,1000)
 
 % estimate an ODF from the individual orientations
-odf_est = calcODF(ori,'halfwidth',10*degree)
+odf_est = calcDensity(ori,'halfwidth',10*degree)
 
 % and visualize it
 figure, plotPDF(odf_est,h,'antipodal',8,'silent');
