@@ -1,8 +1,11 @@
-PoleFigureAnalysisIntro
-ImportPoleFigureData
-ModifyPoleFigureData
-PoleFigure2odf
-PF2ODFAmbiguity
-ghost_demo
-PoleFigureSimulation_demo
-PlotPoleFigures
+PoleFigureImport        Import
+PoleFigurePlot          Plot
+PoleFigureCorrection    Modify
+PoleFigure2ODF          ODF Reconstruction
+PoleFigureSimulation    Simulation
+PoleFigure2ODFAmbiguity The Gost Effect
+PoleFigure2ODFGhostCorrection Ghost Correction
+PoleFigureSantaFe       Santa Fe Example
+PoleFigureDubna         Dubna Example
+PoleFigureExport        Export
+

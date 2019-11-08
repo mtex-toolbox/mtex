@@ -18,7 +18,7 @@ function plotIPDF(f,varargin)
 %  property   - user defined colorcoding
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
@@ -43,19 +43,19 @@ argin_check(r,'vector3d');
 for ir = 1:length(r)
 
   if ir>1, mtexFig.nextAxis; end
-  
+
   % the crystal directions
   h = f.orientation \ r(ir);
-  
+
   if ~check_option(varargin,{'complete','noSymmetry'})
     h = h.project2FundamentalRegion;
   end
- 
-  %  plot  
+
+  %  plot
   [~,cax] = h.line('fundamentalRegion','doNotDraw',varargin{:});
 
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
-  
+
   setappdata(cax,'inversePoleFigureDirection',r(ir));
   set(cax,'tag','ipdf');
   setappdata(cax,'CS',f.CS);

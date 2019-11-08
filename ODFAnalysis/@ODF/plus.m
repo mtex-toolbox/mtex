@@ -5,7 +5,7 @@ function o1 = plus(o1,o2)
 % get the superposition of two ODFs
 %
 % See also
-% ODF_index ODF/mtimes
+% ODF/ODF ODF/mtimes
 
 if isa(o2,'double')
   

@@ -19,6 +19,15 @@ function [qm, lambda, V] = mean(q,varargin)
 % See also
 % orientation/mean
 
+if isempty(q)
+  qm = quaternion.nan;  
+  return
+elseif length(q) == 1
+  qm = qq;
+  lambda = diag([0 0 0 1]);
+  return
+end
+
 T = qq(q,varargin{:});
 [V, lambda] = eig(T);
 l = diag(lambda);

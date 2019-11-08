@@ -1,9 +1,7 @@
-function display(m)
+function display(m,varargin)
 % standard output
 
-disp(' ');
-disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
-  ' ' docmethods(inputname(1))]);
+displayClass(m,inputname(1),varargin{:});
 
 display@vector3d(m,'skipHeader', 'skipCoordinates');
 

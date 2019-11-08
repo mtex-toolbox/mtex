@@ -7,7 +7,7 @@ function  [x,y,segLength] = intersect(gB,xy1,xy2,varargin)
 %
 % Input
 %  gb - @grainBoundary
-%  xy1, xy2 coordinates of the endpoints of the line
+%  xy1, xy2 - coordinates of the endpoints of the line
 %
 % Output
 %  x,y - list of intersection points

@@ -21,7 +21,7 @@ classdef specimenSymmetry < symmetry
     
     function display(s)
       disp(' ');
-      disp([inputname(1) ' = ' s.lattice ' ' doclink('symmetry_index','specimenSymmetry') ' ' docmethods(inputname(1))]);
+      disp([inputname(1) ' = ' s.lattice ' ' doclink(s) ' ' docmethods(inputname(1))]);
       disp(' ');
     end        
     

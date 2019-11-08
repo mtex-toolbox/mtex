@@ -10,8 +10,8 @@ function sR = byVertices(V,varargin)
 % Output
 %  sR - @sphericalRegion
 %
-% see also
-% sphericalRegion_index
+% See also
+% sphericalRegion/sphericalRegion
 
 N = normalize(cross(V,V([2:end,1])));
 alpha = zeros(size(N));

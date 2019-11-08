@@ -4,7 +4,7 @@ function odf = uminus(odf)
 % overload the - operator, i.e. one can now write - @ODF
 %
 % See also
-% ODF_index ODF/mtimes
+% ODF/ODF ODF/mtimes
 
 odf.weights = -odf.weights;
 

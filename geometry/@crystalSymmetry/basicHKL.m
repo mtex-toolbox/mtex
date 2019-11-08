@@ -7,7 +7,7 @@ function p = basicHKL(cs,varargin)
 % Output
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include <VectorsAxes.html antipodal symmetry>
 
 [h,k,l] = meshgrid(-1:1);
 

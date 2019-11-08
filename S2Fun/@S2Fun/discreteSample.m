@@ -2,7 +2,7 @@ function v = discreteSample(S2Fun,n,varargin)
 % takes a random sample of n directions from S2Fun
 %
 % Syntax
-%  v = discreteSample(S2Fun,n)
+%   v = discreteSample(S2Fun,n)
 %
 % Input
 %  sF - @S2Fun

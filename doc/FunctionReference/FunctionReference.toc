@@ -1,3 +1,8 @@
-geometry_index
-QTA_index
-tools_index
+geometry_index             Geometry
+EBSDAnalysis_index         EBSD Analysis
+ODFAnalysis_index          ODF Analysis
+PoleFigureAnalysis_index   Pole Figures
+TensorAnalysis_index       Tensors
+SphericalFunctions_index   Spherical Functions
+plotting_index             Plotting
+tools_index                Tools

@@ -2,7 +2,7 @@ function pf = loadPoleFigure_aachen_exp(fname,varargin)
 % import data fom aachen_exp file
 %
 % Syntax
-%   pf = loadPoleFigure_aachen_exp(fname,<options>)
+%   pf = loadPoleFigure_aachen_exp(fname)
 %
 % Input
 %  fname  - filename

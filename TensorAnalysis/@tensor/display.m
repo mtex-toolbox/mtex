@@ -1,20 +1,7 @@
 function display(T,varargin)
 % standard output
 
-disp(' ');
-
-% collect top line
-h = doclink('tensor_index',class(T));
-if isOption(T,'name'), h = [T.getOption('name'),' ',h];end
-
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = ' h];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = ' h];
-end
-
-% display top line
-disp([h ' ' docmethods(inputname(1))])
+displayClass(T,inputname(1));
 
 % collect tensor properties
 props = fieldnames(T.opt);

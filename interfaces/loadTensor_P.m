@@ -14,7 +14,7 @@ function [T,options] = loadTensor_P(fname,varargin)
 % describing the a Tensor
 %
 % Syntax
-%   T   = loadTensor_generic(fname,<options>)
+%   T   = loadTensor_generic(fname)
 %
 % Input
 %  fname - file name (text files only)

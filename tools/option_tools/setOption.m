@@ -2,8 +2,8 @@ function optList = setOption(optList,option,value)
 % set option in option list
 %
 % Syntax
-%  optList = setOption(option_list,option,value) - 
-%  optList = setOption(option_list,{option1,option2,option3}) -
+%   optList = setOption(option_list,option,value)
+%   optList = setOption(option_list,{option1,option2,option3})
 %
 % Input
 %  optList - struct

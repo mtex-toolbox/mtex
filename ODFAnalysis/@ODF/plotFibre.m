@@ -2,7 +2,7 @@ function [x,omega] = plotFibre(odf,f,varargin)
 % plot odf along a fibre
 %
 % Syntax
-%  plotFibre(odf,f);
+%   plotFibre(odf,f);
 %
 % Input
 %  odf - @ODF
@@ -46,7 +46,7 @@ if any(fz) && round(numel(delta) / fz(1)) == numel(fz) && ...
 end
 
 % evaluate the ODF
-x = eval(odf,ori,varargin{:});%#ok<EVLC>
+x = eval(odf,ori,varargin{:});
 
 % plot the fibre
 optiondraw(plot(omega./degree,x,'parent',mtexFig.gca),varargin{:});

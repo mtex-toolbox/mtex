@@ -45,7 +45,7 @@ ori_id = [ 0 1 1 ; ...
 
 ori = ori(ori_id + 1);
 
-ebsd = EBSD(ori,ori_id,{cs},'options',struct('x',x,'y',y))
+ebsd = EBSD(ori,ori_id,{cs},struct('x',x,'y',y))
   
 end
 

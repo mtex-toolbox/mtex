@@ -1,9 +1,9 @@
 function varargout = find(S2G,v,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
-% Syntax  
-% ind = find(S2G,v,epsilon) - find all points in a epsilon neighborhood of v
-% ind = find(S2G,v)         - find closest point
+% Syntax
+%   ind = find(S2G,v,epsilon) % find all points in a epsilon neighborhood of v
+%   ind = find(S2G,v)         % find closest point
 %
 % Input
 %  S2G     - @S2Grid
@@ -11,10 +11,10 @@ function varargout = find(S2G,v,varargin)
 %  epsilon - double
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include <VectorsAxes.html antipodal symmetry>
 %
 % Output
-%  ind     - int32        
+%  ind     - int32
 
 % TODO: implement faster find for regular S2Grid
 d = [];
@@ -33,30 +33,30 @@ xrho = xrho - rhomin;
 
 % find closest points
 if nargin == 2
-  
+
   ind = S2Grid_find(ytheta,int32(iytheta),yrho,prho,xtheta,xrho);
-    
+
   if S2G.antipodal
     ind = reshape(ind,[],2);
-        
+
     d = abs(dot(S2G(ind),v));
     ind2 = d == repmat(max(d,[],2),1,2);
     ind2(all(ind2,2),2) = false;
     ind = ind(ind2);
     d = d(ind2);
-    
+
   end
-  
+
 % find epsilon region
 else
-  
+
   ind = S2Grid_find_region(ytheta,int32(iytheta),...
     yrho,prho,xtheta,xrho,varargin{1});
-  
+
   if S2G.antipodal
     ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);
   end
-  
+
 end
 
 % assign return values

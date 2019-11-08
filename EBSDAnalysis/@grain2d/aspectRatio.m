@@ -2,7 +2,7 @@ function asp = aspectRatio(grains,varargin)
 % aspectratio = length / width
 %
 % the aspect ratio is the ratio between the two
-% <grain2d.principalcomponents.html,principal componentes> of a grain
+% <grain2d.principalComponents.html,principal componentes> of a grain
 %
 % Input
 %  g - @grain2d

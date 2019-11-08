@@ -1,8 +1,9 @@
 function c = char(v,varargin)
 % convert to char
 %
-% Options
-%  LATEX
+% Flags
+%  LATEX - 
+%  
 
 % short summary for long vectors
 if length(v) > 4

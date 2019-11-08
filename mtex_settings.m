@@ -90,7 +90,7 @@ setMTEXpref('EBSDExtensions',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
 
 % set default colors
-%set(0,'DefaultAxesColorOrder',vega10(10))
+%set(0,'DefaultAxesColorOrder',vega20)
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
@@ -107,6 +107,7 @@ setMTEXpref('EBSDPath',      fullfile(mtexDataPath,'EBSD'));
 setMTEXpref('PoleFigurePath',fullfile(mtexDataPath,'PoleFigure'));
 setMTEXpref('ODFPath',       fullfile(mtexDataPath,'ODF'));
 setMTEXpref('TensorPath',    fullfile(mtexDataPath,'tensor'));
+setMTEXpref('ExamplePath',   fullfile(mtex_path,'..','examples'));
 
 %% set default location to look for data with import wizard
 % if not activated, the paths are selected according to the above

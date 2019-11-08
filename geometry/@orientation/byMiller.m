@@ -2,7 +2,7 @@ function ori = byMiller(hkl,uvw,varargin)
 % define orientations by Miller Bravais indeces
 %
 % Description
-% Defines an <orientation_index.html,orientation> |ori|
+% Defines an <orientation.orientation.html orientation> |ori|
 % by Miller indece (hkl) and [uvw] such that |ori * (hkl) = 001| and 
 % |ori * [uvw] = 100|
 %
@@ -24,18 +24,18 @@ function ori = byMiller(hkl,uvw,varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index orientation/byEuler orientation/byAxisAngle
+% orientation/orientation orientation/byEuler orientation/byAxisAngle
 
 
 if isa(hkl,'double')
-  if nargin == 2
-    CS = crystalSymmetry('cubic');
-  else
-    CS = varargin{1};
-  end
+  CS = getClass(varargin,'crystalSymmetry',crystalSymmetry('cubic'));
   hkl = Miller(hkl(:,1),hkl(:,2),hkl(:,3),CS);
   uvw = Miller(uvw(:,1),uvw(:,2),uvw(:,3),CS);
+else
+  CS = hkl.CS;
 end
+
+SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
 
 hkl = normalize(hkl(:));
 uvw = normalize(uvw);
@@ -68,5 +68,4 @@ quat = q1;
 quat(~ind) = q2(~ind).*q1(~ind);
 
 % make the result an orientation
-ori = orientation(quat,varargin{:});
-try ori.CS = hkl.CS; end %#ok<TRYNC>
+ori = orientation(quat,CS,SS);

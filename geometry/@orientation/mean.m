@@ -14,14 +14,22 @@ function [o, q, lambda, eigv]  = mean(o,varargin)
 %
 % Output
 %  m      - mean @orientation
+%  q      - crystallographic equivalent @quaternion projected to fundamental region
 %  lambda - principle moments of inertia
 %  V      - principle axes of inertia (@orientation)
-%  q      - crystallographic equivalent @quaternion projected to fundamental region
 %
 % See also
 % BinghamODF
 
-if length(o) == 1 
+if isempty(o)
+  
+  o.a = NaN; o.b = NaN; o.c = NaN; o.d = NaN; o.i = false;
+  if nargout > 1, q = quaternion.nan;end
+  if nargout > 2, lambda = zeros(4); end
+  if nargout > 3, eigv = eye(4); end
+  return
+  
+elseif length(o) == 1 
   
   if nargout > 1
     eigv = eye(4);

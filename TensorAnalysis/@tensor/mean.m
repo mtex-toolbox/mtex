@@ -2,14 +2,15 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 % mean of a list of tensors
 %
 % Syntax
-%  T = mean(T)     % mean along the first non singleton dimension
-%  T = mean(T,dim) % mean along dimension dim
-%  TReuss = mean(T,'Reuss') % Reuss average
-%  TGeometric = mean(T,'geometric') % geometric mean
-%  [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
+%   T = mean(T)     % mean along the first non singleton dimension
+%   T = mean(T,dim) % mean along dimension dim
+%   TReuss = mean(T,'Reuss') % Reuss average
+%   THill = mean(T,'Hill') % Hill average
+%   TGeometric = mean(T,'geometric') % geometric mean
+%   [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
-%  [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
-%  [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
+%   [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
+%   [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
 %
 % Input
 %  T - @tensor
@@ -35,30 +36,44 @@ if check_option(varargin,'iso') && T.rank==4
   delta = (3*beta - alpha) / 30;
   
   TVoigt = 2 * delta * T.eye + gamma * dyad(tensor.eye,tensor.eye);
+     
+elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
 
-elseif nargin > 1 && isa(varargin{1},'rotation')
-
-  rotT = rotate(T,varargin{1});
+  TVoigt = 0*T;
+  
+  odf = varargin{1};
+  fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
+  
+  for l = 0:min(T.rank,odf.bandwidth)
+  
+    % calc Fourier coefficient of odf
+    ind = deg2dim(l)+(1:(2*l+1)^2);
+    fhat_l = reshape(fhat(ind),2*l+1,2*l+1)./(2*l+1);
+      
+    % calc Fourier coefficients of the tensor
+    T_hat = Fourier(T,'order',l);
+  
+    % mean Tensor is the product of both
+    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]);
+        
+  end
+  
+elseif check_option(varargin,'weights')  % weighted mean
   
   % extract weights
-  weights = get_option(varargin,'weights',1./length(varargin{1}));
+  weights = reshape(get_option(varargin,'weights'),size(T));
   
   % take the mean of the rotated tensors times the weight
-  TVoigt = sum(weights .* rotT);
-      
-elseif nargin > 1 && isa(varargin{1},'ODF')
-  
-  % this needs to be replaced
-  TVoigt = calcTensor(varargin{1},T,varargin{2:end});
+  TVoigt = sum(weights .* T);
   
 else % the plain mean
 
-  if nargin > 1
+  if nargin > 1 && isnumeric(varargin{1})
     dim = varargin{1};
   else
     dim = 1 + (size(T,1) == 1);
   end
-      
+  
   dim = dim + T.rank;
   TVoigt = T;
   TVoigt.M = mean(T.M,dim);
@@ -72,8 +87,11 @@ if check_option(varargin,'geometric'), TVoigt = expm(TVoigt); end
 if check_option(varargin,'Reuss'), TVoigt = inv(TVoigt); end
 
 % Reuss average -> the inverse of the mean of the inverses
-if nargout > 1, TReuss = inv(mean(inv(T),varargin{:})); end
+if nargout > 1 || check_option(varargin,'Hill')
+  opt = delete_option(varargin,'Hill');
+  TReuss = mean(T,opt{:},'Reuss');
+  THill = 0.5*(TVoigt + TReuss);    
+end
     
 % Hill average
-if nargout > 2, THill = 0.5*(TVoigt + TReuss); end
-  
+if check_option(varargin,'Hill'), TVoigt = THill; end

@@ -23,17 +23,27 @@ end
 % get normal direction
 N = getClass(varargin,'vector3d',vector3d.Z);
 
-%
-A = [2*sqrt(pi)/3,0,4/3*sqrt(pi/5)];
-psi = kernel(A ./ A(1) / 3);
+if check_option(varargin,'quadrature') % slow quadrature based approach
 
-f = conv(pdf,psi);
+  r = equispacedS2Grid('resolution',2.5*degree);
+    
+  k = mean( pdf.eval(r) .* dot_outer(r,N).^2).';
 
-k = f.eval(N);
+else % fast Fourier approach
+  
+  %
+  A = [2*sqrt(pi)/3,0,4/3*sqrt(pi)];
+  psi = kernel(A ./ A(1) / 3);
+
+  f = conv(pdf,psi);
+
+  k = f.eval(N);
+
+end
+
 
 % sF = S2FunHarmonic.quadrature(@(v) dot(v,zvector).^2);
 %psi = kernel(A ./ A(1));
-
 
 % psi should actually be defined by
 % psi = S2KernelHandle(@(x) x^2);

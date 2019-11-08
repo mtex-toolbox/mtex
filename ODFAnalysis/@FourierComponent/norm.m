@@ -12,6 +12,6 @@ function t = norm(component,varargin)
 %  texture index - double
 %
 % See also
-% ODF/textureindex ODF/entropy ODF/volume ODF_index ODF/calcFourier
+% ODF/textureindex ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
 t = norm(Fourier(component,'l2-normalization',varargin{:}));

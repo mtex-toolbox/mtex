@@ -1,10 +1,13 @@
-function ebsd = findByOrientation(ebsd,q0,epsilon)
+function ebsd = findByOrientation(ebsd,ori,epsilon)
 % select ebsd data by orientation
+%
+% Syntax
+%   ebsd = findByOrientation(ebsd,ori,epsilon)
 %
 % Input
 %  ebsd    - @EBSD
-%  q0      - @quaternion | @rotation | @orientation 
-%  epsilon - searching radius
+%  ori     - @orientation 
+%  epsilon - misorientation angle threshold
 %
 % Output
 %  ebsd - @EBSD
@@ -12,6 +15,14 @@ function ebsd = findByOrientation(ebsd,q0,epsilon)
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
-ind  = find(ebsd.orientations,q0,epsilon);
+if nargin == 2, epsilon = 1*dgree; end
+
+% restrict to the right phase
+if isa(ori,'orientation')
+  phaseId = cellfun(@(cs) isa(cs,'crystalSymmetry') & ori.CS == cs, ebsd.CSList);
+  ebsd = subSet(ebsd,ismember(ebsd.phaseId,find(phaseId)));
+end
+
+ind  = find(ebsd.orientations,ori,epsilon);
 
 ebsd = subSet(ebsd,any(ind,2));

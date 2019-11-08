@@ -9,7 +9,7 @@ function [rot,interface,options] = load(fname,varargin)
 % the phase information as well as Euler angles.
 %
 % Syntax
-%  rot = rotation.load(fname,'ColumnNames',{'phi1','Phi','phi2'})
+%   rot = rotation.load(fname,'ColumnNames',{'phi1','Phi','phi2'})
 %
 % Input
 %  fname     - filename
@@ -27,7 +27,7 @@ function [rot,interface,options] = load(fname,varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index
+% orientation/orientation
 
 if iscell(fname), fname = fname{1};end
 

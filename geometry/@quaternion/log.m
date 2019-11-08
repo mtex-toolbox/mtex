@@ -16,7 +16,7 @@ function v = log(q,q_ref,varargin)
 %  v - @vector3d
 %
 % See also
-% quaternion/logm vector3d/exp spinTensor_index
+% quaternion/logm vector3d/exp spinTensor/spinTensor
 
 % if reference point for tangential space is given - rotate
 if nargin >= 2

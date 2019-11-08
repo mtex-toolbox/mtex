@@ -24,17 +24,12 @@ function h = plotSection(sF,sec,varargin)
 [mtexFig,isNew] = newMtexFigure(varargin{:});
  
 % extract polar angle of section
+eta = pi/2; omega = linspace(0,2*pi,361);
 if nargin > 2 && isnumeric(varargin{1})
   eta = varargin{1};
-else
-  eta = pi/2;
-end
-
-% extract azimuthal angle of section
-if nargin > 3 && isnumeric(varargin{2})
-  omega = varargin{2};
-else
-  omega = linspace(0,2*pi,361);
+  
+  % extract azimuthal angle of section
+  if nargin > 3 && isnumeric(varargin{2}), omega = varargin{2}; end  
 end
 
 S2 = [axis2quat(sec,omega),quaternion.nan(numel(sec))]*axis2quat(orth(sec),eta)*sec;
@@ -42,7 +37,7 @@ S2 = [axis2quat(sec,omega),quaternion.nan(numel(sec))]*axis2quat(orth(sec),eta)*
 d = reshape(sF.eval(S2),length(S2), []);
 delta = getappdata(mtexFig.gca,'delta');
 if isempty(delta)
-  delta = max(d) / 200 ;
+  delta = nanmax(d) / 200 ;
   setappdata(mtexFig.gca,'delta',delta);
 end
 delta = delta * get_option(varargin,'linewidth',1);
@@ -72,6 +67,7 @@ for j = 1:length(sF)
   end
   view(mtexFig.gca,squeeze(double(sec)));
   set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
+  axis(mtexFig.gca,'off');
   optiondraw(h{j},varargin{:});
 end
 

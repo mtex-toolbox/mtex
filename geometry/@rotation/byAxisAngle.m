@@ -12,6 +12,6 @@ function rot = byAxisAngle(v,omega,varargin)
 %  rot - @rotation
 %
 % See also
-% rotation_index rotation/byEuler rotation/byMatrix rotation/map
+% rotation/rotation rotation/byEuler rotation/byMatrix rotation/map
 
 rot = rotation(axis2quat(v,omega));

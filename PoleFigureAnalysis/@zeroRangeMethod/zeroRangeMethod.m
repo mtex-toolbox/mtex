@@ -4,10 +4,10 @@ classdef zeroRangeMethod < handle
 % Input
 %  pf  - @PoleFigure
 %  psi - @kernel
-%  threshold 
-%  delta 
-%  bg 
-%  alpha
+%  threshold  - double
+%  delta - double
+%  bg  - double
+%  alpha - double
   
   properties
     pf

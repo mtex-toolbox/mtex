@@ -118,13 +118,15 @@ mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
 
 if nargout==0, clear h; end
 
-if isNew
+if isNew && ~isstruct(mtexFig)
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 else
   mP.micronBar.setOnTop  
 end
 
-if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+if ~isstruct(mtexFig)  && length(mtexFig.children)== 1
+  mtexFig.keepAspectRatio = false; 
+end
 
 end
 
@@ -143,11 +145,14 @@ end
 if ~isempty(id)
 
   txt{1} = ['index = '  num2str(id)];
-  txt{1} = ['Id = '  num2str(ebsd.id(id))];
-  txt{2} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
-  txt{3} = ['(x,y) = (', xnum2str(pos(1)) ', ' xnum2str(pos(2)),')'];
+  txt{2} = ['Id = '  num2str(ebsd.id(id))];
+  txt{3} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
+  txt{4} = ['(x,y) = (' xnum2str(pos(1:2),'delimiter',', ') ')'];
   if ebsd.isIndexed(id)
-    txt{4} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
+    txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
+  end
+  try
+    txt{5} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)
     txt{end+1} = ['Value = ' xnum2str(value)];

@@ -1,4 +1,6 @@
 classdef BungePlot < orientationPlot
+  %
+  %
 
   methods
 
@@ -21,9 +23,14 @@ classdef BungePlot < orientationPlot
         ylim(oP.ax,[0 180]);
         zlim(oP.ax,[0 360]);
       end
-      set(oP.ax,'XTick',0:30:max(xlim))
-      set(oP.ax,'YTick',0:30:max(ylim))
-      set(oP.ax,'ZTick',0:30:max(zlim))
+      if max([xlim ylim zlim]) >= 180
+        delta = 60;
+      else
+        delta = 30;
+      end
+      set(oP.ax,'XTick',0:delta:max(xlim))
+      set(oP.ax,'YTick',0:delta:max(ylim))
+      set(oP.ax,'ZTick',0:delta:max(zlim))
     end
 
 

@@ -2,7 +2,7 @@ function pf = loadPoleFigure_rigaku_dat(fname,varargin)
 % load *.dat files of rigaku devices
 %
 % Syntax
-%   pf = loadPoleFigure_rigaku_dat(fname,<options>)
+%   pf = loadPoleFigure_rigaku_dat(fname)
 %
 % Input
 %  fname  - filename

@@ -1,3 +1,6 @@
 [submodule "extern/jsonlab"]
 	path = extern/jsonlab
 	url = https://github.com/fangq/jsonlab.git
+[submodule "extern/stuct2xml"]
+	path = extern/stuct2xml
+	url = https://github.com/joe-of-all-trades/struct2xml.git

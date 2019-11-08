@@ -1,4 +1,0 @@
-loadPoleFigure
-loadPoleFigure_generic
-loadPoleFigure_aachen
-loadPoleFigure_beartex

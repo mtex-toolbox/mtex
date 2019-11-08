@@ -1,17 +1,27 @@
 classdef dislocationSystem
-% class representing dislocation systems
+% class representing dislocation
 %
 % Syntax
 %   dS = dislocationSystem(b,l)
 %   dS = dislocationSystem(sS)
 %
 % Input
-%  b - @Miller Burgers vector
-%  n - @Miller line vector
+%  b  - @Miller Burgers vector
+%  l  - @Miller line vector
 %  sS - @slipSystem
 %  pr - poisson ratio
 %
-  
+% Class Properties
+%  b  - @Miller Burgers vector
+%  l  - @Miller line vector
+%  u  - energy
+%  CS - @crystalSymmetry
+%  isEdge  - is edge dislocation
+%  isScrew - is screw dislocation
+%
+% See also
+% DislocationSystems SlipSystems GND
+
   properties
     b % burgers vector
     l % line vector
@@ -40,8 +50,8 @@ classdef dislocationSystem
         
         % define screw dislocations
         b = 0.5*unique(sS.b,'antipodal','noSymmetry');
-        dS.b = [dS.b;b];
-        dS.l = [dS.l;b];
+        dS.b = [dS.b(:);b(:)];
+        dS.l = [dS.l(:);b(:)];
         
         % line energy
         dS.u = 1 + dS.isEdge;
@@ -83,10 +93,8 @@ classdef dislocationSystem
         
     function display(dS,varargin)
       % standard output
-
-      disp(' ');
-      disp([inputname(1) ' = ' doclink('dislocationSystem_index','dislocationSystem') ...
-        ' ' docmethods(inputname(1))]);      
+      
+      displayClass(dS,inputname(1),varargin{:});
 
       % display symmetry
       if isa(dS.CS,'crystalSymmetry')

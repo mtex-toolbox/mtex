@@ -9,7 +9,7 @@ function h = plotAxisDistribution(obj,varargin)
 %   plotAxisDistribution(mori,cs1)  % axes in crystal coordinates
 %   plotAxisDistribution(ori1,ori2) % axes in specimen coordinates
 %   plotAxisDistribution(odf)
-%   
+%
 % Input
 %  odf - @ODF
 %  mori - @misorientation
@@ -20,9 +20,9 @@ function h = plotAxisDistribution(obj,varargin)
 %  RESOLUTION - resolution of the plots
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
-%  noLabel   - do not annotate 
+%  noLabel   - do not annotate
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
@@ -40,9 +40,9 @@ if isa(obj,'symmetry')
     cs2 = specimenSymmetry;
   end
 elseif isa(obj,'orientation')
-  
+
   obj = axis(obj,varargin{:});
-  
+
 else
   cs1 = obj.CS;
   cs2 = obj.SS;
@@ -52,7 +52,7 @@ end
 if isa(obj,'vector3d')
 
   h = plot(obj,'symmetrised','FundamentalRegion',varargin{:});
-  
+
 else
 
   if isa(obj,'orientation') && isa(varargin{1},'crystalSymmetry')
@@ -60,12 +60,12 @@ else
   else
     dcs = calcDisjoint(cs1,cs2,varargin{:});
   end
-    
+
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
   h = plotS2Grid(sR,'resolution',res,varargin{:});
-  
-  % plot  
+
+  % plot
   varargin = [delete_option(varargin,'complete'),dcs.plotOptions];
   if isa(obj,'symmetry')
     density = pos(calcAxisDistribution(cs1,cs2,h,varargin{:}));
@@ -75,17 +75,17 @@ else
   h = smooth(h,density,dcs,varargin{:});
 
 end
-  
+
 if isNew % finalize plot
   name = inputname(1);
   set(gcf,'Name',['Axis Distribution of ',name]);
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 if nargout == 0, clear h; end
 
   function dcs = calcDisjoint(cs1,cs2,varargin)
-    
+
     dcs = disjoint(cs1.properGroup,cs2.properGroup);
     if check_option(varargin,'antipodal') || ...
         ((isa(obj,'orientation') || isa(obj,'ODF')) && obj.antipodal)

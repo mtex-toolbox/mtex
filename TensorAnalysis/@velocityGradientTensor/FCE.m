@@ -2,9 +2,8 @@ function [a,b,c] = FCE(L,t)
 % finite strain ellipsoid
 %
 % Syntax
-%
-%  [a,b,c] = FCE(L,t)
-%  r = FCE(l,t)
+%   [a,b,c] = FCE(L,t)
+%   r = FCE(l,t)
 %
 % Input
 %  L - 

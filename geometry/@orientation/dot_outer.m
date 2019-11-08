@@ -2,6 +2,8 @@ function d = dot_outer(o1,o2,varargin)
 % dot_outer
 %
 % Syntax
+%   d = dot_outer(o1,o2)
+%   d = dot_outer(o1,o2,'noSymmetry')
 %
 % Input
 %  o1, o2 - @orientation
@@ -9,6 +11,7 @@ function d = dot_outer(o1,o2,varargin)
 % Output
 % d - double of size length(o1) < length(o2)
 %
+
 % TODO: does not work for orientations of different phase!!
 
 if check_option(varargin,'noSymmetry')

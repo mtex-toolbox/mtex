@@ -50,7 +50,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 %     'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
 %
 % See also
-% ImportEBSDData ebsd_demo EBSD_index
+% EBSDImport EBSD/EBSD
 
 
 % extract file names

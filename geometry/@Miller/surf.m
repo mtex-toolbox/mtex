@@ -1,6 +1,7 @@
 function varargout = surf(m,cdata,varargin)
 %
 % Syntax
+%   surf(m,cdata)
 %
 % Input
 %

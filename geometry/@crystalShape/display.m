@@ -1,11 +1,7 @@
 function display(cS,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('crystalShape_index','crystalShape') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(cS,inputname(1),varargin{:});
 
 if length(cS)>1, disp([' size: ' num2str(length(cS))]); end
 

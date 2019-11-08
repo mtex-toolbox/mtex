@@ -12,7 +12,7 @@ function rot = byMatrix(M,varargin)
 %  rot - @rotation
 %
 % See also
-% rotation_index rotation/byEuler rotation/byAxisAngle
+% rotation/rotentation rotation/byEuler rotation/byAxisAngle
 
 % negative determinant indicates improper rotation
 isInv = false(size(M,3),1);

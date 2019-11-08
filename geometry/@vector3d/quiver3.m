@@ -46,8 +46,10 @@ options = {arrowSize,'MaxHeadSize',mhs,'linewidth',2};
 v = v.*1.05;
 
 h = optiondraw(quiver3(v.x,v.y,v.z,d.x,d.y,d.z,options{:}),varargin{:});
-d = -d;
-h = optiondraw(quiver3(v.x,v.y,v.z,d.x,d.y,d.z,options{:}),varargin{:});
+if d.antipodal
+  d = -d;
+  h = [h,optiondraw(quiver3(v.x,v.y,v.z,d.x,d.y,d.z,options{:}),varargin{:})];
+end
   
 % finalize the plot
 axis equal off

@@ -8,9 +8,9 @@ function loader = loadHelper( d, varargin )
 %  Columns - (1 x m) cell of ColumnNames indizes
 %
 % Options
-%  KeepNaN
-%  Radians
-%  passive rotation
+%  KeepNaN - 
+%  Radians - 
+%  passive rotation - 
 %
 % Output
 %  loader  - structure with some funs

@@ -3,27 +3,28 @@ function selectInteractive(grains,varargin)
 %
 % Syntax
 %   selectInteractive(grains)
-%   [ebsd_small,rec,id] = selectInteractive(ebsd)
+%
+%   global indSelected
+%   plot(grains(indSelected))
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  ebsd_small - @EBSD
-%  rec - the rectangle
-%  id  - id's of the selected data
-
+%  idSelected - id's of the selected grains, global variable
+%
+% See also
+% EBSD/selectInteractive
 
 id = false(size(grains)); % no grains selected initially 
 id_handle = zeros(size(id)); % id to the graphical selections
-mtexFig = gcm;
 
 datacursormode off
 
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 
 hold on
-boundaryStyle = {'lineWidth',2,'lineColor','w'};
+boundaryStyle = [{'lineWidth',4,'lineColor','w'},extract_argoption(varargin,{'linewidth','linecolor'})];
 
 %waitfor(gcf)
 
@@ -35,7 +36,7 @@ boundaryStyle = {'lineWidth',2,'lineColor','w'};
     localId = findByLocation(grains,[pos(1,1) pos(1,2)]);
 
     if isempty(localId), return; end
-
+    
     
     if id(localId)
       delete(id_handle(localId));
@@ -44,10 +45,10 @@ boundaryStyle = {'lineWidth',2,'lineColor','w'};
       disp(['Grain selected: ' xnum2str(localId)])
     end
     id(localId) = ~id(localId);
-        
+    global indSelected;
+    indSelected = find(id);
+    %assignin('caller','indSelected',);
+    
   end
 
 end
-
-
-

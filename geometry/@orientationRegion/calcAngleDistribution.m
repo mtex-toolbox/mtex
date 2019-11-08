@@ -9,7 +9,7 @@ function [ad,omega] = calcAngleDistribution(oR,varargin)
 %  oR    - @orientationRegion
 %  omega - angle
 %
-% Ouput
+% Output
 %  ad - angle distribution
 %  omega - angles
 %

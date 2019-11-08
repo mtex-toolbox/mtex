@@ -1,9 +1,9 @@
 function sFs = quadrature(varargin)
 %
 % Syntax
-%  sF = S2FunHarmonicSym.quadrature(nodes,values,'weights',w,CS)
-%  sF = S2FunHarmonicSym.quadrature(f,CS)
-%  sF = S2FunHarmonicSym.quadrature(f, 'bandwidth', bandwidth,CS)
+%   sF = S2FunHarmonicSym.quadrature(nodes,values,'weights',w,CS)
+%   sF = S2FunHarmonicSym.quadrature(f,CS)
+%   sF = S2FunHarmonicSym.quadrature(f, 'bandwidth', bandwidth,CS)
 %
 % Input
 %  values - double (first dimension has to be the evaluations)

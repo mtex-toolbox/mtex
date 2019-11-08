@@ -14,7 +14,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 %   n  - approximate number of points
 %  res - resolution in radiant
 %
-% Ouptut
+% Output
 %  S3G - @SO3Grid
 %
 % Options
@@ -22,7 +22,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 %  center - center of the ball
 %
 % See also
-% equispacedS2Grid, SO3Grid_index
+% equispacedS2Grid, SO3Grid/SO3Grid
 
 % extract specimen symmetry if provided
 if nargin == 1

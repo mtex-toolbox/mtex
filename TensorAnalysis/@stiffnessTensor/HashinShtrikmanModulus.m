@@ -1,6 +1,7 @@
 function [khs, ghs, def] = HashinShtrikmanModulus(C,Ko,Go)
 % Hashin Shtrikman moduli 
 %
+% Description
 % The equations are from Peselnick and Meister 1965 through Watt and
 % Peselnick 1980 which are based on Hashin and Shtrikman 1963 JMB 8/2013
 %

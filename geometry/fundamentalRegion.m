@@ -12,7 +12,7 @@ function  varargout = fundamentalRegion(varargin)
 %  ori - @orientation
 %  odf - @ODF
 %
-% Ouput
+% Output
 %  oR   - @orientationRegion
 %  dcs  - common symmetries in cs1 and cs2
 %  nSym - number of zones

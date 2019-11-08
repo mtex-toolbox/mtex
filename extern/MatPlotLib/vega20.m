@@ -81,6 +81,10 @@ raw = [...
 	023,190,207;... #17becf
 	158,218,229;... #9edae5
 	];
+
+raw = reshape(raw,2,10,3);
+raw = reshape(permute(raw,[2 1 3]),20,3);
+
 %
 map = raw(1+mod(0:N-1,size(raw,1)),:) / 255;
 %

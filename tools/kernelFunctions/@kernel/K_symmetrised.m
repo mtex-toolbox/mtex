@@ -10,7 +10,7 @@ function w = K_symmetrised(psi,q1,q2,CS,SS,varargin)
 %  exact - 
 %  epsilon - 
 %
-% general formula:
+% Description
 % K(q1,q2) = Sum(S) Sum(l) A_l Tr T_l(s1^-1 q1 s2)
 
 % only the pur rotational part is of interest 

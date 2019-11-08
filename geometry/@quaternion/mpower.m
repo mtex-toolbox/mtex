@@ -2,6 +2,7 @@ function q = mpower(q,n)
 % q^n
 %
 % Syntax
+%   q = q^n
 %
 % q = q^(-1)
 % q = q^2

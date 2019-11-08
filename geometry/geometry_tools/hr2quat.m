@@ -2,7 +2,7 @@ function q = hr2quat(h,r)
 % arbitrary quaternion q with q * h = r 
 %
 % Description
-% The method *hr2quat* defines a [[quaternion_index.html,rotation]] |q|
+% The method |hr2quat| defines a <quaternion.quaternion.html rotation> |q|
 % by a crystal direction |h| and a specimen direction |r| such that 
 % |q * h = r| 
 %
@@ -14,7 +14,7 @@ function q = hr2quat(h,r)
 %  q - @quaternion
 %
 % See also
-% quaternion_index quaternion/quaternion axis2quat Miller2quat 
+% quaternion/quaternion quaternion/quaternion axis2quat Miller2quat 
 % vec42quat euler2quat
 
 h = vector3d(h);

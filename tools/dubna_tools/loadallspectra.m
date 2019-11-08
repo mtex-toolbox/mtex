@@ -1,11 +1,11 @@
 function spectra = loadallspectra(file)
 % load all spectra files of a Dubna meassurement cycle
 %
-%% Input
-%  filename
+% Input
+%  filename - 
 %
-%% Output
-% spectren - []
+% Output
+%  spectra - []
 %
 
 dir = file(1:max(strfind(file,'/')));

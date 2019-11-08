@@ -1,10 +1,7 @@
-function display(DSO3)
+function display(DSO3,varargin)
 % standard output
 
-disp(' ');
-
-disp([inputname(1) ' = ' doclink('DelaunaySO3_index','DelaunaySO3') ...
-  ' ' docmethods(inputname(1))]);
+displayClass(DSO3,inputname(1),varargin{:});
 
 disp(['  size: ' size2str(DSO3)]);
 disp(['  tetrahegons: ',int2str(size(DSO3.tetra,1))]);

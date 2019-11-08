@@ -1,22 +1,23 @@
 function psi = calcKernel(ori,varargin)
 % compute an optimal kernel function for ODF estimation
 %
+% Syntax
+%
+%   psi = calcKernel(ori)
+%   psi = calcKernel(ori,'method','ruleOfThumb')
+%
 % Input
 %  ori - @orientation
 %
 % Output
 %  psi    - @kernel
 %
-% Options
-% method  - select a halfwidth by
-%
-%    * |'RuleOfThumb'| 
-%
-%    or via cross valiadation method:
-%
-%    * |'LSCV'| -- least squares cross valiadation
-%    * |'KLCV'| -- Kullback Leibler cross validation
-%    * |'BCV'| -- biased cross validation
+% Flags
+%  magicrule   - 
+%  RuleOfThumb - 
+%  LSCV        - least squares cross valiadation
+%  KLCV        - Kullback Leibler cross validation (default)
+%  BCV         - biased cross validation
 %
 % See also
 % EBSD/calcODF orientation/BCV orientation/KLCV orientation/LSCV

@@ -1,9 +1,10 @@
-function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
+function varargout = calcTensor(odf,T,varargin)
 % compute the average tensor for an ODF
 %
 % Syntax
 %   [TVoigt, TReuss, THill] = calcTensor(odf,T)
 %   THill = calcTensor(odf,T,'Hill')
+%   TGeo = calcTensor(odf,T,'geometric')
 %
 % Input
 %  odf - @ODF
@@ -13,41 +14,34 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 %  T    - @tensor
 %
 % Options
-%  voigt - voigt mean
-%  reuss - reuss mean
-%  hill  - hill mean
+%  Voigt     - Boigt mean
+%  Reuss     - Reuss mean
+%  Hill      - Hill mean
+%  geometric - geometric mean
 %
 % See also
-%
- 
-% convert to FourierODF
+% tensor/mean EBSD/calcTensor
+
+% decide between the quadrature based method and the harmonic method
 if ~any(cellfun(@(x) isa(x,'BinghamComponent'),odf.components)) ...
     && ~check_option(varargin,'quadrature')
-  odf = FourierODF(odf,T.rank);
+
+  % the harmonic route is directly implemented into tensor/mean
+  [varargout{1:nargout}] = mean(T,odf,varargin{:});
+
+else % quadrature based method
+
+  % define a grid
+  res = get_option(varargin,'resolution',2.5*degree);
+  S3G = equispacedSO3Grid(odf.CS,odf.SS,'resolution',res);
+
+  % evaluate the ODF
+  f = eval(odf,S3G,varargin{:});
+  f = f ./ sum(f(:));
+
+  % compute the means
+  [varargout{1:nargout}] = mean(S3G*T,'weights',f(:),varargin{:});
+
 end
 
-% more then one output -> also compute Reuss mean
-if ~check_option(varargin,'Reuss'), varargin = [varargin,{'Voigt'}];end
-if nargout > 1, varargin = [varargin,{'Reuss'}];end
-
-% cycle through components
-[TVoigt, TReuss] = calcTensor(odf.components{1},T,varargin{:});
-
-for i = 2:numel(odf.components)
-  
-  [TV, TR] = calcTensor(odf.components{i},T,varargin{:});
-  
-  TVoigt = TVoigt + odf.weights(i) * TV;
-  TReuss = TReuss + odf.weights(i) * TR;
-
-end
-
-% Hill is just the average between Voigt and Reuss
-THill = 0.5*(TVoigt + TReuss);
-
-
-% if type is specified only return this type
-if nargout <= 1
-  if check_option(varargin,'Reuss'), TVoigt = TReuss;end
-  if check_option(varargin,'Hill'), TVoigt = THill;end
 end

@@ -1,12 +1,44 @@
 classdef mtexFigure < handle
-% class to handles figures with equaly sized axes  
-%   
-% features:
-% * nicely resize axes
-% * individual colorbar
-% * global colorbars
+% 
+% a class to handles figures equaly sized axes with the following features
 %
-% case A: children of same size and fixed aspectratio 
+% * nicely resize axes
+% * global or individual colorbars
+% *
+%
+% Syntax
+%   newMTEXFigure
+%
+%
+% Class Properties
+%  parent            - handle of the parent figure    
+%  children          - handles to all axes
+%  cBarAxis          - handles to all colorbar axes
+%  innerPlotSpacing  - 
+%  keepAspectRatio   - 
+%  nrows = 1         - number of rows
+%  ncols = 1         - number of columns
+%  axisWidth         - width of an individual axis
+%  axisHeight        - height of an individual axis 
+%  cbx = 0           - colorbar width
+%  cby = 0           - colorbar height
+%  tightInset        - is added to axisSize
+%  figTightInset     - is added to figSize
+%  layoutMode        - 'auto' or 'user'
+%
+% Dependent Class Properties
+%   currentAxes      - handle of the current axis
+%   currentId        - id of te current axis 
+%   axesWidth        - 
+%   axesHeight       -
+%   outerPlotSpacing -
+%   dataCursorMenu   - handle of the data cursor context menu  
+%
+% Description
+% 
+% The calculation of the layout is initiated by the command
+% <mtexFigure.drawNow.html drawNow>. This involves calls to the following
+% functions:
 %
 %  drawNow
 %    |  |
@@ -22,17 +54,15 @@ classdef mtexFigure < handle
 %       V
 %  calcAxesSize  -> compute axes size
 %
+% A mtexFigure may have the following children
 %
-% general concept of MTEX figures:
+% * <mapPlot.html mapPlot> -> micronbar
+% * <sphericalPlot.html sphericalPlot> (stored in appdata of axes handle)
+% * pfPlot [CS,SS,h]
+% * ipdfPlot [CS]
+% * MillerPlot [r,SS]
 %
-% mtexFigure -> cBarAxis handle to each colorbar axes
-%       |
-%       V
-%    children -> mapPlot (stored in appdata of axes handle) -> micronbar
-%             -> spherical Plot (stored in appdata of axes handle)
-%              -> pfPlot     [CS,SS,h]
-%              -> MillerPlot [CS]
-%               -> ipfPlot   [r,SS]
+% See also
 %
 
   properties
@@ -57,7 +87,6 @@ classdef mtexFigure < handle
     currentId         % current axis id
     axesWidth         %
     axesHeight        %
-    currentAxis       %
     outerPlotSpacing  %
     dataCursorMenu    % handle of the data cursor context menu  
   end

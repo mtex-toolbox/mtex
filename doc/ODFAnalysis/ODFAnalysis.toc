@@ -1,9 +1,18 @@
-SantaFe_demo
-ModelODFs
-ODFImportExport
-PoleFigureSimulation_demo
-EBSDSimulation_demo
-ODFCharacteristics
-ODFPlot
-DetectSampleSymmetry
-MDFAnalysis
+ODFTheory                        Theory
+ODFModeling                      Calculations
+ODFPlot                          Plot
+ODFPoleFigure                    Pole Figures
+ODFInversePoleFigure             Inverse Pole Figures
+EulerAngleSections               Euler Angle Section
+SigmaSections                    Sigma Sections
+ODFCharacteristics               Properties
+UnimodalODFs                     Unimodal ODF
+FibreODFs                        Fibre ODF
+BinghamODFs                      Bingham ODF
+HarmonicODFs                     Series Expansion 
+ODFImport                        Import
+ODFExport                        Export
+RandomSampling                   Random Sampling
+DensityEstimation                Density Estimation
+DetectionOfSampleSymmetry        Sample Symmetry
+ODFShapes                        Shapes

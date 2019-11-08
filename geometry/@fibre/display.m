@@ -1,11 +1,7 @@
 function display(f,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('fibre_index','fibre') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(f,inputname(1),varargin{:});
 
 disp([' size: ' size2str(f)]);
 

@@ -10,7 +10,7 @@ function E = entropy(sF, varargin)
 % Output
 %  E - entropy
 %
-% Formula
+% Description
 %
 % $$ int f(x) \cdot \log f(x) d x$$
 %

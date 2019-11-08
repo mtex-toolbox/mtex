@@ -2,8 +2,8 @@ function T = sum(T,dim)
 % sum of a list of tensors
 %
 % Syntax
-%  T = sum(T)     % sum along the first non singleton dimension
-%  T = sum(T,dim) % sum along dimension dim
+%   T = sum(T)     % sum along the first non singleton dimension
+%   T = sum(T,dim) % sum along dimension dim
 %
 % Input
 %  T - @tensor

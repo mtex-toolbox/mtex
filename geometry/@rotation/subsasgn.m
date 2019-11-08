@@ -12,12 +12,20 @@ end
 
 if ~isstruct(s)
 
-  b = rotation(b);
-  r.a(s) = b.a;
-  r.b(s) = b.b;
-  r.c(s) = b.c;
-  r.d(s) = b.d;
-  r.i(s) = b.i;
+  if isempty(b)
+    r.a(s) = [];
+    r.b(s) = [];
+    r.c(s) = [];
+    r.d(s) = [];
+    r.i(s) = [];
+  else
+    b = rotation(b);
+    r.a(s) = b.a;
+    r.b(s) = b.b;
+    r.c(s) = b.c;
+    r.d(s) = b.d;
+    r.i(s) = b.i;
+  end
   
 else
   switch s(1).type

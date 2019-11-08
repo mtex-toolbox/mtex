@@ -18,7 +18,7 @@ function ori = map(varargin)
 %  ori - @orientation
 %
 % See also
-% orientation_index orientation/byMiller orientation/byAxisAngle
+% orientation/orientation orientation/byMiller orientation/byAxisAngle
 % orientation/byEuler
 
 % find and remove symmetries

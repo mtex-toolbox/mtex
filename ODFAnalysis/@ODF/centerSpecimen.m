@@ -98,7 +98,6 @@ odf = rotate(odf,rot);
 
   function v = initialSearch(v)
     
-    global mtex_progress, mtex_progress = 1;
     progress(0,length(v));
 
     val = zeros(size(v));

@@ -1,0 +1,15 @@
+SphericalFunctionsOverview Overview
+S2Fun_index
+S2FunHandle_index
+S2FunTri_index
+BinghamS2_index
+S2FunHarmonic_index
+S2FunHarmonicSym_index
+S2AxisField_index
+S2AxisFieldTri_index
+S2AxisFieldHarmonic_index
+S2VectorField_index
+S2VectorFieldHarmonic_index
+S2VectorFieldTri_index
+S2Kernel_index
+S2DeLaValleePoussin_index de S2DeLaValleePoussin

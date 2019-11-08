@@ -21,7 +21,8 @@ add2all = check_option(varargin,'add2all') || ...
   (numSections(oS)>1 && length(mtexFig.children)>1);
 
 if ~isNew && add2all 
-  for axx = mtexFig.children.'
+  wasHold = ishold;
+  for axx = mtexFig.children.'  
     hold(axx,'on');
   end
   mtexFig.currentId = 1;
@@ -63,7 +64,12 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if ~isempty(data), data = data(samples,:); end
   end
   
-  [vec,secAngle] = project(oS,ori,varargin{:});
+  if length(ori)>1 && ~isempty(data)
+    opt = 'preserveOrder';
+  else
+    opt = '';
+  end
+  [vec,secAngle] = project(oS,ori,opt,varargin{:});
   
   vec.resolution = min(10*degree,max(1*degree,...
     round(500000*degree/(length(oS.SS)*length(oS.CS)*length(ori)).^(1/3))));
@@ -133,7 +139,13 @@ uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquival
 set(dcm,'UIContextMenu',hcmenu)
 
 set(dcm,'UpdateFcn',@tooltip)
-     
+   
+if ~isNew && add2all && ~wasHold 
+  for axx = mtexFig.children.'
+    hold(axx,'off');
+  end
+end
+
 %end
 
 

@@ -1,9 +1,7 @@
 function display(q)
 % standart output
 
-disp(' ');
-disp([inputname(1) ' = ' doclink('Rotations','Quaternion') ...
-  ' ' docmethods(inputname(1))]);
+displayClass(q,inputname(1));
 
 disp(['  size: ' size2str(q)]);
 

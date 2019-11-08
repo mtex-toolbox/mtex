@@ -1,14 +1,40 @@
 classdef grainBoundary < phaseList & dynProp
-  % grainBoundary list of grain boundaries in 2-D
-  %
-  % grainBoundary is used to extract, analyze and visualize grain
-  % boundaries in  2-D. 
-  %
-  % gB = grainBoundary() creates an empty list of grain boundaries
-  %
-  % gB = grains.boudary() extracts boundary information
-  % from a list of grains
-  %
+%
+% Variables of type grainBoundary represent lists of grain boundary
+% segments. Those are typically generated during grain reconstruction and
+% are accessible via
+%
+%   grains.boundary
+%
+% Each grain boundary segement stores many properties: its position within
+% the map, the ids of the adjacent grains, the ids of the adjacent EBSD
+% measurements, the grain boundary misorientation, etc. These properties
+% are explained in more detail in the section <BoundaryProperties.html
+% boundary properties>.
+%
+% Class Properties
+%  V            - [x,y] list of vertices 
+%  scanUnit     - scaning unit (default - um)
+%  triplePoints - @triplePointList
+%  F            - list of boundary segments as ids to V
+%  grainId      - id's of the neighboring grains to a boundary segment
+%  ebsdId       - id's of the neighboring ebsd data to a boundary segment
+%  misrotation  - misrotation between neighboring ebsd data to a boundary segment
+%
+% Dependent Class Properties
+%  misorientation - disorientation between neighboring ebsd data to a boundary segment
+%  direction      - direction of the boundary segment as @vector3d
+%  midPoint       - x,y coordinates of the midpoint of the segments
+%  I_VF           - incidence matrix vertices - edges
+%  I_FG           - incidence matrix edges - grains
+%  A_F            - adjecency matrix edges - edges
+%  A_V            - adjecency matrix vertices - vertices
+%  componentId    - connected component id
+%  componentSize  - number of segments that belong to the component
+%  x              - x coordinates of the vertices of the grains
+%  y              - y coordinates of the vertices of the grains    
+%
+
   
   % properties with as many rows as data
   properties
@@ -33,8 +59,8 @@ classdef grainBoundary < phaseList & dynProp
     I_FG           % incidence matrix edges - grains
     A_F            % adjecency matrix edges - edges
     A_V            % adjecency matrix vertices - vertices
-    segmentId      % connected component id
-    segmentSize    % number of faces that form a segment
+    componentId    % connected component id
+    componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains    
   end
@@ -65,8 +91,10 @@ classdef grainBoundary < phaseList & dynProp
       d = diff([0;fId]);      
       fId = cumsum(d>0) + (d==0)*size(gB.F,1);
             
+      % set the ebsdId temporary to the index - this will be replaced by
+      % the id down in the code
       gB.ebsdId = zeros(size(gB.F,1),2);
-      gB.ebsdId(fId) = eId;      
+      gB.ebsdId(fId) = eId;
             
       % compute grainId
       gB.grainId = zeros(size(gB.F,1),2);
@@ -95,6 +123,9 @@ classdef grainBoundary < phaseList & dynProp
 
       % compute triple points
       gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
+      
+      % store ebsd_id instead of index
+      gB.ebsdId(gB.ebsdId>0) = ebsd.id(gB.ebsdId(gB.ebsdId>0));
       
     end
 
@@ -175,14 +206,14 @@ classdef grainBoundary < phaseList & dynProp
        
     %end
     
-    function segmentId = get.segmentId(gB)
-      segmentId = connectedComponents(gB.A_F).';
+    function componentId = get.componentId(gB)
+      componentId = connectedComponents(gB.A_F).';
     end
     
-    function segmentSize = get.segmentSize(gB)
-      segId = gB.segmentId;
+    function componentSize = get.componentSize(gB)
+      segId = gB.componentId;
       [bincounts,ind] = histc(segId,unique(segId));
-      segmentSize = bincounts(ind);
+      componentSize = bincounts(ind);
     end
     
     function out = hasPhase(gB,phase1,phase2)

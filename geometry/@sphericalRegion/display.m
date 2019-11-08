@@ -1,11 +1,7 @@
 function display(sR,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('sphericalRegion_index','sphericalRegion') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(sR,inputname(1),varargin{:});
 
 disp(' ');
 

@@ -5,8 +5,8 @@ function F = shapeFactor( grains )
 %
 % $$ F = \frac{P}{EP} $$,
 %
-% where $P$ is the [[Grain2d.perimeter.html,perimeter]] and  $EP$ is the
-% [[Grain2d.equivalentPerimeter.html,equivalent perimeter]].
+% where $P$ is the <grain2d.perimeter.html perimeter> and  $EP$ is the
+% <grain2d.equivalentPerimeter.html equivalent perimeter>.
 %
 % Input
 %  p - @grain2d

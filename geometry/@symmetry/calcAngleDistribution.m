@@ -10,7 +10,7 @@ function [ad,omega] = calcAngleDistribution(cs,varargin)
 %  cs -  @crystalSymmetry
 %  omega - angle
 %
-% Ouput
+% Output
 %  ad - angle distribution
 %  omega - angles
 %

@@ -7,7 +7,7 @@ function plotHKL(s,varargin)
 % Output
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include <VectorsAxes.html antipodal symmetry>
 
 mtexFig = newMtexFigure(varargin{:});
 
@@ -21,7 +21,7 @@ m = unique(m);
 options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw',...
   'backgroundColor','w'},varargin];
 if ~check_option(varargin,'complete'), options = [options,{'upper'}]; end
-  
+
 % plot them
 washold = getHoldState(mtexFig.gca);
 hold(mtexFig.gca,'all')
@@ -35,4 +35,3 @@ hold(mtexFig.gca,washold)
 setappdata(gcf,'CS',s);
 set(gcf,'tag','ipdf');
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-    

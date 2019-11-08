@@ -2,14 +2,13 @@ function varargout = plot(sF,varargin)
 %
 % Syntax
 %
+%   plot(sF)
+%
 % Input
-%
-% Output
-%
-% Options
+%  sF - @S2FunHarmonicSym
 %
 % See also
-%
+% S2Fun/plot
 
 % create a new figure if needed
 %[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});

@@ -1,17 +1,29 @@
 classdef ipfSpotKey < ipfColorKey
-  % 
-  % Maps an individual color to each given crystal directions being 
-  % parallel to a specimen direction (fibre)
-  % Properties:
-  % center  - list of crystal directions @Miller
-  % color   - n-by-3 list representing RGB values, one for each center
-  % psi     - @kernel providing the width and brightness for colored fibre
-  % inversePoleFigureDirection - specimen direction @vector3d
+%  
+% Colorizes single spots in the inverse pole figure with individual colors.
+%
+% Syntax
+%   ipfKey = ipfSpotKey
+%   ipfKey.inversePoleFigureDirection = zvector; 
+%   ipfKey.center = Miller(1,0,0,cs); % the centers of the spots in the inverse pole figure
+%   ipfKey.color = [0 0 1];           % the color of the spots
+%   ipfKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
+%
+%   color = ipfKey.orientation2color(ori)
+%
+% Class Properties
+%  center  - list of crystal directions @Miller
+%  color   - n-by-3 list representing RGB values, one for each center
+%  psi     - @S2Kernel providing the width and brightness for colored fibre
+%  inversePoleFigureDirection - specimen direction @vector3d
+%
+% See also
+% EBSDAdvancedMapping
   
   properties
     center % list of crystal directions @Miller
     color  % list of RGB values, one for each center
-    psi    % @kernel providing the width and brightness for colored fibre 
+    psi    % @2Kernel providing the width and brightness for colored fibre 
   end
   
   methods
@@ -21,7 +33,7 @@ classdef ipfSpotKey < ipfColorKey
       oM.center = get_option(varargin,'center',Miller(0,0,1,oM.CS1));
       oM.CS1 = oM.center.CS;
       oM.color = get_option(varargin,'color',[1 0 0]);
-      oM.psi = get_option(varargin,'kernel',...
+      oM.psi = get_option(varargin,'S2Kernel',...
         S2DeLaValleePoussin('halfwidth',get_option(varargin,'halfwidth',10*degree)));
       
       oM.dirMap = directionColorKey(oM.CS1,'dir2color',@(varargin) oM.dir2color(varargin{:}));
@@ -35,7 +47,7 @@ classdef ipfSpotKey < ipfColorKey
 
       for k=1:length(oM.center)
 
-        w = oM.psi.RK(dot(h,normalize(oM.center(k)))) ./ oM.psi.RK(1);
+        w = oM.psi.eval(dot(h,normalize(oM.center(k)))) ./ oM.psi.eval(1);
   
         if ~any(oM.color(k,:))% fix in case of black
           cdata = repmat([0 1 1],length(h),1);

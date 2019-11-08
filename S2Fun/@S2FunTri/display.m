@@ -1,12 +1,7 @@
 function display(sF,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('S2FunTri_index','S2FunTri') ...
-    ' ' docmethods(inputname(1))]);
-  disp(' ')
-end
+displayClass(sF,inputname(1),varargin{:});
 
 % display symmetry
 %dispLine(oR.CS1);
@@ -14,6 +9,7 @@ end
 
 %if sF.antipodal, disp(' antipodal: true'); end
 
+disp(' ');
 disp([' ' varlink([inputname(1),'.vertices'],'vertices') ': ',size2str(sF.vertices)])
 disp([' ' varlink([inputname(1),'.values'],'values') ':   ',size2str(sF.values)])
 

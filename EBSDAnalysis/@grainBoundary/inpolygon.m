@@ -12,7 +12,7 @@ function ind = inpolygon(gb,xy)
 %  dx, dy - extend of a rectangle
 %  x, y  - vertices of a polygon
 %
-% Ouput
+% Output
 %  ind - logical
 %
 % See also

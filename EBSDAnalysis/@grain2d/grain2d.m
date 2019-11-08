@@ -1,6 +1,32 @@
 classdef grain2d < phaseList & dynProp
-  % two dimensional grains
-
+  % class representing two dimensional grains
+  %
+  % Syntax
+  %   grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db)
+  %
+  % Input
+  %   ebsd - EBSD data set
+  %   V    - list of vertices
+  %   F    - list of edges
+  %   I_DG - incidence matrix - ebsd cells x grains
+  %   I_FD - incidence matrix - edges x ebsd cells
+  %   A_Db - adjacense matrix of cells
+  %
+  % Class Properties
+  %  phaseId - phase identifier of each grain
+  %  id            - id of each grain
+  %  poly          - cell list of the vertex ids of each grain (index to V)
+  %  V             - list of verticies (x,y coordinates)
+  %  boundary      - @grainBoundary
+  %  innerBoundary - @grainBoundary
+  %  triplePoints  - @triplePoints
+  %  grainSize     - number if pixels belonging to the grain
+  %  GOS           - grain orientation spread
+  %  meanOrientation - average grain orientation (<GrainOrientationParameters.html only single phase>)
+  %
+  % See also
+  % GrainReconstruction GrainSpatialPlots SelectingGrains ShapeParameter
+  
   % properties with as many rows as data
   properties
     poly={}    % cell list of polygons forming the grains
@@ -35,14 +61,7 @@ classdef grain2d < phaseList & dynProp
   
   methods
     function grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db)
-      %
-      % Input:
-      %   ebsd - EBSD data set
-      %   V    - list of vertices
-      %   F    - list of edges
-      %   I_DG - incidence matrix - ebsd cells x grains
-      %   I_FD - incidence matrix - edges x ebsd cells
-      %   A_Db - adjacense matrix of cells
+      % constructor
       
       if nargin == 0, return;end
       

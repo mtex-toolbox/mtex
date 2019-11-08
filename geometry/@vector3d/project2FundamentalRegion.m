@@ -12,23 +12,23 @@ function v = project2FundamentalRegion(v,cs,varargin)
 %  center - @vector3d
 %
 % Options
-%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %
 % Output
 %  v - @vector3d
 
 
 if nargin==1 || ~isa(cs,'symmetry') % no symmetry is provided
-  
+
   if v.antipodal || (nargin>1 && check_option([cs,varargin],'antipodal'))
-    
+
     ind = v.z<0;
     v.x(ind) = -v.x(ind);
     v.y(ind) = -v.y(ind);
     v.z(ind) = -v.z(ind);
   end
   return
-  
+
 end
 
 % antipodal symmetry is nothing else then adding inversion to the symmetry
@@ -67,7 +67,7 @@ else
       cs = cs(1:3);
   end
   symCenter = cs * sR.center;
-  
+
 end
 
 dist = dot_outer(vector3d(v),symCenter);
@@ -99,5 +99,3 @@ v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col));
 cs = crystalSymmetry('321')
 h = plotS2Grid(cs.fundamentalSector)
 plot(project2FundamentalRegion(h,cs))
-
-

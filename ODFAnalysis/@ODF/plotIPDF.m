@@ -9,7 +9,7 @@ function plotIPDF(odf,r,varargin)
 %  RESOLUTION - resolution of the plots
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
@@ -36,7 +36,7 @@ h = plotS2Grid(sR,varargin{:});
 if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
 
 for i = 1:length(r)
-  
+
   if i>1, mtexFig.nextAxis; end
 
   % compute inverse pole figures
@@ -51,11 +51,11 @@ for i = 1:length(r)
   setappdata(cax,'inversePoleFigureDirection',r(i));
   setappdata(cax,'CS',odf.CS);
   setappdata(cax,'SS',odf.SS);
-  
+
 end
 
 if isNew % finalize plot
-  
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   set(gcf,'Name',['Inverse Pole Figures of ',inputname(1)]);
 
@@ -77,4 +77,3 @@ txt = [xnum2str(value) ' at ' char(h_local)];
 end
 
 end
-

@@ -26,8 +26,10 @@ optionplot(0:bandwidth,power,'Marker','o','linestyle',':',...
   'parent',mtexFig.gca,varargin{:});
 
 if isNew
+  fs = get_option(varargin,'FontSize',getMTEXpref('FontSize'));
   xlim(mtexFig.gca,[0,bandwidth])
-  xlabel(mtexFig.gca,'harmonic degree');
-  ylabel(mtexFig.gca,'power');
+  set(mtexFig.gca,'Fontsize',fs);
+  xlabel(mtexFig.gca,'harmonic degree','FontSize',fs);
+  ylabel(mtexFig.gca,'power','FontSize',fs);
   drawNow(mtexFig,varargin{:});
 end

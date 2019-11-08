@@ -16,12 +16,12 @@ function plotIPDF(ori,varargin)
 % Options
 %  RESOLUTION - resolution of the plots
 %  property   - user defined colorcoding
-%  MarkerSize -  
-%  MarkerFaceColor - 
-%  MarkerEdgeColor - 
+%  MarkerSize -
+%  MarkerFaceColor -
+%  MarkerEdgeColor -
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - ignore fundamental region
 %  upper     - restrict to upper hemisphere
 %  lower     - restrict to lower hemisphere
@@ -57,7 +57,7 @@ try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
 if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
-%  subsample if needed 
+%  subsample if needed
 if (length(ori)*length(ori.CS)*length(ori.SS) > 100000 || check_option(varargin,'points')) ...
     && ~check_option(varargin,{'all','contourf','smooth','contour','pcolor'})
 
@@ -72,23 +72,23 @@ end
 
 for ir = 1:length(r)
 
-  if ir>1, mtexFig.nextAxis; end  
-  
+  if ir>1, mtexFig.nextAxis; end
+
   % the crystal directions
   rSym = symmetrise(r(ir),ori.SS);
   h = ori(:) \ rSym;
-  
-  %  plot  
+
+  %  plot
   [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
-  
+
   % plot annotations
   setappdata(cax,'inversePoleFigureDirection',r(ir));
   set(cax,'tag','ipdf');
   setappdata(cax,'CS',ori.CS);
   setappdata(cax,'SS',ori.SS);
-        
+
   % TODO: unifyMarkerSize
 
 end
@@ -101,17 +101,17 @@ end
 function txt = tooltip(varargin)
 
   [r_local,id,value] = getDataCursorPos(mtexFig,length(ori));
-  
+
   %id = (id-1)/
-  
+
   h_local = round(Miller(r_local,ori.CS));
-  
+
   txt{1} = ['id = ' xnum2str(id)];
   txt{2} = ['(h,k,l) = ' char(h_local,'tolerance',3*degree,'commasep')];
   if ~isempty(value)
     txt{3} = ['value = ' xnum2str(value)];
   end
-  
+
 end
 
 end

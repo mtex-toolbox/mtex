@@ -1,4 +1,4 @@
-%% Isotropic Elastic Moduli
+%% Isotropic Theory
 %
 % While the linear elastic model for anisotropic materials is based on the
 % fourth order elastic stiffness tensor |C| the linear elastic model for
@@ -85,7 +85,7 @@ inv(complianceTensor(...
 % computed directly from the bulk and shear modulus (and vice versa)
 
 % formulae for the Poisson ratio
-(E/GV-2)/2
+(E/G-2)/2
 (3*K-E)/(6*K)
 
 % formulae for the Youngs modulus
@@ -221,7 +221,7 @@ hold off
 
 KReuss = C_iso_Reuss.bulkModulus;
 KHill = C_iso_Hill.bulkModulus;
-GVoight = C_iso_Voigt.shearModulus;
+GVoigt = C_iso_Voigt.shearModulus;
 GReuss = C_iso_Reuss.shearModulus;
 GHill = C_iso_Hill.shearModulus;
 
@@ -231,7 +231,7 @@ cprintf([K,khsUpper,KHill,khsLower,KReuss],...
   '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reus'})
 disp(' ')
 disp('shear modulus')
-cprintf([GV,ghsUpper,GHill,ghsLower,GReuss],...
+cprintf([GVoigt,ghsUpper,GHill,ghsLower,GReuss],...
   '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reus'}) 
 disp(' ')
 

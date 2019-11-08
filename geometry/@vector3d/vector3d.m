@@ -1,5 +1,41 @@
 classdef vector3d < dynOption
-  
+%
+% The class vector3d describes three dimensional vectors, given by
+% their coordinates x, y, z and allows to calculate with them as
+% comfortable as with real numbers.
+%
+% Syntax
+%   v = vector3d(x,y,z)
+%   v = vector3d(x,y,z,'antipodal')
+%   v = vector3d.byPolar(theta,rho)
+%
+% Input
+%  x,y,z - cart. coordinates
+%
+% Output
+%  v - @vector3d
+%
+% Flags
+%  antipodal - <VectorsAxes.html consider vector as an axis>
+%
+% Class Properties
+%  x, y, z      - cart. coordinates
+%  isNormalized - whether the vector is a direction
+%  antipodal    - <VectorsAxes.html whether the vector is an axis>
+%
+% Dependent Class Properties
+%  theta      - polar angle in radiant
+%  rho        - azimuthal angle in radiant
+%  resolution - mean distance between the points on the sphere
+%  xyz        - cart. coordinates as matrix
+%
+% Derived Classes
+%  @Miller - crystal directions
+%  @S2Grid - sphercial grid
+%
+% See also
+% VectorDefinition VectorsOperations VectorsAxes VectorsImport VectorsExport
+
   properties 
     x = []; % x coordinate
     y = []; % y coordinate
@@ -18,22 +54,8 @@ classdef vector3d < dynOption
   methods
     
     function v = vector3d(varargin)
-      % Constructor
-      %
-      % Syntax
-      %   v = vector3d(x,y,z)
-      %   v = vector3d(x,y,z,'antipodal')
-      %   v = vector3d('polar',theta,rho)
-      %
-      % Input
-      %  x,y,z - cart. coordinates
-      %
-      % Flags
-      %   antipodal - consider vector as an axis and not as an direction
-      %
-      % See also
-      % AxialDirectional
-
+      % constructor of the class vector3d
+      
       if nargin == 0
       elseif nargin <= 2
         if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>
@@ -199,21 +221,13 @@ classdef vector3d < dynOption
   
   methods (Static = true)
     
-    function v = nan(varargin)
-      x = nan(varargin{:});
-      v = vector3d(x,x,x);
-    end
+    v = nan(varargin)
+    v = ones(varargin)
+    v = zeros(varargin)
+    v = rand(varargin)
+    v = byPolar(polarAngle,azimuthAngle,varargin)
+    [v,interface,options] = load(fname,varargin)
     
-    function v = ones(varargin)
-      x = ones(varargin{:});
-      v = vector3d(x,x,x);
-    end
-    
-    function v = zeros(varargin)
-      x = zeros(varargin{:});
-      v = vector3d(x,x,x);
-    end
-        
     function v = X(varargin)
       % the vector (1,0,0)
       %
@@ -233,39 +247,8 @@ classdef vector3d < dynOption
     function v = Z(varargin)
       x = ones(varargin{:});
       v = vector3d(0,0,x);
-    end
+    end    
     
-    function v = rand( varargin )
-      % vector of random vector3d
-
-      sR = extractSphericalRegion(varargin{:});
-
-      lastNum = find(~cellfun(@isnumeric,[varargin,{{}}]),1);
-      s = [varargin{1:lastNum-1} 1 1];
-      n = prod(s);
-      
-      if isempty(sR.N)
-        N = n;
-      else
-        N = ceil(100 + 1.5 * n /sR.volume);
-      end
-
-      theta = acos(2*(rand(N,1)-0.5));
-      rho   = 2*pi*rand(N,1);
-
-      v = vector3d('theta',theta,'rho',rho);
-            
-      ind = find(sR.checkInside(v));
-      ind = ind(1:n);
-      
-      v = reshape(v.subSet(ind),s);
-      v.antipodal = check_option(varargin,'antipodal');
-      
-    end
-    
-    [v,interface,options] = load(fname,varargin)
-    
-    v = byPolar(polarAngle,azimuthAngle,varargin)
     
   end
 end

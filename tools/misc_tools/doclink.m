@@ -1,5 +1,14 @@
 function linkText = doclink(fname,lname)
 
+if nargin == 1
+  if ischar(fname)
+      lname = fname;
+  else
+    lname = class(fname);
+  end
+end
+if ~ischar(fname), fname = [class(fname) '.' class(fname)]; end
+
 if 0 && exist('helpPopup','file')>0
   
   linkText = ['matlab:helpPopup(''' fname ''')'];

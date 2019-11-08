@@ -15,14 +15,20 @@ classdef BinghamS2 < S2Fun
   methods
     function BS2 = BinghamS2(Z,a)
       %
-      % Input
-      %  Z -  smoothing parameters;
-      %       Z(1)>=Z(2)>=Z(3), Z(3)<0
-      %       Z(1)=Z(2)  rotationally symmetric unimodal distribution
-      %       Z(1)<<Z(2) partial girdle distribution
+      % Description
+      %  defines a spherical Bingham distribution with shape parameters |Z|
+      %  and principal axes |a|. 
+      %  Z(1)>=Z(2)>=Z(3), Z(3)<0
+      %  Z(1)=Z(2)  rotationally symmetric unimodal distribution
+      %  Z(1)<<Z(2) partial girdle distribution
       %
-      %  a -  principle axes (3 orthogonal vector3d) i.e.
-      %       vector3d(rotation.matrix)
+      % Syntax
+      %
+      %   BS2 = BinghamS2(Z,a)
+      %
+      % Input
+      %  Z -  shape parameters
+      %  a -  principle axes @vector3d
       %
       % Output
       %  BS2 - @BinghamS2 spherical Bingham distribution

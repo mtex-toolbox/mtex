@@ -2,9 +2,9 @@ function sF = times(sF1,sF2)
 % overloads sF1 .* sF2
 %
 % Syntax
-%  sF = sF1.*sF2
-%  sF = a.*sF1
-%  sF = sF1.*a
+%   sF = sF1.*sF2
+%   sF = a.*sF1
+%   sF = sF1.*a
 %
 % Input
 %   sF1, sF2 - S2FunHarmonic

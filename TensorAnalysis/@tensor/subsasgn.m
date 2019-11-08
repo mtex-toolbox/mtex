@@ -1,6 +1,11 @@
 function T = subsasgn(T,s,b)
 % overloads subsasgn
 
+if isempty(T)
+  T = b;
+  T.M = zeros(repmat(3,1,b.rank));
+end
+
 
 switch s(1).type
 

@@ -15,14 +15,14 @@ function ori = byEuler(varargin)
 %  ori - @orientation
 %
 % Flags
-%  Bunge, ZXZ
-%  ABG, Matthies, ZYZ
-%  Roe
-%  Kocks
-%  Canova
+%  Bunge, ZXZ -
+%  ABG, Matthies, ZYZ -
+%  Roe -
+%  Kocks - 
+%  Canova -
 %
 % See also
-% orientation_index orientation/byMiller orientation/byAxisAngle
+% orientation/orientation orientation/byMiller orientation/byAxisAngle
 % orientation/map
 
 q = euler2quat(varargin{:});

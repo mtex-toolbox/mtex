@@ -12,7 +12,7 @@ function pf = rotate(pf,rot,varargin)
 %  pf - rotated @PoleFigure
 %
 % See also
-% rotation_index ODF/rotate
+% rotation/rotation ODF/rotate
 
 ss = pf.SS.Laue;
 if length(ss)>2 && ~any(rot == ss(:))

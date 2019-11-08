@@ -2,19 +2,22 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 % read HKL *.ctf file
 %
 % Syntax
+%
+%   % change x and y values such that spatial and Euler reference frame 
+%   % coincide, i.e., rotate them by 180 degree
 %   ebsd = loadEBSD_ctf(fname,'convertSpatial2EulerReferenceFrame')
+%
+%   % change the Euler angles such that spatial and Euler reference frame 
+%   % coincide, i.e., rotate them by 180 degree
 %   ebsd = loadEBSD_ctf(fname,'convertEuler2SpatialReferenceFrame')
 %
 % Input
 %  fname - file name
 %
 % Flags
-%  convertSpatial2EulerReferenceFrame - change x and y values such that
-%  spatial and Euler reference frame coincide, i.e., rotate them by 180
-%  degree
-%  convertEuler2SpatialReferenceFrame - change the Euler angles such that
-%  spatial and Euler reference frame coincide, i.e., rotate them by 180
-%  degree
+%  convertSpatial2EulerReferenceFrame - 
+%  convertEuler2SpatialReferenceFrame - 
+%
 
 ebsd = EBSD;
 
@@ -76,5 +79,5 @@ elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
 elseif ~check_option(varargin,'wizard') 
   warning(['.ctf files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
-  s  '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
+    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
 end

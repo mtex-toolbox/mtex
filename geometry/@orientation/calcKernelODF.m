@@ -3,7 +3,7 @@ function odf = calcKernelODF(ori,varargin)
 %
 % *calcKernelODF* is one of the core function of the MTEX toolbox.
 % It estimates an ODF from a set of individual crystal orientations by
-% <EBSD2odf.html kernel density estimation>.
+% <EBSD2ODF.html kernel density estimation>.
 %
 % The function *calcKernelODF* has several options to control the halfwidth
 % of the kernel functions, the resolution, etc. Most important the

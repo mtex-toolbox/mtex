@@ -1,7 +1,7 @@
 function [ind,d] = find(v,w,epsilon,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
-% Syntax  
+% Syntax
 %   ind = find(v,w,epsilon) % find all points out of v in a epsilon neighborhood of w
 %   ind = find(v,w)         % find closest point out of v to w
 %
@@ -10,10 +10,10 @@ function [ind,d] = find(v,w,epsilon,varargin)
 %  epsilon - double
 %
 % Options
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 % Output
-%  ind     - int32        
+%  ind     - int32
 
 % compute distances
 d = angle_outer(v,w,varargin{:});

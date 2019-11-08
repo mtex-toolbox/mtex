@@ -30,8 +30,6 @@ function MI = calcMIndex(odf)
 % Output
 %  M-index
 %
-% David Mainprice 04/01/2015
-%
 % See also
 % orientation/calcMIndex
 

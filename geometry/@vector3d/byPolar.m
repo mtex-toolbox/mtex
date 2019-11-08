@@ -1,7 +1,7 @@
 function v = byPolar(polarAngle,azimuthAngle,varargin)
 % define vector3d by polar angles
 %
-%  Syntax
+% Syntax
 %   v = vector3d.byPolar(polarAngle,azimuthAngle)
 %
 % Input
@@ -11,8 +11,8 @@ function v = byPolar(polarAngle,azimuthAngle,varargin)
 % Output
 %  v - @vector3d
 %
-% Options
-%  antipodal
+% Flags
+%  antipodal - include antipodal symmetry
 %
   
 x = sin(polarAngle) .* cos(azimuthAngle);

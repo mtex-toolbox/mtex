@@ -1,11 +1,7 @@
 function display(sFs,varargin)
 % standard output
 
-if ~check_option(varargin,'skipHeader')
-  disp(' ');
-  disp([inputname(1) ' = ' doclink('S2FunHarmonic_index','S2FunHarmonic') ...
-    ' ' docmethods(inputname(1))]);
-end
+displayClass(sFs,inputname(1),varargin{:});
 
 if length(sFs)> 1, disp([' size: ' size2str(sFs)]);end
 

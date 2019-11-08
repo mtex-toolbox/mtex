@@ -30,6 +30,9 @@ for j = 1:length(sF)
   f(:,j) = reshape(real(nfsftmex('get_f', plan)),[],1);
 end
 
+% set values to NaN
+f(isnan(v),:) = NaN;
+
 % finalize nfsft
 nfsftmex('finalize', plan);
 

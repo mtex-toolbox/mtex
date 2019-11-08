@@ -9,7 +9,11 @@ function kappa = evalkappa(lambda,varargin)
 % See also
 % orientation/mean EBSD/mean BinghamODF
 
-% only approximated solution of kappas'
+% only approximated solution of kappas' which hold true only for large
+% values of lambda see: F. Bachmann, R. Hielscher, P. Jupp, W. Pantleon, H.
+% Schaeben, E.Wegert: Inferential statistics of electron backscatter
+% diffraction data from within individual crystalline grains, Journal of
+% applied Crystallogrpahy, 2010, 34, eq. 38.
 
 lambda = sort(lambda);
 kappa = -1./(2.*lambda);

@@ -110,7 +110,8 @@ try
   opt = loader.getOptions('ignoreColumns','Phase');
 
   % set up EBSD variable
-  ebsd = EBSD(q,phase,get_option(varargin,'CS',crystalSymmetry('m-3m')),'options',opt,varargin{:});
+  CSList = get_option(varargin,'CS',repcell('notIndexed',1,3));
+  ebsd = EBSD(q,phase,CSList,opt,varargin{:});
 
 catch
   interfaceError(fname)

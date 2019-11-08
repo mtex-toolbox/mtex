@@ -9,7 +9,7 @@ function gB = flip(gB,ind)
 %  gB  - @grainBoundary
 %  ind - indeces of the boundaries to flip
 %
-% Ouput
+% Output
 %  grains - @grainBoundary
 %
 

@@ -2,6 +2,7 @@ function x = findJumps(fun,xmin,xmax)
 % find all jumps of a monotonsly increasing function
 %
 % Syntax
+%   x = findJumps(fun,xmin,xmax)
 %
 % Input
 %

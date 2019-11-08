@@ -5,6 +5,6 @@ function odf = mtimes(x,y)
 % to scale an ODF
 %
 % See also
-% ODF_index ODF/plus
+% ODF/ODF ODF/plus
 
 odf = times(x,y);

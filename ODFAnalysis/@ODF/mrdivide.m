@@ -5,7 +5,7 @@ function odf = mrdivide(odf,s)
 % to scale an ODF
 %
 % See also
-% ODF_index ODF/plus ODF/mtimes
+% ODF/ODF ODF/plus ODF/mtimes
 
 argin_check(odf,'ODF');
 argin_check(s,'double');

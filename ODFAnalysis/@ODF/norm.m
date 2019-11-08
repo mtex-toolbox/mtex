@@ -17,7 +17,7 @@ function t = norm(odf,varargin)
 %  bandwidth  - bandwidth used for Fourier calculation
 %
 % See also
-% ODF/textureindex ODF/entropy ODF/volume ODF_index ODF/calcFourier
+% ODF/textureindex ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
 % decide which method to use
 if all(cellfun(@(x) isa(x,'FourierComponent'),odf.components)) ...

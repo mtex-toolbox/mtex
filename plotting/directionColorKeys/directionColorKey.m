@@ -17,8 +17,16 @@ classdef directionColorKey < handle
       
       if nargin == 0, sym = specimenSymmetry; end
       
-      dM.sym = sym;
-      dM.sR = sym.fundamentalSector;
+      if isa(sym,'symmetry')
+        dM.sym = sym;
+      else
+        try
+          dM.sym = sym.CS;
+        catch
+          error('No symmetry specified!')
+        end
+      end
+      dM.sR = dM.sym.fundamentalSector;
       
       dM.dir2color = get_option(varargin,'dir2color');
 
@@ -54,15 +62,14 @@ classdef directionColorKey < handle
       if check_option(varargin,'3d')
         if ~check_option(varargin,'noLabel')
           hold on
-          gray = [0.4 0.4 0.4];
-          arrow3d(dM.sym.axes(1),'facecolor',gray)
-          text3(Miller(1,0,0,'uvw',dM.sym),'a_1','horizontalAlignment','right')
           
-          arrow3d(dM.sym.axes(2),'facecolor',gray)
-          text3(Miller(0,1,0,'uvw',dM.sym),'a_2','verticalAlignment','cap','horizontalAlignment','left')
+          axes = normalize(Miller({1,0,0},{0,1,0},{0,0,1},dM.sym,'uvw'));
           
-          arrow3d(dM.sym.axes(3),'facecolor',gray)
-          text3(Miller(0,0,1,'uvw',dM.sym),'c','verticalAlignment','bottom')
+          arrow3d(axes,'facecolor','gray')
+          
+          text3(axes(1),'$a$','horizontalAlignment','right')
+          text3(axes(2),'$b$','verticalAlignment','cap','horizontalAlignment','left')
+          text3(axes(3),'$c$','verticalAlignment','bottom')
           hold off
         end
         if isNew, fcw; end                

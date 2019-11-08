@@ -2,7 +2,7 @@ function pf = loadPoleFigure_ibm(fname,varargin)
 % import data fom ibm file
 %
 % Syntax
-%   pf = loadPoleFigure_ibm(fname,<options>)
+%   pf = loadPoleFigure_ibm(fname)
 %
 % Input
 %  fname    - filename

@@ -1,14 +1,28 @@
 classdef sphericalRegion
-% sphericalRegion implements a region on the sphere
-% The region is bounded by small circles given by there normal vectors
-% and the maximum inner product, i.e., all points v inside a region
-% satisfy the conditions dot(v, N) <= alpha
 %
-%  Syntax
+% The class *sphericalRegion* describes a region on the sphere that is
+% bounded by small circles. For a list of normal vectors $N_i$ and
+% coefficients $\alpha_i$ the region is defined as all vectors $v$ on the
+% sphere that satify for all $i$ the condition
+%
+% $$v \cdot N_i \le \alpha_i$$
+% 
+% Syntax
 %   sR = sphericalRegion(N)
 %   sR = sphericalRegion(N,alpha)
 %   sR = sphericalRegion(N,'antipodal')
 %
+% Input
+%  N     - @vector3d
+%  alpha - double (default is 0 which corresponds to a great circle)
+%
+% Class Properties
+%  N         - the normal @vector3d of the bounding circles
+%  alpha     - the cosine of the bounding circle
+%  antipodal - 
+%
+% See also
+% VectorGrids
   
   properties
     N = vector3d       % the normal vectors of the bounding circles
@@ -245,6 +259,24 @@ classdef sphericalRegion
   methods (Static = true)
     sR = byVertices(V,varargin)    
     sR = triangle(a,b,c,varargin)
+
+    function check
+      %N = [-zvector,yvector,vector3d('polar',pi/2,-pi/4),...
+      %  vector3d('polar',pi/2,pi/2+pi/4)];
+
+      N = [zvector,xvector,yvector,vector3d.byPolar(pi/2,-pi/4),vector3d(-1,-1,1)];
+
+      N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
+      %N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+      %N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
+
+      sR = sphericalRegion(N./norm(N),zeros(size(N)));
+
+      %plot(zvector,'grid','on','upper')
+
+      plot(sR,'Color','b','linewidth',2,'complete')
+    end
+    
   end
 end
 

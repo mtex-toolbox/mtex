@@ -141,7 +141,7 @@ methods
     % Find the range in meters for later determination of magnitude
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
-    [sBLength, sBUnit, factor] = switchUnit(0.3*abs(diff(dx)), sB.scanUnit);
+    [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
     if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
     
     % we would like to have SBlength beeing a nice number
@@ -176,7 +176,8 @@ methods
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
     
     % update text
-    set(sB.txt,'string',[num2str(sB.length) ' ' sBUnit],'HorizontalAlignment', 'Center',...
+    set(sB.txt,'string',['\rm{\textbf{' num2str(sB.length) ' ' sBUnit '}}'],...
+      'HorizontalAlignment', 'Center',...
       'VerticalAlignment', 'baseline','color',sB.lineColor,...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 

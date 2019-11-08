@@ -5,6 +5,6 @@ function pf = minus(pf1,pf2)
 % subtract two pole figures from each other
 %
 % See also
-% PoleFigure_index PoleFigure/plus PoleFigure/mtimes
+% PoleFigure/PoleFigure PoleFigure/plus PoleFigure/mtimes
 
 pf = pf1 + (-pf2);

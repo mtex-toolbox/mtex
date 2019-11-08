@@ -15,7 +15,8 @@ function v = rotate(v,q)
 %  q - @quaternion
 %
 % Output
-%  r = q * v;
+%  r - q * v
+%
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 

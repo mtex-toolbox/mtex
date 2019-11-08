@@ -6,7 +6,7 @@ function c = LSCV(ori,psi,varargin)
 %  psi - @kernel
 %
 % Output
-%  c
+%  c - 
 %
 % See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
@@ -36,7 +36,7 @@ for i = 1:length(psi)
   % compute LSCV
   c(i) = (1-1/N)^2 * eodf.components{1}.norm^2 ...
     - 2/N * sum(1./(1-w) .* eval(eodf,ori)) ...
-    + 2/N * psi{i}.K(1) * sum(w./(1-w)); %#ok<EVLC>
+    + 2/N * psi{i}.K(1) * sum(w./(1-w)); 
     
   % compute something else ---> no sence
   %c(i) = sum(w.^2./(1-w).^2) * ...

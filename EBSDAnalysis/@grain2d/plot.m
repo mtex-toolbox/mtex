@@ -8,10 +8,10 @@ function [h,mP] = plot(grains,varargin)
 %
 % Input
 %  grains  - @grain2d
-%  cS - @crystalShape
+%  cS      - @crystalShape
 %
-%  PatchProperty - see documentation of patch objects for manipulating the
-%                 apperance, e.g. 'EdgeColor'
+%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+%                
 % Options
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend
@@ -35,11 +35,14 @@ if nargin>1 && isa(varargin{1},'orientation')
   
   oM = ipfColorKey(varargin{1});
   varargin{1} = oM.orientation2color(varargin{1});
-  disp('  I''m going to colorize the orientation data with the ');
-  disp('  standard MTEX colorkey. To view the colorkey do:');
-  disp(' ');
-  disp('  colorKey = ipfColorKey(ori_variable_name)')
-  disp('  plot(colorKey)')
+  
+  if ~getMTEXpref('generatingHelpMode')
+    disp('  I''m going to colorize the orientation data with the ');
+    disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp(' ');
+    disp('  colorKey = ipfColorKey(ori_variable_name)')
+    disp('  plot(colorKey)')
+  end
 end
 
 plotBoundary = true;
@@ -144,7 +147,7 @@ if numel(grain)>0
   grain = grain.subSet(1);
   txt{1} = ['grainId = '  num2str(unique(grain.id))];
   txt{2} = ['phase = ', grain.mineral];
-  txt{3} = ['(x,y) = ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
+  txt{3} = ['(x,y) = ', xnum2str(pos(1:2),'delimiter',', ')];
   if grain.isIndexed
     txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];
   end

@@ -2,7 +2,7 @@ function pf = loadPoleFigure_out1(fname,varargin)
 % import polfigure-data form Graz
 %
 % Syntax
-%  pf = loadPoleFigure_out1(fname,<options>)
+%   pf = loadPoleFigure_out1(fname)
 %
 % Input
 %  fname  - filename

@@ -30,7 +30,7 @@ function [c,center] = doHClustering(ori,varargin)
 %   plot(oR)
 % 
 %   hold on
-%   plot(ori,c)
+%   plot(ori,ind2color(c))
 %   caxis([1,5])
 %   plot(center,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
 %   plot(centerRec,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
@@ -79,14 +79,25 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   [~,c] = min(d,[],2);
   
   % recompute center
-  %center = repmat(ori.subSet(1),n,1);
+  %center = repmat(ori.subSet(1),n,1);  
   for i = 1:length(center)
     center = subsasgn(center,i,mean(ori.subSet(c==i),'robust'));
   end
+  center = subsasgn(center,isnan(center),[]);
   
   % performe one step 
   d = angle_outer(ori,center);
   [~,c] = min(d,[],2);
+  
+  % sort center
+  counts = accumarray(c,1,[length(center),1]);
+  [counts,id] = sort(counts,'descend');
+  center = subsasgn(center,id,center);
+  [~,cid] = sort(id);
+  c = cid(c);
+  
+  % it may happen that we end up with less center
+  center = subsasgn(center,counts==0,[]);
   
   return
 end

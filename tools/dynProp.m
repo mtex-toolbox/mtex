@@ -187,11 +187,9 @@ classdef dynProp
     end
     
     % -----------------------------------------------
-    function display(dp)
+    function display(dp,varargin)
       
-      disp(' ');
-      disp([inputname(1) ' = ' doclink('dynProp_index','dynProp') ...
-        ' ' docmethods(inputname(1))]);
+      displayClass(dp,inputname(1),varargin{:});
 
       fn = fieldnames(dp.prop);
       

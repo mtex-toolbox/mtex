@@ -2,10 +2,9 @@ function rot = power(rot,n)
 % r.^n
 %
 % Syntax
-%
-% rot = rot^(-1) % inverse rotation
-% rot = rot.^2
-% rot = rot.^[0,1,2,3]
+%   rot = rot^(-1) % inverse rotation
+%   rot = rot.^2
+%   rot = rot.^[0,1,2,3]
 %
 %
 % Input
