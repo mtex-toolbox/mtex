@@ -13,13 +13,11 @@
 %
 % During all these steps the data are stored as variables of different
 % type. There are many different types of variables (called classes) for
-% different objects, like
-% <https://mtex-toolbox.github.io/vector3d.vector3d.html vectors>,
-% <https://mtex-toolbox.github.io/rotation.rotation.html rotations>, <https://mtex-toolbox.github.io/EBSD.EBSD.html EBSD data>,
-% <https://mtex-toolbox.github.io/graind2d.grain2d.html grains> or
-% <https://mtex-toolbox.github.io/ODF.ODF.html ODFs>. The sidebar on the left
-% lets you browse through all different MTEX class and the corresponding
-% functions.
+% different objects, like <vector3d.vector3d.html vectors>,
+% <rotation.rotation.html rotations>, <EBSD.EBSD.html EBSD data>,
+% <grain2d.grain2d.html grains> or <ODF.ODF.html ODFs>. The sidebar on the
+% left lets you browse through all different MTEX class and the
+% corresponding functions.
 %
 % Variables are generated automatically when data are imported. E.g., the
 % commands

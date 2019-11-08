@@ -225,6 +225,10 @@ plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.05,...
   'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',10)
 hold off
 
+%%
+% A more detailed describtion of ODF estimation from individual orientation
+% measurements can be found in the section <EBSD2ODF.html ODF Estimation
+% from EBSD data>.
 
 %% Parametric Density Estimation
 % 
@@ -236,8 +240,6 @@ hold off
 % and the standard deviation. The analogous to the Gaussian on the sphere
 % and the orientation space are the Bingham distributions. The estimation
 % of Bingham parameters from directional and rotational data are explained
-% in the sections <https://mtex-toolbox.github.io/S2FunBingham.html The
-% Spherical Bingham Distribution> and
-% <https://mtex-toolbox.github.io/BinghamODFs.html The Rotational Bingham
-% Distribution>.
+% in the sections <S2FunBingham.html The Spherical Bingham Distribution>
+% and <BinghamODFs.html The Rotational Bingham Distribution>.
 

@@ -1,16 +1,21 @@
 %% ODF Estimation from EBSD data
 %
-% In order to discuss ODF estimation from EBSD data we start by loading
-% a sample MTEX data set.
+%%
+% In order to discuss ODF estimation from individual orientation data we
+% start by loading an EBSD data set
 
-mtexdata forsterite
+mtexdata copper
 
-%% ODF Estimation
-%
-% These EBSD datasets consist of two phases, Iron, and Magnesium. The ODF
-% of the Iron phase is computed by the command
+plot(ebsd,ebsd.orientations)
 
-odf = calcDensity(ebsd('fo').orientations)
+%%
+% of copper. The orientation distribution function can now be computed by
+
+odf = calcDensity(ebsd('copper').orientations)
+
+plotSection(odf,'contourf')
+mtexColorMap LaboTeX
+mtexColorbar
 
 %%
 % The function <orientation.calcODF.html calcODF> implements the ODF
@@ -35,7 +40,7 @@ odf = calcDensity(ebsd('fo').orientations)
 % measurement per grain).
 
 % try to compute an optimal kernel
-psi = calcKernel(ebsd('fo').orientations)
+psi = calcKernel(ebsd.orientations)
 
 %%
 % In the above example, the EBSD measurements are spatial dependent and the
@@ -50,10 +55,10 @@ grains = calcGrains(ebsd);
 grains = grains(grains.grainSize>5);
 
 % compute optimal halfwidth from the meanorientations of grains
-psi = calcKernel(grains('fo').meanOrientation)
+psi = calcKernel(grains('co').meanOrientation)
 
 % compute the ODF with the kernel psi
-odf = calcDensity(ebsd('fo').orientations,'kernel',psi)
+odf = calcDensity(ebsd('co').orientations,'kernel',psi)
 
 
 %%
