@@ -2,13 +2,17 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 % take a diskrete sample from a list of vectors, orientations, grains, EBSD
 %
 % Syntax
+%
+%   x = discreteSample(f,points)
+%
 %   [obj,ind] = discreteSample(obj,points)
-%   discreteSample(v,points,'withReplacement')
-%   discreteSample(ori,points,'withReplacement')
-%   discreteSample(ebsd,points,'withoutReplacement')
-%   discreteSample(gB,points,'withoutReplacement')
+%   v = discreteSample(v,points,'withReplacement')
+%   ori = discreteSample(ori,points,'withReplacement')
+%   ebsd = discreteSample(ebsd,points,'withoutReplacement')
+%   gB = discreteSample(gB,points,'withoutReplacement')
 %
 % Input
+%  f      - density function, e.g., function handle, @S2Fun, @ODF
 %  gB     - @grainBoundary
 %  ebsd   - @EBSD
 %  ori    - @orientation
@@ -22,6 +26,17 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 % Output
 %  obj    - same as first input
 %  ind    - indeces of the selected subsamples
+
+
+if isa(obj,'function_handle')
+  
+  range = get_option(varargin,'range',[0,1]);
+  x = linspace(range(1),range(2),10000);
+  density = obj(x);
+  obj = discretesample(density ./ mean(density), points).'/length(density);
+  return
+  
+end
 
 if check_option(varargin,'weights')
 
