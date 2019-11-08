@@ -1,9 +1,11 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.1 11/2019
+%% MTEX 5.2.2 11/2019
 %
+% * replaced |calcODF(ori)| by <orientation.calcDensity.html |calcDensity(ori)|>
 % * bug fix in ODF reconstruction from XRD data
 % * bug fix in EBSD export to ctf
+% * bug fix in grain reconstruction
 % * some more minor bug fixes
 %
 %% MTEX 5.2.0 10/2019

@@ -26,7 +26,7 @@ hold on
 plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
 hold off
 
-%% The Histogramm
+%% The Histogram
 % The easiest way to estimate a density function from the samples $x_n$ is
 % a histogram
 
@@ -126,7 +126,7 @@ yN = discreteSample(f,N);
 
 % plot the random sample
 scatter(xN,yN)
-
+axis equal tight
 %%
 % Similarly to the one dimensional example we need to specify the range of
 % the $x$ and $y$ coordinates for the estimated density function. The
@@ -137,24 +137,107 @@ fN = calcDensity([xN,yN],'range',[0 0;1 1]);
 
 % plot the two dimensional density function 
 [x,y] = ndgrid(linspace(0,1));
-pcolor(x,y,fN(x,y))
+contourf(x,y,fN(x,y))
+mtexColorMap LaboTeX
 shading interp
+axis equal tight
 
 % plot the original random sample on top
 hold on
 scatter(xN,yN,'.','k')
 hold off
 
-%% Density Estimation on the Sphere
+%% Density Estimation for Directional Data
+%
+% Kernel density for directional data works analogously as for real valued
+% data. Again we have to choose a kernel function $\psi$ with a certain
+% halfwidth $\delta$. Than the kernel functions are centered at each
+% direction of our random sampling and summed up. Lets us demonstrate this
+% procedure misorientation axes between two phases in an EBSD map 
+
+% import ebsd data
+mtexdata forsterite silent
+
+% reconstruct grains
+grains = calcGrains(ebsd('indexed'));
+
+% extract Forsterite to Enstatite grain boundaries
+gB = grains.boundary('Forsterite','Enstatite');
+
+% plot misorientation axes
+plot(gB.misorientation.axis,'fundamentalRegion','MarkerFaceAlpha',0.1)
+
+%%
+% The distribution of the misorientation axes may be analyzed in more
+% detail by computing the misorientation axis distribution function
+
+% compute the misorientation axis distribution function
+axisDensity = calcDensity(gB.misorientation.axis);
+
+% plot the density function 
+contourf(axisDensity)
+mtexColorMap LaboTeX
+mtexColorbar
+
+% and on top of it the misorientation axes
+hold on
+plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.05,'MarkerFaceColor','none','MarkerEdgeColor','k')
+hold off
+
+%%
+% Note that the resulting variable |axisDensity| is of type
+% @S2FunHarmonicSym and allows for all the operations as explained in the
+% section <S2FunOperations.html Operations on Spherical Functions>. In
+% order to stress once again the importance of the choice of the halfwidth
+% of the kernel function we perform the same calculation as above but with
+% the halfwidth set to 5 degree
+
+axisDensity = calcDensity(gB.misorientation.axis,'halfwidth',5*degree);
+
+contourf(axisDensity)
+mtexColorMap LaboTeX
+mtexColorbar
+
+hold on
+plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.05,'MarkerFaceColor','none','MarkerEdgeColor','k')
+hold off
 
 
+%% Density Estimation for Orientation Data
+%
+% Density estimation from orientations sets the connection between
+% individal crystal orientations, as e.g. measured by EBSD, and the
+% orientation distribution function of a specimen. Considering the
+% Forsterite orientations from the above EBSD map the corresponding ODF
+% computes to
+
+odf = calcDensity(ebsd('Forsterite').orientations,'halfwidth',10*degree)
+
+%%
+% Lets visualize the ODF in phi2 sections and plot on top of it the
+% individual orientation measurements from the EBSD map
+
+plotSection(odf,'contourf')
+mtexColorMap LaboTeX
+
+hold on
+plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.05,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',10)
+hold off
 
 
-
-%% Density Estimation in Orientation Space
-
-
-
-
-
+%% Parametric Density Estimation
+% 
+% In contrast to kernel density estimation parametric density estimation
+% makes the assumption that the true distribution function belong to a
+% parametric distribution family, e.g. the Gaussian. In this case it
+% remains the estimate the parameters of this distribution from the random
+% sample. In the case of the Gaussian distribution these are the mean value
+% and the standard deviation. The analogous to the Gaussian on the sphere
+% and the orientation space are the Bingham distributions. The estimation
+% of Bingham parameters from directional and rotational data are explained
+% in the sections <https://mtex-toolbox.github.io/S2FunBingham.html The
+% Spherical Bingham Distribution> and
+% <https://mtex-toolbox.github.io/BinghamODFs.html The Rotational Bingham
+% Distribution>.
 
