@@ -23,7 +23,7 @@ if isempty(q)
   qm = quaternion.nan;  
   return
 elseif length(q) == 1
-  qm = qq;
+  qm = q;
   lambda = diag([0 0 0 1]);
   return
 end
