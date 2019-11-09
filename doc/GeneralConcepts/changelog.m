@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 5.2.2 11/2019
+%% MTEX 5.2.3 11/2019
 %
 % * replaced |calcODF(ori)| by <orientation.calcDensity.html |calcDensity(ori)|>
 % * bug fix in ODF reconstruction from XRD data
