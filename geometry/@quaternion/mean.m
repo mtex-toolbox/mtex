@@ -20,11 +20,17 @@ function [qm, lambda, V] = mean(q,varargin)
 % orientation/mean
 
 if isempty(q)
-  qm = quaternion.nan;  
+  qm = quaternion.nan;
+  lambda = diag([0 0 0 1]);
+  if nargout == 3, V = nan(4); end
   return
 elseif length(q) == 1
   qm = q;
   lambda = diag([0 0 0 1]);
+  if nargout == 3
+    T = qq(q,varargin{:});
+    [V, lambda] = eig(T);
+  end
   return
 end
 
@@ -36,9 +42,12 @@ qm = quaternion(V(:,pos));
 
 if check_option(varargin,'robust') && length(q)>4
   omega = angle(qm,q);
-  id = omega < quantile(omega,0.8);
+  id = omega < quantile(omega,0.8)*(1+1e-5);
   if ~any(id), return; end
   varargin = delete_option(varargin,'robust');
-  [qm,lambda, V] = mean(q.subSet(id),varargin{:});
-  
+  if nargout == 3
+    [qm,lambda, V] = mean(q.subSet(id),varargin{:});
+  else
+    [qm,lambda] = mean(q.subSet(id),varargin{:});
+  end
 end
