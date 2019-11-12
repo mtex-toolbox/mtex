@@ -56,6 +56,8 @@ grainsMerged.poly = cell(numNewGrains,1);
 grainsMerged.phaseId = zeros(numNewGrains,1);
 grainsMerged.grainSize = zeros(numNewGrains,1);
 grainsMerged.prop.meanRotation = rotation.id(numNewGrains,1);
+grainsMerged.inclusionId = zeros(numNewGrains,1);
+
 
 % 5. set new grainIds in grains.boundary
 ind = grains.boundary.grainId > 0;
@@ -80,7 +82,7 @@ I_FG = grainsMerged.boundary.I_FG;
 I_FG(:,1:numel(keepId)) = [];
 
 newInd = numel(keepId)+(1:size(I_FG,2));
-grainsMerged.poly(newInd) = ...
+[grainsMerged.poly(newInd), grainsMerged.inclusionId(newInd)] = ...
   calcPolygons(I_FG,grainsMerged.boundary.F,grainsMerged.boundary.V);
 
 % new grain size is sum of old grain sizes
