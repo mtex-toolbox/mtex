@@ -127,7 +127,7 @@ grainsMerged.grainSize= full(sum(gS,2));
   
 % new phase id is max of old phase ids
 phaseId = sparse(old2newId(grains.id),grains.id,grains.phaseId);
-grainsMerged.phaseId = max(phaseId,[],2);
+grainsMerged.phaseId = full(max(phaseId,[],2));
 
 % should we compute meanOrientation?
 if check_option(varargin,'calcMeanOrientation')
