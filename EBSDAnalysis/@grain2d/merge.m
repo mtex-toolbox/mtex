@@ -109,6 +109,7 @@ grainsMerged.poly(newInd) = grains.poly(keepInd);
 grainsMerged.phaseId(newInd) = grains.phaseId(keepInd);
 grainsMerged.grainSize(newInd) = grains.grainSize(keepInd);
 grainsMerged.prop.meanRotation(newInd) = grains.prop.meanRotation(keepInd);
+grainsMerged.inclusionId(newInd) = grains.inclusionId(keepInd);
 
 % 8. set up merged polygons
 I_FG = grainsMerged.boundary.I_FG;
