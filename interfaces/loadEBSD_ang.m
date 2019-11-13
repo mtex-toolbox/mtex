@@ -137,7 +137,7 @@ elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
 elseif ~check_option(varargin,'wizard')
   warning(['.ang files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
-    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
+    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
 end
 end
 

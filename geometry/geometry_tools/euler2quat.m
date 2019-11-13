@@ -29,10 +29,10 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % maybe euler angles are given as a matrix
 if (nargin >= 1 && size(alpha,2)==3)
   if exist('beta','var') && isa(beta,'char')
-      varargin = {varargin{:} beta};
+      varargin = [varargin beta];
   end
   if exist('gamma','var') && isa(gamma,'char')
-    varargin = {varargin{:} gamma};
+    varargin = [varargin gamma];
   end
   
   gamma = alpha(:,3);
