@@ -118,9 +118,9 @@ mergedGrains.prop.GOS = accumarray(parentId,1:length(grains),size(mergedGrains),
 
 nextAxis(2), hold on
 plot(mergedGrains,mergedGrains.GOS  ./ degree)
+setColorRange equal
 mtexColorbar
 caxis([0,1.5])
-
 
 %% Setting Up the EBSD Data for the Merged Grains
 % Note that the Id's of the merged grains does not fit the grainIds
@@ -141,7 +141,7 @@ hold off
 ebsd_merged = ebsd;
 
 % update the grainIds to the parentIds
-ebsd_merged('indexed').grainId = parentId(ebsd('indexed').grainId)
+ebsd_merged('indexed').grainId = parentId(grains.id2ind(ebsd('indexed').grainId))
 
 %%
 % Now the variable |ebsd_merged| can be indexed by the merged grains, i.e.
