@@ -2,9 +2,10 @@
 %
 %%
 % Commonly the crystal coordinate system is defined by the crystallographic
-% axes a, b, c. The length [a,b,c] and the angles [alpha,beta,gamma]
-% between theses axes needs to be specified when defining a variable of
-% type <crystalSymmetry.crystalSymmetry.html crystalSymmetry>.
+% axes $\vec a$, $\vec b$, $\vec c$, The length |[a,b,c]| and the angles
+% |[alpha,beta,gamma]| between theses axes needs to be specified when
+% defining a variable of type <crystalSymmetry.crystalSymmetry.html
+% crystalSymmetry>.
 %
 
 cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
@@ -13,18 +14,24 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 %
 % However, there are may crystal properties, like orientation or tensorial
 % properties, that are most commonly described with respect to an Euclidean
-% reference system as oposed to the crystallographic axes a, b, c. Most
-% importantly, Euler angles as a decription of an orientations is described
-% as subsequent rotations about the z, x and z axis. Hence, we need to
-% inscribe an Eucledian reference system x, y, z into crystallogaphic
-% reference system a, b, c.
+% reference system as oposed to the crystallographic axes $\vec a$, $\vec
+% b$, $\vec c$. Most importantly, Euler angles as a decription of an
+% orientations is described as subsequent rotations about the $\vec z$,
+% $\vec x$ and $\vec z$ axis. Hence, we need to inscribe an Eucledian
+% reference system $\vec x$, $\vec y$, $\vec z$ into the crystallogaphic
+% reference system $\vec a$, $\vec b$, $\vec c$.
+%
+% Note, that also the allignment of the crystal axes $\vec a$, $\vec b$ and
+% $\vec c$ with respect to the atomic lattice, and hence it symmetries,
+% follows different conventions. These are discussed in the section
+% <SymmetryAlignment.html Alignment of the Crystal Axes>.
 % 
 %% Cubic, tetragona and orthorhombic symmetries
 %
 % In orthorhombic, tetragonal and cubic crystal symmetry the crystal
-% reference system a, b, c is itsself an Euclidean one and, hence, setting
-% x parallel to a, y parallel to b and z parallel to c is a canonical
-% choice. 
+% reference system $\vec a$, $\vec b$, c is itsself an Euclidean one and,
+% hence, setting $\vec x$ parallel to $\vec a$, $\vec y$ parallel to $\vec
+% b$ and $\vec z$ parallel to $\vec c$ is a canonical choice.
 %
 % As for such symmetries this is also the default in MTEX there is no need
 % to specify the alignment seperately.
@@ -32,11 +39,11 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 %% Trigonal and hexagonal materials
 %
 % For trigonal and hexagonal materials the z axis is commonly aligned with
-% the c axis. As for the x and y axes they are either aligned with the a or
-% b axes. 
+% the $\vec c$ axis. As for the $\vec x$ and $\vec y$ axes they are either
+% aligned with the $\vec a$ or $\vec b$ axes.
 % 
-% The following command alignes the x axes to the a axes and the z axes to
-% the c axes. 
+% The following command alignes the $\vec x$ axes to the $\vec a$ axes and
+% the $\vec z$ axes to the $\vec c$ axes.
 
 cs_x2a = crystalSymmetry('321',[1.7,1.7,1.4],'X||a','Z||c');
 
@@ -47,8 +54,8 @@ annotate(cs_x2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
 annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
 annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 %%
-% In contrast the following command alignes the y axes to the a axes and
-% the z axes to the c axes.
+% In contrast the following command alignes the $\vec y$ axes to the $\vec
+% a$ axes and the $\vec z$ axes to the $\vec c$ axes.
 
 cs_y2a = crystalSymmetry('321',[1.7,1.7,1.4],'y||a','Z||c');
 plot(cs_y2a)
@@ -58,10 +65,10 @@ annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w
 annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
 %%
-% The only difference between the above two plots is the position of the x
-% and y axes. The reason is that visualizations relative to the crystal
-% reference system, e.g., inverse pole figures, are in MTEX aligned on the
-% screen according to the b-axis. 
+% The only difference between the above two plots is the position of the
+% $\vec x$ and $\vec y$ axes. The reason is that visualizations relative to
+% the crystal reference system, e.g., inverse pole figures, are in MTEX
+% aligned on the screen according to the b-axis.
 %
 % This on secreen alignment can be easily modified by
 
@@ -80,11 +87,12 @@ plotb2east
 
 %%
 % It should be stressed that the alignment between the Eucledean crystal
-% axes x, y, z and the crystallographic axes a, b and c is crucial for many
-% computations. The difference between both setups becomes more vsible if
-% we plot crystal shapes in the x, y, z coordinate system
+% axes $\vec x$, $\vec y$, $\vec z$ and the crystallographic axes $\vec a$,
+% $\vec b$ and $\vec c$ is crucial for many computations. The difference
+% between both setups becomes more vsible if we plot crystal shapes in the
+% $\vec x$, $\vec y$, $\vec z$ coordinate system
 
-cS_x2a = crystalShape.quartz(cs_x2a)
+cS_x2a = crystalShape.quartz(cs_x2a);
 
 close all
 figure(1)
@@ -95,7 +103,7 @@ hold off
 
 %%
 
-cS_y2a = crystalShape.quartz(cs_y2a)
+cS_y2a = crystalShape.quartz(cs_y2a);
 
 figure(2)
 plot(cS_y2a)
@@ -143,10 +151,11 @@ ori_x2a.transformReferenceFrame(cs_y2a)
 %% Triclinic and monoclinic symmetries
 %
 % In triclinic and monoclinic symmetries even more different setups are
-% used. As two perpedicular crystal axes are required to align with x, y or
-% z one ussually chooses one crystal axis from the direct coordinate
-% system, i.e., a, b or c, and the second crystal axis from the reciprocal
-% axes a*, b* or c*. Typical examples for such setups are
+% used. As two perpedicular crystal axes are required to align with $\vec
+% x$, $\vec y$ or $\vec z$ one ussually chooses one crystal axis from the
+% direct coordinate system, i.e., $\vec a$, $\vec b$ or $\vec c$, and the
+% second crystal axis from the reciprocal axes $\vec a^*$, $\vec b^*$ or
+% $\vec c^*$. Typical examples for such setups are
 
 cs = crystalSymmetry('-1', [8.290 12.966 7.151], [91.18 116.31 90.14]*degree,...
   'x||a*','y||b', 'mineral','An0 Albite 2016')

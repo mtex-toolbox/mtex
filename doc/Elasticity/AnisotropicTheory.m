@@ -15,7 +15,7 @@ fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 % crytsal symmetry
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
-% define the tentos
+% define the tensor
 C = stiffnessTensor.load(fname,cs)
 
 %% Hooks Law

@@ -2,6 +2,7 @@ CrystalSymmetries       Crystal Symmetries
 CrystalDirections       Miller Indicies
 CrystalOperations       Operations
 CrystalReferenceSystem  Reference System
+SymmetryAlignment       Crystal Axes Alignment
 CrystalShapes           Crystal Shapes
 FundamentalSector       Fundamental Sector
 QuasiCrystals           Quasi Symmetries
