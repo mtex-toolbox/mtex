@@ -38,6 +38,9 @@ rot = rotation(ori) * rotation('matrix',M^-1);
 
 ori = orientation(rot,cs1,ori.SS);
 
+% do the same for the second symmetry
+if nargin == 2, ori = inv(transformReferenceFrame(inv(ori),cs2)); end
+
 % this is some testing code
 % cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
 % cs2 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
