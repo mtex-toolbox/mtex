@@ -5,7 +5,7 @@ function ind = id2ind(grains,id)
 %   ind = id2ind(grains,id)
 %
 % Input
-%  ebsd - @grain2d
+%  grains - @grain2d
 %  id - a list of id's as stored in grains.id
 %
 % Output
