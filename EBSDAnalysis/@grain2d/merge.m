@@ -16,10 +16,16 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %
 %   [grainsMerged,parentId] = merge(grains,M)
 %
+%   [grainsMerged,parentId] = merge(grains,tpList)
+%
+%   [grainsMerged,parentId] = merge(grains,gid)
+%
 % Input
 %  grains   - @grain2d
 %  boundary - @grainBoundary
 %  M        - merge matrix M(i,j)==1 indicates the grains to be merged
+%  tpList   - @triplePointList
+%  gid      - nx2list of grainIds
 %
 % Output
 %  grainsMerged - @grain2d
