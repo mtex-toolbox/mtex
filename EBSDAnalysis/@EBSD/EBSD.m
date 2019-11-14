@@ -100,7 +100,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = prop;
                   
       % get unit cell
-      if check_option(varargin,'uniCell')
+      if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
         ebsd = ebsd.updateUnitCell;
