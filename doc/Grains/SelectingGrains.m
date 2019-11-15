@@ -32,7 +32,7 @@ hold off
 % The most easiest way to select a grain is by using the mouse and the
 % command <grain2d.selectInteractive.html selectInteractive> which allows
 % you to select an arbitrary amount of grains. The index of the selected
-% grains appear as the global variable *indSelected* in your workspace
+% grains appear as the global variable |indSelected| in your workspace
 
 selectInteractive(grains,'lineColor','gold')
 
@@ -50,7 +50,7 @@ hold off
 
 %% Indexing by orientation or position
 % One can also to select a grain by spatial coordinates without user
-% interaction. This is done using the syntax *grains(x,y)*, i.e.,
+% interaction. This is done using the syntax |grains(x,y)|, i.e.,
 
 x = 12000; y = 4000;
 

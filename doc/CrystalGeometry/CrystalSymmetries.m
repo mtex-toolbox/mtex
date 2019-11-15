@@ -82,7 +82,7 @@ plot(cs)
 
 cs = crystalSymmetry('-4m2')
 
-mtexFigure('layout',[1 3])
+mtexFigure('layout',[1 3]);
 plot(cs)
 mtexTitle(char(cs,'LaTex'))
 nextAxis
@@ -110,20 +110,20 @@ mtexTitle(char(cs.properSubGroup,'LaTex'))
 % the point group 2mm. Note that the a-axis points in all three case
 % towards south.
 
-mtexFigure('layout',[1 3])
-cs = crystalSymmetry('2mm')
+mtexFigure('layout',[1 3]);
+cs = crystalSymmetry('2mm');
 plot(cs)
 mtexTitle(char(cs,'LaTex'))
 annotate(cs.aAxis,'labeled')
 
 nextAxis
-cs = crystalSymmetry('m2m')
+cs = crystalSymmetry('m2m');
 plot(cs)
 mtexTitle(char(cs,'LaTex'))
 annotate(cs.aAxis,'labeled')
 
 nextAxis
-cs = crystalSymmetry('mm2')
+cs = crystalSymmetry('mm2');
 plot(cs)
 mtexTitle(char(cs,'LaTex'))
 annotate(cs.aAxis,'labeled')

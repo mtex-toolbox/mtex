@@ -4,7 +4,7 @@
 % We start by importing some EBSD data and reconstructing some grains
 
 % import a demo data set
-mtexdata forsterite
+mtexdata forsterite silent
 plotx2east
 
 % consider only indexed data for grain segmentation
@@ -13,9 +13,8 @@ ebsd = ebsd('indexed');
 % perform grain segmentation
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
 
-
 %% Phase maps
-% When using the <grain2d.plot.html plot> command without additional
+% When using the <grain2d.plot.html |plot|> command without additional
 % argument the associated color is defined by color stored in the crystal
 % symmetry for each phase
 
@@ -100,7 +99,7 @@ CLim(gcm,[1 5])
 % direction.
 
 % consider only alongated grains
-alongated_grains = grains(grains.aspectRatio > 5);
+alongated_grains = grains(grains.aspectRatio > 1.5);
 
 % get the grain alongation
 dir = alongated_grains.principalComponents;
