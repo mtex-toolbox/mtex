@@ -72,6 +72,19 @@ classdef symmetry < rotation
                 
       else
 
+        if any(strcmp(varargin{1},{'2','m','2/m'})) && nargin > 2 && isnumeric(varargin{3})
+          
+          abg = varargin{3};
+          if max(abg) > 2*pi, abg = abg * degree; end
+          
+          [~,i] = max(abs(abg-pi/2));
+          
+          p = {'1','1','1'};
+          p{i} = varargin{1};
+          varargin{1} = [p{:}];
+          
+        end
+        
         s.id = findsymmetry(varargin{1});
         
       end      
