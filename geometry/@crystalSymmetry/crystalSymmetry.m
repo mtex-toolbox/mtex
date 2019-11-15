@@ -160,6 +160,9 @@ classdef crystalSymmetry < symmetry
   
   methods (Static = true)
     cs = load(fname,varargin)
+    
+    cs = byElements(rot,varargin)
+    
   end
     
 end
