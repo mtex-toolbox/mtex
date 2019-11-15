@@ -1,5 +1,5 @@
 function ebsd = loadEBSD_ang(fname,varargin)
-% read TSL *.ang file
+% read EDAX *.ang file
 %
 % Syntax
 %
@@ -130,15 +130,47 @@ catch
 end
 
 % change reference frame
+
+rot = [...
+  rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
+  rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
+  rotation.byAxisAngle(xvector,180*degree),...         % setting 3
+  rotation.byAxisAngle(yvector,180*degree)];           % setting 4
+
+% get the correction setting
+corSettings = {'notSet','setting 1','setting 2','setting 3','setting 4'};
+corSetting = get_flag(varargin,corSettings,'notSet');
+corSetting = find(strcmpi(corSetting,corSettings))-1;
+
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector+yvector,180*degree),'keepEuler');
+  flag = 'keepEuler';
+  opt = 'convertSpatial2EulerReferenceFrame';
 elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector+yvector,180*degree),'keepXY');
-elseif ~check_option(varargin,'wizard')
-  warning(['.ang files have usualy inconsistent conventions for spatial ' ...
-    'coordinates and Euler angles. You may want to use one of the options ' ...
-    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
+  flag = 'keepXY';
+  opt = 'convertEuler2SpatialReferenceFrame';
+else  
+  if ~check_option(varargin,'wizard')
+    warning(['.ang files have usualy inconsistent conventions for spatial ' ...
+      'coordinates and Euler angles. You may want to use one of the options ' ...
+      '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
+  end  
+  return  
 end
+
+if corSetting == 0
+  warning('%s\n\n ebsd = EBSD.load(fileName,''%s'',''setting 2'')',...
+    ['You have choosen to correct your EBSD data for differently aligned '...
+    'reference frames for the Euler angles and the map coordinates. '...
+    'However, you have not specified which reference system setting has been used on your Edax system . ' ...
+    'I''m going to assume "setting 1". '...
+    'Be careful, the default setting of EDAX is "setting 2". '...
+    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...    
+    'Please make sure you have chosen the correct setting and specify it explicitely using the syntax'],...
+    opt)
+  corSetting = 1;
+end
+ebsd = rotate(ebsd,rot(corSetting),flag);
+
 end
 
 function value = readByToken(cellStr,token,default)

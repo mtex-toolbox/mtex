@@ -7,31 +7,31 @@ try
   assertExtension(fname,'.osc');
 
   CS = get_option(varargin,'CS',oscHeader(fname));
-  
+
   if check_option(varargin,'check')
     return
   end
-  
+
   [data,Xstep,Ystep] = oscData( fname );
-  
+
   %Need to handle data like prius or EDS
   nCols=size(data,2);
-  
+
   colNames={'phi1','Phi','phi2','x','y','ImageQuality',...
     'ConfidenceIndex','Phase','SemSignal','Fit'};
   if nCols > 10
       for col = length(colNames)+1:nCols
-          colNames{col}=strcat('unknown_',int2str(col)); 
+          colNames{col}=strcat('unknown_',int2str(col));
       end
-      disp('Warning: more column data was passed in than expected. Check your column names make sense!') 
+      disp('Warning: more column data was passed in than expected. Check your column names make sense!')
   elseif nCols < 5
       error('Error: need to pass in atleast position and orientation data')
   elseif nCols <9
-      disp('Warning: Less column data was passed in than expected. Check your column names make sense!') 
+      disp('Warning: Less column data was passed in than expected. Check your column names make sense!')
   end
- 
+
   loader = loadHelper(data,'ColumnNames',colNames(1:nCols),'Radians');
-  
+
   if Xstep ~= Ystep % probably hexagonal
     unitCell = [...
       -Xstep/2   -Ystep/3;
@@ -47,29 +47,58 @@ try
       -Xstep/2  Ystep/2;
       -Xstep/2 -Ystep/2];
   end
-  
+
   ebsd = EBSD(loader.getRotations(),...
     loader.getColumnData('phase'),...
     CS,...
     loader.getOptions('ignoreColumns','phase'),...
     'unitCell',unitCell);
-  
+
 catch
   interfaceError(fname)
 end
 
 
-% same as in *.ang 
-% change reference frame
+% change reference frame, same as for .ang files
+rot = [...
+  rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
+  rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
+  rotation.byAxisAngle(xvector,180*degree),...         % setting 3
+  rotation.byAxisAngle(yvector,180*degree)];           % setting 4
+
+% get the correction setting
+corSettings = {'notSet','setting 1','setting 2','setting 3','setting 4'};
+corSetting = get_flag(varargin,corSettings,'notSet');
+corSetting = find(strcmpi(corSetting,corSettings))-1;
+
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector+yvector,180*degree),'keepEuler');
+  flag = 'keepEuler';
+  opt = 'convertSpatial2EulerReferenceFrame';
 elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector+yvector,180*degree),'keepXY');
-elseif ~check_option(varargin,'wizard')
-  warning(['.ang files have usualy inconsistent conventions for spatial ' ...
-    'coordinates and Euler angles. You may want to use one of the options ' ...
-    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
-end  
+  flag = 'keepXY';
+  opt = 'convertEuler2SpatialReferenceFrame';
+else
+  if ~check_option(varargin,'wizard')
+    warning(['.ang files have usualy inconsistent conventions for spatial ' ...
+      'coordinates and Euler angles. You may want to use one of the options ' ...
+      '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
+  end
+  return
+end
+
+if corSetting == 0
+  warning('%s\n\n ebsd = EBSD.load(fileName,''%s'',''setting 2'')',...
+    ['You have choosen to correct your EBSD data for differently aligned '...
+    'reference frames for the Euler angles and the map coordinates. '...
+    'However, you have not specified which reference system setting has been used on your Edax system . ' ...
+    'I''m going to assume "setting 1". '...
+    'Be careful, the default setting of EDAX is "setting 2". '...
+    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
+    'Please make sure you have chosen the correct setting and specify it explicitely using the syntax'],...
+    opt)
+  corSetting = 1;
+end
+ebsd = rotate(ebsd,rot(corSetting),flag);
 
 
 % taken from ANYSTITCH
@@ -200,7 +229,7 @@ end
 Xstep = double(fread(fid,1,'single','l'));
 if Xstep==0
    Xstep = double(fread(fid,1,'single','l'));
-   Ystep = double(fread(fid,1,'single','l')); 
+   Ystep = double(fread(fid,1,'single','l'));
 else
    Ystep = double(fread(fid,1,'single','l'));
 
@@ -315,7 +344,7 @@ nPhase=0;
 for i=1:length(osc_phases)
     phaseLoc=strfind(lower(char(headerBytes)),lower(osc_phases{i}));
     if ~isempty(phaseLoc)
-        nPhase=nPhase+1; 
+        nPhase=nPhase+1;
         PhaseStart(nPhase)=phaseLoc;
         PhaseName{nPhase}=osc_phases{i};
     end
@@ -325,15 +354,15 @@ CS = cell(nPhase,1); %if nPhase is zero then interface catches the error
 for k = 1:nPhase
 
   phaseBytes = headerBytes(PhaseStart:PhaseStart+288);
-  
+
   laueGroup = num2str(typecast(phaseBytes(257:260),'int32'));
-  
+
   cellBytes = phaseBytes(261:284);
   axLength  = double(typecast(cellBytes(1:12),'single'));
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
   numHKL    = typecast(phaseBytes(285:288),'int32');
-  
-  
+
+
   % maybe from ang convention? should ask the vendor ...
   switch laueGroup
     case {'-3m' '32' '3' '62' '6'}
@@ -353,7 +382,7 @@ for k = 1:nPhase
         options = {''};
       end
   end
-  
+
   CS{k} = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},options{:});
-  
+
 end
