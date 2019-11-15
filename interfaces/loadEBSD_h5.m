@@ -63,7 +63,13 @@ try
       props.(name) = data(:);
     end
 
-    rot = rotation.byEuler(props.phi1*degree,props.Phi*degree,props.phi2*degree);
+    if max([props.phi1(:);props.phi2(:);props.Phi(:)])>2.1*pi
+      isDegree = degree;
+    else
+      isDegree = 1;
+    end
+    
+    rot = rotation.byEuler(props.phi1*isDegree,props.Phi*isDegree,props.phi2*isDegree);
     phases = props.Phase;
 
     props = rmfield(props,{'Phi','phi1','phi2','Phase'});
