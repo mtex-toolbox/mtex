@@ -1,10 +1,4 @@
 %% Plot Types
-% Explains the different plot types, i.e., scatter plots, contour plots,
-% and line plots.
-%
-%% Open in Editor
-%
-%% Contents
 %
 %% A Sample ODFs
 %

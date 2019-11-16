@@ -38,9 +38,9 @@
 % The following function have been included to handle colors more
 % efficiently
 %
-% * <str2rgb.html str2rgb> convert color str to RGB color
-% * <ind2color.html ind2color> convert index to distrinct RGB colors, good
-% for loops
+% * <str2rgb.html |str2rgb|> convert color str to RGB color
+% * <ind2color.html |ind2color|> convert index to distrinct RGB colors,
+% good for loops
 %
 % *Improved Import Wizard*
 % 
@@ -50,7 +50,7 @@
 % *Speed Improvements*
 %
 % * much faster visualization of the large EBSD maps if <EBSD.gridify.html
-% gridify> is used
+% |gridify|> is used
 % * faster Fourier transforms on the sphere and the orientation space
 % * support for <MOSEK
 % https://docs.mosek.com/9.0/toolbox/install-interface.html> as faster
@@ -58,7 +58,7 @@
 %
 % *Support for hexagonal EBSD grids*
 %
-% The function <EBSD.gridify.html gridify> now works also for EBSD data
+% The function <EBSD.gridify.html |gridify|> now works also for EBSD data
 % measured on a hexagonal grid. As a consequence denoising and GND
 % computation for those data is also on the way.
 %
@@ -87,9 +87,10 @@
 %
 % * Improved methods for the vizualisation of elastic properties, see
 % <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
-% * several new functions like <tensor.trace.html trace>, <tensor.svd.html
-% svd>, <tensor.det.html det>, <tensor.colon.html double dot product ":">
-% * the function <tensor.mean.html mean> computes now Voigt, Reuss, Hill
+% * several new functions like <tensor.trace.html |trace|>,
+% <tensor.svd.html |svd|>, <tensor.det.html |det|>, <tensor.colon.html
+% double dot product |:|>
+% * the function <tensor.mean.html |mean|> computes now Voigt, Reuss, Hill
 % and geometric means
 %
 % *Improved Figure Layout*
@@ -99,24 +100,22 @@
 %
 % *Misc Changes*
 %
-% * allow to export EBSD data to *ctf* thanks to Frank Niessen
+% * allow to export EBSD data to |.ctf| thanks to Frank Niessen
 % * compute the volume of a crystal shape
 % * label crystal faces in crystal shapes
-% * new function <std orientation_std.html> for computing the standard
+% * new function <orientation_std.html |std|> for computing the standard
 % deviation of orientations
-% * calcKearnsFactor
-% * *grainBoundary.ebsdId* is now the id and not the index of the EBSD data
-% * allow to index ebsd data and grains by id using {} brackets
+% * new function <calcKearnsFactor.html |calcKearnsFactor|>
+% * |grainBoundary.ebsdId| is now the id and not the index of the EBSD data
+% * allow to index ebsd data and grains by id using |{}| brackets
 %
 %   ebsd{id}
 %   grains{id}
 %
 % * new options to scatter
 %
-%   scatter(v,'numbered') % plot vectors with numbers
+%   scatter(v,'numbered')               % plot vectors with numbers
 %   scatter(v,'MarkerFaceColor','none') % plot vectors with colored empty marks
-%
-%
 %
 %% MTEX 5.1.0 04/2018
 %
@@ -150,20 +149,21 @@
 % workflow is illustrate the script <GND.html GND> and consists
 % of the following steps:
 %
-% # define the dominant <dislocationSystem.dislocationSystem.html dislocation systems>
+% # define the dominant <dislocationSystem.dislocationSystem.html
+% dislocation systems>
 % # transform the dislocation systems into specimen coordinates for each
 % pixel of the EBSD map
-% # compute the <curvatureTensor.curvatureTensor.html curvature tensor> for each
-% pixel in the EBSD map
-% # <curvatureTensor.fitDislocationSystems.html fit the dislocation systems>
-% to the curvature tensors.
+% # compute the <curvatureTensor.curvatureTensor.html curvature tensor> for
+% each pixel in the EBSD map
+% # <curvatureTensor.fitDislocationSystems.html fit the dislocation
+% systems> to the curvature tensors.
 % # compute the total energy in each pixel
 %
 % *Tensor arithmetics*
 %
-% <dyad.html dyad>, <tensor.trace.html trace>, <tensor.det.html
-% det>, <tensor.mean.html mean>, <tensor.diag.html
-% diag>, <tensor.eye.html eye>, <tensor.sym.html sym>
+% <dyad.html |dyad|>, <tensor.trace.html |trace|>, <tensor.det.html
+% |det|>, <tensor.mean.html |mean|>, <tensor.diag.html
+% |diag|>, <tensor.eye.html |eye|>, <tensor.sym.html |sym|>
 %
 % *Birefringence*
 %
@@ -178,46 +178,46 @@
 % reorganised.
 %
 % * seperate classes for directional color keys. So far these classes are
-% <HSVDirectionKey.html HSVDirectionKey>, <HKLDirectionKey.html
-% HKLDirectionKey>, <TSLDirectionKey.html TSLDirectionKey>. This has become
-% neccesary as some orientation color keys depend directional color keys
-% with different symmetry.
+% <HSVDirectionKey.html |HSVDirectionKey|>, <HKLDirectionKey.html
+% |HKLDirectionKey|>, <TSLDirectionKey.html |TSLDirectionKey|>. This has
+% become neccesary as some orientation color keys depend directional color
+% keys with different symmetry.
 %
-% * new color key <axisAngleColorKey.html axisAngleColorKey> that
+% * new color key <axisAngleColorKey.html |axisAngleColorKey|> that
 % implements the coloring described in K. Thomsen, K. Mehnert, P. W. Trimby
 % and A. Gholinia: Quaternion-based disorientation coloring of orientation
 % maps, Ultramicroscopy, 2017. In central idea is to colorise the
 % misorientation axis with respect to the specimen reference system.
 %
 % * The existing color keys have been renamed for better consistency. The
-% new names are <BungeColorKey.html BungeColorKey>, <ipfHSVKey.html
-% ipfHSVKey>, <ipfHKLKey.html ipfHKLKey>,<ipfTSLKey.html ipfTSLKey>,
-% <ipfSpotKey.html ipfSpotKey>, <spotColorKey.html spotColorKey>,
-% <PatalaColorKey.PatalaColorKey.html PatalaColorKey>
+% new names are <BungeColorKey.html |BungeColorKey|>, <ipfHSVKey.html
+% |ipfHSVKey|>, <ipfHKLKey.html |ipfHKLKey|>, <ipfTSLKey.html |ipfTSLKey|>,
+% <ipfSpotKey.html |ipfSpotKey|>, <spotColorKey.html |spotColorKey|>,
+% <PatalaColorKey.PatalaColorKey.html |PatalaColorKey|>
 %
 % *Spherical functions*
 %
-% * new function <S2Fun.discreteSample.html discreteSample> to
-% compute random samples from spherical density functions
-% * new option to <S2FunHarmonic.symmetrise.html symmetrise> to symmetrise
-% a spherical function with respect to an axis
+% * new function <S2Fun.discreteSample.html |discreteSample|> to compute
+% random samples from spherical density functions
+% * new option to <S2FunHarmonic.symmetrise.html |symmetrise|> to
+% symmetrise a spherical function with respect to an axis
 %
 % *Misc*
 %
-% * new fuction <grain2d.fitEllipse.html fitEllipse> to assign ellipses to
-% grains
-% * the functions <tensor.symmetrise.html tensor/symmetrise> and
-% <S2FunHarmonic.symmetrise.html S2Fun/symmetrise> do support
+% * new fuction <grain2d.fitEllipse.html |fitEllipse|> to assign ellipses
+% to grains
+% * the functions <tensor.symmetrise.html |symmetrise(tensor)|> and
+% <S2FunHarmonic.symmetrise.html |symmetrise(S2F)|> do support
 % symmetrisation with respect to a certain axis.
-% * the function <quaternion.export.html export> allows to export arbitrary
-% additional properties together with the Euler angles, e.g. the half axes
-% and orientation of the grain ellipses
-% * the function <loadOrientation_generic.html loadOrientation_generic>
+% * the function <quaternion.export.html |export(ori)|> allows to export
+% arbitrary additional properties together with the Euler angles, e.g. the
+% half axes and orientation of the grain ellipses
+% * the function <loadOrientation_generic.html |loadOrientation_generic|>
 % allows to import arbitrary additional properties together with the
 % orientations, e.g., weights
 % * new option |logarithmic|
-% * new function <ODF.grad.html grad> to compute the gradient
-% of and ODF at a certain orientation
+% * new function <ODF.grad.html |grad|> to compute the gradient of and ODF
+% at a certain orientation
 % * explicitely set the number of rows and columns in a MTEXFigure plot
 % with
 % * EBSD hdf5 interface works now for Bruker data as well

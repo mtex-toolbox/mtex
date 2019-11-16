@@ -73,7 +73,13 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 grains = calcGrains(ebsd('indexed'),'theshold',10*degree)
 
 % smooth the grains to avoid the stair casing effect
-grains = smooth(grains,5)
+grains = smooth(grains,5);
+
+%%
+% This creates a variable |grains| of type @grain2d which containes the
+% full <ShapeParameters.html geometric information> about all grains and
+% their <BoundaryProperties.html boundaries>. As the most simplest
+% application we may just plot the grain boundaries
 
 % plot the grain boundaries on top of the ipf map
 hold on
@@ -94,7 +100,6 @@ cS = crystalShape.olivine(ebsd('Forsterite').CS)
 % select only grains with more then 100 pixels
 grains = grains(grains.grainSize > 100);
 
-
 % plot at the positions of the Forsterite grains the crystal shapes
 hold on
 plot(grains('Forsterite'),0.7*cS,'FaceColor',[0.3 0.5 0.3])
@@ -108,7 +113,7 @@ hold off
 % directions, here |h|, is aligned
 
 % the fixed crystal directions
-h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS)
+h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS);
 
 % plot their positions with respect to specimen coordinates
 plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium')
@@ -116,11 +121,12 @@ plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium')
 %% Inverse Pole Figures
 % 
 % Analogously one can ask for the crystal directions pointing into a fixed
-% specimen direction. This resulting plots are called
+% specimen direction. The resulting plots are called
 % <OrientationInversePoleFigure.html inverse pole figures>.
 
 % the fixed specimen direction
 r = vector3d.Z;
 
 % plot the position of the z-Axis in crystal coordinates
-plotIPDF(ebsd('Forsterite').orientations,r)
+plotIPDF(ebsd('Forsterite').orientations,r,'MarkerSize',5,...
+  'MarkerFaceAlpha',0.05,'MarkerEdgeAlpha',0.05)
