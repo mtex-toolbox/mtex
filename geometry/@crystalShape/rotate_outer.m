@@ -23,6 +23,6 @@ shift = repmat(shift(:),1,size(cS.F,2));
 % shift faces indices
 cS.F = repmat(cS.F,length(rot),1) + shift;
   
-cS.V = (rot * cS.V).';
+cS.V = (rotation(rot) * cS.V).';
 
 end
