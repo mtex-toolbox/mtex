@@ -18,9 +18,9 @@ end
 if isa(pf2,'PoleFigure')
   for i = 1:pf.numPF
     pf.allI{i} = pf.allI{i} + pf2.allI{i};
-    if ~all(isnull(angle(pf.allH{i},pf2.allH{i})))
+    if ~all(isnull(angle(pf.allH{i},pf2.allH{i}),1e-4))
       pf.allH{i} = [pf.allH{i},pf2.allH{i}];
-      pf.c = [pf.c{i},pf2.c{i}];
+      pf.c{i} = [pf.c{i},pf2.c{i}];
     end
   end
 else
