@@ -21,18 +21,16 @@ mod2 = orientation.byEuler(50*degree,30*degree,-30*degree,'ZYZ',cs);
 
 odf = 0.2*unimodalODF(mod1) ...
   + 0.3*unimodalODF(mod2) ...
-  + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
+  + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree);
 
-%%
 % and lets switch to the LaboTex colormap
 setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
-
-%% Pole Figures
+%%
 % Plotting some pole figures of an <ODF.ODF.html ODF> is straight forward
 % using the <ODF.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller.Miller.html Miller
-% indice> of the crystal directions you want to have pole figures for.
+% indice> of the crystal directions you want to have pole figures for
 
 plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
 
@@ -51,22 +49,16 @@ plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs),'complete')
 % not coincide. This is only the case if one one following reason is
 % satisfied
 %
-% * the crystal direction h is symmetrically equivalent to -h, in the
-% present example this is true for the c-axis h = (0001)
+% * the crystal direction $h$ is symmetrically equivalent to $-h$, in the
+% present example this is true for the c-axis $h = (0001)$
 % * the symmetry group contains the inversion, i.e., it is a Laue group
 % * we consider experimental pole figures where we have antipodal symmetry,
 % due to Friedel's law.
 %
-% In MTEX antipodal symmetry can be enforced by the use the option *antipodal*.
+% In MTEX antipodal symmetry can be enforced by the use the option
+% |'antipodal'|.
 
 plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
-
-
-%%
-% Finally, lets set back the default colormap.
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
-
-%%
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
@@ -75,10 +67,12 @@ setMTEXpref('defaultColorMap',WhiteJetColorMap);
 odf.calcPDF(Miller(1,0,0,cs),xvector)
 
 %%
-
-%%
 % For a more complex example let us define a fibre and plot the ODF there.
 
 fibre = orientation(fibre(Miller(1,0,0,odf.CS),yvector));
 
 plot(odf.eval(fibre))
+
+%%
+% Finally, lets set back the default colormap.
+setMTEXpref('defaultColorMap',WhiteJetColorMap);

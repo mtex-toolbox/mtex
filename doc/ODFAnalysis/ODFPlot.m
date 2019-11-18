@@ -1,87 +1,89 @@
 %% Visualizing ODFs
-% Explains all possibilities to visualize ODfs, i.e. pole figure plots,
-% inverse pole figure plots, ODF sections, fibre sections.
-%
-%% Open in Editor
-%
-%% Contents
 %
 %%
-% Let us first define some model ODFs to be plotted later on.
+% Since an orientation density function (ODF) is a function on the three
+% dimensional, non Euclidean orientation space its proper visualization is
+% a challenging task. In general one distinguishes two approaches
+%
+% # Choose a parameterisation of the orientation space by three variables,
+% e.g., by the Euler angles $\varphi_1$, $\Phi$, $\varphi_2$ and make a
+% three dimensional half transluent contour plot of the function
+% # Choose a series of two dimensional sections through the orientation
+% space and plot the ODF only at the sections.
+%
+%%
+% In order to demonstrate the different visualization techniques let us
+% first define a model ODF.
 
 cs = crystalSymmetry('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
 mod2 = orientation.byEuler(50*degree,30*degree,-30*degree,'ZYZ',cs);
 
-odf = 0.2*unimodalODF(mod1) ...
-  + 0.3*unimodalODF(mod2) ...
-  + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
-
-%odf = 0.2*unimodalODF(mod2)
+odf = 0.1*unimodalODF(mod1) ...
+  + 0.2*unimodalODF(mod2) ...
+  + 0.7*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree);
 
 %%
 % and lets switch to the LaboTex colormap
 setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
-
-%% Pole Figures
-% Plotting some pole figures of an <ODF.ODF.html ODF> is straight forward
-% using the <ODF.plotPDF.html plotPDF> command. The only mandatory
-% arguments are the ODF to be plotted and the <Miller.Miller.html Miller
-% indice> of the crystal directions you want to have pole figures for.
-
-plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
-
-%%
-% While the first two  pole figures are plotted on the upper hemisphere
-% only the (11-21) has been plotted for the upper and lower hemisphere. The
-% reason for this behaviour is that MTEX automatically detects that the
-% first two pole figures coincide on the upper and lower hemisphere while
-% the (11-21) pole figure does not. In order to plot all pole figures with
-% upper and lower hemisphere we can do
-
-plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs),'complete')
-
-%%
-% We see that in general upper and lower hemisphere of the pole figure do
-% not coincide. This is only the case if one one following reason is
-% satisfied
+%% Three Dimensional Plots
 %
-% * the crystal direction h is symmetrically equivalent to -h, in the
-% present example this is true for the c-axis h = (0001)
-% * the symmetry group contains the inversion, i.e., it is a Laue group
-% * we consider experimental pole figures where we have antipodal symmetry,
-% due to Friedel's law.
+% Visualizing an ODF in three dimensions in done by the command
+% <ODF.plot3d.html |plot3d|>.
+
+plot3d(odf)
+
+%%
+% By default this command represents the ODF in the Bunge Euler angle space
+% $\varphi_1$, $\Phi$, $\varphi_2$. The range of the Euler angles depends
+% on the crystal symmetry according to the following table
 %
-% In MTEX antipodal symmetry can be enforced by the use the option *antipodal*.
+% | symmetry | $\varphi_1$   | $\Phi$        | $\varphi_2$ |
+% |    1     | $360^{\circ}$ | $180^{\circ}$ | $360^{\circ}$ |
+% |    2     | $360^{\circ}$ | $180^{\circ}$ | $180^{\circ}$ |
+% |   222    | $360^{\circ}$ | $90^{\circ}$  | $180^{\circ}$ |
+% |    3     | $360^{\circ}$ | $180^{\circ}$ | $120^{\circ}$ |
+% |   32     | $360^{\circ}$ | $90^{\circ}$  | $120^{\circ}$ |
+% |    4     | $360^{\circ}$ | $180^{\circ}$ | $90^{\circ}$ |
+% |   422    | $360^{\circ}$ | $90^{\circ}$  | $90^{\circ}$ |
+% |    6     | $360^{\circ}$ | $180^{\circ}$ | $60^{\circ}$ |
+% |   622    | $360^{\circ}$ | $90^{\circ}$  | $60^{\circ}$ |
+% |    23    | $360^{\circ}$ | $90^{\circ}$  | $180^{\circ}$ |
+% |   432    | $360^{\circ}$ | $90^{\circ}$  | $90^{\circ}$ |
+%
+% Note that for the last to symmetries the three fold axis is not taken
+% into account, i.e., each orientation appears three times within the Euler
+% angle region. The first Euler angle is not restricted by any crystal
+% symmetry, but only by specimen symmetry. For an arbitrary symmetry the
+% bounds of the fundamental region can be computed by the command
+% <symmetry.fundamentalRegionEuler.html |fundamentalRegionEuler|>
 
-plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
-
-%% Inverse Pole Figures
-% Plotting inverse pole figures is analogously to plotting pole figures
-% with the only difference that you have to use the command
-% <ODF.plotIPDF.html plotIPDF> and you to specify specimen directions and
-% not crystal directions.
-
-plotIPDF(odf,[xvector,zvector])
-
-%%
-% Imposing antipodal symmetry to the inverse pole figures halfes the
-% fundamental region
-
-plotIPDF(odf,[xvector,zvector],'antipodal')
-
-%%
-% By default MTEX always plots only the fundamental region with respect to
-% the crystal symmetry. In order to plot the complete inverse pole figure
-% you have to use the option *complete*.
-
-plotIPDF(odf,[xvector,zvector],'complete','upper')
+[maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry('432'),specimenSymmetry('222'))
 
 %%
-% This illustrates also more clearly the effect of the antipodal symmetry
+% This return the common $90^{\circ} \ times 90^{\circ} \ times 90^{\circ}$
+% cube for cubic crystal and orthorombic specimen symmetry. For an
+% arbitrary orientation 
 
-plotIPDF(odf,[xvector,zvector],'complete','antipodal','upper')
+ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
+
+% the symmetrically equivalent orientation within the fundamental region
+% can be computed using the command <orientation.project2EulerFR.html
+% project2EulerFR>
+
+[phi1,Phi,phi2] = ori.project2EulerFR
+
+%%
+% A big disadvantage of the Euler angle representation of the orientation
+% space is that it very badly follows the curved geometry of the space.
+%
+% Especially for misorientation distribution functions a better alternativ
+% is the three dimensional axis angle space. To visualize an ODF with
+% respect to this parameterization simply add the option |'axisAngle'|
+
+plot3d(odf,'axisAngle','figSize','large')
+
 
 %% ODF Sections
 %
