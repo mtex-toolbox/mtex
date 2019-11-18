@@ -89,7 +89,7 @@ elseif check_option(varargin,{'surf3','slice3'})
       vert = [vert; verts];    
       cdata = [cdata; v(k).*ones(size(faces,1),1)];
     end
-    alpha = (cdata./nrm).^2;
+    alpha = cdata./nrm;
     
     patch('vertices',vert,'faces',fac,'CData',cdata,'FaceColor','flat','FaceAlpha','flat','EdgeColor','none','FaceVertexAlphaData',alpha);
   elseif check_option(varargin,'slice3')
