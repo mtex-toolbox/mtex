@@ -80,6 +80,7 @@ classdef mtexFigure < handle
     tightInset = [0,0,0,0] % is added to axisSize
     figTightInset = [10,10,10,10] % is added to figSize
     layoutMode = 'auto' % set to user to fix it
+    figSizeFactor = 0 % relative to the full screen
   end
   
   properties (Dependent = true)        
@@ -127,8 +128,22 @@ classdef mtexFigure < handle
       if check_option(varargin,{'nrows','ncols','layout'})
         mtexFig.layoutMode = 'user';
       end
-      
-      
+           
+      switch get_option(varargin,'figSize','','char')
+        case 'huge'
+          mtexFig.figSizeFactor = 1;
+        case 'large'
+          mtexFig.figSizeFactor = 0.8;
+        case {'normal','medium'}
+          mtexFig.figSizeFactor = 0.5;
+        case 'small'
+          mtexFig.figSizeFactor = 0.35;
+        case 'tiny'
+          mtexFig.figSizeFactor =  0.25;
+        otherwise
+          mtexFig.figSizeFactor = get_option(varargin,'figSize',0,'double');
+      end
+            
       set(mtexFig.parent,'color',[1 1 1],'nextPlot','replace');
       setappdata(mtexFig.parent,'mtexFig',mtexFig);
       

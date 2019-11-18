@@ -4,10 +4,12 @@ function [mtexFig,newFigure] = newMtexFigure(varargin)
 % Syntax
 %
 %   newMtexFigure()
-%
+%s
 % Input
 %
 % Options
+%  figSize - huge, large, normal, small, tiny
+%  layout
 %
 
 mtexFig = gcm;

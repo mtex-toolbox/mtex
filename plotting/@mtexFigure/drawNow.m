@@ -22,14 +22,14 @@ if check_option(varargin,'position')
   position = get_option(varargin,'position');
   figSize = position(3:4);
   
-elseif check_option(varargin,'figSize')
+elseif check_option(varargin,'figSize') || mtexFig.figSizeFactor > 0 
   
   screenExtend = get(0,'MonitorPositions');
     
   mtexFig.keepAspectRatio = true;
   figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
 
-  switch get_option(varargin,'figSize')
+  switch get_option(varargin,'figSize','','char')
     case 'huge'
       fac = 1;
     case 'large'
@@ -41,7 +41,7 @@ elseif check_option(varargin,'figSize')
     case 'tiny'
       fac =  0.25;
     otherwise
-      fac = get_option(varargin,'figSize',0.5,'double');
+      fac = get_option(varargin,'figSize',mtexFig.figSizeFactor,'double');
   end
   figSize = figSize .* fac;
   
