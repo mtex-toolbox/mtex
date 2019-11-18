@@ -1,4 +1,4 @@
-function oP = newOrientationPlot(CS1,CS2,varargin)
+function [oP, isNew] = newOrientationPlot(CS1,CS2,varargin)
 % prepare a 3d orientation plot
 %
 % Description
