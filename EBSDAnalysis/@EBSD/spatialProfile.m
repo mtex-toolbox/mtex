@@ -64,7 +64,7 @@ for k=1:size(lineXY,1)-1
   % setup transformation matrix
   % line from A to B
   
-  if lineXY(k+1,1)>lineXY(k,1) %x2>x1 && y2<y1 || x2>x1 && y2>y1
+  if lineXY(k+1,1)>=lineXY(k,1) %x2>x1 && y2<y1 || x2>x1 && y2>y1
     dX = [lineXY(k+1,1)-lineXY(k,1), - (lineXY(k+1,2)-lineXY(k,2))];
   else %x2<x1 && y2>y1 || x2<x1 && y2<y1
     dX = lineXY(k+1,:)-lineXY(k,:);
