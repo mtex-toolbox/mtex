@@ -31,7 +31,7 @@ for j = 1:numel(sP)
   
   % make the quiver plot
   mhs = get_option(varargin,'MaxHeadSize',0.9*(1-d.antipodal));
-  arrowSize = get_option(varargin,'arrowSize',0.05/max(norm(d(:))));
+  arrowSize = get_option(varargin,'arrowSize',0.05/max(norm(d),[],'all'));
   
   % project data
   if check_option(varargin,'centered') || mhs == 0
