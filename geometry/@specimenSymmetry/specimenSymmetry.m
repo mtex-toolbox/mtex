@@ -5,6 +5,10 @@ classdef specimenSymmetry < symmetry
 % triclinic or orthorhombic
 %
 
+properties
+  plotOptions = {}
+end
+
   methods
     
     function s = specimenSymmetry(varargin)
