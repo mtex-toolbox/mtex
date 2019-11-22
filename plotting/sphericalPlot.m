@@ -240,6 +240,10 @@ classdef sphericalPlot < handle
       
       set(sP.ax,'XTick',rho);
       set(sP.ax,'YTick',theta);
+      if strcmpi(get_option(varargin,'coordinates','on'),'off')
+        set(sP.ax,'xtickLabel',{},'ytickLabel',{});
+        set(sP.ax,'tickLength',[0,0]);
+      end
 
       % the labels
       interpreter = getMTEXpref('textInterpreter');
