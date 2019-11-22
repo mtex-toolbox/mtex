@@ -1,7 +1,6 @@
 %% ODF Characteristics
 %
 %%
-% *Some Sample ODFs*
 %
 % Let us first begin with some constructed ODFs to be analyzed below
 

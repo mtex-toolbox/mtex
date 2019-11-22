@@ -6,7 +6,6 @@
 % |[alpha,beta,gamma]| between theses axes needs to be specified when
 % defining a variable of type <crystalSymmetry.crystalSymmetry.html
 % crystalSymmetry>.
-%
 
 cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 
@@ -48,7 +47,7 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 cs_x2a = crystalSymmetry('321',[1.7,1.7,1.4],'X||a','Z||c');
 
 % visualize the resuls
-plot(cs_x2a)
+plot(cs_x2a,'figSize','small')
 annotate(cs_x2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 annotate(cs_x2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
 annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
@@ -58,7 +57,7 @@ annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w
 % a$ axes and the $\vec z$ axes to the $\vec c$ axes.
 
 cs_y2a = crystalSymmetry('321',[1.7,1.7,1.4],'y||a','Z||c');
-plot(cs_y2a)
+plot(cs_y2a,'figSize','small')
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
 annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
@@ -76,7 +75,7 @@ annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w
 plota2east
 
 % redo last plot
-plot(cs_y2a)
+plot(cs_y2a,'figSize','small')
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
 annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
@@ -96,7 +95,7 @@ cS_x2a = crystalShape.quartz(cs_x2a);
 
 close all
 figure(1)
-plot(cS_x2a)
+plot(cS_x2a,'figSize','small')
 hold on
 arrow3d(0.5*[xvector,yvector,zvector],'labeled')
 hold off
@@ -106,7 +105,7 @@ hold off
 cS_y2a = crystalShape.quartz(cs_y2a);
 
 figure(2)
-plot(cS_y2a)
+plot(cS_y2a,'figSize','small')
 hold on
 arrow3d(0.5*[xvector,yvector,zvector],'labeled')
 hold off
@@ -122,13 +121,12 @@ ori_y2a = orientation.byEuler(0,0,0,cs_y2a)
 %%
 % and visualize them in a pole figure. 
 
-newMtexFigure('innerPlotSpacing',20)
+newMtexFigure('innerPlotSpacing',20,'figSize','small')
 plotPDF(ori_x2a,Miller(1,0,0,cs_x2a),'MarkerSize',20)
 annotate([xvector,yvector],'label',{'x','y'},'backgroundColor','w')
 nextAxis
 plotPDF(ori_y2a,Miller(1,0,0,cs_y2a),'MarkerSize',20)
 annotate([xvector,yvector],'label',{'x','y'},'backgroundColor','w')
-drawNow(gcm,'figSize','medium')
 
 %%
 % We observe that both pole figures are rotated with respect to each other

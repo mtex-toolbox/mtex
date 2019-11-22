@@ -39,18 +39,10 @@ plot3d(odf)
 % $\varphi_1$, $\Phi$, $\varphi_2$. The range of the Euler angles depends
 % on the crystal symmetry according to the following table
 %
-% | symmetry | $\varphi_1$   | $\Phi$        | $\varphi_2$ |
-% |    1     | $360^{\circ}$ | $180^{\circ}$ | $360^{\circ}$ |
-% |    2     | $360^{\circ}$ | $180^{\circ}$ | $180^{\circ}$ |
-% |   222    | $360^{\circ}$ | $90^{\circ}$  | $180^{\circ}$ |
-% |    3     | $360^{\circ}$ | $180^{\circ}$ | $120^{\circ}$ |
-% |   32     | $360^{\circ}$ | $90^{\circ}$  | $120^{\circ}$ |
-% |    4     | $360^{\circ}$ | $180^{\circ}$ | $90^{\circ}$ |
-% |   422    | $360^{\circ}$ | $90^{\circ}$  | $90^{\circ}$ |
-% |    6     | $360^{\circ}$ | $180^{\circ}$ | $60^{\circ}$ |
-% |   622    | $360^{\circ}$ | $90^{\circ}$  | $60^{\circ}$ |
-% |    23    | $360^{\circ}$ | $90^{\circ}$  | $180^{\circ}$ |
-% |   432    | $360^{\circ}$ | $90^{\circ}$  | $90^{\circ}$ |
+% || symmetry     ||    1          ||    2          ||   222         ||    3          ||   32          ||    4          ||   422         ||    6          ||   622         ||    23         ||         432   ||
+% || $\varphi_1$  || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ || $360^{\circ}$ ||
+% || $\Phi$       || $180^{\circ}$ || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $90^{\circ}$  ||
+% || $\varphi_2$  || $360^{\circ}$ || $180^{\circ}$ || $180^{\circ}$ || $120^{\circ}$ || $120^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $60^{\circ}$  || $60^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  ||
 %
 % Note that for the last to symmetries the three fold axis is not taken
 % into account, i.e., each orientation appears three times within the Euler
@@ -62,17 +54,19 @@ plot3d(odf)
 [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry('432'),specimenSymmetry('222'))
 
 %%
-% This return the common $90^{\circ} \ times 90^{\circ} \ times 90^{\circ}$
+% This return the common $90^{\circ} \times 90^{\circ} \times 90^{\circ}$
 % cube for cubic crystal and orthorombic specimen symmetry. For an
-% arbitrary orientation 
+% arbitrary orientation
 
 ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
 
+%%
 % the symmetrically equivalent orientation within the fundamental region
 % can be computed using the command <orientation.project2EulerFR.html
 % project2EulerFR>
 
-[phi1,Phi,phi2] = ori.project2EulerFR
+[phi1,Phi,phi2] = ori.project2EulerFR;
+[phi1,Phi,phi2] ./degree
 
 %%
 % A big disadvantage of the Euler angle representation of the orientation
@@ -88,86 +82,40 @@ plot3d(odf,'axisAngle','figSize','large')
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotSection.html plot>. By default the
-% sections are at constant angles phi2. The number of sections can be
-% specified by the option |sections|
+% is done using the command <ODF.plotSection.html plotSection>. By default
+% the sections are at constant angles of $\varphi_2$.
 
-plot(odf,'sections',6,'silent')
-
-%%
-% One can also specify the phi2 angles of the sections explicitly
-
-plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
-
+plotSection(odf)
 
 %%
-% Beside the standard phi2 sections MTEX supports also sections according
-% to all other Euler angles.
+% More information how to customize such plots can be found in the chapter
+% <EulerAngleSections.html Euler angle sections>. Beside the standard
+% $\varphi_2$ sections MTEX supports also sections according to all other
+% Euler angles.
 %
-% * phi2 (default)
-% * phi1
-% * alpha (Matthies Euler angles)
-% * gamma (Matthies Euler angles)
-% * sigma (alpha+gamma)
+% * $\varphi_2$ (default)
+% * $\varphi_1$
+% * $\alpha$ (Matthies Euler angles)
+% * $\gamma$ (Matthies Euler angles)
+% * $\sigma = \alpha + \gamma$ (recommended)
 %
-%%
-% In this context the authors of MTEX recommend the sigma sections as they
-% provide a much less distorted representation of the orientation space.
-% They can be seen as the (001) pole figure splitted according to rotations
-% about the (001) axis. Lets have a look at the 001 pole figure
+% In fact MTEX highly recommends the so called sigma sections as they
+% provide a much less distorted representation of the orientation space. A
+% detailed description of the sigma sections can be found in the chaper
+% <SigmaSections.html sigma sections>.
 
-plotPDF(odf,Miller(0,0,0,1,cs))
-
-%%
-% We observe three spots. Two in the center and one at 100. When splitting
-% the pole figure, i.e. plotting the odf as sigma sections
-
-plot(odf,'sections',6,'silent','sigma')
-
-%%
-% we can clearly distinguish the two spots in the middle indicating two
-% radial symmetric portions. On the other hand the spots at 001 appear in
-% every section indicating a fibre at position [001](100). Knowing that
-% sigma sections are nothing else then the splitted 001 pole figure they
-% are much more simple to interpret then usual phi2 sections.
-
+plotSection(odf,'sigma')
 
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command
 
 close all
+
+% select a fibre of interest
 f = fibre(Miller(1,2,-3,2,cs),vector3d(2,1,1));
+
 plot(odf,f,'LineWidth',2);
 
-%% Fourier Coefficients
-% A last way to visualize an ODF is to plot its Fourier coefficients
-
-close all;
-fodf = FourierODF(odf,32)
-plotFourier(fodf)
-
-%% Axis / Angle Distribution
-% Let us consider the uncorrelated missorientation ODF corresponding to our
-% model ODF.
-
-mdf = calcMDF(odf)
-
-%%
-% Then we can plot the distribution of the rotation axes of this
-% missorientation ODF
-
-plotAxisDistribution(mdf)
-
-%%
-% and the distribution of the missorientation angles and compare them to a
-% uniform ODF
-
-close all
-plotAngleDistribution(mdf)
-hold all
-plotAngleDistribution(cs,cs)
-hold off
-legend('model ODF','uniform ODF')
 
 %%
 % Finally, lets set back the default colormap.

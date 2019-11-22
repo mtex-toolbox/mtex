@@ -1,7 +1,20 @@
-%% Visualizing ODFs
+%% Inverse Pole Figures
 %
-%%
-% Let us first define some model ODFs to be plotted later on.
+%% Theory
+% For an orientation distribution function (ODF) $f \colon \mathrm{SO}(3)
+% \to R$ the inverse pole density function $P_{\vec r}$ with respect to a
+% fixed specimen direction $\vec r$ is spherical function defined as the
+% integral
+%
+% $$ P_{\vec r}(\vec h) = \int_{g \vec h = \vec r} f(g) dg $$
+%
+% The pole density function $P_{\vec r}(\vec h)$ evaluated at a crystal
+% direction $\vec h$ can be interpreted as the volume percentage of
+% crystals with the crystal lattice planes $\vec h$ beeing normal to the
+% specimen direction $\vec r$. 
+% 
+% In order to illustrate the concept of inverse pole figures at an example
+% lets us first define a model ODF to be plotted later on.
 
 cs = crystalSymmetry('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
