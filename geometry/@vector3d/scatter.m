@@ -47,6 +47,7 @@ for i = 1:numel(sP)
   % add some nans if lines are plotted
   if check_option(varargin,'edgecolor')
     
+    x = x(:); y = y(:);
     % find large gaps
     d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
     ind = find(d > diff(sP(i).bounds([1,3])) / 20);
@@ -87,7 +88,7 @@ for i = 1:numel(sP)
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
     h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).hgt,varargin{2:end});
-    sP(i).updateBounds(0.1);
+    %sP(i).updateBounds(0.1);
   
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
       
