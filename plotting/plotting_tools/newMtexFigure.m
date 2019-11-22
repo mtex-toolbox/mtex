@@ -1,15 +1,14 @@
 function [mtexFig,newFigure] = newMtexFigure(varargin)
-% set uo a new plotting figure
+% set up a new plotting figure
 %
 % Syntax
 %
-%   newMtexFigure()
-%s
-% Input
+%   newMtexFigure('figSize','large')
+%   newMtexFigure('layout',[2,3])
 %
 % Options
 %  figSize - huge, large, normal, small, tiny
-%  layout
+%  layout  - [numberRows, numberColumns]
 %
 
 mtexFig = gcm;
