@@ -14,17 +14,7 @@ function odf = FourierODF(C,CS,varargin)
 % See also
 % ODF/ODF uniformODF fibreODF unimodalODF
   
-% extract f_hat
-if isa(C,'cell')
-  f_hat = [];
-  for l = 0:numel(C)-1
-    f_hat = [f_hat;C{l+1}(:) * sqrt(2*l+1)]; %#ok<AGROW>
-  end
-else
-  f_hat = C;
-end
-
-component = FourierComponent(f_hat,CS,varargin{:});
+component = FourierComponent(C,CS,varargin{:});
   
 odf = ODF(component,1);
 

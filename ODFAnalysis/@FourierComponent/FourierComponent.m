@@ -16,21 +16,14 @@ classdef FourierComponent < ODFComponent
   methods
     
     function component = FourierComponent(f_hat,CS,SS,varargin)
-                       
+      
+      component.f_hat = f_hat;
+      
       component.CS = CS;
       if nargin>2, component.SS = SS;end
+      
       component.antipodal = check_option(varargin,'antipodal');
-      
-      % extract f_hat
-      if isa(f_hat,'cell')
-        component.f_hat = [];
-        for l = 0:numel(f_hat)-1
-          component.f_hat = [component.f_hat;f_hat{l+1}(:) * sqrt(2*l+1)];
-        end
-      else
-        component.f_hat = f_hat;
-      end
-      
+                        
       % truncate zeros
       component.bandwidth = find(component.power>1e-10,1,'last')-1;
       
