@@ -40,7 +40,7 @@ elseif nargin>1 && isa(varargin{1},'fibre')
 elseif ~isempty(oS.plotGrid)
   numData = oS.gridSize(end);
 else 
-  ori = orientation;
+  ori = orientation(oS.CS1,oS.CS2);
   numData = 0;
 end
 secData = {};
