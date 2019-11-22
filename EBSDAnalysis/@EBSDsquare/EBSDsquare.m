@@ -9,12 +9,16 @@ classdef EBSDsquare < EBSD
   % general properties
   properties
     dx
-    dy
+    dy    
   end
   
   properties (Dependent = true)    
     gradientX       % orientation gradient in x
     gradientY       % orientation gradient in y
+    xmin
+    xmax
+    ymin
+    ymax
   end
   
   methods
@@ -40,14 +44,33 @@ classdef EBSDsquare < EBSD
       % get unit cell
       ebsd.dx = dxy(1);
       ebsd.dy = dxy(2);
-      if check_option(varargin,'uniCell')
+      if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
         ebsd.unitCell = 0.5 * [dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1]];
       end
+      
+            
     end
            
     % --------------------------------------------------------------
+    
+    function out = get.xmin(ebsd)
+      out = ebsd.x(1);
+    end
+    
+    function out = get.xmax(ebsd)
+      out = ebsd.x(end);
+    end
+    
+    function out = get.ymin(ebsd)
+      out = ebsd.y(1);
+    end
+    
+    function out = get.ymax(ebsd)
+      out = ebsd.y(end);
+    end
+    
     
     function gX = get.gradientX(ebsd)
       % gives the gradient in X direction with respect to specimen
