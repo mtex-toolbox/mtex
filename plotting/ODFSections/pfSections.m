@@ -29,7 +29,7 @@ classdef pfSections < ODFSections
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'omega',oS.omega,'double');
 
-      oS.referenceField = @(r) pfSections.oneSingularityField(r);
+      oS.referenceField = @(r) S2VectorField.oneSingularity;
       %oS.referenceField = @(r) pfSections.polarField(r);
 
     end
@@ -64,7 +64,7 @@ classdef pfSections < ODFSections
       % determine omega angle
       rF = ori * oS.h2;
       vF = vectorField(oS,r);
-      omega = angle(rF,vF,r);
+      omega = angle(vF,rF,r);
 
       % this builds a list
       bounds = sort(unique([oS.omega - oS.tol,oS.omega + oS.tol]));
@@ -87,18 +87,27 @@ classdef pfSections < ODFSections
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
-      hold on
+      wasHold = ishold(ax);
+      hold(ax,'on');
       r = equispacedS2Grid(oS.sR,'resolution',15*degree);
       vF = oS.vectorField(r,oS.omega(sec));
       quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1,'color',0.7*[1 1 1],'HitTest','off');
-      hold off
+      if ~wasHold, hold(ax,'off'); end
+
+    end
+    
+    function h = quiverSection(oS,ax,sec,v,data,varargin)
+
+      % plot data
+      h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
+        'parent',ax,varargin{:},'doNotDraw');
 
     end
 
     function vF = vectorField(oS,r,omega)
 
 
-      vF = oS.referenceField(r);
+      vF = oS.referenceField.eval(r);
 
       if nargin == 3
         vF = rotation.byAxisAngle(r,omega) .* vF;
@@ -107,47 +116,7 @@ classdef pfSections < ODFSections
     end
 
 
-  end
-
-  methods (Static = true)
-    function vF = polarField(r,rRef)
-      % compute and reference vector field on the pole figure
-
-      if nargin == 1, rRef = xvector; end
-
-      vF = normalize(rRef - r);
-      vF = normalize(vF - dot(vF,r) .* r);
-
-    end
-
-    function vF = sigmaField(r)
-
-      [theta,rho] = polar(r);
-      rot = rotation.byEuler(rho,theta,-rho,'ZYZ');
-      vF = rot * xvector;
-
-    end
-
-    function vF = oneSingularityField(r1)
-
-      r2 = r1; r2.x = -r2.x;
-
-      N = normalize(cross(r1+zvector,r2+zvector));
-
-      ind = r1.x == 0;
-      N(ind) = normalize(r1(ind) - zvector);
-
-      ind = r1 == zvector;
-      N(ind) = yvector;
-
-      vF = normalize(r1 - dot(r1,N) .* N);
-      vF = rotation.byAxisAngle(N,sign(N.y)*90*degree) .* vF;
-
-      vF = normalize(vF - dot(vF,r1) .* r1);
-
-    end
-
-  end
+  end     
 
 end
 
