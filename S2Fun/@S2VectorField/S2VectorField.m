@@ -19,6 +19,11 @@ methods(Static = true)
   v = theta(v);
   v = rho(v);
   v = normal(v);
+  
+  vF = polar(rRef);
+  vF = oneSingularity(rRef);
+  vF = sigma;
+  
 end
 
 end
