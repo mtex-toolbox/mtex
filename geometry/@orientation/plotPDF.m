@@ -22,6 +22,7 @@ function plotPDF(ori,varargin)
 %  MarkerEdgeColor -
 %
 % Flags
+%  noTitle    - suppress the Miller indices at the top
 %  noSymmetry - ignore symmetricaly equivalent points
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  complete   - ignore fundamental region

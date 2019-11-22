@@ -16,6 +16,7 @@ function plotPDF(odf,h,varargin)
 %  superposition - plot superposed pole figures
 %
 % Flags
+%  noTitle   - suppress the Miller indices at the top
 %  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
