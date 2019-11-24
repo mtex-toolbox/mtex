@@ -7,15 +7,15 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Input
 %  odf - @ODF 
-%  %  ori - initial list of @orientation
+%  ori - initial list of @orientation
 %
 % Output
-%  modes - modal @orientation
-%  volume - volume of the component
-%  centerId - list of ids to which each initial ori converged to
+%  modes     - modal @orientation
+%  volume    - volume of the component
+%  centerId  - list of ids to which each initial ori converged to
 %
 % Options
-%  resolution  - search--grid resolution
+%  resolution - search-grid resolution
 %
 % Example
 %
