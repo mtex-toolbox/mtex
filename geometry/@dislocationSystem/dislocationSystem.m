@@ -45,8 +45,15 @@ classdef dislocationSystem
       if isa(sS,'slipSystem')
         
         % define edge dislocations
-        dS.b = 0.5 * sS.b;
-        dS.l = round(cross(sS.b,sS.n));
+        if strcmp(sS.CS.lattice,'hexagonal')
+          dS.b = 1/3 * sS.b; 
+        elseif strcmp(sS.CS.lattice,'cubic')
+          dS.b = 1/2 * sS.b;
+        else
+          dS.b = sS.b;
+          warning('I could not determine the correct length of the Burgers vector. Please adjust it manually.')
+        end
+        dS.l = cross(sS.b,sS.n);
         
         % define screw dislocations
         b = 0.5*unique(sS.b,'antipodal','noSymmetry');
@@ -60,7 +67,7 @@ classdef dislocationSystem
         
         b = sS;
         omega = angle(b,l,'noSymmetry');
-        assert(all(omega > pi/2-1e-5 || omega<1e-5),...
+        assert(all(omega > pi/2-1e-5 | omega<1e-5),...
           'line vector and burgers vector should be either be orthogonal! or identical')
       
         dS.b = sS;
