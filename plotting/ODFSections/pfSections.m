@@ -22,7 +22,11 @@ classdef pfSections < ODFSections
       oS.h2 = Miller(1,0,0,'uvw',CS1); % a
 
       oS.maxOmega = get_option(varargin,'maxOmega',2*pi / CS1.nfold(oS.h1));
-      oS.sR = CS2.fundamentalSector(varargin{:});
+      if angle(oS.h1,-oS.h1) < 1e-2
+        oS.sR = CS2.fundamentalSector('upper',varargin{:});
+      else
+        oS.sR = CS2.fundamentalSector(varargin{:});
+      end
 
       % get sections
       oS.omega = linspace(0,oS.maxOmega,1+get_option(varargin,'sections',6));
@@ -78,7 +82,7 @@ classdef pfSections < ODFSections
       r1 = vector3d.byPolar(theta,rho);
       r2 = oS.vectorField(r1,oS.omega(iOmega));
 
-      ori = orientation.map(soS.h1,r1,oS.h2,r2);
+      ori = orientation.map(oS.h1,r1,oS.h2,r2);
     end
 
     function h = plotSection(oS,ax,sec,v,data,varargin)

@@ -160,7 +160,7 @@ end
   end
 
   function [ori,value] = currentOrientation
-    [pos,value,ax] = getDataCursorPos(mtexFig);
+    [pos,~,value,ax] = getDataCursorPos(mtexFig);
     ori = oS.iproject(pos.rho,pos.theta,mtexFig.children == ax);
   end
   
