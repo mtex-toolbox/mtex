@@ -2,13 +2,15 @@ classdef SO3FunHarmonic < SO3Fun
 % A class representing a harmonic function on the rotational group.
 
 properties
-  fhat = []; % harmonic coefficients
+  fhat   = [];              % harmonic coefficients
+  SLeft  = specimenSymmetry % symmetry from the left
+  SRight = specimenSymmetry % symmetry from the right
 end
 
 properties (Dependent=true)  
-  bandwidth;  % maximum harmonic degree / bandwidth
+  bandwidth   % maximum harmonic degree / bandwidth
   power       % harmonic power
-  antipodal;
+  antipodal
 end
 
 methods
@@ -16,12 +18,26 @@ methods
   function SO3F = SO3FunHarmonic(fhat,varargin)
     % initialize a SO(3)-valued function
     
-    SO3F = SO3F@SO3Fun(varargin{:});
-    
     if nargin == 0, return;end
     
-    % extract fhat
-    if isa(fhat,'SO3FunHarmonic'), SO3F.fhat = fhat.fhat; end
+    % convert arbitrary SO3Fun to SO3FunHarmonic
+    if isa(fhat,'SO3Fun')
+      SO3F.SRight = fhat.SRight;
+      SO3F.SLeft  = fhat.SLeft;
+      SO3F.fhat = calcFourier(fhat);
+      return
+    end
+      
+    % set fhat
+    SO3F.fhat = fhat;
+    
+    % extract symmetries
+    isSym = cellfun(@(x) isa(x,'symmetry'),varargin);
+      
+    id = find(isSym,2,'first');
+    
+    if ~isempty(id), SO3F.SRight = varargin{id(1)}; end
+    if length(id)>1, SO3F.SLeft = varargin{id(2)}; end
     
     % extend entries to full harmonic degree
     SO3F.fhat=fhat;
