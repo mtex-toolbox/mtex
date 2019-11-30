@@ -138,10 +138,12 @@ catch %#ok<CTCH>
   phi = 0;
 end
 
-if strcmpi(data.position_2Theta_unit,'deg'),
-  theta2= theta2*degree; end
-if strcmpi(data.position_Omega_unit,'deg'),
-  omega= omega*degree; end
+if strcmpi(data.position_2Theta_unit,'deg')
+  theta2= theta2*degree; 
+end
+if strcmpi(data.position_Omega_unit,'deg')
+  omega= omega*degree; 
+end
 
 q = axis2quat(zvector,phi) .* ...
   axis2quat(yvector,psi)   .* ...
