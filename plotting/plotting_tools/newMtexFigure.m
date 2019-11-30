@@ -38,12 +38,16 @@ if ~newFigure
         end
         if ~all(ad_stored == ad{i}{2})
           newFigure = true;
-          warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+          if ishold
+            warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+          end
           break
         end
       elseif ~isappdata(gcf,ad{i}{1})
         newFigure = true;
-        warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+        if ishold
+          warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+        end
         break
       end
     end

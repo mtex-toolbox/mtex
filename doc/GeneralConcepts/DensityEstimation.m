@@ -229,7 +229,7 @@ hold off
 % A more detailed describtion of ODF estimation from individual orientation
 % measurements can be found in the section <EBSD2ODF.html ODF Estimation
 % from EBSD data>.
-
+%
 %% Parametric Density Estimation
 % 
 % In contrast to kernel density estimation parametric density estimation
@@ -242,4 +242,25 @@ hold off
 % of Bingham parameters from directional and rotational data are explained
 % in the sections <S2FunBingham.html The Spherical Bingham Distribution>
 % and <BinghamODFs.html The Rotational Bingham Distribution>.
+%
+%% Density Estimtation with Weights
+% In many use cases one has a weighted random sample. A typical example is
+% if one wants to estimate a orientation distribution function from grain
+% orientations. In this cases big grains should contribute more to the ODF
+% than small grains. For that reason the functions |calcDensity| allow for
+% an additional option |'weights'| which allows to pass weights to the
+% density estimation.
+
+mtexdata titanium silent
+grains = calcGrains(ebsd);
+
+odf = calpsicDensity(grains.meanOrientation,'weights',grains.grainSize)
+
+
+
+
+
+
+
+
 
