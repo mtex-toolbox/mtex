@@ -48,7 +48,7 @@ for i = 1:length(uaxis)
   
   % plot a proper rotation or the exterior of an improper rotation 
   if multi > 2 || ~isempty(multiP)
-    plotCustom(n,{@(ax,x,y) npoly(x,y,multi,1.1*symbolSize,n(1).rho,'parent',ax,'edgecolor','w','linewidth',2)});
+    plotCustom(n,{@(ax,x,y) npoly(x,y,multi,1.1*symbolSize,n(1).rho,'parent',ax,'edgecolor','w','linewidth',1)});
   end
   
   % if the improper multiplicity is larger then the proper multiplicity
