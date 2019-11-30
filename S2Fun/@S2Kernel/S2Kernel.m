@@ -29,16 +29,16 @@ classdef S2Kernel
 
     function plot(S2K,varargin)      
       
-      x = linspace(-1,1,10000);
-      omega = acos(x)./degree;
-      f = S2K.eval(x);
+      omega = get_option(varargin,'omega',linspace(0,180*degree,1000));
+      
+      f = S2K.eval(cos(omega));
       
       if check_option(varargin,'symmetric')
         omega = [-omega,fliplr(omega)];
         f = [f,fliplr(f)];
       end
       
-      optiondraw(plot(omega,f),varargin{:});
+      optiondraw(plot(omega./degree,f),varargin{:});
     end
     
     function display(S2K)
