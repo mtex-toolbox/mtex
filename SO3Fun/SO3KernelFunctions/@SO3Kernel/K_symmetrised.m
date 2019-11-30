@@ -48,7 +48,7 @@ if epsilon>2*pi/CS.Laue.multiplicityZ % full matrixes
       
 			sg    = qSS(ips) * q1 * qCS(iks);  % rotate g1
       omega = abs(dot_outer(sg,q2));      % calculate full distance matrix            
-      w = w + psi.K(omega);          
+      w = w + psi.eval(omega);          
       
 		end
   end  
@@ -62,13 +62,13 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
     for issq = 1:length(qSS)
       d = abs(dot_outer(q1,qSS(issq)*quaternion(q2),'epsilon',epsilon,...
         'nospecimensymmetry'));
-        w = w + spfun(@psi.K,d);
+        w = w + spfun(@psi.eval,d);
     end    
   else                         % second argument is SO3Grid
     for issq = 1:length(qSS)
       d = abs(dot_outer(q2,qSS(issq)*quaternion(q1),'epsilon',epsilon,...
         'nospecimensymmetry'));
-      w = w + spfun(@psi.K,d.');
+      w = w + spfun(@psi.eval,d.');
     end
   end
 
@@ -97,7 +97,7 @@ else
 %  if length(z) > numel(omega)/length(CS)/10, w = full(w); end
       
       [y,x] = find(omega>cos(epsilon));
-      dummy = sparse(y,x,psi.K(omega(sub2ind(size(w),y,x))),length(q1),length(q2));
+      dummy = sparse(y,x,psi.eval(omega(sub2ind(size(w),y,x))),length(q1),length(q2));
       
       w = w + dummy;          
       

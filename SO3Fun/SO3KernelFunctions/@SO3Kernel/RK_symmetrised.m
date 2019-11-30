@@ -28,6 +28,9 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 % See also
 % kernel/k kernel/rkk
 
+% compute the radon transformed kernel
+Rpsi = psi.radon;
+
 if length(h)==1                        % pole figure
   [h,lh] = symmetrise(h,varargin{:});
   in = reshape((SS * g).' * h, [length(g),length(SS),lh]);
@@ -48,8 +51,8 @@ in = vector3d(in); out = vector3d(out);
 % take mean along all symmetries
 for is = 1:length(SS)*lh
   dmatrix = dot_outer(out.normalize,in(:,is).normalize);
-  M = M + psi.RK(dmatrix);
-  if check_option(varargin,'antipodal'), M = M + psi.RK(-dmatrix);end
+  M = M + Rpsi.eval(dmatrix);
+  if check_option(varargin,'antipodal'), M = M + Rpsi.eval(-dmatrix);end
 end
 
 if ~isempty(c), M = M * c(:); end

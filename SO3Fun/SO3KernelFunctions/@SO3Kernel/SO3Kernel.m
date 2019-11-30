@@ -1,12 +1,11 @@
 classdef SO3Kernel
 % 
-% The class *kernel* is needed in MTEX to define the specific form of
-% unimodal and fibre symmetric ODFs. It has to be passed as an argument
-% when calling the methods <uniformODF.html uniformODF> and <fibreODF.html
-% fibreODF>.
+% The class *SO3Kernel* is needed in MTEX to define the specific form of
+% unimodal ODFs. It has to be passed as an argument when calling the
+% methods <uniformODF.html uniformODF>.
 %
 % See also
-% deLaValeePoussinKernel AbelPoissonKernel
+% SO3deLaValeePoussin SO3AbelPoisson
   
   properties
     A=[] % Chebyshev coefficients
@@ -34,60 +33,7 @@ classdef SO3Kernel
       disp(['  halfwidth: ',xnum2str(psi.halfwidth/degree) mtexdegchar]);      
       disp(' ');
     end
-                
-    function value = K(psi,co2)
-      % use the Clenshaw algorithm to compute the kernel value from the
-      % Chebyshev coefficients
-      
-      co2 = cut2unitI(co2);
-      value = ClenshawU(psi.A,acos(co2)*2);
-      
-      function res = ClenshawU(A,omega)
-        % calcualtes sum A_l Tr T_l(omega)
-
-        omega = omega / 2;
-        U = ones(size(omega));
-        res = A(1) * U;
-
-        for l=1:length(A)-1
-          U = cos(2*l*omega) + cos(omega).*cos((2*l-1)*omega) ...
-            + cos(omega).^2.*U;
-          res = res + A(l+1) * U;
-        end      
-      end
-    end
-    
-    function value = RK(psi,d)
-      % use the Clenshaw algorithm to compute the kernel value from the
-      % Legendre coefficients
-      
-      d = cut2unitI(d);
-      value = ClenshawL(psi.A,d);
-      
-      
-    end
-    
-    function value = RRK(psi,dh,dr)
-      % use the Clenshaw algorithm to compute the kernel value from the
-      % Legendre coefficients
-     
-      dh = cut2unitI(dh);
-      dr = cut2unitI(dr);
-      value = zeros(numel(dh),numel(dr));
-      if numel(dh)<numel(dr)
-        for ih = 1:length(dh)
-          Plh = legendre0(length(psi.A)-1,dh(ih));
-          value(ih,:) = ClenshawL(psi.A(:) .* Plh,dr);
-        end
-      else
-        for ir = 1:length(dr)
-          Plr = legendre0(length(psi.A)-1,dr(ir));
-          value(:,ir) = ClenshawL(psi.A(:) .* Plr,dh).';
-        end
-      end
-      value(value<0)=0;
-    end
-      
+                         
     function value = eq(psi1,psi2)
       % check for equal kernel functions      
       
@@ -111,12 +57,8 @@ classdef SO3Kernel
     end
     
     function psi = mtimes(psi1,psi2)
-      % convolution of kernel functions
-            
-      L = min(psi1.bandwidth,psi2.bandwidth);     
-      l = (0:L).';
-
-      psi = kernel(psi1.A(1:L+1) .* psi2.A(1:L+1) ./ (2*l+1));    
+      % convolution of kernel functions            
+      psi = conv(psi1,psi2);
     end
          
     function c = char(psi)
@@ -128,7 +70,7 @@ classdef SO3Kernel
       % self convolution
 
       l = 0:psi.bandwidth;
-      psi = kernel((psi.A ./ (2*l+1)).^p .* (2*l+1));      
+      psi = SO3Kernel((psi.A ./ (2*l+1)).^p .* (2*l+1));      
     end
     
     function hw = halfwidth(psi)
