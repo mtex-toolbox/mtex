@@ -1,17 +1,21 @@
-function sF = rotate_outer(sF, rot)
+function SO3F = rotate_outer(SO3F, rot, varargin)
 % rotate a function by a rotation
 %
 % Syntax
-%   sF = sF.rotate_outer(rot)
+%   SO3F = SO3F.rotate_outer(rot)
 %
 % Input
-%  sF - @S2FunHandle
-%  rot - @rotation
+%  SO3F - @SO3FunHandle
+%  rot  - @rotation
 %
 % Output 
-%  sF - @S2FunHandle
+%  SO3F - @SO3FunHandle
 %
 
-sF.fun = @(v) sF.fun(inv(rot)*v);
+if check_option(varargin,'right')
+  SO3F.fun = @(pos) SO3F.fun(pos * inv(rot));
+else
+  SO3F.fun = @(pos) SO3F.fun(inv(rot) * pos);
+end
 
 end

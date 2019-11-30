@@ -1,4 +1,4 @@
-classdef kernel
+classdef SO3Kernel
 % 
 % The class *kernel* is needed in MTEX to define the specific form of
 % unimodal and fibre symmetric ODFs. It has to be passed as an argument
@@ -20,7 +20,7 @@ classdef kernel
   methods
   
     % constructor
-    function psi = kernel(A)
+    function psi = SO3Kernel(A)
       if nargin > 0
         psi.A = A(:);
         %psi.A = cutA(psi);
