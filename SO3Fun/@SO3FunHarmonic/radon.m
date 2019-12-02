@@ -1,45 +1,62 @@
-function pdf = radon(SO3F,h,r,varargin)
-% calculate pole figure from Fourier coefficients
+function S2F = radon(SO3F,h,r,varargin)
+% radon transform of the SO(3) function
+%
+% Syntax
+%   S2F = radon(SO3F,h)
+%   S2F = radon(SO3F,[],r)
+%
+% Input
+%  SO3F - @SO3FunHarmonic
+%  h    - @vector3d, @Miller
+%  r    - @vector3d, @Miller
+%
+% Output
+%  S2F - @S2FunHarmonic
+%
+% See also
 
 % use only even Fourier coefficients?
-even = check_option(varargin,'antipodal') || h.antipodal || SO3F.CS.isLaue;
-if nargin > 2, even = even || r.antipodal; end
+even = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
+  (nargin > 1 && ~isempty(h) && h.antipodal) || ...
+  (nargin > 2 && ~isempty(r) && r.antipodal);
 even = 1 + double(even);
 
 % bandwidth
 L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 L = min(L,SO3F.bandwidth);
 
-if length(h) == 1  % pole figures
-  sym = SO3F.SS;
+% S2Fun in h or r?
+if nargin<3 || isempty(r)
+  isPF = true;
+elseif isempty(h)
+  isPF = false;
 else
-  sym = SO3F.CS;
+  isPF = length(h) < length(r);
 end
 
-ipdf_hat = cumsum([0,2*(0:L)+1]);
+% indeces to Rf_hat
+ind = cumsum([0,2*(0:L)+1]);
 
-% calculate Fourier coefficients of the pole figure
+% calculate Fourier coefficients of the Radon transform
 for l = 0:even:L
-  if length(h) == 1  % pole figures
-    P_hat(1+ipdf_hat(l+1):ipdf_hat(l+2)) = reshape(...
-      SO3F.f_hat(1+deg2dim(l):deg2dim(l+1)),2*l+1,2*l+1).' ./(2*l+1) ...
+  
+  if isPF  % functions with respect to r
+    
+    Rf_hat(1+ind(l+1):ind(l+2),:) = reshape(...
+      SO3F.fhat(1+deg2dim(l):deg2dim(l+1)),2*l+1,2*l+1).' ./(2*l+1) ...
       * 4 * pi * sphericalY(l,h).';
     
-  elseif  length(r) == 1 % inverse pole figures
-    P_hat(1+ipdf_hat(l+1):ipdf_hat(l+2)) = reshape(...
-      conj(SO3F.f_hat(1+deg2dim(l):deg2dim(l+1))),2*l+1,2*l+1) ./(2*l+1) ...
+  else     % functions with respect to h
+    
+    Rf_hat(1+ind(l+1):ind(l+2),:) = reshape(...
+      conj(SO3F.fhat(1+deg2dim(l):deg2dim(l+1))),2*l+1,2*l+1) ./(2*l+1) ...
       * 4 * pi * sphericalY(l,r).';
-  else
-    error('Either h or r should be a single direction!');
+  
   end
 end
 
 % setup a spherical harmonic function
-pdf = S2FunHarmonicSym(conj(P_hat(:)),sym);
+if isPF, sym = SO3F.SS; else sym = SO3F.CS; end
 
-% evaluate if required
-if length(h) > 1
-  pdf = pdf.eval(h); 
-elseif nargin>2 && length(r) > 1
-  pdf = pdf.eval(r); 
-end
+S2F = S2FunHarmonicSym(conj(Rf_hat),sym);
+
