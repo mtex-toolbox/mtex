@@ -12,15 +12,25 @@ classdef SO3FunBingham < SO3Fun
     SRight
   end
   
+  properties (Hidden = true)
+    C0 % normalization constant
+  end
+  
   methods
     
-    function SO3F = BinghamSO3F(kappa,A)
+    function SO3F = SO3FunBingham(kappa,A)
         
       if nargin == 0, return;end
       
       SO3F.kappa = kappa(:);
       SO3F.A = A;
 
+    end
+    
+    
+    function SO3F = set.kappa(SO3F,kappa)
+      SO3F.C0 = mhyper(kappa);
+      SO3F.kappa = kappa;      
     end
     
     function SO3F = set.SRight(SO3F,S)

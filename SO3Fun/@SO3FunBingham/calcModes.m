@@ -1,6 +1,6 @@
-function ori = calcModes(component,varargin)
+function ori = calcModes(SO3F,varargin)
 % return the modes of the component
 
-ori = component.A;
+ori = SO3F.A;
 
 end
