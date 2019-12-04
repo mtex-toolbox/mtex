@@ -1,14 +1,19 @@
 function S2F = radon(SO3F,h,r,varargin)
-% radon transform of the function on SO(3)
+% radon transform of the SO(3) function
 %
 % Syntax
-%   S2F = radon(SO3F,h,r)
+%   S2F = radon(SO3F,h)
+%   S2F = radon(SO3F,[],r)
 %
 % Input
+%  SO3F - @SO3FunRBF
+%  h    - @vector3d, @Miller
+%  r    - @vector3d, @Miller
 %
 % Output
+%  S2F - @S2FunHarmonic
 %
-%
+% See also
 
 if nargin > 2 && min(length(h),length(r)) > 0 && ...
     (check_option(varargin,'old') || max(length(h),length(r)) < 10)
@@ -20,35 +25,44 @@ if nargin > 2 && min(length(h),length(r)) > 0 && ...
   
 end
 
-antipodal = extract_option(varargin,'antipodal');
-if length(h) == 1 % pole figure
+% S2Fun in h or r?
+if nargin<3 || isempty(r)
+  isPF = true;
+elseif isempty(h)
+  isPF = false;
+else
+  isPF = length(h) < length(r);
+end
 
-  sh = symmetrise(h,'unique');
-  S2F = S2FunHarmonicSym.quadrature(SO3F.center*sh,...
-    repmat(SO3F.weights(:),1,length(sh)),SO3F.SS,antipodal{:},...
-    'symmetrise','bandwidth',SO3F.psi.bandwidth);
+if isPF % pole figure
 
-  % convolve with kernel function
-  S2F = 4 * pi * conv(S2F,SO3F.psi)./ length(sh);
-
-  % maybe we should evaluate
-  if nargin > 2 && isa(r,'vector3d'), S2F = S2F.eval(r); end
+  for k = 1:length(h)
+    sh = symmetrise(h(k),'unique','skipantipodal');
+    S2F(k) = S2FunHarmonicSym.quadrature(SO3F.center*sh,...
+      repmat(SO3F.weights(:),1,length(sh)),SO3F.SS,...
+      'symmetrise','bandwidth',SO3F.psi.bandwidth) ./ length(sh); %#ok<AGROW>
+    
+    % set result to antipodal if possible
+    S2F(k).antipodal = angle(h(k),-h(k)) < 1e-3; %#ok<AGROW>
+  end
   
 else % inverse pole figure
 
-  sr = symmetrise(r,SO3F.SS,'unique');
-  S2F = S2FunHarmonicSym.quadrature(inv(SO3F.center)*sr,...
-    repmat(SO3F.weights(:),1,length(sr)),SO3F.CS,antipodal{:},...
-    'symmetrise','bandwidth',SO3F.psi.bandwidth);
-  
-  % convolve with kernel function
-  S2F = 4 * pi * conv(S2F,SO3F.psi) ./ length(sr);
-
-  % maybe we should evaluate
-  if isa(h,'vector3d'), S2F = S2F.eval(h); end
+  for k = 1:length(r)
+    sr = symmetrise(r(k),SO3F.SS,'unique');
+    S2F(k) = S2FunHarmonicSym.quadrature(inv(SO3F.center)*sr,...
+      repmat(SO3F.weights(:),1,length(sr)),SO3F.CS,...
+      'symmetrise','bandwidth',SO3F.psi.bandwidth) ./ length(sr); %#ok<AGROW>
+  end
   
 end
 
-if ~isnumeric(S2F)
-  S2F.antipodal = SO3F.antipodal;
+% convolve with radon transformed kernel function
+S2F = 4 * pi * conv(S2F,SO3F.psi.radon) ;
+
+% globaly set antipodal
+if check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
+    (nargin > 1 && ~isempty(h) && h.antipodal) || ...
+    (nargin > 2 && ~isempty(r) && r.antipodal)
+  S2F.antipodal = true;
 end
