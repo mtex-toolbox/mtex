@@ -46,7 +46,7 @@ methods
     SO3F.antipodal = check_option(varargin,'antipodal');
     
     % truncate zeros
-    SO3F.bandwidth = find(SO3F.power > 1e-10,1,'last'); 
+    SO3F.bandwidth = find(SO3F.power > 1e-10,1,'last')-1; 
     
   end
      
