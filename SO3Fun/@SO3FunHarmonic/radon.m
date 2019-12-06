@@ -11,7 +11,7 @@ function S2F = radon(SO3F,h,r,varargin)
 %  r    - @vector3d, @Miller
 %
 % Output
-%  S2F - @S2FunHarmonic
+%  S2F  - @S2FunHarmonic
 %
 % See also
 
@@ -56,7 +56,7 @@ for l = 0:even:L
 end
 
 % setup a spherical harmonic function
-if isPF, sym = SO3F.SS; else sym = SO3F.CS; end
+if isPF, sym = SO3F.SS; else, sym = SO3F.CS; end
 
 S2F = S2FunHarmonicSym(conj(Rf_hat),sym);
 

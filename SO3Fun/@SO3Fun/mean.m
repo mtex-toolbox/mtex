@@ -23,6 +23,8 @@ function value = mean(SO3F, varargin)
  
 nodes = equispacedSO3Grid(SO3F.SRight, SO3F.SLeft,'resolution',2.5*degree);
 
-value = mean(SO3F.eval(nodes),1);  
+f = reshape(SO3F.eval(nodes),[],size(SO3F,1),size(SO3F,2));
+
+value = nanmean(f,1);  
 
 end

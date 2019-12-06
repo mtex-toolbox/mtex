@@ -1,14 +1,16 @@
-function SO3F = rotate_outer(SO3F,rot,varargin)
+function SO3F = rotate_outer(SO3F,varargin)
 % rotate ODF
 %
 % Syntax
-
+%   SO3F = rotate_outer(SO3F,rot)
 %
 % Input
-%  odf - @ODF
-%  q   - @rotation
+%  SO3F - @SO3Fun
+%  rot  - @rotation
 %
 % Output
-%  rotated odf - @ODF
+%  SO3F - @SO3FunHandle
 
-SO3F = SO3FunHandle(@(x) SO3F.eval(inv(rot) .* x));
+SO3F = SO3FunHandle(@(rot) SO3F.eval(rot));
+
+SO3F = rotate_outer(SO3F,varargin{:});
