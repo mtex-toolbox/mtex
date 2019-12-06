@@ -29,7 +29,7 @@ res = get_option(varargin,'RadonResolution',2*degree);
 if isPF % pole figure
 
   
-  [r,W] = quadratureS2Grid(48);
+  [r,W] = quadratureS2Grid(64);
      
   for k = 1:length(h)
 
