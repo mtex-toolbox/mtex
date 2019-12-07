@@ -8,9 +8,14 @@ classdef S2Kernel
     bandwidth % harmonic degree
   end
   
+  properties (Hidden = true)
+    evalFun = []
+  end
+  
+  
   methods
     
-    function S2K = S2Kernel(A)   
+    function S2K = S2Kernel(A, evalFun)
       if nargin == 0, return; end
       
       if isa(A,'S2Kernel')
@@ -18,13 +23,19 @@ classdef S2Kernel
       else
         S2K.A = A(1:min(end,2048));
       end
+      
+      if nargin == 2, S2K.evalFun = evalFun; end
     end
 
     function v = eval(S2K,x)
       % evaluate the kernel function at nodes x
     
       % TODO: make this faster using a polynomial transform and a nfct
-      v = ClenshawL(S2K.A,x);      
+      if isempty(S2K.evalFun)
+        v = ClenshawL(S2K.A,x);
+      else
+        v = S2K.evalFun(x);
+      end
     end
 
     function plot(S2K,varargin)      
