@@ -14,10 +14,10 @@ if ~isempty(rot1) && ~isempty(rot2)
   
   d = abs(q1 * q2');
   
-  if isa(rot2,'rotation')
+  if isa(rot1,'rotation') && isa(rot2,'rotation')
     i = bsxfun(@xor,rot1.i(:),rot2.i(:).');
     d = ~i .* d;
-  else
+  elseif isa(rot1,'rotation')
     d(rot1.i,:) = 0;
   end
 else
