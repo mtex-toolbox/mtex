@@ -1,5 +1,17 @@
 function Z = calcPDF(component,h,r,varargin)
 % calculate pdf for fibre component
+%
+% Syntax
+%   value = calcPDF(odf,h,r)
+%
+% Input
+%  odf - @fibreComponent
+%  h   - @Miller / @vector3d crystal directions
+%  r   - @vector3d specimen directions
+%
+% Output
+%  pdf - pole density @double
+%
 
 Z = zeros(length(h),length(r));
 
