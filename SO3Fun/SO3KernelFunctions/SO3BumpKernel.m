@@ -1,4 +1,4 @@
-classdef bumpKernel < kernel
+classdef SO3BumpKernel < SO3Kernel
   % the bump kernel
   %   Detailed explanation goes here
     
@@ -8,7 +8,7 @@ classdef bumpKernel < kernel
       
   methods
     
-    function psi = bumpKernel(varargin)
+    function psi = SO3BumpKernel(varargin)
     
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')
@@ -30,20 +30,25 @@ classdef bumpKernel < kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
     
-    function value = K(psi,co2)
+    function value = eval(psi,co2)
       % the kernel function on SO(3)      
       value = (pi/(psi.delta-sin(psi.delta))) * ...
         (co2>cos(psi.delta/2));      
     end
   
-    function value = RK(psi,t)
-      % the radon transformed kernel function at 
-      t = cut2unitI(t);
-      value = zeros(size(t));
-      s = cos(psi.delta/2)./sqrt((1+t)./2);
-      ind = s<=1;
-      value(ind) = (pi/(psi.delta-sin(psi.delta))) * ...
-        2/pi*acos(s(ind));      
+    function S2K = radon(psi)
+            
+      S2K = S2Kernel(psi.A,@evalRadon);
+      
+      function value = evalRadon(t)
+        % the radon transformed kernel function at
+        t = cut2unitI(t);
+        value = zeros(size(t));
+        s = cos(psi.delta/2)./sqrt((1+t)./2);
+        ind = s<=1;
+        value(ind) = (pi/(psi.delta-sin(psi.delta))) * ...
+          2/pi*acos(s(ind));
+      end
     end
         
     function hw = halfwidth(psi)

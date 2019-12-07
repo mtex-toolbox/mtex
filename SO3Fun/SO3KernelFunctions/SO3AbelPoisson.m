@@ -1,4 +1,4 @@
-classdef AbelPoissonKernel < kernel
+classdef SO3AbelPoisson < SO3Kernel
 % the Abel Poisson kernel  
     
   properties
@@ -7,7 +7,7 @@ classdef AbelPoissonKernel < kernel
       
   methods
     
-    function psi = AbelPoissonKernel(varargin)
+    function psi = SO3AbelPoisson(varargin)
             
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')
@@ -33,16 +33,21 @@ classdef AbelPoissonKernel < kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
     
-    function value = K(psi,co2)
+    function value = eval(psi,co2)
       % the kernel function on SO(3)
       co2 = cut2unitI(co2);
       value = AP(psi.kappa,co2);
     end
   
-    function value = RK(psi,t)
-      % the radon transformed kernel function at 
-      t = cut2unitI(t);
-      value  = (1-psi.kappa^4)./((1-2*psi.kappa^2*t+psi.kappa^4).^(3/2));
+    function S2K = radon(psi)
+      % the radon transformed kernel function
+      
+      S2K = S2Kernel(psi.A,@evalRadon);
+      
+      function value = evalRadon(t)
+        t = cut2unitI(t);
+        value  = (1-psi.kappa^4)./((1-2*psi.kappa^2*t+psi.kappa^4).^(3/2));
+      end
     end
         
   end

@@ -1,4 +1,4 @@
-classdef SquareSingularityKernel < kernel
+classdef SO3SquareSingularityKernel < SO3Kernel
       
   properties
     kappa = 90;
@@ -7,7 +7,7 @@ classdef SquareSingularityKernel < kernel
       
   methods
     
-    function psi = SquareSingularityKernel(varargin)
+    function psi = SO3SquareSingularityKernel(varargin)
         
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')        
@@ -42,7 +42,7 @@ classdef SquareSingularityKernel < kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
     
-    function value = RK(psi,t)
+    function value = radon(psi,t)
       % the radon transformed kernel function at 
       value  = 2*psi.kappa/log((1+psi.kappa)/(1-psi.kappa)) ./ ...
         (1-2*psi.kappa*t + psi.kappa^2);

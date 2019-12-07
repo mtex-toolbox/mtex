@@ -1,4 +1,4 @@
-classdef GaussWeierstrassKernel < kernel
+classdef SO3GaussWeierstrassKernel < SO3Kernel
       
   properties
     kappa = 0.1;
@@ -6,7 +6,7 @@ classdef GaussWeierstrassKernel < kernel
       
   methods
     
-    function psi = GaussWeierstrassKernel(varargin)
+    function psi = SO3GaussWeierstrassKernel(varargin)
       
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')

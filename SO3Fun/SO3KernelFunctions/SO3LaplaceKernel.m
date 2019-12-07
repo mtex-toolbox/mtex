@@ -1,13 +1,13 @@
-classdef LaplaceKernel < kernel
+classdef SO3LaplaceKernel < SO3Kernel
             
   methods
     
-    function psi = LaplaceKernel(varargin)
+    function psi = SO3LaplaceKernel(varargin)
             
       % extract bandwidth
       L = get_option(varargin,'bandwidth',1000);
              
-      % compute Legendre coefficients
+      % compute Chebyshev coefficients
       psi.A(1) = 0;
       for i=1:L
         psi.A(i+1) = (2*i + 1)/(4*i^2*(2*i + 2)^2);

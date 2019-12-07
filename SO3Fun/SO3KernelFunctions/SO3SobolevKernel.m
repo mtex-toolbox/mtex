@@ -1,4 +1,4 @@
-classdef SobolevKernel < kernel
+classdef SO3SobolevKernel < SO3kernel
     
   properties
     s = 1;
@@ -6,7 +6,7 @@ classdef SobolevKernel < kernel
       
   methods
     
-    function psi = SobolevKernel(s,varargin)
+    function psi = SO3SobolevKernel(s,varargin)
       
       if nargin == 0, return;end
       psi.s = s;

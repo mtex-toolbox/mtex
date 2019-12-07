@@ -1,12 +1,12 @@
-classdef DirichletKernel < kernel
+classdef SO3DirichletKernel < SO3Kernel
 %the Dirichlet kernel in the orientation space
 %
 % Syntax
-%   psi = DirichletKernel(bandwidth)
+%   psi = SO3DirichletKernel(bandwidth)
 
   methods
     
-    function psi = DirichletKernel(N)
+    function psi = SO3DirichletKernel(N)
       
       psi.A = 2.*(0:N)+1;
             
@@ -16,7 +16,7 @@ classdef DirichletKernel < kernel
       c = ['Dirichlet, bandwidth ' num2str(psi.bandwidth)];
     end
     
-    function value = K(psi,co2)
+    function value = eval(psi,co2)
       % the kernel function on SO(3)
       
       N = psi.bandwidth;
@@ -33,9 +33,7 @@ classdef DirichletKernel < kernel
     function hw = halfwidth(psi)
       hw = fminbnd(@(omega) (psi.K(1)-2*psi.K(cos(omega/2))).^2,0,2*pi/psi.bandwidth);
     end
-    
-    
-    
+
   end
-  
+
 end

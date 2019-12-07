@@ -1,4 +1,4 @@
-classdef vonMisesFisherKernel < kernel
+classdef SO3vonMisesFisherKernel < SO3Kernel
     
   properties
     kappa = 45;
@@ -7,7 +7,7 @@ classdef vonMisesFisherKernel < kernel
       
   methods
     
-    function psi = vonMisesFisherKernel(varargin)
+    function psi = SO3vonMisesFisherKernel(varargin)
       
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')
@@ -37,9 +37,8 @@ classdef vonMisesFisherKernel < kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
     
-    function value = K(psi,co2)
-      % the kernel function on SO(3)
-      
+    function value = eval(psi,co2)
+            
       co2 = cut2unitI(co2);
       if psi.kappa < 500        
         value = psi.C * exp(psi.kappa*cos(acos(co2)*2));        
@@ -48,12 +47,17 @@ classdef vonMisesFisherKernel < kernel
       end
     end
   
-    function value = RK(psi,t)
-      % the radon transformed kernel function at 
-      t = cut2unitI(t);
-      value = exp(psi.kappa*(t-1)/2) .* ...
-        besseli(0,psi.kappa *(1+t)/2)/...
-        (besseli(0,psi.kappa)-besseli(1,psi.kappa));      
+    function S2K = radon(psi)
+      % the radon transformed kernel function
+      
+      S2K = S2Kernel(psi.A,@evalRadon);
+      
+      function value = evalRadon(t)
+        t = cut2unitI(t);
+        value = exp(psi.kappa*(t-1)/2) .* ...
+          besseli(0,psi.kappa *(1+t)/2)/...
+          (besseli(0,psi.kappa)-besseli(1,psi.kappa));
+      end
     end
         
     function hw = halfwidth(psi)
