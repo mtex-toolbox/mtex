@@ -15,9 +15,9 @@ function value = mean(sF, varargin)
 %
 % Description
 %
-% If sF is a 3x3 S2Fun then
-% mean(sF) returns a 3x3 matrix with the mean values of each function
-% mean(sF, 1) returns a 1x3 S2Fun wich contains the pointwise means values along the first dimension
+% If sF is a 3x3 S2Fun then |mean(sF)| returns a 3x3 matrix with the mean
+% values of each function mean(sF, 1) returns a 1x3 S2Fun wich contains the
+% pointwise means values along the first dimension
 %
  
 nodes = quadratureS2Grid(256);
