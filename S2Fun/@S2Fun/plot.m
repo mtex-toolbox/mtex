@@ -1,4 +1,4 @@
-function h = plot(sF,varargin)
+function [h,ax] = plot(sF,varargin)
 % plot spherical Function
 %
 % Syntax
@@ -24,18 +24,22 @@ plotNodes = plotS2Grid(varargin{:});
 % evaluate the function on the plotting grid
 values = reshape(sF.eval(plotNodes),[],length(sF));
 
+if check_option(varargin,'ensureNonNeg'), values = ensureNonNeg(values); end
+
 if check_option(varargin,'rgb')
   
-  h = plot(plotNodes,values,'surf','hold',varargin{:});
+  [h,ax] = plot(plotNodes,values,'surf','hold',varargin{:});
 
 else
-  h = [];
+  h = []; ax = [];
   for j = 1:length(sF)
 
     if j > 1, mtexFig.nextAxis; end
     
     % plot the function values
-    h = [h,plot(plotNodes,values(:,j),'pcolor','hold',varargin{:})]; %#ok<AGROW>
+    [ch,cax] = plot(plotNodes,values(:,j),'pcolor','hold',varargin{:});
+    h = [h,ch]; %#ok<*AGROW>
+    ax = [ax,cax];
   
   end
 end
