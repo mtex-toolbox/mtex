@@ -6,8 +6,8 @@ classdef rotation < quaternion & dynOption
   % Syntax
   %   rot = rotation.byEuler(phi1,Phi,phi2)
   %   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ')
-  %   rot = rotation.axisAngle(v,omega)
-  %   rot = rotation.matrix(A)
+  %   rot = rotation.byAxisAngle(v,omega)
+  %   rot = rotation.byMatrix(A)
   %   rot = rotation.map(u1,v1)
   %   rot = rotation.map(u1,v1,u2,v2)
   %   rot = reflection(b)
