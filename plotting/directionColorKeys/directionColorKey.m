@@ -85,7 +85,7 @@ classdef directionColorKey < handle
     function rgb = direction2color(oM,h,varargin)
       rgb = oM.dir2color(h,varargin{:});
     end
-  
+       
   end
 
 end
