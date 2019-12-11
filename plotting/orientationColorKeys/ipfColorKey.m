@@ -74,5 +74,11 @@ classdef ipfColorKey < orientationColorKey
       
     end
     
+    function S2F = S2Fun(oM)      
+      S2F = S2FunHandle(@(h) direction2color(oM.dirMap,h));
+      
+      %S2F = S2FunHarmonicSym.quadrature(@(h) oM.dirMap.direction2color(h),oM.CS1);
+      
+    end    
   end  
 end
