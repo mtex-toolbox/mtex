@@ -72,6 +72,18 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   plotBoundary = false;
   
+elseif nargin>1 && isa(varargin{1},'S2Fun')
+  
+  scaling = sqrt(grains.area);
+  shift = vector3d([grains.centroid,2*scaling*zUpDown].');
+  
+  for k = 1:length(grains)
+    h(k) = plot(rotate(varargin{1},grains.meanOrientation(k)),...
+    'parent', mP.ax,'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k));
+  end
+  
+  plotBoundary = false;
+  
 elseif check_option(varargin,'FaceColor')
   
   % plot polygons
