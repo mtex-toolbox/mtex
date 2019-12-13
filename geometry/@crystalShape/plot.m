@@ -2,7 +2,9 @@ function h = plot(cS,varargin)
 % colorize grains
 %
 % Syntax
-%   plot(cS)  % colorize by phase
+%   plot(cS)
+%   plot(cS,'colored') % colorize different faces
+%   plot(cS,'colored',ipfKey)
 %   plot(x,y,cS)
 %   plot(x,y,z,cS)
 %   plot(xy,cS)
@@ -21,16 +23,23 @@ function h = plot(cS,varargin)
 
 
 if check_option(varargin,'colored')
+  
+  dirKey = get_option(varargin,'colored');
+  if isa(dirKey,'ipfColorKey'), dirKey = dirKey.dirMap; end
   varargin = delete_option(varargin,'colored');
   
-  C = linspecer(length(cS.N));
-  h = plot(cS.subSet(cS.N(1).symmetrise),'faceColor',C(1,:),'DisplayName',...
-    char(round(cS.N(1)),'LaTeX'),varargin{:});
-  hold on
-  for i = 2:length(cS.N)
-    h = [h,plot(cS.subSet(cS.N(i).symmetrise),'faceColor',C(i,:),'DisplayName',...
+  h = [];
+  for i = 1:length(cS.N)
+    if isa(dirKey,'directionColorKey')
+      color = dirKey.direction2color(cS.N(i));
+    else
+      color = ind2color(i);      
+    end
+    h = [h,plot(cS.subSet(cS.N(i).symmetrise),'faceColor',color,'DisplayName',...
       char(round(cS.N(i)),'LaTex'),varargin{:})]; %#ok<AGROW>
+    hold on
   end
+  
   hold off
   legend('show','interpreter','LaTeX','location','east')
   return
