@@ -38,9 +38,10 @@ end
 
 % norm of the vector is rotational angle
 omega = norm(tq);
-mask = omega ~=0;
-tq(mask) = tq(mask) ./ omega(mask);
-tq(~mask)=0*tq(~mask);
+
+invOmega = 1./omega;
+invOmega(omega==0) = 0;
+tq = tq .* invOmega;
 
 if nargin == 2
   q =  q .* quaternion(cos(omega/2),sin(omega/2).*tq);

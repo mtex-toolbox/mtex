@@ -51,12 +51,8 @@ classdef rotation < quaternion & dynOption
       
       if isa(varargin{1},'quaternion')  % copy constructor
         
-        [rot.a,rot.b,rot.c,rot.d] = double(varargin{1});
-        try
-          rot.i = varargin{1}.i;
-        catch
-          rot.i = false(size(rot.a));
-        end
+        [rot.a,rot.b,rot.c,rot.d, rot.i] = double(varargin{1});
+        
         return
       end
         
