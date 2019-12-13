@@ -1,4 +1,4 @@
-function ebsd = fill(ebsd)
+function ebsd = fill(ebsd,varargin)
 % extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
 %
 % Syntax
