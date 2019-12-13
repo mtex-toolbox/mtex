@@ -19,13 +19,14 @@ function [qm, lambda, V] = mean(q,varargin)
 % See also
 % orientation/mean
 
+qm = q;
+
 if isempty(q)
-  qm = quaternion.nan;
+  [qm.a,qm.b,qm.c,qm.d] = deal(nan,nan,nan,nan);
   lambda = diag([0 0 0 1]);
   if nargout == 3, V = nan(4); end
   return
 elseif length(q) == 1
-  qm = q;
   lambda = diag([0 0 0 1]);
   if nargout == 3
     T = qq(q,varargin{:});
@@ -38,7 +39,8 @@ T = qq(q,varargin{:});
 [V, lambda] = eig(T);
 l = diag(lambda);
 [~,pos] = max(l);
-qm = quaternion(V(:,pos));
+
+[qm.a,qm.b,qm.c,qm.d] = deal(V(1,pos),V(2,pos),V(3,pos),V(4,pos));
 
 if check_option(varargin,'robust') && length(q)>4
   omega = angle(qm,q);
