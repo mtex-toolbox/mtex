@@ -18,13 +18,14 @@ function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 
 
 % get the reference quaternion
-if nargin == 3 && ~isa(CS2,'symmetry') && isa(CS,'quaternion')
+if nargin == 3 && ~isa(CS2,'symmetry') && isa(CS2,'quaternion')
   
   q_ref = quaternion(CS2);
   
 elseif nargin == 4 && isa(varargin{1},'quaternion')
   
   q_ref = varargin{1};
+  varargin{1} = [];
   
 else
   
@@ -35,7 +36,7 @@ end
 % distingish different cases
 if nargin >= 3 && isa(CS2,'symmetry') && length(CS2)>1
   if isempty(q_ref)
-    q = project2FRCS2(q,CS1,CS2);
+    q = project2FRCS2(q,CS1,CS2,varargin{:});
   else
     q = project2FRCS2_ref(q,CS1,CS2,q_ref);
   end
