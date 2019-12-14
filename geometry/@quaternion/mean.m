@@ -19,6 +19,7 @@ function [qm, lambda, V] = mean(q,varargin)
 % See also
 % orientation/mean
 
+q = quaternion(q);
 qm = q;
 
 if isempty(q)

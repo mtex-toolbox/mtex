@@ -254,7 +254,7 @@ hold off
 mtexdata titanium silent
 grains = calcGrains(ebsd);
 
-odf = calpsicDensity(grains.meanOrientation,'weights',grains.grainSize)
+odf = calcDensity(grains.meanOrientation,'weights',grains.grainSize)
 
 
 
