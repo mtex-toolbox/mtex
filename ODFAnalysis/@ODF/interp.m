@@ -53,7 +53,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
   
   case 'nnls'
     
-    w = nnls(full(M).',values);
+    w = nnls(full(M).',values,struct('Iter',1000));        
     
   case 'lsqnonneg'
     
@@ -80,6 +80,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
       end
     end
 end
+norm(M' * w - values) ./ norm(values)
 
 if check_option(varargin,'ODFstats')
  err = abs(M'*w - values);

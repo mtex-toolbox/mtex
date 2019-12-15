@@ -113,15 +113,16 @@ while(true)
         
         % check for divergence
         iter=iter+1;
+        if(iter>maxiter), return; end
         if(iter>=2*n)
             if(iter>maxiter)
-                error(['nnls Failed to converge in ' num2str(iter)  ...
-                    ' iterations'])
-                %warning(['nnls Failed to converge in ' num2str(iter)  ...
-                %    ' iterations'])
-                %return
+              error(['nnls Failed to converge in ' num2str(iter)  ...
+                ' iterations'])
+              %warning(['nnls Failed to converge in ' num2str(iter)  ...
+              %    ' iterations'])
+              %return
             elseif(mod(iter,n)==0)
-                wsc=(wsc+wsc0*tol)*2;
+              wsc=(wsc+wsc0*tol)*2;
             end
         end
         
