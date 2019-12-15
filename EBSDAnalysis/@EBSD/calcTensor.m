@@ -55,6 +55,6 @@ end
 function out = isappr(CS1,CS2)
 % check for correct symmetry
 
-out = (CS1.id == CS2.id) && max(abs(norm(CS1.axes)-norm(CS2.axes)))<0.1;
+out = (CS1.id == CS2.id) && max(abs(norm(CS1.axes)-norm(CS2.axes))./norm(CS1.axes))<0.1;
 
 end
