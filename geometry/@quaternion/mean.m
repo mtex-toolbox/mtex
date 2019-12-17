@@ -22,7 +22,7 @@ function [qm, lambda, V] = mean(q,varargin)
 q = quaternion(q);
 qm = q;
 
-if isempty(q)
+if isempty(q) || all(isnan(q.a(:)))
   [qm.a,qm.b,qm.c,qm.d] = deal(nan,nan,nan,nan);
   lambda = diag([0 0 0 1]);
   if nargout == 3, V = nan(4); end
