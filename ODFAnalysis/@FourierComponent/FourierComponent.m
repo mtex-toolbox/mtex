@@ -61,7 +61,7 @@ classdef FourierComponent < ODFComponent
       for l = 1:component.bandwidth
         ind = (deg2dim(l)+1):deg2dim(l+1);
         d = reshape(component.f_hat(ind),2*l+1,2*l+1) - reshape(component.f_hat(ind),2*l+1,2*l+1)';
-        dd  = dd + sum(d(:).^2)/(2*l+1);
+        dd  = dd + sum(abs(d(:)).^2)/(2*l+1);
       end
       out = sqrt(dd) / n < 1e-4;
     end
