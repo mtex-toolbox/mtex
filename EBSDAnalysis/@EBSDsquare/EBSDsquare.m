@@ -50,6 +50,14 @@ classdef EBSDsquare < EBSD
         ebsd.unitCell = 0.5 * [dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1]];
       end
       
+      if ~isfield(ebsd.prop,'x')
+        
+        [x,y] = meshgrid(1:size(rot,2),1:size(rot,1));
+                
+        ebsd.prop.x = (x-1) * dxy(1);
+        ebsd.prop.y = (y-1) * dxy(2);
+      end
+      
             
     end
            
