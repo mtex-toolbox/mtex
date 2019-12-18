@@ -80,7 +80,7 @@ if ischar(method)
       x = X(:,1);  y = X(:,2);      
 
       % the value 0.95 adjusts the boundary a little bit towards the convex hull
-      delta = get_option(varargin,'tight',0.95);
+      delta = get_option(varargin,'tight',0.95,'double');
       k = boundary(x,y,delta);
       
       % erase all linear dependend points
