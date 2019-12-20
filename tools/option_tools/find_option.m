@@ -1,11 +1,11 @@
 function pos = find_option(option_list,option,type)
 % find postions of the options in option_list
 %
-%% Input
+% Input
 %  option_list - Cell Array
 %  options     - String or Cell Array
 %
-%% Output
+% Output
 %  pos         - doule
 
 
@@ -37,7 +37,7 @@ if ~isempty(pos) && nargin > 2
 end
 
 % no option required
-if isempty(pos), pos = 0;else pos = pos(end);end
+if isempty(pos), pos = 0;else, pos = pos(end);end
 
 %cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
 %  any(strcmpi(c,{'PLAIN','antipodal'}))),varargin)
