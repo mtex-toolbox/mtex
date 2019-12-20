@@ -1,4 +1,4 @@
-function sF = rotate(sF, rot)
+function sF = rotate_outer(sF, rot)
 % rotate a function by a rotation
 %
 % Syntax

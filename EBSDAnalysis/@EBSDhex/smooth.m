@@ -93,7 +93,7 @@ for id = 1:length(grainIds)
   [~,rownum]=size(ori);
   if ebsd.offset==-1, ori(:,rownum:(-1):1)=ori; end
   if ~ebsd.isRowAlignment, ori=transpose(ori); end
-  ori = filter.smoothhex(ori);
+  ori = filter.smooth(ori);
   if ~ebsd.isRowAlignment, ori=transpose(ori); end
   if ebsd.offset==-1, ori(:,rownum:(-1):1)=ori; end
   

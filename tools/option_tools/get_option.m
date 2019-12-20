@@ -18,7 +18,7 @@ function value = get_option(option_list,option,default,type)
 % See also
 % check_option set_option delete_option
 
-if nargin <= 2, value = [];else value = default;end
+if nargin <= 2, value = [];else, value = default;end
 if isempty(option_list), return;end
 if nargin <= 3, type = [];end
 

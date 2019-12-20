@@ -71,7 +71,7 @@ else % use export_fig with 50% magnification
 
   try
     oldColor = get(gcf,'color');
-    set(gcf,'color','w');
+    set(gcf,'color',get(gca,'color'));
     % prevent smoothing and aliasing on map plot: no new colors should be generated
     if isa(getappdata(gca,'mapPlot'),'mapPlot')
       set(gcf,'GraphicsSmoothing','off');

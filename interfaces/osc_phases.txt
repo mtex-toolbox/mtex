@@ -437,7 +437,6 @@ Uranium (Gamma)
 Uranium Oxide
 Uranium Titanium Oxide_Brannerite
 V Cr C
-VC
 Vanadinite
 Vanadium Phosphide
 Vanadium

@@ -54,7 +54,7 @@ try
         case '1'
           options = {'X||a'};
         case '20'
-          laue = {'2'};
+          laue = '2';
           options = {'y||b','z||c'};
         otherwise
           if lattice(6) ~= 90

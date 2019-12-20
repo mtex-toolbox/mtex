@@ -3,8 +3,10 @@ function h = arrow3d(vec,varargin)
 %
 % Syntax
 %   arrow3d(v)
+%   arrow3d(v,'arrowWidth',0.05)
 %
 % Input
+%  v - @vector3d
 %
 % See also
 % savefigure vector3d/scatter3 vector3d/plot3 vector3d/text3
@@ -26,9 +28,9 @@ cax = caxis(ax);
 % length of the arrows
 vec = 1.2.*vec;
 lengthTail = 0.9;
-radiHead = 0.05;
-radiTail = 0.02;
 
+radiTail = get_option(varargin,'arrowWidth',0.02);
+radiHead = 2.5 * radiTail;
 
 for i = 1:length(vec)
   

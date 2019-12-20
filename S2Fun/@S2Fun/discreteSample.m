@@ -14,9 +14,9 @@ function v = discreteSample(S2Fun,n,varargin)
 
 res = get_option(varargin,'resolution',0.5*degree);
 
-% take local random samples at grid points
+% take global random samples at grid points
 S2G = equispacedS2Grid('resolution',res);
-d = eval(S2Fun,S2G); %#ok<EVLC>
+d = eval(S2Fun,S2G);
 
 % take global random samples
 d(d<0) = 0;   

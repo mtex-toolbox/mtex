@@ -21,7 +21,7 @@ values = values - m;
 odf = m * uniformODF(ori.CS,ori.SS);
 
 % grid for representing the ODF
-res = get_option(varargin,'resolution',3*degree);
+res = get_option(varargin,'resolution',5*degree);
 
 if check_option(varargin,'exact')
   S3G=ori;
@@ -36,7 +36,7 @@ psi = get_option(varargin,'kernel',deLaValleePoussinKernel('halfwidth',res));
 M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);
 
 
-switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg'},'lsqnonneg')
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
 
   case 'lsqlin'
 
@@ -51,10 +51,14 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg'},'lsqnonneg')
   
     w = lsqlin(M',values,-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
   
+  case 'nnls'
+    
+    w = nnls(full(M).',values,struct('Iter',1000));        
+    
   case 'lsqnonneg'
     
     w = lsqnonneg(M',values);
-  
+    
   case 'lsqr'
 
     tol = get_option(varargin,'tol',1e-2);
@@ -76,6 +80,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg'},'lsqnonneg')
       end
     end
 end
+norm(M' * w - values) ./ norm(values)
 
 if check_option(varargin,'ODFstats')
  err = abs(M'*w - values);

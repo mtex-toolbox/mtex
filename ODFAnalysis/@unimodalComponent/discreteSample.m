@@ -24,7 +24,7 @@ c = c ./ c(end);
 
 r = rand(npoints,1);
 [~,id] = histc(r,c);
-angle = 2 * acos(t(id)).';
+angle = 2 * acos(t(max(1,id))).';
 
 q = quaternion(component.center(:),ic) .* axis2quat(axis,angle);
 

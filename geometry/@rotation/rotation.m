@@ -6,8 +6,8 @@ classdef rotation < quaternion & dynOption
   % Syntax
   %   rot = rotation.byEuler(phi1,Phi,phi2)
   %   rot = rotation.byEuler(alpha,beta,gamma,'ZYZ')
-  %   rot = rotation.axisAngle(v,omega)
-  %   rot = rotation.matrix(A)
+  %   rot = rotation.byAxisAngle(v,omega)
+  %   rot = rotation.byMatrix(A)
   %   rot = rotation.map(u1,v1)
   %   rot = rotation.map(u1,v1,u2,v2)
   %   rot = reflection(b)
@@ -51,12 +51,8 @@ classdef rotation < quaternion & dynOption
       
       if isa(varargin{1},'quaternion')  % copy constructor
         
-        [rot.a,rot.b,rot.c,rot.d] = double(varargin{1});
-        try
-          rot.i = varargin{1}.i;
-        catch
-          rot.i = false(size(rot.a));
-        end
+        [rot.a,rot.b,rot.c,rot.d, rot.i] = double(varargin{1});
+        
         return
       end
         

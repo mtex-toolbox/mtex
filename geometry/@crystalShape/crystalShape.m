@@ -150,6 +150,8 @@ classdef crystalShape
 
   methods (Static = true)
   
+    cS = plagioclase(cs);
+    
     function cS = quartz(cs)
       
       if nargin == 0, cs = loadCIF('quartz'); end
@@ -207,7 +209,10 @@ classdef crystalShape
         {2,0,1},{1,1,2},{1,1,1},{2,1,1},{3,1,1},{2,1,0},cs);
       
       cS = crystalShape(N,1.2,[0.6,0.6,1]);      
-    end      
+    end   
+    
+    
+    
 
     function cS = garnet(cs)
       

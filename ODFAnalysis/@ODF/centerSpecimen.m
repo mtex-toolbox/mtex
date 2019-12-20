@@ -50,7 +50,7 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 
 % get options
 if nargin < 2, v0 = xvector; end
-delta = get_option(varargin,'delta',15*degree);
+delta = get_option(varargin,'delta',45*degree);
 
 % the ODF should not yet have a specimen symmetry
 odf.SS = specimenSymmetry;
@@ -60,7 +60,7 @@ useFourier = check_option(varargin,'Fourier') || odf.isFourier;
 % first Fourier based
 if useFourier
   L = get_option(varargin,{'bandwidth','L'},16);
-  D0 = odf.calcFourier(L);
+  odf = FourierODF(odf,'bandwidth',L);
 else
   SO3 = get_option(varargin,'SO3Grid',...
     equispacedSO3Grid(odf.CS,odf.SS,varargin{:}));
@@ -122,15 +122,7 @@ odf = rotate(odf,rot);
     % y = textureindex(rotate(odf,r) - odf);
     if useFourier
       
-      DRot = WignerD(rot,'bandwidth',L);
-      
-      D1  = zeros(deg2dim(L+1),1);
-      for l = 0:L
-        d2d = deg2dim(l)+1:deg2dim(l+1);
-        s = 2*l+1;
-        D1(d2d) = reshape(DRot(d2d),s,s) * reshape(D0(d2d),s,s);
-      end
-      y = sum(abs(D1-D0).^2) ./ sum(abs(D0).^2);
+      y = norm(odf-rotate(odf,rot));
       
     else
       

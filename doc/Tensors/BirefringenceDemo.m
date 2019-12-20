@@ -130,10 +130,11 @@ arrow3d(vOptical,'antipodal','facecolor','red')
 hold off
 
 %% Spectral Transmission
-% If white with a certain polarization is transmited though a crystal with
-% isotropic refrative index the light changes wavelength and hence appears
-% collored. The resulting color depending on the propagation direction, the
-% polarization direction and the thickness can be computed by
+% If white light with a certain polarization is transmited though a crystal
+% with isotropic refrative index the light changes wavelength and hence
+% appears collored. The resulting color depending on the propagation
+% direction, the polarization direction and the thickness can be computed
+% by
 
 vprop = Miller(1,1,1,cs);
 thickness = 30000;

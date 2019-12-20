@@ -111,7 +111,7 @@ classdef symmetry < rotation
       try
         r = cs.id == symmetry.pointGroups(cs.id).LaueId;
       catch % this is required for custom symmetries
-        r = any(rotation(cs) == -rotation.id,'all'); 
+        r = any(reshape(rotation(cs) == -rotation.id,[],1)); 
       end
     end
     

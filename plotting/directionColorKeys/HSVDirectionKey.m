@@ -40,34 +40,34 @@ classdef HSVDirectionKey < directionColorKey
 
     function rgb = direction2color(dM,h,varargin)
       
+      h = vector3d(h);
       h.antipodal = false;
       h = h.project2FundamentalRegion(dM.sym);
       
+      wC = vector3d(project2FundamentalRegion(dM.whiteCenter,dM.sym));
+      
       if dM.maxAngle < inf
         
-        wC = project2FundamentalRegion(dM.whiteCenter,dM.sym);
-        if angle(vector3d.Z,vector3d(wC)) < 1*degree
+        if angle(vector3d.Z,wC) < 1*degree
           owC = orth(wC);
         else
           owC = vector3d.Z;
         end
         
-        h.antipodal = false;
-        h = project2FundamentalRegion(vector3d(h),dM.sym,wC);
+        h = project2FundamentalRegion(h,dM.sym,wC);
         
-        rho = angle(h,owC,vector3d(wC));        
+        rho = angle(h,owC,wC);
         radius = max(0,1 - angle(h,wC) ./ dM.maxAngle);
       
       else
         
-        wC = dM.whiteCenter.project2FundamentalRegion(dM.sym); %#ok<*PROP>
         switchWB = false;
       
         % copy to the reduced sector
         h_sR = h;
         whiteOrBlack = true(size(h));
         for i = 1:length(dM.refl)
-          ind = dot(vector3d(h_sR),dM.refl(i))<1e-5;
+          ind = dot(h_sR,dM.refl(i)) < 1e-5;
           h_sR(ind) = reflection(dM.refl(i)) * h_sR(ind);
           whiteOrBlack = whiteOrBlack & ~ind;
           
