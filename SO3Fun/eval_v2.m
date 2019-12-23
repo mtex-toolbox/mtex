@@ -1,7 +1,7 @@
 clear all
 
 % create an test Function
-SO3F=SO3FunHarmonic(ones(deg2dim(64),1));
+SO3F=SO3FunHarmonic(ones(deg2dim(10),1));
 tic
 %% transform fhat to a matrix with dim (k,l) x n
 N=SO3F.bandwidth;
@@ -40,10 +40,10 @@ for j=0:2*N % paralellize over j leads to size(d) ~ N^4 which has to be saved
 end
 toc
 
+FHA=permute(reshape(FHAT,2*N+1,2*N+1,2*N+1),[2,3,1]);
 
-FHAT=permute(reshape(FHAT,2*N+1,2*N+1,2*N+1),[2,3,1]);
-
-FHAT=FHAT(1:end-1,1:end-1,1:end-1); %false, but we need size of even numbers
+FHAT=zeros(2*N+2,2*N+2,2*N+2);
+FHAT(1:end-1,1:end-1,1:end-1)=FHA; %false, but we need size of even numbers
 
 %% use NFFT
 v=rotation.byEuler(25*degree,87*degree,34*degree);
@@ -51,7 +51,7 @@ v=rotation.byEuler(25*degree,87*degree,34*degree);
 vtilde=(Euler(v,'nfft')'+[pi/2;pi;pi/2])/(2*pi);
 
 % initialize nfft plan
-plan = nfftmex('init_3d',2*N,2*N,2*N,length(v));
+plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,length(v));
 
 % set rotations as nodes in plan
 nfftmex('set_x',plan,vtilde);
