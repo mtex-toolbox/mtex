@@ -209,11 +209,11 @@ end
 %% Defining complicated crystals more simple
 % We see that defining a complicated crystal shape is a tedious work. To
 % this end MTEX allows to model the shape with a habitus and a extension
-% parameter. This approach has been developed by Jörg Enderlein in
-% |Enderlein, J., 1997. A package for displaying crystal morphology.
-% Mathematica Journal, 7(1).| The two paraters are used to model the
-% distance of a phase from the origin. Setting all parameters to one we
-% obtain
+% parameter. This approach has been developed by J. Enderlein in
+% <https://library.wolfram.com/infocenter/Articles/3279 A package for
+% displaying crystal morphology. Mathematica Journal, 7(1), 1997>. The two
+% parameters are used to model the distance of a phase from the origin.
+% Setting all parameters to one we obtain
 
 % take the face normals unscaled
 N = [m,r,z,s2,x2];
@@ -270,3 +270,6 @@ plot(crystalShape.garnet,'colored')
 
 plot(crystalShape.topaz,'colored')
 
+%%
+
+plot(crystalShape.plagioclase,'colored')
