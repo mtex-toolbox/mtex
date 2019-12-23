@@ -102,8 +102,10 @@ classdef mtexFigure < handle
     function mtexFig = mtexFigure(varargin)
       
       % clear figure and set it up
+      
       clf('reset');
       rmallappdata(gcf);
+      set(gcf,'Visible','on');
 
       % set figure name
       if ~isempty(get_option(varargin,'FigureTitle'))
