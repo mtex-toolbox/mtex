@@ -26,7 +26,7 @@ oS = newODFSectionPlot(F.CS,F.SS,ap{:},varargin{:});
 
 S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
 
-Z = F.eval(S3G);
+Z = real(F.eval(S3G,varargin{:}));
 clear S3G
 
 cR = [min(Z(:)),max(Z(:))];

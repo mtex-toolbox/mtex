@@ -23,7 +23,7 @@ methods
   
   function f = eval(SO3F,rot)
     f = SO3F.fun(rot);
-  end
+  end  
   
 end
 

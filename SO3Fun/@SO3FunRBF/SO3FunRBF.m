@@ -33,7 +33,11 @@ classdef SO3FunRBF < SO3Fun
     end
     
     function S = get.SRight(SO3F)
-      S = SO3F.center.CS;      
+      try
+        S = SO3F.center.CS;
+      catch
+        S = specimenSymmetry;
+      end
     end
     
     function SO3F = set.SLeft(SO3F,S)
@@ -41,7 +45,11 @@ classdef SO3FunRBF < SO3Fun
     end
     
     function S = get.SLeft(SO3F)
-      S = SO3F.center.SS;
+      try
+        S = SO3F.center.SS;
+      catch
+        S = specimenSymmetry;
+      end
     end
     
     function SO3F = set.antipodal(SO3F,antipodal)
@@ -49,7 +57,11 @@ classdef SO3FunRBF < SO3Fun
     end
         
     function antipodal = get.antipodal(SO3F)
-      antipodal = SO3F.center.antipodal;      
+      try
+        antipodal = SO3F.center.antipodal;
+      catch
+        antipodal = false;
+      end
     end
     
     function L = get.bandwidth(SO3F)
