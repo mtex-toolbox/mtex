@@ -70,13 +70,10 @@ classdef pfSections < ODFSections
       % determine omega angle
       rF = ori * oS.h2;
       vF = vectorField(oS,r);
-      omega = angle(vF,rF,r);
+      omegaSec = angle(vF,rF,r);
 
-      % this builds a list
-      bounds = sort(unique([oS.omega - oS.tol,oS.omega + oS.tol]));
-      [~,secPos] = histc(omega,bounds); %#ok<*PROPLC>
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
+      % determine section number
+      secPos = oS.secList(omegaSec,oS.omega);
 
     end
 

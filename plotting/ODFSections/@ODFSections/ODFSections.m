@@ -64,7 +64,7 @@ classdef ODFSections < handle
     function secPos = secList(oS, values, center)
       
       % ensure disjoint boxes
-      if min(diff(center)) < 2*oS.tol
+      if length(center)>1 && min(abs(diff(center))) <= 2*oS.tol
         oS.tol = 0.99*min(diff(center))/2;
       end      
       bounds = [center(:) - oS.tol,center(:) + oS.tol];
@@ -73,6 +73,11 @@ classdef ODFSections < handle
       %bounds(ind,2) = (5*center(ind) + 4 * center(ind+1)) ./ 9;
       %bounds(ind+1,1) = (4*center(ind) + 5 * center(ind+1)) ./ 9;
                  
+      % must pay special attention to the case center == 0
+      if min(center(:)) <= oS.tol
+        values = mod(values+oS.tol,2*pi)-oS.tol;
+      end
+      
       % compute box position
       [~,secPos] = histc(values,reshape(bounds.',[],1));
       secPos(iseven(secPos)) = -1;

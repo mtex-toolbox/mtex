@@ -66,7 +66,7 @@ classdef phi2Sections < ODFSections
       end
       [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
-      secPos = oS.secList(mod(phi2,oS.maxphi2),oS.phi2);
+      secPos = oS.secList(phi2,oS.phi2);
       Phi = min(max(Phi,1e-5),pi-1e-5);
       S2Pos = vector3d.byPolar(Phi,phi1);
       

@@ -61,7 +61,7 @@ classdef gammaSections < ODFSections
       ori = ori.symmetrise('proper').';
       [alpha,beta,gamma] = Euler(ori,'ZYZ'); %#ok<*PROPLC>
 
-      secPos = oS.secList(mod(gamma,oS.maxGamma),oS.gamma);
+      secPos = oS.secList(gamma,oS.gamma);
       S2Pos = vector3d.byPolar(beta,alpha);
 
     end

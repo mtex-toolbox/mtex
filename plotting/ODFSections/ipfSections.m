@@ -67,7 +67,7 @@ classdef ipfSections < ODFSections
       vF = vectorField(oS,h);      
       
       omega = angle(hF,vF,h); %#ok<*PROPLC>
-      secPos = oS.secList(mod(omega,oS.maxOmega),oS.omega);
+      secPos = oS.secList(omega,oS.omega);
                  
     end
     
