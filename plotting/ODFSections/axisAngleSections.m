@@ -32,6 +32,8 @@ classdef axisAngleSections < ODFSections
         oS.angles(oS.angles>oS.oR.maxAngle) = [];
       end
       
+      oS.updateTol(oS.angles);
+      
       for s=1:length(oS.angles)
         oS.axesSectors{s} = oS.oR.axisSector(oS.angles(s));
       end

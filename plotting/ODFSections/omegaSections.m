@@ -13,6 +13,7 @@ classdef omegaSections < pfSections
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'omega',oS.omega,'double');
       
+      oS.updateTol(oS.omega);
       
       oS.referenceField = S2VectorField.sigma;
       %if nargin < 4, r_ref = xvector; end

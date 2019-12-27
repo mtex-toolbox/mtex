@@ -29,6 +29,8 @@ classdef ipfSections < ODFSections
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'omega',oS.omega,'double');
       
+      oS.updateTol(oS.omega);
+      
       oS.referenceField = @(h) pfSections.oneSingularityField(h);
       
     end

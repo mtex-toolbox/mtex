@@ -36,6 +36,7 @@ classdef gammaSections < ODFSections
       oS.gamma(end) = [];
       oS.gamma = get_option(varargin,'gamma',oS.gamma,'double');
 
+      oS.updateTol(oS.gamma);
     end
 
     function ori = makeGrid(oS,varargin)

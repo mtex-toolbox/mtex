@@ -39,6 +39,7 @@ classdef phi2Sections < ODFSections
       oS.phi2(end) = [];
       oS.phi2 = get_option(varargin,'phi2',oS.phi2,'double');
 
+      oS.updateTol(oS.phi2);
     end
 
     function ori = makeGrid(oS,varargin)

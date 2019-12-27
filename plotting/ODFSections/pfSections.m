@@ -32,6 +32,8 @@ classdef pfSections < ODFSections
       oS.omega = linspace(0,oS.maxOmega,1+get_option(varargin,'sections',6));
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'omega',oS.omega,'double');
+      
+      oS.updateTol(oS.omega);
 
       oS.referenceField = @(r) S2VectorField.oneSingularity;
       %oS.referenceField = @(r) pfSections.polarField(r);

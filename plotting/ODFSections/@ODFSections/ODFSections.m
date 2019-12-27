@@ -43,6 +43,10 @@ classdef ODFSections < handle
       end
       oS.tol = get_option(varargin,'tolerance',5*degree);
     end
+    
+    function updateTol(oS,secAngles)
+      oS.tol = min([2.1*oS.tol;abs(diff(secAngles(:)))])./2.1;
+    end
         
     function CS = get.CS(oS), CS = oS.CS1; end
     function SS = get.SS(oS), SS = oS.CS2; end    

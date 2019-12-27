@@ -21,6 +21,8 @@ classdef PhiSections < ODFSections
       oS.Phi = linspace(0,oS.maxphi2,nsec);
       oS.Phi = get_option(varargin,'Phi',oS.Phi,'double');
 
+      oS.updateTol(oS.Phi);
+      
     end
 
     function ori = makeGrid(oS,varargin)
