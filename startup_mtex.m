@@ -154,6 +154,7 @@ exclPath = {'data','makeDoc','templates','nfft'};
 
 if ~MATLABverLessThan('8.4'), exclPath = [exclPath,'8.4']; end
 if ~MATLABverLessThan('8.5'), exclPath = [exclPath,'8.5']; end
+if ~MATLABverLessThan('9.1'), exclPath = [exclPath,'9.1']; end
 
 warning off
 addpath_recurse(local_path,exclPath);

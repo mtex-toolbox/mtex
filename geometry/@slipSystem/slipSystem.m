@@ -136,7 +136,7 @@ classdef slipSystem
      
     function sS = basal(cs,varargin)
       % <11-20>{0001}
-      sS = slipSystem(Miller(1,1,-2,0,cs,'UVTW'),Miller(0,0,0,1,cs,'HKIL'),varargin{:});
+      sS = slipSystem(Miller(1,1,-2,0,cs,'uvtw'),Miller(0,0,0,1,cs,'hkil'),varargin{:});
     end
          
     function sS = prismaticA(cs,varargin)
@@ -147,46 +147,46 @@ classdef slipSystem
     function sS = prismatic2A(cs,varargin)
     %2nd order prismatic compound <a> slip system in hexagonal lattice:
     %<01-10>{2-1-10}
-    sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'),varargin{:});
+    sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkil'),varargin{:});
     end
     
     function sS = pyramidalA(cs,varargin)
       % first order pyramidal a slip 
-      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,1,cs,'hkl'),varargin{:});
+      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,1,cs,'hkil'),varargin{:});
     end
     
     function sS = pyramidalCA(cs,varargin)
       % first order pyramidal <c+a> slip 
       sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),...
-        Miller(-1,1,0,1,cs,'hkl'),varargin{:});
+        Miller(-1,1,0,1,cs,'hkil'),varargin{:});
     end
     
     function sS = pyramidal2CA(cs,varargin)
       % second order pyramidal <c+a> slip 
       sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),...
-        Miller(-2,1,1,2,cs,'hkl'),varargin{:});
+        Miller(-2,1,1,2,cs,'hkil'),varargin{:});
     end
     
     function sS = twinT1(cs,varargin)
       % most often tensil twin 
       sS = slipSystem(Miller(1,-1,0,1,cs,'uvtw'),...
-        Miller(-1,1,0,2,cs,'hkl'),varargin{:});
+        Miller(-1,1,0,2,cs,'hkil'),varargin{:});
     end
     
     function sS = twinT2(cs,varargin)
       % tensil twinning
       sS = slipSystem(Miller(2,-1,-1,6,cs,'uvtw'),...
-        Miller(-2,1,1,1,cs,'hkl'),varargin{:});
+        Miller(-2,1,1,1,cs,'hkil'),varargin{:});
     end
         
     function sS = twinC1(cs,varargin)
       % compressive twinning
-      sS = slipSystem(Miller(-1,1,0,-2,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'),varargin{:});
+      sS = slipSystem(Miller(-1,1,0,-2,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkil'),varargin{:});
     end
     
     function sS = twinC2(cs,varargin)
       % compressive twinning
-      sS = slipSystem(Miller(2,-1,-1,-3,cs,'uvtw'),Miller(2,-1,-1,2,cs,'hkl'),varargin{:});
+      sS = slipSystem(Miller(2,-1,-1,-3,cs,'uvtw'),Miller(2,-1,-1,2,cs,'hkil'),varargin{:});
     end
     
   end

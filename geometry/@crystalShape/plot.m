@@ -42,6 +42,8 @@ if check_option(varargin,'colored')
   
   hold off
   legend('show','interpreter','LaTeX','location','east')
+  
+  if nargout == 0, clear h; end
   return
 end
 
@@ -91,7 +93,7 @@ h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
 
 if isNew, drawNow(mtexFig,varargin{:}); end
 
-if nargout == 0, clear h;end
+if nargout == 0, clear h; end
 
 end
 

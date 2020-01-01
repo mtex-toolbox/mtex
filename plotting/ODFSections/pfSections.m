@@ -32,6 +32,8 @@ classdef pfSections < ODFSections
       oS.omega = linspace(0,oS.maxOmega,1+get_option(varargin,'sections',6));
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'omega',oS.omega,'double');
+      
+      oS.updateTol(oS.omega);
 
       oS.referenceField = @(r) S2VectorField.oneSingularity;
       %oS.referenceField = @(r) pfSections.polarField(r);
@@ -68,13 +70,10 @@ classdef pfSections < ODFSections
       % determine omega angle
       rF = ori * oS.h2;
       vF = vectorField(oS,r);
-      omega = angle(vF,rF,r);
+      omegaSec = angle(vF,rF,r);
 
-      % this builds a list
-      bounds = sort(unique([oS.omega - oS.tol,oS.omega + oS.tol]));
-      [~,secPos] = histc(omega,bounds); %#ok<*PROPLC>
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
+      % determine section number
+      secPos = oS.secList(omegaSec,oS.omega);
 
     end
 

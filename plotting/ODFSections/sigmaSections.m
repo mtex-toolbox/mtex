@@ -13,6 +13,7 @@ classdef sigmaSections < pfSections
       oS.omega(end) = [];
       oS.omega = get_option(varargin,'sigma',oS.omega,'double');
       
+      oS.updateTol(oS.omega);
       
       oS.referenceField = S2VectorField.sigma;
             
