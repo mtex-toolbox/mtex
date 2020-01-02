@@ -28,13 +28,19 @@ S3G = oP.quiverGrid(varargin{:});
 % compute the tangential vectors
 vec = SO3VF.eval(S3G,varargin{:});
 
+if check_option(varargin,'normalize')
+  vec = normalize(vec);
+else
+  vec = vec ./ max(norm(vec(:)));
+end
+
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,normalize(vec)/10000));
+[x2,y2,z2] = oP.project(exp(S3G,vec/10000));
 
 wasHold = ishold(gca); hold(gca,'on');
 
 % scale to the correct length
-h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1,'LineWidth',2),varargin{:});
+h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1),varargin{:});
 
 if ~wasHold, hold(gca,'off'); end
 
