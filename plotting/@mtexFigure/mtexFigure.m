@@ -146,7 +146,7 @@ classdef mtexFigure < handle
           mtexFig.figSizeFactor = get_option(varargin,'figSize',0,'double');
       end
             
-      set(mtexFig.parent,'color',[1 1 1],'nextPlot','replace');
+      set(mtexFig.parent,'color',[1 1 1],'nextPlot','replaceChildren');
       setappdata(mtexFig.parent,'mtexFig',mtexFig);
       
       varargin = delete_option(varargin,'color',1);
@@ -163,10 +163,8 @@ classdef mtexFigure < handle
         end
       end
       
-      set(mtexFig.parent,'DefaultAxesCreateFcn',...
-        @updateChildren);
-      set(mtexFig.parent,'DefaultAxesDeleteFcn',...
-        @deleteChildren);
+      set(mtexFig.parent,'DefaultAxesCreateFcn', @updateChildren);
+      set(mtexFig.parent,'DefaultAxesDeleteFcn', @deleteChildren);
       
       MTEXFigureMenu(mtexFig,varargin{:});
       
