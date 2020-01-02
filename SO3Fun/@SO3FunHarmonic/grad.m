@@ -1,4 +1,4 @@
-function [g,f_phi1,f_Phi,f_phi2] = grad(SO3F,ori,varargin)
+function [g,f_phi1,f_Phi,f_phi2] = grad(SO3F,varargin)
 % gradient at orientation g
 %
 % Syntax
@@ -16,13 +16,13 @@ function [g,f_phi1,f_Phi,f_phi2] = grad(SO3F,ori,varargin)
 %
 % 
 
-if isempty(ori), g = vector3d; return; end
-
 % fallback to generic method
 if check_option(varargin,'check')
-  g = grad@ODFComponent(SO3F,ori,varargin{:});
+  g = grad@SO3Fun(SO3F,varargin{:});
   return
 end
+
+if isempty(ori), g = vector3d; return; end
 
 % if bandwidth is zero there is nothing to do
 if SO3F.bandwidth == 0, g = vector3d.zeros(size(ori)); return; end

@@ -1,4 +1,4 @@
-function g = grad(SO3F,rot,varargin)
+function g = grad(SO3F,varargin)
 % gradient of odf at orientation ori
 %
 % Syntax
@@ -17,6 +17,15 @@ function g = grad(SO3F,rot,varargin)
 %
 % See also
 %
+
+% maybe we should return a function hand
+if nargin == 1 || ~isa(varargin{1},'rotation')  
+  g = SO3VectorFieldHandle(@(rot) SO3F.grad(rot,varargin{:}),SO3F.CS,SO3F.SS);
+  return
+end
+  
+rot = varargin{1};
+varargin(1) = [];
 
 delta = get_option(varargin,'delta',0.05*degree);
 
