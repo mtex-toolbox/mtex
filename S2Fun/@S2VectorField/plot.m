@@ -22,8 +22,7 @@ values = sVF.eval(plotNodes);
 if check_option(varargin,'normalized'), values = values.normalize; end
 
 % some default plotting settings
-varargin = ['color', 'k', 'arrowSize', ...
-  0.5*plotNodes.resolution/max(norm(values)) varargin];
+varargin = ['color', 'k', varargin];
 if check_option(varargin,'complete')
   varargin = [varargin,{'removeAntipodal'}];
 end

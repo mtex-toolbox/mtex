@@ -60,6 +60,15 @@ classdef orientationPlot < handle
   
   methods 
     
+    function ori = quiverGrid(oP,varargin)
+      
+      res = 60*degree / ((1+oP.antipodal)*length(oP.CS1.properGroup) * length(oP.CS2.properGroup))^(1/3);
+      ori = localOrientationGrid(oP.CS1,oP.CS2,oP.oR.maxAngle-1*degree,...
+        'resolution',res,varargin{:});
+      
+    end
+    
+    
     function h = plot(oP,ori,varargin)
       % plot orientations into 3d space
 

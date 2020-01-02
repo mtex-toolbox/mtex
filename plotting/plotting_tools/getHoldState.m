@@ -6,7 +6,7 @@ else
   ax = gca;
 end
 
-if strcmp(get(ax,'NextPlot'),'replace')
+if any(strcmp(get(ax,'NextPlot'),{'replaceChildren','replace'}))
   ishold = 'off';
 elseif getappdata(ax,'PlotHoldStyle')
   ishold = 'all';
