@@ -54,6 +54,20 @@ classdef pfSections < ODFSections
       end
 
     end
+    
+    function ori = quiverGrid(oS,varargin)
+      
+      S2G = equispacedS2Grid(oS.sR,varargin{:});
+      
+      ori = orientation.nan(S2G.size(1),S2G.size(2),numel(oS.omega),oS.CS1,oS.CS2);
+      for iOmega = 1:numel(oS.omega)
+
+        r2 = oS.vectorField(S2G,oS.omega(iOmega));
+        ori(:,:,iOmega) = reshape(orientation.map(oS.h1,S2G,oS.h2,r2),size(S2G));
+
+      end
+    end
+    
 
     function n = numSections(oS)
       n = numel(oS.omega);

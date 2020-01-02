@@ -53,12 +53,20 @@ classdef BungePlot < orientationPlot
       ori = orientation.id;
     end
 
+    function ori = quiverGrid(oP,varargin)
+      
+      ori = makeGrid(oP,varargin{:},'noBoundary');
+      
+    end
+    
     function ori = makeGrid(oP,varargin)
       res = get_option(varargin,'resolution',5*degree);
       [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(oP.CS1,oP.CS2);
-      phi1 = 0:res:maxPhi1;
-      phi2 = 0:res:maxPhi2;
-      Phi = 0:res:maxPhi;
+      if check_option(varargin,'noBoundary'), delta = res/2; else delta = 0; end
+      phi1 = delta:res:maxPhi1-delta;
+      phi2 = delta:res:maxPhi2-delta;
+      Phi =  delta:res:maxPhi-delta;
+      
       [oP.plotGrid.x,oP.plotGrid.y,oP.plotGrid.z] = meshgrid(phi1,Phi,phi2);
 
       ori = orientation.byEuler(oP.plotGrid.x,oP.plotGrid.y,oP.plotGrid.z,oP.CS1,oP.CS2);

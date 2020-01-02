@@ -53,6 +53,19 @@ classdef phi2Sections < ODFSections
       ori = orientation.byEuler(phi1,Phi,phi2,'Bunge',oS.CS,oS.SS);
 
     end
+    
+    function ori = quiverGrid(oS,varargin)
+
+      maxPhi = oS.sR.thetaMax;
+      maxphi1 = oS.sR.rhoMax;
+      res = get_option(varargin,'resolution',15*degree);
+      
+      [phi1,Phi,phi2] = meshgrid(res/2:res:maxphi1,res/2:res:maxPhi,oS.phi2);
+      
+      ori = orientation.byEuler(phi1,Phi,phi2,'Bunge',oS.CS,oS.SS);
+
+    end
+    
 
     function n = numSections(oS)
       n = numel(oS.phi2);
