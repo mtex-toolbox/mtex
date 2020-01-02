@@ -18,7 +18,11 @@ else
     v.y = v1.y - v2.y;
     v.z = v1.z - v2.z;
   catch
-    error(['Undefined function or method ''minus'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
+    if isa(v1,'vector3d') && isa(v1,'vector3d')
+      error('Incompatible matrix sizes %s and %s in vector3d/minus .',size2str(v1),size2str(v2));
+    else
+      error(['Undefined function or method ''minus'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
+    end
   end
 end
 
