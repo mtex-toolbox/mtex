@@ -94,7 +94,7 @@ classdef pfSections < ODFSections
       hold(ax,'on');
       r = equispacedS2Grid(oS.sR,'resolution',15*degree);
       vF = oS.vectorField(r,oS.omega(sec));
-      quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1,'color',0.7*[1 1 1],'HitTest','off');
+      quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
       if ~wasHold, hold(ax,'off'); end
 
     end
@@ -125,4 +125,4 @@ end
 
 % testing code
 % r = equispacedS2Grid('resolution',20*degree)
-% quiver(r,vector3d(vF),'arrowSize',0.1)
+% quiver(r,vector3d(vF))

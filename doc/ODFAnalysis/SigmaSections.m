@@ -62,12 +62,10 @@ ori2 = orientation.map(cs.cAxis,vector3d.X,cs.aAxis,-vector3d.Z)
 
 hold on
 % visualize the a-axes directions of ori1
-quiver(ori1.symmetrise,ori1.symmetrise*cs.aAxis,...
-  'color','r','arrowSize',0.01,'linewidth',2)
+quiver(ori1.symmetrise,ori1.symmetrise*cs.aAxis,'color','r','linewidth',2)
 
 % visualize the a-axes directions of ori2
-quiver(ori2.symmetrise,ori2.symmetrise*cs.aAxis,...
-  'color','green','arrowSize',0.01,'linewidth',2)
+quiver(ori2.symmetrise,ori2.symmetrise*cs.aAxis,'color','green','linewidth',2)
 hold off
 
 %%
@@ -89,11 +87,11 @@ ori2 = orientation.byEuler(200*degree,80*degree,110*degree,cs);
 ori3 = orientation.byEuler(40*degree,0*degree,0*degree,cs);
 
 hold on
-quiver(ori1.symmetrise,ori1.symmetrise*cs.aAxis, 'color','red','arrowSize',0.01,'linewidth',2)
+quiver(ori1.symmetrise,ori1.symmetrise*cs.aAxis, 'color','red','linewidth',2)
 
-quiver(ori2.symmetrise,ori2.symmetrise*cs.aAxis, 'color','green','arrowSize',0.01,'linewidth',2)
+quiver(ori2.symmetrise,ori2.symmetrise*cs.aAxis, 'color','green','linewidth',2)
 
-quiver(ori3.symmetrise,ori3.symmetrise*cs.aAxis, 'color','blue','arrowSize',0.01,'linewidth',2)
+quiver(ori3.symmetrise,ori3.symmetrise*cs.aAxis, 'color','blue','linewidth',2)
 hold off
 
 %%

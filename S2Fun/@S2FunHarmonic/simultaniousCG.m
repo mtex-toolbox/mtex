@@ -62,7 +62,7 @@ while true
 %  plot(sF);
 %  scatter(v, 'MarkerColor', 'k');
 %  scatter(v(alpha < 0), 'MarkerColor', 'r');
-%  quiver(v, d, 'ArrowSize', 0.1, 'color', 'k');
+%  quiver(v, d, 'color', 'k');
 %  hold off;
   alpha = (alpha < 0)+(alpha >= 0).*alpha;
 % step length by linesearch{{{

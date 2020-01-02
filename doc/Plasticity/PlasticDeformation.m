@@ -1,11 +1,6 @@
 %% Schmid Factor Analysis
 % This script describes how to analyze Schmid factors.
 %
-%% Open in Editor
-%
-%% Contents
-
-%% Geometric Definition
 % Let us assume a Nickel crystal
 
 CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
@@ -136,11 +131,11 @@ tau = sSAll.SchmidFactor(r);
 
 % plot active slip plane in red
 hold on
-quiver(r,sSAll(id).n,'ArrowSize',0.25,'LineWidth',2,'Color','r');
+quiver(r,sSAll(id).n,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
 hold on
-quiver(r,sSAll(id).b.normalize,'ArrowSize',0.12,'LineWidth',2,'Color','g');
+quiver(r,sSAll(id).b.normalize,'LineWidth',2,'Color','g');
 hold off
 
 %%
