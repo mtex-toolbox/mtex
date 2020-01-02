@@ -113,5 +113,25 @@ classdef phi2Sections < ODFSections
         'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
 
     end
+    
+    function h = quiverSection(oS,ax,sec,v,data,varargin)
+
+      % translate rotational data into tangential data
+      if iscell(data) && isa(data{1},'quaternion')
+        [v2,sec2] = project(oS,data{1},'noSymmetry','preserveOrder');
+        data{1} = v2 - v;
+        data{1}(sec2 ~= sec)=NaN;
+      end
+      if check_option(varargin,'normalize'), data{1} = normalize(data{1}); end
+      
+      % plot data
+      h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.phi2(sec)./degree),'^\circ'],...
+      'parent',ax,'projection','plain','xAxisDirection','east',...
+        'xlabel','$\varphi_1$','ylabel','$\Phi$',...
+        'zAxisDirection','intoPlane',varargin{:},'doNotDraw');        
+
+    end
+    
+    
   end
 end

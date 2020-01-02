@@ -76,7 +76,9 @@ classdef pfSections < ODFSections
     function [r,secPos] = project(oS,ori,varargin)
 
       % maybe this can be done more efficiently
-      ori = ori.symmetrise('proper').';
+      if ~check_option(varargin,'noSymmetry')
+        ori = ori.symmetrise('proper').';
+      end
 
       % determine pole figure position
       r = ori * oS.h1;
@@ -115,6 +117,14 @@ classdef pfSections < ODFSections
     
     function h = quiverSection(oS,ax,sec,v,data,varargin)
 
+      % translate rotational data into tangential data
+      if iscell(data) && isa(data{1},'quaternion')
+        [v2,sec2] = project(oS,data{1},'noSymmetry');
+        data{1} = v2 - v;
+        data{1}(sec2 ~= sec)=NaN;
+      end
+      if check_option(varargin,'normalize'), data{1} = normalize(data{1}); end
+      
       % plot data
       h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
