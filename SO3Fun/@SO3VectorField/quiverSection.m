@@ -1,4 +1,4 @@
-function quiverSection(sVF1,sVF2,N,varargin)
+function quiverSection(SO3VF,varargin)
 % plot a vector field along another vectorfield
 %
 % Syntax
@@ -15,44 +15,41 @@ function quiverSection(sVF1,sVF2,N,varargin)
 % Options
 %  normalized - draw unit length vectors
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
+% plot ODF sections
+%
+% Options
+%  sections - number of sections
+%  points   - number of orientations to be plotted
+%  all      - plot all orientations
+%  resolution - resolution of each plot
+%
+% Flags
+%  phi2      - phi2 sections (default)
+%  phi1      - phi1 sections
+%  gamma     - gamma sections
+%  sigma     - sigma = phi1 - phi2 sections
+%  axisAngle - rotational angle sections
+%  smooth
+%  countourf
+%  contour
+%  contour3, surf3, slice3 - 3d volume plot
+%
+% See also
+% saveFigure Plotting
 
-% where to plot - compute circle positions
-omega = linspace(0,2*pi,36);
-  
-if nargin > 2 && isnumeric(varargin{1})
-  eta = varargin{1};
+if SO3VF.antipodal, ap = {'antipodal'}; else, ap = {}; end
+oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,ap{:},varargin{:});
+
+S3G0 = oS.quiverGrid('resolution',15*degree,varargin{:});
+
+v = reshape(SO3VF.eval(S3G0,varargin{:}),size(S3G0));
+
+if check_option(varargin,'normalize')
+  v = normalize(v);
 else
-  eta = pi/2;
+  v = v ./ max(norm(v(:)));
 end
+S3G1 = exp(S3G0,v/10000);
 
-S1 = axis2quat(N,omega)*axis2quat(orth(N),eta)*N;
-circ = reshape(sVF1.eval(S1),length(S1), []);
-    
-% what to plot
-if isa(sVF2,'function_handle')
-  v = sVF2(S1);
-else
-  v = sVF2.eval(S1);
-end
-v = v(:);
-if check_option(varargin,'normalized'), v = v.normalize; end
 
-% plot the vector field v at the positions circ
-if v.antipodal
-  opt = {'showArrowHead','off'};
-  h = quiver3(circ.x,circ.y,circ.z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:});
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-else
-  opt = {};
-  h = [];
-end
-  
-h = [h,quiver3(circ.x,circ.y,circ.z,v.x,v.y,v.z,'parent',mtexFig.gca,opt{:})];
-  
-% post process output
-view(mtexFig.gca,squeeze(double(N)));
-set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
-optiondraw(h,varargin{:});
-
-if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
+oS.quiver(S3G0, S3G1,'noSymmetry',varargin{:});

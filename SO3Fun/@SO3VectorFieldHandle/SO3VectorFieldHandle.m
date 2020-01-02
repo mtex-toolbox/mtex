@@ -7,12 +7,7 @@ properties
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
 end
-
-  properties (Dependent = true)
-    CS
-    SS 
-  end
-
+  
 methods
   function SO3VF = SO3VectorFieldHandle(fun,varargin)
     

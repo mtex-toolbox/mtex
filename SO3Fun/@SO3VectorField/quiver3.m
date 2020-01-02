@@ -20,7 +20,7 @@ oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,ap{:},'project2FundamentalRegio
   varargin{:});
 
 % generate the plotting grid
-S3G = oP.makeGrid('resolution',10*degree,varargin{:},'noBoundary');
+S3G = oP.quiverGrid(varargin{:});
 
 % get the base points of the arrows
 [x1,y1,z1] = oP.project(S3G);
@@ -29,11 +29,14 @@ S3G = oP.makeGrid('resolution',10*degree,varargin{:},'noBoundary');
 vec = SO3VF.eval(S3G,varargin{:});
 
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,normalize(vec)/100));
+[x2,y2,z2] = oP.project(exp(S3G,normalize(vec)/10000));
+
+wasHold = ishold(gca); hold(gca,'on');
 
 % scale to the correct length
-h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1));
+h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1,'LineWidth',2),varargin{:});
 
+if ~wasHold, hold(gca,'off'); end
 
 if nargout == 0, clear h; end
 
