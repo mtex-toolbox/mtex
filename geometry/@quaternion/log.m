@@ -32,4 +32,14 @@ omega = 2 * sign(q.a) .* acos(abs(q.a));
 denum = sqrt(1-q.a.^2);
 omega(denum ~= 0) = omega(denum ~= 0) ./ denum(denum ~= 0);
 
-v = vector3d( omega.* q.b, omega.*q.c, omega.*q.d );
+x = omega .* q.b;
+y = omega .* q.c;
+z = omega .* q.d;
+
+if check_option(varargin,'nan2zero') 
+  x(isnan(x)) = 0;
+  y(isnan(y)) = 0;
+  z(isnan(z)) = 0;
+end
+
+v = vector3d(x,y,z);
