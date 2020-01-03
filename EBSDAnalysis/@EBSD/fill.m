@@ -8,25 +8,43 @@ function ebsd = fill(ebsd,varargin)
 %  ebsd - @EBSD
 %
 
-% setup interpolation object
-F = TriScatteredInterp([ebsd.prop.x,ebsd.prop.y],(1:length(ebsd)).','nearest');
+if ~isa(ebsd,'EBSDsquare') || ~isa(ebsd,'EBSDhex')
+  ebsd = ebsd.gridify;
+end
 
-% generate regular grid
-ext = ebsd.extend;
-dxy = max(ebsd.unitCell) - min(ebsd.unitCell);
-[xi,yi] = meshgrid(ext(1):dxy(1):ext(2),ext(3):dxy(2):ext(4));
+grains = getClass(varargin,'grain2d',[]);
+if isempty(grains)
 
-% find nearest neigbour
-ci = fix(F(xi,yi));
+  % the values to be filled
+  nanId = isnan(ebsd.phaseId);
+  
+  F = TriScatteredInterp([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
+    find(~nanId),'nearest'); %#ok<DTRIINT>
+  newId = fix(F(ebsd.prop.x(nanId),ebsd.prop.y(nanId)));
 
-% fill ebsd variable
-ebsd.id = (1:numel(xi)).';
-ebsd.prop.x = xi(:);
-ebsd.prop.y = yi(:);
-ebsd.rotations = reshape(ebsd.rotations(ci),[],1);
-ebsd.phaseId = reshape(ebsd.phaseId(ci),[],1);
+  % interpolate phaseId
+  ebsd.phaseId(nanId) = ebsd.phaseId(newId);
+  ebsd.rotations(nanId) = ebsd.rotations(newId);
+  
+  % interpolate grainId
+  try
+    ebsd.prop.grainId(nanId) = ebsd.prop.grainId(newId);
+  end
+  
+else % check for whether the pixels are within certain grains
 
-for fn = fieldnames(ebsd.prop).'
-  if any(strcmp(char(fn),{'x','y','z'})), continue;end
-  ebsd.prop.(char(fn)) = ebsd.prop.(char(fn))(ci);
+  % the values to be filled
+  nanId = find(isnan(ebsd.phaseId));
+
+  isInside = grains.checkInside(ebsd.subSet(nanId));
+  
+  [ebsdId,hostId] = find(isInside);
+  
+  ebsd.grainId(nanId(ebsdId)) = grains.id(hostId);
+  ebsd.phaseId(nanId(ebsdId)) = grains.phaseId(hostId);
+  
+  ebsd.rotations(nanId(ebsdId)) = grains.meanRotation(hostId);
+  
+end
+
 end
