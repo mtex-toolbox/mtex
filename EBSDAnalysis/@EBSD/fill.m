@@ -8,9 +8,7 @@ function ebsd = fill(ebsd,varargin)
 %  ebsd - @EBSD
 %
 
-if ~isa(ebsd,'EBSDsquare') || ~isa(ebsd,'EBSDhex')
-  ebsd = ebsd.gridify;
-end
+if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 
 grains = getClass(varargin,'grain2d',[]);
 if isempty(grains)
