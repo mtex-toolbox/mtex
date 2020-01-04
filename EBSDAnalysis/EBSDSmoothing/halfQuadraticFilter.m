@@ -41,33 +41,24 @@ classdef halfQuadraticFilter < EBSDFilter
       iter = 1;
       while iter==1 || (iter < F.iterMax && max(max(abs(g)))>F.tol)
                 
-        % init gradient
-        g = quality .* log(q,u);
-        
-        % init step length
-        lambda = quality;
-        
-        for j = 1:size(idNeighbours,3) % for all neighbours
-                 
-          % extract neighbouring quaternions
-          n = u(idNeighbours(:,:,j));
+        % extract neighbouring quaternions
+        uu = repmat(u,1,1,size(idNeighbours,3));
+        n = u(idNeighbours);
           
-          % compute weights to the neighboring pixels
-          t = angle(u,n);
-          w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
-          w = alpha * w .* (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
-          w(isnan(w)) = 0;
+        % compute weights to the neighboring pixels
+        t = angle(uu,n);
+        %w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
+        w = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
+        w(isnan(w)) = 0;
         
-          % update gradient
-          g = g + w .* log(n,u,'nan2zero');
+        % the gradient
+        g = quality .* log(q,u) + nansum(w .* log(n,uu),3);
           
-          % update step length
-          lambda = lambda + w;
-          
-        end
-        
-        % the final gradient
+        % update step length
+        lambda = quality + sum(w,3);
         lambda(lambda==0) = inf;
+        
+        % the final step
         g = g ./ lambda;
         
         % update u
