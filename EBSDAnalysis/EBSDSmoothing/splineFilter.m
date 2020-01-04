@@ -14,8 +14,15 @@ classdef splineFilter < EBSDFilter
       if nargin > 1, F.robust = robust; end
     end
     
-    function ori = smooth(F,ori)
+    function ori = smooth(F,ori,quality)
 
+      if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the splineFilter. ' ...
+          'It might give reasonable results anyway']);
+      end
+      
+      ori(quality==0) = nan;
+      
       % project to tangential space
       [qmean,q] = mean(ori);
       tq = log(q,quaternion(qmean));      

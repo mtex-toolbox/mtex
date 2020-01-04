@@ -13,7 +13,14 @@ classdef KuwaharaFilter < EBSDFilter
             
     end
     
-    function ori = smooth(F,ori)
+    function ori = smooth(F,ori,quality)
+
+      if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the KuwaharaFilter. ' ...
+          'It might give reasonable results anyway']);
+      end
+      
+      ori(quality==0) = nan;
       
       % map to mean
       [qmean,q] = mean(ori);

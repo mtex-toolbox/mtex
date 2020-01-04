@@ -24,11 +24,15 @@ classdef l1TVFilter < EBSDFilter
       qOut = qIn;
       qOut(isnan(qOut)) = mean(qOut);
       
-      F.lambda(1) * F.alpha ./ degree
+      %F.lambda(1) * F.alpha ./ degree
       for k = 1:F.maxit
-        
-        qOut = proxTVSquare(qOut, F.lambda(k), F.alpha);
-        %qOut = proxLaplace(qOut, F.lambda(k) *  F.alpha);
+       
+        if F.isHex
+          qOut = proxTVhex(qOut, F.lambda(k), F.alpha);
+        else
+          qOut = proxTVSquare(qOut, F.lambda(k), F.alpha);
+          %qOut = proxLaplace(qOut, F.lambda(k) *  F.alpha);
+        end
         
         qOut = proxl1(qOut, qIn, F.lambda(k));
         %qOut = proxl2(qOut, qIn, F.lambda(k));
@@ -40,30 +44,6 @@ classdef l1TVFilter < EBSDFilter
         
     end
     
-    function ori = smoothhex(F,ori)
-      
-      % project into fundamental region
-      [~,qIn] = mean(ori);
-                  
-      % perform cyclic proximal point algorithm
-      qOut = qIn;
-      qOut(isnan(qOut)) = mean(qOut);
-      
-      F.lambda(1) * F.alpha ./ degree
-      for k = 1:F.maxit
-        
-        qOut = proxTVhex(qOut, F.lambda(k), F.alpha);
-        %qOut = proxLaplace(qOut, F.lambda(k) *  F.alpha);
-        
-        qOut = proxl1(qOut, qIn, F.lambda(k));
-        %qOut = proxl2(qOut, qIn, F.lambda(k));
-        
-      end
-                        
-      % project back to orientation space
-      ori = orientation(qOut,ori.CS,ori.SS);
-        
-    end
   end
   
 end
