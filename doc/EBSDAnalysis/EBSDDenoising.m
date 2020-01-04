@@ -160,7 +160,7 @@ F.alpha
 % a later example.
 
 F = halfQuadraticFilter;
-F.alpha = 0.04; %set the smoothing parameter
+F.alpha = 0.01; %set the smoothing parameter
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);

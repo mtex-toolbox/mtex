@@ -1,31 +1,18 @@
 classdef halfQuadraticFilter < EBSDFilter
   % haldQuadraticFilter uses the techniques elaborated half-quadratic
-  % minmization on manifolds
-  % to smooth EBSD data.
-  % Properties:   alpha:  regularisation parameter in [x,y] direction
-  %               weight: function handle specified by the regularising
-  %                       function \varphi, @(t,eps), where eps is its
-  %                       parameter
-  %               eps:    Parameter for the weight
-  %               tol:    Tolerance for the gradient descent
-  %               threshold: threshold for subgrain boundaries
-  % Methods:      smooth: Applies the HQ minimization on the quaternions
-  %                       of the given orientations
-  %
+  % minmization on manifolds to denoise EBSD data.
   % For further details of the algorithm see:
   % R. Bergmann, R. H. Chan, R. Hielscher, J. Persch, G. Steidl
   % Restoration of Manifold-Valued Images by Half-Quadratic Minimization.
   % Preprint, ArXiv #1505.07029. (2015)
-  %
-  %
+  % 
   
   properties
-    alpha = 0.04;                      % regularization parameter
-    weight = @(t,eps,th) (t<=th)./(t.^2+eps^2).^(1/2); % weight function handle b^*(t,epsilon)
-    eps = 1e-3;                             % parameter for the weight function
-    tol = 0.01*degree                        % tolerance for gradient descent
-    threshold = 15*degree                   % threshold for subgrain boundaries
-    iterMax = 1000;
+    alpha = 0.04;         % regularization parameter
+    eps   = 1e-3;         % parameter for the weight function
+    tol   = 0.01*degree   % tolerance for gradient descent
+    threshold = 15*degree % threshold for subgrain boundaries
+    iterMax = 1000;       % maximum number of iterations
   end
   
   methods
@@ -41,6 +28,9 @@ classdef halfQuadraticFilter < EBSDFilter
       else
         idNeighbours = squareNeighbors(size(ori));
       end
+      
+      % the regulaisation parameter
+      alpha = 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       
       % project around center
       [~,q] = mean(ori);
@@ -63,15 +53,16 @@ classdef halfQuadraticFilter < EBSDFilter
           n = u(idNeighbours(:,:,j));
           
           % compute weights to the neighboring pixels
-          w = (1+4*quality(idNeighbours(:,:,j))-quality)./5 .* ...
-            F.weight(angle(u,n),F.eps,F.threshold);
+          t = angle(u,n);
+          w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
+          w = alpha * w .* (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
           w(isnan(w)) = 0;
         
           % update gradient
-          g = g + F.alpha * w .* log(n,u,'nan2zero');
+          g = g + w .* log(n,u,'nan2zero');
           
           % update step length
-          lambda = lambda + F.alpha * w;
+          lambda = lambda + w;
           
         end
         

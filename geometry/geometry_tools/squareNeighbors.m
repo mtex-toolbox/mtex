@@ -5,11 +5,11 @@ function ind = squareNeighbors(RowsCols,Nid)
 
 [col,row] = meshgrid(1:RowsCols(2),1:RowsCols(1));
 
-%dRow = [0 1 0 -1];
-%dCol = [1 0 -1 0];
+dRow = [0 1 0 -1];
+dCol = [1 0 -1 0];
 
-dRow = [1 -1 0  0 1  1 -1 -1];
-dCol = [0  0 1 -1 1 -1  1 -1];
+%dRow = [1 -1 0  0 1  1 -1 -1];
+%dCol = [0  0 1 -1 1 -1  1 -1];
 
 if nargin == 2
   ind = calcInd(Nid);
