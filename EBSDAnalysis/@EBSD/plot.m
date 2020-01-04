@@ -69,6 +69,8 @@ if nargin>1 && isa(varargin{1},'orientation')
   end
 end
 
+% translate logical into numerical data
+if nargin>1 && islogical(varargin{1}), varargin{1} = double(varargin{1}); end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
