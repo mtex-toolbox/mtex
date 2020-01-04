@@ -13,6 +13,7 @@ classdef halfQuadraticFilter < EBSDFilter
     tol   = 0.01*degree   % tolerance for gradient descent
     threshold = 15*degree % threshold for subgrain boundaries
     iterMax = 1000;       % maximum number of iterations
+    l1DataFit = true      % wether to use the l1 norm for data fitting
   end
   
   methods
@@ -52,10 +53,16 @@ classdef halfQuadraticFilter < EBSDFilter
         w(isnan(w)) = 0;
         
         % the gradient
-        g = quality .* log(q,u) + nansum(w .* log(n,uu),3);
+        if F.l1DataFit
+          w0 = quality ./ sqrt(angle(q,u).^2+F.eps^2);
+        else
+          w0 = quality;
+        end
+        w0(isnan(w0)) = 0;
+        g = w0 .* log(q,u) + nansum(w .* log(n,uu),3);
           
         % update step length
-        lambda = quality + sum(w,3);
+        lambda = w0 + sum(w,3);
         lambda(lambda==0) = inf;
         
         % the final step
