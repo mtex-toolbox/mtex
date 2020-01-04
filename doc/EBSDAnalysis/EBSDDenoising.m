@@ -160,7 +160,7 @@ F.alpha
 % a later example.
 
 F = halfQuadraticFilter;
-F.alpha = 0.25; %set the smoothing parameter
+F.alpha = 0.04; %set the smoothing parameter
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);
@@ -181,8 +181,8 @@ hold off
 % a later example.
 
 F = infimalConvolutionFilter;
-F.lambda = 0.01; %smoothing parameter for the gradient
-F.mu = 0.005;% smoothing parameter for the hessian
+F.lambda = 0.01; % sssmoothing parameter for the gradient
+F.mu = 0.005;    % smoothing parameter for the hessian
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);
@@ -279,7 +279,6 @@ hold off
 
 F = halfQuadraticFilter;
 F.alpha = 0.01;
-F.eps = 0.001;
 ebsd_smoothed = smooth(ebsd('indexed'),F,'fill',grains);
 
 plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)
