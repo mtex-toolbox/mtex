@@ -66,7 +66,7 @@ d(newId) = ebsd.rotations.d;
 % update all other properties
 for fn = fieldnames(ebsd.prop).'
   if any(strcmp(char(fn),{'x','y','z'})), continue;end
-  if isnumeric(prop.(char(fn)))
+  if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn))) 
     prop.(char(fn)) = nan(sGrid);
   else
     prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
