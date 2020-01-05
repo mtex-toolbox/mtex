@@ -41,7 +41,12 @@ switch s(1).type
       
       phId = find(strcmpi(b,ebsd.mineralList),1);
       ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),phId);
-            
+      
+    elseif isnan(b)
+      
+      ebsd.rotations = subsasgn(ebsd.rotations,s(1),nan);
+      ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),nan);
+                  
     else
       
       ebsd = subsasgn@dynProp(ebsd,s(1),b);
