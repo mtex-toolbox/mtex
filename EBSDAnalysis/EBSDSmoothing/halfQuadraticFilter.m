@@ -8,12 +8,13 @@ classdef halfQuadraticFilter < EBSDFilter
   % 
   
   properties
-    alpha = 0.04;         % regularization parameter
-    eps   = 1e-3;         % parameter for the weight function
-    tol   = 0.01*degree   % tolerance for gradient descent
+    l1DataFit = true      % use l^1 norm for data fitting
+    l1TV      = true      % use l^1 norm for regularization
+    alpha = 1;            % regularization parameter
+    iterMax   = 1000;     % maximum number of iterations
+    tol   = 0.02*degree   % stopping criterium for the gradient descent
+    eps   = 1e-3;         % l^1 relaxation parameter
     threshold = 15*degree % threshold for subgrain boundaries
-    iterMax = 1000;       % maximum number of iterations
-    l1DataFit = true      % wether to use the l1 norm for data fitting
   end
   
   methods
@@ -31,7 +32,7 @@ classdef halfQuadraticFilter < EBSDFilter
       end
       
       % the regulaisation parameter
-      alpha = 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
+      alpha = degree^(F.l1TV-F.l1DataFit) * 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       
       % project around center
       [~,q] = mean(ori);
@@ -47,10 +48,14 @@ classdef halfQuadraticFilter < EBSDFilter
         n = u(idNeighbours);
           
         % compute weights to the neighboring pixels
-        t = angle(uu,n);
-        %w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
-        w = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
-        w(isnan(w)) = 0;
+        if F.l1TV
+          t = angle(uu,n);
+          %w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
+          w = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
+          w(isnan(w)) = 0;
+        else
+          w = alpha;
+        end
         
         % the gradient
         if F.l1DataFit
