@@ -32,7 +32,8 @@ classdef halfQuadraticFilter < EBSDFilter
       end
       
       % the regulaisation parameter
-      alpha = degree^(F.l1TV-F.l1DataFit) * 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
+      %alpha = (0.5*degree)^(F.l1TV-F.l1DataFit) * 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
+      alpha = (0.25*degree)^F.l1TV * (0.5*degree)^(-F.l1DataFit) * 10 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       
       % project around center
       [~,q] = mean(ori);
@@ -54,7 +55,7 @@ classdef halfQuadraticFilter < EBSDFilter
           w = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
           w(isnan(w)) = 0;
         else
-          w = alpha;
+          w = alpha * ~isnan(n);
         end
         
         % the gradient
