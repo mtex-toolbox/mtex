@@ -1,48 +1,53 @@
 function ebsd = fill(ebsd,varargin)
-% extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
+% fill EBSD data by nearest neighbour
 %
 % Syntax
 %   ebsd_filled = fill(ebsd)
+%   ebsd_filled = fill(ebsd,grains)
 %
 % Input
 %  ebsd - @EBSD
-%
+%  grains - @grain2d
 
 if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 
-grains = getClass(varargin,'grain2d',[]);
-if isempty(grains)
+% the values to be filled
+nanId = isnan(ebsd.phaseId);
 
-  % the values to be filled
-  nanId = isnan(ebsd.phaseId);
-  
-  F = TriScatteredInterp([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
-    find(~nanId),'nearest'); %#ok<DTRIINT>
-  newId = fix(F(ebsd.prop.x(nanId),ebsd.prop.y(nanId)));
+F = TriScatteredInterp([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
+  find(~nanId),'nearest'); %#ok<DTRIINT>
+newId = fix(F(ebsd.prop.x(nanId),ebsd.prop.y(nanId)));
 
-  % interpolate phaseId
-  ebsd.phaseId(nanId) = ebsd.phaseId(newId);
-  ebsd.rotations(nanId) = ebsd.rotations(newId);
+% interpolate phaseId
+ebsd.phaseId(nanId) = ebsd.phaseId(newId);
+ebsd.rotations(nanId) = ebsd.rotations(newId);
   
-  % interpolate grainId
-  try
-    ebsd.prop.grainId(nanId) = ebsd.prop.grainId(newId);
-  end
-  
-else % check for whether the pixels are within certain grains
-
-  % the values to be filled
-  nanId = find(isnan(ebsd.phaseId));
-
-  isInside = grains.checkInside(ebsd.subSet(nanId));
-  
-  [ebsdId,hostId] = find(isInside);
-  
-  ebsd.grainId(nanId(ebsdId)) = grains.id(hostId);
-  ebsd.phaseId(nanId(ebsdId)) = grains.phaseId(hostId);
-  
-  ebsd.rotations(nanId(ebsdId)) = grains.meanRotation(hostId);
-  
+% interpolate grainId
+try
+  ebsd.prop.grainId(nanId) = ebsd.prop.grainId(newId);
 end
+  
+grains = getClass(varargin,'grain2d',[]);
+if isempty(grains), return; end
 
+grains = grains(ismember(grains.id,unique(ebsd.grainId)));
+
+nanId = find(nanId);
+
+% check for whether the pixels are within certain grains
+isInside = grains.checkInside(ebsd.subSet(nanId));
+
+% set phase to not indexed if not inside any grain
+ebsd.phaseId(nanId(~any(isInside,2))) = 1;
+ebsd.grainId(nanId(~any(isInside,2))) = 0;
+
+% the values to be filled
+[ebsdId,hostId] = find(isInside);
+
+wrongGrainId = ebsd.grainId(nanId(ebsdId)) ~= grains.id(hostId);
+
+ebsd.phaseId(nanId(ebsdId)) = grains.phaseId(hostId);
+ebsd.grainId(nanId(ebsdId)) = grains.id(hostId);
+ebsd.rotations(nanId(ebsdId(wrongGrainId))) = grains.meanRotation(hostId(wrongGrainId));
+  
 end

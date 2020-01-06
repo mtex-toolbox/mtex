@@ -62,7 +62,7 @@ rot = ebsd.rotations;
 pos = pos(~isnan(grainIds));
 grainIds = grainIds(~isnan(grainIds));
 phaseIds = ebsd.phaseId(pos).';
-grainIds = grainIds.';
+grainIds = grainIds(grainIds>0).';
 progress(0,length(grainIds));
 
 % find the largest grain
