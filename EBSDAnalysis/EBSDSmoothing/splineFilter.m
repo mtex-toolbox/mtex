@@ -9,7 +9,7 @@ classdef splineFilter < EBSDFilter
   
   methods
     
-    function F = splineFiler(alpha,robust)
+    function F = splineFilter(alpha,robust)
       if nargin > 0, F.alpha = alpha;end
       if nargin > 1, F.robust = robust; end
     end
