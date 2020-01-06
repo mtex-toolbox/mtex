@@ -160,7 +160,6 @@ F.alpha
 % a later example.
 
 F = halfQuadraticFilter;
-F.alpha = 0.01; %set the smoothing parameter
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);
@@ -202,28 +201,28 @@ hold off
 %
 % *A synthetic example*
 %
-% In the following example, we randomly set 50 percent of the measured
-% orientations to |nan|.
+% In the following example, we randomly remove 50 percent measured pixels
 
-ebsdNaN = ebsd;
-
-% set 50 percent of the orientations to nan
-ind = discretesample(length(ebsd),round(length(ebsd)*50/100));
-ebsdNaN(ind).orientations = orientation.nan(ebsd.CS);
+ebsdSub = ebsd(discretesample(length(ebsd),round(length(ebsd)*50/100)));
 
 % plot the reduced data
-plot(ebsdNaN,ipfKey.orientation2color(ebsdNaN.orientations))
+plot(ebsdSub,ipfKey.orientation2color(ebsdSub.orientations))
 hold on
 plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %%
-% By default, all orientations that are set to |nan| are interpolated.
+% In order to fill these misindexed orientations the option |fill| has to
+% be set.
 
-% interpolate the missing data with the smoothing spline filter
-ebsdNaN_smoothed = smooth(ebsdNaN,splineFilter);
-color = ipfKey.orientation2color(ebsdNaN_smoothed('indexed').orientations);
-plot(ebsdNaN_smoothed('indexed'),color,'micronbar','off')
+F = halfQuadraticFilter; F.alpha = 1;
+
+% interpolate the missing data 
+ebsdSub_filled = smooth(ebsdSub,F,'fill',oneGrain);
+
+% plot the result
+color = ipfKey.orientation2color(ebsdSub_filled('indexed').orientations);
+plot(ebsdSub_filled('indexed'),color,'micronbar','off')
 hold on
 plot(oneGrain.boundary)
 hold off
@@ -232,9 +231,10 @@ hold off
 % We may plot the misorientation angle between the interpolated
 % orientations and the measured orientations
 
-omega = angle(ebsdNaN_smoothed('indexed').orientations, ...
-  ebsd_smoothed('indexed').orientations);
-plot(ebsd_smoothed('indexed'),omega./degree,'micronbar','off')
+%TODO
+%omega = angle(ebsdSub_filled('indexed').orientations, ...
+%  ebsd('indexed').orientations);
+%plot(ebsdSub_filled('indexed'),omega./degree,'micronbar','off')
 mtexColorbar
 
 hold on
@@ -278,7 +278,8 @@ hold off
 % argument.
 
 F = halfQuadraticFilter;
-F.alpha = 0.01;
+F.alpha = 10;
+
 ebsd_smoothed = smooth(ebsd('indexed'),F,'fill',grains);
 
 plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)

@@ -28,10 +28,10 @@ ebsd = ebsd(grains(grains.grainSize>10));
 [grains, ebsd.grainId, ebsd.mis2mean] = calcGrains(ebsd);
 
 % smooth grain boundaries to avoid stair casing effect
-grains = smooth(grains,5)
+grains = smooth(grains,5);
 
 % consider only the very big grains
-grains = grains(grains.grainSize>300,'fo');
+grains = grains(grains.grainSize>300,'fo')
 
 %%
 % Colorize the orientations according to their misorientation axis / angle
@@ -66,15 +66,14 @@ hold off
 
 % restrict the 
 ebsd = ebsd(grains(ind));
-%ebsd = ebsd(ebsd.inpolygon([3000,8500,2700,-3100]));
 
 % and denoise a little and fill
-f = halfQuadraticFilter;
-f.alpha =0.05;
-f.threshold=1.5*degree;
+F = halfQuadraticFilter;
+F.alpha = 1;
+F.threshold  = 1.5*degree;
 
-ebsd = smooth(ebsd,f,grains,'fill');
-ebsd = ebsd('indexed')
+ebsd = smooth(ebsd,F,'fill',grains(ind));
+ebsd = ebsd('indexed');
 
 %%
 
@@ -91,9 +90,9 @@ hold off
 % boundaries, let's segment at a small angle
 
 
-[grains, ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',1.5*degree,'boundary','tight')
+[grains, ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',1.5*degree,'boundary','tight');
 
-grains = smooth(grains,5)
+grains = smooth(grains,5);
 
 % gather all subgrain boundaries
 gbfo = [grains.boundary('f','f') grains.innerBoundary('f','f')];
