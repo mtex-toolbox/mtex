@@ -160,6 +160,17 @@ for i = 1:length(CSlst)
     a,b,c,alpha,beta,gamma,mineral,laueGr,spaceGr,comment);%Write phase info
 end
 
+% Check for deleted phases
+phaseIDs = ebsdGrid.phase;
+maxPhID = max(max(phaseIDs));   %Check maximum phase ID in phase list
+k = maxPhID-1;
+while k > 0
+    if ~any(any(ebsdGrid.phase == 1)) %Empty phase ID, i.e. deleted phase
+       phaseIDs(phaseIDs > k) = phaseIDs(phaseIDs > k)-1; %Reduce phase ID
+    end
+    k = k-1;
+end
+
 % assemble data array
 scrPrnt('Step','Assembling data array');
 
@@ -187,7 +198,7 @@ elseif ebsdGrid.y(1,1)> ebsdGrid.y(2,1)
    dim.y = -1;
 end
 %Gather data
-flds{1} = ebsdGrid.phase;
+flds{1} = phaseIDs;
 flds{2} = ebsdGrid.x;
 flds{3} = ebsdGrid.y;
 flds{4} = ebsdGrid.prop.bands;
