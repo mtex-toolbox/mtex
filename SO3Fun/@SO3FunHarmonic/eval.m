@@ -20,7 +20,6 @@ if check_option(varargin,'v2')
   return
 end
 
-
 persistent keepPlan;
 
 % kill plan
@@ -36,7 +35,7 @@ s=size(rot);
 rot = rot(:);
 
 if F.bandwidth == 0
-  f = ones(size(rot)).*F.fhat;
+  f = ones(size(rot)) .* F.fhat;
   if numel(F)==1, f=reshape(f,s); end
   return;
 end
@@ -72,17 +71,18 @@ if isempty(plan)
   nfsoftmex('precompute',plan);
 
 end
+
 f=zeros([length(rot) size(F)]);
 for k=1:length(F)
 
-% set Fourier coefficients
-nfsoftmex('set_f_hat',plan,reshape(F.fhat(1:Ldim,k),[],1));
+  % set Fourier coefficients
+  nfsoftmex('set_f_hat',plan,reshape(F.fhat(1:Ldim,k),[],1));
   
-% fast SO(3) fourier transform
-nfsoftmex('trafo',plan);
+  % fast SO(3) fourier transform
+  nfsoftmex('trafo',plan);
 
-% get function values from plan
-f(:,k) = nfsoftmex('get_f',plan);
+  % get function values from plan
+  f(:,k) = nfsoftmex('get_f',plan);
 
 end
 
@@ -94,3 +94,6 @@ else
 end
 
 if numel(F)==1, f=reshape(f,s); end
+
+if F.isReal, f = real(f); end
+

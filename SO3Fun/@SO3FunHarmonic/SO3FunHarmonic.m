@@ -5,6 +5,7 @@ properties
   fhat   = [];              % harmonic coefficients
   SLeft  = specimenSymmetry % symmetry from the left
   SRight = specimenSymmetry % symmetry from the right
+  isReal = true
 end
 
 properties (Dependent=true)  
@@ -114,7 +115,7 @@ methods
   end
   
   function n = numel(F)
-    n = prod(size(F));
+    n = prod(size(F)); %#ok<PSIZE>
   end
   
 end
