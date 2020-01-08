@@ -1,12 +1,19 @@
 function MTEXmenu
 % show up MTEX menu
 
+try
+  g = getGitInfo;
+  v = ['MTEX (' g.branch ')'];
+catch
+  v = getMTEXpref('version');
+end
+
 disp(' ');
 if isempty(javachk('desktop'))
   if verLessThan('matlab','7.13')
-    s = getMTEXpref('version');
+    s = v;
   else
-    s = ['<strong>' getMTEXpref('version') '</strong>'];
+    s = ['<strong>' v '</strong>'];
   end
   disp([ s  ...
     ' (<a href="matlab:MTEXdoc">show documentation</a>)'])
