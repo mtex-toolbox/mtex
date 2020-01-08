@@ -56,7 +56,13 @@ classdef vector3d < dynOption
     function v = vector3d(varargin)
       % constructor of the class vector3d
       
-      if nargin == 0
+      if nargin >=3 && isnumeric(varargin{1})
+        
+        v.x = varargin{1};
+        v.y = varargin{2};
+        v.z = varargin{3};
+      
+      elseif nargin == 0
       elseif nargin <= 2
         if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>
           
@@ -82,15 +88,7 @@ classdef vector3d < dynOption
           v.z = xyz(3,:);
         else
           error('wrong type of argument');
-        end
-        
-      elseif nargin >=3 && isnumeric(varargin{1}) && isnumeric(varargin{1})...
-          && isnumeric(varargin{1})
-        
-        v.x = varargin{1};
-        v.y = varargin{2};
-        v.z = varargin{3};
-        
+        end       
       elseif ischar(varargin{1})
         
         if strcmp(varargin{1},'polar')

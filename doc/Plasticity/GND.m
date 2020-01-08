@@ -72,9 +72,7 @@ hold off
 
 % denoise orientation data
 F = halfQuadraticFilter;
-F.threshold = 1.5*degree;
-F.eps = 1e-2;
-F.alpha = 0.01;
+
 ebsd = smooth(ebsd('indexed'),F,'fill',grains);
 
 % plot the denoised data

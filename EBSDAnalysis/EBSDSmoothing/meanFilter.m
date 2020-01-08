@@ -18,7 +18,14 @@ classdef meanFilter < EBSDFilter
       imagesc(F.weights)
     end
     
-    function ori = smooth(F,ori)
+    function ori = smooth(F,ori,quality)
+
+      if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the meanFilter. ' ...
+          'It might give reasonable results anyway']);
+      end
+      
+      ori(quality==0) = nan;
       
       % map to mean
       [qmean,q] = mean(ori);
