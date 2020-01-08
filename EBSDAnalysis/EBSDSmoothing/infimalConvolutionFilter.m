@@ -38,6 +38,12 @@ classdef infimalConvolutionFilter < EBSDFilter
       % Output:
       %  ori: @orientation
 
+      
+      if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the infimalConvolutionFilter. ' ...
+          'It might give reasonable results anyway']);
+      end
+      
       [M,N] = size(ori);
 
       

@@ -1,6 +1,6 @@
 function MTEXFigureMenu(mtexFig,varargin)
 
-if strcmpi(isVisible(mtexFig.parent),'off'), return; end
+%if strcmpi(isVisible(mtexFig.parent),'off'), return; end
 
 try
   if isempty(mtexFig.parent.MenuBar), return; end

@@ -8,6 +8,7 @@ EBSDOrientationAnalysis Orientation Analysis
 GrainReconstruction   Grain Reconstruction
 EBSDGrid              Square and Hex Grids
 EBSDDenoising         Denoising
+EBSDFilling           Filling Missing Data
 EBSD2ODF              ODF Estimation
 EBSDOrientationPlots  Orientation Plots
 EBSDSharpPlot         Sharp Color Keys 

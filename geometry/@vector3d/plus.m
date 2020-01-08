@@ -1,27 +1,20 @@
-function v = plus(v1,v2)
+function v1 = plus(v1,v2)
 % poitwise addition
 
-if isnumeric(v1)
-  v = v2;
-  v.x = v1 + v2.x;
-  v.y = v1 + v2.y;
-  v.z = v1 + v2.z;     
-elseif isnumeric(v2)
-  v = v1;
-  v.x = v1.x + v2;
-  v.y = v1.y + v2;
-  v.z = v1.z + v2;
-elseif isa(v2,'S2Grid')
-  v = v1 + vector3d(v2);
-elseif isa(v1,'S2Grid')
-  v = vector3d(v1) + v2;
-elseif isa(v2,'vector3d') && isa(v1,'vector3d')
-  v = v1;
-  v.x = v1.x + v2.x;
-  v.y = v1.y + v2.y;
-  v.z = v1.z + v2.z;
-else
-  v = plus(v2,v1);
+try %#ok<TRYNC>
+  v1.x = v1.x+v2.x;
+  v1.y = v1.y+v2.y;
+  v1.z = v1.z+v2.z;
+  
+  v1.isNormalized = false;
+  v1.opt = struct;
+  return
 end
 
-v.isNormalized = false;
+if isnumeric(v1)
+  v1 = vector3d(v1 + v2.x,v1 + v2.y,v1 + v2.z);
+elseif isnumeric(v2)
+  v1 = vector3d(v2 + v1.x,v2 + v1.y,v2 + v1.z);
+else
+  v1 = plus(v2,v1);
+end

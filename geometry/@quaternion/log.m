@@ -28,8 +28,10 @@ if nargin >= 2
 end
 
 % the logarithm with respect to the identity 
-omega = 2 * sign(q.a) .* acos(abs(q.a));
-denum = sqrt(1-q.a.^2);
-omega(denum ~= 0) = omega(denum ~= 0) ./ denum(denum ~= 0);
+a = min(q.a,1);
+omega = 2 * sign(a) .* acos(abs(a));
+denum = sqrt(1-a.^2);
+denum(denum == 0) = inf;
+omega = omega ./ denum;
 
-v = vector3d( omega.* q.b, omega.*q.c, omega.*q.d );
+v = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
