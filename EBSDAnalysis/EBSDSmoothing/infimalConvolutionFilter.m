@@ -29,6 +29,18 @@ classdef infimalConvolutionFilter < EBSDFilter
   
   methods
     
+    function F = infimalConvolutionFilter(varargin)
+      
+      addlistener(F,'isHex','PostSet',@check);
+      function check(varargin)
+        if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the infimalConvolutionFilter. ' ...
+          'It might give reasonable results anyway']);
+        end
+      end
+      
+    end
+    
     function ori = smooth(F,ori,varargin)
       %
       % Input:
@@ -38,11 +50,6 @@ classdef infimalConvolutionFilter < EBSDFilter
       % Output:
       %  ori: @orientation
 
-      
-      if F.isHex
-        warning(['Hexagonal grids are not yet fully supportet for the infimalConvolutionFilter. ' ...
-          'It might give reasonable results anyway']);
-      end
       
       [M,N] = size(ori);
 

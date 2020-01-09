@@ -2,7 +2,7 @@ classdef EBSDFilter < handle
 % abstract class for denoising EBSD data
 %
 
-properties
+properties (SetObservable)
   isHex = false;
 end
 
