@@ -11,13 +11,13 @@ classdef EBSDhex < EBSD
     dHex
     isRowAlignment
     offset %
-    dx
-    dy
   end
   
   properties (Dependent = true)    
     gradientX       % orientation gradient in x
     gradientY       % orientation gradient in y
+    dx
+    dy
   end
   
   methods
@@ -42,15 +42,45 @@ classdef EBSDhex < EBSD
                   
       % set up unit cell
       ebsd.dHex = dHex;
-      ebsd.isRowAlignment = isRowAlignment;
       ebsd.offset = offset;
+      ebsd.isRowAlignment = isRowAlignment;
       
       omega = (0:60:300)*degree + 30*isRowAlignment*degree;
       ebsd.unitCell = dHex * [cos(omega.') sin(omega.')];
       
+      if ~isfield(ebsd.prop,'x')
+        [cols,rows] = meshgrid(1:size(rot,2),1:size(rot,1));
+
+        if ebsd.isRowAlignment
+          ebsd.prop.x = (cols-1+0.5*iseven(rows)) * ebsd.dx;
+          ebsd.prop.y = (rows-1) * ebsd.dy;
+        else
+          ebsd.prop.x = (cols-1) * ebsd.dx;
+          ebsd.prop.y = (rows-1+0.5*iseven(cols)) * ebsd.dy;
+        end
+      end
+      
     end
            
     % --------------------------------------------------------------
+    
+    
+    function dx = get.dx(ebsd)
+      if ebsd.isRowAlignment
+        dx = ebsd.dHex * sqrt(3);
+      else
+        dx = 1.5 * ebsd.dHex;
+      end
+    end
+    
+    function dy = get.dy(ebsd)
+      if ebsd.isRowAlignment
+        dy = 1.5 * ebsd.dHex;
+      else
+        dy = ebsd.dHex * sqrt(3);
+      end
+    end
+    
     
     function gX = get.gradientX(ebsd)
       % gives the gradient in X direction with respect to specimen
