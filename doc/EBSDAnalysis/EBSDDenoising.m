@@ -75,6 +75,7 @@ hold off
 
 % define the meanFilter
 F = meanFilter;
+F.numNeighbours = 1;
 
 % smooth the data
 ebsdS = smooth(ebsd,F); 
@@ -91,19 +92,9 @@ hold off
 %%
 % We clearly see how the noise has been reduces. In order to further reduce
 % the noise we may increase the number of neighbours that are taken into
-% account. To further advance this idea we may even attach weights to the
-% neighbours which decrease with distance. Therefore, we consider the
-% following 7x7 weighting matrix coming
-% from the Gaussian distribution.
+% account. 
 
-[x,y] = meshgrid(-3:3);
-F.weights = exp(-(x.^2+y.^2)/10);
-close all
-imagesc(-3:3,-3:3,F.weights)
-colorbar
-axis equal tight
-
-%%
+F.numNeighbours = 3;
 
 % smooth the data
 ebsdS = smooth(ebsd,F);
