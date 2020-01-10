@@ -57,8 +57,7 @@ classdef EBSDsquare < EBSD
         ebsd.prop.x = (x-1) * dxy(1);
         ebsd.prop.y = (y-1) * dxy(2);
       end
-      
-            
+           
     end
            
     % --------------------------------------------------------------
