@@ -91,8 +91,3 @@ plot(ebsd(1:10,:),ebsd(1:10,:).orientations,'micronbar','off')
 
 plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
 
-
-
-
-
-
