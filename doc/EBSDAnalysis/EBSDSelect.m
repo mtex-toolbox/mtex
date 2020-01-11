@@ -39,7 +39,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 % an orientation is determined by its position in the 001 inverse pole
 % figure which itself is colored as
 
-ipfKey = ipfColorKey(ebsd('Forsterite'))
+ipfKey = ipfColorKey(ebsd('Forsterite'));
 plot(ipfKey)
 
 
