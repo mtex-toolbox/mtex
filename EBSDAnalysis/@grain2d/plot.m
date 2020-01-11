@@ -72,13 +72,20 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   plotBoundary = false;
   
-elseif nargin>1 && isa(varargin{1},'S2Fun')
+elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
+  
+  if isa(varargin{1},'ipfColorKey')
+    S2F = S2Fun(varargin{1});
+    varargin = ['rgb','3d',varargin];
+  else
+    S2F = varargin{1};
+  end
   
   scaling = sqrt(grains.area);
   shift = vector3d([grains.centroid,2*scaling*zUpDown].');
   
   for k = 1:length(grains)
-    h(k) = plot(rotate(varargin{1},grains.meanOrientation(k)),...
+    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),...
     'parent', mP.ax,'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k));
   end
   
