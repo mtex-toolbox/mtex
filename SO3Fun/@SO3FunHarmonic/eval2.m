@@ -5,7 +5,7 @@ N = SO3F.bandwidth;
 % precompute wigner d -> n x k x j
 d = zeros(N+1,2*N+1,2*N+1);
 for n = 0:N  
-  d(n+1,N+1+(-n:n),N+1+(-n:n)) = wignerd(n,pi/2);  
+  d(n+1,N+1+(-n:n),N+1+(-n:n)) = Wigner_D(n,pi/2);  
 end
 %L = 3; int16(4^L*squeeze(d(L+1,:,:)).^2)
 
