@@ -11,14 +11,17 @@ classdef KuwaharaFilter < EBSDFilter
       
       F.numNeighbours = get_option(varargin,'neighbours',1);
             
+      addlistener(F,'isHex','PostSet',@check);
+      function check(varargin)
+        if F.isHex
+          warning(['Hexagonal grids are not yet fully supportet for the KuwaharaFilter. ' ...
+            'It might give reasonable results anyway']);
+        end
+      end
+      
     end
     
     function ori = smooth(F,ori,quality)
-
-      if F.isHex
-        warning(['Hexagonal grids are not yet fully supportet for the KuwaharaFilter. ' ...
-          'It might give reasonable results anyway']);
-      end
       
       ori(quality==0) = nan;
       

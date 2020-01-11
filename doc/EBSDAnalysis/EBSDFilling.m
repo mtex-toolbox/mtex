@@ -15,7 +15,7 @@
 % orientation map of deformed Magnesium 
 
 % import the data
-mtexdata twin
+mtexdata ferrite
 
 % consider only indexed data
 ebsd = ebsd('indexed');
@@ -37,30 +37,13 @@ plot(ebsd,ebsd.orientations)
 
 % and on top the grain boundaries
 hold on
-plot(grains.boundary,'linewidth',2)
-hold off
-
-%%
-% In order to visualize orientation gradients within the grains we next
-% colorize the orientations according to their misorientation axis and
-% angle with respect to the grain mean orientation.
-
-% define the color key
-colorKey = axisAngleColorKey;
-
-% we need to set the reference orientations are the mean orientation of each grain
-colorKey.oriRef = grains(ebsd.grainId).meanOrientation;
-
-% lets plot the result
-plot(ebsd,colorKey.orientation2color(ebsd.orientations))
-hold on
-plot(grains.boundary,'linewidth',2)
+plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %% A Very Sparse Measured Data Set
 %
-% In order to demonstrate the fill capabilities of the MTEX algorithms we
-% randomly throw away 75 percent of all data.
+% Although the data set has already some not indexed pixels we artificially
+% make the situation more worse by throwing away 75 percent of all data.
 
 ebsdSub = ebsd(discretesample(length(ebsd),round(length(ebsd)*25/100)));
 
@@ -68,56 +51,57 @@ ebsdSub = ebsd(discretesample(length(ebsd),round(length(ebsd)*25/100)));
 plot(ebsdSub,ebsdSub.orientations)
 
 %%
-% In a first step we reconstruct the grain structure from these 25 percent
-% pixels.
+% Our aim is now to recover the orginal orientation map. In a first step we
+% reconstruct the grain structure from the remaining 25 percent of pixels.
 
 % reconstruct the grain structure
 [grainsSub,ebsdSub.grainId] = calcGrains(ebsdSub,'angle',10*degree);
 
-grainsSub = smooth(grainsSub,5)
+grainsSub = smooth(grainsSub,5);
 
 hold on
-plot(grainsSub.boundary,'linewidth',2)
+plot(grainsSub.boundary,'linewidth',1.5)
 hold off
 
 %%
-% In order to fill the 75 percent missing orientations we use the option
-% |fill| when denoising the data.
+% The easiest way to reconstruct missing data is to use the command
+% <EBSD.fill.html fill> which interpolates missing data using the method of
+% nearest neighbor. It is very recommended to pass the grain structure
+% |grainsSub| as an additional argument to the |fill| function. In this
+% case the nearest neighbors are choosen within the grains.
 
-F = splineFilter;
+ebsdSub_filled = fill(ebsdSub,grainsSub);
 
-% interpolate the missing data 
-ebsdSub_filled = smooth(ebsdSub,F,'fill',grainsSub);
-ebsdSub_filled = ebsdSub_filled('indexed');
-
-% plot the result
-colorKey.oriRef = grainsSub(ebsdSub_filled.grainId).meanOrientation;
-plot(ebsdSub_filled,colorKey.orientation2color(ebsdSub_filled.orientations))
+plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
 hold on
-plot(grainsSub.boundary,'linewidth',2)
+plot(grainsSub.boundary,'linewidth',1.5)
 hold off
 
-
 %%
+% A much more powerful method is to use any denoising method and set the
+% option |fill|.
 
 F = halfQuadraticFilter; 
+F.alpha = 0.25;
 
 % interpolate the missing data 
 ebsdSub_filled = smooth(ebsdSub,F,'fill',grainsSub);
 ebsdSub_filled = ebsdSub_filled('indexed');
 
-% plot the result
-colorKey.oriRef = grainsSub(ebsdSub_filled.grainId).meanOrientation;
-plot(ebsdSub_filled,colorKey.orientation2color(ebsdSub_filled.orientations))
+plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
 hold on
-plot(grainsSub.boundary,'linewidth',2)
+plot(grainsSub.boundary,'linewidth',1.5)
 hold off
 
 
-%% A real world example
-% Let's consider a subset of the 
+%% An Example from Geoscience
+%
+% Data sets with many missing pixels most often appear when measuring
+% geological samples. The following data set of forsterite contains about
+% 25 percent missing pixels. Lets start by importing the data and
+% reconstructing the grain structure.
 
 close all; plotx2east
 mtexdata forsterite
@@ -146,7 +130,7 @@ hold off
 
 %%
 % Using the option |fill| the command |smooth| fills the holes inside the
-% grains. Note that the nonindexed pixels at the grain boundaries kept
+% grains. Note that the nonindexed pixels at the grain boundaries are kept
 % untouched. In order to allow MTEX to decide whether a pixel is inside a
 % grain or not, the |grain| variable has to be passed as an additional
 % argument.

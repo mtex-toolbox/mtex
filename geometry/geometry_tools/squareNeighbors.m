@@ -8,9 +8,6 @@ function ind = squareNeighbors(RowsCols,Nid)
 dRow = [0 1 0 -1];
 dCol = [1 0 -1 0];
 
-%dRow = [1 -1 0  0 1  1 -1 -1];
-%dCol = [0  0 1 -1 1 -1  1 -1];
-
 if nargin == 2
   ind = calcInd(Nid);
 else

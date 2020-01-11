@@ -1,49 +1,130 @@
-%% IPF Maps
+%% Inverse Pole Figure Color Coding of Orientation Maps
 %
 %%
-% This section explains various options to customize ipf orientation maps.
-% The mathematics behind the default MTEX color key is explained in detail
-% in the paper <http://dx.doi.org/10.1107/S1600576716012942 Orientations -
-% perfectly colored>. Let us first import some sample EBSD data.
+% This sections explains how to colorize orientation maps. The mathematics
+% behind the default MTEX color key is explained in detail in the paper
+% <http://dx.doi.org/10.1107/S1600576716012942 Orientations - perfectly
+% colored>. 
+%
+% Let us first import some sample EBSD data. We shall do this at the
+% example of olivine data.
 
-close all; plotx2east
-mtexdata forsterite
-csFo = ebsd('Forsterite').CS;
-
-%% The basic setup
-% In order to transform orientations into color one usually defines a
-% <orientationColorKey.html orientation color key>
-% ,e.g,
-
-ipfKey = ipfHSVKey(ebsd('Forsterite').CS)
+mtexdata olivine
+ebsd('olivine').CS = ebsd('olivine').CS.Laue;
 
 %%
-% Note that a mandatory argument to any color key is always the symmetry of
-% the objects to be transformed into colors. When plotting the color key we
-% see that plotting region automatically adapts to the fundamental sector
-% of orthorhombic crystal symmetry
+% In order to illustrate the orientations of the olivine crystals we first
+% define the habitus of a olivine crystal
 
-plot(ipfKey)
+cS = crystalShape.olivine;
+
+plot(cS,'colored')
 
 %%
-% In order to apply this color key for colorizing the map we proceed as
-% follows
+% Next we represent the orientation of each grain by an appropriately
+% rotated crystal. This is done by the following commands
+
+% 1. reconstruct the grains
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+
+% 2. remove all very small grains
+ebsd(grains(grains.grainSize < 5)) = [];
+
+% 3. redo grain reconstruction
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+
+% 4. plot the grain boundaries
+plot(grains.boundary,'lineWidth',1.5,'micronbar','off')
+
+% 5. select only very large grains
+big_grains = grains(grains.grainSize > 150);
+
+% 6.  plot the crystals
+hold on
+plot(big_grains('olivine'),0.8*cS,'linewidth',2,'colored')
+hold off
+legend off
+
+%%
+% The idea of inverse pole figure color coding of orientation maps is to
+% visualize the orientation of a grain by the color of the crystal face
+% pointing towards you. In the case Olivine habitus this would lead to six
+% different colors. We can overcome this restriction by replacing the
+% colored crystal shape by a colored ball. 
+
+close all
+ipfKey = ipfHSVKey(ebsd('olivine'));
+plot(ipfKey,'3d')
+
+%%
+% Next we proceed as with the crystal habitus and place a colored ball at
+% each posiotion of the big grains and rotate it according to the
+% meanorientation of the grain.
+
+plot(grains.boundary,'lineWidth',1.5,'micronbar','off')
+
+hold on
+plot(big_grains('olivine'),ipfKey)
+hold off
+legend off
+
+%%
+% Finally, we take the color in the center of the ball as the color
+% representing the orientation of the grain. This tranformation from a list
+% of orientations into a list colors given as RGB values  is the central
+% purpose of the color key |ipfKey| we have defined above and is done by
+% the command |ipfKey.orientation2color|.
+
+% this computes the colors for each orientation specified as input
+colors = ipfKey.orientation2color(big_grains('olivine').meanOrientation);
+
+% this plots the grains colorized according to the RGB values stored in colors
+plot(big_grains('o'),colors)
+
+%% Basic Properties
+%
+% The interpetation of the colors becomes more simple if we plot the
+% colored ball in stereographic projection and mark the crystallographic
+% axes.
+
+plot(ipfKey,'complete','upper')
+
+h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,0},{0,2,1},...
+  ebsd('olivine').CS);
+annotate(h.symmetrise,'labeled','backgroundColor','w')
+
+%%
+% From the colors of the grains in the map we may now deduce for each grain
+% which crystal axis is pointing out of the plane of the specimen.
+% Accordingly, we can associate to each grain a specific point in the color
+% key. Let plot a colored dot for each grain orientation in the inverse
+% pole figure that scales according to the grain area.
+
+plotIPDF(big_grains('olivine').meanOrientation,colors,vector3d.Z,...
+  'MarkerSize',0.05*big_grains('olivine').area,'markerEdgeColor','k')
+
+%%
+% Instead of colorizing which crystal axis is pointing out of the specimen
+% surface we may also colorizing which crystal axis is pointing towards the
+% rolling or folliation direction or any other specimen fixed direction.
+% This reference direction is stored as the property
+% |inversePoleFigureDirection| in the color key.
+
+% set the referece direction to X
+ipfKey.inversePoleFigureDirection = vector3d.X;
 
 % compute the colors
-color = ipfKey.orientation2color(ebsd('Fo').orientations);
+colors = ipfKey.orientation2color(ebsd('olivine').orientations);
 
-% plot the colors
-close all
-plot(ebsd('Forsterite'),color)
+% plot the ebsd data together with the colors
+plot(ebsd('o'),colors)
 
 %%
-% We can also visualize the orientations of the forsterite phase by
-% plotting them into the inverse pole figure map.
-
-plotIPDF(ebsd('Forsterite').orientations,color,ipfKey.inversePoleFigureDirection,...
-  'MarkerSize',6,'MarkerEdgeColor','k')
-
-%% Customizing the color key
+% Note, that |ipfKey.inversePoleFigureDirection| may even be a vector of
+% directions. Which is helpful for round specimen where one wants to
+% consider the direction normal to the surface.
+%
+%% Customizing the Color Key
 % Orientation color keys usually provide several options to alter the
 % alignment of colors. Let's give some examples
 
@@ -58,66 +139,39 @@ ipfKey.colorPostRotation = rotation.byAxisAngle(zvector,120*degree);
 
 plot(ipfKey)
 
-%%
-% Furthermore, we can explicitly set the inverse pole figure directions by
-
-ipfKey.inversePoleFigureDirection = zvector;
-
-% compute the colors again
-color = ipfKey.orientation2color(ebsd('Forsterite').orientations);
-
-% and plot them
-close all
-plot(ebsd('Forsterite'),color)
-
-
 %% Laue or Enantiomorphic symmetry groups
+%
 % As the Euler angles provided by the EBSD measurement devices describe
 % proper rotations only they do not include any improper symmetry
 % operation. For this reason it is entirely justified to consider for the
 % ipf map proper symmetries only. Lets define the corresponding color key
 
 % the colore key corresponding to the purely enantiomorphic symmetry group
-ipfKey = ipfHSVKey(ebsd('Forsterite').CS.properGroup)
+ipfKey = ipfHSVKey(ebsd('olivine').CS.properGroup);
 plot(ipfKey)
 
 %%
 % We oberseve that the key is twice as large and hence allows for a better
-% distinction between orientations.
+% distinction between different orientations.
 
 close all
-color = ipfKey.orientation2color(ebsd('Fo').orientations);
-plot(ebsd('Forsterite'),color)
+color = ipfKey.orientation2color(ebsd('olivine').orientations);
+plot(ebsd('olivine'),color)
 
 
 %% Other inverse pole figure keys
+%
 % Beside the default ipf color key MTEX provides the default color keys are
 % they are used by other popular EBSD systems.
 
-plot(ipfTSLKey(csFo))
+plot(ipfTSLKey(ebsd('olivine').CS))
 
 %%
 % 
 
-plot(ipfHKLKey(csFo))
+plot(ipfHKLKey(ebsd('olivine').CS))
 
 %%
-% The user should be aware that for certain symmetry groups these color key
-% lead to color jumps.
-
-%% Other Visualitations of Color Keys
-% We may also look at the inverse pole figure sphere in 3d. One can nicely
-% observe how the color map follows the given symmetry group.
-
-close all
-plot(ipfKey,'3d')
-
-%%
-% Alternatively, we may plot the color mapping in 2d together with the
-% symmetry elements
-
-plot(ipfKey,'complete','upper')
-
-hold on
-plot(ipfKey.CS1)
-hold off
+% The user should be aware that for certain symmetry groups these color
+% keys lead to color jumps.
+%

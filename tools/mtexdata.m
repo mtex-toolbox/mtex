@@ -302,9 +302,18 @@ ebsd = EBSD.load(fname,'CS', CS,...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_titanium
 
-CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
+  CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
 
-fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
-ebsd = EBSD.load(fname,'CS', CS,...
-   'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
-   'x' 'y' 'grainId'});
+  fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
+  ebsd = EBSD.load(fname,'CS', CS,...
+    'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
+    'x' 'y' 'grainId'});
+
+ 
+  function ebsd = mtexdata_ferrite
+
+fname = fullfile(mtexDataPath,'EBSD','ferrite.ang');
+ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame','setting 2');
+
+ 
+ 
