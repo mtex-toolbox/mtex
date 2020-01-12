@@ -15,6 +15,9 @@ gB.grainId = gB.grainId(ind,:);
 gB.phaseId = gB.phaseId(ind,:);
 gB.misrotation = gB.misrotation(ind);
 
+% properties
+gB = subSet@dynProp(gB,ind);
+
 % restrict triple points
 tP = gB.triplePoints;
 gB.triplePoints = subSet(tP,any(gB.I_VF(tP.id,:),2));
