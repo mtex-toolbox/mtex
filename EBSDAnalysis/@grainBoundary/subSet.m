@@ -6,7 +6,7 @@ function gB = subSet(gB,ind)
 %  ind - indices
 %
 % Output
-%  grains - @grainBoundary
+%  gB - @grainBoundary
 %
 
 gB.F = gB.F(ind,:);
