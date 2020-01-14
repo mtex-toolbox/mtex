@@ -15,12 +15,20 @@
 %
 %% Computing an ODF from Individual Orientations
 %
-% For data sets of individual orientations, e.g. EBSD, ODFs can be computed
-% by <DensityEstimation.html kernel density estimation> using the command
-% <orientation.calcDensity.html |calcDensity|>. 
+% Individual orientations data may be obtained by experimental by EBSD,
+% ACOM or 3d X-ray imaging; or from simulations, like VPSC. In the
+% following we consider an EBSD map of an Titanium alloy.
 
-% import some ebsd data
+% import the titanium data
 mtexdata titanium
+
+% plot an orientation map
+plot(ebsd, ebsd.orientations)
+
+%%
+% Computing an ODF from individual orientations is done by
+% <DensityEstimation.html kernel density estimation> using the command
+% <orientation.calcDensity.html |calcDensity|>.
 
 % extract the orientations
 ori = ebsd.orientations;
