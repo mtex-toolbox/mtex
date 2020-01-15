@@ -30,12 +30,19 @@ elseif length(m) == 1
 end
 
 % first approximation
-if check_option(varargin,'m0')
+if check_option(varargin,'noSymmetry')
+  
+  m = mean@vector3d(m,varargin{:});
+  return
+  
+elseif check_option(varargin,'m0')
+  
   m_mean = get_option(varargin,'m0',vector3d(m.subSet(find(~isnan(m.x),1))));
   m_mean = vector3d(project2FundamentalRegion(m_mean,m.CS));
   varargin = delete_option(varargin,'m0',1);
-elseif ~check_option(varargin,'noSymmetry')
-
+  
+else
+  
   r = plotS2Grid(m.CS.fundamentalSector,'resolution',10*degree);
 
   d = mean(angle_outer(m,r).^2);
@@ -43,9 +50,7 @@ elseif ~check_option(varargin,'noSymmetry')
   [~,id] = min(d);
 
   m_mean = r.subSet(id);
-else
-  m = mean@vector3d(m,varargin{:});
-  return
+
 end
 
 old_mean = [];
