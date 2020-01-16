@@ -35,23 +35,25 @@ end
 % group
 if check_option(varargin,'antipodal') || v.antipodal, cs = cs.Laue; end
 
-%get fundamental region
-sR = cs.fundamentalSector(varargin{:});
-
 % maybe there is nothing to do
-if isempty(sR.N) || length(cs)==1, return; end
+if length(cs)==1, return; end
 
 % the following algorithm assumes that the center of the fundamental
 % sectors are the center of the corresponding voronoi cells. this seems to
 % be the case for all symmetries accept 321, 312, -4. For these special
 % cases we use the two fold axis first to project to the upper hemisphere
-% and the consider the problem reduced to the point group 3. Maybe this is
+% and then consider the problem reduced to the point group 3. Maybe this is
 % a general idea to reduce computational cost ...
 
 if nargin >= 3 && isa(varargin{1},'vector3d')
+  
   symCenter = cs * varargin{1};
+  
 else
 
+  % get fundamental region
+  sR = fundamentalSector(cs,varargin{:});
+  
   switch cs.id
     case {19,22,26}
       cs = rotation(cs);
@@ -70,7 +72,7 @@ else
 
 end
 
-dist = dot_outer(vector3d(v),symCenter);
+dist = dot_outer(v,symCenter,'noSymmetry');
 
 [~,col] = max(dist,[],2);
 
