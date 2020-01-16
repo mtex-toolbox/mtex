@@ -28,4 +28,4 @@ d = dot_outer@vector3d(m1,m2);
 d = reshape(d,s);
 
 % find maximum
-d = squeeze(max(d,[],1));
+d = reshape(max(d,[],1),s(2:3));
