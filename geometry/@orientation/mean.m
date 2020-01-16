@@ -40,20 +40,23 @@ end
 
 % first approximation
 q_mean = get_option(varargin,'q0',quaternion(o,find(~isnan(o.a),1)));
-q_mean = quaternion(project2FundamentalRegion(q_mean,o.CS,o.SS));
-old_mean = [];
 q = quaternion(o);
 
 if ~check_option(varargin,'noSymmetry')
-  % iterate mean
-  iter = 1;
-  while iter < 5 && (isempty(old_mean) || (angle(dot(q_mean,old_mean))<0.1*degree))
-    old_mean = q_mean;
-    q = project2FundamentalRegion(q,o.CS,o.SS,old_mean);
+  
+  % project around q_mean
+  q = project2FundamentalRegion(q,o.CS,o.SS,q_mean);
+  
+  % compute mean without symmetry
+  [q_mean, lambda, eigv] = mean(q,varargin{:});
+  
+  if max(angle(q,q_mean,'noSymmetry')) > 10*degree
+    q = project2FundamentalRegion(q,o.CS,o.SS,q_mean);
     [q_mean, lambda, eigv] = mean(q,varargin{:});
-    
-    iter = iter + 1;
   end
+
+  if nargout > 1, q = project2FundamentalRegion(q,o.CS,o.SS,q_mean); end
+
 else
   [q_mean, lambda, eigv] = mean@quaternion(o,varargin{:});
 end
