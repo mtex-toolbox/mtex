@@ -15,7 +15,7 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
-if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
+if ~isa(m1,'Miller') || (isa(m2,'Miller') && m1.CS ~= m2.CS)
   warning('Symmetry mismatch')
 end
 
