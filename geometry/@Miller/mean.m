@@ -1,10 +1,10 @@
-function [m, v]  = mean(m,varargin)
+function [m,hkl] = mean(hkl,varargin)
 % mean of a list of Miller, principle axes and moments of inertia
 %
 % Syntax
-%   [m, v] = mean(hkl)
-%   [m, v] = mean(hkl,'robust')
-%   [m, v] = mean(hkl,'weights',weights)
+%   [m, hkl] = mean(hkl)
+%   [m, hkl] = mean(hkl,'robust')
+%   [m, hkl] = mean(hkl,'weights',weights)
 %
 % Input
 %  hkl      - list of @Miller
@@ -13,62 +13,58 @@ function [m, v]  = mean(m,varargin)
 %  weights  - list of weights
 %
 % Output
-%  m      - mean @Miller
-%  v      - crystallographic equivalent @direction projected to fundamental sector
+%  m   - mean @Miller
+%  hkl - crystallographic equivalent @direction projected to fundamental sector
 %
 
+persistent plan
+
 % some cases where nothing is to do
-if isempty(m)
+if isempty(hkl)
   m.x = NaN; m.y = NaN; m.z = NaN;
-  if nargout > 1, v = vector3d.nan;end
   return
-elseif length(m) == 1
-  if nargout > 1
-    v = vector3d(m);
-  end
+elseif length(hkl) == 1
   return;
-end
-
-% first approximation
-if check_option(varargin,'noSymmetry')
-  
-  m = mean@vector3d(m,varargin{:});
+elseif check_option(varargin,'noSymmetry')
+  m = mean@vector3d(hkl,varargin{:});
   return
-  
-elseif check_option(varargin,'m0')
-  
-  m_mean = get_option(varargin,'m0',vector3d(m.subSet(find(~isnan(m.x),1))));
-  m_mean = vector3d(project2FundamentalRegion(m_mean,m.CS));
+end
+
+% get a first guess of the mean
+if check_option(varargin,'m0')
+  m = get_option(varargin,'m0');
   varargin = delete_option(varargin,'m0',1);
-  
 else
+  m = hkl.subSet(find(~isnan(hkl.x),1));
+end
   
-  r = plotS2Grid(m.CS.fundamentalSector,'resolution',10*degree);
-
-  d = mean(angle_outer(m,r).^2);
-  
-  [~,id] = min(d);
-
-  m_mean = r.subSet(id);
-
+% maybe the vectors are sufficiently concentrated around m
+if all(angle(m,hkl) < 10*degree)
+    
+  hkl = project2FundamentalRegion(hkl,m);
+  m = mean@vector3d(hkl,varargin{:});
+  return
 end
 
-old_mean = [];
-v = vector3d(m);
-v.antipodal = false;
+% In the general case we need a more robust algorithm
 
-% iterate mean
-iter = 1;
-while iter < 5 && (isempty(old_mean) || (angle(dot(m_mean,old_mean))<0.1*degree))
-  old_mean = m_mean;
-  v = project2FundamentalRegion(v,m.CS,old_mean);
-  m_mean = mean(v,varargin{:});
-  
-  iter = iter + 1;
+% lets start with a search grid in the fundamental sector  
+% setting up the search grid takes some time
+% hence we try to reuse the last one
+if isempty(plan) || plan.CS ~= hkl.CS
+  plan.CS = hkl.CS;
+  sR = fundamentalSector(hkl.CS);
+  plan.r = plotS2Grid(sR,'resolution',10*degree);
 end
 
-v = reshape(v,size(m));
+% compute for each point the mean square distance to all vectors
+d = mean(angle_outer(hkl,plan.r).^2);
 
-m.x = m_mean.x;
-m.y = m_mean.y;
-m.z = m_mean.z;
+% take the minimum as the initial gues
+[~,id] = min(d);
+m = subSet(plan.r,id);
+
+hkl = project2FundamentalRegion(hkl,m);
+m = mean@vector3d(hkl,varargin{:});
+
+if nargout == 2, hkl = project2FundamentalRegion(hkl,m); end
