@@ -46,12 +46,14 @@ T = qq(q,varargin{:});
 l = diag(lambda);
 [~,pos] = max(l);
 
-[qm.a,qm.b,qm.c,qm.d] = deal(V(1,pos),V(2,pos),V(3,pos),V(4,pos));
+V = V(:,pos);
+qm.a = V(1); qm.b = V(2); qm.c = V(3); qm.d = V(4);
+try qm.i = false; end %#ok<TRYNC>
 
 if isRobust && length(q)>4
-  omega = angle(qm,q);
-  id = omega < quantile(omega,0.8)*(1+1e-5);
-  if ~any(id), return; end
+  omega = angle(qm,q,'noSymmetry');
+  id = omega < quantile(omega,0.8)*2.5;
+  if all(id), return; end
   if nargout == 3
     [qm,lambda, V] = mean(q.subSet(id),varargin{:});
   else
