@@ -7,13 +7,12 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   a1 = q1.a(:); b1 = q1.b(:); c1 = q1.c(:); d1 = q1.d(:);
   a2 = q2.a(:); b2 = q2.b(:); c2 = q2.c(:); d2 = q2.d(:);
   
-
-    % left side matrix Q_l(q1)
-    qr = [a2,b2,c2,d2]';
-    q.a = [a1 -b1 -c1 -d1] * qr;
-    q.b = [b1  a1 -d1  c1] * qr;
-    q.c = [c1  d1  a1 -b1] * qr;
-    q.d = [d1 -c1  b1  a1] * qr;
+  % left side matrix Q_l(q1)
+  qr = [a2,b2,c2,d2]';
+  q.a = [a1 -b1 -c1 -d1] * qr;
+  q.b = [b1  a1 -d1  c1] * qr;
+  q.c = [c1  d1  a1 -b1] * qr;
+  q.d = [d1 -c1  b1  a1] * qr;
 
 
   % stadard algorithm
