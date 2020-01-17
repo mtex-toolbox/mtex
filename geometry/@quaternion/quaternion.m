@@ -83,6 +83,24 @@ classdef quaternion
       
     end
     
+    function d = quat_dot(g1,g2)
+      d = g1.a .* g2.a + g1.b .* g2.b + g1.c .* g2.c + g1.d .* g2.d;
+    end
+
+    function d = quat_dot_outer(g1,g2,varargin)
+
+      if ~isempty(g1) && ~isempty(g2)
+
+        q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
+        q2 = [g2.a(:) g2.b(:) g2.c(:) g2.d(:)];
+  
+        d = q1 * q2';
+
+      else
+        d = [];
+      end
+    end
+
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end
