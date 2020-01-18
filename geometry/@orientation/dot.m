@@ -26,7 +26,7 @@ if isa(o1,'orientation')
 
   % check any of the involved symmetries is a Laue group as in this case we
   % can forget about all inversions
-  isLaue = qss.isLaue || qcs.isLaue;
+  oneIsLaue = isLaue(qss) || isLaue(qcs);
 
   if isa(o2,'orientation')
 
@@ -44,7 +44,7 @@ if isa(o1,'orientation')
           && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
           'Symmetry missmatch');
 
-        isLaue = isLaue || o2.CS.isLaue;
+        oneIsLaue = oneIsLaue || isLaue(o2.CS);
         qcs = o1.CS' * o2.CS;
         qcs = unique(qcs(:));
         qss = rotation.id;
@@ -56,7 +56,7 @@ if isa(o1,'orientation')
        && isa(o1.CS,'specimenSymmetry') && o2.CS.Laue == o1.CS.Laue,...
        'Symmetry missmatch');
 
-      isLaue = isLaue || o2.SS.isLaue;
+      oneIsLaue = oneIsLaue || isLaue(o2.SS);
       qss = o1.SS' * o2.SS;
       qss = unique(qss(:));
       qcs = rotation.id;
@@ -65,54 +65,62 @@ if isa(o1,'orientation')
 else
   qcs = o2.CS;
   qss = o2.SS;
-  isLaue = qss.isLaue || qcs.isLaue;
+  oneIsLaue = isLaue(qss) || isLaue(qcs);
 end
 
 % we may restrict to purely rotational group if one of the following
 % conditions is satified
 % * one of the involved groups is a Laue group
 % * all symmetries as well as all orientations are purely rotational
-if isLaue || (~any(qcs.i(:)) && any(qss.i(:)) && ...
-  (~isa(o1,'rotation') || ~isa(o2,'rotation') || all(o1.i(:) == o2.i(:))))
 
-  q1 = quaternion(o1);
-  q2 = quaternion(o2);
-  qcs = unique(quaternion(qcs),'antipodal');
-  qss = unique(quaternion(qss),'antipodal');
+ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
+  (~isa(o1,'rotation') || ~isa(o2,'rotation') || all(o1.i(:) == o2.i(:))));
 
-else % we have to live with inversion
-
-  q1 = rotation(o1);
-  q2 = rotation(o2);
-
-end
 
 % we have different algorithms depending whether one vector is single
-if length(q1) == 1
+if length(o1) == 1
 
-  q1 = qss * q1 * qcs; % symmetrising the single element is much faster
+  % symmetrising the single element is much faster
+  if length(qss)>1, o1 = qss * o1; end
+  if length(qcs)>1
+    [a,b,c,d] = double(qcs);
+    [a,b,c,d] = quat_mtimes(o1.a,o1.b,o1.c,o1.d,a,b,c,d);
+    o1.a = a; o1.b = b; o1.c = c; o1.d = d;
+    o1.i = xor(o1.i,isProper(qcs));
+  end
 
-  % this might save some time
-  if length(q2) > 1000, q1 = unique(q1,'antipodal'); end
+  % this might save some time TODO!!!
+  %if length(o2) > 1000, o1 = unique(o1,'antipodal','noSymmetry'); end
 
-  % apply rotation / quaternion dot_outer and take the maximum
-  d = reshape(max(abs(dot_outer(q1,q2)),[],1),size(q2));
+  % inline dot_outer(o1,o2) for speed reasons
+  q1 = [o1.a(:) o1.b(:) o1.c(:) o1.d(:)];
+  q2 = [o2.a(:) o2.b(:) o2.c(:) o2.d(:)];
+  
+  d = q1*q2';
+  
+  % TODO
+  if ~ignoreInv, d = d .* 1; end
+  
+  d = reshape(max(abs(d),[],1),size(o2));
 
 else
 
+  % remember shape
+  s = size(o1);
+  
   % symmetrise
-  q1 = qss * q1;
-  q2 = reshape(q2 * inv(qcs),[1,length(q2),length(qcs)]);
-
+  o1 = qss * o1;
+  o2 = reshape(o2 * inv(qcs),[1,length(o2),length(qcs)]); %#ok<MINV>
+  
   % inline dot product for speed reasons
-  d = abs(bsxfun(@times,q1.a,q2.a) + bsxfun(@times,q1.b,q2.b) + ...
-    bsxfun(@times,q1.c,q2.c) + bsxfun(@times,q1.d,q2.d)); %
+  d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...
+    bsxfun(@times,o1.c,o2.c) + bsxfun(@times,o1.d,o2.d)); %
 
   % consider inversion
-  if isa(q1,'rotation'), d = d .* ~bsxfun(@xor,q1.i,q2.i); end
+  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i,o2.i); end
 
   % take the maximum over all symmetric equivalent
-  d = reshape(max(max(d,[],1),[],3),size(o1));
+  d = reshape(max(max(d,[],1),[],3),s);
 
 end
 
