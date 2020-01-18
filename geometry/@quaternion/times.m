@@ -12,8 +12,8 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   
   %  [a,b,c,d] = quaternion_times_qq(q1.a,q1.b,q1.c,q1.d,q2.a,q2.b,q2.c,q2.d);
   %  q = quaternion(a,b,c,d);
-     q = q1;
-     
+  if isa(q1,'rotation'), q = q1; else, q = q2; end
+  
      a1 = q1.a; b1 = q1.b; c1 = q1.c; d1 = q1.d;
      a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;
      
