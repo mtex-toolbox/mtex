@@ -14,16 +14,15 @@ function ori = project2FundamentalRegion(ori,varargin)
 %
 
 if length(ori.SS) == 1 
-  q = project2FundamentalRegion(quaternion(ori),ori.CS,varargin{:});
+  ori = project2FundamentalRegion@quaternion(ori,ori.CS,varargin{:});
 else
   if ori.antipodal, ap = {'antipodal'}; else, ap = {}; end
-  q = project2FundamentalRegion(quaternion(ori),ori.CS,ori.SS,ap{:},varargin{:});
-end
+  CS = ori.CS; SS = ori.SS;
+  ori = project2FundamentalRegion@quaternion(ori,CS,SS,ap{:},varargin{:});
 
-% set values
-sa = size(ori.a);
-ori.a = reshape(q.a,sa);
-ori.b = reshape(q.b,sa);
-ori.c = reshape(q.c,sa);
-ori.d = reshape(q.d,sa);
-%ori = orientation(q,ori.CS,ori.SS);
+  % ensure result is of type orientation
+  if ~isa(ori,'orientation')
+    ori = orientation(ori,CS,SS,ap{:});
+  end
+  
+end

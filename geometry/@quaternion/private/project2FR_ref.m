@@ -14,16 +14,22 @@ function q = project2FR_ref(q,qCS,q_ref)
 %  omega - rotational angle to reference quaternion
 %
 
-q = reshape(q,[],1);
-
-if isempty(q_ref)
-  q_ref = quaternion.id;
-else
-  q_ref = reshape(q_ref,[],1);
-end
+s = size(q);
+q.a = q.a(:); q.b = q.b(:); q.c = q.c(:); q.d = q.d(:);
+try q.i = q.i(:); end %#ok<TRYNC>
 
 % compute distance to reference orientation
-co2 = abs(dot(q,q_ref));
+if ~isempty(q_ref)
+  q_ref.a = q_ref.a(:); q_ref.b = q_ref.b(:);
+  q_ref.c = q_ref.c(:); q_ref.d = q_ref.d(:);
+  
+  co2 = abs(quat_dot(q,q_ref));
+  
+else
+  
+  co2 = abs(q.a);
+
+end
 
 % may be we can skip something
 minAngle = reshape(abs(qCS.angle),[],1);
@@ -44,19 +50,25 @@ end
 if length(q_ref) == numel(notInside), q_ref = q_ref.subSet(notInside); end
 
 % compute all distances to the fundamental regions
-omegaSym  = abs(dot_outer(inv(q_ref).*q_sub,qCS));
+if ~isempty(q_ref)
+  omegaSym  = abs(quat_dot_outer(inv(q_ref).*q_sub,qCS));
+else
+  omegaSym  = abs(quat_dot_outer(q_sub,qCS));
+end
 
 % find symmetry elements with minimum distance
 [~,nx] = max(omegaSym,[],2);
 
 % project to fundamental region
-qn = reshape(q_sub,[],1) .* reshape(inv(qCS.subSet(nx)),[],1);
+qn = q_sub .* reshape(inv(qCS.subSet(nx)),size(q_sub));
 
 % replace projected quaternions
 q.a(notInside) = qn.a;
 q.b(notInside) = qn.b;
 q.c(notInside) = qn.c;
 q.d(notInside) = qn.d;
+
+q = reshape(q,s);
 
 % some testing code
 % cs = crystalSymmetry('432')

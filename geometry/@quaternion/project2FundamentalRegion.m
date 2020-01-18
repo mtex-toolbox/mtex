@@ -20,7 +20,7 @@ function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 % get the reference quaternion
 if nargin == 3 && ~isa(CS2,'symmetry') && isa(CS2,'quaternion')
   
-  q_ref = quaternion(CS2);
+  q_ref = CS2;
   
 elseif nargin == 4 && isa(varargin{1},'quaternion')
   
