@@ -20,7 +20,7 @@ function v = rotate(v,q)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
-if isa(q,'rotation')
+if ~isa(q,'rotation')
   [a,b,c,d] = double(q);
   i = [];
 else
