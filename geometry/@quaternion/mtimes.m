@@ -2,10 +2,11 @@ function q = mtimes(q1,q2)
 % quaternionen multiplication q1 * q2
 
 if isa(q1,'quaternion') && isa(q2,'quaternion')
-  
-  q = q1;
+
   a1 = q1.a(:); b1 = q1.b(:); c1 = q1.c(:); d1 = q1.d(:);
   a2 = q2.a(:); b2 = q2.b(:); c2 = q2.c(:); d2 = q2.d(:);
+
+  q = q1;
   
   % left side matrix Q_l(q1)
   qr = [a2,b2,c2,d2]';
@@ -27,7 +28,6 @@ elseif isa(q1,'quaternion') && isa(q2,'double') % einfache Zahl
   q.b = q1.b * q2;
   q.c = q1.c * q2;
   q.d = q1.d * q2;
-  q = class(q,'quaternion');
   
 elseif isa(q2,'quaternion') && isa(q1,'double') % einfache Zahl
   
@@ -35,8 +35,7 @@ elseif isa(q2,'quaternion') && isa(q1,'double') % einfache Zahl
   q.b = q1 * q2.b;
   q.c = q1 * q2.c;
   q.d = q1 * q2.d;
-  q = class(q,'quaternion');
-  
+    
 else
     
   q = rotate_outer(q2,q1);
