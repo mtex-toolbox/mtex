@@ -75,25 +75,20 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
 else
 
+  % crystal symmetry specified -> apply it
+  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
+    cs = varargin{1};
+  else  % no symmetry specified - take the disjoint
+    cs = properGroup(disjoint(o1.CS,o1.SS));
+  end
+  if o1.antipodal, cs = cs.Laue; end
+  
   % project to Fundamental region to get the axis with the smallest angle
   if ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);
   end
 
   a = axis@quaternion(o1);
-
-  % crystal symmetry specified -> apply it
-  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
-
-    cs = varargin{1};
-
-  else  % no symmetry specified - take the disjoint
-
-    cs = properGroup(disjoint(o1.CS,o1.SS));
-
-  end
-
-  if o1.antipodal, cs = cs.Laue; end
 
   % add symmetry to axis
   if isa(cs,'crystalSymmetry'), a = Miller(a,cs); end
