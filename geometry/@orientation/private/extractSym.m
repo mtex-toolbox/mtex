@@ -8,11 +8,11 @@ elseif isa(obj,'orientation')
   sym1 = obj.SS;
   sym2 = obj.CS;
 else
+  sym2 = [];
   try
     sym1 = obj.CS;
   catch
     sym1 = specimenSymmetry;
-    sym2 = sym1;
   end
 end
 
