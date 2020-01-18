@@ -128,12 +128,9 @@ while 1
   [i,j] = ind2sub(size(d),id);
 
   % update orientations
-  %  m = mean(ori.subSet([i,j]),full(sum(I_OC(:,[i,j]))),'robust');
-  %m = mean(ori.subSet([i,j]),);
-  
   weights = full(sum(I_OC(:,[i,j]),2));
-  m = mean(ori.subSet(weights>0),weights(weights>0),'robust');
-  
+  m = mean(ori.subSet(weights>0),'weights',weights(weights>0),'robust');
+    
   center.a(i) = m.a;
   center.b(i) = m.b;
   center.c(i) = m.c;
