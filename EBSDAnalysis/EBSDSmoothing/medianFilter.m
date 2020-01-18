@@ -27,7 +27,11 @@ classdef medianFilter < EBSDFilter
 
       ori(quality==0) = nan;
       
-      [~,q] = mean(ori);
+      % this projects to the fundamental region around the mean
+      [~,ori] = mean(ori);
+      
+      % make verything quaternion
+      q = quaternion(ori);
       
       % some shortcuts
       nn = F.numNeighbours;

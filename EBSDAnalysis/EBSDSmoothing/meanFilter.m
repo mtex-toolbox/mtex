@@ -40,10 +40,10 @@ classdef meanFilter < EBSDFilter
       end
             
       % map to mean
-      [oriMean,q] = mean(ori);
+      [oriMean,ori] = mean(ori);
       
       % map quaternions into tangential space
-      tq = log(q,quaternion(oriMean));
+      tq = log(ori,oriMean,'noSymmetry');
       
       for j = 1:F.numNeighbours
         
