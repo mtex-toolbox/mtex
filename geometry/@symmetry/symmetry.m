@@ -8,15 +8,16 @@ classdef symmetry < rotation
 %
 
   properties
-    id = 1;     % point group id, compare to symList    
+    id = 1;         % point group id, compare to symList    
+    lattice = 'triclinic' % type of crystal lattice
+    pointGroup = '1'         % name of the point group
   end
-
-  properties (Dependent = true)
-    lattice     % type of crystal lattice
-    pointGroup  % name of the point group
-    isLaue      % is it a Laue group
-    isProper    % does it contain only proper rotations
+  
+  
+  properties (Access = protected)
+    hash = 0          % hash number for comparing different symmetries 
   end
+  
   
   properties (Constant = true)
     
@@ -41,6 +42,7 @@ classdef symmetry < rotation
         s.c = 0;
         s.d = 0;
         s.i = false;
+        s.hash = calcHash(s);
         return; 
       end
       
@@ -87,40 +89,46 @@ classdef symmetry < rotation
         
         s.id = findsymmetry(varargin{1});
         
-      end      
-                                        
-    end
-    
-    function l = get.lattice(cs)
-      if cs.id>0
-        l = symmetry.pointGroups(cs.id).lattice;
-      else
-        l = 'unknown';
       end
-    end
-    
-    function pg = get.pointGroup(cs)
-      if cs.id>0
-        pg = symmetry.pointGroups(cs.id).Inter;
+      
+      if s.id>0
+        s.lattice = symmetry.pointGroups(s.id).lattice;
+        s.pointGroup = symmetry.pointGroups(s.id).Inter;
       else
-        pg = 'unknown';
+        s.lattice = 'unknown';
+        s.pointGroup = 'unknown';
       end
+      
+      s.hash = calcHash(s);
+      
     end
+      
+    function h = calcHash(cs)
             
-    function r = get.isLaue(cs)
       try
-        r = cs.id == symmetry.pointGroups(cs.id).LaueId;
+        isLaue = cs.id == symmetry.pointGroups(cs.id).LaueId;
       catch % this is required for custom symmetries
-        r = any(reshape(rotation(cs) == -rotation.id,[],1)); 
+        isLaue = any(reshape(rotation(cs) == -rotation.id,[],1));
       end
+      
+      values = double(cs);
+      if isempty(values), values = 0; end
+      values = typecast(values(:),'uint8');
+
+      md = java.security.MessageDigest.getInstance('SHA-1');
+      md.update(values);
+
+      % Properly format the computed hash as an hexadecimal string:
+      h = [uint8(isLaue);md.digest()];
+      
+    end
+    
+    function r = isProper(cs) % does it contain only proper rotations
+      r = ~any(cs.i(:));
     end
     
     function r = isRotational(cs)      
       r = cs.id == symmetry.pointGroups(cs.id).properId;
-    end
-    
-    function r = get.isProper(cs)
-      r = ~any(cs.i(:));
     end
     
     function out = le(cs1,cs2)

@@ -101,7 +101,28 @@ classdef crystalSymmetry < symmetry
       
       % compute symmetry operations
       s = calcQuat(s,s.axes);
+      
+      s.hash = calcHash(s);
             
+    end
+    
+    function h = calcHash(cs)
+      
+      try
+        isLaue = cs.id == symmetry.pointGroups(cs.id).LaueId;
+      catch % this is required for custom symmetries
+        isLaue = any(reshape(rotation(cs) == -rotation.id,[],1));
+      end
+      
+      v1 = double(cs);
+      v2 = double(cs.axes);
+      values = typecast([v1(:);v2(:)],'uint8');
+
+      % compute the hash
+      md = java.security.MessageDigest.getInstance('SHA-1');
+      md.update(values);
+      h = [uint8(isLaue);md.digest()];     
+      
     end
 
     function a = get.aAxis(cs)

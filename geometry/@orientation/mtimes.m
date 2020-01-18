@@ -23,7 +23,7 @@ end
 % orientation times vector
 if isa(a,'orientation') && ~isa(b,'quaternion')  && ~isnumeric(b)
   try
-    if a.CS.Laue ~= b.CS.Laue
+    if ~eq(a.CS,b.CS,'Laue')
       warning('Symmetries %s and %s are different but should be equal',a.CS.pointGroup,b.CS.pointGroup);
     end
   catch
@@ -40,7 +40,15 @@ end
 [inner2,right] = extractSym(b);
 
 % ensure inner symmetries coincide
-if inner1.Laue ~= inner2.Laue
+if isempty(inner1)  
+  if ~isempty(inner2) && ~isa(inner2,'specimenSymmetry')
+    warning('Rotation does not respect symmetry!');
+  end
+elseif isempty(inner2)
+  if ~isempty(inner1) && ~isa(inner1,'specimenSymmetry')
+    warning('Rotation does not respect symmetry!');
+  end
+elseif ~eq(inner1,inner2,'Laue')
   if isa(a,'orientation')
     a = a.transformReferenceFrame(inner2);
   elseif all(isnull(min(angle_outer(inner2,a))))
