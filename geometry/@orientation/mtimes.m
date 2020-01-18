@@ -63,8 +63,13 @@ r = mtimes@rotation(a,b);
 
 % convert back to orientation
 if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
-  r = orientation(r,right,left); 
-else % otherwise it is only a rotation anymore
+  if isa(r,'orientation')
+    r.CS = right;
+    r.SS = left;
+  else
+    r = orientation(r,right,left);
+  end
+elseif isa(r,'orientation') % otherwise it is only a rotation anymore 
   r = rotation(r);
 end
 

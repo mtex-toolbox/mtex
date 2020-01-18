@@ -30,11 +30,13 @@ elseif isa(a,'symmetry') && isa(b,'orientation')
 elseif isa(b,'quaternion')
 
   r = mtimes@quaternion(a,b);
-      
-  try ia = a.i; catch, ia = false(size(a.a)); end
-  try ib = b.i; catch, ib = false(size(b.a)); end
+
+  if isa(r,'rotation')
+    try ia = a.i; catch, ia = false(size(a.a)); end
+    try ib = b.i; catch, ib = false(size(b.a)); end
   
-  r.i = bsxfun(@xor,ia(:),ib(:).');
+    r.i = bsxfun(@xor,ia(:),ib(:).');
+  end
  
 else
   
