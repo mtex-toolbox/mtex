@@ -19,7 +19,7 @@ end
     
       s = s@symmetry(varargin{:});
       
-      if nargin > 0, s = calcQuat(s); end
+      calcQuat(s);
       
     end
     

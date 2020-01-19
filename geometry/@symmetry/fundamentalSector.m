@@ -39,8 +39,8 @@ end
 
 % the region on the northern hemisphere now depends just on the
 % number of symmetry operations
-if length(cs) > 1+length(N)
-  drho = 2*pi * (1+length(N)) / length(cs);
+if length(cs.rot) > 1+length(N)
+  drho = 2*pi * (1+length(N)) / length(cs.rot);
   N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
 end
 
@@ -108,7 +108,7 @@ switch cs.id
   case 11
   case 12 % 222
   case {13,14,15} % 2mm, m2m, mm2
-    N = cs.subSet(cs.isImproper).axis; % take mirror planes
+    N = cs.rot(cs.rot.i).axis; % take mirror planes
     ind = angle(N,vector3d(cs.aAxis))< 45*degree;
     N(ind) = -N(ind);
   case 16 % mmm

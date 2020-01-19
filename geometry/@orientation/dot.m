@@ -81,14 +81,8 @@ ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
 if length(o1) == 1
 
   % symmetrising the single element is much faster
-  if length(qss)>1, o1 = qss * o1; end
-  if length(qcs)>1
-    [a,b,c,d] = double(qcs);
-    [a,b,c,d] = quat_mtimes(o1.a,o1.b,o1.c,o1.d,a,b,c,d);
-    o1.a = a; o1.b = b; o1.c = c; o1.d = d;
-    o1.i = xor(o1.i,isProper(qcs));
-  end
-
+  o1 = qss * o1 * qcs;
+  
   % this might save some time TODO!!!
   %if length(o2) > 1000, o1 = unique(o1,'antipodal','noSymmetry'); end
 
@@ -96,7 +90,7 @@ if length(o1) == 1
   q1 = [o1.a(:) o1.b(:) o1.c(:) o1.d(:)];
   q2 = [o2.a(:) o2.b(:) o2.c(:) o2.d(:)];
   
-  d = q1*q2';
+  d = q1 * q2';
   
   % TODO
   if ~ignoreInv, d = d .* 1; end
@@ -108,9 +102,9 @@ else
   % remember shape
   s = size(o1);
   
-  % symmetrise
+  % symmetrise TODO: do we realy need to take the inv here?
   o1 = qss * o1;
-  o2 = reshape(o2 * inv(qcs),[1,length(o2),length(qcs)]); %#ok<MINV>
+  o2 = reshape(o2 * inv(qcs.rot),[1,length(o2),length(qcs.rot)]); %#ok<MINV>
   
   % inline dot product for speed reasons
   d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...

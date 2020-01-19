@@ -1,9 +1,13 @@
-function s = calcQuat(s,axes)
+function calcQuat(s)
 % calculate quaternions for Laue groups
 
-if s.id==0, return; end
+if s.id == 0, return; end
 
-if nargin == 1, axes = [xvector,yvector,zvector]; end
+try
+  axes = s.axes;
+catch
+  axes = [xvector,yvector,zvector];
+end
 
 a = axes(1);
 b = axes(2);
@@ -57,12 +61,9 @@ if size(pg.Inversion ,1) == 2
 else
   rot = arrayfun(@(i) rot{i} .* pg.Inversion(i).^(0:length(rot{i})-1) ,...
     1:length(rot),'uniformOutput',false);
-
 end
 
 % store symmetries
-rot = prod(rot{:});
-[s.a, s.b, s.c, s.d] = double(rot);
-s.i = isImproper(rot);
+s.rot = prod(rot{:});
 
 end

@@ -1,12 +1,19 @@
-function q = mtimes(q1,q2)
+function q = mtimes(q1,q2,takeRight)
 % quaternionen multiplication q1 * q2
 
-if isa(q1,'quaternion') && isa(q2,'quaternion')
+if nargin == 3 || (isa(q1,'quaternion') && isa(q2,'quaternion'))
 
   a1 = q1.a(:); b1 = q1.b(:); c1 = q1.c(:); d1 = q1.d(:);
   a2 = q2.a(:); b2 = q2.b(:); c2 = q2.c(:); d2 = q2.d(:);
 
-  q = q1;
+  % which input will become the output?
+  if nargin == 3 
+    if takeRight, q = q2; else, q = q1; end
+  elseif ~isa(q1,'rotation')
+    q = q2;
+  else
+    q = q1;
+  end
   
   % left side matrix Q_l(q1)
   qr = [a2,b2,c2,d2]';
@@ -15,6 +22,14 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   q.c = [c1  d1  a1 -b1] * qr;
   q.d = [d1 -c1  b1  a1] * qr;
 
+  % maybe result was rotation 
+  % then care also about i
+  if isa(q,'rotation')
+    try ia = q1.i; catch, ia = false(size(q1.a)); end
+    try ib = q2.i; catch, ib = false(size(q2.a)); end
+    q.i = bsxfun(@xor,ia(:),ib(:).');
+  end
+  
 
   % stadard algorithm
   % a = a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2;

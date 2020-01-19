@@ -1,4 +1,4 @@
-classdef symmetry < rotation
+classdef symmetry < handle
 %
 % symmetry is an abstract class for crystal and specimen symmetries
 %
@@ -8,14 +8,16 @@ classdef symmetry < rotation
 %
 
   properties
-    id = 1;         % point group id, compare to symList    
+    id = 1;               % point group id, compare to symList    
     lattice = 'triclinic' % type of crystal lattice
-    pointGroup = '1'         % name of the point group
+    pointGroup = '1'      % name of the point group
+    rot = rotation.id     % the symmetry elements
   end
-  
-  
+   
   properties (Access = protected)
-    hash = 0          % hash number for comparing different symmetries 
+    
+    LaueRef = []
+    
   end
   
   
@@ -33,47 +35,37 @@ classdef symmetry < rotation
   
   methods
     
-    function s = symmetry(varargin)
+    function sym = symmetry(varargin)
                 
       % empty constructor
-      if nargin == 0
-        s.a = 1;
-        s.b = 0;
-        s.c = 0;
-        s.d = 0;
-        s.i = false;
-        s.hash = calcHash(s);
-        return; 
-      end
+      if nargin == 0, return; end
       
+      % determine the correct id
       if check_option(varargin,'PointId')
         
-        s.id = get_option(varargin,'PointId');
+        sym.id = get_option(varargin,'PointId');
         
       elseif check_option(varargin,'LaueId')
       
         % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
         LaueGroups = [2,8,16,27,32,42,45,18,21,35,40];
-        s.id = LaueGroups(get_option(varargin,'LaueId'));
+        sym.id = LaueGroups(get_option(varargin,'LaueId'));
               
       elseif check_option(varargin,'SpaceId')
         
         list = spaceGroups;
         ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
         if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
-        s.id = findsymmetry(list(ndx+1,2));
+        sym.id = findsymmetry(list(ndx+1,2));
         
       elseif isa(varargin{1},'quaternion')
         
-        s.a = varargin{1}.a;
-        s.b = varargin{1}.b;
-        s.c = varargin{1}.c;
-        s.d = varargin{1}.d;
-        try s.i = varargin{1}.i;catch, end
-        s.id = 0;
+        sym.rot = rotation(varargin{1});
+        sym.id = 0;
                 
       else
 
+        % expand 2, m, and 2/m to 112 or 121 or 211 depending on the angles
         if any(strcmp(varargin{1},{'2','m','2/m'})) && nargin > 2 && isnumeric(varargin{3})
           
           abg = varargin{3};
@@ -87,53 +79,31 @@ classdef symmetry < rotation
           
         end
         
-        s.id = findsymmetry(varargin{1});
+        sym.id = findsymmetry(varargin{1});
         
       end
       
-      if s.id>0
-        s.lattice = symmetry.pointGroups(s.id).lattice;
-        s.pointGroup = symmetry.pointGroups(s.id).Inter;
+      % determine pointGroup and lattice names
+      if sym.id>0
+        sym.lattice = symmetry.pointGroups(sym.id).lattice;
+        sym.pointGroup = symmetry.pointGroups(sym.id).Inter;
       else
-        s.lattice = 'unknown';
-        s.pointGroup = 'unknown';
+        sym.lattice = 'unknown';
+        sym.pointGroup = 'unknown';
       end
-      
-      s.hash = calcHash(s);
-      
+                  
     end
       
-    function h = calcHash(cs)
-            
-      try
-        isLaue = cs.id == symmetry.pointGroups(cs.id).LaueId;
-      catch % this is required for custom symmetries
-        isLaue = any(reshape(rotation(cs) == -rotation.id,[],1));
-      end
+   
+    function r = isProper(sym) % does it contain only proper rotations
+      r = ~any(isImproper(sym.rot));
       
-      values = double(cs);
-      if isempty(values), values = 0; end
-      values = typecast(values(:),'uint8');
-
-      md = java.security.MessageDigest.getInstance('SHA-1');
-      md.update(values);
-
-      % Properly format the computed hash as an hexadecimal string:
-      h = [uint8(isLaue);md.digest()];
-      
-    end
-    
-    function r = isProper(cs) % does it contain only proper rotations
-      r = ~any(cs.i(:));
-    end
-    
-    function r = isRotational(cs)      
-      r = cs.id == symmetry.pointGroups(cs.id).properId;
+      %r = cs.id == symmetry.pointGroups(cs.id).properId;
     end
     
     function out = le(cs1,cs2)
       % check wheter cs1 is a sub group of cs2
-      out = all(any(abs(dot_outer(cs1,cs2))>1-1e-6,2));
+      out = all(any(abs(dot_outer(cs1.rot,cs2.rot))>1-1e-6,2));
     end
     
     function out = ge(cs1,cs2)

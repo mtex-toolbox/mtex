@@ -1,4 +1,16 @@
 function res = isLaue(s)
-% check whether a symmetry group is a Laue group
+% check whether s is a Laue group
 
-res = logical(s.hash(1));
+if ~isempty(s.LaueRef)
+
+  res = s.LaueRef == s;
+  
+elseif s.id > 0
+  
+  res = s.id == symmetry.pointGroups(s.id).LaueId;
+  
+else
+    
+  res = any(s.rot(:) == rotation.inversion); 
+  
+end

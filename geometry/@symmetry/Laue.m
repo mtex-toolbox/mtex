@@ -1,17 +1,29 @@
-function s = Laue(s)
+function sL = Laue(s)
 % return the corresponding Laue group 
 
-% if it is already a Laue group there is nothing to do
-if s.isLaue, return;end
+% if it is already a Laue group then there is nothing to do
+if ~isempty(s.LaueRef)
 
-s.a = [s.a(:),s.a(:)];
-s.b = [s.b(:),s.b(:)];
-s.c = [s.c(:),s.c(:)];
-s.d = [s.d(:),s.d(:)];
-s.i = repmat([0,1],size(s.a,1),1);
+  sL = s.LaueRef;
 
-s.hash(1) = uint8(1);
+elseif s.isLaue
+  
+  sL = s;
 
-if s.id > 0
-  s.id = symmetry.pointGroups(s.id).LaueId;
+else
+  
+  rot = [s.rot(:),s.rot(:)];
+  rot.i = repmat([0,1],size(s.rot,1),1);
+
+  if s.id > 0
+    sL = crystalSymmetry('pointId',symmetry.pointGroups(s.id).LaueId);
+    sL.rot = rot;
+  else
+    sL = crystalSymmetry(rot);
+  end
+  
+  sL.axes = s.axes;       % coordinate system
+  sL.mineral = s.mineral; % mineral name
+  sL.color  = s.color;    % color used for EBSD / grain plotting
+    
 end

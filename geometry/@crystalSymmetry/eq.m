@@ -13,7 +13,7 @@ else
 
   if check_option(varargin,'Laue')
   
-    if all(S1.hash(2:end) == S2.hash(2:end))
+    if eq@handle(S1,S2)
       b = true;
     else
       
@@ -27,7 +27,7 @@ else
     
   else
   
-    if all(S1.hash == S2.hash)
+    if eq@handle(S1,S2)
       b = true;
     else
       b = S1.id == S2.id && ...

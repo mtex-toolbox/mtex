@@ -7,17 +7,12 @@ if s.isProper, return;end
 if s.isLaue
   
   % remove all improper rotations
-  ind = s.i == 0;
-  s.a = s.a(ind);
-  s.b = s.b(ind);
-  s.c = s.c(ind);
-  s.d = s.d(ind);
-  s.i = s.i(ind);
-  
+  s.rot = s.rot(~s.rot.i);
+    
 else
   
   % make all rotations proper
-  s.i = zeros(size(s.i));
+  s.rot.i = zeros(size(s.rot));
   
 end
 
@@ -28,8 +23,3 @@ try
 catch
   s.id = 0;
 end
-
-
-
-
-

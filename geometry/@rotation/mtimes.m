@@ -1,4 +1,4 @@
-function r = mtimes(a,b)
+function r = mtimes(a,b,varargin)
 % r = a * b
 
 % multiplication with -1 -> inversion
@@ -20,30 +20,15 @@ if isa(b,'vector3d')
   
   % apply rotation
   r = rotate_outer(b,a);
-
-elseif isa(a,'symmetry') && isa(b,'orientation')
-  % if right is an orientation this should be handled by orientation.mtimes
-  
-  % symmetry times orientation
-  r = inv(mtimes(inv(b),inv(a))).';
   
 elseif isa(b,'quaternion')
 
-  r = mtimes@quaternion(a,b);
-
-  if isa(r,'rotation')
-    try ia = a.i; catch, ia = false(size(a.a)); end
-    try ib = b.i; catch, ib = false(size(b.a)); end
-  
-    r.i = bsxfun(@xor,ia(:),ib(:).');
-  end
+  r = mtimes@quaternion(a,b,varargin{:});
  
 else
   
   r = rotate_outer(b,a);
   
 end
-    
-  
     
 end

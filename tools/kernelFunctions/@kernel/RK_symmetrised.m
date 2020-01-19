@@ -29,7 +29,8 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 % kernel/k kernel/rkk
 
 if length(h)==1                        % pole figure
-  [h,lh] = symmetrise(h,varargin{:});
+  h = unique(symmetrise(h),'noSymmetry',varargin{:});
+  lh = length(h);
   in = reshape((SS * g).' * h, [length(g),length(SS),lh]);
 	out = r;
 else                                   % inverse pole figure

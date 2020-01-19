@@ -18,13 +18,6 @@ if ~isempty(cs.color)
   propV{end+1} = rgb2str(cs.color);
 end
 
-fn = fieldnames(cs.opt);
-for i = 1:length(fn)
-  props{end+1} = fn{i}; 
-  propV{end+1} = cs.opt.(fn{i});  
-end
-
-
 % add symmetry
 props{end+1} = 'symmetry'; 
 if cs.id>0

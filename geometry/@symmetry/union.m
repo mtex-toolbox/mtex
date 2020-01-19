@@ -3,20 +3,17 @@ function s = union(s1,s2)
 %
 % 
 
-if ~isa(s2,'symmetry') && isa(s2,'quaternion')
-  s2 = [s2,rotation.id];
-end
-
-s = unique(s1 * s2);
+rot = unique(s1.rot * s2.rot);
 
 % find a symmetry that exactly contains s
 for i=1:45 % check all Laue groups
   
-  ss = crystalSymmetry('pointId',i);
+  s = crystalSymmetry('pointId',i);
   
-  if length(ss) == length(s) && all(any(isappr(abs(dot_outer(s,ss)),1)))
-    s = ss;
+  if length(s.rot) == length(rot) && all(any(isappr(abs(dot_outer(rot,s.rot)),1)))   
     return
   end
   
 end
+
+s = crystalSymmetry(rot);
