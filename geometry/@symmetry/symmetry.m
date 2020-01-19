@@ -96,9 +96,9 @@ classdef symmetry < handle
       
    
     function r = isProper(sym) % does it contain only proper rotations
-      r = ~any(isImproper(sym.rot));
       
-      %r = cs.id == symmetry.pointGroups(cs.id).properId;
+      r = ~any(sym.rot.i(:));
+      
     end
     
     function out = le(cs1,cs2)

@@ -39,8 +39,8 @@ end
 
 % the region on the northern hemisphere now depends just on the
 % number of symmetry operations
-if length(cs.rot) > 1+length(N)
-  drho = 2*pi * (1+length(N)) / length(cs.rot);
+if numSym(cs) > 1+length(N)
+  drho = 2*pi * (1+length(N)) / numSym(cs);
   N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
 end
 
@@ -96,15 +96,15 @@ switch cs.id
   case 2 % -1
     N = zvector;
   case {3,6,9} % 211, 121, 112
-    if isnull(dot(getMinAxes(cs),zvector))
+    if isnull(dot(getMinAxes(cs.rot),zvector))
       N = zvector;
     end
   case 4
-    N = -getMinAxes(cs);
+    N = -getMinAxes(cs.rot);
   case {7,10} % m11, 1m1, mm1
-    N = getMinAxes(cs);
+    N = getMinAxes(cs.rot);
   case {5,8} % 2/m11 12/m1
-    N = [zvector,getMinAxes(cs)];
+    N = [zvector,getMinAxes(cs.rot)];
   case 11
   case 12 % 222
   case {13,14,15} % 2mm, m2m, mm2

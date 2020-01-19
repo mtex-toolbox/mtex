@@ -43,7 +43,7 @@ center = sym_center(ind);
 q = quaternion;
 for i = 1:length(center)
   cq = center(i) * qId(:);
-  if length(SS) > 1
+  if numSym(SS) > 1
     ind = fundamental_region2(cq,center(i),CS,SS);
     cq = cq(ind);
   end

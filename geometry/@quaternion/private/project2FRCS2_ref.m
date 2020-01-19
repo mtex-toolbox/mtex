@@ -18,7 +18,7 @@ function [q,ics1,ics2] = project2FRCS2_ref(q,CS1,CS2,q_ref)
 % project to fundamental region
 % note: d(CS2 * q * CS1, q_ref) = d(q, inv(CS2) * q_ref * inv(CS1))
 [qs,m,~] = unique(inv(quaternion(CS2)) * q_ref * inv(quaternion(CS1)),'antipodal'); %#ok<MINV>
-[ics2,ics1] = ind2sub([length(CS2),length(CS1)],m);
+[ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],m);
 
 % take the minimum distances to all symmetric equivalent orientations
 [~,i12] = max(abs(dot_outer(q,qs)),[],2);

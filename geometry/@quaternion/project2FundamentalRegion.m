@@ -34,7 +34,7 @@ else
 end
 
 % distingish different cases
-if nargin >= 3 && isa(CS2,'symmetry') && length(CS2)>1
+if nargin >= 3 && isa(CS2,'symmetry') && numSym(CS2)>1
   if isempty(q_ref)
     q = project2FRCS2(q,CS1,CS2,varargin{:});
   else

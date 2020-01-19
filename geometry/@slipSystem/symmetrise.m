@@ -23,8 +23,8 @@ id = [];
 for i = 1:length(sS)
 
   % find all symmetrically equivalent
-  [mm,~] = symmetrise(sS.b(i),varargin{:});
-  [nn,~] = symmetrise(sS.n(i),'antipodal'); %#ok<*PROP>
+  mm = unique(symmetrise(sS.b(i)),'noSymmetry',varargin{:});
+  nn = unique(symmetrise(sS.n(i)),'noSymmetry','antipodal'); %#ok<*PROP>
   
   % find those which have the same angles as the original system
   % for slip system this is of course 90 degree

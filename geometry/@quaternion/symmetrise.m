@@ -14,11 +14,11 @@ function varargout = symmetrise(q,CS,SS,varargin)
 
 q = mtimes(q, CS.rot, 0).'; % CS x M <- q * CS
 
-if nargin>2 && length(SS.rot)>1
+if nargin>2 && numSym(SS)>1
   q = mtimes(SS.rot, q, 1);     % SS x (CS X M)
-  lSS = length(SS.rot);
+  lSS = numSym(SS);
 else
   lSS = 1;
 end
 
-varargout{1} = reshape(q,length(CS.rot) * lSS,[]); % (CSxSS) x M
+varargout{1} = reshape(q,numSym(CS) * lSS,[]); % (CSxSS) x M

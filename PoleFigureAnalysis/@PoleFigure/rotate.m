@@ -15,7 +15,7 @@ function pf = rotate(pf,rot,varargin)
 % rotation/rotation ODF/rotate
 
 ss = pf.SS.Laue;
-if length(ss)>2 && ~any(rot == ss(:))
+if numSym(ss)>2 && ~any(rot == ss.rot(:))
   warning('Rotating pole figures with specimen symmetry will remove the specimen symmetry')
   pf.SS = specimenSymmetry;
 end

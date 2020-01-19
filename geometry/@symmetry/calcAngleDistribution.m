@@ -252,7 +252,7 @@ switch LaueName
 end
 
 % compute output
-ad = 2 * length(cs.rot) * xchi .* sin(omega ./ 2).^2;
+ad = 2 * numSym(cs) * xchi .* sin(omega ./ 2).^2;
 ad = ad ./ mean(ad);
 ad(ad<0) = 0;
 

@@ -10,7 +10,7 @@ for i=1:45 % check all Laue groups
   
   s = crystalSymmetry('pointId',i);
   
-  if length(s.rot) == length(rot) && all(any(isappr(abs(dot_outer(rot,s.rot)),1)))   
+  if numSym(s) == length(rot) && all(any(isappr(abs(dot_outer(rot,s.rot)),1)))   
     return
   end
   

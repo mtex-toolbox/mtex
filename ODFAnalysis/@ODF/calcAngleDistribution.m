@@ -55,7 +55,7 @@ if ~check_option(varargin,'fast')
     o = axis2quat(S2G(:),omega(k));
     
     % and select those
-    rotAngle = abs(dot_outer(o,odf.CS));
+    rotAngle = abs(dot_outer(o,odf.CS.rot));
     maxAngle = max(rotAngle,[],2); 
     o = o(rotAngle(:,1)>maxAngle-0.0001);
     
