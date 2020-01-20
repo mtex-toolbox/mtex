@@ -62,7 +62,7 @@ end
 [~,nx] = max(omegaSym,[],2);
 
 % project to fundamental region
-qn = q_sub .* reshape(inv(qCS.subSet(nx)),size(q_sub));
+qn = times(q_sub, reshape(inv(qCS.subSet(nx)),size(q_sub)),0);
 
 % replace projected quaternions
 q.a(notInside) = qn.a;
