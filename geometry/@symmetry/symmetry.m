@@ -12,6 +12,7 @@ classdef symmetry < handle
     lattice = 'triclinic' % type of crystal lattice
     pointGroup = '1'      % name of the point group
     rot = rotation.id     % the symmetry elements
+    opt = struct
   end
    
   properties (Access = protected)
