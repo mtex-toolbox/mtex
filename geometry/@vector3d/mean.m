@@ -30,7 +30,7 @@ if check_option(varargin,'antipodal') || v.antipodal
   varargin = delete_option(varargin,'antipodal');
 
   if check_option(varargin,'weights')
-    v = v .* sqrt(get_option(varargin,'weights'));
+    v = v .* reshape(sqrt(get_option(varargin,'weights')),size(v));
     varargin = delete_option(varargin,'weights',1);
   end
     
@@ -47,7 +47,7 @@ if check_option(varargin,'antipodal') || v.antipodal
 else
   
   if check_option(varargin,'weights')
-    v = v .* get_option(varargin,'weights');
+    v = v .* reshape(get_option(varargin,'weights'),size(v));
     varargin = delete_option(varargin,'weights',1);
   end
     
