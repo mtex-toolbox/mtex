@@ -1,12 +1,12 @@
 function sL = Laue(s)
 % return the corresponding Laue group 
 
-% if it is already a Laue group then there is nothing to do
+% maybe we have alread computed the Laue group
 if ~isempty(s.LaueRef)
 
   sL = s.LaueRef;
 
-elseif s.isLaue
+elseif s.isLaue % if it is already a Laue group then there is nothing to do
   
   sL = s;
 
@@ -18,11 +18,10 @@ else
 
   if s.id > 0
     if isa(s,'crystalSymmetry')
-      sL = crystalSymmetry('pointId',symmetry.pointGroups(s.id).LaueId);
+      sL = crystalSymmetry('pointId',symmetry.pointGroups(s.id).LaueId,rot);
     else
-      sL = specimenSymmetry('pointId',symmetry.pointGroups(s.id).LaueId);
+      sL = specimenSymmetry('pointId',symmetry.pointGroups(s.id).LaueId,rot);
     end
-    sL.rot = rot;
   else
     sL = crystalSymmetry(rot);
   end

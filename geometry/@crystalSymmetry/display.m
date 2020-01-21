@@ -26,6 +26,12 @@ else
   propV{end+1} = 'unkwown';
 end
 
+% add symmetry
+props{end+1} = 'elements'; 
+propV{end+1} = numSym(cs);
+
+
+
 % add axis length
 props{end+1} = 'a, b, c';
 propV{end+1} = option2str(vec2cell(norm(cs.axes)));

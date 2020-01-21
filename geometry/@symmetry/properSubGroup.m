@@ -10,11 +10,10 @@ rot = s.rot(~s.rot.i);
 if s.id > 0
   id = symmetry.pointGroups(s.id).properId;
   if isa(s,'crystalSymmetry')
-    sP = crystalSymmetry('pointId',id);
+    sP = crystalSymmetry('pointId',id,rot);
   else
-    sP = specimenSymmetry('pointId',id);
+    sP = specimenSymmetry('pointId',id,rot);
   end
-  sP.rot = rot;
 else
   sP = crystalSymmetry(rot);
 end
