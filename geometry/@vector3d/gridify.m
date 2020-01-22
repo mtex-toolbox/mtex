@@ -1,31 +1,36 @@
-function [vGrid,wGrid,id] = gridify(v,varargin)
-% 
+function [vecG,weightsG,id] = gridify(vec,varargin)
+% approximate a list of vectors with vectors on a grid
 %
+% Syntax
+%   [vecG, weightsG, id] = gridify(vec)
+%   [vecG, weightsG, id] = gridify(vec,'weights',weights)
 %
+% Input
+%  vec - @vector3d
+%
+% Output
+%  vGrid   - @S2Grid
+%  weightsG - double
+%  id    - 
+%
+% Options
+%  weights    - 
+%  resolution -
+%  
 
-res = get_option(varargin,'resolution',2.5*degree);
+weights = get_option(varargin,'weights',ones(size(vec)));
 
-if v.antipodal, aP = {'antipodal'}; else, aP = {}; end
-if isa(v,'Miller')
-  sR = v.CS.fundamentalSector;
-  v = project2FundamentalRegion(v);
-else
-  sR = sphericalRegion(aP{:});
-end
+% generate grid of vectors
+if vec.antipodal, aP = {'antipodal'}; else, aP = {}; end
+vecG = equispacedS2Grid(aP{:},varargin{:});
 
-vGrid = equispacedS2Grid('resolution',res,sR,aP{:});
-
-wGrid = get_option(varargin,'weights',ones(length(v),1));
-
-% construct a sparse matrix showing the relation between both grids
-id = find(vGrid,v);
-M = sparse(1:length(v),id,wGrid,length(v),length(vGrid));
+% find correspondence between vectors and grid
+id = find(vecG,vec);
 
 % compute weights
-wGrid = full(sum(M,1)).';
-  
-% eliminate spare vectors in the grid
-vGrid = subGrid(vGrid,wGrid~=0);
-wGrid = wGrid(wGrid~=0);
+weightsG = accumarray(id,weights,[length(vecG) 1]);
 
-if isa(v,'Miller'), vGrid = Miller(vGrid,v.CS); end
+% eliminate spare vectors in the grid
+id = weightsG > 0;
+vecG = vecG.subGrid(id);
+weightsG = weightsG(id);
