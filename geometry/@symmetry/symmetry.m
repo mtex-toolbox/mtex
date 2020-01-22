@@ -139,6 +139,22 @@ classdef symmetry < handle
       % remove from varargin
       varargin = delete_option(varargin,{'PointId','LaueId','SpaceId'},1);
     end
+
+    
+    function id = rot2pointId(rot,axes)
+      % find a symmetry that exactly contains s
+      
+      if nargin == 1, axes = [xvector,yvector,zvector]; end
+      
+      for id=1:45 % check all point groups
+        rotId = symmetry.calcQuat(id,axes);
+        if length(rot) == length(rotId) && all(any(isappr(abs(dot_outer(rotId,rot)),1)))
+          return
+        end
+      end
+      id = 0;
+    end
+    
     
     function rot = calcQuat(id,axes)
       % calculate symmetry elements

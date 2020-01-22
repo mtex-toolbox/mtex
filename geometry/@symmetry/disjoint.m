@@ -15,16 +15,4 @@ if numel(is2) == length(s2), s1 = s2; return; end
 % take the equal ones
 rot = s1.rot(is1);
 
-% find a symmetry that exactly contains s
-for i=1:45 % check all Laue groups
-  
-  s1 = crystalSymmetry('pointId',i);
-  
-  if length(rot) == numSym(s1) && all(any(isappr(abs(dot_outer(s1.rot,rot)),1)))
-    return
-  end
-  
-end
-
-% otherwise define a custom symmetry
 s1 = crystalSymmetry(rot);

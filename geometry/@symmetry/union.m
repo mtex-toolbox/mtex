@@ -3,37 +3,25 @@ function s = union(s1,s2)
 %
 % 
 
+if isa(s2,'symmetry')
+  axes = s2.axes;
+  s2 = s2.rot;   
+else
+  s2 = [rotation.id; s2(:)];
+end
 if isa(s1,'symmetry')
   rot = s1.rot;
+  axes = s1.axes;
 else
-  rot = s1;
+  rot = [rotation.id;s1(:)]; 
+  axes = s1.axes;
 end
-
-if isa(s2,'symmetry'), s2 = s2.rot; end
 
 rot = unique(rot * s2);
 
-% find a symmetry that exactly contains s
-for i=1:45 % check all Laue groups
-  
-  s = crystalSymmetry('pointId',i);
-  
-  if numSym(s) == length(rot) && all(any(isappr(abs(dot_outer(rot,s.rot)),1)))   
-    
-    try %#ok<TRYNC>
-      s.axes = s1.axes;       % coordinate system
-      s.mineral = s1.mineral; % mineral name
-      s.color  = s1.color;    % color used for EBSD / grain plotting
-    end
-    return
-  end
-  
-end
-
-s = crystalSymmetry(rot);
+s = crystalSymmetry(rot,axes);
 
 try %#ok<TRYNC>
-  s.axes = s1.axes;       % coordinate system
   s.mineral = s1.mineral; % mineral name
   s.color  = s1.color;    % color used for EBSD / grain plotting
 end
