@@ -18,7 +18,7 @@ function varargout = find(S2G,v,varargin)
 
 % TODO: implement faster find for regular S2Grid
 d = [];
-if checkOption(S2G,'antipodal'), v = [v(:),-v(:)]; end
+if S2G.antipodal, v = [v(:),-v(:)]; end
 
 % compute polar coordinats
 ytheta = double(S2G.thetaGrid);
@@ -39,7 +39,7 @@ if nargin == 2
   if S2G.antipodal
     ind = reshape(ind,[],2);
 
-    d = abs(dot(S2G(ind),v));
+    d = abs(dot(S2G.subSet(ind),v));
     ind2 = d == repmat(max(d,[],2),1,2);
     ind2(all(ind2,2),2) = false;
     ind = ind(ind2);
