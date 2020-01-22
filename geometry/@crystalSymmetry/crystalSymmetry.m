@@ -108,11 +108,18 @@ classdef crystalSymmetry < symmetry
       try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
       % define the symmetry just by rotations
-      if isa(varargin,'quaternion')
+      if nargin == 0
         
-        id = 0;
+        id = 1;
         axes = [xvector,yvector,zvector];
+        rot = rotation.id;
+        
+      elseif isa(varargin{1},'quaternion')
+
         rot = varargin{1};
+        axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
+        
+        id = symmetry.rot2pointId(rot,axes);
         
       else
         
