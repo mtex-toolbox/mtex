@@ -70,7 +70,7 @@ for i = 1:numel(sP)
 
   % markerSize
   if ~check_option(varargin,{'scatter_resolution','MarkerSize'})
-    res = max(v.resolution,1*degree);
+    res = max(v.resolution,0.5*degree);
   else
     res = get_option(varargin,'scatter_resolution',1*degree);
   end
