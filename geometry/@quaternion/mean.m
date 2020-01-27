@@ -48,7 +48,7 @@ l = diag(lambda);
 
 V = V(:,pos);
 qm.a = V(1); qm.b = V(2); qm.c = V(3); qm.d = V(4);
-try qm.i = false; end %#ok<TRYNC>
+if isa(qm,'rotation'), qm.i = false; end
 
 if isRobust && length(q)>4
   omega = angle(qm,q,'noSymmetry');
