@@ -54,7 +54,7 @@ elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]);
+    TVoigt = TVoigt + real(EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]));
         
   end
   
