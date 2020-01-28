@@ -15,13 +15,13 @@ if nargin == 1, q_ref = quaternion.id;end
 q = quaternion(o);
 
 % no specimen symmetry
-if length(o.SS) == 1 
+if ismember(o.SS.id,[1,2])
     
   % may be we can skip something
   omega = abs(dot(q,q_ref));
   ind = omega < cos(20*degree);
 
-  if ~any(ind),
+  if ~any(ind)
     omega = 2*acos(min(1,omega));
     return;
   end

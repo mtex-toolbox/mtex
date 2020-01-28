@@ -18,7 +18,7 @@ N = length(v);
 antipodal = v.antipodal || check_option(varargin, 'antipodal');
 if antipodal
   v.antipodal = false;
-  [v,~,IC] = unique([v;-v]);
+  [v,~,IC] = unique([v;-v],'noSymmetry');
 end
 
 [V,C] = calcVoronoi(v);

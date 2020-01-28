@@ -1,4 +1,4 @@
-function r = times(a,b)
+function r = times(a,b,varargin)
 % r = a .* b
 
 if isnumeric(a) % (-1) * rot -> inversion
@@ -20,22 +20,13 @@ elseif isnumeric(b) % rot * (-1) -> inversion
 elseif isa(b,'quaternion') % rotA * rotB
   
   % quaternion multiplication
-  r = times@quaternion(a,b);
+  r = times@quaternion(a,b,varargin{:});
     
   % apply inversion
-  try ai = a.i; catch, ai = false(size(a)); end
-  try bi = b.i; catch, bi = false(size(b)); end
+  try ai = a.i; catch, ai = false; end
+  try bi = b.i; catch, bi = false; end
   r.i = xor(ai,bi);
-  
-  if isa(b,'orientation') % rotA * oriB
-    if b.SS.id > 2 && any(max(dot_outer(b.SS,a))<0.99)
-      warning('Symmetry mismatch');
-    end
- 
-    r = orientation(r,b.CS,b.SS);
-        
-  end
-  
+    
 else % rot * Miller, rot * tensor, rot * slipSystem
  
     r = rotate(b,a);

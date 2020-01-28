@@ -13,7 +13,7 @@ else
 
   if check_option(varargin,'Laue')
   
-    if all(S1.hash(2:end) == S2.hash(2:end))
+    if eq@handle(S1,S2)
       b = true;
     else
       
@@ -27,9 +27,13 @@ else
     
   else
   
-    if all(S1.hash == S2.hash)
+    if eq@handle(S1,S2)
       b = true;
-    else
+    elseif S1.id == 0
+      
+      b = S2.id == 0 && numSym(S1) == numSym(S2) && max(angle(S1.rot(:),S2.rot(:)))<0.1 *degree;
+      
+    else 
       b = S1.id == S2.id && ...
         all(norm(S1.axes - S2.axes)./norm(S1.axes)<10^-2) && ...
         (isempty(S1.mineral) || isempty(S2.mineral) || strcmpi(S1.mineral,S2.mineral));  

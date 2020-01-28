@@ -32,7 +32,7 @@ L = get_option(varargin,{'L','bandwidth'},L);
 l = get_option(varargin,{'order','degree'},0:L);
 
 if isa(ori,'orientation')
-  N = length(ori.CS) * length(ori.SS);
+  N = numSym(ori.CS) * numSym(ori.SS);
   
   Tcs = wignerDmatrixSum(ori.CS,l);
   Tss = wignerDmatrixSum(ori.SS,l);

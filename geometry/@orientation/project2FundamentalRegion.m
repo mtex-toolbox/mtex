@@ -13,7 +13,7 @@ function ori = project2FundamentalRegion(ori,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-if length(ori.SS) == 1 
+if ismember(ori.SS.id, [1,2])
   ori = project2FundamentalRegion@quaternion(ori,ori.CS,varargin{:});
 else
   if ori.antipodal, ap = {'antipodal'}; else, ap = {}; end

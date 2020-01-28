@@ -16,7 +16,7 @@ function h = text(m,varargin)
 % symmetrise
 if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')
 
-  [m,l] = symmetrise(m,varargin{:},'keepAntipodal');
+  [m,l] = symmetrise(m,varargin{:},'unique','keepAntipodal');
   
   % symmetrise labels
   if ~check_option(varargin,'labeled') && ~isempty(varargin)

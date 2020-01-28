@@ -58,8 +58,8 @@ classdef quaternion
               
             D = varargin{1};
               
-            [q.a, q.b, q.c, q.d] = deal(D(1,:),D(2,:),D(3,:),D(4,:));
-            
+            q.a = D(1,:); q.b = D(2,:); q.c = D(3,:); q.d = D(4,:);
+
             s = size(D);
             s = [1 s(2:ndims(D))];
             
@@ -72,12 +72,16 @@ classdef quaternion
             else
               q.a = repmat(varargin{1},size(varargin{2}));
             end
+            
             [q.b,q.c,q.d] = double(varargin{2});
             
           case 4
             
-              [q.a, q.b, q.c, q.d] = deal(varargin{:});
-              
+            q.a = varargin{1};
+            q.b = varargin{2};
+            q.c = varargin{3};
+            q.d = varargin{4};
+
         end
       end
       

@@ -36,7 +36,7 @@ end
 if check_option(varargin,'antipodal') || v.antipodal, cs = cs.Laue; end
 
 % maybe there is nothing to do
-if length(cs)==1, return; end
+if cs.id == 1, return; end
 
 % the following algorithm assumes that the center of the fundamental
 % sectors are the center of the corresponding voronoi cells. this seems to
@@ -48,6 +48,7 @@ if length(cs)==1, return; end
 if nargin >= 3 && isa(varargin{1},'vector3d')
   
   symCenter = cs * varargin{1};
+  cs = cs.rot;
   
 else
 
@@ -56,17 +57,17 @@ else
   
   switch cs.id
     case {19,22,26}
-      cs = rotation(cs);
       ind = v.z < 0;
-      vv = cs(2) * subSet(v,ind);
+      vv = cs.rot(2) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-      cs = cs(1:2:end);
+      cs = cs.rot(1:2:end);
     case 18
-      cs = rotation(cs);
       ind = v.z < 0;
-      vv = cs(4) * subSet(v,ind);
+      vv = cs.rot(4) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-      cs = cs(1:3);
+      cs = cs.rot(1:3);
+    otherwise
+      cs = cs.rot;
   end
   symCenter = cs * sR.center;
 

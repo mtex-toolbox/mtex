@@ -14,6 +14,8 @@ function q = project2FR_ref(q,qCS,q_ref)
 %  omega - rotational angle to reference quaternion
 %
 
+qCS = qCS.rot;
+
 s = size(q);
 q.a = q.a(:); q.b = q.b(:); q.c = q.c(:); q.d = q.d(:);
 try q.i = q.i(:); end %#ok<TRYNC>
@@ -60,7 +62,7 @@ end
 [~,nx] = max(omegaSym,[],2);
 
 % project to fundamental region
-qn = q_sub .* reshape(inv(qCS.subSet(nx)),size(q_sub));
+qn = times(q_sub, reshape(inv(qCS.subSet(nx)),size(q_sub)),0);
 
 % replace projected quaternions
 q.a(notInside) = qn.a;
@@ -76,4 +78,3 @@ q = reshape(q,s);
 % q_ref = quaternion.rand(100,1);
 % q_proj = project2FR_ref(q,quaternion(cs),q_ref);
 % hist(angle(q_proj,q_ref)/degree)
-

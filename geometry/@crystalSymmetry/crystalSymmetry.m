@@ -27,6 +27,56 @@ classdef crystalSymmetry < symmetry
 %  aAxisRec, bAxisRec, cAxisRec - reciprocal crystal axes @Miller
 %  axes - @vector3d 
 %
+% Supported Symmetries
+%
+%  id  crystal system  Schoen-  Inter-    Laue     Rotational
+%                      flies    national  class    axes
+%  1   triclinic       C1       1         -1       1
+%  2   triclinic       Ci       -1        -1       1
+%  3   monoclinic      C2       211       2/m11    211
+%  4   monoclinic      Cs       m11       2/m11    211
+%  5   monoclinic      C2h      2/m11     2/m11    211
+%  6   monoclinic      C2       121       12/m1    121
+%  7   monoclinic      Cs       1m1       12/m1    121
+%  8   monoclinic      C2h      12/m1     12/m1    121
+%  9   monoclinic      C2       112       112/m    112
+%  10  monoclinic      Cs       11m       112/m    112
+%  11  monoclinic      C2h      112/m     112/m    112
+%  12  orthorhombic    D2       222       mmm      222
+%  13  orthorhombic    C2v      2mm       mmm      222
+%  14  orthorhombic    C2v      m2m       mmm      222
+%  15  orthorhombic    C2v      mm2       mmm      222
+%  16  orthorhombic    D2h      mmm       mmm      222
+%  17  trigonal        C3       3         -3       3
+%  18  trigonal        C3i      -3        -3       3
+%  19  trigonal        D3       321       -3m1     321
+%  20  trigonal        C3v      3m1       -3m1     321
+%  21  trigonal        D3d      -3m1      -3m1     321
+%  22  trigonal        D3       312       -31m     312
+%  23  trigonal        C3v      31m       -31m     312
+%  24  trigonal        D3d      -31m      -31m     312
+%  25  tetragonal      C4       4         4/m      4
+%  26  tetragonal      S4       -4        4/m      4
+%  27  tetragonal      C4h      4/m       4/m      4
+%  28  tetragonal      D4       422       4/mmm    422
+%  29  tetragonal      C4v      4mm       4/mmm    422
+%  30  tetragonal      D2d      -42m      4/mmm    422
+%  31  tetragonal      D2d      -4m2      4/mmm    422
+%  32  tetragonal      D4h      4/mmm     4/mmm    422
+%  33  hexagonal       C6       6         6/m      6
+%  34  hexagonal       C3h      -6        6/m      6
+%  35  hexagonal       C6h      6/m       6/m      6
+%  36  hexagonal       D6       622       6/mmm    622
+%  37  hexagonal       C6v      6mm       6/mmm    622
+%  38  hexagonal       D3h      -62m      6/mmm    622
+%  39  hexagonal       D3h      -6m2      6/mmm    622
+%  40  hexagonal       D6h      6/mmm     6/mmm    622
+%  41  cubic           T        23        m-3      23
+%  42  cubic           Th       m-3       m-3      23
+%  43  cubic           O        432       m-3m     432
+%  44  cubic           Td       -43m      m-3m     432
+%  45  cubic           Oh       m-3m      m-3m     432
+%
 % See also
 % CrystalSymmetries CrystalShapes CrystalReferenceSystem CrystalOperations
 
@@ -57,41 +107,58 @@ classdef crystalSymmetry < symmetry
       % this is for compatibility with using "strings" as input
       try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
-      
-      s = s@symmetry(varargin{:});
-                  
-      if nargin > 1
-        if ischar(varargin{1}) && any(strcmpi(varargin{1},{'pointId','LaueId','spaceId'}))
-          varargin(1:2) = [];
-        else
-          varargin(1) = [];
-        end
-      end
+      % define the symmetry just by rotations
+      if nargin == 0
         
+        id = 1;
+        axes = [xvector,yvector,zvector];
+        rot = rotation.id;
         
-      % get axes length (a b c)
-      if ~isempty(varargin) && isa(varargin{1},'double')
-        abc = varargin{1};
-        varargin(1) = [];
-      else 
-        abc = [1,1,1];
-      end
-      
-      % get axes angles (alpha beta gamma)
-      if ~isempty(varargin) && isa(varargin{1},'double') && ...
-          s.id < 12
-        angles = varargin{1};
-        if any(angles>2*pi), angles = angles * degree;end
-        varargin(1) = [];
-      elseif s.id>0 && any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
-        angles = [90 90 120] * degree;
-      else
-        angles = [90 90 90] * degree;
-      end
+      elseif isa(varargin{1},'quaternion')
 
-      % compute coordinate system
-      s.axes = calcAxis(s,abc,angles,varargin{:});
+        rot = varargin{1};
+        axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
+        
+        id = symmetry.rot2pointId(rot,axes);
+        
+      else
+        
+        [id, varargin] = symmetry.extractPointId(varargin{:});
       
+        % get axes length (a b c)
+        if ~isempty(varargin) && isa(varargin{1},'double')
+          abc = varargin{1};
+          varargin(1) = [];
+        else
+          abc = [1,1,1];
+        end
+      
+        % get axes angles (alpha beta gamma)
+        if ~isempty(varargin) && isa(varargin{1},'double') && ...
+            id < 12
+          angles = varargin{1};
+          if any(angles>2*pi), angles = angles * degree;end
+          varargin(1) = [];
+        elseif id>0 && any(strcmp(symmetry.pointGroups(id).lattice,{'trigonal','hexagonal'}))
+          angles = [90 90 120] * degree;
+        else
+          angles = [90 90 90] * degree;
+        end
+        
+        % compute coordinate system
+        axes = calcAxis(id,abc,angles,varargin{:});
+
+        % compute symmetry operations
+        rot = getClass(varargin,'quaternion');
+        if isempty(rot), rot = symmetry.calcQuat(id,axes); end
+         
+      end
+     
+      % define the symmetry
+      s = s@symmetry(id,rot);
+      
+      % set axes, mineral name and color
+      s.axes = axes;
       s.mineral = get_option(varargin,'mineral','');
       s.color = get_option(varargin,'color','');
       
@@ -99,32 +166,8 @@ classdef crystalSymmetry < symmetry
         s.opt.density = get_option(varargin,'density','');
       end
       
-      % compute symmetry operations
-      s = calcQuat(s,s.axes);
-      
-      s.hash = calcHash(s);
-            
     end
     
-    function h = calcHash(cs)
-      
-      try
-        isLaue = cs.id == symmetry.pointGroups(cs.id).LaueId;
-      catch % this is required for custom symmetries
-        isLaue = any(reshape(rotation(cs) == -rotation.id,[],1));
-      end
-      
-      v1 = double(cs);
-      v2 = double(cs.axes);
-      values = typecast([v1(:);v2(:)],'uint8');
-
-      % compute the hash
-      md = java.security.MessageDigest.getInstance('SHA-1');
-      md.update(values);
-      h = [uint8(isLaue);md.digest()];     
-      
-    end
-
     function a = get.aAxis(cs)
       a = Miller(1,0,0,cs,'uvw');
     end

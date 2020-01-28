@@ -1,4 +1,4 @@
-function r = times(a,b)
+function r = times(a,b,takeRight)
 % vec = ori .* Miller
 %
 % Syntax
@@ -13,6 +13,11 @@ function r = times(a,b)
 %
 % See also
 
+if nargin == 3
+  r = times@rotation(a,b,takeRight);
+  return
+end
+
 % special case multiplication with +-1
 if isnumeric(a) || isnumeric(b)
   r = times@rotation(a,b);
@@ -25,8 +30,11 @@ end
 
 % ensure inner symmetries coincide
 if isempty(inner1)  
-  if ~isempty(inner2) && ~isa(inner2,'specimenSymmetry')
-    warning('Rotation does not respect symmetry!');
+  if ~isempty(inner2) 
+    if ~isa(inner2,'specimenSymmetry') || ...
+        (inner2.id > 2 && any(max(dot_outer(inner2.rot,a))<0.99))
+      warning('Rotation does not respect symmetry!');
+    end
   end
 elseif isempty(inner2)
   if ~isempty(inner1) && ~isa(inner1,'specimenSymmetry')
@@ -50,19 +58,15 @@ if ~isa(b,'quaternion') && ~isnumeric(b)
 end
 
 % rotation multiplication
-r = times@rotation(a,b);
+r = times@rotation(a,b,isa(b,'orientation'));
 
 % convert back to orientation
 if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
 
-  if isa(r,'rotation')
-    r = orientation(r,right,left);
-  else
-    r.CS = right;
-    r.SS = left;
-  end
+  r.CS = right;
+  r.SS = left;
 
-elseif isa(r,'orientation') % otherwise it is only a rotation
+else % otherwise it is only a rotation
 
   r = rotation(r);
 

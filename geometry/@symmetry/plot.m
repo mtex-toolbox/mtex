@@ -11,7 +11,7 @@ function plot(s,varargin)
 %
 
 % extract symmetry elements
-rot = rotation(s);
+rot = s.rot;
 Improper = isImproper(rot);
 
 axis = rot.axis;

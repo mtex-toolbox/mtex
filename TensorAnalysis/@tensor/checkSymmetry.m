@@ -4,7 +4,7 @@ out = true;
 
 if T.rank <= 1, return; end
 
-rot = rotation(T.CS);
+rot = T.CS.rot;
 
 for i = 2:length(rot)
   
@@ -16,4 +16,3 @@ for i = 2:length(rot)
     return;
   end
 end
-

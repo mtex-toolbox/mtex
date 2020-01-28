@@ -15,8 +15,7 @@ function [axes,mult] = elements(cs,multiplicity)
 %  multiplicity - double
 %
 
-rot = rotation(cs);
-rot = rot(rot.angle>1*degree);
+rot = cs.rot(cs.rot.angle>1*degree);
 axes =  rot.axis;
 mult = round(2*pi ./ rot.angle);
 [axes, ~, id] = unique(axes,'tolerance',1e-3,'antipodal');

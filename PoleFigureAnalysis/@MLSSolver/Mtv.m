@@ -10,7 +10,7 @@ function d = Mtv(solver,I,i)
 %
   
 % extend specimen symmetry
-lss = length(solver.SS.properGroup);
+lss = numSym(solver.SS.properGroup);
 I_ext = repmat(I.',lss,1)./lss;
 
 % compute Fourier coefficients

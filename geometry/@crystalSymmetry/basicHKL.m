@@ -13,9 +13,6 @@ function p = basicHKL(cs,varargin)
 
 p = Miller(h,k,l,cs);
 
-d = p.dspacing;
-
-p(isinf(d)) = [];
-d(isinf(d)) = [];
+p(isinf(p.dspacing)) = [];
 
 p = p.symmetrise('unique');

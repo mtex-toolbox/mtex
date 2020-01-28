@@ -2,7 +2,7 @@ function [v,varargout] = volume(component,center,radius,varargin)
 
 % for large angles or specimen symmetry take the quadrature based algorithm
 if radius > pi / component.CS.multiplicityZ || ...
-    length(component(1).SS) > 1
+    numSym(component(1).SS) > 1
   
   [v,varargout{1:nargout-1}] = volume@ODFComponent(component,center,radius,varargin{:});
   %v = volume@ODFComponent(component,center,radius,varargin{:});

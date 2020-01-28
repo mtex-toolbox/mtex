@@ -42,12 +42,12 @@ elseif length(q) == 1
 end
 
 % if output has symmetry set it to Miller
-if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
-
-  v = Miller(v,q.SS);
-
-elseif ~isa(q,'symmetry') && isa(v,'Miller') % convert to vector3d 
-
-  v = vector3d(v);
+if isa(q,'orientation')
+  
+  if isa(q.SS,'crystalSymmetry')
+    v = Miller(v,q.SS);
+  else % convert to vector3d 
+    v = vector3d(v);
+  end
 
 end

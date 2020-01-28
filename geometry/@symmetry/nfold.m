@@ -18,9 +18,9 @@ else
   axis = vector3d(axis);
   n = ones(size(axis));
   for i = 1:length(axis)
-    ind = isnull(angle(cs.axis,axis(i))) & cs.angle>0;
+    ind = isnull(angle(cs.rot.axis,axis(i))) & cs.rot.angle>0;
     if any(ind(:))
-      n(i) = 2*pi / min(cs.subSet(ind).angle);
+      n(i) = 2*pi / min(cs.rot(ind).angle);
     end
   end
   

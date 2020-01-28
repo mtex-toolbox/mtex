@@ -43,7 +43,7 @@ center = sym_center(ind);
 q = quaternion;
 for i = 1:length(center)
   cq = center(i) * qId(:);
-  if length(SS) > 1
+  if numSym(SS) > 1
     ind = fundamental_region2(cq,center(i),CS,SS);
     cq = cq(ind);
   end
@@ -65,7 +65,7 @@ function ind = fundamental_region2(q,center,cs,ss)
 %  ind    -
 
 % symmetrise
-c_sym = ss *  center * cs;
+c_sym = symmetrise(center,ss.properGroup,cs.properGroup);
 omega = angle(c_sym * inv(center)); %#ok<MINV>
 %[~,i] = min(omega,[],2);
 %c_sym = c_sym(sub2ind(sie(c_sym,i));
