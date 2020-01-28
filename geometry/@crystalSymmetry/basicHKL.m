@@ -11,8 +11,8 @@ function p = basicHKL(cs,varargin)
 
 [h,k,l] = meshgrid(-1:1);
 
-p = Miller(h,k,l,cs);
+p = Miller(h(:),k(:),l(:),cs);
 
 p(isinf(p.dspacing)) = [];
 
-p = p.symmetrise('unique');
+p = unique(p.symmetrise,'noSymmetry');
