@@ -22,7 +22,7 @@ if check_option(varargin,'noSymmetry') || ~isa(m2,'Miller')
 end
 
 % if we should consider symmetry - it must be the same on both sides
-if m1.CS ~= m2.CS, warning('Symmetry mismatch'); end
+if ~eq(m1.CS,m2.CS), warning('Symmetry mismatch'); end
 
 % maybe we should return a full matrix of dot products to all symmetrically
 % equivalent directions

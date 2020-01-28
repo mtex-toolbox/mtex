@@ -1,4 +1,4 @@
-function d = dot(g1,g2)
+function d = dot(g1,g2,varargin)
 % inner product of quaternions g1 and g2
 %
 % Input

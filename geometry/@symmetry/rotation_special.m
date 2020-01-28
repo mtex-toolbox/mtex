@@ -21,7 +21,7 @@ end
 
 switch symmetry.pointGroups(cs.id).LaueId
   case {2, 5, 8} % 1, 211, 121
-    rot = quaternion(cs);
+    rot = quaternion(cs.rot(~cs.rot.i));
   case {11, 18, 27, 35} % 112, 3, 4, 6
     rot = quaternion.id;
   case {16, 32, 40} % 222, 422, 622
@@ -35,6 +35,5 @@ switch symmetry.pointGroups(cs.id).LaueId
   case 45 % 432
     rot = symAxis(lllaxis,3) * symAxis(ll0axis,2);
 end
-
 
 end

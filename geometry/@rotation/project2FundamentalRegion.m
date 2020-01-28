@@ -14,5 +14,7 @@ function rot = project2FundamentalRegion(rot,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-q = project2FundamentalRegion@quaternion(quaternion(rot),varargin{:});
-rot = rotation(q);
+rot = project2FundamentalRegion@quaternion(rot,varargin{:});
+
+% ensure the result is again a rotation
+if ~isa(rot,'rotation'), rot = rotation(rot); end

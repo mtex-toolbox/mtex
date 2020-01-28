@@ -23,7 +23,7 @@ if nargin >= 2
   if check_option(varargin,'left')
     q = q .* q_ref';
   else
-    q = q_ref' .* q;
+    q = times(q_ref', q,1);
   end
 end
 

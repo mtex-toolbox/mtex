@@ -1,35 +1,48 @@
-function s = properGroup(s)
+function sP = properGroup(s)
 % return the corresponding Laue group 
 
-% if it is already a Laue group there is nothing to do
-if s.isProper, return;end
+if ~isempty(s.properRef)
 
-if s.isLaue
+  sP = s.properRef;
+
+% if it is already a Laue group there is nothing to do
+elseif s.isProper
   
-  % remove all improper rotations
-  ind = s.i == 0;
-  s.a = s.a(ind);
-  s.b = s.b(ind);
-  s.c = s.c(ind);
-  s.d = s.d(ind);
-  s.i = s.i(ind);
+  sP = s; 
+  s.properRef = s; 
   
 else
+
+  % compute symmetry elements
+  rot = s.rot;
+  if s.isLaue
+    rot = rot(~rot.i); % remove all improper rotations
+  else
+    rot.i = zeros(size(rot));   % make all rotations proper
+  end
+
+  % set up the new symmetry
+  if s.id > 0
   
-  % make all rotations proper
-  s.i = zeros(size(s.i));
+    pG = symmetry.pointGroups;
+    id = pG(pG(s.id).LaueId).properId;
+  
+    if isa(s,'crystalSymmetry')
+      sP = crystalSymmetry('pointId',id,rot);
+    else
+      sP = specimenSymmetry('pointId',id,rot);
+    end
+  
+  else
+    sP = crystalSymmetry(rot);
+  end
+  
+  try %#ok<TRYNC>
+    sP.axes = s.axes;       % coordinate system
+    sP.mineral = s.mineral; % mineral name
+    sP.color  = s.color;    % color used for EBSD / grain plotting
+  end
+  
+  s.properRef = sP;
   
 end
-
-% set new symmetry id
-try
-  pG = symmetry.pointGroups;
-  s.id = pG(pG(s.id).LaueId).properId;
-catch
-  s.id = 0;
-end
-
-
-
-
-

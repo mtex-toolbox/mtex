@@ -1,4 +1,4 @@
-function abc  = calcAxis(s,axisLength,angle,varargin)
+function abc  = calcAxis(id,axisLength,angle,varargin)
 % calculate the axis a, b, c of the crystal coordinate system with respect
 % to the euclidean reference frame
 %
@@ -29,13 +29,15 @@ end
 if angle(2) == 0,  angle(2) = pi - angle(1);end
 if angle(3) == 0, angle(3) = pi/2;end
 
+pg = symmetry.pointGroups(id);
+
 % check for correct lattice parameters
 if ~check_option(varargin,'force')
-  switch s.lattice
+  switch pg.lattice
     case 'triclinic'
     case 'monoclinic'
-      id = 1:3; id(floor(s.id/3))=[];
-      assert(all(isappr(angle(id),pi/2)),'For monoclinic lattices the angles with the symmetry axis have to be 90 degree');
+      notRot = 1:3; notRot(floor(id/3))=[];
+      assert(all(isappr(angle(notRot),pi/2)),'For monoclinic lattices the angles with the symmetry axis have to be 90 degree');
     case 'orthothombic'
     case 'trigonal'
       assert(axisLength(1)== axisLength(2),'For trigonal lattices a and b must be equal!');

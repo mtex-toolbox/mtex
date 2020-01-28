@@ -17,8 +17,8 @@ function v = rotate_outer(v,q)
 if isnumeric(q), q = axis2quat(zvector,q);end
 
 % bring the coefficient into the right shape
-[a,b,c,d] = double(q(:));
-[x,y,z] = deal(v.x(:).',v.y(:).',v.z(:).');
+[a,b,c,d] = double(q); a = a(:); b = b(:); c = c(:); d = d(:);
+[x,y,z] = double(v); x = x(:).'; y = y(:).'; z = z(:).';
 
 %rotation
 v.x = (a.^2+b.^2-c.^2-d.^2)*x + 2*( (a.*c+b.*d)*z + (b.*c-a.*d)*y );
@@ -42,12 +42,12 @@ elseif length(q) == 1
 end
 
 % if output has symmetry set it to Miller
-if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
-
-   v = Miller(v,q.SS);
-
-else % convert to vector3d
-
-  v = vector3d(v);
+if isa(q,'orientation')
+  
+  if isa(q.SS,'crystalSymmetry')
+    v = Miller(v,q.SS);
+  else % convert to vector3d 
+    v = vector3d(v);
+  end
 
 end

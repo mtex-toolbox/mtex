@@ -13,7 +13,7 @@ function c = BCV(ori,psi,varargin)
 
 % extract data
 N = length(ori);
-NCS = N * length(ori.CS);
+NCS = N * numSym(ori.CS);
 
 w = get_option(varargin,'weights',ones(size(ori)));
 w = w ./ sum(w(:));

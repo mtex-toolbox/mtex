@@ -29,7 +29,7 @@ classdef splineFilter < EBSDFilter
       
       % project to tangential space
       [qmean,q] = mean(ori);
-      tq = log(q,quaternion(qmean));      
+      tq = log(quaternion(q),quaternion(qmean));      
 
       % perform smoothing
       if F.robust, rob = {'robust'}; else, rob = {}; end

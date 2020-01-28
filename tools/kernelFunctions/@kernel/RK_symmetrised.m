@@ -29,14 +29,15 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 % kernel/k kernel/rkk
 
 if length(h)==1                        % pole figure
-  [h,lh] = symmetrise(h,varargin{:});
-  in = reshape((SS * g).' * h, [length(g),length(SS),lh]);
+  h = unique(symmetrise(h),'noSymmetry',varargin{:});
+  lh = length(h);
+  in = reshape((SS * g).' * h, [length(g),numSym(SS),lh]);
 	out = r;
 else                                   % inverse pole figure
   in = reshape(inv(symmetrise(g)).' * r, ...
-    [length(g),length(CS),length(SS)]);
+    [length(g),numSym(CS),numSym(SS)]);
   out = h; 
-  lh = length(CS);
+  lh = numSym(CS);
 end
 
 if length(in)*length(out)>500000000
@@ -46,7 +47,7 @@ M = zeros(length(out),size(in,1));
 in = vector3d(in); out = vector3d(out);
  
 % take mean along all symmetries
-for is = 1:length(SS)*lh
+for is = 1:numSym(SS)*lh
   dmatrix = dot_outer(out.normalize,in(:,is).normalize);
   M = M + psi.RK(dmatrix);
   if check_option(varargin,'antipodal'), M = M + psi.RK(-dmatrix);end
@@ -55,6 +56,6 @@ end
 if ~isempty(c), M = M * c(:); end
 if check_option(varargin,'antipodal'), M = M/2;end
 
-M = M / length(SS) / lh;
+M = M / numSym(SS) / lh;
 
 end

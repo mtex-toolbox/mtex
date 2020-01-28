@@ -36,7 +36,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
             
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
   
-      [m,l] = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise without repetition
+      [m,l] = symmetrise(m,'unique','removeAntipodal',varargin{:}); % symmetrise without repetition
         
       if check_option(varargin,'label')
         label = ensurecell(get_option(varargin,'label'));

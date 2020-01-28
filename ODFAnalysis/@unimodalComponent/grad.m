@@ -56,7 +56,7 @@ for issq = 1:length(qSS)
   g = g - v.' * component.weights(:) ;
   
 end
-g = g ./ length(qSS) ./ length(component.CS.properGroup) ;
+g = g ./ length(qSS) ./ numSym(component.CS.properGroup) ;
 
 % TODO: consider antipodal
 if component.antipodal

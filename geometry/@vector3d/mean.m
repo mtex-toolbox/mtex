@@ -22,15 +22,20 @@ function m = mean(v,varargin)
 %  robust    - robust mean (with respect to outliers)
 %
 
-%v = v.normalize;
+isRobust = check_option(varargin,'robust');
+if isRobust, varargin = delete_option(varargin,'robust'); end
+  
 if check_option(varargin,'antipodal') || v.antipodal
 
   varargin = delete_option(varargin,'antipodal');
 
   if check_option(varargin,'weights')
-    v = v .* sqrt(get_option(varargin,'weights'));
+    v = v .* reshape(sqrt(get_option(varargin,'weights')),size(v));
+    varargin = delete_option(varargin,'weights',1);
   end
     
+  varargin = delete_option(varargin,'weights',1);
+  
   xx = mean(v.x.^2,  varargin{:});
   xy = mean(v.x.*v.y,varargin{:});
   xz = mean(v.x.*v.z,varargin{:});
@@ -42,21 +47,20 @@ if check_option(varargin,'antipodal') || v.antipodal
 else
   
   if check_option(varargin,'weights')
-    v = v .* get_option(varargin,'weights');
+    v = v .* reshape(get_option(varargin,'weights'),size(v));
+    varargin = delete_option(varargin,'weights',1);
   end
     
-  m = sum(v);
+  m = sum(v,varargin{:});
 end
 
 m = m .normalize;
 
-if check_option(varargin,'robust') && length(v)>4
+if isRobust && length(v)>4
   omega = angle(m,v);
   id = omega < quantile(omega,0.8)*(1+1e-5);
   if ~any(id), return; end
-  varargin = delete_option(varargin,'robust');
-  varargin = delete_option(varargin,'weights',1);
-  
+    
   m = mean(v.subSet(id),varargin{:});
   
 end

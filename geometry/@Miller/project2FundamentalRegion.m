@@ -10,4 +10,4 @@ function h = project2FundamentalRegion(h, varargin)
 % Output
 %  h - @Miller
 
-h = Miller(project2FundamentalRegion@vector3d(h,h.CS,varargin{:}),h.CS);
+h = project2FundamentalRegion@vector3d(h,h.CS,varargin{:});

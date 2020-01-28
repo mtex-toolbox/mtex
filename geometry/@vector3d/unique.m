@@ -37,7 +37,7 @@ if check_option(varargin,'stable')
 else
   varargin= {};
 end
-% find duplicates points
+% find duplicate points
 try
   [~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,varargin{:});
 catch

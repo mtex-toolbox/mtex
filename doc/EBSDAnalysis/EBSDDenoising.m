@@ -37,7 +37,8 @@ ebsd(grains(grains.grainSize<5)) = [];
 grains = smooth(grains,5);
 
 % plot the orientation map
-plot(ebsd,ebsd.orientations)
+ipfKey = ipfColorKey(ebsd.CS.properGroup);
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 % and on top the grain boundaries
 hold on

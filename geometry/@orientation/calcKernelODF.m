@@ -56,31 +56,15 @@ psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 hw = psi.halfwidth;
 
-if (check_option(varargin,'exact') || length(ori) < 1000) && ~check_option(varargin,'test')
+% if we have to many orientation approximate them on a grid
+if length(ori) > 1000 && ~check_option(varargin,'exact')
+    
+  [ori,weights] = gridify(ori,'weights',weights,...
+    'resolution',max(0.75*degree,hw / 2), varargin{:});
   
-  % set up exact ODF
-  odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weights);
-  
-else
-  
-  % define a indexed grid
-  res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
-  if ori.antipodal, aP = {'antipodal'}; else aP = {}; end
-  S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res,aP{:});
-
-  % construct a sparse matrix showing the relatation between both grids
-  M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
-
-  % compute weights
-  weights = full(sum(M,1));
-  weights = weights ./ sum(weights);
-
-  % eliminate spare rotations in grid
-  S3G = subGrid(S3G,weights~=0);
-  weights = weights(weights~=0);
-  
-  % set up approximated ODF
-  odf = unimodalODF(S3G,psi,ori.CS,ori.SS,'weights',weights);
 end
+
+% set up exact ODF
+odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weights);
   
 end
