@@ -35,7 +35,7 @@ grains = grains(ismember(grains.id,unique(ebsd.grainId)));
 nanId = find(nanId);
 
 % check for whether the pixels are within certain grains
-isInside = grains.checkInside(ebsd.subSet(nanId));
+isInside = checkInside(grains,ebsd.subSet(nanId));
 
 % set phase to not indexed if not inside any grain
 ebsd.phaseId(nanId(~any(isInside,2))) = 1;
