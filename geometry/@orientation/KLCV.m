@@ -36,7 +36,7 @@ for i = 1:cN
   for k = 1:length(psi)
     
     % eval kernel
-    f = psi{k}.K(d) ./ length(ori) ./ numSym(ori.CS);
+    f = psi{k}.K(d) ./ length(ori) ./ numProper(ori.CS);
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;

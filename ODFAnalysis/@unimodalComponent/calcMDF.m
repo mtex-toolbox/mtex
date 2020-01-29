@@ -21,7 +21,7 @@ if numel(weights) > 10000
   d = zeros(1,length(S3G));
   
   % iterate due to memory restrictions?
-  maxiter = ceil(numSym(cs1) * numSym(cs2) * length(center) /...
+  maxiter = ceil(numProper(cs1) * numProper(cs2) * length(center) /...
     getMTEXpref('memory',300 * 1024));
   if maxiter > 1, progress(0,maxiter);end
   

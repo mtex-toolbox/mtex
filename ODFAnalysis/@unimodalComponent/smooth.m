@@ -21,7 +21,7 @@ g = quaternion(component.center);
 d = zeros(1,length(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(numSym(component.CS)*numSym(component.SS)*length(g) /...
+maxiter = ceil(numProper(component.CS)*numProper(component.SS)*length(g) /...
   getMTEXpref('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 

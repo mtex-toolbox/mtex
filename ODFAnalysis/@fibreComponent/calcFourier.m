@@ -5,10 +5,10 @@ A = component.psi.A;
 A = A(1:min(L+1,length(A)));
 
 % symmetrize
-h = component.CS * component.h;
-h = repmat(h,1,numSym(component.SS));
-r = component.SS * component.r;
-r = repmat(r,numSym(component.CS),1);
+h = component.CS.properGroup * component.h;
+h = repmat(h,1,numProper(component.SS));
+r = component.SS.properGroup * component.r;
+r = repmat(r,numProper(component.CS),1);
 
 f_hat = zeros(deg2dim(length(A)),1);
 for l = 0:min(L,length(A)-1)
@@ -16,7 +16,7 @@ for l = 0:min(L,length(A)-1)
     conj(sphericalY(l,h)).' * sphericalY(l,r);
   
   f_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
-    hat(:) / numSym(component.CS) / numSym(component.SS);
+    hat(:) / numProper(component.CS) / numProper(component.SS);
   
 end
 
