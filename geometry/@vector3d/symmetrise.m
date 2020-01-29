@@ -45,7 +45,7 @@ if check_option(varargin,'unique')
   vSym = cell(size(v,2),1);
   dim1 = size(v,1);
   for j = 1:size(v,2)
-    vSym{j} = unique(v.subSet((1:dim1) + (j-1)*dim1),'noSymmetry',ap{:});
+    vSym{j} = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',ap{:});
   end
 
   l  = cellfun(@length, vSym);
