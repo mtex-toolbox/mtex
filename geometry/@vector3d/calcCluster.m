@@ -17,25 +17,23 @@ function [cId,center] = calcCluster(vec,varargin)
 %
 % Example 
 %
-%   % generate orientation clustered around 5 centers
-%   cs = crystalSymmetry('432');
-%   center = orientation.rand(5,cs); 
-%   odf = unimodalODF(center,'halfwidth',5*degree)
-%   ori = odf.calcOrientations(1500);
-%
-%   % find the clusters and its centers
-%   [cId,centerRec] = calcCluster(ori);
-%
-%   % visualize result
-%   for i = 1:length(centerRec)
-%     plot(ori(cId==i),'axisAngle')
+%     %generate vector data of up to 5 clusters
+%     vin = vector3d.rand(5);
+%     sF2 = calcDensity(vin,'halfwidth',10*degree);
+%     v   = sF2.discreteSample(800);
+% 
+%     % find clsuers and their centers
+%     [cId,center] = calcCluster(v,'numCluster',5,'method','hierarchical')
+% 
+%     % visualize the result
+%     plot(v,cId)
 %     hold on
-%     plot(centerRec(i),'MarkerFaceColor','k','MarkerSize',15)
-%   end
-%   hold off
+%     plot(center,'add2all','MarkerSize',10,'MarkerFaceColor','k')
+%     hold off
+% 
+%     %check the accuracy of the recomputed centers
+%     min(angle_outer(center,vin)./degree)
 %
-%   %check the accuracy of the recomputed centers
-%   min(angle_outer(center,centerRec)./degree)
 %
 
 
