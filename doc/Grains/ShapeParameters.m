@@ -52,6 +52,11 @@ grains(9).boundarySize
 grains(9).perimeter
 
 %%
+% As a note of caution, the estimation of the perimeter of a particle or grain
+% *must be done* on a smoothed grain (as in this example) to get rid of the 
+% stair-case effect, which produces longer perimeters than the actual one.
+
+%%
 % Another, one dimensional measure is the *diameter* which refers to the
 % longest distance between any two boundary points and is given im um as
 % well
