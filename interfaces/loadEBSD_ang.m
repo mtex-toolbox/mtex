@@ -27,7 +27,9 @@ try
   % read file header
   hl = file2cell(fname,2000);
   
-  phasePos = strmatch('# Phase ',hl);
+  %phasePos = strmatch('# Phase ',hl);
+  % some ang files come with a line starting "# Phase index"
+  phasePos = find(~cellfun(@isempty, regexp(hl,['# Phase ' '\d'])));
   if isempty(phasePos)
     phasePos = strmatch('# MaterialName ',hl)-1;
   end
