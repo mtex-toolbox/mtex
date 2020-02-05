@@ -36,5 +36,5 @@ end
 if nargout <= 1
   V = E;
 else
-  V = reshape(vector3d(V(1,:),V(2,:),V(3,:)),3,[]);
+  V = reshape(vector3d(V(1,:),V(2,:),V(3,:),'antipodal'),3,[]);
 end
