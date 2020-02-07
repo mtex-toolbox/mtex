@@ -103,8 +103,8 @@ else
   s = size(o1);
   
   % symmetrise TODO: do we realy need to take the inv here?
-  o1 = qss * o1;
-  o2 = reshape(o2 * inv(qcs.rot),[1,length(o2),numSym(qcs)]); %#ok<MINV>
+  o1 = mtimes(qss,o1,1);
+  o2 = reshape(mtimes(o2,inv(qcs.rot),0),[1,length(o2),numSym(qcs)]);
   
   % inline dot product for speed reasons
   d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...
