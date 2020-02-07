@@ -31,6 +31,14 @@ end
 area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
 dxy = sqrt(area / length(xy));
 
+% compensate for single line EBSD
+if dxy==0;
+    lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
+    if lx==0, lx=ly; else; ly=lx; end
+    dxy= (ly+ly)/2;
+end
+
+
 % reduce data set
 xy = subSample(xy,10000);
 
