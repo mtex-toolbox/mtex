@@ -21,12 +21,12 @@ function [odf,alpha] = calcODF(varargin)
 %  pf - @PoleFigure
 %
 % Options
-%  kernel      - the ansatz functions (default = de la Vallee Poussin)
-%  halfwidth   - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  resolution  - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
-%  iter_max    - maximum number of iterations (default = 11)
-%  iter_min    - minimum number of iterations (default = 5)
-%  c0          - initial guess (default = [1 1 1 1 ... 1])
+%  kernel     - the ansatz functions (default = de la Vallee Poussin)
+%  halfwidth  - halfwidth of the ansatz functions (default = 2/3 * resolution)
+%  resolution - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
+%  iterMax    - maximum number of iterations (default = 11)
+%  iterMin    - minimum number of iterations (default = 5)
+%  c0         - initial guess (default = [1 1 1 1 ... 1])
 %
 % Flags
 %  zeroRange         - apply zero range method (default = )
