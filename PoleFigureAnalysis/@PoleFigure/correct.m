@@ -67,9 +67,10 @@ end
 % otherwise interpolate according to theta
 try
   for i = 1:pf.numPF
-    if length(unique(pf.allR{i}.rho(:))) > 4
+    % if defocussing data are given on a grid -> do full spherical interpolation
+    if length(uniquetol(pf.allR{i}.rho(:),0.1)) > 17
       pf_orig.allI{i} = interp(pf.allR{i},pf.allI{i},pf_orig.allR{i});
-    else
+    else % interpolate as a radial function
       pf_orig.allI{i} = interp1(pf.allR{i}.theta,pf.allI{i},...
         pf_orig.allR{i}.theta,'spline');
     end
