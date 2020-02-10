@@ -37,7 +37,8 @@ classdef MLSSolver < pf2odfSolver
     zrm     % zero range method
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
-    iterMin = 5; % max number of iterations
+    iterMin = 5;  % max number of iterations
+    RM = [];      % regularization matirx
   end
   
   properties (Access = private)
