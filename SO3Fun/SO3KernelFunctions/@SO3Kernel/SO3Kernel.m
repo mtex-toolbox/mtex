@@ -74,7 +74,7 @@ classdef SO3Kernel
     end
     
     function hw = halfwidth(psi)
-      hw = fminbnd(@(omega) (psi.K(1)-2*psi.K(cos(omega/2))).^2,0,3*pi/4);
+      hw = fminbnd(@(omega) (psi.eval(1)-2*psi.eval(cos(omega/2))).^2,0,3*pi/4);
     end
 
   end
@@ -99,7 +99,7 @@ classdef SO3Kernel
       warning off; %#ok<*WNOFF>
       
       for l = 0:L
-        fun = @(omega) psi.K(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
+        fun = @(omega) psi.eval(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
         A(l+1) = 2/pi*quadgk(fun ,0,maxAngle,'MaxIntervalCount',2000); %#ok<AGROW>
         
         if abs(A(l+1)) < epsilon

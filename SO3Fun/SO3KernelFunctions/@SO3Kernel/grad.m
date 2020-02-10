@@ -1,7 +1,8 @@
 function value = grad(psi,co2)
 
 % TODO: new Chebyshev coefficients after differentiation
-A = psi.A;
+l = (0:psi.bandwidth).';
+A = psi.A .* l;
 
 if nargin == 2
   value = ClenshawU(A,co2);

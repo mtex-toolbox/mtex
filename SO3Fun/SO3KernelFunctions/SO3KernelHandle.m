@@ -1,4 +1,4 @@
-classdef customKernel < kernel
+classdef SO3KernelHandle < SO3Kernel
   % defines a kernel function as a function of the rotational angle
   
   properties
@@ -7,7 +7,7 @@ classdef customKernel < kernel
       
   methods
     
-    function psi = customKernel(fun,varargin)
+    function psi = SO3KernelHandle(fun,varargin)
       
       % extract parameter and halfwidth
       if nargin == 0, return;end
@@ -22,7 +22,7 @@ classdef customKernel < kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
     
-    function value = K(psi,co2)
+    function value = eval(psi,co2)
       % the kernel function on SO(3)
       co2 = cut2unitI(co2);
       value   =  psi.fun(co2);
