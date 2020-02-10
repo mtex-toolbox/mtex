@@ -32,7 +32,7 @@ if isempty(ori)
   v = 0;
 elseif check_option(varargin,'weight')
   weights = get_option(varargin,'weights');
-  v = mean(weights(angle(ori .\ r,h,varargin{:}) < radius));
+  v = sum(weights(angle(ori .\ r,h,varargin{:}) < radius)) / sum(weights(:));
 else
   v = nnz(angle(ori .\ r,h,varargin{:}) < radius) ./ length(ori);
 end

@@ -75,6 +75,9 @@ poly = grains.poly;
 V = grains.V;
 incl = grains.inclusionId;
 
+% use internal or external inpolygon engine?
+inpolyEngine = getMTEXpref('insidepoly');
+
 for i = 1:length(poly)
 
   % extract boundary
@@ -84,8 +87,12 @@ for i = 1:length(poly)
   if ignoreInclusions, p = p(1:end-incl(i)); end
   
   % extract xy values of the boundary and use inpolygon
-  Vx = V(p,1); Vy = V(p,2);
-  [in,on] = inpolygon(xy(:,1),xy(:,2),Vx,Vy);
+  if inpolyEngine
+    [in,on] = insidepoly(xy(:,1),xy(:,2),V(p,1),V(p,2));
+  else
+    [in,on] = inpolygon(xy(:,1),xy(:,2),V(p,1),V(p,2));
+  end
+    
   if includeBoundary
     isInside(:,i) = in;
   else

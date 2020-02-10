@@ -1,4 +1,4 @@
-function q = times(q1,q2)
+function q = times(q1,q2,takeRight)
 % quaternion .* quaternion and quaternion .* vector3d 
 %
 % Input
@@ -10,20 +10,25 @@ function q = times(q1,q2)
 
 if isa(q1,'quaternion') && isa(q2,'quaternion')
   
-  %  [a,b,c,d] = quaternion_times_qq(q1.a,q1.b,q1.c,q1.d,q2.a,q2.b,q2.c,q2.d);
-  %  q = quaternion(a,b,c,d);
-     q = q1;
-     
-     a1 = q1.a; b1 = q1.b; c1 = q1.c; d1 = q1.d;
-     a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;
-     
-     %standart algorithm     
-     q.a = a1 .* a2 - b1 .* b2 - c1 .* c2 - d1 .* d2;
-     q.b = b1 .* a2 + a1 .* b2 - d1 .* c2 + c1 .* d2;
-     q.c = c1 .* a2 + d1 .* b2 + a1 .* c2 - b1 .* d2;
-     q.d = d1 .* a2 - c1 .* b2 + b1 .* c2 + a1 .* d2;
-     
-     % fast algorithm which is not faster
+  % which input will become the output?
+  if nargin == 3 
+    if takeRight, q = q2; else, q = q1; end
+  elseif isa(q1,'rotation')
+    q = q1;
+  else
+    q = q2;
+  end
+  
+  a1 = q1.a; b1 = q1.b; c1 = q1.c; d1 = q1.d;
+  a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;
+  
+  %standart algorithm
+  q.a = a1 .* a2 - b1 .* b2 - c1 .* c2 - d1 .* d2;
+  q.b = b1 .* a2 + a1 .* b2 - d1 .* c2 + c1 .* d2;
+  q.c = c1 .* a2 + d1 .* b2 + a1 .* c2 - b1 .* d2;
+  q.d = d1 .* a2 - c1 .* b2 + b1 .* c2 + a1 .* d2;
+  
+  % fast algorithm which is not faster
 %      aa = (d1 + b1) .* (b2 + c2);
 %      cc = (a1 - c1) .* (a2 + d2);
 %      dd = (a1 + c1) .* (a2 - d2);

@@ -1,8 +1,6 @@
 function cs = byElements(rot,varargin)
 % generate a symmetry group from rotations
 
-rot = rotation(rot);
-
 % generate a group
 for k = 1:100
   

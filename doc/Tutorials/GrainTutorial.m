@@ -61,7 +61,7 @@ hold off
 
 close all
 ipfKey = ipfColorKey(ebsd_region('Quartz'));
-plot(ipfKey,'Position',[825 100 300 300])
+plot(ipfKey)
 
 
 %%
@@ -83,7 +83,7 @@ close all
 AOboundary = grains.boundary('Andesina','Orthoclase');
 angle = AOboundary.misorientation.angle;
 
-hist(angle./degree)
+histogram(angle./degree)
 
 %%
 

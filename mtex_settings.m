@@ -162,12 +162,16 @@ setMTEXpref('mtexMethodsAdvise',true)
 
 %% MOSEK integration
 % <https://www.mosek.com/ MOSEK> provides an alternative to the
-% optimization 
+% optimization toolbox
 
 %MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
 %addpath(MOSEKpath);
 setMTEXpref('mosek',false)
 
+%% Use extern/insidepoly instead of matlab/inpolygon
+% this should be faster
+
+setMTEXpref('insidepoly',true)
 
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting

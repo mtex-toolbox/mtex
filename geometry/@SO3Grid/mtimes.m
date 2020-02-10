@@ -1,4 +1,4 @@
-function out = mtimes(a,b)
+function out = mtimes(a,b,varargin)
 % outer quaternion multiplication
 %
 % Syntax

@@ -14,7 +14,13 @@ end
 antipodal = extract_option(varargin,'antipodal');
 if length(h) == 1 % pole figure
 
-  sh = symmetrise(h,'unique');
+  if component.SS.isLaue || component.CS.isLaue || ~isempty(antipodal)
+    antipodal = {'antipodal'};
+    sh = symmetrise(h,'unique');
+  else
+    sh = symmetrise(h,'unique','keepAntipodal');
+  end
+  
   pdf = S2FunHarmonicSym.quadrature(component.center*sh,...
     repmat(component.weights(:),1,length(sh)),component.SS,antipodal{:},...
     'symmetrise','bandwidth',component.psi.bandwidth);

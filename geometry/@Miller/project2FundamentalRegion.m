@@ -10,4 +10,8 @@ function h = project2FundamentalRegion(h, varargin)
 % Output
 %  h - @Miller
 
-h = Miller(project2FundamentalRegion@vector3d(h,h.CS,varargin{:}),h.CS);
+if nargin>1 && isa(varargin{1},'symmetry')
+  h = project2FundamentalRegion@vector3d(h,varargin{:});
+else
+  h = project2FundamentalRegion@vector3d(h,h.CS,varargin{:});
+end

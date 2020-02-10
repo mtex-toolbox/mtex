@@ -1,4 +1,4 @@
-function d = dot_outer(g1,g2)
+function d = dot_outer(g1,g2,varargin)
 % outer inner product between two quaternions
 %
 % Input

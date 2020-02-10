@@ -6,7 +6,7 @@ classdef ODFSections < handle
   %
   %   cs = crystalSymmetry('222')
   %   oS = axisAngleSections(cs,cs);
-  %   ori = oS.makeGrid('resolution');
+  %   ori = oS.makeGrid('resolution',2.5*degree);
   %   oM = PatalaColorKey(cs,cs)
   %   rgb = oM.orientation2color(ori);
   %   plot(oS,rgb,'surf')

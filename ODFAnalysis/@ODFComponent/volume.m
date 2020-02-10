@@ -10,7 +10,7 @@ if nargin < 4 || isempty(S3G)
 end
 
 % estimate volume portion of odf space
-reference = 9897129 * 96 / length(component.CS) / length(component.SS);
+reference = 9897129 * 96 / numProper(component.CS) / numProper(component.SS);
 f = min(1,length(S3G) * (res / 0.25 / degree)^3 / reference);
   
 % eval odf

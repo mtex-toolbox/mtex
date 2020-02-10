@@ -81,6 +81,3 @@ odf.SS = specimenSymmetry('222');
 plot(odf,'sections',18,'layout',[5 4],...
   'coordinates','off','xlabel','','ylabel','')
 
-
-
-

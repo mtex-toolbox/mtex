@@ -2,7 +2,7 @@
 %
 %%
 % The orientation distribution function (ODF), sometimes also called
-% orientation density function, is a function on the orienttion space that
+% orientation density function, is a function on the orientation space that
 % associates to each orientation $g$ the volume percentage of crystals in a
 % polycrystaline specimen that are in this specific orientation. Formaly,
 % this is often expressed by the formula

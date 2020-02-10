@@ -141,6 +141,8 @@ if ~isa(proj,'sphericalProjection')
     
     case 'square',  proj = squareProjection(sR);
       
+    case 'gnonomic', proj = gnonomicProjection(sR);
+      
     otherwise
     
       error('%s\n%s','Unknown projection specified! Valid projections are:',...

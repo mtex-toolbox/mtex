@@ -27,7 +27,7 @@ set(gui.hCrystal  ,'Callback',@localUpdateCS);
 set(gui.hMineral  ,'Callback',@localUpdateCS);
 set(gui.hAxes     ,'Callback',@localUpdateCS);
 set(gui.hAngle    ,'Callback',@localUpdateCS);
-    
+set(gui.hAlignment    ,'Callback',@localUpdateCS);    
 set(gui.hMGroup   ,'SelectionChangeFcn',@localUpdateCS);
 set(gui.hCSGroup  ,'SelectionChangeFcn',@localUpdateCS);
 

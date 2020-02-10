@@ -9,7 +9,7 @@ q     = inv(fmc.O(i)).*fmc.O(j);
 d     = abs(dot(q,quaternion.id));
 checkSym = d < cos(20/2*degree);
 if any(checkSym)
-  d(checkSym) = max(abs(dot_outer(q(checkSym),fmc.CS)),[],2);
+  d(checkSym) = max(abs(dot_outer(q(checkSym),fmc.CS.rot)),[],2);
 end
 del   = 2*real(acosd(d));
 

@@ -24,7 +24,8 @@ if nargin == 1, ss = specimenSymmetry; end
 % phi1
 maxPhi1 = 2*pi/ss.multiplicityZ;
 if cs.multiplicityPerpZ >= 2 && ss.multiplicityPerpZ >= 2 
-  maxPhi1 = max(pi/2,maxPhi1/2);
+  %maxPhi1 = max(pi/2,maxPhi1/2);
+  maxPhi1 = maxPhi1/2;
 end
 
 %phi2

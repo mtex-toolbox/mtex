@@ -36,7 +36,8 @@ classdef halfQuadraticFilter < EBSDFilter
       alpha = (0.25*degree)^F.l1TV * (0.5*degree)^(-F.l1DataFit) * 10 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       
       % project around center
-      [~,q] = mean(ori);
+      [~,ori] = mean(ori);
+      q = quaternion(ori);
       
       % initial guess
       u = q;
@@ -80,7 +81,10 @@ classdef halfQuadraticFilter < EBSDFilter
         iter = iter + 1;
       end
       
-      ori = orientation(u,ori.CS,ori.SS);
+      ori.a = u.a;
+      ori.b = u.b;
+      ori.c = u.c;
+      ori.d = u.d;
     end
     
   end

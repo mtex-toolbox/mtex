@@ -5,6 +5,7 @@ classdef ipfTSLKey < ipfColorKey
     function oM =ipfTSLKey(varargin)
 
       oM = oM@ipfColorKey(varargin{:}); 
+      oM.CS1 = oM.CS1.Laue;
       oM.dirMap = TSLDirectionKey(oM.CS1);
       
     end

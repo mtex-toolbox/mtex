@@ -24,10 +24,15 @@ ebsd = EBSD;
 try
   assertExtension(fname,'.ang');
 
+  %maybe we need to introduce a nonIndexed phase
+  cs{1} = 'notIndexed';
+
   % read file header
   hl = file2cell(fname,2000);
   
-  phasePos = strmatch('# Phase ',hl);
+  %phasePos = strmatch('# Phase ',hl);
+  % some ang files come with a line starting "# Phase index"
+  phasePos = find(~cellfun(@isempty, regexp(hl,['# Phase ' '\d'])));
   if isempty(phasePos)
     phasePos = strmatch('# MaterialName ',hl)-1;
   end
@@ -96,6 +101,26 @@ try
   % Euler 1 Euler 2 Euler 3 X Y IQ CI Fit unknown1 unknown2 phase
   % most important is the position of the phase
   
+  % for future reference:
+  % the following is taken from a recent .ang file - some new files might 
+  % actually state the version in the header
+  %
+  % # NOTES: Start
+  % # Version 1: phi1, PHI, phi2, x, y, iq (x*=0.1 & y*=0.1)
+  % # Version 2: phi1, PHI, phi2, x, y, iq, ci
+  % # Version 3: phi1, PHI, phi2, x, y, iq, ci, phase
+  % # Version 4: phi1, PHI, phi2, x, y, iq, ci, phase, sem
+  % # Version 5: phi1, PHI, phi2, x, y, iq, ci, phase, sem, fit
+  % # Version 6: phi1, PHI, phi2, x, y, iq, ci, phase, sem, fit, PRIAS Bottom Strip, PRIAS Center Square, PRIAS Top Strip, Custom Value
+  % # Version 7: phi1, PHI, phi2, x, y, iq, ci, phase, sem, fit. PRIAS, Custom, EDS and CMV values included if valid
+  % # Phase index: 0 for single phase, starting at 1 for multiphase
+  % # CMV = Correlative Microscopy value
+  % # EDS = cumulative counts over a specific range of energies
+  % # SEM = any external detector signal but usually the secondary electron detector signal
+  % # NOTES: End
+  %
+  
+  
   % if there was text then it describes the phase
   if any(~isnum)
     phaseCol = find(~isnum,1);
@@ -124,6 +149,28 @@ try
   % import the data
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
     'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
+  
+  
+  % Since explicitly non-indexed phases appear to have 4*pi for all Euler angles
+  % which are filtered by loadHelper() already AND ci==-1.
+  % Taking phase 0 for non indexed does not really work in the case of single 
+  % phase ang files;  in only for multiphase data, notIndexed is 0
+  % So here's the attempt to introduce notIndexed to .ang data
+  % Set notIndexed (id 0 in multiphase, id -1 in single phase) for ci=-1 
+  % as well as add empty points (those removed by loadHelper)
+  
+  if length(cs)>2;
+      notIndexedID = 0;
+  else
+      notIndexedID = -1;
+  end
+  ebsd(ebsd.prop.ci<0).phase=notIndexedID;
+  
+  % reconstruct empty points previously removed by loadHelper
+  % gridify might be easiest
+  ebsd=ebsd.gridify;
+  ebsd(isnan(ebsd.rotations)).phase=notIndexedID;
+  ebsd=EBSD(ebsd);
   
 catch
   interfaceError(fname);

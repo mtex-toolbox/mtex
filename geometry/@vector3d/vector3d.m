@@ -185,7 +185,7 @@ classdef vector3d < dynOption
       elseif length(v) <= 4
         res = 2*pi;
       elseif length(v) > 50000
-        res = 1*pi;
+        res = sqrt(40000 / length(v) / (1 + v.antipodal)) * degree;
       else
         try
           a = calcVoronoiArea(v);

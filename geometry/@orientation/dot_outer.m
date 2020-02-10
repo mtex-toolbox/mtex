@@ -36,7 +36,7 @@ l1 = length(o1); l2 = length(o2);
 if l1 * l2 == 0, d = []; return; end
 
 % maybe we can shrink down everything to quaternion
-if cs.isLaue || ss.isLaue || (cs.isProper && ss.isProper ...
+if isLaue(cs) || isLaue(ss) || (cs.isProper && ss.isProper ...
     && all(o1.i(:) == o1.i(1)) && all(o2.i(:) == o1.i(1)))
 
   cs = cs.properGroup; ss = ss.properGroup;
@@ -90,7 +90,7 @@ a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
   
 % this is implicite dot_outer
 d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); 
-for k=2:length(cs)*length(ss)
+for k= 2 : numSym(cs) * numSym(ss)
   d = max(d,abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); % g1 x g2 x CS * SS
 end
 
@@ -111,7 +111,7 @@ i2 = g2rot.i;
 d = ~bsxfun(@xor,i1,i2(:,1).' .* ...
   abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']));
 
-for k=2:length(cs)*length(ss)  
+for k=2:length(cs.rot)*length(ss.rot)  
   d = max(d,...                       % g1 x g2 x CS * SS
     ~bsxfun(@xor,i1,i2(:,k).' .* ...
     abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).']))); 

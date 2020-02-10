@@ -10,12 +10,13 @@ ql = [q.a(:), q.b(:), q.c(:), q.d(:)];
 ql = ql(notNaN,:);
 
 % weigths
-if ~isempty(varargin) && check_option(varargin,'weights')
-  w = get_option(varargin,'weights',ones(1,length(q)));
-  w = reshape(w(notNaN),1,[]);
+w = get_option(varargin,'weights');
+
+if ~isempty(w)
+  w = w(notNaN);
   w = w./sum(w);
-  w = repmat(w,4,1);
-  T = w.*ql'*ql;
+  w = repmat(w(:).',4,1);
+  T = (w .* ql.') * ql;
 else
   T = ql.'*ql;
   T = T ./ size(ql,1);

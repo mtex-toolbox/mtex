@@ -64,14 +64,14 @@ else
 end
 
 % maybe there is nothing to do
-if sF.bandwidth == 0 || length(symX) == 1
+if sF.bandwidth == 0 || numSym(symX) == 1
   sFs = S2FunHarmonicSym(sF.fhat, sym);
   return;
 end
 
 % define a symmetrized evaluation function
 f = @(v) sF.eval(v);
-fsym = @(v) mean(reshape(f(symX * v),length(symX),[]));
+fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
 
 % compute Fourier coefficients by quadrature
 sF = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});

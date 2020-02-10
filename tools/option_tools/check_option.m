@@ -19,7 +19,16 @@ function out = check_option(option_list,option,varargin)
 
 if isempty(option_list)
   out = false;
-elseif nargin <= 3
+elseif nargin == 2  
+  if ischar(option)
+    out = any(strcmpi(option_list,option));
+  else
+    out = false;
+    for k = 1:length(option)
+      out = out || any(strcmpi(option_list,option{k}));
+    end
+  end  
+elseif nargin == 3
   out = find_option(option_list,option,varargin{:}) > 0;
 else
   pos = find_option(option_list,option);

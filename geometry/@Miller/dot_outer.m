@@ -15,7 +15,7 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
-if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
+if ~isa(m1,'Miller') || (isa(m2,'Miller') && m1.CS ~= m2.CS)
   warning('Symmetry mismatch')
 end
 
@@ -28,4 +28,4 @@ d = dot_outer@vector3d(m1,m2);
 d = reshape(d,s);
 
 % find maximum
-d = squeeze(max(d,[],1));
+d = reshape(max(d,[],1),s(2:3));

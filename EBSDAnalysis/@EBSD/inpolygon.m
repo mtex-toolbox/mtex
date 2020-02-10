@@ -28,6 +28,10 @@ if numel(xy)==4
 end
 
 % check for inside
-ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+if ~getMTEXpref('insidepoly')
+  ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+else
+  ind = insidepoly(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+end
   
 end
