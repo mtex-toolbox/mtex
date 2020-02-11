@@ -38,7 +38,8 @@ classdef MLSSolver < pf2odfSolver
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
     iterMin = 5;  % max number of iterations
-    RM = [];      % regularization matirx
+    lambda = 0;   % regularisation parameter
+    RM = [];      % regularization matrix
   end
   
   properties (Access = private)
@@ -112,6 +113,11 @@ classdef MLSSolver < pf2odfSolver
       else
         solver.weights = num2cell(1./length(pf,[]));
       end
+      
+      % regularisation
+      solver.lambda = get_option(varargin,'regularisation',0);
+      if solver.lambda>0, solver.initRegularisation; end
+      
     end
 
     function delete(solver)

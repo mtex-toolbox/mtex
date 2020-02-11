@@ -26,7 +26,7 @@ alpha = solver.alpha;
 % ---------------- ghost correction ----------------------------
 
 % determine phon
-phon = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ solver.alpha);
+phon = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ solver.alpha(1:length(solver.pf.allI)));
 
 if phon > 0.99
   odf = uniformODF(solver.CS,solver.SS);
