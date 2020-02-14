@@ -19,7 +19,8 @@ for i = 1:numPF(solver.pf)
 end
 
 % step 4: regularization
-if ~isempty(solver.RM)
+if solver.lambda>0
+  solver.initRegularisation;
   solver.alpha(i+1) = 1./sum(solver.c);
   solver.u{i+1} = solver.alpha(i+1) * (solver.RM * solver.c);
 end

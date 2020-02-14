@@ -116,8 +116,7 @@ classdef MLSSolver < pf2odfSolver
       
       % regularisation
       solver.lambda = get_option(varargin,'regularisation',0);
-      if solver.lambda>0, solver.initRegularisation; end
-      
+            
     end
 
     function delete(solver)
