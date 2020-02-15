@@ -40,4 +40,40 @@ end
     
   end
   
+  methods (Static = true)
+    
+    function cs = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      if isfield(s,'rot')
+        rot = s.rot;
+      else
+        rot = rotation(s.a,s.b,s.c,s.d,s.i);
+      end
+      
+      if isfield(s,'axes')
+        axes = s.axes;
+      else
+        axes = [];
+      end
+      
+      if isfield(s,'id')
+        id = {'pointId',s.id};
+      else
+        id = {};
+      end
+            
+      cs = specimenSymmetry(rot,id{:},axes);
+      
+      if isfield(s,'opt'), cs.opt = s.opt; end
+      if isfield(s,'plotOptions'), cs.plotOptions = s.plotOptions; end      
+            
+    end
+    
+    
+  end
+  
+  
 end
