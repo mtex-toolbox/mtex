@@ -112,7 +112,8 @@ elseif check_option(varargin,'lower')
 end
 
 % extract antipodal
-sR.antipodal = check_option(varargin,'antipodal') || varargin{1}.antipodal;
+sR.antipodal = check_option(varargin,'antipodal') || ...
+  (isa(varargin{1},'vector3d') && varargin{1}.antipodal);
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper && sR.isLower &&...
