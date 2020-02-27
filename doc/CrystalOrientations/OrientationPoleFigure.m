@@ -1,5 +1,6 @@
 %% Pole Figures
 %
+%%
 % Pole figures are two dimensional representations of orientations. To
 % illustrate this we define a random orientation with trigonal crystal
 % symmetry
