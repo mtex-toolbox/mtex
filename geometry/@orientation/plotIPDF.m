@@ -108,8 +108,9 @@ function txt = tooltip(varargin)
 
   txt{1} = ['id = ' xnum2str(id)];
   txt{2} = ['(h,k,l) = ' char(h_local,'tolerance',3*degree,'commasep')];
+  txt{3} = ['Euler = ' char(ori.subSet(id))];
   if ~isempty(value)
-    txt{3} = ['value = ' xnum2str(value)];
+    txt{4} = ['value = ' xnum2str(value)];
   end
 
 end
