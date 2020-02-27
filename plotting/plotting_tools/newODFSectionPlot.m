@@ -16,7 +16,7 @@ if ~isempty(oS)
   return; 
 end
 
-if isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry')
+if nargin > 0 && (isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry'))
   default = 'phi2';
 else
   default = 'axisAngle';
