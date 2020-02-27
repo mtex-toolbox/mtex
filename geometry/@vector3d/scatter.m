@@ -158,11 +158,14 @@ for i = 1:numel(sP)
         faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
         edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
         
-        pause(0.1);
-        
-        hh = handle(h(i));
-        mh = [hh.MarkerHandle];
-        
+        % we have to wait until the markes have been drawn
+        mh = [];
+        while isempty(mh)
+          pause(0.01);
+          hh = handle(h(i));
+          mh = [hh.MarkerHandle];
+        end
+                
         for j = 1:length(mh)
           mh(j).FaceColorData(4,:) = faceAlpha;
           mh(j).FaceColorType = 'truecoloralpha';
@@ -194,20 +197,22 @@ for i = 1:numel(sP)
   end
 
   % set resize function for dynamic marker sizes
-  try
-    hax = handle(sP(i).ax);
-    hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
-      'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
-    % save listener, otherwise  callback may die
-    setappdata(hax, 'dynamicMarkerSizeListener', hListener);
-  catch    
-    if ~isappdata(hax, 'dynamicMarkerSizeListener')
-      hListener = addlistener(hax,'Position','PostSet',...
-        @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
-%      localResizeScatterCallback([],[],sP(i).ax);
+  if ~check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+    try
+      hax = handle(sP(i).ax);
+      hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
+        'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
+      % save listener, otherwise  callback may die
       setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+    catch
+      if ~isappdata(hax, 'dynamicMarkerSizeListener')
+        hListener = addlistener(hax,'Position','PostSet',...
+          @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
+        %      localResizeScatterCallback([],[],sP(i).ax);
+        setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+      end
+      %disp('some Error!');
     end
-    %disp('some Error!');
   end
 
   % plot labels
@@ -221,7 +226,7 @@ for i = 1:numel(sP)
 
   if isappdata(sP(1).parent,'mtexFig')
     mtexFig = getappdata(sP(1).parent,'mtexFig');
-    mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+    mtexFig.drawNow(varargin{:});
   end
 end
 
