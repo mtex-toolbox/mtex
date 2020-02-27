@@ -28,45 +28,17 @@ end
 
 % orientation times symmetry
 if isa(b,'symmetry') 
-
   r = mtimes@quaternion(a,b.rot,0);
   return
-  
-elseif ~isa(b,'quaternion')  && ~isnumeric(b) % orientation times object
-  try
-    if ~eq(a.CS,b.CS,'Laue')
-      warning('Symmetries %s and %s are different but should be equal',a.CS.pointGroup,b.CS.pointGroup);
-    end
-  catch
-    if isa(a.CS,'crystalSymmetry')
-      warning('Possibly applying an orientation to an object in specimen coordinates!')
-    end
-  end
-  r = rotate_outer(b,a);
-  return 
 end
 
-% collect inner and outer symmetries
-[left,inner1] = extractSym(a);
-[inner2,right] = extractSym(b);
-
 % ensure inner symmetries coincide
-if isempty(inner1)  
-  if ~isempty(inner2) && ~isa(inner2,'specimenSymmetry')
-    warning('Rotation does not respect symmetry!');
-  end
-elseif isempty(inner2)
-  if ~isempty(inner1) && ~isa(inner1,'specimenSymmetry')
-    warning('Rotation does not respect symmetry!');
-  end
-elseif ~eq(inner1,inner2,'Laue')
-  if isa(a,'orientation')
-    a = a.transformReferenceFrame(inner2);
-  elseif all(isnull(min(angle_outer(inner2,a))))
-    left = inner2;
-  else
-    warning('Rotation does not respect symmetry!');
-  end
+[a, left, right] = ensureSym(a,b);
+
+% orientation times object
+if ~isa(b,'quaternion') 
+  r = rotate_outer(b,a);
+  return 
 end
 
 % rotation multiplication
