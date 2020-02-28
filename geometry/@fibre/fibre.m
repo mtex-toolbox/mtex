@@ -139,6 +139,7 @@ classdef fibre
       f = fibre(h,r);
       
       if ~isempty(sym), f.CS = sym{1}; end
+      if length(sym)>1, f.SS = sym{2}; end
       
     end
     
