@@ -31,7 +31,7 @@ function [h,ax] = scatter(v,varargin)
 % initialize spherical plots
 opt = delete_option(varargin,...
   {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'},1);
-sP = newSphericalPlot(v,opt{:},'doNotDraw');
+[sP, isNew] = newSphericalPlot(v,opt{:},'doNotDraw');
 varargin = delete_option(varargin,'parent',1);
 
 h = [];
@@ -219,15 +219,18 @@ for i = 1:numel(sP)
   if check_option(varargin,'numbered')
     text(v,arrayfun(@int2str,1:length(v),'UniformOutput',false),'parent',sP(i).ax,...
       'addMarkerSpacing',varargin{:},'doNotDraw');
+    localResizeScatterCallback([],[],sP(i).ax);
   elseif check_option(varargin,{'text','label','labeled'})
     text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,...
       'addMarkerSpacing',varargin{:},'doNotDraw');
+    localResizeScatterCallback([],[],sP(i).ax);
   end
+  
+end
 
-  if isappdata(sP(1).parent,'mtexFig')
-    mtexFig = getappdata(sP(1).parent,'mtexFig');
-    mtexFig.drawNow(varargin{:});
-  end
+if isappdata(sP(1).parent,'mtexFig') && isNew
+  mtexFig = getappdata(sP(1).parent,'mtexFig');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 if nargout == 0

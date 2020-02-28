@@ -1,4 +1,4 @@
-function sP = newSphericalPlot(v,varargin)
+function [sP, isNew] = newSphericalPlot(v,varargin)
 % split plot in upper and lower hemisphere
 %
 % 1: axis given -> no sphericalRegion stored -> compute sphericalRegion -> finish
@@ -8,6 +8,7 @@ function sP = newSphericalPlot(v,varargin)
 % case 1: predefined axis
 % -----------------------
 if check_option(varargin,'parent')
+  isNew = false;
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
