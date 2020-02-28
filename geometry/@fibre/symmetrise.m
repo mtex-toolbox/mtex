@@ -5,44 +5,45 @@ function [f,l] = symmetrise(f,varargin)
 % Options
 %  unique - return only 
 
-if isa(f.h,'Miller')
-  
+if numSym(f.CS) > 1
+
   if check_option(varargin,'unique')
-  
-    [f.h,l,sym] = f.h.symmetrise('unique','keepAntipodal');
+
+    [f.h,l,sym] = symmetrise(f.h,f.CS,'unique','keepAntipodal');
 
     o1 = repelem(f.o1,l);
     o2 = repelem(f.o2,l);
-    
+
     f.o1 = o1(:) .* inv(sym(:));
     f.o2 = o2(:) .* inv(sym(:));
-    
+
   else
-    
-    f.h = f.h.symmetrise;
+
+    f.h = f.CS.rot * f.h;
     f.o1 = (f.o1 * inv(f.CS.rot)).';
     f.o2 = (f.o2 * inv(f.CS.rot)).';
-    
+
   end
-  
 end
-  
-if isa(f.r,'Miller')
+
+if numSym(f.SS) > 1
   
   if check_option(varargin,'unique')
-
-    [f.r,l,sym] = f.r.symmetrise('unique','keepAntipodal');
-
+    
+    [~,l,sym] = symmetrise(f.r,f.SS,'unique','keepAntipodal');
+    
     o1 = repelem(f.o1,l);
     o2 = repelem(f.o2,l);
     
+    f.h = repelem(f.h,l);
     f.o1 = sym(:) .* o1(:);
     f.o2 = sym(:) .* o2(:);
+    
   else
     
-    f.r = f.r.symmetrise;
-    f.o1 = f.SS * f.o1;
-    f.o2 = f.SS * f.o2;
+    f.h = reshape(repelem(f.h,numSym(f.SS),1),numSym(f.CS)*numSym(f.SS),1);
+    f.o1 = reshape(f.SS * f.o1,numSym(f.CS)*numSym(f.SS),1);
+    f.o2 = reshape(f.SS * f.o2,numSym(f.CS)*numSym(f.SS),1);
     
   end
   
