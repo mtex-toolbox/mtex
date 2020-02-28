@@ -134,8 +134,6 @@ classdef fibre
       n = varargin(cellfun(@isnumeric,varargin));
       sym = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
       
-         
-      
       h = vector3d.rand(n{:});
       r = vector3d.rand(n{:});
       f = fibre(h,r);
