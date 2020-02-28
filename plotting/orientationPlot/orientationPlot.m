@@ -42,7 +42,7 @@ classdef orientationPlot < handle
       
       oP.fRMode = char(extract_option(varargin,...
         {'restrict2FundamentalRegion','project2FundamentalRegion','ignoreFundamentalRegion'}));
-      if isempty(oP.fRMode)
+      if isempty(oP.fRMode) && ~check_option(varargin,'complete')
         oP.fRMode = 'project2FundamentalRegion';
       end
       setappdata(oP.ax,'orientationPlot',oP);
