@@ -110,7 +110,7 @@ classdef symmetry < handle
         
         list = spaceGroups;
         ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
-        assert(ndx < 31, 'I''m sorry, I know only 230 space groups ...');
+        assert(ndx <= 31, 'I''m sorry, I know only 230 space groups ...');
         id = findsymmetry(list(ndx+1,2));
         
       else
