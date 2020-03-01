@@ -8,7 +8,7 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 % case 1: predefined axis
 % -----------------------
 if check_option(varargin,'parent')
-  isNew = false;
+
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
@@ -17,6 +17,7 @@ if check_option(varargin,'parent')
     for i = 1:length(ax)
       sP(i) = getappdata(ax(i),'sphericalPlot');
     end
+    isNew = false;
     
   else % set up a new spherical axes if required
     
@@ -29,6 +30,7 @@ if check_option(varargin,'parent')
     
     % create a new spherical plot
     sP = sphericalPlot(ax,proj(1),varargin{:});
+    isNew = true;
             
   end    
   return;
@@ -73,6 +75,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     
   end
   mtexFig.drawNow(varargin{:});
+  isNew = true;
           
 elseif check_option(varargin,'add2all') % add to or overide existing axes
     
