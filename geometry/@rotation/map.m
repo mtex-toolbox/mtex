@@ -7,10 +7,10 @@ function rot = map(u1,v1,u2,v2)
 % Syntax
 %
 %   % an arbitrary rotation that maps u1 parallel to v1
-%   rot = rotation(u1,v1)
+%   rot = rotation.map(u1,v1)
 %
 %   % a rotation that maps u1 parallel to v1 and u2 parallel to v2
-%   rot = rotation(u1,v1,u2,v2)
+%   rot = rotation.map(u1,v1,u2,v2)
 %
 % Input
 %  u1, v1, u2, v2 - @vector3d
