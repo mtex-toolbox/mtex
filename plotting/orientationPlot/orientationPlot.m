@@ -73,12 +73,12 @@ classdef orientationPlot < handle
       % plot orientations into 3d space
 
       % ensure correct symmetry
-      if isa(ori,'orientation') && ~check_option(varargin,'noSymmetryCheck')
+      if ~isa(ori,'orientation')
+        ori = orientation(ori,oP.CS1,oP.CS2);
+      elseif ~check_option(varargin,'noSymmetryCheck')
         try
           ori = oP.CS1.ensureCS(ori);
         end
-      %else
-      %  ori = orientation(ori,oP.CS1,oP.CS2);
       end
       ori.antipodal = oP.antipodal;
       
