@@ -39,7 +39,9 @@ propV{end+1} = option2str(vec2cell(norm(cs.axes)));
 % add axis angle
 if cs.id < 12
   props{end+1} = 'alpha, beta, gamma';
-  propV{end+1} = [num2str(cs.alpha./degree) '°, ' num2str(cs.beta./degree) '°, ' num2str(cs.gamma./degree) '°'];
+  propV{end+1} = [num2str(cs.alpha./degree) mtexdegchar ', ' ...
+    num2str(cs.beta./degree) mtexdegchar ', ' ...
+    num2str(cs.gamma./degree) mtexdegchar];
 end
 
 % add reference frame
