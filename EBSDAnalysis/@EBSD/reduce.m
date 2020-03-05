@@ -6,10 +6,10 @@ function ebsd = reduce(ebsd,fak)
 %   ebsd = reduce(ebsd,3) % take every third pixel horiz. and vert.
 %
 % Input
-%  ebsd - @EBSD
-%
+%  ebsd    - @EBSD
+%  factor  - resample ebsd at rate factor (integer)
 % Output
-%  ebsd - @EBSD
+%  ebsd    - @EBSD
 %
 
 if nargin == 1, fak = 2; end
