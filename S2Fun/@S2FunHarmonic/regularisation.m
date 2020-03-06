@@ -13,7 +13,7 @@ function sF = regularisation(nodes,y,lambda,varargin)
 % Options
 %  bandwidth  - maximum harmonic degree
 %  W          - weight w_n for the node nodes (default: Voronoi weights)
-%  What       - weight what_{m,l} for the fourier space (default Sobolev weights for s = 2)
+%  What       - weight what_{m,l} for the Fourier space (default Sobolev weights for s = 2)
 %
 
 [nodes,idx] = unique(nodes(:));

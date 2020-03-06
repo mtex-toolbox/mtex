@@ -31,7 +31,7 @@ plot(ebsd)
 % reconstruction, we have  three different choices how to deal with these
 % unindexed regions:
 %
-% # leaf them unindexed
+% # leave them unindexed
 % # assign them to the surrounding grains
 % # a mixture of both, e.g., assign small notindexed regions to the
 % surrounding grains but keep large notindexed regions
