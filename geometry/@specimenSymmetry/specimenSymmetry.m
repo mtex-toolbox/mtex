@@ -47,6 +47,9 @@ end
       % this overloaded method ensures compatibility with older MTEX
       % versions
       
+       % maybe there is nothing to do
+      if isa(s,'specimenSymmetry'), cs = s; return; end
+      
       if isfield(s,'rot')
         rot = s.rot;
       else
