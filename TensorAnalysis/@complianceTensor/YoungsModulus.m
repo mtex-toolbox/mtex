@@ -18,7 +18,7 @@ function E = YoungsModulus(S,varargin)
 %  E - @S2FunHarmonic
 %
 % See also
-% tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor
+% complianceTensor/shearModulus complianceTensor/volumeCompressibility complianceTensor/ChristoffelTensor
 
 % compute directional magnitude
 E = 1./directionalMagnitude(S,varargin{:});
