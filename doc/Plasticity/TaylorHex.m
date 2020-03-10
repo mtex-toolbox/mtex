@@ -7,12 +7,12 @@
 % at 250 degree Celcius. The strain at fracture was approx. 30 percent and
 % 70 percent, respectively.
 
-%% setting up hexagonal crystal symmetry
+%% Setting up hexagonal crystal symmetry
 % First we need to set up hexagonal crystal symmetry.
 
 cs = crystalSymmetry.load('Mg-Magnesium.cif')
 
-%% setting up the basal fibre texture
+%% Setting up the basal fibre texture
 % 
 % Second, we set up the initial fibre texture which has the c-axis
 % perpendicular to the (x,y)-sheet plane and the a-axes are randomized.
@@ -20,18 +20,18 @@ cs = crystalSymmetry.load('Mg-Magnesium.cif')
 
 odf = fibreODF(cs.cAxis, vector3d.Z);
 
-%% plot polefigures of generated initial state without strains
+%% Plot polefigures of generated initial state without strains
 % define crystal orientations of interest for polefigures and plot figure
 
 h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
 
-plotPDF(odf,h,'antipodal','contourf','figSize','small')
-mtexColorbar;
 pfAnnotations = @(varargin) text([-vector3d.X,vector3d.Y],{'Tension','TD'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 setMTEXpref('pfAnnotations',pfAnnotations);
+plotPDF(odf,h,'antipodal','contourf','figSize','small')
+mtexColorbar;
 
-%% setting up the slip systems
+%% Setting up the slip systems
 %
 % The critical resolved shear stresses (CRSS) needed to activate certain
 % slip systems is temperature AND material dependant. As it is not trivial
@@ -64,7 +64,7 @@ sSwarm = [slipSystem.basal(cs,1),...
 % consider all symmetrically equivlent slip systems
 sSwarm = sSwarm.symmetrise;
 
-%% defining strain tensors
+%% Defining strain tensors
 % Due to constant volume law, the sum of all strains must equal zero. Here
 % slightly anisotropic strain is assumed at room temperature, with more
 % thinning in y-direction than in z-direction. In practise the anisotropy
@@ -73,7 +73,7 @@ sSwarm = sSwarm.symmetrise;
 epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]))
 epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
 
-%% calculate texture evolution
+%% Calculate texture evolution
 % The Tayor calculation is used to get the resulting spin of each vector as
 % well as the coeffeicients for each slip system for cold and hot state
 
@@ -91,7 +91,7 @@ oriCold = ori .* orientation(-Wcold);
 oriWarm = ori .* orientation(-Wwarm);
 
 %%
-% Then plot pole figures in comparison to inital texture
+% Plot pole figures in comparison to inital texture
 
 nextAxis %create a new axis on the existing figure and put along side
 plotPDF(oriCold,h,'antipodal','contourf','grid','grid_res',30*degree)
@@ -101,8 +101,13 @@ nextAxis %create a new axis on the existing figure and put along side
 plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
 mtexColorbar;
 
+% get figure handle and set correct layout
+mtexFig = gcm;
+mtexFig.ncols = 3; mtexFig.nrows = 3; mtexFig.layoutMode = 'user';
+drawNow(gcm)
 
-%% statistics on activated slip systems
+
+%% Statistics on activated slip systems
 % By adding up the coefficients of the taylor calculation and grouping them
 % according to their slip system type, a bar chart can be plotted
 
