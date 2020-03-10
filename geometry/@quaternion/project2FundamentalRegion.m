@@ -35,7 +35,7 @@ end
 
 % distingish different cases
 if nargin >= 3 && isa(CS2,'symmetry') && numSym(CS2)>1
-  if isempty(q_ref)
+  if isempty(q_ref) || abs(q_ref.a)==1
     q = project2FRCS2(q,CS1,CS2,varargin{:});
   else
     q = project2FRCS2_ref(q,CS1,CS2,q_ref);
