@@ -38,7 +38,11 @@ function a = axis(o1,varargin)
 if nargin >= 2 && isa(varargin{1},'orientation')
 
   o2 = varargin{1};
-
+  
+  assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') && ...
+    isa(o1.SS,'specimenSymmetry') && isa(o2.SS,'specimenSymmetry'),...
+    'The first two input arguments should be orientations.');
+  
   [l,d,r] = factor(o1.CS,o2.CS);
   l = l * d;
   % we are looking for l,r from L and R such that
