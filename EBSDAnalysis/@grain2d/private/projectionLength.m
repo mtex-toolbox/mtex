@@ -4,7 +4,7 @@ function pl = projectionLength(Vg,varargin)
 % x.
 %
 % Syntax:
-%  Vg = grains(1).V(grains(1).poly{1},:) % vertices of the first grain
+%  Vg = grains(1).V(grains.poly{1},:) % vertices of the first grain
 %  pl = projectionLength(Vg,[0:10:179]*degree)
 %
 % Input:
@@ -20,11 +20,8 @@ if nargin>1 && isnumeric(varargin{1})
 else
     omegaP=[0:1:179]*degree;
 end
-pl = zeros(length(omegaP),1);
-% rotate everything
-% TODO: maybe omit this loop adn the rotation matrix
-for j=1:length(omegaP)
-    VgR = [cos(omegaP(j)) sin(omegaP(j)); -sin(omegaP(j)) cos(omegaP(j))]*Vg';
-    pl(j)=max(VgR(1,:))-min(VgR(1,:)); % projection length
-end
+% omega x vetices
+d = cos(omegaP(:)) * Vg(:,1).' + sin(omegaP(:)) * Vg(:,2).';
+% max for each omega
+pl = max(d,[],2)-min(d,[],2);
 end
