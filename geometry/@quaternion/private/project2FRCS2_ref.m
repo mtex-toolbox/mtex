@@ -37,8 +37,7 @@ if length(q)>100000
 else
     
   % take the minimum distances to all symmetric equivalent orientations
-  [~,ind] = max(abs(dot_outer(q,q_refSym,'noSymmetry','ignoreInv')),[],2);
-  
+  [~,ind] = max(abs(dot_outer(q,q_refSym,'noSymmetry','ignoreInv')),[],2);  
   [ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],ind);
   
 end
@@ -46,11 +45,20 @@ end
 % project to fundamental region
 q = times(times(CS2.rot.subSet(ics2), q, 1), CS1.rot.subSet(ics1),0);
 
+end
 
 % some testing code
-% cs1 = crystalSymmetry('432')
-% cs2 = crystalSymmetry('32')
-% q_ref = quaternion.rand(1,1);
-% q = quaternion.rand(100,1);
-% q_proj = project2FRCS2_ref(q,cs1,cs2,q_ref);
-% hist((angle(q_proj,q_ref) )/degree)
+function test
+ cs1 = crystalSymmetry('432');
+ cs2 = crystalSymmetry('32');
+ 
+ ori_ref = orientation.rand(cs1,cs2);
+ ori = orientation.rand(1000 ,cs1,cs2);
+ ori_proj = project2FundamentalRegion(ori,ori_ref);
+ figure(1)
+ histogram((angle(ori_proj,ori_ref,'noSymmetry')./degree))
+ figure(2)
+ histogram((angle(ori,ori_ref)./degree))
+ figure(3)
+  histogram((angle(ori,ori_ref,'noSymmetry')./degree))
+ end
