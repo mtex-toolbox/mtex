@@ -11,6 +11,5 @@ function m = multiplicity(mori,varargin)
 %  m - integer
 %
 
-[~,m] = symmetrise(mori,'unique');
-
-m = numSym(mori.CS) * numSym(mori.SS) ./ m;
+m = numSym(mori.CS) * numSym(mori.SS) ./ ...
+  length(unique(symmetrise(mori),'noSymmetry'));
