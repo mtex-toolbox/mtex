@@ -31,13 +31,23 @@ if isa(sAF2,'vector3d')
     
   f = sqrt(f,varargin{:});
   
-  return
+elseif isa(sAF2,'S2AxisFieldHarmonic')
+  
+  f = S2FunHarmonic.quadrature(@(v) local_dotHarm(v),varargin{:});
+  
+else
+  
+  f = S2FunHarmonic.quadrature(@(v) local_dotAnti(v),varargin{:});
+  
 end
 
-f = S2FunHarmonic.quadrature(@(v) local_dot(v),varargin{:});
+function d = local_dotAnti(v)
+  d = dot(sAF1.eval(v),sAF2.eval(v),'antipodal');
+end
 
-function d = local_dot(v)
-  
+function d = local_dotHarm(v)
+% faster dot product which uses only the values in the embedding  
+
   f1 = sAF1.sF.eval(v);
   f2 = sAF2.sF.eval(v);
 

@@ -49,22 +49,16 @@ if isa(sAF2,'vector3d')
  
  sAF1.sF.fhat = sAF1.sF.fhat * M.';
   
+% implement a faster method if both are  S2AxisFieldHarmonic
+%elseif isa(sAF2,'S2AxisFieldHarmonic')
+
+%  sAF1.sF = S2FunHarmonic.quadrature(@(v) cross_localHarm(v),varargin{:});
+  
 else
-
-  sAF1 = S2FunHarmonic.quadrature(@(v) cross_local(v),varargin{:});
-
-end
-
-function d = cross_local(v)
   
-  f1 = sAF1.sF.eval(v);
-  f2 = sAF2.sF.eval(v);
+  sAF1 = S2AxisFieldHarmonic.quadrature(...
+    @(v) cross(sAF1.eval(v),sAF2.eval(v)),varargin{:});
 
-  % add weights for the dot product
-  f1(:,[2 4 5]) = 2*f1(:,[2 4 5]);
-  
-  d = sqrt(sum(f1 .* f2,2));
-  
 end
 
 end
