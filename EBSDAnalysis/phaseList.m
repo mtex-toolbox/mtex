@@ -82,7 +82,7 @@ classdef phaseList
           end
           
           % append some phase numbers for the not existing phases
-          pL.phaseMap = [pL.phaseMap;max(pL.phaseMap) + (1:length(pL.CSList)-numel(pL.phaseMap))];
+          pL.phaseMap = [pL.phaseMap;max(pL.phaseMap) + (1:length(pL.CSList)-numel(pL.phaseMap)).'];
         end
       end
 
