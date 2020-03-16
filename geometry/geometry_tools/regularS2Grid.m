@@ -39,5 +39,5 @@ rho = repmat(...
 
 % set up grid
 S2G = S2Grid(theta,rho);
-
+S2G.antipodal = check_option(varargin,'antipodal');
 end
