@@ -46,8 +46,8 @@ T = qq(q,varargin{:});
 l = diag(lambda);
 [~,pos] = max(l);
 
-V = V(:,pos);
-qm.a = V(1); qm.b = V(2); qm.c = V(3); qm.d = V(4);
+VV = V(:,pos);
+qm.a = VV(1); qm.b = VV(2); qm.c = VV(3); qm.d = VV(4);
 if isa(qm,'rotation'), qm.i = false; end
 
 if isRobust && length(q)>4
