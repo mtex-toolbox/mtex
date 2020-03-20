@@ -113,6 +113,11 @@ end
 
 function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
+%
+%
+% Output
+%  A_Db - adjecency matrix of grain boundaries
+%  A_Do - adjecency matrix inside grain connections
 
 % extract segmentation method
 grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
@@ -129,7 +134,7 @@ end
 A_D = I_FD'*I_FD==1;
 [Dl,Dr] = find(triu(A_D,1));
 
-connect = false(size(Dl));
+connect = zeros(size(Dl));
 
 for p = 1:numel(ebsd.phaseMap)
   
@@ -150,11 +155,13 @@ for p = 1:numel(ebsd.phaseMap)
 end
 
 % adjacency of cells that have no common boundary
-A_Do = sparse(double(Dl(connect)),double(Dr(connect)),true,length(ebsd),length(ebsd));
-A_Do = A_Do | A_Do';
+A_Do = sparse(double(Dl(connect>0)),double(Dr(connect>0)),connect,length(ebsd),length(ebsd));
+A_Do = A_Do + A_Do.';% + speye(size(A_Do));
+%A_Do = mclComponents(A_Do,1.6);
 
-A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
-A_Db = A_Db | A_Db';
+% adjacency of cells that have a common boundary
+A_Db = sparse(double(Dl(connect==0)),double(Dr(connect==0)),true,length(ebsd),length(ebsd));
+A_Db = A_Db | A_Db.';
 
 end
 
