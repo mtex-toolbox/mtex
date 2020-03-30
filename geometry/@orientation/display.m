@@ -25,7 +25,9 @@ end
 if length(o) < 20 && ~isempty(o)
   Euler(o);
 else
-  %disp('  <a href="matlab:Euler(o)">show Euler angles</a>')
+  disp(' ')
+  setappdata(0,'data2beDisplayed',o);
+  disp('  <a href="matlab:Euler(getappdata(0,''data2beDisplayed''))">show Euler angles</a>')
   disp(' ')
 end
 
