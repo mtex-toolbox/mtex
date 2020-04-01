@@ -34,7 +34,7 @@ if nargin == 4
   delta = abs(angle(u1,u2,'noSymmetry') - angle(v1,v2,'noSymmetry'));
   assert(all(delta(:) < 1E-3),...
     ['Inconsitent pairs of vectors! sThe angle between u1, u2 and v1, v2 needs ' ....
-    'to be the same, but differs by ' num2str(max(delta)./degree),mtexdegchar]);
+    'to be the same, but differs by ' num2str(max(delta(:))./degree),mtexdegchar]);
 
   % check vectors are not colinear
   if any(abs(dot(u1,u2,'noSymmetry'))>1-eps)
