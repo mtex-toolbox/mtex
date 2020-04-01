@@ -76,7 +76,7 @@ z = linkage(d,'single');
 %cId = cluster(z,'cutoff',30*degree);
 cId = cluster(z,'maxclust',12);
 
-plotCluster_R(r,cId)
+plotCluster(r,cId)
 
 
 %%

@@ -25,7 +25,7 @@ classdef crystalSymmetry < symmetry
 %  alpha, beta, gamma           - angles between the a, b and c axis
 %  aAxis, bAxis, cAxis          - direct crystal axes @Miller
 %  aAxisRec, bAxisRec, cAxisRec - reciprocal crystal axes @Miller
-%  axes - @vector3d 
+%  axes                         - @vector3d 
 %
 % Supported Symmetries
 %

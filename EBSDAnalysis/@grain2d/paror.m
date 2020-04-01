@@ -11,8 +11,7 @@ function cumpl = paror(grains,varargin)
 %  cumpl  - cummulative projection length
 %
 % Options:
-%  omega  - list of angles used in the projection function
-%           (default: [0:1:180]*degree)  
+%  omega  - list of angles used in the projection function (default [0:1:180]*degree)  
 %
 
 omega = get_option(varargin,'omega',linspace(0,pi,181));

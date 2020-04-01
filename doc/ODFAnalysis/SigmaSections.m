@@ -149,10 +149,26 @@ oS = sigmaSections(odf.CS,odf.SS);
 % we may choose the crystal direction (10-10) as the reference direction
 oS.h2 = Miller(1,0,-1,0,cs);
 
+plotSection(odf,oS)
+
 % we may even change the reference vector field
 %oS.referenceField = S2VectorField.polar(xvector);
 
-plotSection(odf,oS)
+%%
+%
+% We may also change the pole figure we would like to split into sections.
+
+% the pole figure we are going to split
+oS.h1 =  Miller(1,0,1,'hkl',odf.CS);
+
+% the reference direction, needs to be orthogonal to h1
+oS.h2 = Miller(-1,2,-1,0,odf.CS,'UVTW');
+
+% since h1 is not a symmetry axis of the crystal we need to consider 
+% all rotations up to 360 degree
+oS.omega = [0:20:340]*degree;
+
+plot(odf,oS)
 
 
 %%

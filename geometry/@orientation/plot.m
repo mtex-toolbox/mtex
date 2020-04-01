@@ -14,8 +14,8 @@ function varargout = plot(ori,varargin)
 %  MarkerFaceColor - fill color of the marker
 %  MarkerEdgeColor - edge color of the marker
 %  MarkerSize      - size of the marker
-%  label -         - 
-%  backgroundColor
+%  label           - a text displayed next to the marker
+%  backgroundColor - background color of the text (none)
 %
 % Flags
 %  filled  - MarkerFaceColor is MarkerEdgeColor
