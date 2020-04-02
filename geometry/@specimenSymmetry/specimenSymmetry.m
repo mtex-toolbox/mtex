@@ -17,17 +17,30 @@ end
       % usually specimen symmetry is either triclinic or orthorhombic
       %
      
-      if nargin > 0      
-        id = symmetry.extractPointId(varargin{:});
+      axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
       
-        % compute symmetry operations
-        rot = getClass(varargin,'quaternion');
-        if isempty(rot), rot = symmetry.calcQuat(id,[xvector,yvector,zvector]); end
-      else
+      if nargin == 0
+        
         id = 1;
-        rot = [];        
-      end  
-             
+        rot = rotation.id;
+        
+      elseif isa(varargin{1},'quaternion') % define the symmetry just by rotations
+
+        rot = varargin{1};
+              
+        if check_option(varargin,'pointId')
+          id = get_option(varargin,'pointId');
+        else
+          id = symmetry.rot2pointId(rot,axes);
+        end
+        
+      else
+        
+        id = symmetry.extractPointId(varargin{:});
+        rot = symmetry.calcQuat(id,axes);
+        
+      end
+      
       s = s@symmetry(id,rot);
              
     end
