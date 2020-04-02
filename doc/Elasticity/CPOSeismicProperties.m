@@ -1,5 +1,6 @@
 %% Plot seismic wave velocities and polarization directions
 %
+%%
 %  In this section we will calculate the elastic properties of an aggregate
 %  and plot its seismic properties in pole figures that can be directly
 %  compare to the pole figures for CPO
@@ -8,6 +9,7 @@
 
 mtexdata forsterite
 
+%%
 % This dataset consist of the three main phases, olivine, enstatite and
 % diopside. As we want to plot the seismic properties of this aggregate, we
 % need (i) the modal proportions of each phase in this sample, (ii) their
@@ -22,133 +24,110 @@ mtexdata forsterite
 % This EBSD dataset has the foliation N-S, but standard CPO plots and
 % physical properties in geosciences use an external reference frame where
 % the foliation is vertical E-W and the lineation is also E-W but
-% horizontal. We can correct the data by rotating the whole dataset like
+% horizontal. We can correct the data by rotating the whole dataset by 90
+% degree around the z-axis
 
-ebsd = rotate(ebsd,rotation('axis',-zvector,'angle',90*degree))
+ebsd = rotate(ebsd,rotation('axis',-zvector,'angle',90*degree));
 
-%% Calculate the area fraction of each phase in this map
+plot(ebsd)
 
-% list of phase names
-Phase_names = ebsd.mineralList;
-% zero area fractions
-Area_Fractions = zeros(numel(Phase_names));
-% number of measurement points in the map
-Map_points = length(ebsd);
-% default first phase is indexed the perfect sample !
-N_first_indexed_phase = 1;
-% remove 'nonIndexed' points from total
-% if 'notIndexed' is present
-if(strcmp(Phase_names(1),'notIndexed'))
-    N_first_indexed_phase = 2;
-end
+%% Import the elastic stiffness tensors
+%
+% The elastic stiffness tensor of Olivine was reported in Abramson et al.,
+% 1997 JGR with respect to the crystal reference frame
 
-%% Calculate the area fraction considering the non-indexed pixels
+CS_Tensor_olivine = crystalSymmetry('222', [4.762 10.225 5.994],...
+    'mineral', 'olivine', 'color', 'light red');
+  
+%%
+% and the density in g/cm^3
 
-fprintf(' \n')
-fprintf(' Area fractions for all phases in the EBSD object \n')
-fprintf(' \n')
-fprintf('   #      Phase       Points  Area fraction \n')
-for i=1:numel(Phase_names);
-% indexed point for mineral
-N_Points = length(ebsd(Phase_names(i)));
-   if(N_Points > 0)
-% area fraction for mineral
-Area_Fractions(i) = N_Points/Map_points;
-% retain first part of mineral name
-P_Name = strtok(char(Phase_names{i}),' ');
-      fprintf(' %3i %12s %10i %11.4f \n',...
-      i,P_Name,N_Points,Area_Fractions(i))
-   end
-end
-AF_total = sum(sum(Area_Fractions));
-fprintf(' \n')
-fprintf(' Total area fraction = %8.4f \n',AF_total)
-fprintf(' \n')
+rho_olivine = 3.3550;
 
-% total number of indexed points in map without 'notIndexed' phase
-Indexed_map_points = sum(length(ebsd(Phase_names(N_first_indexed_phase:numel(Phase_names)))));
-% percentage of indexed point in map
-Percent_indexed = 100*Indexed_map_points/Map_points;
-% print to screen
-fprintf(' \n')
-fprintf(' Percentage indexed points in map = %5.1f \n',Percent_indexed)
-fprintf(' \n')
-%% Calculate the area fraction considering only indexed pixels
-
-fprintf(' \n')
-fprintf(' Area fractions based on minerals with EBSD indexed points only \n')
-fprintf(' \n')
-fprintf('   #      Phase       Points  Area fraction \n')
-for i=N_first_indexed_phase:numel(Phase_names);
-% indexed point for mineral
-N_Points = length(ebsd(Phase_names(i)));
-   if(N_Points > 0)
-% area fraction for mineral
-Area_Fractions(i) = N_Points/Indexed_map_points;
-% retain first part of mineral name
-P_Name = strtok(char(Phase_names{i}),' ');
-      fprintf(' %3i %12s %10i %11.4f \n',...
-      i,P_Name,N_Points,Area_Fractions(i))
-   end
-end
-AF_total = sum((Area_Fractions(N_first_indexed_phase:numel(Phase_names))));
-fprintf(' \n')
-fprintf(' Total area fraction = %8.4f \n',AF_total)
-fprintf(' \n')
-
-%% Define elastic stiffness tensor of Olivine (Abramson et al., 1997 JGR)
+%%
+% by the coefficients $C_{ij}$ in Voigt matrix notation
 
 M = [[320.5  68.15  71.6     0     0     0];...
-    [ 68.15  196.5  76.8     0     0     0];...
-    [  71.6   76.8 233.5     0     0     0];...
-    [   0      0      0     64     0     0];...
-    [   0      0      0      0    77     0];...
-    [   0      0      0      0     0  78.7]];
-% Define Olivine density (from the paper above, g/cm^3)
-rho_olivine = 3.3550;
-% Define Cartesian Tensor crystal symmetry & frame
-CS_Tensor_olivine = crystalSymmetry('222', [4.762 10.225 5.994],...
-    'mineral', 'olivine', 'color', 'light red')
-% Define elastic stiffness tensor Cijkl with MTEX load tensor command
-C_olivine = stiffnessTensor(M,CS_Tensor_olivine,'name','elastic stiffness',...
-    'unit','GPa','density',rho_olivine)
-%% Define elastic stiffness tensor of Enstatite (Chai et al. 1997 - JGR)
+  [ 68.15  196.5  76.8     0     0     0];...
+  [  71.6   76.8 233.5     0     0     0];...
+  [   0      0      0     64     0     0];...
+  [   0      0      0      0    77     0];...
+  [   0      0      0      0     0  78.7]];
 
-M =.... 
- [[  236.90   79.60   63.20    0.00    0.00    0.00];...
- [    79.60  180.50   56.80    0.00    0.00    0.00];...
- [    63.20   56.80  230.40    0.00    0.00    0.00];...
- [     0.00    0.00    0.00   84.30    0.00    0.00];...
- [     0.00    0.00    0.00    0.00   79.40    0.00];...
- [     0.00    0.00    0.00    0.00    0.00   80.10]];
-rho_opx = 3.3060;
+
+%%
+% In order to define the stiffness tensor as an MTEX variable we use the
+% command @stiffnessTensor.
+
+C_olivine = stiffnessTensor(M,CS_Tensor_olivine,'density',rho_olivine)
+
+%%
+% Note that when defining a single crystal tensor we shall always specify
+% the crystal reference system which has been used to represent the tensor
+% by its coordinates $C_{ijkl}$. 
+%
+% Analogously, we next define the stiffness tensor of Enstatite and
+% Diopside. For Enstatite we use the coefficients reportet in (Chai et al.
+% 1997 - JGR)
+
+% the crystal reference system
 cs_Tensor_opx = crystalSymmetry('mmm',[ 18.2457  8.7984  5.1959],...
- [  90.0000  90.0000  90.0000]*degree,'x||a','z||c',...
- 'mineral','Enstatite');
-C_opx = stiffnessTensor(M,cs_Tensor_opx)
-%% Define elastic stiffness tensor of Diopside (Isaak et al., 2005 - PCM)
-M =.... 
- [[  228.10   78.80   70.20    0.00    7.90    0.00];...
- [    78.80  181.10   61.10    0.00    5.90    0.00];...
- [    70.20   61.10  245.40    0.00   39.70    0.00];...
- [     0.00    0.00    0.00   78.90    0.00    6.40];...
- [     7.90    5.90   39.70    0.00   68.20    0.00];...
- [     0.00    0.00    0.00    6.40    0.00   78.10]];
+  [  90.0000  90.0000  90.0000]*degree,'x||a','z||c',...
+  'mineral','Enstatite');
 
-rho_cpx = 3.2860;
+% the density
+rho_opx = 3.3060;
+
+% the tensor coefficients
+M =....
+  [[  236.90   79.60   63.20    0.00    0.00    0.00];...
+  [    79.60  180.50   56.80    0.00    0.00    0.00];...
+  [    63.20   56.80  230.40    0.00    0.00    0.00];...
+  [     0.00    0.00    0.00   84.30    0.00    0.00];...
+  [     0.00    0.00    0.00    0.00   79.40    0.00];...
+  [     0.00    0.00    0.00    0.00    0.00   80.10]];
+
+% define the tensor
+C_opx = stiffnessTensor(M,cs_Tensor_opx,'density',rho_opx)
+
+%%
+% For Diposide coefficients where reported in (Isaak et al., 2005 - PCM)
+
+% the crystal reference system
 cs_Tensor_cpx = crystalSymmetry('121',[9.585  8.776  5.26],...
- [90.0000 105.8600  90.0000]*degree,'x||a*','z||c',...
- 'mineral','Diopside');
-crystalSymmetry('121', [9.585 8.776 5.26], [90,106.85,90]*degree,...
-    'X||a*', 'Y||b', 'Z||c', 'mineral', 'diopside', 'color', 'light blue')
+  [90.0000 105.8600  90.0000]*degree,'x||a*','z||c',...
+  'mineral','Diopside');
+
+% the density
+rho_cpx = 3.2860;
+
+% the tensor coefficients
+M =.... 
+  [[  228.10   78.80   70.20    0.00    7.90    0.00];...
+  [    78.80  181.10   61.10    0.00    5.90    0.00];...
+  [    70.20   61.10  245.40    0.00   39.70    0.00];...
+  [     0.00    0.00    0.00   78.90    0.00    6.40];...
+  [     7.90    5.90   39.70    0.00   68.20    0.00];...
+  [     0.00    0.00    0.00    6.40    0.00   78.10]];
+
+% define the tensor
 C_cpx = stiffnessTensor(M,cs_Tensor_cpx)
 
-%% Let's calculate the olivine single crystal seismic velocities
+%% Single crystal seismic velocities
+%
+% We start by calculating the single crystal seismic velocities of Olivine
+% using the command <stiffnessTensor.velocity.html |velocity|>
 
 [vp_ol,vs1_ol,vs2_ol,pp_ol,ps1_ol,ps2_ol] = C_olivine.velocity('harmonic');
 
-% here Vp, Vs1 and Vs2 stands for the velocities of P, fast and slow
-% S-waves respectively, where ps1 and ps2 are the polarization directions
+%%
+% As output we obtain three <S2FunConcept.html spherical functions>
+% |vp_ol|, |vs1_ol| and |vs2_ol| representing the velocities of P, and fast
+% and slow S-waves respectively in dependency of the propagation direction.
+% The remaining three output variables |pp_ol|, |ps1_ol|, |ps2_ol| are
+% <S2FunAxisField.html spherical vector fields> representing the
+% polarization directions of these wave as functions of the propagation
+% direction.
 
 %% Plot some single crystal seismic velocities
 %
@@ -195,6 +174,7 @@ drawNow(gcm,'figSize','large')
 
 % create a new axis
 nextAxis
+
 % Plot S-wave anisotropy (percent)
 AVs_ol = 200*(vs1_ol-vs2_ol)./(vs1_ol+vs2_ol);
 plot(AVs_ol,'contourf','complete','upper');
@@ -211,6 +191,10 @@ hold off
 
 
 %% Plot the fast shear wave (S1) polarization direction
+%
+% essentiall by adding nextAxis on the beginning of each section for a
+% plot, you can have all your plots in one single figure. Once you finish,
+% you may want to have a scalebar for all the plots, this can be done as
 
 nextAxis
 plot(AVs_ol,'contourf','complete','upper');
@@ -219,17 +203,13 @@ hold on
 plot(ps1_ol,'linewidth',2,'color','black','doNotDraw')
 hold off
 
-% essentiall by adding nextAxis on the beginning of each section for a
-% plot, you can have all your plots in one single figure. Once you finish,
-% you may want to have a scalebar for all the plots, this can be done as
-
 mtexColorbar
 drawNow(gcm,'figSize','large')
 
 %% Now let's estimate the elastic tensor of our sample
 %
 % First we need to calculate the ODF of the individual phases
-%
+
 odf_ol = calcDensity(ebsd('f').orientations,'halfwidth',10*degree)
 odf_opx = calcDensity(ebsd('e').orientations,'halfwidth',10*degree)
 odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree)
@@ -260,7 +240,6 @@ CHill_all = 0.81*CHill_ol_poly + 0.14*CHill_opx_poly + 0.05*CHill_cpx_poly
     CHill_all.velocity('harmonic')
 
 %% Plot P-wave velocity (km/s)
-
 
 plota2east;
 setMTEXpref('defaultColorMap',blue2redColorMap)
