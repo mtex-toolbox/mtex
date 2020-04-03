@@ -122,6 +122,11 @@ C_cpx = stiffnessTensor(M,cs_Tensor_cpx,'density',rho_cpx)
 
 plotSeismicVelocities(C_olivine)
 
+% lets add the crystal axes to the second plot
+nextAxis(1,2)
+text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_olivine),...
+  {'[100]','[010]','[001]'},'backgroundColor','w')
+
 %% Bulk elastic tensor of our sample
 %
 % Combining the EBSD data and the single crystal stiffness tensors we can
