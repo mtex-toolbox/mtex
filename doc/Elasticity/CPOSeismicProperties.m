@@ -54,7 +54,6 @@ M = [[320.5  68.15  71.6     0     0     0];...
   [   0      0      0      0    77     0];...
   [   0      0      0      0     0  78.7]];
 
-
 %%
 % In order to define the stiffness tensor as an MTEX variable we use the
 % command @stiffnessTensor.
@@ -111,249 +110,66 @@ M =....
   [     0.00    0.00    0.00    6.40    0.00   78.10]];
 
 % define the tensor
-C_cpx = stiffnessTensor(M,cs_Tensor_cpx)
+C_cpx = stiffnessTensor(M,cs_Tensor_cpx,'density',rho_cpx)
 
 %% Single crystal seismic velocities
 %
-% We start by calculating the single crystal seismic velocities of Olivine
-% using the command <stiffnessTensor.velocity.html |velocity|>
+% The single crystal seismic velocites can be computed by the command 
+% <stiffnessTensor.velocity.html |velocity|> and are explained in more
+% detail <WaveVelocities.html here>. At this point we simply use the
+% command <plotSeismicVelocities.html |plotSeismicVelocities|> to get an
+% overview of the single crystal seismic properties.
 
-[vp_ol,vs1_ol,vs2_ol,pp_ol,ps1_ol,ps2_ol] = C_olivine.velocity('harmonic');
+plotSeismicVelocities(C_olivine)
+
+%% Bulk elastic tensor of our sample
+%
+% Combining the EBSD data and the single crystal stiffness tensors we can
+% estimate an bulk stiffness tensor by computing Voigt, Reuss or Hill
+% averages. Tensor averages are explained in more detail in
+% <TensorAverage.html this section>. Here we use the command
+% <EBSD.calcTensor.html calcTensor>
+
+[CVoigt, CReuss, CHill] = calcTensor(ebsd,C_olivine,C_opx,C_cpx);
 
 %%
-% As output we obtain three <S2FunConcept.html spherical functions>
-% |vp_ol|, |vs1_ol| and |vs2_ol| representing the velocities of P, and fast
-% and slow S-waves respectively in dependency of the propagation direction.
-% The remaining three output variables |pp_ol|, |ps1_ol|, |ps2_ol| are
-% <S2FunAxisField.html spherical vector fields> representing the
-% polarization directions of these wave as functions of the propagation
-% direction.
+% For visualizing the polycrystal wave velocities we again use the command
+% <plotSeismicVelocities.html |plotSeismicVelocities|>
 
-%% Plot some single crystal seismic velocities
-%
-%  Let's first define some preferences
+plotSeismicVelocities(CHill)
 
-plota2east;
-setMTEXpref('defaultColorMap',blue2redColorMap)
+%%
+% For large data sets the computation of the average stiffness tensor from
+% the EBSD data might be slow. In such cases it can be faster to first
+% estimate an ODF for each individual phase
 
-blackMarker = {'Marker','s','MarkerSize',10,'antipodal',...
-  'MarkerEdgeColor','white','MarkerFaceColor','black','doNotDraw'};
-whiteMarker = {'Marker','o','MarkerSize',10,'antipodal',...
-  'MarkerEdgeColor','black','MarkerFaceColor','white','doNotDraw'};
+odf_ol = calcDensity(ebsd('f').orientations,'halfwidth',10*degree);
+odf_opx = calcDensity(ebsd('e').orientations,'halfwidth',10*degree);
+odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 
-titleOpt = {'visible','on','color','k'};
-
-% Setup multiplot 
-% define plot size [origin X,Y,Width,Height]
-mtexFig = mtexFigure('position',[0 0 1000 1000]);
-
-%  Vp : Plot P-wave velocity (km/s)
-
-plot(vp_ol,'contourf','complete','upper','minmax')
-mtexTitle('Vp (km/s)',titleOpt{:})
-
-% Calculate maximum and minimum
-
-[maxVp_ol, maxVpPos_ol] = max(vp_ol);
-[minVp_ol, minVpPos_ol] = min(vp_ol);
-
-% Calculate Vp anisotropy
-
-AVp_qtz = 200*(maxVp_ol-minVp_ol) / (maxVp_ol+minVp_ol);
-
-% Add some markers to help visualization
-
-hold on
-plot(maxVpPos_ol.symmetrise,blackMarker{:})
-plot(minVpPos_ol.symmetrise,whiteMarker{:})
-hold off
-xlabel(['Vp Anisotropy = ',num2str(AVp_qtz,'%27.7f')],titleOpt{:})
-drawNow(gcm,'figSize','large')
-
-%% Plot S-wave anisotropy
-
-% create a new axis
-nextAxis
-
-% Plot S-wave anisotropy (percent)
-AVs_ol = 200*(vs1_ol-vs2_ol)./(vs1_ol+vs2_ol);
-plot(AVs_ol,'contourf','complete','upper');
-mtexTitle('S-wave anisotropy (%)',titleOpt{:})
-% Max percentage anisotropy
-[maxAVs_ol,maxAVsPos_ol] = max(AVs_ol);
-[minAVs_ol,minAVsPos_ol] = min(AVs_ol);
-xlabel(['Max Vs Anisotropy = ',num2str(maxAVs_ol,'%6.1f')],titleOpt{:})
-% mark maximum with black square and minimum with white circle
-hold on
-plot(maxAVsPos_ol.symmetrise,blackMarker{:})
-plot(minAVsPos_ol.symmetrise,whiteMarker{:})
-hold off
-
-
-%% Plot the fast shear wave (S1) polarization direction
-%
-% essentiall by adding nextAxis on the beginning of each section for a
-% plot, you can have all your plots in one single figure. Once you finish,
-% you may want to have a scalebar for all the plots, this can be done as
-
-nextAxis
-plot(AVs_ol,'contourf','complete','upper');
-mtexTitle('Vs1 polarization',titleOpt{:})
-hold on
-plot(ps1_ol,'linewidth',2,'color','black','doNotDraw')
-hold off
-
-mtexColorbar
-drawNow(gcm,'figSize','large')
-
-%% Now let's estimate the elastic tensor of our sample
-%
-% First we need to calculate the ODF of the individual phases
-
-odf_ol = calcDensity(ebsd('f').orientations,'halfwidth',10*degree)
-odf_opx = calcDensity(ebsd('e').orientations,'halfwidth',10*degree)
-odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree)
-
+%%
 % Note that you do don't need to write the full name of each phase, only
-% the initial, that works when phases start with different letters, you can
-% setup this also in the import_wizard
+% the initial, that works when phases start with different letters.
 %
-% To calculate the elastic constant of each phase considering their
-% orientations within this sample, you do
+% To calculate the average stiffness tensor from the ODFs we first compute
+% them from each phase seperately
 
-[CVoigt_ol_poly, CReuss_ol_poly, CHill_ol_poly] =  ...
-  calcTensor(odf_ol,C_olivine)
+[CVoigt_ol, CReuss_ol, CHill_ol]    = mean(C_olivine,odf_ol);
+[CVoigt_opx, CReuss_opx, CHill_opx] = mean(C_opx,odf_opx);
+[CVoigt_cpx, CReuss_cpx, CHill_cpx] = mean(C_cpx,odf_cpx);
 
-[CVoigt_opx_poly, CReuss_opx_poly, CHill_opx_poly] =  ...
-  calcTensor(odf_opx,C_opx)
+%%
+% and then take their average weighted according the volume of each phase
 
-[CVoigt_cpx_poly, CReuss_cpx_poly, CHill_cpx_poly] =  ...
-  calcTensor(odf_cpx,C_cpx)
+vol_ol  = length(ebsd('f')) ./ length(ebsd('indexed'));
+vol_opx = length(ebsd('e')) ./ length(ebsd('indexed'));
+vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 
 % Now to calculate the elastic tensor considering the three phases, you do
 
-CHill_all = 0.81*CHill_ol_poly + 0.14*CHill_opx_poly + 0.05*CHill_cpx_poly
+CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx
 
-% And finally you calculate the seismic velocities
+%%
+% Finaly, we visualize the polycrystal wave velocities as above
 
-[vp_poly_all,vs1_poly_all,vs2_poly_all,pp_poly_all,ps1_poly_all,ps2_poly_all] = ...
-    CHill_all.velocity('harmonic')
-
-%% Plot P-wave velocity (km/s)
-
-plota2east;
-setMTEXpref('defaultColorMap',blue2redColorMap)
-
-blackMarker = {'Marker','s','MarkerSize',10,'antipodal',...
-  'MarkerEdgeColor','white','MarkerFaceColor','black','doNotDraw'};
-whiteMarker = {'Marker','o','MarkerSize',10,'antipodal',...
-  'MarkerEdgeColor','black','MarkerFaceColor','white','doNotDraw'};
-
-titleOpt = {'visible','on','color','k'};
-
-% Setup multiplot 
-% define plot size [origin X,Y,Width,Height]
-mtexFig = mtexFigure('position',[0 0 1000 1000]);
-
-
-plot(vp_poly_all,'contourf','doNotDraw','complete','upper')
-mtexTitle('Vp (km/s)',titleOpt{:})
-% extrema
-[maxVp_poly_all, maxVpPos_poly_all] = max(vp_poly_all);
-[minVp_poly_all, minVpPos_poly_all] = min(vp_poly_all);
-% percentage anisotropy
-AVp_poly_all = 200*(maxVp_poly_all-minVp_poly_all) / (maxVp_poly_all...
-    +minVp_poly_all);
-% mark maximum with black square and minimum with white circle
-hold on
-plot(maxVpPos_poly_all,blackMarker{:})
-plot(minVpPos_poly_all,whiteMarker{:})
-hold off
-% subTitle
-xlabel(['Vp Anisotropy = ',num2str(AVp_poly_all,'%27.7f')],titleOpt{:})
-drawNow(gcm,'figSize','large')
-
-%% Plot fast shear-wave velocity S1 (km/s)
-
-nextAxis
-plot(vs1_poly_all,'contourf','doNotDraw','complete','upper');
-mtexTitle('Vs1 (km/s)',titleOpt{:})
-[maxS1_poly_all,maxS1pos_poly_all] = max(vs1_poly_all);
-[minS1_poly_all,minS1pos_poly_all] = min(vs1_poly_all);
-AVs1_poly_all=200*(maxS1_poly_all-minS1_poly_all)./(maxS1_poly_all+minS1_poly_all);
-xlabel(['Vs1 Anisotropy = ',num2str(AVs1_poly_all,'%6.1f')],titleOpt{:})
-hold on
-plot(ps1_poly_all,'linewidth',2,'color','black')
-hold on
-plot(maxS1pos_poly_all,blackMarker{:})
-plot(minS1pos_poly_all,whiteMarker{:})
-hold off
-
-%% Plot slow shear-wave velocity S2 (km/s)
-
-nextAxis
-plot(vs2_poly_all,'contourf','doNotDraw','complete','upper');
-mtexTitle('Vs2 (km/s)',titleOpt{:})
-% Percentage anisotropy
-[maxS2_poly_all,maxS2pos_poly_all] = max(vs2_poly_all);
-[minS2_poly_all,minS2pos_poly_all] = min(vs2_poly_all);
-AVs2_poly_all=200*(maxS2_poly_all-minS2_poly_all)./(maxS2_poly_all+minS2_poly_all);
-xlabel(['Vs2 Anisotropy = ',num2str(AVs2_poly_all,'%6.1f')],titleOpt{:})
-hold on
-plot(ps2_poly_all,'linewidth',2,'color','black')
-% mark maximum with black square and minimum with white circle
-hold on
-plot(maxS2pos_poly_all,blackMarker{:})
-plot(minS2pos_poly_all,whiteMarker{:})
-hold off
-
-%% Plot S-wave anisotropy (%)
-
-nextAxis
-AVs_poly_all = 200*(vs1_poly_all-vs2_poly_all)./(vs1_poly_all+vs2_poly_all);
-plot(AVs_poly_all,'contourf','complete','upper');
-mtexTitle('S-wave anisotropy (%)',titleOpt{:})
-[maxAVs_poly_all,maxAVsPos_poly_all] = max(AVs_poly_all);
-[minAVs_poly_all,minAVsPos_poly_all] = min(AVs_poly_all);
-xlabel(['Max Vs Anisotropy = ',num2str(maxAVs_poly_all,'%6.1f')],titleOpt{:})
-hold on
-plot(maxAVsPos_poly_all,blackMarker{:})
-plot(minAVsPos_poly_all,whiteMarker{:})
-hold off
-
-%% Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations
-
-nextAxis
-dVs_poly_all = vs1_poly_all-vs2_poly_all;
-plot(dVs_poly_all,'contourf','complete','upper');
-mtexTitle('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
-[maxdVs_poly_all,maxdVsPos_poly_all] = max(dVs_poly_all);
-[mindVs_poly_all,mindVsPos_poly_all] = min(dVs_poly_all);
-xlabel(['Max dVs (km/s) = ',num2str(maxdVs_poly_all,'%6.2f')],titleOpt{:})
-hold on
-plot(maxdVsPos_poly_all,blackMarker{:})
-plot(mindVsPos_poly_all,whiteMarker{:})
-hold off
-
-%% Plot Vp/Vs1 ratio (no units)
-
-nextAxis
-vpvs1_poly_all = vp_poly_all./vs1_poly_all;
-plot(vpvs1_poly_all,'contourf','complete','upper');
-mtexTitle('Vp/Vs1',titleOpt{:})
-% Percentage anisotropy
-[maxVpVs1_poly_all,maxVpVs1Pos_poly_all] = max(vpvs1_poly_all);
-[minVpVs1_poly_all,minVpVs1Pos_poly_all] = min(vpvs1_poly_all);
-AVpVs1_poly_all=200*(maxVpVs1_poly_all-minVpVs1_poly_all)/(maxVpVs1_poly_all+minVpVs1_poly_all);
-xlabel(['Vp/Vs1 Anisotropy = ',num2str(AVpVs1_poly_all,'%6.1f')],titleOpt{:})
-% mark maximum with black square and minimum with white circle
-hold on
-plot(maxVpVs1Pos_poly_all,blackMarker{:})
-plot(minVpVs1Pos_poly_all,whiteMarker{:})
-hold off
-
-%% Add colorbars in all pole figures and return default color code
-
-mtexColorbar
-drawNow(gcm,'figSize','large')
-setMTEXpref('defaultColorMap',WhiteJetColorMap)
+plotSeismicVelocities(CHill)

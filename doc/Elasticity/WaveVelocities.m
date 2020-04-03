@@ -27,6 +27,7 @@ C = stiffnessTensor.load(fname,cs)
 T = ChristoffelTensor(C,vector3d.X)
 
 %% Elastic Wave Velocity
+%
 % The Christoffel tensor is the basis for computing the direction dependent
 % wave velocities of the p, s1, and s2 wave, as well as of the polarization
 % directions. Therefore, we need also the density of the material, e.g.,
@@ -38,16 +39,22 @@ rho = 3.355
 C = addOption(C,'density',rho)
 
 %%
-% Then the velocities are computed by the command
-% <stiffnessTensor.velocity.html velocity>
+% the single crystal wave velocities are now computed by the command
+% stiffnessTensor.velocity.html |velocity|>
 
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
 
-
 %%
+% As output we obtain three <S2FunConcept.html spherical functions>
+% |vp|, |vs1| and |vs2| representing the velocities of P, and fast
+% and slow S-waves respectively in dependency of the propagation direction.
+% The remaining three output variables |pp|, |ps1|, |ps2| are
+% <S2FunAxisField.html spherical vector fields> representing the
+% polarization directions of these wave as functions of the propagation
+% direction.
+%
 % In order to visualize these quantities, there are several possibilities.
 % Let us first plot the direction dependent wave speed of the p-wave
-
 
 plot(vp,'complete','upper')
 
