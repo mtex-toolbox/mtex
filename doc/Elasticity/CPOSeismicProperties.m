@@ -114,18 +114,21 @@ C_cpx = stiffnessTensor(M,cs_Tensor_cpx,'density',rho_cpx)
 
 %% Single crystal seismic velocities
 %
-% The single crystal seismic velocites can be computed by the command 
+% The single crystal seismic velocites can be computed by the command
 % <stiffnessTensor.velocity.html |velocity|> and are explained in more
 % detail <WaveVelocities.html here>. At this point we simply use the
-% command <plotSeismicVelocities.html |plotSeismicVelocities|> to get an
-% overview of the single crystal seismic properties.
+% command <stiffnessTensor.plotSeismicVelocities.html
+% |plotSeismicVelocities|> to get an overview of the single crystal seismic
+% properties.
 
 plotSeismicVelocities(C_olivine)
 
 % lets add the crystal axes to the second plot
 nextAxis(1,2)
+hold on
 text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_olivine),...
   {'[100]','[010]','[001]'},'backgroundColor','w')
+hold off
 
 %% Bulk elastic tensor of our sample
 %
@@ -139,7 +142,7 @@ text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_olivine),...
 
 %%
 % For visualizing the polycrystal wave velocities we again use the command
-% <plotSeismicVelocities.html |plotSeismicVelocities|>
+% <stiffnessTensor.plotSeismicVelocities.html |plotSeismicVelocities|>
 
 plotSeismicVelocities(CHill)
 
