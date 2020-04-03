@@ -132,6 +132,21 @@ classdef sphericalRegion
     
     function [thetaMin, thetaMax] = thetaRange(sR,rho)
       
+      if isempty(sR.N)
+        thetaMin = zeros(size(rho));
+        thetaMax = pi * ones(size(rho));
+        return
+      elseif length(sR.N) == 1 && sR.N == vector3d.Z && sR.alpha == 0
+        thetaMin = zeros(size(rho));
+        thetaMax = pi/2 * ones(size(rho));
+        return
+      elseif length(sR.N) == 1 && sR.N == -vector3d.Z && sR.alpha == 0
+        thetaMin = pi/2 * ones(size(rho));
+        thetaMax = pi * ones(size(rho));
+        return
+      end
+      
+      
       % antipodal should not increase spherical region
       sR.antipodal = false;
       
