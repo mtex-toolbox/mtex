@@ -1,11 +1,11 @@
 %% Plot seismic wave velocities and polarization directions
 %
 %%
-%  In this section we will calculate the elastic properties of an aggregate
-%  and plot its seismic properties in pole figures that can be directly
-%  compare to the pole figures for CPO
+% In this section we will calculate the elastic properties of an aggregate
+% and plot its seismic properties in pole figures that can be directly
+% compare to the pole figures for CPO
 %
-%  Let's first import an example dataset from the MTEX toolboox
+% Let's first import an example dataset from the MTEX toolboox
 
 mtexdata forsterite
 
@@ -47,7 +47,7 @@ rho_olivine = 3.3550;
 %%
 % by the coefficients $C_{ij}$ in Voigt matrix notation
 
-M = [[320.5  68.15  71.6     0     0     0];...
+Cij = [[320.5  68.15  71.6     0     0     0];...
   [ 68.15  196.5  76.8     0     0     0];...
   [  71.6   76.8 233.5     0     0     0];...
   [   0      0      0     64     0     0];...
@@ -58,12 +58,12 @@ M = [[320.5  68.15  71.6     0     0     0];...
 % In order to define the stiffness tensor as an MTEX variable we use the
 % command @stiffnessTensor.
 
-C_olivine = stiffnessTensor(M,CS_Tensor_olivine,'density',rho_olivine)
+C_olivine = stiffnessTensor(Cij,CS_Tensor_olivine,'density',rho_olivine)
 
 %%
 % Note that when defining a single crystal tensor we shall always specify
 % the crystal reference system which has been used to represent the tensor
-% by its coordinates $C_{ijkl}$. 
+% by its coordinates $c_{ijkl}$. 
 %
 % Analogously, we next define the stiffness tensor of Enstatite and
 % Diopside. For Enstatite we use the coefficients reportet in (Chai et al.
@@ -78,7 +78,7 @@ cs_Tensor_opx = crystalSymmetry('mmm',[ 18.2457  8.7984  5.1959],...
 rho_opx = 3.3060;
 
 % the tensor coefficients
-M =....
+Cij =....
   [[  236.90   79.60   63.20    0.00    0.00    0.00];...
   [    79.60  180.50   56.80    0.00    0.00    0.00];...
   [    63.20   56.80  230.40    0.00    0.00    0.00];...
@@ -87,7 +87,7 @@ M =....
   [     0.00    0.00    0.00    0.00    0.00   80.10]];
 
 % define the tensor
-C_opx = stiffnessTensor(M,cs_Tensor_opx,'density',rho_opx)
+C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx)
 
 %%
 % For Diposide coefficients where reported in (Isaak et al., 2005 - PCM)
@@ -101,7 +101,7 @@ cs_Tensor_cpx = crystalSymmetry('121',[9.585  8.776  5.26],...
 rho_cpx = 3.2860;
 
 % the tensor coefficients
-M =.... 
+Cij =.... 
   [[  228.10   78.80   70.20    0.00    7.90    0.00];...
   [    78.80  181.10   61.10    0.00    5.90    0.00];...
   [    70.20   61.10  245.40    0.00   39.70    0.00];...
@@ -110,7 +110,7 @@ M =....
   [     0.00    0.00    0.00    6.40    0.00   78.10]];
 
 % define the tensor
-C_cpx = stiffnessTensor(M,cs_Tensor_cpx,'density',rho_cpx)
+C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx)
 
 %% Single crystal seismic velocities
 %
@@ -130,7 +130,7 @@ text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_olivine),...
   {'[100]','[010]','[001]'},'backgroundColor','w')
 hold off
 
-%% Bulk elastic tensor of our sample
+%% Bulk elastic tensor from EBSD data
 %
 % Combining the EBSD data and the single crystal stiffness tensors we can
 % estimate an bulk stiffness tensor by computing Voigt, Reuss or Hill
@@ -146,7 +146,8 @@ hold off
 
 plotSeismicVelocities(CHill)
 
-%%
+%% Bulk elastic tensor from ODFs
+%
 % For large data sets the computation of the average stiffness tensor from
 % the EBSD data might be slow. In such cases it can be faster to first
 % estimate an ODF for each individual phase
@@ -172,8 +173,6 @@ odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 vol_ol  = length(ebsd('f')) ./ length(ebsd('indexed'));
 vol_opx = length(ebsd('e')) ./ length(ebsd('indexed'));
 vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
-
-% Now to calculate the elastic tensor considering the three phases, you do
 
 CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx
 
