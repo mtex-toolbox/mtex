@@ -131,14 +131,14 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
 
-odfEpidote = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree)
+odf_gl = calcDensity(ebsd('g').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF
 % The Voigt, Reuss, and Hill averages for the above ODF are computed by
 
-[CVoigtEpidote, CReussEpidote, CHillEpidote] =  ...
-  calcTensor(odfEpidote,CEpidote)
+[CVoigt_glaucophane, CReuss_glaucophane, CHill_glaucophane] =  ...
+  calcTensor(odf_gl,C_glaucophane)
 
 % set back the colormap
 setMTEXpref('defaultColorMap',WhiteJetColorMap);
