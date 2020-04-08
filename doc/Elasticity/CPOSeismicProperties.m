@@ -34,7 +34,7 @@ plot(ebsd)
 %% Import the elastic stiffness tensors
 %
 % The elastic stiffness tensor of Olivine was reported in Abramson et al.,
-% 1997 JGR with respect to the crystal reference frame
+% 1997 (Journal of Geophysical Research) with respect to the crystal reference frame
 
 CS_Tensor_olivine = crystalSymmetry('222', [4.762 10.225 5.994],...
     'mineral', 'olivine', 'color', 'light red');
@@ -65,9 +65,8 @@ C_olivine = stiffnessTensor(Cij,CS_Tensor_olivine,'density',rho_olivine)
 % the crystal reference system which has been used to represent the tensor
 % by its coordinates $c_{ijkl}$. 
 %
-% Analogously, we next define the stiffness tensor of Enstatite and
-% Diopside. For Enstatite we use the coefficients reportet in (Chai et al.
-% 1997 - JGR)
+% Now we define the stiffness tensor of enstatite, reported by Chai et al. 
+% 1997 (Journal of Geophysical Research)
 
 % the crystal reference system
 cs_Tensor_opx = crystalSymmetry('mmm',[ 18.2457  8.7984  5.1959],...
@@ -90,7 +89,8 @@ Cij =....
 C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx)
 
 %%
-% For Diposide coefficients where reported in (Isaak et al., 2005 - PCM)
+% For Diposide coefficients where reported in Isaak et al., 
+% 2005 - Physics and Chemistry of Minerals)
 
 % the crystal reference system
 cs_Tensor_cpx = crystalSymmetry('121',[9.585  8.776  5.26],...
@@ -158,7 +158,10 @@ odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 
 %%
 % Note that you do don't need to write the full name of each phase, only
-% the initial, that works when phases start with different letters.
+% the initial, that works when phases start with different letters. Also 
+% note that although we use EBSD data in this example, you can perform the
+% same calculations with CPO data obtain by other methods (e.g. x-ray/neutron
+% diffraction) as you only need the ODF variable for the calculations
 %
 % To calculate the average stiffness tensor from the ODFs we first compute
 % them from each phase seperately
@@ -177,6 +180,6 @@ vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx
 
 %%
-% Finaly, we visualize the polycrystal wave velocities as above
+% Finnaly, we visualize the polycrystal wave velocities as above
 
 plotSeismicVelocities(CHill)
