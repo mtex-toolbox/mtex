@@ -97,20 +97,20 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 
 %%
 % The Voigt and Reuss are averaging schemes for obtaining estimates of the effective
-% elastic constants in polycrystalline materials. The Voigt average is found by 
-% assuming that the elastic strain field in the aggregate is constant everywhere, so that 
+% elastic constants in polycrystalline materials. The Voigt average assumes that
+% the elastic strain field in the aggregate is constant everywhere, so that 
 % the strain in every position is equal to the macroscopic strain of the sample. CVoigt
 % is then estimated by a volume average of local stiffnesses C(gi), where gi is the 
 % orientation given by a triplet of Euler angles and with orientation gi, and volume 
 % fraction V(i). This is formally described as
 %
-% $$\mathrm .$$
+% $  \left<T\right>^{\text{Voigt}} = \sum_{m=1}^{M}  T(\mathtt{ori}_{m})$
 %
 % The Reuss average on the other hand assumes that the stress field in the aggregate is 
 % constant, so the stress in every point is set equal to the macroscopic stress. CReuss is 
 % therefore estimated by the volume average of local compliances S(gi) and can be described as
 %
-% $$\mathrm .$$
+% $ \left<T\right>^{\text{Reuss}} = \left[ \sum_{m=1}^{M}  T(\mathtt{ori}_{m})^{-1} \right]^{-1}$
 %
 % For weakly anisotropic phases (e.g. garnet), Voigt and Reuss averages are very close to each
 % other, but with increasing elastic anisotropy, the separation between Voigt and Reuss bounds separate
