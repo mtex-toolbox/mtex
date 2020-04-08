@@ -31,67 +31,107 @@ ebsd(ebsd.mad >MAD_MAXIMUM) = []
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
-%% Define Elastic Stiffness Tensors for Glaucophane and Epidote
+%% Import the elastic stiffness tensors
 %
-% Glaucophane elastic stiffness (Cij) Tensor in GPa
-% Bezacier, L., Reynard, B., Bass, J.D., Wang, J., and Mainprice, D. (2010)
-% Elasticity of glaucophane and seismic properties of high-pressure low-temperature
-% oceanic rocks in subduction zones. Tectonophysics, 494, 201-210.
+% The elastic stiffness tensor of glaucophane was reported in Bezacier et al. 2010 
+% (Tectonophysics) with respect to the crystal reference frame
 
-% define the tensor coefficients
-MGlaucophane =....
-  [[122.28   45.69   37.24   0.00   2.35   0.00];...
+CS_Tensor_glaucophane = crystalSymmetry('2/m',[9.5334,17.7347,5.3008],...
+  [90.00,103.597,90.00]*degree,'X||a*','Z||c','mineral','Glaucophane');
+  
+%%
+% and the density in g/cm^3
+
+rho_glaucophane = 3.07;
+
+%%
+% by the coefficients $C_{ij}$ in Voigt matrix notation
+
+Cij = [[122.28   45.69   37.24   0.00   2.35   0.00];...
   [  45.69  231.50   74.91   0.00  -4.78   0.00];...
   [  37.24   74.91  254.57   0.00 -23.74   0.00];...
   [   0.00    0.00    0.00  79.67   0.00   8.89];...
   [   2.35   -4.78  -23.74   0.00  52.82   0.00];...
   [   0.00    0.00    0.00   8.89   0.00  51.24]];
 
-% define the reference frame
-csGlaucophane = crystalSymmetry('2/m',[9.5334,17.7347,5.3008],...
-  [90.00,103.597,90.00]*degree,'X||a*','Z||c','mineral','Glaucophane');
+%%
+% In order to define the stiffness tensor as an MTEX variable we use the
+% command @stiffnessTensor.
 
-% define the tensor
-CGlaucophane = stiffnessTensor(MGlaucophane,csGlaucophane)
+C_glaucophane = stiffnessTensor(Cij,CS_Tensor_glaucophane,'density',rho_glaucophane);
 
 %%
-% Epidote elastic stiffness (Cij) Tensor in GPa
-% Aleksandrov, K.S., Alchikov, U.V., Belikov, B.P., Zaslavskii, B.I. and Krupnyi, A.I.: 1974
+% The elastic stiffness tensor of epidote was reported in Aleksandrov et al. 1974 
 % 'Velocities of elastic waves in minerals at atmospheric pressure and
 % increasing the precision of elastic constants by means of EVM (in Russian)',
-% Izv. Acad. Sci. USSR, Geol. Ser.10, 15-24.
+% Izv. Acad. Sci. USSR, Geol. Ser.10, 15-24, with respect to the crystal reference frame
 
-% define the tensor coefficients
-MEpidote =....
-  [[211.50    65.60    43.20     0.00     -6.50     0.00];...
+CS_Tensor_epidote = crystalSymmetry('2/m',[8.8877,5.6275,10.1517],...
+  [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
+
+%%
+% and the density in g/cm^3
+
+rho_epidote = 3.45;
+
+%%
+% by the coefficients $C_{ij}$ in Voigt matrix notation
+
+Cij = [[211.50    65.60    43.20     0.00     -6.50     0.00];...
   [  65.60   239.00    43.60     0.00    -10.40     0.00];...
   [  43.20    43.60   202.10     0.00    -20.00     0.00];...
   [   0.00     0.00     0.00    39.10      0.00    -2.30];...
   [  -6.50   -10.40   -20.00     0.00     43.40     0.00];...
   [   0.00     0.00     0.00    -2.30      0.00    79.50]];
 
-% define the reference frame
-csEpidote= crystalSymmetry('2/m',[8.8877,5.6275,10.1517],...
-  [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
 
-% define the tensor
-CEpidote = stiffnessTensor(MEpidote,csEpidote)
+% And now we define the epidote stiffness tensor as a MTEX variable
+
+C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
+
 
 %% The Average Tensor from EBSD Data
 % The Voigt, Reuss, and Hill averages for all phases are computed by
 
-[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),CGlaucophane,CEpidote)
+[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),C_glaucophane,C_epidote)
 
 %%
-% for a single phase the syntax is
+% The Voigt and Reuss are averaging schemes for obtaining estimates of the effective
+% elastic constants in polycrystalline materials. The Voigt average is found by 
+% assuming that the elastic strain field in the aggregate is constant everywhere, so that 
+% the strain in every position is equal to the macroscopic strain of the sample. CVoigt
+% is then estimated by a volume average of local stiffnesses C(gi), where gi is the 
+% orientation given by a triplet of Euler angles and with orientation gi, and volume 
+% fraction V(i). This is formally described as
+%
+% $$\mathrm .$$
+%
+% The Reuss average on the other hand assumes that the stress field in the aggregate is 
+% constant, so the stress in every point is set equal to the macroscopic stress. CReuss is 
+% therefore estimated by the volume average of local compliances S(gi) and can be described as
+%
+% $$\mathrm .$$
+%
+% For weakly anisotropic phases (e.g. garnet), Voigt and Reuss averages are very close to each
+% other, but with increasing elastic anisotropy, the separation between Voigt and Reuss bounds separate
+% considerably
+%
+% The estimate of the elastic moduli of a given aggregate nevertheless should lie between the 
+% Voigt and Reuss average bounds, as the stress and strain distributions should be somewhere 
+% between the uniform strain (Voigt bound) and uniform stress. 
+% Hill (1952) showed that the arithmetic mean of the Voigt and Reuss bounds (called Hill or 
+% Voigt-Reuss-Hill average) is very often close to the experimental values (although there is no 
+% physical justification for this behavior). 
 
-[CVoigtEpidote,CReussEpidote,CHillEpidote] =  calcTensor(ebsd('Epidote'),CEpidote)
+%%
+% for a single phase (e.g. glaucophane) the syntax is
 
+[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('g'),C_glaucophane)
 
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
 
-odfEpidote = calcDensity(ebsd('Epidote').orientations,'halfwidth',10*degree)
+odfEpidote = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF
