@@ -1,8 +1,3 @@
-%% Average Material Tensors
-%
-%% TODO
-% Please extend this chapter.
-%
 %%
 % MTEX offers several ways to compute average material tensors from ODFs or
 % EBSD data. We start by importing some EBSD data of Glaucophane and
