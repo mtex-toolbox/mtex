@@ -58,7 +58,7 @@ Cij = [[320.5  68.15  71.6     0     0     0];...
 % In order to define the stiffness tensor as an MTEX variable we use the
 % command @stiffnessTensor.
 
-C_olivine = stiffnessTensor(Cij,CS_Tensor_olivine,'density',rho_olivine)
+C_olivine = stiffnessTensor(Cij,CS_Tensor_olivine,'density',rho_olivine);
 
 %%
 % Note that when defining a single crystal tensor we shall always specify
@@ -86,7 +86,7 @@ Cij =....
   [     0.00    0.00    0.00    0.00    0.00   80.10]];
 
 % define the tensor
-C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx)
+C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx);
 
 %%
 % For Diposide coefficients where reported in Isaak et al., 
@@ -110,7 +110,7 @@ Cij =....
   [     0.00    0.00    0.00    6.40    0.00   78.10]];
 
 % define the tensor
-C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx)
+C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx);
 
 %% Single crystal seismic velocities
 %
@@ -177,7 +177,7 @@ vol_ol  = length(ebsd('f')) ./ length(ebsd('indexed'));
 vol_opx = length(ebsd('e')) ./ length(ebsd('indexed'));
 vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 
-CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx
+CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx;
 
 %%
 % Finally, we visualize the polycrystal wave velocities as above
