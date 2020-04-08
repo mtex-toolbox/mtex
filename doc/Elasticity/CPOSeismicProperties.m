@@ -89,7 +89,7 @@ Cij =....
 C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx);
 
 %%
-% For Diposide coefficients where reported in Isaak et al., 
+% For Diopside coefficients where reported in Isaak et al., 
 % 2005 - Physics and Chemistry of Minerals)
 
 % the crystal reference system
