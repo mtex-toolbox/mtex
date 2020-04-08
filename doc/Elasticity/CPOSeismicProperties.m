@@ -1,4 +1,4 @@
-%% Plot seismic wave velocities and polarization directions
+%% Plot seismic wave velocities and polarization directions for aggregates
 %
 %%
 % In this section we will calculate the elastic properties of an aggregate
