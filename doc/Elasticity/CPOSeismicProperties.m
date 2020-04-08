@@ -180,6 +180,6 @@ vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx
 
 %%
-% Finnaly, we visualize the polycrystal wave velocities as above
+% Finally, we visualize the polycrystal wave velocities as above
 
 plotSeismicVelocities(CHill)
