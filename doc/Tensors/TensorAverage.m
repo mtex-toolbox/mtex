@@ -55,8 +55,7 @@ Cij = [[122.28   45.69   37.24   0.00   2.35   0.00];...
   [   0.00    0.00    0.00   8.89   0.00  51.24]];
 
 %%
-% In order to define the stiffness tensor as an MTEX variable we use the
-% command @stiffnessTensor.
+% The stiffness tensor in MTEX is defined via the command @stiffnessTensor.
 
 C_glaucophane = stiffnessTensor(Cij,CS_Tensor_glaucophane,'density',rho_glaucophane);
 
@@ -113,32 +112,39 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % $ \left<T\right>^{\text{Reuss}} = \left[ \sum_{m=1}^{M}  T(\mathtt{ori}_{m})^{-1} \right]^{-1}$
 %
 % For weakly anisotropic phases (e.g. garnet), Voigt and Reuss averages are very close to each
-% other, but with increasing elastic anisotropy, the separation between Voigt and Reuss bounds separate
-% considerably
+% other, but with increasing elastic anisotropy, the values of the Voigt and Reuss bounds vary considerably
 %
 % The estimate of the elastic moduli of a given aggregate nevertheless should lie between the 
 % Voigt and Reuss average bounds, as the stress and strain distributions should be somewhere 
 % between the uniform strain (Voigt bound) and uniform stress. 
+%
 % Hill (1952) showed that the arithmetic mean of the Voigt and Reuss bounds (called Hill or 
 % Voigt-Reuss-Hill average) is very often close to the experimental values (although there is no 
 % physical justification for this behavior). 
 
-%%
+%% Averaging the elastic stiffness of an aggregate based on EBSD data
 % for a single phase (e.g. glaucophane) the syntax is
 
-[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('g'),C_glaucophane)
+[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane)
 
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
 
-odf_gl = calcDensity(ebsd('g').orientations,'halfwidth',10*degree)
+odf_gl = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF
 % The Voigt, Reuss, and Hill averages for the above ODF are computed by
 
 [CVoigt_glaucophane, CReuss_glaucophane, CHill_glaucophane] =  ...
-  calcTensor(odf_gl,C_glaucophane)
+  calcTensor(odf_gl,C_glaucophane);
+  
+%%
+% To visualize the polycrystalline glaucophane wave velocities we can use the command
+% <stiffnessTensor.plotSeismicVelocities.html |plotSeismicVelocities|>
 
-% set back the colormap
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
+plotSeismicVelocities(CHill_glaucophane)
+
+%%
+% More details on averaging the seismic properties considering the modal composition of different phases
+% can be found in <CPOSeismicProperties.html here>
