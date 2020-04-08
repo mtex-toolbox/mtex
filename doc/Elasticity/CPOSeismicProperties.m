@@ -5,12 +5,12 @@
 % and plot its seismic properties in pole figures that can be directly
 % compare to the pole figures for CPO
 %
-% Let's first import an example dataset from the MTEX toolboox
+% Let's first import an example dataset from the MTEX toolbox
 
 mtexdata forsterite
 
 %%
-% This dataset consist of the three main phases, olivine, enstatite and
+% This dataset consists of the three main phases, olivine, enstatite and
 % diopside. As we want to plot the seismic properties of this aggregate, we
 % need (i) the modal proportions of each phase in this sample, (ii) their
 % orientations, which is given by their ODFs, (iii) the elastic constants 
@@ -159,7 +159,7 @@ odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 %%
 % Note that you do don't need to write the full name of each phase, only
 % the initial, that works when phases start with different letters. Also 
-% note that although we use EBSD data in this example, you can perform the
+% note that although we use an EBSD dataset in this example, you can perform the
 % same calculations with CPO data obtain by other methods (e.g. x-ray/neutron
 % diffraction) as you only need the ODF variable for the calculations
 %
