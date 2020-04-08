@@ -41,7 +41,7 @@ if check_option(varargin,'colored')
   end
   
   hold off
-  legend('show','interpreter','LaTeX','location','best')
+  legend({},'interpreter','LaTeX','location','best')
   
   if nargout == 0, clear h; end
   return
