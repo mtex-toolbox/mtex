@@ -87,7 +87,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 %% The Average Tensor from EBSD Data
 % The Voigt, Reuss, and Hill averages for all phases are computed by
 
-[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),C_glaucophane,C_epidote)
+[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),C_glaucophane,C_epidote);
 
 %%
 % The Voigt and Reuss are averaging schemes for obtaining estimates of the effective
@@ -120,12 +120,12 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 %% Averaging the elastic stiffness of an aggregate based on EBSD data
 % for a single phase (e.g. glaucophane) the syntax is
 
-[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane)
+[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane);
 
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
 
-odf_gl = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree)
+odf_gl = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree);
 
 
 %% The Average Tensor from an ODF
