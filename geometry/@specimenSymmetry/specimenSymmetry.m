@@ -6,6 +6,7 @@ classdef specimenSymmetry < symmetry
 %
 
 properties
+  axes = [xvector,yvector,zvector]; 
   plotOptions = {}
 end
 
@@ -42,6 +43,7 @@ end
       end
       
       s = s@symmetry(id,rot);
+      s.axes = axes;
              
     end
     
