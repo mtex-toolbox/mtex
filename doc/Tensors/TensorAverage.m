@@ -1,3 +1,5 @@
+%% Tensor Averages
+%
 %%
 % MTEX offers several ways to compute average material tensors from ODFs or
 % EBSD data. We start by importing some EBSD data of Glaucophane and
@@ -90,32 +92,37 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 [CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),C_glaucophane,C_epidote);
 
 %%
-% The Voigt and Reuss are averaging schemes for obtaining estimates of the effective
-% elastic constants in polycrystalline materials. The Voigt average assumes that
-% the elastic strain field in the aggregate is constant everywhere, so that 
-% the strain in every position is equal to the macroscopic strain of the sample. CVoigt
-% is then estimated by a volume average of local stiffnesses C(gi), where gi is the 
-% orientation given by a triplet of Euler angles and with orientation gi, and volume 
-% fraction V(i). This is formally described as
+% The Voigt and Reuss are averaging schemes for obtaining estimates of the
+% effective elastic constants in polycrystalline materials. The Voigt
+% average assumes that the elastic strain field in the aggregate is
+% constant everywhere, so that the strain in every position is equal to the
+% macroscopic strain of the sample. CVoigt is then estimated by a volume
+% average of local stiffnesses C(gi), where gi is the orientation given by
+% a triplet of Euler angles and with orientation gi, and volume fraction
+% V(i). This is formally described as
 %
 % $  \left<T\right>^{\text{Voigt}} = \sum_{m=1}^{M}  T(\mathtt{ori}_{m})$
 %
-% The Reuss average on the other hand assumes that the stress field in the aggregate is 
-% constant, so the stress in every point is set equal to the macroscopic stress. CReuss is 
-% therefore estimated by the volume average of local compliances S(gi) and can be described as
+% The Reuss average on the other hand assumes that the stress field in the
+% aggregate is constant, so the stress in every point is set equal to the
+% macroscopic stress. CReuss is therefore estimated by the volume average
+% of local compliances S(gi) and can be described as
 %
 % $ \left<T\right>^{\text{Reuss}} = \left[ \sum_{m=1}^{M}  T(\mathtt{ori}_{m})^{-1} \right]^{-1}$
 %
-% For weakly anisotropic phases (e.g. garnet), Voigt and Reuss averages are very close to each
-% other, but with increasing elastic anisotropy, the values of the Voigt and Reuss bounds vary considerably
+% For weakly anisotropic phases (e.g. garnet), Voigt and Reuss averages are
+% very close to each other, but with increasing elastic anisotropy, the
+% values of the Voigt and Reuss bounds vary considerably
 %
-% The estimate of the elastic moduli of a given aggregate nevertheless should lie between the 
-% Voigt and Reuss average bounds, as the stress and strain distributions should be somewhere 
-% between the uniform strain (Voigt bound) and uniform stress. 
+% The estimate of the elastic moduli of a given aggregate nevertheless
+% should lie between the Voigt and Reuss average bounds, as the stress and
+% strain distributions should be somewhere between the uniform strain
+% (Voigt bound) and uniform stress.
 %
-% Hill (1952) showed that the arithmetic mean of the Voigt and Reuss bounds (called Hill or 
-% Voigt-Reuss-Hill average) is very often close to the experimental values (although there is no 
-% physical justification for this behavior). 
+% Hill (1952) showed that the arithmetic mean of the Voigt and Reuss bounds
+% (called Hill or Voigt-Reuss-Hill average) is very often close to the
+% experimental values (although there is no physical justification for this
+% behavior).
 
 %% Averaging the elastic stiffness of an aggregate based on EBSD data
 % for a single phase (e.g. glaucophane) the syntax is
