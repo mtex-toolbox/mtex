@@ -5,7 +5,7 @@
 
 3. in a terminal do
 ``` bash
-./bootstrap
+./bootstrap.sh
 ./configure --with-matlab=MATLAB_DIR --enable-nfsoft --enable-nfsft --enable-portable-binary
 make
 ```
@@ -13,6 +13,6 @@ make
 4. copy the files 
 ```
 nfft/matlab/nfsoft/nfsoftmex.mex*
-nfft/matlab/nfsoft/nfsftmex.mex*
+nfft/matlab/nfsft/nfsftmex.mex*
 ```
 into directory ```mtex/extern/nfft```
