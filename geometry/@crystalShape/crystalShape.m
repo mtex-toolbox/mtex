@@ -132,10 +132,13 @@ classdef crystalShape
     
     function fC = get.faceCenter(cS)
       fC = vector3d.zeros(size(cS.F,1),1);
-      for i = 1:length(fC)
-        VId = cS.F(i,:); VId = VId(~isnan(VId));
-        fC(i) = centroid(cS.V(VId));
-      end
+      if any(~isnan(cS.F(i,:)))
+                VId = cS.F(i,:); VId = VId(~isnan(VId));
+                fC(i) = centroid(cS.V(VId));
+          else
+              fC(i)=nan;
+          end
+        end
     end
     
     function cSVol = get.volume(cS) 
