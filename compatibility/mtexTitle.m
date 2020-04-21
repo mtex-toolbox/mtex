@@ -42,7 +42,7 @@ end
 if check_option(varargin,'alignLeftOutside')
         set(h, 'horizontalAlignment', 'left');
         set(h, 'units', 'normalized');
-        h.position(1)=0;
+        h.Position(1)=0;
 elseif check_option(varargin,'alignLeftInside')
         set(h, 'horizontalAlignment', 'left');
         set(h, 'units', 'normalized');
