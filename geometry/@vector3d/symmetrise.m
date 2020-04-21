@@ -15,8 +15,11 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 %  sym  - @rotation
 %
 % Flags
-%  antipodal - include <VectorsAxes.html antipodal symmetry>
+%  antipodal     - include <VectorsAxes.html antipodal symmetry>
 %  skipAntipodal - do not include antipodal symmetry
+%  unique        - only return distinct directions, adding 'keepAntipodal'
+%                  treats axes as vectors
+%                  
 %
 % Output
 %  Sv - symmetrically equivalent vectors
