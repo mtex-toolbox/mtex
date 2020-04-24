@@ -132,6 +132,7 @@ classdef sphericalRegion
     
     function [thetaMin, thetaMax] = thetaRange(sR,rho)
       
+      if nargin == 1, rho = 0; end
       if isempty(sR.N)
         thetaMin = zeros(size(rho));
         thetaMax = pi * ones(size(rho));
