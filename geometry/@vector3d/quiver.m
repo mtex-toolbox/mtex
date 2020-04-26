@@ -25,11 +25,11 @@ sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 v = vector3d(v);
 if length(d) == length(v), d = reshape(d,size(v)); end
-d = d.orthProj(v);
 
 mhs = get_option(varargin,'MaxHeadSize',0.9*(1-d.antipodal));
 maxD = max(1e-10,max(reshape(norm(d),[],1)));
 scale = 0.01 / maxD;
+d = d.orthProj(v);
   
 res = min(15*degree,v.resolution);
 if isa(sP(1).proj,'plainProjection')

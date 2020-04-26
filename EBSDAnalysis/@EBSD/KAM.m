@@ -79,7 +79,7 @@ kam = sparse(Dl(ind),Dr(ind),omega(ind)+0.00001,length(ebsd),length(ebsd));
 kam = kam+kam';
 
 if check_option(varargin,'max')
-  kam = reshape(full(max(kam,2)),size(ebsd));
+  kam = reshape(full(max(kam,[],2)),size(ebsd));
 else
   kam = reshape(full(sum(kam,2)./sum(kam>0,2)),size(ebsd));
 end

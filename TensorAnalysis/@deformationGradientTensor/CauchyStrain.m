@@ -11,4 +11,4 @@ function epsilon = CauchyStrain(F)
 %  epsilon - @strainTensor
 %
 
-epsilon = strainTensor(F.sym - eye(3));
+epsilon = strainTensor(F.sym - tensor(eye(3),'rank',2));

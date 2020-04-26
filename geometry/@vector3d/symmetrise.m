@@ -1,13 +1,25 @@
-function [v,l] = symmetrise(v,S,varargin)
+function [v,l,sym] = symmetrise(v,S,varargin)
 % symmetrcially equivalent directions and its multiple
+%
+% Syntax
+%   vSym = symmetrise(v,S)
+%   [vSym,l,sym] = symmetrise(v,S,'unique')
 %
 % Input
 %  v - @vector3d
 %  S - @symmetry
 %
+% Output
+%  vSym - S * v  @vector3d
+%  l    - multiplicity of the crystal directions
+%  sym  - @rotation
+%
 % Flags
-%  antipodal - include <VectorsAxes.html antipodal symmetry>
+%  antipodal     - include <VectorsAxes.html antipodal symmetry>
 %  skipAntipodal - do not include antipodal symmetry
+%  unique        - only return distinct directions, adding 'keepAntipodal'
+%                  treats axes as vectors
+%                  
 %
 % Output
 %  Sv - symmetrically equivalent vectors
@@ -43,13 +55,15 @@ if check_option(varargin,'unique')
   end
   
   vSym = cell(size(v,2),1);
+  idSym = cell(size(v,2),1);
   dim1 = size(v,1);
   for j = 1:size(v,2)
-    vSym{j} = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',ap{:});
+    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',ap{:});
   end
 
   l  = cellfun(@length, vSym);
   v = vertcat(vSym{:});
+  if nargout == 3, sym = S.rot(vertcat(idSym{:})); end
   
 else
   

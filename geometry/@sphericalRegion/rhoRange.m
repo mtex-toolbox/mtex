@@ -1,6 +1,14 @@
 function [rhoMin,rhoMax] = rhoRange(sR)
 % compute range of the polar angle of a spherical region
 
+if isempty(sR.N) || ...
+    (length(sR.N) == 1 && sR.N.z~=0 && sR.alpha == 0)
+        
+  rhoMin = 0;
+  rhoMax = 2*pi;
+  return
+end
+
 % antipodal should not increase spherical region
 sR.antipodal = false;
 

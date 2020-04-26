@@ -134,13 +134,12 @@ classdef fibre
       n = varargin(cellfun(@isnumeric,varargin));
       sym = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
       
-         
-      
       h = vector3d.rand(n{:});
       r = vector3d.rand(n{:});
       f = fibre(h,r);
       
       if ~isempty(sym), f.CS = sym{1}; end
+      if length(sym)>1, f.SS = sym{2}; end
       
     end
     

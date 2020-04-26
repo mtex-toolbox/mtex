@@ -28,8 +28,7 @@ classdef axisAngleColorKey < orientationColorKey
   methods
     function oM = axisAngleColorKey(varargin)
       oM = oM@orientationColorKey(varargin{:});
-      oM.oriRef = get_option(varargin,'center',...
-        orientation.id(oM.CS1,oM.CS2));
+      oM.oriRef = get_option(varargin,'oriRef');
       
       if isa(oM.CS2,'specimenSymmetry')
         sym = specimenSymmetry;
@@ -41,9 +40,14 @@ classdef axisAngleColorKey < orientationColorKey
     end
   
     function rgb = orientation2color(oM,ori)
-      
-      omega = angle(ori,oM.oriRef);
-      v = axis(ori,oM.oriRef);
+
+      if isempty(oM.oriRef)
+        omega = angle(ori);
+        v = axis(ori);
+      else      
+        omega = angle(ori,oM.oriRef);
+        v = axis(ori,oM.oriRef);
+      end
       
       if isinf(oM.maxAngle)
         maxAngle = quantile(reshape(omega,[],1),0.8); %#ok<*PROPLC,*PROP>

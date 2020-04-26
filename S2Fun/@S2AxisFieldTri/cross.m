@@ -22,9 +22,9 @@ end
 if isa(a,'vector3d')
   sVF.values = cross(sVF.values, a);
 elseif isa(a,'S2AxisFieldTri') || isa(a,'S2VectorFieldTri')
-  sVF.values = cross(sVF.values, b.values);
+  sVF.values = cross(sVF.values, a.values);
 else
-  sVF.values = cross(sVF.values, b.eval(sVF.vertices));
+  sVF.values = cross(sVF.values, a.eval(sVF.vertices));
 end
 
 end

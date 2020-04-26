@@ -30,11 +30,14 @@ function varargout = calcTensor(ebsd,varargin)
 % See also
 % tensor/mean
 
+% consider only indexed pixels
+ebsd = ebsd.subSet(ebsd.isIndexed);
+
 % cycle through indexed phases
 for p = ebsd.indexedPhasesId
   
   % search for a fiting tensor
-  Tind = cellfun(@(t) isa(t,'tensor') && isappr(t.CS,ebsd.CSList{p}),varargin);
+  Tind = cellfun(@(t) isa(t,'tensor') && eq(t.CS,ebsd.CSList{p},'Laue'),varargin);
   if any(Tind)
     T = varargin{find(Tind,1)};
   else

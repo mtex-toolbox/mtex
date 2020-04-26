@@ -12,7 +12,7 @@ else
   try
     sym1 = obj.CS;
   catch
-    sym1 = specimenSymmetry;
+    sym1 = [];
   end
 end
 

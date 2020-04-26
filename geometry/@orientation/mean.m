@@ -24,7 +24,7 @@ function [m, o, lambda, eigv]  = mean(o,varargin)
 if isempty(o)
   m = o;
   m.a = NaN; m.b = NaN; m.c = NaN; m.d = NaN; m.i = false;
-  if nargout > 2, lambda = zeros(4); end
+  if nargout > 2, lambda = zeros(1,4); end
   if nargout > 3, eigv = eye(4); end
   return  
 elseif length(o) == 1 

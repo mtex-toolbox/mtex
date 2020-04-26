@@ -108,6 +108,9 @@ legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$','interpreter','Latex'),
 
 fN = calcDensity(xN,'range',[0;1]);
 
+% we may control the halfwidth by the option 'bandwidth'
+%fN = calcDensity(xN,'range',[0;1],'bandwidth',0.004);
+
 plot(x,f(x),'linewidth',2)
 hold on
 plot(x,fN(x),'linewidth',2)

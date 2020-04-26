@@ -159,9 +159,10 @@ function txt = tooltip(varargin)
 [r_local,id,value] = getDataCursorPos(mtexFig,length(ori));
 
 txt{1} = ['id = ' xnum2str(id)];
-txt{2} = ['(x,y) = (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+txt{2} = ['polar = (' int2str(r_local.theta/degree) mtexdegchar ',' int2str(r_local.rho/degree) mtexdegchar ')'];
+txt{3} = ['Euler = ' char(ori.subSet(id))];
 if ~isempty(value)
-  txt{3} = ['value = ' xnum2str(value)];
+  txt{4} = ['value = ' xnum2str(value)];
 end
 
 end

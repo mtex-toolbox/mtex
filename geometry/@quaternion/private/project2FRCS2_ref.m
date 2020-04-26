@@ -15,23 +15,50 @@ function [q,ics1,ics2] = project2FRCS2_ref(q,CS1,CS2,q_ref)
 %  omega - rotational angle to reference quaternion
 %
 
+% consider only proper rotations
+CS1 = CS1.properGroup;
+CS2 = CS2.properGroup;
+
 % project to fundamental region
 % note: d(CS2 * q * CS1, q_ref) = d(q, inv(CS2) * q_ref * inv(CS1))
-[qs,m,~] = unique(inv(quaternion(CS2)) * q_ref * inv(quaternion(CS1)),'antipodal'); %#ok<MINV>
-[ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],m);
+q_refSym = mtimes(times(inv(CS2.rot),q_ref,1),inv(CS1.rot),0); 
 
-% take the minimum distances to all symmetric equivalent orientations
-[~,i12] = max(abs(dot_outer(q,qs)),[],2);
-ics1 = ics1(i12);
-ics2 = ics2(i12);
+if length(q)>100000
+  
+  % maybe q_ref has some multiplicity and we can save some time
+  [q_refSym,m,~] = unique(q_refSym,'antipodal','noSymmetry'); 
+  [ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],m);
+
+  % take the minimum distances to all symmetric equivalent orientations
+  [~,i12] = max(abs(dot_outer(q,q_refSym,'noSymmetry','ignoreInv')),[],2);
+  ics1 = ics1(i12);
+  ics2 = ics2(i12);
+  
+else
+    
+  % take the minimum distances to all symmetric equivalent orientations
+  [~,ind] = max(abs(dot_outer(q,q_refSym,'noSymmetry','ignoreInv')),[],2);  
+  [ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],ind);
+  
+end
 
 % project to fundamental region
-q = reshape(CS2.subSet(ics2),[],1) .* reshape(q,[],1) .* reshape(CS1.subSet(ics1),[],1);
+q = times(times(CS2.rot.subSet(ics2), q, 1), CS1.rot.subSet(ics1),0);
+
+end
 
 % some testing code
-% cs1 = crystalSymmetry('432')
-% cs2 = crystalSymmetry('32')
-% q_ref = quaternion.rand(1,1);
-% q = quaternion.rand(100,1);
-% q_proj = project2FRCS2_ref(q,cs1,cs2,q_ref);
-% hist((angle(q_proj,q_ref) )/degree)
+function test
+ cs1 = crystalSymmetry('432');
+ cs2 = crystalSymmetry('32');
+ 
+ ori_ref = orientation.rand(cs1,cs2);
+ ori = orientation.rand(1000 ,cs1,cs2);
+ ori_proj = project2FundamentalRegion(ori,ori_ref);
+ figure(1)
+ histogram((angle(ori_proj,ori_ref,'noSymmetry')./degree))
+ figure(2)
+ histogram((angle(ori,ori_ref)./degree))
+ figure(3)
+  histogram((angle(ori,ori_ref,'noSymmetry')./degree))
+ end

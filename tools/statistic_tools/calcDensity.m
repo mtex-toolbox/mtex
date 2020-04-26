@@ -18,11 +18,12 @@ function [f,bandwidth] = calcDensity(x,varargin)
 % vector3d/calcDensity orientation/calcDensity
 
 range = get_option(varargin,'range',[min(x);max(x)]);
+varargin = delete_option(varargin,'range',1);
 
 % the one dimensional case
 if length(x) == numel(x)
-  
-  [bandwidth,density,grid] = kde(x,2^14,range(1),range(2));
+
+  [bandwidth,density,grid] = kde(x,2^14,range(1),range(2),varargin{:});
   grid = {grid};
     
 else % the multidimensional case

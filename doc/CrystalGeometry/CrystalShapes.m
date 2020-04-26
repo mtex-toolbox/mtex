@@ -212,7 +212,7 @@ end
 % parameter. This approach has been developed by J. Enderlein in
 % <https://library.wolfram.com/infocenter/Articles/3279 A package for
 % displaying crystal morphology. Mathematica Journal, 7(1), 1997>. The two
-% parameters are used to model the distance of a phase from the origin.
+% parameters are used to model the distance of a face from the origin.
 % Setting all parameters to one we obtain
 
 % take the face normals unscaled

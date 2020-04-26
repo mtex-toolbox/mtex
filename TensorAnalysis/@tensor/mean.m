@@ -9,8 +9,9 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %   TGeometric = mean(T,'geometric') % geometric mean
 %   [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
-%   [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
+%   [TVoigt, TReus, THill] = mean(ori*T,'weights',weights) % mean with respect to orientations
 %   [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
+%   [TVoigt, TReus, THill] = mean(ori,'weights',weights) % weighted mean
 %
 % Input
 %  T - @tensor

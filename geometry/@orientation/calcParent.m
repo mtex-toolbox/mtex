@@ -3,16 +3,17 @@ function [parentOri, parentId, childId] = calcParent(childOri,parentRef,p2c)
 % Syntax
 %
 %   [parentOri, parentId, childId] = calcParent(childOri,parentRef,p2c)
+%   [parentOri, parentId, childId] = calcParent(childOri,p2c)
 %
 % Input
-%  parentOri - parent @orientation
 %  childOri  - child @orientation
-%  p2c - parent to child @misorientation
+%  parentRef - parent @orientation
+%  p2c       - parent to child mis@orientation
 %
 % Output
-%  parentOri -
-%  childId   -
-%  id        - 
+%  parentOri - parent @orientation
+%  childId   - child variant Id
+%  parentid  - parent variant Id 
 %
 % Description
 %

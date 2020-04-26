@@ -10,4 +10,4 @@ function E = GreenStrain(F)
 %  epsilon - @strainTensor
 %
 
-E = 0.5 * strainTensor(F * F' - eye(3));
+E = 0.5 * strainTensor(F * F' - tensor(eye(3),'rank',2));

@@ -131,7 +131,7 @@ classdef slipSystem
      end
     
      function sS = hcp(cs,varargin)
-       warning('Maybe I should collect here all slipSystems below');      
+       warning('There are no predefined slip systems for hcp yet. You might have to define those individually.');      
      end
      
     function sS = basal(cs,varargin)

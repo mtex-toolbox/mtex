@@ -55,7 +55,7 @@ setMTEXpref('pfAnnotations',pfAnnotations);
 
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
-setMTEXpref('innerPlotSpacing',10);
+% setMTEXpref('innerPlotSpacing',10);
 
 % defaut marker size
 % set the marker size depending on the fontSize

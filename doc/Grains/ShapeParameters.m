@@ -187,17 +187,17 @@ ylabel('shape factor')
 % || <grainBoundary.grainBoundary.html *grains.boundary*>  || list of boundary segments || 
 % || <grainBoundary.grainBoundary.html *grains.innerBoundary*>  || list of inner boundary segments || 
 % || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
-% || <grain2d.paris.html *grains.paris*>  || area difference between grain and its convex hull || 
+% || <grain2d.paris.html *grains.paris*>  || 2* quotient excess perimeter of convex hull / perimeter || 
 % || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
 % || <grain2d.diameter.html *grains.diameter*>  || diameter in |grains.scanUnit|  || 
-% || <grain2d.equivalentPerimeter.html *grains.equivalentPerimeter*>  || the perimeter of the fitted ellipse  || 
-% || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || the radius of the fitted ellipse  || 
+% || <grain2d.equivalentPerimeter.html *grains.equivalentPerimeter*>  || area-equivalent perimeter  || 
+% || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || area-equivalent radius  || 
 % || *grains.grainSize* || number of measurements per grain || 
 % || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
 % || <grain2d.neighbors.html *grains.neighbors*>  || number and ids of neighboring grains  || 
 % || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in |grains.scanUnit| || 
-% || <grain2d.principalComponents.html *grains.principalComponents*>  || length and width of the fitted ellipse || 
-% || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / perimeter of the fitted ellipse || 
+% || <grain2d.principalComponents.html *grains.principalComponents*>  || angle, length and width of the fitted ellipse || 
+% || <grain2d.shapeFactor.html *grains.shapeFactor*>  || quotient perimeter / area-equivalent perimeter || 
 % || <triplePointList.triplePointList.html *grains.triplePoints*>  || list of  triple points || 
 % || *grains.x* || x coordinates of the vertices || 
 % || *grains.y* || y coordinates of the vertices || 

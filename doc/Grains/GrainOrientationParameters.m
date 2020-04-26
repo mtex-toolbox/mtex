@@ -90,11 +90,11 @@ calcBinghamODF(ori,'approximated')
 %%
 %
 
-T_spherical = bingham_test(ori,'spherical','approximated');
-T_prolate   = bingham_test(ori,'prolate',  'approximated');
-T_oblate    = bingham_test(ori,'oblate',   'approximated');
+%T_spherical = bingham_test(ori,'spherical','approximated');
+%T_prolate   = bingham_test(ori,'prolate',  'approximated');
+%T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
-[T_spherical T_prolate T_oblate]
+%[T_spherical T_prolate T_oblate]
 
 
 %%

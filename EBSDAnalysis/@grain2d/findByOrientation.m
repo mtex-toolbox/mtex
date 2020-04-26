@@ -15,7 +15,7 @@ function grains = findByOrientation( grains,ori, epsilon )
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
-if nargin == 2, epsilon = 1*dgree; end
+if nargin == 2, epsilon = 1*degree; end
 
 % restrict to the right phase
 if isa(ori,'orientation')

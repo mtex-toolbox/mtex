@@ -18,7 +18,7 @@ CS = grains.CS; % extract crystal symmetry
 
 %%
 % Next we plot the grains together with their mean orientation and
-% highlight grain 70 and grain 80
+% highlight grain 74 and grain 85
 
 plot(grains,grains.meanOrientation,'micronbar','off')
 
@@ -29,7 +29,7 @@ hold off
 text(grains([74,85]),{'1','2'})
 
 %%
-% After extracting the mean orientation of grain 70 and 80
+% After extracting the mean orientation of grain 74 and 85
 
 ori1 = grains(74).meanOrientation;
 ori2 = grains(85).meanOrientation;
@@ -68,9 +68,9 @@ mori = inv(ori1) * ori2
 
 %%
 % In the present case the misorientation describes the coordinate transform
-% from the reference frame of grain 80 into the reference frame of crystal
-% 70. Take as an example the plane {11-20} with respect to the grain 80.
-% Then the plane in grain 70 which alignes parallel to this plane can be
+% from the reference frame of grain 85 into the reference frame of crystal
+% 74. Take as an example the plane {11-20} with respect to the grain 85.
+% Then the plane in grain 74 which alignes parallel to this plane can be
 % computed by
 
 round(mori * Miller(1,1,-2,0,CS))
@@ -78,7 +78,7 @@ round(mori * Miller(1,1,-2,0,CS))
 
 %%
 % Conversely, the inverse of mori is the coordinate transform from crystal
-% 70 to grain 80.
+% 74 to grain 85.
 
 round(inv(mori) * Miller(2,-1,-1,0,CS))
 
@@ -94,8 +94,8 @@ m = Miller({1,-1,0,0},{1,1,-2,0},{-1,0,1,1},{0,0,0,1},CS);
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 80 with respect to the
-  % reference frame of grain 70
+  % plot the lattice planes of grains 85 with respect to the
+  % reference frame of grain 74
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
   hold all
@@ -142,8 +142,8 @@ mori.angle / degree
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 80 with respect to the
-  % reference frame of grain 70
+  % plot the lattice planes of grains 85 with respect to the
+  % reference frame of grain 74
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
   hold all

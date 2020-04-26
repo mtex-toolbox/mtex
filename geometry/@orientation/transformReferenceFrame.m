@@ -31,12 +31,14 @@ M = transformationMatrix(ori.CS,cs1);
 if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01 || ...
     all(norm(ori.CS.axes - cs1.axes)./norm(cs1.axes)<10^-2) || ...
     (~isempty(ori.CS.mineral) && ~isempty(cs1.mineral) && ~strcmpi(ori.CS.mineral,cs1.mineral))
-  warning('Symmetry missmatch! The following crystal frames seem to be different\n\n  %s and %s \n',char(ori.CS,'verbose'),char(cs1,'verbose'));
+  warning('Symmetry missmatch! The following crystal frames seem to be different\n\n  %s\n  %s \n',char(ori.CS,'verbose'),char(cs1,'verbose'));
 end
 
-rot = rotation(ori) * rotation('matrix',M^-1);
+if det(M)>10*eps
+  rot = rotation(ori) * rotation('matrix',M^-1);
 
-ori = orientation(rot,cs1,ori.SS);
+  ori = orientation(rot,cs1,ori.SS);
+end
 
 % do the same for the second symmetry
 if nargin == 3, ori = inv(transformReferenceFrame(inv(ori),cs2)); end

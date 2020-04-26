@@ -60,34 +60,5 @@ for ig = 1:length(grains)
   omega(omega<0)=omega(omega<0)+pi;
   
 end
-
-
-  function pl = projectionLength(Vg,varargin)
-    % return the projection length of group of vertices as a function
-    % of angle omega. For omega=0, it should be the projection
-    % length against the x= axis
-    %
-    % Input:
-    %  Vg     - list of vertices for a sngle grain
-    %  omegaP - list of angles (default 0:pi in 1 degree steps)
-    %
-    % Output:
-    %  pl     - list of projection lengths as a function of omegaP
-    %
-    
-    if nargin>1 && isnumeric(varargin{1})
-      omegaP=varargin{1};
-    else
-      omegaP=[0:1:179]*degree;
-    end
-    pl = zeros(length(omegaP),1);
-    % rotate everything
-    % TODO: maybe omit this loop
-    for j=1:length(omegaP)
-      VgR = [cos(omegaP(j)) sin(omegaP(j)); -sin(omegaP(j)) cos(omegaP(j))]*Vg';
-      pl(j)=max(VgR(1,:))-min(VgR(1,:)); % projection length
-    end
-  end
-
 end
 

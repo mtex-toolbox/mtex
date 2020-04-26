@@ -1,0 +1,18 @@
+{
+"getMTEXpref":
+{
+    "inputs":
+    [
+        {"name":"field", "kind":"flag", "type":"choices=fieldnames(getMTEXpref).'"}
+     ]
+},
+
+"setMTEXpref":
+{
+    "inputs":
+    [
+        {"name":"field", "kind":"flag", "type":"choices=fieldnames(getMTEXpref).'"}
+     ]
+}
+
+}

@@ -35,7 +35,8 @@ classdef pfSections < ODFSections
       
       oS.updateTol(oS.omega);
 
-      oS.referenceField = @(r) S2VectorField.oneSingularity;
+      oS.referenceField = S2VectorField.sigma;
+      %oS.referenceField = @(r) S2VectorField.oneSingularity;
       %oS.referenceField = @(r) pfSections.polarField(r);
 
     end

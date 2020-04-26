@@ -25,7 +25,7 @@ classdef crystalSymmetry < symmetry
 %  alpha, beta, gamma           - angles between the a, b and c axis
 %  aAxis, bAxis, cAxis          - direct crystal axes @Miller
 %  aAxisRec, bAxisRec, cAxisRec - reciprocal crystal axes @Miller
-%  axes - @vector3d 
+%  axes                         - @vector3d 
 %
 % Supported Symmetries
 %
@@ -118,8 +118,12 @@ classdef crystalSymmetry < symmetry
 
         rot = varargin{1};
         axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
-        
-        id = symmetry.rot2pointId(rot,axes);
+      
+        if check_option(varargin,'pointId')
+          id = get_option(varargin,'pointId');
+        else
+          id = symmetry.rot2pointId(rot,axes);
+        end
         
       else
         
@@ -226,6 +230,41 @@ classdef crystalSymmetry < symmetry
     cs = load(fname,varargin)
     
     cs = byElements(rot,varargin)
+    
+    function cs = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % maybe there is nothing to do
+      if isa(s,'crystalSymmetry'), cs = s; return; end
+      
+      if isfield(s,'rot')
+        rot = s.rot;
+      else
+        rot = rotation(s.a,s.b,s.c,s.d,s.i);
+      end
+      
+      if isfield(s,'axes')
+        axes = s.axes;
+      else
+        axes = [];
+      end
+      
+      if isfield(s,'id')
+        id = {'pointId',s.id};
+      else
+        id = {};
+      end
+            
+      cs = crystalSymmetry(rot,id{:},axes);
+      
+      if isfield(s,'mineral'), cs.mineral = s.mineral; end
+      if isfield(s,'color'), cs.color = s.color; end
+      if isfield(s,'opt'), cs.opt = s.opt; end
+            
+    end
+    
     
   end
     

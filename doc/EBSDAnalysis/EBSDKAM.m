@@ -42,7 +42,7 @@ ebsd(grains(grains.grainSize <= 3)) = [];
 
 grains = smooth(grains,5);
 
-plot(ebsd,ebsd.orientations)
+plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on
 plot(grains.boundary,'lineWidth',1.5)
 hold off

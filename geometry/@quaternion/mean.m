@@ -25,14 +25,15 @@ qm = q;
 if isempty(q) || all(isnan(q.a(:)))
   
   [qm.a,qm.b,qm.c,qm.d] = deal(nan,nan,nan,nan);
-  lambda = diag([0 0 0 1]);
+  lambda = [0 0 0 1];
   if nargout == 3, V = nan(4); end
   return
 elseif length(q) == 1
-  lambda = diag([0 0 0 1]);
+  lambda = [0 0 0 1];
   if nargout == 3
     T = qq(q,varargin{:});
     [V, lambda] = eig(T);
+    lambda = diag(lambda).';
   end
   return
 end
@@ -43,11 +44,11 @@ if isRobust, varargin = delete_option(varargin,'robust'); end
 
 T = qq(q,varargin{:});
 [V, lambda] = eig(T);
-l = diag(lambda);
-[~,pos] = max(l);
+lambda = diag(lambda).';
+[~,pos] = max(lambda);
 
-V = V(:,pos);
-qm.a = V(1); qm.b = V(2); qm.c = V(3); qm.d = V(4);
+VV = V(:,pos);
+qm.a = VV(1); qm.b = VV(2); qm.c = VV(3); qm.d = VV(4);
 if isa(qm,'rotation'), qm.i = false; end
 
 if isRobust && length(q)>4

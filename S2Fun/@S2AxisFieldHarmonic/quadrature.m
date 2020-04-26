@@ -27,9 +27,16 @@ end
 sAF = S2AxisFieldHarmonic(sF);
 
 function Ma = g(nodes)
-v = f(nodes);
-[x,y,z] = double(v);
-Ma = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
+  
+  if isa(f,'function_handle')
+    v = f(nodes);
+  else
+    v = f.eval(nodes);
+  end
+  
+  [x,y,z] = double(v);
+  Ma = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
+  
 end
 
 end
