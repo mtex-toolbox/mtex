@@ -56,8 +56,8 @@ if nargin >= 2 && isa(varargin{1},'orientation')
   rl = r * inv(l);
 
   d = -inf;
-  irMax = zeros(size(q21));
-  ilMax = zeros(size(q21));
+  irMax = ones(size(q21));
+  ilMax = ones(size(q21));
   for il = 1:length(l)
     for ir = 1:length(r)
       dLocal = abs(dot(q21,rl(ir,il)));
