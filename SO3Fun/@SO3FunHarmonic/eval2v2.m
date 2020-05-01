@@ -1,5 +1,5 @@
-function f = eval2v2(SO3F,ori,varargin)
-
+function [f,time] = eval2v2(SO3F,ori,varargin)
+tic;
 N = SO3F.bandwidth;
 
 % precompute wigner d -> n x k x j AND bring f_hat in the form n x k x l
@@ -22,6 +22,7 @@ G=ones(N+1,2*N+1,2*N+1,2*N+1).*fhat ...
 
 ghat(2:end,2:end,2:end) = sum(G);
 
+time=toc;
 
 % NFFT
 M = length(ori);

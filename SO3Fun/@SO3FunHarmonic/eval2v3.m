@@ -1,33 +1,20 @@
-function [f,time] = eval2(SO3F,ori,varargin)
+function [f,time] = eval2v3(SO3F,ori,varargin)
 
 tic
 N = SO3F.bandwidth;
 
-% precompute wigner d -> n x k x j
-d = zeros(N+1,2*N+1,2*N+1);
-for n = 0:N  
-  d(n+1,N+1+(-n:n),N+1+(-n:n)) = Wigner_D(n,pi/2);  
-end
-%L = 3; int16(4^L*squeeze(d(L+1,:,:)).^2)
-
-% bring f_hat in the form n x k x l
-fhat = zeros(N+1,2*N+1,2*N+1);
-for n = 0:N
-  fhat(n+1,N+1+(-n:n),N+1+(-n:n)) = ...
-    reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),1,2*n+1,2*n+1);
-end
-
 % ghat -> k x l x j
 % we need to make it 2N+2 as the index set of the NFFT is -(N+2) ... N+1
-ghat = zeros(2*N+2,2*N+2,2*N+2);
+ghat=zeros(2*N+2,2*N+2,2*N+2);
 
-for j = -N:N
-    
-  dj = d(:,:,N+1+j);
-  gj = fhat .* dj .* permute(dj,[1,3,2]);
-    
-  ghat(2:end,2:end,N+2+j) = sum(gj);
-   
+for n=0:N
+
+Fhat=reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
+
+d=Wigner_D(n,pi/2);
+D=permute(d,[1,3,2]).*permute(d,[3,1,2]).*Fhat;
+
+ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n))=ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n))+D;
 end
 
 time=toc;
