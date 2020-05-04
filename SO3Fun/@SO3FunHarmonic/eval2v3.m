@@ -23,6 +23,15 @@ if SO3F.isReal
   pm = -reshape((-1).^(1:(2*N+1)^2),[2*N+1,2*N+1]);
   ghat(2:end,2:end,N+2+(1:N)) = flip(ghat(2:end,2:end,N+2+(-N:-1)),3) .* pm;
   
+  % actually we should also have ghat(k,l,j) = conj(ghat(k,l,j))
+  % lets check this
+  
+  % ghat(2:end,2:end,2:end) = conj(flip(flip(flip(ghat(2:end,2:end,2:end),1),2),3));
+  
+  % this seems to work an allows us to reduce computational time again by
+  % factor 2
+  
+  
 else
   for n=0:N
 
@@ -40,7 +49,7 @@ tic
 M = length(ori);
 
 % alpha, beta, gamma
-% this quite different from the paper I gave you - I do not why
+% this quite different from the paper I gave you - I do not know why
 abg = Euler(ori,'nfft')'./(2*pi);
 abg = (abg + [-0.25;0;0.25]);
 abg = [abg(2,:);abg(1,:);abg(3,:)];
