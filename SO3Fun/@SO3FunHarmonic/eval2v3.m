@@ -1,4 +1,4 @@
-function [f,time] = eval2v3(SO3F,ori,varargin)
+function f = eval2v3(SO3F,ori,varargin)
 
 tic
 N = SO3F.bandwidth;
@@ -7,18 +7,35 @@ N = SO3F.bandwidth;
 % we need to make it 2N+2 as the index set of the NFFT is -(N+2) ... N+1
 ghat=zeros(2*N+2,2*N+2,2*N+2);
 
-for n=0:N
+if SO3F.isReal
+% if SO3F is real valued the Fourier coefficients are symmetric with
+% respect to j, we can use this to speed up computation
 
-Fhat=reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
+  for n=0:N
 
-d=Wigner_D(n,pi/2);
-D=permute(d,[1,3,2]).*permute(d,[3,1,2]).*Fhat;
+    Fhat=reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
 
-ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n))=ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n))+D;
+    d = Wigner_D(n,pi/2); d = d(:,1:n+1);
+    D = permute(d,[1,3,2]) .* permute(d,[3,1,2]) .* Fhat;
+  
+    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:0)) = ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:0)) + D;
+  end
+  pm = -reshape((-1).^(1:(2*N+1)^2),[2*N+1,2*N+1]);
+  ghat(2:end,2:end,N+2+(1:N)) = flip(ghat(2:end,2:end,N+2+(-N:-1)),3) .* pm;
+  
+else
+  for n=0:N
+
+    Fhat=reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
+
+    d=Wigner_D(n,pi/2);
+    D = permute(d,[1,3,2]) .* permute(d,[3,1,2]) .* Fhat;
+
+    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) = ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) + D;
+  end
 end
-
-time=toc;
-
+toc
+tic
 % NFFT
 M = length(ori);
 
@@ -47,7 +64,8 @@ nfftmex('set_f_hat',plan,ghat(:));
 % fast fourier transform
 nfftmex('trafo',plan);
 
+
 % get function values from plan
 f = nfftmex('get_f',plan);
-
+toc
 end
