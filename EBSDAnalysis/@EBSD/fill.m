@@ -14,9 +14,13 @@ if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 % the values to be filled
 nanId = isnan(ebsd.phaseId);
 
-F = TriScatteredInterp([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
-  find(~nanId),'nearest'); %#ok<DTRIINT>
-newId = fix(F(ebsd.prop.x(nanId),ebsd.prop.y(nanId)));
+F = scatteredInterpolant([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
+  find(~nanId),'nearest','none'); 
+
+newId = F(ebsd.prop.x(nanId),ebsd.prop.y(nanId));
+
+nanId(nanId) = ~isnan(newId);
+newId(isnan(newId)) = [];
 
 % interpolate phaseId
 ebsd.phaseId(nanId) = ebsd.phaseId(newId);
