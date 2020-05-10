@@ -28,11 +28,18 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
     
   methods
     
-    function S3G = homochoricSO3Grid(cs,ss,varargin)
+    function S3G = homochoricSO3Grid(varargin)
       
-      S3G.CS = cs;
-      S3G.SS = ss;
-      S3G.oR = fundamentalRegion(cs,ss,varargin{:});
+      if ~isempty(varargin) && isa(varargin{1},'symmetry')
+        S3G.CS = varargin{1};
+        varargin(1) = [];
+      end
+      if ~isempty(varargin) && isa(varargin{1},'symmetry')
+        S3G.SS = varargin{1};
+        varargin(1) = [];
+      end
+      
+      S3G.oR = fundamentalRegion(S3G.CS,S3G.SS,varargin{:});
       S3G.antipodal = check_option(varargin,'antipodal');
       
       S3G.res = get_option(varargin,'resolution',5*degree);
@@ -56,6 +63,9 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       S3G.c = q(:,3);
       S3G.d = q(:,4);
       S3G.i = false(size(S3G.a));
+      
+      % normalize
+      S3G = normalize(S3G);
       
     end
     
