@@ -40,17 +40,21 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       end
       
       S3G.oR = fundamentalRegion(S3G.CS,S3G.SS,varargin{:});
+      S3G.oR = fundamentalRegion(cs,ss,varargin{:});
       S3G.antipodal = check_option(varargin,'antipodal');
       
       S3G.res = get_option(varargin,'resolution',5*degree);
       
       % compute the resolution for the cubegrid
-      % each edge of the cube is splitted into N intervals -> N+1 points
-      % each interval has the length hres
-      hres = S3G.res/2/pi^(1/3);
+      % N points on the interval [-pi^(2/3)/2,pi^(2/3)/2] give
+      %   hres = pi^(2/3)/N = 2*pi / (2*pi(1/3)) * S3G.res
+      N = round(2 * pi / S3G.res);
+      hres = pi^(2/3) / N;
       
       % generate the grid on the cube
-      [X,Y,Z] = meshgrid(-pi^(2/3)/2 : hres : pi^(2/3)/2);
+      % opposite points on the surface of the cube represent the same rotation
+      % thus the grid is shifetd by hres/2 -> no points on the surface
+      [X,Y,Z] = meshgrid(-pi^(2/3)/2+hres/2 : hres : pi^(2/3)/2-hres/2);
       
       % write all coordniates of the N points (X,Y,Z) into an (N,3) array XYZ
       XYZ = [X(:),Y(:),Z(:)];
@@ -66,17 +70,15 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       
       % normalize
       S3G = normalize(S3G);
-      
     end
-    
     
     
     function ind = sub2ind(S3G, ix, iy, iz)
       
       % grid position to index in S3G
-      % each edge of the cube is splitted into N intervals -> N+1 points
+      % N points along each axis
       N = round(2 * pi / S3G.res);
-      ind = (iz-1)*(N+1)^2 + (ix-1)*(N+1) + iy;
+      ind = (iz-1)*N^2 + (ix-1)*N + iy;
       
       % we should take care about boundary effects
       

@@ -17,16 +17,11 @@ p = regionId(XYZ);
 permRegion  = [2 3 1;3 2 1;1 3 2;3 1 2;1 2 3;2 1 3]; 
 ipermRegion = [3 1 2;3 2 1;1 3 2;2 3 1;1 2 3;2 1 3];
 
-permXYZ  = ones(size(XYZ,1),3);
-ipermXYZ = permXYZ;
-
 %  permXYZ contains for each point its permutation 
 % ipermXYZ contains for each point its inverse permutation
-for i=1:size(XYZ,1)
-    permXYZ(i,:)  =  permRegion(p(i),:);
-    ipermXYZ(i,:) = ipermRegion(p(i),:);
-end
 
+permXYZ  =  permRegion(p,:);
+ipermXYZ = ipermRegion(p,:);
 
 % apply the permutation on each grid point
 XYZ = XYZ(sub2ind(size(XYZ), (1:size(XYZ,1)).' * [1 1 1] ,permXYZ));

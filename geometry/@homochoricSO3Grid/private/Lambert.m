@@ -9,10 +9,9 @@ function xyz = Lambert(q)
 % Output:   xyz (dimension (N,3) array) - coordniates of N points (x,y,z) of the ball 
 
 A = sqrt(1 - q(:,1).^2);
-A(A==0) = 1;
+A(abs(A)<0.000001) = 1;
 B = (3/2 * (acos(abs(q(:,1))) - abs(q(:,1)) .* A)).^(1/3);
-C = B ./ A;
 
-xyz = C .* q(:,2:4);
+xyz = B ./ A .* q(:,2:4);
 
 end
