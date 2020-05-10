@@ -22,7 +22,7 @@ function [id,dist] = find(S3G,ori,varargin)
 %  dist - misorientation angle
 %
 
-ori = project2FundamentalRegion(ori);
+ori = project2FundamentalRegion(ori,S3G.CS,S3G.SS);
 
 % translate input (ori) into cubochoric coordinates
 qin = [ori.a(:),ori.b(:),ori.c(:),ori.d(:)];
