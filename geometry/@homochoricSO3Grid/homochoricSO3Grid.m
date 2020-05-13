@@ -40,7 +40,6 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       end
       
       S3G.oR = fundamentalRegion(S3G.CS,S3G.SS,varargin{:});
-      S3G.oR = fundamentalRegion(cs,ss,varargin{:});
       S3G.antipodal = check_option(varargin,'antipodal');
       
       S3G.res = get_option(varargin,'resolution',5*degree);
