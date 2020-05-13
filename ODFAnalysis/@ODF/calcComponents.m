@@ -61,6 +61,7 @@ weights = accumarray(id2,weights);
 finished = false(size(modes));
 
 for k = 1:maxIter
+  progress(k,maxIter,' finding ODF components: ');
 
   % gradient
   g = normalize(odf.grad(modes(~finished)),1);
@@ -72,7 +73,7 @@ for k = 1:maxIter
   line_v = odf.eval(line_ori);
   
   % take the maximum
-  [m,id] = max(line_v,[],2);
+  [~,id] = max(line_v,[],2);
     
   % update orientions
   modes(~finished) = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));

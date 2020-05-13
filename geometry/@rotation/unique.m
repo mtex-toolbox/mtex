@@ -1,18 +1,26 @@
-function [r,m,n] = unique(r,varargin)
+function [r,ir,iu] = unique(r,varargin)
 % disjoint list of rotations
 %
 % Syntax
-%   r = unique(r)
-%   r = unique(r,'tolerance',0.01)
-%   [r,m,n] = unique(r)
+%   u = unique(r)
+%   u = unique(r,'tolerance',0.01)
+%   [u,ir,iu] = unique(r)
 %
 % Input
-%  r - @rotation
+%  r   - @rotation
+%  tol - double (default 1e-3)
 %
 % Output
-%  r - @rotation
-
-% split according to inversion
+%  u - @rotation
+%  ir - index such that u = r(ir)
+%  iu - index such that r = u(iu)
+%
+% Flags
+%  stable - prevent sorting
+%
+% see also
+% unique
+%
 
 a = r.a(:);
 b = r.b(:);
@@ -24,15 +32,21 @@ abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d,i];
 
 tol = get_option(varargin,'tolerance',1e-3);
 
-try
-  [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-catch
-  [~,m,n] = unique(round(abcd./tol),'rows');
+% in case it should not be sorted
+if check_option(varargin,'stable')
+  varargin = {'stable'};
+else
+  varargin= {};
 end
 
+% for some reason this is quite slow
+% [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
+
+[~,ir,iu] = unique(round(abcd./tol),'rows',varargin{:});
+
 % remove duplicated points
-r.a = a(m);
-r.b = b(m);
-r.c = c(m);
-r.d = d(m);
-r.i = i(m);
+r.a = a(ir);
+r.b = b(ir);
+r.c = c(ir);
+r.d = d(ir);
+r.i = i(ir);

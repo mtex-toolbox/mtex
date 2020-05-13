@@ -1,14 +1,26 @@
-function [q,m,n] = unique(q,varargin)
+function [q,iq,iu] = unique(q,varargin)
 % disjoint list of quaternions
 %
 % Syntax
-%   q = unique(q)
+%   u = unique(q)
+%   u = unique(q,'tolerance',tol)
+%   [u,iq,iu] = unique(q)
 %
 % Input
-%  q - @quaternion
+%  q   - @quaternion
+%  tol - double (default 1e-3)
 %
 % Output
-%  q - @quaternion
+%  u - @quaternion
+%  iq - index such that u = q(iq)
+%  iu - index such that q = u(iu)
+%
+% Flags
+%  stable - prevent sorting
+%
+% see also
+% unique
+%
 
 % maybe there is nothing to do
 if length(q) == 1 && nargout <= 1, return; end
@@ -25,16 +37,22 @@ else
   abcd = [a,b,c,d];
 end
 
-tol = get_option(varargin,'tolerance',1e-3);
-
-try
-  [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-catch
-  [~,m,n] = unique(round(abcd ./ tol),'rows');
+% in case it should not be sorted
+if check_option(varargin,'stable')
+  varargin = {'stable'};
+else
+  varargin= {};
 end
 
+tol = get_option(varargin,'tolerance',1e-3);
+
+% for some reason this is very slow 
+%[~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
+
+[~,iq,iu] = unique(round(abcd ./ tol),'rows',varargin{:});
+
 % remove duplicated points
-q.a = q.a(m);
-q.b = q.b(m);
-q.c = q.c(m);
-q.d = q.d(m);
+q.a = q.a(iq);
+q.b = q.b(iq);
+q.c = q.c(iq);
+q.d = q.d(iq);

@@ -1,27 +1,39 @@
-function [m,ndx,pos] = unique(m,varargin)
-% disjoint list of Miller indices
+function [m,im,iu] = unique(m,varargin)
+% disjoint list of Miller indices%
 %
 % Syntax
-%   m = unique(m)           % 
-%   [m,ndx,pos] = unique(m) %
+%   u = unique(m) % find disjoined elements of the vector v
+%   u = unique(m,'tolerance',0.01) % use tolerance 0.01
+%   [u,im,iu] = unique(m,varargin)] 
 %
 % Input
-%  m - @Miller
+%  m   - @Miller
+%  tol - double (default 1e-7)
 %
 % Output
-%  m - @Miller
+%  u - @Miller
+%  im - index such that u = m(im)
+%  iu - index such that m = u(iu)
+%
+% Flags
+%  stable     - prevent sorting
+%  noSymmetry - ignore symmetry
+%
+% see also
+% unique
+%
 
 if check_option(varargin,'noSymmetry')
     
-  [~,ndx,pos] = unique@vector3d(m,varargin{:});
+  [~,im,iu] = unique@vector3d(m,varargin{:});
   
 else
   v = vector3d(symmetrise(m,varargin{:}));
   
-  [tmp1,tmp2,pos] = unique(v,varargin{:}); %#ok<ASGLU>
+  [~,~,iu] = unique(v,varargin{:});
 
-  [tmp,ndx,pos] = unique(min(reshape(pos,size(v)),[],1)); %#ok<ASGLU>
+  [~,im,iu] = unique(min(reshape(iu,size(v)),[],1));
  
 end
 
-m = m.subSet(ndx);
+m = m.subSet(im);
