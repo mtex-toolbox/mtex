@@ -3,7 +3,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Syntax
 %   [modes, volume] = calcComponents(odf)
-%   [modes, weights,centerId] = calcComponents(odf,'seed',ori)
+%   [modes, volume, centerId] = calcComponents(odf,'seed',ori)
 %
 % Input
 %  odf - @ODF 
@@ -16,6 +16,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Options
 %  resolution - search-grid resolution
+%  exact      - do not dismiss very small modes at the end
 %
 % Example
 %
@@ -96,6 +97,13 @@ modes = modes(id);
 iid(id) = 1:length(id);
 centerId = iid(centerId);
 
+if ~check_option(varargin,'exact')
+  id = weights > 0.01;
+  weights = weights(id);
+  modes = modes(id);
+  centerId = centerId(id);
+end
+  
 % weights = [2 1 5 3 4] -> [1 2 3 4 5]
 % id -> [2 1 5 3 4]
 % centerId = 3 -> 5 
