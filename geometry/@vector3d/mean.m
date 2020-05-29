@@ -49,12 +49,15 @@ else
   if check_option(varargin,'weights')
     v = v .* reshape(get_option(varargin,'weights'),size(v));
     varargin = delete_option(varargin,'weights',1);
-  end
     
-  m = sum(v,varargin{:});
+    m = sum(v,varargin{:});
+    
+  else
+    m = sum(v,varargin{:});
+    m = (length(m)./length(v)) .* m;
+  end
+  
 end
-
-m = m .normalize;
 
 if isRobust && length(v)>4
   omega = angle(m,v);
