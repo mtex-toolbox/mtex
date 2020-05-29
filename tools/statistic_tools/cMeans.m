@@ -1,4 +1,4 @@
-classdef cmeans < kmeans
+classdef cMeans < kMeans
   
   properties
     m = 1.5 % fuzzifier
@@ -6,7 +6,7 @@ classdef cmeans < kmeans
   
   methods
     
-    function cm = cmeans(n) 
+    function cm = cMeans(n) 
       cm.n = n;  
     end
     
