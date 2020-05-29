@@ -12,7 +12,8 @@ elseif numel(subs)==2 && ischar(subs{1}) && strcmpi(subs{1},'id')
   end
   return
 else
-  ind = true(length(ebsd),1);
+  %ind = true(length(ebsd),1);
+  ind = true(size(ebsd));
 end
   
 for i = 1:length(subs)
@@ -43,11 +44,11 @@ for i = 1:length(subs)
       end
     end
     
-    phaseId = ebsd.phaseId;
+    phaseId = reshape(ebsd.phaseId,size(ebsd));
     phaseId(isnan(phaseId)) = 1+numel(phases);
     phases(end+1) = false;
     
-    ind = ind & phases(phaseId(:));
+    ind = ind & phases(phaseId);
     
   elseif isa(subs{i},'symmetry')
     

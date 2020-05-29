@@ -243,6 +243,7 @@ classdef phaseList
     function isInd = get.isIndexed(pL)
       notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
       isInd = ~any(ismember(pL.phaseId,notIndexedPhase),2);
+      isInd = reshape(isInd, size(pL));
     end
     
     function out = isempty(pL)
