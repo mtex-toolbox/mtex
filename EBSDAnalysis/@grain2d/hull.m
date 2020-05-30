@@ -19,8 +19,8 @@ end
 grains.boundary.F = F;
 grains.boundary.ebsdId = NaN(size(F));
 bs = cellfun(@length,grains.poly);
-grains.boundary.grainId = repelem(grains.id,bs-1) * [1,0];
-grains.boundary.phaseId = [repelem(grains.phaseId,bs-1), ones(size(F,1),1)];
+grains.boundary.grainId = repelem(grains.id,bs-1,1) * [1,0];
+grains.boundary.phaseId = [repelem(grains.phaseId,bs-1,1), ones(size(F,1),1)];
 grains.boundary.triplePoints = triplePointList;
 
 end
