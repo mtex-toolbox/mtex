@@ -50,21 +50,56 @@ hold off
 
 chGrains.boundary
 
+%% Deviation from fully convex shapes
 
-%%
-% We may now investigate the difference between original grains and their
-% convex hull. An example is the relative difference in area 
+% There are various measures to describe the deviation from fully convex
+% shapes, i.e. the lobateness of grains. Many of these are based on the
+% differences between the convex hull of the grain and the grain itself.
+% Depending on the type of deviation from the fully convex shape, some
+% measures might be more appropriate over others.
 
-plot(grains,(chGrains.area-grains.area)./grains.area)
-setColorRange([0,0.5])
+mtexdata testgrains
 
+% We will select a few interesting grains.
+id = [4 5 20 22 26 27 29 34 42 44 49 51 50]
 
-%%
+% Smoothing of grains is necessary since otherwise many grain
+% segments are either vertical or horizontal (for a square grid) 
+% and perimeters rather measure the "cityblock" distance.
+% See also https://t.co/1vQ3SR8noy?amp=1 for examples.
+% Note, that for very small grains, the error between the smoothed grains
+% and their convex hull may lead to unsatisfactory results.
+sgrains = smooth(grains('id',id),3)
+
+% Next we get the area and the perimeter of the convex hull of grains
+[harea, hperim]=convexhullProps(sgrains)
+
+% One measure is the relative difference between the grain perimeter and
+% the perimeter of the convex hull. It most strongly discriminizes grains
+% with thin, narrow indenting parts, e.g. fracture which not entirely
+% dissect a grain.
+deltP = (sgrains.perimeter-hperim')./sgrains.perimeter*100;
+plot(sgrains,deltP)
+mtexTitle('deltP')
+
+% The relative difference between the grain area and the area within the
+% convex hull is more indicative for a broad lobateness of grains
+deltA = (harea' - sgrains.area)./sgrains.area*100;
+nextAxis
+plot(sgrains,deltA)
+mtexTitle('deltA')
+
+% The total deviation from the fully convex shape can be expressed by
+radiusD = sqrt(deltP.^2+deltA.^2);
+nextAxis
+plot(sgrains,radiusD)
+mtexTitle('radiusD')
+
 % A similar measure is the <grain2d.paris.html paris> which stands
-% for Percentile Average Relative Indented Surface and gives the relative
+% for Percentile Average Relative Indented Surface and gives the
 % difference between the actual perimeter and the perimeter of the convex
-% hull.
-
-plot(grains,grains.paris)
-mtexColorbar('title','paris')
-
+% hull, relative to the convex hull.
+nextAxis
+plot(sgrains,sgrains.paris)
+mtexTitle('paris factor')
+mtexColorbar
