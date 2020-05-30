@@ -109,7 +109,7 @@ fid = fopen([mfilename('fullpath') '.m'],'r');
 A = char(fread(fid,'char')');
 fclose(fid);
 
-data = regexp(A,'function(.*?)(?<type>(ebsd|pf))(.*?)mtexdata_(?<name>\w*)','names');
+data = regexp(A,'function(.*?)(?<type>(ebsd|pf||grains))(.*?)mtexdata_(?<name>\w*)','names');
 data(cellfun('isempty',{data.name})) = [];
 
 
@@ -309,11 +309,17 @@ function ebsd = mtexdata_titanium
     'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
     'x' 'y' 'grainId'});
 
- 
-  function ebsd = mtexdata_ferrite
+% ----------------------------------------------------------------------
+function ebsd = mtexdata_ferrite
 
 fname = fullfile(mtexDataPath,'EBSD','ferrite.ang');
 ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame','setting 2');
+
+% ----------------------------------------------------------------------
+function grains = mtexdata_testgrains
+
+fname = fullfile(mtexDataPath,'testgrains.mat');
+grains = load(fname);
 
  
  
