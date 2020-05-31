@@ -9,7 +9,7 @@
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains
-grains = smooth(grains('id',[4 5 20 22 26 27 29 34 42 44 49 51 50]),3);
+grains = smooth(grains('id',[4 5 20 22 26 27 29 34 42 44 49 51]),3);
 
 %%
 % <grain2d.smooth.html Smoothing> of grains is necessary since otherwise
@@ -23,19 +23,22 @@ grains = smooth(grains('id',[4 5 20 22 26 27 29 34 42 44 49 51 50]),3);
 % <grain2d.hull.html |hull|>. The result is a list of convex grains which
 % can be analyzed almost analogously like the original list of grains.
 
+% compute convex hull grains
 chGrains = grains.hull;
 
-plot(grains,'micronbar','off')
-legend off
+% plot the original grains
+plot(grains,'micronbar','off'), legend off
+
+% and on top of them the convex hull
 hold on
 plot(chGrains.boundary,'lineWidth',2,'lineColor','r')
 hold off
 
 %%
-% One major difference is that the grains may now overlap. Accordingly, a
-% boundary of the convex hull is not a boundary between two adjecent grains
-% anymore. Therefore, the second phase in all boundary segments is set to
-% not indexed.
+% One major difference is that grains may now overlap but their convex
+% hulls usually do. Accordingly, the boundaries of the convex hull grains
+% are not a boundaries between adjecent grains and, therefore, the second
+% phase in all convex hull boundary segments is set to |'notIndexed'|.
 %
 %% Deviation from fully convex shapes
 %
@@ -80,7 +83,6 @@ mtexTitle('deltaP')
 nextAxis
 plot(grains,grains.paris,'micronbar','off')
 mtexTitle('paris')
-
 
 nextAxis
 plot(grains,deltaA,'micronbar','off')

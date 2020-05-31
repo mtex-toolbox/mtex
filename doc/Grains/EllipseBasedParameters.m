@@ -8,8 +8,8 @@
 % || <grain2d.centroid.html |grains.centroid|>  || midpoint of the ellipse || 
 % || <grain2d.longAxis.html |grains.longAxis|>  || long axis of the ellipse ||
 % || <grain2d.shortAxis.html |grains.shortAxis|>  || short axis of the ellipse ||
-% || <grain2d.aspectRatio.html |grains.aspectRatio|>  || quotient long axis / short axis||
-% || <grain2d.equivalentPerimeter.html |grains.equivalentPerimeter|>  || perimeter of the ellipse|| 
+% || <grain2d.aspectRatio.html |grains.aspectRatio|>  || quotient long axis / short axis ||
+% || <grain2d.equivalentPerimeter.html |grains.equivalentPerimeter|>  || perimeter of the ellipse || 
 % || <grain2d.equivalentRadius.html |grains.equivalentRadius|>  || radius of the ellipse || 
 % || <grain2d.shapeFactor.html |grains.shapeFactor|>  || quotient grain perimeter / ellipse perimeter || 
 % || <grain2d.principalComponents.html |grains.principalComponents|>  || angle, length and width of the fitted ellipse || 

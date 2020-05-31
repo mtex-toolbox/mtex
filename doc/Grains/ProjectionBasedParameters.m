@@ -6,8 +6,6 @@
 % parameters.
 %
 % || <grain2d.calliper.html |grains.calliper|>  || calliper or Feret diameter ||
-% || <grain2d.boundarySize.html |grains.boundarySize|>  || number of boundary segments || 
-% || <grain2d.paris.html |grains.paris|>  || 2| quotient excess perimeter of convex hull / perimeter || 
 % || <grain2d.diameter.html |grains.diameter|>  || diameter in |grains.scanUnit|  || 
 % || <grain2d.paror.html |grains.paror|>  || cummulative particle projection function  || 
 %
@@ -43,7 +41,7 @@ hold off
 %
 % The most well known projection based paramter  is the
 % <grain2d.diamter.html |diameter|> which refers to the longest distance
-% between any two boundary points and is given im |µm|
+% between any two boundary points and is given in µm.
 
 grains(9).diameter
 
