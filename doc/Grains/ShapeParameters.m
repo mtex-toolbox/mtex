@@ -7,7 +7,7 @@
 % properties based on fitted ellipses>, <HullBasedParameters.html convex
 % hull bases properties>, <ProjectionBasesParameters.html projection bases
 % properties>. The table below summarizes the shape parameters discussed on
-% this page
+% this page.
 %
 % || |grains.grainSize| || number of measurements per grain || 
 % || <grain2d.area.html |grains.area|>  || grain area in square |grains.scanUnit| || 
@@ -79,7 +79,7 @@ grains(9).diameter
 % grain. By definition the caliper is the length of a grain when projected
 % onto a line. Hence, the length of the longest projection is coincides
 % with the diameter, while the quotient between longest and shortest
-% projection gives an indication about the shape of the grain
+% projection gives an indication about the shape of the grain.
 
 grains(9).calliper('longest')
 grains(9).calliper('shortest')
@@ -123,4 +123,3 @@ ylabel('shape factor')
 
 %%
 % Obviously, there is a strong correlation between those two quantities.
-s
