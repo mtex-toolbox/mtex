@@ -11,7 +11,7 @@ for i = 1:length(grains)
   p = grains.poly{i}([ind(:,1);ind(1,1)].');
   grains.poly{i} = p;
    
-  F = [F;[p(1:end-1).',p(2:end).']];
+  F = [F;[p(1:end-1).',p(2:end).']]; %#ok<AGROW>
   
 end
 
@@ -22,5 +22,7 @@ bs = cellfun(@length,grains.poly);
 grains.boundary.grainId = repelem(grains.id,bs-1,1) * [1,0];
 grains.boundary.phaseId = [repelem(grains.phaseId,bs-1,1), ones(size(F,1),1)];
 grains.boundary.triplePoints = triplePointList;
+grains.innerBoundary = grainBoundary;
+grains.inclusionId = zeros(size(grains.inclusionId));
 
 end
