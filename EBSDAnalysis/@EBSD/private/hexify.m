@@ -1,5 +1,8 @@
 function [ebsdGrid,newId] = hexify(ebsd,varargin)
 
+% allow to run again even if already EBSDhex
+ebsd=EBSD(ebsd);
+
 % extract new unitCell
 unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
