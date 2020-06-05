@@ -169,8 +169,9 @@ try
   % reconstruct empty points previously removed by loadHelper
   % gridify might be easiest
   ebsd=ebsd.gridify;
-  ebsd(isnan(ebsd.rotations)).phase=notIndexedID;
+  ind_no = isnan(ebsd.rotations);
   ebsd=EBSD(ebsd);
+  ebsd(ind_no(:)).phase=notIndexedID;
   
 catch
   interfaceError(fname);
