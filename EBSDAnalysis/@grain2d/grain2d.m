@@ -35,7 +35,7 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Hidden = true)
-    inclusionId = [];
+    inclusionId = []; % number of elements in poly that model inclusions
   end
   
   % general properties
