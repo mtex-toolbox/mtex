@@ -17,7 +17,9 @@ function [v,iv,iu] = unique(v,varargin)
 %  iv - index such that r = u(iv)
 %
 % Flags
-%  stable - prevent sorting
+%  stable      - prevent sorting
+%  antipodal   - tread vectors as axes
+%  noAntipodal - ignore antipodal symmetry
 %
 % see also
 % unique
@@ -27,7 +29,7 @@ x = v.x(:);
 y = v.y(:);
 z = v.z(:);
 
-if check_option(varargin,'antipodal') || v.antipodal
+if (check_option(varargin,'antipodal') || v.antipodal) && ~check_option(varargin,'noAntipodal')
   xyz = [x.^2,y.^2,z.^2,x.*y,x.*z,y.*z];  
 else
   xyz = [x,y,z];  

@@ -1,15 +1,31 @@
 function inside = checkInside(sR,v,varargin)
 % check for points to be inside the spherical region
+%
+% Syntax
+%
+%   inside = checkInside(sR,v)
+%   inside = checkInside(sR,v,'noAntipodal')
+%
+% Input
+%  sR - @sphericalRegion
+%  v  - @vector3d
+%
+% Output
+%  isInside - logical
+%
+% Options
+%  noAntipodal - ignore antipodal symmetry
+% 
   
 % for antipodal symmetry check v and -v
 if (sR.antipodal || check_option(varargin,'antipodal')) && ...
-    ~check_option(varargin,'removeAntipodal')
+    ~check_option(varargin,'noAntipodal')
   sR.antipodal = false;
   inside = checkInside(sR,v) | checkInside(sR,-v);
   return
 end
 
-if check_option(varargin,'removeAntipodal')
+if check_option(varargin,'noAntipodal')
   v.antipodal = false;
 end
 

@@ -15,6 +15,6 @@ function n = multiplicity(m,varargin)
 %  skipAntipodal - do not include antipodal symmetry
 
 
-[~,n] = symmetrise(m,'unique','keepAntipodal');
+[~,n] = symmetrise(m,'unique','noAntipodal');
 
 n = numSym(m.CS) ./ n;

@@ -9,7 +9,7 @@ if numSym(f.CS) > 1
 
   if check_option(varargin,'unique')
 
-    [f.h,l,sym] = symmetrise(f.h,f.CS,'unique','keepAntipodal');
+    [f.h,l,sym] = symmetrise(f.h,f.CS,'unique','noAntipodal');
 
     o1 = repelem(f.o1,l);
     o2 = repelem(f.o2,l);
@@ -30,7 +30,7 @@ if numSym(f.SS) > 1
   
   if check_option(varargin,'unique')
     
-    [~,l,sym] = symmetrise(f.r,f.SS,'unique','keepAntipodal');
+    [~,l,sym] = symmetrise(f.r,f.SS,'unique','noAntipodal');
     
     o1 = repelem(f.o1,l);
     o2 = repelem(f.o2,l);
