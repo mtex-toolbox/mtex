@@ -109,7 +109,7 @@ fid = fopen([mfilename('fullpath') '.m'],'r');
 A = char(fread(fid,'char')');
 fclose(fid);
 
-data = regexp(A,'function(.*?)(?<type>(ebsd|pf||grains))(.*?)mtexdata_(?<name>\w*)','names');
+data = regexp(A,'function(.*?)(?<type>(ebsd|pf|grains))(.*?)mtexdata_(?<name>\w*)','names');
 data(cellfun('isempty',{data.name})) = [];
 
 
