@@ -158,7 +158,7 @@ classdef HSVDirectionKey < directionColorKey
           oM.refl = setdiff(sR.N,oM.sR.N);
         case 1                                                   % 1
           if isa(oM.sym,'crystalSymmetry')                     
-            oM.refl = oM.sym.rot(3).axes;
+            oM.refl = oM.sym.rot.axis;
           else
             oM.refl = vector3d.Z;
           end
