@@ -39,36 +39,52 @@ minAngle = min([inf;minAngle(minAngle > 1e-3)]);
 notInside = 2 * acos(co2) > minAngle/2;
 
 % maybe we can skip everything
-if ~any(notInside) || length(qCS) == 1, return; end
+if any(notInside) && length(qCS) > 1
 
-% restrict to quaternion which are not yet it FR
-if length(q) == numel(notInside)
-  q_sub = q.subSet(notInside); 
-else
-  q_sub = q;
+  % restrict to quaternion which are not yet it FR
+  if length(q) == numel(notInside)
+    q_sub = q.subSet(notInside);
+  else
+    q_sub = q;
+  end
+
+  % compute all distances to the fundamental regions
+  if ~isempty(q_ref)
+  
+    % if q_ref was a list of reference rotations
+    if length(q_ref) == numel(notInside)
+      omegaSym  = abs(quat_dot_outer(inv(q_ref.subSet(notInside)).*q_sub,qCS));
+    else
+      omegaSym  = abs(quat_dot_outer(inv(q_ref).*q_sub,qCS));
+    end
+  
+  else
+    omegaSym  = abs(quat_dot_outer(q_sub,qCS));
+  end
+
+  % find symmetry elements with minimum distance
+  [~,nx] = max(omegaSym,[],2);
+
+  % project to fundamental region
+  qn = times(q_sub, reshape(inv(qCS.subSet(nx)),size(q_sub)),0);
+
+  % replace projected quaternions
+  q.a(notInside) = qn.a;
+  q.b(notInside) = qn.b;
+  q.c(notInside) = qn.c;
+  q.d(notInside) = qn.d;
 end
-
-% if q_ref was a list of reference rotations
-if length(q_ref) == numel(notInside), q_ref = q_ref.subSet(notInside); end
-
-% compute all distances to the fundamental regions
-if ~isempty(q_ref)
-  omegaSym  = abs(quat_dot_outer(inv(q_ref).*q_sub,qCS));
+  
+% ensure correct sign
+if isempty(q_ref)
+  changeSign = q.a < 0;
 else
-  omegaSym  = abs(quat_dot_outer(q_sub,qCS));
+  changeSign = q.a .* q_ref.a + q.b .* q_ref.b + q.c .* q_ref.c + q.d .* q_ref.d < 0;
 end
-
-% find symmetry elements with minimum distance
-[~,nx] = max(omegaSym,[],2);
-
-% project to fundamental region
-qn = times(q_sub, reshape(inv(qCS.subSet(nx)),size(q_sub)),0);
-
-% replace projected quaternions
-q.a(notInside) = qn.a;
-q.b(notInside) = qn.b;
-q.c(notInside) = qn.c;
-q.d(notInside) = qn.d;
+q.a(changeSign) = -q.a(changeSign);
+q.b(changeSign) = -q.b(changeSign);
+q.c(changeSign) = -q.c(changeSign);
+q.d(changeSign) = -q.d(changeSign);
 
 q = reshape(q,s);
 
