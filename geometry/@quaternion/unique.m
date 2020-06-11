@@ -18,7 +18,7 @@ function [q,iq,iu] = unique(q,varargin)
 % Flags
 %  stable - prevent sorting
 %
-% see also
+% See also
 % unique
 %
 

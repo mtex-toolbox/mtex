@@ -5,7 +5,7 @@ function lA = longAxis(grains,varargin)
 % <grain2d.principalComponents.html,principal component> of a grain
 %
 % Syntax
-%  lA = grains.longAxis
+%   lA = grains.longAxis
 %
 % Input
 %  grains - @grain2d

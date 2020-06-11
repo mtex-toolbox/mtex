@@ -5,7 +5,7 @@ function lA = shortAxis(grains,varargin)
 % <grain2d.principalComponents.html,principal component> of a grain
 %
 % Syntax
-%  sA = grains.shortAxis
+%   sA = grains.shortAxis
 %
 % Input
 %  grains - @grain2d

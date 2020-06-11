@@ -21,7 +21,7 @@ function [v,iv,iu] = unique(v,varargin)
 %  antipodal   - tread vectors as axes
 %  noAntipodal - ignore antipodal symmetry
 %
-% see also
+% See also
 % unique
 %
 

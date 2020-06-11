@@ -19,7 +19,7 @@ function [m,im,iu] = unique(m,varargin)
 %  stable     - prevent sorting
 %  noSymmetry - ignore symmetry
 %
-% see also
+% See also
 % unique
 %
 

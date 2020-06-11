@@ -1,6 +1,7 @@
 function A = mclComponents(A,p)
 % Markovian clustering algorithm
-% test the explanations in stijn van dongens thesis.
+% check out the explanations in stijn van dongens thesis.
+% author: gregor arbylon.net
 %
 % Input
 %  A - adjecency matrix with weights between 0 and 1
@@ -9,7 +10,7 @@ function A = mclComponents(A,p)
 % Output
 %  A - adjecency matrix of the components
 %
-% author gregor arbylon.net
+
 
 minval = 0.0001;
 

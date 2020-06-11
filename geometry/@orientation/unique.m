@@ -19,7 +19,7 @@ function [ori,ndx,pos] = unique(ori,varargin)
 %  stable     - prevent sorting
 %  noSymmetry - ignore symmetry
 %
-% see also
+% See also
 % unique
 %
 

@@ -18,7 +18,7 @@ function [r,ir,iu] = unique(r,varargin)
 % Flags
 %  stable - prevent sorting
 %
-% see also
+% See also
 % unique
 %
 
