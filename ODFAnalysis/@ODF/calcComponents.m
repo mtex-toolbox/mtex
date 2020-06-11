@@ -101,7 +101,8 @@ if ~check_option(varargin,'exact')
   id = weights > 0.01;
   weights = weights(id);
   modes = modes(id);
-  centerId = centerId(id);
+  ids = 1:length(id);
+  centerId(ismember(centerId,ids(~id))) = 0;
 end
   
 % weights = [2 1 5 3 4] -> [1 2 3 4 5]
