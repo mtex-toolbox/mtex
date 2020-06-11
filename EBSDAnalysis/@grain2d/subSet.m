@@ -33,7 +33,6 @@ else
   indinnerBd = any(ismember(grains.innerBoundary.grainId,grains.id(ind)),2);
 end
 
-
 grains = subSet@dynProp(grains,ind);
 
 grains.poly = grains.poly(ind);
@@ -46,3 +45,24 @@ grains.grainSize = grains.grainSize(ind);
 grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
+% if we have only one grain - sort boundary segments
+if length(grains) == 1
+  FNew = [grains.poly{1}(1:end-1).',grains.poly{1}(2:end).'];
+  
+  % remove inclusion embeddings
+  if grains.inclusionId > 0
+    ie = any(FNew == FNew(1),2);
+    ie([1,end-grains.inclusionId]) = false;
+    FNew(ie,:) = [];
+  end
+    
+  FNew = sort(FNew,2);
+    
+  [~,ind1] = sortrows(grains.boundary.F);
+  [~,ind2] = sortrows(FNew);
+  inverseorder(ind2) = ind1;
+  
+  grains.boundary = grains.boundary(inverseorder);
+  
+  
+end
