@@ -53,12 +53,11 @@ annotate(center * Miller(1,0,0,ori.CS),'add2all')
 
 %%
 
-[cId,center] = calcCluster(ori,'numCluster',12,'method','odf');
+[cId,center] = calcCluster(ori,'numCluster',2,'method','odf');
 
 plotCluster(r,cId)
 
 annotate(center * Miller(1,0,0,ori.CS),'add2all')
-
 
 
 %%
