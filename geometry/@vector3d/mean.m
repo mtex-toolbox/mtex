@@ -50,7 +50,7 @@ else
     v = v .* reshape(get_option(varargin,'weights'),size(v));
     varargin = delete_option(varargin,'weights',1);
     
-    m = sum(v,varargin{:});
+    m = normalize(sum(v,varargin{:}));
     
   else
     m = sum(v,varargin{:});
