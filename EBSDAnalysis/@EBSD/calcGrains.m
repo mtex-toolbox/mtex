@@ -45,20 +45,20 @@ I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 [grains, newBd] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
 
 % merge quadruple grains
-if check_option(varargin,'removeQuadruplePoints')
+if check_option(varargin,'removeQuadruplePoints') && newBd > 0
 
-  gB = grains.boundary;
-  toMerge = [];
-  
-  for iBd = length(gB)+1-(1:newBd)
+  gB = grains.boundary; gB = gB(length(gB)+1-(1:newBd));
+  toMerge = false(size(gB));
+       
+  for iPhase = ebsd.indexedPhasesId
     
-    % check for same phase
-    if diff(gB.phaseId(iBd,:)) ~= 0, continue; end
+    % restrict to the same phase
+    iBd = all(gB.phaseId == iPhase,2);    
     
+    if ~any(iBd), continue; end
+        
     % check for misorientation angle
-    if angle(gB(iBd).misorientation) > 5 * degree, continue; end
-    
-    toMerge = [toMerge,iBd]; %#ok<AGROW>
+    toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
     
   end
   
