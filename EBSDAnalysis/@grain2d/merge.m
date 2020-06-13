@@ -94,9 +94,16 @@ grainsMerged.id = (1:numNewGrains).';
 grainsMerged.poly = cell(numNewGrains,1);
 grainsMerged.phaseId = zeros(numNewGrains,1);
 grainsMerged.grainSize = zeros(numNewGrains,1);
-grainsMerged.prop.meanRotation = rotation.nan(numNewGrains,1);
 grainsMerged.inclusionId = zeros(numNewGrains,1);
 
+% set up properties
+for fn = fieldnames(grains.prop).'
+  if isnumeric(grains.prop.(char(fn)))
+    grainsMerged.prop.(char(fn)) = nan(numNewGrains,1);
+  else
+    grainsMerged.prop.(char(fn)) = grains.prop.(char(fn)).nan(numNewGrains,1);
+  end
+end
 
 % 5. set new grainIds in grains.boundary
 ind = grains.boundary.grainId > 0;
@@ -114,8 +121,12 @@ newInd = old2newId(keepId);
 grainsMerged.poly(newInd) = grains.poly(keepInd);
 grainsMerged.phaseId(newInd) = grains.phaseId(keepInd);
 grainsMerged.grainSize(newInd) = grains.grainSize(keepInd);
-grainsMerged.prop.meanRotation(newInd) = grains.prop.meanRotation(keepInd);
 grainsMerged.inclusionId(newInd) = grains.inclusionId(keepInd);
+
+% copy properties
+for fn = fieldnames(grains.prop).'
+  grainsMerged.prop.(char(fn))(newInd) = grains.prop.(char(fn))(keepInd);
+end
 
 % 8. set up merged polygons
 I_FG = grainsMerged.boundary.I_FG;
