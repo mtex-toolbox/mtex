@@ -55,9 +55,11 @@ if length(grains) == 1
     ie([1,end-grains.inclusionId]) = false;
     FNew(ie,:) = [];
   end
-    
+
+  % sort minimum entry first
   FNew = sort(FNew,2);
     
+  % sort such the order of F follows the boundary
   [~,ind1] = sortrows(grains.boundary.F);
   [~,ind2] = sortrows(FNew);
   inverseorder(ind2) = ind1;

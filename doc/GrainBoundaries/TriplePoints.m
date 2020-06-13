@@ -1,18 +1,34 @@
 %% Triple points
 %
+%%
 % Triple points are automaticaly computed during grain reconstruction. They
-% are acessable similarly to <GrainBoundaries.html grain boundaries> as
+% are accessable similarly to <GrainBoundaries.html grain boundaries> as
 % the property <triplePointList.triplePointList.html triplePoints> of the
-% grain list.
+% grain list. When analyzing triple points it is a good idea to use the
+% option <QuadruplePoints.html |removeQuadruplePoints|> in
+% <ebsd.calcGrains.html |calcGrains|> to convert all quadruple points into
+% triple points.
 
 % import some EBSD data set
-mtexdata small
+mtexdata small silent
 
 % compute grains
-grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd('indexed'),'removeQuadruplePoints');
+%grains = calcGrains(ebsd('indexed'));
+
+% smooth the grains a bit
+grains = smooth(grains,2);
+
+% plot the grains
+plot(grains);
 
 % extract all triple points
-tP = grains.triplePoints
+tP = grains.triplePoints;
+
+% and plot the on top 
+hold on
+plot(tP,'color','b','linewidth',2)
+hold off
 
 %% Index triple points by phase
 %
@@ -30,15 +46,8 @@ tP('Forsterite','Forsterite')
 %%
 % Finaly, we may mark all inner Diopside triple points
 
-% smooth the grains a bit
-grains = smooth(grains,2);
-
-% and plot them
-plot(grains);
-
-% on top plot the triple points
 hold on
-plot(tP('Diopside','Diopside','Diopside'),'displayName','Di-Di-Di','color','b')
+plot(tP('Diopside','Diopside','Diopside'),'displayName','Di-Di-Di','color','darkred','linewidth',2)
 hold off
 
 %% Index triple points by grains
@@ -56,7 +65,7 @@ tP = grains(id).triplePoints;
 plot(grains(id),'FaceColor',[0.2 0.8 0.8],'displayName','largest grains');
 hold on
 plot(grains.boundary)
-plot(tP,'color','r')
+plot(tP,'color','r','linewidth',2)
 hold off
 
 
@@ -77,7 +86,7 @@ gB_large = gB_Fo(gB_Fo.misorientation.angle>60*degree)
 plot(grains)
 hold on
 plot(gB_large,'linewidth',2,'linecolor','w')
-plot(gB_large.triplePoints,'color','m')
+plot(gB_large.triplePoints,'color','m','linewidth',2)
 hold off
 
 
@@ -119,7 +128,7 @@ sumMisAngle = sum(mori.angle,2);
 
 plot(grains,'figSize','large')
 hold on
-plot(tP,sumMisAngle ./ degree,'markerEdgeColor','w')
+plot(tP,sumMisAngle ./ degree,'markerEdgeColor','w','MarkerSize',8)
 hold off
 mtexColorMap(blue2redColorMap)
 CLim(gcm,[80,180])
