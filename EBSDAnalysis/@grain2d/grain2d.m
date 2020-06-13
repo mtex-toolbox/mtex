@@ -105,14 +105,19 @@ classdef grain2d < phaseList & dynProp
         qOmega = atan2(V(qV,1) - V(qP,1),V(qV,2) - V(qP,2));
         [~,qOrder] = sort(qOmega);
         
+        iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
+        
+        if length(iqD) < 2
+          qOrder = qOrder([2:end,1]);
+          iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
+        end
+        
         % set new vertex into face list
         F(iqF(qOrder(1:2)),:) = [qV(qOrder(1:2)).',[size(V,1);size(V,1)]];
         
         % common D 
         %all(I_FDext(iqF(qOrder([1,4])),:))
         %all(I_FDext(iqF(qOrder([2,3])),:))
-        
-        iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
         
         % if we have different grains - we need a new boundary
         if find(I_DG(iqD(1),:)) ~= find(I_DG(iqD(2),:))           
