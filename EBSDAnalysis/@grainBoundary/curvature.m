@@ -29,15 +29,15 @@ has2n = (full(sum(A_F)) == 2).';
 
 % try to reorder them nicely
 u = reshape(u,2,[]).';
-switchLR = u(:,2)-u(:,1)>1;
+switchLR = u(:,2)-u(:,1)>2;
 u(switchLR,:) = fliplr(u(switchLR,:)); 
 
 % center midpoints
 mpC = mp(has2n,:);
 
 % left and right midpoints
-mpR = mp(u(:,1),:);
-mpL = mp(u(:,2),:);
+mpL = mp(u(:,1),:);
+mpR = mp(u(:,2),:);
 
 % try to make the order compatible 
 % the sign of the curvature should correlate with the order of the vertices
