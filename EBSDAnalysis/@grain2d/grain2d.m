@@ -88,11 +88,13 @@ classdef grain2d < phaseList & dynProp
       F = reshape(F,[],2);
       
       % detect quadruple points
-      quadPoints = find(accumarray(reshape(F(full(any(I_FDext,2)),:),[],1),1) == 4);
+      if check_option(varargin,'removeQuadruplePoints')
+        quadPoints = find(accumarray(reshape(F(full(any(I_FDext,2)),:),[],1),1) == 4);
+      else
+        quadPoints = [];
+      end
       
-      if ~check_option(varargin,'removeQuadruplePoints'), quadPoints = []; end
- 
-      if ~isempty(quadPoints) && 1
+      if ~isempty(quadPoints)
       
         % find the 4 edges connected to the quadpoints
         I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
@@ -126,10 +128,21 @@ classdef grain2d < phaseList & dynProp
       
         % switch to 3/4 and 1/2
         qOrder(switchOrder,:) = qOrder(switchOrder,[4 1 2 3]);
-      
+        orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+        
         iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
           I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
       
+        % some we will not be able to remove
+        ignore = full(sum(iqD,2)) ~= 2;
+        iqD(ignore,:) = [];
+        quadPoints(ignore) = [];
+        iqF(ignore,:) = [];
+        qV(ignore,:) = [];
+        qOrder(ignore,:) = [];
+        s = size(iqF);
+        orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+        
         % add an additional vertex (with the same coordinates) for each quad point
         newVid = (size(V,1) + (1:length(quadPoints))).';
         V = [V;V(quadPoints,:)];
@@ -153,53 +166,9 @@ classdef grain2d < phaseList & dynProp
         
         % new empty rows to I_FDint
         I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
-        
-      end
       
-      if 0
-      
+      else
         qAdded = 0;
-        for qP = quadPoints.'
-              
-          % add an additional vertex for each quad point
-          V = [V;V(qP,:)];
-        
-          % find the corresponding faces
-          iqF = find(any(F == qP,2));
-          qV = F(iqF,:).'; qV(qV==qP) = []; % the vertices of the quadruple point
-        
-          qOmega = atan2(V(qV,1) - V(qP,1),V(qV,2) - V(qP,2));
-          [~,qOrder] = sort(qOmega);
-        
-          iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
-        
-          if length(iqD) < 2
-            qOrder = qOrder([2:end,1]);
-            iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
-          end
-        
-          % set new vertex into face list
-          F(iqF(qOrder(1:2)),:) = [qV(qOrder(1:2)).',[size(V,1);size(V,1)]];
-        
-          % common D
-          %all(I_FDext(iqF(qOrder([1,4])),:))
-          %all(I_FDext(iqF(qOrder([2,3])),:))
-        
-          % if we have different grains - we need a new boundary
-          if find(I_DG(iqD(1),:)) ~= find(I_DG(iqD(2),:))
-        
-            % add new edge
-            F = [F; [qP,size(V,1)]]; %#ok<AGROW>
-            qAdded = qAdded + 1;
-          
-            % new row to I_FDext
-            I_FDext = [I_FDext; ...
-              all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:))]; %#ok<AGROW>
-        
-            % new row to I_FDext
-            I_FDint = [I_FDint; sparse(1,size(I_FDint,2))]; %#ok<AGROW>
-          end
-        end
       end
       
       grains.id = (1:numel(grains.phaseId)).';
