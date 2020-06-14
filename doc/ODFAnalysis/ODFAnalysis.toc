@@ -5,6 +5,7 @@ ODFPoleFigure                    Pole Figures
 ODFInversePoleFigure             Inverse Pole Figures
 EulerAngleSections               Euler Angle Section
 SigmaSections                    Sigma Sections
+ODFComponents                    Components
 ODFCharacteristics               Properties
 UnimodalODFs                     Unimodal ODF
 FibreODFs                        Fibre ODF
