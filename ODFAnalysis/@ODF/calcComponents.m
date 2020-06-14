@@ -33,7 +33,7 @@ res = get_option(varargin,'resolution',0.05*degree);
 omega = 1.5.^(-7:1:4) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
-tol = 1e-3;
+tol = get_option(varargin,'tolerance',0.05);
 
 % initial seed
 if check_option(varargin,'seed')
