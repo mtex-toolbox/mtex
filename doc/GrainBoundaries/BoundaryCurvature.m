@@ -12,7 +12,7 @@
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains
-grains = smooth(grains('id',[4 5 20 22 26 27 29 34 42 44 49 51]),10);
+grains = smooth(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),10);
 
 plotx2east
 
