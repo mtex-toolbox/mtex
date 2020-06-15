@@ -94,7 +94,54 @@ classdef grain2d < phaseList & dynProp
         quadPoints = [];
       end
       
-      if ~isempty(quadPoints)
+      testing = 0;
+      if testing
+      
+        qAdded = 0;
+        for qP = quadPoints.'
+              
+          % add an additional vertex for each quad point
+          V = [V;V(qP,:)];
+        
+          % find the corresponding faces
+          iqF = find(any(F == qP,2));
+          qV = F(iqF,:).'; qV(qV==qP) = []; % the vertices of the quadruple point
+        
+          qOmega = atan2(V(qV,1) - V(qP,1),V(qV,2) - V(qP,2));
+          [~,qOrder] = sort(qOmega);
+        
+          iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
+        
+          if length(iqD) < 2
+            qOrder = qOrder([2:end,1]);
+            iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
+          end
+        
+          % set new vertex into face list
+          F(iqF(qOrder(1:2)),:) = [qV(qOrder(1:2)).',[size(V,1);size(V,1)]];
+        
+          % common D
+          %all(I_FDext(iqF(qOrder([1,4])),:))
+          %all(I_FDext(iqF(qOrder([2,3])),:))
+        
+          % if we have different grains - we need a new boundary
+          if find(I_DG(iqD(1),:)) ~= find(I_DG(iqD(2),:))
+        
+            % add new edge
+            F = [F; [qP,size(V,1)]]; %#ok<AGROW>
+            qAdded = qAdded + 1;
+          
+            % new row to I_FDext
+            I_FDext = [I_FDext; ...
+              all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:))]; %#ok<AGROW>
+        
+            % new row to I_FDext
+            I_FDint = [I_FDint; sparse(1,size(I_FDint,2))]; %#ok<AGROW>
+          end
+        end
+      end
+            
+      if ~isempty(quadPoints) && ~testing
       
         % find the 4 edges connected to the quadpoints
         I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
@@ -147,10 +194,20 @@ classdef grain2d < phaseList & dynProp
         newVid = (size(V,1) + (1:length(quadPoints))).';
         V = [V;V(quadPoints,:)];
       
-        % include new vertex into face list
-        F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];
-        F(iqF(orderSub(2)),:) = [qV(orderSub(2)),newVid];
-      
+        % include new vertex into face list, i.e. replace quadpoint -> newVid
+        Ftmp = F(iqF(orderSub(1)),:).';
+        Ftmp(Ftmp == quadPoints.') = newVid;
+        F(iqF(orderSub(1)),:) = Ftmp.';
+        
+        Ftmp = F(iqF(orderSub(2)),:).';
+        Ftmp(Ftmp == quadPoints.') = newVid;
+        F(iqF(orderSub(2)),:) = Ftmp.';
+        
+        %F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];        
+        %F(iqF(orderSub(2)),:) = [newVid,qV(orderSub(2))];
+        sw = F(:,1) > F(:,2);
+        F(sw,:) = fliplr(F(sw,:));
+        
         [iqD,~] = find(iqD.'); iqD = reshape(iqD,2,[]).';
              
         % if we have different grains - we need a new boundary
@@ -167,7 +224,7 @@ classdef grain2d < phaseList & dynProp
         % new empty rows to I_FDint
         I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
       
-      else
+      elseif ~testing
         qAdded = 0;
       end
       
@@ -179,7 +236,8 @@ classdef grain2d < phaseList & dynProp
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
       [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
-
+      %qAdded = 0;
+      
       
       function [I_FDext,I_FDint] = calcBoundary
         % distinguish between interior and exterior grain boundaries      
