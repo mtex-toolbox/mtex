@@ -55,7 +55,7 @@ kappa(has2n) = 2*(((mpC - mpL) .* fliplr(mpR - mpL)) * [1;-1]) ./ ...
   sqrt(sum((mpC-mpL).^2,2) .* sum((mpR-mpL).^2,2) .* sum((mpC-mpR).^2,2));
 
 % if not ordered nicely, take only absolute value of the curvature
-if ~all(has2n), kappa = abs(kappa); end
+if ~all(has2n) || nnz(switchLR)/length(switchLR)>0.8, kappa = abs(kappa); end
 
 % do some smoothing to the curvature
 if nargin == 1, n = 50; end
