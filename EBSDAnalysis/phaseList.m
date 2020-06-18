@@ -183,11 +183,11 @@ classdef phaseList
         
         % if not yet in CSlist append
         if id == 0
-          pL.CSList(end+1) = cs;
+          pL.CSList{end+1} = cs;
           
           pL.phaseId = length(pL.CSList) * ones(size(pL.phaseId));          
           
-          pL.phaseMap = [pL.phaseMap,max(pL.phaseMap)+1];
+          pL.phaseMap = [pL.phaseMap; max(pL.phaseMap)+1];
           
         else
           pL.CSList{id} = cs;
