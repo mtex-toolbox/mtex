@@ -128,15 +128,15 @@ classdef grain2d < phaseList & dynProp
           if find(I_DG(iqD(1),:)) ~= find(I_DG(iqD(2),:))
         
             % add new edge
-            F = [F; [qP,size(V,1)]]; %#ok<AGROW>
+            F = [F; [qP,size(V,1)]];
             qAdded = qAdded + 1;
           
             % new row to I_FDext
             I_FDext = [I_FDext; ...
-              all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:))]; %#ok<AGROW>
+              all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:))]; 
         
             % new row to I_FDext
-            I_FDint = [I_FDint; sparse(1,size(I_FDint,2))]; %#ok<AGROW>
+            I_FDint = [I_FDint; sparse(1,size(I_FDint,2))];
           end
         end
       end
@@ -145,7 +145,8 @@ classdef grain2d < phaseList & dynProp
       
         % find the 4 edges connected to the quadpoints
         I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
-      
+        
+        quadPoints = find(sum(I_FV) == 4).';
         [iqF,~] = find(I_FV(:,quadPoints));
       
         % this is a length(quadPoints x 4 list of edges
@@ -312,7 +313,13 @@ classdef grain2d < phaseList & dynProp
     end
     
     function grains = set.meanOrientation(grains,ori)
+      
+      % update rotation
       grains.prop.meanRotation = rotation(ori);
+      
+      % update phase
+      grains.CS = ori.CS;
+      
     end
 
     function gos = get.GOS(grains)
@@ -329,6 +336,13 @@ classdef grain2d < phaseList & dynProp
     
     function grains = set.triplePoints(grains,tP)
       grains.boundary.triplePoints = tP;
+    end
+    
+    function grains = update(grains)
+      
+      grains.boundary = grains.boundary.update(grains);
+      grains.innerBoundary = grains.innerBoundary.update(grains);
+      
     end
     
   end
