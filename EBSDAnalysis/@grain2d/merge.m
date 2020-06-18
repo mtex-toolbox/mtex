@@ -68,7 +68,29 @@ for k = 1:length(varargin)
   elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A))
     A = varargin{k};
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
-    A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId,maxId);
+    A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
+  elseif ischar(varargin{k}) && strcmpi(varargin{k},'threshold')
+
+    delta = get_option(varargin,'threshold');
+    
+    grainPairs = unique(grains.boundary.grainId,'rows');
+    grainPairs = grainPairs(all(grainPairs ~= 0,2),:);
+    
+    for phId = grains.indexedPhasesId
+      
+      ind = all(grains.phaseId(grainPairs)==phId,2);
+      
+      % extract the meanorientations
+      oriPairs = orientation(grains.prop.meanRotation(grainPairs(ind,:)),grains.CSList{phId});
+      oriPairs = reshape(oriPairs,[],2);
+      
+      % check mean orientation difference is below a threshold
+      ind(ind) = angle(oriPairs(:,1),oriPairs(:,2)) < delta;
+  
+      A = A + sparse(grainPairs(ind,1),grainPairs(ind,2),1,maxId+1,maxId+1); 
+      
+    end
+    varargin = [varargin,'calcMeanOrientation'];     %#ok<AGROW>
   end
 end
 A = A(1:maxId,1:maxId);
@@ -105,9 +127,11 @@ for fn = fieldnames(grains.prop).'
   end
 end
 
-% 5. set new grainIds in grains.boundary
+% 5. set new grainIds in grains.boundary and grains.innerBoundary
 ind = grains.boundary.grainId > 0;
 grainsMerged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
+ind = grains.innerBoundary.grainId > 0;
+grainsMerged.innerBoundary.grainId(ind) = old2newId(grains.innerBoundary.grainId(ind));
 
 % and in the old grains
 parentId = old2newId(grains.id);
