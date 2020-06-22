@@ -65,8 +65,8 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,2),mergeId(:,3),1,maxId+1,maxId+1);
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
-  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A))
-    A = varargin{k};
+  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1)
+    A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
     A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
   elseif ischar(varargin{k}) && strcmpi(varargin{k},'threshold')
