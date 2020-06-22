@@ -44,6 +44,12 @@ for i = 1:length(subs)
       end
     end
     
+    if ~any(phases)
+      disp(' ');
+      disp(['  There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
+      disp(' ');
+    end
+    
     phaseId = reshape(ebsd.phaseId,size(ebsd));
     phaseId(isnan(phaseId)) = 1+numel(phases);
     phases(end+1) = false;
