@@ -61,15 +61,16 @@ for j = 1:numel(sP)
     strings = cell(1,length(v));
     for i = 1:length(v), strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); end
 
-  else % ensure cell as input
-
+  elseif isnumeric(varargin{1})  % ensure cell as input
+    
+    strings = ensurecell(xnum2str(varargin{1},'cell'));
+    
+  else
     strings = ensurecell(varargin{1});
-    if length(v)>1 && length(strings)==1
-      strings = repmat(strings,length(v),1);
-    end
-
   end
 
+  if length(v)>1 && length(strings)==1, strings = repmat(strings,length(v),1); end
+  
   % 
   M = get(sP(j).hgt,'matrix');
   
