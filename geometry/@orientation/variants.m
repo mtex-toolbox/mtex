@@ -1,18 +1,38 @@
-function mori = variants(mori)
-% variants of an orientation relationship
+function out = variants(p2c,varargin)
+% variants parent to child orientation relationship
 %
 % Syntax
-%   
-%   ori_variants = ori_parent * mori.variants
+%
+%   p2cVariants = variants(p2c, 'child')
+%   p2cVariants = variants(p2c, 'parent')
+%
+%   % compute all child variants
+%   oriChild = variants(p2c, oriParent)
+%
+%   % compute child variants specified by variantId
+%   oriChild = variants(p2c, oriParent, variantId)
+%
+%   % compute all parent variants
+%   oriParent = variants(p2c, oriChild)
+%
+%   % compute parent variants specified by variantId
+%   oriParent = variants(p2c, oriChild, variantId)
 %
 % Input
 %
-%  mori - child to parent @orientation relationship
-%  ori_parent - parent @orientation
+%  p2c - parent to child @orientation relationship
+%  oriParent - parent @orientation
+%  oriChild  - child @orientation
+%  variantId - id of the variant
+%
+% Options
+%  parent - return parent variants
+%  child  - return child variants (default)
 %
 % Output
-%
-%  ori_variants - all possible child @orientation
+%  p2cVariants - parent to child variants
+%  oriParent - parent @orientation
+%  oriChild  - child @orientation
 %
 % Example
 %   % parent symmetry
@@ -34,22 +54,78 @@ function mori = variants(mori)
 %   ori_bcc = unique(ori_fcc.symmetrise * inv(NW))
 %
 %   % same using the function variants
-%   ori_bcc2 = ori_fcc * inv(NW.variants)
+%   ori_bcc2 = variants(NW,ori_fcc)
 %
 %   % we may also compute all possible child to child misorientations
-%   bcc2bcc = unique(NW.variants * inv(NW))
+%   bcc2bcc = unique(variants(NW,'child') * inv(NW))
 %
 % See also
-% orientation/parents
+% calcParents
 
-% store parent
-CS_parent = mori.CS;
+% browse input
+if nargin>1 && isa(varargin{1},'orientation')
+  
+  if eq(varargin{1}.CS,p2c.CS,'Laue')
+    
+    oriParent = varargin{1};
+    varargin(1) = [];
+    parentVariants = false;
+    
+  elseif eq(varargin{1}.CS,p2c.SS,'Laue')
+  
+    oriChild = varargin{1};
+    varargin(1) = [];
+    parentVariants = true;
+    
+  else
+    error('Symmetry mismatch!')
+  end
+ 
+else
+  parentVariants = check_option(varargin,'parent');
+end
 
-% symmetrise only with respect to parent symmetry
-mori = mori * CS_parent;
+if ~isempty(varargin) && isnumeric(varargin{1}), variantId = varargin{1}; end
 
-% ignore all variants symmetrically equivalent with respect to the child
-% symmetry
-mori.CS = crystalSymmetry('1');
-mori = unique(mori);
-mori.CS = CS_parent;
+if parentVariants % parent variants
+
+  % symmetrise with respect to child symmetry
+  p2cVariants = p2c.SS * p2c;
+  
+  % ignore all variants symmetrically equivalent with respect to the parent
+  % symmetry
+  p2cVariants.SS = crystalSymmetry;
+  p2cVariants = unique(p2cVariants);
+  p2cVariants.SS = p2c.SS;
+
+  if exist('variantId','var')
+    p2cVariants = p2cVariants.subSet(variantId);
+  end
+  
+  if exist('oriChild','var')
+    out = oriChild .* p2cVariants;
+  else
+    out = p2cVariants;
+  end
+
+else % child variants
+  
+    % symmetrise with respect to child symmetry
+  p2cVariants = p2c * p2c.CS;
+  
+  % ignore all variants symmetrically equivalent with respect to the child
+  % symmetry
+  p2cVariants.CS = crystalSymmetry;
+  p2cVariants = unique(p2cVariants);
+  p2cVariants.CS = p2c.CS;
+  
+  if exist('variantId','var')
+    p2cVariants = p2cVariants.subSet(variantId);
+  end
+  
+  if exist('oriParent','var')
+    out = oriParent .* inv(p2cVariants);
+  else
+    out = p2cVariants;
+  end
+end
