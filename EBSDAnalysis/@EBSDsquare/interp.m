@@ -11,7 +11,7 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 % Output
 %   ebsdNew - @ebsd with coordinates (xNew,yNew)
 %
-% see also
+% See also
 %  
 
 % find nearest neighbour first
