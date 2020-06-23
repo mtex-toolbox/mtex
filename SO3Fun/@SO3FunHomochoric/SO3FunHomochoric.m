@@ -14,7 +14,7 @@ classdef SO3FunHomochoric < SO3Fun
   
   methods
     
-    function SO3F = SO3FunRBF(S3G,c)
+    function SO3F = SO3FunHomochoric(S3G,c)
                  
       if nargin == 0, return;end
       

@@ -27,12 +27,14 @@
  % translate input (ori) into cubochoric coordinates
  % change the sign if ori.a is negative (southern hemissphere)
  % care that sign=0 can happen
+ 
  qin = sign(ori.a) .* [ori.a(:),ori.b(:),ori.c(:),ori.d(:)];
  nosign = (ori.a==0);
  qin(nosign,:) = [ori.a(nosign) ori.b(nosign) ori.c(nosign) ori.d(nosign)];
+ 
  xyz = quat2cube(qin);
  
-            % N intervals of length hres along each edge of the cube
+% N intervals of length hres along each edge of the cube
  N = round(2 * pi / S3G.res);
  hres = pi^(2/3) / N;
  
@@ -62,9 +64,9 @@
    
    % calculate grid position along each axis by rounding down
    % to the next grid point
-   ix = floor(xyz(:,1)/hres + N/2 - 0.5)-N/2+1/2;
-   iy = floor(xyz(:,2)/hres + N/2 - 0.5)-N/2+1/2;
-   iz = floor(xyz(:,3)/hres + N/2 - 0.5)-N/2+1/2;
+   ix = floor(xyz(:,1)/hres + N/2 - 0.5) - N/2 + 1/2;
+   iy = floor(xyz(:,2)/hres + N/2 - 0.5) - N/2 + 1/2;
+   iz = floor(xyz(:,3)/hres + N/2 - 0.5) - N/2 + 1/2;
    
    % generate corner points 
    cx = [0 0 0 0 1 1 1 1];
@@ -86,14 +88,14 @@
    
    % shift the grid positions
    % from -N/2+1/2,...,N/2-1/2 to 1,...,N
-   % CARE THAT THE CUBE MIGHT GET TWISTED WHEN PUSHING CORNERS
-   % "OVER THE EDGE" -> MAYBE PERMUTATE
    id = sub2ind(S3G,indx+N/2+1/2,indy+N/2+1/2,indz+N/2+1/2);
    
    % calculate coordinate-wise distances to the floor corner
-   % (attained by rounding coordinates up/down to the grid)
-   down = mod((N+1)/2*hres+xyz,hres);
-   dx = down(:,1); dy = down(:,2); dz = down(:,3);
+   % (attained by rounding coordinates down to the grid)
+   % care that it mathers if the grid is odd or even since we then have to
+   % round towards multiples of hres or the same shifted by hres/2
+
+   dist = mod((N+1)/2*hres+xyz,hres);
    
  else % neighborhood
    
