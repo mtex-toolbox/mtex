@@ -1,23 +1,22 @@
-function [counts,pairs] = neighbors(grains)
+function pairs = neighbors(grains,varargin)
 % returns the number of neighboring grains
+%
+% Syntax
+%
+%   % neighbouring relationships within grains
+%   pairs = neighbors(grains)
+%   pairs = neighbors(grains1,grains2)
+%
+%   % all neighbouring relationships
+%   pairs = neighbors(grains,'full')
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  counts - number of neighbors per grain
 %  pairs  - index list of size N x 2
 %
-% Description
-% $$N = 2 \sum n_i $$
-% is the total number of neighborhood relations (without self--reference).
-%
-% pairs(i,:) give the indexes of two neighboring grains, i.e
-%
-%  neighbor_gr = grains(pairs(1,:))
-%
-% selects two neighboring grains.
-%
+
 
 % extract grainIds for each boundary segment
 gbid = grains.boundary.grainId;
@@ -29,12 +28,19 @@ gbid = sort(gbid,2);
 % get unique pairs
 pairs = unique(gbid,'rows');
 
-% check if neighboring grain id is in grainset
-pairs(any(~ismember(pairs,grains.id),2),:)=[];
-
-% get the number of neighbours per grain
-ng = max(grains.id);
-countIds = full(sparse(pairs(pairs<=ng),1,1,ng,1));
-
-% rearange with respect to grain order
-counts = countIds(grains.id);
+% allow only neighbours within the same data set
+if ~check_option(varargin,'full')
+  if nargin > 1 && isa(varargin{1},'grain2d')
+    
+    isIn2 = ismember(pairs,varargin{1}.id);
+    
+    % second grain should aways be in second column
+    pairs(isIn2(:,1),:) = fliplr(pairs(isIn2(:,1),:));
+    
+    % ensure second grain is present everywhere
+    pairs(~any(isIn2,2),:)=[];
+    
+  else
+    pairs(any(~ismember(pairs,grains.id),2),:)=[];
+  end
+end
