@@ -59,10 +59,10 @@ CSList = ebsd.CSList;
 rot = ebsd.rotations;
 
 [grainIds,pos] = unique(grainId(:));
-pos = pos(~isnan(grainIds));
-grainIds = grainIds(~isnan(grainIds));
+pos = pos(~isnan(grainIds) & grainIds >0);
+grainIds = grainIds(~isnan(grainIds) & grainIds >0).';
 phaseIds = ebsd.phaseId(pos).';
-grainIds = grainIds(grainIds>0).';
+%grainIds = grainIds(grainIds>0).';
 progress(0,length(grainIds));
 
 % find the largest grain
