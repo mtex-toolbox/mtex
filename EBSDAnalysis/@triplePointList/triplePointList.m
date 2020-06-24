@@ -1,13 +1,16 @@
 classdef triplePointList < phaseList & dynProp
-  % grainBoundary list of grain boundaries in 2-D
+  % triple points or triple juctions list of grain boundaries in 2-D
   %
-  % grainBoundary is used to extract, analyze and visualize grain
-  % boundaries in  2-D. 
+  % triplePointList is used to extract, analyze and visualize triple points
+  % between grain boundaries in  2-D.
   %
-  % gB = grainBoundary() creates an empty list of grain boundaries
+  % Syntax
   %
-  % gB = grains.boudary() extracts boundary information
-  % from a list of grains
+  %   % creates an empty list of triple points
+  %   tP = triplePointList() 
+  %
+  %   % extracts all triple points from a list of grains
+  %   tP = grains.triplePointList 
   %
   
   % properties with as many rows as data

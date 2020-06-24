@@ -85,13 +85,13 @@ volume(odf,ori,delta) ./ volume(uniformODF(odf.CS),ori,delta)
 %%
 % It is important to understand, that all these values above depend
 % significantly from the chosen disorientation angle |delta|. If |delta| is
-% chosen to large
+% chosen too large
 
 delta = 40*degree
 volume(odf,ori,delta)*100
 
 %%
-% it may even happend that the components overlap and the sum of the volume
+% it may even happen that the components overlap and the sum of the volumes
 % exceeds 100 percent.
 %
 %% Non circular components

@@ -16,7 +16,7 @@
 % || <grain2d.boundarySize.html |grains.boundarySize|>  || number of boundary segments || 
 % || <grain2d.centroid.html |grains.centroid|>  || x,y coordinates of the barycenter of the grain || 
 % || <grain2d.hasHole.html |grains.hasHole|>  || check for inclusions  ||
-% || <grain2d.neighbors.html |grains.neighbors|>  || number and ids of neighboring grains  || 
+% || <grain2d.numNeighbors.html |grains.numNeighbors|>  || number neighboring grains  || 
 % || <triplePointList.triplePointList.html |grains.triplePoints|>  || list of  triple points || 
 % || |grains.x| || x coordinates of the vertices || 
 % || |grains.y| || y coordinates of the vertices || 
