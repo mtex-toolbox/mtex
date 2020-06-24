@@ -14,7 +14,7 @@ function d = dot(o1,o2,varargin)
 % orientation/dot_outer orientation/angle
 
 if check_option(varargin,'noSymmetry')
-  d = dot@rotation(o1,o2);
+  d = dot@rotation(o1,o2,varargin{:});
   return
 end
 
