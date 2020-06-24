@@ -1,4 +1,4 @@
-function [parentOri, fit] = calcParent3(childOri,p2c,varargin)
+function [parentOri, fit] = calcParent(childOri,p2c,varargin)
 %
 % Syntax
 %
@@ -168,13 +168,12 @@ elseif setting == 4
   
   [~,id] = max(weights);
   
-  parentCanditates = variants(p2c, childOri(id));
-  %parentCanditates = childOri(id) * p2c;
+  parentCanditates = childOri(id) * p2c;
   
   bestFit = inf;
   for k = 1:length(parentCanditates)
     
-    pId = calcParent3(childOri,parentCanditates(k),p2c,'id');
+    pId = calcParent(childOri,parentCanditates(k),p2c,'id');
     pOri = childOri .* p2c(pId);
     
     parentCanditates(k) = mean(pOri,'weights',weights,'robust');
