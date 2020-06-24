@@ -17,6 +17,22 @@ function [h,mP] = plot(gB,varargin)
 %  linecolor - line color
 %
 
+reg = get_option(varargin,'region');
+if ~isempty(reg)
+  
+  V = gB.V;
+  F = gB.F;
+  ind = V(F(:,1),1) > reg(1) & V(F(:,1),1) < reg(2)  & ...
+    V(F(:,2),1) > reg(1) & V(F(:,2),1) < reg(2) & ...
+    V(F(:,1),2) > reg(3) & V(F(:,1),2) < reg(4)  & ...
+    V(F(:,2),2) > reg(3) & V(F(:,2),2) < reg(4);
+  
+  gB = gB.subSet(ind);
+  
+end
+
+
+
 % create a new plot
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
