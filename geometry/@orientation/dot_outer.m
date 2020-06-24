@@ -39,7 +39,7 @@ l1 = length(o1); l2 = length(o2);
 if l1 * l2 == 0, d = []; return; end
 
 % maybe we can shrink down everything to quaternion
-if isLaue(cs) || isLaue(ss) || (cs.isProper && (iempty(ss) || ss.isProper) ...
+if isLaue(cs) || isLaue(ss) || (cs.isProper && isProper(ss) ...
     && all(o1.i(:) == o1.i(1)) && all(o2.i(:) == o1.i(1)))
 
   cs = cs.properGroup; 
