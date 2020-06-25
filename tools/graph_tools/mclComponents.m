@@ -11,8 +11,15 @@ function A = mclComponents(A,p)
 %  A - adjecency matrix of the components
 %
 
+% ensure A is symmetric
+if nnz(A .* A.') == 0, A = A + A.'; end
+
+% ensure diagonal has ones
+if ~any(diag(A)), A = A + speye(length(A)); end
 
 minval = 0.0001;
+
+A(A<minval) = 0;
 
 e = 1;
 i = 1;
@@ -39,11 +46,8 @@ while e > emax
   maxs = max(A);
   sqsums = sum(A .^ 2);
   e = max(maxs - sqsums);
-
     
 end 
-
-disp(['number of iterations:' xnum2str(i)]);
 
 end 
 
