@@ -7,9 +7,6 @@
 mtexdata alphaBetaTitanium
 
 % and plot the alpha phase as an inverse pole figure map
-ipfKey = ipfColorKey(grains('Ti (beta)'));
-ipfKey.inversePoleFigureDirection = vector3d.Y;
-
 plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 
 %%
@@ -42,12 +39,13 @@ beta2alpha = inv(orientation.byEuler(135*degree, 90*degree, 355*degree,...
 grains = smooth(grains);
 
 % plot all alpha pixels
+region = [300 400 -500 -440];
 plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,...
-  'region',[300 400 -500 -440],'micronbar','off','figSize','large');
+  'region',region,'micronbar','off','figSize','large');
 
 % and on top the grain boundaries
 hold on
-plot(grains.boundary,'linewidth',2 ,'region',[300 400 -500 -440]);
+plot(grains.boundary,'linewidth',2 ,'region',region);
 hold off
 
 %%
@@ -74,8 +72,8 @@ tP = grains.triplePoints('Ti (alpha)','Ti (alpha)','Ti (alpha)')
 % colorize the triple junctions according to the best fit.
 
 hold on
-plot(tP,fit(:,1) ./ degree,'MarkerEdgecolor','k','MarkerSize',10,'region',[300 400 -500 -440])
-setColorRange([0,10])
+plot(tP,fit(:,1) ./ degree,'MarkerEdgecolor','k','MarkerSize',10,'region',region)
+setColorRange([0,5])
 mtexColorMap LaboTeX
 mtexColorbar
 hold off
@@ -86,10 +84,10 @@ hold off
 
 consistenTP = fit(:,1) < 2.5*degree & fit(:,2) > 2.5*degree;
 
-% marke thse triple points by a red cicle
+% marke these triple points by a red cicle
 hold on
 plot(tP(consistenTP),'MarkerEdgecolor','r','MarkerSize',10,...
-  'MarkerFaceColor','none','linewidth',2,'region',[300 400 -500 -440])
+  'MarkerFaceColor','none','linewidth',2,'region',region)
 hold off
 
 %% Recover beta grains from consistent triple junctions
@@ -101,32 +99,37 @@ hold off
 % |majorityVote|> using the option |strict|.
 
 % get a unique parentId vote for each grain
-parentId = majorityVote( tP(consistenTP).grainId, ...
+[parentId, numVotes] = majorityVote( tP(consistenTP).grainId, ...
   parentId(consistenTP,:,1), max(grains.id),'strict');
 
 %%
 % The command |majorityVote| returns for each grain with consistent
 % parentId votes this unique parentId and for all other grains |NaN|.
-% Accordingly, we can idetify all grains with a unique vote by
-
-hasVote = ~isnan(parentId);
-
-%% 
-% For all grains with a unique vote we now use the command <variants.html
-% |variants|> to compute the parent orientation corresponding to the
-% |parentId|. This parent orientations we assign as new |meanOrientation|
-% to our grains.
+% The second  output argument gives the number of these votes
+% 
+% For all grains with at least 3 unique vote we now use the command
+% <variants.html |variants|> to compute the parent orientation
+% corresponding to the |parentId|. This parent orientations we assign as
+% new |meanOrientation| to our grains.
 
 % lets store the parent grains into a new variable
 parentGrains = grains;
 
 % change orientations of consistent grains from child to parent
-parentGrains(hasVote).meanOrientation = ...
-  variants(beta2alpha,grains(hasVote).meanOrientation,parentId(hasVote));
+parentGrains(numVotes>2).meanOrientation = ...
+  variants(beta2alpha,grains(numVotes>2).meanOrientation,parentId(numVotes>2));
 
 % update all grain properties that are related to the mean orientation
 parentGrains = parentGrains.update;
 
+%%
+% Lets plot map of these reconstructed beta grains
+
+% define a color key
+ipfKey = ipfColorKey(ebsd('Ti (beta)'));
+ipfKey.inversePoleFigureDirection = vector3d.Y;
+
+% and plot
 plot(parentGrains('Ti (beta)'), ...
   ipfKey.orientation2color(parentGrains('Ti (beta)').meanOrientation),'figSize','large')
 
@@ -151,12 +154,12 @@ plot(parentGrains('Ti (beta)'), ...
 
 %% Merge alpha grains to beta grains
 %
-% After the first two steps we have quite some beta grains some alpha
-% grains have not yet transformed into beta grains. In order to merge those
-% left over alpha grains we check wether their misorientation with one of
-% the neighbouring beta grains coincides with the parent to grain
-% orientation relationship and if yes merge them evantually with the
-% already reconstructed beta grains.
+% After the first two steps we have quite some alpha grains have not yet
+% transformed into beta grains. In order to merge those left over alpha
+% grains we check whether their misorientation with one of the neighbouring
+% beta grains coincides with the parent to grain orientation relationship
+% and if yes merge them evantually with the already reconstructed beta
+% grains.
 %
 % First extract a list of all neighbouring alpha - beta grains
 
@@ -164,7 +167,7 @@ plot(parentGrains('Ti (beta)'), ...
 grainPairs = neighbors(parentGrains('Ti (alpha)'), parentGrains('Ti (Beta)'));
 
 %%
-% and check whether how well they fit to a common parent orientation
+% and check how well they fit to a common parent orientation
 
 % extract the corresponding meanorientations
 oriAlpha = parentGrains( grainPairs(:,1) ).meanOrientation;
@@ -175,7 +178,7 @@ oriBeta = parentGrains( grainPairs(:,2) ).meanOrientation;
 
 %%
 % Similarly, as in the first step the command <calcParent.html
-% |calcParent|> return a list of |parentId| that allows the convert the
+% |calcParent|> returns a list of |parentId| that allows the convert the
 % child orientations into parent orientations using the command
 % <variants.html |variants|> and the fitting to the given parent
 % orientation. Similarly, as for the triple point we select only those
@@ -286,7 +289,7 @@ parentEBSD = parentEBSD(parentGrains(parentGrains.grainSize > 15));
 [parentGrains,parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',5*degree);
 
 % smooth the grains a bit
-parentGrains = smooth(parentGrains);
+parentGrains = smooth(parentGrains,5);
 
 %%
 % Finally, we denoise the remaining beta orientations and at the same time
@@ -311,11 +314,4 @@ plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 hold on
 plot(parentGrains.boundary,'lineWidth',3)
 hold off
-
-
-
-
-
-
-
 
