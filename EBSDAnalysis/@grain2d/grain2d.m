@@ -309,16 +309,22 @@ classdef grain2d < phaseList & dynProp
     end
     
     function ori = get.meanOrientation(grains)
-      ori = orientation(grains.prop.meanRotation,grains.CS);
+      if isempty(grains)
+        ori = orientation;
+      else
+        ori = orientation(grains.prop.meanRotation,grains.CS);
+      end
     end
     
     function grains = set.meanOrientation(grains,ori)
       
-      % update rotation
-      grains.prop.meanRotation = rotation(ori);
+      if ~isempty(grains)
+        % update rotation
+        grains.prop.meanRotation = rotation(ori);
       
-      % update phase
-      grains.CS = ori.CS;
+        % update phase
+        grains.CS = ori.CS;
+      end
       
     end
 
