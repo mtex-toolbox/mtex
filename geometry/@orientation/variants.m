@@ -77,6 +77,11 @@ if nargin>1 && isa(varargin{1},'orientation')
     varargin(1) = [];
     parentVariants = true;
     
+  elseif isempty(varargin{1})
+    
+    out = orientation(p2c.CS);
+    return;
+    
   else
     error('Symmetry mismatch!')
   end
