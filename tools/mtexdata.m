@@ -350,3 +350,12 @@ ebsd('Ti (alpha)').CS = ebsd('Ti (alpha)').CS.properGroup;
 ebsd('Ti (beta)').CS = ebsd('Ti (beta)').CS.properGroup;
 
 end
+
+function ebsd = mtexdata_martensite
+
+fname = fullfile(mtexDataPath,'EBSD','martensite.cpr');
+ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame');
+ebsd('Iron bcc').CS = ebsd('Iron bcc').CS.properGroup;
+ebsd('Iron bcc').CSList{3} = ebsd('Iron bcc').CSList{3}.properGroup;
+
+end
