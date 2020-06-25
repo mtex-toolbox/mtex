@@ -1,4 +1,4 @@
-function vote = majorityVote(id,votes,varargin)
+function [vote, numVotes] = majorityVote(id,votes,varargin)
 
 
 
@@ -17,7 +17,12 @@ if check_option(varargin,'strict')
   vote = accumarray(id(:),votes(:),[maxId 1],@(x) x(1));
 
   vote(~isEqual) = nan;
-    
+  
+  if nargout == 2
+    numVotes = accumarray(id(:),votes(:),[maxId 1],@(x) nnz(x==x(1)));
+    numVotes(~isEqual) = 0;
+  end
+  
 else
   
   hasVote = accumarray(id(:),votes(:),[maxId 1]);
@@ -26,4 +31,9 @@ else
   
   vote(~hasVote) = nan;
 
+  if nargout == 2
+    numVotes = accumarray(id(:),votes(:),[maxId 1],@(x) nnz(x==mode(x)));
+  end
+  
 end
+
