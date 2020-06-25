@@ -140,8 +140,9 @@ elseif setting == 3
   % disorientation angles mis12V(:,i1,i2,i3), mis13V(:,i1,i2,i3) and
   % mis23V(:,i1,i2,i3) all small. One way to do this is to find the minimum
   % of the sum
-  fit = reshape(sqrt(mis12V.^2 + mis13V.^2 + mis23V.^2),[],numV^3) / 3;
-
+  %fit = reshape(sqrt(mis12V.^2 + mis13V.^2 + mis23V.^2),[],numV^3) / 3;
+  fit = reshape(max(max(mis12V,mis13V),mis23V),[],numV^3);
+  
   if numFit == 1
   
     % take the minimum
