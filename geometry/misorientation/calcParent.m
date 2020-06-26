@@ -109,7 +109,7 @@ elseif setting == 2     % child + child orientation, aka grain boundaries
   end
   
   
-elseif setting == 3 
+elseif setting == 3 % child + child + child -> triple points
 
   % compute all parent variants to child ori
   % this will result in a size(childOri) x number_of_variant table.
@@ -162,7 +162,7 @@ elseif setting == 3
     parentId = [i1,i2,i3];
   
   end
-elseif setting == 4
+elseif setting == 4 % arbitrarily many child orientations of one parent
   
   weights = get_option(varargin,'weights',ones(size(childOri)));
   weights = reshape(weights ./ sum(weights),[],1);
