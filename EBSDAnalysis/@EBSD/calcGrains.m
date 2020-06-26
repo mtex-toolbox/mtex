@@ -155,9 +155,11 @@ for p = 1:numel(ebsd.phaseMap)
 end
 
 % adjacency of cells that have no common boundary
-A_Do = sparse(double(Dl(connect>0)),double(Dr(connect>0)),connect,length(ebsd),length(ebsd));
-A_Do = A_Do + A_Do.';% + speye(size(A_Do));
-%A_Do = mclComponents(A_Do,1.6);
+ind = connect>0;
+A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+A_Do = A_Do + A_Do.';
+A_Do = mclComponents(A_Do,1.6);
+A_Do = A_Do | A_Do.';
 
 % adjacency of cells that have a common boundary
 A_Db = sparse(double(Dl(connect==0)),double(Dr(connect==0)),true,length(ebsd),length(ebsd));
