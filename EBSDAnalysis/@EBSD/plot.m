@@ -154,7 +154,7 @@ if ~isempty(id)
     txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
   try
-    txt{5} = ['grainId = ' xnum2str(ebsd.grainId(id))];
+    txt{end+1} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)
     txt{end+1} = ['Value = ' xnum2str(value)];
