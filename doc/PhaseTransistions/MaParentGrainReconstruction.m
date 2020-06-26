@@ -71,19 +71,36 @@ xlabel('disorientation angle')
 % Next we set up a adjecency matrix |A| that describes the probability that
 % two neighbouring grains belong to the same parent grains. This
 % probability is is computed from the misfit of misorientation between to
-% child grains to the theoretical child to child misorientation. Here we
-% use the cumulativ density function of the Burr distribution to map the
-% misfit in degree into the interval [0,1]. The matrix |A| is than split
-% into clusters using the command <calcCluster.html |calcCluster|> which
-% implements the Marlovian clustering algorithm.
+% child grains to the theoretical child to child misorientation. More
+% precisely, we model the probability by a cumulativ Gaussian distribution
+% with mean value |threshold| which describes the misfit at which the
+% probability is exactly 50 percent and the standard deviation |tol|
 
-% the probability that two child grains belong to the same parent grain
-sim = 1-cdf('Burr',fit./degree,2,5,1);
+omega = linspace(0,5)*degree;
+threshold = 2*degree;
+tol = 1.5*degree;
+
+close all
+plot(omega./degree,1 - 0.5 * (1 + erf(2*(omega - threshold)./tol)),'linewidth',2)
+xlabel('misfit in degree')
+ylabel('probability')
+
+%%
+% The above diagram describes the probablity distribution as a function of
+% the misfit. After filling the matrix |A| with these probabilities
+
+% compute the probabilities
+prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
 
 % the corresponding similarity matrix
-A = sparse(grainPairs(:,1),grainPairs(:,2),sim,length(grains),length(grains));
+A = sparse(grainPairs(:,1),grainPairs(:,2),prob,length(grains),length(grains));
 
-% apply the Markovian clustering algorithm
+%%
+% we can split it into clusters using the command <calcCluster.html
+% |calcCluster|> which implements the <https://micans.org/mcl Markovian
+% clustering algorithm>. Here an important parameter is the so called
+% inflation power, which controls the size of the clusters. 
+
 p = 1.6; % inflation power:
 A = mclComponents(A,p);
 
@@ -176,7 +193,7 @@ mtexColorbar
 
 [parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 
-parentEBSD(parentGrains(parentGrains.grainSize<5)) = [];
+parentEBSD(parentGrains(parentGrains.grainSize<10)) = [];
 
 [parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 parentGrains = smooth(parentGrains,5);
@@ -192,13 +209,29 @@ plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
 %%
-% and then use the command <EBSD.smooth.html |smooth|> to fill the holes
+% and then use the command <EBSD.smooth.html |smooth|> to fill the holes in
+% the reconstructed parent map
 
+% fill the holes
 F = halfQuadraticFilter;
 parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
 
+% plot the parent map
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large')
 
+% with grain boundaries
 hold on
 plot(parentGrains.boundary,'lineWidth',2)
 hold off
+
+%% Summary of relevant thresholds
+%
+% In the above script several parameters are decicive for the success of
+% the reconstruction
+%
+% * threshold for initial grain segmentation (3 degree)
+% * theshold (2 degree), tolerance (1.5 degree) and inflation power (p =
+% 1.6) of the Markovian clustering algorithm
+% * maximum misfit within a parent grain (5 degree)
+% * minimum number of merged childs
+%

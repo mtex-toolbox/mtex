@@ -315,3 +315,20 @@ hold on
 plot(parentGrains.boundary,'lineWidth',3)
 hold off
 
+%% Summary of relevant thresholds
+%
+% In parent grain reconstruction several parameters are involve are
+% decicive for the success of the reconstruction
+%
+% * threshold for initial grain segmentation (1.5*degree)
+% * maximum misfit at triple junctions (2.5 degree)
+% * minimal misfit of the second best solution at triple junctions (2.5 degree)
+% * minimum number of consistent votes (2)
+% * threshold for merging beta grains (can be skipped)
+% * threshold for merging alpha and betag grains
+%
+
+
+
+
+
