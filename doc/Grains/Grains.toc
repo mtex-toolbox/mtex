@@ -2,6 +2,9 @@ GrainReconstruction            Reconstruction
 GrainSpatialPlots              Plot
 SelectingGrains                Select
 ShapeParameters                Shape Parameters
+EllipseBasedParameters         Ellipse Fitting
+HullBasedParameters            Convex Hull Parameters
+ProjectionBasedParameters      Projection Parameters
 GrainOrientationParameters     Orientation Parameters
 GrainNeighbours                Neighbours
 GrainMerge                     Merge

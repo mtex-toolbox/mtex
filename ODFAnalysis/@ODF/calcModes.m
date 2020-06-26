@@ -135,7 +135,7 @@ for k=1:length(q)
   while res2 > accuracy
     res2 = res2/2;
     S3G = localOrientationGrid(odf.CS,odf.SS,res2*4,'center',q(k),'resolution',res2);
-    f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+    f = eval(odf,S3G,varargin{:});
     
     [mo, ndx] = max(f);
     q(k) = S3G(ndx);

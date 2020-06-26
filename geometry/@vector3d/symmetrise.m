@@ -3,7 +3,18 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 %
 % Syntax
 %   vSym = symmetrise(v,S)
+%
+%   % include antipodal symmetry
+%   vSym = symmetrise(v,S,'antipodal')
+%
+%   % exclude antipodal symmetry
+%   vSym = symmetrise(v,S,'noAntipodal')
+%
+%   % every symmetrically equivalent direction only once 
 %   [vSym,l,sym] = symmetrise(v,S,'unique')
+%
+%   % every symmetrically equivalent axis only once 
+%   [vSym,l,sym] = symmetrise(v,S,'unique','noAntipodal')
 %
 % Input
 %  v - @vector3d
@@ -15,30 +26,59 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 %  sym  - @rotation
 %
 % Flags
-%  antipodal     - include <VectorsAxes.html antipodal symmetry>
-%  skipAntipodal - do not include antipodal symmetry
-%  unique        - only return distinct directions, adding 'keepAntipodal'
-%                  treats axes as vectors
-%                  
+%  antipodal   - include <VectorsAxes.html antipodal symmetry>
+%  noAntipodal - do not include antipodal symmetry (without option unique)
+%  noAntipodal - do not remove antipdal vectors (with option unique)
+%  unique      - only return distinct axes or directions (noAntipodal)
 %
-% Output
-%  Sv - symmetrically equivalent vectors
-%  l  - number of symmetrically equivalent vectors
 
-% TODO
-% symmetrise behaviour for case 1 and option 'antipodal' is not very
-% intuitive
-% we should use the option unique to get the unique symmetric equivalent!!
+% Example
+% Input: sym = 112           (100), (001)
+% no option               -> (100)(-100), (001)(001) 
+% unique                  -> (100)(-100), (001)
+% antipodal               -> (100)(-100)(-100)(100),(001)(001)(00-1)(00-1)
+% antipodal + unique      -> (100), (001)
+% antipodal + noAntipodal + unique  -> (100)(-100), (001)(00-1)
+%
+% cs = crystalSymmetry('112')
+% m = Miller({1,0,0},{0,0,1},cs)
+% symmetrise(m)
 
+% treat as axes or not 
+antiSym = check_option(varargin,'antipodal') || v.antipodal;
 
+if check_option(varargin,'unique')
 
-v = S.rot * v;
+  antiUnique = antiSym && ~check_option(varargin,'noAntipodal');
   
-if ~S.isLaue && (check_option(varargin,'antipodal') || v.antipodal) ...
-    && ~check_option(varargin,'skipAntipodal') %#ok<BDLGI>
+  if antiUnique % unqiue with antipodal -> no antipodal symmetrisation needed
+    
+    antiSym = false;
+    S = S.properGroup;    % we also do not need to perform full symmetrisation
+    apUnique = 'antipodal';
+    
+  else
+    
+    apUnique = 'noAntipodal';
+    
+  end  
+else
+  
+  % noAntipodal switches off antipodal
+  antiSym = antiSym && ~check_option(varargin,'noAntipodal');
+  
+end
+
+% symmetrise with respect to symmetry
+v = S.rot * v;
+
+% consider antipodal symmetry
+if antiSym && ~S.isLaue
+  
   v = [v;-v];
   
-  if check_option(varargin,'plot')
+  if check_option(varargin,'plot') %TODO
+    disp('Check This!');
     del = v.z<-1e-6;
     v.x(del) = [];
     v.y(del) = [];
@@ -48,25 +88,23 @@ end
 
 if check_option(varargin,'unique')
   
-  if check_option(varargin,{'keepAntipodal'})
-    ap = {};
-  else
-    ap = {'antipodal'};
-  end
-  
   vSym = cell(size(v,2),1);
   idSym = cell(size(v,2),1);
   dim1 = size(v,1);
   for j = 1:size(v,2)
-    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',ap{:});
+    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',apUnique);
   end
 
   l  = cellfun(@length, vSym);
   v = vertcat(vSym{:});
   if nargout == 3, sym = S.rot(vertcat(idSym{:})); end
   
-else
-  
-  
-
 end
+
+% where it is used
+% calcPDF              ->  
+% Miller/scatter       -> noAntipodal   as antipodal is treated by vector3d/scatter
+% checkZeroRange       ->  
+% Miller/multiplicity  ->
+% Miller/text          -> 
+% fibre/symmetrise     -> 

@@ -44,11 +44,11 @@ for j = 1:numel(sP)
   set(sP(j).ax,'nextPlot','add');
   
   % project data
-  [x0,y0] = project(sP(j).proj,normalize(v),'removeAntipodal',varargin{:});
+  [x0,y0] = project(sP(j).proj,normalize(v),'noAntipodal',varargin{:});
   if check_option(varargin,'centered') || mhs == 0
    
-    [x1,y1] = project(sP(j).proj,normalize(v - scale * d),'removeAntipodal',varargin{:});
-    [x2,y2] = project(sP(j).proj,normalize(v + scale * d),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v - scale * d),'noAntipodal',varargin{:});
+    [x2,y2] = project(sP(j).proj,normalize(v + scale * d),'noAntipodal',varargin{:});
     
     % we need to rescale to avoid distortions according to projection
     l = sqrt((x1-x0).^2 + (y1-y0).^2);
@@ -60,7 +60,7 @@ for j = 1:numel(sP)
     
   else
     
-    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(scale) * d),'removeAntipodal',varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(scale) * d),'noAntipodal',varargin{:});
     
     % we need to rescale to avoid distortions according to projection
     l = sqrt((x0-x1).^2 + (y0-y1).^2);

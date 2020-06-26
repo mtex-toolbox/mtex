@@ -161,17 +161,39 @@ classdef phaseList
                 
     end
     
-    function pL = set.CS(pL,cs)
-            
-      if isa(cs,'symmetry')      
-        % ensure single phase
-        id = unique(pL.phaseId);
+    function id = cs2phaseId(pL,cs)
       
-        if numel(id) == 1
-          pL.CSList{id} = cs;
-        else
-          % TODO
+      for id = 1:length(pL.CSList)
+        if isa(pL.CSList{id},'symmetry') && (...
+            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
+            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
+          return
         end
+      end
+      id = 0;
+      
+    end
+    
+    function pL = set.CS(pL,cs)
+          
+      
+      if isa(cs,'symmetry')      
+        
+        id = cs2phaseId(pL,cs);
+        
+        % if not yet in CSlist append
+        if id == 0
+          pL.CSList{end+1} = cs;
+          
+          pL.phaseId = length(pL.CSList) * ones(size(pL.phaseId));          
+          
+          pL.phaseMap = [pL.phaseMap; max(pL.phaseMap)+1];
+          
+        else
+          pL.CSList{id} = cs;
+          pL.phaseId = id * ones(size(pL.phaseId));
+        end
+
       elseif iscell(cs)    
         if length(cs) == numel(pL.phaseMap)
           pL.CSList = cs;
@@ -243,6 +265,7 @@ classdef phaseList
     function isInd = get.isIndexed(pL)
       notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
       isInd = ~any(ismember(pL.phaseId,notIndexedPhase),2);
+      isInd = reshape(isInd, size(pL));
     end
     
     function out = isempty(pL)

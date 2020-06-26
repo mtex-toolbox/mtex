@@ -32,14 +32,20 @@ end
 argin_check(center,'quaternion');
 argin_check(radius,'double');
 
-v = 0;
-S3G = [];
+v = zeros(size(center));
+
 
 % cycle through components
-for i = 1:length(odf.components)
+for ic = 1:length(center)
+
+  S3G = [];
   
-  [iv,S3G] = volume(odf.components{i},center,radius,S3G,varargin{:});
-  v = v + odf.weights(i) * iv;
+  for i = 1:length(odf.components)
+  
+    [iv,S3G] = volume(odf.components{i},center(ic),radius,S3G,varargin{:});
+    v(ic) = v(ic) + odf.weights(i) * iv;
+    
+  end
   
 end
 

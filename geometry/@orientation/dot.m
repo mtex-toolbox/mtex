@@ -14,19 +14,19 @@ function d = dot(o1,o2,varargin)
 % orientation/dot_outer orientation/angle
 
 if check_option(varargin,'noSymmetry')
-  d = dot@rotation(o1,o2);
+  d = dot@rotation(o1,o2,varargin{:});
   return
 end
 
 % extract symmetries
 if isa(o1,'orientation')
 
-  qss = o1.SS;
-  qcs = o1.CS;
+  qss = o1.SS.rot;
+  qcs = o1.CS.rot;
 
   % check any of the involved symmetries is a Laue group as in this case we
   % can forget about all inversions
-  oneIsLaue = isLaue(qss) || isLaue(qcs);
+  oneIsLaue = isLaue(o1.SS) || isLaue(o1.CS);
 
   if isa(o2,'orientation')
 
@@ -45,7 +45,7 @@ if isa(o1,'orientation')
           'Symmetry missmatch');
 
         oneIsLaue = oneIsLaue || isLaue(o2.CS);
-        qcs = o1.CS' * o2.CS;
+        qcs = o1.CS.rot' * o2.CS.rot;
         qcs = unique(qcs(:));
         qss = rotation.id;
       end
@@ -57,15 +57,15 @@ if isa(o1,'orientation')
        'Symmetry missmatch');
 
       oneIsLaue = oneIsLaue || isLaue(o2.SS);
-      qss = o1.SS' * o2.SS;
+      qss = o1.SS.rot' * o2.SS.rot;
       qss = unique(qss(:));
       qcs = rotation.id;
     end
   end
 else
-  qcs = o2.CS;
-  qss = o2.SS;
-  oneIsLaue = isLaue(qss) || isLaue(qcs);
+  qcs = o2.CS.rot;
+  qss = o2.SS.rot;
+  oneIsLaue = isLaue(o2.SS) || isLaue(o2.CS);
 end
 
 % we may restrict to purely rotational group if one of the following
@@ -81,7 +81,7 @@ ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
 if length(o1) == 1
 
   % symmetrising the single element is much faster
-  o1 = qss * o1 * qcs;
+  o1 = mtimes(qss,mtimes(o1,qcs,0),1);
   
   % this might save some time TODO!!!
   %if length(o2) > 1000, o1 = unique(o1,'antipodal','noSymmetry'); end
@@ -93,7 +93,7 @@ if length(o1) == 1
   d = q1 * q2';
   
   % TODO
-  if ~ignoreInv, d = d .* 1; end
+  %if ~ignoreInv, d = d .* 1; end
   
   d = reshape(max(abs(d),[],1),size(o2));
 
@@ -104,7 +104,7 @@ else
   
   % symmetrise TODO: do we realy need to take the inv here?
   o1 = mtimes(qss,o1,1);
-  o2 = reshape(mtimes(o2,inv(qcs.rot),0),[1,length(o2),numSym(qcs)]);
+  o2 = reshape(mtimes(o2,inv(qcs),0),[1,length(o2),length(qcs)]);
   
   % inline dot product for speed reasons
   d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...

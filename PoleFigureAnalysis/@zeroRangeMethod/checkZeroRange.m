@@ -23,7 +23,7 @@ if isa(ori,'orientation')
   % loop over pole figures
   for i = 1:zrm.pf.numPF
 
-    h = symmetrise(zrm.pf.allH{i},'antipodal','skipAntipodal','unique');
+    h = symmetrise(zrm.pf.allH{i},'antipodal','unique');
         
     % loop over all symmetrically equivalent pole figure positions
     for ih = 1:length(h)

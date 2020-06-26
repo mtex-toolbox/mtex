@@ -63,19 +63,19 @@ classdef EBSDsquare < EBSD
     % --------------------------------------------------------------
     
     function out = get.xmin(ebsd)
-      out = ebsd.x(1);
+      out = ebsd.prop.x(1);
     end
     
     function out = get.xmax(ebsd)
-      out = ebsd.x(end);
+      out = ebsd.prop.x(end);
     end
     
     function out = get.ymin(ebsd)
-      out = ebsd.y(1);
+      out = ebsd.prop.y(1);
     end
     
     function out = get.ymax(ebsd)
-      out = ebsd.y(end);
+      out = ebsd.prop.y(end);
     end
     
     

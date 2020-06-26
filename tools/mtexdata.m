@@ -101,6 +101,7 @@ if ~check_option(varargin,'silent')
 end
 
 if nargout == 0, clear S; end
+end
 
 % -----------------------------------------------------------------------
 function data = listmtexdata
@@ -109,9 +110,9 @@ fid = fopen([mfilename('fullpath') '.m'],'r');
 A = char(fread(fid,'char')');
 fclose(fid);
 
-data = regexp(A,'function(.*?)(?<type>(ebsd|pf))(.*?)mtexdata_(?<name>\w*)','names');
+data = regexp(A,'function(.*?)(?<type>(ebsd|pf|grains))(.*?)mtexdata_(?<name>\w*)','names');
 data(cellfun('isempty',{data.name})) = [];
-
+end
 
 % -------------------- PoleFigure data ----------------------------------
 function [CS,h,c,pf] = mtexdata_dubna
@@ -139,6 +140,8 @@ h = {...
 c = {1,1,[0.52 ,1.23],1,1,1,1};
 
 pf = PoleFigure.load(fname,h,'interface','dubna','superposition',c,CS);
+end
+
 
 % ------------------------------------------------------------------
 function [CS,h,c,pf] = mtexdata_geesthacht
@@ -159,6 +162,8 @@ c = ones(size(h));
 
 pf = PoleFigure.load(fname,h,CS,SS);
 
+end
+
 %
 function   [CS,h,c,pf] = mtexdata_ptx
 
@@ -175,6 +180,7 @@ fname = {...
 pf = PoleFigure.load(fname,CS,SS);
 h = pf.allH;
 c = ones(size(h));
+end
 
 % -------------------------- EBSD data ---------------------------------
 function ebsd = mtexdata_aachen
@@ -185,6 +191,7 @@ CS = {...
 
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),...
   'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
+end
 
 %
 function ebsd = mtexdata_sharp
@@ -195,6 +202,8 @@ CS = {...
 
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
   'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
+end
+
 
 function ebsd = mtexdata_small
 
@@ -202,6 +211,7 @@ plotx2east
 ebsd = mtexdata_forsterite;
 region = [33 4.5 3 3]*10^3;
 ebsd = ebsd(ebsd.inpolygon(region));
+end
 
 % --------------------------------------------------------------
 function ebsd = mtexdata_csl
@@ -209,13 +219,14 @@ function ebsd = mtexdata_csl
 CS = crystalSymmetry('m-3m','mineral','iron');
 ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','CSL.txt'),'CS',CS,...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'IQ' 'CI' 'Error'});
-
+end
 
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_3d
 
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),...
   '3d', (0:58)*0.12,'convertEuler2SpatialReferenceFrame');
+end
 
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_mylonite
@@ -230,12 +241,14 @@ plotx2east;
 plotzOutOfPlane
 ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),'CS',CS, ...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
+end
 
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_epidote
 
 ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
   'convertEuler2SpatialReferenceFrame');
+end
 
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
@@ -246,7 +259,7 @@ ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2sp
 
 % rotate only the spatial data about the y-axis
 % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-
+end
 
 function ebsd = mtexdata_olivine
 
@@ -264,20 +277,20 @@ setMTEXpref('zAxisDirection','outOfPlane');
 
 % rotate only the spatial data about the y-axis
 % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-
+end
 
 function ebsd = mtexdata_twins
 
 plotx2east; plotzOutOfPlane
 CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium','x||a*')
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
-
+end
 
 function ebsd = mtexdata_copper
 
 plotx2east; plotzOutOfPlane
 ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','copper.osc'),'convertEuler2spatialReferenceFrame');
-
+end
 
 % -----------------------------------------------------------------------
 function ebsd = mtexdata_single
@@ -288,7 +301,7 @@ fname = fullfile(mtexDataPath,'EBSD','single_grain_aluminum.txt');
 ebsd = EBSD.load(fname, 'CS', CS, ...
    'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
   'Columns', [1 2 3 4 5]);
-
+end
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_alu
 
@@ -298,8 +311,9 @@ fname = fullfile(mtexDataPath,'EBSD','polycrystalline_aluminum.txt');
 ebsd = EBSD.load(fname,'CS', CS,...
    'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
   'Columns', [1 2 3 4 5],'ignorePhase', 0);
+end
 
-% ----------------------------------------------------------------------
+
 function ebsd = mtexdata_titanium
 
   CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
@@ -308,12 +322,40 @@ function ebsd = mtexdata_titanium
   ebsd = EBSD.load(fname,'CS', CS,...
     'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
     'x' 'y' 'grainId'});
+end
 
- 
-  function ebsd = mtexdata_ferrite
+
+function ebsd = mtexdata_ferrite
 
 fname = fullfile(mtexDataPath,'EBSD','ferrite.ang');
 ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame','setting 2');
 
+end
+
+
+function grains = mtexdata_testgrains
+
+fname = fullfile(mtexDataPath,'testgrains.mat');
+grains = load(fname);
+end
  
  
+function ebsd = mtexdata_alphaBetaTitanium
+
+fname = fullfile(mtexDataPath,'EBSD','EDXLMDTi64.cpr');
+ebsd = EBSD.load(fname,'convertSpatial2EulerReferenceFrame');
+
+% compute with the purely rotational symmetry groups only
+ebsd('Ti (alpha)').CS = ebsd('Ti (alpha)').CS.properGroup;
+ebsd('Ti (beta)').CS = ebsd('Ti (beta)').CS.properGroup;
+
+end
+
+function ebsd = mtexdata_martensite
+
+fname = fullfile(mtexDataPath,'EBSD','martensite.cpr');
+ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame');
+ebsd('Iron bcc').CS = ebsd('Iron bcc').CS.properGroup;
+ebsd('Iron bcc').CSList{3} = ebsd('Iron bcc').CSList{3}.properGroup;
+
+end

@@ -20,3 +20,4 @@ doc/html
 *.orig
 help/mtex/*
 help/tmp/*
+!data/testgrains.mat

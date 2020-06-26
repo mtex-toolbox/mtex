@@ -1,6 +1,7 @@
 function A = mclComponents(A,p)
 % Markovian clustering algorithm
-% test the explanations in stijn van dongens thesis.
+% check out the explanations in stijn van dongens thesis.
+% author: gregor arbylon.net
 %
 % Input
 %  A - adjecency matrix with weights between 0 and 1
@@ -9,9 +10,16 @@ function A = mclComponents(A,p)
 % Output
 %  A - adjecency matrix of the components
 %
-% author gregor arbylon.net
 
+% prune elements of A that are below minval
 minval = 0.0001;
+A = (A > minval) .* A;
+
+% ensure A is symmetric
+if nnz(A .* A.') == 0, A = A + A.'; end
+
+% ensure diagonal has ones
+if ~any(diag(A)), A = A + speye(length(A)); end
 
 e = 1;
 i = 1;
@@ -38,11 +46,8 @@ while e > emax
   maxs = max(A);
   sqsums = sum(A .^ 2);
   e = max(maxs - sqsums);
-
     
 end 
-
-disp(['number of iterations:' xnum2str(i)]);
 
 end 
 

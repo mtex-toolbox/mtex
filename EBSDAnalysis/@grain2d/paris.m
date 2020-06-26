@@ -15,7 +15,6 @@ function p = paris(grains)
 %
 % 
 
-
 % store this in local variables for speed reasons
 p = zeros(size(grains));
 

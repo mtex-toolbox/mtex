@@ -1,7 +1,13 @@
-%% Orientation Parameters
+%% Grain Orientation Parameters
 %
 %%
+% In this section we discuss properties of grains that are related to the
+% distribution of orientations within the grains, i.e., 
 %
+% || |grains.meanOrientation| || mean orientation ||
+% || |grains.GOS| || grain orientation spread || 
+% || |grains.GAM| || grain orientation spread || 
+
 close all; plotx2east
 
 % import the data

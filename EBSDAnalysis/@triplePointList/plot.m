@@ -18,8 +18,22 @@ function h = plot(tP,varargin)
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:});
 
-obj.Faces    = 1:length(tP.V);
-obj.Vertices = tP.V;
+
+numTP = length(tP);
+
+reg = get_option(varargin,'region');
+if ~isempty(reg)
+  
+  ind = tP.x > reg(1) & tP.x < reg(2) &  tP.y > reg(3) & tP.y < reg(4);
+
+  obj.Vertices = tP.V(ind,:);
+  
+else
+  
+  obj.Vertices = tP.V;  
+end
+
+obj.Faces    = 1:size(obj.Vertices,1);
 obj.parent = mP.ax;
 obj.FaceColor = 'none';
 obj.EdgeColor = 'none';
@@ -28,18 +42,20 @@ obj.hitTest = 'off';
 
 % color given by second argument
 if nargin > 1 && isnumeric(varargin{1}) && ...
-    (size(varargin{1},1) == length(tP) || size(varargin{1},2) == length(tP))
+    (size(varargin{1},1) == numTP || size(varargin{1},2) == numTP)
 
-  if size(varargin{1},1) ~= length(tP), varargin{1} = varargin{1}.'; end
+  if size(varargin{1},1) ~= numTP, varargin{1} = varargin{1}.'; end
   
-    % extract colorpatchArgs{3:end}coding
+  % extract colorcoding
   cdata = varargin{1};
-  if numel(cdata) == length(tP)
-    obj.FacevertexCData = reshape(cdata,[],1);
+  if numel(cdata) == numTP
+     cdata = reshape(cdata,[],1);
   else
-    obj.FacevertexCData = reshape(cdata,[],3);
+    cdata = reshape(cdata,[],3);
   end
-
+  if ~isempty(reg), cdata = cdata(ind,:); end
+  obj.FacevertexCData = cdata;
+    
   obj.markerFaceColor = 'flat';
   obj.markerEdgeColor = 'flat';
 

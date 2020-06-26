@@ -1,4 +1,4 @@
-function [parentOri, parentId, childId] = calcParent(childOri,parentRef,p2c)
+function [parentOri, parentId, childId] = calcChildVariant(childOri,parentRef,p2c)
 %
 % Syntax
 %

@@ -115,11 +115,11 @@ calcBinghamODF(ori_prolate)
 %%
 % and test on the three cases
 
-T_spherical = bingham_test(ori_prolate,'spherical','approximated');
-T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
-T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
+%T_spherical = bingham_test(ori_prolate,'spherical','approximated');
+%T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
+%T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
 
-t = [T_spherical T_oblate T_prolate]
+%t = [T_spherical T_oblate T_prolate]
 
 %%
 % The test clearly rejects the spherical and prolate case, but not the
@@ -159,11 +159,11 @@ calcBinghamODF(ori_oblate)
 %%
 % and do the tests
 
-T_spherical = bingham_test(ori_oblate,'spherical','approximated');
-T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
-T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
+%T_spherical = bingham_test(ori_oblate,'spherical','approximated');
+%T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
+%T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
 
-t = [T_spherical T_oblate T_prolate]
+%t = [T_spherical T_oblate T_prolate]
 
 %%
 % the spherical and oblate case are clearly rejected, the prolate case

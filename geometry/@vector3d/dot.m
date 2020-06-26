@@ -23,6 +23,6 @@ d = xx + yy + zz;
 
 % 
 if (check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal) && ...
-    ~check_option(varargin,'ignoreAntipodal')
+    ~check_option(varargin,'noAntipodal')
   d = abs(d);
 end

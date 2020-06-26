@@ -1,18 +1,56 @@
 classdef axisAngleColorKey < orientationColorKey
-  % 
   %
-  % Colorizes orientations according to their misorientation axis and
-  % misorientation angle in specimen coordinates with respect to some
-  % refererence orientation. The angle determines the saturation of the
-  % color, i.e., a misorientation angle of 0 corresponds to gray and the
-  % misorientation ange at maximum corresponds to fully saturated colors.
-  % The saturated color is determined by the misorientation axis. In the
-  % X-Y plane the colors circle through the rainbow colors and goes to
-  % white and black for z to +/-1.
+  % The axisAngleColorKey allows to assign colors to orientations and
+  % misorientations according to rotational axes and rotational angles.
+  %
+  % Syntax
+  %
+  %   colorKey = axisAngleColorKey(CS1,CS2)
+  %
+  %   rgb = colorKey.orientation2color(mori);
+  %
+  %   rgb = colorKey.orientation2color(ori,oriRef);
+  %
+  % Input
+  %  CS1, CS2 - @crystalSymmetry, two are only required for misorientations 
+  %  ori      - @orientation
+  %  oriRef   - (list of) reference @orientation
+  %
+  % Output
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  dirMapping - @directionColorKey
+  %  oriRef     - reference @orientation
+  %  maxAngle   - misorientation angle at which the colors are maximum saturated
+  %  thresholdAngle - misorientation angle at which colors are set to NaN 
+  %  
+  % Description
+  %
+  % The rotational angle determines the saturation of the color. The
+  % saturation increases linearly from 0 (gray) to 1 (full saturated color)
+  % within the range |[0,maxAngle]|. Within the range
+  % |[maxAngle,thresholdAngle]| the saturation is constant |1|. For angles
+  % large than |thresholdAngle| the color is set to NaN.
+  %
+  % The rotational axis determines the saturated color as defined in the
+  % property <directionColorKey.html |dirMapping|>. Be default this is the
+  % @HSVDirectionKey which circles through the rainbow colors at the
+  % equator and fades to white at the north pole and black at the south
+  % pole.
+  %
+  % If a reference orientation |oriRef| is defined the disorientation angle
+  % and the disorientation axis with respect to this reference orientation
+  % is considered. If orientations are colorized the disorientation axis is
+  % considered in specimen coordinates. If misorientations are colorized
+  % the axis is in crystal coordinates.
   % 
   % The reference orientation may be single fixed orientation or a list of
-  % orientations. A typical example is to set the reference orientation as
-  % the mean orientation of the grain the pixel orientation belongs to.
+  % orientations. A typical application is to use as the reference
+  % orientation the mean orientation of the grain the orientation belongs
+  % to
+  %
+  %  rgb = colorKey.orientation2color(ebsd.orientations, grains(ebsd.grainId).meanOrientation)
   %
   % Reference: Thomsen et al.: Quaternion-based disorientation coloring of
   % orientation maps, 2017
@@ -23,6 +61,7 @@ classdef axisAngleColorKey < orientationColorKey
     dirMapping % direction mapping
     oriRef     % the reference orientation 
     maxAngle = inf % misorientation angle at which the colors are maximum saturated
+    thresholdAngle = inf % misorientation angle at which colors are set to NaN
   end
   
   methods
@@ -39,9 +78,12 @@ classdef axisAngleColorKey < orientationColorKey
 
     end
   
-    function rgb = orientation2color(oM,ori)
-
-      if isempty(oM.oriRef)
+    function rgb = orientation2color(oM,ori,oriRef)
+      
+      if nargin == 3 
+        omega = angle(ori,oriRef);
+        v = axis(ori,oriRef);
+      elseif isempty(oM.oriRef)
         omega = angle(ori);
         v = axis(ori);
       else      
@@ -56,7 +98,7 @@ classdef axisAngleColorKey < orientationColorKey
       end
        
       gray = min(1,omega./maxAngle);
-      %gray(gray > 1) = NaN;
+      gray(omega > oM.thresholdAngle) = NaN;
       
       rgb = oM.dirMapping.direction2color(v,'grayValue',gray);
       

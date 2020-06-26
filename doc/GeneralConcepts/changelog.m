@@ -1,6 +1,26 @@
 %% MTEX Changelog
 %
-%% MTEX 5.3.0 4/2019
+%% MTEX 5.4.1 6/2020
+% 
+% *New Functions*
+%
+% * <EBSDSquare.interp.html interp> to interpolate EBSD maps
+% * grain properties <grain2d.longAxis.html longAxis>, <grain2d.shortAxis.html shortAxis>
+% * <BoundaryCurvature.html grain boundary curvature>
+%
+% *Bug Fixes*
+%
+% * loading ang files
+% * importong ODFs
+% * inverse pole figures misses orientations
+% * <grain2d.hull convex hull> of grains has now correct boundaries
+%
+% * Other Changes*
+%
+% * <vector3d.mean.html vector3d/mean> now returns not normalized vectors
+% * new flag |noAntipodal| to supress antipodal symmetry in calculations
+%
+%% MTEX 5.3.0 4/2020
 %
 % MTEX 5.3 is a humble release without big shiny improvements. On the other
 % hand is has seen some internal changes which lead to significant speed

@@ -18,39 +18,36 @@ function varargout = scatter(m,varargin)
 if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')  
   
   % restrict to fundamental region
-  %varargin = [varargin,{'removeAntipodal','skipSymmetrise'}];
   varargin = [varargin,{'skipSymmetrise'}]; % we do not need to symmtrise twice
-  % the option 'removeAntipodal' is used in symmetrise below as antipodal
-  % symmetry is treaded seperately by the plot command
   
   % symmetrise data with repetition
   if numel(varargin) > 0 && ~isempty(varargin{1}) && ...
       (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
   
     % first dimension cs - second dimension m
-    m = symmetrise(m,'removeAntipodal',varargin{:});
+    m = symmetrise(m,varargin{:});
     
     varargin{1} = repmat(varargin{1}(:)',size(m,1),1);
     
     varargin = replicateMarkerSize(varargin,size(m,1));
             
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
-  
-      [m,l] = symmetrise(m,'unique','removeAntipodal',varargin{:}); % symmetrise without repetition
-        
-      if check_option(varargin,'label')
-        label = ensurecell(get_option(varargin,'label'));
-        label = repelem(label,l);
-        varargin = set_option(varargin,'label',label);
-      end
+    
+    % plot only unqiue points
+    [m,l] = symmetrise(m,'unique','noAntipodal',varargin{:}); % symmetrise without repetition
+    
+    if check_option(varargin,'label')
+      label = ensurecell(get_option(varargin,'label'));
+      label = repelem(label,l);
+      varargin = set_option(varargin,'label',label);
+    end
       
   else 
     
-    m = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise with repetition
+    m = symmetrise(m,varargin{:}); % symmetrise with repetition
     varargin = replicateMarkerSize(varargin,size(m,1));
     
-  end
-  
+  end  
 end
 
 if numel(varargin) > 0 && (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
@@ -60,7 +57,7 @@ else
 end
 
 % plot them all with the same color
-[varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS);
+[varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS,'noAntipodal');
 
 end
 

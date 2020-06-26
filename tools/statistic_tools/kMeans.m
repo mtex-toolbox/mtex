@@ -1,4 +1,4 @@
-classdef kmeans < handle
+classdef kMeans < handle
 %
 % k-means++: The Advantages of Careful Seeding", by David Arthur and 
 % Sergei Vassilvitskii, SODA 2007.
@@ -10,7 +10,7 @@ classdef kmeans < handle
   
   methods
     
-    function km = kmeans(n) 
+    function km = kMeans(n) 
       if nargin == 1, km.n = n; end
     end
     

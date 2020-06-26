@@ -77,9 +77,11 @@ caxis([0,4*degree])
 
 mtexdata copper
 
+[grains, ebsd.grainId] = calcGrains(ebsd)
 ebsd = ebsd.gridify
 
 plot(ebsd,ebsd.orientations)
+
 
 %%
 % Indexing works here similarly as for square grids
@@ -90,4 +92,86 @@ plot(ebsd(1:10,:),ebsd(1:10,:).orientations,'micronbar','off')
 %
 
 plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
+
+%% Switching from Hexagonal to Square Grid
+%
+% Sometimes it is required to resample EBSD data on a hex grid on a square
+% grid. This can be accomplished by passing to the command
+% <EBSD.gridify.html gridify> a square unit cell by the option |unitCell|.
+
+% define a square unit cell
+unitCell = [-2.5 -2.5; -2.5 2.5; 2.5 2.5; 2.5 -2.5];
+
+% use the square unit cell for gridify
+ebsdS = ebsd.gridify('unitCell',unitCell)
+
+% visualize the result
+plot(ebsdS, ebsdS.orientations)
+
+%%
+% In the above example we have chosen the square unit cell to have
+% approximately the same size as the hexgonal unit cell. This leads to
+% quite some distortions as squares can not reproduces all the shapes of
+% the hexagones. We can reduce this issue by chosing the quare unit cell
+% significantly smaller then the hexagonal unit cell.
+
+% a smaller unit cell
+unitCell = [-1 -1; -1 1; 1 1; 1 -1];
+
+% use the small square unit cell for gridify
+ebsdS = ebsd.gridify('unitCell',unitCell)
+
+plot(ebsdS,ebsdS.orientations)
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
+
+%%
+% It is important to understand that the command <EBSD.gridify.html
+% gridify> does not increase the number of data points. As a consquence, we
+% end up with many white spots in the map which corresponds to orientations
+% that have been set to NaN. In order to fill these white spots, we may
+% either use the command <EBSD.fill.html fill> which performs nearest
+% neighbour interpolation or the command <EBSD.smooth smooth> which allows
+% for more suffisticated interpolation methods.
+
+%%
+
+% nearest neigbour interpolation
+ebsdS1 = fill(ebsdS,grains)
+
+plot(ebsdS1('indexed'),ebsdS1('indexed').orientations)
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
+
+%%
+
+% interpolation using a TV regularisation term
+F = halfQuadraticFilter;
+F.alpha = 0.5;
+ebsdS2 = smooth(ebsdS,F,'fill',grains)
+
+plot(ebsdS2('indexed'),ebsdS2('indexed').orientations)
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
+
+%% Gridify on Rotated Maps
+% A similar situation occurs if <EBSD.gridify.html gridify> is applied to
+% rotated data.
+
+ebsd = rotate(ebsd,20*degree)
+
+ebsdG = ebsd.gridify
+
+plot(ebsdG,ebsdG.orientations)
+
+%%
+% Again we may observe white spots within the map which we can easily fill
+% with the <EBSD.fill.html fill> command.
+
+ebsdGF = fill(ebsdG)
+
+plot(ebsdGF,ebsdGF.orientations)
 

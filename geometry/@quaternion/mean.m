@@ -53,7 +53,7 @@ if isa(qm,'rotation'), qm.i = false; end
 
 if isRobust && length(q)>4
   omega = angle(qm,q,'noSymmetry');
-  id = omega < quantile(omega,0.8)*2.5;
+  id = omega <= quantile(omega,0.8)*2.5;
   if all(id), return; end
   if nargout == 3
     [qm,lambda, V] = mean(q.subSet(id),varargin{:});

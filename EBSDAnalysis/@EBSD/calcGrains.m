@@ -42,7 +42,36 @@ I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
 % setup grains
-grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
+[grains, newBd] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+
+% merge quadruple grains
+if check_option(varargin,'removeQuadruplePoints') && newBd > 0
+
+  gB = grains.boundary; gB = gB(length(gB)+1-(1:newBd));
+  toMerge = false(size(gB));
+       
+  for iPhase = ebsd.indexedPhasesId
+    
+    % restrict to the same phase
+    iBd = all(gB.phaseId == iPhase,2);    
+    
+    if ~any(iBd), continue; end
+        
+    % check for misorientation angle
+    toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
+    
+  end
+  
+  [grains, parentId] = merge(grains,gB(toMerge));
+  
+  % update I_DG
+  I_PC = sparse(1:length(parentId),parentId,1);
+  I_DG = I_DG * I_PC;
+  
+  % update grain ids
+  [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
+    
+end
 
 % calc mean orientations, GOS and mis2mean
 % ----------------------------------------

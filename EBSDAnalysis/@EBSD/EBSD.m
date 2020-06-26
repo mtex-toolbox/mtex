@@ -161,13 +161,19 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
       
     function ori = get.orientations(ebsd)
-      ori = orientation(ebsd.rotations,ebsd.CS);
+      if isempty(ebsd)
+        ori = orientation;
+      else
+        ori = orientation(ebsd.rotations,ebsd.CS);
+      end
     end
     
     function ebsd = set.orientations(ebsd,ori)
       
-      ebsd.rotations = rotation(ori);
-      ebsd.CS = ori.CS;
+      if ~isempty(ebsd)
+        ebsd.rotations = rotation(ori);
+        ebsd.CS = ori.CS;
+      end
             
     end
            
