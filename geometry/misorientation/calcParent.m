@@ -127,6 +127,7 @@ elseif setting == 3 % child + child + child -> triple points
   
   for i1=1:numV
     for i2 = 1:numV
+      progress((i1-1)*numV + i2,numV^2);
       fit(:,i1,i2,:) = repmat(angle(pVariants(:,1,i1),pVariants(:,2,i2)),[1 1 1 numV]);
     end
   end
