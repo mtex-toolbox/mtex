@@ -123,37 +123,37 @@ elseif setting == 3 % child + child + child -> triple points
   % all three adjacent grains. To this end we compute the disorientation
   % angle with respect to all combinations
  
-  mis12V = -inf(size(childOri,1),numV,numV,numV);
-  mis13V = mis12V;
-  mis23V = mis12V;
+  fit = -inf(size(childOri,1),numV,numV,numV);
+  
   for i1=1:numV
     for i2 = 1:numV
-      progress((i1-1)*numV+i2,numV^2)
-      
-      mis12V(:,i1,i2,:) = repmat(angle(pVariants(:,1,i1),pVariants(:,2,i2)),[1 1 1 numV]);
-    
-      for i3 = 1:numV
-        
-        fit = max(max(mis12V(:,i1,i2,i3),mis13V(:,i1,i2,i3)),mis23V(:,i1,i2,i3));
-        ind = fit < threshold;
-        
-        mis13V(ind,i1,i2,i3) = angle(pVariants(ind,1,i1),pVariants(ind,3,i3));
-        
-        fit = max(max(mis12V(:,i1,i2,i3),mis13V(:,i1,i2,i3)),mis23V(:,i1,i2,i3));
-        ind = fit < threshold;
-        
-        mis23V(ind,i1,i2,i3) = angle(pVariants(ind,2,i2),pVariants(ind,3,i3));
-      end
+      fit(:,i1,i2,:) = repmat(angle(pVariants(:,1,i1),pVariants(:,2,i2)),[1 1 1 numV]);
     end
   end
-  progress(1,1);
+  
+  for i2=1:numV
+    for i3 = 1:numV
+      ind = any(fit(:,:,i2,i3) < threshold,2);
+      fit(ind,:,i2,i3) = max(fit(ind,:,i2,i3),...
+        repmat(angle(pVariants(ind,2,i2),pVariants(ind,3,i3)),[1 numV 1 1]));
+    end
+  end
+  
+  for i1=1:numV
+    for i3 = 1:numV
+      ind = any(fit(:,i1,:,i3) < threshold,3);
+      fit(ind,i1,:,i3) = max(fit(ind,i1,:,i3),...
+        repmat(angle(pVariants(ind,1,i1),pVariants(ind,3,i3)),[1 1 numV 1]));
+    end
+  end
 
   % Ideally, we would like to find i1, i2, i3 such that all the
   % disorientation angles mis12V(:,i1,i2,i3), mis13V(:,i1,i2,i3) and
   % mis23V(:,i1,i2,i3) all small. One way to do this is to find the minimum
   % of the sum
   %fit = reshape(sqrt(mis12V.^2 + mis13V.^2 + mis23V.^2),[],numV^3) / 3;
-  fit = reshape(max(max(mis12V,mis13V),mis23V),[],numV^3);
+  %fit = reshape(max(max(mis12V,mis13V),mis23V),[],numV^3);
+  fit = reshape(fit,[],numV^3);
   
   if numFit == 1
   
