@@ -173,12 +173,20 @@ grainsMerged.phaseId = full(max(phaseId,[],2));
 % should we compute meanOrientation?
 if check_option(varargin,'calcMeanOrientation')
 
-  updateOriFun = getClass(varargin,'function_handle',@updateOri);
-  
+  updateOriFun = get_option(varargin,'calcMeanOrientation',[],'function_handle');
+    
   for i = newInd
     
     % compute new mean orientation
-    oriNew = updateOriFun(grains.subSet(parentId == i));
+    if isempty(updateOriFun)
+      
+      ind = parentId == i;
+      cs = grains.CSList{max(grains.phaseId(ind))};
+      oriNew = mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.grainSize(ind));
+            
+    else
+      oriNew = updateOriFun(grains.subSet(parentId == i));
+    end
   
     % set new mean rotation
     grainsMerged.prop.meanRotation(i) = rotation(oriNew);
@@ -200,9 +208,4 @@ grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints(grai
 
 end
 
-function ori = updateOri(grains)
 
-cs = grains.CSList{max(grains.phaseId)};
-ori = mean(orientation(grains.prop.meanRotation,cs),'weights',grains.grainSize);
-
-end
