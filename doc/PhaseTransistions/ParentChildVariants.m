@@ -89,8 +89,8 @@ plotIPDF(oriChild,color,vector3d.Z)
 %%
 % These 6 pairs are called the variants of the parent orientation
 % |oriParent| with respect to the orientation relation ship |alpha2beta|.
-% They can be computed more directly using the command <variants.html
-% |variants|>.
+% They can be computed more directly using the command
+% <orientation.variants.html |variants|>.
 
 oriChild = variants(alpha2beta,oriParent)
 

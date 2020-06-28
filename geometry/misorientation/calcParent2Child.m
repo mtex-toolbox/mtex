@@ -26,7 +26,7 @@ if isa(mori.SS, 'specimenSymmetry')
 end
 
 % do some iterations
-for k = 1:10
+for k = 1:6
 
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
@@ -50,5 +50,5 @@ for k = 1:10
   end
   
   p2c = mean(fcc2bccCandidate);
-   
+    
 end

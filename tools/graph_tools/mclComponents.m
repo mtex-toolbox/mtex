@@ -16,7 +16,7 @@ minval = 0.0001;
 A = (A > minval) .* A;
 
 % ensure A is symmetric
-if nnz(A .* A.') == 0, A = A + A.'; end
+if nnz(A .* A.') == 0, A = max(A, A.'); end
 
 % ensure diagonal has ones
 if ~any(diag(A)), A = A + speye(length(A)); end

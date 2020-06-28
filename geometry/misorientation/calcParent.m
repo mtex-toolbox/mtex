@@ -127,7 +127,7 @@ elseif setting == 3 % child + child + child -> triple points
   
   for i1=1:numV
     for i2 = 1:numV
-      progress((i1-1)*numV + i2,numV^2);
+      progress((i1-1)*numV + i2,numV^2 * 1.5);
       fit(:,i1,i2,:) = repmat(angle(pVariants(:,1,i1),pVariants(:,2,i2)),[1 1 1 numV]);
     end
   end
@@ -138,6 +138,7 @@ elseif setting == 3 % child + child + child -> triple points
       fit(ind,:,i2,i3) = max(fit(ind,:,i2,i3),...
         repmat(angle(pVariants(ind,2,i2),pVariants(ind,3,i3)),[1 numV 1 1]));
     end
+    progress(numV^2 + 0.5* i2 * numV ,numV^2 * 1.5);
   end
   
   for i1=1:numV

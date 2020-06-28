@@ -204,10 +204,6 @@ hold on
 plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
-hold on
-plot(parentGrains.boundary,'lineWidth',2)
-hold off
-
 %%
 % and then use the command <EBSD.smooth.html |smooth|> to fill the holes in
 % the reconstructed parent map
