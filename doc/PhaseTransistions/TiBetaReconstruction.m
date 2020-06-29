@@ -10,7 +10,7 @@ mtexdata alphaBetaTitanium
 plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 
 %%
-% The data set contains 99.8 percent alpha titanium and 0.2 percent alpha
+% The data set contains 99.8 percent alpha titanium and 0.2 percent beta
 % titanium. Our goal is to reconstuct the original beta phase. The
 % original grain structure appears almost visible for human eyes.
 % Our computations will be based on the following parent to child
