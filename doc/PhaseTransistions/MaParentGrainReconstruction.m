@@ -60,12 +60,46 @@ grainPairs = grains.neighbors;
 % compute an optimal parent to child orientation relationship
 [fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation,KS);
 
-% display the distribution of disorientations with respect to this
-% orientation relationship
+%%
+% Beside the optimized parent to child orientation relationship the command
+% <calcParent2Child.html |calcParent2Child|> returns as a second output
+% argument the misFit between all grain to grain misorientations and the
+% theoretical child to child misorientations. In fact, the algorithms
+% assumes that the majority of all boundary misorientations are child to
+% child misorientations and finds the parent to child orientations
+% relationship by minimizing this misfit. The following histogram displays
+% the distribution of the misfit over all grain to grain misorientatins.
+
 close all
 histogram(fit./degree)
 xlabel('disorientation angle')
 
+%%
+% We may also colorize the grain boundaries according to this misfit. To
+% this end we first compute the relationship between pairs of grains
+% |grainPairs| and the boundary segments stored in |grains.boundary| using
+% the command <grainBoundary.selectByGrainId.html |selectByGrainId|>
+
+[gB,pairId] = grains.boundary.selectByGrainId(grainPairs);
+
+%%
+% 
+
+plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
+hold on;
+plot(gB,fit(pairId),'linewidth',3)
+hold off
+
+mtexColorMap LaboTeX
+mtexColorbar
+
+setColorRange([0,5]*degree)
+
+%%
+% We observe that the boundary segments with a large misfit form large
+% grain shapes which we want to identify in the next steps as the parent
+% grains.
+%
 %% Create a similarity matrix
 %
 % Next we set up a adjecency matrix |A| that describes the probability that
@@ -123,7 +157,7 @@ parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(parentGrains.boundary,'linewidth',5)
+plot(parentGrains.boundary,'linewidth',3)
 hold off
 
 %% Compute parent grain orientations
@@ -231,3 +265,83 @@ hold off
 % * maximum misfit within a parent grain (5 degree)
 % * minimum number of merged childs
 %
+%% Triple Point Based Analysis
+%
+% A problem of the boundary based reconstuction algorithm is that often
+% child variants of different grains have a misorientation that is close to
+% the theoretical child to child misorientation. One idea to overcome this
+% problem is to analyze triple junctions. Now all three child orientations
+% must fit to a common parent orientations. This fit is computed by the
+% command <calcParent.html |calcParent|>.
+
+% extract child orientations at triple junctions
+tP = grains.triplePoints;
+tPori = grains(tP.grainId).meanOrientation;
+
+% compute the misfit to a common parent orientation
+[~, fit] = calcParent(tPori,fcc2bcc,'id','threshold',5*degree);
+
+%%
+% Lets visualize this misfit by colorizing all triple junctions
+% accordingly.
+
+plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
+hold on
+plot(grains.boundary,'linewidth',2)
+hold off
+
+hold on
+plot(tP,fit(:,1) ./ degree,'MarkerEdgecolor','k','MarkerSize',8)
+setColorRange([0,5])
+mtexColorMap LaboTeX
+mtexColorbar
+hold off
+
+%%
+% Again we observe, that triple junctions with large misfit outlines the
+% shape of the parent grains. In order to identify these parent grains we
+% proceed analogously as for the boundary based analysis. We first set up a
+% similarity matrix between grains connected to the same triple points and
+% than use the Markovian clustering algorithm to detect clusters of child
+% grains, which are than merged into parent grains.
+%
+%% Create a similarity matrix and reconstruct parent grains
+%
+% The setup and the clustering of the similarity matrix is the same as above
+
+threshold = 3*degree;
+tol = 2*degree;
+
+% compute the probabilities
+prob = 1 - 0.5 * (1 + erf(2*(fit(:,1) - threshold)./tol));
+
+% the corresponding similarity matrix
+A = sparse(tP.grainId(:,1),tP.grainId(:,2),prob,length(grains),length(grains));
+A = max(A, sparse(tP.grainId(:,2),tP.grainId(:,3),prob,length(grains),length(grains)));
+A = max(A, sparse(tP.grainId(:,1),tP.grainId(:,3),prob,length(grains),length(grains)));
+
+p = 1.4; % inflation power:
+A = mclComponents(A,p);
+
+%%
+% Each connected component of the resulting adjecency matrix describes one
+% parent grain. Hence, we can use this adjecency matrix to merge child
+% grains into parent grains by the command <graind2d.merge.html |merge|>.
+
+% merge grains according to the adjecency matrix A
+[parentGrains, parentId] = merge(grains,A);
+
+% ensure grainId in parentEBSD is set up correctly with parentGrains
+parentEBSD = ebsd;
+parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
+
+%%
+% Lets visualize the the result. After we can proceed analogously as for
+% the boundary based parent grain reconstruction described above.
+
+plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
+hold on;
+plot(parentGrains.boundary,'linewidth',3)
+set(gcf,'Renderer','painters')
+hold off
+
