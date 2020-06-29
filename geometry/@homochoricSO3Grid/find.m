@@ -28,7 +28,7 @@
  % change the sign if ori.a is negative (southern hemissphere)
  % care that sign=0 can happen
  
- qin = sign(ori.a) .* [ori.a(:),ori.b(:),ori.c(:),ori.d(:)];
+ qin = sign(ori.a(:)) .* [ori.a(:),ori.b(:),ori.c(:),ori.d(:)];
  nosign = (ori.a==0);
  qin(nosign,:) = [ori.a(nosign) ori.b(nosign) ori.c(nosign) ori.d(nosign)];
  
