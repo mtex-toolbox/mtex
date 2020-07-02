@@ -46,8 +46,9 @@ for i = 1:length(subs)
     
     if ~any(phases)
       disp(' ');
-      disp(['  There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
-      disp(' ');
+      warning off backtrace
+      warning(['There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
+      warning on backtrace
     end
     
     phaseId = reshape(ebsd.phaseId,size(ebsd));
