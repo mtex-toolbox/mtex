@@ -43,7 +43,7 @@ psi = get_option(varargin,'kernel',deLaValleePoussinKernel('halfwidth',res));
 M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);
 
 
-switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqnonneg')
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
 
   case 'lsqlin'
 

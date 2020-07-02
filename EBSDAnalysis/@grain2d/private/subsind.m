@@ -41,6 +41,13 @@ for i = 1:length(subs)
       end
     end
     
+    if ~any(phases)
+      disp(' ');
+      warning off backtrace
+      warning(['There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
+      warning on backtrace
+    end
+    
     %miner = ensurecell(subs{i});
     %alt_mineral = cellfun(@num2str,num2cell(grains.phaseMap),'Uniformoutput',false);    
     %for k=1:numel(miner)
