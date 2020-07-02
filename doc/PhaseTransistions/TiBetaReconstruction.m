@@ -10,7 +10,7 @@ mtexdata alphaBetaTitanium
 plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 
 %%
-% The data set contains 99.8 percent alpha titanium and 0.2 percent alpha
+% The data set contains 99.8 percent alpha titanium and 0.2 percent beta
 % titanium. Our goal is to reconstuct the original beta phase. The
 % original grain structure appears almost visible for human eyes.
 % Our computations will be based on the following parent to child
@@ -60,7 +60,8 @@ hold off
 tP = grains.triplePoints('Ti (alpha)','Ti (alpha)','Ti (alpha)')
 
 % compute for each triple point the best fitting parentId and how well the fit is
-[parentId, fit] = calcParent(grains(tP.grainId).meanOrientation,beta2alpha,'numFit',2,'id');
+tPori = grains(tP.grainId).meanOrientation;
+[parentId, fit] = calcParent(tPori,beta2alpha,'numFit',2,'id','threshold',5*degree);
 
 %%
 % The command |calcParent| returns for each child orientation a |parentId|
@@ -314,4 +315,21 @@ plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 hold on
 plot(parentGrains.boundary,'lineWidth',3)
 hold off
+
+%% Summary of relevant thresholds
+%
+% In parent grain reconstruction several parameters are involve are
+% decicive for the success of the reconstruction
+%
+% * threshold for initial grain segmentation (1.5*degree)
+% * maximum misfit at triple junctions (2.5 degree)
+% * minimal misfit of the second best solution at triple junctions (2.5 degree)
+% * minimum number of consistent votes (2)
+% * threshold for merging beta grains (can be skipped)
+% * threshold for merging alpha and beta grains (2.5 degree)
+%%
+
+
+
+
 

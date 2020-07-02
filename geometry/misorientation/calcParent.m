@@ -115,33 +115,47 @@ elseif setting == 3 % child + child + child -> triple points
   % this will result in a size(childOri) x number_of_variant table.
   pVariants = reshape(childOri * p2c,[size(childOri),numV]);
 
+  
+  threshold = get_option(varargin,'threshold',10*degree);
+  
   % Check whether the variants at the triple points are compatible, i.e.,
   % whether we find a betaOrientation which matches one of the variants of
   % all three adjacent grains. To this end we compute the disorientation
   % angle with respect to all combinations
-
-  mis12V = zeros(size(childOri,1),numV,numV,numV);
-  mis13V = mis12V;
-  mis23V = mis12V;
+ 
+  fit = -inf(size(childOri,1),numV,numV,numV);
+  
   for i1=1:numV
     for i2 = 1:numV
-      progress((i1-1)*numV+i2,numV^2)
-    
-      for i3 = 1:numV
-        mis12V(:,i1,i2,i3) = angle(pVariants(:,1,i1),pVariants(:,2,i2));
-        mis13V(:,i1,i2,i3) = angle(pVariants(:,1,i1),pVariants(:,3,i3));
-        mis23V(:,i1,i2,i3) = angle(pVariants(:,2,i2),pVariants(:,3,i3));
-      end
+      progress((i1-1)*numV + i2,numV^2 * 1.5);
+      fit(:,i1,i2,:) = repmat(angle(pVariants(:,1,i1),pVariants(:,2,i2)),[1 1 1 numV]);
     end
   end
-  progress(1,1);
+  
+  for i2=1:numV
+    for i3 = 1:numV
+      ind = any(fit(:,:,i2,i3) < threshold,2);
+      fit(ind,:,i2,i3) = max(fit(ind,:,i2,i3),...
+        repmat(angle(pVariants(ind,2,i2),pVariants(ind,3,i3)),[1 numV 1 1]));
+    end
+    progress(numV^2 + 0.5* i2 * numV ,numV^2 * 1.5);
+  end
+  
+  for i1=1:numV
+    for i3 = 1:numV
+      ind = any(fit(:,i1,:,i3) < threshold,3);
+      fit(ind,i1,:,i3) = max(fit(ind,i1,:,i3),...
+        repmat(angle(pVariants(ind,1,i1),pVariants(ind,3,i3)),[1 1 numV 1]));
+    end
+  end
 
   % Ideally, we would like to find i1, i2, i3 such that all the
   % disorientation angles mis12V(:,i1,i2,i3), mis13V(:,i1,i2,i3) and
   % mis23V(:,i1,i2,i3) all small. One way to do this is to find the minimum
   % of the sum
   %fit = reshape(sqrt(mis12V.^2 + mis13V.^2 + mis23V.^2),[],numV^3) / 3;
-  fit = reshape(max(max(mis12V,mis13V),mis23V),[],numV^3);
+  %fit = reshape(max(max(mis12V,mis13V),mis23V),[],numV^3);
+  fit = reshape(fit,[],numV^3);
   
   if numFit == 1
   

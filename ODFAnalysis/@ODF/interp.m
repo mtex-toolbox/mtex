@@ -11,8 +11,8 @@ function [odf,resvec] = interp(ori,values,varargin)
 %
 % Flags
 %  lsqr      - least squares (Matlab)
-%  lsqnonneg - non negative least squares (Matlab)
-%  lsqlin    - interior point non negative least squares (optimization toolbox)
+%  lsqnonneg - non negative least squares (Matlab, fast)
+%  lsqlin    - interior point non negative least squares (optimization toolbox, slow)
 %  nnls      - non negative least squares (W.Whiten)
 % 
 % 
@@ -43,7 +43,7 @@ psi = get_option(varargin,'kernel',deLaValleePoussinKernel('halfwidth',res));
 M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);
 
 
-switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqnonneg')
 
   case 'lsqlin'
 

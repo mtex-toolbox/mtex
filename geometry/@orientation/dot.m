@@ -103,7 +103,11 @@ else
   s = size(o1);
   
   % symmetrise TODO: do we realy need to take the inv here?
-  o1 = mtimes(qss,o1,1);
+  if length(qss) > 1
+    o1 = mtimes(qss,o1,1); 
+  else
+    o1 = reshape(o1,1,[]);
+  end
   o2 = reshape(mtimes(o2,inv(qcs),0),[1,length(o2),length(qcs)]);
   
   % inline dot product for speed reasons
