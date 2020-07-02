@@ -30,13 +30,9 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neigbhouring cells with grain boundary
-% A_Do - neigbhouring cells without grain boundary
-
-% compute grains as connected components of A_Do
 % I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
 % compute grain ids
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
@@ -111,7 +107,7 @@ mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
 end
 
 
-function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
+function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
 %
 %
@@ -157,13 +153,30 @@ end
 % adjacency of cells that have no common boundary
 ind = connect>0;
 A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
-A_Do = A_Do + A_Do.';
-A_Do = mclComponents(A_Do,1.6);
+if check_option(varargin,'mcl')
+  
+  param = get_option(varargin,'mcl');
+  if isempty(param), param = 1.4; end
+  if length(param) == 1, param = [param,4]; end
+  
+  A_Do = mclComponents(A_Do,param(1),param(2)); 
+  A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+  
+else
+  
+  A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
+  
+end
 A_Do = A_Do | A_Do.';
 
 % adjacency of cells that have a common boundary
-A_Db = sparse(double(Dl(connect==0)),double(Dr(connect==0)),true,length(ebsd),length(ebsd));
+
 A_Db = A_Db | A_Db.';
+
+% compute I_DG connected components of A_Do
+% I_DG - incidence matrix cells to grains
+I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
 
 end
 
