@@ -32,12 +32,13 @@ function [parentOri, fit] = calcParent(childOri,p2c,varargin)
 
 % extract use case and reassign arguments
 setting = size(childOri,2);
-if setting == 1
+if setting <= 1
   if isa(p2c.SS,'crystalSymmetry')
     setting = 4;
   else
     parentOri = p2c;
     p2c = varargin{1};
+    setting = 1;
   end
 end
   
