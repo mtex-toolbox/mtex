@@ -25,13 +25,7 @@
  ori = project2FundamentalRegion(ori);
  
  % translate input (ori) into cubochoric coordinates
- % change the sign if ori.a is negative (southern hemissphere)
- % care that sign=0 can happen
- 
- qin = sign(ori.a(:)) .* [ori.a(:),ori.b(:),ori.c(:),ori.d(:)];
- nosign = (ori.a==0);
- qin(nosign,:) = [ori.a(nosign) ori.b(nosign) ori.c(nosign) ori.d(nosign)];
- 
+ qin = [ori.a(:) ori.b(:) ori.c(:) ori.d(:)];
  xyz = quat2cube(qin);
  
 % N intervals of length hres along each edge of the cube
@@ -46,7 +40,7 @@
    % 0 is included in the grid iff N is odd
    % so xyz/hres+N/2-1/2 takes values in -1/2,...,N-1/2     
    % after rounding this yields values in 0,...,N (since 1/2
-   % rounds up; hopefully no rounding errors) 
+   % rounds up 
      sub  = mod(round(xyz/hres + N/2 - 0.5),N) + 1;
      
    % calculate grid-index (row in XYZ) of S3G
@@ -61,6 +55,9 @@
    dist = real(2*acos(abs(temp)));
    
  elseif ischar(varargin{1}) % cube c
+     
+   % Commented paragraphs will be removed when they surely wont be useful
+   % in the future any more
    
    % calculate grid position along each axis by rounding down
    % to the next grid point
@@ -68,23 +65,62 @@
    iy = floor(xyz(:,2)/hres + N/2 - 0.5) - N/2 + 1/2;
    iz = floor(xyz(:,3)/hres + N/2 - 0.5) - N/2 + 1/2;
    
+   % mark points wich will cause problems (coordinate wise boundary)
+   % difference between pos and neg makes sense because of 'floor'
+   X = ((ix>=N/2-1/2) | (ix<=-N/2-1/2));
+   Y = ((iy>=N/2-1/2) | (iy<=-N/2-1/2));
+   Z = ((iz>=N/2-1/2) | (iz<=-N/2-1/2));
+%    S = X + Y + Z;
+   
    % generate corner points 
    cx = [0 0 0 0 1 1 1 1];
    cy = [0 0 1 1 0 0 1 1];
    cz = [0 1 0 1 0 1 0 1];
    
+   % generate the cube corners
    indx = ix(:) + cx; indy = iy(:) + cy; indz = iz(:) + cz;
+   
+%    XY = (indx(X&Y,:) | indy(X&Y,:));
+%    XZ = (indx(X&Z,:) | indz(X&Z,:));
+%    YZ = (indy(Y&Z,:) | indz(Y&Z,:));
+%    XYZ = (indx(X&Y&Z,:) | indy(X&Y&Z,:) | indz(X&Y&Z,:));
 
    % mark the boundary points
-   bd = (max(indx,max(indy,indz))>=N/2+1/2|min(indx,min(indy,indz))<=-N/2-1/2);
+   bdx = (abs(indx)>=(N+1)/2);
+   bdy = (abs(indy)>=(N+1)/2);
+   bdz = (abs(indz)>=(N+1)/2);
+   bd = (bdx | bdy | bdz);
    
+
+%    bdxy = (bdx & bdy);
+%    bdxz = (bdx & bdz);
+%    bdyz = (bdy & bdz);
+%    bdxyz = (bdxy & bdz);   
+%    bd = (max(indx,max(indy,indz))>=N/2+1/2|min(indx,min(indy,indz))<=-N/2-1/2);
+
+
    % mirror them w.r.t. the origin and shift them onto the
    % grid by adding sign(x)
    % the last 2 summands are for the case sign = 0
-   
-   indx(bd) = -indx(bd) + sign(indx(bd)) + 1 - abs(sign(indx(bd)));
-   indy(bd) = -indy(bd) + sign(indy(bd)) + 1 - abs(sign(indy(bd)));
-   indz(bd) = -indz(bd) + sign(indz(bd)) + 1 - abs(sign(indz(bd)));
+%    indx(bd) = -indx(bd) + sign(indx(bd)) + 1 - abs(sign(indx(bd)));
+%    indy(bd) = -indy(bd) + sign(indy(bd)) + 1 - abs(sign(indy(bd)));
+%    indz(bd) = -indz(bd) + sign(indz(bd)) + 1 - abs(sign(indz(bd)));
+
+
+   % noxbuty marks indice where indx might be okay but indy is on the boundary
+   % and since also ix and iy are too large/small both coordinates have to
+   % be shifted onto the grid by adding sign(indx)
+   noxbuty = (bdy&X&Y); noxbutz = (bdz&X&Z); 
+   noybutx = (bdx&X&Y); noybutz = (bdz&Y&Z);
+   nozbutx = (bdx&X&Z); nozbuty = (bdy&Y&Z);
+
+   % shifting out-of-boundary points back onto the grid applying the
+   % variables above
+   % the case where indx might be okay but indy and indz are too big/small
+   % and also ix,iy,iz are problematic is included automatically
+   indx(bd) = -indx(bd) + sign(indx(bd)) .* (bdx(bd) | noxbuty(bd) | noxbutz(bd));
+   indy(bd) = -indy(bd) + sign(indy(bd)) .* (bdy(bd) | noybutx(bd) | noybutz(bd)); 
+   indz(bd) = -indz(bd) + sign(indz(bd)) .* (bdz(bd) | nozbutx(bd) | nozbuty(bd));
    
    % shift the grid positions
    % from -N/2+1/2,...,N/2-1/2 to 1,...,N
@@ -94,7 +130,6 @@
    % (attained by rounding coordinates down to the grid)
    % care that it mathers if the grid is odd or even since we then have to
    % round towards multiples of hres or the same shifted by hres/2
-
    dist = mod((N+1)/2*hres+xyz,hres);
    
  else % neighborhood

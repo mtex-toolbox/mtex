@@ -19,11 +19,15 @@ q = min(q,1);
 q = max(q,-1);
 A(A<0.000001) = 0;
 
+% perform the mapping
 B = (3/2 * (acos(abs(q(:,1))) - abs(q(:,1)) .* A)).^(1/3);
-
 xyz = B ./ A .* q(:,2:4) .* sign(q(:,1));
 
+% overwrite entries where sign(q(:,1)) (the real part of q) is zero
+K = (3*pi/4)^(1/3);
+xyz(~(sign(q(:,1))),:) = q(~(sign(q(:,1))),2:4) * K;
+
 % remove NaN entries (division by zero in step before)
-xyz(A==0,:) = ones(sum(A==0),1) * [0,0,0];
+xyz(A==0,:) = q(A==0,2:4);
 
 end
