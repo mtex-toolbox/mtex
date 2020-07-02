@@ -328,8 +328,3 @@ hold off
 % * threshold for merging beta grains (can be skipped)
 % * threshold for merging alpha and beta grains (2.5 degree)
 %%
-
-
-
-
-
