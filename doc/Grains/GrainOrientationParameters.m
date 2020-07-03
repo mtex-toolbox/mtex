@@ -1,7 +1,13 @@
-%% Orientation Parameters
+%% Grain Orientation Parameters
 %
 %%
+% In this section we discuss properties of grains that are related to the
+% distribution of orientations within the grains, i.e., 
 %
+% || |grains.meanOrientation| || mean orientation ||
+% || |grains.GOS| || grain orientation spread || 
+% || |grains.GAM| || grain orientation spread || 
+
 close all; plotx2east
 
 % import the data
@@ -90,11 +96,11 @@ calcBinghamODF(ori,'approximated')
 %%
 %
 
-T_spherical = bingham_test(ori,'spherical','approximated');
-T_prolate   = bingham_test(ori,'prolate',  'approximated');
-T_oblate    = bingham_test(ori,'oblate',   'approximated');
+%T_spherical = bingham_test(ori,'spherical','approximated');
+%T_prolate   = bingham_test(ori,'prolate',  'approximated');
+%T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
-[T_spherical T_prolate T_oblate]
+%[T_spherical T_prolate T_oblate]
 
 
 %%

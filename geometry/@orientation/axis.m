@@ -38,7 +38,11 @@ function a = axis(o1,varargin)
 if nargin >= 2 && isa(varargin{1},'orientation')
 
   o2 = varargin{1};
-
+  
+  assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') && ...
+    isa(o1.SS,'specimenSymmetry') && isa(o2.SS,'specimenSymmetry'),...
+    'The first two input arguments should be orientations.');
+  
   [l,d,r] = factor(o1.CS,o2.CS);
   l = l * d;
   % we are looking for l,r from L and R such that
@@ -52,8 +56,8 @@ if nargin >= 2 && isa(varargin{1},'orientation')
   rl = r * inv(l);
 
   d = -inf;
-  irMax = zeros(size(q21));
-  ilMax = zeros(size(q21));
+  irMax = ones(size(q21));
+  ilMax = ones(size(q21));
   for il = 1:length(l)
     for ir = 1:length(r)
       dLocal = abs(dot(q21,rl(ir,il)));
@@ -75,25 +79,20 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
 else
 
+  % crystal symmetry specified -> apply it
+  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
+    cs = varargin{1};
+  else  % no symmetry specified - take the disjoint
+    cs = properGroup(disjoint(o1.CS,o1.SS));
+  end
+  if o1.antipodal, cs = cs.Laue; end
+  
   % project to Fundamental region to get the axis with the smallest angle
   if ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);
   end
 
   a = axis@quaternion(o1);
-
-  % crystal symmetry specified -> apply it
-  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
-
-    cs = varargin{1};
-
-  else  % no symmetry specified - take the disjoint
-
-    cs = properGroup(disjoint(o1.CS,o1.SS));
-
-  end
-
-  if o1.antipodal, cs = cs.Laue; end
 
   % add symmetry to axis
   if isa(cs,'crystalSymmetry'), a = Miller(a,cs); end

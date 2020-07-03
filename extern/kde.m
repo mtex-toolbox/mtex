@@ -50,7 +50,7 @@ initial_data=histc(data,xmesh)/N;  initial_data=initial_data/sum(initial_data);
 a=dct1d(initial_data); % discrete cosine transform of initial data
 
 if check_option(varargin,'bandwidth')
-  t_star = get_option(varargin,'bandwidth')
+  t_star = get_option(varargin,'bandwidth');
 elseif check_option(varargin,'magicNumber')
   % rule of thumb
   t_star = get_option(varargin,'magicNumber',.28,'double')*N^(2);

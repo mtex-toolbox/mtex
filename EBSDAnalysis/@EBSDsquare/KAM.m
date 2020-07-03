@@ -104,8 +104,8 @@ for id = ebsd.indexedPhasesId
           grainId((order+1:end-order)+i,(order+1:end-order)+j) ) = NaN;
       end
       
-      kam = fun(kam, omega * weights(order+1+i,order+1+j));
-      count = fun(count,~isnan(omega) * weights(order+1+i,order+1+j));
+      kam = fun(kam, omega .* weights(order+1+i,order+1+j));
+      count = fun(count,~isnan(omega) .* weights(order+1+i,order+1+j));
       
     end
   end

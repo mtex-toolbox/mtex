@@ -1,7 +1,7 @@
 
 
 # rule for making release
-RNAME = mtex-5.2.7
+RNAME = mtex-5.4.alpha.2
 RDIR = ../releases
 release:
 	rm -rf $(RDIR)/$(RNAME)*
@@ -11,7 +11,6 @@ release:
 	rm -rf $(RDIR)/$(RNAME)/.git
 	rm -rf $(RDIR)/$(RNAME)/.git*
 	rm -rf $(RDIR)/$(RNAME)/data/*.mat
-	rm -rf $(RDIR)/$(RNAME)/doc/html/helpsearch*
 	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -rf $(RDIR)/$(RNAME).zip
 

@@ -13,4 +13,4 @@ function sF = angle(varargin)
 %  sF - @S2FunTri
 %
 sF = dot(varargin{:});
-sF.values = acos(sF.values);
+sF.values = acos(min(1,max(-1,sF.values)));

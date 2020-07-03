@@ -28,10 +28,10 @@ ebsd = ebsd(grains(grains.grainSize>10));
 [grains, ebsd.grainId, ebsd.mis2mean] = calcGrains(ebsd);
 
 % smooth grain boundaries to avoid stair casing effect
-grains = smooth(grains,5)
+grains = smooth(grains,5);
 
 % consider only the very big grains
-grains = grains(grains.grainSize>300,'fo');
+grains = grains(grains.grainSize>300,'fo')
 
 %%
 % Colorize the orientations according to their misorientation axis / angle
@@ -66,20 +66,19 @@ hold off
 
 % restrict the 
 ebsd = ebsd(grains(ind));
-%ebsd = ebsd(ebsd.inpolygon([3000,8500,2700,-3100]));
 
 % and denoise a little and fill
-f = halfQuadraticFilter;
-f.alpha =0.05;
-f.threshold=1.5*degree;
+F = halfQuadraticFilter;
+F.alpha = 1;
+F.threshold  = 1.5*degree;
 
-ebsd = smooth(ebsd,f,grains,'fill');
-ebsd = ebsd('indexed')
+ebsdS = smooth(ebsd,F,'fill',grains(ind));
+ebsdS = ebsdS('indexed');
 
 %%
 
 colorKey.oriRef = mean(ebsd.orientations);
-plot(ebsd,colorKey.orientation2color(ebsd.orientations),'micronbar','off')
+plot(ebsdS,colorKey.orientation2color(ebsdS.orientations),'micronbar','off')
 
 % plot grain boundaries
 hold on
@@ -91,20 +90,20 @@ hold off
 % boundaries, let's segment at a small angle
 
 
-[grains, ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',1.5*degree,'boundary','tight')
+[subGrains, ebsdS.grainId,ebsdS.mis2mean] = calcGrains(ebsdS,'angle',1.25*degree,'boundary','tight');
 
-grains = smooth(grains,5)
+subGrains = smooth(subGrains,5);
 
 % gather all subgrain boundaries
-gbfo = [grains.boundary('f','f') grains.innerBoundary('f','f')];
+gbfo = [subGrains.boundary('f','f') subGrains.innerBoundary('f','f')];
 
 % colorize orientation according to their misorientation to the meanorientation
-plot(ebsd,colorKey.orientation2color(ebsd.orientations),'micronbar','off')
+plot(ebsdS,colorKey.orientation2color(ebsdS.orientations),'micronbar','off')
 hold on
 
 % colorize subgrain boundaries according to their misorientation angle
-plot(gbfo,gbfo.misorientation.angle./degree,'lineWidth',6)
-plot(grains.boundary('notIndexed'),'lineWidth',3)
+plot(gbfo,gbfo.misorientation.angle./degree,'lineWidth',3)
+plot(subGrains.boundary('notIndexed'),'lineWidth',2)
 hold off
 mtexColorbar('Title','Misorientation angle [\circ]','locacation','southoutside')
 mtexColorMap blue2red
@@ -131,7 +130,7 @@ mtexColorbar('Title','Misorientation angle [\circ]','locacation','southoutside')
 % misorientions. In fact we require the adjecent orientations on both sides
 % of the subgrain boundaries. We can find those by the command
 
-ori_boundary = ebsd('id',gbfo.ebsdId).orientations
+ori_boundary = ebsdS('id',gbfo.ebsdId).orientations
 
 %%
 % which results in a Nx2 matrix of orientations with rows corresponding to
@@ -151,11 +150,11 @@ mtexColorbar('Title','Misorientation angle [\circ]','locacation','southoutside')
 
 %% Colorize low angle boundaries by misorientation axes
 
-% First, we plot some crytsal directions of the grain in a pole figure
+% First, we plot some crystal directions of the grain in a pole figure
 % so we understand the orientation of the grain a little better
 close all
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd.CS);
-ori = ebsd.orientations;
+ori = ebsdS.orientations;
 plotPDF(ori,colorKey.orientation2color(ori),h,'MarkerSize',5)
 
 %%
@@ -163,7 +162,7 @@ plotPDF(ori,colorKey.orientation2color(ori),h,'MarkerSize',5)
 % mapping according to the misorientation axes in crystal coordinates
 
 
-plot(ebsd,colorKey.orientation2color(ori),'faceAlpha',0.3)
+plot(ebsdS,colorKey.orientation2color(ori),'faceAlpha',0.3)
 hold on
 axisKey = HSVDirectionKey(ori.CS);
 color = axisKey.direction2color(gbfo.misorientation.axis);
@@ -176,7 +175,7 @@ mtexTitle('misor crystal')
 % Next we plot the grain with subboundaries colorcoded with the direction
 % mapping according to the misorientation axes in specimen coordinates
 
-plot(ebsd,colorKey.orientation2color(ori),'faceAlpha',0.3)
+plot(ebsdS,colorKey.orientation2color(ori),'faceAlpha',0.3)
 hold on
 axisKey = HSVDirectionKey;
 color = axisKey.direction2color(axS);

@@ -23,8 +23,14 @@ if ~check_nfft
     disp(['  ' e.message]);
 
     disp(' ');
-    disp('  Try to compile the binaries or contact author for help!');
-    
+    disp(' I did not get NFFT working. This restricts the functionality of MTEX.')
+    disp(' To overcome this restriction you may need to compile the NFFT your own.');
+    if ismac
+      disp(' Please have a look at https://mtex-toolbox.github.io/installation for possible workarounds')
+    else
+      disp(' Please have a look at https://github.com/mtex-toolbox/mtex/blob/develop/extern/nfft_openMP/readme.md');
+    end
+        
   end
   hline()
 end
@@ -80,7 +86,9 @@ else
   disp(['  ' e.message]);
 
   disp(' ');
-  disp('  Contact author for help!');
+  disp(' Please have a look at https://mtex-toolbox.github.io/installation')
+  disp(' or ask in the forum https://groups.google.com/forum/#!forum/mtexmail for help.');
+  
   hline()
 end
 hline('-')

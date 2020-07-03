@@ -5,7 +5,7 @@ if nargin == 0, mtexpath = mtex_path;end
 mexpath = fullfile(mtexpath,'mex');
 mexfile = @(file)fullfile(mexpath,file);
 
-places = strcat({'S1Grid','S2Grid','SO3Grid'}, '_*.c');
+places = strcat({'S1Grid','S2Grid','SO3Grid','insidepoly'}, '_*.c');
 
 % compile all the files
 for p = 1:length(places)

@@ -4,14 +4,14 @@
 %
 % The Bingham distribution has the density
 %
-% $$ f(g;K,U) = _1F_1 \left(\frac{1}{2},2,K \right)^{-1} \exp
+% $$ f(g;K,U) = _1\!F_1 \left(\frac{1}{2},2,K \right)^{-1} \exp
 % \left\{ g^T UKU  g \right\},\qquad g\in S^3, $$
 %
 % where $U$ are an $4 \times 4$ orthogonal matrix with unit quaternions
 % $u_{1,..,4}\in S^3$ in the column and $K$  a $4 \times 4$ diagonal matrix
 % with the entries $k_1,..,k_4$ describing the shape of the distribution.
-% $_1F_1(,,)$ is the hypergeometric function with matrix argument normalizing
-% the density.
+% $_1F_1(\cdot,\cdot,\cdot)$ is the hypergeometric function with matrix
+% argument normalizing the density.
 %
 % The shape parameters $k_1 \ge k_2 \ge k_3 \ge k4$ give
 %
@@ -41,7 +41,7 @@ plotPDF(odf,h,'antipodal','silent');
 %% The bipolar case and unimodal distribution
 % First, we define some unimodal odf
 
-odf_spherical = unimodalODF(orientation.id(cs),'halfwidth',20*degree)
+odf_spherical = unimodalODF(orientation.rand(cs),'halfwidth',20*degree)
 
 %%
 %
@@ -60,31 +60,33 @@ scatter(ori_spherical)
 % From this simulated EBSD data, we can estimate the parameters of the
 % Bingham distribution,
 
-calcBinghamODF(ori_spherical)
+odf_est = calcBinghamODF(ori_spherical)
 
+plotPDF(odf_est,h,'antipodal','silent')
 
-%%
+%% TODO
+% 
 % where |U| is the orthogonal matrix of eigenvectors of the orientation
 % tensor and |kappa| the shape parameters associated with the |U|.
 %
 % next, we test the different cases of the distribution on rejection
 
-T_spherical = bingham_test(ori_spherical,'spherical','approximated');
-T_oblate    = bingham_test(ori_spherical,'prolate',  'approximated');
-T_prolate   = bingham_test(ori_spherical,'oblate',   'approximated');
+%T_spherical = bingham_test(ori_spherical,'spherical','approximated');
+%T_oblate    = bingham_test(ori_spherical,'prolate',  'approximated');
+%T_prolate   = bingham_test(ori_spherical,'oblate',   'approximated');
 
-t = [T_spherical T_oblate T_prolate]
+%t = [T_spherical T_oblate T_prolate]
 
 %%
 % The spherical test case failed to reject it for some level of
 % significance, hence we would dismiss the hypothesis prolate and oblate.
 
-odf_spherical = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
+%df_spherical = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
 
 %%
 %
 
-plotPDF(odf_spherical,h,'antipodal','silent')
+%plotPDF(odf_spherical,h,'antipodal','silent')
 
 %% Prolate case and fibre distribution
 % The prolate case correspondes to a fibre.
@@ -113,11 +115,11 @@ calcBinghamODF(ori_prolate)
 %%
 % and test on the three cases
 
-T_spherical = bingham_test(ori_prolate,'spherical','approximated');
-T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
-T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
+%T_spherical = bingham_test(ori_prolate,'spherical','approximated');
+%T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
+%T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
 
-t = [T_spherical T_oblate T_prolate]
+%t = [T_spherical T_oblate T_prolate]
 
 %%
 % The test clearly rejects the spherical and prolate case, but not the
@@ -157,11 +159,11 @@ calcBinghamODF(ori_oblate)
 %%
 % and do the tests
 
-T_spherical = bingham_test(ori_oblate,'spherical','approximated');
-T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
-T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
+%T_spherical = bingham_test(ori_oblate,'spherical','approximated');
+%T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
+%T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
 
-t = [T_spherical T_oblate T_prolate]
+%t = [T_spherical T_oblate T_prolate]
 
 %%
 % the spherical and oblate case are clearly rejected, the prolate case
@@ -173,8 +175,6 @@ odf_oblate = BinghamODF(kappa, U,crystalSymmetry,specimenSymmetry)
 %
 
 plotPDF(odf_oblate,h,'antipodal','silent')
-
-
 
 
 %%

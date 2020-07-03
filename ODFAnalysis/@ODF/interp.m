@@ -8,6 +8,13 @@ function [odf,resvec] = interp(ori,values,varargin)
 % Input
 %  ori - @orientation
 %  values - double
+%
+% Flags
+%  lsqr      - least squares (Matlab)
+%  lsqnonneg - non negative least squares (Matlab, fast)
+%  lsqlin    - interior point non negative least squares (optimization toolbox, slow)
+%  nnls      - non negative least squares (W.Whiten)
+% 
 % 
 % Output
 %  odf - @ODF
@@ -69,9 +76,9 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
     %tolerance
     cnt=0;
     while flag > 0
-      tolerance=tolerance*1.3;
-      disp(['   lsqr tolerance cut back: ',xnum2str(max(tolerance))])
-      [w,flag,~,~,resvec] = lsqr(M',values,tolerance,50);
+      tol = tol*1.3;
+      disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
+      [w,flag,~,~,resvec] = lsqr(M',values,tol,50);
       cnt=cnt+1;
       if cnt > 5
         disp('   more than 5 lsqr tolerance cut backs')
@@ -80,7 +87,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
       end
     end
 end
-norm(M' * w - values) ./ norm(values)
+%norm(M' * w - values) ./ norm(values)
 
 if check_option(varargin,'ODFstats')
  err = abs(M'*w - values);

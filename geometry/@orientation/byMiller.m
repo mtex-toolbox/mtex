@@ -28,9 +28,25 @@ function ori = byMiller(hkl,uvw,varargin)
 
 
 if isa(hkl,'double')
+  if size(hkl,2) == 4
+    hkl = {hkl(:,1),hkl(:,2),hkl(:,3),hkl(:,4)};
+  else
+    hkl = {hkl(:,1),hkl(:,2),hkl(:,3)};
+  end
+  
+  if size(uvw,2) == 4
+    uvw = {uvw(:,1),uvw(:,2),uvw(:,3),uvw(:,4)};
+  else
+    uvw = {uvw(:,1),uvw(:,2),uvw(:,3)};
+  end
+end
+
+if iscell(hkl)
   CS = getClass(varargin,'crystalSymmetry',crystalSymmetry('cubic'));
-  hkl = Miller(hkl(:,1),hkl(:,2),hkl(:,3),CS);
-  uvw = Miller(uvw(:,1),uvw(:,2),uvw(:,3),CS);
+  
+  hkl = Miller(hkl{:},CS);
+  uvw = Miller(uvw{:},CS,'uvw');
+  
 else
   CS = hkl.CS;
 end

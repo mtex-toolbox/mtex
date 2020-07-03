@@ -2,8 +2,8 @@ classdef fibre
   %
   % Class representing a fibre in orientation space. Examples are alpha,
   % beta or gamma fibres. In general a fibre is defined by a crystal
-  % direction h of type <Miller.Miller.html Miller> and a specimen direction
-  % of type <vector3d.vector3d.html vector3d>.
+  % direction |h| of type <Miller.Miller.html Miller> and a specimen
+  % direction of type <vector3d.vector3d.html vector3d>.
   %
   % Syntax
   %   cs = crystalSymmetry('432')
@@ -13,7 +13,7 @@ classdef fibre
   %
   %   f = fibre(o1,o2) % the fibre from o1 to o2
   %
-  %   f = fibre(Miller(0,0,1,cs),vector3d.Z,r) % the fibre (001) || ND
+  %   f = fibre(Miller(0,0,1,cs),vector3d.Z,r) % the fibre (001)||ND
   %   f = fibre(h,r)   % the fibre with h parallel to r
   %
   % Input
@@ -23,7 +23,8 @@ classdef fibre
   %  r      - @vector3d
   %
   % Class Properties
-  %
+  %  o1, o2 - start and end @orientation
+  %  h      - @Miller
   %
   % See also
   % OrientationFibre FibreODFs ODF.fibreVolume
@@ -133,13 +134,12 @@ classdef fibre
       n = varargin(cellfun(@isnumeric,varargin));
       sym = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
       
-         
-      
       h = vector3d.rand(n{:});
       r = vector3d.rand(n{:});
       f = fibre(h,r);
       
       if ~isempty(sym), f.CS = sym{1}; end
+      if length(sym)>1, f.SS = sym{2}; end
       
     end
     

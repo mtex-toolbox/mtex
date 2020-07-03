@@ -65,10 +65,32 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,2),mergeId(:,3),1,maxId+1,maxId+1);
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
-  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A))
-    A = varargin{k};
+  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1)
+    A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
-    A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId,maxId);
+    A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
+  elseif ischar(varargin{k}) && strcmpi(varargin{k},'threshold')
+
+    delta = get_option(varargin,'threshold');
+    
+    grainPairs = unique(grains.boundary.grainId,'rows');
+    grainPairs = grainPairs(all(grainPairs ~= 0,2),:);
+    
+    for phId = grains.indexedPhasesId
+      
+      ind = all(grains.phaseId(grainPairs)==phId,2);
+      
+      % extract the meanorientations
+      oriPairs = orientation(grains.prop.meanRotation(grainPairs(ind,:)),grains.CSList{phId});
+      oriPairs = reshape(oriPairs,[],2);
+      
+      % check mean orientation difference is below a threshold
+      ind(ind) = angle(oriPairs(:,1),oriPairs(:,2)) < delta;
+  
+      A = A + sparse(grainPairs(ind,1),grainPairs(ind,2),1,maxId+1,maxId+1); 
+      
+    end
+    varargin = [varargin,'calcMeanOrientation'];     %#ok<AGROW>
   end
 end
 A = A(1:maxId,1:maxId);
@@ -94,13 +116,22 @@ grainsMerged.id = (1:numNewGrains).';
 grainsMerged.poly = cell(numNewGrains,1);
 grainsMerged.phaseId = zeros(numNewGrains,1);
 grainsMerged.grainSize = zeros(numNewGrains,1);
-grainsMerged.prop.meanRotation = rotation.nan(numNewGrains,1);
 grainsMerged.inclusionId = zeros(numNewGrains,1);
 
+% set up properties
+for fn = fieldnames(grains.prop).'
+  if isnumeric(grains.prop.(char(fn)))
+    grainsMerged.prop.(char(fn)) = nan(numNewGrains,1);
+  else
+    grainsMerged.prop.(char(fn)) = grains.prop.(char(fn)).nan(numNewGrains,1);
+  end
+end
 
-% 5. set new grainIds in grains.boundary
+% 5. set new grainIds in grains.boundary and grains.innerBoundary
 ind = grains.boundary.grainId > 0;
 grainsMerged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
+ind = grains.innerBoundary.grainId > 0;
+grainsMerged.innerBoundary.grainId(ind) = old2newId(grains.innerBoundary.grainId(ind));
 
 % and in the old grains
 parentId = old2newId(grains.id);
@@ -114,8 +145,12 @@ newInd = old2newId(keepId);
 grainsMerged.poly(newInd) = grains.poly(keepInd);
 grainsMerged.phaseId(newInd) = grains.phaseId(keepInd);
 grainsMerged.grainSize(newInd) = grains.grainSize(keepInd);
-grainsMerged.prop.meanRotation(newInd) = grains.prop.meanRotation(keepInd);
 grainsMerged.inclusionId(newInd) = grains.inclusionId(keepInd);
+
+% copy properties
+for fn = fieldnames(grains.prop).'
+  grainsMerged.prop.(char(fn))(newInd) = grains.prop.(char(fn))(keepInd);
+end
 
 % 8. set up merged polygons
 I_FG = grainsMerged.boundary.I_FG;
@@ -138,12 +173,20 @@ grainsMerged.phaseId = full(max(phaseId,[],2));
 % should we compute meanOrientation?
 if check_option(varargin,'calcMeanOrientation')
 
-  updateOriFun = getClass(varargin,'function_handle',@updateOri);
-  
+  updateOriFun = get_option(varargin,'calcMeanOrientation',[],'function_handle');
+    
   for i = newInd
     
     % compute new mean orientation
-    oriNew = updateOriFun(grains.subSet(parentId == i));
+    if isempty(updateOriFun)
+      
+      ind = parentId == i;
+      cs = grains.CSList{max(grains.phaseId(ind))};
+      oriNew = mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.grainSize(ind));
+            
+    else
+      oriNew = updateOriFun(grains.subSet(parentId == i));
+    end
   
     % set new mean rotation
     grainsMerged.prop.meanRotation(i) = rotation(oriNew);
@@ -165,9 +208,4 @@ grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints(grai
 
 end
 
-function ori = updateOri(grains)
 
-cs = grains.CSList{max(grains.phaseId)};
-ori = mean(orientation(grains.prop.meanRotation,cs),'weights',grains.grainSize);
-
-end

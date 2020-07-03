@@ -79,7 +79,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
 
   % project data
-  [x,y] = project(sP(j).proj,S2G,'removeAntipodal');
+  [x,y] = project(sP(j).proj,S2G,'noAntipodal');
 
   % extract non nan data
   data = reshape(cdata,size(x));

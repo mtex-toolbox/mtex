@@ -1,4 +1,4 @@
-function s = sum(v,varargin)
+function v = sum(v,varargin)
 % sum of vectors
 %
 % Syntax
@@ -12,10 +12,9 @@ function s = sum(v,varargin)
 %  v - @vector3d
 
 % apply sum to each coordinate
-s = v; 
-s.opt = struct; % clear options (espcially required for resolution)
-s.x = sum(v.x,varargin{:});
-s.y = sum(v.y,varargin{:});
-s.z = sum(v.z,varargin{:});
+v.x = sum(v.x,varargin{:});
+v.y = sum(v.y,varargin{:});
+v.z = sum(v.z,varargin{:});
 
-s.isNormalized = false;
+v.opt = struct;
+v.isNormalized = false;

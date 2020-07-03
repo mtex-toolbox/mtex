@@ -41,12 +41,14 @@ omega = norm(tq);
 
 invOmega = 1./omega;
 invOmega(omega==0) = 0;
-tq = tq .* invOmega;
+tq = (sin(omega/2) .* invOmega) .* tq ;
 
-if nargin == 2
-  q =  q .* quaternion(cos(omega/2),sin(omega/2).*tq);
+[x,y,z] = double(tq);
+
+if nargin == 2 
+  q =  times(q, quaternion(cos(omega/2),x,y,z),0);
 else
-  q = quaternion(cos(omega/2),sin(omega/2).*tq);
+  q = quaternion(cos(omega/2),x,y,z);
 end
 
 end

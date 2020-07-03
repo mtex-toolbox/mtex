@@ -1,6 +1,7 @@
 BoundarySelect             Select
 BoundaryPlots              Plot
 BoundaryProperties         Properties
+BoundaryCurvature          Curvature
 TiltAndTwistBoundaries     Twist and Tilt
 CSLBoundaries              CSL
 TwinningBoundaries         Twinning

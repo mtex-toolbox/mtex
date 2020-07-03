@@ -24,10 +24,13 @@ solver.free_nfft;
 for i = 1:pf.numPF
   
   % TODO: consider the case of no antipodal symmetry
-  [symh,l] = symmetrise(pf.allH{i},'antipodal');
-  
+  for j = 1:length(pf.allH{i})
+    h{j} = unique(symmetrise(pf.allH{i}(j)),'noSymmetry','antipodal');
+    l(j) = length(h{j});
+  end
+    
   % compute points in the pole figure
-  gh = solver.S3G * symh; % S3G x SS x symh
+  gh = solver.S3G * vertcat(h{:}); % S3G x SS x h
   
   solver.nfft_gh(i) = nfsftmex('init_advanced', bw, length(gh), 1);
   nfsftmex('set_x', solver.nfft_gh(i), [gh.rho(:)'; gh.theta(:)']); % set vertices

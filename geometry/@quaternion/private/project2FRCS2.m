@@ -1,4 +1,4 @@
-function [q] = project2FRCS2(q,CS1,CS2,varargin)
+function q = project2FRCS2(q,CS1,CS2,varargin)
 % projects quaternions to a fundamental region
 %
 % Syntax
@@ -11,6 +11,7 @@ function [q] = project2FRCS2(q,CS1,CS2,varargin)
 % Output
 %  q     - @quaternion
 
+q = quaternion(q);
 
 % get quaternions
 [l,d,r] = factor(CS1,CS2);
@@ -21,7 +22,7 @@ qs = l * dr;
 % may be we can skip something
 minAngle = reshape(abs(qs.angle),[],1);
 minAngle = min([inf;minAngle(minAngle > 1e-3)]);
-notInside = 2 * acos(abs(q.a)) > minAngle/2;
+notInside = abs(q.a) < cos(minAngle/4); % angle(q) > minAngle/2
 
 % restrict to quaternion which are not yet it FR
 q_sub = q.subSet(notInside);

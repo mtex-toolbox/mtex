@@ -156,15 +156,16 @@ classdef HSVDirectionKey < directionColorKey
         case 0
           sR = oM.sym.Laue.fundamentalSector;
           oM.refl = setdiff(sR.N,oM.sR.N);
-        case 1, if isa(oM.sym,'crystalSymmetry')                     % 1
-            oM.refl = oM.sym.axes(3);
+        case 1                                                   % 1
+          if isa(oM.sym,'crystalSymmetry')                     
+            oM.refl = oM.sym.rot.axis;
           else
             oM.refl = vector3d.Z;
           end
         case {3,9}                                               % 211, 112  
-          oM.refl = -rotate(oM.sR.N,rotation.byAxisAngle(oM.sym.subSet(2).axis,90*degree));
+          oM.refl = -rotate(oM.sR.N,rotation.byAxisAngle(oM.sym.rot(2).axis,90*degree));
         case 6                                                   % 121
-          oM.refl = rotate(oM.sR.N,rotation.byAxisAngle(-oM.sym.subSet(2).axis,90*degree));
+          oM.refl = rotate(oM.sR.N,rotation.byAxisAngle(-oM.sym.rot(2).axis,90*degree));
         case {5}, oM.refl = rotate(oM.sR.N(2),-90*degree);       % 2/m11
         case {8}, oM.refl = rotate(oM.sR.N(2),90*degree); %      % 12/m1
         case {11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree); % 222

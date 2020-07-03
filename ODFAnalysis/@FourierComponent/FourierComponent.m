@@ -25,7 +25,9 @@ classdef FourierComponent < ODFComponent
       component.antipodal = check_option(varargin,'antipodal');
                         
       % truncate zeros
-      component.bandwidth = find(component.power>1e-10,1,'last')-1;
+      bw = find(component.power>1e-10,1,'last');
+      if isempty(bw), bw = 1; end
+      component.bandwidth = bw - 1;  
       
     end
     

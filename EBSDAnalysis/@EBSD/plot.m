@@ -69,6 +69,8 @@ if nargin>1 && isa(varargin{1},'orientation')
   end
 end
 
+% translate logical into numerical data
+if nargin>1 && islogical(varargin{1}), varargin{1} = double(varargin{1}); end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
@@ -152,7 +154,7 @@ if ~isempty(id)
     txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
   try
-    txt{5} = ['grainId = ' xnum2str(ebsd.grainId(id))];
+    txt{end+1} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)
     txt{end+1} = ['Value = ' xnum2str(value)];

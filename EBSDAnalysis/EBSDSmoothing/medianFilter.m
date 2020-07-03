@@ -10,12 +10,28 @@ classdef medianFilter < EBSDFilter
       %
       
       F.numNeighbours = get_option(varargin,'neighbours',1);
+      
+      addlistener(F,'isHex','PostSet',@check);
             
+      function check(varargin)
+        if F.isHex
+          warning(['Hexagonal grids are not yet fully supportet for the medianFilter. ' ...
+            'It might give reasonable results anyway']);
+        end
+      end
+      
     end
     
-    function ori = smooth(F,ori)
+    
+    function ori = smooth(F,ori,quality)
+
+      ori(quality==0) = nan;
       
-      [~,q] = mean(ori);
+      % this projects to the fundamental region around the mean
+      [~,ori] = mean(ori);
+      
+      % make verything quaternion
+      q = quaternion(ori);
       
       % some shortcuts
       nn = F.numNeighbours;

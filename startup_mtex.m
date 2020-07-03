@@ -19,15 +19,10 @@ end
 % --------------------
 lasterr('') %#ok<LERR> %reset all errors
 
-if MATLABverLessThan('7.6')
-  error(['MTEX can not be installed because your MATLAB version ',version,...
-    ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
-    'version MTEX has been tested on is Matlab 2012b (vers. 8.0).']);
-  
-elseif MATLABverLessThan('8.0')
+if MATLABverLessThan('8.6')
   warning(['MTEX may not be fully functional because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
-    'version MTEX has been tested on is Matlab 2012b (vers. 8.0).']);
+    'version MTEX has been tested on is Matlab 2016b (vers. 8.6).']);
 end
   
 % path to this function to be considered as the root of the MTEX

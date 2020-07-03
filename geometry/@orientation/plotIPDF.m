@@ -58,10 +58,10 @@ if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
 %  subsample if needed
-if (length(ori)*length(ori.CS)*length(ori.SS) > 100000 || check_option(varargin,'points')) ...
+if (length(ori)*numSym(ori.CS)*numSym(ori.SS) > 100000 || check_option(varargin,'points')) ...
     && ~check_option(varargin,{'all','contourf','smooth','contour','pcolor'})
 
-  points = fix(get_option(varargin,'points',100000/length(ori.CS)/length(ori.SS)));
+  points = fix(get_option(varargin,'points',100000/numSym(ori.CS)/numSym(ori.SS)));
   disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
 
   samples = discretesample(length(ori),points);
@@ -108,8 +108,9 @@ function txt = tooltip(varargin)
 
   txt{1} = ['id = ' xnum2str(id)];
   txt{2} = ['(h,k,l) = ' char(h_local,'tolerance',3*degree,'commasep')];
+  txt{3} = ['Euler = ' char(ori.subSet(id))];
   if ~isempty(value)
-    txt{3} = ['value = ' xnum2str(value)];
+    txt{4} = ['value = ' xnum2str(value)];
   end
 
 end

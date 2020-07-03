@@ -44,7 +44,7 @@ switch lower(method)
   
   case 'magicrule'
     
-    kappa = (length(ori.CS) * length(ori.SS) * numOri)^(2/7) * 3; % magic rule
+    kappa = (numProper(ori.CS) * numProper(ori.SS) * numOri)^(2/7) * 3; % magic rule
     psi = deLaValleePoussinKernel(kappa,varargin{:});
     return
     

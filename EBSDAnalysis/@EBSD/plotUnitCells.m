@@ -2,10 +2,26 @@ function h = plotUnitCells(ebsd,d,varargin)
 % low level plotting routine for EBSD maps
 %
 
-ax = get_option(varargin,'parent',gca);
+unitCell = ebsd.unitCell;
 
 xy = [ebsd.prop.x(:),ebsd.prop.y(:)];
-unitCell = ebsd.unitCell;
+if check_option(varargin,'region')
+  
+  reg = get_option(varargin,'region');
+    
+  ind = xy(:,1) > reg(1) & xy(:,1) < reg(2) & xy(:,2) > reg(3) & xy(:,2) < reg(4);
+  
+  xy = xy(ind,:);
+  
+  d = d(ind,:);
+    
+end
+
+
+ax = get_option(varargin,'parent',gca);
+
+
+
 
 if ~isempty(unitCell)
   
@@ -20,7 +36,6 @@ end
 if numel(d) == size(xy,1) || numel(d) == 3*size(xy,1)
 
   obj.FaceVertexCData = reshape(d,size(xy,1),[]);
-  %if size(d,2) == 3, set(get(ax,'parent'),'renderer','opengl');end
   
   if check_option(varargin,{'transparent','translucent','faceAlpha'})
   

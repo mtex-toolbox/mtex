@@ -11,8 +11,8 @@ classdef axisAnglePlot < orientationPlot
       
       oP = oP@orientationPlot(varargin{:});
       
-      oP.oR = fundamentalRegion(oP.CS1,oP.CS2,char(extract_option(varargin,'antipodal')));
-
+      oP.oR = fundamentalRegion(oP.CS1,oP.CS2,char(extract_option(varargin,{'antipodal','complete'})));
+      
       xlabel(oP.ax,'$x$','Interpreter','LaTeX');
       ylabel(oP.ax,'$y$','Interpreter','LaTeX');
       zlabel(oP.ax,'$z$','Interpreter','LaTeX');

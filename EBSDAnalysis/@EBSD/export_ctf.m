@@ -178,29 +178,29 @@ scrPrnt('Step','Assembling data array');
 fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r\n'); %Data header
 
 %Get data order x
-if ebsdGrid.x(1,1)< ebsdGrid.x(1,2)
+if ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(1,2)
    dim.x = 2;
-elseif ebsdGrid.x(1,1)> ebsdGrid.x(1,2)
+elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(1,2)
    dim.x = -2;
-elseif ebsdGrid.x(1,1)< ebsdGrid.x(2,1)
+elseif ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(2,1)
    dim.x = 1;
-elseif ebsdGrid.x(1,1)> ebsdGrid.x(2,1)
+elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(2,1)
    dim.x = -1;
 end
 %Get data order y
-if ebsdGrid.y(1,1)< ebsdGrid.y(1,2)
+if ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(1,2)
    dim.y = 2;
-elseif ebsdGrid.y(1,1)> ebsdGrid.y(1,2)
+elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(1,2)
    dim.y = -2;
-elseif ebsdGrid.y(1,1)< ebsdGrid.y(2,1)
+elseif ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(2,1)
    dim.y = 1;
-elseif ebsdGrid.y(1,1)> ebsdGrid.y(2,1)
+elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
    dim.y = -1;
 end
 %Gather data
 flds{1} = phaseIDs;
-flds{2} = ebsdGrid.x;
-flds{3} = ebsdGrid.y;
+flds{2} = ebsdGrid.prop.x;
+flds{3} = ebsdGrid.prop.y;
 flds{4} = ebsdGrid.prop.bands;
 flds{5} = ebsdGrid.prop.error;
 flds{6} = ebsdGrid.rotations.phi1/degree;

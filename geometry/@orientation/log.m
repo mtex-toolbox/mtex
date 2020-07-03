@@ -28,6 +28,11 @@ function v = log(ori,ori_ref,varargin)
 % See also
 % orientation/logm vector3d/exp Miller/exp
 
+if check_option(varargin,'noSymmetry')
+  v = log@quaternion(ori,ori_ref,varargin{:});
+  return
+end
+
 if nargin >= 2
 
   if isa(ori.CS,'crystalSymmetry')

@@ -1,15 +1,27 @@
 function [ori,ndx,pos] = unique(ori,varargin)
-% disjoint list of quaternions
+% disjoint list of orientations
 %
 % Syntax
-%   ori = unique(ori)
-%   [ori,ndx,pos] = unique(ori) %
+%   u = unique(ori)
+%   u = unique(ori,'tolerance',0.01)
+%   [u,iori,iu] = unique(ori)
 %
 % Input
 %  ori - @orientation
+%  tol - double (default 1e-3)
 %
 % Output
-%  ori - @orientation
+%  u - @orientation
+%  iori - index such that u = ori(iori)
+%  iu   - index such that ori = u(iu)
+%
+% Flags
+%  stable     - prevent sorting
+%  noSymmetry - ignore symmetry
+%
+% See also
+% unique
+%
 
 if check_option(varargin,'noSymmetry')
     
@@ -18,9 +30,9 @@ if check_option(varargin,'noSymmetry')
 else
   rot = rotation(symmetrise(ori,varargin{:}));
   
-  [tmp1,tmp2,pos] = unique(rot,varargin{:}); %#ok<ASGLU>
+  [~,~,pos] = unique(rot,varargin{:});
 
-  [tmp,ndx,pos] = unique(min(reshape(pos,size(rot)),[],1)); %#ok<ASGLU>
+  [~,ndx,pos] = unique(min(reshape(pos,size(rot)),[],1));
  
 end
 

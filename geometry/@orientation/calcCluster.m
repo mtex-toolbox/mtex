@@ -47,7 +47,7 @@ switch method
     weights = get_option(varargin,'weights',ones(size(ori)));
 
     % set up an ODF
-    odf = calcKernelODF(ori,'weights',weights,'halfwidth',2.5*degree,varargin{:});
+    odf = calcKernelODF(ori,'weights',weights,'halfwidth',5*degree,varargin{:});
 
     % find the modes of the ODF
     [center,~,c] = calcComponents(odf,'seed',ori,varargin{:});
@@ -58,7 +58,7 @@ switch method
       % remove points to far from the center
       ori_c = ori.subSet(c==i);
       omega = angle(ori_c,center.subSet(i));
-      c(c==i) = i * (omega < 1.001*quantile(omega,0.9));
+      c(c==i) = i * (omega < 1.5*quantile(omega,0.9));
       
       % recompute center
       odf = unimodalODF(ori_c,weights(c==i),'halfwidth',2.5*degree,varargin{:});

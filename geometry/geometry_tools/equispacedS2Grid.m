@@ -85,7 +85,7 @@ S2G = S2G.setOption('resolution',res);
 
 % restrict to spherical region if specified
 sR = getClass(varargin,'sphericalRegion');
-if ~isempty(sR), S2G = S2G.subGrid(sR.checkInside(S2G,'removeAntipodal')); end
+if ~isempty(sR), S2G = S2G.subGrid(sR.checkInside(S2G,'noAntipodal')); end
 
 end
 

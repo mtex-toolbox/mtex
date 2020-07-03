@@ -20,7 +20,12 @@ function v = rotate(v,q)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
-a = q.a; b = q.b; c = q.c; d = q.d;
+if ~isa(q,'rotation')
+  [a,b,c,d] = double(q);
+  i = [];
+else
+  [a,b,c,d,i] = double(q);
+end
 [x,y,z] = double(v);
 
 n = b.^2 + c.^2 + d.^2;
@@ -33,26 +38,25 @@ v.x = a_2.*(c.* z - y.*d) + s.*b + a_n.*x;
 v.y = a_2.*(d.* x - z.*b) + s.*c + a_n.*y;
 v.z = a_2.*(b.* y - x.*c) + s.*d + a_n.*z;
 
-if isa(q,'rotation')
-  if numel(q.i)>1
-    i = logical(q.i);
+if ~isempty(i) 
+  if numel(i)>1
+    i = logical(i);
     v.x(i) = -v.x(i);
     v.y(i) = -v.y(i);
     v.z(i) = -v.z(i);
-  elseif q.i
+  elseif i
     v.x = -v.x;
     v.y = -v.y;
     v.z = -v.z;
   end
 end
 
-% if output has symmetry set it to Miller
-if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
-
-  v = Miller(v,q.SS);
-
-else % convert to vector3d
-
-  v = vector3d(v);
+if isa(q,'orientation')
+  
+  if isa(q.SS,'crystalSymmetry')
+    v = Miller(v,q.SS);
+  else % convert to vector3d 
+    v = vector3d(v);
+  end
 
 end

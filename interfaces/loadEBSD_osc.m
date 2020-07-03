@@ -342,10 +342,10 @@ headerBytes = data(headerStart+8:headerStop);
 osc_phases = file2cell([mtex_path filesep 'interfaces' filesep 'osc_phases.txt']);
 nPhase=0;
 for i=1:length(osc_phases)
-    phaseLoc=strfind(lower(char(headerBytes)),lower(osc_phases{i}));
+    phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(32) char(32) char(32)]);
     if ~isempty(phaseLoc)
         nPhase=nPhase+1;
-        PhaseStart(nPhase)=phaseLoc;
+        PhaseStart(nPhase)=phaseLoc+1;
         PhaseName{nPhase}=osc_phases{i};
     end
 end
@@ -365,6 +365,9 @@ for k = 1:nPhase
 
   % maybe from ang convention? should ask the vendor ...
   switch laueGroup
+    case {'126'}
+      laueGroup = '622';
+      options = {'X||a'};
     case {'-3m' '32' '3' '62' '6'}
       options = {'X||a'};
     case '2'

@@ -31,14 +31,23 @@ else
   data = {};
 end
 
-if v.antipodal  
+if v.antipodal   %#ok<BDSCI,BDLGI>
   v = [v;-v];
   data = [data;data];
 end
 
+% markerSize
+if ~check_option(varargin,{'scatter_resolution','MarkerSize'},'double')
+  res = max(v.resolution,0.5*degree);
+else
+  res = get_option(varargin,'scatter_resolution',1*degree);
+end
+MarkerSize  = get_option(varargin,'MarkerSize',min(getMTEXpref('markerSize'),50*res));
+
+
 % plot
 data = ensurecell(data);
-h = scatter3(v.x(:),v.y(:),v.z(:),30,data{:},'filled','parent',ax);
+h = optiondraw(scatter3(v.x(:),v.y(:),v.z(:),MarkerSize.^2,data{:},'filled','parent',ax),varargin{:});
 
 axis(ax,'equal','vis3d','off');
 

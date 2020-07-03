@@ -58,8 +58,8 @@ classdef quaternion
               
             D = varargin{1};
               
-            [q.a, q.b, q.c, q.d] = deal(D(1,:),D(2,:),D(3,:),D(4,:));
-            
+            q.a = D(1,:); q.b = D(2,:); q.c = D(3,:); q.d = D(4,:);
+
             s = size(D);
             s = [1 s(2:ndims(D))];
             
@@ -72,17 +72,39 @@ classdef quaternion
             else
               q.a = repmat(varargin{1},size(varargin{2}));
             end
+            
             [q.b,q.c,q.d] = double(varargin{2});
             
           case 4
             
-              [q.a, q.b, q.c, q.d] = deal(varargin{:});
-              
+            q.a = varargin{1};
+            q.b = varargin{2};
+            q.c = varargin{3};
+            q.d = varargin{4};
+
         end
       end
       
     end
     
+    function d = quat_dot(g1,g2)
+      d = g1.a .* g2.a + g1.b .* g2.b + g1.c .* g2.c + g1.d .* g2.d;
+    end
+
+    function d = quat_dot_outer(g1,g2,varargin)
+
+      if ~isempty(g1) && ~isempty(g2)
+
+        q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
+        q2 = [g2.a(:) g2.b(:) g2.c(:) g2.d(:)];
+  
+        d = q1 * q2';
+
+      else
+        d = [];
+      end
+    end
+
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end

@@ -3,7 +3,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Syntax
 %   [modes, volume] = calcComponents(odf)
-%   [modes, weights,centerId] = calcComponents(odf,'seed',ori)
+%   [modes, volume, centerId] = calcComponents(odf,'seed',ori)
 %
 % Input
 %  odf - @ODF 
@@ -16,6 +16,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Options
 %  resolution - search-grid resolution
+%  exact      - do not dismiss very small modes at the end
 %
 % Example
 %
@@ -32,7 +33,7 @@ res = get_option(varargin,'resolution',0.05*degree);
 omega = 1.5.^(-7:1:4) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
-tol = 1e-3;
+tol = get_option(varargin,'tolerance',0.05);
 
 % initial seed
 if check_option(varargin,'seed')
@@ -61,6 +62,7 @@ weights = accumarray(id2,weights);
 finished = false(size(modes));
 
 for k = 1:maxIter
+  progress(k,maxIter,' finding ODF components: ');
 
   % gradient
   g = normalize(odf.grad(modes(~finished)),1);
@@ -72,7 +74,7 @@ for k = 1:maxIter
   line_v = odf.eval(line_ori);
   
   % take the maximum
-  [m,id] = max(line_v,[],2);
+  [~,id] = max(line_v,[],2);
     
   % update orientions
   modes(~finished) = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
@@ -95,6 +97,14 @@ modes = modes(id);
 iid(id) = 1:length(id);
 centerId = iid(centerId);
 
+if ~check_option(varargin,'exact')
+  id = weights > 0.01;
+  weights = weights(id);
+  modes = modes(id);
+  ids = 1:length(id);
+  centerId(ismember(centerId,ids(~id))) = 0;
+end
+  
 % weights = [2 1 5 3 4] -> [1 2 3 4 5]
 % id -> [2 1 5 3 4]
 % centerId = 3 -> 5 

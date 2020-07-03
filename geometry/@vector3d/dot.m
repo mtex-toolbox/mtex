@@ -9,7 +9,8 @@ function d = dot(v1,v2,varargin)
 %  v1, v2 - @vector3d
 %
 % Options
-%  antipodal - consider v1, v2 as axes
+%  antipodal       - consider v1, v2 as axes
+%  ignoreAntipodal - do not consider axes
 %
 % Output
 %  d - double
@@ -21,6 +22,7 @@ zz = v1.z .* v2.z;
 d = xx + yy + zz;
 
 % 
-if check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal
+if (check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal) && ...
+    ~check_option(varargin,'noAntipodal')
   d = abs(d);
 end

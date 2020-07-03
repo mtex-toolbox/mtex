@@ -126,20 +126,17 @@ hold off
 %%
 
 F = halfQuadraticFilter;
-F.alpha = 0.01;
-F.eps = 1e-6;
-F.tol = 1e-10;
 
-ebsdS = smooth(ebsd,F);
+ebsdS = smooth(ebsd,F,'fill',grains);
 
 % use for the reference orientation the grain mean orientation
 ipfKey.oriRef = grains.meanOrientation(ebsdS('indexed').grainId);
 
 plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
 
-%hold on
-%plot(grains.boundary,'lineWidth',4)
-%hold off
+hold on
+plot(grains.boundary,'lineWidth',4)
+hold off
 
 %%
 

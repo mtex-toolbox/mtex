@@ -72,11 +72,19 @@ classdef slipSystem
         end
       end
       
-      if length(sS)>50, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
+      if length(sS)>24, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
       disp([' size: ' size2str(sS.b)]);
             
-      if length(sS)>50, return; end
+      if length(sS)<=45 && ~isempty(sS)
+        dispData(sS)
+      else
+        disp(' ')
+        setappdata(0,'dispLastData',@() dispData(sS));
+        disp('  <a href="matlab:feval(getappdata(0,''dispLastData''))">display all coordinates</a>')
+        disp(' ')
+      end
       
+      function dispData(sS)
       % display coordinates  
       if isa(sS.CS,'crystalSymmetry')
         if any(strcmp(sS.b.CS.lattice,{'hexagonal','trigonal'}))
@@ -92,6 +100,7 @@ classdef slipSystem
         d = round(100*[sS.b.xyz sS.n.xyz])./100;
         d(abs(d) < 1e-10) = 0;
         cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' ' |   x' 'y' 'z' });
+      end
       end
     end
     
@@ -131,7 +140,7 @@ classdef slipSystem
      end
     
      function sS = hcp(cs,varargin)
-       warning('Maybe I should collect here all slipSystems below');      
+       warning('There are no predefined slip systems for hcp yet. You might have to define those individually.');      
      end
      
     function sS = basal(cs,varargin)

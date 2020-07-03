@@ -24,7 +24,7 @@ if check_option(varargin,'normalized'), values = values.normalize; end
 % some default plotting settings
 varargin = ['color', 'k', varargin];
 if check_option(varargin,'complete')
-  varargin = [varargin,{'removeAntipodal'}];
+  varargin = [varargin,{'noAntipodal'}];
 end
 
 % plot the function values

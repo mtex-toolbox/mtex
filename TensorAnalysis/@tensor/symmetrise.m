@@ -56,7 +56,7 @@ end
 T.M(T.M==0) = 1i;
 
 % rotate according to symmetry
-T = rotate(T,cs);
+T = rotate(T,cs.rot);
 
 % set all entries that contain missing values to NaN
 T.M(~isnull(imag(T.M))) = NaN;

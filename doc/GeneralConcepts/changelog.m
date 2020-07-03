@@ -1,8 +1,55 @@
 %% MTEX Changelog
 %
+%% MTEX 5.4.1 6/2020
+% 
+% *New Functions*
+%
+% * <EBSDSquare.interp.html interp> to interpolate EBSD maps
+% * grain properties <grain2d.longAxis.html longAxis>, <grain2d.shortAxis.html shortAxis>
+% * <BoundaryCurvature.html grain boundary curvature>
+%
+% *Bug Fixes*
+%
+% * loading ang files
+% * importong ODFs
+% * inverse pole figures misses orientations
+% * <grain2d.hull convex hull> of grains has now correct boundaries
+%
+% * Other Changes*
+%
+% * <vector3d.mean.html vector3d/mean> now returns not normalized vectors
+% * new flag |noAntipodal| to supress antipodal symmetry in calculations
+%
+%% MTEX 5.3.0 4/2020
+%
+% MTEX 5.3 is a humble release without big shiny improvements. On the other
+% hand is has seen some internal changes which lead to significant speed
+% improvements in some functions. Technicaly speaking the class @symmetry
+% is not derived from @rotation anymore but is a handle class. From the
+% users perspective almost no change will be noticed. Developers should
+% replace |length(cs)| by |numSym(cs)|.
+%
+% *Much Better and Faster Halfquadratic Filter* 
+%
+% Denoising of EBSD data using the
+% <https://mtex-toolbox.github.io/EBSDDenoising.html#10
+% |halfQuadraticFilter|> is now about 10 times faster, handles outliers
+% much better and runs natively on hexagonal grids.
+%
+% *New Functions*
+%
+% * <stiffnessTensor.plotWaveVelocities.html |plotWaveVelocities|>
+% illustrates anisotropy of seismic waves
+% * <EBSD.grainMean.html |grainMean|> grain averages of arbitrary properties
+% * shape functions <grain2d.surfor.html |surfor|>, <grain2d.paror.html
+% |paror|>, <grain2d.calliper.html |calliper|>
+% * <Miller.multiplicity.html |multiplicity|> for Miller, orientation and
+% fibre
+%
 %% MTEX 5.2.3 11/2019
 %
-% * replaced |calcODF(ori)| by <orientation.calcDensity.html |calcDensity(ori)|>
+% * replaced |calcODF(ori)| by <orientation.calcDensity.html
+% |calcDensity(ori)|>
 % * bug fix in ODF reconstruction from XRD data
 % * bug fix in EBSD export to ctf
 % * bug fix in grain reconstruction

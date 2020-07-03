@@ -17,7 +17,7 @@ classdef omegaSections < pfSections
       
       oS.referenceField = S2VectorField.sigma;
       %if nargin < 4, r_ref = xvector; end
-      %oS.referenceField = S2VectorField.polassr(r_ref);
+      %oS.referenceField = S2VectorField.polar(r_ref);
       
     end            
   end  

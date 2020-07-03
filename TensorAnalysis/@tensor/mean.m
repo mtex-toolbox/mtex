@@ -9,8 +9,9 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %   TGeometric = mean(T,'geometric') % geometric mean
 %   [TVoigt, TReus, THill] = mean(T) % Voigt, Reuss and Hill averages
 %
-%   [TVoigt, TReus, THill] = mean(T,ori,'weights',weights) % mean with respect to orientations
+%   [TVoigt, TReus, THill] = mean(ori*T,'weights',weights) % mean with respect to orientations
 %   [TVoigt, TReus, THill] = mean(T,odf) % mean with respect to ODF
+%   [TVoigt, TReus, THill] = mean(ori,'weights',weights) % weighted mean
 %
 % Input
 %  T - @tensor
@@ -54,7 +55,7 @@ elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    TVoigt = TVoigt + EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]);
+    TVoigt = TVoigt + real(EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]));
         
   end
   

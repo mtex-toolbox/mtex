@@ -47,7 +47,7 @@ classdef ipfColorKey < orientationColorKey
       setappdata(caxes,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
             
       try
-        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+        mtexFig.drawNow('figSize','small',varargin{:});
       end
 
     end

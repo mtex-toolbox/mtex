@@ -19,35 +19,42 @@ function [qm, lambda, V] = mean(q,varargin)
 % See also
 % orientation/mean
 
-q = quaternion(q);
+
 qm = q;
 
 if isempty(q) || all(isnan(q.a(:)))
+  
   [qm.a,qm.b,qm.c,qm.d] = deal(nan,nan,nan,nan);
-  lambda = diag([0 0 0 1]);
+  lambda = [0 0 0 1];
   if nargout == 3, V = nan(4); end
   return
 elseif length(q) == 1
-  lambda = diag([0 0 0 1]);
+  lambda = [0 0 0 1];
   if nargout == 3
     T = qq(q,varargin{:});
     [V, lambda] = eig(T);
+    lambda = diag(lambda).';
   end
   return
 end
 
+% shall we apply the robust algorithm?
+isRobust = check_option(varargin,'robust');
+if isRobust, varargin = delete_option(varargin,'robust'); end
+
 T = qq(q,varargin{:});
 [V, lambda] = eig(T);
-l = diag(lambda);
-[~,pos] = max(l);
+lambda = diag(lambda).';
+[~,pos] = max(lambda);
 
-[qm.a,qm.b,qm.c,qm.d] = deal(V(1,pos),V(2,pos),V(3,pos),V(4,pos));
+VV = V(:,pos);
+qm.a = VV(1); qm.b = VV(2); qm.c = VV(3); qm.d = VV(4);
+if isa(qm,'rotation'), qm.i = false; end
 
-if check_option(varargin,'robust') && length(q)>4
-  omega = angle(qm,q);
-  id = omega < quantile(omega,0.8)*(1+1e-5);
-  if ~any(id), return; end
-  varargin = delete_option(varargin,'robust');
+if isRobust && length(q)>4
+  omega = angle(qm,q,'noSymmetry');
+  id = omega <= quantile(omega,0.8)*2.5;
+  if all(id), return; end
   if nargout == 3
     [qm,lambda, V] = mean(q.subSet(id),varargin{:});
   else

@@ -63,12 +63,23 @@ try
       props.(name) = data(:);
     end
 
-    if max([props.phi1(:);props.phi2(:);props.Phi(:)])>2.1*pi
-      isDegree = degree;
-    else
-      isDegree = 1;
-    end
     
+    % sometimes not indexed orientations are marked as 4*pi
+    notIndexed = isappr(props.phi1,4*pi,1e-5);
+    if all(props.phi1(~notIndexed)<=2.001*pi) ...
+        && all(props.Phi(~notIndexed)<=1.001*pi) ...
+        && all(props.phi2(~notIndexed)<=2.001*pi)
+          
+      props.phi1(notIndexed) = NaN;
+      props.phi2(notIndexed) = NaN;
+      props.Phi(notIndexed) = NaN;
+      
+      isDegree = 1;
+      
+    else    
+      isDegree = degree;
+    end
+      
     rot = rotation.byEuler(props.phi1*isDegree,props.Phi*isDegree,props.phi2*isDegree);
     phases = props.Phase;
 

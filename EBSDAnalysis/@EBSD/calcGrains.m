@@ -30,19 +30,44 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neigbhouring cells with grain boundary
-% A_Do - neigbhouring cells without grain boundary
-
-% compute grains as connected components of A_Do
 % I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
 % compute grain ids
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
 % setup grains
-grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
+[grains, newBd] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+
+% merge quadruple grains
+if check_option(varargin,'removeQuadruplePoints') && newBd > 0
+
+  gB = grains.boundary; gB = gB(length(gB)+1-(1:newBd));
+  toMerge = false(size(gB));
+       
+  for iPhase = ebsd.indexedPhasesId
+    
+    % restrict to the same phase
+    iBd = all(gB.phaseId == iPhase,2);    
+    
+    if ~any(iBd), continue; end
+        
+    % check for misorientation angle
+    toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
+    
+  end
+  
+  [grains, parentId] = merge(grains,gB(toMerge));
+  
+  % update I_DG
+  I_PC = sparse(1:length(parentId),parentId,1);
+  I_DG = I_DG * I_PC;
+  
+  % update grain ids
+  [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
+    
+end
 
 % calc mean orientations, GOS and mis2mean
 % ----------------------------------------
@@ -82,8 +107,13 @@ mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
 end
 
 
-function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
+function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
+%
+%
+% Output
+%  A_Db - adjecency matrix of grain boundaries
+%  A_Do - adjecency matrix inside grain connections
 
 % extract segmentation method
 grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
@@ -100,7 +130,7 @@ end
 A_D = I_FD'*I_FD==1;
 [Dl,Dr] = find(triu(A_D,1));
 
-connect = false(size(Dl));
+connect = zeros(size(Dl));
 
 for p = 1:numel(ebsd.phaseMap)
   
@@ -121,11 +151,32 @@ for p = 1:numel(ebsd.phaseMap)
 end
 
 % adjacency of cells that have no common boundary
-A_Do = sparse(double(Dl(connect)),double(Dr(connect)),true,length(ebsd),length(ebsd));
-A_Do = A_Do | A_Do';
+ind = connect>0;
+A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+if check_option(varargin,'mcl')
+  
+  param = get_option(varargin,'mcl');
+  if isempty(param), param = 1.4; end
+  if length(param) == 1, param = [param,4]; end
+  
+  A_Do = mclComponents(A_Do,param(1),param(2)); 
+  A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+  
+else
+  
+  A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
+  
+end
+A_Do = A_Do | A_Do.';
 
-A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
-A_Db = A_Db | A_Db';
+% adjacency of cells that have a common boundary
+
+A_Db = A_Db | A_Db.';
+
+% compute I_DG connected components of A_Do
+% I_DG - incidence matrix cells to grains
+I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
 
 end
 

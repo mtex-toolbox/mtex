@@ -1,4 +1,4 @@
-classdef symmetry < rotation
+classdef symmetry < handle
 %
 % symmetry is an abstract class for crystal and specimen symmetries
 %
@@ -7,21 +7,28 @@ classdef symmetry < rotation
 %  @specimenSymmetry - 
 %
 
+  properties (SetAccess = immutable)
+    id = 1;               % point group id, compare to symList    
+    rot = rotation.id     % the symmetry elements
+  end
+  
   properties
-    id = 1;     % point group id, compare to symList    
+    opt = struct
   end
 
   properties (Dependent = true)
-    lattice     % type of crystal lattice
-    pointGroup  % name of the point group
-    isLaue      % is it a Laue group
-    isProper    % does it contain only proper rotations
+    lattice          % type of crystal lattice
+    pointGroup       % point group name
   end
   
+  properties (Access = protected)
+    LaueRef = []
+    properRef = []
+  end
+  
+  
   properties (Constant = true)
-    
     pointGroups = pointGroupList % list of all point groups
-    
   end
 
   % this is an abstract class
@@ -31,101 +38,35 @@ classdef symmetry < rotation
   end
   
   methods
-    
-    function s = symmetry(varargin)
-                
-      % empty constructor
-      if nargin == 0
-        s.a = 1;
-        s.b = 0;
-        s.c = 0;
-        s.d = 0;
-        s.i = false;
-        return; 
-      end
+       
+    function s = symmetry(id,rot)
+      % constructor
       
-      if check_option(varargin,'PointId')
-        
-        s.id = get_option(varargin,'PointId');
-        
-      elseif check_option(varargin,'LaueId')
+      s.id = id;
+      if ~isempty(rot), s.rot = rot; end
       
-        % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
-        LaueGroups = [2,8,16,27,32,42,45,18,21,35,40];
-        s.id = LaueGroups(get_option(varargin,'LaueId'));
-              
-      elseif check_option(varargin,'SpaceId')
-        
-        list = spaceGroups;
-        ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
-        if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
-        s.id = findsymmetry(list(ndx+1,2));
-        
-      elseif isa(varargin{1},'quaternion')
-        
-        s.a = varargin{1}.a;
-        s.b = varargin{1}.b;
-        s.c = varargin{1}.c;
-        s.d = varargin{1}.d;
-        try s.i = varargin{1}.i;catch, end
-        s.id = 0;
-                
-      else
-
-        if any(strcmp(varargin{1},{'2','m','2/m'})) && nargin > 2 && isnumeric(varargin{3})
-          
-          abg = varargin{3};
-          if max(abg) > 2*pi, abg = abg * degree; end
-          
-          [~,i] = max(abs(abg-pi/2));
-          
-          p = {'1','1','1'};
-          p{i} = varargin{1};
-          varargin{1} = [p{:}];
-          
-        end
-        
-        s.id = findsymmetry(varargin{1});
-        
-      end      
-                                        
     end
     
-    function l = get.lattice(cs)
-      if cs.id>0
-        l = symmetry.pointGroups(cs.id).lattice;
-      else
-        l = 'unknown';
-      end
-    end
     
-    function pg = get.pointGroup(cs)
-      if cs.id>0
-        pg = symmetry.pointGroups(cs.id).Inter;
+    function pg = get.pointGroup(sym)
+      if sym.id>0
+        pg = symmetry.pointGroups(sym.id).Inter;
       else
         pg = 'unknown';
       end
     end
-            
-    function r = get.isLaue(cs)
-      try
-        r = cs.id == symmetry.pointGroups(cs.id).LaueId;
-      catch % this is required for custom symmetries
-        r = any(reshape(rotation(cs) == -rotation.id,[],1)); 
+        
+    function lattice = get.lattice(sym)
+      if sym.id>0
+        lattice = symmetry.pointGroups(sym.id).lattice;
+      else
+        lattice = 'unknown';
       end
-    end
-    
-    function r = isRotational(cs)      
-      r = cs.id == symmetry.pointGroups(cs.id).properId;
-    end
-    
-    function r = get.isProper(cs)
-      r = ~any(cs.i(:));
     end
     
     function out = le(cs1,cs2)
       % check wheter cs1 is a sub group of cs2
-      out = all(any(abs(dot_outer(cs1,cs2))>1-1e-6,2));
+      out = all(any(abs(dot_outer(cs1.rot,cs2.rot))>1-1e-6,2));
     end
     
     function out = ge(cs1,cs2)
@@ -144,8 +85,142 @@ classdef symmetry < rotation
     end
     
   end
+
+  methods (Access = protected, Static = true)
+    
+    
+    function [id, varargin] = extractPointId(varargin)
+
+      % determine the correct id
+      if nargin == 0
       
+        id = 1;
+              
+      elseif check_option(varargin,'PointId')
+        
+        id = get_option(varargin,'PointId');
+        
+      elseif check_option(varargin,'LaueId')
+      
+        % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
+        LaueGroups = [2,8,16,27,32,42,45,18,21,35,40];
+        id = LaueGroups(get_option(varargin,'LaueId'));
+              
+      elseif check_option(varargin,'SpaceId')
+        
+        list = spaceGroups;
+        ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
+        assert(ndx <= 31, 'I''m sorry, I know only 230 space groups ...');
+        id = findsymmetry(list(ndx+1,2));
+        
+      else
+
+        str = varargin{1};
+  
+        % expand 2, m, and 2/m to 112 or 121 or 211 depending on the angles
+        if any(strcmp(str,{'2','m','2/m'})) && nargin > 2 && isnumeric(varargin{3})
+          
+          abg = varargin{3};
+          if max(abg) > 2*pi, abg = abg * degree; end
+          
+          [~,i] = max(abs(abg-pi/2));
+          
+          p = {'1','1','1'};
+          p{i} = str;
+          str = [p{:}];
+          
+        end
+        
+        id = findsymmetry(str);
+        varargin(1) = [];
+  
+      end
+
+      % remove from varargin
+      varargin = delete_option(varargin,{'PointId','LaueId','SpaceId'},1);
+    end
+
+    
+    function id = rot2pointId(rot,axes)
+      % find a symmetry that exactly contains s
+      
+      if nargin == 1, axes = [xvector,yvector,zvector]; end
+      
+      for id=1:45 % check all point groups
+        rotId = symmetry.calcQuat(id,axes);
+        if length(rot) == length(rotId) && all(any(isappr(abs(dot_outer(rotId,rot)),1)))
+          return
+        end
+      end
+      id = 0;
+    end
+    
+    
+    function rot = calcQuat(id,axes)
+      % calculate symmetry elements
+
+      a = axes(1); b = axes(2); c = axes(3);
+
+      a1 = axes(1); a2 = axes(2); m = a1 - a2;
+
+      ll0axis = a+b; lllaxis = a+b+c;
+
+      pg = pointGroupList;
+      pg = pg(id);
+
+      % compute rotations
+      switch pg.LaueId
+        case 2 % 1
+          rot = {rotation.byEuler(0,0,0)};
+        case 5 % 211
+          rot = {symAxis(a,2)};
+        case 8 % 121
+          rot = {symAxis(b,2)};
+        case 11 % 112
+          rot = {symAxis(c,2)};
+        case 16 % 222
+          rot = {symAxis(a,2),symAxis(c,2)};
+        case 18 % 3
+          rot = {symAxis(c,3)};
+        case 21 % 321
+          rot = {symAxis(a1,2),symAxis(c,3)};
+        case 24 % 312
+          rot = {symAxis(m,2),symAxis(c,3)};
+        case 27 % 4
+          rot = {symAxis(c,4)};
+        case 32 % 4/mmm
+          rot = {symAxis(a,2),symAxis(c,4)};
+        case 35 % 6
+          rot = {symAxis(c,6)};
+        case 40 % 622
+          rot = {symAxis(a,2),symAxis(c,6)};
+        case 42 % 23
+          rot = {symAxis(lllaxis,3),symAxis(a,2),symAxis(c,2)};
+        case 45 % 432
+          rot = {symAxis(lllaxis,3),symAxis(ll0axis,2),symAxis(c,4)};
+      end
+
+      % apply inversion
+      if size(pg.Inversion ,1) == 2
+        rot = [rot,{[1,-1] .* rotation.id}];
+      else
+        rot = arrayfun(@(i) rot{i} .* pg.Inversion(i).^(0:length(rot{i})-1) ,...
+          1:length(rot),'uniformOutput',false);
+      end
+
+      % store symmetries
+      rot = prod(rot{:});
+
+    end
+
+    
+  end
+  
+  
 end
+
+
+
 
 % ---------------------------------------------------------------
 

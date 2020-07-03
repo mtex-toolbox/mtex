@@ -24,7 +24,7 @@ end
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(ori);
 center = component.center(:);
-qSS = unique(quaternion(component.SS));
+qSS = quaternion(component.SS);
 % forget about second symmetry
 center.SS = specimenSymmetry;
 
@@ -56,7 +56,7 @@ for issq = 1:length(qSS)
   g = g - v.' * component.weights(:) ;
   
 end
-g = g ./ length(qSS) ./ length(component.CS.properGroup) ;
+g = g ./ length(qSS) ./ numProper(component.CS) ;
 
 % TODO: consider antipodal
 if component.antipodal

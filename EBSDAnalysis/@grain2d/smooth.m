@@ -1,18 +1,22 @@
 function grains = smooth(grains,iter,varargin)
-% constraint laplacian smoothing of grain boundaries 
-% and inner boundaries.
+% constraint laplacian smoothing of grain boundaries
 %
 % Input
 %  grains - @grain2d
-%  iter   - number of iterations (optional, default: 1)
+%  iter   - number of iterations (default: 1)
 %
 % Output
 %  grains - @grain2d
 %
 % Options
-%  'gauss','exp','umbrella' or 'rate' - interpoaltion methods (default: 'rate')
-%  second_order, S2 - second order smoothing
-
+%  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
+%  moveOuterBoundary - do not exclude outer boundary from smoothing
+%  second_order, S2  - second order smoothing
+%  rate              - default smoothing kernel  
+%  gauss             - gaussian smoothing kernel  
+%  exp               - exponential smoothing kernel  
+%  umbrella          - umbrella smoothing kernel   
+ 
 if nargin < 2 || isempty(iter), iter = 1; end
 
 % compute incidence matrix vertices - faces
@@ -23,7 +27,16 @@ A_V = I_VF * I_VF';
 t = size(A_V,1);
 
 % do not consider triple points
-A_V = double(A_V == 1);
+if check_option(varargin,'moveTriplePoints')
+  ignore = false(size(A_V,1),1);
+else
+  ignore = full(diag(A_V)) > 2;
+end
+
+% ignore outer boundary
+if ~check_option(varargin,'moveOuterBoundary')
+  ignore(grains.boundary.F(any(grains.boundary.grainId==0,2),:)) = true;
+end
 
 if check_option(varargin,{'second order','second_order','S','S2'})
   A_V = logical(A_V + A_V*A_V);
@@ -34,7 +47,7 @@ weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate
 lambda = get_option(varargin,weight,.5);
 
 V = full(grains.V);
-isNotZero = ~all(~isfinite(V) | V == 0,2);
+isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
 
 for l=1:iter
   if ~strcmpi(weight,'rate')

@@ -1,10 +1,10 @@
-function r = mtimes(a,b)
+function r = mtimes(a,b,takeRight)
 % orientation times Miller and orientation times orientation
 %
 % Syntax
 %   o = o1 * o2
 %   r = o * h
-%   h = inv(o)*r
+%   h = inv(o) * r
 %
 % Input
 %  o - @orientation
@@ -14,48 +14,40 @@ function r = mtimes(a,b)
 % See also
 % orientation/times
 
+% this is some shortcut for internal use
+if nargin == 3
+  r = mtimes@rotation(a,b,takeRight);
+  return
+end
+
 % special case multiplication with +-1
 if isnumeric(a) || isnumeric(b)
   r = mtimes@rotation(a,b);
   return
 end
 
-% orientation times vector
-if isa(a,'orientation') && ~isa(b,'quaternion')  && ~isnumeric(b)
-  try
-    if a.CS.Laue ~= b.CS.Laue
-      warning('Symmetries %s and %s are different but should be equal',a.CS.pointGroup,b.CS.pointGroup);
-    end
-  catch
-    if isa(a.CS,'crystalSymmetry')
-      warning('Possibly applying an orientation to an object in specimen coordinates!')
-    end
-  end
+% orientation times symmetry
+if isa(b,'symmetry') 
+  r = mtimes@quaternion(a,b.rot,0);
+  return
+end
+
+% ensure inner symmetries coincide
+[a, left, right] = ensureSym(a,b);
+
+% orientation times object
+if ~isa(b,'quaternion') 
   r = rotate_outer(b,a);
   return 
 end
 
-% collect inner and outer symmetries
-[left,inner1] = extractSym(a);
-[inner2,right] = extractSym(b);
-
-% ensure inner symmetries coincide
-if inner1.Laue ~= inner2.Laue
-  if isa(a,'orientation')
-    a = a.transformReferenceFrame(inner2);
-  elseif all(isnull(min(angle_outer(inner2,a))))
-    left = inner2;
-  else
-    warning('Rotation does not respect symmetry!');
-  end
-end
-
 % rotation multiplication
-r = mtimes@rotation(a,b);
+r = mtimes@quaternion(a,b,isa(b,'orientation'));
 
 % convert back to orientation
 if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
-  r = orientation(r,right,left); 
+  r.CS = right;
+  r.SS = left;
 else % otherwise it is only a rotation anymore
   r = rotation(r);
 end

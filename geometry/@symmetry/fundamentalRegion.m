@@ -22,7 +22,7 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 
 if ~check_option(varargin,'pointGroup'), cs = cs.properGroup; end
 
-q = rotation(cs);
+rot = cs.rot;
 N0 = quaternion;
 if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
 
@@ -31,9 +31,9 @@ if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
   % in the usual setting we don't care about reflections
   if ~check_option(varargin,'pointGroup'), cs2 = cs2.properGroup; end
   
-  q = rotation(cs2) * q;   
-  q = q(~q.isImproper);
-  q = unique(quaternion(q),'antipodal');
+  rot = cs2 * rot;   
+  rot = rot(~rot.isImproper);
+  rot = unique(quaternion(rot),'antipodal');
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
     dcs = disjoint(cs,cs2);
@@ -49,23 +49,23 @@ if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
     N0 = rotation.byAxisAngle(sR.N,pi-1e-5);
   end
 else
-  q = q(~q.isImproper);
-  q = quaternion(unique(q));
+  rot = rot(~rot.isImproper);
+  rot = quaternion(unique(rot));
   dcs = cs.properSubGroup;
   if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
   cs2 = {};
 end
-nSym = length(q);
+nSym = length(rot);
 
 % take +- minimal angles for each axis
-q(abs(q.angle)<1e-3) = [];
-axes = q.axis;
+rot(abs(rot.angle)<1e-3) = [];
+axes = rot.axis;
 
 [axes,~,c] = unique(axes,'tolerance',1e-3);
 angles = zeros(size(axes));
 
 for i = 1:length(axes)
-  angles(i) = min(angle(q(c==i)));
+  angles(i) = min(angle(rot(c==i)));
 end
 
 N = [axes;-axes];

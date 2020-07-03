@@ -1,5 +1,6 @@
 %% Symmetricaly Equivalent Orientations
 %
+%%
 % A crystal orientation always appears as a class of symmetrically
 % equivalent rotations which all transform the crystal reference frame into
 % the specimen reference frame and are physicaly not distinguishable. 

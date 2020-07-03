@@ -5,13 +5,16 @@ properties
   sF;
 end
 
-properties(Dependent = true)
+properties(Dependent = true, Access = protected)
   xx;
   xy;
   yy;
   xz;
   yz;
   zz;
+end
+
+properties(Dependent = true)
   bandwidth
 end
 

@@ -1,29 +1,27 @@
-function u = union(s1,s2)
+function s = union(s1,s2)
 % returns the union of two symmetry groups
 %
 % 
 
-if ~isa(s2,'symmetry') && isa(s2,'quaternion')
-  s2 = [s2,rotation.id];
+if isa(s2,'symmetry')
+  axes = s2.axes;
+  s2 = s2.rot;   
+else
+  s2 = [rotation.id; s2(:)];
+end
+if isa(s1,'symmetry')
+  rot = s1.rot;
+  axes = s1.axes;
+else
+  rot = [rotation.id;s1(:)]; 
+  axes = s1.axes;
 end
 
-u  = s1 * s2;
+rot = unique(rot * s2);
 
-u = unique(u(:));
+s = crystalSymmetry(rot,axes);
 
-% take the equal ones
-s1 = quaternion(u(~u.i));
-s2 = quaternion(u(u.i));
-s = [rotation(unique(s1,'antipodal'));-rotation(unique(s2,'antipodal'))];
-
-% find a symmetry that exactly contains s
-for i=1:45 % check all Laue groups
-  
-  ss = crystalSymmetry('pointId',i);
-  
-  if length(ss) == length(s) && all(any(isappr(abs(dot_outer(s,ss)),1)))
-    u = ss;
-    return
-  end
-  
+try %#ok<TRYNC>
+  s.mineral = s1.mineral; % mineral name
+  s.color  = s1.color;    % color used for EBSD / grain plotting
 end

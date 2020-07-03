@@ -37,19 +37,19 @@ if check_option(varargin,'symmetrise')
     varargin{1} = symX * varargin{1};
   
     % symmetries values
-    varargin{2} = repmat(reshape(varargin{2},1,[]),length(symX),1);
+    varargin{2} = repmat(reshape(varargin{2},1,[]),numSym(symX),1);
   
     % symmetrise weights
     if check_option(varargin,'weights')
-      w = get_option(varargin,'weights') ./ length(symX);
+      w = get_option(varargin,'weights') ./ numSym(symX);
       if length(w) == 1
         w = w * ones(size(varargin{2}));
       else
-        w = repmat(reshape(w,1,[]),length(symX),1);
+        w = repmat(reshape(w,1,[]),numSym(symX),1);
       end
       varargin = set_option(varargin,'weights',w);
     else
-      varargin = set_option(varargin,'weights',1/length(symX));
+      varargin = set_option(varargin,'weights',1/numSym(symX));
     end
   
   else % function handle
@@ -60,7 +60,7 @@ if check_option(varargin,'symmetrise')
     else
       f = varargin{1};
     end
-    varargin{1} = @(v) mean(reshape(f(symX*v),length(symX),[]),1);
+    varargin{1} = @(v) mean(reshape(f(symX*v),numSym(symX),[]),1);
   
   end
 end

@@ -151,23 +151,29 @@ classdef EBSD < phaseList & dynProp & dynOption
       if numel(grainId) == length(ebsd)
         ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
-        ebsd.prop.grainId = zeros(length(ebsd),1);
+        ebsd.prop.grainId = zeros(size(ebsd));
         ebsd.prop.grainId(ebsd.isIndexed) = grainId;
       elseif numel(grainId) == 1
-        ebsd.prop.grainId = grainId * ones(length(ebsd),1);
+        ebsd.prop.grainId = grainId * ones(size(ebsd));
       else
         error('The list of grainId has to have the same size as the list of ebsd data.')
       end
     end
       
     function ori = get.orientations(ebsd)
-      ori = orientation(ebsd.rotations,ebsd.CS);
+      if isempty(ebsd)
+        ori = orientation;
+      else
+        ori = orientation(ebsd.rotations,ebsd.CS);
+      end
     end
     
     function ebsd = set.orientations(ebsd,ori)
       
-      ebsd.rotations = rotation(ori);
-      ebsd.CS = ori.CS;
+      if ~isempty(ebsd)
+        ebsd.rotations = rotation(ori);
+        ebsd.CS = ori.CS;
+      end
             
     end
            

@@ -14,11 +14,11 @@ x = reshape(bsxfun(@plus,xy(:,1),unitCell(:,1).'),[],1);
 y = reshape(bsxfun(@plus,xy(:,2),unitCell(:,2).'),[],1);
 
 % remove equal points
+% in general every measurment point generates 4 or 6 vertex points
+% some of them apear multiple times 
+% lets try to reduce them
 eps = min(sqrt(diff(unitCell(:,1)).^2 + diff(unitCell(:,2)).^2))/10;
-%xi = round(x-min(x)./eps);
-%yi = round(y-min(y)./eps);
-%[~,m,n] = unique((1+xi)*2*max(yi) + yi);
-[v,m,n] = unique(round([x-min(x) y-min(y)]./eps),'rows');
+[~,m,n] = unique(round([x-min(x) y-min(y)]./eps),'rows');
 
 v = [x(m) y(m)];
 

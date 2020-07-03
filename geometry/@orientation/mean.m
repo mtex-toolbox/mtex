@@ -1,4 +1,4 @@
-function [o, q, lambda, eigv]  = mean(o,varargin)
+function [m, o, lambda, eigv]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
@@ -14,7 +14,7 @@ function [o, q, lambda, eigv]  = mean(o,varargin)
 %
 % Output
 %  m      - mean @orientation
-%  q      - crystallographic equivalent @quaternion projected to fundamental region
+%  o      - crystallographic equivalent @orientation projected to fundamental region
 %  lambda - principle moments of inertia
 %  V      - principle axes of inertia (@orientation)
 %
@@ -22,48 +22,45 @@ function [o, q, lambda, eigv]  = mean(o,varargin)
 % BinghamODF
 
 if isempty(o)
-  
-  o.a = NaN; o.b = NaN; o.c = NaN; o.d = NaN; o.i = false;
-  if nargout > 1, q = quaternion.nan;end
-  if nargout > 2, lambda = zeros(4); end
+  m = o;
+  m.a = NaN; m.b = NaN; m.c = NaN; m.d = NaN; m.i = false;
+  if nargout > 2, lambda = zeros(1,4); end
   if nargout > 3, eigv = eye(4); end
-  return
-  
+  return  
 elseif length(o) == 1 
-  
+  m = o;
   if nargout > 1
     eigv = eye(4);
-    q = quaternion(o);
+    lambda = [1,0,0,0];
   end
   return;
 end
 
-% first approximation
-q_mean = get_option(varargin,'q0',quaternion(o,find(~isnan(o.a),1)));
-q_mean = quaternion(project2FundamentalRegion(q_mean,o.CS,o.SS));
-old_mean = [];
-q = quaternion(o);
-
-if ~check_option(varargin,'noSymmetry')
-  % iterate mean
-  iter = 1;
-  while iter < 5 && (isempty(old_mean) || (angle(dot(q_mean,old_mean))<0.1*degree))
-    old_mean = q_mean;
-    q = project2FundamentalRegion(q,o.CS,o.SS,old_mean);
-    [q_mean, lambda, eigv] = mean(q,varargin{:});
+if check_option(varargin,'noSymmetry')
+  
+  [m, lambda, eigv] = mean@quaternion(o,varargin{:});
     
-    iter = iter + 1;
-  end
 else
-  [q_mean, lambda, eigv] = mean@quaternion(o,varargin{:});
+  
+  s = size(o);
+
+  % first approximation
+  m = get_option(varargin,'q0');
+  if isempty(m), m = o.subSet(find(~isnan(o.a),1)); end
+  
+  % project around q_mean
+  o = project2FundamentalRegion(o,m);
+  
+  % compute mean without symmetry
+  [m, lambda, eigv] = mean@quaternion(o,varargin{:});
+
+  d = abs(quat_dot(o,m));
+  if min(d(:)) < cos(10*degree)
+    o = project2FundamentalRegion(o,m);
+    [m, lambda, eigv] = mean@quaternion(o,varargin{:});
+  end
+
+  if nargout > 1, o = reshape(project2FundamentalRegion(o,m),s); end
+ 
 end
-
-q = reshape(q,size(o));
-
-o.a = q_mean.a;
-o.b = q_mean.b;
-o.c = q_mean.c;
-o.d = q_mean.d;
-o.i = false;
-
-lambda = diag(lambda);
+m.i = false;

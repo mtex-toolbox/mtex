@@ -1,4 +1,4 @@
-function sP = newSphericalPlot(v,varargin)
+function [sP, isNew] = newSphericalPlot(v,varargin)
 % split plot in upper and lower hemisphere
 %
 % 1: axis given -> no sphericalRegion stored -> compute sphericalRegion -> finish
@@ -8,6 +8,7 @@ function sP = newSphericalPlot(v,varargin)
 % case 1: predefined axis
 % -----------------------
 if check_option(varargin,'parent')
+
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
@@ -16,6 +17,7 @@ if check_option(varargin,'parent')
     for i = 1:length(ax)
       sP(i) = getappdata(ax(i),'sphericalPlot');
     end
+    isNew = false;
     
   else % set up a new spherical axes if required
     
@@ -28,6 +30,7 @@ if check_option(varargin,'parent')
     
     % create a new spherical plot
     sP = sphericalPlot(ax,proj(1),varargin{:});
+    isNew = true;
             
   end    
   return;
@@ -72,6 +75,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     
   end
   mtexFig.drawNow(varargin{:});
+  isNew = true;
           
 elseif check_option(varargin,'add2all') % add to or overide existing axes
     
@@ -112,7 +116,8 @@ elseif check_option(varargin,'lower')
 end
 
 % extract antipodal
-sR.antipodal = check_option(varargin,'antipodal') || varargin{1}.antipodal;
+sR.antipodal = check_option(varargin,'antipodal') || ...
+  (isa(varargin{1},'vector3d') && varargin{1}.antipodal);
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper && sR.isLower &&...
@@ -140,6 +145,8 @@ if ~isa(proj,'sphericalProjection')
     case 'orthographic',  proj = orthographicProjection(sR);
     
     case 'square',  proj = squareProjection(sR);
+      
+    case 'gnonomic', proj = gnonomicProjection(sR);
       
     otherwise
     

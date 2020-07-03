@@ -15,8 +15,8 @@ function w = K_symmetrised(psi,q1,q2,CS,SS,varargin)
 
 % only the pur rotational part is of interest 
 % TODO
-qCS = unique(quaternion(CS));
-qSS = unique(quaternion(SS));
+qCS = quaternion(CS);
+qSS = quaternion(SS);
 
 if check_option(varargin,'exact')
   epsilon = pi;
@@ -91,10 +91,10 @@ else
       end
       
 %  z = find(omega>cos(epsilon));
-%  if length(z) > length(omega)/length(CS)/10, w = full(w); end
+%  if length(z) > length(omega)/numSym(CS)/10, w = full(w); end
 %  w(z) = w(z) +  kk.K(omega(z));
       
-%  if length(z) > numel(omega)/length(CS)/10, w = full(w); end
+%  if length(z) > numel(omega)/numSym(CS)/10, w = full(w); end
       
       [y,x] = find(omega>cos(epsilon));
       dummy = sparse(y,x,psi.K(omega(sub2ind(size(w),y,x))),length(q1),length(q2));

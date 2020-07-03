@@ -5,6 +5,10 @@ classdef meanFilter < EBSDFilter
     weights
   end
   
+  properties (Dependent = true)
+    numNeighbours
+  end
+  
   methods
 
     function F = meanFilter(varargin)      
@@ -14,11 +18,57 @@ classdef meanFilter < EBSDFilter
       %A = exp(-(x.^2+y.^2)/10)
     end
     
+    function n = get.numNeighbours(F)
+      n = (length(F.weights)-1) / 2;
+    end
+    
+    function set.numNeighbours(F,n)
+      F.weights = ones(2*n+1);
+    end
+    
     function plot(F)
       imagesc(F.weights)
     end
     
-    function ori = smooth(F,ori)
+    function ori = smooth(F,ori,quality)
+
+      % precompute neigbour ids
+      if F.isHex
+        idNeighbours = hexNeighbors(size(ori));
+      else
+        idNeighbours = squareNeighbors2(size(ori));
+      end
+            
+      % map to mean
+      [oriMean,ori] = mean(ori);
+      
+      % map quaternions into tangential space
+      tq = log(ori,oriMean,'noSymmetry');
+      
+      for j = 1:F.numNeighbours
+        
+        ntq = tq(idNeighbours);
+        
+        nq = quality + quality(idNeighbours);
+        
+        denominator = nansum(nq,3);
+        denominator(denominator==0) = inf;
+        tq = (quality .* tq + nansum(nq .* ntq,3)) ./ denominator;
+     
+      end
+      
+      ori = exp(oriMean,tq);
+            
+    end
+    
+    function ori = smooth_old(F,ori,quality)
+
+      if F.isHex
+        warning(['Hexagonal grids are not yet fully supportet for the meanFilter. ' ...
+          'It might give reasonable results anyway']);
+      end
+      
+      ori(quality==0) = nan;
       
       % map to mean
       [qmean,q] = mean(ori);
@@ -59,5 +109,6 @@ classdef meanFilter < EBSDFilter
       ori.a = q.a; ori.b = q.b; ori.c = q.c; ori.d = q.d;
             
     end
+    
   end
 end

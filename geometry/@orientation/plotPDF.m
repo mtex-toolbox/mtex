@@ -97,9 +97,9 @@ end
 
 % ------------------ subsample if needed --------------------------
 if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
-    (sum(length(ori))*length(ori.CS)*length(ori.SS) > 10000 || check_option(varargin,'points'))
+    (sum(length(ori))*numSym(ori.CS)*numSym(ori.SS) > 10000 || check_option(varargin,'points'))
 
-  points = fix(get_option(varargin,'points',10000/length(ori.CS)/length(ori.SS)));
+  points = fix(get_option(varargin,'points',10000/numSym(ori.CS)/numSym(ori.SS)));
   disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
   disp('  You can specify the the number points by the option "points".');
   disp('  The option "all" ensures that all data are plotted');
@@ -122,14 +122,14 @@ for i = 1:length(h)
     sh = symmetrise(h{i});
   end
   r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
-  opt = replicateMarkerSize(varargin,length(ori.SS)*length(sh));
+  opt = replicateMarkerSize(varargin,numSym(ori.SS)*length(sh));
 
   % maybe we can restric ourselfs to the upper hemisphere
   if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
     opt = [opt,'upper']; %#ok<AGROW>
   end
 
-  [~,cax] = r.plot(repmat(data,[1 length(ori.SS)*length(sh) 1]),...
+  [~,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
     ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
@@ -159,9 +159,10 @@ function txt = tooltip(varargin)
 [r_local,id,value] = getDataCursorPos(mtexFig,length(ori));
 
 txt{1} = ['id = ' xnum2str(id)];
-txt{2} = ['(x,y) = (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+txt{2} = ['polar = (' int2str(r_local.theta/degree) mtexdegchar ',' int2str(r_local.rho/degree) mtexdegchar ')'];
+txt{3} = ['Euler = ' char(ori.subSet(id))];
 if ~isempty(value)
-  txt{3} = ['value = ' xnum2str(value)];
+  txt{4} = ['value = ' xnum2str(value)];
 end
 
 end
