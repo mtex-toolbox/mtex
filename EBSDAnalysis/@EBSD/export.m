@@ -11,19 +11,18 @@ function export(ebsd,fname,varargin)
 %  degree  - output in degree (default)
 %  radians - output in radians
 
-% TODO
-
 [~,~,ext] = fileparts(fname);
 switch lower(ext)
-  case 'h5'
+  case {'.h5','hdf5'}
     export_h5(ebsd,fname,varargin{:});
     return
-  case 'ctf'
+  case '.ctf'
     export_ctf(ebsd,fname,varargin{:});
     return
-  case 'ang'
+  case '.ang'
+    export_ang(ebsd,fname,varargin{:});
+    return
 end
-
 
 fn = fields(ebsd.prop);
 
