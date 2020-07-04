@@ -45,7 +45,7 @@ end
 
 % if no DisplayName is set remove patch from legend
 if ~check_option(varargin,'DisplayName')
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  set(get(get(h(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 else
   legend('-DynamicLegend','location','NorthEast');
 end
@@ -195,9 +195,23 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   color(~isnan(y),:) = data;
 
   % plot the line
-  p = patch('XData',x(:),'YData',y(:),'FaceVertexCData',color,...
+  
+  
+  % subdivion
+  % for some reason it is important to subdivide it into parts
+  for k = 1:ceil(length(x)/2000) 
+    subId = max(1,(k-1)*2000) : min(k*2000,length(x));
+      
+    p(k) = patch('XData',[x(subId),NaN],'YData',[y(subId),NaN],'FaceVertexCData',[color(subId,:);NaN],...
     'faceColor','none','hitTest','off','parent',...
     mP.ax,'EdgeColor','interp');
+    
+    if k>1
+      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    end
+    
+  end
+  
 
   % this makes the line connectors more nice
   try
@@ -214,7 +228,15 @@ else % color given directly
   
   % subdivion
   % for some reason it is important to subdivide it into parts
-    p = line(x,y,'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
+  for k = 1:ceil(length(x)/2000) 
+    subId = max(1,(k-1)*2000) : min(k*2000,length(x));
+    p(k) = line(x(subId),y(subId),'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
+    
+    if k>1
+      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    end
+    
+  end
   
 end
 
