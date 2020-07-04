@@ -319,11 +319,16 @@ classdef grain2d < phaseList & dynProp
     function grains = set.meanOrientation(grains,ori)
       
       if ~isempty(grains)
-        % update rotation
-        grains.prop.meanRotation = rotation(ori);
       
-        % update phase
-        grains.CS = ori.CS;
+        if isnumeric(ori) && all(isnan(ori(:)))
+          grains.prop.meanRotation = rotation.nan(size(grains.prop.meanRotation));
+        else
+          % update rotation
+          grains.prop.meanRotation = rotation(ori);
+      
+          % update phase
+          grains.CS = ori.CS;
+        end
       end
       
     end
