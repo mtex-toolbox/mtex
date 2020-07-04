@@ -18,7 +18,7 @@ function sF = approximation(nodes, y, varargin)
 % make points unique
 s = size(y);
 y = reshape(y, length(nodes), []);
-[nodes,ind] = unique(nodes);
+[nodes,ind] = unique(nodes(:));
 y = y(ind, :);
 y = reshape(y, [length(nodes) s(2:end)]);
 
