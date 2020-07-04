@@ -87,7 +87,7 @@ xlabel('disorientation angle')
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(gB,fit(pairId),'linewidth',3)
+plot(gB,fit(pairId),'linewidth',3,'smooth')
 hold off
 
 mtexColorMap LaboTeX
@@ -157,7 +157,7 @@ parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(parentGrains.boundary,'linewidth',3)
+plot(parentGrains.boundary,'linewidth',4)
 hold off
 
 %% Compute parent grain orientations
@@ -188,18 +188,37 @@ parentGrains(fit<5*degree).meanOrientation = parentOri(fit<5*degree);
 parentGrains = parentGrains.update;
 
 % merge grains with similar orientation
-%[parentGrains, parentId] = merge(parentGrains,'threshold',3*degree);
-%parentEBSD('indexed').grainId = parentId(parentEBSD('indexed').grainId);
+[parentGrains, mergeId] = merge(parentGrains,'threshold',3*degree);
+parentEBSD('indexed').grainId = mergeId(parentEBSD('indexed').grainId);
 
 %%
 % Let's plot the resulting parent orientations
 
 plot(parentGrains('Iron fcc'),parentGrains('Iron fcc').meanOrientation)
 
+
+%% Compute Child Variants
+% 
+% Knowing the parent grain orientations we may compute the <|variantId|> of
+% each child grain using the command <calcChildVariant.html
+% |calcChildVariant|>. As a bonus this command returns also the |packetId|.
+
+% compute variantId and packetId
+[variantId,packetId] = calcChildVariant(parentOri(parentId),childOri,fcc2bcc);
+
+% associate to each packet id a color and plot
+color = ind2color(packetId);
+plot(grains,color)
+
+hold on
+plot(parentGrains.boundary,'linewidth',4)
+hold off
+
 %%
-% Once parent grain orientations have been computed we may use them to
-% compute parent orientations of each pixel in our original EBSD map. To
-% this end we first find pixels that now belong to a martensite grain.
+% So far our analysis was at the grain level. However, once parent grain
+% orientations have been computed we may also use them to compute parent
+% orientations of each pixel in our original EBSD map. To this end we first
+% find pixels that now belong to a martensite grain.
 
 % consider only austenite pixels that now belong to martensite grains
 isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId)) == 3 & parentEBSD.phaseId == 2;
@@ -235,7 +254,7 @@ parentGrains = smooth(parentGrains,5);
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')
 
 hold on
-plot(parentGrains.boundary,'lineWidth',2)
+plot(parentGrains.boundary,'lineWidth',4)
 hold off
 
 %%
@@ -251,7 +270,7 @@ plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large
 
 % with grain boundaries
 hold on
-plot(parentGrains.boundary,'lineWidth',2)
+plot(parentGrains.boundary,'lineWidth',4)
 hold off
 
 %% Summary of relevant thresholds
@@ -341,7 +360,7 @@ parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(parentGrains.boundary,'linewidth',3)
+plot(parentGrains.boundary,'linewidth',4)
 set(gcf,'Renderer','painters')
 hold off
 
