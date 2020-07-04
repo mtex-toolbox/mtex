@@ -1,36 +1,44 @@
-function [parentOri, parentId, childId] = calcChildVariant(childOri,parentRef,p2c)
+function [childId, packetId] = calcChildVariant(parentOri,childOri,p2c)
 %
 % Syntax
 %
-%   [parentOri, parentId, childId] = calcParent(childOri,parentRef,p2c)
-%   [parentOri, parentId, childId] = calcParent(childOri,p2c)
+%   childId = calcParent(parentOri,childOri,p2c)
 %
 % Input
+%  parentOri - parent @orientation
 %  childOri  - child @orientation
-%  parentRef - parent @orientation
 %  p2c       - parent to child mis@orientation
 %
 % Output
-%  parentOri - parent @orientation
 %  childId   - child variant Id
-%  parentid  - parent variant Id 
 %
 % Description
 %
 %
 
-% child x parent
-if length(p2c) == 1, p2c = (p2c.SS * p2c * p2c.CS).'; end
+parentOri = parentOri.project2FundamentalRegion;
+
+% all child variants
+childVariants  = variants(p2c, parentOri);
   
 % compute distance to all possible variants
-d = dot_outer(p2c,inv(childOri) .* parentRef,'noSymmetry');
+d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
 
 % take the best fit
-[~,id] = max(d);
-  
-[parentId,childId] = ind2sub(size(p2c),id);
+[~,childId] = max(d,[],2);
 
-% compute parent orientation corresponding to the best fit
-parentOri = childOri .* p2c.subSet(id(:));
+% compute packetId if required
+if nargout == 2
+  
+  h = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
+
+  omega = dot(variants(p2c,h),Miller(1,0,1,p2c.SS));
+
+  [~,packetId] = max(omega,[],2);
+  
+  packetId = packetId(childId);
+  
+end
+
 
 end
