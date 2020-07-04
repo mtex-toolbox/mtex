@@ -90,7 +90,9 @@ for k = 1:length(varargin)
       A = A + sparse(grainPairs(ind,1),grainPairs(ind,2),1,maxId+1,maxId+1); 
       
     end
+
     varargin = [varargin,'calcMeanOrientation'];     %#ok<AGROW>
+
   end
 end
 A = A(1:maxId,1:maxId);
@@ -108,6 +110,11 @@ old2newId(keepId) = 1:numel(keepId);
 subA = A(doMerge,doMerge);
 subA = subA | subA.';
 old2newId(doMerge) =  numel(keepId) + connectedComponents(subA);
+
+% and in the old grains
+parentId = old2newId(grains.id);
+
+if check_option(varargin,'testRun'), grainsMerged = []; return; end
 
 % 4. set up new grain variable 
 numNewGrains = max(old2newId);
@@ -132,9 +139,6 @@ ind = grains.boundary.grainId > 0;
 grainsMerged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
 ind = grains.innerBoundary.grainId > 0;
 grainsMerged.innerBoundary.grainId(ind) = old2newId(grains.innerBoundary.grainId(ind));
-
-% and in the old grains
-parentId = old2newId(grains.id);
 
 % 6. remove "new inner" grain boundaries 
 inner = diff(grainsMerged.boundary.grainId,1,2) == 0;
