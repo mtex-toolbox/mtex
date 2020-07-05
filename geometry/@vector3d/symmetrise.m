@@ -47,6 +47,9 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 % treat as axes or not 
 antiSym = check_option(varargin,'antipodal') || v.antipodal;
 
+% maybe we are going to ignore antipodal symmetry
+if check_option(varargin,'noAntipodal'), S = S.properGroup; end
+
 if check_option(varargin,'unique')
 
   antiUnique = antiSym && ~check_option(varargin,'noAntipodal');
