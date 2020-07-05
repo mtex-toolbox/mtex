@@ -167,7 +167,7 @@ grains = calcGrains(ebsd,'mcl',[1.24 50],'soft',[0.2 0.3]*degree)
 
 grains = smooth(grains,5)
 
-plot(ebsd,cKey.orientation2color(ebsd.orientations))
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
 hold on;plot(grains.boundary,'linewidth',2); hold off
 

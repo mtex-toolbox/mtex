@@ -11,6 +11,7 @@
 
 % load the data
 mtexdata martensite 
+plotx2east
 
 % extract fcc and bcc symmetries
 csBCC = ebsd.CSList{2}; % austenite bcc:
@@ -83,7 +84,8 @@ xlabel('disorientation angle')
 [gB,pairId] = grains.boundary.selectByGrainId(grainPairs);
 
 %%
-% 
+% abd then pass the variable |fit| as second input argument to the
+% <grainBoundary.plot.html |plot|> command
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
@@ -196,12 +198,13 @@ parentEBSD('indexed').grainId = mergeId(parentEBSD('indexed').grainId);
 
 plot(parentGrains('Iron fcc'),parentGrains('Iron fcc').meanOrientation)
 
-
 %% Compute Child Variants
 % 
 % Knowing the parent grain orientations we may compute the <|variantId|> of
 % each child grain using the command <calcChildVariant.html
-% |calcChildVariant|>. As a bonus this command returns also the |packetId|.
+% |calcChildVariant|>. As a bonus this command returns also the
+% |packetId|, here defined as the closest {111} plane in austenite to the
+% (011) plane in martensite.
 
 % compute variantId and packetId
 [variantId,packetId] = calcChildVariant(parentOri(parentId),childOri,fcc2bcc);
@@ -211,7 +214,32 @@ color = ind2color(packetId);
 plot(grains,color)
 
 hold on
-plot(parentGrains.boundary,'linewidth',4)
+plot(parentGrains.boundary,'linewidth',3)
+
+% outline a specific parent grain
+hold on
+id = 279;
+plot(parentGrains(id).boundary,'linewidth',3,'lineColor','r')
+hold off
+
+%% 
+% In order to check our parent grain reconstruction we chose the single
+% parent grain outlines in the above map and plot all child variants of its
+% reconstructed parent orientation together with the actually measured
+% child orientations inside the parent grain.
+
+% the measured child orientations that belong to parent grain 279
+childOri = ebsd(parentEBSD.grainId==id).orientations;
+plotPDF(childOri,Miller(0,0,1,csBCC),'MarkerSize',3)
+
+% the orientation of parent grain 279
+hold on
+parentOri = parentGrains(id).meanOrientation;
+plot(parentOri.symmetrise * Miller(0,0,1,csFCC))
+
+% the theoretical child variants
+childVariants = variants(fcc2bcc, parentOri);
+plotPDF(childVariants, 'markerFaceColor','none','linewidth',2,'markerEdgeColor','orange')
 hold off
 
 %%
