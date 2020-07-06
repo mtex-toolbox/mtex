@@ -219,12 +219,8 @@ for i = 1:length(flds)
         temp = temp';
     end
     %Flip matrices if required
-    if dim.x < 0
-       temp = temp(end:-1:1,:);
-    end
-    if dim.y < 0
-       temp = temp(end:-1:1,:);
-    end
+    if dim.x < 0, temp = fliplr(temp); end
+    if dim.y < 0, temp = flipud(temp); end
     %Make vector
     A(:,i) = reshape(temp,ebsdGrid.length,1);
 end
