@@ -21,6 +21,7 @@ scrPrnt('SegmentStart','Exporting ''ang'' file');
 % pre-processing
 scrPrnt('Step','Collecting data');
 
+ebsd.phaseMap = ebsd.phaseMap - (min(ebsd.phaseMap)+1); %Adapt *.ang phase map convention
 if check_option(varargin,'flipud') %Flip spatial ebsd data
   ebsd = flipud(ebsd);
   scrPrnt('Step','Flipping EBSD spatial data upside down');
