@@ -1,6 +1,44 @@
 %% MTEX Changelog
 %
-%% MTEX 5.4.1 6/2020
+%% MTEX 5.4.0 8/2020
+%
+% * Parent Grain Reconstruction*
+%
+% MTEX now includes a number of functions for variant analysis and to
+% recover parent grain structure. Examples include
+% <TiBetaReconstruction.html beta phase reconstruction in Titanium> and
+% <MaParentGrainReconstruction.html Martensite reconstruction from
+% Austenite grains>. The reconstruction is mainly build around the
+% following new commands
+%
+% * <calcParent.html |calcParent|> computes parent orientations from child
+% orientations
+% * <calcChildVariants.html |calcChildVariants|> seperates child variants
+% into packets
+% * <calcParent2Child.html |calcParent2Child|> computes a parent to child
+% orientation relationship from child to child misorientations
+% * <variants.html |variants|> computes all variants to a parent to child
+% orientation relationship
+% 
+% * Other Changes*
+%
+% * <grain2d.smooth.html |smoot(grains)|> keeps now triple points and outer
+% boundary fixed by default
+% * new option |'removeQuadruplePoints'| to <EBSD.calcGrains.html
+% |calcGrains|>
+% * harmonic approximation of spherical functions respecting symmetry
+% * |export(ebsd,'fileName.ang')| now exports also to .ang files
+% * <grain2d.neighbours.html |neighbours(grains)|> now returns a list of
+% pairs of neighboring grains
+% * <grain2d.numNeighbours.html |grains.numNeighbours|> returns the number
+% of neighboring grains
+% * <grainBoundary.selectByGrainId.html |selectByGrainId|> allows to select
+% boundary segments by pairs of grains
+% * new helper function <majorityVote.html |majorityVote|> 
+% * new option |'noAntipodal'| for many commands like |symmetrise|,
+% |unique|, |dot|, |angle|
+%
+%% MTEX 5.3.1 6/2020
 % 
 % *New Functions*
 %
