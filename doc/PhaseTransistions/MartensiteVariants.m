@@ -2,7 +2,7 @@
 %
 %%
 % In this section we discuss the Austenite to Ferrite phase transition. We
-% do so at hand of an EBSD data set of the famous Emsland metereoid. 
+% do so at hand of an EBSD data set of the Emsland iron meteorite. 
 
 plotx2east
 
@@ -23,7 +23,7 @@ ebsd(grains(grains.grainSize<=2)) = [];
 grains = smooth(grains,4);
 
 %%
-% The following lines plots the Martensite phase colorized according to its
+% The following lines plots the Ferrite colorized according to its
 % orientation and the Austenite phase in blue.
 
 plot(ebsd('Fe'),ebsd('Fe').orientations)
@@ -33,16 +33,17 @@ plot(grains('Aus'),'FaceColor','blue','edgeColor','b','lineWidth',1,'DisplayName
 hold off
 
 %%
-% We observe quite many small austenite grains surrounding the ferrite
-% grains. Considering only the parent austenite phase and plotting the
+% We observe quite small remaining taeinite (austenite) grains reflecting the former orientation 
+% of the parent grain. This high-temperatur phase is stabilized by the increasing nickel content 
+% during transformation. The low-temperature phase kamacite (ferrite) can solve in maximum only 
+% 6\% nickel so that taenite has to assimilate the excess nickel.
+% Considering only the parent taenite phase and plotting the
 % orientations into an axis angle plot
 
 plot(ebsd('Aus').orientations,'axisAngle')
 
 %%
-% we observe that they concentrated around one single orientations, i.e.,
-% the all measurements most likely originates from a single austenite
-% crystal. We can find this parent austenite orientation by taking the
+% we recognize the expected single orientations. We can get this parent orientation by taking the
 % <orientation.mean.html |mean|> and compute the fit by the command
 % <orientation.std.html |std|>
 
@@ -51,8 +52,8 @@ parenOri = mean(ebsd('Aus').orientations)
 fit = std(ebsd('Aus').orientations) ./ degree
 
 %%
-% Next we plot the martensite orientations into pole figures and plot on
-% top of them the parent austenite orientation.
+% Next we display the kamacite orientations (blue) in pole figures and additionally plot on
+% top of them the parent taenite orientation (red).
 
 childOri = grains('Fe').meanOrientation;
 
@@ -78,15 +79,18 @@ hold off
 drawNow(gcm)
 
 %%
-% Here we marked in red the parent austenite orientation and in blue the
-% child martensite orientations. As the superposition of the martensite
-% (111) pole figure and the (110) austenite pole figure sugest there seems
-% to be a orientation relation ship with respect to these two
-% crystallographic axes. In fact, the Kurdjumov Sachs orientation
-% relationship is exactly defined by alligning the (111) axis of the
-% austenite phase with the (100) axes of the martensite phase and vice
-% versa. Lets define it the explicite way. We could have used also the
-% command |orientation.KurdjumovSachs(cs_aus,cs_bcc)|.
+% The coincidence of kamacite and taenite poles suggests 
+% an existing orientation relationship between both phases. 
+% The Kurdjumov-Sachs (KS) orientation relationship model assumes 
+% a transformation of one of the {111}-taenite into one of the {110} 
+% kamacite planes. Within these planes one of the <110> directions 
+% in taenite is assumes to aline parallel to one of the <111> directions
+% of kamacite. Since for cubic crystals identically indices of (hkl) and [uvw]
+% generate identical poles the pole figures can be used for both, directions
+% as well as lattice plane normals.
+% Although we could alternatively use the MTEX command 
+% |orientation.KurdjumovSachs(cs_aus,cs_bcc)|, let us define the orientation
+% relationship explicitely:
 
 KS = orientation.map(Miller(1,1,1,cs_aus),Miller(0,1,1,cs_bcc),...
       Miller(-1,0,1,cs_aus),Miller(-1,-1,1,cs_bcc));
@@ -95,15 +99,15 @@ KS = orientation.map(Miller(1,1,1,cs_aus),Miller(0,1,1,cs_bcc),...
 plotPDF(variants(KS,parenOri),'add2all','MarkerFaceColor','none','MarkerEdgeColor','k','linewidth',2)
 
 %%
-% In order to quantify the fit between the Kurdjumov Sachs orientation
-% relationship and the actual orientation relation ship in the data we
-% compute the mean angular deviation between all parent to child
-% misorientaitons and the Kurdjumov Sachs orientation relationship
+% In order to quantify the match between the Kurdjumov-Sachs model
+% and the actual orientation relation ship in the meteorite, we
+% compute the mean angular deviation between all parent-to-child
+% misorientaitons and the KS model
 
-% all parent to child misorientations
+% The parent-to-child misorientations are given by
 mori = inv(childOri) * parenOri;
 
-% mean angular deviation in degree
+% whereas the mean angular deviation in degree can be computed by
 mean(angle(mori, KS)) ./ degree
 
 %fit = sqrt(mean(min(angle_outer(childOri,variants(KS,parenOri)),[],2).^2))./degree
