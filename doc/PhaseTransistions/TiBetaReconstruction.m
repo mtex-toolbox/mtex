@@ -17,13 +17,16 @@ plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
 % The data set contains 99.8 percent alpha titanium and 0.2 percent beta
 % titanium. Our goal is to reconstuct the original beta phase. The
 % original grain structure appears almost visible for human eyes.
-% Our computations will be based on the following parent to child
-% orientation relationship
+% Our computations will be based on the Burgers orientation relationship
 
-beta2alpha = inv(orientation.byEuler(135*degree, 90*degree, 355*degree,...
-  ebsd(alphaName).CS,ebsd(betaName).CS))
+beta2alpha = orientation.Burger(ebsd(betaName).CS,ebsd(alphaName).CS);
+round2Miller(beta2alpha)
 
 %%
+% that alligns (110) plane of the beta phase with the (0001) plane of the
+% alpha phase and the [1-11] direction of the beta phase with the [2110]
+% direction of the alpha phase.
+%
 % Note that all MTEX functions for parent grain reconstruction expect the
 % orientation relationship as parent to child and not as child to parent.
 %

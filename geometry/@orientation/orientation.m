@@ -272,13 +272,13 @@ methods (Static = true)
   function mori = GreningerTrojano(csGamma,csAlpha)
     %
     % Syntax:
-    %   mori = GreningerTrojano(csGamma,csAlpha)
+    %   mori = orientation.GreningerTrojano(csGamma,csAlpha)
     %
     % Input
     %  csGamma - parent @crystalSymmetry (cubic fcc)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
-    % cube cube
+    
     mori = inv(orientation.byEuler(2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
 
     %mori = orientation.map(Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
@@ -286,6 +286,25 @@ methods (Static = true)
 
   end
 
+  function mori = Burger(csBeta,csAlpha)
+    %
+    % Syntax:
+    %   mori = orientation.GreningerTrojano(csBeta,csAlpha)
+    %
+    % Input
+    %  csBeta  - parent @crystalSymmetry (cubic bcc)
+    %  csAlpha - child @crystalSymmetry (hexagonal hcp)
+    %
+  
+    mori = orientation.map(Miller(1,1,0,csBeta),Miller(0,0,0,1,csAlpha),...
+      Miller(-1,1,-1,csBeta),Miller(2,-1,-1,0,csAlpha));
+
+    % beta2alpha = inv(orientation.byEuler(135*degree, 90*degree, 355*degree,csAlpha,csBeta))
+    
+  end
+  
+  
+  
 
 end
 
