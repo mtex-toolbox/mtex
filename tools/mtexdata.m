@@ -25,8 +25,12 @@ list = listmtexdata;
 
 if nargin < 1
 
-  disp('available loading routines for mtex sample data');
-  cprintf({'TYPE', list.type; 'NAME',list.name}');
+  if nargout == 0
+    disp('available loading routines for mtex sample data');
+    cprintf({'TYPE', list.type; 'NAME',list.name}');
+  else
+    S = {list.name};
+  end
   return
 
 elseif strcmpi(name,'clear')
@@ -63,6 +67,7 @@ w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
 
 % try to load
 try
+
   S = load(file);
 
   % ensure classes where loaded correctly
@@ -357,5 +362,12 @@ fname = fullfile(mtexDataPath,'EBSD','martensite.cpr');
 ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame');
 ebsd('Iron bcc').CS = ebsd('Iron bcc').CS.properGroup;
 ebsd('Iron bcc').CSList{3} = ebsd('Iron bcc').CSList{3}.properGroup;
+
+end
+
+function ebsd = mtexdata_emsland
+
+fname = fullfile(mtexDataPath,'EBSD','Emsland_plessite_500x_15.ctf');
+ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame');
 
 end

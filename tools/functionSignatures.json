@@ -3,7 +3,7 @@
 {
     "inputs":
     [
-        {"name":"data", "kind":"flag",   "type":"choices={'dubna','geesthacht','ptx','aachen','sharp','small','csl','mylonite','epidote','forsterite','twins','single','alu','titanium'}"}
+        {"name":"data", "kind":"flag",   "type":"choices=mtexdata"}
      ]
 }
 }
