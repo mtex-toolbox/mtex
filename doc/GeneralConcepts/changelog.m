@@ -11,14 +11,13 @@
 % Austenite grains>. The reconstruction is mainly build around the
 % following new commands
 %
-% * <calcParent.html |calcParent|> computes parent orientations from child
-% orientations
+% * <calcParent.html |calcParent|> computes the best fitting parent
+% orientations from child orientations
 % * <calcChildVariants.html |calcChildVariants|> seperates child variants
 % into packets
-% * <calcParent2Child.html |calcParent2Child|> computes a parent to child
-% orientation relationship from child to child misorientations
-% * <variants.html |variants|> computes all variants to a parent to child
-% orientation relationship
+% * <calcParent2Child.html |calcParent2Child|> computes best fitting parent
+% to child orientation relationship from child to child misorientations
+% * <variants.html |variants|> computes all parent or child variants
 % 
 % * Other Changes*
 %

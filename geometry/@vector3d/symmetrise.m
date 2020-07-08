@@ -28,7 +28,7 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 % Flags
 %  antipodal   - include <VectorsAxes.html antipodal symmetry>
 %  noAntipodal - do not include antipodal symmetry (without option unique)
-%  noAntipodal - do not remove antipdal vectors (with option unique)
+%  noAntipodal - do not remove antipodal vectors (with option unique)
 %  unique      - only return distinct axes or directions (noAntipodal)
 %
 
