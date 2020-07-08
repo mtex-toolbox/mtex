@@ -20,6 +20,10 @@ parentOri = parentOri.project2FundamentalRegion;
 
 % all child variants
 childVariants  = variants(p2c, parentOri);
+
+if size(childVariants,1) == 1
+  childVariants = repmat(childVariants,length(childOri),1);
+end
   
 % compute distance to all possible variants
 d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
