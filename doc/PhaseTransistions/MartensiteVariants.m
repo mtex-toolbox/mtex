@@ -1,8 +1,12 @@
 %% Martensite Variants
 %
 %%
-% In this section we discuss the Austenite to Ferrite phase transition. We
-% do so at hand of an EBSD data set of the Emsland iron meteorite. 
+% In this section we discuss the austenite (fcc) to ferrite (bcc) phase transformation on the example of 
+% an EBSD data set collected on a plessitic microstructure of the Emsland iron meteorite.
+% Plessite is the greek description for filling iron and occurs as remaining volumes between the already
+% transformed kamacite (bcc in meteorites) rims. Plessite regionons are commonly surrounded by a very thin taenite (fcc) ribbons. 
+% The filling iron contains as major phases again bcc and fcc, where the orientation of fcc practically always 
+% indicates the orientation of the formerly huge fcc grain in the planetary body which can easily reach the dimension of meters.
 
 plotx2east
 
@@ -23,8 +27,8 @@ ebsd(grains(grains.grainSize<=2)) = [];
 grains = smooth(grains,4);
 
 %%
-% The following lines plots the Ferrite colorized according to its
-% orientation and the Austenite phase in blue.
+% The following lines plot bcc according to the crystallographic description
+% of the selected reference direction (IPF coloring), whereas austeniteis displayed as phase in blue.
 
 plot(ebsd('Fe'),ebsd('Fe').orientations)
 hold on
@@ -33,17 +37,20 @@ plot(grains('Aus'),'FaceColor','blue','edgeColor','b','lineWidth',1,'DisplayName
 hold off
 
 %%
-% We observe quite small remaining taeinite (austenite) grains reflecting the former orientation 
-% of the parent grain. This high-temperatur phase is stabilized by the increasing nickel content 
-% during transformation. The low-temperature phase kamacite (ferrite) can solve in maximum only 
-% 6\% nickel so that taenite has to assimilate the excess nickel.
-% Considering only the parent taenite phase and plotting the
+% As expected, we recognize very small remaining fcc grains. 
+% This high-temperatur phase is stabilized by the increasing nickel content 
+% during transformation. The low-temperature bcc phase can solve in maximum only 
+% 6\% nickel so that fcc has to assimilate the excess nickel. Size and amount of fcc is therefore
+% and indication of the overall nickel content. 
+% Considering only the parent fcc phase and plotting the
 % orientations into an axis angle plot
 
 plot(ebsd('Aus').orientations,'axisAngle')
 
 %%
-% we recognize the expected single orientations. We can get this parent orientation by taking the
+% we recognize the uniform orientation of all fcc grains. Deviations are assumed to be the result 
+% of deformations during high-speed collisions in asteroitic belt.
+% We can get this parent grain orientation by taking the 
 % <orientation.mean.html |mean|> and compute the fit by the command
 % <orientation.std.html |std|>
 
@@ -52,8 +59,8 @@ parenOri = mean(ebsd('Aus').orientations)
 fit = std(ebsd('Aus').orientations) ./ degree
 
 %%
-% Next we display the kamacite orientations (blue) in pole figures and additionally plot on
-% top of them the parent taenite orientation (red).
+% Next we display the bcc orientations (blue dots) in pole figures, and additionally we plot on
+% top of them the parent taenite orientation (red dots).
 
 childOri = grains('Fe').meanOrientation;
 
@@ -79,15 +86,16 @@ hold off
 drawNow(gcm)
 
 %%
-% The coincidence of kamacite and taenite poles suggests 
-% an existing orientation relationship between both phases. 
+% The partial coincidence of bcc and fcc poles suggests 
+% an existing of a crystallographic orientation relationship between both phases. 
 % The Kurdjumov-Sachs (KS) orientation relationship model assumes 
-% a transformation of one of the {111}-taenite into one of the {110} 
-% kamacite planes. Within these planes one of the <110> directions 
-% in taenite is assumes to aline parallel to one of the <111> directions
-% of kamacite. Since for cubic crystals identically indices of (hkl) and [uvw]
-% generate identical poles the pole figures can be used for both, directions
-% as well as lattice plane normals.
+% a transition of one of the {111}-fcc into one of the {110}-bcc 
+% planes. Moreover, within these planes one of the <110> directions 
+% of fcc is assumed to remain parallel to one of the <111> directions
+% of the formed bcc. Since for cubic crystals identically indexed (hkl) and [uvw]
+% generate the same directions, the derived pole figures can be used for both, the 
+% evaluation of directions as well as lattice plane normals.
+%
 % Although we could alternatively use the MTEX command 
 % |orientation.KurdjumovSachs(cs_aus,cs_bcc)|, let us define the orientation
 % relationship explicitely:
@@ -100,14 +108,14 @@ plotPDF(variants(KS,parenOri),'add2all','MarkerFaceColor','none','MarkerEdgeColo
 
 %%
 % In order to quantify the match between the Kurdjumov-Sachs model
-% and the actual orientation relation ship in the meteorite, we
-% compute the mean angular deviation between all parent-to-child
+% and the actual orientation relationship in the specific plessitic area, we can
+% compute as simplest indicator the mean angular deviation between all parent-to-child
 % misorientaitons and the KS model
 
-% The parent-to-child misorientations are given by
+% Each parent-to-child misorientations can be calculated by
 mori = inv(childOri) * parenOri;
 
-% whereas the mean angular deviation in degree can be computed by
+% whereas the mean angular deviation (output in degree) can be computed by the command
 mean(angle(mori, KS)) ./ degree
 
 %fit = sqrt(mean(min(angle_outer(childOri,variants(KS,parenOri)),[],2).^2))./degree
@@ -116,11 +124,11 @@ mean(angle(mori, KS)) ./ degree
 %% Estimating the parent to child orientation relationship
 %
 % We may have asked ourselfs whether there is an orientation relationship
-% that better fits the measured misorientations than Kurdjumov Sachs. A
-% canocial candidate would be the <orientation.mean.html |mean|> of all
-% misorientations
+% that better matches the measured misorientations than proposed by the KS model. 
+% A canocial candidate would be the <orientation.mean.html |mean|> of all
+% misorientations.
 
-% the mean of all measured parent to child misorientations
+% The mean of all measured parent-to-child misorientations
 p2cMean = mean(mori,'robust')
 
 plotPDF(childOri,h_bcc,'MarkerSize',5);
