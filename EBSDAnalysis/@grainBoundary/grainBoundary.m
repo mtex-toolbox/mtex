@@ -46,7 +46,6 @@ classdef grainBoundary < phaseList & dynProp
   
   % general properties
   properties
-    V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
     triplePoints    % triple points
   end
@@ -62,7 +61,8 @@ classdef grainBoundary < phaseList & dynProp
     componentId    % connected component id
     componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
-    y              % y coordinates of the vertices of the grains    
+    y              % y coordinates of the vertices of the grains
+    V              % vertices x,y coordinates
   end
   
   methods
@@ -82,8 +82,7 @@ classdef grainBoundary < phaseList & dynProp
       % remove empty lines from I_FD and F
       isBoundary = any(I_FD,2);
       gB.F = F(full(isBoundary),:);
-      gB.V = V;
-                  
+                        
       % compute ebsdID
       [eId,fId] = find(I_FD.');
       
@@ -122,7 +121,7 @@ classdef grainBoundary < phaseList & dynProp
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
 
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
+      gB.triplePoints = gB.calcTriplePoints(V,grainsPhaseId);
       
       % store ebsd_id instead of index
       gB.ebsdId(gB.ebsdId>0) = ebsd.id(gB.ebsdId(gB.ebsdId>0));
@@ -163,6 +162,19 @@ classdef grainBoundary < phaseList & dynProp
       v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
       v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
       dir = normalize(v1-v2);
+    end
+    
+    
+    function V = get.V(gB)
+      V = gB.triplePoints.allV;
+    end
+    
+    function gB = set.V(gB,V)
+      if isa(gB.triplePoints,'triplePointList')
+        gB.triplePoints.allV = V;
+      else
+        gB.prop.V = V;
+      end
     end
     
     function x = get.x(gB)
@@ -277,4 +289,23 @@ classdef grainBoundary < phaseList & dynProp
     end
   end
 
+  methods (Static = true)
+      function gB = loadobj(gB)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % maybe there is nothing to do
+      %if isa(s,'grainBoundary'), gB = s; return; end
+      
+      if isfield(gB.prop,'V')
+        gB.triplePoints.allV = gB.prop.V;
+        gB.prop = rmfield(gB.prop,'V');
+      end
+      
+    end
+    
+    
+  end
+  
 end

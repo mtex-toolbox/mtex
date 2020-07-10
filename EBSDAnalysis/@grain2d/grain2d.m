@@ -234,11 +234,9 @@ classdef grain2d < phaseList & dynProp
     end
     
     function grains = set.V(grains,V)
+      
       grains.boundary.V = V;
       grains.innerBoundary.V = V;
-      
-      % update V in triple points
-      grains.triplePoints.allV = V;
       
     end
     

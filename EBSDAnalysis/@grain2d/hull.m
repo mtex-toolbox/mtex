@@ -21,8 +21,18 @@ grains.boundary.ebsdId = NaN(size(F));
 bs = cellfun(@length,grains.poly);
 grains.boundary.grainId = repelem(grains.id,bs-1,1) * [1,0];
 grains.boundary.phaseId = [repelem(grains.phaseId,bs-1,1), ones(size(F,1),1)];
-grains.boundary.triplePoints = triplePointList;
+
+% remove triple points
+grains.boundary.triplePoints.boundaryId = zeros(0,3);
+grains.boundary.triplePoints.grainId = zeros(0,3);
+grains.boundary.triplePoints.phaseId = zeros(0,3);
+grains.boundary.triplePoints.nextVertexId = zeros(0,3);
+grains.boundary.triplePoints.id = zeros(0,1);
+
+% remove innner boundary
 grains.innerBoundary = grainBoundary;
+
+% remove inclusions
 grains.inclusionId = zeros(size(grains.inclusionId));
 
 end
