@@ -131,7 +131,7 @@ end
 if plotBoundary
   hold on
   hh = plot(grains.boundary,varargin{:});
-  set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  set(get(get(hh(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
   hold off
 end
   
