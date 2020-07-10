@@ -133,3 +133,22 @@ hold off
 mtexColorMap(blue2redColorMap)
 CLim(gcm,[80,180])
 mtexColorbar
+
+%% Angles at triple points
+% 
+% The angles at the triplepoints can be accessed by |tP.angles|. This is a
+% 3 column matrix with one column for each of the three angles enclosed by
+% the boundary segments of a triple point. Obviously, the sum of each row
+% is always |2*pi|. More interestingly is the difference between the
+% largest and the smallest angle. Lets plot this for our test data set.
+
+plot(grains,'figSize','large')
+hold on
+tP = grains.triplePoints;
+plot(tP,(max(tP.angles,[],2)-min(tP.angles,[],2))./degree,'markerEdgeColor','w','MarkerSize',8)
+hold off
+mtexColorMap LaboTeX
+setColorRange([0,180])
+mtexColorbar
+
+

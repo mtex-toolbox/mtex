@@ -19,8 +19,12 @@ tpPhaseId = full(grainsPhaseId(tpGrainId));
 [tPBoundaryId,~] = find(I_VF(itP,:).');
 tPBoundaryId = reshape(tPBoundaryId,3,[]).';
 
-tP = triplePointList(find(itP),gB.V(itP,:),...
-  tpGrainId,tPBoundaryId,tpPhaseId,gB.phaseMap,gB.CSList);
-      
+% get the three end vertices
+iV = reshape(gB.F(tPBoundaryId,:),[],6).';
+iV = reshape(iV(iV ~= find(itP).').',3,[]).';
+
+tP = triplePointList(find(itP),gB.V,...
+  tpGrainId,tPBoundaryId,tpPhaseId,iV,gB.phaseMap,gB.CSList);
+
 end
 

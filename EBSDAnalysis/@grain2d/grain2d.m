@@ -190,8 +190,7 @@ classdef grain2d < phaseList & dynProp
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
       [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
-      %qAdded = 0;
-      
+            
       
       function [I_FDext,I_FDint] = calcBoundary
         % distinguish between interior and exterior grain boundaries      
@@ -239,8 +238,8 @@ classdef grain2d < phaseList & dynProp
       grains.innerBoundary.V = V;
       
       % update V in triple points
-      tP = grains.triplePoints;
-      grains.triplePoints.V = V(tP.id,:);
+      grains.triplePoints.allV = V;
+      
     end
     
     function idV = get.idV(grains)

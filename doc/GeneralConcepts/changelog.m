@@ -18,11 +18,15 @@
 % * <calcParent2Child.html |calcParent2Child|> computes best fitting parent
 % to child orientation relationship from child to child misorientations
 % * <variants.html |variants|> computes all parent or child variants
-% 
+%
 % * Other Changes*
 %
+% * new function <EBSD.interp.html |ebsd.interp|> to interpolate EBSD maps
+% at arbitrary x,y coordinates, <EBSDInter.html example>
 % * <grain2d.smooth.html |smoot(grains)|> keeps now triple points and outer
 % boundary fixed by default
+% * the field |grains.triplePoints.angles| returns the angles between the
+% boundaries at the triple points
 % * new option |'removeQuadruplePoints'| to <EBSD.calcGrains.html
 % |calcGrains|>
 % * harmonic approximation of spherical functions respecting symmetry
@@ -36,6 +40,7 @@
 % * new helper function <majorityVote.html |majorityVote|> 
 % * new option |'noAntipodal'| for many commands like |symmetrise|,
 % |unique|, |dot|, |angle|
+% * new predefines orientation relationshop |orientation.Burger|
 %
 %% MTEX 5.3.1 6/2020
 % 
