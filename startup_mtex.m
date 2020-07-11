@@ -30,7 +30,9 @@ end
 local_path = fileparts(mfilename('fullpath'));
 
 % needs installation ?
-do_install(local_path);
+if ~isdeployed
+    do_install(local_path);
+end
 
 % initialize MTEX
 fprintf('initialize');
@@ -40,7 +42,7 @@ try
   fid = fopen('VERSION','r');
   MTEXversion = fgetl(fid);
   fclose(fid);
-  fprintf([' ' MTEXversion '  ']);
+  fprintf(' %s  ', MTEXversion);
 catch
   MTEXversion = 'MTEX';
 end
@@ -48,8 +50,10 @@ end
 p();
 
 % setup search path
-setMTEXPath(local_path);
-p();
+if ~isdeployed
+    setMTEXPath(local_path);
+    p();
+end
 
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
@@ -67,10 +71,11 @@ check_installation;
 p();
 
 % make help searchable
-
-if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
-  disp('Creating search data base for MTEX documentation.')
-  builddocsearchdb(fullfile(local_path,'doc','html'));
+if ~isdeployed
+    if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
+      disp('Creating search data base for MTEX documentation.')
+      builddocsearchdb(fullfile(local_path,'doc','html'));
+    end
 end
 
 % finish
