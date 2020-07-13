@@ -11,6 +11,12 @@ elseif numel(subs)==2 && ischar(subs{1}) && strcmpi(subs{1},'id')
     error('No data with the specified ids in the data set');
   end
   return
+elseif numel(subs)==3 && ischar(subs{1}) && strcmpi(subs{1},'xy')
+  ind = ebsd.findByLocation(subs{2},subs{3});
+  if any(ind(:)==0)
+    error('No data with the specified coordinates in the data set');
+  end
+  return
 else
   %ind = true(length(ebsd),1);
   ind = true(size(ebsd));
