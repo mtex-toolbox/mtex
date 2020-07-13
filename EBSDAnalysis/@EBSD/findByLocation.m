@@ -1,4 +1,4 @@
-function map = findByLocation( ebsd, xy )
+function map = findByLocation( ebsd, xy, y )
 % select EBSD data by spatial coordinates
 %
 % Input
@@ -18,6 +18,7 @@ function map = findByLocation( ebsd, xy )
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
+if nargin==3, xy = [xy(:),y(:)]; end
 
 x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
 
