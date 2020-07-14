@@ -66,7 +66,7 @@ phaseIds = ebsd.phaseId(pos).';
 progress(0,length(grainIds));
 
 % find the largest grain
-[~,m] = max(histc(grainId(:),0.5:1:max(grainId)+0.5));
+[~,m] = max(accumarray(grainId(grainId>0),1));
 
 % and sort it first
 if m>1

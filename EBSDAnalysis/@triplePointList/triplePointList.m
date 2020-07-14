@@ -94,11 +94,6 @@ classdef triplePointList < phaseList & dynProp
       dx = reshape(tP.allV(iV,1),[],3) - repmat(tP.V(:,1),1,3);
       dy = reshape(tP.allV(iV,2),[],3) - repmat(tP.V(:,2),1,3);
 
-      %n = sqrt(dx.^2 + dy.^2);
-      %dx = dx ./ n; dy = dy ./ n;
-
-      %omega = real(acos((dx .* dx(:,[2,3,1]) + dy .* dy(:,[2,3,1]))));
-      
       omega = sort(atan2(dy,dx),2);
       omega = mod(diff(omega(:,[1:3,1]),1,2),2*pi);
       
@@ -118,12 +113,11 @@ classdef triplePointList < phaseList & dynProp
     
     function out = hasPhaseId(tP,varargin)
       
-      
-      ids = unique([varargin{:}]);
-      counts = histc([varargin{:}],ids);
+      [ids,~,m] = unique([varargin{:}]);
+      counts = accumarray(m,1);
       
       out = true(size(tP));
-      for i = 1:length(ids);
+      for i = 1:length(ids)
      
         tmp = tP.phaseId == ids(i);
         

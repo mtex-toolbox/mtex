@@ -54,11 +54,11 @@ function x = discretesample(p, n,varargin)
 %% parse and verify input arguments
 
 assert(isfloat(p), 'discretesample:invalidarg', ...
-    'p should be an array with floating-point value type.');
+  'p should be an array with floating-point value type.');
 
 assert(isnumeric(n) && isscalar(n) && n >= 0 && n == fix(n), ...
-    'discretesample:invalidarg', ...
-    'n should be a nonnegative integer scalar.');
+  'discretesample:invalidarg', ...
+  'n should be a nonnegative integer scalar.');
 
 %% main
 
@@ -68,7 +68,7 @@ if numel(p) == 1
     if 4*n > p
       rp = randperm(p);
       x = rp(1:n);
-       
+      
     else
       f = zeros(1,p); % flags
       sumf = 0;
@@ -88,41 +88,32 @@ end
 
 
 % process p if necessary
-
 K = numel(p);
 if ~isequal(size(p), [1, K])
     p = reshape(p, [1, K]);
 end
 
 % construct the bins
-
 edges = [0, cumsum(p)];
 s = edges(end);
-if abs(s - 1) > eps
-    edges = edges * (1 / s);
-end
+if abs(s - 1) > eps, edges = edges * (1 / s); end
 
 % draw bins
-
 rv = rand(1, n);
-c = histc(rv, edges);
-ce = c(end);
-c = c(1:end-1);
-c(end) = c(end) + ce;
+c = histcounts(rv, edges);
 
 % extract samples
-
 xv = find(c);
 
 if numel(xv) == n  % each value is sampled at most once
-    x = xv;
+  x = xv;
 else                % some values are sampled more than once
-    xc = c(xv);
-    d = zeros(1, n);
-    dv = [xv(1), diff(xv)];
-    dp = [1, 1 + cumsum(xc(1:end-1))];
-    d(dp) = dv;
-    x = cumsum(d);
+  xc = c(xv);
+  d = zeros(1, n);
+  dv = [xv(1), diff(xv)];
+  dp = [1, 1 + cumsum(xc(1:end-1))];
+  d(dp) = dv;
+  x = cumsum(d);
 end
 
 % randomly permute the sample's order

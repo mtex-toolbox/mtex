@@ -83,9 +83,9 @@ end
 if isa(obj,'symmetry') || isa(obj,'ODF')
   [density,omega] = calcAngleDistribution(obj,varargin{:});
 else  
-  d = histc(obj.angle,bins).';
+  d = histcounts(obj.angle,bins).';
   midPoints = 0.5*(bins(1:end-1) + bins(2:end));
-  density(:,end) = 100 * d(1:end-1) ./ sum(d);  
+  density(:,end) = 100 * d ./ sum(d);  
 end
 
 % plot angle distribution

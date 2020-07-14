@@ -86,7 +86,7 @@ hold on
 plot(1:10,e)
 plot(acos(d)*2)
 %%
-x = histc(acos(d)/degree*2,0:5:100);
+x = histcounts(acos(d)/degree*2,0:5:100);
 plot(cumsum(x))
 hold on
 

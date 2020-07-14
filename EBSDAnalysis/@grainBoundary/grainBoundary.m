@@ -224,8 +224,11 @@ classdef grainBoundary < phaseList & dynProp
     
     function componentSize = get.componentSize(gB)
       segId = gB.componentId;
-      [bincounts,ind] = histc(segId,unique(segId));
-      componentSize = bincounts(ind);
+      
+      [~,~,ind] = unique(segId);
+      counts = accumarray(ind,1);
+      componentSize = counts(ind);
+      
     end
     
     function out = hasPhase(gB,phase1,phase2)

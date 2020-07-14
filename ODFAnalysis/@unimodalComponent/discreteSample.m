@@ -13,7 +13,7 @@ end
 axis = vector3d.rand(npoints);
 
 % take random rotational angles
-M = 1000000;             % discretisation parameter
+M = 1000000; % discretisation parameter
 
 hw = min(4*component.psi.halfwidth,90*degree);
 t = linspace(cos(hw),1,M);
@@ -23,7 +23,7 @@ c = 4 / pi * cumsum(sqrt(1-t.^2) .* component.psi.K(t)) / M;
 c = c ./ c(end);
 
 r = rand(npoints,1);
-[~,id] = histc(r,c);
+[~,~,id] = histcounts(r,c);
 angle = 2 * acos(t(max(1,id))).';
 
 q = quaternion(component.center(:),ic) .* axis2quat(axis,angle);
