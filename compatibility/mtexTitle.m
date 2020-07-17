@@ -5,7 +5,9 @@ function h = mtexTitle(s,varargin)
 %
 %   mtexTitle('title of the current axis')
 %   mtexTitle('title of all subplots','global')
-%
+%   mtexTitle('title of the current axis','alignLeftOutside')
+%   mtexTitle('title of the current axis','alignLeftInside')
+
 
 %s = regexprep(s,'-(\d)','\\bar{$1}');
 %s = regexprep(s,'-(\d)','\\bar{$1}');
@@ -35,6 +37,17 @@ else
     'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1)),varargin{:});
 
   set(get(ax,'Title'),'Visible','on');
+end
+
+if check_option(varargin,'alignLeftOutside')
+        set(h, 'horizontalAlignment', 'left');
+        set(h, 'units', 'normalized');
+        h.Position(1)=0;
+elseif check_option(varargin,'alignLeftInside')
+        set(h, 'horizontalAlignment', 'left');
+        set(h, 'units', 'normalized');
+        h1 = get(h, 'position');
+        set(h, 'position', [0 0.9 h1(3)])% 10% below
 end
 
 try
