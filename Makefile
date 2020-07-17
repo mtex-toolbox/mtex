@@ -1,7 +1,7 @@
 
 
 # rule for making release
-RNAME = mtex-5.4.alpha.2
+RNAME = mtex-5.4.0
 RDIR = ../releases
 release:
 	rm -rf $(RDIR)/$(RNAME)*
