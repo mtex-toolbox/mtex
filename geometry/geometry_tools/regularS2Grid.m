@@ -38,6 +38,6 @@ rho = repmat(...
   'PERIODIC'),1,GridLength(theta));
 
 % set up grid
-S2G = S2Grid(theta,rho);
-S2G.antipodal = check_option(varargin,'antipodal');
+S2G = S2Grid(theta,rho,varargin{:});
+
 end
