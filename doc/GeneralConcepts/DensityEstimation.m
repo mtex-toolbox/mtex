@@ -140,7 +140,7 @@ fN = calcDensity([xN,yN],'range',[0 0;1 1]);
 
 % plot the two dimensional density function 
 [x,y] = ndgrid(linspace(0,1));
-contourf(x,y,fN(x,y))
+contourf(x,y,fN(x,y),'LevelStep',2)
 mtexColorMap LaboTeX
 shading interp
 axis equal tight

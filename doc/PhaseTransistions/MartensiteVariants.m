@@ -67,7 +67,7 @@ childOri = grains('Fe').meanOrientation;
 h_bcc = Miller({1,0,0},{1,1,0},{1,1,1},cs_bcc);
 h_fcc = Miller({1,0,0},{1,1,0},{1,1,1},cs_aus);
 
-plotPDF(childOri,h_bcc,'MarkerSize',5);
+plotPDF(childOri,h_bcc,'MarkerSize',5,'MarkerFaceAlpha',0.05,'MarkerEdgeAlpha',0.1,'points',500);
 
 nextAxis(1)
 hold on
@@ -131,7 +131,7 @@ mean(angle(mori, KS)) ./ degree
 % The mean of all measured parent-to-child misorientations
 p2cMean = mean(mori,'robust')
 
-plotPDF(childOri,h_bcc,'MarkerSize',5);
+plotPDF(childOri,h_bcc,'MarkerSize',5,'MarkerFaceAlpha',0.05,'MarkerEdgeAlpha',0.1,'points',500);
 hold on
 plotPDF(variants(p2cMean,parenOri),'add2all','MarkerFaceColor','none','MarkerEdgeColor','k','linewidth',2)
 hold off
