@@ -34,7 +34,9 @@ odf = calcODF(pf)
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
-plotPDF(odf,h,'antipodal','silent','superposition',c)
+h = pf.allH;
+
+plotPDF(odf,h,'antipodal','silent','superposition',pf.c)
 
 
 %% Error analysis
