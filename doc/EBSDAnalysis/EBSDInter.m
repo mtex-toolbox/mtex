@@ -18,14 +18,14 @@ plot(ebsd('indexed'),ebsd('indexed').orientations)
 %%
 % As this functionality is currently only available for EBSD data on a
 % rectangular grid we have to apply the command |<EBSD.gridify.html
-% gridify|> first
+% gridify>| first
 
 ebsd = ebsd.gridify;
-ebsd = ebsd.project2FundamentalRegion(grains)
+ebsd = ebsd.project2FundamentalRegion(grains);
 
 %%
 % Now we can use the command <EBSD.interp.html |interp|> to interpolate the
-% orientation at any arbitrary coordinates |x| and |y|.
+% orientation at arbitrary coordinates |x| and |y|.
 
 x = 30.5; y = 5.5;
 e1 = interp(ebsd,x,y)
@@ -62,5 +62,5 @@ ebsdNewGrid = interp(ebsd,xy(1,:),xy(2,:))
 plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
 
 %%
-% Note, that we have not rotated the EBSD but only the grid. All
+% Note, that we have not rotated the EBSD data but only the grid. All
 % orientations as well as the position of all grains remains unchanged.

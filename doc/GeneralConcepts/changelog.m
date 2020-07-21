@@ -1,8 +1,8 @@
 %% MTEX Changelog
 %
-%% MTEX 5.4.0 8/2020
+%% MTEX 5.4.0 7/2020
 %
-% * Parent Grain Reconstruction*
+% *Parent Grain Reconstruction*
 %
 % MTEX now includes a number of functions for variant analysis and to
 % recover parent grain structure. Examples include
@@ -19,18 +19,18 @@
 % to child orientation relationship from child to child misorientations
 % * <variants.html |variants|> computes all parent or child variants
 %
-% * Other Changes*
+% *New Functionalities*
 %
 % * new function <EBSD.interp.html |ebsd.interp|> to interpolate EBSD maps
 % at arbitrary x,y coordinates, <EBSDInter.html example>
-% * <grain2d.smooth.html |smoot(grains)|> keeps now triple points and outer
+% * <grain2d.smooth.html |smooth(grains)|> keeps now triple points and outer
 % boundary fixed by default
 % * the field |grains.triplePoints.angles| returns the angles between the
 % boundaries at the triple points
-% * new option |'removeQuadruplePoints'| to <EBSD.calcGrains.html
-% |calcGrains|>
+% * new option |'removeQuadruplePoints'| to |<EBSD.calcGrains.html
+% calcGrains>|
 % * harmonic approximation of spherical functions respecting symmetry
-% * |export(ebsd,'fileName.ang')| now exports also to .ang files
+% * |export(ebsd,'fileName.ang')| exports to .ang files
 % * <grain2d.neighbours.html |neighbours(grains)|> now returns a list of
 % pairs of neighboring grains
 % * <grain2d.numNeighbours.html |grains.numNeighbours|> returns the number
@@ -40,7 +40,7 @@
 % * new helper function <majorityVote.html |majorityVote|> 
 % * new option |'noAntipodal'| for many commands like |symmetrise|,
 % |unique|, |dot|, |angle|
-% * new predefines orientation relationshop |orientation.Burger|
+% * new predefined orientation relationship |orientation.Burger|
 %
 %% MTEX 5.3.1 6/2020
 % 
