@@ -27,6 +27,7 @@ if nargin < 1
 elseif strcmpi(name,'clear')
 
   files = dir(fullfile(mtexDataPath,'*.mat'));
+  files = files(~strncmp('testgrains.mat',{files.name},14));
   for k=1:numel(files)
     delete(fullfile(mtexDataPath,[files(k).name]));
   end
