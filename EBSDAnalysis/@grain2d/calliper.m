@@ -53,7 +53,10 @@ for ig = 1:length(grains)
     pl = projectionLength(Vg);
     [cd(ig),idmin]=min(pl); % shortest projection length
     omega(ig) =  omegaP(idmin);
-    pcd(ig) = pl(mod(idmin+90,180));
+    % get the projection length perpendicular to the shortest
+    shiftInd = idmin+90; shiftInd(shiftInd>180)=idmin-90; % 90th id away
+    pcd(ig) = pl(shiftInd);
+    %  pcd(ig) = projectionLength(Vg,mod(omega(ig)+pi/2,pi)); % slightly slower
   end
   
   % keep omega in range
