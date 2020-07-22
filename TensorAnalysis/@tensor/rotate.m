@@ -14,7 +14,7 @@ function T = rotate(T,R,varargin)
 %
 
 % ensure that the rotations have the right reference frame
-if isa(R,'orientation')
+if isa(R,'orientation') && nargin == 2
   R = T.CS.ensureCS(R);
   T.CS = R.SS;
 end

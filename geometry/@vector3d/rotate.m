@@ -1,4 +1,4 @@
-function v = rotate(v,q)
+function v = rotate(v,q,varargin)
 % rotate vector3d by rotation or orientation
 %
 % Syntax
