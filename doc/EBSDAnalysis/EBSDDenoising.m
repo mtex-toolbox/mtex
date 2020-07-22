@@ -19,7 +19,7 @@
 % orientation map of deformed Magnesium.
 
 % import the data
-mtexdata twin
+mtexdata twins
 
 % consider only indexed data
 ebsd = ebsd('indexed');
