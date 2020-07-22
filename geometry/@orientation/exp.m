@@ -24,15 +24,9 @@ end
 
 % compute the orientation
 if check_option(varargin,'left')
-  q = expquat(v).*quaternion(ori);
+  ori = times(expquat(v),ori,true);
 else
-  q = quaternion(ori).*expquat(v);
-end
-
-if ori.antipodal
-  ori = orientation(q,ori.CS,ori.SS,'antipodal');
-else
-  ori = orientation(q,ori.CS,ori.SS);
+  ori = times(ori,expquat(v),false);
 end
 
 end
