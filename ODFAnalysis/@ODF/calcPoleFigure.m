@@ -30,8 +30,8 @@ function pf = calcPoleFigure(odf,h,varargin)
 if ~iscell(h), h = vec2cell(h);end
 
 % ensure crystal symmetry
-argin_check([h{:}],'Miller');
 for i = 1:length(h)
+  argin_check(h{i},'Miller');
   h{i} = odf.CS.ensureCS(h{i});
 end
 
