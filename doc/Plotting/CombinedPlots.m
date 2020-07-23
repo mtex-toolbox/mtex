@@ -113,7 +113,7 @@ plot(pf({1}),'parent',axesPos)
 axesPos = subplot(1,3,2);
 
 % plot the recalculated pole figure at this position
-plotPDF(odf,h{1},'antipodal','parent',axesPos)
+plotPDF(odf,pf{1}.h,'antipodal','parent',axesPos)
 
 % set position 3 in a 1x3 matrix as the current plotting position
 axesPos = subplot(1,3,3);

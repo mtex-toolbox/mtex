@@ -37,7 +37,7 @@ center = calcModes(odf3)
 %%
 % Lets mark this prefered orientation in the pole figures
 
-plotPDF(odf3,h,'antipodal','superposition',c);
+plotPDF(odf3,pf.allH,'antipodal','superposition',pf.c);
 annotate(center,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics

@@ -9,7 +9,7 @@ function map = findByLocation( ebsd, xy, y )
 %  ebsd - @EBSD subset
 %
 % Example
-%   mtexdata fo
+%   mtexdata forsterite
 %   plotx2east
 %   plot(ebsd)
 %   p = [10000 5000] %ginput(1)
