@@ -182,8 +182,9 @@ end
 % ----------------------------------------------------------------------
 function h = plotFaces(poly,V,d,varargin)
 
-if size(d,1) ~= numel(poly) && ...
-  size(d,2) == numel(poly), d = d.'; end
+if numel(poly) > 3 && size(d,1) == 1 && size(d,2) == numel(poly)
+  d = d.';
+end
 
 if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
