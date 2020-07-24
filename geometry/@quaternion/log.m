@@ -21,9 +21,11 @@ function v = log(q,q_ref,varargin)
 % if reference point for tangential space is given - rotate
 if nargin >= 2
   if check_option(varargin,'left')
-    q = q .* q_ref';
+    %q = q .* q_ref';
+    q = itimes(q, q_ref,false);
   else
-    q = times(q_ref', q,1);
+    %q = times(q_ref', q,1);
+    q = itimes(q_ref, q,true);
   end
 end
 
