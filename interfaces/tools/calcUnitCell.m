@@ -55,15 +55,17 @@ try
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
-  unitCell = unitCell(sum(diff(unitCell,1).^2,2) > dxy/100,:);
+  ignore = [false;sum(diff(unitCell,1).^2,2) < dxy/100];
+  unitCell(ignore,:) = [];
   
     
-  if isRegularPoly(unitCell,dxy,varargin)
+  if isRegularPoly(unitCell,varargin)
     return
   end
   
   % second estimate of the grid resolution
-  dxy2 = min(sqrt(diff(cx).^2 + diff(cy).^2));
+  dxy2 = max(unitCell) - min(unitCell);
+  
   if 100*dxy2 > dxy, dxy = dxy2;end
   
   
@@ -100,11 +102,11 @@ end
 % a regular polygon with s vertices, diameter d, and rotation rot
 function unitCell = regularPoly(s,d,rot)
 
-c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))*d./sqrt((s/2));
-unitCell = [real(c(:)),imag(c(:))];
+c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))./sqrt((s/2));
+unitCell = [real(c(:)),imag(c(:))].*d;
 
 
-function isRegular = isRegularPoly(unitCell,dxy,varargin)
+function isRegular = isRegularPoly(unitCell,varargin)
 
 sideLength = sqrt(sum((unitCell).^2,2));
 sides      = numel(sideLength);
