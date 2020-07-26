@@ -35,15 +35,23 @@ distMat = norm(tensor(ori1) - tensor(ori2));
 distRV = norm(Rodrigues(ori1) - Rodrigues(ori2));
 
 % plot 
-subplot(1,2,1)
+figure('position',[200 200 1200 400 ])
+subplot(1,3,1)
 scatter(omega,distMat)
-xlabel('misorientation angle')
+xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
 ylabel('matrix distance')
 
-subplot(1,2,2)
+subplot(1,3,2)
 scatter(omega,distRV)
-xlabel('misorientation angle')
+xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
 ylabel('Rodrigues distance')
+
+subplot(1,3,3)
+scatter(distMat,distRV)
+xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
+ylabel('Rodrigues distance')
+
+
 
 %%
 % We observe that orientations that have very small misorientation angle
@@ -78,25 +86,25 @@ mean(ori)
 %
 %% Defining an embedding
 %
-% Defining an embedding of an orientation |ori| is done by calling the
-% function <embedding.html |embedding|>.
+% Defining an embedding $\mathcal E(\mathtt{ori})$ of an orientation |ori|
+% is done by calling the function |@embedding|.
 
 e1 = embedding(ori1);
 e2 = embedding(ori2)
 
 %%
-% This creates a variable of type <embedding.html |embedding|> that behaves
-% like list of vectors, i.e., variable of type <embedding.html |embedding|>
-% can be summed, rotated, scaled and one can compute the inner product
-% between two embeddings. Lets have a look at the Euclidean distances
-% between the embeddings |e1| and |e2|
+% This creates a variable of type |@embedding| that behaves like list of
+% vectors, i.e., variable of type |@embedding| can be summed, rotated,
+% scaled and one can compute the inner product between two embeddings. Lets
+% have a look at the Euclidean distances between the embeddings |e1| and
+% |e2|
 
 % the Euclidean distance in the embedding
 distE = norm(e1-e2) ./ degree;
 
 close all
 scatter(omega,distE)
-xlabel('misorientation angle')
+xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
 ylabel('embedding distance')
 
 %%
@@ -136,11 +144,11 @@ norm(embedding(orientation.rand(5,cs))).'
 %%
 % Lets compare the norm 
 %
-% $$ \lVert\frac{1}{n} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \rVert$$
+% $$ n=\left\lVert\frac{1}{n} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \right\rVert$$
 % 
 % of the mean embedding with the standard deviation 
 %
-% $$ \sigma \left(\frac{1}{N} \sum_{i=1}^N \omega(\mathtt{ori}_i,
+% $$ \sigma = \left(\frac{1}{N} \sum_{i=1}^N \omega(\mathtt{ori}_i,
 % \mathtt{mori})^2\right)^{1/2}$$
 % 
 % where $\omega(\mathtt{ori}_i, \mathtt{mori}))$ denotes the misorientation
@@ -163,8 +171,8 @@ for hw = logspace(-1,1.75,40)*degree
 end
 
 plot(sigma,real(sqrt(1-n)),'linewidth',2)
-xlabel('dispersion')
-ylabel('norm of the mean')
+xlabel('standard deviation $\sigma$','Interpreter','latex')
+ylabel('$\sqrt{1-n}$','Interpreter','latex')
 
 %% 
 % It appears as if the norm of the mean embedding is a function of the
@@ -200,11 +208,19 @@ hold off
 %
 % The following operations are supported for embeddings:
 %
-% * |+|, |-|, |*|, |.*|, |./| 
+% * |+|, |-|, <embedding.mtimes.html |*|>, <embedding.times.html |.*|>, |./| 
 % * |sum|, |mean|
 % * |norm|, |normalize|
 % * |dot|
-% * |rotate|, rotate_outer|
+% * |rotate|, |rotate_outer|
 %
+%% Rerference
 %
-
+% The theory behind these embeddings is explained in the paper
+%
+% * R. Arnold, P. E. Jupp, H. Schaeben, Statistics of ambiguous rotations,
+% Journal of Multivariate Analysis (165), 2018
+% * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
+% Rotation Group Modulo Finite Symmetries_,
+% <https://arxiv.org/abs/2007.09664 arXiv:2007.09664>, 2020.
+%
