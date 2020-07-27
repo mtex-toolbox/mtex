@@ -47,7 +47,7 @@ classdef embedding
         obj.CS = cs;
         obj.l = l;
         obj.rank = cellfun(@(t) t.rank,obj.u);
-        
+
       end
       
     end
@@ -80,7 +80,35 @@ classdef embedding
       end
     end
   
+    
+    function obj = subsasgn(obj,s,b)
+      % overloads subsasgn
+
+      if ~isa(obj,'embedding') && ~isempty(b)
+        obj = b;
+        for i = 1:length(obj.u), obj.u{i}(:) = []; end
+        
+      end
+
+      switch s(1).type
+  
+        case '()'
+      
+          if numel(s)>1, b =  builtin('subsasgn',subsref(obj,s(1)),s(2:end),b); end
+          
+          if isnumeric(b)
+            for i = 1:length(obj.u), obj.u{i} = subsasgn(obj.u{i},s(1),b); end
+          else
+            for i = 1:length(obj.u), obj.u{i} = subsasgn(obj.u{i},s(1),b.u{i}); end
+          end
+        otherwise
+          obj =  builtin('subsasgn',obj,s,b);          
+      end
+    end
+
+    
     function obj = rdivide(obj,d)
+      % ./
       
       for i = 1:length(obj.u)       
         obj.u{i} = obj.u{i} ./ d;
@@ -88,6 +116,9 @@ classdef embedding
       
     end
     
+    function obj = reshape(obj,varargin)
+      for i = 1:length(obj.u), obj.u{i} = reshape(obj.u{i},varargin{:}); end
+    end
     
     function obj = transpose(obj)
       for i = 1:length(obj.u), obj.u{i} = obj.u{i}.'; end
@@ -98,9 +129,7 @@ classdef embedding
     end       
     
     function varargout = size(obj,varargin)
-      
       [varargout{1:nargout}] = size(obj.u{1},varargin{:});
-      
     end
     
     function display(obj,varargin)
@@ -110,22 +139,19 @@ classdef embedding
 
       disp([' symmetry: ',char(obj.CS,'verbose')]);
       disp([' ranks: ',xnum2str(obj.rank,'delimiter',', ')]);
+      disp([' dim: ' xnum2str(sum( (obj.rank+2).*(obj.rank+1)./2))]);
       disp([' size: ' size2str(obj)]);
-
+      
       if prod(size(obj))~=1, return; end %#ok<PSIZE>
       
       for k = 1:length(obj.u)
         display(obj.u{k},'name',['u' num2str(k)])
       end
     end
-    
-    
-    
   end
 
   methods (Static = true)
- 
-    
+     
     function obj = id(cs,varargin)
       %
       % Input
@@ -142,10 +168,8 @@ classdef embedding
       for i = 1:length(l)
         if alpha(i) > 1
             u{i} = mean((cs.properGroup.rot*l(i))^alpha(i)).*weights(i);  
-             %u{i} = mean((cs.properGroup.rot*l(i))^alpha(i)); 
         else
           u{i} =  mean(cs.properGroup.rot*l(i)).*weights(i);
-          %u{i} =  mean(cs.properGroup.rot*l(i));
         end
       end
       
@@ -196,8 +220,7 @@ classdef embedding
       % obj = obj - embedding.zero(obj);
       
     end
-    
-    
+        
     function t = tangential(cs)
       
       id = embedding.id(cs);
