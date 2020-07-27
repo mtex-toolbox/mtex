@@ -14,9 +14,8 @@
 %
 % The central problem is that the geometry of the fundamental region is not
 % the geometry of the orientation space. Lets demonstate this by taking
-% pairs of random orientations in the fundamental region and compare their
-% misorientation angle with the Euclidean distance of the corresponding
-% rotational matrices and the corresponding Rodrigues Frank vectors.
+% pairs $\mathtt{ori_1}$, $\mathtt{ori_2}$ of random orientations in the
+% fundamental region
 
 % consider cubic symmetry
 cs = crystalSymmetry('432');
@@ -24,6 +23,14 @@ cs = crystalSymmetry('432');
 % random pairs of orientations in the fundamental sector
 ori1 = project2FundamentalRegion(orientation.rand(100000,cs));
 ori2 = project2FundamentalRegion(orientation.rand(100000,cs));
+
+%%
+% and compare their misorientation angle
+% $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$ with the Euclidean distance
+% $\lVert \mathtt{tensor(ori_1)} - \mathtt{tensor(ori_2)} \rVert_2$ of the
+% corresponding rotational matrices and the Euclidean distance $ \lVert
+% \mathtt{R(ori_1)} - \mathtt{R(ori_2)} \rVert_2$ of the corresponding
+% <rotation.Rodrigues.html Rodrigues Frank vectors>.
 
 % compute the misorienation angles in degree
 omega = angle(ori1,ori2)./degree;
@@ -38,39 +45,40 @@ distRV = norm(Rodrigues(ori1) - Rodrigues(ori2));
 figure('position',[200 200 1200 400 ])
 subplot(1,3,1)
 scatter(omega,distMat)
-xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
-ylabel('matrix distance')
+xlabel('$\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
+ylabel('$|| \mathtt{tensor(ori_1)} - \mathtt{tensor(ori_2)}||_2$','Interpreter','latex')
 
 subplot(1,3,2)
 scatter(omega,distRV)
-xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
-ylabel('Rodrigues distance')
+xlabel('$\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
+ylabel('$|| \mathtt{R(ori_1)} - \mathtt{R(ori_2)}||_2$','Interpreter','latex')
 
 subplot(1,3,3)
 scatter(distMat,distRV)
-xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
-ylabel('Rodrigues distance')
-
-
+xlabel('$|| \mathtt{tensor(ori_1)} - \mathtt{tensor(ori_2)}||_2$','Interpreter','latex')
+ylabel('$|| \mathtt{R(ori_1)} - \mathtt{R(ori_2)}||_2$','Interpreter','latex')
 
 %%
-% We observe that orientations that have very small misorientation angle
-% may be very far from each other in Rodrigues Frank space. As a
-% consequence, we can not simply compute the average of two orientations by
-% taking the mean of the corresponding Rodrigues vectors. Lets have a look
-% at an extremal case of finding the mean orientations of the orientations
-% (44,0,0) and (46,0,0)
+% We observe that orientations with very small misorientation angle
+% $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$ may be very far from each other
+% in Rodrigues Frank space, i.e. $|| \mathtt{R(ori_1)} -
+% \mathtt{R(ori_2)}||_2$ is large. As a consequence, we can not simply
+% compute the average of two orientations by taking the mean of the
+% corresponding Rodrigues vectors. 
+% 
+% Lets have a look at an extremal case of finding the mean orientations of
+% the orientations $(44^{\circ},0^{\circ},0^{\circ})$ and
+% $(46^{\circ},0^{\circ},0^{\circ})$
 
 % define two orientations
-ori = orientation.byEuler([44 46]*degree,0,0,cs);
-ori = ori.project2FundamentalRegion;
+ori = project2FundamentalRegion(orientation.byEuler([44 46]*degree,0,0,cs));
 
-%compute the mean by averagin the Rodrigues vectors
+%compute the mean by averaging the Rodrigues vectors
 mori = orientation.byRodrigues(mean(ori.Rodrigues),cs)
 
 %%
-% The  mean orientation computed from the average of the Rodrigues vectors
-% is (0,0,0) is far away from the true mean.
+% The  mean orientation $(0^{\circ},0^{\circ},0^{\circ})$ computed from the
+% average of the Rodrigues vectors is far away from the true mean.
 
 mean(ori)
 
@@ -79,46 +87,47 @@ mean(ori)
 % statistical methods that work well for vectorial data and that one would
 % like to apply to orientation data.
 %
+%% Defining an Embedding
+%
 % The crucial idea of an embedding is to replace the vectorial
 % representation by a higher dimensional tensorial representation that
 % preserves the geometry and the distances of the orientation space as good
-% as possible.
-%
-%% Defining an embedding
-%
-% Defining an embedding $\mathcal E(\mathtt{ori})$ of an orientation |ori|
-% is done by calling the function |@embedding|.
+% as possible. In MTEX such an embedding $\mathcal E(\mathtt{ori})$ of an
+% orientation |ori| is defined by calling the function |@embedding|.
 
 e1 = embedding(ori1);
 e2 = embedding(ori2)
 
 %%
-% This creates a variable of type |@embedding| that behaves like list of
-% vectors, i.e., variable of type |@embedding| can be summed, rotated,
-% scaled and one can compute the inner product between two embeddings. Lets
-% have a look at the Euclidean distances between the embeddings |e1| and
-% |e2|
+% This creates variables |e1| and |e2| of type |@embedding| that behaves
+% like lists of vectors, i.e., they can be <embedding.sum.html summed>,
+% <embedding.rotate.html rotated>, <embedding.mtimes.html scaled> and one
+% can compute their <embedding.dot.html inner product>. Lets have a look at
+% the Euclidean distances $\lVert\mathcal E(\mathtt{ori_1}) - \mathcal
+% E(\mathtt{ori_1}) \rVert_2$ between the embeddings |e1| and |e2|
 
 % the Euclidean distance in the embedding
 distE = norm(e1-e2) ./ degree;
 
 close all
 scatter(omega,distE)
-xlabel('misorientation angle $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
-ylabel('embedding distance')
+xlabel('$\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
+ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_1}) ||$','Interpreter','latex')
 
 %%
 % We observe that the distance in the embedding differs slightly from the
 % misorientation angle. However, especially for small misorientation angles
 % the approximation is very good.
 %
-% Lets go back to our second example of averaging the orientations (44,0,0)
-% and (46,0,0). If we compute the embedding of both orientations, average
-% the resulting tensors and then project to mean tensor back to an
-% orientation we end up with the correct result (0,0,0).
+% Lets go back to our second example of averaging the orientations
+% $(44^{\circ},0^{\circ},0^{\circ})$ and $(46^{\circ},0^{\circ},0^{\circ})$. If
+% we compute the embedding of both orientations, average the resulting
+% tensors and <embedding.orientation.html project the mean tensor back
+% to an orientation> we end up with the correct result
+% $(0^{\circ},0^{\circ},0^{\circ})$.
 
 % compute the embedding of the two orientations
-e = embedding(ori)
+e = embedding(ori);
 
 % take the mean of the embeddings
 me = mean(e);
@@ -151,7 +160,7 @@ norm(embedding(orientation.rand(5,cs))).'
 % $$ \sigma = \left(\frac{1}{N} \sum_{i=1}^N \omega(\mathtt{ori}_i,
 % \mathtt{mori})^2\right)^{1/2}$$
 % 
-% where $\omega(\mathtt{ori}_i, \mathtt{mori}))$ denotes the misorientation
+% where $\omega(\mathtt{ori}_i, \mathtt{mori})$ denotes the misorientation
 % angle between the orientations $\mathtt{ori}_i$ and the mean orientation
 % $\mathtt{mori}$.
 
@@ -178,9 +187,10 @@ ylabel('$\sqrt{1-n}$','Interpreter','latex')
 % It appears as if the norm of the mean embedding is a function of the
 % standaerd deviation. However, the reason for this false relationship is
 % that we have generated the orientations out of a single family of random
-% variables - unimodal de la Vallee Poussin distributed density functions.
-% A broader family of density function are the Bingham distributions. Lets
-% repeat the experiment for this family.
+% variables - <UnimodalODFs.html unimodal de la Vallee Poussin distributed
+% density functions>. A broader family of density function are the
+% <BinghamODFs.html Bingham distributions>. Lets repeat the experiment for
+% this family.
 
 % genrate ODF of different halfwidth
 n = []; sigma = [];
@@ -208,11 +218,11 @@ hold off
 %
 % The following operations are supported for embeddings:
 %
-% * |+|, |-|, <embedding.mtimes.html |*|>, <embedding.times.html |.*|>, |./| 
-% * |sum|, |mean|
-% * |norm|, |normalize|
-% * |dot|
-% * |rotate|, |rotate_outer|
+% * |<embedding.plus.html +>|, |<embedding.minus.html ->|, |<embedding.mtimes.html *>|, |<embedding.times.html .*>|, |./| 
+% * <embedding.sum.html |sum|>, <embedding.mean.html |mean|>
+% * <embedding.norm.html |norm|>, <embedding.normalize.html |normalize|>
+% * <embedding.dot.html |dot|>
+% * <embedding.rotate.html |rotate|>, <embedding.rotate_outer.html |rotate_outer|>
 %
 %% Rerference
 %

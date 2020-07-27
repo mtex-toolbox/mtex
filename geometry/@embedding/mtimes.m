@@ -5,7 +5,7 @@ function c = mtimes(a,b)
 % If |e| is a matrix of embeddings and |c| is a matrix of coefficients 
 % then |e * c| is again a matrix of embeddings defined by
 % 
-% $$ \mathrm{e * c}_{j\ell} = \sum_{k} \mathrm{e}_{jk} \mathrm{c}_{k \ell}$$
+% $$ [\mathrm{e * c}]_{j\ell} = \sum_{k} \mathrm{e}_{jk} \mathrm{c}_{k \ell}$$
 %
 % Syntax
 %   out = e * c

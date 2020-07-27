@@ -1,4 +1,15 @@
 function d = dot(obj1,obj2)
+% inner product between embeddings
+%
+% Syntax
+%   d = dot(e1,e2)
+%
+% Input
+%  e1,e2 - @embedding
+%
+% Output
+%  d - double
+%
       
 d = 0;
 for i = 1:length(obj1.u)

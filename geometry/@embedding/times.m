@@ -5,7 +5,7 @@ function c = times(a,b)
 % If |e| is a matrix of embeddings and |c| is a matrix of coefficients 
 % then |e .* c| is again a matrix of embeddings defined by
 % 
-% $$ \mathrm{e .* c}_{j\ell} = mathrm{e}_{j\ell} \mathrm{c}_{j \ell}$$
+% $$ [\mathrm{e .* c}]_{j\ell} = mathrm{e}_{j\ell} \mathrm{c}_{j \ell}$$
 %
 % Syntax
 %   out = e .* c

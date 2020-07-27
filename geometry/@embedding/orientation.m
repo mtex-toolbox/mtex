@@ -6,7 +6,7 @@ function ori = orientation(obj)
 % orientations.
 %
 % Syntax
-%   ori = project(e)
+%   ori = orientation(e)
 %
 % Input
 %  e - @embedding
