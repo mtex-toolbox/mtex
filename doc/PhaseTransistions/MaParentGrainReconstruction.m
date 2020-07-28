@@ -2,7 +2,7 @@
 %
 %% 
 % This script demonstrates the tools MTEX offers to reconstruct a parent
-% martensite phase from a measured austenite phase. Most of the ideas are
+% austenite phase from a measured martensite phase. Most of the ideas are
 % from
 % <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
 % Crystallography, Morphology, and Martensite Transformation of Prior
@@ -33,8 +33,8 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %% Determine the parent child orientation relationship
-% It is well known that the phase transformation from martensite to
-% austenite is not described by a fixed orientation relationship. In fact,
+% It is well known that the phase transformation from austenite to
+% martensite is not described by a fixed orientation relationship. In fact,
 % the actual orientation relationship needs to be determined for each
 % sample individualy. Here, we used the iterative method proposed by Tuomo
 % Nyyssönen and implemented in the function <calcParent2Child.html
@@ -163,7 +163,7 @@ plot(parentGrains.boundary,'linewidth',4)
 hold off
 
 %% Compute parent grain orientations
-% In the next step we compute for each parent grain its parent martensite
+% In the next step we compute for each parent grain its parent austenite
 % orientation. This can be done usig the command <calcParent.html
 % |calcParent|>. Note, that we ensure that at least two child grains have
 % been merged and that the misfit is smaller than 5 degree.
@@ -246,9 +246,9 @@ hold off
 % So far our analysis was at the grain level. However, once parent grain
 % orientations have been computed we may also use them to compute parent
 % orientations of each pixel in our original EBSD map. To this end we first
-% find pixels that now belong to a martensite grain.
+% find pixels that now belong to an austenite grain.
 
-% consider only austenite pixels that now belong to martensite grains
+% consider only martensite pixels that now belong to austenite grains
 isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId)) == 3 & parentEBSD.phaseId == 2;
 
 % compute parent orientation
