@@ -36,7 +36,7 @@ elseif isa(T2,'double')
 
 elseif T1.rank ==2 && isa(T2,'vector3d')
  
-  T = vector3d(EinsteinSum(T1,[1 -1],T2,-1));
+  T = vector3d(EinsteinSum(T1,[1 -1],T2,-1,'keepClass'));
    
 elseif T1.rank ==2 && isa(T2,'tensor') && T2.rank ==1
   

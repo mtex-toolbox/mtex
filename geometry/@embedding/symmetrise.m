@@ -1,9 +1,9 @@
 function symObj = symmetrise(obj)
-%
+% symmetrise embedding
 %
 % Syntax
 %
-%  symE = symmetrise(e)
+%   symE = symmetrise(e)
 %
 % Input
 %  e - @embedding

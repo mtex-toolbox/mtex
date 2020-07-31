@@ -20,4 +20,4 @@ if nargin == 1 || isempty(x)
 end
 
 % compute tensor product
-beta = double(EinsteinSum(S,[-1 -2 -3 -3],x,-1,x,-2));
+beta = EinsteinSum(S,[-1 -2 -3 -3],x,-1,x,-2);

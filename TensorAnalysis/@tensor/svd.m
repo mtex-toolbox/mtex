@@ -25,7 +25,7 @@ switch T.rank
 
     if nargout <= 1, U = S; end
     if nargout == 3
-      U = normalize(vector3d(EinsteinSum(T,[1 -1],V,-1)));
+      U = normalize(vector3d(EinsteinSum(T,[1 -1],V,-1,'keepClass')));
     end
     
   case 4
