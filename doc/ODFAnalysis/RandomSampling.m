@@ -1,9 +1,9 @@
 %% Random Sampling
 %
 %% 
-% MTEX allows one to simulate an arbitrary number of EBSD data from any ODF.
-% This is quite helpful if you want to analyze the EBSD to ODF estimation
-% routine.
+% MTEX allows one to simulate an arbitrary number of orientations to
+% represent a given ODF. This is quite helpful for running plastic
+% deformation models, e.g. VPSC.
 %
 %% 
 % *Define a Model ODF*
@@ -18,21 +18,22 @@ fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(Miller(0,0,0,1,cs),zvector);
 plot(fibre_odf,'sections',6,'silent')
 
 
-%% Simulate EBSD Data
+%% Random Sample of Orientations
 %
 % This ODF we use now to simulate 10000 individual orientations.
 
-ori = calcOrientations(fibre_odf,10000)
+ori = fibre_odf.discreteSample(10000)
 
-%% ODF Estimation from EBSD Data
+%% ODF Estimation from Random Orientations
 %
-% From the 10000 individual orientations, we can now estimate an ODF.
-% First, we determine the optimal kernel function
+% From the 10000 individual orientations, we can try to estimate back our
+% ODF. First, we determine the optimal kernel function
 
 psi = calcKernel(ori)
 
 %%
-% and then we use this kernel function for kernel density estimation
+% and then we use this kernel function for <DensityEstimation.html kernel
+% density estimation>
 
 odf = calcDensity(ori,'kernel',psi)
 
