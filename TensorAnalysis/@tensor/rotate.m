@@ -28,6 +28,6 @@ for d = 1:T.rank
   
   ind = 1:T.rank;
   ind(d) = -d;
-  Ttmp = EinsteinSum(T,ind,R,[d -d]);
-  T.M = Ttmp.M;
+  T = EinsteinSum(T,ind,R,[d -d],'keepClass');
+  
 end

@@ -31,6 +31,6 @@ for d = 1:T.rank
   
   ind = 1:T.rank;
   ind(d) = -d;
-  T = EinsteinSum(T,ind,R,[d -d]);
+  T = EinsteinSum(T,ind,R,[d -d],'keepClass');
         
 end
