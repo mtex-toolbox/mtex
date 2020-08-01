@@ -43,7 +43,8 @@ else
 end
 
 % project to fundamental region
-q = times(times(CS2.rot.subSet(ics2), q, 1), CS1.rot.subSet(ics1),0);
+q = times(times(reshape(CS2.rot.subSet(ics2),size(q)), q, 1), ...
+  reshape(CS1.rot.subSet(ics1),size(q)),0);
 
 end
 
