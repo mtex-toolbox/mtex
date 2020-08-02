@@ -4,4 +4,5 @@ GeneralConceptsConfiguration
 GeneralConceptsOptions
 Properties
 DensityEstimation
+OptimalKernel
 ClusterDemo

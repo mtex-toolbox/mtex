@@ -1,92 +1,70 @@
 %% Random Sampling
 %
 %% 
-% MTEX allows one to simulate an arbitrary number of orientations to
-% represent a given ODF. This is quite helpful for running plastic
-% deformation models, e.g. VPSC.
-%
-%% 
-% *Define a Model ODF*
-%
-% Let us first define a simple fibre symmetric ODF.
+% Assume an arbitrary <ODFTheorie.html ODF> either from texture modelling
+% or recovered from XRD pole figure measurements a common problem is the
+% simulation of random individual orientations that are distributed
+% according the given ODF. This is helpful crucial in many application,
+% e.g., for running plastic deformation models like VPSC or verifying the
+% accuracy <DensityEstimation.html density estimation methods>. Here we
+% start with a trigonal alpha-fibre ODF which we define by
 
 cs = crystalSymmetry('32');
-fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(Miller(0,0,0,1,cs),zvector);
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.alpha(cs),'halfwidth',20*degree);
+
+plot(fibre_odf,'sections',6,'silent')
+mtexColorbar
+
+%% Computing Random Orientations
+%
+% In order to compute $50000$ random orientation from the ODF |fibre_odf| we use
+% the command <ODF.discreteSample.html discreteSample>.
+
+ori = fibre_odf.discreteSample(50000)
+
+% plot the orientations into the Bunge sections
+hold on
+plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.5,'all','MarkerEdgeColor','k','MarkerSize',4)
+hold off
 
 %%
-%
-plot(fibre_odf,'sections',6,'silent')
+% From the above plot it is very hard to judge whether the orientations are
+% indeed distributed according to the given ODF. The reason for this is the
+% not volume preserving projection of the Bunge sections. A better ODF
+% representation for this purpose are <SigmaSections.html sigma sections>
 
+% plot the ODF in sigma sections
+plot(fibre_odf,'sections',6,'silent','sigma','contour','linewidth',2)
 
-%% Random Sample of Orientations
-%
-% This ODF we use now to simulate 10000 individual orientations.
-
-ori = fibre_odf.discreteSample(10000)
+% plot the orientations into the sigma sections
+hold on
+plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.5,'all','MarkerEdgeColor','k','MarkerSize',4)
+hold off
 
 %% ODF Estimation from Random Orientations
 %
-% From the 10000 individual orientations, we can try to estimate back our
-% ODF. First, we determine the optimal kernel function
+% From the last plot we clearly see that the orientations are more dense
+% close to the alpha fibre. In order more quantitative meaure for how well
+% do the orientations approximate the ODF we may use the orientations to
+% <DensityEstimation.html estimate a new ODF> and compare the fit of this
+% estimate ODF with the initial ODF.
 
-psi = calcKernel(ori)
+% estimate an ODF from the random orientations
+odf_rec = calcDensity(ori)
 
-%%
-% and then we use this kernel function for <DensityEstimation.html kernel
-% density estimation>
-
-odf = calcDensity(ori,'kernel',psi)
-
-%%
-% which can be plotted,
-
-plot(odf,'sections',6,'silent')
-
+% plot the estimated ODF
+plot(odf_rec,'sections',6,'silent')
 
 %%
-% and compared to the original model ODF.
+% We may now compare the original model ODF |fibre_odf| with the
+% reconstructed ODF |odf_rec|. 
 
-calcError(odf,fibre_odf,'resolution',5*degree)
+calcError(odf_rec,fibre_odf)
 
-
-%% Exploration of the relationship between estimation error and number of single orientations
+%% Exporting Random Orientations
 %
-% For a more systematic analysis of the estimation error, we simulate 10,
-% 100, ..., 1000000 single orientations of the model ODF and 
-% calculate the approximation error for the ODFs estimated from these data.
-
-e = [];
-for i = 1:6
-
-  ori = calcOrientations(fibre_odf,10^i,'silent');
-  
-  psi1 = calcKernel(ori,'SamplingSize',10000,'silent');
-  odf = calcDensity(ori,'kernel',psi1,'silent');
-  e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
-  
-  psi2 = calcKernel(ori,'method','RuleOfThumb','silent');
-  odf = calcDensity(ori,'kernel',psi2,'silent');
-  e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
-  
-  psi3 = calcKernel(ori,'method','magicRule','silent');
-  odf = calcDensity(ori,'kernel',psi3,'silent');
-  e(i,3) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
-
-  disp(['RuleOfThumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
-    ' KLCV: ' int2str(psi1.halfwidth/degree) mtexdegchar ...
-    ' magicRule: ' int2str(psi3.halfwidth/degree) mtexdegchar ...
-    ]);
-  
-end
-
-
-%% 
-% Plot the error in dependency of the number of single orientations.
-
-close all;
-loglog(10.^(1:length(e)),e)
-legend('Default','RuleOfThumb','magicRule')
-xlabel('Number of orientations')
-ylabel('Estimation Error')
-title('Error between original fibre ODF model and simulated ebsd','FontWeight','bold')
+% In order to make use of the sampled orientations you pronbably want to
+% export them as <RotationDefinition.html Euler angles> into a text files.
+% This can be done using the commands <orientation.export.html export> and
+% <orientation.export_VPSC.html export_VPSC>.
 
