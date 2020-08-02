@@ -18,7 +18,7 @@ mtexColorbar
 %% Computing Random Orientations
 %
 % In order to compute $50000$ random orientation from the ODF |fibre_odf| we use
-% the command <ODF.discreteSample.html discreteSample>.
+% the command |<ODF.discreteSample.html discreteSample>|.
 
 ori = fibre_odf.discreteSample(50000)
 
@@ -64,7 +64,8 @@ calcError(odf_rec,fibre_odf)
 %% Exporting Random Orientations
 %
 % In order to make use of the sampled orientations you pronbably want to
-% export them as <RotationDefinition.html Euler angles> into a text files.
-% This can be done using the commands <orientation.export.html export> and
-% <orientation.export_VPSC.html export_VPSC>.
+% <OrientationExport.html export> them as <RotationDefinition.html Euler
+% angles> into a text files. This can be done using the commands
+% |<quaternion.export.html export>| and |<orientation.export_VPSC.html
+% export_VPSC>|.
 
