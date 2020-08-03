@@ -89,6 +89,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         for fn = fieldnames(rot.prop)'
           ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
         end
+        ebsd.opt = rot.opt;
         return
       end
       

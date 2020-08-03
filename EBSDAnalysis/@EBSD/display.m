@@ -10,8 +10,6 @@ if isempty(ebsd)
 end
 
 disp(' ')
-% display all other options
-disp(char(dynOption(ebsd)));
 
 % ebsd.phaseMap
 matrix = cell(numel(ebsd.phaseMap),5);
@@ -67,4 +65,8 @@ if min(ebsd.size) > 1
   end
 end
 
+% display all other options
+dispStruct(ebsd.opt);
+
 disp(' ');
+
