@@ -110,7 +110,12 @@ else % otherwise phase plot
     
     if ~any(ind), continue; end
     
-    color = grains.subSet(ind).color;
+    if check_option(varargin,'grayScale')
+      color = 1 - (k-1)/(numel(grains.phaseMap)) * [1,1,1];
+    else
+      color = grains.subSet(ind).color;
+    end
+    
     if ischar(color), [~,color] = colornames(getMTEXpref('colorPalette'),color); end
 
     % plot polygons
