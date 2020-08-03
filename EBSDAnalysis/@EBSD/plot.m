@@ -95,7 +95,11 @@ else % phase plot
     
     if ~any(ind), continue; end
     
-    color = ebsd.subSet(ind).color;
+    if check_option(varargin,'grayScale')
+      color = 1 - (k-1)/(numel(ebsd.phaseMap)-1) * [1,1,1];
+    else
+      color = ebsd.subSet(ind).color;
+    end
     
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
       'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
