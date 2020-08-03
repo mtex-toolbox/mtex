@@ -96,7 +96,7 @@ else % phase plot
     if ~any(ind), continue; end
     
     if check_option(varargin,'grayScale')
-      color = 1 - (k-1)/(numel(ebsd.phaseMap)-1) * [1,1,1];
+      color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
     else
       color = ebsd.subSet(ind).color;
     end
