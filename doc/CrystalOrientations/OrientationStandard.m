@@ -32,7 +32,7 @@ components = [...
   orientation.QLage(cs,ss),...
   ];
 
-%% 3d Euler angle space
+%% 3d Euler Angle Space
 % Lets first visualize the orientations in the three dimensional Euler
 % angle space
 
@@ -45,7 +45,7 @@ end
 legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'FontSize',1.2*getMTEXpref('FontSize'));
 hold off
 
-%% 2d phi2 sections
+%% 2d phi2 Sections
 % A second common way of visualizing the orientation space are sections
 % with fixed Euler angle phi2
 
@@ -57,7 +57,7 @@ end
 
 legend('show','interpreter','LaTeX','location','southeast','FontSize',1.2*getMTEXpref('FontSize'));
 
-%% 3d axis angle space
+%% 3d Axis Angle Space
 % In the three dimensional axis angle space the orientation appear inside
 % the fundamental sector 
 close all
@@ -69,7 +69,7 @@ for i = 1:length(components)
 end
 legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'FontSize',1.2*getMTEXpref('FontSize'));
 
-%% pole figures
+%% Pole Figures
 % In the major pole figures the predefined orientations appear at the
 % following spots
 
@@ -86,7 +86,7 @@ hold off
 
 legend('show','interpreter','LaTeX','location','northeast','numColumns',2,'FontSize',1.2*getMTEXpref('FontSize'));
 
-%% inverse pole figures
+%% Inverse Pole Figures
 % In the inverse pole figure the sitations is as follows. Note that the
 % different size of the markers has been chosen to avoid overprinting.
 

@@ -5,7 +5,7 @@
 % illustrate this we define a random orientation with trigonal crystal
 % symmetry
 
-cs = crystalSymmetry('321')
+cs = crystalSymmetry('321');
 ori = orientation.rand(cs)
 
 %% 
@@ -15,7 +15,7 @@ ori = orientation.rand(cs)
 h = Miller({1,0,0},cs);
 
 %%
-% Next the specimen directions corresponding to all crystal directions
+% Next the specimen directions |r| corresponding to all crystal directions
 % symmetrically equivalent to |h| are computed
 
 r = ori * h.symmetrise
@@ -27,7 +27,8 @@ plot(r)
 
 %%
 % Since the trigonal symmetry group has six symmetry elements the
-% orientation appears at six possitions.
+% orientation or better th crytal direction (100) points towards six
+% direction with respect to the specimen coordinate system.
 %
 % A shortcut for the above computations is the command
 
@@ -38,7 +39,8 @@ plotPDF(ori,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},ori.CS))
 % We observe, that for some crystal directions only the upper hemisphere is
 % plotted while for other upper and lower hemisphere are plotted. The
 % reason is that if |h| and |-h| are symmetrically equivalent the upper and
-% lower hemisphere of the pole figure are symmetric as well.
+% lower hemisphere of the pole figure are symmetric as well. In such cases
+% MTEX plots automatically only the upper hemisphere.
 %
 %% Contour plots
 

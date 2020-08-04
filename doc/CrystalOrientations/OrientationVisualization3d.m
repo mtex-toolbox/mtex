@@ -1,14 +1,17 @@
 %% 3D Orientation Visualizations
 %
-
-%% Euler angle space
+%% Euler Angle Space
 %
 % By default the function <orientation.plot.html plot>
 % plots orientations in the three dimensional Bunge Euler angle space
 
-cs = crystalSymmetry('cubic')
+% consider cubic symmetry
+cs = crystalSymmetry('cubic');
 
+% generate 100 random orientations
 ori = orientation.rand(100,cs);
+
+% plot them
 plot(ori)
 
 %%
@@ -20,19 +23,19 @@ plot(ori)
 
 plot(ori,'ignoreFundamentalRegion')
 
-%% Axis angle space
+%% Axis Angle Space
 %
 % Alternatively, orientations can be plotted in the three dimensional axis
 % angle space.
 
-plot(ori,'AxisAngle','markerEdgeColor',[0 0 0.8],'markerSize',8)
+plot(ori,'AxisAngle','markerEdgeColor',[0 0 0.8],'markerSize',8,'linewidth',2)
 
 %%
 % The orientations are automatically projected into its fundamental region.
 % Again, this can be switched off with the option
 % |'ignoreFundamentalRegion'|.
 
-plot(ori,'axisAngle','ignoreFundamentalRegion','markerEdgeColor',[0 0 0.8],'markerSize',8) 
+plot(ori,'axisAngle','ignoreFundamentalRegion','markerEdgeColor',[0 0 0.8],'markerSize',8,'linewidth',2) 
 
 % visualize the fundamental region
 hold on
