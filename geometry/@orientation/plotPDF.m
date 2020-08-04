@@ -111,6 +111,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
 end
 
 % plot
+handles = [];
 for i = 1:length(h)
 
   if i>1, mtexFig.nextAxis; end
@@ -129,7 +130,7 @@ for i = 1:length(h)
     opt = [opt,'upper']; %#ok<AGROW>
   end
 
-  [~,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
+  [hh,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
     ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
@@ -140,8 +141,14 @@ for i = 1:length(h)
   set(cax,'tag','pdf');
   setappdata(cax,'SS',ori.SS);
 
-  % TODO: unifyMarkerSize
+  handles = [handles,hh]; %#ok<AGROW>
 
+end
+
+% unify MarkerSize
+try
+  set(handles,'MarkerSize',min(cell2mat(get(handles,'MarkerSize'))));
+  set(handles,'userdata',min(cell2mat(get(handles,'userdata'))));
 end
 
 if isNew || check_option(varargin,'figSize')
