@@ -1,5 +1,5 @@
 function export(q,fname,varargin)
-% export quaternions to a ascii file
+% export orientation, rotations or quaternions into an ascii file
 %
 % Syntax
 %
@@ -7,7 +7,7 @@ function export(q,fname,varargin)
 %   export(ori,fname)
 %   export(ori,fname,'radians','Bunge')
 %
-%   fit ellipses to grains and store halfaxes and orientation in a struct
+%   % fit ellipses to grains and store halfaxes and orientation in a struct
 %   [S.angle,S.a,S.b] = fitEllipse(grains);
 %
 %   % store area
@@ -17,7 +17,7 @@ function export(q,fname,varargin)
 %   export(grains.meanOrientation,fname,S)
 %
 % Input
-%  q - @quaternion
+%  q - @quaternion, @rotation, @orientation
 %  fname - filename
 %  S - struct
 %
@@ -27,6 +27,7 @@ function export(q,fname,varargin)
 %  Matthies   - export Matthies Euler angles (alpha beta gamma)
 %  degree     - output in degree (default)
 %  radians    - output in radians
+%
 
 if check_option(varargin,'quaternion')
 
