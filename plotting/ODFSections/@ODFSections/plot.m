@@ -81,7 +81,6 @@ if exist('ori','var') || isempty(oS.plotGrid)
     ind = find(secAngle == s);
     if isa(vec,'vector3d')
       iv = vec(ind);
-      iv.resolution = vec.resolution;
     else
       iv = vec;
       iv.phi1 = iv.phi1(ind);

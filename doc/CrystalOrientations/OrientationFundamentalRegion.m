@@ -105,8 +105,10 @@ plot(rotate(oR,largeGrain.meanOrientation))
 % orientation
 ori = ori.project2FundamentalRegion(largeGrain.meanOrientation)
 
-% plot them
+
 plot(ori,'axisAngle')
+
+
 
 %% Fundamental regions of misorientations
 %
@@ -122,6 +124,7 @@ plot(oR)
 
 plot(grains.boundary('fo','En').misorientation)
 
+
 %% Fundamental regions of misorientations with antipodal symmetry
 %
 % Note that for boundary misorientations between the same phase we can
@@ -131,7 +134,7 @@ plot(grains.boundary('fo','En').misorientation)
 % orientations. The inverse of a misorientation is axis - angle
 % representation is simply the one with the same angle but antipodal axis.
 % Accordingly this additional symmetry is handled in MTEX by the keyword
-% |'antipodal'|. 
+% *antipodal*. 
 
 oR = fundamentalRegion(ebsd('Fo').CS,ebsd('Fo').CS,'antipodal');
 
@@ -140,14 +143,14 @@ plot(oR)
 %%
 % We see that the fundamental region with antipodal symmetry has only half
 % the size as without. In the case of misorientations between the same
-% phase MTEX automatically sets the |antipodal| flag to the misorientations
+% phase MTEX automatically sets the antipodal flag to the misorientations
 % and plots them accordingly.
 
 mori = grains.boundary('Fo','Fo').misorientation
 plot(mori)
 
 %%
-% If you want to avoid this you can remove the |anitpodal| flag by
+% If you want to avoid this you can remove the anitpodal flag by
 
 mori.antipodal = false;
 
@@ -158,11 +161,11 @@ plot(mori)
 % Again we can plot constant angle sections through the fundamental
 % region. This is done by
 
-plotSection(mori,'axisAngle','MarkerAlpha',0.5)
+plotSection(mori,'axisAngle')
 
 %%
 % Note that in the previous plot we distinguish between |mori| and
 % |inv(mori)|. Adding antipodal symmetry those are considered as equivalent
 
-plotSection(mori,'axisAngle','antipodal','MarkerAlpha',0.5)
+plotSection(mori,'axisAngle','antipodal')
 

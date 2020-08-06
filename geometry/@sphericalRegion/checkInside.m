@@ -17,24 +17,23 @@ function inside = checkInside(sR,v,varargin)
 %  noAntipodal - ignore antipodal symmetry
 % 
   
+% for antipodal symmetry check v and -v
+if (sR.antipodal || check_option(varargin,'antipodal')) && ...
+    ~check_option(varargin,'noAntipodal')
+  sR.antipodal = false;
+  inside = checkInside(sR,v) | checkInside(sR,-v);
+  return
+end
+
+if check_option(varargin,'noAntipodal')
+  v.antipodal = false;
+end
+
 % verify all conditions are satisfies
 inside = true(size(v));
 v = normalize(vector3d(v));
 for i = 1:length(sR.N)
-  inside = inside & (dot(subSet(sR.N,i),v,'noAntipodal') >= sR.alpha(i)-1e-4);
+  inside = inside & (dot(subSet(sR.N,i),v) >= sR.alpha(i)-1e-4);
 end
-
-% for antipodal symmetry check also -v
-if (sR.antipodal || v.antipodal || check_option(varargin,'antipodal')) && ...
-    ~check_option(varargin,'noAntipodal')
-    
-  insideAnti = true(size(v));
-  for i = 1:length(sR.N)
-    insideAnti = insideAnti & (dot(subSet(sR.N,i),-v,'noAntipodal') >= sR.alpha(i)-1e-4);
-  end
-  
-  inside = inside | insideAnti;
-  
-end
-
+ 
 end
