@@ -1,37 +1,32 @@
-function [p2c, omega] = calcParent2Child(mori,p2c,alpha,varargin)
+function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %
 % Syntax
 %
 %   p2c = calcParent(childOri,p2c)
 %
-%   p2c = calcParent(c2c,p2c)
-%   p2c = calcParent(c2c,p2c,alpha)
+%   p2c = calcParent(mori,p2c)
 %
-%   [p2c, fit] = calcParent(c2c,p2c)
+%   [p2c, fit] = calcParent(mori,p2c)
 %
 % Input
 %  childOri - child @orientation
-%  c2c      - child to child mis@orientation
+%  c2c_mori - child to child mis@orientation
 %  p2c      - initial gues of the parent to child mis@orientation
-%  alpha    - damping factor
 %
 % Output
 %  p2c      - parent to child mis@orientation
-%  fit      - disorientation angle between all c2cs misorientations and the computed one
+%  fit      - disorientation angle between all c2d misorientations and the computed one
 %
 % Description
 %
 %
 
-% compute misorientations if pairs of orientations are given
-if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
-
-% third input is damping factor
-if nargin<3, alpha = 0; end
-if alpha > 0, weights = [alpha,ones(1,length(mori))./length(mori)]; end
+if isa(mori.SS, 'specimenSymmetry')
+  mori = inv(mori(:,1)) .* mori(:,2);
+end
 
 % do some iterations
-for k = 1:10
+for k = 1:6
 
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
@@ -43,12 +38,7 @@ for k = 1:10
   
   ind = omega < min(5*degree, quantile(omega, 0.9));
   
-  if alpha > 0
-    fcc2bccCandidate = [];
-  else
-    fcc2bccCandidate = p2c;
-  end
-  
+  fcc2bccCandidate = [];
   for iv = 1:length(c2c)
     
     if ~any(ind & variant==iv), continue; end
@@ -59,11 +49,6 @@ for k = 1:10
     
   end
   
-  % compute weighted mean if required
-  if alpha > 0
-    p2c = mean(fcc2bccCandidate,'weigths',weights);
-  else
-    p2c = mean(fcc2bccCandidate);
-  end
-
+  p2c = mean(fcc2bccCandidate);
+    
 end
