@@ -1,10 +1,11 @@
 %% Inverse Pole Figure
 %
+%%
 % Inverse pole figures are two dimensional representations of orientations.
 % To illustrate this we define a random orientation with trigonal crystal
 % symmetry
 
-cs = crystalSymmetry('321')
+cs = crystalSymmetry('321');
 ori = orientation.rand(cs)
 
 %% 
@@ -14,8 +15,8 @@ ori = orientation.rand(cs)
 r = vector3d.Z
 
 %%
-% Next the crystal direction corresponding to the specimen direction |r|
-% according to the orientation |r| are computed
+% Next the crystal direction |h| corresponding to the specimen direction
+% |r| according to the orientation |ori| is computed
 
 h = inv(ori) * r
 
@@ -26,8 +27,9 @@ plot(h.symmetrise,'fundamentalRegion')
 
 %%
 % A shortcut for the above computations is the command
+% |<orientation.plotIPDF.html plotIPDF>|
 
-% a pole figure plot
+% an inverse pole figure plot
 plotIPDF(ori,[vector3d.X,vector3d.Y,vector3d.Z])
 
 %% Contour plots
