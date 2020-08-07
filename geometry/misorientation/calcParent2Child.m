@@ -44,9 +44,9 @@ for k = 1:6
   ind = omega < min(5*degree, quantile(omega, 0.9));
   
   if alpha > 0
-    fcc2bccCandidate = [];   
+    fcc2bccCandidate = p2c;   
   else
-    fcc2bccCandidate = p2c;
+    fcc2bccCandidate = [];
   end
   
   for iv = 1:length(c2c)
