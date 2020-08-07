@@ -30,19 +30,15 @@ if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
 if nargin<3, alpha = 0; end
 if alpha > 0, weights = [alpha,ones(1,length(mori))./length(mori)]; end
 
-% prepare iterative loop
-maxIt = 100;
-diso = nan(maxIt,1);
+diso = nan(100,1);
 p2cOld = p2c;
 
 % do some iterations
-for k = 1:maxIt
+for k = 1:100
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
-  
-  %check for convergence
   if k>5 && norm(diso(k-5:k)) < 0.1
-      break
+      
   end
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
@@ -77,10 +73,4 @@ for k = 1:maxIt
     p2c = mean(fcc2bccCandidate);
   end
 
-end
-
-if k<maxIt
-    fprintf('-> Convergence reached after %.0f iterations\n',k);
-else
-    fprintf('-> Refinement stopped at maximum number of iterations: %.0f\n',maxIt);
 end
