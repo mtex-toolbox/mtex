@@ -28,59 +28,60 @@ if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
 
 % third input is damping factor
 if nargin<3, alpha = 0; end
-if alpha > 0, weights = [alpha,ones(1,length(mori))./length(mori)]; end
 
 % prepare iterative loop
 maxIt = 100;
 diso = nan(maxIt,1);
 p2cOld = p2c;
 
-% do some iterations
+% iterate until convergance
 for k = 1:maxIt
+  
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
   
   %check for convergence
-  if k>5 && norm(diso(k-5:k)) < 0.1
-      break
-  end
+  if k>5 && norm(diso(k-5:k)) < 0.1, break; end
+  
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
 
   % misorientation to c2c variants
   omega = angle_outer(mori, c2c);
   
-  [omega, variant] = min(omega,[],2);
+  % compute best fitting variant
+  [omega, variant] = min(omega,[],2);  
   
+  % take only those c2c misorientations that are suffiently close to the
+  % current candidate
   ind = omega < min(5*degree, quantile(omega, 0.9));
   
-  if alpha > 0
-    fcc2bccCandidate = p2c;   
-  else
-    fcc2bccCandidate = [];
-  end
-  
+  % comute p2c misorientations for all variants
+  p2cCandidates = [];
   for iv = 1:length(c2c)
     
     if ~any(ind & variant==iv), continue; end
     
     mori_v = project2FundamentalRegion(mori(ind & variant==iv), c2c(iv));
     
-    fcc2bccCandidate = [fcc2bccCandidate,mean(mori_v * p2c.variants(iv))]; %#ok<AGROW>
+    p2cCandidates = [p2cCandidates, mori_v * p2c.variants(iv)]; %#ok<AGROW>
     
   end
   
-  % compute weighted mean if required
+  % compute damped mean if required
   if alpha > 0
-    p2c = mean(fcc2bccCandidate,'weigths',weights);
+    
+    weights = [alpha,ones(1,length(p2cCandidates)) ./ length(p2cCandidates)];
+    
+    p2c = mean([p2c,p2cCandidates],'weigths',weights);
   else
-    p2c = mean(fcc2bccCandidate);
+    p2c = mean(p2cCandidates);
   end
 
 end
 
 if k<maxIt
-    fprintf('-> Convergence reached after %.0f iterations\n',k);
+  fprintf('-> Convergence reached after %.0f iterations\n',k);
 else
-    fprintf('-> Refinement stopped at maximum number of iterations: %.0f\n',maxIt);
+  fprintf('-> Refinement stopped at maximum number of iterations: %.0f without convergence \n',maxIt);
 end
