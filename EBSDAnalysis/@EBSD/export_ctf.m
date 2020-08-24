@@ -144,7 +144,7 @@ fprintf(filePh,'\r\n');
 CSlst = ebsd.CSList(ebsd.indexedPhasesId);
 
 % write phase info
-fprintf(filePh,'Phases\t%.0f\r\n',length(CSlst));                               %Write nr of phases
+fprintf(filePh,'Phases\t%.0f\r\n',length(CSlst)); %Write nr of phases
 for i = 1:length(CSlst)
   mineral = CSlst{i}.mineral;
   a = CSlst{i}.aAxis.abs;
