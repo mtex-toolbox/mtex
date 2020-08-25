@@ -3,25 +3,28 @@ function s = union(s1,s2)
 %
 % 
 
-if isa(s2,'symmetry')
-  axes = s2.axes;
-  s2 = s2.rot;   
+if ~isa(s2,'symmetry')
+  
+  s = crystalSymmetry(unique(s1.rot * [rotation.id; s2(:)]),s1.axes);
+  
+elseif ~isa(s1,'symmetry')
+
+  s = crystalSymmetry(unique([rotation.id;s1(:)] * s2.rot),s2.axes);
+   
+elseif s1 == s2
+  
+  s = s1;
+  
+elseif s1 >= s2
+    
+  s = crystalSymmetry(s1.rot,s1.axes);
+  
+elseif s2 >= s1
+
+  s = crystalSymmetry(s2.rot,s2.axes);
+  
 else
-  s2 = [rotation.id; s2(:)];
-end
-if isa(s1,'symmetry')
-  rot = s1.rot;
-  axes = s1.axes;
-else
-  rot = [rotation.id;s1(:)]; 
-  axes = s1.axes;
-end
-
-rot = unique(rot * s2);
-
-s = crystalSymmetry(rot,axes);
-
-try %#ok<TRYNC>
-  s.mineral = s1.mineral; % mineral name
-  s.color  = s1.color;    % color used for EBSD / grain plotting
+  
+  s = crystalSymmetry(unique(s1.rot * s2.rot),s1.axes);
+  
 end
