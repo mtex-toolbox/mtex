@@ -67,12 +67,12 @@ for i = 1:length(subs)
     
     phases = false(1,length(ebsd.CSList));
     for k=1:length(ebsd.CSList)
-      if isa(ebsd.CSList{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
-          (isempty(subs{i}.mineral) || strcmp(ebsd.CS{k}.mineral,subs{i}.mineral))
+      if isa(ebsd.CSList{k},'symmetry') && ebsd.CSList{k} == subs{i} && ...
+          (isempty(subs{i}.mineral) || strcmp(ebsd.CSList{k}.mineral,subs{i}.mineral))
         phases(k) = true;
       end
     end
-    ind = ind & phases(ebsd.phaseId);
+    ind = ind(:) & ebsd.phaseId==find(phases);
     
   elseif isa(subs{i},'grain2d')
     
@@ -81,13 +81,13 @@ for i = 1:length(subs)
         'You should compute grains by the command'],...
         '  [grains,ebsd.grainId] = calcGrains(ebsd)');
     end
-    ind = ind & ismember(ebsd.prop.grainId(:),subs{i}.id);
+    ind = ind(:) & ismember(ebsd.prop.grainId(:),subs{i}.id);
     
   elseif isa(subs{i},'logical')
     
     %sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
-    ind = ind & subs{i}(:);
+    ind = ind(:) & subs{i}(:);
     
   elseif isnumeric(subs{i})
     
