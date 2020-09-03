@@ -6,7 +6,7 @@ classdef Miller < vector3d
   %
   % Syntax
   %   m = Miller(h,k,l,cs)
-  %   m = Miller(H,K,I,L,cs)
+  %   m = Miller(h,k,i,l,cs)
   %   m = Miller(u,v,w,cs,'uvw')
   %   m = Miller(U,V,T,W,cs,'UVTW')
   %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
@@ -18,7 +18,7 @@ classdef Miller < vector3d
   %
   % Input
   %  h,k,l   - three digit reciprocal coordinates
-  %  H,K,I,L - four digit reciprocal coordinates
+  %  h,k,i,l - four digit reciprocal coordinates
   %  u,v,w   - three digit direct coordinates
   %  U,V,T,W - four digit direct coordinates
   %  x       - @vector3d
@@ -26,7 +26,7 @@ classdef Miller < vector3d
   %
   % Class Properties
   %  CS        - @crystalSymmetry
-  %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
+  %  dispStyle - 'hkl', 'uvw', 'hkil', 'UVTW'
   %
   % See also
   % CrystalDirections CrystalOperations CrystalReferenceSystem
@@ -74,6 +74,9 @@ classdef Miller < vector3d
 
       % extract disp style
       dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
+      if ~isempty(dispStyle) && strcmp(dispStyle{1},'hkl') && any(strcmp(m.CSprivate.lattice,{'trigonal','hexagonal'}))
+        dispStyle{1} = 'hkil';
+      end
       
       if nargin == 0 %empty constructor
 
@@ -239,8 +242,11 @@ classdef Miller < vector3d
       m.z = hkl * M(:,3); 
       
       % set default display style
-      m.dispStyle = 'hkl';
-      
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+        m.dispStyle = 'hkil';
+      else
+        m.dispStyle = 'hkl';
+      end
     end
     
     function m = set.h(m,h)

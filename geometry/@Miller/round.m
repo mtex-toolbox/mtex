@@ -1,22 +1,14 @@
 function h = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 
+% ignore xyz case
+if strcmp(m.dispStyle,'xyz'), return; end
 
 sh = size(h);
 
-switch lower(h.dispStyle)
-  
-  case  'uvw'
-    mOld = h.uvw;
-  case 'uvtw'
-    mOld = h.UVTW;  
-  case 'hkl'
-    mOld = h.hkl;
-  otherwise
-    return;
-end
+mOld = m(m.dispStyle);
 
-% the Miller indices
+% consider only 3 digits Miller indices
 mOld = mOld(:,[1 2 end])';
 
 % the 
@@ -46,16 +38,6 @@ end
 h = h .* multiplier;
 
 % now round
-switch lower(h.dispStyle)
-  
-  case 'uvw'
-    h.uvw = round(h.uvw);
-  case 'uvtw'
-    h.UVTW = round(h.UVTW);
-  case 'hkl'
-    h.hkl = round(h.hkl);
-  otherwise
-    return;
-end
+m.(m.dispStyle) = mOld;
 
 h = reshape(h,sh);

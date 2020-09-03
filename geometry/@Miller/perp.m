@@ -10,15 +10,26 @@ function m = perp(m)
 % Output
 %  n - @Miller
 
-m = Miller(perp@vector3d(m),m.CS);
-
 switch m.dispStyle
   
-  case {'uvw','UVTW'}, m.dispStyle = 'hkl';  
   case 'hkl'
-    if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-      m.dispStyle = 'UVTW';
-    else
-      m.dispStyle = 'uvw';
-    end  
+    
+    dispStyle = 'uvw';
+  
+  case 'hkil'
+    
+    dispStyle = 'UVTW';
+  
+  case 'uvw'
+    
+    dispStyle = 'hkl';
+      
+  case 'UVTW'
+    
+    dispStyle = 'hkil';
+    
+end
+
+Miller(perp@vector3d(m),m.CS,dispStyle);
+
 end

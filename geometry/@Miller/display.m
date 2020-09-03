@@ -17,34 +17,12 @@ if length(m) < 20 && ~isempty(m)
   
   eps = 1e4;
   
-  switch lower(m.dispStyle)
-    
-    case 'uvw'
+  % extract coordinates in the correct form
+  d = round(m.(m.dispStyle) * eps)./eps;
+  
+  % set up coordinate names
+  columnNames = vec2cell(m.dispStyle);
       
-      uvtw = round(m.uvw * eps)./eps;
-      uvtw(uvtw==0) = 0;
-      
-      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
-          
-    case 'uvtw'
-      
-      uvtw = round(m.UVTW * eps)./eps;
-      uvtw(uvtw==0) = 0;
-      
-      cprintf(uvtw.','-L','  ','-Lr',{'U' 'V' 'T' 'W'});
-      
-    case 'hkl'
-    
-      hkl = round(m.hkl * eps)./eps;
-      hkl(hkl==0) = 0;
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))                
-        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
-      else
-        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
-      end
-    case 'xyz'
-      xyz = round(m.xyz * eps)./eps;
-      xyz(xyz==0) = 0;      
-      cprintf(xyz.','-L','  ','-Lr',{'x' 'y' 'z'});
-  end
+  cprintf(d,'-L','  ','-Lc',columnNames);
+  
 end

@@ -9,7 +9,7 @@ function c = char(m,varargin)
 c = cell(length(m),1);
 
 % output format
-format = extract_option(varargin,{'hkl','uvw','UVTW'});
+format = extract_option(varargin,{'hkl','hkil','uvw','UVTW'});
 if ~isempty(format), m.dispStyle = format{1};end
 
 for i = 1:length(m)
