@@ -121,6 +121,13 @@ if parentVariants % parent variants
   p2cVariants = unique(p2cVariants);
   p2cVariants.SS = p2c.SS;
 
+  %Sort variants according to parent CS 
+  VarRotations = rotation(inv(p2c)*p2cVariants);
+  CSrotations = p2c.CS.properGroup.rotation;
+  [ind,~] = find(VarRotations == CSrotations);
+  [~,order] = sort(ind);
+  p2cVariants = p2cVariants.subSet(order);
+  
   if exist('variantId','var')
     p2cVariants = p2cVariants.subSet(variantId);
   end
@@ -144,9 +151,18 @@ else % child variants
   p2cVariants = unique(p2cVariants);
   p2cVariants.CS = p2c.CS;
   
+  %Sort variants according to parent CS 
+  VarRotations = rotation(inv(p2c)*p2cVariants);
+  CSrotations = p2c.CS.properGroup.rotation;
+  [ind,~] = find(VarRotations == CSrotations);
+  [~,order] = sort(ind);
+  p2cVariants = p2cVariants.subSet(order);
+  
   if exist('variantId','var')
     p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
   end
+  
+
   
   if exist('oriParent','var')
     out = oriParent .* inv(p2cVariants);
