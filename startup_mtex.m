@@ -107,14 +107,18 @@ cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
 if isappdata(0,'mtex')
   
   oldMTEX = getappdata(0,'mtex');
+  
+  rmappdata(0,'mtex');
+  if isappdata(0,'tmpData'), rmappdata(0,'tmpData'); end
+  if isappdata(0,'data2beDisplayed'), rmappdata(0,'data2beDisplayed'); end
+  
+  disp('I found another version of MTEX and remove it from the current search path!');
+  
+  close all
+  evalin('base','clear classes')
+  
   if ~isfield(oldMTEX,'mtexPath') || ~strcmpi(oldMTEX.mtexPath,local_path) 
   
-    rmappdata(0,'mtex');
-    disp('I found another version of MTEX and remove it from the current search path!');
-  
-    close all
-    evalin('base','clear classes')
-          
     inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,oldMTEX.mtexPath)));
     if ~isempty(inst_dir), rmpath(inst_dir{:}); end
     
