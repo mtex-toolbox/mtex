@@ -32,6 +32,7 @@ else
 end
 
 if check_option(varargin,'noSym2'), ss = []; end
+if check_option(varargin,'noSym1'), cs = []; end
 
 
 % ensure there is something to do
@@ -39,10 +40,10 @@ l1 = length(o1); l2 = length(o2);
 if l1 * l2 == 0, d = []; return; end
 
 % maybe we can shrink down everything to quaternion
-if isLaue(cs) || isLaue(ss) || (cs.isProper && isProper(ss) ...
+if isLaue(cs) || isLaue(ss) || (isProper(cs) && isProper(ss) ...
     && all(o1.i(:) == o1.i(1)) && all(o2.i(:) == o1.i(1)))
 
-  cs = cs.properGroup; 
+  if ~isempty(cs), cs = cs.properGroup; end
   if ~isempty(ss), ss = ss.properGroup; end
   
   if check_option(varargin,'all')
