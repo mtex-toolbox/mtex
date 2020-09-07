@@ -55,10 +55,10 @@ for k = 1:maxIt
   
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
-  %fprintf('%1.3f ',diso(k));
+  %fprintf('%1.3f°\n',diso(k));
   
   %check for convergence
-  if k>5 && norm(diso(k-5:k)) < 0.1, break; end
+  if k>5 && median(diso(k-5:k)) < 0.02, break; end
   
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
