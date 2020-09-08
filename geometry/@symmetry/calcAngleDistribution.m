@@ -19,58 +19,16 @@ function [ad,omega] = calcAngleDistribution(cs,varargin)
 %
 
 oR = fundamentalRegion(cs,varargin{:});
-if check_option(varargin,'oR')
-  [ad,omega] = oR.calcAngleDistribution;
-  return
-end
 
 if ~isempty(varargin) && isa(varargin{1},'symmetry')
-  
   cs = union(cs,varargin{1});
-  
-  % if the union of both symmetries is again a crystal symmetry 
-  % we can simply takes its angle distribution
-  if isa(cs,'symmetry')
-    
-    LaueName = cs.LaueName;
-    nfold = cs.nfold;
-        
-  else % otherwise we have to check
-    
-    
-    if any(isnull(oR.N.angle-pi+pi/12))
-      % we have a 12 fold axis
-      
-      nfold = 12;
-      if any(isnull(oR.N.angle-pi+pi/4))
-        % and a 4 fold axis
-        LaueName = 'C3O';
-      
-      elseif any(isnull(oR.N.angle-pi+pi/2))
-        % and a 2 fold axis
-        LaueName = 'D12';        
-        
-      else
-        
-        LaueName = 'C12';
-        
-      end
-      
-    else
-      
-      % this is the only thing left
-      LaueName = 'C3T';
-      nfold = 6;
-      
-    end        
-  end
-  
   varargin(1) = [];
-else
-  
-  LaueName = cs.LaueName;
-  nfold = cs.nfold;
-  
+end
+
+% use fundamental region for the computation
+if cs.id == 0 ||  check_option(varargin,'oR')
+  [ad,omega] = oR.calcAngleDistribution;
+  return
 end
 
 % get range of rotational angles
@@ -82,6 +40,9 @@ else
   omega = omega(omega < oR.maxAngle + 1e-8);
 end
 
+%
+nfold = cs.nfold;
+
 % multiplier
 xchi = ones(size(omega));
 
@@ -91,7 +52,8 @@ xhn = tan(pi/2/nfold);
 % magic number
 rmag = tan(omega./2);
 
-switch LaueName
+% explicite formulae
+switch cs.LaueName
           
   case {'12/m1','2/m11','112/m','-3','4/m','6/m','C12'}
                     
@@ -107,7 +69,7 @@ switch LaueName
     
     % second region ->
     ind = rmag > 1.0;
-    xchi(ind) = xchi(ind) + nfold*(1./rmag(ind)-1);
+    xchi(ind) = xchi(ind) + nfold * (1./rmag(ind)-1);
     
     % third region ->
     xedge = sqrt(1 + xhn^2);
@@ -115,8 +77,8 @@ switch LaueName
     
     alpha1 = acos(xhn ./ rmag(ind));
     alpha2 = acos(1 ./ rmag(ind));
-    XS21 = S2(alpha1,alpha2,pi/2);
-    XS22 = S2(alpha2,alpha2,pi/nfold);
+    XS21 = S2(alpha1,alpha2, pi/2);
+    XS22 = S2(alpha2,alpha2, pi/nfold);
     
     xchi(ind) = xchi(ind) + nfold * XS21./pi + nfold * XS22./2./pi;
     
@@ -247,8 +209,7 @@ switch LaueName
     % 3 fold axes intersecting each other
     ind = rmag > xh6;
     xchi(ind) = xchi(ind) + 4*S2(alpha3(ind),alpha3(ind),delta2);
-    
-    
+
 end
 
 % compute output

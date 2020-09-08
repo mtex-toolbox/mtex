@@ -13,7 +13,10 @@ function export(ebsd,fname,varargin)
 
 [~,~,ext] = fileparts(fname);
 switch lower(ext)
-  case {'.h5','hdf5'}
+  case {'.crc','.cpr'}
+    export_crc(ebsd,fname,varargin{:});
+    return
+  case {'.h5','.hdf5'}
     export_h5(ebsd,fname,varargin{:});
     return
   case '.ctf'
