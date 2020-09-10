@@ -139,7 +139,7 @@ classdef embedding
 
       disp([' symmetry: ',char(obj.CS,'verbose')]);
       disp([' ranks: ',xnum2str(obj.rank,'delimiter',', ')]);
-      disp([' dim: ' xnum2str(sum( (obj.rank+2).*(obj.rank+1)./2))]);
+      disp([' dim: ' xnum2str(embedding.get_dim(obj.CS))]);
       disp([' size: ' size2str(obj)]);
       
       if prod(size(obj))~=1, return; end %#ok<PSIZE>
@@ -176,8 +176,6 @@ classdef embedding
       % define the embedding
       obj = embedding(u,cs,l);
       
-      % symmetrise
-      %obj = mean(rotate_outer(obj,cs.properGroup.rot));
       
       % subtract mean value - this ensures that 
       %
@@ -203,21 +201,15 @@ classdef embedding
       %
           
       [cs,varargin] = getClass(varargin,'symmetry');
+      dim = embedding.get_dim(cs);
       
-      [l,alpha] = embedding.coefficients(cs);
+      % random vector in linear space
+      y = rand(dim,1);
       
-      % embedding of the identical orientation
-      u = cell(length(l),1);
-      for i = 1:length(l)
-        u{i} = tensor.rand(varargin{:},'rank',alpha(i));
-        if alpha(i) == 1, u{i} = vector3d(u{i}); end
-      end
-      
-      % define the embedding
-      obj = embedding(u,cs,l);
-      
-      % TODO
-      % obj = obj - embedding.zero(obj);
+      % create embedding
+      obj = tensorize(y,cs);
+      obj = obj./norm(obj);
+
       
     end
         
@@ -251,6 +243,36 @@ classdef embedding
       %t = t.symmetrise;
       
     end
+    
+    function radius = radius_sphere(cs)
+        % computes the norm norm(T) for an embedding T before normalizing
+        
+        % compute embedding of identity
+      [l,alpha,weights] = embedding.coefficients(cs);
+      u = cell(length(l),1);
+      for i = 1:length(l)
+        if alpha(i) > 1
+            u{i} = mean((cs.properGroup.rot*l(i))^alpha(i)).*weights(i);  
+        else
+          u{i} =  mean(cs.properGroup.rot*l(i)).*weights(i);
+        end
+      end
+      
+      % define the embedding
+      obj = embedding(u,cs,l);       
+      obj = obj - embedding.zero(obj,weights);
+      
+      radius = norm(obj);
+     
+    end
+    
+    function s = get_dim(cs)
+        % get dimension of linear space of embeddings = dimension of
+        % vectorize(embedding)
+        id = embedding.id(cs);
+        s = length(vectorize(id));
+    end
+    
     
     
     function [l,alpha,weights] = coefficients(cs)
