@@ -34,10 +34,10 @@ switch cs.Laue.id
             u1 = reshape(vector3d(y(1:3,:,:)),dim,[]);
             
             for k=1:5
-                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(3+k,:,:),1,1,dim);
-                 M3(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(8+k,:,:),1,1,dim);
-                 M2(3,3,:,:)=zeros(dim,1);
-                 M3(3,3,:,:)=zeros(dim,1);
+                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(3+k,:,:),[1,1,dim]);
+                 M3(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(8+k,:,:),[1,1,dim]);
+                 M2(3,3,:,:)=zeros([dim,1]);
+                 M3(3,3,:,:)=zeros([dim,1]);
             end
             
             [I1,I2]=ndgrid(1:3);
@@ -64,8 +64,8 @@ switch cs.Laue.id
             dim2{4}=[2 2];
             dim2{5}=[2 3];
             for k=1:5
-                 M1(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(k,:,:),1,1,dim);
-                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(5+k,:,:),1,1,dim);
+                 M1(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(k,:,:),[1,1,dim]);
+                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(5+k,:,:),[1,1,dim]);
             end
                  M1(3,3,:,:)=reshape(-y(1,:,:)-y(4,:,:),[1,1,dim]);
                  M2(3,3,:,:)=reshape(-y(9,:,:)-y(6,:,:),[1,1,dim]);
@@ -98,7 +98,7 @@ switch cs.Laue.id
             dim3{7}=[2 3 3];
             
             for k=1:7
-                  M1(dim3{k}(1),dim3{k}(2),dim3{k}(3),:,:) = reshape(y(k,:,:),1,1,dim);
+                  M1(dim3{k}(1),dim3{k}(2),dim3{k}(3),:,:) = reshape(y(k,:,:),[1,1,dim]);
             end
             M1(1,1,1,:,:)=reshape(-y(3,:,:)-y(5,:,:),[1,1,1,dim]);
             M1(2,2,2,:,:)=reshape(-y(1,:,:)-y(7,:,:),[1,1,1,dim]);
@@ -145,7 +145,7 @@ switch cs.Laue.id
             dim2{4}=[2 2];
             dim2{5}=[2 3];
             for k=1:5
-                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(7+k,:,:),1,1,dim);
+                 M2(dim2{k}(1),dim2{k}(2),:,:) = reshape(y(7+k,:,:),[1,1,dim]);
             end
                  M2(3,3,:,:)=reshape(-y(8,:,:)-y(11,:,:),[1,1,dim]);
                  
@@ -180,7 +180,7 @@ switch cs.Laue.id
             dim4{13}=[2 2 3 3];
             dim4{14}=[2 3 3 3];
         for k=1:14
-            M1(dim4{k}(1),dim4{k}(2),dim4{k}(3),dim4{k}(4),:,:) = reshape(y(k,:,:),1,1,1,1,dim);
+            M1(dim4{k}(1),dim4{k}(2),dim4{k}(3),dim4{k}(4),:,:) = reshape(y(k,:,:),[1,1,1,1,dim]);
         end
             M1(3,3,3,3,:,:) = reshape(-reshape(M1(1,1,1,1,:,:),[1,dim])-reshape(M1(2,2,2,2,:,:),[1,dim])-2*reshape(M1(1,1,2,2,:,:),[1,dim])-2*reshape(M1(1,1,3,3,:,:),[1,dim])-2*reshape(M1(2,2,3,3,:,:),[1,dim]),[1,1,1,1,dim]);
             
@@ -215,9 +215,9 @@ switch cs.Laue.id
             dim4{13}=[2 2 3 3];
             dim4{14}=[2 3 3 3];
         for k=1:14
-            M1(dim4{k}(1),dim4{k}(2),dim4{k}(3),dim4{k}(4),:,:) = reshape(y(k,:,:),1,1,1,1,dim);
+            M1(dim4{k}(1),dim4{k}(2),dim4{k}(3),dim4{k}(4),:,:) = reshape(y(k,:,:),[1,1,1,1,dim]);
         end
-            M1(3,3,3,3,:,:) = reshape(-y(1,:,:)-2*y(4,:,:)-2*y(6,:,:)-y(11,:,:)-2*y(13,:,:),1,1,1,1,dim);
+            M1(3,3,3,3,:,:) = reshape(-y(1,:,:)-2*y(4,:,:)-2*y(6,:,:)-y(11,:,:)-2*y(13,:,:),[1,1,1,1,dim]);
             
         %symmetrise M1
             [I1,I2,I3,I4]=ndgrid(1:3);
@@ -227,13 +227,13 @@ switch cs.Laue.id
                 M1(81*i+sub2ind([3,3,3,3],P(:,1),P(:,2),P(:,3),P(:,4))) =M1(81*i+sub2ind([3,3,3,3],Q(:,1),Q(:,2),Q(:,3),Q(:,4)));
             end
             
-            M2(2,3,:,:) = reshape(-sqrt(2)*y(5,:,:)-sqrt(2)*y(12,:,:)-sqrt(2)*y(14,:,:),1,1,1,1,dim);
-            M2(1,3,:,:) = reshape(-sqrt(2)*y(3,:,:)-sqrt(2)*y(8,:,:)-sqrt(2)*y(10,:,:),1,1,1,1,dim);
-            M2(1,2,:,:) = reshape(-sqrt(2)*y(2,:,:)-sqrt(2)*y(7,:,:)-sqrt(2)*y(9,:,:),1,1,1,1,dim);
-            M2(2,2,:,:) = reshape(-sqrt(2)*y(4,:,:)-sqrt(2)*y(11,:,:)-sqrt(2)*y(13,:,:),1,1,1,1,dim);
-            M2(1,3,:,:) = reshape(-sqrt(2)*y(3,:,:)-sqrt(2)*y(8,:,:)-sqrt(2)*y(10,:,:),1,1,1,1,dim);
-            M2(3,3,:,:) = reshape(-sqrt(2)*y(6,:,:)-sqrt(2)*y(13,:,:)-sqrt(2)*reshape(M1(3,3,3,3,:,:),[1,dim]),1,1,1,1,dim);
-            M2(1,1,:,:) = reshape(-reshape(M2(2,2,:,:),[1,dim])-reshape(M2(3,3,:,:),[1,dim]),1,1,dim);
+            M2(2,3,:,:) = reshape(-sqrt(2)*y(5,:,:)-sqrt(2)*y(12,:,:)-sqrt(2)*y(14,:,:),[1,1,1,1,dim]);
+            M2(1,3,:,:) = reshape(-sqrt(2)*y(3,:,:)-sqrt(2)*y(8,:,:)-sqrt(2)*y(10,:,:),[1,1,1,1,dim]);
+            M2(1,2,:,:) = reshape(-sqrt(2)*y(2,:,:)-sqrt(2)*y(7,:,:)-sqrt(2)*y(9,:,:),[1,1,1,1,dim]);
+            M2(2,2,:,:) = reshape(-sqrt(2)*y(4,:,:)-sqrt(2)*y(11,:,:)-sqrt(2)*y(13,:,:),[1,1,1,1,dim]);
+            M2(1,3,:,:) = reshape(-sqrt(2)*y(3,:,:)-sqrt(2)*y(8,:,:)-sqrt(2)*y(10,:,:),[1,1,1,1,dim]);
+            M2(3,3,:,:) = reshape(-sqrt(2)*y(6,:,:)-sqrt(2)*y(13,:,:)-sqrt(2)*reshape(M1(3,3,3,3,:,:),[1,dim]),[1,1,1,1,dim]);
+            M2(1,1,:,:) = reshape(-reshape(M2(2,2,:,:),[1,dim])-reshape(M2(3,3,:,:),[1,dim]),[1,1,dim]);
             
             %symmetrise M2
             [I1,I2]=ndgrid(1:3);
@@ -252,9 +252,9 @@ switch cs.Laue.id
           dim6 = unique(combnk([1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3],6),'rows');
       
           for k=1:27
-            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),1,1,1,1,1,1,dim);
+            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),[1,1,1,1,1,1,dim]);
           end
-            M1(3,3,3,3,3,3,:,:) = zeros(1,1,1,1,1,1,dim);
+            M1(3,3,3,3,3,3,:,:) = zeros([1,1,1,1,1,1,dim]);
         %symmetrise M1
             [I1,I2,I3,I4,I5,I6]=ndgrid(1:3);
             P = [I1(:),I2(:),I3(:),I4(:),I5(:),I6(:)];
@@ -280,9 +280,9 @@ switch cs.Laue.id
                   1 1 3 3;
                   2 2 3 3];
           for k=1:27
-            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),1,1,1,1,1,1,dim);
+            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),[1,1,1,1,1,1,dim]);
           end
-            M1(3,3,3,3,3,3,:,:) = zeros(1,1,1,1,1,1,dim);
+            M1(3,3,3,3,3,3,:,:) = zeros([1,1,1,1,1,1,dim]);
         %symmetrise M1
             [I1,I2,I3,I4,I5,I6]=ndgrid(1:3);
             P = [I1(:),I2(:),I3(:),I4(:),I5(:),I6(:)];
@@ -292,7 +292,7 @@ switch cs.Laue.id
             end
             M1(3,3,3,3,3,3,:,:) = reshape(-reshape(M1(1,1,1,1,1,1,:,:),[1,dim])-reshape(M1(2,2,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,3,3,3,3,:,:),[1,dim])-3*reshape(M1(2,2,1,1,1,1,:,:),[1,dim])-3*reshape(M1(2,2,3,3,3,3,:,:),[1,dim])-3*reshape(M1(3,3,1,1,1,1,:,:),[1,dim])-3*reshape(M1(3,3,2,2,2,2,:,:),[1,dim])-6*reshape(M1(1,1,2,2,3,3,:,:),[1,dim]),[1,1,1,1,dim]);    
             
-            M2 = zeros(3,3,dim);
+            M2 = zeros([3,3,dim]);
             for i1 =1:1:3
                 for i2 =1:1:3
                     for k =1:1:3
@@ -307,7 +307,7 @@ switch cs.Laue.id
             M2(3,3,:,:) = -reshape(reshape(M2(2,2,:,:),[1,dim])+reshape(M2(1,1,:,:),[1,dim]),[1,1,dim]);
             
             u1 = tensor(M1,'rank',6);
-            u2 = tensor(M1,'rank',2);
+            u2 = tensor(M2,'rank',2);
             E = embedding({u1;u2},cs,l);
             E = reshape(E,dim(1),[]);
             
