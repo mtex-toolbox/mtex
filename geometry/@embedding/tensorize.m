@@ -5,11 +5,11 @@ function E = tensorize(y,cs)
 %   E = tensorize(y,cs)
 %
 % Input
-%  y - vector of double
-%  cs - crystalSymmetry
+%  y - double
+%  cs - @crystalSymmetry
 %
 % Output
-%  E - @oembdding
+%  E - @embedding
 %
 dim = size(y);
 dim = dim(2:end);
@@ -249,11 +249,98 @@ switch cs.Laue.id
             E = reshape(E,dim(1),[]);
         
         case 35 % C6 
+          dim6 = unique(combnk([1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3],6),'rows');
+      
+          for k=1:27
+            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),1,1,1,1,1,1,dim);
+          end
+            M1(3,3,3,3,3,3,:,:) = zeros(1,1,1,1,1,1,dim);
+        %symmetrise M1
+            [I1,I2,I3,I4,I5,I6]=ndgrid(1:3);
+            P = [I1(:),I2(:),I3(:),I4(:),I5(:),I6(:)];
+            Q = sort(P,2,'ascend');
+            for i=0:1:prod(dim)-1
+                M1(3^6*i+sub2ind([3,3,3,3,3,3],P(:,1),P(:,2),P(:,3),P(:,4),P(:,5),P(:,6))) =M1(3^6*i+sub2ind([3,3,3,3,3,3],Q(:,1),Q(:,2),Q(:,3),Q(:,4),Q(:,5),Q(:,6)));
+            end
+            M1(3,3,3,3,3,3,:,:) = reshape(-reshape(M1(1,1,1,1,1,1,:,:),[1,dim])-reshape(M1(2,2,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,3,3,3,3,:,:),[1,dim])-3*reshape(M1(2,2,1,1,1,1,:,:),[1,dim])-3*reshape(M1(2,2,3,3,3,3,:,:),[1,dim])-3*reshape(M1(3,3,1,1,1,1,:,:),[1,dim])-3*reshape(M1(3,3,2,2,2,2,:,:),[1,dim])-6*reshape(M1(1,1,2,2,3,3,:,:),[1,dim]),[1,1,1,1,dim]);    
+            
+            
+            u1 = tensor(M1,'rank',6);
+            u2 = reshape(vector3d(y(28:30,:,:)),dim,[]);
+            E = embedding({u1;u2},cs,l);
+            E = reshape(E,dim(1),[]);
+            
           
         case 40 % D6 
-          
+            dim6 = unique(combnk([1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3],6),'rows');
+                dimM = [1 1 1 1;
+                  2 2 2 2;
+                  3 3 3 3;
+                  1 1 2 2;
+                  1 1 3 3;
+                  2 2 3 3];
+          for k=1:27
+            M1(dim6(k,1),dim6(k,2),dim6(k,3),dim6(k,4),dim6(k,5),dim6(k,6),:,:) = reshape(y(k,:,:),1,1,1,1,1,1,dim);
+          end
+            M1(3,3,3,3,3,3,:,:) = zeros(1,1,1,1,1,1,dim);
+        %symmetrise M1
+            [I1,I2,I3,I4,I5,I6]=ndgrid(1:3);
+            P = [I1(:),I2(:),I3(:),I4(:),I5(:),I6(:)];
+            Q = sort(P,2,'ascend');
+            for i=0:1:prod(dim)-1
+                M1(3^6*i+sub2ind([3,3,3,3,3,3],P(:,1),P(:,2),P(:,3),P(:,4),P(:,5),P(:,6))) =M1(3^6*i+sub2ind([3,3,3,3,3,3],Q(:,1),Q(:,2),Q(:,3),Q(:,4),Q(:,5),Q(:,6)));
+            end
+            M1(3,3,3,3,3,3,:,:) = reshape(-reshape(M1(1,1,1,1,1,1,:,:),[1,dim])-reshape(M1(2,2,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,2,2,2,2,:,:),[1,dim])-3*reshape(M1(1,1,3,3,3,3,:,:),[1,dim])-3*reshape(M1(2,2,1,1,1,1,:,:),[1,dim])-3*reshape(M1(2,2,3,3,3,3,:,:),[1,dim])-3*reshape(M1(3,3,1,1,1,1,:,:),[1,dim])-3*reshape(M1(3,3,2,2,2,2,:,:),[1,dim])-6*reshape(M1(1,1,2,2,3,3,:,:),[1,dim]),[1,1,1,1,dim]);    
+            
+            M2 = zeros(3,3,dim);
+            for i1 =1:1:3
+                for i2 =1:1:3
+                    for k =1:1:3
+                        s = sort([i1,i2,dimM(k,:)]) ; 
+                        t = sort([i1,i2,dimM(3+k,:)]);
+                        M2(i1,i2,:,:) = M2(i1,i2,:,:)-sqrt(3)/4*reshape(reshape(M1(s(1),s(2),s(3),s(4),s(5),s(6),:,:),[1,dim]),[1,1,dim]);
+                        M2(i1,i2,:,:) = M2(i1,i2,:,:)-sqrt(3)/2*reshape(reshape(M1(t(1),t(2),t(3),t(4),t(5),t(6),:,:),[1,dim]),[1,1,dim]);
+                    end
+                end
+            end
+            
+            M2(3,3,:,:) = -reshape(reshape(M2(2,2,:,:),[1,dim])+reshape(M2(1,1,:,:),[1,dim]),[1,1,dim]);
+            
+            u1 = tensor(M1,'rank',6);
+            u2 = tensor(M1,'rank',2);
+            E = embedding({u1;u2},cs,l);
+            E = reshape(E,dim(1),[]);
+            
+            
         case 42 % T
-  
+            
+            dim3{1}=[1 1 2];
+            dim3{2}=[1 1 3];
+            dim3{3}=[1 2 2];
+            dim3{4}=[1 2 3];
+            dim3{5}=[1 3 3];
+            dim3{6}=[2 2 3];
+            dim3{7}=[2 3 3];
+            
+            for k=1:7
+                  M(dim3{k}(1),dim3{k}(2),dim3{k}(3),:,:) = reshape(y(k,:,:),[1,1,1,dim]);
+            end
+            M(1,1,1,:,:)=reshape(-y(3,:,:)-y(5,:,:),[1,1,1,dim]);
+            M(2,2,2,:,:)=reshape(-y(1,:,:)-y(7,:,:),[1,1,1,dim]);
+            M(3,3,3,:,:)=reshape(-y(2,:,:)-y(6,:,:),[1,1,1,dim]);
+            
+            %symmetrise
+            [I1,I2,I3]=ndgrid(1:3);
+            P = [I1(:),I2(:),I3(:)];
+            Q = sort(P,2,'ascend');
+            for i=0:1:prod(dim)-1
+                M(27*i+sub2ind([3,3,3],P(:,1),P(:,2),P(:,3))) =M(27*i+sub2ind([3,3,3],Q(:,1),Q(:,2),Q(:,3)));
+            end
+             u = tensor(M,'rank',3);
+   
+            E = embedding({u},cs,l);
+            E = reshape(E,dim(1),[]);
+            
         case 45 % O 
             
         %dim = [1 2 3 5 6 9 14 15 18 27 41 42 45 54 81];
