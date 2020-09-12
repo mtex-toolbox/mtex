@@ -1,4 +1,4 @@
-%% The Schmidt Factor
+%% The Schmid Factor
 %
 %%
 % Let us assume a Nickel crystal
