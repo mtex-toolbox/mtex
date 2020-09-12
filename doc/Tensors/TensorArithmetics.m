@@ -5,17 +5,17 @@
 % 
 %% Basic algebra
 %
+% First of all, all basic operations like |*|, |.*|, |+|, |-|, |.^| known
+% from linear algebra work also on lists of tensors.
 
-T1 = tensor.rand('rank',2)
-T2 = tensor.rand('rank',2)
-
+T1 = tensor.rand('rank',2);
+T2 = tensor.rand('rank',2);
 
 % addition and multiplication
-T1 + 2*T2
+T = T1 + 2 * T2;
 
 % pointwise product
-T1.*T2
-
+T = T1 .* T2;
 
 %% Tensor Products
 % 
@@ -35,7 +35,7 @@ eps = strainTensor(diag([1 0 -1]))
 % $$\sigma_{ij} =\sum_{k,l} C_{ijkl} \epsilon_{kl}$$
 %
 % and turns it into the stress tensor $\sigma$. In MTEX such tensor
-% products can be computed in its mpst general form by the command
+% products can be computed in its most general form by the command
 % <EinsteinSum.html EinsteinSum>.
 
 sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
@@ -50,9 +50,10 @@ sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 %
 % beween two rank one tensors
 
-a = tensor.rand('rank',1)
-b = tensor.rand('rank',1)
+a = tensor([1;2;3],'rank',1);
+b = tensor([0;2;1],'rank',1);
 
+%%
 % by the command
 
 EinsteinSum(a,1,b,2)
@@ -67,8 +68,8 @@ EinsteinSum(a,1,b,2)
 EinsteinSum(a,-1,b,-1)
 
 %%
-% As a final example we consider the e linear compressibility in a certain
-% direction *v* can be computed by the formula
+% As a final example we consider the linear compressibility in a certain
+% direction |v| which can be computed by the formula
 %
 % $$ c = \sum_{i,j,k} S_{ijkk} v_i v_j$$
 %
@@ -89,32 +90,31 @@ C * eps
 C : eps
 
 %% 
-% More examples for tensor products ares
+% The double dot product between two rank two tensors is essentially their
+% inner product and can be equivalently computed from the
+% |<tensor.trace.html trace>| of their matrix product
 
-% double dot product between two rank two tensors
 T1 : T2
-
-% trace 
 trace(T1 * T2')
-
 trace(T1' * T2)
 
-% determinant
+%% Determinant
+% For rank two tensors we can compute the determinant of the tensor by the
+% command <tensor.det.html |det|>
+
 det(T1)
 
-
 %% Rotating a tensor
-% Rotation a tensor is done by the command <tensor.rotate.html rotate>.
+% Rotation a tensor is done by the command <tensor.rotate.html |rotate|>.
 % Let's define a rotation
 
-r = rotation.byEuler(45*degree,0*degree,0*degree)
+r = rotation.byEuler(45*degree,0*degree,0*degree);
 
 %%
 % Then the rotated tensor is given by
 
-Trot = rotate(T1,r)
+Trot = rotate(T1,r);
 plot(Trot)
-
 
 %%
 % Here is another example from Nye (Physical Properties of Crystals,
@@ -128,4 +128,3 @@ T = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
 
 r = rotation.byAxisAngle(zvector,-45*degree);
 T = rotate(T,r)
-
