@@ -61,7 +61,7 @@ EinsteinSum(a,1,b,2)
 %%
 % and the inner product 
 %
-% $$ a \cdot b = \sum_i a_i b_i
+% $$ a \cdot b = \sum_i a_i b_i $$
 %
 % by
 
@@ -71,7 +71,7 @@ EinsteinSum(a,-1,b,-1)
 % As a final example we consider the linear compressibility in a certain
 % direction |v| which can be computed by the formula
 %
-% $$ c = \sum_{i,j,k} S_{ijkk} v_i v_j$$
+% $$ c = \sum_{i,j,k} S_{ijkk} v_i v_j $$
 %
 % where $C = S^{-1}$ is the inverse of the comcompliance thensor, i.e. the
 % stiffness tensor
@@ -84,7 +84,7 @@ c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 % Here we used the <tensor.inv.html inv> to compute the inverse of any rank
 % 2 or rank 4 tensor. There are shortcuts in MTEX for specific tensor
 % products. E.g. the relation between stress and strain can be more
-% compactly written as a double dot product
+% compactly written as a <tensor.colon.html edouble dot product>
 
 C * eps
 C : eps
