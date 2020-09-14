@@ -20,15 +20,23 @@ elseif T.rank < 2
 end
 
 S = T;
-S.M = S.M .* 0;
-
 dims = T.rank+1 : ndims(T.M);
-
-% take the mean over all permutations of the dimensions
 allP = perms(1:T.rank);
-for p = allP.'
-  S.M = S.M + permute(T.M,[p;dims]);
-end
-S.M = S.M ./ size(allP,1);
 
+if any(isnan(S.M(:)))
+  
+  % take the mean over all permutations of the dimensions
+  for p = allP.'
+    S.M = max(S.M, permute(T.M,[p;dims]),'omitnan');
+  end
+  
+else
+  S.M = S.M .* 0;
+
+  % take the mean over all permutations of the dimensions
+  for p = allP.'
+    S.M = S.M + permute(T.M,[p;dims]);
+  end
+  S.M = S.M ./ size(allP,1);
+  
 end
