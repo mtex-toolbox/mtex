@@ -172,8 +172,14 @@ classdef EBSD < phaseList & dynProp & dynOption
     function ebsd = set.orientations(ebsd,ori)
       
       if ~isempty(ebsd)
-        ebsd.rotations = rotation(ori);
-        ebsd.CS = ori.CS;
+        if isa(ori,'quaternion')
+          ebsd.rotations = rotation(ori);
+          ebsd.CS = ori.CS;
+        elseif isnan(ori) && length(ori)==1
+          ebsd.rotations = rotation.nan(size(ebsd));
+        else
+          error('type mismatch');
+        end
       end
             
     end

@@ -226,7 +226,10 @@ end
 
 if nargout == 0
   assignin('base',type2var(type),out); 
-  if check_option(varargin,'silent'), clear out; end
+  if ~check_option(varargin,'silent')
+    evalin('base',type2var(type));
+  end
+  clear out;
 end
 
 % restore warning style
