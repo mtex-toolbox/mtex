@@ -1,5 +1,6 @@
 function obj = setDouble(obj,d)
 
+d = reshape(d,[],obj.dim);
 s = size(obj);
 
 ind4 = [1 28 55 37 64 73 40 67 76 79 41 68 77 80];     
@@ -34,7 +35,7 @@ switch obj.CS.Laue.id
   case 18 % C3
     
     obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
-    obj.u{1} = vector3d(d(:,8:10).').';
+    obj.u{2} = vector3d(d(:,8:10).').';
     
   case {21,24} % D3
     
@@ -67,19 +68,21 @@ switch obj.CS.Laue.id
   case 40 % D6
     obj.u{1}.M = fillT6(d(:,1:27)); obj.u{1} = obj.u{1}.sym;  
     
-    obj.u{2}.M = zeros([3,3,s]);
-      dimM = [1 1 1 1; 2 2 2 2; 3 3 3 3; 1 1 2 2;1 1 3 3;2 2 3 3];
-            for i1 =1:1:3
-                for i2 =1:1:3
-                    for k =1:1:3
-                        v = sort([i1,i2,dimM(k,:)]) ; 
-                        t = sort([i1,i2,dimM(3+k,:)]);
-                        obj.u{2}.M(i1,i2,:,:) = obj.u{2}.M(i1,i2,:,:)-sqrt(3)/4*reshape(reshape(obj.u{1}.M(v(1),v(2),v(3),v(4),v(5),v(6),:,:),[1,s]),[1,1,s]);
-                        obj.u{2}.M(i1,i2,:,:) = obj.u{2}.M(i1,i2,:,:)-sqrt(3)/2*reshape(reshape(obj.u{1}.M(t(1),t(2),t(3),t(4),t(5),t(6),:,:),[1,s]),[1,1,s]);
-                    end
-                end
-            end
-
+    M = zeros([3,3,size(d,1)]);
+    dimM = [1 1 1 1; 2 2 2 2; 3 3 3 3; 1 1 2 2;1 1 3 3;2 2 3 3];
+    for i1 =1:1:3
+      for i2 =1:1:3
+        for k =1:1:3
+          v = [i1,i2,dimM(k,:)] ;
+          t = [i1,i2,dimM(3+k,:)];
+          M(i1,i2,:) = M(i1,i2,:) ...
+            - sqrt(3)/4 * reshape(obj.u{1}.M(v(1),v(2),v(3),v(4),v(5),v(6),:),1,1,[]) ...
+            - sqrt(3)/2 * reshape(obj.u{1}.M(t(1),t(2),t(3),t(4),t(5),t(6),:),1,1,[]);
+        end
+      end
+    end
+    obj.u{2}.M = M;
+    
   case 42 % T
       obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     
