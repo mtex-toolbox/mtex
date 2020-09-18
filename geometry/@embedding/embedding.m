@@ -478,60 +478,75 @@ classdef embedding
     
     function checkProjection(ori)
       
+      
       if nargin == 0
-        ori = orientation.rand(100,crystalSymmetry('432'));
+        disp(' ');
+        for k = 1:11
+          embedding.checkProjection(crystalSymmetry('laueId',k));
+        end
+        return
       elseif isa(ori,'symmetry')
-          ori = orientation.rand(100,ori);
+        ori = orientation.rand(1000,ori);
       end
       cs  = ori.CS;
+      
+      
+      try
         
-      t = ori*embedding.tangential(cs);
-      r = embedding.rand(size(ori),cs);
+        t = ori*embedding.tangential(cs);
+        r = embedding.rand(size(ori),cs);
       
-      n = r - sum(dot(repmat(r,1,3),t) .* t,2);
+        n = r - sum(dot(repmat(r,1,3),t) .* t,2);
       
-      % check orthogonolity of the normal vector
-      % dot(n(1),t(1,:))
+        % check orthogonolity of the normal vector
+        % dot(n(1),t(1,:))
       
-      e = embedding(ori) + 0.01 * n;
+        e = embedding(ori) + 0.01 * n;
                 
-      oriRec = project(e);
+        [oriRec, ~, numIter] = project(e);
       
-      max(angle(ori,oriRec)./degree)
+        if max(angle(ori,oriRec)./degree)<1e-5
+          disp([cs.LaueName, ' ..... passed, iterations: ' int2str(numIter)]);
+        else
+          disp([cs.LaueName, ' ..... error: ' ...
+            xnum2str(max(angle(ori,oriRec)./degree)) '° ' ...
+            'iterations: ' int2str(numIter)]);
+        end
+      catch
+        disp([cs.LaueName, ' ..... error']);
+      end
       
     end
     
     function checkDouble(ori)
       
-      %if nargin == 0
-      %  ori = orientation.rand(100,crystalSymmetry('432'));
-      %elseif isa(ori,'symmetry')
-      %  ori = orientation.rand(100,ori);
-      %end
-      %cs  = ori.CS;
-      
-      disp(' ');
-      for k = 1:11
-        try
-          cs = crystalSymmetry('laueId',k);
-          ori = orientation.rand(100,cs);
-        
-          e = embedding(ori) + 0.01 * embedding.rand(size(ori),cs);
-      
-          eNew = e;
-          eNew.M = e.M;
-                  
-          if max(norm(e-eNew))<1e-8
-            disp([cs.LaueName, ' ..... passed']);
-          else
-            disp([cs.LaueName, ' ..... not passed']);
-          end
-        catch
-          disp([cs.LaueName, ' ..... error']);
+      if nargin == 0
+        disp(' ');
+        for k = 1:11
+          embedding.checkDouble(crystalSymmetry('laueId',k));
         end
+        return
+      elseif isa(ori,'symmetry')
+        ori = orientation.rand(1000,ori);
+      end
+      cs  = ori.CS;
+
+      try
+        
+        e = embedding(ori) + 0.01 * embedding.rand(size(ori),cs);
+      
+        eNew = e;
+        eNew.M = e.M;
+                  
+        if max(norm(e-eNew))<1e-8
+          disp([cs.LaueName, ' ..... passed']);
+        else
+          disp([cs.LaueName, ' ..... not passed']);
+        end
+      catch
+        disp([cs.LaueName, ' ..... error']);
       end
     end
-        
   end
     
 end
