@@ -2,7 +2,7 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 % merge grains along special grain boundaries
 %
 % Whenever two grains share a grain boundary that is in the list |gB| both
-% grains are merged and the common grain boundary is removed. All the 
+% grains are merged and the common grain boundary is removed. All the
 % properties of the unmerged grains are removed in the merged grains, since
 % there is no common convention for a mean. In case of merging allong small
 % angle grain boundaries one can force MTEX to compute a new
@@ -18,7 +18,14 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %
 %   [grainsMerged,parentId] = merge(grains,tpList)
 %
+%   % merge by a list of pairs of grainIds
 %   [grainsMerged,parentId] = merge(grains,gid)
+%
+%   % merge grains with small misorientation angle
+%   [grainsMerged,parentId] = merge(grains,'threshold',delta)
+% 
+%   % merge inclusions
+%   [grainsMerged,parentId] = merge(grains,'inclusions')
 %
 % Input
 %  grains   - @grain2d
@@ -66,9 +73,22 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
   elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1)
+    
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
+    
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
+    
     A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
+    
+  elseif ischar(varargin{k}) && strcmpi(varargin{k},'inclusions')
+    
+    [isIncl, hostId] = grains.isInclusion;
+
+    A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
+    bSize = grains.boundarySize;
+    
+    varargin = [varargin,'calcMeanOrientation','inclusion'];     %#ok<AGROW>
+    
   elseif ischar(varargin{k}) && strcmpi(varargin{k},'threshold')
 
     delta = get_option(varargin,'threshold');
@@ -177,19 +197,32 @@ grainsMerged.phaseId = full(max(phaseId,[],2));
 % should we compute meanOrientation?
 if check_option(varargin,'calcMeanOrientation')
 
-  updateOriFun = get_option(varargin,'calcMeanOrientation',[],'function_handle');
+  updateOriFun = get_option(varargin,'calcMeanOrientation');
     
   for i = newInd
     
     % compute new mean orientation
-    if isempty(updateOriFun)
+    if isa(updateOriFun,'function_handle')
+      
+      oriNew = updateOriFun(grains.subSet(parentId == i));
+      
+    elseif ischar(updateOriFun) && strcmpi(updateOriFun,'inclusion')
+    
+      % the host grain is the one with the biggest circumstance
+      ind = find(parentId == i);
+      [~,hInd] = max(bSize(ind));
+      ind = ind(hInd);
+      
+      % take the host orientation for the merged grain
+      cs = grains.CSList{grains.phaseId(ind)};
+      oriNew = orientation(grains.prop.meanRotation(ind),cs);
+      
+    else % compute the mean between the merged orientationss
       
       ind = parentId == i;
       cs = grains.CSList{max(grains.phaseId(ind))};
       oriNew = mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.grainSize(ind));
             
-    else
-      oriNew = updateOriFun(grains.subSet(parentId == i));
     end
   
     % set new mean rotation
