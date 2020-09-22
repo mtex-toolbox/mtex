@@ -9,7 +9,7 @@
 % same orientation. This can be avoided by restricting the space of
 % admissible matrices to the so called fundamental region. However, this
 % creates the problem that two similar orientations may be represented by
-% very different matrices in the fundamental region. This ussualy happens
+% very different matrices in the fundamental region. This usually happens
 % if the orientations are close to the boundary of the fundamental region.
 %
 % The central problem is that the geometry of the fundamental region is not
@@ -104,7 +104,7 @@ e2 = embedding(ori2)
 % <embedding.rotate.html rotated>, <embedding.mtimes.html scaled> and one
 % can compute their <embedding.dot.html inner product>. Lets have a look at
 % the Euclidean distances $\lVert\mathcal E(\mathtt{ori_1}) - \mathcal
-% E(\mathtt{ori_1}) \rVert_2$ between the embeddings |e1| and |e2|
+% E(\mathtt{ori_2}) \rVert_2$ between the embeddings |e1| and |e2|
 
 % the Euclidean distance in the embedding
 distE = norm(e1-e2) ./ degree;
@@ -112,7 +112,7 @@ distE = norm(e1-e2) ./ degree;
 close all
 scatter(omega,distE)
 xlabel('$\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
-ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_1}) ||$','Interpreter','latex')
+ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_2}) ||_2$','Interpreter','latex')
 
 %%
 % We observe that the distance in the embedding differs slightly from the
@@ -153,12 +153,12 @@ norm(embedding(orientation.rand(5,cs))).'
 %%
 % Lets compare the norm 
 %
-% $$ n=\left\lVert\frac{1}{n} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \right\rVert$$
+% $$ n=\left\lVert\frac{1}{N} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \right\rVert$$
 % 
 % of the mean embedding with the standard deviation 
 %
 % $$ \sigma = \left(\frac{1}{N} \sum_{i=1}^N \omega(\mathtt{ori}_i,
-% \mathtt{mori})^2\right)^{1/2}$$
+% \mathtt{mori})^2\right)^{1/2},$$
 % 
 % where $\omega(\mathtt{ori}_i, \mathtt{mori})$ denotes the misorientation
 % angle between the orientations $\mathtt{ori}_i$ and the mean orientation

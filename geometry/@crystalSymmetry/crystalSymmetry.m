@@ -116,7 +116,7 @@ classdef crystalSymmetry < symmetry
         
       elseif isa(varargin{1},'quaternion')
 
-        rot = varargin{1};
+        rot = rotation(varargin{1});
         axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
       
         if check_option(varargin,'pointId')

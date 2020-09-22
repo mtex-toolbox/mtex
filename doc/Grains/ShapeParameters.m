@@ -9,17 +9,14 @@
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %
-% || |grains.grainSize| || number of measurements per grain || 
-% || <grain2d.area.html |grains.area|>  || grain area in square |grains.scanUnit| || 
-% || <grain2d.diameter.html |grains.diameter|>  || diameter in |grains.scanUnit|  || 
-% || <grain2d.perimeter.html |grains.perimeter|>  || perimeter in |grains.scanUnit| || 
-% || <grain2d.boundarySize.html |grains.boundarySize|>  || number of boundary segments || 
-% || <grain2d.centroid.html |grains.centroid|>  || x,y coordinates of the barycenter of the grain || 
-% || <grain2d.hasHole.html |grains.hasHole|>  || check for inclusions  ||
-% || <grain2d.numNeighbors.html |grains.numNeighbors|>  || number neighboring grains  || 
-% || <triplePointList.triplePointList.html |grains.triplePoints|>  || list of  triple points || 
-% || |grains.x| || x coordinates of the vertices || 
-% || |grains.y| || y coordinates of the vertices || 
+% || |grainSize| || number of measurements per grain || <grain2d.area.html |area|>  || grain area in square |grains.scanUnit| || 
+% || <grain2d.diameter.html |diameter|>  || diameter in |grains.scanUnit| <grain2d.perimeter.html |perimeter|>  || perimeter in |grains.scanUnit| || 
+% || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
+% || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
+% || <grain2d.centroid.html |centroid|>  || x,y coordinates of the barycenter of the grain || 
+% || <grain2d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <triplePointList.triplePointList.html |triplePoints|>  || list of  triple points || 
+% || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |innerBoundary|>  || subgrain boundaries || 
+% || |x| || x coordinates of the vertices || |y| || y coordinates of the vertices || 
 %
 %%
 % We start our discussion by reconstructing the grain structure from a

@@ -31,6 +31,14 @@ classdef embedding
     rank % rank of the tensors
   end
   
+  properties (Hidden = true)
+    rho % radius of the embedding befor normalization
+  end
+  
+  properties (Dependent = true)
+    M
+  end
+  
   methods
     
     function obj = embedding(u,cs,l)
@@ -49,6 +57,18 @@ classdef embedding
         obj.rank = cellfun(@(t) t.rank,obj.u);
 
       end
+      
+    end
+    
+    function d = get.M(e)
+      
+      d = double(e);
+      
+    end
+    
+    function e = set.M(e,d)
+      
+      e = setDouble(e,d);
       
     end
            
@@ -139,7 +159,7 @@ classdef embedding
 
       disp([' symmetry: ',char(obj.CS,'verbose')]);
       disp([' ranks: ',xnum2str(obj.rank,'delimiter',', ')]);
-      disp([' dim: ' xnum2str(sum( (obj.rank+2).*(obj.rank+1)./2))]);
+      disp([' dim: ' xnum2str(obj.dim)]);
       disp([' size: ' size2str(obj)]);
       
       if prod(size(obj))~=1, return; end %#ok<PSIZE>
@@ -148,10 +168,16 @@ classdef embedding
         display(obj.u{k},'name',['u' num2str(k)])
       end
     end
+    
+    function d = dim(obj)
+      d = size(obj.M,2);
+    end
+    
+    
   end
-
+  
   methods (Static = true)
-     
+    
     function obj = id(cs,varargin)
       %
       % Input
@@ -176,8 +202,6 @@ classdef embedding
       % define the embedding
       obj = embedding(u,cs,l);
       
-      % symmetrise
-      %obj = mean(rotate_outer(obj,cs.properGroup.rot));
       
       % subtract mean value - this ensures that 
       %
@@ -188,8 +212,10 @@ classdef embedding
       % should be approximately zero            
       obj = obj - embedding.zero(obj,weights);
       
+      obj.rho = norm(obj);
+      
       % normalize
-      obj = obj./norm(obj);
+      obj = obj ./ obj.rho;
       
     end
       
@@ -202,22 +228,22 @@ classdef embedding
       %  obj - @embedding
       %
           
-      [cs,varargin] = getClass(varargin,'symmetry');
+      cs = getClass(varargin,'symmetry');
+      obj = embedding.id(cs);
       
-      [l,alpha] = embedding.coefficients(cs);
-      
-      % embedding of the identical orientation
-      u = cell(length(l),1);
-      for i = 1:length(l)
-        u{i} = tensor.rand(varargin{:},'rank',alpha(i));
-        if alpha(i) == 1, u{i} = vector3d(u{i}); end
+      % get size
+      s = varargin(cellfun(@isnumeric,varargin));
+      if isempty(s)
+        s = {1,1};
+      elseif length(s) == 1
+        s = [s,1];
       end
       
-      % define the embedding
-      obj = embedding(u,cs,l);
+      % random vector in linear space
+      obj.M = rand(prod([s{:}]),obj.dim);
       
-      % TODO
-      % obj = obj - embedding.zero(obj);
+      % reshapre correctly
+      obj = reshape(obj./norm(obj),[s{:}]);
       
     end
         
@@ -247,11 +273,13 @@ classdef embedding
       % define the embedding
       t = embedding(u,cs,id.l);
       
+      t = t ./ norm(t);
+      t.rho = id.rho;
+      
       % symmetrise
       %t = t.symmetrise;
       
     end
-    
     
     function [l,alpha,weights] = coefficients(cs)
       % coefficients for isometric embeddings  
@@ -446,7 +474,79 @@ classdef embedding
       
       loglog(n,nn,'.')
     end
+    
+    
+    function checkProjection(ori)
+      
+      
+      if nargin == 0
+        disp(' ');
+        for k = 1:11
+          embedding.checkProjection(crystalSymmetry('laueId',k));
+        end
+        return
+      elseif isa(ori,'symmetry')
+        ori = orientation.rand(1000,ori);
+      end
+      cs  = ori.CS;
+      
+      
+      try
         
+        t = ori*embedding.tangential(cs);
+        r = embedding.rand(size(ori),cs);
+      
+        n = r - sum(dot(repmat(r,1,3),t) .* t,2);
+      
+        % check orthogonolity of the normal vector
+        % dot(n(1),t(1,:))
+      
+        e = embedding(ori) + 0.01 * n;
+                
+        [oriRec, ~, numIter] = project(e);
+      
+        if max(angle(ori,oriRec)./degree)<1e-5
+          disp([cs.LaueName, ' ..... passed, iterations: ' int2str(numIter)]);
+        else
+          disp([cs.LaueName, ' ..... error: ' ...
+            xnum2str(max(angle(ori,oriRec)./degree)) '° ' ...
+            'iterations: ' int2str(numIter)]);
+        end
+      catch
+        disp([cs.LaueName, ' ..... error']);
+      end
+      
+    end
+    
+    function checkDouble(ori)
+      
+      if nargin == 0
+        disp(' ');
+        for k = 1:11
+          embedding.checkDouble(crystalSymmetry('laueId',k));
+        end
+        return
+      elseif isa(ori,'symmetry')
+        ori = orientation.rand(1000,ori);
+      end
+      cs  = ori.CS;
+
+      try
+        
+        e = embedding(ori) + 0.01 * embedding.rand(size(ori),cs);
+      
+        eNew = e;
+        eNew.M = e.M;
+                  
+        if max(norm(e-eNew))<1e-8
+          disp([cs.LaueName, ' ..... passed']);
+        else
+          disp([cs.LaueName, ' ..... not passed']);
+        end
+      catch
+        disp([cs.LaueName, ' ..... error']);
+      end
+    end
   end
     
 end
