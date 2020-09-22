@@ -49,9 +49,14 @@ classdef spinTensor < velocityGradientTensor
     end    
 
     function v = vector3d(Omega)
-      v = vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:));
-      if isa(Omega.CS,'crystalSymmetry')
-        v = Miller(v,Omega.CS);
+      
+      if Omega.rank == 1
+        v = vector3d@tensor(Omega);
+      else
+        v = vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:));
+        if isa(Omega.CS,'crystalSymmetry')
+          v = Miller(v,Omega.CS);
+        end
       end
     end
     

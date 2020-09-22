@@ -1,4 +1,4 @@
-function [ori, Tori] = project(obj,ori)
+function [ori, Tori,i] = project(obj,ori)
 % project an embedding back onto the manifold of orientations.
 %
 % Syntax
@@ -22,7 +22,7 @@ Tid = embedding.id(obj.CS);
 %obj = obj.sym;
 
 % special case for triclinic symmetry
-if obj.CS.Laue.id ==2
+if 0 && obj.CS.Laue.id ==2
   
   %weighted sum in Horn
   for i = 1:length(obj.u)
@@ -36,8 +36,17 @@ if obj.CS.Laue.id ==2
   
 end
 
-% initial guess
-if nargin == 1, ori = orientation.id(obj.CS); end
+% initial guess - we need it to be sufficently close to avoid local extrema
+if nargin == 1
+  ori = equispacedSO3Grid(obj.CS,'points',10);
+  
+  d = norm(reshape(obj,[],1) - (ori * Tid).');
+
+  [~,id] = min(d,[],2);
+  
+  ori = reshape(ori(id),[],1);
+  %ori = orientation.id(obj.CS); 
+end
 
 % basis of the tangential space
 t = spinTensor([xvector,yvector,zvector]);
@@ -49,10 +58,10 @@ for i = 1:maxIter
   % compute the gradient in ori
   Tori = rotate_outer(Tid,ori);
   for k = 1:length(obj.u)
-    Tori.u{k} =obj.rank(k) * EinsteinSum(t,[1,-1],Tori.u{k},[-1 2:obj.rank(k)]);
+    Tori.u{k} = obj.rank(k) * EinsteinSum(t,[1,-1],Tori.u{k},[-1 2:obj.rank(k)]);
   end
   
-  g = vector3d(dot(Tori,obj).');
+  g = vector3d(dot(Tori,obj).').';
   
   % eradicate normalizing of embedding: adapt length ofs gradient
   g = g * obj.rho^2;

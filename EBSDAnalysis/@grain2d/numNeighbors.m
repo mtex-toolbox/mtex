@@ -8,7 +8,6 @@ function counts = numNeighbors(grains)
 %  counts - number of neighbors per grain
 %
 
-
 % get list of neighbouring grains
 pairs = grains.neighbors('full');
 

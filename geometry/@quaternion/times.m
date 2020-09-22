@@ -29,7 +29,7 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   a1 = q1.a; b1 = q1.b; c1 = q1.c; d1 = q1.d;
   a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;
   
-  %standart algorithm
+  %standard algorithm
   q.a = a1 .* a2 - b1 .* b2 - c1 .* c2 - d1 .* d2;
   q.b = b1 .* a2 + a1 .* b2 - d1 .* c2 + c1 .* d2;
   q.c = c1 .* a2 + d1 .* b2 + a1 .* c2 - b1 .* d2;
@@ -56,4 +56,3 @@ else
   q = rotate(q2,q1);
     
 end
-
