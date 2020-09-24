@@ -18,7 +18,7 @@ function [packetIDs] = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %
 
 %Determine lowest disorientations of parallel child planes
-if length(p2c) == length(p2c.variants) %List of variants
+if length(p2c) == length(p2c(1).variants) %List of variants
     omega = dot(p2c*hklParent,hklChild);
 else %OR misorientation
     omega = dot(variants(p2c,hklParent),hklChild);

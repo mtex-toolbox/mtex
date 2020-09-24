@@ -30,6 +30,7 @@ for k = find(grains.hasHole).'
   
   incl = unique(gB.grainId(all(ismember(gB.F, V),2),:));
   incl(incl == grains.id(k)) = [];
+  incl(incl == 0) = [];
   
   isIncl(incl) = true;
   hostId(incl) = grains.id(k);

@@ -1,8 +1,8 @@
-function [childId, packetId] = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
+function [variantList] = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
 %
 % Syntax
 %
-%  childId = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
+%  variantList = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
 %
 % Input
 %  parentOri  - parent @orientation
@@ -11,7 +11,7 @@ function [childId, packetId] = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
 %  variantIDs - order of child variants 
 %
 % Output
-%  childId   - child variant Id
+%  variantList  - child variant Id
 %
 % Description
 %
@@ -34,20 +34,7 @@ end
 d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
 
 % take the best fit
-[~,childId] = max(d,[],2);
-
-% compute packetId if required
-if nargout == 2
-  
-  h = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
-
-  omega = dot(variants(p2c,h),Miller(1,0,1,p2c.SS));
-
-  [~,packetId] = max(omega,[],2);
-  
-  packetId = packetId(childId);
-  
-end
-
-
+[~,variantList] = max(d,[],2);
+% remove variants for which no parent orientation exists
+variantList(all(isnan(d),2)) = nan;
 end
