@@ -1,5 +1,5 @@
 function  peri = perimeter(grains,varargin)
-% calculates the perimeter of a grain without or without inclusions
+% calculates the perimeter of a grain with or without inclusions
 %
 % Syntax
 %

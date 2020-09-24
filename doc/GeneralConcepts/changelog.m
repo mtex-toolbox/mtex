@@ -1,5 +1,36 @@
 %% MTEX Changelog
 %
+%% MTEX 5.5.0 10/2020
+%
+% *Orientation Embeddings*
+%
+% *Subgrain Boundaris*
+%
+% With MTEX 5.5 we make subgrain boundary analsis much more straight
+% forward. Starting point is the command
+%
+%   grains = calcGrains(ebsd,'threshold',[10*degree 1*degree])
+% 
+% which generates grain with a threshold of 10 degree and subgrain
+% boundaries with an threshold of 1 degree. The latter one are stored as
+% |grains.subBoundary|. In order to estimate the density of subgrain
+% boundaries per grain the commands <grain2d.subBoundaryLength.html
+% |subBoundaryLength|> and <grain2d.subBoundarySize.html |subBoundarySize|>
+% have been introduced. The documentation page <SubGrainBoundaries.html
+% Subgrain Boundaries> describes the analysis of subgrain boundaries in
+% more detail.
+%
+% *New Functionalities*
+%
+% * <grain2d.isBoundary |grains.isBoundary|> checks grains to be
+% boundary grains
+% * <grain2d.isInclusion |grains.isInclusion|> checks grains to be
+% inclusions
+% * <grain2d.merge.html |merge(grains,'inclusions')|> merges inclusions
+% into their hosts
+% * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
+% with a certain misorientation angle
+%
 %% MTEX 5.4.0 7/2020
 %
 % *Parent Grain Reconstruction*
