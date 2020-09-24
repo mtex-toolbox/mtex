@@ -15,7 +15,7 @@
 % || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
 % || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
 % || <grain2d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <triplePointList.triplePointList.html |triplePoints|>  || list of  triple points || 
-% || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |innerBoundary|>  || subgrain boundaries || 
+% || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |subBoundary|>  || subgrain boundaries || 
 % || |x|, |y| || coordinates of the vertices || <grain2d.centroid.html |centroid|>  || x,y coordinates of the barycenter || 
 %
 %%

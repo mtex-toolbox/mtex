@@ -5,7 +5,7 @@ function  peri = perimeter(gb,varargin)
 %   grains.boundary.perimeter 
 %
 %   % include subgrain boundaries
-%   grains.boundary.perimeter + grains.innerBoundary.perimeter
+%   grains.boundary.perimeter + grains.subBoundary.perimeter
 %
 %   gB = grains.boundary('Iron','Iron');
 %

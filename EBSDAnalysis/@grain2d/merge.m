@@ -154,11 +154,11 @@ for fn = fieldnames(grains.prop).'
   end
 end
 
-% 5. set new grainIds in grains.boundary and grains.innerBoundary
+% 5. set new grainIds in grains.boundary and grains.subBoundary
 ind = grains.boundary.grainId > 0;
 grainsMerged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
-ind = grains.innerBoundary.grainId > 0;
-grainsMerged.innerBoundary.grainId(ind) = old2newId(grains.innerBoundary.grainId(ind));
+ind = grains.subBoundary.grainId > 0;
+grainsMerged.subBoundary.grainId(ind) = old2newId(grains.subBoundary.grainId(ind));
 
 % 6. remove "new inner" grain boundaries 
 inner = diff(grainsMerged.boundary.grainId,1,2) == 0;

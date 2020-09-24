@@ -20,6 +20,6 @@ for k = 2:numel(varargin)
   grains.grainSize = [grains.grainSize; ng.grainSize];
   grains.poly = [grains.poly; ng.poly];
   grains.boundary = [grains.boundary; ng.boundary];
-  grains.innerBoundary = [grains.innerBoundary; ng.innerBoundary];
+  grains.subBoundary = [grains.subBoundary; ng.subBoundary];
   
 end

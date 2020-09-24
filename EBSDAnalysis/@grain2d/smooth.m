@@ -20,7 +20,7 @@ function grains = smooth(grains,iter,varargin)
 if nargin < 2 || isempty(iter), iter = 1; end
 
 % compute incidence matrix vertices - faces
-I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
+I_VF = [grains.boundary.I_VF,grains.subBoundary.I_VF];
 
 % compute vertice adjacency matrix
 A_V = I_VF * I_VF';

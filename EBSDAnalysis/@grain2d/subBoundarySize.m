@@ -12,7 +12,7 @@ function  numSec = subBoundarySize(grains,varargin)
 %
 
 
-grainIds = grains.innerBoundary.grainId;
+grainIds = grains.subBoundary.grainId;
 
 grainIds(diff(grainIds,1,2)~=0) = [];
 
