@@ -121,8 +121,7 @@
 %
 %% MTEX 5.2.3 11/2019
 %
-% * replaced |calcODF(ori)| by <orientation.calcDensity.html
-% |calcDensity(ori)|>
+% * replaced |calcODF(ori)| by |<orientation.calcDensity.html calcDensity(ori)>|
 % * bug fix in ODF reconstruction from XRD data
 % * bug fix in EBSD export to ctf
 % * bug fix in grain reconstruction
