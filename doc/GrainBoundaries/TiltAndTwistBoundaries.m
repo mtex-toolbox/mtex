@@ -56,6 +56,10 @@ plot(grains('fo').subBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b')
 % stop override mode
 hold off
 
+%%
+% In the above plot we have marked all subgrain boundaries in blue and
+% adjusted the transperency value according to the misorientation angle.
+%
 %% Misorientation Axes
 %
 % When analysing the misorientation axes of the subgrain boundary
@@ -68,7 +72,7 @@ hold off
 subGB = grains('fo').subBoundary;
 
 % plot the misorientation axes in the fundamental sector
-plot(subGB.misorientation.axis,'fundamentalRegion')
+plot(subGB.misorientation.axis,'fundamentalRegion','figSize','normal')
 
 %%
 % Obviously from the above plot it is not easy to judge about prefered
@@ -109,7 +113,7 @@ oriGB = ebsd('id',subGB.ebsdId).orientations
 axS = axis(oriGB(:,1),oriGB(:,2),'antipodal')
 
 % plot the misorientation axes
-plot(axS,'MarkerColor','black','MarkerAlpha',0.2,'MarkerSize',2)
+plot(axS,'MarkerAlpha',0.2,'MarkerSize',2)
 
 %%
 % We have used here the option |antipodal| as we have no fixed ordering of
@@ -119,7 +123,7 @@ plot(axS,'MarkerColor','black','MarkerAlpha',0.2,'MarkerSize',2)
 % coordinates
 
 density = calcDensity(axS,'halfwidth',5*degree);
-plot(density)
+plot(density,'figSize','normal')
 mtexColorbar
 
 [~,pos] = max(density)

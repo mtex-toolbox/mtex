@@ -87,7 +87,7 @@ plot(grains, grains.subBoundaryLength ./ grains.area)
 mori = grains.subBoundary.misorientation;
 
 % and visualize the distribution of the misorientation axes
-plot(mori.axis,'fundamentalRegion','contourf')
+plot(mori.axis,'fundamentalRegion','contourf','figSize','small')
 
 mtexColorbar
 
