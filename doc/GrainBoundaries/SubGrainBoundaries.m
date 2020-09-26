@@ -68,6 +68,7 @@ hold off
 % boundaries per grain pixel.
 
 plot(grains, grains.subBoundarySize ./ grains.grainSize)
+mtexColorbar
 
 %% 
 % We may compute also the density of subgrain boundaries per grain as the
@@ -76,7 +77,7 @@ plot(grains, grains.subBoundarySize ./ grains.grainSize)
 % |subBoundaryLength|> and <grain2d.area.html |area|>
 
 plot(grains, grains.subBoundaryLength ./ grains.area)
-
+mtexColorbar
 
 %% Misorientation at Subgrain Boundaries
 %

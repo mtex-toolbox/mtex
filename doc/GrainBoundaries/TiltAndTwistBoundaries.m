@@ -72,7 +72,7 @@ hold off
 subGB = grains('fo').subBoundary;
 
 % plot the misorientation axes in the fundamental sector
-plot(subGB.misorientation.axis,'fundamentalRegion','figSize','normal')
+plot(subGB.misorientation.axis,'fundamentalRegion','figSize','small')
 
 %%
 % Obviously from the above plot it is not easy to judge about prefered
@@ -84,7 +84,7 @@ plot(subGB.misorientation.axis,'fundamentalRegion','figSize','normal')
 density = calcDensity(subGB.misorientation.axis,'halfwidth',3*degree);
 
 % plot them
-plot(density)
+plot(density,'figSize','small')
 mtexColorbar
 
 % find the two prefered misorientation axes
@@ -113,7 +113,7 @@ oriGB = ebsd('id',subGB.ebsdId).orientations
 axS = axis(oriGB(:,1),oriGB(:,2),'antipodal')
 
 % plot the misorientation axes
-plot(axS,'MarkerAlpha',0.2,'MarkerSize',2)
+plot(axS,'MarkerAlpha',0.2,'MarkerSize',2,'figSize','small')
 
 %%
 % We have used here the option |antipodal| as we have no fixed ordering of
@@ -123,7 +123,7 @@ plot(axS,'MarkerAlpha',0.2,'MarkerSize',2)
 % coordinates
 
 density = calcDensity(axS,'halfwidth',5*degree);
-plot(density,'figSize','normal')
+plot(density,'figSize','small')
 mtexColorbar
 
 [~,pos] = max(density)
