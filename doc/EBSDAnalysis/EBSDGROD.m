@@ -1,4 +1,4 @@
-%% Grain Reference Orientation Deviation (GROD / Mis2mean)
+%% Grain Reference Orientation Deviation (GROD)
 %
 %%
 % The grain reference orientation deviation is the misorientation
@@ -6,10 +6,10 @@
 % $(i,j)$ and the reference or mean orientation $o_g$ of the grain the
 % position $(i,j)$ belongs to, i.e.,
 %
-% $$ \mathrm{GROD}_{i,j} = S \mathrm{inv}(o_g) o_{i,j} $$
+% $$ \mathrm{GROD}_{i,j} = \mathbf S_{i,j} \cdot \mathrm{inv}(o_g) \cdot o_{i,j} $$
 %
-% In the above formula the symmetry elements $S_{i,j}$ are chosen to
-% minimize the misorientation angle of $\mathrm{GROD}_{i,j}$.
+% In the above formula the symmetry elements $\mathbf S_{i,j}$ are chosen
+% to minimize the misorientation angle of $\mathrm{GROD}_{i,j}$.
 %
 % Let us demonstrate the computation of the grain reference orientation
 % feviation at the example of a deformed Ferrite specimen. Lets import the
@@ -17,7 +17,7 @@
 % the orientation data as the we are going to analyse the misorientation
 % axes which are very noise senitive.
 
-mtexdata ferrite
+mtexdata ferrite silent
 
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 % remove one-three pixel grains
@@ -29,7 +29,7 @@ grains = smooth(grains,5);
 
 % denoise the orientations
 F = halfQuadraticFilter;
-ebsd = smooth(ebsd,F,grains,'fill')
+ebsd = smooth(ebsd,F,grains,'fill');
 
 plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on
@@ -41,26 +41,33 @@ hold off
 % The grain reference orientation deviation is computed by the command
 % <EBSD.calcGROD.html |calcGROD|>. It requires the reconstructed |grains|
 % as second argument and that |ebsd.grainId| has been set as we did in the
-% above code. 
+% above code.
 
 % compute the grain reference orientation deviation 
 grod = ebsd.calcGROD(grains);
 
-% lets misorientation angle of the GROD
+%%
+% As a first application we simply plot the misorientation angle of the
+% grain reference orientation deviation and overlay it with the subgrain
+% boundaries
+
+% plot the misorientation angle of the GROD
 plot(ebsd,grod.angle./degree,'micronbar','off')
 mtexColorbar('title','misorientation angle to meanorientation in degree')
 mtexColorMap LaboTeX
+
+% overlay grain and subgrain boundaries
 hold on
 plot(grains.boundary,'lineWidth',1.5)
 plot(grains.subBoundary,'edgeAlpha',grains.subBoundary.misorientation.angle / (5*degree))
 hold off
 
-%% GOS
+%% Grain Orientation Spread (GOS)
 %
 % The grain orientation spread (GOS) is the averaged misorientation angle
 % of the grain reference orientation deviations of each grain. We may
-% compute it using the Matlab command <ebsd.grainMean.html |grainMean|>
-% from the denoised EBSD data.
+% compute this average by using the command <ebsd.grainMean.html
+% |grainMean|>.
 
 GOS = grainMean(ebsd, grod.angle);
 
@@ -78,9 +85,9 @@ mtexColorbar('title','GOS in degree')
 % Lets first plot the distribution of misorientation axes in the
 % fundamental sector.
 
-axCrystal = grod.axis
+axCrystal = grod.axis;
 
-plot(axCrystal,'contourf','fundamentalRegion','antipodal')
+plot(axCrystal,'contourf','fundamentalRegion','antipodal','figSize','small')
 mtexColorbar('title','distribution of misorientation axes in mrd')
 
 %%
@@ -91,7 +98,7 @@ mtexColorbar('title','distribution of misorientation axes in mrd')
 
 colorKey = HSVDirectionKey(ebsd.CS,'antipodal');
 
-plot(colorKey)
+plot(colorKey,'figSize','small')
 
 %%
 % When plotting the misorientation axis we use the misorientation angle as
@@ -104,7 +111,7 @@ color = colorKey.direction2color(axCrystal);
 alpha = min(grod.angle/degree/7.5,1);
 
 % plot the data
-plot(ebsd,color,'micronbar','off','faceAlpha',alpha)
+plot(ebsd,color,'micronbar','off','faceAlpha',alpha,'figSize','large')
 
 hold on
 plot(grains.boundary,'lineWidth',2)
@@ -141,7 +148,7 @@ mtexColorbar('title','distribution of misorientation axes in mrd')
 
 colorKey = HSVDirectionKey;
 
-plot(colorKey)
+plot(colorKey,'figSize','small')
 
 %%
 % The spatial plot of the misorientation axes in crystal coordinates
@@ -152,7 +159,7 @@ omega = min(grod.angle/degree/7.5,1);
 color = colorKey.direction2color(axSpecimen);
 
 % plot the data
-plot(ebsd,color,'micronbar','off','FaceAlpha',omega)
+plot(ebsd,color,'micronbar','off','FaceAlpha',omega,'figSize','large')
 
 hold on
 plot(grains.boundary,'lineWidth',2)

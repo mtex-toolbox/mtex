@@ -1,24 +1,26 @@
 %% Grain Orientation Parameters
 %
 %%
+%
+%% TODO: This page new a rewrite 
+%
 % In this section we discuss properties of grains that are related to the
 % distribution of orientations within the grains, i.e., 
 %
 % || |grains.meanOrientation| || mean orientation ||
 % || |grains.GOS| || grain orientation spread || 
-% || |grains.GAM| || grain orientation spread || 
+% || |grains.GAM| || grain average misorientation || 
 
 close all; plotx2east
 
 % import the data
-mtexdata forsterite
+mtexdata forsterite silent
 
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % make a phase plot
 plot(ebsd)
-
 
 %% Connection between grains and EBSD data
 % As usual, we start by importing some EBSD data and computing grains
