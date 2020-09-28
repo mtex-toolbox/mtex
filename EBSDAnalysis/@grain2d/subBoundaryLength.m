@@ -12,10 +12,10 @@ function  sL = subBoundaryLength(grains,varargin)
 %
 
 
-grainIds = grains.subBoundary.grainId;
+grainIds = grains.innerBoundary.grainId;
 grainIds(diff(grainIds,1,2)~=0) = [];
 
-sL = grains.subBoundary.segLength;
+sL = grains.innerBoundary.segLength;
 
 
 sL = accumarray(grainIds(:,1),sL,[max(grains.id) 1]);

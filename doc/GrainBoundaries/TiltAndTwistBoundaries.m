@@ -48,10 +48,10 @@ hold on
 plot(grains.boundary,'linewidth',2)
 
 % compute transparency from misorientation angle
-alpha = grains('fo').subBoundary.misorientation.angle / (5*degree);
+alpha = grains('fo').innerBoundary.misorientation.angle / (5*degree);
 
 % plot the subgrain boundaries
-plot(grains('fo').subBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b');
+plot(grains('fo').innerBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b');
 
 % stop override mode
 hold off
@@ -69,7 +69,7 @@ hold off
 % directly be computed by the command <orientation.axis.html |axis|>.
 
 % extract the Forsterite subgrain boundaries
-subGB = grains('fo').subBoundary;
+subGB = grains('fo').innerBoundary;
 
 % plot the misorientation axes in the fundamental sector
 plot(subGB.misorientation.axis,'fundamentalRegion','figSize','small')

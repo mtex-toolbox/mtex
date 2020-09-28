@@ -52,10 +52,10 @@ hold on
 plot(grains.boundary,'linewidth',2)
 
 % compute transparency from misorientation angle
-alpha = grains.subBoundary.misorientation.angle / (5*degree);
+alpha = grains.innerBoundary.misorientation.angle / (5*degree);
 
 % plot the subgrain boundaries
-plot(grains.subBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b');
+plot(grains.innerBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b');
 
 % stop override mode
 hold off
@@ -85,7 +85,7 @@ mtexColorbar
 % also analyse the distribution of their misorientations. 
 
 % extract all subgrain boundary misorientation
-mori = grains.subBoundary.misorientation;
+mori = grains.innerBoundary.misorientation;
 
 % and visualize the distribution of the misorientation axes
 plot(mori.axis,'fundamentalRegion','contourf','figSize','small')

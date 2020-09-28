@@ -67,7 +67,7 @@ hold off
 % that loops around these two measurements.
 
 hold on
-plot(grains.subBoundary,'linecolor','red','linewidth',4)
+plot(grains.innerBoundary,'linecolor','red','linewidth',4)
 hold off
 
 %% Misorientation angle

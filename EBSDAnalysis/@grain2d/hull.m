@@ -30,7 +30,7 @@ grains.boundary.triplePoints.nextVertexId = zeros(0,3);
 grains.boundary.triplePoints.id = zeros(0,1);
 
 % remove innner boundary
-grains.subBoundary = grainBoundary;
+grains.innerBoundary = grainBoundary;
 
 % remove inclusions
 grains.inclusionId = zeros(size(grains.inclusionId));

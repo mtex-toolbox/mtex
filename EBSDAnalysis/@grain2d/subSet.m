@@ -20,18 +20,17 @@ if islogical(ind)
   grId = grains.boundary.grainId;
   grId(grId>0) = indLarge(grId(grId>0));
   indBd = any(grId,2);
-  
-  %repeat for subgrain boundary
-  indinLarge = false(max(grains.subBoundary.grainId(:)),1);
+  %repeat for inner Boundary
+  indinLarge = false(max(grains.innerBoundary.grainId(:)),1);
   indinLarge(grains.id) = ind;
   
-  grinId = grains.subBoundary.grainId;
+  grinId = grains.innerBoundary.grainId;
   grinId(grinId>0) = indinLarge(grinId(grinId>0));
   indinnerBd = any(grinId,2);
 
 else
   indBd = any(ismember(grains.boundary.grainId,grains.id(ind)),2);
-  indinnerBd = any(ismember(grains.subBoundary.grainId,grains.id(ind)),2);
+  indinnerBd = any(ismember(grains.innerBoundary.grainId,grains.id(ind)),2);
 end
 
 grains = subSet@dynProp(grains,ind);
@@ -44,7 +43,7 @@ grains.grainSize = grains.grainSize(ind);
 
 
 grains.boundary = subSet(grains.boundary,indBd);
-grains.subBoundary = subSet(grains.subBoundary,indinnerBd);
+grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
 % if we have only one grain - sort boundary segments
 if length(grains) == 1

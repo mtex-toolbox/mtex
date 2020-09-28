@@ -5,9 +5,7 @@ function [h,mP] = plot(gB,varargin)
 %
 % Syntax
 %   plot(grains.boundary)
-%   plot(grains.subBoundary,'linecolor','r')
-%
-%   % colorize segments according to some property
+%   plot(grains.innerBoundary,'linecolor','r')
 %   plot(gB('Forsterite','Forsterite'),gB('Forsterite','Forsterite').misorientation.angle)
 %
 %   % colorize segments according to a list of RGB values

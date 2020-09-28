@@ -18,7 +18,7 @@ classdef grain2d < phaseList & dynProp
   %  poly          - cell list of the vertex ids of each grain (index to V)
   %  V             - list of verticies (x,y coordinates)
   %  boundary      - @grainBoundary
-  %  subBoundary - @grainBoundary
+  %  innerBoundary - @grainBoundary
   %  triplePoints  - @triplePoints
   %  grainSize     - number if pixels belonging to the grain
   %  GOS           - grain orientation spread
@@ -41,7 +41,7 @@ classdef grain2d < phaseList & dynProp
   % general properties
   properties    
     boundary = grainBoundary % boundary of the grains
-    subBoundary = grainBoundary % inner grain boundary
+    innerBoundary = grainBoundary % inner grain boundary
   end
     
   properties (Dependent = true)
@@ -188,7 +188,7 @@ classdef grain2d < phaseList & dynProp
                         
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
       grains.boundary.scanUnit = ebsd.scanUnit;
-      grains.subBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
+      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
       [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
             
@@ -237,7 +237,7 @@ classdef grain2d < phaseList & dynProp
     function grains = set.V(grains,V)
       
       grains.boundary.V = V;
-      grains.subBoundary.V = V;
+      grains.innerBoundary.V = V;
       
     end
     
@@ -306,7 +306,7 @@ classdef grain2d < phaseList & dynProp
     function grains = update(grains)
       
       grains.boundary = grains.boundary.update(grains);
-      grains.subBoundary = grains.subBoundary.update(grains);
+      grains.innerBoundary = grains.innerBoundary.update(grains);
       
     end
     

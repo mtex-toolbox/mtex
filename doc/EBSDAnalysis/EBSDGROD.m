@@ -59,7 +59,7 @@ mtexColorMap LaboTeX
 % overlay grain and subgrain boundaries
 hold on
 plot(grains.boundary,'lineWidth',1.5)
-plot(grains.subBoundary,'edgeAlpha',grains.subBoundary.misorientation.angle / (5*degree))
+plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
 hold off
 
 %% Grain Orientation Spread (GOS)
@@ -115,7 +115,7 @@ plot(ebsd,color,'micronbar','off','faceAlpha',alpha,'figSize','large')
 
 hold on
 plot(grains.boundary,'lineWidth',2)
-plot(grains.subBoundary,'edgeAlpha',grains.subBoundary.misorientation.angle / (5*degree))
+plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
 hold off
 
 %%
@@ -163,7 +163,7 @@ plot(ebsd,color,'micronbar','off','FaceAlpha',omega,'figSize','large')
 
 hold on
 plot(grains.boundary,'lineWidth',2)
-plot(grains.subBoundary,'edgeAlpha',grains.subBoundary.misorientation.angle / (5*degree))
+plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
 hold off
 
 %omega = min(grod.angle/degree/7.5,1);

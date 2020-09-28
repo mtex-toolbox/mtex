@@ -6,14 +6,14 @@
 %
 % *Subgrain Boundaris*
 %
-% With MTEX 5.5 we make subgrain boundary analsis much more straight
+% With MTEX 5.5 we make low angle grain boundary analsis much more straight
 % forward. Starting point is the command
 %
 %   grains = calcGrains(ebsd,'threshold',[10*degree 1*degree])
 % 
 % which generates grain with a threshold of 10 degree and subgrain
 % boundaries with an threshold of 1 degree. The latter one are stored as
-% |grains.subBoundary|. In order to estimate the density of subgrain
+% |grains.innerBoundary|. In order to estimate the density of inner
 % boundaries per grain the commands <grain2d.subBoundaryLength.html
 % |subBoundaryLength|> and <grain2d.subBoundarySize.html |subBoundarySize|>
 % have been introduced. The documentation page <SubGrainBoundaries.html
@@ -30,8 +30,6 @@
 % into their hosts
 % * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
 % with a certain misorientation angle
-%
-% * grains.innerBoundary is replaced by grains.subBoundary
 %
 %% MTEX 5.4.0 7/2020
 %

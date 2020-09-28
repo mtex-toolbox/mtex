@@ -58,4 +58,4 @@ hold off
 
 %%
 
-grains.subBoundary
+grains.innerBoundary
