@@ -289,6 +289,18 @@ classdef phaseList
       end
     end
        
+    function out = isSinglePhase(pL)
+      
+      % considere only indexed
+      phaseId = pL.phaseId(pL.isIndexed,:);
+      phaseId = phaseId(~any(isnan(phaseId),2),:);
+      id = unique(phaseId,'rows');
+      
+      out = numel(id) <= size(pL.phaseId,2) ;
+      
+    end
+    
+    
     function id = checkSinglePhase(pL)
       % ensure single phase
       
