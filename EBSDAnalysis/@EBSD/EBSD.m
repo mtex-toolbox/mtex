@@ -166,6 +166,10 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori = orientation;
       else
         ori = orientation(ebsd.rotations,ebsd.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(ebsd.isIndexed), ori(~ebsd.isIndexed) = NaN; end
+        
       end
     end
     
