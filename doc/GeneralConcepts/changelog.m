@@ -31,6 +31,8 @@
 % * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
 % with a certain misorientation angle
 %
+% * grains.innerBoundary is replaced by grains.subBoundary
+%
 %% MTEX 5.4.0 7/2020
 %
 % *Parent Grain Reconstruction*
