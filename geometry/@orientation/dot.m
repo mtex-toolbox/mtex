@@ -4,11 +4,16 @@ function d = dot(o1,o2,varargin)
 % Syntax
 %   d = dot(o1,o2)
 %
+%   d = dot(o1,o2,'noSymmetry')
+%
 % Input
 %  o1, o2 - @orientation
 %
 % Output
 %  d - cos(omega/2) where omega is the smallest rotational angle of inv(o1)*o2
+%
+% Options
+%  noSymmetry - ignore all symmetries
 %
 % See also
 % orientation/dot_outer orientation/angle

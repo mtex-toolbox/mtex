@@ -42,8 +42,8 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  indexedPhaseId - phaseIds of all indexed phases
   %
   % Derived Classes
-  %  @EBSDSquare - EBSD data measured on a square grid
-  %  @EBSDHex    - EBSD data measured on a hex grid
+  %  @EBSDsquare - EBSD data measured on a square grid
+  %  @EBSDhex    - EBSD data measured on a hex grid
   %
   % See also
   % EBSDImport EBSDSelect EBSDPlotting GrainReconstruction

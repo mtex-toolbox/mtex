@@ -5,11 +5,11 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 %   ebsdNew = interp(ebsd,xNew,yNew)
 %
 % Input
-%   ebsd - @ebsdSquare
+%   ebsd - @EBSDsquare
 %   xNew, yNew - new x,y coordinates
 %
 % Output
-%   ebsdNew - @ebsd with coordinates (xNew,yNew)
+%   ebsdNew - @EBSD with coordinates (xNew,yNew)
 %
 % See also
 %  

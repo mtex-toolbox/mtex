@@ -20,7 +20,7 @@ function [ebsdGrid,newId] = gridify(ebsd,varargin)
 %  ebsd - an @EBSD data set with a non regular grid
 %
 % Output
-%  ebsd - @EBSDSquare data on a regular grid
+%  ebsd - @EBSDsquare, @EBSDhex data on a regular grid
 %  newId - closest regular grid point for every non regular grid point
 %
 % Example

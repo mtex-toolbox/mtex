@@ -5,7 +5,7 @@ function kappa = curvature(ebsd,varargin)
 %   kappa = curvature(ebsd)
 %
 % Input
-%  ebsd - @EBSDSquare
+%  ebsd - @EBSDsquare
 %
 % Output
 %  kappa - @curvatureTensor
