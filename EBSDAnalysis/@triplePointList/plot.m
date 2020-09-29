@@ -17,7 +17,7 @@ function h = plot(tP,varargin)
 %  markerColor     - both colors
 %  linewidth - edge width of the marker
 %
-% see also
+% See also
 % <https://www.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html patch properties>
 
 % create a new plot
