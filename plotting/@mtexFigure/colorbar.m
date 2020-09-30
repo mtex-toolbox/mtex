@@ -32,7 +32,11 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
       try
         mtexFig.cBarAxis.Label.String = cBarTitle;
       catch
-        ylabel(mtexFig.cBarAxis(i),cBarTitle);
+        if iscell(cBarTitle) && numel(cBarTitle) == numel(mtexFig.cBarAxis)
+            ylabel(mtexFig.cBarAxis(i),cBarTitle{i});
+        else
+            ylabel(mtexFig.cBarAxis(i),cBarTitle);
+        end
       end
     end
   end
