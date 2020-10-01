@@ -10,10 +10,10 @@ classdef EBSDhex < EBSD
   properties
     dHex
     isRowAlignment
-    offset %
   end
   
   properties (Dependent = true)    
+    offset          % +/- 1  dependent on whether the second line is shifted in or our
     gradientX       % orientation gradient in x
     gradientY       % orientation gradient in y
     dx
@@ -22,11 +22,11 @@ classdef EBSDhex < EBSD
   
   methods
       
-    function ebsd = EBSDhex(rot,phaseId,phaseMap,CSList,dHex,isRowAlignment,offset,varargin)
+    function ebsd = EBSDhex(rot,phaseId,phaseMap,CSList,dHex,isRowAlignment,varargin)
       % generate a hexagonal EBSD object
       %
       % Syntax 
-      %   EBSDhex(rot,phases,CSList)
+      %   EBSDhex(rot,phases,CSList,dHex,isRowAlignment,)
       
       if nargin == 0, return; end            
       
@@ -42,7 +42,6 @@ classdef EBSDhex < EBSD
                   
       % set up unit cell
       ebsd.dHex = dHex;
-      ebsd.offset = offset;
       ebsd.isRowAlignment = isRowAlignment;
       
       omega = (0:60:300)*degree + 30*isRowAlignment*degree;
@@ -64,6 +63,14 @@ classdef EBSDhex < EBSD
            
     % --------------------------------------------------------------
     
+    
+    function of = get.offset(ebsd)
+      if ebsd.isRowAlignment
+        of = sign(ebsd.prop.x(2,1) - ebsd.prop.x(1,1));
+      else
+        of = sign(ebsd.prop.y(1,2) - ebsd.prop.y(1,1));
+      end
+    end
     
     function dx = get.dx(ebsd)
       if ebsd.isRowAlignment
@@ -141,6 +148,76 @@ classdef EBSDhex < EBSD
       
     end
     
+    function [x,y,z] = hex2cube(ebsd,row,col)
+      % convert offset coordinates into cube coordinates
+      
+      if ebsd.isRowAlignment
+        x = col - (row + ebsd.offset * ~iseven(round(row))) / 2 - 1;
+        z = row-1;
+      else
+        x = row - (col + ebsd.offset * ~iseven(round(col))) / 2 - 1;
+        z = col-1;
+      end
+      y = -x-z;
+      
+    end
+    
+    function [row,col] = cube2hex(ebsd,x,y,z)
+      % convert cube coordinates into offset coordinates
+      
+      if ebsd.isRowAlignment
+        col = 1 + x + (z - ebsd.offset * ~iseven(round(z))) / 2;
+        row = 1 + z;
+      else
+        col = 1 + x;
+        row = 1 + z + (x - ebsd.offset * ~iseven(round(x))) / 2;
+      end
+      
+      % ensure inside the box
+      isInside = row > 0 & col > 0 & row <= size(ebsd,1) & col <= size(ebsd,2);
+      row(~isInside) = NaN;
+      col(~isInside) = NaN;
+      
+    end
+
+    function [row,col] = xy2ind(ebsd,x,y)
+      % nearest neighbour search
+      
+      x = x-ebsd.prop.x(1);
+      y = y-ebsd.prop.y(1);
+      
+      
+      % convert to axial coordinates
+      if ebsd.isRowAlignment        
+        q = (sqrt(3)/3 * x - 1./3 * y) / ebsd.dHex;
+        r = (                2./3 * y) / ebsd.dHex;
+      else        
+        q = ( 2./3 * x                ) / ebsd.dHex;
+        r = (-1./3 * x + sqrt(3)/3 * y) / ebsd.dHex;        
+      end
+      
+      % convert to cube coordinates
+      cx = q; cz = r; cy = -cx - cz;
+      
+      % round in cube coordinates
+      rx = round(cx); ry = round(cy); rz = round(cz);
+      dx = abs(cx-rx); dy = abs(cy-ry); dz = abs(cz-rz);
+      
+      ind1 = dx>dy & dx>dz;
+      ind2 = dy > dz;
+      rx(ind1) = -ry(ind1) - rz(ind1); %#ok<*PROPLC>
+      ry(~ind1 & ind2) = -rx(~ind1 & ind2) - rz(~ind1 & ind2);
+      rz(~ind1 & ~ind2) = -rx(~ind1 & ~ind2) - ry(~ind1 & ~ind2);
+      
+      % convert to offset coordinates
+      [row,col] = ebsd.cube2hex(rx,ry,rz);
+      
+      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      
+    end
+    
+    
+    
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 
@@ -152,6 +229,23 @@ classdef EBSDhex < EBSD
     % gO = log(ori1,ori2.symmetrise,'left') % true for this
     % gO = log(ori1.symmetrise,ori2,'left') % true for this
     
+    
+  end
+  
+  methods (Static = true)
+    
+    function checkCube2Hex
+      
+      [r,c] = ndgrid(1:10,1:10);
+      
+      ebsd = EBSDhex;
+      
+      [x,y,z] = ebsd.hex2cube(r,c);
+      [r2,c2] = ebsd.cube2hex(x,y,z);
+      
+      max((r-r2).^2 + (c-c2).^2)
+      
+    end
     
   end
   
