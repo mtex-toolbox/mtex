@@ -150,13 +150,20 @@ classdef EBSDhex < EBSD
     
     function [x,y,z] = hex2cube(ebsd,row,col)
       % convert offset coordinates into cube coordinates
+
+      % convert to row, col indices
+      if nargin == 2, [row,col] = ind2sub(size(ebsd),row); end
       
+      %col = col - 1 + ebsd.offset * ~iseven(round(row));
+      col = col - 1;
+      row = row - 1 ;
+            
       if ebsd.isRowAlignment
-        x = col - (row + ebsd.offset * ~iseven(round(row))) / 2 - 1;
-        z = row-1;
+        x = col - (row - ebsd.offset * ~iseven(round(row))) / 2;
+        z = row;
       else
-        x = row - (col + ebsd.offset * ~iseven(round(col))) / 2 - 1;
-        z = col-1;
+        x = row - (col - ebsd.offset * ~iseven(round(col))) / 2;
+        z = col;
       end
       y = -x-z;
       
@@ -178,8 +185,31 @@ classdef EBSDhex < EBSD
       row(~isInside) = NaN;
       col(~isInside) = NaN;
       
+      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      
     end
 
+    function ind = neighbors(ebsd,ind,k,radius)
+
+      if nargin == 3, radius = 1; end
+      
+      dnx = [0  1  1  0 -1 -1  0  1]; cnx = cumsum(dnx);
+      dny = [0 -1  0  1  1  0 -1 -1]; cny = cumsum(dny);
+      dnz = [0  0 -1 -1  0  1  1  0]; cnz = cumsum(dnz);
+      
+      i = 1 + floor(k / radius); j = k - radius * (i-1);
+      
+      [x,y,z] = hex2cube(ebsd,ind);
+      
+      x = x - radius + radius * cnx(i) + j*dnx(i+1);
+      y = y          + radius * cny(i) + j*dny(i+1);
+      z = z + radius + radius * cnz(i) + j*dnz(i+1);
+      
+      ind = cube2hex(ebsd,x,y,z);
+      
+    end
+    
+    
     function [row,col] = xy2ind(ebsd,x,y)
       % nearest neighbour search
       
