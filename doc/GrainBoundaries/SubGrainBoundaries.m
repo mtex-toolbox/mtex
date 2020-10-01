@@ -23,8 +23,8 @@ mtexdata ferrite silent
 ebsd(grains(grains.grainSize<5)) = [];
 
 %%
-% For the computation of the subgrain boundaries we specify two thresholds
-% during grain reconstruction: the first value controls the subgrain
+% For the computation of low-angle boundaries we specify two thresholds
+% during grain reconstruction: the first value controls the low-angle grain
 % boundaries whereas the second is used for the high-angle grain
 % boundaries.
 
@@ -62,7 +62,7 @@ hold off
 
 %% Subgrain Boundary Density
 %
-% The number of subgrain boundary segments inside each grain can be
+% The number of low-angle  boundary segments inside each grain can be
 % computed by the command <grain2d.subBoundarySize.html |subBoundarySize|>.
 % In the following figure we use it to visualize the density of subgrain
 % boundaries per grain pixel.
@@ -71,7 +71,7 @@ plot(grains, grains.subBoundarySize ./ grains.grainSize)
 mtexColorbar
 
 %% 
-% We may compute also the density of subgrain boundaries per grain as the
+% We may compute also the density of low-angle boundaries per grain as the
 % length of the subgrain boundaries divided by the grain area. This can be
 % done using the commands <grain2d.subBoundaryLength.html
 % |subBoundaryLength|> and <grain2d.area.html |area|>

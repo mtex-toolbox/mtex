@@ -1,4 +1,4 @@
-function [ebsdGrid,newId] = gridify(ebsd,varargin)
+function varargout = gridify(ebsd,varargin)
 % extend EBSD data to an grid
 %
 % Description This function transforms unordered EBSD data sets into a
@@ -34,9 +34,9 @@ function [ebsdGrid,newId] = gridify(ebsd,varargin)
 unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
 if size(unitCell,1) == 6
-  [ebsdGrid,newId] = hexify(ebsd,varargin{:});
+  [varargout{1:nargout}] = hexify(ebsd,varargin{:});
 else
-  [ebsdGrid,newId] = squarify(ebsd,varargin{:});
+  [varargout{1:nargout}] = squarify(ebsd,varargin{:});
 end
 
 end

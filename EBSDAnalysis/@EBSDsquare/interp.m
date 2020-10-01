@@ -4,12 +4,17 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 % Syntax
 %   ebsdNew = interp(ebsd,xNew,yNew)
 %
+%   ebsdNew = interp(ebsd,xNew,yNew,'method','invDist')
+%
 % Input
-%   ebsd - @EBSDsquare
-%   xNew, yNew - new x,y coordinates
+%  ebsd - @EBSDsquare
+%  xNew, yNew - new x,y coordinates
 %
 % Output
-%   ebsdNew - @EBSD with coordinates (xNew,yNew)
+%  ebsdNew - @EBSD with coordinates (xNew,yNew)
+%
+% Options
+%  method - 'invDist', 'nearest'
 %
 % See also
 %  

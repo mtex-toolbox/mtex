@@ -56,7 +56,6 @@ else
   
 end
 
-
 % set center to zero
 weights(order+1,order+1) = 0;
 
