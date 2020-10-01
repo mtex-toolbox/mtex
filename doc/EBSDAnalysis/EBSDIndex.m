@@ -16,13 +16,13 @@ ebsd = ebsd(inpolygon(ebsd,poly));
 plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
 
 %%
-% In the above plot each square corresponds to entry in the variable
+% In the above plot each square corresponds to one entry in the variable
 % |ebsd|. Lets visualize the order
 
 text(ebsd,1:length(ebsd))
 
 %%
-% We may easily select specific measurement pixels by specifying its
+% We may easily select specific measurement pixels by specifying their
 % indeces
 
 hold on
