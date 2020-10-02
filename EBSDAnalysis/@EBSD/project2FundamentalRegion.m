@@ -1,20 +1,31 @@
 function ebsd = project2FundamentalRegion(ebsd,grains)
 %
 
-rot = ebsd.rotations;
-grainId = ebsd.grainId;
-
-CS = ebsd.CSList;
-isIndexed = grains.isIndexed;
-
-for i = 1:length(grains)
+% determine the reference rotation
+if nargin == 2 % either as mean grain orientation
   
-  id = grainId == grains.id(i);
+  refRot = grains.meanRotation;
   
-  if nnz(id) < 2 || ~isIndexed(i), continue; end
+else % or as the last orientation in a grain
   
-  rot(id) = project2FundamentalRegion(rot(id),CS{grains.phaseId(i)},grains.meanRotation(i));
+  isIndexed = ebsd.isIndexed;
+  refRot = ebsd.rotations(accumarray(ebsd.grainId(isIndexed),find(isIndexed),[],@max));
   
 end
+
+% extract ebsd info
+rot = ebsd.rotations;
+grainId = ebsd.grainId;
+CS = ebsd.CSList;
+
+% perform the projection for each phase seperately
+for idPhase = ebsd.indexedPhasesId
   
+  thisPhase = ebsd.phaseId == idPhase;
+  rot(thisPhase) = project2FundamentalRegion(rot(thisPhase),CS{idPhase},...
+    refRot(grainId(thisPhase)));
+  
+end
+
+% update EBSD orientations  
 ebsd.rotations = rot; 
