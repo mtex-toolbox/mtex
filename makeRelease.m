@@ -11,12 +11,15 @@ end
 unix(['rm -rf ',rDir]);
 unix(['cp -R ' mtex_path ' ' rDir]);
 
-rmList = {'doc/makeDoc/tmp', 'data/*.mat', 'data/*.mat' '.git*' 'data/EBSD/*'};
+rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' 'data/EBSD/*'};
 for rd = rmList 
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end
 
-if any(strfind(ver,'beta')), unix(['rm -rf ' rDir filesep 'doc/html/*']); end
+if any(strfind(ver,'beta'))
+  unix(['rm -rf ' rDir filesep 'doc/html/*']);
+  mkdir([rDir filesep 'doc/html/helpsearch-v3/']);
+end
 
 unix(['chmod -R a+rX ' rDir]);
 
@@ -35,10 +38,11 @@ zip(zipName,rDir);
 disp('Authenticate at Github ...')
 
 
-doRelease = ['gh create release ' ver ' ' zipName ' -t ' getMTEXpref('version')];
+%doRelease = ['gh release create ' ver ' ' zipName ' -t "' getMTEXpref('version') '"'];
+doRelease = ['gh release create ' ver ' ' zipName];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
 disp('uploading release to GitHub ...')
-unix(doRelease);
+unix(['terminator -e "' doRelease '"']);
 
 end
