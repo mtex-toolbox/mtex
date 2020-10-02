@@ -107,7 +107,6 @@ axis off
 str = arrayfun(@(a,b) ['(' int2str(a) ',' int2str(b) ')'],i,j,'UniformOutput',false);
 text(ebsd,str)
 
-
 %% Cube Coordinates
 % In hexognal grids it is sometimes advantageous to use three digit cube
 % coordinates to index the cell. This can be done using the commands

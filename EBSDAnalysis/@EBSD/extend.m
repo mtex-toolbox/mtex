@@ -1,11 +1,18 @@
 function [xmin, xmax, ymin, ymax] = extend(ebsd)
-% returns the boundings of spatial EBSD data
+% spatial bounds of an EBSD map
+%
+% Syntax
+%
+%  [xmin, xmax, ymin, ymax] = extend(ebsd)
+%
+%  ext = extend(ebsd)
 %
 % Input
 %  ebsd - @EBSD 
 %
 % Output
-%  ext - extend as [xmin xmax ymin ymax]
+%  xmin xmax ymin ymax - bounds of the EBSD map
+%  ext - bounds combined in one vector [xmin xmax ymin ymax]
 %
 
 xmin = nanmin(ebsd.prop.x(:));

@@ -1,27 +1,46 @@
 %% MTEX Changelog
 %
-%% MTEX 5.5.0 10/2020
+%% MTEX 5.5.beta.2 10/2020
 %
 % *Orientation Embeddings*
 %
-% *Subgrain Boundaris*
+% Orientational embeddings are tensorial representations of orientations
+% with the specific property that each class of symmetrically equivalent
+% orientations has a unique tensor representation. In contrast to the well
+% known representation by Rodrigues vectors those embeddings do not suffer
+% from boundary effects, i.e., the Euclidean distance between the tensors
+% is close to the misorientation angle. This allows to lift any method that
+% works for multivariate data to orientations. More details of this
+% representation can be found in the chaper <OrientationEbeddings.html
+% orientation embeddings> and the paper
+%
+% * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
+% Rotation Group Modulo Finite Symmetries_,
+% <https://arxiv.org/abs/2007.09664 arXiv:2007.09664>, 2020.
+%
+% *Low Angle Boundaries*
 %
 % With MTEX 5.5 we make low angle grain boundary analsis much more straight
-% forward. Starting point is the command
+% forward by allowing to pass to the command <EBSD.calcGrains.html
+% |calcGrains|> two thresholds, i.e.,
 %
 %   grains = calcGrains(ebsd,'threshold',[10*degree 1*degree])
 % 
-% which generates grain with a threshold of 10 degree and subgrain
-% boundaries with an threshold of 1 degree. The latter one are stored as
-% |grains.innerBoundary|. In order to estimate the density of inner
-% boundaries per grain the commands <grain2d.subBoundaryLength.html
-% |subBoundaryLength|> and <grain2d.subBoundarySize.html |subBoundarySize|>
-% have been introduced. The documentation page <SubGrainBoundaries.html
-% Subgrain Boundaries> describes the analysis of subgrain boundaries in
-% more detail.
+% generates grains bounded by high angle grain boundaries with a threshold
+% of 10 degree and inner low angle boundaries with an threshold of 1
+% degree. The latter ones are stored as |grains.innerBoundary|. In order to
+% estimate the density of inner boundaries per grain the commands
+% <grain2d.subBoundaryLength.html |subBoundaryLength|> and
+% <grain2d.subBoundarySize.html |subBoundarySize|> have been introduced.
+% The documentation page <SubGrainBoundaries.html Subgrain Boundaries>
+% describes the analysis of low angle boundaries in more detail.
 %
 % *New Functionalities*
 %
+% * For single phase EBSD maps you can access the orientations now more
+% easily by |ebsd.orientations| instead of |ebsd('indexed').orientations|.
+% Orientations corresponding to not indexed pixels will be returned as NaN
+% and thus automatically ignored during any further computation.
 % * <grain2d.isBoundary |grains.isBoundary|> checks grains to be
 % boundary grains
 % * <grain2d.isInclusion |grains.isInclusion|> checks grains to be
@@ -30,6 +49,33 @@
 % into their hosts
 % * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
 % with a certain misorientation angle
+% * interpolation of EBSD maps at arbitrary coordinates by the command
+% <EBSD.interp.html |interp|> works now for hexagonal grids as well. In
+% particular this allows to remap EBSD data from hexagonal to square grids
+% and vice versa. Have a look at the chapter <EBSDInter.html Interpolation>
+% for more details.
+% * <EBSD.calcMis2Mean.html |calcMis2Mean|> computes the misorientation to
+% a grain reference orientation, i.e., the <EBSDGROD.html grain reference
+% orientation deviation (GROD)>.
+% * KAM computation has been speeded up signigicantly for hexonal and
+% square grids. Make sure to use the command |ebsd = ebsd.gridify| before
+% the KAM computation.
+% * new option |'edgeAlpha'| to control the transparency of grain
+% boundaries, e.g. in depedency of the misorientation angle.
+% * more easily add new / change phases in an EBSD map by one of the
+% following commands
+%
+%   ebsd(ind).orientations = orientation.byEuler(0,0,0,CSNew)
+%   ebsd(ind).CS = CSNew
+%
+% * new option to plot arrows in spherical plot by
+%
+%   plot([vector3d.Z, vector3d.Z + 0.5 * vector3d.rand],'arrow')
+%
+% * <EBSD.export.html |export(ebsd,fileName)|> allows to export to EBSD
+% data to |.ang|, |.ctf|, |.crc| and |.hdf5| files, thanks to Azdiar Gazder
+% * new function <rotation.fit.html |rot = fit(l,r)|> to compute the
+% rotations that best rotates all the vectors |l| onto the vectors |r|
 %
 %% MTEX 5.4.0 7/2020
 %

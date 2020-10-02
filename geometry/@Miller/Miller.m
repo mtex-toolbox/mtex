@@ -70,8 +70,7 @@ classdef Miller < vector3d
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
       assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
-        ['Starting with MTEX 4.0 Miller ' ...
-        'indices always require to specify a crystal symmetry!']);
+        'No crystal symmetry has been specified when defining a crystal direction!');
 
       % extract disp style
       dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>

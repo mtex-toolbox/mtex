@@ -48,6 +48,15 @@ plot(grains.boundary,'lineWidth',1.5)
 hold off
 
 %%
+% Although MTEX allows the computation of the KAM from arbitrarily sampled
+% EBSD maps the algorithms are much faster an memory efficient if the maps
+% are measured on regular hexagonal or rectangular grid - as it is standard
+% in most applications. The command <EBSD.gridify.html |gridify|> makes
+% MTEX aware of such an underlying regular measurement grid.
+
+ebsd = ebsd.gridify;
+
+%%
 %
 % The kernel average misorientation is computed by the command
 % <EBSD.KAM.html |ebsd.KAM|>. As all MTEX commands it return the mean
