@@ -28,12 +28,16 @@ function kam = KAM(ebsd,varargin)
 % See also
 % grain2d.GOS
 
+% ensure that we have not to deal with symmetry anymore
+ebsd = ebsd.project2FundamentalRegion;
+
 if check_option(varargin,'max')
   fun = @(a,b) nanmax(a,[],b);
 else
   fun = @(a,b) nanplus(a,b);
 end
 
+% extract weights and order
 weights = get_option(varargin,'weights',[]);
 
 if isempty(weights)
