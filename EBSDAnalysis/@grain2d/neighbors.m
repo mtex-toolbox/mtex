@@ -1,5 +1,5 @@
 function pairs = neighbors(grains,varargin)
-% returns the number of neighboring grains
+% returns the Ids of neighboring grains
 %
 % Syntax
 %
