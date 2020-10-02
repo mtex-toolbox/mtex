@@ -60,7 +60,7 @@ end
 weights(order+1,order+1) = 0;
 
 % get threshold
-threshold = get_option(varargin,'threshold',10*degree);
+threshold = get_option(varargin,'threshold',inf);
       
 % prepare the result
 kam = zeros(size(ebsd));

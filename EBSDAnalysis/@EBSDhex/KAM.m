@@ -53,7 +53,7 @@ else
 end
 
 % get threshold
-threshold = get_option(varargin,'threshold',10*degree);
+threshold = get_option(varargin,'threshold',inf);
       
 % prepare the result
 kam = zeros(size(ebsd));
