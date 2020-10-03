@@ -2,34 +2,26 @@
 %
 %%
 % In this section we discuss geometric properties of grains that are
-% related to ellipses fitted to the grains. The table below summarizes all
-% these propeties
+% related to ellipses fitted to the grains. Additionally to the orientation
+% |omega|, and the lengths |a|, |b| of the long axis and short axes that
+% are computed by the command <grain2d.fitEllipse.html |[omega,a,b] =
+% grains.fitEllipse|>  the following properties based on the fitted
+% ellipses are avaiable.
 %
-% || <grain2d.centroid.html |grains.centroid|>  || midpoint of the ellipse || 
-% || <grain2d.longAxis.html |grains.longAxis|>  || long axis of the ellipse ||
-% || <grain2d.shortAxis.html |grains.shortAxis|>  || short axis of the ellipse ||
-% || <grain2d.aspectRatio.html |grains.aspectRatio|>  || quotient long axis / short axis ||
-% || <grain2d.equivalentPerimeter.html |grains.equivalentPerimeter|>  || perimeter of the circle/ellipse || 
-% || <grain2d.equivalentRadius.html |grains.equivalentRadius|>  || radius of the circle/ellipse || 
-% || <grain2d.shapeFactor.html |grains.shapeFactor|>  || quotient grain perimeter / ellipse perimeter || 
-% || <grain2d.principalComponents.html |grains.principalComponents|>  || angle, length and width of the fitted ellipse || 
+% || <grain2d.longAxis.html |longAxis|> || long axis as @vector3d || <grain2d.shortAxis.html |shortAxis|>  || short axis as @vector3d ||
+% || <grain2d.centroid.html |centroid|> || midpoint  || <grain2d.aspectRatio.html |aspectRatio|>  || long axis / short axis ||
 %
 % In order to demonstrate these properties we start by reconstructing the
 % grain structure from a sample EBSD data set.
 
 % load sample EBSD data set
-mtexdata forsterite
+mtexdata forsterite silent
 
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-% remove all not indexed pixels
-ebsd = ebsd('indexed');
-
-% reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
-
-% smooth them
+% reconstruct grains and smooth them 
+[grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 grains = smooth(grains,5);
 
 % plot the orientation data of the Forsterite phase
@@ -82,36 +74,3 @@ mtexColorbar('title','aspect ratio')
 hold on
 quiver(grains,grains.longAxis,'Color','white')
 hold off
-
-%% Radius and Perimeter of the Ellipses
-%
-% Remember that the fitted ellipses are scaled shuch that they have the
-% same area as the grains. However, the <grain2d.equivalentRadius.html
-% radius> and the <grain2d.equivalentPerimeter.html perimeter> of the
-% ellipses are usually different then the actual perimeter of the grains.
-% Hence, the difference between grain perimeter and ellipse perimeter can
-% be interpreted as a measure for the goodness of fit.
-
-plot(grains,(grains.perimeter - grains.equivalentPerimeter)./grains.perimeter)
-setColorRange([0,0.5])
-mtexColorbar
-
-%%
-% In this plot round shapes will have values close to zero while concave
-% shapes will get large values. A similar measure is the
-% <grain2d.shapeFactor.html shape factor> which is defined as the ratio
-% between the grain perimeter and the equivalent perimeter
-
-plot(grains,grains.shapeFactor)
-setColorRange([1,2])
-mtexColorbar('title','shape factor')
-
-%%
-% A similar measure is the <grain2d.paris.html paris> which stands
-% for Percentile Average Relative Indented Surface and gives the relative
-% difference between the actual perimeter and the perimeter of the convex
-% hull.
-
-plot(grains,grains.paris)
-mtexColorbar('title','paris')
-

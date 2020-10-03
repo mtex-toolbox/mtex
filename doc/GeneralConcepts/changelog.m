@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 5.5.beta.2 10/2020
+%% MTEX 5.5.beta.3 10/2020
 %
 % *Orientation Embeddings*
 %
@@ -9,10 +9,10 @@
 % orientations has a unique tensor representation. In contrast to the well
 % known representation by Rodrigues vectors those embeddings do not suffer
 % from boundary effects, i.e., the Euclidean distance between the tensors
-% is close to the misorientation angle. This allows to lift any method that
-% works for multivariate data to orientations. More details of this
-% representation can be found in the chaper <OrientationEbeddings.html
-% orientation embeddings> and the paper
+% is always close to the misorientation angle. This allows to lift any
+% method that works for multivariate data to orientations. More details of
+% this representation can be found in the chaper
+% <OrientationEmbeddings.html orientation embeddings> and the paper
 %
 % * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
 % Rotation Group Modulo Finite Symmetries_,
@@ -68,7 +68,7 @@
 %   ebsd(ind).orientations = orientation.byEuler(0,0,0,CSNew)
 %   ebsd(ind).CS = CSNew
 %
-% * new option to plot arrows in spherical plot by
+% * new option to plot arrows in spherical plots by
 %
 %   plot([vector3d.Z, vector3d.Z + 0.5 * vector3d.rand],'arrow')
 %

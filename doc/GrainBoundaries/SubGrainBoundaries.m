@@ -96,3 +96,26 @@ mtexColorbar
 % A more detailed analysis of the misorientation axes at subgrain
 % boundaries can be found in the chapter <TiltAndTwistBoundaries.html Tild
 % and Twist Boundaries>.
+%
+%% Connected Components
+%
+% Sometimes one would like to distinguish between large connected networks
+% of low-angle boundaries and singular disconected segments. This can be
+% done using the command <grainBoundary.componentSize.html
+% |componentSize|>. This command return for each segment the total number
+% of segments it is connected with. In the following figure we use this to
+% plot all low-angle grain boundary networks with more then 50 segments in
+% blue and all remaining segments in red.
+
+% plot the ebsd data
+plot(ebsd('indexed'),ebsd('indexed').orientations,'faceAlpha',0.5,'figSize','large')
+
+% distinguish between large connected networks and single segments
+ind = grains.innerBoundary.componentSize > 50;
+
+% plot the boundaries
+hold on
+plot(grains.boundary,'linewidth',2)
+plot(grains.innerBoundary(ind),'linewidth',1.5,'edgeAlpha',alpha(ind),'edgeColor','b');
+plot(grains.innerBoundary(~ind),'linewidth',1.5,'edgeAlpha',alpha(~ind),'edgeColor','r');
+hold off
