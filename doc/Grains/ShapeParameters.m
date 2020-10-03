@@ -12,7 +12,7 @@
 % || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in $\mu m^2$ || 
 % || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in $\mu m$ || 
 % || <grain2d.subBoundarySize.html |subBoundarySize|> || number of inner boundaries || <grain2d.subBoundarySize.html |subBoundaryLength|> || length of inner boundaries in $\mu m$ || 
-% || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.calliper.html |calliper|>  || calliper or Feret diameter ||
+% || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.calliper.html |caliper|>  || caliper or Feret diameter ||
 % || <grain2d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
 % || <grain2d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
 % || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
