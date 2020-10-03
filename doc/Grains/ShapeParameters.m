@@ -70,12 +70,13 @@ ylabel('number of grains')
 %%
 % Note the large amount of very small grains. A more realistic histogram we
 % obtain if we do not plot the number of grains at the y-axis but its total
-% area. This can be achieved with the command <grain2d.hist.html hist>
+% area. This can be achieved with the command <grain2d.histogram.html
+% |histogram(grains)|>
 
-hist(grains,grains.area)
+histogram(grains)
 xlabel('grain area')
 
-%%
+%
 % Simarly as |grainSize| and |area|, the one-dimensional meassures
 % |boundarySize| and |perimeter| give the length of the grain boundary as
 % number of segments and in |µm|, respectively.
@@ -160,7 +161,7 @@ mtexColorbar('title','paris')
 % log log plot and fit a linear model. 
 
 % consider the entire data set
-mtexdata forsterite
+mtexdata forsterite silent
 
 % reconstruct grains
 grains = calcGrains(ebsd('indexed'));
