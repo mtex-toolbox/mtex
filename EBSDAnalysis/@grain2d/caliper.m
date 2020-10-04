@@ -59,7 +59,7 @@ elseif nargin > 1 && strcmpi(omega,'short_slow')
 elseif nargin > 1 && strcmpi(omega,'shortest')
   
   poly = grains.poly;
-  V = round(grains.V);
+  V = round(10000*grains.V);
   c = nan(size(grains));
   cPerp = nan(size(grains));
   omega = nan(size(grains));
@@ -165,7 +165,7 @@ end
 
 e = trianglePoints(2,:) - trianglePoints(1,:);
 thetad = atan2d(e(2),e(1));
-minAngle = mod(thetad + 180 + 90,360) - 180;
+minAngle = (mod(thetad + 180 + 90,360) - 180)*degree;
 
 end
 
