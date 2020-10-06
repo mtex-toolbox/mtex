@@ -7,32 +7,27 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**What do you want to do?**
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**What data do you have?**
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**What code do you use?**
+Please provide minimalist code with code in the following form
+```matlab
+% load the data
+ebsd = EBSD.load('myFile.txt')
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+% plot a pole figure
+plotPDF(ebsd,Miller(1,0,0,ebsd.CS)
+```
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**What result do you get**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**What result do you expect**
 
-**Additional context**
-Add any other context about the problem here.
+**Error Message**
+If you get an error message copy and paste it below
+```
+put the error message here
+```
+**What MTEX version do you use?**
