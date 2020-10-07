@@ -7,7 +7,11 @@ assignees: ''
 
 ---
 
-When asking a question please be as verbose as possible. Try to address the following questions.
+<!--
+ - Please search for issues that matches the one you want to file.
+ - Please be as verbose as possible. 
+ - Try to address the following questions.
+-->
 
 1. What do you want to achieve?
 2. What kind of data do you have?
