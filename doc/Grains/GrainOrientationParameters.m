@@ -262,8 +262,12 @@ hold off
 % to the shortening direction.
 
 plot(GAX_S,'antipodal','MarkerSize',2)
+
+% to get some idea about any preferred direction, we can add contours,
+% weighted by the fit. grains with a large mean misorientation angle will
+% also have a more well defined direction of the dispersion axis.
 hold on
-plot(GAX_S,'contour','antipodal','contours',[1 2 3],'halfwidth',10*degree,'linewidth',2)
+plot(GAX_S,'contour','antipodal','weights', fit,'contours',[1 2 3],'halfwidth',10*degree,'linewidth',2)
 hold off
 
 % Here we do not see this clear of a picture
