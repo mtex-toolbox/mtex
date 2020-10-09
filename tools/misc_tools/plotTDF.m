@@ -23,7 +23,7 @@ p1.LineStyle=ls;
 p1.Tag='doNotDelete';
 
 % fix FontSize
-txA = findall(gcf,'type','text');
+txA = findall(gca,'type','text');
 for k=1:length(txA)
     txA(k).FontSize=getMTEXpref('FontSize')-4;
 end
