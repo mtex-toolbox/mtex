@@ -27,7 +27,7 @@ for ig = 1:length(grains)
   
   cumpl(ig,:) = projectionLength(Vg,omega);
 end
-cumpl=sum(cumpl);
+cumpl=sum(cumpl,1);
 cumpl=cumpl./max(cumpl);
 
 end
