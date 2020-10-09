@@ -253,6 +253,7 @@ hold on
 plot(grainsLarge, GAX_S)
 hold off
 
+%%
 % In many materials, a direct relation can be observed between the position
 % of the crystal dispersion axis in specimen coordinates and the inferred
 % type of flow. E.g. in many geomaterials which have undergone (close to)
@@ -263,6 +264,7 @@ hold off
 
 plot(GAX_S,'antipodal','MarkerSize',2)
 
+%%
 % to get some idea about any preferred direction, we can add contours,
 % weighted by the fit. grains with a large mean misorientation angle will
 % also have a more well defined direction of the dispersion axis.
@@ -270,12 +272,12 @@ hold on
 plot(GAX_S,'contour','antipodal','weights', fit,'contours',[1 2 3],'halfwidth',10*degree,'linewidth',2)
 hold off
 
-% Here we do not see this clear of a picture
-% (maybe because this is a piece of steel which might behave differently,
-%  maybe because we do not consider a large enough number of grains)
-%  Question: if this is processed steel, which sample directions is
-%            pointing to the east?
-
+%%
+% Here we do not see this clear of a picture (maybe because this is a piece
+% of steel which might behave differently, maybe because we do not consider
+% a large enough number of grains) Question: if this is processed steel,
+% which sample directions is pointing to the east?
+%
 %% TODO: Testing on Bingham distribution for a single grain 
 % Although the orientations of an individual grain are highly concentrated,
 % they may vary in the shape. In particular, if the grain was deformed by
