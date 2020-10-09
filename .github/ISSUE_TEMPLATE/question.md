@@ -2,7 +2,7 @@
 name: Question
 about: Ask a question about the usage of MTEX
 title: ''
-labels: question
+labels: ''
 assignees: ''
 
 ---
