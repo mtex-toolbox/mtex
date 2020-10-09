@@ -112,7 +112,7 @@ hold off
 % Back to the peridotite sample.
 % If we look at the grains, we might wonder if there is a characteristic
 % difference in the grain shape fabric - shape and alignment of the
-% grains- between e.g. Forsterite and the Pyroxenes (Enstatite and Diopside).
+% grains- between e.g. Forsterite and Enstatite.
  
 plot(grains)
  
@@ -132,14 +132,15 @@ mtexColorbar('title','grain long axis')
 % We can compute the length weighted distribution of grain best fit ellipse
 % long axes by:
  
-[freq,bc] = calcTDF(grains('fo')','binwidth',3*degree);
+[freq,bc] = calcTDF(grains('fo'),'binwidth',3*degree);
 plotTDF(bc,freq/sum(freq),'linecolor','g');
-[freq,bc] = calcTDF(grains({'di' 'en'})','binwidth',3*degree);
+
+[freq,bc] = calcTDF(grains('en'),'binwidth',3*degree);
 hold on
 plotTDF(bc,freq/sum(freq),'linecolor','b');
 hold off
 mtexTitle('long axes')
-legend('Forsterite','Pyroxene','Location','southoutside')
+legend('Forsterite','Enstatite','Location','southoutside')
  
 % Alternatively, we may wonder if the common long axis of grains
 % is does suitably represented by the direction normal to the shortest
@@ -149,29 +150,29 @@ legend('Forsterite','Pyroxene','Location','southoutside')
 % calcTDF also takes a list of angles and a list of weights or lengths as
 % input
 [~, omega_shortestF, cPerpF] = caliper(grains('fo'),'shortest');
-[~, omega_shortestP, cPerpP] = caliper(grains({'di' 'en'}),'shortest');
+[~, omega_shortestE, cPerpE] = caliper(grains('en'),'shortest');
  
 [freqF,bcF] = calcTDF(omega_shortestF+pi/2, 'weights',cPerpF,'binwidth',3*degree);
-[freqP,bcP] = calcTDF(omega_shortestP+pi/2, 'weights',cPerpP,'binwidth',3*degree);
+[freqE,bcE] = calcTDF(omega_shortestE+pi/2, 'weights',cPerpP,'binwidth',3*degree);
 nextAxis
 plotTDF(bcF,freqF/sum(freqF),'linecolor','g');
 hold on
-plotTDF(bcP,freqP/sum(freqP),'linecolor','b');
+plotTDF(bcE,freqE/sum(freqE),'linecolor','b');
 hold off
 mtexTitle('normal to shortest axis [n.t.s.]')
-legend('Forsterite','Pyroxene','Location','southoutside')
+legend('Forsterite','Enstatite','Location','southoutside')
  
  
 % We can also smooth the functions with a wrapped Gaussian
 pdfF = circdensity(bcF, freqF, 5*degree,'sum');
-pdfP = circdensity(bcP, freqP, 5*degree,'sum');
+pdfE = circdensity(bcE, freqE, 5*degree,'sum');
 nextAxis
 plotTDF(bcF,pdfF,'linecolor','g','linestyle',':');
 hold on
-plotTDF(bcP,pdfP,'linecolor','b','linestyle',':');
+plotTDF(bcE,pdfE,'linecolor','b','linestyle',':');
 hold off
 mtexTitle('n.t.s. density estimate')
-legend('Forsterite','Pyroxene','Location','southoutside')
+legend('Forsterite','Enstatite','Location','southoutside')
  
 %%
 % Because best fit ellipses are always symmetric and the projection function
@@ -188,13 +189,13 @@ plotTDF(bcF,pdfF,'linecolor','g');
 hold off
 mtexTitle('Forsterite grain boundaries')
 nextAxis
-[freqP,bcP] = calcTDF(grains({'Di' 'En'}).boundary);
-plotTDF(bcP,freqP/sum(freqP));
-pdfP = circdensity(bcP, freqP, 5*degree,'sum');
+[freqE,bcE] = calcTDF(grains('en').boundary);
+plotTDF(bcE,freqE/sum(freqE));
+pdfE = circdensity(bcE, freqE, 5*degree,'sum');
 hold on
-plotTDF(bcP,pdfP,'linecolor','b');
+plotTDF(bcE,pdfE,'linecolor','b');
 hold off
-mtexTitle('Pyroxene grain boundaries')
+mtexTitle('Enstatite grain boundaries')
  
 % Note that this distribution is very prone to inherit artifacts based on
 % the fact that most EBSD maps are sampled on a regular grid. We tried to
@@ -208,14 +209,14 @@ mtexTitle('Pyroxene grain boundaries')
 % regarded as to represent the average grain shape.
 
 [csAngleF, csRadiusF] = characteristicShape(bcF,freqF);
-[csAngleP, csRadiusP] = characteristicShape(bcP,freqP);
+[csAngleE, csRadiusE] = characteristicShape(bcE,freqE);
 nextAxis
-plotTDF(csAngleF,csRadiusF,'nogrid','nolabels','linecolor','g')
+plotTDF(csAngleF,csRadiusF,'nogrid','nolabels','linecolor','g');
 hold on
-plotTDF(csAngleP,csRadiusP,'nogrid','nolabels','linecolor','b')
+plotTDF(csAngleE,csRadiusE,'nogrid','nolabels','linecolor','b');
 hold off
 mtexTitle('Characteristic shapes')
-legend('Forsterite','Pyroxene','Location','southoutside')
+legend('Forsterite','Enstatite','Location','southoutside')
  
 % We may wonder if these results are significantly different or not
 % TODO: get deviation from an ellipse etc
