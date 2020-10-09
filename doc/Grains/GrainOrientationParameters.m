@@ -40,7 +40,7 @@ ori = ebsd(ebsd.grainId == 4).orientations
 
 %%
 % We could now use the command <orientation.mean |mean|> to compute the
-% grain average orietation from these individual orientations. A more
+% grain average orientation from these individual orientations. A more
 % direct approach, however, is to access the property
 % |grain.meanOrientation| which has been filled with the mean orientations
 % during grain reconstruction.
@@ -61,7 +61,7 @@ mis2mean = inv(grains(4).meanOrientation) .* ori
 %%
 % While the above command computes the misorientations to the grain mean
 % orientation just for one grain the command <EBSD.calcGROD.html |calcGrod|>
-% computes it for all grains simultanously
+% computes it for all grains simultaneously
 
 mis2mean = calcGROD(ebsd, grains)
 
@@ -73,7 +73,7 @@ mis2mean = calcGROD(ebsd, grains)
 % angles to the grain mean orientation is called _grain orientation spread_
 % (GOS) and can be computed by the command <EBSD.grainMean.html
 % |grainMean|> which averages arbitrary EBSD properties over grains. Here,
-% we use it to average the misorientation angle for each grain seperately.
+% we use it to average the misorientation angle for each grain separately.
 
 % take the avarage of the misorientation angles for each grain
 GOS = ebsd.grainMean(mis2mean.angle);
@@ -90,7 +90,7 @@ mtexColorbar('title','GOS in degree')
 % compute the maximum misorientation angle to the mean orientation within
 % each grain. To achieve this we have to pass the function |@max| as an
 % additional argument. Note, that you can replace this function also with
-% any other statistics like the meadian, or some quantile.
+% any other statistics like the median, or some quantile.
 
 % compute the maximum misorientation angles for each grain
 MGOS = ebsd.grainMean(mis2mean.angle,@max);
@@ -119,17 +119,21 @@ setColorRange([0,3])
 % While the GOS measures global orientation gradients within a grain the
 % GAM reflect the average local gradient.
 %
-%% The Axis of deformation
+%% The misorientation axis (crystal dispersion axis)
 %
-% In an ideal world deformation of a grain happens along a specific axis.
-% *TODO: add some material science* In such a case we would expect the
+% Under certain conditions, deformation may result in the dispersion of
+% orientations within a grain. This can usually be the case when
+% deformation is accommodated by slip on one dominant slip system for each
+% grain and conditions are such, that the resulting orientation gradients
+% are preserved in the material (as it is the case in many geomaterials
+% deforming at moderate temperatures). In such a case, we would expect the
 % orientations inside a grain to be aligned along a line with a specific
 % misorientation axis to the mean orientation. Such a line is called
 % <OrientationFibre.html fibre> and we can use the command <fibre.fit.html
 % |fibre.fit|> to find the best fitting fibre for a given list of
-% orientations. Lets do this for a single grain.
+% orientations. Lets do this for a single grain. 
 
-% select an intersting grain and visualize the orientations within the grain in a pole figure
+% select an interesting grain and visualize the orientations within the grain in a pole figure
 % id = 32; id = 160; seems to work
 id = 222;
 h = Miller({1,0,0},ebsd.CS);
@@ -152,13 +156,18 @@ hold off
 f.r
 f.h
 
+% We can see that the dispersion of directions is minimal for those
+% parallel to |f.r| respectively |f.h|. 
+hold on
+plot(ebsd(grains(id)).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
+hold off
 %%
 % The second output argument |lambda| are the eigenvalues of the
 % orientation matrix. The largest eigenvalue indicates are localized the
 % orientations are. The second largest eigenvalue is a measure how much the
 % orientation distributed along the fitted fibre. The third and forth
 % eigenvalue describe how much the orientations scatter off the fibre.
-% The scatter off the fibre is more convinently described in the last
+% The scatter off the fibre is more conveniently described in the last
 % output argument |fit|, which is the mean misorientation angle of the
 % orientations to the fitted fibre.
 
@@ -200,18 +209,18 @@ plot(grainsLarge,fit./degree)
 mtexTitle('fit')
 
 %%
-% *The misorientation axes in crystal coordinates*
+% *The crystal dispersion axes in crystal coordinates*
 %
-% In order to visualize the misorientatio axes we first need to define an
-% approbiate color key for crystal directions. This can be done with the
+% In order to visualize the crystal dispersion axes we first need to define an
+% appropriate color key for crystal directions. This can be done with the
 % command <HSVDirectionKey.html |HSVDirectionKey|>. Note, that we need to
-% specify the option |'antipodal'| since for the misorientation axes we can
+% specify the option |'antipodal'| since for the crystal dispersion axes we can
 % not distinguish between antipodal directions.
 
 % define the color key
 cKey = HSVDirectionKey(ebsd.CS,'antipodal');
 
-% plot the color key and on top the misorientation axes
+% plot the color key and on top the dispersion axes
 plot(cKey)
 hold on
 plot(GAX_C.project2FundamentalRegion,'MarkerFaceColor','black')
@@ -228,13 +237,13 @@ color = cKey.direction2color(GAX_C);
 plot(grainsLarge, color)
 
 %% 
-% *The misorientation axes in specimen coordinates*
+% *The crystal dispersion axes in specimen coordinates*
 %
-% Colorizing the misorientation axes in specimen coordinates is
-% unfortunataely much more complicated. In fact, it is mathematically
+% Colorizing the crystal dispersion axes in specimen coordinates is
+% unfortunately much more complicated. In fact, it is mathematically
 % impossible to find a corresponding color key without color jumps. Instead
 % MTEX visualizes axes in specimen coordinates by compass needles which are
-% entierely gray if in the plane and get diveded into black and white to
+% entirely gray if in the plane and get divided into black and white to
 % indicate which end points out of the plane and which into the plane.
 
 plot(grains,GOS./degree)
@@ -244,6 +253,24 @@ hold on
 plot(grainsLarge, GAX_S)
 hold off
 
+% In many materials, a direct relation can be observed between the position
+% of the crystal dispersion axis in specimen coordinates and the inferred
+% type of flow. E.g. in many geomaterials which have undergone (close to)
+% simple shear progressive deformation, the average of the crystal dispersion 
+% axes align parallel to the vorticity axis of flow; in pure shear progressive
+% deformation, crystal dispersion axes form a girdle with a normal parallel
+% to the shortening direction.
+
+plot(GAX_S,'antipodal','MarkerSize',2)
+hold on
+plot(GAX_S,'contour','antipodal','contours',[1 2 3],'halfwidth',10*degree,'linewidth',2)
+hold off
+
+% Here we do not see this clear of a picture
+% (maybe because this is a piece of steel which might behave differently,
+%  maybe because we do not consider a large enough number of grains)
+%  Question: if this is processed steel, which sample directions is
+%            pointing to the east?
 
 %% TODO: Testing on Bingham distribution for a single grain 
 % Although the orientations of an individual grain are highly concentrated,
@@ -270,4 +297,3 @@ hold off
 %T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
 %[T_spherical T_prolate T_oblate]
-
