@@ -107,8 +107,8 @@ else
     % get the angle with x-axis
     omega(ig) = atan2(Vg(i1,2) - Vg(i2,2), Vg(i1,1) - Vg(i2,1));
   
-    if nargout == 3, cPerp(ig) = projectionLength(Vg, omega(ig)); end
-    
+    if nargout == 3, cPerp(ig) = projectionLength(Vg, mod(omega(ig)+pi/2,pi)); end    
+  
   end
   
   c = sqrt(c);
