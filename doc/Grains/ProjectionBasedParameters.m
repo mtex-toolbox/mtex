@@ -219,13 +219,104 @@ legend('Forsterite','Enstatite','Location','southoutside')
 % TODO: get deviation from an ellipse etc
 %
 %%
-% TODO: some more to explain
-% <grain2d.paror.html |grains.paror|>   cummulative particle projection function  
-
- cumpl = paror(grains);
- plot(grains)
+% PAROR and SURFOR
+% Another way of quantifying shape farbics is by making use of the cumulative
+% projection function of grains of grain boundary segments. These methods
+% are heavily inspired by Edwin A. Abbotts 'Flatland - A romance of many
+% dimensions' (1884) and based on 
+% Panozzo, R., 1983, "Two-dimensional analysis of shape fabric using projections
+% of digitized lines in a plane". Tectonophysics 95, 279-294. and
+% Panozzo, R., 1984, "Two-dimensional strain from the orientation of lines 
+% in a plane." J. Struct. Geol. 6, 215â€“221.
+% implemented in Mtex as <grain2d.paror.html |grains.paror|> and 
+% <grainBoundary.surfor.html |grainBoudnary.surfor|>
  
- %%
  
- figure
- plot(0:180,cumpl);
+% While we used to caliper to derive the shortest and the longest axis in a
+% grain, we can basically derive the projection length for all angles within
+% the interval 0:180 degree.
+% close all
+figure
+omega = linspace(0,180);
+plot(omega,grains(1:10).caliper(omega*degree),'LineWidth',1)
+xlim([0,180])
+% and sum those up
+hold on
+plot(omega,sum(grains(1:10).caliper(omega*degree)),'--','LineWidth',2)
+hold off
+ 
+% <grain2d.paror.html |grains.paror|> returns the cumulative particle
+% projection function normalized to 1. The projection angles can be
+% regarded as the rotation angle of the particle (counterclockwise) while
+% projecting from the y-axis onto the x-axis.
+ 
+cumplF = paror(grains('fo'));
+cumplE = paror(grains('en'));
+ 
+% paror uses by default angles of 0:180 degree
+figure
+plot(0:180,cumplF,'g','linewidth',2);
+hold on
+plot(0:180,cumplE,'b','linewidth',2);
+hold off
+xlim([0,180])
+ 
+% We can interpret the results in the following way. The minimum of the
+% curve is a measure of the amplitude of the projection function and can be
+% compared to an averaged axial ratio 'b/a' of the entire  fabric; isotropic fabrics
+% would have a 'b/a' close to 1 while highly anisotropic fabrics can be identified 
+% by small 'b/a' values.
+min(cumplF)
+min(cumplE)
+ 
+% The position of the maxima and minima of the projection function derived
+% from PAROR as implemented in Mtex can be interpreted in the following
+% way: the maximum position represents the preferred axis parallel to the
+% longest projection and the normal the minimum position represents the preferred
+% axis related to the normal to the shortest projection function.
+ 
+% For the Forsterite;
+[~, id_max] = max(cumplF);
+[~, id_min] = min(cumplF);
+omega= 0:180;
+mod(omega(id_max),180)
+mod(omega(id_min)-90,180)
+ 
+% for the Enstatite;
+[~, id_max] = max(cumplE);
+[~, id_min] = min(cumplE);
+omega= 0:180;
+mod(omega(id_max),180)
+mod(omega(id_min)-90,180)
+ 
+% The smaller the difference between these values, the closer the fabric is
+% to an orthorhombic symmetry.
+ 
+ 
+ 
+%%
+% Similarly to using the entire particle (the convex hull in case of the
+% projection functions), we can use a distribution of lines <grainBoundary.surfor.html |grainBoudnary.surfor|>.
+% This can be useful for the quantification of the grain boundary anisotropy 
+% or in general might be needed if we look at boundaries which do not form
+% closed outlines, e.g. a list of subgrain or twin boundaries or the contact
+% between certain phases.
+ 
+% Let's compare the boundaries between the different unlike phases and between
+% forsterite-forsterite in our sample:
+ 
+pairs = [1 1; nchoosek(1:3,2)];
+phase = {'fo' 'en' 'di'};
+for i=1:length(pairs)
+[cumpl(:,i),omega]  = surfor(grains.boundary(phase{pairs(i,:)}));
+leg{i} = [phase{pairs(i,1)} '-' phase{pairs(i,2)}];
+end
+figure
+plot(omega/degree,cumpl,'linewidth',2);
+legend(leg,'Location','best' )
+xlim([0,180])
+ 
+% We can see that Forsterite-Forsterite boundaries form a fabric slightly
+% more inclined with respect to the other phase boundariesand that the
+% phase boundaries between the two pyroxenes (Enstatite and Diopside) show
+% the lowest anisotropy.
