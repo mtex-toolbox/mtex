@@ -105,7 +105,7 @@ if length(qss) == 1 % no specimen symmetry
   % take the maximum over all symmetric equivalent
   d = max(dot_outer(mori,qcs,'noSymmetry'),[],2);
       
-  d = reshape(d,size(o1));
+  d = reshape(d,size(mori));
   
 
 elseif length(o1) == 1
