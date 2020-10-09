@@ -161,7 +161,7 @@
 % illustrates anisotropy of seismic waves
 % * <EBSD.grainMean.html |grainMean|> grain averages of arbitrary properties
 % * shape functions <grain2d.surfor.html |surfor|>, <grain2d.paror.html
-% |paror|>, <grain2d.calliper.html |calliper|>
+% |paror|>, <grain2d.caliper.html |caliper|>
 % * <Miller.multiplicity.html |multiplicity|> for Miller, orientation and
 % fibre
 %
