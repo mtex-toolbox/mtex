@@ -1,20 +1,19 @@
-function [c, omega, cPerp] = caliper(grains,omega,varargin)
+function c = caliper(grains,varargin)
 % Calliper (Feret diameter) of a grain in measurement units, the projection
 % length normal to it and its direction/trend.
 %
 % Syntax
 %
 %   c = caliper(grains,omega)
-%   c = caliper(grains,'shortest')
-%   [c, omega, cPerp] = caliper(grains,'longest')
+%   cV = caliper(grains,'shortest')
+%   cV = caliper(grains,'longest')
 %
 % Input:
 %  grains   - @grain2d
 %
 % Output:
 %  c     - caliper at angle |omega|
-%  cPerp - projection length normal to |c|
-%  omega - angle of the longest / shortest caliper
+%  cV    - @vector3d, norm(cV) is the length
 %
 % Options:
 %  shortest  - shortest caliper
@@ -23,9 +22,9 @@ function [c, omega, cPerp] = caliper(grains,omega,varargin)
 
 V = grains.V;
 
-if nargin > 1 && isnumeric(omega)
+if nargin > 1 && isnumeric(varargin{1})
 
-  omega = omega(:).';
+  omega = varargin{1}(:).';
   proj = V * [cos(omega);sin(omega)];
   
   if length(omega)>1
@@ -34,10 +33,12 @@ if nargin > 1 && isnumeric(omega)
   else
     c = cellfun(@(id) max(proj(id,:) - min(proj(id,:)),[],1),grains.poly);
   end
+  
+  return
     
-elseif nargin > 1 && strcmpi(omega,'short_slow')
+elseif nargin > 1 && strcmpi(varargin{1},'short_slow')
    
-  if nargin > 1 && strcmpi(omega,'shortest'), fak = -1; else, fak = 1; end
+  fak = -1;
     
   c = -fak * inf(size(grains));
   omega = zeros(size(grains));
@@ -56,12 +57,11 @@ elseif nargin > 1 && strcmpi(omega,'short_slow')
   
   c = sqrt(c);
   
-elseif nargin > 1 && strcmpi(omega,'shortest')
+elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
   V = round(10000*grains.V);
   c = nan(size(grains));
-  cPerp = nan(size(grains));
   omega = nan(size(grains));
 
   
@@ -78,7 +78,10 @@ elseif nargin > 1 && strcmpi(omega,'shortest')
         
     [c(ig), omega(ig)] = minCaliper(VgHull,apPairs);
   
-    if nargout == 3, cPerp(ig) = projectionLength(Vg, omega(ig)); end
+    if check_option(varargin,'shortestPerp')
+      omega(ig) = omega(ig) + pi/2;
+      c(ig) = projectionLength(Vg, omega(ig));
+    end
     
   end
 
@@ -87,8 +90,6 @@ else
   poly = grains.poly;
   V = grains.V;
   c = nan(size(grains));
-  cPerp = nan(size(grains));
-  omega = nan(size(grains));
   
   for ig = 1:length(grains)
     
@@ -107,13 +108,15 @@ else
     % get the angle with x-axis
     omega(ig) = atan2(Vg(i1,2) - Vg(i2,2), Vg(i1,1) - Vg(i2,1));
   
-    if nargout == 3, cPerp(ig) = projectionLength(Vg, mod(omega(ig)+pi/2,pi)); end    
-  
   end
   
   c = sqrt(c);
   
 end
+
+% convert to vector3d
+c = c(:) .* vector3d.byPolar(pi/2,omega(:),'antipodal');
+
 end
 
 function [minDiameter, minAngle] = minCaliper(hull_corners, apPairs)

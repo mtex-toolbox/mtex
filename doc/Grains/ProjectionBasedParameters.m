@@ -43,8 +43,8 @@ grains(id).diameter
 % longest and shortest projection gives an indication about the shape of
 % the grain
 
-grains(id).caliper('longest')
-grains(id).caliper('shortest')
+norm(grains(id).caliper('longest'))
+norm(grains(id).caliper('shortest'))
 
 %% 
 % We may trace the caliper with respect to projection direction
@@ -62,20 +62,16 @@ xlim([0,180])
 % grain. This direction is comparable to the <grain2d.longAxis.html
 % |grains.longAxis|> computed from an ellipse fitted to the grain.
 
-[cMin, omega_min] = grains.caliper('shortest');
-[cMax, omega] = grains.caliper('longest');
+cMin = grains.caliper('shortest');
+cMax = grains.caliper('longest');
 
-longAxis = vector3d.byPolar(pi/2,omega,'antipodal');
-normal_to_shortest = vector3d.byPolar(pi/2,omega_min+pi/2,'antipodal');
-
-plot(grains,(cMax - cMin)./cMax,'micronbar','off')
+plot(grains,(norm(cMax) - norm(cMin))./norm(cMax),'micronbar','off')
 mtexColorbar('title','TODO')
 
 % and on top the long axes
 hold on
 quiver(grains,grains.longAxis,'Color','white')
-quiver(grains,normal_to_shortest,'Color','blue')
-quiver(grains,longAxis,'Color','red')
+quiver(grains,cMax,'Color','red')
 hold off
 
 %%
@@ -90,26 +86,20 @@ hold off
 testgrains = mtexdata('testgrains');
 testgrains = smooth(testgrains([6 8]),5);
 
-[~, o_min] = testgrains.caliper('shortest');
-[~, o_max] = testgrains.caliper('longest');
-
-lax = vector3d.byPolar(pi/2,o_max,'antipodal');
-ntshax = vector3d.byPolar(pi/2,o_min+pi/2,'antipodal');
+cMinPerp = testgrains.caliper('shortestPerp');
+cMax = testgrains.caliper('longest');
 
 plot(testgrains,'micronbar','off')
 hold on
-quiver(testgrains,ntshax,'Color','blue')
-quiver(testgrains,lax,'Color','red')
+quiver(testgrains,cMinPerp,'Color','blue','DisplayName','perp to shortest')
+quiver(testgrains,cMax,'Color','red','DisplayName','largest calliper')
 hold off
 
 %%
 % Back to the peridotite sample. If we look at the grains, we might wonder
 % if there is a characteristic difference in the grain shape fabric - shape
 % and alignment of the grains- between e.g. Forsterite and Enstatite.
-
-plot(grains)
-
-%%
+%
 % In order to say something about the bulk shape fabric, sometimes referred
 % to as SPO (shape preferred "orientation", totally unrelated to a crystal
 % orientation as defined in MTEX), the most basic attempt is to look at a
@@ -117,17 +107,30 @@ plot(grains)
 % the <EllipseBasedParameters.html best fit ellipse> long axes computed by
 % the command <grain2d.fitEllipse.html |fitEllipse|>.
  
-[omega, a, b] = grains.fitEllipse; 
+plot(grains)
 hold on
-lax = vector3d.byPolar(pi/2,omega,'antipodal');
-quiver(grains,lax,'Color','red')
+quiver(grains,grains.longAxis,'Color','red','displayName','long axis')
 hold off
-mtexColorbar('title','grain long axis')
 
 %%
-% We can compute the length weighted distribution of grain best fit ellipse
-% long axes by:
+% We can plot the length weighted polar histogram of the grain long axes
+% by
 
+numBin = 50;
+
+subplot(1,2,1)
+histogram(grains('forsterite').longAxis,numBin,...
+  'weights',norm(grains('forsterite').longAxis))
+title('Forsterite')
+
+subplot(1,2,2)
+histogram(grains('enstatite').longAxis,numBin,...
+  'weights',norm(grains('enstatite').longAxis))
+title('Enstatite')
+
+%%
+
+figure
 [freq,bc] = calcTDF(grains('fo'),'binwidth',3*degree);
 plotTDF(bc,freq/sum(freq),'linecolor','g');
 
@@ -145,11 +148,11 @@ mtexTitle('long axes')
 % particles. The command <calcTDF.html |calcTDF|> also takes a list of
 % angles and a list of weights or lengths as input
 
-[~, omega_shortestF, cPerpF] = caliper(grains('fo'),'shortest');
-[~, omega_shortestE, cPerpE] = caliper(grains('en'),'shortest');
+cPerpF = caliper(grains('fo'),'shortestPerp');
+cPerpE = caliper(grains('en'),'shortestPerp');
 
-[freqF,bcF] = calcTDF(omega_shortestF+pi/2, 'weights',cPerpF,'binwidth',3*degree);
-[freqE,bcE] = calcTDF(omega_shortestE+pi/2, 'weights',cPerpE,'binwidth',3*degree);
+[freqF,bcF] = calcTDF(cPerpF.rho, 'weights',cPerpF.norm, 'binwidth',3*degree);
+[freqE,bcE] = calcTDF(cPerpE.rho, 'weights',cPerpE.norm, 'binwidth',3*degree);
 
 legend('hide'); nextAxis
 plotTDF(bcF,freqF/sum(freqF),'linecolor','g');
