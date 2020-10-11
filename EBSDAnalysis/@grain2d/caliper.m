@@ -60,7 +60,8 @@ elseif nargin > 1 && strcmpi(varargin{1},'short_slow')
 elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
-  V = round(10000*grains.V);
+  scaling = 10000 ;
+  V = round(scaling * grains.V);
   c = nan(size(grains));
   omega = nan(size(grains));
 
@@ -80,10 +81,12 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
     if check_option(varargin,'shortestPerp')
       omega(ig) = omega(ig) + pi/2;
-      c(ig) = projectionLength(Vg, omega(ig));
+      c(ig) = scaling * projectionLength(Vg, omega(ig));
     end
     
   end
+  
+  c = c / scaling;
 
 else
   
