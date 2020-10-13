@@ -160,19 +160,7 @@ classdef phaseList
       end
                 
     end
-    
-    function id = cs2phaseId(pL,cs)
       
-      for id = 1:length(pL.CSList)
-        if isa(pL.CSList{id},'symmetry') && (...
-            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
-            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
-          return
-        end
-      end
-      id = 0;
-      
-    end
     
     function pL = set.CS(pL,cs)
           
@@ -331,6 +319,26 @@ classdef phaseList
       
     end
     
+    
+    
+  end
+  
+  
+  methods (Hidden = true)
+    
+    function id = cs2phaseId(pL,cs)
+      
+      for id = 1:length(pL.CSList)
+        if isa(pL.CSList{id},'symmetry') && (...
+            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
+            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
+          return
+        end
+      end
+      id = 0;
+      
+    end
+    
     function phId = name2id(pL,ph)
       % convert phase name to id
               
@@ -348,6 +356,6 @@ classdef phaseList
       end
       
     end
-    
+
   end
 end

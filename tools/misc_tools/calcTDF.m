@@ -1,4 +1,3 @@
-
 function [totfreq, bc, azi]=calcTDF(g,varargin)
 % calc circular axis/ trend distribution function of grain long axes
 % OR grain boundary segments or from a list of angles for axial data (0:pi)
