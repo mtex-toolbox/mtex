@@ -13,6 +13,7 @@ classdef symmetry < handle
   end
   
   properties
+    spaceId = 1           % space group id as in the international tables
     opt = struct
   end
 
@@ -29,6 +30,7 @@ classdef symmetry < handle
   
   properties (Constant = true)
     pointGroups = pointGroupList % list of all point groups
+    spaceGroups = readSpaceGroupList % list of all point groups
   end
 
   % this is an abstract class
