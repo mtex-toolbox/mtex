@@ -2,11 +2,11 @@ function h = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 
 % ignore xyz case
-if strcmp(m.dispStyle,'xyz'), return; end
+if strcmp(h.dispStyle,'xyz'), return; end
 
 sh = size(h);
 
-mOld = m(m.dispStyle);
+mOld = h.(h.dispStyle);
 
 % consider only 3 digits Miller indices
 mOld = mOld(:,[1 2 end])';
@@ -38,6 +38,6 @@ end
 h = h .* multiplier;
 
 % now round
-m.(m.dispStyle) = mOld;
+h.(h.dispStyle) = round(h.(h.dispStyle));
 
 h = reshape(h,sh);
