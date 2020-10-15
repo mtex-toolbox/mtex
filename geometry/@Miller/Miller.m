@@ -77,7 +77,7 @@ classdef Miller < vector3d
       if ~isempty(dispStyle) && strcmp(dispStyle{1},'hkl') && any(strcmp(m.CSprivate.lattice,{'trigonal','hexagonal'}))
         dispStyle{1} = 'hkil';
       end
-      
+            
       if nargin == 0 %empty constructor
 
         return
@@ -247,6 +247,10 @@ classdef Miller < vector3d
       else
         m.dispStyle = 'hkl';
       end
+    end
+    
+    function m = set.hkil(m,hkil)
+      m.hkl = hkil;
     end
     
     function m = set.h(m,h)
