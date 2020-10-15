@@ -14,7 +14,11 @@ function cumpl = paror(grains,varargin)
 %  omega  - list of angles used in the projection function (default [0:1:180]*degree)  
 %
 
-omega = get_option(varargin,'omega',linspace(0,pi,181));
+if nargin > 1 && isnumeric(varargin{1})
+  omega = varargin{1};
+else
+  omega = get_option(varargin,'omega',linspace(0,pi,181));
+end
 
 V = grains.V;
 poly = grains.poly;
