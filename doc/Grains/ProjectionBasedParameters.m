@@ -65,8 +65,8 @@ norm(grains(ind).caliper('longest'))
 norm(grains(ind).caliper('shortest'))
 
 hold on
-quiver(grains(ind),grains(ind).caliper('longest'))
-quiver(grains(ind),grains(ind).caliper('shortest'))
+quiver(grains(ind),grains(ind).caliper('longest'),'noScaling')
+quiver(grains(ind),grains(ind).caliper('shortest'),'noScaling')
 hold off
 
 
@@ -225,7 +225,7 @@ for i=1:length(pairs)
   
 end
 hold off
-legend(leg,'Location','best' )
+legend('Location','best' )
 
 %%
 % We can see that Forsterite-Forsterite boundaries form a fabric slightly
