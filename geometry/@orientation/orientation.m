@@ -272,13 +272,13 @@ methods (Static = true)
   function mori = GreningerTrojano(csGamma,csAlpha)
     %
     % Syntax:
-    %   mori = GreningerTrojano(csGamma,csAlpha)
+    %   mori = orientation.GreningerTrojano(csGamma,csAlpha)
     %
     % Input
     %  csGamma - parent @crystalSymmetry (cubic fcc)
     %  csAlpha - child @crystalSymmetry (cubic bcc)
     %
-    % cube cube
+    
     mori = inv(orientation.byEuler(2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
 
     %mori = orientation.map(Miller(1,1,1,csGamma),Miller(1,1,0,csAlpha),...
@@ -286,7 +286,70 @@ methods (Static = true)
 
   end
 
+  function mori = Burger(csBeta,csAlpha)
+    %
+    % Syntax:
+    %   mori = orientation.GreningerTrojano(csBeta,csAlpha)
+    %
+    % Input
+    %  csBeta  - parent @crystalSymmetry (cubic bcc)
+    %  csAlpha - child @crystalSymmetry (hexagonal hcp)
+    %
+  
+    mori = orientation.map(Miller(1,1,0,csBeta),Miller(0,0,0,1,csAlpha),...
+      Miller(-1,1,-1,csBeta),Miller(2,-1,-1,0,csAlpha));
 
+    % beta2alpha = inv(orientation.byEuler(135*degree, 90*degree, 355*degree,csAlpha,csBeta))
+    
+  end
+  
 end
 
+
+methods (Static = true, Hidden = true)
+
+  function check_dot(cs)
+  
+    % first setting
+    cs = crystalSymmetry('m-3m');
+    n = 10000000;
+    ori1 = orientation.rand(n,cs);
+    ori2 = orientation.rand(n,cs);
+    
+    tic
+    mori = inv(ori1) .* ori2;
+    
+    d1 = max(dot_outer(mori,cs.rot,'noSymmetry'),[],2);
+    toc
+    
+    tic
+    d2 = dot(ori1,ori2);
+    toc
+    
+    norm(d1-d2)
+    
+    %second setting
+    n = 1000000;
+    ori1 = orientation.rand(n,cs,cs);
+    ori2 = orientation.rand(cs,cs);
+    
+    tic
+    d1 = dot(ori1,ori2);
+    toc
+    
+    tic
+    d2 = dot(ori2,ori1);
+    toc
+    
+    norm(d1-d2)
+    
+    
+  end
+  
+  
+  
+  
+  
+end
+  
 end

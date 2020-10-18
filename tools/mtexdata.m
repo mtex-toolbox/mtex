@@ -1,4 +1,4 @@
-function S = mtexdata(name,varargin)
+function out = mtexdata(name,varargin)
 % load of data provided with mtex and often used in documentation
 %
 % Syntax
@@ -6,356 +6,233 @@ function S = mtexdata(name,varargin)
 %   mtexdata name   % loads specified data set
 %
 % Input
-%
-% Flags
-%    aachen -
-%        3d - serial section 3d EBSD data from Leo Kestens
-%  mylonite - collected by Daniel Rutte (Brad R. Hacker)
-%   epidote - data provided by David Mainprice
-%
-%     dubna - collected by Florian Wobbe at Dubna
-%       ptx -
-% geesthacht -
-%
-%
-% See also
+%  name - name of the sample data
 %
 
-list = listmtexdata;
+% read list of all available sample data
+list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
+
+type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d'}, {'pf','ebsd','grains'});
 
 if nargin < 1
 
-  disp('available loading routines for mtex sample data');
-  cprintf({'TYPE', list.type; 'NAME',list.name}');
+  if nargout == 0
+    disp('available loading routines for mtex sample data');
+    disp(list)
+  else
+    out = list.Properties.RowNames;
+  end
   return
 
 elseif strcmpi(name,'clear')
 
   files = dir(fullfile(mtexDataPath,'*.mat'));
+  files = files(~strncmp('testgrains.mat',{files.name},14));
   for k=1:numel(files)
-    fullfile(mtexDataPath,[files(k).name]);
     delete(fullfile(mtexDataPath,[files(k).name]));
   end
   return
-
-elseif strcmpi(name,'all')
-
-  for files = list
-    mtexdata(files.name)
-  end
-  return
-
 end
 
-
-ndx = strmatch(name,{list.name});
-
-if any(ndx)
-  file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
-else
+%
+if isempty(strmatch(name,list.Properties.RowNames))
   warning('mtex:missingData','data not found, please choose one listed below')
-  mtexdata
+  disp(list)
   return
 end
+
+type = char(list(name,:).type);
+
+% try to load as mat file
 
 % change warning to error to make it catchable
 w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
-
-% try to load
 try
-  S = load(file);
+  
+  matFile = fullfile(mtexDataPath,[ lower(name) '.mat']);
+  load(matFile,'out');
 
-  % ensure classes where loaded correctly
-  assert(all(structfun(@(x) ~isstruct(x),S)));
-
-catch %#ok<CTCH> % if can not load -> import
-
-  if any(ndx)
-
-    disp(' loading data ...')
-    switch list(ndx).type
-      case 'ebsd'
-        S.ebsd = feval(['mtexdata_' list(ndx).name]);
-      case 'pf'
-        [S.CS,S.h,S.c,S.pf] = feval(['mtexdata_' list(ndx).name]);
+catch
+ 
+  fName = fullfile(mtexDataPath,type,char(list(name,:).files));
+  
+  % load from internet when required
+  if isempty(dir(fName))
+    
+    url = ['https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/data/' type '/' char(list(name,:).files)];
+    disp('  downloading data from ')
+    disp(' ');
+    disp(['   <a href="' url '">' url '</a>'])
+    disp(' ');
+    disp(['  and saving it to ',fName]);
+    
+    websave(fName,url);
+    
+    if strcmp(url(end-2:end),'cpr')
+      url(end-2:end) = 'crc';
+      fName(end-2:end) = 'crc';
+      disp('  downloading data from ')
+      disp(' ');
+      disp(['   <a href="' url '">' url '</a>'])
+      disp(' ');
+      disp(['  and saving it to ',fName]);
+      websave(fName,url);
     end
-    disp([' saving data to ' file])
-    save(file,'-struct','S');
   end
+  
+  switch type
+    case 'PoleFigure'
+      switch name
+        case 'dubna'
+          CS = loadCIF('quartz');
+          c = {1,1,[0.52 ,1.23],1,1,1,1};
+          out = PoleFigure.load(fName,'superposition',c,CS);
+        case 'geesthacht'
+          CS = crystalSymmetry('m-3m');
+          out = PoleFigure.load(fName,CS);
+        case 'ptx'
+          CS = crystalSymmetry('mmm');
+          out = PoleFigure.load(fName,CS);
+      end
+      
+    case 'EBSD'
+      switch lower(name)
+        
+        case 'aachen'
+          CS = {...
+            'notIndexed',...
+            crystalSymmetry('m-3m','mineral','Fe','color','light blue'),...
+            crystalSymmetry('m-3m','mineral','Mg','color','light red')};
 
+          out = EBSD.load(fName,...
+            'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
+
+        case  'sharp'
+          CS = {...
+            'notIndexed',...
+            crystalSymmetry('-3m',[5,5,17],'mineral','calcite','color','light blue')};
+
+          out = EBSD.load(fName,'CS',CS,...
+            'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
+
+        case 'csl'
+          
+          CS = crystalSymmetry('m-3m','mineral','iron');
+          out = loadEBSD_generic(fName,'CS',CS,...
+            'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'IQ' 'CI' 'Error'});
+          
+        case 'mylonite'
+
+          CS = {...
+            crystalSymmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina'),...
+            crystalSymmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz'),...
+            crystalSymmetry('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
+            crystalSymmetry('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
+
+          plotx2east;
+          plotzOutOfPlane
+          out = loadEBSD_generic(fName,'CS',CS, ...
+            'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
+          
+        case 'olivine'
+          
+          out = EBSD.load(fName);
+
+          % correct data to fit the reference frame
+          rot = rotation.byEuler(90*degree,180*degree,180*degree);
+          out = rotate(out,rot,'keepEuler');
+          rot = rotation.byEuler(0*degree,0*degree,90*degree);
+          out = rotate(out,rot);
+
+          % plotting conventions
+          plotx2east; plotzOutOfPlane;
+          
+          % rotate only the spatial data about the y-axis
+          % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
+          
+        case 'twins'
+          
+          plotx2east; plotzOutOfPlane
+          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+        
+        case 'copper'
+
+          plotx2east; plotzOutOfPlane
+          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+
+        case 'single'
+
+          CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
+
+          out = EBSD.load(fName, 'CS', CS, ...
+            'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
+            'Columns', [1 2 3 4 5]);
+          
+        case 'alu'
+
+          CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
+
+          out = EBSD.load(fName,'CS', CS,...
+            'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
+            'Columns', [1 2 3 4 5],'ignorePhase', 0);
+
+        case 'titanium'
+
+          CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
+          out = EBSD.load(fName,'CS', CS,...
+            'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' 'x' 'y' 'grainId'});
+
+        case 'ferrite'
+
+          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame','setting 2');
+
+        case 'epidote'
+
+          out = EBSD.load(fName,'ignorePhase',[0 3 4],'convertEuler2SpatialReferenceFrame');
+          
+        case 'forsterite'
+
+          plotx2east; plotzOutOfPlane
+          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+
+        case 'small'
+
+          plotx2east; plotzOutOfPlane
+          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = out(out.inpolygon([33 4.5 3 3]*10^3));
+
+        case lower('alphaBetaTitanium')
+
+          out = EBSD.load(fName,'convertSpatial2EulerReferenceFrame');
+          out('Ti (alpha)').CS = out('Ti (alpha)').CS.properGroup;
+          out('Ti (beta)').CS = out('Ti (beta)').CS.properGroup;
+
+        case 'martensite'
+
+          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          out('Iron bcc').CS = out('Iron bcc').CS.properGroup;
+          out('Iron bcc').CSList{3} = out('Iron bcc').CSList{3}.properGroup;
+
+        case 'emsland'
+
+          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          
+      end
+      
+  end    
+  disp([' saving data to ' matFile])
+  save(matFile,'out');
+end
+
+if nargout == 0
+  assignin('base',type2var(type),out); 
+  if ~check_option(varargin,'silent')
+    evalin('base',type2var(type));
+  end
+  clear out;
 end
 
 % restore warning style
 warning(w);
-
-% copy to workspace
-fld = fields(S);
-for k=1:numel(fld)
-  assignin('base',fld{k},S.(fld{k}));
-end
-
-% display
-%if ~getMTEXpref('generatingHelpMode')
-if ~check_option(varargin,'silent')
-  evalin('base',fld{end});
-end
-
-if nargout == 0, clear S; end
-end
-
-% -----------------------------------------------------------------------
-function data = listmtexdata
-
-fid = fopen([mfilename('fullpath') '.m'],'r');
-A = char(fread(fid,'char')');
-fclose(fid);
-
-data = regexp(A,'function(.*?)(?<type>(ebsd|pf|grains))(.*?)mtexdata_(?<name>\w*)','names');
-data(cellfun('isempty',{data.name})) = [];
-end
-
-% -------------------- PoleFigure data ----------------------------------
-function [CS,h,c,pf] = mtexdata_dubna
-
-CS = loadCIF('quartz');
-
-fname = {...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-12)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-21)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
-
-h = {...
-  Miller(0,2,-2,1,CS),...
-  Miller(1,0,-1,0,CS),...
-  [Miller(0,1,-1,1,CS),Miller(1,0,-1,1,CS)],... % superposed pole figures
-  Miller(1,0,-1,2,CS),...
-  Miller(1,1,-2,0,CS),...
-  Miller(1,1,-2,1,CS),...
-  Miller(1,1,-2,2,CS)};
-
-c = {1,1,[0.52 ,1.23],1,1,1,1};
-
-pf = PoleFigure.load(fname,h,'interface','dubna','superposition',c,CS);
-end
-
-
-% ------------------------------------------------------------------
-function [CS,h,c,pf] = mtexdata_geesthacht
-
-CS = crystalSymmetry('m-3m');
-SS = specimenSymmetry('-1');
-
-fname = fullfile(mtexDataPath,'PoleFigure','geesthacht','ST42-104-110.dat');
-
-h = { ...
-  Miller(1,0,4,CS), ...
-  Miller(1,0,4,CS), ...
-  Miller(1,1,0,CS), ...
-  Miller(1,1,0,CS), ...
-  };
-
-c = ones(size(h));
-
-pf = PoleFigure.load(fname,h,CS,SS);
-
-end
-
-%
-function   [CS,h,c,pf] = mtexdata_ptx
-
-CS = crystalSymmetry('mmm');
-SS = specimenSymmetry('-1');
-
-pname = fullfile(mtexDataPath,'PoleFigure','ptx');
-fname = {...
-  [pname '/gt9104.ptx'], ...
-  [pname '/gt9110.ptx'], ...
-  [pname '/gt9202.ptx'], ...
-  };
-
-pf = PoleFigure.load(fname,CS,SS);
-h = pf.allH;
-c = ones(size(h));
-end
-
-% -------------------------- EBSD data ---------------------------------
-function ebsd = mtexdata_aachen
-CS = {...
-  'notIndexed',...
-  crystalSymmetry('m-3m','mineral','Fe','color','light blue'),...
-  crystalSymmetry('m-3m','mineral','Mg','color','light red')};
-
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),...
-  'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
-end
-
-%
-function ebsd = mtexdata_sharp
-
-CS = {...
-  'notIndexed',...
-  crystalSymmetry('-3m',[5,5,17],'mineral','calcite','color','light blue')};
-
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
-  'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
-end
-
-
-function ebsd = mtexdata_small
-
-plotx2east
-ebsd = mtexdata_forsterite;
-region = [33 4.5 3 3]*10^3;
-ebsd = ebsd(ebsd.inpolygon(region));
-end
-
-% --------------------------------------------------------------
-function ebsd = mtexdata_csl
-
-CS = crystalSymmetry('m-3m','mineral','iron');
-ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','CSL.txt'),'CS',CS,...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'IQ' 'CI' 'Error'});
-end
-
-% ----------------------------------------------------------------------
-function ebsd = mtexdata_3d
-
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),...
-  '3d', (0:58)*0.12,'convertEuler2SpatialReferenceFrame');
-end
-
-% ----------------------------------------------------------------------
-function ebsd = mtexdata_mylonite
-
-CS = {...
-  crystalSymmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina'),...
-  crystalSymmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz'),...
-  crystalSymmetry('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
-  crystalSymmetry('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
-
-plotx2east;
-plotzOutOfPlane
-ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),'CS',CS, ...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
-end
-
-% ----------------------------------------------------------------------
-function ebsd = mtexdata_epidote
-
-ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
-  'convertEuler2SpatialReferenceFrame');
-end
-
-% ----------------------------------------------------------------------
-function ebsd = mtexdata_forsterite
-
-plotx2east;
-plotzOutOfPlane
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
-
-% rotate only the spatial data about the y-axis
-% ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-end
-
-function ebsd = mtexdata_olivine
-
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','olivineopticalmap.ang'));
-
-% correct data to fit the reference frame
-rot = rotation.byEuler(90*degree,180*degree,180*degree);
-ebsd = rotate(ebsd,rot,'keepEuler');
-rot = rotation.byEuler(0*degree,0*degree,90*degree);
-ebsd = rotate(ebsd,rot);
-
-% plotting conventions
-setMTEXpref('xAxisDirection','east');
-setMTEXpref('zAxisDirection','outOfPlane');
-
-% rotate only the spatial data about the y-axis
-% ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-end
-
-function ebsd = mtexdata_twins
-
-plotx2east; plotzOutOfPlane
-CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium','x||a*')
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
-end
-
-function ebsd = mtexdata_copper
-
-plotx2east; plotzOutOfPlane
-ebsd = EBSD.load(fullfile(mtexDataPath,'EBSD','copper.osc'),'convertEuler2spatialReferenceFrame');
-end
-
-% -----------------------------------------------------------------------
-function ebsd = mtexdata_single
-
-CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
-
-fname = fullfile(mtexDataPath,'EBSD','single_grain_aluminum.txt');
-ebsd = EBSD.load(fname, 'CS', CS, ...
-   'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
-  'Columns', [1 2 3 4 5]);
-end
-% ----------------------------------------------------------------------
-function ebsd = mtexdata_alu
-
-CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
-
-fname = fullfile(mtexDataPath,'EBSD','polycrystalline_aluminum.txt');
-ebsd = EBSD.load(fname,'CS', CS,...
-   'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
-  'Columns', [1 2 3 4 5],'ignorePhase', 0);
-end
-
-
-function ebsd = mtexdata_titanium
-
-  CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
-
-  fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
-  ebsd = EBSD.load(fname,'CS', CS,...
-    'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
-    'x' 'y' 'grainId'});
-end
-
-
-function ebsd = mtexdata_ferrite
-
-fname = fullfile(mtexDataPath,'EBSD','ferrite.ang');
-ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame','setting 2');
-
-end
-
-
-function grains = mtexdata_testgrains
-
-fname = fullfile(mtexDataPath,'testgrains.mat');
-grains = load(fname);
-end
- 
- 
-function ebsd = mtexdata_alphaBetaTitanium
-
-fname = fullfile(mtexDataPath,'EBSD','EDXLMDTi64.cpr');
-ebsd = EBSD.load(fname,'convertSpatial2EulerReferenceFrame');
-
-% compute with the purely rotational symmetry groups only
-ebsd('Ti (alpha)').CS = ebsd('Ti (alpha)').CS.properGroup;
-ebsd('Ti (beta)').CS = ebsd('Ti (beta)').CS.properGroup;
-
-end
-
-function ebsd = mtexdata_martensite
-
-fname = fullfile(mtexDataPath,'EBSD','martensite.cpr');
-ebsd = EBSD.load(fname,'convertEuler2SpatialReferenceFrame');
-ebsd('Iron bcc').CS = ebsd('Iron bcc').CS.properGroup;
-ebsd('Iron bcc').CSList{3} = ebsd('Iron bcc').CSList{3}.properGroup;
 
 end

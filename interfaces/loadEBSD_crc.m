@@ -25,7 +25,7 @@ try
   options = loader.getOptions('ignoreColumns','phase');
   
   ebsd = EBSD(q,phases,CS,options,'unitCell',param.unitCell);
-  
+  ebsd.opt.cprInfo = cpr;
 catch %#ok<CTCH>
   interfaceError(fname);
 end

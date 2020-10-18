@@ -32,7 +32,7 @@ for j = 1:numel(sP)
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     
     % project data
-    [x,y] = project(sP(j).proj,v);
+    [x,y] = project(sP(j).proj,v,'noAntipodal');
     x(~sR.checkInside(v))=NaN;
                 
     % plot

@@ -70,8 +70,7 @@ classdef Miller < vector3d
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
       assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
-        ['Starting with MTEX 4.0 Miller ' ...
-        'indices always require to specify a crystal symmetry!']);
+        'No crystal symmetry has been specified when defining a crystal direction!');
 
       % extract disp style
       dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
@@ -118,11 +117,11 @@ classdef Miller < vector3d
         if nparam < 3, error('You need at least 3 Miller indice!');end
         
         % check fourth coefficient is right
-        if nparam==4 && all(varargin{1} + varargin{2} + varargin{3} ~= 0)
+        if nparam==4 && all(abs(varargin{1} + varargin{2} + varargin{3}) > eps*10)
           if check_option(varargin,{'uvw','uvtw','direction'})
-            warning(['Convention u+v+t=0 violated! I assume t = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
+            warning(['Convention u+v+t=0 violated! I assume t = ',num2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
           else
-            warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
+            warning(['Convention h+k+i=0 violated! I assume i = ',num2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
           end
         end
         

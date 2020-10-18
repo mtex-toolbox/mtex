@@ -32,14 +32,18 @@ classdef EBSDsquare < EBSD
       if nargin == 0, return; end            
       
       sGrid = size(rot);
+      
       ebsd.rotations = rotation(rot);
       ebsd.phaseId = phaseId(:);
       ebsd.phaseMap = phaseMap;
       ebsd.CSList = CSList;
-      ebsd.id = reshape(1:prod(sGrid),sGrid);
-            
+      ebsd.id = 1:prod(sGrid);
+      
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
+      
+      % correctly reshape all properties
+      ebsd = reshape(ebsd,sGrid);
                   
       % get unit cell
       ebsd.dx = dxy(1);

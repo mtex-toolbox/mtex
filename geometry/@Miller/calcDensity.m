@@ -30,6 +30,9 @@ function sF = calcDensity(h,varargin)
 hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',S2DeLaValleePoussin('halfwidth',hw));
 
+% ignore nans
+h = subSet(h,~isnan(h));
+
 sF = 4*pi * S2FunHarmonic.quadrature(h,ones(size(h)),varargin{:});
 
 % normalize

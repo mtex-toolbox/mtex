@@ -11,8 +11,8 @@ function [odf,resvec] = interp(ori,values,varargin)
 %
 % Flags
 %  lsqr      - least squares (Matlab)
-%  lsqnonneg - non negative least squares (Matlab)
-%  lsqlin    - interior point non negative least squares (optimization toolbox)
+%  lsqnonneg - non negative least squares (Matlab, fast)
+%  lsqlin    - interior point non negative least squares (optimization toolbox, slow)
 %  nnls      - non negative least squares (W.Whiten)
 % 
 % 

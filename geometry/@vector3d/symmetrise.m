@@ -28,7 +28,7 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 % Flags
 %  antipodal   - include <VectorsAxes.html antipodal symmetry>
 %  noAntipodal - do not include antipodal symmetry (without option unique)
-%  noAntipodal - do not remove antipdal vectors (with option unique)
+%  noAntipodal - do not remove antipodal vectors (with option unique)
 %  unique      - only return distinct axes or directions (noAntipodal)
 %
 
@@ -46,6 +46,9 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 
 % treat as axes or not 
 antiSym = check_option(varargin,'antipodal') || v.antipodal;
+
+% maybe we are going to ignore antipodal symmetry
+if check_option(varargin,'noAntipodal'), S = S.properGroup; end
 
 if check_option(varargin,'unique')
 

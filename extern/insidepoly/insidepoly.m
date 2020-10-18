@@ -238,6 +238,6 @@ first(ip) = first;
 % determine how Pmax interleaves with xsorted, i.e.,
 % index of the last element in xsorted such that xsorted(first)<=Pmax
 % Note: in case of draw in binning edges, HISTC must return the last edge
-[trash last] = histc(Pmax, [xsorted; inf]); %#ok
+[~,~, last] = histcounts(Pmax, [xsorted; inf]);
 
 end % presort

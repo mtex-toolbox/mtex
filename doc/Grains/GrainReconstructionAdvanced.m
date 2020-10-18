@@ -98,10 +98,10 @@ drawNow(gcm)
 
 mtexdata single
 
-ipfKey = axisAngleColorKey(ebsd);
-ipfKey.oriRef = mean(ebsd.orientations);
+colorKey = axisAngleColorKey(ebsd);
+colorKey.oriRef = mean(ebsd.orientations);
 
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
 %%
 % We obeserve that the are no rapid changes in the orientation which would
@@ -112,13 +112,13 @@ grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
 figure
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 hold on
 plot(grains_high.boundary)
 hold off
 
 figure
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 hold on
 plot(grains_low.boundary)
 hold off
@@ -146,7 +146,7 @@ grains_FMC = smooth(grains_FMC);
 % of similar orientation
 
 %plot(ebsd,oM.orientation2color(ebsd.orientations))
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
 % start overide mode
 hold on
@@ -155,9 +155,21 @@ plot(grains_FMC.boundary,'linewidth',1.5)
 % stop overide mode
 hold off
 
+%% Markovian Clustering Algorithm
 
+F = halfQuadraticFilter
+F.alpha = 0.5
+ebsd = smooth(ebsd,F)
 
+%%
 
+grains = calcGrains(ebsd,'mcl',[1.24 50],'soft',[0.2 0.3]*degree)
+
+grains = smooth(grains,5)
+
+plot(ebsd,colorKey.orientation2color(ebsd.orientations))
+
+hold on;plot(grains.boundary,'linewidth',2); hold off
 
 
 

@@ -10,12 +10,12 @@ function [i,j] = xy2ind(ebsd,x,y)
 %   ebsd(i,j)
 %
 % Input
-%  ebsd - @EBSDSquare
+%  ebsd - @EBSDsquare
 %  x,y  - spatial coordinates
 %
 % Output
-%  ind  - index to @EBSDSquare
-%  i,j  - indeces to @EBSDSquare
+%  ind  - index to @EBSDsquare
+%  i,j  - indeces to @EBSDsquare
 %
 
 if nargin == 2

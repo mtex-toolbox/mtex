@@ -23,9 +23,9 @@ if ~check_option(varargin,'noScaling')
   
   dir = 0.2*grains.diameter .* normalize(dir) * ...
     get_option(varargin,'autoScaleFactor',1);
-  varargin = [varargin,'autoScale','off','linewidth',2];
+  varargin = ['linewidth',2,'autoScale','off',varargin];
 else
-  varargin = [{'linewidth',2,'autoScaleFactor',0.25},varargin];
+  varargin = ['linewidth',2,'autoScaleFactor',0.25,varargin];
 end
   
 if check_option(varargin,'antipodal') || dir.antipodal

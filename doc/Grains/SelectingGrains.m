@@ -232,7 +232,11 @@ grain_id(grain_id==0) = [];
 plot(grains(grain_id))
 
 %%
-% finally, we can remove the boundary grains by
-grains(grain_id) = []
+% finally, we could remove the boundary grains by
+%
+%   grains(grain_id) = []
+%
+% However, boundary grains can be selected more easily be the command
+% |<grain2d/isBoundary.html isBoundary>|. 
 
-plot(grains)
+plot(grains(~grains.isBoundary))

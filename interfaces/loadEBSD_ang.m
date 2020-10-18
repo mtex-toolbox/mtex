@@ -164,6 +164,7 @@ try
   else
       notIndexedID = -1;
   end
+  ebsd.phaseMap(1) = notIndexedID;
   ebsd(ebsd.prop.ci<0).phase=notIndexedID;
   
   % reconstruct empty points previously removed by loadHelper

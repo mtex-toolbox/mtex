@@ -1,0 +1,104 @@
+[General]
+Version=5.0
+Date=01-07-2014
+Time=11:29:49
+Duration=2:52:52
+Description=
+Author=
+Notes=
+HKLCoronaFile=D:\Nyyssonen\Q&P\EBSD_2014_06_17_EC\EC003_50.cprx
+HKLCoronaDataset=EC003_50_05_4
+PerCycle=0.0302
+JobMode=RegularGrid
+SampleSymmetry=2
+[Fields]
+Field1=3
+Field2=4
+Field3=5
+Field4=6
+Field5=7
+Field6=8
+Field7=10
+Field8=11
+Field9=12
+Count=9
+[Job]
+Device=Beam
+GridDistX=0.5000
+GridDistY=0.5000
+GridDist=0.5
+xCells=707
+yCells=486
+Automatic=True
+Coverage=73.1
+Magnification=299
+kV=15.00
+TiltAngle=70.00
+TiltAxis=0.00
+NoOfPoints=343602
+[StagePosition]
+XPos=48.794690
+YPos=72.717970
+ZPos=35.102610
+RPos=12.482720
+TPos=69.999993
+ZValid=True
+[SEMFields]
+DOEuler1=1.26500
+DOEuler2=94.94400
+DOEuler3=0.43300
+[Phases]
+NoReflectors=38
+Count=2
+[ProjectionParameters]
+VHRatio=0.74400
+PCX=0.49673
+PCY=0.76316
+DD=0.47615
+[Band Detection]
+Detect=0
+Divergence=1
+Min=7
+Max=8
+HoughRes=60
+OLockLevel=20
+UseBandWidth=False
+OLock=False
+[Phase1]
+Enabled=True
+StructureName=Iron bcc (old)
+Reference=J. Appl. Phys. [JAPIAU], vol. 42, pages 4290-95
+Database=HKL phases
+Composition=Fe 100%
+PhaseColor=255
+A=2.8659999370575
+B=2.8659999370575
+C=2.8659999370575
+Alpha=90
+Beta=90
+Gamma=90
+LaueGroup=11
+SpaceGroup=229
+ID1=3803863129_5.0.6.3
+ID2=490346091
+[Phase2]
+Enabled=False
+StructureName=Iron fcc
+Reference=Z. Angew. Phys. [ZAPHAX], vol. 23, pages 245-249
+Database=HKL phases
+Composition=Fe 100%
+PhaseColor=16711680
+A=3.65989995002747
+B=3.65989995002747
+C=3.65989995002747
+Alpha=90
+Beta=90
+Gamma=90
+LaueGroup=11
+SpaceGroup=225
+ID1=3803863129_5.0.6.3
+ID2=1610797605
+[Acquisition Surface]
+Euler1=0.0
+Euler2=0.0
+Euler3=0.0

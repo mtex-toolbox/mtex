@@ -17,9 +17,6 @@ if isempty(xy)
   return;
 end
 
-% remove dublicates from the coordinates
-xy = unique(xy,'first','rows');
-
 if size(xy,2) == 3
   unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});...
     calcUnitCell(xy(:,[1 3]), varargin{:}); ...
@@ -32,15 +29,17 @@ area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
 dxy = sqrt(area / length(xy));
 
 % compensate for single line EBSD
-if dxy==0;
-    lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
-    if lx==0, lx=ly; else; ly=lx; end
-    dxy= (ly+ly)/2;
+if dxy==0
+  lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
+  if lx==0, lx=ly; else; ly=lx; end
+  dxy= (ly+ly)/2;
 end
 
+% remove dublicates from the coordinates
+xy = uniquetol(xy,0.01/sqrt(size(xy,1)),'ByRows',true);
 
 % reduce data set
-xy = subSample(xy,10000);
+if length(xy)>10000, xy = subSample(xy,10000); end
 
 
 try
@@ -52,17 +51,21 @@ try
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
   
   % the unit cell should be the Voronoi cell with the smalles area
-  [a, ci] = min(areaf);
+  [~, ci] = min(areaf);
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
+  ignore = [false;sum(diff(unitCell,1).^2,2) < dxy/100];
+  unitCell(ignore,:) = [];
+  
     
-  if isRegularPoly(unitCell,dxy,varargin)
+  if isRegularPoly(unitCell,varargin)
     return
   end
   
   % second estimate of the grid resolution
-  dxy2 = min(sqrt(diff(cx).^2 + diff(cy).^2));
+  dxy2 = max(unitCell) - min(unitCell);
+  
   if 100*dxy2 > dxy, dxy = dxy2;end
   
   
@@ -99,11 +102,11 @@ end
 % a regular polygon with s vertices, diameter d, and rotation rot
 function unitCell = regularPoly(s,d,rot)
 
-c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))*d./sqrt((s/2));
-unitCell = [real(c(:)),imag(c(:))];
+c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))./sqrt((s/2));
+unitCell = [real(c(:)),imag(c(:))].*d;
 
 
-function isRegular = isRegularPoly(unitCell,dxy,varargin)
+function isRegular = isRegularPoly(unitCell,varargin)
 
 sideLength = sqrt(sum((unitCell).^2,2));
 sides      = numel(sideLength);

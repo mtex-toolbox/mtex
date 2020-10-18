@@ -95,7 +95,11 @@ else % phase plot
     
     if ~any(ind), continue; end
     
-    color = ebsd.subSet(ind).color;
+    if check_option(varargin,'grayScale')
+      color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
+    else
+      color = ebsd.subSet(ind).color;
+    end
     
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
       'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
@@ -154,7 +158,7 @@ if ~isempty(id)
     txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
   try
-    txt{5} = ['grainId = ' xnum2str(ebsd.grainId(id))];
+    txt{end+1} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)
     txt{end+1} = ['Value = ' xnum2str(value)];

@@ -7,8 +7,8 @@ M = 1000000;                   % discretisation parameter
 t = linspace(-1,1,M);
 c = cumsum(odf.psi.RK(t)) / M; % cumulative distribution function
 
-[~,t] = histc(rand(npoints,1),c);
-theta = acos(t ./ M);
+[~,~,t] = histcounts(rand(npoints,1),[c,inf]);
+theta = acos((t-0.5) ./ M);
   
 % take random azimuthal angles
 rho   = 2*pi*rand(npoints,1);

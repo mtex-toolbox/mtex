@@ -14,7 +14,7 @@ function T = rotate(T,R,varargin)
 %
 
 % ensure that the rotations have the right reference frame
-if isa(R,'orientation')
+if isa(R,'orientation') && nargin == 2
   R = T.CS.ensureCS(R);
   T.CS = R.SS;
 end
@@ -28,6 +28,6 @@ for d = 1:T.rank
   
   ind = 1:T.rank;
   ind(d) = -d;
-  Ttmp = EinsteinSum(T,ind,R,[d -d]);
-  T.M = Ttmp.M;
+  T = EinsteinSum(T,ind,R,[d -d],'keepClass');
+  
 end

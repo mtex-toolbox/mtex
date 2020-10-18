@@ -13,3 +13,4 @@ OrientationGrid                  Grids
 OrientationFibre                 Fibres
 OrientationImport                Import       
 OrientationExport                Export
+OrientationEmbeddings            Embeddings

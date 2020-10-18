@@ -43,7 +43,7 @@ if isa(mori.SS,'specimenSymmetry')
   
   hkl = mori \ vector3d.Z;
   hkl.dispStyle = 'hkl';
-  hkl = round(hkl);
+  hkl = round(hkl,varargin{:});
 
   uvw = mori \ vector3d.X;
   if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
@@ -92,7 +92,7 @@ end
 
 penalty = get_option(varargin,'penalty',0.002);
 
-maxIndex = get_option(varargin,'maxIndex',4);
+maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 
 % all plane normales
 [h,k,l] =meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);

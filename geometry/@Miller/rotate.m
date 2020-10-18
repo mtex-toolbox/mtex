@@ -10,7 +10,7 @@ function v = rotate(m,rot,varargin)
 %
 
 % ensure that the rotations have the right reference frame
-if isa(rot,'orientation')
+if isa(rot,'orientation') && nargin == 2
   rot = m.CS.ensureCS(rot);
 end
 

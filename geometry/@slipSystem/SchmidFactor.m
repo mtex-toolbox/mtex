@@ -44,13 +44,13 @@ elseif isa(sigma,'stressTensor')
   sigma = sigma.normalize;
   
   if length(sigma) == 1
-    SF = double(EinsteinSum(sigma,[-1,-2],n,-1,b,-2));
+    SF = EinsteinSum(sigma,[-1,-2],n,-1,b,-2);
     SF = reshape(SF,size(sS));
   else
     SF = zeros(length(sigma),length(b));
   
     for i = 1:length(sS.b)
-      SF(:,i) = double(EinsteinSum(sigma,[-1,-2],n(i),-1,b(i),-2));
+      SF(:,i) = EinsteinSum(sigma,[-1,-2],n(i),-1,b(i),-2);
     end
   end
     

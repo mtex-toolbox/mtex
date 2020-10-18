@@ -24,7 +24,7 @@ end
 
 % compute tensor products with directions v with respect to all dimensions
 while ~isnumeric(T)
-  T = EinsteinSum(T,[-1 1:T.rank-1],v.normalize,-1);
+  T = EinsteinSum(T,[-1 1:T.rank-1],v.normalize,-1,'keepClass');
 end
 
 if length(v)>1, T = reshape(T,size(v)); end

@@ -68,6 +68,7 @@ classdef grain2d < phaseList & dynProp
       % compute phaseId's     
       grains.phaseId = max(I_DG' * ...
         spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2);
+      grains.phaseId(grains.phaseId==0) = 1;
       grains.CSList = ebsd.CSList;
       grains.phaseMap = ebsd.phaseMap;
            
@@ -94,54 +95,7 @@ classdef grain2d < phaseList & dynProp
         quadPoints = [];
       end
       
-      testing = 0;
-      if testing
-      
-        qAdded = 0;
-        for qP = quadPoints.'
-              
-          % add an additional vertex for each quad point
-          V = [V;V(qP,:)];
-        
-          % find the corresponding faces
-          iqF = find(any(F == qP,2));
-          qV = F(iqF,:).'; qV(qV==qP) = []; % the vertices of the quadruple point
-        
-          qOmega = atan2(V(qV,1) - V(qP,1),V(qV,2) - V(qP,2));
-          [~,qOrder] = sort(qOmega);
-        
-          iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
-        
-          if length(iqD) < 2
-            qOrder = qOrder([2:end,1]);
-            iqD = find(all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:)));
-          end
-        
-          % set new vertex into face list
-          F(iqF(qOrder(1:2)),:) = [qV(qOrder(1:2)).',[size(V,1);size(V,1)]];
-        
-          % common D
-          %all(I_FDext(iqF(qOrder([1,4])),:))
-          %all(I_FDext(iqF(qOrder([2,3])),:))
-        
-          % if we have different grains - we need a new boundary
-          if find(I_DG(iqD(1),:)) ~= find(I_DG(iqD(2),:))
-        
-            % add new edge
-            F = [F; [qP,size(V,1)]];
-            qAdded = qAdded + 1;
-          
-            % new row to I_FDext
-            I_FDext = [I_FDext; ...
-              all(I_FDext(iqF(qOrder([1,4])),:)) + all(I_FDext(iqF(qOrder([2,3])),:))]; 
-        
-            % new row to I_FDext
-            I_FDint = [I_FDint; sparse(1,size(I_FDint,2))];
-          end
-        end
-      end
-            
-      if ~isempty(quadPoints) && ~testing
+      if ~isempty(quadPoints) 
       
         % find the 4 edges connected to the quadpoints
         I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
@@ -225,7 +179,7 @@ classdef grain2d < phaseList & dynProp
         % new empty rows to I_FDint
         I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
       
-      elseif ~testing
+      else
         qAdded = 0;
       end
       
@@ -237,8 +191,7 @@ classdef grain2d < phaseList & dynProp
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
       [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
-      %qAdded = 0;
-      
+            
       
       function [I_FDext,I_FDint] = calcBoundary
         % distinguish between interior and exterior grain boundaries      
@@ -282,12 +235,10 @@ classdef grain2d < phaseList & dynProp
     end
     
     function grains = set.V(grains,V)
+      
       grains.boundary.V = V;
       grains.innerBoundary.V = V;
       
-      % update V in triple points
-      tP = grains.triplePoints;
-      grains.triplePoints.V = V(tP.id,:);
     end
     
     function idV = get.idV(grains)
@@ -313,17 +264,25 @@ classdef grain2d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
       end
     end
     
     function grains = set.meanOrientation(grains,ori)
       
       if ~isempty(grains)
-        % update rotation
-        grains.prop.meanRotation = rotation(ori);
       
-        % update phase
-        grains.CS = ori.CS;
+        if isnumeric(ori) && all(isnan(ori(:)))
+          grains.prop.meanRotation = rotation.nan(size(grains.prop.meanRotation));
+        else
+          % update rotation
+          grains.prop.meanRotation = rotation(ori);
+      
+          % update phase
+          grains.CS = ori.CS;
+        end
       end
       
     end

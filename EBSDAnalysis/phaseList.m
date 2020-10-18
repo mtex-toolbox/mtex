@@ -160,19 +160,7 @@ classdef phaseList
       end
                 
     end
-    
-    function id = cs2phaseId(pL,cs)
       
-      for id = 1:length(pL.CSList)
-        if isa(pL.CSList{id},'symmetry') && (...
-            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
-            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
-          return
-        end
-      end
-      id = 0;
-      
-    end
     
     function pL = set.CS(pL,cs)
           
@@ -264,7 +252,7 @@ classdef phaseList
 
     function isInd = get.isIndexed(pL)
       notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
-      isInd = ~any(ismember(pL.phaseId,notIndexedPhase),2);
+      isInd = ~any(isnan(pL.phaseId) | ismember(pL.phaseId,notIndexedPhase),2);
       isInd = reshape(isInd, size(pL));
     end
     
@@ -289,6 +277,18 @@ classdef phaseList
       end
     end
        
+    function out = isSinglePhase(pL)
+      
+      % considere only indexed
+      phaseId = pL.phaseId(pL.isIndexed,:);
+      phaseId = phaseId(~any(isnan(phaseId),2),:);
+      id = unique(phaseId,'rows');
+      
+      out = numel(id) <= size(pL.phaseId,2) ;
+      
+    end
+    
+    
     function id = checkSinglePhase(pL)
       % ensure single phase
       
@@ -298,18 +298,44 @@ classdef phaseList
                            
       if numel(id)>size(pL.phaseId,2)     
               
-        error('MTEX:MultiplePhases',['\n' ...
-          '----------------------------------------------------------------\n'...
-          'Your variable contains the phases: ' ...
-          pL.mineralList{id(1)} ', ' pL.mineralList{id(2)} '\n\n' ...
-          'However, your are executing a command that is only permitted for a single phase!\n\n' ...
-          'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
-          ' for how to restrict EBSD data or grains to a single phase.\n' ...
-          '----------------------------------------------------------------\n']);
+        % second try with only indexed data
+        phaseId = pL.phaseId(pL.isIndexed,:);
+        id = unique(phaseId,'rows');
         
+        if numel(id)>size(pL.phaseId,2)     
+        
+          error('MTEX:MultiplePhases',['\n' ...
+            '----------------------------------------------------------------\n'...
+            'Your variable contains the phases: ' ...
+            pL.mineralList{id(1)} ', ' pL.mineralList{id(2)} '\n\n' ...
+            'However, your are executing a command that is only permitted for a single phase!\n\n' ...
+            'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
+            ' for how to restrict EBSD data or grains to a single phase.\n' ...
+            '----------------------------------------------------------------\n']);
+        end
       elseif isempty(id) || ~all(any(bsxfun(@eq,id,pL.indexedPhasesId(:)),1))
         error('MTEX:NoPhase','There are no indexed data in this variable!');
       end
+      
+    end
+    
+    
+    
+  end
+  
+  
+  methods (Hidden = true)
+    
+    function id = cs2phaseId(pL,cs)
+      
+      for id = 1:length(pL.CSList)
+        if isa(pL.CSList{id},'symmetry') && (...
+            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
+            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
+          return
+        end
+      end
+      id = 0;
       
     end
     
@@ -330,6 +356,6 @@ classdef phaseList
       end
       
     end
-    
+
   end
 end

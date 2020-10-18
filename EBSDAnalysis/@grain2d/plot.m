@@ -62,6 +62,16 @@ if nargin>1 && isnumeric(varargin{1})
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
 
+elseif nargin>1 && isa(varargin{1},'vector3d')
+  
+  scaling = sqrt(grains.area);
+    
+  p = axialSymbol(grains.centroid,varargin{1},scaling,varargin{:});
+  
+  p.Parent = mP.ax;
+    
+  plotBoundary = false;
+ 
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
@@ -110,7 +120,12 @@ else % otherwise phase plot
     
     if ~any(ind), continue; end
     
-    color = grains.subSet(ind).color;
+    if check_option(varargin,'grayScale')
+      color = 1 - (k-1)/(numel(grains.phaseMap)) * [1,1,1];
+    else
+      color = grains.subSet(ind).color;
+    end
+    
     if ischar(color), [~,color] = colornames(getMTEXpref('colorPalette'),color); end
 
     % plot polygons
@@ -131,7 +146,7 @@ end
 if plotBoundary
   hold on
   hh = plot(grains.boundary,varargin{:});
-  set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  set(get(get(hh(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
   hold off
 end
   
@@ -182,8 +197,9 @@ end
 % ----------------------------------------------------------------------
 function h = plotFaces(poly,V,d,varargin)
 
-if size(d,1) ~= numel(poly) && ...
-  size(d,2) == numel(poly), d = d.'; end
+if numel(poly) > 3 && size(d,1) == 1 && size(d,2) == numel(poly)
+  d = d.';
+end
 
 if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 

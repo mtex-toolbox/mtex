@@ -59,7 +59,7 @@ denominator = Y4_Y3 .* X2_X1 - X4_X3 .* Y2_Y1;
 
 u_a = numerator_a ./ denominator;
 u_b = numerator_b ./ denominator;
-inside = (u_a >= 0) & (u_a <= 1) & (u_b >= 0) & (u_b <= 1);
+inside = (u_a >= -1e-5) & (u_a <= 1+1e-5) & (u_b >= -1e-5) & (u_b <= 1+1e-5);
 
 % Find the adjacency matrix A of intersecting lines.
 x = X1 + X2_X1 .* u_a;

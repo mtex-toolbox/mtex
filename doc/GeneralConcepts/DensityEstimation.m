@@ -116,6 +116,11 @@ hold on
 plot(x,fN(x),'linewidth',2)
 hold off
 
+%% Optimal Halfwidth Selection
+% Selecting an optimal kernel halfwidth is a tough problem. MTEX provides a
+% couple of methods for this purpose which are explained in detail in the
+% section <OptimalKernel.html Optimal Kernel Selection>.
+%
 %% Kernel Density Estimation in d-Dimensions
 % The command <calcDensity.html calcDensity> may also be applied to
 % $d$-dimenional data. For simplicity lets consider a two dimensional
@@ -140,7 +145,7 @@ fN = calcDensity([xN,yN],'range',[0 0;1 1]);
 
 % plot the two dimensional density function 
 [x,y] = ndgrid(linspace(0,1));
-contourf(x,y,fN(x,y))
+contourf(x,y,fN(x,y),'LevelStep',2)
 mtexColorMap LaboTeX
 shading interp
 axis equal tight

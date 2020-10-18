@@ -1,41 +1,60 @@
-function [gmp, gid] = grainMean(ebsd,prop,varargin)
-% calculate grain average scalar properties based on all ebsd
-% points that are within a grain
+function meanProp = grainMean(ebsd, prop, varargin)
+% grain average property from ebsd properties
 %
-%  Syntax
-%     [grains,ebsd.grainId]=calcGrains(ebsd)
-%     [gmp, gid] = grainMean(ebsd,ebsd.ci)
-%     plot(grains(gid),gmp)
+% Syntax
 %
+%   % recover grains and store grainId 
+%   [grains,ebsd.grainId]=calcGrains(ebsd)
 %
-%  Input
-%      ebsd - @EBSD (which must contain a grainID)
-%      prop - property to average (of length(ebsd))
+%   % compute average grain property
+%   meanProp = grainMean(ebsd, ebsd.ci);
+%   plot(grains,meanProp(grains.id))
 %
-%  Output
-%      gmp   - average property (of length grainID)
-%      gid   - grainId from ebsd of length(property)
+%   % ensures meanProp has the same ordering as grains
+%   meanProp = grainMean(ebsd, ebsd.ci, grains);
 %
-%   Options
-%      ulim  - upper limit to consider (upper limit)
-%      llim  - lower limit to consider (lower limit)
+%   % take not the mean but the maximum per grain
+%   meanProp = grainMean(ebsd, ebsd.ci, @max);
+%
+%   % full syntax
+%   meanProp = grainMean(ebsd, prop, grains, method)
+%
+% Input
+%  ebsd   - @EBSD (which must contain a grainId)
+%  prop   - property to average, same size as ebsd
+%  grains - @grain2d
+%  method - function_handle
+%
+% Output
+%  meanProp - average property, sorted by grainId
+%  meanProp - average property, same size as grains (if specified)
+%
+% Options
+%  ulim   - upper limit to consider (upper limit)
+%  llim   - lower limit to consider (lower limit)
 %
 
-
-%   check if grainID exists
+% check for grainId
 if isempty(ebsd.grainId)
-    error('There is no ebsd.grainId. Run calcGrains first.')
+  error('There is no ebsd.grainId. Run calcGrains first.')
 end
-%ss
-prop = prop(:);
+
+% some limits
 ulim = get_option(varargin,'ulim', max(prop));
 llim= get_option(varargin,'llim',min(prop));
-
 prop(prop<llim | prop > ulim)=nan;
-%find ebsd.grainID and index of corresponding prop
-[gid,~,eindex] = unique(ebsd.grainId);
-% calc the mean, ignoring nans
-gmp = accumarray(eindex,prop,[],@nanmean);
-% Todo allow diffrent averaging methods
+
+% ignore ebsd data without grainId
+hasGrain = ebsd.grainId>0;
+
+% get averaging method
+method = getClass(varargin,'function_handle',@nanmean);
+
+% perform the averaging
+meanProp = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
+
+% convert from id to ind
+grains = getClass(varargin,'grain2d');
+if ~isempty(grains), meanProp = meanProp(grains.id); end
 
 end

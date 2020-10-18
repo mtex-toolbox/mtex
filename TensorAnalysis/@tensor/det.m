@@ -1,12 +1,12 @@
 function d = det(T)
-% compute the determinants of rank 2 tensors
+% determinants of rank 2 and rank 4 tensors
 %
-% Synatx
+% Syntax
 %
 %   d = det(T)
 %
 % Input
-%  d - rank 2 @tensor
+%  d - @tensor of rank 2 or 4
 %
 % Output
 %  d - double

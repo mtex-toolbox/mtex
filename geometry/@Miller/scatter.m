@@ -16,10 +16,7 @@ function varargout = scatter(m,varargin)
 
 % symmetrise if needed
 if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')  
-  
-  % restrict to fundamental region
-  varargin = [varargin,{'skipSymmetrise'}]; % we do not need to symmtrise twice
-  
+      
   % symmetrise data with repetition
   if numel(varargin) > 0 && ~isempty(varargin{1}) && ...
       (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
@@ -48,6 +45,9 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     varargin = replicateMarkerSize(varargin,size(m,1));
     
   end  
+  
+  % we do not need to symmtrise twice
+  varargin = [varargin,{'skipSymmetrise','noAntipodal'}]; 
 end
 
 if numel(varargin) > 0 && (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
@@ -57,7 +57,7 @@ else
 end
 
 % plot them all with the same color
-[varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS,'noAntipodal');
+[varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS);
 
 end
 

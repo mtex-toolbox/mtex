@@ -35,6 +35,7 @@ mtexColorbar
 
 plot(pf,'contourf')
 mtexColorbar
+mtexColorMap parula
 
 %%
 % When drawing a colorbar next to the pole figure plots it is necessary
@@ -54,3 +55,4 @@ odf = calcODF(pf,'silent')
 % Now smooth pole figures can be plotted for arbitrary crystallographic directions.
 
 plotPDF(odf,pf.h,'antipodal')
+mtexColorMap parula

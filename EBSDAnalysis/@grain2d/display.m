@@ -42,7 +42,7 @@ for ip = 1:numel(grains.phaseMap)
 end
 
 % remove empty rows
-matrix(histc(full(grains.phaseId),1:numel(grains.phaseMap))==0,:) = [];
+matrix(accumarray(full(grains.phaseId),1,[size(matrix,1) 1])==0,:) = [];
 
 if ~isempty(grains)
   cprintf(matrix,'-L',' ','-Lc',...

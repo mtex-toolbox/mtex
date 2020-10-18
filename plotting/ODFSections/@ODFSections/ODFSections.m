@@ -79,7 +79,7 @@ classdef ODFSections < handle
       end
       
       % compute box position
-      [~,secPos] = histc(values,reshape(bounds.',[],1));
+      [~,~,secPos] = histcounts(values,reshape(bounds.',[],1));
       secPos(iseven(secPos)) = -1;
       secPos = (secPos + 1)./2;
     end  

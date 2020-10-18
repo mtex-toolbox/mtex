@@ -26,13 +26,13 @@ if length(v) == length(utheta) * length(urho) && min(utheta) == 0
 else
       
   % remove duplicated points
-  [uV,m,n] = unique(v);
+  [uV,~,n] = unique(v);
   
   % compute weights as the area of the voronoi cells
   w = calcVoronoiArea(uV)./4./pi;
 
   % compute weights
-  o = histc(n,1:length(m));
+  o = accumarray(n,1);
   w = w./o;
   
   % redistribute weights

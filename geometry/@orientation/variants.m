@@ -86,6 +86,24 @@ if nargin>1 && isa(varargin{1},'orientation')
     error('Symmetry mismatch!')
   end
  
+elseif nargin>1 && isa(varargin{1},'Miller')
+  
+  if eq(varargin{1}.CS,p2c.CS,'Laue')
+    
+    MillerParent = varargin{1};
+    varargin(1) = [];
+    parentVariants = false;
+    
+  elseif eq(varargin{1}.CS,p2c.SS,'Laue')
+  
+    MillerChild = varargin{1};
+    varargin(1) = [];
+    parentVariants = true;
+       
+  else
+    error('Symmetry mismatch!')
+  end
+
 else
   parentVariants = check_option(varargin,'parent');
 end
@@ -109,6 +127,8 @@ if parentVariants % parent variants
   
   if exist('oriChild','var')
     out = oriChild .* p2cVariants;
+  elseif exist('MillerChild','var')
+    out = inv(p2cVariants) * MillerChild; %#ok<MINV>
   else
     out = p2cVariants;
   end
@@ -125,11 +145,13 @@ else % child variants
   p2cVariants.CS = p2c.CS;
   
   if exist('variantId','var')
-    p2cVariants = p2cVariants.subSet(variantId);
+    p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
   end
   
   if exist('oriParent','var')
     out = oriParent .* inv(p2cVariants);
+  elseif exist('MillerParent','var')
+    out = p2cVariants * MillerParent;
   else
     out = p2cVariants;
   end

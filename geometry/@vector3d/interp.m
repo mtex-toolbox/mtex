@@ -3,12 +3,12 @@ function yi = interp(v,y,varargin)
 %
 % Syntax
 %   sF = interp(v,y,'linear')     % linear interpolation (default)
-%   sF = interp(v,y,'harmonicApproximation') % approximation with spherical harmonics
+%   sF = interp(v,y,'harmonic')   % approximation with spherical harmonics
 %   yi = interp(v,y,vi,'linear')  % linear interpolation
 %   yi = interp(v,y,vi,'spline')  % spline interpolation (default)
 %   yi = interp(v,y,vi,'nearest') % nearest neigbour interpolation
 %   yi = interp(v,y,vi,'inverseDistance') % inverse distance interpolation
-%   sF = interp(v,y,vi,'harmonicApproximation') % approximation with spherical harmonics
+%   yi = interp(v,y,vi,'harmonic') % approximation with spherical harmonics
 %
 % Input
 %  v - data points @vector3d
@@ -20,14 +20,17 @@ function yi = interp(v,y,varargin)
 %  yi - interpolation values
 %
 
-% we need unqiue input data
-%s = size(y);
-y = reshape(y, length(v), []);
-[v,ind] = unique(v);
-y = y(ind, :);
-%y = reshape(y, [length(v) s(2:end)]);
+% set harmonic approximation default for symmetric data 
+if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance'}) 
+  varargin = [varargin,'harmonic'];
+else
+  % take the mean over duplicated nodes
+  y = reshape(y, length(v), []);
+  [v,~,ind] = unique(v(:));
+  y = accumarray(ind,y,[],@nanmean);
+end
 
-if nargin == 2
+if isempty(varargin) 
   yi = S2FunTri(v,y);
   return
 end
@@ -47,7 +50,7 @@ if isa(varargin{1},'vector3d')
     sF = S2FunTri(v,y);
     yi = sF.eval(vi);
 
-  elseif check_option(varargin, 'harmonicApproximation')
+  elseif check_option(varargin, {'harmonicApproximation','harmonic'})
 
     sF = S2FunHarmonic.approximation(v, y, varargin{:});
     yi = sF.eval(vi);
@@ -84,7 +87,7 @@ if isa(varargin{1},'vector3d')
   
   end
 else % varargin{1} not numeric
-  if check_option(varargin, 'harmonicApproximation')
+  if check_option(varargin, {'harmonicApproximation','harmonic'})
     yi = S2FunHarmonic.approximation(v, y, varargin{:});
 
   elseif check_option(varargin, 'linear')

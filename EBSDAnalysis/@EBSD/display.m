@@ -10,8 +10,6 @@ if isempty(ebsd)
 end
 
 disp(' ')
-% display all other options
-disp(char(dynOption(ebsd)));
 
 % ebsd.phaseMap
 matrix = cell(numel(ebsd.phaseMap),5);
@@ -48,7 +46,7 @@ for ip = 1:numel(ebsd.phaseMap)
 end
 
 % remove empty rows
-matrix(histc(ebsd.phaseId(:),1:numel(ebsd.phaseMap))==0,:) = [];
+matrix(accumarray(ebsd.phaseId(ebsd.phaseId>0),1,[size(matrix,1) 1])==0,:) = [];
 
 cprintf(matrix,'-L',' ','-Lc',...
   {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
@@ -67,4 +65,8 @@ if min(ebsd.size) > 1
   end
 end
 
+% display all other options
+dispStruct(ebsd.opt);
+
 disp(' ');
+

@@ -10,11 +10,13 @@ GrainReconstruction   Grain Reconstruction
 EBSDGrid              Square and Hex Grids
 EBSDDenoising         Denoising
 EBSDFilling           Filling Missing Data
+EBSDInter             Regridding and Interpolation
 EBSD2ODF              ODF Estimation
 EBSDOrientationPlots  Orientation Plots
 EBSDSharpPlot         Sharp Color Keys 
 EBSDAdvancedMaps      Advanced Plotting
 EBSDKAM               KAM
+EBSDGROD              Mis2Mean / GROD
 EBSDProfile           Profiles
 EBSDSimulation        Simulation
 EBSDExport            Export

@@ -17,6 +17,6 @@ function beta = volumeCompressibility(S)
 
 
 % compute tensor product
-beta = double(EinsteinSum(S,[-1 -1 -2 -2]));
+beta = EinsteinSum(S,[-1 -1 -2 -2]);
 
 % beta = 1/S.bulkModulus(S)

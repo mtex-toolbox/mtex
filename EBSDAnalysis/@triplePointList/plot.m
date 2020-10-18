@@ -1,5 +1,5 @@
 function h = plot(tP,varargin)
-% plot grain boundaries
+% plot triple points
 %
 % Syntax
 %   plot(grains.triplePoints)
@@ -10,9 +10,15 @@ function h = plot(tP,varargin)
 %  tP  - @triplePointList
 %  
 % Options
-%  linewidth - line width
-%  linecolor - line color
+%  marker    - square, diamond, circle, asterics, 
+%  markerSize - size of the marker
+%  markerEdgeColor - edge color
+%  markerFaceColor - face color
+%  markerColor     - both colors
+%  linewidth - edge width of the marker
 %
+% See also
+% <https://www.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html patch properties>
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
@@ -67,7 +73,7 @@ else % color given directly
   else
     defColor = 'w';
   end
-  obj.MarkerEdgeColor = str2rgb(get_option(varargin,{'color'},defColor));
+  obj.MarkerEdgeColor = str2rgb(get_option(varargin,{'color','markerColor'},defColor));
   
 end
 

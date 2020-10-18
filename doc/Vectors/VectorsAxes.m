@@ -68,6 +68,7 @@ plot(density,'complete')
 % projected to the upper hemisphere if necessary
 
 mtexdata dubna
+CS = pf.CS;
 
 % plot the first pole figure
 plot(pf({1}))

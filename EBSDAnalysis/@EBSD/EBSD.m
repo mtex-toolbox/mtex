@@ -42,8 +42,8 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  indexedPhaseId - phaseIds of all indexed phases
   %
   % Derived Classes
-  %  @EBSDSquare - EBSD data measured on a square grid
-  %  @EBSDHex    - EBSD data measured on a hex grid
+  %  @EBSDsquare - EBSD data measured on a square grid
+  %  @EBSDhex    - EBSD data measured on a hex grid
   %
   % See also
   % EBSDImport EBSDSelect EBSDPlotting GrainReconstruction
@@ -89,6 +89,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         for fn = fieldnames(rot.prop)'
           ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
         end
+        ebsd.opt = rot.opt;
         return
       end
       
@@ -165,14 +166,24 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori = orientation;
       else
         ori = orientation(ebsd.rotations,ebsd.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(ebsd.isIndexed), ori(~ebsd.isIndexed) = NaN; end
+        
       end
     end
     
     function ebsd = set.orientations(ebsd,ori)
       
       if ~isempty(ebsd)
-        ebsd.rotations = rotation(ori);
-        ebsd.CS = ori.CS;
+        if isa(ori,'quaternion')
+          ebsd.rotations = rotation(ori);
+          ebsd.CS = ori.CS;
+        elseif isnan(ori) && length(ori)==1
+          ebsd.rotations = rotation.nan(size(ebsd));
+        else
+          error('type mismatch');
+        end
       end
             
     end

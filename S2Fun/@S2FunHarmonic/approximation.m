@@ -18,14 +18,29 @@ function sF = approximation(nodes, y, varargin)
 % make points unique
 s = size(y);
 y = reshape(y, length(nodes), []);
-[nodes,ind] = unique(nodes);
-y = y(ind, :);
-y = reshape(y, [length(nodes) s(2:end)]);
+[nodes,~,ind] = unique(nodes(:));
+
+% take the mean over duplicated nodes
+for k = 1:size(y,2)
+  yy(:,k) = accumarray(ind,y(:,k),[],@nanmean); %#ok<AGROW>
+end
+
+% consider the case of symmetry
+if isa(nodes,'Miller')
+  
+  nodes = nodes.symmetrise('noAntipodal').';
+  nodes.antipodal = nodes.CS.isLaue;
+  yy = repmat(yy,size(nodes,2),1);
+  nodes = nodes(:);
+  
+end
+
+y = reshape(yy, [length(nodes) s(2:end)]);
 
 tol = get_option(nodes, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
 
-if check_option(varargin, 'antipodal') || nodes.antipodal 
+if check_option(varargin, 'antipodal') || nodes.antipodal
   nodes.antipodal = true;
   bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
   bw = floor(bw/2)*2; % make bandwidth even
@@ -72,11 +87,13 @@ nfsftmex('finalize', plan);
 
 sF = S2FunHarmonic(fhat);
 
+% ensure symmetry if required
+if isa(nodes,'Miller'), sF = sF.symmetrise(nodes.CS); end
+
 end
 
-
-
 function y = afun(transp_flag, x, plan, W, mask)
+
 if strcmp(transp_flag, 'transp')
 
   x = x.*W;
@@ -98,4 +115,5 @@ elseif strcmp(transp_flag, 'notransp')
   y = y.*W;
 
 end
+
 end

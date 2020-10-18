@@ -39,7 +39,7 @@ elseif nargin <= 2 || isempty(y)
 else
 
   % compute tensor product
-  nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
-    double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,x,-3,x,-4));
+  nu = -EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4) ./ ...
+    EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,x,-3,x,-4);
   
 end

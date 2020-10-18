@@ -1,4 +1,4 @@
-function v = rotate_outer(v,q)
+function v = rotate_outer(v,q,varargin)
 % rotate vector3d by quaternion
 %
 % Syntax

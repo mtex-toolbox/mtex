@@ -11,6 +11,12 @@ elseif numel(subs)==2 && ischar(subs{1}) && strcmpi(subs{1},'id')
     error('No data with the specified ids in the data set');
   end
   return
+elseif numel(subs)==3 && ischar(subs{1}) && strcmpi(subs{1},'xy')
+  ind = ebsd.findByLocation(subs{2},subs{3});
+  if any(ind(:)==0)
+    error('No data with the specified coordinates in the data set');
+  end
+  return
 else
   %ind = true(length(ebsd),1);
   ind = true(size(ebsd));
@@ -46,8 +52,9 @@ for i = 1:length(subs)
     
     if ~any(phases)
       disp(' ');
-      disp(['  There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
-      disp(' ');
+      warning off backtrace
+      warning(['There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
+      warning on backtrace
     end
     
     phaseId = reshape(ebsd.phaseId,size(ebsd));
@@ -60,12 +67,12 @@ for i = 1:length(subs)
     
     phases = false(1,length(ebsd.CSList));
     for k=1:length(ebsd.CSList)
-      if isa(ebsd.CSList{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
-          (isempty(subs{i}.mineral) || strcmp(ebsd.CS{k}.mineral,subs{i}.mineral))
+      if isa(ebsd.CSList{k},'symmetry') && ebsd.CSList{k} == subs{i} && ...
+          (isempty(subs{i}.mineral) || strcmp(ebsd.CSList{k}.mineral,subs{i}.mineral))
         phases(k) = true;
       end
     end
-    ind = ind & phases(ebsd.phaseId);
+    ind = ind(:) & ebsd.phaseId==find(phases);
     
   elseif isa(subs{i},'grain2d')
     
@@ -74,13 +81,13 @@ for i = 1:length(subs)
         'You should compute grains by the command'],...
         '  [grains,ebsd.grainId] = calcGrains(ebsd)');
     end
-    ind = ind & ismember(ebsd.prop.grainId(:),subs{i}.id);
+    ind = ind(:) & ismember(ebsd.prop.grainId(:),subs{i}.id);
     
   elseif isa(subs{i},'logical')
     
     %sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
-    ind = ind & subs{i}(:);
+    ind = ind(:) & subs{i}(:);
     
   elseif isnumeric(subs{i})
     

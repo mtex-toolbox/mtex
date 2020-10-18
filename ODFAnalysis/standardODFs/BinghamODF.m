@@ -33,20 +33,24 @@ if numel(kappa) < 4
 end
       
 % get A
-if isa(varargin{2},'double')
+if nargin > 1 && isa(varargin{2},'double')
         
   A = quaternion(varargin{2});
         
-elseif isa(varargin{2},'vector3d') && isa(varargin{3},'vector3d')
+elseif nargin > 1 && isa(varargin{2},'vector3d') && isa(varargin{3},'vector3d')
         
   % if only one kappa was given extend in to the second one
   if numel(varargin{1}) == 1, kappa(2) = varargin{1};end
 
   A = fibre2A(h,r);
         
-else
+elseif nargin > 1 && isa(varargin{2},'quaternion')
         
-  A = argin_check(varargin{2},'quaternion');
+  A = varargin{2};
+  
+else
+  
+  A = quaternion(eye(4));
                         
 end
       

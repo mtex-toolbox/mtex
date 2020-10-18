@@ -15,28 +15,32 @@ classdef triplePointList < phaseList & dynProp
   
   % properties with as many rows as data
   properties
-    id = zeros(0,1)      % indices of the vertices in grains.V
-    V = zeros(0,2)       % vertices x,y coordinates
-    grainId = zeros(0,3) % id's of the neigbouring grains to a face
-    boundaryId = zeros(0,3)  % id's of the neigbouring ebsd data to a face    
+    id = zeros(0,1)           % indices of the vertices in grains.V
+    grainId = zeros(0,3)      % id's of the neigbouring grains to a face
+    boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
+    nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
+    allV = zeros(0,2)         % vertices x,y coordinates
   end
    
   properties (Dependent = true)
     misorientation % misorientation between adjecent measurements to a boundary
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
+    angles         % boundary segement angles at the triple points
+    V              % vertices x,y coordinates
   end
   
   methods
-    function tP = triplePointList(id,V,grainId,boundaryId,phaseId,phaseMap,CSList)
+    function tP = triplePointList(id,allV,grainId,boundaryId,phaseId,nextVertexId,phaseMap,CSList)
       
       if nargin == 0, return; end
       
       tP.id = id;
-      tP.V = V;
+      tP.allV = allV;
       tP.grainId = grainId;
       tP.boundaryId = boundaryId;      
       tP.phaseId = phaseId;
+      tP.nextVertexId = nextVertexId;
       tP.phaseMap = phaseMap;
       tP.CSList = CSList;
       
@@ -58,27 +62,41 @@ classdef triplePointList < phaseList & dynProp
         ntP = varargin{k};
         
         tP.id = [tP.id;ntP.id];
-        tP.V = [tP.V;ntP.V];
         tP.grainId = [tP.grainId; ntP.grainId];
         tP.boundaryId = [tP.boundaryId; ntP.boundaryId];
         %tP.ebsdId = [tP.ebsdId; ntP.ebsdId];
         %tP.misrotation = [tP.misrotation;ntP.misrotation];
         tP.phaseId = [tP.phaseId; ntP.phaseId];        
-          
+        tP.nextVertexId = [tP.nextVertexId; ntP.nextVertexId];
+        
       end
       
-      % remove duplicates
-      [~,ind] = unique(tP.V,'rows');      
-      tP = tP.subSet(ind);
-      
     end
-       
+    
+    function v = get.V(tP)
+      v = tP.allV(tP.id,:);
+    end
+    
     function x = get.x(tP)
       x = tP.V(:,1);
     end
     
     function y = get.y(tP)
       y = tP.V(:,2);
+    end
+    
+    function omega = get.angles(tP)
+      
+      % get the three end vertices
+      iV = tP.nextVertexId;
+
+      % compute the angles between them
+      dx = reshape(tP.allV(iV,1),[],3) - repmat(tP.V(:,1),1,3);
+      dy = reshape(tP.allV(iV,2),[],3) - repmat(tP.V(:,2),1,3);
+
+      omega = sort(atan2(dy,dx),2);
+      omega = mod(diff(omega(:,[1:3,1]),1,2),2*pi);
+      
     end
     
     function out = hasPhase(tP,phase1,phase2,phase3)
@@ -95,12 +113,11 @@ classdef triplePointList < phaseList & dynProp
     
     function out = hasPhaseId(tP,varargin)
       
-      
-      ids = unique([varargin{:}]);
-      counts = histc([varargin{:}],ids);
+      [ids,~,m] = unique([varargin{:}]);
+      counts = accumarray(m,1);
       
       out = true(size(tP));
-      for i = 1:length(ids);
+      for i = 1:length(ids)
      
         tmp = tP.phaseId == ids(i);
         

@@ -134,6 +134,6 @@ else
 end
 
 ebsdGrid = EBSDhex(rot,phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,offset,'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop);
 
 end

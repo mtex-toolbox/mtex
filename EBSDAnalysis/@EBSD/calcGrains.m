@@ -30,13 +30,9 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neigbhouring cells with grain boundary
-% A_Do - neigbhouring cells without grain boundary
-
-% compute grains as connected components of A_Do
 % I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
 % compute grain ids
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
@@ -92,6 +88,9 @@ for p = grains.indexedPhasesId
   q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{p},meanRotation(g(ndx)));
 end
 
+
+% TODO: this can be done more efficiently using accumarray
+
 % compute mean orientation and GOS
 doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
 for k = 1:numel(doMeanCalc)
@@ -111,8 +110,13 @@ mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
 end
 
 
-function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
+function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
+%
+%
+% Output
+%  A_Db - adjecency matrix of grain boundaries
+%  A_Do - adjecency matrix inside grain connections
 
 % extract segmentation method
 grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
@@ -129,7 +133,7 @@ end
 A_D = I_FD'*I_FD==1;
 [Dl,Dr] = find(triu(A_D,1));
 
-connect = false(size(Dl));
+connect = zeros(size(Dl));
 
 for p = 1:numel(ebsd.phaseMap)
   
@@ -144,17 +148,37 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      quaternion(ebsd.rotations),ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
+      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue,varargin{:});
     
   end  
 end
 
 % adjacency of cells that have no common boundary
-A_Do = sparse(double(Dl(connect)),double(Dr(connect)),true,length(ebsd),length(ebsd));
-A_Do = A_Do | A_Do';
+ind = connect>0;
+A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+if check_option(varargin,'mcl')
+  
+  param = get_option(varargin,'mcl');
+  if isempty(param), param = 1.4; end
+  if length(param) == 1, param = [param,4]; end
+  
+  A_Do = mclComponents(A_Do,param(1),param(2)); 
+  A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+  
+else
+  
+  A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
+    length(ebsd),length(ebsd));
+  
+end
+A_Do = A_Do | A_Do.';
 
-A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
-A_Db = A_Db | A_Db';
+% adjacency of cells that have a common boundary
+A_Db = A_Db | A_Db.';
+
+% compute I_DG connected components of A_Do
+% I_DG - incidence matrix cells to grains
+I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
 
 end
-

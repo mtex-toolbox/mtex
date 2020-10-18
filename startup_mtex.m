@@ -30,7 +30,9 @@ end
 local_path = fileparts(mfilename('fullpath'));
 
 % needs installation ?
-do_install(local_path);
+if ~isdeployed
+    do_install(local_path);
+end
 
 % initialize MTEX
 fprintf('initialize');
@@ -40,7 +42,7 @@ try
   fid = fopen('VERSION','r');
   MTEXversion = fgetl(fid);
   fclose(fid);
-  fprintf([' ' MTEXversion '  ']);
+  fprintf(' %s  ', MTEXversion);
 catch
   MTEXversion = 'MTEX';
 end
@@ -48,8 +50,10 @@ end
 p();
 
 % setup search path
-setMTEXPath(local_path);
-p();
+if ~isdeployed
+    setMTEXPath(local_path);
+    p();
+end
 
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
@@ -67,10 +71,11 @@ check_installation;
 p();
 
 % make help searchable
-
-if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
-  disp('Creating search data base for MTEX documentation.')
-  builddocsearchdb(fullfile(local_path,'doc','html'));
+if ~isdeployed
+    if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
+      disp('Creating search data base for MTEX documentation.')
+      builddocsearchdb(fullfile(local_path,'doc','html'));
+    end
 end
 
 % finish
@@ -102,14 +107,18 @@ cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
 if isappdata(0,'mtex')
   
   oldMTEX = getappdata(0,'mtex');
+  
+  rmappdata(0,'mtex');
+  if isappdata(0,'tmpData'), rmappdata(0,'tmpData'); end
+  if isappdata(0,'data2beDisplayed'), rmappdata(0,'data2beDisplayed'); end
+  
+  disp('I found another version of MTEX and remove it from the current search path!');
+  
+  close all
+  evalin('base','clear classes')
+  
   if ~isfield(oldMTEX,'mtexPath') || ~strcmpi(oldMTEX.mtexPath,local_path) 
   
-    rmappdata(0,'mtex');
-    disp('I found another version of MTEX and remove it from the current search path!');
-  
-    close all
-    evalin('base','clear classes')
-          
     inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,oldMTEX.mtexPath)));
     if ~isempty(inst_dir), rmpath(inst_dir{:}); end
     

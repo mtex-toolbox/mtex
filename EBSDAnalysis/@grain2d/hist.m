@@ -48,7 +48,7 @@ for id = 1:numel(idList)
   phaseProp = prop(phaseId);
 
   % find for each area the binId
-  [~,binIdLocal] = histc(phaseProp,bins);
+  [~,~,binIdLocal] = histcounts(phaseProp,bins);
   binId(phaseId) = binIdLocal;
   
   % compute the sum of areas belonging to the same bin

@@ -23,9 +23,15 @@ elseif isa(b,'quaternion') % rotA * rotB
   r = times@quaternion(a,b,varargin{:});
     
   % apply inversion
-  try ai = a.i; catch, ai = false; end
-  try bi = b.i; catch, bi = false; end
-  r.i = xor(ai,bi);
+  if isa(a,'rotation') 
+    if isa(b,'rotation')
+      r.i = xor(a.i,b.i);
+    else
+      r.i = xor(a.i,false(size(b)));
+    end
+  else
+    r.i = xor(false(size(a)),b.i);
+  end
     
 else % rot * Miller, rot * tensor, rot * slipSystem
  

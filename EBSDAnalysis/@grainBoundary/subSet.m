@@ -20,4 +20,6 @@ gB = subSet@dynProp(gB,ind);
 
 % restrict triple points
 tP = gB.triplePoints;
-gB.triplePoints = subSet(tP,any(gB.I_VF(tP.id,:),2));
+if ~isempty(tP)
+  gB.triplePoints = subSet(tP,any(gB.I_VF(tP.id,:),2));
+end

@@ -90,6 +90,19 @@ for i = 1:numel(sP)
     h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).hgt,varargin{2:end});
     %sP(i).updateBounds(0.1);
   
+  elseif check_option(varargin,'arrow')
+    
+    x(isnan(x)) = [];
+    y(isnan(y)) = [];
+    if length(x)>1
+      arrowOpt = extract_option(varargin,{'length','baseAngle','tipAngle',...
+        'Width','Page','Ends','type','color'},...
+        {'double','double','double',...
+        'double','double','char','char','double'});
+      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:});
+      set(h(i),'Parent', sP(i).hgt);
+    end
+
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
       
     % extract color coding
@@ -175,7 +188,6 @@ for i = 1:numel(sP)
         end
          
       end
-      
       
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend

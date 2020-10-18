@@ -157,6 +157,8 @@ classdef rotation < quaternion & dynOption
     r = byRodrigues(varargin);
 
     r = map(varargin);
+    
+    r = fit(varargin);
 
     [rot,interface,options] = load(fname,varargin)
     
