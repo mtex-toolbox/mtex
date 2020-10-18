@@ -7,65 +7,33 @@ function val = evalfft(SO3F,ori,varargin)
 % rotations is done by interpolation.
 %
 % Syntax  
-%   evalfft(SO3F,ori)
-%   evalfft(SO3F,ori,'GridPointNum',127,'Interpolation','trilinear')
+%   val = evalfft(SO3F,ori)
+%   val = evalfft(SO3F,ori,'GridPointNum',127,'Interpolation','trilinear')
 %
 % Input
 %   SO3F - @SO3FunHarmonic
 %   ori  - @rotation
 %
-% Name-Value Pair Arguments  
+% Options  
 %   'GridPointNum'  - H as number of grid points in [0,2*pi) with the points
 %                     2*pi*k/H, k=0,...,H-1 and (2*pi)/H as gridconstant
 %   'Interpolation' - kind of interpolation respectively to grid points
 %                     'round'     = use next grid point
 %                     'trilinear' = trilinear interpolation
 % Output
-%   values of ori at SO3F (double)
+%  val - SO3F at orientations |ori|
 
 
 N = SO3F.bandwidth;
 
-H=0;
-inter='trilinear';
-for j=1:2:nargin-2
-    if strcmp(varargin{j},'GridPointNum')
-        if isnumeric(varargin{j+1}) && mod(varargin{j+1},2)==0 
-            if varargin{j+1}>=2*N+2
-                H=varargin{j+1}/2-1;
-            else
-                disp(['The value for GridPointNum is to small. Instead, ', num2str(2*N+2),' is used.'])
-                H=N;
-            end
-        else
-            disp('Error. The value for GridPointNum is not a even number.')
-            return
-        end
-    elseif strcmp(varargin{j},'Interpolation')
-        inter=varargin{j+1};
-        if strcmp(varargin{j+1},'round')
-            if H==0, H=255; end
-        elseif strcmp(varargin{j+1},'trilinear') 
-            if H==0, H=127; end
-        else
-            disp('Error: Interpolation property not allowed.')
-            return
-        end
-    else
-        disp('Error. Property not allowed.')
-        return
-    end
-end
-if H==0
-    H=max(N,127); % may use 255    
-end
+% get number of grid points
+H = ceil(get_option(varargin,'GridPointNum',2*N+1)/2-1);
 
-
+% get interpolation method
+method = get_flag(varargin,{'nearest','trilinear'},'trilinear');
 
 % give gridconstant h
-h=pi/(H+1);
-
-
+h = pi/(H+1);
 
 % 1. calculate FFT of SO3F
 
@@ -94,9 +62,10 @@ if SO3F.isReal
   ghat(:,:,N+1+(1:N)) = flip(ghat(:,:,N+1+(-N:-1)),3) .* pm;
   
   % needed for (*)
-  ghat(:,1,:)=ghat(:,1,:)/2;
+  ghat(:,1,:) = ghat(:,1,:)/2;
 
 else
+  
   ghat=zeros(2*N+1,2*N+1,2*N+1);
   
   for n=0:N
@@ -114,12 +83,10 @@ end
 % FFT
 f=fftn(ghat,[2*H+2,2*H+2,2*H+2]);
 
-f=f(:,:,1:H+2);                         % because beta is only in [0,pi]
-z=(0:2*H+1)'+reshape(0:H+1,1,1,H+2);    % needed to shift summation for FFT from [-N:N] to [0:2N]
+f = f(:,:,1:H+2);                       % because beta is only in [0,pi]
+z = (0:2*H+1)'+reshape(0:H+1,1,1,H+2);  % needed to shift summation for FFT from [-N:N] to [0:2N]
 f = 2*real(exp(1i*pi*z*N/(H+1)).*f);    % shift summation & use (*)
-f=permute(f,[1,3,2]);
-
-
+f = permute(f,[1,3,2]);
 
 % 2) evaluate SO3F in ori
 
@@ -136,13 +103,13 @@ abg(~null,:) = mod(mod(abg(~null,:)+[-pi/2,0,pi/2],2*pi)/h,2*H+2);
 abg(null,:)  = mod(abg(null,:)/h,2*H+2);
 
 % interpolation
-if strcmp(inter,'round')
+if strcmpi(method,'nearest')
 
     basic=round(abg);
     ind=basic(:,1)*(2*H+2)*(H+2)+basic(:,2)*(2*H+2)+basic(:,3)+1;
     val=f(ind);
 
-elseif strcmp(inter,'trilinear')
+elseif strcmpi(method,'trilinear')
 
     basic = floor(abg);
     % if beta = pi : we change basic point, to avoid domain error later
