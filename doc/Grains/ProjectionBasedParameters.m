@@ -105,7 +105,7 @@ plot(testgrains,'micronbar','off','lineWidth',2)
 hold on
 quiver(testgrains,cMax,'DisplayName','longest calliper','LineWidth',3)
 quiver(testgrains,testgrains.longAxis,'DisplayName','long axis','LineWidth',3)
-h = quiver(testgrains,cMinPerp,'DisplayName','perp to shortest','LineWidth',3)
+quiver(testgrains,cMinPerp,'DisplayName','perp to shortest','LineWidth',3)
 hold off
 legend('Location','east')
 

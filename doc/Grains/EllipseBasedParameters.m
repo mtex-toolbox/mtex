@@ -17,9 +17,6 @@
 % load sample EBSD data set
 mtexdata forsterite silent
 
-% restrict it to a subregion of interest.
-%ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-
 % reconstruct grains and smooth them 
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 ebsd(grains(grains.grainSize<10)) = [];
@@ -30,7 +27,6 @@ grains=smooth(grains('indexed'),10,'moveTriplePoints');
 
 % plot the grains
 plot(grains,'micronbar','off','lineWidth',2)
-
 
 %% Fit Ellipses
 %
@@ -77,30 +73,35 @@ hold off
 
 %% Shape perfered orientation
 %
-% If we look at the grains, we might wonder if there is a characteristic
-% difference in the grain shape fabric - shape and alignment of the grains-
-% between e.g. Forsterite and Enstatite.
+% If we look at grains, we might wonder if there is a characteristic
+% difference in the grain shape fabric between e.g. Forsterite and
+% Enstatite. In contrast to crystal prefered orientations which which
+% describe on the alignment of the atome lattices the shape prefered
+% orientation (SPO) describes the algnment of the grains by shape in the
+% bulk fabric. 
 %
-% In order to say something about the bulk shape fabric, sometimes referred
-% to as SPO (shape preferred "orientation", totally unrelated to a crystal
-% orientation as defined in MTEX), the most basic attempt is to look at a
-% length weighted rose diagram (circular histogram) of any of the long
-% axes.
+% *Long Axis Distribution*
+% 
+% The most direct way to analyse shape prefered orientations are rose
+% diagrams of the distribution of the grain long axes. For those diagrams
+% it is useful to weight the long axis by the grain area such that larger
+% grains have a bigger impact on the distribution and by the aspect ratio
+% as for grains with a small aspect ratio the long axis is not so well
+% defined.
 
 numBin = 50;
 
 subplot(1,2,1)
-histogram(grains('forsterite').longAxis,numBin,...
-  'weights',norm(grains('forsterite').longAxis))
+weights = grains('forsterite').area .* (grains('forsterite').aspectRatio-1);
+histogram(grains('forsterite').longAxis,numBin, 'weights', weights)
 title('Forsterite')
 
 subplot(1,2,2)
-histogram(grains('enstatite').longAxis,numBin,...
-  'weights',norm(grains('enstatite').longAxis))
+weights = grains('enstatite').area .* (grains('enstatite').aspectRatio - 1);
+histogram(grains('enstatite').longAxis,numBin,'weights',weights)
 title('Enstatite')
 
-%% *Long Axis Distribution*
-%
+%% 
 % Instead of the histogram we may also fit a circular density distribution
 % to the to the long axes using the command <calcDensity.thml
 % |calcDensity|>.
@@ -118,15 +119,15 @@ plotSection(tdfEnstatite, vector3d.Z, 'linewidth', 3)
 hold off
 
 %%
+% 
 
-
-figure
+close all
 [freq,bc] = calcTDF(grains('fo'),'binwidth',3*degree);
-plotTDF(bc,freq/sum(freq),'linecolor','g');
+plotTDF(bc,freq/sum(freq));
 
 [freq,bc] = calcTDF(grains('en'),'binwidth',3*degree);
 hold on
-plotTDF(bc,freq/sum(freq),'linecolor','b');
+plotTDF(bc,freq/sum(freq));
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
 mtexTitle('long axes')
@@ -145,13 +146,12 @@ cPerpE = caliper(grains('en'),'shortestPerp');
 [freqF,bcF] = calcTDF(cPerpF.rho, 'weights',cPerpF.norm, 'binwidth',3*degree);
 [freqE,bcE] = calcTDF(cPerpE.rho, 'weights',cPerpE.norm, 'binwidth',3*degree);
 
-legend('hide'); nextAxis
-plotTDF(bcF,freqF/sum(freqF),'linecolor','g');
+plotTDF(bcF,freqF/sum(freqF));
 hold on
-plotTDF(bcE,freqE/sum(freqE),'linecolor','b');
+plotTDF(bcE,freqE/sum(freqE));
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
-mtexTitle('normal to shortest axis [n.t.s.]')
+
 
 %%
 % We can also smooth the functions with a wrapped Gaussian
@@ -159,10 +159,9 @@ mtexTitle('normal to shortest axis [n.t.s.]')
 pdfF = circdensity(bcF, freqF, 5*degree,'sum');
 pdfE = circdensity(bcE, freqE, 5*degree,'sum');
 
-legend('hide'); nextAxis(1,3)
-plotTDF(bcF,pdfF,'linecolor','g','linestyle',':');
+plotTDF(bcF,pdfF);
 hold on
-plotTDF(bcE,pdfE,'linecolor','b','linestyle',':');
+plotTDF(bcE,pdfE);
 hold off
 mtexTitle('n.t.s. density estimate')
 legend('Forsterite','Enstatite','Location','eastoutside')
@@ -177,7 +176,7 @@ legend('Forsterite','Enstatite','Location','eastoutside')
 plotTDF(bcF,freqF/sum(freqF));
 pdfF = circdensity(bcF, freqF, 5*degree,'sum');
 hold on
-plotTDF(bcF,pdfF,'linecolor','g');
+plotTDF(bcF,pdfF);
 hold off
 mtexTitle('Forsterite grain boundaries')
 nextAxis
@@ -185,11 +184,12 @@ nextAxis
 plotTDF(bcE,freqE/sum(freqE));
 pdfE = circdensity(bcE, freqE, 5*degree,'sum');
 hold on
-plotTDF(bcE,pdfE,'linecolor','b');
+plotTDF(bcE,pdfE);
 hold off
 mtexTitle('Enstatite grain boundaries')
 
-%%
+%% Characteristic Shape
+%
 % Note that this distribution is very prone to inherit artifacts based on
 % the fact that most EBSD maps are sampled on a regular grid. We tried to
 % overcome this problem by heavily smoothing the grain boundary. The little 
@@ -202,13 +202,13 @@ mtexTitle('Enstatite grain boundaries')
 
 [csAngleF, csRadiusF] = characteristicShape(bcF,freqF);
 [csAngleE, csRadiusE] = characteristicShape(bcE,freqE);
-nextAxis
-plotTDF(csAngleF,csRadiusF,'nogrid','nolabels','linecolor','g');
+
+close all
+plotTDF(csAngleF,csRadiusF,'nolabels');
 hold on
-plotTDF(csAngleE,csRadiusE,'nogrid','nolabels','linecolor','b');
+plotTDF(csAngleE,csRadiusE,'nolabels');
 hold off
-mtexTitle('Characteristic shapes')
-legend('Forsterite','Enstatite','Location','southoutside')
+legend('Forsterite','Enstatite','Location','eastoutside')
 
 %%
 % We may wonder if these results are significantly different or not
