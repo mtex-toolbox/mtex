@@ -1,5 +1,11 @@
-About
+MTEX
 =====
+![](https://img.shields.io/github/languages/top/mtex-toolbox/mtex)&nbsp;
+![](https://img.shields.io/github/v/release/mtex-toolbox/mtex)&nbsp;
+[![contributions welcome](https://img.shields.io/static/v1.svg?label=Contributions&message=Welcome&color=0059b3&style=flat-square)](https://github.com/mtex-toolbox/mtex/blob/master/CONTRIBUTING.md)&nbsp;
+![](https://img.shields.io/github/repo-size/mtex-toolbox/mtex)&nbsp;
+![](https://img.shields.io/github/downloads/mtex-toolbox/mtex/total)&nbsp;
+![](https://img.shields.io/github/contributors/mtex-toolbox/mtex)&nbsp;
 
 MTEX is an open source MATLAB toolbox for crystallographic texture
 analysis. Its main features are
