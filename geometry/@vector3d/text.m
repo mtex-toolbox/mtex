@@ -13,6 +13,7 @@ function h = text(v,varargin)
 %  s  - string
 %
 % Options
+%  textColor - 
 %
 % See also
 
@@ -105,6 +106,10 @@ for j = 1:numel(sP)
     h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
       tag{:},'margin',0.001,'parent',sP(j).hgt),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
+    
+    if check_option(varargin,'textcolor')
+      h.Color = str2rgb(get_option(varargin,'textcolor'));
+    end
     
   end
 
