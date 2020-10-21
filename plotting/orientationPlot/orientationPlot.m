@@ -124,8 +124,8 @@ classdef orientationPlot < handle
           'EdgeColor','none',...
           'MarkerSize',get_option(varargin,'MarkerSize',getMTEXpref('markerSize')),...
           'Marker',get_option(varargin,'Marker','o'),...
-          'parent',oP.ax);                
-        
+          'parent',oP.ax);
+
       else
         % colorize with a specified color
         if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
@@ -157,7 +157,29 @@ classdef orientationPlot < handle
             'MarkerEdgeColor',MEC),varargin{:});
           set(oP.ax,'nextPlot',holdState);
         end
+
+        % add transperency if required
+        if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
         
+          faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
+          edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
+        
+          % we have to wait until the markes have been drawn
+          mh = [];
+          while isempty(mh)
+            pause(0.01);
+            hh = handle(h);
+            mh = [hh.MarkerHandle];
+          end
+                
+          for j = 1:length(mh)
+            mh(j).FaceColorData(4,:) = faceAlpha;
+            mh(j).FaceColorType = 'truecoloralpha';
+            
+            mh(j).EdgeColorData(4,:) = edgeAlpha;
+            mh(j).EdgeColorType = 'truecoloralpha';
+          end
+        end
         
       end
 
