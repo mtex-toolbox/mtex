@@ -43,6 +43,7 @@ classdef Miller < vector3d
   
   properties (Dependent = true)
     CS        % crystal symmetry
+    lattice   % 1 direct lattice, 0 indefinite, x,y,z, -1 reciprocal lattice 
     hkl       % direct coordinates
     hkil      % direct coordinates
     h
@@ -190,6 +191,49 @@ classdef Miller < vector3d
         m.CSprivate = cs;
       end      
     end
+    
+    function l = get.lattice(m)
+      
+      switch lower(m.dispStyle)
+        case {'uvw','uvtw'}
+          l = 1;
+        case 'xyz'
+          l = 0;
+        case {'hkl','hkil'}
+          l = -1;
+      end
+      
+    end
+    
+    function m = set.lattice(m,l)
+      
+      if l == 0
+
+        m.dispStyle = 'xyz'; 
+      
+      elseif l == 1
+        
+        if any(strcmp(m.CS.lattice,{'hexagonal','trigonal'}))
+          m.dispStyle = 'UVTW';
+        else
+          m.dispStyle = 'uvw';
+        end
+                
+      elseif l == -1
+        
+        if any(strcmp(m.CS.lattice,{'hexagonal','trigonal'}))
+          m.dispStyle = 'hkil';
+        else
+          m.dispStyle = 'hkl';
+        end
+        
+      else
+        
+        error('undefined lattice')
+      end
+      
+    end
+    
     
     function hkl = get.hkl(m)
       

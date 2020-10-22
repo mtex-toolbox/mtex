@@ -10,26 +10,9 @@ function m = perp(m)
 % Output
 %  n - @Miller
 
-switch m.dispStyle
-  
-  case 'hkl'
-    
-    dispStyle = 'uvw';
-  
-  case 'hkil'
-    
-    dispStyle = 'UVTW';
-  
-  case 'uvw'
-    
-    dispStyle = 'hkl';
-      
-  case 'UVTW'
-    
-    dispStyle = 'hkil';
-    
-end
+m = Miller(perp@vector3d(m),m.CS,m.dispStyle);
 
-m = Miller(perp@vector3d(m),m.CS,dispStyle);
+% switch between reciprocal and direct lattice
+m.lattice = -m.lattice;
 
 end

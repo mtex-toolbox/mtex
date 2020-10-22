@@ -42,27 +42,21 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 if isa(mori.SS,'specimenSymmetry')
   
   hkl = mori \ vector3d.Z;
-  hkl.dispStyle = 'hkl';
+  hkl.lattice = -1; % reciprocal lattice
   hkl = round(hkl,varargin{:});
 
   uvw = mori \ vector3d.X;
-  if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
-    uvw.dispStyle = 'UVTW';
-  else
-    uvw.dispStyle = 'uvw';
-  end
+  uvw.lattice = 1; % direct lattice
   uvw = round(uvw);
      
   if nargout == 0
-    if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
-      d = [hkl.hkl uvw.UVTW ];
-      d(abs(d) < 1e-10) = 0;
-      format = {'H' 'K' 'I' 'L' '| U' 'V' 'T' 'W'};
-    else
-      d = [hkl.hkl uvw.uvw];
-      d(abs(d) < 1e-10) = 0;
-      format = { 'H' 'K' 'L' '| U' 'V' 'W'};
-    end
+    
+    d = [hkl.(hkl.dispStyle) uvw.(uvw.dispStyle)];
+    d(abs(d) < 1e-10) = 0;
+    format = vec2cell(uvw.dispStyle);
+    format{1} = ['| ' format{1}];
+    format = [vec2cell(hkl.dispStyle) format];
+    
     cprintf(d,'-L','  ','-Lc',format);
   elseif check_option(varargin,'LaTex')
     n1 = [char(hkl,'LaTex'),char(uvw,'LaTex')];
