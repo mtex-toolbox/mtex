@@ -30,6 +30,6 @@ switch m.dispStyle
     
 end
 
-Miller(perp@vector3d(m),m.CS,dispStyle);
+m = Miller(perp@vector3d(m),m.CS,dispStyle);
 
 end
