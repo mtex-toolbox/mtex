@@ -74,10 +74,7 @@ classdef Miller < vector3d
 
       % extract disp style
       dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
-      if ~isempty(dispStyle) && strcmp(dispStyle{1},'hkl') && any(strcmp(m.CSprivate.lattice,{'trigonal','hexagonal'}))
-        dispStyle{1} = 'hkil';
-      end
-            
+                  
       if nargin == 0 %empty constructor
 
         return
@@ -204,21 +201,17 @@ classdef Miller < vector3d
 
       % compute reciprocal coordinates
       hkl = (M \ v)';
-
-      % add fourth component for trigonal and hexagonal systems
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-        hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
-      end
       
     end
 
     function hkil = get.hkil(m)
             
-      hkil = m.hkl;
-            
-    end
+      hkl = m.hkl;
 
-    
+      % add fourth component for trigonal and hexagonal systems
+      hkil = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
+      
+    end
     
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
