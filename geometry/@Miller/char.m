@@ -15,36 +15,26 @@ if ~isempty(format), m.dispStyle = format{1};end
 for i = 1:length(m)
   
   abc = m.subSet(i).(m.dispStyle);
-  
-  switch lower(m.dispStyle)
 
-    case {'uvw','uvtw'}
-     
-      if check_option(varargin,{'tex','latex'})
-        leftBracket = '['; %'\left\langle ';
-        rightBracket = ']';% '\right\rangle';
-      else
-        leftBracket = '[';%'<';
-        rightBracket = ']';%'>';
-      end
-    
-    case {'hkl','hkil'}
-    
-      if check_option(varargin,{'tex','latex'})
-        leftBracket = '(';%'\{';
-        rightBracket = ')';% '\}';
-      else
-        leftBracket = '(';%'{';
-        rightBracket = ')';% '}';
-      end
-      
-    otherwise
+  switch m.lattice
+
+    case 1
+
+      leftBracket = '[';
+      rightBracket = ']';
+
+    case -1
+
+      leftBracket = '(';
+      rightBracket = ')';
+
+    case 0
+
       leftBracket = '';
       rightBracket = '';
-      
+
   end
 
-  
   % only display rounded results
   if strcmpi(m.dispStyle,'xyz')
     s = xnum2str(abc);

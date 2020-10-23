@@ -185,15 +185,15 @@ classdef crystalSymmetry < symmetry
     end
 
     function a = get.aAxisRec(cs)
-      a = Miller(1,0,0,cs,'hkl');
+      a = Miller(1,0,0,cs);
     end
 
     function b = get.bAxisRec(cs)
-      b = Miller(0,1,0,cs,'hkl');
+      b = Miller(0,1,0,cs);
     end
 
     function c = get.cAxisRec(cs)
-      c = Miller(0,0,1,cs,'hkl');
+      c = Miller(0,0,1,cs);
     end
 
     function alpha = get.alpha(cs)

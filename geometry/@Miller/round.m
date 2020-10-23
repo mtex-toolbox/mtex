@@ -19,7 +19,6 @@ maxHKL = get_option(varargin,'maxHKL',12);
 
 multiplier = ones(size(h));
 for im = 1:size(mOld,2)
-%   
   
   mNew = mOld(:,im) / mMax(im) * (1:maxHKL);  
   

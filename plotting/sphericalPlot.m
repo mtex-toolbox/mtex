@@ -313,18 +313,12 @@ classdef sphericalPlot < handle
 
       if ~isempty(CS)
         h = Miller(unique(h),CS);
-        switch CS.lattice
-          case {'hexagonal','trigonal'}
-            h.dispStyle = 'UVTW';
-            if any(angle(round(h),h)>1e-5)
-              h.dispStyle = 'HKIL';
-            end
-          otherwise
-            h.dispStyle = 'uvw';
-            if any(angle(round(h),h)>1e-5)
-              h.dispStyle = 'hkl';
-            end
-        end
+        
+        % try direct coordinates
+        h.lattice = 1;
+        
+        % if this gives no integer values - go to reciprocal coordinates
+        if any(angle(round(h),h)>1e-5), h.lattice = -1; end
         h = round(h);
       end
       

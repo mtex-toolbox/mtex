@@ -12,14 +12,5 @@ function m = cross(m1,m2)
 
 m = cross@vector3d(m1,m2);
 
-
-switch m1.dispStyle
-  case 'hkl'
-    m.dispStyle = 'uvw';
-  case 'hkil'
-    m.dispStyle = 'UVTW';
-  case 'uvw'
-    m.dispStyle = 'hkl';
-  case 'UVTW'
-    m.dispStyle = 'hkil';
-end
+% switch from recirprocal to direct and vice verca
+m.lattice = -m.lattice;
