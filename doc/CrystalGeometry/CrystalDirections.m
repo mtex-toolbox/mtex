@@ -62,7 +62,7 @@ hold off
 %%
 % Note that for non Euclidean crystal frames uvw and hkl notations usually
 % lead to different directions.
-%s
+%
 %% Trigonal and Hexagonal Convention
 %
 % In the case of trigonal and hexagonal crystal symmetry often four digit

@@ -21,7 +21,7 @@ for i = 1:length(m)
   % only display rounded results
   if m.dispStyle == MillerConvention.xyz
     s = xnum2str(abc(i,:));
-  elseif all(isappr(round(abc),abc))
+  else
     s = barchar(abc(i,:),varargin{:});
   end
   
@@ -40,13 +40,13 @@ function s=barchar(i,varargin)
 
 comma = check_option(varargin,'commasep');
 space = check_option(varargin,'spacesep');
-i = round(i);
+
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
-    s = [s,'\bar{',int2str(-i(j)),'}']; %#ok<AGROW>
+    s = [s,'\bar{',xnum2str(-i(j),10),'}']; %#ok<AGROW>
   else
-    s = [s,int2str(i(j))]; %#ok<AGROW>
+    s = [s,xnum2str(i(j),10)]; %#ok<AGROW>
   end
   
   if comma && j < length(i)
@@ -54,7 +54,7 @@ for j = 1:length(i)
   elseif space && j < length(i)
     s = [s,' '];
     if i(j+1)>=0, s = [s,' ']; end
-  elseif any(i>9)
+  elseif any(i>9) || any(i ~= round(i))
     s = [s,' '];
   end
 end
