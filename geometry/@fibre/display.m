@@ -25,13 +25,9 @@ end
 
 return
 
-
-
-f = 1;
-
 % display coordinates
 if isa(f.CS,'crystalSymmetry')
-  if any(strcmp(f.b.CS.lattice,{'hexagonal','trogonal'}))
+  if f.b.lattice.isTriHex
     d = [f.b.UVTW f.n.hkl];
     d(abs(d) < 1e-10) = 0;
     cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});

@@ -18,10 +18,10 @@ if length(m) < 20 && ~isempty(m)
   eps = 1e4;
   
   % extract coordinates in the correct form
-  d = round(m.(m.dispStyle) * eps)./eps;
+  d = round(m.coordinates * eps)./eps;
   
   % set up coordinate names
-  columnNames = vec2cell(m.dispStyle);
+  columnNames = vec2cell(char(m.dispStyle));
       
   cprintf(d,'-L','  ','-Lc',columnNames);
   

@@ -28,7 +28,6 @@ v = reshape(double(m),[],3).';
 
 hkl = (M \ v)';
 
-if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+if m.lattice.isTriHex
   hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
 end
-

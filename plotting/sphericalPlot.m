@@ -315,10 +315,10 @@ classdef sphericalPlot < handle
         h = Miller(unique(h),CS);
         
         % try direct coordinates
-        h.lattice = 1;
+        h.dispStyle = abs(h.dispStyle);
         
         % if this gives no integer values - go to reciprocal coordinates
-        if any(angle(round(h),h)>1e-5), h.lattice = -1; end
+        if any(angle(round(h),h)>1e-5), h.dispStyle = -h.dispStyle; end
         h = round(h);
       end
       

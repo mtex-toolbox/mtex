@@ -13,4 +13,4 @@ function m = cross(m1,m2)
 m = cross@vector3d(m1,m2);
 
 % switch from recirprocal to direct and vice verca
-m.lattice = -m.lattice;
+m.dispStyle = -m.dispStyle;

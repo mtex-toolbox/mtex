@@ -42,20 +42,19 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 if isa(mori.SS,'specimenSymmetry')
   
   hkl = mori \ vector3d.Z;
-  hkl.lattice = -1; % reciprocal lattice
   hkl = round(hkl,varargin{:});
 
   uvw = mori \ vector3d.X;
-  uvw.lattice = 1; % direct lattice
+  uvw.dispStyle = -uvw.dispStyle; % direct lattice
   uvw = round(uvw);
      
   if nargout == 0
     
-    d = [hkl.(hkl.dispStyle) uvw.(uvw.dispStyle)];
+    d = [hkl.coordinates uvw.coordinates];
     d(abs(d) < 1e-10) = 0;
-    format = vec2cell(uvw.dispStyle);
+    format = vec2cell(char(uvw.dispStyle));
     format{1} = ['| ' format{1}];
-    format = [vec2cell(hkl.dispStyle) format];
+    format = [vec2cell(char(hkl.dispStyle)) format];
     
     cprintf(d,'-L','  ','-Lc',format);
   elseif check_option(varargin,'LaTex')
@@ -122,8 +121,8 @@ n2 = round(mori * n1);
 d2 = round(mori * d1);
 
 % switch to UVTW for trigonal and hexagonal materials
-if any(strcmp(d1.CS.lattice,{'hexagonal','trigonal'})), d1.dispStyle = 'UVTW'; end
-if any(strcmp(d2.CS.lattice,{'hexagonal','trigonal'})), d2.dispStyle = 'UVTW'; end
+if d1.lattice.isTriHex, d1.dispStyle = 'UVTW'; end
+if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
 
 if nargout == 0, showResult; end
 

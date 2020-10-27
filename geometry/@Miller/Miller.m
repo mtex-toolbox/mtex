@@ -34,7 +34,7 @@ classdef Miller < vector3d
   % crystalSymmetry.crystalSymmetry
   
   properties
-    dispStyle = 'hkl' % output convention hkl or uvw
+    dispStyle (1,1) MillerConvention = 'hkl' % output convention hkl or uvw
   end
   
   properties (Access = private)
@@ -42,10 +42,12 @@ classdef Miller < vector3d
   end
   
   properties (Dependent = true)
-    CS        % crystal symmetry
-    lattice   % 1 direct lattice, 0 indefinite, x,y,z, -1 reciprocal lattice 
-    hkl       % direct coordinates
-    hkil      % direct coordinates
+    CS          % crystal symmetry
+    convention  % convention of the Miller indices
+    coordinates % Miller coordinates according to the convention set above
+    lattice     % type of crystal lattice -> CS.lattice
+    hkl         % direct coordinates
+    hkil        % direct coordinates
     h
     k
     i
@@ -66,30 +68,30 @@ classdef Miller < vector3d
     function m = Miller(varargin)
       % constructor
       
+      %empty constructor
       if nargin == 0, return; end
       
+           
+      % copy constructor
+      if isa(varargin{1},'Miller') 
+  
+        m = varargin{1};
+        m.CSprivate = getClass(varargin,'crystalSymmetry',m.CSprivate);
+        m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
+        
+        return;
+      end
+
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
       assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
         'No crystal symmetry has been specified when defining a crystal direction!');
 
       % extract disp style
-      dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
-                  
-      if nargin == 0 %empty constructor
-
-        return
-  
-      elseif isa(varargin{1},'Miller') % copy constructor
-  
-        if ~isempty(m.CSprivate), varargin{1}.CSprivate = m.CSprivate;end
-        m = varargin{1};
-        
-        if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
-        
-        return;
-  
-      elseif ischar(varargin{1})
+      if m.lattice.isTriHex, m.dispStyle = 'hkil'; end
+      m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
+            
+      if ischar(varargin{1})
         
         m = s2v(varargin{1},m);
               
@@ -108,8 +110,7 @@ classdef Miller < vector3d
           m =  [m,mm];
         end
         
-        % hkl and uvw
-      elseif isa(varargin{1},'double')
+      elseif isa(varargin{1},'double') % hkl and uvw
         
         % get hkls and uvw from input
         nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
@@ -151,12 +152,9 @@ classdef Miller < vector3d
         end
         
       end
-
-      % add antipodal symmetry ?
-      m.antipodal = m.antipodal | check_option(varargin,'antipodal');
       
-      % set dispStyle
-      if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
+      % add antipodal symmetry ?
+      m.antipodal = m.antipodal | check_option(varargin,'antipodal');      
 
     end        
     
@@ -193,48 +191,26 @@ classdef Miller < vector3d
     end
     
     function l = get.lattice(m)
-      
-      switch lower(m.dispStyle)
-        case {'uvw','uvtw'}
-          l = 1;
-        case 'xyz'
-          l = 0;
-        case {'hkl','hkil'}
-          l = -1;
-      end
-      
+      l = m.CS.lattice;
     end
     
-    function m = set.lattice(m,l)
-      
-      if l == 0
+    function out = get.convention(m)
+      out = m.dispStyle;
+    end
+    
+    function m = set.convention(m,dS)
+      m.convention = dS;
+    end
+    
+    
+    function c = get.coordinates(m)
+      c = m.(char(m.dispStyle));
+    end
+    
+    function m = set.coordinates(m,hkl)
+      m.(char(m.dispStyle)) = hkl;
+    end
 
-        m.dispStyle = 'xyz'; 
-      
-      elseif l == 1
-        
-        if any(strcmp(m.CS.lattice,{'hexagonal','trigonal'}))
-          m.dispStyle = 'UVTW';
-        else
-          m.dispStyle = 'uvw';
-        end
-                
-      elseif l == -1
-        
-        if any(strcmp(m.CS.lattice,{'hexagonal','trigonal'}))
-          m.dispStyle = 'hkil';
-        else
-          m.dispStyle = 'hkl';
-        end
-        
-      else
-        
-        error('undefined lattice')
-      end
-      
-    end
-    
-    
     function hkl = get.hkl(m)
       
       % get reciprocal axes
@@ -279,7 +255,7 @@ classdef Miller < vector3d
       m.z = hkl * M(:,3); 
       
       % set default display style
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+      if m.lattice.isTriHex
         m.dispStyle = 'hkil';
       else
         m.dispStyle = 'hkl';
@@ -347,7 +323,7 @@ classdef Miller < vector3d
     function UVTW = get.UVTW(m)
       %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
 
-      uvw = m.uvw;
+      uvw = m.uvw; %#ok<*PROP>
       
       UVTW = [2*uvw(:,1)-uvw(:,2),...
         2*uvw(:,2)-uvw(:,1),...
@@ -398,7 +374,7 @@ classdef Miller < vector3d
         
         m.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
         
-      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
+      elseif m.lattice.isTriHex
         
         m.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
         

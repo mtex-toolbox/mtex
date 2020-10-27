@@ -9,39 +9,20 @@ function c = char(m,varargin)
 c = cell(length(m),1);
 
 % output format
-format = extract_option(varargin,{'hkl','hkil','uvw','UVTW'});
-if ~isempty(format), m.dispStyle = format{1};end
+format = get_flag(varargin,{'hkl','hkil','uvw','UVTW'});
+if ~isempty(format), m.dispStyle = format; end
+
+[leftBracket, rightBracket] = m.dispStyle.brackets;
+
+abc = m.coordinates;
 
 for i = 1:length(m)
   
-  abc = m.subSet(i).(m.dispStyle);
-
-  switch m.lattice
-
-    case 1
-
-      leftBracket = '[';
-      rightBracket = ']';
-
-    case -1
-
-      leftBracket = '(';
-      rightBracket = ')';
-
-    case 0
-
-      leftBracket = '';
-      rightBracket = '';
-
-  end
-
   % only display rounded results
-  if strcmpi(m.dispStyle,'xyz')
-    s = xnum2str(abc);
+  if m.dispStyle == MillerConvention.xyz
+    s = xnum2str(abc(i,:));
   elseif all(isappr(round(abc),abc))
-    s = barchar(abc,varargin{:});
-  else
-    s = '---';
+    s = barchar(abc(i,:),varargin{:});
   end
   
   % add scopes

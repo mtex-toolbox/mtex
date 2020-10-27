@@ -10,9 +10,6 @@ function m = perp(m)
 % Output
 %  n - @Miller
 
-m = Miller(perp@vector3d(m),m.CS,m.dispStyle);
-
-% switch between reciprocal and direct lattice
-m.lattice = -m.lattice;
+m = Miller(perp@vector3d(m),m.CS,-m.dispStyle);
 
 end
