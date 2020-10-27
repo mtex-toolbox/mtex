@@ -18,9 +18,11 @@ for fn = fieldnames(s).'
         out = 'false';
       end
     case 'struct'
-      
-      id = pushTemp(value);
-      out = ['<a href="matlab:dispStruct(pullTemp(' int2str(id) '))">show struct</a>'];
+
+      if ~getMTEXpref('generatingHelpMode')
+        id = pushTemp(value);
+        out = ['<a href="matlab:dispStruct(pullTemp(' int2str(id) '))">show struct</a>'];
+      end
       
     otherwise
       try

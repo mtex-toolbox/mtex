@@ -89,13 +89,13 @@ xlabel('disorientation angle')
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(gB,fit(pairId),'linewidth',3,'smooth')
+plot(gB,fit(pairId) ./ degree,'linewidth',3,'smooth')
 hold off
 
 mtexColorMap LaboTeX
 mtexColorbar
 
-setColorRange([0,5]*degree)
+setColorRange([0,5])
 
 %%
 % We observe that the boundary segments with a large misfit form large

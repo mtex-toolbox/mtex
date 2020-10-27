@@ -16,7 +16,9 @@ p1 = polar(bc,pd,'parent',mtexFig.gca);
 % set linewidth
 p1.LineWidth = get_option(varargin,'linewidth',2);
 % set linecolor
-p1.Color = get_option(varargin,'linecolor',[0 0 0]);
+if check_option(varargin,'lineColor')
+  p1.Color = get_option(varargin,'linecolor',[0 0 0]);
+end
 % set linestyle
 ls = get_option(varargin,'linestyle','-');
 p1.LineStyle=ls;

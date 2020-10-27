@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ":unicorn: feature request"
+labels: 'feature request :christmas_tree:'
 assignees: ''
 
 ---
