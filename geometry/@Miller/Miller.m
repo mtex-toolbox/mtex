@@ -20,7 +20,7 @@ classdef Miller < vector3d
   %  h,k,l   - three digit reciprocal coordinates
   %  h,k,i,l - four digit reciprocal coordinates
   %  u,v,w   - three digit direct coordinates
-  %  U,V,T,W - four digit direct coordinates
+  %  U,V,T,W - four digit direct coordinates - Weber indices
   %  x       - @vector3d
   %  cs      - @crystalSymmetry
   %
@@ -53,7 +53,7 @@ classdef Miller < vector3d
     i
     l
     uvw       % reciprocal coordinates
-    UVTW      % reciprocal coordinates
+    UVTW      % reciprocal coordinates / Weber indices
     u
     v
     w
