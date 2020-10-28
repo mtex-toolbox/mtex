@@ -20,7 +20,7 @@ for i = 1:length(m)
   
   % only display rounded results
   if m.dispStyle == MillerConvention.xyz
-    s = xnum2str(abc(i,:));
+    s = xnum2str(abc(i,:),'precision',0.1);
   else
     s = barchar(abc(i,:),varargin{:});
   end
@@ -44,9 +44,9 @@ space = check_option(varargin,'spacesep');
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
-    s = [s,'\bar{',xnum2str(-i(j),10),'}']; %#ok<AGROW>
+    s = [s,'\bar{',xnum2str(-i(j),'precision',1),'}']; %#ok<AGROW>
   else
-    s = [s,xnum2str(i(j),10)]; %#ok<AGROW>
+    s = [s,xnum2str(i(j),'precision',1)]; %#ok<AGROW>
   end
   
   if comma && j < length(i)
