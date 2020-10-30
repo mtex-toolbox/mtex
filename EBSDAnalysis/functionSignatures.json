@@ -10,6 +10,16 @@
         {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
     ]
 },
+
+"EBSD.subsref":
+{
+    "inputs":
+    [
+        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+	      {"name":"id", "kind":"namevalue", "type":"double"}
+    ]
+},
+
 "calcGrains":
 {
     "inputs":
