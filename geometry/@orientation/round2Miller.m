@@ -64,8 +64,8 @@ if isa(mori.SS,'specimenSymmetry')
       format = { 'H' 'K' 'L' '| U' 'V' 'W'};
     end
     cprintf(d,'-L','  ','-Lc',format);
-  elseif check_option(varargin,'LaTex')
-    n1 = [char(hkl,'LaTex'),char(uvw,'LaTex')];
+  elseif nargout == 1
+    n1 = [char(hkl,varargin{:}),char(uvw,varargin{:})];
     n1 = strrep(n1,'$$','');
   else
     n1 = hkl;
@@ -131,7 +131,18 @@ d2 = round(mori * d1);
 if any(strcmp(d1.CS.lattice,{'hexagonal','trigonal'})), d1.dispStyle = 'UVTW'; end
 if any(strcmp(d2.CS.lattice,{'hexagonal','trigonal'})), d2.dispStyle = 'UVTW'; end
 
-if nargout == 0, showResult; end
+if nargout == 0
+  
+  showResult; 
+
+elseif nargout == 1
+  
+  mori_exact = orientation.map(n1,n2,d1,d2);
+  err = angle(mori,mori_exact);
+  n1 = [char(n1) ' || ' char(n2) '   ' char(d1) ' || ' char(d2) ...
+      '   error: ',xnum2str(err./degree),mtexdegchar'];
+  
+end
 
 function showResult
     
