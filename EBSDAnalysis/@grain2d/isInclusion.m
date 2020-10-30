@@ -24,7 +24,7 @@ gB = grains.boundary;
 
 for k = find(grains.hasHole).'
   
-  % innver vertices
+  % inner vertices
   V = poly{k}(end-grains.inclusionId(k):end);
   V = V(V ~= V(1)); 
   

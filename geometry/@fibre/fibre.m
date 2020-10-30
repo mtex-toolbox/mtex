@@ -199,7 +199,7 @@ classdef fibre
       f = fibre(ori1,ori2,varargin{:});
     end
 
-    function [f,lambda] = fit(ori,varargin)
+    function [f,lambda,delta] = fit(ori,varargin)
       % determines the fibre that fits best a list of orientations
       %
       % Syntax
@@ -214,8 +214,11 @@ classdef fibre
 
       [~,~,lambda,eigv] = mean(ori);
 
-      ori = orientation(quaternion(eigv(:,1:2)),ori.CS,ori.SS);
-      f = fibre(ori(1),ori(2),'full',varargin{:});
+      ori12 = orientation(quaternion(eigv(:,4:-1:3)),ori.CS,ori.SS);
+      f = fibre(ori12(1),ori12(2),'full',varargin{:});
+      
+      delta = norm(angle(f,ori)) / length(ori);
+      
     end
 
   end

@@ -1,6 +1,19 @@
 %% Theory of Misorientations
 %
 %%
+% Misorientation describe the relative orientation of two crystal with
+% respect to each other. Those crystal may be of the same phase or of
+% different phases. Misorientation are used to describe 
+
+
+
+
+%% Grain Exchange Symmetry
+
+
+
+
+%%
 % Misorientation describes the relative orientation of two grains with
 % respect to each other. Important concepts are twinnings and
 % CSL (coincidence site lattice) misorientations. To illustrate this

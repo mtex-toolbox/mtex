@@ -1,5 +1,7 @@
 EBSDOverview
 EBSD_index              EBSD
+EBSDsquare_index        EBSDsquare
+EBSDhex_index           EBSDhex
 grain2d_index           grain2d 
 grainBoundary_index     grainBoundary 
 triplePointList_index   triplePointList

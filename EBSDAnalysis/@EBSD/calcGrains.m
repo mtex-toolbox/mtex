@@ -88,6 +88,9 @@ for p = grains.indexedPhasesId
   q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{p},meanRotation(g(ndx)));
 end
 
+
+% TODO: this can be done more efficiently using accumarray
+
 % compute mean orientation and GOS
 doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
 for k = 1:numel(doMeanCalc)
@@ -145,7 +148,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      quaternion(ebsd.rotations),ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
+      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue,varargin{:});
     
   end  
 end
@@ -164,13 +167,13 @@ if check_option(varargin,'mcl')
   
 else
   
-  A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length(ebsd));
+  A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
+    length(ebsd),length(ebsd));
   
 end
 A_Do = A_Do | A_Do.';
 
 % adjacency of cells that have a common boundary
-
 A_Db = A_Db | A_Db.';
 
 % compute I_DG connected components of A_Do
@@ -179,4 +182,3 @@ I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
 
 end
-

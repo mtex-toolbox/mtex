@@ -16,6 +16,7 @@ EBSDOrientationPlots  Orientation Plots
 EBSDSharpPlot         Sharp Color Keys 
 EBSDAdvancedMaps      Advanced Plotting
 EBSDKAM               KAM
+EBSDGROD              Mis2Mean / GROD
 EBSDProfile           Profiles
 EBSDSimulation        Simulation
 EBSDExport            Export

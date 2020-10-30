@@ -56,6 +56,32 @@ hold on
 plot(f,'linecolor','gold','linewidth',3,'project2FundamentalRegion')
 hold off
 
+
+%% Fibres in pole figures and inverse pole figures
+%
+% MTEX supports for fibres all the plotting options that are available for
+% orientations. This included <OrientationPoleFigure.html pole figures> and
+% <OrientationInversePoleFigure.html inverse pole figures> using the
+% commands <fibre.plotPDF.html |plotPDF|> and <fibre.plotIPDF.html
+% |plotIPDF|>.
+
+plotPDF(f,Miller({1,1,0},{1,1,1},cs),'linewidth',3,'lineColor','orange')
+
+%%
+% An important difference to orientation plots is that fibres are not
+% automatically symmetrised when plotted. To achieve this use the command
+% <fibre.symmetrise.html |symmetrise|>.
+
+plotPDF(f.symmetrise,Miller({1,1,0},{2,1,0},{1,1,1},cs),'linewidth',3,'lineColor','orange')
+
+%%
+% Inverse pole figures are by default restricted to the fundamental sector.
+% You may use the option |'complete'| to plot the entire sphere.
+
+% an inverse pole figure plot
+r = [vector3d(1,1,0),vector3d(2,1,0),vector3d(1,1,1)];
+plotIPDF(f.symmetrise,r,'linewidth',3,'lineColor','orange')
+
 %% Defining a fibre by directions
 %
 % Alternatively, a fibre can also be defined by a pair of a crystal and a
@@ -89,7 +115,7 @@ f = fibre(ori1,Miller(1,1,1,cs))
 
 plot(f,'linecolor','darkred','linewidth',4,'project2FundamentalRegion','axisAngle')
 
-%% predefined fibres
+%% Predefined fibres
 % MTEX includes also a list of predefined fibres, e.g., alpha-, beta-,
 % gamma-, epsilon-, eta- and tau fibres. Those can be defined by
 

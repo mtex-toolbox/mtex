@@ -37,8 +37,7 @@ function odf = calcKernelODF(ori,varargin)
 % See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
-% remove nan orientations
-ori = subSet(ori,~isnan(ori));
+
 
 % maybe there is nothing to do
 if isempty(ori), odf = ODF; return, end
@@ -49,6 +48,12 @@ if check_option(varargin,'weights')
 else
   weights = ones(1,length(ori));
 end
+
+% remove nan orientations and weights
+weights = weights(~isnan(ori));
+ori = subSet(ori,~isnan(ori));
+
+% normalize weights
 weights = weights ./ sum(weights(:));
 
 % extract kernel function

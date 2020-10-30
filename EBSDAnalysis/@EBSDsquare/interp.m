@@ -4,12 +4,17 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 % Syntax
 %   ebsdNew = interp(ebsd,xNew,yNew)
 %
+%   ebsdNew = interp(ebsd,xNew,yNew,'method','invDist')
+%
 % Input
-%   ebsd - @ebsdSquare
-%   xNew, yNew - new x,y coordinates
+%  ebsd - @EBSDsquare
+%  xNew, yNew - new x,y coordinates
 %
 % Output
-%   ebsdNew - @ebsd with coordinates (xNew,yNew)
+%  ebsdNew - @EBSD with coordinates (xNew,yNew)
+%
+% Options
+%  method - 'invDist', 'nearest'
 %
 % See also
 %  
@@ -99,7 +104,7 @@ end
       doInclude = doInclude & (ebsd.prop.grainId(idn) == prop.grainId(isIndexed)) & ...
         angle(ebsd.rotations(idn),rot(isIndexed)) < 2.5*degree;
     else
-      doInclude = doInclude & (ebsd.prop.phaseId(idn) == prop.phaseId(isIndexed)) & ...
+      doInclude = doInclude & (ebsd.phaseId(idn) == phaseId(isIndexed)) & ...
         angle(ebsd.rotations(idn),rot(isIndexed)) < 5*degree;
     end
     

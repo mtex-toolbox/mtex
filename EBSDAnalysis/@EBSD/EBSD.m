@@ -42,8 +42,8 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  indexedPhaseId - phaseIds of all indexed phases
   %
   % Derived Classes
-  %  @EBSDSquare - EBSD data measured on a square grid
-  %  @EBSDHex    - EBSD data measured on a hex grid
+  %  @EBSDsquare - EBSD data measured on a square grid
+  %  @EBSDhex    - EBSD data measured on a hex grid
   %
   % See also
   % EBSDImport EBSDSelect EBSDPlotting GrainReconstruction
@@ -166,6 +166,10 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori = orientation;
       else
         ori = orientation(ebsd.rotations,ebsd.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(ebsd.isIndexed), ori(~ebsd.isIndexed) = NaN; end
+        
       end
     end
     

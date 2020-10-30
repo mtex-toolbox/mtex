@@ -18,7 +18,7 @@ function kam = KAM(ebsd,varargin)
 %   plot(ebsd,kam./degree)
 %
 % Input
-%  ebsd - @ebsd
+%  ebsd - @EBSD
 %
 % Options
 %  threshold - ignore misorientation angles larger then threshold

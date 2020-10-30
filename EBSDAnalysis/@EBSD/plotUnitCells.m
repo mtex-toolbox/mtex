@@ -40,6 +40,7 @@ if numel(d) == size(xy,1) || numel(d) == 3*size(xy,1)
   if check_option(varargin,{'transparent','translucent','faceAlpha'})
   
     s = get_option(varargin,{'transparent','translucent','faceAlpha'},1,'double');
+    varargin = delete_option(varargin,'faceAlpha');
   
     if size(d,2) == 3 % rgb
       obj.FaceVertexAlphaData = s.*(1-min(d,[],2));

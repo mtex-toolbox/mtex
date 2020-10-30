@@ -6,7 +6,7 @@ A_D = sparse(Dl,Dr,true,length(q),length(q));
 fmc.CS = CS;
 fmc.O  = q;
 
-fmc.cmaha    = cmaha;
+fmc.cmaha    = cmaha(1);
 fmc.cmaha0   = get_option(varargin,{'cmaha0'},0.05,'double');
 fmc.quatmax  = get_option(varargin,{'quatmax'},5,'double');
 fmc.quatmax2 = cos(fmc.quatmax/2*degree);

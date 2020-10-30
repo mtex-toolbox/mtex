@@ -9,13 +9,25 @@
      ]
 },
 
+"vector3d":
+{
+    "inputs":
+    [
+        {"name":"x", "kind":"ordered",   "type":"double"},
+        {"name":"y", "kind":"ordered",   "type":"double"},
+        {"name":"z", "kind":"ordered",   "type":"double"},
+        {"name":"antipodal_flag", "kind":"flag", "type":"choices={'antipodal'}"}
+    ]
+},
+
+
 "vector3d.load":
 {
     "inputs":
     [
         {"name":"filename1", "kind":"required",   "type":"filepath"},
         {"name":"columnNames", "kind":"namevalue", "type":"cell"},
-	{"name":"columns", "kind":"namevalue", "type":"double"}
+      	{"name":"columns", "kind":"namevalue", "type":"double"}
     ]
 },
 

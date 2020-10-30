@@ -7,6 +7,7 @@
 
 % load some example data
 mtexdata twins
+ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 
 % detect grains
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));
@@ -30,21 +31,18 @@ hold off
 % A variable of type <grainBoundary.grainBoundary.html grainBoundary>
 % contains the following properties
 %
-% || ebsdId         || id of the EBSD pixel on both sides of the grain boundary ||
-% || phaseId        || id of the phase on both sides of the grain boundary ||
-% || grainId        || id of the grains on both sides of the grain boundary ||
-% || misorientation || misorientation between ebsdId(:,1) and ebsdId(:,2) ||
-% || F              || F(:,1), F(:,2) ids of the two vertices of the segment ||
-% || direction      || vector connecting vertice 1 with vertice 2 ||
-% || midPoint       || mid point of the segment ||
-% || segLength      || length of the segment ||
-% || componentId    || id of the connected component with respect to all segments ||
-% || componentSize  || number of segments within the component ||
+% || |ebsdId|         || neighboring pixel ids || |phaseId| || neighboring phase ids ||
+% || |grainId|        || neighboring grain ids || |F| || vertices ids of the segments ||
+% || <grainBoundary.segLength.html |segLength|> || length of each segment || |direction| || direction of each segment ||
+% || |midPoint|       || mid point of the segment || <grainBoundary.curvature.html |curvature|> || curvature of each segment ||
+% || |misorientation| || between |ebsdId(:,1)| and  |ebsdId(:,2)| || || ||
+% || |componentId|    || connected component id || |componentSize| || connected component size ||
 %
-% The first three properties refer to N x 2 matrices where N is the number
-% of boundary segments. Each row of these matrices contains the information
-% about the EBSD data, and grain data on both sides of the grain boundary.
-% To illustrate this consider the grain boundary of one specific grain
+% The first three properties refer to $N \times 2$ matrices where $N$ is
+% the number of boundary segments. Each row of these matrices contains the
+% information about the EBSD data, and grain data on both sides of the
+% grain boundary. To illustrate this consider the grain boundary of one
+% specific grain
 
 gB8 = grains(8).boundary
 

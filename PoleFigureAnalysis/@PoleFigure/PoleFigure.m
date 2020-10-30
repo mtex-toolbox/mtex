@@ -74,15 +74,9 @@ classdef PoleFigure < dynProp & dynOption
       %pf.c = cellfun(@(x) x./sum(x),pf.c,'uniformOutput',false);
             
       % extract symmetries
-      args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
-      if ~isempty(args)
-        pf.CS = varargin{args(1)};
-        if numel(args)>1
-          pf.SS = varargin{args(2)};
-        else
-          pf.SS = specimenSymmetry;
-        end
-      end      
+      pf.CS = getClass(varargin,'crystalSymmetry',pf.CS);
+      pf.SS = getClass(varargin,'specimenSymmetry',pf.SS);
+      
     end
     
     function pf = set.CS(pf,CS)

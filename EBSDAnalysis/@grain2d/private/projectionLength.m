@@ -18,10 +18,13 @@ function pl = projectionLength(Vg,varargin)
 if nargin>1 && isnumeric(varargin{1})
     omegaP=varargin{1};
 else
-    omegaP=[0:1:179]*degree;
+    omegaP = 0:1:179 * degree;
 end
+
 % omega x vetices
 d = cos(omegaP(:)) * Vg(:,1).' + sin(omegaP(:)) * Vg(:,2).';
+
 % max for each omega
 pl = max(d,[],2)-min(d,[],2);
+
 end
