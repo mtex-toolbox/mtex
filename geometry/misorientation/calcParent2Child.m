@@ -53,6 +53,7 @@ p2cOld = p2c;
 % iterate until convergance
 for k = 1:maxIt
   
+  progress(k,maxIt,'searching orientation relationship: ');
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
   %fprintf('%1.3f°\n',diso(k));
@@ -95,6 +96,7 @@ for k = 1:maxIt
     p2c = mean(p2cCandidates);
   end
 end
+progress(maxIt,maxIt,'searching orientation relationship: ');
 
 if k<maxIt
   fprintf('-> Convergence reached after %.0f iterations\n',k);
