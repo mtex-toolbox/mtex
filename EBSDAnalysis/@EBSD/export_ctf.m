@@ -199,10 +199,16 @@ elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
 end
 
 ebsdList = reduce(ebsdGrid,1);
+%Compute X and Y data
+X = repmat(1:size(ebsdGrid,1),size(ebsdGrid,2),1);
+X = ebsdGrid.dx.*X(:);
+Y = repmat(1:size(ebsdGrid,1),1,size(ebsdGrid,2));
+Y = ebsdGrid.dy.*Y(:);
+
 %Gather data
 flds{1} = phaseIDs;
-flds{2} = ebsdList.prop.x;
-flds{3} = ebsdList.prop.y;
+flds{2} = X;
+flds{3} = Y;
 if isfield(ebsd.prop,'bands')
   flds{4} = ebsdList.prop.bands;
 else
@@ -248,11 +254,14 @@ end
 
 % Set nan data points to 0
 for ii = 1:length(flds), flds{ii}(isnan(flds{ii})) = 0; end
+% Make X increase first
+[~,ind] = sort(ebsdList.y);
 
 %Write data
 A = zeros(ebsdList.length,11); %initialize
 for i = 1:length(flds)
     temp = flds{i};
+    temp = temp(ind);
     %Transpose matrices if required
     if abs(dim.x == 2) && abs(dim.y) == 1
         temp = temp';
