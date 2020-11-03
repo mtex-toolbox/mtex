@@ -175,17 +175,24 @@ classdef parentGrainReconstructor < handle
       job.ebsd('indexed').grainId = mergeId(job.ebsd('indexed').grainId);
             
     end
-    
 
-    function parentEBSD = calcParentEBSD(job)
+    function ebsd = calcParentEBSD(job)
       % update EBSD
            
-      % consider only austenite pixels that now belong to martensite grains
-      %isNowFCC = job.parentGrains.phaseId(max(1,job.parentEBSD.grainId)) == 3 & job.parentEBSD.phaseId == 2;
+      % consider only child pixels that have been reconstructed to parent
+      % grains
+      isNowParent = job.ebsd.phaseId == job.childPhaseId &...
+        job.grains.phaseId(max(1,job.ebsd.grainId)) == job.parentPhaseId;
 
       % compute parent orientation
-      %[parentEBSD(isNowFCC).orientations, fit] = calcParent(ebsd(isNowFCC).orientations,...
-      %  parentGrains(parentEBSD(isNowFCC).grainId).meanOrientation,fcc2bcc);
+      [ori,fit] = calcParent(job.ebsd(isNowParent).orientations,...
+        job.grains(job.ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
+      
+      % setup parent ebsd
+      ebsd = job.ebsd;
+      ebsd.prop.fit = nan(size(ebsd));
+      ebsd(isNowParent).orientations = ori;
+      ebsd.prop.fit(isNowParent) = fit;
       
     end
     
