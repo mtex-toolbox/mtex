@@ -110,15 +110,26 @@ classdef parentGrainReconstructor < handle
       
       prob = 1 - 0.5 * (1 + erf(2*(job.fit - threshold)./tol));
 
-      % get neighbouring grain pairs
+      % child 2 child neighbours
       grainPairs = job.grains(job.csChild).neighbors;
       
       % the corresponding similarity matrix
       job.graph = sparse(grainPairs(:,1),grainPairs(:,2),prob,...
         length(job.grains),length(job.grains));
       
-      % add parent grains to the graph
+      % parent to child neighbours
+      grainPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
       
+      childOri = job.grains(job.grains.id2ind(grainPairs(:,2))).meanOrientation;
+      parentOri = job.grains(job.grains.id2ind(grainPairs(:,1))).meanOrientation;
+      
+      p2cFit = angle(job.p2c, inv(childOri).*parentOri);
+            
+      prob = 1 - 0.5 * (1 + erf(2*(p2cFit - threshold)./tol));
+      
+      job.graph = job.graph + sparse(grainPairs(:,1),grainPairs(:,2),prob,...
+        length(job.grains),length(job.grains));
+            
     end
 
     function clusterGraph(job, varargin)
