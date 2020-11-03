@@ -63,11 +63,12 @@ classdef parentGrainReconstructor < handle
     
     function disp(job)
       
-      p = 100*sum(job.ebsd.phaseId == job.parentPhaseId) / length(job.ebsd);
+      gs = job.grains.grainSize;
+      p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
       matrix(1,:) = {'parent', job.csParent.mineral, char(job.csParent), ...
         length(job.grains(job.csParent)),[xnum2str(p) '%']};
       
-      p = 100*sum(job.ebsd.phaseId == job.childPhaseId) / length(job.ebsd);
+      p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
       if ~isempty(job.csChild)
         matrix(2,:) = {'child', job.csChild.mineral, char(job.csChild), ...
           length(job.grains(job.csChild)),[xnum2str(p) '%']};
