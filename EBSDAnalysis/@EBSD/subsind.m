@@ -65,8 +65,8 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'symmetry')
     
-    phaseId = grains.cs2phaseId(subs{i});
-    ind = ind(:) & ebsd.phaseId==phaseId;
+    phaseId = ebsd.cs2phaseId(subs{i});
+    ind = ind(:) & ebsd.phaseId == phaseId;
     
   elseif isa(subs{i},'grain2d')
     
