@@ -37,19 +37,29 @@ classdef parentGrainReconstructor < handle
       
       job.mergeId = 1:length(job.grains);
       
-      % try to guess parent and child phase
-      numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
-      indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
-      numPhase = numPhase(indexedPhasesId );
+      % check for provided orientation relationship
+      job.p2c = getClass(varargin,'orientation');
       
-      [~,maxPhase] = max(numPhase);
-      job.csChild = ebsd.CSList{indexedPhasesId(maxPhase)};
+      % determine parent and child phase
+      if isempty(job.p2c)
+          % try to guess parent and child phase
+          numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
+          indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
+          numPhase = numPhase(indexedPhasesId );
 
-      [~,minPhase] = min(numPhase);
-      if minPhase ~= maxPhase
-        job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
-      end
-      
+          [~,maxPhase] = max(numPhase);
+          job.csChild = ebsd.CSList{indexedPhasesId(maxPhase)};
+
+          [~,minPhase] = min(numPhase);
+          if minPhase ~= maxPhase
+            job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
+          end
+      else
+          % extract from existing orientation relationship
+          assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
+          job.csParent = job.p2c.CS;
+          job.csChild = job.p2c.SS;
+      end            
     end
     
     
@@ -84,9 +94,10 @@ classdef parentGrainReconstructor < handle
         disp(['  parent to child OR: ' round2Miller(job.p2c)])
         disp(' ');
       end
-      
-      disp(['  grains reconstructed: 20%']);
-      disp(['  ebsd reconstructed:   20%']);
+      recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
+      recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
+      fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);
+      fprintf('  ebsd reconstructed: %.0f%%\n', recAreaEBSD);
       
     end
     
@@ -96,7 +107,7 @@ classdef parentGrainReconstructor < handle
       grainPairs = job.grains(job.csChild).neighbors;
 
       p2c0 = orientation.KurdjumovSachs(job.csParent,job.csChild);
-      
+      if ~isempty(job.p2c), p2c0 = job.p2c; end       
       p2c0 = getClass(varargin,'orientation',p2c0);
       
       % compute an optimal parent to child orientation relationship
@@ -142,7 +153,23 @@ classdef parentGrainReconstructor < handle
     end
     
     function mergeByGraph(job,varargin)
-      % merge grains according to the adjecency matrix A
+%       % merge grains according to the adjecency matrix A
+%       
+%       % merge grains according to the adjacency matrix A
+%       [recParentGrains, recParentId] = merge(job.grains,job.graph);
+%       grains.prop.parentGrainId = recParentId;
+%       % ensure grainId in parentEBSD is set up correctly with parentGrains
+%       recEBSD = ebsd;
+%       %recEBSD('indexed').grainId = recParentId(ebsd('indexed').grainId);
+%       recEBSD.grainId = recParentId(ebsd.grainId);
+%       %% Initialize the parent orientation we are going to reconstruct
+%       recParentOri = orientation.nan(max(recParentId),1,parent.CS);
+%       fit = inf(size(recParentOri));
+%       weights = grains.grainSize;
+%     
+%       
+%       
+      
       
       % the remember child orientations
       wasChildGrain = job.grains.phaseId == job.childPhaseId;
@@ -154,6 +181,7 @@ classdef parentGrainReconstructor < handle
       weights = job.grains.grainSize;
       
       % perform the grain merge
+      grains = job.grains;
       [job.grains, mergeId] = merge(job.grains,job.graph);
       job.mergeId = mergeId(job.mergeId);
             
@@ -163,14 +191,42 @@ classdef parentGrainReconstructor < handle
       % the parent orientation we are going to compute
       parentOri = orientation.nan(max(mergeId),1,job.csParent);
       job.fit = inf(size(parentOri));
-            
+      
+      % obtain phase info
+      pId = unique(grains(job.csParent).phase);
+      cId = unique(grains(job.csChild).phase);
+      phaseList = grains.phase;
+      
       % compute parent grain orientation by looping through all merged grains
       for k = 1:max(mergeId)
-        if nnz(mergeId == k) > 1
-          % compute the parent orientation from the child orientations
-          [parentOri(k),job.fit(k)] = calcParent(childOri(mergeId==k),...
-            job.p2c, 'weights', weights(mergeId==k));
-        end
+          
+          %Check if empty
+          if ~any(mergeId==k), continue; end
+
+          %Parent orientation(s)
+          if all(phaseList(mergeId==k) == pId)
+              parentOri(k) = mean(grains(mergeId==k).meanOrientation);
+              job.fit(k) = 0;
+          %Child orientations(s)
+          elseif all(phaseList(mergeId==k) == cId)
+                if nnz(mergeId==k) > 1
+                    [parentOri(k),job.fit(k)] = calcParent(grains(mergeId == k).meanOrientation,...
+                                               job.p2c, 'weights', weights(mergeId == k));
+                end
+          %Parent and child orientations
+          elseif all(ismember(phaseList(mergeId==k),[cId,pId]))
+                [ori,fit] = calcParent(grains(mergeId==k, grains.phase==cId).meanOrientation,...
+                                      mean(grains(mergeId==k, grains.phase==pId).meanOrientation, 'robust'),...
+                                      job.p2c,'weights', weights(mergeId == k));
+                parentOri(k) = mean(ori, 'robust');
+                job.fit(k) = mean(fit);
+          end  
+                 
+%         if nnz(mergeId == k) > 1
+%           % compute the parent orientation from the child orientations
+%           [parentOri(k),job.fit(k)] = calcParent(childOri(mergeId==k),...
+%             job.p2c, 'weights', weights(mergeId==k));
+%         end
         progress(k,max(mergeId),'computing parent grain orientations: ');
       end
       
