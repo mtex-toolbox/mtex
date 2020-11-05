@@ -37,6 +37,7 @@ round0Thrsh = 1e-6;
 % pre-processing
 scrPrnt('Step','Collecting data');
 
+ebsd = reduce(ebsd,1);
 if check_option(varargin,'flipud') %Flip spatial ebsd data
   ebsd = flipud(ebsd);
   scrPrnt('Step','Flipping EBSD spatial data upside down');
@@ -161,12 +162,12 @@ for i = 1:length(CSlst)
 end
 
 % Check for deleted phases
-phaseIDs = ebsdGrid.phaseId;
-maxPhID = max(max(phaseIDs));   %Check maximum phase ID in phase list
+phase = ebsdGrid.phase;
+maxPhID = max(max(phase));   %Check maximum phase ID in phase list
 k = maxPhID-1;
 while k > 0
     if ~any(any(ebsdGrid.phase == 1)) %Empty phase ID, i.e. deleted phase
-       phaseIDs(phaseIDs > k) = phaseIDs(phaseIDs > k)-1; %Reduce phase ID
+       phase(phase > k) = phase(phase > k)-1; %Reduce phase ID
     end
     k = k-1;
 end
@@ -201,12 +202,12 @@ end
 ebsdList = reduce(ebsdGrid,1);
 %Compute X and Y data
 X = repmat(1:size(ebsdGrid,1),size(ebsdGrid,2),1);
-X = ebsdGrid.dx.*X(:);
+X = round(ebsdGrid.dx,5).*X(:);
 Y = repmat(1:size(ebsdGrid,1),1,size(ebsdGrid,2));
-Y = ebsdGrid.dy.*Y(:);
+Y = round(ebsdGrid.dy,5).*Y(:);
 
 %Gather data
-flds{1} = phaseIDs;
+flds{1} = phase(:);
 flds{2} = X;
 flds{3} = Y;
 if isfield(ebsd.prop,'bands')
