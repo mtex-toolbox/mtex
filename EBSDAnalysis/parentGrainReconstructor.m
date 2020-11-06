@@ -42,23 +42,23 @@ classdef parentGrainReconstructor < handle
       
       % determine parent and child phase
       if isempty(job.p2c)
-          % try to guess parent and child phase
-          numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
-          indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
-          numPhase = numPhase(indexedPhasesId );
-
-          [~,maxPhase] = max(numPhase);
-          job.csChild = ebsd.CSList{indexedPhasesId(maxPhase)};
-
-          [~,minPhase] = min(numPhase);
-          if minPhase ~= maxPhase
-            job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
-          end
+        % try to guess parent and child phase
+        numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
+        indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
+        numPhase = numPhase(indexedPhasesId );
+        
+        [~,maxPhase] = max(numPhase);
+        job.csChild = ebsd.CSList{indexedPhasesId(maxPhase)};
+        
+        [~,minPhase] = min(numPhase);
+        if minPhase ~= maxPhase
+          job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
+        end
       else
-          % extract from existing orientation relationship
-          assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
-          job.csParent = job.p2c.CS;
-          job.csChild = job.p2c.SS;
+        % extract from existing orientation relationship
+        assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
+        job.csParent = job.p2c.CS;
+        job.csChild = job.p2c.SS;
       end            
     end
     
