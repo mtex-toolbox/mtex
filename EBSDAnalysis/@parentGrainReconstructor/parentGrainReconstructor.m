@@ -97,8 +97,14 @@ classdef parentGrainReconstructor < handle
       
       if ~isempty(job.graph) && size(job.graph,2) == length(job.grains)
         
-        nn = length(unique(connectedComponents(job.graph)));               
-        disp(['  graph clusters: ' int2str(nn)]);
+        [~,mId] = merge(job.grains, job.graph,'testRun');
+        numComp = accumarray(mId,1);
+        untouched = nnz(numComp==1);
+        numComp = numComp(numComp>1);
+        
+        disp(['  mergable grains: ' int2str(sum(numComp)) ...
+          ' -> ' int2str(length(numComp)) ' keep ' int2str(untouched)]);
+        disp(' ');
       end
       
       recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
@@ -108,7 +114,7 @@ classdef parentGrainReconstructor < handle
       
     end
     
-    function calcParent2Child(job, varargin)
+    function job = calcParent2Child(job, varargin)
       
       % get neighbouring grain pairs
       grainPairs = job.grains(job.csChild).neighbors;
@@ -122,7 +128,7 @@ classdef parentGrainReconstructor < handle
       
     end
     
-    function buildGraph(job, varargin)
+    function job = buildGraph(job, varargin)
     
       threshold = get_option(varargin,'threshold',2*degree);
       tol = get_option(varargin,'tolerance',1.5*degree);
@@ -159,7 +165,7 @@ classdef parentGrainReconstructor < handle
             
     end
 
-    function clusterGraph(job, varargin)
+    function job = clusterGraph(job, varargin)
 
       p = get_option(varargin,'inflationPower', 1.6);
       
@@ -168,10 +174,10 @@ classdef parentGrainReconstructor < handle
     end
     
     
-    function mergeSimilar(job, varargin)
+    function job = mergeSimilar(job, varargin)
       
       [job.grains, mergeId] = merge(job.grains, varargin{:});
-      job.mergeId = mergeId(job.mergeId);
+      job.mergeId = mergeId(job.mergeId); %#ok<*PROPLC>
       job.ebsd('indexed').grainId = mergeId(job.ebsd('indexed').grainId);
             
     end
