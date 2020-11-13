@@ -33,12 +33,13 @@ if ~check_option(varargin,'full')
   if nargin > 1 && isa(varargin{1},'grain2d')
     
     isIn2 = ismember(pairs,varargin{1}.id);
+    isIn1 = ismember(pairs,grains.id);
     
     % second grain should aways be in second column
     pairs(isIn2(:,1),:) = fliplr(pairs(isIn2(:,1),:));
     
     % ensure second grain is present everywhere
-    pairs(~any(isIn2,2),:)=[];
+    pairs = pairs(all(isIn1 | isIn2,2) & any(isIn2,2),:);
     
   else
     pairs(any(~ismember(pairs,grains.id),2),:)=[];
