@@ -35,12 +35,12 @@ for i = 1:length(rotAngle)
   qId = [qId,axis2quat(axes,rotAngle(i))]; %#ok<AGROW>
 end
 
-center = quaternion(get_option(varargin,'center',rotation.id));
+center = get_option(varargin,'center',rotation.id);
 
 ori = orientation(qId * center,CS,SS);
 
 % ensure 
-if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1
+if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && length(center)==1
   
   % in order to avoid centers that are exactly at the boundary of the
   % fundamental region we distort the center slightly
