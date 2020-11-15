@@ -22,6 +22,8 @@ for fn = fieldnames(s).'
       if ~getMTEXpref('generatingHelpMode')
         id = pushTemp(value);
         out = ['<a href="matlab:dispStruct(pullTemp(' int2str(id) '))">show struct</a>'];
+      else
+        continue
       end
       
     otherwise

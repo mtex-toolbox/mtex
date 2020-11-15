@@ -20,7 +20,7 @@ mdouble = reshape(double(m),[],3).';
 
 uvtw = (M \ mdouble)';
 
-if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+if m.lattice.isTriHex
       
   uvtw(:,4) = uvtw(:,3);
   uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;

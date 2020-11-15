@@ -49,7 +49,7 @@ end
     
     function display(s)
       disp(' ');
-      disp([inputname(1) ' = ' s.lattice ' ' doclink(s) ' ' docmethods(inputname(1))]);
+      disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ' ' docmethods(inputname(1))]);
       disp(' ');
     end        
     
