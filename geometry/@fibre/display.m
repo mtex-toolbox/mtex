@@ -13,46 +13,12 @@ if f.antipodal, disp(' antipodal: true'); end
 
 if length(f)~=1, return; end
 
+disp([' h || r: ' char(round(f.h)) ' || (' char(round(f.r)) ')']);
+
 % display starting and end orientation
-disp([' o1: ' char(f.o1)]);
 if angle(f.o2,f.o1,'noSymmetry')>0
-  disp([' o2: ' char(f.o2)]); 
-elseif isa(f.h,'Miller')
-  disp([' h: ' char(round(f.h))]);
-else
-  disp([' h: ' char(f.h)]);
-end
-
-return
-
-% display coordinates
-if isa(f.CS,'crystalSymmetry')
-  if f.b.lattice.isTriHex
-    d = [f.b.UVTW f.n.hkl];
-    d(abs(d) < 1e-10) = 0;
-    cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});
-  else
-    d = [f.b.uvw f.n.hkl];
-    d(abs(d) < 1e-10) = 0;
-    cprintf(d,'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l'});
-  end
-else
-  d = round(100*[f.b.xyz f.n.xyz])./100;
-  d(abs(d) < 1e-10) = 0;
-  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' ' |   x' 'y' 'z' });
-end
-
-return
-
-
-% display coordinates
-if ~check_option(varargin,'skipCoordinates') && ...
-    (check_option(varargin,'all') || (length(f) < 20 && ~isempty(f)))
-  
-  d = [f.x(:),f.y(:),f.z(:)];
-  d(abs(d) < 1e-10) = 0;
-  
-  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+  disp([' o1 -> o2: ' char(f.o1) ' -> ' char(f.o2)]);
 end
 
 end
+
