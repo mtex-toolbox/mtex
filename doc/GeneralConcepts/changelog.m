@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 5.5.beta.3 10/2020
+%% MTEX 5.5.beta.6 11/2020
 %
 % *Orientation Embeddings*
 %
