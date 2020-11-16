@@ -28,10 +28,18 @@ varargin(args) = [];
    
 ori = orientation(rotation.map(varargin{:}));
         
-if isa(varargin{1},'Miller'), ori.CS = varargin{1}.CS; end
+if isa(varargin{1},'Miller')
+  ori.CS = varargin{1}.CS; 
+  if ~isempty(sym), ori.SS = sym{1}; end
+else
+  if ~isempty(sym), ori.CS = sym{1}; end
+end
+
 if isa(varargin{2},'Miller'), ori.SS = varargin{2}.CS; end
 
-try ori.CS = sym{1}; end %#ok<TRYNC>
-try ori.SS = sym{2}; end %#ok<TRYNC>
+if length(sym) == 2
+  ori.CS = sym{1};
+  ori.SS = sym{2};
+end
     
 end
