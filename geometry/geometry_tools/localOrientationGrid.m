@@ -35,20 +35,20 @@ for i = 1:length(rotAngle)
   qId = [qId,axis2quat(axes,rotAngle(i))]; %#ok<AGROW>
 end
 
+% shift the grid to center
 center = get_option(varargin,'center',rotation.id);
+ori = mtimes(qId,center,1);
 
-ori = orientation(qId * center,CS,SS);
-
-% ensure 
+% ensure we respect the fundamental region
 if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && length(center)==1
   
   % in order to avoid centers that are exactly at the boundary of the
   % fundamental region we distort the center slightly
-  sym_center = symmetrise(center * axis2quat(vector3d(3,2,1),0.001*degree), ...
-    CS.properGroup,SS.properGroup);
+  sym_center = symmetrise(...
+    times(center,axis2quat(vector3d(3,2,1),0.001*degree),0),'proper');
   
   % we have only to check for those sym_centers that are not to far away
-  delta = angle(sym_center(1),sym_center);
+  delta = angle(sym_center(1),sym_center,'noSymmetry');
   sym_center = sym_center(delta < 2*maxAngle);
 
   % take only those orientations that are closest to center
