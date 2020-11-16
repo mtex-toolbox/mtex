@@ -147,16 +147,19 @@ classdef orientationPlot < handle
           'parent',oP.ax);
   
         optiondraw(h,varargin{:});
-        set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
         
-        % since the legend entry for patch object is not nice we draw an
-        % invisible scatter dot just for legend
-        if check_option(varargin,'DisplayName')
-          holdState = get(oP.ax,'nextPlot');
-          set(oP.ax,'nextPlot','add');
-          optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
-            'MarkerEdgeColor',MEC),varargin{:});
-          set(oP.ax,'nextPlot',holdState);
+        if ~check_option(varargin,'edgecolor')
+          set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        
+          % since the legend entry for patch object is not nice we draw an
+          % invisible scatter dot just for legend
+          if check_option(varargin,'DisplayName')
+            holdState = get(oP.ax,'nextPlot');
+            set(oP.ax,'nextPlot','add');
+            optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
+              'MarkerEdgeColor',MEC),varargin{:});
+            set(oP.ax,'nextPlot',holdState);
+          end
         end
 
         % add transperency if required
