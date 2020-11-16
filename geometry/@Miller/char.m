@@ -54,7 +54,7 @@ for j = 1:length(i)
   elseif space && j < length(i)
     s = [s,' '];
     if i(j+1)>=0, s = [s,' ']; end
-  elseif any(i>9) || any(abs(i-round(i))>1e-3)
+  elseif (any(i>9) || any(abs(i-round(i))>1e-3)) && j<length(i)
     s = [s,' '];
   end
 end
