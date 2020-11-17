@@ -35,7 +35,7 @@ else
   xyz = [x,y,z];  
 end
 
-tol = get_option(varargin,'tolerance',1e-7);
+tol = get_option(varargin,'tolerance',1e-8);
 
 % in case it should not be sorted
 if check_option(varargin,'stable')
