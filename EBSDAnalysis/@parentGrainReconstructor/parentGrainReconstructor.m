@@ -9,7 +9,7 @@ classdef parentGrainReconstructor < handle
     ebsd      % reconstructed parent EBSD data
     grains    % reconstructed parent grains
 
-    mergeId 
+    mergeId   % a list of ids to the merged grains
     
     fit    
     graph
