@@ -6,8 +6,9 @@ classdef parentGrainReconstructor < handle
     csChild   % child symmetry
     p2c       % parent to childe orientation relationship
     
-    ebsd      % reconstructed parent EBSD data
-    grains    % reconstructed parent grains
+    ebsd      % initial / measured EBSD
+    grainsI   % initial / measured grains 
+    grains    % reconstructed grains
 
     mergeId   % a list of ids to the merged grains
     
@@ -21,6 +22,15 @@ classdef parentGrainReconstructor < handle
     parentPhaseId   % phase id of the parent phase
   end
   
+  properties (Dependent=true)
+    numParents      % number of child grains for each parent grain
+    isTransformed   % child grains that have been reverted from child to parent phase
+    isMerged        % child grains that have been merged into a parent grain    
+    
+    variantId       %
+    packetId        %
+  end
+  
   
   methods
     
@@ -30,6 +40,7 @@ classdef parentGrainReconstructor < handle
       % set up ebsd and grains
       job.ebsd = ebsd;
       job.grains = getClass(varargin,'grain2d');
+      job.grainsI = job.grains;
       
       if isempty(job.grains)
         [job.grains, job.ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
@@ -71,119 +82,47 @@ classdef parentGrainReconstructor < handle
       id = job.ebsd.cs2phaseId(job.csChild);
     end
     
-    function disp(job)
+    function out = get.numParents(job)
+      out = accumarray(job.mergeId,1);
+    end
+    
+    function out = get.isMerged(job)
+      % the merged ones are those 
+      out = job.numParents(job.mergeId)>1;
+    end
+    
+    function out = get.isTransformed(job)
+      % which initial grains have been already reconstructeds
+      out = job.grainsI.phaseId == job.childPhaseId & ...
+        job.grains.phaseId(job.mergeId) == job.parentPhaseId;
+    end
+    
+    function out = get.packetId(job)
       
-      gs = job.grains.grainSize;
-      p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
-      matrix(1,:) = {'parent', job.csParent.mineral, char(job.csParent), ...
-        length(job.grains(job.csParent)),[xnum2str(p) '%']};
-      
-      p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
-      if ~isempty(job.csChild)
-        matrix(2,:) = {'child', job.csChild.mineral, char(job.csChild), ...
-          length(job.grains(job.csChild)),[xnum2str(p) '%']};
+      if isfield(job.grainsI.prop,'packetId')
+        out = job.grainsI.prop.packetId;
+      else
+        out = NaN(size(job.grainsI));
       end
+    end
+    
+    function set.packetId(job,id)
+      job.grainsI.prop.packetId = id;
+    end
+    
+    function out = get.variantId(job)
       
-      cprintf(matrix,'-L',' ','-Lc',...
-        {'phase' 'mineral' 'symmetry' 'grains' 'ebsd'},...
-        '-d','  ','-ic',true);
-
-      disp(' ');
-      
-      if ~isempty(job.p2c)
-        disp(['  parent to child OR: ' round2Miller(job.p2c)])
-        disp(' ');
+      if isfield(job.grainsI.prop,'variantId')
+        out = job.grainsI.prop.variantId;
+      else
+        out = NaN(size(job.grainsI));
       end
-      
-      if ~isempty(job.graph) && size(job.graph,2) == length(job.grains)
-        
-        [~,mId] = merge(job.grains, job.graph,'testRun');
-        numComp = accumarray(mId,1);
-        untouched = nnz(numComp==1);
-        numComp = numComp(numComp>1);
-        
-        disp(['  mergable grains: ' int2str(sum(numComp)) ...
-          ' -> ' int2str(length(numComp)) ' keep ' int2str(untouched)]);
-        disp(' ');
-      end
-      
-      recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
-      recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
-      fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);
-      fprintf('  ebsd reconstructed: %.0f%%\n', recAreaEBSD);
-      
     end
     
-    function job = calcParent2Child(job, varargin)
-      
-      % get neighbouring grain pairs
-      grainPairs = job.grains(job.csChild).neighbors;
-
-      p2c0 = orientation.KurdjumovSachs(job.csParent,job.csChild);
-      if ~isempty(job.p2c), p2c0 = job.p2c; end       
-      p2c0 = getClass(varargin,'orientation',p2c0);
-      
-      % compute an optimal parent to child orientation relationship
-      [job.p2c, job.fit] = calcParent2Child(job.grains(grainPairs).meanOrientation,p2c0);
-      
+    function set.variantId(job,id)
+      job.grainsI.prop.variantId = id;
     end
-    
-    function job = buildGraph(job, varargin)
-    
-      threshold = get_option(varargin,'threshold',2*degree);
-      tol = get_option(varargin,'tolerance',1.5*degree);
-      
-      % child to child misorientations
-      pairs = neighbors(job.grains(job.csChild),job.grains(job.csChild));
-
-      c2c = inv(job.grains(pairs(:,2)).meanOrientation) .* ...
-        job.grains(pairs(:,1)).meanOrientation;
-
-      p2pFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
-
-      prob = 1 - 0.5 * (1 + erf(2*(p2pFit - threshold)./tol));
-
-      % child 2 child neighbours
-      grainPairs = job.grains(job.csChild).neighbors;
-      
-      % the corresponding similarity matrix
-      job.graph = sparse(grainPairs(:,1),grainPairs(:,2),prob,...
-        length(job.grains),length(job.grains));
-      
-      % parent to child neighbours
-      grainPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
-      
-      childOri = job.grains(job.grains.id2ind(grainPairs(:,2))).meanOrientation;
-      parentOri = job.grains(job.grains.id2ind(grainPairs(:,1))).meanOrientation;
-      
-      p2cFit = angle(job.p2c, inv(childOri).*parentOri);
-            
-      prob = 1 - 0.5 * (1 + erf(2*(p2cFit - threshold)./tol));
-      
-      job.graph = job.graph + sparse(grainPairs(:,1),grainPairs(:,2),prob,...
-        length(job.grains),length(job.grains));
-            
-    end
-
-    function job = clusterGraph(job, varargin)
-
-      p = get_option(varargin,'inflationPower', 1.6);
-      
-      job.graph = mclComponents(job.graph,p);
-      
-    end
-    
-    
-    function job = mergeSimilar(job, varargin)
-      
-      [job.grains, mergeId] = merge(job.grains, varargin{:});
-      job.mergeId = mergeId(job.mergeId); %#ok<*PROPLC>
-      job.ebsd('indexed').grainId = mergeId(job.ebsd('indexed').grainId);
-            
-    end
-
-    
     
   end
-  
+
 end
