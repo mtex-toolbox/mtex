@@ -2,20 +2,29 @@ function job = mergeByGraph(job,varargin)
 % merge grains according to the adjecency matrix A
 %
 % Syntax
+%   mergeByGraph(job)
+%   mergeByGraph(job,'threshold',5*degree)
 %
 % Input
+%  job - @parentGrainReconstructor
 %
 % Output
+%  job - @parentGrainReconstructor
 %
 % Options
 %
-%  threshold - required fit for merge
+%  threshold - child / parent grains with a misfit larger then the threshold will not be merged
 %
 
+% steps of the algorithm
 %  (1) fake merge - to identify the grains to be merged
 %  (2) fit parent grain orientation to the merged grains
 %  (3) identify merged grains with a good fit
-%  (4) perform the acutal merge
+%  (4) perform the actual merge
+%
+% TODO:
+%  - misfit computation: currently we take the maximum, we consider only the childorientations 
+%  -
 
 assert(~isempty(job.graph), 'No merge graph found. Please use the command ...');
 
@@ -80,6 +89,7 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
   progress(k,max(mergeId),'computing parent grain orientations: ');
 end
     
+% only merge those grains where the parent grain 
 threshold = get_option(varargin,'threshold',5*degree);
 isGood = fit < threshold;
 

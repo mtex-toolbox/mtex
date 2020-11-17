@@ -136,10 +136,10 @@ classdef parentGrainReconstructor < handle
       % child to child misorientations
       pairs = neighbors(job.grains(job.csChild),job.grains(job.csChild));
 
-      p2p = inv(job.grains(pairs(:,2)).meanOrientation) .* ...
+      c2c = inv(job.grains(pairs(:,2)).meanOrientation) .* ...
         job.grains(pairs(:,1)).meanOrientation;
 
-      p2pFit = min(angle_outer(p2p,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
+      p2pFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
 
       prob = 1 - 0.5 * (1 + erf(2*(p2pFit - threshold)./tol));
 
