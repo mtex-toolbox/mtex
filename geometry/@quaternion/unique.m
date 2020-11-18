@@ -48,8 +48,8 @@ tol = get_option(varargin,'tolerance',1e-3);
 
 % for some reason this is very slow 
 %[~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-
-[~,iq,iu] = unique(round(abcd ./ tol),'rows',varargin{:});
+[~,iq,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1,varargin{:});
+%[~,iq,iu] = unique(round(abcd ./ tol),'rows',varargin{:});
 
 % remove duplicated points
 q.a = q.a(iq);

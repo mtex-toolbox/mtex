@@ -41,8 +41,8 @@ end
 
 % for some reason this is quite slow
 % [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-
-[~,ir,iu] = unique(round(abcd./tol),'rows',varargin{:});
+[~,ir,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1,varargin{:});
+%[~,ir,iu] = unique(round(abcd./tol),'rows',varargin{:});
 
 % remove duplicated points
 r.a = a(ir);

@@ -46,8 +46,9 @@ end
 
 % find duplicate points
 % this is somehow slow
-%[~,m,n] = uniquetol(1+xyz,tol,'ByRows',true,varargin{:});
-[~,iv,iu] = unique(round(xyz./tol),'rows',varargin{:});
+[~,iv,iu] = uniquetol(xyz,tol,'ByRows',true,'DataScale',1,varargin{:});
+% unique/round is more slow and also less accurate
+%[~,iv,iu] = unique(round(xyz./tol),'rows',varargin{:});
 
 % remove duplicated points
 v.x = v.x(iv);
