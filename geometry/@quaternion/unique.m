@@ -38,18 +38,12 @@ else
 end
 
 % in case it should not be sorted
-if check_option(varargin,'stable')
-  varargin = {'stable'};
-else
-  varargin= {};
-end
-
 tol = get_option(varargin,'tolerance',1e-3);
-
-% for some reason this is very slow 
-%[~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-[~,iq,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1,varargin{:});
-%[~,iq,iu] = unique(round(abcd ./ tol),'rows',varargin{:});
+if check_option(varargin,'stable')
+  [~,iq,iu] = unique(round(abcd ./ tol),'rows','stable');
+else
+  [~,iq,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1);
+end
 
 % remove duplicated points
 q.a = q.a(iq);

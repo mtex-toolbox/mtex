@@ -39,16 +39,10 @@ tol = get_option(varargin,'tolerance',1e-8);
 
 % in case it should not be sorted
 if check_option(varargin,'stable')
-  varargin = {'stable'};
+  [~,iv,iu] = unique(round(xyz./tol),'rows','stable');
 else
-  varargin= {};
+  [~,iv,iu] = uniquetol(xyz,tol,'ByRows',true,'DataScale',1);
 end
-
-% find duplicate points
-% this is somehow slow
-[~,iv,iu] = uniquetol(xyz,tol,'ByRows',true,'DataScale',1,varargin{:});
-% unique/round is more slow and also less accurate
-%[~,iv,iu] = unique(round(xyz./tol),'rows',varargin{:});
 
 % remove duplicated points
 v.x = v.x(iv);

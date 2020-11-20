@@ -34,15 +34,10 @@ tol = get_option(varargin,'tolerance',1e-3);
 
 % in case it should not be sorted
 if check_option(varargin,'stable')
-  varargin = {'stable'};
+  [~,ir,iu] = unique(round(abcd./tol),'rows','stable');
 else
-  varargin= {};
+  [~,ir,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1);
 end
-
-% for some reason this is quite slow
-% [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
-[~,ir,iu] = uniquetol(abcd,tol,'ByRows',true,'DataScale',1,varargin{:});
-%[~,ir,iu] = unique(round(abcd./tol),'rows',varargin{:});
 
 % remove duplicated points
 r.a = a(ir);
