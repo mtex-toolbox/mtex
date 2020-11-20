@@ -3,7 +3,7 @@ function display(q)
 
 displayClass(q,inputname(1));
 
-disp(['  size: ' size2str(q)]);
+if length(q)~=1, disp(['  size: ' size2str(q)]); end
 
 if length(q) < 30 && ~isempty(q)
   
