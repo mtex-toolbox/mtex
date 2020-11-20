@@ -81,20 +81,18 @@ hold off
 % $U + V + T = 0$ and $H + K + I = 0$. The syntax is
 
 % import trigonal Quartz lattice structure
-cs = loadCIF('quartz')
+cs = loadCIF('quartz');
 
 % a four digit lattice direction
 m = Miller(2,1,-3,1,cs,'UVTW')
 
-plot(m,'upper','labeled')
-
+% a four digit plane normal
 n = Miller(1,1,-2,3,cs,'hkil')
 
+plot(m,'upper','labeled','backgroundColor','white','grid','on')
 hold on
 plot(n,'upper','labeled')
 hold off
-
-drawNow(gcm,'figSize','normal')
 
 %%
 % In order to switch the output format, e.g. from UVTW to uvw do

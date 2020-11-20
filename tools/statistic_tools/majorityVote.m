@@ -1,16 +1,6 @@
 function [vote, numVotes] = majorityVote(id,votes,varargin)
 % returns
 %
-% Example
-%
-% idList = [1 1 1 1 1 2 3 2 3 2 3];
-% voteList = [5 9 5 9 9 4 1 4 2 4 1];
-%
-% 
-% majorityVote(idList,voteList)
-%
-% majorityVote(idList,voteList,'strict')
-%
 % Syntax 
 %
 %   [vote, numVotes] = majorityVote(idList,voteList)
@@ -25,6 +15,15 @@ function [vote, numVotes] = majorityVote(id,votes,varargin)
 %
 % Options
 %  strict - only assign a vote if all votes coincide, otherwise set in to nan
+%
+% Example
+%
+%   idList = [1 1 1 1 1 2 3 2 3 2 3];
+%   voteList = [5 9 5 9 9 4 1 4 2 4 1];
+% 
+%   majorityVote(idList,voteList)
+%
+%   majorityVote(idList,voteList,'strict')
 %
 % See also
 %

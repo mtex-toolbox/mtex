@@ -5,21 +5,18 @@
 % discrete values on the sphere. To simulate this, we have stored some
 % nodes and corresponding function values which we can load. The csv-file
 % contains the $x$-, $y$-, and $z$-component of the nodes and the function
-% value in the fourth column.
-% 
+% value in the fourth column. Lets import these data using the function
+% <vector3d.load.html |load|> 
 
-data = importdata(fullfile(mtexDataPath, 'vector3d', 'smiley.csv'));
-nodes = vector3d(data.data(:,1:3)')';
-f = data.data(:,4);
+fname = fullfile(mtexDataPath, 'vector3d', 'smiley.csv');
+[nodes, S] = vector3d.load(fname,'columnNames',{'x','y','z','values'});
 
 %%
-% Note that if you don't have the the nodes and function values stored
-% convieniently in a Matlab-file, you can alway use the <vector3d.load
-% |load|> function of the class <vector3d.vector3d |vector3d|>. Next, we
-% can make a scatter plot to see, what we a dealing with.
-%
+% The second output |S| is a struct that contains a field |S.values| with
+% the function values from the fourth column. Next, we can make a scatter
+% plot to see, what we are dealing with
 
-scatter(nodes, f, 'upper');
+scatter(nodes, S.values, 'upper');
 
 %%
 % Now, we want to find a function which coincides with the given function
@@ -43,14 +40,14 @@ plot(rand(10,1), '.-','linewidth',2)
 % <vector3d.vector3d |vector3d|> when the argument |'linear'| is given
 %
 
-sFTri = interp(nodes, f, 'linear');
+sFTri = interp(nodes, S.values, 'linear');
 
 %%
 % To see that we realy have the exact function values, we can evaluate
 % |sFTri| of type <S2FunTri.S2FunTri |S2FunTri|> and compare it with the
 % original data values.
 
-norm(eval(sFTri, nodes)-f)
+norm(eval(sFTri, nodes) - S.values)
 
 %%
 % Indeed, the error is within machine precision.
@@ -79,7 +76,7 @@ contourf(sFTri, 'upper');
 % command of the class <vector3d.vector3d |vector3d|> when the argument
 % |'harmnicApproximation'|
 
-sF = interp(nodes, f, 'harmonicApproximation');
+sF = interp(nodes, S.values, 'harmonicApproximation');
 contourf(sF, 'upper');
 
 %%
@@ -87,7 +84,7 @@ contourf(sF, 'upper');
 % smoother function. But one has to keep in mind that the error in the data
 % nodes is not zero as in the case of interpolation.
 
-norm(eval(sF, nodes)-f)
+norm(eval(sF, nodes) - S.values)
 
 %%
 % But this may not be of great importance like in the case of function

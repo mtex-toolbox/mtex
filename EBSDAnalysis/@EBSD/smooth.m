@@ -5,14 +5,14 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %  ebsd - @EBSD
 %
 % Example
-%   mtexdata forsterite
+%   mtexdata forsterite;
 %   ebsd = ebsd('indexed');
 %   % segment grains
-%   [grains,ebsd.grainId] = calcGrains(ebsd)
+%   [grains,ebsd.grainId] = calcGrains(ebsd);
 %
 %   % find largest grains
-%   largeGrains = grains(grains.grainSize>800)
-%   ebsd = ebsd(largeGrains(1))
+%   largeGrains = grains(grains.grainSize>800);
+%   ebsd = ebsd(largeGrains(1));
 %
 %   figure
 %   plot(largeGrains(1).boundary,'linewidth',2)
@@ -23,7 +23,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   plot(ebsd,oM.orientation2color(ebsd.orientations))
 %   hold off
 %
-%   ebsd_smoothed = smooth(ebsd)
+%   ebsd_smoothed = smooth(ebsd);
 %   plot(ebsd_smoothed('indexed'),oM.orientation2color(ebsd_smoothed('indexed').orientations))
 %   hold on
 %   plot(largeGrains(1).boundary,'linewidth',2)

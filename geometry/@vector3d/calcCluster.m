@@ -17,25 +17,23 @@ function [cId,center] = calcCluster(vec,varargin)
 %
 % Example 
 %
-%     %generate vector data of up to 5 clusters
-%     vin = vector3d.rand(5);
-%     sF2 = calcDensity(vin,'halfwidth',10*degree);
-%     v   = sF2.discreteSample(800);
+%   %generate vector data of up to 5 clusters
+%   vin = vector3d.rand(5);
+%   sF2 = calcDensity(vin,'halfwidth',10*degree);
+%   v   = sF2.discreteSample(800);
 % 
-%     % find clsuers and their centers
-%     [cId,center] = calcCluster(v,'numCluster',5,'method','hierarchical')
+%   % find clusters and their centers
+%   [cId,center] = calcCluster(v,'numCluster',5,'method','hierarchical');
 % 
-%     % visualize the result
-%     plot(v,cId)
-%     hold on
-%     plot(center,'add2all','MarkerSize',10,'MarkerFaceColor','k')
-%     hold off
+%   % visualize the result
+%   plot(v,cId)
+%   hold on
+%   plot(center,'add2all','MarkerSize',10,'MarkerFaceColor','k')
+%   hold off
 % 
-%     %check the accuracy of the recomputed centers
-%     min(angle_outer(center,vin)./degree)
+%   %check the accuracy of the recomputed centers
+%   min(angle_outer(center,vin)./degree)
 %
-%
-
 
 method = get_option(varargin,'method','hierarchical');
 
