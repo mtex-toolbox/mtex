@@ -1,4 +1,4 @@
-function [ori,interface,options] = loadOrientation(fname,varargin)
+function [ori,varargout] = loadOrientation(fname,varargin)
 
 warning('loadOrientation is depreciated. Please use instead orientation.load');
-[ori,interface,options] = orientation.load(fname,varargin{:});
+[ori,varargout{1:nargout-1}] = orientation.load(fname,varargin{:});

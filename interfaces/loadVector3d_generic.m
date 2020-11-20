@@ -1,17 +1,17 @@
-function [v,options] = loadVector3d_generic(fname,varargin)
+function [v,S] = loadVector3d_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
 % Description
 %
-% *loadVector3d_generic* is a  function that reads any txt or exel files 
-% The assoziation of the columns as cartesian coordinates or polar angles 
-% is specified by the options |ColumnNames| and |Columns|. The files can be
+% |loadVector3d_generic| reads vector3d from any txt or exel files. The
+% assoziation of the columns as cartesian coordinates or polar angles is
+% specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
 % Syntax
-%   v   = loadVector3d_generic(fname,'ColumnNames',{'x','y','z'})
-%   v   = loadVector3d_generic(fname,'ColumnNames',{'latitude','longitude'})
-%   v   = loadVector3d_generic(fname,'ColumnNames',{'polar angle','azimuth'})
+%   v = loadVector3d_generic(fname,'ColumnNames',{'x','y','z'})
+%   v = loadVector3d_generic(fname,'ColumnNames',{'latitude','longitude'})
+%   v = loadVector3d_generic(fname,'ColumnNames',{'polar angle','azimuth'})
 %
 % Input
 %  fname - file name (text files only)
@@ -28,6 +28,8 @@ function [v,options] = loadVector3d_generic(fname,varargin)
 % polar angle, colatitude
 % latitude
 % 
+
+isCheck = check_option(varargin,'check');
 
 % load data
 [d,options,header,c] = load_generic(char(fname),'minColumns',2,varargin{:});
@@ -48,13 +50,12 @@ if ~check_option(varargin,'ColumnNames')
   
 end
 
-
 loader = loadHelper(d,varargin{:});
 
-v      = loader.getVector3d();
+% get x,y,z
+v = loader.getVector3d();
   
+% extract additional properties
+S = loader.getOptions();
 
-
-function str = stripws(str)
-
-str = strrep(str,' ','');
+if isCheck, S = options; end
