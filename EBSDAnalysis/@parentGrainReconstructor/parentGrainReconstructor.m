@@ -92,7 +92,12 @@ classdef parentGrainReconstructor < handle
     end
     
     function out = get.isTransformed(job)
-      % which initial grains have been already reconstructeds
+      % which initial grains have been already reconstructed
+      
+      %Should this not be "which grains have been succesfully
+      %reconstructed?
+      %Then we could use this to return the area fraction of reconstructed
+      %phase
       out = job.grainsI.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end

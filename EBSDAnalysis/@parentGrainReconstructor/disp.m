@@ -34,6 +34,9 @@ if ~isempty(job.graph) && size(job.graph,2) == length(job.grains)
   disp(' ');
 end
 
+%I would prefer an expression based on "isTransformed". I am not sure if 20
+%percent preexisting austenite should be indexed as "20% transformed" if no
+%reconstruction has been started. What do you think?
 recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
 recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
 fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);

@@ -9,9 +9,9 @@
  c2c = inv(job.grains(pairs(:,2)).meanOrientation) .* ...
    job.grains(pairs(:,1)).meanOrientation;
  
- p2pFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
+ c2cFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
  
- prob = 1 - 0.5 * (1 + erf(2*(p2pFit - threshold)./tol));
+ prob = 1 - 0.5 * (1 + erf(2*(c2cFit - threshold)./tol));
  
  % child 2 child neighbours
  grainPairs = job.grains(job.csChild).neighbors;
