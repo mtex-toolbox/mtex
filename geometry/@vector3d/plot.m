@@ -53,10 +53,10 @@ end
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
   'line','plane','circle','surf','pcolor','custom','3d','scatter3d'};
-plotType = extract_option(varargin,plotTypes);
+plotType = get_flag(varargin,plotTypes);
 
 % default plot type
-if isempty_cell(plotType)
+if isempty(plotType)
   if isOption(v,'plot') && v.opt.plot
   
     if ~isempty(varargin) && isnumeric(varargin{1}) && all(size(varargin{1}) == [length(v),3])      
@@ -68,8 +68,6 @@ if isempty_cell(plotType)
   else
     plotType = 'scatter';
   end
-else
-  plotType = plotType{end};
 end
 varargin = delete_option(varargin,plotTypes(3:end));
 

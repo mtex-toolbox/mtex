@@ -1,4 +1,4 @@
-function [v,interface,options] = load(fname,varargin)
+function [v,varargout] = load(fname,varargin)
 % import directions
 %
 % Description
@@ -44,4 +44,4 @@ else
 end
 
 % load tensor
-v = feval(['loadVector3d_',char(interface)],fname,options{:});
+[v,varargout{1:nargout-1}] = feval(['loadVector3d_',char(interface)],fname,options{:});

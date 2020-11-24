@@ -17,8 +17,8 @@ for i = 1:numel(varargin)
       error('I can not store Miller indices with respect to different crystal symmetries within one list');
     end
     
-    if ~strcmp(ms.dispStyle,m.dispStyle)
-      warning(['Miller indices are converted to ' m.dispStyle]);
+    if ms.dispStyle ~= m.dispStyle
+      warning(['Miller indices are converted to ' char(m.dispStyle)]);
     end
   end
 end

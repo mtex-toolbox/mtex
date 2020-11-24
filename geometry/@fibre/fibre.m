@@ -198,6 +198,16 @@ classdef fibre
 
       f = fibre(ori1,ori2,varargin{:});
     end
+    
+    function f = theta(varargin)
+      % the theta fibre
+      
+      CS = getClass(varargin,'crystalSymmetry',crystalSymmetry('432'));
+      SS = getClass(varargin,'specimenSymmetry',specimenSymmetry('1'));
+      
+      f = fibre(Miller(1,0,0,CS),vector3d.Z,SS);
+      
+    end
 
     function [f,lambda,delta] = fit(ori,varargin)
       % determines the fibre that fits best a list of orientations
