@@ -14,6 +14,7 @@ classdef parentGrainReconstructor < handle
     
     fit    
     graph
+    votes
     
   end
   
@@ -26,6 +27,9 @@ classdef parentGrainReconstructor < handle
     numParents      % number of child grains for each parent grain
     isTransformed   % child grains that have been reverted from child to parent phase
     isMerged        % child grains that have been merged into a parent grain    
+    
+    parentGrains
+    childGrains
     
     variantId       %
     packetId        %
@@ -101,6 +105,19 @@ classdef parentGrainReconstructor < handle
       out = job.grainsI.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
+    
+    function out = get.parentGrains(job)
+      
+      out = job.grains( job.grains.phaseId == job.parentPhaseId );
+      
+    end
+    
+    function out = get.childGrains(job)
+      
+      out = job.grains( job.grains.phaseId == job.childPhaseId );
+      
+    end
+    
     
     function out = get.packetId(job)
       
