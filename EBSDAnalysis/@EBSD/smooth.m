@@ -54,7 +54,7 @@ else
 end
 
 % fill holes if needed
-if check_option(varargin,'fill'), ebsd = fill(ebsd,varargin{:}); end
+if check_option(varargin,'fill') || check_option(varargin,'extrapolate'), ebsd = fill(ebsd,varargin{:}); end
 
 % read input
 filter = getClass(varargin,'EBSDFilter',splineFilter);
