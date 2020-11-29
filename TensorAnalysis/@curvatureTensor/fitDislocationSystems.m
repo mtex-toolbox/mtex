@@ -27,7 +27,7 @@ function [rho,factor] = fitDislocationSystems(kappa,dS,varargin)
 try
   linprog(0,0,0);
 catch
-  error('Optimization Toolbox not found. The funtion fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
+  error('Optimization Toolbox not found. The function fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
 end
 
 
