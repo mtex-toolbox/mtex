@@ -9,7 +9,7 @@ function [rho,factor] = fitDislocationSystems(kappa,dS,varargin)
 %
 % Syntax
 %
-%   rho = calcDislocationDensities(kappa,dS)
+%   rho = fitDislocationSystems(kappa,dS)
 %
 %   % compute complete curvature tensor
 %   kappa = dS.dislocationTensor * rho;
