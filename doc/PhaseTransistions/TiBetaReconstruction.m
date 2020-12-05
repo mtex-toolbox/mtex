@@ -44,10 +44,10 @@ round2Miller(beta2alpha)
 % reconstruct grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree,...
   'removeQuadruplePoints');
-grains = smooth(grains);
+grains = smooth(grains,1,'moveTriplePoints');
 
 % plot all alpha pixels
-region = [300 400 -500 -440];
+region = [299 401 -500 -440];
 plot(ebsd(alphaName),ebsd(alphaName).orientations,...
   'region',region,'micronbar','off','figSize','large');
 
