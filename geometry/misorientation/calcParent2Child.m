@@ -59,7 +59,7 @@ for k = 1:maxIt
   p2cOld = p2c;
     
   %check for convergence
-  if k>5 && median(diso(k-5:k)) < 0.02, break; end
+  if k>5 && median(diso(k-5:k)) < 0.1, break; end
   
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
@@ -78,7 +78,8 @@ for k = 1:maxIt
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-  ind = omega < min(threshold, quantile(omega, 0.5));
+%   ind = omega < min(threshold, quantile(omega, 0.02));
+  ind = omega < threshold;
   
   %
   fit(k) = mean(omega(ind));
