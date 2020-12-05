@@ -256,7 +256,7 @@ end
 % Set nan data points to 0
 for ii = 1:length(flds), flds{ii}(isnan(flds{ii})) = 0; end
 % Make X increase first
-[~,ind] = sort(ebsdList.y);
+[~,ind] = sort(ebsdList.prop.y);
 
 %Write data
 A = zeros(ebsdList.length,11); %initialize
