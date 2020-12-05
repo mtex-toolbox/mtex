@@ -26,10 +26,6 @@ if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-%if length(odf.SS) > 1
-%  error('Only triclinic specimen symmetry is supported for fibreVolume');
-%end
-
 % get resolution
 res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 

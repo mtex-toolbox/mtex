@@ -303,9 +303,53 @@ methods (Static = true)
     
   end
   
-  
-  
-
 end
 
+
+methods (Static = true, Hidden = true)
+
+  function check_dot(cs)
+  
+    % first setting
+    cs = crystalSymmetry('m-3m');
+    n = 10000000;
+    ori1 = orientation.rand(n,cs);
+    ori2 = orientation.rand(n,cs);
+    
+    tic
+    mori = inv(ori1) .* ori2;
+    
+    d1 = max(dot_outer(mori,cs.rot,'noSymmetry'),[],2);
+    toc
+    
+    tic
+    d2 = dot(ori1,ori2);
+    toc
+    
+    norm(d1-d2)
+    
+    %second setting
+    n = 1000000;
+    ori1 = orientation.rand(n,cs,cs);
+    ori2 = orientation.rand(cs,cs);
+    
+    tic
+    d1 = dot(ori1,ori2);
+    toc
+    
+    tic
+    d2 = dot(ori2,ori1);
+    toc
+    
+    norm(d1-d2)
+    
+    
+  end
+  
+  
+  
+  
+  
+end
+  
 end

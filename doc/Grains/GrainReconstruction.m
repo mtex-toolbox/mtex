@@ -151,10 +151,10 @@ mtexColorbar
 % quotient.
 
 % the "not indexed grains" we want to remove
-toRemove = notIndexed(notIndexed.grainSize ./ notIndexed.boundarySize<0.8)
+toRemove = notIndexed(notIndexed.grainSize ./ notIndexed.boundarySize<0.8);
 
 % now we remove the corresponding EBSD measurements
-ebsd(toRemove) = []
+ebsd(toRemove) = [];
 
 % and perform grain reconstruction with the reduces EBSD data set
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
@@ -201,13 +201,13 @@ poly = 1.0e+04 *[...
   0.6853    0.2833
   0.6853    0.2848];
 
-ebsdP = ebsd(ebsd.inpolygon(poly))
+ebsdP = ebsd(ebsd.inpolygon(poly));
   
 plot(ebsdP,'micronBar','off')
 legend off
 
 % compute the grains
-grains = calcGrains(ebsdP('indexed'))
+grains = calcGrains(ebsdP('indexed'));
 
 % plot the grain boundary
 hold on
@@ -223,7 +223,7 @@ plot(ebsdP,'micronBar','off')
 legend off
 
 % compute the grains
-grains = calcGrains(ebsdP('indexed'),'boundary','tight')
+grains = calcGrains(ebsdP('indexed'),'boundary','tight');
 
 % plot the grain boundary
 hold on

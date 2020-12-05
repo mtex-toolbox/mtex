@@ -11,7 +11,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %   gnd = calcGND(ebsd,dS)
 %
 % Input
-%  ebsd - @EBSDSquare
+%  ebsd - @EBSDsquare
 %  dS   - @dislocationSystem 
 %
 % Output

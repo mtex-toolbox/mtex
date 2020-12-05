@@ -88,7 +88,6 @@ classdef HSVDirectionKey < directionColorKey
           ref = xvector;
         end
         [radius,rho] = polarCoordinates(dM.sR,h_sR,wC,ref,'maxAngle',dM.maxAngle);
-
               
         % white center
         radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;

@@ -189,7 +189,6 @@ for i = 1:numel(sP)
          
       end
       
-      
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend
       if check_option(varargin,'DisplayName')

@@ -18,8 +18,8 @@ classdef pfSections < ODFSections
 
       oS = oS@ODFSections(CS1,CS2);
 
-      oS.h1 = Miller(0,0,1,'hkl',CS1); % c*
-      oS.h2 = Miller(1,0,0,'uvw',CS1); % a
+      oS.h1 = CS1.cAxisRec; % c*
+      oS.h2 = CS1.aAxis; % a
 
       oS.maxOmega = get_option(varargin,'maxOmega',2*pi / CS1.nfold(oS.h1));
       if angle(oS.h1,-oS.h1) < 1e-2

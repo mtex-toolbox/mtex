@@ -1,9 +1,10 @@
-function [odf,options] = loadODF_generic(fname,varargin)
+function [odf,opt] = loadODF_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
 % Description
 %
-% *loadEBSD_txt* loads an ODF from any txt or exel files are of the following format
+% |loadODF_generic| loads an ODF from any txt or exel files are of the
+% following format
 %
 %  alpha_1 beta_1 gamma_1 weight_1
 %  alpha_2 beta_2 gamma_2 weight_2

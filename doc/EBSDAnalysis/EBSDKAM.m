@@ -48,11 +48,20 @@ plot(grains.boundary,'lineWidth',1.5)
 hold off
 
 %%
+% Although MTEX allows the computation of the KAM from arbitrarily sampled
+% EBSD maps the algorithms are much faster an memory efficient if the maps
+% are measured on regular hexagonal or rectangular grid - as it is standard
+% in most applications. The command <EBSD.gridify.html |gridify|> makes
+% MTEX aware of such an underlying regular measurement grid.
+
+ebsd = ebsd.gridify;
+
+%%
 %
 % The kernel average misorientation is computed by the command
-% <EBSD.KAM.html KAM>. As all MTEX commands it return the mean
-% disorientation angle in radiant. Hence, dividing by the constant
-% |degree| gives the result in degree.
+% <EBSD.KAM.html |ebsd.KAM|>. As all MTEX commands it return the mean
+% disorientation angle in radiant. Hence, dividing by the constant |degree|
+% gives the result in degree.
 
 kam = ebsd.KAM / degree;
 
@@ -71,7 +80,7 @@ hold off
 % been reconstructed and the property |ebsd.grainId| has been set (as we
 % did above) only misorientations within the same grain are considered. As
 % a consequence the resulting KAM map is dominated by the orientation
-% gradients at the subgrain boundaries. ()
+% gradients at the subgrain boundaries.
 %
 % Specifying a reasonable small theshold angle $\delta=2.5^{\circ}$ the
 % subgrain boundaries can be effectively removed from the KAM.

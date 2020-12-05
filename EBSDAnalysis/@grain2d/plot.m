@@ -62,6 +62,16 @@ if nargin>1 && isnumeric(varargin{1})
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
 
+elseif nargin>1 && isa(varargin{1},'vector3d')
+  
+  scaling = sqrt(grains.area);
+    
+  p = axialSymbol(grains.centroid,varargin{1},scaling,varargin{:});
+  
+  p.Parent = mP.ax;
+    
+  plotBoundary = false;
+ 
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);

@@ -1,15 +1,17 @@
-function [ori,interface,options] = load(fname,varargin)
-% import orientation data from data files
+function [ori,varargout] = load(fname,varargin)
+% import orientation data file
 %
 % Description
 %
 % orientation.load is a high level method for importing orientations from
 % column aligned text files or excel spread sheets. In those cases it is
-% neccesary to tell MTEX the column positions of the spatial coordinates,
-% the phase information as well as Euler angles.
+% neccesary to tell MTEX the column positions of the Euler angles and
+% possible other properties.
 %
 % Syntax
 %   ori = orientation.load(fname,cs,'ColumnNames',{'phi1','Phi','phi2'})
+%
+%   [ori, prop] = orientation.load(fname,cs,'ColumnNames',{'phi1','Phi','phi2','prop1','prop2'})
 %
 % Input
 %  fname - filename
@@ -23,10 +25,11 @@ function [ori,interface,options] = load(fname,varargin)
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
 %  Bunge             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
-%  passive           -
+%  passive           - interprete the orientation as passive rotationss
 %
 % Output
-%  ori - @orientation
+%  ori  - @orientation
+%  prop - struct with additionally 
 %
 % See also
 % orientation/orientation
@@ -42,8 +45,7 @@ elseif check_option(varargin,'columnNames')
 else
   interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);
-  if isempty(interface), return; end
 end
 
 % call specific interface
-ori = feval(['loadOrientation_',char(interface)],fname,options{:});
+[ori, varargout{1:nargout-1}] = feval(['loadOrientation_',char(interface)],fname,options{:});

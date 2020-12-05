@@ -36,7 +36,7 @@ end
 % may be we can skip something
 minAngle = reshape(abs(qCS.angle),[],1);
 minAngle = min([inf;minAngle(minAngle > 1e-3)]);
-notInside = 2 * acos(co2) > minAngle/2;
+notInside = co2 < cos(minAngle/4);
 
 % maybe we can skip everything
 if any(notInside) && length(qCS) > 1

@@ -34,7 +34,9 @@ if nargin > 2
 % extract options without argument  
 else
 
-  ind = cellfun(@(a) ischar(a) && any(strcmpi(a,option)) ,option_list);
-  out = option_list(ind);
+  option_list = option_list(cellfun(@ischar,option_list));
+  
+  ind = cellfun(@(a) any(strcmpi(a,option_list)) ,option);
+  out = option(ind);
   
 end

@@ -264,6 +264,9 @@ classdef grain2d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
       end
     end
     
@@ -304,6 +307,7 @@ classdef grain2d < phaseList & dynProp
       
       grains.boundary = grains.boundary.update(grains);
       grains.innerBoundary = grains.innerBoundary.update(grains);
+      grains.triplePoints = grains.triplePoints.update(grains);
       
     end
     

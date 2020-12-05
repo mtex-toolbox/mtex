@@ -17,13 +17,16 @@ function [lp, omega] = surfor(gb,varargin)
 %
 %
 
-sw = get_option(varargin,'stepwidth',1*degree);
+%proj. angle
+if nargin > 1 && isnumeric(varargin{1})
+  omega = varargin{1};
+else
+  sw = get_option(varargin,'stepwidth',1*degree);
+  omega=linspace(0,pi,round(pi/sw));
+end
 
 % direction
 rho = mod(gb.direction.rho,pi);
-
-%proj. angle
-omega=linspace(0,pi,round(pi/sw));
 omat = repmat(omega,length(rho),1);
 
 % sum of projection lengths

@@ -13,15 +13,10 @@ mtexdata twins;
 
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
 
-plot(ebsd('indexed'),ebsd('indexed').orientations)
-
-%%
-% As this functionality is currently only available for EBSD data on a
-% rectangular grid we have to apply the command |<EBSD.gridify.html
-% gridify>| first
-
-ebsd = ebsd.gridify;
+% this command here is important :)
 ebsd = ebsd.project2FundamentalRegion(grains);
+
+plot(ebsd('indexed'),ebsd('indexed').orientations)
 
 %%
 % Now we can use the command <EBSD.interp.html |interp|> to interpolate the
@@ -49,8 +44,9 @@ angle(e1.orientations,e2.orientations)./degree
 
 % define a rotated coarse grid
 omega = 5*degree;
-x = linspace(ebsd.xmin-cos(omega)*ebsd.ymax,ebsd.xmax,100);
-y = linspace(ebsd.ymin-sin(omega)*ebsd.xmax,ebsd.ymax,50);
+[xmin, xmax, ymin, ymax] = ebsd.extend;
+x = linspace(xmin-cos(omega)*ymax,xmax,100);
+y = linspace(ymin-sin(omega)*xmax,ymax,50);
 [x,y] = meshgrid(x,y);
 
 xy = [cos(omega) -sin(omega); sin(omega) cos(omega) ] * [x(:),y(:)].';
@@ -64,3 +60,26 @@ plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
 %%
 % Note, that we have not rotated the EBSD data but only the grid. All
 % orientations as well as the position of all grains remains unchanged.
+%
+% Another example is the change from a square to an hexagonal grid or vice
+% versa. In this case the command <EBSD.interp.html |interp|> is
+% implicitely called by the command <EBSD.gridify.html |gridify|>. In order
+% to demonstrate this functionality we start by EBSD data on a hex grid
+
+mtexdata ferrite silent
+
+plot(ebsd,ebsd.orientations)
+
+%%
+% and resample the data on a square grid. To do so we first define a
+% smaller square unit cell corresponding to the hexagonal unit cell
+
+% define a square unit cell
+hexUnitCell = abs(round(ebsd.unitCell,4));
+minUnit = min(hexUnitCell(hexUnitCell>0));
+squnitCell = minUnit * [-1 -1;-1 1; 1 1; 1 -1];
+
+% use the square unit cell for gridify
+ebsd = ebsd.gridify('unitCell',squnitCell);
+
+plot(ebsd,ebsd.orientations)

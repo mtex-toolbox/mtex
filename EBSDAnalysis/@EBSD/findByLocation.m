@@ -33,7 +33,7 @@ for k=1:size(xy,1)
   
   candit = find(all(bsxfun(@le,x_Dm,xy(k,:)) & bsxfun(@ge,x_Dp,xy(k,:)),2));
   dist = sqrt(sum(bsxfun(@minus,x_D(candit,:),xy(k,:)).^2,2));
-  [dist, i] = min(dist);
+  [~, i] = min(dist);
   nd(candit(i),k) = 1;
   
 end

@@ -32,7 +32,7 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %  boundary - @grainBoundary
 %  M        - merge matrix M(i,j)==1 indicates the grains to be merged
 %  tpList   - @triplePointList
-%  gid      - nx2list of grainIds
+%  gid      - n x 2 list of grainIds
 %
 % Output
 %  grainsMerged - @grain2d

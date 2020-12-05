@@ -42,30 +42,23 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 if isa(mori.SS,'specimenSymmetry')
   
   hkl = mori \ vector3d.Z;
-  hkl.dispStyle = 'hkl';
   hkl = round(hkl,varargin{:});
 
   uvw = mori \ vector3d.X;
-  if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
-    uvw.dispStyle = 'UVTW';
-  else
-    uvw.dispStyle = 'uvw';
-  end
+  uvw.dispStyle = -uvw.dispStyle; % direct lattice
   uvw = round(uvw);
      
   if nargout == 0
-    if any(strcmp(mori.CS.lattice,{'hexagonal','trigonal'}))
-      d = [hkl.hkl uvw.UVTW ];
-      d(abs(d) < 1e-10) = 0;
-      format = {'H' 'K' 'I' 'L' '| U' 'V' 'T' 'W'};
-    else
-      d = [hkl.hkl uvw.uvw];
-      d(abs(d) < 1e-10) = 0;
-      format = { 'H' 'K' 'L' '| U' 'V' 'W'};
-    end
+    
+    d = [hkl.coordinates uvw.coordinates];
+    d(abs(d) < 1e-10) = 0;
+    format = vec2cell(char(uvw.dispStyle));
+    format{1} = ['| ' format{1}];
+    format = [vec2cell(char(hkl.dispStyle)) format];
+    
     cprintf(d,'-L','  ','-Lc',format);
-  elseif check_option(varargin,'LaTex')
-    n1 = [char(hkl,'LaTex'),char(uvw,'LaTex')];
+  elseif nargout == 1
+    n1 = [char(hkl,varargin{:}),char(uvw,varargin{:})];
     n1 = strrep(n1,'$$','');
   else
     n1 = hkl;
@@ -128,10 +121,21 @@ n2 = round(mori * n1);
 d2 = round(mori * d1);
 
 % switch to UVTW for trigonal and hexagonal materials
-if any(strcmp(d1.CS.lattice,{'hexagonal','trigonal'})), d1.dispStyle = 'UVTW'; end
-if any(strcmp(d2.CS.lattice,{'hexagonal','trigonal'})), d2.dispStyle = 'UVTW'; end
+if d1.lattice.isTriHex, d1.dispStyle = 'UVTW'; end
+if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
 
-if nargout == 0, showResult; end
+if nargout == 0
+  
+  showResult; 
+
+elseif nargout == 1
+  
+  mori_exact = orientation.map(n1,n2,d1,d2);
+  err = angle(mori,mori_exact);
+  n1 = [char(n1) ' || ' char(n2) '   ' char(d1) ' || ' char(d2) ...
+      '   error: ',xnum2str(err./degree),mtexdegchar'];
+  
+end
 
 function showResult
     

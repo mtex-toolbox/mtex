@@ -12,6 +12,19 @@ dy = max(uc(:,2))-min(uc(:,2));
   linspace(ext(3),ext(4),1+round((ext(4)-ext(3))/dy))); % ygrid runs first
 sGrid = size(prop.x);
 
+% if original unit cell was to much different
+if numel(ebsd.unitCell) ~= 8 || 1.5*max(ebsd.unitCell(:)) < max(uc(:))
+  
+  % interpolate
+  ebsd = interp(ebsd,prop.x,prop.y);
+
+  ebsdGrid = EBSDsquare(reshape(ebsd.rotations,size(prop.x)),...
+    ebsd.phaseId(:), ebsd.phaseMap,ebsd.CSList,[dx,dy],'options',ebsd.prop);
+  
+  return
+  
+end
+
 % detect position within grid
 newId = sub2ind(sGrid, 1 + round((ebsd.prop.y - ext(3))/dy), ...
   1 + round((ebsd.prop.x - ext(1))/dx));

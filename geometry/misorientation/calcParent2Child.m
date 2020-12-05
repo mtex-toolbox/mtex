@@ -43,6 +43,7 @@ threshold = get_option(varargin,'threshold',5*degree);
 if length(p2c) > 1
   alpha = alpha * length(p2c)/length(mori);
   p2c = mean(p2c,'robust');
+  p2c0 = p2c;
 end
 
 % prepare iterative loop
@@ -53,25 +54,34 @@ p2cOld = p2c;
 % iterate until convergance
 for k = 1:maxIt
   
+  progress(k,maxIt,'searching orientation relationship: ');
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
-  %fprintf('%1.3f°\n',diso(k));
-  
+    
   %check for convergence
   if k>5 && median(diso(k-5:k)) < 0.02, break; end
   
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
-
+  
+  if length(mori) > 50000
+    moriSub = discreteSample(mori,50000);
+  else
+    moriSub = mori;
+  end
+  
   % misorientation to c2c variants
-  omega = angle_outer(mori, c2c);
+  omega = angle_outer(moriSub, c2c);
   
   % compute best fitting variant
   [omega, variant] = min(omega,[],2);  
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-  ind = omega < min(threshold, quantile(omega, 0.9));
+  ind = omega < min(threshold, quantile(omega, 0.5));
+  
+  %
+  fit(k) = mean(omega(ind));
   
   % comute p2c misorientations for all variants
   p2cCandidates = [];
@@ -79,7 +89,7 @@ for k = 1:maxIt
     
     if ~any(ind & variant==iv), continue; end
     
-    mori_v = project2FundamentalRegion(mori(ind & variant==iv), c2c(iv));
+    mori_v = project2FundamentalRegion(moriSub(ind & variant==iv), c2c(iv));
     
     p2cCandidates = [p2cCandidates; mori_v * p2c.variants(iv)]; %#ok<AGROW>
     
@@ -90,11 +100,12 @@ for k = 1:maxIt
     
     weights = [alpha,ones(1,length(p2cCandidates)) ./ length(p2cCandidates)];
     
-    p2c = mean([p2c;p2cCandidates],'weights',weights);
+    p2c = mean([p2c0;p2cCandidates],'weights',weights);
   else
     p2c = mean(p2cCandidates);
   end
 end
+progress(maxIt,maxIt,'searching orientation relationship: ');
 
 if k<maxIt
   fprintf('-> Convergence reached after %.0f iterations\n',k);
@@ -102,4 +113,4 @@ else
   fprintf('-> Refinement stopped at maximum number of iterations: %.0f without convergence \n',maxIt);
 end
 
-%hold on; plot(diso);
+%hold on; plot(fit);
