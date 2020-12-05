@@ -6,10 +6,10 @@ function XYZ = quat2cube(q)
 %   quaternions to homochoric representation (Lambert) and then further to
 %   cubochoric representation (ball2cube)
 % 
-% Input:   q   (dimension (N,4) array) - coordniates of N unit quaternions
+% Input:   q - @quaternion
 % Output:  XYZ (dimension (N,3) array) - cubochoric coordinates (X,Y,Z) of N points of the cube
 
-xyz = Lambert(q);
+xyz = Lambert([q.a(:) q.b(:) q.c(:) q.d(:)]);
 XYZ = ball2cube(xyz);
 
 end

@@ -22,8 +22,11 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
   % no difference is made between antipodal quaternions
     
   properties
-    res = 2*pi;
-    oR = orientationRegion
+    res = 2*pi;                 % resolution
+    oR = orientationRegion      % orientationRegion
+    idxmap                      % has size of full grid (without symmetries)
+                                % 0 for points not in S3G.oR
+                                % enumerates the other points
   end
     
   methods
@@ -60,12 +63,16 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       
       % transform the points (cubochoric representation of rotations) into unit quaternions
       q = cube2quat(XYZ);
+      inside = checkInside(S3G.oR,q);
       
-      S3G.a = q(:,1);
-      S3G.b = q(:,2);
-      S3G.c = q(:,3);
-      S3G.d = q(:,4);
+      S3G.a = q.a(inside);
+      S3G.b = q.b(inside);
+      S3G.c = q.c(inside);
+      S3G.d = q.d(inside);
       S3G.i = false(size(S3G.a));
+      
+      S3G.idxmap = zeros(N^3,1);
+      S3G.idxmap(inside) = [1:sum(inside)]';
       
       % normalize
       S3G = normalize(S3G);

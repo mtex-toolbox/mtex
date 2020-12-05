@@ -7,9 +7,9 @@ function q = cube2quat(XYZ)
 %   quaternions (InvLambert) 
 % 
 % Input:    XYZ (dimension (N,3) array) - cubochoric coordinates (X,Y,Z) of N points of the cube
-% Output:   q   (dimension (N,4) array) - coordniates of N unit quaternions
+% Output:   q - @quaternion
 
 xyz = cube2ball(XYZ);
-q   = InvLambert(xyz);
+q = quaternion(InvLambert(xyz)');
 
 end
