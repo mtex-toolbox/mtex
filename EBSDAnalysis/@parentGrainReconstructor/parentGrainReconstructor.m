@@ -18,7 +18,7 @@ classdef parentGrainReconstructor < handle
     
   end
   
-  properties (Dependent=true, Hidden = true)
+  properties (Dependent=true)
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
   end
