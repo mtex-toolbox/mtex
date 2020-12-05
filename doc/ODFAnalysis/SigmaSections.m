@@ -159,7 +159,7 @@ plotSection(odf,oS)
 % We may also change the pole figure we would like to split into sections.
 
 % the pole figure we are going to split
-oS.h1 =  Miller(1,0,1,'hkl',odf.CS);
+oS.h1 =  Miller(1,0,-1,1,'hkil',odf.CS);
 
 % the reference direction, needs to be orthogonal to h1
 oS.h2 = Miller(-1,2,-1,0,odf.CS,'UVTW');

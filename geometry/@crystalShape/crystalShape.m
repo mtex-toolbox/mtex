@@ -187,7 +187,7 @@ classdef crystalShape
     
     function cS = hex(cs)
       % a very simple hex crystal
-      cS = crystalShape(Miller({1,0,0},{0,0,2},cs,'hkl'));
+      cS = crystalShape(Miller({1,0,0},{0,0,2},cs,'hkil'));
       
     end
     
@@ -215,9 +215,6 @@ classdef crystalShape
       cS = crystalShape(N,1.2,[0.6,0.6,1]);      
     end   
     
-    
-    
-
     function cS = garnet(cs)
       
       if nargin == 0

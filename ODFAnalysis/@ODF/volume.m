@@ -27,10 +27,9 @@ if isa(center,'fibre')
   return
 end
 
-
 % check input
-argin_check(center,'quaternion');
-argin_check(radius,'double');
+assert(eq(center.CS,odf.CS,'Laue'),'Crystal cymmmetry of odf and center needs to be the same!');
+assert(eq(center.SS,odf.SS,'Laue'),'Specimen cymmmetry of odf and center needs to be the same!');
 
 v = zeros(size(center));
 

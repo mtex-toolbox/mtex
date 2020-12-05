@@ -1,14 +1,24 @@
 %% Reference Frame Alignment
 %
 %%
-% In this section we discuss how you can put your data into MTEX while
-% keeping track with the correct reference system. Many peoply are
-% concerned when the images produced by MTEX are not aligned exactly as
-% they are in their commercial software. It is indeed very important to
-% understand exactly the alignment of you data. However, the important
-% point is not whether a map upside down on you screen or not. The
-% important point is how your map alignes with the specimen, as we want to
-% use the map to describe properties of the specimen. 
+% The most important difference between MTEX and many other EBSD software
+% is that in MTEX the Euler angle reference is always the map reference
+% frame. This mean the $x$ and $z$ axes of the map are exactly the rotation
+% axes of the Euler angles. 
+%
+% In case the map coordinates and the Euler angles in your data are with
+% respect to different reference frames it is highly recommendet to correct
+% for this while importing the data into MTEX. This section explains in
+% detail how to do this.
+%
+%% On Sreen Orientation of the EBSD Map
+%
+% Many peoply are concerned when the images produced by MTEX are not
+% aligned exactly as they are in their commercial software. It is indeed
+% very important to understand exactly the alignment of you data. However,
+% the important point is not whether a map is upside down on you screen or
+% not. The important point is how your map alignes with the specimen, as we
+% want to use the map to describe properties of the specimen.
 %
 % There are basicaly two components in an EBSD data set that refers to the
 % specimen reference frame: the spatial coordinates $x$, $y$ and the Euler

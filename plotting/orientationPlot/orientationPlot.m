@@ -5,7 +5,7 @@ classdef orientationPlot < handle
 %
 %   cs = crystalSymmetry('mmm')
 %   oS = axisAngleSections(cs,cs)
-%   ori = oS.makeGrid('resolution');
+%   ori = oS.makeGrid('resolution',2*degree);
 %   oM = PatalaColorKey(cs,cs)
 %   rgb = oM.orientation2color(ori);
 %   plot(oS,rgb,'surf')
@@ -62,7 +62,8 @@ classdef orientationPlot < handle
     
     function ori = quiverGrid(oP,varargin)
       
-      res = 60*degree / ((1+oP.antipodal)*length(oP.CS1.properGroup) * length(oP.CS2.properGroup))^(1/3);
+      res = 60*degree / ((1+oP.antipodal)*length(oP.CS1.properGroup) * ...
+        length(oP.CS2.properGroup))^(1/3);
       ori = localOrientationGrid(oP.CS1,oP.CS2,oP.oR.maxAngle-1*degree,...
         'resolution',res,varargin{:});
       
@@ -146,16 +147,19 @@ classdef orientationPlot < handle
           'parent',oP.ax);
   
         optiondraw(h,varargin{:});
-        set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
         
-        % since the legend entry for patch object is not nice we draw an
-        % invisible scatter dot just for legend
-        if check_option(varargin,'DisplayName')
-          holdState = get(oP.ax,'nextPlot');
-          set(oP.ax,'nextPlot','add');
-          optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
-            'MarkerEdgeColor',MEC),varargin{:});
-          set(oP.ax,'nextPlot',holdState);
+        if ~check_option(varargin,'edgecolor')
+          set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        
+          % since the legend entry for patch object is not nice we draw an
+          % invisible scatter dot just for legend
+          if check_option(varargin,'DisplayName')
+            holdState = get(oP.ax,'nextPlot');
+            set(oP.ax,'nextPlot','add');
+            optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
+              'MarkerEdgeColor',MEC),varargin{:});
+            set(oP.ax,'nextPlot',holdState);
+          end
         end
 
         % add transperency if required

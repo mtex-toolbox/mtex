@@ -13,9 +13,9 @@ else
   displayClass(o,inputname(1));
 end
 
-disp(['  size: ' size2str(o)]);
+if length(o)~=1, disp(['  size: ' size2str(o)]); end
 disp(char(o.CS,'verbose','symmetryType'));
-disp(char(o.SS,'verbose','symmetryType'));
+if o.SS.id ~= 1, disp(char(o.SS,'verbose','symmetryType')); end
 
 if o.antipodal
   disp('  antipodal:         true');

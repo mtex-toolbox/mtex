@@ -3,8 +3,15 @@ function p = axialSymbol(center,v,symbolSize,varargin)
 %
 % Syntax
 %
+%   p = axialSymbol(center,v,symbolSize)
 %
+% Input
+%  center - [x,y] of symbol center
+%  v - axial direction
+%  symbolSize - size of the symbol
 %
+% Output
+%  p - patch object
 
 % ensure input is column vector
 v = v(:);

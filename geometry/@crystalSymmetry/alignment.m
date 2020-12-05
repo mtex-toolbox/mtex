@@ -2,7 +2,7 @@ function str = alignment(cs)
 % return alignment of the reference frame as string, e.g. x||a, y||b*
 
 
-if any(strcmp(cs.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
+if ~cs.lattice.isEucledean
     
   abc = normalize(cs.axes);
   abcStar = normalize(cs.axesDual);

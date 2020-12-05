@@ -137,16 +137,14 @@ classdef crystalSymmetry < symmetry
           abc = [1,1,1];
         end
       
-        % get axes angles (alpha beta gamma)
-        if ~isempty(varargin) && isa(varargin{1},'double') && ...
-            id < 12
+        % extract axes angles (alpha beta gamma)
+        lattice = symmetry.pointGroups(id).lattice;
+        angles = lattice.defaultAngles;
+        
+        if ~isempty(varargin) && isa(varargin{1},'double')
           angles = varargin{1};
-          if any(angles>2*pi), angles = angles * degree;end
+          if any(angles>2*pi), angles = angles * degree; end
           varargin(1) = [];
-        elseif id>0 && any(strcmp(symmetry.pointGroups(id).lattice,{'trigonal','hexagonal'}))
-          angles = [90 90 120] * degree;
-        else
-          angles = [90 90 90] * degree;
         end
         
         % compute coordinate system
@@ -185,15 +183,15 @@ classdef crystalSymmetry < symmetry
     end
 
     function a = get.aAxisRec(cs)
-      a = Miller(1,0,0,cs,'hkl');
+      a = Miller(1,0,0,cs);
     end
 
     function b = get.bAxisRec(cs)
-      b = Miller(0,1,0,cs,'hkl');
+      b = Miller(0,1,0,cs);
     end
 
     function c = get.cAxisRec(cs)
-      c = Miller(0,0,1,cs,'hkl');
+      c = Miller(0,0,1,cs);
     end
 
     function alpha = get.alpha(cs)

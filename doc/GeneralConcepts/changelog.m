@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 5.5.beta.3 10/2020
+%% MTEX 5.5.0 11/2020
 %
 % *Orientation Embeddings*
 %
@@ -76,6 +76,18 @@
 % data to |.ang|, |.ctf|, |.crc| and |.hdf5| files, thanks to Azdiar Gazder
 % * new function <rotation.fit.html |rot = fit(l,r)|> to compute the
 % rotations that best rotates all the vectors |l| onto the vectors |r|
+%
+% * <orientation.load.html |orientation.load|> and <vector3d.load.html
+% |vector3d.load|> allows now to import additional properties.
+%
+% *Important Bug Fixes*
+%
+% * <ODF.volume.html |volume(odf)|> gave wrong results in the presense of
+% specimen symmetry and for centers close to the boundary of the
+% fundamental region.
+%
+% * <slibSystem.symmetrise.html |slibSystem.symmetrise.html|> gave
+% incorrect number of slipsystems due to a rounding error
 %
 %% MTEX 5.4.0 7/2020
 %

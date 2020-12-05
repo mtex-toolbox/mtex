@@ -1,14 +1,38 @@
 function [vote, numVotes] = majorityVote(id,votes,varargin)
+% returns
+%
+% Syntax 
+%
+%   [vote, numVotes] = majorityVote(idList,voteList)
+%
+% Input
+%  idList   - list of ids 
+%  voteList - list of votes
+%
+% Output
+%  vote     - most frequent vote in voteList(idList == id) for each id
+%  numVotes - number occurences of vote in voteList(idList == id) for each id
+%
+% Options
+%  strict - only assign a vote if all votes coincide, otherwise set in to nan
+%
+% Example
+%
+%   idList = [1 1 1 1 1 2 3 2 3 2 3];
+%   voteList = [5 9 5 9 9 4 1 4 2 4 1];
+% 
+%   majorityVote(idList,voteList)
+%
+%   majorityVote(idList,voteList,'strict')
+%
+% See also
+%
 
-
-
-if isnumeric(varargin{1})
+if nargin > 2 && isnumeric(varargin{1})
   maxId = varargin{1};
 else
   maxId = max(id(:));
 end
-
-
 
 if check_option(varargin,'strict')
 
