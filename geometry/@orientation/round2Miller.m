@@ -45,7 +45,7 @@ if isa(mori.SS,'specimenSymmetry')
   hkl = round(hkl,varargin{:});
 
   uvw = mori \ vector3d.X;
-  uvw.dispStyle = -uvw.dispStyle; % direct lattice
+  uvw.dispStyle = MillerConvention(-MillerConvention(uvw.dispStyle)); % direct lattice
   uvw = round(uvw);
      
   if nargout == 0

@@ -10,6 +10,6 @@ function m = perp(m)
 % Output
 %  n - @Miller
 
-m = Miller(perp@vector3d(m),m.CS,-m.dispStyle);
+m = Miller(perp@vector3d(m),m.CS,MillerConvention(-MillerConvention(m.dispStyle)));
 
 end
