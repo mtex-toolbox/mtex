@@ -34,7 +34,7 @@ classdef Miller < vector3d
   % crystalSymmetry.crystalSymmetry
   
   properties
-    dispStyle (1,1) MillerConvention = 'hkl' % output convention hkl or uvw
+    dispStyle = MillerConvention.hkl % output convention hkl or uvw
   end
   
   properties (Access = private)
@@ -168,23 +168,10 @@ classdef Miller < vector3d
       % recompute representation in cartesian coordinates
       if m.CSprivate ~= cs
 
-        switch m.dispStyle
-    
-          case 'uvw'
-      
-            uvw = m.uvw; %#ok<*PROPLC>
-            m.CSprivate = cs;
-            m.uvw = uvw;
-      
-          case 'hkl'
-      
-            hkl = m.hkl;
-            m.CSprivate = cs;
-            m.hkl = hkl;
-      
-          otherwise        
-            m.CSprivate = cs;
-        end        
+        coord = m.coordinates;
+        m.CSprivate = cs;
+        m.coordinates = coord;
+        
       else
         m.CSprivate = cs;
       end      
@@ -201,8 +188,7 @@ classdef Miller < vector3d
     function m = set.convention(m,dS)
       m.convention = dS;
     end
-    
-    
+        
     function c = get.coordinates(m)
       c = m.(char(m.dispStyle));
     end
