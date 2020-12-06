@@ -4,17 +4,17 @@ function XYZ = ball2cube(xyz)
 % maps from the ball (radius (3*pi/4)^(1/3)) to the cube (edge pi^(2/3)) 
 % 
 % Input
-%   xyz - homochoric coordinates (x,y,z) of N points of the ball 
+%  xyz - homochoric coordinates (x,y,z) of N points of the ball 
 %
 % Output
-%   XYZ - cubochoric coordinates (X,Y,Z) of N points of the cube 
+%  sXYZ - cubochoric coordinates (X,Y,Z) of N points of the cube 
 % 
+
 % the actual mapping is only defined on one pyramid Pz (z>=abs(x),z>=abs(y)) 
 % map other points by: 
-%       transform coordinates, so that we get a point of Pz
-%       map the point 
-%       apply the inverse transformation 
-
+%  1. transform coordinates, so that we get a point of Pz
+%  2. map the point 
+%  3. apply the inverse transformation 
 
 % for each point find out, which pyramid it lies in (1,2,3,4,5,6)
 p = regionId(xyz);         

@@ -1,16 +1,19 @@
 function xyz = cube2ball(XYZ)
-
+%
 % transforms cubochoric coordinates of quaternions into homochoric ones 
 % maps from cube (edge pi^(2/3) onto ball (radius (3*pi/4)^(1/3)) 
 % 
-% Input :   XYZ (dimension (N,3) array) - cubochoric coordinates (X,Y,Z) of N points of the cube
-% Output:   xyz (dimension (N,3) array) - homochoric coordinates (x,y,z) of N points of the ball 
-% 
+% Input
+%  XYZ - cubochoric coordinates (X,Y,Z) of N points of the cube
+%
+% Output
+%  xyz - homochoric coordinates (x,y,z) of N points of the ball 
+
 % the actual mapping is only defined on one pyramid Pz (z>=abs(x),z>=abs(y)) 
 % map other points by: 
-%       transform coordinates, so that we get a point of Pz
-%       map the point 
-%       apply the inverse transformation 
+%  1. transform coordinates, so that we get a point of Pz
+%  2. map the point 
+%  3. apply the inverse transformation 
 
 % define permutaions (and inverse ones) for each region (pyramid)
 p = regionId(XYZ);

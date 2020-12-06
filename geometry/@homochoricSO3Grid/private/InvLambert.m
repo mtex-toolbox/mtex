@@ -1,13 +1,16 @@
 function q = InvLambert(xyz)
-
-% Inverse Lambert Projection 
-% maps points of the ball with radius (3*pi/4)^(1/3) onto the 3-hemissphere
-% this is the transformtaion of homochoric representation of rotations into
-%   the representation as unit quaternions 
-% function is an approximization with error <= ~10^(-7)
+%
+% Inverse Lambert Projection maps points of the ball with radius
+% (3*pi/4)^(1/3) onto the 3-hemissphere this is the transformtaion of
+% homochoric representation of rotations into the representation as unit
+% quaternions function is an approximization with error <= ~10^(-7)
 % 
-% Input:   xyz (dimension (N,3) array) - coordniates of N points (x,y,z) of the ball 
-% Output:  q   (dimension (N,4) array) - coordniates of N unit quaternions q
+% Input
+%  xyz - ball coordinates N x (x,y,z)
+%
+% Output
+%  q - quaternion coordniates N x (a,b,c,d)s
+%
 
 
 p = sqrt(sum(xyz(:,:).^2,2));
