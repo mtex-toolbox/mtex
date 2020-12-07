@@ -1,9 +1,9 @@
-classdef homochoricPlot < axisAnglePlot
+classdef cubochoricPlot < axisAnglePlot
   
   methods
     
-    function oP = homochoricPlot(varargin)
-      % create a 3d Euler angle plot
+    function oP = cubochoricPlot(varargin)
+      % create a 3d plot of rotations in cubochoric coordinates
       
       oP = oP@axisAnglePlot(varargin{:});
       
@@ -19,9 +19,9 @@ classdef homochoricPlot < axisAnglePlot
             ori(~oP.oR.checkInside) = NaN;
         end
       end
+     
+      [x,y,z] = double(cubochoric(ori));
       
-      [x,y,z] = double(homochoric(ori));
-            
     end
     
     function ori = iproject(oP,x,y,z,varargin)
@@ -32,7 +32,7 @@ classdef homochoricPlot < axisAnglePlot
       
       [ori,S2G,omega] = makeGrid@axisAnglePlot(oP,varargin{:});
       
-      [oP.plotGrid.x,oP.plotGrid.y,oP.plotGrid.z] = ...
+      [oP.plotGrid.x, oP.plotGrid.y, oP.plotGrid.z] = ...
         double( S2G .* (3./4 * (omega - sin(omega))).^(1/3));
       
     end
