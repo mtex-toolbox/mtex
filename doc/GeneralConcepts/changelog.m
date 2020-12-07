@@ -1,5 +1,9 @@
 %% MTEX Changelog
 %
+%% MTEX 5.5.1 12/2020
+%
+% * fixes incompatibilities with Matlab versions earlier then 2019b
+%
 %% MTEX 5.5.0 11/2020
 %
 % *Orientation Embeddings*
