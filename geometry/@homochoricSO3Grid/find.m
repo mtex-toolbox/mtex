@@ -24,7 +24,6 @@ function [id,dist] = find(S3G,ori,varargin)
 
 % project oris to fundamental Region
 ori = project2FundamentalRegion(ori,S3G.CS);
-qin = [ori.a ori.b ori.c ori.d];
 
 % translate input (ori) into cubochoric coordinates
 xyz = quat2cube(ori);
@@ -40,102 +39,106 @@ if nargin == 2 % closest point
   % included in the grid iff N is odd so xyz/hres+N/2-1/2 takes values in
   % -1/2,...,N-1/2 after rounding this yields values in 0,...,N (since 1/2
   % rounds up
-  sub  = mod(round(xyz/hres + N/2 - 0.5),N) + 1;
-  subidx = sub2ind(S3G,sub(:,1),sub(:,2),sub(:,3));
+  sub  = mod(round(xyz/hres + N/2 - 0.5),N) + 1;    % [ix, iy, iz]
+  subidx = sub2ind(S3G,sub(:,1),sub(:,2),sub(:,3)); 
   id = S3G.idxmap(subidx); % some index, in in grid; zero else
-  
-  I = find(id);   % indices valid indice (in S3G)
-  
-  dist = zeros(size(id));     % initialize distances
-  
-  qgrid = [S3G.a(:) S3G.b(:) S3G.c(:) S3G.d(:)];
-  origrid = orientation(quaternion(qgrid'),S3G.CS);   % orientations in S3G
-  
-  % already calculate distances to found neighbors
-  % angle_outer without CS option much faster, so calculate as many
-  % distances as possible without using it
-  for i = 1:length(I)
-    dist(I(i)) = real(2*acos(abs(qin(I(i),:) * qgrid(id(I(i)),:)')));
+     
+  if nargout == 2
+    dist = zeros(size(id));     % initialize distances  
+    dist(id>0) = angle(ori.subSet(id>0), S3G.subSet(id>0), 'noSymmetry');
   end
-  
-  % project those not beeing in fR again --> Quaternion Projected
-  if length(I) < length(id)
     
-    % project
-    subxyz = hres * (sub(~id,:) - (N+1)/2);
+  % project those not beeing in fR again --> Quaternion Projected
+  if any(id==0)
+    
+    % take outside grid points 
+    subxyz = hres * (sub(id==0,:) - (N+1)/2);
+    
+    % and project them back into the fundamental region
     q2 = project2FundamentalRegion(cube2quat(subxyz),S3G.CS,S3G.SS);
     
-    % round
+    % find closest grid point
     xyz2 = quat2cube(q2);
     sub2 = mod(round(xyz2/hres + N/2 - 0.5),N) + 1;
     
     % insert eventually new found neighbors on grid into id
     id2 = S3G.idxmap(sub2ind(S3G,sub2(:,1),sub2(:,2),sub2(:,3)));
-    J = find(~id);       % those entries of id have to be overwritten
-    K = J(id2>0);
-    L = find(id2);
-    
-    % here we already have to use the CS option in angle outer, because
-    % after rounding and projecting some points may be on the 'other
-    % side' of the grid
-    for i = 1:length(K)
-      dist(K(i)) = angle_outer(ori(K(i)),origrid(id2(L(i))),S3G.CS);
+
+    % compute distances
+    if nargout == 2
+      dist(id==0) = angle(ori.subSet(id==0), S3G.subSet(id==0));
     end
     
-    id(~id) = id2;          % plug in new found indice
+    % plug in new found indice
+    id(~id) = id2;
     
+  end
     
-    % if still not in fR, then search for best neighbor (of 8 surrounding)
-    % notice that at least one of those 8 neighbors will lie in S3G
-    if length(J) > 0
-      % generate corner points
-      vertex = floor(xyz2(~id2,:)/hres + N/2 - 0.5) - N/2 + 0.5;
+  % if still not in fR, then search for best neighbor (of 8 surrounding)
+  % notice that at least one of those 8 neighbors will lie in S3G
+  if any(id==0)
+    
+    % 1. cube vertcises around xyz -> N x 8 indeces sub2ind([ix,iy,iz])
+    % 2. distance to all that are inside
+    % 3. take shortest distance
+    
+    %tip:  idx : N x 8
+    % S3GVertices = rotation.nan(N,8)
+    % S3GVertices(idx>0) = S3G.subset(idx(idx>0))
+    % d = angle(repmat(ori(id==0),1,8), S3GVertices ,'noSymmetry')
+    % -> N x 8 matrix
+    % [d,irow] = min(d,[],2)
+    % id(id == 0) = idx(sub2ind(...,1:N,irow))
+    %
+    
+    % generate corner points
+    vertex = floor(xyz(id==0,:)/hres + N/2 - 0.5) - N/2 + 0.5;
+    
+    % mark points liying on grid boundary
+    X = ((vertex(:,1) >= N/2-1/2) | (vertex(:,1) <= -N/2-1/2));
+    Y = ((vertex(:,2) >= N/2-1/2) | (vertex(:,2) <= -N/2-1/2));
+    Z = ((vertex(:,3) >= N/2-1/2) | (vertex(:,3) <= -N/2-1/2));
       
-      % mark points liying on grid boundary
-      X = ((vertex(:,1) >= N/2-1/2) | (vertex(:,1) <= -N/2-1/2));
-      Y = ((vertex(:,2) >= N/2-1/2) | (vertex(:,2) <= -N/2-1/2));
-      Z = ((vertex(:,3) >= N/2-1/2) | (vertex(:,3) <= -N/2-1/2));
-      
-      % make cubes containing xyz2
-      cx = [0 0 0 0 1 1 1 1];
-      cy = [0 0 1 1 0 0 1 1];
-      cz = [0 1 0 1 0 1 0 1];
-      idx = vertex(:,1) + cx;
-      idy = vertex(:,2) + cy;
-      idz = vertex(:,3) + cz;
-      
-      % mark the boundary points
-      bdx = (abs(idx)>=(N+1)/2);
-      bdy = (abs(idy)>=(N+1)/2);
-      bdz = (abs(idz)>=(N+1)/2);
-      bd = (bdx | bdy | bdz);
-      
-      % noxbuty marks indice where indx might be okay but indy is on the boundary
-      % and since also ix and iy are too large/small both coordinates have to
-      % be shifted onto the grid by adding sign(indx)
-      noxbuty = (bdy&X&Y); noxbutz = (bdz&X&Z);
-      noybutx = (bdx&X&Y); noybutz = (bdz&Y&Z);
-      nozbutx = (bdx&X&Z); nozbuty = (bdy&Y&Z);
-      
-      % shifting out-of-boundary points back onto the grid applying the
-      % variables above
-      % the case where indx might be okay but indy and indz are too big/small
-      % and also ix,iy,iz are problematic is included automatically
-      idx(bd) = -idx(bd) + sign(idx(bd)) .* (bdx(bd) | noxbuty(bd) | noxbutz(bd));
-      idy(bd) = -idy(bd) + sign(idy(bd)) .* (bdy(bd) | noybutx(bd) | noybutz(bd));
-      idz(bd) = -idz(bd) + sign(idz(bd)) .* (bdz(bd) | nozbutx(bd) | nozbuty(bd));
-      
-      % get the index of the corner points
-      idneighbors = S3G.idxmap(sub2ind(S3G,idx+N/2+1/2,idy+N/2+1/2,idz+N/2+1/2));
+    % make cubes containing xyz2
+    cx = [0 0 0 0 1 1 1 1];
+    cy = [0 0 1 1 0 0 1 1];
+    cz = [0 1 0 1 0 1 0 1];
+    idx = vertex(:,1) + cx;
+    idy = vertex(:,2) + cy;
+    idz = vertex(:,3) + cz;
+    
+    % mark the boundary points
+    bdx = (abs(idx)>=(N+1)/2);
+    bdy = (abs(idy)>=(N+1)/2);
+    bdz = (abs(idz)>=(N+1)/2);
+    bd = (bdx | bdy | bdz);
+    
+    % noxbuty marks indice where indx might be okay but indy is on the boundary
+    % and since also ix and iy are too large/small both coordinates have to
+    % be shifted onto the grid by adding sign(indx)
+    noxbuty = (bdy&X&Y); noxbutz = (bdz&X&Z);
+    noybutx = (bdx&X&Y); noybutz = (bdz&Y&Z);
+    nozbutx = (bdx&X&Z); nozbuty = (bdy&Y&Z);
+    
+    % shifting out-of-boundary points back onto the grid applying the
+    % variables above
+    % the case where indx might be okay but indy and indz are too big/small
+    % and also ix,iy,iz are problematic is included automatically
+    idx(bd) = -idx(bd) + sign(idx(bd)) .* (bdx(bd) | noxbuty(bd) | noxbutz(bd));
+    idy(bd) = -idy(bd) + sign(idy(bd)) .* (bdy(bd) | noybutx(bd) | noybutz(bd));
+    idz(bd) = -idz(bd) + sign(idz(bd)) .* (bdz(bd) | nozbutx(bd) | nozbuty(bd));
+    
+    % get the index of the corner points
+    idneighbors = S3G.idxmap(sub2ind(S3G,idx+N/2+1/2,idy+N/2+1/2,idz+N/2+1/2));
       
       % now get choose the closest point for all
       distances = zeros(sum(~id),8);
-      I = find(~id);
+      isInside = find(~id);
             
       for i = 1:size(distances,1)
         qneighbors = cube2quat(hres * [idx(i,:)' idy(i,:)' idz(i,:)']);
         orineighbors = orientation(qneighbors,S3G.CS);
-        distances(i,:) = angle_outer(ori(I(i)),orineighbors,S3G.CS);
+        distances(i,:) = angle_outer(ori(isInside(i)),orineighbors,S3G.CS);
       end
       % points not lying in S3G dont matter -Y distance to 1000
       distances(~idneighbors) = 1000;
@@ -147,8 +150,6 @@ if nargin == 2 % closest point
       dist(~id) = value;
       id(~id) = idneighbors(sub2ind(size(distances),[1:sum(~id)]',index));
       
-    end
-    
   end
   
   
