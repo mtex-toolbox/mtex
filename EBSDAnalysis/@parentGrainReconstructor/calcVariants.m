@@ -10,5 +10,5 @@ childOri = job.grainsI(isTr).meanOrientation;
 parentOri = job.grains('id',job.mergeId(isTr)).meanOrientation;
 
 % compute variantId and packetId
-[job.variantId(isTr), job.packetId(isTr)] = calcChildVariant(parentOri,childOri,job.p2c);
+[job.variantId(isTr), job.packetId(isTr)] = calcChildVariant(parentOri,childOri,job.p2c,varargin);
 
