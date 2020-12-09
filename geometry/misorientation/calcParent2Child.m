@@ -59,7 +59,7 @@ for k = 1:maxIt
   p2cOld = p2c;
     
   %check for convergence
-  if k>5 && median(diso(k-5:k)) < 0.1, break; end
+  if k>5 && median(diso(k-5:k)) < 0.5, break; end
   
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
