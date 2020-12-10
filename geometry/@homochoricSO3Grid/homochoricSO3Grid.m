@@ -65,10 +65,10 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       q = cube2quat(XYZ);
       inside = checkInside(S3G.oR,q);
       
-      S3G.a = q.a(inside);
-      S3G.b = q.b(inside);
-      S3G.c = q.c(inside);
-      S3G.d = q.d(inside);
+      S3G.a = q.a(inside)';
+      S3G.b = q.b(inside)';
+      S3G.c = q.c(inside)';
+      S3G.d = q.d(inside)';
       S3G.i = false(size(S3G.a));
       
       S3G.idxmap = zeros(N^3,1);
@@ -81,12 +81,13 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
     
     function ind = sub2ind(S3G, ix, iy, iz)
       
-      % grid position to index in S3G
+      % grid position to index in S3G 
       % N points along each axis
       N = round(2 * pi / S3G.res);
       ind = (iz-1)*N^2 + (ix-1)*N + iy;
       
-      % we should take care about boundary effects
+      % ind for this specific grid
+      ind = S3G.idxmap(ind);
       
     end
     
