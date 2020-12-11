@@ -65,9 +65,7 @@ l = addSym(l,'Oh' ,'m-3m' ,7,43,45,[[1 1 1];[-1 -1 -1]],'m3m','4/m-32/m');
 
 function nl = addSym(l,Schoen,Inter,latticeId,properId,LaueId,inv,varargin)
 
-latticeList = {'triclinic','monoclinic','orthorhombic','trigonal','tetragonal','hexagonal','cubic'};
-
-s = struct('Schoen',Schoen,'Inter',Inter,'lattice',latticeList{latticeId},...
+s = struct('Schoen',Schoen,'Inter',Inter,'lattice',latticeType(latticeId),...
   'properId',properId,'LaueId',LaueId,'Inversion',inv,'altNames',{varargin});
 
 nl = [l,s];

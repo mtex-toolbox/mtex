@@ -5,7 +5,7 @@ vname = get_option(varargin,'name',inputname(1));
 varargin = delete_option(varargin,'name',1);
 displayClass(v,vname,varargin{:});
 
-disp([' size: ' size2str(v)]);
+if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 
 if v.antipodal, disp(' antipodal: true'); end
 

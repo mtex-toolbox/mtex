@@ -3,9 +3,9 @@ function [xmin, xmax, ymin, ymax] = extend(ebsd)
 %
 % Syntax
 %
-%  [xmin, xmax, ymin, ymax] = extend(ebsd)
+%   [xmin, xmax, ymin, ymax] = extend(ebsd)
 %
-%  ext = extend(ebsd)
+%   ext = extend(ebsd)
 %
 % Input
 %  ebsd - @EBSD 

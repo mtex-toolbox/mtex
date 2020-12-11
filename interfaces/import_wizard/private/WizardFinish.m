@@ -265,7 +265,7 @@ end
             opt = {axLength};
             
             % for triclinic and monoclinic get angles
-            if any(strcmp(cs{i}.lattice,{'triclinic','monoclinic'}))
+            if cs{i}.lattice == latticeType.triclinic || cs{i}.lattice == latticeType.monoclinic
               opt = [opt {[n2s(axAngles./degree),'*degree']}]; %#ok<AGROW>
             end
             

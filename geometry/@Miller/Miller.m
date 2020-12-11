@@ -6,7 +6,7 @@ classdef Miller < vector3d
   %
   % Syntax
   %   m = Miller(h,k,l,cs)
-  %   m = Miller(H,K,I,L,cs)
+  %   m = Miller(h,k,i,l,cs)
   %   m = Miller(u,v,w,cs,'uvw')
   %   m = Miller(U,V,T,W,cs,'UVTW')
   %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
@@ -18,15 +18,15 @@ classdef Miller < vector3d
   %
   % Input
   %  h,k,l   - three digit reciprocal coordinates
-  %  H,K,I,L - four digit reciprocal coordinates
+  %  h,k,i,l - four digit reciprocal coordinates
   %  u,v,w   - three digit direct coordinates
-  %  U,V,T,W - four digit direct coordinates
+  %  U,V,T,W - four digit direct coordinates - Weber indices
   %  x       - @vector3d
   %  cs      - @crystalSymmetry
   %
   % Class Properties
   %  CS        - @crystalSymmetry
-  %  dispStyle - 'hkl', 'uvw', 'HKIL', 'UVTW'
+  %  dispStyle - 'hkl', 'uvw', 'hkil', 'UVTW'
   %
   % See also
   % CrystalDirections CrystalOperations CrystalReferenceSystem
@@ -34,7 +34,7 @@ classdef Miller < vector3d
   % crystalSymmetry.crystalSymmetry
   
   properties
-    dispStyle = 'hkl' % output convention hkl or uvw
+    dispStyle = MillerConvention.hkl % output convention hkl or uvw
   end
   
   properties (Access = private)
@@ -42,15 +42,18 @@ classdef Miller < vector3d
   end
   
   properties (Dependent = true)
-    CS        % crystal symmetry
-    hkl       % direct coordinates
-    hkil      % direct coordinates
+    CS          % crystal symmetry
+    convention  % convention of the Miller indices
+    coordinates % Miller coordinates according to the convention set above
+    lattice     % type of crystal lattice -> CS.lattice
+    hkl         % direct coordinates
+    hkil        % direct coordinates
     h
     k
     i
     l
     uvw       % reciprocal coordinates
-    UVTW      % reciprocal coordinates
+    UVTW      % reciprocal coordinates / Weber indices
     u
     v
     w
@@ -65,30 +68,30 @@ classdef Miller < vector3d
     function m = Miller(varargin)
       % constructor
       
+      %empty constructor
       if nargin == 0, return; end
       
+           
+      % copy constructor
+      if isa(varargin{1},'Miller') 
+  
+        m = varargin{1};
+        m.CSprivate = getClass(varargin,'crystalSymmetry',m.CSprivate);
+        m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
+        
+        return;
+      end
+
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
       assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
         'No crystal symmetry has been specified when defining a crystal direction!');
 
       % extract disp style
-      dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
-      
-      if nargin == 0 %empty constructor
-
-        return
-  
-      elseif isa(varargin{1},'Miller') % copy constructor
-  
-        if ~isempty(m.CSprivate), varargin{1}.CSprivate = m.CSprivate;end
-        m = varargin{1};
-        
-        if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
-        
-        return;
-  
-      elseif ischar(varargin{1})
+      if m.lattice.isTriHex, m.dispStyle = 'hkil'; end
+      m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
+            
+      if ischar(varargin{1})
         
         m = s2v(varargin{1},m);
               
@@ -107,8 +110,7 @@ classdef Miller < vector3d
           m =  [m,mm];
         end
         
-        % hkl and uvw
-      elseif isa(varargin{1},'double')
+      elseif isa(varargin{1},'double') % hkl and uvw
         
         % get hkls and uvw from input
         nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
@@ -150,12 +152,9 @@ classdef Miller < vector3d
         end
         
       end
-
-      % add antipodal symmetry ?
-      m.antipodal = m.antipodal | check_option(varargin,'antipodal');
       
-      % set dispStyle
-      if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
+      % add antipodal symmetry ?
+      m.antipodal = m.antipodal | check_option(varargin,'antipodal');      
 
     end        
     
@@ -169,28 +168,35 @@ classdef Miller < vector3d
       % recompute representation in cartesian coordinates
       if m.CSprivate ~= cs
 
-        switch m.dispStyle
-    
-          case 'uvw'
-      
-            uvw = m.uvw; %#ok<*PROPLC>
-            m.CSprivate = cs;
-            m.uvw = uvw;
-      
-          case 'hkl'
-      
-            hkl = m.hkl;
-            m.CSprivate = cs;
-            m.hkl = hkl;
-      
-          otherwise        
-            m.CSprivate = cs;
-        end        
+        coord = m.coordinates;
+        m.CSprivate = cs;
+        m.coordinates = coord;
+        
       else
         m.CSprivate = cs;
       end      
     end
     
+    function l = get.lattice(m)
+      l = m.CS.lattice;
+    end
+    
+    function out = get.convention(m)
+      out = m.dispStyle;
+    end
+    
+    function m = set.convention(m,dS)
+      m.convention = dS;
+    end
+        
+    function c = get.coordinates(m)
+      c = m.(char(m.dispStyle));
+    end
+    
+    function m = set.coordinates(m,hkl)
+      m.(char(m.dispStyle)) = hkl;
+    end
+
     function hkl = get.hkl(m)
       
       % get reciprocal axes
@@ -201,21 +207,17 @@ classdef Miller < vector3d
 
       % compute reciprocal coordinates
       hkl = (M \ v)';
-
-      % add fourth component for trigonal and hexagonal systems
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-        hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
-      end
       
     end
 
     function hkil = get.hkil(m)
             
-      hkil = m.hkl;
-            
-    end
+      hkl = m.hkl;
 
-    
+      % add fourth component for trigonal and hexagonal systems
+      hkil = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
+      
+    end
     
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
@@ -239,8 +241,15 @@ classdef Miller < vector3d
       m.z = hkl * M(:,3); 
       
       % set default display style
-      m.dispStyle = 'hkl';
-      
+      if m.lattice.isTriHex
+        m.dispStyle = 'hkil';
+      else
+        m.dispStyle = 'hkl';
+      end
+    end
+    
+    function m = set.hkil(m,hkil)
+      m.hkl = hkil;
     end
     
     function m = set.h(m,h)
@@ -300,7 +309,7 @@ classdef Miller < vector3d
     function UVTW = get.UVTW(m)
       %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
 
-      uvw = m.uvw;
+      uvw = m.uvw; %#ok<*PROP>
       
       UVTW = [2*uvw(:,1)-uvw(:,2),...
         2*uvw(:,2)-uvw(:,1),...
@@ -351,7 +360,7 @@ classdef Miller < vector3d
         
         m.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
         
-      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
+      elseif m.lattice.isTriHex
         
         m.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
         

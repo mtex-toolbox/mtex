@@ -35,8 +35,17 @@ m = Miller(1,0,1,cs,'uvw')
 % for values $u = 1$, $v = 0$, and, $w = 1$. To plot a crystal direction as
 % a <SphericalProjections.html spherical projections> do
 
-plot(m,'upper','labeled','grid')
+plot(m,'labeled','grid')
 
+annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
+
+%%
+% Note that MTEX by default aligns spherical projections of crystal
+% directions such that the b-axis points towards east and the z-axis points
+% out of the plane. This behaviour can be changed by the commands
+% |plota2east|, |plota2north|, |plota2west|, |plota2south|, |plotb2east|,
+% |plotb2north|, |plotb2west|, |plotb2south|, or |plotaStar2East|.
+%
 %% Crystal Lattice Planes
 %
 % A crystal lattice plane $(hkl)$ is commonly described by its normal
@@ -56,13 +65,13 @@ hold on
 plot(m,'upper','labeled')
 
 % the trace of the corresponding lattice plane
-plot(m,'plane','linecolor','r','linewidth',2)
+plot(m,'plane','linecolor','r','linewidth',2,'add2all')
 hold off
 
 %%
 % Note that for non Euclidean crystal frames uvw and hkl notations usually
 % lead to different directions.
-%s
+%
 %% Trigonal and Hexagonal Convention
 %
 % In the case of trigonal and hexagonal crystal symmetry often four digit
@@ -72,20 +81,18 @@ hold off
 % $U + V + T = 0$ and $H + K + I = 0$. The syntax is
 
 % import trigonal Quartz lattice structure
-cs = loadCIF('quartz')
+cs = loadCIF('quartz');
 
 % a four digit lattice direction
 m = Miller(2,1,-3,1,cs,'UVTW')
 
-plot(m,'upper','labeled')
-
+% a four digit plane normal
 n = Miller(1,1,-2,3,cs,'hkil')
 
+plot(m,'upper','labeled','backgroundColor','white','grid','on')
 hold on
 plot(n,'upper','labeled')
 hold off
-
-drawNow(gcm,'figSize','normal')
 
 %%
 % In order to switch the output format, e.g. from UVTW to uvw do

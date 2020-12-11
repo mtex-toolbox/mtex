@@ -1,18 +1,32 @@
 function [ebsd,filter] = smooth(ebsd,varargin)
 % smooth spatial EBSD 
 %
+% Syntax
+%
+%   ebsd = smooth(ebsd)
+%
+%   F = halfQuadraticFilter
+%   F.alpha = 2;
+%   ebsd = smooth(ebsd, F, 'fill', grains)
+%
 % Input
-%  ebsd - @EBSD
+%  ebsd   - @EBSD
+%  F      - @EBSDFilters
+%  grains - @grain2d if provided pixels at the boundary between grains are not filled
+%
+% Options
+%  fill        - fill missing values (this is different then not indexed values!)
+%  extrapolate - extrapolate up the the outer boundaries
 %
 % Example
-%   mtexdata forsterite
+%   mtexdata forsterite;
 %   ebsd = ebsd('indexed');
 %   % segment grains
-%   [grains,ebsd.grainId] = calcGrains(ebsd)
+%   [grains,ebsd.grainId] = calcGrains(ebsd);
 %
 %   % find largest grains
-%   largeGrains = grains(grains.grainSize>800)
-%   ebsd = ebsd(largeGrains(1))
+%   largeGrains = grains(grains.grainSize>800);
+%   ebsd = ebsd(largeGrains(1));
 %
 %   figure
 %   plot(largeGrains(1).boundary,'linewidth',2)
@@ -23,7 +37,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   plot(ebsd,oM.orientation2color(ebsd.orientations))
 %   hold off
 %
-%   ebsd_smoothed = smooth(ebsd)
+%   ebsd_smoothed = smooth(ebsd);
 %   plot(ebsd_smoothed('indexed'),oM.orientation2color(ebsd_smoothed('indexed').orientations))
 %   hold on
 %   plot(largeGrains(1).boundary,'linewidth',2)
@@ -40,7 +54,7 @@ else
 end
 
 % fill holes if needed
-if check_option(varargin,'fill'), ebsd = fill(ebsd,varargin{:}); end
+if check_option(varargin,'fill') || check_option(varargin,'extrapolate'), ebsd = fill(ebsd,varargin{:}); end
 
 % read input
 filter = getClass(varargin,'EBSDFilter',splineFilter);

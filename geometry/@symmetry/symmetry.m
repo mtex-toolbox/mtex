@@ -60,7 +60,7 @@ classdef symmetry < handle
       if sym.id>0
         lattice = symmetry.pointGroups(sym.id).lattice;
       else
-        lattice = 'unknown';
+        lattice = latticeType.none;
       end
     end
     

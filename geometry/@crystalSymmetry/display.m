@@ -45,7 +45,7 @@ if cs.id < 12
 end
 
 % add reference frame
-if any(strcmp(cs.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
+if ~cs.lattice.isEucledean
   props{end+1} = 'reference frame'; 
   propV{end+1} = option2str(cs.alignment);    
 end

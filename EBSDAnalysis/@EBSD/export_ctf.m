@@ -37,6 +37,7 @@ round0Thrsh = 1e-6;
 % pre-processing
 scrPrnt('Step','Collecting data');
 
+ebsd = reduce(ebsd,1);
 if check_option(varargin,'flipud') %Flip spatial ebsd data
   ebsd = flipud(ebsd);
   scrPrnt('Step','Flipping EBSD spatial data upside down');
@@ -161,12 +162,12 @@ for i = 1:length(CSlst)
 end
 
 % Check for deleted phases
-phaseIDs = ebsdGrid.phase;
-maxPhID = max(max(phaseIDs));   %Check maximum phase ID in phase list
+phase = ebsdGrid.phase;
+maxPhID = max(max(phase));   %Check maximum phase ID in phase list
 k = maxPhID-1;
 while k > 0
     if ~any(any(ebsdGrid.phase == 1)) %Empty phase ID, i.e. deleted phase
-       phaseIDs(phaseIDs > k) = phaseIDs(phaseIDs > k)-1; %Reduce phase ID
+       phase(phase > k) = phase(phase > k)-1; %Reduce phase ID
     end
     k = k-1;
 end
@@ -197,23 +198,71 @@ elseif ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(2,1)
 elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
    dim.y = -1;
 end
+
+ebsdList = reduce(ebsdGrid,1);
+%Compute X and Y data
+X = repmat(1:size(ebsdGrid,1),size(ebsdGrid,2),1);
+X = round(ebsdGrid.dx,5).*X(:);
+Y = repmat(1:size(ebsdGrid,1),1,size(ebsdGrid,2));
+Y = round(ebsdGrid.dy,5).*Y(:);
+
 %Gather data
-flds{1} = phaseIDs;
-flds{2} = ebsdGrid.prop.x;
-flds{3} = ebsdGrid.prop.y;
-flds{4} = ebsdGrid.prop.bands;
-flds{5} = ebsdGrid.prop.error;
-flds{6} = ebsdGrid.rotations.phi1/degree;
-flds{7} = ebsdGrid.rotations.Phi/degree;
-flds{8} = ebsdGrid.rotations.phi2/degree;
-flds{9} = ebsdGrid.prop.mad;
-flds{10} = ebsdGrid.prop.bc;
-flds{11} = ebsdGrid.prop.bs;
+flds{1} = phase(:);
+flds{2} = X;
+flds{3} = Y;
+if isfield(ebsd.prop,'bands')
+  flds{4} = ebsdList.prop.bands;
+else
+  flds{4} = zeros(size(ebsdList));
+  warning('Bands values were set to 0');
+end
+if isfield(ebsd.prop,'error')
+  flds{5} = ebsdList.prop.error;
+else
+  flds{5} = zeros(size(ebsdList));
+  warning('error values were set to 0');
+end
+flds{6} = ebsdList.rotations.phi1/degree;
+flds{7} = ebsdList.rotations.Phi/degree;
+flds{8} = ebsdList.rotations.phi2/degree;
+if isfield(ebsd.prop,'mad')
+  flds{9} = ebsdList.prop.mad;
+elseif isfield(ebsd.prop,'fit')
+  flds{9} = ebsdList.prop.fit;
+  warning('mad values were set to fit values');
+else
+  flds{9} = zeros(size(ebsdList));
+  warning('mad values were set to 0');
+end
+if isfield(ebsd.prop,'bc')
+  flds{10} = ebsdList.prop.bc;
+% elseif isfield(ebsd.prop,'imagequality')
+%   flds{10} = ebsdList.prop.imagequality;
+%   warning('bc values were set to imagequality values');
+else
+  flds{10} = zeros(size(ebsdList));
+  warning('bc values were set to 0');
+end
+if isfield(ebsd.prop,'bs')
+  flds{11} = ebsdList.prop.bs;
+elseif isfield(ebsd.prop,'semsignal')
+  flds{11} = ebsdList.prop.semsignal;
+  warning('bs values were set to semsignal values');
+else
+  flds{11} = zeros(size(ebsdList));
+  warning('bs values were set to 0');
+end
+
+% Set nan data points to 0
+for ii = 1:length(flds), flds{ii}(isnan(flds{ii})) = 0; end
+% Make X increase first
+[~,ind] = sort(ebsdList.prop.y);
 
 %Write data
-A = zeros(ebsdGrid.length,11); %initialize
+A = zeros(ebsdList.length,11); %initialize
 for i = 1:length(flds)
     temp = flds{i};
+    temp = temp(ind);
     %Transpose matrices if required
     if abs(dim.x == 2) && abs(dim.y) == 1
         temp = temp';
@@ -222,7 +271,7 @@ for i = 1:length(flds)
     if dim.x < 0, temp = fliplr(temp); end
     if dim.y < 0, temp = flipud(temp); end
     %Make vector
-    A(:,i) = reshape(temp,ebsdGrid.length,1);
+    A(:,i) = reshape(temp,ebsdList.length,1);
 end
 
 A(find(all([A(:,2)>-round0Thrsh,A(:,2)<round0Thrsh],2)),2) = 0;            %Rounding close to 0 X coordinates

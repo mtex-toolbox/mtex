@@ -45,9 +45,9 @@ classdef dislocationSystem
       if isa(sS,'slipSystem')
         
         % define edge dislocations
-        if strcmp(sS.CS.lattice,'hexagonal')
+        if sS.CS.lattice == 'hexagonal' %#ok<BDSCA>
           dS.b = 1/3 * sS.b; 
-        elseif strcmp(sS.CS.lattice,'cubic')
+        elseif sS.CS.lattice == 'cubic' %#ok<BDSCA>
           dS.b = 1/2 * sS.b;
         else
           dS.b = sS.b;

@@ -9,49 +9,21 @@ function c = char(m,varargin)
 c = cell(length(m),1);
 
 % output format
-format = extract_option(varargin,{'hkl','uvw','UVTW'});
-if ~isempty(format), m.dispStyle = format{1};end
+format = get_flag(varargin,{'hkl','hkil','uvw','UVTW'});
+if ~isempty(format), m.dispStyle = format; end
+
+
+[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle));
+
+abc = m.coordinates;
 
 for i = 1:length(m)
   
-  abc = m.subSet(i).(m.dispStyle);
-  
-  switch lower(m.dispStyle)
-
-    case {'uvw','uvtw'}
-     
-      if check_option(varargin,{'tex','latex'})
-        leftBracket = '['; %'\left\langle ';
-        rightBracket = ']';% '\right\rangle';
-      else
-        leftBracket = '[';%'<';
-        rightBracket = ']';%'>';
-      end
-    
-    case {'hkl','hkil'}
-    
-      if check_option(varargin,{'tex','latex'})
-        leftBracket = '(';%'\{';
-        rightBracket = ')';% '\}';
-      else
-        leftBracket = '(';%'{';
-        rightBracket = ')';% '}';
-      end
-      
-    otherwise
-      leftBracket = '';
-      rightBracket = '';
-      
-  end
-
-  
   % only display rounded results
-  if strcmpi(m.dispStyle,'xyz')
-    s = xnum2str(abc);
-  elseif all(isappr(round(abc),abc))
-    s = barchar(abc,varargin{:});
+  if m.dispStyle == MillerConvention.xyz
+    s = xnum2str(abc(i,:),'precision',0.1);
   else
-    s = '---';
+    s = barchar(abc(i,:),varargin{:});
   end
   
   % add scopes
@@ -69,13 +41,13 @@ function s=barchar(i,varargin)
 
 comma = check_option(varargin,'commasep');
 space = check_option(varargin,'spacesep');
-i = round(i);
+
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
-    s = [s,'\bar{',int2str(-i(j)),'}']; %#ok<AGROW>
+    s = [s,'\bar{',xnum2str(-i(j),'precision',1),'}']; %#ok<AGROW>
   else
-    s = [s,int2str(i(j))]; %#ok<AGROW>
+    s = [s,xnum2str(i(j),'precision',1)]; %#ok<AGROW>
   end
   
   if comma && j < length(i)
@@ -83,7 +55,7 @@ for j = 1:length(i)
   elseif space && j < length(i)
     s = [s,' '];
     if i(j+1)>=0, s = [s,' ']; end
-  elseif any(i>9)
+  elseif (any(i>9) || any(abs(i-round(i))>1e-3)) && j<length(i)
     s = [s,' '];
   end
 end

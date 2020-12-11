@@ -2,8 +2,17 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
+%
 %   grains = calcGrains(ebsd,'angle',10*degree)
+%
+%   % allow grains to grow into not indexed regions
+%   grains = calcGrains(ebsd('indexed'),'angle',10*degree) 
+%
+%   % do not allow grains to grow into not indexed regions
 %   grains = calcGrains(ebsd,'unitCell')
+%
+%   % follow non convex outer boundary
+%   grains = calcGrains(ebsd,'boundary','tight')
 %
 % Input
 %  ebsd   - @EBSD
@@ -12,14 +21,24 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %  grains  - @grain2d
 %
 % Options
-%  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
-%  boundary        - bounds the spatial domain ('convexhull', 'tight')
+%  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
+%  boundary         - bounds the spatial domain ('convexhull', 'tight')
 %
 % Flags
-%  unitcell     - omit voronoi decomposition and treat a unitcell lattice
+%  unitCell     - omit voronoi decomposition and treat a unitcell lattice
+%  FMC          - use fast multiscale clustering method
+%  soft         - use markovian clustering algorithm
+%  custom       - use a custom property for grain separation
+%
+% References
+%
+% * C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, L. Bassman,
+%   Boundary identification in EBSD data with a generalization of fast
+%   multiscale clustering, <https://doi.org/10.1016/j.ultramic.2013.04.009
+%   Ultramicroscopy, 2013, 133:16-25>.
 %
 % See also
-% 
+% GrainReconstruction GrainReconstructionAdvanced
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
@@ -38,12 +57,12 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
 % setup grains
-[grains, newBd] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
 
 % merge quadruple grains
-if check_option(varargin,'removeQuadruplePoints') && newBd > 0
+if check_option(varargin,'removeQuadruplePoints') && grains.qAdded > 0
 
-  gB = grains.boundary; gB = gB(length(gB)+1-(1:newBd));
+  gB = grains.boundary; gB = gB(length(gB)+1-(1:grains.qAdded));
   toMerge = false(size(gB));
        
   for iPhase = ebsd.indexedPhasesId

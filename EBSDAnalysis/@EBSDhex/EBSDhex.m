@@ -95,7 +95,7 @@ classdef EBSDhex < EBSD
       
       % extract orientations
       ori = ebsd.orientations;
-      
+            
       if ebsd.isRowAlignment
         ori_right = ori(:,[2:end end-1]);
         gX = log(ori_right,ori,'left') ./ ebsd.dHex;
@@ -106,6 +106,38 @@ classdef EBSDhex < EBSD
           gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
         end
       else
+      
+        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
+        
+        % one right
+        c = c + 1;
+        
+        % go in oposite direction at the right boundary
+        c(c>size(ebsd,2)) = c(c>size(ebsd,2))-2;
+        
+        % one up
+        r = r - xor(ebsd.offset == 1, ~iseven(c));
+                
+        % compute gradient 1
+        ind1 = sub2ind(size(ebsd), max(r,1), c);
+        gX1 = log(ori(ind1),ori,'left');
+        
+        if isfield(ebsd.prop,'grainId')
+          gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
+        end
+        
+        % compute gradient 2
+        ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
+        gX2 = log(ori(ind2),ori,'left');
+        
+        if isfield(ebsd.prop,'grainId')
+          gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
+        end
+                
+        gX = mean(cat(3,gX1,gX2),3,'omitnan') ./ ebsd.dx;
+        
+        gX(end,:) = - gX(end,:);
+        
         
       end
       
@@ -118,10 +150,10 @@ classdef EBSDhex < EBSD
       % extract orientations
       ori = ebsd.orientations;
       
-      [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
-          
       if ebsd.isRowAlignment
-      
+
+        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
+        
         % one up
         r = r+1;
         
