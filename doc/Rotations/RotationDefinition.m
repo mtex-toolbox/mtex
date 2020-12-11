@@ -1,17 +1,28 @@
 %% Defining Rotations
 %
-% In this section we describe many different ways to define or to describe
-% rotations. In the end however, every description results in an variable
-% of type <rotation.rotation.html>. 
+% MTEX offers the following functions to define rotations
+%
+% || <rotation.byEuler.html |rotation.byEuler|> || <rotation.byAxisAngle.html |rotation.byAxisAngle|> || <rotation.byMatrix.html |rotation.byMatrix|> ||
+% || <rotation.byRodrigues.html |rotation.byRodrigues|> || <rotation.byHomochoric.html |rotation.byHomochoric|> || <rotation.byQuaternion.html |rotation(quat)|> ||
+% || <rotation.id.html |rotation.id|> || <rotation.map.html |rotation.map|> || <rotation.fit.html |rotation.fit|> || 
+% || <rotation.rand.html |rotation.rand|> || <ODF.discreteSample.html |odf.discreteSample|> || <rotation.nan.html |rotation.nan|> ||
+% || <rotation.load.html |rotation.load|> || || <rotation.inversion.html |rotation.inversion|> || <rotation.mirroring.html |rotation.mirroring|>  ||
+%
+% At the end all functions return a variable of type
+% <rotation.rotation.html> which represents a list of rotations that are
+% internaly stored as <quaternion.index.html quaternions>. An overview of
+% different rotation representations by three dimensional vectors and their
+% properties can be found in the section <RotationRepresentations.html
+% Representations>.
 %
 %% Euler Angles
 %
 % One of the most common ways to describe a rotation is as three subsequent
 % rotations about fixed axes, e.g., first around the z axis, second around
 % the x axis and third again around the z. The corresponding rotational
-% angles are commonly called Euler angles. As for the axes different
-% conventions are in use. Sorted by popularity in the texture analysis
-% community these are
+% angles are commonly called Euler angles. Beside the most common |ZXZ|
+% covention other choices of the axes are sometimes used. Sorted by
+% popularity in the texture analysis community these are
 %
 % * Bunge (phi1,Phi,phi2)       - ZXZ
 % * Matthies (alpha,beta,gamma) - ZYZ
@@ -119,7 +130,28 @@ rot = rotation.map(u1,v1,u2,v2)
 % smallest angle is returned that rotates the first vector onto the second
 % one.
 
-rot = rotation.map(xvector,yvector)
+rot = rotation.map(zvector,yvector)
+
+%%
+% More generaly, one can fit a rotation |rot| to a list of left and right
+% vectors |l| and |r| such that |rot * l| is the best approximation of |r|.
+% This is done by the function <rotation.fit.html |rotation.fit|>
+
+% take five random left vectors
+left = vector3d.rand(5);
+
+% rotate them by rot and perturbe them a little bit
+right = rot * left + 0.1 * vector3d.rand(1,5);
+
+% recover the rotation rot
+rotation.fit(left,right)
+
+
+%% Radom Rotations
+%
+% MTEX offers several ways for generating random rotations. In the most 
+
+
 
 
 %% Logarithm, Exponential Mapping, Spin Tensor
@@ -140,14 +172,9 @@ rotation(exp(v))
 
 %% Quaternions
 %
-% A last possibility to describe a rotation is by quaternions given by
-% components a, b, c, d.
+% A last possibility to define a rotation is by <quaternion.quaternion.html
+% quaternion coordinates> a, b, c, d.
 
-q = quaternion(rot)
-
-%%
-% Actually, MTEX represents internally every rotation as a
-% <quaternion.quaternion.html quaternion>. To transform a quaternion back
-% into a rotation do
+q = quaternion(1,0,0,0)
 
 rot = rotation(q)
