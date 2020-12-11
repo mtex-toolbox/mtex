@@ -24,7 +24,10 @@ if MATLABverLessThan('8.6')
     ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
     'version MTEX has been tested on is Matlab 2016b (vers. 8.6).']);
 end
-  
+
+global useBSXFUN;
+useBSXFUN = MATLABverLessThan('9.6');
+     
 % path to this function to be considered as the root of the MTEX
 % installation
 local_path = fileparts(mfilename('fullpath'));

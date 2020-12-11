@@ -7,7 +7,7 @@ sl = symmetry.pointGroups;
 % search for point group
 id = [];
 for i = numel(sl):-1:1
-  if any(strcmp(name,[{sl(i).Schoen,sl(i).Inter,sl(i).lattice},sl(i).altNames]))
+  if any(strcmp(name,[{sl(i).Schoen,sl(i).Inter,char(sl(i).lattice)},sl(i).altNames]))
     id = i;
     break;
   end
