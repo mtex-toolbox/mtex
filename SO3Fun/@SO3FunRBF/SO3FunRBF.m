@@ -3,7 +3,7 @@ classdef SO3FunRBF < SO3Fun
   properties
     c0 = 0               % constant portion
     center = orientation % center of the components
-    psi = deLaValeePoussinKernel % shape of the components
+    psi = SO3deLaValleePoussin % shape of the components
     weights = []         % coefficients
   end
 
