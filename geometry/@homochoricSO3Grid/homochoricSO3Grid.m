@@ -25,7 +25,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
     res = 2*pi;                 % resolution
     oR = orientationRegion      % orientationRegion
     idxmap                      % has size of full grid (without symmetries)
-                                % 0 for points not in S3G.oR
+                                % 0 for points not in S3G.fR
                                 % enumerates the other points
   end
     
@@ -53,16 +53,40 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       N = round(2 * pi / S3G.res);
       hres = pi^(2/3) / N;
       
-      % generate the grid on the cube
-      % opposite points on the surface of the cube represent the same rotation
-      % thus the grid is shifetd by hres/2 -> no points on the surface
-      [X,Y,Z] = meshgrid(-pi^(2/3)/2+hres/2 : hres : pi^(2/3)/2-hres/2);
+      % get max angle of S3G.oR
+      maximumAngle = maxAngle(S3G.oR);
+      
+      % get number of poins along each axis s. th. grid is surely contained
+      % take the min because we never want to get more than N ;-)
+      % subtract 1 because in the naxt step both borders are contained 
+      n = min(N, 2 * ceil(maximumAngle/S3G.res) + mod(N,2)) - 1;
+      
+      % generate the smallest cube that contains all points of the grid 
+      % factor hres comes in in next step
+      [X,Y,Z] = meshgrid(-n/2:n/2);
       
       % write all coordniates of the N points (X,Y,Z) into an (N,3) array XYZ
-      XYZ = [X(:),Y(:),Z(:)];
+      XYZ = [X(:),Y(:),Z(:)] * hres;
+      
+      % shift indice for idxmap
+      % whole grid is NxNxN and we do nxnxn
+      % we calculate the indice of our grid points in the whole grid
+      
+      % half of size difference 
+      indexshift = (N-n-1) / 2;     
+      
+      % calculate coordinates of all points of the small grid
+      [x,y,z] = ind2sub([n+1,n+1,n+1],[1:(n+1)^3]);
+      
+      % add indexshift to those coordiantes and use sub2ind
+      % to get indice of our small-grid-points in the big grid
+      % we will use this for idxmap
+      indice = sub2ind([N,N,N],x+indexshift,y+indexshift,z+indexshift);
       
       % transform the points (cubochoric representation of rotations) into unit quaternions
       q = cube2quat(XYZ);
+      
+      % check, wcih ones are inside the S3G.oR
       inside = checkInside(S3G.oR,q);
       
       S3G.a = q.a(inside)';
@@ -71,11 +95,17 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       S3G.d = q.d(inside)';
       S3G.i = false(size(S3G.a));
       
+      % initialize idxmap 
       S3G.idxmap = zeros(N^3,1);
-      S3G.idxmap(inside) = [1:sum(inside)]';
+      
+      % use calculated indice from above
+      % idxmap is zero if point isnt inside fR
+      % we enumerate the other points
+      S3G.idxmap(indice(inside)) = [1:sum(inside)]';
       
       % normalize
       S3G = normalize(S3G);
+      
     end
     
     

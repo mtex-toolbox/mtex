@@ -23,7 +23,7 @@ function [id,dist] = find(S3G,ori,varargin)
 %
 
 % project oris to fundamental Region
-ori = project2FundamentalRegion(ori,S3G.CS);
+ori = project2FundamentalRegion(ori, S3G.CS, S3G.SS);
 
 % translate input (ori) into cubochoric coordinates
 xyz = quat2cube(ori);
