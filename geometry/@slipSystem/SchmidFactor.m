@@ -41,7 +41,9 @@ elseif isa(sigma,'vector3d')
 elseif isa(sigma,'stressTensor')
   
   % normalize the stress tensor
-  sigma = sigma.normalize;
+  % such that the resulting Schmid factor is always between [0, 0.5]
+  EV = eig(sigma);
+  sigma = sigma ./ reshape(EV(3,:)-EV(1,:),size(sigma));
   
   if length(sigma) == 1
     SF = EinsteinSum(sigma,[-1,-2],n,-1,b,-2);
