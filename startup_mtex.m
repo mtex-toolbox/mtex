@@ -69,6 +69,12 @@ p();
 mtex_settings;
 p();
 
+% noOpenMP - reset path
+if ~getMTEXpref('openMP')
+  rmpath([mtex_path filesep 'extern' filesep 'nfft_openMP'])
+  addpath([mtex_path filesep 'extern' filesep 'nfft'])
+end
+
 % check installation
 check_installation;
 p();
@@ -86,6 +92,13 @@ if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
 else
   disp(' done!')
+end
+
+if ~getMTEXpref('openMP')
+  disp(' ')
+  disp(' For compatibility reasons MTEX is not using OpenMP.');
+  disp(' You may want to switch on OpenMP in the file <a href="matlab: edit mtex_settings">mtex_settings.m</a>');
+  disp(' ')
 end
 
 if isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
