@@ -88,9 +88,9 @@ end
 
 % sum over the dimensions to be removed
 if useBSXFUN
-  if rDel>0, M1 = sum(M1,1:rDel); end
-else
   for d = 1:rDel, M1 = sum(M1,d); end
+else
+  if rDel>0, M1 = sum(M1,1:rDel); end
 end
 
 % and remove these leading dimensions
