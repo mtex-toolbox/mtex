@@ -24,15 +24,13 @@ if MATLABverLessThan('8.6')
     ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
     'version MTEX has been tested on is Matlab 2016b (vers. 8.6).']);
 end
-  
+    
 % path to this function to be considered as the root of the MTEX
 % installation
 local_path = fileparts(mfilename('fullpath'));
 
 % needs installation ?
-if ~isdeployed
-    do_install(local_path);
-end
+if ~isdeployed, do_install(local_path); end
 
 % initialize MTEX
 fprintf('initialize');
@@ -50,10 +48,7 @@ end
 p();
 
 % setup search path
-if ~isdeployed
-    setMTEXPath(local_path);
-    p();
-end
+if ~isdeployed, setMTEXPath(local_path); p(); end
 
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
@@ -66,16 +61,26 @@ p();
 mtex_settings;
 p();
 
+% noOpenMP - reset path
+if ~getMTEXpref('openMP')
+  rmpath([mtex_path filesep 'extern' filesep 'nfft_openMP'])
+  addpath([mtex_path filesep 'extern' filesep 'nfft'])
+end
+
+% old Matlab version
+global useBSXFUN;
+useBSXFUN = MATLABverLessThan('9.6');
+
 % check installation
 check_installation;
 p();
 
 % make help searchable
 if ~isdeployed
-    if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
-      disp('Creating search data base for MTEX documentation.')
-      builddocsearchdb(fullfile(local_path,'doc','html'));
-    end
+  if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
+    disp('Creating search data base for MTEX documentation.')
+    builddocsearchdb(fullfile(local_path,'doc','html'));
+  end
 end
 
 % finish
@@ -83,6 +88,13 @@ if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
 else
   disp(' done!')
+end
+
+if ~getMTEXpref('openMP')
+  disp(' ')
+  disp(' For compatibility reasons MTEX is not using OpenMP.');
+  disp(' You may want to switch on OpenMP in the file <a href="matlab: edit mtex_settings">mtex_settings.m</a>');
+  disp(' ')
 end
 
 if isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')

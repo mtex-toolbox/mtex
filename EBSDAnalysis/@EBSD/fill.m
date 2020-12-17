@@ -8,14 +8,24 @@ function ebsd = fill(ebsd,varargin)
 % Input
 %  ebsd - @EBSD
 %  grains - @grain2d
+%
+% Options
+%  extrapolate - extrapolate up the the outer boundaries
+%
 
 if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 
 % the values to be filled
 nanId = isnan(ebsd.phaseId);
 
+if check_option(varargin,'extrapolate')
+  opt = 'nearest';
+else
+  opt = 'none';
+end
+
 F = scatteredInterpolant([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
-  find(~nanId),'nearest','none'); 
+  find(~nanId),'nearest',opt); 
 
 newId = F(ebsd.prop.x(nanId),ebsd.prop.y(nanId));
 

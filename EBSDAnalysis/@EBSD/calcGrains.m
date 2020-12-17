@@ -57,12 +57,12 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
 % setup grains
-[grains, newBd] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
 
 % merge quadruple grains
-if check_option(varargin,'removeQuadruplePoints') && newBd > 0
+if check_option(varargin,'removeQuadruplePoints') && grains.qAdded > 0
 
-  gB = grains.boundary; gB = gB(length(gB)+1-(1:newBd));
+  gB = grains.boundary; gB = gB(length(gB)+1-(1:grains.qAdded));
   toMerge = false(size(gB));
        
   for iPhase = ebsd.indexedPhasesId

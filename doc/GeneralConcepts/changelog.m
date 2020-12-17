@@ -1,5 +1,12 @@
 %% MTEX Changelog
 %
+%% MTEX 5.5.2 12/2020
+%
+% * fixes incompatibilities with Matlab versions earlier then 2019b
+% * for compatibility reasons MTEX does by default not make use of openMP.
+% You can gain additional speed by switching on openMP in the file
+% <GeneralConceptsConfiguration.html |mtex_settings.m|>
+%
 %% MTEX 5.5.0 11/2020
 %
 % *Orientation Embeddings*
