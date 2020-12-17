@@ -1,10 +1,10 @@
 classdef SO3FunRBF < SO3Fun
 
   properties
-    c0 = 0               % constant portion
-    center = orientation % center of the components
+    c0 = 0                     % constant portion
+    center = orientation       % center of the components
     psi = SO3deLaValleePoussin % shape of the components
-    weights = []         % coefficients
+    weights = []               % coefficients
   end
 
   properties (Dependent = true)
@@ -73,4 +73,18 @@ classdef SO3FunRBF < SO3Fun
     end
     
   end
+  
+  methods (Static = true)
+    
+    function test
+      
+      mtexdata dubna
+      
+      odf = calcODF(pf);
+      
+      
+      
+    end
+  end
+  
 end

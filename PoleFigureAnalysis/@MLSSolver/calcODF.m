@@ -14,39 +14,36 @@ solver.iterMin = get_option(varargin,'iterMin',5);
 if solver.iterMax < solver.iterMin
     solver.iterMax=solver.iterMin;
 end
+
 % display
 format = [' %s |' repmat('  %1.2f',1,solver.pf.numPF) '\n'];
 
 do_iterate;
 
-% extract result
-odf = solver.odf;
+% extract alpha - this might change during ghost correct - this is the
+% correct one
 alpha = solver.alpha;
 
 % ---------------- ghost correction ----------------------------
 
 % determine phon
-phon = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ solver.alpha(1:length(solver.pf.allI)));
+solver.c0 = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ alpha(1:length(solver.pf.allI)));
 
-if phon > 0.99
-  odf = uniformODF(solver.CS,solver.SS);
-  return
-elseif phon > 0.1 && ~check_option(varargin,'noGhostCorrection')
-  vdisp(['  I''m going to apply ghost correction. Uniform portion fixed to ',xnum2str(phon)],varargin{:});
-else
-  return
+if solver.c0 > 0.1 && solver.c0 < 0.99 && ~check_option(varargin,'noGhostCorrection')
+  vdisp(['  I''m going to apply ghost correction. Uniform portion fixed to ',xnum2str(solver.c0)],varargin{:});
+
+  % subtract uniform portion from intensities
+  solver.pf = max(0,solver.pf - alpha .* solver.c0);
+
+  % reset solution
+  solver.c = [];
+
+  do_iterate;
+
 end
 
-% subtract uniform portion from intensities
-solver.pf = max(0,solver.pf - alpha .* phon);
-
-% reset solution
-solver.c = [];
-
-do_iterate;
-
-% return ODF
-odf = phon * uniformODF(solver.CS,solver.SS) + (1-phon) * solver.odf;
+% extract result
+odf = solver.odf;
 
 % ---------------------- the main loop --------------------------
   function do_iterate

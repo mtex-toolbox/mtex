@@ -60,6 +60,9 @@ end
 % convolve with radon transformed kernel function
 S2F = 4 * pi * conv(S2F,SO3F.psi.radon) ;
 
+% add uniform portion
+S2F = S2F + sqrt(4*pi)*SO3F.c0;
+
 % globaly set antipodal
 if check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
     (nargin > 1 && ~isempty(h) && h.antipodal) || ...

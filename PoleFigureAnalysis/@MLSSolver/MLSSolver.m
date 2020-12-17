@@ -33,6 +33,7 @@ classdef MLSSolver < pf2odfSolver
     psi     % kernel function
     S3G     % SO3Grid
     c       % current coefficients
+    c0      % constant portion
     weights % cell
     zrm     % zero range method
     ghostCorrection = 1
@@ -93,9 +94,9 @@ classdef MLSSolver < pf2odfSolver
       end
         
       % get kernel
-      psi = deLaValleePoussinKernel('halfwidth',...
+      psi = SO3deLaValleePoussin('halfwidth',...
         get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},solver.S3G.resolution,'double'));
-      solver.psi = getClass(varargin,'kernel',psi);
+      solver.psi = getClass(varargin,'SO3Kernel',psi);
             
       % get other options
       solver.iterMin = get_option(varargin,'iterMin',solver.iterMin);
@@ -134,7 +135,12 @@ classdef MLSSolver < pf2odfSolver
     end
     
     function odf = get.odf(solver)
-      odf = unimodalODF(solver.S3G,solver.psi,'weights',solver.c./sum(solver.c));
+      if solver.c0 > 0.99
+        odf = SO3FunHarmonic(1,solver.CS, solver.SS);
+      else
+        odf = SO3FunRBF(solver.S3G,solver.psi,...
+          (1-solver.c0)*solver.c./sum(solver.c), solver.c0);
+      end   
     end
     
   end

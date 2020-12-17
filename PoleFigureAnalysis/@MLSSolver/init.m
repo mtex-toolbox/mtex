@@ -17,6 +17,9 @@ nfsftmex('precompute', bw, 1000, 1, 0);
 % extend coefficients
 solver.A = repelem(A,2*(0:bw)+1);
 
+% set constant portion
+solver.c0 = 0;
+
 % free previously allocated nfft plans
 solver.free_nfft;
 
