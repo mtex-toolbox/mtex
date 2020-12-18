@@ -154,7 +154,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % merge all inclusions that a fever pixels then a certain threshold into
 % the surrounding parent grains.
 
-job.mergeInclusions('minSize',50)
+job.mergeInclusions('maxSize',50)
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
@@ -168,7 +168,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % the parent phase orientation. This is done by the command
 % <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|>
 
-[parentEBSD,fit] = job.calcParentEBSD;
+parentEBSD = job.calcParentEBSD;
 
 % plot the result
 color = ipfKey.orientation2color(parentEBSD('Ti (Beta)').orientations);

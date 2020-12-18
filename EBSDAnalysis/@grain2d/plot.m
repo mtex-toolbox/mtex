@@ -47,9 +47,7 @@ end
 
 plotBoundary = true;
 % allow to plot grain faces only without boundaries
-if check_option(varargin,'noBoundary')
-plotBoundary = false;
-end
+if check_option(varargin,'noBoundary'),plotBoundary = false; end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
