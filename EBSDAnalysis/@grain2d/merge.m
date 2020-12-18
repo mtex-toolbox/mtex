@@ -24,8 +24,8 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %   % merge grains with small misorientation angle
 %   [grainsMerged,parentId] = merge(grains,'threshold',delta)
 % 
-%   % merge inclusions
-%   [grainsMerged,parentId] = merge(grains,'inclusions')
+%   % merge all inclusions with a minimum pixel size
+%   [grainsMerged,parentId] = merge(grains,'inclusions','minSize',5)
 %
 % Input
 %  grains   - @grain2d
@@ -37,6 +37,10 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 % Output
 %  grainsMerged - @grain2d
 %  parentId      - a list of the same size as grains containing the ids of the merged grains
+%
+% Options
+%  threshold - maximum misorientation angle to be merged as similar
+%  minSize  - minimum number of pixels to be merged as an inclusion 
 %
 % Example:
 %
@@ -83,6 +87,7 @@ for k = 1:length(varargin)
   elseif ischar(varargin{k}) && strcmpi(varargin{k},'inclusions')
     
     [isIncl, hostId] = grains.isInclusion;
+    isIncl = isIncl & grains.grainSize < get_option(varargin,'minSize',inf);
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
