@@ -7,7 +7,7 @@ classdef parentGrainReconstructor < handle
     p2c       % parent to childe orientation relationship
     
     ebsd      % initial / measured EBSD
-    grainsI   % initial / measured grains 
+    grainsMeasured % initialy measured grains 
     grains    % reconstructed grains
 
     mergeId   % a list of ids to the merged grains
@@ -28,8 +28,9 @@ classdef parentGrainReconstructor < handle
     isTransformed   % child grains that have been reverted from child to parent phase
     isMerged        % child grains that have been merged into a parent grain    
     
-    parentGrains
-    childGrains
+    transformedGrains  % transformed measured grains 
+    parentGrains       % 
+    childGrains        %
     
     variantId       %
     packetId        %
@@ -44,7 +45,7 @@ classdef parentGrainReconstructor < handle
       % set up ebsd and grains
       job.ebsd = ebsd;
       job.grains = getClass(varargin,'grain2d');
-      job.grainsI = job.grains;
+      job.grainsMeasured = job.grains;
       
       if isempty(job.grains)
         [job.grains, job.ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
@@ -102,7 +103,7 @@ classdef parentGrainReconstructor < handle
       %reconstructed?
       %Then we could use this to return the area fraction of reconstructed
       %phase
-      out = job.grainsI.phaseId == job.childPhaseId & ...
+      out = job.grainsMeasured.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
     
@@ -118,31 +119,38 @@ classdef parentGrainReconstructor < handle
       
     end
     
+    function out = get.transformedGrains(job)
+      out = job.grainsMeasured(job.isTransformed);
+    end
+    
+    function set.transformedGrains(job,grains)
+      job.grainsMeasured(job.isTransformed) = grains;
+    end
     
     function out = get.packetId(job)
       
-      if isfield(job.grainsI.prop,'packetId')
-        out = job.grainsI.prop.packetId;
+      if isfield(job.grainsMeasured.prop,'packetId')
+        out = job.grainsMeasured.prop.packetId;
       else
-        out = NaN(size(job.grainsI));
+        out = NaN(size(job.grainsMeasured));
       end
     end
     
     function set.packetId(job,id)
-      job.grainsI.prop.packetId = id;
+      job.grainsMeasured.prop.packetId = id;
     end
     
     function out = get.variantId(job)
       
-      if isfield(job.grainsI.prop,'variantId')
-        out = job.grainsI.prop.variantId;
+      if isfield(job.grainsMeasured.prop,'variantId')
+        out = job.grainsMeasured.prop.variantId;
       else
-        out = NaN(size(job.grainsI));
+        out = NaN(size(job.grainsMeasured));
       end
     end
     
     function set.variantId(job,id)
-      job.grainsI.prop.variantId = id;
+      job.grainsMeasured.prop.variantId = id;
     end
     
   end
