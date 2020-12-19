@@ -1,5 +1,18 @@
 function job = calcParentFromVote(job,varargin)
 %
+% Syntax
+%
+%  % take majority vote
+%  job.calcParentFromVote('minFit',2*degree,'minVotes',2)
+%
+%  % all votes must be equal
+%  job.calcParentFromVote('strict','minVotes',2)
+%
+%  % go by probability
+%  job.calcParentFromVote('probability','threshold',1.5*degree,'tolerance',1.5*degree,'minProb',0.6)
+%  
+%
+%
 % Input
 %  job - @parentGrainReconstructor
 %
@@ -7,34 +20,53 @@ function job = calcParentFromVote(job,varargin)
 %  job - @parentGrainReconstructor
 %
 % Options
+%  probability - 
 %  strict - require all votes to be equal
 %  minFit - minimum required fit
 %  maxFit - maximum second best fit
 %  minVotes - minimum number of required votes
+%  minProb  - minimum probability
 
 
 assert(~isempty(job.votes),'You need to compute votes first.');
 
-% consider only consistent votes
-minFit = get_option(varargin,'minFit',inf);
-maxFit = get_option(varargin,'maxFit',-inf);
 
-consistenVotes = job.votes.fit(:,1) < minFit;
-vdisp(' ',varargin{:})
-vdisp(['  votes   fit < misFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
-if size(job.votes.fit,2)>1
-  consistenVotes = consistenVotes & job.votes.fit(:,2) > maxFit;
-  vdisp(['  votes  fit2 > maxFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
+if check_option(varargin,'probability')
+  
+   threshold = get_option(varargin,'threshold',2*degree);
+   tol = get_option(varargin,'tolerance',1.5*degree);
+ 
+   prob = 1 - 0.5 * (1 + erf(2*(job.votes.fit - threshold)./tol));
+   prob(prob<1e-2) = 0;
+   
+   % perform voting
+   [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,2), ...
+     job.votes.parentId, max(job.grains.id),'weights',prob);
+   
+else
+
+  % consider only consistent votes
+  minFit = get_option(varargin,'minFit',inf);
+  maxFit = get_option(varargin,'maxFit',-inf);
+
+  consistenVotes = job.votes.fit(:,1) < minFit;
+  vdisp(' ',varargin{:})
+  vdisp(['  votes   fit < misFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
+  if size(job.votes.fit,2)>1
+    consistenVotes = consistenVotes & job.votes.fit(:,2) > maxFit;
+    vdisp(['  votes  fit2 > maxFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
+  end
+
+  job.votes = job.votes(consistenVotes,:);
+
+  % perform voting
+  [parentId, numVotes] = majorityVote( job.votes.grainId, ...
+    job.votes.parentId(:,1), max(job.grains.id),varargin{:});
+  
 end
 
-job.votes = job.votes(consistenVotes,:);
-
-% perform voting
-[parentId, numVotes] = majorityVote( job.votes.grainId, ...
-  job.votes.parentId(:,1), max(job.grains.id),varargin{:});
-
 % which child grains to transform
-doTransform = numVotes > get_option(varargin,'minVotes',0);
+doTransform = numVotes > get_option(varargin,{'minVotes','minProb'},0);
 vdisp(['  numVotes > minVotes:  ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
 vdisp(' ',varargin{:})
 
