@@ -51,7 +51,7 @@ classdef parentGrainReconstructor < handle
         [job.grains, job.ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
       end
       
-      job.mergeId = 1:length(job.grains);
+      job.mergeId = (1:length(job.grains)).';
       
       % check for provided orientation relationship
       job.p2c = getClass(varargin,'orientation');
