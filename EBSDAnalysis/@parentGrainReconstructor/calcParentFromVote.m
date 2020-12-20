@@ -40,7 +40,7 @@ if check_option(varargin,'probability')
    prob(prob<1e-2) = 0;
    
    % perform voting
-   [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,2), ...
+   [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,size(prob,2)), ...
      job.votes.parentId, max(job.grains.id),'weights',prob);
    
 else
