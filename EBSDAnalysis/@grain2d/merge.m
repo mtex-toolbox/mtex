@@ -126,19 +126,32 @@ for k = 1:length(varargin)
 end
 A = A(1:maxId,1:maxId);
 
-% ids of the grains to merge
-doMerge = any(A,1) | any(A,2).';
+% maybe we provide old2newId directly
+if isnumeric(varargin{1}) && length(varargin{1}) == length(grains) && size(varargin{1},2)==1
+  
+  old2newId = varargin{1};
+  
+  keepId = [];
+  keepInd = [];
+  
+else
 
-% 2. determine grains not to touch and sort them first
-keepId = find(~doMerge);
-keepInd = grains.id2ind(keepId);
-old2newId = zeros(maxId,1);
-old2newId(keepId) = 1:numel(keepId);
+  % ids of the grains to merge
+  doMerge = any(A,1) | any(A,2).';
 
-% 3. determine which grains to merge
-subA = A(doMerge,doMerge);
-subA = subA | subA.';
-old2newId(doMerge) =  numel(keepId) + connectedComponents(subA);
+  % 2. determine grains not to touch and sort them first
+  keepId = find(~doMerge);
+  keepInd = grains.id2ind(keepId);
+  old2newId = zeros(maxId,1);
+  old2newId(keepId) = 1:numel(keepId);
+
+  % 3. determine which grains to merge
+  subA = A(doMerge,doMerge);
+  subA = subA | subA.';
+  old2newId(doMerge) =  numel(keepId) + connectedComponents(subA);
+  
+end
+  
 
 % and in the old grains
 parentId = old2newId(grains.id);
