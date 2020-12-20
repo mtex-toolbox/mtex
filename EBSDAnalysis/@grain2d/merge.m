@@ -76,11 +76,13 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,2),mergeId(:,3),1,maxId+1,maxId+1);
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
-  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1)
+  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) 
+    % adjecency matrix
     
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
     
-  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
+  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 
+    % pairs of grains
     
     A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
     
@@ -99,14 +101,16 @@ for k = 1:length(varargin)
     delta = get_option(varargin,'threshold');
     
     grainPairs = unique(grains.boundary.grainId,'rows');
-    grainPairs = grainPairs(all(grainPairs ~= 0,2),:);
+    indPairs = id2ind(grains,grainPairs);
+    grainPairs = grainPairs(all(indPairs ~= 0,2),:);
+    indPairs = indPairs(all(indPairs ~= 0,2),:);
     
     for phId = grains.indexedPhasesId
       
-      ind = all(grains.phaseId(grainPairs)==phId,2);
+      ind = all(grains.phaseId(indPairs)==phId,2);
       
       % extract the meanorientations
-      oriPairs = orientation(grains.prop.meanRotation(grainPairs(ind,:)),grains.CSList{phId});
+      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList{phId});
       oriPairs = reshape(oriPairs,[],2);
       
       % check mean orientation difference is below a threshold
