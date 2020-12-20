@@ -51,7 +51,7 @@ if length(grains) == 1
   
   % remove inclusion embeddings
   if grains.inclusionId > 0
-    ie = any(FNew == FNew(1),2);
+    ie = sum(FNew == FNew(1),2)==1;
     ie([1,end-grains.inclusionId]) = false;
     FNew(ie,:) = [];
   end
