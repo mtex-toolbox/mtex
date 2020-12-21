@@ -29,7 +29,7 @@ end
 
 % which are the original grains to revert
 % doRevert = ismember(job.mergeId, ind);
-doRevert = ind(job.mergeId);
+doRevert = ind(job.mergeId) & job.isTransformed;
 
 % we may have two situations
 % 1. grains to revert have not yet been merged
@@ -67,28 +67,6 @@ elseif 1 % we do not undo the merge but we redo the merge of the remaining grain
   
   job.grains = grains;
   job.mergeId = mergeId;
-  
-else
-  
-  % incidencs matrix measured grains -> old grains
-  %I = sparse((1:length(job.grainsMeasured)).',job.mergeId,true);
-  
-  % remove those incidences to to be reverted
-  %I(doRevert,:) = false;
-  
-  % ensure grains are indeed parent grains
-  %assert(all(job.grains.phaseId(ind) == job.parentPhaseId));
-
-  % remove grains to be reverted
-  job.grains(ind) = [];
-
-  % update mergeId
-  job.mergeId(doRevert) = length(job.grains) + (1:nnz(doRevert));
-  shift = cumsum(doRevert);
-  job.mergeId(~doRevert) = job.mergeId(~doRevert) - shift(~doRevert);
-
-  % include original grains
-  job.grains = [job.grains,job.grainsMeasured(doRevert)];
 
 end
 
