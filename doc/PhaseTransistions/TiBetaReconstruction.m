@@ -54,16 +54,37 @@ job = parentGrainReconstructor(ebsd, grains, beta2alpha)
 
 %%
 % The output of the |job| variable allows you to keep track of the amount
-% of already recovered parent grains. The following operations are
-% available for parent grain reconstruction and can be applied multiple
+% of already recovered parent grains. Using the variable |job| you have
+% access to the following properties
+%
+% * |job.grainsMeasured| - the reference grain reconstruction from your EBSD
+% data
+% * |job.grains| - the grains at the current stage of parent grain
+% reconstruction
+% * |job.mergeId| - the relationship between the reference grains
+% |job.grainsMeasured| and the current grains |job.grains|, i.e.,
+% |job.grainsMeasured(ind)| goes into the merged grain
+% |job.grains(job.mergeId(ind))|
+% * |job.numChilds| - number of childs of each current parent grain
+% * |job.parenGrains| - the current parent grains
+% * |job.childGrains| - the current child grains
+% * |job.isTransformed| - which of the |grainsMeasured| have a computed
+% parent
+% * |job.isMerged| - which of the |grainsMeasured| have been merged into a parent grain
+% * |job.transformedGrains| - child grains in |grainsMeasured| with computed
+% parent grain
+%
+% Additionaly, the <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|> class provides the following operations for
+% parent grain reconstruction. These operators can be applied multiple
 % times and in any order to archieve the best possible reconstruction.
 %
-% * detect child/child and parent/child grain boundaries
-% * detect child/child/child triple points
-% * recover parent grains from votes
-% * recover parent grains from graph clustering
-% * merge similar parent grains
-% * merge inclusions
+% * |job.calcGBVotes| - detect child/child and parent/child grain boundaries
+% * |job.calcTPVotes| - detect child/child/child triple points
+% * |job.calcParentFromVote| - recover parent grains from votes
+% * |job.calcParentFromGraph| - recover parent grains from graph clustering
+% * |job.mergeSimilar| - merge similar parent grains
+% * |job.mergeInclusions| - merge inclusions
 %
 %% Compute parent orientations from triple junctions
 %
@@ -96,6 +117,8 @@ job.calcTPVotes('numFit',2)
 % into a parent grain.
 
 job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',2.5*degree,'minVotes',1)
+
+%job.calcParentFromVote('probability', 'threshold',2*degree,'tolerance',2*degree)
 
 %%
 % We observe that after this step more then 90 percent of the grains became
