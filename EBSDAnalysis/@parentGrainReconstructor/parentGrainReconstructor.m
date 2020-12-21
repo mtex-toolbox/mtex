@@ -24,7 +24,7 @@ classdef parentGrainReconstructor < handle
   end
   
   properties (Dependent=true)
-    numParents      % number of child grains for each parent grain
+    numChilds       % number of child grains for each parent grain
     isTransformed   % child grains that have been reverted from child to parent phase
     isMerged        % child grains that have been merged into a parent grain    
     
@@ -87,13 +87,13 @@ classdef parentGrainReconstructor < handle
       id = job.ebsd.cs2phaseId(job.csChild);
     end
     
-    function out = get.numParents(job)
+    function out = get.numChilds(job)
       out = accumarray(job.mergeId,1);
     end
     
     function out = get.isMerged(job)
       % the merged ones are those 
-      out = job.numParents(job.mergeId)>1;
+      out = job.numChilds(job.mergeId)>1;
     end
     
     function out = get.isTransformed(job)
