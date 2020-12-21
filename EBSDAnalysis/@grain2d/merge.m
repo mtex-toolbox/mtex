@@ -36,7 +36,7 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %
 % Output
 %  grainsMerged - @grain2d
-%  parentId      - a list of the same size as grains containing the ids of the merged grains
+%  parentId     - a list of the same size as grains containing the ids of the merged grains
 %
 % Options
 %  threshold - maximum misorientation angle to be merged as similar
@@ -79,6 +79,7 @@ for k = 1:length(varargin)
   elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) 
     % adjecency matrix
     
+    % this supindexing is required as varargin{k} is only maxId x maxId
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
     
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 
@@ -148,10 +149,9 @@ else
   % 3. determine which grains to merge
   subA = A(doMerge,doMerge);
   subA = subA | subA.';
-  old2newId(doMerge) =  numel(keepId) + connectedComponents(subA);
+  old2newId(doMerge) =  numel(keepId) + connectedComponents(subA); 
   
 end
-  
 
 % and in the old grains
 parentId = old2newId(grains.id);
