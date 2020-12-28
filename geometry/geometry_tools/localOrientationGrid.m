@@ -4,6 +4,7 @@ function ori = localOrientationGrid(CS,SS,maxAngle,varargin)
 % Syntax
 %
 %   ori = localOrientationGrid(CS,SS,maxAngle,'center',center)
+%   ori = localOrientationGrid(center,maxAngle,'resolution',1*degree)
 % 
 % Input
 %  CS       - @symmetry
