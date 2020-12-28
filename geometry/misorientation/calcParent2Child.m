@@ -45,15 +45,13 @@ p2cOld = p2c;
 disp(' ');
 disp(' searching orientation relationship');
 
-% iterate until convergance
+% iterate
 for k = 1:maxIt
   
-  diso(k) = angle(p2c,p2cOld)/degree;
+  % stop iteration if convergence
+  if k>1 && angle(p2c,p2cOld) < 0.1*degree, break; end
   p2cOld = p2c;
     
-  %check for convergence
-  if k>5 && median(diso(k-5:k)) < 0.5, break; end
-  
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
   
