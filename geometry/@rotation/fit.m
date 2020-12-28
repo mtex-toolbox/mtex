@@ -29,13 +29,16 @@ function rot = fit(l,r,varargin)
 % 629.
 %
 
+if check_option(varargin,'antipodal') || l.antipodal || r.antipodal
+  warning('antipodal symmetry not yet supported in rotation.fit');
+end
 
 w = get_option(varargin,'weights');
 if ~isempty(w), l = l .* w; end
 
 M = l * r;
 
-switch lower(get_option(varargin,'method','kabsch'))
+switch lower(get_option(varargin,'method','horn'))
   
   case 'horn' % quaternion based method
     
@@ -47,20 +50,9 @@ switch lower(get_option(varargin,'method','kabsch'))
       MA(3,1)    MS(1,2)              M(2,2)-M(1,1)-M(3,3) MS(2,3);
       MA(1,2)    MS(1,3)              MS(2,3)              M(3,3)-M(1,1)-M(2,2)];
     
-    [V,lambda] = eig(N);
-    [lambda,idx] = sort(diag(lambda));
-    for i=1:1:length(idx)
-      W(:,i)=V(:,idx(i));
-    end
-    V = W;
-
-    % this is to cover the antipodal case -> TODO
-    if length(l)== 3 && -min(lambda)>2*max(lambda)
-      r(end) = -r(end);
-      rot = rotation.fit(l,r);
-    else
-      rot = rotation(quaternion(V(:,4)));
-    end
+    [V,~] = eig(N);
+    
+    rot = rotation(V(:,4).');
     
   case 'kabsch' % Kabsch algorithm
     
