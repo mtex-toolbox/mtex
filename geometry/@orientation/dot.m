@@ -73,6 +73,10 @@ if isa(o1,'orientation')
       qcs = rotation.id;
     end
   end
+  
+  if check_option(varargin,'noSym2'), qss = []; end
+  if check_option(varargin,'noSym1'), qcs = []; end
+  
 else
   
   oneIsLaue = isLaue(o2.SS) || isLaue(o2.CS);
@@ -97,7 +101,7 @@ ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
 
 
 % we have different algorithms depending whether one vector is single
-if length(qss) == 1 % no specimen symmetry
+if length(qss) <= 1 % no specimen symmetry
 
   % this is inv(o1) .* o2
   mori = itimes(o1,o2,1);
@@ -107,6 +111,15 @@ if length(qss) == 1 % no specimen symmetry
       
   d = reshape(d,size(mori));
   
+elseif length(qcs) <= 1 % no crystal symmetry
+  
+  % this is o1 .* inv(o2)
+  mori = itimes(o1,o2,0);
+
+  % take the maximum over all symmetric equivalent
+  d = max(dot_outer(mori,qss,'noSymmetry'),[],2);
+      
+  d = reshape(d,size(mori));
 
 elseif length(o1) == 1
 
