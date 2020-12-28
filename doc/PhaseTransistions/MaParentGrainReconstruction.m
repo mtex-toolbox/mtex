@@ -81,10 +81,37 @@ close all
 histogram(job.fit./degree)
 xlabel('disorientation angle')
 
+%%
+% We may also explicitely compute the misfit for all child to child
+% boundaries using the command <parentGrainReconstructor.calcGBFit.html
+% |calcGBFit|>. Beside the list |fit| it returns also the list of grain
+% pairs for which these fits have been computed. Using th command
+% <grainBoundary.selectByGrainId.html |selectByGrainId|> we can find the
+% corresponding boundary segments and colorize them according to this
+% misfit.
+
+% compute the misfit for all child to child grain neighbours
+[fit,c2cPairs] = job.calcGBFit;
+
+% select grain boundary segments by grain ids
+[gB,pairId] = job.grains.boundary.selectByGrainId(c2cPairs);
+
+% plot the child phase
+plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
+
+% and on top of it the boundaries colorized by the misfit
+hold on;
+plot(gB, fit(pairId) ./ degree,'linewidth',2);
+hold off
+
+setColorRange([2.5,5])
+mtexColorMap white2black
+mtexColorbar
+
 %% Graph based parent grain reconstruction
 %
-% Next we set up a graph that where each edge describes two neighbouring
-% grain and the value of this edge is the probability that these two grains
+% Next we set up a graph where each edge describes two neighbouring grains
+% and the value of this edge is the probability that these two grains
 % belong to the same parent grain. This graph is computed by the function
 % <parentGrainReconstructor.buildGraph.html |buildGraph|>. The probability
 % is computed from the misfit of the misorientation between the two child
@@ -94,7 +121,7 @@ xlabel('disorientation angle')
 % probability is exactly 50 percent and the standard deviation
 % |'tolerance'|.
 
-job.buildGraph('treshold',2*degree,'tolerance',1.5*degree)
+job.buildGraph('threshold',2*degree,'tolerance',1.5*degree)
 
 %% 
 % We may visualize th graph by coloring the boundary between grains

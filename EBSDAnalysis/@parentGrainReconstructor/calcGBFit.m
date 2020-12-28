@@ -5,6 +5,13 @@ function [fit, c2cPairs] = calcGBFit(job,varargin)
 %
 %   [fit, c2cPairs] = job.calcGBFit
 %
+%   % visualize the result
+%   [fit,c2cPairs] = job.calcGBFit;
+%   [gB,pairId] = job.grains.boundary.selectByGrainId(c2cPairs);
+%   plot(gB, fit(pairId) ./ degree,'linewidth',2);
+%   setColorRange([2,8])
+%   mtexColorMap white2black
+%
 % Input
 %  job - @parentGrainReconstructor
 %

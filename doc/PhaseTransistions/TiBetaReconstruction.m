@@ -116,7 +116,7 @@ job.calcTPVotes('numFit',2)
 % votes as specified by the option |minVotes| the child grain is turned
 % into a parent grain.
 
-job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',2.5*degree,'minVotes',1)
+job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',3.5*degree,'minVotes',1)
 
 %job.calcParentFromVote('probability', 'threshold',2*degree,'tolerance',2*degree)
 
@@ -146,7 +146,7 @@ job.calcGBVotes;
 % <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
 % to 
 
-job.calcParentFromVote('minFit',5*degree,'maxFit',5*degree,'minVotes',1)
+job.calcParentFromVote('minFit',5*degree,'maxFit',5*degree,'minVotes',0)
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
