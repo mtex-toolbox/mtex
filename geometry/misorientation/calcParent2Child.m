@@ -72,7 +72,7 @@ for k = 1:maxIt
   ind = omega < min(threshold, quantile(omega, 0.5));
   
   % current fit
-  disp(['  ' char(p2c) ' ' xnum2str(mean(omega(ind)) ./ degree)])
+  disp(['  ' fillStr(char(p2c),22) xnum2str(mean(omega(ind)) ./ degree)])
   
   % comute p2c misorientations for all variants
   p2cCandidates = [];

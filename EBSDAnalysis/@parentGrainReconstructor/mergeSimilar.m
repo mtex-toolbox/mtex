@@ -1,10 +1,15 @@
  function job = mergeSimilar(job, varargin)
+ % merge neighbouring grains with similar orientation
  %
  % Syntax
  %   job.mergeSimilar('threshold',5*degree)
  %
  % Input
  %  job - @parentGrainReconstructor
+ %
+ % Output
+ %  job.grains  - merged grains
+ %  job.mergeId - job.grainsMeasured 
  %
  % Options
  %  threshold - misorientation angle up to which grains are merged
