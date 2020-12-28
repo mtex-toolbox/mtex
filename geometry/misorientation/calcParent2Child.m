@@ -1,27 +1,27 @@
-function [p2c, omega] = calcParent2Child(mori,p2c,alpha,varargin)
+function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %
 % Syntax
 %
-%   p2c = calcParent(childOri,p2c)
+%   p2c = calcParent(childOri,p2c0)
 %
-%   p2c = calcParent(c2c,p2c)
-%   p2c = calcParent(c2c,p2c,alpha)
+%   p2c = calcParent(c2c,p2c0)
+%   p2c = calcParent(c2c,p2c0,'dampingFactor',alpha)
 %
-%   [p2c, fit] = calcParent(c2c,p2c)
+%   [p2c, fit] = calcParent(c2c,p2c0)
 %
 % Input
 %  childOri - child @orientation
 %  c2c      - child to child mis@orientation
-%  p2c      - initial gues or list of measured parent to child boundary mis@orientations
-%  alpha    - damping factor ( default - 0)
+%  p2c0     - initial guess of the parent to child orienation relationship
 %
 % Output
-%  p2c      - parent to child mis@orientation
-%  fit      - disorientation angle between all c2cs misorientations and the computed one
+%  p2c      - parent to child orienation relationship
+%  fit      - disorientation angle between all c2c misorientations and the computed one
 %
 % Options
 %  maxIteration - maximum number of iterations (default - 100)
-%  threshold    - consider only misorientation within the threshold to the initial p2c (default - 5*degree)
+%  threshold    - consider only misorientation within the threshold to the initial p2c (default - 10*degree)
+%  dampingFactor - default - 1/numVariants
 %
 % References
 %
@@ -33,28 +33,21 @@ function [p2c, omega] = calcParent2Child(mori,p2c,alpha,varargin)
 % compute misorientations if pairs of orientations are given
 if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
 
-% third input is damping factor
-if nargin<3, alpha = length(p2c) > 1; end
-
-threshold = get_option(varargin,'threshold',5*degree);
-
-% if p2c is a list of parent2child orientation relationships - take the
-% mean first
-if length(p2c) > 1
-  alpha = alpha * length(p2c)/length(mori);
-  p2c = mean(p2c,'robust');
-  p2c0 = p2c;
-end
+% extract options
+alpha = get_option(varargin,'dampingFactor', 1/numSym(p2c.CS));
+threshold = get_option(varargin,'threshold',inf);
+maxIt = get_option(varargin,'maxIterarion',10);
 
 % prepare iterative loop
-maxIt = get_option(varargin,'maxIterarion',100);
 diso = nan(maxIt,1);
 p2cOld = p2c;
+
+disp(' ');
+disp(' searching orientation relationship');
 
 % iterate until convergance
 for k = 1:maxIt
   
-  progress(k,maxIt,'searching orientation relationship: ');
   diso(k) = angle(p2c,p2cOld)/degree;
   p2cOld = p2c;
     
@@ -78,11 +71,10 @@ for k = 1:maxIt
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-%   ind = omega < min(threshold, quantile(omega, 0.02));
-  ind = omega < threshold;
+  ind = omega < min(threshold, quantile(omega, 0.5));
   
-  %
-  fit(k) = mean(omega(ind));
+  % current fit
+  disp(['  ' char(p2c) ' ' xnum2str(mean(omega(ind)) ./ degree)])
   
   % comute p2c misorientations for all variants
   p2cCandidates = [];
@@ -93,25 +85,12 @@ for k = 1:maxIt
     mori_v = project2FundamentalRegion(moriSub(ind & variant==iv), c2c(iv));
     
     p2cCandidates = [p2cCandidates; mori_v * p2c.variants(iv)]; %#ok<AGROW>
+    %p2cCandidates(iv) = mean(mori_v * p2c.variants(iv));
     
   end
   
-  % compute damped mean if required
-  if alpha > 0
-    
-    weights = [alpha,ones(1,length(p2cCandidates)) ./ length(p2cCandidates)];
-    
-    p2c = mean([p2c0;p2cCandidates],'weights',weights);
-  else
-    p2c = mean(p2cCandidates);
-  end
-end
-progress(maxIt,maxIt,'searching orientation relationship: ');
-
-if k<maxIt
-  fprintf('-> Convergence reached after %.0f iterations\n',k);
-else
-  fprintf('-> Refinement stopped at maximum number of iterations: %.0f without convergence \n',maxIt);
+  p2c = mean([p2c,mean(p2cCandidates)],'weights',[alpha 1]);
+  
 end
 
-%hold on; plot(fit);
+disp(' ');
