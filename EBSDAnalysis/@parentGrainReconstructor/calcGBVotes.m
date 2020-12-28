@@ -7,6 +7,9 @@ function job = calcGBVotes(job,varargin)
 % Input
 %  job - @parentGrainReconstructor
 %
+% Output
+%  job.votes - table of votes
+%
 % Options
 %  numFit      - number of fits to be computed
 %  onlyParents - consider only parent / child grain boundaries

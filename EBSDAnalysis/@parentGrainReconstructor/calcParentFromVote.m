@@ -1,17 +1,16 @@
 function job = calcParentFromVote(job,varargin)
+% reconstruct parent orientations from boundary or triple point votes
 %
 % Syntax
 %
-%  % take majority vote
-%  job.calcParentFromVote('minFit',2*degree,'minVotes',2)
+%   % take majority vote
+%   job.calcParentFromVote('minFit',2*degree,'minVotes',2)
 %
-%  % all votes must be equal
-%  job.calcParentFromVote('strict','minVotes',2)
+%   % all votes must be equal
+%   job.calcParentFromVote('strict','minVotes',2)
 %
-%  % go by probability
-%  job.calcParentFromVote('probability','threshold',1.5*degree,'tolerance',1.5*degree,'minProb',0.6)
-%  
-%
+%   % go by probability
+%   job.calcParentFromVote('probability','threshold',1.5*degree,'tolerance',1.5*degree,'minProb',0.6)
 %
 % Input
 %  job - @parentGrainReconstructor

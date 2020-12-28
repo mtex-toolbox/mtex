@@ -9,7 +9,7 @@ function job = mergeByGraph(job,varargin)
 %  job - @parentGrainReconstructor
 %
 % Output
-%  job - @parentGrainReconstructor
+%  job.grains - reconstructed parent grains
 %
 % Options
 %

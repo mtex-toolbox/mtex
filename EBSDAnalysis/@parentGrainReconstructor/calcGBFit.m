@@ -18,6 +18,7 @@ function [fit, c2cPairs] = calcGBFit(job,varargin)
 % Output
 %  fit      - fit between child to child misorientations and job.p2c
 %  c2cPairs - list of grainId of child to child neighbours
+%
 
 % child to child boundaries
 c2cPairs = neighbors(job.childGrains);

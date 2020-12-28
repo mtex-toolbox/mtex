@@ -2,7 +2,7 @@ function [variantList] = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
 %
 % Syntax
 %
-%  variantList = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
+%   variantList = calcVariantIDs(parentOri,childOri,p2c,variantIDs)
 %
 % Input
 %  parentOri  - parent @orientation
@@ -37,4 +37,5 @@ d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
 [~,variantList] = max(d,[],2);
 % remove variants for which no parent orientation exists
 variantList(all(isnan(d),2)) = nan;
+
 end

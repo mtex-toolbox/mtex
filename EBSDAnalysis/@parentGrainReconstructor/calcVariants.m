@@ -7,6 +7,11 @@ function calcVariants(job,varargin)
 % Input
 %   job - @parentGrainReconstructor
 %
+% Output
+%   job.transformedGrains.variantId - variant ids
+%   job.transformedGrains.packetId  - packet ids
+%
+
 
 isTr = job.isTransformed;
 childOri = job.grainsMeasured(isTr).meanOrientation;

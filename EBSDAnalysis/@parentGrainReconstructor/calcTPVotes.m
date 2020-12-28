@@ -1,8 +1,18 @@
 function job = calcTPVotes(job,varargin)
 %
+% Syntax
+%   job.calcTPVotes
+%
+% Input
+%  job - @parentGrainReconstructor
+%
+% Output
+%  job.votes - table of votes
+%
 % Options
-%  threshold
-%  numFit
+%  threshold - maximum allowed mean misfit
+%  numFit    - number of fits to compute (default 2)
+%
 
 % exctract child - child - child triplepoints
 tP = job.grains.triplePoints;

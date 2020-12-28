@@ -1,5 +1,25 @@
  function job = buildGraph(job, varargin)
-    
+ % set up similarity graph for parent grain reconstruction
+ %
+ % Syntax
+ %   job.buildGraph
+ %
+ % Input
+ %  job - @parentGrainReconstructor
+ %
+ % Output
+ %  job.graph - adjacency matrix of the graph
+ %
+ % Options
+ %  threshold - misfit at which the probability is set to 0.5, default is 2 degree
+ %  tolerance - range around the threshold where the probability increases from 0 to 1
+ %
+ % Description
+ % The weights of the graph are computed from a cummulative gaussion
+ % distribution with mean given by the option |'threshold'| and variance
+ % given by the option |'tolerance'|
+ %
+ 
  threshold = get_option(varargin,'threshold',2*degree);
  tol = get_option(varargin,'tolerance',1.5*degree);
  

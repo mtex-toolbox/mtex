@@ -1,10 +1,45 @@
 classdef parentGrainReconstructor < handle
-  
+% class guiding through the parent grain reconstruction process 
+%
+% Syntax
+%   job = parentGrainReconstructor(ebsd, grains)
+%
+%   job = parentGrainReconstructor(ebsd, grains, p2c0)
+%
+% Input
+%  ebsd - @EBSD
+%  grains - @grain2d
+%  p2c0 - initial guess for the parent to child orientation relationship
+%
+% Class Properties
+%  csParent  - @crystalSymmetry of the parent phase
+%  csChild   - @crystalSymmetry of the child phase
+%  p2c       - parent to child orientation relationship
+%  ebsd      - measured @EBSD
+%  grainsMeasured - measured @grain2d
+%  grains    - reconstructed grains
+%  mergeId   - list of ids to the merged grains
+%  fit       - 
+%  graph     -
+%  votes     -
+%  numChilds         -s number of child grains for each parent grain
+%  isTransformed     - child grains that have been reverted from child to parent phase
+%  isMerged          - child grains that have been merged into a parent grain    
+%  transformedGrains - transformed measured grains 
+%  parentGrains - measured and reconstructed parent grains
+%  childGrains  - not yet reconstructed child grains
+%  variantId    - reconstructed variant ids
+%  packetId     - reconstructed packet ids
+%
+% See also
+% MaParentGrainReconstruction TiBetaReconstruction
+%
+
   properties
     
     csParent  % parent symmetry
     csChild   % child symmetry
-    p2c       % parent to childe orientation relationship
+    p2c       % parent to child orientation relationship
     
     ebsd      % initial / measured EBSD
     grainsMeasured % initialy measured grains 

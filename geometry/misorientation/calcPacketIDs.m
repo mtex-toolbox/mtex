@@ -2,7 +2,7 @@ function [packetIDs] = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %
 % Syntax
 %
-%  packetIDs = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
+%   packetIDs = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %
 % Input
 %  hklParent  - Habit planes in the parent phase
@@ -17,13 +17,14 @@ function [packetIDs] = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %
 %
 
-%Determine lowest disorientations of parallel child planes
+% determine lowest disorientations of parallel child planes
 if length(p2c) == length(p2c(1).variants) %List of variants
-    omega = dot(p2c*hklParent,hklChild);
-else %OR misorientation
-    omega = dot(variants(p2c,hklParent),hklChild);
+  omega = dot(p2c*hklParent,hklChild);
+else % OR misorientation
+  omega = dot(variants(p2c,hklParent),hklChild);
 end
-%Determine packet IDs
+
+% determine packet IDs
 [~,packetId] = max(omega,[],2);  
 if nargin == 3
    packetIDs = packetId; 
