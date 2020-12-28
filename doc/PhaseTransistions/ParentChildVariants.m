@@ -9,17 +9,17 @@
 % be quite different. A typical example are the alpha and beta phase of
 % titanium. While the alpha phase is hexagonal
 
-csAlpha = crystalSymmetry('622',[3 3 4.7],'mineral','Ti (alpha)')
+csAlpha = crystalSymmetry('622',[3 3 4.7],'mineral','Ti (alpha)');
 
 %%
 % the beta phase is cubic
 
-csBeta = crystalSymmetry('432',[3.3 3.3 3.3],'mineral','Ti (beta)')
+csBeta = crystalSymmetry('432',[3.3 3.3 3.3],'mineral','Ti (beta)');
 
 %%
 % Let |oriParent|
 
-oriParent = orientation.rand(csAlpha)
+oriParent = orientation.rand(csAlpha);
 
 %%
 % be the orientation of the atomic lattice befor phase transition and
@@ -43,8 +43,8 @@ oriChild = oriParent * inv(alpha2beta)
 % direction of the cubic beta phase and the [2-1-10] direction of the alpha
 % phase with the  [-11-1] direction of the beta phase.
 
-hAlpha = Miller({0,0,0,1},{2,-1,-1,0},csAlpha)
-hBeta  = Miller({1,1,0},{1,1,1},csBeta)
+hAlpha = Miller({0,0,0,1},{2,-1,-1,0},csAlpha);
+hBeta  = Miller({1,1,0},{1,1,1},csBeta);
 
 plotPDF(oriParent,hAlpha,'layout',[2 2])
 nextAxis
@@ -55,7 +55,7 @@ plotPDF(oriChild,hBeta)
 % relationship as
 
 alpha2beta = orientation.map(Miller(0,0,0,1,csAlpha),Miller(1,1,0,csBeta),...
-  Miller(2,-1,-1,0,csAlpha),Miller(-1,1,-1,csBeta))
+  Miller(2,-1,-1,0,csAlpha),Miller(-1,1,-1,csBeta));
 
 %%
 % The advantage of the above definition by the alignment of different
@@ -92,7 +92,7 @@ plotIPDF(oriChild,color,vector3d.Z)
 % They can be computed more directly using the command
 % <orientation.variants.html |variants|>.
 
-oriChild = variants(alpha2beta,oriParent)
+oriChild = variants(alpha2beta,oriParent);
 
 for i = 1:6
   plotIPDF(oriChild(i),ind2color(i),vector3d.Z,'label',i); hold on

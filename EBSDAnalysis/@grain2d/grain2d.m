@@ -307,6 +307,7 @@ classdef grain2d < phaseList & dynProp
       
       grains.boundary = grains.boundary.update(grains);
       grains.innerBoundary = grains.innerBoundary.update(grains);
+      grains.triplePoints = grains.triplePoints.update(grains);
       
     end
     

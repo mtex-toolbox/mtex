@@ -34,20 +34,48 @@ else
   maxId = max(id(:));
 end
 
+% only vote if all voteIds are equal
 if check_option(varargin,'strict')
 
+  % check for equal voteIds
   isEqual = accumarray(id(:),votes(:),[maxId 1],@equal);
 
+  % find the unique voteId
   vote = accumarray(id(:),votes(:),[maxId 1],@(x) x(1));
 
   vote(~isEqual) = nan;
   
+  % second output argument is the number of votes for the unique voteId
   if nargout == 2
     numVotes = accumarray(id(:),votes(:),[maxId 1],@(x) nnz(x==x(1)));
     numVotes(~isEqual) = 0;
   end
   
+elseif check_option(varargin,'weights')
+  % compute a probability for each vote
+  
+  % get the probabilities for each voteId
+  w = get_option(varargin,'weights');
+  
+  % probability matrix
+  % columns are different voteIds
+  % rows are the different votings
+  % value is the probability
+  W = sparse(id,votes,w,maxId,max(votes(:)));
+  
+  % numVote is likelyhood
+  % vote the voteId with maximum likelihood
+  [numVotes, vote] = max(W,[],2);
+  
+  % second best probability
+  W(sub2ind(size(W),1:length(vote),vote.')) = 0;
+  prob2 = full(max(W,[],2));
+  
+  %numVotes = full(numVotes) ./ (1e-3 + full(sum(W,2)));
+  numVotes = full(numVotes) ./ (1e-3 + prob2 + full(numVotes));
+    
 else
+  % take the voteId with the most votes
   
   hasVote = accumarray(id(:),votes(:),[maxId 1]);
   

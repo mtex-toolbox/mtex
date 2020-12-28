@@ -1,27 +1,27 @@
-function [p2c, omega] = calcParent2Child(mori,p2c,alpha,varargin)
+function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %
 % Syntax
 %
-%   p2c = calcParent(childOri,p2c)
+%   p2c = calcParent(childOri,p2c0)
 %
-%   p2c = calcParent(c2c,p2c)
-%   p2c = calcParent(c2c,p2c,alpha)
+%   p2c = calcParent(c2c,p2c0)
+%   p2c = calcParent(c2c,p2c0,'dampingFactor',alpha)
 %
-%   [p2c, fit] = calcParent(c2c,p2c)
+%   [p2c, fit] = calcParent(c2c,p2c0)
 %
 % Input
 %  childOri - child @orientation
 %  c2c      - child to child mis@orientation
-%  p2c      - initial gues or list of measured parent to child boundary mis@orientations
-%  alpha    - damping factor ( default - 0)
+%  p2c0     - initial guess of the parent to child orienation relationship
 %
 % Output
-%  p2c      - parent to child mis@orientation
-%  fit      - disorientation angle between all c2cs misorientations and the computed one
+%  p2c      - parent to child orienation relationship
+%  fit      - disorientation angle between all c2c misorientations and the computed one
 %
 % Options
 %  maxIteration - maximum number of iterations (default - 100)
-%  threshold    - consider only misorientation within the threshold to the initial p2c (default - 5*degree)
+%  threshold    - consider only misorientation within the threshold to the initial p2c (default - 10*degree)
+%  dampingFactor - default - 1/numVariants
 %
 % References
 %
@@ -33,45 +33,46 @@ function [p2c, omega] = calcParent2Child(mori,p2c,alpha,varargin)
 % compute misorientations if pairs of orientations are given
 if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
 
-% third input is damping factor
-if nargin<3, alpha = length(p2c) > 1; end
-
-threshold = get_option(varargin,'threshold',5*degree);
-
-% if p2c is a list of parent2child orientation relationships - take the
-% mean first
-if length(p2c) > 1
-  alpha = alpha * length(p2c)/length(mori);
-  p2c = mean(p2c,'robust');
-end
+% extract options
+alpha = get_option(varargin,'dampingFactor', 1/numSym(p2c.CS));
+threshold = get_option(varargin,'threshold',inf);
+maxIt = get_option(varargin,'maxIterarion',10);
 
 % prepare iterative loop
-maxIt = get_option(varargin,'maxIterarion',100);
 diso = nan(maxIt,1);
 p2cOld = p2c;
 
-% iterate until convergance
+disp(' ');
+disp(' searching orientation relationship');
+
+% iterate
 for k = 1:maxIt
   
-  diso(k) = angle(p2c,p2cOld)/degree;
+  % stop iteration if convergence
+  if k>1 && angle(p2c,p2cOld) < 0.1*degree, break; end
   p2cOld = p2c;
-  %fprintf('%1.3f ',diso(k));
-  
-  %check for convergence
-  if k>5 && norm(diso(k-5:k)) < 0.1, break; end
-  
+    
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
-
+  
+  if length(mori) > 50000
+    moriSub = discreteSample(mori,50000);
+  else
+    moriSub = mori;
+  end
+  
   % misorientation to c2c variants
-  omega = angle_outer(mori, c2c);
+  omega = angle_outer(moriSub, c2c);
   
   % compute best fitting variant
   [omega, variant] = min(omega,[],2);  
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-  ind = omega < min(threshold, quantile(omega, 0.9));
+  ind = omega < min(threshold, quantile(omega, 0.5));
+  
+  % current fit
+  disp(['  ' fillStr(char(p2c),22) xnum2str(mean(omega(ind)) ./ degree)])
   
   % comute p2c misorientations for all variants
   p2cCandidates = [];
@@ -79,27 +80,15 @@ for k = 1:maxIt
     
     if ~any(ind & variant==iv), continue; end
     
-    mori_v = project2FundamentalRegion(mori(ind & variant==iv), c2c(iv));
+    mori_v = project2FundamentalRegion(moriSub(ind & variant==iv), c2c(iv));
     
     p2cCandidates = [p2cCandidates; mori_v * p2c.variants(iv)]; %#ok<AGROW>
+    %p2cCandidates(iv) = mean(mori_v * p2c.variants(iv));
     
   end
   
-  % compute damped mean if required
-  if alpha > 0
-    
-    weights = [alpha,ones(1,length(p2cCandidates)) ./ length(p2cCandidates)];
-    
-    p2c = mean([p2c;p2cCandidates],'weights',weights);
-  else
-    p2c = mean(p2cCandidates);
-  end
+  p2c = mean([p2c,mean(p2cCandidates)],'weights',[alpha 1]);
+  
 end
 
-if k<maxIt
-  fprintf('-> Convergence reached after %.0f iterations\n',k);
-else
-  fprintf('-> Refinement stopped at maximum number of iterations: %.0f without convergence \n',maxIt);
-end
-
-%hold on; plot(diso);
+disp(' ');
