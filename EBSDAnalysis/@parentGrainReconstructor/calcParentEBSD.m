@@ -1,5 +1,15 @@
 function ebsd = calcParentEBSD(job)
-% update EBSD
+% reconstruct parent EBSD
+%
+% Syntax
+%   job.calcParentEBSD
+%
+% Input
+%  job - @parentGrainReconstructor
+%
+% Output
+%  ebsd - reconstructed parent @EBSD
+%
            
 % consider only child pixels that have been reconstructed to parent
 % grains

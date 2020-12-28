@@ -9,21 +9,25 @@ disp(' ');
 gs = job.grains.grainSize;
 p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
 matrix(1,:) = {'parent', job.csParent.mineral, char(job.csParent), ...
-  length(job.grains(job.csParent)),[xnum2str(p) '%']};
+  length(job.grains(job.csParent)),[xnum2str(p) '%'],...
+  [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsMeasured.phaseId ==job.childPhaseId)) '%']};
 
 p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
 if ~isempty(job.csChild)
   matrix(2,:) = {'child', job.csChild.mineral, char(job.csChild), ...
-    length(job.grains(job.csChild)),[xnum2str(p) '%']};
+    length(job.grains(job.csChild)),[xnum2str(p) '%'],''};
 end
 
 cprintf(matrix,'-L',' ','-Lc',...
-  {'phase' 'mineral' 'symmetry' 'grains' 'area'},...
+  {'phase' 'mineral' 'symmetry' 'grains' 'area' 'reconstructed'},...
   '-d','  ','-ic',true,'-la','T');
 
 if ~isempty(job.p2c)
   disp(' ');
   disp([' parent to child OR: ' round2Miller(job.p2c)])
+  omega = calcGBFit(job);
+  disp([' mean fit to child to child misorientations: ' ...
+    xnum2str(mean(omega(omega < quantile(omega,0.5))./degree)) ' degree']);  
 end
 
 % display graph information
@@ -48,6 +52,8 @@ if ~isempty(job.votes)
   disp([' mean fit: ' xnum2str(omega) getMTEXpref('degreeChar')]);
 end
 
+disp(' ')
+
 %I would prefer an expression based on "isTransformed". I am not sure if 20
 %percent preexisting austenite should be indexed as "20% transformed" if no
 %reconstruction has been started. What do you think?
@@ -55,5 +61,6 @@ end
 %recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
 %fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);
 %fprintf('  ebsd reconstructed: %.0f%%\n', recAreaEBSD);
+
 
 end
