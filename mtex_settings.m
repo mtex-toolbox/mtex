@@ -9,10 +9,6 @@ function mtex_settings
 %% user defined global settings
 %------------------------------------------------------------------------
 
-% in order to make use of openMP parallelization
-% set this option to "true"
-setMTEXpref('openMP',false);
-
 %% default global plotting options
 % here you can define default plott options
 
