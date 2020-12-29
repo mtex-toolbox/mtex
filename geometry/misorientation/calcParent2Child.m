@@ -39,11 +39,10 @@ threshold = get_option(varargin,'threshold',inf);
 maxIt = get_option(varargin,'maxIterarion',10);
 
 % prepare iterative loop
-diso = nan(maxIt,1);
 p2cOld = p2c;
 
 disp(' ');
-disp(' searching orientation relationship');
+disp(' optimizing parent to child orientation relationship');
 
 % iterate
 for k = 1:maxIt
@@ -69,7 +68,7 @@ for k = 1:maxIt
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-  ind = omega < min(threshold, quantile(omega, 0.5));
+  ind = omega < min(threshold, quantile(omega, 0.75));
   
   % current fit
   disp(['  ' fillStr(char(p2c),22) xnum2str(mean(omega(ind)) ./ degree)])
