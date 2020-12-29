@@ -49,6 +49,9 @@ plotBoundary = true;
 % allow to plot grain faces only without boundaries
 if check_option(varargin,'noBoundary'),plotBoundary = false; end
 
+% turn logical into double
+if nargin>1 && islogical(varargin{1}), varargin{1} = double(varargin{1}); end
+
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
   
