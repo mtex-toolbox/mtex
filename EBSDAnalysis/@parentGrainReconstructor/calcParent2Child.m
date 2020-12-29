@@ -44,18 +44,24 @@ else % consider also child to child
   if ~isempty(job.p2c), p2c0 = job.p2c; end
   p2c0 = getClass(varargin,'orientation',p2c0);
 
+  oriChild = reshape(job.grains('id',c2cPairs).meanOrientation,[],2);
+  mori = inv(oriChild(:,1)).*oriChild(:,2);
+
+  % ignore pairs with misorientation angle smaller then 5 degree
+  mori(mori.angle < 5 * degree) = [];
+    
   % compute an optimal parent to child orientation relationship
   if check_option(varargin,'v3')
     
-   job.p2c = fitP2C(job.grains(c2cPairs).meanOrientation,p2c0);
+   job.p2c = fitP2C(mori,p2c0);
     
   elseif check_option(varargin,'v2')
     
-    [job.p2c, job.fit] = calcParent2Child2(job.grains(c2cPairs).meanOrientation,p2c0);
+    [job.p2c, job.fit] = calcParent2Child2(mori,p2c0);
     
   else
    
-    [job.p2c, job.fit] = calcParent2Child(job.grains(c2cPairs).meanOrientation,p2c0,varargin{:});
+    [job.p2c, job.fit] = calcParent2Child(mori,p2c0,varargin{:});
     
   end
   

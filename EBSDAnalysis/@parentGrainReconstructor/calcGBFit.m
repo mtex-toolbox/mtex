@@ -20,15 +20,25 @@ function [fit, c2cPairs] = calcGBFit(job,varargin)
 %  c2cPairs - list of grainId of child to child neighbours
 %
 
-% child to child boundaries
-c2cPairs = neighbors(job.childGrains);
-  
-% extract the corresponding mean orientations
-oriChild = job.grains('id',c2cPairs).meanOrientation;
-
 % child to child misorientation variants
 p2cV = job.p2c.variants; p2cV = p2cV(:);
 c2c = job.p2c .* inv(p2cV);
+
+% child to child boundaries
+c2cPairs = neighbors(job.childGrains);
+
+% extract the corresponding misorientations
+oriChild = reshape(job.grains('id',c2cPairs).meanOrientation,[],2);
+mori = inv(oriChild(:,1)).*oriChild(:,2);
+
+% ignore pairs with misorientation angle smaller then 5 degree
+ind = mori.angle < 5 * degree;
+c2cPairs(ind,:) = [];
+mori(ind) = [];
   
 % misorientation to c2c variants
-fit = min(angle_outer(inv(oriChild(:,1)).*oriChild(:,2), c2c),[],2);
+if isempty(oriChild)
+  fit = 0;
+else
+  fit = min(angle_outer(mori, c2c),[],2);
+end
