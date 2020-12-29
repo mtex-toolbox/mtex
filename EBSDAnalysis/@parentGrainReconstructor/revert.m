@@ -18,6 +18,9 @@ function job = revert(job,ind)
 % See also
 %
 
+% revert everything
+if nargin == 1, ind = true(size(job.grains)); end
+
 % input should be index to job.grains
 if isa(ind,'grain2d'), ind = id2ind(job.grains,ind.id); end
 
