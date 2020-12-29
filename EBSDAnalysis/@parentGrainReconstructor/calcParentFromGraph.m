@@ -72,18 +72,12 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
     % compute mean parent orientation
     pWeights = weights(mergeId==k & wasParentGrain);
     pOri = mean(parentOri(mergeId==k & wasParentGrain), 'weights', pWeights, 'robust');
-        
-    % extract child orientations
-    cOri = childOri(mergeId==k & wasChildGrain);
-    cWeights = weights(mergeId==k & wasChildGrain);
     
     % compute for child ori a parent ori
-    [ori,fitLocal] = calcParent(cOri, pOri, job.p2c,'weights', cWeights);
-    
-    % compute mean parent ori
-    recOri(k) = mean([pOri;ori], 'robust', 'weigts',[sum(pWeights);cWeights]);
-    fit(k) = max(fitLocal);
-        
+    ind = mergeId==k & wasChildGrain;
+    [parentOri(ind),fit(ind)] = calcParent(childOri(ind), ...
+      pOri, job.p2c,'weights', weights(ind));
+
   end
       
   progress(k,max(mergeId),'computing parent grain orientations: ');
