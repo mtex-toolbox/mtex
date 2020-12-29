@@ -11,8 +11,8 @@ function job = calcGBVotes(job,varargin)
 %  job.votes - table of votes
 %
 % Options
-%  numFit      - number of fits to be computed
-%  onlyParents - consider only parent / child grain boundaries
+%  numFit - number of fits to be computed
+%  noC2C  - consider only parent / child grain boundaries
 %
 
 numFit = get_option(varargin,'numFit',2);
@@ -35,7 +35,7 @@ if ~isempty(job.parentGrains)
 end
 
 % child-child - votes
-if ~check_option(varargin,'onlyParents')
+if ~check_option(varargin,'noC2C')
   grainPairs = neighbors(job.childGrains, job.childGrains);
   
   % extract the corresponding mean orientations
