@@ -22,7 +22,7 @@ classdef parentGrainReconstructor < handle
 %  fit       - 
 %  graph     -
 %  votes     -
-%  numChilds         -s number of child grains for each parent grain
+%  numChilds         - number of child grains for each parent grain
 %  isTransformed     - child grains that have been reverted from child to parent phase
 %  isMerged          - child grains that have been merged into a parent grain    
 %  transformedGrains - transformed measured grains 

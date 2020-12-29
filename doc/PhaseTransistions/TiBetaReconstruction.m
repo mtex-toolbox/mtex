@@ -116,7 +116,7 @@ job.calcTPVotes('numFit',2)
 % votes as specified by the option |minVotes| the child grain is turned
 % into a parent grain.
 
-job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',3.5*degree,'minVotes',1)
+job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',5*degree,'minVotes',2)
 
 %job.calcParentFromVote('probability', 'threshold',2*degree,'tolerance',2*degree)
 
@@ -135,18 +135,21 @@ plot(job.parentGrains, color, 'figSize', 'large')
 %% Grow parent grains at grain boundaries
 %
 % Next we may grow the reconstructed parent grains into the regions of the
-% remaining child grains. To this end we now use the command
-% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> to compute fit
-% and votes from grain boundaries.
+% remaining child grains. To this end we use the command
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> with the option
+% |'noC2C'| to compute fit and votes from grain boundaries to consider only
+% parent to child boundaries.
 
-job.calcGBVotes;
+job.calcGBVotes('noC2C');
 
 %%
 % Next we use the exact same command
 % <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
-% to 
+% to recover parent orientations from the votes. Here, however, with much
+% weaker constraints, i.e., we doubled the threshold |'minfit'| and are
+% already happy with a single vote.
 
-job.calcParentFromVote('minFit',5*degree,'maxFit',5*degree,'minVotes',0)
+job.calcParentFromVote('minFit',5*degree)
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
@@ -172,9 +175,9 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % 
 % We may be still a bit unsatisfied with the result as the large parent
 % grains contain a lot of poorly indexed inclusions where we failed to
-% assign a parent orientation. We may use the command
+% assign a parent orientation. We use the command
 % <parentGrainReconstructor.mergeInclusions.html |mergeInclusions|> to
-% merge all inclusions that a fever pixels then a certain threshold into
+% merge all inclusions that have fever pixels then a certain threshold into
 % the surrounding parent grains.
 
 job.mergeInclusions('maxSize',50)
@@ -189,7 +192,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % orientations of the beta grains. In this section we want to set up the
 % EBSD variable |parentEBSD| to contain for each pixel a reconstruction of
 % the parent phase orientation. This is done by the command
-% <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|>
+% |<parentGrainReconstructor.calcParentEBSD.html calcParentEBSD>|
 
 parentEBSD = job.calcParentEBSD;
 
@@ -198,9 +201,10 @@ color = ipfKey.orientation2color(parentEBSD('Ti (Beta)').orientations);
 plot(parentEBSD('Ti (Beta)'),color,'figSize','large')
 
 %%
-% We obtain even a measure |parentEBSD.fit| for the corespondence between
-% the beta orientation reconstructed for a single pixel and the beta
-% orientation of the grain. Lets visualize this 
+% The recovered EBSD variable |parentEBSD| contains a measure
+% |parentEBSD.fit| for the corespondence between the beta orientation
+% reconstructed for a single pixel and the beta orientation of the grain.
+% Lets visualize this
 
 % the beta phase
 plot(parentEBSD, parentEBSD.fit ./ degree,'figSize','large')
