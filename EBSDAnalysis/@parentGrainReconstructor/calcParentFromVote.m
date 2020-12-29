@@ -41,6 +41,10 @@ if check_option(varargin,'probability')
    % perform voting
    [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,size(prob,2)), ...
      job.votes.parentId, max(job.grains.id),'weights',prob);
+
+   % which child grains to transform
+   doTransform = numVotes > get_option(varargin,'minProb',0);
+   vdisp(['  votes prob > minProb: ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
    
 else
 
@@ -61,12 +65,12 @@ else
   % perform voting
   [parentId, numVotes] = majorityVote( job.votes.grainId, ...
     job.votes.parentId(:,1), max(job.grains.id),varargin{:});
+
+  % which child grains to transform
+  doTransform = numVotes >= get_option(varargin,'minVotes',1);
+  vdisp(['  numVotes >= minVotes: ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
   
 end
-
-% which child grains to transform
-doTransform = numVotes > get_option(varargin,{'minVotes','minProb'},0);
-vdisp(['  numVotes > minVotes:  ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
 vdisp(' ',varargin{:})
 
 % compute new parent orientation from parentId
