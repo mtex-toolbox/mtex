@@ -28,7 +28,7 @@ function job = calcParentFromGraph(job,varargin)
 
 assert(~isempty(job.graph), 'No merge graph found. Please use the command ...');
 
-% the remember child orientations
+% remember child orientations
 wasChildGrain = job.grains.phaseId == job.childPhaseId;
 wasParentGrain = job.grains.phaseId == job.parentPhaseId;
 
@@ -46,25 +46,26 @@ weights = job.grains.grainSize;
     
 % (2) parent orientation reconstruction
 % the parent orientation we are going to compute
-recOri = orientation.nan(max(mergeId),1,job.csParent);
-fit = inf(size(recOri));
+fit = inf(size(parentOri));
+clusterSize = ones(size(parentOri));
 
 % compute parent grain orientation by looping through all merged grains
 for k = 1:max(mergeId) %#ok<*PROPLC>
   
-  % check if empty or single grain
-  if nnz(mergeId==k)<=1, continue; end
+  % check if empty or single grain or only parent orientations
+  if nnz(mergeId==k)<=1 || all(wasParentGrain(mergeId==k))
+    continue; 
+  end
   
-  if all(wasParentGrain(mergeId==k)) % only parent orientations
+  if all(wasChildGrain(mergeId==k)) % only child orientations
     
-    recOri(k) = mean(parentOri(mergeId==k), 'weights', weights(mergeId == k));
-    fit(k) = 0;
-        
-  elseif all(wasChildGrain(mergeId==k)) % only child orientations
+    ind = mergeId == k;
+    pOri = calcParent(childOri(ind), job.p2c, 'weights', weights(ind));
+
+    [parentOri(ind),fit(ind)] = calcParent(childOri(ind),pOri,job.p2c);
     
-    [recOri(k),fit(k)] = calcParent(childOri(mergeId == k),...
-      job.p2c, 'weights', weights(mergeId == k));
-        
+    clusterSize(ind) = nnz(ind);
+    
   elseif all(wasChildGrain(mergeId==k) | wasParentGrain(mergeId==k))
     % parent and child orientations
         
@@ -82,32 +83,17 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
     % compute mean parent ori
     recOri(k) = mean([pOri;ori], 'robust', 'weigts',[sum(pWeights);cWeights]);
     fit(k) = max(fitLocal);
-    
+        
   end
       
   progress(k,max(mergeId),'computing parent grain orientations: ');
 end
     
-% only merge those grains where the parent grain 
-threshold = get_option(varargin,'threshold',5*degree);
-isGood = fit < threshold;
+% set reconstructed parentorientations
+job.grains(~isnan(parentOri)).meanOrientation = parentOri(~isnan(parentOri));
+job.grains.prop.fit = fit;
+job.grains.prop.clusterSize = clusterSize;
 
-% reduce graph
-job.graph(:,~isGood(mergeId)) = 0;
-job.graph(~isGood(mergeId),:) = 0;
-
-% now perform the actual merge
-[job.grains, mergeId] = merge(job.grains,job.graph);
-job.mergeId = mergeId(job.mergeId);
-
-% ensure grainId in parentEBSD is set up correctly with parentGrains
-job.ebsd('indexed').grainId = mergeId(job.ebsd('indexed').grainId);
-
-% update mean orientation of the parent grains
-job.grains(end-nnz(isGood)+1:end).meanOrientation = recOri(isGood);
-job.grains = job.grains.update;
-
-% erase merge graph
 job.graph = [];
 
 end
