@@ -1,8 +1,8 @@
- function job = buildGraph(job, varargin)
+ function job = calcGraph(job, varargin)
  % set up similarity graph for parent grain reconstruction
  %
  % Syntax
- %   job.buildGraph
+ %   job.calcGraph
  %
  % Input
  %  job - @parentGrainReconstructor
