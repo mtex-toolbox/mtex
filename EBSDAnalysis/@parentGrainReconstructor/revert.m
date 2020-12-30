@@ -3,19 +3,26 @@ function job = revert(job,ind)
 %
 % Syntax
 %
-%   % revert all 
-%   job.calcGraph
-%   ind = job.graph.clusterSize < 3
+%   % undo all reconstruction
+%   job.revert
+%
+%   % undo grains by condition
+%   ind = job.grains.fit > 5*degree
 %   job.revert(ind)
 %
+%   % undo specific grains
+%   job.revert(job.parentGrains(5))
+%
 % Input
-%  job - @parentGrainReconstructor
-%  ind - true/false of which parent grains should be reverted to child grains
+%  job    - @parentGrainReconstructor
+%  ind    - true/false of which parent grains should be reverted to child grains
+%  grains - list of grains to be reverted
 %
 % Output
 %  job - @parentGrainReconstructor
 %
 % See also
+% MaParentGrainReconstruction
 %
 
 % revert everything

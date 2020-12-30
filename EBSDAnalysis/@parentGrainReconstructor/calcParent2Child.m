@@ -1,7 +1,19 @@
 function job = calcParent2Child(job, varargin)
+% compute optimal parent to child orientation relationship
+%
+% The function |calcParent2Child| uses the parent to child orientation
+% relationship stored in |job.p2c| as a starting point for an iterative
+% process to find a parent to child orientation
+% relationship that best possible fits to the child to child
+% misorientations in the measured grain data |job.grains|.
 %
 % Syntax
+%
+%   % find optimal parent to child orientation relationship
 %   job.calcParent2Child
+%
+%   % display distribtion of the misfit
+%   histogram(job.fit ./ degree)
 %
 % Input
 %  job - @parentGrainReconstructor
@@ -11,12 +23,20 @@ function job = calcParent2Child(job, varargin)
 %  job.fit - fit between the c2c misorientations to the fitted p2c
 %
 % Options
-%  noC2C - do not consider child to child orientation relationships
-%  noP2C - do not consider parent to child orientation relationships
-%  dampingFactor - 
-%  threshold     - 
+%  noC2C - do not consider child to child misorientations
+%  noP2C - do not consider parent to child misorientations
+%  threshold - only consider misorientations that are within this threshold of the current parent to child OR guess
 %
-      
+% References
+%
+% * Tuomo Nyyssönen, <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
+% Crystallography, Morphology, and Martensite Transformation of Prior
+% Austenite in Intercritically Annealed High-Aluminum Steel>
+%
+% See also
+% calcParent2Child
+%
+
 % get p2c from parent 2 child OR
 if nnz(job.ebsd.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsd)
   

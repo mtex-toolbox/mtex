@@ -10,14 +10,14 @@
 % recovering parent orientations which can be applied multiple times and in
 % any order to archieve the best possible reconstruction.
 %
-% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimze parent to child orientation relationship
+% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
 % * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
 % * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
-% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote| - recover parent orientations from votes
-% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph| - recover parent orientations from graph clusteres
-% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar| - merge similar parent grains
-% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions| - merge inclusions
-% * <parentGrainReconstructor.revert.html |job.revert| - undo parent grain reconstructions
+% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clusteres
+% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
+% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
+% * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
 %
 % The usage of this new class is demonstrated in <TiBetaReconstruction.html
 % Beta Titanium Reconstruction> and <MaParentGrainReconstruction.html
@@ -114,7 +114,7 @@
 % specimen symmetry and for centers close to the boundary of the
 % fundamental region.
 %
-% * <slibSystem.symmetrise.html |slibSystem.symmetrise.html|> gave
+% * <slipSystem.symmetrise.html |slipSystem.symmetrise|> gave
 % incorrect number of slipsystems due to a rounding error
 %
 %% MTEX 5.4.0 7/2020

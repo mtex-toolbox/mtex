@@ -13,8 +13,9 @@ function job = clusterGraph(job, varargin)
 % Options
 %  inflationPower - controls the size of the clusters, default 1.6
 %
-% see also
-% mclComponents
+% See also
+% MaParentGrainReconstruction mclComponents
+%
 
 p = get_option(varargin,'inflationPower', 1.6);
       
