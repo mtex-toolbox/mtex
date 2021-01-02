@@ -37,6 +37,9 @@ if check_option(varargin,'probability')
  
    prob = 1 - 0.5 * (1 + erf(2*(job.votes.fit - threshold)./tol));
    prob(prob<1e-2) = 0;
+   if any(strcmp(job.votes.Properties.VariableNames,'weights'))
+     prob = prob .* sqrt(job.votes.weights); 
+   end
    
    % perform voting
    [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,size(prob,2)), ...
