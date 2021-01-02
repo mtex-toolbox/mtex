@@ -50,9 +50,10 @@ switch lower(get_option(varargin,'method','horn'))
       MA(3,1)    MS(1,2)              M(2,2)-M(1,1)-M(3,3) MS(2,3);
       MA(1,2)    MS(1,3)              MS(2,3)              M(3,3)-M(1,1)-M(2,2)];
     
-    [V,~] = eig(N);
+    [V,d] = eig(N,'vector');
+    [~, ind] = sort(d);
     
-    rot = rotation(V(:,4).');
+    rot = rotation(V(:,ind(4)).');
     
   case 'kabsch' % Kabsch algorithm
     
