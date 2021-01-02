@@ -36,10 +36,11 @@ if ~islogical(ind)
   ind = full(sparse(ind,1,true,length(job.grains),1));
 end
 
-
 % which are the original grains to revert
 % doRevert = ismember(job.mergeId, ind);
 doRevert = ind(job.mergeId) & job.isTransformed;
+
+if ~any(doRevert), return; end
 
 % we may have two situations
 % 1. grains to revert have not yet been merged
