@@ -1,4 +1,5 @@
 function job = calcTPVotes(job,varargin)
+% compute votes from triple points
 %
 % Syntax
 %   job.calcTPVotes
