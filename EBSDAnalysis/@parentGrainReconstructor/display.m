@@ -31,9 +31,14 @@ if ~isempty(job.p2c)
     ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
     ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
     ', ' xnum2str(quantile(omega,0.8)) getMTEXpref('degreeChar') ...
-    ' (quintiles)']);
+    ' (quantiles)']);
   disp(['   closest ideal OR: ' round2Miller(job.p2c)])
-    
+  % Here we still obtain that the (110) of austenite is parallel to (111) in martensite, 
+  % which is the reverse in reality. We have had this discussion before, and I think that  
+  % we should keep things as they are, as they are crystallographically not
+  % wrong. The conventionally reported OR just takes the planes that are
+  % found at the crystal interface which is (111) in austenite and (110) in
+  % martensite.
 end
 
 % display graph information
@@ -60,7 +65,7 @@ if ~isempty(job.votes)
     ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
     ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
     ', ' xnum2str(quantile(omega,0.8)) getMTEXpref('degreeChar') ...
-    '         (quintiles)']);
+    '         (quantiles)']);
   if size(job.votes.fit,2)>1
     omega = job.votes.fit(:,2)./degree;
     disp(['   second best fit: ' xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
