@@ -17,17 +17,17 @@ colorScale(job.variantMap,:),hChild,...
 hold on
 
 % Plot unique variants with label
-for ii = 1:24
+for ii = 1:length(job.p2c.variants)
     plotPDF(vars(ii),...
     colorScale(job.variantMap(ii),:),hChild,...
-    'equal','antipodal',...
+    'equal','upper',...
     'MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'nosymmetry',...
     'label',job.variantMap(ii),'fontsize',10,'fontweight','bold');
     hold on
 end
 % Plot cube axes
-plot(Miller(1,0,0,job.csChild),'plane','linecolor','k') 
-plot(Miller(0,1,0,job.csChild),'plane','linecolor','k') 
-plot(Miller(0,0,1,job.csChild),'plane','linecolor','k') 
+plot(Miller(1,0,0,job.csParent),'plane','linecolor','k') 
+plot(Miller(0,1,0,job.csParent),'plane','linecolor','k') 
+plot(Miller(0,0,1,job.csParent),'plane','linecolor','k') 
 % Change figure name
 set(f,'Name',strcat('PDF of child variants'),'NumberTitle','on');
