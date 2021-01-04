@@ -50,6 +50,7 @@ classdef parentGrainReconstructor < handle
     fit    
     graph
     votes
+    variantMap      
     
   end
   
@@ -110,6 +111,7 @@ classdef parentGrainReconstructor < handle
         assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
         job.csParent = job.p2c.CS;
         job.csChild = job.p2c.SS;
+        job.variantMap = 1:length(job.p2c.variants);
       end            
     end
     
@@ -186,6 +188,14 @@ classdef parentGrainReconstructor < handle
     
     function set.variantId(job,id)
       job.grainsMeasured.prop.variantId = id;
+    end
+        
+    function set.variantMap(job,id)      
+      assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
+      nr_variants = length(job.p2c.variants);
+      assert(length(id) == nr_variants,'Supply %d natural numbers as Ids',nr_variants);
+      job.variantMap = id;    
+
     end
     
   end
