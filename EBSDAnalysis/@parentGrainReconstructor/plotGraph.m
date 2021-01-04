@@ -1,7 +1,7 @@
 function varargout = plotGraph(job,varargin)
 % 
 
-assert(~isempty(job.graph), 'No graph computed. Please use the command ...');
+assert(~isempty(job.graph), 'No graph computed. Please use the command ''calcGraph''');
 
 grainPairs = job.grains.neighbors;
 
