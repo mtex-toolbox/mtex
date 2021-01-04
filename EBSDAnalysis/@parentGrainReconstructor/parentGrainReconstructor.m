@@ -115,11 +115,11 @@ classdef parentGrainReconstructor < handle
     
     
     function id = get.parentPhaseId(job)
-      id = job.ebsd.cs2phaseId(job.csParent);
+      id = job.grains.cs2phaseId(job.csParent);
     end
     
     function id = get.childPhaseId(job)
-      id = job.ebsd.cs2phaseId(job.csChild);
+      id = job.grains.cs2phaseId(job.csChild);
     end
     
     function out = get.numChilds(job)

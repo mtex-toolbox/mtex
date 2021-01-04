@@ -175,7 +175,7 @@ classdef phaseList
           
           pL.phaseId = length(pL.CSList) * ones(size(pL.phaseId));          
           
-          pL.phaseMap = [pL.phaseMap; max(pL.phaseMap)+1];
+          pL.phaseMap(end+1) = max(pL.phaseMap)+1;
           
         else
           pL.CSList{id} = cs;
