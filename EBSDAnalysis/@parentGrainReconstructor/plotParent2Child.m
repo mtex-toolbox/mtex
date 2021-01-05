@@ -1,5 +1,17 @@
 function plotParent2Child(job, varargin)
 % Plot pole figure of child variants
+%
+% Syntax
+%   plotParent2Child(job)
+%   plotParent2Child(job, oriParent)
+%   plotParent2Child(job, hChild)
+%   plotParent2Child(job, oriParent, hChild)
+%
+% Input
+%  job - @parentGrainReconstructor
+%  oriParent - @orientation Parent orientation
+%  hChild - @Miller Plotting direction for the pole figure
+
 assert(~isempty(job.p2c), 'No p2c defined. Please use the command ''calcParent2Child''.');
 oriParent = getClass(varargin,'orientation',orientation.id(job.csParent));
 hChild = getClass(varargin,'Miller',Miller(0,0,1,job.csChild,'hkl'));
