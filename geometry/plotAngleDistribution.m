@@ -11,7 +11,7 @@ function h = plotAngleDistribution(obj,varargin)
 %  CS - @symmetry
 %
 % Options
-%  resolution - resolution of the plots (given as angle)
+%  resolution, xy*degree - resolution of the plots (given as angle)
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
