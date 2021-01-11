@@ -20,7 +20,8 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %
 % Options
 %  maxIteration - maximum number of iterations (default - 100)
-%  threshold    - consider only misorientation within the threshold to the initial p2c (default - 10*degree)
+%  quantile     - consider only misorientation within this quantile to the current p2c guess (default 0.9)
+%  threshold    - consider only misorientation within this threshold to the current p2c guess (default - 10*degree)
 %  dampingFactor - default - 1/numVariants
 %
 % References
@@ -36,6 +37,7 @@ if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
 % extract options
 alpha = get_option(varargin,'dampingFactor', 1/numSym(p2c.CS));
 threshold = get_option(varargin,'threshold',inf);
+quant = get_option(varargin,'quantile',0.9);
 maxIt = get_option(varargin,'maxIterarion',10);
 
 % prepare iterative loop
@@ -68,7 +70,7 @@ for k = 1:maxIt
   
   % take only those c2c misorientations that are suffiently close to the
   % current candidate
-  ind = omega < min(threshold, quantile(omega, 0.75));
+  ind = omega < min(threshold, quantile(omega, quant));
   
   % current fit
   disp(['  ' fillStr(char(p2c),22) xnum2str(mean(omega(ind)) ./ degree)])

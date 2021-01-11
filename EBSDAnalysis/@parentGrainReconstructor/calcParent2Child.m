@@ -25,6 +25,7 @@ function job = calcParent2Child(job, varargin)
 % Options
 %  noC2C - do not consider child to child misorientations
 %  noP2C - do not consider parent to child misorientations
+%  quantile  - consider only misorientation within this quantile to the current p2c guess (default 0.9)
 %  threshold - only consider misorientations that are within this threshold of the current parent to child OR guess
 %
 % References
