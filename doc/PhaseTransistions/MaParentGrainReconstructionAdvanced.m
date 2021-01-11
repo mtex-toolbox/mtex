@@ -58,6 +58,10 @@ KS = orientation.KurdjumovSachs(csFCC,csBCC);
 % get neighbouring grain pairs
 grainPairs = grains.neighbors;
 
+% ignore pairs with misorientation angle smaller then 5 degree
+mori = grains(grainPairs).meanOrientation;
+grainPairs(angle(mori(:,1),mori(:,2)) < 5*degree,:) = [];
+
 % compute an optimal parent to child orientation relationship
 [fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation,KS);
 
@@ -218,8 +222,8 @@ plot(parentGrains.boundary,'linewidth',3)
 
 % outline a specific parent grain
 hold on
-id = 279;
-plot(parentGrains(id).boundary,'linewidth',3,'lineColor','r')
+id = parentGrains.findByLocation([100,80]);
+plot(parentGrains(id).boundary,'linewidth',3,'lineColor','w')
 hold off
 
 %% 

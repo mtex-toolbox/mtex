@@ -201,11 +201,15 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 % |job.calcGBVotes|> and <parentGrainReconstructor.calcParentFromVote.html
 % |job.calcParentFromVote|> can be adjusted by many options.
 
-% compute votes
-job.calcGBVotes('noC2C');
 
-% compute parent orientations from votes
-job.calcParentFromVote('minFit',7.5*degree)
+for k = 1:3 % do this three times
+
+  % compute votes
+  job.calcGBVotes('noC2C');
+
+  % compute parent orientations from votes
+  job.calcParentFromVote('minFit',7.5*degree)
+end
 
 % plot the result
 plot(job.parentGrains,job.parentGrains.meanOrientation)
@@ -255,10 +259,9 @@ parentGrains = smooth(job.parentGrains,10);
 plot(parentGrains.boundary,'linewidth',3)
 
 % outline a specific parent grain
-grainSelected = parentGrains(parentGrains.findByLocation([100,80]))
+grainSelected = parentGrains(parentGrains.findByLocation([100,80]));
 
 hold on
-id = 412;
 plot(grainSelected.boundary,'linewidth',3,'lineColor','w')
 hold off
 

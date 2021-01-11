@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 5.6.0 12/2020
+%% MTEX 5.6.0 01/2021
 %
 % MTEX 5.6 greatly simplifies parent grain reconstruction by introducing
 % the class <parentGrainReconstructor.parentGrainReconstructor.html
