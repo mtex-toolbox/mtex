@@ -88,7 +88,7 @@ end
 function d = dot_outer_quat_cs(g1,g2,cs,ss)
 % quick version that ignores inversion
 
-g2rot = symmetrise(quaternion(g2),cs,ss).'; % g2 x CS x SS
+g2rot = symmetrise(g2,cs,ss).'; % g2 x CS x SS
 
 q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
 a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
