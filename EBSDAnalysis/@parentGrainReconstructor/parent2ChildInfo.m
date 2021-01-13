@@ -44,8 +44,7 @@ OR.variants.axis = setDisplayStyle(OR.variants.axis,'direction');
 OR.variants.id = job.variantMap;
 
 %Screen output
-if check_option(varargin,'silent'); return; end
- 
+
 screenPrint('Step','OR info:');
 screenPrint('SubStep',sprintf(['OR misorientation angle = ',...
     num2str(angle(OR.p2c)./degree),'º']));
