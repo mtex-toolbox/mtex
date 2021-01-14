@@ -23,12 +23,15 @@ function [fit, c2cPairs] = calcGBFit(job,varargin)
 if check_option(varargin,'p2c')
   
   c2cPairs = neighbors(job.parentGrains,job.childGrains);
+  if ~isempty(c2cPairs),
+    oriChild = job.grains('id',c2cPairs(:,2)).meanOrientation;
+    oriParent = job.grains('id',c2cPairs(:,1)).meanOrientation;
+    mori = inv(oriChild).*oriParent;
   
-  oriChild = job.grains('id',c2cPairs(:,2)).meanOrientation;
-  oriParent = job.grains('id',c2cPairs(:,1)).meanOrientation;
-  mori = inv(oriChild).*oriParent;
-  
-  fit = angle(mori, job.p2c);
+    fit = angle(mori, job.p2c);
+  else
+    fit = [];
+  end
   
 else
 
