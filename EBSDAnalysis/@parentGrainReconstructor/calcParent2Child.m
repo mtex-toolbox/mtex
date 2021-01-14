@@ -38,6 +38,9 @@ function job = calcParent2Child(job, varargin)
 % calcParent2Child
 %
 
+% store the old variants
+if ~isempty(job.variantMap), p2cVariants = variants(job.p2c); end
+
 % get p2c from parent 2 child OR
 if nnz(job.ebsd.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsd)
   
@@ -93,6 +96,12 @@ else % consider also child to child
     
   end
     
+end
+
+% update variantmap
+if ~isempty(job.variantMap)
+  [~,new2old] = min(angle_outer(job.p2c.variants,p2cVariants,'noSym1'),[],2);
+  job.variantMap = job.variantMap(new2old);
 end
    
 end
