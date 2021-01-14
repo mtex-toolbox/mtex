@@ -47,6 +47,7 @@ weights = job.grains.grainSize;
 % (2) parent orientation reconstruction
 % the parent orientation we are going to compute
 fit = inf(size(parentOri));
+fit(~wasParentGrain & ~wasChildGrain ) = NaN;
 clusterSize = ones(size(parentOri));
 
 % compute parent grain orientation by looping through all merged grains
@@ -70,8 +71,9 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
     % parent and child orientations
         
     % compute mean parent orientation
-    pWeights = weights(mergeId==k & wasParentGrain);
-    pOri = mean(parentOri(mergeId==k & wasParentGrain), 'weights', pWeights, 'robust');
+    ind = mergeId==k & wasParentGrain;
+    pOri = mean(parentOri(ind), 'weights', weights(ind), 'robust');
+    fit(ind) = angle(parentOri(ind),pOri);
     
     % compute for child ori a parent ori
     ind = mergeId==k & wasChildGrain;
