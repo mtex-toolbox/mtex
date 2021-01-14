@@ -14,7 +14,6 @@ function plotVariants(p2c, varargin)
 %
 % Options
 %  variantMap - Variant order
-%  id         - return parent variant id instead of parent ori
 %
 
 oriParent = getClass(varargin,'orientation',orientation.id(p2c.CS));
