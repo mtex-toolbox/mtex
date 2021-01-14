@@ -12,6 +12,10 @@ function plotVariants(p2c, varargin)
 %  oriParent - parent @orientation 
 %  hChild    - @Miller, plotting direction for the pole figure
 %
+% Options
+%  variantMap - Variant order
+%  id         - return parent variant id instead of parent ori
+%
 
 oriParent = getClass(varargin,'orientation',orientation.id(p2c.CS));
 hChild = getClass(varargin,'Miller',Miller(0,0,1,p2c.SS,'hkl'));
