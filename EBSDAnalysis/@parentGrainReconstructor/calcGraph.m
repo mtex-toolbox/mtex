@@ -53,4 +53,6 @@
  job.graph = job.graph + sparse(grainPairs(:,1),grainPairs(:,2),prob,...
    length(job.grains),length(job.grains));
  
+ job.graph = max(job.graph, job.graph.');
+ 
  end
