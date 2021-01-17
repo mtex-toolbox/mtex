@@ -36,6 +36,7 @@ classdef grain2d < phaseList & dynProp
   
   properties (Hidden = true)
     inclusionId = []; % number of elements in poly that model inclusions
+    qAdded      = 0;  % this is only for returning to calcGrains to avoid multiple outputs
   end
   
   % general properties
@@ -60,7 +61,7 @@ classdef grain2d < phaseList & dynProp
   end
   
   methods
-    function [grains,qAdded] = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin)
+    function grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin)
       % constructor
       
       if nargin == 0, return;end
@@ -170,17 +171,16 @@ classdef grain2d < phaseList & dynProp
       
         % add new edges
         F = [F; [quadPoints(newBd),newVid(newBd)]];
-        qAdded = sum(newBd);
+        grains.qAdded = sum(newBd);
         
         % new rows to I_FDext
         I_FDext = [I_FDext; ...
-          sparse(repmat((1:qAdded).',1,2),iqD(newBd,:),1,qAdded,size(I_FDext,2))];
+          sparse(repmat((1:grains.qAdded).',1,2), iqD(newBd,:), 1, ...
+          grains.qAdded,size(I_FDext,2))];
         
         % new empty rows to I_FDint
-        I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
+        I_FDint = [I_FDint; sparse(grains.qAdded,size(I_FDint,2))];
       
-      else
-        qAdded = 0;
       end
       
       grains.id = (1:numel(grains.phaseId)).';
@@ -264,6 +264,9 @@ classdef grain2d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
       end
     end
     
@@ -304,6 +307,7 @@ classdef grain2d < phaseList & dynProp
       
       grains.boundary = grains.boundary.update(grains);
       grains.innerBoundary = grains.innerBoundary.update(grains);
+      grains.triplePoints = grains.triplePoints.update(grains);
       
     end
     

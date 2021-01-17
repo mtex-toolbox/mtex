@@ -31,7 +31,8 @@ for k2 = kappa
   for k1 = kappa
     if k1 >= k2
       bs=BinghamS2([-k1 -k2 0]);
-      plot(bs,'colorRange',[0,25],'TR',['$\kappa_1$:' num2str(k1)],'BR',['$\kappa_2$: ' num2str(k2)],'doNotDraw')
+      plot(bs,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
+%       mtexTitle(['$\kappa_1 :$' num2str(k1)  '  ' '$\kappa_2 :$' num2str(k2)],'FontSize',14)
       nextAxis
     else
       nextAxis

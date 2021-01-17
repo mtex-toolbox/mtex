@@ -32,6 +32,7 @@ else
 end
 
 if check_option(varargin,'noSym2'), ss = []; end
+if check_option(varargin,'noSym1'), cs = []; end
 
 
 % ensure there is something to do
@@ -39,10 +40,10 @@ l1 = length(o1); l2 = length(o2);
 if l1 * l2 == 0, d = []; return; end
 
 % maybe we can shrink down everything to quaternion
-if isLaue(cs) || isLaue(ss) || (cs.isProper && isProper(ss) ...
+if isLaue(cs) || isLaue(ss) || (isProper(cs) && isProper(ss) ...
     && all(o1.i(:) == o1.i(1)) && all(o2.i(:) == o1.i(1)))
 
-  cs = cs.properGroup; 
+  if ~isempty(cs), cs = cs.properGroup; end
   if ~isempty(ss), ss = ss.properGroup; end
   
   if check_option(varargin,'all')
@@ -87,7 +88,7 @@ end
 function d = dot_outer_quat_cs(g1,g2,cs,ss)
 % quick version that ignores inversion
 
-g2rot = symmetrise(quaternion(g2),cs,ss).'; % g2 x CS x SS
+g2rot = symmetrise(g2,cs,ss).'; % g2 x CS x SS
 
 q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
 a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;

@@ -7,7 +7,7 @@
 % computing grain boundaries.
 
 % load some example data
-mtexdata twins
+mtexdata twins silent
 
 % detect grains
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));
@@ -29,8 +29,8 @@ hold off
 % Let start by defining some line by its endpoints and plot in on top of
 % the boundary plot
 
-xy1 = [0,10];   % staring point
-xy2 = [31,41]; % end point
+xy1 = [10,10];   % staring point
+xy2 = [41,41]; % end point
 
 line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linestyle',':','linewidth',4,'color','white')
 

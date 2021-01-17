@@ -26,6 +26,10 @@ classdef directionColorKey < handle
           error('No symmetry specified!')
         end
       end
+      
+      
+      if check_option(varargin,'antipodal'), dM.sym = dM.sym.Laue; end
+      
       dM.sR = dM.sym.fundamentalSector;
       
       dM.dir2color = get_option(varargin,'dir2color');

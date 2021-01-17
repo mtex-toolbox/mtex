@@ -24,12 +24,13 @@ gB = grains.boundary;
 
 for k = find(grains.hasHole).'
   
-  % innver vertices
+  % inner vertices
   V = poly{k}(end-grains.inclusionId(k):end);
   V = V(V ~= V(1)); 
   
   incl = unique(gB.grainId(all(ismember(gB.F, V),2),:));
   incl(incl == grains.id(k)) = [];
+  incl(incl == 0) = [];
   
   isIncl(incl) = true;
   hostId(incl) = grains.id(k);

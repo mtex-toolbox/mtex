@@ -8,7 +8,7 @@ function h = quiver(ebsd,dir,varargin)
 %   quiver(ebsd,ebsd.rotations.axis)
 %
 % Input
-%  ebsd - @ebsd
+%  ebsd - @EBSD
 %  dir  - @vector3d
 %
 % Options

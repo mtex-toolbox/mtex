@@ -87,8 +87,8 @@ classdef slipSystem
       function dispData(sS)
       % display coordinates  
       if isa(sS.CS,'crystalSymmetry')
-        if any(strcmp(sS.b.CS.lattice,{'hexagonal','trigonal'}))
-          d = [sS.b.UVTW sS.n.hkl];
+        if sS.b.lattice.isTriHex
+          d = [sS.b.UVTW sS.n.hkil];
           d(abs(d) < 1e-10) = 0;
           cprintf([d,reshape(sS.CRSS,[],1)],'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L' 'CRSS'});
         else

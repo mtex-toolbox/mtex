@@ -97,6 +97,13 @@ end
 % combine multiple inputs
 ebsd = [ebsd{:}];
 
+% ensure unique phases
+[C, IC] = uniqueCS(ebsd.CSList);
+
+ebsd.CSList = ebsd.CSList(C);
+ebsd.phaseMap = ebsd.phaseMap(C);
+ebsd.phaseId = IC(ebsd.phaseId);
+
 % compute unit cell for 3d data
 if check_option(varargin,'3d')    
   ebsd.unitCell = calcUnitCell([ebsd.x(:),ebsd.y(:),ebsd.z(:)],varargin{:});
@@ -105,3 +112,31 @@ end
 
 % should we automatically gridify?
 %ebsd = ebsd.gridify;
+
+end
+
+function [C,IC] = uniqueCS(csList)
+
+
+IC = zeros(length(csList),1); IC(1) = 1;
+C = 1;
+
+for k = 2:length(csList)
+  
+  % look for old elements
+  for l = 1:k-1     
+    if (ischar(csList{k}) && ischar(csList{l}) && strcmpi(csList{k},csList{l})) || ...
+        (eq(csList{k},csList{l}) && strcmpi(csList{k}.mineral,csList{l}.mineral))
+      
+      IC(k) = l;
+      break
+    end
+  end
+  
+  % new element
+  if IC(k) == 0,  C = [C,k]; IC(k) = length(C); end %#ok<AGROW>
+  
+end
+   
+end
+

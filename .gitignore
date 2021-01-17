@@ -21,3 +21,5 @@ doc/html
 help/mtex/*
 help/tmp/*
 !data/testgrains.mat
+/myToken.txt
+resources/*

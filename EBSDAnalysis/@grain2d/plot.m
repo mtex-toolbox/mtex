@@ -47,9 +47,10 @@ end
 
 plotBoundary = true;
 % allow to plot grain faces only without boundaries
-if check_option(varargin,'noBoundary')
-plotBoundary = false;
-end
+if check_option(varargin,'noBoundary'),plotBoundary = false; end
+
+% turn logical into double
+if nargin>1 && islogical(varargin{1}), varargin{1} = double(varargin{1}); end
 
 % numerical data are given
 if nargin>1 && isnumeric(varargin{1})
@@ -62,6 +63,16 @@ if nargin>1 && isnumeric(varargin{1})
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
 
+elseif nargin>1 && isa(varargin{1},'vector3d')
+  
+  scaling = sqrt(grains.area);
+    
+  p = axialSymbol(grains.centroid,varargin{1},scaling,varargin{:});
+  
+  p.Parent = mP.ax;
+    
+  plotBoundary = false;
+ 
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);

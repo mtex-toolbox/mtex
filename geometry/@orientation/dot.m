@@ -4,11 +4,16 @@ function d = dot(o1,o2,varargin)
 % Syntax
 %   d = dot(o1,o2)
 %
+%   d = dot(o1,o2,'noSymmetry')
+%
 % Input
 %  o1, o2 - @orientation
 %
 % Output
 %  d - cos(omega/2) where omega is the smallest rotational angle of inv(o1)*o2
+%
+% Options
+%  noSymmetry - ignore all symmetries
 %
 % See also
 % orientation/dot_outer orientation/angle
@@ -21,17 +26,22 @@ end
 % extract symmetries
 if isa(o1,'orientation')
 
-  qss = o1.SS.rot;
-  qcs = o1.CS.rot;
-
   % check any of the involved symmetries is a Laue group as in this case we
   % can forget about all inversions
   oneIsLaue = isLaue(o1.SS) || isLaue(o1.CS);
 
+  if oneIsLaue
+    qss = o1.SS.properGroup.rot;
+    qcs = o1.CS.properGroup.rot;
+  else
+    qss = o1.SS.rot;
+    qcs = o1.CS.rot;
+  end
+  
   if isa(o2,'orientation')
 
     % it is also possible to compute the misorientation angle between two
-    % orientations of differernt phase. In this case the symmetry becomes
+    % orientations of different phase. In this case the symmetry becomes
     % the product of both symmetries
     if ~eq(o1.CS,o2.CS,'Laue')
 
@@ -48,6 +58,7 @@ if isa(o1,'orientation')
         qcs = o1.CS.rot' * o2.CS.rot;
         qcs = unique(qcs(:));
         qss = rotation.id;
+        
       end
 
     elseif ~eq(o1.SS,o2.SS,'Laue') % comparing inverse orientations
@@ -62,10 +73,22 @@ if isa(o1,'orientation')
       qcs = rotation.id;
     end
   end
+  
+  if check_option(varargin,'noSym2'), qss = []; end
+  if check_option(varargin,'noSym1'), qcs = []; end
+  
 else
-  qcs = o2.CS.rot;
-  qss = o2.SS.rot;
+  
   oneIsLaue = isLaue(o2.SS) || isLaue(o2.CS);
+  
+  if oneIsLaue
+    qss = o2.SS.properGroup.rot;
+    qcs = o2.CS.properGroup.rot;
+  else
+    qss = o2.SS.rot;
+    qcs = o2.CS.rot;
+  end
+  
 end
 
 % we may restrict to purely rotational group if one of the following
@@ -78,36 +101,65 @@ ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
 
 
 % we have different algorithms depending whether one vector is single
-if length(o1) == 1
+if length(qss) <= 1 % no specimen symmetry
+
+  % this is inv(o1) .* o2
+  mori = itimes(o1,o2,1);
+
+  % take the maximum over all symmetric equivalent
+  d = max(dot_outer(mori,qcs,'noSymmetry'),[],2);
+      
+  d = reshape(d,size(mori));
+  
+elseif length(qcs) <= 1 % no crystal symmetry
+  
+  % this is o1 .* inv(o2)
+  mori = itimes(o1,o2,0);
+
+  % take the maximum over all symmetric equivalent
+  d = max(dot_outer(mori,qss,'noSymmetry'),[],2);
+      
+  d = reshape(d,size(mori));
+
+elseif length(o1) == 1
 
   % symmetrising the single element is much faster
   o1 = mtimes(qss,mtimes(o1,qcs,0),1);
   
-  % this might save some time TODO!!!
-  %if length(o2) > 1000, o1 = unique(o1,'antipodal','noSymmetry'); end
-
   % inline dot_outer(o1,o2) for speed reasons
   q1 = [o1.a(:) o1.b(:) o1.c(:) o1.d(:)];
   q2 = [o2.a(:) o2.b(:) o2.c(:) o2.d(:)];
   
-  d = q1 * q2';
+  d = q1 * q2.';
   
-  % TODO
-  %if ~ignoreInv, d = d .* 1; end
+  % consider inversion if needed
+  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i(:),o2.i(:).'); end
   
   d = reshape(max(abs(d),[],1),size(o2));
-
-else
+  
+elseif length(o2) == 1
+  
+  % symmetrising the single element is much faster
+  o2 = mtimes(qss,mtimes(o2,qcs,0),1);
+  
+  % inline dot_outer(o1,o2) for speed reasons
+  q1 = [o1.a(:) o1.b(:) o1.c(:) o1.d(:)];
+  q2 = [o2.a(:) o2.b(:) o2.c(:) o2.d(:)];
+  
+  d = q1 * q2.';
+  
+  % consider inversion if needed
+  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i(:),o2.i(:).'); end
+  
+  d = reshape(max(abs(d),[],2),size(o1));
+  
+else % length(qss)>1 and two vectors to compare
 
   % remember shape
   s = size(o1);
-  
-  % symmetrise TODO: do we realy need to take the inv here?
-  if length(qss) > 1
-    o1 = mtimes(qss,o1,1); 
-  else
-    o1 = reshape(o1,1,[]);
-  end
+
+  % symmetrise o1 by qss and o2 by qcs
+  o1 = mtimes(qss,o1,1);
   o2 = reshape(mtimes(o2,inv(qcs),0),[1,length(o2),length(qcs)]);
   
   % inline dot product for speed reasons

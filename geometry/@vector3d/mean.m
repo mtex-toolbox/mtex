@@ -22,8 +22,19 @@ function m = mean(v,varargin)
 %  robust    - robust mean (with respect to outliers)
 %
 
-isRobust = check_option(varargin,'robust');
-if isRobust, varargin = delete_option(varargin,'robust'); end
+% robust estimator
+if check_option(varargin,'robust') && length(v)>4
+  
+  varargin = delete_option(varargin,'robust');
+  
+  m = mean(v,varargin{:});
+  
+  omega = angle(m,v);
+  id = omega < quantile(omega,0.8)*(1+1e-5);
+  
+  if any(id), m = mean(v.subSet(id),varargin{:}); end
+  return;
+end
   
 if check_option(varargin,'antipodal') || v.antipodal
 
@@ -53,18 +64,16 @@ else
     m = normalize(sum(v,varargin{:}));
     
   else
-    m = sum(v,varargin{:});
-    m = (length(m)./length(v)) .* m;
-  end
-  
-end
-
-if isRobust && length(v)>4
-  omega = angle(m,v);
-  id = omega < quantile(omega,0.8)*(1+1e-5);
-  if ~any(id), return; end
     
-  m = mean(v.subSet(id),varargin{:});
+    v.x = mean(v.x,varargin{:});
+    v.y = mean(v.y,varargin{:});
+    v.z = mean(v.z,varargin{:});
+
+    v.opt = struct;
+    v.isNormalized = false;
+    
+    m = v;
+  end
   
 end
 

@@ -3,5 +3,6 @@ MartensiteVariants
 TiBetaReconstruction
 MaParentGrainReconstruction
 TransformationTexture
-ParentGrainReconstruction
+TiBetaReconstructionAdvanced
+MaParentGrainReconstructionAdvanced
 GrainMerge

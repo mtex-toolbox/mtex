@@ -58,6 +58,12 @@ else
   
 end
 
-ind = discretesample(arg1,points);
+if numel(arg1) == 1 && arg1 == 1
+  ind = ones(points,1);
+else
+  ind = discretesample(arg1,points);
+end
 
 obj = subSet(obj,ind);
+
+end

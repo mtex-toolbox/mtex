@@ -18,7 +18,7 @@ function kam = KAM(ebsd,varargin)
 %   plot(ebsd,kam./degree)
 %
 % Input
-%  ebsd - @ebsd
+%  ebsd - @EBSD
 %
 % Options
 %  threshold - ignore misorientation angles larger then threshold
@@ -56,12 +56,11 @@ else
   
 end
 
-
 % set center to zero
 weights(order+1,order+1) = 0;
 
 % get threshold
-threshold = get_option(varargin,'threshold',10*degree);
+threshold = get_option(varargin,'threshold',inf);
       
 % prepare the result
 kam = zeros(size(ebsd));

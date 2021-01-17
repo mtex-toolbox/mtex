@@ -16,13 +16,13 @@ ebsd = ebsd(inpolygon(ebsd,poly));
 plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
 
 %%
-% In the above plot each square corresponds to entry in the variable
+% In the above plot each square corresponds to one entry in the variable
 % |ebsd|. Lets visualize the order
 
 text(ebsd,1:length(ebsd))
 
 %%
-% We may easily select specific measurement pixels by specifying its
+% We may easily select specific measurement pixels by specifying their
 % indeces
 
 hold on
@@ -106,4 +106,21 @@ axis off
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
 str = arrayfun(@(a,b) ['(' int2str(a) ',' int2str(b) ')'],i,j,'UniformOutput',false);
 text(ebsd,str)
+
+%% Cube Coordinates
+% In hexognal grids it is sometimes advantageous to use three digit cube
+% coordinates to index the cell. This can be done using the commands
+% <EBSDhex.hex2cube.html |hex2cube|> and <EBSDhex.cube2hex.html
+% |cube2hex|>. Much more details on indexing hex grids can be found at
+% <https://www.redblobgames.com/grids/hexagons/ here>.
+
+plot(ebsd,ebsd.orientations,'edgeColor','k','micronbar','off')
+axis off
+
+[i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
+[x,y,z] = ebsd.hex2cube(i,j);
+str = arrayfun(@(a,b,c) ['(' int2str(a) ',' int2str(b) ',' int2str(c) ')'],x,y,z,'UniformOutput',false);
+text(ebsd,str)
+
+
 

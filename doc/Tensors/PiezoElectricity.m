@@ -68,8 +68,7 @@ drawNow(gcm)
 
 fname = fullfile(mtexDataPath,'orientation', 'Tongue_Quartzite_Bunge_Euler');
 
-ori = loadOrientation(fname,CS,'interface','generic' ...
-  , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
+ori = orientation.load(fname,CS, 'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3'})
 
 %%
 % The figure on p.1184 of the publication

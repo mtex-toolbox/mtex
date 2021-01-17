@@ -150,11 +150,13 @@ methods (Static = true)
   end
 
   function ori = copper(varargin)
-    ori = orientation.byEuler(90*degree,35*degree,45*degree,varargin{:});
+    %ori = orientation.byEuler(90*degree,35*degree,45*degree,varargin{:});
+    ori = orientation.byMiller([1 1 2],[1 -1 1],varargin{:});
   end
 
   function ori = copper2(varargin)
-    ori = orientation.byEuler(270*degree,30*degree,45*degree,varargin{:});
+    %ori = orientation.byEuler(270*degree,35*degree,45*degree,varargin{:});
+    ori = orientation.byMiller([1 1 2],[1 1 -1],varargin{:});
   end
 
   function ori = SR(varargin)
@@ -303,9 +305,53 @@ methods (Static = true)
     
   end
   
-  
-  
-
 end
 
+
+methods (Static = true, Hidden = true)
+
+  function check_dot(cs)
+  
+    % first setting
+    cs = crystalSymmetry('m-3m');
+    n = 10000000;
+    ori1 = orientation.rand(n,cs);
+    ori2 = orientation.rand(n,cs);
+    
+    tic
+    mori = inv(ori1) .* ori2;
+    
+    d1 = max(dot_outer(mori,cs.rot,'noSymmetry'),[],2);
+    toc
+    
+    tic
+    d2 = dot(ori1,ori2);
+    toc
+    
+    norm(d1-d2)
+    
+    %second setting
+    n = 1000000;
+    ori1 = orientation.rand(n,cs,cs);
+    ori2 = orientation.rand(cs,cs);
+    
+    tic
+    d1 = dot(ori1,ori2);
+    toc
+    
+    tic
+    d2 = dot(ori2,ori1);
+    toc
+    
+    norm(d1-d2)
+    
+    
+  end
+  
+  
+  
+  
+  
+end
+  
 end

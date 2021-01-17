@@ -1,10 +1,11 @@
 BoundarySelect             Select
 BoundaryPlots              Plot
 BoundaryProperties         Properties
-BoundaryCurvature          Curvature
+SubGrainBoundaries         Subgrain Boundaries
 TiltAndTwistBoundaries     Twist and Tilt
 CSLBoundaries              CSL
+BoundaryCurvature          Curvature
+GrainSmoothing             Smoothing
 TwinningBoundaries         Twinning
 TriplePoints               Triple Points
 BoundaryIntersections      Intersections
-

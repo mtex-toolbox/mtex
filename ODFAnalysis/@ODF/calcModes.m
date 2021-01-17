@@ -59,7 +59,7 @@ oriNextSeed = ori(f>=quantile(f(:),-20));
 while res > targetRes
 
   % new grid
-  ori = [oriNextSeed(:);...
+  ori = [oriNextSeed(:).';...
     localOrientationGrid(odf.CS,odf.SS,res,'center',oriNextSeed,'resolution',res/4)];
     
   % evaluate ODF

@@ -36,7 +36,7 @@ if isRowAlignment
   offset = 2*iseven(round((ebsd.prop.y(i) - ext(3)) / (3/2*dHex)))-1;
   
   nRows = round((ext(4)-ext(3))/ (3/2*dHex));
-  nCols = ceil((ext(2)-ext(1)) / (sqrt(3)*dHex)-0.25);
+  nCols = ceil((ext(2)-ext(1)) / (sqrt(3)*dHex)-0.75);
   
 else
   
@@ -47,7 +47,7 @@ else
   offset = 2*iseven(round((ebsd.prop.x(i) - ext(1)) / (3/2*dHex)))-1;
   
   nCols = round((ext(2)-ext(1))/ (3/2*dHex));
-  nRows = ceil((ext(4)-ext(3)) / (sqrt(3)*dHex)-0.25);
+  nRows = ceil((ext(4)-ext(3)) / (sqrt(3)*dHex)-0.75);
    
 end
   
@@ -134,6 +134,6 @@ else
 end
 
 ebsdGrid = EBSDhex(rot,phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,offset,'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop);
 
 end

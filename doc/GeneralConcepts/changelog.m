@@ -1,5 +1,122 @@
 %% MTEX Changelog
 %
+%% MTEX 5.6.0 01/2021
+%
+% MTEX 5.6 greatly simplifies parent grain reconstruction by introducing
+% the class <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|>. During the reconstruction procedure this
+% class keeps track of the correspondence between measured child grains and
+% the reconstructed parent grains. It provides the following functions for
+% recovering parent orientations which can be applied multiple times and in
+% any order to archieve the best possible reconstruction.
+%
+% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
+% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
+% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
+% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clusteres
+% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
+% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
+% * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
+%
+% The usage of this new class is demonstrated in <TiBetaReconstruction.html
+% Beta Titanium Reconstruction> and <MaParentGrainReconstruction.html
+% Parent Martensite Reconstruction>.
+%
+% *Compatibility fixes*
+%
+% MTEX 5.6 fixes several incompatibilities with Matlab versions earlier
+% then 2019b.
+%
+%% MTEX 5.5.0 11/2020
+%
+% *Orientation Embeddings*
+%
+% Orientational embeddings are tensorial representations of orientations
+% with the specific property that each class of symmetrically equivalent
+% orientations has a unique tensor representation. In contrast to the well
+% known representation by Rodrigues vectors those embeddings do not suffer
+% from boundary effects, i.e., the Euclidean distance between the tensors
+% is always close to the misorientation angle. This allows to lift any
+% method that works for multivariate data to orientations. More details of
+% this representation can be found in the chaper
+% <OrientationEmbeddings.html orientation embeddings> and the paper
+%
+% * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
+% Rotation Group Modulo Finite Symmetries_,
+% <https://arxiv.org/abs/2007.09664 arXiv:2007.09664>, 2020.
+%
+% *Low Angle Boundaries*
+%
+% With MTEX 5.5 we make low angle grain boundary analsis much more straight
+% forward by allowing to pass to the command <EBSD.calcGrains.html
+% |calcGrains|> two thresholds, i.e.,
+%
+%   grains = calcGrains(ebsd,'threshold',[10*degree 1*degree])
+% 
+% generates grains bounded by high angle grain boundaries with a threshold
+% of 10 degree and inner low angle boundaries with an threshold of 1
+% degree. The latter ones are stored as |grains.innerBoundary|. In order to
+% estimate the density of inner boundaries per grain the commands
+% <grain2d.subBoundaryLength.html |subBoundaryLength|> and
+% <grain2d.subBoundarySize.html |subBoundarySize|> have been introduced.
+% The documentation page <SubGrainBoundaries.html Subgrain Boundaries>
+% describes the analysis of low angle boundaries in more detail.
+%
+% *New Functionalities*
+%
+% * For single phase EBSD maps you can access the orientations now more
+% easily by |ebsd.orientations| instead of |ebsd('indexed').orientations|.
+% Orientations corresponding to not indexed pixels will be returned as NaN
+% and thus automatically ignored during any further computation.
+% * <grain2d.isBoundary |grains.isBoundary|> checks grains to be
+% boundary grains
+% * <grain2d.isInclusion |grains.isInclusion|> checks grains to be
+% inclusions
+% * <grain2d.merge.html |merge(grains,'inclusions')|> merges inclusions
+% into their hosts
+% * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
+% with a certain misorientation angle
+% * interpolation of EBSD maps at arbitrary coordinates by the command
+% <EBSD.interp.html |interp|> works now for hexagonal grids as well. In
+% particular this allows to remap EBSD data from hexagonal to square grids
+% and vice versa. Have a look at the chapter <EBSDInter.html Interpolation>
+% for more details.
+% * <EBSD.calcMis2Mean.html |calcMis2Mean|> computes the misorientation to
+% a grain reference orientation, i.e., the <EBSDGROD.html grain reference
+% orientation deviation (GROD)>.
+% * KAM computation has been speeded up signigicantly for hexonal and
+% square grids. Make sure to use the command |ebsd = ebsd.gridify| before
+% the KAM computation.
+% * new option |'edgeAlpha'| to control the transparency of grain
+% boundaries, e.g. in depedency of the misorientation angle.
+% * more easily add new / change phases in an EBSD map by one of the
+% following commands
+%
+%   ebsd(ind).orientations = orientation.byEuler(0,0,0,CSNew)
+%   ebsd(ind).CS = CSNew
+%
+% * new option to plot arrows in spherical plots by
+%
+%   plot([vector3d.Z, vector3d.Z + 0.5 * vector3d.rand],'arrow')
+%
+% * <EBSD.export.html |export(ebsd,fileName)|> allows to export to EBSD
+% data to |.ang|, |.ctf|, |.crc| and |.hdf5| files, thanks to Azdiar Gazder
+% * new function <rotation.fit.html |rot = fit(l,r)|> to compute the
+% rotations that best rotates all the vectors |l| onto the vectors |r|
+%
+% * <orientation.load.html |orientation.load|> and <vector3d.load.html
+% |vector3d.load|> allows now to import additional properties.
+%
+% *Important Bug Fixes*
+%
+% * <ODF.volume.html |volume(odf)|> gave wrong results in the presense of
+% specimen symmetry and for centers close to the boundary of the
+% fundamental region.
+%
+% * <slipSystem.symmetrise.html |slipSystem.symmetrise|> gave
+% incorrect number of slipsystems due to a rounding error
+%
 %% MTEX 5.4.0 7/2020
 %
 % *Parent Grain Reconstruction*
@@ -84,14 +201,13 @@
 % illustrates anisotropy of seismic waves
 % * <EBSD.grainMean.html |grainMean|> grain averages of arbitrary properties
 % * shape functions <grain2d.surfor.html |surfor|>, <grain2d.paror.html
-% |paror|>, <grain2d.calliper.html |calliper|>
+% |paror|>, <grain2d.caliper.html |caliper|>
 % * <Miller.multiplicity.html |multiplicity|> for Miller, orientation and
 % fibre
 %
 %% MTEX 5.2.3 11/2019
 %
-% * replaced |calcODF(ori)| by <orientation.calcDensity.html
-% |calcDensity(ori)|>
+% * replaced |calcODF(ori)| by |<orientation.calcDensity.html calcDensity(ori)>|
 % * bug fix in ODF reconstruction from XRD data
 % * bug fix in EBSD export to ctf
 % * bug fix in grain reconstruction

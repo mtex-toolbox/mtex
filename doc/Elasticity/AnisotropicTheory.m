@@ -37,21 +37,21 @@ sigma = C : eps
 inv(C) : sigma
 
 %%
-% The ellastic energy of the strain |eps| can be computed equivalently
-% computed by the following equations
+% The ellastic energy of the strain |eps| can be computed equivalently by
+% the following equations
 
 % the elastic energy
 U = sigma : eps
-U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4])
+U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4]);
 
-U = (C : eps) : eps
+U = (C : eps) : eps;
 
 %% Young's Modulus
 % Young's modulus is also known as the tensile modulus and measures the
 % stiffness of elastic materials. It is computed for a specific direction
 % |d| by the command <stiffnessTensor.YoungsModulus.html YoungsModulus>.
 
-d = vector3d.X
+d = vector3d.X;
 E = C.YoungsModulus(d)
 
 %%
@@ -86,8 +86,8 @@ plot(beta,'complete','upper')
 beta.eval(d)
 
 %% Poisson Ratio 
-% The rate of compression/ decompression in a direction |n| normal to the
-% pulling direction |p| is called Poisson ration. 
+% The rate of compression / decompression in a direction |n| normal to the
+% pulling direction |p| is called Poisson ration.
 
 % the pulling direction
 p = vector3d.Z;
@@ -109,7 +109,7 @@ nu = C.PoissonRatio(p)
 % we again obtain a spherical function. However, this time it is only
 % meaningfull to evaluate this function at directions perpendicular to the
 % pulling direction |p|. Hence, a good way to visualize this function is to
-% plot it as a section in the x/y plane
+% plot it as a <S2Fun.plotSection.html section> in the x/y plane
 
 plotSection(nu,p,'color','interp','linewidth',5)
 axis off
@@ -119,10 +119,10 @@ mtexColorbar
 % The shear modulus is TODO
 
 % shear plane
-n = Miller(0,0,1,cs)
+n = Miller(0,0,1,cs);
 
 % shear direction
-d = Miller(1,0,0,cs)
+d = Miller(1,0,0,cs);
 
 G = C.shearModulus(n,d)
 

@@ -24,19 +24,23 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 %   % merge grains with small misorientation angle
 %   [grainsMerged,parentId] = merge(grains,'threshold',delta)
 % 
-%   % merge inclusions
-%   [grainsMerged,parentId] = merge(grains,'inclusions')
+%   % merge all inclusions with a maximum pixel size
+%   [grainsMerged,parentId] = merge(grains,'inclusions','maxSize',5)
 %
 % Input
 %  grains   - @grain2d
 %  boundary - @grainBoundary
 %  M        - merge matrix M(i,j)==1 indicates the grains to be merged
 %  tpList   - @triplePointList
-%  gid      - nx2list of grainIds
+%  gid      - n x 2 list of grainIds
 %
 % Output
 %  grainsMerged - @grain2d
-%  parentId      - a list of the same size as grains containing the ids of the merged grains
+%  parentId     - a list of the same size as grains containing the ids of the merged grains
+%
+% Options
+%  threshold - maximum misorientation angle to be merged as similar
+%  maxSize   - maximum number of pixels to be merged as an inclusion 
 %
 % Example:
 %
@@ -72,17 +76,21 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,2),mergeId(:,3),1,maxId+1,maxId+1);
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
-  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1)
+  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) 
+    % adjecency matrix
     
+    % this supindexing is required as varargin{k} is only maxId x maxId
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
     
-  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2
+  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 
+    % pairs of grains
     
     A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
     
   elseif ischar(varargin{k}) && strcmpi(varargin{k},'inclusions')
     
     [isIncl, hostId] = grains.isInclusion;
+    isIncl = isIncl & grains.grainSize < get_option(varargin,'maxSize',inf);
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
@@ -94,14 +102,16 @@ for k = 1:length(varargin)
     delta = get_option(varargin,'threshold');
     
     grainPairs = unique(grains.boundary.grainId,'rows');
-    grainPairs = grainPairs(all(grainPairs ~= 0,2),:);
+    indPairs = id2ind(grains,grainPairs);
+    grainPairs = grainPairs(all(indPairs ~= 0,2),:);
+    indPairs = indPairs(all(indPairs ~= 0,2),:);
     
     for phId = grains.indexedPhasesId
       
-      ind = all(grains.phaseId(grainPairs)==phId,2);
+      ind = all(grains.phaseId(indPairs)==phId,2);
       
       % extract the meanorientations
-      oriPairs = orientation(grains.prop.meanRotation(grainPairs(ind,:)),grains.CSList{phId});
+      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList{phId});
       oriPairs = reshape(oriPairs,[],2);
       
       % check mean orientation difference is below a threshold
@@ -117,19 +127,31 @@ for k = 1:length(varargin)
 end
 A = A(1:maxId,1:maxId);
 
-% ids of the grains to merge
-doMerge = any(A,1) | any(A,2).';
+% maybe we provide old2newId directly
+if isnumeric(varargin{1}) && length(varargin{1}) == length(grains) && size(varargin{1},2)==1
+  
+  old2newId = varargin{1};
+  
+  keepId = [];
+  keepInd = [];
+  
+else
 
-% 2. determine grains not to touch and sort them first
-keepId = find(~doMerge);
-keepInd = grains.id2ind(keepId);
-old2newId = zeros(maxId,1);
-old2newId(keepId) = 1:numel(keepId);
+  % ids of the grains to merge
+  doMerge = any(A,1) | any(A,2).';
 
-% 3. determine which grains to merge
-subA = A(doMerge,doMerge);
-subA = subA | subA.';
-old2newId(doMerge) =  numel(keepId) + connectedComponents(subA);
+  % 2. determine grains not to touch and sort them first
+  keepId = find(~doMerge);
+  keepInd = grains.id2ind(keepId);
+  old2newId = zeros(maxId,1);
+  old2newId(keepId) = 1:numel(keepId);
+
+  % 3. determine which grains to merge
+  subA = A(doMerge,doMerge);
+  subA = subA | subA.';
+  old2newId(doMerge) =  numel(keepId) + connectedComponents(subA); 
+  
+end
 
 % and in the old grains
 parentId = old2newId(grains.id);

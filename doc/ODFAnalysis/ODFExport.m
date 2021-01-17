@@ -76,7 +76,7 @@ export(model_odf,fname,S3G,'Bunge','generic')
 fname = [mtexDataPath '/ODF/odf.mtex'];
 
 % export the ODF
-export(model_odf,fname,'Bunge','MTEX')
+export(model_odf,fname,'Bunge','interface','mtex')
 
 %%  Export to VPSC format
 %
