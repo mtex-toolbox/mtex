@@ -1,5 +1,23 @@
 function obj = setDouble(obj,d)
-
+% convert embedding to packed double
+% iverse of double
+%
+% Syntax
+%
+%   obj = setDouble(obj,d);
+%   
+%
+% Input
+%  obj - @embedding
+%  d - double
+%
+%
+% Output
+%  E - embedding
+%
+% See also
+% OrientationEmbeddings
+%
 d = reshape(d,[],obj.dim);
 s = size(obj);
 
@@ -18,13 +36,22 @@ switch obj.CS.Laue.id
     
   case {5,8,11} % C2
     
+    d([5,6,8]) = d([5,6,8])./sqrt(2);
+    d([10,11,13]) = d([10,11,13])./sqrt(2);
+    
     obj.u{1} = vector3d(d(:,1:3).').';
 
     obj.u{2}.M = fillT2(d(:,4:8));  obj.u{2} = obj.u{2}.sym;
     
     obj.u{3}.M = fillT2(d(:,9:13)); obj.u{3} = obj.u{3}.sym;
     
+    
+    
   case 16 % D2
+      
+    d([2,3,5]) = d([2,3,5])./sqrt(2);
+    d([7,8,10]) = d([7,8,10])./sqrt(2);
+    d([12,13,15]) = d([12,13,15])./sqrt(2);
     
     obj.u{1}.M = fillT2(d(:,1:5)); obj.u{1} = obj.u{1}.sym;
     
@@ -34,21 +61,32 @@ switch obj.CS.Laue.id
        
   case 18 % C3
     
+    d([1:7]) = d([1:7])./sqrt(3);
     obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     obj.u{2} = vector3d(d(:,8:10).').';
     
   case {21,24} % D3
     
+   d([1:7]) = d([1:7])./sqrt(3);
+   d([9,10,12]) = d([9,10,12])./sqrt(2);
     obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     
     obj.u{2}.M = fillT2(d(:,8:12)); obj.u{2} = obj.u{2}.sym;
     
   case 27 % C4
+      
+    d([2,3,7,10,12,14]) = d([2,3,7,10,12,14])./sqrt(4);
+    d([4,6,13]) = d([4,6,13])./sqrt(6);
+    d([5,8,9]) = d([5,8,9])./sqrt(12);
     
     obj.u{1}.M = fillT4(d(:,1:14)); obj.u{1} = obj.u{1}.sym;
     obj.u{2} = vector3d(d(:,15:17).').';
     
   case 32 % D4
+      
+    d([2,3,7,10,12,14]) = d([2,3,7,10,12,14])./sqrt(4);
+    d([4,6,13]) = d([4,6,13])./sqrt(6);
+    d([5,8,9]) = d([5,8,9])./sqrt(12);
     
     obj.u{1}.M = fillT4(d(:,1:14)); obj.u{1} = obj.u{1}.sym;
     
@@ -63,11 +101,24 @@ switch obj.CS.Laue.id
     
   case 35 % C6
     
+    d([2,3,16,21,23,27]) = d([2,3,16,21,23,27])./sqrt(6);
+    d([4,6,11,15,24,26]) = d([4,6,11,15,24,26])./sqrt(15);
+    d([5,17,20]) = d([5,17,20])./sqrt(30);
+    d([7,10,25]) = d([7,10,25])./sqrt(20);
+    d([8,9,12,14,18,19]) = d([8,9,12,14,18,19])./sqrt(60) ;
+    d([13]) =  d([13])/sqrt(15*6);
     obj.u{1}.M = fillT6(d(:,1:27)); obj.u{1} = obj.u{1}.sym;
     obj.u{2} = vector3d(d(:,28:30).').';
     
   case 40 % D6
     
+    d([2,3,16,21,23,27]) = d([2,3,16,21,23,27])./sqrt(6);
+    d([4,6,11,15,24,26]) = d([4,6,11,15,24,26])./sqrt(15);
+    d([5,17,20]) = d([5,17,20])./sqrt(30);
+    d([7,10,25]) = d([7,10,25])./sqrt(20);
+    d([8,9,12,14,18,19]) = d([8,9,12,14,18,19])./sqrt(60) ;
+    d([13]) =  d([13])/sqrt(15*6); 
+      
     obj.u{1}.M = fillT6(d(:,1:27)); obj.u{1} = obj.u{1}.sym;
     
     M1 = obj.u{1}.M;
@@ -76,11 +127,15 @@ switch obj.CS.Laue.id
       + 2 * (M1(:,:,1,1,2,2,:) + M1(:,:,1,1,3,3,:) + M1(:,:,2,2,3,3,:)), 3,3,[]);
     
   case 42 % T
-    
+       
+      d = d./sqrt(3);
       obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     
   case 45 % O
             
+    d([1,2,5,6,7,9]) =  d([1,2,5,6,7,9])./sqrt(4);
+    d([3,4,8]) = d([3,4,8])./sqrt(6);
+      
     M = nan(3^4,size(d,1));
     M(ind43,:) = d.';
     
