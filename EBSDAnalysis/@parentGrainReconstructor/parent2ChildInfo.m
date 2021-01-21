@@ -18,12 +18,12 @@ OR.p2c = job.p2c;
 
 % Parallel planes and directions
 [OR.plane.parent,OR.plane.child,OR.direction.parent,OR.direction.child] = ...
-                    round2Miller(OR.p2c,'maxIndex',15);    
+  round2Miller(OR.p2c,'maxIndex',15);
                 
 % Misorientation of rational OR
 OR.p2cRational = orientation('map',...
-                               OR.plane.parent,OR.plane.child,...
-                               OR.direction.parent,OR.direction.child); 
+  OR.plane.parent,OR.plane.child,...
+  OR.direction.parent,OR.direction.child);
                            
 % Deviation angle between rational and actual OR
 OR.devAngle.plane = min(angle(OR.p2c*OR.plane.parent.symmetrise,OR.plane.child));
@@ -47,37 +47,37 @@ OR.variants.id = job.variantMap;
 
 screenPrint('Step','OR info:');
 screenPrint('SubStep',sprintf(['OR misorientation angle = ',...
-    num2str(angle(OR.p2c)./degree),'º']));
+  num2str(angle(OR.p2c)./degree),'º']));
 
 screenPrint('Step','Parallel planes');
 screenPrint('SubStep',sprintf(['Closest parent plane = ',...
-    sprintMiller(OR.plane.parent,'round')]));
+  sprintMiller(OR.plane.parent,'round')]));
 screenPrint('SubStep',sprintf(['Closest child plane = ',...
-    sprintMiller(OR.plane.child,'round')]));
+  sprintMiller(OR.plane.child,'round')]));
 screenPrint('SubStep',sprintf(['Ang. dev. from parallel plane relationship from OR = ',...
-    num2str(OR.devAngle.plane./degree),'º']));
+  num2str(OR.devAngle.plane./degree),'º']));
 
 screenPrint('Step','Parallel directions');
 screenPrint('SubStep',sprintf(['Closest parent direction = ',...
-    sprintMiller(OR.direction.parent,'round')]));
+  sprintMiller(OR.direction.parent,'round')]));
 screenPrint('SubStep',sprintf(['Closest child direction = ',...
-    sprintMiller(OR.direction.child,'round')]));
+  sprintMiller(OR.direction.child,'round')]));
 screenPrint('SubStep',sprintf(['Ang. dev. from parallel directions relationship from OR = ',...
-    num2str(OR.devAngle.direction./degree),'º']));
+  num2str(OR.devAngle.direction./degree),'º']));
 
-screenPrint('Step','OR misorientation rotation axes'); 
+screenPrint('Step','OR misorientation rotation axes');
 screenPrint('SubStep',sprintf(['Parent rot. axis = ',...
-    sprintMiller(OR.p2cAxis.parent)]));
+  sprintMiller(OR.p2cAxis.parent)]));
 screenPrint('SubStep',sprintf(['child rot. axis = ',...
-    sprintMiller(OR.p2cAxis.child)]));
+  sprintMiller(OR.p2cAxis.child)]));
 
 screenPrint('Step','Angle & rot. axes of unique variants');
 
 for jj = 1:length(OR.variants.orientation)
-    ii = OR.variants.id(jj);
-    screenPrint('SubStep',sprintf([num2str(jj),': ',...
-                 num2str(OR.variants.angle(ii)./degree,'%2.2f'),...
-                 'º / ',sprintMiller(OR.variants.axis(ii))]));
+  ii = OR.variants.id(jj);
+  screenPrint('SubStep',sprintf([num2str(jj),': ',...
+    num2str(OR.variants.angle(ii)./degree,'%2.2f'),...
+    'º / ',sprintMiller(OR.variants.axis(ii))]));
 end
 
 end
@@ -86,19 +86,19 @@ end
 function m = setDisplayStyle(millerObj,mode)
 m = millerObj;
 if isa(m,'Miller')
-        if any(strcmpi(m.CS.lattice,{'hexagonal','trigonal'})) == 1
-            if strcmpi(mode,'direction')
-                m.dispStyle = 'UVTW';
-            elseif strcmpi(mode,'plane')
-                m.dispStyle = 'hkil';
-            end
-        else
-            if strcmpi(mode,'direction')
-                m.dispStyle = 'uvw';
-            elseif strcmpi(mode,'plane')
-                m.dispStyle = 'hkl';
-            end
-        end
+  if any(strcmpi(m.CS.lattice,{'hexagonal','trigonal'})) == 1
+    if strcmpi(mode,'direction')
+      m.dispStyle = 'UVTW';
+    elseif strcmpi(mode,'plane')
+      m.dispStyle = 'hkil';
+    end
+  else
+    if strcmpi(mode,'direction')
+      m.dispStyle = 'uvw';
+    elseif strcmpi(mode,'plane')
+      m.dispStyle = 'hkl';
+    end
+  end
 end
 end
 
@@ -106,69 +106,69 @@ end
 %% ScreenPrint
 function screenPrint(mode,varargin)
 switch mode
-    case 'StartUp'
-        titleStr = varargin{1};
-        fprintf('\n*************************************************************');
-        fprintf(['\n                 ',titleStr,' \n']);
-        fprintf('*************************************************************\n'); 
-    case 'Termination'
-        titleStr = varargin{1};
-        fprintf('\n*************************************************************');
-        fprintf(['\n                 ',titleStr,' \n']);
-        fprintf('*************************************************************\n'); 
-    case 'SegmentStart'
-        titleStr = varargin{1};
-        fprintf('\n------------------------------------------------------');
-        fprintf(['\n     ',titleStr,' \n']);
-        fprintf('------------------------------------------------------\n'); 
-   case 'Step'
-        titleStr = varargin{1};
-        fprintf([' -> ',titleStr,'\n']);
-   case 'SubStep'
-        titleStr = varargin{1};
-        fprintf(['    - ',titleStr,'\n']);
-   case 'SegmentEnd'
-        fprintf('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - \n');
-end 
+  case 'StartUp'
+    titleStr = varargin{1};
+    fprintf('\n*************************************************************');
+    fprintf(['\n                 ',titleStr,' \n']);
+    fprintf('*************************************************************\n');
+  case 'Termination'
+    titleStr = varargin{1};
+    fprintf('\n*************************************************************');
+    fprintf(['\n                 ',titleStr,' \n']);
+    fprintf('*************************************************************\n');
+  case 'SegmentStart'
+    titleStr = varargin{1};
+    fprintf('\n------------------------------------------------------');
+    fprintf(['\n     ',titleStr,' \n']);
+    fprintf('------------------------------------------------------\n');
+  case 'Step'
+    titleStr = varargin{1};
+    fprintf([' -> ',titleStr,'\n']);
+  case 'SubStep'
+    titleStr = varargin{1};
+    fprintf(['    - ',titleStr,'\n']);
+  case 'SegmentEnd'
+    fprintf('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - \n');
+end
 end
 
 %% Print Crystal Planes
 function s = sprintMiller(mil,varargin)
-    if any(strcmpi(mil.dispStyle,{'hkl','hkil'}))
-        if strcmpi(mil.dispStyle,'hkil')
-           mill = {'h','k','i','l'};
-        elseif strcmpi(mil.dispStyle,'hkl')
-           mill = {'h','k','l'};
-        end
-        s = '(';
-        for i = 1:length(mill)
-           if check_option(varargin,'round')
-                s = [s,num2str(round(mil.(mill{i}),0))];
-           else
-                s = [s,num2str(mil.(mill{i}),'%0.4f')];
-           end
-           if i<length(mill)
-                s = [s,','];
-           end
-        end
-        s = [s,')'];
-    elseif any(strcmpi(mil.dispStyle,{'uvw','UVTW'}))
-        if strcmpi(mil.dispStyle,'UVTW')
-           mill = {'U','V','T','W'};
-        elseif strcmpi(mil.dispStyle,'uvw')
-           mill = {'u','v','w'};
-        end
-        s = '[';
-        for i = 1:length(mill)
-           if check_option(varargin,'round')
-                s = [s,num2str(round(mil.(mill{i}),0))];
-           else
-                s = [s,num2str(mil.(mill{i}),'%0.4f')];
-           end
-           if i<length(mill)
-                s = [s,','];
-           end
-        end
-        s = [s,']'];
+if any(strcmpi(mil.dispStyle,{'hkl','hkil'}))
+  if strcmpi(mil.dispStyle,'hkil')
+    mill = {'h','k','i','l'};
+  elseif strcmpi(mil.dispStyle,'hkl')
+    mill = {'h','k','l'};
+  end
+  s = '(';
+  for i = 1:length(mill)
+    if check_option(varargin,'round')
+      s = [s,num2str(round(mil.(mill{i}),0))];
+    else
+      s = [s,num2str(mil.(mill{i}),'%0.4f')];
     end
+    if i<length(mill)
+      s = [s,','];
+    end
+  end
+  s = [s,')'];
+elseif any(strcmpi(mil.dispStyle,{'uvw','UVTW'}))
+  if strcmpi(mil.dispStyle,'UVTW')
+    mill = {'U','V','T','W'};
+  elseif strcmpi(mil.dispStyle,'uvw')
+    mill = {'u','v','w'};
+  end
+  s = '[';
+  for i = 1:length(mill)
+    if check_option(varargin,'round')
+      s = [s,num2str(round(mil.(mill{i}),0))];
+    else
+      s = [s,num2str(mil.(mill{i}),'%0.4f')];
+    end
+    if i<length(mill)
+      s = [s,','];
+    end
+  end
+  s = [s,']'];
+end
 end
