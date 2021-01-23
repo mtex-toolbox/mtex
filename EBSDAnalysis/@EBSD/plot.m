@@ -97,7 +97,9 @@ else % phase plot
     
     if check_option(varargin,'grayScale')
       color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
-    elseif ~isa(ebsd.CSList{k},'symmetry') && ~check_option(varargin,{'color','faceColor'})
+    elseif check_option(varargin,{'color','faceColor'})
+      color = 'none';
+    elseif ~isa(ebsd.CSList{k},'symmetry')
       continue;
     else
       color = ebsd.CSList{k}.color;
