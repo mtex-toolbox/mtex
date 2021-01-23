@@ -114,7 +114,9 @@ if isappdata(0,'mtex')
   disp('I found another version of MTEX and remove it from the current search path!');
   
   close all
+  old = warning('off');
   evalin('base','clear classes')
+  warning(old);
   
   if ~isfield(oldMTEX,'mtexPath') || ~strcmpi(oldMTEX.mtexPath,local_path) 
   
