@@ -53,8 +53,14 @@ clusterSize = ones(size(parentOri));
 % compute parent grain orientation by looping through all merged grains
 for k = 1:max(mergeId) %#ok<*PROPLC>
   
-  % check if empty or single grain or only parent orientations
-  if nnz(mergeId==k)<=1 || all(wasParentGrain(mergeId==k))
+  % check if only parent orientations
+  if all(wasParentGrain(mergeId==k))
+     fit(mergeId==k) = nan;
+     continue;
+  end
+  
+  % check if empty or single grain
+  if nnz(mergeId==k)<=1 
     continue; 
   end
   
