@@ -19,6 +19,19 @@ function d = double(E,varargin)
 % OrientationEmbeddings
 %
 
+if check_option(varargin,'full')
+  
+  for k = 1:length(E.u)
+    
+    d{k} = reshape(double(E.u{k}),[],size(E,1));
+    
+  end
+  
+  d = vertcat(d{:}).';
+  return;
+  
+end
+
 ind2 = [1 2 3 5 6];
 
 % d = {1 1 2; 1 1 3; 1 2 2; 1 2 3; 1 3 3; 2 2 3; 2 3 3};
