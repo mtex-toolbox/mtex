@@ -22,7 +22,8 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute colorcoding ------------------------
 
 % create a new plot
-mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
+%mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
+mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if isempty(grains)
@@ -165,7 +166,76 @@ if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 
 if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
 
+% datacursormode does not work with grains due to a Matlab bug
+datacursormode off
+
+% define a hand written selector
+set(gcf,'WindowButtonDownFcn',{@spatialSelection});
+setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
+
 end
+
+
+function spatialSelection(src,eventdata)
+
+
+
+persistent sel_handle;
+
+pos = get(gca,'CurrentPoint');
+%key = get(src, 'CurrentCharacter');
+%src.SelectionType
+grains = getappdata(gca,'grains');
+
+idSelected = getappdata(gca,'idSelected');
+handleSelected = getappdata(gca,'handleSelected');
+if isempty(idSelected) || length(idSelected) ~= length(grains)
+  idSelected = false(size(grains));
+  handleSelected = cell(size(grains));
+end
+
+
+localId = findByLocation(grains,[pos(1,1) pos(1,2)]);
+
+grain = grains.subSet(localId);
+
+if isempty(grain), return; end
+
+% remove old selection
+if strcmpi(src.SelectionType,'normal')
+  idSelected = false(size(grains));
+  try delete([handleSelected{:}]); end %#ok<TRYNC>
+elseif strcmpi(src.SelectionType,'extend')
+  try delete([handleSelected{localId}]); end %#ok<TRYNC>
+  handleSelected{localId} = [];
+end
+
+% remember new selection
+idSelected(localId) = ~idSelected(localId);
+if idSelected(localId)
+  hold on
+  handleSelected{localId} = plot(grain.boundary,'lineColor','w','linewidth',4);
+  hold off
+end
+
+txt{1} = ['grainId = '  num2str(unique(grain.id))];
+txt{2} = ['phase = ', grain.mineral];
+txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
+if grain.isIndexed
+  txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];
+end
+%if ~isempty(value), txt{end+1} = ['Value = ' xnum2str(value(1))]; end
+
+for k = 1:length(txt)
+  disp(txt{k});
+end
+disp(' ');
+
+setappdata(gca,'idSelected',idSelected);
+setappdata(gca,'handleSelected',handleSelected);
+
+end
+
 
 % ------------------ Tooltip function -----------------------------
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
