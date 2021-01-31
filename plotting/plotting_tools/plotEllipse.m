@@ -52,4 +52,3 @@ else % plot only one object
 setCamera default
 
 end
-

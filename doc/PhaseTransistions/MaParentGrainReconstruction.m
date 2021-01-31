@@ -273,7 +273,7 @@ hold off
 
 % the measured child orientations that belong to parent grain 279
 childOri = job.ebsd(grainSelected).orientations;
-plotPDF(childOri,Miller(0,0,1,childOri.CS),'MarkerSize',3)
+plotPDF(childOri, Miller(0,0,1,childOri.CS),'MarkerSize',3)
 
 % the orientation of parent grain 279
 hold on
@@ -302,7 +302,8 @@ plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large
 % the parent orientation reconstructed from the single pixel and the parent
 % orientation of the grain. Lets visualize this fit
 
-% the beta phase
+% the fit between ebsd child orientation and the reconstructed parent grain
+% orientation
 plot(parentEBSD, parentEBSD.fit ./ degree,'figSize','large')
 mtexColorbar
 setColorRange([0,5])
