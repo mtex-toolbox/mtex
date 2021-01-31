@@ -127,6 +127,7 @@ methods (Static = true)
   ori = byAxisAngle(v,omega,varargin);
   ori = byMatrix(M,varargin);
   ori = map(varargin);
+  ori = fit(varargin);
   [ori,interface,options] = load(fname,varargin);
 
   function ori = cube(varargin)
