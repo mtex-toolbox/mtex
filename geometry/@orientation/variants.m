@@ -151,7 +151,7 @@ else % child variants
   end
   
   if exist('oriParent','var')
-    out = oriParent .* inv(p2cVariants);
+    out = oriParent.project2FundamentalRegion .* inv(p2cVariants);
   elseif exist('MillerParent','var')
     out = p2cVariants * MillerParent;
   else
