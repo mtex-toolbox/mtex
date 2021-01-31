@@ -5,10 +5,10 @@ function [packetIDs] = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %   packetIDs = calcPacketIDs(hklParent,hklChild,p2c,variantIDs)
 %
 % Input
-%  hklParent  - Habit planes in the parent phase
-%  hklChild   - Habit plane in the child phase
+%  hklParent  - habit planes in the parent phase
+%  hklChild   - habit plane in the child phase
 %  p2c        - parent to child mis@orientation or list of variant mis@orientations
-%  variantIDs - List of identified variantIDs 
+%  variantIDs - list of identified variantIDs 
 %
 % Output
 %  packetId   - child variant Id
