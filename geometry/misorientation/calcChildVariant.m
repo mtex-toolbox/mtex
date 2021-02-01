@@ -11,6 +11,10 @@ function [childId, packetId] = calcChildVariant(parentOri,childOri,p2c,varargin)
 %
 % Output
 %  childId   - child variant Id
+%  packetId  - child packet Id
+%
+% Options
+%  variantMap - reorder variantIds according to variantMap
 %
 % Description
 %
@@ -19,7 +23,7 @@ function [childId, packetId] = calcChildVariant(parentOri,childOri,p2c,varargin)
 parentOri = parentOri.project2FundamentalRegion;
 
 % all child variants
-childVariants  = variants(p2c, parentOri);
+childVariants  = variants(p2c, parentOri, varargin{:});
 
 if size(childVariants,1) == 1
   childVariants = repmat(childVariants,length(childOri),1);
