@@ -12,6 +12,10 @@ function calcVariants(job,varargin)
 %   job.transformedGrains.packetId  - packet ids
 %
 
+% ensure we have a variantMap
+if isempty(job.variantMap)
+  job.variantMap = 1:length(variants(job.p2c));
+end
 
 isTr = job.isTransformed;
 childOri = job.grainsMeasured(isTr).meanOrientation;
