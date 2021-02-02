@@ -22,8 +22,11 @@ function d = double(E,varargin)
 if check_option(varargin,'full')
   
   for k = 1:length(E.u)
-    
+    if E.u{k}.rank ==1
+    d{k} = reshape([E.u{k}.x';E.u{k}.y';E.u{k}.z'],[],size(E,1));
+    else
     d{k} = reshape(double(E.u{k}),[],size(E,1));
+    end
     
   end
   
@@ -66,8 +69,16 @@ switch E.CS.Laue.id
     M3 = reshape(E.u{3}.M,9,[]).';
     
     d = [reshape(double(E.u{1}),[],3), M2(:,ind2),M3(:,ind2)];
-    d([5,6,8]) = sqrt(2) * d([5,6,8]);
-    d([10,11,13]) = sqrt(2) *  d([10,11,13]);
+    d(:,[5,6,8]) = sqrt(2) * d(:,[5,6,8]);
+    d(:,[10,11,13]) = sqrt(2) *  d(:,[10,11,13]);
+    tmp = sqrt(3/2)*(d(:,4)+d(:,7));
+    tmp2 = sqrt(1/2)*(d(:,4)-d(:,7));
+    d(:,4) = tmp;
+    d(:,7) = tmp2;
+    tmp = sqrt(3/2)*(d(:,9)+d(:,12));
+    tmp2 = sqrt(1/2)*(d(:,9)-d(:,12));
+    d(:,9) = tmp;
+    d(:,12) = tmp2;
     
   case 16 % D2
     
@@ -79,13 +90,26 @@ switch E.CS.Laue.id
     d([2,3,5]) = sqrt(2) * d([2,3,5]);
     d([7,8,10]) = sqrt(2) *  d([7,8,10]);
     d([12,13,15]) = sqrt(2) *  d([12,13,15]);
+    tmp = sqrt(3/2)*(d(:,1)+d(:,4));
+    tmp2 = sqrt(1/2)*(d(:,1)-d(:,4));
+    d(:,1) = tmp;
+    d(:,4) = tmp2;
+    tmp = sqrt(3/2)*(d(:,6)+d(:,9));
+    tmp2 = sqrt(1/2)*(d(:,6)-d(:,9));
+    d(:,6) = tmp;
+    d(:,9) = tmp2;
+    tmp = sqrt(3/2)*(d(:,11)+d(:,14));
+    tmp2 = sqrt(1/2)*(d(:,11)-d(:,14));
+    d(:,11) = tmp;
+    d(:,14) = tmp2;
     
        
   case 18 % C3
 
     M = reshape(E.u{1}.M,27,[]).';
     d = [M(:,ind3),reshape(double(E.u{2}),[],3)];
-    d([1:7]) = sqrt(3) * d([1:7]);
+    d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7]).*sqrt(3);
+    d(:,4) = d(:,4).*sqrt(6);
 
   case {21,24} % D3
     
@@ -93,8 +117,13 @@ switch E.CS.Laue.id
     M2 = reshape(E.u{2}.M,9,[]).';
     
     d = [M1(:,ind3),M2(:,ind2)];
-    d([1:7]) = sqrt(3) * d([1:7]);
+    d(:,[1,2,3,5,6,7]) = sqrt(3) * d(:,[1,2,3,5,6,7]);
+    d(:,4) = sqrt(6) * d(:,4);
     d([9,10,12]) = sqrt(2) * d([9,10,12]);
+    tmp = sqrt(3/2)*(d(:,8)+d(:,11));
+    tmp2 = sqrt(1/2)*(d(:,8)-d(:,11));
+    d(:,8) = tmp;
+    d(:,11) = tmp2;
     
     
   case 27 % C4
