@@ -64,15 +64,13 @@ if nargin>1 && isnumeric(varargin{1})
   legendNames = get_option(varargin,'displayName');
   
     % if many legend names are given - seperate grains by color / value
-  if iscell(legendNames)
+  if iscell(legendNames) && max(property)<50
   
     varargin = delete_option(varargin,'displayName',1);
     
-    [a,~,c] = unique(property,'rows');
-
-    % plot polygons 
-    for k = 1:length(a)
-      h{k} = plotFaces(grains.poly(c==k),grains.V,property(c==k,:),...
+    % plot polygons
+    for k = 1:max(property)
+      h{k} = plotFaces(grains.poly(property==k), grains.V, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
       
       % reactivate legend information
