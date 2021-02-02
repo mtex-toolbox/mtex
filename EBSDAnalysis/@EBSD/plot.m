@@ -97,8 +97,13 @@ else % phase plot
     
     if check_option(varargin,'grayScale')
       color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
+    elseif check_option(varargin,{'color','faceColor'})
+      color = 'none';
+    elseif ~isa(ebsd.CSList{k},'symmetry') 
+      % do not plot notindexed phase if no color is given
+      continue;
     else
-      color = ebsd.subSet(ind).color;
+      color = ebsd.CSList{k}.color;
     end
     
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
@@ -109,6 +114,8 @@ else % phase plot
   warning('off','MATLAB:legend:PlotEmpty');
   legend('-DynamicLegend','location','NorthEast');
   warning('on','MATLAB:legend:PlotEmpty');
+  
+  set(gcf,'name','phase plot');
   
 end
   

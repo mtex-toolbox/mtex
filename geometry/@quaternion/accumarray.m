@@ -25,3 +25,5 @@ d = accumarray(subs,q.d .* flip,varargin{:});
 % normalize
 s = sqrt(a.^2 + b.^2 + c.^2 + d.^2);
 q.a = a ./ s; q.b = b ./ s; q.c = c ./ s; q.d = d ./ s;
+
+if isa(q,'rotation'), q.i = q_ref.i(ref); end

@@ -12,4 +12,9 @@ function plotVariantPF(job, varargin)
 %  oriParent - @orientation Parent orientation
 %  hChild - @Miller Plotting direction for the pole figure
 
+% ensure we have a variantMap
+if isempty(job.variantMap)
+  job.variantMap = 1:length(variants(job.p2c));
+end
+
 plotVariants(job.p2c, 'variantMap', job.variantMap, varargin{:});

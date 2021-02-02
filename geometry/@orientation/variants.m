@@ -28,6 +28,7 @@ function out = variants(p2c,varargin)
 % Options
 %  parent - return parent variants
 %  child  - return child variants (default)
+%  variantMap - reorder variants
 %
 % Output
 %  p2cVariants - parent to child variants
@@ -146,12 +147,23 @@ else % child variants
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
   p2cVariants = p2cVariants.subSet(ind);
   
+  if check_option(varargin,'variantMap')
+    vMap = get_option(varargin,'variantMap');
+    %if length(vMap) == length(p2cVariants)
+    %  p2cVariants = p2cVariants.subSet(vMap);
+    %else
+    p2cVariants.CS = [];
+    p2cVariants = inv(reshape(accumarray(vMap(:),inv(p2cVariants)),1,[]));
+    p2cVariants.CS = p2c.CS;
+    %end
+  end
+  
   if exist('variantId','var')
     p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
   end
   
   if exist('oriParent','var')
-    out = oriParent .* inv(p2cVariants);
+    out = oriParent.project2FundamentalRegion .* inv(p2cVariants);
   elseif exist('MillerParent','var')
     out = p2cVariants * MillerParent;
   else

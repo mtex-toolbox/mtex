@@ -25,6 +25,7 @@ classdef dynProp
       dp = varargin{1};
       
       for k=1:numel(varargin)
+        if isempty(varargin{k}), continue; end
         s(k) = varargin{k}.prop; %#ok<AGROW>
       end
       
