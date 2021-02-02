@@ -20,10 +20,8 @@ function [childId, packetId] = calcChildVariant(parentOri,childOri,p2c,varargin)
 %
 %
 
-parentOri = parentOri.project2FundamentalRegion;
-
 % all child variants
-childVariants  = variants(p2c, parentOri, varargin{:});
+childVariants  = variants(p2c, parentOri);
 
 if size(childVariants,1) == 1
   childVariants = repmat(childVariants,length(childOri),1);
@@ -34,6 +32,12 @@ d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
 
 % take the best fit
 [~,childId] = max(d,[],2);
+
+% apply a variant map
+if check_option(varargin,'variantMap')
+  vMap = get_option(varargin,'variantMap');
+  childId = vMap(childId);
+end
 
 % compute packetId if required
 if nargout == 2
