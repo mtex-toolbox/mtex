@@ -152,7 +152,9 @@ else % child variants
     %if length(vMap) == length(p2cVariants)
     %  p2cVariants = p2cVariants.subSet(vMap);
     %else
-    p2cVariants = reshape(accumarray(vMap(:),p2cVariants),1,[]);
+    p2cVariants.CS = [];
+    p2cVariants = inv(reshape(accumarray(vMap(:),inv(p2cVariants)),1,[]));
+    p2cVariants.CS = p2c.CS;
     %end
   end
   
