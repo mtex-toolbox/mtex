@@ -59,10 +59,33 @@ if nargin>1 && isnumeric(varargin{1})
   property = varargin{1};
   
   assert(any(numel(property) == length(grains) * [1,3]),...
-  'Number of grains must be the same as the number of data');
+    'Number of grains must be the same as the number of data');
+
+  legendNames = get_option(varargin,'displayName');
   
-  % plot polygons
-  h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+    % if many legend names are given - seperate grains by color / value
+  if iscell(legendNames)
+  
+    varargin = delete_option(varargin,'displayName',1);
+    
+    [a,~,c] = unique(property,'rows');
+
+    % plot polygons 
+    for k = 1:length(a)
+      h{k} = plotFaces(grains.poly(c==k),grains.V,property(c==k,:),...
+        'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
+      
+      % reactivate legend information
+      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+      hold on
+    end
+    hold off
+  
+  else % % plot polygons
+
+    h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+  
+  end
 
 elseif nargin>1 && isa(varargin{1},'vector3d')
   
