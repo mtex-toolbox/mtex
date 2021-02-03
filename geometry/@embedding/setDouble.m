@@ -62,20 +62,23 @@ switch obj.CS.Laue.id
     d(:,[2,3,5]) = d(:,[2,3,5])./sqrt(2);
     d(:,[7,8,10]) = d(:,[7,8,10])./sqrt(2);
     d(:,[12,13,15]) = d(:,[12,13,15])./sqrt(2);
-    d(:,[5,6,8]) = d(:,[5,6,8])./sqrt(2);
-    d(:,[10,11,13]) = d(:,[10,11,13])./sqrt(2);
-    tmp = 1/2*(sqrt(2/3)*d(:,1)+sqrt(2)*d(:,4));
-    tmp2 = 1/2*(sqrt(2/3)*d(:,1)-sqrt(2)*d(:,4));
-    d(:,1) = tmp;
-    d(:,4) = tmp2;
-    tmp = 1/2*(sqrt(2/3)*d(:,6)+sqrt(2)*d(:,9));
-    tmp2 = 1/2*(sqrt(2/3)*d(:,6)-sqrt(2)*d(:,9));
-    d(:,6) = tmp;
-    d(:,9) = tmp2;
-    tmp = 1/2*(sqrt(2/3)*d(:,11)+sqrt(2)*d(:,14));
-    tmp2 = 1/2*(sqrt(2/3)*d(:,11)-sqrt(2)*d(:,14));
-    d(:,11) = tmp;
-    d(:,14) = tmp2;
+%     d(:,[5,6,8]) = d(:,[5,6,8])./sqrt(2);
+%     d(:,[10,11,13]) = d(:,[10,11,13])./sqrt(2);
+    d = isometricdot(d,1,4);
+    d = isometricdot(d,6,9);
+    d = isometricdot(d,11,14);
+%     tmp = 1/2*(sqrt(2/3)*d(:,1)+sqrt(2)*d(:,4));
+%     tmp2 = 1/2*(sqrt(2/3)*d(:,1)-sqrt(2)*d(:,4));
+%     d(:,1) = tmp;
+%     d(:,4) = tmp2;
+%     tmp = 1/2*(sqrt(2/3)*d(:,6)+sqrt(2)*d(:,9));
+%     tmp2 = 1/2*(sqrt(2/3)*d(:,6)-sqrt(2)*d(:,9));
+%     d(:,6) = tmp;
+%     d(:,9) = tmp2;
+%     tmp = 1/2*(sqrt(2/3)*d(:,11)+sqrt(2)*d(:,14));
+%     tmp2 = 1/2*(sqrt(2/3)*d(:,11)-sqrt(2)*d(:,14));
+%     d(:,11) = tmp;
+%     d(:,14) = tmp2;
     
     
     obj.u{1}.M = fillT2(d(:,1:5)); obj.u{1} = obj.u{1}.sym;
@@ -86,21 +89,24 @@ switch obj.CS.Laue.id
        
   case 18 % C3
     
-    d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7])./sqrt(3);
+    %d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7])./sqrt(3);
     d(:,4) = d(:,4)./sqrt(6);
+    d = isometricdot3d(d,3,5);
+    d = isometricdot3d(d,1,7);
+    d = isometricdot3d(d,2,6);
     
     obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     obj.u{2} = vector3d(d(:,8:10).').';
     
   case {21,24} % D3
     
-   d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7])./sqrt(3);
+   %d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7])./sqrt(3);
    d(:,4) = d(:,4)./sqrt(6);
+   d = isometricdot3d(d,3,5);
+   d = isometricdot3d(d,1,7);
+   d = isometricdot3d(d,2,6);
    d([9,10,12]) = d([9,10,12])./sqrt(2);
-   tmp = 1/2*(sqrt(2/3)*d(:,8)+sqrt(2)*d(:,11));
-   tmp2 = 1/2*(sqrt(2/3)*d(:,8)-sqrt(2)*d(:,11));
-   d(:,8) = tmp;
-   d(:,11) = tmp2;
+   d = isometricdot(d,8,11);
    
     obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     obj.u{2}.M = fillT2(d(:,8:12)); obj.u{2} = obj.u{2}.sym;
@@ -160,7 +166,12 @@ switch obj.CS.Laue.id
     
   case 42 % T
        
-      d = d./sqrt(3);
+      %d = d./sqrt(3);
+      d(:,4) = d(:,4)./sqrt(6);
+      d = isometricdot3d(d,3,5);
+      d = isometricdot3d(d,1,7);
+      d = isometricdot3d(d,2,6);
+      
       obj.u{1}.M = fillT3(d(:,1:7)); obj.u{1} = obj.u{1}.sym;
     
   case 45 % O
@@ -232,4 +243,13 @@ M = reshape(M,3,3,3,3,3,3,[]);
 M(3,3,3,3,3,3,:,:) = -M(1,1,1,1,1,1,:,:)-M(2,2,2,2,2,2,:,:)-3*M(1,1,2,2,2,2,:,:)-3*M(1,1,3,3,3,3,:,:)-3*M(1,1,1,1,2,2,:,:)-3*M(2,2,3,3,3,3,:,:)-3*M(1,1,1,1,3,3,:,:)-3*M(2,2,2,2,3,3,:,:)-6*M(1,1,2,2,3,3,:,:);
 
 end
-    
+function d_neu = isometricdot(d,index1,index2)
+    d_neu = d;
+    d_neu(:,index1) = 1/2*(sqrt(2/3)*d(:,index1)+sqrt(2)*d(:,index2));
+    d_neu(:,index2) = 1/2*(sqrt(2/3)*d(:,index1)-sqrt(2)*d(:,index2));
+end
+function d_neu = isometricdot3d(d,index1,index2)
+    d_neu = d;
+    d_neu(:,index1) = 1/2*(sqrt(2/5)*d(:,index1)+sqrt(2/3)*d(:,index2));
+    d_neu(:,index2) = 1/2*(sqrt(2/5)*d(:,index1)-sqrt(2/3)*d(:,index2));
+end
