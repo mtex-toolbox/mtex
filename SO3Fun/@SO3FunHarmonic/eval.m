@@ -1,6 +1,6 @@
 function f =  eval(F,rot,varargin)
 % evaluates the rotational harmonic on a given set of points using NFSOFT
-% 
+%
 % gives a align for numel(F)==1 or otherwise transform the align of v to a
 % vector.
 %
@@ -8,8 +8,8 @@ function f =  eval(F,rot,varargin)
 %   f = eval(F,v)
 %
 % Input
-%   F - @SO3FunHarmonic 
-%   v - @rotation interpolation nodes 
+%   F - @SO3FunHarmonic
+%   v - @rotation interpolation nodes
 %
 % Output
 %   f - double
@@ -31,17 +31,18 @@ end
 
 if isempty(rot), f = []; return; end
 
-s=size(rot);
+s = size(rot);
 rot = rot(:);
 
 if F.bandwidth == 0
   f = ones(size(rot)) .* F.fhat;
-  if numel(F)==1, f=reshape(f,s); end
+  if numel(F) == 1, f = reshape(f,s); end
   return;
 end
 
 % maybe we should set antipodal
-F.antipodal = check_option(varargin,'antipodal') || (isa(rot,'orientation') && rot.antipodal);
+F.antipodal = check_option(varargin,'antipodal') || ...
+    (isa(rot,'orientation') && rot.antipodal);
 
 % extract bandwidth
 L = min(F.bandwidth,get_option(varargin,'bandwidth',inf));
@@ -62,9 +63,10 @@ if isempty(plan)
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)
   % initialize nfsoft plan
-  plan = nfsoftmex('init',L,length(rot),nfsoft_flags,0,4,1000,2*ceil(1.5*L)); 
+  plan = nfsoftmex('init',L,length(rot),nfsoft_flags,0,4,1000,...
+      2*ceil(1.5*L));
 
-  %  set rotations in Euler angles (nodes)
+  % set rotations in Euler angles (nodes)
   nfsoftmex('set_x',plan,Euler(rot,'nfft').');
 
   % node-dependent precomputation
@@ -72,12 +74,12 @@ if isempty(plan)
 
 end
 
-f=zeros([length(rot) size(F)]);
-for k=1:length(F)
+f = zeros([length(rot) size(F)]);
+for k = 1:length(F)
 
   % set Fourier coefficients
   nfsoftmex('set_f_hat',plan,reshape(F.fhat(1:Ldim,k),[],1));
-  
+
   % fast SO(3) fourier transform
   nfsoftmex('trafo',plan);
 
@@ -90,10 +92,11 @@ end
 if check_option(varargin,'keepPlan')
   keepPlan = plan;
 else
-  nfsoftmex('finalize',plan);  
+  nfsoftmex('finalize',plan);
 end
 
-if numel(F)==1, f=reshape(f,s); end
+if numel(F) == 1, f = reshape(f,s); end
 
 if F.isReal, f = real(f); end
 
+end
