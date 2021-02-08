@@ -2,7 +2,7 @@ function [modes, values] = calcModes(odf,varargin)
 % heuristic to find modal orientations
 %
 % Syntax
-%   [modes, values] = calcModes(odf,n)
+%   [modes, values] = calcModes(odf,'numLocal',n)
 %
 % Input
 %  odf - @ODF 
@@ -26,8 +26,12 @@ function [modes, values] = calcModes(odf,varargin)
 % See also
 % ODF/max
 
-% find multiple modes
 if nargin > 1 && isnumeric(varargin{1})
+  error('Please use the option "numLocal" to specify multiple maxima!')
+end
+
+% find multiple modes
+if check_option(varargin,'numLocal')
   [modes, values] = findMultipleModes(odf,varargin{:});
   return
 end
@@ -37,7 +41,6 @@ res = get_option(varargin,'resolution',5*degree);
 
 % target resolution
 targetRes = get_option(varargin,'accuracy',0.25*degree);
-
 
 % initial seed
 ori = orientation(odf.CS,odf.SS);
@@ -111,7 +114,7 @@ ids = false(1,nn);
 [ix, iy] = find(T);
 cx = [0 ; find(diff(iy))];
 
-num = get_option(varargin,'num',1);
+num = get_option(varargin,'numLocal',1);
 if nargin > 1 && isa(varargin{1},'double')
   num = varargin{1};
 end

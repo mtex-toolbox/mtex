@@ -70,7 +70,7 @@ hold off
 
 % overlay the boundaries of the merged grains with the previous plot
 hold on
-plot(mergedGrains.boundary,'linecolor','w','linewidth',2)
+plot(mergedGrains.boundary,'linecolor','w','linewidth',3)
 hold off
 
 %%
@@ -138,7 +138,7 @@ drawNow(gcm)
 %%
 % The MDF can be now used to compute prefered misorientations
 
-mori = mdf.calcModes(2)
+[~,mori] = max(mdf,'numLocal',2)
 
 %%
 % and their volumes in percent

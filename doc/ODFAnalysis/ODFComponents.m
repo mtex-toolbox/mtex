@@ -38,12 +38,11 @@ annotate(ori)
 
 %%
 % We may not only use the command <ODF.max.html |max|> to find the global
-% maximum of an ODF but also to find a certain amount of local maxima. 
-% The number of local maxima MTEX should search for is specified as the
-% second input argument, i.e., to find the three largest local maxima do
+% maximum of an ODF but also to find a certain amount of local maxima. The
+% number of local maxima MTEX should search for, is specified as by the
+% option |'numLocal'|, i.e., to find the three largest local maxima do
 
-
-[value,ori] = max(odf,3)
+[value,ori] = max(odf,'numLocal',3)
 
 annotate(ori)
 
