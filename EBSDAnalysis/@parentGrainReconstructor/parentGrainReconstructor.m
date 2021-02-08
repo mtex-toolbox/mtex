@@ -124,24 +124,24 @@ classdef parentGrainReconstructor < handle
        
     function handlePropEvents(job,metaProp,eventData)
       switch metaProp.Name 
-         case 'p2c'                 
-             
-             pG1 = job.p2c.SS.pointGroup;
-             pG2 = job.p2c.CS.pointGroup;
-             if length(job.variantMap) ~= length(job.p2c.variants)
-                 
-                %Initialisation
-                if length(job.p2c.variants) == 1
-                    job.variantMap = 1;               
-                % Cubic to Cubic misorientation
-                elseif length(job.p2c.variants) == 24 && strcmp(pG1,'m-3m') && strcmp(pG2,'m-3m') 
-                    %Morito convention
-                    job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-                                      24 22 20 4 2 6 13 15 17 8 12 10];
-                else 
-                    job.variantMap = 1:length(job.p2c.variants);
-                end
-             end
+        case 'p2c'
+          
+          numVariants = length(job.p2c.variants);
+          
+          %Initialisation
+          if length(job.variantMap) ~= numVariants
+            
+            % default to Morito convention for cubic to cubic misorientation
+            if job.p2c.CS.lattice == latticeType.cubic && ...
+                job.p2c.SS.lattice == latticeType.cubic && ...
+                numVariants == 24
+            
+              job.variantMap = 'morito';
+              
+            else % otherwise the default is 1,2,3,4,...,numVariants
+              job.variantMap = 1:numVariants;
+            end
+          end          
       end
     end
 	
@@ -221,14 +221,18 @@ classdef parentGrainReconstructor < handle
         
     function set.variantMap(job,id) 
       assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
-      nrVariants = length(job.p2c.variants);
+      numVariants = length(job.p2c.variants);
         
-      if strcmpi(id,'morito') && nrVariants == 24
-          job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-                  24 22 20 4 2 6 13 15 17 8 12 10];
+      if strcmpi(id,'morito') && numVariants == 24
+        job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
+          24 22 20 4 2 6 13 15 17 8 12 10];
+        
+        % TODO: maybe we can find a more robust implementation of the
+        % morito order, i.e., one that does not depend 
+        
       else
-          assert(length(id) == nrVariants,'Supply %d natural numbers as Ids',nrVariants);
-          job.variantMap = id;            
+        assert(length(id) == numVariants,'Supply %d natural numbers as Ids',numVariants);
+        job.variantMap = id;
       end
     end
     

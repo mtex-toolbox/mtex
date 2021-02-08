@@ -38,9 +38,6 @@ function job = calcParent2Child(job, varargin)
 % calcParent2Child
 %
 
-% store the old variants
-if ~isempty(job.variantMap), p2cVariants = variants(job.p2c); end
-
 % get p2c from parent 2 child OR
 if nnz(job.ebsd.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsd)
   
@@ -58,7 +55,7 @@ end
 
 if check_option(varargin,'noC2C')
 
-  job.p2c = p2c0;
+  p2c = p2c0;
   
 else % consider also child to child 
   
@@ -77,31 +74,34 @@ else % consider also child to child
   % compute an optimal parent to child orientation relationship
   if check_option(varargin,'v3')
     
-   job.p2c = fitP2C(mori,p2c0);
+   p2c = fitP2C(mori,p2c0);
     
   elseif check_option(varargin,'v2')
     
-    [job.p2c, job.fit] = calcParent2Child2(mori,p2c0);
+    [p2c, job.fit] = calcParent2Child2(mori,p2c0);
     
   else
    
-    [job.p2c, job.fit] = calcParent2Child(mori,p2c0,varargin{:});
+    [p2c, job.fit] = calcParent2Child(mori,p2c0,varargin{:});
     
   end
   
   % combine p2c and c2c orientation relationships
   if ~isempty(p2cData) && ~check_option(varargin,'noP2C')
     
-    job.p2c = mean([job.p2c,p2cData],'weights',[length(c2cPairs),length(p2cPairs)]);
+    p2c = mean([p2c,p2cData],'weights',[length(c2cPairs),length(p2cPairs)]);
     
-  end
-    
+  end    
 end
 
-% update variantmap
+% compute new variantMap
 if ~isempty(job.variantMap)
-  [~,new2old] = min(angle_outer(job.p2c.variants,p2cVariants,'noSym1'),[],2);
-  job.variantMap = job.variantMap(new2old);
+  [~,new2old] = min(angle_outer(p2c.variants,job.p2c.variants,'noSym1'),[],2);
+  variantMap = job.variantMap(new2old);
 end
-   
+
+% update p2c and variantMap
+job.p2c = p2c;
+if exist('variantMap','var'), job.variantMap = variantMap; end
+
 end
