@@ -19,7 +19,7 @@ function export(q,fname,varargin)
 % Input
 %  q - @quaternion
 %  fname - filename
-%  S - struct
+%  S - struct containing additional properties to be exported
 %
 % Options
 %  quaternion - export quaternion values
@@ -44,7 +44,7 @@ if ~check_option(varargin,{'radians','radiant','radiand'})
   d = d ./ degree;
 end
 
-% store additional information
+% export additional properties
 S = getClass(varargin,'struct');
 if ~isempty(S)
   for fn = fieldnames(S).'
