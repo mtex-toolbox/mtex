@@ -132,14 +132,14 @@ classdef parentGrainReconstructor < handle
                  
                 %Initialisation
                 if length(job.p2c.variants) == 1
-                    job.variantMap = 1;
-                end
-                 
+                    job.variantMap = 1;               
                 % Cubic to Cubic misorientation
-                if length(job.p2c.variants) == 24 && strcmp(pG1,'m-3m') && strcmp(pG2,'m-3m') 
+                elseif length(job.p2c.variants) == 24 && strcmp(pG1,'m-3m') && strcmp(pG2,'m-3m') 
                     %Morito convention
                     job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
                                       24 22 20 4 2 6 13 15 17 8 12 10];
+                else 
+                    job.variantMap = 1:length(job.p2c.variants);
                 end
              end
       end
