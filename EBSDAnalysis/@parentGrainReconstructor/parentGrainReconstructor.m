@@ -39,7 +39,7 @@ classdef parentGrainReconstructor < handle
     
     csParent  % parent symmetry
     csChild   % child symmetry
-    p2c       % parent to child orientation relationship
+
     
     ebsd      % initial / measured EBSD
     grainsMeasured % initialy measured grains 
@@ -70,6 +70,10 @@ classdef parentGrainReconstructor < handle
     
     variantId       %
     packetId        %
+  end
+  
+  properties (SetObservable) 
+    p2c       % parent to child orientation relationship
   end
   
   
@@ -111,11 +115,36 @@ classdef parentGrainReconstructor < handle
         assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
         job.csParent = job.p2c.CS;
         job.csChild = job.p2c.SS;
-        job.variantMap = 1:length(job.p2c.variants);
-      end            
+        %job.variantMap = 1:length(job.p2c.variants);
+      end   
+      
+      % add listener to p2c
+      addlistener(job,'p2c','PostSet',@job.handlePropEvents);
     end
-    
-    
+       
+    function handlePropEvents(job,metaProp,eventData)
+      switch metaProp.Name 
+         case 'p2c'                 
+             
+             pG1 = job.p2c.SS.pointGroup;
+             pG2 = job.p2c.CS.pointGroup;
+             if length(job.variantMap) ~= length(job.p2c.variants)
+                 
+                %Initialisation
+                if length(job.p2c.variants) == 1
+                    job.variantMap = 1;
+                end
+                 
+                % Cubic to Cubic misorientation
+                if length(job.p2c.variants) == 24 && strcmp(pG1,'m-3m') && strcmp(pG2,'m-3m') 
+                    %Morito convention
+                    job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
+                                      24 22 20 4 2 6 13 15 17 8 12 10];
+                end
+             end
+      end
+    end
+	
     function id = get.parentPhaseId(job)
       id = job.grains.cs2phaseId(job.csParent);
     end
@@ -190,12 +219,17 @@ classdef parentGrainReconstructor < handle
       job.grainsMeasured.prop.variantId = id;
     end
         
-    function set.variantMap(job,id)      
+    function set.variantMap(job,id) 
       assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
-      nr_variants = length(job.p2c.variants);
-      assert(length(id) == nr_variants,'Supply %d natural numbers as Ids',nr_variants);
-      job.variantMap = id;    
-
+      nrVariants = length(job.p2c.variants);
+        
+      if strcmpi(id,'morito') && nrVariants == 24
+          job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
+                  24 22 20 4 2 6 13 15 17 8 12 10];
+      else
+          assert(length(id) == nrVariants,'Supply %d natural numbers as Ids',nrVariants);
+          job.variantMap = id;            
+      end
     end
     
   end
