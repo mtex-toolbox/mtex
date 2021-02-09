@@ -1,8 +1,32 @@
 %% MTEX Changelog
 %
-%% MTEX 5.5.1 12/2020
+%% MTEX 5.6.0 01/2021
 %
-% * fixes incompatibilities with Matlab versions earlier then 2019b
+% MTEX 5.6 greatly simplifies parent grain reconstruction by introducing
+% the class <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|>. During the reconstruction procedure this
+% class keeps track of the correspondence between measured child grains and
+% the reconstructed parent grains. It provides the following functions for
+% recovering parent orientations which can be applied multiple times and in
+% any order to archieve the best possible reconstruction.
+%
+% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
+% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
+% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
+% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clusteres
+% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
+% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
+% * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
+%
+% The usage of this new class is demonstrated in <TiBetaReconstruction.html
+% Beta Titanium Reconstruction> and <MaParentGrainReconstruction.html
+% Parent Martensite Reconstruction>.
+%
+% *Compatibility fixes*
+%
+% MTEX 5.6 fixes several incompatibilities with Matlab versions earlier
+% then 2019b.
 %
 %% MTEX 5.5.0 11/2020
 %
@@ -90,7 +114,7 @@
 % specimen symmetry and for centers close to the boundary of the
 % fundamental region.
 %
-% * <slibSystem.symmetrise.html |slibSystem.symmetrise.html|> gave
+% * <slipSystem.symmetrise.html |slipSystem.symmetrise|> gave
 % incorrect number of slipsystems due to a rounding error
 %
 %% MTEX 5.4.0 7/2020

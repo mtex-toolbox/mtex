@@ -13,7 +13,7 @@ function h = text(v,varargin)
 %  s  - string
 %
 % Options
-%  textColor - 
+%  textColor - rgb or color name
 %
 % See also
 

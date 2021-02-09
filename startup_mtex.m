@@ -24,15 +24,13 @@ if MATLABverLessThan('8.6')
     ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
     'version MTEX has been tested on is Matlab 2016b (vers. 8.6).']);
 end
-  
+    
 % path to this function to be considered as the root of the MTEX
 % installation
 local_path = fileparts(mfilename('fullpath'));
 
 % needs installation ?
-if ~isdeployed
-    do_install(local_path);
-end
+if ~isdeployed, do_install(local_path); end
 
 % initialize MTEX
 fprintf('initialize');
@@ -50,10 +48,7 @@ end
 p();
 
 % setup search path
-if ~isdeployed
-    setMTEXPath(local_path);
-    p();
-end
+if ~isdeployed, setMTEXPath(local_path); p(); end
 
 % set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
@@ -66,16 +61,20 @@ p();
 mtex_settings;
 p();
 
+% old Matlab version
+global useBSXFUN;
+useBSXFUN = MATLABverLessThan('9.6');
+
 % check installation
 check_installation;
 p();
 
 % make help searchable
 if ~isdeployed
-    if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
-      disp('Creating search data base for MTEX documentation.')
-      builddocsearchdb(fullfile(local_path,'doc','html'));
-    end
+  if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
+    disp('Creating search data base for MTEX documentation.')
+    builddocsearchdb(fullfile(local_path,'doc','html'));
+  end
 end
 
 % finish
@@ -115,7 +114,9 @@ if isappdata(0,'mtex')
   disp('I found another version of MTEX and remove it from the current search path!');
   
   close all
+  old = warning('off');
   evalin('base','clear classes')
+  warning(old);
   
   if ~isfield(oldMTEX,'mtexPath') || ~strcmpi(oldMTEX.mtexPath,local_path) 
   

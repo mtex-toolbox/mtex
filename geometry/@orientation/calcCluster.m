@@ -98,7 +98,7 @@ hold off
 min(angle_outer(center,centerRec)./degree)
 
 odfRec = calcDensity(ori)
-[~,centerRec2] = max(odfRec,5)
+[~,centerRec2] = max(odfRec,'numLocal',5)
 min(angle_outer(center,centerRec2)./degree)
 end
 

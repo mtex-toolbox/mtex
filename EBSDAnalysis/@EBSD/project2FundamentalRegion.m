@@ -9,7 +9,9 @@ if nargin == 2 % either as mean grain orientation
 else % or as the last orientation in a grain
   
   isIndexed = ebsd.isIndexed;
-  refRot = ebsd.rotations(accumarray(ebsd.grainId(isIndexed),find(isIndexed),[],@max));
+  refInd = accumarray(ebsd.grainId(isIndexed),find(isIndexed),[],@max);
+  refRot = rotation.nan(length(refInd));
+  refRot(refInd>0) = ebsd.rotations(refInd(refInd>0));
   
 end
 

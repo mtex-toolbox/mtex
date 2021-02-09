@@ -215,7 +215,7 @@ classdef embedding
       obj.rho = norm(obj);
       
       % normalize
-      obj = obj ./ obj.rho;
+      % obj = obj ./ obj.rho;
       
     end
       
@@ -460,6 +460,8 @@ classdef embedding
       % 
       %scatter(angle(ori)./degree,norm(E - id),5,abs(pi/2-angle(ori.axis,zvector))./degree)
       scatter(angle(ori),norm(E - id),5,zeros(100000,1));
+      xlabel('$d([\mathbf{R}_1]_{\mathcal{S}},[\mathbf{R}_2]_{\mathcal{S}})$','Interpreter','latex')
+      ylabel('$d(\mathcal{E}([\mathbf{R}_1]_{\mathcal{S}}),\mathcal{E}([\mathbf{R}_2]_{\mathcal{S}})$','Interpreter','latex')
       %axis equal tight
       
     end

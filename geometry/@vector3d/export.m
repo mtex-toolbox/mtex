@@ -4,6 +4,7 @@ function export(v,fname,varargin)
 % Input
 %  v - @vector3d
 %  fname - filename
+%  S - struct containing additional properties to be exported
 %
 % Options
 %  polar   - export polar coordinates
@@ -20,12 +21,22 @@ if check_option(varargin,'polar')
     d = d ./ degree;
   end
   
-else
+else % Euclidean coordinates x, y, z
   
-  % add Euler angles
   d = [v.x(:),v.y(:),v.z(:)];
-  columnNames = {'x','y'};
+  columnNames = {'x','y','z'};
   
 end
   
+% export additional properties
+S = getClass(varargin,'struct');
+if ~isempty(S)
+  for fn = fieldnames(S).'
+    columnNames = [columnNames,fn]; %#ok<AGROW>
+    dd = S.(char(fn));
+    d = [d,double(dd(:))]; %#ok<AGROW>
+  end
+end
+
+% write to file
 cprintf(d,'-Lc',columnNames,'-fc',fname,'-q',true);

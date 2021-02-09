@@ -1,11 +1,14 @@
 classdef strainTensor < tensor
 
   properties (SetAccess=protected)
-    type = 'Lagrange' % 'Euler'
+    type % 'Lagrange' % 'Euler'
   end  
     
   methods
     function sT = strainTensor(varargin)
+      if ~check_option(varargin,'type')
+         varargin = set_option(varargin,'type','Lagrange');
+      end
       sT = sT@tensor(varargin{:},'rank',2);
     end
   end

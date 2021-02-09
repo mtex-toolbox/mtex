@@ -12,7 +12,8 @@ function export(odf,filename,varargin)
 % Options
 %  weights   - export weights of the ODF components
 %  ZYZ, ABG  - Matthies (alpha, beta, gamma) convention (default)
-%  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention 
+%  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention
+%  interface - generic (default), mtex, VPSC
 %
 % See also
 % ODFImportExport

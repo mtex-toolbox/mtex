@@ -7,7 +7,7 @@ odf = unimodalODF(quaternion.id,cs,ss,'halfwidth',1.5*degree);
 
 %%
 
-q = calcModes(odf)
+[~,q] = max(odf)
 
 %%
 v = [];

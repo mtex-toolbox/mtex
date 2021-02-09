@@ -90,7 +90,13 @@ setMTEXpref('EBSDExtensions',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
 
 % set default colors
-%set(0,'DefaultAxesColorOrder',vega20)
+colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
+% in former MTEX version this was
+% color.rgb = vega20;
+setMTEXpref('colors',colors.rgb)
+
+% make these colors the default in Matlab
+set(0,'DefaultAxesColorOrder',colors.rgb)
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by

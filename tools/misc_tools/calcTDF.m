@@ -2,10 +2,14 @@ function [totfreq, bc, azi]=calcTDF(g,varargin)
 % calc circular axis/ trend distribution function of grain long axes
 % OR grain boundary segments or from a list of angles for axial data (0:pi)
 %
-% Syntax:
-%  [freq,bc] = calcTDF(smoothgrains.boundary('indexed'))
-%  or
-%  [freq,bc] = calcTDF(smoothgrains('indexed'))
+% Note: In case of boundaries, this function only makes sense for smoothed
+% boundaries and one would potentially remove grains touching the edge of
+% the map unless only indexed-phase gbs are considered!
+%
+% Syntax
+%   [freq,bc] = calcTDF(smoothgrains.boundary('indexed'))
+%
+%   [freq,bc] = calcTDF(smoothgrains('indexed'))
 %
 % Input
 %  gb          -  @grainBoundary
@@ -22,11 +26,6 @@ function [totfreq, bc, azi]=calcTDF(g,varargin)
 %  freq        - instead of length, do frequencies only
 %  weights     - instead of length, use weights
 %
-%
-% Note: In case of boundaries, this function only makes sense for smoothed
-%  boundaries and one would potentially remove grains touching the
-%  edge of the map unless only indexed-phase gbs are considered!
-
 
 
 % get options

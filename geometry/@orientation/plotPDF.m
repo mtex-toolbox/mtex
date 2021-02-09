@@ -38,7 +38,7 @@ function plotPDF(ori,varargin)
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
- h = [];
+h = [];
 if nargin > 1
   if isa(varargin{1},'Miller')
     h = varargin{1};

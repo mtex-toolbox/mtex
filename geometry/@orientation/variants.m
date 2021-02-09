@@ -28,6 +28,7 @@ function out = variants(p2c,varargin)
 % Options
 %  parent - return parent variants
 %  child  - return child variants (default)
+%  variantMap - reorder variants
 %
 % Output
 %  p2cVariants - parent to child variants
@@ -115,12 +116,10 @@ if parentVariants % parent variants
   % symmetrise with respect to child symmetry
   p2cVariants = p2c.SS * p2c;
   
-  % ignore all variants symmetrically equivalent with respect to the parent
-  % symmetry
-  p2cVariants.SS = crystalSymmetry;
-  p2cVariants = unique(p2cVariants);
-  p2cVariants.SS = p2c.SS;
-
+  % ignore all variants symmetrically equivalent with respect to the parent symmetry
+  ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym2')>1-1e-4,-1),2);
+  p2cVariants = p2cVariants.subSet(ind);
+  
   if exist('variantId','var')
     p2cVariants = p2cVariants.subSet(variantId);
   end
@@ -135,21 +134,36 @@ if parentVariants % parent variants
 
 else % child variants
   
-    % symmetrise with respect to child symmetry
-  p2cVariants = p2c * p2c.CS;
+  %DC = disjoint(p2c.SS, p2c * p2c.CS.rot * inv(p2c));
+  %DP = disjoint(p2c.CS, inv(p2c) * p2c.SS.rot * p2c);
+  %csRot = orientation(p2c.CS.rot,DP);
+  %ind = ~any(tril(dot_outer(csRot,csRot)>1-1e-4,-1),2);
+  %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
-  % ignore all variants symmetrically equivalent with respect to the child
-  % symmetry
-  p2cVariants.CS = crystalSymmetry;
-  p2cVariants = unique(p2cVariants);
-  p2cVariants.CS = p2c.CS;
+  % symmetrise with respect to child symmetry
+  p2cVariants = p2c * p2c.CS.rot;
+  
+  % ignore all variants symmetrically equivalent with respect to the child symmetry
+  ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
+  p2cVariants = p2cVariants.subSet(ind);
+  
+  if check_option(varargin,'variantMap')
+    vMap = get_option(varargin,'variantMap');
+    %if length(vMap) == length(p2cVariants)
+    %  p2cVariants = p2cVariants.subSet(vMap);
+    %else
+    p2cVariants.CS = [];
+    p2cVariants = inv(reshape(accumarray(vMap(:),inv(p2cVariants)),1,[]));
+    p2cVariants.CS = p2c.CS;
+    %end
+  end
   
   if exist('variantId','var')
     p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
   end
   
   if exist('oriParent','var')
-    out = oriParent .* inv(p2cVariants);
+    out = oriParent.project2FundamentalRegion .* inv(p2cVariants);
   elseif exist('MillerParent','var')
     out = p2cVariants * MillerParent;
   else

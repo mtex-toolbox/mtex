@@ -10,9 +10,10 @@ function c = times(a,b)
 % Syntax
 %   out = e .* c
 %   out = c .* e
+%   out = e1 .* e2
 %
 % Input
-%  e - @embedding
+%  e, e1, e2 - @embedding
 %  c - double
 %
 % Output
@@ -20,15 +21,21 @@ function c = times(a,b)
 %
 
 if isa(a,'embedding')
-  for i = 1:length(b.u)
-    a.u{i} = a.u{i} .* a;
+  
+  if isa(b,'embedding')
+
+    for i = 1:length(a.u), a.u{i} = a.u{i} .* b.u{i}; end
+    
+  else
+    for i = 1:length(a.u), a.u{i} = a.u{i} .* b; end
   end
   c = a;
+  
 else
-  for i = 1:length(b.u)
-    b.u{i} = a .* b.u{i};
-  end
+  
+  for i = 1:length(b.u), b.u{i} = a .* b.u{i}; end
   c = b;
+  
 end
 
 end

@@ -12,6 +12,7 @@ classdef rotation < quaternion & dynOption
   %   rot = rotation.map(u1,v1,u2,v2)
   %   rot = reflection(b)
   %   rot = rotation.inversion
+  %   rot = reflection(n)
   %   rot = rotation.byRodrigues(v)
   %   rot = rotation(fibre(u1,v1),'resolution',5*degree)
   %   rot = rotation(quaternion(a,b,c,d))
@@ -59,15 +60,26 @@ classdef rotation < quaternion & dynOption
       switch class(varargin{1})
         
         case 'double'
-        
-          rot.a = varargin{1};
-          rot.b = varargin{2};
-          rot.c = varargin{3};
-          rot.d = varargin{4};
-          if nargin == 4
-            rot.i = false(size(rot.a));
+     
+          if nargin == 1
+            
+            rot.a = varargin{1}(:,1);
+            rot.b = varargin{1}(:,2);
+            rot.c = varargin{1}(:,3);
+            rot.d = varargin{1}(:,4);
+            rot.i = false(size(varargin{1},1),1);
+            
           else
-            rot.i = varargin{5};
+            rot.a = varargin{1};
+            rot.b = varargin{2};
+            rot.c = varargin{3};
+            rot.d = varargin{4};
+            
+            if nargin == 4
+              rot.i = false(size(rot.a));
+            else
+              rot.i = varargin{5};
+            end
           end
 
         case 'char'

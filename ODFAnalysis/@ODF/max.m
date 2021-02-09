@@ -1,5 +1,12 @@
-function [m,ori]= max(odf,varargin)
+function [m,ori] = max(odf,varargin)
 % heuristic to find local modal orientations
+%
+% Syntax
+%
+%   [m,ori] = max(odf)
+%
+%   % find two local maxima
+%   [m,ori] = max(odf,'numLocal',2)
 %
 % Input
 %  odf - @ODF 
@@ -11,6 +18,7 @@ function [m,ori]= max(odf,varargin)
 % Options
 %  resolution  - search--grid resolution
 %  accuracy    - in radians
+%  numLocal    - number of local maxima to find
 %
 % Example
 %  %find the local maxima of the <SantaFe.html SantaFe> ODF

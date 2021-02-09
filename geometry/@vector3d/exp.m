@@ -1,13 +1,11 @@
 function rot = exp(v,rot_ref,varargin)
 % rotation vector to rotation
 %
-% Description
-% 
 % Syntax
 %
-%   mori = exp(m) % misorientation in specimen coordinates
+%   mori = exp(v) % misorientation in specimen coordinates
 %
-%   rot = exp(m,ori_ref) % orientation update
+%   rot = exp(v,ori_ref) % orientation update
 %
 % Input
 %  v - @vector3d rotation vector in specimen coordinates
@@ -15,7 +13,7 @@ function rot = exp(v,rot_ref,varargin)
 %
 % Output
 %  mori - @rotation
-%  ori - @orientation
+%  ori  - @orientation
 %
 % See also
 % Miller/exp orientation/log

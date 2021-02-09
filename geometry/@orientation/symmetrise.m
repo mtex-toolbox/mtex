@@ -15,9 +15,7 @@ if check_option(varargin,'proper')
 end
 o = symmetrise@rotation(o,CS,SS);
 
-if o.antipodal
-  o = [o;inv(o)];
-end
+if o.antipodal, o = [o;inv(o)]; end
 
 if check_option(varargin,'unique')
   [~,ind] = unique(o,'noSymmetry');

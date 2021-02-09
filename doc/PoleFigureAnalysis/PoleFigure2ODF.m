@@ -64,8 +64,9 @@ plotDiff(pf,odf)
 % This difference is computed by the command <ODF.calcError.html
 % calcError>.
 
-% define a unimodal ODF with the same modal orientation
-odf_model = unimodalODF(calcModes(odf),'halfwidth',15*degree)
+% define a unimodal ODF with the same preferred orientation 
+[~,ori_pref] = max(odf);
+odf_model = unimodalODF(ori_pref,'halfwidth',15*degree)
 
 % plot the pole figures
 plotPDF(odf_model,pf.allH,'antipodal','superposition',pf.c)
