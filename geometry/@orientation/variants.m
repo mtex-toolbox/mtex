@@ -140,7 +140,7 @@ else % child variants
   %ind = ~any(tril(dot_outer(csRot,csRot)>1-1e-4,-1),2);
   %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
-  % symmetrise with respect to child symmetry
+  % symmetrise with respect to parent symmetry
   p2cVariants = p2c * p2c.CS.rot;
   
   % ignore all variants symmetrically equivalent with respect to the child symmetry
