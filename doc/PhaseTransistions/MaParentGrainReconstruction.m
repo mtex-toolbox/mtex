@@ -51,6 +51,7 @@ job = parentGrainReconstructor(ebsd,grains);
 
 % initial guess for the parent to child orientation relationship
 job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
+%job.p2c = orientation.NishiyamaWassermann(job.csParent, job.csChild)
 
 %%
 % The output of the variable |job| tells us the amount of parent and child

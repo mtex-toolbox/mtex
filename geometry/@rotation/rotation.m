@@ -12,6 +12,7 @@ classdef rotation < quaternion & dynOption
   %   rot = rotation.map(u1,v1,u2,v2)
   %   rot = reflection(b)
   %   rot = rotation.inversion
+  %   rot = reflection(n)
   %   rot = rotation.byRodrigues(v)
   %   rot = rotation(fibre(u1,v1),'resolution',5*degree)
   %   rot = rotation(quaternion(a,b,c,d))
