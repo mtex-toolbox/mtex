@@ -50,7 +50,7 @@ try
     
     
     abc = sscanf( strrep(mpara{1},',','.'),'%f;%f;%f'); % Lattice ABC
-    abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
+    abg = sscanf( strrep(mpara{2},',','.'),'%f;%f;%f'); % Lattice alpha beta gamma
     
     % Phase name
     mineral = mpara{3};
