@@ -59,10 +59,13 @@ if nargout == 2
 end
 
 % apply a variant map
-if check_option(varargin,'variantMap')
-  vMap = get_option(varargin,'variantMap');
-  childId = vMap(childId);
+if check_option(varargin,'morito')
+  vMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
+    24 22 20 4 2 6 13 15 17 8 12 10];
+else
+  vMap = get_option(varargin,'variantMap',1:max(childId));
 end
 
+childId = vMap(childId);
 
 end
