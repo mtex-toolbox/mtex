@@ -116,8 +116,7 @@ methods (Static = true)
   end
 
   function ori = rand(varargin)
-    s = varargin(cellfun(@isnumeric,varargin));
-    q = quaternion.rand(s{:});
+    q = quaternion.rand(varargin{:});
     ori = orientation(q,varargin{:});
   end
 

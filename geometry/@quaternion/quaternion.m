@@ -125,23 +125,30 @@ classdef quaternion
     end
         
     function q = rand(varargin)
+
+      isNum = cellfun(@isnumeric,varargin);
+      [~,last] = find(~isNum,1,'first');
+      
+      s = varargin;
+      if ~isempty(last), s = s(1:last-1); end
       
       if check_option(varargin,'maxAngle')
         
-        v = vector3d.rand(varargin{:});
-        
         omega = linspace(0,get_option(varargin,'maxAngle'),1e4);
-        id = discretesample(sin(omega).^2,varargin{1});
-        omega = omega(id);
+                
+        v = vector3d.rand(s{:});
         
-        q = axis2quat(v,omega(:));
+        id = discretesample(sin(omega).^2,prod([s{:}]));
+        omega = reshape(omega(id),size(v));
+        
+        q = axis2quat(v,omega);
         
       else
-        if nargin < 2, varargin = [varargin 1]; end
+        if length(s) < 2, s = [s 1]; end
 
-        alpha = 2*pi*rand(varargin{:});
-        beta  = acos(2*(rand(varargin{:})-0.5));
-        gamma = 2*pi*rand(varargin{:});
+        alpha = 2*pi*rand(s{:});
+        beta  = acos(2*(rand(s{:})-0.5));
+        gamma = 2*pi*rand(s{:});
 
         q = euler2quat(alpha,beta,gamma);
       end
