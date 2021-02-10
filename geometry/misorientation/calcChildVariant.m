@@ -33,12 +33,6 @@ d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
 % take the best fit
 [~,childId] = max(d,[],2);
 
-% apply a variant map
-if check_option(varargin,'variantMap')
-  vMap = get_option(varargin,'variantMap');
-  childId = vMap(childId);
-end
-
 % compute packetId if required
 if nargout == 2
   % Get packet definition
@@ -62,6 +56,12 @@ if nargout == 2
   
   packetId = packetId(childId);
   
+end
+
+% apply a variant map
+if check_option(varargin,'variantMap')
+  vMap = get_option(varargin,'variantMap');
+  childId = vMap(childId);
 end
 
 
