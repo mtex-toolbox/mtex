@@ -181,10 +181,10 @@ mean(angle(mori,p2cIter)) ./degree
 % <calcChildVariant.html |calcChildVariant|>.
 
 % compute for each child orientation a variantId
-[variantId, packetId] = calcChildVariant(parenOri,childOri,p2cIter);
+[variantId, packetId] = calcChildVariant(parenOri,childOri,p2cIter,'morito');
 
 % colorize the orientations according to the variantID
-color = ind2color(variantId);
+color = ind2color(variantId,'ordered');
 plotPDF(childOri,color,h_bcc,'MarkerSize',5);
 
 %%
