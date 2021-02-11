@@ -270,7 +270,9 @@ hold off
 % In order to check our parent grain reconstruction we chose the single
 % parent grain outlined in the above map and plot all child variants of its
 % reconstructed parent orientation together with the actually measured
-% child orientations inside the parent grain.
+% child orientations inside the parent grain. In order to compute the
+% |variantId| and |packetId| we use the command <calcVariantId.html
+% |calcVariantId|>.
 
 % the measured child orientations that belong to parent grain 279
 childOri = job.ebsd(grainSelected).orientations;
@@ -279,7 +281,7 @@ childOri = job.ebsd(grainSelected).orientations;
 parentOri = grainSelected.meanOrientation;
 
 % lets compute the variant and packeIds
-[variantId,packetId] = calcChildVariant(parentOri,childOri,job.p2c);
+[variantId, packetId] = calcVariantId(parentOri,childOri,job.p2c);
 
 % colorize child orientations by packetId
 color = ind2color(packetId);

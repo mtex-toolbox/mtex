@@ -1,23 +1,40 @@
-function [childId, packetId] = calcChildVariant(parentOri,childOri,p2c,varargin)
+function [childId, packetId] = calcVariantId(parentOri,childOri,p2c,varargin)
+% compute variantIds and packetId from child orientations
 %
 % Syntax
 %
-%   childId = calcParent(parentOri,childOri,p2c)
+%   variantId = calcVariantId(parentOri,childOri,p2c)
+%
+%   % reorder variantIds according to Morito convention
+%   variantId = calcVariantId(parentOri,childOri,p2c,'variantMap',variantMap)
+%
+%   % reorder variantIds according to variantMap
+%   variantId = calcVariantId(parentOri,childOri,p2c,'variantMap',variantMap)
+%
+%   % compute packetIds
+%   [variantId,packetId] = calcVariantId(parentOri,childOri,p2c,...
+%     {hklParent,hklChild})
+%
+%   % packet determination
+%   hklParent = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
+%   hklChild  = Miller(1,0,1,p2c.SS);
+%
+%   [variantId,packetId] = calcVariantId(parentOri,childOri,p2c,...
+%     {hklParent,hklChild})
 %
 % Input
 %  parentOri - parent @orientation
 %  childOri  - child @orientation
 %  p2c       - parent to child mis@orientation
+%  hklParent, hklChild - correspondent planes between parent and child
 %
 % Output
-%  childId   - child variant Id
-%  packetId  - child packet Id
+%  variantId - variant id
+%  packetId  - packet id
 %
 % Options
 %  variantMap - reorder variantIds according to variantMap
-%
-% Description
-%
+%  morito - reorder variantId according to Morito convention
 %
 
 % all child variants

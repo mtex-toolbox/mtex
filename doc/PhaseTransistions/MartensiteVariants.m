@@ -178,10 +178,10 @@ mean(angle(mori,p2cIter)) ./degree
 % Once we have determined parent orientations and a parent to child
 % orientation relationship we may proceed further by classifying the child
 % orientations into different variants. This is computed by the command
-% <calcChildVariant.html |calcChildVariant|>.
+% <calcVariantId.html |calcVariantId|>.
 
 % compute for each child orientation a variantId
-[variantId, packetId] = calcChildVariant(parenOri,childOri,p2cIter,'morito');
+[variantId, packetId] = calcVariantId(parenOri,childOri,p2cIter,'morito');
 
 % colorize the orientations according to the variantID
 color = ind2color(variantId,'ordered');
