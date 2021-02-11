@@ -1,5 +1,5 @@
 function [childId, packetId] = calcVariantId(parentOri,childOri,p2c,varargin)
-% compute variantIds and packetId from child orientations
+% compute variantIds and packetId from parent / child orientation pairs
 %
 % Syntax
 %
@@ -45,7 +45,7 @@ if size(childVariants,1) == 1
 end
   
 % compute distance to all possible variants
-d = dot(childVariants,repmat(childOri,1,size(childVariants,2)));
+d = dot(childVariants,repmat(childOri(:),1,size(childVariants,2)));
 
 % take the best fit
 [~,childId] = max(d,[],2);
@@ -69,7 +69,7 @@ if nargout == 2
   
   omega = dot(variants(p2c,h1),h2);
 
-  [~,packetId] = max(omega,[],2);
+  [~,packetId] = max(omega,[],1);
   
   packetId = packetId(childId);
   
