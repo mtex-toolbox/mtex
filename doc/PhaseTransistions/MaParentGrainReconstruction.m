@@ -274,16 +274,25 @@ hold off
 
 % the measured child orientations that belong to parent grain 279
 childOri = job.ebsd(grainSelected).orientations;
-plotPDF(childOri, Miller(0,0,1,childOri.CS),'MarkerSize',3)
 
 % the orientation of parent grain 279
-hold on
 parentOri = grainSelected.meanOrientation;
-plot(parentOri.symmetrise * Miller(0,0,1,parentOri.CS))
+
+% lets compute the variant and packeIds
+[variantId,packetId] = calcChildVariant(parentOri,childOri,job.p2c);
+
+% colorize child orientations by packetId
+color = ind2color(packetId);
+plotPDF(childOri,color, Miller(0,0,1,childOri.CS),'MarkerSize',2,'all')
+
+% the positions of the parent (001) directions
+hold on
+plot(parentOri.symmetrise * Miller(0,0,1,parentOri.CS),'markerSize',10,...
+  'marker','s','markerFaceColor','w','MarkerEdgeColor','k','linewidth',2)
 
 % the theoretical child variants
 childVariants = variants(job.p2c, parentOri);
-plotPDF(childVariants, 'markerFaceColor','none','linewidth',2,'markerEdgeColor','orange')
+plotPDF(childVariants, 'markerFaceColor','none','linewidth',1.5,'markerEdgeColor','k')
 hold off
 
 %% Parent EBSD reconstruction
