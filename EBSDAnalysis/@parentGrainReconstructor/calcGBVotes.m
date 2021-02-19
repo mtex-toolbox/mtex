@@ -15,6 +15,7 @@ function job = calcGBVotes(job,varargin)
 %  numFit - number of fits to be computed
 %  noC2C  - consider only parent / child grain boundaries
 %  weights - store boundary as weights to votes
+%
 
 numFit = get_option(varargin,'numFit',2);
 
