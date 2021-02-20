@@ -26,7 +26,7 @@ try
   hl = file2cell(fname,100);
   
   % check that this is a channel text file
-  if isempty(strmatch('Channel Text File',hl{1}))
+  if isempty(strfind(hl{1},'Channel Text File'))
     error('MTEX:wrongInterface','Interface ctf does not fit file format!');
   elseif check_option(varargin,'check')
     return
