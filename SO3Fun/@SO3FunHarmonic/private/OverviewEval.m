@@ -18,16 +18,19 @@ fprintf('\n \n <strong> NFFT: </strong>\n')
 % The goal is to evaluate a rotational function fast in some given
 % orientations and to use some symmetriy properties to make the algorithm
 % faster.
-% To study speed of this algorithms one has to choose between a few and 
-% lots of evaluation points. Hence we construct two vectors of rotations. 
+%
+% To study speed of this algorithms one has to distinguish between a few
+% and lots of evaluation points. Hence we construct two vectors of
+% rotations.
 
 ori1 = rotation.rand(10);
 ori2 = rotation.rand(1000000);
 
 %% Comparison of the different implementations of eval functions
-% Now we want to compare between different implementations and want to show
-% there speed and accuracy for approximate solutions.
-% Hence we save the running time in a variable
+% Now we want to campare between different implementations and want to show
+% there speed and accuracy for approximate solutions. Hence we save the
+% running time in a variable
+
 implementation = zeros(2,7);
 error = zeros(2,7);
 
@@ -56,8 +59,10 @@ implementation(2,1) = toc;
 % implementations. 
 
 %% eval_NoSymStraightforward.m
-% We start with a straightforward implementation of (a) following the 
+%
+% We start with a straightforward implementation of (a) following the
 % script.
+
 fprintf('\neval_NoSymStraightforward.m \n')
 tic
 
@@ -84,11 +89,13 @@ fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 GHAT = ghat;           % Save ghat to compare later with the other algorithms
 
 %% eval_NoSym4dimHypermatrix.m
+%
 % Here we tried to omit loops and do it by a 4 dimensional Hypermatrix. 
 % This Hypermatrix gets very big and so it needs a lot of storage space. 
 % Hence the storage explodes for large bandwidth N.
 % The solution ghat is the same as before, but this implementation is very
 % slow.
+
 fprintf('\neval_NoSym4dimHypermatrix.m \n')
 tic
 
@@ -112,9 +119,12 @@ fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
     max(max(max(abs(GHAT-ghat)))));
 
 %% eval_NoSymFast.m
+%
 % This is a better implementation of (a). We have less loop iterations and
 % we do not construct fhat completely. We parallelize the first
 % straightforward implementation by sum over another index in the script.
+
+
 fprintf('\neval_NoSymFast.m \n')
 tic
 
@@ -124,7 +134,7 @@ for n = 0:N
     Fhat = reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
     d = Wigner_D(n,pi/2);
     D = permute(d,[1,3,2]) .* permute(d,[3,1,2]) .* Fhat;
-    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) = ...
+    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) = ... 
         ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) + D;
 end
 %
@@ -136,6 +146,7 @@ fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
 
 %% 
 % Save the running times and errors for this 3 implementations
+
 tic
 ftest1 = eval_NoSymStraightforward(SO3F,ori1);
 implementation(1,2) = toc;
@@ -170,10 +181,11 @@ error(1,4) = max(abs(ftest1-f1));
 error(2,4) = max(abs(ftest2-f2));
 
 %% eval_SymReconstrct.m
-% Now we want to investigate the symmetry properties of the fourier 
-% coefficient matrix ghat by using a real valued function SO3F.
-% First we calculate only half of ghat and get the remaining part by the
-% symmetry property.
+%
+% Now we want to investigate the symmetry properties of the fourier matrix
+% ghat by using a real valued function SO3F. First we calculate only half
+% of ghat and get the remaining part by the symmetry property.
+
 fprintf('\neval_SymReconstrct.m \n')
 tic
 
@@ -187,8 +199,12 @@ for n = 0:N
     ghat(N+2+(-n:n),N+2+(-n:0),N+2+(-n:0)) = ...
         ghat(N+2+(-n:n),N+2+(-n:0),N+2+(-n:0)) + D;
 end
+
+% eq. 7
 pm = -reshape((-1).^(1:(2*N+1)*(N+1)),[2*N+1,N+1]);
 ghat(2:end,2:N+2,N+2+(1:N)) = flip(ghat(2:end,2:N+2,N+2+(-N:-1)),3) .*pm;
+
+% eq. 5
 ghat(2:end,N+2+(1:N),2:end) = ...
     conj(flip(flip(flip(ghat(2:end,N+2+(-N:-1),2:end),1),2),3));
 %
@@ -199,11 +215,13 @@ fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
     max(max(max(abs(GHAT-ghat)))));
 
 %% eval_SymHalfsize.m
+%
 % Now we want to use the symmetry property to reduce the size of NFFT
-% following the script. Hence the fourier coefficient matrix ghat is only 
-% half the size it was before. And we have to change two lines in part (c). 
-% First we have one lower dimension in NFFT and second we have to modify 
-% the solution a little bit.
+% following the script. Hence the fourier matrix ghat is only half the size
+% it was before. And we have to change two lines in part (c). First we have
+% one lower dimension in NFFT and second we have to modify the solution a
+% little bit.
+
 fprintf('\neval_SymHalfsize.m \n')
 tic
 
@@ -229,6 +247,7 @@ fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 
 %% 
 % Save the running times and errors for this 2 implementations
+
 tic
 ftest1 = eval_SymReconstrct(SO3F,ori1);
 implementation(1,5) = toc;
@@ -252,6 +271,7 @@ error(1,6) = max(abs(ftest1-f1));
 error(2,6) = max(abs(ftest2-f2));
 
 %% eval_SymNFFTDecompose.m
+%
 % Now we also want to use the second symmetry property to reduce the size
 % of the fourier coefficient matrix and NFFT again by half. We cant 
 % summarize the formulas similar as before. So we decompose the NFFT in 5 
@@ -287,8 +307,6 @@ disp(error)
 fprintf('head of the tables:')
 fprintf(['\n[ eval | NoSymStraightforward | NoSym4dimHypermatrix | ', ...
     'NoSymFast | SymReconstrct | SymHalfsize | SymNFFTDecompose ] \n'])
-
-
 
 % We observe: eval_SymReconstrct.m and eval_SymHalfsize.m are possible 
 % alternatives for  eval.m
