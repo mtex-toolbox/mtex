@@ -14,6 +14,14 @@ function export_ang(ebsd,fName,varargin)
 %
 
 
+OIMSymId = [100 101 ... triclinic
+  135:137 132:134 102:104 ... 3  .. 11 monoclinic (a,b,c)
+  105 106 106 106 107  ...    12 .. 16 orthorhombic
+  115 116 117:119 117:119,... 17 .. 24 trigonal
+  108:113 113 114 ...         25 .. 32 tetragonal
+  120:125 125 126 ...         33 .. 40 hexagonal 
+  127:131];                  %41 .. 45 cubic
+
 roundOff = 3; %Rounding coordinates to 'roundOff' digits
 
 scrPrnt('SegmentStart','Exporting ''ang'' file');
@@ -56,7 +64,7 @@ for phaseId = fliplr(ebsd.indexedPhasesId)
   fprintf(filePh,'# %s  \t%s\n','MaterialName',cs.mineral);
   fprintf(filePh,'# %s     \t%s\n','Formula','');
   fprintf(filePh,'# %s \t\t%s\n','Info','');
-  fprintf(filePh,'# %-22s%s\n','Symmetry',cs.pointGroup);
+  fprintf(filePh,'# %-22s%s\n','Symmetry', OIMSymId(cs.id));
   fprintf(filePh,'# %-22s %4.3f %5.3f %5.3f %7.3f %7.3f %7.3f\n',...
     'LatticeConstants',cs.aAxis.abs,cs.bAxis.abs,cs.cAxis.abs,...
     cs.alpha/degree,cs.beta/degree,cs.gamma/degree);
