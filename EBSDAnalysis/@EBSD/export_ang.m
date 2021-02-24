@@ -64,7 +64,7 @@ for phaseId = fliplr(ebsd.indexedPhasesId)
   fprintf(filePh,'# %s  \t%s\n','MaterialName',cs.mineral);
   fprintf(filePh,'# %s     \t%s\n','Formula','');
   fprintf(filePh,'# %s \t\t%s\n','Info','');
-  fprintf(filePh,'# %-22s%s\n','Symmetry', OIMSymId(cs.id));
+  fprintf(filePh,'# %-22s%d\n','Symmetry', OIMSymId(cs.id));
   fprintf(filePh,'# %-22s %4.3f %5.3f %5.3f %7.3f %7.3f %7.3f\n',...
     'LatticeConstants',cs.aAxis.abs,cs.bAxis.abs,cs.cAxis.abs,...
     cs.alpha/degree,cs.beta/degree,cs.gamma/degree);
