@@ -7,20 +7,20 @@
 % axes of the Euler angles. 
 %
 % In case the map coordinates and the Euler angles in your data are with
-% respect to different reference frames it is highly recommendet to correct
+% respect to different reference frames it is highly recommended to correct
 % for this while importing the data into MTEX. This section explains in
 % detail how to do this.
 %
 %% On Sreen Orientation of the EBSD Map
 %
-% Many peoply are concerned when the images produced by MTEX are not
+% Many people are concerned when the images produced by MTEX are not
 % aligned exactly as they are in their commercial software. It is indeed
-% very important to understand exactly the alignment of you data. However,
-% the important point is not whether a map is upside down on you screen or
-% not. The important point is how your map alignes with the specimen, as we
+% very important to understand exactly the alignment of your data. However,
+% the important point is not whether a map is upside down on your screen or
+% not. The important point is how your map aligns with the specimen, as we
 % want to use the map to describe properties of the specimen.
 %
-% There are basicaly two components in an EBSD data set that refers to the
+% There are basically two components in an EBSD data set that refer to the
 % specimen reference frame: the spatial coordinates $x$, $y$ and the Euler
 % angles $\phi_1$, $\Phi$, $\phi_2$. To explain the difference have a look
 % at the EDAX export dialog
@@ -30,21 +30,21 @@
 % Here we have the axes $x$ and $y$ which describe how the map coordinates
 % needs to be interpreted and the axes $A_1$, $A_2$, $A_3$ which describe
 % how the Euler angles, and in consequence, the pole figures needs to be
-% interpreted. We see that in non of these settings the map reference
+% interpreted. We see that in none of these settings the map reference
 % system coincides with the Euler angle reference frame. 
 %
 % This situation is not specific to EDAX but occurs as well with EBSD data
 % from Oxford or Bruker, all of them using different reference system
-% alignments. For that reason MTEX stronly recommends to transform the data
+% alignments. For that reason MTEX strongly recommends to transform the data
 % such that both map coordinates and Euler angles refer to the same
 % coordinate system. 
 %
 % Doing this we have two choices:
 %
-% # transfrom everything to the reference system $x$, $y$ using the option
+% # transform everything to the reference system $x$, $y$ using the option
 % |'convertEuler2SpatialReferenceFrame'|. This will keep the map
 % coordinates while changing the Euler angles
-% # transfrom everything to the reference system $A_1$, $A_2$, $A_3$ using
+% # transform everything to the reference system $A_1$, $A_2$, $A_3$ using
 % the option |'convertSpatial2EulerReferenceFrame'|. This will keep the
 % Euler angles while changing the map coordinates.
 % 
@@ -77,7 +77,7 @@ plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 % any data.
 %
 %% Verify the reference system
-% One way of veryfying the reference systems is to visualize crystal shapes
+% One way of verifying the reference systems is to visualize crystal shapes
 % on top of the orientation map. To do this we proceed as follows
 
 % reconstruct grains
@@ -95,19 +95,19 @@ plot(largeGrains,cS)
 hold off
 
 %%
-% It may also be helpfull to inspect pole figures 
+% It may also be helpful to inspect pole figures 
 
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('O').CS);
 plotPDF(ebsd('O').orientations,h,'contourf')
 
 %%
 % As pole figures display data relative to the specimen reference frame
-% MTEX automatically aligns them on the screen exatcly as the spatial map
+% MTEX automatically aligns them on the screen exactly as the spatial map
 % above, i.e., according to our last definition with x pointing towards
 % east and y to the south.
 %
 %% Change the map reference system
-% In order to manualy change the map reference frame one may apply a
+% In order to manually change the map reference frame one may apply a
 % rotation to the map coordinates only. E.g. to flip the map left to right
 % while preserving the Euler angles one can do
 
@@ -150,7 +150,7 @@ plot(largeGrains,cS)
 hold off
 
 
-%% Changing both reference system simultanously
+%% Changing both reference system simultaneously
 %
 % Sometimes it is necessary to relate the EBSD data to a different external
 % reference frame, or to  change the external reference frame from one to
