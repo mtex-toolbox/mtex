@@ -30,12 +30,27 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %  soft         - use markovian clustering algorithm
 %  custom       - use a custom property for grain separation
 %
+%
+%   
+% optional parameters for 'FMC' (TODO)
+%   cmaha      - 
+%   cmaha0     - lower misorientation bias (default 0.05)
+%   quatmax    - quaterion variance metrix for cluster (default 5)
+%   alpha      - seed selection (default 0.2)
+%   beta       - probability threshold for point in cluster (default 0.3)
+%   gammaW     - edge dilution (default 25)
+%
+% optional parameters for 'soft' (TODO)
+%   mcl,[a b]  - a: inflation exponent  b: max. Iterations
+%   soft,[c d] - c: gb criterion angle with highes probability d: varaiance of gb criterion
+%
 % References
 %
 % * C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, L. Bassman,
 %   Boundary identification in EBSD data with a generalization of fast
 %   multiscale clustering, <https://doi.org/10.1016/j.ultramic.2013.04.009
 %   Ultramicroscopy, 2013, 133:16-25>.
+%
 %
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
