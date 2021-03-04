@@ -123,7 +123,7 @@ loader.getColumnData = @getColumnData;
       % specimen directions
       if type == 1  % xyz
 
-        v = vector3d(data(:,cols).');
+        v = reshape(vector3d(data(:,cols).'),[],1);
 
       else % spherical
 
