@@ -23,6 +23,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % Options
 %  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
 %  boundary         - bounds the spatial domain ('convexhull', 'tight')
+%  maxDist          - maximum distance to for two pixels to be in one grain (default inf)
 %
 % Flags
 %  unitCell     - omit voronoi decomposition and treat a unitcell lattice
@@ -167,12 +168,21 @@ end
 A_D = I_FD'*I_FD==1;
 [Dl,Dr] = find(triu(A_D,1));
 
+%xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
+%  (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
+
+% dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
+% maxDist = get_option(varargin,'maxDist',3*dx);
+% maxDist = get_option(varargin,'maxDist',inf);
+
 connect = zeros(size(Dl));
 
 for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
+  % ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
   ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+  
   connect(ndx) = true;
   
   % check, whether they are indexed
