@@ -69,12 +69,11 @@ classdef grainBoundary < phaseList & dynProp
     function gB = grainBoundary(V,F,I_FD,ebsd,grainsPhaseId)
       %
       % Input
-      %  V - [x,y] list of vertices
-      %  F - [v1,v2] list of boundary segments
+      %  V    - [x,y] list of vertices
+      %  F    - [v1,v2] list of boundary segments
       %  I_FD - incidence matrix boundary segments vs. cells
-      %  ebsd -
-      %  grainPhaseId - 
-      %
+      %  ebsd - @EBSD
+      %  grainPhaseId - grains.phaseId sorted by grainId
       %
       
       if nargin == 0, return; end
