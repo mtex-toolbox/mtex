@@ -19,14 +19,14 @@ function pf = correct( pf, varargin )
 % See also
 %  ModifyPoleFigureData
 
-% Background correction
+% background correction
 bg = get_option(varargin,{'background','bg'});
 if ~isempty(bg)
   bg = adapt_pf(bg,pf,'Background correction pole figure');
   pf = pf-bg;
 end
 
-% Defocussing
+% defocusing correction
 def = get_option(varargin,{'defocussing','defocusing','def'});
 def_bg = get_option(varargin,{'defocussing bg','defocussing background','defocusing background','defocusing bg','defbg'});
 
