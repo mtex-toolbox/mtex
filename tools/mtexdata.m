@@ -89,7 +89,8 @@ catch
           out = PoleFigure.load(fName,'superposition',c,CS);
         case 'geesthacht'
           CS = crystalSymmetry('m-3m');
-          out = PoleFigure.load(fName,CS);
+          h = Miller({1 0 4},{1 0 4},{1 1 0},{1 1 0},CS);
+          out = PoleFigure.load(fName,h);
         case 'ptx'
           CS = crystalSymmetry('mmm');
           out = PoleFigure.load(fName,CS);
