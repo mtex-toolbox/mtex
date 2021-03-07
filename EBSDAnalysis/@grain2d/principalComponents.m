@@ -38,7 +38,7 @@ for k=1:numel(poly)
   dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
      
   % weight vertices according to half the length of the adjacent faces
-  Vg = Vg(1:end-1,:) .* [dist,dist];
+  Vg = Vg(1:end-1,:) .* [dist,dist] .* sum(Vg(1:end-1,:).^2,2).^(0.25);
       
   % compute eigen values and vectors
   [ew, omega(k)] = eig2(Vg' * Vg);
