@@ -45,8 +45,14 @@ lambda(:,2) = p + D;
 if nargout > 1
 
   % then angle of the largest eigen vector
-  omega = atan2(a12,a11 - lambda(:,1));
- 
+  % we need to avoid the case of zero entries in the first column of the
+  % matrix
+  useCol1 = (a11 - lambda(:,1)).^2 > (a22 - lambda(:,1)).^2;
+
+  omega(useCol1) = atan2(a12(useCol1), a11(useCol1) - lambda(useCol1,1));
+  omega(~useCol1) = atan2(a22(~useCol1) - lambda(~useCol1,1), a12(~useCol1));
+  
+  
   if nargout == 2
     v1 = mod(omega,pi); % only the range between 0 and pi matters
   else
