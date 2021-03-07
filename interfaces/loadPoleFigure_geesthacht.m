@@ -43,6 +43,15 @@ try
     
   end
   
+  hh = getClass(varargin,'Miller');
+  if length(hh) == length(h)
+    if iscell(hh)
+      h = hh; 
+    else
+      h = vec2cell(hh); 
+    end
+  end
+  
   pf = PoleFigure(h,r,intensities,varargin{:});
   
 catch
