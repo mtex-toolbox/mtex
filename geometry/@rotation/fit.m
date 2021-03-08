@@ -36,7 +36,7 @@ end
 w = get_option(varargin,'weights');
 if ~isempty(w), l = l .* w; end
 
-M = l * r;
+M = l.normalize * r.normalize;
 
 switch lower(get_option(varargin,'method','horn'))
   
