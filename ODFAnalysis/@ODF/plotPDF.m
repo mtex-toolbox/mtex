@@ -32,7 +32,7 @@ else
 end
 
 % ensure crystal symmetry
-if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
+if ~iscell(h), h = mat2cell(h(:),cellfun(@length,c),1); end
 for i = 1:length(h)
   argin_check([h{i}],'Miller');
   h{i} = odf.CS.ensureCS(h{i}); 
@@ -133,11 +133,10 @@ end
     [r_local,~,~,ax] = getDataCursorPos(mtexFig);
 
     f = orientation(fibre(h{mtexFig.children==ax},r_local,odf.CS,odf.SS));
-    f = eval(odf,f);
+    
+    [v,vpos] = max(eval(odf,f)); %#ok<ASGLU>
 
-    [v,vpos] = max(f); %#ok<ASGLU>
-
-    annotate(fibre(vpos));
+    annotate(f(vpos));
 
   end
 
