@@ -164,7 +164,6 @@ colorKey = PatalaColorKey(gB_Fo);
 
 hold on
 plot(gB_Fo,'linewidth',7)
-set(gcf,'Renderer','painters')
 hold on
 plot(gB_Fo,colorKey.orientation2color(gB_Fo.misorientation),'linewidth',4)
 hold off
