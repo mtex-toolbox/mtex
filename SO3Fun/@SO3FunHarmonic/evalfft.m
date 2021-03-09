@@ -90,6 +90,10 @@ if SO3F.isReal
   % needed for (*)
   ghat(:,1,:) = ghat(:,1,:)/2;
 
+  % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
+  z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
+  ghat = ghat.*exp(-0.5*pi*1i*z);
+
 else
 
   ghat = zeros(2*N+1,2*N+1,2*N+1);
@@ -106,11 +110,11 @@ else
 
   end
 
-end
+  % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
+  z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-(-N:N);
+  ghat = ghat.*exp(-0.5*pi*1i*z);
 
-% correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
-z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
-ghat = ghat.*exp(-0.5*pi*1i*z);
+end
 
 
 % fft
