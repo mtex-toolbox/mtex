@@ -74,8 +74,7 @@ if SO3F.isReal
 
   for n = 0:N
 
-    Fhat = reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
-    Fhat = Fhat(:,n+1:end);
+    Fhat = reshape(SO3F.fhat(deg2dim(n)+1+n*(2*n+1):deg2dim(n+1)),2*n+1,n+1);
 
     d = Wigner_D(n,pi/2); d = d(:,1:n+1);
     D = permute(d,[1,3,2]) .* permute(d(n+1:end,:),[3,1,2]) .* Fhat;
