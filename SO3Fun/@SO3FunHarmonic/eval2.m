@@ -42,19 +42,25 @@ else
 
   % create ghat -> k x l x j
   % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
+  % we can again use (**) to speed up
   ghat = zeros(2*N+2,2*N+2,2*N+2);
 
   for n = 0:N
 
     Fhat = reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
 
-    d = Wigner_D(n,pi/2);
+    d = Wigner_D(n,pi/2); d = d(:,1:n+1);
     D = permute(d,[1,3,2]) .* permute(d,[3,1,2]) .* Fhat;
 
-    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) = ...
-        ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:n)) + D;
+    ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:0)) = ...
+        ghat(N+2+(-n:n),N+2+(-n:n),N+2+(-n:0)) + D;
 
   end
+  
+  % use (**) by last index
+  pm = -reshape((-1).^(1:(2*N+1)*(2*N+1)),[2*N+1,2*N+1]);
+  ghat(2:end,2:end,N+2+(1:N)) = ...
+      flip(ghat(2:end,2:end,N+2+(-N:-1)),3) .* pm;
 
 end
 
