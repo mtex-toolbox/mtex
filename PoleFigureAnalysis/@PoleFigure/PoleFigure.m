@@ -94,7 +94,7 @@ classdef PoleFigure < dynProp & dynOption
     
     function h = get.h(pf)
       h = pf.allH;
-      h = vertcat(h{:});
+      h = horzcat(h{:});
     end
     
     function r = get.r(pf)
