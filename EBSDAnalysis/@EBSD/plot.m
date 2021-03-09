@@ -102,8 +102,10 @@ else % phase plot
     elseif ~isa(ebsd.CSList{k},'symmetry') 
       % do not plot notindexed phase if no color is given
       continue;
-    else
+    elseif ~isempty(ebsd.CSList{k}.color)
       color = ebsd.CSList{k}.color;
+    else
+      color = ebsd.subSet(ind).color;
     end
     
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
