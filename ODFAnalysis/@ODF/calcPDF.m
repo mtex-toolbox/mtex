@@ -31,7 +31,7 @@ if isa(h,'Miller'), h = odf.CS.ensureCS(h); end
 
 % superposed pole figures
 sp = get_option(varargin,'superposition',1);
-if length(h) > 1
+if length(sp) > 1
   assert(length(sp) == length(h),'Number of superposition coefficients must coinside with the number of pole figures');
   varargin = delete_option(varargin,'superposition');
   pdf = sp(1) * calcPDF(odf,h(1),varargin{:});
