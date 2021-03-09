@@ -49,6 +49,7 @@ if nargout > 1
   % matrix
   useCol1 = (a11 - lambda(:,1)).^2 > (a22 - lambda(:,1)).^2;
 
+  omega = zeros(size(useCol1));
   omega(useCol1) = atan2(a12(useCol1), a11(useCol1) - lambda(useCol1,1));
   omega(~useCol1) = atan2(a22(~useCol1) - lambda(~useCol1,1), a12(~useCol1));
   
