@@ -251,7 +251,7 @@ if check_option(varargin,'calcMeanOrientation')
     grainsMerged.prop.meanRotation(i) = rotation(oriNew);
   
     % get new phaseId
-    if ischar(cs)
+    if exist('cs') && ischar(cs) 
       grainsMerged.phaseId(i) = 1;
     else
       newPhase = cellfun(@(x) isa(x,'symmetry') && x==oriNew.CS,grains.CSList);
