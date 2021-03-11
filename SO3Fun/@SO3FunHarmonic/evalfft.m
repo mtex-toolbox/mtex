@@ -74,8 +74,7 @@ if SO3F.isReal
 
   for n = 0:N
 
-    Fhat = reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
-    Fhat = Fhat(:,n+1:end);
+    Fhat = reshape(SO3F.fhat(deg2dim(n)+1+n*(2*n+1):deg2dim(n+1)),2*n+1,n+1);
 
     d = Wigner_D(n,pi/2); d = d(:,1:n+1);
     D = permute(d,[1,3,2]) .* permute(d(n+1:end,:),[3,1,2]) .* Fhat;
@@ -90,6 +89,10 @@ if SO3F.isReal
   % needed for (*)
   ghat(:,1,:) = ghat(:,1,:)/2;
 
+  % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
+  z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
+  ghat = ghat.*exp(-0.5*pi*1i*z);
+
 else
 
   ghat = zeros(2*N+1,2*N+1,2*N+1);
@@ -98,19 +101,23 @@ else
 
     Fhat = reshape(SO3F.fhat(deg2dim(n)+1:deg2dim(n+1)),2*n+1,2*n+1);
 
-    d = Wigner_D(n,pi/2);
+    d = Wigner_D(n,pi/2);  d = d(:,1:n+1);
     D = permute(d,[1,3,2]) .* permute(d,[3,1,2]) .* Fhat;
 
-    ghat(N+1+(-n:n),N+1+(-n:n),N+1+(-n:n)) = ...
-        ghat(N+1+(-n:n),N+1+(-n:n),N+1+(-n:n)) + D;
+    ghat(N+1+(-n:n),N+1+(-n:n),N+1+(-n:0)) = ...
+        ghat(N+1+(-n:n),N+1+(-n:n),N+1+(-n:0)) + D;
 
   end
 
-end
+  % use (**)
+  pm = -reshape((-1).^(1:(2*N+1)*(2*N+1)),[2*N+1,2*N+1]);
+  ghat(:,:,N+1+(1:N)) = flip(ghat(:,:,N+1+(-N:-1)),3) .* pm;
 
-% correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
-z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
-ghat = ghat.*exp(-0.5*pi*1i*z);
+  % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
+  z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-(-N:N);
+  ghat = ghat.*exp(-0.5*pi*1i*z);
+
+end
 
 
 % fft
