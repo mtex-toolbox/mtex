@@ -25,7 +25,7 @@ ori1 = rotation.rand(10);
 ori2 = rotation.rand(1000000);
 
 %% Comparison of the different implementations of eval functions
-% Now we want to campare between different implementations and want to show
+% Now we want to compare between different implementations and want to show
 % there speed and accuracy for approximate solutions.
 % Hence we save the running time in a variable
 implementation = zeros(2,7);
@@ -80,7 +80,7 @@ end
 %
 
 t = toc;
-fprintf('  time to compute fourier matrix = %.3f s\n',t)
+fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 GHAT = ghat;           % Save ghat to compare later with the other algorithms
 
 %% eval_NoSym4dimHypermatrix.m
@@ -107,7 +107,7 @@ ghat(2:end,2:end,2:end) = sum(G);
 %
 
 t = toc;
-fprintf('  time to compute fourier matrix = %.3f s\n',t)
+fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
     max(max(max(abs(GHAT-ghat)))));
 
@@ -130,7 +130,7 @@ end
 %
 
 t = toc;
-fprintf('  time to compute fourier matrix = %.3f s\n',t)
+fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
     max(max(max(abs(GHAT-ghat)))));
 
@@ -170,8 +170,8 @@ error(1,4) = max(abs(ftest1-f1));
 error(2,4) = max(abs(ftest2-f2));
 
 %% eval_SymReconstrct.m
-% Now we want to investigate the symmetry properties of the fourier matrix
-% ghat by using a real valued function SO3F.
+% Now we want to investigate the symmetry properties of the fourier 
+% coefficient matrix ghat by using a real valued function SO3F.
 % First we calculate only half of ghat and get the remaining part by the
 % symmetry property.
 fprintf('\neval_SymReconstrct.m \n')
@@ -194,16 +194,16 @@ ghat(2:end,N+2+(1:N),2:end) = ...
 %
 
 t = toc;
-fprintf('  time to compute fourier matrix = %.3f s\n',t)
+fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 fprintf('  l_{\\infty} error of fourier matrix = %.1d \n',...
     max(max(max(abs(GHAT-ghat)))));
 
 %% eval_SymHalfsize.m
 % Now we want to use the symmetry property to reduce the size of NFFT
-% following the script. Hence the fourier matrix ghat is only half the size
-% it was before. And we have to change two lines in part (c). First we have
-% one lower dimension in NFFT and second we have to modify the solution a
-% little bit.
+% following the script. Hence the fourier coefficient matrix ghat is only 
+% half the size it was before. And we have to change two lines in part (c). 
+% First we have one lower dimension in NFFT and second we have to modify 
+% the solution a little bit.
 fprintf('\neval_SymHalfsize.m \n')
 tic
 
@@ -225,7 +225,7 @@ ghat(:,1+ind,:)=ghat(:,1+ind,:)/2;
 %
 
 t = toc;
-fprintf('  time to compute fourier matrix = %.3f s\n',t)
+fprintf('  time to compute fourier coefficients = %.3f s\n',t)
 
 %% 
 % Save the running times and errors for this 2 implementations
@@ -253,11 +253,12 @@ error(2,6) = max(abs(ftest2-f2));
 
 %% eval_SymNFFTDecompose.m
 % Now we also want to use the second symmetry property to reduce the size
-% of the fourier matrix and NFFT again by an half. We cant summarize the 
-% formulas similar as before. So we decompose the NFFT in 5 smaller ones
-% following the script.
+% of the fourier coefficient matrix and NFFT again by half. We cant 
+% summarize the formulas similar as before. So we decompose the NFFT in 5 
+% smaller ones following the script.
 % That is not a realy good idea.
-fprintf('\neval_SymNFFTDecompose.m\n  The fourier matrix is decomposed.\n')
+fprintf(['\neval_SymNFFTDecompose.m\n  The fourier coefficient matrix', ...
+    ' is decomposed.\n'])
 
 tic
 ftest1 = eval_SymNFFTDecompose(SO3F,ori1);
@@ -431,7 +432,8 @@ fprintf('  l_{\\infty} error to eval(SO3F,Gridori) = %.1d \n', ...
 
 %% eval_fftSymReconstrct.m
 % Now we speed up the algorithm by using the symmetry property to
-% reconstruct half of fourier matrix from the other half, like before.
+% reconstruct half of fourier coefficient matrix from the other half, like 
+% before.
 fprintf('\neval_fftSymReconstrct.m \n')
 
 tic
