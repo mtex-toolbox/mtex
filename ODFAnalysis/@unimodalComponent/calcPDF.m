@@ -37,7 +37,7 @@ if length(h) == 1 % pole figure
   
 else % inverse pole figure
 
-  sr = symmetrise(r,component.SS,'unique',antipodalFlag{1+IsAnti});
+  sr = symmetrise(r,component.SS,'unique',antipodalFlag{1+isAnti});
   pdf = S2FunHarmonicSym.quadrature(inv(component.center)*sr,...
     repmat(component.weights(:),1,length(sr)),component.CS,antipodalFlag{1+isAnti},...
     'symmetrise','bandwidth',component.psi.bandwidth);
