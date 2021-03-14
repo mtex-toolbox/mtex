@@ -69,4 +69,4 @@ end
 
 q = quaternion(real(Quat));
 q = q./norm(q);
-q = q';
+q = inv(q).';
