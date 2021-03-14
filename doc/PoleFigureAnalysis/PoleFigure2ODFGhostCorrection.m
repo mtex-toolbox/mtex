@@ -32,7 +32,7 @@ odf = 0.9*uniformODF(cs) + ...
 r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % crystal directions
-h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
+h = Miller({1,0,0},{0,1,0},{0,0,1},cs);
 
 % compute pole figures
 pf = calcPoleFigure(odf,h,r);
