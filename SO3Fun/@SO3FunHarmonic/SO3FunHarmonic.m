@@ -49,7 +49,8 @@ methods
     SO3F.antipodal = check_option(varargin,'antipodal');
     
     % truncate zeros
-    SO3F.bandwidth = find(sum(sum(SO3F.power,2),3) > 1e-10,1,'last')-1; 
+    A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
+    SO3F.bandwidth = find(sum(A,2) > 1e-10,1,'last')-1;
     
   end
      
