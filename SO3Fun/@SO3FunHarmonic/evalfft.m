@@ -138,7 +138,7 @@ end
 f = permute(f,[1,3,2]);
 
 if dft
-  grid(:,[3,2,1]) = combvec(0:2*N+1,0:2*N+1,0:2*N+1)'*pi/(N+1);
+  grid(:,[3,2,1]) = combvec(0:2*H+1,0:2*H+1,0:2*H+1)'*pi/(H+1);
   grid = grid(grid(:,2)<=pi,:);
   grid = rotation.byEuler(grid,'nfft');
   val.grid = reshape(grid,size(f));
