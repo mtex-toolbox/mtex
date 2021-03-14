@@ -46,6 +46,9 @@ if isa(q,'orientation')
   
   if isa(q.SS,'crystalSymmetry')
     v = Miller(v,q.SS);
+    v.dispStyle = MillerConvention(v.dispStyle);
+    v.dispStyle = make4Digit(v.dispStyle,q.SS);
+    
   else % convert to vector3d 
     v = vector3d(v);
   end

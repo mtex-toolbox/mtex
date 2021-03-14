@@ -33,5 +33,17 @@ classdef MillerConvention < int32
       
       end
     end
+    
+    function this = make4Digit(this,cs)
+      % ensure 4 digit dispStyle when possible
+      
+      if cs.lattice.isTriHex
+        this = MillerConvention(2 * sign(this));
+      else
+        this = MillerConvention(sign(this));
+      end
+      
+    end
+    
   end  
 end
