@@ -41,13 +41,15 @@ methods
     if length(id)>1, SO3F.SLeft = varargin{id(2)}; end
     
     % extend entries to full harmonic degree
-    SO3F.fhat=fhat;
-    SO3F.fhat(size(fhat,1)+1:deg2dim(dim2deg(size(fhat,1))+1),:)=0;
-    
+    s1 = size(fhat,1);
+    if s1>2
+      SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
+    end
+      
     SO3F.antipodal = check_option(varargin,'antipodal');
     
     % truncate zeros
-    SO3F.bandwidth = find(SO3F.power > 1e-10,1,'last')-1; 
+    SO3F.bandwidth = find(sum(sum(SO3F.power,2),3) > 1e-10,1,'last')-1; 
     
   end
      
@@ -73,11 +75,13 @@ methods
   end
   
   function pow = get.power(F)
+    
     hat = abs(F.fhat).^2;
-    pow = zeros(F.bandwidth+1,1);
-    for l = 0:length(pow)-1
-      pow(l+1) = sum(hat(deg2dim(l)+1:deg2dim(l+1))) ./ (2*l+1);
+    pow = zeros([F.bandwidth+1,size(F)]);
+    for l = 0:size(pow,1)-1
+      pow(l+1,:) = sum(hat(deg2dim(l)+1:deg2dim(l+1),:),1) ./ (2*l+1);
     end
+    
   end
     
   function out = get.antipodal(F)      
@@ -118,6 +122,13 @@ methods
     n = prod(size(F)); %#ok<PSIZE>
   end
   
+end
+
+methods (Static = true)
+  %sF = approximation(v, y, varargin);
+  %SO3F = quadrature(f, varargin);
+  %sF = regularisation(nodes,y,lambda,varargin);
+  SO3F = WignerDmap(harmonicdegree,varargin);
 end
 
 end
