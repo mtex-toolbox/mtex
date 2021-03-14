@@ -13,6 +13,9 @@ if isa(x,'ODF') && isa(y,'double')
 elseif isa(y,'ODF') && isa(x,'double')
   odf = y;
   f = x;
+elseif isa(y,'ODF') && isa(x,'ODF')
+  warning('not implemented yet');
+  % got to SO3FunHarmonic
 end
 
 odf.weights = odf.weights .* f;

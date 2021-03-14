@@ -3,7 +3,7 @@ function s = size2str(o)
 
 s = [];
 
-for i = 1:ndims(o)
+for i = 1:length(size(o)) % ndims(o) not works pretty well if size/length are new functions
 
   if i>1, s = [s,' x '];end
   s = [s,num2str(size(o,i))];

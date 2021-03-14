@@ -1,14 +1,20 @@
-function odf = rdivide(odf,s)
-% scaling of the ODF
-%
-% overload the ./ operator, i.e. one can now write @ODF ./ [1 2 3]  in order
-% to scale an ODF by different factors
-%
-% See also
-% ODF/ODF ODF/plus ODF/mtimes
+function SO3F = rdivide(SO3F1, SO3F2)
+% implements ./
 
-argin_check(odf,'ODF');
-argin_check(s,'double');
+if isa(SO3F1,'SO3Fun') && isa(SO3F2,'SO3Fun')
+  
+  SO3F = SO3FunHandle(@(rot) SO3F1.eval(rot) ./ SO3F2.eval(rot));
+  
+elseif isa(SO3F1,'SO3Fun')
+  
+  SO3F = SO3FunHandle(@(rot) SO3F1.eval(rot) .*(1./SO3F2));
+  
+else
+  
+  SO3F = SO3FunHandle(@(rot) SO3F1 .* SO3F2.eval(rot));
+  
+end
 
-odf.weighs =  odf.weighs ./ s; 
+
+end
 
