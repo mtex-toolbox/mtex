@@ -1,7 +1,22 @@
-function psi = deLaValeePoussinKernel(varargin)
+classdef deLaValeePoussinKernel
+  
+methods (Hidden = true)
 
-warning('The syntax "deLaValeePoussinKernel" is obsolete. Please use "deLaValleePoussinKernel" instead.')
+  function psi = deLaValeePoussinKernel(varargin)
 
-psi = deLaValleePoussinKernel(varargin{:});
+    warning('The syntax "deLaValeePoussinKernel" is obsolete. Please use "deLaValleePoussinKernel" instead.')
+
+    psi = deLaValleePoussinKernel(varargin{:});
+
+  end
+end
+
+methods (Static = true)
+  function psi = loadobj(s)
+    psi = deLaValleePoussinKernel(s.kappa);
+  end
+end
+
+
 
 end
