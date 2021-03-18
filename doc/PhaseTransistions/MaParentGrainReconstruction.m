@@ -17,10 +17,10 @@ plotx2east
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree);
 
 % remove small grains
-ebsd(grains(grains.grainSize < 4)) = [];
+ebsd(grains(grains.grainSize < 3)) = [];
 
 % reidentify grains with small grains removed:
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',2*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
