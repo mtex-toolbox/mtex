@@ -118,7 +118,7 @@ if ~isempty(varargin) && isnumeric(varargin{1}), variantId = varargin{1}; end
 if parentVariants % parent variants
 
   % symmetrise with respect to child symmetry
-  p2cVariants = p2c.SS * p2c;
+  p2cVariants = p2c.SS.properGroup.rot * p2c;
   
   % ignore all variants symmetrically equivalent with respect to the parent symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym2')>1-1e-4,-1),2);
@@ -145,7 +145,7 @@ else % child variants
   %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
   % symmetrise with respect to parent symmetry
-  p2cVariants = p2c * p2c.CS.rot;
+  p2cVariants = p2c * p2c.CS.properGroup.rot;
   
   % ignore all variants symmetrically equivalent with respect to the child symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
