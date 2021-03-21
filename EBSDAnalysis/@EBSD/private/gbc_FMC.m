@@ -1,5 +1,11 @@
 function [criterion] = gbc_FMC(q, CS, Dl,Dr, cmaha, varargin)
-
+%
+%  cmaha      - 
+%  cmaha0     - lower misorientation bias (default 0.05)
+%  quatmax    - quaterion variance metrix for cluster (default 5)
+%  alpha      - seed selection (default 0.2)
+%  beta       - probability threshold for point in cluster (default 0.3)%
+%  gammaW     - edge dilution (default 25)
 
 A_D = sparse(Dl,Dr,true,length(q),length(q));
 

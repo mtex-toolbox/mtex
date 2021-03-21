@@ -12,7 +12,7 @@ plotx2east
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % grain smoothing
-grains = smooth(grains,2);
+grains = smooth(grains,5);
 
 % plot the result
 plot(grains,grains.meanOrientation)
@@ -27,7 +27,7 @@ CLim(gcm,[.5,5])
 
 % the option 'FaceAlpha',0.4 makes the plot a bit transluent
 hold on
-plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
+plot(grains,grains.meanOrientation,'FaceAlpha',0.4,'linewidth',3)
 hold off
 
 %% Detecting CSL Boundaries
@@ -44,7 +44,7 @@ gB3 = gB(angle(gB.misorientation,CSL(3,ebsd.CS)) < 3*degree);
 
 % overlay CSL(3) grain boundaries with the existing plot
 hold on
-plot(gB3,'lineColor','gold','linewidth',2,'DisplayName','CSL 3')
+plot(gB3,'lineColor','gold','linewidth',3,'DisplayName','CSL 3')
 hold off
 
 %% Mark triple points
