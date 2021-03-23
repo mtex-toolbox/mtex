@@ -15,6 +15,7 @@ minColumns = get_option(varargin,'minColumns',3);
 c = extract_option(varargin,'ReplaceExpr','cell');
 InfoLevel = get_option(varargin,'InfoLevel',1);
 options = [options,c];
+options = [options,extract_option(varargin,'RowRange','double')];
 
 d = [];
 
