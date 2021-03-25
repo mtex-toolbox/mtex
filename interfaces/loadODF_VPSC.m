@@ -28,11 +28,20 @@ numStrain = round(size(d,1) / (nOri+4));
 for k = 1:numStrain
   range = 4+(1+(nOri+4)*(k-1):(nOri+4)*(k-1)+nOri);
   ori = orientation.byEuler(d(range,1:3) * degree,cs);
+  weights = d(range,4);
   
-  odf{k} = calcDensity(ori,varargin{:}); %#ok<AGROW>
+  if size(d,2) > 4
+   data = d(range,5:size(d,2));
+  end
+
+  odf{k} = calcDensity(ori,'weights',weights,varargin{:}); %#ok<AGROW>
   odf{k}.opt.strain = d(1+(nOri+4)*(k-1),1); %#ok<AGROW>
   odf{k}.opt.strainEllipsoid = d(2+(nOri+4)*(k-1),1:3); %#ok<AGROW>
   odf{k}.opt.strainEllipsoidAngles = d(3+(nOri+4)*(k-1),1:3); %#ok<AGROW>
+
+  % also store data (individual orientations, ellipsoids, Taylor factors)
+  odf{k}.opt.orientations = ori;
+  odf{k}.opt.data = data;
   
 end
 
