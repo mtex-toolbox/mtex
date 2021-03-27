@@ -328,6 +328,14 @@ classdef phaseList
     
     function id = cs2phaseId(pL,cs)
       
+      if ischar(cs) && strcmpi(cs,'notIndexed')
+        id = 1;
+        return;
+      elseif ~isa(cs,'crystalSymmetry')
+        id = 0;
+        return;
+      end
+      
       for id = 1:length(pL.CSList)
         if isa(pL.CSList{id},'symmetry') && (...
             (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
@@ -349,6 +357,7 @@ classdef phaseList
         ph = ~cellfun('isempty',regexpi(pL.mineralList(:),['^' ph])) | ...
           strcmpi(alt_mineral(:),ph);
         phId = find(ph,1);
+        if isempty(phId), phId = 0; end
       elseif isa(ph,'symmetry')
         phId = find(cellfun(@(cs) cs==ph,pL.CSList));
       else
