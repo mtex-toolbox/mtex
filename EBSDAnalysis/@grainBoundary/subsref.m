@@ -12,21 +12,22 @@ function varargout = subsref(gB,s)
 %
 
 if strcmp(s(1).type,'()')
+
+  subs = s(1).subs;
   
-  ind = subsind(gB,s(1).subs);
+  % turn phaseNames into crystalSymmetry
+  isCS = cellfun(@(x) ischar(x) | isa(x,'crystalSymmetry'),subs);  
+  phId = cellfun(@gB.name2id,subs(isCS));
+  isCS(isCS) = phId>0; phId(phId==0) = [];
+  subs(isCS) = gB.CSList(phId);
+  
+  % restrict to subet
+  ind = subsind(gB,subs);
   gB = subSet(gB,ind);
 
-  % change the order of boundary
-  phId = find(cellfun(@ischar,s(1).subs),1);
-  
-  if ~isempty(phId) && ~strcmpi(s(1).subs{phId},'indexed')
-    
-    phId = gB.name2id(s(1).subs{phId});
-    
-    % if a phase is specified flip boundaries such that the phase becomes first
-    if ~ischar(gB.CSList{phId})
-      gB = flip(gB,gB.phaseId(:,1) ~= phId);
-    end
+  % if a phase is specified flip boundaries such that the phase becomes first
+  if ~isempty(phId) && phId(1)>1
+    gB = flip(gB,gB.phaseId(:,1) ~= phId(1));
   end
     
   % is there something more to do?

@@ -8,12 +8,13 @@ else
   ind = true(length(gB),1);
 end
 
-% select for minerals
-isMineralName = cellfun(@ischar,subs);
-if any(isMineralName)
-  ind = gB.hasPhase(subs{isMineralName});
+% select by CS
+phaseId = cellfun(@gB.cs2phaseId,subs);
+if any(phaseId)
+  tmp = vec2cell(phaseId(phaseId>0));
+  ind = gB.hasPhaseId(tmp{:});
 end
-subs = subs(~isMineralName);
+subs = subs(~phaseId);
 
 % select for grains
 isGrain = cellfun(@(x) isa(x,'grain2d'),subs);
