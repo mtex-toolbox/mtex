@@ -21,8 +21,8 @@ methods
     if length(id)>1, SO3F.SLeft = varargin{id(2)}; end
   end
   
-  function f = eval(SO3F,rot)
-    f = SO3F.fun(rot);
+  function f = eval(SO3F,rot,varargin)
+    f = reshape(SO3F.fun(rot),size(rot));
   end  
   
 end
