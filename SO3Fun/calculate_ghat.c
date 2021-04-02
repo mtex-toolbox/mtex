@@ -215,6 +215,7 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble N,
 {
   // Be shure N>0. Otherwise return the trivial solution.
   if(N==0) {
+    ghat += 3;
     *ghat =*fhat;
     return;
   }
@@ -240,7 +241,7 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble N,
     start_wigd = wigd;
     
     
-    // set start for recurrence relations.
+    // set start for recurrence relations to compute Wigner-ds
     int mid_index = 2*(N+1)*N;
     wigd_min2 += mid_index;       // go to mid of matrix
     *wigd_min2 = 1;
@@ -268,14 +269,54 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble N,
     }
     wigd_min1 = start_wigd_min1;    // go back to matrix start
     
-    int maxN = N;
+    mxComplexDouble *start_ghat;
+    start_ghat = ghat;
+    mxComplexDouble *iter_fhat;
+    
+    // n = 0
+    ghat += N*(N+1)*(N+1)*4 + 2*(N+1)*(N+1) + N+1;
+    *ghat = *fhat;
+    fhat ++;
+    ghat = start_ghat;
+    
+    // n = 1
+    ghat += (N-1)*(N+1)*(N+1)*4 + 2*(N+1)*N + N;
+    iter_fhat = fhat;
+    for (j=-1; j<=1; j++){
+      for (l=-1; l<=1; l++){
+        for (k=-1; k<=1; k++){
+          
+          *ghat = *fhat*feld[k][l];
+          ghat ++;
+          fhat ++;
+        }
+        ghat += 2*N-1;
+      }
+      ghat += (2*N+2)*(2*N-1);
+      fhat = iter_fhat;
+    }
+    
+    
     // do recursion
-    for (l=2; l<=N; l++)//N;l++)
+    mwSize j;
+    mwSize n;
+    int maxN = N;
+    
+    for (n=2; n<=N; n++)
     {
-      wigner_d(maxN,l,wigd_min2,wigd_min1,wigd);
+      wigner_d(maxN,n,wigd_min2,wigd_min1,wigd);
       
       
       // mache rechnung fuer ghat
+      for (j=-n; j<=0; j++){
+        for (k=-n; k<=n; k++){
+          for (l=-n; l<=n; l++){
+            
+          }
+        }
+          
+      }
+      
       
       
       // tausche zeiger wigd wigdmin1 und wigdmin2
@@ -394,7 +435,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
 
   // create output data
-    mwSize dims[3] = {2*bandwidth+1, 2*bandwidth+1, 2*bandwidth+2};
+    mwSize dims[3] = {2*bandwidth+2, 2*bandwidth+2, 2*bandwidth+2};
     plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
 
     // create a pointer to the data in the output array (outFourierCoeff)
