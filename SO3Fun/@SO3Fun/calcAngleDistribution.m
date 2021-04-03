@@ -1,20 +1,20 @@
-function [density,omega] = calcAngleDistribution(odf,varargin)
+function [density,omega] = calcAngleDistribution(S3F,varargin)
 % compute the angle distribution of an ODF or an MDF 
 %
 % Input
-%  odf - @ODF
+%  S3F   - @SO3Fun
 %  omega - list of angles
-%
-% Flags
-%  even       - calculate even portion only
 %
 % Output
 %  x   - values of the axis distribution
 %
+% Flags
+%  even - calculate even portion only
+%
 % See also
 
 if nargin > 1 && isa(varargin{1},'ODF')
-  odf = calcMDF(odf,varargin{1});
+  S3F = calcMDF(S3F,varargin{1});
   varargin(1) = [];
 end
 
@@ -26,8 +26,8 @@ if ~check_option(varargin,'fast')
   % initialize evaluation grid
   S3G = quaternion;
   iS3G = 0;
-  cs1 = odf.CS;
-  cs2 = odf.SS;
+  cs1 = S3F.CS;
+  cs2 = S3F.SS;
   csD = properGroup(disjoint(cs1,cs2));
   
   % the angle distribution of the uniformODF
@@ -55,7 +55,7 @@ if ~check_option(varargin,'fast')
     o = axis2quat(S2G(:),omega(k));
     
     % and select those
-    rotAngle = abs(dot_outer(o,odf.CS));
+    rotAngle = abs(dot_outer(o,S3F.CS));
     maxAngle = max(rotAngle,[],2); 
     o = o(rotAngle(:,1)>maxAngle-0.0001);
     
@@ -66,7 +66,7 @@ if ~check_option(varargin,'fast')
   end
   
   % evaluate the ODF at the grid
-  f = max(0,eval(odf,S3G));
+  f = max(0,eval(S3F,S3G));
   
   % integrate
   for k = 1:numel(omega)    
@@ -84,15 +84,15 @@ else
   % get resolution
   res = get_option(varargin,'resolution',2.5*degree);
   
-  % simluate EBSD data
-  ori = calcOrientations(odf,points,'resolution',res);
+  % random orientations for Monte Carlo method
+  ori = discreteSample(S3F,points,'resolution',res);
 
   % compute angles
   angles = ori.angle;
 
   maxangle = max(angles);
 
-  % perform kernel density estimation
+  % perform kernel density estimation on the angles
   [bandwidth,density,omega] = kde(angles,2^8,0,maxangle,'magicNumber',0.28); %#ok<ASGLU>
 
   density = density ./ mean(density) * pi ./ maxangle;
