@@ -13,9 +13,7 @@ function odf = FourierODF(C,CS,varargin)
 %
 % See also
 % ODF/ODF uniformODF fibreODF unimodalODF
-  
-component = FourierComponent(C,CS,varargin{:});
-  
-odf = ODF(component,1);
+   
+odf = SO3FunHarmonic(C,CS,varargin{:});
 
 end

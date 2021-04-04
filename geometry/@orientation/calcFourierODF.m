@@ -42,11 +42,11 @@ odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth
 L = get_option(varargin,{'L','HarmonicDegree'},...
-  min(max(1,odf.components{1}.psi.bandwidth),96),'double');
+  min(max(1,odf.psi.bandwidth),96),'double');
 
 % check kernel has at most the requested bandwidth
-if odf.components{1}.psi.bandwidth > L
-  warning('MTEX:EBSD:calcODF',['The estimated ODF will suffer from ' ...
+if odf.psi.bandwidth > L
+  warning('MTEX:calcDensity',['The estimated ODF will suffer from ' ...
     'truncation errors when truncated to harmonic degree ' int2str(L) ...
     '. You  might want to increase the harmonic degree or the halfwidth.'])
 end

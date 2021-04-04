@@ -61,8 +61,7 @@ try
 catch
   center = center(id);
 end
-component = unimodalComponent(center,psi,weights(id));
 
-odf = ODF(component,1);
+odf = SO3FunRBF(center, psi, weights);
 
 end
