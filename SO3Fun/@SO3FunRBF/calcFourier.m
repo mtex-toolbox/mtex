@@ -3,21 +3,19 @@ function f_hat = calcFourier(SO3F,L,varargin)
 
 if nargin == 1, L = SO3F.bandwidth; end
 
-% set parameter
+% the weights
 c = SO3F.weights / length(SO3F.SS) / length(SO3F.CS);
-      
-% TODO
+
+% the center orientations
+g = SO3F.center;
+
 % for a few center symmetrize before computing c_hat
-if 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) < max(L^3,100)
+symCenter = 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) < max(L^3,100);
+if symCenter
   
-  g = SO3F.SS * reshape(quaternion(SO3F.center),1,[]); % SS x S3G
-  g = reshape(g.',[],1);                             % S3G x SS
-  g = reshape(g*SO3F.CS,1,[]);                        % S3G x SS x CS
-  % g = quaternion(symmetrise(odf.center));
+  g = symmetrise(SO3F.center,'proper');
+  c = repmat(c(:).',size(g,1),1);
   
-  c = repmat(c,1,length(SO3F.CS)*length(SO3F.SS));
-else
-  g = quaternion(SO3F.center);
 end
  
 % export Chebyshev coefficients
@@ -28,7 +26,7 @@ A = A(1:min(max(2,L+1),length(A)));
 f_hat = gcA2fourier(g,c,A);
 
 % for many center symmetrise f_chat
-if 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) >= L^3
+if ~symCenter
   
   if length(SO3F.CS) ~= 1
     % symmetrize crystal symmetry
@@ -44,6 +42,7 @@ if 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) >= L^3
     f_hat = multiply(f_hat,gcA2fourier(SO3F.SS,c,A),length(A)-1);
   end
   
+  % grain exchange symmetry
   if SO3F.antipodal
     for l = 0:length(A)-1
       ind = deg2dim(l)+1:deg2dim(l+1);
@@ -53,6 +52,9 @@ if 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) >= L^3
   end
   
 end
+
+% add constant portion
+f_hat(1) = f_hat(1) + SO3F.c0;
 
 end
 

@@ -1,32 +1,35 @@
-function ori = discreteSample(component,npoints,varargin)
+function ori = discreteSample(SO3F,npoints,varargin)
 % draw a random sample
 %
 
 % spread points over different centers
-if numel(component.weights) == 1
-  ic = ones(npoints,1);
-else
-  ic = discretesample(component.weights, npoints);
-end
+ic = discretesample([SO3F.weights;SO3F.c0], npoints).';
     
-% take random rotational axes
+isUniform = ic == length(SO3F.weights)+1;
+
+% some uniform random orientations
+ori = orientation.rand(length(ic),SO3F.CS,SO3F.SS);
+
+% take random rotational axes for the remaining samples
+npoints = nnz(~isUniform);
 axis = vector3d.rand(npoints);
 
-% take random rotational angles
-M = 1000000;             % discretisation parameter
+% random rotational angles
+M = 1000000; % discretisation parameter
 
-hw = min(4*component.psi.halfwidth,90*degree);
+hw = min(4*SO3F.psi.halfwidth,90*degree);
 t = linspace(cos(hw),1,M);
 
 % compute cummulative distribution function
-c = 4 / pi * cumsum(sqrt(1-t.^2) .* component.psi.K(t)) / M;
+c = 4 / pi * cumsum(sqrt(1-t.^2) .* SO3F.psi.K(t)) / M;
 c = c ./ c(end);
 
+% random sample with respect to the CDF
 r = rand(npoints,1);
 [~,id] = histc(r,c);
 angle = 2 * acos(t(id)).';
 
-q = quaternion(component.center(:),ic) .* axis2quat(axis,angle);
+% set up random orientations
+ori(~isUniform) = times(SO3F.center(ic(~isUniform)), rotation.byAxisAngle(axis,angle),false);
 
-% set up orientations
-ori = orientation(q,component.CS,component.SS);
+
