@@ -21,56 +21,6 @@
 #include <stdio.h> 
 #include <complex.h>
 
-static void pointer_shift(mxDouble *d, mxDouble *d_min1, mxDouble *d_min2,
-                mxDouble *upright, mxDouble *downleft, mxDouble *downright)
-{
-  
-  
-}
-
-static inline void set_wigner_values(int L, int row, int col, double value,
-          mxDouble *d, mxDouble *upright, mxDouble *downright, mxDouble *downleft)
-{
-  *d =value;
-  if (row != col)
-  {
-    if ((row+col) % 2 == 0)
-    {
-      *upright = value;
-    }
-    else
-    {
-       *upright = -value;
-    }
-  }
-   
-  if (row+col != 0)
-  {
-    if (L % 2 == 0)
-    {
-      *downright = value;
-    }
-    else
-    {
-      *downright = -value;
-    }
-  }
-       
-  if ((row != 0) && (row != col))
-  {
-    if ((L+(row+col)) % 2 == 0)
-    {
-      *downleft = value;
-    }
-    else
-    {
-      *downleft = -value;
-    }
-  }
-
-}
-
-
 // The Wigner D-matrix of order L, is a matrix with entries from -L:L in 
 // both dimensions. Here it is sufficient to calculate Wigner-d with 
 // second Euler angle beta = pi/2. Due to symmetry of ghat only the 
@@ -124,7 +74,9 @@ static inline void set_wigner_values(int L, int row, int col, double value,
    // with next factor.
    double sqrt_binom = 1;
    double multi = pow(0.5,L);
-   *d = multi; 
+   // Set first value in up right corner, because binomial coefficient (2*L 0) = 1.
+   *d = multi;
+   // Set symmetrically equivalent value in down left corner
    if (L % 2 == 0)
    {
      *downleft = multi;
@@ -133,6 +85,7 @@ static inline void set_wigner_values(int L, int row, int col, double value,
    {
      *downleft = -multi;
    }
+   // update all pointers
    d ++; d_min1 ++; d_min2 ++; upright += column_shift; downleft --; downright += column_shift;
    int iter=1;
    for (row=-L+1; row<=0; row++)
@@ -141,8 +94,11 @@ static inline void set_wigner_values(int L, int row, int col, double value,
      
      value = sqrt_binom*multi;
      
+     // set value in lower triangular matrix of A
      *d = value;
      
+     // Use symmetry and set the solution 4 times with some signs.
+     // set value in upper triangular of A
      if (iter % 2 == 0)
      {
        *upright = value;
@@ -151,7 +107,7 @@ static inline void set_wigner_values(int L, int row, int col, double value,
      {
        *upright = -value;
      }
-     
+     // set value in A* with same column index as original value
      if ((L+iter) % 2 == 0)
      {
        *downleft = value;
@@ -160,7 +116,8 @@ static inline void set_wigner_values(int L, int row, int col, double value,
      {
        *downleft = -value;
      }
-     
+     // set value in A* with same column index as value of upper triangular
+     // matrix of A
      if (L % 2 == 0)
      {
        *downright = value;
@@ -170,7 +127,10 @@ static inline void set_wigner_values(int L, int row, int col, double value,
        *downright = -value;
      }
      
-     iter ++; 
+     // increase running index
+     iter++;
+     
+     // Update pointers to next value
      d ++; d_min1 ++; d_min2 ++; upright += column_shift; downleft --; downright += column_shift;
     }
    // shift to next column of current inner Wigner-d matrix and one down to
@@ -198,33 +158,85 @@ static inline void set_wigner_values(int L, int row, int col, double value,
        // Pay attention to different signs.
        // Hence input uses 4 pointers, the calculated value and some
        // indices to determine the signs.
-       set_wigner_values(L,row,col,  value,  d,upright,downright,downleft);
+       // set value in lower triangular matrix of A
+       *d = value;
+     
+       // Use symmetry and set the solution 4 times with some signs.
+       // set value in upper triangular of A
+       if (row != col)
+       {
+         if ((row+col) % 2 == 0)
+         {
+           *upright = value;
+         }
+         else
+         {
+            *upright = -value;
+         }
+       }
+       // set value in A* with same column index as original value
+       if (row+col != 0)
+       {
+         if (L % 2 == 0)
+         {
+           *downright = value;
+         }
+         else
+         {
+           *downright = -value;
+         }
+       }
+       // set value in A* with same column index as value of upper triangular
+       // matrix of A     
+       if ((row != 0) && (row != col))
+       {
+         if ((L+(row+col)) % 2 == 0)
+         {
+           *downleft = value;
+         }
+         else
+         {
+           *downleft = -value;
+         }
+       }
+
        
-       
+       // Update pointers for next iteration in same column
        d ++; d_min1 ++; d_min2 ++; upright += column_shift; downleft --; downright += column_shift;
      }
+     // Update pointers for next iteration in next column
      shift = 2*N+1+col;
      d += shift; d_min1 += shift; d_min2 += shift; upright = d; downleft = d - 2*col-2; downright = downleft;
    }
 
 }
+ 
+ 
+ 
 
 // The computational routine
-static void calculate_ghat( mxComplexDouble *fhat, mxDouble N, 
-                            mxComplexDouble *ghat, mwSize n )
+static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth, 
+                            mxComplexDouble *ghat, mwSize nrows )
 {
+  // running indices
+  int k,l,j,n;
+  // shifting pointers
+  int shift;
+  // integer bandwidth
+  const int N = bandwidth;
+
+  
   // Be shure N>0. Otherwise return the trivial solution.
-  if(N==0) {
-    ghat += 3;
+  if(N==0)
+  {
     *ghat =*fhat;
     return;
   }
-
-
-  // 1.) Calculate Wigner-d matrix by recursion formula from last two 
+  
+  // Idea: Calculate Wigner-d matrix by recursion formula from last two 
   // wigner-d matrices.
     // create 3 Wigner-d matrices for recurrence relation (2 as input and 1
-    // as output). Also get an auxiliary pointer to the matrix in each case.
+    // as output). Also get an auxiliary pointer to the matrices in each case.
     mxArray *D_min2 = mxCreateDoubleMatrix(2*N+1,2*N+1,mxREAL);
     mxDouble *wigd_min2 = mxGetDoubles(D_min2);
     mxDouble *start_wigd_min2;
@@ -241,85 +253,144 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble N,
     start_wigd = wigd;
     
     
-    // set start for recurrence relations to compute Wigner-ds
-    int mid_index = 2*(N+1)*N;
-    wigd_min2 += mid_index;       // go to mid of matrix
+    // set start values for recurrence relations to compute Wigner-d matrices
+    // Wigner_d(0,pi/2)
+    shift = 2*(N+1)*N;
+    wigd_min2 += shift;       // go to center of matrix
     *wigd_min2 = 1;
     wigd_min2 = start_wigd_min2;  // go back to matrix start
     
-    int mid_1northwest = 2*(N+1)*(N-1);
-    wigd_min1 += mid_1northwest;    // go 1 left up of the mid of matrix
+    // Wigner_d(1,pi/2)
+    shift = 2*(N+1)*(N-1);
+    wigd_min1 += shift;    // go 1 left up from the center of the matrix
     double wert = sqrt(0.5);
-    double feld[3][3] = {
+    double feld[3][3] = {           // values of Wigner_d(1,pi/2)
       {0.5, -wert,-0.5},
       {wert,0,wert},
       {-0.5,-wert,0.5}
     };
-    mwSize k;
-    mwSize l;
-    int shift = 2*(N-1);
+    shift = 2*(N-1);
     for (k=0; k<3; k++)             // fill with values
     {
       for (l=0; l<3; l++)
       {
         *wigd_min1 = feld[l][k];
-        wigd_min1 ++;
+        wigd_min1 ++;              // go to next line
       }
-      wigd_min1 += shift;          // go to next line one left of mid
+      wigd_min1 += shift;          // go to next column
     }
     wigd_min1 = start_wigd_min1;    // go back to matrix start
-    
+     
+  // Compute ghat by iteration over harmonic degree n of Wigner-d matrices
+  // in outermost loop. Start with n=0 and n=1 manually and use a loop for 
+  // the remaining n > 1.
+    // Create pointers for help. They save the starting position of ghat 
+    // and fhat in current iteration of harmonic degree n.
     mxComplexDouble *start_ghat;
     start_ghat = ghat;
     mxComplexDouble *iter_fhat;
-    
-    // n = 0
-    ghat += N*(N+1)*(N+1)*4 + 2*(N+1)*(N+1) + N+1;
+
+    // Do recursion for n = 0.
+    // Go to the center of ghat and write first value of fhat, since d^0=1.
+    ghat += N*(N+1)*(N+1)*4 + 2*(N+1)*N + N;
     *ghat = *fhat;
     fhat ++;
     ghat = start_ghat;
     
-    // n = 1
-    ghat += (N-1)*(N+1)*(N+1)*4 + 2*(N+1)*N + N;
+    // Do recursion for n = 1.
+    // Go to ghat(-1,-1,-1)
+    ghat += (N-1)*(N+1)*(N+1)*4 + 2*(N+1)*(N-1) + (N-1);  
     iter_fhat = fhat;
-    for (j=-1; j<=1; j++){
-      for (l=-1; l<=1; l++){
-        for (k=-1; k<=1; k++){
-          
-          *ghat = *fhat*feld[k][l];
+    double value;
+    for (j=0; j<3; j++){
+      for (l=0; l<3; l++){
+        for (k=0; k<3; k++){
+          // fill with values
+          value = feld[k][j] * feld[l][j];
+          ghat[0].real += fhat[0].real* value;
+          ghat[0].imag += fhat[0].imag* value;
+          // next line
           ghat ++;
           fhat ++;
         }
+        // next column
         ghat += 2*N-1;
       }
+      // next matrix (3rd dimension)
       ghat += (2*N+2)*(2*N-1);
+      // reset pointer fhat
       fhat = iter_fhat;
+    }
+    // Set pointer to next harmonic degree
+    fhat += 9;
+    // reset pointer ghat to ghat(-N,-N,-N)
+    ghat = start_ghat;
+    
+    
+    // Be shure N>1, otherwise STOP
+    if (N==1)
+    {
+      return;
     }
     
     
-    // do recursion
-    mwSize j;
-    mwSize n;
-    int maxN = N;
+    // Do recursion for 1 < n < N:
+    int const con1 = 4*N*N+10*N+7; // (4*(N+1)*(N+1)+2*(N+1)+1);
+    int const con2 = 2*N+1;
+    int const con3 = 2*N+2;
     
-    for (n=2; n<=N; n++)
+    for (n=2; n<N; n++)
     {
-      wigner_d(maxN,n,wigd_min2,wigd_min1,wigd);
+      // Calculate Wigner-d matrix
+      wigner_d(N,n,wigd_min2,wigd_min1,wigd);
       
+      // Shift to inner part of Wigner-d matrix, which is not 0.
+      shift = con3*(N-n)+n;
+      wigd += shift;
       
-      // mache rechnung fuer ghat
+      // shift pointer ghat to ghat(-n,-n,-n)
+      ghat += con1*(N-n);
+      
+      // Set pointer of fhat and helping pointer for iterations
+      iter_fhat = fhat;
+      
+      shift = con2 - 2*n;
+              
+      // Compute ghat by adding over all summands of current harmonic degree n
       for (j=-n; j<=0; j++){
         for (k=-n; k<=n; k++){
           for (l=-n; l<=n; l++){
+            // fill with values
+            value = wigd[k]*wigd[l];
             
+            ghat[0].real += fhat[0].real*value;
+            ghat[0].imag += fhat[0].imag*value;
+            
+            // next line
+            ghat ++;
+            fhat ++;
           }
+          // next column
+          ghat += shift;
         }
-          
+        // next matrix (3rd dimension)
+        ghat += con3*shift;
+        // reset pointer fhat
+        fhat = iter_fhat;
+        // use next column of Wigner-d matrix
+        wigd += con2;
       }
       
+      // reset pointer ghat to ghat(-N,-N,-N)
+      ghat = start_ghat;
+      // Set pointer to next harmonic degree
+      shift = 2*n+1;
+      fhat += shift*shift;
       
-      
-      // tausche zeiger wigd wigdmin1 und wigdmin2
+      // change pointers (wigd, wigdmin1 and wigdmin2) with regard to next
+      // recursions iteration of Wigner-d matrices. Therefore the two most
+      // recently computed Wigner-d matrices are used for next recursion.
+      // The other matrix will be overwritten in the next step.
       // use wigd as exchange variable
       wigd = start_wigd_min2;
       
@@ -329,47 +400,83 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble N,
       
       wigd_min1 = start_wigd_min1;
       wigd_min2 = start_wigd_min2;
-    
     }
     
-
-    
-    
-// plot routine for created Wigner-d matrix
-    int matrix = (2*N+1)*(2*N+1); // size
-    ghat -= matrix;               // reset pointer start
-    
-    //mwSize k;
-    for (k=0; k<matrix; k++)
-    {
+    // do step for n=N and set symmetric values
+      // Get Pointer for symmetric values
+      mxComplexDouble *ghat_right;
+      ghat_right = ghat + con3*con3*2*N;
+      // boolean plusminus variable
+      bool pm = true;
       
-      ghat[0].real = *wigd_min1;
-      ghat += 1;
-      wigd_min1++;
-    }
-    
-    
-    
-    // 10.) Calculate ghat
-    
-//     mxComplexDouble data;
-//     mxComplexDouble data2 = {3,3};
-//     mxComplexDouble data3 = {1,1};
-//     data.real = data3.real + data2.real;
-//     data.imag = data3.imag + data2.imag;
-//    double complex data;
-//    double complex data2 = 3 + 4.1*I;
-//   double complex data3 = 1.2 + 5*I;
-//ghat[1].imag = fhat[0].imag + fhat[1].imag;
-    
-    
-     for (k=0; k<n; k++)
-    {
+      // Calculate Wigner-d matrix
+      wigner_d(N,N,wigd_min2,wigd_min1,wigd);
       
-      *ghat = *fhat;  // write value of pointer fhat in value of pointer ghat
-      ghat += 1;      // go to next adress with pointer
-      fhat++;         //
-    }
+      // Shift to inner part of Wigner-d matrix, which is not 0.
+      wigd += N;
+      
+      // Set pointer of fhat and helping pointer for iterations
+      iter_fhat = fhat;
+      
+      // Compute ghat by adding over all summands of current harmonic degree n
+      for (j=-N; j<=0; j++){
+        for (k=-N; k<=N; k++){
+          for (l=-N; l<=N; l++){
+            // fill with values
+            value = wigd[k]*wigd[l];
+            
+            ghat[0].real += fhat[0].real*value;
+            ghat[0].imag += fhat[0].imag*value;
+            
+            // fill symmetric values
+            if (pm){
+              *ghat_right = *ghat;
+              pm = false;
+            }
+            else{
+              ghat_right[0].real = -ghat[0].real;
+              ghat_right[0].imag = -ghat[0].imag;
+              pm = true;
+            }
+                          
+            // next row
+            ghat ++; ghat_right ++;
+            fhat ++;
+          }
+          // next column
+          ghat ++; ghat_right ++;
+        }
+        // next matrix (3rd dimension)
+        ghat += con3;
+        ghat_right += con3-2*con3*con3;
+        // reset pointer fhat
+        fhat = iter_fhat;
+        // use next column of Wigner-d matrix
+        wigd += con2;
+        
+        // set plusminus true because in next matrix upright is plus;
+        pm = true;
+      }
+    
+    
+// // plot routine for last created Wigner-d matrix
+//     int matrix = (2*N+2)*(2*N+2); // size
+//     ghat -= matrix;               // reset pointer start
+//     
+//     int helpplotzaehler = 0;
+//     //mwSize k;
+//     for (k=0; k<((2*maxN+1)*(2*maxN+1)); k++)
+//     {
+//       helpplotzaehler++;
+//       ghat[0].real = *wigd_min1;
+//       ghat += 1;
+//       wigd_min1++;
+//       if (helpplotzaehler % (2*maxN+1)  == 0)
+//       {
+//         ghat ++;
+//         helpplotzaehler = 0;
+//       }
+//     }
 
     
 
@@ -441,7 +548,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     // create a pointer to the data in the output array (outFourierCoeff)
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
     // set pointer to skip first index
-    outFourierCoeff += (dims[1])*(dims[1]);
+    outFourierCoeff += (dims[1])*(dims[1]+1)+1;
 
   // call the computational routine
     calculate_ghat(inCoeff,bandwidth,outFourierCoeff,(mwSize)nrows);
