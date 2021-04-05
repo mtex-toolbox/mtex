@@ -29,7 +29,7 @@ weight = @(rot_angle,quat_dist,volume_radius) (max(0,min(4*pi,2*pi*(1-(cos(volum
 
 % integrant
 KV = @(rot_angle,quat_dist,volume_radius) weight(rot_angle,quat_dist,volume_radius) ...
-  .* sin(rot_angle ./2).^2 .* psi.K(cos(rot_angle./2)) ./pi.*2 ;
+  .* sin(rot_angle ./2).^2 .* psi.eval(cos(rot_angle./2)) ./pi.*2 ;
 
 % perform quadrature
 %vol = zeros(size(dist));
@@ -37,6 +37,5 @@ KV = @(rot_angle,quat_dist,volume_radius) weight(rot_angle,quat_dist,volume_radi
 %  vol(j) = quad(@(rot_angle) KV(rot_angle,dist(j),radius),0,min(pi,5*k.hw),1e-6);
 %end
 
-vol = quadv(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),1e-7);
-%vol = integral(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),'AbsTol',1e-7,'ArrayValued',true);
-%'AbsTol',1e-7,
+%vol = quadv(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),1e-7);
+vol = integral(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),'AbsTol',1e-7,'ArrayValued',true);
