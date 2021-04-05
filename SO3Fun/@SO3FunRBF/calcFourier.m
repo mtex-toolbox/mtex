@@ -1,16 +1,33 @@
 function f_hat = calcFourier(SO3F,L,varargin)
-% called by ODF/calcFourier
+% compute harmonic coefficients of SO3Fun
+%
+% Syntax
+%
+%  f_hat = calcFourier(SO3F)
+%
+%  f_hat = calcFourier(SO3F,L)
+%
+% Input
+%  SO3F - @SO3FunRBF
+%     L - maximum harmonic degree
+%
+% Output
+%  f_hat - harmonic/Fouier/Wigner-D coefficients
+%
 
 if nargin == 1, L = SO3F.bandwidth; end
 
+cs = SO3F.CS.properGroup;
+ss = SO3F.SS.properGroup;
+
 % the weights
-c = SO3F.weights / length(SO3F.SS) / length(SO3F.CS);
+c = SO3F.weights / numSym(cs) / numSym(ss);
 
 % the center orientations
 g = SO3F.center;
 
 % for a few center symmetrize before computing c_hat
-symCenter = 10*length(SO3F.center)*length(SO3F.SS)*length(SO3F.CS) < max(L^3,100);
+symCenter = 10*length(SO3F.center) * numSym(cs) * numSym(ss) < max(L^3,100);
 if symCenter
   
   g = symmetrise(SO3F.center,'proper');
@@ -28,18 +45,18 @@ f_hat = gcA2fourier(g,c,A);
 % for many center symmetrise f_chat
 if ~symCenter
   
-  if length(SO3F.CS) ~= 1
+  if numSym(cs) ~= 1
     % symmetrize crystal symmetry
     A(1:end) = 1;
-    c = ones(1,length(SO3F.CS));
-    f_hat = multiply(gcA2fourier(SO3F.CS,c,A),f_hat,length(A)-1);
+    c = ones(1,numSym(cs));
+    f_hat = multiply(gcA2fourier(cs.rot,c,A),f_hat,length(A)-1);
   end
   
-  if length(SO3F.SS) ~= 1
+  if numSym(ss) ~= 1
     % symmetrize specimen symmetry
     A(1:end) = 1;
-    c = ones(1,length(SO3F.SS));
-    f_hat = multiply(f_hat,gcA2fourier(SO3F.SS,c,A),length(A)-1);
+    c = ones(1,numSym(ss));
+    f_hat = multiply(f_hat,gcA2fourier(ss.rot,c,A),length(A)-1);
   end
   
   % grain exchange symmetry
