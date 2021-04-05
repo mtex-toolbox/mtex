@@ -1,7 +1,8 @@
 function display(cs,varargin)
 % standard output
 
-displayClass(cs,inputname(1));
+vName = get_option(varargin,'vName',inputname(1));
+displayClass(cs,vName);
 
 disp(' ');
 
