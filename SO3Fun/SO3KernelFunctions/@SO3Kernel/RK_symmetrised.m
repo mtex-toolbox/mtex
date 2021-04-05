@@ -32,7 +32,7 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 Rpsi = psi.radon;
 
 if length(h)==1                        % pole figure
-  [h,lh] = symmetrise(h,varargin{:});
+  [h,lh] = symmetrise(h,'unique',varargin{:});
   in = reshape((SS * g).' * h, [length(g),length(SS),lh]);
 	out = r;
 else                                   % inverse pole figure

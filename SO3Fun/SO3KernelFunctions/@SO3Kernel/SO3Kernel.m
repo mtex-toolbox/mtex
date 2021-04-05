@@ -37,7 +37,7 @@ classdef SO3Kernel
     function value = eq(psi1,psi2)
       % check for equal kernel functions      
       
-      L = min(psi1.bandwith,psi2.bandwith);
+      L = min(psi1.bandwidth,psi2.bandwidth);
       
       value = norm(psi1.A(1:L) - psi2.A(1:L)) ./ norm(psi1.A) < 1e-6;
     end
