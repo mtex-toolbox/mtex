@@ -20,6 +20,9 @@ else
   % sum up
   v = sum(v.' * SO3F.weights(:));
   
+  % add uniform portion
+  v = v + SO3F.c0 * numProper(SO3F.CS) * (radius - sin(radius))./pi;
+ 
   varargout = varargin;
   
 end

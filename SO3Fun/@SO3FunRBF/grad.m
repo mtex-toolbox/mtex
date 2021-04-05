@@ -60,6 +60,6 @@ g = g ./ length(qSS) ./ length(SO3F.CS.properGroup) ;
 
 % TODO: consider antipodal
 if SO3F.antipodal
-  
+  warning('not yet implemented!!')
 end
 
