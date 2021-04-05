@@ -2,8 +2,10 @@ classdef SO3Fun
 % a class representing a function on the rotational group
 
   properties (Abstract = true)
-    SLeft  % symmetry that acts from the left
-    SRight % symmetry that acts from the right
+    SLeft     % symmetry that acts from the left
+    SRight    % symmetry that acts from the right
+    antipodal % grain exchange symmetry
+    bandwidth % 
   end    
   
   properties (Dependent = true)
@@ -31,6 +33,11 @@ classdef SO3Fun
     
   end
   
+  methods (Hidden = true)
+    function str = symChar(SO3F)
+      str = [char(SO3F.CS,'compact') ' ' char([55358 56342]) ' ' char(SO3F.SS,'compact')];
+    end
+  end
   
   methods (Abstract = true)
     

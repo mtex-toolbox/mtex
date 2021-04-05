@@ -6,6 +6,7 @@ properties
   antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
+  bandwidth = 96
 end
 
 methods

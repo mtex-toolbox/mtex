@@ -19,7 +19,8 @@ elseif isnumeric(SO3F2) && length(SO3F2) == 1
   SO3F.fhat(1, :) = SO3F.fhat(1, :)+SO3F2;
   SO3F = reshape(SO3F, s);
 
-else
+else 
+  
   [~, index] = max([SO3F1.bandwidth, SO3F2.bandwidth]);
   if index == 1
     SO3F2.bandwidth = SO3F1.bandwidth;
@@ -28,7 +29,7 @@ else
   end
 
   SO3F = SO3F1;
-  SO3F.fhat = SO3F1.fhat+SO3F2.fhat;
+  SO3F.fhat = SO3F1.fhat + SO3F2.fhat;
 
 end
 
