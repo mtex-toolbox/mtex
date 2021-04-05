@@ -43,10 +43,10 @@ else
 end
 
 % get kernel
-psi = getClass(varargin,'kernel');
+psi = getClass(varargin,'SO3Kernel');
 if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
-  psi = deLaValleePoussinKernel('halfwidth',hw);
+  psi = SO3deLaValleePoussin('halfwidth',hw);
 end
 
 % get weights
@@ -55,7 +55,7 @@ assert(numel(weights) == length(center),...
   'Number of orientations and weights must be equal!');
 
 % remove to small values
-id = weights./sum(weights(:)) > 1e-2 / psi.K(1) / numel(weights);
+id = weights./sum(weights(:)) > 1e-2 / psi.eval(1) / numel(weights);
 try
   center = center.subGrid(id);
 catch
