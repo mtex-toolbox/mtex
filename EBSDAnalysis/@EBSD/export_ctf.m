@@ -47,9 +47,6 @@ if check_option(varargin,'fliplr') %Flip spatial ebsd data
   scrPrnt('Step','Flipping EBSD spatial data left right');
 end
 
-% get gridified version of ebsd map
-ebsdGrid = ebsd.gridify;
-
 mtexId2ctfId = [1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,6,6,7,7,7,7,7,7,4,4,...
   4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,10,11,11,11];
 
@@ -118,10 +115,15 @@ fprintf(filePh,'Author\t%s\r\n',getenv('USERNAME'));
 fprintf(filePh,'JobMode\tGrid\r\n');
 
 % write grid info
-fprintf(filePh,'XCells\t%.0f\r\n',size(ebsdGrid,2));
-fprintf(filePh,'YCells\t%.0f\r\n',size(ebsdGrid,1));
-fprintf(filePh,'XStep\t%.4f\r\n',ebsdGrid.dx);
-fprintf(filePh,'YStep\t%.4f\r\n',ebsdGrid.dy);
+xVec = unique(ebsd.prop.x);
+yVec = unique(ebsd.prop.y);
+dx = abs(xVec(1)-xVec(2));
+dy = abs(yVec(1)-yVec(2));
+
+fprintf(filePh,'XCells\t%.0f\r\n',length(xVec));
+fprintf(filePh,'YCells\t%.0f\r\n',length(yVec));
+fprintf(filePh,'XStep\t%.4f\r\n',dx);
+fprintf(filePh,'YStep\t%.4f\r\n',dy);
 fprintf(filePh,'AcqE1\t%.4f\r\n',0);
 fprintf(filePh,'AcqE2\t%.4f\r\n',0);
 fprintf(filePh,'AcqE3\t%.4f\r\n',0);
@@ -161,117 +163,115 @@ for i = 1:length(CSlst)
     a,b,c,alpha,beta,gamma,mineral,laueGr,spaceGr,comment);%Write phase info
 end
 
-% Check for deleted phases
-phase = ebsdGrid.phase;
-maxPhID = max(max(phase));   %Check maximum phase ID in phase list
-k = maxPhID-1;
-while k > 0
-    if ~any(any(ebsdGrid.phase == 1)) %Empty phase ID, i.e. deleted phase
-       phase(phase > k) = phase(phase > k)-1; %Reduce phase ID
-    end
-    k = k-1;
-end
-
 % assemble data array
 scrPrnt('Step','Assembling data array');
 
 % write data header
 fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r\n'); %Data header
 
-%Get data order x
-if ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(1,2)
-   dim.x = 2;
-elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(1,2)
-   dim.x = -2;
-elseif ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(2,1)
-   dim.x = 1;
-elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(2,1)
-   dim.x = -1;
-end
-%Get data order y
-if ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(1,2)
-   dim.y = 2;
-elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(1,2)
-   dim.y = -2;
-elseif ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(2,1)
-   dim.y = 1;
-elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
-   dim.y = -1;
-end
+% %Get data order x
+% if ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(1,2)
+%    dim.x = 2;
+% elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(1,2)
+%    dim.x = -2;
+% elseif ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(2,1)
+%    dim.x = 1;
+% elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(2,1)
+%    dim.x = -1;
+% end
+% %Get data order y
+% if ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(1,2)
+%    dim.y = 2;
+% elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(1,2)
+%    dim.y = -2;
+% elseif ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(2,1)
+%    dim.y = 1;
+% elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
+%    dim.y = -1;
+% end
 
-ebsdList = reduce(ebsdGrid,1);
 %Compute X and Y data
-X = repmat(1:size(ebsdGrid,1),size(ebsdGrid,2),1);
-X = round(ebsdGrid.dx,5).*X(:);
-Y = repmat(1:size(ebsdGrid,1),1,size(ebsdGrid,2));
-Y = round(ebsdGrid.dy,5).*Y(:);
+X = ebsd.prop.x;
+Y = ebsd.prop.y;
 
-%Gather data
-flds{1} = phase(:);
+% Check for deleted phases
+phase = ebsd.phase;
+maxPhID = max(max(phase));   %Check maximum phase ID in phase list
+k = maxPhID-1;
+while k > 0
+    if ~any(any(ebsd.phase == 1)) %Empty phase ID, i.e. deleted phase
+       phase(phase > k) = phase(phase > k)-1; %Reduce phase ID
+    end
+    k = k-1;
+end
+
+% Write fields
+flds{1} = phase;
 flds{2} = X;
 flds{3} = Y;
 if isfield(ebsd.prop,'bands')
-  flds{4} = ebsdList.prop.bands;
+  flds{4} = ebsd.prop.bands;
 else
-  flds{4} = zeros(size(ebsdList));
+  flds{4} = zeros(size(ebsd));
   warning('Bands values were set to 0');
 end
 if isfield(ebsd.prop,'error')
-  flds{5} = ebsdList.prop.error;
+  flds{5} = ebsd.prop.error;
 else
-  flds{5} = zeros(size(ebsdList));
+  flds{5} = zeros(size(ebsd));
   warning('error values were set to 0');
 end
-flds{6} = ebsdList.rotations.phi1/degree;
-flds{7} = ebsdList.rotations.Phi/degree;
-flds{8} = ebsdList.rotations.phi2/degree;
+flds{6} = ebsd.rotations.phi1/degree;
+flds{7} = ebsd.rotations.Phi/degree;
+flds{8} = ebsd.rotations.phi2/degree;
 if isfield(ebsd.prop,'mad')
-  flds{9} = ebsdList.prop.mad;
+  flds{9} = ebsd.prop.mad;
 elseif isfield(ebsd.prop,'fit')
-  flds{9} = ebsdList.prop.fit;
+  flds{9} = ebsd.prop.fit;
   warning('mad values were set to fit values');
 else
-  flds{9} = zeros(size(ebsdList));
+  flds{9} = zeros(size(ebsd));
   warning('mad values were set to 0');
 end
 if isfield(ebsd.prop,'bc')
-  flds{10} = ebsdList.prop.bc;
+  flds{10} = ebsd.prop.bc;
 % elseif isfield(ebsd.prop,'imagequality')
 %   flds{10} = ebsdList.prop.imagequality;
 %   warning('bc values were set to imagequality values');
 else
-  flds{10} = zeros(size(ebsdList));
+  flds{10} = zeros(size(ebsd));
   warning('bc values were set to 0');
 end
 if isfield(ebsd.prop,'bs')
-  flds{11} = ebsdList.prop.bs;
+  flds{11} = ebsd.prop.bs;
 elseif isfield(ebsd.prop,'semsignal')
-  flds{11} = ebsdList.prop.semsignal;
+  flds{11} = ebsd.prop.semsignal;
   warning('bs values were set to semsignal values');
 else
-  flds{11} = zeros(size(ebsdList));
+  flds{11} = zeros(size(ebsd));
   warning('bs values were set to 0');
 end
+    
 
 % Set nan data points to 0
 for ii = 1:length(flds), flds{ii}(isnan(flds{ii})) = 0; end
 % Make X increase first
-[~,ind] = sort(ebsdList.prop.y);
+[~,ind] = sort(ebsd.prop.y);
 
 %Write data
-A = zeros(ebsdList.length,11); %initialize
+ A = zeros(ebsd.length,11); %initialize
 for i = 1:length(flds)
     temp = flds{i};
     temp = temp(ind);
     %Transpose matrices if required
-    if abs(dim.x == 2) && abs(dim.y) == 1
-        temp = temp';
-    end
-    %Flip matrices if required
-    if dim.x < 0, temp = fliplr(temp); end
-    if dim.y < 0, temp = flipud(temp); end
+%     if abs(dim.x == 2) && abs(dim.y) == 1
+%         temp = temp';
+%     end
+%     %Flip matrices if required
+%     if dim.x < 0, temp = fliplr(temp); end
+%     if dim.y < 0, temp = flipud(temp); end
     %Make vector
-    A(:,i) = reshape(temp,ebsdList.length,1);
+    A(:,i) = reshape(temp,ebsd.length,1);
 end
 
 A(find(all([A(:,2)>-round0Thrsh,A(:,2)<round0Thrsh],2)),2) = 0;            %Rounding close to 0 X coordinates

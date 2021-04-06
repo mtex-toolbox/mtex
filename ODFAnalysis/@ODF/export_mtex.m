@@ -30,30 +30,30 @@ fprintf(fid,'%% specimen symmetry: %s\n',char(odf.SS));
 % TODO
 for i = 1:length(odf.components)
 
-  if isa(odf(i).components{1},'uniformComponent') % uniform portion
+  if isa(odf.components{i},'uniformComponent') % uniform portion
 
     fprintf(fid,'%%\n%%%% uniform component\n');
-    fprintf(fid,'%% weight: %3.5f\n',odf(i).weights);
+    fprintf(fid,'%% weight: %3.5f\n',odf.weights(i));
 
-  elseif isa(odf(i).components{1},'FourierComponent')
+  elseif isa(odf.components{i},'FourierComponent')
 
     fprintf(fid,'%%\n%%%% fourier component: currently not supported! \n');
 
-  elseif isa(odf(i).components{1},'fibreComponent') % fibre symmetric portion
+  elseif isa(odf.components{i},'fibreComponent') % fibre symmetric portion
     
     fprintf(fid,'%%\n%%%% fibre component\n');
-    fprintf(fid,'%% weight: %3.5f\n',odf(i).weights);
-    fprintf(fid,'%% kernel: %s\n',char(odf(i).components{1}.psi));
-    fprintf(fid,'%% fibre h: %s\n',char(odf(i).components{1}.h));
-    fprintf(fid,'%% fibre r: %s\n',char(odf(i).components{1}.r));
+    fprintf(fid,'%% weight: %3.5f\n',odf.weights(i));
+    fprintf(fid,'%% kernel: %s\n',char(odf.components{i}.psi));
+    fprintf(fid,'%% fibre h: %s\n',char(odf.components{i}.h));
+    fprintf(fid,'%% fibre r: %s\n',char(odf.components{i}.r));
 
   else % radially symmetric portion
 
     fprintf(fid,'%%\n%%%% radial component:\n');
-    fprintf(fid,'%% kernel: %s\n',char(odf(i).components{1}.psi));
+    fprintf(fid,'%% kernel: %s\n',char(odf.components{i}.psi));
 
     % build up matrix to be exported
-    d = Euler(odf(i).components{1}.center,varargin{:});
+    d = Euler(odf.components{i}.center,varargin{:});
     if ~check_option(varargin,'radians'), d = d./degree;end
 
     % convention
@@ -62,7 +62,7 @@ for i = 1:length(odf.components)
     elseif check_option(varargin,{'ABG','ZYZ'})
       convention = 'ZYZ';
     elseif isa(odf(i).center,'SO3Grid')
-      convention = get_flag(get(odf(i).components{1}.center,'options'),{'ZXZ','ZYZ'},'none');
+      convention = get_flag(get(odf.components{i}.center,'options'),{'ZXZ','ZYZ'},'none');
     else
       convention = getMTEXpref('EulerAngleConvention');
     end
@@ -74,7 +74,7 @@ for i = 1:length(odf.components)
       fprintf(fid,'%% alpha   beta    gamma   weight\n');
     end
 
-    fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,odf(i).components{1}.weights].');
+    fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,odf.components{i}.weights].');
 
   end
 end

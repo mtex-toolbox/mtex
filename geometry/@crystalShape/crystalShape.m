@@ -6,8 +6,6 @@ classdef crystalShape
   % Enderlein, J., 1997. A package for displaying crystal morphology.
   % Mathematica Journal, 7(1).
   %
-  % we need more :)
-  %
   % Example
   %
   %   mtexdata titanium;
@@ -19,7 +17,7 @@ classdef crystalShape
   properties
     N % face normals
     V % vertices
-    F % faces[2019-03-25 11:22:15] ERROR `/images/favicon.ico' not found.
+    F % faces
 
     habitus = 0 % describes how visibe mixed hkl faces are
     extension = [1 1 1]; % describes distance of the faces in dependence of hkl
@@ -149,36 +147,10 @@ classdef crystalShape
              .*cS.faceArea);
     end
 
-
   end
 
   methods (Static = true)
   
-    cS = plagioclase(cs);
-    
-    function cS = quartz(cs)
-      
-      if nargin == 0, cs = loadCIF('quartz'); end
-
-      m = Miller({1,0,-1,0},cs);  % hexagonal prism
-      r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usally bigger then z
-      z = Miller({0,1,-1,1},cs);  % negative rhomboedron
-      s1 = Miller({2,-1,-1,1},cs);% left tridiagonal bipyramid
-      s2 = Miller({1,1,-2,1},cs); % right tridiagonal bipyramid
-      x1 = Miller({6,-1,-5,1},cs);% left positive Trapezohedron
-      x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
-      
-      % select faces and scale them nicely
-      %N = [4*m,2*r,1.8*z,1.4*s1,0.6*x1];
-      %cS = crystalShape(N,1.2,[1,1.2,1.2]);
-      
-      % if we use habitus scaling is implicite
-      N = [m,r,z,s2,x2];
-      cS = crystalShape(N,1.2,[1,1.2,1]);
-   
-    end
-    
-    
     function cS = cube(cs)
       % a very simple cube crystal
       cS = crystalShape(Miller({1,0,0},cs,'hkl'));
@@ -190,54 +162,7 @@ classdef crystalShape
       cS = crystalShape(Miller({1,0,0},{0,0,2},cs,'hkil'));
       
     end
-    
-    function cS = topaz(cs)
-      
-      if nargin == 0
-        cs = crystalSymmetry('mmm',[0.52854,1,0.47698]);
-      end
-      
-      N = Miller({0,0,1},{2,2,3},{2,0,1},{0,2,1},{1,1,0},{1,2,0},{2,2,1},...
-        {0,4,1},cs);
-      
-      cS = crystalShape(N,1.2,[0.3,0.3,1]);
-    end
-
-    function cS = apatite(cs)
-      
-      if nargin == 0
-        cs = crystalSymmetry('6/m',[1,1,0.7346],'mineral','apatite');
-      end
-      
-      N = Miller({1,0,0},{0,0,1},{1,0,1},{1,0,2},...
-        {2,0,1},{1,1,2},{1,1,1},{2,1,1},{3,1,1},{2,1,0},cs);
-      
-      cS = crystalShape(N,1.2,[0.6,0.6,1]);      
-    end   
-    
-    function cS = garnet(cs)
-      
-      if nargin == 0
-        cs = crystalSymmetry('m3m','mineral','garnet');
-      end
-      
-      N = Miller({1,1,0},{2,1,1},cs);
-      
-      cS = crystalShape(N,1.5);      
-    end
-    
-    function cS = olivine(cs)
-      
-      if nargin == 0
-        cs = crystalSymmetry('mmm',[4.762 10.225 5.994],'mineral','olivine');
-      end
-    
-      N = Miller({1,1,0},{1,2,0},{0,1,0},{1,0,1},{0,2,1},{0,0,1},cs);
-      
-      cS = crystalShape(N,2.0,[6.0,1.0,6.0]);
-    end 
-        
-        
+            
     function demo
       
       % import some data
@@ -261,7 +186,7 @@ classdef crystalShape
       
       % and plot them 
       hold on
-      plot(grains,0.6 * cS,'FaceColor','light blue','DisplayName','Titanium')
+      plot(grains,0.6 * cS,'DisplayName','Titanium','colored')
       hold off
 
     end

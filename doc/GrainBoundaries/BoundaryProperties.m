@@ -96,7 +96,7 @@ gB_Mg = gB('Magnesium','Magnesium')
 %%
 % Then the misorientation angles can be plotted by
 
-plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',3)
+plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
@@ -109,7 +109,7 @@ ori = ebsd('id',gB_Mg.ebsdId).orientations;
 axes = axis(ori(:,1),ori(:,2),'antipodal')
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',3)
+plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4)
 
 %%
 % We observe that the angle is quite oscilatory. This is because of the
@@ -118,7 +118,7 @@ plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',3)
 % command <grainBoundary.calcMeanDirection.html calcMeanDirection>
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',3)
+plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4)
 
 %%
 % The *midPoint* property is usefull when  TODO:
@@ -143,7 +143,7 @@ sum(gB_Mg.segLength)
 components = unique(gB.componentId);
 for cId = components.'
   plot(gB(gB.componentId == cId),'lineColor',ind2color(cId),...
-    'micronbar','off','lineWidth',3,'displayName',num2str(cId))
+    'micronbar','off','lineWidth',4,'displayName',num2str(cId))
   hold on
 end
 hold off

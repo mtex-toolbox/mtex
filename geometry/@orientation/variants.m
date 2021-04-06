@@ -22,7 +22,9 @@ function out = variants(p2c,varargin)
 %
 %  p2c - parent to child @orientation relationship
 %  oriParent - parent @orientation
+%  hklParent - parent direction @Miller
 %  oriChild  - child @orientation
+%  hklChild  - child direction @Miller
 %  variantId - id of the variant
 %
 % Options
@@ -32,8 +34,10 @@ function out = variants(p2c,varargin)
 %
 % Output
 %  p2cVariants - parent to child variants
-%  oriParent - parent @orientation
-%  oriChild  - child @orientation
+%  oriParent - parent @orientation (numOri x numVariants)
+%  hklParent - parent directions (numOri x numVariants)
+%  oriChild  - child @orientation  (numOri x numVariants)
+%  hklChild  - child directions (numOri x numVariants)
 %
 % Example
 %   % parent symmetry
@@ -114,7 +118,7 @@ if ~isempty(varargin) && isnumeric(varargin{1}), variantId = varargin{1}; end
 if parentVariants % parent variants
 
   % symmetrise with respect to child symmetry
-  p2cVariants = p2c.SS * p2c;
+  p2cVariants = p2c.SS.properGroup.rot * p2c;
   
   % ignore all variants symmetrically equivalent with respect to the parent symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym2')>1-1e-4,-1),2);
@@ -140,8 +144,8 @@ else % child variants
   %ind = ~any(tril(dot_outer(csRot,csRot)>1-1e-4,-1),2);
   %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
-  % symmetrise with respect to child symmetry
-  p2cVariants = p2c * p2c.CS.rot;
+  % symmetrise with respect to parent symmetry
+  p2cVariants = p2c * p2c.CS.properGroup.rot;
   
   % ignore all variants symmetrically equivalent with respect to the child symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
@@ -160,12 +164,14 @@ else % child variants
   
   if exist('variantId','var')
     p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
+  else
+    p2cVariants = reshape(p2cVariants,1,[]);
   end
   
   if exist('oriParent','var')
-    out = oriParent.project2FundamentalRegion .* inv(p2cVariants);
+    out = reshape(oriParent.project2FundamentalRegion,[],1) .* inv(p2cVariants);
   elseif exist('MillerParent','var')
-    out = p2cVariants * MillerParent;
+    out = p2cVariants .* reshape(MillerParent,[],1);
   else
     out = p2cVariants;
   end

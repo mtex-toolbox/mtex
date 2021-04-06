@@ -15,7 +15,7 @@ function [fe,qe] = ellipsoid(E)
 %  qe - length of ellipse axes (1+e)
 
 [fe,qe] = eig(E);
- if strcmp(E.type,'Euler')
+ if strcmp(E.opt.type,'Euler')
      qe = sqrt(1-2*qe);
  else
     qe = sqrt(1+2*qe);

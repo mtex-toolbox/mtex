@@ -15,9 +15,9 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 %  odf    - recalculated @ODF
 %
 % Options
-%  RP    - RP value (default)
-%  l1    - l1 error
-%  l2    - l2 error
+%  RP    - RP value (default) |pfmeas - pfcalc|./ pfcalc
+%  l1    - l1 error           |pfmeas - pfcalc|
+%  l2    - l2 error           |pfmeas - pfcalc|.^2
 %
 % Output
 %  pf - @PoleFigure 

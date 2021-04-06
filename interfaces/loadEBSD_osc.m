@@ -345,7 +345,7 @@ for i=1:length(osc_phases)
   phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(32) char(32) char(32)]);
   if ~isempty(phaseLoc)
     nPhase=nPhase+1;
-    PhaseStart(nPhase)=phaseLoc+1;
+    PhaseStart(nPhase)=phaseLoc(1)+1;
     PhaseName{nPhase}=osc_phases{i};
   end
 end
@@ -354,7 +354,7 @@ if nPhase==0
     phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(0)]);
     if ~isempty(phaseLoc)
       nPhase=nPhase+1;
-      PhaseStart(nPhase)=phaseLoc+1;
+      PhaseStart(nPhase)=phaseLoc(1)+1;
       PhaseName{nPhase}=osc_phases{i};
     end
   end

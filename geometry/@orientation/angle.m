@@ -24,6 +24,20 @@ elseif check_option(varargin,'noSymmetry')
   
   omega = angle@quaternion(o1);
   
+elseif check_option(varargin,'max')
+  
+  % do not care about inversion
+  q = quaternion(o1);
+  
+  % for misorientations we do not have to consider all symmetries
+  [l,d,r] = factor(o1.CS,o1.SS);
+  dr = d * r;
+  qs = l * dr;
+  
+  % compute all distances to the symmetric equivalent orientations
+  % and take the minimum
+  omega = 2 * real(acos(min(abs(dot_outer(q,qs)),[],2)));
+  
 else
   
   % do not care about inversion
@@ -43,5 +57,5 @@ else
   % compute all distances to the symmetric equivalent orientations
   % and take the minimum
   omega(notInside) = 2 * real(acos(max(abs(dot_outer(q.subSet(notInside),qs)),[],2)));
-    
+  
 end

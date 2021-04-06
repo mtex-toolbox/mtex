@@ -13,7 +13,7 @@ else
 end
 
 % display coordinates
-if length(m) < 20 && ~isempty(m)
+if length(m) < 25 && ~isempty(m)
   
   eps = 1e4;
   

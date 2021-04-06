@@ -205,13 +205,13 @@ plot(parentGrains('Iron fcc'),parentGrains('Iron fcc').meanOrientation)
 %% Compute Child Variants
 % 
 % Knowing the parent grain orientations we may compute the <|variantId|> of
-% each child grain using the command <calcChildVariant.html
-% |calcChildVariant|>. As a bonus this command returns also the
+% each child grain using the command <calcVariantId.html
+% |calcVariantId|>. As a bonus this command returns also the
 % |packetId|, here defined as the closest {111} plane in austenite to the
 % (011) plane in martensite.
 
 % compute variantId and packetId
-[variantId,packetId] = calcChildVariant(parentOri(parentId),childOri,fcc2bcc);
+[variantId,packetId] = calcVariantId(parentOri(parentId),childOri,fcc2bcc);
 
 % associate to each packet id a color and plot
 color = ind2color(packetId);

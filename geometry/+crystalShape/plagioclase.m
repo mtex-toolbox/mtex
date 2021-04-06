@@ -6,7 +6,7 @@ function cS = plagioclase(cs)
 
 if nargin == 0
   cs = crystalSymmetry('-1', [8.1797 12.8748 14.1721],...
-    [93.13,115.89,91.24]*degree, 'X||a*', 'Z||c', 'mineral', 'Plagioclase', 'color', 'yellow');
+    [93.13,115.89,91.24]*degree, 'X||a*', 'Z||c', 'mineral', 'Plagioclase');
 end
 
 % definition of visible faces

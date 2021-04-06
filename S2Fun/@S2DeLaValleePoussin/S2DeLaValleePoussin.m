@@ -1,5 +1,5 @@
 classdef S2DeLaValleePoussin < S2Kernel
-%
+% the spherical de la Vallee Poussin kernel
 %
 % Syntax
 %

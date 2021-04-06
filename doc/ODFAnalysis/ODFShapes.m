@@ -11,7 +11,7 @@
 % find a list of all kernel functions supported by MTEX.
 
 psi{1} = AbelPoissonKernel(0.79);
-psi{2} = deLaValeePoussinKernel(13);
+psi{2} = deLaValleePoussinKernel(13);
 psi{3} = bumpKernel(35*degree);
 psi{4} = DirichletKernel(3);
 psi{5} = vonMisesFisherKernel(7.5);

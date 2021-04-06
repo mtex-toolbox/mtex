@@ -221,7 +221,7 @@ classdef Miller < vector3d
     
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
-    function i = get.i(m), i = m.hkl(:,3);end
+    function i = get.i(m), i = m.hkil(:,3);end
     function l = get.l(m), l = m.hkl(:,end);end
         
     % ------------------------------------------------------------

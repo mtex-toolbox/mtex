@@ -248,10 +248,12 @@ classdef sphericalPlot < handle
       % the labels
       interpreter = getMTEXpref('textInterpreter');
       fs = getMTEXpref('FontSize');
+      
+      onoff = get_option(varargin,'labels','on');
       xlabel(sP.ax,get_option(varargin,'xlabel','rho'),...
-        'interpreter',interpreter,'FontSize',fs);
+        'interpreter',interpreter,'FontSize',fs,'visible',onoff);
       ylabel(sP.ax,get_option(varargin,'ylabel','theta'),...
-        'interpreter',interpreter,'FontSize',fs);
+        'interpreter',interpreter,'FontSize',fs,'visible',onoff);
       
     end
 

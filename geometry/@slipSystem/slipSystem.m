@@ -111,8 +111,7 @@ classdef slipSystem
         str{i} = strrep(str{i},'$$','');
       end
       if i == 1, str = char(str); end
-      
-      
+
     end
     
     function n = numArgumentsFromSubscript(varargin)

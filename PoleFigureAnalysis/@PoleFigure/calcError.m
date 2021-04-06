@@ -19,9 +19,9 @@ function e = calcError(pf,rec,varargin)
 %  e - error
 %
 % Flags
-%  RP - (default) 
-%  l1 - L1 error
-%  l2 - L2 error
+%  RP    - RP value (default) |pfmeas - pfcalc|./ pfcalc
+%  l1    - l1 error           |pfmeas - pfcalc|
+%  l2    - l2 error           |pfmeas - pfcalc|.^2
 %
 % See also
 % ODF/calcError PoleFigure/calcNormalization PoleFigure/scale

@@ -68,7 +68,6 @@ if isa(mori.SS,'specimenSymmetry')
   return  
 end
 
-
 % maybe more then one orientation should be transformed
 if length(mori) > 1
   n1 = Miller.nan(size(mori),mori.CS);
@@ -88,7 +87,7 @@ penalty = get_option(varargin,'penalty',0.002);
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 
 % all plane normales
-[h,k,l] =meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
+[h,k,l] =meshgrid(-maxIndex:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
 rh2 = round(n2);
@@ -96,10 +95,11 @@ hkl2 = rh2.hkl;
 
 % fit of planes
 omega_h = angle(rh2(:),n2(:)) + ...
-  (h(:).^2 + k(:).^2 + l(:).^2 + sum(hkl2.^2,2)) * penalty;
+  (h(:).^2 + k(:).^2 + l(:).^2 + ...
+  sum(hkl2.^2,2) + 0.01*sum(hkl2<-0.1,2)) * penalty;
 
 % all directions
-[u,v,w] = meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
+[u,v,w] = meshgrid(-maxIndex:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 d1 = Miller(u(:),v(:),w(:),mori.CS,'uvw');
 d2 = reshape(mori * d1,[],1);
 rd2 = round(d2);
@@ -107,7 +107,8 @@ uvw2 = rd2.uvw;
 
 % fit of directions
 omega_d = angle(rd2(:),d2(:)) + ...
-  (u(:).^2 + v(:).^2 + w(:).^2 + sum(uvw2.^2,2)) * penalty;
+  (1.05*(u(:).^2 + v(:).^2 + w(:).^2) + ...
+  sum(uvw2.^2,2) + 0.01*sum(uvw2<-0.1,2)) * penalty;
 
 % directions should be orthognal to normals
 fit = bsxfun(@plus,omega_h(:),omega_d(:).') + 10*(abs(pi/2-angle_outer(n1,d1,'noSymmetry')));
@@ -142,14 +143,25 @@ function showResult
   mori_exact = orientation.map(n1,n2,d1,d2);
   err = angle(mori,mori_exact);
   disp(' ');
-  for k = 1:length(n1)
-    disp([char(n1(k)) ' || ' char(n2(k)) '   ' char(d1(k)) ' || ' char(d2(k)) ...
-      '   error: ',xnum2str(err(k)./degree),mtexdegchar']);
-  end
-  disp(' ');  
   
-  clear n1 s1 n2 d2
+  n1 = char(n1,'cell'); ln1 = max(cellfun(@length,n1));
+  n2 = char(n2,'cell'); ln2 = max(cellfun(@length,n2));
+  d1 = char(d1,'cell'); ld1 = max(cellfun(@length,d1));
+  d2 = char(d2,'cell'); ld2 = max(cellfun(@length,n2));
+
+  disp([fillStr('plane parallel',ln1+ln2+4,'left') '   ' ...
+    fillStr('direction parallel',ld1+ld2+6) '   fit']);
+  for kk = 1:length(n1)
     
+    disp([fillStr(n1{kk},ln1,'left') ' || ' fillStr(n2{kk},ln2) '   ' ...
+      fillStr(d1{kk},ld1,'left') ' || ' fillStr(d2{kk},ld2) '   ' ...
+      '  ',xnum2str(err(kk)./degree,'precision',0.1),mtexdegchar']);
+  end
+
+  disp(' ');
+
+  clear n1 s1 n2 d2
+
 end
 
 end

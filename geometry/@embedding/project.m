@@ -15,6 +15,9 @@ function [ori, Tori,i] = project(obj,ori)
 % get the embedding of the identity
 Tid = embedding.id(obj.CS);
 
+% normalize obj correctly
+obj = obj .* norm(Tid)./norm(obj);
+
 %get weights beta
 %[~,~,weights]= embedding.coefficients(obj.CS);
 
@@ -64,7 +67,7 @@ for i = 1:maxIter
   g = vector3d(dot(Tori,obj).').';
   
   % eradicate normalizing of embedding: adapt length ofs gradient
-  g = g * obj.rho^2;
+  %g = g * obj.rho^2;
   
   % stop if gradient is sufficently small
   if all(norm(g)<1e-10), break; end

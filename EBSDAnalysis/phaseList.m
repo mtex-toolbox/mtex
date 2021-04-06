@@ -308,8 +308,8 @@ classdef phaseList
             '----------------------------------------------------------------\n'...
             'Your variable contains the phases: ' ...
             pL.mineralList{id(1)} ', ' pL.mineralList{id(2)} '\n\n' ...
-            'However, your are executing a command that is only permitted for a single phase!\n\n' ...
-            'Please read the chaper ' doclink('EBSDSelect','"select EBSD data"')  ...
+            'However, you are executing a command that is only permitted for a single phase!\n\n' ...
+            'Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
             ' for how to restrict EBSD data or grains to a single phase.\n' ...
             '----------------------------------------------------------------\n']);
         end
@@ -327,6 +327,14 @@ classdef phaseList
   methods (Hidden = true)
     
     function id = cs2phaseId(pL,cs)
+      
+      if ischar(cs) && strcmpi(cs,'notIndexed')
+        id = 1;
+        return;
+      elseif ~isa(cs,'crystalSymmetry')
+        id = 0;
+        return;
+      end
       
       for id = 1:length(pL.CSList)
         if isa(pL.CSList{id},'symmetry') && (...
@@ -349,6 +357,7 @@ classdef phaseList
         ph = ~cellfun('isempty',regexpi(pL.mineralList(:),['^' ph])) | ...
           strcmpi(alt_mineral(:),ph);
         phId = find(ph,1);
+        if isempty(phId), phId = 0; end
       elseif isa(ph,'symmetry')
         phId = find(cellfun(@(cs) cs==ph,pL.CSList));
       else

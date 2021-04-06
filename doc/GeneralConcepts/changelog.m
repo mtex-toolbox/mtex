@@ -1,5 +1,9 @@
 %% MTEX Changelog
 %
+%% MTEX 5.6.1 03/2021
+%
+% This is mainly a bug fix release.
+%
 %% MTEX 5.6.0 01/2021
 %
 % MTEX 5.6 greatly simplifies parent grain reconstruction by introducing

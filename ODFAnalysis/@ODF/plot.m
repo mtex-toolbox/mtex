@@ -24,14 +24,18 @@ function varargout = plot(odf,varargin)
 % See also
 % ODF/plotSection ODF/plot3d ODF/plotFibre
 
+
+if nargin > 1 && isa(varargin{1},'fibre')
+  plotFibre(odf,varargin{:});
+  return;
+end
+
 % get current figure
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 %
 if isNew % old functionality in case plotting to a new figure
-  if nargin > 1 && isa(varargin{1},'fibre')
-    plotFibre(odf,varargin{:});
-  elseif check_option(varargin,{'3d','axisAngle','rodrigues'})
+  if check_option(varargin,{'3d','axisAngle','rodrigues'})
     plot3d(odf,varargin{:});
   else
     plotSection(odf,varargin{:});  

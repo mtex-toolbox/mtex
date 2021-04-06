@@ -3,7 +3,12 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %
 % Syntax
 %
-%   grains = calcGrains(ebsd,'angle',10*degree)
+%   [grains, ebsd.grainId] = calcGrains(ebsd,'angle',10*degree)
+%
+%   % reconstruction low and high angle grain boundaries
+%   lagb = 2*degree;
+%   hagb = 10*degree;
+%   grains = calcGrains(ebsd,'angle',[hagb lagb])
 %
 %   % allow grains to grow into not indexed regions
 %   grains = calcGrains(ebsd('indexed'),'angle',10*degree) 
@@ -14,23 +19,35 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   % follow non convex outer boundary
 %   grains = calcGrains(ebsd,'boundary','tight')
 %
+%   % markovian clustering algorithm
+%   p = 1.5;    % inflation power (default = 1.4)
+%   maxIt = 10; % number of iterations (default = 4)
+%   delta = 5*degree % variance of the threshold angle
+%   grains = calcGrains(ebsd,'method','mcl',[p maxIt],'soft',[angle delta])
+%
 % Input
 %  ebsd   - @EBSD
 %
 % Output
-%  grains  - @grain2d
+%  grains       - @grain2d
+%  ebsd.grainId - grainId of each pixel
 %
 % Options
 %  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
 %  boundary         - bounds the spatial domain ('convexhull', 'tight')
+%  maxDist          - maximum distance to for two pixels to be in one grain (default inf)
+%  fmc       - fast multiscale clustering method
+%  mcl       - markovian clustering algorithm
+%  custom    - use a custom property for grain separation
 %
 % Flags
-%  unitCell     - omit voronoi decomposition and treat a unitcell lattice
-%  FMC          - use fast multiscale clustering method
-%  soft         - use markovian clustering algorithm
-%  custom       - use a custom property for grain separation
+%  unitCell - omit voronoi decomposition and treat a unitcell lattice
 %
 % References
+%
+% * F.Bachmann, R. Hielscher, H. Schaeben, Grain detection from 2d and 3d
+% EBSD data - Specification of the MTEX algorithm: Ultramicroscopy, 111,
+% 1720-1733, 2011
 %
 % * C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, L. Bassman,
 %   Boundary identification in EBSD data with a generalization of fast
@@ -152,12 +169,28 @@ end
 A_D = I_FD'*I_FD==1;
 [Dl,Dr] = find(triu(A_D,1));
 
+if check_option(varargin,'maxDist') 
+  xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
+    (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
+
+  dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
+  maxDist = get_option(varargin,'maxDist',3*dx);
+  % maxDist = get_option(varargin,'maxDist',inf);
+else
+  maxDist = 0;
+end
+
 connect = zeros(size(Dl));
 
 for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
-  ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+  if maxDist > 0
+    ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
+  else
+    ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+  end
+  
   connect(ndx) = true;
   
   % check, whether they are indexed

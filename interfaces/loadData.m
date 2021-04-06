@@ -112,9 +112,11 @@ idata = cellfun('prodofsize',data);
 
 % ------------- apply options ----------------------------------
 
+if length(data) == 1 && iscell(data{1}), data = data{1}; end
+
 % set file name
 for i = 1:numel(data)
-  data{i} = data{i}.setOption('file_name',ls(fname{i}));
+  data{i} = data{i}.setOption('file_name',ls(fname{min(i,length(fname))}));
 end
 
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
@@ -127,7 +129,7 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
 end
 
 % set crystal and specimen symmetry, specimen direction
-if ~any(strcmpi(type,{'tensor','vector3d'}))
+if ~any(strcmpi(type,{'tensor','vector3d','ODF'}))
   if iscell(data)
     data = cellfun(@(d,f) setOption(d,'file_name',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
@@ -137,7 +139,7 @@ if ~any(strcmpi(type,{'tensor','vector3d'}))
   if exist('ss','var') && ~isa(data,'EBSD'), data.SS = ss;end % TODO
   if exist('h','var'),  data = set(data,'h',h);end
   if ~isempty_cell(c),  data = set(data,'c',c);end
-else
+elseif ~any(strcmpi(type,{'ODF'}))
   data = [data{:}];
   
   if exist('cs','var')

@@ -26,7 +26,7 @@ if nargin >= 2 && isa(varargin{1},'vector3d')
   generateFun = false;
 else
   if check_option(varargin,'harmonic')
-    M = 48;
+    M = get_option(varargin,'bandwidth',48);
     [x, W] = quadratureS2Grid(2*M);
     generateFun = 1;
   else

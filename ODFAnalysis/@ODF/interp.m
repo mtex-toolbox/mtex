@@ -97,6 +97,11 @@ if check_option(varargin,'ODFstats')
  disp(['   Mean error during interpolating ODF   : ',xnum2str(mean(err))]);
 end
 
-odf = odf + (1-m).*unimodalODF(S3G,psi,'weights',w./sum(w));
+odf = odf + sum(w).*unimodalODF(S3G,psi,'weights',w./sum(w));
+
+% ensure normalization to 1 if we are sufficiently close to 1
+if abs(sum(odf.weights)-1)<0.1
+  odf.weights = odf.weights ./ sum(odf.weights);
+end
 
 end

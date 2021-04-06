@@ -27,6 +27,13 @@ component.antipodal = check_option(varargin,'antipodal') || (isa(ori,'orientatio
 L = min(component.bandwidth,get_option(varargin,'bandwidth',inf));
 Ldim = deg2dim(double(L+1));
 
+% 
+if L==0
+  f = component.f_hat(1) * ones(size(ori));
+  return
+end
+
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlan;
