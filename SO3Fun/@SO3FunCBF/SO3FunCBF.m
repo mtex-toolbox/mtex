@@ -16,14 +16,14 @@ classdef SO3FunCBF < SO3Fun
   end
   
   methods
-    function SO3F = SO3FunCBF(h,r,psi,varargin)
+    function SO3F = SO3FunCBF(h,r,weights,psi,varargin)
       
       if nargin == 0, return;end
       
       SO3F.h = h;
       SO3F.r = r;
-      SO3F.weights = get_option(varargin,'weights',1);
       SO3F.psi = psi;
+      SO3F.weights = weights;
       SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
                   
     end

@@ -77,6 +77,11 @@ classdef S2DeLaValleePoussin < S2Kernel
       hw = acos(2*(0.5)^(1/psi.kappa) - 1);
       
     end
+    
+    function c = char(psi)
+      c = ['de la Vallee Poussin, halfwidth ' ...
+        xnum2str(psi.halfwidth/degree) mtexdegchar];
+    end
         
   end
   

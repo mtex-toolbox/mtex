@@ -46,10 +46,10 @@ else
 end
 
 % get kernel
-psi = getClass(varargin,'kernel',[]);
+psi = getClass(varargin,'S2Kernel',[]);
 if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
-  psi = deLaValleePoussinKernel('halfwidth',hw); % todo: replace with S2DeLaValleePoussin
+  psi = S2DeLaValleePoussin('halfwidth',hw);
 end
 
 % get weights
@@ -57,8 +57,6 @@ weights = get_option(varargin,'weights',ones(size(h)));
 assert(numel(weights) == length(h),...
   'Number of fibres and weights must be equal!');
 
-component = fibreComponent(h,r,weights,psi,SS);
-
-odf = ODF(component,1);
+odf = SO3FunCBF(h,r,weights,psi,SS);
 
 end
