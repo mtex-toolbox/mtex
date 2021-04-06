@@ -11,6 +11,7 @@ end
 
 disp(['  kernel: ',char(SO3F.psi)]);
 disp(['  fibre : ',char(round(SO3F.h)),' || ' char(round(SO3F.r))]);
+disp(['  weight: ',xnum2str(mean(SO3F))]);
 disp(' ');
 
 end
