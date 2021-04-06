@@ -1,4 +1,4 @@
-function odf = FourierODF(C,CS,varargin)
+function odf = FourierODF(C,varargin)
 % defines an ODF by its Fourier coefficients
 %
 % Syntax
@@ -14,6 +14,6 @@ function odf = FourierODF(C,CS,varargin)
 % See also
 % ODF/ODF uniformODF fibreODF unimodalODF
    
-odf = SO3FunHarmonic(C,CS,varargin{:});
+odf = SO3FunHarmonic(C,varargin{:});
 
 end
