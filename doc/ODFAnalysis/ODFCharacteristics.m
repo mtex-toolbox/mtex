@@ -77,13 +77,8 @@ volume(odf3, ori_pref, 30*degree) * 100
 
 
 %% Extract Internal Representation
-% The internal representation of the ODF can be addressed by the command
+% The internal representation of the ODF can be addressed by the commands
 
-properties(odf3.components{1})
+odf3.center
 
-%%
-% The properties in this list can be accessed by
-
-odf3.components{1}.center
-
-odf3.components{1}.psi
+odf3.psi
