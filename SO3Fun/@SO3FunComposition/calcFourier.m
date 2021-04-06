@@ -1,12 +1,16 @@
-function f_hat = calcFourier(odf,varargin)
+function f_hat = calcFourier(SO3F,varargin)
 % compute Fourier coefficients of an ODF
 %
 % Syntax  
-%   f_hat = calcFourier(odf,L)
+%   f_hat = calcFourier(odf,'bandwidth',L)
 %
 % Input
 %  odf  - @ODF
 %  L    - order up to which Fourier coefficients are calculated
+%
+% Options
+%  l2-normalization - logical
+%  
 %
 % Output
 %  f_hat - vector of Fourier coefficients order as [fh000 fh1-1-1 ... fh111 fh2-2-2 fh222 ...]
@@ -15,19 +19,16 @@ function f_hat = calcFourier(odf,varargin)
 % SO3Fun/plotFourier SO3Fun/Fourier wignerD FourierODF SO3Fun/textureindex SO3Fun/entropy SO3Fun/eval 
 %
 
-if nargin > 1 && isnumeric(varargin{1})
-  L = varargin{1};
-else
-  L = get_option(varargin,'bandwidth',min(odf.bandwidth,getMTEXpref('maxBandwidth')));
-end
+L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxBandwidth')));
+
 
 f_hat = zeros(deg2dim(L+1),1);
 
-for i = 1:numel(odf.components)
+for i = 1:numel(SO3F.components)
   
-  hat = calcFourier(odf.components{i},L,varargin{:});
+  hat = calcFourier(SO3F.components{i},varargin{:},'bandwidth',L);
   
-  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + odf.weights(i) * hat;
+  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + SO3F.weights(i) * hat;
     
 end
 

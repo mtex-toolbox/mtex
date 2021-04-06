@@ -1,28 +1,15 @@
-function display(odf,varargin)
+function display(SO3F,varargin)
 % standard output
 
-if isempty(odf)
-  
-  displayClass(odf,inputname(1));
-  return
-    
-elseif isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')  
-  displayClass(odf,inputname(1),'MDF');  
-else  
-  displayClass(odf,inputname(1));  
-end
+displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});  
 
 % display symmtries and minerals
-if ~isempty(odf.CS), disp(char(odf.CS,'verbose','symmetryType'));end
-if ~isempty(odf.SS) && odf.SS.id>1, disp(char(odf.SS,'verbose','symmetryType'));end
-if odf.antipodal, disp('  antipodal:         true'); end
+if SO3F.antipodal, disp('  antipodal: true'); end
 
 % display components
 disp(' ');
-for i = 1:length(odf.components)
+for i = 1:length(SO3F.components)
   
-  odf.components{i}.display;
-  disp(['    weight: ',num2str(odf.weights(i))]);  
-  disp(' ');
+  SO3F.components{i}.display('skipHeader');
   
 end
