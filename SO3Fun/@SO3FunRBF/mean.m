@@ -21,6 +21,6 @@ function value = mean(SO3F, varargin)
 % pointwise means values along the first dimension
 %
  
-value = sum(SO3F.weights,varargin{:}) * SO3F.psi.A(1);
+value = sum(SO3F.weights,varargin{:}) * SO3F.psi.A(1) + SO3F.c0;
 
 end
