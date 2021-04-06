@@ -25,7 +25,7 @@ methods
     if isa(fhat,'SO3Fun')
       SO3F.SRight = fhat.SRight;
       SO3F.SLeft  = fhat.SLeft;
-      SO3F.fhat = calcFourier(fhat);
+      SO3F.fhat = calcFourier(fhat,varargin{:});
       return
     end
       

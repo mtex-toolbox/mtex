@@ -43,7 +43,7 @@ elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
   TVoigt = 0*T;
   
   odf = varargin{1};
-  fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
+  fhat = calcFourier(odf,'bandwidth',min(T.rank,odf.bandwidth));
   
   for l = 0:min(T.rank,odf.bandwidth)
   

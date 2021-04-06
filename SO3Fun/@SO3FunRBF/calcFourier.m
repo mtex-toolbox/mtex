@@ -1,21 +1,21 @@
-function f_hat = calcFourier(SO3F,L,varargin)
+function f_hat = calcFourier(SO3F,varargin)
 % compute harmonic coefficients of SO3Fun
 %
 % Syntax
 %
 %  f_hat = calcFourier(SO3F)
 %
-%  f_hat = calcFourier(SO3F,L)
+%  f_hat = calcFourier(SO3F,'bandwidth',L)
 %
 % Input
 %  SO3F - @SO3FunRBF
-%     L - maximum harmonic degree
+%     L - maximum harmonic degree / bandwidth
 %
 % Output
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
 
-if nargin == 1, L = SO3F.bandwidth; end
+L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 
 cs = SO3F.CS.properGroup;
 ss = SO3F.SS.properGroup;

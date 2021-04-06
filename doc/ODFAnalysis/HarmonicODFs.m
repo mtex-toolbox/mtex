@@ -21,15 +21,19 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 % <PoleFigure2ODFGhostCorrection.html Ghost Correction>.
 
 %%
-% transform into an odf given by Fourier coefficients
+% We may transform an arbitrary ODF into its Fourier representation using
+% the command <SO3FunHarmonic.SO3FunHarmonic.html SO3FunHarmonic> 
 
-
-
-fodf = FourierODF(odf3,32)
+fodf = FourierODF(odf3,'bandwidth',32)
 
 %%
-% The Fourier coefficients of order 2:
-reshape(fodf.components{1}.f_hat(11:35),5,5)
+% Within the variable |fodf| the Fourier coefficients are stored as the
+% property |fodf.f_hat| in a linear order, i.e., the |fodf.f_hat(1)| is the
+% zero order Fourier coefficient, |fodf.fhat(2:10)| are the first order
+% Fourier coefficients that form a 3x3 matrix. Accordingly, we can extract
+% the second order Fourier coefficients by
+
+reshape(fodf.fhat(11:35),5,5)
 
 %%
 % The decay of the Fourier coefficients:

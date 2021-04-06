@@ -55,7 +55,7 @@ end
 
 % %% test correctness
 % tic 
-% C1 = Fourier(calcFourier(unimodalODF(ori,psi),L));
+% C1 = Fourier(calcFourier(unimodalODF(ori,psi),'bandwidth',L));
 % toc
 % norm(sum(Psi./size(Psi,2),2)-C1)
 %
