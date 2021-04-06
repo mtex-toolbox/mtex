@@ -36,4 +36,6 @@ if ~isempty(SO3F.center)
   end
 end
 
+disp(' ');
+
 end

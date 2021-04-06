@@ -2,7 +2,7 @@ function display(SO3F,varargin)
 % standard output
 
 if check_option(varargin,'skipHeader')
-  disp('  <strong>unimodal component</strong>');
+  disp('  <strong>harmonic component</strong>');
 else
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   if SO3F.antipodal, disp('  antipodal: true'); end
@@ -10,5 +10,7 @@ else
 end
 
 disp(['  bandwidth: ' num2str(SO3F.bandwidth)]);
+disp(['  weight: ' xnum2str(real(SO3F.fhat(1)))]);
+disp(' ');
 
 end
