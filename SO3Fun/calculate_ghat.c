@@ -35,7 +35,7 @@
 // with Jacobi Polynomials.
 // (refer Varshalovich - Quantum Theory of Angular Momentum - 1988, section 4.3.4)      [*2*]
 
- static void wigner_d(int N,mwSize L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
+ static void wigner_d(int N,int L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
 {
    int col;    // column index
    int row;    // row index
@@ -49,7 +49,7 @@
    // Define a pointer for upper triangular matrix
    mxDouble *upright;
    upright = d;
-   // This pointers runs over column indices. Updating is done by shifting
+   // This pointer runs over column indices. Updating is done by shifting
    const int column_shift = N+1;
    
    // variables for calculating Wigner-d
@@ -116,6 +116,7 @@
    const double constant5 = -(2.0*L-1);
    const double constant6 = -1.0*L;
    int constant7, constant8;
+   long long int constant9, constant10;
    
    // now do three term recursion to receive inner part
    // (only use lower triangular matrix in loop)
@@ -126,11 +127,16 @@
        // calculate the auxiliar variables similar like in refence [*1*].
        constant7 = row*row;
        constant8 = col*col;
-       nenner = sqrt((constant2-constant7)*(constant2-constant8)) * constant3;
+       constant9 = (constant2-constant7);
+       constant10 = (constant2-constant8);
+       nenner = sqrt(constant9*constant10) * constant3;
        v = constant5*row*col / nenner;
-       w = constant6 * sqrt( (constant4-constant7) * (constant4-constant8) ) / nenner;
+       constant9 = (constant4-constant7);
+       constant10 = (constant4-constant8);
+       w = constant6 * sqrt(constant9*constant10) / nenner;
+       
        // get value of inner part
-       value = v*(*d_min1) + w*(*d_min2) ;
+       value = v*(*d_min1) + w*(*d_min2);
        
        // Set this value at every symmetric point where it occurs (2 times).
        // Pay attention to different signs.
@@ -304,7 +310,8 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
     const int constant15 = (2*N+2)*(3*N+3);
     const int constant16 = 4*N*N+10*N+7;          // (4*(N+1)*(N+1)+2*(N+1)+1)
     const int constant17 = 2*N*(2*N+2)*(2*N+2);
-    int constant18, constant19, constant20, constant21;
+    int constant18, constant19, constant20, constant21, constant22, 
+            constant23, constant24, constant25, constant26;
     int shift_2 = N*N+N-1;
     
     // Do recursion for 1 < n < N:
@@ -336,14 +343,16 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
       constant18 = 2*n;                       // 2*n
       constant19 = constant18 + 1;            // 2*n+1
       constant20 = constant18 * constant19;   // 2*n*(2*n+1)
-      constant21 = constant4 * n;
+      constant21 = constant4 * n;             // n*(2*N+2)
+      constant22 = constant3-n;               // 2*N+1-n
+      constant23 = constant5+n;               // 2*N+3 +n
+      constant24 = 3*n+2;
+      constant25 = constant10-constant21;     // (2*N+1)*(2*N+2) - n*(2*N+2)
+      constant26 = constant14+constant21;     // (2*N+2)*(2*N+3) + n*(2*N+2)
       
       ghat_ne_front = ghat + constant18*constant4;
       fhat_ne_front = fhat + constant20;
       
-      shift = constant3 - constant18;
-      
-              
       // Compute ghat by adding over all summands of current harmonic degree n
       // Compute only ghat for j<=0.
       for (j=-n; j<=0; j++){
@@ -416,12 +425,12 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
             
           }
           // go to next column
-          ghat += constant3-n; fhat += n;
-          ghat_ne_front -= constant5+n; fhat_ne_front -= 3*n+2;
+          ghat += constant22; fhat += n;
+          ghat_ne_front -= constant23; fhat_ne_front -= constant24;
         }
         // go to next matrix (3rd dimension)
-        ghat += constant10-constant21;
-        ghat_ne_front += constant14+constant21;
+        ghat += constant25;
+        ghat_ne_front += constant26;
         // reset pointer fhat
         fhat = iter_fhat;
         fhat_ne_front = iter_fhat + constant20;
