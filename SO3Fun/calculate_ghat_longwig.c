@@ -243,15 +243,15 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
                             int row_shift, int col_shift, int fullsized,
                             mxComplexDouble *ghat, mwSize nrows )
 {
-  // running indices
-  int k,l,j,n;
-  // shifting pointers
-  int shift;
-  // integer bandwidth
-  const int N = bandwidth;
   
-  const int row_len = (fullsized*N+N+1+col_shift);  // length of a row
-  const int col_len = (2*N+1+row_shift);            // length of a column
+  // define usefull variables
+    int k,l,j,n;                                      // running indices
+    const int N = bandwidth;                          // integer bandwidth
+    int shift;                                        // helps by shifting pointers
+    const int row_len = (fullsized*N+N+1+col_shift);  // length of a row
+    const int col_len = (2*N+1+row_shift);            // length of a column
+    const int matrix_size = row_len*col_len;          // size of one matrix
+    const int halfsized = 1-fullsized;
   
   // Be shure N>0. Otherwise return the trivial solution.
   if(N==0)
@@ -262,7 +262,7 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
   }
   
   // Idea: Calculate Wigner-d matrix by recursion formula from last two 
-  // wigner-d matrices.
+  // Wigner-d matrices.
     // create 3 Wigner-d matrices for recurrence relation (2 as input and 1
     // as output). Also get an auxiliary pointer to the matrices in each case.
     mxArray *D_min2 = mxCreateDoubleMatrix(2*N+1,2*N+1,mxREAL);
@@ -292,26 +292,26 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
     shift = 2*(N+1)*(N-1);
     wigd_min1 += shift;    // go 1 left up from the center of the matrix
     double wert = sqrt(0.5);
-    double wigd_harmonicdegree1[3][3] = {           // values of Wigner_d(1,pi/2)
-      {0.5, -wert,-0.5},
-      {wert,0,wert},
-      {-0.5,-wert,0.5}
-    };
+    double wigd_harmonicdegree1[3][3] = {   // values of Wigner_d(1,pi/2)
+                                            {0.5, -wert,-0.5},
+                                            {wert,0,wert},
+                                            {-0.5,-wert,0.5}      };
     shift = 2*(N-1);
     for (k=0; k<3; k++)             // fill with values
     {
       for (l=0; l<3; l++)
       {
         *wigd_min1 = wigd_harmonicdegree1[l][k];
-        wigd_min1 ++;              // go to next line
+        wigd_min1 ++;               // go to next row
       }
-      wigd_min1 += shift;          // go to next column
+      wigd_min1 += shift;           // go to next column
     }
     wigd_min1 = start_wigd_min1;    // go back to matrix start
      
   // Compute ghat by iteration over harmonic degree n of Wigner-d matrices
   // in outermost loop. Start with n=0 and n=1 manually and use a loop for 
-  // the remaining n > 1.
+  // the remaining n > 1, except the last one. Do the last iteration n=N
+  // seperately and use symmetry of ghat there.
     // Create pointers for help. They save the starting position of ghat 
     // and fhat in current iteration of harmonic degree n.
     mxComplexDouble *start_ghat;
@@ -320,32 +320,32 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
 
     // Do recursion for n = 0.
     // Go to the center of ghat and write first value of fhat, since d^0=1.
-    ghat += row_len*col_len*N + fullsized*col_len*N + N;
+    ghat += matrix_size*N + fullsized*col_len*N + N;
     *ghat = *fhat;
     fhat ++;
     ghat = start_ghat;
     
     // Do recursion for n = 1.
     // Go to ghat(-1,-1,-1)
-    ghat += row_len*col_len*(N-1) + fullsized*col_len*(N-1) + (N-1);
-    fhat += (1-fullsized)*3;
+    ghat += matrix_size*(N-1) + fullsized*col_len*(N-1) + (N-1);
+    fhat += halfsized*3;
     iter_fhat = fhat;
     double value;
     for (j=0; j<3; j++){
-      for (l=(1-fullsized); l<3; l++){
+      for (l=halfsized; l<3; l++){
         for (k=0; k<3; k++){
           // fill with values
           value = wigd_harmonicdegree1[k][j] * wigd_harmonicdegree1[l][j];
           ghat[0].real += fhat[0].real* value;
           ghat[0].imag += fhat[0].imag* value;
-          // next row
+          // go to next row
           ghat ++;
           fhat ++;
         }
-        // next column
+        // go to next column
         ghat += col_len-3;
       }
-      // next matrix (3rd dimension)
+      // go to next matrix (3rd dimension)
       ghat += col_len*row_len - col_len*(2+fullsized);
       // reset pointer fhat
       fhat = iter_fhat;
@@ -375,42 +375,47 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
     }
     
     // Define some variables
-    const int matrix_size = row_len*col_len;
-    const int constant1 = 2*N+1;
-    const int constant2 = col_len*col_shift;
-    const int constant3 = col_len*col_shift - 2*matrix_size;
-    const int constant4 = 2*N*matrix_size;
-    const int constant5 = (row_len-1)*col_len;
+    const int constant1 = N*fullsized;
+    const int constant2 = 2*N+1;
+    const int constant3 = col_len*col_shift;
+    const int constant4 = col_len*col_shift - 2*matrix_size;
+    const int constant5 = 2*N*matrix_size;
     const int constant6 = matrix_size + fullsized*col_len + 1;
-    int constant7, constant8, constant9;
+    int constant7, constant8, constant9, constant10, constant11, constant12, constant13;
     int shift_toinnerwigner = 2*N*N+2*N - (2*N+1);
-
     
     // Do recursion for 1 < n < N:
     for (n=2; n<N; n++)
     {
+      // define some useful constants
+      
+      constant7 = 2*n+1;
+      constant8 = col_len - constant7;                        // col_len - 2*n+1
+      constant9 = fullsized*n;
+      constant10 = constant9 + n + 1;
+      constant11 = matrix_size - col_len*constant10;   // matrix_size - col_len*(fullsized*n+n+1)
+      constant12 = constant7*constant10;
+      constant13 = constant7*n*halfsized;
+            
       // Calculate Wigner-d matrix
       wigner_d(N,n,wigd_min2,wigd_min1,wigd);
       
       // Shift to inner part of Wigner-d matrix, which is not 0.
-      shift_toinnerwigner -= constant1;
+      shift_toinnerwigner -= constant2;
       wigd +=  shift_toinnerwigner;
       
-      // shift pointer ghat to ghat(-n,-n,-n)
+      // shift pointer ghat to ghat(-n,-n,-n) when fullsized. ghat(-n,0,-n) otherwise
       ghat += constant6*(N-n);
       
       // Set pointer of fhat and helping pointer for iterations
-      fhat += (1-fullsized)*(2*n+1)*n;
+      fhat += constant13;
       iter_fhat = fhat;
       
-      // Define some useful constants
-       constant7 = 2*n+1;
-       constant8 = col_len-constant7;                     // col_len - 2*n+1
-       constant9 = constant5 - col_len*(n+fullsized*n);   // matrix_size - col_len*(fullsized*n+n+1)
-              
+                    
       // Compute ghat by adding over all summands of current harmonic degree n
+      // Compute ghat only for j<=0.
       for (j=-n; j<=0; j++){
-        for (k=-fullsized*n; k<=n; k++){
+        for (k=-constant9; k<=n; k++){
           for (l=-n; l<=n; l++){
             // fill with values
             value = wigd[k]*wigd[l];
@@ -426,17 +431,17 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
           ghat += constant8;
         }      
         // go to next matrix (3rd dimension)
-        ghat += constant9;
+        ghat += constant11;
         // reset pointer fhat
         fhat = iter_fhat;
         // use next column of Wigner-d matrix
-        wigd += constant1;
+        wigd += constant2;
       }
       
       // reset pointer ghat to ghat(-N,-N,-N)
       ghat = start_ghat;
       // Set pointer to next harmonic degree
-      fhat += (fullsized*n+n+1)*constant7;
+      fhat += constant12;
       
       // change pointers (wigd, wigdmin1 and wigdmin2) with regard to next
       // recursions iteration of Wigner-d matrices. Therefore the two most
@@ -456,7 +461,7 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
     // do step for n=N and set symmetric values
       // Get Pointer for symmetric values
       mxComplexDouble *ghat_right;
-      ghat_right = ghat + constant4;
+      ghat_right = ghat + constant5;
       // boolean plusminus variable for sign of symmetric values
       // start_pm is up right start sign (only not true if matrix starts in
       // column with index 0 and bandwidth is an odd value)
@@ -472,14 +477,14 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
       wigd += N;
       
       // Set pointer of fhat and helping pointer for iterations
-      fhat += (1-fullsized)*(2*N+1)*N;
+      fhat += halfsized*(2*N+1)*N;
       iter_fhat = fhat;
       
       // Compute ghat by adding over all summands of current harmonic degree n
       // Copy code and divide ghat(:,0,:) by 2 if not fullsized.
       // (Copy code, because if fullsized, it proofs an useless if conditions in every iteration)
       for (j=-N; j<=0; j++){
-        for (k=-N*fullsized; k<=N; k++){
+        for (k=-constant1; k<=N; k++){
           for (l=-N; l<=N; l++){
             // fill with values
             value = wigd[k]*wigd[l];
@@ -510,21 +515,21 @@ static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
             fhat ++;
           }
           // go to next column
-          ghat +=row_shift; ghat_right += row_shift;
+          ghat += row_shift; ghat_right += row_shift;
         }
         // go to next matrix (3rd dimension)
-        ghat +=  constant2;
-        ghat_right +=  constant3;
+        ghat += constant3;
+        ghat_right += constant4;
         // reset pointer fhat
         fhat = iter_fhat;
         // use next column of Wigner-d matrix
-        wigd += constant1;
+        wigd += constant2;
         
         // reset plusminus to start plusminus value, because in next matrix
         // upright sign is same as before
         pm = start_pm;
       }
-    
+
 //     
 // // plot routine for last created Wigner-d matrix
 //     wigd = start_wigd;
@@ -558,6 +563,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     char *flag1 = "empty";            // optional input options
     char *flag2 = "empty";               
     mxComplexDouble *outFourierCoeff; // output fourier coefficient matrix
+
 
   // check data types
     // check for 2,3 or 4 input arguments (inCoeff & bandwith)
@@ -610,34 +616,37 @@ void mexFunction( int nlhs, mxArray *plhs[],
       flag1 = mxArrayToString(prhs[2]);
     if(nrhs>3)
       flag2 = mxArrayToString(prhs[3]);
-    
-  // create output data
-    // Get optional flags and create output with suitable size.
+
+
+  // Get optional flags to generate output with suitable size.
     // If f is a real valued function, then half size in 2nd dimension of
     // ghat is sufficient. Sometimes it is necessary to add zeros in some
-    // dimensions to get there size even for nfft.
-    // We define some {0,1} valued variables.
+    // dimensions to get even size for nfft.
+    // define some {0,1}-valued variables.
     int row_shift;    // 1 if zero row are added to make size of ghat even. 0 otherwise
     int col_shift;    // 1 if zero column are added to make size of ghat even. 0 otherwise
     int fullsized;    // 0 if ghat is halfsized in second dimension. 1 otherwise
-    const int ind = bandwidth+1;
-    int start_shift;
+    
+    // define length of the 3 dimensions of ghat
     mwSize dims[3];
+    // define helping variables
+    const int bwp1 = bandwidth+1;
+    int start_shift;
     
     if( (!strcmp(flag1,"makeeven")) || (!strcmp(flag2,"makeeven")) )
     {
-      // Create half sized ghat with even dimensions
+      // create half sized ghat with even dimensions
       if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
       {
         row_shift = 1;
-        col_shift = ind % 2;
+        col_shift = bwp1 % 2;
         fullsized = 0;
         dims[0] = 2*bandwidth+2; 
         dims[1] = bandwidth+1+col_shift; 
         dims[2] = 2*bandwidth+2;
         start_shift = (dims[0])*(dims[1]+col_shift)+1;
       }
-      // Create full sized ghat with even dimensions
+      // create full sized ghat with even dimensions
       else
       {
         row_shift = 1;
@@ -651,7 +660,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     else
     {
-      // Create half sized ghat without additional zeros
+      // create half sized ghat without additional zeros
       if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
       {
         row_shift = 0;
@@ -662,7 +671,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         dims[2] = 2*bandwidth+1;
         start_shift = 0;
       }
-      // Create full sized ghat without additional zeros
+      // create full sized ghat without additional zeros
       else
       {
         row_shift = 0;
@@ -674,13 +683,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
         start_shift = 0;
       }
     }    
-    
+
+
+  // create output data
     plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
 
     // create a pointer to the data in the output array (outFourierCoeff)
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
     // set pointer to skip first index
     outFourierCoeff += start_shift;
+
 
   // call the computational routine
     calculate_ghat_longwig(bandwidth,inCoeff,row_shift,col_shift,fullsized,
