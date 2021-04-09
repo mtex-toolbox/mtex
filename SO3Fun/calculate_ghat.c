@@ -20,149 +20,181 @@
 #include <matrix.h>
 #include <stdio.h> 
 #include <complex.h>
+#include <string.h>
 
-// The Wigner D-matrix of order L, is a matrix with entries from -L:L in 
+// The Wigner-d matrix of order L, is a matrix with entries from -L:L in 
 // both dimensions. Here it is sufficient to calculate Wigner-d with 
-// second Euler angle beta = pi/2. Due to symmetry only the rows and
-// columns with indices -L...0 are needed.
-// Moreover the Wigner-d matrix with beta = pi/2 is symmetric. Hence we 
-// only calculate the lower triangular part.
+// second Euler angle beta = pi/2. Due to symmetry only the rows with 
+// indices 0...L and the columns with indices -L...0 are needed. 
+// This is the left down quarter of Wigner-d matrix  (C in following outline)
+// and the left part of line with index 0 and the lower part of column with 
+// index 0.
+//        (  A  |  B  )
+//    d = (-----+-----)        
+//        (  C  |  D  )        
+// Moreover this part of the Wigner-d matrix with beta = pi/2 is symmetric
+// with respect to the antidiagonal. Hence we only calculate the lower 
+// anti-triangular matrix of C. For instance look here for L=3:
+//   (  4'  7'  9'  10 )        ( --------+ )
+//   (  3'  6'  8   9  )        (         | )
+//   (  2'  5   6   7  )   =    (    C    | )
+//   (  1   2   3   4  )        (         | )
+// The numbers represent the sequence of steps, which will be done to 
+// fill this matrix. The ' shows the symmetric values. For instance the 
+// value of 2' is entered in the same step as its (except of sign) 
+// symmetric value in 2.
+// The Wigner-d matrix with bandwidth L has size (2*L+1)x(2*L+1). It is
+// located in the center of a (2*N+1)x(2*N+1) matrix of zeros. 
+// In the current case it is sufficient to use the lower left quarter.
+// Hence, if harmonic degree is L, only the upper right (L+1)x(L+1) part
+// of lower left (N+1)x(N+1) quarter is needed. 
 //
 // Idea: We construct the current Wigner-d matrix by three term recurrsion.
 // (refer Antje Vollrath - A Fast Fourier Algorithm on the Rotation Group, section 2.3) [*1*]
-// Therefore we can not produce the first column. Since beta = pi/2 we get 
-// this exterior frame very easily by representation of Wigner-d matrix 
-// with Jacobi Polynomials.
+// Therefore we can not produce the exterior frame (row and column with 
+// indices L and -L).
+// Since beta = pi/2 we get this exterior frame very easily by 
+// representation of Wigner-d matrices with Jacobi Polynomials.
 // (refer Varshalovich - Quantum Theory of Angular Momentum - 1988, section 4.3.4)      [*2*]
 
  static void wigner_d(int N,int L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
 {
-   int col;    // column index
-   int row;    // row index
-   // use symmetry and run only over lower triangular matrix.
    
-   // only use central (L+1)x(L+1) for current Wigner-d matrix as part 
-   // of full (2*N+1)x(2*N+1) matrix. Hence we shift the pointers.
-   int shift = (N+2)*(N-L);
-   d += shift; d_min1 += shift; d_min2 += shift;
+    int col;      // column index
+    int row;      // row index
+    double value;
+    
+    // shift the pointer to d(L,-L).
+    int shift = L+(N+1)*(N-L);
+    d += shift;
    
-   // Define a pointer for upper triangular matrix
-   mxDouble *upright;
-   upright = d;
-   // This pointer runs over column indices. Updating is done by shifting
-   const int column_shift = N+1;
+    // The pointers runs over column indices. Updating is done by shifting
+    const int column_shift = N+1;
    
-   // variables for calculating Wigner-d
-   double value,nenner,v,w;
+    // define a pointer for upper matrix part (updated by -1 to upper row)
+    mxDouble *upleft;
+    upleft = d;
    
-   // produce column -L without recursion formula by:
-   // Representation formula of wigner-d matrices with Jacobi Polynomials
-   // The column -L is iteratively calculated by: (0.5)^L * sqrt_binom.
-   // binom = sequence with squere roots of binomial coefficents 
-   // (2*L  0), (2*L 1), ... (2*L  (L+row)).
-   // For example we use L=10. We can write the sequence as squereroots of: 
-   // 1
-   // (10/1)
-   // (10/1) * (9/2)
-   // (10/1) * (9/2) * (8/3)
-   // (10/1) * (9/2) * (8/3) * (7/4)
-   // ...
-   // Therefore we start with 1 and every new entry needs a multiplication 
-   // with next factor.
-   double sqrt_binom = 1;
-   const double multi = pow(0.5,L);
-   const double constant1 = 2.0*L+1;
+    
+  // Produce the exterior frame (row L and column -L) without recursion 
+  // formula by:
+    // Representation formula of wigner-d matrices with Jacobi Polynomials
+    // The row L is iteratively calculated by: (0.5)^L * sqrt_binom.
+    // sqrt_binom = sequence with square roots of binomial coefficents 
+    // (2*L  0), (2*L 1), ... (2*L  (L+row)).
+    // For instance we use L=10. We can write the sequence as square roots of: 
+    // 1
+    // (10/1)
+    // (10/1) * (9/2)
+    // (10/1) * (9/2) * (8/3)
+    // (10/1) * (9/2) * (8/3) * (7/4)
+    // ...
+    // Therefore we start with 1 and every new entry needs a multiplication 
+    // with next factor.
+    double sqrt_binom = 1;
+    double multi = pow(0.5,L);
+    const double constant1 = 2.0*L+1;
    
-   // Set first value in up right corner, because binomial coefficient (2*L 0) = 1.
-   *d = multi;
+    // if bandwidth is odd, then the last row values are <0. otherwise >0.
+    if((L % 2)==1)
+      multi = -multi;
+   
+    // Set first value in down left corner, because binomial coefficient 
+    // (2*L 0) = 1.
+    *d = multi;
 
-   // update all pointers
-   d ++; d_min1 ++; d_min2 ++; upright += column_shift;
-   // define running index
-   int iter=1;
-   for (row=-L+1; row<=0; row++)
-   {
-     sqrt_binom = sqrt_binom * sqrt((constant1-iter)/iter);
-     
-     value = sqrt_binom*multi;
-     
-     // set value in lower triangular matrix
-     *d = value;
-     
-     // Use symmetry and set value in upper triangular matrix
-     if (iter % 2 == 0)
-     {
-       *upright = value;
-     }
-     else
-     {
-       *upright = -value;
-     }
-     
-     // increase running index
-     iter++;
-     
-     // Update pointers to next value
-     d ++; d_min1 ++; d_min2 ++; upright += column_shift;
+    // update the pointers
+    d += column_shift; upleft --;
+    
+    // define running index
+    int iter = 1;
+    
+    for (col=-L+1; col<=0; col++)
+    {
+      sqrt_binom = sqrt_binom * sqrt((constant1-iter)/iter);
+      
+      value = sqrt_binom*multi;
+      
+      // Set value in lower anti-triangular matrix.
+      *d = value;
+      
+      // Use symmetry and set value in upper anti-triangular matrix in column -L
+      if (iter % 2 == 0)
+        *upleft = value;
+      else
+        *upleft = -value;
+      
+      // increase running index
+      iter ++;
+      
+      // Update pointers to next value
+      d += column_shift; upleft --;
     }
-   // shift to next column of current inner Wigner-d matrix and one down to
-   // diagonal element (-L+1,-L+1) of current Wigner-d matrix
-   shift = N-L+1;
-   d += shift; d_min1 += shift; d_min2 += shift;  upright = d;
-   
-   const int constant2 = L*L;
-   const int constant3 = L-1;
-   const int constant4 = constant3*constant3;
-   const double constant5 = -(2.0*L-1);
-   const double constant6 = -1.0*L;
-   int constant7, constant8;
-   long long int constant9, constant10;
-   
-   // now do three term recursion to receive inner part
-   // (only use lower triangular matrix in loop)
-   for (col=-L+1; col<=0; col++)
-   {
-     for (row=col; row<=0; row++)
-     {
-       // calculate the auxiliar variables similar like in refence [*1*].
-       constant7 = row*row;
-       constant8 = col*col;
-       constant9 = (constant2-constant7);
-       constant10 = (constant2-constant8);
-       nenner = sqrt(constant9*constant10) * constant3;
-       v = constant5*row*col / nenner;
-       constant9 = (constant4-constant7);
-       constant10 = (constant4-constant8);
-       w = constant6 * sqrt(constant9*constant10) / nenner;
+    
+    // shift to diagonal element (L-1,-L+1) of current Wigner-d matrix
+    shift = L-1+(N+1)*(N-L+1);
+    d_min1 += shift; d_min2 += shift;
+    shift = -L*column_shift-1;
+    d += shift; 
+    upleft = d;
+    
+    
+  // Now do three term recursion to receive inner part of Wigner-d matrix.
+    // define some variables for calculating Wigner-d by recursion formula
+    double nenner,v,w;
+    const int constant2 = L*L;
+    const int constant3 = L-1;
+    const int constant4 = constant3*constant3;
+    const double constant5 = -(2.0*L-1);
+    const double constant6 = -1.0*L;
+    int constant7, constant8;
+    long long int constant9, constant10;
+    
+    // only iterate over lower anti-triangular matrix in the loop
+    for (row=L-1; row>=0; row--)
+    {
+      for (col=-row; col<=0; col++)
+      {
+        // calculate the auxiliar variables v,w similar like in reference [*1*].
+        constant7 = row*row;
+        constant8 = col*col;
+        constant9 = constant2-constant7;
+        constant10 = constant2-constant8;
+        nenner = sqrt(constant9*constant10) * constant3;
+        v = constant5*row*col / nenner;
+        constant9 = constant4-constant7;
+        constant10 = constant4-constant8;
+        w = constant6 * sqrt(constant9*constant10) / nenner;
+        
+        // get value of inner part
+        value = v*(*d_min1) + w*(*d_min2);
        
-       // get value of inner part
-       value = v*(*d_min1) + w*(*d_min2);
-       
-       // Set this value at every symmetric point where it occurs (2 times).
-       // Pay attention to different signs.
-       // set value in lower triangular matrix
-       *d = value;
-     
-       // set value in upper triangular matrix
-       if (row != col)
-       {
-         if ((row+col) % 2 == 0)
-         {
-           *upright = value;
-         }
-         else
-         {
-            *upright = -value;
-         }
-       }
-              
-       // Update pointers for next iteration in same column
-       d ++; d_min1 ++; d_min2 ++; upright += column_shift;
-     }
-     // Update pointers for next iteration in next column
-     shift ++;
-     d += shift; d_min1 += shift; d_min2 += shift; upright = d;
-   }
+        // Set this value at both symmetric points where it occurs.
+        // Pay attention to different signs.
+        // 1) Set value in lower anti-triangular matrix
+        *d = value;
+      
+        // 2) Set value in upper anti-triangular matrix
+        if (-row != col)
+        {
+          if ((row+col) % 2 == 0)
+            *upleft = value;
+          else
+            *upleft = -value;
+        }
+        
+        // Update pointers for next iteration in same row and next column
+        d += column_shift; d_min1 += column_shift; d_min2 += column_shift;
+        // and in next row and same column
+        upleft --;
+      }
+      
+      // Update pointers for next iteration in upper row
+      shift += column_shift;
+      d += shift; d_min1 += shift; d_min2 += shift;
+      // and right column
+      upleft = d;
+    }
 
 }
  
@@ -170,27 +202,33 @@
  
 
 // The computational routine
-static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth, 
+static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
+                            int row_shift, int col_shift, int fullsized,
                             mxComplexDouble *ghat, mwSize nrows )
 {
-  // running indices
-  int k,l,j,n;
-  // shifting pointers
-  int shift;
-  // integer bandwidth
-  const int N = bandwidth;
-
   
+  // define usefull variables
+    int k,l,j,n;                                      // running indices
+    const int N = bandwidth;                          // integer bandwidth
+    int shift;                                        // helps by shifting pointers
+    const int row_len = (fullsized*N+N+1+col_shift);  // length of a row
+    const int col_len = (2*N+1+row_shift);            // length of a column
+    const int matrix_size = row_len*col_len;          // size of one matrix
+    double value;
+    
+    
   // Be shure N>0. Otherwise return the trivial solution.
-  if(N==0)
-  {
-    *ghat =*fhat;
-    return;
-  }
+    if(N==0)
+    {
+      ghat[0].real = fhat[0].real/(2-fullsized);
+      ghat[0].imag = fhat[0].imag/(2-fullsized);
+      return;
+    }
   
+    
   // Idea: Calculate Wigner-d matrix by recursion formula from last two 
-  // wigner-d matrices.
-    // create 3 Wigner-d matrices for recurrence relation (2 as input and 1
+  // Wigner-d matrices.
+    // Create 3 Wigner-d matrices for recurrence relation (2 as input and 1
     // as output). Also get an auxiliary pointer to the matrices in each case.
     mxArray *D_min2 = mxCreateDoubleMatrix(N+1,N+1,mxREAL);
     mxDouble *wigd_min2 = mxGetDoubles(D_min2);
@@ -208,91 +246,112 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
     start_wigd = wigd;
     
     
-    // set start values for recurrence relations to compute Wigner-d matrices
+    // Set start values for recurrence relations to compute Wigner-d matrices
     // Wigner_d(0,pi/2)
-    shift = (N+2)*N;
-    wigd_min2 += shift;       // go to last element of matrix
+    shift = (N+1)*N;
+    wigd_min2 += shift;           // go to last element of matrix
     *wigd_min2 = 1;
     wigd_min2 = start_wigd_min2;  // go back to matrix start
     
     // Wigner_d(1,pi/2)
-    shift = (N+2)*(N-1);
-    wigd_min1 += shift;    // go 1 left up from the last element of the matrix
+    shift = (N+1)*(N-1);
+    wigd_min1 += shift;    // go 1 left from the upperelement of last column of the matrix
     const double wert = sqrt(0.5);
     const double wigd_harmonicdegree1[3][3] = {  // values of Wigner_d(1,pi/2)
-      {0.5, -wert,-0.5},
-      {wert,0,wert},
-      {-0.5,-wert,0.5}
-    };
+                                                {0.5, -wert,-0.5},
+                                                {wert,0,wert},
+                                                {-0.5,-wert,0.5}    };
     shift = N-1;
-    for (k=0; k<2; k++)             // fill with values
+    for (k=0; k<2; k++)             
     {
-      for (l=0; l<2; l++)
+      for (l=1; l<3; l++)
       {
-        *wigd_min1 = wigd_harmonicdegree1[l][k];
-        wigd_min1 ++;              // go to next line
+        *wigd_min1 = wigd_harmonicdegree1[l][k];  // fill with values
+        wigd_min1 ++;                             // go to next row
       }
-      wigd_min1 += shift;          // go to next column
+      wigd_min1 += shift;                         // go to next column
     }
-    wigd_min1 = start_wigd_min1;    // go back to matrix start
+    wigd_min1 = start_wigd_min1;                  // go back to matrix start
      
-  // Compute ghat by iteration over harmonic degree n of Wigner-d matrices
+    
+  // Compute ghat by iterating over harmonic degree n of Wigner-d matrices
   // in outermost loop. Start with n=0 and n=1 manually and use a loop for 
-  // the remaining n > 1.
-  // Use symmetry properties of Wigner-d and calculate only ghat for
-  // all indices j,k,l between -N...0.
+  // the remaining n > 1, except the last one. Do the last iteration n=N
+  // seperately and use symmetry in third dimension of ghat here.
+  // In every iteration: Use symmetry properties of Wigner-d matrices and 
+  // calculate ghat only for all indices j,k,l between -n...0.
     // Create pointers for help. One saves the starting position of ghat
-    // and the other saves starting position of fhat in current iteration 
-    // of harmonic degree n.
+    // and the other one saves the starting position of fhat in current 
+    // iteration of harmonic degree n.
     mxComplexDouble *start_ghat;
     start_ghat = ghat;
     mxComplexDouble *iter_fhat;
 
-    // Do recursion for n = 0.
+    
+  // Do recursion for n = 0.
     // Go to the center of ghat and write first value of fhat, since d^0=1.
-    ghat += N*(N+1)*(N+1)*4 + 2*(N+1)*N + N;
+    ghat += matrix_size*N + fullsized*col_len*N + N;
     *ghat = *fhat;
     fhat ++;
     ghat = start_ghat;
     
-    // Do recursion for n = 1.
+    
+  // Do recursion for n = 1.
     // Go to ghat(-1,-1,-1)
-    ghat += (N-1)*(N+1)*(N+1)*4 + 2*(N+1)*(N-1) + (N-1);  
+    ghat += matrix_size*(N-1) + fullsized*col_len*(N-1) + (N-1);
+    // if fullsized skip 3 values of fhat
+    fhat += (1-fullsized)*3;
     iter_fhat = fhat;
-    double value;
-    for (j=0; j<3; j++){
-      for (l=0; l<3; l++){
-        for (k=0; k<3; k++){
-          // fill with values
+    // fill ghat with values := fhat(1,k,l) * d^1(k,j) * d^1(l,k)
+    for (j=0; j<3; j++)
+    {
+      for (l=(1-fullsized); l<3; l++)
+      {
+        for (k=0; k<3; k++)
+        {
           value = wigd_harmonicdegree1[k][j] * wigd_harmonicdegree1[l][j];
           ghat[0].real += fhat[0].real* value;
           ghat[0].imag += fhat[0].imag* value;
-          // next line
+          // go to next row
           ghat ++;
           fhat ++;
         }
-        // next column
-        ghat += 2*N-1;
+        // go to next column
+        ghat += col_len-3;
       }
-      // next matrix (3rd dimension)
-      ghat += (2*N+2)*(2*N-1);
+      // go to next matrix (3rd dimension)
+      ghat += matrix_size - col_len*(2+fullsized);
       // reset pointer fhat
       fhat = iter_fhat;
     }
-    // Set pointer to next harmonic degree
-    fhat += 9;
+    // Set pointer fhat to next harmonic degree (to the 11th value of fhat)
+    fhat += 6 + 3*fullsized;
     // reset pointer ghat to ghat(-N,-N,-N)
     ghat = start_ghat;
     
     
-    // Be shure N>1, otherwise STOP
+  // Be shure N>1, otherwise STOP.
     if (N==1)
     {
+      if(fullsized == 0)
+      {
+        for (j=0; j<3; j++)
+        {
+          for (k=0; k<3; k++)
+          {
+            ghat[k].real = ghat[k].real/2;
+            ghat[k].imag = ghat[k].imag/2;
+          }
+          // next matrix (3rd dimension)
+          ghat += matrix_size;
+        }
+      }
+      
       return;
     }
     
     
-
+  // define some usefull variables
     const int constant1 = N+1;
     const int constant2 = 2*N;
     const int constant3 = 2*N+1;
@@ -312,32 +371,37 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
     const int constant17 = 2*N*(2*N+2)*(2*N+2);
     int constant18, constant19, constant20, constant21, constant22, 
             constant23, constant24, constant25, constant26;
-    int shift_2 = N*N+N-1;
     
-    // Do recursion for 1 < n < N:
     
-    // symmetry pointers (north-east , south-west , south-east)
-    mxComplexDouble *fhat_ne_front;
-    mxComplexDouble *ghat_ne_front;
-    mxComplexDouble *fhat_sw_front;
-    mxComplexDouble *ghat_sw_front;
-    mxComplexDouble *fhat_se_front;
-    mxComplexDouble *ghat_se_front;
+  // Do recursion for 1 < n < N: 
+    // define symmetry pointers for filling the values of ghat(:,:,j) by 
+    // iterating over j.
+    // ghat is the pointer of the southeast part of ghat(:,:,j).
+    mxComplexDouble *fhat_nw;   // northwest
+    mxComplexDouble *ghat_nw;
+    mxComplexDouble *fhat_ne;   // northeast
+    mxComplexDouble *ghat_ne;
+    mxComplexDouble *fhat_sw;   // southwest
+    mxComplexDouble *ghat_sw;
     
     for (n=2; n<N; n++)
     {
       // Calculate Wigner-d matrix
       wigner_d(N,n,wigd_min2,wigd_min1,wigd);
       
-      // Shift to inner part of Wigner-d matrix, which is not 0.
-      shift_2 -= constant1;
-      wigd += shift_2;
+      // Shift to first column of Wigner-d matrix, which is not 0.
+      wigd += constant1*(N-n);
       
-      // shift pointer ghat to ghat(-n,-n,-n)
-      ghat += constant16*(N-n);
+      // Shift pointer ghat to ghat(n,n,-n).
+      ghat += matrix_size*(N-n) + col_len*(n+N*fullsized) + (N+n);
       
       // Set pointer of fhat and helping pointer for iterations
+      fhat += (2*n+1)*(2*n+1)-1;
       iter_fhat = fhat;
+      
+      // Set northeast pointers
+      ghat_ne = ghat - 2*n;
+      fhat_ne = fhat - 2*n;
       
       // Define some useful constants
       constant18 = 2*n;                       // 2*n
@@ -350,105 +414,113 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
       constant25 = constant10-constant21;     // (2*N+1)*(2*N+2) - n*(2*N+2)
       constant26 = constant14+constant21;     // (2*N+2)*(2*N+3) + n*(2*N+2)
       
-      ghat_ne_front = ghat + constant18*constant4;
-      fhat_ne_front = fhat + constant20;
-      
+
       // Compute ghat by adding over all summands of current harmonic degree n
-      // Compute only ghat for j<=0.
-      for (j=-n; j<=0; j++){
-        for (k=-n; k<=0; k++){
-          // set pointers for symmetric values for j<=0
-          ghat_sw_front = ghat + constant18;
-          fhat_sw_front = fhat + constant18;
-          ghat_se_front = ghat_ne_front + constant18;
-          fhat_se_front = fhat_ne_front + constant18;       
-          for (l=-n; l<=0; l++){
-            // fill with values
+      // Compute ghat only for j<=0 (ghat is symmetric for j>0, more on later)
+      for (j=-n; j<=0; j++)
+      {
+        for (k=n; k>=0; k--)
+        {
+          // Set pointers of symmetric values for fixed index j
+          if (fullsized == 1)
+          {
+            ghat_sw = ghat - 2*n*col_len;
+            fhat_sw = fhat - 2*n*(2*n+1);
+            ghat_nw = ghat_ne - 2*n*col_len;
+            fhat_nw = fhat_ne - 2*n*(2*n+1);       
+          }
+          for (l=n; l>=0; l--)
+          {
+            // compute value
             value = wigd[k]*wigd[l];
             
-            // left up value
+            // Set right down (southeast) value
             ghat[0].real += fhat[0].real*value;
             ghat[0].imag += fhat[0].imag*value;
             
-
-            // fill symmetric values:
-            // left down value
-            if (l!=0)
+            // Fill symmetric values:
+            // 1) right up value
+            if (k!=0)
+            {
+              if ((k+j+n) % 2 == 0)
+              {
+                ghat_ne[0].real += fhat_ne[0].real*value;
+                ghat_ne[0].imag += fhat_ne[0].imag*value;
+              }
+              else
+              {
+                ghat_ne[0].real += -fhat_ne[0].real*value;
+                ghat_ne[0].imag += -fhat_ne[0].imag*value;
+              }
+            }
+            
+            // 2) left down value
+            if ((l!=0) && (fullsized == 1))
             {
               if ((l+j+n) % 2 == 0)
               {
-                ghat_sw_front[0].real += fhat_sw_front[0].real*value;
-                ghat_sw_front[0].imag += fhat_sw_front[0].imag*value;
+                ghat_sw[0].real += fhat_sw[0].real*value;
+                ghat_sw[0].imag += fhat_sw[0].imag*value;
               }
               else
               {   
-                ghat_sw_front[0].real += -fhat_sw_front[0].real*value;
-                ghat_sw_front[0].imag += -fhat_sw_front[0].imag*value;
-               }
-            }
+                ghat_sw[0].real += -fhat_sw[0].real*value;
+                ghat_sw[0].imag += -fhat_sw[0].imag*value;
+              }
             
-            if (k!=0)
-            {
-              // right up value
-              if ((k+j+n) % 2 == 0)
-              {
-                ghat_ne_front[0].real += fhat_ne_front[0].real*value;
-                ghat_ne_front[0].imag += fhat_ne_front[0].imag*value;
-              }
-              else
-              {
-                ghat_ne_front[0].real += -fhat_ne_front[0].real*value;
-                ghat_ne_front[0].imag += -fhat_ne_front[0].imag*value;
-              }
-              
-              // right down value
-              if (l!=0)
+            // 3) left up value
+              if (k!=0)
               {
                 if ((k+l) % 2 == 0)
                 {
-                  ghat_se_front[0].real += fhat_se_front[0].real*value;
-                  ghat_se_front[0].imag += fhat_se_front[0].imag*value;
+                  ghat_nw[0].real += fhat_nw[0].real*value;
+                  ghat_nw[0].imag += fhat_nw[0].imag*value;
                 }
                 else
                 {
-                  ghat_se_front[0].real += -fhat_se_front[0].real*value;
-                  ghat_se_front[0].imag += -fhat_se_front[0].imag*value;
+                  ghat_nw[0].real += -fhat_nw[0].real*value;
+                  ghat_nw[0].imag += -fhat_nw[0].imag*value;
                 }
               }
-            }   
-            
-            // go to next row
-            ghat ++; ghat_sw_front --;
-            fhat ++; fhat_sw_front --;
-            ghat_ne_front ++; ghat_se_front --;
-            fhat_ne_front ++; fhat_se_front --;
-            
+            } 
+             
+            // go to left column
+            ghat -= col_len; ghat_ne -= col_len;
+            fhat -= 2*n+1; fhat_ne -= 2*n+1;
+            // or right column
+            if (fullsized == 1)
+            {
+              ghat_nw += col_len; ghat_sw += col_len;
+              fhat_nw += 2*n+1; fhat_sw += 2*n+1;
+            }
           }
-          // go to next column
-          ghat += constant22; fhat += n;
-          ghat_ne_front -= constant23; fhat_ne_front -= constant24;
+          // go to upper row
+          ghat += col_len*(n+1)-1; fhat += (2*n+1)*(n+1)-1;
+          // or next row
+          ghat_ne += col_len*(n+1)+1; fhat_ne += (2*n+1)*(n+1)+1;
         }
         // go to next matrix (3rd dimension)
-        ghat += constant25;
-        ghat_ne_front += constant26;
+        ghat += (n+1)+matrix_size;
+        ghat_ne += -(n+1)+matrix_size;
         // reset pointer fhat
         fhat = iter_fhat;
-        fhat_ne_front = iter_fhat + constant20;
+        fhat_ne = iter_fhat -2*n;
         // use next column of Wigner-d matrix
         wigd += constant1;
       }
       
       
-      // reset pointer ghat to ghat(-N,-N,-N)
+      // reset pointer ghat to: ghat(-N,-N,-N) when fullsized. ghat(-N,0,-N) otherwise
       ghat = start_ghat;
-      // Set fhat to next harmonic degree
-      fhat += constant19*constant19;
+      // Set fhat to first value in next harmonic degree
+      fhat += 1;
       
-      // change pointers (wigd, wigdmin1 and wigdmin2) with regard to next
-      // recursions iteration of Wigner-d matrices. Therefore the two most
-      // recently computed Wigner-d matrices are used for next recursion.
+      // Change the pointers (wigd, wigdmin1 and wigdmin2) for the next
+      // recursions step for the calculation of the Wigner-d matrices.
+      // Therefore the two most recently computed Wigner-d matrices are 
+      // used for next recursion.
       // The other matrix will be overwritten in the next step.
-      // use wigd as exchange variable
+      // Use wigd as exchange variable.
       wigd = start_wigd_min2;
       
       start_wigd_min2 = start_wigd_min1;
@@ -459,188 +531,227 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
       wigd_min2 = start_wigd_min2;
     }
     
-    // do step for n=N and set symmetric values for j>0 by copying from j<0
-      // Define Pointers for symmetric values
-      mxComplexDouble *ghat_ende;
-      mxComplexDouble *ghat_sw_ende;
-      mxComplexDouble *ghat_ne_ende;
-      mxComplexDouble *ghat_se_ende;
+    
+  // Do step for n=N and set symmetric values for j>0 by copying from j<0
+    // define 4 pointers for j>0 which belong to the symmetric values of
+    // the previous pointers.
+    mxComplexDouble *ghat_back;
+    mxComplexDouble *ghat_ne_back;
+    mxComplexDouble *ghat_nw_back;
+    mxComplexDouble *ghat_sw_back;
+    
+    // Shift pointer ghat to ghat(N,N,-N)
+    ghat += col_len*(N+N*fullsized) + 2*N;
+       
+    // boolean plusminus variable for j>0, because ghat(:,:,j) = ghat(:,:,j)
+    // except for the sign
+    bool pm = true;
       
-      ghat_ende = ghat + constant17;
-      ghat_ne_ende = ghat_ende + constant9;
+    // Calculate Wigner-d matrix
+    wigner_d(N,N,wigd_min2,wigd_min1,wigd);
       
-      // boolean plusminus variable
-      bool pm = true;
+    // It is not necessary to shift the Wigner-d matrix to the first column
+    // which is not 0, because the pointer is already there.
       
-      // Calculate Wigner-d matrix
-      wigner_d(N,N,wigd_min2,wigd_min1,wigd);
-      
-      // Shift to inner part of Wigner-d matrix, which is not 0.
-      wigd += N;
-      
-      // Set pointer of fhat and helping pointer for iterations
-      iter_fhat = fhat;
-      
-      ghat_ne_front = ghat + constant9;
-      fhat_ne_front = fhat + constant8;
-      
-      // Compute ghat by adding over all summands of current harmonic degree N
-      for (j=-N; j<=0; j++){
-        for (k=-N; k<=0; k++){
-          ghat_sw_front = ghat + constant2;
-          fhat_sw_front = fhat + constant2;
-          ghat_se_front = ghat_ne_front + constant2;
-          fhat_se_front = fhat_ne_front + constant2;
-          
-          ghat_sw_ende = ghat_ende + constant2;
-          ghat_se_ende = ghat_ne_ende + constant2;
-          for (l=-N; l<=0; l++){
-            // fill with values
-            value = wigd[k]*wigd[l];
-            
-            ghat[0].real += fhat[0].real*value;
-            ghat[0].imag += fhat[0].imag*value;
-            
+    // Set pointer fhat to last value and set helping pointer for iterations
+    fhat += (2*N+1)*(2*N+1)-1;
+    iter_fhat = fhat;
+    
+    // Set northeast pointers
+    ghat_ne = ghat -2*N;
+    fhat_ne = fhat -2*N;
 
-            // fill symmetric values
-            // fill values for j<=0.
-            if (l!=0)
+    // Set the symmetry pointers
+    ghat_back = ghat + matrix_size*2*N;
+    ghat_ne_back = ghat_back - 2*N;
+      
+    // Compute ghat by adding over all summands of current harmonic degree N
+    for (j=-N; j<=0; j++)
+    {
+      for (k=N; k>=0; k--)
+      {
+        // Set pointers of symmetric values for fixed index j
+        if (fullsized == 1)
+        {
+          ghat_sw = ghat - 2*N*col_len;
+          fhat_sw = fhat - 2*N*(2*N+1);
+          ghat_nw = ghat_ne - 2*N*col_len;
+          fhat_nw = fhat_ne - 2*N*(2*N+1);
+          ghat_sw_back = ghat_back - 2*N*col_len;
+          ghat_nw_back = ghat_ne_back - 2*N*col_len;
+        }
+        for (l=N; l>=0; l--)
+        {
+          // compute value
+          value = wigd[k]*wigd[l];
+            
+          // Set right down (southeast) value
+          ghat[0].real += fhat[0].real*value;
+          ghat[0].imag += fhat[0].imag*value;
+          
+          // Fill symmetric values:
+          // Fill values for j<=0.
+            // 1) right up value
+            if (k!=0)
             {
-              if ((l+j+N) % 2 == 0)
+              if ((k+j+n) % 2 == 0)
               {
-                ghat_sw_front[0].real += fhat_sw_front[0].real*value;
-                ghat_sw_front[0].imag += fhat_sw_front[0].imag*value;
+                ghat_ne[0].real += fhat_ne[0].real*value;
+                ghat_ne[0].imag += fhat_ne[0].imag*value;
+              }
+              else
+              {
+                ghat_ne[0].real += -fhat_ne[0].real*value;
+                ghat_ne[0].imag += -fhat_ne[0].imag*value;
+              }
+            }
+          
+          
+          
+          // set ghat(:,0,:) values to half if not fullsized
+          if ((l==0) && (fullsized==0))
+          {
+            ghat[0].real = ghat[0].real/2;
+            ghat[0].imag = ghat[0].imag/2;
+            if (k!=0)
+            {
+              ghat_ne[0].real = ghat_ne[0].real/2;
+              ghat_ne[0].imag = ghat_ne[0].imag/2;
+            }
+          }
+          
+          
+          
+            // 2) left down value
+            if ((l!=0) && (fullsized == 1))
+            {
+              if ((l+j+n) % 2 == 0)
+              {
+                ghat_sw[0].real += fhat_sw[0].real*value;
+                ghat_sw[0].imag += fhat_sw[0].imag*value;
               }
               else
               {   
-                ghat_sw_front[0].real += -fhat_sw_front[0].real*value;
-                ghat_sw_front[0].imag += -fhat_sw_front[0].imag*value;
-               }
-            }
-            
-            if (k!=0)
-            {
-              if ((k+j+N) % 2 == 0)
-              {
-                ghat_ne_front[0].real += fhat_ne_front[0].real*value;
-                ghat_ne_front[0].imag += fhat_ne_front[0].imag*value;
+                ghat_sw[0].real += -fhat_sw[0].real*value;
+                ghat_sw[0].imag += -fhat_sw[0].imag*value;
               }
-              else
-              {
-                ghat_ne_front[0].real += -fhat_ne_front[0].real*value;
-                ghat_ne_front[0].imag += -fhat_ne_front[0].imag*value;
-              }
-              
-              if (l!=0)
+            // 3) left up value
+              if (k!=0)
               {
                 if ((k+l) % 2 == 0)
                 {
-                  ghat_se_front[0].real += fhat_se_front[0].real*value;
-                  ghat_se_front[0].imag += fhat_se_front[0].imag*value;
+                  ghat_nw[0].real += fhat_nw[0].real*value;
+                  ghat_nw[0].imag += fhat_nw[0].imag*value;
                 }
                 else
                 {
-                  ghat_se_front[0].real += -fhat_se_front[0].real*value;
-                  ghat_se_front[0].imag += -fhat_se_front[0].imag*value;
+                  ghat_nw[0].real += -fhat_nw[0].real*value;
+                  ghat_nw[0].imag += -fhat_nw[0].imag*value;
                 }
               }
-            }
-            
-            // fill values for j>0. by symmetry property
+            } 
+
+          // Fill values for j>0 by symmetry property
             if (j!=0)
             {
+              // with positive sign
               if (pm)
               {
-                *ghat_ende = *ghat;
-                
-                if (l!=0)
-                {
-                  *ghat_sw_ende = *ghat_sw_front;
-                }
+                *ghat_back = *ghat;
                 
                 if (k!=0)
+                  *ghat_ne_back = *ghat_ne;
+                
+                if (fullsized == 1)
                 {
-                  *ghat_ne_ende = *ghat_ne_front;
+                  if (l!=0)
+                    *ghat_sw_back = *ghat_sw;
+                  
+                  if ((k*l)!=0)
+                    *ghat_nw_back = *ghat_nw;
                 }
                 
-                if ((k*l)!=0)
-                {
-                  *ghat_se_ende = *ghat_se_front;
-                }
-                
+                // Change value of pm for next iteration
                 pm = false;
               }
-              else{
-                ghat_ende[0].real = -ghat[0].real;
-                ghat_ende[0].imag = -ghat[0].imag;
-                
-                if (l!=0)
-                {
-                  ghat_sw_ende[0].real = -ghat_sw_front[0].real;
-                  ghat_sw_ende[0].imag = -ghat_sw_front[0].imag;
-                }
+              // with negative sign
+              else
+              {
+                ghat_back[0].real = -ghat[0].real;
+                ghat_back[0].imag = -ghat[0].imag;
                 
                 if (k!=0)
                 {
-                  ghat_ne_ende[0].real = -ghat_ne_front[0].real;
-                  ghat_ne_ende[0].imag = -ghat_ne_front[0].imag;
+                  ghat_ne_back[0].real = -ghat_ne[0].real;
+                  ghat_ne_back[0].imag = -ghat_ne[0].imag;
+                }
+                if (fullsized == 1)
+                {
+                  if (l!=0)
+                  {
+                    ghat_sw_back[0].real = -ghat_sw[0].real;
+                    ghat_sw_back[0].imag = -ghat_sw[0].imag;
+                  }
+                
+                  if ((k*l)!=0)
+                  {
+                    ghat_nw_back[0].real = -ghat_nw[0].real;
+                    ghat_nw_back[0].imag = -ghat_nw[0].imag;
+                  }
                 }
                 
-                if ((k*l)!=0)
-                {
-                  ghat_se_ende[0].real = -ghat_se_front[0].real;
-                  ghat_se_ende[0].imag = -ghat_se_front[0].imag;
-                }
-               
+                // Change value of pm for next iteration
                 pm = true;
               }
             }
-            
-            
-            
-            // next row
-            ghat ++; ghat_sw_front --; 
-            ghat_ende ++; ghat_sw_ende --;
-            fhat ++; fhat_sw_front --;
-            
-            ghat_ne_front ++; ghat_se_front --;
-            ghat_ne_ende ++; ghat_se_ende --;
-            fhat_ne_front ++; fhat_se_front --;
-            
-          }
-          // next column
-          ghat += constant1; fhat += N;
-          ghat_ne_front -= constant7; fhat_ne_front -= constant6;
           
-          ghat_ende += constant1; 
-          ghat_ne_ende -= constant7;
-          if (N % 2 ==1)
+          // go to left column
+          ghat -= col_len; ghat_ne -= col_len;
+          ghat_back -= col_len; ghat_ne_back -= col_len;
+          fhat -= 2*N+1; fhat_ne -= 2*N+1;
+          // or right column
+          if (fullsized == 1)
           {
-            pm = !pm;
+            ghat_nw += col_len; ghat_sw += col_len;
+            ghat_nw_back += col_len; ghat_sw_back += col_len;
+            fhat_nw += 2*N+1; fhat_sw += 2*N+1;
           }
         }
-        // next matrix (3rd dimension)
-        ghat += constant11;
-        ghat_ne_front += constant15;
-        ghat_ende -= constant13;
-        ghat_ne_ende -= constant11;
-        // reset pointer fhat
-        fhat = iter_fhat;
-        fhat_ne_front = iter_fhat + constant8;
-        // use next column of Wigner-d matrix
-        wigd += constant1;
-        
-        // set plusminus true because in next matrix upright is plus;
-        pm = true;
+        // go to upper row
+        ghat += col_len*(N+1)-1; fhat += (2*N+1)*(N+1)-1;
+        ghat_back += col_len*(N+1)-1;
+        // or next row
+        ghat_ne += col_len*(N+1)+1; fhat_ne += (2*N+1)*(N+1)+1;
+        ghat_ne_back += col_len*(N+1)+1;  
+
+        // change pm when skipping an odd number N of steps
+        if (N % 2 == 1)
+          pm = !pm;
       }
-    
-    
+      // go to next matrix (3rd dimension)
+      ghat += (N+1)+matrix_size;
+      ghat_ne += -(N+1)+matrix_size;
+      ghat_back += (N+1)-matrix_size;
+      ghat_ne_back += -(N+1)-matrix_size;
+
+      // reset pointer fhat
+      fhat = iter_fhat;
+      fhat_ne = iter_fhat - 2*N;
+      
+      // use next column of Wigner-d matrix
+      wigd += constant1;
+      
+      // Set plusminus to true, because in next matrix down left is plus.
+      pm = true;
+    }
+      
+
 // // plot routine for last created Wigner-d matrix
-//     wigd = start_wigd;
+//     wigd = start_wigd_min1,
 //     ghat = start_ghat;
 //     int matrix = (2*N+2)*(2*N+2); // size
-//     ghat -= matrix;               // reset pointer start
-//     
+//     ghat -= matrix-N;               // reset pointer start
+//             
 //     int helpplotzaehler = 0;
 //     //mwSize k;
 //     for (k=0; k<((N+1)*(N+1)); k++)
@@ -656,8 +767,6 @@ static void calculate_ghat( mxComplexDouble *fhat, mxDouble bandwidth,
 //       }
 //     }
 
-    
-
 }
 
 
@@ -666,69 +775,145 @@ void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[])
 {
 
-  // variable declarations here
+  // variable declarations
+    mxDouble bandwidth;               // input bandwidth
     mxComplexDouble *inCoeff;         // nrows x 1 input coefficient vector
     size_t nrows;                     // size of inCoeff
-    mxDouble bandwidth;               // input bandwidth
+    char *flag1 = "empty";            // optional input options
+    char *flag2 = "empty";               
     mxComplexDouble *outFourierCoeff; // output fourier coefficient matrix
 
+
   // check data types
-    // check for 2 input arguments (inCoeff & bandwith)
-    if(nrhs!=2) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt","Two inputs required.");
-    }
+    // check for 2,3 or 4 input arguments (inCoeff & bandwith)
+    if( (nrhs!=2) && (nrhs!=3) && (nrhs!=4) )
+      mexErrMsgIdAndTxt("calculate_ghat:invalidNumInputs","Two, three or four inputs required.");
     // check for 1 output argument (outFourierCoeff)
-    if(nlhs!=1) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt","One output required.");
-    }
-    // make sure the first input argument (inCoeff) is type double
-    if(  !mxIsComplex(prhs[0]) && !mxIsDouble(prhs[0]) ) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt",
-                "Input coefficient vector must be type double.");
-    }
-    // check that number of columns in first input argument (inCoeff) is 1
-    if(mxGetN(prhs[0])!=1) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt",
-                "Input coefficient vector must be a row vector.");
-    }
-    // make sure the second input argument (bandwidth) is double scalar
-    if( !mxIsDouble(prhs[1]) ||
-         mxIsComplex(prhs[1]) ||
-         mxGetNumberOfElements(prhs[1])!=1) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt",
-                "Input bandwidth must be a Scalar double.");
-    }
+    if(nlhs!=1) 
+      mexErrMsgIdAndTxt("calculate_ghat:maxlhs","One output required.");
+    
+    // make sure the first input argument (bandwidth) is double scalar
+    if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
+      mexErrMsgIdAndTxt("calculate_ghat:notDouble","First input argument bandwidth must be a Scalar double.");
+    
+    // make sure the second input argument (inCoeff) is type double
+    if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
+      mexErrMsgIdAndTxt("calculate_ghat:notDouble","Second input argument coefficient vector must be type double.");
+    // check that number of columns in second input argument (inCoeff) is 1
+    if(mxGetN(prhs[1])!=1)
+      mexErrMsgIdAndTxt("calculate_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
+    
+    // make sure the third and fourth input arguments are strings (if existing)
+    if ( (nrhs>2) && (mxIsChar(prhs[2]) != 1) )
+      mexErrMsgIdAndTxt( "calculate_ghat:inputNotString","Third input argument must be a string.");
+    if ( (nrhs>3) && (mxIsChar(prhs[3]) != 1) )
+      mexErrMsgIdAndTxt( "calculate_ghat:inputNotString","Fourth input argument must be a string.");
+
 
   // read input data
+    // get the value of the scalar input (bandwidth)
+    bandwidth = mxGetScalar(prhs[0]);
+    
+    // check whether bandwidth is natural number
+    if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
+      mexErrMsgIdAndTxt("calculate_ghat:notInt","First input argument must be a natural number.");
+    
     // make input matrix complex
-    mxArray *zeiger = mxDuplicateArray(prhs[0]);
-    if (mxMakeArrayComplex(zeiger)) {}
+    mxArray *zeiger = mxDuplicateArray(prhs[1]);
+    if(mxMakeArrayComplex(zeiger)) {}
 
     // create a pointer to the data in the input vector (inCoeff)
     inCoeff = mxGetComplexDoubles(zeiger);
 
     // get dimensions of the input vector
-    nrows = mxGetM(prhs[0]);
+    nrows = mxGetM(prhs[1]);
+    
+    // if exists, get flags of input
+    if(nrhs>2)
+      flag1 = mxArrayToString(prhs[2]);
+    if(nrhs>3)
+      flag2 = mxArrayToString(prhs[3]);
 
-    // get the value of the scalar input (bandwidth)
-    bandwidth = mxGetScalar(prhs[1]);
-    // check whether bandwidth is natural number
-    if( (round(bandwidth)-bandwidth)!=0 ||
-         bandwidth<0 ) {
-        mexErrMsgIdAndTxt("calculate_ghat:notInt",
-                "Input must be a natural number.");
+
+// Get optional flags to generate output with suitable size.
+    // If f is a real valued function, then half size in 2nd dimension of
+    // ghat is sufficient. Sometimes it is necessary to add zeros in some
+    // dimensions to get even size for nfft.
+    // define some {0,1}-valued variables.
+    int row_shift;    // 1 if zero row are added to make size of ghat even. 0 otherwise
+    int col_shift;    // 1 if zero column are added to make size of ghat even. 0 otherwise
+    int fullsized;    // 0 if ghat is halfsized in second dimension. 1 otherwise
+    
+    // define length of the 3 dimensions of ghat
+    mwSize dims[3];
+    // define helping variables
+    const int bwp1 = bandwidth+1;
+    int start_shift;
+    
+    if( (!strcmp(flag1,"makeeven")) || (!strcmp(flag2,"makeeven")) )
+    {
+      // create half sized ghat with even dimensions
+      if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
+      {
+        row_shift = 1;
+        col_shift = bwp1 % 2;
+        fullsized = 0;
+        dims[0] = 2*bandwidth+2; 
+        dims[1] = bandwidth+1+col_shift; 
+        dims[2] = 2*bandwidth+2;
+        start_shift = (dims[0])*(dims[1]+col_shift)+1;
+      }
+      // create full sized ghat with even dimensions
+      else
+      {
+        row_shift = 1;
+        col_shift = 1;
+        fullsized = 1;
+        dims[0] = 2*bandwidth+2; 
+        dims[1] = 2*bandwidth+2; 
+        dims[2] = 2*bandwidth+2;
+        start_shift = (dims[0])*(dims[1]+1)+1;
+      }
     }
+    else
+    {
+      // create half sized ghat without additional zeros
+      if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
+      {
+        row_shift = 0;
+        col_shift = 0;
+        fullsized = 0;
+        dims[0] = 2*bandwidth+1; 
+        dims[1] = bandwidth+1; 
+        dims[2] = 2*bandwidth+1;
+        start_shift = 0;
+      }
+      // create full sized ghat without additional zeros
+      else
+      {
+        row_shift = 0;
+        col_shift = 0;
+        fullsized = 1;
+        dims[0] = 2*bandwidth+1; 
+        dims[1] = 2*bandwidth+1; 
+        dims[2] = 2*bandwidth+1;
+        start_shift = 0;
+      }
+    }    
+
 
   // create output data
-    mwSize dims[3] = {2*bandwidth+2, 2*bandwidth+2, 2*bandwidth+2};
     plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
 
     // create a pointer to the data in the output array (outFourierCoeff)
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
-    // set pointer to skip first index
-    outFourierCoeff += (dims[1])*(dims[1]+1)+1;
+    // Set pointer to skip first index in all 3 dimensions. Possibly this
+    // is not necessary for instance if flag is flag2 is not makeeven.
+    outFourierCoeff += start_shift;
+
 
   // call the computational routine
-    calculate_ghat(inCoeff,bandwidth,outFourierCoeff,(mwSize)nrows);
+    calculate_ghat(bandwidth,inCoeff,row_shift,col_shift,fullsized,
+            outFourierCoeff,(mwSize)nrows);
 
 }
