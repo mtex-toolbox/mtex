@@ -197,9 +197,8 @@
     }
 
 }
- 
- 
- 
+
+
 
 // The computational routine
 static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
@@ -214,6 +213,7 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
     const int row_len = (fullsized*N+N+1+col_shift);  // length of a row
     const int col_len = (2*N+1+row_shift);            // length of a column
     const int matrix_size = row_len*col_len;          // size of one matrix
+    const int halfsized = 1-fullsized;
     double value;
     
     
@@ -300,12 +300,12 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
     // Go to ghat(-1,-1,-1)
     ghat += matrix_size*(N-1) + fullsized*col_len*(N-1) + (N-1);
     // if fullsized skip 3 values of fhat
-    fhat += (1-fullsized)*3;
+    fhat += halfsized*3;
     iter_fhat = fhat;
     // fill ghat with values := fhat(1,k,l) * d^1(k,j) * d^1(l,k)
     for (j=0; j<3; j++)
     {
-      for (l=(1-fullsized); l<3; l++)
+      for (l=halfsized; l<3; l++)
       {
         for (k=0; k<3; k++)
         {
@@ -352,6 +352,12 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
     
     
   // define some usefull variables
+    const bool full = (fullsized==1);
+    const bool odd = (N % 2 == 1);
+    bool test1;
+    bool test2;
+    bool test3;
+    bool test4;
     const int constant1 = N+1;
     const int constant2 = 2*N;
     const int constant3 = 2*N+1;
@@ -385,7 +391,18 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
     mxComplexDouble *ghat_sw;
     
     for (n=2; n<N; n++)
-    {
+    {      
+      // define some useful constants
+      constant18 = 2*n;                       // 2*n
+      constant19 = constant18 + 1;            // 2*n+1
+      constant20 = constant18 * constant19;   // 2*n*(2*n+1)
+      constant21 = constant4 * n;             // n*(2*N+2)
+      constant22 = constant3-n;               // 2*N+1-n
+      constant23 = constant5+n;               // 2*N+3 +n
+      constant24 = 3*n+2;
+      constant25 = constant10-constant21;     // (2*N+1)*(2*N+2) - n*(2*N+2)
+      constant26 = constant14+constant21;     // (2*N+2)*(2*N+3) + n*(2*N+2)
+      
       // Calculate Wigner-d matrix
       wigner_d(N,n,wigd_min2,wigd_min1,wigd);
       
@@ -403,17 +420,6 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
       ghat_ne = ghat - 2*n;
       fhat_ne = fhat - 2*n;
       
-      // Define some useful constants
-      constant18 = 2*n;                       // 2*n
-      constant19 = constant18 + 1;            // 2*n+1
-      constant20 = constant18 * constant19;   // 2*n*(2*n+1)
-      constant21 = constant4 * n;             // n*(2*N+2)
-      constant22 = constant3-n;               // 2*N+1-n
-      constant23 = constant5+n;               // 2*N+3 +n
-      constant24 = 3*n+2;
-      constant25 = constant10-constant21;     // (2*N+1)*(2*N+2) - n*(2*N+2)
-      constant26 = constant14+constant21;     // (2*N+2)*(2*N+3) + n*(2*N+2)
-      
 
       // Compute ghat by adding over all summands of current harmonic degree n
       // Compute ghat only for j<=0 (ghat is symmetric for j>0, more on later)
@@ -421,8 +427,11 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
       {
         for (k=n; k>=0; k--)
         {
+          test2 = (k!=0);
+          test3 = ((k+j+n) % 2 == 0);
+          
           // Set pointers of symmetric values for fixed index j
-          if (fullsized == 1)
+          if(full)
           {
             ghat_sw = ghat - 2*n*col_len;
             fhat_sw = fhat - 2*n*(2*n+1);
@@ -439,56 +448,56 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
             ghat[0].imag += fhat[0].imag*value;
             
             // Fill symmetric values:
-            // 1) right up value
-            if (k!=0)
-            {
-              if ((k+j+n) % 2 == 0)
+              // 1) right up value
+              if(test2)
               {
-                ghat_ne[0].real += fhat_ne[0].real*value;
-                ghat_ne[0].imag += fhat_ne[0].imag*value;
-              }
-              else
-              {
-                ghat_ne[0].real += -fhat_ne[0].real*value;
-                ghat_ne[0].imag += -fhat_ne[0].imag*value;
-              }
-            }
-            
-            // 2) left down value
-            if ((l!=0) && (fullsized == 1))
-            {
-              if ((l+j+n) % 2 == 0)
-              {
-                ghat_sw[0].real += fhat_sw[0].real*value;
-                ghat_sw[0].imag += fhat_sw[0].imag*value;
-              }
-              else
-              {   
-                ghat_sw[0].real += -fhat_sw[0].real*value;
-                ghat_sw[0].imag += -fhat_sw[0].imag*value;
-              }
-            
-            // 3) left up value
-              if (k!=0)
-              {
-                if ((k+l) % 2 == 0)
+                if(test3)
                 {
-                  ghat_nw[0].real += fhat_nw[0].real*value;
-                  ghat_nw[0].imag += fhat_nw[0].imag*value;
+                  ghat_ne[0].real += fhat_ne[0].real*value;
+                  ghat_ne[0].imag += fhat_ne[0].imag*value;
                 }
                 else
                 {
-                  ghat_nw[0].real += -fhat_nw[0].real*value;
-                  ghat_nw[0].imag += -fhat_nw[0].imag*value;
+                  ghat_ne[0].real += -fhat_ne[0].real*value;
+                  ghat_ne[0].imag += -fhat_ne[0].imag*value;
                 }
               }
-            } 
+            
+              // 2) left down value
+              if ((l!=0) && full)
+              {
+                if ((l+j+n) % 2 == 0)
+                {
+                  ghat_sw[0].real += fhat_sw[0].real*value;
+                  ghat_sw[0].imag += fhat_sw[0].imag*value;
+                }
+                else
+                {   
+                  ghat_sw[0].real += -fhat_sw[0].real*value;
+                  ghat_sw[0].imag += -fhat_sw[0].imag*value;
+                }
+          
+              // 3) left up value
+                if(test2)
+                {
+                  if ((k+l) % 2 == 0)
+                  {
+                    ghat_nw[0].real += fhat_nw[0].real*value;
+                    ghat_nw[0].imag += fhat_nw[0].imag*value;
+                  }
+                  else
+                  {
+                    ghat_nw[0].real += -fhat_nw[0].real*value;
+                    ghat_nw[0].imag += -fhat_nw[0].imag*value;
+                  }
+                }
+              } 
              
             // go to left column
             ghat -= col_len; ghat_ne -= col_len;
             fhat -= 2*n+1; fhat_ne -= 2*n+1;
             // or right column
-            if (fullsized == 1)
+            if(full)
             {
               ghat_nw += col_len; ghat_sw += col_len;
               fhat_nw += 2*n+1; fhat_sw += 2*n+1;
@@ -568,10 +577,14 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
     // Compute ghat by adding over all summands of current harmonic degree N
     for (j=-N; j<=0; j++)
     {
+      test1 = (j!=0);
       for (k=N; k>=0; k--)
       {
+        test2 = (k!=0);
+        test3 = ((k+j+n) % 2 == 0);
+        
         // Set pointers of symmetric values for fixed index j
-        if (fullsized == 1)
+        if(full)
         {
           ghat_sw = ghat - 2*N*col_len;
           fhat_sw = fhat - 2*N*(2*N+1);
@@ -582,6 +595,8 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
         }
         for (l=N; l>=0; l--)
         {
+          test4 = ((l!=0) && full);
+          
           // compute value
           value = wigd[k]*wigd[l];
             
@@ -592,9 +607,9 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
           // Fill symmetric values:
           // Fill values for j<=0.
             // 1) right up value
-            if (k!=0)
+            if(test2)
             {
-              if ((k+j+n) % 2 == 0)
+              if(test3)
               {
                 ghat_ne[0].real += fhat_ne[0].real*value;
                 ghat_ne[0].imag += fhat_ne[0].imag*value;
@@ -605,25 +620,8 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
                 ghat_ne[0].imag += -fhat_ne[0].imag*value;
               }
             }
-          
-          
-          
-          // set ghat(:,0,:) values to half if not fullsized
-          if ((l==0) && (fullsized==0))
-          {
-            ghat[0].real = ghat[0].real/2;
-            ghat[0].imag = ghat[0].imag/2;
-            if (k!=0)
-            {
-              ghat_ne[0].real = ghat_ne[0].real/2;
-              ghat_ne[0].imag = ghat_ne[0].imag/2;
-            }
-          }
-          
-          
-          
             // 2) left down value
-            if ((l!=0) && (fullsized == 1))
+            if(test4)
             {
               if ((l+j+n) % 2 == 0)
               {
@@ -636,7 +634,7 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
                 ghat_sw[0].imag += -fhat_sw[0].imag*value;
               }
             // 3) left up value
-              if (k!=0)
+              if(test2)
               {
                 if ((k+l) % 2 == 0)
                 {
@@ -651,23 +649,34 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
               }
             } 
 
+          // Set ghat(:,0,:) values to half if not fullsized
+            if ((l==0) && !full)
+            {
+              ghat[0].real = ghat[0].real/2;
+              ghat[0].imag = ghat[0].imag/2;
+              if(test2)
+              {
+                ghat_ne[0].real = ghat_ne[0].real/2;
+                ghat_ne[0].imag = ghat_ne[0].imag/2;
+              }
+            }
+          
           // Fill values for j>0 by symmetry property
-            if (j!=0)
+            if(test1)
             {
               // with positive sign
-              if (pm)
+              if(pm)
               {
                 *ghat_back = *ghat;
                 
-                if (k!=0)
+                if(test2)
                   *ghat_ne_back = *ghat_ne;
                 
-                if (fullsized == 1)
+                if(test4)
                 {
-                  if (l!=0)
-                    *ghat_sw_back = *ghat_sw;
+                  *ghat_sw_back = *ghat_sw;
                   
-                  if ((k*l)!=0)
+                  if(test2)
                     *ghat_nw_back = *ghat_nw;
                 }
                 
@@ -680,20 +689,17 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
                 ghat_back[0].real = -ghat[0].real;
                 ghat_back[0].imag = -ghat[0].imag;
                 
-                if (k!=0)
+                if(test2)
                 {
                   ghat_ne_back[0].real = -ghat_ne[0].real;
                   ghat_ne_back[0].imag = -ghat_ne[0].imag;
                 }
-                if (fullsized == 1)
+                if(test4)
                 {
-                  if (l!=0)
-                  {
-                    ghat_sw_back[0].real = -ghat_sw[0].real;
-                    ghat_sw_back[0].imag = -ghat_sw[0].imag;
-                  }
-                
-                  if ((k*l)!=0)
+                  ghat_sw_back[0].real = -ghat_sw[0].real;
+                  ghat_sw_back[0].imag = -ghat_sw[0].imag;
+                                  
+                  if(test2)
                   {
                     ghat_nw_back[0].real = -ghat_nw[0].real;
                     ghat_nw_back[0].imag = -ghat_nw[0].imag;
@@ -710,7 +716,7 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
           ghat_back -= col_len; ghat_ne_back -= col_len;
           fhat -= 2*N+1; fhat_ne -= 2*N+1;
           // or right column
-          if (fullsized == 1)
+          if(full)
           {
             ghat_nw += col_len; ghat_sw += col_len;
             ghat_nw_back += col_len; ghat_sw_back += col_len;
@@ -725,7 +731,7 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
         ghat_ne_back += col_len*(N+1)+1;  
 
         // change pm when skipping an odd number N of steps
-        if (N % 2 == 1)
+        if(odd)
           pm = !pm;
       }
       // go to next matrix (3rd dimension)
