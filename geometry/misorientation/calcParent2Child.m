@@ -1,4 +1,4 @@
-function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
+function [p2cOld, omega] = calcParent2Child(mori,p2c,varargin)
 %
 % Syntax
 %
@@ -42,17 +42,18 @@ maxIt = get_option(varargin,'maxIterarion',10);
 
 % prepare iterative loop
 p2cOld = p2c;
+bestFit = inf;
 
 disp(' ');
 disp(' optimizing parent to child orientation relationship');
 
 % iterate
-for k = 1:maxIt
+k = 1;
+while k <= maxIt
   
   % stop iteration if convergence
   if k>1 && angle(p2c,p2cOld) < 0.1*degree, break; end
-  p2cOld = p2c;
-    
+      
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
   
@@ -73,22 +74,34 @@ for k = 1:maxIt
   ind = omega < min(threshold, quantile(omega, quant));
   
   % current fit
-  disp(['  ' fillStr(char(p2c),22) xnum2str(mean(omega(ind)) ./ degree)])
+  misFit = mean(omega(ind));
+
+  if misFit > bestFit
+    
+    alpha = (alpha + 0.1) * 2;
+        
+  else
   
-  % comute p2c misorientations for all variants
-  p2cCandidates = [];
-  for iv = 1:length(c2c)
-    
-    if ~any(ind & variant==iv), continue; end
-    
-    mori_v = project2FundamentalRegion(moriSub(ind & variant==iv), c2c(iv));
-    
-    p2cCandidates = [p2cCandidates; mori_v * p2c.variants(iv)]; %#ok<AGROW>
-    %p2cCandidates(iv) = mean(mori_v * p2c.variants(iv));
-    
-  end
+    k = k + 1;
+    disp(['  ' fillStr(char(p2c),22) xnum2str(misFit ./ degree)])
+    bestFit = misFit;
+    p2cOld = p2c;
   
-  p2c = mean([p2c,mean(p2cCandidates)],'weights',[alpha 1]);
+    % compute p2c misorientations for all variants
+    p2cCandidates = [];
+    for iv = 1:length(c2c)
+    
+      if ~any(ind & variant==iv), continue; end
+    
+      mori_v = project2FundamentalRegion(moriSub(ind & variant==iv), c2c(iv));
+    
+      p2cCandidates = [p2cCandidates; mori_v * p2c.variants(iv)]; %#ok<AGROW>
+      %p2cCandidates(iv) = mean(mori_v * p2c.variants(iv));
+    
+    end
+  end 
+
+  p2c = mean([p2cOld,mean(p2cCandidates)],'weights',[alpha 1]);
   
 end
 
