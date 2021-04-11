@@ -5,12 +5,6 @@ function [childId, packetId] = calcVariantId(parentOri,childOri,p2c,varargin)
 %
 %   variantId = calcVariantId(parentOri,childOri,p2c)
 %
-%   % reorder variantIds according to Morito convention
-%   variantId = calcVariantId(parentOri,childOri,p2c,'variantMap',variantMap)
-%
-%   % reorder variantIds according to variantMap
-%   variantId = calcVariantId(parentOri,childOri,p2c,'variantMap',variantMap)
-%
 %   % compute packetIds
 %   [variantId,packetId] = calcVariantId(parentOri,childOri,p2c,...
 %     {hklParent,hklChild})
@@ -31,10 +25,6 @@ function [childId, packetId] = calcVariantId(parentOri,childOri,p2c,varargin)
 % Output
 %  variantId - variant id
 %  packetId  - packet id
-%
-% Options
-%  variantMap - reorder variantIds according to variantMap
-%  morito - reorder variantId according to Morito convention
 %
 
 % all child variants
@@ -74,15 +64,5 @@ if nargout == 2
   packetId = packetId(childId);
   
 end
-
-% apply a variant map
-if check_option(varargin,'morito')
-  vMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-    24 22 20 4 2 6 13 15 17 8 12 10];
-else
-  vMap = get_option(varargin,'variantMap',1:max(childId));
-end
-
-childId = vMap(childId);
 
 end

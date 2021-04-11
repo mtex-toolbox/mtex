@@ -37,17 +37,16 @@ OR.p2cAxis.child = setDisplayStyle(OR.p2cAxis.child,'direction');
 
 %Variants
 OR.variants.orientation = OR.p2c.variants;
-OR.variants.c2c = OR.p2c.variants*inv(OR.p2c.variants((job.variantMap(1))));
+OR.variants.c2c = OR.p2c.variants*inv(OR.p2c.variants(1));
 OR.variants.angle = angle(OR.variants.c2c);
 OR.variants.axis = axis(OR.variants.c2c,job.csChild);
 OR.variants.axis = setDisplayStyle(OR.variants.axis,'direction');
-OR.variants.id = job.variantMap;
 
 %Screen output
 
 screenPrint('Step','OR info:');
 screenPrint('SubStep',sprintf(['OR misorientation angle = ',...
-  num2str(angle(OR.p2c)./degree),'º']));
+  num2str(angle(OR.p2c)./degree),'°']));
 
 screenPrint('Step','Parallel planes');
 screenPrint('SubStep',sprintf(['Closest parent plane = ',...

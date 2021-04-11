@@ -51,13 +51,13 @@ classdef parentGrainReconstructor < handle
     fit    
     graph
     votes
-    variantMap      
-    
+
   end
   
   properties (Dependent=true)
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
+    variantMap
   end
   
   properties (Dependent=true)
@@ -116,34 +116,8 @@ classdef parentGrainReconstructor < handle
         assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
         job.csParent = job.p2c.CS;
         job.csChild = job.p2c.SS;
-        %job.variantMap = 1:length(job.p2c.variants);
-      end   
-      
-      % add listener to p2c
-      addlistener(job,'p2c','PostSet',@job.handlePropEvents);
-    end
-       
-    function handlePropEvents(job,metaProp,eventData)
-      switch metaProp.Name 
-        case 'p2c'
-          
-          numVariants = length(job.p2c.variants);
-          
-          %Initialisation
-          if length(job.variantMap) ~= numVariants
-            
-            % default to Morito convention for cubic to cubic misorientation
-            if job.p2c.CS.lattice == latticeType.cubic && ...
-                job.p2c.SS.lattice == latticeType.cubic && ...
-                numVariants == 24
-            
-              job.variantMap = 'morito';
-              
-            else % otherwise the default is 1,2,3,4,...,numVariants
-              job.variantMap = 1:numVariants;
-            end
-          end          
       end
+      
     end
 	
     function id = get.parentPhaseId(job)
@@ -219,24 +193,19 @@ classdef parentGrainReconstructor < handle
     function set.variantId(job,id)
       job.grainsMeasured.prop.variantId = id;
     end
-        
-    %function set.variantMap(job,id) 
-    %  assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
-    %  numVariants = length(job.p2c.variants);
-    %    
-    %  if strcmpi(id,'morito') && numVariants == 24
-    %    job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-    %      24 22 20 4 2 6 13 15 17 8 12 10];
-    %    
-    %    % TODO: maybe we can find a more robust implementation of the
-    %    % morito order, i.e., one that does not depend 
-    %    
-    %  else
-    %    assert(length(id) == numVariants,'Supply %d natural numbers as Ids',numVariants);
-    %    job.variantMap = id;
-    %  end
-    %end
+     
+    function set.variantMap(job,vMap)
+      job.p2c.opt.variantMap = vMap;
+    end
     
+    function vMap = get.variantMap(job) 
+      if ~isfield(job.p2c.opt,'variantMap') || isempty(job.p2c.opt.variantMap)
+        vMap = 1:length(job.p2c.variants); 
+      else
+        vMap = job.p2c.opt.variantMap;
+      end      
+    end
+        
   end
 
 end

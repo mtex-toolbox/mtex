@@ -30,7 +30,6 @@ function out = variants(p2c,varargin)
 % Options
 %  parent - return parent variants
 %  child  - return child variants (default)
-%  variantMap - reorder variants
 %
 % Output
 %  p2cVariants - parent to child variants
@@ -160,17 +159,6 @@ else % child variants
 
   if isfield(p2c.opt,'variantMap') && ~isempty(p2c.opt.variantMap)
     p2cVariants = p2cVariants.subSet(p2c.opt.variantMap);
-  end
-  
-  if check_option(varargin,'variantMap')
-    vMap = get_option(varargin,'variantMap');
-    %if length(vMap) == length(p2cVariants)
-    %  p2cVariants = p2cVariants.subSet(vMap);
-    %else
-    p2cVariants.CS = [];
-    p2cVariants = inv(reshape(accumarray(vMap(:),inv(p2cVariants)),1,[]));
-    p2cVariants.CS = p2c.CS;
-    %end
   end
   
   if exist('variantId','var')
