@@ -18,7 +18,7 @@ OR.p2c = job.p2c;
 
 % Parallel planes and directions
 [OR.plane.parent,OR.plane.child,OR.direction.parent,OR.direction.child] = ...
-  round2Miller(OR.p2c,'maxIndex',15);
+  round2Miller(OR.p2c,'maxIndex',8);
                 
 % Misorientation of rational OR
 OR.p2cRational = orientation('map',...
