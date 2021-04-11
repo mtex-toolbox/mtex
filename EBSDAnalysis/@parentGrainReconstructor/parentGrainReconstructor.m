@@ -46,6 +46,7 @@ classdef parentGrainReconstructor < handle
     grains    % reconstructed grains
 
     mergeId   % a list of ids to the merged grains
+    pParentId % probabilities of parentIds
     
     fit    
     graph
@@ -219,22 +220,22 @@ classdef parentGrainReconstructor < handle
       job.grainsMeasured.prop.variantId = id;
     end
         
-    function set.variantMap(job,id) 
-      assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
-      numVariants = length(job.p2c.variants);
-        
-      if strcmpi(id,'morito') && numVariants == 24
-        job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-          24 22 20 4 2 6 13 15 17 8 12 10];
-        
-        % TODO: maybe we can find a more robust implementation of the
-        % morito order, i.e., one that does not depend 
-        
-      else
-        assert(length(id) == numVariants,'Supply %d natural numbers as Ids',numVariants);
-        job.variantMap = id;
-      end
-    end
+    %function set.variantMap(job,id) 
+    %  assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
+    %  numVariants = length(job.p2c.variants);
+    %    
+    %  if strcmpi(id,'morito') && numVariants == 24
+    %    job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
+    %      24 22 20 4 2 6 13 15 17 8 12 10];
+    %    
+    %    % TODO: maybe we can find a more robust implementation of the
+    %    % morito order, i.e., one that does not depend 
+    %    
+    %  else
+    %    assert(length(id) == numVariants,'Supply %d natural numbers as Ids',numVariants);
+    %    job.variantMap = id;
+    %  end
+    %end
     
   end
 

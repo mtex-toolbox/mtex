@@ -144,12 +144,23 @@ else % child variants
   %ind = ~any(tril(dot_outer(csRot,csRot)>1-1e-4,-1),2);
   %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
+  
   % symmetrise with respect to parent symmetry
-  p2cVariants = p2c * p2c.CS.properGroup.rot;
+  symRot = p2c.CS.properGroup.rot;
+  % try to switch to Morito convention
+  if length(symRot) == 24
+    symRot = symRot([1 17 2 16 3 18 8 22 9 24 7 23 19 11 20 10 21 12 6 15 4 14 5 13]);
+  end
+    
+  p2cVariants = p2c * symRot;
   
   % ignore all variants symmetrically equivalent with respect to the child symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
   p2cVariants = p2cVariants.subSet(ind);
+
+  if isfield(p2c.opt,'variantMap') && ~isempty(p2c.opt.variantMap)
+    p2cVariants = p2cVariants.subSet(p2c.opt.variantMap);
+  end
   
   if check_option(varargin,'variantMap')
     vMap = get_option(varargin,'variantMap');
