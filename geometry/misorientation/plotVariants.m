@@ -29,6 +29,7 @@ if check_option(varargin,'reduced')
     'antipodal','MarkerEdgeColor','black',varargin{:});
   
   % plot unique variants with label
+  nextAxis(1)
   hold on
   plotPDF(vars,'label',1:length(vars),'nosymmetry', ...
     'MarkerFaceColor','none','MarkerEdgeColor','none',varargin{:});
