@@ -95,8 +95,10 @@ else % consider also child to child
 end
 
 % compute new variantMap
-[~,new2old] = min(angle_outer(p2c.variants,job.p2c.variants,'noSym1'),[],2);
-p2c.opt.variantMap = new2old;
+if ~isempty(job.p2c) && length(p2c.variants) == length(job.p2c.variants)
+  [~,new2old] = min(angle_outer(p2c.variants,job.p2c.variants,'noSym1'),[],2);
+  p2c.opt.variantMap = new2old;
+end
 
 % update p2c
 job.p2c = p2c;
