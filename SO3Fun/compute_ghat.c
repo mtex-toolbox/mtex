@@ -1,5 +1,5 @@
 /*=========================================================================
- * calculate_ghat_longwig.c - eval of SO3FunHarmonic
+ * calculate_ghat.c - eval of SO3FunHarmonic
  * 
  * The inputs are the fourier coefficients (ghat)
  * of harmonic representation of a SO(3) function and the bandwidth (N).
@@ -40,8 +40,6 @@
 #include <stdio.h>
 #include <complex.h>
 #include <string.h>
-
-
 
 
 
@@ -256,7 +254,7 @@ static void wigner_d(int N,mwSize L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *
 
 
 // The computational routine
-static void calculate_ghat_longwig( mxDouble bandwidth, mxComplexDouble *fhat,
+static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
                             int row_shift, int col_shift, int fullsized,
                             mxComplexDouble *ghat, mwSize nrows )
 {
@@ -746,7 +744,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     
   // call the computational routine
-    calculate_ghat_longwig(bandwidth,inCoeff,row_shift,col_shift,fullsized,
+    calculate_ghat(bandwidth,inCoeff,row_shift,col_shift,fullsized,
             outFourierCoeff,(mwSize)nrows);
 
 }
