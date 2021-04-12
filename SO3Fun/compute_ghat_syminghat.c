@@ -1,5 +1,10 @@
 /*=========================================================================
- * calculate_ghat.c - eval of SO3FunHarmonic
+ * calculate_ghat_syminghat.c - eval of SO3FunHarmonic
+ *
+ * In contrast to calculate_ghat we do not use the symmetry properties of
+ * Wigner-d matrices by computing them, but we use the symmetry of Wigner-d
+ * when computing the values of ghat.
+ * This process is a little slower then calculate_ghat.
  * 
  * The inputs are the fourier coefficients (ghat)
  * of harmonic representation of a SO(3) function and the bandwidth (N).
@@ -41,6 +46,9 @@
 #include <stdio.h>
 #include <complex.h>
 #include <string.h>
+
+
+
 
 /* The Wigner-d matrix of order L, is a matrix with entries from -L:L in
  * both dimensions. Here it is sufficient to calculate Wigner-d with
@@ -767,27 +775,6 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
       // reset plusminus to true, because in next matrix down left sign is plus.
       pm = true;
     }
-
-// // plot routine for last created Wigner-d matrix
-//     wigd = start_wigd_min1,
-//     ghat = start_ghat;
-//     int matrix = (2*N+2)*(2*N+2); // size
-//     ghat -= matrix-N;               // reset pointer start
-//             
-//     int helpplotzaehler = 0;
-//     //mwSize k;
-//     for (k=0; k<((N+1)*(N+1)); k++)
-//     {
-//       helpplotzaehler++;
-//       ghat[0].real = *wigd;
-//       ghat += 1;
-//       wigd++;
-//       if (helpplotzaehler % (N+1)  == 0)
-//       {
-//         ghat += N+1;
-//         helpplotzaehler = 0;
-//       }
-//     }
 
 }
 
