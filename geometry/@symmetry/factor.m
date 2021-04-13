@@ -9,26 +9,38 @@ function [l,d,r] = factor(s1,s2)
 %  l, r, d - @quaternion
 %
 
-qs1 = unique(quaternion(s1),'antipodal');
-qs2 = unique(quaternion(s2),'antipodal');
+% first trivial case - both symmetries are the same
+if s1 == s2
+  l = rotation.id;
+  r = rotation.id;
+  d = s1.rot;
+  return
+end
 
-% step 1: find common quaterions d
-[is1,~] = find(isappr(abs(dot_outer(qs1,qs2)),1));
+% step 1: compute disjoint d
+d = s1.rot(any(isappr(dot_outer(s1.rot,s2.rot),1),2));
 
-d = subSet(qs1,is1);
+% second trivial case - disjoint is identity
+if length(d) == 1
+  l = s1.rot;
+  r = s2.rot;
+  return
+end
+
+% TODO: maybe this can be done faster!!!
 
 % step 2: compute l
-l = quaternion.id;
-c = any(isappr(abs(dot_outer(l*d,qs2)),1),1);
+l = rotation.id;
+c = any(isappr(dot_outer(l*d, s2.rot),1),1);
 while ~all(c)
-  l = [l;subSet(qs2,find(~c,1))]; %#ok<AGROW>
-  c = any(isappr(abs(dot_outer(l*d,qs2)),1),1);
+  l = [l; s2.rot(find(~c,1))]; %#ok<AGROW>
+  c = any(isappr(dot_outer(l*d, s2.rot),1),1);
 end
 
 % step 3: compute r
-r = quaternion.id;
-c = any(isappr(abs(dot_outer(d*r,qs1)),1),1);
+r = rotation.id;
+c = any(isappr(dot_outer(d*r,s1.rot),1),1);
 while ~all(c)
-  r = [r;subSet(qs1,find(~c,1))]; %#ok<AGROW>
-  c = any(isappr(abs(dot_outer(d*r,qs1)),1),1);
+  r = [r;s1.rot(find(~c,1))]; %#ok<AGROW>
+  c = any(isappr(dot_outer(d*r, s1.rot),1),1);
 end
