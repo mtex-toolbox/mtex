@@ -42,38 +42,43 @@ if nargin >= 2 && isa(varargin{1},'orientation')
   assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') && ...
     isa(o1.SS,'specimenSymmetry') && isa(o2.SS,'specimenSymmetry'),...
     'The first two input arguments should be orientations.');
+ 
+  if o1.CS == o1.SS
   
-  [l,d,r] = factor(o1.CS,o2.CS);
-  l = l * d;
-  % we are looking for l,r from L and R such that
-  % angle(o1*l , o2*r) is minimal
-  % this is equivalent to
-  % angle(inv(o2)*o1 , r*inv(l)) is minimal
+    po2 = project2FundamentalRegion(o2, o1);
+    mori = inv(po2) .* o1;
 
-  q1 = quaternion(o1);
-  q2 = quaternion(o2);
-  q21 = inv(q2).*q1; %#ok<*MINV>
-  rl = r * inv(l);
+    a = o1 .* mori.axis('noSymmetry');
+  
+  else
+    
+    [l,d,r] = factor(o1.CS.properGroup,o2.CS.properGroup);
+    l = l * d;
+    % we are looking for l,r from L and R such that
+    % angle(o1*l , o2*r) is minimal
+    % this is equivalent to angle(inv(o2)*o1 , r*inv(l)) is minimal
 
-  d = -inf;
-  irMax = ones(size(q21));
-  ilMax = ones(size(q21));
-  for il = 1:length(l)
-    for ir = 1:length(r)
-      dLocal = abs(dot(q21,rl(ir,il)));
-      ind = dLocal > d;
+    mori = inv(o2) .* o1; %#ok<*MINV>
+    idSym = r * inv(l);
+
+    d = -inf(size(mori));
+    idMax = ones(size(mori));
+    for id = 1:length(idSym)
+      dLocal = dot(mori,idSym(id),'noSymmetry');
+      idMax(dLocal > d) = id;
       d = max(d,dLocal);
-      irMax(ind) = ir;
-      ilMax(ind) = il;
     end
+
+    % this projects mori into the fundamental zone
+    [row,col] = ind2sub(size(idSym),idMax);
+    pMori = times(inv(r(row)), mori, 0) .* l(col); 
+
+    % now the misorientation axis is given by in specimen coordinates is
+    % given by either of the following two lines
+    %ax = times(o1, l(col), 1) .* axis(pMori);
+    a = times(o2, r(row), 1) .* axis(pMori);
+        
   end
-
-  % this projects q21 into the fundamental zone
-  q = reshape(inv(r(irMax)),size(q21)) .* q21 .* reshape(l(ilMax),size(q21));
-
-  % now the misorientation axis is given by in specimen coordinates is
-  % given by o2 * l(il) * q.axis or equivalently by
-  a = q2 .* r(irMax) .* axis@quaternion(q);
 
   a.antipodal = check_option(varargin,'antipodal');
 
