@@ -1,5 +1,5 @@
 /*=========================================================================
- * calculate_ghat.c - eval of SO3FunHarmonic
+ * compute_ghat.c - eval of SO3FunHarmonic
  * 
  * The inputs are the fourier coefficients (ghat)
  * of harmonic representation of a SO(3) function and the bandwidth (N).
@@ -24,10 +24,10 @@
  * 
  * The calling syntax is:
  * 
- *		ghat = calculate_ghat(N,fhat)
- *    ghat = calculate_ghat(N,fhat,'makeeven')
- *    ghat = calculate_ghat(N,fhat,'isReal')
- *    ghat = calculate_ghat(N,fhat,'makeeven','isReal')
+ *		ghat = compute_ghat(N,fhat)
+ *    ghat = compute_ghat(N,fhat,'makeeven')
+ *    ghat = compute_ghat(N,fhat,'isReal')
+ *    ghat = compute_ghat(N,fhat,'makeeven','isReal')
  * 
  * 
  * This is a MEX-file for MATLAB.
@@ -76,7 +76,7 @@
  * representation of Wigner-d matrices with Jacobi Polynomials.
  * (refer Varshalovich - Quantum Theory of Angular Momentum - 1988, section 4.3.4)      [*2*]
 */ 
-static void wigner_d(int N,mwSize L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
+static void wigner_d(int N,int L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
 {
 
     int col;      // column index
@@ -184,12 +184,12 @@ static void wigner_d(int N,mwSize L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *
     int constant7, constant8;
     long long int constant9, constant10;
     
-    // only iterate over lower triangular matrix in the loop
+    // only iterate over lower triangular matrix of A in the loop
     for (col=-L+1; col<=0; col++)
     {
       for (row=col; row<=0; row++)
       {
-        // calculate the auxiliar variables v,w similar like in reference [*1*].
+        // calculate the auxiliar variables v,w similar as in reference [*1*].
         constant7 = row*row;
         constant8 = col*col;
         constant9 = (constant2-constant7);
@@ -254,9 +254,9 @@ static void wigner_d(int N,mwSize L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *
 
 
 // The computational routine
-static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
-                            int row_shift, int col_shift, int fullsized,
-                            mxComplexDouble *ghat, mwSize nrows )
+static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
+                            const int row_shift, const int col_shift, const int fullsized,
+                            mxComplexDouble *ghat, const mwSize nrows )
 {
 
   // define usefull variables
@@ -579,23 +579,6 @@ static void calculate_ghat( mxDouble bandwidth, mxComplexDouble *fhat,
       pm = start_pm;
     }
 
-//     
-// // plot routine for last created Wigner-d matrix
-//     wigd = start_wigd;
-//     ghat = start_ghat;
-//     int matrix = (2*N+2)*(2*N+2); // size
-//     ghat -= matrix;               // reset pointer start
-//     
-//     //mwSize k;
-//     for (k=-N; k<=0; k++){
-//       for (l=-N; l<=N; l++){
-//         ghat[0].real = *wigd;
-//         ghat += 1;
-//         wigd++;
-//       }
-//       ghat++;
-//     }
-
 }
 
 
@@ -618,27 +601,27 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // check data types
     // check for 2,3 or 4 input arguments (inCoeff & bandwith)
     if( (nrhs!=2) && (nrhs!=3) && (nrhs!=4) )
-      mexErrMsgIdAndTxt("calculate_ghat:invalidNumInputs","Two, three or four inputs required.");
+      mexErrMsgIdAndTxt("compute_ghat:invalidNumInputs","Two, three or four inputs required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
-      mexErrMsgIdAndTxt("calculate_ghat:maxlhs","One output required.");
+      mexErrMsgIdAndTxt("compute_ghat:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("calculate_ghat:notDouble","First input argument bandwidth must be a Scalar double.");
+      mexErrMsgIdAndTxt("compute_ghat:notDouble","First input argument bandwidth must be a Scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
-      mexErrMsgIdAndTxt("calculate_ghat:notDouble","Second input argument coefficient vector must be type double.");
+      mexErrMsgIdAndTxt("compute_ghat:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
-      mexErrMsgIdAndTxt("calculate_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
+      mexErrMsgIdAndTxt("compute_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
     // make sure the third and fourth input arguments are strings (if existing)
     if ( (nrhs>2) && (mxIsChar(prhs[2]) != 1) )
-      mexErrMsgIdAndTxt( "calculate_ghat:notString","Third input argument must be a string.");
+      mexErrMsgIdAndTxt( "compute_ghat:notString","Third input argument must be a string.");
     if ( (nrhs>3) && (mxIsChar(prhs[3]) != 1) )
-      mexErrMsgIdAndTxt( "calculate_ghat:notString","Fourth input argument must be a string.");
+      mexErrMsgIdAndTxt( "compute_ghat:notString","Fourth input argument must be a string.");
     
     
   // read input data
@@ -647,7 +630,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     // check whether bandwidth is natural number
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
-      mexErrMsgIdAndTxt("calculate_ghat:notInt","First input argument must be a natural number.");
+      mexErrMsgIdAndTxt("compute_ghat:notInt","First input argument must be a natural number.");
     
     // make input matrix complex
     mxArray *zeiger = mxDuplicateArray(prhs[1]);

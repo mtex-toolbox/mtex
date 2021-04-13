@@ -1,5 +1,5 @@
 /*=========================================================================
- * calculate_ghat_syminghat.c - eval of SO3FunHarmonic
+ * compute_ghat_syminghat.c - eval of SO3FunHarmonic
  *
  * In contrast to calculate_ghat we do not use the symmetry properties of
  * Wigner-d matrices by computing them, but we use the symmetry of Wigner-d
@@ -30,10 +30,10 @@
  * 
  * The calling syntax is:
  * 
- *		ghat = calculate_ghat(N,fhat)
- *    ghat = calculate_ghat(N,fhat,'makeeven')
- *    ghat = calculate_ghat(N,fhat,'isReal')
- *    ghat = calculate_ghat(N,fhat,'makeeven','isReal')
+ *		ghat = compute_ghat_syminghat(N,fhat)
+ *    ghat = compute_ghat_syminghat(N,fhat,'makeeven')
+ *    ghat = compute_ghat_syminghat(N,fhat,'isReal')
+ *    ghat = compute_ghat_syminghat(N,fhat,'makeeven','isReal')
  * 
  * 
  * This is a MEX-file for MATLAB.
@@ -798,27 +798,27 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // check data types
     // check for 2,3 or 4 input arguments (inCoeff & bandwith)
     if( (nrhs!=2) && (nrhs!=3) && (nrhs!=4) )
-      mexErrMsgIdAndTxt("calculate_ghat:invalidNumInputs","Two, three or four inputs required.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:invalidNumInputs","Two, three or four inputs required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
-      mexErrMsgIdAndTxt("calculate_ghat:maxlhs","One output required.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("calculate_ghat:notDouble","First input argument bandwidth must be a Scalar double.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:notDouble","First input argument bandwidth must be a Scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
-      mexErrMsgIdAndTxt("calculate_ghat:notDouble","Second input argument coefficient vector must be type double.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
-      mexErrMsgIdAndTxt("calculate_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
     // make sure the third and fourth input arguments are strings (if existing)
     if ( (nrhs>2) && (mxIsChar(prhs[2]) != 1) )
-      mexErrMsgIdAndTxt( "calculate_ghat:notString","Third input argument must be a string.");
+      mexErrMsgIdAndTxt( "compute_ghat_syminghat:notString","Third input argument must be a string.");
     if ( (nrhs>3) && (mxIsChar(prhs[3]) != 1) )
-      mexErrMsgIdAndTxt( "calculate_ghat:notString","Fourth input argument must be a string.");
+      mexErrMsgIdAndTxt( "compute_ghat_syminghat:notString","Fourth input argument must be a string.");
     
     
   // read input data
@@ -827,7 +827,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     // check whether bandwidth is natural number
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
-      mexErrMsgIdAndTxt("calculate_ghat:notInt","First input argument must be a natural number.");
+      mexErrMsgIdAndTxt("compute_ghat_syminghat:notInt","First input argument must be a natural number.");
     
     // make input matrix complex
     mxArray *zeiger = mxDuplicateArray(prhs[1]);
