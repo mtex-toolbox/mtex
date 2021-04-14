@@ -18,6 +18,6 @@ function [m, lambda, v] = mean(odf,varargin)
 
 S3G = extract_SO3grid(odf,varargin);
 
-[m, ~, lambda, v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
+[m, ~, lambda, v] = mean(S3G,'weights',eval(odf,S3G));
 
 m = orientation(m);
