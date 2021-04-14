@@ -37,27 +37,26 @@ classdef parentGrainReconstructor < handle
 
   properties
     
-    csParent  % parent symmetry
-    csChild   % child symmetry
-
+    ebsd           % EBSD prior to reconstruction
+    grainsMeasured % grains prior to reconstruction
+    grains         % grains at the current stage of reconstruction
+    p2c            % parent to child orientation relationship
     
-    ebsd      % initial / measured EBSD
-    grainsMeasured % initialy measured grains 
-    grains    % reconstructed grains
-
-    mergeId   % a list of ids to the merged grains
-    pParentId % probabilities of parentIds
+    mergeId        % a list of ids to the merged grains
+    pParentId      % probabilities of parentIds
     
-    fit    
-    graph
-    votes
+    votes          % votes computed by calcGBVotes or calcTPVotes
+    fit            % misFit of the votes
+    graph          % graph computed by calcGraph
 
   end
   
   properties (Dependent=true)
+    csParent        % parent symmetry
+    csChild         % child symmetry
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
-    variantMap
+    variantMap      % allows to reorder variants
   end
   
   properties (Dependent=true)
@@ -73,14 +72,8 @@ classdef parentGrainReconstructor < handle
     packetId        %
   end
   
-  properties (SetObservable) 
-    p2c       % parent to child orientation relationship
-  end
-  
-  
   methods
-    
-    
+
     function job = parentGrainReconstructor(ebsd,varargin)
 
       % set up ebsd and grains
@@ -95,10 +88,11 @@ classdef parentGrainReconstructor < handle
       job.mergeId = (1:length(job.grains)).';
       
       % check for provided orientation relationship
-      job.p2c = getClass(varargin,'orientation');
+      job.p2c = getClass(varargin,'orientation',orientation);
       
       % determine parent and child phase
       if isempty(job.p2c)
+                
         % try to guess parent and child phase
         numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
         indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
@@ -110,16 +104,27 @@ classdef parentGrainReconstructor < handle
         [~,minPhase] = min(numPhase);
         if minPhase ~= maxPhase
           job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
-        end
-      else
-        % extract from existing orientation relationship
-        assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
-        job.csParent = job.p2c.CS;
-        job.csChild = job.p2c.SS;
+        end      
       end
       
     end
-	
+    
+    function cs = get.csParent(job)
+      cs = job.p2c.CS;
+    end
+    
+    function set.csParent(job,cs)
+      job.p2c.CS = cs;
+    end
+    
+    function cs = get.csChild(job)
+      cs = job.p2c.SS;
+    end
+    
+    function set.csChild(job,cs)
+      job.p2c.SS = cs;
+    end
+    
     function id = get.parentPhaseId(job)
       id = job.grains.cs2phaseId(job.csParent);
     end
@@ -140,10 +145,6 @@ classdef parentGrainReconstructor < handle
     function out = get.isTransformed(job)
       % which initial grains have been already reconstructed
       
-      %Should this not be "which grains have been succesfully
-      %reconstructed?
-      %Then we could use this to return the area fraction of reconstructed
-      %phase
       out = job.grainsMeasured.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
