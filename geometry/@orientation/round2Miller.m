@@ -19,7 +19,7 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 %   [n1,n2,d1,d2] = round2Miller(mori,'maxIndex',6)
 %
 % Input
-%   ori - @orientation
+%  ori  - @orientation
 %  mori - mis@orientation
 %
 % Output
