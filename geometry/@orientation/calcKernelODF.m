@@ -57,7 +57,7 @@ ori = subSet(ori,~isnan(ori));
 weights = weights ./ sum(weights(:));
 
 % extract kernel function
-psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = SO3deLaValleePoussin('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 hw = psi.halfwidth;
 

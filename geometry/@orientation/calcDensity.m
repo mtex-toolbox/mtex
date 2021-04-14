@@ -60,12 +60,12 @@ if check_option(varargin,'bingham')
 end
   
 % extract kernel function
-psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = SO3deLaValleePoussin('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 
 if  ~check_option(varargin,{'exact','noFourier'}) && ...
     (isa(ori.SS,'crystalSymmetry') || check_option(varargin,{'Fourier','harmonic'}) || ...
-    isa(psi,'DirichletKernel') || ...
+    isa(psi,'SO3DirichletKernel') || ...
     (length(ori) > 200 && psi.bandwidth <= 96))
   
   odf = calcFourierODF(ori,varargin{:},'kernel',psi);

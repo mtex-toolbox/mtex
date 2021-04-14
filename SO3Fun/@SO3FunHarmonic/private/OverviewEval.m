@@ -10,7 +10,6 @@ clear all
 rng(11)
 rot = orientation.rand(1000);
 SO3F = calcDensity(rot,'harmonic','bandwidth',64,'halfwidth',2.5*degree);
-SO3F = SO3FunHarmonic(SO3F.components{1}.f_hat)
 N = SO3F.bandwidth;
 
 fprintf('\n \n <strong> NFFT: </strong>\n')
