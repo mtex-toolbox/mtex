@@ -42,7 +42,7 @@ odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth
 L = get_option(varargin,{'L','HarmonicDegree'},...
-  min(max(1,odf.psi.bandwidth),96),'double');
+  min(max(1,odf.psi.bandwidth),128),'double');
 
 % check kernel has at most the requested bandwidth
 if odf.psi.bandwidth > L
@@ -51,5 +51,5 @@ if odf.psi.bandwidth > L
     '. You  might want to increase the harmonic degree or the halfwidth.'])
 end
 
-odf = FourierODF(odf,get_option(varargin,{'L','bandwidth','fourier'},L,'double'));
+odf = FourierODF(odf,'bandwidth',get_option(varargin,{'L','bandwidth','fourier'},L,'double'));
 odf.antipodal = odf.antipodal || ori.antipodal;
