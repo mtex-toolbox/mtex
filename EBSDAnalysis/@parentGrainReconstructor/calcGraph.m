@@ -32,14 +32,13 @@
  if ~check_option(varargin,'noC2C')
    
    % child 2 child neighbours
-   grainPairs = job.grains(job.csChild).neighbors;
+   [grainPairs, childOri] = getC2CPairs(job, varargin{:});
    
    % c2c misorientations
-   c2c = inv(job.grains(grainPairs(:,2)).meanOrientation) .* ...
-     job.grains(grainPairs(:,1)).meanOrientation;
+   c2c = inv(childOri(:,2)) .* childOri(:,1);
  
    % fit to ideal p2c
-   c2cFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
+   c2cFit = min(angle_outer(c2c, job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
  
    % turn into probability
    prob = 1 - 0.5 * (1 + erf(2*(c2cFit - threshold)./tol));

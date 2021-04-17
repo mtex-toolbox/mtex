@@ -40,10 +40,9 @@ else
   c2c = job.p2c .* inv(p2cV);
 
   % child to child boundaries
-  c2cPairs = neighbors(job.childGrains);
+  [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
 
-  % extract the corresponding misorientations
-  oriChild = reshape(job.grains('id',c2cPairs).meanOrientation,[],2);
+  % compute the corresponding misorientations
   mori = inv(oriChild(:,1)).*oriChild(:,2);
 
   % ignore pairs with misorientation angle smaller then 5 degree

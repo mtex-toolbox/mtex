@@ -49,18 +49,17 @@ end
 
 % child-child - votes
 if ~check_option(varargin,'noC2C')
-  grainPairs = neighbors(job.childGrains, job.childGrains);
+
+  % extract child to child grain pairs with the coresponding orientations
+  % averaged along the boundary
+  [grainPairs, oriChild] = getC2CPairs(job,varargin{:});
   
-  % extract the corresponding mean orientations
-  oriChild = job.grains('id',grainPairs).meanOrientation;
-    
   % compute for each parent/child pair of grains the best fitting parentId
   [parentId, fit] = calcParent(oriChild,job.p2c,'numFit',numFit,'id');
-    
+  
   c2cVotes = table(grainPairs(:), reshape(parentId,[],numFit), repmat(fit,2,1), ...
     'VariableNames',{'grainId','parentId','fit'});
-  
-  
+
   % weight votes according to boundary length
   if check_option(varargin,'weights')
     
@@ -68,7 +67,7 @@ if ~check_option(varargin,'noC2C')
     weights = accumarray(pairId,1,[size(grainPairs,1) 1]);
     
     c2cVotes.weights = [weights;weights];
-  end 
+  end
   
   % add to table
   job.votes = [job.votes; c2cVotes];
