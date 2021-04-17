@@ -21,7 +21,7 @@ numFit = get_option(varargin,'numFit',2);
 
 % parent-child - votes
 
-if ~isempty(job.parentGrains)
+if ~isempty(job.parentGrains) && ~check_option(varargin,'noP2C')
   grainPairs = neighbors(job.parentGrains, job.childGrains);
     
   % extract the corresponding mean orientations
@@ -42,7 +42,9 @@ if ~isempty(job.parentGrains)
     weights = accumarray(pairId,1,[size(grainPairs,1) 1]);
     
     job.votes.weights = weights;
-  end
+   end
+else
+  job.votes = [];  
 end
 
 % child-child - votes
