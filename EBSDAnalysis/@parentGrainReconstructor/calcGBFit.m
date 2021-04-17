@@ -1,59 +1,63 @@
-function [fit, c2cPairs] = calcGBFit(job,varargin)
+function [fit, pairs] = calcGBFit(job,varargin)
 % fit between child to child misorientations and job.p2c
 %
 % Syntax
 %
-%   [fit, c2cPairs] = job.calcGBFit
+%   [fit, pairs] = job.calcGBFit
 %
 %   % visualize the result
-%   [fit,c2cPairs] = job.calcGBFit;
-%   [gB,pairId] = job.grains.boundary.selectByGrainId(c2cPairs);
-%   plot(gB, fit(pairId) ./ degree,'linewidth',2);
+%   [gB, pairId] = job.grains.boundary.selectByGrainId(pairs);
+%   plot(gB, fit(pairId) ./ degree, 'linewidth',2);
 %   setColorRange([2,8])
 %   mtexColorMap white2black
+%
+%   % consider only P2C neighbors
+%   [fit, p2cPairs] = job.calcGBFit('noC2C')
+%
+%   % consider only C2C neighbors
+%   [fit, c2cPairs] = job.calcGBFit('noP2C')
 %
 % Input
 %  job - @parentGrainReconstructor
 %
 % Output
-%  fit      - fit between child to child misorientations and job.p2c
-%  c2cPairs - list of grainId of child to child neighbours
+%  fit   - fit between the grain boundary misorientations and job.p2c
+%  pairs - list of grainId of the neighboring grains
 %
 
-if check_option(varargin,'p2c')
+% parent to child neighbors
+if ~check_option(varargin,'noP2C')
   
-  c2cPairs = neighbors(job.parentGrains,job.childGrains);
-  if ~isempty(c2cPairs)
-    oriChild = job.grains('id',c2cPairs(:,2)).meanOrientation;
-    oriParent = job.grains('id',c2cPairs(:,1)).meanOrientation;
-    mori = inv(oriChild).*oriParent;
+  % extract all parent to child neighbors
+  [pairs, oriParent, oriChild] = getP2CPairs(job, varargin{:});
   
-    fit = angle(mori, job.p2c);
-  else
-    fit = [];
-  end
+  % compute the misorientation
+  mori = inv(oriChild).*oriParent;
+  
+  % compute the fit
+  fit = angle(mori, job.p2c);
   
 else
+  
+  fit = []; 
+  pairs = [];
+  
+end
+  
+if ~check_option(varargin,'noC2C')
 
+  % extract all child to child neighbors
+  [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
+  pairs = [pairs;c2cPairs];
+  
+  % compute the corresponding misorientations
+  mori = inv(oriChild(:,1)).*oriChild(:,2);
+  
   % child to child misorientation variants
   p2cV = job.p2c.variants; p2cV = p2cV(:);
   c2c = job.p2c .* inv(p2cV);
 
-  % child to child boundaries
-  [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
-
-  % compute the corresponding misorientations
-  mori = inv(oriChild(:,1)).*oriChild(:,2);
-
-  % ignore pairs with misorientation angle smaller then 5 degree
-  ind = mori.angle < 5 * degree;
-  c2cPairs(ind,:) = [];
-  mori(ind) = [];
-  
   % misorientation to c2c variants
-  if isempty(oriChild)
-    fit = 0;
-  else
-    fit = min(angle_outer(mori, c2c),[],2);
-  end
+  fit = [fit;min(angle_outer(mori, c2c),[],2)];
+  
 end

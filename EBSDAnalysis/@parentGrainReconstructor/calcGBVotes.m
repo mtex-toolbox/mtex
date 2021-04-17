@@ -22,15 +22,14 @@ numFit = get_option(varargin,'numFit',2);
 % parent-child - votes
 
 if ~isempty(job.parentGrains) && ~check_option(varargin,'noP2C')
-  grainPairs = neighbors(job.parentGrains, job.childGrains);
-    
-  % extract the corresponding mean orientations
-  oriParent = job.grains('id',grainPairs(:,1) ).meanOrientation;
-  oriChild  = job.grains('id', grainPairs(:,2) ).meanOrientation;
-    
+  
+  % extract parent to child grain pairs with the coresponding orientations
+  % averaged along the boundary
+  [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
+
   % compute for each parent/child pair of grains the best fitting parentId
   [parentId, fit] = calcParent(oriChild,oriParent,job.p2c,'numFit',numFit,'id');
-    
+
   % store as table
   job.votes = table(grainPairs(:,2), parentId, fit, ...
     'VariableNames',{'grainId','parentId','fit'});

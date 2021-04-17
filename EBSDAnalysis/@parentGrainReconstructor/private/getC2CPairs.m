@@ -4,6 +4,12 @@ function [pairs,ori] = getC2CPairs(job,varargin)
 pairs = neighbors(job.childGrains, job.childGrains);
 pairs = sortrows(sort(pairs,2,'ascend'));
 
+% maybe there is nothing to do
+if isempty(pairs)
+  ori = reshape(orientation(job.csChild),[],2);
+  return
+end
+
 % compute the corresponding mean orientations
 if job.useBoundaryOrientations 
   
@@ -23,8 +29,5 @@ else
   ori = job.grains('id',pairs).meanOrientation;
   
 end
-
-% this is only to guarantee size 0x2
-ori = reshape(ori,[],2);
 
 end

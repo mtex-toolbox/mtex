@@ -25,9 +25,9 @@ cprintf(matrix,'-L',' ','-Lc',...
 if ~isempty(job.p2c)
   disp(' ');
   disp([' parent to child OR: ' char(job.p2c)]);
-  omega = calcGBFit(job,'p2c')./degree;
+  omega = calcGBFit(job,'noC2C')./degree;
   if ~isempty(omega)
-    disp(['   fit with parent to child misorientations: '...
+    disp(['   p2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
@@ -35,9 +35,9 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  omega = calcGBFit(job,'c2c')./degree;
+  omega = calcGBFit(job,'noP2C')./degree;
   if ~isempty(omega)
-    disp(['   fit with child to child misorientations: '...
+    disp(['   c2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
@@ -90,14 +90,5 @@ if ~isempty(job.votes)
 end
 
 disp(' ')
-
-%I would prefer an expression based on "isTransformed". I am not sure if 20
-%percent preexisting austenite should be indexed as "20% transformed" if no
-%reconstruction has been started. What do you think?
-%recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
-%recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
-%fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);
-%fprintf('  ebsd reconstructed: %.0f%%\n', recAreaEBSD);
-
 
 end

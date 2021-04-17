@@ -25,6 +25,10 @@ function job = revert(job,ind)
 % MaParentGrainReconstruction
 %
 
+% forget votes and graph
+job.votes = [];
+job.graph = [];
+
 % revert everything
 if nargin == 1, ind = true(size(job.grains)); end
 
