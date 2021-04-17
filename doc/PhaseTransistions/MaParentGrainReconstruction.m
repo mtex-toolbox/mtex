@@ -59,7 +59,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % Furthermore, it displays how well the current guess of the parent to
 % child orientation relationship fits the child to child misorientations
 % within our data. In our sample data set this fit is described by the 4
-% quintiles 2.7°, 3.7°, 4.7° and 5.5°.
+% quintiles 2.5°, 3.5°, 4.5° and 5.5°.
 %
 %% Optimizing the parent child orientation relationship
 %
