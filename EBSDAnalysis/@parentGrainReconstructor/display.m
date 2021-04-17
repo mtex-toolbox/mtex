@@ -10,7 +10,7 @@ gs = job.grains.grainSize;
 p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
 matrix(1,:) = {'parent', job.csParent.mineral, char(job.csParent), ...
   length(job.grains(job.csParent)),[xnum2str(p) '%'],...
-  [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsMeasured.phaseId ==job.childPhaseId)) '%']};
+  [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsPrior.phaseId ==job.childPhaseId)) '%']};
 
 p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
 if ~isempty(job.csChild)

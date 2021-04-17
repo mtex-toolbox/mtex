@@ -39,7 +39,7 @@ function job = calcParent2Child(job, varargin)
 %
 
 % get p2c from parent 2 child OR
-if nnz(job.ebsd.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsd)
+if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior)
   
   p2cPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
 

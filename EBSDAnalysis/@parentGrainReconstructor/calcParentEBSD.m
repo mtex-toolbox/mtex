@@ -10,24 +10,27 @@ function ebsd = calcParentEBSD(job)
 % Output
 %  ebsd - reconstructed parent @EBSD
 %
-           
+
+% copy prior EBSD
+ebsd = job.ebsdPrior;
+
 % find Ids of grains that are either parent or child phase
-isRecData = job.ebsd.phaseId== job.childPhaseId | ...
-            job.ebsd.phaseId== job.parentPhaseId;
-grainIds = max(1,job.ebsd.grainId);
+isRecData = ebsd.phaseId == job.childPhaseId | ...
+  ebsd.phaseId == job.parentPhaseId;
+
+grainIds = max(1,ebsd.grainId);
 grainIds(~isRecData) = 1;
 
 % consider only child pixels that have been reconstructed to parent
 % grains
-isNowParent = job.ebsd.phaseId == job.childPhaseId &...
+isNowParent = ebsd.phaseId == job.childPhaseId &...
   job.grains.phaseId(grainIds) == job.parentPhaseId;
 
 % compute parent orientation
-[ori,fit] = calcParent(job.ebsd(isNowParent).orientations,...
-  job.grains(job.ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
+[ori,fit] = calcParent(ebsd(isNowParent).orientations,...
+  job.grains(ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
 
 % setup parent ebsd
-ebsd = job.ebsd;
 ebsd.prop.fit = nan(size(ebsd));
 ebsd(isNowParent).orientations = ori;
 ebsd.prop.fit(isNowParent) = fit;
