@@ -275,7 +275,7 @@ hold off
 % |calcVariantId|>.
 
 % the measured child orientations that belong to parent grain 279
-childOri = job.ebsd(grainSelected).orientations;
+childOri = job.ebsdPrior(grainSelected).orientations;
 
 % the orientation of parent grain 279
 parentOri = grainSelected.meanOrientation;
