@@ -26,6 +26,9 @@ grainIds(~isRecData) = 1;
 isNowParent = ebsd.phaseId == job.childPhaseId &...
   job.grains.phaseId(grainIds) == job.parentPhaseId;
 
+% maybe there is nothing to do
+if nnz(isNowParent) == 0, return; end
+
 % compute parent orientation
 [ori,fit] = calcParent(ebsd(isNowParent).orientations,...
   job.grains(ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
