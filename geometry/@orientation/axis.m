@@ -71,7 +71,7 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
     % this projects mori into the fundamental zone
     [row,col] = ind2sub(size(idSym),idMax);
-    pMori = times(inv(r(row)), mori, 0) .* l(col); 
+    pMori = times(inv(r(row)), mori, 0) .* reshape(l(col),size(col)); 
 
     % now the misorientation axis is given by in specimen coordinates is
     % given by either of the following two lines
