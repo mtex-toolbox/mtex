@@ -131,10 +131,7 @@ if nargout == 0
 
 elseif nargout == 1
   
-  mori_exact = orientation.map(n1,n2,d1,d2);
-  err = angle(mori,mori_exact);
-  n1 = [char(n1) ' || ' char(n2) '   ' char(d1) ' || ' char(d2) ...
-      '   error: ',xnum2str(err./degree),mtexdegchar'];
+  n1 = orientation.map(n1,n2,d1,d2);
   
 end
 

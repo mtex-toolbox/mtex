@@ -24,7 +24,7 @@ cprintf(matrix,'-L',' ','-Lc',...
 
 if ~isempty(job.p2c)
   disp(' ');
-  disp([' parent to child OR: ' char(job.p2c)]);
+  disp([' OR: ' char(job.p2c)]);
   omega = calcGBFit(job,'noC2C')./degree;
   if ~isempty(omega)
     disp(['   p2c fit: '...
@@ -45,7 +45,11 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  disp(['   closest ideal OR: ' round2Miller(job.p2c)])
+  OR = round2Miller(job.p2c,'maxHKL',5);
+  if angle(OR,job.p2c) > 1e-3*degree
+    disp(['   closest ideal OR: ' char(OR) ' fit: ' ...
+      xnum2str(angle(OR,job.p2c)./degree) '°'])
+  end
   % Here we still obtain that the (110) of austenite is parallel to (111) in martensite, 
   % which is the reverse in reality. We have had this discussion before, and I think that  
   % we should keep things as they are, as they are crystallographically not
