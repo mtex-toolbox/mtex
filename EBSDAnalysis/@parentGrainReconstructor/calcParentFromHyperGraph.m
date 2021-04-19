@@ -28,7 +28,7 @@ function job = calcParentFromHyperGraph(job,varargin)
 
 % extract parameters
 p = get_option(varargin,'inflationPower', 1.4);
-numIter = get_option(varargin,'numIter', 1.6);
+numIter = get_option(varargin,'numIter', 6);
 minval = 0.0001;
 
 % some constants
