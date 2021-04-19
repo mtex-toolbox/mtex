@@ -137,10 +137,10 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % Next we may grow the reconstructed parent grains into the regions of the
 % remaining child grains. To this end we use the command
 % <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> with the option
-% |'noC2C'| to compute fit and votes from grain boundaries to consider only
+% |'p2c'| to compute fit and votes from grain boundaries to consider only
 % parent to child boundaries.
 
-job.calcGBVotes('noC2C');
+job.calcGBVotes('p2c');
 
 %%
 % Next we use the exact same command

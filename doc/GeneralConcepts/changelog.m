@@ -161,7 +161,7 @@
 % * new helper function <majorityVote.html |majorityVote|> 
 % * new option |'noAntipodal'| for many commands like |symmetrise|,
 % |unique|, |dot|, |angle|
-% * new predefined orientation relationship |orientation.Burger|
+% * new predefined orientation relationship |orientation.Burgers|
 %
 %% MTEX 5.3.1 6/2020
 % 

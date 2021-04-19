@@ -83,7 +83,7 @@ while k <= maxIt
   else
   
     k = k + 1;
-    disp(['  ' fillStr(char(p2c),22) xnum2str(misFit ./ degree)])
+    disp(['  ' fillStr(char(p2c,'Euler'),22) xnum2str(misFit ./ degree)])
     bestFit = misFit;
     p2cOld = p2c;
   

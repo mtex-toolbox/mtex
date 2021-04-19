@@ -23,8 +23,8 @@ function job = calcParent2Child(job, varargin)
 %  job.fit - fit between the c2c misorientations to the fitted p2c
 %
 % Options
-%  noC2C - do not consider child to child misorientations
-%  noP2C - do not consider parent to child misorientations
+%  c2c - consider only child to child misorientations
+%  p2c - consider only parent to child misorientations
 %  quantile  - consider only misorientation within this quantile to the current p2c guess (default 0.9)
 %  threshold - only consider misorientations that are within this threshold of the current parent to child OR guess
 %
@@ -38,8 +38,11 @@ function job = calcParent2Child(job, varargin)
 % calcParent2Child
 %
 
+noOpt = ~check_option(varargin,{'p2c','c2c'});
+
 % get p2c from parent 2 child OR
-if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior)
+if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior) ...
+    && (noOpt || check_option(varargin,'p2c'))
   
   p2cPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
 
@@ -53,12 +56,9 @@ else % some default parent2child orientation relationship
   
 end
 
-if check_option(varargin,'noC2C')
+% consider also child to child 
+if noOpt || check_option(varargin,'c2c')
 
-  p2c = p2c0;
-  
-else % consider also child to child 
-  
   % get neighbouring grain pairs
   [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
   
@@ -92,6 +92,11 @@ else % consider also child to child
     p2c = mean([p2c,p2cData],'weights',[length(c2cPairs),length(p2cPairs)]);
     
   end    
+  
+else 
+
+  p2c = p2c0;
+  
 end
 
 % compute new variantMap
