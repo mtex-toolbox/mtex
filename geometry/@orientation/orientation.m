@@ -288,20 +288,46 @@ methods (Static = true)
 
   end
 
-  function mori = Burger(csBeta,csAlpha)
+  function mori = Burgers(csParent,csChild)
     %
     % Syntax:
-    %   mori = orientation.GreningerTrojano(csBeta,csAlpha)
+    %   mori = orientation.Burgers(csParent,csChild)
     %
     % Input
-    %  csBeta  - parent @crystalSymmetry (cubic bcc)
-    %  csAlpha - child @crystalSymmetry (hexagonal hcp)
+    %  csParent - parent @crystalSymmetry
+    %  csChild  - child @crystalSymmetry
     %
   
-    mori = orientation.map(Miller(1,1,0,csBeta),Miller(0,0,0,1,csAlpha),...
-      Miller(-1,1,-1,csBeta),Miller(2,-1,-1,0,csAlpha));
-
-    % beta2alpha = inv(orientation.byEuler(135*degree, 90*degree, 355*degree,csAlpha,csBeta))
+    if csParent.lattice.isTriHex
+      mori = inv(orientation.Burgers(csChild,csParent));
+    else
+      mori = orientation.map(Miller(1,1,0,csParent),Miller(0,0,0,1,csChild),...
+        Miller(-1,1,-1,csParent),Miller(2,-1,-1,0,csChild));
+    end
+    
+  end
+  
+  function mori = Burger(varargin)
+        
+    warning('orientation.Burger has been renamed to orientation.Burgers')
+    
+    mori = orientation.Burgers(varargin{:});
+    
+  end
+  
+  
+  function mori = ShojiNishiyama(csGamma,csEps)
+    %
+    % Syntax:
+    %   mori = orientation.ShojiNishiyama(csGamma,csEps)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry
+    %  csEps  - child @crystalSymmetry
+    %
+    
+    mori = orientation.map(Miller(1, 1, 1,csGamma),Miller(0, 0, 0, 1,csEps),...
+      Miller(1, 0, -1,csGamma,'uvw'),Miller(2, -1, -1, 0,csEps,'uvw'));
     
   end
   

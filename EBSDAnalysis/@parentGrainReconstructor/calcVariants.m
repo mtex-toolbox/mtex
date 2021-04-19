@@ -13,7 +13,7 @@ function calcVariants(job,varargin)
 %
 
 isTr = job.isTransformed;
-childOri = job.grainsMeasured(isTr).meanOrientation;
+childOri = job.grainsPrior(isTr).meanOrientation;
 parentOri = job.grains('id',job.mergeId(isTr)).meanOrientation;
 
 % compute variantId and packetId

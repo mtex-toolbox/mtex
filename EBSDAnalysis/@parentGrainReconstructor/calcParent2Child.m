@@ -39,7 +39,7 @@ function job = calcParent2Child(job, varargin)
 %
 
 % get p2c from parent 2 child OR
-if nnz(job.ebsd.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsd)
+if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior)
   
   p2cPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
 
@@ -60,17 +60,17 @@ if check_option(varargin,'noC2C')
 else % consider also child to child 
   
   % get neighbouring grain pairs
-  c2cPairs = job.grains(job.csChild).neighbors;
-
-  if ~isempty(job.p2c), p2c0 = job.p2c; end
-  p2c0 = getClass(varargin,'orientation',p2c0);
-
-  oriChild = reshape(job.grains('id',c2cPairs).meanOrientation,[],2);
-  mori = inv(oriChild(:,1)).*oriChild(:,2);
+  [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
+  
+  % compute c2c misorientation
+  mori = inv(oriChild(:,1)) .* oriChild(:,2);
 
   % ignore pairs with misorientation angle smaller then 5 degree
   mori(mori.angle < 5 * degree) = [];
-    
+  
+  if ~isempty(job.p2c), p2c0 = job.p2c; end
+  p2c0 = getClass(varargin,'orientation',p2c0);
+  
   % compute an optimal parent to child orientation relationship
   if check_option(varargin,'v3')
     

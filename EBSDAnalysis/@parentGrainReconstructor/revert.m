@@ -25,6 +25,10 @@ function job = revert(job,ind)
 % MaParentGrainReconstruction
 %
 
+% forget votes and graph
+job.votes = [];
+job.graph = [];
+
 % revert everything
 if nargin == 1, ind = true(size(job.grains)); end
 
@@ -50,8 +54,8 @@ if ~any(doRevert), return; end
 if max(accumarray(job.mergeId(doRevert),1)) == 1
 
   % reset phase and rotation
-  job.grains.phaseId(doRevert) = job.grainsMeasured.phaseId(doRevert);
-  job.grains.prop.meanRotation(doRevert) = job.grainsMeasured.prop.meanRotation(doRevert);
+  job.grains.phaseId(doRevert) = job.grainsPrior.phaseId(doRevert);
+  job.grains.prop.meanRotation(doRevert) = job.grainsPrior.prop.meanRotation(doRevert);
 
 elseif 1 % we do not undo the merge but we redo the merge of the remaining grains
   
@@ -65,12 +69,12 @@ elseif 1 % we do not undo the merge but we redo the merge of the remaining grain
   newMergeId(~doRevert) = newMergeId(~doRevert) + shift(newMergeId(~doRevert));
   
   % remerge grains
-  [grains, mergeId] = merge(job.grainsMeasured, newMergeId);
+  [grains, mergeId] = merge(job.grainsPrior, newMergeId);
   
   
   % reassign phase and rotation to the reverted grains
-  grains.phaseId(1:nnz(doRevert)) = job.grainsMeasured.phaseId(doRevert);
-  grains.prop.meanRotation(1:nnz(doRevert)) = job.grainsMeasured.prop.meanRotation(doRevert);
+  grains.phaseId(1:nnz(doRevert)) = job.grainsPrior.phaseId(doRevert);
+  grains.prop.meanRotation(1:nnz(doRevert)) = job.grainsPrior.prop.meanRotation(doRevert);
   
   % reassign phase and rotation to the not reverted grains
   grains.phaseId((nnz(doRevert)+1):end) = job.grains.phaseId(~ind);

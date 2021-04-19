@@ -23,7 +23,7 @@ gbid = grains.boundary.grainId;
 gbid(any(gbid == 0,2),:) = [];
 
 % sort columnwise
-gbid = sort(gbid,2);
+gbid = sort(gbid,2,'ascend');
 
 % get unique pairs
 pairs = unique(gbid,'rows');
@@ -32,6 +32,7 @@ pairs = unique(gbid,'rows');
 if ~check_option(varargin,'full')
   if nargin > 1 && isa(varargin{1},'grain2d')
     
+    % TODO: this changes sorting even if it is not needed
     isIn2 = ismember(pairs,varargin{1}.id);
     isIn1 = ismember(pairs,grains.id);
     

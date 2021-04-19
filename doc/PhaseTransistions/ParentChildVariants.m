@@ -31,7 +31,7 @@ oriParent = orientation.rand(csBeta);
 % orientation relationship is described by the Burger orientation
 % relationship 
 
-beta2alpha = orientation.Burger(csBeta,csAlpha)
+beta2alpha = orientation.Burgers(csBeta,csAlpha)
 
 %%
 % A corresponding child orientation would then be
@@ -43,17 +43,23 @@ oriChild = oriParent * inv(beta2alpha)
 % (0001) plane with the cubic (110) plane and alignment of the hexagonal
 % [2-1-10] direction with the cubic [-11-1] direction.
 
-hAlpha = Miller({0,0,0,1},{2,-1,-1,0},csAlpha);
-hBeta  = Miller({1,1,0},{1,1,1},csBeta);
-
-plotPDF(oriParent,hBeta,'MarkerSize',20,'MarkerFaceColor','none','linewidth',4)
-nextAxis(1)
+% (110) / (0001) pole figure
+plotPDF(oriParent,Miller(1,1,0,csBeta),...
+  'MarkerSize',20,'MarkerFaceColor','none','linewidth',4)
 hold on
-plot(oriChild * hAlpha(1).symmetrise,'MarkerSize',12)
-xlabel(char(hAlpha(1)),'color',ind2color(2))
+plot(oriChild.symmetrise * Miller(0,0,0,1,csAlpha),'MarkerSize',12)
+xlabel(char(Miller(0,0,0,1,csAlpha)),'color',ind2color(2))
+hold off
+
+% [111] / [2-1-10] pole figure
 nextAxis(2)
-plot(oriChild * hAlpha(2).symmetrise,'MarkerSize',12)
-xlabel(char(hAlpha(2)),'color',ind2color(2))
+plotPDF(oriParent,Miller(1,1,1,csBeta,'uvw'),'upper',...
+  'MarkerSize',20,'MarkerFaceColor','none','linewidth',4)
+
+dAlpha = Miller(2,-1,-1,0,csAlpha,'uvw');
+hold on
+plot(oriChild.symmetrise * dAlpha,'MarkerSize',12)
+xlabel(char(dAlpha),'color',ind2color(2))
 hold off
 drawNow(gcm)
 

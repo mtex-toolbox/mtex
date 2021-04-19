@@ -8,13 +8,13 @@ disp(' ');
 
 gs = job.grains.grainSize;
 p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
-matrix(1,:) = {'parent', job.csParent.mineral, char(job.csParent), ...
+matrix(1,:) = {'parent', job.csParent.mineral, job.csParent.pointGroup, ...
   length(job.grains(job.csParent)),[xnum2str(p) '%'],...
-  [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsMeasured.phaseId ==job.childPhaseId)) '%']};
+  [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsPrior.phaseId ==job.childPhaseId)) '%']};
 
 p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
 if ~isempty(job.csChild)
-  matrix(2,:) = {'child', job.csChild.mineral, char(job.csChild), ...
+  matrix(2,:) = {'child', job.csChild.mineral, job.csChild.pointGroup, ...
     length(job.grains(job.csChild)),[xnum2str(p) '%'],''};
 end
 
@@ -24,10 +24,10 @@ cprintf(matrix,'-L',' ','-Lc',...
 
 if ~isempty(job.p2c)
   disp(' ');
-  disp([' parent to child OR: ' char(job.p2c)]);
-  omega = calcGBFit(job,'p2c')./degree;
+  disp([' OR: ' char(job.p2c)]);
+  omega = calcGBFit(job,'noC2C')./degree;
   if ~isempty(omega)
-    disp(['   fit with parent to child misorientations: '...
+    disp(['   p2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
@@ -35,9 +35,9 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  omega = calcGBFit(job,'c2c')./degree;
+  omega = calcGBFit(job,'noP2C')./degree;
   if ~isempty(omega)
-    disp(['   fit with child to child misorientations: '...
+    disp(['   c2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.4)) getMTEXpref('degreeChar') ...
       ', ' xnum2str(quantile(omega,0.6)) getMTEXpref('degreeChar') ...
@@ -45,7 +45,11 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  disp(['   closest ideal OR: ' round2Miller(job.p2c)])
+  OR = round2Miller(job.p2c,'maxHKL',5);
+  if angle(OR,job.p2c) > 1e-3*degree
+    disp(['   closest ideal OR: ' char(OR) ' fit: ' ...
+      xnum2str(angle(OR,job.p2c)./degree) '°'])
+  end
   % Here we still obtain that the (110) of austenite is parallel to (111) in martensite, 
   % which is the reverse in reality. We have had this discussion before, and I think that  
   % we should keep things as they are, as they are crystallographically not
@@ -90,14 +94,5 @@ if ~isempty(job.votes)
 end
 
 disp(' ')
-
-%I would prefer an expression based on "isTransformed". I am not sure if 20
-%percent preexisting austenite should be indexed as "20% transformed" if no
-%reconstruction has been started. What do you think?
-%recAreaGrains = sum(job.grains(job.csParent).area)/sum(job.grains.area)*100;
-%recAreaEBSD = length(job.ebsd(job.csParent))/length(job.ebsd)*100;
-%fprintf('  grains reconstructed: %.0f%%\n', recAreaGrains);
-%fprintf('  ebsd reconstructed: %.0f%%\n', recAreaEBSD);
-
 
 end

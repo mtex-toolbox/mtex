@@ -102,7 +102,7 @@ job.graph(~isGood(mergeId),:) = 0;
 job.mergeId = mergeId(job.mergeId);
 
 % ensure grainId in parentEBSD is set up correctly with parentGrains
-job.ebsd('indexed').grainId = mergeId(job.ebsd('indexed').grainId);
+job.ebsdPrior('indexed').grainId = mergeId(job.ebsdPrior('indexed').grainId);
 
 % update mean orientation of the parent grains
 job.grains(end-nnz(isGood)+1:end).meanOrientation = recOri(isGood);

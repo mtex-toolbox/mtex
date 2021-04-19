@@ -12,12 +12,11 @@ classdef parentGrainReconstructor < handle
 %  p2c0 - initial guess for the parent to child orientation relationship
 %
 % Class Properties
+%  grains    - grains at the current stage of reconstruction
+%  ebsd      - EBSD at the current stage of reconstruction
 %  csParent  - @crystalSymmetry of the parent phase
 %  csChild   - @crystalSymmetry of the child phase
-%  p2c       - parent to child orientation relationship
-%  ebsd      - measured @EBSD
-%  grainsMeasured - measured @grain2d
-%  grains    - reconstructed grains
+%  p2c       - refined parent to child orientation relationship
 %  mergeId   - list of ids to the merged grains
 %  fit       - 
 %  graph     -
@@ -36,31 +35,29 @@ classdef parentGrainReconstructor < handle
 %
 
   properties
+    grains         % grains at the current stage of reconstruction
+    p2c            % parent to child orientation relationship
+    useBoundaryOrientations = false
     
-    csParent  % parent symmetry
-    csChild   % child symmetry
-
+    mergeId        % a list of ids to the merged grains
+    pParentId      % probabilities of parentIds
     
-    ebsd      % initial / measured EBSD
-    grainsMeasured % initialy measured grains 
-    grains    % reconstructed grains
-
-    mergeId   % a list of ids to the merged grains
-    pParentId % probabilities of parentIds
-    
-    fit    
-    graph
-    votes
-
+    votes          % votes computed by calcGBVotes or calcTPVotes
+    fit            % misFit of the votes
+    graph          % graph computed by calcGraph
   end
   
   properties (Dependent=true)
+    csParent        % parent symmetry
+    csChild         % child symmetry
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
-    variantMap
+    variantMap      % allows to reorder variants
   end
   
   properties (Dependent=true)
+    ebsd            % EBSD at the current stage of reconstruction
+    
     numChilds       % number of child grains for each parent grain
     isTransformed   % child grains that have been reverted from child to parent phase
     isMerged        % child grains that have been merged into a parent grain    
@@ -73,32 +70,36 @@ classdef parentGrainReconstructor < handle
     packetId        %
   end
   
-  properties (SetObservable) 
-    p2c       % parent to child orientation relationship
+  properties (Hidden=true)
+    ebsdPrior      % EBSD prior to reconstruction
+    grainsPrior    % grains prior to reconstruction
   end
   
-  
   methods
-    
-    
+
     function job = parentGrainReconstructor(ebsd,varargin)
 
       % set up ebsd and grains
-      job.ebsd = ebsd;
+      job.ebsdPrior = ebsd;
       job.grains = getClass(varargin,'grain2d');
-      job.grainsMeasured = job.grains;
+      job.grainsPrior = job.grains;
       
       if isempty(job.grains)
-        [job.grains, job.ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
+        [job.grains, job.ebsdPrior.grainId] = ...
+          calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
       end
+
+      % project EBSD orientations close the grain mean orientations
+      job.ebsdPrior = job.ebsdPrior.project2FundamentalRegion(job.grains);
       
       job.mergeId = (1:length(job.grains)).';
       
       % check for provided orientation relationship
-      job.p2c = getClass(varargin,'orientation');
+      job.p2c = getClass(varargin,'orientation',orientation);
       
       % determine parent and child phase
       if isempty(job.p2c)
+                
         % try to guess parent and child phase
         numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
         indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
@@ -110,16 +111,27 @@ classdef parentGrainReconstructor < handle
         [~,minPhase] = min(numPhase);
         if minPhase ~= maxPhase
           job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
-        end
-      else
-        % extract from existing orientation relationship
-        assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
-        job.csParent = job.p2c.CS;
-        job.csChild = job.p2c.SS;
+        end      
       end
       
     end
-	
+    
+    function cs = get.csParent(job)
+      cs = job.p2c.CS;
+    end
+    
+    function set.csParent(job,cs)
+      job.p2c.CS = cs;
+    end
+    
+    function cs = get.csChild(job)
+      cs = job.p2c.SS;
+    end
+    
+    function set.csChild(job,cs)
+      job.p2c.SS = cs;
+    end
+    
     function id = get.parentPhaseId(job)
       id = job.grains.cs2phaseId(job.csParent);
     end
@@ -140,11 +152,7 @@ classdef parentGrainReconstructor < handle
     function out = get.isTransformed(job)
       % which initial grains have been already reconstructed
       
-      %Should this not be "which grains have been succesfully
-      %reconstructed?
-      %Then we could use this to return the area fraction of reconstructed
-      %phase
-      out = job.grainsMeasured.phaseId == job.childPhaseId & ...
+      out = job.grainsPrior.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
     
@@ -161,37 +169,37 @@ classdef parentGrainReconstructor < handle
     end
     
     function out = get.transformedGrains(job)
-      out = job.grainsMeasured(job.isTransformed);
+      out = job.grainsPrior(job.isTransformed);
     end
     
     function set.transformedGrains(job,grains)
-      job.grainsMeasured(job.isTransformed) = grains;
+      job.grainsPrior(job.isTransformed) = grains;
     end
     
     function out = get.packetId(job)
       
-      if isfield(job.grainsMeasured.prop,'packetId')
-        out = job.grainsMeasured.prop.packetId;
+      if isfield(job.grainsPrior.prop,'packetId')
+        out = job.grainsPrior.prop.packetId;
       else
-        out = NaN(size(job.grainsMeasured));
+        out = NaN(size(job.grainsPrior));
       end
     end
     
     function set.packetId(job,id)
-      job.grainsMeasured.prop.packetId = id;
+      job.grainsPrior.prop.packetId = id;
     end
     
     function out = get.variantId(job)
       
-      if isfield(job.grainsMeasured.prop,'variantId')
-        out = job.grainsMeasured.prop.variantId;
+      if isfield(job.grainsPrior.prop,'variantId')
+        out = job.grainsPrior.prop.variantId;
       else
-        out = NaN(size(job.grainsMeasured));
+        out = NaN(size(job.grainsPrior));
       end
     end
     
     function set.variantId(job,id)
-      job.grainsMeasured.prop.variantId = id;
+      job.grainsPrior.prop.variantId = id;
     end
      
     function set.variantMap(job,vMap)
@@ -204,6 +212,10 @@ classdef parentGrainReconstructor < handle
       else
         vMap = job.p2c.opt.variantMap;
       end      
+    end
+    
+    function ebsd = get.ebsd(job)
+      ebsd = calcParentEBSD(job);
     end
         
   end

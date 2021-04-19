@@ -240,6 +240,11 @@ for i = 1:numel(sP)
   
 end
 
+% with opengl markers with thick boundary look ugly
+if get_option(varargin,'linewidth',0) > 3 && ~check_option(varargin,'edgecolor')
+  set(gcf,'Renderer','painters');
+end
+
 if isappdata(sP(1).parent,'mtexFig') && isNew
   mtexFig = getappdata(sP(1).parent,'mtexFig');
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});

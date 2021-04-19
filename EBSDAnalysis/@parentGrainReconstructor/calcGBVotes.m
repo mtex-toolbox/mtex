@@ -21,16 +21,15 @@ numFit = get_option(varargin,'numFit',2);
 
 % parent-child - votes
 
-if ~isempty(job.parentGrains)
-  grainPairs = neighbors(job.parentGrains, job.childGrains);
-    
-  % extract the corresponding mean orientations
-  oriParent = job.grains('id',grainPairs(:,1) ).meanOrientation;
-  oriChild  = job.grains('id', grainPairs(:,2) ).meanOrientation;
-    
+if ~isempty(job.parentGrains) && ~check_option(varargin,'noP2C')
+  
+  % extract parent to child grain pairs with the coresponding orientations
+  % averaged along the boundary
+  [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
+
   % compute for each parent/child pair of grains the best fitting parentId
   [parentId, fit] = calcParent(oriChild,oriParent,job.p2c,'numFit',numFit,'id');
-    
+
   % store as table
   job.votes = table(grainPairs(:,2), parentId, fit, ...
     'VariableNames',{'grainId','parentId','fit'});
@@ -42,23 +41,24 @@ if ~isempty(job.parentGrains)
     weights = accumarray(pairId,1,[size(grainPairs,1) 1]);
     
     job.votes.weights = weights;
-  end
+   end
+else
+  job.votes = [];  
 end
 
 % child-child - votes
 if ~check_option(varargin,'noC2C')
-  grainPairs = neighbors(job.childGrains, job.childGrains);
+
+  % extract child to child grain pairs with the coresponding orientations
+  % averaged along the boundary
+  [grainPairs, oriChild] = getC2CPairs(job,varargin{:});
   
-  % extract the corresponding mean orientations
-  oriChild = job.grains('id',grainPairs).meanOrientation;
-    
   % compute for each parent/child pair of grains the best fitting parentId
   [parentId, fit] = calcParent(oriChild,job.p2c,'numFit',numFit,'id');
-    
+  
   c2cVotes = table(grainPairs(:), reshape(parentId,[],numFit), repmat(fit,2,1), ...
     'VariableNames',{'grainId','parentId','fit'});
-  
-  
+
   % weight votes according to boundary length
   if check_option(varargin,'weights')
     
@@ -66,7 +66,7 @@ if ~check_option(varargin,'noC2C')
     weights = accumarray(pairId,1,[size(grainPairs,1) 1]);
     
     c2cVotes.weights = [weights;weights];
-  end 
+  end
   
   % add to table
   job.votes = [job.votes; c2cVotes];
