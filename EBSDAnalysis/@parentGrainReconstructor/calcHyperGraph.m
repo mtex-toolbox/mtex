@@ -25,7 +25,7 @@ function job = calcHyperGraph(job, varargin)
 % get parameters
 threshold = get_option(varargin,'threshold',2*degree);
 tol = get_option(varargin,'tolerance',1.5*degree);
-noOpt = ~get_option(varargin,{'p2c','p2p','c2c'});
+noOpt = ~check_option(varargin,{'p2c','p2p','c2c'});
 
 % init graph
 p2cV = variants(job.p2c,'parent');
