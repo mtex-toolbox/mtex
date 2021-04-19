@@ -12,11 +12,11 @@ function [fit, pairs] = calcGBFit(job,varargin)
 %   mtexColorMap white2black
 %
 %   % consider only P2C neighbors
-%   [fit, p2cPairs] = job.calcGBFit('noC2C')
+%   [fit, p2cPairs] = job.calcGBFit('p2c')
 %
 %   % consider only C2C neighbors
-%   [fit, c2cPairs] = job.calcGBFit('noP2C')
-%
+%   [fit, c2cPairs] = job.calcGBFit('c2c')
+%s
 % Input
 %  job - @parentGrainReconstructor
 %
@@ -25,8 +25,10 @@ function [fit, pairs] = calcGBFit(job,varargin)
 %  pairs - list of grainId of the neighboring grains
 %
 
+noOpt = ~check_option(varargin,{'p2c','c2c'});
+
 % parent to child neighbors
-if ~check_option(varargin,'noP2C')
+if noOpt || check_option(varargin,'p2c')
   
   % extract all parent to child neighbors
   [pairs, oriParent, oriChild] = getP2CPairs(job, varargin{:});
@@ -44,7 +46,7 @@ else
   
 end
   
-if ~check_option(varargin,'noC2C')
+if noOpt || check_option(varargin,'c2c')
 
   % extract all child to child neighbors
   [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});

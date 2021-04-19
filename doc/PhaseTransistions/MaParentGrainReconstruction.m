@@ -206,7 +206,7 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 for k = 1:3 % do this three times
 
   % compute votes
-  job.calcGBVotes('noC2C');
+  job.calcGBVotes('p2c');
 
   % compute parent orientations from votes
   job.calcParentFromVote('minFit',7.5*degree)

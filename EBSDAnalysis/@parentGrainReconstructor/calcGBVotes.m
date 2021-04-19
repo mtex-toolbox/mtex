@@ -13,15 +13,16 @@ function job = calcGBVotes(job,varargin)
 %
 % Options
 %  numFit - number of fits to be computed
-%  noC2C  - consider only parent / child grain boundaries
+%  p2c  - consider only parent / child grain boundaries
+%  c2c  - consider only child / child grain boundaries
 %  weights - store boundary as weights to votes
 %
 
 numFit = get_option(varargin,'numFit',2);
+noOpt = ~check_option(varargin,{'p2c','c2c'});
 
 % parent-child - votes
-
-if ~isempty(job.parentGrains) && ~check_option(varargin,'noP2C')
+if ~isempty(job.parentGrains) && (noOpt || check_option(varargin,'p2c'))
   
   % extract parent to child grain pairs with the coresponding orientations
   % averaged along the boundary
@@ -47,7 +48,7 @@ else
 end
 
 % child-child - votes
-if ~check_option(varargin,'noC2C')
+if noOpt || check_option(varargin,'c2c')
 
   % extract child to child grain pairs with the coresponding orientations
   % averaged along the boundary

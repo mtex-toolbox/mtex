@@ -25,7 +25,7 @@ cprintf(matrix,'-L',' ','-Lc',...
 if ~isempty(job.p2c)
   disp(' ');
   disp([' OR: ' char(job.p2c)]);
-  omega = calcGBFit(job,'noC2C')./degree;
+  omega = calcGBFit(job,'p2c')./degree;
   if ~isempty(omega)
     disp(['   p2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
@@ -35,7 +35,7 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  omega = calcGBFit(job,'noP2C')./degree;
+  omega = calcGBFit(job,'c2c')./degree;
   if ~isempty(omega)
     disp(['   c2c fit: '...
       xnum2str(quantile(omega,0.2)) getMTEXpref('degreeChar') ...
