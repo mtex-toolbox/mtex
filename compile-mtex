@@ -1,5 +1,7 @@
 #!/bin/bash
 # Usage: compile-mtex your-matlab-script.m
-# First you must set the environment variable MTEX_INCLUDE to point to
-# mtex-install-dir/mtex-include
+
+# This script uses two environment variables which you must set.
+# 1. MTEX_DIR = the directory containing this script.
+# 2. MTEX_INCLUDE = ${MTEX_DIR}/mtex-include
 mcc -R -singleCompThread -m $1 $(cat $MTEX_INCLUDE | envsubst)
