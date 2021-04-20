@@ -10,7 +10,7 @@ function job = calcParentFromVote(job,varargin)
 %   job.calcParentFromVote('strict','minVotes',2)
 %
 %   % go by probability
-%   job.calcParentFromVote('probability','threshold',1.5*degree,'tolerance',1.5*degree,'minProb',0.6)
+%   job.calcParentFromVote('minProb',0.6,'threshold',1.5*degree,'tolerance',1.5*degree)
 %
 % Input
 %  job - @parentGrainReconstructor
@@ -19,18 +19,19 @@ function job = calcParentFromVote(job,varargin)
 %  job - @parentGrainReconstructor
 %
 % Options
-%  probability - 
 %  strict - require all votes to be equal
 %  minFit - minimum required fit
 %  maxFit - maximum second best fit
 %  minVotes - minimum number of required votes
-%  minProb  - minimum probability
+%  minProb  - minimum probability (default - 0)
+%  threshold - threshold fitting angle between the theoretical OR and the boundary OR
+%  tolerance - range over which the probability increases from 0 to 1 (default 1.5)
 
 
 assert(~isempty(job.votes),'You need to compute votes first.');
 
 
-if check_option(varargin,'probability')
+if check_option(varargin,{'probability','minProb'})
   
    threshold = get_option(varargin,'threshold',2*degree);
    tol = get_option(varargin,'tolerance',1.5*degree);
