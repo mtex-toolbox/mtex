@@ -3,8 +3,8 @@ function SO3F = WignerDmap(N,varargin)
 % degree N and index k,l : D^n_{k,l}
 %
 % Syntax
-%   SO3F = WignerDmap(N,k,l)
-%   SO3F = WignerDmap(N,'full')
+%   SO3F = SO3FunHarmonic.WignerDmap(N,k,l)
+%   SO3F = SO3FunHarmonic.WignerDmap(N,'full')
 %
 % Input
 %   N   - harmonic degree of Wigner-D function
