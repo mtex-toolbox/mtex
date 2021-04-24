@@ -39,4 +39,7 @@ job.grains(doTransform).meanOrientation = pOri;
 % update all grain properties that are related to the mean orientation
 job.grains = job.grains.update;
 
+% remove votes
+job.votes = [];
+
 end
