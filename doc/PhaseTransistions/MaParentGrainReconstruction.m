@@ -202,14 +202,13 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 % |job.calcGBVotes|> and <parentGrainReconstructor.calcParentFromVote.html
 % |job.calcParentFromVote|> can be adjusted by many options.
 
-
 for k = 1:3 % do this three times
 
   % compute votes
-  job.calcGBVotes('p2c');
+  job.calcGBVotes('p2c','threshold', k * 2.5*degree);
 
   % compute parent orientations from votes
-  job.calcParentFromVote('minFit',7.5*degree)
+  job.calcParentFromVote
 end
 
 % plot the result
