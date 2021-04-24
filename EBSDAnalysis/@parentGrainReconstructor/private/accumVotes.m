@@ -63,7 +63,7 @@ end
 for k = 1:numFit
   [votes.prob(:,k), votes.parentId(:,k)] = max(W,[],2);
   
-  W(sub2ind(size(W), 1:maxGrainId, votes.parentId(:,k).')) = 0;
+  W(sub2ind(size(W), 1:maxGrainId, votes.parentId(:,k).')) = nan;
 end
 
 end
