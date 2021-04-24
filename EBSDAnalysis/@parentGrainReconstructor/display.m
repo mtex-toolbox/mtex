@@ -76,6 +76,7 @@ end
 if ~isempty(job.votes)
   disp(' ');
   prob = 100*job.votes.prob(job.isChild,:);
+  prob = prob(~isnan(prob(:,1)),:);
   
   disp([' votes: ' size2str(prob)]);
   prob = prob(:,1);
