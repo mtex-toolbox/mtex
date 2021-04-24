@@ -53,6 +53,7 @@ classdef parentGrainReconstructor < handle
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
     variantMap      % allows to reorder variants
+    c2c             % all child to child ORs
   end
   
   properties (Dependent=true)
@@ -216,6 +217,12 @@ classdef parentGrainReconstructor < handle
     
     function ebsd = get.ebsd(job)
       ebsd = calcParentEBSD(job);
+    end
+    
+    function c2c = get.c2c(job)
+      % child to child misorientation variants
+      p2cV = job.p2c.variants; 
+      c2c = job.p2c .* inv(p2cV(:));
     end
         
   end

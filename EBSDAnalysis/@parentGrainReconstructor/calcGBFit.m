@@ -55,11 +55,7 @@ if noOpt || check_option(varargin,'c2c')
   % compute the corresponding misorientations
   mori = inv(oriChild(:,1)).*oriChild(:,2);
   
-  % child to child misorientation variants
-  p2cV = job.p2c.variants; p2cV = p2cV(:);
-  c2c = job.p2c .* inv(p2cV);
-
   % misorientation to c2c variants
-  fit = [fit;min(angle_outer(mori, c2c),[],2)];
+  fit = [fit;min(angle_outer(mori, job.c2c),[],2)];
   
 end
