@@ -12,21 +12,16 @@ function job = calcParentFromHyperGraph(job,varargin)
 %  job.parentGrains - reconstructed parent grains
 %
 % Options
-%
+%  minProb   - minimum probability (default - 0.5)
 %  threshold - child / parent grains with a misfit larger then the threshold will not be merged
 %
 
-% steps of the algorithm
-%  (1) fake merge - to identify the grains to be merged
-%  (2) fit parent grain orientation to the merged grains
-%  (3) identify merged grains with a good fit
-%  (4) perform the actual merge
-%
-% TODO:
-%  - misfit computation: currently we take the maximum, we consider only the childorientations 
-%  -
+
+% ensure we have a graph
+if isempty(job.graph), job.calcHyperGraph(varargin{:}); end
 
 % extract parameters
+minProb = get_option(varargin,'minProb',0.0);
 p = get_option(varargin,'inflationPower', 1.4);
 numIter = get_option(varargin,'numIter', 6);
 minval = 0.0001;
@@ -59,35 +54,39 @@ for iter = 1:numIter
     end
   end
   dinv = spdiags(1./s.',0,numG,numG);
-  for k = 1:numel(A), A{k} = A{k} * dinv; end
+  if iter < numIter
+    for k = 1:numel(A), A{k} = A{k} * dinv; end
+    %for k = 1:numel(A), A{k} =  sqrt(dinv) * A{k} * sqrt(dinv); end
+  end
 
   disp('.')
 end 
+job.graph = A;
 
 % create a table of probabilities for the different parentIds of each child
 % grains
 pIdP = zeros(numG,numV);
 
 for k2 = 1:numV
-  for k1 = 1:numV   
+  for k1 = 1:numV
     pIdP(:,k2) = pIdP(:,k2) + sum(A{k1,k2},1).';
   end
+  %pIdP(:,k2) = diag(A{k2,k2});
 end
 
-% store it in the job class
-job.grains.prop.pParentId = pIdP; 
+% sort the table and store the highest probabilities in the job class
+[pIdP,pId] = sort(pIdP,2,'descend');
 
-% for the reconstruction simple take the parent Id with the maximum
-% probability
-[P,parentId] = max(pIdP,[],2);
+job.grains.prop.parentId = pId(:,1:3); 
+job.grains.prop.pParentId = pIdP(:,1:3); 
 
 % we could use here some threshold on the probability
 % note, by normalization the probabilities for a single child grain
 % sum up to 1
-doTransform = P > 0.0 & job.grains.phaseId == job.childPhaseId;
+doTransform = pIdP(:,1) >= minProb & job.grains.phaseId == job.childPhaseId;
 
 % compute new parent orientation from parentId
-pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, parentId(doTransform));
+pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, pId(doTransform,1));
 
 % change orientations of consistent grains from child to parent
 job.grains(doTransform).meanOrientation = pOri;
@@ -95,26 +94,31 @@ job.grains(doTransform).meanOrientation = pOri;
 % update all grain properties that are related to the mean orientation
 job.grains = job.grains.update;
 
-job.graph = [];
+% delete graph 
+%job.graph = [];
 
 
-end
 
 function B = expansion(A)
 
-B = A;
-for k1 = 1:length(A)
-  for k2 = 1:length(A)
-    
-    for k = 1:length(A)
-      
-      B{k1,k2} = B{k1,k2} + A{k1,k} * A{k,k2};
-      
+if check_option(varargin, 'withDiagonal')
+  
+  B = cell(size(A));
+  for l1 = 1:length(A)
+    for l2 = 1:length(A)      
+      B{l1,l2} = sparse(size(A{l1,l2},1),size(A{l1,l2},1));
+      for l = 1:length(A), B{l1,l2} = B{l1,l2} + A{l1,l} * A{l,l2}; end
     end
-   
+  end
+  
+else
+  
+  B = A;
+  for l1 = 1:length(A)
+    for l2 = 1:length(A)
+      for l = 1:length(A), B{l1,l2} = B{l1,l2} + A{l1,l} * A{l,l2}; end
+    end
   end
 end
-
+end 
 end
-
- 

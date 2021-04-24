@@ -46,10 +46,19 @@ if ~isempty(job.parentGrains) && (check_option(varargin,'p2p') || noOpt)
   ind = prob > 0.1;
   
   % write to graph
-  job.graph{1,1} = max(...
+  job.graph{1,1} = speye(numG) + max(...
     sparse(grainPairs(ind,1),grainPairs(ind,2),prob(ind),numG,numG),...
     sparse(grainPairs(ind,2),grainPairs(ind,1),prob(ind),numG,numG));
   
+end
+
+% set diagonal elements to 1/numV, i.e.,
+% each parentId has the same chance to begin with
+if check_option(varargin,'withDiagonal')
+  childId = job.grains.id(job.grains.phaseId == job.childPhaseId);
+  for k = 1:numV
+    job.graph{k,k} = sparse(childId,childId,1/numV,numG,numG);
+  end
 end
 
 % parent to child probabilities
