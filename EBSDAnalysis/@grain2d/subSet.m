@@ -41,6 +41,9 @@ grains.id = grains.id(ind);
 grains.phaseId = reshape(grains.phaseId(ind),[],1);
 grains.grainSize = grains.grainSize(ind);
 
+if ~islogical(ind)
+  grains.prop.meanRotation = reshape(grains.prop.meanRotation, size(ind));
+end
 
 grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);

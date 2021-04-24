@@ -124,7 +124,7 @@ if parentVariants % parent variants
   p2cVariants = p2cVariants.subSet(ind);
   
   if exist('variantId','var')
-    p2cVariants = p2cVariants.subSet(variantId);
+    p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
   end
   
   if exist('oriChild','var')

@@ -50,7 +50,7 @@ if isempty(interface)
     %disp(' ');
     %disp(lasterr); %#ok<LERR>
     %disp(' ');
-    error('Could not detect file format. You may ask for help in the MTEX forum (https://groups.google.com/forum/#!forum/mtexmail).');
+    error('Could not detect file format. You may ask for help in the MTEX forum (https://github.com/mtex-toolbox/mtex/discussions).');
   end
   
   if isempty(d)

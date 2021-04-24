@@ -21,9 +21,10 @@ classdef parentGrainReconstructor < handle
 %  fit       - 
 %  graph     -
 %  votes     -
-%  numChilds         - number of child grains for each parent grain
-%  isTransformed     - child grains that have been reverted from child to parent phase
-%  isMerged          - child grains that have been merged into a parent grain    
+%  numChilds     - number of child grains for each parent grain
+%  isTransformed - child grains that have been reverted from child to parent phase
+%  isChild       -s child grains that have been reverted from child to parent phase
+%  isMerged      - child grains that have been merged into a parent grain    
 %  transformedGrains - transformed measured grains 
 %  parentGrains - measured and reconstructed parent grains
 %  childGrains  - not yet reconstructed child grains
@@ -53,13 +54,15 @@ classdef parentGrainReconstructor < handle
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
     variantMap      % allows to reorder variants
+    c2c             % all child to child ORs
   end
   
   properties (Dependent=true)
     ebsd            % EBSD at the current stage of reconstruction
     
     numChilds       % number of child grains for each parent grain
-    isTransformed   % child grains that have been reverted from child to parent phase
+    isChild         % is a child grains
+    isTransformed   % a child grain that has been reconstructed into a parent grain
     isMerged        % child grains that have been merged into a parent grain    
     
     transformedGrains  % transformed measured grains 
@@ -156,16 +159,16 @@ classdef parentGrainReconstructor < handle
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
     
-    function out = get.parentGrains(job)
-      
-      out = job.grains( job.grains.phaseId == job.parentPhaseId );
-      
+    function out = get.isChild(job)
+      out = job.grains.phaseId == job.childPhaseId;
     end
     
-    function out = get.childGrains(job)
-      
-      out = job.grains( job.grains.phaseId == job.childPhaseId );
-      
+    function out = get.parentGrains(job)      
+      out = job.grains( job.grains.phaseId == job.parentPhaseId );      
+    end
+    
+    function out = get.childGrains(job)      
+      out = job.grains( job.grains.phaseId == job.childPhaseId );      
     end
     
     function out = get.transformedGrains(job)
@@ -216,6 +219,12 @@ classdef parentGrainReconstructor < handle
     
     function ebsd = get.ebsd(job)
       ebsd = calcParentEBSD(job);
+    end
+    
+    function c2c = get.c2c(job)
+      % child to child misorientation variants
+      p2cV = job.p2c.variants; 
+      c2c = job.p2c .* inv(p2cV(:));
     end
         
   end

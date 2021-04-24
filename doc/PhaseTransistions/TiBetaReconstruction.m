@@ -50,20 +50,21 @@ round2Miller(beta2alpha)
 %
 % Now we are ready to set up the parent grain reconstruction job.
 
-job = parentGrainReconstructor(ebsd, grains, beta2alpha)
+job = parentGrainReconstructor(ebsd, grains);
+job.p2c = beta2alpha
 
 %%
 % The output of the |job| variable allows you to keep track of the amount
 % of already recovered parent grains. Using the variable |job| you have
 % access to the following properties
 %
-% * |job.grainsMeasured| - the reference grain reconstruction from your EBSD
-% data
-% * |job.grains| - the grains at the current stage of parent grain
-% reconstruction
-% * |job.mergeId| - the relationship between the reference grains
-% |job.grainsMeasured| and the current grains |job.grains|, i.e.,
-% |job.grainsMeasured(ind)| goes into the merged grain
+% * |job.grainsIn| - the input grains
+% * |job.grains| - the grains at the current stage of reconstruction
+% * |job.ebsdIn| - the input EBDS data
+% * |job.ebsd| - the ebsd data at the current stage of reconstruction
+% * |job.mergeId| - the relationship between the input grains
+% |job.grainsIn| and the current grains |job.grains|, i.e.,
+% |job.grainsIn(ind)| goes into the merged grain
 % |job.grains(job.mergeId(ind))|
 % * |job.numChilds| - number of childs of each current parent grain
 % * |job.parenGrains| - the current parent grains
@@ -93,35 +94,39 @@ job = parentGrainReconstructor(ebsd, grains, beta2alpha)
 % parent parent grains. In a first step we identify triple junctions that
 % have misorientations that are compatible with a common parent orientation
 % using the command <parentGrainReconstructor.calcTPVotes.html
-% |calcTPVotes|>. This common parent orientation is then stored as votes
-% for the three adjacent grains.
+% |calcTPVotes|>. The option |'minFit'| tells the MTEX that the only those
+% triple junctions are considered where the fit to the common parent
+% orientation does not exceed 2.5 degree.
 
-job.calcTPVotes('numFit',2)
-
-%%
-% In the above command we have not only computed the best fitting but also
-% the second best fitting parent orientations. This allows us to ignore
-% ambigues triple points which may vote equally well for different parent
-% orientations. In the next command
-% <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
-% this is controlled by the options |minFit| which controls how well the
-% best fitting parent orientations fits the adjacent child orienttions and
-% the option |maxFit| which controls how bad the second best needs to be
-% such that this triple point is considered.
-%
-% After identifying, the reliable triple points the command
-% <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
-% loops through all grains and checks for the votes from the adjecent
-% triple junctions. If all votes coincide and we have at least as many
-% votes as specified by the option |minVotes| the child grain is turned
-% into a parent grain.
-
-job.calcParentFromVote('strict', 'minFit',2.5*degree,'maxFit',5*degree,'minVotes',2)
-
-%job.calcParentFromVote('probability', 'threshold',2*degree,'tolerance',2*degree)
+job.calcTPVotes('minFit',2.5*degree,'maxFit',5*degree)
 
 %%
-% We observe that after this step more then 90 percent of the grains became
+% The above command does not only compute the best fitting but also the
+% second best fitting parent orientation. This allows us to ignore ambigues
+% triple points which may vote equally well for different parent
+% orientations. In the above command we did this by the option |'maxFit'|
+% which tells MTEX to ignore all triple points where the fit to the second
+% best parent orientation is below 5 degree.
+%%
+% From all remaining triple points the command
+% <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> compute a list
+% of votes stored in |job.votes| that contain for each child grain the most
+% likely parent orientation and a corresponding probability
+% |job.votes.prob|. We may visualize this probability for each grain
+
+plot(job.grains, job.votes.prob(:,1))
+mtexColorbar
+
+%%
+% We observe that for most of the grains the probability is above 70
+% percent. We may use this percentage as threshold to decide which child
+% grains we turn into parent grains. This can be done by the command command
+% <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
+
+job.calcParentFromVote('minProb',0.7)
+
+%%
+% We observe that after this step more then 66 percent of the grains became
 % parent grains. Lets visualize these reconstructed beta grains
 
 % define a color key
@@ -137,19 +142,18 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % Next we may grow the reconstructed parent grains into the regions of the
 % remaining child grains. To this end we use the command
 % <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> with the option
-% |'p2c'| to compute fit and votes from grain boundaries to consider only
-% parent to child boundaries.
-
-job.calcGBVotes('p2c');
-
-%%
-% Next we use the exact same command
+% |'p2c'| to compute votes from parent to child grain boundaries. Next we
+% use the exact same command
 % <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
-% to recover parent orientations from the votes. Here, however, with much
-% weaker constraints, i.e., we doubled the threshold |'minfit'| and are
-% already happy with a single vote.
+% to recover parent orientations from the votes. As threshold for the
+% growing the parent grains into the child grains we use 2.5 degree, 5
+% degree and 7.5 degree. This can be easily accomblished by the following
+% small loop.
 
-job.calcParentFromVote('minFit',5*degree)
+for k = 1:3
+  job.calcGBVotes('p2c','threshold',k * 2.5*degree);
+  job.calcParentFromVote
+end
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
@@ -180,7 +184,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % merge all inclusions that have fever pixels then a certain threshold into
 % the surrounding parent grains.
 
-job.mergeInclusions('maxSize',50)
+job.mergeInclusions('maxSize',5)
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
@@ -194,7 +198,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % the parent phase orientation. This is done by the command
 % |<parentGrainReconstructor.calcParentEBSD.html calcParentEBSD>|
 
-parentEBSD = job.calcParentEBSD;
+parentEBSD = job.ebsd;
 
 % plot the result
 color = ipfKey.orientation2color(parentEBSD('Ti (Beta)').orientations);

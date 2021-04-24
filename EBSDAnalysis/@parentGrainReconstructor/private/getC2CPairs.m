@@ -2,6 +2,9 @@ function [pairs,ori] = getC2CPairs(job,varargin)
 % 
 
 pairs = neighbors(job.childGrains, job.childGrains);
+
+% remove self boundaries
+pairs(pairs(:,1)==pairs(:,2)) = [];
 pairs = sortrows(sort(pairs,2,'ascend'));
 
 % maybe there is nothing to do
@@ -29,5 +32,15 @@ else
   ori = job.grains('id',pairs).meanOrientation;
   
 end
+
+% remove pairs of similar orientations
+% as they will not vote reliably for a parent orientation
+if check_option(varargin,'minDelta')
+  
+  ind = angle(ori(:,1),ori(:,2)) < get_option(varargin,'minDelta');
+
+  ori(ind,:) = [];
+  pairs(ind,:) = [];
+
 
 end
