@@ -52,13 +52,24 @@ if ~isempty(job.parentGrains) && (check_option(varargin,'p2p') || noOpt)
   
 end
 
-% set diagonal elements to 1/numV, i.e.,
+% set diagonal elements to 1, i.e.,
 % each parentId has the same chance to begin with
 if check_option(varargin,'withDiagonal')
+  
   childId = job.grains.id(job.grains.phaseId == job.childPhaseId);
+  
+  % fit between the parent variants of the same child
+  %fit = angle_outer(p2cV,p2cV);
+  %prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
+  
+  %for k = find(prob > 0.1).'
+  %  job.graph{k} = sparse(childId,childId,prob(k),numG,numG);
+  %end  
+  
   for k = 1:numV
-    job.graph{k,k} = sparse(childId,childId,1/numV,numG,numG);
+    job.graph{k} = sparse(childId,childId,1,numG,numG);
   end
+  
 end
 
 % parent to child probabilities
