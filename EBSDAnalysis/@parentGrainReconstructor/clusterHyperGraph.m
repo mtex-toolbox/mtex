@@ -23,7 +23,6 @@ function job = clusterHyperGraph(job,varargin)
 if isempty(job.graph), job.calcHyperGraph(varargin{:}); end
 
 % extract parameters
-minProb = get_option(varargin,'minProb',0.0);
 p = get_option(varargin,'inflationPower', 1.4);
 numIter = get_option(varargin,'numIter', 6);
 cutOff = get_option(varargin,'cutOff',0.0001);
@@ -76,9 +75,29 @@ for k2 = 1:numV
   %pIdP(:,k2) = diag(A{k2,k2});
 end
 
+if check_option(varargin,'includeTwins')
+  
+  % define theoretical twinning of the packet
+  p2cV = job.p2c.variants('parent');
+  tp2cV = p2cV(:) .* orientation.byAxisAngle(round(p2cV \ Miller(0,1,1,p2cV.SS),'maxHKL',1),60*degree);
+  
+  M = 0.5*triu(angle_outer(p2cV,tp2cV,'noSym2') < 5 * degree);
+  
+  M(~sum(M),~sum(M)) = eye(nnz(~sum(M)));
+  pIdP = pIdP * M;
+end
+
+
+if check_option(varargin,'includeSimilar')
+  M = triu(angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree);
+  M(:,sum(M)==1) = 0;
+  pIdP = pIdP * M;
+  
+end
+
 % sort the table and store the highest probabilities in the job class
 [pIdP,pId] = sort(pIdP,2,'descend');
-job.votes = table(pId(:,1:3),pIdP(:,1:3),'VariableNames',{'parentId','prob'});
+job.votes = table(pId,pIdP,'VariableNames',{'parentId','prob'});
 
 % --------------------------------------------------------------------------
 function B = expansion(A)
