@@ -23,10 +23,10 @@ function job = calcParentFromVote(job,varargin)
 %  minProb  - minimum probability (default - 0)
 %  minDelta - minimum difference between best and second best probability
 
-assert(~isempty(job.votes),'You need to compute votes first.');
+assert(~isempty(job.votes),'You need to compute votes first!');
 
 % which to transform
-doTransform = job.votes.parentId(:,1)>0 & ...
+doTransform = job.isChild & job.votes.parentId(:,1)>0 & ...
   job.votes.prob(:,1) > get_option(varargin,'minProb',0) & ...
   job.votes.prob(:,1)-job.votes.prob(:,2) > get_option(varargin,'minDelta',0);
 
