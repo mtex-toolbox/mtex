@@ -157,7 +157,7 @@ else % child variants
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
   p2cVariants = p2cVariants.subSet(ind);
 
-  if isfield(p2c.opt,'variantMap') && ~isempty(p2c.opt.variantMap)
+  if isfield(p2c.opt,'variantMap') && length(p2c.opt.variantMap) == length(p2cVariants)
     p2cVariants = p2cVariants.subSet(p2c.opt.variantMap);
   end
   
