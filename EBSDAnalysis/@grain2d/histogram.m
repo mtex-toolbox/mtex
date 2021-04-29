@@ -60,6 +60,7 @@ if all(prop == area)
   title(mtexFig.gca,'grain size distribution')
   xlabel(mtexFig.gca,'grain area');
 end
+yticklabels(mtexFig.gca,yticks*100)
 ylabel(mtexFig.gca,'relative area (%)')
 
 % legend
