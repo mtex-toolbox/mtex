@@ -18,12 +18,11 @@ classdef parentGrainReconstructor < handle
 %  csChild   - @crystalSymmetry of the child phase
 %  p2c       - refined parent to child orientation relationship
 %  mergeId   - list of ids to the merged grains
-%  fit       - 
-%  graph     -
-%  votes     -
+%  graph     - grain graph with edges representing probabilities of adjecent grains to form a parent grain
+%  votes     - table of of votes for each grain
 %  numChilds     - number of child grains for each parent grain
 %  isTransformed - child grains that have been reverted from child to parent phase
-%  isChild       -s child grains that have been reverted from child to parent phase
+%  isChild       - child grains that have been reverted from child to parent phase
 %  isMerged      - child grains that have been merged into a parent grain    
 %  transformedGrains - transformed measured grains 
 %  parentGrains - measured and reconstructed parent grains
@@ -66,8 +65,9 @@ classdef parentGrainReconstructor < handle
     isMerged        % child grains that have been merged into a parent grain    
     
     transformedGrains  % transformed measured grains 
-    parentGrains       % 
-    childGrains        %
+    parentEBSD         % parent EBSD data at the current state of reconstruction
+    parentGrains       % parent grains at the current state of reconstruction
+    childGrains        % remaining child grains at the current state of reconstruction
     
     variantId       %
     packetId        %
@@ -169,6 +169,10 @@ classdef parentGrainReconstructor < handle
     
     function out = get.childGrains(job)      
       out = job.grains( job.grains.phaseId == job.childPhaseId );      
+    end
+    
+    function out = get.parentEBSD(job)      
+      out = job.ebsd( job.csParent);
     end
     
     function out = get.transformedGrains(job)
