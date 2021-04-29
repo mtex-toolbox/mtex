@@ -39,8 +39,8 @@ function job = calcParent2Child(job, varargin)
 %
 
 noOpt = ~check_option(varargin,{'p2c','c2c'});
-threshold = get_option(varargin,'threshold',inf);
-quant = get_option(varargin,'quantile',0.9);
+threshold = get_option(varargin,'threshold',5*degree);
+quant = get_option(varargin,'quantile',0.5);
 
 if ~isempty(job.p2c), p2c0 = job.p2c; end
 p2c0 = getClass(varargin,'orientation',p2c0);
