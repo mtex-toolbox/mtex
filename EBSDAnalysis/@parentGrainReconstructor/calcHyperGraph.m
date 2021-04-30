@@ -29,7 +29,7 @@ noOpt = ~check_option(varargin,{'p2c','p2p','c2c'});
 
 % init graph
 p2cV = variants(job.p2c,'parent');
-numG = max(job.grains.id);
+numG = length(job.grains);
 numV = length(p2cV);
 job.graph = cell(numV,numV);
 for k = 1:numel(job.graph), job.graph{k} = sparse(numG,numG); end
@@ -38,7 +38,7 @@ for k = 1:numel(job.graph), job.graph{k} = sparse(numG,numG); end
 if ~isempty(job.parentGrains) && (check_option(varargin,'p2p') || noOpt)
  
   % get all parent to parent grain pairs
-  [grainPairs, oriParent] = getP2PPairs(job,varargin{:});
+  [grainPairs, oriParent] = getP2PPairs(job,'index',varargin{:});
   
   % compute fit
   fit = angle(oriParent(:,1), oriParent(:,2));
@@ -76,7 +76,7 @@ end
 if ~isempty(job.parentGrains) && (check_option(varargin,'P2C') || noOpt)
  
   % get all child to child grain pairs
-  [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
+  [grainPairs, oriParent, oriChild] = getP2CPairs(job,'index',varargin{:});
     
   for k2 = 1:numV
       
@@ -99,7 +99,7 @@ end
 if check_option(varargin,'C2C') || noOpt
  
   % get all child to child grain pairs
-  [grainPairs, oriChild] = getC2CPairs(job,varargin{:});
+  [grainPairs, oriChild] = getC2CPairs(job,'index',varargin{:});
     
   p2cV = variants(job.p2c,'parent');
   for k1 = 1:length(p2cV)
