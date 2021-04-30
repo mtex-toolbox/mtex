@@ -36,11 +36,11 @@ end
 % remove pairs of similar orientations
 % as they will not vote reliably for a parent orientation
 if check_option(varargin,'minDelta')
-  
   ind = angle(ori(:,1),ori(:,2)) < get_option(varargin,'minDelta');
 
   ori(ind,:) = [];
   pairs(ind,:) = [];
-
-
 end
+
+% translate to index if required
+if check_option(varargin,'index'), pairs = job.grains.id2ind(pairs); end
