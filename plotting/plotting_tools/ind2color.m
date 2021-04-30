@@ -10,7 +10,15 @@ if check_option(varargin,'ordered')
   iorder(order) = 1:24;
   
   cmap = cmap(order,:);
+  
+elseif nargin > 1 && isa(varargin{1},'double')
+  
+  cmap = varargin{1};
+  
 end
 
 
-rgb = cmap(ind,:);
+isInd = ind > 0 & ~isnan(ind);
+rgb = nan(numel(ind),3);
+
+rgb(isInd,:) = cmap(ind(isInd),:);

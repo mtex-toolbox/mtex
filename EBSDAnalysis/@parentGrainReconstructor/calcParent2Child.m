@@ -39,20 +39,31 @@ function job = calcParent2Child(job, varargin)
 %
 
 noOpt = ~check_option(varargin,{'p2c','c2c'});
+threshold = get_option(varargin,'threshold',5*degree);
+quant = get_option(varargin,'quantile',0.5);
+
+if ~isempty(job.p2c), p2c0 = job.p2c; end
+p2c0 = getClass(varargin,'orientation',p2c0);
 
 % get p2c from parent 2 child OR
 if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior) ...
     && (noOpt || check_option(varargin,'p2c'))
   
   p2cPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
-
-  p2cData = mean(inv(job.grains(p2cPairs(:,2)).meanOrientation) .* job.grains(p2cPairs(:,1)).meanOrientation,'robust');
-  p2c0 = p2cData;
+  
+  p2c = inv(job.grains(p2cPairs(:,2)).meanOrientation) .* ...
+    job.grains(p2cPairs(:,1)).meanOrientation;
+  
+  for k = 1:3
+    omega = angle(p2c,p2c0);
+    ind = omega < min(threshold, quantile(omega, quant));
+    p2c0 = mean(p2c(ind));
+  end
+  p2cData = p2c0;
   
 else % some default parent2child orientation relationship
   
   p2cData = [];
-  p2c0 = orientation.KurdjumovSachs(job.csParent,job.csChild);
   
 end
 
