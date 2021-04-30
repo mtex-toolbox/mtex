@@ -18,6 +18,5 @@ function job = mergeInclusions(job, varargin)
 [job.grains, mergeId] = merge(job.grains, 'inclusions', job.isChild | job.isParent, ... 
   'host', job.isParent, varargin{:});
 job.mergeId = mergeId(job.mergeId); %#ok<*PROPLC>
-job.ebsdPrior('indexed').grainId = mergeId(job.ebsdPrior('indexed').grainId);
 
 end

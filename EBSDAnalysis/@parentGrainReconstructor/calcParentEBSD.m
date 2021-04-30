@@ -18,6 +18,9 @@ ebsd = job.ebsdPrior;
 isRecData = ebsd.phaseId == job.childPhaseId | ...
   ebsd.phaseId == job.parentPhaseId;
 
+% compute new grainIds
+ebsd.grainId(ebsd.grainId>0) = job.mergeId(ebsd.grainId(ebsd.grainId>0));
+
 grainIds = max(1,ebsd.grainId);
 grainIds(~isRecData) = 1;
 
