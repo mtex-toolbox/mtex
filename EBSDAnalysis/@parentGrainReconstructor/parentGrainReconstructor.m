@@ -60,7 +60,8 @@ classdef parentGrainReconstructor < handle
     ebsd            % EBSD at the current stage of reconstruction
     
     numChilds       % number of child grains for each parent grain
-    isChild         % is a child grains
+    isChild         % is a child grain
+    isParent        % is a parent grain
     isTransformed   % a child grain that has been reconstructed into a parent grain
     isMerged        % child grains that have been merged into a parent grain    
     
@@ -161,6 +162,10 @@ classdef parentGrainReconstructor < handle
     
     function out = get.isChild(job)
       out = job.grains.phaseId == job.childPhaseId;
+    end
+    
+    function out = get.isParent(job)
+      out = job.grains.phaseId == job.parentPhaseId;
     end
     
     function out = get.parentGrains(job)      
