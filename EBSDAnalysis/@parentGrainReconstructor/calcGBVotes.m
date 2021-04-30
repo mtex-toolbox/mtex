@@ -61,9 +61,12 @@ else
   grainId2 = [];    
 end
 
+% turn grainId into grainInd
+grainInd = job.grains.id2ind([grainId1(:);grainId2(:)]);
+
 % accumulate votes, i.e. compute a probability for each grain / parentId
 % combination
-job.votes = accumVotes([grainId1(:);grainId2(:)],...
-  [parentId1(:);parentId2(:)], [fit1(:); fit2(:)], max(job.grains.id), varargin{:});
+job.votes = accumVotes(grainInd, [parentId1(:);parentId2(:)], ...
+  [fit1(:); fit2(:)], length(job.grains), varargin{:});
 
 end
