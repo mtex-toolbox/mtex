@@ -1,4 +1,4 @@
-function job = revert(job,ind)
+function job = revert(job,doRevert)
 % revert parent orientations to measured child orientations
 %
 % Syntax
@@ -30,61 +30,66 @@ job.votes = [];
 job.graph = [];
 
 % revert everything
-if nargin == 1, ind = true(size(job.grains)); end
+if nargin == 1, doRevert = true(size(job.grains)); end
 
 % input should be index to job.grains
-if isa(ind,'grain2d'), ind = id2ind(job.grains,ind.id); end
+if isa(doRevert,'grain2d'), doRevert = id2ind(job.grains,doRevert.id); end
 
 % make ind a logical vector
-if ~islogical(ind)
-  ind = full(sparse(ind,1,true,length(job.grains),1));
+if ~islogical(doRevert)
+  doRevert = full(sparse(doRevert,1,true,length(job.grains),1));
 end
 
 % which are the original grains to revert
 % doRevert = ismember(job.mergeId, ind);
-doRevert = ind(job.mergeId) & job.isTransformed;
+doRevertPrior = doRevert(job.mergeId); %& job.isTransformed;
 
-if ~any(doRevert), return; end
+if ~any(doRevertPrior) % revert nothingthing
+  
+elseif all(doRevertPrior) % revert everything
 
-% we may have two situations
-% 1. grains to revert have not yet been merged
-% 2. grains has already been merged
-
-% no merge needs to be undone
-if max(accumarray(job.mergeId(doRevert),1)) == 1
+  job.grains = job.grainsPrior;
+  job.mergeId = (1:length(job.grains)).';
+  
+elseif max(accumarray(job.mergeId(doRevertPrior),1)) == 1 
+  % no merge needs to be undone
 
   % reset phase and rotation
-  job.grains.phaseId(doRevert) = job.grainsPrior.phaseId(doRevert);
-  job.grains.prop.meanRotation(doRevert) = job.grainsPrior.prop.meanRotation(doRevert);
+  job.grains.phaseId(doRevertPrior) = job.grainsPrior.phaseId(doRevertPrior);
+  job.grains.prop.meanRotation(doRevertPrior) = job.grainsPrior.prop.meanRotation(doRevertPrior);
 
-elseif 1 % we do not undo the merge but we redo the merge of the remaining grains
+  % update grain boundaries and triple points
+  job.grains = job.grains.update;
+  
+else % we do not undo the merge but we redo the merge of the remaining grains
   
   newMergeId = job.mergeId;
   
-  % grains to revert a put first
-  newMergeId(doRevert) = 1:nnz(doRevert);
+  % generate possible new ids
+  id = 1:max(max(newMergeId),length(job.grainsPrior));
+  id(newMergeId(~doRevertPrior)) = [];
   
-  % shift everything that we do not touch at the end
-  shift = nnz(doRevert) - cumsum(ind);
-  newMergeId(~doRevert) = newMergeId(~doRevert) + shift(newMergeId(~doRevert));
+  % replace grains we revert with unique merge ids
+  newMergeId(doRevertPrior) = id(1:nnz(doRevertPrior));
   
   % remerge grains
   [grains, mergeId] = merge(job.grainsPrior, newMergeId);
-  
-  
+    
   % reassign phase and rotation to the reverted grains
-  grains.phaseId(1:nnz(doRevert)) = job.grainsPrior.phaseId(doRevert);
-  grains.prop.meanRotation(1:nnz(doRevert)) = job.grainsPrior.prop.meanRotation(doRevert);
+  keepIndNew = grains.id2ind(unique(mergeId(doRevertPrior),'stable'));  
+  grains.phaseId(keepIndNew) = job.grainsPrior.phaseId(doRevertPrior); 
+  grains.prop.meanRotation(keepIndNew) = job.grainsPrior.prop.meanRotation(doRevertPrior);
   
   % reassign phase and rotation to the not reverted grains
-  grains.phaseId((nnz(doRevert)+1):end) = job.grains.phaseId(~ind);
-  grains.prop.meanRotation((nnz(doRevert)+1):end) = job.grains.prop.meanRotation(~ind);
+  keepIndNew = grains.id2ind(unique(mergeId(~doRevertPrior),'stable'));
+  keepInd = job.grains.id2ind(unique(job.mergeId(~doRevertPrior),'stable'));
+  grains.phaseId(keepIndNew) = job.grains.phaseId(keepInd);
+  grains.prop.meanRotation(keepIndNew) = job.grains.prop.meanRotation(keepInd);
   
   job.grains = grains;
   job.mergeId = mergeId;
 
+  % update grain boundaries and triple points
+  job.grains = job.grains.update;
+  
 end
-
-% update grain boundaries and triple points
-job.grains = job.grains.update;
-
