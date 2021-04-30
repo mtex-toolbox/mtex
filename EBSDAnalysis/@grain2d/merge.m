@@ -91,6 +91,14 @@ for k = 1:length(varargin)
     
     [isIncl, hostId] = grains.isInclusion;
     isIncl = isIncl & grains.grainSize < get_option(varargin,'maxSize',inf);
+    
+    % additional condition on the inclusion
+    cond = get_option(varargin,'inclusions');
+    if numel(cond) == length(grains), isIncl = isIncl & cond; end
+    
+    % additional condition on the host
+    cond = get_option(varargin,'host');
+    isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
