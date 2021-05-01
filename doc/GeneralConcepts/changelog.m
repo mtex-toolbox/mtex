@@ -1,5 +1,31 @@
 %% MTEX Changelog
 %
+%% MTEX 5.7.0 05/2021
+%
+% MTEX 5.7 improves on parent grain reconstruction. Changes include:
+%
+% *Improved parent grain reconstruction*
+%
+% * The ordering of the variants is stored within the OR misorientation |p2c|
+% as |p2c.variantMap|. In particular the variants in |p2c.variants| are
+% ordered by default according to the Morito convention. This can be easily
+% check by the command |round2Miller(p2c.variants)|
+% * The command |job.calcGBVotes| and |job.calcTPVotes| compute votes
+% associated with probabilities that are stored in |job.votes| and can
+% easily be analyzed.
+% * The options |'noP2C'| and |'noC2C'| have been replaced by |'p2c'| and
+% |'c2c'|.
+% * New option |job.useBoundaryMisorienation| which makes the parent grain
+% reconstructor to use the misorientations along the grain boundaries
+% instead of the misorientations between the grain mean orientations.
+% * added ShojiNishiyama orientation relationship.
+%
+% *Other Changes*
+%
+% * The command |findByOrientation| accepts a fibre as input.
+% * The antipodal |axisAngleColorKey| allows for option |'antipodal'|.
+% 
+%
 %% MTEX 5.6.1 03/2021
 %
 % This is mainly a bug fix release.
