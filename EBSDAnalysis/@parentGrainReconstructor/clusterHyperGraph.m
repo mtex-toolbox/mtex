@@ -115,8 +115,12 @@ end
 
 
 if check_option(varargin,'includeSimilar')
-  M = triu(angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree);
-  M(:,sum(M)==1) = 0;
+  %M = triu(angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree);
+  %M(:,sum(M)==1) = 0;
+  
+  M = angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree;
+  M = 0.9*M + 0.1*eye(size(M));
+  
   pIdP = pIdP * M;
   
 end
