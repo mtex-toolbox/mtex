@@ -23,8 +23,8 @@ function job = clusterHyperGraph(job,varargin)
 if isempty(job.graph), job.calcHyperGraph(varargin{:}); end
 
 % extract parameters
-p = get_option(varargin,'inflationPower', 1.4);
-numIter = get_option(varargin,'numIter', 6);
+p = get_option(varargin,'inflationPower', 1);
+numIter = get_option(varargin,'numIter', 3);
 cutOff = get_option(varargin,'cutOff',0.0001);
 
 % some constants
