@@ -265,6 +265,24 @@ hold on
 plot(grainSelected.boundary,'linewidth',3,'lineColor','w')
 hold off
 
+%%
+% We can also directly identify the child grains belonging to the selected
+% parent grains. Remeber that the initial grains are stored in
+% |job.grainsPrior| and that the vector |job.mergeId| stores for every
+% initial grain the |id| of the corresponding parent grain. Combining these
+% two information we do
+
+% identify childs of the selected parent grain
+childGrains = job.grainsPrior(job.mergeId == grainSelected.id);
+
+% plot these childs 
+plot(childGrains,childGrains.meanOrientation)
+
+% and top the parent grain boundary 
+hold on
+plot(grainSelected.boundary,'linewidth',2)
+hold off
+
 %% 
 % In order to check our parent grain reconstruction we chose the single
 % parent grain outlined in the above map and plot all child variants of its
@@ -274,7 +292,7 @@ hold off
 % |calcVariantId|>.
 
 % the measured child orientations that belong to parent grain 279
-childOri = job.ebsdPrior(grainSelected).orientations;
+childOri = job.ebsdPrior(childGrains).orientations;
 
 % the orientation of parent grain 279
 parentOri = grainSelected.meanOrientation;
