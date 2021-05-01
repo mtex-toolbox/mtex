@@ -42,6 +42,6 @@ grainInd = job.grains.id2ind(repmat(tP.grainId,1,1,size(parentId,3)));
 
 % accumulate votes, i.e. compute a probability for each grain / parentId
 % combination
-job.votes = accumVotes(grainInd, parentId, fit, max(job.grains), varargin{:});
+job.votes = accumVotes(grainInd, parentId, fit, length(job.grains), varargin{:});
 
 end
