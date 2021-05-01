@@ -47,6 +47,17 @@ for iter = 1:numIter
   
   % prune elements of A that are below minval
   for k = 1:numel(A), A{k} = (A{k} > cutOff) .* A{k}; end
+  
+  % ensure parent 
+  ind = full(job.isParent);
+  for k1 = 2:length(A)
+    for k2 = 1:length(A)
+      A{k1,k2}(ind,:) = 0;
+      A{k2,k1}(:,ind) = 0;
+    end
+  end
+  %A{1,1}(ind,:)
+  
     
   % column re-normalisation
   s = 0;
