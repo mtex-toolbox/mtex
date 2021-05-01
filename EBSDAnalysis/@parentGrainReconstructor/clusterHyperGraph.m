@@ -67,10 +67,9 @@ for iter = 1:numIter
     end
   end
   dinv = spdiags(1./s.',0,numG,numG);
-  if iter < numIter
+  %if iter < numIter
     for k = 1:numel(A), A{k} = A{k} * dinv; end
-    %for k = 1:numel(A), A{k} =  sqrt(dinv) * A{k} * sqrt(dinv); end
-  end
+  %end
 
   disp('.')
 end 
@@ -79,12 +78,28 @@ end
 % grains
 pIdP = zeros(numG,numV);
 
+% take only the diag as probability
+%for k2 = 1:numV
+%  pIdP(:,k2) = diag(A{k2,k2});
+%end
+
+%for k2 = 1:numV
+%  for k1 = 1:numV
+%    pIdP(:,k2) = pIdP(:,k2) + sum(A{k1,k2},2);
+%  end
+%end
+
 for k2 = 1:numV
   for k1 = 1:numV
     pIdP(:,k2) = pIdP(:,k2) + sum(A{k1,k2},1).';
   end
-  %pIdP(:,k2) = diag(A{k2,k2});
+  pIdP(:,k2) = pIdP(:,k2) - diag(A{k2,k2});
 end
+
+% normalize to probability one
+%pIdP = pIdP ./(eps+sum(pIdP,2));
+
+pIdP(~job.isChild,:) = nan;
 
 if check_option(varargin,'includeTwins')
   
