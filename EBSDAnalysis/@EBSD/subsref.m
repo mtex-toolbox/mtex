@@ -12,13 +12,17 @@ function varargout = subsref(ebsd,s)
 if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
     length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'CS')
   
-  CS = ebsd.CSList{ebsd.name2id(s(1).subs{1})};
-  if numel(s)>2
-    [varargout{1:nargout}] = builtin('subsref',CS,s(3:end));
-  else
-    varargout{1} = CS;
+  id = ebsd.name2id(s(1).subs{1});
+  if id ~= 0
+    
+    CS = ebsd.CSList{id}; 
+    if numel(s)>2
+      [varargout{1:nargout}] = builtin('subsref',CS,s(3:end));
+    else
+      varargout{1} = CS;
+    end   
+    return
   end
-  return
 end
 
 % now the general case
