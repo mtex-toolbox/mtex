@@ -67,7 +67,8 @@ if check_option(varargin,'withDiagonal')
   %end  
   
   for k = 1:numV
-    job.graph{k} = sparse(childId,childId,1,numG,numG);
+    job.graph{k,k} = max(job.graph{k,k},...
+      sparse(childId,childId,1,numG,numG));
   end
   
 end
