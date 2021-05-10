@@ -13,14 +13,13 @@ function job = calcParent2Child(job, varargin)
 %   job.calcParent2Child
 %
 %   % display distribtion of the misfit
-%   histogram(job.fit ./ degree)
+%   histogram(job.calcGBFit ./ degree)
 %
 % Input
 %  job - @parentGrainReconstructor
 %
 % Output
 %  job.p2c - fitted parent to child orientation relationship
-%  job.fit - fit between the c2c misorientations to the fitted p2c
 %
 % Options
 %  c2c - consider only child to child misorientations
@@ -89,11 +88,11 @@ if noOpt || check_option(varargin,'c2c')
     
   elseif check_option(varargin,'v2')
     
-    [p2c, job.fit] = calcParent2Child2(mori,p2c0);
+    p2c = calcParent2Child2(mori,p2c0);
     
   else
    
-    [p2c, job.fit] = calcParent2Child(mori,p2c0,varargin{:});
+    p2c = calcParent2Child(mori,p2c0,varargin{:});
     
   end
   
