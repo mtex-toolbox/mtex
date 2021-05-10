@@ -52,7 +52,7 @@ handleSelected = plot(grain.boundary,'lineColor','w','linewidth',4);
 hold off
 setappdata(ax,'handleSelected',handleSelected);
 
-votes = job.calcGrainVotes(grain.id,'bestFit');
+votes = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
 
 figure(ax.Parent.Number+1)
 clf
