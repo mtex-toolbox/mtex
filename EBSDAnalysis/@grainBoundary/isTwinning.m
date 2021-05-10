@@ -8,6 +8,8 @@ function ind = isTwinning(gB, mori, threshold )
 % Input
 %  
 
+if nargin == 2, threshold = 5*degree; end
+
 ind = false(size(gB));
 
 % whiches phases to use

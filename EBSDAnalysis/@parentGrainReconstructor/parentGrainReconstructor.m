@@ -177,7 +177,8 @@ classdef parentGrainReconstructor < handle
     end
     
     function out = get.parentEBSD(job)      
-      out = job.ebsd( job.csParent);
+      out = job.ebsd;
+      out = out(job.csParent);
     end
     
     function out = get.transformedGrains(job)

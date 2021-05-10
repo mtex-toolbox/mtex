@@ -8,10 +8,10 @@ function q = quantile(x,n)
 % Output
 
 if size(x,1) == 1, x = x.';end
-x = sort(x);
+x = sort(x(~isnan(x)));
 
-if isempty(x),
-  q = [];
+if isempty(x)
+  q = nan;
 elseif n <= 0
   q = x(max(1,end+n));
 elseif n < 1

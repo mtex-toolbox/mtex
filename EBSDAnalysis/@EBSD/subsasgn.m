@@ -26,13 +26,15 @@ if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
   
   % get id of the phase
   id = ebsd.name2id(s(1).subs{1});
-  
-  if numel(s)>2
-    ebsd.CSList{id} = subsasgn(ebsd.CSList{id},s(3:end),b);    
-  else
-    ebsd.CSList{id} = b;
+
+  if id>0
+    if numel(s)>2
+      ebsd.CSList{id} = subsasgn(ebsd.CSList{id},s(3:end),b);
+    else
+      ebsd.CSList{id} = b;
+    end
+    return
   end
-  return
 end
 
 switch s(1).type

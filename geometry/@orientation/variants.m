@@ -125,10 +125,12 @@ if parentVariants % parent variants
   
   if exist('variantId','var')
     p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
+  else
+    p2cVariants = reshape(p2cVariants,1,[]);
   end
   
   if exist('oriChild','var')
-    out = oriChild .* p2cVariants;
+    out = reshape(oriChild,[],1) .* p2cVariants;
   elseif exist('MillerChild','var')
     out = inv(p2cVariants) * MillerChild; %#ok<MINV>
   else

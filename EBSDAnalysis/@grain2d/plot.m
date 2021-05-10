@@ -179,13 +179,15 @@ end
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
-axis(mP.ax,'tight');
+if isNew
+  axis(mP.ax,'tight'); 
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+end
 
-if nargout == 0, clear h;end
-
-if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
-
-if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+% allow change of aspect ratio only for single figures
+if ~isstruct(mtexFig)
+  mtexFig.keepAspectRatio = length(mtexFig.children)== 1; 
+end
 
 % datacursormode does not work with grains due to a Matlab bug
 datacursormode off
@@ -194,12 +196,12 @@ datacursormode off
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
 
+if nargout == 0, clear h;end
+
 end
 
 
 function spatialSelection(src,eventdata)
-
-
 
 persistent sel_handle;
 

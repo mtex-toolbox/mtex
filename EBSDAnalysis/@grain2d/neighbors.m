@@ -28,8 +28,26 @@ gbid = sort(gbid,2,'ascend');
 % get unique pairs
 pairs = unique(gbid,'rows');
 
-% allow only neighbours within the same data set
-if ~check_option(varargin,'full')
+% return adjecency matrix
+if check_option(varargin,'matrix')
+  
+  maxId = get_option(varargin,'maxId',max(gbid(:)));
+  
+  % generate an adjecency matrix
+  A = sparse(pairs(:,1),pairs(:,2),true,maxId,maxId);
+  
+  % symmetrise
+  A = A | A.';
+  
+  % remove 
+  ind = ismember(1:maxId,grains.id);
+  A(~ind,:) = false;
+  
+  pairs = A;
+  
+elseif ~check_option(varargin,'full')
+  % allow only neighbours within the same data set
+  
   if nargin > 1 && isa(varargin{1},'grain2d')
     
     % TODO: this changes sorting even if it is not needed

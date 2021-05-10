@@ -67,8 +67,8 @@ classdef grain2d < phaseList & dynProp
       if nargin == 0, return;end
       
       % compute phaseId's     
-      grains.phaseId = max(I_DG' * ...
-        spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2);
+      grains.phaseId = full(max(I_DG' * ...
+        spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
       grains.phaseId(grains.phaseId==0) = 1;
       grains.CSList = ebsd.CSList;
       grains.phaseMap = ebsd.phaseMap;
