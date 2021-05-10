@@ -40,10 +40,8 @@ classdef parentGrainReconstructor < handle
     useBoundaryOrientations = false
     
     mergeId        % a list of ids to the merged grains
-    pParentId      % probabilities of parentIds
     
     votes          % votes computed by calcGBVotes or calcTPVotes
-    fit            % misFit of the votes
     graph          % graph computed by calcGraph
   end
   
@@ -72,6 +70,7 @@ classdef parentGrainReconstructor < handle
     
     variantId       %
     packetId        %
+    parentId        %
   end
   
   properties (Hidden=true)
@@ -196,6 +195,21 @@ classdef parentGrainReconstructor < handle
       else
         out = NaN(size(job.grainsPrior));
       end
+    end
+    
+    function out = get.parentId(job)
+      
+      out = nan(size(job.grainsPrior));
+      
+      ind = job.isTransformed;
+      
+      
+      cOri = job.grainsPrior(ind).meanOrientation;
+      pOri = job.grains(ind).meanOrientation;
+
+      [~,out(ind)] = min(angle_outer(inv(cOri) .* pOri, ...
+        variants(job.p2c, 'parent'),'noSym2'),[],2);
+
     end
     
     function set.packetId(job,id)
