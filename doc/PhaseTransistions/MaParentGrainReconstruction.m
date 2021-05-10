@@ -72,6 +72,10 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % relation ship and iterates towards a more optimal orientation
 % relationship.
 
+close all
+histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+xlabel('disorientation angle')
+
 job.calcParent2Child
 
 %%
@@ -86,9 +90,10 @@ job.calcParent2Child
 % following histogram displays the distribution of the misfit over all
 % grain to grain misorientations.
 
-close all
-histogram(job.fit./degree)
-xlabel('disorientation angle')
+hold on
+histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+hold off
+
 
 %%
 % We may explicitely compute the misfit for all child to child
