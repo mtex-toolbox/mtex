@@ -25,25 +25,31 @@ function job = calcParentFromVote(job,varargin)
 
 assert(~isempty(job.votes),'You need to compute votes first!');
 
+% which to transform
 switch job.votes.Properties.VariableNames{2}
   case 'fit'
 
     doTransform = job.votes.fit(:,1) < get_option(varargin,'minFit',5*degree) & ...
       job.votes.fit(:,2)-job.votes.fit(:,1) > get_option(varargin,'minDelta',0);
   
-    % compute new parent orientation from parentId
-    pOri = variants(job.p2c, job.grainsPrior(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
-  
   case 'prob'
   
-    % which to transform
-    doTransform = job.isChild & job.votes.parentId(:,1)>0 & ...
+    doTransform = job.votes.parentId(:,1)>0 & ...
       job.votes.prob(:,1) > get_option(varargin,'minProb',0) & ...
       job.votes.prob(:,1)-job.votes.prob(:,2) > get_option(varargin,'minDelta',0);
-    
-    % compute new parent orientation from parentId
-    pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
 
+  case 'count'
+  
+    doTransform = job.votes.count(:,1) >= get_option(varargin,'minCount',0) & ...
+      job.votes.count(:,2) < get_option(varargin,'maxCount',inf);
+
+end
+
+% compute new parent orientation from parentId
+if any(job.isParent(doTransform))
+  pOri = variants(job.p2c, job.grainsPrior(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
+else
+  pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
 end
 
 % change orientations of consistent grains from child to parent
