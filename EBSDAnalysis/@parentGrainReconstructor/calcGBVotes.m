@@ -1,4 +1,4 @@
-function job = calcGBVotes(job,varargin)
+function out = calcGBVotes(job,varargin)
 % compute votes from grain boundaries
 %
 % Syntax
@@ -18,55 +18,116 @@ function job = calcGBVotes(job,varargin)
 % Options
 %  p2c  - consider only parent / child grain boundaries
 %  c2c  - consider only child / child grain boundaries
+%  bestFit   - best fitting parent wins
 %  threshold - threshold fitting angle between job.p2c and the boundary OR
 %  tolerance - range over which the probability increases from 0 to 1 (default 1.5)
-%  numFit - number of fits to be computed
+%  numFit    - number of fits to be computed
+%  reconsiderAll - reconsider also already reconstructed grains
 %
 
 numFit = get_option(varargin,'numFit',2);
 noOpt = ~check_option(varargin,{'p2c','c2c'});
 
-% parent-child - votes
-if ~isempty(job.parentGrains) && (noOpt || check_option(varargin,'p2c'))
-  
-  % extract parent to child grain pairs with the coresponding orientations
-  % averaged along the boundary
-  [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
-  grainId1 = repmat(grainPairs(:,2),1,numFit);
-
-  % compute for each parent/child pair of grains the best fitting parentId
-  [parentId1, fit1] = calcParent(oriChild,oriParent,job.p2c,'numFit',numFit,'id');
-
+% maybe we should consider only some of the grains
+if nargin > 1 && isnumeric(varargin{1})
+  id = varargin{1};
 else
-  parentId1 = [];
-  fit1 = [];
-  grainId1 = [];
+  id = job.grains.id;
 end
 
-% child-child - votes
-if noOpt || check_option(varargin,'c2c')
+% if we reconsider all grains we need a seperate algorithm
+if check_option(varargin,'reconsiderAll')
 
-  % extract child to child grain pairs with the coresponding orientations
-  % averaged along the boundary
-  [grainId2, oriChild] = getC2CPairs(job,'minDelta',2*degree,varargin{:});
+  % the original child orientation
+  ori = job.grainsPrior('id',id).meanOrientation;
+
+  % all variants
+  oriV = variants(job.p2c, ori);
+  numV = size(oriV,2);
+
+  % fit with neighboring grains
+  % TODO: this can be done better
+  A = job.grains('id',id).neighbors('matrix','maxId',max(job.grains.id));
+  A = A(id,:);
+  [grainInd,nId] = find(A);
+  grainInd = grainInd(:); nId = nId(:);
+
+  % some neighbors coorespond to parent and some to child grains
+  nInd = job.grains.id2ind(nId);
+  isParent = job.grains.phaseId(nInd) == job.parentPhaseId;
+  oriP = job.grains(nInd(isParent)).meanOrientation;
+
+  isChild = job.grains.phaseId(nInd) == job.childPhaseId;
+  oriChildV = variants(job.p2c,job.grains(nInd(isChild)).meanOrientation);
+
+  % compute fits to all neighbors
+  fit = nan(length(nId),numV);
+  for iV = 1:numV
+ 
+    % parent - parent fit
+    fit(isParent,iV) = angle(oriV(grainInd(isParent),iV), oriP);
   
-  % compute for each parent/child pair of grains the best fitting parentId
-  [parentId2, fit2] = calcParent(oriChild,job.p2c,'numFit',numFit,'id');
-  grainId2 = repmat(grainId2,1,1,numFit);
-  fit2 = repmat(reshape(fit2,[],1,numFit),1,2,1);
+    % parent - child fit
+    %fit(isChild,iV) = min(angle(oriV(grainInd(isChild),iV), oriChildV),[],2);
   
+  end
+
+  % accumulate votes, i.e. compute a probability for each grain / parentId
+  % combination
+  votes = accumVotes(repmat(grainInd,1,numV), repmat(1:numV,length(grainInd),1), fit,...
+    max(grainInd), varargin{:});
+
 else
-  parentId2 = [];
-  fit2 = [];
-  grainId2 = [];    
+  
+  % parent-child - votes
+  if ~isempty(job.parentGrains) && (noOpt || check_option(varargin,'p2c'))
+  
+    % extract parent to child grain pairs with the coresponding orientations
+    % averaged along the boundary
+    [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
+    grainId1 = repmat(grainPairs(:,2),1,numFit);
+
+    % compute for each parent/child pair of grains the best fitting parentId
+    [parentId1, fit1] = calcParent(oriChild,oriParent,job.p2c,'numFit',numFit,'id');
+
+  else
+    parentId1 = [];
+    fit1 = [];
+    grainId1 = [];
+  end
+
+  % child-child - votes
+  if noOpt || check_option(varargin,'c2c')
+
+    % extract child to child grain pairs with the coresponding orientations
+    % averaged along the boundary
+    [grainId2, oriChild] = getC2CPairs(job,'minDelta',2*degree,varargin{:});
+  
+    % compute for each parent/child pair of grains the best fitting parentId
+    [parentId2, fit2] = calcParent(oriChild,job.p2c,'numFit',numFit,'id');
+    grainId2 = repmat(grainId2,1,1,numFit);
+    fit2 = repmat(reshape(fit2,[],1,numFit),1,2,1);
+  
+  else
+    parentId2 = [];
+    fit2 = [];
+    grainId2 = [];
+  end
+
+  % turn grainId into grainInd
+  grainInd = job.grains.id2ind([grainId1(:);grainId2(:)]);
+
+  % accumulate votes, i.e. compute a probability for each grain / parentId
+  % combination
+  votes = accumVotes(grainInd, [parentId1(:);parentId2(:)], ...
+    [fit1(:); fit2(:)], length(job.grains), varargin{:});
+
 end
 
-% turn grainId into grainInd
-grainInd = job.grains.id2ind([grainId1(:);grainId2(:)]);
-
-% accumulate votes, i.e. compute a probability for each grain / parentId
-% combination
-job.votes = accumVotes(grainInd, [parentId1(:);parentId2(:)], ...
-  [fit1(:); fit2(:)], length(job.grains), varargin{:});
-
+% output
+if nargin > 1 && isnumeric(varargin{1})
+  out = votes;
+else
+  job.votes = votes;  
+  out = job;
 end
