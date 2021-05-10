@@ -54,7 +54,8 @@ setappdata(ax,'handleSelected',handleSelected);
 
 votes = job.calcGrainVotes(grain.id,'bestFit');
 
-figure(2)
+figure(ax.Parent.Number+1)
+clf
 numV = size(votes.fit,2);
 cKey = ipfHSVKey(job.csParent);
 
