@@ -6,6 +6,18 @@ fit = reshape(fit,[],numFit);
 grainId = reshape(grainId,[],numFit);
 parentId = reshape(parentId,[],numFit);
 
+if check_option(varargin,'bestFit')
+  
+  votes = table('size',[maxGrainId,2],'VariableTypes',{'int32','double'},'VariableNames',{'parentId','fit'});
+  
+  % find best fit for 
+  fit = accumarray([grainId(:),parentId(:)],fit(:),[maxGrainId,max(parentId(:))],@min,nan);
+  [votes.fit,votes.parentId] = sort(fit,2);
+
+  return
+  
+end
+
 % ensure best fit is smaller minFit and second best fit is lager maxFit
 minFit = get_option(varargin,'minFit',inf);
 maxFit = get_option(varargin,'maxFit',-inf);
