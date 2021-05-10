@@ -6,76 +6,77 @@ fit = reshape(fit,[],numFit);
 grainId = reshape(grainId,[],numFit);
 parentId = reshape(parentId,[],numFit);
 
-if check_option(varargin,'bestFit')
-  
-  votes = table('size',[maxGrainId,2],'VariableTypes',{'int32','double'},'VariableNames',{'parentId','fit'});
-  
-  % find best fit for 
-  fit = accumarray([grainId(:),parentId(:)],fit(:),[maxGrainId,max(parentId(:))],@min,nan);
-  [votes.fit,votes.parentId] = sort(fit,2);
-
-  return
-  
-end
-
-% ensure best fit is smaller minFit and second best fit is lager maxFit
+% restrict fit according to minFit and maxFit
+% best fit needs to be smaller minFit 
 minFit = get_option(varargin,'minFit',inf);
-maxFit = get_option(varargin,'maxFit',-inf);
+ind = fit(:,1) < minFit;
 
-ind = fit(:,1) < minFit & fit(:,2) > maxFit;
+% second best fit needs to be lager maxFit
+maxFit = get_option(varargin,'maxFit',-inf);
+if size(fit,2)>1, ind = ind & fit(:,2) > maxFit; end
+
+% restrict
 fit = fit(ind,:);
 grainId = grainId(ind,:);
 parentId = parentId(ind,:);
 
-% turn fits into probabilities
+% 
 threshold = get_option(varargin,'threshold',min(2*degree,minFit));
-tol = get_option(varargin,{'tol','tolerance'},threshold);
 
-if check_option(varargin,'count') % no tolerance -> cut-off function 
+% init table
+votes = table('size',[maxGrainId,1],'VariableTypes',{'int32'},'VariableNames',{'parentId'});
+numFit = get_option(varargin,'numFit',2);
+numV = max(parentId(:));
+
+if check_option(varargin,'bestFit')
   
-  prob = fit(:) < threshold;
+  % find best fit for 
+  fit = accumarray([grainId(:),parentId(:)],fit(:),[maxGrainId,numV],@min,nan);
   
-else
-  % otherwise we use the error function, which is the cumulative gaussian
-  % distribution
+  % sort result according to fit
+  [votes.fit,votes.parentId] = sort(fit,2);
   
+elseif check_option(varargin,'count')
+
+  % count votes per grain
+  count = accumarray([grainId(:), parentId(:)], fit(:) < threshold, [maxGrainId,numV],@sum, nan);
+
+  % sort probabilities row-wise up to numFit
+  [count,parentId] = sort(count,2,'descend');
+  
+  votes.parentId = parentId(:,1:numFit);
+  votes.prob = count(:,1:numFit);
+  
+  
+else % turn fits into probabilities
+  
+  % use the error function, which is the cumulative gaussian distribution
+  tol = get_option(varargin,{'tol','tolerance'},threshold);
   prob = 1 - 0.5 * (1 + erf(2*(fit(:) - threshold)./tol));
   prob(prob < 1e-2) = 0;
-  
-end
 
-%if any(strcmp(job.votes.Properties.VariableNames,'weights'))
-%  prob = prob .* sqrt(job.votes.weights);
-%end
+  %if any(strcmp(job.votes.Properties.VariableNames,'weights'))
+  %  prob = prob .* sqrt(job.votes.weights);
+  %end
   
-% init table
-numFit = get_option(varargin,'numFit',2);
-votes = table(zeros(maxGrainId,numFit),zeros(maxGrainId,numFit),'VariableNames',{'parentId','prob'});
-
-if check_option(varargin,'count')
-  
-  % simply add up the probabilities
-  W = accumarray([grainId(:), parentId(:)], prob, [maxGrainId,max(parentId(:))]);
-  
-else % compute probability by parentId
-  % probability matrix
+  % compute probability matrix
   % columns are different voteIds
   % rows are the different votings
   % value is the probability
-  W = full(sparse(grainId(:), parentId(:), prob, maxGrainId, max(parentId(:))));
   
-  %Wmax = accumarray([grainId(:), parentId(:)], prob, [maxGrainId,max(parentId(:))], @max);
-  Wmax = accumarray([grainId(:), parentId(:)], prob, [maxGrainId,max(parentId(:))],...
+  %probMax = accumarray([grainId(:), parentId(:)], prob, [maxGrainId,numV], @max);
+  probMax = accumarray([grainId(:), parentId(:)], prob(:), [maxGrainId,numV],...
     @(x) quantile(x,1 - 1/(4*numFit)));
   
-  W = Wmax .* W ./ (sum(W,2));
-end
+  prob = accumarray([grainId(:), parentId(:)], prob(:), [maxGrainId, numV]);
+    
+  prob = probMax .* prob ./ (sum(prob,2));
 
-% sort probabilities row-wise up to numFit
-for k = 1:numFit
-  [votes.prob(:,k), votes.parentId(:,k)] = max(W,[],2);
+  % sort probabilities row-wise up to numFit
+  [prob,parentId] = sort(prob,2,'descend');
   
-  W(sub2ind(size(W), 1:maxGrainId, votes.parentId(:,k).')) = nan;
-end
+  votes.parentId = parentId(:,1:numFit);
+  votes.prob = prob(:,1:numFit);
+    
 
 end
