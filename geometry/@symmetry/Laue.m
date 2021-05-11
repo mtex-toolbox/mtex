@@ -10,28 +10,8 @@ elseif s.isLaue % if it is already a Laue group then there is nothing to do
   
   sL = s;
 
-else
-  
-  rot = s.rot;
-  rot = [rot(:),rot(:)];
-  rot.i = repmat([0,1],size(rot,1),1);
+else % in the meantime isLaue has computed the Laue group :)
 
-  if s.id > 0
-    if isa(s,'crystalSymmetry')
-      sL = crystalSymmetry('pointId',symmetry.pointGroups(s.id).LaueId,rot);
-    else
-      sL = specimenSymmetry('pointId',symmetry.pointGroups(s.id).LaueId,rot);
-    end
-  else
-    sL = crystalSymmetry(rot);
-  end
-  
-  try %#ok<TRYNC>
-    sL.axes = s.axes;       % coordinate system
-    sL.mineral = s.mineral; % mineral name
-    sL.color  = s.color;    % color used for EBSD / grain plotting
-  end
-  
-  % save for the future
-  s.LaueRef = sL;
+  sL = s.LaueRef;
+
 end
