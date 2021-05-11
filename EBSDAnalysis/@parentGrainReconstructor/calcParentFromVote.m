@@ -29,19 +29,31 @@ assert(~isempty(job.votes),'You need to compute votes first!');
 switch job.votes.Properties.VariableNames{2}
   case 'fit'
 
-    doTransform = job.votes.fit(:,1) < get_option(varargin,'minFit',5*degree) & ...
-      job.votes.fit(:,2)-job.votes.fit(:,1) > get_option(varargin,'minDelta',0);
+    doTransform = job.votes.fit(:,1) < get_option(varargin,'minFit',5*degree);
+      
+    if check_option(varargin,'minDelta')  
+      doTransform = doTransform & ...
+        job.votes.fit(:,2)-job.votes.fit(:,1) > get_option(varargin,'minDelta',0);
+    end
   
   case 'prob'
   
     doTransform = job.votes.parentId(:,1)>0 & ...
-      job.votes.prob(:,1) > get_option(varargin,'minProb',0) & ...
-      job.votes.prob(:,1)-job.votes.prob(:,2) > get_option(varargin,'minDelta',0);
+      job.votes.prob(:,1) > get_option(varargin,'minProb',0);
 
+    if check_option(varargin,'minDelta')  
+      doTransform = doTransform & ...
+        job.votes.prob(:,1)-job.votes.prob(:,2) > get_option(varargin,'minDelta',0);
+    end
+    
   case 'count'
   
-    doTransform = job.votes.count(:,1) >= get_option(varargin,'minCount',0) & ...
-      job.votes.count(:,2) < get_option(varargin,'maxCount',inf);
+    doTransform = job.votes.count(:,1) >= get_option(varargin,'minCount',0);
+    
+    if check_option(varargin,'maxCount')  
+      doTransform = doTransform & ...
+        job.votes.count(:,2) < get_option(varargin,'maxCount',inf);
+    end
 
 end
 
