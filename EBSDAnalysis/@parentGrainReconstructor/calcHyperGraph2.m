@@ -97,11 +97,16 @@ if check_option(varargin,'C2C') || noOpt
   % the corresponding indeces in the sparse matrix
   indC = indV1(grainPairs);
     
+  oriChild2 = oriChild(:,2) * p2cV;
+  
   for k1 = 1:length(p2cV)
+  
+    oriChild1 = oriChild(:,1) * p2cV(k1);
+    
     for k2 = 1:length(p2cV)
       
       % compute fit
-      fit = angle(oriChild(:,1) * p2cV(k1),oriChild(:,2) * p2cV(k2));
+      fit = angle(oriChild1,oriChild2(:,k2));
       prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
       ind = prob > 0.1;
             
