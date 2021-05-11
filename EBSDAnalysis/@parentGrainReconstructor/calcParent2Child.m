@@ -24,6 +24,7 @@ function job = calcParent2Child(job, varargin)
 % Options
 %  c2c - consider only child to child misorientations
 %  p2c - consider only parent to child misorientations
+%  peakFitting - use peak fitting algorithm
 %  quantile  - consider only misorientation within this quantile to the current p2c guess (default 0.9)
 %  threshold - only consider misorientations that are within this threshold of the current parent to child OR guess
 %
@@ -58,6 +59,12 @@ if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior) 
     ind = omega < min(threshold, quantile(omega, quant));
     p2c0 = mean(p2c(ind));
   end
+  
+  if check_option(varargin,'peakFitting')    
+    mdf = calcDensity(p2c(ind),'halfwidth',1*degree);
+    p2c0 = steepestDescent(mdf,p2c0);
+  end
+  
   p2cData = p2c0;
   
 else % some default parent2child orientation relationship
@@ -67,7 +74,7 @@ else % some default parent2child orientation relationship
 end
 
 % consider also child to child 
-if noOpt || check_option(varargin,'c2c')
+if (noOpt && angle(p2c0)>5*degree) || check_option(varargin,'c2c') 
 
   % get neighbouring grain pairs
   [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
