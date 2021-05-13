@@ -9,13 +9,13 @@ disp(' ');
 gs = job.grains.grainSize;
 p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
 matrix(1,:) = {'parent', job.csParent.mineral, job.csParent.pointGroup, ...
-  length(job.grains(job.csParent)),[xnum2str(p) '%'],...
+  nnz(job.isParent),[xnum2str(p) '%'],...
   [xnum2str(100*nnz(job.isTransformed)./nnz(job.grainsPrior.phaseId ==job.childPhaseId)) '%']};
 
 p = 100*sum(gs(job.grains.phaseId == job.childPhaseId)) / sum(gs);
 if ~isempty(job.csChild)
   matrix(2,:) = {'child', job.csChild.mineral, job.csChild.pointGroup, ...
-    length(job.grains(job.csChild)),[xnum2str(p) '%'],''};
+    nnz(job.isChild),[xnum2str(p) '%'],''};
 end
 
 cprintf(matrix,'-L',' ','-Lc',...
@@ -25,7 +25,7 @@ cprintf(matrix,'-L',' ','-Lc',...
 if ~isempty(job.p2c)
   disp(' ');
   disp([' OR: ' char(job.p2c)]);
-  prop = calcGBFit(job,'p2c')./degree;
+  prop = calcGBFit(job,'p2c','quick')./degree;
   if ~isempty(prop)
     disp(['   p2c fit: '...
       xnum2str(quantile(prop,0.2)) getMTEXpref('degreeChar') ...
@@ -35,7 +35,7 @@ if ~isempty(job.p2c)
       ' (quintiles)']);
   end
   
-  prop = calcGBFit(job,'c2c')./degree;
+  prop = calcGBFit(job,'c2c','quick')./degree;
   if ~isempty(prop)
     disp(['   c2c fit: '...
       xnum2str(quantile(prop,0.2)) getMTEXpref('degreeChar') ...
