@@ -98,28 +98,29 @@ if check_option(varargin,'C2C') || noOpt
   indC = indV1(grainPairs);
     
   oriChild2 = oriChild(:,2) * p2cV;
+  oriChild1 = oriChild(:,1) * p2cV;
+  
+  % these will be the rows, cols, and values of the sparse matrix
+  i = []; j = []; p = [];
   
   for k1 = 1:length(p2cV)
-  
-    oriChild1 = oriChild(:,1) * p2cV(k1);
-    
     for k2 = 1:length(p2cV)
-      
+
+      % compute the fit
+      fit = angle(oriChild1(:,k1),oriChild2(:,k2));
+    
       % compute fit
-      fit = angle(oriChild1,oriChild2(:,k2));
       prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
       ind = prob > 0.1;
-            
-      job.graph = max(job.graph, ...
-        sparse(indC(ind,1) + k1-1, indC(ind,2) + k2-1, prob(ind), nHyper, nHyper));
-      
-      % symmetrise graph
-      job.graph = max(job.graph, ...
-        sparse(indC(ind,2) + k2-1, indC(ind,1) + k1-1, prob(ind), nHyper, nHyper));
-      
+
+      i = [i;indC(ind,1) + k1-1;indC(ind,2) + k2-1];
+      j = [j;indC(ind,2) + k2-1;indC(ind,1) + k1-1];
+      p = [p;prob(ind);prob(ind)];
+    
     end
   end
-end
+
+  job.graph = max(job.graph, sparse(i, j , p, nHyper, nHyper));
 
 end
  
