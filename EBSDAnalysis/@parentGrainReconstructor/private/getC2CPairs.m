@@ -1,11 +1,20 @@
 function [pairs,ori] = getC2CPairs(job,varargin)
 % 
 
-pairs = neighbors(job.childGrains, job.childGrains);
+% all child to child pairs
+pairs = neighbors(job.grains);
+
+ind = all(ismember(pairs, job.grains.id(job.isChild)), 2);
+pairs = pairs(ind,:);
 
 % remove self boundaries
 pairs(pairs(:,1)==pairs(:,2)) = [];
 pairs = sortrows(sort(pairs,2,'ascend'));
+
+if  check_option(varargin,'quick') && length(pairs) > 10000
+  ind = unique(randi(length(pairs),10000,1));
+  pairs = pairs(ind,:);
+end
 
 % maybe there is nothing to do
 if isempty(pairs)

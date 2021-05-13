@@ -2,7 +2,22 @@ function [pairs,pOri,cOri] = getP2CPairs(job,varargin)
 % 
 
 % all parent - child neighbors
-pairs = neighbors(job.parentGrains, job.childGrains);
+pairs = neighbors(job.grains);
+
+isParent = ismember(pairs, job.grains.id(job.isParent));
+isChild = ismember(pairs, job.grains.id(job.isChild));
+
+ind = any(isParent,2) & any(isChild,2);
+pairs = pairs(ind,:);
+
+% ensure parent is first
+doFlip = isChild(ind,1);
+pairs(doFlip,:) = fliplr(pairs(doFlip,:));
+
+if  check_option(varargin,'quick') && length(pairs) > 10000
+  ind = unique(randi(length(pairs),10000,1));
+  pairs = pairs(ind,:);
+end
 
 % maybe there is nothing to do
 if isempty(pairs)
