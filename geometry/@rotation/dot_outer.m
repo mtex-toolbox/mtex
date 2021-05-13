@@ -14,11 +14,20 @@ if ~isempty(rot1) && ~isempty(rot2)
   
   d = abs(q1 * q2.');
   
-  if isa(rot1,'rotation') && isa(rot2,'rotation') && ~check_option(varargin,'ignoreInv')
-    i = bsxfun(@xor,rot1.i(:),rot2.i(:).');
-    d = ~i .* d;
+  % handle improper rotations
+  if isa(rot1,'rotation') && isa(rot2,'rotation') 
+    
+    if (any(rot1.i(:)) || any(rot2.i(:))) && ~check_option(varargin,'ignoreInv')
+      i = bsxfun(@xor,rot1.i(:),rot2.i(:).');
+      d = ~i .* d;
+    else
+      return
+    end
+    
   elseif isa(rot1,'rotation') && ~check_option(varargin,'ignoreInv')
+    
     d(rot1.i,:) = 0;
+    
   end
 else
     d = [];

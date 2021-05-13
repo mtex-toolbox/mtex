@@ -6,7 +6,7 @@ function q = project2FRCS2(q,CS1,CS2,varargin)
 %
 % Input
 %  q        - @quaternion
-%  CS1, CS2 - crystal @symmetry
+%  CS1, CS2 - @symmetry
 %
 % Output
 %  q     - @quaternion
@@ -14,8 +14,8 @@ function q = project2FRCS2(q,CS1,CS2,varargin)
 q = quaternion(q);
 
 % get quaternions
-[l,d,r] = factor(CS1,CS2);
-dr= d * r;
+[l,d,r] = factor(CS1.properGroup,CS2.properGroup);
+dr = d * r;
 qs = l * dr;
 [i,j] = ind2sub([length(l),length(dr)],1:length(qs));
 
