@@ -14,6 +14,34 @@ function varargout = subsref(grains,s)
 %  cond   - logical array with same size as grains
 %
 
+
+% some special cases to speed things up
+if strcmp(s(1).type,'()') && ...
+    length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'meanOrientation')
+  
+  if strcmp(s(1).type,'{}')
+    ind = grains.id2ind(s(1).subs{1});
+  else
+    ind = subsind(grains,s(1).subs);
+  end
+  
+  phId = unique(grains.phaseId(ind));
+  
+  if length(phId)~= 1
+    error('');
+  end
+  ori = orientation(grains.prop.meanRotation(ind),grains.CSList{phId});
+    
+  if numel(s)>2
+    [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));
+  else
+    varargout{1} = ori;
+  end
+  return
+end
+
+
+
 if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
   if strcmp(s(1).type,'{}')
