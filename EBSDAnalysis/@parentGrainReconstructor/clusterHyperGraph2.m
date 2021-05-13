@@ -74,7 +74,8 @@ for iter = 1:numIter
   A = A.^p;
   
   % prune elements of A that are below minval
-  A = (A > cutOff) .* A;
+  %A = (A > cutOff) .* A;
+  A = spfun(@(x) (x > cutOff) .* x,A);
   
   % column re-normalisation
   % sum over all targets
