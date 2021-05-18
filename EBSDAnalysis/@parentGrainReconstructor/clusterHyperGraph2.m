@@ -92,14 +92,27 @@ for iter = 1:numIter
   disp(nnz(A))
 end 
 
+if check_option(varargin,'test1')
+  A = sqrt(diag(diag(A)) * A);
+
+  % column re-normalisation
+  s = full(sum(A));
+  
+  % sum over all variants
+  s = accumarray(h2ind.',s);
+  s = repelem(s,numV * job.isChild + job.isParent);
+
+  % create sparse diagonal matrix for
+  dinv = spdiags(1./s,0,nHyper,nHyper);
+  A = A * dinv;
+end
+
 % create a table of probabilities for the different parentIds of each child
 % grains
-
-pIdP = nan(length(job.grains),numV);
-
-s = full(sum(A).' - diag(A));
+s = full(sum(A).' - diag(A)); % sum columns
 s = s(isChild);
 
+pIdP = nan(length(job.grains),numV);
 pIdP(job.isChild,:) = reshape(s,numV,[]).';
 
 % some post processing
