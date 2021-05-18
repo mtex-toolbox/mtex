@@ -1,6 +1,18 @@
 function out = eq(S1,S2,varargin)
 % check S1 == S2
 
+if length(S1) ~= length(S2)
+  
+  out  = false;
+  return;
+  
+elseif isa(S1,'char') && isa(S2,'char')
+  
+  out = strmpi(S1,S2);
+  return;
+  
+end
+
 out = eq@handle(S1,S2);
 
 % just compare handles -> this is fastest
