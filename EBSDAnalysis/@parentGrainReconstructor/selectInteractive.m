@@ -52,14 +52,16 @@ handleSelected = plot(grain.boundary,'lineColor','w','linewidth',4);
 hold off
 setappdata(ax,'handleSelected',handleSelected);
 
-votes = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
+votesFit = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
+votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24);
 
 figure(ax.Parent.Number+1)
 clf
-numV = size(votes.fit,2);
+set(gcf,'name',['grain: ' xnum2str(grain.id)])
+numV = size(votesFit.parentId,2);
 cKey = ipfHSVKey(job.csParent);
 
-oriPV = variants(job.p2c,job.grainsPrior(localId).meanOrientation,votes.parentId);
+oriPV = variants(job.p2c,job.grainsPrior(localId).meanOrientation,votesFit.parentId);
 
 bgColor = cKey.orientation2color(oriPV);
 fgColor = bgColor .* sum(bgColor,2) < 1.5;
@@ -69,7 +71,8 @@ for n=1:numV
   handles.b{n} = uicontrol('Style','PushButton','Units','normalized',...
     'Position',[0.1 (n-1)/numV 0.8 0.9*1/numV],...
     'backGroundColor',bgColor(n,:),'ForegroundColor',fgColor(n,:),...
-    'String',xnum2str(votes.fit(n)./degree),...
+    'String',[xnum2str(votesFit.fit(n)./degree) ' - ' ...
+    xnum2str(votesProb.prob(votesProb.parentId==votesFit.parentId(n))) ],...
     'Callback',{@setOri,job,localId,oriPV(n),ax});
 end
 
