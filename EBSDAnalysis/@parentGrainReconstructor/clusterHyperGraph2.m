@@ -88,12 +88,28 @@ for iter = 1:numIter
   % create sparse diagonal matrix for 
   dinv = spdiags(1./s,0,nHyper,nHyper);
   A = A * dinv;
- 
+
+  if check_option(varargin,'test2')
+    A = sqrt(diag(diag(A)) * A);
+
+    % column re-normalisation
+    s = full(sum(A));
+  
+    % sum over all variants
+    s = accumarray(h2ind.',s);
+    s = repelem(s,numV * job.isChild + job.isParent);
+
+    % create sparse diagonal matrix for
+    dinv = spdiags(1./s,0,nHyper,nHyper);
+    A = A * dinv;
+  end
+  
   disp(nnz(A))
 end 
 
 if check_option(varargin,'test1')
-  A = sqrt(diag(diag(A)) * A);
+  %A = sqrt(diag(diag(A)) * A);
+  A = diag(diag(A)) * A;
 
   % column re-normalisation
   s = full(sum(A));
