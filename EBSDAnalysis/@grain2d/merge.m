@@ -133,7 +133,13 @@ for k = 1:length(varargin)
 
   end
 end
+
+% remove everything that is not in grains
 A = A(1:maxId,1:maxId);
+isInGrains = false(1,maxId);
+isInGrains(grains.id) = true;
+A(~isInGrains,:) = 0;
+A(:,~isInGrains) = 0;
 
 % maybe we provide old2newId directly
 if isnumeric(varargin{1}) && length(varargin{1}) == length(grains) && size(varargin{1},2)==1
@@ -149,7 +155,7 @@ else
   doMerge = any(A,1) | any(A,2).';
 
   % 2. determine grains not to touch and sort them first
-  keepId = find(~doMerge);
+  keepId = find(~doMerge & isInGrains);
   keepInd = grains.id2ind(keepId);
   old2newId = zeros(maxId,1);
   old2newId(keepId) = 1:numel(keepId);
