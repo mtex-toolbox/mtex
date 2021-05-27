@@ -45,6 +45,7 @@ if isempty(ori), odf = ODF; return, end
 % extract weights
 if check_option(varargin,'weights')
   weights = get_option(varargin,'weights');
+  varargin = delete_option(varargin,'weights',1);
 else
   weights = ones(1,length(ori));
 end
