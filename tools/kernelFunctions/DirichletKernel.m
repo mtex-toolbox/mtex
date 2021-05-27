@@ -22,11 +22,11 @@ classdef DirichletKernel < kernel
       N = psi.bandwidth;
       
       ind = co2 > 1-eps;
-       value(ind) = (1+N)*(1+2*N)*(3+2*N)/3;
+      value(ind) = (1+N)*(1+2*N)*(3+2*N)/3;
        
-       value(~ind) = csc(acos(co2)).^3 .* ...
-         ((3+2*N)*sin((1+2*N)*acos(co2)) - ...
-         (1+2*N)*sin((3+2*N)*acos(co2)))./4;
+      omega = acos(co2(~ind));
+      value(~ind) = csc(omega).^3 .* ((3+2*N)*sin((1+2*N)*omega) - ...
+        (1+2*N)*sin((3+2*N)*omega))./4;
        
     end
     
