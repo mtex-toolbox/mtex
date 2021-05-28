@@ -22,7 +22,8 @@ tPBoundaryId = reshape(tPBoundaryId,3,[]).';
 
 % get the three end vertices
 iV = reshape(gB.F(tPBoundaryId,:),[],6).';
-iV = reshape(iV(iV ~= find(itP).').',3,[]).';
+% TODO: the repmat can be removed in new versions of Matlab
+iV = reshape(iV(iV ~= repmat(find(itP).',size(iV,1),1)).',3,[]).';
 
 tP = triplePointList(find(itP),V,...
   tpGrainId,tPBoundaryId,tpPhaseId,iV,gB.phaseMap,gB.CSList);
