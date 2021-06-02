@@ -5,13 +5,13 @@ properties
   fhat   = [];              % harmonic coefficients
   SLeft  = specimenSymmetry % symmetry from the left
   SRight = specimenSymmetry % symmetry from the right
-  isReal = true
 end
 
 properties (Dependent=true)  
   bandwidth   % maximum harmonic degree / bandwidth
   power       % harmonic power
   antipodal
+  isReal
 end
 
 methods
@@ -116,10 +116,28 @@ methods
     F=reshape(F,s);
   end
   
-%   function F = get.isReal(F)
-%     % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
-%   end
-  % DO WE NEED function F = set.isReal(F,value)
+  function out = get.isReal(F)
+    F=reshape(F,numel(F));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
+    end
+    dd = sum(abs(F.fhat-conj(F.fhat(ind,:))).^2);
+    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
+    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
+  end
+  
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    s=size(F);
+    F=reshape(F,prod(s));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
+    end
+    F.fhat = 0.5*(F.fhat+conj(F.fhat(ind,:)));
+    F=reshape(F,s);
+  end
   
   function d = size(F, varargin)
     d = size(F.fhat);
