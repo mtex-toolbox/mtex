@@ -58,7 +58,8 @@ if isempty(plan)
 
   % 2^4 -> nfsoft-represent
   % 2^2 -> nfsoft-use-DPT
-  nfsoft_flags = bitor(2^4,4);
+  % 2^0 -> use normalized Wigner-D functions and fourier coefficients
+  nfsoft_flags = bitor(2^4,4)+1;
   % nfft cutoff - 4
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)
@@ -83,8 +84,8 @@ for k = 1:length(F)
   % fast SO(3) fourier transform
   nfsoftmex('trafo',plan);
 
-  % get function values from plan
-  f(:,k) = nfsoftmex('get_f',plan);
+  % get function values from plan and normalize
+  f(:,k) = nfsoftmex('get_f',plan) * (sqrt(8)*pi);
 
 end
 
