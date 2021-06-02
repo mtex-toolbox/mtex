@@ -5,13 +5,13 @@ properties
   fhat   = [];              % harmonic coefficients
   SLeft  = specimenSymmetry % symmetry from the left
   SRight = specimenSymmetry % symmetry from the right
-  isReal = true
 end
 
 properties (Dependent=true)  
   bandwidth   % maximum harmonic degree / bandwidth
   power       % harmonic power
   antipodal
+  isReal
 end
 
 methods
@@ -80,7 +80,7 @@ methods
     hat = abs(F.fhat).^2;
     pow = zeros([F.bandwidth+1,size(F)]);
     for l = 0:size(pow,1)-1
-      pow(l+1,:) = sum(hat(deg2dim(l)+1:deg2dim(l+1),:),1) ./ (2*l+1);
+      pow(l+1,:) = sum(hat(deg2dim(l)+1:deg2dim(l+1),:),1);
     end
     
   end
@@ -90,14 +90,14 @@ methods
       out = false;
       return
     end
-    n = norm(F);
-    dd = 0;
-    for l = 1:F.bandwidth
-      ind = (deg2dim(l)+1):deg2dim(l+1);
-      d = reshape(F.fhat(ind),2*l+1,2*l+1) - reshape(F.fhat(ind),2*l+1,2*l+1)';
-      dd  = dd + sum(d(:).^2)/(2*l+1);
+    F=reshape(F,numel(F));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
+      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
-    out = sqrt(dd) / n < 1e-4;
+    dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
+    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
   end
   
   function F = set.antipodal(F,value)
@@ -105,11 +105,38 @@ methods
     if F.CS ~= F.SS
       error('ODF can only be antipodal if both crystal symmetry coincide!')
     end
-    for l = 1:F.bandwidth
-      ind = (deg2dim(l)+1):deg2dim(l+1);
-      F.fhat(ind) = 0.5* (reshape(F.fhat(ind),2*l+1,2*l+1) + ...
-        reshape(F.fhat(ind),2*l+1,2*l+1)');
+    s=size(F);
+    F=reshape(F,prod(s));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
+      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
+    F.fhat = 0.5*(F.fhat+F.fhat(ind,:));
+    F=reshape(F,s);
+  end
+  
+  function out = get.isReal(F)
+    F=reshape(F,numel(F));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
+    end
+    dd = sum(abs(F.fhat-conj(F.fhat(ind,:))).^2);
+    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
+    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
+  end
+  
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    s=size(F);
+    F=reshape(F,prod(s));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
+    end
+    F.fhat = 0.5*(F.fhat+conj(F.fhat(ind,:)));
+    F=reshape(F,s);
   end
   
   function d = size(F, varargin)

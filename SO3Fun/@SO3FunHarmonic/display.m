@@ -6,7 +6,8 @@ if check_option(varargin,'skipHeader')
 else
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   if SO3F.antipodal, disp('  antipodal: true'); end
-  if length(SO3F) > 1, disp([' size: ' size2str(SO3F)]); end
+  if SO3F.isReal, disp('  isReal: true'); end
+  if length(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
 end
 
 disp(['  bandwidth: ' num2str(SO3F.bandwidth)]);

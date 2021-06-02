@@ -253,6 +253,31 @@ static void wigner_d(int N,int L,mxDouble *d_min2,mxDouble *d_min1,mxDouble *d)
 
 
 
+// Normalize fourier coefficients
+static void NORMALIZE( const mxDouble bandwidth, mxComplexDouble *fhat )
+{
+  int l,k,u,u_square;
+  const int N = bandwidth;
+  mxDouble sqrt_u;
+  mxComplexDouble *fhat2;
+  fhat2 = fhat;  
+  for (l=0; l<=N; l++)
+  {
+    u = 2*l+1;
+    u_square = u*u;
+    sqrt_u = sqrt(u);
+    for (k=0; k<u_square; k++)
+    {
+      fhat[0].real = fhat[0].real*sqrt_u;
+      fhat[0].imag = fhat[0].imag*sqrt_u;
+      fhat ++;
+    }
+  }
+}
+
+
+
+
 // The computational routine
 static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
                             const int row_shift, const int col_shift, const int fullsized,
@@ -725,7 +750,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     // set pointer to skip first index
     outFourierCoeff += start_shift;
     
-    
+  
+  // normalize fourier coefficients
+    NORMALIZE(bandwidth,inCoeff);
   // call the computational routine
     calculate_ghat(bandwidth,inCoeff,row_shift,col_shift,fullsized,
             outFourierCoeff,(mwSize)nrows);
