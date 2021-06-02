@@ -6,8 +6,7 @@ N = SO3F.bandwidth;
 % the Fourier coefficients. We will use this to speed up computation.
 if SO3F.isReal
 
-  ind = mod(N+1,2);
-
+  %ind = mod(N+1,2);
   % create ghat -> k x l x j
   %   k = -N+1:N
   %   l =    0:N+ind    -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
@@ -16,14 +15,14 @@ if SO3F.isReal
   % we use ind in 2nd dimension to get even number of fourier coefficients
   % the additionally indices gives 0-columns in front of ghat
   ghat = compute_ghat(N,SO3F.fhat,'isReal','makeeven');
-
+  
 else
 
   % create ghat -> k x l x j
   % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
-  % we can again use (**) to speed up
-  ghat = compute_ghat(N,SO3F.fhat,'makeeven');
-
+  % we can again use (**) to speed up  
+  ghat = compute_ghat(N,SO3F.fhat,'makeeven');  
+  
 end
 
 
