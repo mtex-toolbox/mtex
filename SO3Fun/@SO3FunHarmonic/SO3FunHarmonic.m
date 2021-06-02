@@ -90,14 +90,15 @@ methods
       out = false;
       return
     end
-    n = norm(F);
-    dd = 0;
-    for l = 1:F.bandwidth
-      ind = (deg2dim(l)+1):deg2dim(l+1);
-      d = reshape(F.fhat(ind),2*l+1,2*l+1) - reshape(F.fhat(ind),2*l+1,2*l+1)';
-      dd  = dd + sum(d(:).^2)/(2*l+1);
+    s=size(F);
+    F=reshape(F,prod(s));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
+      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
-    out = sqrt(dd) / n < 1e-4;
+    dd = sum((F.fhat-F.fhat(ind,:)).^2);
+    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
   end
   
   function F = set.antipodal(F,value)
@@ -105,12 +106,21 @@ methods
     if F.CS ~= F.SS
       error('ODF can only be antipodal if both crystal symmetry coincide!')
     end
-    for l = 1:F.bandwidth
-      ind = (deg2dim(l)+1):deg2dim(l+1);
-      F.fhat(ind) = 0.5* (reshape(F.fhat(ind),2*l+1,2*l+1) + ...
-        reshape(F.fhat(ind),2*l+1,2*l+1)');
+    s=size(F);
+    F=reshape(F,prod(s));
+    ind=zeros(deg2dim(F.bandwidth+1),1);
+    for l = 0:F.bandwidth
+      localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
+      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
+    F.fhat = 0.5*(F.fhat+F.fhat(ind,:));
+    F=reshape(F,s);
   end
+  
+%   function F = get.isReal(F)
+%     % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
+%   end
+  % DO WE NEED function F = set.isReal(F,value)
   
   function d = size(F, varargin)
     d = size(F.fhat);
