@@ -90,14 +90,13 @@ methods
       out = false;
       return
     end
-    s=size(F);
-    F=reshape(F,prod(s));
+    F=reshape(F,numel(F));
     ind=zeros(deg2dim(F.bandwidth+1),1);
     for l = 0:F.bandwidth
       localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
       ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
-    dd = sum((F.fhat-F.fhat(ind,:)).^2);
+    dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
     out = prod(sqrt(dd) ./ norm(F)' <1e-4);
   end
   
