@@ -53,9 +53,22 @@ for i = 1:length(all.Groups)
             content = h5read(fname,[all.Groups.Groups(1).Groups(2).Groups(1).Groups(phaseN).Name '/' phases(phaseN).Datasets(k).Name]);
             EBSDphases.(pN).(sane_name) = content;
         end
-        CS{phaseN+1} = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group, ...
+        
+        % the angle comes in single precision. make sure something
+        % sufficiently close to 90 resp. 120 does not end up with
+        % rounding errors instead of using the 'force' option
+        
+        langle = double(EBSDphases.(pN).Lattice_Angles');
+        csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+        if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal') 
+           langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
+        else
+           langle(isnull(langle-pi/2,1e-7))=pi/2;
+        end  
+         
+        CS{phaseN} = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
-            double(EBSDphases.(pN).Lattice_Angles'),...
+            langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name), ...
             'X||a*','Y||b', 'Z||C');
     end
