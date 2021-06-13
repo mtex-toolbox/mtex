@@ -26,11 +26,22 @@ if strcmp(s(1).type,'()') && ...
   end
   
   phId = unique(grains.phaseId(ind));
-  
-  if length(phId)~= 1
-    error('');
+
+  if length(phId) > 1
+    error('MTEX:MultiplePhases',['\n' ...
+      '----------------------------------------------------------------\n'...
+      'Your variable contains the phases: ' ...
+      grains.mineralList{phId(1)} ', ' grains.mineralList{phId(2)} '\n\n' ...
+      'However, you are executing a command that is only permitted for a single phase!\n\n' ...
+      'Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
+      ' for how to restrict grains to a single phase.\n' ...
+      '----------------------------------------------------------------\n']);
   end
-  ori = orientation(grains.prop.meanRotation(ind),grains.CSList{phId});
+  if isempty(ind)
+    ori = orientation;
+  else
+    ori = orientation(grains.prop.meanRotation(ind),grains.CSList{phId});
+  end
     
   if numel(s)>2
     [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));
