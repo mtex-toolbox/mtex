@@ -30,16 +30,25 @@ noOpt = ~check_option(varargin,{'p2c','c2c'});
 
 % maybe we should consider only some of the grains
 if nargin > 1 && isnumeric(varargin{1})
+
   id = varargin{1};
+  wasChild = true(size(id));
+  
 else
+  
   id = job.grains.id;
+  
+  % only the prior child grains needs to be considered
+  wasChild = job.grainsPrior.phaseId==job.childPhaseId;
+
 end
 
 % if we reconsider all grains we need a seperate algorithm
 if check_option(varargin,'reconsiderAll')
 
+  
   % the original child orientation
-  ori = job.grainsPrior('id',id).meanOrientation;
+  ori = job.grainsPrior('id',id(wasChild)).meanOrientation;
 
   % all variants
   oriV = variants(job.p2c, ori);
@@ -47,8 +56,8 @@ if check_option(varargin,'reconsiderAll')
 
   % fit with neighboring grains
   % TODO: this can be done better
-  A = job.grains('id',id).neighbors('matrix','maxId',max(job.grains.id));
-  A = A(id,:);
+  A = job.grains('id',id(wasChild)).neighbors('matrix','maxId',max(job.grains.id));
+  A = A(id(wasChild),:);
   [grainInd,nId] = find(A);
   grainInd = grainInd(:); nId = nId(:);
 
@@ -72,11 +81,15 @@ if check_option(varargin,'reconsiderAll')
   
   end
 
+  
+  i2i = cumsum(~wasChild); i2i = i2i(wasChild);
+  grainInd = grainInd + i2i(grainInd);
+
   % accumulate votes, i.e. compute a probability for each grain / parentId
   % combination
   votes = accumVotes(repmat(grainInd,1,numV), repmat(1:numV,length(grainInd),1), fit,...
     max(grainInd), varargin{:});
-
+  
 else
   
   % parent-child - votes
