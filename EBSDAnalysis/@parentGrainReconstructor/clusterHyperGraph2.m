@@ -61,6 +61,8 @@ if check_option(varargin,'noPseudoDiagonal')
   pseudoDiag = sparse(indV1 + i(:).',indV1 + j(:).',true,size(A,1),size(A,2));
 end
 
+normalize
+
 % this is an adaptation of the MCL algorithm
 for iter = 1:numIter
 
@@ -78,54 +80,33 @@ for iter = 1:numIter
   A = spfun(@(x) (x > cutOff) .* x,A);
   
   % column re-normalisation
-  % sum over all targets
-  s = full(sum(A));
+  normalize
   
-  % sum over all variants
-  s = accumarray(h2ind.',s);
-  s = repelem(s,numV * job.isChild + job.isParent);
-  
-  % create sparse diagonal matrix for 
-  dinv = spdiags(1./s,0,nHyper,nHyper);
-  A = A * dinv;
-
   if check_option(varargin,'test2')
     A = sqrt(diag(diag(A)) * A);
-
-    % column re-normalisation
-    s = full(sum(A));
-  
-    % sum over all variants
-    s = accumarray(h2ind.',s);
-    s = repelem(s,numV * job.isChild + job.isParent);
-
-    % create sparse diagonal matrix for
-    dinv = spdiags(1./s,0,nHyper,nHyper);
-    A = A * dinv;
+    normalize
   end
   
   disp(nnz(A))
 end 
 
 if check_option(varargin,'test1')
-  %A = sqrt(diag(diag(A)) * A);
   A = diag(diag(A)) * A;
+  normalize
+end
 
-  % column re-normalisation
-  s = full(sum(A));
-  
-  % sum over all variants
-  s = accumarray(h2ind.',s);
-  s = repelem(s,numV * job.isChild + job.isParent);
-
-  % create sparse diagonal matrix for
-  dinv = spdiags(1./s,0,nHyper,nHyper);
-  A = A * dinv;
+if check_option(varargin,'sym')
+  A = sqrt(A.' .* A);
+  normalize
 end
 
 % create a table of probabilities for the different parentIds of each child
 % grains
-s = full(sum(A).' - diag(A)); % sum columns
+if p>1
+  s = full(sum(A,2)); % sum columns
+else
+  s = full(sum(A,2) - diag(A)); % sum columns
+end
 s = s(isChild);
 
 pIdP = nan(length(job.grains),numV);
@@ -160,4 +141,39 @@ end
 [pIdP,pId] = sort(pIdP,2,'descend');
 job.votes = table(pId,pIdP,'VariableNames',{'parentId','prob'});
 
+if check_option(varargin,'keepGraph')
+  job.graph = A;
+end
+
+
+  function normalize2
+    
+    % column re-normalisation
+    % sum over all targets
+    s = full(sum(A));
+  
+    % sum over all variants
+    s = accumarray(h2ind.',s);
+    s = repelem(s,numV * job.isChild + job.isParent);
+  
+    % create sparse diagonal matrix for
+    dinv = spdiags(1./s,0,nHyper,nHyper);
+    A = A * dinv;
+    
+  end
+  function normalize
+    
+    % column re-normalisation
+    % sum over all targets
+    s = full(sum(A,2)).';
+  
+    % sum over all variants
+    s = accumarray(h2ind.',s);
+    s = repelem(s,numV * job.isChild + job.isParent);
+  
+    % create sparse diagonal matrix for
+    dinv = spdiags(1./s,0,nHyper,nHyper);
+    A = dinv * A;
+    
+  end
 end 
