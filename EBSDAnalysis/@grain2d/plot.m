@@ -15,6 +15,7 @@ function [h,mP] = plot(grains,varargin)
 % Options
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend
+%  region      - [xmin, xmax, ymin, ymax] of the plotting region 
 %
 % See also
 % EBSD/plot grainBoundary/plot
@@ -180,7 +181,14 @@ end
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 if isNew
-  axis(mP.ax,'tight'); 
+  
+  region = get_option(varargin,'region');
+  if ~isempty(region)
+    set(mP.ax,'XLim',region(1:2),'YLim',region(3:4))
+  else
+    axis(mP.ax,'tight'); 
+  end
+  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
@@ -296,6 +304,25 @@ if numel(poly) > 3 && size(d,1) == 1 && size(d,2) == numel(poly)
 end
 
 if size(d,1) == 1, d = repmat(d,numel(poly),1); end
+
+if check_option(varargin,'region')
+  region = get_option(varargin,'region');
+  ind = cellfun(@(p) any(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+    V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
+  
+  d = d(ind,:);
+  poly = poly(ind);
+  
+  % cut polygons - TODO!!
+  %ind = cellfun(@(p) ~all(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+  %  V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
+  %reg = polyshape(region([1 2 2 1]),region([3 3 4 4]));
+  %for k = find(ind).'
+  %  p = polyshape(V(poly{k},:));
+  %  [p2,sId,vId] = intersect(p,reg);
+  %end
+
+end
 
 numParts = fix(log(max(cellfun('prodofsize',poly)))/2);
 Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
