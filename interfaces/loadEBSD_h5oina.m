@@ -13,44 +13,108 @@ function ebsd = loadEBSD_h5oina(fname,varargin)
 
 % fname = 'oxin.h5oina'
 
-% get file info
+
 all = h5info(fname);
 
-% all.Groups : file my contain multiple datasets
-for i = 1:length(all.Groups)
+% task: find all groups called EBSD, therein header and PHASE
+EBSD_index = {};
+EDS_index = {};
+n = 1;
+m=1;
+%search for EBSD data
+for i = 1:length(all.Groups) % map site on sample
+    if ~isempty(all.Groups(i).Groups) % data on map site ('EBSD, EDS, Electron iamge etc)
+        for j=1:length(all.Groups(i).Groups)
+            if contains(all.Groups(i).Groups(j).Name,'EBSD')
+                EBSD_index{n} = [i j];
+                n = n+1;
+            end
+            if contains(all.Groups(i).Groups(j).Name,'EDS')
+                EDS_index{m} = [i j];
+                m = m+1;
+            end
+            
+        end
+        
+    end
+end
+
+if length(EBSD_index) > 1
+    disp('more than 1 EBSD dataset in the file, output will be a cell')
+end
+for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple datasets
+    %EBSD dataset
+    EBSD_data = all.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(1);
     
-    [data, header] =  all.Groups.Groups(1).Groups.Datasets;
+    %EBSD header
+    EBSD_header = all.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(2);
     
-    EBSDdata = struct;
     
-    % read all data
-    for thing = 1:length(data)
-        sane_name = strrep(data(thing).Name,' ','_');
-        %-----------------------------------------      1    / EBSD   /
-        EBSDdata.(sane_name)=double(h5read(fname,[all.Groups.Groups(1).Groups(1).Name '/' data(thing).Name]));
+    if ~isempty(EDS_index) & EDS_index{k}(1) == EBSD_index{k}(1)
+        
+        % EDS times and coordiantes - not used for now
+        % eds_tc = all.Groups(EDS_index{k}(1)).Groups(EDS_index{k}(2)).Groups(1)
+        
+        % EDS header
+        EDS_header = all.Groups(EDS_index{k}(1)).Groups(EDS_index{k}(2)).Groups(2);
+        
+        % EDS data
+        EDS_data= all.Groups(EDS_index{k}(1)).Groups(EDS_index{k}(2)).Groups(1).Groups;
+        
     end
     
-    %read header
+    
+    % read all EBSD data
+    EBSDdata = struct;
+    for thing = 1:length(EBSD_data.Datasets)
+        sane_name = strrep(EBSD_data.Datasets(thing).Name,' ','_');
+        EBSDdata.(sane_name)=double(h5read(fname,[EBSD_data.Name '/' EBSD_data.Datasets(thing).Name]));
+    end
+    
+    %read EBSD header
     EBSDheader = struct;
-    for thing = 1:length(header)
-        sane_name = strrep(header(thing).Name,' ','_');
-        content = h5read(fname,[all.Groups.Groups(1).Groups(2).Name '/' header(thing).Name]);
+    for thing = 1:length(EBSD_header.Datasets)
+        sane_name = strrep(EBSD_header.Datasets(thing).Name,' ','_');
+        content = h5read(fname,[EBSD_header.Name '/' EBSD_header.Datasets(thing).Name]);
         if any(size(content) ~=1) & isnumeric(content)
             content = reshape(content,1,[]);
         end
         EBSDheader.(sane_name) = content;
     end
     
-    % get the phases
+    if ~isempty(EDS_index) & EDS_index{k}(1) == EBSD_index{k}(1)
+        %read EDS data
+        EDSdata = struct;
+        for thing = 1:length(EDS_data.Datasets)
+            sane_name = strrep(EDS_data.Datasets(thing).Name,' ','_');
+            sane_name = strrep(sane_name,'-','_');
+            EDSdata.(sane_name)=double(h5read(fname,[EDS_data.Name '/' EDS_data.Datasets(thing).Name]));
+        end
+        %read EDS header
+        EDSheader = struct;
+        for thing = 1:length(EDS_header.Datasets)
+            sane_name = strrep(EDS_header.Datasets(thing).Name,' ','_');
+            content = h5read(fname,[EDS_header.Name '/' EDS_header.Datasets(thing).Name]);
+            if any(size(content) ~=1) & isnumeric(content)
+                content = reshape(content,1,[]);
+            end
+            EDSheader.(sane_name) = content;
+        end
+        
+    end
+    
     EBSDphases = struct;
-    phases = all.Groups.Groups(1).Groups(2).Groups(1).Groups;
+    phases = all.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(2).Groups(1);
+    %   ----------------
+    
     CS{1}='notIndexed';
-    for phaseN = 1:length(phases)
+    for phaseN = 1:length(phases.Groups)
         pN = ['phase_' num2str(phaseN)];
         EBSDphases.(pN)= struct;
-        for k = 1:length(phases(phaseN).Datasets)
-            sane_name = strrep(phases(phaseN).Datasets(k).Name,' ','_');
-            content = h5read(fname,[all.Groups.Groups(1).Groups(2).Groups(1).Groups(phaseN).Name '/' phases(phaseN).Datasets(k).Name]);
+        for j = 1:length(phases.Groups(phaseN).Datasets)
+            sane_name = strrep(phases.Groups(phaseN).Datasets(j).Name,' ','_');
+            sane_name = strrep(sane_name,'-','_');
+            content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
             EBSDphases.(pN).(sane_name) = content;
         end
         
@@ -60,28 +124,28 @@ for i = 1:length(all.Groups)
         
         langle = double(EBSDphases.(pN).Lattice_Angles');
         csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
-        if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal') 
-           langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
+        if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal')
+            langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
         else
-           langle(isnull(langle-pi/2,1e-7))=pi/2;
-        end  
-         
+            langle(isnull(langle-pi/2,1e-7))=pi/2;
+        end
+        
         CS{phaseN} = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
-            'Mineral',char(EBSDphases.(pN).Phase_Name), ...
-            'X||a*','Y||b', 'Z||C');
+            'Mineral',char(EBSDphases.(pN).Phase_Name));
+        %             'X||a*','Y||b', 'Z||C');
     end
     
     
-    
+    % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
     % CS1 (sample surface) into CS0 (sample primary),
     % CS2 into CS1 should be absolute orientation
     % TODO! make sure those rotations are correctly applied, possibly
     % EBSDheader.Specimen_Orientation_Euler
-    rc = rotation.byEuler(EBSDheader.Specimen_Orientation_Euler*degree); % what definition? Bunge?
     
+    rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler*degree)); % what definition? Bunge?
     
     % set up EBSD data
     rot = rc*rotation.byEuler(EBSDdata.Euler');
@@ -94,10 +158,23 @@ for i = 1:length(all.Groups)
     opt.bands = EBSDdata.Bands;
     opt.MAD = EBSDdata.Mean_Angular_Deviation;
     opt.quality = EBSDdata.Pattern_Quality;
-    ebsd = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
-    ebsd.opt.Header = EBSDheader;
+    
+    % TODO: make final EBSD autocomplete ebsd.EDS.something
+    if exist('EDSdata','var') 
+         opt.EDS = EDSdata;
+    end
+    
+    ebsdtemp = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
+    ebsdtemp.opt.Header = EBSDheader;
+    
+    if length(EBSD_index) > 1
+        ebsd{k} = ebsdtemp;
+    else
+        ebsd = ebsdtemp;
+    end
     
 end
+
 
 
 end
