@@ -159,11 +159,14 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     opt.MAD = EBSDdata.Mean_Angular_Deviation;
     opt.quality = EBSDdata.Pattern_Quality;
     
-    % TODO: make final EBSD autocomplete ebsd.EDS.something
-    if exist('EDSdata','var') 
-         opt.EDS = EDSdata;
+    % if available, add EDS data
+    if exist('EDSdata','var')
+        eds_names = fieldnames(EDSdata);
+        for j =1 :length(eds_names)
+        opt.(eds_names{j}) = EDSdata.(eds_names{j});
+        end
     end
-    
+        
     ebsdtemp = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
     ebsdtemp.opt.Header = EBSDheader;
     
