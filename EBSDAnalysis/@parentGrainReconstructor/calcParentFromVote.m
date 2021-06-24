@@ -21,7 +21,9 @@ function job = calcParentFromVote(job,varargin)
 % Options
 %  minVotes - minimum number of required votes
 %  minProb  - minimum probability (default - 0)
+%  minAlpha - minimum factor between best and second best probability
 %  minDelta - minimum difference between best and second best probability
+%
 
 assert(~isempty(job.votes),'You need to compute votes first!');
 
@@ -34,6 +36,11 @@ switch job.votes.Properties.VariableNames{2}
     if check_option(varargin,'minDelta')  
       doTransform = doTransform & ...
         job.votes.fit(:,2)-job.votes.fit(:,1) > get_option(varargin,'minDelta',0);
+    end
+    
+    if check_option(varargin,'minAlpha')  
+      doTransform = doTransform & ...
+        job.votes.fit(:,1) > get_option(varargin,'minAlpha',0) * job.votes.fit(:,2);
     end
   
   case 'prob'
