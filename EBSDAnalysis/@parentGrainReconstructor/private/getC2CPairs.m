@@ -1,4 +1,4 @@
-function [pairs,ori] = getC2CPairs(job,varargin)
+function [pairs,ori,weights] = getC2CPairs(job,varargin)
 % 
 
 % all child to child pairs
@@ -49,6 +49,16 @@ if check_option(varargin,'minDelta')
 
   ori(ind,:) = [];
   pairs(ind,:) = [];
+end
+
+if check_option(varargin,'weights')
+    
+  weights = calcBndWeights(job.grains.boundary, pairs, varargin{:});
+  
+else
+  
+  weights = 1;
+      
 end
 
 % translate to index if required

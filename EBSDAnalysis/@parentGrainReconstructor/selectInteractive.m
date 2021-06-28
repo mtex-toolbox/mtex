@@ -53,7 +53,7 @@ hold off
 setappdata(ax,'handleSelected',handleSelected);
 
 votesFit = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
-votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24);
+votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24,'tolerance',5*degree,'curvatureFactor',1);
 
 fig = figure(100);
 clf(fig)
