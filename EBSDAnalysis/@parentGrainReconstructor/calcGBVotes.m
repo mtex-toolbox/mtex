@@ -62,7 +62,11 @@ if check_option(varargin,'reconsiderAll')
   grainInd = grainInd(:); nId = nId(:);
 
   % compute boundary weights
-  w = calcBndWeights(job.grains.boundary, [id(grainInd),nId],varargin{:});
+  if check_option(varargin,'curvatureFactor')
+    w = calcBndWeights(job.grains.boundary, [id(grainInd),nId],varargin{:});
+  else
+    w = 1;
+  end
   
   % some neighbors coorespond to parent and some to child grains
   nInd = job.grains.id2ind(nId);

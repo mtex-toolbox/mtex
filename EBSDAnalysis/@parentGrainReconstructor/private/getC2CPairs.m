@@ -51,14 +51,10 @@ if check_option(varargin,'minDelta')
   pairs(ind,:) = [];
 end
 
-if check_option(varargin,'weights')
-    
-  weights = calcBndWeights(job.grains.boundary, pairs, varargin{:});
-  
-else
-  
-  weights = 1;
-      
+if check_option(varargin,'curvatureFactor')
+  weights = calcBndWeights(job.grains.boundary, pairs, varargin{:});  
+else  
+  weights = 1;      
 end
 
 % translate to index if required
