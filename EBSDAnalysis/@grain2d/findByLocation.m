@@ -23,8 +23,14 @@ poly = grains.poly;
 % restrict vertices to available grains
 iV = unique([poly{:}]);
 
-% and search for the closest vertice
-closestVertex = iV(bucketSearch(grains.V(iV,:),pos));
+% and search for the closest vertex
+if size(pos,1) == 1
+  dist = sum((grains.V(iV,:) - pos).^2,2);
+  [~,ind] = min(dist);
+  closestVertex = iV(ind);
+else
+  closestVertex = iV(bucketSearch(grains.V(iV,:),pos));
+end
 
 % list of candidates
 id = find(cellfun(@(x) any(ismember(closestVertex,x)), poly));
