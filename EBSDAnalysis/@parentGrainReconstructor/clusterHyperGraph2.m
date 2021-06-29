@@ -79,6 +79,11 @@ for iter = 1:numIter
   %A = (A > cutOff) .* A;
   A = spfun(@(x) (x > cutOff) .* x,A);
   
+  if check_option(varargin,'sym')
+    A = sqrt(A.' .* A);
+    normalize
+  end
+  
   % column re-normalisation
   normalize
   
@@ -86,6 +91,8 @@ for iter = 1:numIter
     A = sqrt(diag(diag(A)) * A);
     normalize
   end
+
+  
   
   disp(nnz(A))
 end 

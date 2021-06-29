@@ -92,7 +92,7 @@ end
 if check_option(varargin,'C2C') || noOpt
  
   % get all child to child grain pairs
-  [grainPairs, oriChild] = getC2CPairs(job,'index',varargin{:});
+  [grainPairs, oriChild, weights] = getC2CPairs(job,'index',varargin{:});
   
   % the corresponding indeces in the sparse matrix
   indC = indV1(grainPairs);
@@ -110,7 +110,8 @@ if check_option(varargin,'C2C') || noOpt
       fit = angle(oriChild1(:,k1),oriChild2(:,k2));
     
       % compute fit
-      prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
+      prob = weights .* (1 - 0.5 * (1 + erf(2*(fit - threshold)./tol)));
+      
       ind = prob > 0.1;
 
       i = [i;indC(ind,1) + k1-1;indC(ind,2) + k2-1];
