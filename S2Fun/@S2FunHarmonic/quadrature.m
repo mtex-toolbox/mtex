@@ -73,7 +73,10 @@ end
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
   if nodes.isOption('using_fsft')
-    plan = nfsftmex('init_advanced', bw, length(nodes), 1+2^17);
+    %plan = nfsftmex('init_advanced', bw, length(nodes), 1+2^17);
+    plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+    nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+    nfsftmex('precompute_x', plan);
   else
     plan = nfsftmex('init_advanced', bw, length(nodes), 1);
     nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
