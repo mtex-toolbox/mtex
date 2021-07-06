@@ -1,4 +1,4 @@
-edifunction sF = quadrature(f, varargin)
+function sF = quadrature(f, varargin)
 %
 % Syntax
 %   sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
