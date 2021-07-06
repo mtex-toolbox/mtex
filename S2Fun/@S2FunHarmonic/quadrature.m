@@ -32,7 +32,9 @@ if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureS2Grid(2*bw, 'gauss');
+    [nodes, W] = quadratureS2Grid(2*bw, 'gauss');   
+  elseif check_option(varargin, 'chebyshev')
+    [nodes, W] = quadratureS2Grid(2*bw, 'chebyshev');
   else
     [nodes, W] = quadratureS2Grid(2*bw);
   end
@@ -70,9 +72,13 @@ end
 % initialize nfsft
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
-  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-  nfsftmex('precompute_x', plan);
+  if nodes.isOption('using_fsft')
+    plan = nfsftmex('init_advanced', bw, length(nodes), 1+2^17);
+  else
+    plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+    nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+    nfsftmex('precompute_x', plan);
+  end
 end
 
 s = size(values);
