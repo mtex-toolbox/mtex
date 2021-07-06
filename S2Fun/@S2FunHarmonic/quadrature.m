@@ -34,16 +34,18 @@ if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureS2Grid(2*bw, 'gauss');   
   elseif check_option(varargin, 'regular')
-    ph=(-bw-1:bw)/(2*bw+2)*2*pi;
-    th=(0:bw)/(bw+1)*pi;
+    bw = bw+~iseven(bw); % make the bandwidth even
+    ph=(-Mq-1:Mq)/(2*Mq+2)*2*pi;
+    th=(0:Mq)/(Mq+1)*pi;
     [ph,th]=meshgrid(ph, th);
     nodes = vector3d.byPolar(th, ph);
     nodes = nodes(:);
     % one could implement this by using the dct
-    v = 4./(1-4*(0:bw/2).^2)';
+    v = 4./(1-4*(0:Mq/2).^2)';
     v([1 end]) = v([1 end])/2;
-    W = 1/bw*cos(2*(0:bw)'*(0:bw/2)*pi/bw)*v;
-    W = W*ones(1, 2*bw+2);
+    W = 1/Mq*cos(2*(0:Mq)'*(0:Mq/2)*pi/Mq)*v;
+    W([1 end]) = W([1 end])/2;
+    W = 2*pi*W*ones(1, 2*Mq+2)/(2*Mq+2);
     W = W(:);
   else
     [nodes, W] = quadratureS2Grid(2*bw);
