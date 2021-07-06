@@ -56,18 +56,19 @@ else
     end  
   else
     bandwidth = bandwidth/2;
-    ph=(-bandwidth-1:bandwidth)/(2*bandwidth+2)*2*pi;
-    th=(0:bandwidth)/(bandwidth+1)*pi;
-    [ph,th]=meshgrid(ph, th);
-    S2G = vector3d.byPolar(th, ph);
+    ph = (-bandwidth-1:bandwidth)/(2*bandwidth+2)*2*pi;
+    th = (0:bandwidth)/(bandwidth+1)*pi;
+    [ph, th]=meshgrid(ph, th);
+    S2G = vector3d.byPolar(ph, th);
     S2G = S2G(:);
     S2G.addOption('using_fsft');
     % one could implement this by using the dct
     v = 4./(1-4*(0:bandwidth/2).^2)';
-    v([1 end]) = v([1 end])/2;
-    W = 1/bandwidth*cos(2*(0:bandwidth)'*(0:bandwidth/2)*pi/bandwidth)*v;
-    W([1 end]) = W([1 end])/2;
-    W = 2*pi*W*ones(1, 2*bandwidth+2)/(2*bandwidth+2);
+    v(1) = v(1)/2;
+    W = 1/(bandwidth+1)*cos(2*(0:bandwidth+1)'*(0:bandwidth/2)*pi/(bandwidth+1))*v;
+    %W([1 end]) = W([1 end])/2; % we need those nodes twice
+    W = [W; W(2:end-1)];
+    W = pi*ones(bandwidth+1, 1)/(bandwidth+1)*W';
     W = W(:);
   end
   
