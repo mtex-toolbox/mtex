@@ -32,7 +32,19 @@ if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureS2Grid(2*bw, 'gauss');
+    [nodes, W] = quadratureS2Grid(2*bw, 'gauss');   
+  elseif check_option(varargin, 'regular')
+    ph=(-bw-1:bw)/(2*bw+2)*2*pi;
+    th=(0:bw)/(bw+1)*pi;
+    [ph,th]=meshgrid(ph, th);
+    nodes = vector3d.byPolar(th, ph);
+    nodes = nodes(:);
+    % one could implement this by using the dct
+    v = 4./(1-4*(0:bw/2).^2)';
+    v([1 end]) = v([1 end])/2;
+    W = 1/bw*cos(2*(0:bw)'*(0:bw/2)*pi/bw)*v;
+    W = W*ones(1, 2*bw+2);
+    W = W(:);
   else
     [nodes, W] = quadratureS2Grid(2*bw);
   end
@@ -70,9 +82,13 @@ end
 % initialize nfsft
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
-  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-  nfsftmex('precompute_x', plan);
+  if check_option(varargin, 'regular')
+    plan = nfsftmex('init_advanced', bw, length(nodes), 1+2^17);
+  else
+    plan = nfsftmex('init_advanced', bw, length(nodes), 1);
+    nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+    nfsftmex('precompute_x', plan);
+  end
 end
 
 s = size(values);
