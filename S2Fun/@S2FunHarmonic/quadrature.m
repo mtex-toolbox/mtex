@@ -1,4 +1,4 @@
-function sF = quadrature(f, varargin)
+edifunction sF = quadrature(f, varargin)
 %
 % Syntax
 %   sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
@@ -33,20 +33,8 @@ if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureS2Grid(2*bw, 'gauss');   
-  elseif check_option(varargin, 'regular')
-    bw = bw+~iseven(bw); % make the bandwidth even
-    ph=(-Mq-1:Mq)/(2*Mq+2)*2*pi;
-    th=(0:Mq)/(Mq+1)*pi;
-    [ph,th]=meshgrid(ph, th);
-    nodes = vector3d.byPolar(th, ph);
-    nodes = nodes(:);
-    % one could implement this by using the dct
-    v = 4./(1-4*(0:Mq/2).^2)';
-    v([1 end]) = v([1 end])/2;
-    W = 1/Mq*cos(2*(0:Mq)'*(0:Mq/2)*pi/Mq)*v;
-    W([1 end]) = W([1 end])/2;
-    W = 2*pi*W*ones(1, 2*Mq+2)/(2*Mq+2);
-    W = W(:);
+  elseif check_option(varargin, 'chebyshev')
+    [nodes, W] = quadratureS2Grid(2*bw, 'chebyshev');
   else
     [nodes, W] = quadratureS2Grid(2*bw);
   end
@@ -84,7 +72,7 @@ end
 % initialize nfsft
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
-  if check_option(varargin, 'regular')
+  if nodes.isOption('using_fsft')
     plan = nfsftmex('init_advanced', bw, length(nodes), 1+2^17);
   else
     plan = nfsftmex('init_advanced', bw, length(nodes), 1);
