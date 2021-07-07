@@ -21,6 +21,9 @@ function [h,mP] = plot(ebsd,varargin)
 %   badMAD = ebsd.mad > 1;
 %   plot(ebsd(badMAD),'faceColor','black,'DisplayName','bad values')
 %
+%   % plot a subregion
+%   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
+%
 % Input
 %  ebsd - @EBSD
 %  color - length(ebsd) x 3 vector of RGB values
@@ -28,6 +31,7 @@ function [h,mP] = plot(ebsd,varargin)
 % Options
 %  micronbar - 'on'/'off'
 %  DisplayName - add a legend entry
+%  region - [xmin, xmax, ymin, ymax] plotting region
 %  
 % Flags
 %  points   - plot dots instead of unitcells
