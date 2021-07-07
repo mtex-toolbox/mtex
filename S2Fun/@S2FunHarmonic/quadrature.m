@@ -14,7 +14,7 @@ function sF = quadrature(f, varargin)
 %  sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - minimal degree of the spherical harmonic (default: 128)
+%  bandwidth - minimal degree of the spherical harmonic (default: 256)
 %
 
 persistent keepPlan;
@@ -26,7 +26,7 @@ if check_option(varargin,'killPlan')
   return
 end
 
-bw = get_option(varargin, 'bandwidth', 128);
+bw = get_option(varargin, 'bandwidth', getMTEXpref('NFSFTBandwidth'));
 
 if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 

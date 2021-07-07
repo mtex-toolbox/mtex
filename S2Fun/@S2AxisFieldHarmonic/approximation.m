@@ -12,7 +12,7 @@ function sAF = approximation(v, y, varargin)
 %   sAF - @S2AxisFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%   bw - degree of the spherical harmonic (default: 256)
 %
 
 [x,y,z] = double(y);

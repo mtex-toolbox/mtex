@@ -23,7 +23,7 @@ elseif isa(sF2,'S2Fun')
   f = @(v) sF1.eval(v) .* sF2.eval(v);
   sF = S2FunHarmonic.quadrature(f, 'bandwidth', min(getMTEXpref('maxBandwidth'),sF1.bandwidth + sF2.bandwidth));
 else
-  sF = sF2.*sF1
+  sF = sF2.*sF1;
 end
 
 end

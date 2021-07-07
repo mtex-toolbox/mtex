@@ -30,7 +30,7 @@ classdef S2BumpKernel < S2Kernel
       end
       
       % extract bandwidth
-      L = get_option(varargin,'bandwidth',128);
+      L = get_option(varargin,'bandwidth',getMTEXpref('NFSFTBandwidth'));
             
       % compute Legendre coefficients
       psi.A = nan(1,L+1);

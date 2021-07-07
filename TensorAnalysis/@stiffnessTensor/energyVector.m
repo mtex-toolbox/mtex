@@ -38,7 +38,8 @@ if isempty(x)
   if isa(V,'S2FunTri')
     E = S2VectorFieldTri(V.tri,energyVector(C,V.vertices,V.values,P.values,varargin{:}));
   else
-    E = S2VectorFieldHarmonic.quadrature(@(x) energyVector(C,x,V,P,varargin{:}),'bandwidth',128,C.CS);
+    E = S2VectorFieldHarmonic.quadrature(@(x) energyVector(C,x,V,P,varargin{:}),...
+      'bandwidth',getMTEXpref('NFSFTBandwidth'),C.CS);
   end
   return
 end
