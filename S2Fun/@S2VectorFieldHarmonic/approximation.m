@@ -12,7 +12,7 @@ function sVF = approximation(v, y, varargin)
 %   sVF - @S2VectorFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%   bw - degree of the spherical harmonic (default: 256)
 %
 
 y = y.xyz;

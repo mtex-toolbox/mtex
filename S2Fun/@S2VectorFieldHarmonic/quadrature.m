@@ -14,7 +14,7 @@ function sVF = quadrature(f, varargin)
 %   sVF - @S2VectorFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%   bw - degree of the spherical harmonic (default: 256)
 %
 
 if isa(f,'vector3d')

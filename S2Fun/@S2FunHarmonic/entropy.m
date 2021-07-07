@@ -16,7 +16,7 @@ function E = entropy(sF, varargin)
 %
 
 % get some quadrature nodes
-[nodes, W] = quadratureS2Grid(max(128,sF.bandwidth));
+[nodes, W] = quadratureS2Grid(max(getMTEXpref('NFSFTBandwidth'),sF.bandwidth));
 
 f = sF.eval(nodes);
 

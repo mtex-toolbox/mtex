@@ -11,7 +11,7 @@ function sAF = quadrature(f, varargin)
 %  f - function handle in @vector3d
 %
 % Options
-%  M - degree of the spherical harmonic (default: 128)
+%  M - degree of the spherical harmonic (default: 256)
 %
 
 if isa(f,'vector3d')
