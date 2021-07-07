@@ -57,7 +57,7 @@ W = get_option(varargin, 'weights');
 if isempty(W) 
   W = nodes.calcVoronoiArea;
 else
-  W = W(ind);
+  W = accumarray(ind,W);
 end
 W = sqrt(W(:));
 
