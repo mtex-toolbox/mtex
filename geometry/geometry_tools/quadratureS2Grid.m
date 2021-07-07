@@ -9,10 +9,6 @@ function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
 persistent S2G_p;
 persistent W_p;
 persistent M2_p;
-persistent N_p;
-
-
-
 
 if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
   if check_option(varargin, 'gauss')
@@ -29,10 +25,10 @@ if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
   N = gridIndex.N(index);
 else
   M2 = ceil(bandwidth/4)*4; % make the bandwidth multible of four
-  N = (2*bandwidth+2)*(bandwidth+1);
+  N = (bandwidth+2)*(bandwidth/2+1);
 end
 
-if ~isempty(M2_p) && ~isempty(N_p) && M2_p == M2 && N_p == N
+if ~isempty(M2_p) && M2_p == M2 && length(S2G_p) == N
   S2G = S2G_p;
   W = W_p;
   M2 = M2_p;
@@ -61,7 +57,7 @@ else
     [ph, th]=meshgrid(ph, th);
     S2G = vector3d.byPolar(ph, th);
     S2G = S2G(:);
-    S2G.addOption('using_fsft');
+    S2G = S2G.addOption('using_fsft');
     % one could implement this by using the dct
     v = 4./(1-4*(0:bandwidth/2).^2)';
     v(1) = v(1)/2;
