@@ -38,6 +38,16 @@ function [c,center] = calcCluster(ori,varargin)
 %   min(angle_outer(center,centerRec)./degree)
 %
 
+% deal with nan orientations
+if any(isnan(ori))
+  
+  c = nan(size(ori));
+  notNaN = ~isnan(ori);
+  [c(notNaN),center] = calcCluster(ori.subSet(notNaN),varargin);
+  
+  return
+end
+
 
 method = get_option(varargin,'method','odf');
 

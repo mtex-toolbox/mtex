@@ -11,6 +11,9 @@ function q = project2FRCS2(q,CS1,CS2,varargin)
 % Output
 %  q     - @quaternion
 
+% TODO!!!
+% maybe we can implement this without casting to quaternion
+% and such that it returns an orientation if input was an orientation
 q = quaternion(q);
 
 % get quaternions

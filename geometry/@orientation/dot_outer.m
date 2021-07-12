@@ -15,7 +15,7 @@ function d = dot_outer(o1,o2,varargin)
 % TODO: does not work for orientations of different phase!!
 
 if check_option(varargin,'noSymmetry')
-  d = dot_outer@rotation(o1,o2);
+  d = dot_outer@rotation(o1,o2,varargin{:});
   return
 end
 

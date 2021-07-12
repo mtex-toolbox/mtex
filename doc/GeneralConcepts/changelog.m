@@ -1,5 +1,24 @@
 %% MTEX Changelog
 %
+%% MTEX 5.7.1 06/2021
+%
+% Beside numerous bug fixes and speed improvements MTEX 5.7.1 comes with
+% the following new Functionalities:
+%
+% * manual interactive parent orientation selection using
+% <parentGrainReconstructor.selectInteractive.html |selectInteractive(job)|>
+% * new option |'reconsiderAll'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to recheck
+% all asignments of parent orientations.
+% * new option |'bestFit'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| consider
+% only the best fitting neighbor
+% * |job.votes| is now a table which contains the parentId votes and the
+% probabilities for all grains
+%
+% * new option |'region'| to <EBSD.plot.html |plot(ebsd)|> to plot only a
+% rectangular subregion of the map
+%
 %% MTEX 5.7.0 05/2021
 %
 % MTEX 5.7 improves on parent grain reconstruction. Changes include:

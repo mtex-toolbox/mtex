@@ -27,7 +27,9 @@ if strcmpi(getMTEXpref('xAxisDirection'),'east')
   centers = rotate(centers,90*degree);
 end
 
-fh = @(v) (sum(c_0.*f_r(dot(v, centers), h_0), 1))';
+% TODO: upper line can be replaced by lower line with Matlab 2017
+fh = @(v) (sum(repmat(c_0,1,length(v)) .* f_r(dot(repmat(v,length(centers),1), repmat(centers,1,length(v))), repmat(h_0,1,length(v))), 1))';
+%fh = @(v) (sum(c_0.*f_r(dot(v, centers), h_0), 1))';
 
 f = fh(v);
 

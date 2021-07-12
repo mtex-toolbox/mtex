@@ -181,7 +181,14 @@ end
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 if isNew
-  axis(mP.ax,'tight'); 
+  
+  region = get_option(varargin,'region');
+  if ~isempty(region)
+    set(mP.ax,'XLim',region(1:2),'YLim',region(3:4))
+  else
+    axis(mP.ax,'tight'); 
+  end
+  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

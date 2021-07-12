@@ -1,19 +1,19 @@
-function rot = fit(l,r,varargin)
-% find rotation rot such that rot * l ~ r f
+function rot = fit(r,l,varargin)
+% find rotation rot such that l = rot * r
 %
 % Syntax
 %
-%   rot = rotation.fit(l,r)
-%   rot = rotation.fit(l,r,'weights',w)
+%   rot = rotation.fit(r,l)
+%   rot = rotation.fit(r,l,'weights',w)
 %
 % Input
-%  l, r - @vector3d
+%  r, l - @vector3d
 %
 % Output
 %  rot - @rotation
 %
 % Description
-% Find the rotation that best maps all the vectors |l| onto the vectors |r|.
+% Find the rotation that best maps all the vectors |r| onto the vectors |l|.
 %
 % See also
 % rotation/rotation rotation/byMatrix rotation/byAxisAngle
@@ -29,14 +29,14 @@ function rot = fit(l,r,varargin)
 % 629.
 %
 
-if check_option(varargin,'antipodal') || l.antipodal || r.antipodal
+if check_option(varargin,'antipodal') || r.antipodal || l.antipodal
   warning('antipodal symmetry not yet supported in rotation.fit');
 end
 
 w = get_option(varargin,'weights');
-if ~isempty(w), l = l .* w; end
+if ~isempty(w), r = r .* w; end
 
-M = l.normalize * r.normalize;
+M = r.normalize * l.normalize;
 
 switch lower(get_option(varargin,'method','horn'))
   
@@ -59,13 +59,13 @@ switch lower(get_option(varargin,'method','horn'))
     
     [U,~,V] = svd(M);
     
-    if length(l)<3
+    if length(r)<3
       S = ones(3);
       S(3,3) = det(V*U');
       rot = rotation.byMatrix(V*S*U');
     else
       rot = rotation.byMatrix(V*U');
-      if l.antipodal || r.antipodal, rot.i = false; end
+      if r.antipodal || l.antipodal, rot.i = false; end
     end
 end
 end
