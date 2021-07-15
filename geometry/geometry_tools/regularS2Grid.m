@@ -23,6 +23,21 @@ function S2G = regularS2Grid(varargin)
 % See also
 % equispacedS2Grid plotS2Grid
 
+if check_option(varargin,'FSFT')
+  % a regular grid that fits the FSFT
+
+  N = get_option(varargin,'bandwidth',256)/2;
+
+  ph=(-N-1:N)/(2*N+2)*2*pi;
+  th=(0:N+1)/(2*N+2)*2*pi;
+  [ph,th]=meshgrid(ph,th);
+  S2G = vector3d.byPolar(th,ph);
+
+  S2G = S2G.addOption('using_fsft',N);
+  return
+  
+end
+
 % extract options
 bounds = getPolarRange(varargin{:});
 

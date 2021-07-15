@@ -21,7 +21,7 @@ persistent keepPlan;
 
 % kill plan
 if check_option(varargin,'killPlan')
-  nfsftmex('finalize',keepPlan);
+  if ~isempty(keepPlan), nfsftmex('finalize',keepPlan); end
   keepPlan = [];
   return
 end
@@ -31,6 +31,8 @@ bw = get_option(varargin, 'bandwidth', getMTEXpref('NFSFTBandwidth'));
 if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 
 if isa(f,'function_handle')
+  % we need a qudrature grid for twice the bandwidth to compute the Fourier
+  % coefficients
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureS2Grid(2*bw, 'gauss');   
   elseif check_option(varargin, 'chebyshev')
@@ -38,7 +40,7 @@ if isa(f,'function_handle')
   else
     [nodes, W] = quadratureS2Grid(2*bw);
   end
-  values = f(nodes(:));
+  values = f(nodes);
 else
   nodes = f(:);
   values = varargin{1};
