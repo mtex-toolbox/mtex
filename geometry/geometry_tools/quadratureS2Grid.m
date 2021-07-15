@@ -5,7 +5,6 @@ function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
 %   [S2G, W, M2] = quadratureS2Grid(M, 'gauss') quadrature grid of type gauss
 %
 
-
 persistent S2G_p;
 persistent W_p;
 persistent M2_p;
@@ -24,8 +23,8 @@ if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
   M2 = gridIndex.bandwidth(index);
   N = gridIndex.N(index);
 else
-  M2 = ceil(bandwidth/4)*4; % make the bandwidth multible of four
-  N = (bandwidth+2)*(bandwidth/2+1);
+  M2 = ceil(bandwidth/2)*2; % ensure bandwidth to be even
+  N = (bandwidth+1)*(bandwidth/2+1);
 end
 
 if ~isempty(M2_p) && M2_p == M2 && length(S2G_p) == N
@@ -51,21 +50,12 @@ else
       W = 4*pi/size(data, 1) .* ones(size(S2G));
     end  
   else
-    bandwidth = bandwidth/2;
-    ph = (-bandwidth-1:bandwidth)/(2*bandwidth+2)*2*pi;
-    th = (0:bandwidth)/(bandwidth+1)*pi;
-    [ph, th]=meshgrid(ph, th);
-    S2G = vector3d.byPolar(ph, th);
-    S2G = S2G(:);
-    S2G = S2G.addOption('using_fsft');
-    % one could implement this by using the dct
-    v = 4./(1-4*(0:bandwidth/2).^2)';
-    v(1) = v(1)/2;
-    W = 1/(bandwidth+1)*cos(2*(0:bandwidth+1)'*(0:bandwidth/2)*pi/(bandwidth+1))*v;
-    %W([1 end]) = W([1 end])/2; % we need those nodes twice
-    W = [W; W(2:end-1)];
-    W = pi*ones(bandwidth+1, 1)/(bandwidth+1)*W';
-    W = W(:);
+    S2G = regularS2Grid('FSFT','bandwidth',bandwidth);
+    
+    w = fclencurt2(size(S2G,1));
+    W = 2*pi/size(S2G,2)*repmat(w,1,size(S2G,2));
+
+    %W = W(:);
   end
   
   % store the data
@@ -75,3 +65,16 @@ else
 end
 
 end
+
+function w = fclencurt2(n)
+
+c = zeros(n,2);
+c(1:2:n,1) = (2./[1 1-(2:2:n-1).^2 ])';
+c(2,2)=1;
+f = real(ifft([c(1:n,:);c(n-1:-1:2,:)]));
+w = 2*([f(1,1); 2*f(2:n-1,1); f(n,1)])/2;
+%x = 0.5*((b+a)+n*bma*f(1:n1,2));
+
+end
+
+

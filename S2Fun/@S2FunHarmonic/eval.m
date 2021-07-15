@@ -1,4 +1,4 @@
-function f =  eval(sF,v)
+function f = eval(sF,v)
 % evaluates the spherical harmonic on a given set of points
 % Syntax
 %   f = eval(sF,v)
@@ -10,7 +10,6 @@ function f =  eval(sF,v)
 %   f - double
 %
 
-v = v(:);
 if sF.bandwidth == 0
   f = ones(size(v)).*sF.fhat/sqrt(4*pi);
   return;
@@ -18,9 +17,15 @@ end
 
 % initialize nfsft
 nfsftmex('precompute', sF.bandwidth, 1000, 1, 0);
-plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
-nfsftmex('set_x', plan, [v.rho'; v.theta']); % set vertices
-nfsftmex('precompute_x', plan);
+
+if v.isOption('using_fsft')
+  sF.bandwidth = v.opt.using_fsft;
+  plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1+2^17);
+else
+  plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
+  nfsftmex('set_x', plan, [v.rho(:).'; v.theta(:).']); % set vertices
+  nfsftmex('precompute_x', plan);
+end
 
 f = zeros([length(v) size(sF)]);
 % nfsft

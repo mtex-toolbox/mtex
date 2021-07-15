@@ -9,7 +9,11 @@ function bounds = getPolarRange(varargin)
 %
 
 % set up fundamental region
-bounds.FR = {0,pi,0,2*pi};
+if check_option(varargin,'FSFT')
+  bounds.FR = {0,pi,-pi,pi};
+else
+  bounds.FR = {0,pi,0,2*pi};
+end
 
 bounds.VR{3} = get_option(varargin,'minRho',bounds.FR{3});
 bounds.VR{4} = get_option(varargin,'maxRho',bounds.FR{4});
