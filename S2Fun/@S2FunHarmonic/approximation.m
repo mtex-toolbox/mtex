@@ -37,7 +37,7 @@ end
 
 y = reshape(yy, [length(nodes) s(2:end)]);
 
-tol = get_option(nodes, 'tol', 1e-6);
+tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 40);
 
 if check_option(varargin, 'antipodal') || nodes.antipodal
