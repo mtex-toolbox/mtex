@@ -1,5 +1,20 @@
-function [pairs,ori] = getC2CPairs(job,varargin)
+function [pairs,ori,weights] = getC2CPairs(job,varargin)
+% extract child to child grain pairs with their orientations 
+%
 % 
+% Options
+%  index    - return as index to job.grains instread of grainId
+%  minDelta - ignore grain pairs with similar orientations as they can not 
+%             vote for a unique parent orientation
+%  curvatureFactor - compute boundary weight from the curvature (default 0)
+%  job.useBoundaryOrientations - instead of the grain mean orientations
+%  average the orientations along the grain boundaries
+%
+% Output
+%  pairs - N x 2 list of grainIds
+%  ori   - N x 2 list of grain orientations
+%  weights - N x 1 list of boundary weights (1 if curvature is not considered)
+%
 
 % all child to child pairs
 pairs = neighbors(job.grains);
