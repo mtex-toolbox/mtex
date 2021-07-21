@@ -27,13 +27,18 @@ if check_option(varargin,'noSymmetry')
     
   [~,ndx,pos] = unique@rotation(ori,varargin{:});
   
-else
+elseif length(ori)<2000
   rot = rotation(symmetrise(ori,varargin{:}));
   
   [~,~,pos] = unique(rot,varargin{:});
 
   [~,ndx,pos] = unique(min(reshape(pos,size(rot)),[],1));
- 
+
+else
+
+ ori = ori.project2FundamentalRegion;
+ [~,ndx,pos] = unique@rotation(ori,varargin{:});
+
 end
 
 ori = ori.subSet(ndx);
