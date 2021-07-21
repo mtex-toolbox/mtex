@@ -26,8 +26,14 @@ if job.useBoundaryOrientations
 else 
   
   % simply the mean orientations of the grains
-  ori = job.grains('id',pairs).meanOrientation;
+  %ori = job.grains('id',pairs).meanOrientation;
+  ori = orientation(job.grains.prop.meanRotation(job.grains.id2ind(pairs)),...
+    job.csParent);
+  ori = reshape(ori,size(pairs));
   
 end
+
+% translate to index if required
+if check_option(varargin,'index'), pairs = job.grains.id2ind(pairs); end
 
 end
