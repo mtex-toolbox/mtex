@@ -16,6 +16,7 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 %
 % Options
 %  resolution - search-grid resolution
+%  angle      - maximum component width used for volume computation
 %  exact      - do not dismiss very small modes at the end
 %
 % Example
@@ -28,41 +29,44 @@ function [modes, weights,centerId] = calcComponents(odf,varargin)
 % See also
 % ODF/max
 
+% extract options
 maxIter = get_option(varargin,'maxIter',100);
 res = get_option(varargin,'resolution',0.05*degree);
 omega = 1.5.^(-7:1:4) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
-tol = get_option(varargin,'tolerance',0.05);
+tol = get_option(varargin,'tolerance',0.5*degree);
+maxAngle = get_option(varargin,{'radius','angle'},inf);
 
 % initial seed
 if check_option(varargin,'seed')
-  modes = reshape(get_option(varargin,'seed'),[],1);
+  seed = reshape(get_option(varargin,'seed'),[],1);
   weights = get_option(varargin,'weights',...
-    odf.eval(modes));
+    odf.eval(seed));
 elseif isa(odf.components{end},'unimodalComponent')
-  modes = odf.components{end}.center;
+  seed = odf.components{end}.center;
   weights = odf.components{end}.weights;
 else
-  modes = equispacedSO3Grid(odf.CS,odf.SS,'resolution',5*degree);
-  weights = ones(length(modes),1) ./ length(modes);
+  seed = equispacedSO3Grid(odf.CS,odf.SS,'resolution',2.5*degree);
+  weights = ones(length(seed),1) ./ length(seed);
 end
 id = weights>0;
-modes = reshape(modes(id),[],1);
+seed = reshape(seed(id),[],1);
 weights = weights(id);
 weights = weights ./ sum(weights);
 
-centerId = 1:length(modes);
+centerId = 1:length(seed);
+modes = seed;
 
 % join orientations if possible
-[modes,~,id2] = unique(modes,'tolerance',tol);
-centerId = id2(centerId);
-weights = accumarray(id2,weights);
+%[modes,~,id2] = unique(modes,'tolerance',tol);
+%centerId = id2(centerId);
+%weights = accumarray(id2,weights);
 
 finished = false(size(modes));
 
 for k = 1:maxIter
-  progress(k,maxIter,' finding ODF components: ');
+  %progress(k,maxIter,' finding ODF components: ');
 
   % gradient
   g = normalize(odf.grad(modes(~finished)),1);
@@ -74,21 +78,30 @@ for k = 1:maxIter
   line_v = odf.eval(line_ori);
   
   % take the maximum
-  [~,id] = max(line_v,[],2);
+  [v_max(~finished),id] = max(line_v,[],2);
     
   % update orientions
   modes(~finished) = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
   
-  finished(~finished) = id == 1;
-  if all(finished), break; end
+  nnz(id>1)
+  if all(id == 1), break; end
 
   % join orientations if possible
-  [modes,~,id2] = unique(modes,'tolerance',tol);
+  [~,~,id2] = unique(modes,'tolerance',tol);
+
+  modes = modes(maxVote(id2,v_max));
+
   centerId = id2(centerId);
-  
-  weights = accumarray(id2,weights);
-  finished = accumarray(id2,finished,[],@all);
-  %[length(modes), k, sum(finished)]
+  finished = accumarray(id2,finished,[],@any);
+  if maxAngle == inf, weights = accumarray(id2,weights); end
+  length(modes);
+
+end
+
+% accumulate only weights that are sufficiently close to the centers
+if maxAngle < inf
+  inRadius = angle(seed,modes(centerId))<maxAngle;
+  weights = accumarray(centerId(inRadius), weights(inRadius));
 end
 
 % sort components according to volume
@@ -98,7 +111,7 @@ iid(id) = 1:length(id);
 centerId = iid(centerId);
 
 if ~check_option(varargin,'exact')
-  id = weights > 0.01;
+  id = weights > min([0.01, numSym(odf.CS) * maxAngle^3 ./ 8*pi^2,0.5 * max(weights)]);  
   weights = weights(id);
   modes = modes(id);
   ids = 1:length(id);
