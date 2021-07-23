@@ -1,4 +1,4 @@
-function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
+function [S2G, W, bandwidth] = quadratureS2Grid(bandwidth, varargin)
 %
 % Syntax
 %   [S2G, W, M2] = quadratureS2Grid(M) quadrature grid of type chebyshev
@@ -7,7 +7,7 @@ function [S2G, W, M2] = quadratureS2Grid(bandwidth, varargin)
 
 persistent S2G_p;
 persistent W_p;
-persistent M2_p;
+persistent bw_p;
 
 if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
   if check_option(varargin, 'gauss')
@@ -20,17 +20,20 @@ if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
     index = size(gridIndex,1);
     warning('M is too large, instead we are giving you the largest quadrature grid we got.');
   end
-  M2 = gridIndex.bandwidth(index);
+  bandwidth = gridIndex.bandwidth(index);
   N = gridIndex.N(index);
+elseif check_option(varargin,'clenshawCurtis')
+  bandwidth = 2*ceil(bandwidth/2); % ensure bandwidth to be even
+  N = (bandwidth+1)*(bandwidth+2);
 else
-  M2 = ceil(bandwidth/2)*2; % ensure bandwidth to be even
+  bandwidth = 2*ceil(bandwidth/2); % ensure bandwidth to be even
   N = (bandwidth+1)*(bandwidth/2+1);
 end
 
-if ~isempty(M2_p) && M2_p == M2 && length(S2G_p) == N
+if ~isempty(bw_p) && bw_p == bandwidth && length(S2G_p) == N
   S2G = S2G_p;
   W = W_p;
-  M2 = M2_p;
+  bandwidth = bw_p;
   
 else
   if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
@@ -49,19 +52,24 @@ else
     else
       W = 4*pi/size(data, 1) .* ones(size(S2G));
     end  
-  else
-    S2G = regularS2Grid('FSFT','bandwidth',bandwidth);
+  elseif check_option(varargin,'clenshawCurtis')
+    S2G = regularS2Grid('clenshawCurtis','bandwidth',bandwidth);
     
     w = fclencurt2(size(S2G,1));
     W = 2*pi/size(S2G,2)*repmat(w,1,size(S2G,2));
 
     %W = W(:);
+  else
+    S2G = regularS2Grid('FSFT','bandwidth',bandwidth);
+    
+    w = fclencurt2(size(S2G,1));
+    W = 2*pi/size(S2G,2)*repmat(w,1,size(S2G,2));
   end
   
   % store the data
   S2G_p = S2G;
   W_p = W;
-  M2_p = M2;    
+  bw_p = bandwidth;    
 end
 
 end

@@ -25,17 +25,37 @@ function S2G = regularS2Grid(varargin)
 
 if check_option(varargin,'FSFT')
   % a regular grid that fits the FSFT
+  % required spherical harmonic bandwidth 2*n 
+  % 2n+1 Clenshaw Curtis Quadrature rule
+  % -> (2n+1)x(2n+2) points
 
-  N = get_option(varargin,'bandwidth',256)/2;
+  N = ceil(get_option(varargin,'bandwidth',256)/2);
 
-  ph=(-N-1:N)/(2*N+2)*2*pi;
-  th=(0:N+1)/(2*N+2)*2*pi;
-  [ph,th]=meshgrid(ph,th);
-  S2G = vector3d.byPolar(th,ph);
+  theta = linspace(0,pi,N+2);
+  rho = (-N-1:N)/(2*N+2)*2*pi; 
+  [rho,theta] = meshgrid(rho,theta);
+  S2G = vector3d.byPolar(theta,rho); 
 
   S2G = S2G.addOption('using_fsft',N);
   return
-  
+
+elseif check_option(varargin,'ClenshawCurtis')
+
+  % a regular grid for ClenshawCurtis quadrature
+  % required spherical harmonic bandwidth 2*n 
+  % 2n+1 Clenshaw Curtis Quadrature rule
+  % -> (2n+1)x(2n+2) points
+
+  N = ceil(get_option(varargin,'bandwidth',256)/2);
+
+  theta = linspace(0,pi,2*N+1);
+  rho = (-N-1:N)/(2*N+2)*2*pi; 
+  [rho,theta] = meshgrid(rho,theta);
+  S2G = vector3d.byPolar(theta,rho); 
+
+  S2G = S2G.addOption('using_fsft',N);
+  return
+
 end
 
 % extract options
