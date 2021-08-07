@@ -1,8 +1,9 @@
 %% Documentation
 %
 % Use the left sidebar to navigate through the different topics. Note that all
-% documentation pages are essentially MTEX scripts. This means you can open them
-% in Matlab by typing
+% documentation pages are essentially MTEX scripts.  You have a copy of them in your MTEX download, 
+%with a file name equal to the last part of the URL with .html swapped for .m (so this page is Documentation.m).
+% This means you can open them in Matlab by typing
 %
 %   edit fileName
 %
@@ -29,11 +30,11 @@
 % edit page> which leads you to the file on <https://github.com GitHub>
 % # click the little pencil in the top right corner which allows you to
 % edit the script online
-% # enter of copy and paste your changes into the site
-% # click at the bottom *suggest changes*
+% # enter or copy and paste your changes into the site
+% # click at the bottom *Propose changes*
 % # click create *pull request*
 %
-% Alternatively, you can send us you changes simply by <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email>.
+% Alternatively, you can send us your changes simply by <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email>.
 %
 %% The Publish Command
 %
