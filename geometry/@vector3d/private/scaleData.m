@@ -1,5 +1,7 @@
 function [data,colorRange,minData,maxData] = scaleData(data,varargin)
 
+data = real(data);
+
 % min and max
 minData = min(data(~isnan(data) & ~isinf(data)));
 maxData = max(data(~isnan(data) & ~isinf(data)));
