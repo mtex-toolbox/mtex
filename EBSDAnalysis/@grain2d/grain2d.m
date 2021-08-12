@@ -49,7 +49,6 @@ classdef grain2d < phaseList & dynProp
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
-    id2ind           % 
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
@@ -248,11 +247,6 @@ classdef grain2d < phaseList & dynProp
       polygons(isCell) = cellfun(@(x) [x{:}] ,grains.poly(isCell),'UniformOutput',false);
       idV = unique([polygons{:}]);
       
-    end
-    
-    function id2ind = get.id2ind(grains)
-      id2ind = zeros(max(grains.id),1);
-      id2ind(grains.id) = 1:length(grains);
     end
     
     function varargout = size(grains,varargin)
