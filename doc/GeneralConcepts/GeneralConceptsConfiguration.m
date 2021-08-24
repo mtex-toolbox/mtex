@@ -10,16 +10,16 @@
 %
 % There the following behaviour can be customized
 %
-% * the alignment of the x and y axes
-% * the alignment of the a and b axes
+% * the orientation of the x and y spatial coordinate axes
+% * the alignment of the a and b crystallographic unit cell axes 
 % * default font size
 % * default figure size
-% * coordinates / micronbar 
+% * show or hide coordinates / micronbar on EBSD maps
 % * default pole figure annotations
 % * default Euler angle convention
 % * default color map
 % * file extensions associated with EBSD and pole figure files
-% * path to the CIF files
+% * path to CIF (Crystallographic Information Framework) and other files
 % * the default maximum iteration depth of the function
 % <PoleFigure.calcODF.html calcODF>
 % * the amount of available memory
