@@ -28,15 +28,16 @@ methods
     
     isConstant = cellfun(@isnumeric,varargin);
     
-    SO3F.components = [{sum([varargin{isConstant}]) * ...
-      uniformODF(SO3F.CS,SO3F.SS)} SO3F.components];
-    
+    if any(isConstant)
+      SO3F.components = [{sum([varargin{isConstant}]) * ...
+        uniformODF(SO3F.CS,SO3F.SS)} SO3F.components];
+    end  
   end
   
   function f = eval(SO3F,rot,varargin)
     
     f = 0;
-    for k = 1:lengh(SO3F.components)
+    for k = 1:length(SO3F.components)
       f = f + eval(SO3F.components{k},rot,varargin{:});
     end
     

@@ -9,7 +9,5 @@ if SO3F.antipodal, disp('  antipodal: true'); end
 % display components
 disp(' ');
 for i = 1:length(SO3F.components)
-  
   SO3F.components{i}.display('skipHeader');
-  
 end

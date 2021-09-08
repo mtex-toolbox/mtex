@@ -77,8 +77,7 @@ classdef SO3FunCBF < SO3Fun
     function SO3F = set.bandwidth(SO3F,L)
       SO3F.psi.bandwidth = L;
     end
-    
-    
+        
   end
 
 end
