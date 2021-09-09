@@ -77,11 +77,49 @@ childs = grains(parentId == mergedGrains(16).id)
 
 twinId = unique(gB(isTwinning).grainId);
 
-% compute the area fraction
+% compute the area fraction of grains with twins 
 sum(area(grains(twinId))) / sum(area(grains)) * 100
 
+%% Estimate twin area fraction
+% we can also attempt to label twinned grains assuming twins 
+% make up less than half of the original parent grain
+
+% Loop over mergedGrains and determine children that are not twins
+twinId = ones(grains.length,1,'logical');
+for i = 1:mergedGrains.length
+   % get child ids
+   childId = find(parentId==i);
+
+   % find grains of similar orientations
+   [fId,center] = calcCluster(grains.meanOrientation(childId),'maxAngle',...
+       15*degree,'method','hierarchical');
+
+   % sum areas of grains with similar orientation (family) and label the 
+   % largest as not a twin
+   nFamilies = max(fId);
+   fArea = zeros(nFamilies,1);
+   for family = 1:nFamilies
+       fArea(family) = sum(area(grains((childId(fId==family)))));
+   end
+   [~,fParent] = max(fArea);
+   twinId(childId(fId==fParent)) = false;
+end
+
+% compute the area fraction of twins
+sum(area(grains(twinId)))/sum(area(grains)) * 100
+
+% visualize the result
+close all
+plot(grains(~twinId),'FaceColor','darkgray','displayName','not twin')
+hold on
+plot(grains(twinId),'FaceColor','red','displayName','twin')
+hold on
+plot(mergedGrains.boundary,'linecolor','k','linewidth',2,'linestyle','-',...
+  'displayName','merged grains')
+mtexTitle('twin id')
+
 %%
-% The |parentId| may also used to compute properties of the parent grains
+% The |parentId| may also be used to compute properties of the parent grains
 % by averaging over the corresponding child grain properties. This can be
 % done with the Matlab command
 % <mathworks.com/help/matlab/ref/accumarray.html accumarray>
