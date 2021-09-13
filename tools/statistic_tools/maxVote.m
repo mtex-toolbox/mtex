@@ -30,4 +30,5 @@ function maxInd = maxVote(ind,data,varargin)
 
 newInd = (1:length(data)).';
 
-maxInd = accumarray(ind(a),newInd(a),[],@(x) x(end));
+maxInd = accumarray(reshape(ind(a),[],1),reshape(newInd(a),[],1),...
+  [],@(x) x(end));

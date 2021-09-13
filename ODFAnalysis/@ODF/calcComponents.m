@@ -89,7 +89,7 @@ for k = 1:maxIter
   % join orientations if possible
   [~,~,id2] = unique(modes,'tolerance',tol);
 
-  modes = modes(maxVote(id2,v_max));
+  modes = modes(maxVote(id2,v_max(~finished)));
 
   centerId = id2(centerId);
   finished = accumarray(id2,finished,[],@any);
