@@ -68,4 +68,3 @@ calcError(odf_rec,fibre_odf)
 % angles> into a text files. This can be done using the commands
 % |<quaternion.export.html export>| and |<orientation.export_VPSC.html
 % export_VPSC>|.
-

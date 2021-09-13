@@ -99,8 +99,6 @@ MGOS = ebsd.grainMean(mis2mean.angle,@max);
 plot(grains, MGOS ./ degree)
 mtexColorbar('title','MGOS in degree')
 
-
-
 %% Grain average misorientation (GAM)
 %
 % A measure that is often confused with the grain orientation spread is the
@@ -200,11 +198,11 @@ end
 plot(grainsLarge,lambda(:,3))
 mtexTitle('$\lambda_3$')
 
-nextAxis
+nextAxis(1,2)
 plot(grainsLarge,lambda(:,2))
 mtexTitle('$\lambda_2$')
 
-nextAxis
+nextAxis(1,3)
 plot(grainsLarge,fit./degree)
 mtexTitle('fit')
 
@@ -246,7 +244,7 @@ plot(grainsLarge, color)
 % entirely gray if in the plane and get divided into black and white to
 % indicate which end points out of the plane and which into the plane.
 
-plot(grains,GOS./degree)
+plot(grains, GOS./degree)
 mtexColorbar('title','GOS in degree')
 
 hold on
@@ -262,7 +260,7 @@ hold off
 % deformation, crystal dispersion axes form a girdle with a normal parallel
 % to the shortening direction.
 
-plot(GAX_S,'antipodal','MarkerSize',2)
+plot(GAX_S,'antipodal','MarkerSize',4)
 
 %%
 % to get some idea about any preferred direction, we can add contours,

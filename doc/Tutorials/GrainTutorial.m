@@ -5,8 +5,8 @@
 % capabilities of MTEX. It uses the same data set as in the corresponding
 % publication
 % <https://www.researchgate.net/publication/51806709_Grain_detection_from_2d_and_3d_EBSD_data-Specification_of_the_MTEX_algorithm
-% Grain detection from 2d and 3d EBSD data>. Data courtesy of Daniel
-% Rutte and Bret Hacker, Stanford.
+% Grain detection from 2d and 3d EBSD data>. Data courtesy of Daniel Rutte
+% and Bret Hacker, Stanford.
 
 mtexdata mylonite
 
@@ -58,8 +58,10 @@ legend off
 hold off
 
 %%
-% For the map created, most of the phases are coloured based on where they exist, while only the Quartz phase is colored according to the orientation.  
-% The quartz orientations are colured using the following ipf color key
+% For the map created, most of the phases are coloured based on where they
+% exist, while only the Quartz phase is colored according to the
+% orientation. The quartz orientations are colured using the following ipf
+% color key
 
 close all
 ipfKey = ipfColorKey(ebsd_region('Quartz'));
@@ -67,8 +69,9 @@ plot(ipfKey)
 
 
 %%
-% Alternatively, we may colorize each quarz grain according to
-% its mean orientation.  Again, the other phases are colured based on where they exist.
+% Alternatively, we may colorize each quarz grain according to its mean
+% orientation.  Again, the other phases are colured based on where they
+% exist.
 
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.4)
 hold on
@@ -77,8 +80,9 @@ legend off
 
 
 %% Highlight specific boundaries
-% We can create a phase map with certain grain boundaries highlighted.  In this case, we highlight where adjacent grains of Andesina and Orthoclase have
-% a misorientation with rotational axis close to the c-axis.
+% We can create a phase map with certain grain boundaries highlighted.  In
+% this case, we highlight where adjacent grains of Andesina and Orthoclase
+% have a misorientation with rotational axis close to the c-axis.
 
 close all
 % copy all boundaries between Andesina Orthoclase to a new variable
@@ -93,7 +97,9 @@ plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')
 hold off
 
 %%
-% We can also represent the angular misorientation data between these two phases as a histogram.
+% We can also represent the angular misorientation data between these two
+% phases as a histogram.
+
 figure;histogram(angle./degree)
 xlabel('angle in degrees of boundary segment')
 ylabel('count of boundary segments')

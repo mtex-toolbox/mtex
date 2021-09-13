@@ -36,9 +36,9 @@ plotx2east % this command tells MTEX to plot the x coordinates increasing to the
 plot(ebsd,'coordinates','on')
 
 %% 
-% When importing EBSD data it is critically important to align it correctly to a
-% fixed reference frame. This issue is exhaustively discussed in the topic
-% <EBSDReferenceFrame.html Reference Frame Alignment>.
+% When importing EBSD data it is critically important to align it correctly
+% to a fixed reference frame. This issue is exhaustively discussed in the
+% topic <EBSDReferenceFrame.html Reference Frame Alignment>.
 %
 %% Orientation Plots
 %
@@ -83,11 +83,9 @@ grains = smooth(grains,5);
 % application we may just plot the grain boundaries
 
 % plot the grain boundaries on top of the ipf map
-% reconstruct grains with a theshold angle of 10 degrees
-grains = calcGrains(ebsd('indexed'),'theshold',10*degree)
-
-% smooth the grains to avoid the staircase effect
-grains = smooth(grains,5);
+hold on
+plot(grains.boundary,'lineWidth',2)
+hold off
 
 %% Crystal Shapes
 %

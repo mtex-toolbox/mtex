@@ -30,7 +30,9 @@ mtexColorbar
 
 %% Extract information from imported pole figure data
 %
-% *get raw data* Data stored in a <PoleFigure.PoleFigure.html PoleFigure>
+% *Get raw data*
+%
+% Data stored in a <PoleFigure.PoleFigure.html PoleFigure>
 % variable can be extracted by
 
 I = pf.intensities; % intensities
@@ -38,7 +40,8 @@ h = pf.h;            % Miller indice
 r = pf.r;            % specimen directions
 
 %%
-% *basic statistics*
+% *Basic Statistics*
+%
 % There are also some basic statics on pole figure intensities
 
 min(pf)

@@ -78,8 +78,8 @@ pf = calcPoleFigure(odf1,h(1:7),'upper');
 
 plot(pf)
 
-
 %%
+
 % 2. step: reconstruct an ODF
 odf = calcODF(pf,'silent')
 

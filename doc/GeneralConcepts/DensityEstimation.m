@@ -1,29 +1,33 @@
 %% Density Estimation
 %
 %%
-% In many cases texture measurements are acquired in the form of a series of points or intensities.
-% EBSD measurements are usually a grid of measurement points, while pole figure measurements are often
-% angular positions combined with intensity values.
-% However, in many cases we want to do analysis that requires a continuous function, in which case 
-% we want to determine the continuous function that best represents our data points.  This section 
-% discusses the mathematical basis of this calculation and how it is affected by some of the parameters involved.
+% In many cases texture measurements are acquired in the form of a series
+% of points or intensities. EBSD measurements are usually a grid of
+% measurement points, while pole figure measurements are often angular
+% positions combined with intensity values. However, in many cases we want
+% to do analysis that requires a continuous function, in which case we want
+% to determine the continuous function that best represents our data
+% points.  This section discusses the mathematical basis of this
+% calculation and how it is affected by some of the parameters involved.
 % 
-% In mathematical terms, density estimation is a concept that describes estimation of a probability density
-% function $f_N$ from given random samples $x_n$, $n=1,\ldots,N$. 
-% In the simplest case the random samples $x_n$ are real numbers and come from an
-% unknown distribution function $f$. The goal is to ensure that $f_N$
-% approximates $f$ as well as possible.
+% In mathematical terms, density estimation is a concept that describes
+% estimation of a probability density function $f_N$ from given random
+% samples $x_n$, $n=1,\ldots,N$. In the simplest case the random samples
+% $x_n$ are real numbers and come from an unknown distribution function
+% $f$. The goal is to ensure that $f_N$ approximates $f$ as well as
+% possible.
 %
 % Lets illustrate this starting with the example of a mixed Gaussian
 % distribution
 
-% Define the true density function, in this case made by combining two Gaussians
+% Define the true density function, in this case made by combining two
+% Gaussians
 f = @(x) Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x);
 
 % generate 1000 points linearly spaced between 0 and 1
 x = linspace(0,1,1000);
 % use these points to plot the true density function as blue lines
-plot(x,f(x),'linewidth',2,'color','b')
+plot(x,f(x),'linewidth',2)
 xlabel('x');ylabel('f(x)')
 
 % generate a random sample of points from the function f(x)
@@ -35,9 +39,11 @@ hold on
 plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
 hold off
 
-% Note that the higher the peak of the original function, the more points randomly generated.
-% Because the red points are randomly generated, your plot will look slightly different.
-
+%%
+% Note that the higher the peak of the original function, the more points
+% randomly generated. Because the red points are randomly generated, your
+% plot will look slightly different.
+%
 %% The Histogram
 % The easiest way to estimate a density function from the sample $x_n$ is
 % with a histogram

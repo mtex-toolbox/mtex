@@ -21,10 +21,15 @@ ebsd(grains(grains.grainSize<2))=[];
 grains = ebsd.calcGrains;
  
 % the data was accquired on a regular grid;
-plot(grains.boundary('indexed'),'linewidth',2,'linecolor','Fuchsia')
-axis([25 100 150 200])
+plot(ebsd,ebsd.orientations,'micronbar','off')
+hold on
+plot(grains.boundary('indexed'),'linewidth',5,'linecolor','YellowGreen')
+hold off
+axis([313 353 140 156])
+
 
 %%
+% With the default parameters we have the following result
 
 % smooth the grains with default paramters
 grains_smooth = smooth(grains);
@@ -35,8 +40,8 @@ hold off
 
  
 %%
-% The grain boundary map look smooth and the total grain boundary length is
-% reasonable reduced.
+% The grain boundary boundaries look noew a little bit more smooth and the
+% total grain boundary length is reasonable reduced.
  
 sum(grains.boundary('indexed').segLength)
 sum(grains_smooth.boundary('indexed').segLength)
@@ -45,7 +50,7 @@ sum(grains_smooth.boundary('indexed').segLength)
 % However, if we look at the frequnecy distribution of grain boundary
 % segments, we find that some angle are over-represented which is due to
 % the fact that without any additional input argument, <grain2d.smooth.html
-% |grains.smooth|> only performs just a single iteration
+% |grains.smooth|> performs just a single iteration
 
 histogram(grains_smooth.boundary('indexed').direction, ...
           'weights',norm(grains_smooth.boundary('indexed').direction),180)
@@ -65,7 +70,7 @@ for i = 1:length(iter)
   d{i} = grains_smooth.boundary('i','i').direction;
 end
 hold off
-axis([25 100 150 200])
+axis([313 353 140 156])
 
 %%
 % We can compare the histogram of the grain boundary directions of the
@@ -94,7 +99,7 @@ for i = 1:length(iter)
   d{i} = grains_smooth.boundary('i','i').direction;
 end
 hold off
-axis([25 100 150 200])
+axis([313 353 140 156])
 
 %%
 % Comparing the grain boundary direction histograms shows that we
