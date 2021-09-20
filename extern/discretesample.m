@@ -62,7 +62,12 @@ assert(isnumeric(n) && isscalar(n) && n >= 0 && n == fix(n), ...
 
 %% main
 
-if numel(p) == 1
+if numel(p) == 1 && p <= 1 && nargin == 2
+
+  x = ones(1,n);
+  return
+
+elseif numel(p) == 1
 
   if nargin == 2 % without replacement
     if 4*n > p
