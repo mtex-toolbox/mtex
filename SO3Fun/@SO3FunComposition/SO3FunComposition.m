@@ -10,6 +10,7 @@ properties (Dependent = true)
   antipodal
   SLeft
   SRight
+  weights
 end
 
 methods
@@ -43,6 +44,12 @@ methods
     
   end  
   
+  function w = get.weights(S3F)
+
+    w = cellfun(@mean, S3F.components);
+
+  end
+
   function out = get.antipodal(S3F)
     out =  S3F.components{1}.antipodal;
   end
