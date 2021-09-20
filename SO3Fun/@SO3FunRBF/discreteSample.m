@@ -10,8 +10,11 @@ isUniform = ic == length(SO3F.weights)+1;
 % some uniform random orientations
 ori = orientation.rand(length(ic),SO3F.CS,SO3F.SS);
 
-% take random rotational axes for the remaining samples
+% the remaining points
 npoints = nnz(~isUniform);
+if npoints == 0, return; end
+
+% take random rotational axes for the remaining samples
 axis = vector3d.rand(npoints);
 
 % random rotational angles
@@ -21,7 +24,7 @@ hw = min(4*SO3F.psi.halfwidth,90*degree);
 t = linspace(cos(hw),1,M);
 
 % compute cummulative distribution function
-c = 4 / pi * cumsum(sqrt(1-t.^2) .* SO3F.psi.K(t)) / M;
+c = 4 / pi * cumsum(sqrt(1-t.^2) .* SO3F.psi.eval(t)) / M;
 c = c ./ c(end);
 
 % random sample with respect to the CDF
