@@ -35,7 +35,8 @@ classdef SO3Fun
   
   methods (Hidden = true)
     function str = symChar(SO3F)
-      str = [char(SO3F.CS,'compact') ' ' char([55358 56342]) ' ' char(SO3F.SS,'compact')];
+      %str = [char(SO3F.CS,'compact') ' ' char([55358 56342]) ' ' char(SO3F.SS,'compact')];
+      str = [char(SO3F.CS,'compact') ' ' char(8594) ' ' char(SO3F.SS,'compact')];
     end
   end
   
