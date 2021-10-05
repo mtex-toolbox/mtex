@@ -1,8 +1,8 @@
 function ebsd = loadEBSD_h5oina(fname,varargin)
 % read HKL *.h5oina hdf5 file
 % documented here: https://github.com/oinanoanalysis/h5oina/blob/master/H5OINAFile.md
-% note that Matlab does not handle hdf5 v1.10 hence in most cases one needs to use hdf5format_convert
-% (https://github.com/HDFGroup/hdf5)
+% note that Matlab < R2021b does not handle hdf5 v1.10 and one needs to use hdf5format_convert
+% (https://github.com/HDFGroup/hdf5) on the input file to prevent Matlab from fatally crashing
 
 % TODO
 % 1) Test if EBSDheader.Specimen_Orientation_Euler does what it's supposed
@@ -12,7 +12,6 @@ function ebsd = loadEBSD_h5oina(fname,varargin)
 % 3) decide what header data to use and how to display it? Fix display for
 % the header to be shown correctly (bc. ebsd.opt.Header sort of works)
 
-% fname = 'oxin.h5oina'
 
 
 all = h5info(fname);
