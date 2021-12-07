@@ -132,25 +132,28 @@ annotate(pos)
 %% Tilt and Twist Boundaries
 %
 % Subgrain boundaries are often assumed to form during deformation by the
-% accumulation of edge or screw dislocations. In first extremal case of
-% exclusive edge dislocations the misorientation axis is parallel to
+% accumulation of edge or screw dislocations. In the first extremal case of
+% exclusive edge dislocations the misorientation axis is parallel to the
 % deformation line and within the boundary plane. Such boundaries are
-% called *tild boundaries*. In the second extremal case of exclusive screw
+% called *tilt boundaries*. In the second extremal case of exclusive screw
 % dislocations the misorientation axis is the screw axis and is parallel to
-% the boundary axis. Such boundaries are called *twist boundaries*. 
+% the boundary normal. Such boundaries are called *twist boundaries*. 
 %
-% In the case of 2d EBSD data one usually has not full boundary
+% In the case of 2d EBSD data one usually has not the full boundary
 % information, but only the trace of the boundary with the measurement
 % surface. Hence, it is impossible to distinguish tilt and twist
-% boundaries. However, for twist boundaries the trace must be always
-% perpendicular to the trace of the boundary as the trace is always
-% perpendicular to the boundary normal. This can be easily checked from our
-% EBSD data and allows us to exclude certain boundaries to be tilt
-% boundaries. To do so we colorize in the following plot all subgrain
-% boundaries according to the angle between the boundary trace and the
-% misorientation axis. Red subgrain boundaries indicate potential tilt
-% boundaries while blue subgrain boundaries are for sure no tilt
-% boundaries.
+% boundaries. However, for twist boundaries misorientation axis must be normal
+% to the boundary trace. This means, if the misorientation axis lays in the
+% measurement plane and normal to the boundary trace, the boundary is quite 
+% likely to be a twist boundary. At the other hand, if the misorientation axis 
+% is parallel to the trace of a boundary, the boundary is quite likely to be a
+% tilt boundary. 
+% We can be easily check the latter situation from our EBSD data, which allows us to
+% exclude certain boundaries to be twist boundaries and to be most likely tilt
+% boundaries To do so, we colorize in the following plot all subgrain boundaries
+% according to the angle between the boundary trace and the misorientation axis.
+% Blue subgrain boundaries are very likely tilt boundaries, while red subgrain
+% boundaries are can be either tilt or twist boundaries.
 
 plot(ebsd('fo'),color,'faceAlpha',0.5,'figSize','large')
 
