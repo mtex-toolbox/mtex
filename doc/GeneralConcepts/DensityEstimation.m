@@ -55,9 +55,9 @@ plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
 hold off
 
 %%
-% However, since the histogram always leads to a piecewise constant 
-% function (step function) the fit to the true density function $f$ is usually not so good.
-% A better alternative is kernel density estimation.
+% However, since the histogram always leads to a piecewise constant
+% function (step function) the fit to the true density function $f$ is
+% usually not so good. A better alternative is kernel density estimation.
 %
 %% Kernel Density Estimation 
 %
@@ -89,10 +89,10 @@ fN = @(x) mean(psi(x-xN),1);
 
 hold on
 % plot the resulting estimate of the original function
-plot(x,fN(x),'linewidth',2,'color','m')
+plot(x,fN(x),'linewidth',3,'Color',ind2color(2))
 
 % plot the "true" density function
-plot(x,f(x),'linewidth',2,'color','b')
+plot(x,f(x),'linewidth',3,'Color',ind2color(1))
 hold off
 
 %%
@@ -103,7 +103,7 @@ hold off
 % density estimation with three different standard deviations
 
 % plot the true density function
-plot(x,f(x),'linewidth',2,'color','b')
+plot(x,f(x),'linewidth',3)
 hold on
 
 % and on top the kernel density estimates with different halfwidth
@@ -112,7 +112,7 @@ for d = delta
 
   psi = Gaussian(0,d);
   fN = @(x) mean(psi(x-xN),1);
-  plot(x,fN(x),'linewidth',2)
+  plot(x,fN(x),'linewidth',3)
   
 end
 hold off
@@ -120,9 +120,10 @@ legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$','interpreter','Latex'),
 
 %%
 % In general a too small halfwidth leads to heavily oscillating functions,
-% while a too large halfwdith will result in excessively smooth functions. In the
-% case of one dimensional data kernel density estimation MTEX includes
-% automatic optomization of the halfwidth when using the command <calcDensity.html |calcDensity|>.
+% while a too large halfwdith will result in excessively smooth functions.
+% In the case of one dimensional data kernel density estimation MTEX
+% includes automatic optomization of the halfwidth when using the command
+% <calcDensity.html |calcDensity|>.
 
 fN = calcDensity(xN,'range',[0;1]);
 
@@ -177,11 +178,12 @@ hold off
 
 %% Density Estimation for Directional Data
 %
-% Kernel density for directional (misorientation/ crystallographic axis) data works analogously as for real valued
-% data. Again we have to choose a kernel function $\psi$ with a certain
-% halfwidth $\delta$. Than the kernel functions are centered at each
-% direction of our random sampling and summed up. Lets us demonstrate this
-% procedure for misorientation axes between two phases in an EBSD map 
+% Kernel density for directional (misorientation/ crystallographic axis)
+% data works analogously as for real valued data. Again we have to choose a
+% kernel function $\psi$ with a certain halfwidth $\delta$. Than the kernel
+% functions are centered at each direction of our random sampling and
+% summed up. Lets us demonstrate this procedure for misorientation axes
+% between two phases in an EBSD map
 
 % import ebsd data
 mtexdata forsterite silent
@@ -209,7 +211,8 @@ mtexColorbar
 
 % and on top of it the misorientation axes
 hold on
-plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.05,'MarkerFaceColor','none','MarkerEdgeColor','k')
+plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.25,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 
 %%
@@ -227,7 +230,8 @@ mtexColorMap LaboTeX
 mtexColorbar
 
 hold on
-plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.05,'MarkerFaceColor','none','MarkerEdgeColor','k')
+plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.25,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 
 
@@ -249,7 +253,7 @@ plotSection(odf,'contourf')
 mtexColorMap LaboTeX
 
 hold on
-plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.05,...
+plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.25,...
   'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',10)
 hold off
 
@@ -263,32 +267,23 @@ hold off
 % In contrast to kernel density estimation, parametric density estimation
 % makes the assumption that the true distribution function belongs to a
 % parametric distribution family, e.g. the Gaussian. In this case it
-% estimates the parameters of this distribution from the random
-% sample. In the case of the Gaussian distribution these parameters are the mean value
-% and the standard deviation. On spheres and in orientation space, the analogous functions to the Gaussian
-% are the Bingham distributions. The estimation
-% of Bingham parameters from directional and rotational data is explained
-% in the sections <S2FunBingham.html The Spherical Bingham Distribution>
-% and <BinghamODFs.html The Rotational Bingham Distribution>.
+% estimates the parameters of this distribution from the random sample. In
+% the case of the Gaussian distribution these parameters are the mean value
+% and the standard deviation. On spheres and in orientation space, the
+% analogous functions to the Gaussian are the Bingham distributions. The
+% estimation of Bingham parameters from directional and rotational data is
+% explained in the sections <S2FunBingham.html The Spherical Bingham
+% Distribution> and <BinghamODFs.html The Rotational Bingham Distribution>.
 %
 %% Density Estimtation with Weights
 % In many use cases one has a weighted random sample. A typical example is
 % if one wants to estimate a orientation distribution function from grain
 % orientations. In this cases big grains should contribute more to the ODF
 % than small grains. For that reason the functions |calcDensity| allow for
-% an additional option |'weights'| which will pass weights to the
-% density estimation.
+% an additional option |'weights'| which will pass weights to the density
+% estimation.
 
 mtexdata titanium silent
 grains = calcGrains(ebsd);
 
 odf = calcDensity(grains.meanOrientation,'weights',grains.grainSize)
-
-
-
-
-
-
-
-
-

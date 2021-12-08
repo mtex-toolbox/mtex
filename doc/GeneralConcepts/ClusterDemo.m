@@ -54,13 +54,13 @@ annotate(center,'add2all')
 %%
 % pick a vector3d, and use that to convert the 10k random orientations
 % previously generated into crystal directions.
-h = ori \ vector3d(1,2,0);
+h = ori \ vector3d(1,1,0);
 
 % assign the crystal directions to two clusters
 [cId,center] = calcCluster(h,'numCluster',2);
 
 % plot the crystal symmetry data on appropiate fundamental sector
-plot(h.project2FundamentalRegion,cId,'fundamentalSector')
+plot(h.project2FundamentalRegion,ind2color(cId),'fundamentalSector')
 
 % annote the cluster centers
 annotate(center,'add2all')
@@ -72,10 +72,11 @@ annotate(center,'add2all')
 
 % create a pole figure of the orientations coloured by the cluster they
 % belong to.
-plotPDF(ori,cId,Miller(1,0,0,cs),'all')
+plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all')
 
 %%
-% If you have the statistics toolbox, you can make some calculations about the spread of points assigned to each cluster.
+% If you have the statistics toolbox, you can make some calculations about
+% the spread of points assigned to each cluster.
 
 % compute the full distance matrix between all combinations of vector3D
 d = angle_outer(r,r);
@@ -91,7 +92,6 @@ z = linkage(d,'single');
 cId = cluster(z,'maxclust',12);
 
 plotCluster(r,cId)
-
 
 %%
 

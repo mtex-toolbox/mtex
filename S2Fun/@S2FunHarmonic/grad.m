@@ -1,5 +1,5 @@
 function sVF = grad(sF, varargin)
-% calculates the gradiet of a spherical harmonic
+% calculates the gradient of a spherical harmonic
 %
 % Syntax
 %   sVF = grad(sF) % returns the gradient as a spherical vector field 
