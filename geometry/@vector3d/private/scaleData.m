@@ -2,15 +2,15 @@ function [data,colorRange,minData,maxData] = scaleData(data,varargin)
 
 data = real(data);
 
-% min and max
-minData = min(data(~isnan(data) & ~isinf(data)));
-maxData = max(data(~isnan(data) & ~isinf(data)));
+%if check_option(varargin,{'log','logarithmic'}), data(data==0)=NaN; end
 
-% log plot?
+% min and max
 if check_option(varargin,{'log','logarithmic'})
-  data = log10(data);
-  data(imag(data) ~= 0 | isinf(data)) = nan;
+  minData = min(data(~isnan(data) & ~isinf(log(data))));
+else
+  minData = min(data(~isnan(data) & ~isinf(data)));
 end
+maxData = max(data(~isnan(data) & ~isinf(data)));
 
 % get colorrange from data
 colorRange = [minData,maxData];
@@ -29,18 +29,10 @@ if check_option(varargin,{'contourf'},'double')
   
   contours = get_option(varargin,{'contourf','contour'},[],'double');
   colorRange = [contours(1),contours(end)];
-  
-  if check_option(varargin,{'log','logarithmic'})
-    colorRange = log10(colorRange);
-  end
-  
+   
 elseif check_option(varargin,'colorRange','double')
   
   colorRange = get_option(varargin,'colorrange',[],'double');
-
-  if check_option(varargin,{'log','logarithmic'})
-    colorRange = log10(colorRange);
-  end
   
   if isinf(colorRange(1)) 
     if isfinite(minData)
