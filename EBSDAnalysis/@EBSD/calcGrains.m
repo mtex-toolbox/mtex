@@ -89,7 +89,7 @@ if check_option(varargin,'removeQuadruplePoints') && grains.qAdded > 0
     
     if ~any(iBd), continue; end
         
-    % check for misorientation angle
+    % check for misorientation angle % TODO
     toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
     
   end

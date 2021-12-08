@@ -29,6 +29,7 @@ else
   %ori = job.grains('id',pairs).meanOrientation;
   ori = orientation(job.grains.prop.meanRotation(job.grains.id2ind(pairs)),...
     job.csParent);
+  ori = reshape(ori,size(pairs));
   
 end
 

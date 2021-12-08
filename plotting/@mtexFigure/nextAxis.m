@@ -6,7 +6,10 @@ if nargin == 1
 elseif nargin == 2
   mtexFig.currentId = i;
 else
+  mtexFig.nrows = max(mtexFig.nrows,i);
+  mtexFig.ncols = max(mtexFig.ncols,j);  
   mtexFig.currentId = (i-1)*mtexFig.ncols + j;
+  mtexFig.layoutMode = 'user';
 end
 
 set(mtexFig.parent,'CurrentAxes',mtexFig.gca);

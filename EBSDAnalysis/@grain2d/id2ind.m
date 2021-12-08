@@ -12,3 +12,4 @@ function ind = id2ind(grains,id)
 %  ind - a list indeces such that grains.id(ind) == id
 
 [~,ind] = ismember(id,grains.id);
+ind = reshape(ind, size(id));

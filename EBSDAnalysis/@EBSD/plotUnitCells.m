@@ -13,15 +13,13 @@ if check_option(varargin,'region')
   
   xy = xy(ind,:);
   
-  d = d(ind,:);
+  if numel(d) == numel(ind) || numel(ind) == size(d,1)
+    d = d(ind,:);
+  end
     
 end
 
-
 ax = get_option(varargin,'parent',gca);
-
-
-
 
 if ~isempty(unitCell)
   

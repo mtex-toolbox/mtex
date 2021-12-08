@@ -40,9 +40,11 @@ if check_option(varargin,'iso') && T.rank==4
      
 elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
 
-  TVoigt = 0*T;
-  
   odf = varargin{1};
+
+  TVoigt = 0*T;
+  TVoigt.CS = odf.SS; 
+  
   fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
   
   for l = 0:min(T.rank,odf.bandwidth)

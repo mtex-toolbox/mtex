@@ -107,7 +107,11 @@ classdef dynOption
               s = 'false';
             end
           otherwise
-            s = char(dOpt.opt.(fn),varargin{:});
+            try
+              s = char(dOpt.opt.(fn),varargin{:});
+            catch
+              s = '';
+            end
         end
         c = [c,{[' ' fn ': ' s]}]; %#ok<AGROW>
       end

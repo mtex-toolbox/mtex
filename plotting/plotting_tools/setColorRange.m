@@ -12,7 +12,7 @@ function setColorRange(varargin)
 %
 % Options
 %  log         - scale plots logarithmic
-%  linear      - scale plots logarithmic
+%  linear      - scale plots linear
 %  equal       - scale plots to the same range
 %  tight       - scale plots individually
 %  all         - scale all plots

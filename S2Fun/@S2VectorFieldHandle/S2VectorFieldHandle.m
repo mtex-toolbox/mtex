@@ -12,7 +12,9 @@ methods
   end
   
   function f = eval(S2F,v)
-    f = S2F.fun(v);
+    for k = 1:length(S2F)
+      f(:,k) = S2F(k).fun(v);
+    end
   end
   
 end

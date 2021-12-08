@@ -157,7 +157,9 @@ else % otherwise phase plot
       'parent', mP.ax,'DisplayName',grains.mineralList{k},varargin{:}); %#ok<AGROW>
 
     % reactivate legend information
-    set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    if ~isempty(h{k})
+      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    end
         
   end
 
@@ -330,6 +332,7 @@ Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
 obj.FaceColor = 'flat';
 obj.EdgeColor = 'None';
 obj.hitTest = 'off';
+h = [];
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse

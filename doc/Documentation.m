@@ -1,26 +1,31 @@
 %% Documentation
 %
-% Use the left sidebar to navigate through the different topics. Note that all
-% documentation pages are essentially MTEX scripts. This means you can open them
-% in Matlab by typing
+%%
+% Use the left sidebar to navigate through the different topics. Note that
+% all documentation pages are essentially MTEX scripts. You have a copy of
+% them in your MTEX download, with a file name equal to the last part of
+% the URL with .html swapped for .m (so this page is |Documentation.m|).
+% This means you can open them in Matlab by typing
 %
 %   edit fileName
 %
-% This allows you to execute the sections by step by step and investiage the
-% effect of each single MTEX command. It also should motivate you to play around
-% with different parameters, different input files or further analysis
-% steps. Eventually, these documentation scripts may serve as a good starting
-% point for your own analysis scripts.
+% This allows you to execute the sections by step by step and investiage
+% the effect of each single MTEX command. It also should motivate you to
+% play around with different parameters, different input files or further
+% analysis steps. Eventually, these documentation scripts may serve as a
+% good starting point for your own analysis scripts.
 %
 %% Contributing to the Documentation
 %
-% Documenting a project like MTEX is a challenging and ongoing task. Therefore
-% we are extremely happy about any spelling fixes, examples, theoretical
-% explainations, special use cases, etc. As a bonus everybody who contributed to
-% MTEX will automatically appear at the <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors page>.
+% Documenting a project like MTEX is a challenging and ongoing task.
+% Therefore we are extremely happy about any spelling fixes, examples,
+% theoretical explainations, special use cases, etc. As a bonus everybody
+% who contributed to MTEX will automatically appear at the
+% <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors
+% page>.
 %
-% The easiest way to suggest changes to the MTEX documentation is online via
-% Github. This is done as follows:
+% The easiest way to suggest changes to the MTEX documentation is online
+% via Github. This is done as follows:
 %
 % # sign into <https://github.com GitHub>
 % # open the help page you want to change, e.g., this one
@@ -29,11 +34,11 @@
 % edit page> which leads you to the file on <https://github.com GitHub>
 % # click the little pencil in the top right corner which allows you to
 % edit the script online
-% # enter of copy and paste your changes into the site
-% # click at the bottom *suggest changes*
+% # enter or copy and paste your changes into the site
+% # click at the bottom *Propose changes*
 % # click create *pull request*
 %
-% Alternatively, you can send us you changes simply by <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email>.
+% Alternatively, you can send us your changes simply by <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email>.
 %
 %% The Publish Command
 %

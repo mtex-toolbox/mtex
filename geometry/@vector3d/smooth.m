@@ -32,7 +32,7 @@ for j = 1:numel(sP)
   else % no color given -> do kernel density estimation
 
     sR = sP(j).sphericalRegion;
-    if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end
+    if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end %#ok<AGROW> 
     S2G = plotS2Grid(sR);
 
     cdata = calcDensity(v(:),S2G,'halfwidth',5*degree,varargin{:});    
@@ -60,7 +60,7 @@ for j = 1:numel(sP)
   
   % scale the data
   [cdata,colorRange] = scaleData(cdata,varargin{:});
-  if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange);end
+  %if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange);end
 
   % ------------- compute contour lines ------------------------
 
@@ -70,7 +70,11 @@ for j = 1:numel(sP)
   
   % specify contourlines explicitely
   if length(contours) == 1
-    contours = linspace(colorRange(1),colorRange(2),contours);
+    if check_option(varargin,'log')
+      contours = logspace(log10(colorRange(1)),log10(colorRange(2)),contours);
+    else      
+      contours = linspace(colorRange(1),colorRange(2),contours);
+    end
   end
 
   % ----------------- draw contours ------------------------------
@@ -93,6 +97,7 @@ for j = 1:numel(sP)
 
   % adjust caxis according to colorRange
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange); end
+  if check_option(varargin,'log'), set(sP(j).ax,'colorScale','log'); end
 
   % colormap
   if ~strcmpi(get_option(varargin,'fill'),'off')
