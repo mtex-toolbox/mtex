@@ -12,9 +12,7 @@ function h = histogram(grains,varargin)
 %    
 % Input
 %  grains - @grain2d
-%  n      - number of bin edges, default ist 15, (number of bins is n-1)
-%  OR
-%  bins   - vector of bin edges
+%  n      - number of bins, default ist 15
 %
 % Output
 %  h - handle to the histogram graphics object
@@ -33,19 +31,12 @@ else
 end
 
 % generate bins
-if ~isempty(varargin) && isnumeric(varargin{1}) 
-    if numel(varargin{1})==1
-        nbins = varargin{1}; %define nbins
-    elseif numel(varargin{1})>1
-        bins = varargin{1}; %define bin edges automatically
-        nbins = numel(varargin{1});
-    end
+if ~isempty(varargin) && isnumeric(varargin{1})
+  nbins = varargin{1};
 else
-    nbins = 15;
+  nbins = 15;
 end
-if ~exist('bins','var')
-    bins = linspace(0,max(prop)+eps,nbins);
-end
+bins = linspace(0,max(prop)+eps,nbins);
 
 % loop through all phases
 h = [];
