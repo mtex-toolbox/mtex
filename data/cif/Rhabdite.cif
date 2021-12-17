@@ -1,0 +1,142 @@
+#------------------------------------------------------------------------------
+#$Date: 2015-01-27 19:58:39 +0000 (Tue, 27 Jan 2015) $
+#$Revision: 130149 $
+#$URL: file:///home/coder/svn-repositories/cod/cif/8/10/05/8100503.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_8100503
+loop_
+_publ_author_name
+'Moretzki, Olaf'
+'Doering, Thomas'
+'Geist, Volker'
+'Morgenroth, Wolfgang'
+'Wendschuh, Michael'
+_publ_section_title
+;
+Crystal structure of iron nickel phosphide, Fe~1.65~Ni~1.35~P, a Rhabdite 
+extracted from Morasko meteorite
+;
+_journal_issue                   4
+_journal_name_full
+'Zeitschrift f\"ur Kristallographie - New Crystal Structures'
+_journal_page_first              393
+_journal_page_last               394
+_journal_volume                  218
+_journal_year                    2003
+_chemical_formula_structural     'Fe1.65 Ni1.35 P'
+_chemical_formula_sum            'Fe13.2 Ni10.8 P8'
+_chemical_formula_weight         1619.05
+_chemical_name_common            Rhabdite
+_space_group_IT_number           82
+_symmetry_cell_setting           tetragonal
+_symmetry_space_group_name_Hall  'I -4'
+_symmetry_space_group_name_H-M   'I -4'
+_cell_angle_alpha                90.00
+_cell_angle_beta                 90.00
+_cell_angle_gamma                90.00
+_cell_formula_units_Z            1
+_cell_length_a                   9.059(2)
+_cell_length_b                   9.059(2)
+_cell_length_c                   4.4793(12)
+_cell_measurement_temperature    293(2)
+_cell_volume                     367.62(16)
+_diffrn_ambient_temperature      293(2)
+_exptl_crystal_density_diffrn    7.313
+_[local]_cod_chemical_formula_sum_orig 'Fe13.20 Ni10.80 P8'
+_cod_database_code               8100503
+loop_
+_symmetry_equiv_pos_as_xyz
+'x, y, z'
+'-x, -y, z'
+'y, -x, -z'
+'-y, x, -z'
+'x+1/2, y+1/2, z+1/2'
+'-x+1/2, -y+1/2, z+1/2'
+'y+1/2, -x+1/2, -z+1/2'
+'-y+1/2, x+1/2, -z+1/2'
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_U_iso_or_equiv
+_atom_site_adp_type
+_atom_site_occupancy
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_calc_flag
+_atom_site_refinement_flags
+_atom_site_disorder_assembly
+_atom_site_disorder_group
+Fe1 Fe 0.07816(13) 0.10808(12) 0.2301(3) 0.0105(4) Uani 1 8 g d . . .
+Ni1 Ni 0.07816(13) 0.10808(12) 0.2301(3) 0.0105(4) Uani 0.00 8 g d P . .
+Fe2 Fe 0.36191(12) 0.03357(12) 0.9793(3) 0.0091(3) Uani 0.65 8 g d P . .
+Ni2 Ni 0.36191(12) 0.03357(12) 0.9793(3) 0.0091(3) Uani 0.35 8 g d P . .
+Fe3 Fe 0.16823(11) 0.21885(12) 0.7485(3) 0.0125(4) Uani 0.00 8 g d P . .
+Ni3 Ni 0.16823(11) 0.21885(12) 0.7485(3) 0.0125(4) Uani 1 8 g d . . .
+P P 0.2923(2) 0.0501(2) 0.4834(6) 0.0099(5) Uani 1 8 g d . . .
+loop_
+_atom_site_aniso_label
+_atom_site_aniso_U_11
+_atom_site_aniso_U_22
+_atom_site_aniso_U_33
+_atom_site_aniso_U_23
+_atom_site_aniso_U_13
+_atom_site_aniso_U_12
+Fe1 0.0090(6) 0.0103(6) 0.0124(8) 0.0009(7) -0.0005(6) 0.0003(5)
+Ni1 0.0090(6) 0.0103(6) 0.0124(8) 0.0009(7) -0.0005(6) 0.0003(5)
+Fe2 0.0084(6) 0.0090(6) 0.0098(6) -0.0006(6) 0.0002(6) 0.0006(4)
+Ni2 0.0084(6) 0.0090(6) 0.0098(6) -0.0006(6) 0.0002(6) 0.0006(4)
+Fe3 0.0123(6) 0.0118(6) 0.0135(7) -0.0006(6) -0.0001(5) 0.0021(4)
+Ni3 0.0123(6) 0.0118(6) 0.0135(7) -0.0006(6) -0.0001(5) 0.0021(4)
+P 0.0092(10) 0.0101(10) 0.0106(12) 0.0015(12) -0.0011(11) 0.0005(8)
+loop_
+_geom_bond_atom_site_label_1
+_geom_bond_atom_site_label_2
+_geom_bond_distance
+_geom_bond_site_symmetry_2
+_geom_bond_publ_flag
+Fe1 P 2.308(3) . ?
+Fe1 P 2.405(3) 4_556 ?
+Fe1 Fe1 2.417(2) 2 ?
+Fe1 Ni3 2.5153(18) 1_554 ?
+Fe1 Fe3 2.6580(19) . ?
+Fe1 Fe1 2.678(2) 3 ?
+Fe1 Fe1 2.678(2) 4 ?
+Fe1 Ni2 2.6819(16) 4_556 ?
+Fe1 Fe2 2.6819(16) 4_556 ?
+Fe1 Ni3 2.7470(18) 4_556 ?
+Fe1 Ni3 2.7828(17) 6_554 ?
+Fe2 P 2.314(3) . ?
+Fe2 P 2.329(2) 7_556 ?
+Fe2 P 2.332(3) 8_546 ?
+Fe2 P 2.349(3) 1_556 ?
+Fe2 Ni3 2.5511(15) 3_557 ?
+Fe2 Ni3 2.5610(16) 6 ?
+Fe2 Fe2 2.575(2) 2_655 ?
+Fe2 Ni2 2.575(2) 2_655 ?
+Fe2 Fe3 2.6391(17) . ?
+Fe2 Fe1 2.6819(16) 3_556 ?
+Fe2 Fe2 2.745(2) 8_546 ?
+Fe3 P 2.238(3) . ?
+Fe3 P 2.331(2) 4_556 ?
+Fe3 P 2.370(2) 6 ?
+Fe3 Fe1 2.5153(18) 1_556 ?
+Fe3 Ni2 2.5511(15) 4_557 ?
+Fe3 Fe2 2.5511(15) 4_557 ?
+Fe3 Ni2 2.5610(16) 6_554 ?
+Fe3 Fe2 2.5610(16) 6_554 ?
+P Ni2 2.329(2) 8_546 ?
+P Fe2 2.329(2) 8_546 ?
+P Ni3 2.331(2) 3_556 ?
+P Fe2 2.332(3) 7_556 ?
+P Ni2 2.332(3) 7_556 ?
+P Fe2 2.349(3) 1_554 ?

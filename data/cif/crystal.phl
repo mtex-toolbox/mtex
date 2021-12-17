@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="yes"?>
+<TEBSDExtPhaseEntryList>
+  <RTHeader/>
+  <ClassInstance Type="TEBSDExtPhaseEntryList">
+    <TEBSDPhaseEntryList/>
+    <ChildClassInstances>
+      <ClassInstance Type="TEBSDExtPhaseEntry" Name="Magnetite">
+        <TEBSDPhaseEntry>
+          <CC>CUB</CC>
+          <SG>Fd#ovl3m(*)</SG>
+          <USED>0</USED>
+          <IT>227</IT>
+          <REF/>
+          <MU>0</MU>
+          <SE>2</SE>
+          <REFLVERSION>1</REFLVERSION>
+          <BPS1>ZikxZy96JjEjME0nbjQ/fl54aHMA</BPS1>
+          <BPS2>ZikxZy96JjEjMXQmbjE5dkh4dnlQKmclI2JEJ2YhKTQoU01OfFUsXn1PL0RKN2pqMX58OClnVzImL0UwOTBAfl9JfiNgc29Zc0RhYic5WDYxbU03NSAhR0hMKS16UHkzJ2tXTlZpYkVMIyw9PDdNQkdCbl8iT01LcUFaVW04WCx5fSpBRm9sZzRsd0x6Okcrek51Ln4gJzszeW1FAA==</BPS2>
+          <PKEY>Wk9beWswQUJpZWp5fClBam0gIjlhSzdpVUJzaXEpN212dClOezNjTShHJTFnZlRRKVIvV1U3TzplVlQ1ZE8pWD1oWkk=</PKEY>
+          <ISUSERDB>False</ISUSERDB>
+          <DBNAME/>
+          <ENTRYID>0</ENTRYID>
+          <CLUSTERINDEX>-1</CLUSTERINDEX>
+          <AT>3</AT>
+          <POS0>Fe,1.25E-1,1.25E-1,1.25E-1,9.71E-1,0</POS0>
+          <POS1>Fe,5E-1,5E-1,5E-1,9.83E-1,0</POS1>
+          <POS2>O,2.55E-1,2.55E-1,2.55E-1,1,0</POS2>
+          <Chem>O32 Fe23.496</Chem>
+          <DENSITY>5.054</DENSITY>
+          <Elem>8, 32,26, 23.5</Elem>
+          <Cell>
+            <Dim>8.431,8.431,8.431</Dim>
+            <Angles>90,90,90</Angles>
+            <VOLUME>0</VOLUME>
+          </Cell>
+          <DefaultGlideSystem>
+            <ClassInstance Type="TGlideSystems">
+              <GSCount>0</GSCount>
+            </ClassInstance>
+          </DefaultGlideSystem>
+          <Complete>True</Complete>
+          <Encrypted>False</Encrypted>
+        </TEBSDPhaseEntry>
+        <Color>255,0,0</Color>
+        <Selected>True</Selected>
+        <Masked>False</Masked>
+        <Indexed>True</Indexed>
+        <CLUSTERINDEX>1</CLUSTERINDEX>
+      </ClassInstance>
+      <ClassInstance Type="TEBSDExtPhaseEntry" Name="Hematite">
+        <TEBSDPhaseEntry>
+          <CC>TRIGO</CC>
+          <SG>R #ovl3c</SG>
+          <USED>0</USED>
+          <IT>167</IT>
+          <REF/>
+          <MU>0</MU>
+          <SE>1</SE>
+          <REFLVERSION>1</REFLVERSION>
+          <BPS1>Z1hBaDJuLj1EIXMvOGRSQj53eS1+KWNbdzN0ZTlmV0sA</BPS1>
+          <BPS2>Z1hBaDJfUUBCLWpWdm9oWGluZmYzcDE7N1EzS1E+ZykiTkVtRHFzbTVeTjYxfSlhNk4uOjVdRSFjWkN5VS1EbzltamAqb2R4Y1EsPjZoW1ZvMkNxR3cgfVZHWFkmVyNfOVU8XX0wTV0qWCVrUidBaDRdRXxobWVqN2lGNEQlPHNWT0U1O1o+YidSTnhVVXdRfS9KJ3MjOnREM3FtQyE2Xy5gc2pBJn5XK0shPEBzc35hZndzSiAqOzJJRnxdVyJDYkh6dE0uKVF2Iz5pP3poenEhNWY0JTgieC4oUHUpPztIRHAsLU5nd2ReUDtGKkgxJT9zel5aQCFdZz08VkhcWitbJGtMRVxJV0pgYzslWzxDNDUlKDxtW3ozM2dFN0YlAA==</BPS2>
+          <PKEY>X0tVJ108OFY_ID1oYkx8PG1pXkx8QXN6dCYuUkJjX1s+eyE4TjlnWUIgMUUqSXEsP30mRCc5ZWlgVkwuUCk7eXgpQm8=</PKEY>
+          <ISUSERDB>False</ISUSERDB>
+          <DBNAME/>
+          <ENTRYID>0</ENTRYID>
+          <CLUSTERINDEX>-1</CLUSTERINDEX>
+          <AT>2</AT>
+          <POS0>Fe,0,0,3.552E-1,1,0</POS0>
+          <POS1>O,3.108E-1,0,2.5E-1,1,0</POS1>
+          <Chem>O18 Fe12</Chem>
+          <DENSITY>5.391</DENSITY>
+          <Elem>8, 18,26, 12</Elem>
+          <Cell>
+            <Dim>5.002,5.002,13.62</Dim>
+            <Angles>90,90,120</Angles>
+            <VOLUME>0</VOLUME>
+          </Cell>
+          <DefaultGlideSystem>
+            <ClassInstance Type="TGlideSystems">
+              <GSCount>0</GSCount>
+            </ClassInstance>
+          </DefaultGlideSystem>
+          <Complete>True</Complete>
+          <Encrypted>False</Encrypted>
+        </TEBSDPhaseEntry>
+        <Color>0,255,0</Color>
+        <Selected>True</Selected>
+        <Masked>False</Masked>
+        <Indexed>True</Indexed>
+        <CLUSTERINDEX>2</CLUSTERINDEX>
+      </ClassInstance>
+      <ClassInstance Type="TEBSDExtPhaseEntry" Name="Schreibersite">
+        <TEBSDPhaseEntry>
+          <CC>TETRA</CC>
+          <SG>I #ovl4</SG>
+          <USED>36</USED>
+          <IT>82</IT>
+          <REF/>
+          <MU>0</MU>
+          <SE>1</SE>
+          <REFLVERSION>0</REFLVERSION>
+          <BPS1>Zik5ZzF7KDAobSxWbiNue1BKOl98IypKTiUsS1o3UytzcTFZb3BJfmN6enoA</BPS1>
+          <BPS2>ZnllaTQkL1NoLmt1TlAiOStzMF54PG9EaCxAdU17fDB5fHoqbiolQj0wQHdRTDluPy0kPz89JEA8I0ZJcUIuWnk3czVBJnw3MnJXR0gjOWEnQyQnbiRwImRkYkxcW1lwWmonTVc4VkNCZVU5LXAsV3RsLktZRyJKdUBiVGN8Q31gTVUzfkxscUQ+L155N3okZG5ROjUpW01faXlDZHdaVWQgSSp3TCouJml+PkAlfFgxdnZpPjpdU2kzcHhXUngxfk1tfFttKE9cZTgpMnNaTVZjciZwLi9ee1ZfXyQtOnNCKVRvYXFWRkhHQntdPztnKWldS1JcZWMtPmghJGdZTFw+X1ZzM2h3TVJROzQgTFAjS2RoMHhGJnA4JmNDMmteJFh9PT0pWEBJOT42RkJoYiJKYWItb3FgLXJoaTFvIkRQRll0YiQqREU2c25GMjBgIWFONilYYVJlIDNCUGFwelp1Oi44V2VUbTwtXHggVTUnXGJUAA==</BPS2>
+          <PKEY/>
+          <ISUSERDB>False</ISUSERDB>
+          <DBNAME/>
+          <ENTRYID>0</ENTRYID>
+          <CLUSTERINDEX>-1</CLUSTERINDEX>
+          <AT>6</AT>
+          <POS0>Fe,7.85E-2,1.081E-1,2.35E-1,1,0</POS0>
+          <POS1>Fe,3.617E-1,3.24E-2,9.82E-1,6.667E-1,0</POS1>
+          <POS2>Ni,3.617E-1,3.24E-2,9.82E-1,3.333E-1,0</POS2>
+          <POS3>Fe,1.698E-1,2.199E-1,7.525E-1,3.333E-1,0</POS3>
+          <POS4>Ni,1.698E-1,2.199E-1,7.525E-1,6.667E-1,0</POS4>
+          <POS5>P,2.916E-1,4.81E-2,4.86E-1,1,0</POS5>
+          <Chem>Fe16 P8 Ni8</Chem>
+          <DENSITY>7.336</DENSITY>
+          <Elem>26, 16,15, 8,28, 8</Elem>
+          <Cell>
+            <Dim>9.04,9.04,4.462</Dim>
+            <Angles>90,90,90</Angles>
+            <VOLUME>0</VOLUME>
+          </Cell>
+          <DefaultGlideSystem>
+            <ClassInstance Type="TGlideSystems">
+              <GSCount>0</GSCount>
+            </ClassInstance>
+          </DefaultGlideSystem>
+          <Complete>True</Complete>
+          <Encrypted>False</Encrypted>
+        </TEBSDPhaseEntry>
+        <Color>0,0,255</Color>
+        <Selected>True</Selected>
+        <Masked>False</Masked>
+        <Indexed>True</Indexed>
+        <CLUSTERINDEX>3</CLUSTERINDEX>
+      </ClassInstance>
+      <ClassInstance Type="TEBSDExtPhaseEntry" Name="Ferrite, bcc 110 (old)">
+        <TEBSDPhaseEntry>
+          <CC>CUB</CC>
+          <SG>I m#ovl3m</SG>
+          <USED>2</USED>
+          <IT>229</IT>
+          <REF/>
+          <MU>0</MU>
+          <SE>1</SE>
+          <REFLVERSION>0</REFLVERSION>
+          <BPS1>Z3g+aDNhMklVQ1IyKDJJIFlLVkJCbGJRXnBlV3A2TCgA</BPS1>
+          <BPS2>Z2g9ZzJuLj9BemVRZVwhJmRkU2NBK2FISyl9KWwkUytyd3oreDx7JWpvR3RMUSk2J0hcR0ouRyVlXH5DX1FzbTZuIiptJlMtdDR0cDtpRGgsP2RnMWR2c0kuJS8hXD1efUYyUl54cnNCLmRFSzl1ckF0UitwPV5SYl8xSFJQRXpXUk4ham9JcUYxLFBjaiB7X0p6fV5fcSoud3gpAA==</BPS2>
+          <PKEY/>
+          <ISUSERDB>False</ISUSERDB>
+          <DBNAME/>
+          <ENTRYID>0</ENTRYID>
+          <CLUSTERINDEX>-1</CLUSTERINDEX>
+          <AT>1</AT>
+          <POS0>Fe,0,0,0,1,0</POS0>
+          <Chem>Fe</Chem>
+          <DENSITY>0</DENSITY>
+          <Elem>26, 2</Elem>
+          <Cell>
+            <Dim>2.866,2.866,2.866</Dim>
+            <Angles>90,90,90</Angles>
+            <VOLUME>0</VOLUME>
+          </Cell>
+          <DefaultGlideSystem>
+            <ClassInstance Type="TGlideSystems">
+              <GSCount>0</GSCount>
+            </ClassInstance>
+          </DefaultGlideSystem>
+          <Complete>True</Complete>
+          <Encrypted>False</Encrypted>
+        </TEBSDPhaseEntry>
+        <Color>255,255,0</Color>
+        <Selected>True</Selected>
+        <Masked>False</Masked>
+        <Indexed>True</Indexed>
+        <CLUSTERINDEX>4</CLUSTERINDEX>
+      </ClassInstance>
+    </ChildClassInstances>
+  </ClassInstance>
+</TEBSDExtPhaseEntryList>

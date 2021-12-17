@@ -1,0 +1,77 @@
+#------------------------------------------------------------------------------
+#$Date: 2012-02-28 12:14:52 +0000 (Tue, 28 Feb 2012) $
+#$Revision: 35911 $
+#$URL: file:///home/coder/svn-repositories/cod/cif/1/00/80/1008006.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_1008006
+_chemical_name_systematic          'IRON TETRATHIOSILICATE'
+_chemical_formula_structural       'FE2 SI S4'
+_chemical_formula_sum              'Fe2 S4 Si'
+_publ_section_title
+;
+Polyhedral deformations in olivine-type compounds and the crystal
+structure of Fe~2~ Si S~4~ and Fe~2~ Ge S~4~
+;
+loop_
+_publ_author_name
+  'Vincent, H'
+  'Bertaut, E'
+_journal_name_full                 'Acta Crystallographica B (24,1968-38,1982)'
+_journal_coden_ASTM                ACBCAR
+_journal_volume                    32
+_journal_year                      1976
+_journal_page_first                1749
+_journal_page_last                 1755
+_cell_length_a                     12.407(2)
+_cell_length_b                     7.198(1)
+_cell_length_c                     5.812(1)
+_cell_angle_alpha                  90
+_cell_angle_beta                   90
+_cell_angle_gamma                  90
+_cell_volume                       519.0
+_cell_formula_units_Z              4
+_symmetry_space_group_name_H-M     'P n m a'
+_symmetry_Int_Tables_number        62
+_symmetry_cell_setting             orthorhombic
+loop_
+_symmetry_equiv_pos_as_xyz
+  'x,y,z'
+  '1/2+x,1/2-y,1/2-z'
+  '-x,1/2+y,-z'
+  '1/2-x,-y,1/2+z'
+  '-x,-y,-z'
+  '1/2-x,1/2+y,1/2+z'
+  'x,1/2-y,z'
+  '1/2+x,y,1/2-z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+  S2-   -2.000
+  Si4+   4.000
+  Fe2+   2.000
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+_atom_site_calc_flag
+  S1    S2-    4 c 0.4079 0.25 0.7284 1.  0 d
+  S2    S2-    4 c 0.5692 0.25 0.2383 1.  0 d
+  S3    S2-    8 d 0.3335 0.0173 0.2487 1.  0 d
+  Si1   Si4+   4 c 0.4111 0.25 0.0916 1.  0 d
+  Fe1   Fe2+   4 a 0. 0. 0. 1.  0 d
+  Fe2   Fe2+   4 c 0.2299 0.25 0.5098 1.  0 d
+_refine_ls_R_factor_all            0.032
+_cod_database_code 1008006
