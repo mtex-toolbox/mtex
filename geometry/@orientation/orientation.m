@@ -151,12 +151,12 @@ methods (Static = true)
 
   function ori = copper(varargin)
     %ori = orientation.byEuler(90*degree,35*degree,45*degree,varargin{:});
-    ori = orientation.byMiller([1 1 2],[1 -1 1],varargin{:});
+    ori = orientation.byMiller([1 1 2],[-1 1 -1],varargin{:});
   end
 
   function ori = copper2(varargin)
     %ori = orientation.byEuler(270*degree,35*degree,45*degree,varargin{:});
-    ori = orientation.byMiller([1 1 2],[1 1 -1],varargin{:});
+    ori = orientation.byMiller([1 1 2],[1 -1 1],varargin{:});
   end
 
   function ori = SR(varargin)
