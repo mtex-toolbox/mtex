@@ -53,7 +53,7 @@ if job.useBoundaryOrientations
 else 
   
   % simply the mean orientations of the grains
-  ori = job.grains('id',pairs).meanOrientation;
+  ori = reshape(job.grains('id',pairs).meanOrientation,size(pairs));
   
 end
 
