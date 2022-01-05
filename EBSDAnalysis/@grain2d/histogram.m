@@ -53,9 +53,12 @@ for id = grains.indexedPhasesId
   
   % find for each area the binId
   [~,~,binId] = histcounts(prop(grains.phaseId==id),bins);
+  if any(~binId,'all')
+      warning([num2str(nnz(~binId)) ' grains outside bin limits not plotted!']);
+  end
     
   % compute the sum of areas belonging to the same bin
-  cumArea = accumarray(binId,area(grains.phaseId==id),[length(bins)-1 1],@nansum) ./ sum(area);
+  cumArea = accumarray(binId(binId>0),area(grains.phaseId==id & binId>0),[length(bins)-1 1],@nansum) ./ sum(area);
   
   h = [h,optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
     'FaceColor',grains.CSList{id}.color),varargin{:})]; %#ok<AGROW>
