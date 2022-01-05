@@ -24,3 +24,4 @@ help/tmp/*
 /myToken.txt
 resources/*
 *.c
+*.c
