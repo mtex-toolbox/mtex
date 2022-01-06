@@ -70,7 +70,7 @@ if SO3F.isReal
   % with  k = -N:N
   %       l =  0:N      -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
   %       j = -N:N      -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
-  ghat = compute_ghat(N,SO3F.fhat,'isReal');
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^0+2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
   z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
@@ -78,7 +78,7 @@ if SO3F.isReal
 
 else
 
-  ghat = compute_ghat(N,SO3F.fhat);
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
   z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-(-N:N);

@@ -1,5 +1,5 @@
 /*=========================================================================
- * compute_ghat.c - eval of SO3FunHarmonic
+ * representationbased_coefficient_transform.c - eval of SO3FunHarmonic
  * 
  * The inputs are the fourier coefficients (ghat)
  * of harmonic representation of a SO(3) function and the bandwidth (N).
@@ -24,11 +24,13 @@
  * 
  * The calling syntax is:
  * 
- *		ghat = compute_ghat(N,fhat)
- *    ghat = compute_ghat(N,fhat,'makeeven')
- *    ghat = compute_ghat(N,fhat,'isReal')
- *    ghat = compute_ghat(N,fhat,'makeeven','isReal')
+ *		ghat = representationbased_coefficient_transform(N,fhat)
+ *    ghat = representationbased_coefficient_transform(N,fhat,2^0+2^1)
  * 
+ * flags:  2^0 --> 'isReal'
+ *         2^1 --> 'makeeven'
+ *         2^2 --> normalize Fourier coefficients
+ *         2^3 --> precompute Wigner-d Matrices      (not implemented yet)
  * 
  * This is a MEX-file for MATLAB.
  * 
@@ -41,6 +43,26 @@
 #include <complex.h>
 #include <string.h>
 
+
+
+/*
+* Transform number which includes the flags to boolean vector.
+* flags:  2^0 --> 'isReal'
+*         2^1 --> 'makeeven'
+*         2^2 --> normalize Fourier coefficients
+*         2^3 --> precompute Wigner-d Matrices      (not implemented yet)
+*/
+void get_flags(mxDouble number, bool flags[7]) {
+  for (int i = 6; i>=0; i--){
+    if(number >= pow(2,i)){
+      number = number-pow(2,i);
+      flags[i]=1;
+    }
+    else{
+      flags[i]=0;
+    }
+  }
+}
 
 
 
@@ -618,22 +640,21 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxDouble bandwidth;               // input bandwidth
     mxComplexDouble *inCoeff;         // nrows x 1 input coefficient vector
     size_t nrows;                     // size of inCoeff
-    char *flag1 = "empty";            // optional input options
-    char *flag2 = "empty";
+    mxDouble input_flags = 0;
     mxComplexDouble *outFourierCoeff; // output fourier coefficient matrix
     
     
   // check data types
-    // check for 2,3 or 4 input arguments (inCoeff & bandwith)
-    if( (nrhs!=2) && (nrhs!=3) && (nrhs!=4) )
-      mexErrMsgIdAndTxt("compute_ghat:invalidNumInputs","Two, three or four inputs required.");
+    // check for 2 or 3 input arguments (inCoeff & bandwith)
+    if( (nrhs!=2) && (nrhs!=3))
+      mexErrMsgIdAndTxt("compute_ghat:invalidNumInputs","Two or three inputs required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
       mexErrMsgIdAndTxt("compute_ghat:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("compute_ghat:notDouble","First input argument bandwidth must be a Scalar double.");
+      mexErrMsgIdAndTxt("compute_ghat:notDouble","First input argument bandwidth must be a scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
@@ -642,12 +663,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if(mxGetN(prhs[1])!=1)
       mexErrMsgIdAndTxt("compute_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
-    // make sure the third and fourth input arguments are strings (if existing)
-    if ( (nrhs>2) && (mxIsChar(prhs[2]) != 1) )
-      mexErrMsgIdAndTxt( "compute_ghat:notString","Third input argument must be a string.");
-    if ( (nrhs>3) && (mxIsChar(prhs[3]) != 1) )
-      mexErrMsgIdAndTxt( "compute_ghat:notString","Fourth input argument must be a string.");
-    
+    // make sure the third input argument (input_flags) is double scalar (if existing)
+    if( (nrhs==3) && ( !mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) || mxGetNumberOfElements(prhs[2])!=1 ) )
+      mexErrMsgIdAndTxt( "compute_ghat:notDouble","Third input argument flags must be a scalar double.");
+
     
   // read input data
     // get the value of the scalar input (bandwidth)
@@ -668,12 +687,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
     nrows = mxGetM(prhs[1]);
     
     // if exists, get flags of input
-    if(nrhs>2)
-      flag1 = mxArrayToString(prhs[2]);
-    if(nrhs>3)
-      flag2 = mxArrayToString(prhs[3]);
+    //input_flags = 0;
+    if(nrhs=3)
+      input_flags = mxGetScalar(prhs[2]);
     
-    
+    bool flags[7];
+    get_flags(input_flags,flags);
+
+
   // Get optional flags to generate output with suitable size.
     // If f is a real valued function, then half size in 2nd dimension of
     // ghat is sufficient. Sometimes it is necessary to add zeros in some
@@ -690,14 +711,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
     const int bwp1 = bandwidth+1;
     int start_shift;
     
-    if( (!strcmp(flag1,"makeeven")) || (!strcmp(flag2,"makeeven")) )
+    if(flags[1]==1)
     {
       // create half sized ghat with even dimensions
-      if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
+      if(flags[0]==1)
       {
-        row_shift = 1;
+        row_shift = flags[1];
         col_shift = bwp1 % 2;
-        fullsized = 0;
+        fullsized = !flags[0];
         dims[0] = 2*bandwidth+2;
         dims[1] = bandwidth+1+col_shift;
         dims[2] = 2*bandwidth+2;
@@ -706,9 +727,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
       // create full sized ghat with even dimensions
       else
       {
-        row_shift = 1;
-        col_shift = 1;
-        fullsized = 1;
+        row_shift = flags[1];
+        col_shift = flags[1];
+        fullsized = !flags[0];
         dims[0] = 2*bandwidth+2;
         dims[1] = 2*bandwidth+2;
         dims[2] = 2*bandwidth+2;
@@ -718,11 +739,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else
     {
       // create half sized ghat without additional zeros
-      if( (!strcmp(flag1,"isReal")) || (!strcmp(flag2,"isReal")) )
+      if(flags[0]==1)
       {
-        row_shift = 0;
-        col_shift = 0;
-        fullsized = 0;
+        row_shift = flags[1];
+        col_shift = flags[1];
+        fullsized = !flags[0];
         dims[0] = 2*bandwidth+1;
         dims[1] = bandwidth+1;
         dims[2] = 2*bandwidth+1;
@@ -731,9 +752,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
       // create full sized ghat without additional zeros
       else
       {
-        row_shift = 0;
-        col_shift = 0;
-        fullsized = 1;
+        row_shift = flags[1];
+        col_shift = flags[1];
+        fullsized = !flags[0];
         dims[0] = 2*bandwidth+1;
         dims[1] = 2*bandwidth+1;
         dims[2] = 2*bandwidth+1;
@@ -752,7 +773,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
   
   // normalize fourier coefficients
+  if(flags[2])
     NORMALIZE(bandwidth,inCoeff);
+  
   // call the computational routine
     calculate_ghat(bandwidth,inCoeff,row_shift,col_shift,fullsized,
             outFourierCoeff,(mwSize)nrows);

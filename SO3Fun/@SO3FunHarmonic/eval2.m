@@ -14,14 +14,14 @@ if SO3F.isReal
   % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
   % we use ind in 2nd dimension to get even number of fourier coefficients
   % the additionally indices gives 0-columns in front of ghat
-  ghat = compute_ghat(N,SO3F.fhat,'isReal','makeeven');
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^0+2^1+2^2); %'isReal','makeeven','normalize_fouriercoeffis'
   
 else
 
   % create ghat -> k x l x j
   % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
   % we can again use (**) to speed up  
-  ghat = compute_ghat(N,SO3F.fhat,'makeeven');  
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^1+2^2);  %'makeeven','normalize_fouriercoeffis'
   
 end
 
