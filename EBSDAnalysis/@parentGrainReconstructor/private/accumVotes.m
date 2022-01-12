@@ -56,7 +56,7 @@ else % turn fits into probabilities
   prob(prob < 1e-2) = 0;
 
   w = get_option(varargin,'weights',1);
-  if numel(w)>1 
+  if size(w,1)>1 
     w = w(ind,:);
     prob = prob .* w(:);
   end
