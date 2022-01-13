@@ -1,5 +1,5 @@
 function job = calcVariantGraph(job, varargin)
-% set up similarity graph for parent grain reconstruction
+% set up variant graph for parent grain reconstruction
 %
 % Syntax
 %   job.calcVariantGraph
@@ -13,14 +13,24 @@ function job = calcVariantGraph(job, varargin)
 % Options
 %  threshold - misfit at which the probability is set to 0.5, default is 2 degree
 %  tolerance - range around the threshold where the probability increases from 0 to 1
-%  C2C     - consider only child to child grain boundaries
-%  P2C     - consider only parent to child grain boundaries
+%  C2C       - consider only child to child grain boundaries
+%  P2C       - consider only parent to child grain boundaries
 %  mergeSimilar - merge similar variants in the graph
 %
 % Description
+% Parent grain reconstruction using the variant graph approach is explained
+% in the publication
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022
+% 
 % The weights of the graph are computed from a cummulative Gaussian
 % distribution with mean given by the option |'threshold'| and variance
-% given by the option |'tolerance'|
+% given by the option |'tolerance'|. The options |'C2C'| and |'P2C'| may be
+% used to restrict the graph to specific neighborhood relationships.
+% The option |mergeSimilar| creates a variant graph that does not
+% distinguish between similar variants. 
+% 
 %
 
 % get parameters
@@ -130,7 +140,20 @@ if check_option(varargin,'C2C') || noOpt
 
 end
  
+% if job.votes contains information consider only those variants with
+% positive probability
+if ~isempty(job.votes) 
+
+  pos = indV1(1:end-1) + job.votes.parentId(:,1:2) - 1;
+  
+  D = sparse(pos,pos,1,length(job.graph),length(job.graph));
+
+  job.graph = D * job.graph * D;
+
+end
+
+
 % remove diagonal entries that are completely isolated
 if ~check_option(varargin,'noDiagonal')
-  job.graph(sum(job.graph)==1,[]) = 0;
+  job.graph(sum(job.graph>0)==1,:) = 0;
 end
