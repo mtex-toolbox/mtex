@@ -19,8 +19,8 @@ function job = clusterVariantGraph(job,varargin)
 %  cutOff         - default 0.0001
 %  withDiagonal   -
 %  keepGraph      - do not kill graph after clustering 
-%  includeSimilar -
-%  includeTwins   -
+%  includeSimilar - similarly oriented variants share probability
+%  includeTwins   - potential twins share probability
 %
 
 % ensure we have a graph
@@ -125,7 +125,6 @@ pIdP(job.isChild,:) = reshape(s,numV,[]).';
 if check_option(varargin,'includeTwins')
   
   % define theoretical twinning of the packet
-  p2cV = job.p2c.variants('parent');
   tp2cV = p2cV(:) .* orientation.byAxisAngle(round(p2cV \ Miller(0,1,1,p2cV.SS),'maxHKL',1),60*degree);
   
   M = 0.5*triu(angle_outer(p2cV,tp2cV,'noSym2') < 5 * degree);
@@ -139,11 +138,16 @@ if check_option(varargin,'includeSimilar')
   %M = triu(angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree);
   %M(:,sum(M)==1) = 0;
   
-  M = angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree;
+  M = angle_outer(p2cV,p2cV,'noSym2')<5*degree;
   M = 0.9*M + 0.1*eye(size(M));
   
   pIdP = pIdP * M;
   
+elseif check_option(varargin,'mergeSimilar')
+
+  M = angle_outer(p2cV,p2cV,'noSym2')<5*degree;   
+  pIdP = pIdP * M;
+
 end
 
 % sort the table and store the highest probabilities in the job class
