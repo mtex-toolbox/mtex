@@ -1,6 +1,9 @@
 function makeDoc(varargin)
 % build help with the DocHelp Toolbox
 %
+% Options
+%  clear
+%  force
 
 % load doc toolbox
 warning off
