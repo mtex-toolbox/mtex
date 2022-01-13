@@ -2,12 +2,15 @@
 %
 %% 
 % This script demonstrates the tools MTEX offers to reconstruct a parent
-% austenite phase from a measured martensite phase. Some of the ideas are
-% from
-% <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
-% Crystallography, Morphology, and Martensite Transformation of Prior
-% Austenite in Intercritically Annealed High-Aluminum Steel> by Tuomo
-% Nyyssönen. We shall use the following sample data set.
+% austenite phase from a measured martensite phase. The methods are
+% described in more detail in the publications 
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022,
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction from partially or fully transformed
+% microstructures in MTEX>, J. Appl. Cryst. 55, 2022.
+% 
+% We shall use the following sample data set.
 
 % load the data
 mtexdata martensite 
@@ -134,11 +137,21 @@ hold off
 job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree)
 
 %%
+% For large maps it can be useful to perform the segmentation in a two step
+% process, where in the in the first step similarly oriented variants are
+% reconstructed as one variants and only seperated in a second step. This
+% can be accomplished by the commands
+% 
+%   job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree,'mergeSimilar')
+%   job.clusterVariantGraph 
+%   job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree)
+%
+%%
 % The next step is to cluster the variant graph into components. This is
 % done by the command <parentGrainReconstructor.clusterVariantGraph.html
 % |clusterVariantGraph|>.
 
-job.clusterVariantGraph('mergeSimilar')
+job.clusterVariantGraph('includeSimilar')
 
 %%
 % As a result a table of votes |job.votes| is generated. More specificaly,
@@ -151,8 +164,7 @@ plot(job.grains,job.votes.prob(:,1))
 mtexColorbar
 
 %%
-% We observe many
-% child grains where the algorithm feels very sure about the parent
+% We observe many child grains where the algorithm is sure about the parent
 % orientation and some child grains where the probability is close to 50
 % percent. This is an indication that there are a least two potential
 % parent orientations which are similarly likely. In many cases these
@@ -184,7 +196,7 @@ job.selectInteractive
 % from the surrounding already reconstructed parent grains. 
 
 % compute the votes
-job.calcGBVotes('p2c')
+job.calcGBVotes('p2c','reconsiderAll')
 
 % assign parent orientations according to the votes
 job.calcParentFromVote
