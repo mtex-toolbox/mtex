@@ -32,13 +32,14 @@ mthres = get_option(varargin,'mergethreshold',6*degree);
 p2cV = variants(job.p2c,'parent');
 numV = length(p2cV);
 
+% Analyse this!!!
 if check_option(varargin,'finishMerged')
-    p2cV = reshape(p2cV,[],1);
-    M = angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<mthres;
-    [z(:,1),z(:,2)] = find(M);
-    z(z(:,1) == z(:,2),:) = [];
-    z = unique(sort(z,2),'rows');
-    numV = 2;
+  p2cV = reshape(p2cV,[],1);
+  M = angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<mthres;
+  [z(:,1),z(:,2)] = find(M);
+  z(z(:,1) == z(:,2),:) = [];
+  z = unique(sort(z,2),'rows');
+  numV = 2;
 end
 
 % index of variant 1
@@ -121,6 +122,7 @@ if check_option(varargin,'C2C') || noOpt
     
       % compute fit
       prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
+      
       ind = prob > 0.1;
 
       i = [i;indC(ind,1) + k1-1;indC(ind,2) + k2-1];
@@ -133,7 +135,8 @@ if check_option(varargin,'C2C') || noOpt
   job.graph = max(job.graph, sparse(i, j , p, nHyper, nHyper));
 
 end
-  % Post processing to merge close-together parent orientations
+
+% Post processing to merge close-together parent orientations
 if check_option(varargin,'mergeSimilar')
     
 M = angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<mthres;
@@ -151,33 +154,32 @@ j2 = [];
 p2 = [];
 
 for k1 = 1:12
-    for k2 = 1:12
+  for k2 = 1:12
         
-        i_temp = indC(:,1) + z(k1,1)-1;
-        j_temp = indC(:,2) + z(k2,1)-1;
-        zz = sub2ind(size(job.graph),i_temp,j_temp);
+    i_temp = indC(:,1) + z(k1,1)-1;
+    j_temp = indC(:,2) + z(k2,1)-1;
+    zz = sub2ind(size(job.graph),i_temp,j_temp);
+      
+    i_temp = indC(:,1) + z(k1,2)-1;
+    j_temp = indC(:,2) + z(k2,1)-1;
+    zz(:,2) = sub2ind(size(job.graph),i_temp,j_temp);
+      
+    i_temp = indC(:,1) + z(k1,1)-1;
+    j_temp = indC(:,2) + z(k2,2)-1;
+    zz(:,3) = sub2ind(size(job.graph),i_temp,j_temp);
+      
+    i_temp = indC(:,1) + z(k1,2)-1;
+    j_temp = indC(:,2) + z(k2,2)-1;
+    zz(:,4) = sub2ind(size(job.graph),i_temp,j_temp);
         
-        i_temp = indC(:,1) + z(k1,2)-1;
-        j_temp = indC(:,2) + z(k2,1)-1;
-        zz(:,2) = sub2ind(size(job.graph),i_temp,j_temp);
-
-        i_temp = indC(:,1) + z(k1,1)-1;
-        j_temp = indC(:,2) + z(k2,2)-1;
-        zz(:,3) = sub2ind(size(job.graph),i_temp,j_temp);
+    prob = max(job.graph(zz),[],2);
+    ind = find(prob);
         
-        i_temp = indC(:,1) + z(k1,2)-1;
-        j_temp = indC(:,2) + z(k2,2)-1;
-        zz(:,4) = sub2ind(size(job.graph),i_temp,j_temp);
-        
-        prob = max(job.graph(zz),[],2);
-        ind = find(prob);
-        
-        i2 = [i2;indC2(ind,1) + k1-1;indC2(ind,2) + k2-1];
-        j2 = [j2;indC2(ind,2) + k2-1;indC2(ind,1) + k1-1];
-        p2 = [p2;prob(ind);prob(ind)];
-        
-    end
-        
+    i2 = [i2;indC2(ind,1) + k1-1;indC2(ind,2) + k2-1];
+    j2 = [j2;indC2(ind,2) + k2-1;indC2(ind,1) + k1-1];
+    p2 = [p2;prob(ind);prob(ind)];
+    
+  end
 end
 
 job.graph = max(graph2, sparse(i2, j2 , p2, nHyper2, nHyper2));
