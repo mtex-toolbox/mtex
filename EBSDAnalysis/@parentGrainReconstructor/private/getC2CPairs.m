@@ -53,18 +53,24 @@ if job.useBoundaryOrientations
 else 
   
   % simply the mean orientations of the grains
-  ori = job.grains('id',pairs).meanOrientation;
+  ori = reshape(job.grains('id',pairs).meanOrientation,size(pairs));
   
 end
 
 % remove pairs of similar orientations
 % as they will not vote reliably for a parent orientation
 if check_option(varargin,'minDelta')
-  
   ind = angle(ori(:,1),ori(:,2)) < get_option(varargin,'minDelta');
 
   ori(ind,:) = [];
   pairs(ind,:) = [];
-
-
 end
+
+if check_option(varargin,'curvatureFactor')
+  weights = calcBndWeights(job.grains.boundary, pairs, varargin{:});  
+else  
+  weights = 1;      
+end
+
+% translate to index if required
+if check_option(varargin,'index'), pairs = job.grains.id2ind(pairs); end

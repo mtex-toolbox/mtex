@@ -77,7 +77,12 @@ classdef parentGrainReconstructor < handle
     ebsdPrior      % EBSD prior to reconstruction
     grainsPrior    % grains prior to reconstruction
   end
-  
+
+  properties (Hidden=true, Dependent=true)
+    hasVariantGraph
+    hasGraph
+  end
+
   methods
 
     function job = parentGrainReconstructor(ebsd,varargin)
@@ -250,7 +255,15 @@ classdef parentGrainReconstructor < handle
       p2cV = job.p2c.variants; 
       c2c = job.p2c .* inv(p2cV(:));
     end
-        
+    
+    function out = get.hasVariantGraph(job)
+      out = ~isempty(job.graph) && length(job.graph)>1.5*length(job.grains);
+    end
+
+    function out = get.hasGraph(job)
+      out = ~isempty(job.graph) && length(job.graph)<1.5*length(job.grains);
+    end
+
   end
 
 end

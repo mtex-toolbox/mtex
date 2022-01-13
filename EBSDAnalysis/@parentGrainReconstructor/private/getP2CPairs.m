@@ -49,4 +49,7 @@ else
   
 end
 
+% translate to index if required
+if check_option(varargin,'index'), pairs = job.grains.id2ind(pairs); end
+
 end

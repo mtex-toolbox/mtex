@@ -17,9 +17,16 @@ function job = clusterGraph(job, varargin)
 % MaParentGrainReconstruction mclComponents
 %
 
-p = get_option(varargin,'inflationPower', 1.6);
+if job.hasVariantGraph
+  job.clusterVariantGraph(varargin{:});
+  
+else
+
+  p = get_option(varargin,'inflationPower', 1.6);
       
-job.graph = mclComponents(job.graph,p);
-      
+  job.graph = mclComponents(job.graph,p);
+
+end
+    
 end
     

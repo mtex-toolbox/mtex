@@ -1,4 +1,4 @@
-function out = variants(p2c,varargin)
+function [out, bestFriends] = variants(p2c,varargin)
 % variants parent to child orientation relationship
 %
 % Syntax
@@ -176,4 +176,8 @@ else % child variants
   else
     out = p2cVariants;
   end
+end
+
+if nargout == 2
+  [~,bestFriends] = max(angle_outer(out,out,'noSym2') < 5*degree,[],2);
 end

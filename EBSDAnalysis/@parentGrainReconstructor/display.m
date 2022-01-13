@@ -69,13 +69,18 @@ if ~isempty(job.graph) && size(job.graph,2) == length(job.grains)
   
   disp([' graph: ' int2str(sum(numComp)) ...
     ' grains in ' int2str(length(numComp)) ' clusters + ' int2str(untouched) ' single grain clusters']);
- 
+
+elseif job.hasVariantGraph
+
+  disp(' ');
+  disp([' variant graph: ' int2str(nnz(job.graph)) ...
+    ' entries']);
+
 end
 
 % display vote information
 if ~isempty(job.votes)
-  disp(' ');
-    
+  
   switch job.votes.Properties.VariableNames{2}
     case 'fit'
     
@@ -99,13 +104,18 @@ if ~isempty(job.votes)
       
   prop = prop(~isnan(prop(:,1)),1);
   
-  disp([' votes: ' size2str(prop)]);
-  disp(['   ' name ': ' xnum2str(quantile(prop,0.8)) symb ...
-    ', ' xnum2str(quantile(prop,0.6)) symb ...
-    ', ' xnum2str(quantile(prop,0.4)) symb ...
-    ', ' xnum2str(quantile(prop,0.2)) symb ...
-    ' (quintiles)']);
-  
+  if ~isempty(prop)
+
+    disp(' ');
+
+    disp([' votes: ' size2str(prop)]);
+    disp(['   ' name ': ' xnum2str(quantile(prop,0.8)) symb ...
+      ', ' xnum2str(quantile(prop,0.6)) symb ...
+      ', ' xnum2str(quantile(prop,0.4)) symb ...
+      ', ' xnum2str(quantile(prop,0.2)) symb ...
+      ' (quintiles)']);
+    
+  end
 end
 
 disp(' ')

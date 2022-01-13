@@ -53,11 +53,11 @@ hold off
 setappdata(ax,'handleSelected',handleSelected);
 
 votesFit = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
-votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24);
+votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24,'tolerance',5*degree,'curvatureFactor',1);
 
-figure(ax.Parent.Number+1)
-clf
-set(gcf,'name',['grain: ' xnum2str(grain.id)])
+fig = figure(100);
+clf(fig)
+set(fig,'name',['grain: ' xnum2str(grain.id)])
 numV = size(votesFit.parentId,2);
 cKey = ipfHSVKey(job.csParent);
 
