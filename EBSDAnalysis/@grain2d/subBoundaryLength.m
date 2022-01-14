@@ -17,7 +17,7 @@ grainIds = grains.innerBoundary.grainId;
 sL = grains.innerBoundary.segLength;
 
 % if varargin is a logical use for selection of relevant innerBoundary
-if islogical(varargin{1})
+if nargin>1 && islogical(varargin{1})
     grainIds = grainIds(varargin{1},:);
     sL = sL(varargin{1});
 end

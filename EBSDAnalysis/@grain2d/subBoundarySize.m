@@ -15,8 +15,8 @@ function  numSec = subBoundarySize(grains,varargin)
 grainIds = grains.innerBoundary.grainId;
 
 % if varargin is a logical use for selection of relevant innerBoundary
-if islogical(varargin{1})
-    grainIds = grainIds(varargin{1},:);
+if nargin>1 && islogical(varargin{1})
+  grainIds = grainIds(varargin{1},:);
 end
 
 grainIds(diff(grainIds,1,2)~=0) = [];
