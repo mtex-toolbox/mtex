@@ -30,6 +30,14 @@ classdef parentGrainReconstructor < handle
 %  variantId    - reconstructed variant ids
 %  packetId     - reconstructed packet ids
 %
+% References
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022,
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, J. Appl.
+% Cryst. 55, 2022.
+% 
 % See also
 % MaParentGrainReconstruction TiBetaReconstruction
 %
