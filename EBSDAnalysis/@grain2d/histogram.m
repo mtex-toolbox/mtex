@@ -2,18 +2,19 @@ function h = histogram(grains,varargin)
 % grain area weighted histogram
 %
 % Syntax
-%   histogram(grains)
-%   histogram(grains,n) % specify the number of bins
+%   histogram(grains)      % area weighted histogram of the grain area
 %
-%   % use an arbitrary property for the histogramm
-%   histogram(grains,grains.equivalentRadius) 
+%   prop = grains.equivalentRadius;
+%   histogram(grains,prop) % area weighted histogram of property prop
+%
+%   histogram(grains,prop,n)    % specify number of bins
+%   histogram(grains,prop,bins) % specify bin edges
 %
 %   h = histogram(grains) 
 %    
 % Input
 %  grains - @grain2d
 %  n      - number of bin edges, default ist 15, (number of bins is n-1)
-%  OR
 %  bins   - vector of bin edges
 %
 % Output
@@ -34,18 +35,16 @@ end
 
 % generate bins
 if ~isempty(varargin) && isnumeric(varargin{1}) 
-    if numel(varargin{1})==1
-        nbins = varargin{1}; %define nbins
-    elseif numel(varargin{1})>1
-        bins = varargin{1}; %define bin edges automatically
-        nbins = numel(varargin{1});
-    end
+  if numel(varargin{1})==1
+    nbins = varargin{1}; %define nbins
+  elseif numel(varargin{1})>1
+    bins = varargin{1}; %define bin edges automatically
+    nbins = numel(varargin{1});
+  end
 else
-    nbins = 15;
+  nbins = 15;
 end
-if ~exist('bins','var')
-    bins = linspace(0,max(prop)+eps,nbins);
-end
+if ~exist('bins','var'), bins = linspace(0,max(prop)+eps,nbins); end
 
 % loop through all phases
 h = [];
