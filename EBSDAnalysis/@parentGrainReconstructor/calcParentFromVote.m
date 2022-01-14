@@ -24,6 +24,12 @@ function job = calcParentFromVote(job,varargin)
 %  minAlpha - minimum factor between best and second best probability
 %  minDelta - minimum difference between best and second best probability
 %
+% References
+%
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, J. Appl.
+% Cryst. 55, 2022.
+%
 
 assert(~isempty(job.votes),'You need to compute votes first!');
 

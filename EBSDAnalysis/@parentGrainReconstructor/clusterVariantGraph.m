@@ -1,5 +1,5 @@
 function job = clusterVariantGraph(job,varargin)
-% the MCL algorithms generalized to hyper graphs
+% the MCL algorithm generalized to hyper graphs
 %
 % Syntax
 %
@@ -21,6 +21,11 @@ function job = clusterVariantGraph(job,varargin)
 %  keepGraph      - do not kill graph after clustering 
 %  includeSimilar - similarly oriented variants share probability
 %  includeTwins   - potential twins share probability
+%
+% References
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022
 %
 
 % ensure we have a graph

@@ -18,11 +18,6 @@ function job = calcVariantGraph(job, varargin)
 %  mergeSimilar - merge similar variants in the graph
 %
 % Description
-% Parent grain reconstruction using the variant graph approach is explained
-% in the publication
-%
-% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
-% improved parent grain reconstruction>, arXiv, 2022
 % 
 % The weights of the graph are computed from a cummulative Gaussian
 % distribution with mean given by the option |'threshold'| and variance
@@ -31,6 +26,10 @@ function job = calcVariantGraph(job, varargin)
 % The option |mergeSimilar| creates a variant graph that does not
 % distinguish between similar variants. 
 % 
+% References
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022
 %
 
 % get parameters
