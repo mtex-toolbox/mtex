@@ -12,7 +12,9 @@ function h = histogram(grains,varargin)
 %    
 % Input
 %  grains - @grain2d
-%  n      - number of bins, default ist 15
+%  n      - number of bin edges, default ist 15, (number of bins is n-1)
+%  OR
+%  bins   - vector of bin edges
 %
 % Output
 %  h - handle to the histogram graphics object
@@ -31,12 +33,19 @@ else
 end
 
 % generate bins
-if ~isempty(varargin) && isnumeric(varargin{1})
-  nbins = varargin{1};
+if ~isempty(varargin) && isnumeric(varargin{1}) 
+    if numel(varargin{1})==1
+        nbins = varargin{1}; %define nbins
+    elseif numel(varargin{1})>1
+        bins = varargin{1}; %define bin edges automatically
+        nbins = numel(varargin{1});
+    end
 else
-  nbins = 15;
+    nbins = 15;
 end
-bins = linspace(0,max(prop)+eps,nbins);
+if ~exist('bins','var')
+    bins = linspace(0,max(prop)+eps,nbins);
+end
 
 % loop through all phases
 h = [];
@@ -44,9 +53,12 @@ for id = grains.indexedPhasesId
   
   % find for each area the binId
   [~,~,binId] = histcounts(prop(grains.phaseId==id),bins);
+  if any(~binId,'all')
+      warning([num2str(nnz(~binId)) ' grains outside bin limits not plotted!']);
+  end
     
   % compute the sum of areas belonging to the same bin
-  cumArea = accumarray(binId,area(grains.phaseId==id),[length(bins)-1 1],@nansum) ./ sum(area);
+  cumArea = accumarray(binId(binId>0),area(grains.phaseId==id & binId>0),[length(bins)-1 1],@nansum) ./ sum(area);
   
   h = [h,optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
     'FaceColor',grains.CSList{id}.color),varargin{:})]; %#ok<AGROW>

@@ -23,3 +23,5 @@ help/tmp/*
 !data/testgrains.mat
 /myToken.txt
 resources/*
+*.c
+*.c
