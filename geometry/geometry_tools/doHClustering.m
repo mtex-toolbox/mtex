@@ -74,7 +74,7 @@ d(sub2ind(size(d),1:length(obj),1:length(obj))) = 0;
 
 center = obj(1:end);
 
-progress(0,length(obj));
+progress(0,length(obj),'do clustering: ',varargin{:});
 while 1
   
   if length(center) <= n, break; end
@@ -104,10 +104,10 @@ while 1
   d(j,:) = [];
   center(j) = [];
     
-  progress(length(obj)-length(center),length(obj));
+  progress(length(obj)-length(center),length(obj),'do clustering: ',varargin{:});
 end
 
-progress(length(obj),length(obj));
+progress(length(obj),length(obj),'do clustering: ',varargin{:});
 
 [c,~] = find(I_OC.');
 
