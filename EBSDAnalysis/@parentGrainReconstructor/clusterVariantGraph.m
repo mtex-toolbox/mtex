@@ -21,6 +21,7 @@ function job = clusterVariantGraph(job,varargin)
 %  keepGraph      - do not kill graph after clustering 
 %  includeSimilar - similarly oriented variants share probability
 %  includeTwins   - potential twins share probability
+%  minCluster     - minimum cluster size (default 4)
 %
 % References
 %
@@ -121,10 +122,14 @@ if p>1
 else
   s = full(sum(A,2) - diag(A)); % sum columns
 end
-s = s(isChild);
 
+% ensure minimum cluster size
+minCluster = get_option(varargin,'minCluster',4);
+s = s .* (full(sum(A>0,2))>=minCluster);
+
+% store in numGrains x numVariant matrix
 pIdP = nan(length(job.grains),numV);
-pIdP(job.isChild,:) = reshape(s,numV,[]).';
+pIdP(job.isChild,:) = reshape(s(isChild),numV,[]).';
 
 % some post processing
 if check_option(varargin,'includeTwins')
@@ -137,7 +142,6 @@ if check_option(varargin,'includeTwins')
   M(~sum(M),~sum(M)) = eye(nnz(~sum(M)));
   pIdP = pIdP * M;
 end
-
 
 if check_option(varargin,'includeSimilar')
   %M = triu(angle_outer(job.p2c.variants('parent'),job.p2c.variants('parent'),'noSym2')<5*degree);
