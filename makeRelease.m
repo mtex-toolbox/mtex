@@ -36,7 +36,7 @@ zip(zipName,rDir);
 
 
 disp('Authenticate at Github ...')
-
+% gh auth login
 
 %doRelease = ['gh release create ' ver ' ' zipName ' -t "' getMTEXpref('version') '"'];
 doRelease = ['gh release create ' ver ' ' zipName];
