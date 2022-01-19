@@ -1,12 +1,12 @@
-function [S3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
+function [SO3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
 % regular grid in Euler orientation space
 %
 % Syntax
-%   S3G = regularSO3Grid(cs)
-%   S3G = regularSO3Grid(cs,ss,'resolution',2.5*degree)     % specify the resolution
-%   S3G = regularSO3Grid(cs,ss,'resolution',5*degree,'ZYZ') % use ZYZ convention
-%   S3G = regularSO3Grid(cs,ss,'phi2','sections',10) % 10 phi2 sections
-%   S3G = regularSO3Grid
+%   SO3G = regularSO3Grid(cs)
+%   SO3G = regularSO3Grid(cs,ss,'resolution',2.5*degree)     % specify the resolution
+%   SO3G = regularSO3Grid(cs,ss,'resolution',5*degree,'ZYZ') % use ZYZ convention
+%   SO3G = regularSO3Grid(cs,ss,'phi2','sections',10)        % 10 phi2 sections
+%   SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',64) % 
 %
 % Input
 %  cs - @crystalSymmetry
@@ -21,6 +21,24 @@ function [S3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
 %
 % Output
 %
+
+if check_option(CS,'ClenshawCurtis')
+  % a regular grid for ClenshawCurtis quadrature required bandwidth 2*n 
+  % 2n+1 Clenshaw Curtis Quadrature rule -> (2n+2)x(2n+1)x(2n+2) points
+
+  N = ceil(get_option(varargin,'bandwidth',256)/2);
+
+  alphagamma = (0:2*N+1)*pi/(N+1);
+  beta = linspace(0,pi,2*N+1);
+
+  [beta,alpha,gamma] = meshgrid(beta,alphagamma,alphagamma);
+  SO3G = rotation.byEuler(alpha,beta,gamma); 
+
+  return
+
+end
+
+
 
 if nargin > 1 && isa(varargin{1},'symmetry')
   SS = varargin{1};
@@ -94,7 +112,7 @@ switch lower(sectype)
 end
 
 % define grid
-S3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
+SO3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
 % store gridding, @TODO: check when its required, this is required for
 % export
 if nargout == 4
