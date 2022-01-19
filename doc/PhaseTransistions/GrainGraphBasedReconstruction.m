@@ -1,13 +1,18 @@
-%% Martensite Parent Grain Reconstruction
+%% Grain Graph Based Parent Grain Reconstrution
 %
 %% 
-% This script demonstrates the tools MTEX offers to reconstruct a parent
-% austenite phase from a measured martensite phase. Some of the ideas are
-% from
-% <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
+% This script demonstrates the grain graph approach to parent phase
+% reconstrution in a martensitic material. The methods are
+% described in more detail in the publications 
+%
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, J. Appl.
+% Cryst. 55, 2022.
+% * <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
 % Crystallography, Morphology, and Martensite Transformation of Prior
-% Austenite in Intercritically Annealed High-Aluminum Steel> by Tuomo
-% Nyyssönen. We shall use the following sample data set.
+% Austenite in Intercritically Annealed High-Aluminum Steel>
+% 
+% We shall use the following sample data set.
 
 % load the data
 mtexdata martensite 

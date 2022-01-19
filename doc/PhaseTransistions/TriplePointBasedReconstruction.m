@@ -1,8 +1,9 @@
-%% Parent Beta Phase Reconstruction in Titanium Alloys
+%% Triple Point Based Parent Phase Reconstruction
 %
 %%
-% In this section we discuss parent grain reconstruction at the example of
-% a titanium alloy. Lets start by importing a sample data set
+% In this section we discuss triple point based parent grain reconstruction
+% at the example of a titanium alloy. Lets start by importing a sample data
+% set
 
 mtexdata alphaBetaTitanium
 
@@ -36,79 +37,65 @@ round2Miller(beta2alpha)
 % need to compute the initital child grains from out EBSD data set.
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree,...
+  'removeQuadruplePoints');
 
 %%
-% We choose a very small threshold of 1.5 degree for the identification of
-% grain boundaries to avoid alpha orientations that belong to different
-% beta grains get merged into the same alpha grain.
+% As our reconstruction will be based on triple junctions we compute the
+% child grains using the option <QuadruplePoints.html
+% |removeQuadruplePoints|> which turns all quadruple junctions into 2
+% triple junctions. Furthermore, we choose a very small threshold of 1.5
+% degree for the identification of grain boundaries to avoid alpha
+% orientations that belong to different beta grains get merged into the
+% same alpha grain.
 %
 % Now we are ready to set up the parent grain reconstruction job.
 
 job = parentGrainReconstructor(ebsd, grains);
+
+% set the parent to child orientation relationship
 job.p2c = beta2alpha
 
-%%
-% The output of the |job| variable allows you to keep track of the amount
-% of already recovered parent grains. Using the variable |job| you have
-% access to the following properties
+%% Compute parent orientations from triple junctions
 %
-% * |job.grainsIn| - the input grains
-% * |job.grains| - the grains at the current stage of reconstruction
-% * |job.ebsdIn| - the input EBDS data
-% * |job.ebsd| - the ebsd data at the current stage of reconstruction
-% * |job.mergeId| - the relationship between the input grains
-% |job.grainsIn| and the current grains |job.grains|, i.e.,
-% |job.grainsIn(ind)| goes into the merged grain
-% |job.grains(job.mergeId(ind))|
-% * |job.numChilds| - number of childs of each current parent grain
-% * |job.parenGrains| - the current parent grains
-% * |job.childGrains| - the current child grains
-% * |job.isTransformed| - which of the |grainsMeasured| have a computed
-% parent
-% * |job.isMerged| - which of the |grainsMeasured| have been merged into a parent grain
-% * |job.transformedGrains| - child grains in |grainsMeasured| with computed
-% parent grain
-%
-% Additionaly, the <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|> class provides the following operations for
-% parent grain reconstruction. These operators can be applied multiple
-% times and in any order to archieve the best possible reconstruction.
-%
-% * |job.calcVariantGraph| - compute the variant graph
-% * |job.clusterVariantGraph| - compute votes from the variant graph
-% * |job.calcGBVotes| - detect child/child and parent/child grain boundaries
-% * |job.calcTPVotes| - detect child/child/child triple points
-% * |job.calcParentFromVote| - recover parent grains from votes
-% * |job.calcParentFromGraph| - recover parent grains from graph clustering
-% * |job.mergeSimilar| - merge similar parent grains
-% * |job.mergeInclusions| - merge inclusions
-%
-%%
-% The main line of the variant graph based reconstruction algorithm is as
-% follows. First we compute the variant graph using the command
-% <parentGrainReconstructor.calcVariantGraph |job.calcVariantGraph|>
+% In present datas set we have very little and unreliable parent
+% measurements. Therefore, we use triple junctions as germ cells for the
+% parent parent grains. In a first step we identify triple junctions that
+% have misorientations that are compatible with a common parent orientation
+% using the command <parentGrainReconstructor.calcTPVotes.html
+% |calcTPVotes|>. The option |'minFit'| tells the MTEX that the only those
+% triple junctions are considered where the fit to the common parent
+% orientation does not exceed 2.5 degree.
 
-job.calcVariantGraph('threshold',1.5*degree)
+job.calcTPVotes('minFit',2.5*degree,'maxFit',5*degree)
 
 %%
-% In a second step we cluster the variant graph and at the same time
-% compute probabilites for potential parent orientations using the command
-% <parentGrainReconstructor.clusterVariantGraph |job.clusterVariantGraph|>
+% The above command does not only compute the best fitting but also the
+% second best fitting parent orientation. This allows us to ignore ambigues
+% triple points which may vote equally well for different parent
+% orientations. In the above command we did this by the option |'maxFit'|
+% which tells MTEX to ignore all triple points where the fit to the second
+% best parent orientation is below 5 degree.
+%%
+% From all remaining triple points the command
+% <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> compute a list
+% of votes stored in |job.votes| that contain for each child grain the most
+% likely parent orientation and a corresponding probability
+% |job.votes.prob|. We may visualize this probability for each grain
 
-job.clusterVariantGraph('numIter',3)
+plot(job.grains, job.votes.prob(:,1))
+mtexColorbar
 
 %%
-% The probabilities are stored in |job.votes.prob| and the corresponding
-% variant ids in |job.votes.parentId|. In order to use the parent
-% orientation with the highest probability for the reconstruction we use
-% the command <parentGrainReconstructor.calcParentFromVote
-% |job.calcParentFromVote|>
+% We observe that for most of the grains the probability is above 70
+% percent. We may use this percentage as threshold to decide which child
+% grains we turn into parent grains. This can be done by the command command
+% <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
 
-job.calcParentFromVote
+job.calcParentFromVote('minProb',0.7)
 
 %%
-% We observe that after this step more then 99 percent of the grains became
+% We observe that after this step more then 66 percent of the grains became
 % parent grains. Lets visualize these reconstructed beta grains
 
 % define a color key
@@ -118,6 +105,29 @@ ipfKey.inversePoleFigureDirection = vector3d.Y;
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
 plot(job.parentGrains, color, 'figSize', 'large')
+
+%% Grow parent grains at grain boundaries
+%
+% Next we may grow the reconstructed parent grains into the regions of the
+% remaining child grains. To this end we use the command
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> with the option
+% |'p2c'| to compute votes from parent to child grain boundaries. Next we
+% use the exact same command
+% <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
+% to recover parent orientations from the votes. As threshold for the
+% growing the parent grains into the child grains we use 2.5 degree, 5
+% degree and 7.5 degree. This can be easily accomblished by the following
+% small loop.
+
+for k = 1:3
+  job.calcGBVotes('p2c','threshold',k * 2.5*degree);
+  job.calcParentFromVote
+end
+
+% plot the result
+color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
+plot(job.parentGrains, color, 'figSize', 'large')
+
 
 %% Merge parent grains
 %
@@ -143,7 +153,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % merge all inclusions that have fever pixels then a certain threshold into
 % the surrounding parent grains.
 
-job.mergeInclusions('maxSize',10)
+job.mergeInclusions('maxSize',5)
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
@@ -187,5 +197,5 @@ plot(ebsd('Ti (Alpha)'),ebsd('Ti (Alpha)').orientations,'figSize','large')
 
 hold on
 parentGrains = smooth(job.grains,5);
-plot(parentGrains.boundary,'lineWidth',3,'lineColor','White')
+plot(parentGrains.boundary,'lineWidth',3)
 hold off

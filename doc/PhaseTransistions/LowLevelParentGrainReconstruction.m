@@ -1,4 +1,4 @@
-%% Parent Beta Phase Reconstruction in Titanium Alloys
+%% Low Level Parent Phase Reconstruction
 %
 %%
 % In this section we discuss parent grain reconstruction at the example of

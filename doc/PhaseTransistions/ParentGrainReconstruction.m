@@ -1,3 +1,0 @@
-%% Partent Grain Reconstruction
-%
-%%
