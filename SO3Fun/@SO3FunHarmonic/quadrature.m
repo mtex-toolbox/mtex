@@ -17,12 +17,12 @@ function SO3F = quadrature(f, varargin)
 %  bandwidth - minimal harmonic degree (default: 64)
 %
 
-persistent keepPlanNOSFT;
+persistent keepPlanNSOFT;
 
 % kill plan
 if check_option(varargin,'killPlan')
-  nfsftmex('finalize',keepPlanNOSFT);
-  keepPlanNOSFT = [];
+  nfsftmex('finalize',keepPlanNSOFT);
+  keepPlanNSOFT = [];
   return
 end
 
@@ -34,7 +34,7 @@ if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
     [nodes, W] = quadratureSO3Grid(2*bw, 'gauss');
   else
-    [nodes, W] = quadratureSO3Grid(2*bw);
+    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis');
   end
   values = f(nodes(:));
 else
@@ -42,9 +42,11 @@ else
   values = varargin{1};
   W = get_option(varargin,'weights',1);
   
-  if length(nodes)>100000 && length(values) == length(nodes) && length(W)==1
-    % TODO: use a regular grid here and a faster search
-    n2 = equispacedSO3Grid('resolution',0.5*degree);
+  if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
+    % TODO: use a regular grid here and a faster search 
+    % TODO: nodes have to be orientation to use nodes.CS . Does the following work correctly?
+    % if isa(nodes,'rotation'), orientation(nodes,crystalSymmetry); end
+    n2 = equispacedSO3Grid(nodes.CS,'resolution',0.5*degree);
     id = find(n2,nodes);
     values = accumarray(id,values,[length(n2),1]);
     
@@ -62,7 +64,7 @@ end
 
 % create plan
 if check_option(varargin,'keepPlan')
-  plan = keepPlanNOSFT;
+  plan = keepPlanNSOFT;
 else
   plan = [];
 end
@@ -72,14 +74,18 @@ if isempty(plan)
   
   % 2^4 -> nfsoft-represent
   % 2^2 -> nfsoft-use-DPT
-  nfsoft_flags = bitor(2^4,4);
+   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
+  nfsoft_flags = bitor(2^4,4)+1;
   % nfft cutoff - 4
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)
   % initialize nfsoft plan
-  plan = nfsoftmex('init',bw,length(nodes),nfsoft_flags,0,4,1000,2*ceil(1.5*bw)); 
+  plan = nfsoftmex('init',bw,length(nodes),nfsoft_flags,0,4,1000,2*ceil(1.5*bw));
   
+  % set rotations in Euler angles (nodes)
   nfsoftmex('set_x',plan,Euler(nodes,'nfft').');
+  
+  % node-dependent precomputation
   nfsoftmex('precompute',plan);
 
 end
@@ -93,14 +99,15 @@ for index = 1:num
   % adjoint nfsoft
   nfsoftmex('set_f', plan, W(:) .* values(:, index));
   nfsoftmex('adjoint', plan);
-  fhat(:, index) = nfsftmex('get_f_hat_linear', plan);
+  % get fourier coefficients from plan and normalize
+  fhat(:, index) = nfsoftmex('get_f_hat', plan)*(sqrt(8)*pi);
 end
 
 % kill plan
 if check_option(varargin,'keepPlan')
-  keepPlanNOSFT = plan;
+  keepPlanNSOFT = plan;
 else
-  nfsftmex('finalize', plan);
+  nfsoftmex('finalize', plan);
 end
 
 
@@ -112,6 +119,6 @@ SO3F = SO3FunHarmonic(fhat);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients
-SO3F.antippodal = check_option(varargin,'antipodal') || nodes.antipodal;
+SO3F.antipodal = check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal);
 
 end

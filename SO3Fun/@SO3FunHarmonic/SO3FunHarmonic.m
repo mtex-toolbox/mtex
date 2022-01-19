@@ -154,7 +154,7 @@ end
 
 methods (Static = true)
   %sF = approximation(v, y, varargin);
-  %SO3F = quadrature(f, varargin);
+  SO3F = quadrature(f, varargin);
   %sF = regularisation(nodes,y,lambda,varargin);
   SO3F = WignerDmap(harmonicdegree,varargin);
 end
