@@ -68,7 +68,7 @@ if ~isempty(job.parentGrains) && (check_option(varargin,'p2p') || noOpt)
   ind = prob > 0.1;
   
   % write to graph
-  indP = indV1(grainPairs(ind,:));
+  indP = reshape(indV1(grainPairs(ind,:)),[],2);
   job.graph = job.graph + max(...
     sparse(indP(:,1),indP(:,2),prob(ind),nVG,nVG),...
     sparse(indP(:,2),indP(:,1),prob(ind),nVG,nVG));
