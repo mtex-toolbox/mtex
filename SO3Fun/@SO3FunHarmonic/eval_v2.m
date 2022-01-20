@@ -36,7 +36,7 @@ if isempty(plan)
   % initialize nfft plan
   %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
   NN = 2*N+2;
-  N2 = N+1+mod(N+1,2);
+  if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
   FN = ceil(1.5*NN);
   FN2 = ceil(1.5*N2);
   plan = nfftmex('init_guru',{3,NN,N2,NN,M,FN,FN2,FN,4,int8(0),int8(0)});
