@@ -21,7 +21,7 @@ persistent keepPlanNSOFT;
 
 % kill plan
 if check_option(varargin,'killPlan')
-  nfsftmex('finalize',keepPlanNSOFT);
+  nfsoftmex('finalize',keepPlanNSOFT);
   keepPlanNSOFT = [];
   return
 end
@@ -69,7 +69,7 @@ else
   plan = [];
 end
 
-% initialize nfsft
+% initialize nfsoft
 if isempty(plan)
   
   % 2^4 -> nfsoft-represent
