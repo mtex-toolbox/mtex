@@ -27,10 +27,10 @@
  *		ghat = representationbased_coefficient_transform(N,fhat)
  *    ghat = representationbased_coefficient_transform(N,fhat,2^0+2^1)
  * 
- * flags:  2^0 --> 'isReal'
- *         2^1 --> 'makeeven'
- *         2^2 --> normalize Fourier coefficients
- *         2^3 --> precompute Wigner-d Matrices      (not implemented yet)
+ * flags:  2^0 -> fhat are the fourier coefficients of a real valued function
+ *         2^1 -> make size of result even
+ *         2^2 -> use L_2-normalized Wigner-D functions
+ *         2^3 -> precompute Wigner-d Matrices      (not implemented yet)
  * 
  * This is a MEX-file for MATLAB.
  * 
@@ -46,12 +46,12 @@
 
 
 /*
-* Transform number which includes the flags to boolean vector.
-* flags:  2^0 --> 'isReal'
-*         2^1 --> 'makeeven'
-*         2^2 --> normalize Fourier coefficients
-*         2^3 --> precompute Wigner-d Matrices      (not implemented yet)
-*/
+ * Transform number which includes the flags to boolean vector.
+ * flags:  2^0 -> fhat are the fourier coefficients of a real valued function
+ *         2^1 -> make size of result even
+ *         2^2 -> use L_2-normalized Wigner-D functions
+ *         2^3 -> precompute Wigner-d Matrices      (not implemented yet)
+ * */
 void get_flags(mxDouble number, bool flags[7]) {
   for (int i = 6; i>=0; i--){
     if(number >= pow(2,i)){

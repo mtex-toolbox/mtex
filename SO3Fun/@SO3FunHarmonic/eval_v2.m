@@ -1,4 +1,4 @@
-function f = eval2(SO3F,rot,varargin)
+function f = eval_v2(SO3F,rot,varargin)
 
 persistent keepPlan;
 
@@ -64,14 +64,21 @@ for k = 1:length(SO3F)
     % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
     % we use ind in 2nd dimension to get even number of fourier coefficients
     % the additionally indices gives 0-columns in front of ghat
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),2^0+2^1+2^2); %'isReal','makeeven','normalize_fouriercoeffis'
+    % 2^0 -> fhat are the fourier coefficients of a real valued function
+    % 2^1 -> make size of result even
+    % 2^2 -> use L_2-normalized Wigner-D functions
+    flags = 2^0+2^1+2^2;
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
   
   else
 
     % create ghat -> k x l x j
     % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
-    % we can again use (**) to speed up  
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),2^1+2^2);  %'makeeven','normalize_fouriercoeffis'
+    % we can again use (**) to speed up
+    % 2^1 -> make size of result even
+    % 2^2 -> use L_2-normalized Wigner-D functions
+    flags = 2^1+2^2;
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
   
   end
 

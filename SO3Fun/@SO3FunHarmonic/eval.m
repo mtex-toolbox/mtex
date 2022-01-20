@@ -16,7 +16,7 @@ function f =  eval(F,rot,varargin)
 %
 
 if check_option(varargin,'v2')
-  f = eval2(F,rot,varargin{:});
+  f = eval_v2(F,rot,varargin{:});
   return
 end
 

@@ -1,6 +1,6 @@
 function ghat = compute_ghat_matlab(N,fhat,varargin)
 % This function contains the matlab code which is used to compute the
-% fourier coefficients ghat in eval2 and evalfft by a faster C++ program.
+% fourier coefficients ghat in eval_v2 and evalfft by a faster C++ program.
 
 normalizedfhat=zeros(deg2dim(N+1),1);
   for l=0:N
@@ -11,7 +11,7 @@ fhat=normalizedfhat;
 halfsize = get_flag(varargin,'isReal','notReal');
 even = get_flag(varargin,'makeeven','notmake');
 
-% (2N+2,2N+2,2N+2)     -->     if ~SO3F.isReal in eval2
+% (2N+2,2N+2,2N+2)     -->     if ~SO3F.isReal in eval_v2
 if strcmpi(even,'makeeven') && ~strcmpi(halfsize,'isReal')
   
   ghat = zeros(2*N+2,2*N+2,2*N+2);
@@ -49,7 +49,7 @@ if strcmpi(even,'makeeven') && ~strcmpi(halfsize,'isReal')
   
 end
 
-% (2N+2,N+1+ind,2N+2)     -->     if SO3F.isReal in eval2
+% (2N+2,N+1+ind,2N+2)     -->     if SO3F.isReal in eval_v2
 if strcmpi(even,'makeeven') && strcmpi(halfsize,'isReal')
   
   ind = mod(N+1,2);
