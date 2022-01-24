@@ -70,6 +70,8 @@ if SO3F.isReal
   % with  k = -N:N
   %       l =  0:N      -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
   %       j = -N:N      -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
+  % 2^0 -> fhat are the fourier coefficients of a real valued function
+  % 2^2 -> use L_2-normalized Wigner-D functions
   ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^0+2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
@@ -78,6 +80,7 @@ if SO3F.isReal
 
 else
 
+  % 2^2 -> use L_2-normalized Wigner-D functions
   ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))

@@ -44,7 +44,5 @@ else
   
 end
 
-SO3F.isReal=0;
-
 
 end

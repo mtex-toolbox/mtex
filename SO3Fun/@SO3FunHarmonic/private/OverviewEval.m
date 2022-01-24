@@ -379,16 +379,16 @@ legend({'eval_{NFSOFT}','eval_{SymHalfsize}','eval_{SymReconstrct}'},'Location',
 sgtitle('running time of different eval functions')
 
 % Thus we use eval_SymHalfsize.m as best implementation.
-% Therefore we construct a function eval2 using this implementation in the
+% Therefore we construct a function eval_v2 using this implementation in the
 % case of real valued functions and eval_NoSymFast.m otherwise.
 
-%% eval2.m
-fprintf('\neval2.m \n')
+%% eval_v2.m
+fprintf('\neval_v2.m \n')
 tic
-ftest1 = eval2(SO3F,ori1);
+ftest1 = eval_v2(SO3F,ori1);
 t1 = toc;
 tic
-ftest2 = eval2(SO3F,ori2);
+ftest2 = eval_v2(SO3F,ori2);
 t2 = toc;
 fprintf('  running time of [ori1,ori2]  = [%.3f,%.3f] s\n',t1,t2)
 fprintf('  l_{\\infty} error of [ori1,ori2] = [%.1d,%.1d] \n',...
