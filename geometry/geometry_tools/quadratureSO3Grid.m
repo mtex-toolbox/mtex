@@ -5,7 +5,7 @@ function [SO3G, W, M2] = quadratureSO3Grid(bandwidth, varargin)
 %                       Euler angle (beta)
 %
 % Syntax
-%   [SO3G, W, M2] = quadratureSO3rid(M, 'clenshawCurtis') quadrature grid of type Clenshaw Curtis
+%   [SO3G, W, M2] = quadratureSO3rid(M, 'ClenshawCurtis') quadrature grid of type Clenshaw Curtis
 %
 
 

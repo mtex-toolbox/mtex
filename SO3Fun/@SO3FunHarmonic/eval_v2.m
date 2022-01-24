@@ -1,4 +1,19 @@
 function f = eval_v2(SO3F,rot,varargin)
+% evaluates the rotational harmonic on a given set of points using a
+% representation based coefficient transform, that transforms 
+% a series of Wigner-D functions into a trivariate fourier series and using
+% NFFT at the end.
+%
+% Syntax
+%   f = eval(F,v)
+%
+% Input
+%   F - @SO3FunHarmonic
+%   v - @rotation interpolation nodes
+%
+% Output
+%   f - double
+%
 
 persistent keepPlan;
 
@@ -56,27 +71,27 @@ for k = 1:length(SO3F)
   % the Fourier coefficients. We will use this to speed up computation.
   if SO3F.isReal
 
-    %ind = mod(N+1,2);
+    % ind = mod(N+1,2);
     % create ghat -> k x l x j
     %   k = -N+1:N
     %   l =    0:N+ind    -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
     %   j = -N+1:N        -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
-    % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
-    % we use ind in 2nd dimension to get even number of fourier coefficients
-    % the additionally indices gives 0-columns in front of ghat
-    % 2^0 -> fhat are the fourier coefficients of a real valued function
-    % 2^1 -> make size of result even
-    % 2^2 -> use L_2-normalized Wigner-D functions
+    % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N 
+    % Therfore we use ind in 2nd dimension to get even number of fourier coefficients
+    % The additional indices produce 0-columns in front of ghat
+    % flags: 2^0 -> fhat are the fourier coefficients of a real valued function
+    %        2^1 -> make size of ghat even
+    %        2^2 -> use L_2-normalized Wigner-D functions
     flags = 2^0+2^1+2^2;
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
   
   else
 
     % create ghat -> k x l x j
-    % we need to make it 2N+2 as the index set of the NFFT is -(N+1) ... N
-    % we can again use (**) to speed up
-    % 2^1 -> make size of result even
-    % 2^2 -> use L_2-normalized Wigner-D functions
+    % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N
+    % we can use (**) again to speed up
+    % flags: 2^1 -> make size of ghat even
+    %        2^2 -> use L_2-normalized Wigner-D functions
     flags = 2^1+2^2;
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
   
