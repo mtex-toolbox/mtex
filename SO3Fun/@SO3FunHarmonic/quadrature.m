@@ -18,7 +18,7 @@ function SO3F = quadrature(f, varargin)
 %
 
 if check_option(varargin,'v2')
-  SO3F = quadrature_v2(f,varargin{:});
+  SO3F = SO3FunHarmonic.quadrature_v2(f,varargin{:});
   return
 end
 
