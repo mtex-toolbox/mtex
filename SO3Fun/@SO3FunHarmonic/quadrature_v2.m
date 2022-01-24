@@ -1,0 +1,145 @@
+function SO3F = quadrature_v2(f, varargin)
+%
+% Syntax
+%   SO3F = SO3FunHarmonic.quadrature_v2(nodes,values,'weights',w)
+%   SO3F = SO3FunHarmonic.quadrature_v2(f)
+%   SO3F = SO3FunHarmonic.quadrature_v2(f, 'bandwidth', bandwidth)
+%
+% Input
+%  values - double (first dimension has to be the evaluations)
+%  nodes  - @rotation
+%  f - function handle in vector3d (first dimension has to be the evaluations)
+%
+% Output
+%  SO3F - @SO3FunHarmonic
+%
+% Options
+%  bandwidth      - minimal harmonic degree (default: 64)
+%  ClenshawCurtis - use Clenshaw Curtis quadrature nodes and weights
+%
+
+persistent keepPlanNFFT;
+
+% kill plan
+if check_option(varargin,'killPlan')
+  nfftmex('finalize',keepPlanNFFT);
+  keepPlanNFFT = [];
+  return
+end
+
+bw = get_option(varargin, 'bandwidth', 64);
+
+
+% 1) compute/get weights and values for quadrature
+
+if isa(f,'SO3Fun'), f = @(v) f.eval(v,'v2'); end
+
+if isa(f,'function_handle')
+  if check_option(varargin, 'gauss')
+    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss');
+  else
+    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis');
+    varargin{end+1} = 'ClenshawCurtis';
+  end
+  values = f(nodes(:));
+else
+  nodes = f(:);
+  values = varargin{1};
+  W = get_option(varargin,'weights',1);
+  
+  if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
+    % TODO: use a regular grid here and a faster search 
+    % TODO: nodes have to be orientation to use nodes.CS . Does the following work correctly?
+    % if isa(nodes,'rotation'), orientation(nodes,crystalSymmetry); end
+    n2 = equispacedSO3Grid(nodes.CS,'resolution',0.5*degree);
+    id = find(n2,nodes);
+    values = accumarray(id,values,[length(n2),1]);
+    
+    id = values>0;
+    nodes = reshape(n2.subGrid(id),[],1);
+    values = values(id);
+    nodes.antipodal = f.antipodal;
+  end
+end
+
+if isempty(nodes)
+  SO3F = SO3FunHarmonic(0);
+  return
+end
+
+
+% 2) Inverse trivariate NFFT/FFT and representation based wigner transform
+
+% create plan
+if check_option(varargin,'keepPlan')
+  plan = keepPlanNFFT;
+else
+  plan = [];
+end
+
+% initialize nfft plan
+if isempty(plan) && ~check_option(varargin, 'ClenshawCurtis')
+
+  %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
+  NN = 2*bw+2;
+  FN = ceil(1.5*NN);
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(nodes),FN,FN,FN,4,int8(0),int8(0)});
+
+  % set rotations as nodes in plan
+  nfftmex('set_x',plan,(Euler(nodes,'nfft').')/(2*pi));
+  % node-dependent precomputation
+  nfftmex('precompute_psi',plan);
+
+end
+
+s = size(values);
+values = reshape(values, length(nodes), []);
+num = size(values, 2);
+
+fhat = zeros(deg2dim(bw+1), num);
+for index = 1:num
+  
+  % use trivariate inverse equispaced fft in case of Clenshaw Curtis and
+  % nfft otherwise 
+  if check_option(varargin, 'ClenshawCurtis')
+
+    eta = ifftn( W.* reshape(values(:, index),size(W)) ,[2*bw+2,4*bw,2*bw+2]);
+    eta = ifftshift(eta);
+    eta = 16*bw*(bw+1)^2 * eta(2:end,bw+1:3*bw+1,2:end);
+
+  else
+    % adjoint nfft
+    nfftmex('set_f', plan, W(:) .* values(:, index));
+    nfftmex('adjoint', plan);
+    % adjoint fourier transform
+    eta = nfftmex('get_f_hat', plan);
+    eta = permute(reshape(eta,2*bw+2,2*bw+2,2*bw+2),[3,2,1]);
+    eta = eta(2:end,2:end,2:end);
+  end
+
+    % use adjoint representation based coefficient transform
+    if sum(abs(imag(values(:,index)))) < 1e-15
+      fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta,'isReal');
+    else
+      fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta);
+    end
+end
+
+% kill plan
+if check_option(varargin,'keepPlan')
+  keepPlanNFFT = plan;
+elseif ~check_option(varargin, 'ClenshawCurtis')
+  nfftmex('finalize', plan);
+end
+
+try
+  fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
+end
+
+SO3F = SO3FunHarmonic(fhat);
+SO3F.bandwidth = bw;
+
+% if antipodal consider only even coefficients
+SO3F.antipodal = check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal);
+
+end

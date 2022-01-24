@@ -17,6 +17,12 @@ function SO3F = quadrature(f, varargin)
 %  bandwidth - minimal harmonic degree (default: 64)
 %
 
+if check_option(varargin,'v2')
+  SO3F = quadrature_v2(f,varargin{:});
+  return
+end
+
+
 persistent keepPlanNSOFT;
 
 % kill plan
