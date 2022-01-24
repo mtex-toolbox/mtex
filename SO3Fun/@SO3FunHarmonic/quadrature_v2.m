@@ -83,7 +83,13 @@ if isempty(plan) && ~check_option(varargin, 'ClenshawCurtis')
   %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
   NN = 2*bw+2;
   FN = ceil(1.5*NN);
-  plan = nfftmex('init_guru',{3,NN,NN,NN,length(nodes),FN,FN,FN,4,int8(0),int8(0)});
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
+  %                         It is the default value
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
+  %                         measuring their execution time. This can take some time (often a few seconds).
+  fftw_flag = int8(64);
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(nodes),FN,FN,FN,4,int8(0),fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,(Euler(nodes,'nfft').')/(2*pi));

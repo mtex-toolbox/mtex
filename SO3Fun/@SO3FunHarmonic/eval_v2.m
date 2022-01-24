@@ -54,7 +54,13 @@ if isempty(plan)
   if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
   FN = ceil(1.5*NN);
   FN2 = ceil(1.5*N2);
-  plan = nfftmex('init_guru',{3,NN,N2,NN,M,FN,FN2,FN,4,int8(0),int8(0)});
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
+  %                         It is the default value
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
+  %                         measuring their execution time. This can take some time (often a few seconds).
+  fftw_flag = int8(64);
+  plan = nfftmex('init_guru',{3,NN,N2,NN,M,FN,FN2,FN,4,int8(0),fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,abg);
