@@ -18,27 +18,29 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % convolution with a kernel function
 if isa(SO3F2,'SO3Kernel')
 
-  SO3F = SO3F1;
-  L = SO3F.bandwidth;
+  L = min(SO3F1.bandwidth,SO3F2.bandwidth);
+  SO3F1.bandwidth = L;
   
-  A = SO3F2.fhat;
-  A(end+1:L+1) = 0;
-
-  % multiply Fourier coefficients of odf with Chebyshev coefficients
+  % multiply Wigner-D coefficients of SO3F1 
+  % with the Chebyshev coefficients A of SO3F2 
+  A = SO3F2.A;
   for l = 0:L
-    SO3F.fhat(deg2dim(l)+1:deg2dim(l+1)) = ...
-      A(l+1) * SO3F.fhat(deg2dim(l)+1:deg2dim(l+1));
+    SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)) = ...
+      A(l+1) * SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1));
   end
-else
-  
-  % ensure second input is harmonic as well
-  SO3F2 = SO3FunHarmonic(SO3F2);
+
+  SO3F = SO3F1;
+  return
+
 end
+
+% ensure second input is harmonic as well
+SO3F2 = SO3FunHarmonic(SO3F2);
 
 % get bandwidth
 L = min(SO3F1.bandwidth,SO3F2.bandwidth);
 
-% compute Fourier coefficients of mdf
+% compute Fourier coefficients of the convolution
 fhat = [SO3F1.fhat(1) * SO3F2.fhat(1); zeros(deg2dim(L+1)-1,1)];
 for l = 1:L
   ind = deg2dim(l)+1:deg2dim(l+1);
