@@ -26,7 +26,7 @@ if isa(SO3F2,'SO3Kernel')
   A = SO3F2.A;
   for l = 0:L
     SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)) = ...
-      A(l+1) * SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1));
+      A(l+1)./(2*l+1) * SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1));
   end
 
   SO3F = SO3F1;
