@@ -3,7 +3,7 @@ function ori = discreteSample(SO3F,npoints,varargin)
 %
 
 % spread points over different centers
-ic = discretesample([SO3F.weights;SO3F.c0], npoints).';
+ic = discretesample([SO3F.weights(:);SO3F.c0], npoints).';
     
 isUniform = ic == length(SO3F.weights)+1;
 
