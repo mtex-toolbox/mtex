@@ -7,8 +7,8 @@ function SO3F = quadrature(f, varargin)
 %
 % Input
 %  values - double (first dimension has to be the evaluations)
-%  nodes  - @rotation
-%  f - function handle in vector3d (first dimension has to be the evaluations)
+%  nodes  - @rotation, @orientation
+%  f - function handle in @orientation (first dimension has to be the evaluations)
 %
 % Output
 %  SO3F - @SO3FunHarmonic
@@ -34,13 +34,16 @@ end
 
 bw = get_option(varargin, 'bandwidth', 64);
 
-if isa(f,'SO3Fun'), f = @(v) f.eval(v); end
+if isa(f,'SO3Fun')
+  f = @(v) f.eval(v);
+  SLeft = f.SLeft; SRight = f.SRight;
+end
 
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss');
+    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss',SLeft,SRight);
   else
-    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis');
+    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SLeft,SRight);
   end
   values = f(nodes(:));
 else
@@ -64,7 +67,7 @@ else
 end
 
 if isempty(nodes)
-  SO3F = SO3FunHarmonic(0);
+  SO3F = SO3FunHarmonic(0,nodes.CS, nodes.SS);
   return
 end
 
@@ -121,7 +124,7 @@ end
 try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
-SO3F = SO3FunHarmonic(fhat);
+SO3F = SO3FunHarmonic(fhat,nodes.CS, nodes.SS);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients
