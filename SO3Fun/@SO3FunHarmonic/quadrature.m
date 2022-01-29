@@ -35,8 +35,8 @@ end
 bw = get_option(varargin, 'bandwidth', 64);
 
 if isa(f,'SO3Fun')
-  f = @(v) f.eval(v);
   SLeft = f.SLeft; SRight = f.SRight;
+  f = @(v) f.eval(v);
 end
 
 if isa(f,'function_handle')

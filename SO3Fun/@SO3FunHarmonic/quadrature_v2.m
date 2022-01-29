@@ -7,8 +7,8 @@ function SO3F = quadrature_v2(f, varargin)
 %
 % Input
 %  values - double (first dimension has to be the evaluations)
-%  nodes  - @rotation
-%  f - function handle in vector3d (first dimension has to be the evaluations)
+%  nodes  - @rotation, @orientation
+%  f - function handle in @orientation (first dimension has to be the evaluations)
 %
 % Output
 %  SO3F - @SO3FunHarmonic
@@ -32,13 +32,16 @@ bw = get_option(varargin, 'bandwidth', 64);
 
 % 1) compute/get weights and values for quadrature
 
-if isa(f,'SO3Fun'), f = @(v) f.eval(v,'v2'); end
+if isa(f,'SO3Fun')
+  SLeft = f.SLeft; SRight = f.SRight;
+  f = @(v) f.eval(v,'v2');
+end
 
 if isa(f,'function_handle')
   if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss');
+    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss',SLeft,SRight);
   else
-    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis');
+    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SLeft,SRight);
     varargin{end+1} = 'ClenshawCurtis';
   end
   values = f(nodes(:));
@@ -114,21 +117,28 @@ for index = 1:num
     eta = 16*bw*(bw+1)^2 * eta(2:end,bw+1:3*bw+1,2:end);
 
   else
+    
     % adjoint nfft
     nfftmex('set_f', plan, W(:) .* values(:, index));
     nfftmex('adjoint', plan);
     % adjoint fourier transform
     eta = nfftmex('get_f_hat', plan);
-    eta = permute(reshape(eta,2*bw+2,2*bw+2,2*bw+2),[3,2,1]);
+    eta = reshape(eta,2*bw+2,2*bw+2,2*bw+2);
     eta = eta(2:end,2:end,2:end);
+
   end
 
-    % use adjoint representation based coefficient transform
-    if sum(abs(imag(values(:,index)))) < 1e-15
-      fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta,'isReal');
-    else
-      fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta);
-    end
+  % shift rotational grid
+  [~,k,l] = meshgrid(-bw:bw,-bw:bw,-bw:bw);
+  eta = (1i).^(l-k).*eta;
+
+  % use adjoint representation based coefficient transform
+  if sum(abs(imag(values(:,index)))) < 1e-15
+    fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta,'isReal');
+  else
+    fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta);
+  end
+
 end
 
 % kill plan
@@ -142,7 +152,7 @@ try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
 
-SO3F = SO3FunHarmonic(fhat);
+SO3F = SO3FunHarmonic(fhat,nodes.CS,nodes.SS);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients

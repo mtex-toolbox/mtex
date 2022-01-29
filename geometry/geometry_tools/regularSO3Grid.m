@@ -31,8 +31,8 @@ if check_option(CS,'ClenshawCurtis')
   alphagamma = (0:2*N+1)*pi/(N+1);
   beta = linspace(0,pi,2*N+1);
 
-  [beta,alpha,gamma] = meshgrid(beta,alphagamma,alphagamma);
-  SO3G = rotation.byEuler(alpha,beta,gamma); 
+  [beta,gamma,alpha] = meshgrid(beta,alphagamma,alphagamma);
+  SO3G = orientation.byEuler(alpha,beta,gamma,'nfft');
 
   return
 
