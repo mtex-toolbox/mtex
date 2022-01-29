@@ -164,4 +164,17 @@ if ~strcmpi(even,'makeeven') && strcmpi(halfsize,'isReal')
 
 end
 
+if ~strcmpi(even,'makeeven')
+  ghat = flip(permute(ghat,[1,3,2]),2);
+elseif ~strcmpi(halfsize,'isReal')
+  G=ghat;
+  ghat = zeros(2*N+2,2*N+2,2*N+2);
+  ghat(2:end,2:end,2:end) = flip(permute(G(2:end,2:end,2:end),[1,3,2]),2);
+else
+  G = ghat;
+  ghat = zeros(2*N+2,2*N+2,N+1+ind);
+  ghat(2:end,2:end,1+ind:end) = flip(permute(G(2:end,1+ind:end,2:end),[1,3,2]),2);
+end
+
+
 end

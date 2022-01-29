@@ -34,9 +34,8 @@ rot = rot(:);
 M = length(rot);
 
 % alpha, beta, gamma
-abg = Euler(rot,'nfft')'./(2*pi);
-abg = (abg + [-0.25;0;0.25]);
-abg = [abg(2,:);abg(1,:);abg(3,:)];
+abg = Euler(rot,'nfft').'./(2*pi);
+abg = (abg + [0.25;0;-0.25]);
 abg = mod(abg,1);
 
 % create plan
@@ -60,7 +59,7 @@ if isempty(plan)
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
   fftw_flag = int8(64);
-  plan = nfftmex('init_guru',{3,NN,N2,NN,M,FN,FN2,FN,4,int8(0),fftw_flag});
+  plan = nfftmex('init_guru',{3,N2,NN,NN,M,FN2,FN,FN,4,int8(0),fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,abg);
@@ -90,7 +89,7 @@ for k = 1:length(SO3F)
     %        2^2 -> use L_2-normalized Wigner-D functions
     flags = 2^0+2^1+2^2;
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
-  
+
   else
 
     % create ghat -> k x l x j
@@ -100,7 +99,7 @@ for k = 1:length(SO3F)
     %        2^2 -> use L_2-normalized Wigner-D functions
     flags = 2^1+2^2;
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
-  
+
   end
 
   % set Fourier coefficients
@@ -112,7 +111,7 @@ for k = 1:length(SO3F)
   % get function values from plan
   if SO3F.isReal
     % use (*) and shift summation in 2nd index
-    f(:,k) = 2*real((exp(-2*pi*1i*ceil(N/2)*abg(2,:)')).*(nfftmex('get_f',plan)));
+    f(:,k) = 2*real((exp(-2*pi*1i*ceil(N/2)*abg(1,:).')).*(nfftmex('get_f',plan)));
   else
     f(:,k) = nfftmex('get_f',plan);
   end
