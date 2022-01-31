@@ -179,5 +179,5 @@ else % child variants
 end
 
 if nargout == 2
-  [~,bestFriends] = max(angle_outer(out,out,'noSym2') < 5*degree,[],2);
+  [~,bestFriends] = max(angle_outer(out,out,'noSym2') < 8*degree,[],2);
 end
