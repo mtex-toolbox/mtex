@@ -112,9 +112,9 @@ for index = 1:num
   % nfft otherwise 
   if check_option(varargin, 'ClenshawCurtis')
 
-    eta = ifftn( W.* reshape(values(:, index),size(W)) ,[2*bw+2,4*bw,2*bw+2]);
-    eta = ifftshift(eta);
-    eta = 16*bw*(bw+1)^2 * eta(2:end,bw+1:3*bw+1,2:end);
+    ghat = ifftn( W.* reshape(values(:, index),size(W)) ,[2*bw+2,4*bw,2*bw+2]);
+    ghat = ifftshift(ghat);
+    ghat = 16*bw*(bw+1)^2 * ghat(2:end,bw+1:3*bw+1,2:end);
 
   else
     
@@ -122,15 +122,15 @@ for index = 1:num
     nfftmex('set_f', plan, W(:) .* values(:, index));
     nfftmex('adjoint', plan);
     % adjoint fourier transform
-    eta = nfftmex('get_f_hat', plan);
-    eta = reshape(eta,2*bw+2,2*bw+2,2*bw+2);
-    eta = eta(2:end,2:end,2:end);
+    ghat = nfftmex('get_f_hat', plan);
+    ghat = reshape(ghat,2*bw+2,2*bw+2,2*bw+2);
+    ghat = ghat(2:end,2:end,2:end);
 
   end
 
   % shift rotational grid
   [~,k,l] = meshgrid(-bw:bw,-bw:bw,-bw:bw);
-  eta = (1i).^(l-k).*eta;
+  ghat = (1i).^(l-k).*ghat;
 
   % use adjoint representation based coefficient transform
   if sum(abs(imag(values(:,index)))) < 1e-15

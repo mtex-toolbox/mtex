@@ -2,6 +2,29 @@ function fhat = adjoint_compute_ghat_matlab(N,G,varargin)
 % Matlab code of the adjoint representation based coefficient transform,
 % that transforms a series of Wigner-D functions into a trivariate fourier series
 %
+%   fhat = zeros(deg2dim(N+1),1);
+%   D = Wigner_d_recursion(N,pi/2);
+%   for n=0:N
+%     A = zeros(2*n+1);
+%     if n==0
+%       d=1;
+%     else
+%       d = D{n};
+%     end
+%     for k=-n:n
+%       for l=-n:n
+%         x = 0;
+%         for j=-n:n
+%           x = x + d(n+1+j,n+1+k)*d(n+1+j,n+1+l)*G(N+1+k,N+1+j,N+1+l);
+%         end
+%         A(n+1+k,n+1+l) = x;
+%       end
+%     end
+%     A = sqrt(2*n+1)*A;
+%     fhat(deg2dim(n)+1:deg2dim(n+1)) = A(:);
+%   end
+%
+
 
 % save some calculations by adding over half size in index j
 ghat = zeros(2*N+1,N+1,2*N+1);
@@ -9,7 +32,7 @@ ghat = zeros(2*N+1,N+1,2*N+1);
 ghat(:,1,:) = (-1).^(k(:,1,:)+l(:,1,:)) .*G(:,N+1,:);
 ghat(:,2:end,:) = (-1).^(k(:,2:end,:)+l(:,2:end,:)) .* G(:,N+2:end,:) + G(:,N:-1:1,:);
 
-% create output vektor and Wigner-d matrices by recurrence relation
+% create output vector and Wigner-d matrices by recurrence relation
 fhat = zeros(deg2dim(N+1),1);
 D = Wigner_d_recursion(N,pi/2);
 

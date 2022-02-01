@@ -42,8 +42,8 @@
 #include <complex.h>
 #include <string.h>
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
-#include "wigner_d.c"   // use three term recurrence relation to compute Wigner-d matrices
-#include "normalize.c"  // scale the fourier coefficients by using L_2-normalized Wigner-D functions
+#include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
+#include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
 
 
 
@@ -72,7 +72,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     
   // Idea: Calculate Wigner-d matrix by recurrence formula from last two
   // Wigner-d matrices. 
-  // Because of symmetry only the left rows are needed.
+  // Because of symmetry only the left parts of the rows are needed.
   //       (  A  | A'  )        + (the cross) represents row and column with index 0
   //   d = ( ----+---- )        ' corresponds to flip(.,2)
   //       (  A* | A*' )        * corresponds to flip(.,1)
@@ -186,16 +186,16 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     }
     
     
-  // define some usefull variables
-    bool test1;
-    bool test2;
+  // define some usefull variables, that are used to shift pointers
     const int constant1 = 2*N+1;
     const int constant2 =  matrix_size-(2*N+1);
     const int constant3 = -matrix_size*(N+1+fullsized*N);
     const int constant4 = fullsized*matrix_size + rowcol_len + 1;
-    int constant5, constant6;
     const int shift_tocenterwigner = (2*N+1)*N+N;
-    
+    int constant5, constant6;
+    bool jisnot0;
+    bool rowis0_and_halfsized;
+
   // Do recursion for 1 < n < N:
     for (n=2; n<N; n++)
     {
@@ -204,7 +204,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       constant6 = -matrix_size*(fullsized*n+n+1)+rowcol_len;
 
       // Calculate Wigner-d matrix
-      wigner_d(N,n,wigd_min2,wigd_min1,wigd);
+      wigner_d_recursion_at_pi_half(N,n,wigd_min2,wigd_min1,wigd);
       
       // jump to the center of Wigner-d matrix
       wigd +=  shift_tocenterwigner;
@@ -284,7 +284,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     bool pm = start_pm;
      
     // Calculate Wigner-d matrix
-    wigner_d(N,N,wigd_min2,wigd_min1,wigd);
+    wigner_d_recursion_at_pi_half(N,N,wigd_min2,wigd_min1,wigd);
     
     // jump to middle of the center of the Wigner-d matrix.
     wigd +=  shift_tocenterwigner;
@@ -299,10 +299,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     // Compute ghat by adding over all summands of current harmonic degree N
     for (j=0; j<=N; j++)
     {
-      test1 = (j!=0);
+      jisnot0 = (j!=0);
       for (k= -N*fullsized; k<=N; k++)
       {
-        test2 = ((k==0) && half);
+        rowis0_and_halfsized = ((k==0) && half);
         for (l= -N; l<=N; l++)
         {
           // compute values
@@ -313,14 +313,14 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
           ghat[0].imag += fhat[0].imag*value;
           
           // half the values of ghat(:,0,:) if not fullsized
-            if(test2)
+            if(rowis0_and_halfsized)
             {
               ghat[0].real = ghat[0].real/2;
               ghat[0].imag = ghat[0].imag/2;
             }
             
           // Fill values for j<0 by symmetry property
-            if(test1)
+            if(jisnot0)
             {
               if(pm)
               {
@@ -385,25 +385,25 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // check data types
     // check for 2 or 3 input arguments (inCoeff & bandwith)
     if( (nrhs!=2) && (nrhs!=3))
-      mexErrMsgIdAndTxt("compute_ghat:invalidNumInputs","Two or three inputs required.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:invalidNumInputs","Two or three inputs required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
-      mexErrMsgIdAndTxt("compute_ghat:maxlhs","One output required.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("compute_ghat:notDouble","First input argument bandwidth must be a scalar double.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","First input argument bandwidth must be a scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
-      mexErrMsgIdAndTxt("compute_ghat:notDouble","Second input argument coefficient vector must be type double.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
-      mexErrMsgIdAndTxt("compute_ghat:inputNotVector","Second input argument coefficient vector must be a row vector.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
     // make sure the third input argument (input_flags) is double scalar (if existing)
     if( (nrhs==3) && ( !mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) || mxGetNumberOfElements(prhs[2])!=1 ) )
-      mexErrMsgIdAndTxt( "compute_ghat:notDouble","Third input argument flags must be a scalar double.");
+      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notDouble","Third input argument flags must be a scalar double.");
 
     
   // read input data
@@ -412,7 +412,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     // check whether bandwidth is natural number
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
-      mexErrMsgIdAndTxt("compute_ghat:notInt","First input argument must be a natural number.");
+      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notInt","First input argument must be a natural number.");
     
     // make input matrix complex
     mxArray *zeiger = mxDuplicateArray(prhs[1]);
@@ -425,7 +425,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     nrows = mxGetM(prhs[1]);
     
     // if exists, get flags of input
-    if(nrhs=3)
+    if(nrhs==3)
       input_flags = mxGetScalar(prhs[2]);
     
     bool flags[7];
@@ -460,12 +460,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
     outFourierCoeff += start_shift;
     
   
-  // normalize fourier coefficients
+  // use L2-normalize Wigner-D functions by scaling the fourier coefficients
   if(flags[2])
-    NORMALIZE(bandwidth,inCoeff);
+    L2_normalized_WignerD_functions(bandwidth,inCoeff);
   
   // call the computational routine
-    calculate_ghat(bandwidth,inCoeff,rowcol_shift,fullsized,
-            outFourierCoeff,(mwSize)nrows);
+    calculate_ghat(bandwidth,inCoeff,rowcol_shift,fullsized,outFourierCoeff,(mwSize)nrows);
 
 }
