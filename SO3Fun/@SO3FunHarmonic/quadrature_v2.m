@@ -134,9 +134,11 @@ for index = 1:num
 
   % use adjoint representation based coefficient transform
   if sum(abs(imag(values(:,index)))) < 1e-15
-    fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta,'isReal');
+    % fhat(:,index) = adjoint_compute_ghat_matlab(bw,ghat,'isReal');
+    fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,2^2+2^0);
   else
-    fhat(:,index) = adjoint_compute_ghat_matlab(bw,eta);
+    % fhat(:,index) = adjoint_compute_ghat_matlab(bw,ghat);
+    fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,2^2);
   end
 
 end
