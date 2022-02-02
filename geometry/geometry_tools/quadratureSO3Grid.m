@@ -31,8 +31,9 @@ if ~isempty(M2_p) && M2_p == M2 && length(SO3G_p) == N
   
 else
   if check_option(varargin,'ClenshawCurtis')
-    SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',bandwidth);
-        
+    SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',bandwidth,varargin{:});
+
+    % TODO:
     w = fclencurt2(size(SO3G,2));
     % W = normalized volume * 2xGauß-quadrature-weights * Clenshaw-Curtis-quadrature-weights 
     % W =     1/sqrt(8*pi^2)    *      (2*pi/(2*N+2))^2     *              w_b^N

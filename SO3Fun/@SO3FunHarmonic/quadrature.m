@@ -64,10 +64,16 @@ else
     values = values(id);
     nodes.antipodal = f.antipodal;
   end
+
+  if isa(nodes,'orientation')
+    SLeft = nodes.CS; SRight = nodes.SS;
+  else
+    [SLeft,SRight] = extractSym(varargin);
+  end
 end
 
 if isempty(nodes)
-  SO3F = SO3FunHarmonic(0,nodes.CS, nodes.SS);
+  SO3F = SO3FunHarmonic(0,SLeft,SRight);
   return
 end
 
@@ -124,7 +130,7 @@ end
 try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
-SO3F = SO3FunHarmonic(fhat,nodes.CS, nodes.SS);
+SO3F = SO3FunHarmonic(fhat,SLeft,SRight);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients
