@@ -25,7 +25,7 @@ v = v + get_option(varargin,'shift',0);
 
 % plot
 %v = v .* reshape(data,size(v));
-h = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax,...
+h = surf(v.x,v.y,v.z,reshape(double(data),size(v,1),size(v,2),[]),'parent',ax,...
   'edgeColor','none');
 
 % colormap

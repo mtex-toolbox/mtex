@@ -24,9 +24,10 @@ for j = 1:numel(sP)
   % ---------------- extract colors --------------------------
 
   % color given by the first argument?
-  if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
+  if ~isempty(varargin) && ~isempty(varargin{1}) ...
+      && (islogical(varargin{1}) || isnumeric(varargin{1})) 
 
-    cdata = reshape(varargin{1},size(v));
+    cdata = double(varargin{1});
     S2G = v;
     
   else % no color given -> do kernel density estimation
