@@ -139,15 +139,21 @@ for index = 1:num
   [~,k,l] = meshgrid(-bw:bw,-bw:bw,-bw:bw);
   ghat = (1i).^(l-k).*ghat;
 
-  % use adjoint representation based coefficient transform
-  if sum(abs(imag(values(:,index)))) < 1e-15
-    % fhat(:,index) = adjoint_compute_ghat_matlab(bw,ghat,'isReal');
-    fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,2^2+2^0);
-  else
-    % fhat(:,index) = adjoint_compute_ghat_matlab(bw,ghat);
-    fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,2^2);
+  % set flags and symmetry axis
+  flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
+  if sum(abs(imag(values(:,index)))) < (1e-10)*sum(abs(real(values(:,index))))  % real valued
+    flags = flags+2^2;
   end
-
+  if check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal) % antipodal
+    flags = flags+2^3;
+  end
+  sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
+         min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
+  
+  % use adjoint representation based coefficient transform
+  fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,flags,sym);
+  fhat(:,index) = sym_aRBWT(fhat(:,index),flags,sym);
+  %fhat(:,index) = adjoint_representationbased_coefficient_transform_old(bw,ghat,flags);
 end
 
 % kill plan
@@ -163,8 +169,5 @@ end
 
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 SO3F.bandwidth = bw;
-
-% if antipodal consider only even coefficients
-SO3F.antipodal = check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal);
 
 end
