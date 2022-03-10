@@ -32,7 +32,7 @@ if check_option(varargin,'killPlan')
   return
 end
 
-bw = get_option(varargin, 'bandwidth', 64);
+bw = get_option(varargin,'bandwidth', 64);
 
 if isa(f,'SO3Fun')
   SLeft = f.SLeft; SRight = f.SRight;
@@ -40,10 +40,10 @@ if isa(f,'SO3Fun')
 end
 
 if isa(f,'function_handle')
-  if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss',SLeft,SRight);
+  if check_option(varargin,'gauss')
+    [nodes, W] = quadratureSO3Grid(2*bw,'gauss',SRight,SLeft);
   else
-    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SLeft,SRight);
+      [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'complete');
   end
   values = f(nodes(:));
 else
@@ -66,14 +66,14 @@ else
   end
 
   if isa(nodes,'orientation')
-    SLeft = nodes.CS; SRight = nodes.SS;
+    SRight = nodes.CS; SLeft = nodes.SS;
   else
-    [SLeft,SRight] = extractSym(varargin);
+    [SRight,SLeft] = extractSym(varargin);
   end
 end
 
 if isempty(nodes)
-  SO3F = SO3FunHarmonic(0,SLeft,SRight);
+  SO3F = SO3FunHarmonic(0,SRight,SLeft);
   return
 end
 
@@ -89,7 +89,7 @@ if isempty(plan)
   
   % 2^4 -> nfsoft-represent
   % 2^2 -> nfsoft-use-DPT
-   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
+  % 2^0 -> use normalized Wigner-D functions and fourier coefficients
   nfsoft_flags = bitor(2^4,4)+1;
   % nfft cutoff - 4
   % fpt kappa - 1000
@@ -130,7 +130,7 @@ end
 try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
-SO3F = SO3FunHarmonic(fhat,SLeft,SRight);
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients

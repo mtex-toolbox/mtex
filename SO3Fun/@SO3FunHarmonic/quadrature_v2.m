@@ -27,21 +27,22 @@ if check_option(varargin,'killPlan')
   return
 end
 
-bw = get_option(varargin, 'bandwidth', 64);
+bw = get_option(varargin,'bandwidth', 64);
 
 
 % 1) compute/get weights and values for quadrature
 
 if isa(f,'SO3Fun')
   SLeft = f.SLeft; SRight = f.SRight;
-  f = @(v) f.eval(v,'v2');
+  f = @(v) f.eval(v);
 end
 
 if isa(f,'function_handle')
-  if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureSO3Grid(2*bw, 'gauss',SLeft,SRight);
+  if check_option(varargin,'gauss')
+    % possilbly use symmetries and evaluate in fundamental region
+    [nodes, W] = quadratureSO3Grid(2*bw,'gauss',SRight,SLeft,'complete');
   else
-    [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SLeft,SRight);
+      [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'complete');
     varargin{end+1} = 'ClenshawCurtis';
   end
   values = f(nodes(:));
@@ -63,10 +64,16 @@ else
     values = values(id);
     nodes.antipodal = f.antipodal;
   end
+
+  if isa(nodes,'orientation')
+    SRight = nodes.CS; SLeft = nodes.SS;
+  else
+    [SRight,SLeft] = extractSym(varargin);
+  end
 end
 
 if isempty(nodes)
-  SO3F = SO3FunHarmonic(0);
+  SO3F = SO3FunHarmonic(0,SRight,SLeft);
   return
 end
 
@@ -81,7 +88,7 @@ else
 end
 
 % initialize nfft plan
-if isempty(plan) && ~check_option(varargin, 'ClenshawCurtis')
+if isempty(plan) && ~check_option(varargin,'ClenshawCurtis')
 
   %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
   NN = 2*bw+2;
@@ -108,9 +115,9 @@ num = size(values, 2);
 fhat = zeros(deg2dim(bw+1), num);
 for index = 1:num
   
-  % use trivariate inverse equispaced fft in case of Clenshaw Curtis and
-  % nfft otherwise 
-  if check_option(varargin, 'ClenshawCurtis')
+  % use trivariate inverse equispaced fft in case of Clenshaw Curtis quadrature 
+  % and nfft otherwise 
+  if check_option(varargin,'ClenshawCurtis')
 
     ghat = ifftn( W.* reshape(values(:, index),size(W)) ,[2*bw+2,4*bw,2*bw+2]);
     ghat = ifftshift(ghat);
@@ -154,7 +161,7 @@ try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
 
-SO3F = SO3FunHarmonic(fhat,nodes.CS,nodes.SS);
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients
