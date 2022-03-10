@@ -33,19 +33,17 @@ methods
     SO3F.fhat = fhat;
     
     % extract symmetries
-    isSym = cellfun(@(x) isa(x,'symmetry'),varargin);
-      
-    id = find(isSym,2,'first');
-    
-    if ~isempty(id), SO3F.SRight = varargin{id(1)}; end
-    if length(id)>1, SO3F.SLeft = varargin{id(2)}; end
+    [CS,SS] = extractSym(varargin);
+    SO3F.SRight = CS; SO3F.SLeft = SS;
     
     % extend entries to full harmonic degree
     s1 = size(fhat,1);
     if s1>2
       SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
     end
-      
+
+    SO3F = SO3F.symmetrise;
+
     SO3F.antipodal = check_option(varargin,'antipodal');
     
     % truncate zeros
@@ -105,15 +103,7 @@ methods
     if F.CS ~= F.SS
       error('ODF can only be antipodal if both crystal symmetry coincide!')
     end
-    s=size(F);
-    F=reshape(F,prod(s));
-    ind=zeros(deg2dim(F.bandwidth+1),1);
-    for l = 0:F.bandwidth
-      localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
-      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
-    end
-    F.fhat = 0.5*(F.fhat+F.fhat(ind,:));
-    F=reshape(F,s);
+    F = F.symmetrise('antipodal');
   end
   
   function out = get.isReal(F)

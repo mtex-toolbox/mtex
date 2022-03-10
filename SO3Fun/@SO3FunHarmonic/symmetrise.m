@@ -1,17 +1,18 @@
 function SO3F = symmetrise(SO3F,varargin)
-% compute harmonic coefficients of SO3Fun
+% compute harmonic coefficients of SO3Fun by using symmetry properties
 %
 % Syntax
-%
-%  f_hat = calcFourier(SO3F,sym1,sym2)
+%  f_hat = symmetrise(SO3F)
 %
 % Input
-%  SO3F - @SO3FunRBF
-%  sym1 - @symmetry
+%  SO3F - @SO3FunHarmonic
 %
 % Output
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
+
+s = size(SO3F);
+SO3F = reshape(SO3F,prod(s));
 
 L = SO3F.bandwidth;
 
@@ -19,28 +20,28 @@ cs = SO3F.CS.properGroup;
 ss = SO3F.SS.properGroup;
  
 if numSym(cs) ~= 1
-
   % symmetrize crystal symmetry
-  c = ones(1,numSym(cs));
-  SO3F.fhat = multiply(gcA2fourier(cs.rot,c,ones(L+1,1)),...
-    SO3F.fhat,L);
+  c = ones(1,numSym(cs))/numSym(cs);
+  SO3F.fhat = multiply(gcA2fourier(cs.rot,c,ones(L+1,1)),SO3F.fhat,L);
 end
   
 if numSym(ss) ~= 1
   % symmetrize specimen symmetry
-  c = ones(1,numSym(ss));
+  c = ones(1,numSym(ss))/numSym(ss);
   SO3F.fhat = multiply(SO3F.fhat,gcA2fourier(ss.rot,c,ones(L+1,1)),L);
 end
 
 % grain exchange symmetry
-if SO3F.antipodal
+if SO3F.antipodal || check_option(varargin,'antipodal')
   for l = 0:L
     ind = deg2dim(l)+1:deg2dim(l+1);
-    SO3F.fhat(ind) = 0.5* (reshape(SO3F.fhat(ind),2*l+1,2*l+1) + ...
-      reshape(SO3F.fhat(ind),2*l+1,2*l+1)');
+    ind2 = reshape(flip(ind),2*l+1,2*l+1)';
+    SO3F.fhat(ind,:) = 0.5*(SO3F.fhat(ind,:) + SO3F.fhat(ind2(:),:));
   end
 end
   
+SO3F = reshape(SO3F,s);
+
 end
 
 % --------------------------------------------------------------
@@ -67,14 +68,15 @@ end
 
 % --------------------------------------------------------------
 
-% multiply Fourier matrixes
+% multiply Fourier matrices
 function f = multiply(f1,f2,lA)
-
-f = zeros(numel(f1),1);
-for l = 0:lA  
-  ind = deg2dim(l)+1:deg2dim(l+1);  
-  f(ind) = reshape(f1(ind),2*l+1,2*l+1) * ...
-    reshape(f2(ind),2*l+1,2*l+1);
+s1 = size(f1,2);
+s2 = size(f2,2);
+f = zeros(length(f1),max(s1,s2));
+for l = 0:lA
+  ind = deg2dim(l)+1:deg2dim(l+1);
+  f(ind,:) = reshape(pagemtimes( reshape(f1(ind,:),2*l+1,2*l+1,s1) , ...
+    reshape(f2(ind,:),2*l+1,2*l+1,s2) ),length(ind),max(s1,s2));
 end
 
 end
