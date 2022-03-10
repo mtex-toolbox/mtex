@@ -1,4 +1,4 @@
-function fhat = sym_aRBWT(fhat,input_flags,sym,varargin)
+function fhat = symmetrise_fouriercoefficients_aRBWT(fhat,input_flags,sym,varargin)
 % 
 % sym = [1,0,0,1];
 % sym(1) --> 2-fold crystal symmetry Y-axis

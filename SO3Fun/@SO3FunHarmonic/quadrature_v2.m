@@ -152,7 +152,7 @@ for index = 1:num
   
   % use adjoint representation based coefficient transform
   fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,flags,sym);
-  fhat(:,index) = sym_aRBWT(fhat(:,index),flags,sym);
+  fhat(:,index) = symmetrise_fouriercoefficients_aRBWT(fhat(:,index),flags,sym);
   %fhat(:,index) = adjoint_representationbased_coefficient_transform_old(bw,ghat,flags);
 end
 
