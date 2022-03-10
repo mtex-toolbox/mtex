@@ -41,11 +41,31 @@ if isa(f,'function_handle')
   if check_option(varargin,'gauss')
     % possilbly use symmetries and evaluate in fundamental region
     [nodes, W] = quadratureSO3Grid(2*bw,'gauss',SRight,SLeft,'complete');
+    values = f(nodes(:));
   else
+    if SRight.id~=1 || SLeft.id~=1
+      % Use crystal and specimen symmetries by only evaluating in fundamental
+      % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
+      t1=1; t2=2; 
+      if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
+      if SLeft.id==22,  t2=4; end     % 2 | (N+1)
+      if SRight.id==22, t1=4; end     % 2 | (N+1)
+      while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
+        bw = bw+1;
+      end
+
+      % evaluate function handle f at Clenshaw Curtis quadrature grid by
+      % using crystal and specimen symmetry
+      [values,nodes,W] = eval_onCCGrid_useSym(f,bw,SRight,SLeft);
+    else
+      % ignore symmetry by using 'complete'
       [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'complete');
+      values = f(nodes(:));
+    end
     varargin{end+1} = 'ClenshawCurtis';
   end
-  values = f(nodes(:));
+
+
 else
   nodes = f(:);
   values = varargin{1};
