@@ -28,16 +28,21 @@ function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 % get Euler angle bounds
 [max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
 
-if check_option(CS,'ClenshawCurtis')
-  % a regular grid for ClenshawCurtis quadrature required bandwidth 2*n 
+if check_option(varargin,'ClenshawCurtis')
+  % a regular grid for ClenshawCurtis quadrature required bandwidth 2n 
   % 2n+1 Clenshaw Curtis Quadrature rule -> (2n+2)x(2n+1)x(2n+2) points
 
   N = ceil(get_option(varargin,'bandwidth',256)/2);
+  
+  a_len = round((2*N+2)*max_rho/(2*pi));
+  b_len = round((2*N)*max_theta/pi+1);
+  g_len = round((2*N+2)*max_sec/(2*pi));
+  
+  alpha = (0:a_len-1)*max_rho/(a_len);
+  gamma = (0:g_len-1)*max_sec/(g_len);
+  beta = linspace(0,max_theta,b_len);
 
-  alphagamma = (0:2*N+1)*pi/(N+1);
-  beta = linspace(0,pi,2*N+1);
-
-  [beta,gamma,alpha] = meshgrid(beta,alphagamma,alphagamma);
+  [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
   SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',CS,SS);
 
   return

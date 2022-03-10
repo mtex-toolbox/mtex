@@ -34,7 +34,10 @@ else
     SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',bandwidth,varargin{:});
 
     % TODO:
-    w = fclencurt2(size(SO3G,2));
+    w = fclencurt2(bandwidth+1);
+    if size(SO3G,2) == 1+bandwidth/2
+      w = w(1:size(SO3G,2));
+    end
     % W = normalized volume * 2xGauß-quadrature-weights * Clenshaw-Curtis-quadrature-weights 
     % W =     1/sqrt(8*pi^2)    *      (2*pi/(2*N+2))^2     *              w_b^N
     W = 1/(2*(size(SO3G,1))^2)*repmat(w',size(SO3G,1),1,size(SO3G,3));
