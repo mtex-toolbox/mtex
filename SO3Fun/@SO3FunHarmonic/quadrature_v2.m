@@ -188,6 +188,8 @@ try
 end
 
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
-SO3F.bandwidth = bw;
+%SO3F.bandwidth = bw;
+% if antipodal consider only even coefficients
+SO3F.antipodal = check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal);
 
 end

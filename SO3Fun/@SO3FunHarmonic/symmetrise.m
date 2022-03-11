@@ -36,6 +36,19 @@ if SO3F.antipodal || check_option(varargin,'antipodal')
   for l = 0:L
     ind = deg2dim(l)+1:deg2dim(l+1);
     ind2 = reshape(flip(ind),2*l+1,2*l+1)';
+    % if CS and SS are '321', by symmetry properties it follows, that all 
+    % fourier coefficients with odd row or column indices have to be 0
+    if cs.id==19  
+      ind3 = ind(iseven(-l:l).*iseven(-l:l)'==0);
+      SO3F.fhat(ind3(:),:)=0;
+    end
+    % if CS and SS are '312' it follows by symmetry properties, that all 
+    % fourier coefficients which row or column indices are not multiple of
+    % 4 have to be 0
+    if cs.id==22
+      ind3 = ind((mod(-l:l,4)==0).*(mod(-l:l,4)==0).'==0);
+      SO3F.fhat(ind3(:),:)=0;
+    end
     SO3F.fhat(ind,:) = 0.5*(SO3F.fhat(ind,:) + SO3F.fhat(ind2(:),:));
   end
 end
