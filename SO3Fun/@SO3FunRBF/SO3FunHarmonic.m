@@ -21,7 +21,7 @@ cs = SO3F.CS.properGroup;
 ss = SO3F.SS.properGroup;
 
 % the weights
-c = SO3F.weights / numSym(cs) / numSym(ss);
+c = SO3F.weights;
 
 % the center orientations
 ori = SO3F.center;
@@ -30,7 +30,7 @@ ori = SO3F.center;
 symCenter = 10*length(SO3F.center) * numSym(cs) * numSym(ss) < max(L^3,100);
 if symCenter
   ori = symmetrise(SO3F.center,'proper');
-  c = repmat(c(:).',size(ori,1),1);
+  c = repmat(c(:).',size(ori,1),1) / numSym(cs) / numSym(ss);
 end
  
 SO3FH = SO3FunHarmonic.quadrature(ori,c,varargin{:});

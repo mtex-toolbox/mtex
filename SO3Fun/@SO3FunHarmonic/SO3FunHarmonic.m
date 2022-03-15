@@ -23,9 +23,7 @@ methods
     
     % convert arbitrary SO3Fun to SO3FunHarmonic
     if isa(fhat,'SO3Fun')
-      SO3F.SRight = fhat.SRight;
-      SO3F.SLeft  = fhat.SLeft;
-      SO3F.fhat = calcFourier(fhat,varargin{:});
+      SO3F = SO3FunHarmonic.quadrature(fhat,varargin{:});      
       return
     end
       
