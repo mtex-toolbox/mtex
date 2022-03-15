@@ -13,12 +13,9 @@ methods
     
     SO3VF.fun = fun;
     
-    isSym = cellfun(@(x) isa(x,'symmetry'),varargin);
-      
-    id = find(isSym,2,'first');
-    
-    if ~isempty(id), SO3VF.SRight = varargin{id(1)}; end
-    if length(id)>1, SO3VF.SLeft = varargin{id(2)}; end
+    [SRight,SLeft] = extractSym(varargin);
+    SO3VF.SRight = SRight;
+    SO3VF.SLeft = SLeft;
     
   end
   

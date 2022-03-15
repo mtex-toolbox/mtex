@@ -46,7 +46,7 @@ else
   
   %f = @(v) SO3F1.eval(v) + SO3F2.eval(v);
   %SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', ...
-  %  min(getMTEXpref('maxBandwidth'),max(SO3F1.bandwidth,SO3F2.bandwidth)));
+  %  min(getMTEXpref('maxSO3Bandwidth'),max(SO3F1.bandwidth,SO3F2.bandwidth)));
 
 end
 

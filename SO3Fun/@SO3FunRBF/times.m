@@ -29,7 +29,7 @@ elseif isa(SO3F2,'SO3Fun')
   
   f = @(v) SO3F1.eval(v) .* SO3F2.eval(v);
   SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', ...
-    min(getMTEXpref('maxBandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
+    min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
   
 else
   SO3F = SO3F2 .* SO3F1;

@@ -19,7 +19,7 @@ function f_hat = calcFourier(SO3F,varargin)
 % SO3Fun/plotFourier SO3Fun/Fourier wignerD FourierODF SO3Fun/textureindex SO3Fun/entropy SO3Fun/eval 
 %
 
-L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxBandwidth')));
+L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxSO3Bandwidth')));
 
 
 f_hat = zeros(deg2dim(L+1),1);
