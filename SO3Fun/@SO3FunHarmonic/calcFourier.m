@@ -12,9 +12,11 @@ function f_hat = calcFourier(SO3F,varargin)
 %     L - maximum harmonic degree
 %
 % Output
-%  f_hat - harmonic/Fouier/Wigner-D coefficients
+%  f_hat - harmonic/Fourier/Wigner-D coefficients
 %
 
-L = get_option(varargin,'bandwidth',SO3F.bandwidth);
+L = min(SO3F.bandwidth, get_option(varargin,'bandwidth',NaN));
+SO3F.bandwidth = L;
 
-f_hat = SO3F.fhat(1:min(end,deg2dim(L+1)));
+f_hat = SO3F.fhat;
+

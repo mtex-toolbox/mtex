@@ -23,7 +23,8 @@ methods
     
     % convert arbitrary SO3Fun to SO3FunHarmonic
     if isa(fhat,'SO3Fun')
-      SO3F = SO3FunHarmonic.quadrature(fhat,varargin{:});      
+      f_hat = calcFourier(fhat,varargin{:});
+      SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
       return
     end
       

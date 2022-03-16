@@ -15,6 +15,5 @@ function f_hat = calcFourier(SO3F,varargin)
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
 
-L = get_option(varargin,'bandwidth',SO3F.bandwidth);
-
-% TODO: do this with quadrature
+SO3F = SO3FunHarmonic.quadrature(SO3F,varargin{:});
+f_hat = SO3F.fhat;
