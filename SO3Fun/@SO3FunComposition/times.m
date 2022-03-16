@@ -15,7 +15,11 @@ elseif isa(y,'ODF') && isa(x,'double')
   f = x;
 elseif isa(y,'ODF') && isa(x,'ODF')
   warning('not implemented yet');
-  % got to SO3FunHarmonic
+  % TODO: go to SO3FunHarmonic
+  %SO3F = times@SO3Fun(SO3F1,SO3F2);
+  %SO3F = SO3FunHarmonic(SO3F,'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
 end
 
 odf.weights = odf.weights .* f;
+
+% Error in last time by odf.weights

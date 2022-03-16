@@ -18,7 +18,7 @@ function value = mean(SO3F, varargin)
 %
 % If SO3F is a 3x3 SO3Fun then
 % mean(SO3F) returns a 3x3 matrix with the mean values of each function
-% mean(SO3F, 1) returns a 1x3 SO3Fun wich contains the pointwise means values along the first dimension
+% mean(SO3F, 1) returns a 1x3 SO3Fun which contains the pointwise means values along the first dimension
 %
 
 s = size(SO3F);

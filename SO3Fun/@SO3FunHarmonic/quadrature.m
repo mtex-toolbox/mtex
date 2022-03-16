@@ -32,7 +32,7 @@ if check_option(varargin,'killPlan')
   return
 end
 
-bw = get_option(varargin,'bandwidth', 64);
+bw = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
 
 if isa(f,'SO3Fun')
   SLeft = f.SLeft; SRight = f.SRight;
@@ -44,6 +44,8 @@ if isa(f,'function_handle')
     [nodes, W] = quadratureSO3Grid(2*bw,'gauss',SRight,SLeft);
     values = f(nodes(:));
   else
+% TODO: Usage of symmetries only implemented for SRight = crystalSymmetry('1') and 
+% SLeft = specimenSymmetry('1') with default symmetries 1, 2, 3, 4, 6, 112, 222, 422, 622, 23, 423, 312, 321
     if SRight.id~=1 || SLeft.id~=1
       % Use crystal and specimen symmetries by only evaluating in fundamental
       % region. Therefore adjust the bandwidth to crystal and specimen symmetry.

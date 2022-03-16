@@ -33,7 +33,7 @@ else
   if check_option(varargin,'ClenshawCurtis')
     SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',bandwidth,varargin{:});
 
-    % TODO:
+    % TODO: decide whether using half grid along second euler angle or not
     w = fclencurt2(bandwidth+1);
     if size(SO3G,2) == 1+bandwidth/2
       w = w(1:size(SO3G,2));

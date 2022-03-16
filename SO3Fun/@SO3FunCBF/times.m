@@ -24,15 +24,12 @@ elseif isnumeric(SO3F2)
   SO3F.weights = SO3F.fhat .* SO3F2;
   
 elseif isa(SO3F2,'SO3Fun')
-  
-  f = @(v) SO3F1.eval(v) .* SO3F2.eval(v);
-  SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', ...
-    min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
+
+  SO3F = times@SO3Fun(SO3F1,SO3F2);
+  SO3F = SO3FunHarmonic(SO3F,'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
   
 else
-  
   SO3F = SO3F2 .* SO3F1;
-  
 end
 
 end

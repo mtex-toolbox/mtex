@@ -7,7 +7,7 @@ function [values,nodes,weights] = eval_onCCGrid_useSym(F,N,CS,SS)
 % function values on Clenshaw Curtis quadrature grid and are therefore ignored
 
 % Get nodes by ClenshawCurtis quadrature
-[nodes, ~] = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS);
+nodes = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS);
 
 % if crystal and specimen symmetry both has 2-fold rotation around Y axis
 % we have an additional (possibly shifted) inner mirror symmetry in 1st 

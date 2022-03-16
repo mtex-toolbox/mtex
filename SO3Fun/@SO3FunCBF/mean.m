@@ -1,6 +1,6 @@
 function value = mean(SO3F, varargin)
 % calculates the mean value for an univariate SO3Fun or calculates the mean
-% along a specified dimension fo a multimodal SO3Fun
+% along a specified dimension for a multimodal SO3Fun
 %
 % Syntax
 %   value = mean(SO3F)
