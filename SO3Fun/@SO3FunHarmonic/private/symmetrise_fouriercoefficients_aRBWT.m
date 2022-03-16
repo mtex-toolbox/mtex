@@ -19,7 +19,7 @@ for n=1:N
   % There is a 2-fold crystal symmetry Y-axis
   if CS.id==22
     A(n+2:end,:) = (-1).^(n+(1:n)').*flip(A(1:n,:),1);
-  elseif SRight.multiplicityPerpZ~=1
+  elseif CS.multiplicityPerpZ~=1
     A(n+2:end,:) = (-1)^n *flip(A(1:n,:),1);
   end
   
@@ -28,7 +28,7 @@ for n=1:N
     A(:,n+2:end) = (-1).^(n+(1:n)) .* flip(A(:,1:n),2);
   elseif SS.id==22
     A(:,n+2:end) = (1i).^(2*n+(1:n)) .* flip(A(:,1:n),2);
-  elseif SLeft.multiplicityPerpZ~=1
+  elseif SS.multiplicityPerpZ~=1
     A(:,n+2:end) = (-1)^n * flip(A(:,1:n),2);
   end
   
