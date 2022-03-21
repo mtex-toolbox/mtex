@@ -30,7 +30,19 @@ classdef shape2d < grain2d
       shape = shape@grain2d(ebsd,Vs,F,I_DG,I_FD,A_Db);
       
     end
-    
+
+    function Vs = get.Vs(shape)
+            Vs = shape.boundary.V;
+    end
+
+    function theta = get.theta(shape)
+            theta = atan2(shape.Vs(:,2),shape.Vs(:,1));
+    end
+
+    function rho = get.rho(shape)
+            rho = sqrt(shape.Vs(:,2).^2 + shape.Vs(:,1).^2);
+    end
+
   end
   
 end
