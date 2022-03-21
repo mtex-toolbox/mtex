@@ -1,62 +1,50 @@
-function p = plot(shape,varargin)
-% Wrapper for the Matlab polar plot
+function h = plot(shape,varargin)
+% Wrapper for the Matlab polarplot plot
 %
 % Input
-%  shape2d
+%  shape   - @shape2d
 %
 % Options
-%  nogrid   - get rid of grid on polar plot
-%  nolabels - get rid of polar labels
-%  linewidth - 
-%  linecolor -
-%  linestyle -
-% TODO replace with polarplot
+%  plain   - get rid of grid and polar labels
+%
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
-
-p = polar(shape.theta,shape.rho,'parent',mtexFig.gca);
-% set linewidth
-p.LineWidth = get_option(varargin,'linewidth',2);
-% set linecolor
-if check_option(varargin,'lineColor')
-  p.Color = get_option(varargin,'linecolor',[0 0 0]);
+if check_option(varargin,'plain')
+varargin = delete_option(varargin,'plain');
+plain = true;
 end
-% set linestyle
-ls = get_option(varargin,'linestyle','-');
-p.LineStyle=ls;
-p.Tag='doNotDelete';
+h = polarplot(shape.theta,shape.rho,varargin{:});
 
-% fix FontSize
-txA = findall(gca,'type','text');
-for k=1:length(txA)
-    txA(k).FontSize=getMTEXpref('FontSize')-4;
+% shortcuts
+if plain
+h.Parent.ThetaGrid='off';
+h.Parent.RGrid  ='off';
+h.Parent.RTick = [];
 end
 
-if check_option(varargin,'nogrid')
-    % find all of the lines in the polar plot
-    h = findall(gcf,'type','line');
-    for k=1:length(h)
-        id_del(k) = ~strcmp(h(k).Tag,'doNotDelete');
-        % delete all other lines excet our plot
-    end
-    delete(h(id_del));
+% set plotting convention such that the plot coinices with a map
+x = getMTEXpref('xAxisDirection');
+switch x
+  case 'east'
+    h.Parent.ThetaZeroLocation='right';
+  case 'north'
+    h.Parent.ThetaZeroLocation='top';
+  case 'west'
+    h.Parent.ThetaZeroLocation='left';
+  case 'south'
+    h.Parent.ThetaZeroLocation='bottom';
 end
 
-if check_option(varargin,'nolabels')
-    % find and remove the radial text labels in the polar plot
-    tx=findall(gcf,'type','text');
-    for k=1:length(tx)
-        id_delt(k) = strcmp(tx(k).HorizontalAlignment,'left');
-    end
-    delete(tx(id_delt));
+z  = getMTEXpref('zAxisDirection');
+switch z
+  case 'intoPlane'
+    h.Parent.ThetaDir='clockwise';
+  case 'outOfPlane'
+    h.Parent.ThetaDir='counterclockwise';
 end
 
-% although it's inside an mtexFigure we need to set plotting conventions
-mtexFig.setCamera('xAxisDirection',getMTEXpref('xAxisDirection'));
-mtexFig.setCamera('zAxisDirection',getMTEXpref('zAxisDirection'));
 
-% 
-if isNew, mtexFig.drawNow(varargin{:});end
+if nargout == 0, clear h; end
+
 % 
 % 
 end
