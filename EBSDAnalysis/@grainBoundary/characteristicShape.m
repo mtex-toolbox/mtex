@@ -1,4 +1,4 @@
-function [cshape, xyn] = characteristicShape(gb)
+function cShape = characteristicShape(gb)
 % derive characteristic shape from a set of grain boundaries
 %
 % % Syntax
@@ -9,10 +9,8 @@ function [cshape, xyn] = characteristicShape(gb)
 %  gb   -  @grainBoundary 
 %
 % Output
-%  cshape - polar coordinates of characteristic shape
-%  xyn    - x,y coordiantes of characteritic shape
+%  cShape - characteristic shape
 %
-
 
 % xy coordinates shifted to originate at 0
 xy = gb.V(gb.F(:,2),:) - gb.V(gb.F(:,1),:);
@@ -33,6 +31,19 @@ xyn = cumsum(dxy);
 xyn = [xyn(:,1) - mean(xyn(:,1)) xyn(:,2) - mean(xyn(:,2))];
 
 % output
-cshape = [atan2(xyn(:,2),xyn(:,1))  ...
-          sqrt(xyn(:,2).^2 + xyn(:,1).^2)];
+% cShape = [atan2(xyn(:,2),xyn(:,1))  ...
+%          sqrt(xyn(:,2).^2 + xyn(:,1).^2)];
+
+prop = struct('x',1,'y',1,'grainId',1);
+ebsd = EBSD(rotation.nan,1,{'Hallo'},prop);
+
+n = size(xyn,1);
+F = [(1:n).',[(2:n).';1]];
+
+I_DG = 1;
+I_FD = sparse(ones(size(F,1),1));
+A_Db = 1;
+
+cShape = grain2d(ebsd,xyn,F,I_DG,I_FD,A_Db);
+
 end
