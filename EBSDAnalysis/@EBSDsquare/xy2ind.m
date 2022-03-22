@@ -23,7 +23,7 @@ if nargin == 2
   x = x(:,1);
 end
 
-i = 1+round((y - ebsd.y(1))./ebsd.dy);
-j = 1+round((x - ebsd.x(1))./ebsd.dx);
+i = 1+round((y - ebsd.prop.y(1))./ebsd.dy);
+j = 1+round((x - ebsd.prop.x(1))./ebsd.dx);
 
 if nargout == 1, i = sub2ind(size(ebsd),i,j); end
