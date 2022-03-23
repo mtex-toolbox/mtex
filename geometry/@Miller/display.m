@@ -1,16 +1,9 @@
 function display(m,varargin)
 % standard output
 
-displayClass(m,inputname(1),varargin{:});
+displayClass(m,inputname(1),'Miller','moreInfo',char(m.CS,'compact'),varargin{:});
 
 display@vector3d(m,'skipHeader', 'skipCoordinates');
-
-% display symmetry
-if ~isempty(m.CS.mineral)
-  disp([' mineral: ',char(m.CS,'verbose')]);
-else
-  disp([' symmetry: ',char(m.CS,'verbose')]);
-end
 
 % display coordinates
 if length(m) < 25 && ~isempty(m)
