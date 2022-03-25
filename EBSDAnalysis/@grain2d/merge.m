@@ -98,7 +98,9 @@ for k = 1:length(varargin)
     
     % additional condition on the host
     cond = get_option(varargin,'host');
-    isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
+    if ~isempty(cond)
+      isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
+    end
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
