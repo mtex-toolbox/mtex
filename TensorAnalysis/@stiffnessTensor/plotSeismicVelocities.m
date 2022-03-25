@@ -52,8 +52,6 @@ function plotSeismicVelocities(C,varargin)
 
 if ~check_option(varargin,'lower'), varargin = [varargin,'upper']; end
 
-setMTEXpref('defaultColorMap',red2blueColorMap)
-
 % some options
 ms = get_option(varargin,'MarkerSize',10);
 blackMarker = {'Marker','s','MarkerSize',ms,'antipodal',...
@@ -246,14 +244,11 @@ else
 end
 hold off
 %**************************************************************************
-% add colorbars to all plots and save plot
+% add colorbars and colormap to all plots
 %**************************************************************************
-
+mtexColorMap red2blueColorMap
 mtexColorbar('figSize','huge')
 
-%**************************************************************************
-% reset to default MTEX colormap
-%**************************************************************************
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
+
 end
 
