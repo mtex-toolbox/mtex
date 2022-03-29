@@ -1,7 +1,7 @@
 function display(o)
 % standart output
 
-refSystems = [char(o.CS,'compact') ' -> ' char(o.SS,'compact')];
+refSystems = [char(o.CS,'compact') ' ' char(8594) ' ' char(o.SS,'compact')];
 
 if isMisorientation(o)  
   type = 'misorientation';
