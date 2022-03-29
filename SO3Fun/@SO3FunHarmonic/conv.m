@@ -12,8 +12,6 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % Output
 %  SO3F - @SO3FunHarmonic
 %
-% See also
-% 
 
 % convolution with a kernel function
 if isa(SO3F2,'SO3Kernel')
