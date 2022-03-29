@@ -63,8 +63,7 @@ A = orientation(A,CS,SS);
 %orthogonality check
 assert(isappr(abs(det(squeeze(double(A)))),1),'Center must be orthogonal');
                   
-component = BinghamComponent(kappa,A);
-odf = ODF(component,1);
+odf = SO3FunBingham(kappa,A);
 
 end
 

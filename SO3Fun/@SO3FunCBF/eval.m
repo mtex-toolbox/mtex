@@ -1,7 +1,9 @@
 function f = eval(SO3F,rot,varargin)
 % pointwise evaluation of SO3F at rotations rot
 %
-% sum_i \sum_j \sum_k  psi(g*s_j h_i . s_k r_i)
+% sum_i \sum_j \sum_k  weights * psi(g*s_j h_i . s_k r_i)
+
+% TODO: Use weights
 
 h = symmetrise(SO3F.h.normalize,'unqiue');
 

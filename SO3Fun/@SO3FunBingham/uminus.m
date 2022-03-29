@@ -4,6 +4,8 @@ function SO3F = uminus(SO3F)
 %   SO3F = | -SO3F |
 %
 
-SO3F.fhat = -SO3F.fhat;
+%TODO: write uminus for Bingham
+SO3F = uminus@SO3Fun(SO3F);
 
 end
+

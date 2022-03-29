@@ -3,6 +3,7 @@ function display(SO3F,varargin)
 
 displayClass(SO3F,inputname(1),varargin{:});
 
-disp(['  kappa: ',xnum2str(SO3F.kappa)]);
+disp(['  kappa: ',xnum2str(SO3F.kappa)]); 
+disp(' ');
 
 end

@@ -6,5 +6,7 @@ function odf = uminus(odf)
 % See also
 % ODF/ODF ODF/mtimes
 
-odf.weights = -odf.weights;
+%odf.weights = -odf.weights;
 
+components = cellfun(@(x) -x,odf.components,'UniformOutput',false);
+odf.components = [components{:}];
