@@ -5,6 +5,7 @@ function [h,mP] = plot(grains,varargin)
 %   plot(grains)          % colorize by phase
 %   plot(grains,property) % colorize by property
 %   plot(grains,cS)       % visualize crystal shape 
+%   plot(grains,S2F)      % visualize a tensorial property on top of the grains
 %
 % Input
 %  grains  - @grain2d
@@ -16,6 +17,7 @@ function [h,mP] = plot(grains,varargin)
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 
+%  scale       - scaling of crystal shapes and tensorial properties (0.3)
 %
 % See also
 % EBSD/plot grainBoundary/plot
@@ -108,19 +110,20 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
 elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   
-  if isa(varargin{1},'ipfColorKey')
-    S2F = S2Fun(varargin{1});
-    varargin = ['rgb','3d',varargin];
-  else
-    S2F = varargin{1};
-  end
+  % extract spherical function
+  S2F = varargin{1};
+  if isa(S2F,'ipfColorKey'), S2F = S2Fun(S2F); end
+  if length(S2F)==3, varargin = ['rgb',varargin]; end
   
+  % position in the map
   scaling = sqrt(grains.area);
   shift = vector3d([grains.centroid,2*scaling*zUpDown].');
   
   for k = 1:length(grains)
-    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),...
-    'parent', mP.ax,'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k));
+
+    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),'parent', mP.ax,...
+    'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d');
+    
   end
   
   plotBoundary = false;
