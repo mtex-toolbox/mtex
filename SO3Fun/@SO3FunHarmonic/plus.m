@@ -24,6 +24,7 @@ end
 
 
 % if isa(SO3F1,'SO3FunHarmonic') && isa(SO3F2,'SO3Fun')
+  SO3F1 = SO3FunHarmonic(SO3F1);
   SO3F2 = SO3FunHarmonic(SO3F2);
 
   [~, index] = max([SO3F1.bandwidth, SO3F2.bandwidth]);

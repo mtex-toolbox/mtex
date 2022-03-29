@@ -32,7 +32,8 @@ if isa(SO3F2,'SO3Kernel')
 
 end
 
-% ensure second input is harmonic as well
+% ensure both inputs are harmonic as well
+SO3F1 = SO3FunHarmonic(SO3F1);
 SO3F2 = SO3FunHarmonic(SO3F2);
 
 % get bandwidth
