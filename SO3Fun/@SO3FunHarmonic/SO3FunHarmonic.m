@@ -35,6 +35,11 @@ methods
     [CS,SS] = extractSym(varargin);
     SO3F.SRight = CS; SO3F.SLeft = SS;
     
+    if norm(fhat(:))==0
+      SO3F.bandwidth=0;
+      return
+    end
+    
     % extend entries to full harmonic degree
     s1 = size(fhat,1);
     if s1>2
@@ -48,7 +53,6 @@ methods
     % truncate zeros
     A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
     SO3F.bandwidth = find(sum(A,2) > 1e-10,1,'last')-1;
-    
   end
      
   function n = numArgumentsFromSubscript(varargin)
@@ -87,6 +91,10 @@ methods
       out = false;
       return
     end
+    if F.bandwidth == 0
+      out = true;
+      return
+    end
     F=reshape(F,numel(F));
     ind=zeros(deg2dim(F.bandwidth+1),1);
     for l = 0:F.bandwidth
@@ -94,7 +102,8 @@ methods
       ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
     end
     dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
-    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
+    nF = norm(F)';
+    out = prod(sqrt(dd(nF>0)) ./ nF(nF>0) <1e-4);
   end
   
   function F = set.antipodal(F,value)
@@ -106,13 +115,18 @@ methods
   end
   
   function out = get.isReal(F)
+    if F.bandwidth == 0
+      out = isreal(F.fhat);
+      return
+    end
     F=reshape(F,numel(F));
     ind=zeros(deg2dim(F.bandwidth+1),1);
     for l = 0:F.bandwidth
       ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
     end
     dd = sum(abs(F.fhat-conj(F.fhat(ind,:))).^2);
-    out = prod(sqrt(dd) ./ norm(F)' <1e-4);
+    nF = norm(F)';
+    out = prod(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
     % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
   end
   

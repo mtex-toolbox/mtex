@@ -11,6 +11,10 @@ function SO3F = symmetrise(SO3F,varargin)
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
 
+if SO3F.bandwidth==0
+  return
+end
+
 s = size(SO3F);
 SO3F = reshape(SO3F,prod(s));
 
