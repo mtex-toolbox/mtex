@@ -58,6 +58,14 @@ methods
     out =  max(cellfun(@(x) x.bandwidth,S3F.components));
   end
   
+% TODO: Fix symmetries. The following yields different values
+%   mtexdata dubna; odf = pf.calcODF;
+%   mtexdata ptx; odf2 = pf.calcODF;
+%   mtexdata dubna, 
+%   A=SO3FunHarmonic(odf2+odf); A.eval(rot)
+%   B=SO3FunHarmonic(odf+odf2); B.eval(rot)
+%   C=odf+odf2;                 C.eval(rot)
+
   function out = get.SLeft(S3F)
     out =  S3F.components{1}.SLeft;
   end
