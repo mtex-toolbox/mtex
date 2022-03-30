@@ -177,7 +177,11 @@ vol_ol  = length(ebsd('f')) ./ length(ebsd('indexed'));
 vol_opx = length(ebsd('e')) ./ length(ebsd('indexed'));
 vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 
-CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx;
+% density of the bulkmaterial
+bulkDensity = vol_ol * C_olivine.density + vol_opx * C_opx.density + vol_cpx * C_cpx.density;
+
+[CVoigt, CReuss, CHill] = mean([CVoigt_ol, CVoigt_opx, CVoigt_cpx],...
+  'weights',[vol_ol, vol_opx, vol_cpx],'density', bulkDensity);
 
 %%
 % Finally, we visualize the polycrystal wave velocities as above
