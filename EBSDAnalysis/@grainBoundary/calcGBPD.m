@@ -39,13 +39,14 @@ ori = [rot .* ebsd('id',gB.ebsdId(:,1)).orientations;...
 % define a kernel function that is a fibre through the crystallograhic
 % z-axis and the crystallographic x-axis
 psi = S2FunHarmonic(S2DeLaValleePoussin('halfwidth',5*degree,varargin{:}));
+
 psi = psi.radon;
 
 bw = min(getMTEXpref('maxBandwidth'),psi.bandwidth);
 rot = rotation.byAxisAngle(xvector,90*degree);
 
 % multiply this kernel function with the sin of the polar angle
-fun = @(v) psi.eval(rot*v) .* sin(angle(v,zvector));
+fun = @(v) pi/2*psi.eval(rot*v) .* sin(angle(v,zvector));
 
 % the final kernel function as S2Harmonic
 psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
