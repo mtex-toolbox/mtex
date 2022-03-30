@@ -68,7 +68,11 @@ elseif check_option(varargin,'weights')  % weighted mean
   
   % take the mean of the rotated tensors times the weight
   TVoigt = sum(weights .* T);
-  
+
+  if isfield(T.opt,'density') && numel(weights) == numel(T.opt.density)
+    TVoigt.opt.density = sum(T.opt.density .* weights);
+  end
+
 else % the plain mean
 
   if nargin > 1 && isnumeric(varargin{1})
@@ -81,11 +85,6 @@ else % the plain mean
   TVoigt = T;
   TVoigt.M = mean(T.M,dim);
     
-end
-
-% assign a new density if required
-if check_option(varargin,'density')
-  TVoigt.opt.density = get_option(varargin,'density');
 end
 
 % for the geometric mean take matrix exponential to go back
