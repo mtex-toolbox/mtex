@@ -1,5 +1,5 @@
 classdef SO3FunComposition < SO3Fun
-% a class represeneting a function on the rotation group
+% a class representing a function on the rotation group
   
 properties
   components = {}
@@ -32,7 +32,8 @@ methods
     if any(isConstant)
       SO3F.components = [{sum([varargin{isConstant}]) * ...
         uniformODF(SO3F.CS,SO3F.SS)} SO3F.components];
-    end  
+    end
+
   end
   
   function f = eval(SO3F,rot,varargin)
@@ -45,8 +46,7 @@ methods
   end  
   
   function w = get.weights(S3F)
-
-    w = cellfun(@mean, S3F.components);
+    w = cellfun(@(x) mean(x,'all'), S3F.components);
 
   end
 

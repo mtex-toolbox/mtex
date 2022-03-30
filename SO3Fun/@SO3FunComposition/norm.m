@@ -19,6 +19,10 @@ function t = norm(odf,varargin)
 % See also
 % ODF/textureindex ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
+
+% TODO: possibly delete this and use norm@SO3Fun instant
+
+
 % decide which method to use
 if all(cellfun(@(x) isa(x,'FourierComponent'),odf.components)) ...
   || odf.bandwidth < 32

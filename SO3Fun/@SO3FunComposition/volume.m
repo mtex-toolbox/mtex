@@ -37,7 +37,7 @@ for ic = 1:length(center)
   for i = 1:length(odf.components)
   
     [iv,S3G] = volume(odf.components{i},center(ic),radius,S3G,varargin{:});
-    v(ic) = v(ic) + odf.weights(i) * iv;
+    v(ic) = v(ic) + iv;
     
   end
   

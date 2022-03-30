@@ -27,8 +27,7 @@ f_hat = zeros(deg2dim(L+1),1);
 for i = 1:numel(SO3F.components)
   
   hat = calcFourier(SO3F.components{i},varargin{:},'bandwidth',L);
-  
-  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + SO3F.weights(i) * hat;
+  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + hat;
     
 end
 

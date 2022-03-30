@@ -30,5 +30,5 @@ if isempty(ori), return; end
 
 % compute the gradient for each component seperately
 for i = 1:numel(odf.components)
-  g = g + odf.weights(i) * odf.components{i}.grad(ori,varargin{:});
+  g = g + odf.components{i}.grad(ori,varargin{:});
 end
