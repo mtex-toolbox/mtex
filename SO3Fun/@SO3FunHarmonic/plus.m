@@ -1,10 +1,10 @@
 function SO3F = plus(SO3F1, SO3F2)
-% implements SO3F1 + SO3F2
+% overloads SO3F1 + SO3F2
 %
 % Syntax
-%   SO3F = SO3F1+SO3F2
-%   SO3F = a+SO3F1
-%   SO3F = SO3F1+a
+%   SO3F = SO3F1 + SO3F2
+%   SO3F = a + SO3F1
+%   SO3F = SO3F1 + a
 %
 
 if isnumeric(SO3F1) %&& ( length(SO3F1) == 1 || all(size(SO3F1)==size(SO3F2)) ) 
@@ -23,7 +23,7 @@ if isnumeric(SO3F2) %&& ( length(SO3F2) == 1 || all(size(SO3F1)==size(SO3F2)) )
 end
 
 
-% if isa(SO3F1,'SO3FunHarmonic') && isa(SO3F2,'SO3Fun')
+% if isa(SO3F1,'SO3Fun') && isa(SO3F2,'SO3Fun')
   SO3F1 = SO3FunHarmonic(SO3F1);
   SO3F2 = SO3FunHarmonic(SO3F2);
 

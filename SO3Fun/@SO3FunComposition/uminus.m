@@ -1,12 +1,7 @@
-function odf = uminus(odf)
-% superposeing two ODFs
-%
-% overload the - operator, i.e. one can now write - @ODF
-%
-% See also
-% ODF/ODF ODF/mtimes
+function SO3F = uminus(SO3F)
+% overloads -SO3F
 
-%odf.weights = -odf.weights;
+components = cellfun(@(x) -x,SO3F.components,'UniformOutput',false);
+SO3F.components = components;
 
-components = cellfun(@(x) -x,odf.components,'UniformOutput',false);
-odf.components = [components{:}];
+end
