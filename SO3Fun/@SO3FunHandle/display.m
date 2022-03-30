@@ -8,8 +8,7 @@ else
 end
 
 if length(SO3F) > 1, disp([' size: ' size2str(SO3F)]); end
-%disp([' fun: ' char(SO3F.fun)]);
-
+disp(['  weight: ' num2str(mean(SO3F(1),'all','bandwidth',16))])
 disp(' ')
 
 end

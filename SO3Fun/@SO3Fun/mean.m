@@ -20,11 +20,9 @@ function value = mean(SO3F, varargin)
 % values of each function mean(SO3F, 1) returns a 1x3 SO3Fun which contains the
 % pointwise means values along the first dimension
 %
- 
-nodes = equispacedSO3Grid(SO3F.SRight, SO3F.SLeft,'resolution',2.5*degree);
 
-f = reshape(SO3F.eval(nodes),[],size(SO3F,1),size(SO3F,2));
+f = SO3FunHarmonic(SO3F,varargin{:});
+value = mean(f);
 
-value = nanmean(f,1);  
 
 end

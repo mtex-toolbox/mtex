@@ -16,6 +16,9 @@ function [m, lambda, v] = mean(odf,varargin)
 % See also
 % orientation/calcBinghamODF
 
+
+% TODO: possibly delete this and use mean@SO3Fun instant
+
 S3G = extract_SO3grid(odf,varargin);
 
 [m, ~, lambda, v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
