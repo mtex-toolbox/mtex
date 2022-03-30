@@ -7,14 +7,14 @@ T = T1;
 if isa(T2,'tensor')
   T.M = T.M + T2.M;
 
-  if isfield(T1.prop,'density') && isfield(T2.prop,'density') ...
-      && T1.prop.density ~= T2.prop.density
+  if isfield(T1.opt,'density') && isfield(T2.opt,'density') ...
+      && T1.opt.density ~= T2.opt.density
     
     warning(['Tensors with different density have been summed! I have ' ...
       'removed the density information from the resulting tensor. ' ...
       'You need to reset the density your own by \n\n%s'], ...
       '  T.density = (fak1 * T1.density + fak2 * T2.density) / (fak1 + fak2).')
-    T.prop = rmfield(T.prop,'density');
+    T.opt = rmfield(T.opt,'density');
 
   end
 
