@@ -15,6 +15,7 @@
 % || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.calliper.html |caliper|>  || caliper or Feret diameter ||
 % || <grain2d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
 % || <grain2d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
+% || <IceSphericity.html |sphericity|>  || irregularity of grain boundary ||   ||  ||
 % || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
 % || <grain2d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <triplePointList.triplePointList.html |triplePoints|>  || list of  triple points || 
 % || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |innerBoundary|>  || subgrain boundaries || 
