@@ -83,6 +83,11 @@ else % the plain mean
     
 end
 
+% assign a new density if required
+if check_option(varargin,'density')
+  TVoigt.opt.density = get_option(varargin,'density');
+end
+
 % for the geometric mean take matrix exponential to go back
 if check_option(varargin,'geometric'), TVoigt = expm(TVoigt); end
 
