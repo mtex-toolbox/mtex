@@ -15,6 +15,9 @@ function f_hat = calcFourier(SO3F,varargin)
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
 
+
+% TODO: A=SO3FunHarmonic(CBF); A.eval(rot) is not the same as CBF.eval(rot)
+
 L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 
 A = SO3F.psi.A;
@@ -22,9 +25,9 @@ A = A(1:min(L+1,length(A)));
 
 % symmetrize
 h = SO3F.CS * SO3F.h;
-h = repmat(h,1,length(SO3F.SS));
+h = repmat(h,1,length(SO3F.SS.rot));
 r = SO3F.SS * SO3F.r;
-r = repmat(r,length(SO3F.CS),1);
+r = repmat(r,length(SO3F.CS.rot),1);
 
 f_hat = zeros(deg2dim(length(A)),1);
 for l = 0:min(L,length(A)-1)
@@ -32,7 +35,7 @@ for l = 0:min(L,length(A)-1)
     conj(sphericalY(l,h)).' * sphericalY(l,r);
   
   f_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
-    hat(:) / length(SO3F.CS) / length(SO3F.SS);
+    hat(:) / length(SO3F.CS.rot) / length(SO3F.SS.rot);
   
 end
 
