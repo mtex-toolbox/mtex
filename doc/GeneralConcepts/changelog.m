@@ -1,5 +1,59 @@
 %% MTEX Changelog
 %
+%
+%% MTEX 5.8.0 01/2022
+%
+% MTEX 5.8 improves further on parent grain reconstruction by implementing
+% the novel <https://arxiv.org/abs/2201.02103 variant graph algorithm>
+% which is faster and more accurate than the prvious grain graph algorithm.
+%
+% *Improved parent grain reconstruction*
+%
+% Along with the new reconstruction algorithm the following new features
+% have been implemented:
+%
+% * manual interactive parent orientation selection using
+% <parentGrainReconstructor.selectInteractive.html |selectInteractive(job)|>
+% * new option |'reconsiderAll'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to recheck
+% all asignments of parent orientations.
+% * new option |'bestFit'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to consider
+% only the best fitting neighbor
+% * |job.votes| is now a table which contains the parentId votes and the
+% probabilities for all grains
+%
+% *Misc Changes*
+%
+% * new option |'region'| for |<EBSD.plot.html plot(ebsd)>| to plot only a
+% rectangular subregion of the map
+%
+%% MTEX 5.7.0 05/2021
+%
+% MTEX 5.7 improves on parent grain reconstruction. Changes include:
+%
+% *Improved parent grain reconstruction*
+%
+% * The ordering of the variants is stored within the OR misorientation |p2c|
+% as |p2c.variantMap|. In particular the variants in |p2c.variants| are
+% ordered by default according to the Morito convention. This can be easily
+% check by the command |round2Miller(p2c.variants)|
+% * The command |job.calcGBVotes| and |job.calcTPVotes| compute votes
+% associated with probabilities that are stored in |job.votes| and can
+% easily be analyzed.
+% * The options |'noP2C'| and |'noC2C'| have been replaced by |'p2c'| and
+% |'c2c'|.
+% * New option |job.useBoundaryMisorienation| which makes the parent grain
+% reconstructor to use the misorientations along the grain boundaries
+% instead of the misorientations between the grain mean orientations.
+% * added ShojiNishiyama orientation relationship.
+%
+% *Other Changes*
+%
+% * The command |findByOrientation| accepts a fibre as input.
+% * The antipodal |axisAngleColorKey| allows for option |'antipodal'|.
+% 
+%
 %% MTEX 5.6.1 03/2021
 %
 % This is mainly a bug fix release.
@@ -161,7 +215,7 @@
 % * new helper function <majorityVote.html |majorityVote|> 
 % * new option |'noAntipodal'| for many commands like |symmetrise|,
 % |unique|, |dot|, |angle|
-% * new predefined orientation relationship |orientation.Burger|
+% * new predefined orientation relationship |orientation.Burgers|
 %
 %% MTEX 5.3.1 6/2020
 % 

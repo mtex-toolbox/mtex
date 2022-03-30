@@ -84,6 +84,7 @@ classdef grainBoundary < phaseList & dynProp
                         
       % compute ebsdID
       [eId,fId] = find(I_FD.');
+      eId = eId(:); fId = fId(:);
       
       % scale fid down to 1:length(gB)
       d = diff([0;fId]);      

@@ -15,7 +15,7 @@ classdef S2Kernel
   
   methods
     
-    function S2K = S2Kernel(A, evalFun)
+    function S2K = S2Kernel(A, varargin)
       if nargin == 0, return; end
       
       if isa(A,'S2Kernel')
@@ -24,7 +24,13 @@ classdef S2Kernel
         S2K.A = A(1:min(end,2048));
       end
       
-      if nargin == 2, S2K.evalFun = evalFun; end
+      if check_option(varargin,'normalized')
+        S2K.A = S2K.A(:) .* (2*(0:length(S2K.A)-1)+1).';
+      end
+
+      if nargin == 2 && isa(varargin{1},'function_handle')
+        S2K.evalFun = evalFun; 
+      end
     end
 
     function v = eval(S2K,x)

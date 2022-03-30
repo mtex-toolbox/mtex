@@ -19,7 +19,10 @@ hw = min(4*component.psi.halfwidth,90*degree);
 t = linspace(cos(hw),1,M);
 
 % compute cummulative distribution function
-c = 4 / pi * cumsum(sqrt(1-t.^2) .* component.psi.K(t)) / M;
+c = component.psi.K(t);
+assert(all(c>=0),...
+  'You can not compute a random sampling from a density function that takes negative values');
+c = 4 / pi * cumsum(sqrt(1-t.^2) .* c) / M;
 c = c ./ c(end);
 
 r = rand(npoints,1);

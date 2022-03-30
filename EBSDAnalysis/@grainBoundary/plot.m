@@ -56,7 +56,7 @@ else
   legend('-DynamicLegend','location','NorthEast');
 end
 
-try axis(mP.ax,'tight'); end
+if isNew, try axis(mP.ax,'tight'); end, end
 mP.micronBar.setOnTop
 
 if nargout == 0, clear h; end

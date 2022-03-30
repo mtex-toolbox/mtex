@@ -10,7 +10,7 @@
 % start with a trigonal alpha-fibre ODF which we define by
 
 cs = crystalSymmetry('32');
-fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.alpha(cs),'halfwidth',20*degree);
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 
 plot(fibre_odf,'sections',6,'silent')
 mtexColorbar
@@ -38,7 +38,7 @@ plot(fibre_odf,'sections',6,'silent','sigma','contour','linewidth',2)
 
 % plot the orientations into the sigma sections
 hold on
-plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.5,'all','MarkerEdgeColor','k','MarkerSize',4)
+plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.25,'all','MarkerEdgeColor','k','MarkerSize',4)
 hold off
 
 %% ODF Estimation from Random Orientations
@@ -68,4 +68,3 @@ calcError(odf_rec,fibre_odf)
 % angles> into a text files. This can be done using the commands
 % |<quaternion.export.html export>| and |<orientation.export_VPSC.html
 % export_VPSC>|.
-

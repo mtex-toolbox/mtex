@@ -1,4 +1,4 @@
-%% Parent Beta Phase Reconstruction in Titanium Alloys
+%% Low Level Parent Phase Reconstruction
 %
 %%
 % In this section we discuss parent grain reconstruction at the example of
@@ -19,7 +19,7 @@ plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
 % original grain structure appears almost visible for human eyes.
 % Our computations will be based on the Burgers orientation relationship
 
-beta2alpha = orientation.Burger(ebsd(betaName).CS,ebsd(alphaName).CS);
+beta2alpha = orientation.Burgers(ebsd(betaName).CS,ebsd(alphaName).CS);
 round2Miller(beta2alpha)
 
 %%

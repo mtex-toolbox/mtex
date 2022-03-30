@@ -2,12 +2,15 @@
 %
 %% 
 % This script demonstrates the tools MTEX offers to reconstruct a parent
-% austenite phase from a measured martensite phase. Some of the ideas are
-% from
-% <https://www.researchgate.net/deref/http%3A%2F%2Fdx.doi.org%2F10.1007%2Fs11661-018-4904-9?_sg%5B0%5D=gRJGzFvY4PyFk-FFoOIj2jDqqumCsy3e8TU6qDnJoVtZaeUoXjzpsGmpe3TDKsNukQYQX9AtKGniFzbdpymYvzYwhg.5jfOl5Ohgg7pW_6yACRXN3QiR-oTn8UsxZjTbJoS_XqwSaaB7r8NgifJyjSES2iXP6iOVx57sy8HC4q2XyZZaA
-% Crystallography, Morphology, and Martensite Transformation of Prior
-% Austenite in Intercritically Annealed High-Aluminum Steel> by Tuomo
-% Nyyssönen. We shall use the following sample data set.
+% austenite phase from a measured martensite phase. The methods are
+% described in more detail in the publications 
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022,
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction from partially or fully transformed
+% microstructures in MTEX>, J. Appl. Cryst. 55, 2022.
+% 
+% We shall use the following sample data set.
 
 % load the data
 mtexdata martensite 
@@ -59,7 +62,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % Furthermore, it displays how well the current guess of the parent to
 % child orientation relationship fits the child to child misorientations
 % within our data. In our sample data set this fit is described by the 4
-% quintiles 2.7°, 3.7°, 4.7° and 5.5°.
+% quintiles 2.5°, 3.5°, 4.5° and 5.5°.
 %
 %% Optimizing the parent child orientation relationship
 %
@@ -71,6 +74,10 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % |calcParent2Child|> that starts at our initial guess of the orientation
 % relation ship and iterates towards a more optimal orientation
 % relationship.
+
+close all
+histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+xlabel('disorientation angle')
 
 job.calcParent2Child
 
@@ -86,9 +93,9 @@ job.calcParent2Child
 % following histogram displays the distribution of the misfit over all
 % grain to grain misorientations.
 
-close all
-histogram(job.fit./degree)
-xlabel('disorientation angle')
+hold on
+histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+hold off
 
 %%
 % We may explicitely compute the misfit for all child to child
@@ -115,111 +122,95 @@ hold on;
 plot(gB, 'edgeAlpha', (fit(pairId) ./ degree - 2.5)./2 ,'linewidth',2);
 hold off
 
-%% Graph based parent grain reconstruction
+%% Variant Graph based parent grain reconstruction
 %
-% Next we set up a graph where each edge describes two neighbouring grains
-% and the value of this edge is the probability that these two grains
-% belong to the same parent grain. This graph is computed by the function
-% <parentGrainReconstructor.calcGraph.html |calcGraph|>. The probability
-% is computed from the misfit of the misorientation between the two child
-% grains to the theoretical child to child misorientation. More precisely,
-% we model the probability by a cumulative Gaussian distribution with the
-% mean value |'threshold'| which describes the misfit at which the
-% probability is exactly 50 percent and the standard deviation
+% Next we set up the variant graph where the nodes are the potential parent
+% orientations of each child grain and the edges describe neighbouring
+% grains that have compatible potential parent orientations. This graph is
+% computed by the function <parentGrainReconstructor.calcVariantGraph.html
+% |calcVariantGraph|>. The edge weights are computed from the misfit
+% between the potential parent orientations using a cumulative Gaussian
+% distribution with the mean value |'threshold'| which describes the misfit
+% at which the probability is exactly 50 percent and the standard deviation
 % |'tolerance'|.
 
-job.calcGraph('threshold',2.5*degree,'tolerance',2.5*degree);
-
-%% 
-% We may visualize th graph adjusting the edgeAlpha of the boundaries
-% between grains according to the edge value of the graph. This can be
-% accomplished by the command <parentGrainReconstructor.plotGraph.html
-% |plotGraph|>
-
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large','faceAlpha',0.5)
-hold on;
-job.plotGraph('linewidth',2)
-hold off
+job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree)
 
 %%
-% The next step is to cluster the graph into components. This is done by
-% the command <parentGrainReconstructor.clusterGraph.html |clusterGraph|>
-% which uses by default the Markovian clustering algorithm. The number of
-% clusters can be controlled by the option |'inflationPower'|. A smaller
-% inflation power results in fewer but larger clusters.
+% For large maps it can be useful to perform the segmentation in a two step
+% process, where in the in the first step similarly oriented variants are
+% reconstructed as one variants and only seperated in a second step. This
+% can be accomplished by the commands
+% 
+%   job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree,'mergeSimilar')
+%   job.clusterVariantGraph 
+%   job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree)
+%
+%%
+% The next step is to cluster the variant graph into components. This is
+% done by the command <parentGrainReconstructor.clusterVariantGraph.html
+% |clusterVariantGraph|>.
 
-job.clusterGraph('inflationPower',1.6)
+job.clusterVariantGraph('includeSimilar')
 
 %%
-% Finaly, we assume a single parent orientation for each cluster and use it
-% to compute a parent orientation for each child grain beeing part of a
-% cluster. This is done by the command
-% <parentGrainReconstructor.calcParentFromGraph.html
-% |calcParentFromGraph|>.
+% As a result a table of votes |job.votes| is generated. More specificaly,
+% |job.votes.prob| is a matrix that contains in row |job.votes.prob(i,:)|
+% the probabilities of the i-th child grain to have a specific parent
+% orientation. Accordingly, we can plot the probability of the best fit for
+% each grain by
 
-% compute parent orientations
-job.calcParentFromGraph
-
-% plot them
-plot(job.parentGrains,job.parentGrains.meanOrientation)
-
-%%
-% We observe that almost all child grains have been fliped into parent
-% grains. The command <parentGrainReconstructor.calcParentFromGraph.html
-% |calcParentFromGraph|> has two additional outputs. The misorientation
-% angle between the reconstructed parent orientation of each child grain
-% and the mean parent orientation of the corresponding parent grain is 
-% stored in |job.grains.fit| while |job.grains.clusterSize| containes the
-% size of each cluster.
-
-figure
-plot(job.grains,job.grains.fit./degree)
-%plot(job.grains, job.grains.clusterSize < 15)
-setColorRange([0,5])
+plot(job.grains,job.votes.prob(:,1))
 mtexColorbar
 
 %%
-% We may use these quantities to undo the parent orientation reconstruction
-% for child grains with a misfit exeeding a certain threshold or belonging
-% to a too small cluster. This can be done by the command
-% <parentGrainReconstructor.revert.html |job.revert|> 
+% We observe many child grains where the algorithm is sure about the parent
+% orientation and some child grains where the probability is close to 50
+% percent. This is an indication that there are a least two potential
+% parent orientations which are similarly likely. In many cases these
+% potential parent orientations are in a twinning relationship.
+%
+% Lets reconstruct all parent orientations where the probability is above
+% 50 percent.
 
-job.revert(job.grains.fit > 5*degree | job.grains.clusterSize < 15)
+job.calcParentFromVote('minProb',0.5)
 
+% plot the result
 plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 %%
-% When used without any input argument
-% <parentGrainReconstructor.revert.html |job.revert|> will undo all
-% reconstructed parent grain. This is helpfull when experimenting with
-% different parameters.
-%
-% In order to fill the holes corresponding to the remaining child grains we
-% inspect their misorientations to neighbouring already reconstructed
-% parent grains. Each of these misorientations votes for a certain parent
-% orientation. We choose the parent orientation that gets the most votes.
-% The corresponding commands <parentGrainReconstructor.calcGBVotes.html
-% |job.calcGBVotes|> and <parentGrainReconstructor.calcParentFromVote.html
-% |job.calcParentFromVote|> can be adjusted by many options.
+% From here we have different possibilities to continue. One possibility is
+% to reconstruct the remaining parent orientations manually. To this end
+% one can use the the command
+% <parentGrainReconstructor.selectInteractive.html
+% |job.selectInteractive|>. This allow to click any grain and to change its
+% parent orientation into one of the potential parent orientations.
 
+job.selectInteractive
 
-for k = 1:3 % do this three times
+%%
+% A second way would be to rerun the variant graph approach above a second
+% time but with relaxed settings, i.e., with a lower probability. A third
+% way is to use the command <parentGrainReconstructor.calcGBVotes.html
+% |job.calcGBVotes|> to compute votes for potential parent orientations
+% from the surrounding already reconstructed parent grains. 
 
-  % compute votes
-  job.calcGBVotes('noC2C');
+% compute the votes
+job.calcGBVotes('p2c','reconsiderAll')
 
-  % compute parent orientations from votes
-  job.calcParentFromVote('minFit',7.5*degree)
-end
+% assign parent orientations according to the votes
+job.calcParentFromVote
 
 % plot the result
 plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 %% Merge similar grains and inclusions
 %
-% We observe that we have many neighbouring parent grains with similar
-% orientations. These can be merged into big parent grains using the
-% command <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|>
+% After the above reconstruction steps most of the child grains have been
+% reverted into parent grains. However, instead of a few big parent grains
+% we still have many small, but similarly oriented parent grains. These can
+% be merged into big parent grains using the command
+% <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|>
 
 % merge grains with similar orientation
 job.mergeSimilar('threshold',7.5*degree);
@@ -266,6 +257,24 @@ hold on
 plot(grainSelected.boundary,'linewidth',3,'lineColor','w')
 hold off
 
+%%
+% We can also directly identify the child grains belonging to the selected
+% parent grains. Remeber that the initial grains are stored in
+% |job.grainsPrior| and that the vector |job.mergeId| stores for every
+% initial grain the |id| of the corresponding parent grain. Combining these
+% two information we do
+
+% identify childs of the selected parent grain
+childGrains = job.grainsPrior(job.mergeId == grainSelected.id);
+
+% plot these childs 
+plot(childGrains,childGrains.meanOrientation)
+
+% and top the parent grain boundary 
+hold on
+plot(grainSelected.boundary,'linewidth',2)
+hold off
+
 %% 
 % In order to check our parent grain reconstruction we chose the single
 % parent grain outlined in the above map and plot all child variants of its
@@ -275,7 +284,7 @@ hold off
 % |calcVariantId|>.
 
 % the measured child orientations that belong to parent grain 279
-childOri = job.ebsd(grainSelected).orientations;
+childOri = job.ebsdPrior(childGrains).orientations;
 
 % the orientation of parent grain 279
 parentOri = grainSelected.meanOrientation;

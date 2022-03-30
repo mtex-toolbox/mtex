@@ -91,6 +91,16 @@ for k = 1:length(varargin)
     
     [isIncl, hostId] = grains.isInclusion;
     isIncl = isIncl & grains.grainSize < get_option(varargin,'maxSize',inf);
+    
+    % additional condition on the inclusion
+    cond = get_option(varargin,'inclusions');
+    if numel(cond) == length(grains), isIncl = isIncl & cond; end
+    
+    % additional condition on the host
+    cond = get_option(varargin,'host');
+    if ~isempty(cond)
+      isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
+    end
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
@@ -125,7 +135,13 @@ for k = 1:length(varargin)
 
   end
 end
+
+% remove everything that is not in grains
 A = A(1:maxId,1:maxId);
+isInGrains = false(1,maxId);
+isInGrains(grains.id) = true;
+A(~isInGrains,:) = 0;
+A(:,~isInGrains) = 0;
 
 % maybe we provide old2newId directly
 if isnumeric(varargin{1}) && length(varargin{1}) == length(grains) && size(varargin{1},2)==1
@@ -141,7 +157,7 @@ else
   doMerge = any(A,1) | any(A,2).';
 
   % 2. determine grains not to touch and sort them first
-  keepId = find(~doMerge);
+  keepId = find(~doMerge & isInGrains);
   keepInd = grains.id2ind(keepId);
   old2newId = zeros(maxId,1);
   old2newId(keepId) = 1:numel(keepId);
@@ -251,7 +267,7 @@ if check_option(varargin,'calcMeanOrientation')
     grainsMerged.prop.meanRotation(i) = rotation(oriNew);
   
     % get new phaseId
-    if exist('cs') && ischar(cs) 
+    if exist('cs','var') && ischar(cs) 
       grainsMerged.phaseId(i) = 1;
     else
       newPhase = cellfun(@(x) isa(x,'symmetry') && x==oriNew.CS,grains.CSList);

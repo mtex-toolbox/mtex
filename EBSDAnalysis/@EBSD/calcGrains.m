@@ -19,6 +19,10 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   % follow non convex outer boundary
 %   grains = calcGrains(ebsd,'boundary','tight')
 %
+%   % specify phase dependent thresholds
+%   % thresholds follow the same order as ebsd.CSList and should have the same length
+%   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
+%
 %   % markovian clustering algorithm
 %   p = 1.5;    % inflation power (default = 1.4)
 %   maxIt = 10; % number of iterations (default = 4)
@@ -89,7 +93,7 @@ if check_option(varargin,'removeQuadruplePoints') && grains.qAdded > 0
     
     if ~any(iBd), continue; end
         
-    % check for misorientation angle
+    % check for misorientation angle % TODO
     toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
     
   end
@@ -130,12 +134,17 @@ end
 % compute mean orientation and GOS
 doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
 for k = 1:numel(doMeanCalc)
-  
   qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
   mq = mean(qind,'robust');
   meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
-  GOS(doMeanCalc(k)) = mean(angle(mq,qind));
-  
+  GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
+end
+
+% assign variant and parent Ids for variant-based grain computation
+if check_option(varargin,'variants')
+    variantId = get_option(varargin,'variants');   
+    grains.prop.variantId = variantId(firstD,1);
+    grains.prop.parentId = variantId(firstD,2);
 end
 
 % save 
@@ -157,9 +166,10 @@ function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
 % extract segmentation method
 grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
+gbcFlags = regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1');
 
-gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
-gbcValue = get_option(varargin,{gbc,'threshold','delta'},15*degree,'double');
+gbc      = get_flag(varargin,gbcFlags,'angle');
+gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
 
 if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
   gbcValue = repmat(gbcValue,size(ebsd.CSList));
@@ -200,7 +210,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue,varargin{:});
+      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
     
   end  
 end

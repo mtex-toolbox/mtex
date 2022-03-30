@@ -20,6 +20,23 @@ if ~isa(ebsd,'EBSD')
   ebsd.CSList = b.CSList;
 end
 
+% special case - changing symmetry
+if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
+    length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'CS')
+  
+  % get id of the phase
+  id = ebsd.name2id(s(1).subs{1});
+
+  if id>0
+    if numel(s)>2
+      ebsd.CSList{id} = subsasgn(ebsd.CSList{id},s(3:end),b);
+    else
+      ebsd.CSList{id} = b;
+    end
+    return
+  end
+end
+
 switch s(1).type
   
   case '()'

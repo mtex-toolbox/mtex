@@ -1451,7 +1451,7 @@ nhOrig = nh;
 %% Read in file
 
 % definitions
-num_chars_read = 65536; % number of characters to read
+num_chars_read = 2^18;  % number of characters to read
 has_nuff_n_ratio = 0.1; % this ratio will tell if a row has enough values
 cstr     = '%f';        % assume floats only (so far)
 

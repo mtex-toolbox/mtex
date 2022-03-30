@@ -5,7 +5,8 @@
 % Many functions provided by MTEX can be customized by options. An option
 % is passed to a method as a string parameter followed by a value. For
 % example, almost all plotting methods support the option *resolution*
-% followed by a double value specifying the resolution in radiant
+% followed by a double value specifying the resolution in radians.  The code below
+% demonstrates the effect of changing this parameter.
 
 odf = SantaFe
 plotPDF(odf,Miller(1,0,0,odf.CS),'resolution',10*degree,'contour','linewidth',2);

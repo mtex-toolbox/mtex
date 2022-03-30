@@ -61,20 +61,13 @@ classdef slipSystem
     function display(sS,varargin)
       % standard output
 
-      displayClass(sS,inputname(1),varargin{:});
-      
-      % display symmetry
-      if isa(sS.CS,'crystalSymmetry')
-        if ~isempty(sS.CS.mineral)
-          disp([' mineral: ',char(sS.CS,'verbose')]);
-        else
-          disp([' symmetry: ',char(sS.CS,'verbose')]);
-        end
-      end
+      displayClass(sS,inputname(1),'slipSystem',varargin{:},'moreInfo',char(sS.CS,'compact'));
       
       if length(sS)>24, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
-      disp([' size: ' size2str(sS.b)]);
-            
+      if length(sS)>1, disp([' size: ' size2str(sS.b)]); end
+        
+      disp(' ');
+
       if length(sS)<=45 && ~isempty(sS)
         dispData(sS)
       elseif ~getMTEXpref('generatingHelpMode')

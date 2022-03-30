@@ -40,10 +40,12 @@ if check_option(varargin,'iso') && T.rank==4
      
 elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
 
-  TVoigt = 0*T;
-  
   odf = varargin{1};
-  fhat = calcFourier(odf,'bandwidth',min(T.rank,odf.bandwidth));
+
+  TVoigt = 0*T;
+  TVoigt.CS = odf.SS; 
+  
+  fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
   
   for l = 0:min(T.rank,odf.bandwidth)
   
@@ -66,7 +68,11 @@ elseif check_option(varargin,'weights')  % weighted mean
   
   % take the mean of the rotated tensors times the weight
   TVoigt = sum(weights .* T);
-  
+
+  if isfield(T.opt,'density') && numel(weights) == numel(T.opt.density)
+    TVoigt.opt.density = sum(T.opt.density .* weights);
+  end
+
 else % the plain mean
 
   if nargin > 1 && isnumeric(varargin{1})

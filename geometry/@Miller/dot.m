@@ -2,18 +2,22 @@ function d = dot(m1,m2,varargin)
 % inner product between two Miller indece
 %
 % Syntax
-%   a = dot(m1,m2)
-%   a = dot(m1,m2,'antipodal')
+%   d = dot(m1,m2)
+%   d = dot(m1,m2,'antipodal')
 %
 % Input
-%  m1,m2 - @Miller
+%  m1, m2 - @Miller
 %
 % Output
-%  d - double [length(m1) length(cs)]
+%  d - double, same size as |m1| and |m2| 
 % 
 % Options
-%  antipodal - consider m1,m2 with antipodal symmetry
-%  all       -
+%  noSymmetry - do *not* consider sym. equiv. directions
+%  max       - (default) maximum dot product with respect to all sym. equiv.
+%  min       - minimum dot product with respect to all sym. equiv.
+%  all       - all dot products with respect to sym. equiv.
+%  antipodal - include antipodal symmetry
+%
 
 % maybe we should ignore symmetry
 if check_option(varargin,'noSymmetry') || ~isa(m2,'Miller')
@@ -53,5 +57,9 @@ m2 = repmat(reshape(m2,1,[]),size(m1,1),1);
 % vector3d dot product
 d = dot@vector3d(m1,m2,varargin{:});
 
-% find maximum
-if ~check_option(varargin,'all'), d = reshape(max(d,[],1),s); end
+% which angle to return
+if check_option(varargin,'min')
+  d = reshape(min(d,[],1),s); % minimum angle of all symmetricaly equ.
+elseif ~check_option(varargin,'all')
+  d = reshape(max(d,[],1),s); % maximum angle of all symmetricaly equ.
+end

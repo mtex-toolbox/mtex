@@ -8,17 +8,17 @@ function ori = byMiller(hkl,uvw,varargin)
 %
 % Syntax
 %   
-%   hkl = Miller(h,k,l,CS,'hkl')
-%   uvw =  Miller(u,v,w,CS,'uvw')
+%   hkl = Miller(h,k,l,cs,'hkl')
+%   uvw =  Miller(u,v,w,cs,'uvw')
 %   ori = orientation.byMiller(hkl,uvw)
 %
-%   ori = orientation.byMiller([h k l],[u v w],CS)
+%   ori = orientation.byMiller([h k l],[u v w],cs)
 %
 % Input
 %  hkl, uvw - @Miller
 %  h,k,l  - Miller indece (double)
 %  u,v,w  - Miller indece (double)
-%  CS     - @crystalSymmetry
+%  cs     - @crystalSymmetry
 %
 % Output
 %  ori - @orientation

@@ -18,6 +18,15 @@ methods
     if nargin == 0, return; end
     if isa(fhat,'S2FunHarmonic')       
       sF.fhat = fhat.fhat;
+    elseif isa(fhat,'S2Kernel')
+
+      psi = fhat;
+      bw = psi.bandwidth;
+      sF.fhat = zeros((bw+1)^2,1);
+      for l = 0:bw
+        sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
+      end
+
     else
       s = size(fhat);
       bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree

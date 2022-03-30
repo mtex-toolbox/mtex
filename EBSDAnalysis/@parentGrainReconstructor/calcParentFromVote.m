@@ -3,14 +3,14 @@ function job = calcParentFromVote(job,varargin)
 %
 % Syntax
 %
-%   % take majority vote
-%   job.calcParentFromVote('minFit',2*degree,'minVotes',2)
+%   % compute votes
+%   job.calcGBVotes('threshold',1.5*degree,'tolerance',1.5*degree)
 %
-%   % all votes must be equal
-%   job.calcParentFromVote('strict','minVotes',2)
+%   % take vote with highest probability for reconstruction
+%   job.calcParentFromVote
 %
-%   % go by probability
-%   job.calcParentFromVote('probability','threshold',1.5*degree,'tolerance',1.5*degree,'minProb',0.6)
+%   % require probability to be at least 0.6
+%   job.calcParentFromVote('minProb',0.6)
 %
 % Input
 %  job - @parentGrainReconstructor
@@ -19,65 +19,63 @@ function job = calcParentFromVote(job,varargin)
 %  job - @parentGrainReconstructor
 %
 % Options
-%  probability - 
-%  strict - require all votes to be equal
-%  minFit - minimum required fit
-%  maxFit - maximum second best fit
 %  minVotes - minimum number of required votes
-%  minProb  - minimum probability
+%  minProb  - minimum probability (default - 0)
+%  minAlpha - minimum factor between best and second best probability
+%  minDelta - minimum difference between best and second best probability
+%
+% References
+%
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, J. Appl.
+% Cryst. 55, 2022.
+%
 
+assert(~isempty(job.votes),'You need to compute votes first!');
 
-assert(~isempty(job.votes),'You need to compute votes first.');
+% which to transform
+switch job.votes.Properties.VariableNames{2}
+  case 'fit'
 
-
-if check_option(varargin,'probability')
+    doTransform = job.votes.fit(:,1) < get_option(varargin,'minFit',5*degree);
+      
+    if check_option(varargin,'minDelta')  
+      doTransform = doTransform & ...
+        job.votes.fit(:,2)-job.votes.fit(:,1) > get_option(varargin,'minDelta',0);
+    end
+    
+    if check_option(varargin,'minAlpha')  
+      doTransform = doTransform & ...
+        job.votes.fit(:,1) > get_option(varargin,'minAlpha',0) * job.votes.fit(:,2);
+    end
   
-   threshold = get_option(varargin,'threshold',2*degree);
-   tol = get_option(varargin,'tolerance',1.5*degree);
- 
-   prob = 1 - 0.5 * (1 + erf(2*(job.votes.fit - threshold)./tol));
-   prob(prob<1e-2) = 0;
-   if any(strcmp(job.votes.Properties.VariableNames,'weights'))
-     prob = prob .* sqrt(job.votes.weights); 
-   end
-   
-   % perform voting
-   [parentId, numVotes] = majorityVote( repmat(job.votes.grainId,1,size(prob,2)), ...
-     job.votes.parentId, max(job.grains.id),'weights',prob);
-
-   % which child grains to transform
-   doTransform = numVotes > get_option(varargin,'minProb',0);
-   vdisp(['  votes prob > minProb: ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
-   
-else
-
-  % consider only consistent votes
-  minFit = get_option(varargin,'minFit',inf);
-  maxFit = get_option(varargin,'maxFit',-inf);
-
-  consistenVotes = job.votes.fit(:,1) < minFit;
-  vdisp(' ',varargin{:})
-  vdisp(['  votes   fit < misFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
-  if size(job.votes.fit,2)>1
-    consistenVotes = consistenVotes & job.votes.fit(:,2) > maxFit;
-    vdisp(['  votes  fit2 > maxFit: ',xnum2str(100*nnz(consistenVotes)/length(consistenVotes)) '%'],varargin{:});
-  end
-
-  job.votes = job.votes(consistenVotes,:);
-
-  % perform voting
-  [parentId, numVotes] = majorityVote( job.votes.grainId, ...
-    job.votes.parentId(:,1), max(job.grains.id),varargin{:});
-
-  % which child grains to transform
-  doTransform = numVotes >= get_option(varargin,'minVotes',1);
-  vdisp(['  numVotes >= minVotes: ',xnum2str(100*nnz(doTransform)/nnz(numVotes)) '%'],varargin{:});
+  case 'prob'
   
+    doTransform = job.votes.parentId(:,1)>0 & ...
+      job.votes.prob(:,1) > get_option(varargin,'minProb',0);
+
+    if check_option(varargin,'minDelta')  
+      doTransform = doTransform & ...
+        job.votes.prob(:,1)-job.votes.prob(:,2) > get_option(varargin,'minDelta',0);
+    end
+    
+  case 'count'
+  
+    doTransform = job.votes.count(:,1) >= get_option(varargin,'minCount',0);
+    
+    if check_option(varargin,'maxCount')  
+      doTransform = doTransform & ...
+        job.votes.count(:,2) < get_option(varargin,'maxCount',inf);
+    end
+
 end
-vdisp(' ',varargin{:})
 
 % compute new parent orientation from parentId
-pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, parentId(doTransform));
+if any(job.isParent(doTransform))
+  pOri = variants(job.p2c, job.grainsPrior(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
+else
+  pOri = variants(job.p2c, job.grains(doTransform).meanOrientation, job.votes.parentId(doTransform,1));
+end
 
 % change orientations of consistent grains from child to parent
 job.grains(doTransform).meanOrientation = pOri;
@@ -85,6 +83,12 @@ job.grains(doTransform).meanOrientation = pOri;
 % update all grain properties that are related to the mean orientation
 job.grains = job.grains.update;
 
-job.votes = [];
-
+% remove votes
+switch job.votes.Properties.VariableNames{2}
+  case 'fit'
+    job.votes.fit(doTransform,:) = nan;
+  case 'prob'
+    job.votes.prob(doTransform,:) = nan;
+  case 'count'
+    job.votes.count(doTransform,:) = nan;
 end

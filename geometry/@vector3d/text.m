@@ -29,7 +29,13 @@ if check_option(varargin,'add2all')
   varargin = delete_option(varargin,'add2all');
   
   for i = 1:length(ax)
-    text(v,varargin{:},'parent',ax(i));
+    if strcmpi(get(gca,'PlotBoxAspectRatioMode'),'manual') % check for 3d plot
+      hold(ax(i),'on');
+      arrow3d(v,varargin{:},'parent',ax(i));
+      text3(v,varargin{:},'parent',ax(i));
+    else
+      text(v,varargin{:},'parent',ax(i));
+    end
   end
   
   return

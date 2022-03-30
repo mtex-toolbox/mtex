@@ -25,9 +25,9 @@ if ~check_option(varargin, 'startingnodes')
   sR = sym.fundamentalSector;
   v = equispacedS2Grid(sR,'points',min(1000000,2*sF.bandwidth^2));
     
-  if isa(sF.s,'crystalSymmetry')
-    v = Miller(v, sym);
-  end
+  if isa(sF.s,'crystalSymmetry'), v = Miller(v, sF.s); end
+  v.antipodal = sF.antipodal;
+
   varargin = set_option(varargin, 'startingnodes', v);
 end
 

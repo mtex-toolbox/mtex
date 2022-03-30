@@ -5,9 +5,11 @@
 
 mtexdata forsterite
 [grains,ebsd.grainId] = ebsd.calcGrains;
+
 % just use the larger grains of forsterite
 ebsd(grains(grains.grainSize< 100))='notIndexed';
 ebsd({'e' 'd'})='notIndexed';
+
 % lets also ignore inclusions for a nicer plotting experience
 ebsd(grains(grains.isInclusion))=[];
 [grains,ebsd.grainId, ebsd.mis2mean] = ebsd.calcGrains;
@@ -29,7 +31,7 @@ hold off
 %% Visualizing dispersion of orientations via directions
 
 % First, we will inspect a selected grain
-sel_id =  2079;
+sel_id =  1395;
 hold on
 plot(grains('id',sel_id).boundary,'linewidth',3,'linecolor','b')
 hold off
@@ -116,22 +118,22 @@ mtexColorbar('title', 'distance from fibre')
 % We can fit a fibre for each grain and write out the axes in crystal as 
 % well as in specimen coordiantes
 
-ids = grains('f').id;
-clear fib_axSC fib_axCC
-for i = 1:length(ids)
-        o = ebsd(grains('id',ids(i))).orientations;     
-        fib = fibre.fit(o);
-        fib_axCC(i) = fib.h;
-        fib_axSC(i) = fib.r;
-end
+%ids = grains('f').id;
+%clear fib_axSC fib_axCC
+%for i = 1:length(ids)
+%        o = ebsd(grains('id',ids(i))).orientations;     
+%        fib = fibre.fit(o);
+%        fib_axCC(i) = fib.h;
+%        fib_axSC(i) = fib.r;
+%end
 
 % plot fibre axes in specimen coordinates
-opts= {'contourf','antipodal','halfwidth', 10*degree,'contours',[1:10]};
-plot(fib_axSC,opts{:})
-nextAxis
+%opts= {'contourf','antipodal','halfwidth', 10*degree,'contours',[1:10]};
+%plot(fib_axSC,opts{:})
+%nextAxis
 % plot fibre axes in crystal coordinates
-plot(fib_axCC,opts{:},'fundamentalRegion')
-mtexColorbar
+%plot(fib_axCC,opts{:},'fundamentalRegion')
+%mtexColorbar
 
 % Now we can start to wonder whether the distrubtion of fibre axes relates
 % to e.g. the kinematic during deformation of the sample.

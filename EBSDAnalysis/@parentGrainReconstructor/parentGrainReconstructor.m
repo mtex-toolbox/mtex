@@ -12,92 +12,110 @@ classdef parentGrainReconstructor < handle
 %  p2c0 - initial guess for the parent to child orientation relationship
 %
 % Class Properties
+%  grains    - grains at the current stage of reconstruction
+%  ebsd      - EBSD at the current stage of reconstruction
 %  csParent  - @crystalSymmetry of the parent phase
 %  csChild   - @crystalSymmetry of the child phase
-%  p2c       - parent to child orientation relationship
-%  ebsd      - measured @EBSD
-%  grainsMeasured - measured @grain2d
-%  grains    - reconstructed grains
+%  p2c       - refined parent to child orientation relationship
 %  mergeId   - list of ids to the merged grains
-%  fit       - 
-%  graph     -
-%  votes     -
-%  numChilds         - number of child grains for each parent grain
-%  isTransformed     - child grains that have been reverted from child to parent phase
-%  isMerged          - child grains that have been merged into a parent grain    
+%  graph     - grain graph with edges representing probabilities of adjecent grains to form a parent grain
+%  votes     - table of of votes for each grain
+%  numChilds     - number of child grains for each parent grain
+%  isTransformed - child grains that have been reverted from child to parent phase
+%  isChild       - child grains that have been reverted from child to parent phase
+%  isMerged      - child grains that have been merged into a parent grain    
 %  transformedGrains - transformed measured grains 
 %  parentGrains - measured and reconstructed parent grains
 %  childGrains  - not yet reconstructed child grains
 %  variantId    - reconstructed variant ids
 %  packetId     - reconstructed packet ids
 %
+% References
+%
+% * <https://arxiv.org/abs/2201.02103 The variant graph approach to
+% improved parent grain reconstruction>, arXiv, 2022,
+% * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, J. Appl.
+% Cryst. 55, 2022.
+% 
 % See also
 % MaParentGrainReconstruction TiBetaReconstruction
 %
 
   properties
+    grains         % grains at the current stage of reconstruction
+    p2c            % parent to child orientation relationship
+    useBoundaryOrientations = false
     
-    csParent  % parent symmetry
-    csChild   % child symmetry
-
+    mergeId        % a list of ids to the merged grains
     
-    ebsd      % initial / measured EBSD
-    grainsMeasured % initialy measured grains 
-    grains    % reconstructed grains
-
-    mergeId   % a list of ids to the merged grains
-    
-    fit    
-    graph
-    votes
-    variantMap      
-    
+    votes          % votes computed by calcGBVotes or calcTPVotes
+    graph          % graph computed by calcGraph
   end
   
   properties (Dependent=true)
+    csParent        % parent symmetry
+    csChild         % child symmetry
     childPhaseId    % phase id of the child phase
     parentPhaseId   % phase id of the parent phase
+    variantMap      % allows to reorder variants
+    c2c             % all child to child ORs
   end
   
   properties (Dependent=true)
+    ebsd            % EBSD at the current stage of reconstruction
+    
     numChilds       % number of child grains for each parent grain
-    isTransformed   % child grains that have been reverted from child to parent phase
+    isChild         % is a child grain
+    isParent        % is a parent grain
+    isTransformed   % a child grain that has been reconstructed into a parent grain
     isMerged        % child grains that have been merged into a parent grain    
     
     transformedGrains  % transformed measured grains 
-    parentGrains       % 
-    childGrains        %
+    parentEBSD         % parent EBSD data at the current state of reconstruction
+    parentGrains       % parent grains at the current state of reconstruction
+    childGrains        % remaining child grains at the current state of reconstruction
     
     variantId       %
     packetId        %
+    parentId        %
   end
   
-  properties (SetObservable) 
-    p2c       % parent to child orientation relationship
+  properties (Hidden=true)
+    ebsdPrior      % EBSD prior to reconstruction
+    grainsPrior    % grains prior to reconstruction
   end
-  
-  
+
+  properties (Hidden=true, Dependent=true)
+    hasVariantGraph
+    hasGraph
+  end
+
   methods
-    
-    
+
     function job = parentGrainReconstructor(ebsd,varargin)
 
       % set up ebsd and grains
-      job.ebsd = ebsd;
+      job.ebsdPrior = ebsd;
       job.grains = getClass(varargin,'grain2d');
-      job.grainsMeasured = job.grains;
+      job.grainsPrior = job.grains;
       
       if isempty(job.grains)
-        [job.grains, job.ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
+        [job.grains, job.ebsdPrior.grainId] = ...
+          calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
       end
+
+      % project EBSD orientations close the grain mean orientations
+      job.ebsdPrior = job.ebsdPrior.project2FundamentalRegion(job.grains);
       
       job.mergeId = (1:length(job.grains)).';
       
       % check for provided orientation relationship
-      job.p2c = getClass(varargin,'orientation');
+      job.p2c = getClass(varargin,'orientation',orientation);
       
       % determine parent and child phase
       if isempty(job.p2c)
+                
         % try to guess parent and child phase
         numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
         indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
@@ -109,42 +127,27 @@ classdef parentGrainReconstructor < handle
         [~,minPhase] = min(numPhase);
         if minPhase ~= maxPhase
           job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
-        end
-      else
-        % extract from existing orientation relationship
-        assert(~(job.p2c.CS == job.p2c.SS),'p2c should be a misorientation')
-        job.csParent = job.p2c.CS;
-        job.csChild = job.p2c.SS;
-        %job.variantMap = 1:length(job.p2c.variants);
-      end   
-      
-      % add listener to p2c
-      addlistener(job,'p2c','PostSet',@job.handlePropEvents);
-    end
-       
-    function handlePropEvents(job,metaProp,eventData)
-      switch metaProp.Name 
-        case 'p2c'
-          
-          numVariants = length(job.p2c.variants);
-          
-          %Initialisation
-          if length(job.variantMap) ~= numVariants
-            
-            % default to Morito convention for cubic to cubic misorientation
-            if job.p2c.CS.lattice == latticeType.cubic && ...
-                job.p2c.SS.lattice == latticeType.cubic && ...
-                numVariants == 24
-            
-              job.variantMap = 'morito';
-              
-            else % otherwise the default is 1,2,3,4,...,numVariants
-              job.variantMap = 1:numVariants;
-            end
-          end          
+        end      
       end
+      
     end
-	
+    
+    function cs = get.csParent(job)
+      cs = job.p2c.CS;
+    end
+    
+    function set.csParent(job,cs)
+      job.p2c.CS = cs;
+    end
+    
+    function cs = get.csChild(job)
+      cs = job.p2c.SS;
+    end
+    
+    function set.csChild(job,cs)
+      job.p2c.SS = cs;
+    end
+    
     function id = get.parentPhaseId(job)
       id = job.grains.cs2phaseId(job.csParent);
     end
@@ -165,77 +168,110 @@ classdef parentGrainReconstructor < handle
     function out = get.isTransformed(job)
       % which initial grains have been already reconstructed
       
-      %Should this not be "which grains have been succesfully
-      %reconstructed?
-      %Then we could use this to return the area fraction of reconstructed
-      %phase
-      out = job.grainsMeasured.phaseId == job.childPhaseId & ...
+      out = job.grainsPrior.phaseId == job.childPhaseId & ...
         job.grains.phaseId(job.mergeId) == job.parentPhaseId;
     end
     
-    function out = get.parentGrains(job)
-      
-      out = job.grains( job.grains.phaseId == job.parentPhaseId );
-      
+    function out = get.isChild(job)
+      out = job.grains.phaseId == job.childPhaseId;
     end
     
-    function out = get.childGrains(job)
-      
-      out = job.grains( job.grains.phaseId == job.childPhaseId );
-      
+    function out = get.isParent(job)
+      out = job.grains.phaseId == job.parentPhaseId;
+    end
+    
+    function out = get.parentGrains(job)      
+      out = job.grains( job.grains.phaseId == job.parentPhaseId );      
+    end
+    
+    function out = get.childGrains(job)      
+      out = job.grains( job.grains.phaseId == job.childPhaseId );      
+    end
+    
+    function out = get.parentEBSD(job)      
+      out = job.ebsd;
+      out = out(job.csParent);
     end
     
     function out = get.transformedGrains(job)
-      out = job.grainsMeasured(job.isTransformed);
+      out = job.grainsPrior(job.isTransformed);
     end
     
     function set.transformedGrains(job,grains)
-      job.grainsMeasured(job.isTransformed) = grains;
+      job.grainsPrior(job.isTransformed) = grains;
     end
     
     function out = get.packetId(job)
       
-      if isfield(job.grainsMeasured.prop,'packetId')
-        out = job.grainsMeasured.prop.packetId;
+      if isfield(job.grainsPrior.prop,'packetId')
+        out = job.grainsPrior.prop.packetId;
       else
-        out = NaN(size(job.grainsMeasured));
+        out = NaN(size(job.grainsPrior));
       end
     end
     
+    function out = get.parentId(job)
+      
+      out = nan(size(job.grainsPrior));
+      
+      ind = job.isTransformed;
+      
+      
+      cOri = job.grainsPrior(ind).meanOrientation;
+      pOri = job.grains(ind).meanOrientation;
+
+      [~,out(ind)] = min(angle_outer(inv(cOri) .* pOri, ...
+        variants(job.p2c, 'parent'),'noSym2'),[],2);
+
+    end
+    
     function set.packetId(job,id)
-      job.grainsMeasured.prop.packetId = id;
+      job.grainsPrior.prop.packetId = id;
     end
     
     function out = get.variantId(job)
       
-      if isfield(job.grainsMeasured.prop,'variantId')
-        out = job.grainsMeasured.prop.variantId;
+      if isfield(job.grainsPrior.prop,'variantId')
+        out = job.grainsPrior.prop.variantId;
       else
-        out = NaN(size(job.grainsMeasured));
+        out = NaN(size(job.grainsPrior));
       end
     end
     
     function set.variantId(job,id)
-      job.grainsMeasured.prop.variantId = id;
+      job.grainsPrior.prop.variantId = id;
     end
-        
-    function set.variantMap(job,id) 
-      assert(~isempty(job.p2c),'Define p2c before mapping variant Ids');
-      numVariants = length(job.p2c.variants);
-        
-      if strcmpi(id,'morito') && numVariants == 24
-        job.variantMap = [1 3 5 21 23 19 11 7 9 16 14 18 ...
-          24 22 20 4 2 6 13 15 17 8 12 10];
-        
-        % TODO: maybe we can find a more robust implementation of the
-        % morito order, i.e., one that does not depend 
-        
-      else
-        assert(length(id) == numVariants,'Supply %d natural numbers as Ids',numVariants);
-        job.variantMap = id;
-      end
+     
+    function set.variantMap(job,vMap)
+      job.p2c.opt.variantMap = vMap;
     end
     
+    function vMap = get.variantMap(job) 
+      if ~isfield(job.p2c.opt,'variantMap') || isempty(job.p2c.opt.variantMap)
+        vMap = 1:length(job.p2c.variants); 
+      else
+        vMap = job.p2c.opt.variantMap;
+      end      
+    end
+    
+    function ebsd = get.ebsd(job)
+      ebsd = calcParentEBSD(job);
+    end
+    
+    function c2c = get.c2c(job)
+      % child to child misorientation variants
+      p2cV = job.p2c.variants; 
+      c2c = job.p2c .* inv(p2cV(:));
+    end
+    
+    function out = get.hasVariantGraph(job)
+      out = ~isempty(job.graph) && length(job.graph)>1.5*length(job.grains);
+    end
+
+    function out = get.hasGraph(job)
+      out = ~isempty(job.graph) && length(job.graph)<1.5*length(job.grains);
+    end
+
   end
 
 end

@@ -8,6 +8,8 @@ function ind = isTwinning(gB, mori, threshold )
 % Input
 %  
 
+if nargin == 2, threshold = 5*degree; end
+
 ind = false(size(gB));
 
 % whiches phases to use
@@ -30,4 +32,3 @@ for ip = 1:size(pairs,1)
   ind(indPhase) = min(angle_outer(gB.subSet(indPhase).misorientation,mori_local),[],2)<threshold;
 
 end
-

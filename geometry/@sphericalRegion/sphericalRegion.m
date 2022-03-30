@@ -219,7 +219,7 @@ classdef sphericalRegion
       v = planeIntersect(sR.N(l),sR.N(r),sR.alpha(l),sR.alpha(r));
       
       ind = (imag(v.x).^2 + imag(v.y).^2 + imag(v.z).^2) < 1e-5;
-      ind = ind & sR.checkInside(v);
+      ind = ind & sR.checkInside(v,'noAntipodal');
       l = [l(:),l(:)]; r = [r(:),r(:)];
       e = [reshape(l(ind),[],1),reshape(r(ind),[],1)];
       v(~ind) = [];

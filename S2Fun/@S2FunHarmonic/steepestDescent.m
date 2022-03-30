@@ -25,7 +25,7 @@ sF = sF.truncate;
 % parameters
 res = get_option(varargin,'resolution',0.025*degree);
 tol = get_option(varargin,'tolerance',degree/4);
-kmax  = get_option(varargin, {'kmax','iterMax'}, 20); % maximal iterations
+kmax  = get_option(varargin, {'kmax','iterMax'}, 30); % maximal iterations
 maxStepSize = get_option(varargin,'maxStepSize',inf);
 
 isAntipodal = sF.antipodal;

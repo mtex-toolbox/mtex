@@ -1,4 +1,4 @@
-function h = scatter3d(v,varargin)
+function [h,ax] = scatter3d(v,varargin)
 % plot spherical data
 %
 % Syntax
@@ -42,11 +42,12 @@ if ~check_option(varargin,{'scatter_resolution','MarkerSize'},'double')
 else
   res = get_option(varargin,'scatter_resolution',1*degree);
 end
-MarkerSize  = get_option(varargin,'MarkerSize',min(getMTEXpref('markerSize'),50*res));
+MarkerSize  = get_option(varargin,'MarkerSize',max(1,min(getMTEXpref('markerSize'),50*res)));
 
 
 % plot
 data = ensurecell(data);
+if isempty(data), data = {}; end
 h = optiondraw(scatter3(v.x(:),v.y(:),v.z(:),MarkerSize.^2,data{:},'filled','parent',ax),varargin{:});
 
 % add transperency if required

@@ -25,46 +25,15 @@
  threshold = get_option(varargin,'threshold',2*degree);
  tol = get_option(varargin,'tolerance',1.5*degree);
  
- % init graph
- job.graph = sparse(length(job.grains),length(job.grains));
+ % OR fit of grain neighbors
+ [fit, grainPairs] = calcGBFit(job,varargin{:});
  
- % child to child misorientations
- if ~check_option(varargin,'noC2C')
-   
-   % child 2 child neighbours
-   grainPairs = job.grains(job.csChild).neighbors;
-   
-   % c2c misorientations
-   c2c = inv(job.grains(grainPairs(:,2)).meanOrientation) .* ...
-     job.grains(grainPairs(:,1)).meanOrientation;
+ % turn into probability
+ prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
  
-   % fit to ideal p2c
-   c2cFit = min(angle_outer(c2c,job.p2c * inv(variants(job.p2c))),[],2); %#ok<MINV>
- 
-   % turn into probability
-   prob = 1 - 0.5 * (1 + erf(2*(c2cFit - threshold)./tol));
-    
-   % write into similarity matrix
-   job.graph = sparse(grainPairs(:,1),grainPairs(:,2),prob,...
-     length(job.grains),length(job.grains));
- end
- 
- if ~check_option(varargin,'noP2C')
-   
-   % parent to child neighbours
-   grainPairs = neighbors(job.grains(job.csParent),job.grains(job.csChild));
-   
-   % p2c misorientations
-   childOri = job.grains(job.grains.id2ind(grainPairs(:,2))).meanOrientation;
-   parentOri = job.grains(job.grains.id2ind(grainPairs(:,1))).meanOrientation;
- 
-   p2cFit = angle(job.p2c, inv(childOri).*parentOri);
- 
-   prob = 1 - 0.5 * (1 + erf(2*(p2cFit - threshold)./tol));
- 
-   job.graph = job.graph + sparse(grainPairs(:,1),grainPairs(:,2),prob,...
-     length(job.grains),length(job.grains));
- end
+ % write into similarity matrix
+ job.graph = sparse(grainPairs(:,1),grainPairs(:,2),prob,...
+   length(job.grains),length(job.grains));
  
  % ensure graph is symmetric
  job.graph = max(job.graph, job.graph.');

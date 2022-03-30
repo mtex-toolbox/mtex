@@ -61,7 +61,11 @@ classdef dynProp
 
       fn = fieldnames(dp.prop);
       for i = 1:numel(fn)
-        dp.prop.(fn{i}) = dp.prop.(fn{i})(ind);
+        if size(dp.prop.(fn{i}),2)>1 && length(dp) == size(dp.prop.(fn{i}),1)
+          dp.prop.(fn{i}) = dp.prop.(fn{i})(ind,:);
+        else
+          dp.prop.(fn{i}) = dp.prop.(fn{i})(ind);
+        end
       end
 
     end
@@ -116,7 +120,13 @@ classdef dynProp
             fn = fieldnames(value.prop);
             for i = 1:numel(fn)
               if ~isfield(dp.prop,fn{i}), dp.prop.(fn{i})= zeros(size(dp));end
+
+              if size(dp.prop.(fn{i}),2)>1 && length(dp) == size(dp.prop.(fn{i}),1)
+                s.subs = [s.subs, ':'];
+              end
+              
               dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),s(1),value.prop.(fn{i}));
+              
             end
             
           end

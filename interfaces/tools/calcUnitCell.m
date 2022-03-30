@@ -35,12 +35,11 @@ if dxy==0
   dxy= (ly+ly)/2;
 end
 
-% remove dublicates from the coordinates
-xy = uniquetol(xy,0.01/sqrt(size(xy,1)),'ByRows',true);
-
 % reduce data set
 if length(xy)>10000, xy = subSample(xy,10000); end
 
+% remove dublicates from the coordinates
+xy = uniquetol(xy,0.01/sqrt(size(xy,1)),'ByRows',true);
 
 try
   % compute Voronoi decomposition

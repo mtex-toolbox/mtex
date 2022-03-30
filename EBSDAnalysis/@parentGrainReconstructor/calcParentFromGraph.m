@@ -96,6 +96,9 @@ job.grains(~isnan(parentOri)).meanOrientation = parentOri(~isnan(parentOri));
 job.grains.prop.fit = fit;
 job.grains.prop.clusterSize = clusterSize;
 
+% update all grain properties that are related to the mean orientation
+job.grains = job.grains.update;
+
 job.graph = [];
 
 end

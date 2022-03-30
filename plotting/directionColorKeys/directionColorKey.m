@@ -67,13 +67,20 @@ classdef directionColorKey < handle
         if ~check_option(varargin,'noLabel')
           hold on
           
-          axes = normalize(Miller({1,0,0},{0,1,0},{0,0,1},dM.sym,'uvw'));
+          if isa(dM.sym,'crystalSymmetry')
+            axes = normalize(Miller({1,0,0},{0,1,0},{0,0,1},dM.sym,'uvw'));
+            labels = {'$a$' '$b$' '$c$'};  
+          else
+            axes = [xvector,yvector,zvector];
+            labels = {'$x$' '$y$' '$z$'};
+          end
           
           arrow3d(axes,'facecolor','gray')
           
-          text3(axes(1),'$a$','horizontalAlignment','right')
-          text3(axes(2),'$b$','verticalAlignment','cap','horizontalAlignment','left')
-          text3(axes(3),'$c$','verticalAlignment','bottom')
+          text3(axes(1),labels{1},'horizontalAlignment','right')
+          text3(axes(2),labels{2},'verticalAlignment','cap','horizontalAlignment','left')
+          text3(axes(3),labels{3},'verticalAlignment','bottom')
+
           hold off
         end
         if isNew, fcw; end                

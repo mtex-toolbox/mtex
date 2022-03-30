@@ -5,6 +5,7 @@ function [h,mP] = plot(grains,varargin)
 %   plot(grains)          % colorize by phase
 %   plot(grains,property) % colorize by property
 %   plot(grains,cS)       % visualize crystal shape 
+%   plot(grains,S2F)      % visualize a tensorial property on top of the grains
 %
 % Input
 %  grains  - @grain2d
@@ -15,6 +16,8 @@ function [h,mP] = plot(grains,varargin)
 % Options
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend
+%  region      - [xmin, xmax, ymin, ymax] of the plotting region 
+%  scale       - scaling of crystal shapes and tensorial properties (0.3)
 %
 % See also
 % EBSD/plot grainBoundary/plot
@@ -107,19 +110,20 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
 elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   
-  if isa(varargin{1},'ipfColorKey')
-    S2F = S2Fun(varargin{1});
-    varargin = ['rgb','3d',varargin];
-  else
-    S2F = varargin{1};
-  end
+  % extract spherical function
+  S2F = varargin{1};
+  if isa(S2F,'ipfColorKey'), S2F = S2Fun(S2F); end
+  if length(S2F)==3, varargin = ['rgb',varargin]; end
   
+  % position in the map
   scaling = sqrt(grains.area);
   shift = vector3d([grains.centroid,2*scaling*zUpDown].');
   
   for k = 1:length(grains)
-    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),...
-    'parent', mP.ax,'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k));
+
+    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),'parent', mP.ax,...
+    'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d');
+    
   end
   
   plotBoundary = false;
@@ -156,7 +160,9 @@ else % otherwise phase plot
       'parent', mP.ax,'DisplayName',grains.mineralList{k},varargin{:}); %#ok<AGROW>
 
     % reactivate legend information
-    set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    if ~isempty(h{k})
+      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    end
         
   end
 
@@ -179,13 +185,22 @@ end
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
-axis(mP.ax,'tight');
+if isNew
+  
+  region = get_option(varargin,'region');
+  if ~isempty(region)
+    set(mP.ax,'XLim',region(1:2),'YLim',region(3:4))
+  else
+    axis(mP.ax,'tight'); 
+  end
+  
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+end
 
-if nargout == 0, clear h;end
-
-if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
-
-if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+% allow change of aspect ratio only for single figures
+if ~isstruct(mtexFig)
+  mtexFig.keepAspectRatio = length(mtexFig.children)== 1; 
+end
 
 % datacursormode does not work with grains due to a Matlab bug
 datacursormode off
@@ -194,12 +209,12 @@ datacursormode off
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
 
+if nargout == 0, clear h;end
+
 end
 
 
 function spatialSelection(src,eventdata)
-
-
 
 persistent sel_handle;
 
@@ -295,12 +310,32 @@ end
 
 if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
+if check_option(varargin,'region')
+  region = get_option(varargin,'region');
+  ind = cellfun(@(p) any(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+    V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
+  
+  d = d(ind,:);
+  poly = poly(ind);
+  
+  % cut polygons - TODO!!
+  %ind = cellfun(@(p) ~all(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+  %  V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
+  %reg = polyshape(region([1 2 2 1]),region([3 3 4 4]));
+  %for k = find(ind).'
+  %  p = polyshape(V(poly{k},:));
+  %  [p2,sId,vId] = intersect(p,reg);
+  %end
+
+end
+
 numParts = fix(log(max(cellfun('prodofsize',poly)))/2);
 Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
 
 obj.FaceColor = 'flat';
 obj.EdgeColor = 'None';
 obj.hitTest = 'off';
+h = [];
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse

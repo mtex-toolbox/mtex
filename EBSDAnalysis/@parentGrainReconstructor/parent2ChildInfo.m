@@ -18,7 +18,7 @@ OR.p2c = job.p2c;
 
 % Parallel planes and directions
 [OR.plane.parent,OR.plane.child,OR.direction.parent,OR.direction.child] = ...
-  round2Miller(OR.p2c,'maxIndex',15);
+  round2Miller(OR.p2c,'maxIndex',8);
                 
 % Misorientation of rational OR
 OR.p2cRational = orientation('map',...
@@ -37,17 +37,16 @@ OR.p2cAxis.child = setDisplayStyle(OR.p2cAxis.child,'direction');
 
 %Variants
 OR.variants.orientation = OR.p2c.variants;
-OR.variants.c2c = OR.p2c.variants*inv(OR.p2c.variants((job.variantMap(1))));
+OR.variants.c2c = OR.p2c.variants*inv(OR.p2c.variants(1));
 OR.variants.angle = angle(OR.variants.c2c);
 OR.variants.axis = axis(OR.variants.c2c,job.csChild);
 OR.variants.axis = setDisplayStyle(OR.variants.axis,'direction');
-OR.variants.id = job.variantMap;
 
 %Screen output
 
 screenPrint('Step','OR info:');
 screenPrint('SubStep',sprintf(['OR misorientation angle = ',...
-  num2str(angle(OR.p2c)./degree),'º']));
+  num2str(angle(OR.p2c)./degree),'°']));
 
 screenPrint('Step','Parallel planes');
 screenPrint('SubStep',sprintf(['Closest parent plane = ',...
@@ -74,7 +73,7 @@ screenPrint('SubStep',sprintf(['child rot. axis = ',...
 screenPrint('Step','Angle & rot. axes of unique variants');
 
 for jj = 1:length(OR.variants.orientation)
-  ii = OR.variants.id(jj);
+  ii = job.variantMap(jj);
   screenPrint('SubStep',sprintf([num2str(jj),': ',...
     num2str(OR.variants.angle(ii)./degree,'%2.2f'),...
     'º / ',sprintMiller(OR.variants.axis(ii))]));

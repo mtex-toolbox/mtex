@@ -1,4 +1,4 @@
-function out = variants(p2c,varargin)
+function [out, bestFriends] = variants(p2c,varargin)
 % variants parent to child orientation relationship
 %
 % Syntax
@@ -30,7 +30,6 @@ function out = variants(p2c,varargin)
 % Options
 %  parent - return parent variants
 %  child  - return child variants (default)
-%  variantMap - reorder variants
 %
 % Output
 %  p2cVariants - parent to child variants
@@ -125,11 +124,13 @@ if parentVariants % parent variants
   p2cVariants = p2cVariants.subSet(ind);
   
   if exist('variantId','var')
-    p2cVariants = p2cVariants.subSet(variantId);
+    p2cVariants = reshape(p2cVariants.subSet(variantId),size(variantId));
+  else
+    p2cVariants = reshape(p2cVariants,1,[]);
   end
   
   if exist('oriChild','var')
-    out = oriChild .* p2cVariants;
+    out = reshape(oriChild,[],1) .* p2cVariants;
   elseif exist('MillerChild','var')
     out = inv(p2cVariants) * MillerChild; %#ok<MINV>
   else
@@ -144,22 +145,22 @@ else % child variants
   %ind = ~any(tril(dot_outer(csRot,csRot)>1-1e-4,-1),2);
   %p2cVariants1 = p2c * subSet(p2c.CS.rot,ind);
   
+  
   % symmetrise with respect to parent symmetry
-  p2cVariants = p2c * p2c.CS.properGroup.rot;
+  symRot = p2c.CS.properGroup.rot;
+  % try to switch to Morito convention
+  if length(symRot) == 24
+    symRot = symRot([1 17 2 16 3 18 8 22 9 24 7 23 19 11 20 10 21 12 6 15 4 14 5 13]);
+  end
+    
+  p2cVariants = p2c * symRot;
   
   % ignore all variants symmetrically equivalent with respect to the child symmetry
   ind = ~any(tril(dot_outer(p2cVariants,p2cVariants,'noSym1')>1-1e-4,-1),2);
   p2cVariants = p2cVariants.subSet(ind);
-  
-  if check_option(varargin,'variantMap')
-    vMap = get_option(varargin,'variantMap');
-    %if length(vMap) == length(p2cVariants)
-    %  p2cVariants = p2cVariants.subSet(vMap);
-    %else
-    p2cVariants.CS = [];
-    p2cVariants = inv(reshape(accumarray(vMap(:),inv(p2cVariants)),1,[]));
-    p2cVariants.CS = p2c.CS;
-    %end
+
+  if isfield(p2c.opt,'variantMap') && length(p2c.opt.variantMap) == length(p2cVariants)
+    p2cVariants = p2cVariants.subSet(p2c.opt.variantMap);
   end
   
   if exist('variantId','var')
@@ -175,4 +176,8 @@ else % child variants
   else
     out = p2cVariants;
   end
+end
+
+if nargout == 2
+  [~,bestFriends] = max(angle_outer(out,out,'noSym2') < 8*degree,[],2);
 end
