@@ -233,6 +233,9 @@ num = size(values, 2);
 fhat = zeros(deg2dim(bw+1), num);
 for index = 1:num
   % adjoint nfsoft
+
+  values(isnan(values)) = 0;
+
   nfsoftmex('set_f', plan, W(:) .* values(:, index));
   nfsoftmex('adjoint', plan);
   % get fourier coefficients from plan and normalize
