@@ -232,3 +232,40 @@ legend('Location','best' )
 % more inclined with respect to the other phase boundariesand that the
 % phase boundaries between the two pyroxenes (Enstatite and Diopside) show
 % the lowest anisotropy.
+
+
+
+%% Characteristic Shape
+%
+% The characteristic shape results from the cummulative sum of all
+% grain boundary segements ordered by the angle of the segment direction.
+% It can be regarded as to represent the average grain shape, however
+% without the need to use closed areas such as it would be required when
+% working with grains.
+
+plotopts = {'normalize','linewidth',2, 'plain'}
+
+% here we can compare the shape defined by Forterite-Forsterite,
+% Enstatite-Enstatite and Forsterite-Enstatite boundaries
+
+shapeF = characteristicShape(grains.boundary('f','f'))
+plot(shapeF,plotopts{:})
+hold on
+shapeE = characteristicShape(grains.boundary('e','e'))
+plot(shapeE,plotopts{:})
+hold on
+shapeEF = characteristicShape(grains.boundary('e','f'))
+plot(shapeEF,plotopts{:})
+hold off
+
+legend('Fo-Fo','En-En','En-Fo','Location','northeastoutside', ...
+       'FontSize', 24)
+
+% The output of `characteristicShape` is a `shape2d` object which behaves
+% very similar to a `grain2d` object, hence it is easy to derive things
+% such as a long axis or e.g. the angle between the longest and the shortest
+% caliper which can be regarded as a measure of asymmetry.
+
+angle(shapeF.caliper('longest'),shapeF.caliper('shortest'))/degree
+angle(shapeE.caliper('longest'),shapeE.caliper('shortest'))/degree
+angle(shapeEF.caliper('longest'),shapEF.caliper('shortest'))/degree
