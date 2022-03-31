@@ -5,7 +5,7 @@ function display(SO3F,varargin)
 if check_option(varargin,'skipHeader')
   disp('  <strong>bingham component</strong>');
 else
-  displayClass(SO3F,inputname(1),varargin{:});
+  displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   disp(' ');
 end
 

@@ -18,10 +18,14 @@ classdef SO3FunBingham < SO3Fun
   
   methods
     
-    function SO3F = SO3FunBingham(kappa,A)
+    function SO3F = SO3FunBingham(kappa,A,cs)
         
       if nargin == 0, return;end
       
+      if isnumeric(A), A = orientation(quaternion(A)); end
+
+      if nargin == 3, A.CS = cs; end
+
       SO3F.kappa = kappa(:);
       SO3F.A = A;
 
