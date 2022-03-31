@@ -5,7 +5,7 @@ function ori = discreteSample(odf,npoints,varargin)
 % take random polar angles
 M = 1000000;                   % discretisation parameter
 t = linspace(-1,1,M);
-c = cumsum(odf.psi.RK(t)) / M; % cumulative distribution function
+c = cumsum(odf.psi.eval(t)) / M; % cumulative distribution function
 
 [~,t] = histc(rand(npoints,1),c);
 theta = acos(t ./ M);

@@ -11,5 +11,6 @@ for i = 1:length(sh)
   for j = 1:length(sr)
     dr = dot_outer(sr(j),r,'noSymmetry');
     Z = Z + SO3F.weights * SO3F.psi.RRK(dh.',dr) / length(sh);
+    % TODO: here we need S2kernel.radon
   end
 end
