@@ -215,7 +215,7 @@ mod(omega(id_min)./degree-90,180)
 
 close all
 pairs = [1 1; nchoosek(1:3,2)];
-phase = {'fo' 'en' 'di'};
+phase = {'Fo' 'En' 'Di'};
 for i=1:length(pairs)
   
   gB = grains.boundary(phase{pairs(i,:)});
@@ -225,7 +225,7 @@ for i=1:length(pairs)
   
 end
 hold off
-legend('Location','best' )
+legend('Location','southoutside','Orientation','horizontal')
 
 %%
 % We can see that Forsterite-Forsterite boundaries form a fabric slightly
@@ -258,7 +258,7 @@ shapeEF = characteristicShape(grains.boundary('En','Fo'))
 plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
 hold off
 
-legend('Location','northeastoutside')
+legend('Location','southoutside','Orientation','horizontal')
 
 %%
 % The output of the command <grainBoundary.characteristicShape.html
