@@ -18,7 +18,7 @@ ebsd(grains(grains.grainSize<5)) = [];
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 grains(grains.isBoundary) = [];
 
-grains=smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smooth(grains('indexed'),10,'moveTriplePoints');
 
 % plot all grains and highlight a specific one
 plot(grains)
@@ -232,40 +232,42 @@ legend('Location','best' )
 % more inclined with respect to the other phase boundariesand that the
 % phase boundaries between the two pyroxenes (Enstatite and Diopside) show
 % the lowest anisotropy.
-
-
-
+%
 %% Characteristic Shape
 %
-% The characteristic shape results from the cummulative sum of all
-% grain boundary segements ordered by the angle of the segment direction.
-% It can be regarded as to represent the average grain shape, however
-% without the need to use closed areas such as it would be required when
-% working with grains.
-
-plotopts = {'normalize','linewidth',2, 'plain'}
-
-% here we can compare the shape defined by Forterite-Forsterite,
+% The characteristic shape results from the cummulative sum of all grain
+% boundary segements ordered by the angle of the segment direction. It can
+% be regarded as to represent the average grain shape, however without the
+% need to use closed areas such as it would be required when working with
+% grains.
+%
+% Here we can compare the shape defined by Forterite-Forsterite,
 % Enstatite-Enstatite and Forsterite-Enstatite boundaries
 
-shapeF = characteristicShape(grains.boundary('f','f'))
-plot(shapeF,plotopts{:})
+plotopts = {'normalize','linewidth',2, 'plain'};
+
+shapeF = characteristicShape(grains.boundary('Fo','Fo'))
+plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
+
 hold on
-shapeE = characteristicShape(grains.boundary('e','e'))
-plot(shapeE,plotopts{:})
+shapeE = characteristicShape(grains.boundary('En','En'))
+plot(shapeE,plotopts{:},'DisplayName','En-En')
+
 hold on
-shapeEF = characteristicShape(grains.boundary('e','f'))
-plot(shapeEF,plotopts{:})
+shapeEF = characteristicShape(grains.boundary('En','Fo'))
+plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
 hold off
 
-legend('Fo-Fo','En-En','En-Fo','Location','northeastoutside', ...
-       'FontSize', 24)
+legend('Location','northeastoutside')
 
-% The output of `characteristicShape` is a `shape2d` object which behaves
-% very similar to a `grain2d` object, hence it is easy to derive things
-% such as a long axis or e.g. the angle between the longest and the shortest
-% caliper which can be regarded as a measure of asymmetry.
+%%
+% The output of the command <grainBoundary.characteristicShape.html
+% |characteristicShape|> is a <shape2d.shape2d.html |shape2d|> object which
+% behaves very similar to a <grain2d.grain2d.html |grain2d|> object. Hence
+% it is easy to derive things such as a long axis or e.g. the angle between
+% the longest and the shortest caliper which can be regarded as a measure
+% of asymmetry.
 
 angle(shapeF.caliper('longest'),shapeF.caliper('shortest'))/degree
 angle(shapeE.caliper('longest'),shapeE.caliper('shortest'))/degree
-angle(shapeEF.caliper('longest'),shapEF.caliper('shortest'))/degree
+angle(shapeEF.caliper('longest'),shapeF.caliper('shortest'))/degree
