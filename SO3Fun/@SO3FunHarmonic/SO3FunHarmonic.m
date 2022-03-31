@@ -53,7 +53,7 @@ methods
     
     % truncate zeros
     A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
-    SO3F.bandwidth = find(sum(A,2) > 1e-10,1,'last')-1;
+    SO3F.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
   end
      
   function n = numArgumentsFromSubscript(varargin)
