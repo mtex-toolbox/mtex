@@ -27,7 +27,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 % The modal orientation of an ODF is the crystallographic prefered
 % orientation |ori_pref| of the texture. It is characterized as the maximum
 % of the ODF. In MTEX it is returned as the second output argument of the
-% command <ODF.max.html |max|>
+% command <SO3Fun.max.html |max|>
 
 [~,ori_pref] = max(odf3)
 
@@ -41,15 +41,30 @@ annotate(ori_pref,'marker','s','MarkerFaceColor','black')
 %
 % Texture characteristics are used for a rough classification of ODF into
 % sharp and weak ones. The two most common texture characteristics are the
-% <ODF.entropy.html entropy> and the
-% <ODF.textureindex.html texture index>.
+% entropy and the texture index. The tetxure index of an ODF $f$ is defined
+% as:
+%
+% $$ t = \int f(g)^2 dg$$
+%
+% We may either compute this integral using the command <SO3Fun.sum.html
+% |sum|> directly by
+
+t = mean(odf1.*odf1)
 
 %%
-% Compute the texture index:
-textureindex(odf1)
+% or, more efficiently, by the command <SO3Fun.norm.html norm>
+
+t = norm(odf1)^2
+
+%% 
+% A texture index large than 
 
 %%
-% Compute the entropy:
+% The entropy of an ODF $f$ is defined as:
+%
+% $$ e = - \int f(g) \ln f(g) dg$$
+
+
 entropy(odf2)
 
 
@@ -72,6 +87,7 @@ volume(odf3, ori_pref, 30*degree) * 100
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre in percent:
 % TODO
+
 %fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100
 
 
