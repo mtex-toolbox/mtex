@@ -36,7 +36,7 @@ if isa(psi,'S2Fun')
   CS1 = crystalSymmetry; CS2 = specimenSymmetry;
   try CS1 = sF.CS; end; try CS2 = sF2.CS; end %#ok<TRYNC>
     
-  sF = FourierODF(fhat,CS1,CS2);
+  sF = SO3FunHarmonic(fhat,CS1,CS2);
     
 else
 
