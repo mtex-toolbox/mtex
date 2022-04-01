@@ -17,7 +17,7 @@ function SO3F = quadrature(f, varargin)
 %  bandwidth - minimal harmonic degree (default: 64)
 %
 
-if check_option(varargin,'v2')
+if ~check_option(varargin,'nfsoft')
   SO3F = SO3FunHarmonic.quadrature_v2(f,varargin{:});
   return
 end

@@ -81,7 +81,7 @@ else
   end
 
   
-  if length(nodes)>1e3 && length(values) == length(nodes) && length(W)==1
+  if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
       
     % Use crystal and specimen symmetries by only evaluating in fundamental
     % region. Therefore adjust the bandwidth to crystal and specimen symmetry.

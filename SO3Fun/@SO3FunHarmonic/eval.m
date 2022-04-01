@@ -15,7 +15,7 @@ function f =  eval(F,rot,varargin)
 %   f - double
 %
 
-if check_option(varargin,'v2')
+if ~check_option(varargin,'nfsoft')
   f = eval_v2(F,rot,varargin{:});
   return
 end
