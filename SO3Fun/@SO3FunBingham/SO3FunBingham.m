@@ -4,6 +4,7 @@ classdef SO3FunBingham < SO3Fun
     A
     kappa = [1,0,0,0];
     antipodal = false;
+    weight = 1;
   end
  
   properties (Dependent = true)    
@@ -59,7 +60,10 @@ classdef SO3FunBingham < SO3Fun
     
     function SO3F = set.bandwidth(SO3F,~)      
     end
-    
+
+    function m=mean(SO3F,varargin)
+      m = SO3F.weight;
+    end
   end
   
 end

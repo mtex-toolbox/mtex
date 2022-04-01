@@ -11,7 +11,7 @@ for iA = 1:size(ASym,1)
   h = h * SO3F.kappa;
   
   % fast way  1/1F1.*exp(h)
-  fz = 1./SO3F.C0 .* exp(h);
+  fz = SO3F.weight * 1./SO3F.C0 .* exp(h);
     
   f = f + reshape(fz, size(f))./ size(ASym,1);
   

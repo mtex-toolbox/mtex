@@ -64,6 +64,7 @@ end
               
       end
     end
+    f = f * SO3F.weight;
   end
 end
 
