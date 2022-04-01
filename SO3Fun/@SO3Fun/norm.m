@@ -1,12 +1,12 @@
-function t = norm(odf,varargin)
+function t = norm(SO3F,varargin)
 % caclulate texture index of SO3Fun
 %
-% The norm of an ODF f is defined as:
+% The norm of an SO3Fun f is defined as:
 %
 % $$ t = \sqrt(-\int f(g)^2 dg)$$
 %
 % Input
-%  odf - @SO3Fun 
+%  SO3F - @SO3Fun 
 %
 % Output
 %  texture index - double
@@ -17,15 +17,6 @@ function t = norm(odf,varargin)
 % See also
 % ODF/textureindex ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
-
-%     % get approximation grid
-%     S3G = extract_SO3grid(odf,varargin{:},'resolution',5*degree);
-% 
-%     % eval ODF
-%     t = sqrt(mean(eval(odf,S3G(:)).^2));
-
-
-f = SO3FunHarmonic(odf,varargin{:});
-t = f.norm;
+t = sqrt(mean(SO3F.^2));
     
 end

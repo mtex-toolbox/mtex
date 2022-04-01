@@ -1,26 +1,18 @@
-function [m, lambda, v] = mean(odf,varargin)
-% expected value of an ODF
+function value = mean(SO3F,varargin)
+% expected value of an SO3FunComposition
 %
 % Syntax
-%
-%   [m, lambda, v] = mean(odf)
+%   mean(SO3F)
 %
 % Input
-%  odf       - @ODF
+%  SO3F - @SO3FunComposition
 %
 % Output
-%  m      - @orientation
-%  lambda - principle moments of inertia
-%  V      - principle axes of inertia (@orientation)
+%  value - double
 %
 % See also
 % orientation/calcBinghamODF
 
+value = sum(cellfun(@mean,SO3F.components,'UniformOutput',true));
 
-% TODO: possibly delete this and use mean@SO3Fun instant
-
-S3G = extract_SO3grid(odf,varargin);
-
-[m, ~, lambda, v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
-
-m = orientation(m);
+end

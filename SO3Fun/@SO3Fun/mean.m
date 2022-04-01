@@ -21,8 +21,9 @@ function value = mean(SO3F, varargin)
 % pointwise means values along the first dimension
 %
 
-f = SO3FunHarmonic(SO3F,varargin{:});
-value = mean(f);
+% TODO: mean along specific dimension
 
+nodes = equispacedSO3Grid(SO3F.SRight,SO3F.SLeft,'resolution',2.5*degree,varargin{:});
+value = mean(SO3F.eval(nodes(:)));
 
 end
