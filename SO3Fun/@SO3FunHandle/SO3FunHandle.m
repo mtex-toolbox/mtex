@@ -1,5 +1,5 @@
 classdef SO3FunHandle < SO3Fun
-% a class represeneting a function on the rotation group
+% a class representing a function on the rotation group
   
 properties
   fun
@@ -21,9 +21,14 @@ methods
   end
   
   function f = eval(SO3F,rot,varargin)
-    f = reshape(SO3F.fun(rot),size(rot));
-  end  
-  
+    s = size(rot);
+    rot = rot(:);
+    f = SO3F.fun(rot);
+    if numel(SO3F)==1
+      f = reshape(f,s);
+    end
+  end
+
 end
 
 
