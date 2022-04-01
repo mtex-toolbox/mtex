@@ -28,7 +28,7 @@ if ~isempty(SO3F.center)
     disp(' ');
   else
     disp(['  center: ',num2str(length(SO3F.center)), ' orientations']);
-    s.weight = SO3F.weights; 
+    s.weight = SO3F.weights(:); 
     Euler(SO3F.center,s)
   end
 end
