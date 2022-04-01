@@ -48,7 +48,7 @@ classdef SO3Fun
   
   methods (Static = true)
   
-    SO3F = example(varargin)
+    SO3F = dubna(varargin)
     
   end
 
