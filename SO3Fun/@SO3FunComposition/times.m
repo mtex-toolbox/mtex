@@ -1,25 +1,25 @@
-function odf = times(x,y)
-% scaling of the ODF
+function SO3F = times(SO3F1,SO3F2)
+% overloads |SO3F1 .* SO3F2|
 %
-% overload the * operator, i.e. one can now write x*@ODF or @ODF*y in order
-% to scale an ODF
+% Syntax
+%   sF = SO3F1 .* SO3F2
+%   sF = a .* SO3F2
+%   sF = SO3F1 .* a
 %
-% See also
-% ODF/ODF ODF/plus
+% Input
+%  SO3F1, SO3F2 - @SO3FunComposition
+%  a - double
+%
+% Output
+%  SO3F - @SO3Fun
+%
 
-if isa(x,'ODF') && isa(y,'double')
-  odf = x;
-  f = y;
-elseif isa(y,'ODF') && isa(x,'double')
-  odf = y;
-  f = x;
-elseif isa(y,'ODF') && isa(x,'ODF')
-  warning('not implemented yet');
-  % TODO: go to SO3FunHarmonic
-  %SO3F = times@SO3Fun(SO3F1,SO3F2);
-  %SO3F = SO3FunHarmonic(SO3F,'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
+if isnumeric(SO3F1)
+  components = cellfun(@(x) SO3F1.*x,SO3F2.components,'UniformOutput',false);
+  SO3F = SO3F2;
+  SO3F.components = components;
 end
 
-odf.weights = odf.weights .* f;
+SO3F = times@SO3Fun(SO3F1,SO3F2);
 
-% Error in last time by odf.weights
+end
