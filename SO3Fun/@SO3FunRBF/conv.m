@@ -6,7 +6,7 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %   SO3F = conv(SO3F1,psi,varargin)
 %
 % Input
-%  SO3F1,SO3F2 - SO3FunRBF
+%  SO3F1,SO3F2 - @SO3FunRBF
 %  psi - @SO3Kernel
 %
 % Output
@@ -36,7 +36,8 @@ end
 
 
 % pure RBF method
-  
+ensureCompatibleSymmetries(SO3F1,SO3F2,'conv');
+
 center = inv(SO3F1.center) * SO3F2.center.';
 weights = SO3F1.weights * SO3F2.weights.';
 psi = conv(SO3F1.psi, SO3F2.psi);
