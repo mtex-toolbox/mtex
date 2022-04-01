@@ -1,9 +1,9 @@
 function cShape = characteristicShape(gb)
 % derive characteristic shape from a set of grain boundaries
 %
-% % Syntax
+% Syntax
+%
 %   cshape = characteristicShapeN(grains.boundary('b','b'))
-%   plotTDF(cshape(:,1),cshape(:,2))
 %
 % Input
 %  gb   -  @grainBoundary 

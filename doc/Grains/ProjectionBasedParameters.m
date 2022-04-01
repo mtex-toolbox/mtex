@@ -250,11 +250,11 @@ shapeF = characteristicShape(grains.boundary('Fo','Fo'))
 plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
 
 hold on
-shapeE = characteristicShape(grains.boundary('En','En'))
+shapeE = characteristicShape(grains.boundary('En','En'));
 plot(shapeE,plotopts{:},'DisplayName','En-En')
 
 hold on
-shapeEF = characteristicShape(grains.boundary('En','Fo'))
+shapeEF = characteristicShape(grains.boundary('En','Fo'));
 plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
 hold off
 

@@ -25,8 +25,6 @@ if plain
   h.Parent.RTick = [];
 end
 
-
-
 % set plotting convention such that the plot coinices with a map
 x = getMTEXpref('xAxisDirection');
 switch x
