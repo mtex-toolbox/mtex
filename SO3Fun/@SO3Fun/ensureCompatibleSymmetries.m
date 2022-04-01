@@ -20,6 +20,10 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %  conv - be shure switched symmetries match
 %
 
+if isnumeric(SO3F1) || isnumeric(SO3F2)
+  return
+end
+
 if check_option(varargin,'conv')
   sym = SO3F1.SRight;
   SO3F1.SRight = SO3F1.SLeft;
