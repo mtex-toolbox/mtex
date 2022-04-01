@@ -96,11 +96,11 @@ methods
       out = true;
       return
     end
-    F=reshape(F,numel(F));
-    ind=zeros(deg2dim(F.bandwidth+1),1);
+    F = F.subSet(':');
+    ind = zeros(deg2dim(F.bandwidth+1),1);
     for l = 0:F.bandwidth
       localind = reshape(deg2dim(l+1):-1:deg2dim(l)+1,2*l+1,2*l+1)';
-      ind(deg2dim(l)+1:deg2dim(l+1))=localind(:);
+      ind(deg2dim(l)+1:deg2dim(l+1)) = localind(:);
     end
     dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
     nF = norm(F)';
@@ -143,16 +143,7 @@ methods
     F=reshape(F,s);
   end
   
-  function d = size(F, varargin)
-    d = size(F.fhat);
-    d = d(2:end);
-    if length(d) == 1, d = [d 1]; end
-    if nargin > 1, d = d(varargin{1}); end
-  end
-  
-  function n = numel(F)
-    n = prod(size(F)); %#ok<PSIZE>
-  end
+
   
 end
 
