@@ -72,12 +72,15 @@ ylabel('number of grains')
 % Note the large amount of very small grains. A more realistic histogram we
 % obtain if we do not plot the number of grains at the y-axis but its total
 % area. This can be achieved with the command <grain2d.histogram.html
-% |histogram(grains)|>
+% |histogram(grains)|> or <grain2d.hist.html |hist(grains)|>
+
+hist(grains)
+
+%%
 
 histogram(grains)
-xlabel('grain area')
 
-%
+%%
 % Simarly as |grainSize| and |area|, the one-dimensional meassures
 % |boundarySize| and |perimeter| give the length of the grain boundary as
 % number of segments and in |µm|, respectively.
