@@ -1,4 +1,4 @@
-function cShape = characteristicShape(gb)
+function cShape = characteristicShape(gb,varargin)
 % derive characteristic shape from a set of grain boundaries
 %
 % Syntax
@@ -29,6 +29,12 @@ xyn = cumsum(dxy);
 
 % shift again
 xyn = [xyn(:,1) - mean(xyn(:,1)) xyn(:,2) - mean(xyn(:,2))];
+
+% simplify
+if ~check_option(varargin,'noSimplify')
+    id = floor(linspace(1,length(xyn),1024));
+    xyn = xyn(id,:);
+end
 
 cShape = shape2d(xyn);
 
