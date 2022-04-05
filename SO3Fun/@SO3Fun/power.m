@@ -12,6 +12,10 @@ function SO3F = power(SO3F,a)
 %  SO3F - @SO3Fun
 %
 
+if ~isnumeric(a)
+  error('The exponent has to be numeric.')
+end
+
 SO3F = SO3FunHandle(@(rot) SO3F.eval(rot).^a,SO3F.SRight,SO3F.SLeft);
 
 
