@@ -24,10 +24,10 @@ set(0,'DefaultAxesFontSize',fontSize);
 set(0,'DefaultLegendFontSize',fontSize)
 
 % default plotting of the coordinate axes
-setMTEXpref('xAxisDirection','north');
+setMTEXpref('xAxisDirection','west');
 setMTEXpref('zAxisDirection','outOfPlane');
 
-setMTEXpref('bAxisDirection','east');
+setMTEXpref('bAxisDirection','north');
 setMTEXpref('aAxisDirection',''); % undefined
 
 %setMTEXpref('bAxisDirection',''); % undefined
@@ -54,7 +54,7 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
 setMTEXpref('pfAnnotations',pfAnnotations);
 
 % default spacing between muliple plots
-setMTEXpref('outerPlotSpacing',10);
+setMTEXpref('outerPlotSpacing',30);
 % setMTEXpref('innerPlotSpacing',10);
 
 % defaut marker size
