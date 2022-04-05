@@ -1,21 +1,22 @@
 function t = norm(SO3F,varargin)
-% caclulate texture index of SO3Fun
+% Calculate the L2-norm also known as texture index of a SO3Fun, by using
 %
-% The norm of an SO3Fun f is defined as:
+% $$ t = \sqrt{\int_{SO(3)} |f(R)|^2 dR}$$,
 %
-% $$ t = \sqrt(-\int f(g)^2 dg)$$
+% where $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 %
+% Syntax
+%   t = norm(SO3F)
+% 
 % Input
 %  SO3F - @SO3Fun 
 %
 % Output
-%  texture index - double
+%  t - double
 %
 % Options
-%  bandwidth  - bandwidth used for Fourier calculation
+%  resolution  - choose mesh width by calculation of mean
 %
-% See also
-% ODF/textureindex ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
 t = sqrt(mean(SO3F.^2));
     

@@ -1,8 +1,22 @@
 function n = norm(SO3F)
-% the L2 norm of SO3FunHarmonics
+% Calculate the L2-norm also known as texture index of a SO3FunHarmonic, by
+% using Parsevalls equality for the integral
+%
+% $$ t = \sqrt{\int_{SO(3)} |f(R)|^2 dR}$$,
+%
+% with $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 %
 % Syntax
-%   norm(SO3F)
+%   t = norm(SO3F)
+% 
+% Input
+%  SO3F - @SO3FunHarmonic
+%
+% Output
+%  t - double
+%
+% Options
+%  resolution  - choose mesh width by calculation of mean
 %
 
 % norm of Wigner-D functions is 1

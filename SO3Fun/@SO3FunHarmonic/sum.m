@@ -1,6 +1,12 @@
 function value = sum(SO3F, varargin)
-% calculates the integral for an univariate SO3Fun or sums up along a
-% specified dimension of a multimodal SO3Fun
+% Calculates the integral of a SO3FunHarmonic based on
+% 
+% $$ v = \int f(R) dR $$
+% 
+% with $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
+% 
+% If there is a second argument it sums up along a specified dimension of a 
+% vector-valued SO3FunHarmonic.
 %
 % Syntax
 %   value = sum(SO3F)
@@ -11,7 +17,7 @@ function value = sum(SO3F, varargin)
 %  d    - dimension to take the sum value over
 %
 % Output
-%  SO3F  - SO3FunHarmonic
+%  SO3F  - @SO3FunHarmonic
 %  value - double
 %
 % Description

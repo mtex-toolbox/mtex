@@ -1,6 +1,6 @@
 function value = mean(SO3F, varargin)
-% calculates the mean value for an univariate SO3Fun or calculates the mean
-% along a specified dimension of a multimodal SO3Fun
+% Calculates the mean value of a SO3Fun or calculates the mean
+% along a specified dimension of a vector-valued SO3Fun
 %
 % Syntax
 %   value = mean(SO3F)
@@ -16,9 +16,9 @@ function value = mean(SO3F, varargin)
 %
 % Description
 %
-% If SO3F is a 3x3 SO3Fun then |mean(SO3F)| returns a 3x3 matrix with the mean
-% values of each function mean(SO3F, 1) returns a 1x3 SO3Fun which contains the
-% pointwise means values along the first dimension
+% If SO3F is a 3x3 SO3Fun then 
+% |mean(SO3F)| returns a 3x3 matrix with the mean values of each function 
+% |mean(SO3F, 1)| returns a 1x3 SO3Fun which contains the pointwise mean values along the first dimension
 %
 
 % TODO: mean along specific dimension
