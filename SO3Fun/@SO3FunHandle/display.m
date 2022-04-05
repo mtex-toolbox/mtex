@@ -10,7 +10,7 @@ end
 
 try
   m = mean(SO3F,'all','bandwidth',16);
-  disp(['  weight: ' num2str(m(1))])
+  disp(['  weight: ' xnum2str(m(1))])
 end
 disp(' ')
 
