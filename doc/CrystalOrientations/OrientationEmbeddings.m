@@ -124,7 +124,7 @@ ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_2}) ||_2$','Inter
 % we compute the embedding of both orientations, average the resulting
 % tensors and <embedding.orientation.html project the mean tensor back
 % to an orientation> we end up with the correct result
-% $(0^{\circ},0^{\circ},0^{\circ})$.
+% $(45^{\circ},0^{\circ},0^{\circ})$.
 
 % compute the embedding of the two orientations
 e = embedding(ori);

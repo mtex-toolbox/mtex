@@ -59,7 +59,7 @@ plotType = get_flag(varargin,plotTypes);
 if isempty(plotType)
   if isOption(v,'plot') && v.opt.plot
   
-    if ~isempty(varargin) && isnumeric(varargin{1}) && all(size(varargin{1}) == [length(v),3])      
+    if ~isempty(varargin) && isnumeric(varargin{1}) && all(size(varargin{1}) == [length(v),3])
       plotType = 'surf';
     else
       plotType = 'smooth';
@@ -146,7 +146,7 @@ end
 end
 
 function v = ensureData(v)
-  if ~isempty(v) && ~isnumeric(v{1}) 
+  if ~isempty(v) && ~(islogical(v{1}) ||  isnumeric(v{1})) 
     v = [{[]},v];
   end
 end

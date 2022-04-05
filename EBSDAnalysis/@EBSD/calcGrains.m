@@ -19,6 +19,10 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   % follow non convex outer boundary
 %   grains = calcGrains(ebsd,'boundary','tight')
 %
+%   % specify phase dependent thresholds
+%   % thresholds follow the same order as ebsd.CSList and should have the same length
+%   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
+%
 %   % markovian clustering algorithm
 %   p = 1.5;    % inflation power (default = 1.4)
 %   maxIt = 10; % number of iterations (default = 4)
@@ -162,9 +166,10 @@ function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
 % extract segmentation method
 grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
+gbcFlags = regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1');
 
-gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
-gbcValue = get_option(varargin,{gbc,'threshold','delta'},15*degree,'double');
+gbc      = get_flag(varargin,gbcFlags,'angle');
+gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
 
 if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
   gbcValue = repmat(gbcValue,size(ebsd.CSList));
@@ -205,7 +210,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue,varargin{:});
+      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
     
   end  
 end

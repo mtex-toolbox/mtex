@@ -29,8 +29,8 @@ function job = clusterVariantGraph(job,varargin)
 % improved parent grain reconstruction>, arXiv, 2022
 %
 
-% ensure we have a graph
-if isempty(job.graph), job.calcHyperGraph2(varargin{:}); end
+% ensure we have a variant graph
+if isempty(job.graph), job.calcVariantGraph(varargin{:}); end
 
 % extract parameters
 p = get_option(varargin,'inflationPower', 1.05);
@@ -39,27 +39,26 @@ cutOff = get_option(varargin,'cutOff',0.0001);
 
 % some constants
 A = job.graph;
+nVG = size(A,1); % size of the variant graph
 job.graph = [];
 p2cV = variants(job.p2c,'parent');
 numV = length(p2cV);
 
-% index of variant 1
-nHyper = size(A,1);
+% indices to the variant graph
+isCP = job.isChild | job.isParent; % only child and parent phases go into the variant graph
 
-% h2ind 
-h2ind = 1:length(job.grains);
-h2ind = h2ind(job.isChild | job.isParent);
-h2ind = repelem(h2ind, numV * job.isChild + job.isParent);
+% rep2VG - how often it repeats to fit in the variant graph [numV numV 1 numV 0 1 numV ...]
+rep2VG = numV * job.isChild + job.isParent;
 
-isChild = job.isChild;
-isChild = isChild(job.isChild | job.isParent);
-isChild = repelem(isChild, numV * job.isChild + job.isParent);
+% VG2ind - variant graph index -> grain index
+VG2ind = 1:length(job.grains);
+VG2ind = repelem(VG2ind(isCP), rep2VG(isCP));
 
 % indeces of the pseudo diagonal
 if check_option(varargin,'noPseudoDiagonal')
 
   % position of variant 1 of each child grain in the Matrix
-  indV1 = [0;cumsum(numV * job.isChild + job.isParent)];
+  indV1 = [0;cumsum(rep2VG)];
   indV1(end) = [];
   indV1 = indV1(job.isChild);
   
@@ -128,8 +127,9 @@ minCluster = get_option(varargin,'minCluster',4);
 s = s .* (full(sum(A>0,2))>=minCluster);
 
 % store in numGrains x numVariant matrix
+isVGChild = job.isChild(VG2ind); % isChild in variant graph
 pIdP = nan(length(job.grains),numV);
-pIdP(job.isChild,:) = reshape(s(isChild),numV,[]).';
+pIdP(job.isChild,:) = reshape(s(isVGChild),numV,[]).';
 
 % some post processing
 if check_option(varargin,'includeTwins')
@@ -175,11 +175,11 @@ end
     s = full(sum(A));
   
     % sum over all variants
-    s = accumarray(h2ind.',s);
-    s = repelem(s,numV * job.isChild + job.isParent);
+    s = accumarray(VG2ind.',s);
+    s = repelem(s,rep2VG(isPC));
   
     % create sparse diagonal matrix for
-    dinv = spdiags(1./s,0,nHyper,nHyper);
+    dinv = spdiags(1./s,0,nVG,nVG);
     A = A * dinv;
     
   end
@@ -190,11 +190,11 @@ end
     s = full(sum(A,2)).';
   
     % sum over all variants
-    s = accumarray(h2ind.',s);
-    s = repelem(s,numV * job.isChild + job.isParent);
+    s = accumarray(VG2ind.',s);
+    s = repelem(s(isCP),rep2VG(isCP));
   
     % create sparse diagonal matrix for
-    dinv = spdiags(1./s,0,nHyper,nHyper);
+    dinv = spdiags(1./s,0,nVG,nVG);
     A = dinv * A;
     
   end

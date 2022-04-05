@@ -143,11 +143,19 @@ end
 % positive probability
 if ~isempty(job.votes) 
 
-  pos = indV1(1:end-1) + job.votes.parentId(:,1:2) - 1;
-  
-  D = sparse(pos,pos,1,length(job.graph),length(job.graph));
+    [p2cV, bestFriend] = variants(job.p2c,'parent');
+    numV = length(p2cV);
+    indV1 = [1;1+cumsum(numV * job.isChild + job.isParent)];
+    ind_corvar = zeros(numV,1);
+    ind_corvar(bestFriend(find(~ismember([1:numV]',bestFriend)))) = ...
+        find(~ismember([1:numV]',bestFriend));
 
-  job.graph = D * job.graph * D;
+    %best fitting variant ids and their closest variant
+    pos = indV1(1:end-1) + job.votes.parentId(:,1) - 1;
+    pos(:,2) = indV1(1:end-1) + ind_corvar(job.votes.parentId(:,1)) - 1;
+
+    D = sparse(pos,pos,1,length(job.graph),length(job.graph));
+    job.graph = D * job.graph * D;
 
 end
 
