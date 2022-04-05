@@ -18,6 +18,6 @@ function t = norm(SO3F,varargin)
 %  resolution  - choose mesh width by calculation of mean
 %
 
-t = sqrt(mean(SO3F.^2));
+t = sqrt(mean(abs(SO3F).^2,varargin{:}));
     
 end
