@@ -16,6 +16,11 @@ function sF = conv(sF, psi, varargin)
 %  SO3F - @ODF
 %
 
+if isnumeric(sF)
+  sF = conv(psi,sF,varargin{:});
+  return
+end
+
 if isa(psi,'S2Fun')
   
   if isa(psi,'S2FunHarmonic')

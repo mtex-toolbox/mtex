@@ -1,0 +1,44 @@
+function psi = conv(psi1, psi2, varargin)
+% spherical convolution of S2Kernel psi1 with psi2 
+%
+% Syntax
+%   psi = conv(psi1, psi2)
+%   psi = conv(psi1, A)
+%
+% Input
+%  psi1, psi2 - @S2Kernel
+%  A   - list of Legendre coefficients
+%
+% Output
+%  psi   - @S2Kernel
+%
+
+if nargin == 1, psi2 = psi1; end
+
+if isa(psi2,'S2Fun')
+  psi = conv(psi2,psi1,varargin{:});
+  return
+end
+
+if isnumeric(psi1)
+  psi = conv(psi2,psi1,varargin{:});
+  return
+end
+
+% extract Legendre coefficients of psi1
+A1 = psi1.A(:);
+
+% extract Legendre coefficients of psi2
+if isnumeric(psi2)
+  A2 = psi2(:);
+elseif isa(psi2,'S2Kernel') || isa(psi2,'kernel')
+  A2 = psi2.A(:);
+  A2 = A2 ./ (2*(0:length(A2)-1)+1).';
+end
+
+% multiplication in harmonic domain
+l = min(length(A1),length(A2));
+psi = S2Kernel(A1(1:l).*A2(1:l));
+
+
+end
