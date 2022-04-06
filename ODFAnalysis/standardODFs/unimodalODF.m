@@ -28,7 +28,7 @@ function odf = unimodalODF(varargin)
 % ODF/ODF uniformODF fibreODF
 
 % get crystal and specimen symmetry
-[CS,SS] = extractSymmetries(varargin);
+[CS,SS] = extractSym(varargin);
 
 % get center
 if nargin > 0 && isa(varargin{1},'quaternion')
