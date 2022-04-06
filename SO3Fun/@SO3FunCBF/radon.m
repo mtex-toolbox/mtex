@@ -3,9 +3,11 @@ function Z = radon(SO3F,h,r,varargin)
 
 if isempty(h)  
   Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,v,r,varargin{:}));
+  Z = S2FunHarmonicSym(Z.fhat,SO3F.CS);
   return
 elseif nargin>2 && isempty(r)
   Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,h,v,varargin{:}));
+  Z = S2FunHarmonicSym(Z.fhat,SO3F.SS);
   return
 end
 
@@ -25,4 +27,6 @@ for i = 1:length(sh)
     Z = Z + SO3F.weights * psi.eval(dh.') / length(sh);
      
   end
+end
+
 end
