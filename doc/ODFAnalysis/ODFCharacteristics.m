@@ -90,7 +90,22 @@ volume(odf3, ori_pref, 30*degree) * 100
 
 volume(odf2,f001_x,20*degree) * 100
 
+%%
 
+odf = FourierODF(odf2);
+volume(odf,f001_x,20*degree) * 100
+%%
+figure(1)
+plotFibre(odf,f001_x)
+figure(2)
+plotFibre(odf2,f001_x)
+
+%%
+
+figure(1)
+plotIPDF(odf,xvector)
+figure(2)
+plotIPDF(odf2,xvector)
 
 %% Extract Internal Representation
 % The internal representation of the ODF can be addressed by the commands
