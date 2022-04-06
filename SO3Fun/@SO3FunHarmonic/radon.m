@@ -26,7 +26,8 @@ L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 L = min(L,SO3F.bandwidth);
 
 % S2Fun in h or r?
-if nargin<3 || isempty(r)
+if nargin<3, r = []; end
+if isempty(r)
   isPF = true;
 elseif isempty(h)
   isPF = false;
@@ -59,4 +60,12 @@ end
 if isPF, sym = SO3F.SS; else, sym = SO3F.CS; end
 
 S2F = S2FunHarmonicSym(conj(Rf_hat),sym);
+
+% evaluate S2Fun if needed
+if length(h) > length(r)
+  S2F = S2F.eval(h);
+elseif ~isempty(r)
+  S2F = S2F.eval(r);
+end
+
 
