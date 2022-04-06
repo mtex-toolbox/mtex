@@ -64,7 +64,7 @@ S2F = S2FunHarmonicSym(conj(Rf_hat),sym);
 % evaluate S2Fun if needed
 if length(h) > length(r)
   S2F = S2F.eval(h);
-elseif ~isempty(r)
+elseif ~isempty(h)
   S2F = S2F.eval(r);
 end
 
