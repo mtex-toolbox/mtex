@@ -1,7 +1,7 @@
 function t = norm(odf,varargin)
 % caclulate texture index of ODF
 %
-% The normx of an ODF f is defined as:
+% The norm of an ODF f is defined as:
 %
 % $$ t = \sqrt(-\int f(g)^2 dg)$$
 %
