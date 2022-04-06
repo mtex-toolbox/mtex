@@ -23,6 +23,6 @@ function value = mean(SO3F,varargin)
 
 % TODO: mean along specific dimension
 
-value = sum(cellfun(@mean,SO3F.components,'UniformOutput',true));
+value = sum(cellfun(@(x) mean(x,varargin{:}),SO3F.components,'UniformOutput',true));
 
 end

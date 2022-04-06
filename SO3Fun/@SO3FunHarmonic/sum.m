@@ -28,7 +28,7 @@ function value = sum(SO3F, varargin)
 %
 
 if nargin == 1
-  value = 8*pi^2*mean(SO3F);
+  value = 8*pi^2*mean(SO3F,varargin{:});
 else
   SO3F.fhat = sum(SO3F.fhat, varargin{1}+1);
   value = SO3F;

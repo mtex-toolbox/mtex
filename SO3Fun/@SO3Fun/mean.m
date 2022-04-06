@@ -24,6 +24,6 @@ function value = mean(SO3F, varargin)
 % TODO: mean along specific dimension
 
 nodes = equispacedSO3Grid(SO3F.SRight,SO3F.SLeft,'resolution',2.5*degree,varargin{:});
-value = mean(SO3F.eval(nodes(:)));
+value = mean(SO3F.eval(nodes(:)),varargin{:});
 
 end
