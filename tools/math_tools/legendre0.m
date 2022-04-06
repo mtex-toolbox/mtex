@@ -1,8 +1,8 @@
 function l = legendre0(N,x)
-% Legendrepolynome bis zur Odnung N
-% und gibt sie als Matrix zur�ck
-% erste Dimension -> Ordnung
-% zweite Dimension -> x
+% Evaluate all Legendre polynomials up to degree N in x and returns a 
+% matrix of the function values
+%       1st dimension -> degree
+%       2nd dimension -> x
 
 
 x = x(:).';

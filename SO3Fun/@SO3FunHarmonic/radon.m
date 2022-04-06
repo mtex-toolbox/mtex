@@ -1,9 +1,10 @@
 function S2F = radon(SO3F,h,r,varargin)
-% radon transform of the SO(3) function
+% radon transform of a SO3FunHarmonic
 %
 % Syntax
 %   S2F = radon(SO3F,h)
 %   S2F = radon(SO3F,[],r)
+%   v = radon(SO3F,h,r)
 %
 % Input
 %  SO3F - @SO3FunHarmonic
@@ -12,8 +13,8 @@ function S2F = radon(SO3F,h,r,varargin)
 %
 % Output
 %  S2F  - @S2FunHarmonic
+%  v    - double
 %
-% See also
 
 % use only even Fourier coefficients?
 even = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
@@ -35,7 +36,7 @@ else
   isPF = length(h) < length(r);
 end
 
-% indeces to Rf_hat
+% indices to Rf_hat
 ind = cumsum([0,2*(0:L)+1]);
 
 % calculate Fourier coefficients of the Radon transform
@@ -62,10 +63,13 @@ if isPF, sym = SO3F.SS; else, sym = SO3F.CS; end
 S2F = S2FunHarmonicSym(conj(Rf_hat),sym);
 
 % evaluate S2Fun if needed
-if length(h) > length(r)
-  S2F = S2F.eval(h);
-elseif ~isempty(r)
-  S2F = S2F.eval(r);
+if  ~isempty(r) &&  ~isempty(h)
+  if length(h) >= length(r)
+    S2F = S2F.eval(h);
+  else
+    S2F = S2F.eval(r).';
+  end
 end
 
 
+end

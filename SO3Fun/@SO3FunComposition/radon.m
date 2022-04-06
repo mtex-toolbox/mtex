@@ -1,30 +1,20 @@
 function out = radon(odf,h,varargin)
-% calcPDF computed the PDF corresponding to an ODF
+% radon transform of a SO3FunComposition
 %
 % Syntax
-%   pdf = calcPDF(odf,h)
-%   pdf = calcPDF(odf,h,'superposition',c)
-%   value = calcPDF(odf,h,r)
-%   ipdf = calcPDF(odf,[],r)
+%   S2F = radon(SO3F,h)
+%   S2F = radon(SO3F,[],r)
+%   v = radon(SO3F,h,r)
 %
 % Input
-%  odf - @ODF
-%  h   - @Miller / @vector3d crystal directions
-%  r   - @vector3d specimen directions
+%  SO3F - @SO3FunComposition
+%  h    - @vector3d, @Miller
+%  r    - @vector3d, @Miller
 %
 % Output
-%  pdf - pole density function @S2FunHarmonicSym
-%  ipdf - inverse pole density function @S2FunHarmonicSym
-%  value - double
+%  S2F  - @S2Fun
+%  v    - double
 %
-% Options
-%  superposition - calculate superposed pdf
-%
-% Flags
-%  antipodal - include <VectorsAxes.html antipodal symmetry>
-%
-% See also
-% SO3Fun/radon
 
 % cycle through components
 out = radon(odf.components{1},h,varargin{:});
