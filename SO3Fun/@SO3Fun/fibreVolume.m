@@ -42,6 +42,6 @@ f = length(S2G)/lS2G;
 if f==0
   v = 0;
 else
-  v = min(1,mean(odf.calcPDF(S2G,r)) * f);
+  v = min(1,mean(odf.radon(S2G,r)) * f);
 end
 

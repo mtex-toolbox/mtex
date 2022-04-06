@@ -13,7 +13,9 @@ odf1 = unimodalODF(orientation.byEuler(0,0,0,cs)) + ...
 %%
 % A fibre ODF:
 
-odf2 = fibreODF(Miller(0,0,1,cs),xvector)
+f001_x = fibre(Miller(0,0,1,cs),xvector)
+
+odf2 = fibreODF(f001_x)
 
 %%
 % An ODF estimated from diffraction data
@@ -39,12 +41,12 @@ annotate(ori_pref,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics
 %
-% Texture characteristics are used for a rough classification of ODF into
+% Texture characteristics are used for a rough classification of ODFs into
 % sharp and weak ones. The two most common texture characteristics are the
-% entropy and the texture index. The tetxure index of an ODF $f$ is defined
+% entropy and the texture index. The texture index of an ODF $f$ is defined
 % as:
 %
-% $$ t = \int f(g)^2 dg$$
+% $$ t = \int_{SO(3)} f(R)^2 dR$$
 %
 % We may either compute this integral using the command <SO3Fun.sum.html
 % |sum|> directly by
@@ -52,20 +54,18 @@ annotate(ori_pref,'marker','s','MarkerFaceColor','black')
 t = mean(odf1.*odf1)
 
 %%
-% or, more efficiently, by the command <SO3Fun.norm.html norm>
+% or, more efficiently, by the command <SO3Fun.norm.html |norm|>
 
 t = norm(odf1)^2
 
-%% 
-% A texture index large than 
 
 %%
 % The entropy of an ODF $f$ is defined as:
 %
-% $$ e = - \int f(g) \ln f(g) dg$$
+% $$ S = - \int_{SO(3)} f(R) \ln f(R) dR$$
 
 
-entropy(odf2)
+S = entropy(odf2)
 
 
 %% Volume Portions
@@ -88,7 +88,7 @@ volume(odf3, ori_pref, 30*degree) * 100
 % from the prefered fibre in percent:
 % TODO
 
-%fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100
+volume(odf2,f001_x,20*degree) * 100
 
 
 
