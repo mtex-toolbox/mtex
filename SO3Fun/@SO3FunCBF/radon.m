@@ -1,13 +1,11 @@
 function Z = radon(SO3F,h,r,varargin)
 % calculate pdf for fibre component
 
-if isempty(h)  
-  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,v,r,varargin{:}));
-  Z = S2FunHarmonicSym(Z.fhat,SO3F.CS);
+if isempty(h)
+  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,v,r,varargin{:}),SO3F.CS);
   return
 elseif nargin>2 && isempty(r)
-  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,h,v,varargin{:}));
-  Z = S2FunHarmonicSym(Z.fhat,SO3F.SS);
+  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,h,v,varargin{:}),SO3F.SS);
   return
 end
 
