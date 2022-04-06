@@ -1,6 +1,14 @@
 function Z = radon(SO3F,h,r,varargin)
 % calculate pdf for fibre component
 
+if isempty(h)  
+  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,v,r,varargin{:}));
+  return
+elseif nargin>2 && isempty(r)
+  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,h,v,varargin{:}));
+  return
+end
+
 Z = zeros(length(h),length(r));
 
 sh = symmetrise(normalize(SO3F.h),varargin{:});
@@ -10,7 +18,11 @@ for i = 1:length(sh)
   dh = dot_outer(sh(i),normalize(h),'noSymmetry');
   for j = 1:length(sr)
     dr = dot_outer(sr(j),r,'noSymmetry');
-    Z = Z + SO3F.weights * SO3F.psi.RRK(dh.',dr) / length(sh);
-    % TODO: here we need S2kernel.radon
+
+    Plr = legendre0(length(SO3F.psi.A)-1,dr);
+    psi = conv(SO3F.psi,Plr);
+
+    Z = Z + SO3F.weights * psi.eval(dh.') / length(sh);
+     
   end
 end
