@@ -62,10 +62,10 @@ t = norm(odf1)^2
 %%
 % The entropy of an ODF $f$ is defined as:
 %
-% $$ S = - \int_{SO(3)} f(R) \ln f(R) dR$$
+% $$ H = - \int_{SO(3)} f(R) \ln f(R) dR$$
 
 
-S = entropy(odf2)
+H = entropy(odf2)
 
 
 %% Volume Portions
@@ -73,39 +73,22 @@ S = entropy(odf2)
 % Volume portions describes the relative volume of crystals having a
 % certain orientation. The relative volume of crystals having a orientation
 % close to a given orientation is computed by the command
-% <ODF.volume.html volume> and the relative volume of crystals having a
+% <ODF.volume.html |volume|> and the relative volume of crystals having a
 % orientation close to a given fibre is computed by the command
-% <ODF.fibreVolume.html fibreVolume>
+% <ODF.fibreVolume.html |fibreVolume|>
 
 %%
 % The relative volume in percent of crystals with missorientation maximum
 % 30 degree from the preferred orientation |ori_pref|:
 
-volume(odf3, ori_pref, 30*degree) * 100
+V1 = volume(odf3, ori_pref, 30*degree) * 100
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre in percent:
-% TODO
 
-volume(odf2,f001_x,20*degree) * 100
+V2 = volume(odf2,f001_x,20*degree) * 100
 
-%%
-
-odf = FourierODF(odf2);
-volume(odf,f001_x,20*degree) * 100
-%%
-figure(1)
-plotFibre(odf,f001_x)
-figure(2)
-plotFibre(odf2,f001_x)
-
-%%
-
-figure(1)
-plotIPDF(odf,xvector)
-figure(2)
-plotIPDF(odf2,xvector)
 
 %% Extract Internal Representation
 % The internal representation of the ODF can be addressed by the commands
