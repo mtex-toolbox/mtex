@@ -49,7 +49,6 @@ for i = 1:length(sh)
       dh = s.';
     end
     Plr = legendre0(length(SO3F.psi.A)-1,dr);
-    Plr = Plr ./ sqrt(2*(0:bw)+1).';
     psi = conv(SO3F.psi,Plr);
     Z = Z + SO3F.weights * psi.eval(dh.') / length(sh);
     
