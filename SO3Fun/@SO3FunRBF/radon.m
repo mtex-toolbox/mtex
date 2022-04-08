@@ -1,5 +1,5 @@
 function S2F = radon(SO3F,h,r,varargin)
-% radon transform of the SO(3) function
+% radon transform of a SO3FunRBF
 %
 % Syntax
 %   S2F = radon(SO3F,h)
