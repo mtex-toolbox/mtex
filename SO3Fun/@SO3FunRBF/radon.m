@@ -13,20 +13,11 @@ function S2F = radon(SO3F,h,r,varargin)
 % Output
 %  S2F - @S2FunHarmonic
 %
-% See also
-
-if nargin > 2 && min(length(h),length(r)) > 0 && ...
-    (check_option(varargin,'old') || max(length(h),length(r)) < 10)
-  
-  S2F = SO3F.psi.RK_symmetrised(...
-    SO3F.center,h,r,SO3F.weights,...
-    SO3F.CS,SO3F.SS,varargin{:});
-  return
-  
-end
 
 % S2Fun in h or r?
-if nargin<3 || isempty(r)
+if nargin<3, r = []; end
+
+if isempty(r)
   isPF = true;
 elseif isempty(h)
   isPF = false;
@@ -45,7 +36,7 @@ if isPF % pole figure
   for k = 1:length(h)
     sh = h(k);
     sh.antipodal = isAntipodal || angle(h(k),-h(k)) < 1e-3;
-    sh = symmetrise(sh,'unique');
+    sh = symmetrise(sh,SO3F.CS,'unique');
     
     S2F(k) = S2FunHarmonicSym.quadrature(SO3F.center*sh,...
       repmat(SO3F.weights(:),1,length(sh)),SO3F.SS,...
@@ -66,8 +57,17 @@ else % inverse pole figure
 end
 
 % convolve with radon transformed kernel function
-S2F = 4 * pi * conv(S2F,SO3F.psi.radon) ;
+S2F = 4 * pi * conv(S2F,SO3F.psi.radon);
 
 % add uniform portion
 S2F = S2F + sqrt(4*pi)*SO3F.c0;
+
+% evaluate S2Fun if needed
+if  ~isempty(r) &&  ~isempty(h)
+  if length(h) >= length(r)
+    S2F = S2F.eval(h);
+  else
+    S2F = S2F.eval(r).';
+  end
+end
 
