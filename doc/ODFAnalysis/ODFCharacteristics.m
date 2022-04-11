@@ -73,9 +73,9 @@ H = entropy(odf2)
 % Volume portions describes the relative volume of crystals having a
 % certain orientation. The relative volume of crystals having a orientation
 % close to a given orientation is computed by the command
-% <ODF.volume.html |volume|> and the relative volume of crystals having a
+% <SO3Fun.volume.html |volume|> and the relative volume of crystals having a
 % orientation close to a given fibre is computed by the command
-% <ODF.fibreVolume.html |fibreVolume|>
+% <SO3Fun.fibreVolume.html |fibreVolume|>
 
 %%
 % The relative volume in percent of crystals with missorientation maximum
