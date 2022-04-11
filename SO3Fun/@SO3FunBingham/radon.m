@@ -41,14 +41,16 @@ f = zeros(length(h),length(r));
 hSym = symmetrise(h,SO3F.CS,varargin{:});
 rSym = symmetrise(r,SO3F.SS);
 
+A = quaternion(SO3F.A);
+
 for ih = 1:size(hSym,1)
   for ir = 1:size(rSym,1)
     
     q1 = hr2quat(hSym(ih,:),rSym(ir,:));
     q2 = q1 .* axis2quat(hSym(ih,:),pi);
     
-    A1 = dot_outer(q1,SO3F.A,'noSymmetry');
-    A2 = dot_outer(q2,SO3F.A,'noSymmetry');
+    A1 = dot_outer(q1,A);
+    A2 = dot_outer(q2,A);
     
     a = (A1.^2 +  A2.^2) * SO3F.kappa ./2;
     b = (A1.^2 -  A2.^2) * SO3F.kappa ./2;
