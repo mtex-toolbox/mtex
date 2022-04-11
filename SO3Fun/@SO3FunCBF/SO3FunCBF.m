@@ -78,6 +78,12 @@ classdef SO3FunCBF < SO3Fun
       SO3F.psi.bandwidth = L;
     end
         
+  end 
+  
+  methods (Static = true)
+  
+    SO3F = example(varargin)
+    
   end
 
 end

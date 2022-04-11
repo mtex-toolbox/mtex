@@ -34,7 +34,8 @@ end
 
 methods (Static = true)
    
-    
+  SO3F = example(varargin)
+
 end
 
 

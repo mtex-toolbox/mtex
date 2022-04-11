@@ -65,5 +65,11 @@ classdef SO3FunBingham < SO3Fun
       m = SO3F.weight;
     end
   end
+
+  methods (Static = true)
+  
+    SO3F = example(varargin)
+    
+  end
   
 end

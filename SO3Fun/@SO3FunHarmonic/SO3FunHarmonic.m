@@ -153,6 +153,7 @@ methods (Static = true)
   SO3F = quadrature_v2(f, varargin);
   %sF = regularisation(nodes,y,lambda,varargin);
   SO3F = WignerDmap(harmonicdegree,varargin);
+  SO3F = example(varargin)
 end
 
 end

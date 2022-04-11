@@ -80,15 +80,8 @@ classdef SO3FunRBF < SO3Fun
   
   methods (Static = true)
     
-    function test
-      
-      mtexdata dubna
-      
-      odf = calcODF(pf);
-      
-      
-      
-    end
+    SO3F = example(varargin)
+
   end
   
 end
