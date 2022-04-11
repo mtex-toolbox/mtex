@@ -12,7 +12,7 @@ function rot = discreteSample(SO3F,n,varargin)
 %  v -  @rotation / @orientation
 %
 
-res = get_option(varargin,'resolution',0.5*degree);
+res = get_option(varargin,'resolution',1.5*degree);
 
 % take global random samples at grid points
 SO3G = equispacedSO3Grid(SO3F.SRight,SO3F.SLeft,'resolution',res);
