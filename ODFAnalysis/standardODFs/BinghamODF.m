@@ -2,7 +2,7 @@ function odf = BinghamODF(varargin)
 % defines a Bingham distributed ODF
 %
 % Description
-% BinhamODF defines a Bingham distributed ODF with A and Lambda.
+% BinghamODF defines a Bingham distributed ODF with A and Lambda.
 %
 % Syntax
 %   odf = BinghamODF(kappa,A,CS,SS)
@@ -11,7 +11,8 @@ function odf = BinghamODF(varargin)
 %
 % Input
 %  kappa  - form parameter
-%  A      - 
+%  A      - orthogonal 4x4 matrix
+%  q      - quaternion
 %  h,r    - fibre
 %  CS, SS - crystal, specimen @symmetry
 %
@@ -23,7 +24,12 @@ function odf = BinghamODF(varargin)
 
 
 % get crystal and specimen symmetry
-[CS,SS] = extractSym(varargin);
+try
+  CS = varargin{2}.CS;
+  SS = varargin{2}.SS;
+catch
+  [CS,SS] = extractSym(varargin);
+end
 
 % get kappa
 kappa = argin_check(varargin{1},'double');
@@ -43,7 +49,7 @@ elseif nargin > 1 && isa(varargin{2},'vector3d') && isa(varargin{3},'vector3d')
   if numel(varargin{1}) == 1, kappa(2) = varargin{1};end
 
   A = fibre2A(h,r);
-        
+
 elseif nargin > 1 && isa(varargin{2},'quaternion')
         
   A = varargin{2};
