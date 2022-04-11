@@ -34,8 +34,9 @@ if ~isempty(SO3F.center)
        Euler(SO3F.center,s)
     elseif ~getMTEXpref('generatingHelpMode')
       disp(' ')
-      setappdata(0,'data2beDisplayed',Euler(SO3F.center,s));
-      disp('  <a href="matlab:(getappdata(0,''data2beDisplayed''))">show centers of the components and corresponding weights</a>')
+      setappdata(0,'data2beDisplayed',SO3F.center);
+      setappdata(0,'data2beDisplayedWeights',s);
+      disp('  <a href="matlab:Euler(getappdata(0,''data2beDisplayed''),getappdata(0,''data2beDisplayedWeights''))">show centers of the components and corresponding weights</a>')
       disp(' ')
     end
     
