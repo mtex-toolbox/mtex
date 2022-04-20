@@ -24,16 +24,15 @@ function value = sum(SO3F, varargin)
 %
 % SO3F is a 3x3 SO3Fun
 % sum(SO3F) returns a 3x3 matrix with the integrals of each function
-% sum(SO3F, 1) returns a 1x3 SO3Fun wich contains the pointwise sums along the first dimension
+% sum(SO3F, 1) returns a 1x3 SO3Fun which contains the pointwise sums along the first dimension
 %
+
 
 if nargin == 1 || ~isnumeric(varargin{1})
   value = 8*pi^2*mean(SO3F,varargin{:});
 else
-
-  d =varargin{1}+1;
+  d = varargin{1}+1;
   value = SO3FunHandle(@(rot) sum(SO3F.eval(rot),d) ,SO3F.SRight,SO3F.SLeft);
- 
 end
 
 end
