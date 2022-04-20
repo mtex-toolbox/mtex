@@ -61,9 +61,6 @@ classdef SO3FunBingham < SO3Fun
     function SO3F = set.bandwidth(SO3F,~)      
     end
 
-    function m=mean(SO3F,varargin)
-      m = SO3F.weight;
-    end
   end
 
   methods (Static = true)
