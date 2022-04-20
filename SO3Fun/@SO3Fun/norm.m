@@ -1,4 +1,4 @@
-function t = norm(SO3F,varargin)
+function t = norm(SO3F)
 % Calculate the L2-norm also known as texture index of a SO3Fun, by using
 %
 % $$ t = \sqrt{\int_{SO(3)} |f(R)|^2 dR}$$,
@@ -18,6 +18,6 @@ function t = norm(SO3F,varargin)
 %  resolution  - choose mesh width by calculation of mean
 %
 
-t = sqrt(mean(abs(SO3F).^2,varargin{:}));
+t = sqrt(mean(abs(SO3F).^2));
     
 end
