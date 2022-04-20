@@ -24,7 +24,7 @@ function value = sum(SO3F, varargin)
 %
 % SO3F is a 3x3 SO3Fun
 % sum(SO3F) returns a 3x3 matrix with the integrals of each function
-% sum(SO3F, 1) returns a 1x3 SO3Fun wich contains the pointwise sums along the first dimension
+% sum(SO3F, 1) returns a 1x3 SO3Fun which contains the pointwise sums along the first dimension
 %
 
 if nargin == 1
