@@ -20,6 +20,10 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %  conv - be shure switched symmetries match
 %
 
+% TODO: In the moment only the same symmetrys are suitable.
+%       If we are changing this, then also update the code in
+%       SO3FunComposition
+
 if isnumeric(SO3F1) || isnumeric(SO3F2)
   return
 end
