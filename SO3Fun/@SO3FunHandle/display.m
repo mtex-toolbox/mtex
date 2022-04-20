@@ -9,7 +9,7 @@ else
 end
 
 try
-  m = mean(SO3F,'all','bandwidth',16);
+  m = mean(SO3F,'resolution',5*degree);
   disp(['  weight: ' xnum2str(m(1))])
 end
 disp(' ')

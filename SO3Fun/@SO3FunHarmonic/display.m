@@ -11,7 +11,7 @@ else
 end
 
 disp(['  bandwidth: ' num2str(SO3F.bandwidth)]);
-disp(['  weight: ' xnum2str(SO3F.fhat(1))]);
+disp(['  weight: ' xnum2str(mean(SO3F.subSet(1)))]);
 disp(' ');
 
 end

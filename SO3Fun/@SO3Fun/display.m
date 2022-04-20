@@ -8,5 +8,5 @@ else
 end
 
 if length(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
-disp(['  weight: ' xnum2str(mean(SO3F(1),'all','bandwidth',16))])
+disp(['  weight: ' xnum2str(mean(SO3F,'resolution',5*degree))])
 end
