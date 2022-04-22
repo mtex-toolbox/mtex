@@ -19,6 +19,8 @@ switch s(1).type
       return
     end
     
+    ensureCompatibleSymmetries(SO3F,b);
+
     [bw, I] = max([SO3F.bandwidth, b.bandwidth]);
     if I == 1
       b.bandwidth = bw;
