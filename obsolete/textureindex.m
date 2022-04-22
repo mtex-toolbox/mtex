@@ -3,7 +3,7 @@ function t = textureindex(odf,varargin)
 %
 % The tetxure index of an ODF f is defined as:
 %
-% $$ t = \sqrt{\int_{SO(3)} |f(R)|^2 dR}$$,
+% $$ t = \int_{SO(3)} |f(R)|^2 dR $$,
 %
 % where $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 %
@@ -19,6 +19,6 @@ function t = textureindex(odf,varargin)
 % See also
 % ODF/norm ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
 
-warning('The command textureindex is depreciated! Please use norm instead.')
+warning('The command textureindex is depreciated! Please use squared norm instead.')
 
-t = norm(odf,varargin);
+t = norm(odf,varargin).^2;
