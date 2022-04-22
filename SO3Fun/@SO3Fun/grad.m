@@ -18,7 +18,7 @@ function g = grad(SO3F,varargin)
 % See also
 %
 
-% maybe we should return a function hand
+% maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
   g = SO3VectorFieldHandle(@(rot) SO3F.grad(rot,varargin{:}),SO3F.CS,SO3F.SS);
   return
