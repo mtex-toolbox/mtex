@@ -42,7 +42,7 @@ psi = S2FunHarmonic(S2DeLaValleePoussin('halfwidth',5*degree,varargin{:}));
 
 psi = psi.radon;
 
-bw = min(getMTEXpref('maxBandwidth'),psi.bandwidth);
+bw = min(getMTEXpref('maxS2Bandwidth'),psi.bandwidth);
 rot = rotation.byAxisAngle(xvector,90*degree);
 
 % multiply this kernel function with the sin of the polar angle
@@ -72,9 +72,9 @@ odf = calcDensity(ori,'kernel',DirichletKernel(bw),'harmonic');
 
 %% step 4: convolution
 % GBPD = conv(odf,psi)
-
-odfHat = odf.components{1}.f_hat;
-fhat = zeros((2*bw+1)^2,1);
+odf.bandwidth = bw;
+odfHat = odf.fhat;
+fhat = zeros((bw+1)^2,1);
 for l = 0:bw
   fhat(l^2+1:(l+1)^2) = reshape(odfHat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
     psi.fhat(l^2+1:(l+1)^2) ./ (2*l+1);
