@@ -41,8 +41,7 @@ if isempty(ori), odf = ODF; return, end
 odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth
-L = get_option(varargin,{'L','HarmonicDegree'},...
-  min(max(1,odf.psi.bandwidth),128),'double');
+L = get_option(varargin,{'L','HarmonicDegree'},min(max(1,odf.psi.bandwidth),getMTEXpref('maxSO3Bandwidth')),'double');
 
 % check kernel has at most the requested bandwidth
 if odf.psi.bandwidth > L
