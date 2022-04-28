@@ -42,7 +42,7 @@ classdef SO3FunCBF < SO3Fun
         SRight = SO3F.h.CS;
       else
         try
-          SRight = SO3F.h.sym;
+          SRight = SO3F.h.opt.sym;
         catch
           SRight = specimenSymmetry;
         end
@@ -63,7 +63,7 @@ classdef SO3FunCBF < SO3Fun
         SLeft = SO3F.r.CS;
       else
         try
-          SLeft = SO3F.r.sym;
+          SLeft = SO3F.r.opt.sym;
         catch
           SLeft = specimenSymmetry;
         end
