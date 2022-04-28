@@ -9,33 +9,43 @@ properties (Dependent=true)
   bandwidth;  % maximum harmonic degree / bandwidth
   antipodal;  %
   isReal;
+  power;
 end
 
 methods
   
-  function sF = S2FunHarmonic(fhat)
+  function sF = S2FunHarmonic(fhat,varargin)
     % initialize a spherical function
     
     if nargin == 0, return; end
 
+    % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic
     if isa(fhat,'S2FunHarmonic')
       sF.fhat = fhat.fhat;
+      return
     elseif isa(fhat,'S2Fun')
       sF = S2FunHarmonic.quadrature(fhat);
+      return
     elseif isa(fhat,'S2Kernel')
-
       psi = fhat;
       bw = psi.bandwidth;
       sF.fhat = zeros((bw+1)^2,1);
       for l = 0:bw
         sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
       end
-
-    else
-      s = size(fhat);
-      bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
-      sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
+      return
     end
+
+    % construct S2FunHarmonic from fourier coefficient vector
+    s = size(fhat);
+    bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
+    sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
+    
+    sF.antipodal = check_option(varargin,'antipodal');
+    
+    % truncate zeros
+    A = reshape(sF.power,size(sF.power,1),prod(size(sF)));
+    sF.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
 
   end
   
@@ -57,6 +67,15 @@ methods
     end
   end
   
+  function pow = get.power(sF)
+    hat = abs(sF.fhat).^2;
+    pow = zeros([sF.bandwidth+1,size(sF)]);
+    for l = 0:size(pow,1)-1
+      pow(l+1,:) = sum(hat(l^2+1:(l+1)^2,:),1);
+    end
+    pow = sqrt(pow);
+  end
+
   function out = get.antipodal(sF)
     sF = truncate(sF);
     out = all(norm(sF - sF.even) < 1e-5*norm(sF));

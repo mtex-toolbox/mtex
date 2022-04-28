@@ -100,7 +100,7 @@ try
   fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
 end
 sF = S2FunHarmonic(fhat);
-sF.bandwidth = bw;
+sF.bandwidth = min([bw,sF.bandwidth]);
 
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || nodes.antipodal 
