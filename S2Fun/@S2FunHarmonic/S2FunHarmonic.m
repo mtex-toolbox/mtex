@@ -8,6 +8,7 @@ end
 properties (Dependent=true)
   bandwidth;  % maximum harmonic degree / bandwidth
   antipodal;  %
+  isReal;
 end
 
 methods
@@ -63,6 +64,33 @@ methods
   
   function sF = set.antipodal(sF,value)
     if value, sF = sF.even; end
+  end
+
+  function out = get.isReal(sF)
+    if sF.bandwidth == 0
+      out = isreal(sF.fhat);
+      return
+    end
+    sF = reshape(sF,numel(sF));
+    ind = zeros((sF.bandwidth+1)^2,1);
+    for l = 0:sF.bandwidth
+      ind(l^2+1:(l+1)^2) = (l+1)^2:-1:l^2+1;
+    end
+    dd = sum(abs(sF.fhat-conj(sF.fhat(ind,:))).^2);
+    nF = norm(sF)';
+    out = all(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
+  end
+
+  function sF = set.isReal(sF,value)
+    if ~value, return; end
+    s = size(sF);
+    sF = reshape(sF,prod(s));
+    ind = zeros((sF.bandwidth+1)^2,1);
+    for l = 0:sF.bandwidth
+      ind(l^2+1:(l+1)^2) = (l+1)^2:-1:l^2+1;
+    end
+    sF.fhat = 0.5*(sF.fhat+conj(sF.fhat(ind,:)));
+    sF=reshape(sF,s);
   end
 
   function d = size(sF, varargin)
