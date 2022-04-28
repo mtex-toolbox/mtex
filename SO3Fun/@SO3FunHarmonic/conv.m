@@ -1,6 +1,7 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
 % convolution with a function or a kernel on SO(3)
 % 
+% 1) SO3Fun * SO3Fun
 % There are two SO3Funs $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
 % where $S_f^L$ is the Left symmetry and $S_f^R$ is the Right symmetry and
 % $g: _{S_g^L\backslash}SO(3)_{/S_g^R} \to \mathbb{C}$ given.
@@ -19,18 +20,28 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % The convolution of matrices of SO3Functions with matrices of SO3Functions
 % works elementwise.
 % 
+% 2) SO3Fun * S2Fun
+% The convolution of an SO3Fun  $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
+% with an S2Fun $h: \mathbb S^2_{/S_h} \to \mathbb{C}$ yields 
+% $f*h:\mathbb S^2_{/S_f^L} \to \mathbb{C}$ with
+%
+% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$.
+%
 % 
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
 %   SO3F = conv(SO3F1,SO3F2,'Right')
 %   SO3F = conv(SO3F1,psi)
+%   sF2 = conv(SO3F1,sF1)
 %
 % Input
 %  SO3F1, SO3F2 - @SO3Fun
 %  psi          - convolution @SO3Kernel
+%  sF1          - @S2Fun
 %
 % Output
 %  SO3F - @SO3FunHarmonic
+%  sF2  - @S2FunHarmonic
 %
 
 % convolution with a kernel function
@@ -49,6 +60,34 @@ if isa(SO3F2,'SO3Kernel')
   end
 
   SO3F = reshape(SO3F1,s);
+  return
+
+end
+
+% convolution with a S2Fun
+if isa(SO3F2,'S2Fun')
+
+  sF = S2FunHarmonic(SO3F2);
+  L = min(SO3F1.bandwidth,sF.bandwidth);
+  
+  fhat = zeros((L+1)^2,1);
+  for l = 0:L
+%     fhat(l^2+1:(l+1)^2) = reshape(SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
+%           sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
+
+     fhat(l^2+1:(l+1)^2) = reshape(SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
+          sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
+  end
+
+  if isa(SO3F2,'S2FunHarmonicSym')
+    ensureCompatibleSymmetries(SO3F1,SO3F2);
+    SO3F = S2FunHarmonicSym(fhat,SO3F1.SLeft);
+  else
+    warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...
+      'right symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])
+    SO3F = S2FunHarmonic(fhat);
+  end
+
   return
 
 end
