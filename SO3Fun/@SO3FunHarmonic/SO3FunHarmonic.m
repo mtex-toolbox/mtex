@@ -127,7 +127,7 @@ methods
     end
     dd = sum(abs(F.fhat-conj(F.fhat(ind,:))).^2);
     nF = norm(F)';
-    out = prod(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
+    out = all(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
     % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
   end
   
