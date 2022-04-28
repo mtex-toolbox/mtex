@@ -256,7 +256,7 @@ for index = 1:num
   % set flags and symmetry axis
   flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
   % TODO: Probably use limit 1e-5 because this is precision m of nfft
-  if sum(abs(imag(values(:,index)))) <= (1e-10)*sum(abs(real(values(:,index))))  % real valued
+  if isalmostreal(values(:,index),'precision',10,'norm',1) % real valued
     flags = flags+2^2;
   end
   if check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal) % antipodal
