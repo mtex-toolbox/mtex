@@ -96,7 +96,7 @@ plotSpektra(S2F,'linewidth',2)
 
 %%
 % In particular all
-% operation on those functions are implmented as operations on the Fourier
+% operations on those functions are implmented as operations on the Fourier
 % coefficients. 
 %
 % The crucial parameter when representing spherical functions by their
