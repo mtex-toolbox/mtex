@@ -84,7 +84,8 @@ methods
     for l = 0:size(pow,1)-1
       pow(l+1,:) = sum(hat(deg2dim(l)+1:deg2dim(l+1),:),1);
     end
-    
+    pow = sqrt(pow);
+
   end
     
   function out = get.antipodal(F)      

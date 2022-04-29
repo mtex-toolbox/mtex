@@ -9,7 +9,6 @@ properties (Dependent=true)
   bandwidth;  % maximum harmonic degree / bandwidth
   antipodal;  %
   isReal;
-  power;
 end
 
 methods
