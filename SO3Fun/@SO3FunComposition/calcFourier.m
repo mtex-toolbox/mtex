@@ -16,7 +16,7 @@ function f_hat = calcFourier(SO3F,varargin)
 %  f_hat - vector of Fourier coefficients order as [fh000 fh1-1-1 ... fh111 fh2-2-2 fh222 ...]
 %
 % See also
-% SO3Fun/plotFourier SO3Fun/Fourier wignerD FourierODF SO3Fun/textureindex SO3Fun/entropy SO3Fun/eval 
+% SO3Fun/plotSpektra SO3Fun/Fourier wignerD FourierODF SO3Fun/textureindex SO3Fun/entropy SO3Fun/eval 
 %
 
 L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxSO3Bandwidth')));

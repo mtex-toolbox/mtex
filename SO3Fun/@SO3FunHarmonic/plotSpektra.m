@@ -1,10 +1,10 @@
-function plotFourier(SO3F,varargin)
+function plotSpektra(SO3F,varargin)
 % viszalize the harmonic coefficients
 %
 % Syntax
 %
-%   plotFourier(SO3F)
-%   plotFourier(SO3F,'bandwidth',32)
+%   plotSpektra(SO3F)
+%   plotSpektra(SO3F,'bandwidth',32)
 %
 % Input
 %  odf - @ODF

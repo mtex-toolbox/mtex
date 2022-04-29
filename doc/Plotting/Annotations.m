@@ -119,10 +119,10 @@ legend show
 % with the Fourier coefficients of an unimodal ODF.
 
 close all
-plotFourier(FourierODF(odf,32),'DisplayName','Unimodal ODF')
+plotSpektra(FourierODF(odf,32),'DisplayName','Unimodal ODF')
 hold all
 fodf = fibreODF(Miller(1,0,0,cs),zvector);
-plotFourier(FourierODF(fodf,32),'DisplayName','Fibre ODF');
+plotSpektra(FourierODF(fodf,32),'DisplayName','Fibre ODF');
 hold off
 legend show
 
