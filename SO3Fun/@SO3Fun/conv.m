@@ -12,5 +12,7 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % Output
 %  SO3F - @SO3FunHarmonic
 %
+% See also
+% SO3FunHarmonic/conv
 
 SO3F = conv(SO3FunHarmonic(SO3F1),SO3F2,varargin{:});
