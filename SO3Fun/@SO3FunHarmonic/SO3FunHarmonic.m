@@ -28,6 +28,15 @@ methods
       SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
       return
     end
+    if isa(fhat,'SO3Kernel')
+      psi = fhat;
+      bw = psi.bandwidth;
+      SO3F.fhat = zeros(deg2dim(bw+1),1);
+      for l = 0:bw
+        SO3F.fhat(deg2dim(l)+1 +(2*l+2).*(0:2*l) ) = psi.A(l+1)/sqrt(2*l+1);
+      end
+      return
+    end
       
     % set fhat
     SO3F.fhat = fhat;
@@ -54,6 +63,7 @@ methods
     % truncate zeros
     A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
     SO3F.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
+
   end
      
   function n = numArgumentsFromSubscript(varargin)
