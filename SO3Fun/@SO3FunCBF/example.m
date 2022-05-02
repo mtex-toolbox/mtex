@@ -4,9 +4,9 @@ function f = example(varargin)
 cs = crystalSymmetry.load('Ti-Titanium-alpha.cif');
 
 % define the fibre to be the beta fibre
-warning('off')
+warning off
 f = fibre.beta(cs);
-warning('on')
+warning on
 
 % define a fibre ODF
 f = fibreODF(f,'halfwidth',10*degree);
