@@ -44,7 +44,54 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %  sF2  - @S2FunHarmonic
 %
 
-% convolution with a kernel function
+
+% ------------------- convolution with a S2Kernel -------------------
+if isa(SO3F2,'S2Kernel')
+  psi = SO3F2;
+  L = min(SO3F1.bandwidth,psi.bandwidth);
+  
+  fhat = zeros((L+1)^2,1);
+  for l = 0:L
+    fhat(l^2+1:(l+1)^2) = 2*sqrt(pi)/(2*l+1) * ...
+          SO3F1.fhat(deg2dim(l)+(2*l+1)*l+(1:2*l+1)')*psi.A(l+1);
+  end
+
+  warning(['There is no symmetry given for the S2Kernel function. But for convolution the ' ...
+      'right symmetry of the SO3Fun has to be compatible with the symmetry of the S2Fun.'])
+  SO3F = S2FunHarmonic(fhat);
+  return
+
+end
+
+
+% ------------------- convolution with a S2Fun -------------------
+if isa(SO3F2,'S2Fun')
+
+  sF = S2FunHarmonic(SO3F2);
+  L = min(SO3F1.bandwidth,sF.bandwidth);
+  
+  fhat = zeros((L+1)^2,1);
+  for l = 0:L
+    fhat(l^2+1:(l+1)^2) = reshape(SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
+          sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
+  end
+
+  if isa(SO3F2,'S2FunHarmonicSym')
+    ensureCompatibleSymmetries(SO3F1,SO3F2);
+    SO3F = S2FunHarmonicSym(fhat,SO3F1.SLeft);
+  else
+    warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...
+      'right symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])
+    SO3F = S2FunHarmonic(fhat);
+  end
+
+  return
+
+end
+
+
+% ------------------- convolution with a SO3Kernel -------------------
+% ( Here *L is the same like *R ) 
 if isa(SO3F2,'SO3Kernel')
 
   L = min(SO3F1.bandwidth,SO3F2.bandwidth);
@@ -64,45 +111,15 @@ if isa(SO3F2,'SO3Kernel')
 
 end
 
-% convolution with a S2Fun
-if isa(SO3F2,'S2Fun')
 
-  sF = S2FunHarmonic(SO3F2);
-  L = min(SO3F1.bandwidth,sF.bandwidth);
-  
-  fhat = zeros((L+1)^2,1);
-  for l = 0:L
-%     fhat(l^2+1:(l+1)^2) = reshape(SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
-%           sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
-
-     fhat(l^2+1:(l+1)^2) = reshape(SO3F1.fhat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
-          sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
-  end
-
-  if isa(SO3F2,'S2FunHarmonicSym')
-    ensureCompatibleSymmetries(SO3F1,SO3F2);
-    SO3F = S2FunHarmonicSym(fhat,SO3F1.SLeft);
-  else
-    warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...
-      'right symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])
-    SO3F = S2FunHarmonic(fhat);
-  end
-
-  return
-
-end
-
-% convolution of SO3Fun's
-
-% right sided convolution
+% ------------------- convolution of SO3Fun's -------------------
+% i) right sided convolution
 if check_option(varargin,'Right')
   SO3F = inv(conv(inv(SO3F1),inv(SO3F2)));
   return
 end
 
-
-% define left sided convolution as default
-
+% ii) left sided convolution (default)
 ensureCompatibleSymmetries(SO3F1,SO3F2,'conv_Left');
 
 % ensure both inputs are harmonic as well
