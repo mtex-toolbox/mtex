@@ -78,6 +78,7 @@ else
     SRight = nodes.CS; SLeft = nodes.SS;
   else
     [SRight,SLeft] = extractSym(varargin);
+    nodes = orientation(nodes,SRight,SLeft);
   end
 
   
@@ -96,11 +97,12 @@ else
     grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
     % in some special cases we need to evaluate the function handle in additional nodes
     if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
-      warning('off')
-      if (SS.id==19 && mod(N+1,2)==0) || (SS.id==22 && mod(N+1,12)==0) || (SS.id~=19 && SS.id~=22)
+      %warning('off')
+      if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
         grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
       end
-      warning('on')
+      %warning('on')
+      warning('hi')
     end
     [a,b,c] = nodes.project2EulerFR('nfft');
     ori = [a,b,c];
@@ -144,7 +146,7 @@ else
 %     % in some special cases we need to evaluate the function handle in additional nodes
 %     if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
 %       warning('off')
-%       if (SS.id==19 && mod(N+1,2)==0) || (SS.id==22 && mod(N+1,12)==0) || (SS.id~=19 && SS.id~=22)
+%       if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
 %         grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
 %       end
 %       warning('on')
