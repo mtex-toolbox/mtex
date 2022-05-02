@@ -29,7 +29,10 @@ if isa(SO3F2,'S2FunHarmonicSym')
   if SO3F1.SRight ~= SO3F2.s
     error('By convolution of a @SO3Fun with a @S2Fun the symmetries have to be compatible.')
   end
-elseif check_option(varargin,'conv_Left')
+  return
+end
+
+if check_option(varargin,'conv_Left')
   % compare symmetries in case of left sided convolution
   em = SO3F1.SRight ~= SO3F2.SLeft;
 else
