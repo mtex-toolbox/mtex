@@ -1,4 +1,4 @@
-classdef SO3SobolevKernel < SO3kernel
+classdef SO3SobolevKernel < SO3Kernel
     
   properties
     s = 1;
