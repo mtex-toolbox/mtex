@@ -53,7 +53,7 @@ end
 
 
 % ------------------- convolution of SO3Funs -------------------
-% i) maybe we should go the Fourier route
+% a) maybe we should go the Fourier route
 if ~isa(SO3F2,'SO3FunRBF') || ...
     (length(SO3F1.center) > 100 && length(SO3F2.center) > 100 && ... 
     ~check_option(varargin,'noFourier'))
@@ -69,8 +69,15 @@ if ~isa(SO3F2,'SO3FunRBF') || ...
 end
 
 
-% ii) pure RBF method
-%ensureCompatibleSymmetries(SO3F1,SO3F2,'conv_Left');
+% b) pure RBF method
+% i) right sided convolution
+if check_option(varargin,'Right')
+  SO3F = inv(conv(inv(SO3F1),inv(SO3F2)));
+  return
+end
+
+% ii) left sided convolution (default)
+ensureCompatibleSymmetries(SO3F1,SO3F2,'conv_Left');
 warning(['The convolution of two SO3FunRBFs could be done fast by pure RBF method.' ...
   'For big center sizes this yields an SO3FunRBF with lots of centers, which is ' ...
   'not manageable anymore. Possibly transform one SO3FunRBF to an SO3FunHarmonic.']);
