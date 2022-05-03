@@ -1,15 +1,38 @@
-function psi = conv(psi1,psi2)
-% convolution between two SO3-kernel functions gives again a SO3-kernel
+function psi = conv(psi1,psi2,varargin)
+% convolution of an SO3Kernel function with a function or a kernel on SO(3)
+%
+% We can convolute an SO3Kernel $f$ with another SO3Kernel or an SO3Fun $g$
+% by the convolution
+%
+% $$ (f *_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
+%
+% which in this case is similar to the so caled right sided convolution,
+% see SO3FunHarmonic/conv.
+%
+% The convolution of an SO3Kernel with an S2Kernel or an S2Fun $h$ is
+% defined by
+%
+% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$.
+% 
 %
 % Syntax
-%   psi = conv(psi1,psi2,varargin)
-%   psi = conv(psi1,varargin)
+%   psi = conv(psi1,psi2)
+%   SO3F2 = conv(psi1,SO3F1)
+%   sF2 = conv(psi1,sF1)
+%   phi2 = conv(psi1,phi1)
+%   psi = conv(psi1)
 %
 % Input
 %  psi1, psi2 - @SO3Kernel
+%  phi1       - @S2Kernel
+%  SO3F1      - @SO3Fun
+%  sF1        - @S2Fun
 %
 % Output
-%  psi - @SO3Kernel
+%  psi   - @SO3Kernel
+%  SO3F2 - @SO3Fun
+%  sF2   - @S2Fun
+%  phi2  - @S2Kernel
 %
 % See also
 % SO3FunHarmonic/conv
@@ -54,7 +77,7 @@ if isa(psi2,'S2Kernel')
 end
 
 
-% ------------------- convolution with a SO3Kernel -------------------
+% ------------------- convolution of SO3Kernels -------------------
 L = min(psi1.bandwidth,psi2.bandwidth);     
 l = (0:L);
 psi = SO3Kernel(psi1.A(1:L+1) .* psi2.A(1:L+1) ./ (2*l+1));
