@@ -1,12 +1,12 @@
 function SO3F = inv(SO3F)      
 % Define the inverse function $g$ of an SO3FunHarmonic $f$ by $g(R^{-1}) = f(R)$
-% for all rotations $R\in SO3(3)$.
+% for all rotations $R\in SO(3)$.
 %
 % Syntax
 %   SO3F = inv(F)
 %
 % Input
-%  F - @SO3FunHarmonic
+%  SO3F - @SO3FunHarmonic
 %
 % Output
 %  SO3F - @SO3FunHarmonic
