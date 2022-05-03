@@ -1,7 +1,7 @@
 function f = example(varargin)
 % Construct the odf from the dubna data set as example for an SO3FunRBF.
 
-CS = crystalSymmetry('321',[4.9 4.9 5.4],'mineral','Quartz');
+CS = crystalSymmetry('-3m',[4.9 4.9 5.4]);
 SS = specimenSymmetry;
 
 % specify file names
