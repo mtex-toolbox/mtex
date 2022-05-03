@@ -1,5 +1,5 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
-% convolution with a function or a kernel on SO(3)
+% convolution of an SO3FunHarmonic with a function or a kernel on SO(3)
 % 
 % 1) SO3Fun * SO3Fun
 % There are two SO3Funs $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
@@ -27,22 +27,36 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %
 % $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$.
 %
+% 3) In particular we convolute an SO3Fun with an SO3Kernel similar to the
+% first case. Therefore the Right and Left sided convolution are
+% equivalent. The convolution of an SO3Fun with an S2Kernel works analogue 
+% to case 2. 
+%
 % 
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
 %   SO3F = conv(SO3F1,SO3F2,'Right')
 %   SO3F = conv(SO3F1,psi)
 %   sF2 = conv(SO3F1,sF1)
+%   sF2 = conv(SO3F1,phi)
 %
 % Input
 %  SO3F1, SO3F2 - @SO3Fun
 %  psi          - convolution @SO3Kernel
 %  sF1          - @S2Fun
+%  phi          - convolution @S2Kernel
 %
 % Output
 %  SO3F - @SO3FunHarmonic
 %  sF2  - @S2FunHarmonic
 %
+% See also
+% SO3Kernel/conv SO3FunHarmonic/conv SO3FunRBF/calcFourier
+
+
+% TODO: I changed the code so it is compatible to the definition.
+%       We should use           conv(inv(conj(SO3F1)),SO3F2)
+%       every time when conv(SO3F1,SO3F2) occurs.
 
 
 % ------------------- convolution with a S2Kernel -------------------
@@ -96,7 +110,7 @@ if isa(SO3F2,'SO3Kernel')
 
   L = min(SO3F1.bandwidth,SO3F2.bandwidth);
   SO3F1.bandwidth = L;
-  s=size(SO3F1); SO3F1 = SO3F1(:);
+  s = size(SO3F1); SO3F1 = SO3F1(:);
 
   % multiply Wigner-D coefficients of SO3F1 
   % with the Chebyshev coefficients A of SO3F2 
