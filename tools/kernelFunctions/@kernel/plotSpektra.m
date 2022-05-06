@@ -1,4 +1,4 @@
-function plotFourier(psi,varargin)
+function plotSpektra(psi,varargin)
 % plot the Chybeyshev coefficients of the kernel function
   
 bw = get_option(varargin,'bandwidth',32);

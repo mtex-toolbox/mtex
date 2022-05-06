@@ -54,7 +54,7 @@ legend(gca,'show','Location','eastoutside')
 close; figure('position',[100,100,500,450])
 hold all
 for i = 1:numel(psi)
-  plotFourier(psi{i},'bandwidth',32,'linewidth',2,'DisplayName',class(psi{i}));
+  plotSpektra(psi{i},'bandwidth',32,'linewidth',2,'DisplayName',class(psi{i}));
 end
 hold off
 legend(gca,'show')
