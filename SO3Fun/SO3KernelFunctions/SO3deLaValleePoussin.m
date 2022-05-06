@@ -1,8 +1,20 @@
 classdef SO3deLaValleePoussin < SO3Kernel
-% de La Vallee Pousin kernel on SO(3)
+% The de la Vallee Poussin kernel on SO(3) has the unique property that for
+% a given halfwidth it can be described exactly by a finite number of 
+% Fourier coefficients. This kernel is recommended for Texture analysis as 
+% it is always positive in Orientation space and there is no truncation 
+% error in Fourier space.
+%
+% Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ 
+% depending on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its 
+% finite Chebyshev expansion
+%
+% $$ \psi_{\kappa}(t) = \frac{(\kappa+1)\,2^{2\kappa-1}}{\binom{2\kappa-1}{\kappa}}
+% \, t^{2\kappa}  = \binom{2\kappa+1}{\kappa}^{-1} \, 
+% \sum\limits_{n=0}^{\kappa} (2n+1)\,\binom{2\kappa+1}{\kappa-n} \,
+% \mathcal U_{2n}(t)$$.
 %
 % Syntax
-%
 %   psi = SO3deLaValleePoussin(100)
 %   psi = SO3deLaValleePoussin('halfwidth',5*degree)
 %

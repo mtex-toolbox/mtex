@@ -1,5 +1,15 @@
 classdef SO3AbelPoisson < SO3Kernel
-% the Abel Poisson kernel  
+% The Abel Poisson Kernel $\psi_{\kappa}$ on SO(3) is a nonnegative function 
+% depending on a parameter $\kappa \in (0,1)$ and is defined by its 
+% Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} (2n+1) \, \kappa^{2n} \,
+% \mathcal U_{2n}(t)$$.
+% 
+% Syntax
+%   psi = SO3AbelPoisson(0.4)
+%   psi = SO3AbelPoisson('halfwidth',5*degree)
+%
     
   properties
     kappa = 0.8;

@@ -1,5 +1,12 @@
 classdef SO3DirichletKernel < SO3Kernel
-%the Dirichlet kernel in the orientation space
+% The Dirichlet kernel on SO(3) has the unique property of being a 
+% convergent finite series in Fourier coefficients with an integral of one.
+% This kernel is recommended for calculating physical properties as the 
+% Fourier coefficients always have a value of one for a given bandwidth.
+% 
+% It is defined by its Chebyshev series
+%
+% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal U_{2n}(t)$$.
 %
 % Syntax
 %   psi = SO3DirichletKernel(bandwidth)
