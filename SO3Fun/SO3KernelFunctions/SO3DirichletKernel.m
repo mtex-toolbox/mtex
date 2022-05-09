@@ -9,7 +9,9 @@ classdef SO3DirichletKernel < SO3Kernel
 % $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal U_{2n}(t)$$.
 %
 % Syntax
-%   psi = SO3DirichletKernel(bandwidth)
+%   psi = SO3DirichletKernel(35)
+%
+
 
   methods
     

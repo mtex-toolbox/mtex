@@ -1,5 +1,5 @@
 classdef SO3AbelPoisson < SO3Kernel
-% The Abel Poisson Kernel $\psi_{\kappa}$ on SO(3) is a nonnegative function 
+% The Abel Poisson kernel $\psi_{\kappa}$ on SO(3) is a nonnegative function 
 % depending on a parameter $\kappa \in (0,1)$ and is defined by its 
 % Chebyshev series
 %

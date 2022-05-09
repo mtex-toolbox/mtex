@@ -1,15 +1,26 @@
 classdef SO3vonMisesFisher < SO3Kernel
-% de La Vallee Pousin kernel on SO(3)
+% The von Mises Fisher kernel $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% is a nonnegative function depending on a parameter $\kappa>0$ and 
+% is defined by its Chebyshev series
 %
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} 
+% \frac{\mathcal{I}_n(\kappa}-\mathcal{I}_{n+1}(\kappa)}
+% {\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}  \, \mathcal U_{2n}(t)$$ 
+%
+% or directly by
+%
+% $$ \psi_{\kappa}(t) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{2\kappa t}$$
+% 
+% while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
+% functions of first kind
+%
+% $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
+% \cos \omega} \, \cos n\omega \, \mathrm d\omega $$.%
+% 
 % Syntax
-%
 %   psi = SO3vonMisesFisher(100)
 %   psi = SO3vonMisesFisher('halfwidth',5*degree)
-%
-% Input
-%
-% Output
-%
 %
 
 properties

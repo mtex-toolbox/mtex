@@ -1,5 +1,15 @@
 classdef SO3GaussWeierstrassKernel < SO3Kernel
-      
+% The Gauss Weierstrass kernel $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% is a nonnegative function depending on a parameter $\kappa>0$ and 
+% is defined by its Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} (2n+1) \, 
+% \mathrm e^{-n(n+1)\kappa} \, \mathcal U_{2n}(t)$$.
+%
+% Syntax
+%   psi = SO3GaussWeierstrassKernel(0.1)
+%
+
   properties
     kappa = 0.1;
   end

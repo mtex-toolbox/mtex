@@ -1,7 +1,8 @@
 %% SO(3)-Kernel Functions
 %
+%%
 % We examine some radial symmetric kernel functions $\tilde\psi \colon \mathcal{SO}(3) \to \mathbb R$ 
-% on $\mathcal{SO}(3)$. For rotations $R\in\mathcal{SO}(3)$ we ca write this
+% on $\mathcal{SO}(3)$. For rotations $R\in\mathcal{SO}(3)$ we write this
 % $\mathcal{SO}(3)$-kernels as functions of $t=\cos\frac{\omega(R)}2$ on 
 % the real numbers. Hence we write
 %
@@ -15,11 +16,11 @@
 % where $\mathcal U_{n}$ denotes the Chebyshev polynomials of second kind and degree
 % $n\in\mathbb N$.
 %
-% The class *SO3Kernel* is needed in MTEX to define the specific form of
+% The class |@SO3Kernel| is needed in MTEX to define the specific form of
 % unimodal ODFs. It has to be passed as an argument when calling the
 % methods <uniformODF.html uniformODF>.
-% $\mathcal{SO}(3)-Kernels are also used for computing an ODF from EBSD
-% data.
+% Furthermore $\mathcal{SO}(3)-Kernels are also used for computing an ODF 
+% from EBSD data.
 %
 %%
 % Within the class |@SO3Kernel| kernel functions are represented by
@@ -32,10 +33,17 @@ psi = SO3Kernel([1;0;3;1])
 plot(psi)
 
 %%
-% In MTEX there are more then 10 SO3Kernels included. The two most importants are
+% In MTEX there are a lot of SO3Kernels included. The two most importants are
 %
 % * de la Vallee Poussin kernel (used for ODF, MODF, Pole figures, etc),
 % * Dirichlet kernel (uesd for physical properties).
+% * Abel Poisson kernel
+% * von Mises Fisher kernel
+% * Gauss Weierstrass kernel
+% * Laplace kernel
+% * Sobolev kernel
+% * Square Singularity kernel
+% * Bump kernel
 %
 %%
 % A specific $\mathcal{SO}(3)$ kernel function like the de la Vallee Poussin kernel
@@ -50,38 +58,6 @@ plot(psi)
 % In the following we want to look at some different types of 
 % $\mathcal{SO}(3)$ kernel functions.
 %
-
-%% The Dirichlet kernel
-% The <SO3DirichletKernel.html Dirichlet kernel> has the 
-% unique property of being a convergent finite series in Fourier coefficients 
-% with an integral of one. This kernel is recommended for calculating 
-% physical properties as the Fourier coefficients always have a value of one
-% for a given bandwidth.
-% 
-% On the rotation group $\mathcal{SO}(3)$ the Dirichlet kernel 
-% $\psi_N \in L^2(\mathcal{SO}(3))$ is defined by its Chebyshev series
-%
-% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal U_{2n}(t)$$.
-%
-% Lets construct two of them.
-
-psi1 = SO3DirichletKernel(10)
-psi2 = SO3DirichletKernel(5)
-
-plot(psi1)
-hold on
-plot(psi2)
-hold off
-legend('bandwidth = 5','bandwidth = 10')
-
-%%
-% We also take a look at the Fourier coefficients
-
-plotSpektra(psi1)
-hold on
-plotSpektra(psi2)
-hold off
-legend('bandwidth = 5','bandwidth = 10')
 
 %% The de La Vallee Poussin Kernel
 % The <SO3deLaValleePoussin.html de la Vallee Poussin kernel> has the unique 
@@ -122,6 +98,38 @@ plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
+%% The Dirichlet Kernel
+% The <SO3DirichletKernel.html Dirichlet kernel> has the 
+% unique property of being a convergent finite series in Fourier coefficients 
+% with an integral of one. This kernel is recommended for calculating 
+% physical properties as the Fourier coefficients always have a value of one
+% for a given bandwidth.
+% 
+% On the rotation group $\mathcal{SO}(3)$ the Dirichlet kernel 
+% $\psi_N \in L^2(\mathcal{SO}(3))$ is defined by its Chebyshev series
+%
+% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal U_{2n}(t)$$.
+%
+% Lets construct two of them.
+
+psi1 = SO3DirichletKernel(10)
+psi2 = SO3DirichletKernel(5)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('bandwidth = 5','bandwidth = 10')
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('bandwidth = 5','bandwidth = 10')
+
 %% The Abel Poisson Kernel
 % The <SO3AbelPoisson.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa \in (0,1)$ and 
@@ -153,8 +161,79 @@ plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
+%% The von Mises Fisher Kernel
+% The <SO3vonMisesFisher.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% is a nonnegative function depending on a parameter $\kappa>0$ and 
+% is defined by its Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} 
+% \frac{\mathcal{I}_n(\kappa}-\mathcal{I}_{n+1}(\kappa)}
+% {\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}  \, \mathcal U_{2n}(t)$$ 
+%
+% or directly by
+%
+% $$ \psi_{\kappa}(t) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{2\kappa t}$$
+% 
+% while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
+% functions of first kind
+%
+% $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
+% \cos \omega} \, \cos n\omega \, \mathrm d\omega $$.
+%
+% Lets construct two of this kernels.
+
+psi1 = SO3vonMisesFisher('halfwidth',15*degree)
+psi2 = SO3vonMisesFisher('halfwidth',20*degree)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('halfwidth = 15°','halfwidth = 20°')
+
+%%
+% Here the parameter $\kappa$ is $20.34$ for function $\psi_1$ and $11.49$ 
+% in function $\psi_2$.
+%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('halfwidth = 15°','halfwidth = 20°')
+
+%% The Gauss Weierstrass Kernel
+% The <SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% is a nonnegative function depending on a parameter $\kappa>0$ and 
+% is defined by its Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} (2n+1) \, 
+% \mathrm e^{-n(n+1)\kappa} \, \mathcal U_{2n}(t)$$.
+%
+% Lets construct two of them by the parameter $\kappa$.
+
+psi1 = SO3GaussWeierstrassKernel(0.025)
+psi2 = SO3GaussWeierstrassKernel(0.045)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('halfwidth = 15°','halfwidth = 20°')
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('halfwidth = 15°','halfwidth = 20°')
 
 %% TODO: add the definition of the other kernel functions
+% ( Bump, Laplace, Dirichlet, Square Singularity )
 
 
 
