@@ -1,5 +1,14 @@
 classdef SO3LaplaceKernel < SO3Kernel
-            
+% The Laplace kernel $\psi\in L^2(\mathcal{SO}(3))$ is a radial symmetric 
+% kernel function which is defined by its Chebyshev series
+%
+% $$ \psi(t) = \sum\limits_{n=0}^{\infty} \frac{(2n+1)}{4\,n^2\,(2n+2)^2}
+% \, \mathcal U_{2n}(t) $$.
+%
+% Syntax
+%   psi = SO3LaplaceKernel
+%
+        
   methods
     
     function psi = SO3LaplaceKernel(varargin)

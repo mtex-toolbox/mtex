@@ -40,8 +40,8 @@ plot(psi)
 % * Abel Poisson kernel
 % * von Mises Fisher kernel
 % * Gauss Weierstrass kernel
-% * Laplace kernel
 % * Sobolev kernel
+% * Laplace kernel
 % * Square Singularity kernel
 % * Bump kernel
 %
@@ -122,7 +122,7 @@ hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %%
-% We also take a look at the Fourier coefficients
+% By looking at the fourier coefficients we see, that they have the value 1.
 
 plotSpektra(psi1)
 hold on
@@ -172,8 +172,8 @@ legend('halfwidth = 15°','halfwidth = 20°')
 %
 % or directly by
 %
-% $$ \psi_{\kappa}(t) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathrm{e}^{2\kappa t}$$
+% $$ \psi_{\kappa}(\cos\frac{\omega(R)}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{\kappa \cos\omega(R)}$$
 % 
 % while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
 % functions of first kind
@@ -232,8 +232,138 @@ plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
-%% TODO: add the definition of the other kernel functions
-% ( Bump, Laplace, Dirichlet, Square Singularity )
+%% The Sobolev Kernel
+% The <SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
+% is a radial symmetric kernel function depending on a parameter $s$ and 
+% is defined by its Chebyshev series
+%
+% $$ \psi_s(t) = \sum\limits_{n=0}^{\infty} (2n+1)\, (n(n+1))^s \, \mathcal
+% U_{2n}(t) $$.
+%
+% Lets construct two of them by the parameter $s$.
+
+psi1 = SO3SobolevKernel(1,'bandwidth',15)
+psi2 = SO3SobolevKernel(1.2,'bandwidth',15)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('s = 1','s = 1.2')
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('s = 1','s = 1.2')
+
+%% The Laplace Kernel
+% The <SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
+% is a radial symmetric kernel function which is defined by its Chebyshev series
+%
+% $$ \psi(t) = \sum\limits_{n=0}^{\infty} \frac{(2n+1)}{4\,n^2\,(2n+2)^2}
+% \, \mathcal U_{2n}(t) $$.
+%
+
+psi = SO3LaplaceKernel
+
+plot(psi)
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi)
+
+%% The Squared Singularity Kernel
+% The <SO3SquareSingularityKernel.html squared singularity kernel> 
+% $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$  is a nonnegative function 
+% depending on a parameter $\kappa\in(0,1)$ and is defined by its Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} \hat{f}_n(\kappa)
+% \, \mathcal U_{2n}(t) $$.
+%
+% where the chebychev coefficients follows a 3-term recurrsion
+%
+% $\hat{f}_0 = 1$
+% $\hat{f}_1 = \frac{1+\kappa^2}{2\kappa}-\frac1{\log\frac{1+\kappa}{1-\kappa}}$
+% $\hat{f}_n = \frac{(2n-3)(2n+1)(1+\kappa^2)}{(2n-1)(n-1)2\kappa} \,
+% \hat{f}_{n-1}(\kappa)-\frac{2\kappa(n-2)(2n+1)}{2n-3} \,
+% \hat{f}_{n-2}(\kappa)$.
+%
+% Lets construct two of them by the parameter $\kappa$.
+
+psi1 = SO3SquareSingularityKernel(0.2)
+psi2 = SO3SquareSingularityKernel(0.3)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('\kappa = 0.2','\kappa = 0.3')
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('\kappa = 0.2','\kappa = 0.3')
+
+%% The Bump kernel
+% The <SO3BumpKernel.html bump kernel> $\tilde\psi_r\in L^2(\mathcal{SO}(3))$
+% is a radial symmetric kernel function depending on a parameter $r\in (0,pi)$.
+% The function value is 0, if the angle is greater then the halfwidth $r$.
+% Otherwise it is has a contstant value, such that the mean of $\psi_r$ on 
+% $\mathcal{SO}(3)$ is 1. Hence we use the open set
+%
+% $$U_r = \{ R \in \mathcal{SO}(3) \,|~ |\omega(R)|<r \}$$
+% 
+% and define the bump kernel by
+%
+% $$ \tilde\psi_r(R) = \frac1{|U_r|} \mathbf{1}_{R \in U_r} $$
+%
+% where $\mathbf{1}$ is the indicator function.
+%
+% The main problem of the bump kernel is that we need a lot of chebychev
+% coefficients to describe it. That possibly can result in high runtimes. 
+%
+
+psi1 = SO3BumpKernel(30*degree)
+psi2 = SO3BumpKernel(40*degree)
+
+plot(psi1)
+hold on
+plot(psi2)
+hold off
+legend('halfwidth = 30°','halwidth = 40°')
+
+%%
+% We also take a look at the Fourier coefficients
+
+plotSpektra(psi1)
+hold on
+plotSpektra(psi2)
+hold off
+legend('\kappa = 0.2','\kappa = 0.3')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

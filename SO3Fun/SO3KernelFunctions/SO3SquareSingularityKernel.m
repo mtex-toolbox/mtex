@@ -1,5 +1,23 @@
 classdef SO3SquareSingularityKernel < SO3Kernel
-      
+% The Squared Singularity Kernel $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$  
+% is a nonnegative function depending on a parameter $\kappa\in(0,1)$ and 
+% is defined by its Chebyshev series
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} \hat{f}_n(\kappa)
+% \, \mathcal U_{2n}(t) $$.
+%
+% where the chebychev coefficients follows a 3-term recurrsion
+%
+% $\hat{f}_0 = 1$
+% $\hat{f}_1 = \frac{1+\kappa^2}{2\kappa}-\frac1{\log\frac{1+\kappa}{1-\kappa}}$
+% $\hat{f}_n = \frac{(2n-3)(2n+1)(1+\kappa^2)}{(2n-1)(n-1)2\kappa} \,
+% \hat{f}_{n-1}(\kappa)-\frac{2\kappa(n-2)(2n+1)}{2n-3} \,
+% \hat{f}_{n-2}(\kappa)$.
+%
+% Syntax
+%   psi = SO3SquareSingularityKernel(0.2)
+%
+
   properties
     kappa = 90;
     C = [];
