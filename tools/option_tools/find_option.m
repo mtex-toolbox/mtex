@@ -1,5 +1,5 @@
 function pos = find_option(option_list,option,type)
-% find postions of the options in option_list
+% find positions of the options in option_list
 %
 % Input
 %  option_list - Cell Array
@@ -27,7 +27,7 @@ if ~isempty(pos) && nargin > 2
   
   % check type for all found options
   for p = length(pos):-1:1
-    if isempty(type) || any(strcmpi(class(option_list{pos(p)+1}),type))
+    if isempty(type) || any(isa(option_list{pos(p)+1},type))
       pos = pos(p)+1;
       return
     else
