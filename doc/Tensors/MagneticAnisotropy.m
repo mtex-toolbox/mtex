@@ -40,7 +40,7 @@ SS = specimenSymmetry('-1');
 odf = unimodalODF(orientation('Euler',0,45*degree,0,CS,SS),CS,SS);
 
 % simulate random orientations from the ODF 
-oris = calcOrientations(odf,10000); 
+oris = discreteSample(odf,10000); 
  
 %% Calculate anisotropy energy for different external magnetic field directions in sheet plane
 %

@@ -21,7 +21,7 @@ function [c,center] = calcCluster(ori,varargin)
 %   cs = crystalSymmetry('432');
 %   center = orientation.rand(5,cs); 
 %   odf = unimodalODF(center,'halfwidth',5*degree)
-%   ori = odf.calcOrientations(1500);
+%   ori = odf.discreteSample(1500);
 %
 %   % find the clusters and its centers
 %   [cId,centerRec] = calcCluster(ori);
@@ -89,7 +89,7 @@ function test
 cs = crystalSymmetry('432');
 center = orientation.rand(5,cs);
 odf = unimodalODF(center,'halfwidth',5*degree);
-ori = odf.calcOrientations(1500);
+ori = odf.discreteSample(1500);
 
 % find the clusters and its centers
 tic; 

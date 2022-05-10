@@ -72,7 +72,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.05*unimodalODF(axis2quat(xvector,45*degree),cs,'halfwidth',15*degree) + ...
   0.3*unimodalODF(axis2quat(yvector,65*degree),cs,'halfwidth',25*degree);
 
-ori = calcOrientations(model_odf,1000);
+ori = discreteSample(model_odf,1000);
 
 for k = 1:15
   psi{k} = deLaValleePoussinKernel('halfwidth',40*degree/2^(k/4));
