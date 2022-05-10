@@ -60,7 +60,7 @@ plot(psi)
 %
 
 %% The de La Vallee Poussin Kernel
-% The <SO3deLaValleePoussin.html de la Vallee Poussin kernel> has the unique 
+% The <SO3Kernels.SO3deLaValleePoussin.html de la Vallee Poussin kernel> has the unique 
 % property that for a given halfwidth it can be described exactly by a 
 % finite number of Fourier coefficients. This kernel is recommended for 
 % Texture analysis as it is always positive in Orientation space and there 
@@ -99,7 +99,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Dirichlet Kernel
-% The <SO3DirichletKernel.html Dirichlet kernel> has the 
+% The <SO3Kernels.SO3DirichletKernel.html Dirichlet kernel> has the 
 % unique property of being a convergent finite series in Fourier coefficients 
 % with an integral of one. This kernel is recommended for calculating 
 % physical properties as the Fourier coefficients always have a value of one
@@ -131,7 +131,7 @@ hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %% The Abel Poisson Kernel
-% The <SO3AbelPoisson.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3AbelPoisson.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa \in (0,1)$ and 
 % is defined by its Chebyshev series
 %
@@ -162,7 +162,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The von Mises Fisher Kernel
-% The <SO3vonMisesFisher.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3vonMisesFisher.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
@@ -205,7 +205,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Gauss Weierstrass Kernel
-% The <SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
@@ -233,7 +233,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Sobolev Kernel
-% The <SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
 % is a radial symmetric kernel function depending on a parameter $s$ and 
 % is defined by its Chebyshev series
 %
@@ -261,7 +261,7 @@ hold off
 legend('s = 1','s = 1.2')
 
 %% The Laplace Kernel
-% The <SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
 % is a radial symmetric kernel function which is defined by its Chebyshev series
 %
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \frac{(2n+1)}{4\,n^2\,(2n+2)^2}
@@ -278,7 +278,7 @@ plot(psi)
 plotSpektra(psi)
 
 %% The Squared Singularity Kernel
-% The <SO3SquareSingularityKernel.html squared singularity kernel> 
+% The <SO3Kernels.SO3SquareSingularityKernel.html squared singularity kernel> 
 % $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$  is a nonnegative function 
 % depending on a parameter $\kappa\in(0,1)$ and is defined by its Chebyshev series
 %
@@ -314,7 +314,7 @@ hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
 %% The Bump kernel
-% The <SO3BumpKernel.html bump kernel> $\tilde\psi_r\in L^2(\mathcal{SO}(3))$
+% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in L^2(\mathcal{SO}(3))$
 % is a radial symmetric kernel function depending on a parameter $r\in (0,pi)$.
 % The function value is 0, if the angle is greater then the halfwidth $r$.
 % Otherwise it is has a contstant value, such that the mean of $\psi_r$ on 
@@ -349,22 +349,4 @@ hold on
 plotSpektra(psi2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
