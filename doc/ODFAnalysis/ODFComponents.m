@@ -22,7 +22,7 @@ mtexColorbar
 % 
 % First of all we observe that the ODF posses a strong maximum. To find
 % this orientation that correspondes to the maximum ODF intensity we use
-% the <ODF.max.html |max|> command. 
+% the <SO3Fun.max.html |max|> command. 
 
 [value,ori] = max(odf)
 
@@ -37,7 +37,7 @@ mtexColorbar
 annotate(ori)
 
 %%
-% We may not only use the command <ODF.max.html |max|> to find the global
+% We may not only use the command <SO3Fun.max.html |max|> to find the global
 % maximum of an ODF but also to find a certain amount of local maxima. The
 % number of local maxima MTEX should search for, is specified as by the
 % option |'numLocal'|, i.e., to find the three largest local maxima do
@@ -57,7 +57,7 @@ annotate(ori)
 % that represent only very little volume. A more robust and physically more
 % relevant quantity is the relative volume of crystal that have an
 % orientation close to the preferred orientation. This volume portion can
-% be computed by the command <ODF.volume.html, |volume(odf,ori,delta)|>
+% be computed by the command <SO3Fun.volume.html, |volume(odf,ori,delta)|>
 % where |ori| is a list of preferred orientations and |delta| is the
 % maximum disorientation angle. Multiplying with $100$ the output will be
 % in percent
@@ -98,7 +98,7 @@ volume(odf,ori,delta)*100
 % A disadvantage of the approach above is that one is restricted to
 % circular components with a fixed disorientation angle which makes it hard
 % to analyze components that are close together. In such settings one may
-% want to use the command <ODF.calcComponents.html |calcComponents|>. This
+% want to use the command <SO3Fun.calcComponents.html |calcComponents|>. This
 % command starts with evenly distributed orientations and lets the crawl
 % towards the closest prefered orientation. At the end of this process the
 % command returns these prefered orientation and the percentage of
