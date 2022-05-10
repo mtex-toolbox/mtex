@@ -1,5 +1,5 @@
 function odf = calcFourierODF(ori,varargin)
-% calculate ODF from individuel orientations via kernel density estimation
+% calculate ODF from individual orientations via kernel density estimation
 %
 % *calcODF* is one of the core function of the MTEX toolbox.
 % It estimates an ODF from a set of individual crystal orientations by
@@ -24,7 +24,7 @@ function odf = calcFourierODF(ori,varargin)
 %
 % Output
 %  odf - @ODF
-%  psi - @kernel
+%  psi - @SO3Kernel
 %
 % Options
 %  halfwidth - halfwidth of the kernel function

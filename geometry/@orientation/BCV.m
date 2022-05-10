@@ -3,7 +3,7 @@ function c = BCV(ori,psi,varargin)
 %
 % Input
 %  ebsd - @EBSD
-%  psi  - @kernel
+%  psi  - @SO3Kernel
 %
 % Output
 %  c    - halfwidth
@@ -21,9 +21,9 @@ w = w ./ sum(w(:));
 % compute Fourier coefficients
 L = 16;
 odf_d = calcFourierODF(ori,'weights',weights,...
-  'kernel',DirichletKernel(L),'silent');
+  'kernel',SO3DirichletKernel(L),'silent');
 
-sob = SobolevKernel(1,'bandwidth',L);
+sob = SO3SobolevKernel(1,'bandwidth',L);
 
 c = zeros(1,length(psi));
 

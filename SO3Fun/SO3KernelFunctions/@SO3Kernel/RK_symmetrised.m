@@ -5,7 +5,7 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 %   f = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin) - 
 %
 % Input
-%  psi   - @kernel
+%  psi  - @SO3Kernel
 %  g    - @quaternion(s)
 %  h    - list of crystal directions
 %  r    - list of ein specimen directions

@@ -3,7 +3,7 @@ function c = LSCV(ori,psi,varargin)
 %
 % Input
 %  ori - @orientation
-%  psi - @kernel
+%  psi - @SO3Kernel
 %
 % Output
 %  c - 
@@ -18,7 +18,7 @@ w = get_option(varargin,'weights',ones(size(ori)));
 
 % compute Fourier coefficients
 L = 25;
-odf_d = calcFourierODF(ori,'weights',w,'kernel',DirichletKernel(L),'silent');
+odf_d = calcFourierODF(ori,'weights',w,'kernel',SO3DirichletKernel(L),'silent');
 
 c = zeros(1,length(psi));
 

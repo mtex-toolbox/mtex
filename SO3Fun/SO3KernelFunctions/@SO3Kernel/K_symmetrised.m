@@ -2,7 +2,7 @@ function w = K_symmetrised(psi,q1,q2,CS,SS,varargin)
 % evaluate kernel modulo symmetries
 %
 % Input
-%  psi    - @kernel
+%  psi    - @SO3Kernel
 %  q1, q2 - @quaternion(s)
 %  CS, SS - crystal , specimen @symmetry
 %

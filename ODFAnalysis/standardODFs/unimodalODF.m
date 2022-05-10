@@ -4,25 +4,25 @@ function odf = unimodalODF(varargin)
 % Description
 % *unimodalODF* defines a radially symmetric, unimodal ODF 
 % with respect to a crystal orientation |mod|. The
-% shape of the ODF is defined by a @kernel function.
+% shape of the ODF is defined by a @SO3Kernel function.
 %
 % Syntax
 %   mod = orientation.byEuler(phi1,Phi,phi2,CS,SS)
 %   odf = unimodalODF(mod) % default halfwidth 10 degree 
 %   odf = unimodalODF(mod,'halfwidth',15*degree) % specify halfwidth
 %   odf = unimodalODF(mod,CS,SS)  % specify crystal and specimen symmetry
-%   odf = unimodalODF(mod,kernel) % specify @kernel shape 
+%   odf = unimodalODF(mod,psi) % specify @SO3Kernel shape 
 %   odf = unimodalODF(mod,'weights',weights) % specify weights for each component
 %
 % Input
 %  mod    - @quaternion modal orientation
 %  CS, SS - crystal, specimen @symmetry
 %  hw     - halfwidth of the kernel (default -- 10°)
-%  kernel - @kernel function (default -- de la Vallee Poussin)
+%  psi    - @SO3Kernel function (default -- SO3 de la Vallee Poussin)
 %
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % See also
 % ODF/ODF uniformODF fibreODF

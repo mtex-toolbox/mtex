@@ -37,7 +37,7 @@ odf = uniformODF(cs,ss)
 cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
 
-psi = vonMisesFisherKernel('halfwidth',10*degree);
+psi = SO3vonMisesFisherKernel('halfwidth',10*degree);
 mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 
 odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)

@@ -2,18 +2,18 @@ function odf = smooth(odf,varargin)
 % smooth ODF
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  res - resolution
 %
 % Output
-%  odf - smoothed @ODF
+%  odf - smoothed @SO3Fun
 %
 
 % get smoothing kernel
-if nargin >= 2 && isa(varargin{1},'kernel')
+if nargin >= 2 && isa(varargin{1},'SO3Kernel')
   psi = varargin{1};
 else
-  psi = deLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',5*degree));
+  psi = SO3deLaValleePoussin('halfwidth',get_option(varargin,'halfwidth',5*degree));
 end
 
 % smooth components

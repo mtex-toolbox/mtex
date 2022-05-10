@@ -68,7 +68,7 @@ psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
 %% step 3: compute orientation density
 
 % compute the orientation density of the modified boundary orientations
-odf = calcDensity(ori,'kernel',DirichletKernel(bw),'harmonic');
+odf = calcDensity(ori,'kernel',SO3DirichletKernel(bw),'harmonic');
 
 %% step 4: convolution
 % GBPD = conv(odf,psi)

@@ -14,7 +14,7 @@ classdef MLSSolver < pf2odfSolver
 %   [odf,alpha] = solver.calcODF;
 %
 % Class Properties
-%  psi     - @kernel describing the shape of the unimodal components
+%  psi     - @SO3Kernel describing the shape of the unimodal components
 %  S3G     - the centers of the unimodal components as @SO3Grid in orientation space
 %  c       - weighting coefficients to the unimodal components
 %  weights - 
@@ -30,7 +30,7 @@ classdef MLSSolver < pf2odfSolver
 % PoleFigureTutorial PoleFigure2ODFAmbiguity PoleFigure2ODFGhostCorrection
 
   properties
-    psi     % kernel function
+    psi     % SO3Kernel function
     S3G     % SO3Grid
     c       % current coefficients
     c0      % constant portion
@@ -164,7 +164,7 @@ classdef MLSSolver < pf2odfSolver
       solver = MLSSolver;
       solver.pf = pf;
       solver.S3G = equispacedSO3Grid(pf.CS,'resolution',2.5*degree);
-      solver.psi = deLaValleePoussinKernel('halfwidth',2.5*degree);
+      solver.psi = SO3deLaValleePoussin('halfwidth',2.5*degree);
       solver.weights = repcell(1,numPF(pf),1);
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       

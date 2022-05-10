@@ -31,7 +31,7 @@ A1 = psi1.A(:);
 % extract Legendre coefficients of psi2
 if isnumeric(psi2)
   A2 = psi2(:);
-elseif isa(psi2,'S2Kernel') || isa(psi2,'kernel')
+elseif isa(psi2,'S2Kernel') || isa(psi2,'SO3Kernel')
   A2 = psi2.A(:);
   A2 = A2 ./ (2*(0:length(A2)-1)+1).';
 end
