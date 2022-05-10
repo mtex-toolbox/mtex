@@ -1,6 +1,8 @@
 %% SO(3)-Kernel Functions
 %
 %%
+% Also take a look at the page <ODFShapes.html ODFShapes>.
+%
 % We examine some radial symmetric kernel functions $\tilde\psi \colon \mathcal{SO}(3) \to \mathbb R$ 
 % on $\mathcal{SO}(3)$. For rotations $R\in\mathcal{SO}(3)$ we write this
 % $\mathcal{SO}(3)$-kernels as functions of $t=\cos\frac{\omega(R)}2$ on 

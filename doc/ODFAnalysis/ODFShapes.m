@@ -1,23 +1,26 @@
 %% Unimodal ODF Shapes
 %
+%%
+% Also take a look at the page <SO3Kernels.html SO3Kernels>.
+%
 % In order to control the shape of unimodal ODF
-% The class *kernel* is needed in MTEX to define the specific form of
-% unimodal and fibre symmetric ODFs. It has to be passed as an argument
-% when calling the methods <uniformODF.html uniformODF> and
+% The classes *SO3Kernel* and *S2Kernel* are needed in MTEX to define the 
+% specific form of unimodal and fibre symmetric ODFs. It has to be passed 
+% as an argument when calling the methods <uniformODF.html uniformODF> or
 % <fibreODF.html fibreODF>. 
 %
 % A kernel is defined by specifying its name and its free parameter.
 % Alternatively one can also specify the halfwidth of the kernel. Below you
-% find a list of all kernel functions supported by MTEX.
+% find a list of some important SO3Kernel functions supported by MTEX.
 
-psi{1} = AbelPoissonKernel(0.79);
-psi{2} = deLaValleePoussinKernel(13);
-psi{3} = bumpKernel(35*degree);
-psi{4} = DirichletKernel(3);
-psi{5} = vonMisesFisherKernel(7.5);
-psi{6} = GaussWeierstrassKernel(0.07);
+psi{1} = SO3AbelPoisson(0.79);
+psi{2} = SO3deLaValleePoussin(13);
+psi{3} = SO3BumpKernel(35*degree);
+psi{4} = SO3DirichletKernel(3);
+psi{5} = SO3vonMisesFisherKernel(7.5);
+psi{6} = SO3GaussWeierstrassKernel(0.07);
 psi{7} = fibreVonMisesFisherKernel(7.2);
-psi{8} = SquareSingularityKernel(0.72);
+psi{8} = SO3SquareSingularityKernel(0.72);
 
 
 %% 
