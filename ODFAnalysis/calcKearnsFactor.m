@@ -33,7 +33,7 @@ else % fast Fourier approach
   
   %
   A = [2*sqrt(pi)/3,0,4/3*sqrt(pi)];
-  psi = kernel(A ./ A(1) / 3);
+  psi = S2Kernel(A ./ A(1) / 3);
 
   f = conv(pdf,psi);
 
@@ -43,7 +43,7 @@ end
 
 
 % sF = S2FunHarmonic.quadrature(@(v) dot(v,zvector).^2);
-%psi = kernel(A ./ A(1));
+%psi = S2Kernel(A ./ A(1));
 
 % psi should actually be defined by
 % psi = S2KernelHandle(@(x) x^2);

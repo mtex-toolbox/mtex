@@ -4,14 +4,14 @@ function odf = fibreODF(varargin)
 % Description
 % *fibreODF* defines a fibre symmetric ODF with respect to 
 % a crystal direction |h| and a specimen directions |r|. The
-% shape of the ODF is defined by a @kernel function.
+% shape of the ODF is defined by a @S2kernel function.
 %
 % Syntax
 %   h = Miller(h,k,l,CS)
 %   r = vector3d(x,y,z);
 %   odf = fibreODF(h,r) % default halfwith 10*degree
 %   odf = fibreODF(h,r,'halfwidth',15*degree) % specify halfwidth
-%   odf = fibreODF(h,r,kernel) % specify @kernel shape
+%   odf = fibreODF(h,r,psi) % specify @S2kernel shape
 %   odf = fibreODF(h,r,SS)  % specify crystal and specimen symmetry
 %
 % Input
@@ -19,7 +19,7 @@ function odf = fibreODF(varargin)
 %  r      - @vector3d specimen direction
 %  CS, SS - crystal, specimen @symmetry
 %  hw     - halfwidth of the kernel (default -- 10°)
-%  kernel - @kernel function (default -- de la Vallee Poussin)
+%  psi    - @S2kernel function (default -- S2 de la Vallee Poussin)
 %
 % Output
 %  odf - @ODF

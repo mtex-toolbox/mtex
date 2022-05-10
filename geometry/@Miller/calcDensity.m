@@ -14,7 +14,7 @@ function sF = calcDensity(h,varargin)
 %  S2G - @vector3d
 %  w   - weights, default is all one
 %  delta - halfwidth of the kernel, default is 10 degree
-%  psi - @kernel function, default is de la Vallee Poussin
+%  psi - @S2Kernel function, default is de la Vallee Poussin
 %
 % Output
 %  sF  - @S2FunHarmonicSym
