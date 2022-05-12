@@ -79,8 +79,8 @@ classdef SO3SquareSingularityKernel < SO3Kernel
       sindhdr = sqrt((1-dh.^2)*(1-dr.^2));
       
       value = c./...
-        (1 + h^2 - 2*h*(dh * dr - sindhdr)).^(0.5) ./...
-        (1 + h^2 - 2*h*(dh * dr + sindhdr)).^(0.5);
+        (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr - sindhdr)).^(0.5) ./...
+        (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr + sindhdr)).^(0.5);
     end
         
   end
