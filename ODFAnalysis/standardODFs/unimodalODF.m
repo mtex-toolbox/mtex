@@ -46,7 +46,7 @@ end
 psi = getClass(varargin,'SO3Kernel');
 if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
-  psi = SO3deLaValleePoussin('halfwidth',hw);
+  psi = SO3deLaValleePoussinKernel('halfwidth',hw);
 end
 
 % get weights
