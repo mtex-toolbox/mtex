@@ -46,5 +46,8 @@ res = get_option(varargin,'resolution',2.5*degree);
 nodes = equispacedSO3Grid(SO3F.SRight,SO3F.SLeft,'resolution',res);
 value = mean(SO3F.eval(nodes(:)));
 value = reshape(value,size(SO3F));
+if isalmostreal(value,'componentwise')
+  value = real(value);
+end
 
 end

@@ -11,6 +11,9 @@ function value = mean(SO3F, varargin)
 %  value - double
 %
 
-  value = sum(SO3F.weights(:)) * SO3F.psi.A(1) + SO3F.c0;
+value = sum(SO3F.weights(:)) * SO3F.psi.A(1) + SO3F.c0;
+if isalmostreal(value)
+  value = real(value);
+end
 
 end

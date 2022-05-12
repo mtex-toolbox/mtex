@@ -1,4 +1,4 @@
-function m=mean(SO3F,varargin)
+function value = mean(SO3F,varargin)
 % Calculates the mean value of a SO3FunBingham
 %
 % Syntax
@@ -10,6 +10,9 @@ function m=mean(SO3F,varargin)
 % Output
 %  value - double
 
-m = SO3F.weight;
+value = SO3F.weight;
+if isalmostreal(value)
+  value = real(value);
+end
 
 end

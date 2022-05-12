@@ -12,5 +12,8 @@ function value = mean(SO3F,varargin)
 %
 
 value = sum(cellfun(@(x) mean(x),SO3F.components,'UniformOutput',true));
+if isalmostreal(value)
+  value = real(value);
+end
 
 end

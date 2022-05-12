@@ -12,5 +12,8 @@ function value = mean(SO3F, varargin)
 %
  
 value = SO3F.weights * SO3F.psi.A(1);
+if isalmostreal(value)
+  value = real(value);
+end
 
 end

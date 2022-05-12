@@ -25,6 +25,11 @@ im = imag(A(:));
 p = 10^-get_option(varargin,'precision', 5);
 n = get_option(varargin,'norm', 1);
 
+if check_option(varargin,'componentwise')
+  out = any(abs(im) <= p * abs(re));
+  return
+end
+
 out = norm(im,n) <= p * norm(re,n);
 
 end

@@ -29,12 +29,20 @@ function value = mean(SO3F, varargin)
 %
 
 s = size(SO3F);
-if nargin == 1
-  SO3F = SO3F.subSet(':');
-  value = SO3F.fhat(1, :);
-  value = reshape(value, s);
-else
+
+% mean along specific dimension
+if nargin>1 && isnumeric(varargin{1})
   value = sum(SO3F, varargin{1})./s(varargin{1});
+  return
 end
+
+SO3F = SO3F.subSet(':');
+value = SO3F.fhat(1, :);
+value = reshape(value, s);
+
+if isalmostreal(value,'componentwise')
+  value = real(value);
+end
+
 
 end
