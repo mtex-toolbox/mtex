@@ -26,7 +26,7 @@ classdef spotColorKey < orientationColorKey
 
       for k=1:length(oM.center)
 
-        w = oM.psi.K(dot(ori,oM.center(k)))./oM.psi.K(1);
+        w = oM.psi.eval(dot(ori,oM.center(k)))./oM.psi.eval(1);
 
         cdata = rgb2hsv(repmat(oM.color(k,:),length(ori),1));
         cdata(:,2) = w(:).*cdata(:,2);

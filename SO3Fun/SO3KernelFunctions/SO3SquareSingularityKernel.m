@@ -59,11 +59,17 @@ classdef SO3SquareSingularityKernel < SO3Kernel
       c = ['de la Vallee Poussin, halfwidth ' ...
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
-    
-    function value = radon(psi,t)
-      % the radon transformed kernel function at 
+
+
+    function S2K = radon(psi)
+      S2K = S2Kernel(psi.A,@evalRadon);
+
+      function value = evalRadon(t)
+      % the radon transformed kernel function at
       value  = 2*psi.kappa/log((1+psi.kappa)/(1-psi.kappa)) ./ ...
-        (1-2*psi.kappa*t + psi.kappa^2);
+            (1-2*psi.kappa*t + psi.kappa^2);
+    
+      end
     end
     
     function value = RRK(psi,dh,dr)

@@ -40,7 +40,7 @@ classdef SO3DirichletKernel < SO3Kernel
     end
     
     function hw = halfwidth(psi)
-      hw = fminbnd(@(omega) (psi.K(1)-2*psi.K(cos(omega/2))).^2,0,2*pi/psi.bandwidth);
+      hw = fminbnd(@(omega) (psi.eval(1)-2*psi.eval(cos(omega/2))).^2,0,2*pi/psi.bandwidth);
     end
 
   end
