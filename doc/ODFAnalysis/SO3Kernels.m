@@ -62,12 +62,17 @@ plot(psi)
 %
 
 %% The de La Vallee Poussin Kernel
-% The <SO3Kernels.SO3deLaValleePoussin.html de la Vallee Poussin kernel> has the unique 
-% property that for a given halfwidth it can be described exactly by a 
-% finite number of Fourier coefficients. This kernel is recommended for 
-% Texture analysis as it is always positive in Orientation space and there 
-% is no truncation error in Fourier space.
-%
+% The <SO3Kernels.SO3deLaValleePoussin.html de la Vallee Poussin kernel> on
+% SO(3) is defined by 
+% 
+% $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
+% 
+% for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
+% Poussin kernel additionaly has the unique property that for
+% a given halfwidth it can be described exactly by a finite number of 
+% Fourier coefficients. This kernel is recommended for Texture analysis as 
+% it is always positive in orientation space and there is no truncation 
+% error in Fourier space.
 % Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ depending 
 % on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its finite 
 % Chebyshev expansion
