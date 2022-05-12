@@ -138,7 +138,7 @@ hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %% The Abel Poisson Kernel
-% The <SO3Kernels.SO3AbelPoisson.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3AbelPoissonKernel.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa \in (0,1)$ and 
 % is defined by its Chebyshev series
 %
@@ -147,8 +147,8 @@ legend('bandwidth = 5','bandwidth = 10')
 %
 % Lets construct two of them.
 
-psi1 = SO3AbelPoisson('halfwidth',15*degree)
-psi2 = SO3AbelPoisson('halfwidth',20*degree)
+psi1 = SO3AbelPoissonKernel('halfwidth',15*degree)
+psi2 = SO3AbelPoissonKernel('halfwidth',20*degree)
 
 plot(psi1)
 hold on
@@ -169,7 +169,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The von Mises Fisher Kernel
-% The <SO3Kernels.SO3vonMisesFisher.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3Kernels.SO3vonMisesFisherKernel.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
@@ -190,8 +190,8 @@ legend('halfwidth = 15°','halfwidth = 20°')
 %
 % Lets construct two of this kernels.
 
-psi1 = SO3vonMisesFisher('halfwidth',15*degree)
-psi2 = SO3vonMisesFisher('halfwidth',20*degree)
+psi1 = SO3vonMisesFisherKernel('halfwidth',15*degree)
+psi2 = SO3vonMisesFisherKernel('halfwidth',20*degree)
 
 plot(psi1)
 hold on

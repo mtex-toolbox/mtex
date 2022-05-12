@@ -17,7 +17,7 @@ function odf = calcDensity(ori,varargin)
 %   odf = calcDensity(grains.meanOrientation,'weights',grains.area)
 %
 %   % use a specific kernel
-%   psi = SO3AbelPoisson('halfwidth',10*degree)
+%   psi = SO3AbelPoissonKernel('halfwidth',10*degree)
 %   odf = calcDensity(ori,'kernel',psi) 
 %
 %   % compute the ODF as a Fourier series of order 16

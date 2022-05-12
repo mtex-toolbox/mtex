@@ -5,7 +5,7 @@ classdef SO3Kernel
 % methods <uniformODF.html uniformODF>.
 %
 % See also
-% SO3deLaValeePoussin SO3AbelPoisson
+% SO3deLaValeePoussin SO3AbelPoissonKernel
   
   properties
     A=[] % Chebyshev coefficients

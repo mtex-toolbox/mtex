@@ -13,7 +13,7 @@
 % Alternatively one can also specify the halfwidth of the kernel. Below you
 % find a list of some important SO3Kernel functions supported by MTEX.
 
-psi{1} = SO3AbelPoisson(0.79);
+psi{1} = SO3AbelPoissonKernel(0.79);
 psi{2} = SO3deLaValleePoussin(13);
 psi{3} = SO3BumpKernel(35*degree);
 psi{4} = SO3DirichletKernel(3);

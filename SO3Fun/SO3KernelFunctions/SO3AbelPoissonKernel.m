@@ -1,4 +1,4 @@
-classdef SO3AbelPoisson < SO3Kernel
+classdef SO3AbelPoissonKernel < SO3Kernel
 % The Abel Poisson kernel $\psi_{\kappa}$ on SO(3) is a nonnegative function 
 % depending on a parameter $\kappa \in (0,1)$ and is defined by its 
 % Chebyshev series
@@ -7,8 +7,8 @@ classdef SO3AbelPoisson < SO3Kernel
 % \mathcal U_{2n}(t)$$.
 % 
 % Syntax
-%   psi = SO3AbelPoisson(0.4)
-%   psi = SO3AbelPoisson('halfwidth',5*degree)
+%   psi = SO3AbelPoissonKernel(0.4)
+%   psi = SO3AbelPoissonKernel('halfwidth',5*degree)
 %
     
   properties
@@ -17,7 +17,7 @@ classdef SO3AbelPoisson < SO3Kernel
       
   methods
     
-    function psi = SO3AbelPoisson(varargin)
+    function psi = SO3AbelPoissonKernel(varargin)
             
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')

@@ -21,7 +21,7 @@ function mdf = calcMDF(mori,varargin)
 %   mdf = calcMDF(grains('phase1').meanOrientation,'weights',grains('phase1').diameter)
 %
 %   % use a specific kernel
-%   psi = SO3AbelPoisson('halfwidth',10*degree)
+%   psi = SO3AbelPoissonKernel('halfwidth',10*degree)
 %   mdf = calcMDF(mori,'kernel',psi) 
 %
 %   % compute the MDF as a Fourier series of order 16
