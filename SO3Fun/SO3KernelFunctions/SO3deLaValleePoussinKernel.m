@@ -1,4 +1,4 @@
-classdef SO3deLaValleePoussinKernel < SO3Kernel
+classdef SO3DeLaValleePoussinKernel < SO3Kernel
 % The de la Vallee Poussin kernel on SO(3) is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
@@ -20,8 +20,8 @@ classdef SO3deLaValleePoussinKernel < SO3Kernel
 % \mathcal U_{2n}(t)$$.
 %
 % Syntax
-%   psi = SO3deLaValleePoussinKernel(100)
-%   psi = SO3deLaValleePoussinKernel('halfwidth',5*degree)
+%   psi = SO3DeLaValleePoussinKernel(100)
+%   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree)
 %
 
 properties
@@ -31,7 +31,7 @@ end
       
 methods
     
-  function psi = SO3deLaValleePoussinKernel(varargin)
+  function psi = SO3DeLaValleePoussinKernel(varargin)
     
     % extract parameter and halfwidth
     if check_option(varargin,'halfwidth')

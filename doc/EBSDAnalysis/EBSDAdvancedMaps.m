@@ -74,7 +74,7 @@ plot(colorKey,'sections',6,'sigma')
 colorKey = spotColorKey(ebsd('Fo'));
 colorKey.center = mean(ebsd('Forsterite').orientations,'robust');
 colorKey.color = [0,0,1];
-colorKey.psi = SO3deLaValleePoussinKernel('halfwidth',20*degree);
+colorKey.psi = SO3DeLaValleePoussinKernel('halfwidth',20*degree);
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 

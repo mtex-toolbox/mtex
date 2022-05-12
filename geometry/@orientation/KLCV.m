@@ -75,7 +75,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
 ori = discreteSample(model_odf,1000);
 
 for k = 1:15
-  psi{k} = SO3deLaValleePoussinKernel('halfwidth',40*degree/2^(k/4));
+  psi{k} = SO3DeLaValleePoussinKernel('halfwidth',40*degree/2^(k/4));
 end
 psi
 

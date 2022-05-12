@@ -14,7 +14,7 @@
 % find a list of some important SO3Kernel functions supported by MTEX.
 
 psi{1} = SO3AbelPoissonKernel(0.79);
-psi{2} = SO3deLaValleePoussinKernel(13);
+psi{2} = SO3DeLaValleePoussinKernel(13);
 psi{3} = SO3BumpKernel(35*degree);
 psi{4} = SO3DirichletKernel(3);
 psi{5} = SO3vonMisesFisherKernel(7.5);
