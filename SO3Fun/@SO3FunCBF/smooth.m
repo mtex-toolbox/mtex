@@ -1,13 +1,13 @@
-function component = smooth(component,psi)
+function CBF = smooth(CBF,psi)
 % smooth ODF component
 %
 % Input
-%  component - @ODFComponent
+%  CBF - @SO3FunCBF
 %  res - resolution
 %
 % Output
-%  component - smoothed @ODFComponent
+%  component - smoothed @SO3FunCBF
 %
 
-component.psi = component.psi * psi;
+CBF.psi = conv(CBF.psi , psi);
 

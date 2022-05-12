@@ -1,18 +1,18 @@
-function component = smooth(component,psi)
-% smooth ODF component
+function SO3F = smooth(SO3F,psi)
+% smooth SO3FunHarmonic
 %
 % Input
-%  component - @ODFComponent
+%  SO3F - @SO3FunHarmonic
 %  res - resolution
 %
 % Output
-%  component - smoothed @ODFComponent
+%  component - smoothed @SO3FunHarmonic
 %
 
-L = min(component.bandwidth,find(psi.A,1,'last')-1);
+L = min(SO3F.bandwidth,find(psi.A,1,'last')-1);
 
-component.fhat = component.fhat(1:deg2dim(L+1));
+SO3F.fhat = SO3F.fhat(1:deg2dim(L+1));
 for l = 0:L
-  component.fhat(deg2dim(l)+1:deg2dim(l+1)) = ...
-    component.fhat(deg2dim(l)+1:deg2dim(l+1)) * psi.A(l+1);
+  SO3F.fhat(deg2dim(l)+1:deg2dim(l+1)) = ...
+    SO3F.fhat(deg2dim(l)+1:deg2dim(l+1)) * psi.A(l+1);
 end
