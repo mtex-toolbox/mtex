@@ -44,7 +44,7 @@ for l = 1:L
  s = (-1).^k1 .* (-1).^k2 .* reshape((-1).^((1:(2*l+1)^2)-1),2*l+1,2*l+1);
   
  ind = (deg2dim(l)+1):deg2dim(l+1);
- SO3F.f_hat(ind) = s.*reshape(SO3F.f_hat(ind),2*l+1,2*l+1);
+ SO3F.fhat(ind) = s.*reshape(SO3F.fhat(ind),2*l+1,2*l+1);
 end
 
 % create plan
@@ -62,7 +62,7 @@ nfsoftmex('precompute',plan);
 
 %% step 1: f_phi1 
 Ldim = deg2dim(double(L+1));
-fhat = SO3F.f_hat(1:Ldim);
+fhat = SO3F.fhat(1:Ldim);
 for l = 0:L-1
   [k1,~] = meshgrid(-l:l,-l:l);
   ind = (deg2dim(l)+1):deg2dim(l+1);
@@ -79,7 +79,7 @@ nfsoftmex('trafo',plan);
 f_phi1 = nfsoftmex('get_f',plan);
 
 %% step 2: f_phi2
-fhat = SO3F.f_hat(1:Ldim);
+fhat = SO3F.fhat(1:Ldim);
 for l = 0:L-1    
   [~,k2] = meshgrid(-l:l,-l:l);
   ind = (deg2dim(l)+1):deg2dim(l+1);
@@ -104,19 +104,19 @@ for l = 0:L-1
   
   % b
   if l > 0
-    fhat(ind) = -k1(:) .* k2(:) ./ l./(l+1) .* SO3F.f_hat(ind);
+    fhat(ind) = -k1(:) .* k2(:) ./ l./(l+1) .* SO3F.fhat(ind);
   end
   
   % c
   next = (deg2dim(l+1)+1):deg2dim(l+2);
   c  = (l+2)/(l + 1)/(2*l + 3) * sqrt(((l+1)^2 - k1.^2) .* ((l+1)^2 - k2.^2));
-  fhat(ind) = fhat(ind) - c(:) .* SO3F.f_hat(next(inner(l+1)));
+  fhat(ind) = fhat(ind) - c(:) .* SO3F.fhat(next(inner(l+1)));
     
   % a_n-1
   if l > 0
     last = (deg2dim(l-1)+1):deg2dim(l);
     a = (l-1)/l/(2*l-1) * sqrt((l^2 - k1.^2) .* (l^2 - k2.^2));
-    fhat(ind(inner(l))) = fhat(ind(inner(l))) + a(inner(l)) .* SO3F.f_hat(last);
+    fhat(ind(inner(l))) = fhat(ind(inner(l))) + a(inner(l)) .* SO3F.fhat(last);
   end
 end
   
