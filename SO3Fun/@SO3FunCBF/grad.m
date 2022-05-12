@@ -30,7 +30,8 @@ w = repelem(component.weights./l,l);
 g = vector3d.zeros(size(ori));
 for i = 1:length(h)
 
-  % todo: scaling might not be correct
+  % TODO: scaling might not be correct
+  % TODO: There is no method DRK.
   g = g + w(i) * component.psi.DRK(dot(ori*h(i),r(i))) .* ...
     cross(h(i),inv(ori) * r(i));
 end
