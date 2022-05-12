@@ -55,11 +55,6 @@ classdef SO3Kernel
       % L2 norm
       n = norm(psi.A.^2);
     end
-    
-    function psi = mtimes(psi1,psi2)
-      % convolution of kernel functions            
-      psi = conv(psi1,psi2);
-    end
          
     function c = char(psi)
       c = ['custom, halfwidth ' ...
