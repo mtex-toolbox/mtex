@@ -41,12 +41,13 @@ classdef fibreVonMisesFisherKernel < SO3Kernel
       value  =  psi.kappa/sinh(psi.kappa)*exp(psi.kappa*t);      
     end
     
-    function value = RRK(psi,dh,dr)
-      dh = cut2unitI(dh);
-      dr = cut2unitI(dr);
-      value = psi.kappa/sinh(psi.kappa) * ...
-        besseli(0,psi.kappa * sqrt((1-dh.^2)*(1-dr.^2))).*...
-        exp(psi.kappa * dh * dr);
-    end
+% double radon transform used in calcPDF
+%     function value = RRK(psi,dh,dr)
+%       dh = cut2unitI(dh);
+%       dr = cut2unitI(dr);
+%       value = psi.kappa/sinh(psi.kappa) * ...
+%         besseli(0,psi.kappa * sqrt((1-dh.^2)*(1-dr.^2))).*...
+%         exp(psi.kappa * dh * dr);
+%     end
   end
 end

@@ -72,16 +72,17 @@ classdef SO3SquareSingularityKernel < SO3Kernel
       end
     end
     
-    function value = RRK(psi,dh,dr)
-      
-      c = 2*psi.kappa/log((1+psi.kappa)/(1-psi.kappa));
-      
-      sindhdr = sqrt((1-dh.^2)*(1-dr.^2));
-      
-      value = c./...
-        (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr - sindhdr)).^(0.5) ./...
-        (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr + sindhdr)).^(0.5);
-    end
+% double radon transform used in calcPDF
+%     function value = RRK(psi,dh,dr)
+%       
+%       c = 2*psi.kappa/log((1+psi.kappa)/(1-psi.kappa));
+%       
+%       sindhdr = sqrt((1-dh.^2)*(1-dr.^2));
+%       
+%       value = c./...
+%         (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr - sindhdr)).^(0.5) ./...
+%         (1 + psi.kappa^2 - 2*psi.kappa*(dh * dr + sindhdr)).^(0.5);
+%     end
         
   end
 
