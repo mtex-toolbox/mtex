@@ -47,21 +47,7 @@ plot(SO3F,'ipf')  % This yields an error message
 plot(SO3F,'sigma')
 %plot(SO3F)
 
-%% 5) Error in halfwidth of SO3DirichletKernel
-% change K to A in this code-line isnot enough
-psi = SO3DirichletKernel(20)
-
-%% 6) The kernels are defined for real numbers. 
-% I think that is correct, because we insert angle(rot) or something
-% else as argument. We should add an doc for this or should think about 
-% change to argument rotation instead!!!
-
-psi = SO3deLaValleePoussin(10);
-%SO3DirichletKernel(20);
-plot(psi)
-psi.eval(rand)
-
-%% 7) Error in eval by evaluating an SO3FunRBF with no proper Symmetry
+%% 5) Error in eval by evaluating an SO3FunRBF with no proper Symmetry
 % This problem is produced by convolution of SO3FunRBFs.
 % example 1
 rng(0)
@@ -93,7 +79,10 @@ C3.eval(r)
 C4.eval(r)
 
 
-%% 8) Spherical Harmonics not L2-normalized
+%% 6) Spherical Harmonics not L2-normalized
+% We will not change this, but add an nice documentation about Wigner-D
+% functions, Spherical Harmonics an the normalisation of SO3FunHarmonic and
+% S2FunHarmonic
 
 % We use normalized Wigner-D functions
 SO3F2 = SO3FunHarmonic(1);
@@ -105,5 +94,13 @@ sF1 = S2FunHarmonic(1);
 sF1.eval(vector3d.rand(3))
 mean(sF1)
 sF2 = S2FunHandle(@(v) 1+0.*norm(v));
+
+
+
+
+
+
+
+
 
 
