@@ -29,7 +29,7 @@ classdef S2Kernel
       end
 
       if nargin == 2 && isa(varargin{1},'function_handle')
-        S2K.evalFun = evalFun; 
+        S2K.evalFun = varargin{1}; 
       end
     end
 
