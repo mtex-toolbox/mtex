@@ -1,4 +1,4 @@
-classdef fibreVonMisesFisherKernel < kernel
+classdef fibreVonMisesFisherKernel < SO3Kernel
       
   properties
     kappa = 45;
