@@ -49,7 +49,7 @@ in = vector3d(in); out = vector3d(out);
 % take mean along all symmetries
 for is = 1:numSym(SS)*lh
   dmatrix = dot_outer(out.normalize,in(:,is).normalize);
-  M = M + psi.RK(dmatrix);
+  M = M + psi.radon.eval(dmatrix);
   if check_option(varargin,'antipodal'), M = M + psi.RK(-dmatrix);end
 end
 

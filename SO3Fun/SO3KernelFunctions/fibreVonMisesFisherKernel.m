@@ -35,10 +35,15 @@ classdef fibreVonMisesFisherKernel < SO3Kernel
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
          
-    function value = RK(psi,t)
-      % the radon transformed kernel function at       
-      t = cut2unitI(t);
-      value  =  psi.kappa/sinh(psi.kappa)*exp(psi.kappa*t);      
+    function S2K = radon(psi)
+      % the radon transformed kernel function
+      
+      S2K = S2Kernel(psi.A,@evalRadon);
+      
+      function value = evalRadon(t)
+        t = cut2unitI(t);
+        value = psi.kappa/sinh(psi.kappa)*exp(psi.kappa*t);
+      end
     end
     
 % double radon transform used in calcPDF
