@@ -9,8 +9,8 @@ classdef SO3vonMisesFisher < SO3Kernel
 %
 % or directly by
 %
-% $$ \psi_{\kappa}(t) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathrm{e}^{2\kappa t}$$
+% $$ \psi_{\kappa}(\cos\frac{\omega(R)}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{\kappa \cos\omega(R)}$$
 % 
 % while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
 % functions of first kind
@@ -83,18 +83,18 @@ methods
     
   end
     
-%   function S2K = radon(psi)
-% 
-%     % TODO !!
-% 
-%     % the radon transformed kernel function at
-%     t = cut2unitI(t);
-%     value = exp(psi.kappa*(t-1)/2) .* ...
-%       besseli(0,psi.kappa *(1+t)/2)/...
-%       (besseli(0,psi.kappa)-besseli(1,psi.kappa));
-%     
-%     S2K = S2KernelBessel;
-%   end
+  function S2K = radon(psi)
+      % the radon transformed kernel function
+      
+      S2K = S2Kernel(psi.A,@evalRadon);
+      % TODO: S2K = S2KernelBessel
+      
+      function value = evalRadon(t)
+        t = cut2unitI(t);
+        value = exp(psi.kappa*(t-1)/2) .* ...
+          besseli(0,psi.kappa *(1+t)/2)*psi.C;
+      end
+  end
   
   function hw = halfwidth(psi)
       hw = acos(1-log(2)/psi.kappa);      
