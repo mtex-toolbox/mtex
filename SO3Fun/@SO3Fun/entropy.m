@@ -20,10 +20,7 @@ function H = entropy(SO3F,varargin)
 % See also
 % SO3Fun/norm SO3Fun/sum
 
-SO3F = - SO3F.*log(SO3F);
+H = mean(- SO3F.*log(SO3F));
 
-nodes = equispacedSO3Grid(SO3F.SRight,SO3F.SLeft,'resolution',2.5*degree,varargin{:});
-values = SO3F.eval(nodes(:));
-H = sum(values,'omitnan')/length(values);
 
 end
