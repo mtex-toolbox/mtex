@@ -128,7 +128,7 @@ methods
   
   function out = get.isReal(F)
     if F.bandwidth == 0
-      out = isreal(F.fhat);
+      out = isalmostreal(F.fhat,'precision',4);
       return
     end
     F=reshape(F,numel(F));

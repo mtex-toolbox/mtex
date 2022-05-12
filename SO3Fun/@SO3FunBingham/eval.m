@@ -16,3 +16,9 @@ for iA = 1:size(ASym,1)
   f = f + reshape(fz, size(f))./ size(ASym,1);
   
 end 
+
+if isalmostreal(f)
+  f = real(f);
+end
+
+end

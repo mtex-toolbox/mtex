@@ -13,3 +13,7 @@ gh = reshape((SO3F.SS.properGroup * rot).' * h, length(rot),[]);
 f = mean(SO3F.psi.eval(dot(gh,normalize(SO3F.r),'noSymmetry')),2);
 
 f = reshape(f,size(rot));
+
+if isalmostreal(f)
+  f = real(f);
+end

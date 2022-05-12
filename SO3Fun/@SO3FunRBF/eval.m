@@ -75,4 +75,9 @@ while iter <= numiter
   iter = iter + 1;
 end
 
+if isalmostreal(f)
+  f = real(f);
+end
+
+
 end

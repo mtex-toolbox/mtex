@@ -27,6 +27,9 @@ methods
     if numel(SO3F)==1
       f = reshape(f,s);
     end
+    if isalmostreal(f)
+      f = real(f);
+    end
   end
 
 end
