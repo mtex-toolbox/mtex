@@ -168,7 +168,7 @@ norm(embedding(orientation.rand(5,cs))).'
 n = []; sigma = [];
 for hw = logspace(-1,1.75,40)*degree
 
-  psi = SO3deLaValleePoussin('halfwidth',hw);
+  psi = SO3deLaValleePoussinKernel('halfwidth',hw);
   odf = unimodalODF(orientation.rand(cs),psi);
   ori = discreteSample(odf,round(1000*(hw*6)^3));
   

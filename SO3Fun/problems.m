@@ -70,7 +70,7 @@ rng(0)
 F1 = SO3FunRBF.example;
 F1.CS = crystalSymmetry('2');
 ori = orientation.rand(10,crystalSymmetry('1'),specimenSymmetry('2'));
-F2 = SO3FunRBF(ori,SO3deLaValleePoussin('halfwidth',5*degree));
+F2 = SO3FunRBF(ori,SO3deLaValleePoussinKernel('halfwidth',5*degree));
 
 C3 = conv(F1,F2)
 C4 = conv(SO3FunHarmonic(F1),F2)

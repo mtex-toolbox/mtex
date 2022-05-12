@@ -52,7 +52,7 @@ plot(psi)
 % is specified by a half-width angle in orientation space ($\mathcal{SO}(3)$) 
 % or bandwidth in Fourier space, which is the maximum development in Fourier coefficients.
 
-psi = SO3deLaValleePoussin('halfwidth',30*degree)
+psi = SO3deLaValleePoussinKernel('halfwidth',30*degree)
 
 plot(psi)
 
@@ -62,7 +62,7 @@ plot(psi)
 %
 
 %% The de La Vallee Poussin Kernel
-% The <SO3Kernels.SO3deLaValleePoussin.html de la Vallee Poussin kernel> on
+% The <SO3Kernels.SO3deLaValleePoussinKernel.html de la Vallee Poussin kernel> on
 % SO(3) is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
@@ -84,8 +84,8 @@ plot(psi)
 %
 % Lets construct two of them.
 
-psi1 = SO3deLaValleePoussin('halfwidth',15*degree)
-psi2 = SO3deLaValleePoussin('halfwidth',20*degree)
+psi1 = SO3deLaValleePoussinKernel('halfwidth',15*degree)
+psi2 = SO3deLaValleePoussinKernel('halfwidth',20*degree)
 
 plot(psi1)
 hold on

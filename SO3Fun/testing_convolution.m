@@ -18,7 +18,7 @@ F2.eval(v)
 %% SO3 Kernels
 
 rng(4)
-psi = SO3deLaValleePoussin(4);
+psi = SO3deLaValleePoussinKernel(4);
 %plot(psi)
 figure(1)
 F1 = SO3FunHarmonic(psi);
@@ -87,7 +87,7 @@ r = rotation.rand;
 
 F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i);%,crystalSymmetry('622'),specimenSymmetry('3'));
 %F1.isReal=1
-F2 = SO3deLaValleePoussin;
+F2 = SO3deLaValleePoussinKernel;
 
 CL = conv(F1,F2); CL.eval(r)
 CR = conv(F1,F2,'Right'); CR.eval(r)
@@ -110,7 +110,7 @@ rng(2)
 p = vector3d.rand;
 
 F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i);%,crystalSymmetry('622'),specimenSymmetry('3'));
-psi = S2DeLaValleePoussin(10);
+psi = S2DeLaValleePoussinKernel(10);
 
 C1 = conv(F1,psi);
 C1.eval(p)
@@ -125,7 +125,7 @@ plot(C2)
 
 %% convolution SO3Kernel with SO3Kernel
 % works
-psi1 = SO3deLaValleePoussin(4);
+psi1 = SO3deLaValleePoussinKernel(4);
 psi2 = SO3GaussWeierstrassKernel;
 
 C1 = SO3FunHarmonic(conv(psi1,psi2));
@@ -139,7 +139,7 @@ plot(C2)
 
 %% convolution SO3Kernel with S2Kernel
 % works
-psi1 = SO3deLaValleePoussin(4);
+psi1 = SO3deLaValleePoussinKernel(4);
 psi2 = S2DeLaValleePoussin(10);
 
 C1 = S2FunHarmonic(conv(psi1,psi2));
@@ -152,7 +152,7 @@ plot(C2)
 
 %% convolution SO3Kernel with S2Fun
 % works
-psi = SO3deLaValleePoussin(4);
+psi = SO3deLaValleePoussinKernel(4);
 sF = S2Fun.smiley;
 
 C1 = conv(psi,sF);
@@ -166,7 +166,7 @@ plot(C2)
 %% convolution SO3FunRBF with SO3Kernel
 % works
 F1 = SO3FunRBF.example;
-psi = SO3deLaValleePoussin;
+psi = SO3deLaValleePoussinKernel;
 
 C1 = SO3FunHarmonic(conv(F1,psi))
 C2 = conv(SO3FunHarmonic(F1),psi)
@@ -180,7 +180,7 @@ rng(0)
 F1 = SO3FunRBF.example;
 F1.CS = crystalSymmetry('2');
 ori = orientation.rand(10,crystalSymmetry('1'),specimenSymmetry('2'));
-F2 = SO3FunRBF(ori,SO3deLaValleePoussin('halfwidth',5*degree));
+F2 = SO3FunRBF(ori,SO3deLaValleePoussinKernel('halfwidth',5*degree));
 
 C3 = conv(F1,F2)
 C4 = conv(SO3FunHarmonic(F1),F2)

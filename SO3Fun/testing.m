@@ -10,7 +10,7 @@ plot(FHarm,'sigma')
 %%
 
 FRBF = SO3FunRBF(odf.components{1}.center,...
-  SO3deLaValleePoussin(odf.components{1}.psi.kappa),...
+  SO3deLaValleePoussinKernel(odf.components{1}.psi.kappa),...
   odf.components{1}.weights)
 
 plot(FRBF,'sigma')
@@ -42,7 +42,7 @@ hold off
 
 %%
 
-psi = SO3deLaValleePoussin
+psi = SO3deLaValleePoussinKernel
 
 plot(psi)
 
