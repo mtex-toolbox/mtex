@@ -1,4 +1,4 @@
-classdef SO3vonMisesFisher < SO3Kernel
+classdef SO3vonMisesFisherKernel < SO3Kernel
 % The von Mises Fisher kernel $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
@@ -19,8 +19,8 @@ classdef SO3vonMisesFisher < SO3Kernel
 % \cos \omega} \, \cos n\omega \, \mathrm d\omega $$.%
 % 
 % Syntax
-%   psi = SO3vonMisesFisher(100)
-%   psi = SO3vonMisesFisher('halfwidth',5*degree)
+%   psi = SO3vonMisesFisherKernel(100)
+%   psi = SO3vonMisesFisherKernel('halfwidth',5*degree)
 %
 
 properties
@@ -30,7 +30,7 @@ end
       
 methods
     
-  function psi = SO3vonMisesFisher(varargin)
+  function psi = SO3vonMisesFisherKernel(varargin)
  
     % extract parameter and halfwidth
     if check_option(varargin,'halfwidth')
