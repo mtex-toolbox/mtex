@@ -60,6 +60,11 @@ if isempty(nodes)
   return
 end
 
+if bw==0
+  sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
+  return
+end
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlan;
