@@ -15,11 +15,17 @@ function psi = conv(psi1, psi2, varargin)
 
 if nargin == 1, psi2 = psi1; end
 
+
+% ------------------- convolution with a S2Fun -------------------
+% In case psi2 is a S2Fun, convolute the S2Fun with the kernel
+% conv is commutative if kernel is included
 if isa(psi2,'S2Fun')
   psi = conv(psi2,psi1,varargin{:});
   return
 end
 
+
+% ------------------- convolution with a S2Kernel -------------------
 if isnumeric(psi1)
   psi = conv(psi2,psi1,varargin{:});
   return

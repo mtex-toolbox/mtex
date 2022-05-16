@@ -44,7 +44,7 @@ if nargin == 1, psi2 = psi1; end
 % In case psi2 is a SO3Fun, convolute the SO3Fun with the kernel
 % conv is commutative if kernel is included
 if isa(psi2,'SO3Fun')
-  psi = conv(psi2,psi1);
+  psi = conv(psi2,psi1,varargin{:});
   return
 end
 
@@ -78,9 +78,25 @@ end
 
 
 % ------------------- convolution of SO3Kernels -------------------
+if isnumeric(psi1)
+  psi = conv(psi2,psi1,varargin{:});
+  return
+end
+
+% extract Legendre coefficients of psi1
+A1 = psi1.A(:);
+
+% extract Legendre coefficients of psi2
+if isnumeric(psi2)
+  A2 = psi2(:);
+else
+  A2 = psi2.A(:);
+  A2 = A2 ./ (2*(0:length(A2)-1)+1).';
+end
+
+% multiplication in harmonic domain
 L = min(psi1.bandwidth,psi2.bandwidth);     
-l = (0:L);
-psi = SO3Kernel(psi1.A(1:L+1) .* psi2.A(1:L+1) ./ (2*l+1));
+psi = SO3Kernel(A1(1:L+1) .* A2(1:L+1));
 
 
 end

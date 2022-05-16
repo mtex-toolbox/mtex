@@ -176,32 +176,108 @@ plot(C1)
 figure(2)
 plot(C2)
 %% convolution SO3FunRBF with SO3FunRBF
+% problems with symmetries
 rng(0)
-F1 = SO3FunRBF.example;
-F1.CS = crystalSymmetry('2');
-ori = orientation.rand(10,crystalSymmetry('1'),specimenSymmetry('2'));
+ori = orientation.rand(1,crystalSymmetry('2'),specimenSymmetry('2'));
+F1 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',10*degree));
+%F1 = SO3FunRBF.example;
+%F1.CS = crystalSymmetry('2');
+ori = orientation.rand(1,crystalSymmetry('432'),specimenSymmetry('2'));
 F2 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',5*degree));
 
 C3 = conv(F1,F2)
 C4 = conv(SO3FunHarmonic(F1),F2)
 
-r=rotation.rand(3);
+r=rotation.rand(100);
+r=r(65);
 C3.eval(r)
 C4.eval(r)
 
-%% convolution S2Fun with S2Fun
-rng(6)
+figure(1)
+plot(C3)
+figure(2)
+plot(C4)
+
+mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(inv(rot).*r)))
+
+%% convolution S2Fun with S2Fun (bisherige Definition)
+
+rng(3)
 r=rotation.rand(1);
 
-F1 = S2FunHarmonic([1,0.0001,0,0]');
-F2 = S2FunHarmonic(1);%,specimenSymmetry('622'));
+F1 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
+F2 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
+
+
+
+%% convolution S2Fun with S2Fun (meine Definition)
+
+rng(3)
+r=rotation.rand(1);
+
+F1 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
+F2 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
 
 C = conv(F1,F2)
 C.eval(r)
 
-C2 = SO3FunHandle(@(rot) mean(S2FunHandle(@(v) F1.eval(v).*F2.eval(rot.*(v)))))
+C2 = SO3FunHandle(@(rot) mean(S2FunHandle(@(v) F1.eval(v).*F2.eval(inv(rot).*(v)))),specimenSymmetry('1'),specimenSymmetry('2'))
 C2.eval(r)
 
+% bisherige Definition
+% conjugate
+% fhat =[];
+% for l=0:F2.bandwidth
+%   fhat(l^2+1:(l+1)^2) = (F2.fhat((l+1)^2:-1:l^2+1));
+% end
+% cF2 = S2FunHarmonic(fhat');
+% 
+% C3 = inv(4*pi*conv(F1,cF2))
+% C3.eval(r)
+% 
+% C4 = SO3FunHandle(@(rot) 4*pi*mean(S2FunHandle(@(v) F1.eval(v).*conj(F2.eval(rot.*v)))))
+% C4.eval(r)
 
 
+
+%% convolution S2Fun with S2Kernel (S2Kernel * S2Fun)
+
+rng(0)
+v=vector3d.rand(1);
+
+F1 = S2FunHarmonic([1+5i,2+6i,3+7i,4+8i]');
+F2 = S2Kernel([1+3i;2+4i]);
+
+C = conv(F1,F2)
+C.eval(v)
+
+C2 = S2FunHandle(@(w) mean(S2FunHandle(@(v) F1.eval(v).*F2.eval(cos(angle(w,v)))    )))
+C2.eval(v)
+
+C.fhat/sqrt(4*pi)
+C3 = conv(F1,S2FunHarmonic(F2))
+C3.fhat
+
+% S2Kernel * S2Fun
+C4 = conv(S2FunHarmonic(F2),F1)
+C4.fhat
+
+
+%% convolution S2Kernel with S2Kernel
+
+rng(0)
+v=vector3d.rand(1);
+
+F1 = S2Kernel([1+5i,2+6i,3+7i,4+8i]');
+F2 = S2Kernel([1+3i;2+4i;5;2+1i]);
+
+C1 = S2FunHarmonic(conv(F1,F2))
+C2 = conv(S2FunHarmonic(F1),F2)
+C3 = conv(S2FunHarmonic(F2),F1)
+
+plot(C1)
+figure
+plot(C2)
+figure
+plot(C3)
 
