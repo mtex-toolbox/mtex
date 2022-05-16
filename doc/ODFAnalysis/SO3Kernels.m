@@ -35,10 +35,19 @@ psi = SO3Kernel([1;0;3;1])
 plot(psi)
 
 %%
-% In MTEX there are a lot of SO3Kernels included. The two most importants are
+% We can define an SO3Fun from a kernel function $\psi$ at a specific
+% orientation $R$ by using the class <SO3FunRBF.html |SO3FunRBF|>, i.e.
+
+psi =SO3DeLaValleePoussinKernel('halfwidth',20*degree)
+R = orientation.byAxisAngle(vector3d.Y,pi/3)
+SO3F = SO3FunRBF(R,psi)
+plot(SO3F)
+
+%%
+% In MTEX there are lots of SO3Kernels included. The most importants are
 %
-% * de la Vallee Poussin kernel (used for ODF, MODF, Pole figures, etc),
-% * Dirichlet kernel (uesd for physical properties).
+% * de la Vallee Poussin kernel (used for ODF, MODF, Pole figures, etc)
+% * Dirichlet kernel (uesd for physical properties)
 % * Abel Poisson kernel
 % * von Mises Fisher kernel
 % * Gauss Weierstrass kernel

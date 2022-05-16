@@ -9,31 +9,16 @@
 % $$ f({\bf R}) = \sum_{n=0}^N \sum_{k,l = -n}^n \hat f_n^{k,l} \, \mathrm{D}_n^{k,l}({\bf R}) $$
 %
 % with respect to Fourier coefficients $\hat f_n^{k,l}$ and the so called
-% Wigner-D functions $D_n^{k,l}({\bf R})$.
+% <WignerFunctions.html Wigner-D functions> $D_n^{k,l}$.
 % 
-% In terms of Matthies (ZYZ-convention) Euler angles 
-% ${\bf R} = ${\bf R}(\alpha,\beta,\gamma)$ the $L_2$-normalized Wigner-D 
-% function of degree $n\in\mathbb N$ and orders $k,l \in \{-n,\dots,n\}$ is
-% defined by
+% There exists various normalizations for the <WignerFunctions.html Wigner-D functions>. 
+% In MTEX they are $L_2$ normalized, which means
 %
-% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma} \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
+% $$\| D_n^{k,l} \|_2 = 1$$
 %
-% where $d_n^{k,l}$, denotes the real valued Wigner-d function, which is
-% defined by some constants
-%
-% $$ a &=|k-l|,\\
-% b &=|k+l|,\\
-% s &= n- \frac{a+b}2 = n - \max\{|k|,|l|\},\\
-% \nu &= \begin{cases}
-%           0 	& \text{falls } l \geq k,\\
-%           k+l & \text{sonst}
-%         \end{cases} $$
-%
-% and the formula
-%
-% $$ d_n^{k,l}(x) =  \binom{2n-s}{s+a}^{\frac12} \binom{s+b}{b}^{-\frac12} \left(\frac{1-x}{2}\right)^{\frac{a}2} \left(\frac{1+x}{2}\right)^{\frac{b}2} P_s^{a,b}(x)$$
-%
-% were $P_s^{a,b}$ denotes the corresponding Jacobi polynomial.
+% for all $n,k,l$. For more information take a look on 
+% <WignerFunctions.html Wigner-D functions> and 
+% <SO3FunOperations.html#5 Integration of SO3Fun's>.
 %
 %%
 %
@@ -59,8 +44,8 @@ f = SO3FunHarmonic(odf,'bandwidth',32)
 reshape(f.fhat(11:35),5,5)
 
 %%
-% As an additional example lets define a harmonic function which Fourier
-% coefficients are $\hat f_0^{0,0} = 0.5$ and 
+% As an additional example lets define a harmonic function by its Fourier
+% coefficients $\hat f_0^{0,0} = 0.5$ and 
 % $\hat f_1 = \begin{array}{rrr} 
 % 1 & 4 & 7 \\ 
 % 2 & 5 & 8 \\ 
