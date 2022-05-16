@@ -200,15 +200,6 @@ plot(C4)
 
 mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(inv(rot).*r)))
 
-%% convolution S2Fun with S2Fun (bisherige Definition)
-
-rng(3)
-r=rotation.rand(1);
-
-F1 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
-F2 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
-
-
 
 %% convolution S2Fun with S2Fun (meine Definition)
 
