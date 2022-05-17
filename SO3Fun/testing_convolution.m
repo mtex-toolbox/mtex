@@ -216,14 +216,7 @@ C2 = SO3FunHandle(@(rot) mean(S2FunHandle(@(v) F1.eval(v).*F2.eval(inv(rot).*(v)
 C2.eval(r)
 
 % bisherige Definition
-% conjugate
-% fhat =[];
-% for l=0:F2.bandwidth
-%   fhat(l^2+1:(l+1)^2) = (F2.fhat((l+1)^2:-1:l^2+1));
-% end
-% cF2 = S2FunHarmonic(fhat');
-% 
-% C3 = inv(4*pi*conv(F1,cF2))
+% C3 = inv(4*pi*conv(F1,conj(F2)))
 % C3.eval(r)
 % 
 % C4 = SO3FunHandle(@(rot) 4*pi*mean(S2FunHandle(@(v) F1.eval(v).*conj(F2.eval(rot.*v)))))

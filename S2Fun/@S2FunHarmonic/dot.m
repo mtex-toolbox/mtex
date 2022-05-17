@@ -15,8 +15,7 @@ bw = min(sF1.bandwidth,sF2.bandwidth);
 
 sF1.bandwidth = bw;
 sF2.bandwidth = bw;
-sF2 = conj(sF2);
 
-d = sum(sF1.fhat .* sF2.fhat);
+d = sum(sF1.fhat .* conj(sF2.fhat));
 
 end
