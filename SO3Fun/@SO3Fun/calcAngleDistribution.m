@@ -13,7 +13,7 @@ function [density,omega] = calcAngleDistribution(S3F,varargin)
 %
 % See also
 
-if nargin > 1 && isa(varargin{1},'ODF')
+if nargin > 1 && isa(varargin{1},'SO3Fun')
   S3F = calcMDF(S3F,varargin{1});
   varargin(1) = [];
 end

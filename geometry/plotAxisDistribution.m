@@ -88,7 +88,7 @@ if nargout == 0, clear h; end
 
     dcs = disjoint(cs1.properGroup,cs2.properGroup);
     if check_option(varargin,'antipodal') || ...
-        ((isa(obj,'orientation') || isa(obj,'ODF')) && obj.antipodal)
+        ((isa(obj,'orientation') || isa(obj,'SO3Fun')) && obj.antipodal)
       dcs = dcs.Laue;
     end
   end
