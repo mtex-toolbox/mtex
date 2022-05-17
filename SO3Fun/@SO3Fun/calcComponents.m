@@ -42,7 +42,8 @@ maxAngle = get_option(varargin,{'radius','angle'},inf);
 if check_option(varargin,'seed')
   seed = reshape(get_option(varargin,'seed'),[],1);
   weights = get_option(varargin,'weights',odf.eval(seed));
-elseif isa(odf,'SO3FunComposition') && isa(odf.components{end},'unimodalComponent')
+elseif isa(odf,'SO3FunComposition') && isa(odf.components{end},'SO3FunRBF') ...
+                && length(odf.components{end}.center)==1
   seed = odf.components{end}.center;
   weights = odf.components{end}.weights; 
 else
