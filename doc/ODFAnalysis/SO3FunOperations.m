@@ -31,6 +31,19 @@ plot(max(2*SO3F1,SO3F2));
 % the minimum between two functions
 plot(min(2*SO3F1,SO3F2));
 
+%%
+% We also can work with the pointwise <SO3Fun.conj.html |conj|>, 
+% <SO3Fun.exp.html |exp|> or <SO3Fun.log.html |log|> of an |SO3Fun|.
+%
+% For a given function $f\colon SO(3) \to \mathbb C$ we get a second function
+% $g\colon SO(3) \to \mathbb C$ where $g(R) = f(R^{-1})$ by the method 
+% <SO3Fun.inv.html |inv|>, i.e.
+
+g = inv(SO3F1)
+
+SO3F1.eval(R)
+g.eval(inv(R))
+
 %% Local Extrema
 % 
 % The above mentioned functions <SO3Fun.min.html |min|> and <SO3Fun.max.html
