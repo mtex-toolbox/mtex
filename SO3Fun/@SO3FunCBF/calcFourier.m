@@ -16,8 +16,6 @@ function f_hat = calcFourier(SO3F,varargin)
 %
 
 
-% TODO: A=SO3FunHarmonic(CBF); A.eval(rot) is not the same as CBF.eval(rot)
-
 L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 
 A = SO3F.psi.A;
