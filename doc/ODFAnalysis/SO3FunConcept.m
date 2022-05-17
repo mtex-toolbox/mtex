@@ -2,8 +2,9 @@
 %
 %%
 % By a variable of type @SO3Fun it is possible to represent an entire
-% function on the rotation group $SO(3)$. A typical example of such a
-% function is the orientation distribution function (<ODFTheory.html ODF>)
+% function on the rotation group $SO(3)$, i.e. a function $f\colon SO(3)\to\mathbb C$. 
+% A typical example of such a function is the orientation distribution 
+% function (<ODFTheory.html ODF>)
 
 % the famouse Santa Fe orientation distribution function
 odf = SantaFe;
