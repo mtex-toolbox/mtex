@@ -1,14 +1,14 @@
-function pdf = calcPDF(odf,h,varargin)
+function pdf = calcPDF(SO3F,h,varargin)
 % calcPDF computed the PDF corresponding to an ODF
 %
 % Syntax
-%   pdf = calcPDF(odf,h)
-%   pdf = calcPDF(odf,h,'superposition',c)
-%   value = calcPDF(odf,h,r)
-%   ipdf = calcPDF(odf,[],r)
+%   pdf = calcPDF(SO3F,h)
+%   pdf = calcPDF(SO3F,h,'superposition',c)
+%   value = calcPDF(SO3F,h,r)
+%   ipdf = calcPDF(SO3F,[],r)
 %
 % Input
-%  odf - @ODF
+%  SO3F - @SO3Fun
 %  h   - @Miller / @vector3d crystal directions
 %  r   - @vector3d specimen directions
 %
@@ -24,10 +24,10 @@ function pdf = calcPDF(odf,h,varargin)
 %  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 % See also
-% ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
+% SO3Fun/plotPDF SO3Fun/plotIPDF SO3Fun/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller'), h = odf.CS.ensureCS(h); end
+if isa(h,'Miller'), h = SO3F.CS.ensureCS(h); end
 
 % superposed pole figures
 sp = get_option(varargin,'superposition',1);
@@ -35,6 +35,6 @@ assert(length(sp)== 1 || length(sp) == length(h),...
   'Number of superposition coefficients must coinside with the number of pole figures');
 
 % compute pole density functions and average over superposition
-pdf = odf.radon(h,varargin{:}).' * sp(:);
+pdf = SO3F.radon(h,varargin{:}).' * sp(:);
 
 end
