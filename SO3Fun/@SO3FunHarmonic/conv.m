@@ -51,7 +51,8 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %  sF2  - @S2FunHarmonic
 %
 % See also
-% SO3Kernel/conv SO3FunHarmonic/conv SO3FunRBF/calcFourier
+% SO3Kernel/conv SO3FunHarmonic/conv SO3FunRBF/calcFourier S2FunHarmonic/conv S2Kernel/conv
+
 
 
 % TODO: I changed the code so it is compatible to the definition.

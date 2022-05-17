@@ -33,7 +33,7 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %  SO3F - @SO3FunRBF
 %
 % See also
-% SO3FunHarmonic/conv  SO3Kernel/conv
+% SO3FunHarmonic/conv  SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv
 
 
 % TODO: I changed this code, so it is compatible to the definition.

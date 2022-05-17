@@ -1,7 +1,7 @@
 function psi = conv(psi1,psi2,varargin)
 % convolution of an SO3Kernel function with a function or a kernel on SO(3)
 %
-% We can convolute an SO3Kernel $f$ with another SO3Kernel or an SO3Fun $g$
+% We convolute an SO3Kernel $f$ with another SO3Kernel or an SO3Fun $g$
 % by the convolution
 %
 % $$ (f *_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
@@ -35,7 +35,7 @@ function psi = conv(psi1,psi2,varargin)
 %  phi2  - @S2Kernel
 %
 % See also
-% SO3FunHarmonic/conv
+% SO3FunHarmonic/conv SO3FunRBF/conv S2FunHarmonic/conv S2Kernel/conv
 
 if nargin == 1, psi2 = psi1; end
 

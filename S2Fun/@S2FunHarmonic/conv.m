@@ -15,6 +15,8 @@ function sF = conv(sF, psi, varargin)
 %  sF   - @S2FunHarmonic
 %  SO3F - @ODF
 %
+% See also
+% S2Kernel/conv SO3FunHarmonic/conv SO3Kernel/conv 
 
 if isnumeric(sF)
   sF = conv(psi,sF,varargin{:});

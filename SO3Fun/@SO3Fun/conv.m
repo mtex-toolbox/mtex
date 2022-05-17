@@ -13,6 +13,6 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %  SO3F - @SO3FunHarmonic
 %
 % See also
-% SO3FunHarmonic/conv
+% SO3FunHarmonic/conv SO3FunRBF/conv SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv 
 
 SO3F = conv(SO3FunHarmonic(SO3F1),SO3F2,varargin{:});

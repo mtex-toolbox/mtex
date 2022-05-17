@@ -12,6 +12,8 @@ function psi = conv(psi1, psi2, varargin)
 % Output
 %  psi   - @S2Kernel
 %
+% See also
+% S2FunHarmonic/conv SO3FunHarmonic/conv  SO3Kernel/conv 
 
 if nargin == 1, psi2 = psi1; end
 
