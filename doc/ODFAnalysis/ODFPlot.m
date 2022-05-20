@@ -29,8 +29,8 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %% Three Dimensional Plots
 %
-% Visualizing an ODF in three dimensions in done by the command
-% <ODF.plot3d.html |plot3d|>.
+% Visualizing an ODF in three dimensions is done by the command
+% <SO3Fun.plot3d.html |plot3d|>.
 
 plot3d(odf)
 
@@ -82,7 +82,7 @@ plot3d(odf,'axisAngle','figSize','large')
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotSection.html plotSection>. By default
+% is done using the command <SO3Fun.plotSection.html plotSection>. By default
 % the sections are at constant angles of $\varphi_2$.
 
 plotSection(odf)

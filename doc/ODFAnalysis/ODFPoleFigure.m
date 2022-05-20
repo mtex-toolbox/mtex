@@ -28,7 +28,7 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %%
 % Plotting some pole figures of an <ODF.ODF.html ODF> is straight forward
-% using the <ODF.plotPDF.html plotPDF> command. The only mandatory
+% using the <SO3Fun.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller.Miller.html Miller
 % indice> of the crystal directions you want to have pole figures for
 
@@ -62,7 +62,7 @@ plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
-% done using the command <ODF.calcPDF.html calcPDF>.
+% done using the command <SO3Fun.calcPDF.html calcPDF>.
 
 odf.calcPDF(Miller(1,0,0,cs),xvector)
 

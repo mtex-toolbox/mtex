@@ -187,7 +187,7 @@ ylabel('$\sqrt{1-n}$','Interpreter','latex')
 % It appears as if the norm of the mean embedding is a function of the
 % standaerd deviation. However, the reason for this false relationship is
 % that we have generated the orientations out of a single family of random
-% variables - <UnimodalODFs.html unimodal de la Vallee Poussin distributed
+% variables - <RadialODFs.html#2 unimodal de la Vallee Poussin distributed
 % density functions>. A broader family of density function are the
 % <BinghamODFs.html Bingham distributions>. Lets repeat the experiment for
 % this family.

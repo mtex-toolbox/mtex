@@ -18,7 +18,7 @@ mtexColorbar
 %% Computing Random Orientations
 %
 % In order to compute $50000$ random orientation from the ODF |fibre_odf| we use
-% the command |<ODF.discreteSample.html discreteSample>|.
+% the command |<SO3Fun.discreteSample.html discreteSample>|.
 
 ori = fibre_odf.discreteSample(50000)
 

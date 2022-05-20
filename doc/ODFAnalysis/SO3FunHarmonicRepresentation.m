@@ -18,7 +18,7 @@
 %
 % for all $n,k,l$. For more information take a look on 
 % <WignerFunctions.html Wigner-D functions> and 
-% <SO3FunOperations.html#5 Integration of SO3Fun's>.
+% <SO3FunOperations.html#6 Integration of SO3Fun's>.
 %
 %%
 %

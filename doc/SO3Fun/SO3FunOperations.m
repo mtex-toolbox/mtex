@@ -1,4 +1,4 @@
-%% Operations on Spherical Functions
+%% Operations on Rotational Functions
 %
 %%
 % The idea of variables of type @SO3Fun is to calculate with $SO(3)$

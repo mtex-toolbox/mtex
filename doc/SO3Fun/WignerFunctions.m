@@ -70,7 +70,7 @@ D.eval(R)
 % $$ \lVert f \rVert_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
 %
 % such that $ \| 1 \|_2^2 = 1$. Take a look on the section 
-% <SO3FunOperations.html#5 Integration of SO3Fun's>.
+% <SO3FunOperations.html#6 Integration of SO3Fun's>.
 %
 % Using that definition the Wigner-D functions in MTEX fulfill
 %

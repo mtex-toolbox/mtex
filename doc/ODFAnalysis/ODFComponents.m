@@ -65,6 +65,7 @@ annotate(ori)
 delta = 10*degree;
 volume(odf,ori,delta) * 100
 
+
 %%
 % We observe that the sum of all volume portions is far from $100$ percent.
 % This is very typical. The reason is that the portion of the full

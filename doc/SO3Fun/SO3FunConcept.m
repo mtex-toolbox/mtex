@@ -42,12 +42,12 @@ annotate(localMax)
 % In MTEX there exist different ways for representing $SO(3)$ functions
 % internally. 
 %
-% || harmonic expansion || @SO3FunHarmonic ||
+% || harmonic expansion || <SO3FunHarmonicRepresentation.html @SO3FunHarmonic> ||
 % || radial basis function || @SO3FunRBF ||
-% || fibre elements || @SO3FunCBF ||
-% || function handle || @SO3FunHandle ||
-% || Bingham distribution || @SO3FunBingham ||
+% || fibre elements || <FibreODFs.html @SO3FunCBF> ||
+% || Bingham distribution || <BinghamODFs.html @SO3FunBingham> ||
 % || sum of the other representations || @SO3FunComposition ||
+% || function handle || @SO3FunHandle ||
 %
 % All representations allow the same operations which are specified for
 % the abstact class |@SO3Fun|. In particular it is possible

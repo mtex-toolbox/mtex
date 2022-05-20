@@ -6,6 +6,7 @@ CrystalGeometry        Crystal Geometry
 CrystalOrientations    Orientations
 Misorientations        Misorientations
 ODFAnalysis            ODF
+SO3Fun                 Rotational Functions
 PoleFigureAnalysis     Pole Figures
 EBSDAnalysis           EBSD
 Grains                 Grains 

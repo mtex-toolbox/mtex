@@ -46,15 +46,15 @@ plot(SO3F)
 %%
 % In MTEX there are lots of SO3Kernels included. The most importants are
 %
-% * de la Vallee Poussin kernel (used for ODF, MODF, Pole figures, etc)
-% * Dirichlet kernel (uesd for physical properties)
-% * Abel Poisson kernel
-% * von Mises Fisher kernel
-% * Gauss Weierstrass kernel
-% * Sobolev kernel
-% * Laplace kernel
-% * Square Singularity kernel
-% * Bump kernel
+% * <SO3Kernels.html#7 de la Vallee Poussin kernel> (used for ODF, MODF, Pole figures, etc)
+% * <SO3Kernels.html#9 Dirichlet kernel> (uesd for physical properties)
+% * <SO3Kernels.html#11 Abel Poisson kernel>
+% * <SO3Kernels.html#13 von Mises Fisher kernel>
+% * <SO3Kernels.html#15 Gauss Weierstrass kernel>
+% * <SO3Kernels.html#17 Sobolev kernel>
+% * <SO3Kernels.html#19 Laplace kernel>
+% * <SO3Kernels.html#21 Square Singularity kernel>
+% * <SO3Kernels.html#23 Bump kernel>
 %
 %%
 % A specific $\mathcal{SO}(3)$ kernel function like the de la Vallee Poussin kernel

@@ -4,7 +4,7 @@
 % Also take a look at the page <SO3Kernels.html SO3Kernels>.
 %
 % In order to control the shape of unimodal ODF
-% The classes *SO3Kernel* and *S2Kernel* are needed in MTEX to define the 
+% The classes @SO3Kernel and @S2Kernel are needed in MTEX to define the 
 % specific form of unimodal and fibre symmetric ODFs. It has to be passed 
 % as an argument when calling the methods <uniformODF.html uniformODF> or
 % <fibreODF.html fibreODF>. 
