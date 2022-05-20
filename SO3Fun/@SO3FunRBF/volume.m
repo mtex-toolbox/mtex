@@ -14,7 +14,9 @@ elseif isempty(SO3F.center)
 else
 
   % compute distances
-  d = reshape(SO3F.center.angle_outer(center,'all'), length(SO3F.center),[]).';
+  d = SO3F.center.angle_outer(center,'all');
+  s = size(d);
+  d = reshape(d, length(SO3F.center),[]).';
   
   % precompute volumes
   [vol,r] = volume(SO3F.psi,radius);
@@ -23,7 +25,8 @@ else
   v = interp1(r,vol,d.','spline');
   
   % sum up
-  v = sum(v.' * SO3F.weights(:));
+  v = v.' * SO3F.weights(:);
+  v = sum(reshape(v,s(2:end)),length(s)-1);
   
   % add uniform portion
   v = v + SO3F.c0 * numProper(SO3F.CS) * (radius - sin(radius))./pi;
