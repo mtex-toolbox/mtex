@@ -96,6 +96,29 @@ mean(sF1)
 sF2 = S2FunHandle(@(v) 1+0.*norm(v));
 
 
+%% 7) Problems with Symmetries by convolution of SO3FunRBF and SO3FunRBF 
+rng(0)
+ori = orientation.rand(1,crystalSymmetry('2'),specimenSymmetry('2'));
+F1 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',10*degree));
+ori = orientation.rand(1,crystalSymmetry('432'),specimenSymmetry('2'));
+F2 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',5*degree));
+
+C3 = conv(F1,F2)
+C4 = conv(SO3FunHarmonic(F1),F2)
+
+figure(1)
+plot(C3)
+figure(2)
+plot(C4)
+
+
+
+
+
+
+
+
+
 
 
 
