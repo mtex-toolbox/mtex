@@ -77,6 +77,7 @@ ori = get_option(varargin,'startingNodes');
   
 if isempty(ori)
   ori = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res);
+  ori = orientation(ori);
 end
 
 % first evaluation
