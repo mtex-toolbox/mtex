@@ -6,6 +6,11 @@ if radius > pi / SO3F.CS.multiplicityZ || ...
   
   [v,varargout{1:nargout-1}] = volume@SO3Fun(SO3F,center,radius,varargin{:});
   
+elseif isempty(SO3F.center)
+  
+  v =  zeros(size(center)) + SO3F.c0 * numProper(SO3F.CS) * (radius - sin(radius))./pi;
+  varargout = varargin;
+
 else
 
   % compute distances
