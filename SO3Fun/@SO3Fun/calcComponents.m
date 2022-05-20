@@ -1,12 +1,12 @@
-function [modes, weights,centerId] = calcComponents(odf,varargin)
+function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 % heuristic to find modal orientations
 %
 % Syntax
-%   [modes, volume] = calcComponents(odf)
-%   [modes, volume, centerId] = calcComponents(odf,'seed',ori)
+%   [modes, volume] = calcComponents(SO3F)
+%   [modes, volume, centerId] = calcComponents(SO3F,'seed',ori)
 %
 % Input
-%  odf - @SO3Fun 
+%  SO3F - @SO3Fun 
 %  ori - initial list of @orientation
 %
 % Output
@@ -41,13 +41,13 @@ maxAngle = get_option(varargin,{'radius','angle'},inf);
 % initial seed
 if check_option(varargin,'seed')
   seed = reshape(get_option(varargin,'seed'),[],1);
-  weights = get_option(varargin,'weights',odf.eval(seed));
-elseif isa(odf,'SO3FunComposition') && isa(odf.components{end},'SO3FunRBF') ...
-                && length(odf.components{end}.center)==1
-  seed = odf.components{end}.center;
-  weights = odf.components{end}.weights; 
+  weights = get_option(varargin,'weights',SO3F.eval(seed));
+elseif isa(SO3F,'SO3FunComposition') && isa(SO3F.components{end},'SO3FunRBF') ...
+                && length(SO3F.components{end}.center)==1
+  seed = SO3F.components{end}.center;
+  weights = SO3F.components{end}.weights; 
 else
-  seed = equispacedSO3Grid(odf.CS,odf.SS,'resolution',2.5*degree);
+  seed = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',2.5*degree);
   weights = ones(length(seed),1) ./ length(seed);
 end
 id = weights>0;
@@ -69,13 +69,13 @@ for k = 1:maxIter
   %progress(k,maxIter,' finding ODF components: ');
 
   % gradient
-  g = normalize(odf.grad(modes(~finished)),1);
+  g = normalize(SO3F.grad(modes(~finished)),1);
   
   % prepare for linesearch
   line_ori = exp(repmat(modes(~finished),1,length(omega)),g * omega);
   
   % evaluate along lines
-  line_v = odf.eval(line_ori);
+  line_v = SO3F.eval(line_ori);
   
   % take the maximum
   [v_max(~finished),id] = max(line_v,[],2);
@@ -111,7 +111,7 @@ iid(id) = 1:length(id);
 centerId = iid(centerId);
 
 if ~check_option(varargin,'exact')
-  id = weights > min([0.01, numSym(odf.CS) * maxAngle^3 ./ 8*pi^2,0.5 * max(weights)]);  
+  id = weights > min([0.01, numSym(SO3F.CS) * maxAngle^3 ./ 8*pi^2,0.5 * max(weights)]);  
   weights = weights(id);
   modes = modes(id);
   ids = 1:length(id);
