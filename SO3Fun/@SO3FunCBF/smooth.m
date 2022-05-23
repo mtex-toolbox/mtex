@@ -1,5 +1,5 @@
 function CBF = smooth(CBF,psi)
-% smooth ODF component
+% smooth SO3FunCBF
 %
 % Input
 %  CBF - @SO3FunCBF

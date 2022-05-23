@@ -26,7 +26,7 @@ else
   antipodal = true;
 end
 
-% the misorietation density function is nothing else then the convolution
+% the misorientation density function is nothing else then the convolution
 mdf = conv(inv(conj(SO3F1)),SO3F2,varargin{:});
 mdf.antipodal = antipodal;
   
