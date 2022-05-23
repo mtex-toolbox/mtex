@@ -1,5 +1,5 @@
 function plotSpektra(SO3F,varargin)
-% viszalize the harmonic coefficients
+% visualize the harmonic coefficients
 %
 % Syntax
 %
@@ -15,6 +15,8 @@ function plotSpektra(SO3F,varargin)
 %
 % See also
 % SO3Fun_calcFourier FourierODF
+
+SO3F = SO3FunHarmonic(SO3F,varargin{:});
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
