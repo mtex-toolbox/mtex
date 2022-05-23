@@ -49,7 +49,7 @@ rot = rotation.byAxisAngle(xvector,90*degree);
 fun = @(v) pi/2*psi.eval(rot*v) .* sin(angle(v,zvector));
 
 % the final kernel function as S2Harmonic
-psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
+psi = S2FunHarmonicSym.quadrature(fun, 'bandwidth', bw, ori.CS);
 
 %% testing only
 
@@ -71,18 +71,7 @@ psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
 odf = calcDensity(ori,'kernel',SO3DirichletKernel(bw),'harmonic');
 
 %% step 4: convolution
-% GBPD = conv(odf,psi)
-odf.bandwidth = bw;
-odfHat = odf.fhat;
-fhat = zeros((bw+1)^2,1);
-for l = 0:bw
-  fhat(l^2+1:(l+1)^2) = reshape(odfHat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
-    psi.fhat(l^2+1:(l+1)^2) ./ (2*l+1);
-end
-
-
-%GBPD = S2FunHarmonic(fhat);
-GBPD = S2FunHarmonicSym(fhat,ori.CS);
+GBPD = conv(odf,psi);
 
 %plot(GBPD)
 
