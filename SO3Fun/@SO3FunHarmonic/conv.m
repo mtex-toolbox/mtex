@@ -58,6 +58,14 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % TODO: I changed the code so it is compatible to the definition.
 %       We should use           conv(inv(conj(SO3F1)),SO3F2)
 %       every time when conv(SO3F1,SO3F2) occurs.
+if isnumeric(SO3F1)
+  SO3F = conv(SO3F2,SO3F1,varargin{:});
+  return
+end
+if isnumeric(SO3F2)
+  v = 2*(1:length(SO3F2))'-1;
+  SO3F2 = SO3Kernel(SO3F2.*v);
+end
 
 
 % ------------------- convolution with a S2Kernel -------------------
