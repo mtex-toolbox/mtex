@@ -18,6 +18,13 @@ function sF = conv(sF, psi, varargin)
 % See also
 % S2Kernel/conv SO3FunHarmonic/conv SO3Kernel/conv 
 
+
+% The convolution is defined like above. But in MTEX the convolution of two
+% S2Funs is mostly calculated by
+%                    inv(4*pi*conv(SO3F1,conj(SO3F2))).
+%
+
+
 if isnumeric(sF)
   sF = conv(psi,sF,varargin{:});
   return

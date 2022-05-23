@@ -36,9 +36,11 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % SO3FunHarmonic/conv  SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv
 
 
-% TODO: I changed this code, so it is compatible to the definition.
-%       We should use          conv(inv(SO3F1),SO3F2)
-%       every time when conv(SO3F1,SO3F2) occurs, for example calcMDF.
+% The convolution is defined like above. But in MTEX the convolution of two
+% SO3Funs is mostly calculated by
+%                    conv(inv(conj(SO3F1)),SO3F2).
+%
+
 
 if isnumeric(SO3F1)
   SO3F = conv(SO3F2,SO3F1,varargin{:});

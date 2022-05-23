@@ -63,9 +63,10 @@ classdef SO3Kernel
     
     function psi = mpower(psi,p)
       % self convolution
-
-      l = 0:psi.bandwidth;
-      psi = SO3Kernel((psi.A ./ (2*l+1)).^p .* (2*l+1));      
+      error(['Operator ''*'' is not supported for operands of type ''SO3Kernel''. Use ' ...
+        'conv() instead.'])
+      % l = 0:psi.bandwidth;
+      % psi = SO3Kernel((psi.A ./ (2*l+1)).^p .* (2*l+1));      
     end
     
     function hw = halfwidth(psi)

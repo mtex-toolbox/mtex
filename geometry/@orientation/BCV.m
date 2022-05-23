@@ -32,7 +32,8 @@ for i = 1:length(psi)
   kappa = psi{i}.kappa;
   
   % compute ODF
-  eodf = conv(odf_d,(psi{i}*sob)^2);
+  
+  eodf = conv(odf_d,conv(conv(psi{i},sob)));
   
   
   % compute BCV
