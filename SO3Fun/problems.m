@@ -111,14 +111,29 @@ plot(C3)
 figure(2)
 plot(C4)
 
+%% 8) KernelODF ist zu ungenau   --->  Damit ist calcError in der Doku häufig viel zu hoch
+% verwendet in calcDensity, calcFourierODF
+% Aber Achtung: calcDensity wird in
+% problems/Missorientation/MissorientationDistributionFunction verwendet und
+% dass funktioniert genau wie in der doku.
 
+clear
 
+odf = SO3FunRBF.example;
+figure(1)
+plot(odf)
+ori = odf.discreteSample(50000);
+hold on
+plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.5,'all','MarkerEdgeColor','k','MarkerSize',4)
+hold off
 
+odf_rec = calcKernelODF(ori);
+odf_rec = calcDensity(ori);
 
+figure(2)
+plot(odf_rec)
 
-
-
-
+calcError(odf,odf_rec)
 
 
 
