@@ -24,7 +24,11 @@ classdef shape2d < grain2d
       prop = struct('x',1,'y',1,'grainId',1);
       ebsd = EBSD(rotation.nan,1,{'mineral'},prop);
       n = size(Vs,1);
-      F = [(1:n).',[(2:n).';1]];
+      if n==0
+        F = zeros(0,2);
+      else
+        F = [(1:n).',[(2:n).';1]];
+      end
       I_DG = 1;
       I_FD = sparse(ones(size(F,1),1));
       A_Db = 1;
