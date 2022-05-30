@@ -35,45 +35,36 @@ end
 bw = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
 
 
-% 1) compute/get weights and values for quadrature
-
-[SRight,SLeft] = extractSym(varargin);
-if isa(f,'SO3Fun')
-  SLeft = f.SLeft; SRight = f.SRight;
-  f = @(v) f.eval(v);
+if isa(f,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  f = SO3FunHandle(f,SRight,SLeft);
 end
 
-if isa(f,'function_handle')
-  if check_option(varargin,'gauss')
-    % possilbly use symmetries and evaluate in fundamental region
-    [nodes, W] = quadratureSO3Grid(2*bw,'gauss',SRight,SLeft,'complete');
-    values = f(nodes(:));
-  else
-% TODO: Usage of symmetries only implemented for SRight = crystalSymmetry('1') and 
-% SLeft = specimenSymmetry('1') with default symmetries 1, 2, 3, 4, 6, 112, 222, 422, 622, 23, 423, 312, 321
-    if SRight.id~=1 || SLeft.id~=1
-      % Use crystal and specimen symmetries by only evaluating in fundamental
-      % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
-      t1=1; t2=2; 
-      if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
-      if SLeft.id==22,  t2=4; end     % 2 | (N+1)
-      if SRight.id==22, t1=4; end     % 2 | (N+1)
-      while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
-        bw = bw+1;
-      end
-
-      % evaluate function handle f at Clenshaw Curtis quadrature grid by
-      % using crystal and specimen symmetry
-      [values,nodes,W] = eval_onCCGrid_useSym(f,bw,SRight,SLeft);
-    else
-      % ignore symmetry by using 'complete' grid
-      [nodes, W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'complete');
-      values = f(nodes(:));
-    end  
+try
+  if f.antipodal
+    f.antipodal = 0;
+    varargin{end+1} = 'antipodal';
   end
+end
 
+% 1) compute/get weights and values for quadrature
+
+if isa(f,'SO3Fun')
+  
+  SLeft = f.SLeft; SRight = f.SRight;
+
+  % TODO: Usage of symmetries only implemented for SRight = crystalSymmetry('1') and 
+  % SLeft = specimenSymmetry('1') with default symmetries 1, 2, 3, 4, 6, 112, 222, 422, 622, 23, 423, 312, 321
+  % others are not tested yet
+
+  % Use crystal and specimen symmetries by only evaluating at Clenshaw Curtis 
+  % quadrature grid in fundamental region. 
+  % Therefore adjust the bandwidth to crystal and specimen symmetry.
+  bw = AdjustBandwidth(bw,SRight,SLeft);
+  [values,nodes,W] = eval_onCCGrid_useSym(f,bw,SRight,SLeft);
 
 else
+
   nodes = f(:);
   values = varargin{1}(:);
   W = get_option(varargin,'weights',1);
@@ -85,110 +76,13 @@ else
     nodes = orientation(nodes,SRight,SLeft);
   end
 
-  
+  % Speed up for a high number of nodes, by transforming the nodes to an 
+  % equispaced Clenshaw Curtis grid.
   if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
-    
-    % Use crystal and specimen symmetries by only evaluating in fundamental
-    % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
-    t1=1; t2=2;
-    if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
-    if SLeft.id==22,  t2=4; end     % 2 | (N+1)
-    if SRight.id==22, t1=4; end     % 2 | (N+1)
-    while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
-      bw = bw+1;
-    end
-
-    grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
-    % in some special cases we need to evaluate the function handle in additional nodes
-    if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
-      warning('off')
-      if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
-        grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
-      end
-      warning('on')
-    end
-    [a,b,c] = nodes.project2EulerFR('nfft');
-    ori = [a,b,c];
-
-    I = zeros(length(values),3);
-    I(:,2) = round(ori(:,2).*(2*bw/pi));
-
-    % work on cases beta = 0 or pi
-    ind_beta0 = I(:,2)==0;
-    ind_betapi = I(:,2)==2*bw;
-    ori(ind_beta0,1) = mod(ori(ind_beta0,1) + ori(ind_beta0,3),2*pi);
-    ori(ind_beta0,3) = 0;
-    ori(ind_betapi,1) = mod(ori(ind_betapi,1) - ori(ind_betapi,3),2*pi);
-    ori(ind_betapi,3) = 0;
-
-    % get 1st and 3rd Euler angles
-    I(:,[1,3]) = round(ori(:,[1,3])*((bw+1)/pi));
-    I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
-
-    % get grid indices
-    ind = I * [size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1] + 1;
-
-    % add grid values with same indices
-    grid_values = zeros(size(grid_nodes));
-    B = accumarray(ind,values);
-    grid_values(1:length(B)) = B;
-
-    % set the equivalent nodes for beta=0 /pi
-    grid_values(:,1,:) = repmat(hankel(grid_values(:,1,1),circshift(grid_values(:,1,1),1)),SLeft.multiplicityZ,SRight.multiplicityZ);
-    if size(grid_values,2)==2*bw+1
-      grid_values(:,end,:) = toeplitz(grid_values(:,end,1),circshift(flip(grid_values(:,end,1)),1));
-    end
-    nodes = grid_nodes(grid_values~=0);
-    values = grid_values(grid_values~=0);
-
-
-% Alternatively split the values to all neigborhood nodes weighted by the distance
-% TODO: Special cases beta = 0 , pi/(2N) , pi*(1-1/(2N)) , pi do not work yet.
-%     bw=71;
-%     grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
-%     % in some special cases we need to evaluate the function handle in additional nodes
-%     if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
-%       warning('off')
-%       if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
-%         grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
-%       end
-%       warning('on')
-%     end
-%     [a,b,c] = nodes.project2EulerFR('nfft');
-%     ori = [a,b,c];
-%     
-%     I = permute(floor(ori.*[bw+1,2*bw,bw+1]/pi),[1,3,2]) ...
-%         + permute([0,0,0;0,0,1;0,1,0;0,1,1;1,0,0;1,0,1;1,1,0;1,1,1],[3,1,2]);
-% 
-%     I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
-%     ind = sum(I .* permute([size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1],[2,3,1]),3) + 1;
-% 
-%     grid_values = zeros(size(grid_nodes));
-% 
-%     % get the neighbor grid nodes for every single node
-%     d = nan(length(values),8);
-%     for m=1:8
-%       if m==1 || m==3 || m==7
-%         ZZZ = ~isnan(ind(:,m));
-%       end
-%       d(ZZZ,m) = angle(grid_nodes(ind(ZZZ,m)),nodes(ZZZ));
-%     end
-%     d = 1./d;
-%     v = d.*(values./sum(d,2,'omitnan'));
-% 
-%     B = accumarray(id,v);
-%     grid_values(1:length(B)) = B;
-% 
-%     nodes = grid_nodes(grid_values~=0);
-%     values = grid_values(grid_values~=0);
-
-
-    nodes.antipodal = f.antipodal;
+    [nodes,values] = Round2equispacedGrid(nodes,values,bw,SRight,SLeft);
   end
  
 end
-
-
 
 
 if isempty(nodes)
@@ -255,10 +149,120 @@ end
 try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
+
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 SO3F.bandwidth = bw;
 
 % if antipodal consider only even coefficients
-SO3F.antipodal = check_option(varargin,'antipodal') || (isa(nodes,'orientation') && nodes.antipodal);
+SO3F.antipodal = check_option(varargin,'antipodal');
+
+end
+
+
+
+
+
+% --------------------------- functions -----------------------------------
+
+function bw = AdjustBandwidth(bw,SRight,SLeft)
+  t1=1; t2=2; 
+  if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
+  if SLeft.id==22,  t2=4; end     % 2 | (N+1)
+  if SRight.id==22, t1=4; end     % 2 | (N+1)
+  while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
+    bw = bw+1;
+  end
+end
+
+
+function [nodes,values] = Round2equispacedGrid(nodes,values,bw,SRight,SLeft)
+
+  % Use crystal and specimen symmetries by only evaluating in fundamental
+  % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
+  bw = AdjustBandwidth(bw,SRight,SLeft);
+
+  grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
+  % in some special cases we need to evaluate the function handle in additional nodes
+  if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
+    warning('off')
+    if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
+      grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
+    end
+    warning('on')
+  end
+  [a,b,c] = nodes.project2EulerFR('nfft');
+  ori = [a,b,c];
+
+  I = zeros(length(values),3);
+  I(:,2) = round(ori(:,2).*(2*bw/pi));
+
+  % work on cases beta = 0 or pi
+  ind_beta0 = I(:,2)==0;
+  ind_betapi = I(:,2)==2*bw;
+  ori(ind_beta0,1) = mod(ori(ind_beta0,1) + ori(ind_beta0,3),2*pi);
+  ori(ind_beta0,3) = 0;
+  ori(ind_betapi,1) = mod(ori(ind_betapi,1) - ori(ind_betapi,3),2*pi);
+  ori(ind_betapi,3) = 0;
+
+  % get 1st and 3rd Euler angles
+  I(:,[1,3]) = round(ori(:,[1,3])*((bw+1)/pi));
+  I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
+
+  % get grid indices
+  ind = I * [size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1] + 1;
+
+  % add grid values with same indices
+  grid_values = zeros(size(grid_nodes));
+  B = accumarray(ind,values);
+  grid_values(1:length(B)) = B;
+
+  % set the equivalent nodes for beta=0 /pi
+  grid_values(:,1,:) = repmat(hankel(grid_values(:,1,1),circshift(grid_values(:,1,1),1)),SLeft.multiplicityZ,SRight.multiplicityZ);
+  if size(grid_values,2)==2*bw+1
+    grid_values(:,end,:) = toeplitz(grid_values(:,end,1),circshift(flip(grid_values(:,end,1)),1));
+  end
+  nodes = grid_nodes(grid_values~=0);
+  values = grid_values(grid_values~=0);
+
+
+% Alternatively split the values to all neigborhood nodes weighted by the distance
+% TODO: Special cases beta = 0 , pi/(2N) , pi*(1-1/(2N)) , pi do not work yet.
+%   bw=71;
+%   grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
+%   % in some special cases we need to evaluate the function handle in additional nodes
+%   if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
+%     warning('off')
+%     if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
+%       grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
+%     end
+%     warning('on')
+%   end
+%   [a,b,c] = nodes.project2EulerFR('nfft');
+%   ori = [a,b,c];
+%     
+%   I = permute(floor(ori.*[bw+1,2*bw,bw+1]/pi),[1,3,2]) ...
+%       + permute([0,0,0;0,0,1;0,1,0;0,1,1;1,0,0;1,0,1;1,1,0;1,1,1],[3,1,2]);
+% 
+%   I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
+%   ind = sum(I .* permute([size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1],[2,3,1]),3) + 1;
+% 
+%   grid_values = zeros(size(grid_nodes));
+% 
+%   % get the neighbor grid nodes for every single node
+%   d = nan(length(values),8);
+%   for m=1:8
+%     if m==1 || m==3 || m==7
+%       ZZZ = ~isnan(ind(:,m));
+%     end
+%     d(ZZZ,m) = angle(grid_nodes(ind(ZZZ,m)),nodes(ZZZ));
+%   end
+%   d = 1./d;
+%   v = d.*(values./sum(d,2,'omitnan'));
+% 
+%   B = accumarray(id,v);
+%   grid_values(1:length(B)) = B;
+% 
+%   nodes = grid_nodes(grid_values~=0);
+%   values = grid_values(grid_values~=0);
 
 end

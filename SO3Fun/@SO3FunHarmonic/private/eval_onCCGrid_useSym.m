@@ -1,10 +1,19 @@
-function [values,nodes,weights] = eval_onCCGrid_useSym(F,N,CS,SS)
+function [values,nodes,weights] = eval_onCCGrid_useSym(SO3F,N,CS,SS)
 % We want to evaluate a function handle on the rotation group in clenshaw
 % curtis quadrature nodes by using crystal and specimen symmetry. Hence
 % we evaluate the function handle on a fundamental region concerning the
 % symmetries.
 % Rotations around Z axis in crystal and specimen symmetries yields periodic
 % function values on Clenshaw Curtis quadrature grid and are therefore ignored
+
+
+% ignore symmetry by using 'complete' grid
+if CS.id==1 && SS.id==1
+  [nodes,weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS,'complete');
+  values = SO3F.eval(nodes(:));
+  return
+end
+
 
 % Get nodes by ClenshawCurtis quadrature
 nodes = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS);
@@ -36,7 +45,7 @@ if CS.multiplicityPerpZ~=1 && SS.multiplicityPerpZ~=1
 end
 
 % evaluate on fundamental region
-evalues = F(nodes(:));
+evalues = SO3F.eval(nodes(:));
 
 
 s = size(evalues);
