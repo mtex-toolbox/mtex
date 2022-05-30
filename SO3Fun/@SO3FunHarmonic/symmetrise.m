@@ -26,33 +26,28 @@ ss = SO3F.SS.properGroup;
 if numSym(cs) ~= 1
   % symmetrize crystal symmetry
   c = ones(1,numSym(cs))/numSym(cs);
-  SO3F.fhat = multiply(gcA2fourier(cs.rot,c,ones(L+1,1)),SO3F.fhat,L);
+  f1 = SO3FunHarmonic(SO3F.fhat);
+  f2 = SO3FunHarmonic.quadrature(cs.rot,c,'bandwidth',L,'nfsoft');
+  f = conv(f1,f2);
+  SO3F.fhat = f.fhat;
+
 end
   
 if numSym(ss) ~= 1
   % symmetrize specimen symmetry
   c = ones(1,numSym(ss))/numSym(ss);
-  SO3F.fhat = multiply(SO3F.fhat,gcA2fourier(ss.rot,c,ones(L+1,1)),L);
+  f1 = SO3FunHarmonic.quadrature(ss.rot,c,'bandwidth',L,'nfsoft');
+  f2 = SO3FunHarmonic(SO3F.fhat);
+  f = conv(f1,f2);
+  SO3F.fhat = f.fhat;
+
 end
 
 % grain exchange symmetry
-if SO3F.antipodal || check_option(varargin,'antipodal')
-  for l = 0:L
+if (SO3F.antipodal || check_option(varargin,'antipodal') ) && (SO3F.CS==SO3F.SS)
+  for l = 0:SO3F.bandwidth
     ind = deg2dim(l)+1:deg2dim(l+1);
     ind2 = reshape(flip(ind),2*l+1,2*l+1)';
-    % if CS and SS are '321', by symmetry properties it follows, that all 
-    % fourier coefficients with odd row or column indices have to be 0
-    if cs.id==19  
-      ind3 = ind(iseven(-l:l).*iseven(-l:l)'==0);
-      SO3F.fhat(ind3(:),:)=0;
-    end
-    % if CS and SS are '312' it follows by symmetry properties, that all 
-    % fourier coefficients which row or column indices are not multiple of
-    % 4 have to be 0
-    if cs.id==22
-      ind3 = ind((mod(-l:l,4)==0).*(mod(-l:l,4)==0).'==0);
-      SO3F.fhat(ind3(:),:)=0;
-    end
     SO3F.fhat(ind,:) = 0.5*(SO3F.fhat(ind,:) + SO3F.fhat(ind2(:),:));
   end
 end
@@ -61,39 +56,51 @@ SO3F = reshape(SO3F,s);
 
 end
 
-% --------------------------------------------------------------
 
-function c_hat = gcA2fourier(g,c,A)
+% % ------------------------ Test ------------------------------
+function test
 
-% 2^4 -> nfsoft-represent
-% 2^2 -> nfsoft-use-DPT
-nfsoft_flags = bitor(2^4,4);
-plan = nfsoftmex('init',length(A)-1,length(g),nfsoft_flags,0,4,1000,2*ceil(1.5*(length(A)+1)));
-nfsoftmex('set_x',plan,Euler(g,'nfft').');
-nfsoftmex('set_f',plan,c(:));
-nfsoftmex('precompute',plan);
-nfsoftmex('adjoint',plan);
-c_hat = nfsoftmex('get_f_hat',plan);
-nfsoftmex('finalize',plan);
+E = zeros(45,3);
+E(:,1) = 1:45;
+S = {'1','-1','211','m11','2/m11','121','1m1','12/m1','112','11m','112/m',...
+     '222','2mm','m2m','mm2','mmm',...
+     '3','-3','321','3m1','-3m1','312','31m','-31m',...
+     '4','-4','4/m','422','4mm','-42m','-4m2','4/mmm',...
+     '6','-6','6/m','622','6mm','-62m','-6m2','6/mmm',...
+     '23','m-3','432','-43m','m-3m'};
+N = 12;
 
-for l = 1:length(A)-1
-  ind = (deg2dim(l)+1):deg2dim(l+1);
-  c_hat(ind) = A(l+1)* reshape(c_hat(ind),2*l+1,2*l+1);
-end
+for k=1:45
   
+  rng(0)
+  CS = crystalSymmetry(S{k});
+  SS = specimenSymmetry(S{k});
+  fhat = rand(deg2dim(N+1),1)+rand(deg2dim(N+1),1)*1i-0.5-0.5i;
+  F = SO3FunHarmonic(fhat,CS,CS); F.antipodal = 1;
+  G = SO3FunHarmonic(fhat,SS,SS); G.antipodal = 1;
+  H = SO3FunHarmonic(fhat,CS,SS); H.antipodal = 1;
+  J = SO3FunHarmonic(fhat,SS,CS); J.antipodal = 1;
+
+  E(k,2) = max(abs(G.fhat-F.fhat));
+  E(k,3) = max(abs(H.fhat-F.fhat));
+  E(k,4) = max(abs(J.fhat-F.fhat));
+
+  r = rotation.rand(500);
+  E(k,5) = max(abs(F.eval(r)-F.eval(inv(r))));
+  E(k,6) = max(abs(G.eval(r)-G.eval(inv(r))));
+  E(k,7) = max(abs(H.eval(r)-H.eval(inv(r))));
+  E(k,8) = max(abs(J.eval(r)-J.eval(inv(r))));
+
 end
 
-% --------------------------------------------------------------
-
-% multiply Fourier matrices
-function f = multiply(f1,f2,lA)
-s1 = size(f1,2);
-s2 = size(f2,2);
-f = zeros(length(f1),max(s1,s2));
-for l = 0:lA
-  ind = deg2dim(l)+1:deg2dim(l+1);
-  f(ind,:) = reshape(pagemtimes( reshape(f1(ind,:),2*l+1,2*l+1,s1) , ...
-    reshape(f2(ind,:),2*l+1,2*l+1,s2) ),length(ind),max(s1,s2));
-end
+E  % for k=19:24 we have: CS.rot is different to SS.rot
 
 end
+
+
+
+
+
+
+
+
