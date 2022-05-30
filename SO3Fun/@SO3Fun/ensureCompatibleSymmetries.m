@@ -20,6 +20,15 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %  conv - be shure switched symmetries match
 %
 
+
+if isnumeric(SO3F1) || isnumeric(SO3F2) || ...
+    (isa(SO3F1,'SO3FunRBF') && SO3F1.c0~=0 && isempty(SO3F1.weights)) || ...
+    (isa(SO3F2,'SO3FunRBF') && SO3F2.c0~=0 && isempty(SO3F2.weights))
+  return
+end
+
+
+
 % TODO: Currently only same symmetries are suitable.
 %       By changing that also update the code in SO3FunComposition.
 
