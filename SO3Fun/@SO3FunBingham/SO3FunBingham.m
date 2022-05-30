@@ -1,5 +1,25 @@
 classdef SO3FunBingham < SO3Fun
-  
+% defines a BinghamODF
+%
+% Syntax
+%   SO3F = SO3FunBingham(kappa,A,cs)
+%
+% Input
+%  kappa - vector (shape parameter)
+%  A     - orthogonal 4x4 matrix
+%  cs    - @Symmetry
+%
+% Output
+%  SO3F - @SO3FunBingham
+%
+% Example
+%   
+%   cs = crystalSymmetry('1');
+%   kappa = [100 90 80 0];
+%   U     = eye(4);
+%   f = BinghamODF(kappa,U,cs)
+%
+
   properties
     A
     kappa = [1,0,0,0];

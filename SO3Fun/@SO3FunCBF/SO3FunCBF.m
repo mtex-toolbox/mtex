@@ -1,5 +1,25 @@
 classdef SO3FunCBF < SO3Fun
-% defines an fibre symmetric component
+% defines an fibre symmetric ODF
+%
+% Syntax
+%   SO3F = SO3FunCBF(h,r,weights,psi)
+%   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
+%
+% Input
+%  h       - @vector3d
+%  r       - @vector3d
+%  weights - double
+%  psi     - @S2Kernel
+%  fibre   - @fibre
+%
+% Output
+%  SO3F - @SO3FunCBF
+%
+% Example
+%   
+%   f = fibre.beta(cs);
+%   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
+%
 
   properties
     h
