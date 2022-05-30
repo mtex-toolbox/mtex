@@ -1,5 +1,26 @@
 classdef SO3FunComposition < SO3Fun
-% a class representing a function on the rotation group
+% This is a class representing a function on the rotation group as sum of 
+% SO3Funs. Therefore the summands possibly are different subclasses of 
+% SO3Fun, which are stored as components.
+%
+% Syntax
+%   SO3F = SO3FunComposition(F1,F2,F3)
+%
+% Input
+%  F1,F2,F3 - @SO3Fun
+%
+% Output
+%  SO3F - @SO3FunComposition
+%
+% Example
+%
+% F1 = SO3FunCBF.example;
+% F2 = SO3FunRBF.example;
+% F2.CS = F1.CS;
+% SO3F = F1+F2
+%
+%
+
   
 properties
   components = {}
