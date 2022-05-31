@@ -17,14 +17,15 @@ function plotSpektra(SO3F,varargin)
 % SO3Fun_calcFourier FourierODF
 
 SO3F = SO3FunHarmonic(SO3F,varargin{:});
+SO3F = SO3F(:);
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 
-power = zeros(L+1,1);
+power = zeros(L+1,numel(SO3F));
 LL = min(L,SO3F.bandwidth);
-power(1:LL+1) = SO3F.power(1:LL+1);
+power(1:LL+1,:) = SO3F.power(1:LL+1,:);
 
 optionplot(0:L,power,'Marker','o','linestyle',':',...
   'parent',mtexFig.gca,varargin{:});
