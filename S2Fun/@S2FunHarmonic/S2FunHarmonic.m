@@ -20,9 +20,8 @@ methods
 
     % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic
     if isa(fhat,'S2FunHarmonic')
-      sF = fhat;
-      A = S2FunHarmonic(fhat.fhat,varargin{:});
-      sF.fhat = A.fhat;
+      sF.fhat = fhat.fhat;
+      truncate(sF);
       return
     elseif isa(fhat,'S2Fun')
       sF = S2FunHarmonic.quadrature(fhat);
