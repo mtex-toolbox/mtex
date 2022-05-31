@@ -1,5 +1,5 @@
 classdef SO3FunBingham < SO3Fun
-% defines a BinghamODF
+% a class representing BinghamODFs
 %
 % Syntax
 %   SO3F = SO3FunBingham(kappa,A,cs)

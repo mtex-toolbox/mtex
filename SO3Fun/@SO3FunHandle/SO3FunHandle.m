@@ -1,6 +1,21 @@
 classdef SO3FunHandle < SO3Fun
-% a class representing a function on the rotation group
-  
+% a class representing a function on the rotation group by an function
+% handle
+%
+% Syntax
+%   SO3F = SO3FunHandle(fun)
+%
+% Input
+%  fun - @function_handle
+%
+% Output
+%  SO3F - @SO3FunHandle
+%
+% Example
+%
+%   r = orientation.rand;
+%   SO3F = SO3FunHandle(@(rot) angle(rot,r))
+%
 properties
   fun
   antipodal = false

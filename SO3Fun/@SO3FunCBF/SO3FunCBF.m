@@ -1,5 +1,5 @@
 classdef SO3FunCBF < SO3Fun
-% defines an fibre symmetric ODF
+% a class representing fibre symmetric ODFs
 %
 % Syntax
 %   SO3F = SO3FunCBF(h,r,weights,psi)

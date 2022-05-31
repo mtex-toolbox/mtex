@@ -1,6 +1,27 @@
 classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3FunHarmonic < SO3Fun
-% A class representing a harmonic function on the rotational group.
+% a class representing a harmonic function on the rotational group.
+%
+% Syntax
+%   SO3F = SO3FunHarmonic(fhat)
+%   SO3F = SO3FunHarmonic(fhat,CS,SS)
+%   SO3F = SO3FunHarmonic(F)
+%
+% Input
+%  fhat  - double (harmonic coefficient vector)
+%  CS,SS - @Symmetry 
+%  F     - @SO3Fun
+%
+% Output
+%  SO3F - @SO3FunHarmonic
+%
+% Example
+%
+%   SO3F = SO3FunHarmonic(rand(deg2dim(6),1))
+%
+%   F = SO3FunRBF.example
+%   SO3F = SO3FunHarmonic(F)
+%
 
 properties
   fhat   = [];              % harmonic coefficients

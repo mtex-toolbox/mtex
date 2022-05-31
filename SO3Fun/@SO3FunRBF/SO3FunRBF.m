@@ -1,4 +1,25 @@
 classdef SO3FunRBF < SO3Fun
+% a class representing radial ODFs by an SO3Kernel function and center orientations
+%
+% Syntax
+%   SO3F = SO3FunRBF(center,psi,weights,c0)
+%
+% Input
+%  center  - @orientation
+%  psi     - @SO3Kernel
+%  weights - double
+%  c0      - double
+%
+% Output
+%  SO3F - @SO3FunRBF
+%
+% Example
+%
+%   ori = orientation.rand(10);
+%   w = rand(10,1); w=w./sum(w);
+%   psi = SO3DeLaValleePoussinKernel(10);
+%   SO3F = SO3FunRBF(ori,psi,w)
+%
 
   properties
     c0 = 0                           % constant portion

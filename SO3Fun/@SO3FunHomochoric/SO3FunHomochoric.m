@@ -1,4 +1,5 @@
 classdef SO3FunHomochoric < SO3Fun
+% a class representing SO3Funs on a special grid
 
   properties
     S3G % homochoric orientation grid
