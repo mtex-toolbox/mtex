@@ -1,5 +1,5 @@
 classdef SO3Fun
-% a class representing a function on the rotational group
+% a class representing functions on the rotational group
 
   properties (Abstract = true)
     SLeft     % symmetry that acts from the left

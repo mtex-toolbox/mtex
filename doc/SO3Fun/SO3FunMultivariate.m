@@ -92,14 +92,14 @@ SO3F4(2:3);
 
 conj(SO3F1);
 SO3F1.';
-SO3F1';
+SO3F1'
 
 %%
 % Some other operations
 
 length(SO3F1)
 size(SO3F2)
-SO3F3 = reshape(SO3F3, 2, []);
+SO3F3 = reshape(SO3F3, 2, [])
 
 %%
 % *|sum| and |mean|*
@@ -109,8 +109,8 @@ SO3F3 = reshape(SO3F3, 2, []);
 % You could also calculate the conventional sum or the meanvalue over a 
 % dimension of a multivariate |SO3FunHarmonic|.
 
-sum(SO3F1, 1);
-mean(SO3F3, 2);
+sum(SO3F1, 1)
+mean(SO3F3, 2)
 
 %%
 % *min/max*
@@ -120,7 +120,7 @@ mean(SO3F3, 2);
 % dimension if not specified otherwise.
 %
 
-min(SO3F3);
+min(SO3F3)
 
 %%
 % *Remark on the matrix product*
