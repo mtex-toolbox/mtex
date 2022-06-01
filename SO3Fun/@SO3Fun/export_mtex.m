@@ -62,7 +62,7 @@ for i = 1:length(SO3F.components)
       convention = 'ZXZ';
     elseif check_option(varargin,{'ABG','ZYZ'})
       convention = 'ZYZ';
-    elseif isa(SO3F(i).center,'SO3Grid')
+    elseif isa(SO3F.components{i}.center,'SO3Grid')
       convention = get_flag(get(SO3F.components{i}.center,'options'),{'ZXZ','ZYZ'},'none');
     else
       convention = getMTEXpref('EulerAngleConvention');
