@@ -132,9 +132,22 @@ SO3F1 .* SO3F3
 
 %% Visualization of multivariate SO3FunHarmonic
 %
-% The same plot commands as for univariate |SO3FunHarmonic| work on multivariate as well.
-% The difference is that, now, each component is plotted next to one another.
+% Similary to the univariate case we also can look at the Fourier
+% coefficients of multivariate functions.
 
 plotSpektra(SO3F2)
 
+%%
+% The section plot and the 3d plot are performed only for the first component
+
 plot(SO3F2)
+
+%%
+
+plot3d(SO3F2)
+
+%%
+% while the plot along a specific fibre includes all components.
+
+plotFibre(SO3F2,fibre.beta)
+
