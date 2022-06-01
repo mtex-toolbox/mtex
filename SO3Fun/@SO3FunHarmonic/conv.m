@@ -120,7 +120,7 @@ if isa(SO3F2,'SO3Kernel')
 
   L = min(SO3F1.bandwidth,SO3F2.bandwidth);
   SO3F1.bandwidth = L;
-  s = size(SO3F1); SO3F1 = SO3F1(:);
+  s = size(SO3F1); SO3F1 = SO3F1.subSet(':');
 
   % multiply Wigner-D coefficients of SO3F1 
   % with the Chebyshev coefficients A of SO3F2 

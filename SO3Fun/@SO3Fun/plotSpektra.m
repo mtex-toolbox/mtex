@@ -17,7 +17,6 @@ function plotSpektra(SO3F,varargin)
 % SO3Fun_calcFourier FourierODF
 
 SO3F = SO3FunHarmonic(SO3F,varargin{:});
-SO3F = SO3F(:);
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
