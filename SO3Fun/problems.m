@@ -24,9 +24,6 @@ F2 = radon(SO3F,xvector);
 F1.eval(v)
 F2.eval(v)
 
-%% 2) first is not antipodal, second is
-RBF = SO3FunRBF.example;
-SO3F = SO3FunHarmonic(RBF)
 
 %% 3) Section-plot Error in pfSections when isa SRight 'specimenSymmetry'
 % this is a problem for functions created like 
@@ -136,9 +133,33 @@ plot(odf_rec)
 calcError(odf,odf_rec)
 
 
+%% 9) Teste SO3Fun/calcMindex
 
 
 
+%% 10) antipodal hat keine Auswirkung und wird nicht ermittelt
+% 1) get.antipodal for general SO3Fun
+% 2) set.antipodal for general SO3Fun
+% 3) use antipodal in eval,...
+
+cs = crystalSymmetry('1');
+kappa = [20 0 10 30];
+U = [zeros(3,1),(rotation.rand.matrix);1,zeros(1,3)];
+f = BinghamODF(kappa,U,cs)
+rng(0); 
+r = rotation.rand(10);
+f.eval(r)
+f.eval(inv(r))
+
+F1 = SO3FunHandle(@(rot) 0.5*(f.eval(rot)+f.eval(inv(rot))))
+F1.antipodal = 1;
+figure(1)
+plot(F1)
+
+f.antipodal = 1;
+F2 = SO3FunHarmonic(f)
+figure(2)
+plot(F2)
 
 
 
