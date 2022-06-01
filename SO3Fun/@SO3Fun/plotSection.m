@@ -40,5 +40,4 @@ elseif cR(1) == cR(2)
   end
 end
 
-
 oS.plot(Z,'smooth','colorRange',cR,varargin{:});

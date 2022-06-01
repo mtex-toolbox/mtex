@@ -5,7 +5,7 @@ function [x,omega] = plotFibre(odf,f,varargin)
 %   plotFibre(odf,f);
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  f   - @fibre
 %
 % Options

@@ -2,7 +2,7 @@ function plotIPDF(SO3F,r,varargin)
 % plot inverse pole figures
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  r   - @vector3d specimen directions
 %
 % Options

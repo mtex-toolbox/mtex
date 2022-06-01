@@ -7,7 +7,7 @@ function plotPDF(SO3F,h,varargin)
 %   plotPDF(odf,pf.h,'superposition',pf.c)
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  h   - @Miller crystallographic directions
 %  c   - structure coefficients
 %

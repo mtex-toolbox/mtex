@@ -22,7 +22,7 @@ function varargout = plot(odf,varargin)
 %   plot(odf,oS)
 %
 % See also
-% ODF/plotSection ODF/plot3d ODF/plotFibre
+% SO3Fun/plotSection SO3Fun/plot3d SO3Fun/plotFibre
 
 % get current figure
 [mtexFig,isNew] = newMtexFigure(varargin{:});
