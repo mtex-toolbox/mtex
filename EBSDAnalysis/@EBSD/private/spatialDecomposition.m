@@ -25,7 +25,7 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  if check_option(varargin,'noQHull')
+  if ~check_option(varargin,'QHull')
   
     dt = delaunayTriangulation([X;dummyCoordinates]);
     [V,D] = voronoiDiagram(dt);

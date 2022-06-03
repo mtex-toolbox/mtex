@@ -9,11 +9,11 @@
 % || <rotation.load.html |rotation.load|> || || <rotation.inversion.html |rotation.inversion|> || <rotation.mirroring.html |rotation.mirroring|>  ||
 %
 % At the end all functions return a variable of type
-% <rotation.rotation.html> which represents a list of rotations that are
-% internaly stored as <quaternion.index.html quaternions>. An overview of
-% different rotation representations by three dimensional vectors and their
-% properties can be found in the section <RotationRepresentations.html
-% Representations>.
+% <rotation.rotation.html |rotation|> which represents a list of rotations
+% that are internaly stored as <quaternion.quaternion.html quaternions>. An
+% overview of different rotation representations by three dimensional
+% vectors and their properties can be found in the section
+% <RotationRepresentations.html Representations>.
 %
 %% Euler Angles
 %
