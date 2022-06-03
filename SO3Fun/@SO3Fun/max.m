@@ -6,8 +6,8 @@ function [values,modes] = max(SO3F,varargin)
 %
 %   [v,pos] = max(SO3F,'numLocal',5) % the 5 largest local maxima
 %
-%   SO3F = max(SO3F, c) % maximum of a spherical functions and a constant
-%   SO3F = max(SO3F1, SO3F2) % maximum of two spherical functions
+%   SO3F = max(SO3F, c) % maximum of a rotational functions and a constant
+%   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions
 %   SO3F = max(SO3F1, SO3F2, 'bandwidth', bw) % specify the new bandwidth
 %
 %   % compute the maximum of a multivariate function along dim
