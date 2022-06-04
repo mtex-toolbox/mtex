@@ -31,7 +31,7 @@ classdef ipfSections < ODFSections
       
       oS.updateTol(oS.omega);
       
-      oS.referenceField = @(h) pfSections.oneSingularityField(h);
+      oS.referenceField = S2VectorField.sigma;
       
     end
     
@@ -95,7 +95,7 @@ classdef ipfSections < ODFSections
     function vF = vectorField(oS,r,omega)
       
       
-      vF = oS.referenceField(r);
+      vF = oS.referenceField.eval(r);
       
       if nargin == 3
         vF = rotation.byAxisAngle(r,omega-pi/2) .* vF;

@@ -26,7 +26,8 @@ F2.eval(v)
 
 
 %% 3) Section-plot Error in pfSections when isa SRight 'specimenSymmetry'
-% this is a problem for functions created like 
+% RH -> resolved for sigma
+% this is a problem for functions created like
 %SO3F = SO3FunHarmonic(rand(1e5,1));
 
 SO3F = SO3FunHarmonic.example;
@@ -36,6 +37,8 @@ plot(SO3F,'sigma')
 %plot(SO3F,'pf')
 
 %% 4) Bug: all other Plots do not work anymore after trying 'ipf'
+% RH: resolved
+
 SO3F = SO3FunHarmonic.example;
 plot(SO3F,'sigma')
 
@@ -48,11 +51,16 @@ plot(SO3F,'sigma')
 % This problem is produced by convolution of SO3FunRBFs.
 % example 1
 rng(0)
+
 F = inv(SO3FunRBF.example);
+
 H=F; H.SS = H.SS.properGroup
 r=rotation.rand(5);
 F.eval(r)
 H.eval(r)
+
+%%
+
 
 % example 2
 F=SO3FunRBF.example;
