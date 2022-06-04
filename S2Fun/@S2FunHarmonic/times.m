@@ -31,6 +31,13 @@ else
   bw = getMTEXpref('maxS2Bandwidth');
 end
 f = @(v) sF1.eval(v) .* sF2.eval(v);
-sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
+
+if isa(sF1,'S2VectorField') || isa(sF2,'S2VectorField')
+  sF = S2VectorFieldHarmonic.quadrature(f, 'bandwidth', bw);
+elseif isa(sF1,'S2AxisField') || isa(sF2,'S2AxisField')
+  sF = S2AxisFieldHarmonic.quadrature(f, 'bandwidth', bw);
+else
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw);
+end
 
 end

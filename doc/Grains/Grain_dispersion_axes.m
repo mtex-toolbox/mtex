@@ -31,11 +31,12 @@ hold off
 %% Visualizing dispersion of orientations via directions
 
 % First, we will inspect a selected grain
-sel_id =  1395;
+sel_id =  1321;
 hold on
 plot(grains('id',sel_id).boundary,'linewidth',3,'linecolor','b')
 hold off
 
+%%
 % and examine the spread of orientations in terms of its pole figure. In
 % order to do so, we can define a grid of crystal direction and compute the
 % corresponding specimen directions for each orientation within the grain.

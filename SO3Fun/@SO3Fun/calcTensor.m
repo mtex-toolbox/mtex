@@ -23,8 +23,7 @@ function varargout = calcTensor(odf,T,varargin)
 % tensor/mean EBSD/calcTensor
 
 % decide between the quadrature based method and the harmonic method
-if ~any(cellfun(@(x) isa(x,'BinghamComponent'),odf.components)) ...
-    && ~check_option(varargin,'quadrature')
+if ~check_option(varargin,'quadrature')
 
   % the harmonic route is directly implemented into tensor/mean
   [varargout{1:nargout}] = mean(T,odf,varargin{:});

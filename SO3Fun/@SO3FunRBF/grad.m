@@ -50,7 +50,7 @@ for issq = 1:length(qSS)
   
   % set up vector3d matrix - a tangential vector for any pair of
   % orientations
-  v = sparse(i,j,v,length(center),length(rot)) .* spfun(@psi.DK,d);
+  v = sparse(i,j,v,length(center),length(rot)) .* spfun(@psi.grad,d);
   
   % sum over all neighbours
   g = g - v.' * SO3F.weights(:) ;

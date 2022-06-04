@@ -42,10 +42,9 @@ maxAngle = get_option(varargin,{'radius','angle'},inf);
 if check_option(varargin,'seed')
   seed = reshape(get_option(varargin,'seed'),[],1);
   weights = get_option(varargin,'weights',SO3F.eval(seed));
-elseif isa(SO3F,'SO3FunComposition') && isa(SO3F.components{end},'SO3FunRBF') ...
-                && length(SO3F.components{end}.center)==1
-  seed = SO3F.components{end}.center;
-  weights = SO3F.components{end}.weights; 
+elseif isa(SO3F,'SO3FunRBF')
+  seed = SO3F.center;
+  weights = SO3F.weights; 
 else
   seed = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',2.5*degree);
   weights = ones(length(seed),1) ./ length(seed);
