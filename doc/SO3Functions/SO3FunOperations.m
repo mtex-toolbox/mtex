@@ -1,35 +1,45 @@
 %% Operations on Rotational Functions
 %
 %%
-% The idea of variables of type @SO3Fun is to calculate with $SO(3)$
+% The idea of variables of type @SO3Fun is to calculate with rotational
 % functions similarly as Matlab does with vectors and matrices. In order to
-% illustrate this we consider the following two $SO(3)$ functions
+% illustrate this we consider the following two rotational functions
+%
+% An ODF determined from XRD data
+SO3F1 = SO3Fun.dubna
 
-SO3F1 = SO3Fun.dubna;
+plot(SO3F1,'sigma')
+
+%%
+% and an unimodal distributed ODF
+
 R = orientation.byAxisAngle(vector3d.Y,pi/4,SO3F1.CS);
-SO3F2 = SO3FunRBF(R,SO3DeLaValleePoussinKernel);
+SO3F2 = SO3FunRBF(R,SO3DeLaValleePoussinKernel)
 
-plot(SO3F1)
-plot(SO3F2)
+plot(SO3F2,'sigma')
 
 %% Basic arithmetic operations
-% Now the sum of these two $SO(3)$ functions is again a $SO(3)$ function
+% Now the sum of these two rotational functions is again a rotational
+% function, i.e., a function of type <SO3Fun.SO3Fun.html |SO3Fun|>
 
 1 + 2 * SO3F1 + SO3F2
 
-plot(2 * SO3F1 + SO3F2)
+plot(2 * SO3F1 + SO3F2,'sigma')
 
 %%
 % Accordingly, one can use all basic operations like |-|, |*|, |^|, |/|,
-% <SO3Fun.min.html |min|>, <SO3Fun.max.html |max|>, <SO3Fun.abs.html |abs|>,
-% <SO3Fun.sqrt.html |sqrt|> to calculate with variables of type
+% <SO3Fun.min.html |min|>, <SO3Fun.max.html |max|>, <SO3Fun.abs.html
+% |abs|>, <SO3Fun.sqrt.html |sqrt|> to calculate with variables of type
 % @SO3Fun.
 
 % the maximum between two functions
-plot(max(2*SO3F1,SO3F2));
+plot(max(2*SO3F1,SO3F2),'sigma');
+
+
+%%
 
 % the minimum between two functions
-plot(min(2*SO3F1,SO3F2));
+plot(min(2*SO3F1,SO3F2),'sigma');
 
 %%
 % We also can work with the pointwise <SO3Fun.conj.html |conj|>, 
@@ -46,20 +56,19 @@ g.eval(inv(R))
 
 %% Local Extrema
 % 
-% The above mentioned functions <SO3Fun.min.html |min|> and <SO3Fun.max.html
-% |max|> have very different use cases
+% The above mentioned functions <SO3Fun.min.html |min|> and
+% <SO3Fun.max.html |max|> have very different use cases
 %
-% * if two $SO(3)$ functions are passed as arguments, a $SO(3)$ function
-% defined as the pointwise min/max between these two functions is
-% computed
-% * if a $SO(3)$ function and a single number are passed as arguments a
-% $SO(3)$ function defined as the pointwise min/max between the
-% function and the value is computed
-% * if only a single $SO(3)$ function is provided the global maximum /
-% minimum of the function is returned
+% * if a single rotational function is provided the global maximum /
+% minimum of the function is computed
+% * if two rotational functions are provied, a rotational function defined
+% as the pointwise min/max between these two functions is computed
+% * if a rotational function and a single number are passed as arguments a
+% rotational function defined as the pointwise min/max between the function
+% and the value is computed
+
 % * if additionally the option 'numLocal' is provided the certain number of
 % local minima / maxima is computed
-
 
 plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
 
@@ -115,9 +124,9 @@ grad(SO3F1,R)
 G = grad(SO3F1)
 
 % plot the gradient on top of the function
-plot(SO3F1,'upper')
+plot(SO3F1,'upper','sigma')
 hold on
-plot(G)
+plot(G,'color','black','linewidth',2,'resolution',5*degree)
 hold off
 
 %%
@@ -132,6 +141,6 @@ hold off
 rot = rotation.byEuler(30*degree,0*degree,90*degree,'Bunge')
 
 % plot the rotated function
-plot(rotate(2 * SO3F1 + SO3F2,rot))
+plot(rotate(2 * SO3F1 + SO3F2,rot),'sigma')
 
 

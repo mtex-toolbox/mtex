@@ -1,14 +1,15 @@
 %% Wigner-D functions
 %
 %%
-% The Wigner-D functions are special functions on the rotation group $SO(3)$.
+% The Wigner-D functions are special functions on the rotation group
+% $SO(3)$.
 %
-% In terms of Matthies (ZYZ-convention) Euler angles 
-% ${\bf R} = ${\bf R}(\alpha,\beta,\gamma)$ the $L_2$-normalized Wigner-D 
-% function of degree $n\in\mathbb N$ and orders $k,l \in \{-n,\dots,n\}$ is
-% defined by
+% In terms of Matthies (ZYZ-convention) Euler angles ${\bf R} = {\bf
+% R}(\alpha,\beta,\gamma)$ the $L_2$-normalized Wigner-D function of degree
+% $n$ and orders $k,l \in \{-n,\dots,n\}$ is defined by
 %
-% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma} \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
+% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma}
+% \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
 %
 % where $d_n^{k,l}$, denotes the real valued Wigner-d function, which is
 % defined by some constants
@@ -29,7 +30,7 @@
 % were $P_s^{a,b}$ denotes the corresponding Jacobi polynomial of degree $s$.
 %
 % This definition is slightly different to other well known definitions,
-% because the Wigner-D functions are defined compatible to the 
+% because the Wigner-D functions are defined compatible to the
 % <SphericalHarmonics.html spherical harmonics> which form an orthonormal
 % basis on the 2-sphere.
 %
@@ -41,7 +42,7 @@ R = rotation.rand
 d = Wigner_D(1,beta)
 
 %%
-% where the orders $k,l$ work as row and column indices.
+% where the orders $k$, $l$ work as row and column indices.
 %
 % Similary we get the function values of the Wigner-D functions of degree 1
 % in a rotation $R$ by the command |Wigner_D| and the normalization factor 
@@ -50,11 +51,11 @@ d = Wigner_D(1,beta)
 R = rotation.rand
 sqrt(3)*Wigner_D(1,R)
 
-%%
-% The Wigner-D functions form an orthonormal basis in $L_2(SO(3))$.
-% Hence we describe functions on $SO(3)$ by there harmonic
-% representation using the class <SO3FunHarmonicRepresentation.html
-% @SO3FunHarmonic>.
+%% Series Expansion
+%
+% The Wigner-D functions form an orthonormal basis in $L_2(SO(3))$. Hence,
+% we can describe functions on $SO(3)$ by there harmonic representation
+% using the class <SO3FunHarmonicRepresentation.html |SO3FunHarmonic|>.
 %
 % With that we define the Wigner-D function $D_1^{1,-1}$ by
 

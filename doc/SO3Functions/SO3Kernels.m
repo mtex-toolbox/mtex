@@ -3,15 +3,15 @@
 %%
 % Also take a look at the page <ODFShapes.html ODFShapes>.
 %
-% We examine some radial symmetric kernel functions $\tilde\psi \colon \mathcal{SO}(3) \to \mathbb R$ 
-% on $\mathcal{SO}(3)$. For rotations $R\in\mathcal{SO}(3)$ we write this
-% $\mathcal{SO}(3)$-kernels as functions of $t=\cos\frac{\omega(R)}2$ on 
+% We examine some radial symmetric kernel functions $\tilde \psi \colon SO(3) \to R$ 
+% on $SO(3)$. For rotations $R \in SO(3)$ we write this
+% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega(R)}2$ on 
 % the real numbers. Hence we write
 %
 % $$ \psi(t) = \tilde\psi(R) $$.
 %
-% Moreover, we have $\psi \in L^2([-1,1],\sqrt{1-t^2}\mathrm{d}t) and we describe
-% this $\mathcal{SO}(3)$ kernel functions by there Chebyshev expansion
+% Moreover, we have $\psi \in L^2([-1,1],\sqrt{1-t^2}\mathrm{d}t)$ and we
+% describe these rotational kernel functions by there Chebyshev expansion
 %
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal U_{2n}(t) $$
 %
@@ -44,7 +44,7 @@ SO3F = SO3FunRBF(R,psi)
 plot(SO3F)
 
 %%
-% In MTEX there are lots of SO3Kernels included. The most importants are
+% The following kernel function are predefined in MTEX
 %
 % * <SO3Kernels.html#7 de la Vallee Poussin kernel> (used for ODF, MODF, Pole figures, etc)
 % * <SO3Kernels.html#9 Dirichlet kernel> (uesd for physical properties)
