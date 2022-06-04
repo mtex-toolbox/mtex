@@ -1,13 +1,21 @@
 %% Rotational Functions
 %
 %%
-% By a variable of type @SO3Fun it is possible to represent an entire
-% function on the rotation group $SO(3)$, i.e. a function $f\colon SO(3)\to\mathbb C$. 
-% A typical example of such a function is the orientation distribution 
-% function (<ODFTheory.html ODF>)
+% By a rotational function we understand a function that assigns to each
+% rotation or orientation a numerical value. An import example of a
+% rotational function is the <ODFTheory.html orientation density function
+% (ODF)> that assignes to each crystal orientation the probability of its
+% occurence within a specimen. Other examples are the Schmidt or the Taylor
+% factor as a function of the crystal orientation.
+%
+%% 
+%
+% Within MTEX a rotational function is represented by a variable of type
+% <SO3Fun.SO3Fun.html |SO3Fun|>. For the moment we consider the following
+% ODF
 
-% the famouse Santa Fe orientation distribution function
-odf = SantaFe;
+% a predefined ODF
+odf = SantaFe
 
 %%
 % Since, the variable |odf| stores all information about this function we
@@ -27,27 +35,24 @@ plot(odf)
 %%
 % or find its local maxima
 
-[~,localMax] = max(odf,'numLocal',12)
+[~,pos] = max(odf)
 
-annotate(localMax)
+annotate(pos)
 
 %%
-% A complete list of operations that can be performed with $SO(3)$
-% functions can be found in section <SO3FunOperations.html Operations>.
-%
-
+% A complete list of operations that can be performed with rotational
+% functions can be found in section <SO3FunOperations.html operations>.
 
 %% Representation of Rotational Functions
 %
-% In MTEX there exist different ways for representing $SO(3)$ functions
-% internally. 
+% Internally MTEX represents rotational functions in different ways:
 %
-% || harmonic expansion || <SO3FunHarmonicRepresentation.html @SO3FunHarmonic> ||
-% || radial basis function || @SO3FunRBF ||
-% || fibre elements || <FibreODFs.html @SO3FunCBF> ||
-% || Bingham distribution || <BinghamODFs.html @SO3FunBingham> ||
-% || sum of the other representations || @SO3FunComposition ||
-% || function handle || @SO3FunHandle ||
+% || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
+% || as superposition of radial function || @SO3FunRBF ||
+% || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> ||
+% || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
+% || as sum of different components || @SO3FunComposition ||
+% || explicitely given by a formula || @SO3FunHandle ||
 %
 % All representations allow the same operations which are specified for
 % the abstact class |@SO3Fun|. In particular it is possible
