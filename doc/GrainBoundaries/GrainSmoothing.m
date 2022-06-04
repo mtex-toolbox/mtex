@@ -53,7 +53,7 @@ sum(grains_smooth.boundary('indexed').segLength)
 % |grains.smooth|> performs just a single iteration
 
 histogram(grains_smooth.boundary('indexed').direction, ...
-          'weights',norm(grains_smooth.boundary('indexed').direction),180)
+  'weights',grains_smooth.boundary('indexed').segLength,180)
 
 %% Effect of smoothing iterations
 % If we specify a larger number of iterations, we can see that the scatting
