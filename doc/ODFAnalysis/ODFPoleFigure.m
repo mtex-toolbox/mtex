@@ -67,11 +67,13 @@ plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
 odf.calcPDF(Miller(1,0,0,cs),xvector)
 
 %%
-% For a more complex example let us define a fibre and plot the ODF there.
+% For a more complex example let us define a fibre and plot the ODF along
+% this fibre.
 
-fibre = orientation(fibre(Miller(1,0,0,odf.CS),yvector));
+f = fibre(Miller(1,0,0,odf.CS),yvector);
 
-plot(odf.eval(fibre))
+close all
+plotFibre(odf,f)
 
 %%
 % Finally, lets set back the default colormap.

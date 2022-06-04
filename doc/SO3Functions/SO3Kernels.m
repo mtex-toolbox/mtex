@@ -39,8 +39,7 @@ plot(psi)
 % orientation $R$ by using the class <SO3FunRBF.html |SO3FunRBF|>, i.e.
 
 psi =SO3DeLaValleePoussinKernel('halfwidth',20*degree)
-R = orientation.byAxisAngle(vector3d.Y,pi/3)
-SO3F = SO3FunRBF(R,psi)
+SO3F = SO3FunRBF(orientation.rand,psi)
 plot(SO3F)
 
 %%
@@ -63,6 +62,7 @@ plot(SO3F)
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',30*degree)
 
+close all
 plot(psi)
 
 %%

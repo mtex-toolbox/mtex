@@ -119,4 +119,4 @@ plotPDF(odf,pf{1}.h,'antipodal','parent',axesPos)
 axesPos = subplot(1,3,3);
 
 % plot the difference pole figure at this position
-plotDiff(odf,pf({1}),'parent',axesPos)
+%plotDiff(odf,pf({1}),'parent',axesPos)

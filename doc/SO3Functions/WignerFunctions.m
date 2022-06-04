@@ -1,6 +1,7 @@
 %% Wigner-D functions
 %
-%%
+%% Theorie
+%
 % The Wigner-D functions are special functions on the rotation group
 % $SO(3)$.
 %
@@ -11,46 +12,37 @@
 % $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma}
 % \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
 %
-% where $d_n^{k,l}$, denotes the real valued Wigner-d function, which is
-% defined by some constants
-%
-% $$ a &=|k-l|,\\
-% b &=|k+l|,\\
-% s &= n- \frac{a+b}2 = n - \max\{|k|,|l|\},\\
-% \nu &= \min\{0,k\}+\min\{0,l\}+
-%         \begin{cases}
-%           0 	& \text{falls } l \geq k,\\
-%           k+l & \text{sonst}
-%         \end{cases} $$
-%
-% and the formula
-%
-% $$ d_n^{k,l}(x) = (-1)^{\nu} \binom{2n-s}{s+a}^{\frac12} \binom{s+b}{b}^{-\frac12} \left(\frac{1-x}{2}\right)^{\frac{a}2} \left(\frac{1+x}{2}\right)^{\frac{b}2} P_s^{a,b}(x)$$
-%
-% were $P_s^{a,b}$ denotes the corresponding Jacobi polynomial of degree $s$.
+% where $d_n^{k,l}$, denote the real valued Wigner-d functions, which are
+% defined in terms of Jacobi polynomial $P_s^{a,b}$  by
+% 
+% $$ d_n^{k,l}(x) = (-1)^{\nu} \binom{2n-s}{s+a}^{\frac12}
+% \binom{s+b}{b}^{-\frac12} \left(\frac{1-x}{2}\right)^{\frac{a}{2}}
+% \left(\frac{1+x}{2}\right)^{\frac{b}2} P_s^{a,b}(x)$$
+% 
+% using the constants $a =|k-l|$, $b =|k+l|$, $s = n - \max\{|k|,|l|\}$ and
+% $\nu = \min\{0,k\}+\min\{0,l\}$ if $l \geq k$; $\nu =
+% \min\{0,k\}+\min\{0,l\} + k+l$ otherwise.
 %
 % This definition is slightly different to other well known definitions,
 % because the Wigner-D functions are defined compatible to the
 % <SphericalHarmonics.html spherical harmonics> which form an orthonormal
 % basis on the 2-sphere.
 %
-%%
-% We define the real valued Wigner-d functions of degree 1 by
+%% 
+% In MTEX the Wigner-D and Wigner-d functions are available through the
+% command <Wigner_D.html |Wigner_D|>
 
-R = rotation.rand
-[alpha,beta,gamma] = Euler(R,'Matthies')
+% the Wigner-d function of degree 1
+beta = 0.5;
 d = Wigner_D(1,beta)
 
+% the Wigner-D function of degree 1
+R = rotation.rand;
+D = sqrt(3) * Wigner_D(1,R)
+
 %%
-% where the orders $k$, $l$ work as row and column indices.
+% Here the orders $k$, $l$ work as row and column indices.
 %
-% Similary we get the function values of the Wigner-D functions of degree 1
-% in a rotation $R$ by the command |Wigner_D| and the normalization factor 
-% $\sqrt{2n+1}$, i.e.
-
-R = rotation.rand
-sqrt(3)*Wigner_D(1,R)
-
 %% Series Expansion
 %
 % The Wigner-D functions form an orthonormal basis in $L_2(SO(3))$. Hence,
@@ -68,17 +60,14 @@ D.eval(R)
 %
 % Here we define the $L_2$-norm by
 %
-% $$ \lVert f \rVert_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
+% $$ \| f \|_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
 %
-% such that $ \| 1 \|_2^2 = 1$. Take a look on the section 
+% such that $\| 1 \|_2^2 = 1$. Take a look on the section 
 % <SO3FunOperations.html#6 Integration of SO3Fun's>.
 %
-% Using that definition the Wigner-D functions in MTEX fulfill
-%
-% $$\| D_n^{k,l} \|_2 = 1$$
-% 
-% for all $n,k,l$.
-%
+% Using that definition the Wigner-D functions in MTEX fulfill $\|
+% D_n^{k,l} \|_2 = 1$ for all $n,k,l$.
+
 
 norm(D)
 
@@ -103,7 +92,9 @@ norm(D)
 % The Wigner-d functions by construction fulfill a lot of symmetry 
 % properties. Some importants are
 %  
-% $$ d_n^{k,l}(x) &= d_n^{-k,-l}(x) = (-1)^{k+l}\, d_n^{l,k}(x) = (-1)^{k+l}\, d_n^{-l,-k}(x) \\
-%    d_n^{k,l}(x) &= (-1)^{n+k+l}\,d_n^{-k,l}(-x) = (-1)^{n+k+l}\,d_n^{k,-l}(-x) \\
-%    d_n^{k,l}(\cos\beta) &= (-1)^{k+l}\,d_n^{k,l}(\cos(-\beta))  $$
+% $$ d_n^{k,l}(x) = d_n^{-k,-l}(x) = (-1)^{k+l}\, d_n^{l,k}(x) = (-1)^{k+l}\, d_n^{-l,-k}(x)$$
+% 
+% $$ d_n^{k,l}(x) = (-1)^{n+k+l}\,d_n^{-k,l}(-x) = (-1)^{n+k+l}\,d_n^{k,-l}(-x) $$
+%
+% $$d_n^{k,l}(\cos\beta) = (-1)^{k+l}\,d_n^{k,l}(\cos(-\beta))$$
 %
