@@ -1,8 +1,8 @@
-function h = plot(sVF,varargin)
-% plot spherical vector field
+function varargout = plot(SO3VF,varargin)
+% plot vector field on SO(3)
 %
 % Syntax
-%   plot(sVF)
+%   plot(SO3VF)
 %
 % Options
 %  normalized - normalize vectors
@@ -13,28 +13,45 @@ function h = plot(sVF,varargin)
 % S2VectorField/quiver3
 %  
 
-% generate a grid where the function will be plotted
-plotNodes = equispacedS2Grid('resolution',10*degree,'no_center',varargin{:});
+% get current figure
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
-% evaluate the function on the plotting grid
-values = sVF.eval(plotNodes);
-
-if check_option(varargin,'normalized'), values = values.normalize; end
-
-% some default plotting settings
-varargin = ['color', 'k', varargin];
-if check_option(varargin,'complete')
-  varargin = [varargin,{'removeAntipodal'}];
+%
+if isNew % old functionality in case plotting to a new figure
+  if check_option(varargin,{'3d','axisAngle','rodrigues'})
+    quiver3(SO3VF,varargin{:});
+  else
+    quiverSection(SO3VF,varargin{:});
+  end
+  return;
+end
+  
+% somehow assuming that add2all is supplied
+if check_option(varargin,'add2all')
+  allAxes = mtexFig.children;
+else % this case is probably not needed at all
+  allAxes = get_option(varargin,'parent',mtexFig.currentAxes);
+end
+varargin = delete_option(varargin,{'add2all','parent'},[0,1]);
+  
+for ax = allAxes(:).'
+  switch get(ax,'tag')
+    
+    case 'pdf' % pole figure annotations
+        
+      [varargout{1:nargout}] = plotPDF(SO3VF,getappdata(ax,'h'),varargin{:},'parent',ax,'noTitle');
+        
+    case 'ipdf' % inverse pole figure annotations
+        
+      [varargout{1:nargout}] = plotIPDF(SO3VF,getappdata(ax,'inversePoleFigureDirection'),varargin{:},'parent',ax,'noTitle');
+        
+  end
 end
 
-% plot the function values
-if check_option(varargin, '3d')
-  h = quiver3(plotNodes,values,varargin{:});
-else
-  h = quiver(plotNodes,values,varargin{:});
+% TODO: store ODF section info on axis level
+% because we may have mixed pole figures and ODF sections in one figure
+if isappdata(mtexFig.parent,'ODFSections')
+  [varargout{1:nargout}] = quiverSection(SO3VF,varargin{:});  
 end
-
-% remove output if not required
-if nargout == 0, clear h; end
 
 end

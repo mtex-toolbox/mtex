@@ -1,11 +1,11 @@
-function g = grad(SO3F,rot,varargin)
+function g = grad(SO3F,varargin)
 % gradient at rotation rot
 %
 % Syntax
 %   g = grad(SO3F,rot)
 %
 % Input
-%  SO3F - @SO3FunUnimodal
+%  SO3F - @SO3FunRBF
 %  rot  - @rotation
 %
 % Output
@@ -16,10 +16,12 @@ function g = grad(SO3F,rot,varargin)
 %
 % $$s(g1_i) = sum_j c_j DK(g1_i,g2_j) $$
 
-if check_option(varargin,'check')
-  g = grad@SO3Fun(SO3F,rot,varargin{:});
+if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'quaternion')
+  g = grad@SO3Fun(SO3F,varargin{:});
   return
 end
+
+rot = varargin{1}; varargin(1) = [];;
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(rot);
@@ -53,7 +55,7 @@ for issq = 1:length(qSS)
   v = sparse(i,j,v,length(center),length(rot)) .* spfun(@psi.grad,d);
   
   % sum over all neighbours
-  g = g - v.' * SO3F.weights(:) ;
+  g = g - reshape(v.' * SO3F.weights(:),size(g)) ;
   
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup) ;

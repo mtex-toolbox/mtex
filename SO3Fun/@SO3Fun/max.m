@@ -49,10 +49,10 @@ end
 if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   SO3F2 = varargin{1};
   ensureCompatibleSymmetries(SO3F,SO3F2);
-  f = SO3FunHandle(@(rot) max(SO3F.eval(rot),SO3F2.eval(rot)),SO3F.CS,SO3F.SS);
+  values = SO3FunHandle(@(rot) max(SO3F.eval(rot),SO3F2.eval(rot)),SO3F.CS,SO3F.SS);
   if isa(SO3F,'SO3FunHarmonic') || isa(SO3F2,'SO3FunHarmonic')
-    values = SO3FunHarmonic(f,'bandwidth', ...
-        min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));
+    values = SO3FunHarmonic(values,'bandwidth', ...
+        min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));  
   end
   return
 end

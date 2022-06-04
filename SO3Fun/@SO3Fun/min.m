@@ -41,4 +41,4 @@ end
 
 [varargout{1:nargout}] = max(varargin{:});
 
-varargout{1} = - varargout{1};
+varargout{1} = -varargout{1};
