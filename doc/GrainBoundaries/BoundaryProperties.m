@@ -44,32 +44,32 @@ hold off
 % grain boundary. To illustrate this consider the grain boundary of one
 % specific grain
 
-gB8 = grains(8).boundary
+gB17 = grains(17).boundary
 
 %%
-% This boundary consists of 8 segemts and hence ebsdId forms a 8x2 matrix
+% This boundary consists of 6 segemts and hence ebsdId forms a 8x2 matrix
 
-gB8.ebsdId
+gB17.ebsdId
 
 %%
 % It is important to understand that the *id* is not neccesarily the same
 % as the index in the list. In order to index an variable of type EBSD by
 % id and not by index the following syntax has to be used
 
-ebsd('id',gB8.ebsdId)
+ebsd('id',gB17.ebsdId)
 
 %%
 % Similarly
 
-gB8.grainId
+gB17.grainId
 
 %%
-% results in 8x2 matrix indicating that grain 8 is an inclusion of grain
-% 21.
+% results in 6x2 matrix indicating that grain 17 is an inclusion of grain
+% 28.
 
-plot(grains(8),'FaceColor','DarkBlue','micronbar','off')
+plot(grains(17),'FaceColor','DarkBlue','micronbar','off')
 hold on
-plot(grains(21),'FaceColor','LightCoral')
+plot(grains(28),'FaceColor','LightCoral')
 hold off
 
 %% Grain boundary misorientations
@@ -78,9 +78,9 @@ hold off
 % the orientations corresponding to ids in first and second column of
 % ebsdId, i.e. following two commands should give the same result
 
-gB8(1).misorientation
+gB17(1).misorientation
 
-inv(ebsd('id',gB8.ebsdId(1,2)).orientations) .* ebsd('id',gB8.ebsdId(1,1)).orientations
+inv(ebsd('id',gB17.ebsdId(1,2)).orientations) .* ebsd('id',gB17.ebsdId(1,1)).orientations
 
 %%
 % Note that in the first result the antipodal flag is true while it is
@@ -100,7 +100,7 @@ plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
-% The *direction* property of the boundary segments is usefull when
+% The |direction| property of the boundary segments is usefull when
 % checking for tilt and twist boundaries, i.e., when we want to compare the
 % misorientation axis with the interface between the grains
 
