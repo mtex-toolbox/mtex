@@ -90,7 +90,11 @@ classdef SO3FunRBF < SO3Fun
     end
     
     function L = get.bandwidth(SO3F)
-      L= SO3F.psi.bandwidth;
+      if isempty(SO3F.weights)
+        L = 0;
+      else
+        L= SO3F.psi.bandwidth;        
+      end
     end
     
     function SO3F = set.bandwidth(SO3F,L)
