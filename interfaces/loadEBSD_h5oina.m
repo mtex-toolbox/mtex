@@ -110,7 +110,11 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         EBSDphases.(pN)= struct;
         for j = 1:length(phases.Groups(phaseN).Datasets)
             sane_name = regexprep(phases.Groups(phaseN).Datasets(j).Name,' |-|,|:|%|~|#','_');
-            content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
+            if isempty(phases.Groups(phaseN).Datasets(j).Attributes)
+                content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
+            else
+                content = phases.Groups(phaseN).Datasets(j).Attributes.Value;
+            end
             EBSDphases.(pN).(sane_name) = content;
         end
         
@@ -119,7 +123,11 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         % rounding errors instead of using the 'force' option
         
         langle = double(EBSDphases.(pN).Lattice_Angles');
-        csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+        if ~isempty(EBSDphases.(pN).Space_Group)
+            csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+        else
+            csm = crystalSymmetry(EBSDphases.(pN).Laue_Group);  
+        end
         if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal')
             langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
         else
