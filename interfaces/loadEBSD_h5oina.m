@@ -110,10 +110,10 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         EBSDphases.(pN)= struct;
         for j = 1:length(phases.Groups(phaseN).Datasets)
             sane_name = regexprep(phases.Groups(phaseN).Datasets(j).Name,' |-|,|:|%|~|#','_');
-            if isempty(phases.Groups(phaseN).Datasets(j).Attributes)
-                content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
-            else
-                content = phases.Groups(phaseN).Datasets(j).Attributes.Value;
+            content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
+            % format uses an Id for laue groups we do not seem to have
+            if strcmpi(sane_name,'Laue_Group')
+              content = phases.Groups(phaseN).Datasets(j).Attributes.Value;
             end
             EBSDphases.(pN).(sane_name) = content;
         end
@@ -134,7 +134,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             langle(isnull(langle-pi/2,1e-7))=pi/2;
         end
         
-        CS{phaseN} = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group, ...
+        CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name));
