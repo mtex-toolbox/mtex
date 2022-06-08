@@ -72,7 +72,7 @@ switch method
       
       % recompute center
       odf = unimodalODF(ori_c,weights(c==i),'halfwidth',2.5*degree,varargin{:});
-      center = subsasgn(center,i,odf.steepestDescent(center.subSet(i)));
+      center = subsasgn(center,i,steepestDescent(odf,center.subSet(i)));
       
     end
     

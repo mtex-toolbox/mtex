@@ -61,8 +61,8 @@ ylabel('$|| \mathtt{R(ori_1)} - \mathtt{R(ori_2)}||_2$','Interpreter','latex')
 %%
 % We observe that orientations with very small misorientation angle
 % $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$ may be very far from each other
-% in Rodrigues Frank space, i.e. $|| \mathtt{R(ori_1)} -
-% \mathtt{R(ori_2)}||_2$ is large. As a consequence, we can not simply
+% in Rodrigues Frank space, i.e. $\lVert\mathtt{R(ori_1)} -
+% \mathtt{R(ori_2)}\rVert_2$ is large. As a consequence, we can not simply
 % compute the average of two orientations by taking the mean of the
 % corresponding Rodrigues vectors. 
 % 
@@ -151,7 +151,7 @@ norm(embedding(orientation.rand(5,cs))).'
 % concentrated around a prefered orientation, whereas if the norm is close
 % to zero some of the orientations are at maximum distance to each other.
 %%
-% Lets compare the norm 
+% Lets compare the norm
 %
 % $$ n=\left\lVert\frac{1}{N} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \right\rVert$$
 % 

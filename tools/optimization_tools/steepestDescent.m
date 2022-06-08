@@ -40,7 +40,7 @@ for k = 1:maxIter
   
   % if there was no change -> abbort
   if all(id == 1), break; end
-  fprintf('.')
+  %fprintf('.')
 end
 
 % [o2,v1,v2] = unique(ori)

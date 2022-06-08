@@ -2,7 +2,7 @@
 %
 %%
 % A common way to interprete ODFs is to think of them as superposition of
-% different components that originates from different deformation processes
+% different components that originate from different deformation processes
 % and describe the texture of the material. In this section we describe how
 % these components can be identified from a given ODF.
 %
