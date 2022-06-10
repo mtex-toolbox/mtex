@@ -54,6 +54,7 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
     values = SO3FunHarmonic(values,'bandwidth', ...
         min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));  
   end
+  modes=[];
   return
 end
 
@@ -62,6 +63,7 @@ if ( nargin > 1 ) && ( isnumeric(varargin{1}) )
   if isa(SO3F,'SO3FunHarmonic')
     values = SO3FunHarmonic(f,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
   end
+  modes=[];
   return
 end
 
