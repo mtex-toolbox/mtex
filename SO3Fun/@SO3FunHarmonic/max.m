@@ -69,11 +69,12 @@ if nargin>1 && (isa(varargin{1},'SO3FunHarmonic') || isnumeric(varargin{1}))
   return
 end
 
-values = cell(s);
-modes = cell(s);
+len = get_option(varargin,'numLocal',1);
+values = zeros(len,prod(s));
+modes = rotation.id(len,prod(s));
 for k=1:numel(SO3F)
   [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
-  values{k}=v; modes{k}=m;
+  values(:,k)=v; modes(:,k)=m;
 end
 
 end
