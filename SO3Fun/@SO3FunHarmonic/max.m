@@ -44,16 +44,36 @@ if ~SO3F.isReal || (nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1
   warning('By taking the minima of SO3Funs, the functions should be real valued.')
 end
 
-s = size(SO3F);
-
-values=zeros(s);
-modes=rotation.id(s);
-for k=1:numel(SO3F)
-  [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
-  values(k)=v; modes(k)=m;
+if numel(SO3F)==1
+  [values,modes] = max@SO3Fun(SO3F,varargin{:});
+  return
 end
 
-values = reshape(values,s);
-modes = reshape(modes,s);
+% multivariate functions
+s = size(SO3F);
+
+if nargin>1 && (isa(varargin{1},'SO3FunHarmonic') || isnumeric(varargin{1}))
+  t = size(varargin{1});
+  SO3F1 = SO3F.*ones(t);
+  SO3F2 = varargin{1}.*ones(s);
+  values = [];
+  for k=1:numel(SO3F1)
+    if isa(SO3F2,'SO3FunHarmonic')
+      A = max@SO3Fun(SO3F1.subSet(k),SO3F2.subSet(k),varargin{:});
+    else
+      A = max@SO3Fun(SO3F1.subSet(k),SO3F2(k),varargin{:});
+    end
+    values = [values,A];
+  end
+  values = reshape(values,size(SO3F1));
+  return
+end
+
+values = cell(s);
+modes = cell(s);
+for k=1:numel(SO3F)
+  [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
+  values{k}=v; modes{k}=m;
+end
 
 end
