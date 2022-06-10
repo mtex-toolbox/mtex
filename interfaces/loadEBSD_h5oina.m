@@ -11,6 +11,7 @@ function ebsd = loadEBSD_h5oina(fname,varargin)
 %    cell?
 % 3) decide what header data to use and how to display it? Fix display for
 % the header to be shown correctly (bc. ebsd.opt.Header sort of works)
+% 4) dataset may contain multiple EDS sets per EBSD dataset, currently only a single dataset is supported
 
 all = h5info(fname);
 
