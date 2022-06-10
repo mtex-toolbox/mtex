@@ -4,13 +4,13 @@ function odf = mix2
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
 
-psi = SO3vonMisesFisherKernel(HALFWIDTH',17*degree);
+psi = SO3vonMisesFisherKernel('halfwidth',17*degree);
 ori1 = orientation.byEuler(54.736*degree, 45.0*degree, 0.0*degree,CS,SS);
 ori2 = orientation.byEuler(62.968*degree, 57.689*degree, 71.565*degree,CS,SS);
 ori3 = orientation.byEuler(50.768*degree, 65.905*degree, 63.435*degree,CS,SS);
 
 odf = 0.3095*uniformODF(CS,SS) + 0.315*unimodalODF(ori1,psi) + ...
-  0.315*unimodalODF(ori2,psi) + 0.0605*uniformODF(ori3,psi);
+  0.315*unimodalODF(ori2,psi) + 0.0605*unimodalODF(ori3,psi);
 
 
 % 3,7
