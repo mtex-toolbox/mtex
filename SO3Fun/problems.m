@@ -142,7 +142,8 @@ calcError(odf,odf_rec)
 
 
 %% 9) Teste SO3Fun/calcMindex
-
+% function hinzugefügt, aber es existiert kein Aufruf in der doku, also
+% auch kein Test
 
 
 %% 10) antipodal hat keine Auswirkung und wird nicht ermittelt
@@ -168,6 +169,23 @@ f.antipodal = 1;
 F2 = SO3FunHarmonic(f)
 figure(2)
 plot(F2)
+
+%% 11) Zeitüberlauf in MinMax Methode
+
+F = SO3FunHarmonic(1);
+F.isReal = 1
+
+max(F)
+
+%% 12)  Fehler in
+
+GrainOrientationParameters
+
+%% 13) add load Function and correct import wizzard.       ODF ---> SO3Fun
+
+ODFInport
+VPSCInport
+
 
 
 

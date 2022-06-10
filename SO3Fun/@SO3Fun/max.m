@@ -88,6 +88,7 @@ f = eval(SO3F,ori,varargin{:});
 % extract 20 largest values
 oriNextSeed = ori(f>=quantile(f(:),-20));
 
+% TODO: check for constant function or two much orientations
 while res > targetRes
 
   % new grid
