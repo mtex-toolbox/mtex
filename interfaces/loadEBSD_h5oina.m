@@ -11,7 +11,6 @@ function ebsd = loadEBSD_h5oina(fname,varargin)
 %    cell?
 % 3) decide what header data to use and how to display it? Fix display for
 % the header to be shown correctly (bc. ebsd.opt.Header sort of works)
-% 4) dataset may contain multiple EDS sets per EBSD dataset, currently only a single dataset is supported
 
 all = h5info(fname);
 
@@ -84,10 +83,17 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     if ~isempty(EDS_index) & EDS_index{k}(1) == EBSD_index{k}(1)
         %read EDS data
         EDSdata = struct;
-        for thing = 1:length(EDS_data.Datasets)
-            sane_name = regexprep(EDS_data.Datasets(thing).Name,' |-|,|:|%|~|#','_');
-            EDSdata.(sane_name)=double(h5read(fname,[EDS_data.Name '/' EDS_data.Datasets(thing).Name]));
+        % are there multiple datasets?
+        allEDS = {EDS_data.Datasets};
+        EDSPATH = {EDS_data.Name};
+        %read all datsets
+        for est=1:length(allEDS)
+            for thing = 1:length(allEDS{est})
+                sane_name = regexprep(allEDS{est}(thing).Name,' |-|,|:|%|~|#','_');
+                EDSdata.(sane_name)=double(h5read(fname,[EDSPATH{est} '/' allEDS{est}(thing).Name]));
+            end
         end
+        
         %read EDS header
         EDSheader = struct;
         for thing = 1:length(EDS_header.Datasets)
