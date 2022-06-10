@@ -116,6 +116,6 @@ switch method
   case 'interp'
 
     disp('  Interpolating the ODF. This might take some time...')
-    odf = ODF.interp(ori,weights,varargin{:});
+    odf = SO3Fun.interpolate(ori,weights,varargin{:});
 
 end
