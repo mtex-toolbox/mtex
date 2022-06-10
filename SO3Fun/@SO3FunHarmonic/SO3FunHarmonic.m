@@ -73,7 +73,7 @@ methods
     
     % extend entries to full harmonic degree
     s1 = size(fhat,1);
-    if s1>2
+    if s1>=2
       SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
     end
 
