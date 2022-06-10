@@ -61,6 +61,7 @@ try
 catch
   center = center(id);
 end
+weights = weights(id);
 
 odf = SO3FunRBF(center, psi, weights);
 
