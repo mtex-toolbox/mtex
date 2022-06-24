@@ -30,9 +30,7 @@ for j = 1:length(sF)
   f(:,j) = reshape(nfsftmex('get_f', plan),[],1);
 end
 
-if isalmostreal(f)
-  f = real(f);
-end
+if isalmostreal(f), f = real(f); end
 
 % set values to NaN
 f(isnan(v),:) = NaN;
