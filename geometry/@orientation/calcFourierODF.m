@@ -51,5 +51,5 @@ if odf.components{1}.psi.bandwidth > L
     '. You  might want to increase the harmonic degree or the halfwidth.'])
 end
 
-odf = FourierODF(odf,get_option(varargin,{'L','bandwidth','fourier'},L,'double'));
+odf = FourierODF(odf,get_option(varargin,{'L','bandwidth','fourier'},L,'double'),varargin{:});
 odf.antipodal = odf.antipodal || ori.antipodal;
