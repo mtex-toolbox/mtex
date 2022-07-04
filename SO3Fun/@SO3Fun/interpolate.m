@@ -20,6 +20,10 @@ function [SO3F,resvec] = interpolate(ori,values,varargin)
 %  SO3F - @SO3Fun
 %
 
+if length(ori) ~= numel(values)
+  error('Interpolation is only possible for univariate functions.')
+end
+
 % construct the uniform portion first
 values = values(:);
 m = min(values);
