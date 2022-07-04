@@ -66,3 +66,25 @@ C = cellfun(@unique,C,'UniformOutput',false);
  
 % Now in V some rotations occurs a second time by there opposite quaternion
 % for example try: unique(rotation(V))
+
+
+% compute edges
+if nargout>3
+  faces = faces(first,:);   % delete duplicated faces (look at line 39)
+  faces = sort(faces,2);
+  f = [faces(:,[2 3 4]); faces(:,[1 3 4]); faces(:,[1 2 4]); faces(:,[1 2 3])];
+  [~,first,f] = unique(f,'rows','first');
+  [~,last,~] = unique(f,'rows','last');
+  first = mod(first-1,length(V))+1;
+  last = mod(last-1,length(V))+1;
+  E = [first,last];
+  % G = graph(first,last);
+  % E = adjacency(G);
+end
+
+
+
+
+
+
+
