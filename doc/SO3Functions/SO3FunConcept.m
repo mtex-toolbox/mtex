@@ -41,7 +41,7 @@ annotate(pos)
 
 %%
 % A complete list of operations that can be performed with rotational
-% functions can be found in section <SO3FunOperations.html operations>.
+% functions can be found in section <SO3FunOperations.html Operations>.
 
 %% Representation of Rotational Functions
 %

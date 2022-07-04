@@ -45,6 +45,7 @@ nodes = nodes(:);
 %%
 % Next we define function values for the vertices
 y = [SO3Fun.dubna(nodes), (nodes.a.*nodes.b).^(1/4)];
+nodes.CS = SO3Fun.dubna.CS;
 %%
 % Now the actual command to get a 2x1 |SO3F1| of type 
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
