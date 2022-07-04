@@ -180,7 +180,7 @@ methods
 end
 
 methods (Static = true)
-  %sF = approximation(v, y, varargin);
+  SO3F = approximation(v, y, varargin);
   SO3F = quadrature(f, varargin);
   SO3F = quadrature_v2(f, varargin);
   %sF = regularisation(nodes,y,lambda,varargin);
