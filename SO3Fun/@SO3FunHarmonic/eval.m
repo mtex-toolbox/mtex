@@ -75,6 +75,11 @@ if isempty(plan)
 
 end
 
+if check_option(varargin,'createPlan')
+  keepPlan = plan;
+  return
+end
+
 f = zeros([length(rot) size(F)]);
 for k = 1:length(F)
 

@@ -15,23 +15,30 @@ function f = eval_v2(SO3F,rot,varargin)
 %   f - double
 %
 
-persistent keepPlan;
+persistent keepPlanNFFT;
 
 % kill plan
 if check_option(varargin,'killPlan')
-  nfftmex('finalize',keepPlan);
-  keepPlan = [];
+  nfftmex('finalize',keepPlanNFFT);
+  keepPlanNFFT = [];
+  f=[];
   return
 end
 
 if isempty(rot), f = []; return; end
 
-
-N = SO3F.bandwidth;
-
-sz = size(rot);
+s = size(rot);
 rot = rot(:);
 M = length(rot);
+
+if SO3F.bandwidth == 0
+  f = ones(size(rot)) .* SO3F.fhat;
+  if numel(SO3F) == 1, f = reshape(f,s); end
+  return;
+end
+
+% extract bandwidth
+N = min(SO3F.bandwidth,get_option(varargin,'bandwidth',inf));
 
 % alpha, beta, gamma
 abg = Euler(rot,'nfft').'./(2*pi);
@@ -40,7 +47,7 @@ abg = mod(abg,1);
 
 % create plan
 if check_option(varargin,'keepPlan')
-  plan = keepPlan;
+  plan = keepPlanNFFT;
 else
   plan = [];
 end
@@ -67,6 +74,12 @@ if isempty(plan)
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
 
+end
+
+if check_option(varargin,'createPlan')
+  keepPlanNFFT = plan;
+  f=[];
+  return
 end
 
 f = zeros([length(rot) size(SO3F)]);
@@ -120,11 +133,11 @@ end
 
 % kill plan
 if check_option(varargin,'keepPlan')
-  keepPlan = plan;
+  keepPlanNFFT = plan;
 else
   nfftmex('finalize',plan);
 end
 
-if numel(SO3F) == 1, f = reshape(f,sz); end
+if numel(SO3F) == 1, f = reshape(f,s); end
 
 end

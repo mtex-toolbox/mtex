@@ -121,6 +121,11 @@ if isempty(plan)
 
 end
 
+if check_option(varargin,'createPlan')
+  keepPlanNSOFT = plan;
+  return
+end
+
 s = size(values);
 values = reshape(values, length(nodes), []);
 num = size(values, 2);

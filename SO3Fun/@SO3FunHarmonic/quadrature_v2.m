@@ -24,6 +24,7 @@ persistent keepPlanNFFT;
 if check_option(varargin,'killPlan')
   nfftmex('finalize',keepPlanNFFT);
   keepPlanNFFT = [];
+  SO3F=[];
   return
 end
 
@@ -116,6 +117,12 @@ if isempty(plan) && ~check_option(varargin,'ClenshawCurtis')
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
 
+end
+
+if check_option(varargin,'createPlan')
+  keepPlanNFFT = plan;
+  SO3F=[];
+  return
 end
 
 s = size(values);
