@@ -99,6 +99,11 @@ while res > targetRes
   f = eval(SO3F,ori,varargin{:});
   
   % extract largest values
+  if sum(f(:)>=quantile(f(:),0))>1e4 %&& var(f(:))==0
+    warning(['The function has lots off possible minima. Thatswhy iterative gridify folds. ' ...
+      'Possibly the function is constant.'])
+    break
+  end
   oriNextSeed = ori(f>=quantile(f(:),0));
   
   res = res / 2; 

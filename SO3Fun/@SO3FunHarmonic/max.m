@@ -40,8 +40,13 @@ function [values,modes] = max(SO3F,varargin)
 % See also
 % SO3Fun/min SO3Fun/max
 
-if ~SO3F.isReal || (nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal )
-  warning('By taking the minima of SO3Funs, the functions should be real valued.')
+if isa(SO3F,'SO3FunHarmonic') && ~SO3F.isReal
+  SO3F = SO3F.isReal;
+  warning('By taking the maxima of SO3Funs, the functions should be real valued.')
+end
+if nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal
+  varargin{1}.isReal = 1;
+  warning('By taking the maxima of SO3Funs, the functions should be real valued.')
 end
 
 if numel(SO3F)==1
