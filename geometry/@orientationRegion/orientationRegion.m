@@ -5,9 +5,9 @@ classdef orientationRegion
   % dot(-q, N) <= 0 for all N
   
   properties
-    N = quaternion % the nornal vectors of the bounding circles
+    N = quaternion  % the normal vectors of the bounding faces
     V = orientation % list of vertices
-    F = {}         % list of faces             
+    F = {}          % list of faces             
     antipodal = false % whether to identify q and inv(q)
   end
     
