@@ -1,4 +1,4 @@
-function [V,C] = calcVoronoi(q,varargin)
+function [V,C,E] = calcVoronoi(q,varargin)
 % compute the the Voronoi decomposition for unit quaternions
 %
 % Input
