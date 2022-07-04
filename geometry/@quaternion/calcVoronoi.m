@@ -11,7 +11,12 @@ function [V,C] = calcVoronoi(q,varargin)
 % See also
 % S2Grid\calcVoronoi voronoin
 
+% be sure q is quaternion
+q = quaternion(q);
+
 % make it double cover
+% TODO: Possibly only double the quaternions which are nearly at the
+% boundary of upper S^3
 q = reshape([q -q],[],1);
 n = length(q);
 [a,b,c,d] = double(q);
@@ -53,3 +58,11 @@ for k=1:length(last)-1
   ndx = last(k)+1:last(k+1);
   C{center(ndx(1))} = left( ndx );
 end
+
+% delete obsolet cells
+C = C(1:length(C)/2);
+% simplify if the same vertex occurs several times in a cell 
+C = cellfun(@unique,C,'UniformOutput',false);
+ 
+% Now in V some rotations occurs a second time by there opposite quaternion
+% for example try: unique(rotation(V))
