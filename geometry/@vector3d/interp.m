@@ -20,12 +20,12 @@ function yi = interp(v,y,varargin)
 %  yi - interpolation values
 %
 
+y = reshape(y, length(v), []);
 % set harmonic approximation default for symmetric data 
 if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance'}) 
   varargin = [varargin,'harmonic'];
 else
   % take the mean over duplicated nodes
-  y = reshape(y, length(v), []);
   [v,~,ind] = unique(v(:));
   y = accumarray(ind,y,[],@nanmean);
 end
