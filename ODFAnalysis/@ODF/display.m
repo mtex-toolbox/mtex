@@ -1,20 +1,22 @@
 function display(odf,varargin)
 % standard output
 
-if isempty(odf)
-  
+if isempty(odf.CS)  
   displayClass(odf,inputname(1));
-  return
-    
-elseif isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')  
-  displayClass(odf,inputname(1),'MDF');  
-else  
-  displayClass(odf,inputname(1));  
+  return    
 end
 
+refSystems = [char(odf.CS,'compact') ' ' char(8594) ' ' char(odf.SS,'compact')];
+
+if isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')
+  type = 'MDF';
+else
+  type = 'ODF';
+end
+displayClass(odf,inputname(1),type,'moreInfo',refSystems);
+
+
 % display symmtries and minerals
-if ~isempty(odf.CS), disp(char(odf.CS,'verbose','symmetryType'));end
-if ~isempty(odf.SS) && odf.SS.id>1, disp(char(odf.SS,'verbose','symmetryType'));end
 if odf.antipodal, disp('  antipodal:         true'); end
 
 % display components
