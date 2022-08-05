@@ -54,7 +54,7 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
 setMTEXpref('pfAnnotations',pfAnnotations);
 
 % default spacing between muliple plots
-setMTEXpref('outerPlotSpacing',30);
+setMTEXpref('outerPlotSpacing',50);
 % setMTEXpref('innerPlotSpacing',10);
 
 % defaut marker size
