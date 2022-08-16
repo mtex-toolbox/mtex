@@ -27,7 +27,7 @@ set(0,'DefaultLegendFontSize',fontSize)
 setMTEXpref('xAxisDirection','west');
 setMTEXpref('zAxisDirection','outOfPlane');
 
-setMTEXpref('bAxisDirection','north');
+setMTEXpref('bAxisDirection','east');
 setMTEXpref('aAxisDirection',''); % undefined
 
 %setMTEXpref('bAxisDirection',''); % undefined
