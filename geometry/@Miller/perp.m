@@ -1,4 +1,4 @@
-function m = perp(m)
+function m = perp(m,varargin)
 % best normal to a list of directions
 %
 % Syntax
@@ -10,6 +10,6 @@ function m = perp(m)
 % Output
 %  n - @Miller
 
-m = Miller(perp@vector3d(m),m.CS,MillerConvention(-MillerConvention(m.dispStyle)));
+m = Miller(perp@vector3d(m,varargin{:}),m.CS,MillerConvention(-MillerConvention(m.dispStyle)));
 
 end
