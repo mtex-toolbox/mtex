@@ -20,3 +20,16 @@ for i = 1:numel(varargin)
 end
 
 T.M = cat(T.rank+dim,M{:});
+
+% cat also densities if present
+if isfield(T.opt,'density')
+
+  d = cell(size(varargin));
+  for i = 1:numel(varargin), d{i} = varargin{i}.opt.density; end  
+  
+  T.opt.density = cat(dim,d{:});
+    
+end
+
+
+end

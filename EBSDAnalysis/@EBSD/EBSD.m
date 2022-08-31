@@ -1,9 +1,9 @@
 classdef EBSD < phaseList & dynProp & dynOption
   % class representing EBSD measurements
   %
-  % In MTEX a variable of type *EBSD* is used to store EBSD measurements
-  % as a table with rows containing the orientation, the spatial
-  % coordinates and the phase of each indiviudal measurement.
+  % In MTEX a variable of type <EBSD.EBSD.html |EBSD|> is used to store
+  % EBSD measurements as a table with rows containing the orientation, the
+  % spatial coordinates and the phase of each indiviudal measurement.
   %
   % Syntax
   %

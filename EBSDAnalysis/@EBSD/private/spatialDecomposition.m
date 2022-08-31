@@ -25,7 +25,7 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  if check_option(varargin,'noQHull')
+  if ~check_option(varargin,'QHull')
   
     dt = delaunayTriangulation([X;dummyCoordinates]);
     [V,D] = voronoiDiagram(dt);
@@ -35,6 +35,18 @@ else
     [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
             
   end
+
+  %if check_option(varargin,'quadruplePoints')
+
+  [V,~,ic] = unique(V,'rows');
+  %D = cellfun(@(x) ic(x).',D,'UniformOutput',false);
+
+  for k = 1:length(D)
+    x = ic(D{k}).';              % merge points that coincide
+    D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
+  end
+  
+  %end
     
   D = D(1:size(X,1));
   

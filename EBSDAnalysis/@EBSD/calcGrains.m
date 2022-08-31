@@ -46,6 +46,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %
 % Flags
 %  unitCell - omit voronoi decomposition and treat a unitcell lattice
+%  qhull    - use qHull for the voronin decomposition
 %
 % References
 %

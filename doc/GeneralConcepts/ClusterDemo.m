@@ -85,13 +85,17 @@ d(d<0.01) = 0;
 %d = d(triu(true(size(d)),1));
 
 % use the statistic toolbox
-d = squareform(d);
-z = linkage(d,'single');
+try
+  d = squareform(d);
+  z = linkage(d,'single');
     
-%cId = cluster(z,'cutoff',30*degree);
-cId = cluster(z,'maxclust',12);
+  %cId = cluster(z,'cutoff',30*degree);
+  cId = cluster(z,'maxclust',12);
 
-plotCluster(r,cId)
+  plotCluster(r,cId)
+catch
+  warning('Statistics Toolbox not installed!')
+end
 
 %%
 

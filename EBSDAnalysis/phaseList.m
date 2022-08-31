@@ -273,7 +273,7 @@ classdef phaseList
       if n==1
         e = size(pL.phaseId,1);
       else
-        e = size(pL.phaseId,i);
+        e = size(pL.id,i);
       end
     end
        

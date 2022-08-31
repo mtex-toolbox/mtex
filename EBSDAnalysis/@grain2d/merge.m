@@ -98,7 +98,9 @@ for k = 1:length(varargin)
     
     % additional condition on the host
     cond = get_option(varargin,'host');
-    isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
+    if ~isempty(cond)
+      isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
+    end
 
     A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
     bSize = grains.boundarySize;
@@ -265,7 +267,7 @@ if check_option(varargin,'calcMeanOrientation')
     grainsMerged.prop.meanRotation(i) = rotation(oriNew);
   
     % get new phaseId
-    if exist('cs') && ischar(cs) 
+    if exist('cs','var') && ischar(cs) 
       grainsMerged.phaseId(i) = 1;
     else
       newPhase = cellfun(@(x) isa(x,'symmetry') && x==oriNew.CS,grains.CSList);

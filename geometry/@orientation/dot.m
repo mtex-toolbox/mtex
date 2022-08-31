@@ -1,5 +1,5 @@
 function d = dot(o1,o2,varargin)
-% compute minimum dot(o1,o2) modulo symmetry
+% compute maximum dot(o1,o2) modulo symmetry
 %
 % Syntax
 %   d = dot(o1,o2)
