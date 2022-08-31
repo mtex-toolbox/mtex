@@ -1,4 +1,4 @@
-function GROD = calcGROD(ebsd,grains,varargin)
+function GROD = calcGROD(ebsd,grains,rotRef)
 % compute grain reference orientation deviation / mis2mean
 %
 % Syntax
@@ -9,16 +9,16 @@ function GROD = calcGROD(ebsd,grains,varargin)
 %   % compute grain reference orientation deviation
 %   GROD = calcGROD(ebsd,grains)
 %
+%   % grain reference orientation deviation with respect to oriRef
+%   GROD = calcGROD(ebsd,grains,oriRef)
+%
 % Input 
 %  ebsd   - @EBSD
 %  grains - @grain2d
+%  oriRef - (list of) reference @rotation 
 %
 % Output
 %  GROD - @rotation, mis@orientation
-%
-% Optional input
-%  %Allow user defined reference orientation
-%  refOri - @rotation
 %
 % See also
 %
@@ -26,18 +26,27 @@ function GROD = calcGROD(ebsd,grains,varargin)
 GROD = rotation.nan(size(ebsd));
 
 for phId = grains.indexedPhasesId
-    thisPhase = ebsd.phaseId == phId;
-    if ~any(thisPhase), continue; end
-    
-    if ~isempty(varargin) && isa(varargin{1},'rotation')
-        meanOri = repmat(varargin{1}, size(ebsd.grainId(thisPhase)));
-        meanOri = project2FundamentalRegion(meanOri, ebsd.CSList{phId}, ebsd.rotations(thisPhase));
-    else
-        meanOri = grains.meanRotation(ebsd.grainId(thisPhase));
-        meanOri = project2FundamentalRegion(meanOri, ebsd.CSList{phId}, ebsd.rotations(thisPhase));
-    end
 
-    GROD(thisPhase) = inv(meanOri) .* ebsd.rotations(thisPhase);
+  thisPhase = ebsd.phaseId == phId;
+
+  if ~any(thisPhase), continue; end
+    
+  if nargin == 2
+    
+    oriRef = grains.meanRotation(ebsd.grainId(thisPhase));
+
+  elseif length(rotRef) == 1
+    
+    oriRef = repmat(rotRef, nnz(thisPhase),1);
+  
+  else
+   
+    oriRef = rotRef(ebsd.grainId(thisPhase));
+
+  end
+  
+  oriRef = project2FundamentalRegion(oriRef, ebsd.CSList{phId}, ebsd.rotations(thisPhase));
+  GROD(thisPhase) = inv(oriRef) .* ebsd.rotations(thisPhase);
     
 end
 

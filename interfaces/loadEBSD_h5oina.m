@@ -83,10 +83,17 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     if ~isempty(EDS_index) & EDS_index{k}(1) == EBSD_index{k}(1)
         %read EDS data
         EDSdata = struct;
-        for thing = 1:length(EDS_data.Datasets)
-            sane_name = regexprep(EDS_data.Datasets(thing).Name,' |-|,|:|%|~|#','_');
-            EDSdata.(sane_name)=double(h5read(fname,[EDS_data.Name '/' EDS_data.Datasets(thing).Name]));
+        % are there multiple datasets?
+        allEDS = {EDS_data.Datasets};
+        EDSPATH = {EDS_data.Name};
+        %read all datsets
+        for est=1:length(allEDS)
+            for thing = 1:length(allEDS{est})
+                sane_name = regexprep(allEDS{est}(thing).Name,' |-|,|:|%|~|#','_');
+                EDSdata.(sane_name)=double(h5read(fname,[EDSPATH{est} '/' allEDS{est}(thing).Name]));
+            end
         end
+        
         %read EDS header
         EDSheader = struct;
         for thing = 1:length(EDS_header.Datasets)
@@ -111,6 +118,10 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         for j = 1:length(phases.Groups(phaseN).Datasets)
             sane_name = regexprep(phases.Groups(phaseN).Datasets(j).Name,' |-|,|:|%|~|#','_');
             content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
+            % format uses an Id for laue groups we do not seem to have
+            if strcmpi(sane_name,'Laue_Group')
+              content = phases.Groups(phaseN).Datasets(j).Attributes.Value;
+            end
             EBSDphases.(pN).(sane_name) = content;
         end
         
@@ -119,14 +130,18 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         % rounding errors instead of using the 'force' option
         
         langle = double(EBSDphases.(pN).Lattice_Angles');
-        csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+        if ~isempty(EBSDphases.(pN).Space_Group)
+            csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+        else
+            csm = crystalSymmetry(EBSDphases.(pN).Laue_Group);  
+        end
         if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal')
             langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
         else
             langle(isnull(langle-pi/2,1e-7))=pi/2;
         end
         
-        CS{phaseN} = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group, ...
+        CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name));

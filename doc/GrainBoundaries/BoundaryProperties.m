@@ -47,7 +47,7 @@ hold off
 gB8 = grains(8).boundary
 
 %%
-% This boundary consists of 8 segemts and hence ebsdId forms a 8x2 matrix
+% This boundary consists of 6 segemts and hence ebsdId forms a 8x2 matrix
 
 gB8.ebsdId
 
@@ -64,7 +64,7 @@ ebsd('id',gB8.ebsdId)
 gB8.grainId
 
 %%
-% results in 8x2 matrix indicating that grain 8 is an inclusion of grain
+% results in 9x2 matrix indicating that grain 8 is an inclusion of grain
 % 21.
 
 plot(grains(8),'FaceColor','DarkBlue','micronbar','off')
@@ -100,7 +100,7 @@ plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
-% The *direction* property of the boundary segments is usefull when
+% The |direction| property of the boundary segments is usefull when
 % checking for tilt and twist boundaries, i.e., when we want to compare the
 % misorientation axis with the interface between the grains
 

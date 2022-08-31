@@ -83,7 +83,7 @@ for k = 1:maxIter
   % update orientions
   modes(~finished) = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
   
-  nnz(id>1)
+  %nnz(id>1)
   if all(id == 1), break; end
 
   % join orientations if possible

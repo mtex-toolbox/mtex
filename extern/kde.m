@@ -53,7 +53,13 @@ xmesh = (edges(1:end-1) + edges(2:end))./2;
 N=length(unique(data));
 
 %bin the data uniformly using the grid defined above;
-initial_data = histcounts(data,edges)/N;
+if check_option(varargin,'weights')
+  weights = get_option(varargin,'weights');
+  [~,~,id] = histcounts(data,edges);
+  initial_data = accumarray(id,weights).';
+else
+  initial_data = histcounts(data,edges)/N;
+end
 initial_data = initial_data/sum(initial_data);
 a=dct1d(initial_data); % discrete cosine transform of initial data
 
@@ -67,7 +73,7 @@ else
   I = (1:n).^2; 
       
   % use  fzero to solve the equation t=zeta*gamma^[5](t)
-  t_star=root(@(t)fixed_point(t,N,I,a.^2 ./ 4),N);
+  t_star=root(@(t)fixed_point(t,N,I,a.^2 ./ 4),N)
 end
 
 % smooth the discrete cosine transform of initial data using t_star

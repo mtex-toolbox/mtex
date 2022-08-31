@@ -68,7 +68,11 @@ elseif check_option(varargin,'weights')  % weighted mean
   
   % take the mean of the rotated tensors times the weight
   TVoigt = sum(weights .* T);
-  
+
+  if isfield(T.opt,'density') && numel(weights) == numel(T.opt.density)
+    TVoigt.opt.density = sum(T.opt.density .* weights);
+  end
+
 else % the plain mean
 
   if nargin > 1 && isnumeric(varargin{1})

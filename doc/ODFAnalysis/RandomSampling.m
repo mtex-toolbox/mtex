@@ -63,7 +63,7 @@ calcError(odf_rec,fibre_odf)
 
 %% Exporting Random Orientations
 %
-% In order to make use of the sampled orientations you pronbably want to
+% In order to make use of the sampled orientations you probably want to
 % <OrientationExport.html export> them as <RotationDefinition.html Euler
 % angles> into a text files. This can be done using the commands
 % |<quaternion.export.html export>| and |<orientation.export_VPSC.html

@@ -33,6 +33,14 @@ if strcmp(char(root.getTagName()),'xrdMeasurements')
     
   end
   
+  % check if Miller was supplied
+  if length(varargin) >= 1
+     pM = cellfun('isclass', varargin, 'Miller')
+     if any(pM)
+     allH = ensurecell(varargin{pM});
+     end
+  end
+  
   pf = PoleFigure(allH,allR,allI,varargin{:});
   
 else
