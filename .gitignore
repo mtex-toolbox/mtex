@@ -26,4 +26,4 @@ resources/*
 *.c
 *.c
 *.mexw64
-*/mtex_settings.m
+mtex_settings.m
