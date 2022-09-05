@@ -78,36 +78,46 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % compute grain ids
 [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
+% phaseId of each grain
+phaseId = full(max(I_DG' * ...
+        spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
+phaseId(phaseId==0) = 1; % why this is needed?
+
+% split face x cell incidence matrix into
+% I_FDext - faces x cells external grain boundaries
+% I_FDint - faces x cells internal grain boundaries
+[I_FDext,I_FDint] = calcBoundary;
+
+% remove empty lines from I_FD, F, and V
+isBoundary = full(any(I_FDext,2) | any(I_FDint,2));
+F = F(isBoundary,:);
+I_FDext = I_FDext.'; I_FDext = I_FDext(:,isBoundary).';
+I_FDint = I_FDint.'; I_FDint = I_FDint(:,isBoundary).';
+      
+% remove vertices that are not needed anymore
+[inUse,~,F] = unique(F);
+V = V(inUse,:);
+F = reshape(F,[],2);
+
+if check_option(varargin,'removeQuadruplePoints')
+  qAdded = removeQuadruplePoints; 
+end
+
+[poly, inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
+
 % setup grains
-grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+grains = grain2d(poly, inclusionId, phaseId, ebsd.CSList,ebsd.phaseMap,...
+  varargin{:});
+grains.grainSize = full(sum(I_DG,1)).';
+%grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
+
+grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
+grains.boundary.scanUnit = ebsd.scanUnit;
+grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
 
 % merge quadruple grains
-if check_option(varargin,'removeQuadruplePoints') && grains.qAdded > 0
-
-  gB = grains.boundary; gB = gB(length(gB)+1-(1:grains.qAdded));
-  toMerge = false(size(gB));
-       
-  for iPhase = ebsd.indexedPhasesId
-    
-    % restrict to the same phase
-    iBd = all(gB.phaseId == iPhase,2);    
-    
-    if ~any(iBd), continue; end
-        
-    % check for misorientation angle % TODO
-    toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
-    
-  end
-  
-  [grains, parentId] = merge(grains,gB(toMerge));
-  
-  % update I_DG
-  I_PC = sparse(1:length(parentId),parentId,1);
-  I_DG = I_DG * I_PC;
-  
-  % update grain ids
-  [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
-    
+if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
+  mergeQuadrupleGrains;
 end
 
 % calc mean orientations, GOS and mis2mean
@@ -123,10 +133,10 @@ GOS = zeros(length(grains),1);
 
 % choose between equivalent orientations in one grain such that all are
 % close together
-for p = grains.indexedPhasesId
-  ndx = ebsd.phaseId(d) == p;
+for pId = grains.indexedPhasesId
+  ndx = ebsd.phaseId(d) == pId;
   if ~any(ndx), continue; end
-  q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{p},meanRotation(g(ndx)));
+  q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{pId},meanRotation(g(ndx)));
 end
 
 
@@ -141,6 +151,11 @@ for k = 1:numel(doMeanCalc)
   GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
 end
 
+% save 
+grains.prop.GOS = GOS;
+grains.prop.meanRotation = reshape(meanRotation,[],1);
+mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
+
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
     variantId = get_option(varargin,'variants');   
@@ -148,100 +163,279 @@ if check_option(varargin,'variants')
     grains.prop.parentId = variantId(firstD,2);
 end
 
-% save 
-grains.prop.GOS = GOS;
-grains.prop.meanRotation = reshape(meanRotation,[],1);
-mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
-
-end
 
 
-function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
-% segmentation 
-%
-%
-% Output
-%  A_Db - adjecency matrix of grain boundaries
-%  A_Do - adjecency matrix inside grain connections
 
-% extract segmentation method
-grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
-grainBoundaryCiterions = {grainBoundaryCiterions.name};
-gbcFlags = regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1');
+  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
+    % segmentation
+    %
+    %
+    % Output
+    %  A_Db - adjecency matrix of grain boundaries
+    %  A_Do - adjecency matrix inside grain connections
 
-gbc      = get_flag(varargin,gbcFlags,'angle');
-gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
+    % extract segmentation method
+    grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
+    grainBoundaryCiterions = {grainBoundaryCiterions.name};
+    gbcFlags = regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1');
 
-if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
-  gbcValue = repmat(gbcValue,size(ebsd.CSList));
-end
+    gbc      = get_flag(varargin,gbcFlags,'angle');
+    gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
 
-% get pairs of neighbouring cells {D_l,D_r} in A_D
-A_D = I_FD'*I_FD==1;
-[Dl,Dr] = find(triu(A_D,1));
+    if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
+      gbcValue = repmat(gbcValue,size(ebsd.CSList));
+    end
 
-if check_option(varargin,'maxDist') 
-  xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
-    (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
+    % get pairs of neighbouring cells {D_l,D_r} in A_D
+    A_D = I_FD'*I_FD==1;
+    [Dl,Dr] = find(triu(A_D,1));
 
-  dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
-  maxDist = get_option(varargin,'maxDist',3*dx);
-  % maxDist = get_option(varargin,'maxDist',inf);
-else
-  maxDist = 0;
-end
+    if check_option(varargin,'maxDist')
+      xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
+        (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
 
-connect = zeros(size(Dl));
+      dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
+      maxDist = get_option(varargin,'maxDist',3*dx);
+      % maxDist = get_option(varargin,'maxDist',inf);
+    else
+      maxDist = 0;
+    end
 
-for p = 1:numel(ebsd.phaseMap)
+    connect = zeros(size(Dl));
+
+    for p = 1:numel(ebsd.phaseMap)
   
-  % neighboured cells Dl and Dr have the same phase
-  if maxDist > 0
-    ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
-  else
-    ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+      % neighboured cells Dl and Dr have the same phase
+      if maxDist > 0
+        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
+      else
+        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+      end
+  
+      connect(ndx) = true;
+  
+      % check, whether they are indexed
+      ndx = ndx & ebsd.isIndexed(Dl) & ebsd.isIndexed(Dr);
+  
+      % now check for the grain boundary criterion
+      if any(ndx)
+    
+        connect(ndx) = feval(['gbc_' gbc],...
+          ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
+   
+      end
+    end
+
+    % adjacency of cells that have no common boundary
+    ind = connect>0;
+    A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+    if check_option(varargin,'mcl')
+      
+      param = get_option(varargin,'mcl');
+      if isempty(param), param = 1.4; end
+      if length(param) == 1, param = [param,4]; end
+  
+      A_Do = mclComponents(A_Do,param(1),param(2));
+      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+  
+    else
+  
+      A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
+        length(ebsd),length(ebsd));
+  
+    end
+    A_Do = A_Do | A_Do.';
+
+    % adjacency of cells that have a common boundary
+    A_Db = A_Db | A_Db.';
+
+    % compute I_DG connected components of A_Do
+    % I_DG - incidence matrix cells to grains
+    I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
   end
-  
-  connect(ndx) = true;
-  
-  % check, whether they are indexed
-  ndx = ndx & ebsd.isIndexed(Dl) & ebsd.isIndexed(Dr);
-  
-  % now check for the grain boundary criterion
-  if any(ndx)
+
+  function [I_FDext,I_FDint] = calcBoundary
+    % distinguish between interior and exterior grain boundaries
     
-    connect(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
+    % cells that have a subgrain boundary, i.e. a boundary with a cell
+    % belonging to the same grain
+    sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
+    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
+    sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
     
-  end  
+    % split grain boundaries A_Db into interior and exterior
+    A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
+    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundray
+    
+    % create incidence graphs
+    I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
+    D_Fbg  = diag(any(I_FDbg,2));
+    
+    [ix,iy] = find(A_Db_ext);
+    D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+    
+    I_FDext = (D_Fext| D_Fbg)*I_FD;
+    
+    [ix,iy] = find(A_Db_int);
+    D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+    I_FDint = D_Fsub*I_FD;
+    
+  end
+
+  function qAdded = removeQuadruplePoints
+
+    quadPoints = find(accumarray(reshape(F(full(any(I_FDext,2)),:),[],1),1) == 4);
+
+    if isempty(quadPoints), return; end
+      
+    % find the 4 edges connected to the quadpoints
+    I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
+        
+    quadPoints = find(sum(I_FV) == 4).';
+    [iqF,~] = find(I_FV(:,quadPoints));
+      
+    % this is a length(quadPoints x 4 list of edges
+    iqF = reshape(iqF,4,length(quadPoints)).';
+      
+    % find the 4 vertices adfacent to each quadruple point
+    qV = [F(iqF.',1).';F(iqF.',2).'];
+    qV = qV(qV ~= reshape(repmat(quadPoints.',8,1),2,[]));
+    qV = reshape(qV,4,[]).';
+        
+    % compute angle with respect to quadruple point
+    qOmega = reshape(atan2(V(qV,1) - V(repmat(quadPoints,1,4),1),...
+      V(qV,2) - V(repmat(quadPoints,1,4),2)),[],4);
+      
+    % sort the angles
+    [~,qOrder] = sort(qOmega,2);
+      
+    % find common pixels for pairs of edges - first we try 1/4 and 2/3
+    s = size(iqF);
+    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+            
+    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
+      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
+      
+    % if not both have one common pixel
+    switchOrder = full(sum(iqD,2))~= 2;
+        
+    % switch to 3/4 and 1/2
+    qOrder(switchOrder,:) = qOrder(switchOrder,[4 1 2 3]);
+    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+        
+    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
+      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
+      
+    % some we will not be able to remove
+    ignore = full(sum(iqD,2)) ~= 2;
+    iqD(ignore,:) = [];
+    quadPoints(ignore) = [];
+    iqF(ignore,:) = [];
+    qV(ignore,:) = [];
+    qOrder(ignore,:) = [];
+    s = size(iqF);
+    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+  
+    % add an additional vertex (with the same coordinates) for each quad point
+    newVid = (size(V,1) + (1:length(quadPoints))).';
+    V = [V;V(quadPoints,:)];
+  
+    % include new vertex into face list, i.e. replace quadpoint -> newVid
+    Ftmp = F(iqF(orderSub(1)),:).';
+    Ftmp(Ftmp == quadPoints.') = newVid;
+    F(iqF(orderSub(1)),:) = Ftmp.';
+  
+    Ftmp = F(iqF(orderSub(2)),:).';
+    Ftmp(Ftmp == quadPoints.') = newVid;
+    F(iqF(orderSub(2)),:) = Ftmp.';
+        
+    %F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];
+    %F(iqF(orderSub(2)),:) = [newVid,qV(orderSub(2))];
+    sw = F(:,1) > F(:,2);
+    F(sw,:) = fliplr(F(sw,:));
+  
+    [iqD,~] = find(iqD.'); iqD = reshape(iqD,2,[]).';
+             
+    % if we have different grains - we need a new boundary
+    newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
+      
+    % add new edges
+    F = [F; [quadPoints(newBd),newVid(newBd)]];
+    qAdded = sum(newBd);
+    
+    % new rows to I_FDext
+    I_FDext = [I_FDext; ...
+      sparse(repmat((1:qAdded).',1,2), iqD(newBd,:), 1, ...
+      qAdded,size(I_FDext,2))];
+        
+    % new empty rows to I_FDint
+    I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
+      
+  end
+
+  function mergeQuadrupleGrains
+    
+    gB = grains.boundary; gB = gB(length(gB)+1-(1:qAdded));
+    toMerge = false(size(gB));
+       
+    for iPhase = ebsd.indexedPhasesId
+    
+      % restrict to the same phase
+      iBd = all(gB.phaseId == iPhase,2);
+    
+      if ~any(iBd), continue; end
+        
+      % check for misorientation angle % TODO
+      toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
+    
+    end
+  
+    [grains, parentId] = merge(grains,gB(toMerge));
+  
+    % update I_DG
+    I_PC = sparse(1:length(parentId),parentId,1);
+    I_DG = I_DG * I_PC;
+  
+    % update grain ids
+    [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
+  end
+
+
 end
 
-% adjacency of cells that have no common boundary
-ind = connect>0;
-A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
-if check_option(varargin,'mcl')
+function [poly,inclId] = calcPolygons(I_FG,F,V)
+%
+% Input:
+%  I_FG - incidence matrix faces to grains
+%  F    - list of faces
+%  V    - list of vertices
+
+inclId = zeros(size(I_FG,2),1);
+poly = cell(size(I_FG,2),1);
+
+if isempty(I_FG), return; end
+
+% for all grains
+for k=1:size(I_FG,2)
+    
+  % inner and outer boundaries are circles in the face graph
+  EC = EulerCycles(F(I_FG(:,k)>0,:));
+          
+  % first cicle should be positive and all others negatively oriented
+  for c = 1:numel(EC)
+    if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
+      EC{c} = fliplr(EC{c});
+    end
+  end
+    
+  % this is needed
+  for c=2:numel(EC), EC{c} = [EC{c} EC{1}(1)]; end
   
-  param = get_option(varargin,'mcl');
-  if isempty(param), param = 1.4; end
-  if length(param) == 1, param = [param,4]; end
-  
-  A_Do = mclComponents(A_Do,param(1),param(2)); 
-  A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
-  
-else
-  
-  A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
-    length(ebsd),length(ebsd));
+  poly{k} = [EC{:}];
+  inclId(k) = length(poly{k}) - length(EC{1});
   
 end
-A_Do = A_Do | A_Do.';
-
-% adjacency of cells that have a common boundary
-A_Db = A_Db | A_Db.';
-
-% compute I_DG connected components of A_Do
-% I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
-
 
 end
+
