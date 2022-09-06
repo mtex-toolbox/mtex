@@ -46,8 +46,8 @@ D = sqrt(3) * Wigner_D(1,R)
 %% Series Expansion
 %
 % The Wigner-D functions form an orthonormal basis in $L_2(SO(3))$. Hence,
-% we can describe functions on $SO(3)$ by there harmonic representation
-% using the class <SO3FunHarmonicRepresentation.html |SO3FunHarmonic|>.
+% we can describe functions on the rotation group $SO(3)$ by there harmonic
+% representation using the class <SO3FunHarmonicRepresentation.html |SO3FunHarmonic|>.
 %
 % With that we define the Wigner-D function $D_1^{1,-1}$ by
 
