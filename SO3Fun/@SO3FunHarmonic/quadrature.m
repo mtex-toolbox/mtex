@@ -53,10 +53,6 @@ if isa(f,'SO3Fun')
   
   SLeft = f.SLeft; SRight = f.SRight;
 
-  % TODO: Usage of symmetries only implemented for SRight = crystalSymmetry('1') and 
-  % SLeft = specimenSymmetry('1') with default symmetries 1, 2, 3, 4, 6, 112, 222, 422, 622, 23, 423, 312, 321
-  % others are not tested yet
-
   % Use crystal and specimen symmetries by only evaluating at Clenshaw Curtis 
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
