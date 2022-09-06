@@ -57,7 +57,7 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = AdjustBandwidth(bw,SRight,SLeft);
-  [values,nodes,W] = eval_onCCGrid_useSym(f,bw,SRight,SLeft);
+  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
 
 else
 
