@@ -16,7 +16,7 @@ function f =  eval(F,rot,varargin)
 %
 
 if ~check_option(varargin,'nfsoft')
-  f = eval_v2(F,rot,varargin{:});
+  f = evalV2(F,rot,varargin{:});
   return
 end
 

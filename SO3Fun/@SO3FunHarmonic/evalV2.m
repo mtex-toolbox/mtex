@@ -1,11 +1,11 @@
-function f = eval_v2(SO3F,rot,varargin)
+function f = evalV2(SO3F,rot,varargin)
 % evaluates the rotational harmonic on a given set of points using a
 % representation based coefficient transform, that transforms 
 % a series of Wigner-D functions into a trivariate fourier series and using
 % NFFT at the end.
 %
 % Syntax
-%   f = eval(F,v)
+%   f = evalV2(F,v)
 %
 % Input
 %   F - @SO3FunHarmonic
@@ -58,8 +58,8 @@ if isempty(plan)
   %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
   NN = 2*N+2;
   if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
-  FN = ceil(1.5*NN);
-  FN2 = ceil(1.5*N2);
+  FN = 2*ceil(1.5*NN);
+  FN2 = 2*ceil(1.5*N2);
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
   %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
   %                         It is the default value
