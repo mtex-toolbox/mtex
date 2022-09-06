@@ -65,13 +65,13 @@ switch method
     % post process cluster
     for i = 1:min(length(center),20)
     
-      % remove points to far from the center
-      ori_c = ori.subSet(c==i);
+      % remove cluster points too far from the center
       omega = angle(ori_c,center.subSet(i));
-      c(c==i) = i * (omega < 1.5*quantile(omega,0.9));
+      c(c==i) = i * (omega(c==i) < 1.5*quantile(omega(c==i),0.9));
       
       % recompute center
-      odf = unimodalODF(ori_c,weights(c==i),'halfwidth',2.5*degree,varargin{:});
+      odf = unimodalODF(ori_c.subSet(c==i),'halfwidth',2.5*degree,varargin{:},...
+        'weights',weights(c==i));
       center = subsasgn(center,i,steepestDescent(odf,center.subSet(i)));
       
     end
