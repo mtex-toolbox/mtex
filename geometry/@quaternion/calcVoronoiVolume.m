@@ -43,7 +43,7 @@ for l = unique(len)'
   end
 end
 
-w = w/(sum(w));
+w = w.^3/(sum(w.^3));
 
 end
 
