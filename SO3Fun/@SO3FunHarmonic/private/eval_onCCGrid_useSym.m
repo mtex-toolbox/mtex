@@ -1,117 +1,178 @@
-function [values,nodes,weights] = eval_onCCGrid_useSym(SO3F,N,CS,SS)
-% We want to evaluate a function handle on the rotation group in clenshaw
-% curtis quadrature nodes by using crystal and specimen symmetry. Hence
-% we evaluate the function handle on a fundamental region concerning the
-% symmetries.
-% Rotations around Z axis in crystal and specimen symmetries yields periodic
-% function values on Clenshaw Curtis quadrature grid and are therefore ignored
+function [values,nodes,weights] = eval_onCCGrid_useSym(SO3F,N,SRight,SLeft,varargin)
+% This funtion evaluates a rotational function handle efficiently on clenshaw
+% curtis quadrature nodes by using right and left symmetry prperties. 
+% Hence we evaluate the function handle on a fundamental region concerning 
+% the symmetries.
+% Rotations around Z axis yields periodic function values on the Clenshaw 
+% Curtis quadrature grid and are therefore ignored, because they are also
+% ignored in the quadratureV2 algorithm.
 
+LId = SLeft.id;
+RId = SRight.id;
+bothPerpZ = SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1;
 
 % ignore symmetry by using 'complete' grid
-if CS.id==1 && SS.id==1
-  [nodes,weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS,'complete');
+if check_option(varargin,'complete') || (LId==1 && RId==1)
+  [nodes,weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete');
   values = SO3F.eval(nodes(:));
   return
 end
 
+% Get Clenshaw Curtis quadrature nodes suitable to the symmetries
+nodes = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft);
 
-% Get nodes by ClenshawCurtis quadrature
-nodes = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS);
 
-% if crystal and specimen symmetry both has 2-fold rotation around Y axis
-% we have an additional (possibly shifted) inner mirror symmetry in 1st 
-% euler angle alpha
-if CS.multiplicityPerpZ~=1 && SS.multiplicityPerpZ~=1
-
-  % if crystal symmetry has 2-fold rotation around Y axis and specimen
-  % symmetry is '321' or '312' we have to shift the nodes in 1st euler angle
-  % alpha by pi/6 or pi/4
-  warning('off')
-  if SS.id==19
-    shift = ceil(N/6);
-    nodes = rotation.byEuler(pi/(N+1)*shift,0,0).*nodes;
-  elseif SS.id==22
-    shift = ceil(N/4);
-    nodes = rotation.byEuler(pi/(N+1)*shift,0,0).*nodes;
-  else
-    shift=0;
-  end
-
-  % in some special cases we need to evaluate the function handle in additional nodes
-  if (SS.id==19 && mod(N+1,2)==0) || (SS.id==22 && mod(N+1,12)==0) || (SS.id~=19 && SS.id~=22)
-    nodes = cat(3,nodes,rotation.byEuler(2*pi/(2*N+2),0,0).*nodes(:,:,end));
-  end
-  warning('on')
+% 1) in some special cases we need to evaluate the function handle in additional nodes
+addNodes = true;
+if ~bothPerpZ
+  addNodes = false;
+end
+if ismember(LId,19:21) && (iseven(N) && (isa(SLeft,'specimenSymmetry') || ismember(RId,[1:2,9:11,17:18,22:35,43:45])))
+  addNodes = false;
+end
+if ismember(RId,19:21) && iseven(N) && ~ismember(LId,6:8) && ~(isa(SLeft,'crystalSymmetry') && ismember(LId,19:21))
+  addNodes = false;
+end
+if ismember(LId,22:24) && (isa(SLeft,'specimenSymmetry') || SRight.multiplicityPerpZ==1) && (isa(SLeft,'crystalSymmetry') || mod(N+1,12)~=0)
+  addNodes = false;
+end
+if ismember(RId,22:24) && iseven(N) && ~ismember(LId,6:8)
+  addNodes = false;
+end
+if ismember(LId,3:5) && iseven(N)
+  addNodes = false;
+end
+if ismember(RId,3:5) && ~ismember(LId,19:24) && iseven(N) && ~ismember(LId,6:8)
+  addNodes = false;
 end
 
-% evaluate on fundamental region
+% add the additional nodes
+if addNodes
+  nodes = cat(3,nodes,rotation.byEuler(2*pi/(2*N+2),0,0).*nodes(:,:,end));
+end
+
+
+% 2) in some special cases we need to shift the nodes along 1st Euler angle alpha
+shift = 0;
+if SRight.multiplicityPerpZ ~=1
+  switch LId
+    case {3,4,5}
+      shift = ceil((N+1)/2);
+    case {19,20,21}
+      if isa(SLeft,'specimenSymmetry')
+        shift = ceil((N+1)/6);
+      else
+        shift = 0;
+      end
+    case {22,23,24}
+      if isa(SLeft,'specimenSymmetry')
+        shift = ceil((N+1)/4);
+      else
+        shift = ceil((N+1)/6);
+      end
+  end
+end
+nodes = rotation.byEuler(pi/(N+1)*shift,0,0).*nodes;
+
+
+% 3) get necessary evaluations
+% TODO: probably use unique function in special cases 
+% diagonal symmetry axis --> choose N nicely
 evalues = SO3F.eval(nodes(:));
-
-
 s = size(evalues);
 evalues = reshape(evalues, length(nodes), []);
-num = size(evalues, 2);
 
-len = (2*N+2)^2*(2*N+1)/(CS.multiplicityZ*SS.multiplicityZ);
+num = size(evalues, 2);
+len = (2*N+2)^2*(2*N+1)/(SRight.multiplicityZ*SLeft.multiplicityZ);
 values = zeros(len,num);
+
 for index = 1:num
 
   v = reshape(evalues(:,index),size(nodes));
 
-  % redouble values along 1st euler angle alpha by use of inner mirror 
-  % symmetry in 1st euler angle alpha
-  if CS.multiplicityPerpZ~=1 && SS.multiplicityPerpZ~=1
-    if (SS.id==19 && mod(N+1,2)~=0) || (SS.id==22 && mod(N+1,12)~=0)
-      values_below = flip(circshift(flip(v,3),-1,1),1);
-    else
-      values_below = flip(circshift(flip(v(:,:,2:end-1),3),-1,1),1);
-    end
-    if CS.id==22
-      values_below = fftshift(values_below,1);
-    end
-    v = cat(3,v,values_below);
-    v = circshift(v,shift,3);
-  end
 
-
-  % if crystal or specimen symmetry includes 2-fold rotation around Y axis,
-  % we construct full size of values along the 2nd euler angle beta
-  if CS.multiplicityPerpZ~=1 || SS.multiplicityPerpZ~=1
-  
+  % 4) If one of the symmetries includes a 2-fold rotation around Y axis,
+  %    we reconstruct full size of values along the 2nd euler angle beta
+  if SRight.multiplicityPerpZ~=1 || SLeft.multiplicityPerpZ~=1
     values_right = flip(v(:,1:end-1,:),2);
-    if CS.multiplicityPerpZ==1 && SS.multiplicityPerpZ~=1
-      values_right = flip(circshift(values_right,-1,3),3);
+    
+    if SRight.multiplicityPerpZ==1 && SLeft.multiplicityPerpZ~=1
+      values_right = flip(values_right,3);
+      values_right = circshift(values_right,1,3);
+    elseif SRight.multiplicityPerpZ~=1 && ismember(LId,[3:8,19:24])
+      values_right = flip(values_right,3);
     else
       values_right = flip(circshift(values_right,-1,1),1);
     end
 
-    if SS.multiplicityZ==1 || (SS.multiplicityZ==3 && CS.multiplicityPerpZ~=1)
+    if ismember(LId,[1:2,17:18]) || (ismember(LId,6:8) && SRight.multiplicityPerpZ==1)
       values_right = fftshift(values_right,3);
     end
-    if CS.multiplicityZ==1 || (CS.multiplicityZ==3 && CS.id~=22)
+    if ismember(RId,[1:2,6:8,17:18]) || (ismember(RId,[3:5,19:24]) && ismember(LId,[3:8,19:24]))
       values_right = fftshift(values_right,1);
     end
-    if CS.multiplicityPerpZ==1 && SS.id==22
+    if isa(SLeft,'crystalSymmetry') && ismember(LId,19:21) && SRight.multiplicityPerpZ==1
+      values_right = fftshift(values_right,3);
+    end
+    if isa(SLeft,'specimenSymmetry') && ismember(LId,22:24) && SRight.multiplicityPerpZ==1
       values_right = circshift(values_right,(N+1)/6,3);
     end
-
+    if isa(SRight,'crystalSymmetry') && ismember(RId,19:21) && ismember(LId,[1:2,9:18,25:45])
+      values_right = fftshift(values_right,1);
+    end
+    if isa(SRight,'specimenSymmetry') && ismember(RId,22:24) && ismember(LId,[1:2,9:18,25:45])
+      values_right = circshift(values_right,-(N+1)/6,1);
+    end
+  
     v = cat(2,v,values_right);
+  end
 
+
+  % 5) If both symmetries has 2-fold rotation around Y axis we have an 
+  % additional inner mirror symmetry in 1st euler angle alpha. We use this
+  % to redouble the values along 1st euler angle alpha
+  if bothPerpZ
+    if addNodes
+      values_below = v(:,:,2:end-1);
+    else
+      values_below = v;
+    end
+    values_below = flip(circshift(flip(values_below,3),-1,1),1);
+
+    if ismember(RId,[3:5,22:24])
+      values_below = fftshift(values_below,1);
+    end
+    if isa(SRight,'specimenSymmetry') && ismember(RId,19:21)
+      values_below = fftshift(values_below,1);
+    end
+    if isa(SRight,'specimenSymmetry') && ismember(RId,22:24)
+      values_below = circshift(values_below,-(N+1)/6,1);
+    end
+
+    v = cat(3,v,values_below);
+    v = circshift(v,shift,3);
   end
 
   values(:,index) = v(:);
 
 end
 
+% resize values
 values = reshape(values,[len s(2:end)]);
 
-% ignore symmetry by property 'complete' and make dimensions of nodes
-% weights and values matching to each other
-% If crystal symmetry includes r-fold rotation around Z axis and specimen
-% symmetry includes s-fold rotation around Z axis, then multiply with r*s.
-[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',CS,SS,'complete');
-nodes = nodes(1:(2*N+2)/CS.multiplicityZ,:,1:(2*N+2)/SS.multiplicityZ);
-rs = CS.multiplicityZ*SS.multiplicityZ;
-weights = weights(1:(2*N+2)/CS.multiplicityZ,:,1:(2*N+2)/SS.multiplicityZ)*rs;
+
+% Construct suitable nodes and weights:
+% Ignore symmetry by property 'complete' and make dimensions of nodes,
+% weights and values matching to each other.
+% If left symmetry includes an r-fold rotation around Z axis and right
+% symmetry includes an s-fold rotation around Z axis, then we have to 
+% multiply the weights with r*s.
+[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete');
+r = SRight.multiplicityZ;
+s = SLeft.multiplicityZ;
+nodes = nodes(1:(2*N+2)/r,:,1:(2*N+2)/s);
+weights = weights(1:(2*N+2)/r,:,1:(2*N+2)/s)*r*s;
 
 end
+
+
