@@ -72,7 +72,9 @@ if SRight.multiplicityPerpZ ~=1
       end
   end
 end
+warning off
 nodes = rotation.byEuler(pi/(N+1)*shift,0,0).*nodes;
+warning on
 
 
 % 3) get necessary evaluations
