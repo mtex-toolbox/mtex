@@ -64,6 +64,7 @@ else
   nodes = f(:);
   values = varargin{1}(:);
   W = get_option(varargin,'weights',1);
+  W = W(:);
 
   if isa(nodes,'orientation')
     SRight = nodes.CS; SLeft = nodes.SS;
@@ -75,6 +76,7 @@ else
   % Speed up for a high number of nodes, by transforming the nodes to an 
   % equispaced Clenshaw Curtis grid.
   if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
+    warning('There are to many input nodes. Thatswhy an inexact rounded quadrature is used.')
     [nodes,values] = Round2equispacedGrid(nodes,values,bw,SRight,SLeft);
   end
  
@@ -102,7 +104,7 @@ if isempty(plan)
   % 2^4 -> nfsoft-represent
   % 2^2 -> nfsoft-use-DPT
   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
-  nfsoft_flags = bitor(2^4,4)+1;
+  nfsoft_flags = bitor(2^4,2^0)+2^2;
   % nfft cutoff - 4
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)

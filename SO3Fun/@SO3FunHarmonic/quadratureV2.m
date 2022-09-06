@@ -70,7 +70,7 @@ else
     nodes = orientation(nodes,SRight,SLeft);
   end
 
-  % Look at approximation or interpolation
+  % TODO: Look at approximation or interpolation
 %   % Speed up for a high number of nodes, by transforming the nodes to an 
 %   % equispaced Clenshaw Curtis grid.
 %   if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
