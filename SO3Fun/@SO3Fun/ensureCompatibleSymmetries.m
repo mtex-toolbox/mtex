@@ -1,4 +1,4 @@
-function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
+function ensureCompatibleSymmetries(SO3F1,varargin)
 % For calculating with @SO3Fun (+, -, .*, ./, conv, ...) we have to verify
 % that the symmetries are suitable.
 %
@@ -11,6 +11,7 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %   ensureCompatibleSymmetries(SO3F1,sF)
 %   ensureCompatibleSymmetries(SO3F1,ori)
 %   ensureCompatibleSymmetries(SO3F1,SO3F2,'conv')
+%   ensureCompatibleSymmetries(SO3F1,'antipodal')
 %
 % Input
 %  SO3F1, SO3F2 - @SO3Fun
@@ -24,6 +25,15 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %  conv - be shure switched symmetries match
 %
 
+
+if check_option(varargin,'antipodal')
+  if SO3F1.CS ~= SO3F1.SS
+    error('ODF can only be antipodal if both symmetries coincide!')
+  end
+  return
+end
+
+SO3F2 = varargin{1};
 
 if isnumeric(SO3F1) || isnumeric(SO3F2) || ...
     (isa(SO3F1,'SO3FunRBF') && SO3F1.c0~=0 && isempty(SO3F1.weights)) || ...

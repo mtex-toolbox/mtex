@@ -32,7 +32,9 @@ if numSym(ss) ~= 1 % symmetrize specimen symmetry
 end
 
 % grain exchange symmetry
-if check_option(varargin,'antipodal') && (SO3F.CS==SO3F.SS)
+
+if check_option(varargin,'antipodal')
+  ensureCompatibleSymmetries(SO3F,'antipodal')
   for l = 0:SO3F.bandwidth
     ind = deg2dim(l)+1:deg2dim(l+1);
     ind2 = reshape(flip(ind),2*l+1,2*l+1)';

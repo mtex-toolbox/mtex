@@ -145,9 +145,7 @@ methods
   
   function F = set.antipodal(F,value)
     if ~value, return; end
-    if F.CS ~= F.SS
-      error('ODF can only be antipodal if both symmetries coincide!')
-    end
+    ensureCompatibleSymmetries(F,'antipodal');
     F = F.symmetrise('antipodal');
   end
   
