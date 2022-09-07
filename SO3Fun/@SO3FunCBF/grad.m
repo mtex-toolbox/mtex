@@ -1,11 +1,11 @@
-function g = grad(component,ori,varargin)
+function g = grad(SO3F,ori,varargin)
 % evaluate an odf at orientation g
 %
 % Syntax
-%   g = grad(component,ori)
+%   g = grad(SO3F,ori)
 %
 % Input
-%  component - @fibreComponent
+%  SO3F - @SO3FunCBF
 %  ori - @orientation
 %
 % Output
@@ -18,21 +18,21 @@ function g = grad(component,ori,varargin)
 
 % fallback to generic method
 if check_option(varargin,'check')
-  g = grad@ODFComponent(component,ori,varargin{:});
+  g = grad@SO3Fun(SO3F,ori,varargin{:});
   return
 end
 
-% symmetrise - only crytsal symmetry
-[h,l] = symmetrise(component.h.normalize);
-r = repelem(component.r.normalize,l);
-w = repelem(component.weights./l,l);
+% symmetrise - only crystal symmetry
+[h,l] = symmetrise(SO3F.h.normalize,'unique');
+r = repelem(SO3F.r.normalize,l);
+w = repelem(SO3F.weights./l,l);
 
 g = vector3d.zeros(size(ori));
 for i = 1:length(h)
 
   % TODO: scaling might not be correct
-  % TODO: There is no method DRK.
-  g = g + w(i) * component.psi.DRK(dot(ori*h(i),r(i))) .* ...
+  % TODO: There is no method S2Kernel.grad.
+  g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i))) .* ...
     cross(h(i),inv(ori) * r(i));
 end
 end

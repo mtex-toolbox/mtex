@@ -8,10 +8,14 @@ function ensureCompatibleSymmetries(SO3F1,SO3F2,varargin)
 %
 % Syntax
 %   ensureCompatibleSymmetries(SO3F1,SO3F2)
+%   ensureCompatibleSymmetries(SO3F1,sF)
+%   ensureCompatibleSymmetries(SO3F1,ori)
 %   ensureCompatibleSymmetries(SO3F1,SO3F2,'conv')
 %
 % Input
 %  SO3F1, SO3F2 - @SO3Fun
+%  sF - @S2FunHarmonicSym
+%  ori - @orientation
 %
 % Output
 %  msg - yields a error message if the symmetry do not match
@@ -30,6 +34,7 @@ end
 
 
 % TODO: Currently only same symmetries are suitable.
+%       Possibly use LaueGroups or properGroups
 %       By changing that also update the code in SO3FunComposition.
 
 if isa(SO3F2,'S2FunHarmonicSym')
