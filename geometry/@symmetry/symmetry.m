@@ -84,6 +84,19 @@ classdef symmetry < handle
       out = lt(cs2,cs1);
     end
     
+    function fhat = WignerD(cs,L)
+      if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
+        fhat = cs.opt.fhat(1:deg2dim(L+1));
+      else
+        c = ones(1,numSym(cs))/numSym(cs);
+        SO3F = SO3FunHarmonic.quadrature(cs.rot,c,'bandwidth',L,'nfsoft');
+        fhat = SO3F.fhat;
+        fhat(abs(fhat)<1e-5)=0;
+        fhat = sparse(fhat);
+        cs.opt.fhat = fhat;
+      end
+    end
+
   end
 
   methods (Access = protected, Static = true)
