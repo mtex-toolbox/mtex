@@ -23,28 +23,16 @@ L = SO3F.bandwidth;
 cs = SO3F.CS.properGroup;
 ss = SO3F.SS.properGroup;
  
-if numSym(cs) ~= 1
-  % symmetrize crystal symmetry
-  c = ones(1,numSym(cs))/numSym(cs);
-  f1 = SO3FunHarmonic(SO3F.fhat);
-  f2 = SO3FunHarmonic.quadrature(cs.rot,c,'bandwidth',L,'nfsoft');
-  f = conv(f1,f2);
-  SO3F.fhat = f.fhat;
-
+if numSym(cs) ~= 1 % symmetrize crystal symmetry
+  SO3F.fhat = convSO3(SO3F.fhat,cs.WignerD(L));
 end
   
-if numSym(ss) ~= 1
-  % symmetrize specimen symmetry
-  c = ones(1,numSym(ss))/numSym(ss);
-  f1 = SO3FunHarmonic.quadrature(ss.rot,c,'bandwidth',L,'nfsoft');
-  f2 = SO3FunHarmonic(SO3F.fhat);
-  f = conv(f1,f2);
-  SO3F.fhat = f.fhat;
-
+if numSym(ss) ~= 1 % symmetrize specimen symmetry
+  SO3F.fhat = convSO3(ss.WignerD(L),SO3F.fhat);
 end
 
 % grain exchange symmetry
-if (SO3F.antipodal || check_option(varargin,'antipodal') ) && (SO3F.CS==SO3F.SS)
+if check_option(varargin,'antipodal') && (SO3F.CS==SO3F.SS)
   for l = 0:SO3F.bandwidth
     ind = deg2dim(l)+1:deg2dim(l+1);
     ind2 = reshape(flip(ind),2*l+1,2*l+1)';
