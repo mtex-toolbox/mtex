@@ -39,7 +39,7 @@ methods
     s = size(rot);
     rot = rot(:);
     f = SO3F.fun(rot);
-    if numel(SO3F)==1
+    if numel(f)==numel(rot)
       f = reshape(f,s);
     end
     if isalmostreal(f)
