@@ -28,6 +28,13 @@ function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 % get Euler angle bounds
 [max_rho,max_theta,max_sec] = fundamentalRegionEuler(SRight,SLeft,varargin{:});
 
+if check_option(varargin,'Zfold')
+  m1 = SLeft.multiplicityZ;
+  m2 = SRight.multiplicityZ;
+  max_rho = 2*pi/m1;
+  max_theta = pi;
+  max_sec = 2*pi/m2;
+end
 
 if check_option(varargin,'ClenshawCurtis')
   % a regular grid for ClenshawCurtis quadrature required bandwidth 2n 

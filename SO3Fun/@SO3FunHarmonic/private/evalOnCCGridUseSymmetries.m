@@ -50,7 +50,7 @@ end
 
 % add the additional nodes
 if addNodes
-  nodes = cat(3,nodes,rotation.byEuler(2*pi/(2*N+2),0,0).*nodes(:,:,end));
+  nodes = cat(3,nodes,rotation.byEuler(pi/(N+1),0,0).*nodes(:,:,end));
 end
 
 
@@ -171,12 +171,6 @@ values = reshape(values,[len s(2:end)]);
 % If left symmetry includes an r-fold rotation around Z axis and right
 % symmetry includes an s-fold rotation around Z axis, then we have to 
 % multiply the weights with r*s.
-[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete','Euler');
-r = SRight.multiplicityZ;
-s = SLeft.multiplicityZ;
-nodes = nodes(1:(2*N+2)/r,:,1:(2*N+2)/s);
-weights = weights(1:(2*N+2)/r,:,1:(2*N+2)/s)*r*s;
+[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'Zfold','Euler');
 
 end
-
-
