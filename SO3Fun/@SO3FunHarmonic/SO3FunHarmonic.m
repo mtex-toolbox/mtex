@@ -77,6 +77,10 @@ methods
       SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
     end
 
+    if check_option(varargin,'bandwidth')
+      SO3F.bandwidth = get_option(varargin,'bandwidth');
+    end
+
     SO3F = SO3F.symmetrise;
 
     SO3F.antipodal = check_option(varargin,'antipodal');

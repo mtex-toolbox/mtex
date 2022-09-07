@@ -28,8 +28,8 @@ if check_option(varargin,'killPlan')
   return
 end
 
-bw = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
-
+N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+bw=N;
 
 if isa(f,'function_handle')
   [SRight,SLeft] = extractSym(varargin);
@@ -52,7 +52,7 @@ if isa(f,'SO3Fun')
   % Use crystal and specimen symmetries by only evaluating at Clenshaw Curtis 
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
-  bw = AdjustBandwidth(bw,SRight,SLeft);
+  bw = adjustBandwidth(bw,SRight,SLeft);
   [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
   varargin{end+1} = 'ClenshawCurtis';
 
@@ -75,7 +75,7 @@ else
 %   % equispaced Clenshaw Curtis grid.
 %   if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
 %     warning('There are to many input nodes. Thatswhy an inexact rounded quadrature is used.')
-%     [nodes,values] = Round2equispacedGrid(nodes,values,bw,SRight,SLeft);
+%     [nodes,values] = round2equispacedGrid(nodes,values,bw,SRight,SLeft);
 %     varargin{end+1} = 'ClenshawCurtis';
 %   end
 
@@ -187,8 +187,7 @@ try
   fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
 end
 
-SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
-SO3F.bandwidth = bw;
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft,'bandwidth',N);
 
 % if antipodal consider only even coefficients
 SO3F.antipodal = check_option(varargin,'antipodal');
@@ -201,7 +200,7 @@ end
 
 % --------------------------- functions -----------------------------------
 
-function bw = AdjustBandwidth(bw,SRight,SLeft)
+function bw = adjustBandwidth(bw,SRight,SLeft)
   t1=1; t2=2; 
   if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
   if ismember(SLeft.id,22:24),  t2=4; end     % 2 | (N+1)
@@ -213,11 +212,11 @@ end
 
 
 
-function [nodes,values] = Round2equispacedGrid(nodes,values,bw,SRight,SLeft)
+function [nodes,values] = round2equispacedGrid(nodes,values,bw,SRight,SLeft)
 
   % Use crystal and specimen symmetries by only evaluating in fundamental
   % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
-   bw = AdjustBandwidth(bw,SRight,SLeft);
+   bw = adjustBandwidth(bw,SRight,SLeft);
 
     grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
     % in some special cases we need to evaluate the function handle in additional nodes
