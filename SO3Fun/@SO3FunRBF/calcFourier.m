@@ -15,7 +15,7 @@ function f_hat = calcFourier(SO3F,varargin)
 %  f_hat - harmonic/Fouier/Wigner-D coefficients
 %
 
-L = get_option(varargin,'bandwidth',SO3F.bandwidth);
+L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxSO3Bandwidth')));
 
 cs = SO3F.CS.properGroup;
 ss = SO3F.SS.properGroup;
@@ -33,7 +33,7 @@ if symCenter
   c = repmat(c(:).',size(ori,1),1) / numSym(cs) / numSym(ss);
 end
  
-SO3FH = SO3FunHarmonic.quadrature(ori,c,varargin{:});
+SO3FH = SO3FunHarmonic.quadrature(ori,c,varargin{:},'bandwidth',L);
 
 SO3FH = conv(SO3FH,SO3F.psi);
 
