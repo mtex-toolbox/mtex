@@ -146,29 +146,14 @@ end
 % ii) left sided convolution (default)
 ensureCompatibleSymmetries(SO3F1,SO3F2,'conv_Left');
 
-% ensure both inputs are harmonic as well
-SO3F1 = SO3FunHarmonic(SO3F1);
-SO3F2 = SO3FunHarmonic(SO3F2);
-
-% get bandwidth
 L = min(SO3F1.bandwidth,SO3F2.bandwidth);
 
-s1 = size(SO3F1);
-s2 = size(SO3F2);
-s = size( ones(s1) .* ones(s2) );
+% compute Fourier coefficients
+fhat1 = SO3F1.calcFourier('bandwidth',L);
+fhat2 = SO3F2.calcFourier('bandwidth',L);
 
-% compute Fourier coefficients of the convolution
-fhat = zeros([deg2dim(L+1),s]);
-for l = 0:L
-  ind = deg2dim(l)+1:deg2dim(l+1);
-   fhat_l = pagemtimes( reshape(SO3F2.fhat(ind,:),[2*l+1,2*l+1,s2]) , ...
-                        reshape(SO3F1.fhat(ind,:),[2*l+1,2*l+1,s1]) ) ./ sqrt(2*l+1);
-   fhat(ind,:) = reshape(fhat_l,[],prod(s));
-end
-
-% construct SO3FunHarmonic
-SO3F = SO3FunHarmonic(fhat,SO3F2.SRight,SO3F1.SLeft);
-
+% construct SO3FunHarmonic by multiplying the Fourier coefficients
+SO3F = SO3FunHarmonic(convSO3(fhat1,fhat2),SO3F2.SRight,SO3F1.SLeft);
 
 end
 
