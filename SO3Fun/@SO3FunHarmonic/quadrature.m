@@ -58,6 +58,10 @@ if isa(f,'SO3Fun')
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = AdjustBandwidth(bw,SRight,SLeft);
   [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
+  alpha = nodes(:,:,:,1); 
+  beta = nodes(:,:,:,2); 
+  gamma = nodes(:,:,:,3);
+  nodes = [alpha(:),beta(:),gamma(:)];
 
 else
 
@@ -70,8 +74,8 @@ else
     SRight = nodes.CS; SLeft = nodes.SS;
   else
     [SRight,SLeft] = extractSym(varargin);
-    nodes = orientation(nodes,SRight,SLeft);
   end
+  nodes = Euler(nodes,'nfft');
 
   % Speed up for a high number of nodes, by transforming the nodes to an 
   % equispaced Clenshaw Curtis grid.
@@ -109,10 +113,10 @@ if isempty(plan)
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)
   % initialize nfsoft plan
-  plan = nfsoftmex('init',bw,length(nodes),nfsoft_flags,0,4,1000,2*ceil(1.5*bw));
+  plan = nfsoftmex('init',bw,size(nodes,1),nfsoft_flags,0,4,1000,2*ceil(1.5*bw));
   
   % set rotations in Euler angles (nodes)
-  nfsoftmex('set_x',plan,Euler(nodes,'nfft').');
+  nfsoftmex('set_x',plan,nodes.');
   
   % node-dependent precomputation
   nfsoftmex('precompute',plan);
@@ -125,7 +129,7 @@ if check_option(varargin,'createPlan')
 end
 
 s = size(values);
-values = reshape(values, length(nodes), []);
+values = reshape(values, size(nodes,1), []);
 num = size(values, 2);
 
 fhat = zeros(deg2dim(bw+1), num);

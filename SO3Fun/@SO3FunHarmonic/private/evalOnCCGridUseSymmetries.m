@@ -15,6 +15,8 @@ bothPerpZ = SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1;
 if check_option(varargin,'complete') || (LId==1 && RId==1)
   [nodes,weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete');
   values = SO3F.eval(nodes(:));
+  [a,b,c] = Euler(nodes,'nfft');
+  nodes = cat(4,a,b,c);
   return
 end
 
@@ -169,7 +171,7 @@ values = reshape(values,[len s(2:end)]);
 % If left symmetry includes an r-fold rotation around Z axis and right
 % symmetry includes an s-fold rotation around Z axis, then we have to 
 % multiply the weights with r*s.
-[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete');
+[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete','Euler');
 r = SRight.multiplicityZ;
 s = SLeft.multiplicityZ;
 nodes = nodes(1:(2*N+2)/r,:,1:(2*N+2)/s);

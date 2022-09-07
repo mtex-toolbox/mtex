@@ -23,10 +23,11 @@ function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 %
 
 % extract symmetry
-[CS,SS] = extractSym(varargin);
+[SRight,SLeft] = extractSym(varargin);
 
 % get Euler angle bounds
-[max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
+[max_rho,max_theta,max_sec] = fundamentalRegionEuler(SRight,SLeft,varargin{:});
+
 
 if check_option(varargin,'ClenshawCurtis')
   % a regular grid for ClenshawCurtis quadrature required bandwidth 2n 
@@ -43,7 +44,11 @@ if check_option(varargin,'ClenshawCurtis')
   beta = linspace(0,max_theta,b_len);
 
   [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
-  SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',CS,SS);
+  if check_option(varargin,'Euler')
+    SO3G = cat(4,alpha,beta,gamma);
+  else
+    SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
+  end
 
   return
 
@@ -112,7 +117,7 @@ switch lower(sectype)
 end
 
 % define grid
-SO3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
+SO3G = orientation.byEuler(sec_angle,theta,rho,convention,SRight,SLeft);
 % store gridding, @TODO: check when its required, this is required for
 % export
 if nargout == 4

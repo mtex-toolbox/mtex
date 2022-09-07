@@ -54,6 +54,8 @@ if isa(f,'SO3Fun')
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(bw,SRight,SLeft);
   [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
+  % we only need the size of nodes
+  nodes = nodes(:,:,:,1); 
   varargin{end+1} = 'ClenshawCurtis';
 
 else
@@ -125,7 +127,7 @@ if check_option(varargin,'createPlan')
 end
 
 s = size(values);
-values = reshape(values, length(nodes), []);
+values = reshape(values, prod(size(nodes)), []);
 num = size(values, 2);
 
 fhat = zeros(deg2dim(bw+1), num);
