@@ -66,8 +66,8 @@ classdef S2DeLaValleePoussin < S2Kernel
 
     function value = grad(psi,t)
       % the derivative of the radon transformed kernel function at
-      %value  = psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 .* ((1+t)/2).^(psi.kappa-1);
-      value  = psi.kappa*(1+psi.kappa) * ((1+t)/2).^(psi.kappa-1) ./ 2;
+      value  = -psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 .* ((1+t)/2).^(psi.kappa-1);
+      %value  = psi.kappa*(1+psi.kappa) * ((1+t)/2).^(psi.kappa-1) ./ 2;
     end
     
     

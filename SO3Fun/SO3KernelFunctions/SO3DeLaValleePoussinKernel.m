@@ -77,8 +77,8 @@ methods
     % DK(omega) = - kappa * C * sin(omega/2)*cos(omega/2)^(2kappa-1)
     
     if nargin == 2
-      %value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
       value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
+      %value = 2 * psi.C * psi.kappa *co2.^(2*psi.kappa-1);
     else      
       value = SO3KernelHandle(@(co2) -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1));
     end
