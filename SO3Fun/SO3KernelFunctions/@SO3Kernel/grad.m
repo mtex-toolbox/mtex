@@ -25,7 +25,7 @@ Dpsi = SO3Kernel(Ahat);
 
 
 if nargin == 2
-  value = x .*co2.*sqrt(1-co2.^2);
+  value = Dpsi.eval(co2).*co2.*sqrt(1-co2.^2);
 else
   value = SO3KernelHandle(@(co2) Dpsi.eval(co2).*co2.*sqrt(1-co2.^2));
 end
