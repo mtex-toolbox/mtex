@@ -60,19 +60,22 @@ classdef grain2d < phaseList & dynProp
   
   methods
 
-    function grains = grain2d(poly, inclusionId, phaseId, CSList, phaseMap, varargin)
+    function grains = grain2d(poly, phaseId, CSList, phaseMap, varargin)
       % constructor
       % 
       % Input
       %  V    - n x 2 list of vertices
       %  poly - cell array of the polyhedrons
-      %  inclusionId - id within poly where the inclusions start
-      % 
+      %  inclusionId - id within poly where the inclusions start, 0 - for no inclusion
+      %  phaseId     - list of phaseId for each grain
+      %  CSList      -
+      %  phaseMap    - 
       
       if nargin == 0, return;end
 
       grains.poly = poly;
-      grains.inclusionId = inclusionId;
+      grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly,'uniformOutput',true)-1;
+
 
       grains.phaseId = phaseId;
       grains.CSList = CSList;
@@ -152,6 +155,11 @@ classdef grain2d < phaseList & dynProp
     
     function unit = get.scanUnit(grains)
       unit = grains.boundary.scanUnit;
+    end
+
+    function grains = set.scanUnit(grains,unit)
+      grains.boundary.scanUnit = unit;
+      grains.innerBoundary.scanUnit = unit;
     end
     
     function tP = get.triplePoints(grains)

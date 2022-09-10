@@ -72,48 +72,36 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 
 % determine which cells to connect
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
-% A_db - neigbhouring cells with grain boundary
+% A_db - neigbhouring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
 % compute grain ids
-[grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
+[grainId,~] = find(I_DG.');
 
 % phaseId of each grain
 phaseId = full(max(I_DG' * ...
-        spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
+  spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
 phaseId(phaseId==0) = 1; % why this is needed?
 
-% split face x cell incidence matrix into
+% compute boundary this gives
 % I_FDext - faces x cells external grain boundaries
 % I_FDint - faces x cells internal grain boundaries
-[I_FDext,I_FDint] = calcBoundary;
-
-% remove empty lines from I_FD, F, and V
-isBoundary = full(any(I_FDext,2) | any(I_FDint,2));
-F = F(isBoundary,:);
-I_FDext = I_FDext.'; I_FDext = I_FDext(:,isBoundary).';
-I_FDint = I_FDint.'; I_FDint = I_FDint(:,isBoundary).';
-      
-% remove vertices that are not needed anymore
-[inUse,~,F] = unique(F);
-V = V(inUse,:);
-F = reshape(F,[],2);
+[I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
 if check_option(varargin,'removeQuadruplePoints')
   qAdded = removeQuadruplePoints; 
 end
 
-[poly, inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
+poly  = calcPolygons(I_FDext * I_DG,Fext,V);
 
 % setup grains
-grains = grain2d(poly, inclusionId, phaseId, ebsd.CSList,ebsd.phaseMap,...
+grains = grain2d(poly, phaseId, ebsd.CSList,ebsd.phaseMap,...
   varargin{:});
-grains.grainSize = full(sum(I_DG,1)).';
-%grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin{:});
 
-grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
-grains.boundary.scanUnit = ebsd.scanUnit;
-grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
+grains.grainSize = full(sum(I_DG,1)).';
+grains.boundary = makeBoundary(Fext,I_FDext);
+grains.innerBoundary = makeBoundary(Fint,I_FDint);
+grains.scanUnit = ebsd.scanUnit;
 
 % merge quadruple grains
 if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
@@ -162,7 +150,6 @@ if check_option(varargin,'variants')
     grains.prop.variantId = variantId(firstD,1);
     grains.prop.parentId = variantId(firstD,2);
 end
-
 
 
 
@@ -255,7 +242,7 @@ end
 
   end
 
-  function [I_FDext,I_FDint] = calcBoundary
+  function [I_FDext, I_FDint, Fext, Fint] = calcBoundary
     % distinguish between interior and exterior grain boundaries
     
     % cells that have a subgrain boundary, i.e. a boundary with a cell
@@ -281,16 +268,57 @@ end
     D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
     I_FDint = D_Fsub*I_FD;
     
+    % remove empty lines from I_FD, F, and V
+    isExt = full(any(I_FDext,2));
+    I_FDext = I_FDext.'; I_FDext = I_FDext(:,isExt).';
+
+    isInt = full(any(I_FDint,2));
+    I_FDint = I_FDint.'; I_FDint = I_FDint(:,isInt).';
+      
+    % remove vertices that are not needed anymore
+    [inUse,~,F] = unique(F(isExt | isInt,:));
+    V = V(inUse,:);
+    F = reshape(F,[],2);
+    Fext = F(isExt(isExt | isInt),:); % external boundary segments
+    Fint = F(isInt(isExt | isInt),:); % internal boundary segments
+
   end
+
+  function gB = makeBoundary(F,I_FD)
+
+    % compute ebsdInd
+    [eId,fId] = find(I_FD.');
+    eId = eId(:); fId = fId(:);
+      
+    % replace fId that appears a second time by fId + length(F)+1
+    % such that it refers to the second column
+    d = diff([0;fId]);
+    fId = cumsum(d>0) + (d==0)*size(F,1);
+            
+    %  ebsdInd - [Id1,Id2] list of adjecent EBSD pixels for each segment
+    ebsdInd = zeros(size(F,1),2);
+    ebsdInd(fId) = eId;
+          
+    % compute misrotations
+    mori = rotation.nan(size(F,1),1);
+    isNotBoundary = all(ebsdInd,2);
+    mori(isNotBoundary) = ...
+      inv(ebsd.rotations(ebsdInd(isNotBoundary,2))) ...
+      .* ebsd.rotations(ebsdInd(isNotBoundary,1));
+    
+    gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,ebsd.phaseMap,ebsd.id);
+
+  end
+
 
   function qAdded = removeQuadruplePoints
 
-    quadPoints = find(accumarray(reshape(F(full(any(I_FDext,2)),:),[],1),1) == 4);
+    quadPoints = find(accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4);
 
     if isempty(quadPoints), return; end
       
     % find the 4 edges connected to the quadpoints
-    I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
+    I_FV = sparse(repmat((1:size(Fext,1)).',1,2),Fext,ones(size(Fext)));
         
     quadPoints = find(sum(I_FV) == 4).';
     [iqF,~] = find(I_FV(:,quadPoints));
@@ -299,7 +327,7 @@ end
     iqF = reshape(iqF,4,length(quadPoints)).';
       
     % find the 4 vertices adfacent to each quadruple point
-    qV = [F(iqF.',1).';F(iqF.',2).'];
+    qV = [Fext(iqF.',1).';Fext(iqF.',2).'];
     qV = qV(qV ~= reshape(repmat(quadPoints.',8,1),2,[]));
     qV = reshape(qV,4,[]).';
         
@@ -342,18 +370,18 @@ end
     V = [V;V(quadPoints,:)];
   
     % include new vertex into face list, i.e. replace quadpoint -> newVid
-    Ftmp = F(iqF(orderSub(1)),:).';
+    Ftmp = Fext(iqF(orderSub(1)),:).';
     Ftmp(Ftmp == quadPoints.') = newVid;
-    F(iqF(orderSub(1)),:) = Ftmp.';
+    Fext(iqF(orderSub(1)),:) = Ftmp.';
   
-    Ftmp = F(iqF(orderSub(2)),:).';
+    Ftmp = Fext(iqF(orderSub(2)),:).';
     Ftmp(Ftmp == quadPoints.') = newVid;
-    F(iqF(orderSub(2)),:) = Ftmp.';
+    Fext(iqF(orderSub(2)),:) = Ftmp.';
         
     %F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];
     %F(iqF(orderSub(2)),:) = [newVid,qV(orderSub(2))];
-    sw = F(:,1) > F(:,2);
-    F(sw,:) = fliplr(F(sw,:));
+    sw = Fext(:,1) > Fext(:,2);
+    Fext(sw,:) = fliplr(Fext(sw,:));
   
     [iqD,~] = find(iqD.'); iqD = reshape(iqD,2,[]).';
              
@@ -361,7 +389,7 @@ end
     newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
       
     % add new edges
-    F = [F; [quadPoints(newBd),newVid(newBd)]];
+    Fext = [Fext; [quadPoints(newBd),newVid(newBd)]];
     qAdded = sum(newBd);
     
     % new rows to I_FDext
@@ -370,7 +398,7 @@ end
       qAdded,size(I_FDext,2))];
         
     % new empty rows to I_FDint
-    I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
+    %I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
       
   end
 
@@ -398,20 +426,19 @@ end
     I_DG = I_DG * I_PC;
   
     % update grain ids
-    [grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
+    [grainId,~] = find(I_DG.');
   end
 
 
 end
 
-function [poly,inclId] = calcPolygons(I_FG,F,V)
+function poly = calcPolygons(I_FG,F,V)
 %
 % Input:
 %  I_FG - incidence matrix faces to grains
 %  F    - list of faces
 %  V    - list of vertices
 
-inclId = zeros(size(I_FG,2),1);
 poly = cell(size(I_FG,2),1);
 
 if isempty(I_FG), return; end
@@ -433,9 +460,7 @@ for k=1:size(I_FG,2)
   for c=2:numel(EC), EC{c} = [EC{c} EC{1}(1)]; end
   
   poly{k} = [EC{:}];
-  inclId(k) = length(poly{k}) - length(EC{1});
   
 end
 
 end
-

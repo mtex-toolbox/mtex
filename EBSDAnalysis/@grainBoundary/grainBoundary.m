@@ -47,7 +47,7 @@ classdef grainBoundary < phaseList & dynProp
   % general properties
   properties
     scanUnit = 'um' % unit of the vertice coordinates
-    triplePoints    % triple points
+    triplePoints = triplePointList  % triple points
   end
   
   properties (Dependent = true)
@@ -66,65 +66,49 @@ classdef grainBoundary < phaseList & dynProp
   end
   
   methods
-    function gB = grainBoundary(V,F,I_FD,ebsd,grainsPhaseId)
+    function gB = grainBoundary(V,F,ebsdInd,grainId,phaseId,mori,CSList,phaseMap,ebsdId)
       %
       % Input
-      %  V    - [x,y] list of vertices
-      %  F    - [v1,v2] list of boundary segments
-      %  I_FD - incidence matrix boundary segments vs. cells
-      %  ebsd - @EBSD
-      %  grainPhaseId - grains.phaseId sorted by grainId
-      %
+      %  V       - [x,y] list of vertices
+      %  F       - [v1,v2] list of boundary segments
+      %  ebsdInd - [Id1,Id2] list of adjecent EBSD pixels for each segment
+      %  mori    - misorientation between adjecent EBSD pixels for each segment
+      %  grainId - ebsd.grainId
+      %  phaseId - ebsd.phaseId
+      %  CSList   - 
+      %  phaseMap - 
       
       if nargin == 0, return; end
       
-      % remove empty lines from I_FD and F
-      isBoundary = any(I_FD,2);
-      gB.F = F(full(isBoundary),:);
-                        
-      % compute ebsdID
-      [eId,fId] = find(I_FD.');
-      eId = eId(:); fId = fId(:);
+      % assign properties
+      gB.V = V;
+      gB.F = F;
+      gB.misrotation = mori;
+      gB.CSList = CSList;
+      gB.phaseMap = phaseMap;
+      gB.misrotation = mori;
+      gB.ebsdId = ebsdInd;
+      if nargin == 9 % store ebsd_id instead of index
+        gB.ebsdId(ebsdInd>0) = ebsdId(ebsdInd(ebsdInd>0));
+      end
+
+      % compute boundary grainId and phaseId
+      gB.grainId = zeros(size(F,1),2);
+      gB.grainId(ebsdInd>0) = grainId(ebsdInd(ebsdInd>0));
       
-      % scale fid down to 1:length(gB)
-      d = diff([0;fId]);      
-      fId = cumsum(d>0) + (d==0)*size(gB.F,1);
-            
-      % set the ebsdId temporary to the index - this will be replaced by
-      % the id down in the code
-      gB.ebsdId = zeros(size(gB.F,1),2);
-      gB.ebsdId(fId) = eId;
-            
-      % compute grainId
-      gB.grainId = zeros(size(gB.F,1),2);
-      gB.grainId(fId) = ebsd.grainId(eId);
-      
-      % compute phaseId
-      gB.phaseId = zeros(size(gB.F,1),2);
-      isNotBoundary = gB.ebsdId>0;
-      gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
-      gB.phaseMap = ebsd.phaseMap;
-      gB.CSList = ebsd.CSList;
-      
-      % sort ebsdId such that first phaseId1 <= phaseId2
+      gB.phaseId = zeros(size(F,1),2);
+      gB.phaseId(ebsdInd>0) = phaseId(ebsdInd(ebsdInd>0));
+
+      % sort columns such that first phaseId1 <= phaseId2
       doSort = gB.phaseId(:,1) > gB.phaseId(:,2) | ...
         (gB.phaseId(:,1) == gB.phaseId(:,2) & gB.grainId(:,1) > gB.grainId(:,2));
       gB.phaseId(doSort,:) = fliplr(gB.phaseId(doSort,:));
       gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
       gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
-      
-      % compute misrotations
-      gB.misrotation = rotation.id(size(gB.F,1),1);
-      isNotBoundary = all(gB.ebsdId,2);
-      gB.misrotation(isNotBoundary) = ...
-        inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
-        .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
+      gB.misrotation(doSort) = inv(gB.misrotation(doSort));
 
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints(V,grainsPhaseId);
-      
-      % store ebsd_id instead of index
-      gB.ebsdId(gB.ebsdId>0) = ebsd.id(gB.ebsdId(gB.ebsdId>0));
+      gB.triplePoints = gB.calcTriplePoints;
       
     end
 
