@@ -2,15 +2,15 @@ classdef grain2d < phaseList & dynProp
   % class representing two dimensional grains
   %
   % Syntax
-  %   grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db)
+  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
   %
   % Input
-  %   ebsd - EBSD data set
-  %   V    - list of vertices
-  %   F    - list of edges
-  %   I_DG - incidence matrix - ebsd cells x grains
-  %   I_FD - incidence matrix - edges x ebsd cells
-  %   A_Db - adjacense matrix of cells
+  %  V    - n x 2 list of vertices
+  %  poly - cell array of the polyhedrons
+  %  ori  - array of mean orientations
+  %  CSList   - cell array of symmetries
+  %  phaseId  - list of phaseId for each grain
+  %  phaseMap -
   %
   % Class Properties
   %  phaseId - phase identifier of each grain
@@ -60,32 +60,86 @@ classdef grain2d < phaseList & dynProp
   
   methods
 
-    function grains = grain2d(poly, phaseId, CSList, phaseMap, varargin)
+    function grains = grain2d(V, poly, ori, CSList, phaseId,  phaseMap, varargin)
       % constructor
       % 
       % Input
       %  V    - n x 2 list of vertices
       %  poly - cell array of the polyhedrons
-      %  inclusionId - id within poly where the inclusions start, 0 - for no inclusion
-      %  phaseId     - list of phaseId for each grain
-      %  CSList      -
-      %  phaseMap    - 
+      %  ori  - array of mean orientations
+      %  CSList   - cell array of symmetries
+      %  phaseId  - list of phaseId for each grain
+      %  phaseMap - 
       
       if nargin == 0, return;end
 
       grains.poly = poly;
-      grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly,'uniformOutput',true)-1;
+      grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
 
+      if nargin>=3 && ~isempty(ori)
+        grains.prop.meanRotation = ori;
+      else
+        grains.prop.meanRotation = rotation.nan(length(poly),1);        
+      end
 
-      grains.phaseId = phaseId;
-      grains.CSList = CSList;
-      grains.phaseMap = phaseMap;
+      if nargin>=4
+        grains.CSList = ensurecell(CSList);
+      else
+        grains.CSList = {'notIndexed'};
+      end
+
+      if nargin>=5
+        grains.phaseId = phaseId;
+      else
+        grains.phaseId = ones(length(poly),1);
+      end
+      
+      if nargin>=6
+        grains.phaseMap = phaseMap;
+      else
+        grains.phaseMap = 1:length(grains.CSList);
+      end
 
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = ones(size(poly));
       
-      %grains.boundary = boundary;
-      %grains.innerBoudary = innerBoundary;
+      if isa(V,'grainBoundary') % grain boundary already given
+        grains.boundary = V;
+      else % otherwise compute grain boundary
+        
+        % compute boundary segments
+        F = arrayfun(@(i) poly{i}([1:end-grains.inclusionId(i)-1;2:end-grains.inclusionId(i)]),...
+          1:length(poly),'uniformOutput',false);
+        F = [F{:}].';
+
+        lBnd = cellfun(@(p) length(p),poly) - grains.inclusionId -1;
+
+        grainIds = repelem(1:length(grains),lBnd);
+
+        [~,iF,iG] = unique(sort(F,2),'rows','stable');
+        F = F(iF,:);
+        
+        % compute boundary grainIds
+        grainId = zeros(size(F));
+        grainId(:,1) = grainIds(iF); % first column - first apperance
+
+        % second column - second appearance
+        col2 = true(size(iG,1),1);
+        col2(iF) = false;
+        grainId(iG(col2),2) = grainIds(col2);
+        
+        % compute misorientation from mean orientations of the grain
+        mori = rotation.nan(size(F,1),1);
+        isNotBoundary = all(grainId,2);
+        mori(isNotBoundary) = ...
+          inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
+          .* grains.prop.meanRotation(grainId(isNotBoundary,1));
+
+        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId),...
+          grains.phaseId,mori,grains.CSList,grains.phaseMap);
+        
+      end
+      
 
     end
         

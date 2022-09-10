@@ -92,14 +92,12 @@ if check_option(varargin,'removeQuadruplePoints')
   qAdded = removeQuadruplePoints; 
 end
 
-poly  = calcPolygons(I_FDext * I_DG,Fext,V);
-
 % setup grains
-grains = grain2d(poly, phaseId, ebsd.CSList,ebsd.phaseMap,...
-  varargin{:});
+grains = grain2d( makeBoundary(Fext,I_FDext), ...
+  calcPolygons(I_FDext * I_DG,Fext,V), ...
+  [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
 grains.grainSize = full(sum(I_DG,1)).';
-grains.boundary = makeBoundary(Fext,I_FDext);
 grains.innerBoundary = makeBoundary(Fint,I_FDint);
 grains.scanUnit = ebsd.scanUnit;
 
@@ -314,6 +312,7 @@ end
   function qAdded = removeQuadruplePoints
 
     quadPoints = find(accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4);
+    qAdded = 0;
 
     if isempty(quadPoints), return; end
       

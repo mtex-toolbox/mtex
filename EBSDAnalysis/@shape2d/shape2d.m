@@ -20,19 +20,8 @@ classdef shape2d < grain2d
     
     function shape = shape2d(Vs)
       % list of vertices [x y]
-      % construct a fake grain2d
-      prop = struct('x',1,'y',1,'grainId',1);
-      ebsd = EBSD(rotation.nan,1,{'mineral'},prop);
-      n = size(Vs,1);
-      if n==0
-        F = zeros(0,2);
-      else
-        F = [(1:n).',[(2:n).';1]];
-      end
-      I_DG = 1;
-      I_FD = sparse(ones(size(F,1),1));
-      A_Db = 1;
-      shape = shape@grain2d(ebsd,Vs,F,I_DG,I_FD,A_Db);
+            
+      shape = shape@grain2d(Vs,{[1:size(Vs,1),1].'});
       
     end
 
