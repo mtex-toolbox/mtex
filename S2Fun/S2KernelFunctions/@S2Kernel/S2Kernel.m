@@ -110,9 +110,9 @@ classdef S2Kernel
       small = 0;      
 
       % Get nodes and weights for Gauss-Legendre quadrature
-      [nodes,weights] = lgwt(L+1,-1,1);
-%       % Get better accuracy for high bandwidth:
-%       [nodes,weights] = lgwt(2*L,-1,1);
+      [nodes,weights] = GaussLegendreNodesWeights(L+1,-1,1);
+%       % Get better accuracy by double sampling rate
+%       [nodes,weights] = GaussLegendreNodesWeights(2*L,-1,1);
 
       values = psi.eval(nodes);
 
@@ -120,7 +120,7 @@ classdef S2Kernel
       v = legendre0(L,nodes);
 
       for l = 0:L
-        A(l+1) =  sum((2*l+1)/2*values.*weights.*v(:,l+1));    
+        A(l+1) =  sum((2*l+1)/2*values.*weights.*v(l+1,:).');    
         
         if abs(A(l+1)) < epsilon
           small = small + 1;

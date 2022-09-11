@@ -1,4 +1,4 @@
-classdef SO3KernelHandle < SO3Kernel
+classdef S2KernelHandle < S2Kernel
   % defines a kernel function as a function of the rotational angle
   
   properties
@@ -7,7 +7,7 @@ classdef SO3KernelHandle < SO3Kernel
       
   methods
     
-    function psi = SO3KernelHandle(fun,varargin)
+    function psi = S2KernelHandle(fun,varargin)
       
       % extract parameter and halfwidth
       if nargin == 0, return;end
@@ -16,16 +16,9 @@ classdef SO3KernelHandle < SO3Kernel
       psi.A = calcFourier(psi,getMTEXpref('maxS2Bandwidth'),varargin{:});
                 
     end
-  
-    function c = char(psi)
-      c = ['custom, halfwidth ' ...
-        xnum2str(psi.halfwidth/degree) mtexdegchar];
-    end
     
-    function value = eval(psi,co2)
-      % the kernel function on SO(3)
-      co2 = cut2unitI(co2);
-      value   =  psi.fun(co2);
+    function value = eval(psi,t)
+      value = psi.fun(t);
     end    
         
   end
