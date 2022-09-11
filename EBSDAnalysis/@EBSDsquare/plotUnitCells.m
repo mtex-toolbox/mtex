@@ -7,8 +7,8 @@ if check_option(varargin,'region')
   
   ext = get_option(varargin,'region');
     
-  xy = ebsd.xy;
-  ind = xy(:,1) > reg(1) & xy(:,1) < reg(2) & xy(:,2) > reg(3) & xy(:,2) < reg(4);
+  xy = [ebsd.prop.x(:), ebsd.prop.y(:)];
+  ind = xy(:,1) > ext(1) & xy(:,1) < ext(2) & xy(:,2) > ext(3) & xy(:,2) < ext(4);
      
   d = submatrix(d,ind);  
 else
