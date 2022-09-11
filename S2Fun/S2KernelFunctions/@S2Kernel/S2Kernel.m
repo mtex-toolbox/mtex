@@ -93,6 +93,7 @@ classdef S2Kernel
   end
 
   methods (Access=protected)        
+    
     function A = cutA(psi)
       % cut of Chebyshev coefficients when they are sufficently small
       
@@ -102,5 +103,37 @@ classdef S2Kernel
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
       A = psi.A(1:min([ind+1,length(A)]));
     end
+
+    function A = calcFourier(psi,L)
+      
+      epsilon = getMTEXpref('FFTAccuracy',1E-2);
+      small = 0;      
+
+      % Get nodes and weights for Gauss-Legendre quadrature
+      [nodes,weights] = lgwt(L+1,-1,1);
+%       % Get better accuracy for high bandwidth:
+%       [nodes,weights] = lgwt(2*L,-1,1);
+
+      values = psi.eval(nodes);
+
+      % Evaluate Legendre polynomials up to degree N
+      v = legendre0(L,nodes);
+
+      for l = 0:L
+        A(l+1) =  sum((2*l+1)/2*values.*weights.*v(:,l+1));    
+        
+        if abs(A(l+1)) < epsilon
+          small = small + 1;
+        else
+          small = 0;
+        end
+        
+        if small == 10, break;end
+      end
+
+    end
+
+
   end
 end
+
