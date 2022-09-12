@@ -7,7 +7,11 @@ M = (mod(k+l+1,2) & k>=l);
 A = (M * A(2:end)) .* (1:2:2*N-1)';
 D = S2Kernel(A);
 
-value = - D.eval(t) .* sqrt(1-t.^2);
+if nargin == 2
+  value = - D.eval(t) .* sqrt(1-t.^2);
+else
+  value = S2KernelHandle(@(t) - D.eval(t) .* sqrt(1-t.^2));
+end
 
 % TODO: Interpolation error: Try
 % psi = S2DeLaValleePoussin;
@@ -17,8 +21,5 @@ value = - D.eval(t) .* sqrt(1-t.^2);
 % hold on
 % plot(omega/degree, psi2.grad(cos(omega)) )
 % hold off
-
-
-% TODO: We need quadrature to construct an S2 function Handle
 
 end
