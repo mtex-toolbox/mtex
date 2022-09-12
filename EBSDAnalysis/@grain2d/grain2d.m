@@ -5,11 +5,11 @@ classdef grain2d < phaseList & dynProp
   %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
   %
   % Input
-  %  V    - n x 2 list of vertices
-  %  poly - cell array of the polyhedrons
+  %  V    - xy coordinates of vertices (array n x 2)
+  %  poly - cell array of the polyhedrons 
   %  ori  - array of mean orientations
   %  CSList   - cell array of symmetries
-  %  phaseId  - list of phaseId for each grain
+  %  phaseId  - array of phaseId for each grain
   %  phaseMap -
   %
   % Example
