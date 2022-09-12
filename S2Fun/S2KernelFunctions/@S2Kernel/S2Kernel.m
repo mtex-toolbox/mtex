@@ -74,6 +74,15 @@ classdef S2Kernel
     function psi = set.bandwidth(psi,L)
       psi.A = psi.A(1:min(L+1,end));        
     end
+
+    function c = char(psi)
+      c = ['custom, halfwidth ' ...
+        xnum2str(psi.halfwidth/degree) mtexdegchar];
+    end
+
+    function hw = halfwidth(psi)
+      hw = fminbnd(@(t) (psi.eval(1)-2*psi.eval(cos(t))).^2,0,3*pi/4);
+    end
     
     
   end
