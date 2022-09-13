@@ -95,7 +95,7 @@ methods
   end
     
   function S2K = radon(psi)
-    S2K = S2DeLaValleePoussin(psi.kappa);
+    S2K = S2DeLaValleePoussinKernel(psi.kappa);
   end
   
   function hw = halfwidth(psi)

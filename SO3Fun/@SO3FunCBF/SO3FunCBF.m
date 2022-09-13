@@ -24,7 +24,7 @@ classdef SO3FunCBF < SO3Fun
   properties
     h
     r
-    psi = S2DeLaValleePoussin('halfwidth',10*degree);
+    psi = S2DeLaValleePoussinKernel('halfwidth',10*degree);
     weights = 1;
     antipodal = false
   end

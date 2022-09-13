@@ -14,7 +14,7 @@ else
 end
 
 % TODO: Interpolation error: Try
-% psi = S2DeLaValleePoussin;
+% psi = S2DeLaValleePoussinKernel;
 % psi2=S2Kernel(psi.A);
 % omega = 35*degree:0.01:pi;
 % plot(omega/degree,psi.grad(cos(omega)) )

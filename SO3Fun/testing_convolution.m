@@ -1,7 +1,7 @@
 %% S2Kernels
 
 rng('default')
-psi = S2DeLaValleePoussin(10);
+psi = S2DeLaValleePoussinKernel(10);
 %plot(psi)
 figure(1)
 F1 = S2FunHarmonic(psi);
@@ -110,7 +110,7 @@ rng(2)
 p = vector3d.rand;
 
 F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i);%,crystalSymmetry('622'),specimenSymmetry('3'));
-psi = S2DeLaValleePoussin(10);
+psi = S2DeLaValleePoussinKernel(10);
 
 C1 = conv(F1,psi);
 C1.eval(p)
@@ -140,7 +140,7 @@ plot(C2)
 %% convolution SO3Kernel with S2Kernel
 % works
 psi1 = SO3DeLaValleePoussinKernel(4);
-psi2 = S2DeLaValleePoussin(10);
+psi2 = S2DeLaValleePoussinKernel(10);
 
 C1 = S2FunHarmonic(conv(psi1,psi2));
 C2 = conv(SO3FunHarmonic(psi1),S2FunHarmonic(psi2));

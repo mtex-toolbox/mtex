@@ -38,7 +38,7 @@ ori = [rot .* ebsd('id',gB.ebsdId(:,1)).orientations;...
 
 % define a kernel function that is a fibre through the crystallograhic
 % z-axis and the crystallographic x-axis
-psi = S2FunHarmonic(S2DeLaValleePoussin('halfwidth',5*degree,varargin{:}));
+psi = S2FunHarmonic(S2DeLaValleePoussinKernel('halfwidth',5*degree,varargin{:}));
 
 psi = psi.radon;
 

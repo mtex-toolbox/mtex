@@ -5,7 +5,7 @@ classdef S2Kernel
 % For more information take a look at the <S2Kernels.html documentation>.
 %
 % See also
-% S2DeLaValleePoussin S2BumpKernel
+% S2DeLaValleePoussinKernel S2BumpKernel
 
   properties
     A % Legendre coefficients

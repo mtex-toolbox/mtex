@@ -1,4 +1,4 @@
-classdef S2DeLaValleePoussin < S2Kernel
+classdef S2DeLaValleePoussinKernel < S2Kernel
 % The spherical de la Vallee Poussin kernel is defined by 
 % 
 % $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{kappa}$$ 
@@ -22,8 +22,8 @@ classdef S2DeLaValleePoussin < S2Kernel
 %
 % Syntax
 %
-%   psi = S2DeLaValleePoussin(20)
-%   psi = S2DeLaValleePoussin('halfwidth',10*degree)
+%   psi = S2DeLaValleePoussinKernel(20)
+%   psi = S2DeLaValleePoussinKernel('halfwidth',10*degree)
 %
 % Input
 %  kappa - kernel parameter
@@ -48,7 +48,7 @@ classdef S2DeLaValleePoussin < S2Kernel
   methods
     
     
-    function psi = S2DeLaValleePoussin(varargin)
+    function psi = S2DeLaValleePoussinKernel(varargin)
     
       % extract parameter and halfwidth
       if nargin > 0 && isnumeric(varargin{1})

@@ -28,7 +28,7 @@ function sF = calcDensity(h,varargin)
 %
 
 hw = get_option(varargin,'halfwidth',10*degree);
-psi = get_option(varargin,'kernel',S2DeLaValleePoussin('halfwidth',hw));
+psi = get_option(varargin,'kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
 
 % ignore nans
 h = subSet(h,~isnan(h));

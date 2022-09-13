@@ -54,7 +54,7 @@ plot(psi.grad,'polynomial')
 % elements at a specific orientation $R$ by using the class 
 % <SO3FunCBF.html |SO3FunCBF|>, i.e.
 
-psi = S2DeLaValleePoussin
+psi = S2DeLaValleePoussinKernel
 SO3F = SO3FunCBF(vector3d(1,0,0),vector3d(0,0,1),1,psi)
 plot(SO3F)
 
@@ -69,7 +69,7 @@ plot(SO3F)
 %
 
 %% The de La Vallee Poussin Kernel
-% The <S2Kernels.S2DeLaValleePoussin.html spherical de la Vallee Poussin kernel>
+% The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
 % 
 % $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{kappa}$$ 
@@ -93,8 +93,8 @@ plot(SO3F)
 %
 % Lets construct two of them.
 
-psi1 = S2DeLaValleePoussin('halfwidth',15*degree)
-psi2 = S2DeLaValleePoussin('halfwidth',20*degree)
+psi1 = S2DeLaValleePoussinKernel('halfwidth',15*degree)
+psi2 = S2DeLaValleePoussinKernel('halfwidth',20*degree)
 
 plot(psi1)
 hold on
