@@ -11,6 +11,12 @@ classdef SO3BumpKernel < SO3Kernel
 % Syntax
 %   psi = SO3BumpKernel(40*degree)
 %
+% Options
+%  halfwidth - angle at which the kernel function has reduced to half its peak value  
+%  bandwidth - harmonic degree
+%
+% See also
+% SO3Kernel
     
   properties
     delta = 10*degree;
