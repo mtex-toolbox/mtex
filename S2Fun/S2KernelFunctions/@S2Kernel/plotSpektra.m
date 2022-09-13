@@ -1,5 +1,5 @@
 function plotSpektra(psi,varargin)
-% plot the Chybeyshev coefficients of the kernel function
+% plot the Legendre coefficients of the kernel function
   
 bw = get_option(varargin,'bandwidth',32);
 bw = min(bw,length(psi.A)-1);
@@ -12,6 +12,6 @@ else
   optiondraw(semilogx(0:bw,A./(2*(0:bw)+1),...
     'marker','o','MarkerSize',5),varargin{:});
 end
-set(gcf,'Name',['Chebychev coefficients of the kernel ',inputname(1)]);
+set(gcf,'Name',['Legendre coefficients of the kernel ',inputname(1)]);
 
 end
