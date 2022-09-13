@@ -2,10 +2,11 @@ classdef SO3Kernel
 % 
 % The class *SO3Kernel* is needed in MTEX to define the specific form of
 % unimodal ODFs. It has to be passed as an argument when calling the
-% methods <uniformODF.html uniformODF>.
+% methods <uniformODF.html uniformODF>. 
+% For more information take a look at the <SO3Kernels.html documentation>.
 %
 % See also
-% SO3deLaValeePoussin SO3AbelPoissonKernel
+% SO3DeLaValleePoussinKernel SO3AbelPoissonKernel
   
   properties
     A=[] % Chebyshev coefficients

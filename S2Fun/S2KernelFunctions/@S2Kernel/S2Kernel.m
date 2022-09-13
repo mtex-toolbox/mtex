@@ -1,4 +1,11 @@
 classdef S2Kernel
+% The class *S2Kernel* is needed in MTEX to define the specific form of
+% fibre ODFs. It has to be passed as an argument when calling the
+% methods <fibreODF.html fibreODF>.
+% For more information take a look at the <S2Kernels.html documentation>.
+%
+% See also
+% S2DeLaValleePoussin S2BumpKernel
 
   properties
     A % Legendre coefficients

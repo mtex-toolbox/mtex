@@ -1,5 +1,24 @@
 classdef S2DeLaValleePoussin < S2Kernel
-% the spherical de la Vallee Poussin kernel
+% The spherical de la Vallee Poussin kernel is defined by 
+% 
+% $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{kappa}$$ 
+% 
+% for $t\in[0,1]$. The de la Vallee Poussin kernel additionaly has the 
+% unique property that for a given halfwidth it can be described exactly 
+% by a finite number of Fourier coefficients. This kernel is recommended
+% for Texture analysis as it is always positive and there is no truncation 
+% error in Fourier space.
+%
+% Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ 
+% depending on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its 
+% finite Legendre polynomial expansion
+%
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{L} a_n(\kappa) \mathcal P_{n}(t)$$.
+%
+% We obtain the Legendre coefficients $a_n(\kappa)$ by $a_0=1$, 
+% $a_1=\frac{\kappa}{2+\kappa}$ and the three term recurence relation
+%
+% $$ (\kappa+l+2) a_{l+1} = -(2l+1)\,a_l + (\kappa-l+1)\,a_{l-1}$$.
 %
 % Syntax
 %

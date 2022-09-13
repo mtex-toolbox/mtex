@@ -1,5 +1,5 @@
 classdef SO3DeLaValleePoussinKernel < SO3Kernel
-% The de la Vallee Poussin kernel on SO(3) is defined by 
+% The rotational de la Vallee Poussin kernel is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
@@ -23,6 +23,15 @@ classdef SO3DeLaValleePoussinKernel < SO3Kernel
 %   psi = SO3DeLaValleePoussinKernel(100)
 %   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree)
 %
+% Input
+%  kappa - kernel parameter
+%
+% Options
+%  halfwidth - angle at which the kernel function has reduced to half its peak value  
+%  bandwidth - harmonic degree
+%
+% See also
+% SO3Kernel
 
 properties
   kappa = 90;

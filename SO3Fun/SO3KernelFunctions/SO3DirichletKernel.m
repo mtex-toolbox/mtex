@@ -11,6 +11,11 @@ classdef SO3DirichletKernel < SO3Kernel
 % Syntax
 %   psi = SO3DirichletKernel(35)
 %
+% Input
+%  N - polynomial degree / bandwidth
+%
+% See also
+% SO3Kernel
 
 
   methods

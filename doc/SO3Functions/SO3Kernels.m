@@ -28,9 +28,13 @@
 % Within the class |@SO3Kernel| kernel functions are represented by
 % their Chebyshev coefficients, that are stored in the field |fun.A|. 
 % As an example lets define an $\mathcal{SO}(3)$ kernel function with
-% Chebyshev coefficients $a_1 = 1$, $a_2 = 0$, $a_3 = 3$ and $a_4 = 1$
+% Chebyshev coefficients $a_0 = 1$, $a_1 = 0$, $a_2 = 3$ and $a_3 = 1$
 
 psi = SO3Kernel([1;0;3;1])
+%%
+% We plot this function by evaluation of its Chebychev series in 
+% $\cos(\frac{\omega}{2})$ for $\omega\in[-pi,\pi].$
+%
 
 plot(psi)
 
@@ -45,15 +49,15 @@ plot(SO3F)
 %%
 % The following kernel function are predefined in MTEX
 %
-% * <SO3Kernels.html#7 de la Vallee Poussin kernel> (used for ODF, MODF, Pole figures, etc)
-% * <SO3Kernels.html#9 Dirichlet kernel> (uesd for physical properties)
-% * <SO3Kernels.html#11 Abel Poisson kernel>
-% * <SO3Kernels.html#13 von Mises Fisher kernel>
-% * <SO3Kernels.html#15 Gauss Weierstrass kernel>
-% * <SO3Kernels.html#17 Sobolev kernel>
-% * <SO3Kernels.html#19 Laplace kernel>
-% * <SO3Kernels.html#21 Square Singularity kernel>
-% * <SO3Kernels.html#23 Bump kernel>
+% * <SO3Kernels.html#8 de la Vallee Poussin kernel> (used for ODF, MODF, Pole figures, etc)
+% * <SO3Kernels.html#10 Dirichlet kernel> (used for physical properties)
+% * <SO3Kernels.html#12 Abel Poisson kernel>
+% * <SO3Kernels.html#14 von Mises Fisher kernel>
+% * <SO3Kernels.html#16 Gauss Weierstrass kernel>
+% * <SO3Kernels.html#18 Sobolev kernel>
+% * <SO3Kernels.html#20 Laplace kernel>
+% * <SO3Kernels.html#22 Square Singularity kernel>
+% * <SO3Kernels.html#24 Bump kernel>
 %
 %%
 % A specific $\mathcal{SO}(3)$ kernel function like the de la Vallee Poussin kernel
@@ -138,7 +142,7 @@ hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %%
-% By looking at the fourier coefficients we see, that they have the value 1.
+% By looking at the fourier coefficients we see, that they are exactly 1.
 
 plotSpektra(psi1)
 hold on
