@@ -83,12 +83,25 @@ classdef S2DeLaValleePoussinKernel < S2Kernel
       
     end
 
-    function value = grad(psi,t)
+    function value = grad(psi,varargin)
       % the derivative of the radon transformed kernel function at
-      value  = -psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 .* ((1+t)/2).^(psi.kappa-1);
+      %value  = -psi.kappa*(1+psi.kappa) * sqrt(1-t.^2)/2 .* ((1+t)/2).^(psi.kappa-1);
       %value  = psi.kappa*(1+psi.kappa) * ((1+t)/2).^(psi.kappa-1) ./ 2;
-    end
+      if check_option(varargin,'polynomial')
+        innerGrad = @(t) 1;
+      else
+        innerGrad = @(t) -sqrt(1-t.^2);
+      end
+
+      if nargin >= 2 && isnumeric(varargin{1})
+        t = varargin{1};
+        value  = psi.kappa*(1+psi.kappa)/2 * innerGrad(t) .* ((1+t)/2).^(psi.kappa-1);
+      else
+        value = S2KernelHandle(@(t) psi.kappa*(1+psi.kappa)/2 * innerGrad(t) .* ((1+t)/2).^(psi.kappa-1));
+      end
+
     
+    end
     
     function hw = get.halfwidth(psi)
             

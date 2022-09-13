@@ -29,11 +29,8 @@ w = repelem(SO3F.weights./l,l);
 
 g = vector3d.zeros(size(ori));
 for i = 1:length(h)
-
-  % TODO: scaling might not be correct
-  % TODO: There is no method S2Kernel.grad.
-  g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i))) .* ...
-    cross(h(i),inv(ori) * r(i));
+  g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
+      cross(h(i),inv(ori) * r(i));
 end
 end
 

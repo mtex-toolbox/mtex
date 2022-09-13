@@ -1,4 +1,4 @@
-function value = grad(psi,t)
+function value = grad(psi,varargin)
 
 N = psi.bandwidth;
 A = psi.A(:);
@@ -7,10 +7,19 @@ M = (mod(k+l+1,2) & k>=l);
 A = (M * A(2:end)) .* (1:2:2*N-1)';
 D = S2Kernel(A);
 
-if nargin == 2
-  value = - D.eval(t) .* sqrt(1-t.^2);
+if check_option(varargin,'polynomial')
+  innerGrad = @(t) 1;
 else
-  value = S2KernelHandle(@(t) - D.eval(t) .* sqrt(1-t.^2));
+  innerGrad = @(t) -sqrt(1-t.^2);
+end
+
+if nargin >= 2 && isnumeric(varargin{1})
+  t = varargin{1};
+  value = D.eval(t) .* innerGrad(t);
+elseif check_option(varargin,'polynomial')
+  value = D;
+else
+  value = S2KernelHandle(@(t) D.eval(t) .* innerGrad(t));
 end
 
 % TODO: Interpolation error: Try
