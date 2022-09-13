@@ -1,8 +1,10 @@
 classdef S2BumpKernel < S2Kernel
-% the spherical bump kernel
+% The spherical Bump kernel is a radial symmetric kernel function depending
+% on the halfwidth $r\in (0,pi)$. 
+% The function value is 0, if the angle is greater then the halfwidth $r$. 
+% Otherwise it is 1.
 %
 % Syntax
-%
 %   psi = S2BumpKernel(10*degree)
 %   psi = S2BumpKernel('halfwidth',10*degree)
 %
@@ -33,6 +35,8 @@ classdef S2BumpKernel < S2Kernel
       L = get_option(varargin,'bandwidth',128);
             
       % compute Legendre coefficients
+      % TODO: We need 3rd argument maxAngle in calcFourier
+      % psi.A = calcFourier(psi,L,psi.halfwidth);
       psi.A = nan(1,L+1);
       
       %psi.A = psi.cutA;

@@ -1,6 +1,5 @@
 classdef SchulzDefousingKernel < S2Kernel
 %
-%
 % Syntax
 %
 %   psi = SchulzDefousingKernel(mu*t,theta)
