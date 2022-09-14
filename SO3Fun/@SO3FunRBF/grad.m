@@ -21,7 +21,7 @@ if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'quaternion
   return
 end
 
-rot = varargin{1}; varargin(1) = [];;
+rot = varargin{1}; varargin(1) = [];
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(rot);
