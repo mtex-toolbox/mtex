@@ -160,3 +160,101 @@ plot(F2)
 
 
 
+%% ungenauigkeit des Gradienten an nichtdifferenzierbarkeitsstelle
+
+p = SO3DeLaValleePoussinKernel(90)
+pD = SO3Kernel(p.grad.A)
+q = SO3Kernel(p.A)
+omega1 = -pi:0.01:pi;
+omega2 = 40*degree:0.01:pi;
+
+figure(1)
+subplot(121)
+plot(omega1/degree,pD.eval(cos(omega1/2)))
+hold on
+plot(omega1/degree,q.grad(cos(omega1/2)))
+hold off
+
+max(abs(q.grad(cos(omega1/2))-pD.eval(cos(omega1/2))))
+
+subplot(122)
+plot(omega2/degree,pD.eval(cos(omega2/2)))
+hold on
+plot(omega2/degree,q.grad(cos(omega2/2)))
+hold off
+
+
+
+%% Test SO3FunRBF.grad
+
+clear
+rng(0)
+% F = SO3FunRBF(orientation.rand(100),SO3DeLaValleePoussinKernel)
+F = SO3FunRBF.example
+% F.CS = crystalSymmetry('622');
+% F.SS = specimenSymmetry('432');
+F2 = SO3FunHandle(@(rot) F.eval(rot),F.CS,F.SS);
+ori = orientation.rand(300);
+ori.CS = F.CS;
+ori.SS = F.SS;
+
+
+F2.grad(ori)
+F.grad(ori)
+% figure(1)
+% plot(SO3FunHandle(@(ori) F.grad(ori).y))
+% figure(2)
+% plot(SO3FunHandle(@(ori) F2.grad(ori).y))
+
+%% SO3Grid Symmetrie ändern zerstört SO3Grid
+clear
+F = SO3FunRBF.example;
+center = F.center;
+alphabeta = center.alphabeta;
+gamma = center.gamma;
+resolution = center.resolution;
+c = center.center;
+
+center.SS=specimenSymmetry('432');
+F.center = SO3Grid(center,alphabeta,gamma,'center',c,'resolution',resolution)
+
+F2 = SO3FunHandle(@(rot) F.eval(rot),F.CS,F.SS);
+ori = orientation.rand(3);
+ori.CS = F.CS;
+ori.SS = F.SS;
+
+
+F2.grad(ori)
+F.grad(ori)
+
+%% Halfwidth is not correct
+psi = SO3DeLaValleePoussinKernel(100)
+SO3Kernel(psi.A)
+
+%% Halfwidth schould be the same for gradient
+psi = SO3DeLaValleePoussinKernel(10)
+g = psi.grad
+
+hwidth(psi)/degree
+hwidth(g)/degree
+
+
+% omega = 0:0.01:3*pi/4;
+figure(1)
+subplot(221)
+plot(psi)
+subplot(222)
+plot(g)
+% subplot(223)
+% plot(omega/degree,(0-2*psi.eval(cos(omega/2))).^2)
+% subplot(224)
+% plot(omega/degree,(80-2*abs(g.eval(cos(omega/2)))).^2)
+
+
+function h = hwidth(psi)
+
+[x,y] = fminbnd(@(t) -abs(psi.eval(t)),-1,1);
+h = fminbnd(@(omega) ((-y)-2*abs(psi.eval(cos(omega/2)))).^2,x,3*pi/4);
+
+end
+
