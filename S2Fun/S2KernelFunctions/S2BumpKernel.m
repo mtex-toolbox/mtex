@@ -32,12 +32,13 @@ classdef S2BumpKernel < S2Kernel
       end
       
       % extract bandwidth
-      L = get_option(varargin,'bandwidth',128);
+      L = get_option(varargin,'bandwidth',2000);
             
       % compute Legendre coefficients
-      % TODO: We need 3rd argument maxAngle in calcFourier
-      % psi.A = calcFourier(psi,L,psi.halfwidth);
-      psi.A = nan(1,L+1);
+      % TODO: calcFourier does not work for Bump kernel
+      warning('The Fourier coefficients are to less')
+      psi.A = calcFourier(psi,L,psi.halfwidth);
+      %psi.A = nan(1,L+1);
       
       %psi.A = psi.cutA;
     end

@@ -120,13 +120,15 @@ classdef S2Kernel
       A = psi.A(1:min([ind+1,length(A)]));
     end
 
-    function A = calcFourier(psi,L)
+    function A = calcFourier(psi,L,maxAngle)
       
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);
+      if nargin==2, maxAngle=pi; end
+
+      epsilon = eps;%getMTEXpref('FFTAccuracy',1E-2);
       small = 0;      
 
       % Get nodes and weights for Gauss-Legendre quadrature
-      [nodes,weights] = GaussLegendreNodesWeights(L+1,-1,1);
+      [nodes,weights] = GaussLegendreNodesWeights(L+1,cos(maxAngle),1);
 %       % Get better accuracy by double sampling rate
 %       [nodes,weights] = GaussLegendreNodesWeights(2*L,-1,1);
 
@@ -152,4 +154,3 @@ classdef S2Kernel
 
   end
 end
-
