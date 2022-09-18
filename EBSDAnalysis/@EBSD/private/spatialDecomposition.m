@@ -41,6 +41,9 @@ else
   [V,~,ic] = unique(V,'rows');
   %D = cellfun(@(x) ic(x).',D,'UniformOutput',false);
 
+  % remove empty lines from D
+  D = D(cellfun(@(x) ~isempty(x),D));
+
   for k = 1:length(D)
     x = ic(D{k}).';              % merge points that coincide
     D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
