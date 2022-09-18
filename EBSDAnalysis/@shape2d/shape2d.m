@@ -67,7 +67,8 @@ classdef shape2d < grain2d
   end
     
   methods (Static = true)
-    v = byRhoTheta(rho,theta)
+    shape = byRhoTheta(rho,theta)
+    shape = byFV(F,V,varargin)
   end
   
 end
