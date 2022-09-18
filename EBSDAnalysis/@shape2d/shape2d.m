@@ -18,11 +18,39 @@ classdef shape2d < grain2d
   
   methods
     
-    function shape = shape2d(Vs)
+    function shape = shape2d(V,CS)
       % list of vertices [x y]
-            
-      shape = shape@grain2d(Vs,{[1:size(Vs,1),1].'});
       
+      if nargin == 0, return;end
+
+      N = size(V,1);
+      shape.poly = {[1:N,1].'};
+      shape.inclusionId = zeros(N,1);
+
+      if nargin>=2
+        shape.CSList = {CS};
+      else
+        shape.CSList = {'notIndexed'};
+      end
+
+      shape.phaseId = 1;
+      shape.phaseMap = 1;
+      shape.id = 1;
+      shape.grainSize = 1;
+      
+      if isa(V,'grainBoundary') % grain boundary already given
+        shape.boundary = V;
+      else % otherwise compute grain boundary
+                
+        F = [1:N;[2:N 1]].';
+        grainId = [zeros(N,1),ones(N,1)];
+        
+        shape.boundary = grainBoundary(V,F,grainId,1,...
+          1,nan,shape.CSList,shape.phaseMap,1,'noTriplePoints');
+        
+      end
+
+
     end
 
     function Vs = get.Vs(shape)

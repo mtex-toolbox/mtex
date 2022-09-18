@@ -66,7 +66,7 @@ classdef grainBoundary < phaseList & dynProp
   end
   
   methods
-    function gB = grainBoundary(V,F,ebsdInd,grainId,phaseId,mori,CSList,phaseMap,ebsdId)
+    function gB = grainBoundary(V,F,ebsdInd,grainId,phaseId,mori,CSList,phaseMap,ebsdId,varargin)
       %
       % Input
       %  V       - [x,y] list of vertices
@@ -81,7 +81,7 @@ classdef grainBoundary < phaseList & dynProp
       if nargin == 0, return; end
       
       % assign properties
-      gB.V = V;
+      gB.triplePoints = struct('allV',V);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -102,14 +102,17 @@ classdef grainBoundary < phaseList & dynProp
       % sort columns such that first phaseId1 <= phaseId2
       doSort = gB.phaseId(:,1) > gB.phaseId(:,2) | ...
         (gB.phaseId(:,1) == gB.phaseId(:,2) & gB.grainId(:,1) > gB.grainId(:,2));
-      gB.phaseId(doSort,:) = fliplr(gB.phaseId(doSort,:));
-      gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
-      gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
-      gB.misrotation(doSort) = inv(gB.misrotation(doSort));
+      if any(doSort)
+        gB.phaseId(doSort,:) = fliplr(gB.phaseId(doSort,:));
+        gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
+        gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
+        gB.misrotation(doSort) = inv(gB.misrotation(doSort));
+      end
 
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints;
-      
+      if ~check_option(varargin,'noTriplePoints')
+        gB.triplePoints = gB.calcTriplePoints;
+      end
     end
 
     function gB = cat(dim,varargin)
@@ -180,13 +183,13 @@ classdef grainBoundary < phaseList & dynProp
     
     function I_VF = get.I_VF(gB)
       [i,~,f] = find(gB.F);
-      I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
+      I_VF = sparse(f,i,true,size(gB.V,1),size(gB.F,1));
     end
 
     function I_FG = get.I_FG(gB)
       ind = gB.grainId>0;
       iF = repmat(1:size(gB.F,1),1,2);
-      I_FG = sparse(iF(ind),gB.grainId(ind),1);
+      I_FG = sparse(iF(ind),gB.grainId(ind),true);
     end   
     
     function A_F = get.A_F(gB)
