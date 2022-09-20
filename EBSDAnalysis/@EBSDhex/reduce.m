@@ -24,11 +24,13 @@ else
   r = r + iseven(round((c+1)/2));
 end
 
-ind = sub2ind(s,r,c);
+ind = r <= s(1) & c <= s(2) ;
+ind = sub2ind(s,r(ind),c(ind));
 
 ebsd.unitCell = 2*ebsd.unitCell;
 ebsd.dHex = 2*ebsd.dHex;
 
 ebsd = ebsd.subSet(ind);
+ebsd = ebsd.gridify;
 
 end
