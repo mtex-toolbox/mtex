@@ -23,7 +23,7 @@ ind = all(ismember(pairs, job.grains.id(job.isChild)), 2);
 pairs = pairs(ind,:);
 
 % remove self boundaries
-pairs(pairs(:,1)==pairs(:,2)) = [];
+pairs(pairs(:,1)==pairs(:,2),:) = [];
 pairs = sortrows(sort(pairs,2,'ascend'));
 
 if  check_option(varargin,'quick') && length(pairs) > 10000
