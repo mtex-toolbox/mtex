@@ -28,8 +28,8 @@ if isa(center,'fibre')
 end
 
 % check input
-assert(eq(center.CS,odf.CS,'Laue'),'Crystal cymmmetry of odf and center needs to be the same!');
-assert(eq(center.SS,odf.SS,'Laue'),'Specimen cymmmetry of odf and center needs to be the same!');
+assert(center.CS.Laue == odf.CS.Laue,'Crystal cymmmetry of odf and center needs to be the same!');
+assert(center.SS.Laue == odf.SS.Laue,'Specimen cymmmetry of odf and center needs to be the same!');
 
 v = zeros(size(center));
 

@@ -69,13 +69,13 @@ function [out, bestFriends] = variants(p2c,varargin)
 % browse input
 if nargin>1 && isa(varargin{1},'orientation')
   
-  if eq(varargin{1}.CS,p2c.CS,'Laue')
+  if varargin{1}.CS.Laue == p2c.CS.Laue
     
     oriParent = varargin{1};
     varargin(1) = [];
     parentVariants = false;
     
-  elseif eq(varargin{1}.CS,p2c.SS,'Laue')
+  elseif varargin{1}.CS.Laue == p2c.SS.Laue
   
     oriChild = varargin{1};
     varargin(1) = [];
@@ -92,13 +92,13 @@ if nargin>1 && isa(varargin{1},'orientation')
  
 elseif nargin>1 && isa(varargin{1},'Miller')
   
-  if eq(varargin{1}.CS,p2c.CS,'Laue')
+  if varargin{1}.CS.Laue == p2c.CS.Laue
     
     MillerParent = varargin{1};
     varargin(1) = [];
     parentVariants = false;
     
-  elseif eq(varargin{1}.CS,p2c.SS,'Laue')
+  elseif varargin{1}.CS.Laue == p2c.SSLaue
   
     MillerChild = varargin{1};
     varargin(1) = [];
