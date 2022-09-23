@@ -29,9 +29,8 @@ for n=0:SO3F.bandwidth
   FHAT = reshape(SO3F.fhat(ind),2*n+1,2*n+1);
   
   % compute constants
-  k = (-n+1:n)';
-  p = (abs(2*k-1)+1)/2;
-  C = (-1).^(k<=0) .* sqrt((n+p).*(n-p+1)) /2;
+  k = (-n:n-1)';
+  C = (-1).^(k<=0) .* sqrt((n+k+1).*(n-k))/2;
 
   % derivative around xvector
   X = zeros(2*n+1,2*n+1);
