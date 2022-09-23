@@ -29,7 +29,7 @@ classdef SO3BumpKernel < SO3Kernel
       % extract parameter and halfwidth
       if check_option(varargin,'halfwidth')
         psi.delta = get_option(varargin,'halfwidth');               
-      else
+      elseif nargin>0
         psi.delta = varargin{1};
       end
       
@@ -51,6 +51,17 @@ classdef SO3BumpKernel < SO3Kernel
       value = (pi/(psi.delta-sin(psi.delta))) * ...
         (co2>cos(psi.delta/2));      
     end
+
+    function value = grad(psi,co2)
+      % the derivative of the kernel function
+      if nargin == 2
+        value = 0*co2;
+      else
+        value = SO3Kernel(0);
+      end
+    
+    end
+    
   
     function S2K = radon(psi)
             
