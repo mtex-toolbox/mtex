@@ -25,10 +25,11 @@ rot = varargin{1}; varargin(1) = [];
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(rot);
-center = SO3F.center(:);
+center = SO3F.center;
 qSS = unique(quaternion(SO3F.SS));
-% forget about second symmetry
-center.SS = specimenSymmetry;
+% forget about second symmetry (this destroys the grid structure)
+% center = center(:);
+% center.SS = specimenSymmetry;
 
 psi = SO3F.psi;
 epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
@@ -38,12 +39,16 @@ g = vector3d.zeros(size(rot));
 
 % comute the distance matrix and evaluate the kernel
 for issq = 1:length(qSS)
-  d = abs(dot_outer(qSS(issq) * center, q2,'epsilon',epsilon,...
+  d = abs(dot_outer( center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse
-  d(d<=cos(epsilon/2)) = 0;  
+%   d(d<=cos(epsilon/2)) = 0;   % array size gets to big
   [i,j] = find(d>cos(epsilon/2));
+  I = find(d>cos(epsilon/2));
+  V = d(I);
+  d = sparse(i,j,V,size(d,1),size(d,2));
+
   
   % the normalized logarithm
   v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),varargin{:});
@@ -58,7 +63,7 @@ for issq = 1:length(qSS)
   g = g - reshape(v.' * SO3F.weights(:),size(g)) ;
   
 end
-g = g ./ length(qSS) ./ length(SO3F.CS.properGroup) ;
+g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
 % TODO: consider antipodal
 if SO3F.antipodal
