@@ -238,81 +238,40 @@ classdef fibre
         rotSym = cs.rot;
         fs = cs.fundamentalSector;
 
-        %hGrid1 = Miller(equispacedS2Grid('resolution',10*degree,fs),cs);
-        %rGrid = equispacedS2Grid('resolution',1.25*degree,ori.SS.fundamentalSector);
-        
+        hGrid = Miller(equispacedS2Grid('resolution',10*degree,fs),cs);
+        rGrid = equispacedS2Grid('resolution',1.25*degree,ori.SS.fundamentalSector);
+        localhGrid = equispacedS2Grid('resolution',0.5*degree,'maxTheta',10*degree);
+        %localhGrid = [localhGrid;-localhGrid];
 
-        
-
-        if 0
-          hGrid = Miller(equispacedS2Grid('resolution',1.25*degree,fs),cs);
-          r = calcSymAxis(calcPDF(odf,Miller(1,1,1,cs)));
-          [~,id] = max(calcPDF(odf,hGrid,r));
-          h = hGrid(id);
-
-          % project to fibre
-          d = dot_outer(times(rotSym,h,1), times(inv(ori),r,0),'noSymmetry').';
-          [~,idSym] = max(d,[],2);
-          oriP = times(ori, rotSym(idSym),0);
-
-          f = fibre.fit(oriP,'noSymmetry');
+        v = inf;
+        for ih = 1:length(hGrid)
           
-          % iterate this one more time
-          d = dot_outer(times(rotSym,f.h,1), times(inv(ori),f.r,0),'noSymmetry').';
+          [~,id] = max(calcPDF(odf,hGrid(ih),rGrid));
+          
+          rhGrid = rotation.byAxisAngle(zvector + hGrid(ih),pi) * localhGrid;
+          
+          [~,id2] = max(calcPDF(odf,rhGrid,rGrid(id)));
+            
+          % project to fibre
+          d = dot_outer(times(rotSym,rhGrid(id2),1), times(inv(ori),rGrid(id),0),'noSymmetry').';
           [~,idSym] = max(d,[],2);
           oriP = times(ori, rotSym(idSym),0);
 
-          f = fibre.fit(oriP,'noSymmetry');
-
-        else
-
-          hGrid = Miller(equispacedS2Grid('resolution',10*degree,fs),cs);
-          rGrid = equispacedS2Grid('resolution',1.25*degree,ori.SS.fundamentalSector);
-          localhGrid = equispacedS2Grid('resolution',0.5*degree,'maxTheta',10*degree);
-          %localhGrid = [localhGrid;-localhGrid];
-
-          v = inf;
-          for ih = 1:length(hGrid)
+          fTmp = fibre.fit(oriP,'noSymmetry');
             
-            [~,id] = max(calcPDF(odf,hGrid(ih),rGrid));
-            
-            rhGrid = rotation.byAxisAngle(zvector + hGrid(ih),pi) * localhGrid;
-            
-            [~,id2] = max(calcPDF(odf,rhGrid,rGrid(id)));
+          vTmp = mean(angle(fTmp,oriP));
 
-            % project to fibre
-            d = dot_outer(times(rotSym,rhGrid(id2),1), times(inv(ori),rGrid(id),0),'noSymmetry').';
-            [~,idSym] = max(d,[],2);
-            oriP = times(ori, rotSym(idSym),0);
-
-            fTmp = fibre.fit(oriP,'noSymmetry');
-            
-            % project to fibre
-            %d = dot_outer(times(rotSym,fTmp.h,1), times(inv(ori),fTmp.r,0),'noSymmetry').';
-            %[~,idSym] = max(d,[],2);
-            %oriP = times(ori, rotSym(idSym),0);
-
-            %fTmp = fibre.fit(oriP,'noSymmetry');
-
-            vTmp = mean(angle(fTmp,oriP));
-
-            if vTmp < v 
-              f = fTmp; v = vTmp;
-            end
+          if vTmp < v, f = fTmp; v = vTmp; end
           end          
         end
 
-        
-
-      end
-      
-      function test
+        function test
 
         cs = crystalSymmetry('432');
         f = fibre.rand(cs);
-        odf = fibreODF(f,'halfwidth',5*degree);
+        odf = fibreODF(f,'halfwidth',30*degree);
         
-        ori = discreteSample(odf,1000);
+        ori = discreteSample(odf,100000);
 
         %%
         tic
@@ -327,13 +286,9 @@ classdef fibre
         
         %%
 
-        
-
-
       end
 
-
     end
-
+      
   end
 end
