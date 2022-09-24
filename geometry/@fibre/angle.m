@@ -6,7 +6,9 @@ function omega = angle(f,ori,varargin)
 if isa(ori,'orientation')
   omega = angle(ori .\ f.r,f.h,varargin{:});
 else
-  error('not yet implemented')
+  %omega = max(min(angle_outer(orientation(f),orientation(ori))));
+  omega = min(angle(f.h,ori.h) + angle(f.r,ori.r), ...
+          angle(f.h,-ori.h) + angle(f.r,-ori.r));
 end
 
 end
