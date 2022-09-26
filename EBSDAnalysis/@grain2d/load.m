@@ -185,7 +185,7 @@ while (1)
                 crysym=strtrim(buffer);
                 buffer=fgetl(fid);
             end
-        case "*seed"            %Hinter Seed könnte mehr kommen -> Begrenzung
+        case "*seed"
             disp ("reading  *seed ...");                    %output as table
             seedsTable=fscanf(fid,'%u %f %f %f %f ', [5 inf]);
             seedsTable=array2table(seedsTable');
@@ -314,8 +314,9 @@ fclose(fid);
 clearvars fid buffer
 end 
 
+%%
 function skipEmptyLines(fid)
-% to ignore possible empty lines
+% function to ignore/skip possible empty lines
 i=ftell(fid);
 skipEmptyLinesBuffer=fgetl(fid);
 while (skipEmptyLinesBuffer=="")
@@ -327,6 +328,8 @@ fseek(fid, i, "bof");
 clearvars i skipEmptyLinesBuffer
 end
 
+%%
 function returnvalue = isHeader(buffer)
+% function to check if buffer is Header (=starts with *)
 returnvalue=strncmp(strtrim(buffer), "*", 1);
 end
