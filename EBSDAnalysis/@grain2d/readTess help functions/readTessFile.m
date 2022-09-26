@@ -43,13 +43,13 @@ variables:
     -cell_ids
         - vector
     -crysym
-        - @output, string 
+        - see output, string 
     -seedsTable('seed_id', 'seed_x', 'seed_y', 'seed_z', 'seed_weight')
         - table 
     -quaternion_descriptor
         - string (1x1 cell)
     -oriMatrix
-        - @output 
+        - see output 
     -verticesTable('ver_id','ver_x', 'ver_y','ver_z','ver_state')
 
     -edgesTable('egde_id', 'vertex_1', 'vertex_2', 'edged_state')
@@ -65,11 +65,11 @@ variables:
     -I_FD
         - incidence matrix edges - grains/face
     -V
-        - @output
+        - see output
     -F
-    	-list of edges as indices to V
+    	- list of edges as indices to V
     -poly
-        -@output
+        - see output
 
 %}
 
