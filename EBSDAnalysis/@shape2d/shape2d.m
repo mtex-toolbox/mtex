@@ -50,7 +50,6 @@ classdef shape2d < grain2d
         
       end
 
-
     end
 
     function Vs = get.Vs(shape)
