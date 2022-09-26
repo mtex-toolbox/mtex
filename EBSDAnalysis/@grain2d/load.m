@@ -39,17 +39,9 @@ phaseList=2*ones(size(poly));
 grains = grain2d(V,poly,rot,CSList,phaseList);
 
 %% check for clockwise poly's
-for i=1:size(grains)
-    if (grains(i).area<0)
-        A=cell2mat(poly(i));
-        B=zeros(1,length(A));
-        
-        for j=1:length(cell2mat(poly(i)))
-            B(j)=A(length(A)+1-j);
-        end
-        poly{i}=B;
-    end
-end
+
+isNeg = (grains.area<0);
+grains.poly = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
 
 grains = grain2d(V,poly,rot,CSList,phaseList);
 
