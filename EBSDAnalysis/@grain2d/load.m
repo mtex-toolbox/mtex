@@ -38,12 +38,8 @@ phaseList=2*ones(size(poly));
 
 grains = grain2d(V,poly,rot,CSList,phaseList);
 
-grains
-size(grains)
-
 %% check for clockwise poly's
 for i=1:size(grains)
-    i
     if (grains(i).area<0)
         A=cell2mat(poly(i));
         B=zeros(1,length(A));
