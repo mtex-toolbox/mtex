@@ -182,7 +182,7 @@ grainsLarge = grains(grains.grainSize > 50);
 for k = 1:length(grainsLarge)
   
   % fit a fibre
-  [f,lambda(k,:),fit(k)] = fibre.fit(ebsd(grainsLarge(k)).orientations);
+  [f,lambda(k,:),fit(k)] = fibre.fit(ebsd(grainsLarge(k)).orientations,'local');
   
   % store the misorientation axes in crystal and specimen symmetry
   GAX_C(k) = f.h;

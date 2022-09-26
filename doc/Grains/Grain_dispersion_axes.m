@@ -76,7 +76,7 @@ annotate(disp_ax_grid,'plane','linestyle','--','linewidth',2)
 % can fit an orientation fibre <fibre.fibre.html |fibre|>
 
 % This can be accomplished by |fibre.fit|
-fib = fibre.fit(o)
+fib = fibre.fit(o,'local')
 
 % the fibre has an axis in specimen coordinates |fib.r| and in crystal
 % coordinates |fib.h|.
@@ -111,7 +111,7 @@ mtexColorbar('title', 'distance from fibre')
 
 %%
 % TODO: use eigenvalues of fibre.fit  to give measure of "fibryness"
-% [fib, lambda] = fibre.fit(o)
+% [fib, lambda] = fibre.fit(o,'local')
 % lambda(2)/lambda(3)
 
 %% Bulk evaluation
