@@ -2,7 +2,7 @@ function display(f,varargin)
 % standard output
 
 
-refSystems = [char(f.CS,'compact') ' ' char(8594) ' ' char(f.SS,'compact')];
+refSystems = [char(f.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(f.SS,'compact')];
 
 displayClass(f,inputname(1),'fibre',varargin{:},'moreInfo',refSystems);
 
@@ -17,11 +17,11 @@ disp(' ');
 
 if length(f)~=1, return; end
 
-disp([' h || r: ' char(round(f.h)) ' || (' char(round(f.r)) ')']);
+disp(['  h || r: ' char(round(f.h)) ' || (' char(round(f.r)) ')']);
 
 % display starting and end orientation
 if angle(f.o2,f.o1,'noSymmetry')>0
-  disp([' o1 -> o2: ' char(f.o1) ' -> ' char(f.o2)]);
+  disp([' o1 ' getMTEXpref('arrowChar') ' o2: ' char(f.o1) ' ' getMTEXpref('arrowChar') ' ' char(f.o2)]);
 end
 
 end
