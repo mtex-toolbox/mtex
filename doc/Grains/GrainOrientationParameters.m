@@ -138,7 +138,7 @@ h = Miller({1,0,0},ebsd.CS);
 plotPDF(ebsd(grains(id)).orientations,h,'MarkerSize',2,'all')
 
 % fit a fibre to the orientations within the grain
-[f,lambda,fit] = fibre.fit(ebsd(grains(id)).orientations);
+[f,lambda,fit] = fibre.fit(ebsd(grains(id)).orientations,'local');
 
 % add the fibre to the pole figure
 hold on
