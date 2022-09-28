@@ -42,9 +42,8 @@ function [grains] = load(filepath)
   %% check for clockwise poly's
 
   isNeg = (grains.area<0);
-  grains.poly = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
+  grains.poly(isNeg) = cellfun(@fliplr, poly(isNeg), 'UniformOutput', false);
 
-  grains = grain2d(V,poly,rot,CSList,phaseList);
 end
 
 function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
