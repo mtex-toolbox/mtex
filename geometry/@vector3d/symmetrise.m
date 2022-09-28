@@ -77,7 +77,8 @@ end
 v = S.rot * v;
 
 % consider antipodal symmetry
-if antiSym && ~S.isLaue, v = [v;-v]; end
+%if antiSym && ~S.isLaue, v = [v;-v]; end
+if antiSym && ~S.isLaue, v = reshape([1;-1] * reshape(v,1,[]),2*S.numSym,[]); end
 
 % finally ensure unqiue vectors if required
 if check_option(varargin,'unique')
