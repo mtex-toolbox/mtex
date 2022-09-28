@@ -6,7 +6,7 @@ if isempty(odf.CS)
   return    
 end
 
-refSystems = [char(odf.CS,'compact') ' ' char(8594) ' ' char(odf.SS,'compact')];
+refSystems = [char(odf.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(odf.SS,'compact')];
 
 if isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')
   type = 'MDF';

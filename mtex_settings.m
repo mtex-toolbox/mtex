@@ -210,10 +210,16 @@ setMTEXpref('maxBandwidth',512);
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 
-degree_char = native2unicode([194 176],'UTF-8');
+degreeChar = native2unicode([194 176],'UTF-8');
 %degree_char = '?';
 
-setMTEXpref('degreeChar',degree_char);
+setMTEXpref('degreeChar',degreeChar);
+
+arrowChar = char(8594);
+%arrowChar = '→';
+%arrowChar = '~>';
+setMTEXpref('arrowChar',arrowChar);
+
 
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
