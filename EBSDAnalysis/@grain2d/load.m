@@ -42,7 +42,7 @@ function [grains] = load(filepath)
   %% check for clockwise poly's
 
   isNeg = (grains.area<0);
-  grains.poly(isNeg) = cellfun(@fliplr, poly(isNeg), 'UniformOutput', false);
+  grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
 
 end
 

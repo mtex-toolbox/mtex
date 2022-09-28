@@ -94,7 +94,8 @@ if check_option(varargin, 'numLocal')
   n = min(length(v), n);
   f = f(1:n);
 else
-  n = sum(f-f(1) < 1e-4);
+  %n = sum(f-f(1) < 1e-4);
+  n = 1;
   f = f(1);
 end
 v = v(I(1:n));
