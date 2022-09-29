@@ -44,7 +44,6 @@ figure(1)
 plot(odf1,'sigma')
 mtexColorMap LaboTeX
 
-%%
 figure(2)
 plot(odf2,'sigma')
 mtexColorMap LaboTeX
@@ -60,7 +59,6 @@ h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,1,1},{1,2,0},cs);
 plotPDF(odf1,h,'contourf')
 mtexColorMap LaboTeX
 
-%%
 figure(2)
 plotPDF(odf2,h,'contourf')
 mtexColorMap LaboTeX

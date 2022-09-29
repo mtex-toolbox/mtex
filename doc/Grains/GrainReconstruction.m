@@ -49,12 +49,12 @@ plot(ebsd)
 grains = calcGrains(ebsd,'angle',10*degree)
 
 %%
-% The reconstructed grains are stored in the variable *grains*.
+% The reconstructed grains are stored in the variable |grains|.
 % Note that also the notIndexed measurements are grouped into grains. This
 % allows later to analyze the shape of these unindexed regions.
 %
 % To visualize the grains we can plot its boundaries by the command
-% <grainBoundary.plot.html plot>.
+% <grainBoundary.plot.html |plot|>.
 
 % start overide mode
 hold on

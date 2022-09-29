@@ -1,5 +1,16 @@
 function N = perp(v, varargin)
 % compute an vector best orthogonal to a list of directions
+%
+% Syntax
+%   N = perp(v)
+%   N = perp(v, 'robust') % ignore outliers
+%
+% Input
+%  v - @vector3d
+%
+% Output
+%  N - antipodal @vector3d
+%
 
 if any(isnan(v)), v = v.subSet(v.isnan); end
 

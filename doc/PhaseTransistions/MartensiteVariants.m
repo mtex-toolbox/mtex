@@ -107,8 +107,7 @@ drawNow(gcm)
 % orientation relationship explicitely:
 
 KS = orientation.map(Miller(1,1,1,cs_aus),Miller(0,1,1,cs_bcc),...
-      Miller(-1,0,1,cs_aus),Miller(-1,-1,1,cs_bcc));
-
+      Miller(-1,0,1,cs_aus),Miller(-1,-1,1,cs_bcc))
 
 plotPDF(variants(KS,parenOri),'add2all','MarkerFaceColor','none','MarkerEdgeColor','k','linewidth',2)
 
@@ -156,7 +155,7 @@ mean(angle(mori, p2cMean)) ./ degree
 % orientation relation ship.
 
 % define Nishiyama Wassermann
-NW = orientation.NishiyamaWassermann(cs_aus,cs_bcc);
+NW = orientation.NishiyamaWassermann(cs_aus,cs_bcc)
 
 % extract all child to child misorientations 
 grainPairs = neighbors(grains('Fe'));
