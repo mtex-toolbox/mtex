@@ -1,4 +1,4 @@
-changelog
+MTEXScripts
 ListsAndIndexing
 GeneralConceptsConfiguration
 GeneralConceptsOptions
