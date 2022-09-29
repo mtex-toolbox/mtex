@@ -87,7 +87,7 @@ penalty = get_option(varargin,'penalty',0.002);
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 
 % all plane normales
-[h,k,l] =meshgrid(-maxIndex:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
+[h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
 rh2 = round(n2);
@@ -99,9 +99,15 @@ omega_h = angle(rh2(:),n2(:)) + ...
   sum(hkl2.^2,2) + 0.01*sum(hkl2<-0.1,2)) * penalty;
 
 % all directions
-[u,v,w] = meshgrid(-maxIndex:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
-d1 = Miller(u(:),v(:),w(:),mori.CS,'uvw');
+[u,v,w] = allHKL(maxIndex);
+if mori.CS.lattice.isTriHex
+  d1 = Miller(u(:),v(:),w(:),mori.CS,'UVTW');
+else
+  d1 = Miller(u(:),v(:),w(:),mori.CS,'uvw');  
+end
+
 d2 = reshape(mori * d1,[],1);
+if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
 rd2 = round(d2);
 uvw2 = rd2.uvw;
 
@@ -120,10 +126,6 @@ n1 = n1(ih);
 d1 = d1(id);
 n2 = round(mori * n1);
 d2 = round(mori * d1);
-
-% switch to UVTW for trigonal and hexagonal materials
-if d1.lattice.isTriHex, d1.dispStyle = 'UVTW'; end
-if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
 
 if nargout == 0
   

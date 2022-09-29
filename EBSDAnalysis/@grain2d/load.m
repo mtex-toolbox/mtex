@@ -42,9 +42,8 @@ function [grains] = load(filepath)
   %% check for clockwise poly's
 
   isNeg = (grains.area<0);
-  grains.poly = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
+  grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
 
-  grains = grain2d(V,poly,rot,CSList,phaseList);
 end
 
 function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
@@ -185,14 +184,12 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
           crysym=strtrim(buffer);
           buffer=fgetl(fid);
         end
-      case "*seed"
+      case {"*seed","*seed (id x y z weigth )"}
         disp ("reading  *seed ...");                    %output as table
         seedsTable=fscanf(fid,'%u %f %f %f %f ', [5 inf]);
         seedsTable=array2table(seedsTable');
         seedsTable.Properties.VariableNames(1:5)={'seed_id', 'seed_x', 'seed_y', 'seed_z', 'seed_weight'};
         buffer=fgetl(fid);
-      case "*seed (id x y z weigth )"                 %output as table
-        buffer="*seed";
       case "*ori"
         disp ("reading  *ori ...");
         buffer=fgetl(fid);
@@ -208,7 +205,7 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
         disp("reading **vertex ...")
         break
       otherwise
-        error 'reading cell parameters failed. file has wrong structure, expression not known'
+        error('Error while reading cell parameters failed. file has wrong structure, expression "%s" not known', buffer)
     end
   end
 
@@ -243,7 +240,14 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
     buffer=R*vector3d(V(i,:));
     Vrot(i,:)=buffer.xyz;
   end
-  V=Vrot(:,1:2);
+  V=Vrot-[0,0,Vrot(1,3)];
+
+  for i=1:length(V)
+    if V(i,3)~=0
+      error('Error: vertices not in plane')
+    end
+  end
+  V=V(:,1:2);
 
   clearvars A B C i n z R rot_angle rot_axis Vrot v1 v2
 

@@ -25,7 +25,7 @@ end
 if isMisorientation(o) && length(o) == 1 && angle(o,round2Miller(o))<1e-3
   
   disp(' ');
-  disp('     planes      directions');
+  %disp('     planes      directions');
   disp([' ',char(o)]);
   disp(' ')
 
