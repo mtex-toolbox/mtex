@@ -87,7 +87,7 @@ penalty = get_option(varargin,'penalty',0.002);
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 
 % all plane normales
-[h,k,l] =meshgrid(-maxIndex:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
+[h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
 rh2 = round(n2);
