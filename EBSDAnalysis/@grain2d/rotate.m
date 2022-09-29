@@ -53,5 +53,8 @@ if ~check_option(varargin,'keepXY')
     
   % store back
   grains.V = [V.x(:),V.y(:),V.z(:)];
-  
+
+  % rotate normal direction
+  grains.N = rot * grains.N;
+
 end
