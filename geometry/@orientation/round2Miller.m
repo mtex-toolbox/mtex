@@ -90,11 +90,11 @@ maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 [h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
-rh2 = round(n2);
-hkl2 = rh2.hkl;
+rn2 = round(n2);
+hkl2 = rn2.hkl;
 
 % fit of planes
-omega_h = angle(rh2(:),n2(:)) + ...
+omega_h = angle(rn2(:),n2(:)) + ...
   (h(:).^2 + k(:).^2 + l(:).^2 + ...
   sum(hkl2.^2,2) + 0.01*sum(hkl2<-0.1,2)) * penalty;
 
@@ -117,15 +117,17 @@ omega_d = angle(rd2(:),d2(:)) + ...
   sum(uvw2.^2,2) + 0.01*sum(uvw2<-0.1,2)) * penalty;
 
 % directions should be orthognal to normals
-fit = bsxfun(@plus,omega_h(:),omega_d(:).') + 10*(abs(pi/2-angle_outer(n1,d1,'noSymmetry')));
+fit = bsxfun(@plus,omega_h(:),omega_d(:).') + ...
+  100*(abs(pi/2-angle_outer(n1,d1,'noSymmetry'))>1e-5)+...
+  100*(abs(pi/2-angle_outer(rn2,rd2,'noSymmetry'))>1e-5);
 
 [~,ind] = nanmin(fit(:));
 [ih,id] = ind2sub(size(fit),ind);
 
 n1 = n1(ih);
 d1 = d1(id);
-n2 = round(mori * n1);
-d2 = round(mori * d1);
+n2 = rn2(ih);
+d2 = rd2(id);
 
 if nargout == 0
   
