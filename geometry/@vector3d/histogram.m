@@ -17,10 +17,12 @@ if ~isempty(weights)
   % oddly, matlab returns bins in the range -pi:pi and the data 
   % within 0:2*pi with some data < 0
   edges = h.BinEdges;
-  edges(edges<0)=pi-edges(edges<0);
+  %edges(edges<0)=pi-edges(edges<0);
   data=mod(h.Data,2*pi);
+  data(data>pi) = data(data>pi)-2*pi;
 
   [~,~,binId] = histcounts(data,sort(edges));
+  binId(binId==0)=length(edges)-1;
   h.BinCounts = accumarray(binId,weights,[length(h.BinEdges)-1 1],@nansum).' ./ sum(weights);
 end
     
