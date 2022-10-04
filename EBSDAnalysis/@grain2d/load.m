@@ -40,7 +40,6 @@ function [grains] = load(filepath)
   grains = grain2d(V,poly,rot,CSList,phaseList);
 
   %% check for clockwise poly's
-
   isNeg = (grains.area<0);
   grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
 
@@ -121,9 +120,7 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   
   %}
   
-  %%
-
-  %open file
+  %% open file
   fid=fopen(filepath, 'r');
 
   if (fid==-1)
@@ -215,8 +212,10 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   verticesTable=array2table(verticesTable');          
   verticesTable.Properties.VariableNames(1:5)={'ver_id','ver_x', 'ver_y','ver_z','ver_state'};
 
-  % rotate the 2dslice into xy-plane (z becomes zero)
   V=table2array(verticesTable(:,2:4));
+
+  %% rotate the 2dslice into xy-plane to make sure all points are situated in a
+  % 3d plane
   A=V(1,:);
   B=V(2,:);
   C=V(3,:);
@@ -240,14 +239,12 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
     buffer=R*vector3d(V(i,:));
     Vrot(i,:)=buffer.xyz;
   end
-  V=Vrot-[0,0,Vrot(1,3)];
 
-  for i=1:length(V)
-    if V(i,3)~=0
+  for i=1:length(Vrot)
+    if Vrot(i,3)~=Vrot(1,3)
       error('Error: vertices not in plane')
     end
   end
-  V=V(:,1:2);
 
   clearvars A B C i n z R rot_angle rot_axis Vrot v1 v2
 
@@ -298,7 +295,6 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
     for j=4:3+str2num(cell2mat(buffer(3)))
       poly{i}=[poly{i,1} str2double(buffer(j))];
     end
-    %A(length(A))
     poly{i}=[poly{i,1} str2double(buffer(4))];
 
     buffer=fgetl(fid);
