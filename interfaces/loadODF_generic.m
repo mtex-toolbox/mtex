@@ -84,7 +84,7 @@ weights = loader.getColumnData({'weights','weight','intensity'});
 if isempty(weights), weights = ones(size(q)); end
 
 % return varargin as options
-options = varargin;
+opt = varargin;
 if ischeck, odf = uniformODF;return;end
 
 if numel(unique(weights)) > 1
