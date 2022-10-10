@@ -238,7 +238,7 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   V=Vrot-[0,0,Vrot(1,3)];
 
   for i=1:length(V)
-    if V(i,3)~=0
+    if abs(V(i,3)) > 1e-9
       error('Error: vertices not in plane')
     end
   end
