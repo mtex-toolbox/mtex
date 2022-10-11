@@ -223,8 +223,8 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   n=cross(v1,v2);
   n=1/norm(n)*n;
 
-  rot_angle=-asind(norm(cross(n,z))/(norm(n)*norm(z)));
-  rot_angle=rot_angle/360*2*pi;
+  rot_angle=-asin(norm(cross(n,z))/(norm(n)*norm(z)));
+  if rot_angle ~= 0 % rotate only if needed
   rot_axis=cross(n,z);
   rot_axis=1/norm(rot_axis)*rot_axis;
 
@@ -236,6 +236,12 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
     Vrot(i,:)=buffer.xyz;
   end
   V=Vrot-[0,0,Vrot(1,3)];
+  end
+
+  %set Z to 0 if slice is from somewhere above/below but not rotated
+  if length(unique(V(:,3))) == 1
+        V(:,3) = 0;
+  end
 
   for i=1:length(V)
     if abs(V(i,3)) > 1e-9
