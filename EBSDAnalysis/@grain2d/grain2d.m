@@ -146,17 +146,16 @@ classdef grain2d < phaseList & dynProp
 
         grains.boundary = grainBoundary(V,F,grainId,1:max(grainId),...
           grains.phaseId,mori,grains.CSList,grains.phaseMap);
-
-
-        % for pseudo3d data determine a normal direction
-        if size(grains.V,2) ~= 2
-          grains.N = perp(grains.boundary.direction);
-
-          if sum(grains.area) < 0
-            grains.N = -grains.N;
-          end
-        end
         
+      end
+
+      % for pseudo3d data determine a normal direction
+      if size(grains.V,2) ~= 2
+        v=(grains.V(:,:)-grains.V(1,:));
+        grains.N = perp(vector3d(v(:,1),v(:,2),v(:,3)));
+        if sum(grains.area) < 0
+          grains.N = -grains.N;
+        end
       end
       
 
