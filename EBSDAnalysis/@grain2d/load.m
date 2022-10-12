@@ -39,6 +39,14 @@ function [grains] = load(filepath)
 
   grains = grain2d(V,poly,rot,CSList,phaseList);
 
+  %% check for 3d plane
+  d=zeros(length(grains.V),1);
+  for i=1:length(grains.V)
+    d(i)=dot(grains.V(i,:),grains.N.xyz);
+  end
+  if size(unique(round(d,10)))~=1
+    error 'grains are not within one plane'
+  end
   %% check for clockwise poly's
   isNeg = (grains.area<0);
   grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
@@ -213,40 +221,6 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   verticesTable.Properties.VariableNames(1:5)={'ver_id','ver_x', 'ver_y','ver_z','ver_state'};
 
   V=table2array(verticesTable(:,2:4));
-
-  %% rotate the 2dslice into xy-plane to make sure all points are situated in a
-  % 3d plane
-  A=V(1,:);
-  B=V(2,:);
-  C=V(3,:);
-
-  v1=B-A;
-  v2=C-A;
-  z=[0,0,1];
-
-  n=cross(v1,v2);
-  n=1/norm(n)*n;
-
-  rot_angle=-asind(norm(cross(n,z))/(norm(n)*norm(z)));
-  rot_angle=rot_angle/360*2*pi;
-  rot_axis=cross(n,z);
-  rot_axis=1/norm(rot_axis)*rot_axis;
-
-  R=rotation.byAxisAngle(vector3d(rot_axis),rot_angle);
-  
-  Vrot=zeros(total_number_of_vertices,3);
-  for i=1:total_number_of_vertices
-    buffer=R*vector3d(V(i,:));
-    Vrot(i,:)=buffer.xyz;
-  end
-
-  for i=1:length(Vrot)
-    if Vrot(i,3)~=Vrot(1,3)
-      error('Error: vertices not in plane')
-    end
-  end
-
-  clearvars A B C i n z R rot_angle rot_axis Vrot v1 v2
 
   %% **edge
   skipEmptyLines(fid)
