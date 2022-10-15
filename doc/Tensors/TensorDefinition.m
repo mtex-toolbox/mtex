@@ -150,8 +150,8 @@ C = tensor(M,'rank',4)
 % || @strainTensor || 2 || $\sigma_{ij}$  || @stressTensor || 2 || $\varepsilon_{ij}$ ||
 % || @strainRateTensor || 2 || $E$ || @velocityGradientTensor || 2 || $L$ ||
 % || @curvatureTensor || 2 || $\kappa_{ij}$ || @deformationGradientTensor || 2 || $F$ ||
-% || @refractiveIndexTensor || 2 || $\chi$ || @ChristoffelTensor || 2 || $M_ij$ || 
-% || @dislocationDensityTensor || 2 || $\alpha$  || @SchmidTensor || 2 || $M_{ij}$ ||
+% || @refractiveIndexTensor || 2 || $\chi$ || @ChristoffelTensor || 2 || $M_{ij}$ || 
+% || @dislocationDensityTensor || 2 || $\alpha$  || <SchmidTensor.html |SchmidTensor|> || 2 || $M_{ij}$ ||
 % || <tensor.leviCivita.html |leviCivita|> || 3 || $\varepsilon_{ijk}$ || @spinTensor || 2 || $\Omega$ ||
 %
 % Those specific tensors are defined by the syntax

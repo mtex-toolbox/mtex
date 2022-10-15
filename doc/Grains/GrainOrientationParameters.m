@@ -161,7 +161,7 @@ f.h
 % We can see that the dispersion of directions is minimal for those
 % parallel to |f.r| respectively |f.h|. 
 hold on
-plot(ebsd(grains(id)).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
+plot(ebsd(grainSel).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
 hold off
 %%
 % The second output argument |lambda| are the eigenvalues of the
@@ -288,7 +288,6 @@ hold off
 %cs = ebsd(grains(id)).CS;
 %ori = ebsd(grain_selected).orientations;
 %plotPDF(ori,[Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
-
 
 %%
 % Testing on the distribution shows a gentle prolatness, nevertheless we

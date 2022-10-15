@@ -15,11 +15,6 @@ function [grains] = load(filepath)
   % Output
   %  grain2d - @grain2d
   %
-  % Example
-  %
-  %   
-  %   grains = grain2d.load(fname)
-  %
   % See also
   % readTessFile
 

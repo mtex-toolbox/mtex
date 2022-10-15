@@ -17,6 +17,12 @@ function [f,bandwidth] = calcDensity(x,varargin)
 % See also
 % vector3d/calcDensity orientation/calcDensity
 
+if check_option(varargin,'periodic')
+
+  f = calcS1Density(x,varargin{:});
+  return
+end
+
 range = get_option(varargin,'range',[min(x);max(x)]);
 varargin = delete_option(varargin,'range',1);
 

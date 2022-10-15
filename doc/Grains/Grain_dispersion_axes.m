@@ -31,9 +31,9 @@ hold off
 %% Visualizing dispersion of orientations via directions
 
 % First, we will inspect a selected grain
-sel_id =  1395;
+grain_selected = grains(5095, 7803);
 hold on
-plot(grains('id',sel_id).boundary,'linewidth',3,'linecolor','b')
+plot(grain_selected.boundary,'linewidth',3,'linecolor','b')
 hold off
 
 % and examine the spread of orientations in terms of its pole figure. In
@@ -45,7 +45,7 @@ s2G = equispacedS2Grid('resolution',15*degree);
 s2G = Miller(s2G,ebsd('f').CS)
 
 % use the orientations of points belonging to the grain
-o = ebsd(grains('id',sel_id)).orientations;
+o = ebsd(grain_selected).orientations;
 
 % and compute the corresponding specimen directions
 d = o .* s2G;
@@ -64,7 +64,7 @@ mtexColorbar('title','avergage pole dispersion')
 
 % and we can ask which grid point is the one with the smallest dispersion
 [~,id_min]=min(vd);
-disp_ax_grid = grains('id',sel_id).meanOrientation .* s2G(id_min);
+disp_ax_grid = grain_selected.meanOrientation .* s2G(id_min);
 annotate(disp_ax_grid)
 annotate(disp_ax_grid,'plane','linestyle','--','linewidth',2)
 
@@ -105,7 +105,7 @@ hold off
 nextAxis
 % we can also inspect the distance of each orientation within the grains
 % to the fitted fibre with the grains
-plot(ebsd(grains('id',sel_id)),fd)
+plot(ebsd(grain_selected),fd)
 mtexColorbar('title', 'distance from fibre')
 
 

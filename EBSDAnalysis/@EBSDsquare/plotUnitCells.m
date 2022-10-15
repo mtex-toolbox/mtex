@@ -3,18 +3,19 @@ function h = plotUnitCells(ebsd,d,varargin)
 
 ax = get_option(varargin,'parent',gca);
 
+d = reshape(d,size(ebsd,1),size(ebsd,2),[]);
+
 if check_option(varargin,'region')
   
   ext = get_option(varargin,'region');
     
-  xy = [ebsd.prop.x(:), ebsd.prop.y(:)];
-  ind = xy(:,1) > ext(1) & xy(:,1) < ext(2) & xy(:,2) > ext(3) & xy(:,2) < ext(4);
+  ind = ebsd.prop.x > ext(1) & ebsd.prop.x < ext(2) & ...
+    ebsd.prop.y > ext(3) & ebsd.prop.y < ext(4);
      
   d = submatrix(d,ind);  
 else
   
   ext = ebsd.extend;
-  d = reshape(d,size(ebsd,1),size(ebsd,2),[]);
   
 end
 

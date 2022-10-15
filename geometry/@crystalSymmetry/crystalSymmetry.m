@@ -98,6 +98,9 @@ classdef crystalSymmetry < symmetry
     bAxisRec    % b*-axis reciprocal coordinate system
     cAxisRec    % c*-axis reciprocal coordinate system
     plotOptions
+    X           % x-axis
+    Y           % y-axis
+    Z           % z-axis
   end
   
   methods
@@ -170,6 +173,18 @@ classdef crystalSymmetry < symmetry
       
     end
     
+    function x = get.X(cs)
+      x = Miller(vector3d.X,cs,'xyz');
+    end
+
+    function y = get.Y(cs)
+      y = Miller(vector3d.Y,cs,'xyz');
+    end
+
+    function z = get.Z(cs)
+      z = Miller(vector3d.Z,cs,'xyz');
+    end
+
     function a = get.aAxis(cs)
       a = Miller(1,0,0,cs,'uvw');
     end
