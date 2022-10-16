@@ -18,14 +18,14 @@ cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 % define the tensor
 C = stiffnessTensor.load(fname,cs)
 
-%% Hooks Law
+%% Hooke's Law
 % The stiffness tensor tensor of a material is defined as the stress the
 % material expreances for a given strain
 
 eps = strainTensor(diag([1,1.1,0.9]),cs)
 
 %%
-% Now Hools law states that the resulting stress can be computed by
+% Now Hooke's law states that the resulting stress can be computed by
 
 sigma = C : eps
 
