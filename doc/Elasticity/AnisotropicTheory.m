@@ -6,7 +6,7 @@
 % represented in MTEX by a variable of type
 % <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>. Such a variable
 % can either by set up using a symmetric 6x6 matrix or by importing it from
-% an external file. The following examples does so for the sitiffness
+% an external file. The following examples does so for the stiffness
 % tensor for Olivine
 
 % file name
@@ -58,7 +58,7 @@ E = C.YoungsModulus(d)
 % If the direction |d| is ommited Youngs modulus is returned as a
 % <S2FunHarmonic.S2FunHarmonic.html spherical function>.
 
-% compute Young's modulus as a directional dependend function
+% compute Young's modulus as a directional dependent function
 E = C.YoungsModulus
 
 % which can be evaluated at any direction
@@ -71,7 +71,7 @@ plot(C.YoungsModulus,'complete','upper')
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
 % specimen caused by an increase in hydrostatic pressure and can be
-% described by a second rank tensor. Similarly as the Youngs modulus it can
+% described by a second rank tensor. Similar to the Young's modulus it can
 % be computed by the command <stiffnessTensor.linearCompressibility.html
 % linearCompressibility> for specific directions |d| or as a spherical
 % function
@@ -87,7 +87,7 @@ beta.eval(d)
 
 %% Poisson Ratio 
 % The rate of compression / decompression in a direction |n| normal to the
-% pulling direction |p| is called Poisson ration.
+% pulling direction |p| is called Poisson ratio.
 
 % the pulling direction
 p = vector3d.Z;
@@ -107,7 +107,7 @@ nu = C.PoissonRatio(p)
 
 %%
 % we again obtain a spherical function. However, this time it is only
-% meaningfull to evaluate this function at directions perpendicular to the
+% meaningful to evaluate this function at directions perpendicular to the
 % pulling direction |p|. Hence, a good way to visualize this function is to
 % plot it as a <S2Fun.plotSection.html section> in the x/y plane
 
