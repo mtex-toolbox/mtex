@@ -17,6 +17,16 @@ function grains = smooth(grains,iter,varargin)
 %  exp               - exponential smoothing kernel  
 %  umbrella          - umbrella smoothing kernel   
  
+if dot(grains.N,zvector) ~= 0
+
+  [grains,rot] = rotate2Plane(grains);
+  grains = smooth(grains);
+  grains = inv(rot) * grains;
+  return
+
+end
+
+
 if nargin < 2 || isempty(iter), iter = 1; end
 
 % compute incidence matrix vertices - faces
