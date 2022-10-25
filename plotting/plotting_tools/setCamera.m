@@ -9,6 +9,12 @@ else
   ax = gca;
 end
 
+sP = getClass(varargin,'screenProjection');
+if ~isempty(sP)
+  sP.setView(ax);
+  return
+end
+
 if check_option(varargin,'default')
   xAxis = getMTEXpref('xAxisDirection');
   zAxis = getMTEXpref('zAxisDirection');
