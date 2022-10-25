@@ -125,7 +125,7 @@ r = symmetrise(CS.fundamentalSector.center,CS);
 % compute the Schmid factor
 tau = sSAll.SchmidFactor(r);
 
-% here we do not need to take the absolut value since we consider both
+% here we do not need to take the absolute value since we consider both
 % burger vectors +/- b
 [~,id] = max(tau,[],2);
 
@@ -153,7 +153,7 @@ mtexColorbar
 % So far we have always assumed that the stress tensor is already given
 % relatively to the crystal coordinate system. Next, we want to examine the
 % case where the stress is given in specimen coordinates and we know the
-% orientation of the crystal. Lets import some EBSD data and computet the
+% orientation of the crystal. Let's import some EBSD data and compute the
 % grains
 
 mtexdata csl
@@ -256,7 +256,7 @@ quiver(grains,sSactive.b,'color','r')
 
 hold off
 
-%% Strain based analysis on the same data set
+%% Strain-based analysis on the same data set
 
 eps = strainTensor(diag([1,0,-1]))
 
