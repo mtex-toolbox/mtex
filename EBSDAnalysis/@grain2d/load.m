@@ -20,21 +20,19 @@ function [grains] = load(filepath)
 
   %filepath="2dslice.tess";
 
-  %%
-
-  [dimension,V,poly,oriMatrix,crysym] = readTessFile(filepath);
+  [dimension,V,poly,rot,crysym] = readTessFile(filepath);
 
   if (dimension~=2)
     error 'format is not 2 - only two dimesional tesselations allowed'
   end
 
   CSList={'notIndexed',crystalSymmetry(crysym)};
-  rot=rotation(quaternion(oriMatrix'));
+  
   phaseList=2*ones(size(poly));
 
   grains = grain2d(V,poly,rot,CSList,phaseList);
 
-  %% check for 3d plane
+  % check for 3d plane
   d=zeros(length(grains.V),1);
   for i=1:length(grains.V)
     d(i)=dot(grains.V(i,:),grains.N.xyz);
@@ -42,13 +40,14 @@ function [grains] = load(filepath)
   if size(unique(round(d,10)))~=1
     error 'grains are not within one plane'
   end
-  %% check for clockwise poly's
+  
+  % check for clockwise poly's
   isNeg = (grains.area<0);
   grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
 
 end
 
-function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
+function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
   % function for reading data from nepers tesselation files (.tess)
   %
   % Description
@@ -194,12 +193,23 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
         disp ("reading  *ori ...");
         buffer=fgetl(fid);
         quaternion_descriptor=split(buffer, ':');
-        if (strtrim(quaternion_descriptor(1))~="quaternion")
-          error 'orientation in wrong format. currently only available for quaternion';
+        switch lower(strtrim(quaternion_descriptor{1}))
+          case 'quaternion'
+            eulerAngles = fscanf(fid,'%f %f %f %f ',[4 inf]);
+            rot = rotation(quaternion(eulerAngles));
+          case 'rodrigues'
+            vec = fscanf(fid,'%f %f %f %f ',[3 inf]);
+            %rot = rotation.byRodrigues(vec);
+            rot = rotation.byEuler(vec.' .* degree);
+          otherwise
+            error('orientation in wrong format. currently only available for quaternion');
         end
-        quaternion_descriptor=strtrim(quaternion_descriptor(2));
-        oriMatrix=fscanf(fid,'%f %f %f %f ',[4 inf]);          %output as matrix
-        oriMatrix=oriMatrix';
+        
+        % convert to passive rotation if needed
+        %if ~strcmpi(strtrim(quaternion_descriptor{2}),'active')
+        %rot = inv(rot);
+        %end
+
         buffer=fgetl(fid);
       case "**vertex"
         disp("reading **vertex ...")
