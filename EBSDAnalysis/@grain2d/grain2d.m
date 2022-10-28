@@ -65,7 +65,8 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Dependent = true, Access = protected)
-    idV % active vertices    
+    idV % active vertices
+    rot2Plane
   end
   
   methods
@@ -190,6 +191,11 @@ classdef grain2d < phaseList & dynProp
       
     end
     
+    function rot = get.rot2Plane(grains)
+      rot = rotation.map(grains.N,vector3d.Z);
+    end
+
+
     function varargout = size(grains,varargin)
       [varargout{1:nargout}] = size(grains.id,varargin{:});
     end
