@@ -17,11 +17,20 @@ function [omega,a,b]= principalComponents(grains,varargin)
 % plotEllipse
 %
 
+if dot(grains.N,zvector) ~= 1
+
+  disp("Rotating grains into xy-plane, Consider that the calculated ellipses lay in the xy plane too.")
+  [grains,~] = rotate2Plane(grains);
+  [omega,a,b] = principalComponents(grains, varargin);
+  return
+
+end
+
 % ignore holes
 poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput',false);
 
 % extract vertices
-V = grains.V;
+V = grains.V(:,1:2);
 
 % centroids
 c = grains.centroid;
