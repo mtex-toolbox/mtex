@@ -17,7 +17,7 @@ function grains = smooth(grains,iter,varargin)
 %  exp               - exponential smoothing kernel  
 %  umbrella          - umbrella smoothing kernel   
  
-if dot(grains.N,zvector) ~= 0
+if dot(grains.N,zvector) ~= 1
 
   [grains,rot] = rotate2Plane(grains);
   grains = smooth(grains);
