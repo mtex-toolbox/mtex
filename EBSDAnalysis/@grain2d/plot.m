@@ -232,7 +232,7 @@ if isempty(idSelected) || length(idSelected) ~= length(grains)
 end
 
 
-localId = findByLocation(grains,[pos(1,1) pos(1,2)]);
+localId = findByLocation(grains,pos(1,:));
 
 grain = grains.subSet(localId);
 
@@ -261,7 +261,11 @@ if grain.isIndexed
 else
   txt{2} = ['phase = not indexed'];
 end
-txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
+if size(grains.V,2) == 3
+  txt{3} = ['(x,y,z) = ', xnum2str(pos(1,:),'delimiter',', ')];
+else
+  txt{3} = ['(x,y) = ', xnum2str(pos(1,:),'delimiter',', ')];
+end
 if grain.isIndexed
   txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];
 end

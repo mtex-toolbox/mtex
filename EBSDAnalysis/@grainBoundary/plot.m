@@ -71,7 +71,7 @@ end
 function plotOrdered2(gB,varargin)
 
 % add a nan vertex at the end - patch should not close the faces
-V = [gB.V;nan(1,2)];
+V = [gB.V;nan(1,size(gB.V,2))];
 
 % extract the edges
 F = gB.F;
@@ -80,8 +80,10 @@ F = gB.F;
 [EC,Fid] = EulerCycles2(F);
 
 x = NaN(length(EC),1); y = x;
+z = zeros(size(x));
 x(~isnan(EC)) = V(EC(~isnan(EC)),1);
 y(~isnan(EC)) = V(EC(~isnan(EC)),2);
+if size(V,2) == 3, z(~isnan(EC)) = V(EC(~isnan(EC)),3); end
 
 % color given by second argument
 if nargin > 1 && isnumeric(varargin{1}) && ...
@@ -110,6 +112,13 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   y(3:2:end-1) = (1-alpha)*yy(3:2:end-1) + alpha*yy(4:2:end);
   y(end+1) = NaN;
 
+  z = repelem(z(:).',1,2).';
+  z(1) = []; z(end)=[];
+  zz = z;
+  z(2:2:end-1) = (1-alpha)*zz(2:2:end-1) + alpha*zz(1:2:end-2);
+  z(3:2:end-1) = (1-alpha)*zz(3:2:end-1) + alpha*zz(4:2:end);
+  z(end+1) = NaN;
+
   % align the data
   data = repelem(data(Fid(~isnan(Fid)),:),2,1);
   color = nan(length(y),size(data,2));
@@ -123,8 +132,8 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
     subId = max(1,(k-1)*1000) : min(k*1000,length(x)).';
   
     % plot the line
-    z = zeros(length(subId),2);
-    p(k) = surface([x(subId),x(subId)],[y(subId),y(subId)],z,...
+    %z = zeros(length(subId),2);
+    p(k) = surface([x(subId),x(subId)],[y(subId),y(subId)],[z(subId),z(subId)],...
       repmat(color(subId,:,:),1,2,1),...
       'FaceColor','none','EdgeColor','interp','parent',mP.ax);
     
@@ -144,7 +153,8 @@ else % color given directly
   % for some reason it is important to subdivide it into parts
   for k = 1:ceil(length(x)/2000) 
     subId = max(1,(k-1)*2000) : min(k*2000,length(x));
-    p(k) = line(x(subId),y(subId),'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
+    p(k) = line(x(subId),y(subId),z(subId),...
+      'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
     
     if k>1
       set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
