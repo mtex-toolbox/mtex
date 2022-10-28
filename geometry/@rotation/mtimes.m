@@ -33,6 +33,10 @@ elseif isa(b,'quaternion')
 
   r = mtimes@quaternion(a,b,varargin{:});
  
+elseif isa(b,'grain2d')
+
+  r = rotate(b,a);
+
 else
   
   r = rotate_outer(b,a);
