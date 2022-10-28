@@ -6,7 +6,8 @@ if dot(grains.N,zvector) ~= 1
 
   [grains,rot] = rotate2Plane(grains);
   [x,y,z] = centroid(grains);
-
+  
+  z=z+grains.V(1,3);  %compensate that grains are only turned parallel to xy plane, but possebly are situated over or under
   A=vector3d(x,y,z);
   A=inv(rot)*A;
   A=A.xyz();
