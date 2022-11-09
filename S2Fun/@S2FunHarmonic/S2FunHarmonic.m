@@ -44,7 +44,7 @@ methods
     sF.antipodal = check_option(varargin,'antipodal');
     
     % truncate zeros
-    sF = sF.truncate;
+    %sF = sF.truncate;
 
   end
   
