@@ -71,7 +71,38 @@ classdef SO3Kernel
     end
     
     function hw = halfwidth(psi)
-      hw = fminbnd(@(omega) (psi.eval(1)-2*psi.eval(cos(omega/2))).^2,0,3*pi/4);
+%       hw = fminbnd(@(omega) (psi.eval(1)-2*psi.eval(cos(omega/2))).^2,0,3*pi/4);
+      % Minimization does not yield first/global minimizer, so:
+      % Find halfwidth by function evaluations
+      
+      if psi.A==0
+        hw = 0;
+        return
+      end
+
+      if psi.bandwidth<100 
+        epsilon = 0.01;
+      else
+        epsilon = 0.1;
+      end
+      
+      % evaluate psi
+      v = abs(psi.eval(cos((0:epsilon:180)*degree/2)));
+      % get maximum value
+      [my,mind] = max(v);
+%       shift
+%       v = [flip(v(2:end));v];
+%       mx = (mind-1)*epsilon;
+      % shift halfwide to roots
+      v = my-2*v;
+      
+      hr = find(v(mind:end)>=0,1,'first')-1;
+      if isempty(hr), hr=0; end
+      hl = mind-find(v(1:mind)>=0,1,'last');
+      if isempty(hl), hl=0; end
+      hw = max(hl,hr)*epsilon*degree;
+      
+
     end
 
   end
