@@ -1,7 +1,7 @@
 function display(T,varargin)
 % standard output
 
-displayClass(T,get_option(varargin,'name',inputname(1)),[],'moreInfo',char(T.CS,'compact'));
+displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact'),varargin{:});
 
 % collect tensor properties
 props = fieldnames(T.opt);
