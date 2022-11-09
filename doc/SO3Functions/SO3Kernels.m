@@ -260,7 +260,7 @@ legend('halfwidth = 15°','halfwidth = 20°')
 % $$ \psi_s(t) = \sum\limits_{n=0}^{\infty} (2n+1)\, (n(n+1))^s \, \mathcal
 % U_{2n}(t) $$.
 %
-% Lets construct two of them by the parameter $s$.
+% Lets construct two of them by the parameter $s$ and banwidth 15.
 
 psi1 = SO3SobolevKernel(1,'bandwidth',15)
 psi2 = SO3SobolevKernel(1.2,'bandwidth',15)

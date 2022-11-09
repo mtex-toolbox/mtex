@@ -1,9 +1,10 @@
 classdef SO3SobolevKernel < SO3Kernel
 % The Sobolev kernel $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
 % is a radial symmetric kernel function depending on a parameter $s$ and 
-% is defined by its Chebyshev series
+% the bandwidth $N$.
+% It is defined by its Chebyshev series
 %
-% $$ \psi_s(t) = \sum\limits_{n=0}^{\infty} (2n+1)\, (n(n+1))^s \, \mathcal
+% $$ \psi_s(t) = \sum\limits_{n=0}^{N} (2n+1)\, (n(n+1))^s \, \mathcal
 % U_{2n}(t) $$.
 %
 % Syntax
