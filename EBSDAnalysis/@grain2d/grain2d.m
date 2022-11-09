@@ -51,7 +51,7 @@ classdef grain2d < phaseList & dynProp
     boundary = grainBoundary % boundary of the grains
     innerBoundary = grainBoundary % inner grain boundary
     N = vector3d.Z % normal direction of the pseudo3d data
-    sP = screenProjection
+    sP = plottingConvention
   end
     
   properties (Dependent = true)
