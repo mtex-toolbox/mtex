@@ -32,7 +32,7 @@ end
 
 % and search for the closest vertex
 if size(pos,1) == 1
-  dist = sum((V(iV,:) - pos).^2,2);
+  dist = sum((V(iV,:) - pos(1:size(V,2))).^2,2);
   [~,ind] = min(dist);
   closestVertex = iV(ind);
 else
