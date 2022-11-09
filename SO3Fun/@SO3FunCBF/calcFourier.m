@@ -37,4 +37,9 @@ for l = 0:min(L,length(A)-1)
   
 end
 
+if SO3F.antipodal 
+  f_hat = SO3FunHarmonic(f_hat,'antipodal');
+  f_hat = f_hat.fhat;
+end
+
 end

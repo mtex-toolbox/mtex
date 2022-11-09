@@ -18,6 +18,7 @@ classdef SO3FunHandle < SO3Fun
 %
 properties
   fun
+  % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
   antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry

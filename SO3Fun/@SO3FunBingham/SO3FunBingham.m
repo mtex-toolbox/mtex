@@ -23,6 +23,7 @@ classdef SO3FunBingham < SO3Fun
   properties
     A
     kappa = [1,0,0,0];
+    % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
     antipodal = false;
     weight = 1;
   end

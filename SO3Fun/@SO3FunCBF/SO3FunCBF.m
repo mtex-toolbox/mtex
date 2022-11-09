@@ -26,6 +26,7 @@ classdef SO3FunCBF < SO3Fun
     r
     psi = S2DeLaValleePoussinKernel('halfwidth',10*degree);
     weights = 1;
+    % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
     antipodal = false
   end
 

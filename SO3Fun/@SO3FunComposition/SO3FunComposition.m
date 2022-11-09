@@ -28,6 +28,7 @@ end
 
 properties (Dependent = true)
   bandwidth % harmonic degree
+  % TODO: antipodal wird nicht gesetzt/verwendet
   antipodal
   SLeft
   SRight
@@ -121,13 +122,12 @@ methods
   
   function w = get.weights(S3F)
     w = cellfun(@(x) mean(x,'all'), S3F.components);
-
   end
 
   function out = get.antipodal(S3F)
-    out =  S3F.components{1}.antipodal;
+    out = all(cellfun(@(x) x.antipodal ,S3F.components));
   end
-  
+    
   function out = get.bandwidth(S3F)
     out =  max(cellfun(@(x) x.bandwidth,S3F.components));
   end
