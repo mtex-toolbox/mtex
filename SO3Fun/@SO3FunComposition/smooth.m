@@ -1,22 +1,22 @@
-function odf = smooth(odf,varargin)
-% smooth ODF
+function SO3F = smooth(SO3F,varargin)
+% smooth SO3FunComposition
 %
 % Input
-%  odf - @SO3Fun
-%  res - resolution
+%  SO3F - @SO3FunComposition
+%  psi - @SO3Kernel (smoothing kernel)
+%
+% Options
+%  halfwidth
 %
 % Output
-%  odf - smoothed @SO3Fun
+%  SO3F - smoothed @SO3Fun
 %
-
-% get smoothing kernel
-if nargin >= 2 && isa(varargin{1},'SO3Kernel')
-  psi = varargin{1};
-else
-  psi = SO3DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',5*degree));
-end
+% See also
+% SO3Fun/smooth
 
 % smooth components
-for i = 1:length(odf.components)
-  odf.components{i} = odf.components{i}.smooth(psi);
+for i = 1:length(SO3F.components)
+  SO3F.components{i} = SO3F.components{i}.smooth(varargin{:});
+end
+
 end
