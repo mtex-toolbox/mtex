@@ -270,7 +270,7 @@ api.clearAllData();
       else
 
         data = [data{:}];
-        data.unitCell = calcUnitCell([data.x(:),data.y(:)]);
+        %data.unitCell = calcUnitCell([data.x(:),data.y(:)]);
 
       end
 
