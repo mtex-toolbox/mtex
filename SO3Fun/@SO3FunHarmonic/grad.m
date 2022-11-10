@@ -30,7 +30,7 @@ for n=0:SO3F.bandwidth
   
   % compute constants
   k = (-n:n-1)';
-  C = (-1).^(k<=0) .* sqrt((n+k+1).*(n-k))/2;
+  C = (-1).^(k<0) .* sqrt((n+k+1).*(n-k))/2;
 
   % derivative around xvector
   X = zeros(2*n+1,2*n+1);
