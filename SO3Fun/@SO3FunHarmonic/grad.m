@@ -28,19 +28,19 @@ for n=0:SO3F.bandwidth
   ind = deg2dim(n)+1:deg2dim(n+1);
   FHAT = reshape(SO3F.fhat(ind),2*n+1,2*n+1);
   
-  % compute constants
+  % compute derivative of Wigner-d functions
   k = (-n:n-1)';
-  C = (-1).^(k<0) .* sqrt((n+k+1).*(n-k))/2;
+  dd = (-1).^(k<0) .* sqrt((n+k+1).*(n-k))/2;
 
   % derivative around xvector
   X = zeros(2*n+1,2*n+1);
-  X(2:end,:) = 1i*C.*FHAT(1:end-1,:);
-  X(1:end-1,:) = X(1:end-1,:) + 1i*C.*FHAT(2:end,:);
+  X(2:end,:) = 1i*dd.*FHAT(1:end-1,:);
+  X(1:end-1,:) = X(1:end-1,:) + 1i*dd.*FHAT(2:end,:);
 
   % derivative around yvector
   Y = zeros(2*n+1,2*n+1);
-  Y(2:end,:) = C.*FHAT(1:end-1,:);
-  Y(1:end-1,:) = Y(1:end-1,:) - C.*FHAT(2:end,:);
+  Y(2:end,:) = dd.*FHAT(1:end-1,:);
+  Y(1:end-1,:) = Y(1:end-1,:) - dd.*FHAT(2:end,:);
   
   % derivative around zvector
   Z = FHAT .* (-n:n)' * (-1i);
