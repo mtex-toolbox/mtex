@@ -1,16 +1,19 @@
-function displayClass(obj,input,varargin)
+function displayClass(obj,vName,varargin)
 
 if check_option(varargin,'skipHeader'), return; end
 
 disp(' ');
 
-cN = class(obj);
-if nargin == 2 || isempty(varargin{1}), altName = cN; else, altName = varargin{1}; end
+vName = get_option(varargin,'variableName',vName);
+className = class(obj);
+altName = get_option(varargin,'className',className);
+scopes = get_option(varargin,'moreInfo');
 
-if check_option(varargin,'moreInfo')
-  disp([input ' = ' doclink([cN '.' cN],altName) ' (' ...
-    get_option(varargin,'moreInfo') ')']);
-else
-  disp([input ' = ' doclink([cN '.' cN],altName) ' ' docmethods(input)]);
-end       
+str = [vName ' = ' doclink([className '.' className],altName)];
+%str = [vName ' = <strong>' altName '</strong>'];
+
+if ~isempty(scopes), str = [str,' (',scopes,')']; end
+
+disp(str);
+
 end

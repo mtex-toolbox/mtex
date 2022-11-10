@@ -110,7 +110,11 @@ try
   opt = loader.getOptions('ignoreColumns','Phase');
 
   % set up EBSD variable
-  CSList = get_option(varargin,'CS',repcell('notIndexed',1,3));
+  CSList{1} = 'notIndexed';
+  for k = 1:max(1,length(unique(phase))-1)
+    CSList{k+1} = crystalSymmetry('432','mineral',['unknown' int2str(k)]);
+  end
+  CSList = get_option(varargin,'CS',CSList);
   ebsd = EBSD(q,phase,CSList,opt,varargin{:});
 
 catch

@@ -13,7 +13,7 @@ if isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')
 else
   type = 'ODF';
 end
-displayClass(odf,inputname(1),type,'moreInfo',refSystems);
+displayClass(odf,inputname(1),'className',type,'moreInfo',refSystems);
 
 
 % display symmtries and minerals

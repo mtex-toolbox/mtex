@@ -26,7 +26,7 @@ stack = dbstack;
 if isempty(strmatch('publish',{stack.name},'exact'))
   
   % generate link text
-  linkText = ['<a href="' linkText '">' lname '</a>'];
+  linkText = ['<a href="' linkText '" style="font-weight:bold">' lname '</a>'];
   
 else
   linkText = lname;

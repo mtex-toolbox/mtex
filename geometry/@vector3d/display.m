@@ -1,9 +1,8 @@
 function display(v,varargin)
 % standard output
 
-vname = get_option(varargin,'name',inputname(1));
-varargin = delete_option(varargin,'name',1);
-displayClass(v,vname,varargin{:});
+
+displayClass(v,inputname(1),varargin{:});
 
 if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 

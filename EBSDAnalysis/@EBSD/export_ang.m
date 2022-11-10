@@ -2,7 +2,12 @@ function export_ang(ebsd,fName,varargin)
 % Export EBSD data to TSL/EDAX text file (ang).
 %
 % Syntax
-%   export_ang(ebsd,fName,varargin)
+%
+%   % import an ctf file
+%   ebsd = EBSD.load('myfile.ctf')
+%
+%   % export as ang
+%   export_ang(ebsd,'myFile.ang')
 %
 % Input
 %  ebsd  - @EBSD

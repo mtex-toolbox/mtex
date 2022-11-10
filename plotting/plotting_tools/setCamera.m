@@ -9,7 +9,7 @@ else
   ax = gca;
 end
 
-sP = getClass(varargin,'screenProjection');
+sP = getClass(varargin,'plottingConvention');
 if ~isempty(sP)
   sP.setView(ax);
   return

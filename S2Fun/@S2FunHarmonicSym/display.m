@@ -1,9 +1,7 @@
 function display(sFs,varargin)
 % standard output
 
-displayClass(sFs,inputname(1),'S2FunHarmonicSym','moreInfo',char(sFs.CS,'compact'));
-
-%displayClass(sFs,inputname(1),varargin{:});
+displayClass(sFs,inputname(1),'moreInfo',char(sFs.CS,'compact'));
 
 if length(sFs)> 1, disp([' size: ' size2str(sFs)]);end
 

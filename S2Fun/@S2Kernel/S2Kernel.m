@@ -59,7 +59,7 @@ classdef S2Kernel
     end
     
     function display(S2K)
-      displayClass(S2K,inputname(1));      
+      displayClass(S2K,inputname(1));
       disp(['  bandwidth: ',int2str(S2K.bandwidth)]);
       try
         disp(['  halfwidth: ',xnum2str(S2K.halfwidth/degree) mtexdegchar]);

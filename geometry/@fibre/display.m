@@ -4,7 +4,7 @@ function display(f,varargin)
 
 refSystems = [char(f.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(f.SS,'compact')];
 
-displayClass(f,inputname(1),'fibre',varargin{:},'moreInfo',refSystems);
+displayClass(f,inputname(1),varargin{:},'moreInfo',refSystems);
 
 if length(f)~=1, disp([' size: ' size2str(f)]); end
 

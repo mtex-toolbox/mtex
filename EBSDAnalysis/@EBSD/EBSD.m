@@ -57,7 +57,8 @@ classdef EBSD < phaseList & dynProp & dynOption
   % general properties
   properties
     scanUnit = 'um'       % unit of the x,y coordinates
-    unitCell = []         % cell associated to a measurement
+    unitCell = vector3d   % cell associated to a measurement
+    N = zvector           % normal direction of the measurement plane
   end
    
   properties (Dependent = true)
@@ -101,12 +102,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = prop;
                   
       % get unit cell
-      if check_option(varargin,'unitCell')
-        ebsd.unitCell = get_option(varargin,'unitCell',[]);
-      else
-        ebsd = ebsd.updateUnitCell;
-      end
-      
+      ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'));
+            
     end
     
     % --------------------------------------------------------------

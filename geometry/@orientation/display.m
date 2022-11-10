@@ -8,7 +8,7 @@ if isMisorientation(o)
 else
   type = 'orientation';
 end
-displayClass(o,inputname(1),type,'moreInfo',refSystems);
+displayClass(o,inputname(1),'className',type,'moreInfo',refSystems);
 
 %disp(char(o.CS,'verbose','symmetryType'));
 %if o.SS.id ~= 1, disp(char(o.SS,'verbose','symmetryType')); end
