@@ -23,6 +23,12 @@ end
 
 rot = varargin{1}; varargin(1) = [];
 
+if isempty(SO3F.center)
+  g = vector3d.zeros(size(rot));
+  return
+end
+
+
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(rot);
 center = SO3F.center;
