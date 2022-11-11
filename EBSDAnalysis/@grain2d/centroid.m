@@ -1,26 +1,19 @@
-function [x,y,z] = centroid(grains)
+function c = centroid(grains)
 % calculates the barycenters of the grain boundary
 %
 
 if dot(grains.N,zvector) ~= 1
 
   [grains,rot] = rotate2Plane(grains);
-  [x,y,z] = centroid(grains);
-  
-  z=z+grains.V(1,3);  %compensate that grains are only turned parallel to xy plane, but possebly are situated over or under
-  A=vector3d(x,y,z);
-  A=inv(rot)*A;
-  A=A.xyz();
-  x=A(:,1);
-  y=A(:,2);
-  z=A(:,3);
+  c = centroid(grains);
+  c=(rot\c)';
 
   return
 
 end
 
 % initalize x,y values
-x = zeros(size(grains)); y = x; z = x;
+x = zeros(size(grains)); y = x;
 
 faceOrder = [grains.poly{:}];
 
@@ -41,7 +34,8 @@ for k=1:numel(x)
   y(k) = sum(cy(ndx)) / 3 / a;
 end
 
-if nargout == 1, x = [x,y]; end
+c=vector3d(x,y,grains.V(1,3));
+%compensate that grains are only turned parallel to xy plane, but possebly are situated over or under
 
 end
 
