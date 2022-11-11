@@ -23,13 +23,13 @@ if isa(f,'rotation')
   y = y.xyz;
   SO3F = SO3FunHarmonic.quadrature(v, y, varargin{:});
 else
-  SO3F = SO3FunHarmonic.quadrature(@(v) g(v), varargin{:});
+  SO3F = SO3FunHarmonic.quadrature(@(rot) g(rot), varargin{:});
 end
 
 SO3VF = SO3VectorFieldHarmonic(SO3F);
 
-function g = g(v)
-g = f.eval(v);
+function g = g(rot)
+g = f.eval(rot);
 g = g.xyz;
 end
 
