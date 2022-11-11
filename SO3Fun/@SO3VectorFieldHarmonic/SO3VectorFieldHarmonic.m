@@ -24,7 +24,19 @@ methods
     % initialize a rotational vector field
     
     if nargin == 0, return; end
-    SO3VF.SO3F = SO3F(:);
+    if isa(SO3F,'SO3FunHarmonic')
+      SO3VF.SO3F = SO3F(:);
+      return
+    end
+    if isa(SO3F,'SO3VectorFieldHarmonic')
+      SO3VF.SO3F = SO3F.SO3F;
+      return
+    end
+    if isa(SO3F,'SO3VectorField')
+      SO3VF = SO3VectorFieldHarmonic.quadrature(SO3F,varargin{:});
+      return
+    end
+    error('Input should be of type SO3FunHarmonic or SO3VectorField.')
 
   end
 
