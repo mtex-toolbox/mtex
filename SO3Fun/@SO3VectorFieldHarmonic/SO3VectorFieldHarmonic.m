@@ -1,5 +1,7 @@
-classdef SO3VectorFieldHarmonic < SO3VectorField
-% a class represeneting a function on the sphere
+classdef (InferiorClasses = {?SO3FunHarmonic,?SO3FunBingham,?SO3FunCBF, ...
+    ?SO3FunComposition,?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF, ...
+    ?SO3VectorFieldHandle}) SO3VectorFieldHarmonic < SO3VectorField
+% a class representing a function on the rotation group
 
 properties
   SO3F
