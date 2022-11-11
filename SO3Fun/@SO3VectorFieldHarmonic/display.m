@@ -1,6 +1,7 @@
 function display(SO3VF,varargin)
 % standard output
-displayClass(SO3VF,inputname(1),varargin{:});
+displayClass(SO3VF,inputname(1),[],'moreInfo',symChar(SO3VF),varargin{:});
+
 
 if SO3VF.SO3F.antipodal, disp('  antipodal: true'); end
 if SO3VF.SO3F.isReal, disp('  isReal: true'); end
