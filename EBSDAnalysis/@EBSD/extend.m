@@ -1,4 +1,4 @@
-function [xmin, xmax, ymin, ymax] = extend(ebsd)
+function [xmin, xmax, ymin, ymax, zmin, zmax] = extend(ebsd)
 % spatial bounds of an EBSD map
 %
 % Syntax
@@ -15,9 +15,12 @@ function [xmin, xmax, ymin, ymax] = extend(ebsd)
 %  ext - bounds combined in one vector [xmin xmax ymin ymax]
 %
 
-xmin = nanmin(ebsd.prop.x(:));
-xmax = nanmax(ebsd.prop.x(:));
-ymin = nanmin(ebsd.prop.y(:));
-ymax = nanmax(ebsd.prop.y(:));
+xmin = nanmin(ebsd.pos.x(:));
+xmax = nanmax(ebsd.pos.x(:));
+ymin = nanmin(ebsd.pos.y(:));
+ymax = nanmax(ebsd.pos.y(:));
+zmin = nanmin(ebsd.pos.z(:));
+zmax = nanmax(ebsd.pos.z(:));
 
-if nargout <= 1, xmin = [xmin, xmax, ymin, ymax]; end
+
+if nargout <= 1, xmin = [xmin, xmax, ymin, ymax, zmin, zmax]; end

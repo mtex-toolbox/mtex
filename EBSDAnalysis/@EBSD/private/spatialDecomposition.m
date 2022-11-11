@@ -143,8 +143,7 @@ elseif isa(method,'double')
   
 end
 
-
-radius = mean(sqrt(sum(unitCell.^2,2)));
+radius = mean(abs(unitCell));
 edgeLength = sqrt(sum(diff(boundingX).^2,2));
 
 % fill each line segment with nodes every 20 points (in average)

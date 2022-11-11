@@ -89,7 +89,8 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
-  plot(ebsd.prop.x,ebsd.prop.y,zUpDown * cS.diameter,ebsd.orientations * cS,varargin{2:end});
+  pos = ebsd.pos + cS.diameter * ebsd.N;
+  plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,varargin{2:end});
   
 else % phase plot
 
@@ -130,10 +131,10 @@ end
 %if isNew, ; end % TODO set axis tight removes all the plot
 try axis(mP.ax,'tight'); end
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
-mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
-mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
-mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
+mP.extend(1) = min(mP.extend(1),min(ebsd.pos.x(:)));
+mP.extend(2) = max(mP.extend(2),max(ebsd.pos.x(:)));
+mP.extend(3) = min(mP.extend(3),min(ebsd.pos.y(:)));
+mP.extend(4) = max(mP.extend(4),max(ebsd.pos.y(:)));
 
 if nargout==0, clear h; end
 
