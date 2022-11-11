@@ -1,5 +1,5 @@
 classdef SO3VectorField
-% a class represeneting a vector field on the sphere
+% a class representing a vector field on the rotation group
 
 properties (Abstract = true)
   SLeft  % symmetry that acts from the left
@@ -33,12 +33,12 @@ end
 
 methods (Abstract = true)
 
-  f = eval(sF, v, varargin)
+  f = eval(F, v, varargin)
 
 end
 
 methods (Sealed = true)
-  h = plot(sF,varargin)
+  h = plot(F,varargin)
     
 end
 
