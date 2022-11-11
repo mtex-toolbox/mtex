@@ -1,8 +1,6 @@
-function display(sVF,varargin)
+function display(SO3VF,varargin)
 % standard output
-
-displayClass(sVF,inputname(1),varargin{:});
-
-if length(sVF) > 1, disp([' size: ' size2str(sVF)]); end
+displayClass(SO3VF,inputname(1),[],'moreInfo',symChar(SO3VF),varargin{:});
+disp(' ')
 
 end

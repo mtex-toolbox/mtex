@@ -31,6 +31,13 @@ methods
   
 end
 
+methods (Hidden = true)
+  function str = symChar(SO3VF)
+    %str = [char(SO3VF.CS,'compact') ' ' char([55358 56342]) ' ' char(SO3VF.SS,'compact')];
+    str = [char(SO3VF.CS,'compact') ' ' char(8594) ' ' char(SO3VF.SS,'compact')];
+  end
+end
+
 methods (Abstract = true)
 
   f = eval(F, v, varargin)
