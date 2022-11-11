@@ -1,35 +1,35 @@
-function sVF = quadrature(f, varargin)
+function SO3VF = quadrature(f, varargin)
 %
 % Syntax
-%   sVF = S2VectorField.quadrature(v, value)
-%   sVF = S2VectorField.quadrature(f)
-%   sVF = S2VectorField.quadrature(f, 'bandwidth', bw)
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value)
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(f)
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(f, 'bandwidth', bw)
 %
 % Input
 %   value - @vector3d
-%   v - @vector3d
-%   f - function handle in @vector3d
+%   rot - @rotation
+%   f - function handle in @SO3VectorField
 %
 % Output
-%   sVF - @S2VectorFieldHarmonic
+%   SO3VF - @SO3VectorFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%   bw - degree of the Wigner-D functions (default: 128)
 %
 
-if isa(f,'vector3d')
+if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
   y = y.xyz;
-  sF = S2FunHarmonic.quadrature(v, y, varargin{:});
+  SO3F = SO3FunHarmonic.quadrature(v, y, varargin{:});
 else
-  sF = S2FunHarmonic.quadrature(@(v) g(v), varargin{:});
+  SO3F = SO3FunHarmonic.quadrature(@(v) g(v), varargin{:});
 end
 
-sVF = S2VectorFieldHarmonic(sF);
+SO3VF = SO3VectorFieldHarmonic(SO3F);
 
 function g = g(v)
-g = f(v);
+g = f.eval(v);
 g = g.xyz;
 end
 
