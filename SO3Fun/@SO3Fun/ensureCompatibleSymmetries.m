@@ -66,7 +66,11 @@ end
 
 % error message
 if em
-  error('Calculations with @SO3Fun''s are not supported if the symmetries are not compatible.')
+%   if check_option(varargin,'SO3VectorField')
+%     error('Calculations with @SO3VectorField''s are not supported if the symmetries are not compatible.')
+%   else
+    error('Calculations with @SO3Fun''s are not supported if the symmetries are not compatible.')
+%   end
 end
 
 end
