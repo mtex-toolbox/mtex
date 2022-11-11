@@ -40,24 +40,12 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
 
-  % store coordinates as vector3d
-  if isfield(ebsd.prop,'z')
-    V = vector3d(ebsd.prop.x,ebsd.prop.y,ebsd.prop.z);
-  else
-    V = vector3d(ebsd.prop.x,ebsd.prop.y,0);
-  end
-  
   % the center of rotation
   center = get_option(varargin,'center',vector3d(0,0,0));
   if ~isa(center,'vector3d'), center = vector3d(center(1),center(2),0); end
 
-  % rotate vertices
-  V = center + rot * (V - center);
-
-  % store back
-  ebsd.prop.x = V.x(:);
-  ebsd.prop.y = V.y(:);
-  ebsd.prop.z = V.z(:);
+  % rotate positions
+  ebsd.pos = center + rot * (ebsd.pos - center);
 
   % rotate normal direction
   ebsd.N = rot * ebsd.N;

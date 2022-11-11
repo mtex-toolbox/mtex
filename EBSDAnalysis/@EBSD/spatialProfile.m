@@ -51,7 +51,7 @@ if nargin >= 3 && isnumeric(varargin{1})
 end
 
 % work with homogenous coordinates
-xy1 = [ebsd.prop.x,ebsd.prop.y];
+xy1 = [ebsd.pos.x,ebsd.pos.y];
 xy1(:,end+1) = 1;
 
 radius = unitCellDiameter(ebsd.unitCell)/2;

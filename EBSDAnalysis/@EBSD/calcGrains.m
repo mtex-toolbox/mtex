@@ -64,7 +64,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-[V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+[V,F,I_FD] = spatialDecomposition([ebsd.pos.x(:), ebsd.pos.y(:)],ebsd.unitCell,varargin{:});
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -176,12 +176,7 @@ end
     [Dl,Dr] = find(triu(A_D,1));
 
     if check_option(varargin,'maxDist')
-      xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
-        (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
-
-      dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
-      maxDist = get_option(varargin,'maxDist',3*dx);
-      % maxDist = get_option(varargin,'maxDist',inf);
+      maxDist = get_option(varargin,'maxDist',3*ebsd.dPos);
     else
       maxDist = 0;
     end
@@ -191,12 +186,13 @@ end
     for p = 1:numel(ebsd.phaseMap)
   
       % neighboured cells Dl and Dr have the same phase
+      ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+
+      % do not connect points to far away from each other
       if maxDist > 0
-        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
-      else
-        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+        ndx = ndx & norm(ebsd.pos(Dl) - ebsd.pos(Dr)) < maxDist; 
       end
-  
+      
       connect(ndx) = true;
   
       % check, whether they are indexed

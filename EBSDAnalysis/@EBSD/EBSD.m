@@ -52,6 +52,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   properties
     id = []               % unique id's starting with 1    
     rotations = rotation  % rotations without crystal symmetry
+    pos = vector3d        % positions of the EBSD measurements
   end
   
   % general properties
@@ -65,6 +66,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     orientations    % rotation including symmetry
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
+    dPos            % spacing of the positions
   end
   
   properties (Access = protected)
@@ -73,7 +75,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   
   methods
     
-    function ebsd = EBSD(rot,phases,CSList,prop,varargin)
+    function ebsd = EBSD(pos,rot,phases,CSList,prop,varargin)
       
       if nargin == 0, return; end            
       
@@ -81,6 +83,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       if isa(rot,'EBSD')
         ebsd.id = rot.id(:);
         ebsd.rotations = rot.rotations(:);
+        ebsd.pos = rot.pos(:);
         ebsd.phaseId = rot.phaseId(:);
         ebsd.phaseMap = rot.phaseMap;
         ebsd.CSList = rot.CSList;
@@ -94,6 +97,16 @@ classdef EBSD < phaseList & dynProp & dynOption
         return
       end
       
+      % extract spatial coordinates
+      if ~isa(pos,"vector3d")
+        if size(pos,2)==3
+          pos = vector3d(pos(:,1),pos(:,2),pos(:,3));
+        else
+          pos = vector3d(pos(:,1),pos(:,2),0);
+        end
+      end
+      ebsd.pos = pos;
+
       ebsd.rotations = rotation(rot);
       ebsd = ebsd.init(phases,CSList);      
       ebsd.id = (1:numel(phases)).';
@@ -185,6 +198,11 @@ classdef EBSD < phaseList & dynProp & dynOption
             
     end
            
+    function d = get.dPos(ebsd)
+      d = 2 * max(norm(ebsd.unitCell));
+    end
+
+
 %     function dx = get.dx(ebsd)
 %       uc = ebsd.unitCell;
 %       if size(uc,1) == 4
@@ -212,7 +230,34 @@ classdef EBSD < phaseList & dynProp & dynOption
   methods (Static = true)
     
     [ebsd,interface,options] = load(fname,varargin)
-    
+
+    function ebsd = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % transform to class if not yet done
+      if isa(s,'EBSD')
+        ebsd = s; 
+      else
+        ebsd = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
+        ebsd.opt = s.opt;
+        ebsd.scanUnit = s.scanUnit;
+      end
+      
+      % ensure pos is set correctly
+      if isfield(ebsd.prop,'x')
+        ebsd.pos = vector3d(s.prop.x,s.prop.y,0);
+        ebsd.prop = rmfield(ebsd.prop,{'x','y'});
+      end
+            
+      % ensure unitCell is vector3d
+      if ~isa(ebsd.unitCell,'vector3d')
+        ebsd.unitCell = vector3d(ebsd.unitCell(:,1),ebsd.unitCell(:,2),0);
+      end
+
+    end
+
   end
       
 end
