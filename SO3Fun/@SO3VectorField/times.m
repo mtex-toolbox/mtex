@@ -1,12 +1,12 @@
 function SO3VF = times(SO3VF1,SO3VF2)
-% overloads |SO3VF1 .* SO3VF2|
+% overloads |SO3VF1 + SO3VF2|
 %
 % Syntax
-%   SO3VF = SO3VF1 .* SO3VF2
-%   SO3VF = a .* SO3VF2
-%   SO3VF = SO3VF1 .* a
-%   SO3VF = SO3F .* SO3VF1
-%   SO3VF = SO3VF1 .* SO3F
+%   SO3VF = SO3VF1 + SO3VF2
+%   SO3VF = a + SO3VF1
+%   SO3VF = SO3VF1 + a
+%   SO3VF = SO3VF1 + SO3F;
+%   SO3VF = SO3F + SO3VF2;
 %
 % Input
 %  SO3VF1, SO3VF2 - @SO3VectorField
