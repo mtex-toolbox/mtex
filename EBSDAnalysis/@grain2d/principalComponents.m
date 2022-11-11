@@ -1,13 +1,13 @@
-function [omega,a,b]= principalComponents(grains,varargin)
+function [a,b]= principalComponents(grains,varargin)
 % returns the principalcomponents of grain polygon, without Holes
+% in this version omega is no longer supported, use a.rho instead.
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  omega - angle of the ellipse
-%  a     - length largest axis
-%  b     - length smallest axis
+%  a     - length largest axis @vector3d
+%  b     - length smallest axis @vector3d
 %
 % Options
 %  area - scale a,b such that the corresponding ellipse has the same area as the grain (default)
@@ -19,9 +19,10 @@ function [omega,a,b]= principalComponents(grains,varargin)
 
 if dot(grains.N,zvector) ~= 1
 
-  disp("Rotating grains into xy-plane, Consider that the calculated ellipses lay in the xy plane too.")
-  [grains,~] = rotate2Plane(grains);
-  [omega,a,b] = principalComponents(grains, varargin);
+  [grains,rot] = rotate2Plane(grains);
+  [a,b] = principalComponents(grains, varargin);
+  a=rot\a;
+  b=rot\b;
   return
 
 end
@@ -33,7 +34,7 @@ poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput
 V = grains.V(:,1:2);
 
 % centroids
-c = grains.centroid;
+c = [grains.centroid.x, grains.centroid.y];
 
 % loop over all grains
 omega = zeros(size(poly)); a = omega; b = omega;
@@ -66,6 +67,9 @@ end
 
 % scale half axes
 a = a .* scaling; b = b .* scaling;
+
+a=a.*vector3d.byPolar(pi/2,omega);
+b=b.*vector3d.byPolar(pi/2,omega+pi/2);
 
 end
 
