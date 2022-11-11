@@ -1,27 +1,36 @@
-function sVF = plus(sVF1, sVF2)
+function SO3VF = plus(SO3VF1, SO3VF2)
+% overloads |SO3VF1 + SO3VF2|
 %
 % Syntax
-%   sVF = sVF1+sVF2
-%   sVF = a+sVF1
-%   sVF = sVF1+a
+%   SO3VF = SO3VF1 + SO3VF2
+%   SO3VF = a + SO3VF1
+%   SO3VF = SO3VF1 + a
+%   SO3VF = SO3VF1 + SO3F;
+%   SO3VF = SO3F + SO3VF2;
+%
+% Input
+%  SO3VF1, SO3VF2 - @SO3VectorField
+%  a - double
+%  SO3F - @SO3Fun
+%
+% Output
+%  SO3VF - @SO3VectorField
 %
 
-if isa(sVF1, 'vector3d')
-  sVF = sVF2;
-  sVF.x = sVF.x+sVF1.x;
-  sVF.y = sVF.y+sVF1.y;
-  sVF.z = sVF.z+sVF1.z;
-  
-elseif isa(sVF2, 'vector3d')
-  sVF = sVF1;
-  sVF.x = sVF.x+sVF2.x;
-  sVF.y = sVF.y+sVF2.y;
-  sVF.z = sVF.z+sVF2.z;
-
-else
-  sVF = sVF1;
-  sVF.sF = sVF1.sF+sVF2.sF;
-
+if isnumeric(SO3VF1) || isa(SO3VF1,'SO3Fun')
+  SO3VF = SO3VF2;
+  SO3VF.SO3F = SO3VF1 + SO3VF2.SO3F;
+  return
 end
+if isnumeric(SO3VF2) || isa(SO3VF2,'SO3Fun')
+  SO3VF = SO3VF2 + SO3VF1;
+  return
+end
+
+ensureCompatibleSymmetries(SO3VF1,SO3VF2)
+SO3VF1 = SO3VectorFieldHarmonic(SO3VF1);
+SO3VF2 = SO3VectorFieldHarmonic(SO3VF2);
+SO3VF = SO3VF1;
+SO3VF.SO3F = SO3VF1.SO3F+SO3VF2.SO3F;
 
 end
