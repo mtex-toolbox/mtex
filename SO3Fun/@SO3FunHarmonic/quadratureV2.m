@@ -83,6 +83,11 @@ else
 
 end
 
+% check for Inf-values (quadrature fails)
+if any(isinf(values))
+  error('There are poles at some quadrature nodes.')
+end
+
 
 if isempty(nodes)
   SO3F = SO3FunHarmonic(0,SRight,SLeft);
