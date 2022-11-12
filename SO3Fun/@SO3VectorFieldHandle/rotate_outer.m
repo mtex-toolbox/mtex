@@ -1,17 +1,17 @@
-function sF = rotate_outer(sF, rot)
+function SO3VF = rotate_outer(SO3VF, rot)
 % rotate a function by a rotation
 %
 % Syntax
-%   sF = sF.rotate_outer(rot)
+%   SO3F = SO3F.rotate_outer(rot)
 %
 % Input
-%  sF - @S2FunHandle
+%  SO3F - @SO3VectorFieldHandle
 %  rot - @rotation
 %
 % Output 
-%  sF - @S2FunHandle
+%  SO3F - @SO3VectorFieldHandle
 %
 
-sF.fun = @(v) sF.fun(inv(rot)*v);
+SO3VF.fun = @(v) SO3VF.fun(inv(rot)*v);
 
 end
