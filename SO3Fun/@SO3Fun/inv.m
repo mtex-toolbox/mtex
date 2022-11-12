@@ -15,4 +15,7 @@ function SO3F = inv(SO3F)
 SO3F = SO3FunHarmonic(SO3F);
 SO3F = inv(SO3F);
 
+% or alternative use:
+% SO3F = SO3FunHandle(@(r) SO3F.eval(inv(r)),SO3F.SS,SO3F.CS);
+
 end

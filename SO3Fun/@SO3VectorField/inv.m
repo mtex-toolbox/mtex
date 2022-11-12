@@ -15,4 +15,7 @@ function SO3VF = inv(SO3VF)
 SO3VF = SO3VectorFieldHarmonic(SO3VF);
 SO3VF = inv(SO3VF);
 
+% or alternative use:
+% SO3VF = SO3VectorFieldHandle(@(r) SO3VF.eval(inv(r)),SO3VF.SS,SO3VF.CS);
+
 end
