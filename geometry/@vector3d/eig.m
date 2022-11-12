@@ -15,7 +15,7 @@ function [lambda,v] = eig(v,varargin)
 %  v        - eigen vectors
 %
 
-M = [v.x v.y v.z]'*[v.x v.y v.z];
+M = [v.x v.y v.z]' * [v.x v.y v.z];
 [v, lambda] = eig3(M);
 lambda = lambda/length(v);
 

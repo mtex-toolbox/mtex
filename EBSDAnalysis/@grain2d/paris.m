@@ -18,8 +18,8 @@ function p = paris(grains)
 % store this in local variables for speed reasons
 p = zeros(size(grains));
 
-X = grains.V(:,1);
-Y = grains.V(:,2);
+X = grains.V.x;
+Y = grains.V.y;
 
 
 poly = grains.poly;

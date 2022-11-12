@@ -56,7 +56,7 @@ end
 weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
 lambda = get_option(varargin,weight,.5);
 
-V = full(grains.V);
+V = double(grains.V);
 isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
 
 for l=1:iter
@@ -90,4 +90,4 @@ for l=1:iter
   
 end
 
-grains.V = V;
+grains.V = vector3d(V);

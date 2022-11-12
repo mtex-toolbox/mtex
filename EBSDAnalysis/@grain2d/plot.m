@@ -321,8 +321,8 @@ if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
 if check_option(varargin,'region')
   region = get_option(varargin,'region');
-  ind = cellfun(@(p) any(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
-    V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
+  ind = cellfun(@(p) any(V.x(p)>=region(1) & V.x(p)<=region(2) & ...
+    V.y(p)>=region(3) & V.y(p)<=region(4)),poly);
   
   d = d(ind,:);
   poly = poly(ind);
@@ -357,8 +357,8 @@ for p=numel(Parts):-1:1
 
   % reduce face-vertex indices to required
   Faces = [Faces{:}];
-  vert  = sparse(Faces,1,1,size(V,1),1);
-  obj.Vertices = V(vert>0,:);
+  vert  = sparse(Faces,1,1,length(V),1);
+  obj.Vertices = double(V(vert>0));
 
   vert  = cumsum(full(vert)>0);
   Faces = nonzeros(vert(Faces));

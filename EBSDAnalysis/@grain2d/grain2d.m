@@ -75,7 +75,7 @@ classdef grain2d < phaseList & dynProp
       % constructor
       % 
       % Input
-      %  V    - n x 3 list of vertices
+      %  V    - @vector3d
       %  poly - cell array of the polyhedrons
       %  ori  - array of mean orientations
       %  CSList   - cell array of symmetries
@@ -153,8 +153,7 @@ classdef grain2d < phaseList & dynProp
 
       % for pseudo3d data determine a normal direction
       if size(grains.V,2) ~= 2
-        v=(grains.V(:,:)-grains.V(1,:));
-        grains.N = perp(vector3d(v(:,1),v(:,2),v(:,3)));
+        grains.N = perp(grains.V - grains.V(1));
         if sum(grains.area) < 0
           grains.N = -grains.N;
         end

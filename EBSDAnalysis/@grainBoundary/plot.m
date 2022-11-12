@@ -171,7 +171,7 @@ end
 
 function plotSimple(gB,varargin)
 obj.Faces    = gB.F;
-obj.Vertices = gB.V;
+obj.Vertices = double(gB.V);
 obj.parent = mP.ax;
 obj.FaceColor = 'none';
 

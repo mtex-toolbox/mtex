@@ -1,4 +1,4 @@
-function [a,b]= principalComponents(grains,varargin)
+function [a,b] = principalComponents(grains,varargin)
 % returns the principalcomponents of grain polygon, without Holes
 % in this version omega is no longer supported, use a.rho instead.
 %
@@ -17,59 +17,46 @@ function [a,b]= principalComponents(grains,varargin)
 % plotEllipse
 %
 
-if dot(grains.N,zvector) ~= 1
-
-  [grains,rot] = rotate2Plane(grains);
-  [a,b] = principalComponents(grains, varargin);
-  a=rot\a;
-  b=rot\b;
-  return
-
-end
-
 % ignore holes
 poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput',false);
 
-% extract vertices
-V = grains.V(:,1:2);
-
 % centroids
-c = [grains.centroid.x, grains.centroid.y];
+c = grains.centroid;
+V = grains.V;
 
 % loop over all grains
-omega = zeros(size(poly)); a = omega; b = omega;
-for k=1:numel(poly)
+a = vector3d.nan(length(grains),1); a.antipodal = true;
+b = a;
+for k=1:length(grains)
   
   % center polygon in centroid
-  Vg = V(poly{k},:) - repmat(c(k,:),length(poly{k}),1);
+  Vg = V(poly{k}) - c(k);
   
   % compute length of line segments
-  dist = sqrt(sum((Vg(1:end-1,:) - Vg(2:end,:)).^2,2));
+  dist = norm(Vg(1:end-1) - Vg(2:end));
   dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
      
   % weight vertices according to half the length of the adjacent faces
-  Vg = Vg(1:end-1,:) .* [dist,dist] .* sum(Vg(1:end-1,:).^2,2).^(0.25);
+  Vg = Vg(1:end-1) .* [dist,dist] .* sqrt(norm(Vg(1:end-1)));
       
   % compute eigen values and vectors
-  [ew, omega(k)] = eig2(Vg' * Vg);
+  [eVec, eVal] = eig3(Vg * Vg);
     
   % halfaxes are square roots of the eigenvalues
-  b(k) = sqrt(ew(1)); a(k) = sqrt(ew(2));
+  a(k) = sqrt(eVal(3)) * eVec(3);
+  b(k) = sqrt(eVal(2)) * eVec(2);
+    
 end
 
 % compute scaling
 if check_option(varargin,'boundary') % boundary length fit
-  [~,E] = ellipke(sqrt((a.^2 - b.^2)./a.^2));
+  [~,E] = ellipke(sqrt((norm(a).^2 - norm(b).^2)./norm(a).^2));
   scaling = grains.perimeter ./ a ./4 ./ E;
 else % area fit
-  scaling = sqrt(grains.area ./ a ./ b ./pi);
+  scaling = sqrt(grains.area ./ norm(a) ./ norm(b) ./pi);
 end
 
 % scale half axes
 a = a .* scaling; b = b .* scaling;
 
-a=a.*vector3d.byPolar(pi/2,omega);
-b=b.*vector3d.byPolar(pi/2,omega+pi/2);
-
 end
-

@@ -33,7 +33,7 @@ function [grains] = load(filepath)
   grains = grain2d(V,poly,rot,CSList,phaseList);
 
   % check for 3d plane
-  d=zeros(length(grains.V),1);
+  d = zeros(length(grains.V),1);
   for i=1:length(grains.V)
     d(i)=dot(grains.V(i,:),grains.N.xyz);
   end

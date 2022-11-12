@@ -19,7 +19,7 @@ classdef triplePointList < phaseList & dynProp
     grainId = zeros(0,3)      % id's of the neigbouring grains to a face
     boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
     nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
-    allV = zeros(0,2)         % vertices x,y coordinates
+    allV = vector3d           % vertices x,y coordinates
   end
    
   properties (Dependent = true)

@@ -15,19 +15,12 @@ function c = centroid(grains)
 % grain2d/fitEllipse
 %
 
-% extract vertices as vector3d -> grains.V should be vector3d!
-if size(grains.V,2)==2
-  V = vector3d(grains.V(:,1), grains.V(:,2),0);
-else
-  V = vector3d(grains.V(:,1), grains.V(:,2), grains.V(:,3));
-end
-
 % duplicate vertices according to their occurence in the grain2s
-V = V([grains.poly{:}]);
+V = grains.V([grains.poly{:}]);
 
 % compute the relative area of the triangles between the edges an a
 % potential center (here (0,0,0) - but the center does not matter here)
-a = dot(cross(V(1:end-1),V(2:end)), grains.N);
+a = dot(cross(V(1:end-1),V(2:end)), grains.N,'noAntipodal');
 
 % weight the vertices according to the area
 aV = a .* (V(1:end-1)+V(2:end));
