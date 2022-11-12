@@ -16,6 +16,7 @@ function SO3F = dot(SO3VF1, SO3VF2, varargin)
 
 if isa(SO3VF2, 'vector3d')
   SO3F = SO3VF1.SO3F;
+  v = SO3VF2;
   SO3F = reshape(sum( SO3F .* reshape(v.xyz.',[3,size(v)]),1),size(v));
   if SO3VF2.antipodal
     SO3F = abs(SO3F);
