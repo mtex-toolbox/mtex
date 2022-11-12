@@ -8,9 +8,9 @@ function SO3F = norm(SO3VF)
 %  SO3VF - @SO3VectorField 
 %
 % Output
-%  SO3F - @SO3FunHarmonic
+%  SO3F - @SO3Fun
 %
 
-SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF,SS);
+SO3F = SO3FunHandle(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS);
 
 end

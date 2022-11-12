@@ -1,8 +1,7 @@
-function sVF = normalize(sVF)
-%
+function SO3VF = normalize(SO3VF)
 % Gives the normal vector of the tangential plane in v
 %
 
-sVF = sVF ./ norm(sVF);
+SO3VF = SO3VF ./ norm(SO3VF);
 
 end
