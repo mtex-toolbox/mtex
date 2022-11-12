@@ -42,6 +42,7 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
+    plottingConvention = plottingConvention
   end
     
   properties (Dependent = true)

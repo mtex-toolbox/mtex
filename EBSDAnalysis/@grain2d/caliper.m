@@ -4,15 +4,16 @@ function c = caliper(grains,varargin)
 %
 % Syntax
 %
-%   c = caliper(grains,omega)
+%   c = caliper(grains,v)
 %   cV = caliper(grains,'shortest')
 %   cV = caliper(grains,'longest')
 %
 % Input:
 %  grains   - @grain2d
+%  dir      - @vector3d
 %
 % Output:
-%  c     - caliper at angle |omega|
+%  c     - caliper at direction |dir|
 %  cV    - @vector3d, norm(cV) is the length
 %
 % Options:
@@ -24,10 +25,10 @@ V = grains.V;
 
 if nargin > 1 && isnumeric(varargin{1})
 
-  omega = varargin{1}(:).';
-  proj = V * [cos(omega);sin(omega)];
+  dir = varargin{1};
+  proj = dot_outer(grains.V, dir);
   
-  if length(omega)>1
+  if length(dir)>1
     c = cellfun(@(id) max(proj(id,:) - min(proj(id,:)),[],1),grains.poly,'UniformOutput',false);
     c = vertcat(c{:});
   else
@@ -61,10 +62,9 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
   scaling = 10000 ;
-  V = round(scaling * grains.V);
+  V = round(scaling * double(grains.V));
   c = nan(size(grains));
   omega = nan(size(grains));
-
   
   for ig = 1:length(grains)
     

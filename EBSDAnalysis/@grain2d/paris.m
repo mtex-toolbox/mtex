@@ -57,4 +57,3 @@ for id = 1:length(grains)
   p(id) = 200*(perimeterGrain - perimeterHull)./perimeterHull;
   
 end
-

@@ -28,7 +28,7 @@ function [h,mP] = plot(gB,varargin)
 reg = get_option(varargin,'region');
 if ~isempty(reg)
   
-  V = gB.V;
+  V = double(gB.V);
   F = gB.F;
   ind = V(F(:,1),1) > reg(1) & V(F(:,1),1) < reg(2)  & ...
     V(F(:,2),1) > reg(1) & V(F(:,2),1) < reg(2) & ...
@@ -71,7 +71,7 @@ end
 function plotOrdered2(gB,varargin)
 
 % add a nan vertex at the end - patch should not close the faces
-V = [gB.V;nan(1,size(gB.V,2))];
+V = [double(gB.V);nan(1,3)];
 
 % extract the edges
 F = gB.F;
