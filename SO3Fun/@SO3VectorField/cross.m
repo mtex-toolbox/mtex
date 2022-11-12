@@ -11,13 +11,11 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 %   v - @vector3d
 %
 % Output
-%   SO3VF - @SO3VectorFieldHarmonic
+%   SO3VF - @SO3VectorField
 %
 
 if isa(SO3VF2, 'vector3d') && length(SO3VF2)==1
-  xyz = repmat(SO3VF2.xyz,size(SO3VF1.SO3F.fhat,1),1);
-  SO3VF = SO3VF1;
-  SO3VF.SO3F.fhat = cross(SO3VF1.SO3F.fhat,xyz,2);
+  SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2));
   if SO3VF2.antipodal
     SO3VF = abs(SO3VF);
   end
@@ -30,7 +28,6 @@ if isa(SO3VF1, 'vector3d')
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
-f = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)));
-SO3VF = SO3VectorFieldHarmonic(f, varargin{:});
+SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)));
 
 end
