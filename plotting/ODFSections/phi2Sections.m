@@ -86,14 +86,14 @@ classdef phi2Sections < ODFSections
       % try to handle the case that some orientations apear at different sections
       if ~check_option(varargin,'preserveOrder')
       
-        ind = find(Phi <= 1e-5).';
+        ind = find(Phi < 1e-5).';
         if ~isempty(ind)
           secPos = [secPos(~ind).', reshape(repmat(1:length(oS.phi2),1,length(ind)),1,[])];
           newPhi1 = bsxfun(@minus,phi1(ind)+phi2(ind),oS.phi2.');
           S2Pos = [S2Pos(~ind).',reshape(vector3d.byPolar(1e-5,newPhi1),1,[])];
         end
         
-        ind = find(Phi >= pi-1e-5).';
+        ind = find(Phi > pi-1e-5).';
         if ~isempty(ind)
           secPos = [secPos(~ind).', reshape(repmat(1:length(oS.phi2),1,length(ind)),1,[])];
           newPhi1 = bsxfun(@plus,phi1(ind)-phi2(ind), oS.phi2.');
