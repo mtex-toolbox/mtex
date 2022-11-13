@@ -2,8 +2,8 @@ function display(v,varargin)
 % standard output
 
 
-displayClass(v,inputname(1),...
-  'moreInfo',char(v.refSystem,'compact'),varargin{:});
+displayClass(v,inputname(1),varargin{:});%...
+  %'moreInfo',char(v.refSystem,'compact'),varargin{:});
 
 if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 
