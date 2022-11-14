@@ -37,23 +37,13 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
 
-  % store coordinates as vector3d
-  if size(grains.V,2)==2
-    V = vector3d(grains.V(:,1),grains.V(:,2),0);
-  else
-    V = vector3d(grains.V.');
-  end
-
   % the center of rotation
   center = get_option(varargin,'center',vector3d(0,0,0));
   if ~isa(center,'vector3d'), center = vector3d(center(1),center(2),0); end
 
   % rotate vertices
-  V = center + rot * (V - center);
-    
-  % store back
-  grains.V = [V.x(:),V.y(:),V.z(:)];
-
+  grains.V = center + rot .* (grains.V - center);
+  
   % rotate normal direction
   grains.N = rot * grains.N;
 

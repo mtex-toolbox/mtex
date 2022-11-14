@@ -50,8 +50,7 @@ classdef grain2d < phaseList & dynProp
   properties    
     boundary = grainBoundary % boundary of the grains
     innerBoundary = grainBoundary % inner grain boundary
-    N = vector3d.Z % normal direction of the pseudo3d data
-    plotConv = plottingConvention
+    N = vector3d.Z % normal direction of the pseudo3d data    
   end
     
   properties (Dependent = true)
@@ -65,8 +64,9 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Dependent = true, Access = protected)
-    idV % active vertices
-    rot2Plane
+    idV        % active vertices
+    rot2Plane  % rotation to xy plane
+    plottingConvention % plotting convention
   end
   
   methods
@@ -75,7 +75,7 @@ classdef grain2d < phaseList & dynProp
       % constructor
       % 
       % Input
-      %  V    - n x 3 list of vertices
+      %  V    - @vector3d
       %  poly - cell array of the polyhedrons
       %  ori  - array of mean orientations
       %  CSList   - cell array of symmetries
@@ -151,15 +151,13 @@ classdef grain2d < phaseList & dynProp
         
       end
 
-      % for pseudo3d data determine a normal direction
-      if size(grains.V,2) ~= 2
-        v=(grains.V(:,:)-grains.V(1,:));
-        grains.N = perp(vector3d(v(:,1),v(:,2),v(:,3)));
-        if sum(grains.area) < 0
-          grains.N = -grains.N;
-        end
-      end
-      
+      % determine a normal direction such that the area is positive
+      grains.N = perp(grains.V - grains.V(1));
+      grains.N.antipodal = false;
+      if sum(grains.area) < 0, grains.N = -grains.N; end
+
+      % check for 3d plane
+      assert(max(abs(dot(grains.V,grains.N)))<1e-4*max(abs(grains.V)),'grains are not within one plane');
 
     end
         
@@ -168,11 +166,11 @@ classdef grain2d < phaseList & dynProp
     end
     
     function x = get.x(grains)
-      x = grains.boundary.x;
+      x = grains.V.x;
     end
     
     function y = get.y(grains)
-      y = grains.boundary.y;
+      y = grains.V.y;
     end
     
     function grains = set.V(grains,V)
@@ -193,6 +191,10 @@ classdef grain2d < phaseList & dynProp
     
     function rot = get.rot2Plane(grains)
       rot = rotation.map(grains.N,vector3d.Z);
+    end
+
+    function pC = get.plottingConvention(grains)
+      pC = grains.V.plottingConvention;
     end
 
 

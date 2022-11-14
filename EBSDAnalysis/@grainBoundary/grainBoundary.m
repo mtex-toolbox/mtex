@@ -79,6 +79,9 @@ classdef grainBoundary < phaseList & dynProp
       %  phaseMap - 
       
       if nargin == 0, return; end
+
+      % ensure V is vector3d
+      if ~isa(V,'vector3d'), V = vector3d(V(:,1),V(:,2),0); end
       
       % assign properties
       gB.triplePoints = struct('allV',V);

@@ -1,42 +1,37 @@
 function c = centroid(grains)
-% calculates the barycenters of the grain boundary
+% barycenters of the grains
+% 
+% Syntax
+%
+%   c = grains.centroid
+%
+% Input
+%  grains - @grain2d
+%
+% Output
+%  c - @vector3d
+%
+% See also
+% grain2d/fitEllipse
 %
 
-if dot(grains.N,zvector) ~= 1
+% duplicate vertices according to their occurence in the grain2s
+V = grains.V([grains.poly{:}]);
 
-  [grains,rot] = rotate2Plane(grains);
-  c = centroid(grains);
-  c=(rot\c)';
+% compute the relative area of the triangles between the edges an a
+% potential center (here (0,0,0) - but the center does not matter here)
+a = dot(cross(V(1:end-1),V(2:end)), grains.N,'noAntipodal');
 
-  return
+% weight the vertices according to the area
+aV = a .* (V(1:end-1)+V(2:end));
 
-end
-
-% initalize x,y values
-x = zeros(size(grains)); y = x;
-
-faceOrder = [grains.poly{:}];
-
-Vx = grains.V(faceOrder,1);
-Vy = grains.V(faceOrder,2);
-
-dF = (Vx(1:end-1).*Vy(2:end)-Vx(2:end).*Vy(1:end-1));
-cx = (Vx(1:end-1) +Vx(2:end)).*dF;
-cy = (Vy(1:end-1) +Vy(2:end)).*dF;
-
+% average the weighte vertices for each polygon (grain)
 cs = [0; cumsum(cellfun('prodofsize',grains.poly))];
 
-for k=1:numel(x)
+c = vector3d.nan(length(grains),1);
+for k=1:length(c)
   ndx = cs(k)+1:cs(k+1)-1;
-  
-  a = sum(dF(ndx));
-  x(k) = sum(cx(ndx)) / 3 / a;
-  y(k) = sum(cy(ndx)) / 3 / a;
-end
-
-c=vector3d(x,y,grains.V(1,3));
-%compensate that grains are only turned parallel to xy plane, but possebly are situated over or under
-
+  c(k)  = sum(aV(ndx)) / 3 / sum(a(ndx));
 end
 
 % some test code
@@ -44,5 +39,5 @@ end
 % plot(ebsd)
 % grains = calcGrains(ebsd)
 % plot(grains(1806))
-% [x,y] = centroid(grains(1806));
-% hold on, plot(x,y,'o','color','b'); hold off
+% c = centroid(grains(1806));
+% hold on, plot(c.x,c.y,c.z,'o','color','b'); hold off

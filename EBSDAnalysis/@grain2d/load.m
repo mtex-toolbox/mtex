@@ -32,15 +32,6 @@ function [grains] = load(filepath)
 
   grains = grain2d(V,poly,rot,CSList,phaseList);
 
-  % check for 3d plane
-  d=zeros(length(grains.V),1);
-  for i=1:length(grains.V)
-    d(i)=dot(grains.V(i,:),grains.N.xyz);
-  end
-  if size(unique(round(d,10)))~=1
-    error 'grains are not within one plane'
-  end
-  
   % check for clockwise poly's
   isNeg = (grains.area<0);
   grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);

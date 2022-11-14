@@ -8,21 +8,11 @@ function A = area(grains,varargin)
 %  A  - list of areas (in measurement units)
 %
 
-poly = grains.poly;
-V = grains.V;
-A = zeros(length(poly),1);
+% signed Area
+A = zeros(length(grains),1);
+for i=1:length(grains)
 
-if (size(V,2)==2)        % plane in 2d
-  for ig = 1:length(poly)
-    A(ig) = polySgnArea(V(poly{ig},1),V(poly{ig},2));
-  end
-elseif (size(V,2)==3)    % plane in 3d 
-  nV=grains.N.xyz;
-  % calculate signed Area
-  for i=1:length(poly)
-    Ptlist=V(poly{i},:);
-    a=sum(cross(Ptlist(2:end,:),Ptlist(1:end-1,:)));
-    A(i)=dot(nV,a)/2;
-    %A(i)=norm(a)/2;        % unsigned area
-  end
+  V = grains.V(grains.poly{i});
+  A(i) = dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
+
 end

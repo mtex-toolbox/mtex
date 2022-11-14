@@ -42,6 +42,7 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
+    plottingConvention = plottingConvention
   end
     
   properties (Dependent = true)
@@ -80,12 +81,10 @@ classdef vector3d < dynOption
           
         elseif isa(varargin{1},'double')
           xyz = varargin{1};
-          if all(size(xyz) == [1,3])
-            xyz = xyz.';
-          end
-          v.x = xyz(1,:);
-          v.y = xyz(2,:);
-          v.z = xyz(3,:);
+          if size(xyz,2) ~= 3, xyz = xyz.'; end
+          v.x = xyz(:,1);
+          v.y = xyz(:,2);
+          v.z = xyz(:,3);
         else
           error('wrong type of argument');
         end       

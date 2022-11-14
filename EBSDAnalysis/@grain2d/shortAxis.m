@@ -1,4 +1,4 @@
-function lA = shortAxis(grains,varargin)
+function sA = shortAxis(grains,varargin)
 % short axis of a grain 
 %
 % the long axis is the direction of the smallest
@@ -16,6 +16,4 @@ function lA = shortAxis(grains,varargin)
 % See also
 % grain2d/principalComponents
 
-omega = principalComponents(grains);
-
-lA = vector3d.byPolar(pi/2,omega+pi/2,'antipodal');
+[~,sA] = principalComponents(grains);

@@ -1,4 +1,4 @@
-function plotEllipse(cxy,a,b,varargin)
+function plotEllipse(c,a,b,varargin)
 % plot multiple ellipses
 %
 % Syntax
@@ -7,8 +7,8 @@ function plotEllipse(cxy,a,b,varargin)
 %   plotEllipse(grains.centroid,a,b,'lineColor','r')
 %
 % Input
-%  cxy - center of the ellipse @vector3d
-%  a,b - length of the half axes @vector3d
+%  c - center of the ellipse @vector3d
+%  a,b - half axes of the ellipse @vector3d
 %
 % Options
 %  lineColor - colorspec
@@ -20,8 +20,8 @@ function plotEllipse(cxy,a,b,varargin)
 % angle discretisation
 phi = [linspace(0,2*pi,100),nan]; 
 
-v=a(:)*cos(phi)+b(:)*sin(phi)+cxy(:);
-v=v';
+% ellipse discretisation
+v = (a(:) * cos(phi) + b(:)*sin(phi) + c(:)).';
 
 % plot
 c = get_option(varargin,'lineColor','k');

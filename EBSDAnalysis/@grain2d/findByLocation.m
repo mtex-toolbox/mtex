@@ -23,7 +23,7 @@ poly = grains.poly;
 % restrict vertices to available grains
 iV = unique([poly{:}]);
 
-V = grains.V;
+V = double(grains.V);
 if size(V,2) == 3
   mat = grains.rot2Plane.matrix;
   V = (mat * V.').'; V = V(:,1:2);
