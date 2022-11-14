@@ -1,4 +1,4 @@
-function [lambda,v] = eig(v,varargin)
+function [lambda,ev] = eig(v,varargin)
 % eigenvalues and eigenvectors for a list of @vector3d
 %
 % Syntax
@@ -15,10 +15,12 @@ function [lambda,v] = eig(v,varargin)
 %  v        - eigen vectors
 %
 
-M = [v.x v.y v.z]' * [v.x v.y v.z];
-[v, lambda] = eig3(M);
-lambda = lambda/length(v);
+xyz = v.xyz;
+[ev, lambda] = eig3(xyz.' * xyz);
+ev.refSystem = v.refSystem;
+
+%lambda = lambda/length(v);
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same
-[lambda,v] = deal(v,lambda);
+[lambda,ev] = deal(ev,lambda);

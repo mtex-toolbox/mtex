@@ -1,7 +1,7 @@
 function display(ebsd,varargin)
 % standard output
 
-displayClass(ebsd,inputname(1));
+displayClass(ebsd,inputname(1),'moreInfo',char(ebsd.pos.refSystem));
 
 % empty ebsd set 
 if isempty(ebsd)
