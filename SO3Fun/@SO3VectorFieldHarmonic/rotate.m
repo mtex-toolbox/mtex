@@ -9,9 +9,10 @@ function SO3VF = rotate(SO3VF, rot)
 %  rot - @rotation
 %
 % Output
-%   SO3VF - @SO3VectorFieldHarmonic
+%  SO3VF - @SO3VectorFieldHarmonic
 %
 
 SO3VF.SO3F = rotate(SO3VF.SO3F, rot);
+
 
 end
