@@ -1,23 +1,24 @@
-function sVF = approximation(v, y, varargin)
+function SO3VF = approximation(nodes, values, varargin)
 %
 % Syntax
-%   sVF = S2VectorField.quadrature(v, value)
-%   sVF = S2VectorField.quadrature(v, value, 'bandwidth', bw)
+%   SO3VF = SO3VectorFieldHarmonic.approximation(nodes, values)
+%   SO3VF = SO3VectorFieldHarmonic.approximation(nodes, values, 'bandwidth', bw)
 %
 % Input
-%   value - @vector3d
-%   v - @vector3d
+%   nodes - @rotation
+%   values - @vector3d
 %
 % Output
-%   sVF - @S2VectorFieldHarmonic
+%   SO3VF - @SO3VectorFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%   bandwidth - maximal degree of the Wigner-D functions (default: 128)
 %
 
-y = y.xyz;
-sF = S2FunHarmonic.quadrature(v, y, varargin{:});
+% TODO: This method uses the very expensive approximation method
 
-sVF = S2VectorFieldHarmonic(sF);
+SO3F = SO3FunHarmonic.approximation(nodes(:),values.xyz,varargin{:});
+
+SO3VF = SO3VectorFieldHarmonic(SO3F);
 
 end
