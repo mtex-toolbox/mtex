@@ -1,4 +1,4 @@
-function g = grad(SO3F,ori,varargin)
+function g = grad(SO3F,varargin)
 % evaluate an odf at orientation g
 %
 % Syntax
@@ -17,10 +17,12 @@ function g = grad(SO3F,ori,varargin)
 % $$s(g1_i) = sum_j c_j DRK(<g h_j,r_j>) g h_j x r_j $$
 
 % fallback to generic method
-if check_option(varargin,'check')
-  g = grad@SO3Fun(SO3F,ori,varargin{:});
+if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'rotation')
+  g = grad@SO3Fun(SO3F,varargin{:});
   return
 end
+
+ori = varargin{1};
 
 % symmetrise - only crystal symmetry
 [h,l] = symmetrise(SO3F.h.normalize,'unique');

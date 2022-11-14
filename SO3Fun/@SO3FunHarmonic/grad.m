@@ -1,4 +1,4 @@
-function g = grad(SO3F,ori,varargin)
+function g = grad(SO3F,varargin)
 % gradient at orientation g
 %
 % Syntax
@@ -18,7 +18,10 @@ if check_option(varargin,'check')
   return
 end
 
-if isempty(ori), g = vector3d; return; end
+if nargin>1 && isa(varargin{1},'rotation') && isempty(varargin{1})
+  g = vector3d; 
+  return
+end
 
 % if bandwidth is zero there is nothing to do
 if SO3F.bandwidth == 0, g = vector3d.zeros(size(ori)); return; end
@@ -52,10 +55,14 @@ for n=0:SO3F.bandwidth
 
 end
 
-G = SO3FunHarmonic(fhat);
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat) ,SO3F.CS,SO3F.SS );
 
-g = vector3d(G.eval(ori).').';
+if nargin > 1 && isa(varargin{1},'rotation')
+  ori = varargin{1};
+  g = vector3d(g.eval(ori).').';
+end
 
+end
 
 
 

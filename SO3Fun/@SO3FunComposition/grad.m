@@ -1,4 +1,4 @@
-function g = grad(SO3F,ori,varargin)
+function g = grad(SO3F,varargin)
 % gradient of odf at orientation ori
 %
 % Syntax
@@ -18,16 +18,28 @@ function g = grad(SO3F,ori,varargin)
 % See also
 % ODF/eval orientation/exp
 
-if isa(ori,'orientation')
-  ensureCompatibleSymmetries(SO3F,ori)
+if nargin>1 && isa(varargin{1},'rotation')
+  
+  ori = varargin{1};
+  if isa(ori,'orientation')
+    ensureCompatibleSymmetries(SO3F,ori)
+  end
+  
+  g = vector3d.zeros(size(ori));
+  if isempty(ori), return; end
+
+  % compute the gradient for each component seperately
+  for i = 1:numel(SO3F.components)
+    g = g + SO3F.components{i}.grad(varargin{:});
+  end
+  return
+
 end
 
-% evaluate components
-g = vector3d.zeros(size(ori));
-
-if isempty(ori), return; end
-
 % compute the gradient for each component seperately
+g = 0;
 for i = 1:numel(SO3F.components)
-  g = g + SO3F.components{i}.grad(ori,varargin{:});
+  g = g + SO3F.components{i}.grad(varargin{:});
+end
+
 end
