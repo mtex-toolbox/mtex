@@ -3,7 +3,6 @@ classdef referenceSystem < handle
   properties
     name = "XYZ" % name of the reference system
     sP           % screenProjection
-    sym = specimenSymmetry('1')  % symmetry of the reference system
   end
 
   methods
