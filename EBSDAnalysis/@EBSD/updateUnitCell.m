@@ -7,6 +7,7 @@ if nargin == 1 || isempty(uc)
 end
 
 if ~isa(uc,'vector3d'), uc = vector3d(uc(:,1),uc(:,2),0); end
+uc.refSystem = ebsd.pos.refSystem;
 
 ebsd.unitCell = uc;
 
