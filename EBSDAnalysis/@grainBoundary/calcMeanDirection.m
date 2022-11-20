@@ -27,8 +27,8 @@ A_V = I_VF * I_VF.';
 [u,v] = find(A_V^n);
 
 % X, Y values of the neighbouring vertices
-X = sparse(u,v,gB.V(v,1),size(A_V,1),size(A_V,1));
-Y = sparse(u,v,gB.V(v,2),size(A_V,1),size(A_V,1));
+X = sparse(u,v,gB.V.x(v),size(A_V,1),size(A_V,1));
+Y = sparse(u,v,gB.V.y(v),size(A_V,1),size(A_V,1));
 
 % take the mean
 X = full(sum(X,2)) ./ sum(A_V ~= 0,2);

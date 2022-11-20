@@ -266,6 +266,27 @@ classdef grain2d < phaseList & dynProp
     
     [grain2d] = load(fname)
     
+    function grains = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % transform to class if not yet done
+      if isa(s,'grain2d')
+        grains = s; 
+      else
+        grains = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
+        grains.opt = s.opt;
+        grains.scanUnit = s.scanUnit;
+      end
+      
+      % ensure V is vector3d
+      if isa(grains.V,'double')
+        grains.V = vector3d(grains.V(:,1),grains.V(:,2),0);
+      end
+
+    end
+
   end
 
 end

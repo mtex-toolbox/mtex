@@ -40,12 +40,15 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
 
+  % remove ana grid
+  ebsd = EBSD(ebsd);
+
   % the center of rotation
   center = get_option(varargin,'center',vector3d(0,0,0));
   if ~isa(center,'vector3d'), center = vector3d(center(1),center(2),0); end
 
   % rotate positions
-  ebsd.pos = center + rot * (ebsd.pos - center);
+  ebsd.pos = reshape(center + rot * (ebsd.pos - center),[],1);
 
   % rotate normal direction
   ebsd.N = rot * ebsd.N;

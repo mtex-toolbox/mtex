@@ -63,10 +63,14 @@ classdef EBSD < phaseList & dynProp & dynOption
   end
    
   properties (Dependent = true)
-    orientations    % rotation including symmetry
-    grainId         % id of the grain to which the EBSD measurement belongs to
-    mis2mean        % misorientation to the mean orientation of the corresponding grain
-    dPos            % spacing of the positions
+    xyz           %
+    x             %
+    y             %
+    z             %  
+    orientations  % rotation including symmetry
+    grainId       % id of the grain to which the EBSD measurement belongs to
+    mis2mean      % misorientation to the mean orientation of the corresponding grain   
+    dPos          % spacing of the positions
   end
   
   properties (Access = protected)
@@ -80,29 +84,29 @@ classdef EBSD < phaseList & dynProp & dynOption
       if nargin == 0, return; end            
       
       % copy constructor
-      if isa(rot,'EBSD')
-        ebsd.id = rot.id(:);
-        ebsd.rotations = rot.rotations(:);
-        ebsd.pos = rot.pos(:);
-        ebsd.phaseId = rot.phaseId(:);
-        ebsd.phaseMap = rot.phaseMap;
-        ebsd.CSList = rot.CSList;
-        ebsd.unitCell = rot.unitCell;
-        ebsd.scanUnit = rot.scanUnit;
-        ebsd.A_D = rot.A_D;
-        for fn = fieldnames(rot.prop)'
-          ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
+      if isa(pos,'EBSD')
+        ebsd.id = pos.id(:);
+        ebsd.rotations = pos.rotations(:);
+        ebsd.pos = pos.pos(:);
+        ebsd.phaseId = pos.phaseId(:);
+        ebsd.phaseMap = pos.phaseMap;
+        ebsd.CSList = pos.CSList;
+        ebsd.unitCell = pos.unitCell;
+        ebsd.scanUnit = pos.scanUnit;
+        ebsd.A_D = pos.A_D;
+        for fn = fieldnames(pos.prop)'
+          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
         end
-        ebsd.opt = rot.opt;
+        ebsd.opt = pos.opt;
         return
       end
       
       % extract spatial coordinates
       if ~isa(pos,"vector3d")
         if size(pos,2)==3
-          pos = vector3d(pos(:,1),pos(:,2),pos(:,3));
+          pos = vector3d.byXYZ(pos);
         else
-          pos = vector3d(pos(:,1),pos(:,2),0);
+          pos = vector3d.byXYZ(pos(:,1),pos(:,2),0);
         end
       end
       ebsd.pos = pos;
@@ -113,10 +117,15 @@ classdef EBSD < phaseList & dynProp & dynOption
             
       % extract additional properties
       ebsd.prop = prop;
-                  
+
+      % remove nan positions
+      ebsd = ebsd.subSet(~isnan(ebsd.pos));
+
       % get unit cell
       ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'));
             
+      ebsd.N = perp(ebsd.unitCell);
+
     end
     
     % --------------------------------------------------------------
@@ -125,6 +134,39 @@ classdef EBSD < phaseList & dynProp & dynOption
       [varargout{1:nargout}] = size(ebsd.id,varargin{:});
     end
     
+
+    function x = get.x(ebsd)
+      x = ebsd.pos.x;
+    end
+
+    function ebsd = set.x(ebsd,x)
+      ebsd.pos.x = x;
+    end
+
+    function y = get.y(ebsd)
+      y = ebsd.pos.y;
+    end
+
+    function ebsd = set.y(ebsd,y)
+      ebsd.pos.y = y;
+    end
+
+    function z = get.z(ebsd)
+      z = ebsd.pos.z;
+    end
+
+    function ebsd = set.z(ebsd,z)
+      ebsd.pos.z = z;
+    end
+
+    function xyz = get.xyz(ebsd)
+      xyz = ebsd.pos.xyz;
+    end
+
+    function ebsd = set.xyz(ebsd,xyz)
+      ebsd.pos = vector3d.byXYZ(xyz);
+    end
+
     function ori = get.mis2mean(ebsd)      
       ori = ebsd.prop.mis2mean;
       try
@@ -199,7 +241,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
            
     function d = get.dPos(ebsd)
-      d = 2 * max(norm(ebsd.unitCell));
+      d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
     end
 
 

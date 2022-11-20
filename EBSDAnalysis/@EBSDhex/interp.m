@@ -16,6 +16,7 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 
 % ensure column vectors
 xNew = xNew(:); yNew = yNew(:);
+pos = vector3d(xNew,yNew,0);
 
 % find nearest neighbour first
 idNearest = ebsd.xy2ind(xNew,yNew);
@@ -35,9 +36,8 @@ phaseId = ones(size(xNew));
 phaseId(isIndexed) = ebsd.phaseId(idNearest);
 
 % copy properties
-prop = struct('x',xNew,'y',yNew);
+prop = struct();
 for fn = fieldnames(ebsd.prop).'
-  if any(strcmp(char(fn),{'x','y','z'})), continue;end
 
   if isnumeric(ebsd.prop.(char(fn))) || islogical(ebsd.prop.(char(fn)))
     prop.(char(fn)) = nan(size(xNew));
@@ -47,7 +47,7 @@ for fn = fieldnames(ebsd.prop).'
   prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
 end
 
-ebsdNew = EBSD(rot,phaseId,ebsd.CSList,prop);
+ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop);
 ebsdNew.phaseMap = ebsd.phaseMap;
 ebsdNew.phaseId = phaseId(:);
 ebsdNew.CSList = ebsd.CSList;

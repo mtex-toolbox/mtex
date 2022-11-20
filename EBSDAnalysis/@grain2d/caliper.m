@@ -62,7 +62,7 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
   scaling = 10000 ;
-  V = round(scaling * double(grains.V));
+  V = round(scaling * grains.V.xyz);
   c = nan(size(grains));
   omega = nan(size(grains));
   

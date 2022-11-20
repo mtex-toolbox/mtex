@@ -9,8 +9,8 @@ if check_option(varargin,'region')
   
   ext = get_option(varargin,'region');
     
-  ind = ebsd.prop.x > ext(1) & ebsd.prop.x < ext(2) & ...
-    ebsd.prop.y > ext(3) & ebsd.prop.y < ext(4);
+  ind = ebsd.pos.x > ext(1) & ebsd.pos.x < ext(2) & ...
+    ebsd.pos.y > ext(3) & ebsd.pos.y < ext(4);
      
   d = submatrix(d,ind);  
 else

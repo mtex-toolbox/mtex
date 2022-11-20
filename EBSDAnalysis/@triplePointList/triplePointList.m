@@ -78,11 +78,11 @@ classdef triplePointList < phaseList & dynProp
     end
     
     function x = get.x(tP)
-      x = tP.V(:,1);
+      x = tP.V.x;
     end
     
     function y = get.y(tP)
-      y = tP.V(:,2);
+      y = tP.V.y;
     end
     
     function omega = get.angles(tP)
@@ -91,11 +91,10 @@ classdef triplePointList < phaseList & dynProp
       iV = tP.nextVertexId;
 
       % compute the angles between them
-      dx = reshape(tP.allV(iV,1),[],3) - repmat(tP.V(:,1),1,3);
-      dy = reshape(tP.allV(iV,2),[],3) - repmat(tP.V(:,2),1,3);
+      d = tP.allV(iV) - tP.V;
 
-      omega = sort(atan2(dy,dx),2);
-      omega = mod(diff(omega(:,[1:3,1]),1,2),2*pi);
+      omega = angle(d(:,1),d(:,2:3));
+      omega(:,3) = 2*pi - nansum(omega,2);
       
     end
     

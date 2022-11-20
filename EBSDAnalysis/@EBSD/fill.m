@@ -24,10 +24,10 @@ else
   opt = 'none';
 end
 
-F = scatteredInterpolant([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
+F = scatteredInterpolant([ebsd.pos.x(~nanId),ebsd.pos.y(~nanId)],...
   find(~nanId),'nearest',opt); 
 
-newId = F(ebsd.prop.x(nanId),ebsd.prop.y(nanId));
+newId = F(ebsd.pos.x(nanId),ebsd.pos.y(nanId));
 
 nanId(nanId) = ~isnan(newId);
 newId(isnan(newId)) = [];

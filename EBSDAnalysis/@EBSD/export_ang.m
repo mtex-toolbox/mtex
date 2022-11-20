@@ -117,7 +117,7 @@ elseif ebsdGrid.pos.x(1,1)> ebsdGrid.pos.x(2,1)
   dim.x = -1;
 end
 %Get data order y
-if ebsdGrid.pos.y(1,1)< ebsdGrid.prop.y(1,2)
+if ebsdGrid.pos.y(1,1)< ebsdGrid.pos.y(1,2)
   dim.y = 2;
 elseif ebsdGrid.pos.y(1,1)> ebsdGrid.pos.y(1,2)
   dim.y = -2;

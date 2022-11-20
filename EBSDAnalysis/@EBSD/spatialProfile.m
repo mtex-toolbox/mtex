@@ -54,7 +54,7 @@ end
 xy1 = [ebsd.pos.x,ebsd.pos.y];
 xy1(:,end+1) = 1;
 
-radius = unitCellDiameter(ebsd.unitCell)/2;
+radius = ebsd.dPos/2;
 
 distList = 0;
 idList = [];
@@ -87,7 +87,7 @@ for k=1:size(lineXY,1)-1
   dist = x_DX(id,1);
   
   % if we start with B, reverse the distance
-  if double(s<0), dist = max(dist)-dist; end
+  if s<0, dist = max(dist)-dist; end
   
   [dist, ndx] = sort(dist);
   idList = [idList; id(ndx)]; %#ok<AGROW>
@@ -98,14 +98,4 @@ end
 distList(1) = [];
 ebsd = ebsd.subSet(idList);
 
-
-% ----------------------------------------------------------------
-function d = unitCellDiameter(unitCell)
-
-
-diffVg = bsxfun(@minus,...
-  reshape(unitCell,[size(unitCell,1),1,size(unitCell,2)]),...
-  reshape(unitCell,[1,size(unitCell)]));
-diffVg = sum(diffVg.^2,3);
-d  = sqrt(max(diffVg(:)));
 

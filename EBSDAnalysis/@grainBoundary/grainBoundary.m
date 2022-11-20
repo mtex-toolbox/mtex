@@ -152,9 +152,10 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function dir = get.direction(gB)      
-      v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
-      v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
-      dir = normalize(v1-v2);
+      
+      dir = normalize(gB.V(gB.F(:,1)) - gB.V(gB.F(:,2)));
+      dir.antipodal = true;
+      
     end
     
     

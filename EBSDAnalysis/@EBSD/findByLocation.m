@@ -20,10 +20,9 @@ function map = findByLocation( ebsd, xy, y )
 
 if nargin==3, xy = [xy(:),y(:)]; end
 
-x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
+x_D = [ebsd.pos.x(:),ebsd.pos.y(:)];
 
-
-delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
+delta = mean(norm(ebsd.unitCell));
 
 x_Dm = x_D-delta;  x_Dp = x_D+delta;
 

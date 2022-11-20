@@ -29,7 +29,7 @@ function kam = KAM(ebsd,varargin)
 % grain2d.GOS
 
 % compute adjacent measurements
-[~,~,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,'unitCell');
+[~,~,I_FD] = spatialDecomposition([ebsd.pos.x(:), ebsd.pos.y(:)],ebsd.unitCell,'unitCell');
 A_D = I_FD.' * I_FD;
 
 n = get_option(varargin,'order',1);

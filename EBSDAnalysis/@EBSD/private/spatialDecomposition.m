@@ -176,9 +176,8 @@ edgeAngle = atan2(edgeDirection(:,2),edgeDirection(:,1));
 edgeLength = sqrt(sum(edgeDirection.^2,2));
 
 % shift the starting vertex
-bX = squeeze(double(axis2quat(zvector,edgeAngle)* ...
-  vector3d([0; radius; 1])));
-offsetX = bX - boundingX(1:end-1,:);
+bX = axis2quat(zvector,edgeAngle) * vector3d(0, radius, 1);
+offsetX = bX.xyz - boundingX(1:end-1,:);
 
 for k=1:size(boundingX,1)-1
   
