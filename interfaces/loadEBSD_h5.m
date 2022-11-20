@@ -53,8 +53,13 @@ try
 
       name = strrep(name,'X_Position','x');
       name = strrep(name,'Y_Position','y');
+      name = strrep(name,'Z_Position','z');
+      name = strrep(name,'X Position','x');
+      name = strrep(name,'Y Position','y');
+      name = strrep(name,'Z Position','z');
       name = strrep(name,'X_SAMPLE','x');
       name = strrep(name,'Y_SAMPLE','y');
+      name = strrep(name,'Z_SAMPLE','z');
 
       name = regexprep(name,'phi','Phi','ignorecase');
       name = regexprep(name,'phi1','phi1','ignorecase');
@@ -79,18 +84,24 @@ try
     else    
       isDegree = degree;
     end
-      
+    
+    if isfield(props,'z')
+      pos = vector3d(props.x,props.y,props.z);
+      props = rmfield(props,'z');
+    else
+      pos = vector3d(props.x,props.y,0);
+    end
     rot = rotation.byEuler(props.phi1*isDegree,props.Phi*isDegree,props.phi2*isDegree);
     phases = props.Phase;
 
-    props = rmfield(props,{'Phi','phi1','phi2','Phase'});
 
-    ebsd = EBSD(rot,phases,CS,props);
+    props = rmfield(props,{'Phi','phi1','phi2','Phase','x','y'});
+
+    ebsd = EBSD(pos,rot,phases,CS,props);
 
     ind = props.x > -11111;
     ebsd = ebsd(ind);
-    ebsd.unitCell = calcUnitCell([ebsd.prop.x,ebsd.prop.y]);
-
+    
     if length(kGroup.Groups) > 1
       header = h5group2struct(fname,kGroup.Groups(2));
     else

@@ -75,13 +75,13 @@ end
 
 loader = loadHelper(d,varargin{:});
 
-q      = loader.getRotations();
+rot = loader.getRotations;
 
 % get weights
 weights = loader.getColumnData({'weights','weight','intensity'});
 
 % if no weights given - set to one
-if isempty(weights), weights = ones(size(q)); end
+if isempty(weights), weights = ones(size(rot)); end
 
 % return varargin as options
 opt = varargin;
@@ -94,11 +94,11 @@ else
 end
 
 if isempty(cs)
-  ori = orientation(q,crystalSymmetry,ss);
+  ori = orientation(rot,crystalSymmetry,ss);
   odf = unimodalODF(ori,'weights',weights);
   return
 else
-  ori = orientation(q,cs,ss,varargin{:});
+  ori = orientation(rot,cs,ss,varargin{:});
 end
 
 method = get_flag(varargin,{'interp','density'},defaultMethod);
