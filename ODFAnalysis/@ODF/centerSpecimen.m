@@ -116,7 +116,7 @@ odf = rotate(odf,rot);
     % objective function - compare original ODF with the ODF rotate along v
     % about 180 degree
     
-    if isnumeric(v), v = vector3d('theta',v(1),'rho',v(2));end
+    if isnumeric(v), v = vector3d.byPolar(v(1),v(2));end
     rot = axis2quat(v,pi);
     
     % y = textureindex(rotate(odf,r) - odf);

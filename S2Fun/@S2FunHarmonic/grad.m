@@ -23,7 +23,7 @@ if nargin > 1
     y(:, 1)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
     y(:, 2)./sin(v.theta).*S2VectorField.theta(v);
 
-  sVF(isnan(sVF)) = vector3d([0 0 0]);
+  sVF(isnan(sVF)) = 0;
 
 else
   sF = [sF.drho; sF.dtheta];
