@@ -227,7 +227,11 @@ classdef vector3d < dynOption
     [v,interface,options] = load(fname,varargin)
 
     function v = byXYZ(d,varargin)
-      v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+      if size(d,2) == 3
+        v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+      else
+        v = vector3d(d(:,1),d(:,2),0,varargin{:});
+      end
     end
 
     function v = X(varargin)
