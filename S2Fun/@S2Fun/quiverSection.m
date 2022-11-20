@@ -58,7 +58,7 @@ for j = 1:length(sF)
   
 end
 optiondraw(h,varargin{:});
-view(mtexFig.gca,squeeze(double(sec)));
+view(mtexFig.gca,sec.xyz);
 set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end

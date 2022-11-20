@@ -17,7 +17,7 @@
 
 function S=colormap222(v)
 
-pts = reshape(double(v),[],3);
+pts = v.xyz;
 
 k1 = sqrt(3)*max(pts,[],2)./(sum(pts,2) + 1*(sum(pts,2) == 0));
 pts = [k1.*pts(:,1) k1.*pts(:,2) k1.*pts(:,3)];

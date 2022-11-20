@@ -10,5 +10,5 @@ if nargout >= 2
   y = v.y;
   z = v.z;
 else
-  x = [v.x(:),v.y(:),v.z(:)];
+  x = [v.x(:),v.y(:),v.z(:)].';
 end

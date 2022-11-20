@@ -49,7 +49,6 @@ classdef vector3d < dynOption
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
-    xyz
   end
   
   methods
@@ -81,10 +80,10 @@ classdef vector3d < dynOption
           
         elseif isa(varargin{1},'double')
           xyz = varargin{1};
-          if size(xyz,2) ~= 3, xyz = xyz.'; end
-          v.x = xyz(:,1);
-          v.y = xyz(:,2);
-          v.z = xyz(:,3);
+          if size(xyz,1) ~= 3, xyz = xyz.'; end
+          v.x = xyz(1,:);
+          v.y = xyz(2,:);
+          v.z = xyz(3,:);
         else
           error('wrong type of argument');
         end       
@@ -171,10 +170,12 @@ classdef vector3d < dynOption
       end
     end
     
-    function xyz = get.xyz(v)
-      
-      xyz = [v.x(:),v.y(:),v.z(:)];
-      
+    function xyz = xyz(v)
+      xyz = [v.x(:),v.y(:),v.z(:)];      
+    end
+
+    function xy = xy(v)
+      xy = [v.x(:),v.y(:)];      
     end
     
     function res = get.resolution(v)
@@ -224,7 +225,11 @@ classdef vector3d < dynOption
     v = rand(varargin)
     v = byPolar(polarAngle,azimuthAngle,varargin)
     [v,interface,options] = load(fname,varargin)
-    
+
+    function v = byXYZ(d,varargin)
+      v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+    end
+
     function v = X(varargin)
       % the vector (1,0,0)
       %

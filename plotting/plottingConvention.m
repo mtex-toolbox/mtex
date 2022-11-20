@@ -38,17 +38,17 @@ classdef plottingConvention < handle
 
       if nargin == 1, ax = gca; end
 
-      %cT = get(ax,'CameraTarget');
+      cT = get(ax,'CameraTarget');
       
-      %set(ax,"CameraPosition",cT + reshape(double(pC.outOfScreen),1,3),...
-      %  "CameraUpVector",squeeze(double(pC.north)));
+      set(ax,"CameraPosition",cT + 1000*pC.outOfScreen.xyz,...
+        "CameraUpVector",pC.north.xyz);
 
-      set(ax,pC.viewOpt{:});
+      %set(ax,pC.viewOpt{:});
     end
 
     function opt = get.viewOpt(pC)
-      opt = {'CameraPosition',1000*squeeze(double(pC.outOfScreen)),...
-        "CameraUpVector",squeeze(double(pC.north))};
+      opt = {'CameraPosition',1000*pC.outOfScreen.xyz,...
+        "CameraUpVector",pC.north.xyz};
     end
 
 

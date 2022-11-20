@@ -32,11 +32,11 @@ if ~isempty(reg)
   
   ind = tP.x > reg(1) & tP.x < reg(2) &  tP.y > reg(3) & tP.y < reg(4);
 
-  obj.Vertices = double(tP.V(ind));
+  obj.Vertices = tP.V(ind).xyz;
   
 else
   
-  obj.Vertices = double(tP.V);
+  obj.Vertices = tP.V.xyz;
 end
 
 obj.Faces    = 1:size(obj.Vertices,1);

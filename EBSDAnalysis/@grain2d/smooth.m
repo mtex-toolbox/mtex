@@ -56,7 +56,7 @@ end
 weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
 lambda = get_option(varargin,weight,.5);
 
-V = double(grains.V);
+V = grains.V.xyz;
 isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
 
 for l=1:iter
@@ -77,7 +77,7 @@ for l=1:iter
   end
 
   % take the mean over the neigbours
-  Vt = A_V*V;
+  Vt = A_V * V;
   
   m = sum(A_V,2);
   
@@ -90,4 +90,4 @@ for l=1:iter
   
 end
 
-grains.V = vector3d(V);
+grains.V = vector3d.byXYZ(V);

@@ -33,8 +33,7 @@ r = get_option(varargin,'Grid',...
   equispacedS2Grid('resolution',get_option(varargin,'resolution',2*degree),...
   'upper','maxtheta',get_option(varargin,'maxtheta',70*degree)));
 
-v = double(vector3d(r));
-v = reshape(v,[],3);
+v = r.xyz;
 
 P = odf.calcPDF(h,r);
 

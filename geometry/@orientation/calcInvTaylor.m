@@ -44,7 +44,7 @@ R = [R(6,:);-R(3,:);R(2,:)];
 CRSS = ones(length(sS),1);
 
 % the orientation gradient tensor to match
-y = reshape(double(log(mori)),[],3).';
+y = double(log(mori));
 
 % this method applies the dual simplex algorithm
 options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
