@@ -10,7 +10,7 @@ else
 end
 
 sP = getClass(varargin,'plottingConvention');
-if ~isempty(sP)
+if 0 && ~isempty(sP)
   sP.setView(ax);
   return
 end
