@@ -189,9 +189,8 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
             eulerAngles = fscanf(fid,'%f %f %f %f ',[4 inf]);
             rot = rotation(quaternion(eulerAngles));
           case 'rodrigues'
-            vec = fscanf(fid,'%f %f %f %f ',[3 inf]);
-            %rot = rotation.byRodrigues(vec);
-            rot = rotation.byEuler(vec.' .* degree);
+            vec = fscanf(fid,'%f %f %f ',[3 inf]);
+            rot = rotation.byRodrigues(vec);
           otherwise
             error('orientation in wrong format. currently only available for quaternion');
         end
