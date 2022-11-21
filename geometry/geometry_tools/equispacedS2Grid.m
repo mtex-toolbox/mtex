@@ -63,7 +63,7 @@ theta = bounds.VR{1} + theta;
 % define azimuth angles
 identified = check_option(varargin,'antipodal');
 
-rhGrid = repmat(S1Grid([],bounds.FR{3},bounds.FR{4}+pi,'periodic'),...
+rhGrid = repmat(S1Grid([],bounds.FR{3},bounds.FR{4},'periodic'),...
   1,length(theta));
 for j = 1:length(theta)
 
