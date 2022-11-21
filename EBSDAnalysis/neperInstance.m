@@ -1,16 +1,43 @@
 classdef neperInstance < handle
+% class that provides an interface to the crystal simulation software
+% neper (see https://neper.info)
 
-  properties
+properties
 
-    morphology
-    sphericity
-    numGrains = 1000;
-    iterMax = 10000;
-    fileName = "run"
-    
-  end
+  morphology
+  sphericity
+  numGrains = 1000;
+  iterMax = 10000;
+  fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
+  fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
+  wsl                         % contains char 'wsl' for windows systems
+  
+end
 
 methods
+  
+  function neper = neperInstance(varargin)
+    % constructor
+    % Input:
+    %   numGrains (optional)
+
+    neper.morphology = '';
+
+    if nargin>0
+      if isnumeric(varargin{1})
+        neper.numGrains=varargin{1};
+      else
+        error 'argument must be numeric or empty'
+      end
+    end
+
+    if computer=="PCWIN64"
+      neper.wsl='wsl ';
+    else
+      neper.wsl='';
+    end
+
+  end
 
   function simulateGrains(this,ori)
 
@@ -18,41 +45,66 @@ methods
       ori = ori.discreSample(this.numGrains);
     end
     
-    % save ori to file 
-    cprintf(ori.Euler ./ degree,'-fc','ori_in.txt','-q',true);
+    % save ori to file
+    oriFilename='ori_in.txt';
+    fid=fopen(oriFilename,'w');
+    fprintf(fid,'%f %f %f\n',ori.Rodrigues.x,ori.Rodrigues.y,ori.Rodrigues.z);
+    fclose(fid);
 
-    system(['neper -T -n ' num2str(ngrains) ...
-    ' -morpho "diameq:lognormal(1,0.35),1-:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
+    system([this.wsl 'neper -T -n ' num2str(this.numGrains) ...
+    ' -morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
       ' -morphooptistop "itermax=1000" ' ... % decreasing the iterations makes things go a bit faster for testing
-      ' -oricrysym "-1" -ori "file(ori_in.txt)" ' ...
+      ' -oricrysym "-1" '...
+      ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
       ' -statpoly faceeqs ' ... % some statistics on the faces
-      ' -o allgrains ' ...
-      ' -oridescriptor euler-bunge ' ...
+      ' -o ' this.fileName3d ' ' ... % output file name
+      ' -oridescriptor rodrigues ' ... % orientation format in output file
       ' -oriformat plain ' ...
-      ' -format tess,ori' ...
+      ' -format tess,ori' ... % outputfiles
       ' && ' ...
-      'neper -V allgrains.tess']);
+      ...
+      this.wsl 'neper -V ' this.fileName3d '.tess']);
 
   end
 
-  function grains = getSlice(this,n)
+  function grains = getSlice(this,varargin)
     % 
-    % Input
-    %  n - slice normal
+    % Input (optional)
+    %  n - slice normal @vector3d (default:[1,1,1])
+    %  d - point in slice @vector3d
+    %      0 > x,y,z < 1
+    %      or scalar d of a plane(a,b,c,d) (default:1)
     %  
+    
+    % default values
+    n=vector3d(1,1,1);
+    d=1;
+
+    if nargin>1 && isa(varargin{1},'vector3d')
+      n=varargin{1};
+      n=normalize(n);
+    end
+    if nargin>2
+      if isa(varargin{2},"vector3d")
+        d=dot(n,varargin{2});
+      elseif isnumeric(varargin{2})
+        d=varargin{2};
+      end
+    end
 
     % get a slice
-    system(['neper -T -loadtess allgrains.tess ' ...
-      '-transform "slice(1,1,1,1)" ' ... % this is (d,a,b,c) of a plane
-      '-oricrysym "mmm" -ori "file(allgrains.ori)" ' ...
-      '-o 2dslice ' ...
+    system([this.wsl 'neper -T -loadtess ' this.fileName3d '.tess ' ...
+      '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
+      '-oricrysym "mmm" -ori "file(' this.fileName3d '.ori)" ' ...
+      '-o ' this.fileName2d ' ' ...
       '-oriformat geof ' ...
       '-oridescriptor quaternion ' ...
       '-format tess,ori ' ...
       '&& ' ...
-      'neper -V 2dslice.tess']);
+      ...
+      this.wsl 'neper -V ' this.fileName2d '.tess']);
 
-    grains = grain2d.load('2dslice.tess');
+    grains = grain2d.load([this.fileName2d '.tess']);
 
   end
 
@@ -64,11 +116,12 @@ methods (Static = true)
   function test
 
     neper = neperInstance;
-    neper.morphology = '';
     neper.iterMax = 1000;
 
-    neper.simulateGrains
-    neper.getSlice
+    neper.simulateGrains(orientation.rand(neper.numGrains))
+    grains=neper.getSlice();
+
+    plot(grains)
 
   end
 
