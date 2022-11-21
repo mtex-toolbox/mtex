@@ -13,6 +13,7 @@ function S2G = equispacedS2Grid(varargin)
 %  maxRho     - maximum rho angle (default 2*pi)
 %  minTheta   - starting theta angle (default 0)
 %  maxTheta   - maximum theta angle (default pi)
+%  center     - default z-vector
 %
 % Flags
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
@@ -62,7 +63,7 @@ theta = bounds.VR{1} + theta;
 % define azimuth angles
 identified = check_option(varargin,'antipodal');
 
-rhGrid = repmat(S1Grid([],bounds.FR{3},bounds.FR{4} + pi,'periodic'),...
+rhGrid = repmat(S1Grid([],bounds.FR{3},bounds.FR{4}+pi,'periodic'),...
   1,length(theta));
 for j = 1:length(theta)
 
@@ -86,6 +87,11 @@ S2G = S2G.setOption('resolution',res);
 % restrict to spherical region if specified
 sR = getClass(varargin,'sphericalRegion');
 if ~isempty(sR), S2G = S2G.subGrid(sR.checkInside(S2G,'noAntipodal')); end
+
+if check_option(varargin,'center')
+  rot = rotation.byAxisAngle(get_option(varargin,'center')+zvector,pi);
+  S2G = rot * S2G;
+end
 
 end
 
