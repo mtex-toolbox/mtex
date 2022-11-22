@@ -1,18 +1,9 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 5.9.0
+%% MTEX 5.8.2 11/2022
 %
-% *Habit Plane Detection*
-%
-% * new function <calcTrace> to compute habbit plane traces from families
-% of grains or EBSD data.
-% * new function <calcGBND.html calcGBND(traces,ori)> to compute the grain
-% boundary normal distribution from a list of habit plane traces and the
-% corresponding grain orientations.
-% * new Function <calcHabitPlane.html calcHabitPlane()>
-% * new function <grainBoundary.characteristicShape.html
-% characteristicShape(gB)> to 
+% This is mainly a bug fix release. New functionalities include
 %
 % * <fibre.fit.html |fibre.fit(ori)|> and <fibre.fit.html |fibre.fit(odf)|>
 % robustly finds fibres in data sets of individual orientations and ODFs.
@@ -21,8 +12,6 @@
 % * <S2Fun/calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
 % symmetries in <ODFPoleFigure.html pole figures> or arbitrary
 % <S2FunConcept.html spherical functions>.
-% 
-%
 %
 %% MTEX 5.8.0 01/2022
 %
