@@ -8,7 +8,7 @@ function job = clusterGraph(job, varargin)
 %  job - @parentGrainReconstructor
 %
 % Output
-%  job.graph
+%  job.graph - the reduced graph
 %
 % Options
 %  inflationPower - controls the size of the clusters, default 1.6
