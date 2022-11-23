@@ -13,7 +13,7 @@ function omega = angle(f,ori,varargin)
 % Output
 %  omega - double
 %
-% see also 
+% See also 
 % orientation/angle
 
 if isa(ori,'orientation')
