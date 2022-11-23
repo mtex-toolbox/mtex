@@ -158,7 +158,7 @@ classdef grain2d < phaseList & dynProp
 
       % check for 3d plane
       d=dot(grains.V(1),grains.N);
-      assert(max(abs(dot(grains.V,grains.N)-d))<1e-11,'grains are not within one plane');
+      assert(max(abs(dot(grains.V,grains.N)-d))<abs(d)*1e-5,'grains are not within one plane');
 
     end
         
