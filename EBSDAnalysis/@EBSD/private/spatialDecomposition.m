@@ -36,19 +36,25 @@ else
             
   end
 
-  %if check_option(varargin,'quadruplePoints')
+  % we are only interested in voronoi cells corresponding to the given
+  % coordinates - not the dummy coordinates
+  D = D(1:size(X,1));
 
-  [V,~,ic] = unique(V,'rows');
+  % remove empty lines from D
+  % D = D(cellfun(@(x) ~isempty(x),D));
+  
+  % merge points that coincide
+  [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
   %D = cellfun(@(x) ic(x).',D,'UniformOutput',false);
 
+  % remove duplicated points in D
+  %D = cellfun(@(x) x(diff([x,x(1)])~=0),D,'UniformOutput',false);
+
+  % this is faster then the cellfun approach
   for k = 1:length(D)
     x = ic(D{k}).';              % merge points that coincide
     D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
   end
-  
-  %end
-    
-  D = D(1:size(X,1));
   
 end
 

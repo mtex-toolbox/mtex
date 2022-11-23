@@ -4,7 +4,7 @@ function obj = ensureCS(csNew,obj)
 csOld = obj.CS;
 
 % if equal, everythink is ok
-if eq(csOld,csNew,'laue'), return;end
+if csOld.Laue == csNew.Laue, return;end
 
 % check for compatibility
 try

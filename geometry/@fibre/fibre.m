@@ -209,27 +209,7 @@ classdef fibre
       
     end
 
-    function [f,lambda,delta] = fit(ori,varargin)
-      % determines the fibre that fits best a list of orientations
-      %
-      % Syntax
-      %   f = fibre.fit(ori) % fit fibre to a list of orientations
-      %
-      % Input
-      %  ori1, ori2, ori - @orientation
-      %
-      % Output
-      %  f       - @fibre
-      %  lambda  - eigenvalues of the orientation tensor
-
-      [~,~,lambda,eigv] = mean(ori);
-
-      ori12 = orientation(quaternion(eigv(:,4:-1:3)),ori.CS,ori.SS);
-      f = fibre(ori12(1),ori12(2),'full',varargin{:});
-      
-      delta = norm(angle(f,ori)) / length(ori);
-      
-    end
-
+    [f,lambda,delta] = fit(ori,varargin)
+    
   end
 end

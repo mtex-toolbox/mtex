@@ -61,7 +61,7 @@ classdef slipSystem
     function display(sS,varargin)
       % standard output
 
-      displayClass(sS,inputname(1),'slipSystem',varargin{:},'moreInfo',char(sS.CS,'compact'));
+      displayClass(sS,inputname(1),varargin{:},'moreInfo',char(sS.CS,'compact'));
       
       if length(sS)>24, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
       if length(sS)>1, disp([' size: ' size2str(sS.b)]); end

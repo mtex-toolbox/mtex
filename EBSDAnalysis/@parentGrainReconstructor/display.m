@@ -1,8 +1,6 @@
 function display(job,varargin)
       
-vname = get_option(varargin,'name',inputname(1));
-varargin = delete_option(varargin,'name',1);
-displayClass(job,vname,varargin{:});
+displayClass(job,inputname(1),varargin{:});
 
 disp(' ');
 

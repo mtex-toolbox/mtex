@@ -21,7 +21,7 @@ end
 
 % get symmetries and ensure both arguments are at least rotations
 if isa(o1,'orientation')
-  if isa(o2,'orientation') && ~eq(o1.CS,o2.CS,'Laue')
+  if isa(o2,'orientation') && o1.CS.Laue ~= o2.CS.Laue
     error('comparing orientations of different phase not yet supported');
   end
   cs = o1.CS; ss = o1.SS;

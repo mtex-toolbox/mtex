@@ -255,7 +255,11 @@ if idSelected(localId)
 end
 
 txt{1} = ['grainId = '  num2str(unique(grain.id))];
-txt{2} = ['phase = ', grain.mineral];
+if grain.isIndexed
+  txt{2} = ['phase = ', grain.mineral];
+else
+  txt{2} = ['phase = not indexed'];
+end
 txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
 if grain.isIndexed
   txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];

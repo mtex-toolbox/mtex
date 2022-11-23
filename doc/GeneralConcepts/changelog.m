@@ -1,6 +1,18 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.8.2 11/2022
+%
+% This is mainly a bug fix release. New functionalities include
+%
+% * <fibre.fit.html |fibre.fit(ori)|> and <fibre.fit.html |fibre.fit(odf)|>
+% robustly finds fibres in data sets of individual orientations and ODFs.
+% * <fibre.angle.html |angle(f1,f2)|> computes the angle between two
+% <OrientationFibre.html fibres>.
+% * <S2Fun/calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
+% symmetries in <ODFPoleFigure.html pole figures> or arbitrary
+% <S2FunConcept.html spherical functions>.
+%
 %% MTEX 5.8.0 01/2022
 %
 % MTEX 5.8 improves further on parent grain reconstruction by implementing

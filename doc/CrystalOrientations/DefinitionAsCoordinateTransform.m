@@ -18,7 +18,7 @@ rot = rotation.rand
 % by variables of type <crystalSymmetry.crystalSymmetry.html crystalSymmetry>
 
 % lets take cubic crystal symmetry
-cs = crystalSymmetry('cubic')
+cs = crystalSymmetry.load("Al-Aluminum.cif")
 
 %%
 % Combining both incredients allows us to define an orientation

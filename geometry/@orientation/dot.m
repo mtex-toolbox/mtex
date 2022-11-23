@@ -43,14 +43,14 @@ if isa(o1,'orientation')
     % it is also possible to compute the misorientation angle between two
     % orientations of different phase. In this case the symmetry becomes
     % the product of both symmetries
-    if ~eq(o1.CS,o2.CS,'Laue')
+    if o1.CS.Laue ~= o2.CS.Laue
 
       try 
         o2 = ensureCS(o1.CS,o2);
       catch
       
         % this makes only sense when comparing orientations
-        assert(isa(o1.CS,'crystalSymmetry') && isa(o1.CS,'crystalSymmetry') ...
+        assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') ...
           && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
           'Symmetry missmatch');
 
@@ -61,9 +61,9 @@ if isa(o1,'orientation')
         
       end
 
-    elseif ~eq(o1.SS,o2.SS,'Laue') % comparing inverse orientations
+    elseif o1.SS.Laue ~= o2.SS.Laue % comparing inverse orientations
 
-      assert(isa(o1.SS,'crystalSymmetry') && isa(o1.SS,'crystalSymmetry') ...
+      assert(isa(o1.SS,'crystalSymmetry') && isa(o2.SS,'crystalSymmetry') ...
        && isa(o1.CS,'specimenSymmetry') && o2.CS.Laue == o1.CS.Laue,...
        'Symmetry missmatch');
 

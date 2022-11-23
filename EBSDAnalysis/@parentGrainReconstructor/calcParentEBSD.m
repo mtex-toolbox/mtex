@@ -36,6 +36,15 @@ if nnz(isNowParent) == 0, return; end
 [ori,fit] = calcParent(ebsd(isNowParent).orientations,...
   job.grains(ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
 
+% compute variantId
+vId = calcVariantId(ori, ebsd(isNowParent).orientations,job.p2c);
+ebsd.prop.variantId = NaN(size(ebsd));
+ebsd.prop.variantId(isNowParent) = vId;
+
+% adjust parent and child orientations such that the misorientation is
+% closest to the given OR job.p2c
+ori = ori.project2FundamentalRegion .* inv(variants(job.p2c,vId)) * job.p2c;
+
 % setup parent ebsd
 ebsd.prop.fit = nan(size(ebsd));
 ebsd(isNowParent).orientations = ori;

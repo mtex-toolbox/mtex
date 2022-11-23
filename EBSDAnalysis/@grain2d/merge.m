@@ -283,7 +283,7 @@ phaseId(notZero) =  grainsMerged.phaseId(grainsMerged.boundary.grainId(notZero))
 grainsMerged.boundary.phaseId = phaseId;
 
 % 10. update triple points
-grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints(grainsMerged.V,grainsMerged.phaseId);
+grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints;
 
 end
 

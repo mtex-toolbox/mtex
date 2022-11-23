@@ -26,15 +26,7 @@ if ~isa(S1,'crystalSymmetry') || ~isa(S2,'crystalSymmetry')
   catch
     out = false;
   end
-  
-elseif check_option(varargin,'Laue')
-  
-  Lid1 = symmetry.pointGroups(S1.id).LaueId;
-  Lid2 = symmetry.pointGroups(S2.id).LaueId;
-    
-  out = Lid1 == Lid2 && ...
-    all(norm(S1.axes - S2.axes)./norm(S1.axes)<5*10^-2);
-    
+
 elseif S1.id == 0
       
   out = S2.id == 0 && numSym(S1) == numSym(S2) && ...
@@ -48,6 +40,5 @@ else
   if ~isempty(S1.mineral) && ~isempty(S2.mineral)
     out = out && strcmpi(S1.mineral,S2.mineral);
   end
-
 
 end

@@ -27,5 +27,12 @@ function [odf,interface,options] = load(fname,varargin)
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
-% TODO: remove call to loadData
-[odf,interface,options] = loadData(fname,'ODF',varargin{:});
+%  determine interface 
+if ~check_option(varargin,'interface')
+  [interface,options] = check_interfaces(fname,'ODF',varargin{:});
+else
+  interface = get_option(varargin,'interface');
+  options = delete_option(varargin,'interface',1);
+end
+
+odf = feval(['loadODF_',char(interface)],fname,options{:});  

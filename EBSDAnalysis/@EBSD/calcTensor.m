@@ -40,7 +40,7 @@ density = nan(size(ebsd));
 for p = ebsd.indexedPhasesId
   
   % search for a fiting tensor
-  Tind = cellfun(@(t) isa(t,'tensor') && eq(t.CS,ebsd.CSList{p},'Laue'),varargin);
+  Tind = cellfun(@(t) isa(t,'tensor') && t.CS.Laue ==  ebsd.CSList{p}.Laue,varargin);
   if any(Tind)
     T = varargin{find(Tind,1)};
   else

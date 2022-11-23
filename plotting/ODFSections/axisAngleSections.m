@@ -73,6 +73,9 @@ classdef axisAngleSections < ODFSections
     end
     
     function ori = iproject(oS,rho,theta,iangle)
+      if oS.upperAndLower
+        iangle = any(reshape(iangle,2,[]));
+      end
       ori = orientation.byAxisAngle(vector3d.byPolar(theta,rho),...
         oS.angles(iangle),oS.CS,oS.SS);
     end

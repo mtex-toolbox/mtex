@@ -12,7 +12,7 @@ function out = mtexdata(name,varargin)
 % read list of all available sample data
 list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
 
-type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d'}, {'pf','ebsd','grains'});
+type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun'}, {'pf','ebsd','grains','odf'});
 
 if nargin < 1
 
@@ -81,6 +81,12 @@ catch
   end
   
   switch type
+    case 'SO3Fun'
+      switch name
+        case 'dubnaODF'
+          pf = mtexdata('dubna');
+          out = calcODF(pf);
+      end
     case 'PoleFigure'
       switch name
         case 'dubna'
