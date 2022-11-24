@@ -100,37 +100,6 @@ calcError(odf,odf_rec)
 % 2) set.antipodal for general SO3Fun
 % 3) use antipodal in eval,...
 
-cs = crystalSymmetry('1');
-kappa = [20 0 10 30];
-U = [zeros(3,1),(rotation.rand.matrix);1,zeros(1,3)];
-f = BinghamODF(kappa,U,cs)
-rng(0); 
-r = rotation.rand(10);
-f.eval(r)
-f.eval(inv(r))
-
-F1 = SO3FunHandle(@(rot) 0.5*(f.eval(rot)+f.eval(inv(rot))))
-F1.antipodal = 1;
-figure(1)
-plot(F1)
-
-f.antipodal = 1;
-F2 = SO3FunHarmonic(f)
-figure(2)
-plot(F2)
-
-%% 6)  Error in line 185 of
-
-GrainOrientationParameters
-
-%% 7) add load Function and correct import wizzard.       ODF ---> SO3Fun
-
-ODFImport
-VPSCImport
-
-
-%% 8) antipodal does not matter in FunHandle, Bingham, Composition, CBF
-
 rng(3)
 r = rotation.rand;
 F = SO3FunBingham.example;  % erkennt nicht das bereits antipodal
@@ -142,8 +111,17 @@ F.eval([r,r.inv])
 F.antipodal = 1
 F.eval([r,r.inv])
 
+%% 6)  Error in line 185 of
 
-%% 9) Halfwidth of SO3Kernel should get a new definition
+GrainOrientationParameters
+
+%% 7) add load Function and correct import wizzard.       ODF ---> SO3Fun
+
+ODFImport
+VPSCImport
+
+
+%% 8) Halfwidth of SO3Kernel should get a new definition
 % [See: test_KernelHalfwidth.m]
 %
 % i) The halfwidth of a kernel psi of a specific subclass of @SO3Kernel should be
@@ -156,6 +134,24 @@ SO3Kernel(psi.A)
 %
 % ii) The halwidth should be the same for the gradient of an @SO3Kernel
 psi.grad
+
+
+
+
+
+%% RandomSampling
+cs = crystalSymmetry('32');
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
+ori = fibre_odf.discreteSample(50000)
+odf_rec = calcDensity(ori)
+calcError(odf_rec,fibre_odf)
+
+%% PoleFigure2ODF
+
+
+
+
+
 
 
 
