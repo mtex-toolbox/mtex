@@ -18,22 +18,38 @@ classdef shape2d < grain2d
   
   methods
     
-    function shape = shape2d(Vs)
+    function shape = shape2d(V,CS)
       % list of vertices [x y]
-      % construct a fake grain2d
-      prop = struct('x',1,'y',1,'grainId',1);
-      ebsd = EBSD(rotation.nan,1,{'mineral'},prop);
-      n = size(Vs,1);
-      if n==0
-        F = zeros(0,2);
-      else
-        F = [(1:n).',[(2:n).';1]];
-      end
-      I_DG = 1;
-      I_FD = sparse(ones(size(F,1),1));
-      A_Db = 1;
-      shape = shape@grain2d(ebsd,Vs,F,I_DG,I_FD,A_Db);
       
+      if nargin == 0, return;end
+
+      N = size(V,1);
+      shape.poly = {[1:N,1].'};
+      shape.inclusionId = zeros(N,1);
+
+      if nargin>=2
+        shape.CSList = {CS};
+      else
+        shape.CSList = {'notIndexed'};
+      end
+
+      shape.phaseId = 1;
+      shape.phaseMap = 1;
+      shape.id = 1;
+      shape.grainSize = 1;
+      
+      if isa(V,'grainBoundary') % grain boundary already given
+        shape.boundary = V;
+      else % otherwise compute grain boundary
+                
+        F = [1:N;[2:N 1]].';
+        grainId = [zeros(N,1),ones(N,1)];
+        
+        shape.boundary = grainBoundary(V,F,grainId,1,...
+          1,nan,shape.CSList,shape.phaseMap,1,'noTriplePoints');
+        
+      end
+
     end
 
     function Vs = get.Vs(shape)
@@ -50,7 +66,8 @@ classdef shape2d < grain2d
   end
     
   methods (Static = true)
-    v = byRhoTheta(rho,theta)
+    shape = byRhoTheta(rho,theta)
+    shape = byFV(F,V,varargin)
   end
   
 end

@@ -2,8 +2,9 @@ function pdf = calcPDF(component,h,r,varargin)
 % calculate pole figure from Fourier coefficients
 
 % use only even Fourier coefficients?
-even = check_option(varargin,'antipodal') || h.antipodal || component.CS.isLaue;
-if nargin > 2, even = even || r.antipodal; end
+even = check_option(varargin,'antipodal') || ...
+  (~isempty(h) && h.antipodal) || component.CS.isLaue;
+if nargin > 2 && ~isempty(r), even = even || r.antipodal; end
 even = 1 + double(even);
 
 % bandwidth
@@ -38,8 +39,8 @@ end
 pdf = S2FunHarmonicSym(conj(P_hat(:)),sym);
 
 % evaluate if required
-if length(h) > 1
+if length(h) > 1 % inverse pole figure
   pdf = pdf.eval(h); 
-elseif nargin>2 && length(r) > 1
+elseif nargin>2 && ~isempty(r) && ~isempty(h)
   pdf = pdf.eval(r); 
 end

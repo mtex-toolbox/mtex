@@ -27,7 +27,7 @@ elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
   end
   right = inner1;
   
-elseif ~eq(inner1,inner2,'Laue') % ori * ori, ori * Miller
+elseif inner1.Laue ~= inner2.Laue % ori * ori, ori * Miller
   
   if isa(inner1,'crystalSymmetry') && isa(inner2,'specimenSymmetry')
     

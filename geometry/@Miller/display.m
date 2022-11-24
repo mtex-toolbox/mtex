@@ -1,7 +1,7 @@
 function display(m,varargin)
 % standard output
 
-displayClass(m,inputname(1),'Miller','moreInfo',char(m.CS,'compact'),varargin{:});
+displayClass(m,inputname(1),'moreInfo',char(m.CS,'compact'),varargin{:});
 
 display@vector3d(m,'skipHeader', 'skipCoordinates');
 

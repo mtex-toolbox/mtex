@@ -44,8 +44,8 @@ maxIt = get_option(varargin,'maxIterarion',10);
 p2cOld = p2c;
 bestFit = inf;
 
-disp(' ');
-disp(' optimizing parent to child orientation relationship');
+vdisp(' ',varargin{:});
+vdisp(' optimizing parent to child orientation relationship',varargin{:});
 
 % iterate
 k = 1;
@@ -83,7 +83,7 @@ while k <= maxIt
   else
   
     k = k + 1;
-    disp(['  ' fillStr(char(p2c,'Euler'),22) xnum2str(misFit ./ degree)])
+    vdisp(['  ' fillStr(char(p2c,'Euler'),22) xnum2str(misFit ./ degree)],varargin{:})
     bestFit = misFit;
     p2cOld = p2c;
   
@@ -105,4 +105,4 @@ while k <= maxIt
   
 end
 
-disp(' ');
+vdisp(' ',varargin{:});

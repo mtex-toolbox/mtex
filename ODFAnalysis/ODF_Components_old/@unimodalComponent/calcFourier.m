@@ -1,8 +1,13 @@
 function f_hat = calcFourier(component,L,varargin)
 % called by ODF/calcFourier
 
-qss = quaternion(component.SS);
-qcs = quaternion(component.CS);
+if check_option(varargin,'noSymmetry')
+  qss = quaternion.id;
+  qcs = quaternion.id;
+else
+  qss = quaternion(component.SS);
+  qcs = quaternion(component.CS);
+end
 
 % set parameter
 c = component.weights / length(qss) / length(qcs);

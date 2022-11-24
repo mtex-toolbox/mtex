@@ -1,7 +1,7 @@
 function display(T,varargin)
 % standard output
 
-displayClass(T,get_option(varargin,'name',inputname(1)));
+displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact'),varargin{:});
 
 % collect tensor properties
 props = fieldnames(T.opt);
@@ -23,12 +23,6 @@ propV{end+1} = [num2str(T.rank),' (' strrep(int2str(tensorSize(T)),'  ',' x ') '
 if T.doubleConvention
   props{end+1} = 'doubleConvention';
   propV{end+1} = 'true';
-end
-
-% collect symmetry
-if isa(T.CS,'crystalSymmetry')
-  props{end+1} = 'mineral'; 
-  propV{end+1} = char(T.CS,'verbose');
 end
 
 % display all properties

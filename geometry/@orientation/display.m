@@ -1,14 +1,14 @@
 function display(o)
 % standart output
 
-refSystems = [char(o.CS,'compact') ' ' char(8594) ' ' char(o.SS,'compact')];
+refSystems = [char(o.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(o.SS,'compact')];
 
 if isMisorientation(o)  
   type = 'misorientation';
 else
   type = 'orientation';
 end
-displayClass(o,inputname(1),type,'moreInfo',refSystems);
+displayClass(o,inputname(1),'className',type,'moreInfo',refSystems);
 
 %disp(char(o.CS,'verbose','symmetryType'));
 %if o.SS.id ~= 1, disp(char(o.SS,'verbose','symmetryType')); end
@@ -22,7 +22,14 @@ if o.antipodal
   disp('  antipodal:         true');
 end
   
-if length(o) < 20 && ~isempty(o)
+if isMisorientation(o) && length(o) == 1 && angle(o,round2Miller(o))<1e-3
+  
+  disp(' ');
+  %disp('     planes      directions');
+  disp([' ',char(o)]);
+  disp(' ')
+
+elseif length(o) < 20 && ~isempty(o)
   Euler(o);
 elseif ~getMTEXpref('generatingHelpMode')
   disp(' ')

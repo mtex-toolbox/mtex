@@ -27,7 +27,11 @@ function pdf = calcPDF(odf,h,varargin)
 % ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller'), h = odf.CS.ensureCS(h); end
+if isa(h,'Miller')
+  h = odf.CS.ensureCS(h); 
+else
+  h = Miller(h,odf.CS);
+end
 
 % superposed pole figures
 sp = get_option(varargin,'superposition',1);

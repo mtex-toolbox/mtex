@@ -23,11 +23,11 @@ function [r,ir,iu] = unique(r,varargin)
 %
 
 
-a = r.a(:); b = r.b(:); c = r.c(:); d = r.d(:);
+a = r.a(:); b = r.b(:); c = r.c(:); d = r.d(:); i = r.i(:);
 
 if length(r) < 1000 && ~check_option(varargin,'tolerance')
   
-  abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d, r.i(:)];
+  abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d, i(:)];
 
   tol = get_option(varargin,'tolerance',1e-3);
 
@@ -48,7 +48,7 @@ else % faster but less accurate
   a(ind) = -a(ind); b(ind) = -b(ind);
   c(ind) = -c(ind); d(ind) = -d(ind);
   
-  [~,ir,iu] = uniquetol([a,b,c,d],tol / 100 / degree, ...
+  [~,ir,iu] = uniquetol([a,b,c,d,i],tol / 100 / degree, ...
     'ByRows',true,'DataScale',1);
 
 end
@@ -58,5 +58,5 @@ r.a = a(ir);
 r.b = b(ir);
 r.c = c(ir);
 r.d = d(ir);
-r.i = r.i(ir);
+r.i = i(ir);
 

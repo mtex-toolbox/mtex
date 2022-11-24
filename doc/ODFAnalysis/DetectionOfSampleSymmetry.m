@@ -40,7 +40,6 @@ ori = rot * discreteSample(odf,1000)
 odf_est = calcDensity(ori,'halfwidth',10*degree)
 
 % and visualize it
-figure
 plotPDF(odf_est,h,'antipodal',8,'silent');
 
 %% Detect the sample symmetry axis in the reconstructed ODF
@@ -53,7 +52,6 @@ plotPDF(odf_est,h,'antipodal',8,'silent');
 
 [odf_corrected,rot_inv] = centerSpecimen(odf_est);
 
-figure
 plotPDF(odf_corrected,h,'antipodal',8,'silent')
 
 % the difference between the applied rotation and the estimate rotation
@@ -80,7 +78,7 @@ plotPDF(odf,h,'antipodal','silent')
 %%
 % Finally, we detect the orthotropic symmetry axes a1, a2, a3 by
 
-[~,~,a1,a2] = centerSpecimen(odf,yvector)
+[~,~,a1,a2] = centerSpecimen(odf,yvector,'Fourier')
 a3 = cross(a1,a2)
 
 annotate([a1,a2,a3],'label',{'RD','TD','ND'},'backgroundcolor','w','MarkerSize',8)

@@ -4,7 +4,7 @@
 %
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
-% since the concatenation of to symmetry operations is again a symmetry
+% since the concatenation of two symmetry operations is again a symmetry
 % operation. 
 %
 % Depending which symmetry operations are coonsidered the symmetry groups

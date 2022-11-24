@@ -89,8 +89,8 @@ round2Miller(mori_mean)
 % Bases on the output above we may now define the special orientation
 % relationship as
 
-twinning = orientation.map(Miller(0,1,-1,-2,CS),Miller(0,-1,1,-2,CS),...
-  Miller(2,-1,-1,0,CS),Miller(2,-1,-1,0,CS))
+twinning = orientation.map(Miller(0,1,-1,-1,CS),Miller(-1,1,0,-1,CS),...
+  Miller(1,0,-1,1,CS,'uvw'),Miller(1,0,-1,-1,CS,'uvw'))
 
 %%
 % and observe that it is actually a rotation about axis (-1210) and angle
