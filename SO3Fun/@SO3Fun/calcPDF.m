@@ -27,7 +27,11 @@ function pdf = calcPDF(SO3F,h,varargin)
 % SO3Fun/plotPDF SO3Fun/plotIPDF SO3Fun/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller'), h = SO3F.CS.ensureCS(h); end
+if isa(h,'Miller')
+  h = SO3F.CS.ensureCS(h); 
+else
+  h = Miller(h,SO3F.CS);
+end
 
 % superposed pole figures
 sp = get_option(varargin,'superposition',1);
