@@ -27,13 +27,14 @@ alpha = solver.alpha;
 % ---------------- ghost correction ----------------------------
 
 % determine phon
-solver.c0 = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ alpha(1:length(solver.pf.allI)));
+c0 = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ alpha(1:length(solver.pf.allI)));
 
-if solver.c0 > 0.1 && solver.c0 < 0.99 && ~check_option(varargin,'noGhostCorrection')
+if c0 > 0.1 && c0 < 0.99 && ~check_option(varargin,'noGhostCorrection')
   vdisp(['  I''m going to apply ghost correction. Uniform portion fixed to ',xnum2str(solver.c0)],varargin{:});
 
   % subtract uniform portion from intensities
-  solver.pf = max(0,solver.pf - alpha .* solver.c0);
+  solver.pf = max(0,solver.pf - alpha .* c0);
+  solver.c0 = c0;
 
   % reset solution
   solver.c = [];
