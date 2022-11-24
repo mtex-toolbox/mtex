@@ -7,7 +7,7 @@ function plotSpektra(SO3F,varargin)
 %   plotSpektra(SO3F,'bandwidth',32)
 %
 % Input
-%  odf - @ODF
+%  SO3F - @SO3Fun
 %
 % Options
 %  bandwidth   - number of Fourier coefficients to be plotted
