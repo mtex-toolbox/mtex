@@ -135,7 +135,27 @@ SO3Kernel(psi.A)
 % ii) The halwidth should be the same for the gradient of an @SO3Kernel
 psi.grad
 
+%
+% iii) Maybe set halfwidth for Kernels to pi. 
+% Think about using the support instead.
+% Here we have a problem in SO3FunRBF.K_symmetrised because it is cut off
+% at 3.5*psi.halfwidth (look on epsilon)
+cs = crystalSymmetry('-1');
+alphaFibre = orientation.byAxisAngle(zvector,(-180:180)*degree,cs);
 
+A = SO3Kernel(((-1).^(0:10)').*(1:2:21)');
+psi = conv(SO3DeLaValleePoussinKernel(10),A);
+odf1 = SO3FunRBF(orientation.id(cs),psi,1);
+odf2 = FourierODF(odf1,10);
+
+
+close all
+plot(-180:180,odf1.eval(alphaFibre),'linewidth',2)
+hold on
+plot(-180:180,odf2.eval(alphaFibre),'linewidth',2)
+hold off
+legend('odf1','odf2')
+xlim([-180,180])
 
 
 
@@ -146,7 +166,6 @@ ori = fibre_odf.discreteSample(50000)
 odf_rec = calcDensity(ori)
 calcError(odf_rec,fibre_odf)
 
-%% PoleFigure2ODF
 
 
 
