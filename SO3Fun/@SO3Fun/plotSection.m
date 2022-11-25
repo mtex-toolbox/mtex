@@ -18,6 +18,10 @@ function plotSection(F,varargin)
 %  contour
 %  contour3, surf3, slice3 - 3d volume plot
 %
+% Example
+%   % Section plots at specific angles
+%   plotSection(SO3Fun.dubna,'phi2',[15,23,36]*degree)
+%
 % See also
 % saveFigure Plotting
 
