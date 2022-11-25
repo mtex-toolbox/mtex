@@ -48,6 +48,7 @@ classdef SO3Fun
   
   methods (Static = true)
   
+    [SO3F,interface,options] = load(fname,varargin)
     SO3F = dubna(varargin)
     SO3F = interpolate(ori,values,varargin)
     
