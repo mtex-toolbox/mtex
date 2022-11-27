@@ -4,8 +4,6 @@ classdef neperInstance < handle
 
 properties
 
-  morphology
-  sphericity
   numGrains = 100;
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
@@ -20,8 +18,6 @@ methods
     % constructor
     % Input:
     %   numGrains (optional)
-
-    neper.morphology = '';
 
     if nargin>0   %numGrains
       if isnumeric(varargin{1})
