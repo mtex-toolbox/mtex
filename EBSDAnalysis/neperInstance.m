@@ -4,6 +4,8 @@ classdef neperInstance < handle
 
 properties
 
+  ori                         %@ODF or list of @orientation
+  CS='-1'                          %crystalSymmetries
   numGrains = 100;
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
@@ -16,15 +18,33 @@ methods
   
   function neper = neperInstance(varargin)
     % constructor
-    % Input:
-    %   numGrains (optional)
+    % Input:  (optional)
+    %   - ori (@ODF) & numGrains (numeric)
+    %   - ori (@ODF)
+    %   - ori (list @orientation)
 
-    if nargin>0   %numGrains
-      if isnumeric(varargin{1})
+    if nargin==2  %numGrains & ori
+      if isnumeric(varargin{1}) && isa(varargin{2},'ODF')
+        neper.ori=varargin{2};
         neper.numGrains=varargin{1};
+      elseif isnumeric(varargin{2}) && isa(varargin{1},'ODF')
+        neper.ori=varargin{1};
+        neper.numGrains=varargin{2};
       else
-        error 'argument must be numeric or empty'
+        error 'argument error'
       end
+    elseif nargin==1 %ori
+      if isa(varargin{1},'orientation')
+        neper.ori=varargin{1};
+        neper.numGrains=length(varargin{1});
+        neper.CS=varargin{1}.CS.pointGroup;
+      elseif isa(varargin{1},'ODF')
+        neper.ori=varargin{1};
+      else
+        error 'argument error'
+      end
+    else %default
+      neper.ori=unimodalODF(orientation.rand);
     end
 
     if computer=="PCWIN64"
@@ -35,24 +55,28 @@ methods
 
   end
 
-  function simulateGrains(this,ori)
+  function simulateGrains(this)
 
-    if isa(ori,'ODF')
-      ori = ori.discreSample(this.numGrains);
+    if isa(this.ori,'ODF')
+      this.ori = this.ori.discreteSample(this.numGrains);
     else
-      this.numGrains=length(ori);
+      if this.numGrains~=length(this.ori)
+        warning 'numGrains does not equal length of ori'
+      end
+      this.numGrains=min(this.numGrains,length(this.ori));
+      this.ori=this.ori(1:this.numGrains);
     end
     
     % save ori to file
     oriFilename='ori_in.txt';
     fid=fopen(oriFilename,'w');
-    fprintf(fid,'%f %f %f\n',[ori.Rodrigues.x'; ori.Rodrigues.y'; ori.Rodrigues.z']);
+    fprintf(fid,'%f %f %f\n',[this.ori.Rodrigues.x'; this.ori.Rodrigues.y'; this.ori.Rodrigues.z']);
     fclose(fid);
 
     system([this.cmdPrefix 'neper -T -n ' num2str(this.numGrains) ...
     ' -morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
       ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
-      ' -oricrysym "-1" '...
+      ' -oricrysym "' this.CS '" '...
       ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
       ' -statpoly faceeqs ' ... % some statistics on the faces
       ' -o ' this.fileName3d ' ' ... % output file name
@@ -113,18 +137,15 @@ methods (Static = true)
 
   function test
 
-    neper = neperInstance;
-    neper.iterMax = 1000;
+    ori=orientation.rand('1');
+    %odf=unimodalODF(ori);
 
-    cs = crystalSymmetry('432');
-    oriC = orientation.rand(cs);
-    odf = unimodalODF(oriC);
-    ori = odf.discreteSample(neper.numGrains);
+    neper = neperInstance(ori);
 
-    neper.simulateGrains(ori)
+    neper.simulateGrains()
     grains=neper.getSlice();
 
-    max(angle(oriC,grains.meanOrientation)/degree)
+    max(angle(ori,grains.meanOrientation)/degree)
 
     plot(grains)
 
