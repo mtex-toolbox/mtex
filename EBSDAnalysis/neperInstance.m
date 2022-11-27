@@ -6,11 +6,11 @@ properties
 
   morphology
   sphericity
-  numGrains = 1000;
-  iterMax = 10000;
+  numGrains = 100;
+  iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
-  wsl                         % contains char 'wsl' for windows systems
+  cmdPrefix                         % contains char 'wsl' for windows systems
   
 end
 
@@ -23,7 +23,7 @@ methods
 
     neper.morphology = '';
 
-    if nargin>0
+    if nargin>0   %numGrains
       if isnumeric(varargin{1})
         neper.numGrains=varargin{1};
       else
@@ -32,9 +32,9 @@ methods
     end
 
     if computer=="PCWIN64"
-      neper.wsl='wsl ';
+      neper.cmdPrefix='wsl ';
     else
-      neper.wsl='';
+      neper.cmdPrefix='';
     end
 
   end
@@ -43,17 +43,19 @@ methods
 
     if isa(ori,'ODF')
       ori = ori.discreSample(this.numGrains);
+    else
+      this.numGrains=length(ori);
     end
     
     % save ori to file
     oriFilename='ori_in.txt';
     fid=fopen(oriFilename,'w');
-    fprintf(fid,'%f %f %f\n',ori.Rodrigues.x,ori.Rodrigues.y,ori.Rodrigues.z);
+    fprintf(fid,'%f %f %f\n',[ori.Rodrigues.x'; ori.Rodrigues.y'; ori.Rodrigues.z']);
     fclose(fid);
 
-    system([this.wsl 'neper -T -n ' num2str(this.numGrains) ...
+    system([this.cmdPrefix 'neper -T -n ' num2str(this.numGrains) ...
     ' -morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
-      ' -morphooptistop "itermax=1000" ' ... % decreasing the iterations makes things go a bit faster for testing
+      ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
       ' -oricrysym "-1" '...
       ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
       ' -statpoly faceeqs ' ... % some statistics on the faces
@@ -63,7 +65,7 @@ methods
       ' -format tess,ori' ... % outputfiles
       ' && ' ...
       ...
-      this.wsl 'neper -V ' this.fileName3d '.tess']);
+      this.cmdPrefix 'neper -V ' this.fileName3d '.tess']);
 
   end
 
@@ -93,16 +95,16 @@ methods
     end
 
     % get a slice
-    system([this.wsl 'neper -T -loadtess ' this.fileName3d '.tess ' ...
+    system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
       '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
       '-oricrysym "mmm" -ori "file(' this.fileName3d '.ori)" ' ...
       '-o ' this.fileName2d ' ' ...
       '-oriformat geof ' ...
-      '-oridescriptor quaternion ' ...
+      '-oridescriptor rodrigues ' ...
       '-format tess,ori ' ...
       '&& ' ...
       ...
-      this.wsl 'neper -V ' this.fileName2d '.tess']);
+      this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
 
     grains = grain2d.load([this.fileName2d '.tess']);
 
@@ -118,8 +120,15 @@ methods (Static = true)
     neper = neperInstance;
     neper.iterMax = 1000;
 
-    neper.simulateGrains(orientation.rand(neper.numGrains))
+    cs = crystalSymmetry('432');
+    oriC = orientation.rand(cs);
+    odf = unimodalODF(oriC);
+    ori = odf.discreteSample(neper.numGrains);
+
+    neper.simulateGrains(ori)
     grains=neper.getSlice();
+
+    max(angle(oriC,grains.meanOrientation)/degree)
 
     plot(grains)
 
