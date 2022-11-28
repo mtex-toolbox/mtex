@@ -89,7 +89,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read all datsets
         for est=1:length(allEDS)
             for thing = 1:length(allEDS{est})
-                sane_name = regexprep(allEDS{est}(thing).Name,{' |-|,|:|%|~|#' char(945) char(946)},{'_' 'a' 'b'});
+                sane_name = regexprep(allEDS{est}(thing).Name,' |-|,|:|%|~|#','_');
                 EDSdata.(sane_name)=double(h5read(fname,[EDSPATH{est} '/' allEDS{est}(thing).Name]));
             end
         end
