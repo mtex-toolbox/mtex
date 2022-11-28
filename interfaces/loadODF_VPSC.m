@@ -1,6 +1,6 @@
 function [odf,options] = loadODF_VPSC(fname,varargin)
 
-options = {};
+options = delete_option(varargin,'check');
 
 % read file header
 hl = file2cell(fname,4);
