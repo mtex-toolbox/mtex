@@ -73,7 +73,7 @@ volume(odf,ori,delta) * 100
 % from the preferred orientations is very small. More precisely, it
 % represents only
 
-volume(uniformODF(odf.CS),ori,delta) * 100
+volume(uniformODF(odf.CS),ori(1),delta) * 100
 
 %%
 % percent of the entiere orientations space. Putting these values in
@@ -110,7 +110,7 @@ ori
 vol * 100
 
 %%
-% This volumes allways sums up to apprximately 100 percent. While the
+% These volumes allways sums up to apprximately 100 percent. While the
 % prefered orientations should be the same as those computed by the |max|
 % command.
 
