@@ -1,14 +1,19 @@
 function g = grad(SO3F,varargin)
-% gradient at orientation g
+% right-sided gradient of an SO3Fun
 %
 % Syntax
-%   g = grad(SO3F,ori)
+%   G = SO3F.grad % compute the gradient
+%   g = SO3F.grad(rot) % evaluate the gradient in rot
+%
+%   % go 5 degree in direction of the gradient
+%   ori_new = exp(rot,5*degree*normalize(g)) 
 %
 % Input
 %  SO3F - @SO3FunHarmonic
-%  ori - @orientation
+%  rot  - @rotation / @orientation
 %
 % Output
+%  G - @SO3VectorFieldHarmonic
 %  g - @vector3d
 % 
 

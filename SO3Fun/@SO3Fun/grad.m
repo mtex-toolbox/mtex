@@ -1,8 +1,9 @@
 function g = grad(SO3F,varargin)
-% gradient of odf at orientation ori
+% right-sided gradient of an SO3Fun
 %
 % Syntax
-%   g = SO3F.grad(rot) % compute the gradient
+%   G = SO3F.grad % compute the gradient
+%   g = SO3F.grad(rot) % evaluate the gradient in rot
 %
 %   % go 5 degree in direction of the gradient
 %   rot_new = exp(rot,5*degree*normalize(g)) 
@@ -12,10 +13,11 @@ function g = grad(SO3F,varargin)
 %  rot  - @rotation / @orientation
 %
 % Output
+%  G - @SO3VectorField
 %  g - @vector3d gradient of |SO3F| at rotation |rot|
 %
 % See also
-%
+% SO3Fun/eval orientation/exp
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
