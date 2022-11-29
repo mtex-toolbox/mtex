@@ -48,7 +48,7 @@ function odf = calcDensity(ori,varargin)
 
 % TODO this could be done better!!!
 % add grain exchange symmetry
-if check_option(varargin,'antipoal') && ori.CS == ori.SS
+if check_option(varargin,'antipodal') && ori.CS == ori.SS
   ori = [ori(:);inv(ori(:))]; 
 end
 
