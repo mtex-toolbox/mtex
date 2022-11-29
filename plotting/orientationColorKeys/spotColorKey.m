@@ -16,7 +16,7 @@ classdef spotColorKey < orientationColorKey
       oM.CS1 = oM.center.CS;
       oM.color = get_option(varargin,'color',[1 0 0]);
       oM.psi = get_option(varargin,'kernel',...
-        deLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
+        SO3DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
     end
   
     function rgb = orientation2color(oM,ori)
@@ -26,7 +26,7 @@ classdef spotColorKey < orientationColorKey
 
       for k=1:length(oM.center)
 
-        w = oM.psi.K(dot(ori,oM.center(k)))./oM.psi.K(1);
+        w = oM.psi.eval(dot(ori,oM.center(k)))./oM.psi.eval(1);
 
         cdata = rgb2hsv(repmat(oM.color(k,:),length(ori),1));
         cdata(:,2) = w(:).*cdata(:,2);

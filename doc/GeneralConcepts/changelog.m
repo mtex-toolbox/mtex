@@ -2180,7 +2180,7 @@
 %
 % * |fibreVolume| calculates the
 % volume fraction within a fibre.
-% * |plotFourier| plots the Fourier coefficients of an ODF.
+% * |plotSpektra| plots the Fourier coefficients of an ODF.
 % * |setcolorrange| and the plotting option *colorrange* allow for
 % consistent color coding for arbitrary plots.
 % * A *colorbar* can be added to any plots.

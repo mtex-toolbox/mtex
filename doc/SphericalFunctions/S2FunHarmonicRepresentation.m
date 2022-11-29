@@ -5,26 +5,25 @@
 % sines and cosines a spherical function $f$ can be written as series of
 % the form
 %
-% $$ f({\bf v}) = \sum_{m=0}^M \sum_{l = -m}^m \hat f(m,l) Y_{m,l}({\bf v}) $$
+% $$ f({\bf v}) = \sum_{m=0}^M \sum_{l = -m}^m \hat f_m^l Y_m^l({\bf v}) $$
 %
-% with respect to Fouriers coefficients $\hat f(m,l)$ and the so called
-% spherical harmonics $Y_{m,l}({\bf v})$.
+% with respect to Fouriers coefficients $\hat f_m^l$ and the so called
+% <SphericalHarmonics.html spherical harmonics> $Y_m^l({\bf v})$.
 %
-% In terms of polar coordinates 
-% ${\bf v} = (\sin \theta \cos \rho, \sin \theta \sin \rho, \cos \theta)$ the
-% spherical harmonic of degree $m$ and order $l$ is
-% defined by
+% There exists various normalizations for the sperical harmonics. 
+% In MTEX the $L_2$ norm of the spherical harmonics equals
 %
-% $$ Y_{m,l}({\bf v}) = \sqrt{\frac{2m+1}{4\pi}}P_{m,|l|}(\cos\rho)\mathrm e^{\mathrm i l\theta} $$
+% $$\| Y_m^l \|_2 = 1$$
 %
-% where $P_{m,|l|}$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
-% associated Legendre-Polynomials.
+% for all $m,l$. For more information take a look on 
+% <SphericalHarmonics.html spherical harmonics> and 
+% <S2FunOperations.html#5 Integration of S2Fun's>.
 %
 %% 
 % Within the class |@S2FunHarmonic| spherical functions are represented by
 % their Fourier coefficients which are stored in the field |fun.fhat|. As
 % an example lets define a harmonic function which Fourier coefficients
-% $\hat f(0,0) = 1$, $\hat f(1,-1) = 0$, $\hat f(1,0) = 3$ and $\hat f(1,1)
+% $\hat f_0^0 = 1$, $\hat f_1^{-1} = 0$, $\hat f_1^0 = 3$ and $\hat f_1^1
 % = 0$
 
 fun = S2FunHarmonic([1;0;3;0])
@@ -57,7 +56,7 @@ end
 fun = @(v) dot(v,vector3d.X).^9;
 
 %%
-% Now we can compute the Harmonic representation this function and turn it
+% Now we can compute the Harmonic representation of this function and turn it
 % into a variable of type |@S2FunHarmonic| using the command
 % <S2FunHarmonic.quadrature.html |S2FunHarmonic.quadrature|>
 
@@ -72,7 +71,7 @@ plot(S2F,'upper')
 % visualized using the command <S2FunHarmonic.plotSpektra.html
 % plotSpektra> which plot for each harmonic degree $m$ the sum of the
 % squared moduli of the corresponding Fourier coefficients, i.e.
-% $\sum_{k=-m}^m \lvert \hat f(m,k)\rvert^2$
+% $\sum_{k=-m}^m \lvert \hat f_m^k\rvert^2$
 
 close all
 plotSpektra(S2F)
@@ -91,12 +90,12 @@ plotSpektra(S2F,'linewidth',2)
 %% 
 % In 
 % The robust estimation of these
-% Fourier coefficients from discrete data is discussed in the secion
+% Fourier coefficients from discrete data is discussed in the section
 % <S2FunApproximationInterpolation.html Spherical Approximation>
 
 %%
 % In particular all
-% operation on those functions are implmented as operations on the Fourier
+% operations on those functions are implemented as operations on the Fourier
 % coefficients. 
 %
 % The crucial parameter when representing spherical functions by their

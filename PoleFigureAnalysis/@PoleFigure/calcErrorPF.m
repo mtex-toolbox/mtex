@@ -26,7 +26,7 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 %  PoleFigure/calcError ODF/calcPoleFigure
 
 % evaluate ODF if neccesary
-if isa(pfcalc,'ODF')
+if isa(pfcalc,'SO3Fun')
   pfcalc = calcPoleFigure(pfcalc,pfmeas.allH,pfmeas.allR,'superposition',pfmeas.c);
 end
 

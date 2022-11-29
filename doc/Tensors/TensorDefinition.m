@@ -72,11 +72,11 @@ vector3d(t)
 %
 % $$
 % \sigma_{ij} = 
-% \begin{bmatrix}
+% \left[\begin{array}{ccc}
 % \sigma_{11} & \sigma_{12} & \sigma_{13}  \\
 % \sigma_{21} & \sigma_{22} & \sigma_{23}  \\
 % \sigma_{31} & \sigma_{32} & \sigma_{33}  \\
-% \end{bmatrix}
+% \end{array}\right]
 % $$
 %
 % In MTEX, a second-rank tensor where only the main diagonal components are

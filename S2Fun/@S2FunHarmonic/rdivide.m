@@ -23,6 +23,4 @@ else
   sF = S2FunHarmonic.quadrature(f);
 end
 
-sF = sF.truncate;
-
 end

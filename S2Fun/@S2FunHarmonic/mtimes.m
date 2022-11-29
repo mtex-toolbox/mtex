@@ -16,7 +16,7 @@ elseif isnumeric(sF2)
   s = size(sF.fhat);
   sF.fhat = reshape(sF.fhat,s(1),s(2),[]);
 else
-  warning('not implemented yet; use .* instead');
+  error('not implemented yet; use .* or conv() instead');
 end
 
 end

@@ -1,5 +1,5 @@
 function odf = calcFourierODF(ori,varargin)
-% calculate ODF from individuel orientations via kernel density estimation
+% calculate ODF from individual orientations via kernel density estimation
 %
 % *calcODF* is one of the core function of the MTEX toolbox.
 % It estimates an ODF from a set of individual crystal orientations by
@@ -24,7 +24,7 @@ function odf = calcFourierODF(ori,varargin)
 %
 % Output
 %  odf - @ODF
-%  psi - @kernel
+%  psi - @SO3Kernel
 %
 % Options
 %  halfwidth - halfwidth of the kernel function
@@ -41,15 +41,14 @@ if isempty(ori), odf = ODF; return, end
 odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth
-L = get_option(varargin,{'L','HarmonicDegree'},...
-  min(max(1,odf.components{1}.psi.bandwidth),96),'double');
+L = get_option(varargin,{'L','HarmonicDegree'},min(max(1,odf.psi.bandwidth),getMTEXpref('maxSO3Bandwidth')),'double');
 
 % check kernel has at most the requested bandwidth
-if odf.components{1}.psi.bandwidth > L
-  warning('MTEX:EBSD:calcODF',['The estimated ODF will suffer from ' ...
+if odf.psi.bandwidth > L
+  warning('MTEX:calcDensity',['The estimated ODF will suffer from ' ...
     'truncation errors when truncated to harmonic degree ' int2str(L) ...
     '. You  might want to increase the harmonic degree or the halfwidth.'])
 end
 
-odf = FourierODF(odf,get_option(varargin,{'L','bandwidth','fourier'},L,'double'),varargin{:});
+odf = FourierODF(odf,'bandwidth',get_option(varargin,{'L','bandwidth','fourier'},L,'double'),varargin{:});
 odf.antipodal = odf.antipodal || ori.antipodal;

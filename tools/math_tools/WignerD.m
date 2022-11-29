@@ -22,7 +22,7 @@ function Psi = WignerD(ori,varargin)
 % See also
 % sphericalY
 
-psi = get_option(varargin,'kernel',[],'kernel');
+psi = get_option(varargin,'kernel',[],'SO3Kernel');
 if ~isempty(psi)
   L = psi.bandwidth;
 else
@@ -43,7 +43,7 @@ else
   Psi = wignerDmatrix(ori,l);  
 end
 
-if isa(psi,'kernel')
+if isa(psi,'SO3Kernel')
   Psi = bsxfun(@times,expandPsi(psi,l)./N,Psi);
 else
   Psi = Psi./N;
@@ -55,7 +55,7 @@ end
 
 % %% test correctness
 % tic 
-% C1 = Fourier(calcFourier(unimodalODF(ori,psi),L));
+% C1 = Fourier(calcFourier(unimodalODF(ori,psi),'bandwidth',L));
 % toc
 % norm(sum(Psi./size(Psi,2),2)-C1)
 %

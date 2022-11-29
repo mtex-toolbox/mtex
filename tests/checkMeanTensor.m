@@ -101,7 +101,7 @@ plot(rotate(T,o))
 %% do the same by an ODF
 
 
-%psi = kernel('Fourier',[1 0 0 0 0]);
+%psi = SO3Kernel([1 0 0 0 0]);
 
 odf = unimodalODF(o,symmetry,symmetry,'halfwidth',0.1*degree);
 %odf = unimodalODF(o,symmetry,symmetry,psi);
@@ -135,7 +135,7 @@ N = 10^7;
 Lo = 0:100;
 kappa = 5;
 A = (2*Lo+1) .* kappa.^2 ./ (kappa.^2 +  (2*Lo+1).^2 .* Lo.^(s+0.5) .* (Lo+1).^(s+0.5) ./N);
-psi = kernel('Fourier',A);
+psi = SO3Kernel(A);
 
 odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
 
@@ -145,7 +145,7 @@ odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
 
 S3G = orientation('random',CS{1},SS,'points',10)
 
-psi = kernel('di',4)
+psi = SO3DirichletKernel(4)
 
 %odf = unimodalODF(S3G,CS{1},SS,psi)
 odf = calcODF(S3G,'kernel',psi)

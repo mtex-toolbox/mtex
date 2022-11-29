@@ -14,7 +14,7 @@ function sF = calcDensity(v,varargin)
 %  S2G - @vector3d
 %  w   - weights, default is all one
 %  delta - halfwidth of the kernel, default is 10 degree
-%  psi - @kernel function, default is de la Vallee Poussin
+%  psi - @S2Kernel function, default is S2 de la Vallee Poussin
 %
 % Output
 %  sF  - @S2Fun
@@ -22,13 +22,13 @@ function sF = calcDensity(v,varargin)
 %
 % Options
 %  halfwidth - halfwidth of a kernel
-%  kernel    - specify a kernel
+%  kernel    - specify a S2Kernel
 %  weights   - vector of weights, with same length as v
 %
 
 % determine kernel function
 hw = get_option(varargin,'halfwidth',10*degree);
-psi = get_option(varargin,'kernel',S2DeLaValleePoussin('halfwidth',hw));
+psi = get_option(varargin,'kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
 
 % ignore nans
 v = subSet(v,~isnan(v));

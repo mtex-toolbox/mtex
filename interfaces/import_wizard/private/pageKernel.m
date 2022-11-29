@@ -94,7 +94,7 @@ set(gui.hApprox      ,'Callback',@localChange)
       ma = 2* pi / CS.multiplicityZ;
       omega = linspace(-ma/2,ma/2,5000);
       
-      v = real(psi.K(cos(omega/2)));
+      v = real(psi.eval(cos(omega/2)));
       plot(gui.hKernelAxis,omega/degree,v,'linewidth',2);
       set(gui.hKernelAxis,'ylim',[min([0,v]),max(v)],'yTick',[]);
       set(gui.hKernelAxis,'xlim',[min(omega)/degree,max(omega)/degree]);

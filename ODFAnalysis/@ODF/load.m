@@ -27,12 +27,6 @@ function [odf,interface,options] = load(fname,varargin)
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
-%  determine interface 
-if ~check_option(varargin,'interface')
-  [interface,options] = check_interfaces(fname,'ODF',varargin{:});
-else
-  interface = get_option(varargin,'interface');
-  options = delete_option(varargin,'interface',1);
-end
+warning('The class ODF and also ODF.load is depreciated. Please use instead SO3Fun.load');
 
-odf = feval(['loadODF_',char(interface)],fname,options{:});  
+[odf,interface,options] = SO3Fun.load(fname,varargin{:}); 

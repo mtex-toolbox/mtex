@@ -10,7 +10,7 @@ pf = calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('antipodal'));
 
 %%
 % and simulate some EBSD data
-ori = calcOrientations(odf,100)
+ori = discreteSample(odf,100)
 
 %% Scatter Plots
 % In a scatter plots individual points are plotted. This plot is usually

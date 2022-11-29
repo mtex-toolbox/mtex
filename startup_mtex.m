@@ -155,7 +155,7 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-exclPath = {'data','makeDoc','templates','nfft'};
+exclPath = {'data','makeDoc','templates','nfft','ODF_Components_old','kernelFunctions'};
 
 if ~MATLABverLessThan('8.4'), exclPath = [exclPath,'8.4']; end
 if ~MATLABverLessThan('8.5'), exclPath = [exclPath,'8.5']; end
