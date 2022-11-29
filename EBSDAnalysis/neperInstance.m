@@ -5,12 +5,11 @@ classdef neperInstance < handle
 properties
 
   ori                         %@ODF or list of @orientation
-  CS='-1'                          %crystalSymmetries
   numGrains = 100;
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
-  cmdPrefix                         % contains char 'wsl' for windows systems
+  cmdPrefix                   % contains char 'wsl' for windows systems
   
 end
 
@@ -37,7 +36,6 @@ methods
       if isa(varargin{1},'orientation')
         neper.ori=varargin{1};
         neper.numGrains=length(varargin{1});
-        neper.CS=varargin{1}.CS.pointGroup;
       elseif isa(varargin{1},'ODF')
         neper.ori=varargin{1};
       else
@@ -76,7 +74,7 @@ methods
     system([this.cmdPrefix 'neper -T -n ' num2str(this.numGrains) ...
     ' -morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
       ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
-      ' -oricrysym "' this.CS '" '...
+      ' -oricrysym "' this.ori.CS.LaueName '" '...
       ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
       ' -statpoly faceeqs ' ... % some statistics on the faces
       ' -o ' this.fileName3d ' ' ... % output file name
@@ -117,7 +115,7 @@ methods
     % get a slice
     system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
       '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
-      '-oricrysym "mmm" -ori "file(' this.fileName3d '.ori)" ' ...
+      '-ori "file(' this.fileName3d '.ori)" ' ...
       '-o ' this.fileName2d ' ' ...
       '-oriformat geof ' ...
       '-oridescriptor rodrigues ' ...
@@ -137,17 +135,26 @@ methods (Static = true)
 
   function test
 
-    ori=orientation.rand('1');
+    cs = crystalSymmetry('432');
+    ori = orientation.byRodrigues(vector3d(1,1,1),cs);
+    odf = unimodalODF(ori,'halfwidth',2.5*degree);
+    oriS = odf.discreteSample(100);
+
+
+    %ori=orientation.rand('1');
     %odf=unimodalODF(ori);
 
-    neper = neperInstance(ori);
+    neper = neperInstance(oriS);
 
     neper.simulateGrains()
     grains=neper.getSlice();
 
+    max(angle(oriS,ori))./degree
     max(angle(ori,grains.meanOrientation)/degree)
 
-    plot(grains)
+    plot(grains,grains.meanOrientation)
+
+
 
   end
 
