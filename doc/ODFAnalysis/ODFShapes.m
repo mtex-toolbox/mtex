@@ -44,7 +44,7 @@ legend(gca,'show','Location','eastoutside')
 close; figure('position',[100,100,1000,450])
 hold all
 for i = 1:numel(psi)
-  plotPDF(psi{i},'RK','DisplayName',class(psi{i}));
+  plot(psi{i}.radon,'symmetric','DisplayName',class(psi{i}),'linewidth',2);
 end
 hold off
 
