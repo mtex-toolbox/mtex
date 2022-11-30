@@ -4,9 +4,6 @@ classdef neperInstance < handle
 
 properties
 
-  ori                         %@ODF or list of @orientation
-  CS='-1'                          %crystalSymmetries
-  numGrains = 100;
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
@@ -16,36 +13,8 @@ end
 
 methods
   
-  function neper = neperInstance(varargin)
+  function neper = neperInstance()
     % constructor
-    % Input:  (optional)
-    %   - ori (@ODF) & numGrains (numeric)
-    %   - ori (@ODF)
-    %   - ori (list @orientation)
-
-    if nargin==2  %numGrains & ori
-      if isnumeric(varargin{1}) && isa(varargin{2},'ODF')
-        neper.ori=varargin{2};
-        neper.numGrains=varargin{1};
-      elseif isnumeric(varargin{2}) && isa(varargin{1},'ODF')
-        neper.ori=varargin{1};
-        neper.numGrains=varargin{2};
-      else
-        error 'argument error'
-      end
-    elseif nargin==1 %ori
-      if isa(varargin{1},'orientation')
-        neper.ori=varargin{1};
-        neper.numGrains=length(varargin{1});
-        neper.CS=varargin{1}.CS.pointGroup;
-      elseif isa(varargin{1},'ODF')
-        neper.ori=varargin{1};
-      else
-        error 'argument error'
-      end
-    else %default
-      neper.ori=unimodalODF(orientation.rand);
-    end
 
     if computer=="PCWIN64"
       neper.cmdPrefix='wsl ';
@@ -55,28 +24,65 @@ methods
 
   end
 
-  function simulateGrains(this)
+  function simulateGrains(this,varargin)
+    % Input:  (optional)
+    %   - ori (@ODF) & numGrains (numeric)
+    %   - ori (@ODF)
+    %   - ori (list @orientation)
 
-    if isa(this.ori,'ODF')
-      this.ori = this.ori.discreteSample(this.numGrains);
-    else
-      if this.numGrains~=length(this.ori)
-        warning 'numGrains does not equal length of ori'
+    numGrains=100;    %default
+
+    if nargin==3  %numGrains & ori
+      if isnumeric(varargin{1}) && isa(varargin{2},'ODF')
+        numGrains=varargin{1};
+        ori = varargin{2}.discreteSample(numGrains);
+      elseif isnumeric(varargin{2}) && isa(varargin{1},'ODF')
+        numGrains=varargin{2};
+        ori = varargin{1}.discreteSample(numGrains);
+      else
+        error 'argument error'
       end
-      this.numGrains=min(this.numGrains,length(this.ori));
-      this.ori=this.ori(1:this.numGrains);
+    elseif nargin==2 %ori
+      if isa(varargin{1},'orientation')
+        ori=varargin{1};
+        numGrains=length(varargin{1});
+      elseif isa(varargin{1},'ODF')
+        ori = varargin{1}.discreteSample(numGrains);
+      else
+        error 'argument error'
+      end
+    else %default
+      ori=orientation.rand();
+      ori.CS=crystalSymmetry('mmm');
+      ori = unimodalODF(ori).discreteSample(numGrains);
     end
-    
-    % save ori to file
+
+    %% parsing orientations
+    CS=ori.CS.LaueName;
+    switch CS
+      case '2/m11'
+        CS='2/m';
+      case '12/m1'
+        CS='2/m';
+      case '112/m'
+        CS='2/m';
+      case '-3m1'
+        CS='-3m';
+      case '-31m'
+        CS='-3m';
+      otherwise
+    end
+
+    %% save ori to file
     oriFilename='ori_in.txt';
     fid=fopen(oriFilename,'w');
-    fprintf(fid,'%f %f %f\n',[this.ori.Rodrigues.x'; this.ori.Rodrigues.y'; this.ori.Rodrigues.z']);
+    fprintf(fid,'%f %f %f\n',[ori.Rodrigues.x'; ori.Rodrigues.y'; ori.Rodrigues.z']);
     fclose(fid);
 
-    system([this.cmdPrefix 'neper -T -n ' num2str(this.numGrains) ...
+    system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
     ' -morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ' ...
       ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
-      ' -oricrysym "' this.CS '" '...
+      ' -oricrysym "' CS '" '...
       ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
       ' -statpoly faceeqs ' ... % some statistics on the faces
       ' -o ' this.fileName3d ' ' ... % output file name
@@ -96,25 +102,37 @@ methods
     %  d - point in slice @vector3d
     %      0 > x,y,z < 1
     %      or scalar d of a plane(a,b,c,d) (default:1)
-    %  
+
+    %%
+    %deleting old files, to make shure, to not load a wrong file, if slicing failed
+    warning off MATLAB:DELETE:FileNotFound
+    delete([this.fileName2d '.tess' ]);
+    delete([this.fileName2d '.ori' ]);
+    warning on MATLAB:DELETE:FileNotFound
     
-    % default values
+    %% default values
     n=vector3d(1,1,1);
     d=1;
 
-    if nargin>1 && isa(varargin{1},'vector3d')
-      n=varargin{1};
-      n=normalize(n);
+    if nargin>1
+      if isa(varargin{1},'vector3d')
+        n=varargin{1};
+        n=normalize(n);
+      else
+        warning 'argument error, using default n'
+      end
     end
     if nargin>2
       if isa(varargin{2},"vector3d")
         d=dot(n,varargin{2});
-      elseif isnumeric(varargin{2})
+      elseif isnumeric(varargin{2}) && isscalar(varargin{2})
         d=varargin{2};
+      else
+        warning 'argument error, using default'
       end
     end
 
-    % get a slice
+    %% get a slice
     system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
       '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
       '-oricrysym "mmm" -ori "file(' this.fileName3d '.ori)" ' ...
@@ -126,6 +144,10 @@ methods
       ...
       this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
 
+    if ~isfile('2dslice.tess')
+      error 'slicing failed, try other plane parameters.'
+    end
+
     grains = grain2d.load([this.fileName2d '.tess']);
 
   end
@@ -135,17 +157,12 @@ end
 
 methods (Static = true)
 
-  function test
+  function grains = test
 
-    ori=orientation.rand('1');
-    %odf=unimodalODF(ori);
-
-    neper = neperInstance(ori);
+    neper = neperInstance;
 
     neper.simulateGrains()
     grains=neper.getSlice();
-
-    max(angle(ori,grains.meanOrientation)/degree)
 
     plot(grains)
 
