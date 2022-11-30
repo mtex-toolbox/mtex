@@ -119,7 +119,7 @@ hold off
 
 %%
 % For computing the exact values see the commands
-% <ODF.calcAngleDistribution.html calcAngleDistribution(mdf)> and
+% <SO3Fun.calcAngleDistribution.html calcAngleDistribution(mdf)> and
 % <orientation.calcAngleDistribution.html calcAngleDistribution(ori)>.
  
 %% SUB: Axis distribution
@@ -137,7 +137,7 @@ plotAxisDistribution(mdf)
 
 %%
 % For computing the exact values see the commands
-% <ODF.calcAxisDistribution.html calcAxisDistribution(mdf)> and
+% <SO3Fun.calcAxisDistribution.html calcAxisDistribution(mdf)> and
 % <orientation.calcAxisDistribution.html calcAxisDistribution(grains)>.
 
 aD = calcDensity(axis(grains.boundary('fo','en').misorientation))

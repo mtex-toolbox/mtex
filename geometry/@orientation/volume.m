@@ -14,7 +14,7 @@ function v = volume(ori,center,radius,varargin)
 %  radius - double
 %
 % See also
-% ODF/volume
+% SO3Fun/volume
 
 if isa(center,'fibre')
   v = fibreVolume(ori,center.h,center.r,radius,varargin{:});

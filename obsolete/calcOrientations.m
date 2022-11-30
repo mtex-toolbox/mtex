@@ -5,7 +5,7 @@ function ori = calcOrientations(odf,points,varargin)
 %   ori = calcOrientations(odf,points)
 %
 % Input
-%  odf    - @ODF
+%  odf    - @SO3Fun
 %  points - number of orientation to be simualted
 %
 % Output

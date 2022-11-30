@@ -27,7 +27,7 @@ function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 %   annotate(mode)
 %
 % See also
-% ODF/max
+% SO3Fun/max
 
 % extract options
 maxIter = get_option(varargin,'maxIter',100);

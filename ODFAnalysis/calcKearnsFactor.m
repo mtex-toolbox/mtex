@@ -6,7 +6,7 @@ function k = calcKearnsFactor(pdf,varargin)
 %   k = calcKearnsFactor(pdf,N)
 %
 % Input
-%  odf - orientation distribution function, @ODF
+%  odf - orientation distribution function, @SO3Fun
 %  h - crystal direction, @Miller (default is [0001])
 %  pdf - pole density function, @S2Fun 
 %  N - normal direction @vector3d, (default is Z)

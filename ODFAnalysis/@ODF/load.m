@@ -22,7 +22,7 @@ function [odf,interface,options] = load(fname,varargin)
 %  comment    - comment to be associated with the data
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic

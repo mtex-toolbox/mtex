@@ -9,7 +9,7 @@ function v = fibreVolume(odf,h,r,radius,varargin)
 %   v = fibreVolume(odf,h,r,radius)
 %
 % Input
-%  odf    - @ODF
+%  odf    - @SO3Fun
 %  h      - @Miller
 %  r      - @vector3d
 %  radius - double
@@ -18,7 +18,7 @@ function v = fibreVolume(odf,h,r,radius,varargin)
 %  resolution - resolution of discretization
 %
 % See also
-% ODF/volume ODF/entropy ODF/textureindex
+% SO3Fun/volume SO3Fun/entropy SO3Fun/textureindex
 
 % check input
 argin_check(h,{'Miller','vector3d'});

@@ -5,7 +5,7 @@ function f_hat = calcFourier(SO3F,varargin)
 %   f_hat = calcFourier(odf,'bandwidth',L)
 %
 % Input
-%  odf  - @ODF
+%  odf  - @SO3Fun
 %  L    - order up to which Fourier coefficients are calculated
 %
 % Options

@@ -21,7 +21,7 @@ function SO3F = mrdivide(SO3F,s)
 %   [F,F] / [1,2;3,4]
 %
 % See also
-% ODF/ODF ODF/plus ODF/mtimes
+% SO3Fun/plus SO3Fun/mtimes
 % implements SO3F / alpha
 %
 % See also

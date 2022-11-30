@@ -2,11 +2,11 @@ function odf = rotate(odf,rot,varargin)
 % rotate ODF
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  q   - @rotation
 %
 % Output
-%  rotated odf - @ODF
+%  rotated odf - @SO3Fun
 
 ss = odf.SS.Laue;
 if length(ss)>2 && ~any(rot == ss(:))

@@ -111,4 +111,4 @@ end
 % Miller/multiplicity  ->
 % Miller/text          -> noAntipodal
 % fibre/symmetrise     -> 
-% unimodalComponent/calcPDF -> noAntipodal
+% SO3FunRBF/calcPDF    -> noAntipodal

@@ -27,7 +27,7 @@ classdef fibre
   %  h      - @Miller
   %
   % See also
-  % OrientationFibre FibreODFs ODF.fibreVolume
+  % OrientationFibre FibreODFs SO3Fun.fibreVolume
 
   properties
     o1 = orientation % starting point

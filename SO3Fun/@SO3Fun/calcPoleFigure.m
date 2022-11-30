@@ -12,7 +12,7 @@ function pf = calcPoleFigure(odf,h,varargin)
 %   pf = calcPoleFigure(odf,{h1,{h2,h3]},'superposition',{[1,[0.2 0.8]]})
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  h   - @Miller / @vector3d crystallographic directions
 %  r   - @vector3d specimen directions
 %

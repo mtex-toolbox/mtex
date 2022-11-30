@@ -5,7 +5,7 @@
 % || <rotation.byEuler.html |rotation.byEuler|> || <rotation.byAxisAngle.html |rotation.byAxisAngle|> || <rotation.byMatrix.html |rotation.byMatrix|> ||
 % || <rotation.byRodrigues.html |rotation.byRodrigues|> || <rotation.byHomochoric.html |rotation.byHomochoric|> || <rotation.byQuaternion.html |rotation(quat)|> ||
 % || <rotation.id.html |rotation.id|> || <rotation.map.html |rotation.map|> || <rotation.fit.html |rotation.fit|> || 
-% || <rotation.rand.html |rotation.rand|> || <ODF.discreteSample.html |odf.discreteSample|> || <rotation.nan.html |rotation.nan|> ||
+% || <rotation.rand.html |rotation.rand|> || <SO3Fun.discreteSample.html |odf.discreteSample|> || <rotation.nan.html |rotation.nan|> ||
 % || <rotation.load.html |rotation.load|> || || <rotation.inversion.html |rotation.inversion|> || <rotation.mirroring.html |rotation.mirroring|>  ||
 %
 % At the end all functions return a variable of type

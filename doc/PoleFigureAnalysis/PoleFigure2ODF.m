@@ -61,7 +61,7 @@ plotDiff(pf,odf)
 %%
 % Assuming you have driven two ODFs from different pole figure measurements
 % or by ODF modeling. Then one can ask for the difference between both.
-% This difference is computed by the command <ODF.calcError.html
+% This difference is computed by the command <SO3Fun.calcError.html
 % calcError>.
 
 % define a unimodal ODF with the same preferred orientation 

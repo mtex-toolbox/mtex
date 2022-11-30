@@ -13,7 +13,7 @@ function sF = conv(sF, psi, varargin)
 %
 % Output
 %  sF   - @S2FunHarmonic
-%  SO3F - @ODF
+%  SO3F - @SO3Fun
 %
 % See also
 % S2Kernel/conv SO3FunHarmonic/conv SO3Kernel/conv 

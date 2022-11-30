@@ -6,7 +6,7 @@ function e = calcError(odf1,odf2,varargin)
 %   e = calcError(odf,pf,'RP')
 %
 % Input
-%  odf1, odf2 - @ODF
+%  odf1, odf2 - @SO3Fun
 %  pf   - @PoleFigure
 %  S3G  - @SO3Grid of quadrature nodes (optional)
 %

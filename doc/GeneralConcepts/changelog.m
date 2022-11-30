@@ -180,7 +180,7 @@
 %
 % *Important Bug Fixes*
 %
-% * <ODF.volume.html |volume(odf)|> gave wrong results in the presense of
+% * <SO3Fun.volume.html |volume(odf)|> gave wrong results in the presense of
 % specimen symmetry and for centers close to the boundary of the
 % fundamental region.
 %

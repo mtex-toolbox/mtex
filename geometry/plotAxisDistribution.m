@@ -11,7 +11,7 @@ function h = plotAxisDistribution(obj,varargin)
 %   plotAxisDistribution(odf)
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  mori - @misorientation
 %  ori1,ori2 - @orientation
 %  cs1, cs2 - @crystalSymmetry

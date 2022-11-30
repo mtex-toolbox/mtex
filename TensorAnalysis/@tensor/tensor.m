@@ -33,7 +33,7 @@ classdef tensor < dynOption
       %  name - name of the tensor
       %
       % See also
-      % ODF/calcTensor EBSD/calcTensor
+      % SO3Fun/calcTensor EBSD/calcTensor
 
       if nargin == 0
         

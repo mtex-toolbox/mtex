@@ -7,7 +7,7 @@ function varargout = calcTensor(odf,T,varargin)
 %   TGeo = calcTensor(odf,T,'geometric')
 %
 % Input
-%  odf - @ODF
+%  odf - @SO3Fun
 %  T   - @tensor
 %
 % Output

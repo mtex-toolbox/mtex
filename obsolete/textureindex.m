@@ -17,7 +17,7 @@ function t = textureindex(odf,varargin)
 %  resolution - resolution of the discretization
 %
 % See also
-% ODF/norm ODF/entropy ODF/volume ODF/ODF ODF/calcFourier
+% SO3Fun/norm SO3Fun/entropy SO3Fun/volume SO3Fun/SO3Fun SO3Fun/calcFourier
 
 warning('The command textureindex is depreciated! Please use squared norm instead.')
 

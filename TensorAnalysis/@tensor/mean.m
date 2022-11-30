@@ -17,7 +17,7 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %  T - @tensor
 %  dim - dimension with respect to which the mean is taken 
 %  ori - @orientation
-%  odf - @ODF 
+%  odf - @SO3Fun
 %  weights - double
 %
 

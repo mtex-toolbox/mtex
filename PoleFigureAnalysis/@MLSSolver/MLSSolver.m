@@ -24,7 +24,7 @@ classdef MLSSolver < pf2odfSolver
 %  iterMin - min number of iterations
 %
 % Dependent Class Properties
-%  odf - @ODF the reconstructed ODF
+%  odf - @SO3Fun the reconstructed ODF
 %
 % See also
 % PoleFigureTutorial PoleFigure2ODFAmbiguity PoleFigure2ODFGhostCorrection
@@ -54,7 +54,7 @@ classdef MLSSolver < pf2odfSolver
   end
   
   properties (Dependent = true)
-    odf % the reconstructed @ODF
+    odf % the reconstructed @SO3Fun
   end
     
   methods

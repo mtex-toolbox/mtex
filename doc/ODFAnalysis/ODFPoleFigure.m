@@ -27,7 +27,7 @@ odf = 0.2*unimodalODF(mod1) ...
 setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %%
-% Plotting some pole figures of an <ODF.ODF.html ODF> is straight forward
+% Plotting some pole figures of an <SO3Fun.SO3Fun.html ODF> is straight forward
 % using the <SO3Fun.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller.Miller.html Miller
 % indice> of the crystal directions you want to have pole figures for

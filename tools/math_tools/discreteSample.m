@@ -12,7 +12,7 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 %   gB = discreteSample(gB,points,'withoutReplacement')
 %
 % Input
-%  f      - density function, e.g., function handle, @S2Fun, @ODF
+%  f      - density function, e.g., function handle, @S2Fun, @SO3Fun
 %  gB     - @grainBoundary
 %  ebsd   - @EBSD
 %  ori    - @orientation

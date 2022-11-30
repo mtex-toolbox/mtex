@@ -11,7 +11,7 @@ function v = volume(SO3F,center,radius,varargin)
 %   v = volume(odf,fibre,radius) % gives the volume with a fibre
 %
 % Input
-%  odf    - @ODF
+%  odf    - @SO3Fun
 %  center - @orientation
 %  fibre  - @fibre
 %  radius - double
@@ -20,7 +20,7 @@ function v = volume(SO3F,center,radius,varargin)
 %  resolution - resolution of discretization
 %
 % See also
-% ODF/fibreVolume ODF/entropy ODF/textureindex
+% SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
 
 if isa(center,'fibre')
   

@@ -15,7 +15,7 @@
 % type. There are many different types of variables (called classes) for
 % different objects, like <vector3d.vector3d.html vectors>,
 % <rotation.rotation.html rotations>, <EBSD.EBSD.html EBSD data>,
-% <grain2d.grain2d.html grains> or <ODF.ODF.html ODFs>. The sidebar on the
+% <grain2d.grain2d.html grains> or <SO3Fun.SO3Fun.html ODFs>. The sidebar on the
 % left lets you browse through all different MTEX class and the
 % corresponding functions.
 %

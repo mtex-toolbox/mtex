@@ -10,7 +10,7 @@ function  varargout = fundamentalRegion(varargin)
 % Input
 %  cs,cs1,cs2 - @symmetry
 %  ori - @orientation
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Output
 %  oR   - @orientationRegion

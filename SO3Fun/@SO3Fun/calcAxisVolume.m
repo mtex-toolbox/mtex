@@ -5,7 +5,7 @@ function v = calcAxisVolume(odf,axis,radius,varargin)
 %   vol = calcAxisVolume(odf,axis,radius)
 %
 % Input
-%  odf  - @ODF
+%  odf  - @SO3Fun
 %  axis - @vector3d / @Miller
 %  radius - double
 %
