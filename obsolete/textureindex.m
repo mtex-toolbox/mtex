@@ -21,4 +21,4 @@ function t = textureindex(odf,varargin)
 
 warning('The command textureindex is depreciated! Please use squared norm instead.')
 
-t = norm(odf,varargin).^2;
+t = norm(odf,varargin{:}).^2;
