@@ -491,7 +491,7 @@
 % allows to import arbitrary additional properties together with the
 % orientations, e.g., weights
 % * new option |logarithmic|
-% * new function <ODF.grad.html |grad|> to compute the gradient of and ODF
+% * new function <SO3Fun.grad.html |grad|> to compute the gradient of and ODF
 % at a certain orientation
 % * explicitely set the number of rows and columns in a MTEXFigure plot
 % with
@@ -650,7 +650,7 @@
 % *ODF component analysis*
 %
 % MTEX 5.0 allows for decomposing ODF into components using the command
-% <ODF.calcComponents.html calcComponents>. In its simplest form
+% <SO3Fun.calcComponents.html calcComponents>. In its simplest form
 %
 %   [mods,weights] = calcComponents(odf)
 %
@@ -667,7 +667,7 @@
 % The ODF component analysis is used as the new default algorithm in
 % <orientation.calcCluster.html calcCluster> for orientations. The idea is
 % to compute an ODF out of the orientations and call
-% <ODF.calcComponents.html calcComponents> with
+% <SO3Fun.calcComponents.html calcComponents> with
 %
 %   [center,~,centerId] = calcComponents(odf,'seed',ori)
 %
@@ -733,11 +733,11 @@
 %
 % *Other new functions*
 %
-% * <ODF.grad.html odf.grad> computes the gradient of an ODF at some
+% * <SO3Fun.grad.html odf.grad> computes the gradient of an ODF at some
 % orientation
 % * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
 % properties
-% * <ODF.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * <SO3Fun.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
 % * allow to change the length of the scaleBar in EBSD plots
 %
 %% MTEX 4.5.2 11/2017
@@ -872,8 +872,8 @@
 %   f = fibre.fit([ori1,ori2,mean(ori1,ori2)])
 %
 % All commands that took a pair of directions to specify a fibre, e.g.,
-% <fibreODF.html fibreODF>, <ODF.fibreVolume.html fibreVolume>,
-% <ODF.plotFibre.html plotFibre> have been rewritten to accept a fibre as a
+% <fibreODF.html fibreODF>, <SO3Fun.fibreVolume.html fibreVolume>,
+% <SO3Fun.plotFibre.html plotFibre> have been rewritten to accept a fibre as a
 % single input argument. I.e. a fibre ODF is now defined by
 %
 %   odf = fibreODF(fibre.alpha(cs))
@@ -2159,9 +2159,9 @@
 %
 % * ODF reconstruction and PDF calculation are about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
-% * ODF plotting and the calculation of <ODF.volume.html volume
-% fractions>, the <ODF.textureindex.html texture index>, the
-% <ODF.entropy.html entropy> and <ODF.calcFourier.html Fourier
+% * ODF plotting and the calculation of <SO3Fun.volume.html volume
+% fractions>, the <textureindex.html texture index>, the
+% <SO3Fun.entropy.html entropy> and <SO3Fun.calcFourier.html Fourier
 % coefficients> is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
@@ -2219,8 +2219,8 @@
 %
 %% MTEX 0.2 - 07/2007
 %
-% * new functions <ODF.textureindex.html textureindex>, <ODF.entropy.html
-% entropy>, <ODF.volume.html volume>
+% * new functions <textureindex.html texture index>, <SO3Fun.entropy.html
+% entropy>, <SO3Fun.volume.html volume>
 % * creatly improved help
 % * improved installation
 % * new options for plotting routines for specific ODF sections
