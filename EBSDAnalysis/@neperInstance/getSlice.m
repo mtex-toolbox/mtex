@@ -8,11 +8,20 @@ function grains = getSlice(this,varargin)
 %      or scalar d of a plane(a,b,c,d) (default:1)
 
 %%
+%change work directory
+if this.newfolder==true
+  cd([this.filePath this.folder]);
+else
+  cd(this.filePath)
+end
+
 %deleting old files, to make shure, to not load a wrong file, if slicing failed
-warning off MATLAB:DELETE:FileNotFound
-delete([this.fileName2d '.tess' ]);
-delete([this.fileName2d '.ori' ]);
-warning on MATLAB:DELETE:FileNotFound
+if isfile('2dslice.tess')
+  delete([this.fileName2d '.tess' ]);
+end
+if isfile('2dslice.ori')
+  delete([this.fileName2d '.ori' ]);
+end
 
     %% default values
     n=vector3d(1,1,1);

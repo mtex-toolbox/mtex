@@ -14,6 +14,20 @@ function simulateGrains(this,varargin)
 %  ori   - @orientation
 % 
 
+%%
+%change work directory
+if this.newfolder==true
+  try
+    cd([this.filePath this.folder]);
+  catch
+    cd(this.filePath);
+    mkdir(this.folder);
+    cd(this.folder);
+  end
+else
+  cd(this.filePath);
+end
+%%
     numGrains=100;    %default
 
     if nargin==3  %numGrains & ori

@@ -14,8 +14,13 @@ properties
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
   filePath = tempdir
-  cmdPrefix                    % contains char 'wsl' for windows systems
+  newfolder = true;
   
+end
+
+properties (Access = private)
+  folder = 'neper\'
+  cmdPrefix                    % contains char 'wsl' for windows systems
 end
 
 methods
