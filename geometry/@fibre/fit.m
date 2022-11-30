@@ -10,7 +10,7 @@ function [f,lambda,delta] = fit(ori,varargin)
 %
 % Input
 %  ori1, ori2, ori - @orientation
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Output
 %  f       - @fibre
@@ -19,7 +19,7 @@ function [f,lambda,delta] = fit(ori,varargin)
 % Options
 %  local   - fast approach for locally concentrated orientations 
     
-if isa(ori,'ODF')
+if isa(ori,'SO3Fun')
 
   odf = ori;
   cs = odf.CS.properGroup;

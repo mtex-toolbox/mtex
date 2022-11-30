@@ -81,11 +81,11 @@ fname = [pname filesep 'twins.ctf'];
 ebsd = EBSD.load(fname,CS,'interface','ctf',...
   'convertEuler2SpatialReferenceFrame');
 
+%%
 % Running this script imports the data into a variable named
 % |ebsd|. From this point, the script can be extended to your needs, e.g:
 
 plot(ebsd)
-
 
 %% Supported Data Formats
 %
