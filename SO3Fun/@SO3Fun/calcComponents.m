@@ -64,11 +64,13 @@ modes = seed;
 
 finished = false(size(modes));
 
+G = SO3F.grad;
+
 for k = 1:maxIter
   %progress(k,maxIter,' finding ODF components: ');
 
   % gradient
-  g = normalize(SO3F.grad(modes(~finished)),1);
+  g = normalize(G.eval(modes(~finished)),1);
   
   % prepare for linesearch
   line_ori = exp(repmat(modes(~finished),1,length(omega)),g * omega);
