@@ -17,10 +17,10 @@ function odf = BinghamODF(varargin)
 %  CS, SS - crystal, specimen @symmetry
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % See also
-% ODF/ODF uniformODF unimodalODF fibreODF
+% FourierODF uniformODF unimodalODF fibreODF
 
 
 % get crystal and specimen symmetry

@@ -25,7 +25,7 @@ function odf = unimodalODF(varargin)
 %  odf - @SO3Fun
 %
 % See also
-% ODF/ODF uniformODF fibreODF
+% FourierODF uniformODF BinghamODF fibreODF
 
 % get crystal and specimen symmetry
 [CS,SS] = extractSym(varargin);

@@ -9,11 +9,11 @@ function odf = FourierODF(C,varargin)
 %  CS, SS - crystal, specimen @symmetry
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % See also
-% ODF/ODF uniformODF fibreODF unimodalODF
-   
+% uniformODF unimodalODF BinghamODF fibreODF
+
 odf = SO3FunHarmonic(C,varargin{:});
 
 end
