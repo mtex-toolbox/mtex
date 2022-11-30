@@ -107,18 +107,17 @@ sqrt(mean(abs(SO3F1).^2))
 
 norm(SO3F1)
 
-%% TODO: Differentiation
-%
-% The differential of a $SO(3)$ function in a specific point is a
-% gradient, i.e., a <vector3d.vector3d.html three-dimensional vector> which
+%% Differentiation
+% The gradient of a $SO(3)$ function in a specific point can be described
+% by a <vector3d.vector3d.html three-dimensional vector> which
 % can be computed by the command <SO3Fun.grad.html |grad|>
 
 grad(SO3F1,R)
 
 %%
 % The gradients of a $SO(3)$ function in all points form a $SO(3)$
-% vector field and are returned by the function <SO3Fun.grad.html |grad|> as a
-% variable of type @SO3VectorFieldHarmonic.
+% vector field and are returned by the function <SO3Fun.grad.html |grad|> 
+% as a variable of type @SO3VectorFieldHarmonic.
 
 % compute the gradient as a vector field
 G = grad(SO3F1)
@@ -128,6 +127,23 @@ plot(SO3F1,'upper','sigma')
 hold on
 plot(G,'color','black','linewidth',2,'resolution',5*degree)
 hold off
+
+%%
+% Now we can use the function <SO3Fun.steepestDescent.html |steepestDescent|>
+% to compute local maxima and minima of an @SO3Fun.
+
+plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
+ori = orientation.id;
+
+% compute and mark the global maximum
+[maxnode, maxvalue] = steepestDescent(2 * SO3F1 + SO3F2,ori)
+annotate(maxnodes)
+
+% compute and mark the local minimum
+[minnode, v] = steepestDescent( -(2 * SO3F1 + SO3F2),ori)
+minvalue = -v
+annotate(minnodes)
+
 
 %%
 % We observe long arrows at the positions of big changes in intensity and
