@@ -23,44 +23,37 @@ if isfile('2dslice.ori')
   delete([this.fileName2d '.ori' ]);
 end
 
-    %% default values
-    n=vector3d(1,1,1);
-    d=1;
+%%
+assert(nargin>1,'too few input arguments')
+if nargin>2 && isa(varargin{1},'vector3d')
+  n=varargin{1};
+  if isa(varargin{2},"vector3d")
+    d=dot(n,varargin{2});
+  elseif isnumeric(varargin{2}) && isscalar(varargin{2})
+    d=varargin{2};
+  else
+    error 'argument error'
+  end
+else
+  error 'argument error'
+end
 
-    if nargin>1
-      if isa(varargin{1},'vector3d')
-        n=varargin{1};
-        n=normalize(n);
-      else
-        warning 'argument error, using default n'
-      end
-    end
-    if nargin>2
-      if isa(varargin{2},"vector3d")
-        d=dot(n,varargin{2});
-      elseif isnumeric(varargin{2}) && isscalar(varargin{2})
-        d=varargin{2};
-      else
-        warning 'argument error, using default'
-      end
-    end
+%% get a slice
+system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
+  '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
+  '-ori "file(' this.fileName3d '.ori)" ' ...
+  '-o ' this.fileName2d ' ' ...
+  '-oriformat geof ' ...
+  '-oridescriptor rodrigues ' ...
+  '-format tess,ori ' ...
+  '&& ' ...
+  ...
+  this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
 
-    %% get a slice
-    system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
-      '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
-      '-ori "file(' this.fileName3d '.ori)" ' ...
-      '-o ' this.fileName2d ' ' ...
-      '-oriformat geof ' ...
-      '-oridescriptor rodrigues ' ...
-      '-format tess,ori ' ...
-      '&& ' ...
-      ...
-      this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
+if ~isfile('2dslice.tess')
+  error 'slicing failed, try other plane parameters.'
+end
 
-    if ~isfile('2dslice.tess')
-      error 'slicing failed, try other plane parameters.'
-    end
-
-    grains = grain2d.load([this.fileName2d '.tess']);
+grains = grain2d.load([this.fileName2d '.tess']);
 
   end

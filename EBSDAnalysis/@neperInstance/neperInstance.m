@@ -27,18 +27,12 @@ methods
   
   function neper = neperInstance()
     % constructor
-
     if computer=="PCWIN64"
       neper.cmdPrefix='wsl ';
     else
       neper.cmdPrefix='';
     end
-
   end
-
-  
-
-  
 
 end
 
@@ -48,9 +42,17 @@ methods (Static = true)
   function grains = test
 
     neper = neperInstance;
+    
+    numGrains=100;
+    ori=orientation.rand();
+    ori.CS=crystalSymmetry('mmm');
+    ori = unimodalODF(ori).discreteSample(numGrains);
 
-    neper.simulateGrains()
-    grains=neper.getSlice();
+    n=vector3d(1,1,1);
+    d=1;
+
+    neper.simulateGrains(ori)
+    grains=neper.getSlice(n,d);
 
     plot(grains,grains.meanOrientation)
 
