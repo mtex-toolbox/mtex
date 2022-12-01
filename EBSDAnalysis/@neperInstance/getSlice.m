@@ -1,11 +1,27 @@
 function grains = getSlice(this,varargin)
+% generating 2d slices of 3d neper tesselations
 %
-% TODO: better docu, ohne default, 
-% Input (optional)
-%  n - slice normal @vector3d (default:[1,1,1])
-%  d - point in slice @vector3d
-%      0 > x,y,z < 1
-%      or scalar d of a plane(a,b,c,d) (default:1)
+% Syntax
+%   
+%   neper=neperInstance;
+%   neper.simulateGrains(unimodalODF(orientation.rand), 100)
+%
+%   N=vector3d(1,1,1);   % normal vector of a plane
+%   d=1;                 % d of plane equation
+%   grains=neper.getSlice(N,d)
+%
+%   A=vector3d(1/3,1/3,1/3) %position vector of a point from the plane
+%   grains=neper.getSlice(N,A)
+%
+% Input
+%  N - slice normal @vector3d
+%  d - d of a plane equation (a,b,c,d)
+%  A - point in slice plane @vector3d
+%
+% Output
+%  grains         - @grain2d
+%  2dslice.tess   - 2d neper tesselation file, name specified at neper.fileName2d, stored under neper.filepath
+%  2dslice.ori    - file with orientations in euler-bunge format
 
 %%
 %change work directory
@@ -15,7 +31,7 @@ else
   cd(this.filePath)
 end
 
-%deleting old files, to make shure, to not load a wrong file, if slicing failed
+%deleting old files, to make sure, to not load a wrong file, if slicing failed
 if isfile('2dslice.tess')
   delete([this.fileName2d '.tess' ]);
 end

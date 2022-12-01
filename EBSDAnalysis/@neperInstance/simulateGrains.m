@@ -1,19 +1,28 @@
 function simulateGrains(this,varargin)
+% generating 3d neper tesselations
 %
 % Syntax
 %   
+%   neper=neperInstance;
+%   neper.filepath='C:\\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
+%   numGrains=100;
+%   odf=unimodalODF(orientation.rand);
 %   neper.simulateGrains(odf, numGrains)
+%
+%   ori=discreteSample(odf,numGrains)
 %   neper.simulateGrains(ori)
 %
-%   % is numGrains == length(ori)?
-%   
 %
 % Input
-%  neper - @neperInstance
-%  odf   - @ODF
-%  numGrains - number of grains
-%  ori   - @orientation
+%  neper      - @neperInstance
+%  odf        - @ODF
+%  numGrains  - number of grains
+%  ori        - @orientation
 % 
+%  Output
+%   allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
+%   allgrains.ori   - orientation file, euler-bunge format,
+%   ori_in.txt      - input orientations, rodrigues format
 
 %%
 %change work directory

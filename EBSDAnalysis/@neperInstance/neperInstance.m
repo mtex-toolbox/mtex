@@ -2,10 +2,35 @@ classdef neperInstance < handle
 % class that provides an interface to the crystal simulation software
 % neper (see https://neper.info)
 %
-% Example
+% Syntax
 % 
+%   myNeper=neperInstance
 %
-
+%   %select working folder, default: @tempdir
+%   myNeper.filePath='C:\\Users\user\Work\Mtex\NeperExamples'; 
+%   %decide if new folder should be created in working directory, default: true
+%   myNeper.newFolder=false;
+%   %specifing filenames
+%   myNeper.fileName3d='my100Grains';    %default: 'allgrains'
+%   myNeper.fileName2d='mySlice';        %default: '2dslice'
+%
+%   ori=orientation.rand;
+%   ori.CS=crystalSymmetry('mmm');
+%   odf=unimodalODF(orientation.rand)
+%   numGrains=100;
+%   myNeper.simulateGrains(odf,100)
+%
+%   N=vector3d(1,1,1);    %normal vector (a,b,c) of a plane
+%   d=1;                  %d of a plane equation(a,b,c,d)
+%   grains=myNeper.getSlice(N,d)
+%
+%   N=vector3d(0,0,1);    %normal vector of a plane
+%   A=vector3d(0,0,0.5);  %point from the plane
+%   grains2=myNeper.getSlice(N,A)
+%
+%   plot(grains,grains.meanOrientation)
+%   hold
+%   plot(grains2,grains2.meanOrientation)
 
 properties
 
@@ -24,7 +49,7 @@ properties (Access = private)
 end
 
 methods
-  
+
   function neper = neperInstance()
     % constructor
     if computer=="PCWIN64"
