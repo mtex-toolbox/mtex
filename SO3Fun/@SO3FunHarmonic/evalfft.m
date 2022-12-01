@@ -36,9 +36,13 @@ function val = evalfft(SO3F,varargin)
 %   SO3F - @SO3FunHarmonic
 %
 % Output
-%   val - structure array composed of a grid and the SO3F values at this
-%   grid points
+%   val - structure array composed of a grid and the SO3F values at this grid points
 %
+% Example
+%   SO3F = SO3FunHarmonic(SO3Fun.dubna);
+%   v = SO3F.evalfft;
+%   v.value - SO3F.eval(v.grid)
+% 
 
 % if there are no @rotation given, do dft
 if ~isempty(varargin) && isa(varargin{1},'rotation')
@@ -75,8 +79,8 @@ if SO3F.isReal
   ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^0+2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
-  z = zeros(2*N+1,N+1,2*N+1)+(-N:N)'-(0:N);
-  ghat = ghat.*exp(-0.5*pi*1i*z);
+  z = zeros(2*N+1,2*N+1,N+1)+(-N:N)'-reshape(0:N,1,1,[]);
+  ghat = ghat.*(1i).^z;
 
 else
 
@@ -84,8 +88,8 @@ else
   ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^2);
 
   % correct ghat by exp(-2*pi*i*(-1/4*l+1/4*k))
-  z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-(-N:N);
-  ghat = ghat.*exp(-0.5*pi*1i*z);
+  z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-reshape(-N:N,1,1,[]);
+  ghat = ghat.*(1i).^z;
 
 end
 
@@ -93,24 +97,23 @@ end
 % fft
 f = fftn(ghat,[2*H+2,2*H+2,2*H+2]);
 
-f = f(:,:,1:H+2);                          % because beta is only in [0,pi]
+f = f(:,1:H+2,:);                          % because beta is only in [0,pi]
 
 if SO3F.isReal
   % need to shift summation of fft from [-N:N] to [0:2N]
-  z = (0:2*H+1)'+reshape(0:H+1,1,1,H+2);
+  z = (0:H+1)+(0:2*H+1)';
   f = 2*real(exp(1i*pi*N/(H+1)*z).*f);     % shift summation & use (*)
 else
   % need to shift summation of fft from [-N:N] to [0:2N]
-  z = (0:2*H+1)+(0:2*H+1)'+reshape(0:H+1,1,1,H+2);
+  z = (0:H+1)+(0:2*H+1)'+reshape(0:2*H+1,1,1,[]);
   f = exp(1i*pi*N/(H+1)*z).*f;
 end
 
-f = permute(f,[1,3,2]);
 
 if dft
   grid(:,[3,2,1]) = combvec(0:2*H+1,0:2*H+1,0:2*H+1)'*pi/(H+1);
   grid = grid(grid(:,2)<=pi,:);
-  grid = rotation.byEuler(grid,'nfft');
+  grid = orientation.byEuler(grid,'nfft',SO3F.CS,SO3F.SS);
   val.grid = reshape(grid,size(f));
   val.value = f;
   return
