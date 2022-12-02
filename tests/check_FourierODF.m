@@ -9,7 +9,7 @@ h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(1,-3,-4,cs)];
 
 odf = unimodalODF(axis2quat(vector3d(2,-3,-5),60*degree),cs);
 %odf = UnimodalODF(axis2quat(yvector,45*degree)*axis2quat(xvector,45*degree),cs);
-fodf = calcFourier(odf,32);
+fodf = calcFourier(odf,'bandwidth',32);
 fodf = FourierODF(fodf);
 
 %fourier(fodf,'order',1)
@@ -46,7 +46,7 @@ input('(return)')
 odf = fibreODF(Miller(1,3,2,cs),vector3d(4,2,1),'halfwidth',20*degree)
 
 %% compute Fourier coefficients
-fodf = calcFourier(odf,32); 
+fodf = calcFourier(odf,'bandwidth',32); 
 fodf = FourierODF(fodf);
 
 %fourier(fodf,'order',2)

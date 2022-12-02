@@ -203,7 +203,7 @@ plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs))
 % harmonic degree 10.
 
 close all
-plotFourier(odf1,'linewidth',2)
+plotSpektra(odf1,'linewidth',2)
 %set(gca,'yScale','log')
 
 
@@ -212,11 +212,11 @@ plotFourier(odf1,'linewidth',2)
 % odd order harmonic coefficients. More precisely, we set all odd order
 % harmonic coefficients to zero
 
-A = mod(1:11,2);
+A = mod(1:11,2)';
 odf2 = conv(odf1,A)
 
 hold on
-plotFourier(odf2,'linewidth',2)
+plotSpektra(odf2,'linewidth',2)
 %set(gca,'yScale','log')
 hold off
 legend('odf1','odf2')
@@ -249,7 +249,7 @@ xlim([-180,180])
 
 odf1 = 4/5 * uniformODF(cs) + 1/5 * unimodalODF(orientation.id(cs),'halfwidth',30*degree);
 
-A = (-1).^(0:10);
+A = (-1).^(0:10)';
 odf2 = conv(odf1,A);
 
 close all
@@ -315,16 +315,16 @@ xlim([-180,180])
 % original ones.
 
 close all
-plotFourier(odf1,'linewidth',2,'bandwidth',10)
+plotSpektra(odf1,'linewidth',2,'bandwidth',10)
 hold on
-plotFourier(odf2,'linewidth',2)
-plotFourier(odf_rec1,'linewidth',2)
-plotFourier(odf_rec2,'linewidth',2)
+plotSpektra(odf2,'linewidth',2)
+plotSpektra(odf_rec1,'linewidth',2)
+plotSpektra(odf_rec2,'linewidth',2)
 hold off
 legend('odf1','odf2','odf rec1','odf rec2')
 
 %%
-% Historically, this effect was is tightly connected with the so-called
+% Historically, this effect is tightly connected with the so-called
 % SantaFe sample ODF.
 
 odf = SantaFe;
@@ -384,16 +384,16 @@ mtexColorMap white2black
 
 close all;
 % the harmonic coefficients of the sample ODF
-plotFourier(SantaFe,'bandwidth',32,'linewidth',2,'MarkerSize',10)
+plotSpektra(SantaFe,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 
 % keep plot for adding the next plots
 hold all
 
 % the harmonic coefficients of the reconstruction with ghost correction:
-plotFourier(rec,'bandwidth',32,'linewidth',2,'MarkerSize',10)
+plotSpektra(rec,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 
 % the harmonic coefficients of the reconstruction without ghost correction:
-plotFourier(rec2,'bandwidth',32,'linewidth',2,'MarkerSize',10)
+plotSpektra(rec2,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 
 legend({'true ODF','with ghost correction','without ghost correction'})
 % next plot command overwrites plot

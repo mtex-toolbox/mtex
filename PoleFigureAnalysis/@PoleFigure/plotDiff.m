@@ -8,7 +8,7 @@ function plotDiff(pfmeas,pfcalc,varargin)
 % Input
 %  pf   - @PoleFigure
 %  pf2  - @PoleFigure
-%  odf  - @ODF     
+%  odf  - @SO3Fun
 %
 % Options
 %  RP - calculate RP error
@@ -16,7 +16,7 @@ function plotDiff(pfmeas,pfcalc,varargin)
 %  l2 - calculate mean square error
 %
 % See also
-% S2Grid/plot PoleFigure/calcError ODF/calcError savefigure
+% S2Grid/plot PoleFigure/calcError SO3Fun/calcError savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 

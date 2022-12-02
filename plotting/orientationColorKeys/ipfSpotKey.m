@@ -7,7 +7,7 @@ classdef ipfSpotKey < ipfColorKey
 %   ipfKey.inversePoleFigureDirection = zvector; 
 %   ipfKey.center = Miller(1,0,0,cs); % the centers of the spots in the inverse pole figure
 %   ipfKey.color = [0 0 1];           % the color of the spots
-%   ipfKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
+%   ipfKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
 %
 %   color = ipfKey.orientation2color(ori)
 %
@@ -34,7 +34,7 @@ classdef ipfSpotKey < ipfColorKey
       oM.CS1 = oM.center.CS;
       oM.color = get_option(varargin,'color',[1 0 0]);
       oM.psi = get_option(varargin,'S2Kernel',...
-        S2DeLaValleePoussin('halfwidth',get_option(varargin,'halfwidth',10*degree)));
+        S2DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
       
       oM.dirMap = directionColorKey(oM.CS1,'dir2color',@(varargin) oM.dir2color(varargin{:}));
             

@@ -48,7 +48,7 @@ classdef rotation < quaternion & dynOption
   methods
     function rot = rotation(varargin)
 
-      if nargin == 0, return;end
+      if nargin == 0, return; end
       
       if isa(varargin{1},'quaternion')  % copy constructor
         

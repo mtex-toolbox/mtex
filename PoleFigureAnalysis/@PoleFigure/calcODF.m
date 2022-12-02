@@ -36,7 +36,7 @@ function [odf,alpha] = calcODF(varargin)
 %  silent         - no output
 %
 % Output
-%  odf    - reconstructed @ODF
+%  odf    - reconstructed @SO3Fun
 %  alpha  - scaling factors, calculated during reconstruction
 %
 % See also

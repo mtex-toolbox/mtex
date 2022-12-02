@@ -58,7 +58,7 @@ if isa(varargin{1},'vector3d')
   else
   
     res = v.resolution;
-    psi = S2DeLaValleePoussin('halfwidth',res/2);
+    psi = S2DeLaValleePoussinKernel('halfwidth',res/2);
 
     % take the 4 closest neighbours for each point
     % TODO: this can be done better

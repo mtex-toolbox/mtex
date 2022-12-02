@@ -23,7 +23,7 @@ function odf = calcKernelODF(ori,varargin)
 %  ori - @orientation
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Options
 %  halfwidth  - halfwidth of the kernel function
@@ -35,7 +35,7 @@ function odf = calcKernelODF(ori,varargin)
 %  exact      - no approximation to a corser grid
 %
 % See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load ODF/calcEBSD EBSD/calcKernel kernel/kernel
+% ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
 
 
 
@@ -58,7 +58,7 @@ ori = subSet(ori,~isnan(ori));
 weights = weights ./ sum(weights(:));
 
 % extract kernel function
-psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = SO3DeLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 hw = psi.halfwidth;
 

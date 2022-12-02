@@ -2,8 +2,8 @@
 %
 %%
 % MTEX supports four types of spherical projection which are available for
-% all spherical plot, e.g. <ODF.plotPDF.html polefigure plots>,
-% <ODF.plotIPDF.html inverse polefigure plots> or <ODF.plotSection.html
+% all spherical plot, e.g. <SO3Fun.plotPDF.html polefigure plots>,
+% <SO3Fun.plotIPDF.html inverse polefigure plots> or <SO3Fun.plotSection.html
 % ODF plots>. These are the equal area projection (Schmidt projection), the
 % equal distance projection, the stereographic projection (equal angle
 % projection), the three-dimensional projection and the flat projection.

@@ -10,12 +10,12 @@ ori2 = orientation.copper(cs);
 f = fibre.beta(cs);
 
 odf = 0.2*unimodalODF(ori1) + ...
-  0.3*unimodalODF(ori2) + ...
-  0.5*fibreODF(f);
+      0.3*unimodalODF(ori2) + ...
+      0.5*fibreODF(f)
 
 %%
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotSection.html plot>. By default the
+% is done using the command <SO3Fun.plotSection.html plot>. By default the
 % sections are at constant angles of $\varphi_2$. The number of sections
 % can be specified by the option |'sections'|
 
@@ -44,7 +44,6 @@ plot(f,'linewidth',2,'add2all')
 %
 % * phi2 (default)
 % * phi1
-% * alpha (Matthies Euler angles)
 % * gamma (Matthies Euler angles)
 % * sigma (alpha+gamma)
 
@@ -60,7 +59,7 @@ plotSection(odf)
 % || $\Phi$       || $180^{\circ}$ || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $90^{\circ}$  ||
 % || $\varphi_2$  || $360^{\circ}$ || $180^{\circ}$ || $180^{\circ}$ || $120^{\circ}$ || $120^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $60^{\circ}$  || $60^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  ||
 %
-% Note that for the last to symmetries the three fold axis is not taken
+% Note that for the last two symmetries the three fold axis is not taken
 % into account, i.e., each orientation appears three times within the Euler
 % angle region. The first Euler angle is not restricted by any crystal
 % symmetry, but only by specimen symmetry. For an arbitrary symmetry the
@@ -69,10 +68,10 @@ plotSection(odf)
 %
 %% Specimen Symmetry
 %
-% As we can see from the above table the first Euler angles $\varphi_1$
+% As we can see from the above table the first Euler angle $\varphi_1$
 % ranges for all symmetries from zero to 360 degree. The only way to
 % restrict this angle is to consider specimen symmetry. In the classical
-% case of orthotropic specimen symmetry the range of the first Euler angles
+% case of orthotropic specimen symmetry the range of the first Euler angle
 % reduces to 90 degree and we obtain the common square shaped ODF section
 % plots
 

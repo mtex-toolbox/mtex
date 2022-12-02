@@ -1,9 +1,28 @@
 function l = legendre0(N,x)
-% Legendrepolynome bis zur Odnung N
-% und gibt sie als Matrix zur�ck
-% erste Dimension -> Ordnung
-% zweite Dimension -> x
-
+% Evaluate all Legendre polynomials up to degree N in x and returns a 
+% matrix of the function values
+%       1st dimension -> degree
+%       2nd dimension -> x
+% Use the recurence formula
+%   (n+1)*P_{n+1} = (2n+1)*x*P_n - n*P_{n-1}
+%
+% Syntax
+%   l = legendre0(N,x)
+%
+% Input
+%   N - degree
+%   x - input nodes
+%   
+% Output
+%   l - function evaluations
+%
+% Example
+%   x = -1:0.2:1
+%   legendre0(10,x)
+%   for k=0:10
+%     LegendreP(k,x)
+%   end
+%
 
 x = x(:).';
 l(1,:) = ones(1,length(x));

@@ -76,7 +76,7 @@ e = [];
 for i = 1:6
 
   % calculate a sample of orientations from the model ODF
-  ori = calcOrientations(odf,10^i,'silent');
+  ori = discreteSample(odf,10^i,'silent');
   
   % calculate the kernel using the function defaults, reconstruct the odf, and calculate error between this and the original ODF
   psi1 = calcKernel(ori,'SamplingSize',10000,'silent');

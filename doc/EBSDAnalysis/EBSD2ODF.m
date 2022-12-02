@@ -79,7 +79,7 @@ plotPDF(odf,h,'antipodal','silent')
 % Let's start with a model ODF and simulate some individual orientation data.
 
 modelODF = fibreODF(Miller(1,1,1,crystalSymmetry('cubic')),xvector);
-ori = calcOrientations(modelODF,10000)
+ori = discreteSample(modelODF,10000)
 
 %%
 % Next we define a list of kernel halfwidth ,

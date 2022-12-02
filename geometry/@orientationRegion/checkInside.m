@@ -12,7 +12,7 @@ inside1 = dot_outer(oR.N,q)<1e-6;
 inside2 = dot_outer(oR.N,q)>-1e-6;
 
 % either q or -q needs to satisfy the condition
-inside = reshape(all(inside1) | all(inside2),size(q));
+inside = reshape(all(inside1,1) | all(inside2,1),size(q));
  
 end
  

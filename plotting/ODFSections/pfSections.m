@@ -18,8 +18,13 @@ classdef pfSections < ODFSections
 
       oS = oS@ODFSections(CS1,CS2);
 
-      oS.h1 = CS1.cAxisRec; % c*
-      oS.h2 = CS1.aAxis; % a
+      if isa(CS1,'crystalSymmetry')
+        oS.h1 = CS1.cAxisRec; % c*
+        oS.h2 = CS1.aAxis; % a
+      else
+        oS.h1 = vector3d.Z;
+        oS.h2 = vector3d.X;
+      end
 
       oS.maxOmega = get_option(varargin,'maxOmega',2*pi / CS1.nfold(oS.h1));
       if angle(oS.h1,-oS.h1) < 1e-2

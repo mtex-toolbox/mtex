@@ -1,5 +1,5 @@
 function omega = angle(q1,q2,varargin)
-% calcualtes the rotational angle between rotations q1 and q2
+% calculates the rotational angle between rotations q1 and q2
 %
 % Syntax  
 %   omega = angle(q)

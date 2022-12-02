@@ -56,7 +56,7 @@ export(model_odf,fname,'Bunge')
 
 %%
 % Other Euler angle conventions or other resolutions can by specified by
-% options to <ODF.export.html export>. Even more control you have,
+% options to <SO3Fun.export.html export>. Even more control you have,
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
@@ -81,3 +81,11 @@ export(model_odf,fname,'Bunge','interface','mtex')
 %%  Export to VPSC format
 %
 % TODO!!!
+
+fname = [mtexDataPath '/ODF/odfvpsc.txt'];
+
+export(model_odf,fname,'VPSC')
+
+
+
+

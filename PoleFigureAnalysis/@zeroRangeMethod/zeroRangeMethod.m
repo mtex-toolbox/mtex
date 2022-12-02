@@ -3,7 +3,7 @@ classdef zeroRangeMethod < handle
 %
 % Input
 %  pf  - @PoleFigure
-%  psi - @kernel
+%  psi - @S2Kernel
 %  threshold  - double
 %  delta - double
 %  bg  - double

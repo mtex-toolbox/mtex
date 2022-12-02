@@ -20,7 +20,7 @@ function [c,center] = doHClustering(obj,varargin)
 %   cs = crystalSymmetry('m-3m');
 %   center = orientation.rand(5,cs); 
 %   odf = unimodalODF(center,'halfwidth',5*degree)
-%   ori = odf.calcOrientations(3000);
+%   ori = odf.discreteSample(3000);
 %
 %   % find the clusters and its centers
 %   tic; [c,centerRec] = calcCluster(ori,'method','hierarchical','numCluster',5); toc

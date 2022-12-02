@@ -15,5 +15,6 @@ Elasticity             Elasticity
 Plasticity             Plasticity
 PhaseTransitions       Phase Transitions
 SphericalFunctions     Spherical Functions
+SO3Functions           Orientation Functions
 Plotting               Plotting
 FunctionReference      Function Reference

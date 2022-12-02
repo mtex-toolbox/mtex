@@ -11,7 +11,7 @@ function export_VPSC(ori,filename,varargin)
 %  weights  - list weights with the same size as the orientations
 %
 % See also
-% quaternion/export ODF/export_VPSC
+% quaternion/export SO3Fun/export_VPSC
   
 % allocate memory
 d = zeros(length(ori),4);

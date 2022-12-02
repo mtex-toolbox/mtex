@@ -26,7 +26,7 @@ classdef axisAnglePlot < orientationPlot
         
     function [x,y,z] = project(oP,ori,varargin)
       
-      if ~check_option(varargin,'noBoundaryCheck')
+      if ~check_option(varargin,{'noBoundaryCheck','noSymmetry'})
         switch oP.fRMode
           case 'project2FundamentalRegion'
             ori = project2FundamentalRegion(ori);
