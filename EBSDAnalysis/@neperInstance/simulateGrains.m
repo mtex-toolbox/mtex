@@ -15,7 +15,7 @@ function simulateGrains(this,varargin)
 %
 % Input
 %  neper      - @neperInstance
-%  odf        - @ODF
+%  odf        - @SO3Fun
 %  numGrains  - number of grains
 %  ori        - @orientation
 % 
@@ -41,10 +41,10 @@ end
 %%
 assert(nargin>1,'too few input arguments')
 if nargin==3  %numGrains & odf
-  if isnumeric(varargin{1}) && isa(varargin{2},'ODF')
+  if isnumeric(varargin{1}) && isa(varargin{2},'SO3Fun')
     numGrains=varargin{1};
     ori = varargin{2}.discreteSample(numGrains);
-  elseif isnumeric(varargin{2}) && isa(varargin{1},'ODF')
+  elseif isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
     numGrains=varargin{2};
     ori = varargin{1}.discreteSample(numGrains);
   else
