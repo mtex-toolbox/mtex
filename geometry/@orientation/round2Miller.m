@@ -83,8 +83,8 @@ if length(mori) > 1
 end
 
 penalty = get_option(varargin,'penalty',0.002);
-
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
+nextFit = get_option(varargin,'nextFit',1);
 
 % all plane normales
 [h,k,l] = allHKL(maxIndex);
@@ -121,8 +121,9 @@ fit = bsxfun(@plus,omega_h(:),omega_d(:).') + ...
   100*(abs(pi/2-angle_outer(n1,d1,'noSymmetry'))>1e-5)+...
   100*(abs(pi/2-angle_outer(rn2,rd2,'noSymmetry'))>1e-5);
 
-[~,ind] = nanmin(fit(:));
-[ih,id] = ind2sub(size(fit),ind);
+fit_sorted = sort(fit(:));
+ind = find(fit(:)==fit_sorted(nextFit));
+[ih,id] = ind2sub(size(fit),ind(1));
 
 n1 = n1(ih);
 d1 = d1(id);
