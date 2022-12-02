@@ -28,7 +28,7 @@ function simulateGrains(this,varargin)
 %change work directory
 if this.newfolder==true
   try
-    cd([this.filePath this.folder]);
+    cd([this.filePath filesep this.folder]);
   catch
     cd(this.filePath);
     mkdir(this.folder);

@@ -66,10 +66,10 @@ system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
   ...
   this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
 
-if ~isfile('2dslice.tess')
+if ~isfile([this.fileName2d '.tess'])
   error 'slicing failed, try other plane parameters.'
 end
 
 grains = grain2d.load([this.fileName2d '.tess']);
 
-  end
+end
