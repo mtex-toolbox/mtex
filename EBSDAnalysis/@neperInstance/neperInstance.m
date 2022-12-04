@@ -15,6 +15,11 @@ classdef neperInstance < handle
 %   myNeper.fileName3d='my100Grains';    %default: 'allgrains'
 %   myNeper.fileName2d='mySlice';        %default: '2dslice'
 %
+%   %specifying size of tesselation domain
+%   myNeper.cubeSize = [4 4 1];
+%   %defining tesselation id
+%   myNeper.id = 512;
+%
 %   ori=orientation.rand;
 %   ori.CS=crystalSymmetry('mmm');
 %   odf=unimodalODF(orientation.rand)
@@ -32,11 +37,27 @@ classdef neperInstance < handle
 %   plot(grains,grains.meanOrientation)
 %   hold
 %   plot(grains2,grains2.meanOrientation)
+%
+% Class Properties
+%  id         - integer, "used [...] to compute the (initial) seed positions"
+%  cubeSize   - 1x3 rowvector, size of the tesselation domain box, default: [1 1 1]
+%  morpho     - specify morphological properties of the cells, default: graingrowth
+%  iterMax    - max Iterations for morpho optimization process
+%  fileName2d - name for 2d outputs (fileendings .tess/.ori), default: '2dslice'
+%  fileName3d - name for 3d outputs (fileendings .tess/.ori/.stpoly), default: 'allgrains'
+%  filePath   - filepath working directory, default: tempdir
+%  newfolder  - boolean, if true, new folder will be created, default: true;
+%
+% See also
+% grain2d.load
+
 
 properties
 
+  id = 1;
+  cubeSize = [1 1 1];
+  morpho = '-morpho "graingrowth"';
   iterMax = 1000;
-  morrho = 'morpho "diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)" ';
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
   filePath = tempdir
