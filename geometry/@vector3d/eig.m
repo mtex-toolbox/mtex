@@ -19,8 +19,6 @@ xyz = v.xyz;
 [ev, lambda] = eig3(xyz.' * xyz);
 ev.refSystem = v.refSystem;
 
-%lambda = lambda/length(v);
-
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same
 [lambda,ev] = deal(ev,lambda);

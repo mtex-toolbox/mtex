@@ -75,9 +75,7 @@ plot(ebsd,ebsd.orientations)
 % smaller square unit cell corresponding to the hexagonal unit cell
 
 % define a square unit cell
-hexUnitCell = abs(round(ebsd.unitCell,4));
-minUnit = min(hexUnitCell(hexUnitCell>0));
-squnitCell = minUnit * [-1 -1;-1 1; 1 1; 1 -1];
+squnitCell = ebsd.dPos / 4 * vector3d([1 1 -1 -1],[1 -1 -1 1],0).';
 
 % use the square unit cell for gridify
 ebsd = ebsd.gridify('unitCell',squnitCell);

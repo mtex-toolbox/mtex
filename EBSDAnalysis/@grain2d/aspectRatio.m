@@ -13,7 +13,7 @@ function asp = aspectRatio(grains,varargin)
 % See also
 % grain2d/principalcomponents
 
-[~,a,b] = principalComponents(grains);
-asp = abs(a ./ b);
+[a,b] = principalComponents(grains);
+asp = abs(norm(a) ./ norm(b));
 
 % asp2 = diameter(grains).^2 ./ area(grains);

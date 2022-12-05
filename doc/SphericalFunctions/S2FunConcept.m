@@ -38,6 +38,8 @@ annotate(localMax)
 % A complete list of operations that can be performed with spherical
 % functions can be found in section <S2FunOperations.html Operations>.
 %
+
+
 %% Representation of Spherical Functions
 %
 % In MTEX there exist different ways for representing spherical functions

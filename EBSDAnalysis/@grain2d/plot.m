@@ -102,9 +102,8 @@ elseif nargin>1 && isa(varargin{1},'vector3d')
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  xy = [grains.centroid,2*scaling*zUpDown];
-  
-  h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
+  pos = grains.centroid + 2*scaling * grains.N; 
+  h = plot(pos + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
     'parent', mP.ax,varargin{:});
   
   plotBoundary = false;
@@ -118,7 +117,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   
   % position in the map
   scaling = sqrt(grains.area);
-  shift = vector3d([grains.centroid,2*scaling*zUpDown].');
+  shift = grains.centroid + 2*scaling *grains.N;
   
   for k = 1:length(grains)
 
@@ -358,7 +357,7 @@ for p=numel(Parts):-1:1
   % reduce face-vertex indices to required
   Faces = [Faces{:}];
   vert  = sparse(Faces,1,1,length(V),1);
-  obj.Vertices = double(V(vert>0));
+  obj.Vertices = V(vert>0).xyz;
 
   vert  = cumsum(full(vert)>0);
   Faces = nonzeros(vert(Faces));

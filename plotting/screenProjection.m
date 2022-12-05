@@ -43,8 +43,8 @@ classdef screenProjection < handle
     end
 
     function opt = get.viewOpt(sP)
-      opt = {'CameraPosition',squeeze(double(sP.outOfScreen)),...
-        "CameraUpVector",squeeze(double(sP.north))};
+      opt = {'CameraPosition',sP.outOfScreen.xyz,...
+        "CameraUpVector",sP.north.xyz};
     end
 
 

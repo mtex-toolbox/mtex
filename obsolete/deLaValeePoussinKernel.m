@@ -4,19 +4,18 @@ methods (Hidden = true)
 
   function psi = deLaValeePoussinKernel(varargin)
 
-    warning('The syntax "deLaValeePoussinKernel" is obsolete. Please use "deLaValleePoussinKernel" instead.')
+    warning(['The syntax "deLaValeePoussinKernel" is obsolete. ' ...
+      'Please use "SO3DeLaValleePoussinKernel" instead.'])
 
-    psi = deLaValleePoussinKernel(varargin{:});
+    psi = SO3DeLaValleePoussinKernel(varargin{:});
 
   end
 end
 
-methods (Static = true)
+methods (Static = true, Hidden=true)
   function psi = loadobj(s)
-    psi = deLaValleePoussinKernel(s.kappa);
+    psi = SO3DeLaValleePoussinKernel(s.kappa);
   end
 end
-
-
 
 end

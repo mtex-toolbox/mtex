@@ -88,8 +88,7 @@ if isNew
 end
 
 % do plot
-V = reshape(double(cS.V),[],3);
-h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
+h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k'),varargin{:});
 
 if isNew, drawNow(mtexFig,varargin{:}); end
 

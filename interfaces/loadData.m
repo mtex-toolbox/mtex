@@ -16,7 +16,7 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 %  comment    - comment to be associated with the data
 %
 % Output
-%  data - @EBSD, @PoleFigure, @ODF, @tensor, @vector3d, @orientation
+%  data - @EBSD, @PoleFigure, @SO3Fun, @tensor, @vector3d, @orientation
 %
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic

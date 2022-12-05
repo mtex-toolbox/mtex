@@ -1,4 +1,4 @@
-function [V,E] = eig(sF)
+function varargout = eig(sF)
 % eigen value of a spherical function
 %
 % Syntax
@@ -19,9 +19,6 @@ sFM = S2FunHarmonic.quadrature(M,'bandwidth',2);
 M = real(dot(sF,sFM));
 M = reshape(M([1 2 3 2 4 5 3 5 6]),3,3);
 
-[V,E] = eig(M,'vector');
-
-E = flipud(E);
-V = fliplr(vector3d(V)).';
+[varargout{1:nargout}] = eig3(M);
 
 end

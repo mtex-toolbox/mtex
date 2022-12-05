@@ -17,7 +17,7 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %  T - @tensor
 %  dim - dimension with respect to which the mean is taken 
 %  ori - @orientation
-%  odf - @ODF 
+%  odf - @SO3Fun
 %  weights - double
 %
 
@@ -38,7 +38,7 @@ if check_option(varargin,'iso') && T.rank==4
   
   TVoigt = 2 * delta * T.eye + gamma * dyad(tensor.eye,tensor.eye);
      
-elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
+elseif nargin > 1 && isa(varargin{1},'SO3Fun') % use an ODF as input
 
   odf = varargin{1};
 

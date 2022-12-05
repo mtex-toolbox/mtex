@@ -146,7 +146,7 @@ classdef grain2d < phaseList & dynProp
           inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
           .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
-        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId),...
+        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId,[],'all'),...
           grains.phaseId,mori,grains.CSList,grains.phaseMap);
         
       end
@@ -157,7 +157,8 @@ classdef grain2d < phaseList & dynProp
       if sum(grains.area) < 0, grains.N = -grains.N; end
 
       % check for 3d plane
-      assert(max(abs(dot(grains.V,grains.N)))<1e-4*max(abs(grains.V)),'grains are not within one plane');
+      d=dot(grains.V(1),grains.N);
+      assert(max(abs(dot(grains.V,grains.N)-d))<abs(d)*1e-5,'grains are not within one plane');
 
     end
         
@@ -265,6 +266,27 @@ classdef grain2d < phaseList & dynProp
     
     [grain2d] = load(fname)
     
+    function grains = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % transform to class if not yet done
+      if isa(s,'grain2d')
+        grains = s; 
+      else
+        grains = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
+        grains.opt = s.opt;
+        grains.scanUnit = s.scanUnit;
+      end
+      
+      % ensure V is vector3d
+      if isa(grains.V,'double')
+        grains.V = vector3d(grains.V(:,1),grains.V(:,2),0);
+      end
+
+    end
+
   end
 
 end

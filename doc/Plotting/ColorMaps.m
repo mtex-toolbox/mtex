@@ -10,7 +10,7 @@
 %
 %% A sample ODFs and Simulated Pole Figure Data
 %
-% Let us first define some model <ODF.ODF.html ODFs> to be plotted later
+% Let us first define some model <SO3Fun.SO3Fun.html ODFs> to be plotted later
 % on.
 
 cs = crystalSymmetry('-3m');
@@ -42,7 +42,7 @@ mtexColorbar
 %% Setting an Explicite Colorrange
 %
 % If you want to have a unified colorcoding for several figures you can
-% set the colorrange directly in the <ODF.plotPDF.html plot command>
+% set the colorrange directly in the <SO3Fun.plotPDF.html plot command>
 
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...

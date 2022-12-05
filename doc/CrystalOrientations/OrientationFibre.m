@@ -156,7 +156,7 @@ plot(odf,fibre.eta(cs,ss),'linewidth',2)
 
 %% Compute volume of fibre portions
 % or compute the volume of an ODF in a tube around a fibre using the
-% command <ODF.volume.html |volume|>
+% command <SO3Fun.volume.html |volume|>
 
 100 * volume(odf,beta,10*degree)
 

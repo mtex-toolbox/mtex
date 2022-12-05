@@ -13,7 +13,9 @@ odf1 = unimodalODF(orientation.byEuler(0,0,0,cs)) + ...
 %%
 % A fibre ODF:
 
-odf2 = fibreODF(Miller(0,0,1,cs),xvector)
+f001_x = fibre(Miller(0,0,1,cs),xvector)
+
+odf2 = fibreODF(f001_x)
 
 %%
 % An ODF estimated from diffraction data
@@ -27,7 +29,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 % The modal orientation of an ODF is the crystallographic prefered
 % orientation |ori_pref| of the texture. It is characterized as the maximum
 % of the ODF. In MTEX it is returned as the second output argument of the
-% command <ODF.max.html |max|>
+% command <SO3Fun.max.html |max|>
 
 [~,ori_pref] = max(odf3)
 
@@ -39,18 +41,31 @@ annotate(ori_pref,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics
 %
-% Texture characteristics are used for a rough classification of ODF into
+% Texture characteristics are used for a rough classification of ODFs into
 % sharp and weak ones. The two most common texture characteristics are the
-% <ODF.entropy.html entropy> and the
-% <ODF.textureindex.html texture index>.
+% entropy and the texture index. The texture index of an ODF $f$ is defined
+% as:
+%
+% $$ t = \int_{SO(3)} f(R)^2 dR$$
+%
+% We may either compute this integral using the command <SO3Fun.sum.html
+% |sum|> directly by
+
+t = mean(odf1.*odf1)
 
 %%
-% Compute the texture index:
-textureindex(odf1)
+% or, more efficiently, by the command <SO3Fun.norm.html |norm|>
+
+t = norm(odf1)^2
+
 
 %%
-% Compute the entropy:
-entropy(odf2)
+% The entropy of an ODF $f$ is defined as:
+%
+% $$ H = - \int_{SO(3)} f(R) \ln f(R) dR$$
+
+
+H = entropy(odf2)
 
 
 %% Volume Portions
@@ -58,32 +73,19 @@ entropy(odf2)
 % Volume portions describes the relative volume of crystals having a
 % certain orientation. The relative volume of crystals having a orientation
 % close to a given orientation is computed by the command
-% <ODF.volume.html volume> and the relative volume of crystals having a
+% <SO3Fun.volume.html |volume|> and the relative volume of crystals having a
 % orientation close to a given fibre is computed by the command
-% <ODF.fibreVolume.html fibreVolume>
+% <SO3Fun.fibreVolume.html |fibreVolume|>
 
 %%
 % The relative volume in percent of crystals with missorientation maximum
 % 30 degree from the preferred orientation |ori_pref|:
 
-volume(odf3, ori_pref, 30*degree) * 100
+V1 = volume(odf3, ori_pref, 30*degree) * 100
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre in percent:
-% TODO
-%fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100
 
+V2 = volume(odf2,f001_x,20*degree) * 100
 
-
-%% Extract Internal Representation
-% The internal representation of the ODF can be addressed by the command
-
-properties(odf3.components{1})
-
-%%
-% The properties in this list can be accessed by
-
-odf3.components{1}.center
-
-odf3.components{1}.psi

@@ -14,7 +14,7 @@ classdef MLSSolver < pf2odfSolver
 %   [odf,alpha] = solver.calcODF;
 %
 % Class Properties
-%  psi     - @kernel describing the shape of the unimodal components
+%  psi     - @SO3Kernel describing the shape of the unimodal components
 %  S3G     - the centers of the unimodal components as @SO3Grid in orientation space
 %  c       - weighting coefficients to the unimodal components
 %  weights - 
@@ -24,20 +24,23 @@ classdef MLSSolver < pf2odfSolver
 %  iterMin - min number of iterations
 %
 % Dependent Class Properties
-%  odf - @ODF the reconstructed ODF
+%  odf - @SO3Fun the reconstructed ODF
 %
 % See also
 % PoleFigureTutorial PoleFigure2ODFAmbiguity PoleFigure2ODFGhostCorrection
 
   properties
-    psi     % kernel function
+    psi     % SO3Kernel function
     S3G     % SO3Grid
     c       % current coefficients
+    c0      % constant portion
     weights % cell
     zrm     % zero range method
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
-    iterMin = 5; % max number of iterations
+    iterMin = 5;  % max number of iterations
+    lambda = 0;   % regularisation parameter
+    RM = [];      % regularization matrix
   end
   
   properties (Access = private)
@@ -51,7 +54,7 @@ classdef MLSSolver < pf2odfSolver
   end
   
   properties (Dependent = true)
-    odf % the reconstructed @ODF
+    odf % the reconstructed @SO3Fun
   end
     
   methods
@@ -91,9 +94,9 @@ classdef MLSSolver < pf2odfSolver
       end
         
       % get kernel
-      psi = deLaValleePoussinKernel('halfwidth',...
+      psi = SO3DeLaValleePoussinKernel('halfwidth',...
         get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},solver.S3G.resolution,'double'));
-      solver.psi = getClass(varargin,'kernel',psi);
+      solver.psi = getClass(varargin,'SO3Kernel',psi);
             
       % get other options
       solver.iterMin = get_option(varargin,'iterMin',solver.iterMin);
@@ -111,6 +114,10 @@ classdef MLSSolver < pf2odfSolver
       else
         solver.weights = num2cell(1./length(pf,[]));
       end
+      
+      % regularisation
+      solver.lambda = get_option(varargin,'regularisation',0);
+            
     end
 
     function delete(solver)
@@ -128,7 +135,12 @@ classdef MLSSolver < pf2odfSolver
     end
     
     function odf = get.odf(solver)
-      odf = unimodalODF(solver.S3G,solver.psi,'weights',solver.c./sum(solver.c));
+      if solver.c0 > 0.99
+        odf = SO3FunHarmonic(1,solver.CS, solver.SS);
+      else
+        odf = SO3FunRBF(solver.S3G,solver.psi,...
+          (1-solver.c0)*solver.c./sum(solver.c), solver.c0);
+      end   
     end
     
   end
@@ -152,7 +164,7 @@ classdef MLSSolver < pf2odfSolver
       solver = MLSSolver;
       solver.pf = pf;
       solver.S3G = equispacedSO3Grid(pf.CS,'resolution',2.5*degree);
-      solver.psi = deLaValleePoussinKernel('halfwidth',2.5*degree);
+      solver.psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
       solver.weights = repcell(1,numPF(pf),1);
       solver.c = ones(length(solver.S3G),1) ./ length(solver.S3G);
       

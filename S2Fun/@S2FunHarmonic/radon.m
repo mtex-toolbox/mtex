@@ -12,7 +12,7 @@ function sF = radon(sF, delta)
 %
 
 % Description
-% The spherical Radon transform is is simply a convolution operator with
+% The spherical Radon transform is simply a convolution operator with
 % a kernel function with Legendre coefficients given by
 % 
 %         A(n) = (-1)^(n/2) * (n-1)!! / n!!     if n is even
@@ -21,7 +21,7 @@ function sF = radon(sF, delta)
 % where 
 % (n-1)!! = 1 * 3 * 5 * ... (n-1)
 % n!!     = 2 * 4 * 6 * ... n
-
+%
 
 if nargin == 2
   

@@ -2,7 +2,7 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 % error polefigure between meassured and recalculated pole figures
 %
 % returns a @PoleFigure with valuess given as the difference between the
-% meassured intensities and the recalculated @ODF or between two meassured
+% meassured intensities and the recalculated @SO3Fun or between two meassured
 % @PoleFigure.
 %
 % Syntax
@@ -12,7 +12,7 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 % Input
 %  pfmeas - meassured @PoleFigure 
 %  pfcalc - recalculated @PoleFigure
-%  odf    - recalculated @ODF
+%  odf    - recalculated @SO3Fun
 %
 % Options
 %  RP    - RP value (default) |pfmeas - pfcalc|./ pfcalc
@@ -23,10 +23,10 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 %  pf - @PoleFigure 
 %
 % See also
-%  PoleFigure/calcError ODF/calcPoleFigure
+%  PoleFigure/calcError SO3Fun/calcPoleFigure
 
 % evaluate ODF if neccesary
-if isa(pfcalc,'ODF')
+if isa(pfcalc,'SO3Fun')
   pfcalc = calcPoleFigure(pfcalc,pfmeas.allH,pfmeas.allR,'superposition',pfmeas.c);
 end
 

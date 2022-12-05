@@ -35,14 +35,14 @@ plot(min(15*sF1,sF2),'upper');
 
 %% Local Extrema
 % 
-% The obove mentioned functions <S2Fun.min.html |min|> and <S2Fun.max.html
+% The above mentioned functions <S2Fun.min.html |min|> and <S2Fun.max.html
 % |max|> have very different use cases
 %
 % * if two spherical functions are passed as arguments a spherical
-% functions defined as the pointwise min/max between these two functions is
+% function defined as the pointwise min/max between these two functions is
 % computed
-% * if a spherical function and single number are passed as arguments a
-% spherical functions defined as the pointwise min/max between these the
+% * if a spherical function and a single number are passed as arguments a
+% spherical function defined as the pointwise min/max between the
 % function and the value is computed
 % * if only a single spherical function is provided the global maximum /
 % minimum of the function is returned
@@ -65,7 +65,7 @@ annotate(minnodes)
 % The surface integral of a spherical function can be computed by either
 % <S2Fun.mean.html |mean|> or <S2Fun.sum.html |sum|>. The difference
 % between both commands is that <S2Fun.sum.html |sum|> normalizes the
-% integral of the identical function on the sphere to $4 \pi$ the command
+% integral of the identical function on the sphere to $4 \pi$, the command
 % <S2Fun.mean.html |mean|> normalizes it to one. Compare
 
 mean(sF1)
@@ -74,16 +74,16 @@ sum(sF1) / ( 4 * pi )
 
 %%
 % A practical application of integration is the computation of the
-% $L^2$-norm which is defined for a spherical function $f$ as
+% $L^2$-norm which is defined for a spherical function $f$ by
 %
-% $$ \lVert f \rVert_2 = \left(\int_{\mathrm{sphere}} f(x)^2 dx\right)^{1/2} $$
+% $$ \lVert f \rVert_2 = \left(\int_{\mathrm{sphere}} |f(\xi)|^2 \,\mathrm d\xi\right)^{1/2} $$
 %
 % accordingly we can compute it by
 
 sqrt(sum(sF1.^2))
 
 %%
-% or more efficiently by the command <S2FunHarmonic.norm.html |norm|>
+% or more efficiently by the command <S2Fun.norm.html |norm|>
 
 norm(sF1)
 

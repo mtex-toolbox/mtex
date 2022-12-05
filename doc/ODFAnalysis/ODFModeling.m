@@ -2,19 +2,24 @@
 %
 %%
 %
+% ODFs are functions on the rotation group $SO(3)$. Therefore we construct 
+% them by the class |@SO3Fun|.
+%
 % MTEX provides a very simple way to define model ODFs. Generally, there
 % are five different ODF types in MTEX:
 %
-% * <uniformODF.html uniform ODFs>
-% * <UnimodalODFs.html unimodal ODFs>
+% * <RadialODFs.html#1 uniform ODFs>
+% * <RadialODFs.html#2 unimodal ODFs>
+% * <RadialODFs.html#4 multimodal ODFs>
 % * <FibreODFs.html fibre ODFs>
-% * <BinghamODFs Bingham ODFs>
-% * <HarmonicODFs ODFs given by harmonic series expansion>
+% * <BinghamODFs.html Bingham ODFs>
+% * <SO3FunHarmonicRepresentation.html Harmonic ODFs>
 %
 % The central idea is that MTEX allows you to calculate mixture models, by
 % adding and subtracting arbitrary ODFs. Model ODFs may be used as
 % references for ODFs estimated from pole figure data or EBSD data and are
 % instrumental for simulating texture evolutions.
+%
 %
 %% The Uniform ODF
 %
@@ -37,7 +42,7 @@ odf = uniformODF(cs,ss)
 cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
 
-psi = vonMisesFisherKernel('halfwidth',10*degree);
+psi = SO3vonMisesFisherKernel('halfwidth',10*degree);
 mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 
 odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)

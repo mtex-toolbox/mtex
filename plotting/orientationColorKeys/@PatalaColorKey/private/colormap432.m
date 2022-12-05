@@ -22,7 +22,7 @@ sR = sphericalRegion([vector3d(0,1,-1),vector3d(1,-1,0),vector3d.Z]);
 cs = crystalSymmetry('m-3m');
 v = project2FundamentalRegion(v,cs,sR.center);
 
-pts = reshape(double(v),[],3);
+pts = v.xyz;
 
 kmax = sqrt(2)-1;
 theta = atan2(pts(:,3),pts(:,2));

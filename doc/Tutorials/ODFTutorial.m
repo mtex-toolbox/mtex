@@ -86,7 +86,7 @@ plotPDF(odf,pf.h)
 %% ODF Modelling
 %
 % Besides from experimental data MTEX allows also the definition of model
-% ODFS of different type. These include <UnimodalODFs.html unimodal ODFs>,
+% ODFS of different type. These include <RadialODFs.html#2 unimodal ODFs>,
 % <FibreODFs.html fibre ODF>, <BinghamODFs.html Bingham Distributed ODFs>
 % and any <ODFModeling.html combination of such ODFs>.
 

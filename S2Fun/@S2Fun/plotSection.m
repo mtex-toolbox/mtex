@@ -67,7 +67,7 @@ for j = 1:length(sF)
     
     h{j} = plot3(x,y,z,'parent',mtexFig.gca);
   end
-  view(mtexFig.gca,squeeze(double(sec)));
+  view(mtexFig.gca,sec.xyz);
   set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
   axis(mtexFig.gca,'off');
   optiondraw(h{j},varargin{:});

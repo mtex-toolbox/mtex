@@ -15,7 +15,7 @@ function zr = calcZeroRange(pf,S2G,varargin)
 % PoleFigure/calcODF
 
 % kernel used for calculation
-psi = S2DeLaValleePoussin('halfwidth',...
+psi = S2DeLaValleePoussinKernel('halfwidth',...
   get_option(varargin,'zr_halfwidth',2*pf.r.resolution));
 
 % normalization

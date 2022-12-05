@@ -81,7 +81,7 @@ classdef grainBoundary < phaseList & dynProp
       if nargin == 0, return; end
 
       % ensure V is vector3d
-      if ~isa(V,'vector3d'), V = vector3d(V(:,1),V(:,2),0); end
+      if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
       % assign properties
       gB.triplePoints = struct('allV',V);
@@ -152,9 +152,10 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function dir = get.direction(gB)      
-      v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
-      v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
-      dir = normalize(v1-v2);
+      
+      dir = normalize(gB.V(gB.F(:,1)) - gB.V(gB.F(:,2)));
+      dir.antipodal = true;
+      
     end
     
     

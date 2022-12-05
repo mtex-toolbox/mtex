@@ -7,7 +7,7 @@ function sF = unimodal(varargin)
 %   sF = S2Fun.unimodal('halfwidth',10*degree)
 %
 %   v = vector3d(1,1,1)
-%   psi = S2DeLaValleePoussin('halfwidth',20*degree)
+%   psi = S2DeLaValleePoussinKernel('halfwidth',20*degree)
 %   sF = S2Fun.unimodal(v,psi)
 %
 % Input
@@ -20,7 +20,7 @@ function sF = unimodal(varargin)
 
 
 % extract kernel
-psi = S2DeLaValleePoussin('halfwidth',get_option(varargin,'halfwidth',25*degree));
+psi = S2DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',25*degree));
 psi = getClass(varargin,'S2Kernel',psi);
 
 % define a radially symmetric function

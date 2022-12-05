@@ -1,4 +1,4 @@
-function [v,l,sym] = symmetrise(v,S,varargin)
+function [v,l,sym] = symmetrise(v,varargin)
 % symmetrcially equivalent directions and its multiple
 %
 % Syntax
@@ -43,6 +43,14 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 % cs = crystalSymmetry('112')
 % m = Miller({1,0,0},{0,0,1},cs)
 % symmetrise(m)
+
+if nargin > 1 && isa(varargin{1},'symmetry')
+  S = varargin{1};
+  varargin(1) = [];
+else
+  S = specimenSymmetry;
+end
+
 
 % symmetrisation includes antipodal symmetry?
 antiSym = check_option(varargin,'antipodal') || v.antipodal || S.isLaue;
@@ -103,4 +111,4 @@ end
 % Miller/multiplicity  ->
 % Miller/text          -> noAntipodal
 % fibre/symmetrise     -> 
-% unimodalComponent/calcPDF -> noAntipodal
+% SO3FunRBF/calcPDF    -> noAntipodal

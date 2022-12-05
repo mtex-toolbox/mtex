@@ -10,6 +10,7 @@ function A = area(grains,varargin)
 
 % signed Area
 A = zeros(length(grains),1);
+
 for i=1:length(grains)
 
   V = grains.V(grains.poly{i});

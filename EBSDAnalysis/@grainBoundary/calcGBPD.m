@@ -38,18 +38,18 @@ ori = [rot .* ebsd('id',gB.ebsdId(:,1)).orientations;...
 
 % define a kernel function that is a fibre through the crystallograhic
 % z-axis and the crystallographic x-axis
-psi = S2FunHarmonic(S2DeLaValleePoussin('halfwidth',5*degree,varargin{:}));
+psi = S2FunHarmonic(S2DeLaValleePoussinKernel('halfwidth',5*degree,varargin{:}));
 
 psi = psi.radon;
 
-bw = min(getMTEXpref('maxBandwidth'),psi.bandwidth);
+bw = min(getMTEXpref('maxS2Bandwidth'),psi.bandwidth);
 rot = rotation.byAxisAngle(xvector,90*degree);
 
 % multiply this kernel function with the sin of the polar angle
 fun = @(v) pi/2*psi.eval(rot*v) .* sin(angle(v,zvector));
 
 % the final kernel function as S2Harmonic
-psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
+psi = S2FunHarmonicSym.quadrature(fun, 'bandwidth', bw, ori.CS);
 
 %% testing only
 
@@ -68,21 +68,10 @@ psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw);
 %% step 3: compute orientation density
 
 % compute the orientation density of the modified boundary orientations
-odf = calcDensity(ori,'kernel',DirichletKernel(bw),'harmonic');
+odf = calcDensity(ori,'kernel',SO3DirichletKernel(bw),'harmonic');
 
 %% step 4: convolution
-% GBPD = conv(odf,psi)
-
-odfHat = odf.components{1}.f_hat;
-fhat = zeros((2*bw+1)^2,1);
-for l = 0:bw
-  fhat(l^2+1:(l+1)^2) = reshape(odfHat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
-    psi.fhat(l^2+1:(l+1)^2) ./ (2*l+1);
-end
-
-
-%GBPD = S2FunHarmonic(fhat);
-GBPD = S2FunHarmonicSym(fhat,ori.CS);
+GBPD = conv(odf,psi);
 
 %plot(GBPD)
 

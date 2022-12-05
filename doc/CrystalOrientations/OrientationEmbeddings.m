@@ -61,8 +61,8 @@ ylabel('$|| \mathtt{R(ori_1)} - \mathtt{R(ori_2)}||_2$','Interpreter','latex')
 %%
 % We observe that orientations with very small misorientation angle
 % $\omega(\mathtt{ori}_1,\mathtt{ori}_2)$ may be very far from each other
-% in Rodrigues Frank space, i.e. $|| \mathtt{R(ori_1)} -
-% \mathtt{R(ori_2)}||_2$ is large. As a consequence, we can not simply
+% in Rodrigues Frank space, i.e. $\lVert\mathtt{R(ori_1)} -
+% \mathtt{R(ori_2)}\rVert_2$ is large. As a consequence, we can not simply
 % compute the average of two orientations by taking the mean of the
 % corresponding Rodrigues vectors. 
 % 
@@ -151,7 +151,7 @@ norm(embedding(orientation.rand(5,cs))).'
 % concentrated around a prefered orientation, whereas if the norm is close
 % to zero some of the orientations are at maximum distance to each other.
 %%
-% Lets compare the norm 
+% Lets compare the norm
 %
 % $$ n=\left\lVert\frac{1}{N} \sum_{i=1}^N \mathcal E(\mathtt{ori}_i) \right\rVert$$
 % 
@@ -168,7 +168,7 @@ norm(embedding(orientation.rand(5,cs))).'
 n = []; sigma = [];
 for hw = logspace(-1,1.75,40)*degree
 
-  psi = deLaValleePoussinKernel('halfwidth',hw);
+  psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
   odf = unimodalODF(orientation.rand(cs),psi);
   ori = discreteSample(odf,round(1000*(hw*6)^3));
   
@@ -187,7 +187,7 @@ ylabel('$\sqrt{1-n}$','Interpreter','latex')
 % It appears as if the norm of the mean embedding is a function of the
 % standaerd deviation. However, the reason for this false relationship is
 % that we have generated the orientations out of a single family of random
-% variables - <UnimodalODFs.html unimodal de la Vallee Poussin distributed
+% variables - <RadialODFs.html#2 unimodal de la Vallee Poussin distributed
 % density functions>. A broader family of density function are the
 % <BinghamODFs.html Bingham distributions>. Lets repeat the experiment for
 % this family.

@@ -20,12 +20,12 @@ cs = crystalSymmetry('222', [4.762 10.225 5.994],'mineral', 'olivine');
 
 %%
 % In the next step the orientations are imported and converted into a list
-% of <ODF.ODF.html ODFs> using the command <ODF.load.html |ODF.load|>.
+% of <SO3Fun.SO3Fun.html ODFs> using the command <ODF.load.html |ODF.load|>.
 
 % put in here the path to the VPSC output files
 path2file = [mtexDataPath filesep 'VPSC'];
 
-odf = ODF.load([path2file filesep 'TEX_PH1.OUT'],'halfwidth',10*degree,cs)
+odf = ODF.load([path2file filesep 'TEX_PH1.OUT'],'halfwidth',10*degree,'CS',cs)
 
 %%
 % The individuel ODFs can be accessed by |odf{id}|

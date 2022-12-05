@@ -22,7 +22,9 @@ if nargin>1 && islogical(varargin{1})
     sL = sL(varargin{1});
 end
 
-grainIds(diff(grainIds,1,2)~=0) = [];
+ind = (diff(grainIds,1,2)~=0);
+grainIds(ind,:) = [];
+sL(ind,:) = [];
 
 sL = accumarray(grainIds(:,1),sL,[max(grains.id) 1]);
 

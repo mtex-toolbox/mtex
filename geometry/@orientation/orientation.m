@@ -125,6 +125,7 @@ methods (Static = true)
   ori = byEuler(phi1,Phi,phi2,varargin);
   ori = byAxisAngle(v,omega,varargin);
   ori = byMatrix(M,varargin);
+  ori = byRodrigues(v,varargin);
   ori = map(varargin);
   ori = fit(varargin);
   [ori,interface,options] = load(fname,varargin);

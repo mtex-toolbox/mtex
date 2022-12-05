@@ -26,3 +26,8 @@
 %
 % and many more.
 %
+% You can use
+%
+%   getMTEXpref 
+%
+% to display all mtex_settings.  

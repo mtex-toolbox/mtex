@@ -1,6 +1,6 @@
 function [odf,options] = loadODF_VPSC(fname,varargin)
 
-options = {};
+options = delete_option(varargin,'check');
 
 % read file header
 hl = file2cell(fname,4);
@@ -11,6 +11,7 @@ assert(~isempty(strmatch('TEXTURE AT STRAIN',hl{1})),...
   
 if check_option(varargin,'check')
   odf = ODF;
+  options = delete_option(varargin,'check');
   return; 
 end
 
@@ -20,7 +21,7 @@ nOri = sscanf(hl{4},'B %d');
 % read file
 d = txt2mat(fname,'NumHeaderLines',0,'InfoLevel',0,'ReplaceExpr',{{'TEXTURE AT STRAIN = ',''}});
 
-cs = getClass(varargin,'crystalSymmetry');
+cs = getClass(varargin,'crystalSymmetry',crystalSymmetry('432'));
 
 numStrain = round(size(d,1) / (nOri+4));
 

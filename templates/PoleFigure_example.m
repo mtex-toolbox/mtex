@@ -9,14 +9,14 @@
 % Nevertheless writing a template for any type of Data (PoleFigure, EBSD,
 % ODF) has two standard variables names
 %
-%   CS - Crystal Symmetry
-%   SS - Specime Symmetry
+%   CS - @crystalSymmetry
+%   SS - @specimenSymmetry
 %
 % furthermore the Data gets a variable according to its type
 %
-%   pf   - PoleFigure
-%   ebsd - EBSD
-%   odf  - ODF
+%   pf   - @PoleFigure
+%   ebsd - @EBSD
+%   odf  - @SO3Fun
 %
 %% Code begins here
 

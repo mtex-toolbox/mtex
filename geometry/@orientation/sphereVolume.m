@@ -14,7 +14,7 @@ function v = sphereVolume(ori,center,radius,varargin)
 %  radius - double
 %
 % See also
-% ODF/volume
+% SO3Fun/volume
 
 % compute volume
 if isempty(ori)

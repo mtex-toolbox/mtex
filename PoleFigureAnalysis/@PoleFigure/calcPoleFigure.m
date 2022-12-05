@@ -6,13 +6,13 @@ function pf = calcPoleFigure(pf,odf,varargin)
 %
 % Input
 %  pf  - meassured @PoleFigure
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Output
 %  pf - recomputed @PoleFigure 
 %
 % See also
-% ODF/calcPoleFigure
+% SO3Fun/calcPoleFigure
 
 pf = calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c,varargin{:});
 

@@ -204,7 +204,9 @@ setMTEXpref('memory',500*1024);
 %
 setMTEXpref('FFTAccuracy',1E-2);
 
-setMTEXpref('maxBandwidth',512);
+setMTEXpref('maxS2Bandwidth',512);
+
+setMTEXpref('maxSO3Bandwidth',64);
 
 %% degree character
 % MTEX sometimes experences problems when printing the degree character

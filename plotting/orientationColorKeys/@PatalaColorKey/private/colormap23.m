@@ -17,7 +17,7 @@
 
 function S = colormap23(v)
 
-pts = reshape(double(v),[],3);
+pts = v.xyz;
 
 pts(pts(:,1) > 1,1)=1;
 pts(pts(:,2) > 1,2)=1;

@@ -10,7 +10,7 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 %  faces - list of faces
 
 % compute the vertices
-V = pos(:) + unitCell(:).';
+V = reshape(pos(:) + unitCell(:).',[],1);
 
 % remove equal points
 % in general every measurment point generates 4 or 6 vertex points

@@ -63,7 +63,7 @@ sVF1-sVF2; sVF2-vector3d(sqrt(2)/2, sqrt(2)/2, 0);
 %%
 % multiplication/division by a scalar or a |S2Fun|
 2.*sVF1; sVF1./4;
-S2Fun.smiley*sVF1;
+S2Fun.smiley .* sVF1;
 
 %%
 % dot product with a vector or another vector field
@@ -99,3 +99,14 @@ plot(sVF1);
 % or the 3D plot of a sphere with the vectors on itself
 clf;
 quiver3(sVF2);
+
+%% Some fun
+
+sVF = grad(S2Fun.smiley)
+
+plot(dot(sVF,sVF))
+
+%%
+
+plot(dot(sVF,zvector))
+

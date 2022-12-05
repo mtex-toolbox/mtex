@@ -8,4 +8,5 @@ function  l = segLength(gB,varargin)
 %  l - length of the boundary segments in µm
 %
 
-l = sqrt(sum((gB.V(gB.F(:,1),:) - gB.V(gB.F(:,2),:)).^2,2));
+%l = sqrt(sum((gB.V(gB.F(:,1),:) - gB.V(gB.F(:,2),:)).^2,2));
+l = norm(gB.V(gB.F(:,1)) - gB.V(gB.F(:,2)));

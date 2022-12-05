@@ -23,7 +23,7 @@ plot(model_odf,'sections',6,'silent','sigma')
 % In order to simulate pole figure data, the following parameters have to be
 % specified
 %
-% # an arbitrary <ODF.ODF.html ODF>
+% # an arbitrary <SO3Fun.SO3Fun.html ODF>
 % # a list of <Miller.Miller.html Miller indece>
 % # a grid of <S2Grid.S2Grid.html specimen directions>
 % # superposition coefficients (optional)
@@ -42,7 +42,7 @@ r = regularS2Grid('resolution',5*degree);
 
 %%
 % Now the pole figures can be simulated using the command
-% <ODF.calcPoleFigure.html calcPoleFigure>. 
+% <SO3Fun.calcPoleFigure.html calcPoleFigure>. 
 
 pf = calcPoleFigure(model_odf,h,r)
 

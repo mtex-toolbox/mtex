@@ -7,7 +7,7 @@ function pf = normalize(pf,odf)
 %
 % Input
 %  pf  - @PoleFigure
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Output
 %  pf  - @PoleFigure

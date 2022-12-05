@@ -17,7 +17,7 @@ function odf = calcDensity(ori,varargin)
 %   odf = calcDensity(grains.meanOrientation,'weights',grains.area)
 %
 %   % use a specific kernel
-%   psi = AbelPoissonKernel('halfwidth',10*degree)
+%   psi = SO3AbelPoissonKernel('halfwidth',10*degree)
 %   odf = calcDensity(ori,'kernel',psi) 
 %
 %   % compute the ODF as a Fourier series of order 16
@@ -27,13 +27,13 @@ function odf = calcDensity(ori,varargin)
 %  ori  - @orientation
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % Options
 %  weights    - list of weights for the orientations
 %  halfwidth  - halfwidth of the kernel function
 %  resolution - resolution of the grid where the ODF is approximated
-%  kernel     - kernel function (default -- de la Valee Poussin kernel)
+%  kernel     - SO3Kernel function (default -- SO3 de la Valee Poussin kernel)
 %  order      - order up to which Fourier coefficients are calculated
 %
 % Flags
@@ -48,7 +48,7 @@ function odf = calcDensity(ori,varargin)
 
 % TODO this could be done better!!!
 % add grain exchange symmetry
-if check_option(varargin,'antipoal') && ori.CS == ori.SS
+if check_option(varargin,'antipodal') && ori.CS == ori.SS
   ori = [ori(:);inv(ori(:))]; 
 end
 
@@ -60,12 +60,12 @@ if check_option(varargin,'bingham')
 end
   
 % extract kernel function
-psi = deLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = SO3DeLaValleePoussinKernel('halfwidth',10*degree,varargin{:});
 psi = get_option(varargin,'kernel',psi);
 
 if  ~check_option(varargin,{'exact','noFourier'}) && ...
     (isa(ori.SS,'crystalSymmetry') || check_option(varargin,{'Fourier','harmonic'}) || ...
-    isa(psi,'DirichletKernel') || ...
+    isa(psi,'SO3DirichletKernel') || ...
     (length(ori) > 200 && psi.bandwidth <= 96))
   
   odf = calcFourierODF(ori,varargin{:},'kernel',psi);

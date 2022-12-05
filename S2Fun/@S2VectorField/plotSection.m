@@ -44,7 +44,7 @@ else
   h = plot3(d.x,d.y,d.z,'parent',mtexFig.gca);
 end
 
-view(mtexFig.gca,squeeze(double(sec)));
+view(mtexFig.gca,sec.xyz)
 set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
 optiondraw(h,varargin{:});
 
