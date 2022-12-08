@@ -90,10 +90,10 @@ for k = 1:length(SO3F)
   if SO3F.isReal
 
     % ind = mod(N+1,2);
-    % create ghat -> k x l x j
+    % create ghat -> k x j x l
     %   k = -N+1:N
-    %   l =    0:N+ind    -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
-    %   j = -N+1:N        -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
+    %   j = -N+1:N      -> use ghat(k,-j,l) = (-1)^(k+l)*ghat(k,j,l)    (*)
+    %   l =    0:N+ind  -> use ghat(-k,-j,-l) = conj(ghat(k,j,l))      (**)
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N 
     % Therfore we use ind in 2nd dimension to get even number of fourier coefficients
     % The additional indices produce 0-columns in front of ghat
@@ -105,13 +105,13 @@ for k = 1:length(SO3F)
 
   else
 
-    % create ghat -> k x l x j
+    % create ghat -> k x j x l
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N
-    % we can use (**) again to speed up
     % flags: 2^1 -> make size of ghat even
     %        2^2 -> use L_2-normalized Wigner-D functions
     flags = 2^1+2^2;
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
+    % we can use (*) again to speed up
 
   end
 
@@ -123,7 +123,7 @@ for k = 1:length(SO3F)
 
   % get function values from plan
   if SO3F.isReal
-    % use (*) and shift summation in 2nd index
+    % use (**) and shift summation in 2nd index
     f(:,k) = 2*real((exp(-2*pi*1i*ceil(N/2)*abg(1,:).')).*(nfftmex('get_f',plan)));
   else
     f(:,k) = nfftmex('get_f',plan);
