@@ -47,11 +47,15 @@ if SO3F.isReal
 
   % create ghat -> k x j x l
   % with  k = -N:N
-  %       l =  0:N      -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
-  %       j = -N:N      -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
-  % 2^0 -> fhat are the fourier coefficients of a real valued function
-  % 2^2 -> use L_2-normalized Wigner-D functions
-  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^0+2^2);
+  %       j = -N:N    -> use ghat(k,-j,l) = (-1)^(k+l) * ghat(k,-j,l)   (*)
+  %       l =  0:N    -> use ghat(-k,-j,-l) = conj(ghat(k,j,l))        (**)
+  % flags: 2^0 -> use L_2-normalized Wigner-D functions
+  %        2^2 -> fhat are the fourier coefficients of a real valued function
+  %        2^4 -> use right and left symmetry
+  flags = 2^0+2^2+2^4;
+  sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,flags,sym);
 
   % correct ghat by (-1)^(k-l)
   z = zeros(2*N+1,2*N+1,N+1)+(-N:N)'-reshape(0:N,1,1,[]);
@@ -59,8 +63,12 @@ if SO3F.isReal
 
 else
 
-  % 2^2 -> use L_2-normalized Wigner-D functions
-  ghat = representationbased_coefficient_transform(N,SO3F.fhat,2^2);
+  % flags: 2^0 -> use L_2-normalized Wigner-D functions
+  %        2^4 -> use right and left symmetry
+  flags = 2^0+2^4;
+  sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+  ghat = representationbased_coefficient_transform(N,SO3F.fhat,flags,sym);
 
   % correct ghat by (-1)^(k-l)
   z = zeros(2*N+1,2*N+1,2*N+1)+(-N:N)'-reshape(-N:N,1,1,[]);
@@ -77,7 +85,7 @@ f = f(:,1:H+2,:);                          % because beta is only in [0,pi]
 if SO3F.isReal
   % need to shift summation of fft from [-N:N] to [0:2N]
   z = (0:H+1)+(0:2*H+1)';
-  f = 2*real(exp(1i*pi*N/(H+1)*z).*f);     % shift summation & use (*)
+  f = 2*real(exp(1i*pi*N/(H+1)*z).*f);     % shift summation & use (**)
 else
   % need to shift summation of fft from [-N:N] to [0:2N]
   z = (0:H+1)+(0:2*H+1)'+reshape(0:2*H+1,1,1,[]);

@@ -97,21 +97,27 @@ for k = 1:length(SO3F)
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N 
     % Therfore we use ind in 2nd dimension to get even number of fourier coefficients
     % The additional indices produce 0-columns in front of ghat
-    % flags: 2^0 -> fhat are the fourier coefficients of a real valued function
-    %        2^1 -> make size of ghat even
-    %        2^2 -> use L_2-normalized Wigner-D functions
-    flags = 2^0+2^1+2^2;
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
+    % flags: 2^0 -> use L_2-normalized Wigner-D functions
+    %        2^1 -> make size of result even
+    %        2^2 -> fhat are the fourier coefficients of a real valued function
+    %        2^4 -> use right and left symmetry
+    flags = 2^0+2^1+2^2+2^4;
+    sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
 
   else
 
     % create ghat -> k x j x l
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N
-    % flags: 2^1 -> make size of ghat even
-    %        2^2 -> use L_2-normalized Wigner-D functions
-    flags = 2^1+2^2;
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
     % we can use (*) again to speed up
+    % flags: 2^0 -> use L_2-normalized Wigner-D functions
+    %        2^1 -> make size of result even
+    %        2^4 -> use right and left symmetry
+    flags = 2^0+2^1+2^4;
+    sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
 
   end
 
