@@ -142,6 +142,7 @@ for index = 1:num
   % quadrature grid and nfft otherwise 
   if check_option(varargin,'ClenshawCurtis')
 
+    % Possibly use smaller input matrix by using the symmetries
     ghat = ifftn( W.* reshape(values(:, index),size(nodes)) ,[2*bw+2,4*bw,2*bw+2]);
     ghat = ifftshift(ghat);
     ghat = 16*bw*(bw+1)^2 * ghat(2:end,bw+1:3*bw+1,2:end);

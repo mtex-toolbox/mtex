@@ -5,40 +5,55 @@
  * the Euler angles of evaluations of a SO(3) function (F).
  * We calculate as output the corresponding SO(3) fourier coefficient vector 
  * (fhat) of this function F.
- * There are two options choosable.
+ * Therefore we use symmetry properties of F to calculate only a part of symmetrical
+ * SO(3) Fourier coefficients and to speed up the algorithm. The following 
+ * symmetry properties are implemented:
  * 1) Possibly the size of the input was made even in any dimension by
  * adding zeros in front. That was necessary since inverse nfft was done for 
  * indices -N-1 : N but the values were given for indices -N:N.
  * 2) If F is a real valued function, the SO(3) Fourier coefficients satisfy
- * the symmetry property 
+ * the symmetry property
  *                     fhat(n,k,l) = conj(fhat(n,-k,-l)). 
- * Hence it is sufficient to calculate fhat(n,k,l) for indices 
- *                      (n,k,l) in (0:N)x(-n:0)x(-n:n).
- * 
+ * 3) If F is an antipodal function, the SO(3) Fourier coefficients satisfy
+ * the symmetry property
+ *                     fhat(n,k,l) = fhat(n,-l,-k). 
+ * 4) Similarly an r-fold symmetry axis along the Z-axis in right or left 
+ * symmetry implies that the SO(3) Fourier coefficients satisfy
+ *                    fhat(n,k,l) = 0   if k mod r is not 0
+ * or
+ *                    fhat(n,k,l) = 0   if l mod r is not 0.
+ * Moreover an 2-fold symmetry along Y-axis yields 
+ *            fhat(n,k,l) = (-1)^n fhat(n,-k,l)
+ * for right symmetry and
+ *            fhat(n,k,l) = (-1)^n fhat(n,k,-l)
+ * in case of left symmetry.
+ *
+ *
  * For the calculation of fhat we need Wigner-d matrices with Euler angle
  * beta = pi/2. From symmetry properties of this Wigner-d matrices we get
  *       (-1)^(k+l) * d^n(l,k) = d^n(k,l) = (-1)^(n+k+l) * d^n(k,-l).
  * We use this to speed up the calculation of fhat.
  * 
- * The calling syntax is:
+ * Syntax
+ *   flags = 2^0+2^2+2^4;
+ *   sym_axis = [1,2,2,1];
+ *   fhat = adjoint_representationbased_coefficient_transform(N,ghat,flags,sym_axis);
  * 
- *		fhat = adjoint_representationbased_coefficient_transform(N,ghat)
- *    fhat = adjoint_representationbased_coefficient_transform(N,ghat,2^0+2^2)
- * 
- * flags:  2^0 -> fhat are the fourier coefficients of a real valued function
- *         2^1 -> use input of even size            (not implemented yet)
- *         2^2 -> use L_2-normalized Wigner-D functions
- *         2^3 -> precompute Wigner-d Matrices      (not implemented yet)
+ * Input
+ *  N        - bandwidth
+ *  ghat     - matrix of fourier transformed function evaluations on ClenshawCurtis grid
+ *  flags    - 2^0 -> use L_2-normalized Wigner-D functions
+ *             2^1 -> use input of even size            (not implemented yet)
+ *             2^2 -> fhat are the fourier coefficients of a real valued function
+ *             2^3 -> antipodal
+ *             2^4 -> use right and left symmetry
+ *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2} and 
+ *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
  *
- * 
- * 2^0 -> use L_2-normalized Wigner-D functions
- * 2^1 -> use input of even size            (not implemented yet)
- * 2^2 -> fhat are the fourier coefficients of a real valued function
- * 2^3 -> antipodal
- * 2^4 -> use crystal and specimen symmetry
- *          sym_axis = [CS-Y,CS-Z,SS-Y,SS-Z]
+ * Output
+ *  fhat - SO(3) Fourier coefficient vector
  *
- * 
+ *
  * This is a MEX-file for MATLAB.
  * 
  *=======================================================================*/
@@ -66,10 +81,10 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
     const int N = bandwidth;                          // integer bandwidth
     const int rowcol_len = (2*N+1);                   // length of a row and a column in ghat
     const int matrix_size = rowcol_len*rowcol_len;    // size of one matrix in ghat
-    const int CSY = sym_axis[0];
-    const int CSZ = sym_axis[1];
-    const int SSY = sym_axis[2];
-    const int SSZ = sym_axis[3];
+    const int SRightY = sym_axis[0];
+    const int SRightZ = sym_axis[1];
+    const int SLeftY = sym_axis[2];
+    const int SLeftZ = sym_axis[3];
     
 
     
@@ -170,14 +185,6 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
     ghat = start_ghat;
     
 
-//     fhat--;
-//     (*fhat).real = SSY;
-//     (*fhat).imag = SSZ;
-//     fhat--;
-//     (*fhat).real = CSY;
-//     (*fhat).imag = CSZ;
-
-
     // Be shure N>1, otherwise STOP.
     if (N==1)
       return;
@@ -204,40 +211,41 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
 
       //pm = -1.0;
 
-      // Compute fhat by adding fhat(n,k,l) = sum_{j=-n}^n ghat(k,j,l) * d^1(j,k) * d^1(j,l)
+      // Compute fhat by adding fhat(n,k,l) = sum_{j=-n}^n ghat(k,j,l) * d^n(j,k) * d^n(j,l)
       // Use symmetry properties in Wigner-d functions:
-      // fhat(n,k,l) = ghat(k,0,l)*d^n(k,0)*d^n(l,0)  +  sum_{j=1}^n () * d^n(k,-j)*d^n(l,-j)
+      // fhat(n,k,l) = ghat(k,0,l)*d^n(k,0)*d^n(l,0)  +  sum_{j=1}^n (ghat(k,j,l)+(-1)^(k+l)*ghat(k,-j,l)) * d^n(k,-j)*d^n(l,-j)
       // ignore some values if - SO3FunHarmonic is real valued
       //                       - SO3FunHarmonic is antipodal
-      //                       - we have crystall and specimen symmetry
+      //                       - we have right and left symmetry
         // set left and right loop bounds
-        L_shift = n % SSZ;
+        L_shift = n % SLeftZ;
         L_min = -n+L_shift;
         L_max = n-L_shift;
-        if(SSY==2)
+        if(SLeftY==2)
           L_max=0;
-        K_shift = n % CSZ;
+        K_shift = n % SRightZ;
         K_min = -n+K_shift;
         K_max = n-K_shift;
-        if(CSY==2)
+        if(SRightY==2)
           K_max=0;
 
-        if((CSY*SSY==2) && (isReal==1)) 
+        if((SRightY*SLeftY==2) && (isReal==1)) 
         {
           K_max=0;
           L_max=0;
         }
-        if((CSY*SSY==1) && (isReal==1) && (isAntipodal==0))
+        if((SRightY*SLeftY==1) && (isReal==1) && (isAntipodal==0))
           K_max=0;
 
 
+      // Iteration:
       fhat += L_shift*(2*n+1);
       ghat += L_shift*matrix_size;
-      for (l= L_min; l<=L_max; l+=SSZ)
+      for (l= L_min; l<=L_max; l+=SLeftZ)
       {
         if(isAntipodal==1)
         {
-          if(CSY*SSY==1)
+          if(SRightY*SLeftY==1)
           {
             K_max = -l;
             if(isReal==1)
@@ -246,14 +254,14 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
               L_max = 0;
             }
           }
-          if((CSY*SSY==4))
+          if((SRightY*SLeftY==4))
             K_min = l;
         }
 
         ghat += n+K_min;    // new
         fhat += n+K_min;    // new                                     
 
-        for (k= K_min; k<=K_max; k+=CSZ)
+        for (k= K_min; k<=K_max; k+=SRightZ)
         {
           if((k+l)%2==0) 
             pm = 1.0;
@@ -277,17 +285,17 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
             ghat2 -= rowcol_len;
             ghat += rowcol_len;
           }
-          fhat += CSZ;                                // changed
-          ghat += CSZ -rowcol_len*(n+1);              // changed
+          fhat += SRightZ;                                // changed
+          ghat += SRightZ -rowcol_len*(n+1);              // changed
         }
-        fhat += 1-CSZ + (n-K_max);                    // new
-        fhat += (SSZ-1)*(2*n+1);                      // new
-        ghat += 1-CSZ + (n-K_max);                    // new
-        ghat += (SSZ-1)*matrix_size;                  // new
+        fhat += 1-SRightZ + (n-K_max);                    // new
+        fhat += (SLeftZ-1)*(2*n+1);                      // new
+        ghat += 1-SRightZ + (n-K_max);                    // new
+        ghat += (SLeftZ-1)*matrix_size;                  // new
         ghat += -(2*n+1)+matrix_size;
       }
       // shift fhat to next harmonic degree in case of used symmetries
-      fhat += (1-SSZ)*(2*n+1) + (n-L_max)*(2*n+1);
+      fhat += (1-SLeftZ)*(2*n+1) + (n-L_max)*(2*n+1);
       
       // reset pointer ghat to ghat(-N,-N,-N)
       ghat = start_ghat;
@@ -354,7 +362,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxComplexDouble *outFourierCoeff; // output fourier coefficient vector
     
   // check data types
-    // check for 2 or 3 input arguments (inCoeff & bandwith)
+    // check for 2 input arguments (inCoeff & bandwith)
     if(nrhs<2)
       mexErrMsgIdAndTxt("adjoint_representationbased_coefficient_transform:invalidNumInputs","More inputs are required.");
     // check for 1 output argument (outFourierCoeff)
@@ -408,8 +416,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     bool flags[7];
     get_flags(input_flags,flags);
 
-    // if exists and the flag implies we want to use crystal and specimen 
-    // symmetry to speed up --> get sym_axis of input
+    // if exists and the flag implies we want to use right and left 
+    // symmetries to speed up --> get sym_axis of input
     double s[4] = {1,1,1,1};
     if( (nrhs>=4) && (flags[4]) )
       sym_axis = mxGetDoubles(prhs[3]);
@@ -417,7 +425,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       sym_axis = s;
 
     if( ((sym_axis[0]!=sym_axis[2]) || (sym_axis[1]!=sym_axis[3])) && flags[3] )
-      mexErrMsgIdAndTxt( "adjoint_representationbased_coefficient_transform:notAntipodal","ODF can only be antipodal if both crystal symmetry coincide!");
+      mexErrMsgIdAndTxt( "adjoint_representationbased_coefficient_transform:notAntipodal","ODF can only be antipodal if both symmetries coincide!");
 
     
     const int isReal = flags[2];
@@ -438,5 +446,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // use L2-normalize Wigner-D functions by scaling the fourier coefficients
   if(flags[0])
     L2_normalized_WignerD_functions(bandwidth,outFourierCoeff);
+
+  // free the storage
+  mxDestroyArray(zeiger);
 
 }
