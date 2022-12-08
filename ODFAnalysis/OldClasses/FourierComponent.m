@@ -10,12 +10,9 @@ methods (Static = true, Hidden=true)
     if isempty(fhat), fhat = 0; end
     if isempty(CS), CS = crystalSymmetry; end
     if isempty(SS), SS = specimenSymmetry; end
-    % The Fourier coefficients are L2-normalized since MTEX Version 5.9.
-    for n = 0:dim2deg(length(fhat))
-      ind = deg2dim(n)+1:deg2dim(n+1);
-      fhat(ind) = fhat(ind) * (1/sqrt(2*n+1));
-    end
     odf = SO3FunHarmonic(fhat);
+    % We use L2-normalized Wigner-D functions since MTEX Version 5.9.
+    odf = L2normalizeFourierCoefficients(odf);
     % The ODFs has been real valued before MTEX verison 5.9.
     odf.isReal = 1;
     % do not symmetrise odf by defining the symmetries.

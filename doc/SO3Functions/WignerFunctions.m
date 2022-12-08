@@ -9,8 +9,8 @@
 % R}(\alpha,\beta,\gamma)$ the $L_2$-normalized Wigner-D function of degree
 % $n$ and orders $k,l \in \{-n,\dots,n\}$ is defined by
 %
-% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma}
-% \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
+% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{-\mathrm i k\gamma}
+% \mathrm d_n^{k,l}(\cos\beta) \,e^{-\mathrm i l\alpha} $$
 %
 % where $d_n^{k,l}$, denote the real valued Wigner-d functions, which are
 % defined in terms of Jacobi polynomial $P_s^{a,b}$  by
