@@ -1,5 +1,5 @@
 classdef deLaValleePoussinKernel
-% This class is obsolet since MTEX 6.0. Use the class @SO3DeLaValleePoussinKernel
+% This class is obsolet since MTEX 5.9. Use the class @SO3DeLaValleePoussinKernel
 % instead. Anyway the class is preserved, so that the kernels of saved 
 % unimodal @ODFs can be loaded.
 
