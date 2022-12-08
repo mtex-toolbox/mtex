@@ -10,8 +10,17 @@ methods (Static = true, Hidden=true)
     if isempty(fhat), fhat = 0; end
     if isempty(CS), CS = crystalSymmetry; end
     if isempty(SS), SS = specimenSymmetry; end
-    odf = SO3FunHarmonic(fhat,CS,SS);
-    warning('The Fourier coefficients are normalized since MTEX Version 5.0.')
+    % The Fourier coefficients are L2-normalized since MTEX Version 5.9.
+    for n = 0:dim2deg(length(fhat))
+      ind = deg2dim(n)+1:deg2dim(n+1);
+      fhat(ind) = fhat(ind) * (1/sqrt(2*n+1));
+    end
+    odf = SO3FunHarmonic(fhat);
+    % The ODFs has been real valued before MTEX verison 5.9.
+    odf.isReal = 1;
+    % do not symmetrise odf by defining the symmetries.
+    odf.CS = CS;
+    odf.SS = SS;
   end
 end
 
