@@ -105,6 +105,7 @@ for k = 1:length(SO3F)
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+%     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^0+2^1+2^2);
 
   else
 
@@ -118,6 +119,7 @@ for k = 1:length(SO3F)
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+%     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^1+2^2);
 
   end
 
