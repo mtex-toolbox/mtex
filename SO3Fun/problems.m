@@ -111,13 +111,8 @@ F.eval([r,r.inv])
 F.antipodal = 1
 F.eval([r,r.inv])
 
-%% 6)  Error in line 185 of
-
-GrainOrientationParameters
-
 %% 7) add load Function and correct import wizzard.       ODF ---> SO3Fun
 
-ODFImport
 VPSCImport
 
 
