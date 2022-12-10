@@ -53,9 +53,9 @@ try
   assert(abs(f(xvector) - sF.eval(xvector))<1e-5);
   
   % check NFSOFT
-  ori = orientation.rand(100,crystalSymmetry);
-  odf = calcDensity(ori,'Fourier','bandwidth',12);
-  odf.eval(ori);
+  %ori = orientation.rand(100,crystalSymmetry);
+  %odf = calcDensity(ori,'Fourier','bandwidth',12);
+  %odf.eval(ori);
   e = 1;
 end
 end
@@ -102,7 +102,7 @@ e = false;
 mexpath = [mtex_path filesep 'mex'];
 
 % check for existence of the files
-mex = {'quaternion_*','S1Grid_*','S2Grid_*','SO3Grid_*'};
+mex = {'quaternion_*','S1Grid_*','S2Grid_*','SO3Grid_*','insidepoly_*','representationbased*'};
 for k=1:numel(mex)
   cfile = dir(fullfile(mexpath, [mex{k} '.c']));
   for c=1:numel(cfile)
@@ -118,6 +118,10 @@ end
 try
   S3G = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',100);
   dot_outer(S3G,quaternion.id,'epsilon',pi/4);
+
+  SO3F = SO3FunHarmonic(rand(1000,1));
+  SO3F.eval(rotation.rand(10));
+
   e = true;
 catch
   e = false;

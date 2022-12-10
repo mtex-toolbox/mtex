@@ -1,4 +1,4 @@
-#include "S1Grid.c"
+#include "../../@S1Grid/private/S1Grid.c"
 
 
 typedef struct S2Grid_ {

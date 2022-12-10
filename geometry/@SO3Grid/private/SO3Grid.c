@@ -1,4 +1,4 @@
-#include "S2Grid.c"
+#include "../../@S2Grid/private/S2Grid.c"
 
 
 
