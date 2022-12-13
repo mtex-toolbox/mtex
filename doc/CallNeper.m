@@ -24,8 +24,9 @@ myneper = neperInstance
 % your tesselations are already located under another path, you can change
 % it:
 
-myneper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
-%or
+% for example
+% myneper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
+% or
 myneper.filePath = pwd;
 
 %%
@@ -67,7 +68,7 @@ myneper.id = 529;
 % https://neper.info/doc/neper_t.html#cmdoption-morpho for more
 % information. By default graingrowth is used, that is an alias for:
 
-myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)';
+myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
 %% Tesselation
 % The tesselation is executed by the command |simulateGrains|. There are
@@ -87,7 +88,7 @@ myneper.simulateGrains(odf,numGrains)
 
 oriList=odf.discreteSample(numGrains);
 
-myneper.simulateGrains(ori)
+myneper.simulateGrains(oriList)
 
 %% Slicing
 % To get slices of your tesselation, that you can process with MTEX, the
@@ -107,13 +108,12 @@ N=vector3d(2,2,4);
 A=vector3d(2,2,1);
 mySlice3=myneper.getSlice(N,A);
 
+%%
 plot(mySlice1,mySlice1.meanOrientation);
 hold on
 plot(mySlice2,mySlice2.meanOrientation);
 hold on
 plot(mySlice3,mySlice3.meanOrientation);
-
-
 
 %% Diskussion von parametern 
 % * output files
