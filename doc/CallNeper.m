@@ -70,20 +70,48 @@ myneper.id = 529;
 myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)';
 
 %% Tesselation
-%
+% The tesselation is executed by the command |simulateGrains|. There are
+% two option to call it.
+% 1. by ODF and number of grains:
 
 cs = crystalSymmetry('432');
 ori = orientation.rand(cs);
 odf = unimodalODF(ori);
+numGrains=100;
 
-myneper.simulateGrains(odf,100)
+myneper.simulateGrains(odf,numGrains)
 
 %%
+% 2. by list of orientations:
+% In this case the length of the list determines the number of Grains.
 
+oriList=odf.discreteSample(numGrains);
 
+myneper.simulateGrains(ori)
 
+%% Slicing
+% To get slices of your tesselation, that you can process with MTEX, the
+% command |getSlice| is used, wich returns a set of grains (|grain2d|). 
+% It is called by giving the normal vector [a,b,c] of the plane and either 
+% a point that lies in the plane or the "d" of the plane equation.
 
+N=vector3d(0,0,1);
+d=1;
+mySlice1=myneper.getSlice(N,d);
 
+N=vector3d(1,-1,0);
+A=vector3d(2,2,1);
+mySlice2=myneper.getSlice(N,A);
+
+N=vector3d(2,2,4);
+A=vector3d(2,2,1);
+mySlice3=myneper.getSlice(N,A);
+
+plot(mySlice1,mySlice1.meanOrientation);
+hold on
+plot(mySlice2,mySlice2.meanOrientation);
+hold on
+plot(mySlice3,mySlice3.meanOrientation);
 
 
 
