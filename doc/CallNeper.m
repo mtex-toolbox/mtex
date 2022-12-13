@@ -15,7 +15,7 @@
 % If you do not want to make any further adjustments to the default values,
 % this step could be done very easily:
 
-myneper=neperInstance;
+myneper = neperInstance
 
 %% 
 % File options:
@@ -24,16 +24,16 @@ myneper=neperInstance;
 % your tesselations are already located under another path, you can change
 % it:
 
-myneper.filePath='C:\Users\user\Documents\work\MtexWork\neper';
+myneper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 %or
-myneper.filePath=pwd;
+myneper.filePath = pwd;
 
 %%
 % By default a new folder, named neper will be created for the tesselation 
 % data. If you do not want to create a new folder you can switch it of by 
-% setting |newfolder| to False.
+% setting |newfolder| to |false|.
 
-myneper.newfolder=False;
+myneper.newfolder = false;
 
 %%
 % If |newfolder| is true (default) the slicing module also works in the
@@ -44,16 +44,15 @@ myneper.newfolder=False;
 % ending .tess and .ori . You can change the file names in variables
 % |fileName3d| and |fileName2d|.
 
-myneper.fileName3d='my100grains';
-myneper.fileName2d='my100GrSlice';
+myneper.fileName3d = 'my100grains';
+myneper.fileName2d = 'my100GrSlice';
 
-%%
-% Tesselation options
+%% Tesselation options
 % The grains will be generated in cubic domain. By default the domain has
-% the edge length 1 in each direction. To change the size of the domain, 
+% the edge length 1 in each direction. To change the size of the domain,
 % store a row vector with 3 entries (x,y,z) in the variable |cubeSize|.
 
-myneper.cubeSize=[4 4 2];
+myneper.cubeSize = [4 4 2];
 
 %%
 % Neper uses an id to identify the tesselation. This interger value "is
@@ -61,17 +60,32 @@ myneper.cubeSize=[4 4 2];
 % seed positions" (neper.info/doc/neper_t.html#cmdoption-id) By default the
 % tesselation id is always |1|.
 
-myneper.id=529;
+myneper.id = 529;
 
 %%
 % Neper allows to specify the morphological properties of the cells. See
 % https://neper.info/doc/neper_t.html#cmdoption-morpho for more
 % information. By default graingrowth is used, that is an alias for:
 
-myneper.morpho='diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)';
+myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03),aspratio(3,1.5,1)';
 
 %% Tesselation
 %
+
+cs = crystalSymmetry('432');
+ori = orientation.rand(cs);
+odf = unimodalODF(ori);
+
+myneper.simulateGrains(odf,100)
+
+%%
+
+
+
+
+
+
+
 
 %% Diskussion von parametern 
 % * output files
