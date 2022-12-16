@@ -115,8 +115,4 @@ plot(mySlice2,mySlice2.meanOrientation);
 hold on
 plot(mySlice3,mySlice3.meanOrientation);
 
-%% Diskussion von parametern 
-% * output files
-% * which slice, how to pameterize slice
-% * morphological parameters
-% * mehrere schöne Ebenen (3)
+% set camera
