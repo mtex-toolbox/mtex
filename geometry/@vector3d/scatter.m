@@ -79,8 +79,8 @@ for i = 1:numel(sP)
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
 
   % dynamic markersize
-  if check_option(varargin,'dynamicMarkerSize') || ...
-      (~check_option(varargin,'MarkerSize') && length(v)>20)
+  if ~check_option(varargin,'MarkerSize') && ...
+      (check_option(varargin,'dynamicMarkerSize') || length(v)>20)
     patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
   end
     
