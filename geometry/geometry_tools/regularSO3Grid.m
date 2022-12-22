@@ -20,6 +20,7 @@ function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 %  phi1 | Phi | phi2 - sections along which variable
 %
 % Output
+%  SO3G - @orientation
 %
 
 % extract symmetry

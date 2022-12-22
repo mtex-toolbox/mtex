@@ -5,15 +5,17 @@ function f = evalV2(SO3F,rot,varargin)
 % NFFT at the end.
 %
 % Syntax
-%   f = evalV2(F,v)
+%   f = evalV2(F,rot)
 %
 % Input
 %   F - @SO3FunHarmonic
-%   v - @rotation interpolation nodes
+%   rot - @rotation (evaluation nodes)
 %
 % Output
 %   f - double
 %
+% See also
+% SO3Fun/eval SO3Fun/evalEquispacedFFT
 
 persistent keepPlanNFFT;
 
