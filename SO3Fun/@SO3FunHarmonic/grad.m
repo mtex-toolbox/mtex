@@ -60,7 +60,7 @@ for n=0:SO3F.bandwidth
 
 end
 
-g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat) ,SO3F.CS,SO3F.SS );
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS) );
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};
