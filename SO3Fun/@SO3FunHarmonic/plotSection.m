@@ -31,6 +31,44 @@ if numel(SO3F)>1
     'manually. In the following the first component is plotted.'])
 end
 
-plotSection@SO3Fun(SO3F.subSet(1),varargin{:});
 
+if SO3F.antipodal, ap = {'antipodal'}; else, ap = {}; end
+oS = newODFSectionPlot(SO3F.CS,SO3F.SS,ap{:},varargin{:});
+
+if ~isa(oS,'gammaSections') && ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections')
+  % plotSection@SO3Fun(SO3F.subSet(1),varargin{:});
+  S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
+  % plot on S3G with evalfft
+  SO3F.isReal = 1;
+  tic
+  Z = SO3F.eval(S3G,varargin{:});
+  toc
+  clear S3G
+else % use equispaced fft
+  oS.plotGrid = plotS2Grid(oS.sR,'resolution',2.5*degree,varargin{:});
+  if isa(oS,'gammaSections')
+    l = numel(oS.gamma);
+  elseif isa(oS,'phi2Sections')
+    l = numel(oS.phi2);
+  elseif isa(oS,'phi1Sections')
+    l = numel(oS.phi1);
+  end
+  oS.gridSize = (0:l) * length(oS.plotGrid);
+  SO3F.isReal = 1;
+  Z = SO3F.evalSectionsEquispacedFFT('resolution',2.5*degree,'Sections',oS,varargin{:});
+  Z = permute(Z,[2,1,3]);
 end
+
+
+cR = [min(Z(:)),max(Z(:))];
+if isempty(cR)
+  cR = [0,1];
+elseif cR(1) == cR(2)
+  if cR(1) == 0
+    cR(2) = 1;
+  else
+    cR(1) = 0;    
+  end
+end
+
+oS.plot(Z,'smooth','colorRange',cR,varargin{:});
