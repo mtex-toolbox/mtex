@@ -11,12 +11,17 @@ function plotSection(SO3F,varargin)
 %  phi2      - phi2 sections (default)
 %  phi1      - phi1 sections
 %  gamma     - gamma sections
+%  alpha     - alpha sections
 %  sigma     - sigma = phi1 - phi2 sections
 %  axisAngle - rotational angle sections
 %  smooth
 %  countourf
 %  contour
 %  contour3, surf3, slice3 - 3d volume plot
+%
+% Example
+%   % Section plots at specific angles
+%   plotSection(SO3Fun.dubna,'phi2',[15,23,36]*degree)
 %
 % See also
 % saveFigure Plotting

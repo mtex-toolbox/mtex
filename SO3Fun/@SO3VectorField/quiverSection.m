@@ -27,6 +27,7 @@ function quiverSection(SO3VF,varargin)
 %  phi2      - phi2 sections (default)
 %  phi1      - phi1 sections
 %  gamma     - gamma sections
+%  alpha     - alpha sections
 %  sigma     - sigma = phi1 - phi2 sections
 %  axisAngle - rotational angle sections
 %  smooth
