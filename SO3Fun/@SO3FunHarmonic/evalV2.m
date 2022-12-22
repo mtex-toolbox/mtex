@@ -15,7 +15,7 @@ function f = evalV2(SO3F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3Fun/eval SO3Fun/evalEquispacedFFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
 persistent keepPlanNFFT;
 

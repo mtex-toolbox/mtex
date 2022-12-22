@@ -14,6 +14,9 @@ function f =  eval(F,rot,varargin)
 % Output
 %   f - double
 %
+% See also
+% SO3FunHarmonic/evalV2 SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+
 
 if ~check_option(varargin,'nfsoft')
   f = evalV2(F,rot,varargin{:});
