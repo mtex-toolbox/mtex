@@ -1,6 +1,6 @@
 classdef (InferiorClasses = {?SO3FunHarmonic,?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3VectorFieldHandle < SO3VectorField
-% a class represeneting a vector field on SO(3)
+% a class representing a vector field on SO(3)
   
 properties
   fun
