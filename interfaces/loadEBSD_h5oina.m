@@ -130,7 +130,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         % rounding errors instead of using the 'force' option
         
         langle = double(EBSDphases.(pN).Lattice_Angles');
-        if ~isempty(EBSDphases.(pN).Space_Group)
+        if ~isempty(EBSDphases.(pN).Space_Group) & EBSDphases.(pN).Space_Group ~= 0
             csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
         else
             csm = crystalSymmetry(EBSDphases.(pN).Laue_Group);  
