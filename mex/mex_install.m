@@ -1,5 +1,10 @@
 function mex_install(mtexpath,varargin)
 % compiles all mex files for use with MTEX
+%
+% You need a mex Compiler for example MinGW64 for Windows 
+%         --> Home/AddOns/Get Add-Ons ...
+%
+
 
 if nargin == 0, mtexpath = mtex_path;end
 
