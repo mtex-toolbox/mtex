@@ -13,15 +13,14 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,varargin)
 %   f = evalSectionsEquispacedFFT(SO3F)
 %   f = evalSectionsEquispacedFFT(SO3F,'resolution',2.5*degree)
 %   [f,nodes] = evalSectionsEquispacedFFT(SO3F,'resolution',[2*degree,2.5*degree])
-%   f = evalSectionsEquispacedFFT(SO3F,'Sections',oS)
+%   f = evalSectionsEquispacedFFT(SO3F,oS)
 %
 % Input
 %  SO3F - @SO3FunHarmonic
-%  oS - @ODFSection
+%  oS - @ODFSection (phi2,gamma,phi1)
 %
 % Options
 %  'resolution' - shape constant along Euler angles. (default = 2.5°)
-%  'Sections' - phi1Sections / phi2Sections / gammaSections
 %
 % Output
 %  nodes - @orientation
@@ -32,8 +31,7 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,varargin)
 
 N = SO3F.bandwidth;
 
-
-oS = get_option(varargin,'Sections',[]);
+if isa(varargin{1},'ODFSections'), oS = varargin{1}; else, oS =[]; end
 [a_max,b_max,g_max] = fundamentalRegionEuler(SO3F.CS,SO3F.SS);
 if isempty(oS)
   gamma = mod((0:5)*g_max/6+pi/2,2*pi);
@@ -74,6 +72,12 @@ if any(s<=1)
 end
 
 
+shiftGrid = get_option(varargin,'shiftGrid',[0,0]);
+if check_option(varargin,'shiftGrid')
+  s = s-1;
+end
+
+
 
 % compute ghat
 if SO3F.isReal
@@ -94,6 +98,10 @@ if SO3F.isReal
   z = - (0:N)'+ reshape(-N:N,1,1,[]) + shift * (0:N)';
   ghat = ghat.*(1i).^z;
 
+  if check_option(varargin,'shiftGrid')
+    ghat = ghat.*exp(-1i * (shiftGrid(1)*(0:N)' + shiftGrid(2)*(-N:N)) );
+  end
+
 else
 
   % compute ghat
@@ -107,6 +115,10 @@ else
   % correct ghat by i^(-k+l)
   z = - (-N:N)' + reshape(-N:N,1,1,[]) + shift * (-N:N)';
   ghat = ghat.*(1i).^z;
+  
+  if check_option(varargin,'shiftGrid')
+    ghat = ghat.*exp(-1i * (shiftGrid(1)*(-N:N)' + shiftGrid(2)*(-N:N)) );
+  end
 
 end
 
@@ -169,14 +181,20 @@ for g = 1:length(gamma)
 end
 
 
-
 % compute the corresponding nodes
 if nargout>1
-  grid = combvec((0:s(1))*res(1)-shift*pi/2,(0:s(2))*res(2),gamma);
+  if check_option(varargin,'shiftGrid')
+    grid = combvec((0:s(1))*res(1)-shift*pi/2,(0:s(2))*res(2),gamma);
+    grid = grid + [shiftGrid,0];
+  else
+    grid = combvec((0:s(1))*res(1)-shift*pi/2,(0:s(2))*res(2),gamma);
+  end
   if isa(oS,'phi1Sections')
     grid = grid(:,[3,2,1]);
+    grid = orientation.byEuler(grid,'nfft',SO3F.SS,SO3F.CS);
+  else
+    grid = orientation.byEuler(grid,'nfft',SO3F.CS,SO3F.SS);
   end
-  grid = orientation.byEuler(grid,'nfft',SO3F.CS,SO3F.SS);
   nodes = reshape(grid,size(f));
 end
 
@@ -187,7 +205,7 @@ end
 
 
 function v = combvec(v1,v2,v3)
-% This function do the same as the combvec() function from Digital 
+% This function does the same as the combvec() function from Digital 
 % Processing Toolbox and additionaly transpose the output matrix.
 % It is a simple version for the special case of three input vectors.
   l1 = length(v1);

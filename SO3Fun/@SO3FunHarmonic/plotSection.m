@@ -29,6 +29,7 @@ function plotSection(SO3F,varargin)
 if numel(SO3F)>1
   warning(['You try to plot an multivariate function. Plot the desired components ' ...
     'manually. In the following the first component is plotted.'])
+  SO3F = SO3F.subSet(1);
 end
 
 
@@ -55,7 +56,7 @@ else % use equispaced fft
   end
   oS.gridSize = (0:l) * length(oS.plotGrid);
   SO3F.isReal = 1;
-  Z = SO3F.evalSectionsEquispacedFFT('resolution',2.5*degree,'Sections',oS,varargin{:});
+  Z = SO3F.evalSectionsEquispacedFFT(oS,'resolution',2.5*degree,varargin{:});
   Z = permute(Z,[2,1,3]);
 end
 
