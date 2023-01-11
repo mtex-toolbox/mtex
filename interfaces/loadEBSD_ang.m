@@ -160,10 +160,10 @@ try
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
     'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
   
-  % Since explicitly non-indexed phases appear to have 4*pi for all Euler angles
+  % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
   % which are filtered by loadHelper() already AND ci==-1.
   % Taking phase 0 for non indexed does not really work in the case of single 
-  % phase ang files;  in only for multiphase data, notIndexed is 0
+  % phase ang files; only for multiphase data, notIndexed is 0
   % So here's the attempt to introduce notIndexed to .ang data
   % Set notIndexed (id 0 in multiphase, id -1 in single phase) for ci=-1 
   % as well as add empty points (those removed by loadHelper)
