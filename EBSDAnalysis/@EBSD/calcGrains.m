@@ -221,7 +221,8 @@ end
       if length(param) == 1, param = [param,4]; end
   
       A_Do = mclComponents(A_Do,param(1),param(2));
-      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
+      A_Db(A_Do~=0) = false;
   
     else
   
