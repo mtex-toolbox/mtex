@@ -11,6 +11,8 @@
 % * tesselation
 % * slicing
 % 
+%% Simulating a microstructure with Neeper
+
 %% Setting-up the neper instance
 % If you do not want to make any further adjustments to the default values,
 % this step could be done very easily:
@@ -27,7 +29,7 @@ myneper = neperInstance
 % for example
 % myneper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
-myneper.filePath = pwd;
+%myneper.filePath = pwd;
 
 %%
 % By default a new folder, named neper will be created for the tesselation 
@@ -65,12 +67,13 @@ myneper.id = 529;
 
 %%
 % Neper allows to specify the morphological properties of the cells. See
-% https://neper.info/doc/neper_t.html#cmdoption-morpho for more
+% <https://neper.info/doc/neper_t.html#cmdoption-morpho> for more
 % information. By default graingrowth is used, that is an alias for:
 
 myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
-%% Tesselation
+%% Simulating a microstructure with Neeper
+%
 % The tesselation is executed by the command |simulateGrains|. There are
 % two option to call it.
 % 1. by ODF and number of grains:
@@ -98,7 +101,7 @@ myneper.simulateGrains(oriList)
 
 N=vector3d(0,0,1);
 d=1;
-mySlice1=myneper.getSlice(N,d);
+slice001 = myneper.getSlice(N,d);
 
 N=vector3d(1,-1,0);
 A=vector3d(2,2,1);
@@ -116,3 +119,6 @@ hold on
 plot(mySlice3,mySlice3.meanOrientation);
 
 % set camera
+
+
+
