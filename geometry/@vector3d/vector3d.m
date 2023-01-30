@@ -136,7 +136,7 @@ classdef vector3d < dynOption
 
       % ------------------ options ------------------------------
       
-      if nargin > 3
+      if nargin > 1
         
         % antipodal
         v.antipodal = check_option(varargin,'antipodal');
