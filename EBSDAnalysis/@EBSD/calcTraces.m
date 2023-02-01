@@ -1,23 +1,24 @@
 function [traces, rel, cSize] =  calcTraces(ebsd,varargin)
-% traces of segments of an EBSD map
+% traces of subregions of an EBSD map
 %
 % Syntax
 %
-%   [traces, rel, cSize] = calcTraces(ebsd, {'grainId','variantId'}, 'Radon')
+%   clusterId = [grainId,variantId];
+%   [traces, rel, cSize] = calcTraces(ebsd, clusterId, 'Radon')
 %
 % Input
 %  ebsd - @EBSD
-%  cId  - cluster Id
+%  clusterId  - an id indicating for which pixel form a region
+%
+% Output
+%  traces - @vector3d size max(clusterId(:,1)) x max(clusterId(:,2)) ....
+%  rel    - relyability index
+%  cSize  - cluster size
 %
 % Options
 %  minClusterSize - minimum number of pixels required for trace computation (default: 100) 
-%  Radon   - Radon based methods
-%  Fourier - Fourier based methods
-%
-% Output
-%  traces - @vector3d
-%  rel    - relyability index
-%  cSize  - cluster size
+%  Radon   - Radon based algorithm
+%  Fourier - Fourier based algorithm
 %
 % References
 %
@@ -27,11 +28,12 @@ function [traces, rel, cSize] =  calcTraces(ebsd,varargin)
 %
 
 % ensure EBSD is at a grid
-ebsd = ebsd.gridify;
+[ebsd,newId] = ebsd.gridify;
 
-if nargin > 1 && iscellstr(varargin{1})
-  for k = 1:length(varargin{1})
-    prop{k} = ebsd.prop.(varargin{1}{k});
+if nargin > 1 && isnumeric(varargin{1})
+  for k = 1:size(varargin{1},2)
+    prop{k} = nan(size(ebsd));
+    prop{k}(newId) = varargin{1}(:,k);
   end
 else
   prop{1} = double(~isnan(ebsd));
@@ -50,6 +52,7 @@ cSize = accumarray(allProp(all(allProp>0,2),:),1);
 ic = find(cSize > get_option(varargin,'minClusterSize',100));
 
 method = get_flag(varargin,{'Radon','Fourier'},'Radon');
+J = get_option(varargin,'cutOff',6);
 
 % loop over all clusters
 for i = 1:length(ic)
@@ -76,7 +79,7 @@ for i = 1:length(ic)
       % sum over all frequencies, while leaving out the smallest
       % frequencies, as they are dominated by the shape of the cluster
 
-      Z = sum(Y(1:floor(end/2)-3,:));
+      Z = sum(Y(1:floor(end/2)-J,:));
 
       % take the maximum of the radon transform along the centerline
       % which correspondes to the lines passing through the center

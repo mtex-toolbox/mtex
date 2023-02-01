@@ -1,24 +1,24 @@
 function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
-% traces of clusters of grains
+% traces of subsets of grains
 %
 % Syntax
 %
 %   clusterId = [grainId,variantId];
-%   [traces, rel, cSize] = calcTraces(grains, clusterId)
+%   [traces, rel, cSize] = calcTraces(grains, clusterId,'shape')
 %
 % Input
 %  grains - @grain2d
 %  cId  - cluster Id
 %
-% Options
-%  minClusterSize - minimum number of pixels required for trace computation (default: 100) 
-%  Radon   - Radon based methods
-%  Fourier - Fourier based methods
-%
 % Output
-%  traces - @vector3d
-%  rel    - relyability index
-%  cSize  - cluster size
+%  traces - @vector3d, size max(clusterId(:,1)) x max(clusterId(:,2)) ....
+%  rel    - relyability index, same size as traces
+%  cSize  - cluster size, , same size as traces
+%
+% Options
+%  minClusterSize - minimum grainSize required for trace computation (default: 100)
+%  shape - characteristic shape based algorithm
+%  hist  - circular histogram based algorithm
 %
 % References
 %
@@ -26,6 +26,12 @@ function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
 % planes from two-dimensional reconstructed parent phase orientation maps>,
 % arXiv, 2022
 %
+
+% generate clusters
+if nargin == 1 || ~isnumeric(clusterId), clusterId = ones(length(grains),1); end
+notZero = all(clusterId>0,2);
+cSize = accumarray(clusterId(notZero,:),grains.grainSize(notZero));
+ic = find(cSize > get_option(varargin,'minClusterSize',100));
 
 % prepare output
 sz = [max(clusterId),1];
@@ -36,11 +42,7 @@ rel = zeros(sz);
 V = grains.boundary.V;
 F = grains.boundary.F;
 I_BG = grains.boundary.I_FG;
-
-% generate clusters
-notZero = all(clusterId>0,2);
-cSize = accumarray(clusterId(notZero,:),grains.grainSize(notZero));
-ic = find(cSize > get_option(varargin,'minClusterSize',100));
+grainId = grains.id;
 
 % get method to use
 useHist = check_option(varargin,'hist');
@@ -53,10 +55,12 @@ for i = 1:length(ic)
   ind = all(clusterId == [sub{:}],2);
     
   % the boundary segments
-  lF = F(any(I_BG(:,ind),2),:);
+  lF = F(any(I_BG(:,grainId(ind)),2),:);
 
   % shifted into the origin
   lS = V(lF(:,1),:) - V(lF(:,2),:);
+
+  if isempty(lF), continue; end
 
   if useHist % density function method
 
