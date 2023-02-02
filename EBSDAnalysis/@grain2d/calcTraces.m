@@ -18,6 +18,7 @@ function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
 % Options
 %  minClusterSize - minimum grainSize required for trace computation (default: 100)
 %  shape - characteristic shape based algorithm
+%  calliper - use shortest calliper instead of eigenvectors
 %  hist  - circular histogram based algorithm
 %
 % References
@@ -46,6 +47,7 @@ grainId = grains.id;
 
 % get method to use
 useHist = check_option(varargin,'hist');
+useCalliper = check_option(varargin,'calliper');
 
 % loop over all relevant clusters
 for i = 1:length(ic)
@@ -66,7 +68,8 @@ for i = 1:length(ic)
 
     rho = atan2(lS(:,2),lS(:,1));
   
-    fun = calcDensity(rho, 'weights',sum(lS.^2,2),'periodic','sigma',10*degree);
+    %fun = calcDensity(rho, 'weights',sqrt(sum(lS.^2,2)),'periodic','sigma',10*degree);
+    fun = calcDensity(rho, 'weights',vecnorm(lS,2,2),'periodic','sigma',10*degree);
     fun.antipodal = true;
 
     phi = linspace(0,2*pi,360);
@@ -96,20 +99,35 @@ for i = 1:length(ic)
 
     % shift again
     xyn = [xyn(:,1) - mean(xyn(:,1)) xyn(:,2) - mean(xyn(:,2))];
-
-    % the following lines are taken from grain2d/principleComponent
-    % compute length of line segments
-    dist = sqrt(sum((xyn(1:end-1,:) - xyn(2:end,:)).^2,2));
-    dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
-     
-    % weight vertices according to half the length of the adjacent faces
-    xyn = xyn(1:end-1,:) .* [dist,dist] .* sum(xyn(1:end-1,:).^2,2).^(0.25);
-      
-    % compute eigen values and vectors
-    [ew, omega(ic(i))] = eig2(xyn' * xyn);
     
-    % halfaxes are square roots of the eigenvalues
-    b = sqrt(ew(1)); a = sqrt(ew(2));
+    if useCalliper
+      
+      mid = round(size(xyn,1)/2);
+      dxyn = xyn - [xyn(1+mid:end,:);xyn(1:mid,:)];
+      delta = vecnorm(dxyn,2,2);
+
+      % minimum and maximum Ferret diameter
+      a = max(delta); [b,ib] = min(delta);
+    
+      % use vector perpendicular to short axis
+      omega(ic(i)) = pi/2 + atan2(dxyn(ib,2),dxyn(ib,1));
+      
+    else
+    
+      % the following lines are taken from grain2d/principleComponent
+      % compute length of line segments
+      dist = sqrt(sum((xyn(1:end-1,:) - xyn(2:end,:)).^2,2));
+      dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
+     
+      % weight vertices according to half the length of the adjacent faces
+      xyn = xyn(1:end-1,:) .* [dist,dist] .* sum(xyn(1:end-1,:).^2,2).^(0.25);
+      
+      % compute eigen values and vectors
+      [ew, omega(ic(i))] = eig2(xyn' * xyn);
+    
+      % halfaxes are square roots of the eigenvalues
+      b = sqrt(ew(1)); a = sqrt(ew(2));
+    end
     rel(ic(i)) = (a-b)./a;
   end
 
