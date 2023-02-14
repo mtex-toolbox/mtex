@@ -14,4 +14,4 @@ if isa(ori.CS,'crystalSymmetry') && isa(ori.SS,'crystalSymmetry') && ...
   
 end
 
-s = char@rotation(ori);
+s = char@rotation(ori,[],varargin{:});
