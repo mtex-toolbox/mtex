@@ -3,12 +3,12 @@
 %%
 % Also take a look at the page <ODFShapes.html ODFShapes>.
 %
-% We examine some radial symmetric kernel functions $\tilde \psi \colon SO(3) \to R$ 
-% on $SO(3)$. For rotations $R \in SO(3)$ we write this
-% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega(R)}2$ on 
+% We examine some radial symmetric kernel functions $\tilde \psi \colon \mathcal{SO}(3) \to \mathbb R$ 
+% on $\mathcal{SO}(3)$. For rotations $\bf R \in \mathcal{SO}(3)$ we write this
+% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega (\bf R)}2$ on 
 % the real numbers. Hence we write
 %
-% $$ \psi(t) = \tilde\psi(R) $$.
+% $$ \psi(t) = \tilde\psi (\bf R) $$.
 %
 % Moreover, we have $\psi \in L^2([-1,1],\sqrt{1-t^2}\mathrm{d}t)$ and we
 % describe these rotational kernel functions by there Chebyshev expansion
@@ -21,7 +21,7 @@
 % The class |@SO3Kernel| is needed in MTEX to define the specific form of
 % unimodal ODFs. It has to be passed as an argument when calling the
 % methods <uniformODF.html uniformODF>.
-% Furthermore $\mathcal{SO}(3)-Kernels are also used for computing an ODF 
+% Furthermore $\mathcal{SO}(3)$-Kernels are also used for computing an ODF 
 % from EBSD data.
 %
 %%
@@ -76,7 +76,7 @@ plot(psi)
 
 %% The de La Vallee Poussin Kernel
 % The <SO3Kernels.SO3DeLaValleePoussinKernel.html de la Vallee Poussin kernel> on
-% SO(3) is defined by 
+% \mathcal{SO}(3) is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
