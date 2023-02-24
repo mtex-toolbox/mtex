@@ -46,7 +46,7 @@ plot(min(2*SO3F1,SO3F2),'sigma');
 % <SO3Fun.exp.html |exp|> or <SO3Fun.log.html |log|> of an |SO3Fun|.
 %
 % For a given function $f\colon SO(3) \to \mathbb C$ we get a second function
-% $g\colon SO(3) \to \mathbb C$ where $g(R) = f(R^{-1})$ by the method 
+% $g\colon SO(3) \to \mathbb C$ where $g(\bf R) = f(\bf R^{-1})$ by the method 
 % <SO3Fun.inv.html |inv|>, i.e.
 
 g = inv(SO3F1)
@@ -96,7 +96,7 @@ sum(SO3F1) / ( 8 * pi^2 )
 % A practical application of integration is the computation of the
 % $L^2$-norm which is defined for a $SO(3)$ function $f$ by
 %
-% $$ \lVert f \rVert_2 = \left( \frac1{8\pi^2} \int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
+% $$ \lVert f \rVert_2 = \left( \frac1{8\pi^2} \int_{SO(3)} \lVert f(\bf R) \rVert^2 \,\mathrm d \bf R \right)^{1/2} $$
 %
 % accordingly we can compute it by
 
