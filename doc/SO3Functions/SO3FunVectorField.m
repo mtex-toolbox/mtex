@@ -4,8 +4,38 @@
 % instance the gradient of an univariate <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> can return a
 % <SO3VectorFieldHarmonic.SO3VectorFieldHarmonic SO3VectorFieldHarmonic>.
 %
+%% Defining a SO3VectorFieldHandle
+%
+%%
+% Analogous to |@SO3FunHandle| we are able to define |SO3VectorFields|
+% by an
+% <https://de.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html
+% anonymous function>.
+%
+
+f = @(rot) vector3d(rot.phi1, rot.phi2, 0*rot.phi1);
+
+SO3VF = SO3VectorFieldHandle(f)
+
+
+%%
+% Note that the evaluations are of class |@vector3d|
+%
+
+rot = rotation.rand(2);
+SO3VF.eval(rot)
+
 %% Defining a SO3VectorFieldHarmonic
 %
+%%
+% *Definition via SO3VectorField*
+%
+% We can expand any |@SO3VectorField| in an |@SO3VectorFieldHarmonic| 
+% directly by the command |SO3VectorFieldHarmonic|
+%
+
+SO3VectorFieldHarmonic(SO3VF)
+
 %%
 % *Definition via function values*
 %
@@ -27,7 +57,7 @@ SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y)
 % handle which takes <rotation.rotation.html |rotation|> as an argument and
 % returns a <vector3d.vector3d.html |vector3d|>:
 
-f = @(rot) vector3d(rot.phi1, rot.phi2, 0*rot.phi1);
+
 %% 
 % Now we can call the quadrature command to get |SO3VF2| of type
 % |SO3VectorFieldHarmonic|

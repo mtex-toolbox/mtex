@@ -1,6 +1,11 @@
 %% S2FunSymmetricFunctions
 %
+%%
 % Any <SO3Fun.SO3Fun |SO3Fun|> has a left and a right symmetry.
+% For further information on symmetries look at <CrystalSymmetries.html
+% crystal symmetries>, <SpecimenSymmetry.html specimen symmetries> and, 
+% <QuasiCrystals.html Quasi symmetries>.
+%
 
 SO3F = SO3Fun.dubna
 SO3F.SLeft = specimenSymmetry('2');

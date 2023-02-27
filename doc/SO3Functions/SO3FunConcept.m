@@ -82,12 +82,12 @@ mtexColorMap parula
 
 plot(ori.symmetrise,'axisAngle','filled','markerSize',15,'restrict2FundamentalRegion')
 
-%% Representation of Rotational Functions
+%% Representations of Rotational Functions
 %
 % Internally MTEX represents rotational functions in different ways:
 %
 % || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
-% || as superposition of radial function || @SO3FunRBF ||
+% || as superposition of radial function || <RadialODFs.html SO3FunRBF> ||
 % || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> ||
 % || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
 % || as sum of different components || @SO3FunComposition ||
@@ -101,6 +101,6 @@ plot(ori.symmetrise,'axisAngle','filled','markerSize',15,'restrict2FundamentalRe
 %
 %% Generalizations of Rotational Functions
 %
-% || rotational vector fields || @SO3VectorField ||
-% || radial rotational functions || @SO3Kernel ||
+% || rotational vector fields || <SO3FunVectorField.html SO3VectorField> ||
+% || radial rotational functions || <SO3Kernels.html SO3Kernel> ||
 %
