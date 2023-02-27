@@ -1,4 +1,4 @@
-classdef SO3Fun
+classdef SO3Fun < dynOption
 % a class representing functions on the rotational group
 
   properties (Abstract = true)
