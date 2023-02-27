@@ -10,7 +10,7 @@ function SO3VF = plus(SO3VF1, SO3VF2)
 %
 % Input
 %  SO3VF1, SO3VF2 - @SO3VectorField
-%  a - double, vector3d
+%  a - double, @vector3d
 %  SO3F - @SO3Fun
 %
 % Output
