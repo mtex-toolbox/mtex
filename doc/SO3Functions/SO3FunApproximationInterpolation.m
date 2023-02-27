@@ -1,15 +1,5 @@
 %% Rotational Approximation and Interpolation
 %
-
-% Producing Code
-nodes = orientation.rand(1e4);
-F = SO3Fun.dubna;
-F.CS = crystalSymmetry;
-values = F.eval(nodes);
-T = [Euler(nodes,'Bunge')/degree,values]; 
-%csvwrite('dubna.csv',T)
-
-
 %%
 % On this page, we want to cover the topic of function approximation from
 % discrete values on the Rotation group. To simulate this, we have stored some
@@ -39,19 +29,14 @@ plotSection(nodes, S.values,'all');
 % of class <SO3Fun.SO3Fun |SO3Fun|> 
 
 SO3F = SO3Fun.interpolate(nodes, S.values,'exact');
+plot(SO3F)
 
-% 
-% To see that we really have the exact function values, we can evaluate
-% |SO3F| of type <SO3Fun.SO3FunRBF |SO3FunRBF|> and compare it with the
-% original data values.
-
-norm(eval(SO3F, nodes) - S.values)
+%% 
+% The interpolation is done by lsqr. Hence the error is not in machine
+% precision.
+norm(SO3F.eval(nodes) - S.values)
 
 %%
-% TODO: fix This
-% Indeed, the error is within machine precision.
-
-
 % If we don't restrict ourselfs to the given function values in the nodes, we have more
 % freedom, which can be seen in the case of approximation.
 
