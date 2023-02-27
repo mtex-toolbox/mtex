@@ -36,7 +36,9 @@ if check_option(varargin, 'startingnodes')
 else
   antipodalFlag = {'','antipodal'};
   v = equispacedS2Grid('points', min(1000000,2*sF.bandwidth^2), antipodalFlag{isAntipodal+1});
+  res0 = v.resolution;
   sR = sphericalRegion;
+  %v = equispacedS2Grid('points',1000).'
 end
 
 
@@ -50,6 +52,7 @@ omega(omega<res) = [];
 omega(omega>maxStepSize) = [];
 omega = [0,omega];
 
+sumOmega = zeros(size(v));
 
 %base = (2*tol/res)^(1/kmax);
 
@@ -69,7 +72,7 @@ for k = 0:kmax
   
   % update v
   v = normalize(line_v(sub2ind(size(line_v),(1:length(v)).',id)));
-  
+  sumOmega = sumOmega + omega(id).';
   
   % project to fundamental region;
   v = v.project2FundamentalRegion;
@@ -84,7 +87,12 @@ for k = 0:kmax
   [~,~,I] = unique(v, 'tolerance', tol,'noSymmetry');
   v = normalize(accumarray(I,v));
   f = accumarray(I,f,[],@mean);
-  
+  sumOmega = accumarray(I,sumOmega,[],@min);
+
+  % consider only points that did not walked too far
+  f(sumOmega>2*res0) = [];
+  v(sumOmega>2*res0) = [];
+  sumOmega(sumOmega>2*res0) = [];
 end
 
 % format output

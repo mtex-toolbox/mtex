@@ -119,7 +119,7 @@ end
 function [values,modes] = maxLocal(SO3F,varargin)
 
 % initial resolution
-res = get_option(varargin,'resolution',5*degree);
+res0 = get_option(varargin,'resolution',5*degree);
 
 % target resolution
 targetRes = get_option(varargin,'accuracy',0.25*degree);
@@ -128,63 +128,71 @@ targetRes = get_option(varargin,'accuracy',0.25*degree);
 S3G = get_option(varargin,'startingNodes');
   
 if isempty(S3G)
-  S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res);
+  S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0);
 end
+S3G = reshape(S3G,[],1);
 
+% evaluate function on grid
 f = eval(SO3F,S3G,varargin{:});
 
-% eliminate zeros
-del = f>0;
-qa = S3G(del);
-f = f(del);
-
-% the search grid
-S3Gs = subGrid(S3G,del);
-T = find(S3Gs,qa,res*1.5);
-
-[f, ndx] = sort(f,'descend');
-qa = qa(ndx);
-
-T = T(ndx,:);
-T = T(:,ndx);
-T = T -speye(size(T));
-
-% look for maxima
-nn = numel(f);
-ls = false(1,nn);
-ids = false(1,nn);
-
+% the neighbours
+T = find(S3G,S3G,res0*1.5) - speye(length(S3G));
 [ix, iy] = find(T);
-cx = [0 ; find(diff(iy))];
 
-num = get_option(varargin,'numLocal',1);
+% consider only local exatrema
+ind = f > accumarray(iy,f(ix),[],@max);
+modes = S3G(ind);
+values = f(ind);
 
-for k=1:length(cx)-1
-  id = ix(cx(k)+1:cx(k+1));
-  ls(id) = true;  
-  ids(k) = ls(:,k)==0;
+% the total walking distance
+sumOmega = zeros(size(modes));
+
+% local refinement
+res = res0;
+while res > targetRes
+  res = res / 1.25;
+
+  S3Glocal = localOrientationGrid(crystalSymmetry,crystalSymmetry,2*res,'resolution',res/2);
+  omega = S3Glocal.angle;
+  newModes = (S3Glocal * modes).';
+
+  f = eval(SO3F,newModes,varargin{:});
   
-  if nnz(ids)>=num, break,end
+  [values,id] = max(f,[],2);
+  modes = newModes(sub2ind(size(newModes),(1:length(modes)).',id));
+
+  % keep track of the walking distance
+  sumOmega = sumOmega + omega(id);
+
+  %[max(omega(id))./degree, max(sumOmega ./degree)]
+
+  % maybe we can reduce the number of points a bit
+  [~,~,I] = unique(modes, 'tolerance', 1.5*res0,'noSymmetry');
+  modes = normalize(accumarray(I,modes));
+  values = accumarray(I,values,[],@mean);
+  sumOmega = accumarray(I,sumOmega,[],@min);
+
+  % consider only points that did not walked too far
+  values(sumOmega>5*res0) = [];
+  modes(sumOmega>5*res0) = [];
+  sumOmega(sumOmega>5*res0) = [];
+
 end
 
-% the retrived maximas
-q = qa(ids);
-values = f(ids);
+[modes,~,I] = unique(modes, 'tolerance', 1.5*res0);
+values = accumarray(I,values,[],@mean);
 
-%centering of local max
-for k=1:length(q)
-  res2 = res/2;
-  while res2 > targetRes
-    res2 = res2/2;
-    S3G = localOrientationGrid(SO3F.CS,SO3F.SS,res2*4,'center',q(k),'resolution',res2);
-    f = eval(SO3F,S3G,varargin{:});
-    
-    [mo, ndx] = max(f);
-    q(k) = S3G(ndx);
-    values(k) = mo;
-  end
+% format output
+[values, I] = sort(values,'descend');
+if check_option(varargin, 'numLocal')
+  n = get_option(varargin, 'numLocal');
+  n = min(length(values), n);
+  values = values(1:n);
+else
+  %n = sum(f-f(1) < 1e-4);
+  n = 1;
+  values = values(1);
 end
-
-modes = orientation(q,SO3F.CS,SO3F.SS);
+modes = modes(I(1:n));
 
 end
