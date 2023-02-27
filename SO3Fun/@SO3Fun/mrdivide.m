@@ -16,9 +16,8 @@ function SO3F = mrdivide(SO3F,s)
 %
 % Example
 %   %generate SO3Fun and divide
-%   F = SO3Fun.example
+%   F = SO3Fun.dubna
 %   F / 2
-%   [F,F] / [1,2;3,4]
 %
 % See also
 % SO3Fun/plus SO3Fun/mtimes
