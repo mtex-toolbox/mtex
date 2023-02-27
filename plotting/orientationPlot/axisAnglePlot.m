@@ -31,7 +31,7 @@ classdef axisAnglePlot < orientationPlot
           case 'project2FundamentalRegion'
             ori = project2FundamentalRegion(ori);
           case 'restrict2FundamentalRegion'
-            ori(~oP.oR.checkInside) = NaN;
+            ori(~oP.oR.checkInside(ori)) = NaN;
         end
       end
       
