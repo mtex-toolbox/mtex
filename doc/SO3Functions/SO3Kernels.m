@@ -76,7 +76,7 @@ plot(psi)
 
 %% The de La Vallee Poussin Kernel
 % The <SO3Kernels.SO3DeLaValleePoussinKernel.html de la Vallee Poussin kernel> on
-% \mathcal{SO}(3) is defined by 
+% $\mathcal{SO}(3)$ is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
@@ -186,14 +186,14 @@ legend('halfwidth = 15°','halfwidth = 20°')
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} 
-% \frac{\mathcal{I}_n(\kappa)-\mathcal{I}_{n+1}(\kappa)}
-% {\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}  \, \mathcal U_{2n}(t)$$ 
+% $$ \psi_{\kappa}(t) = \sum_{n=0}^{\infty} 
+% \frac{\mathcal{I}_n(\kappa)-\mathcal{I}_{n+1}(\kappa)}{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathcal U_{2n}(t)$$ 
 %
 % or directly by
 %
-% $$ \psi_{\kappa}(\cos\frac{\omega(\bf R)}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathrm{e}^{\kappa \cos\omega(\bf R)}$$
+% $$ \psi_{\kappa}(\cos\frac{\omega(\bf{R})}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{\kappa \cos\omega(\bf{R})}$$
 % 
 % while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
 % functions of first kind

@@ -9,3 +9,5 @@ S2FunVectorField                Vector Field
 S2FunAxisField                  Axis Field
 S2FunSym                        Symmetric Function
 S2FunMultivariate               Multivariate Functions
+S2Kernels                       Spherical Kernel Functions
+SphericalHarmonics              Spherical Harmonics
