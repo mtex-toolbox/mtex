@@ -24,6 +24,8 @@ if length(ori) ~= numel(values)
   error('Interpolation is only possible for univariate functions.')
 end
 
+ori = orientation(ori);
+
 % construct the uniform portion first
 values = values(:);
 m = min(values);
