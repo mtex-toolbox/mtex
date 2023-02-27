@@ -1,6 +1,48 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.9.0 2/2023
+%
+% *Habit Plane Detection*
+%
+% MTEX 5.9 includes powerful functions for the determination of predominant
+% habit planes and habit plane distributions. For the setting of a fully
+% transformed microstructure the are described in the paper <Habit plane
+% determination from reconstructed parent phase orientation maps>.
+%
+% * new function <grain2d.calcTrace.html |calcTrace(grains)|> and
+% <ebsd.calcTrace.html |calcTrace(ebsd)|> to compute habbit plane traces
+% from families of grains or EBSD data.
+% * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
+% grain boundary normal distribution from a list of habit plane traces and
+% the corresponding grain orientations.
+% * new function <grainBoundary.characteristicShape.html
+% |characteristicShape(gB)|> to compute the characteristic shape from lists
+% of grain boundaries
+%
+% *Orientation dependent functions*
+%
+% The orientation distribution function (ODF) describes the relative volume
+% of crystal orientations within a material. As such it is a function that
+% associates to each orientation a number with unit mrd (multiples of
+% random distribution). However, in material science many other orientation
+% dependend functions are of importance, e.g., the Taylor factor with
+% respect to some outer strain depends on the local orientation. While ODFs
+% have ever since been at the heart of MTEX, this release is the first one
+% that includes full support for orientation dependent functions. Those
+% functions are called @SO3Fun and behave similar to sphercial functions
+% @S2Fun. In particular one can
+%
+% * add, substract, multiply and divide with them
+% * compare them
+% * detect global and local extrema
+% * visualize them in 3d and 2d sections
+% * compute gradients
+%
+% While implementing these new features we also significantly speeded up
+% all operations related with ODF operations.
+%
+%
 %% MTEX 5.8.2 11/2022
 %
 % This is mainly a bug fix release. New functionalities include
