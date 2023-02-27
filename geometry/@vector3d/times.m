@@ -1,5 +1,5 @@
 function v = times(v1,v2)
-% .* - componenwtise multiplication
+% .* - componentwise multiplication
 %
 % Syntax
 %   v = v1 .* v2
@@ -11,6 +11,11 @@ function v = times(v1,v2)
 % Output
 %  v - @vector3d
 %
+
+if isa(v2,'SO3VectorField') || isa(v2,'S2VectorField')
+  v = v2 .* v1;
+  return
+end
 
 if isnumeric(v1) || islogical(v1)
   v2.x = v1 .* v2.x;

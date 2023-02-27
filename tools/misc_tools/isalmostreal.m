@@ -19,6 +19,10 @@ function out = isalmostreal(A,varargin)
 %  norm      - is used to compare the real and imaginary parts of A (default 1)
 %
 
+if isa(A,'vector3d')
+  A = A.xyz;
+end
+
 re = real(A(:));
 im = imag(A(:));
 
