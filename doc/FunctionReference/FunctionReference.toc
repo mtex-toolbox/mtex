@@ -4,5 +4,6 @@ ODFAnalysis_index          ODF Analysis
 PoleFigureAnalysis_index   Pole Figures
 TensorAnalysis_index       Tensors
 SphericalFunctions_index   Spherical Functions
+SO3Functions_index         Orientation Functions
 plotting_index             Plotting
 tools_index                Tools

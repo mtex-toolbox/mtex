@@ -10,8 +10,8 @@
 % transformed microstructure the are described in the paper <Habit plane
 % determination from reconstructed parent phase orientation maps>.
 %
-% * new function <grain2d.calcTrace.html |calcTrace(grains)|> and
-% <ebsd.calcTrace.html |calcTrace(ebsd)|> to compute habbit plane traces
+% * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
+% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
 % from families of grains or EBSD data.
 % * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
 % grain boundary normal distribution from a list of habit plane traces and
