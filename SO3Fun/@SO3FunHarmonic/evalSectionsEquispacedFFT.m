@@ -32,7 +32,7 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,varargin)
 N = SO3F.bandwidth;
 
 if isa(varargin{1},'ODFSections'), oS = varargin{1}; else, oS =[]; end
-[a_max,b_max,g_max] = fundamentalRegionEuler(SO3F.CS,SO3F.SS);
+[a_max,b_max,g_max] = fundamentalRegionEuler(SO3F.CS,SO3F.SS,varargin{:});
 if isempty(oS)
   gamma = mod((0:5)*g_max/6+pi/2,2*pi);
   shift = 1;
@@ -63,7 +63,7 @@ res = get_option(varargin,'resolution',2.5*degree);
 if length(res)==1
   res = [1,1]*res;
 end
-% [a_max,b_max,~] = fundamentalRegionEuler(SO3F.CS,SO3F.SS);
+% [a_max,b_max,~] = fundamentalRegionEuler(SO3F.CS,SO3F.SS,varargin{:});
 s = ceil([a_max,b_max]./res);
 res = [a_max,b_max]./s;
 H = 2*pi./res;
