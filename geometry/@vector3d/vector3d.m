@@ -214,6 +214,14 @@ classdef vector3d < dynOption
     function b = isfinite(v)
       b = ~(isinf(v) | isnan(v));
     end
+
+    function v = real(v)
+      v = vector3d(real(v.x),real(v.y),real(v.z));
+    end
+
+    function v = imag(v)
+      v = vector3d(imag(v.x),imag(v.y),imag(v.z));
+    end
     
   end
   
