@@ -1,1 +1,1 @@
-%% S2VectorFieldHarmonic
+%% SO3VectorFieldHandle

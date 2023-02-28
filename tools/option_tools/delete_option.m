@@ -2,8 +2,8 @@ function option_list = delete_option(option_list,options,nparams)
 % clear options in option list
 %
 % Syntax
-%   value = set_option(option_list,{option1,option2,option3,...})
-%   value = set_option(option_list,option,nparams)
+%   value = delete_option(option_list,{option1,option2,option3,...})
+%   value = delete_option(option_list,option,nparams)
 %
 % Input
 %  option_list - cell array

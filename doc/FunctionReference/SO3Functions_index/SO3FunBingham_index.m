@@ -1,1 +1,1 @@
-%% S2FunTri
+%% SO3FunBingham

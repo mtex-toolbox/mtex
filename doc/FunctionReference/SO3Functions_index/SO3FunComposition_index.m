@@ -1,1 +1,1 @@
-%% S2AxisFieldHarmonic
+%% SO3FunComposition

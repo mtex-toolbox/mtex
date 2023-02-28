@@ -10,5 +10,5 @@ SO3FunHomochoric_index
 SO3VectorField_index
 SO3VectorFieldHarmonic_index
 SO3VectorFieldHandle_index
-SO3DeLaValleePoussin_index de SO3DeLaValleePoussinKernel
+SO3DeLaValleePoussin_index SO3DeLaValleePoussinKernel
 SO3Kernel_index
