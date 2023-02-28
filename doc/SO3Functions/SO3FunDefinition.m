@@ -9,12 +9,9 @@
 %
 % Internally MTEX represents rotational functions in different ways:
 %
-% || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
-% || as superposition of radial function || <RadialODFs.html SO3FunRBF> ||
-% || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> ||
-% || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
-% || as sum of different components || @SO3FunComposition ||
-% || explicitely given by a formula || @SO3FunHandle ||
+% || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
+% || as superposition of radial function || <RadialODFs.html SO3FunRBF> || as sum of different components || @SO3FunComposition ||
+% || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> || explicitely given by a formula || @SO3FunHandle ||
 %
 %% Generalizations of Rotational Functions
 %
@@ -40,7 +37,7 @@
 %
 %%
 %
-% *Definition of SO3FunHandle*
+% *Definition of anonymous functions on SO(3)*
 %
 % Functions of class |@SO3FunHandle| are defined by an
 % <https://de.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html
@@ -69,17 +66,23 @@ SO3FunHandle(@(rot) SO3F1.eval(rot))
 
 %%
 %
-% *Definition of SO3FunHarmonic*
+% *Definition of Harmonic Series on SO(3)*
 %
 % The class |@SO3FunHarmonic| described rotational functions by there 
 % harmonic series. MTEX is very fast by computing with this
 % |SO3FunHarmonic's|. Hence sometimes it might be a good idea to expand any
-% |@SO3Fun| in its harmonic series. Therefore only the command <SO3FunHarmonic.SO3FunHarmonic SO3FunHarmonic>
-% is needed.
+% |@SO3Fun| in its harmonic series. Therefore only the command 
+% <SO3FunHarmonic.SO3FunHarmonic SO3FunHarmonic> is needed.
+% But note that this approximation may lead to inaccuracies.
 %
 
 SO3F3 = SO3FunHarmonic(SO3F2)
 
+%%
+% Moreover if MTEX computes with an |@SO3FunHarmonic| and any |@SO3Fun| it
+% is also expanded to an |@SO3FunHarmonic|. You can prevent that by 
+% transformation to a |@SO3FunHandle| like before.
+%
 %%
 % Generally |SO3FunHarmonic's| are defined by there Fourier coefficient 
 % vector.
@@ -94,7 +97,7 @@ SO3F4 = SO3FunHarmonic(fhat,cs)
 %
 % By the property |isReal| we are able to change between real and complex
 % valued |SO3FunHarmonic's|.
-% Note that makeing an SO3FunHarmonic real vealued changes the Fourier
+% Note that creation of an real vealued SO3FunHarmonic changes the Fourier
 % coefficient vector. So it is not possible to reconstruct the previous
 % function. But computing with real valued functions is much faster.
 %
@@ -112,7 +115,7 @@ SO3F4.eval(rot)
 %
 %%
 %
-% *Definition of SO3FunRBF*
+% *Definition of Radial Basis Functions*
 %
 % Radial Basis functions are of class |@SO3FunRBF|. They are defined by
 % a kernel function |@SO3Kernel| which is cenetered on |orientations| with
@@ -130,18 +133,21 @@ SO3F5 = SO3FunRBF(ori,psi,w,1.2)
 %
 %%
 %
-% *Definition of SO3FunCBF*
+% *Definition of fibre elements*
 %
-% 
+% They are described by the class |@SO3FunCBF|.
+% We construct them by a fibre on SO(3) together with some halfwidth.
+%
 
+f = fibre.beta(cs)
+SO3F6 = SO3FunCBF(f,'halfwidth',10*degree)
 
-
-
-
+%%
+% For further information, see <FibreODFs.html SO3FunCBF>.
 
 %%
 %
-% *Definition of SO3FunBingham*
+% *Definition of Bingham distributions*
 %
 % Bingham distribution functions are described by the class 
 % |@SO3FunBingham|. One can construct them by
@@ -149,25 +155,25 @@ SO3F5 = SO3FunRBF(ori,psi,w,1.2)
 
 kappa = [100 90 80 0];
 U = eye(4);
-SO3F6 = BinghamODF(kappa,U,cs)
+SO3F7 = BinghamODF(kappa,U,cs)
 
 %%
 % For further information, see <BinghamODFs.html SO3FunBingham>.
 %
 %%
 %
-% *SO3FunComposition*
+% *Sum of different subclasses of SO3Fun*
 %
+% By adding some subclasses of |@SO3Fun| we can save the sum by storing the
+% single components itself.
 %
 
+SO3F2 + SO3FunComposition(SO3F4) + SO3F5 + SO3F6 + SO3F7
 
-
-
-
-
-
-
-
-
+%%
+% Note that the sum of any |@SO3Fun| with an |@SO3FunHarmonic| yields an
+% |@SO3FunHarmonic|. Hence you need to add an |@SO3FunHarmonic| in exactly 
+% that way. Otherwise the sum is expanded to an |@SO3FunHarmonic| in every
+% summation step.
 
 
