@@ -53,7 +53,7 @@ pOri = variants(job.p2c, job.grains.meanOrientation, job.votes.parentId(:,1));
 nextAxis
 plot(job.grains(cond_grains),...
     pOri(cond_grains))
-lims = job.ebsd.extend;
+lims = job.ebsd.extent;
 xlim([lims(1) lims(2)])
 ylim([lims(3) lims(4)])
 

@@ -1,11 +1,11 @@
-function [xmin, xmax, ymin, ymax] = extend(ebsd)
+function [xmin, xmax, ymin, ymax] = extent(ebsd)
 % spatial bounds of an EBSD map
 %
 % Syntax
 %
-%   [xmin, xmax, ymin, ymax] = extend(ebsd)
+%   [xmin, xmax, ymin, ymax] = extent(ebsd)
 %
-%   ext = extend(ebsd)
+%   ext = extent(ebsd)
 %
 % Input
 %  ebsd - @EBSD 

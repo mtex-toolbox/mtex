@@ -9,7 +9,7 @@ function ind = inpolygon(grains,xy)
 % Input
 %  grains    - @grain2d
 %  xmin, xmax - lower left corner of a rectangle
-%  dx, dy - extend of a rectangle
+%  dx, dy - extent of a rectangle
 %  x, y  - vertices of a polygon
 %
 % Output
