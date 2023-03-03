@@ -60,10 +60,14 @@ if isa(f,'SO3Fun')
 
 else
 
-  nodes = f(:);
-  values = varargin{1}(:);
+  nodes = f;
+  values = varargin{1};
   W = get_option(varargin,'weights',1);
-  W = W(:);
+  if ~check_option(varargin,'ClenshawCurtis')
+    nodes = nodes(:);
+    values = values(:);
+    W = W(:);
+  end
 
   if isa(nodes,'orientation')
     SRight = nodes.CS; SLeft = nodes.SS;
