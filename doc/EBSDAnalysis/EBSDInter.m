@@ -44,7 +44,7 @@ angle(e1.orientations,e2.orientations)./degree
 
 % define a rotated coarse grid
 omega = 5*degree;
-[xmin, xmax, ymin, ymax] = ebsd.extend;
+[xmin, xmax, ymin, ymax] = ebsd.extent;
 x = linspace(xmin-cos(omega)*ymax,xmax,100);
 y = linspace(ymin-sin(omega)*xmax,ymax,50);
 [x,y] = meshgrid(x,y);

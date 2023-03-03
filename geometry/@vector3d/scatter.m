@@ -323,13 +323,13 @@ for it = 1:length(t)
   set(t(it),'unit','pixels');
   xy = get(t(it),'position');
   if isappdata(t(it),'extent')
-    extend = getappdata(t(it),'extent');
+    extent = getappdata(t(it),'extent');
   else
-    extend = get(t(it),'extent');
-    setappdata(t(it),'extent',extend);
+    extent = get(t(it),'extent');
+    setappdata(t(it),'extent',extent);
   end
   margin = get(t(it),'margin');
-  xy(2) = xy(2) + direction*(extend(4)/2 + margin + markerSize/2 + 5);
+  xy(2) = xy(2) + direction*(extent(4)/2 + margin + markerSize/2 + 5);
     
   set(t(it),'position',xy);
   set(t(it),'unit','data');

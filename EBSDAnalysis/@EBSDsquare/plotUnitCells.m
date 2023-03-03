@@ -15,7 +15,7 @@ if check_option(varargin,'region')
   d = submatrix(d,ind);  
 else
   
-  ext = ebsd.extend;
+  ext = ebsd.extent;
   
 end
 

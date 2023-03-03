@@ -50,11 +50,11 @@ Y1 = ebsd1.prop.y;
 X2 = ebsd2.prop.x;
 Y2 = ebsd2.prop.y;
 
-% get max extend
-maxExtend = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
+% get max extent
+maxExtent = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
   (max([Y1;Y2])-min([Y1;Y2]))^2);
 
-minDistance = get_option(varargin,'minDistance',maxExtend/100);
+minDistance = get_option(varargin,'minDistance',maxExtent/100);
 
 % take a random sample
 samplSize = get_option(varargin,'sampleSize',100000);

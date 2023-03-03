@@ -8,7 +8,7 @@ else
 
   ax = get_option(varargin,'parent',gca);
 
-  ext = ebsd.extend;
+  ext = ebsd.extent;
   hold on
   d = reshape(d,size(ebsd,1),size(ebsd,2),[]);
 

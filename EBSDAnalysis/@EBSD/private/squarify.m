@@ -4,7 +4,7 @@ uc = get_option(varargin,'unitCell',ebsd.unitCell);
 
 % generate regular grid
 prop = ebsd.prop;
-ext = ebsd.extend;
+ext = ebsd.extent;
 dx = max(uc(:,1))-min(uc(:,1));
 dy = max(uc(:,2))-min(uc(:,2));
 

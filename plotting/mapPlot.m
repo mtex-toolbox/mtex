@@ -5,7 +5,7 @@ classdef mapPlot < handle
     ax        % the axes that contain the map
     parent    % the figure that contains the map plot
     micronBar % 
-    extend = [inf -inf inf -inf]   %
+    extent = [inf -inf inf -inf]   %
   end
   
   properties (Dependent = true)
@@ -103,7 +103,7 @@ ax_r = pos(4)/ pos(3);
 ay_r = pos(3)/ pos(4);
 
 % x/y rations of of maximum xlim  / ylim
-ey_r = diff(mP.extend(1:2))/diff(mP.extend(3:4));
+ey_r = diff(mP.extent(1:2))/diff(mP.extent(3:4));
 
 % current xlim  / ylim
 cx = [xlim(mP.ax) ylim(mP.ax)];
@@ -122,12 +122,12 @@ if ay_r < ey_r % resize ylim
   y = cx(3:4) + [-1 1] * dy./2;
 
   % may be a shift is necessary
-  if y(1) < mP.extend(3)
-    y(2) = min(mP.extend(4),y(2)+mP.extend(3)-y(1));
-    y(1) = mP.extend(3);
-  elseif y(2) > mP.extend(4)
-    y(1) = max(mP.extend(3),y(1)+mP.extend(4)-y(2));
-    y(2) = mP.extend(4);
+  if y(1) < mP.extent(3)
+    y(2) = min(mP.extent(4),y(2)+mP.extent(3)-y(1));
+    y(1) = mP.extent(3);
+  elseif y(2) > mP.extent(4)
+    y(1) = max(mP.extent(3),y(1)+mP.extent(4)-y(2));
+    y(2) = mP.extent(4);
   end
 
   % set the new limit
@@ -142,12 +142,12 @@ else % resize xlim
   x = cx(1:2) + [-1 1] * dx./2;
 
   % may be a shift is necessary
-  if x(1) < mP.extend(1)
-    x(2) = min(mP.extend(2),x(2)+mP.extend(1)-x(1));
-    x(1) = mP.extend(1);
-  elseif x(2) > mP.extend(2)
-    x(1) = max(mP.extend(1),x(1)+mP.extend(2)-x(2));
-    x(2) = mP.extend(2);
+  if x(1) < mP.extent(1)
+    x(2) = min(mP.extent(2),x(2)+mP.extent(1)-x(1));
+    x(1) = mP.extent(1);
+  elseif x(2) > mP.extent(2)
+    x(1) = max(mP.extent(1),x(1)+mP.extent(2)-x(2));
+    x(2) = mP.extent(2);
   end
 
   % set the new limit
