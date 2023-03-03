@@ -40,9 +40,8 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 %
 
 % TODO: Maybe rotate tangent space evertime to id
-% Compute the Taylor factor and spin Tensor dependent of the orientation,
-% i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
-% Note that the Spin-tensor is rotatated to id.
+% Compute the Taylor factor and strain dependent gradient independent of 
+% the orientation, i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
 if sS.CS ~= eps.CS
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
@@ -51,9 +50,9 @@ if sS.CS ~= eps.CS
   M = SO3F(1);
   if nargout>1
     b = [];
-    % spin vectors of tangent space rotated to id
+    % gradient in tangent space rotated to id
     spin = SO3VectorFieldHarmonic(SO3F(2:4));
-    % spin vectors of tangent space at rotation
+    % gradient in tangent space at specific rotation
     % Note that this VectorField is no longer symmetric
     spin = SO3VectorFieldHandle(@(ori) inv(ori).*spin.eval(ori));
   end
@@ -144,4 +143,3 @@ function Out = calcTaylorFun(rot,eps,sS,numOut)
    Out(:,4) = s(:,3);
   end
 end
-
