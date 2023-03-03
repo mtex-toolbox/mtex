@@ -10,10 +10,10 @@ end
 
 if SO3F.antipodal, disp('  antipodal: true'); end
 
-try
-  m = mean(SO3F,'resolution',5*degree);
-  disp(['  weight: ' xnum2str(m(1))])
-end
+% try
+%   m = mean(SO3F,'resolution',5*degree);
+%   disp(['  weight: ' xnum2str(m(1))])
+% end
 disp(' ')
 
 end
