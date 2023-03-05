@@ -67,7 +67,7 @@ finished = false(size(modes));
 G = SO3F.grad;
 
 for k = 1:maxIter
-  %progress(k,maxIter,' finding ODF components: ');
+  progress(k,maxIter,' finding ODF components: ');
 
   % gradient
   g = normalize(G.eval(modes(~finished)),1);

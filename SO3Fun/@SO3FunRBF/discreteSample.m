@@ -33,7 +33,7 @@ r = rand(npoints,1);
 angle = 2 * acos(t(id)).';
 
 % set up random orientations
-ori(~isUniform) = times(SO3F.center(ic(~isUniform)), ...
+ori(~isUniform) = times(reshape(SO3F.center(ic(~isUniform)),[],1), ...
   rotation.byAxisAngle(axis,angle),false);
 
 % random symmetry elements
