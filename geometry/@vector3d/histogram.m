@@ -4,6 +4,8 @@ weights = get_option(varargin,'weights');
 varargin = delete_option(varargin,'weights',1);
 
 rho = v.rho(:);
+antipodalflag = v.antipodal || check_option(varargin,'antipodal');
+
 if v.antipodal || check_option(varargin,'antipodal')
   rho = mod(rho,pi); % prevent funny behavior of h.Binedeges/data
   rho = [rho; pi+rho]; 
@@ -15,12 +17,13 @@ h = polarhistogram(rho,varargin{:});
 
 if ~isempty(weights)
   
-  % oddly, matlab returns bins in the range -pi:pi and the data 
-  % within 0:2*pi with some data < 0
   edges = h.BinEdges;
   %edges(edges<0)=pi-edges(edges<0);
   data=mod(h.Data,2*pi);
-  %data(data>pi) = data(data>pi)-2*pi;
+  
+  if ~antipodalflag
+    data(data>pi) = data(data>pi)-2*pi;
+  end
 
   [~,~,binId] = histcounts(data,sort(edges));
   binId(binId==0)=length(edges)-1;
