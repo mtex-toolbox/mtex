@@ -34,7 +34,7 @@ if check_option(varargin, 'startingnodes')
   %v.antipodal = isAntipodal;
   sR = getClass(varargin,'sphericalRegion');
   if v.isOption('resolution')
-    res0 = v.resolution
+    res0 = v.resolution;
   else
     res0 = 5 * degree;
   end  
