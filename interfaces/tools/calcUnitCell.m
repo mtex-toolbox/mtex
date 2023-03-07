@@ -54,7 +54,8 @@ try
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
-  ignore = [false;sum(diff(unitCell,1).^2,2) < dxy/100];
+  % sometimes it happens that we have one point doubled, remove those
+  ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
   
     
