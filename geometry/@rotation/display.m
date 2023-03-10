@@ -4,12 +4,21 @@ function display(rot,varargin)
 displayClass(rot,inputname(1),varargin{:});
 if length(rot)~=1, disp(['  size: ' size2str(rot)]); end
 
-if length(rot) < 20 && ~isempty(rot)
+if length(rot) <= 19 && ~isempty(rot)
   
   Euler(rot);
   
-else
+elseif ~getMTEXpref('generatingHelpMode')  && ~isempty(rot)
+
   disp(' ')
+  setappdata(0,'data2beDisplayed',rot);
+  disp('  <a href="matlab:Euler(getappdata(0,''data2beDisplayed''))">show Euler angles</a>')
+  disp(' ')
+
+else
+  
+  disp(' ')
+
 end
 
 
