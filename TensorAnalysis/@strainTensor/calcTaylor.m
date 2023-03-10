@@ -109,7 +109,7 @@ for i = 1:size(y,2)
         param,'minimize echo(0)');
       b(i,:) = res.sol.itr.xx;
     else
-      b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
+      b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],options);
     end    
   end
   

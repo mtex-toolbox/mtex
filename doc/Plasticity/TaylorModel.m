@@ -32,6 +32,10 @@ ori = orientation.byEuler(0,30*degree,15*degree,cs)
 [M,b,W] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
 
 %% The orientation dependence of the Taylor factor
+% For a fixed strain tensor |epsilon| and slip systems |sS| the Taylor
+% factor
+% 
+
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
 % Some applications of the Taylor theory of polycrystal plasticity.
 % Kristall Und Technik, 5(1), 145-175.
@@ -56,7 +60,7 @@ sP.plot(M,'smooth')
 mtexColorbar
 
 %%
-% Lets prcompute the Taylor factor as |@SO3Fun| and the spin tensor as
+% Lets precompute the Taylor factor as |@SO3Fun| and the spin tensor as
 % |@SO3VectorField|. Hence we can evaluate them very fast for several times
 % in mush more orientations.
 

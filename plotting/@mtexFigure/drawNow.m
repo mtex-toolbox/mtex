@@ -84,7 +84,7 @@ end
 
 % draw layout
 set(mtexFig.parent,'ResizeFcn',[]);
-set(mtexFig.parent,'position',position);
+if mtexFig.parent.WindowStyle~="docked", set(mtexFig.parent,'position',position); end
 updateLayout(mtexFig);
 set(mtexFig.parent,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
 

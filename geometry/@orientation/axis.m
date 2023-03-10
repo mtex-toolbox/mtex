@@ -30,6 +30,10 @@ function a = axis(o1,varargin)
 %  a - @vector3d
 %  m - @Miller
 %
+% Options
+%  noSymmetry - ignore symmetry
+%  max        - return the axis corresponding to the largest rotational angle
+%
 % See also
 % orientation/angle
 
@@ -93,7 +97,24 @@ else
   if o1.antipodal, cs = cs.Laue; end
   
   % project to Fundamental region to get the axis with the smallest angle
-  if ~check_option(varargin,'noSymmetry')
+  if check_option(varargin,'max')
+    % do not care about inversion
+    q = quaternion(o1);
+  
+    % for misorientations we do not have to consider all symmetries
+    [l,d,r] = factor(o1.CS,o1.SS);
+    dr = d * r;
+    qs = inv(l) * inv(dr);
+  
+    % compute all distances to the symmetric equivalent orientations
+    % and take the minimum
+    [~,pos] = min(abs(dot_outer(q,qs)),[],2);
+
+    [il,idr] = ind2sub([length(l),length(dr)],pos);
+
+    o1 = l(il) * o1 * dr(idr);
+
+  elseif ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);
   end
 

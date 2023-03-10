@@ -131,8 +131,8 @@ if ay_r < ey_r % resize ylim
   end
 
   % set the new limit
-  ylim(mP.ax,y)
-
+  if ~any(isinf(x)), ylim(mP.ax,y); end
+  
 else % resize xlim
   
   % new xlim = ylim * are_ratio
@@ -151,7 +151,8 @@ else % resize xlim
   end
 
   % set the new limit
-  xlim(mP.ax,x);
+  if ~any(isinf(x)), xlim(mP.ax,x); end
+  
 end
 
 % restore units

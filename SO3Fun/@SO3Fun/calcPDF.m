@@ -29,7 +29,7 @@ function pdf = calcPDF(SO3F,h,varargin)
 % check crystal symmetry
 if isa(h,'Miller')
   h = SO3F.CS.ensureCS(h); 
-else
+elseif ~isempty(h)
   h = Miller(h,SO3F.CS);
 end
 

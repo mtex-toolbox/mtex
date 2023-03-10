@@ -8,7 +8,8 @@
 % MTEX 5.9 includes powerful functions for the determination of predominant
 % habit planes and habit plane distributions. For the setting of a fully
 % transformed microstructure the are described in the paper <Habit plane
-% determination from reconstructed parent phase orientation maps>.
+% determination from reconstructed parent phase orientation maps>. Those
+% functions include
 %
 % * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
 % <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
@@ -40,7 +41,8 @@
 % * compute gradients
 %
 % While implementing these new features we also significantly speeded up
-% all operations related with ODF operations.
+% all operations related with ODF operations. A full documentation of these
+% new features can be found <SO3FunConcept.html here>.
 %
 %
 %% MTEX 5.8.2 11/2022
