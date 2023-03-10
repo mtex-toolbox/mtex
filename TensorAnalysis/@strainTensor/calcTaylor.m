@@ -45,7 +45,7 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 if sS.CS ~= eps.CS
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
-  F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut),sS.CS,eps.CS);
+  F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut,varargin{:}),sS.CS,eps.CS);
   SO3F = SO3FunHarmonic(F,'bandwidth',bw);
   M = SO3F(1);
   if nargout>1
@@ -131,9 +131,9 @@ end
 
 
 
-function Out = calcTaylorFun(rot,eps,sS,numOut)
+function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
-  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS);
+  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:});
   s = vector3d(spin).xyz;
   Out(:,1) = Taylor;
   if numOut>1
