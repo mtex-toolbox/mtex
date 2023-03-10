@@ -41,9 +41,7 @@ if ~isa(oS,'gammaSections') && ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections'
   S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
   % plot on S3G with evalfft
   SO3F.isReal = 1;
-  tic
   Z = SO3F.eval(S3G,varargin{:});
-  toc
   clear S3G
 else % use equispaced fft
   oS.plotGrid = plotS2Grid(oS.sR,'resolution',2.5*degree,varargin{:});
