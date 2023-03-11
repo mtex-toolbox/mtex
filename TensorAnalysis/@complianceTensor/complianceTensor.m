@@ -5,7 +5,11 @@ classdef complianceTensor < tensor
       
       varargin = set_default_option(varargin,{},'unit','1/GPa','doubleConvention');
       sT = sT@tensor(varargin{:},'rank',4);
-      
+
+      if ~sT.isSymmetric, warning('Tensor is not symmetric!'); end
+      lambda = eig(sT);
+      if ~all(lambda(:) > 0), warning('Tensor is not positive definite'); end
+
     end
   end
   
