@@ -11,8 +11,8 @@ if length(rot) <= 19 && ~isempty(rot)
 elseif ~getMTEXpref('generatingHelpMode')  && ~isempty(rot)
 
   disp(' ')
-  setappdata(0,'data2beDisplayed',rot);
-  disp('  <a href="matlab:Euler(getappdata(0,''data2beDisplayed''))">show Euler angles</a>')
+  s = setappdata(0,'data2beDisplayed',rot);
+  disp(['  <a href="matlab:Euler(getappdata(0,''',s,'''))">show Euler angles</a>'])
   disp(' ')
 
 else

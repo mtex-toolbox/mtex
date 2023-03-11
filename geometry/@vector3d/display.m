@@ -26,17 +26,17 @@ end
 disp(char(dynOption(v)));
 
 % display coordinates
-if check_option(varargin,'skipCoordinates') 
+if check_option(varargin,'skipCoordinates') || isempty(v) || getMTEXpref('generatingHelpMode')
 
-elseif (check_option(varargin,'all') || (length(v) < 20 && ~isempty(v)))
+elseif check_option(varargin,'all') || (length(v) < 20)
   
   display(v,'onlyShowVectors')
 
 else
 
   disp(' ')
-  setappdata(0,'data2beDisplayed',v);
-  disp('  <a href="matlab:display(getappdata(0,''data2beDisplayed''),''onlyShowVectors'')">show Vectors</a>')
+  s = setappdata(0,'data2beDisplayed',v);
+  disp(['  <a href="matlab:display(getappdata(0,''',s,'''),''onlyShowVectors'')">show vectors</a>'])
   disp(' ')
 
 end
