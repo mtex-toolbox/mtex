@@ -17,6 +17,9 @@ function f =  eval(F,rot,varargin)
 % See also
 % SO3FunHarmonic/evalV2 SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
+if isa(rot,'orientation')
+  ensureCompatibleSymmetries(F,rot)
+end
 
 if ~check_option(varargin,'nfsoft')
   f = evalV2(F,rot,varargin{:});
