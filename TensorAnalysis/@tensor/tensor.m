@@ -149,10 +149,10 @@ classdef tensor < dynOption
 
     function isSym = get.isSymmetric(T)
 
-      if T.rank == 2
+      if T.rank == 2 || T.rank == 4
 
-        isSym = norm(T - T') ./ norm(T) < 1e-6;
-
+        isSym = norm(T - ctranspose(T,'skipCorrection')) ./ norm(T) < 1e-6;
+      
       else
         
         error('not yet implemented');
