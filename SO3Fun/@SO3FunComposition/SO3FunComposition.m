@@ -109,9 +109,9 @@ methods
   
   function f = eval(SO3F,rot,varargin)
     
-    if isa(rot,'orientation')
-      ensureCompatibleSymmetries(SO3F,rot)
-    end
+%     if isa(rot,'orientation')
+%       ensureCompatibleSymmetries(SO3F,rot)
+%     end
 
     f = 0;
     for k = 1:length(SO3F.components)

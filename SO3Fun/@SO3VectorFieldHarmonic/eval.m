@@ -10,9 +10,9 @@ function f = eval(SO3VF,rot,varargin)
 %   f - @vector3d
 %
 
-if isa(rot,'orientation')
-  ensureCompatibleSymmetries(SO3VF,rot)
-end
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(SO3VF,rot)
+% end
 
 f = vector3d(SO3VF.SO3F.eval(rot)');
 f = reshape(f',size(rot));

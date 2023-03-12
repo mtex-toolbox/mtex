@@ -22,9 +22,9 @@ methods
   end
   
   function f = eval(SO3VF,ori,varargin)
-    if isa(ori,'orientation')
-      ensureCompatibleSymmetries(SO3VF,ori)
-    end
+%     if isa(ori,'orientation')
+%       ensureCompatibleSymmetries(SO3VF,ori)
+%     end
 
     f = SO3VF.fun(ori);
   end

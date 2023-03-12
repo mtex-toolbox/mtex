@@ -3,9 +3,9 @@ function f = eval(SO3F,rot,varargin)
 %
 % sum_i \sum_j \sum_k  weights * psi(g*s_j h_i . s_k r_i)
 
-if isa(rot,'orientation')
-  ensureCompatibleSymmetries(SO3F,rot)
-end
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(SO3F,rot)
+% end
 
 s = size(rot);
 rot = rot(:);

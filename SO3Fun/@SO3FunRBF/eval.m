@@ -17,9 +17,9 @@ function f = eval(SO3F,g,varargin)
 %
 % $$ f(r) = sum_j w_j \psi(r,c_j) $$
 
-if isa(g,'orientation')
-  ensureCompatibleSymmetries(SO3F,g)
-end
+% if isa(g,'orientation')
+%   ensureCompatibleSymmetries(SO3F,g)
+% end
 
 % decide along which dimension to split the summation matrix
 if isa(g,'SO3Grid')
