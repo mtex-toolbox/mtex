@@ -46,6 +46,13 @@ function odf = calcDensity(ori,varargin)
 % See also
 % orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
 
+% Allow calcDensity for rotations
+[CS,SS] = extractSym(varargin);
+if ~isa(ori,'orientation')
+  ori = orientation(ori,CS,SS);
+end
+
+
 % TODO this could be done better!!!
 % add grain exchange symmetry
 if check_option(varargin,'antipodal') && ori.CS == ori.SS
