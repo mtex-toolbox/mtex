@@ -105,18 +105,18 @@ slice001 = myneper.getSlice(N,d);
 
 N=vector3d(1,-1,0);
 A=vector3d(2,2,1);
-mySlice2=myneper.getSlice(N,A);
+slice2=myneper.getSlice(N,A);
 
 N=vector3d(2,2,4);
 A=vector3d(2,2,1);
-mySlice3=myneper.getSlice(N,A);
+slice3=myneper.getSlice(N,A);
 
 %%
-plot(mySlice1,mySlice1.meanOrientation);
+plot(slice001,slice001.meanOrientation);
 hold on
-plot(mySlice2,mySlice2.meanOrientation);
+plot(slice2,slice2.meanOrientation);
 hold on
-plot(mySlice3,mySlice3.meanOrientation);
+plot(slice3,slice3.meanOrientation);
 
 % set camera
 
