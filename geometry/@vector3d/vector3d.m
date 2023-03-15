@@ -109,6 +109,8 @@ classdef vector3d < dynOption
                 
       end
 
+      v.refSystem = getClass(varargin,'referenceSystem',referenceSystem);
+
       % ----------- check for equal size ------------------------
       if numel(v.x) ~= numel(v.y) || (numel(v.x) ~= numel(v.z))
   
