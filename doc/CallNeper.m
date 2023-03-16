@@ -17,7 +17,7 @@
 % If you do not want to make any further adjustments to the default values,
 % this step could be done very easily:
 
-myneper = neperInstance
+job = neperInstance
 
 %% 
 % File options:
@@ -36,7 +36,7 @@ myneper = neperInstance
 % data. If you do not want to create a new folder you can switch it of by 
 % setting |newfolder| to |false|.
 
-myneper.newfolder = false;
+job.newfolder = false;
 
 %%
 % If |newfolder| is true (default) the slicing module also works in the
@@ -47,15 +47,15 @@ myneper.newfolder = false;
 % ending .tess and .ori . You can change the file names in variables
 % |fileName3d| and |fileName2d|.
 
-myneper.fileName3d = 'my100grains';
-myneper.fileName2d = 'my100GrSlice';
+job.fileName3d = 'my100grains';
+job.fileName2d = 'my100GrSlice';
 
 %% Tesselation options
 % The grains will be generated in cubic domain. By default the domain has
 % the edge length 1 in each direction. To change the size of the domain,
 % store a row vector with 3 entries (x,y,z) in the variable |cubeSize|.
 
-myneper.cubeSize = [4 4 2];
+job.cubeSize = [4 4 2];
 
 %%
 % Neper uses an id to identify the tesselation. This interger value "is
@@ -63,14 +63,14 @@ myneper.cubeSize = [4 4 2];
 % seed positions" (neper.info/doc/neper_t.html#cmdoption-id) By default the
 % tesselation id is always |1|.
 
-myneper.id = 529;
+job.id = 529;
 
 %%
 % Neper allows to specify the morphological properties of the cells. See
 % <https://neper.info/doc/neper_t.html#cmdoption-morpho> for more
 % information. By default graingrowth is used, that is an alias for:
 
-myneper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
 %% Simulating a microstructure with Neeper
 %
@@ -83,7 +83,7 @@ ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
 
-myneper.simulateGrains(odf,numGrains)
+job.simulateGrains(odf,numGrains)
 
 %%
 % 2. by list of orientations:
@@ -91,7 +91,7 @@ myneper.simulateGrains(odf,numGrains)
 
 oriList=odf.discreteSample(numGrains);
 
-myneper.simulateGrains(oriList)
+job.simulateGrains(oriList)
 
 %% Slicing
 % To get slices of your tesselation, that you can process with MTEX, the
@@ -101,15 +101,15 @@ myneper.simulateGrains(oriList)
 
 N=vector3d(0,0,1);
 d=1;
-slice001 = myneper.getSlice(N,d);
+slice001 = job.getSlice(N,d);
 
 N=vector3d(1,-1,0);
 A=vector3d(2,2,1);
-slice2=myneper.getSlice(N,A);
+slice2=job.getSlice(N,A);
 
 N=vector3d(2,2,4);
 A=vector3d(2,2,1);
-slice3=myneper.getSlice(N,A);
+slice3=job.getSlice(N,A);
 
 %%
 plot(slice001,slice001.meanOrientation);
