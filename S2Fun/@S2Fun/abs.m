@@ -8,16 +8,12 @@ function sF = abs(sF, varargin)
 %  sF - @S2Fun
 %
 % Output
-%  sF - @S2FunHarmonic
+%  sF - @S2FunHandle
 %
 % Options
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-if check_option(varargin, 'bandwidth')
-  sF = max(sF, -sF, 'bandwidth', get_option(varargin, 'bandwidth'));
-else
-  sF = max(sF, -sF);
-end
+sF = S2FunHandle(@(v) abs(sF.eval(v)));
 
 end

@@ -15,6 +15,8 @@ function sF = log(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = sF.quadrature(@(v) log(sF.eval(v)),varargin{:});
+%sF = sF.quadrature(@(v) log(sF.eval(v)),varargin{:});
+
+sF = S2FunHandle(@(v) log(sF.eval(v)));
 
 end
