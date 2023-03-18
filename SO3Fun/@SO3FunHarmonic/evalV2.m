@@ -56,19 +56,26 @@ end
 
 if isempty(plan)
 
-  % initialize nfft plan
-  %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
-  NN = 2*N+2;
-  if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
-  FN = 2*ceil(1.5*NN);
-  FN2 = 2*ceil(1.5*N2);
+  % TODO: Heuristic for selection of oversampling Factor sigma and cut-off Parameter m
+
+  % nfft size
+    NN = 2*N+2;
+    if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
   %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-  fftw_flag = int8(64);
-  plan = nfftmex('init_guru',{3,N2,NN,NN,M,FN2,FN,FN,4,int8(0),fftw_flag});
+    fftw_flag = int8(64);
+    nfft_flag = int8(0);
+  % nfft_cutoff parameter 
+    m = 4;
+  % oversampling factor
+    sigma = 3;
+    fftw_size = 2*ceil(sigma/2*NN);
+    fftw_size2 = 2*ceil(sigma/2*N2);
+  % initialize nfft plan
+  plan = nfftmex('init_guru',{3,N2,NN,NN,M,fftw_size2,fftw_size,fftw_size,m,nfft_flag,fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,abg);
