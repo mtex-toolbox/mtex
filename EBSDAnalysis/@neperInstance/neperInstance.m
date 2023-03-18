@@ -41,7 +41,7 @@ classdef neperInstance < handle
 % Class Properties
 %  id         - integer, "used [...] to compute the (initial) seed positions"
 %  cubeSize   - 1x3 rowvector, size of the tesselation domain box, default: [1 1 1]
-%  morpho     - specify morphological properties of the cells, default: graingrowth
+%  morpho     - cell morphology, see neper.info/doc/neper_t.html#morphology-options -default: graingrowth
 %  iterMax    - max Iterations for morpho optimization process
 %  fileName2d - name for 2d outputs (fileendings .tess/.ori), default: '2dslice'
 %  fileName3d - name for 3d outputs (fileendings .tess/.ori/.stpoly), default: 'allgrains'
@@ -56,7 +56,7 @@ properties
 
   id = 1;
   cubeSize = [1 1 1];
-  morpho = '-morpho "graingrowth"';
+  morpho = 'graingrowth';
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)

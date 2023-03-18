@@ -25,7 +25,7 @@ function grains = getSlice(this,varargin)
 
 %%
 %change work directory
-if this.newfolder==true
+if this.newfolder==true && exist(this.folder,'dir')==7
   cd([this.filePath this.folder]);
 else
   cd(this.filePath)

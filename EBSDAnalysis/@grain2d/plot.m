@@ -207,7 +207,11 @@ datacursormode off
 
 % define a hand written selector
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
-setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
+try
+  setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
+catch
+  warning('still can not concatenate grains on different slices')
+end
 
 if nargout == 0, clear h;end
 
