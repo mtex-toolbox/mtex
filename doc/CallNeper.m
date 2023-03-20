@@ -5,17 +5,24 @@
 % meshing developed by Romain Query. It can be obtained from
 % https://neper.info, where also the documentation is located.
 %
-%% General workflow
-% A general workflow using neper conatins usually three parts:
-% * setting up the neper instance
-% * tesselation
-% * slicing
-% 
-%% Simulating a microstructure with Neeper
-
+% This module provides an comfortable interface to neper. It is used 
+% to simulate microstructures with certain parameters and load them back
+% into MTEX for analysis and further investigation with the various tools 
+% provided by MTEX.
+%
+% In order to do this, a slicing of the 3-dimensional tesselation is 
+% necessary after the simulation. The obtained 2-dimensional tesselation 
+% is processed as an object from the class |grain2d|. 
+%
+%% Contents
+% * Setting-up the neper instance and further options
+% * Simulation/tesselation
+% * Slicing
+%
 %% Setting-up the neper instance
 % If you do not want to make any further adjustments to the default values,
-% this step could be done very easily:
+% this step could be done very easily. In this case please skip to chapter
+% "Simulating a microstructure with Neper"
 
 job = neperInstance
 
@@ -27,9 +34,9 @@ job = neperInstance
 % it:
 
 % for example
-% myneper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
+% job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
-%myneper.filePath = pwd;
+% job.filePath = pwd;
 
 %%
 % By default a new folder, named neper will be created for the tesselation 
@@ -72,7 +79,7 @@ job.id = 529;
 
 job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
-%% Simulating a microstructure with Neeper
+%% Simulating a microstructure with Neper
 %
 % The tesselation is executed by the command |simulateGrains|. There are
 % two option to call it.
@@ -97,7 +104,9 @@ job.simulateGrains(oriList)
 % To get slices of your tesselation, that you can process with MTEX, the
 % command |getSlice| is used, wich returns a set of grains (|grain2d|). 
 % It is called by giving the normal vector [a,b,c] of the plane and either 
-% a point that lies in the plane or the "d" of the plane equation.
+% a point that lies in the plane or the "d" of the plane equation. Please
+% consider that the slicing must align with the size of the domain/cube
+% (see Tesselation options - cubeSize)
 
 N=vector3d(0,0,1);
 d=1;
