@@ -39,6 +39,12 @@ function [odf,alpha] = calcODF(varargin)
 %  odf    - reconstructed @SO3Fun
 %  alpha  - scaling factors, calculated during reconstruction
 %
+% References
+%
+% * <http://dx.doi.org/10.1107/S0021889808030112 A novel pole figure
+% inversion method: specification of the MTEX algorithm>, J. Appl. Cryst.
+% 41, 2008.
+%
 % See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo
 % PoleFigure/load ImportPoleFigureData examples_index
