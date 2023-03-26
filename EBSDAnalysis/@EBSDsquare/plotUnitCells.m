@@ -19,6 +19,8 @@ else
   
 end
 
+alpha = get_option(varargin,'FaceAlpha',~isnan(d(:,:,1)));
+
 hold on
-h = imagesc(ext(1:2),ext(3:4),d,'parent',ax,'alphaData',~isnan(d(:,:,1)));
+h = imagesc(ext(1:2),ext(3:4),d,'parent',ax,'alphaData',alpha);
 hold off
