@@ -23,6 +23,7 @@ if isa(A,'vector3d')
   A = A.xyz;
 end
 
+A = A(~isnan(A));
 re = real(A(:));
 im = imag(A(:));
 
