@@ -22,6 +22,9 @@ fun.fhat(2:end) = fun.fhat(2:end) .* exp(- 0.5*sigma.^2 * (-N:N).^2).';
 % normalize
 fun.fhat = fun.fhat ./ fun.fhat(N+2);
 
+% make antipodal if needed
+%fun.antipodal = check_option(varargin,'antipodal');
+
 
 end
 
