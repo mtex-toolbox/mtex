@@ -215,6 +215,10 @@ classdef vector3d < dynOption
       b = ~(isinf(v) | isnan(v));
     end
 
+    function b = isreal(v)
+      b = isreal(v.x) & isreal(v.y) & isreal(v.z);
+    end
+
     function v = real(v)
       v = vector3d(real(v.x),real(v.y),real(v.z));
     end
@@ -241,18 +245,21 @@ classdef vector3d < dynOption
       %   x = vector3d.X % returns a single vector (1,0,0)
       %   x = vector3d.X(3,1) % returns 3 vectors (1,0,0)
       
-      x = ones(varargin{:});
-      v = vector3d(x,0,0);
+      s = varargin(cellfun(@isnumeric,varargin));
+      x = ones(s{:});
+      v = vector3d(x,0,0,varargin{:});
     end
     
     function v = Y(varargin)
-      x = ones(varargin{:});
-      v = vector3d(0,x,0);
+      s = varargin(cellfun(@isnumeric,varargin));
+      x = ones(s{:});
+      v = vector3d(0,x,0,varargin{:});
     end
     
     function v = Z(varargin)
-      x = ones(varargin{:});
-      v = vector3d(0,0,x);
+      s = varargin(cellfun(@isnumeric,varargin));
+      x = ones(s{:});
+      v = vector3d(0,0,x,varargin{:});
     end    
     
     
