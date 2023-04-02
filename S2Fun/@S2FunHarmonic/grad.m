@@ -16,11 +16,11 @@ function sVF = grad(sF, varargin)
 
 
 if nargin > 1
-  sF = [sF.drho; sF.dthetasin];
+  sF = [sF.drho; sF.dtheta];
   v = varargin{1};
   y = eval(sF, v);
   sVF = ...
-    y(:, 1)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
+    y(:, 1)./sin(v.theta).*S2VectorField.rho(v)+ ...
     y(:, 2) .* S2VectorField.theta(v);
 
   sVF(isnan(sVF)) = vector3d([0 0 0]);
