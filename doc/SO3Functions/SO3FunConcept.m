@@ -21,7 +21,7 @@
 % anonymous function>.
 
 % define the crystal symmetry
-cs = crystalSymmetry('cubic');
+cs = crystalSymmetry('432');
 
 % construct the SO3Fun
 SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
@@ -73,14 +73,15 @@ mtexColorMap parula
 % with maximum rotational angle in cubic symmetry. We may compute them by
 % the command <SO3Fun.max.html |max|>
 
-[value,ori] = max(SO3F,'numLocal',10)
+[value,ori] = max(SO3F,'numLocal',10,'accuracy',0.001*degree)
 
 %%
 % We observe that there are exactly six symetrically not equivalent
-% orientations that realize an orientation angle of about 62.77 degree and
+% orientations that realize an orientation angle of about 62.994 degree and
 % form the vertices of the fundamental region in orienation space
 
-plot(ori.symmetrise,'axisAngle','filled','markerSize',15,'restrict2FundamentalRegion')
+color = ind2color(repmat(1:length(ori),numSym(cs),1));
+plot(ori.symmetrise,color,'axisAngle','filled','markerSize',20,'restrict2FundamentalRegion')
 
 %% Representations of Rotational Functions
 %
