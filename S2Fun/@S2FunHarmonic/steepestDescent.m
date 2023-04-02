@@ -40,10 +40,13 @@ omega = [0,omega];
 % cumulative walking distance
 sumOmega = zeros(size(v));
 
+gradsF = sF.grad;
+
 % actual steepest descent
 for k = 0:interMax
 
-  d = -normalize(sF.grad(v));
+  %d = -normalize(sF.grad(v));
+  d = -normalize(gradsF.eval(v));
   
   % search line
   line_v = repmat(v,1,length(omega)) + d * omega;
