@@ -22,6 +22,7 @@ if nargin > 1
   N = varargin{1};   % normal direction
   t1 = vector3d(N.y,-N.x,0);  % first tangential vector
   t1(norm(t1)==0) = xvector;
+  t1 = t1.normalize;
 
   t2 = normalize(cross(N,t1));  % second tangential vector
   
