@@ -35,16 +35,16 @@ end
 
   function g = localGrad(v)
     
-    gg = sF.eval(v);
+    gg = real(sF.eval(v));
     [th,rh] = polar(v);
     
-    th = min(pi-eps,max(eps,th));
+    sinTh = max(1e-7,sin(th));
 
-    x = gg(:,2) .* cos(rh) .* cot(th) - gg(:,1) .* sin(rh) ./ sin(th);
-    y = gg(:,2) .* sin(rh) .* cot(th) + gg(:,1) .* cos(rh) ./ sin(th);
-    z = -gg(:,2);
+    x = gg(:,2) .* cos(rh) .* cos(th) - gg(:,1) .* sin(rh);
+    y = gg(:,2) .* sin(rh) .* cos(th) + gg(:,1) .* cos(rh);
+    z = -gg(:,2) .* sin(th);
 
-    g = vector3d(x,y,z);
+    g = vector3d(x,y,z) ./ sinTh;
   
     %sVF = ...
     %  y(:, 1) ./ sin(v.theta) .* S2VectorField.rho(v)+ ...
