@@ -13,7 +13,7 @@ function [f,v] = steepestDescent(sF, v, varargin)
 %  pos - @vector3d
 %
 % Options
-%  kmax - number of iterations
+%  iterMax       - number of iterations
 %  numLocal      - number of peaks to return
 %  startingNodes - @vector3d
 %  tolerance     - minimum distance between two peaks
@@ -23,13 +23,10 @@ function [f,v] = steepestDescent(sF, v, varargin)
 % parameters
 res = get_option(varargin,'resolution',0.025*degree);
 tol = get_option(varargin,'tolerance',degree/4);
-interMax  = get_option(varargin, {'kmax','iterMax'}, 30); 
+iterMax  = get_option(varargin, {'kmax','iterMax'}, 30); 
 maxStepSize = get_option(varargin,'maxStepSize',inf);
 maxTravel = get_option(varargin,'maxTravel',inf);
-
-% remove points exactly at the poles
-v = rmOption(v(:),'resolution');
-v = v(v.theta > 0.01 & v.theta < pi-0.01);
+numLocal = get_option(varargin,'numLocal',1);
 
 % possible steplength
 omega = 1.25.^(-30:1:10) * degree; %omega = 1.25.^(-30:1:12) * degree;
@@ -43,9 +40,9 @@ sumOmega = zeros(size(v));
 gradsF = sF.grad;
 
 % actual steepest descent
-for k = 0:interMax
+for k = 0:iterMax
 
-  %d = -normalize(sF.grad(v));
+  % negatove gradient is search direction
   d = -normalize(gradsF.eval(v));
   
   % search line
@@ -73,12 +70,25 @@ for k = 0:interMax
   [~,~,I] = unique(v, 'tolerance', tol,'noSymmetry');
   v = normalize(accumarray(I,v));
   f = accumarray(I,f,[],@mean);
+  id = accumarray(I,id,[],@min);
   sumOmega = accumarray(I,sumOmega,[],@min);
 
   % consider only points that did not walked too far
   f(sumOmega>maxTravel) = [];
   v(sumOmega>maxTravel) = [];
+  id(sumOmega>maxTravel) = [];
   sumOmega(sumOmega>maxTravel) = [];
+
+  % break if we have already numLocal points found
+  if nnz(id==1)>= numLocal &&...
+      max(mink(f(id==1),min(nnz(id),numLocal))) < ...
+      min(f(id>1)) + 10 * min(min(line_f-line_f(:,1)))
+    break
+  end
+  
 end
+
+% ignore points that are still moving
+% f(id>1) = []; v(id>1) = [];
 
 end
