@@ -148,7 +148,10 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %             'X||a*','Y||b', 'Z||C');
     end
     
-    
+    if check_option(varargin,'CS');
+        CS = get_option(varargin,'CS');
+    end
+
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
     % CS1 (sample surface) into CS0 (sample primary),
