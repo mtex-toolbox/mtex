@@ -3,31 +3,31 @@ function varargout = symmetricDecomposition(T,varargin)
 %
 % Syntax
 %   % decompose into symmetric portions
-%   [T1, T2, T3] = symmetricDecomposition(T,cs1,cs2,cs3)
+%   [Tiso, T1, T2, T3] = symmetricDecomposition(T,cs1,cs2,cs3)
 %
 % Input
 %  T  - @tensor
 %  cs1, cs2, cs3 - @symmetry
 %
 % Output
-%  T1, T2, T3  - @tensor
+%  T1, T2, T3 - @tensor
 %
 % Example
 %
-% T = stiffnessTensor([
+%   cs = crystalSymmetry('222',[18 8.8 5.2],'mineral','Enstatite');
+%
+%   T = stiffnessTensor([
 %    225 54 72 0 0 0
 %    54 214 53 0 0 0
 %    72 53 178 0 0 0
 %    0 0 0 78 0 0
 %    0 0 0 0 82 0
-%    0 0 0 0 0 76]);
+%    0 0 0 0 0 76],cs);
 %
-% csHex = crystalSymmetry('622');
-% csTet = crystalSymmetry('422');
-% csOrt = crystalSymmetry('222');
-% csMon = crystalSymmetry('2');
+%   csHex = crystalSymmetry('622','mineral','Enstatite');
+%   csTet = crystalSymmetry('422','mineral','Enstatite');
 %
-% [Tiso, THex, TTet, TOrt, TMon] = symmetricDecomposition(T,csHex,csTet,csOrt,csMon)
+%   [Tiso, THex, TTet, TOrt] = symmetricDecomposition(T,csHex,csTet)
 %
 % References
 %
@@ -39,6 +39,10 @@ function varargout = symmetricDecomposition(T,varargin)
 csList = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
 
 varargout{1} = symmetrise(T,'iso');
+if check_option(varargin,'ensureSPD')
+  alpha = fzero(@(alpha) min(eig(T - alpha * varargout{1})),0);
+  varargout{1} = alpha * varargout{1};
+end
 T = T - varargout{1};
 
 for k = 1:length(csList)
