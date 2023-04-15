@@ -26,7 +26,7 @@ if ~isempty(varargin) && isa(varargin{1},'symmetry')
 end
 
 % use fundamental region for the computation
-if cs.id == 0 ||  check_option(varargin,'oR')
+if cs.id == 0 || cs.id > 45 || check_option(varargin,'oR')
   [ad,omega] = oR.calcAngleDistribution;
   return
 end
