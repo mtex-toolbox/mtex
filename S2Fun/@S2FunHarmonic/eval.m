@@ -35,8 +35,6 @@ f(isnan(v),:) = NaN;
 
 if isalmostreal(f) 
   f = real(f); 
-else
-  disp(1)
 end
 
 % finalize nfsft
