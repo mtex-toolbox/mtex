@@ -22,6 +22,7 @@ methods
       sVF.sF = sF(:);
 
     elseif length(sF) == 2
+      % TODO: Das stimmt nicht: Vgl. Gradient
       f2 = @(y, v) ...
         y(:, 1)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
         y(:, 2).*S2VectorField.theta(v);
