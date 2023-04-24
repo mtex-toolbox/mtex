@@ -25,8 +25,7 @@ classdef symmetry < handle
     LaueRef = []
     properRef = []
   end
-  
-  
+    
   properties (Constant = true)
     pointGroups = pointGroupList % list of all point groups
   end
@@ -211,6 +210,9 @@ classdef symmetry < handle
           rot = {symAxis(lllaxis,3),symAxis(a,2),symAxis(c,2)};
         case 45 % 432
           rot = {symAxis(lllaxis,3),symAxis(ll0axis,2),symAxis(c,4)};
+        case 47 % 532
+          a5 = c + 2/(1+sqrt(5)) * a;
+          rot = {symAxis(a5,5),symAxis(a,2),symAxis(b,2),symAxis(c,2)};
       end
 
       % apply inversion
@@ -223,12 +225,11 @@ classdef symmetry < handle
 
       % store symmetries
       rot = prod(rot{:});
+      if pg.LaueId == 47, rot = unique(rot*rot); end
 
     end
 
-    
   end
-  
   
 end
 

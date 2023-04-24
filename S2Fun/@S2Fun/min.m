@@ -93,7 +93,7 @@ else % detect local or global minima
   value = eval(sF,pos);
 
   % take only local minima as starting points
-  pos = pos(isLocalMinD(value,pos,res0));
+  pos = pos(isLocalMinD(value,pos,res0,varargin{:}));
 
   % turn into Miller if needed
   if exist('sym','var') && isa(sym,'crystalSymmetry'), pos = Miller(pos, sym); end

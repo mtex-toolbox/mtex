@@ -71,7 +71,7 @@ N = rotate(N,rho);
 
 % some special cases
 switch cs.id
-  case 0 % symmetry without name - the code below works only in a very specific case
+  case {0,46,47} % symmetry without name - the code below works only in a very specific case
     %N = cs.subSet(cs.isImproper).axis; % take mirror planes
     %ind = angle(N,vector3d(cs.aAxis))< 45*degree;
     %N(ind) = -N(ind);
