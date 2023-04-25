@@ -14,7 +14,7 @@ function S = sym(T,varargin)
 if T.rank < 2
   S = T;
   return;
-elseif T.rank < 2
+elseif T.rank == 2
   S = 0.5 * (T + T');
   return
 end
