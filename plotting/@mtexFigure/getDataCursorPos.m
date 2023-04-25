@@ -71,7 +71,10 @@ else
 end
 
 if nargin > 1
-  id = ceil(id*maxId/numel(xd));
+	id = mod(id,maxId);
+	if id == 0
+		id = maxId;
+	end
 end
 
 end
