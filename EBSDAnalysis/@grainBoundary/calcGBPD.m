@@ -18,6 +18,15 @@ function GBPD = calcGBPD(gB,ebsd,varargin)
 %
 % See also
 %
+% References
+%
+% * D.M. Saylor, G.S. Rohrer:
+% <https://doi.org/10.1111/J.1151-2916.2002.TB00531.X Determining crystal
+% habits from observations of planar sections> in J. Am. Ceram. Soc.,
+% 85(11):2799–2804, 2002.
+%
+% * 
+
 
 %% step 1: extract data
 
@@ -72,7 +81,5 @@ odf = calcDensity(ori,'kernel',SO3DirichletKernel(bw),'harmonic');
 
 %% step 4: convolution
 GBPD = conv(odf,psi);
-
-%plot(GBPD)
 
 end
