@@ -1,44 +1,12 @@
-function [grains] = load(filepath)
+function [V,poly] = load(filepath)
   % load tesselation data from neper files
-  %
-  % Description
-  %
-  % grain2d.load is a method to load the data from the tesselation files that
-  % <neper.info/ neper> outputs (only 2 dimesional tesselations!)
-  %
-  % Syntax
-  %   grains = grain2d.load('filepath/filename.tess')
-  %
-  % Input
-  %  fname     - filename
-  %
-  % Output
-  %  grain2d - @grain2d
-  %
-  % See also
-  % readTessFile
-
-  %filepath="2dslice.tess";
-
-  [dimension,V,poly,rot,crysym] = readTessFile(filepath);
-
-  if (dimension~=2)
-    error 'format is not 2 - only two dimesional tesselations allowed'
-  end
-
-  CSList={'notIndexed',crystalSymmetry(crysym)};
-  
-  phaseList=2*ones(size(poly));
-
-  grains = grain2d(V,poly,rot,CSList,phaseList);
-
-  % check for clockwise poly's
-  isNeg = (grains.area<0);
-  grains.poly(isNeg) = cellfun(@fliplr, grains.poly(isNeg), 'UniformOutput', false);
+ 
+  [~,V,poly,I_CellsFaces] = readTess3File(filepath)
+  drawMesh(V,poly)
 
 end
 
-function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
+function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
   % function for reading data from nepers tesselation files (.tess)
   %
   % Description
@@ -145,9 +113,6 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
     disp("reading **general ...");
   end
   dimension = fscanf(fid, '%d' , 1);
-  if dimension~=2
-    error 'only two dimensional tesselations supported'
-  end
   type = fscanf(fid, '%s', 1);
   fgetl(fid);                %eliminate the \n character
 
@@ -253,7 +218,7 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
 
   I_FD=zeros(total_number_of_edges,total_number_of_faces);  
   clear poly
-  poly{total_number_of_cells,1}=[];
+  poly{total_number_of_faces,1}=[];
 
   % read in I_FD and poly
   for i=1:total_number_of_faces
@@ -278,6 +243,27 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
   end
 
   clearvars i j sizeFD FD
+  %% **polyhedron
+  skipEmptyLines(fid)
+  buffer=fgetl(fid);
+  if (buffer~=" **polyhedron")
+    error '" **polyhedron" not found'
+  else
+    disp("reading **polyhedron ...");
+  end
+  total_number_of_polyhedra=str2double(fgetl(fid));
+
+  I_CellsFaces=zeros(total_number_of_polyhedra,total_number_of_faces);  
+
+  for i=1:total_number_of_polyhedra
+    buffer=fgetl(fid);
+    CF=split(buffer);
+    currentNumOfFaces=str2double(CF(3));
+    for j=4:currentNumOfFaces+3
+      el=str2double(CF(j));
+      I_CellsFaces(i, abs(el))=sign(el)*1;
+    end
+  end
   %% close file
   fclose(fid);
   clearvars fid buffer
