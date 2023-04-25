@@ -1,6 +1,15 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.9.1 4/2023
+%
+% * Burgers vector
+% * |crystalSymmetry('532')|
+% * |symmetrise(t,'iso')| return the isotropic portion of a tensor
+% * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
+% the symmetric decomposition of a tensor
+%  
+%
 %% MTEX 5.9.0 2/2023
 %
 % *Habit Plane Detection*
