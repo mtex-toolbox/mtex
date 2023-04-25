@@ -1,7 +1,7 @@
-%% S2FunSymmetricFunctions
+%% Symmetry Properties of Orientation Functions
 %
 %%
-% Any <SO3Fun.SO3Fun |SO3Fun|> has a left and a right symmetry.
+% Every <SO3Fun.SO3Fun |SO3Fun|> has a left and a right symmetry.
 % For further information on symmetries look at <CrystalSymmetries.html
 % crystal symmetries>, <SpecimenSymmetry.html specimen symmetries> and, 
 % <QuasiCrystals.html Quasi symmetries>.
@@ -47,7 +47,7 @@ SO3F.SLeft = specimenSymmetry('432')
 % to change it. We also have to symmetries this function.
 
 SO3F2 = SO3FunHarmonic(rand(1e3,1))
-SO3F.fhat(1:10)
+SO3F2.fhat(1:10)
 
 %%
 
