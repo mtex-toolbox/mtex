@@ -18,7 +18,6 @@ function [grains] = load(filepath)
   % See also
   % readTessFile
 
-  %filepath="2dslice.tess";
 
   [dimension,V,poly,rot,crysym] = readTessFile(filepath);
 
