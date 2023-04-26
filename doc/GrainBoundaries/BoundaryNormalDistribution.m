@@ -19,7 +19,7 @@
 
 mtexdata csl
 
-[grains,ebsd.grainId] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd);
 
 grains = smooth(grains,10)
 
@@ -34,6 +34,7 @@ hold off
 % misorientation angle larger then 57 degree and those with a smaller
 % misorientation angle.
 
+gB = grains.boundary('indexed');
 cond = gB.misorientation.angle > 57 * degree;
 
 plot(ebsd,ebsd.orientations)
