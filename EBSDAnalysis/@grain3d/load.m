@@ -1,39 +1,39 @@
-function [V,poly] = load(filepath)
+function [V,E,I_EF,I_CF] = load(filepath)
   % load tesselation data from neper files
  
-  [~,V,poly,I_CellsFaces] = readTess3File(filepath)
-  drawMesh(V,poly)
+  [V, E, I_EF, I_CF] = readTess3File(filepath);
 
 end
 
-function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
+function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
   % function for reading data from nepers tesselation files (.tess)
   %
   % Description
   %
-  % readTessFile is a helping function used from the grain2d.load method to
+  % readTess3File is a helping function used from the grain3d.load method to
   % read the data from the tesselation files that
-  % <neper.info/ neper> outputs (only 2 dimesional tesselations!)
+  % <neper.info/ neper> outputs (only 3 dimesional tesselations. For 2 
+  % dimensional tesselations see readTessFile)
   %
   % Syntax
-  %   [V,poly,oriMatrix,crysym] = readTessFile('filepath/filename.tess')
+  %   [V, E, I_EF, I_CellsFaces] = readTess3File('filepath/filename.tess')
   %
   % Input
-  %  fname     - filepath
+  %  filepath     - filepath
   %
   % Output
-  %  V - matrix[total_number_of_vertices,2] of vertices(x,y)
-  %  poly - cell array of the polyhedrons, clockwise or against the clock
-  %  oriMatrix - matrix[total_number_of_cells,4] containing the quaternion values
-  %  crysym - crysym
+  %  V          - list of vertices(x,y,z)
+  %  E          - list of edges as indices to V
+  %  I_EF       - adjacency matrix edges - faces
+  %  I_CF       - adjacency matrix cells - faces
   %
   % Example
   %
   %   
-  %   [V,poly,oriMatrix,crysym] = readTessFile('fname')
+  %   [V, E, I_EF, I_CellsFaces] = readTess3File('allgrains.tess')
   %
   % See also
-  % grain2d.load
+  % grain3d.load grain2d.load
   %
 
   %{
@@ -48,20 +48,14 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
         - string
       -total_number_of_cells
         - int
-      -cell_ids
-        - vector
       -crysym
-        - see output, string 
-      -seedsTable('seed_id', 'seed_x', 'seed_y', 'seed_z', 'seed_weight')
-        - table 
+        - string 
+      -seeds
+        - total_number_of_cells x 5 matrix (seed_id,seed_x,seed_y,seed_z,seed_weight) 
       -quaternion_descriptor
         - string (1x1 cell)
       -oriMatrix
-        - see output 
-      -verticesTable('ver_id','ver_x', 'ver_y','ver_z','ver_state')
-
-      -edgesTable('egde_id', 'vertex_1', 'vertex_2', 'edged_state')
-  
+        - matrix[total_number_of_cells,4] containing the quaternion values 
       -total_number_of_cells
         - int
       -total_number_of_vertices
@@ -70,14 +64,16 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
         - int
       -total_number_of_faces
         - int
-      -I_FD
-        - incidence matrix edges - grains/face
+      -I_EF
+        - adjecency matrix edges - faces
       -V
         - see output
-      -F
+      -E
       	- list of edges as indices to V
       -poly
-        - see output
+        - obsolet
+      -I_CellsFaces
+        - adjecency matrix cells - faces
   
   %}
   
@@ -113,6 +109,9 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
     disp("reading **general ...");
   end
   dimension = fscanf(fid, '%d' , 1);
+  if dimension~=3
+    error 'for 2 dimensional tess files use readTessFile()'
+  end
   type = fscanf(fid, '%s', 1);
   fgetl(fid);                %eliminate the \n character
 
@@ -129,9 +128,6 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
   while (1)
     switch strtrim(buffer)
       case "*id"
-        disp ("reading  *id ...")
-          cell_ids=fscanf(fid,'%u', inf);
-          buffer=fgetl(fid);
       case "*crysym"
         disp ("reading  *crysym ...");
         buffer=fgetl(fid);
@@ -140,10 +136,9 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
           buffer=fgetl(fid);
         end
       case {"*seed","*seed (id x y z weigth )"}
-        disp ("reading  *seed ...");                    %output as table
-        seedsTable=fscanf(fid,'%u %f %f %f %f ', [5 inf]);
-        seedsTable=array2table(seedsTable');
-        seedsTable.Properties.VariableNames(1:5)={'seed_id', 'seed_x', 'seed_y', 'seed_z', 'seed_weight'};
+        disp ("reading  *seed ...");
+        seeds=fscanf(fid,'%u %f %f %f %f ', [5 inf]);
+        seeds=seeds';
         buffer=fgetl(fid);
       case "*ori"
         disp ("reading  *ori ...");
@@ -176,11 +171,8 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
 
   %% **vertex
   total_number_of_vertices=str2double(fgetl(fid));
-  verticesTable=fscanf(fid,'%u %f %f %f %d ',[5 inf]);
-  verticesTable=array2table(verticesTable');          
-  verticesTable.Properties.VariableNames(1:5)={'ver_id','ver_x', 'ver_y','ver_z','ver_state'};
-
-  V=table2array(verticesTable(:,2:4));
+  V=fscanf(fid,'%u %f %f %f %d ',[5 inf])';
+  V=V(:,2:4);
 
   %% **edge
   skipEmptyLines(fid)
@@ -193,18 +185,14 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
   skipEmptyLines(fid)
   total_number_of_edges=str2double(fgetl(fid));
   skipEmptyLines(fid)
-  % reading in edges
-  varTypes={'uint32', 'uint32', 'uint32', 'int32'};
-  varNames={'egde_id', 'vertex_1', 'vertex_2', 'edged_state'};
-  edgesTable=table('Size', [0 4], 'VariableTypes', varTypes , 'VariableNames',varNames);
-  for i=0:total_number_of_edges-1                   %Hier Kanten einlesen Zeilenweise zur Tabelle hinzufüg
-    buffer=textscan(fid,'%u %u %u %d', 1);
-    edgesTable=[edgesTable;buffer];
-    %fgetl(fid);
+
+  E=zeros(total_number_of_edges,2);
+  for i=1:total_number_of_edges                  
+    buffer=fgetl(fid);
+    buffer=split(buffer);
+    E(i,:)=str2double(buffer(3:4));
   end
 
-  F=table2array(edgesTable(:, 2:3));
-  clearvars varNames varTypes
   %% **face
   skipEmptyLines(fid)
   buffer=fgetl(fid);
@@ -216,33 +204,34 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
   skipEmptyLines(fid)
   total_number_of_faces=str2double(fgetl(fid));
 
-  I_FD=zeros(total_number_of_edges,total_number_of_faces);  
-  clear poly
-  poly{total_number_of_faces,1}=[];
+  I_EF=zeros(total_number_of_edges,total_number_of_faces);  
+  %poly{total_number_of_faces,1}=[];
 
-  % read in I_FD and poly
+  % read in I_EF
   for i=1:total_number_of_faces
 
-    buffer=fgetl(fid);
-    buffer=split(buffer);
-
+    %buffer=...
+      fgetl(fid);
+    %buffer=split(buffer);
+    %{
     for j=4:3+str2num(cell2mat(buffer(3)))
       poly{i}=[poly{i,1} str2double(buffer(j))];
     end
     poly{i}=[poly{i,1} str2double(buffer(4))];
+    %}
 
     buffer=fgetl(fid);
-    FD=split(buffer);
-    sizeFD=str2double(FD(2));
+    EF=split(buffer);
+    sizeFD=str2double(EF(2));
     for j=3:sizeFD+2
-      I_FD(abs(str2double(FD(j))), i)=1;
+      el=str2double(EF(j));
+      I_EF(abs(el), i)=sign(el)*1;
     end
 
     fgetl(fid);
     fgetl(fid);
   end
 
-  clearvars i j sizeFD FD
   %% **polyhedron
   skipEmptyLines(fid)
   buffer=fgetl(fid);
@@ -266,7 +255,6 @@ function [dimension,V, poly, I_CellsFaces] = readTess3File(filepath)
   end
   %% close file
   fclose(fid);
-  clearvars fid buffer
 end 
 
 %%
@@ -280,7 +268,6 @@ function skipEmptyLines(fid)
   end
   fseek(fid, i, "bof");
 
-  clearvars i skipEmptyLinesBuffer
 end
 
 %%
