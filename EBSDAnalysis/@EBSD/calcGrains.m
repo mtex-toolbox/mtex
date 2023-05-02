@@ -130,12 +130,15 @@ end
 
 % compute mean orientation and GOS
 doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
+abcd = zeros(length(doMeanCalc),4);
 for k = 1:numel(doMeanCalc)
   qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
   mq = mean(qind,'robust');
-  meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
+  abcd(k,:) = [mq.a mq.b mq.c mq.d];
   GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
 end
+
+meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
 
 % save 
 grains.prop.GOS = GOS;
