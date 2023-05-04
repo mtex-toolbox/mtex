@@ -162,6 +162,11 @@ classdef crystalShape
       cS = crystalShape(Miller({1,0,0},{0,0,2},cs,'hkil'));
       
     end
+
+    function cS= tetr(cs)
+        % a very simple tetragonal crystal
+        cS = crystalShape(Miller({1,0,0},{0,0,1},cs,'hkl'));
+    end
             
     function demo
       
