@@ -16,12 +16,20 @@ isTr = job.isTransformed;
 childOri = job.grainsPrior(isTr).meanOrientation;
 parentOri = job.grains('id',job.mergeId(isTr)).meanOrientation;
 
-% compute variantId and packetId
-[vId, pId] = calcVariantId(parentOri,childOri,job.p2c,varargin{:});
+% % compute variantId and packetId
+% [vId, pId] = calcVariantId(parentOri,childOri,job.p2c,varargin{:});
+
+%% AAG ADDED
+% compute variantId, packetId and bainId
+[vId, pId,bId] = calcVariantId(parentOri,childOri,job.p2c,varargin{:}); 
+%% AAG ADDED
 
 % store it in the job class
 job.variantId(isTr) = vId;
 job.packetId(isTr) = pId;
+%% AAG ADDED
+job.bainId(isTr) = bId;
+%% AAG ADDED
 
 % adjust parent and child orientations such that the misorientation is
 % closest to the given OR job.p2c
