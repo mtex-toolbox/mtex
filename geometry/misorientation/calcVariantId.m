@@ -25,7 +25,8 @@ function [childId, packetId,bainId] = calcVariantId(parentOri,childOri,p2c,varar
 % Output
 %  variantId - variant id
 %  packetId  - packet id
-%
+%  bainId    - bain id % AAG ADDED
+
 
 % all child variants
 childVariants  = variants(p2c, parentOri);
@@ -47,7 +48,7 @@ if nargout >= 2 % AAG EDIT
   isMiller = [];
   for ii = 1:length(tmp); isMiller(ii) = ~isempty(getClass(tmp(ii),'Miller')); end
 
-  if sum(isMiller) == 2 || sum(isMiller) == 4 % definition given % AAG EDIT
+  if sum(isMiller) >= 2 % definition given % AAG EDIT
     ind = find(isMiller);
     h1 = tmp{ind(1)};  
     h2 = tmp{ind(2)};
@@ -73,7 +74,7 @@ if nargout == 3
   isMiller = [];
   for ii = 1:length(tmp); isMiller(ii) = ~isempty(getClass(tmp(ii),'Miller')); end
   
-  if sum(isMiller) == 2 || sum(isMiller) == 4 % definition given % AAG EDIT
+  if sum(isMiller) == 4 % definition given % AAG EDIT
     ind = find(isMiller);
     h1 = tmp{ind(3)};  
     h2 = tmp{ind(4)};
