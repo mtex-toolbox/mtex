@@ -1,19 +1,19 @@
-function [childId, packetId,bainId] = calcVariantId(parentOri,childOri,p2c,varargin)
-% compute variantIds and packetId from parent / child orientation pairs
+function [childId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,varargin)
+% compute variantIds, packetId and bainId from parent / child orientation pairs
 %
 % Syntax
 %
 %   variantId = calcVariantId(parentOri,childOri,p2c)
 %
-%   % compute packetIds
-%   [variantId,packetId] = calcVariantId(parentOri,childOri,p2c,...
+%   % compute packetIds & bainIds
+%   [variantId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,...
 %     {hklParent,hklChild})
 %
 %   % packet determination
 %   hklParent = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
 %   hklChild  = Miller(1,0,1,p2c.SS);
 %
-%   [variantId,packetId] = calcVariantId(parentOri,childOri,p2c,...
+%   [variantId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,...
 %     {hklParent,hklChild})
 %
 % Input
