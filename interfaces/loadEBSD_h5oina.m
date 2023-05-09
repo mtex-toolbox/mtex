@@ -1,4 +1,4 @@
-function ebsd = loadEBSD_h5oina(fname,varargin)
+function [ebsd] = loadEBSD_h5oina(fname,varargin)
 % read HKL *.h5oina hdf5 file
 % documented here: https://github.com/oinanoanalysis/h5oina/blob/master/H5OINAFile.md
 % note that Matlab < R2021b does not handle hdf5 v1.10 and one needs to use hdf5format_convert
@@ -17,8 +17,10 @@ all = h5info(fname);
 % task: find all groups called EBSD, therein header and PHASE
 EBSD_index = {};
 EDS_index = {};
+Image_index = {};
 n = 1;
 m=1;
+p=1;
 %search for EBSD data
 for i = 1:length(all.Groups) % map site on sample
     if ~isempty(all.Groups(i).Groups) % data on map site ('EBSD, EDS, Electron iamge etc)
@@ -30,6 +32,10 @@ for i = 1:length(all.Groups) % map site on sample
             if contains(all.Groups(i).Groups(j).Name,'EDS')
                 EDS_index{m} = [i j];
                 m = m+1;
+            end
+            if contains(all.Groups(i).Groups(j).Name,'Electron Image')
+                Image_index{p} = [i j];
+                p = p+1;
             end
             
         end
@@ -61,6 +67,15 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         
     end
     
+    if ~isempty(Image_index) & Image_index{k}(1) == EBSD_index{k}(1)
+        
+        % Image header
+        Image_header = all.Groups(Image_index{k}(1)).Groups(Image_index{k}(2)).Groups(2);
+        
+        % Image data
+        Image_data= all.Groups(Image_index{k}(1)).Groups(Image_index{k}(2)).Groups(1).Groups;
+        
+    end
     
     % read all EBSD data
     EBSDdata = struct;
@@ -89,7 +104,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read all datsets
         for est=1:length(allEDS)
             for thing = 1:length(allEDS{est})
-                sane_name = regexprep(allEDS{est}(thing).Name,{' |-|,|:|%|~|#' char(945) char(946)},{'_' 'a' 'b'});
+                sane_name = regexprep(allEDS{est}(thing).Name,' |-|,|:|%|~|#','_');
                 EDSdata.(sane_name)=double(h5read(fname,[EDSPATH{est} '/' allEDS{est}(thing).Name]));
             end
         end
@@ -106,6 +121,44 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         end
         
     end
+
+     if ~isempty(Image_index) & Image_index{k}(1) == EBSD_index{k}(1)
+         %read image data
+        Imagedata = struct;
+        % are there multiple datasets?
+        allImage = {Image_data.Datasets};
+        ImagePATH = {Image_data.Name};
+        %read all datsets
+        for est=1:length(allImage)
+            for thing = 1:length(allImage{est})
+                sane_name = regexprep(allImage{est}(thing).Name,' |-|,|:|%|~|#','_');
+                Imagedata.(sane_name)=double(h5read(fname,[ImagePATH{est} '/' allImage{est}(thing).Name]));
+            end
+        end
+        
+        %read image header
+        Imageheader = struct;
+        for thing = 1:length(Image_header.Datasets)
+            sane_name = regexprep(Image_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+            content = h5read(fname,[Image_header.Name '/' Image_header.Datasets(thing).Name]);
+            if any(size(content) ~=1) & isnumeric(content)
+                content = reshape(content,1,[]);
+            end
+            Imageheader.(sane_name) = content;
+        end
+
+        % try to gridify the images (read axis ij)
+        try
+            for est=1:length(allImage)
+                for thing = 1:length(allImage{est})
+                    sane_name = regexprep(allImage{est}(thing).Name,' |-|,|:|%|~|#','_');
+                    %assume image is read across rows first
+                    Imagedata.(sane_name)=permute(reshape(Imagedata.(sane_name)(:),[Imageheader.X_Cells Imageheader.Y_Cells]),[2 1]);
+                end
+            end
+        catch
+        end
+     end
     
     EBSDphases = struct;
     phases = all.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(2).Groups(1);
@@ -144,14 +197,11 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
-            'Mineral',char(EBSDphases.(pN).Phase_Name));
+            'Mineral',char(EBSDphases.(pN).Phase_Name)); %TODO - check and rename if default phases have overlapping names?
         %             'X||a*','Y||b', 'Z||C');
     end
     
-    if check_option(varargin,'CS');
-        CS = get_option(varargin,'CS');
-    end
-
+    
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
     % CS1 (sample surface) into CS0 (sample primary),
@@ -180,9 +230,19 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         opt.(eds_names{j}) = EDSdata.(eds_names{j});
         end
     end
+
         
     ebsdtemp = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
     ebsdtemp.opt.Header = EBSDheader;
+
+     % if available, add Image data
+    if exist('Imagedata','var')
+        image_names = fieldnames(Imagedata);
+        for j =1 :length(image_names)
+        ebsdtemp.opt.Images.(image_names{j}) = Imagedata.(image_names{j});
+        end
+        ebsdtemp.opt.Images.Header = Imageheader;
+    end
     
     if length(EBSD_index) > 1
         ebsd{k} = ebsdtemp;
@@ -192,11 +252,6 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     
 end
 
-warning(['Please make sure that you correct for the very probable ' ...
-         'inconsitencies between coordinate systems. '  ...
-         'Example:' newline ...
-         'rot = rotation.byAxisAngle(yvector,180*degree)' newline ...
-         'ebsd = rotate(ebsd,rot,''keepXY'')' newline]);
 
 
 end
