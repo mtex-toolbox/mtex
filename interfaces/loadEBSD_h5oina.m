@@ -6,7 +6,9 @@ function [ebsd] = loadEBSD_h5oina(fname,varargin)
 
 % TODO
 % 1) Test if EBSDheader.Specimen_Orientation_Euler does what it's supposed
-%    to do -> see below
+%    to do -> see below. <-- looks like this is in some datasets stored in
+%    the 'Data Processing' header. Should probably make a user option flag
+%    to say whether to import as CS1 or CS0 (currently defaults to CS0)
 % 2) find a solution if multiple ebsd datasets are contained, export to a
 %    cell?
 % 3) decide what header data to use and how to display it? Fix display for
@@ -18,9 +20,11 @@ all = h5info(fname);
 EBSD_index = {};
 EDS_index = {};
 Image_index = {};
+Processing_index = {};
 n = 1;
 m=1;
 p=1;
+q=1;
 %search for EBSD data
 for i = 1:length(all.Groups) % map site on sample
     if ~isempty(all.Groups(i).Groups) % data on map site ('EBSD, EDS, Electron iamge etc)
@@ -36,6 +40,11 @@ for i = 1:length(all.Groups) % map site on sample
             if contains(all.Groups(i).Groups(j).Name,'Electron Image')
                 Image_index{p} = [i j];
                 p = p+1;
+            end
+
+            if contains(all.Groups(i).Groups(j).Name,'Data Processing')
+                Processing_index{q} = [i j];
+                q = q+1;
             end
             
         end
@@ -77,6 +86,17 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         
     end
     
+    if ~isempty(Processing_index) & Processing_index{k}(1) == EBSD_index{k}(1)
+        
+        % Processing header
+        Processing_header = all.Groups(Processing_index{k}(1)).Groups(Processing_index{k}(2)).Groups(3);
+        
+        % Processing data
+        Processing_data= all.Groups(Processing_index{k}(1)).Groups(Processing_index{k}(2)).Groups(2);
+        
+    end
+
+
     % read all EBSD data
     EBSDdata = struct;
     for thing = 1:length(EBSD_data.Datasets)
@@ -126,7 +146,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
          %read image data
         Imagedata = struct;
         % are there multiple datasets?
-        allImage = {Image_data.Datasets};
+        allImage = {Image_data.Datasets}; %TODO - group FSE and SE images better
         ImagePATH = {Image_data.Name};
         %read all datsets
         for est=1:length(allImage)
@@ -158,6 +178,33 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             end
         catch
         end
+     end
+
+     if ~isempty(Processing_index) & Processing_index{k}(1) == EBSD_index{k}(1)
+         %read EDS data
+         Processingdata = struct;
+         % are there multiple datasets?
+         allProcessing = {Processing_data.Datasets};
+         ProcessingPATH = {Processing_data.Name};
+         %read all datsets
+         for est=1:length(allProcessing)
+             for thing = 1:length(allProcessing{est})
+                 sane_name = regexprep(allProcessing{est}(thing).Name,' |-|,|:|%|~|#','_');
+                 Processingdata.(sane_name)=double(h5read(fname,[ProcessingPATH{est} '/' allProcessing{est}(thing).Name]));
+             end
+         end
+
+         %read EDS header
+         Processingheader = struct;
+         for thing = 1:length(Processing_header.Datasets)
+             sane_name = regexprep(Processing_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+             content = h5read(fname,[Processing_header.Name '/' Processing_header.Datasets(thing).Name]);
+             if any(size(content) ~=1) & isnumeric(content)
+                 content = reshape(content,1,[]);
+             end
+             Processingheader.(sane_name) = content;
+         end
+
      end
     
     EBSDphases = struct;
@@ -201,6 +248,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %             'X||a*','Y||b', 'Z||C');
     end
     
+
     
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
@@ -208,11 +256,17 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     % CS2 into CS1 should be absolute orientation
     % TODO! make sure those rotations are correctly applied, possibly
     % EBSDheader.Specimen_Orientation_Euler
+    % Maybe this is sometimes contained in the 'Data Processing' part too?
+
+    if ~isempty(Processing_index) && nnz(Processingheader.Specimen_Orientation_Euler)>0
+        rc = rotation.byEuler(double(Processingheader.Specimen_Orientation_Euler*degree)); % what definition? Bunge?
+    else
+        rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler*degree));
+    end
     
-    rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler*degree)); % what definition? Bunge?
     
     % set up EBSD data
-    rot = rc*rotation.byEuler(EBSDdata.Euler');
+    rot = rc*rotation.byEuler(EBSDdata.Euler'); %TODO - set up rc* or no rc* option flag - choose either CS0 (physical sample) and CS1 (SEM image surface) coordinate systems?
     phase = EBSDdata.Phase;
     opt=struct;
     opt.x=EBSDdata.X;
