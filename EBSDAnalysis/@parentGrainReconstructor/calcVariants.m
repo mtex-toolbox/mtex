@@ -1,5 +1,5 @@
 function calcVariants(job,varargin)
-% compute variants and packet Ids
+% compute variants, packet Ids and bain Ids
 %
 % Syntax
 %   job.calcVariants
