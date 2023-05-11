@@ -3,12 +3,23 @@ function [ebsd] = loadEBSD_h5oina(fname,varargin)
 % documented here: https://github.com/oinanoanalysis/h5oina/blob/master/H5OINAFile.md
 % note that Matlab < R2021b does not handle hdf5 v1.10 and one needs to use hdf5format_convert
 % (https://github.com/HDFGroup/hdf5) on the input file to prevent Matlab from fatally crashing
-
+%
+% Syntax
+%   % import EBSD data in acquisition surface coordinates (CS1)
+%   ebsd = loadEBSD_h5oina('ebsdData.h5oina');
+%
+%   % import EBSD data in sample primary coordinates (CS0)
+%   ebsd = loadEBSD_h5oina('ebsdData.h5oina','CS0');
+%
+% Options
+%   CS0 - use sample primary coordinates (default - use acquisition
+%   coordinates CS1)
+% 
+% 
 % TODO
 % 1) Test if EBSDheader.Specimen_Orientation_Euler does what it's supposed
 %    to do -> see below. <-- looks like this is in some datasets stored in
-%    the 'Data Processing' header. Should probably make a user option flag
-%    to say whether to import as CS1 or CS0 (currently defaults to CS0)
+%    the 'Data Processing' header, radians, Bunge convention
 % 2) find a solution if multiple ebsd datasets are contained, export to a
 %    cell?
 % 3) decide what header data to use and how to display it? Fix display for
@@ -244,7 +255,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
-            'Mineral',char(EBSDphases.(pN).Phase_Name)); %TODO - check and rename if default phases have overlapping names?
+            'Mineral',char(EBSDphases.(pN).Phase_Name)); 
         %             'X||a*','Y||b', 'Z||C');
     end
     
@@ -255,18 +266,21 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     % CS1 (sample surface) into CS0 (sample primary),
     % CS2 into CS1 should be absolute orientation
     % TODO! make sure those rotations are correctly applied, possibly
-    % EBSDheader.Specimen_Orientation_Euler
-    % Maybe this is sometimes contained in the 'Data Processing' part too?
-
+    % EBSDheader.Specimen_Orientation_Euler <-- now done
+    % This is (sometimes?) contained in the 'Data Processing' header
     if ~isempty(Processing_index) && nnz(Processingheader.Specimen_Orientation_Euler)>0
-        rc = rotation.byEuler(double(Processingheader.Specimen_Orientation_Euler*degree)); % what definition? Bunge?
+        % Specimen_Orientation_Euler angles are in radians, Bunge convention
+        rc = rotation.byEuler(double(Processingheader.Specimen_Orientation_Euler));
     else
-        rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler*degree));
+        rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler));
     end
-    
-    
+
     % set up EBSD data
-    rot = rc*rotation.byEuler(EBSDdata.Euler'); %TODO - set up rc* or no rc* option flag - choose either CS0 (physical sample) and CS1 (SEM image surface) coordinate systems?
+    if check_option(varargin,'CS0')
+        rot = rc*rotation.byEuler(EBSDdata.Euler'); 
+    else
+        rot = rotation.byEuler(EBSDdata.Euler'); %don't rotate - keep CS1 (default - acquisition surface0
+    end
     phase = EBSDdata.Phase;
     opt=struct;
     opt.x=EBSDdata.X;
