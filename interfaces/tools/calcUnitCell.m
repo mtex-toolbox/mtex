@@ -35,8 +35,11 @@ if dxy==0
   dxy= (ly+ly)/2;
 end
 
-% reduce data set
-if length(xy)>10000, xySmall = subSample(xy,10000); else xySmall=xy; end
+if length(xy)>10000 
+  xySmall = subSample(xy,10000); 
+else
+  xySmall = xy;
+end
 
 % remove dublicates from the coordinates
 xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);

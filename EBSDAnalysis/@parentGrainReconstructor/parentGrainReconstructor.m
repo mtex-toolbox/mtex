@@ -29,6 +29,8 @@ classdef parentGrainReconstructor < handle
 %  childGrains  - not yet reconstructed child grains
 %  variantId    - reconstructed variant ids
 %  packetId     - reconstructed packet ids
+%  bainId       - reconstructed bain ids % AAG ADDED
+
 %
 % References
 %
@@ -78,6 +80,7 @@ classdef parentGrainReconstructor < handle
     
     variantId       %
     packetId        %
+    bainId          % AAG ADDED
     parentId        %
   end
   
@@ -210,24 +213,37 @@ classdef parentGrainReconstructor < handle
       end
     end
     
+    %% AAG ADDED
+    function out = get.bainId(job)   
+      
+        if isfield(job.grainsPrior.prop,'bainId')
+        out = job.grainsPrior.prop.bainId;
+      else
+        out = NaN(size(job.grainsPrior));
+      end
+    end
+    %% AAG ADDED
+
     function out = get.parentId(job)
-      
       out = nan(size(job.grainsPrior));
-      
       ind = job.isTransformed;
-      
       
       cOri = job.grainsPrior(ind).meanOrientation;
       pOri = job.grains(ind).meanOrientation;
 
       [~,out(ind)] = min(angle_outer(inv(cOri) .* pOri, ...
         variants(job.p2c, 'parent'),'noSym2'),[],2);
-
     end
     
     function set.packetId(job,id)
       job.grainsPrior.prop.packetId = id;
     end
+
+    %% AAG ADDED
+    function set.bainId(job,id)
+      job.grainsPrior.prop.bainId = id;
+    end
+    %% AAG ADDED
     
     function out = get.variantId(job)
       
