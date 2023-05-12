@@ -35,7 +35,6 @@ if dxy==0
   dxy= (ly+ly)/2;
 end
 
-% reduce data set
 if length(xy)>10000 
   xySmall = subSample(xy,10000); 
 else
