@@ -23,6 +23,10 @@ function varargout = gridify(ebsd,varargin)
 %  ebsd - @EBSDsquare, @EBSDhex data on a regular grid
 %  newId - closest regular grid point for every non regular grid point
 %
+% Options
+%  extent - extend of gridded map
+%  unitCell - unit cell of the gridded map
+%
 % Example
 %
 %   mtexdata twins
