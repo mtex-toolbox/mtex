@@ -12,6 +12,10 @@ function f = eval(SO3F,ori,varargin)
 %  f - odf(ori)
 %
 
+% if isa(ori,'orientation')
+%   ensureCompatibleSymmetries(SO3F,ori)
+% end
+
 % find neighbouring points
 % get resolution of the grid
 % values are the known function values on the grid points

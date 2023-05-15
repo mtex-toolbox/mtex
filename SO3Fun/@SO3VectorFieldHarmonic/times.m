@@ -10,12 +10,16 @@ function SO3VF = times(SO3VF1,SO3VF2)
 %   
 % Input
 %  SO3VF1, SO3VF2 - @SO3VectorField
-%  a - double
+%  a - double, @vector3d
 %  SO3F - @SO3Fun
 %
 % Output
 %  SO3VF - @SO3VectorField
 %
+
+if isa(SO3VF2,'vector3d')
+  SO3VF2 = SO3VF2.xyz.';
+end
 
 if isnumeric(SO3VF1) || isa(SO3VF1,'SO3Fun')
   SO3VF = SO3VF2;

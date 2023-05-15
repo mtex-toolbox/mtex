@@ -66,8 +66,9 @@ classdef EBSDsquare < EBSD
       [x,y] = ind2sub(size(ebsd),ind);
     end
 
-    function ebsd = gridify(ebsd,varargin)
+    function [ebsd,newId] = gridify(ebsd,varargin)
       % nothing to do :)
+      newId = (1:length(ebsd)).';
     end
            
     % --------------------------------------------------------------

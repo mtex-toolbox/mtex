@@ -1,6 +1,10 @@
 function f = eval(SO3F,rot,varargin)
 % evaluate an odf at rotation rot
 
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(SO3F,rot)
+% end
+
 ASym = symmetrise(SO3F.A);
 
 f = zeros(size(rot));

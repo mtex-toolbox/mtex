@@ -3,13 +3,14 @@ function [ebsdGrid,newId] = squarify(ebsd,varargin)
 % set up the new unit cell
 uc = get_option(varargin,'unitCell',ebsd.unitCell);
 if isnumeric(uc), uc = vector3d(uc(:,1),uc(:,2),0); end
-
 if length(uniquetol(uc.x,0.01)) ~= 4 || length(uniquetol(uc.y,0.01)) ~= 4
   uc = ebsd.dPos/2 * vector3d([1 1 -1 -1],[1 -1 -1 1],0);
 end
 
+ext = get_option(varargin,'extent',ebsd.extent);
+
 % generate regular grid
-ext = ebsd.extend;
+prop = ebsd.prop;
 dx = max(uc.x)-min(uc.x);
 dy = max(uc.y)-min(uc.y);
 

@@ -40,12 +40,7 @@ function [values,modes] = max(SO3F,varargin)
 % See also
 % SO3Fun/min
 
-% find multiple modes
-if check_option(varargin,'numLocal')
-  [values, modes] = maxLocal(SO3F,varargin{:});
-  return
-end
-
+% max(SO3F1, SO3F2)
 if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   SO3F2 = varargin{1};
   ensureCompatibleSymmetries(SO3F,SO3F2);
@@ -54,137 +49,86 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
     values = SO3FunHarmonic(values,'bandwidth', ...
         min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));  
   end
-  modes=[];
-  return
-end
+  
+elseif ( nargin > 1 ) && ( isnumeric(varargin{1}) ) % max(SO3F1, SO3F2)
 
-if ( nargin > 1 ) && ( isnumeric(varargin{1}) )
   f = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
   if isa(SO3F,'SO3FunHarmonic')
     values = SO3FunHarmonic(f,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
   end
-  modes=[];
-  return
-end
-
-
-% initial resolution
-res = get_option(varargin,'resolution',5*degree);
-
-% target resolution
-targetRes = get_option(varargin,'accuracy',0.25*degree);
-
-% initial seed
-ori = get_option(varargin,'startingNodes');
   
-if isempty(ori)
-  ori = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res);
-  ori = orientation(ori);
-end
+else
 
-% first evaluation
-f = eval(SO3F,ori,varargin{:});
+  % initial resolution
+  res0 = get_option(varargin,'resolution',5*degree);
 
-% extract 20 largest values
-oriNextSeed = ori(f>=quantile(f(:),-20));
+  % target resolution
+  targetRes = get_option(varargin,'accuracy',0.25*degree);
 
-% TODO: check for constant function or two much orientations
-while res > targetRes
-
-  % new grid
-  ori = [oriNextSeed(:).';...
-    localOrientationGrid(SO3F.CS,SO3F.SS,res,'center',oriNextSeed,'resolution',res/4)];
-    
-  % evaluate ODF
-  f = eval(SO3F,ori,varargin{:});
+  % initial seed
+  S3G = get_option(varargin,'startingNodes');
   
-  % extract largest values
-  if sum(f(:)>=quantile(f(:),0))>1e4 %&& var(f(:))==0
-    warning(['The function has lots off possible minima. Thatswhy iterative gridify folds. ' ...
-      'Possibly the function is constant.'])
-    break
+  if isempty(S3G)
+    S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0);
   end
-  oriNextSeed = ori(f>=quantile(f(:),0));
+  S3G = reshape(S3G,[],1);
+
+  % evaluate function on grid
+  f = eval(SO3F,S3G,varargin{:});
+
+  % take only local minima as starting points
+  ind = isLocalMinD(-f,S3G,1.5*res0,varargin{:});
+  modes = S3G(ind);
+  values = f(ind);
+
+  % the total walking distance
+  sumOmega = zeros(size(modes));
+
+  numLocal = get_option(varargin, 'numLocal',1);
+
+  % local refinement
+  res = res0;
+  while res > targetRes
+    res = res / 1.25;
+
+    % neighborhood search
+    S3Glocal = localOrientationGrid(crystalSymmetry,crystalSymmetry,2*res,'resolution',res/2);
+    newModes = (S3Glocal * modes).';
+    f = eval(SO3F,newModes,varargin{:});
   
-  res = res / 2; 
-end
+    if numLocal == 1
 
-[values,ind] = max(f(:));
-modes = ori(ind);
+      [values,id] = max(f(:));
+      modes = newModes(id);
+        
+    else
+      [values,id] = max(f,[],2);
+      modes = newModes(sub2ind(size(newModes),(1:length(modes)).',id));
 
-end
+      % keep track of the walking distance
+      omega = S3Glocal.angle;
+      sumOmega = sumOmega + omega(id);
 
-% -------------------------------------------------------
+      % maybe we can reduce the number of points a bit
+      [~,~,I] = unique(modes, 'tolerance', 1.5*res0,'noSymmetry');
+      modes = normalize(accumarray(I,modes));
+      values = accumarray(I,values,[],@mean);
+      sumOmega = accumarray(I,sumOmega,[],@min);
 
-function [values,modes] = maxLocal(SO3F,varargin)
-
-% initial resolution
-res = get_option(varargin,'resolution',5*degree);
-
-% target resolution
-targetRes = get_option(varargin,'accuracy',0.25*degree);
-
-% initial seed
-S3G = get_option(varargin,'startingNodes');
-  
-if isempty(S3G)
-  S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res);
-end
-
-f = eval(SO3F,S3G,varargin{:});
-
-% eliminate zeros
-del = f>0;
-qa = S3G(del);
-f = f(del);
-
-% the search grid
-S3Gs = subGrid(S3G,del);
-T = find(S3Gs,qa,res*1.5);
-
-[f, ndx] = sort(f,'descend');
-qa = qa(ndx);
-
-T = T(ndx,:);
-T = T(:,ndx);
-T = T -speye(size(T));
-
-% look for maxima
-nn = numel(f);
-ls = false(1,nn);
-ids = false(1,nn);
-
-[ix, iy] = find(T);
-cx = [0 ; find(diff(iy))];
-
-num = get_option(varargin,'numLocal',1);
-
-for k=1:length(cx)-1
-  id = ix(cx(k)+1:cx(k+1));
-  ls(id) = true;  
-  ids(k) = ls(:,k)==0;
-  
-  if nnz(ids)>=num, break,end
-end
-
-% the retrived maximas
-q = qa(ids);
-values = f(ids);
-
-%centering of local max
-for k=1:length(q)
-  res2 = res/2;
-  while res2 > targetRes
-    res2 = res2/2;
-    S3G = localOrientationGrid(SO3F.CS,SO3F.SS,res2*4,'center',q(k),'resolution',res2);
-    f = eval(SO3F,S3G,varargin{:});
-    
-    [mo, ndx] = max(f);
-    q(k) = S3G(ndx);
-    values(k) = mo;
+      % consider only points that did not walked too far
+      values(sumOmega>5*res0) = [];
+      modes(sumOmega>5*res0) = [];
+      sumOmega(sumOmega>5*res0) = [];
+    end
   end
-end
 
-modes = orientation(q,SO3F.CS,SO3F.SS);
+  [modes,~,I] = unique(modes, 'tolerance', 1.5*res0);
+  values = accumarray(I,values,[],@mean);
 
+  % format output
+  [values, I] = sort(values,'descend');
+  numLocal = min(length(values), numLocal);
+  values = values(1:numLocal);
+  modes = modes(I(1:numLocal));
+  
 end

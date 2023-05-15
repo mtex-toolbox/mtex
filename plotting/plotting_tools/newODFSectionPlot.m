@@ -22,13 +22,15 @@ else
   default = 'axisAngle';
 end
 
-switch lower(get_flag(varargin,{'phi2','phi1','gamma','sigma','axisAngle','pf','ipf','omega','Phi'},default))
+switch lower(get_flag(varargin,{'phi2','phi1','gamma','alpha','sigma','axisAngle','pf','ipf','omega','Phi'},default))
   case 'phi2'
     oS = phi2Sections(CS,SS,varargin{:});
   case 'phi1'
     oS = phi1Sections(CS,SS,varargin{:});
   case 'gamma'
     oS = gammaSections(CS,SS,varargin{:});
+  case 'alpha'
+    oS = alphaSections(CS,SS,varargin{:});
   case 'sigma'
     oS = sigmaSections(CS,SS,varargin{:});    
   case 'axisangle'

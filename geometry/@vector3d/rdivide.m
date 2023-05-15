@@ -1,6 +1,11 @@
 function v = rdivide(v1,d)
 % scalar division v ./ s
 
+if isa(d,'SO3VectorField') || isa(d,'S2VectorField')
+  v = (1./d) .* v1;
+  return
+end
+
 if isnumeric(d)
   v = v1;
   v.x = v1.x ./ d;

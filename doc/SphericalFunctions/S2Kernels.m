@@ -72,7 +72,7 @@ plot(SO3F)
 % The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
 % 
-% $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{kappa}$$ 
+% $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{\kappa}$$ 
 % 
 % for $t\in[0,1]$. The de la Vallee Poussin kernel additionaly has the 
 % unique property that for a given halfwidth it can be described exactly 
@@ -84,12 +84,12 @@ plot(SO3F)
 % depending on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its 
 % finite Legendre polynomial expansion
 %
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{L} a_n(\kappa) \mathcal P_{n}(t)$$.
+% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{L} a_n(\kappa) \mathcal P_{n}(t).$$
 %
 % We obtain the Legendre coefficients $a_n(\kappa)$ by $a_0=1$, 
 % $a_1=\frac{\kappa}{2+\kappa}$ and the three term recurence relation
 %
-% $$ (\kappa+l+2) a_{l+1} = -(2l+1)\,a_l + (\kappa-l+1)\,a_{l-1}$$.
+% $$ (\kappa+l+2) a_{l+1} = -(2l+1)\,a_l + (\kappa-l+1)\,a_{l-1}.$$
 %
 % Lets construct two of them.
 
@@ -123,7 +123,7 @@ legend('halfwidth = 15°','halfwidth = 20°')
 %
 % It is defined by its Legendre series
 %
-% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal P_{n}(t)$$.
+% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal P_{n}(t).$$
 %
 % Lets construct two of them.
 

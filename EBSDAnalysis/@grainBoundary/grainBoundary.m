@@ -193,7 +193,7 @@ classdef grainBoundary < phaseList & dynProp
     function I_FG = get.I_FG(gB)
       ind = gB.grainId>0;
       iF = repmat(1:size(gB.F,1),1,2);
-      I_FG = sparse(iF(ind),gB.grainId(ind),true);
+      I_FG = logical(sparse(iF(ind),gB.grainId(ind),1));
     end   
     
     function A_F = get.A_F(gB)

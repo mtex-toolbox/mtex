@@ -17,6 +17,9 @@ function SO3VF = rdivide(SO3VF1, SO3VF2)
 %  SO3VF - @SO3VectorFieldHarmonic
 %
 
+if isa(SO3VF2,'vector3d')
+  SO3VF2 = SO3VF2.xyz.';
+end
 
 if isnumeric(SO3VF1)
   SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1 ./ SO3VF2.eval(rot),SO3VF2.SRight,SO3VF2.SLeft);

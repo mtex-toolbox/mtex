@@ -17,9 +17,9 @@ if nargin == 1, fak = 2; end
 if length(ebsd.unitCell) == 4
   
   % generate regular grid
-  ext = ebsd.extend;
+  ext = ebsd.extent;
   dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);
-  dy = max(ebsd.unitCell.x)-min(ebsd.unitCell.y);
+  dy = max(ebsd.unitCell.y)-min(ebsd.unitCell.y);
   
   % detect position within grid
   iy = round((ebsd.pos.y - ext(3))/dy);
@@ -32,7 +32,7 @@ elseif length(ebsd.unitCell) == 6 % hexgrid
   
   
   % generate regular grid
-  ext = ebsd.extend;
+  ext = ebsd.extent;
   dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);
   dy = max(ebsd.unitCell.y)-min(ebsd.unitCell.y);
   

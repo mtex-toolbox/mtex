@@ -7,6 +7,10 @@ classdef stiffnessTensor < tensor
       sT = sT@tensor(varargin{:},'rank',4);
       sT.doubleConvention = false;
       
+      if ~sT.isSymmetric, warning('Tensor is not symmetric!'); end
+      lambda = eig(sT);
+      if ~all(lambda(:) > 0), warning('Tensor is not positive definite'); end
+
     end
   end
   

@@ -12,7 +12,7 @@ function N = perp(v, varargin)
 %  N - antipodal @vector3d
 %
 
-if any(isnan(v)), v = v.subSet(v.isnan); end
+if any(isnan(v)), v = v.subSet(~v.isnan); end
 
 [N,~] = eig(v);
 N = N.subSet(1);

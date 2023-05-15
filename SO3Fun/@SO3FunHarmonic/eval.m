@@ -14,6 +14,12 @@ function f =  eval(F,rot,varargin)
 % Output
 %   f - double
 %
+% See also
+% SO3FunHarmonic/evalV2 SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(F,rot)
+% end
 
 if ~check_option(varargin,'nfsoft')
   f = evalV2(F,rot,varargin{:});
@@ -56,16 +62,22 @@ else
 end
 if isempty(plan)
 
+  % TODO: Heuristic for selection of oversampling Factor sigma and cut-off Parameter m
+
   % 2^4 -> nfsoft-represent
-  % 2^2 -> nfsoft-use-DPT
+  % 2^2 -> nfsoft-use-DPT instead of FPT
   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
-  nfsoft_flags = bitor(2^4,4)+1;
-  % nfft cutoff - 4
-  % fpt kappa - 1000
-  % fftw_size -> 2*ceil(1.5*L)
+    nfsoft_flags = bitor(2^4,4)+1;
+    nfft_flags = 0;
+  % nfft_cutoff parameter 
+    m = 4;
+  % oversampling factor
+    sigma = 3;
+    fftw_size = 2*ceil(sigma*L);
+  % fpt kappa 
+    kappa = 1000;
   % initialize nfsoft plan
-  plan = nfsoftmex('init',L,length(rot),nfsoft_flags,0,4,1000,...
-      2*ceil(1.5*L));
+  plan = nfsoftmex('init',L,length(rot),nfsoft_flags,nfft_flags,m,kappa,fftw_size);
 
   % set rotations in Euler angles (nodes)
   nfsoftmex('set_x',plan,Euler(rot,'nfft').');

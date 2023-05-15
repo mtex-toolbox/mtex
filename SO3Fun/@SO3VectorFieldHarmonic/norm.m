@@ -11,6 +11,6 @@ function SO3F = norm(SO3VF)
 %  SO3F - @SO3FunHarmonic
 %
 
-SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF,SS);
+SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS);
 
 end

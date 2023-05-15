@@ -19,13 +19,6 @@ function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 %  angle      - maximum component width used for volume computation
 %  exact      - do not dismiss very small modes at the end
 %
-% Example
-%
-%   %find the local maxima of the <SantaFe.html SantaFe> ODF
-%   mode = calcModes(SantaFe)
-%   plotPDF(SantaFe,Miller(0,0,1,mode.CS))
-%   annotate(mode)
-%
 % See also
 % SO3Fun/max
 
@@ -67,7 +60,7 @@ finished = false(size(modes));
 G = SO3F.grad;
 
 for k = 1:maxIter
-  %progress(k,maxIter,' finding ODF components: ');
+  progress(k,maxIter,' finding ODF components: ');
 
   % gradient
   g = normalize(G.eval(modes(~finished)),1);

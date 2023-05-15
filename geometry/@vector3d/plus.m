@@ -1,5 +1,10 @@
 function v1 = plus(v1,v2)
-% poitwise addition
+% pointwise addition
+
+if isa(v2,'SO3VectorField') || isa(v2,'S2VectorField')
+  v1 = v2 + v1;
+  return
+end
 
 try %#ok<TRYNC>
   v1.x = v1.x+v2.x;

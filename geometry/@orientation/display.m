@@ -31,9 +31,9 @@ if isMisorientation(o) && length(o) == 1 && angle(o,round2Miller(o))<1e-3
 
 elseif length(o) < 20 && ~isempty(o)
   Euler(o);
-elseif ~getMTEXpref('generatingHelpMode')
+elseif ~getMTEXpref('generatingHelpMode') && ~isempty(o)
   disp(' ')
-  setappdata(0,'data2beDisplayed',o);
-  disp('  <a href="matlab:Euler(getappdata(0,''data2beDisplayed''))">show Euler angles</a>')
+  s = setappdata(0,'data2beDisplayed',o);
+  disp(['  <a href="matlab:Euler(getappdata(0,''',s,'''))">show Euler angles</a>'])
   disp(' ')
 end

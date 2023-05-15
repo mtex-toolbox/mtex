@@ -1,5 +1,5 @@
 classdef FourierComponent
-% This class is obsolet since MTEX 6.0. Use the class @SO3FunHarmonic instead.
+% This class is obsolet since MTEX 5.9. Use the class @SO3FunHarmonic instead.
 % Anyway the class is preserved, so that saved @ODFs can be loaded.
   
 methods (Static = true, Hidden=true)
@@ -10,8 +10,14 @@ methods (Static = true, Hidden=true)
     if isempty(fhat), fhat = 0; end
     if isempty(CS), CS = crystalSymmetry; end
     if isempty(SS), SS = specimenSymmetry; end
-    odf = SO3FunHarmonic(fhat,CS,SS);
-    warning('The Fourier coefficients are normalized since MTEX Version 5.0.')
+    odf = SO3FunHarmonic(fhat);
+    % We use L2-normalized Wigner-D functions since MTEX Version 5.9.
+    odf = L2normalizeFourierCoefficients(odf);
+    % The ODFs has been real valued before MTEX verison 5.9.
+    odf.isReal = 1;
+    % do not symmetrise odf by defining the symmetries.
+    odf.CS = CS;
+    odf.SS = SS;
   end
 end
 

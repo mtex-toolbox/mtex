@@ -100,9 +100,12 @@ if isa(SO3F2,'S2Fun')
           sF.fhat(l^2+1:(l+1)^2) ./ sqrt(2*l+1);
   end
 
-  if isa(SO3F2,'S2FunHarmonicSym')
-    ensureCompatibleSymmetries(SO3F1,SO3F2);
-    SO3F = S2FunHarmonicSym(fhat,SO3F1.SLeft);
+  % we need that SO3F1.SRight == SO3F.Sym
+  if numProper(SO3F1.SLeft) == 1 
+    SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
+  elseif isa(SO3F2,'S2FunHarmonicSym')
+    ensureCompatibleSymmetries(SO3F1,SO3F2);    
+    SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   else
     warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...
       'right symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])

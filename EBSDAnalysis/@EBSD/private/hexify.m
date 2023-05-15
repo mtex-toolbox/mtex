@@ -18,7 +18,7 @@ prop = ebsd.prop;
 % number of rows and columns and offset
 % 1 means second row / column has positiv offset
 % -1 means second row / column has negativ offset
-ext = ebsd.extend;
+ext = ebsd.extent;
 
 if isRowAlignment
   

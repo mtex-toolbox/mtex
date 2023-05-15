@@ -4,9 +4,9 @@
 %
 % In this part we deal with multivariate functions of the form
 %
-% $$ f\colon \mathcal SO(3) \to \bf R^n $$.
+% $$ f\colon \mathcal{SO}(3) \to \mathbb R^n. $$
 %
-% * the structure of the nodes (@rotations) is always interpreted as a column vector
+% * the structure of the nodes |@rotations| is always interpreted as a column vector
 % * the node index is the first dimension
 % * the dimensions of the |SO3FunHarmonic| itself is counted from the second dimension
 %
@@ -47,7 +47,7 @@ nodes = nodes(:);
 y = [SO3Fun.dubna(nodes), (nodes.a.*nodes.b).^(1/4)];
 nodes.CS = SO3Fun.dubna.CS;
 %%
-% Now the actual command to get a 2x1 |SO3F1| of type 
+% Now the actual command to get a (2x1) |SO3F1| of type $~$
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> is
 SO3F1 = SO3FunHarmonic.approximation(nodes, y)
 
@@ -64,12 +64,12 @@ SO3F2 = SO3FunHarmonic.interpolate(nodes,y(:,1))
 %
 % If we have a function handle for the function we could create a
 % |SO3FunHarmonic| via quadrature. At first let us define a function handle
-% which takes <rotation.rotation.html |rotation|> as an argument and returns
+% which takes $~$ <rotation.rotation.html |rotation|> as an argument and returns
 % double:
 
 f = @(rot) [exp(rot.a+rot.b+rot.c)+50*(rot.b-cos(pi/3)).^3.*(rot.b-cos(pi/3) > 0), rot.a, rot.b, rot.c];
 %% 
-% Now we call the quadrature command to get 4x1 |SO3F3| of type 
+% Now we call the quadrature command to get (4x1) |SO3F3| of type $~$
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
 SO3F3 = SO3FunHarmonic.quadrature(f, 'bandwidth', 50,SO3F1.CS)
 

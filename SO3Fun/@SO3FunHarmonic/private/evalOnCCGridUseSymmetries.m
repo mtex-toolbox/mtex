@@ -1,6 +1,6 @@
 function [values,nodes,weights] = evalOnCCGridUseSymmetries(SO3F,N,SRight,SLeft,varargin)
 % This funtion evaluates a rotational function handle efficiently on clenshaw
-% curtis quadrature nodes by using right and left symmetry prperties. 
+% curtis quadrature nodes by using right and left symmetry properties. 
 % Hence we evaluate the function handle on a fundamental region concerning 
 % the symmetries.
 % Rotations around Z axis yields periodic function values on the Clenshaw 

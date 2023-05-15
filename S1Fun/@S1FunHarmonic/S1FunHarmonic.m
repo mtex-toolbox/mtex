@@ -43,8 +43,7 @@ methods
   end
   
   function out = get.antipodal(sF)
-    sF = truncate(sF);
-    out = (prod(norm(sF - sF.even) < 1e-5*norm(sF)) > 0);
+    out = norm(sF.fhat(1+rem(sF.bandwidth,2):2:end)) < 1e-5*norm(sF.fhat);
   end
   
   function sF = set.antipodal(sF,value)
@@ -64,6 +63,13 @@ methods
   function n = numel(sF)
     n = prod(size(sF)); %#ok<PSIZE>
   end
+
+  function fun = uminus(fun)
+
+    fun.fhat = -fun.fhat;
+
+  end
+
 
 end
 

@@ -26,7 +26,7 @@ end
 
 % construct an equispaced axes / angle grid
 rotAngle = res/2:res:maxAngle;
-qId = quaternion();
+qId = quaternion.id;
 for i = 1:length(rotAngle)
   
   dres = acos(max((cos(res/2) - cos(rotAngle(i)/2)^2)/...

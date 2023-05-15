@@ -37,6 +37,11 @@ methods
   end
   
   function f = eval(SO3F,rot,varargin)
+
+%     if isa(rot,'orientation')
+%       ensureCompatibleSymmetries(SO3F,rot)
+%     end
+
     s = size(rot);
     rot = rot(:);
     f = SO3F.fun(rot);

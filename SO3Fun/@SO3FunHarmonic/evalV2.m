@@ -5,15 +5,17 @@ function f = evalV2(SO3F,rot,varargin)
 % NFFT at the end.
 %
 % Syntax
-%   f = evalV2(F,v)
+%   f = evalV2(F,rot)
 %
 % Input
 %   F - @SO3FunHarmonic
-%   v - @rotation interpolation nodes
+%   rot - @rotation (evaluation nodes)
 %
 % Output
 %   f - double
 %
+% See also
+% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
 persistent keepPlanNFFT;
 
@@ -54,19 +56,26 @@ end
 
 if isempty(plan)
 
-  % initialize nfft plan
-  %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
-  NN = 2*N+2;
-  if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
-  FN = 2*ceil(1.5*NN);
-  FN2 = 2*ceil(1.5*N2);
+  % TODO: Heuristic for selection of oversampling Factor sigma and cut-off Parameter m
+
+  % nfft size
+    NN = 2*N+2;
+    if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
   %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-  fftw_flag = int8(64);
-  plan = nfftmex('init_guru',{3,N2,NN,NN,M,FN2,FN,FN,4,int8(0),fftw_flag});
+    fftw_flag = int8(64);
+    nfft_flag = int8(0);
+  % nfft_cutoff parameter 
+    m = 4;
+  % oversampling factor
+    sigma = 3;
+    fftw_size = 2*ceil(sigma/2*NN);
+    fftw_size2 = 2*ceil(sigma/2*N2);
+  % initialize nfft plan
+  plan = nfftmex('init_guru',{3,N2,NN,NN,M,fftw_size2,fftw_size,fftw_size,m,nfft_flag,fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,abg);
@@ -90,28 +99,36 @@ for k = 1:length(SO3F)
   if SO3F.isReal
 
     % ind = mod(N+1,2);
-    % create ghat -> k x l x j
+    % create ghat -> k x j x l
     %   k = -N+1:N
-    %   l =    0:N+ind    -> use ghat(-k,-l,-j)=conj(ghat(k,l,j))        (*)
-    %   j = -N+1:N        -> use ghat(k,l,-j)=(-1)^(k+l)*ghat(k,l,j)     (**)
+    %   j = -N+1:N      -> use ghat(k,-j,l) = (-1)^(k+l)*ghat(k,j,l)    (*)
+    %   l =    0:N+ind  -> use ghat(-k,-j,-l) = conj(ghat(k,j,l))      (**)
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N 
     % Therfore we use ind in 2nd dimension to get even number of fourier coefficients
     % The additional indices produce 0-columns in front of ghat
-    % flags: 2^0 -> fhat are the fourier coefficients of a real valued function
-    %        2^1 -> make size of ghat even
-    %        2^2 -> use L_2-normalized Wigner-D functions
-    flags = 2^0+2^1+2^2;
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
+    % flags: 2^0 -> use L_2-normalized Wigner-D functions
+    %        2^1 -> make size of result even
+    %        2^2 -> fhat are the fourier coefficients of a real valued function
+    %        2^4 -> use right and left symmetry
+    flags = 2^0+2^1+2^2+2^4;
+    sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+%     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^0+2^1+2^2);
 
   else
 
-    % create ghat -> k x l x j
+    % create ghat -> k x j x l
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N
-    % we can use (**) again to speed up
-    % flags: 2^1 -> make size of ghat even
-    %        2^2 -> use L_2-normalized Wigner-D functions
-    flags = 2^1+2^2;
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags);
+    % we can use (*) again to speed up
+    % flags: 2^0 -> use L_2-normalized Wigner-D functions
+    %        2^1 -> make size of result even
+    %        2^4 -> use right and left symmetry
+    flags = 2^0+2^1+2^4;
+    sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
+         min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
+    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+%     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^1+2^2);
 
   end
 
@@ -123,7 +140,7 @@ for k = 1:length(SO3F)
 
   % get function values from plan
   if SO3F.isReal
-    % use (*) and shift summation in 2nd index
+    % use (**) and shift summation in 2nd index
     f(:,k) = 2*real((exp(-2*pi*1i*ceil(N/2)*abg(1,:).')).*(nfftmex('get_f',plan)));
   else
     f(:,k) = nfftmex('get_f',plan);

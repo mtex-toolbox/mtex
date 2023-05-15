@@ -1,6 +1,6 @@
 classdef (InferiorClasses = {?SO3FunHarmonic,?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3VectorFieldHandle < SO3VectorField
-% a class represeneting a vector field on SO(3)
+% a class representing a vector field on SO(3)
   
 properties
   fun
@@ -22,6 +22,10 @@ methods
   end
   
   function f = eval(SO3VF,ori,varargin)
+%     if isa(ori,'orientation')
+%       ensureCompatibleSymmetries(SO3VF,ori)
+%     end
+
     f = SO3VF.fun(ori);
   end
   

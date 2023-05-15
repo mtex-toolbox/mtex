@@ -6,8 +6,8 @@ function out = isBoundary(grains,ext)
 %   % decide by missing outside data points
 %   out = isBoundary(grains)
 %
-%   % deside by extend of the ebsd map
-%   out = isBoundary(grains,ebsd.extend)
+%   % deside by extent of the ebsd map
+%   out = isBoundary(grains,ebsd.extent)
 %
 % Input
 %

@@ -4,7 +4,10 @@ function ensureCompatibleSymmetries(SO3F1,varargin)
 %
 % By default the Left and Right symmetries of both functions have to
 % coincide. By convolution of SO3Fun's the Left symmetry of one function
-% have to coincide with the right symmetry of the oter function.
+% have to coincide with the right symmetry of the other function.
+%
+% Evaluation of some SO3Fun in some orientation also needs suitable
+% symmetries.
 %
 % Syntax
 %   ensureCompatibleSymmetries(SO3F1,SO3F2)
@@ -60,17 +63,22 @@ if check_option(varargin,'conv_Left')
   em = SO3F1.SRight ~= SO3F2.SLeft;
 else
   % compare all symmetrys in case of +, -, *, /, cat, subsasgn
-  em = (SO3F1.SRight ~= SO3F2.SRight) || (SO3F1.SLeft ~= SO3F2.SLeft);
+  em = (SO3F1.CS ~= SO3F2.CS) || (SO3F1.SS ~= SO3F2.SS);
 end
 
 
-% error message
+s = 'The symmetries are not compatible. (Calculations with @SO3Fun''s needs suitable symmetries.)';
+
+% if check_option(varargin,'SO3VectorField')
+%   s = 'The symmetries are not compatible. (Calculations with @SO3VectorField''s needs suitable symmetries.)';
+% end
+
+if isa(SO3F2,'orientation')
+  s = 'The symmetries are not compatible. (Evaluating SO3Fun''s at orientations needs suitable symmetries.)';
+end
+
 if em
-%   if check_option(varargin,'SO3VectorField')
-%     error('Calculations with @SO3VectorField''s are not supported if the symmetries are not compatible.')
-%   else
-    error('Calculations with @SO3Fun''s are not supported if the symmetries are not compatible.')
-%   end
+  error(s)
 end
 
 end

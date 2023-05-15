@@ -46,7 +46,7 @@ plot(min(2*SO3F1,SO3F2),'sigma');
 % <SO3Fun.exp.html |exp|> or <SO3Fun.log.html |log|> of an |SO3Fun|.
 %
 % For a given function $f\colon SO(3) \to \mathbb C$ we get a second function
-% $g\colon SO(3) \to \mathbb C$ where $g(R) = f(R^{-1})$ by the method 
+% $g\colon SO(3) \to \mathbb C$ where $g( \bf{R}) = f(\bf R^{-1})$ by the method 
 % <SO3Fun.inv.html |inv|>, i.e.
 
 g = inv(SO3F1)
@@ -73,13 +73,8 @@ g.eval(inv(R))
 plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
 
 % compute and mark the global maximum
-[maxvalue, maxnodes] = max(2 * SO3F1 + SO3F2);
+[maxvalue, maxnodes] = max(2 * SO3F1 + SO3F2,'numLocal',2);
 annotate(maxnodes)
-
-% compute and mark the local minimum
-[minvalue, minnodes] = min(2 * SO3F1 + SO3F2,'numLocal',2);
-annotate(minnodes)
-
 
 %% Integration
 % The surface integral of a spherical function can be computed by either
@@ -96,7 +91,7 @@ sum(SO3F1) / ( 8 * pi^2 )
 % A practical application of integration is the computation of the
 % $L^2$-norm which is defined for a $SO(3)$ function $f$ by
 %
-% $$ \lVert f \rVert_2 = \left( \frac1{8\pi^2} \int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
+% $$ |f|_2 = \left( \frac{1}{8\pi^2} \int_{SO(3)} | f(\bf{R}) |^2 \,\mathrm d \bf{R} \right)^{1/2} $$
 %
 % accordingly we can compute it by
 
@@ -129,23 +124,6 @@ plot(G,'color','black','linewidth',2,'resolution',5*degree)
 hold off
 
 %%
-% Now we can use the function <SO3Fun.steepestDescent.html |steepestDescent|>
-% to compute local maxima and minima of an @SO3Fun.
-
-plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
-ori = orientation.id;
-
-% compute and mark the global maximum
-[maxnode, maxvalue] = steepestDescent(2 * SO3F1 + SO3F2,ori)
-annotate(maxnodes)
-
-% compute and mark the local minimum
-[minnode, v] = steepestDescent( -(2 * SO3F1 + SO3F2),ori)
-minvalue = -v
-annotate(minnodes)
-
-
-%%
 % We observe long arrows at the positions of big changes in intensity and
 % almost invisible arrows in regions of constant intensity.
 %
@@ -158,5 +136,3 @@ rot = rotation.byEuler(30*degree,0*degree,90*degree,'Bunge')
 
 % plot the rotated function
 plot(rotate(2 * SO3F1 + SO3F2,rot),'sigma')
-
-

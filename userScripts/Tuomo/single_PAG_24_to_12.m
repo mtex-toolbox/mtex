@@ -49,7 +49,7 @@ job.calcParentFromVote;
 nextAxis
 plot(job.grains(cond_grains & job.grains.phase == 2),...
     job.grains(cond_grains & job.grains.phase == 2).meanOrientation)
-lims = job.ebsd.extend;
+lims = job.ebsd.extent;
 xlim([lims(1) lims(2)])
 ylim([lims(3) lims(4)])
 
@@ -111,7 +111,7 @@ hold on
 plot(G,'XData',x(unique([i1;j1])),'YData',y(unique([i1;j1])),...
     'EdgeColor',colors,'NodeColor','none','NodeLabel',{})
 hold on
-lims = job.ebsd.extend;
+lims = job.ebsd.extent;
 text(lims(2)-40,lims(3)+15, {[num2str(numIters(k)) ' iterations'],...
     [num2str(length(z)) ' nodes'],...
     [num2str(length(i1)) ' edges']}, 'HorizontalAlignment','left',...

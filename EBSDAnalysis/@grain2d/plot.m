@@ -183,7 +183,7 @@ if check_option(varargin,'DisplayName')
   legend('-DynamicLegend','location','NorthEast');
 end
 
-% keep track of the extend of the graphics
+% keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 if isNew
   

@@ -25,7 +25,7 @@ function [odf,interface,options] = load(fname,varargin)
 %  odf - @SO3Fun
 %
 % See also
-% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
+% SO3Fun.load loadODF_generic
 
 warning('The class ODF and also ODF.load is depreciated. Please use instead SO3Fun.load');
 

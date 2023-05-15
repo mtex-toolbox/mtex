@@ -2,7 +2,7 @@
 %
 %% Theory
 % For an orientation distribution function (ODF) $f \colon \mathrm{SO}(3)
-% \to R$ the pole densiry function $P_{\vec h}$ with respect to a fixed
+% \to R$ the pole density function $P_{\vec h}$ with respect to a fixed
 % crystal direction $\vec h$ is spherical function defined as the integral
 %
 % $$ P_{\vec h}(\vec r) = \int_{g \vec h = \vec r} f(g) dg $$

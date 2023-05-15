@@ -125,18 +125,20 @@ for pId = grains.indexedPhasesId
   q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{pId},meanRotation(g(ndx)));
 end
 
-
-% TODO: this can be done more efficiently using accumarray
-
 % compute mean orientation and GOS
-doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
-for k = 1:numel(doMeanCalc)
-  qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
-  mq = mean(qind,'robust');
-  meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
-  GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
+if 0
+  doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
+  abcd = zeros(length(doMeanCalc),4);
+  for k = 1:numel(doMeanCalc)
+    qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
+    mq = mean(qind,'robust');
+    abcd(k,:) = [mq.a mq.b mq.c mq.d];
+    GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
+  end
+  meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
+else
+  [meanRotation, GOS] = accumarray(grainId,q,'robust');
 end
-
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
@@ -217,7 +219,8 @@ end
       if length(param) == 1, param = [param,4]; end
   
       A_Do = mclComponents(A_Do,param(1),param(2));
-      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd)) & ~A_Do;
+      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
+      A_Db(A_Do~=0) = false;
   
     else
   
