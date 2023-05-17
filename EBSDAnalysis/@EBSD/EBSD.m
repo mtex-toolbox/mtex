@@ -54,14 +54,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     rotations = rotation  % rotations without crystal symmetry
     pos = vector3d        % positions of the EBSD measurements
   end
-  
-  % general properties
-  properties
-    scanUnit = 'um'       % unit of the x,y coordinates
-    unitCell = vector3d   % cell associated to a measurement
-    N = zvector           % normal direction of the measurement plane
-  end
-   
+
   properties (Dependent = true)
     xyz           %
     x             %
@@ -70,9 +63,21 @@ classdef EBSD < phaseList & dynProp & dynOption
     orientations  % rotation including symmetry
     grainId       % id of the grain to which the EBSD measurement belongs to
     mis2mean      % misorientation to the mean orientation of the corresponding grain   
-    dPos          % spacing of the positions
   end
-  
+
+  % general properties
+  properties
+    scanUnit = 'um'       % unit of the x,y coordinates
+    unitCell = vector3d   % cell associated to a measurement
+    N = zvector           % normal direction of the measurement plane
+  end
+   
+  properties (Dependent = true)
+    dPos          % spacing of the positions
+    rot2Plane  % rotation to xy plane
+    plottingConvention % plotting convention
+  end
+
   properties (Access = protected)
     A_D = []        % adjecency matrix of the measurement points
   end
@@ -244,6 +249,13 @@ classdef EBSD < phaseList & dynProp & dynOption
       d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
     end
 
+    function rot = get.rot2Plane(ebsd)
+      rot = rotation.map(ebsd.N,vector3d.Z);
+    end
+
+    function pC = get.plottingConvention(ebsd)
+      pC = ebsd.pos.plottingConvention;
+    end
 
 %     function dx = get.dx(ebsd)
 %       uc = ebsd.unitCell;

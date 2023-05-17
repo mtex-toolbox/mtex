@@ -64,7 +64,8 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-[V,F,I_FD] = spatialDecomposition([ebsd.pos.x(:), ebsd.pos.y(:)],ebsd.unitCell,varargin{:});
+pos = ebsd.rot2Plane * ebsd.pos;
+[V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.rot2Plane*ebsd.unitCell,varargin{:});
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -106,6 +107,9 @@ if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
   mergeQuadrupleGrains;
 end
 
+% rotate grains back
+grains = inv(ebsd.rot2Plane) * grains;
+
 % calc mean orientations, GOS and mis2mean
 % ----------------------------------------
 
@@ -146,10 +150,11 @@ mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
-    variantId = get_option(varargin,'variants');   
-    grains.prop.variantId = variantId(firstD,1);
-    grains.prop.parentId = variantId(firstD,2);
+  variantId = get_option(varargin,'variants');
+  grains.prop.variantId = variantId(firstD,1);
+  grains.prop.parentId = variantId(firstD,2);
 end
+
 
 
 
