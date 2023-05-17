@@ -6,7 +6,7 @@
 % plessitic microstructure of the Emsland iron meteorite. Plessite is the
 % greek description for filling iron and occurs as remaining volumes
 % between the already transformed kamacite (bcc in meteorites) rims.
-% Plessite regionons are commonly surrounded by a very thin taenite (fcc)
+% Plessite regions are commonly surrounded by a very thin taenite (fcc)
 % ribbons. The filling iron contains as major phases again bcc and fcc,
 % where the orientation of fcc practically always indicates the orientation
 % of the formerly huge fcc grain in the planetary body which can easily
@@ -172,15 +172,24 @@ mean(angle(mori,p2cIter)) ./degree
 % solely from the child to child misorientations fits the actual
 % orientation relationship equaly well. 
 %
-%% Classification of child variants
+%% Classification of child variants by variant Ids
 %
 % Once we have determined parent orientations and a parent to child
-% orientation relationship we may proceed further by classifying the child
-% orientations into different variants. This is computed by the command
+% orientation relationship, we may proceed further by classifying the child
+% orientations into different variants.
+%
+% A variant refers to a specific orientation or crystallographic arrangement of 
+% the child martensite phase within the context of the original parent orientation.
+% Depending on the operative orientation relationship and parent-child crystal 
+% symmetries, a single parent phase orientation results in multiple child phase 
+% orientations (i.e.- variants). The variant Id is a convinient way to label or 
+% identify a specific variant within the child martensitic microstructure.
+%
+% Child variant Ids are computed by the command
 % <calcVariantId.html |calcVariantId|>.
 
 % compute for each child orientation a variantId
-[variantId, packetId] = calcVariantId(parenOri,childOri,p2cIter,'morito');
+[variantId, packetId, bainId] = calcVariantId(parenOri,childOri,p2cIter,'morito');
 
 % colorize the orientations according to the variantID
 color = ind2color(variantId,'ordered');
@@ -192,9 +201,22 @@ plotPDF(childOri,color,h_bcc,'MarkerSize',5);
 
 plot(childOri,color,'axisAngle')
 
-%%
+
+%% Classification of child variants by crystallographic packet Ids
+%
 % A more important classification is the seperation of the
-% variants into packets. 
+% variants into their various crystallographic packets. 
+%
+% A crystallographic packet Id is used to identify a packet of variants with 
+the same habit plane (i.e. - the interfacial plane between the parent and child 
+% crystal lattices along which the atomic rearrangements occur during martensitic 
+transformation). 
+%
+% Within a crystallographic packet, the individual variants are related to each other 
+through specific symmetries. The crystallographic packet Id is a means of identifying 
+and distinguishing a specific packet of variants that share the same habit plane and 
+exhibit related crystallographic orientations.
+
 
 color = ind2color(packetId);
 plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);
@@ -221,8 +243,54 @@ drawNow(gcm)
 % orientations are distinguished by which of the symmetrically equivalent
 % (111) austenite axes is aligned to the (110) martensite axis.
 %%
-% We may also use the packet color to distinguish different Martensite
+% We may also use the packet Id color to distinguish different martensite
 % packets in the EBSD map.
 
 plot(grains('Fe'),color)
 
+
+%% Classification of child variants by Bain group Ids
+%
+% Another important classification is the seperation of the
+% variants into their various Bain groups. 
+%
+% The concept of Bain groups is based on the Bain notation.The latter provides 
+% a concise system of representing the transformation path and the geometric
+% correspondence between the crystal structures of the parent austenite and 
+% child martensite phases. Each Bain group is labeled with a unique Bain 
+% group Id, which represents a distinct combination of orientation relationships 
+% between parent and child phases. 
+% Bain group Ids serve as a convenient identifier to categorize, classify and 
+% differentiate the various transformation paths that may occur during martensitic 
+% transformation based on their crystallographic characteristics.
+
+
+color = ind2color(bainId);
+plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);
+
+nextAxis(1)
+hold on
+opt = {'MarkerFaceColor','none','MarkerEdgeColor','k','linewidth',3};
+plot(parenOri * h_fcc(1).symmetrise ,opt{:})
+xlabel('\((100)\)','Color','red','Interpreter','latex')
+
+nextAxis(2)
+plot(parenOri * h_fcc(3).symmetrise ,opt{:})
+xlabel('\((111)\)','Color','red','Interpreter','latex')
+
+nextAxis(3)
+plot(parenOri * h_fcc(2).symmetrise ,opt{:})
+xlabel('\((110)\)','Color','red','Interpreter','latex')
+hold off
+
+drawNow(gcm)
+
+%%
+% As we can see from the above pole figures the red, blue, and orange
+% orientations are distinguished by which of the symmetrically equivalent
+% (100) austenite axes is aligned to the (100) martensite axis.
+%%
+% Similarly, we may also use the Bain group Id color to distinguish different 
+% martensite Bain groups in the EBSD map.
+
+plot(grains('Fe'),color)
