@@ -131,10 +131,10 @@ end
 %if isNew, ; end % TODO set axis tight removes all the plot
 try axis(mP.ax,'tight'); end
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extend(1) = min(mP.extend(1),min(ebsd.pos.x(:)));
-mP.extend(2) = max(mP.extend(2),max(ebsd.pos.x(:)));
-mP.extend(3) = min(mP.extend(3),min(ebsd.pos.y(:)));
-mP.extend(4) = max(mP.extend(4),max(ebsd.pos.y(:)));
+mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
+mP.extent(2) = max(mP.extent(2),max(ebsd.pos.x(:)));
+mP.extent(3) = min(mP.extent(3),min(ebsd.pos.y(:)));
+mP.extent(4) = max(mP.extent(4),max(ebsd.pos.y(:)));
 
 if nargout==0, clear h; end
 
