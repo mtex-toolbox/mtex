@@ -1,8 +1,8 @@
-classdef SchulzDefousingKernel < S2Kernel
+classdef SchulzDefocusingKernel < S2Kernel
 %
 % Syntax
 %
-%   psi = SchulzDefousingKernel(mu*t,theta)
+%   psi = SchulzDefocusingKernel(mu*t,theta)
 %
 % Input
 %  mu - absorption coefficient (1/cm)
@@ -24,7 +24,7 @@ classdef SchulzDefousingKernel < S2Kernel
   methods
     
     
-    function psi = SchulzDefousingKernel(mu_t)
+    function psi = SchulzDefocusingKernel(mu_t)
       psi.mu_t = mu_t;
     end
     
