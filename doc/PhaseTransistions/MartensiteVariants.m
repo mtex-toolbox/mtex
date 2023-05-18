@@ -207,16 +207,16 @@ plot(childOri,color,'axisAngle')
 % A more important classification is the seperation of the
 % variants into their various crystallographic packets. 
 %
-% A crystallographic packet Id is used to identify a packet of variants with 
-the same habit plane (i.e. - the interfacial plane between the parent and child 
-% crystal lattices along which the atomic rearrangements occur during martensitic 
-transformation). 
+% A crystallographic packet Id is used to identify a packet of variants
+% with the same habit plane (i.e. - the interfacial plane between the
+% parent and child crystal lattices along which the atomic rearrangements
+% occur during martensitic transformation).
 %
-% Within a crystallographic packet, the individual variants are related to each other 
-through specific symmetries. The crystallographic packet Id is a means of identifying 
-and distinguishing a specific packet of variants that share the same habit plane and 
-exhibit related crystallographic orientations.
-
+% Within a crystallographic packet, the individual variants are related to
+% each other through specific symmetries. The crystallographic packet Id is
+% a means of identifying and distinguishing a specific packet of variants
+% that share the same habit plane and exhibit related crystallographic
+% orientations.
 
 color = ind2color(packetId);
 plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);
