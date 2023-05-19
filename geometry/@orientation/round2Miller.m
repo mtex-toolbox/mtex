@@ -70,10 +70,11 @@ end
 
 % maybe more then one orientation should be transformed
 if length(mori) > 1
-  n1 = Miller.nan(size(mori),mori.CS);
-  n2 = Miller.nan(size(mori),mori.SS);
-  d1 = Miller.nan(size(mori),mori.CS,'uvw');
-  d2 = Miller.nan(size(mori),mori.SS,'uvw');
+  n1 = Miller.nan(size(mori),mori.CS); d1 = n1;
+  n2 = Miller.nan(size(mori),mori.SS); d2 = n2;
+  d1.dispStyle = MillerConvention(-MillerConvention(n1.dispStyle));
+  d2.dispStyle = MillerConvention(-MillerConvention(n2.dispStyle));
+
   for i = 1:length(mori)
     [n1(i),n2(i),d1(i),d2(i)] = round2Miller(mori.subSet(i),varargin{:});
   end
