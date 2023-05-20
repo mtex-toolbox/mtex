@@ -1,5 +1,4 @@
 function [childId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,varargin)
-%% --- AAG EDIT ---
 % compute variantIds, packetId and bainId from parent / child orientation pairs
 %
 % Syntax
@@ -35,7 +34,7 @@ function [childId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,vararg
 %  variantId - variant id
 %  packetId  - packet id
 %  bainId    - bain id
-
+%
 
 % all child variants
 childVariants  = variants(p2c, parentOri);
@@ -53,42 +52,40 @@ d = dot(childVariants,repmat(childOri(:),1,size(childVariants,2)));
 
 % compute packetId if required
 if nargout >= 2
-    if ~isempty(varargin) && any(strcmpi(varargin,'packet')) % definition given
-        h1 = varargin{find(strcmpi('packet',varargin)==1)+1};
-        h2 = varargin{find(strcmpi('packet',varargin)==1)+2};
-        if ~isa(h1,'Miller') || ~isa(h2,'Miller')
-            error('Input for packet ID calculation must be Miller.');
-        end
-    else % definition assumed
-        warning('Packet ID calculation assuming {111}_p||{110}_c');
-        h1 = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
-        h2 = Miller(1,0,1,p2c.SS);
+  if ~isempty(varargin) && any(strcmpi(varargin,'packet')) % definition given
+    h1 = varargin{find(strcmpi('packet',varargin)==1)+1};
+    h2 = varargin{find(strcmpi('packet',varargin)==1)+2};
+    if ~isa(h1,'Miller') || ~isa(h2,'Miller')
+      error('Input for packet ID calculation must be Miller.');
     end
-
-    omega = dot(variants(p2c,h1),h2);
-    [~,packetId] = max(omega,[],1);
-    packetId = packetId(childId);
+  else % definition assumed
+    warning('Packet ID calculation assuming {111}_p||{110}_c');
+    h1 = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
+    h2 = Miller(1,0,1,p2c.SS);
+  end
+  
+  omega = dot(variants(p2c,h1),h2);
+  [~,packetId] = max(omega,[],1);
+  packetId = packetId(childId);
 end
-
 
 % compute bainId if required
 if nargout == 3
-    if ~isempty(varargin) && any(strcmpi(varargin,'bain')) % definition given
-        h1 = varargin{find(strcmpi('bain',varargin)==1)+1};
-        h2 = varargin{find(strcmpi('bain',varargin)==1)+2};
-        if ~isa(h1,'Miller') || ~isa(h2,'Miller')
-            error('Input for bain ID calculation must be Miller.');
-        end
-    else % definition assumed
-        warning('Bain ID calculation assuming {001}_p||{100}_c');
-        h1 = Miller({0,0,1},{1,0,0},{0,1,0},p2c.CS);
-        h2 = Miller(1,0,0,p2c.SS);
+  if ~isempty(varargin) && any(strcmpi(varargin,'bain')) % definition given
+    h1 = varargin{find(strcmpi('bain',varargin)==1)+1};
+    h2 = varargin{find(strcmpi('bain',varargin)==1)+2};
+    if ~isa(h1,'Miller') || ~isa(h2,'Miller')
+      error('Input for bain ID calculation must be Miller.');
     end
-
-    omega = dot(variants(p2c,h1),h2);
-    [~,bainId] = max(omega,[],1);
-    bainId = bainId(childId);
+  else % definition assumed
+    warning('Bain ID calculation assuming {001}_p||{100}_c');
+    h1 = Miller({0,0,1},{1,0,0},{0,1,0},p2c.CS);
+    h2 = Miller(1,0,0,p2c.SS);
+  end
+  
+  omega = dot(variants(p2c,h1),h2);
+  [~,bainId] = max(omega,[],1);
+  bainId = bainId(childId);
 end
 
 end
-%% --- AAG EDIT ---
