@@ -15,9 +15,10 @@ function T = loadTensor_mpod(fname,varargin)
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
 % Example
-% download form MPOD
-%    T = loadTensor_mpod(1000055)
-%    T = loadTensor_mpod('1000055.mpod')
+% 
+%    T = loadTensor_mpod('1000055.mpod');
+%    T{1}
+%    T{2}
 %
 % See also
 % loadTensor
