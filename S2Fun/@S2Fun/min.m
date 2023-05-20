@@ -53,7 +53,7 @@ elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
   else
     d = varargin{2};
   end
-  f = @(v) min(sF.eval(v), [], d(1)+1);
+  f = @(v) min(reshape(sF.eval(v),[length(v),s]), [], d(1)+1);
   value = S2FunHarmonic.quadrature(f);
 
 else % detect local or global minima
@@ -69,6 +69,9 @@ else % detect local or global minima
       res0 = 5 * degree;
     end
   else
+
+    assert(length(sF)==1,'Search for local and global extrema ist only implmented for scalar functions.')
+
     antipodalFlag = {'','antipodal'};
 
     res0 = get_option(varargin,'maxStepSize',5*degree) / 2;
