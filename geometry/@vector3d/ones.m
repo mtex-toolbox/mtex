@@ -16,7 +16,7 @@ function v = ones(varargin)
 % ones
 
 s = varargin(cellfun(@isnumeric,varargin));
-x = ones(varargin{s});
+x = ones(s{:});
 v = vector3d(x,x,x,varargin{:});
 
 end
