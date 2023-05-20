@@ -813,7 +813,7 @@
 % orientation
 % * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
 % properties
-% * <SO3Fun.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * <SO3Fun.fibreVolume.html  |fibreVolume|> works also for specimen symmetry
 % * allow to change the length of the scaleBar in EBSD plots
 %
 %% MTEX 4.5.2 11/2017
@@ -2189,7 +2189,7 @@
 %
 % *New ODF Class*
 %
-% * The new function <FourierODF.html FourierODF> provides an easy way to
+% * The new function <FourierODF.html |FourierODF|> provides an easy way to
 % define ODFs via their Fourier coefficients. In particular, MTEX allows now
 % to calculate with those ODFs in the same manner as with any other ODFs.
 %
