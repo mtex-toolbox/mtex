@@ -38,7 +38,7 @@ if length(q)>100000 && length(q_ref) == 1
 else
     
   % take the minimum distances to all symmetric equivalent orientations
-  d = abs(dot(q(:),q_refSym,'noSymmetry','ignoreInv'));
+  d = abs(dot(reshape(q,[],1),q_refSym,'noSymmetry','ignoreInv'));
   [~,ind] = max(d,[],2);  
   [ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],ind);
   
