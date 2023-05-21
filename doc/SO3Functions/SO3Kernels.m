@@ -16,7 +16,7 @@
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal U_{2n}(t) $$
 %
 % where $\mathcal U_{n}$ denotes the Chebyshev polynomials of second kind and degree
-% $n\in\mathbb N$.
+% $n\in \mathbb N$.
 %
 % The class |@SO3Kernel| is needed in MTEX to define the specific form of
 % unimodal ODFs. It has to be passed as an argument when calling the
@@ -195,7 +195,7 @@ legend('halfwidth = 15°','halfwidth = 20°')
 % $$ \psi_{\kappa}(\cos\frac{\omega(\bf{R})}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
 % \, \mathrm{e}^{\kappa \cos\omega(\bf{R})}$$
 % 
-% while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
+% while $\mathcal I_n,\,n \in \mathbb N_0$ denotes the the modified Bessel 
 % functions of first kind
 %
 % $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
