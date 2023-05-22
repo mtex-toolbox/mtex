@@ -1,11 +1,12 @@
-function [V,E,I_EF,I_CF] = load(filepath)
+function [V,E,I_EF,I_CF, poly] = load(filepath)
   % load tesselation data from neper files
  
-  [V, E, I_EF, I_CF] = readTess3File(filepath);
+  [V, E, I_EF, I_CF, poly] = readTess3File(filepath);
+
 
 end
 
-function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
+function [V, E, I_EF, I_CellsFaces, poly] = readTess3File(filepath)
   % function for reading data from nepers tesselation files (.tess)
   %
   % Description
@@ -16,7 +17,7 @@ function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
   % dimensional tesselations see readTessFile)
   %
   % Syntax
-  %   [V, E, I_EF, I_CellsFaces] = readTess3File('filepath/filename.tess')
+  %   [V, E, poly, I_CellsFaces] = readTess3File('filepath/filename.tess')
   %
   % Input
   %  filepath     - filepath
@@ -24,7 +25,7 @@ function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
   % Output
   %  V          - list of vertices(x,y,z)
   %  E          - list of edges as indices to V
-  %  I_EF       - adjacency matrix edges - faces
+  %  poly       - cell arry with all faces
   %  I_CF       - adjacency matrix cells - faces
   %
   % Example
@@ -65,13 +66,13 @@ function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
       -total_number_of_faces
         - int
       -I_EF
-        - adjecency matrix edges - faces
+        - obsolet: adjecency matrix edges - faces
       -V
         - see output
       -E
       	- list of edges as indices to V
       -poly
-        - obsolet
+        - cell arry with all faces
       -I_CellsFaces
         - adjecency matrix cells - faces
   
@@ -205,28 +206,28 @@ function [V, E, I_EF, I_CellsFaces] = readTess3File(filepath)
   total_number_of_faces=str2double(fgetl(fid));
 
   I_EF=zeros(total_number_of_edges,total_number_of_faces);  
-  %poly{total_number_of_faces,1}=[];
+  poly{total_number_of_faces,1}=[];
 
-  % read in I_EF
+  % read in poly
   for i=1:total_number_of_faces
 
-    %buffer=...
-      fgetl(fid);
-    %buffer=split(buffer);
-    %{
+    buffer=fgetl(fid);
+    buffer=split(buffer);
     for j=4:3+str2num(cell2mat(buffer(3)))
       poly{i}=[poly{i,1} str2double(buffer(j))];
     end
     poly{i}=[poly{i,1} str2double(buffer(4))];
-    %}
 
-    buffer=fgetl(fid);
+    %buffer=...
+      fgetl(fid);
+    %{
     EF=split(buffer);
-    sizeFD=str2double(EF(2));
-    for j=3:sizeFD+2
+    sizeEF=str2double(EF(2));
+    for j=3:sizeEF+2
       el=str2double(EF(j));
       I_EF(abs(el), i)=sign(el)*1;
     end
+    %}
 
     fgetl(fid);
     fgetl(fid);
