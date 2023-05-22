@@ -48,6 +48,7 @@ classdef parentGrainReconstructor < handle
     grains         % grains at the current stage of reconstruction
     p2c            % parent to child orientation relationship
     useBoundaryOrientations = false
+    reportFit = true
     
     mergeId        % a list of ids to the merged grains
     
