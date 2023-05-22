@@ -2,6 +2,9 @@ function T = symmetrise(T,cs)
 % symmetrise a tensor according to its crystal symmetry
 %
 % Syntax
+%   % the isotropic part of the tensor
+%   T = symmetrise(T,'isotropic')
+%
 %   % symmetrise according to a crystal symmetry
 %   T = symmetrise(T,cs)
 %
@@ -22,7 +25,21 @@ function T = symmetrise(T,cs)
 if nargin == 1, cs = T.CS; end
   
 % symmetrise transversally
-if isa(cs,'vector3d')
+if ischar(cs) && any(strcmpi(cs,{'iso','isotropic'}))
+  
+  % TODO: this can be done better
+  %rot2 = rotation.byAxisAngle(vector3d.Z,180*degree);
+  %a5 = normalize(vector3d(0,2/(1+sqrt(5)),1));
+  %rot5 = rotation.byAxisAngle(a5,72*degree);
+  %cs = crystalSymmetry.byElements([rot5,rot2]);
+  %cs2 = crystalSymmetry('432');
+  %T = mean(cs2.rot*mean(cs.rot*T));
+
+  s = load(fullfile(mtexDataPath,'orientation','quatSO3N4.mat'));
+  T = mean(s.rot*T);
+
+  return
+elseif isa(cs,'vector3d')
 
   omega = linspace(0,360,3610) * degree;
   

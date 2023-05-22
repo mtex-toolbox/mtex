@@ -98,17 +98,17 @@ ori =  ebsd('Fo').orientations.project2FundamentalRegion
 largeGrain = grains(id)
 ori = ebsd(largeGrain).orientations
 
-% recenter the fundamental zone to the mean orientation 
-plot(rotate(oR,largeGrain.meanOrientation))
+% recenter the fundamental zone to the mean orientation
+center = largeGrain.meanOrientation;
+plot(rotate(oR,center))
 
 % project the orientations into the fundamental region around the mean
 % orientation
-ori = ori.project2FundamentalRegion(largeGrain.meanOrientation)
+ori = ori.project2FundamentalRegion(center)
 
-
+hold on
 plot(ori,'axisAngle')
-
-
+hold off
 
 %% Fundamental regions of misorientations
 %

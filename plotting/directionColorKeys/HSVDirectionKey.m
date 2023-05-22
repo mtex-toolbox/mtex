@@ -152,7 +152,7 @@ classdef HSVDirectionKey < directionColorKey
 
       % symmetry dependent settings
       switch oM.sym.id
-        case 0
+        case {0,46,47}
           sR = oM.sym.Laue.fundamentalSector;
           oM.refl = setdiff(sR.N,oM.sR.N);
         case 1                                                   % 1
@@ -185,7 +185,7 @@ classdef HSVDirectionKey < directionColorKey
         case {33,35,36}, oM.refl = rotate(oM.sR.N(end),-30*degree); % 6,6/m, 622,  
         case 34, oM.refl = rotate(oM.sR.N(end),-60*degree);            % -6
         case {41}, oM.refl = sum(oM.sR.N(3:4))- sum(oM.sR.N(1:2));  % 23
-        case {42,43}, oM.refl = oM.sR.N(end-2) - oM.sR.N(end-1);      % 432, m-3  
+        case {42,43}, oM.refl = oM.sR.N(end-2) - oM.sR.N(end-1);      % 432, m-3            
       end
       
       % reduce fundamental sector by reflectors for black-white colorcoding

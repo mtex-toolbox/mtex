@@ -1,15 +1,24 @@
-function tP = calcTriplePoints(gB,V,grainsPhaseId)
+function tP = calcTriplePoints(gB)
+%
+% Input
+%  gB - @grainBoundary
+
+
+% list of phaseIds ordered as grainIds
+grainId = gB.grainId;
+grainPhaseId = zeros(max(grainId(:)),1);
+grainPhaseId(grainId(grainId>0)) = gB.phaseId((grainId>0));
 
 % compute triple points
 [i,~,f] = find(gB.F);
-I_VF = sparse(f,i,1,size(V,1),size(gB.F,1));
+I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
 I_VG = (I_VF * gB.I_FG)==2;
 % triple points are those with exactly 3 neigbouring grains and 3
 % boundary segments
 itP = full(sum(I_VG,2)==3 & sum(I_VF,2)==3);
 [tpGrainId,~] = find(I_VG(itP,:).');
 tpGrainId = reshape(tpGrainId,3,[]).';
-tpPhaseId = full(grainsPhaseId(tpGrainId));
+tpPhaseId = full(grainPhaseId(tpGrainId));
 
 % compute ebsdId
 % first step: compute faces at the triple point
@@ -22,9 +31,10 @@ tPBoundaryId = reshape(tPBoundaryId,3,[]).';
 
 % get the three end vertices
 iV = reshape(gB.F(tPBoundaryId,:),[],6).';
-iV = reshape(iV(iV ~= find(itP).').',3,[]).';
+% TODO: the repmat can be removed in new versions of Matlab
+iV = reshape(iV(iV ~= repmat(find(itP).',size(iV,1),1)).',3,[]).';
 
-tP = triplePointList(find(itP),V,...
+tP = triplePointList(find(itP),gB.V,...
   tpGrainId,tPBoundaryId,tpPhaseId,iV,gB.phaseMap,gB.CSList);
 
 end

@@ -1,4 +1,4 @@
-function sVF = rotate(sVF, rot)
+function sVF = rotate(sVF, rot, varargin)
 % rotate a function by a rotation
 %
 % Syntax
@@ -12,6 +12,11 @@ function sVF = rotate(sVF, rot)
 %   sVF - @S2VectorFieldHarmonic
 %
 
-sVF.sF = rotate(sVF.sF, rot);
+%sVF.sF = rotate(sVF.sF, rot);
+
+if sVF.bandwidth ~= 0
+  f = @(v) rot .* sVF.eval(rotate(v, inv(rot)));
+  sVF = S2VectorFieldHarmonic.quadrature(f, 'bandwidth', sVF.bandwidth);
+end
 
 end

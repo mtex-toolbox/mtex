@@ -33,7 +33,7 @@ classdef tensor < dynOption
       %  name - name of the tensor
       %
       % See also
-      % ODF/calcTensor EBSD/calcTensor
+      % SO3Fun/calcTensor EBSD/calcTensor
 
       if nargin == 0
         
@@ -149,10 +149,10 @@ classdef tensor < dynOption
 
     function isSym = get.isSymmetric(T)
 
-      if T.rank == 2
+      if T.rank == 2 || T.rank == 4
 
-        isSym = norm(T - T') ./ norm(T) < 1e-6;
-
+        isSym = norm(T - ctranspose(T,'skipCorrection')) ./ norm(T) < 1e-6;
+      
       else
         
         error('not yet implemented');
@@ -169,6 +169,8 @@ classdef tensor < dynOption
 
     T = load(fname,varargin)
     
+    eps = leviCivita()
+
     function T = eye(varargin)
       r = get_option(varargin,'rank',2);
       [cs,varargin] = getClass(varargin,'symmetry');
@@ -220,22 +222,7 @@ classdef tensor < dynOption
       T = tensor(rand(d),'rank',r);
       if ~isempty(cs), T.CS = cs; end
     end
-    
-    function eps = leviCivita
-      % the Levi Civita permutation tensor
-      
-      eps = zeros(3,3,3);
-      eps(1,2,3) = 1;
-      eps(3,1,2) = 1;
-      eps(2,3,1) = 1;
-      
-      eps(1,3,2) = -1;
-      eps(3,2,1) = -1;
-      eps(2,1,3) = -1;
-      
-      eps = tensor(eps,'rank',3,'name','Levi Cevita');
-      
-    end
+
   end
   
 end

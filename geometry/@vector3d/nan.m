@@ -15,7 +15,8 @@ function v = nan(varargin)
 % See also
 % nan
 
-x = nan(varargin{:});
-v = vector3d(x,x,x);
+s = varargin(cellfun(@isnumeric,varargin));
+x = nan(s{:});
+v = vector3d(x,x,x,varargin{:});
 
 end

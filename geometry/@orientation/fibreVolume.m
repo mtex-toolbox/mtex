@@ -15,7 +15,7 @@ function v = fibreVolume(ori,h,r,radius,varargin)
 %  radius - double
 %
 % See also
-% ODF/volume
+% SO3Fun/volume
 
 % check input
 argin_check(h,{'Miller','vector3d'});

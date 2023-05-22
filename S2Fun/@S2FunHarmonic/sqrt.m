@@ -1,5 +1,6 @@
 function sF = sqrt(sF, varargin)
 % square root of a function
+%
 % Syntax
 %   sF = sqrt(sF)
 %   sF = sqrt(sF, 'bandwidth', bandwidth)

@@ -24,7 +24,7 @@ end
 
 ad = zeros(size(omega));
 sR = oR.axisSector;
-S2G = equispacedS2Grid(sR,'resolution',0.5*degree);
+S2G = equispacedS2Grid(sR,'resolution',0.05*degree);
 
 for i = 1:length(omega)
   sR = oR.axisSector(omega(i));

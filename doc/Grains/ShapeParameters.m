@@ -9,12 +9,13 @@
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %
-% || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in $\mu m^2$ || 
-% || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in $\mu m$ || 
+% || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in µm² || 
+% || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in µm || 
 % || <grain2d.subBoundarySize.html |subBoundarySize|> || number of inner boundaries || <grain2d.subBoundarySize.html |subBoundaryLength|> || length of inner boundaries in $\mu m$ || 
-% || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.calliper.html |caliper|>  || caliper or Feret diameter ||
+% || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter ||
 % || <grain2d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
 % || <grain2d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
+% || <IceSphericity.html |sphericity|>  || irregularity of grain boundary ||   ||  ||
 % || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
 % || <grain2d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <triplePointList.triplePointList.html |triplePoints|>  || list of  triple points || 
 % || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |innerBoundary|>  || subgrain boundaries || 
@@ -71,12 +72,15 @@ ylabel('number of grains')
 % Note the large amount of very small grains. A more realistic histogram we
 % obtain if we do not plot the number of grains at the y-axis but its total
 % area. This can be achieved with the command <grain2d.histogram.html
-% |histogram(grains)|>
+% |histogram(grains)|> or <grain2d.hist.html |hist(grains)|>
+
+hist(grains)
+
+%%
 
 histogram(grains)
-xlabel('grain area')
 
-%
+%%
 % Simarly as |grainSize| and |area|, the one-dimensional meassures
 % |boundarySize| and |perimeter| give the length of the grain boundary as
 % number of segments and in |µm|, respectively.

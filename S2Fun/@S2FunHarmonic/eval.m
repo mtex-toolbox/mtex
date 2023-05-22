@@ -19,7 +19,8 @@ end
 % initialize nfsft
 nfsftmex('precompute', sF.bandwidth, 1000, 1, 0);
 plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
-nfsftmex('set_x', plan, [v.rho'; v.theta']); % set vertices
+[theta,rho] = polar(v);
+nfsftmex('set_x', plan, [rho'; theta']); % set vertices
 nfsftmex('precompute_x', plan);
 
 f = zeros([length(v) size(sF)]);
@@ -27,11 +28,15 @@ f = zeros([length(v) size(sF)]);
 for j = 1:length(sF)
   nfsftmex('set_f_hat_linear', plan, sF.fhat(:,j)); % set fourier coefficients
   nfsftmex('trafo', plan);
-  f(:,j) = reshape(real(nfsftmex('get_f', plan)),[],1);
+  f(:,j) = reshape(nfsftmex('get_f', plan),[],1);
 end
 
 % set values to NaN
 f(isnan(v),:) = NaN;
+
+if isalmostreal(f) 
+  f = real(f); 
+end
 
 % finalize nfsft
 nfsftmex('finalize', plan);

@@ -12,7 +12,7 @@ function out = mtexdata(name,varargin)
 % read list of all available sample data
 list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
 
-type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d'}, {'pf','ebsd','grains'});
+type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun'}, {'pf','ebsd','grains','odf'});
 
 if nargin < 1
 
@@ -81,6 +81,12 @@ catch
   end
   
   switch type
+    case 'SO3Fun'
+      switch name
+        case 'dubnaODF'
+          pf = mtexdata('dubna');
+          out = calcODF(pf);
+      end
     case 'PoleFigure'
       switch name
         case 'dubna'
@@ -89,7 +95,8 @@ catch
           out = PoleFigure.load(fName,'superposition',c,CS);
         case 'geesthacht'
           CS = crystalSymmetry('m-3m');
-          out = PoleFigure.load(fName,CS);
+          h = Miller({1 0 4},{1 0 4},{1 1 0},{1 1 0},CS);
+          out = PoleFigure.load(fName,h);
         case 'ptx'
           CS = crystalSymmetry('mmm');
           out = PoleFigure.load(fName,CS);
@@ -101,8 +108,8 @@ catch
         case 'aachen'
           CS = {...
             'notIndexed',...
-            crystalSymmetry('m-3m','mineral','Fe','color','light blue'),...
-            crystalSymmetry('m-3m','mineral','Mg','color','light red')};
+            crystalSymmetry('m-3m','mineral','Fe'),...
+            crystalSymmetry('m-3m','mineral','Mg')};
 
           out = EBSD.load(fName,...
             'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
@@ -110,7 +117,7 @@ catch
         case  'sharp'
           CS = {...
             'notIndexed',...
-            crystalSymmetry('-3m',[5,5,17],'mineral','calcite','color','light blue')};
+            crystalSymmetry('-3m',[5,5,17],'mineral','calcite')};
 
           out = EBSD.load(fName,'CS',CS,...
             'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });

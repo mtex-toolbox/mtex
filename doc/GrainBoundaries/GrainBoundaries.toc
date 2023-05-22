@@ -9,3 +9,4 @@ GrainSmoothing             Smoothing
 TwinningBoundaries         Twinning
 TriplePoints               Triple Points
 BoundaryIntersections      Intersections
+BoundaryNormalDistribution Distribution

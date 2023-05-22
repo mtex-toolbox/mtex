@@ -32,7 +32,7 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 % Plotting inverse pole figures is analogously to plotting pole figures
 % with the only difference that you have to use the command
-% <ODF.plotIPDF.html plotIPDF> and you to specify specimen directions and
+% <SO3Fun.plotIPDF.html plotIPDF> and you to specify specimen directions and
 % not crystal directions.
 
 plotIPDF(odf,[xvector,zvector])

@@ -8,7 +8,24 @@ function varargout = subsref(ebsd,s)
 %
 
 
+% some special cases to speed things up
+if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
+    length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'CS')
+  
+  id = ebsd.name2id(s(1).subs{1});
+  if id ~= 0
+    
+    CS = ebsd.CSList{id}; 
+    if numel(s)>2
+      [varargout{1:nargout}] = builtin('subsref',CS,s(3:end));
+    else
+      varargout{1} = CS;
+    end   
+    return
+  end
+end
 
+% now the general case
 if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
   if strcmp(s(1).type,'{}')

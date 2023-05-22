@@ -1,5 +1,19 @@
 function h = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
+%
+% Syntax
+%   h = round(h)
+%   h = round(h,'maxHKL',5)
+%
+% Input
+%  h - @Miller
+%
+% Output
+%  h - @Miller
+%
+% Options
+%  maxHKL - maximum value of Miller indices
+%
 
 % ignore xyz case
 if h.dispStyle == MillerConvention.xyz, return; end

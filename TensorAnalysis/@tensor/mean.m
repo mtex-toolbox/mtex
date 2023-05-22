@@ -17,7 +17,7 @@ function [TVoigt, TReuss, THill] = mean(T,varargin)
 %  T - @tensor
 %  dim - dimension with respect to which the mean is taken 
 %  ori - @orientation
-%  odf - @ODF 
+%  odf - @SO3Fun
 %  weights - double
 %
 
@@ -38,11 +38,13 @@ if check_option(varargin,'iso') && T.rank==4
   
   TVoigt = 2 * delta * T.eye + gamma * dyad(tensor.eye,tensor.eye);
      
-elseif nargin > 1 && isa(varargin{1},'ODF') % use an ODF as input
+elseif nargin > 1 && isa(varargin{1},'SO3Fun') % use an ODF as input
+
+  odf = varargin{1};
 
   TVoigt = 0*T;
+  TVoigt.CS = odf.SS; 
   
-  odf = varargin{1};
   fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
   
   for l = 0:min(T.rank,odf.bandwidth)
@@ -66,7 +68,11 @@ elseif check_option(varargin,'weights')  % weighted mean
   
   % take the mean of the rotated tensors times the weight
   TVoigt = sum(weights .* T);
-  
+
+  if isfield(T.opt,'density') && numel(weights) == numel(T.opt.density)
+    TVoigt.opt.density = sum(T.opt.density .* weights);
+  end
+
 else % the plain mean
 
   if nargin > 1 && isnumeric(varargin{1})

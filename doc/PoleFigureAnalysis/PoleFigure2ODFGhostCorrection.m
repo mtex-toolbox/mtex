@@ -32,7 +32,7 @@ odf = 0.9*uniformODF(cs) + ...
 r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % crystal directions
-h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
+h = Miller({1,0,0},{0,1,0},{0,0,1},cs);
 
 % compute pole figures
 pf = calcPoleFigure(odf,h,r);
@@ -127,7 +127,7 @@ calcError(rec_cor,odf,'L2')
 %%
 % true ODF
 close all;
-plotFourier(odf,'linewidth',2)
+plotSpektra(odf,'linewidth',2)
 
 %%
 % keep plotting windows and add next plots
@@ -135,11 +135,11 @@ hold all
 
 %%
 % Without ghost correction:
-plotFourier(rec,'linewidth',2)
+plotSpektra(rec,'linewidth',2)
 
 %%
 % with ghost correction
-plotFourier(rec_cor,'linewidth',2)
+plotSpektra(rec_cor,'linewidth',2)
 legend({'true ODF','without ghost correction','with ghost correction'})
 % next plot command overwrites plot window
 hold off

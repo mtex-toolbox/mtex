@@ -1,7 +1,7 @@
 function display(cs,varargin)
 % standard output
 
-displayClass(cs,inputname(1));
+displayClass(cs,inputname(1),varargin{:});
 
 disp(' ');
 

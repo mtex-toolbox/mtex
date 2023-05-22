@@ -12,12 +12,18 @@ function s = xnum2str(n,varargin)
 %  n - double | int
 %
 % Output
-% s - string
+%  s - string
 %
 
+% get precision parameter
+if imag(n)~=0
+  pre = min(abs(real(n)),abs(imag(n)));
+else
+  pre = n;
+end
+m = get_option(varargin,'precision',pre);
 
-m = get_option(varargin,'precision',n);
-
+% handle arrays componentwise
 if length(n) > 1
  
   del = get_option(varargin,'delimiter',' ');
@@ -33,7 +39,26 @@ elseif isempty(n)
   n = 0;
 end
 
-%check whether to use floating point or not
+% seperate real and imaginary part
+if isnan(n)
+  s = 'NaN';
+  return
+elseif abs(imag(n))<=0.01*abs(real(n))
+  n = real(n);
+elseif abs(real(n))<0.01*abs(imag(n))
+  s = [xnum2str(imag(n),varargin),'i'];
+  return
+else
+  if imag(n)>0
+    vz='+';
+  else 
+    vz='';
+  end
+  s = [xnum2str(real(n),'precision',m,varargin),vz,xnum2str(imag(n),'precision',m,varargin),'i'];
+  return
+end
+
+% check whether to use floating point or not
 if abs(m)>1000000
   s = num2str(n,'%7.2g');
 elseif abs(m) >= 10
@@ -66,6 +91,7 @@ end
 if s(end) == '.', s = s(1:end-1);end
 if strcmp(s,'-0'), s = '0';end
 
+% add spaces if needed
 if check_option(varargin,'fixedWidth')
   width = get_option(varargin,'fixedWidth');
   s = [repmat(' ',1,max(0,width-length(s))) s];

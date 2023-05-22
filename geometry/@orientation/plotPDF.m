@@ -36,9 +36,15 @@ function plotPDF(ori,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+if check_option(varargin,{'contour','contourf','smooth','pcolor'})
+  dcMode = {};
+else
+  dcMode = {'datacursormode',@tooltip};
+end
 
- h = [];
+[mtexFig,isNew] = newMtexFigure(dcMode{:},varargin{:});
+
+h = [];
 if nargin > 1
   if isa(varargin{1},'Miller')
     h = varargin{1};

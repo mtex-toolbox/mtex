@@ -1,4 +1,4 @@
-function ebsd = subSet(ebsd,ind)
+function ebsd = subSet(ebsd,ind,varargin)
 % indexing of EBSD data
 %
 % Syntax
@@ -12,6 +12,8 @@ ebsd.id = ebsd.id(ind);
 %if ~isempty(ebsd.grainId), ebsd.grainId = ebsd.grainId(ind); end
 if ~isempty(ebsd.A_D), ebsd.A_D = ebsd.A_D(ind(:),ind(:)); end
 
-if (islogical(ind) || min(size(ind))==1) && (isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex'))
+if (isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')) && ...
+  ~check_option(varargin,'keepGrid') && ...  
+  (islogical(ind) || min(size(ind))==1)
   ebsd = EBSD(ebsd);
 end

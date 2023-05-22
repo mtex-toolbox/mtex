@@ -12,7 +12,14 @@ methods
   end
   
   function f = eval(S2F,v)
-    f = S2F.fun(v);
+    if length(S2F)==1
+       f = S2F.fun(v);
+    else
+      f = vector3d.zeros(numel(v),length(S2F));
+      for k = 1:length(S2F)
+        f(:,k) = reshape(S2F(k).fun(v),[],1);
+      end
+    end
   end
   
 end

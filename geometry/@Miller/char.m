@@ -12,9 +12,12 @@ c = cell(length(m),1);
 format = get_flag(varargin,{'hkl','hkil','uvw','UVTW'});
 if ~isempty(format), m.dispStyle = format; end
 
-[leftBracket, rightBracket] = m.dispStyle.brackets;
+
+[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle));
 
 abc = m.coordinates;
+% prevent bar{0}
+abc(abs(abc)<1e-8) = 0;
 
 for i = 1:length(m)
   

@@ -31,7 +31,8 @@ for k2 = kappa
   for k1 = kappa
     if k1 >= k2
       bs=BinghamS2([-k1 -k2 0]);
-      plot(bs,'colorRange',[0,25],'TR',['$\kappa_1$:' num2str(k1)],'BR',['$\kappa_2$: ' num2str(k2)],'doNotDraw')
+      plot(bs,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
+%       mtexTitle(['$\kappa_1 :$' num2str(k1)  '  ' '$\kappa_2 :$' num2str(k2)],'FontSize',14)
       nextAxis
     else
       nextAxis
@@ -57,7 +58,7 @@ hold off
 % best fitting Bingham distribution by
 
 % estimate a Bingham distribution
-bs = BinghamS2.fit(v,'confElli',0.99)
+bs = BinghamS2.fit(v,'confElli',0.9)
 
 %%
 % Lets plot the fitted distribution with the data
@@ -78,6 +79,8 @@ annotate(bs.a(3),'MarkerFaceColor','red','MarkerSize',10)
 %%
 % The orientation of the ellipse is specified by all the principle vectors
 % |bs.a| and the a and b axes are computed by the command |cEllipse|
+
+mtexColorMap white2black
 
 % annotate the ellipse
 ellipse(rotation('matrix',bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...

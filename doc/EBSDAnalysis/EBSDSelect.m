@@ -2,8 +2,8 @@
 %
 %%
 % In this section we discuss how to select specific EBSD data by certain
-% properties. Let us first import some example <mtexdata.html EBSD data>.
-% and plot the raw data
+% properties. Let us first import some example EBSD data using the command
+% <mtexdata.html |mtexdata|>.
 
 mtexdata forsterite
 

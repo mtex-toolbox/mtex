@@ -13,9 +13,25 @@ function sF = conv(sF, psi, varargin)
 %
 % Output
 %  sF   - @S2FunHarmonic
-%  SO3F - @ODF
+%  SO3F - @SO3Fun
+%
+% See also
+% S2Kernel/conv SO3FunHarmonic/conv SO3Kernel/conv 
+
+
+% The convolution is defined like above. But in MTEX the convolution of two
+% S2Funs is mostly calculated by
+%                    inv(4*pi*conv(SO3F1,conj(SO3F2))).
 %
 
+
+if isnumeric(sF)
+  sF = conv(psi,sF,varargin{:});
+  return
+end
+
+
+% ------------------- convolution of S2Funs -------------------
 if isa(psi,'S2Fun')
   
   if isa(psi,'S2FunHarmonic')
@@ -28,17 +44,21 @@ if isa(psi,'S2Fun')
   
   fhat = [];
   for l = 0:bw
-    fhat = [fhat;reshape(sF.fhat(l^2+1:(l+1)^2) * ...
-      sF2.fhat(l^2+1:(l+1)^2)',[],1)]; %#ok<AGROW>
+    A = sF2.fhat(l^2+1:(l+1)^2) * sF.fhat((l+1)^2:-1:l^2+1).' /(4*pi)/sqrt(2*l+1);
+    fhat = [fhat;A(:)];
   end
   
   % extract symmetries if possible
   CS1 = crystalSymmetry; CS2 = specimenSymmetry;
-  try CS1 = sF.CS; end; try CS2 = sF2.CS; end %#ok<TRYNC>
+  try CS1 = sF.s; end; try CS2 = sF2.s; end
     
-  sF = FourierODF(fhat,CS1,CS2);
+  sF = SO3FunHarmonic(fhat,CS1,CS2);
     
-else
+  return
+end
+
+
+% ------------------- convolution of S2Kernel functions -------------------
 
   % extract Legendre coefficients
   if isa(psi,'double')
@@ -46,11 +66,6 @@ else
   elseif isa(psi,'S2Kernel')
     A = psi.A(:);
     A = A ./ (2*(0:length(A)-1)+1).';
-  elseif isa(psi,'kernel')
-    A = psi.A(:);
-    A = A ./ (2*(0:length(A)-1)+1).';
-  else
-    error('wrong second argument');
   end
   A = A(1:min(sF.bandwidth+1,length(A)));
   
@@ -63,7 +78,8 @@ else
 
   % multiplication in harmonic domain
   sF.fhat = A .* sF.fhat;
-  
+
+
 end
 
 

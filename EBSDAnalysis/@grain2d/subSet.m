@@ -41,6 +41,9 @@ grains.id = grains.id(ind);
 grains.phaseId = reshape(grains.phaseId(ind),[],1);
 grains.grainSize = grains.grainSize(ind);
 
+if ~islogical(ind)
+  grains.prop.meanRotation = reshape(grains.prop.meanRotation, size(ind));
+end
 
 grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
@@ -51,7 +54,7 @@ if length(grains) == 1
   
   % remove inclusion embeddings
   if grains.inclusionId > 0
-    ie = any(FNew == FNew(1),2);
+    ie = sum(FNew == FNew(1),2)==1;
     ie([1,end-grains.inclusionId]) = false;
     FNew(ie,:) = [];
   end

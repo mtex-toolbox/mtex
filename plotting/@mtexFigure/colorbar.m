@@ -30,9 +30,14 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
     cBarTitle = get_option(varargin,'title');
     for i = 1:numel(mtexFig.cBarAxis)
       try
-        mtexFig.cBarAxis.Label.String = cBarTitle;
+        l = get(mtexFig.cBarAxis(i),'Label');
+        l.String = cBarTitle;
       catch
-        ylabel(mtexFig.cBarAxis(i),cBarTitle);
+        if iscell(cBarTitle) && numel(cBarTitle) == numel(mtexFig.cBarAxis)
+            ylabel(mtexFig.cBarAxis(i),cBarTitle{i});
+        else
+            ylabel(mtexFig.cBarAxis(i),cBarTitle);
+        end
       end
     end
   end

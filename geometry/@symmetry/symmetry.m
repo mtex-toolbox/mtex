@@ -25,8 +25,7 @@ classdef symmetry < handle
     LaueRef = []
     properRef = []
   end
-  
-  
+    
   properties (Constant = true)
     pointGroups = pointGroupList % list of all point groups
   end
@@ -84,6 +83,19 @@ classdef symmetry < handle
       out = lt(cs2,cs1);
     end
     
+    function fhat = WignerD(cs,L)
+      if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
+        fhat = cs.opt.fhat(1:deg2dim(L+1));
+      else
+        c = ones(1,numSym(cs))/numSym(cs);
+        SO3F = SO3FunHarmonic.quadrature(cs.rot,c,'bandwidth',L,'nfsoft');
+        fhat = SO3F.fhat;
+        fhat(abs(fhat)<1e-5)=0;
+        fhat = sparse(fhat);
+        cs.opt.fhat = fhat;
+      end
+    end
+
   end
 
   methods (Access = protected, Static = true)
@@ -198,6 +210,9 @@ classdef symmetry < handle
           rot = {symAxis(lllaxis,3),symAxis(a,2),symAxis(c,2)};
         case 45 % 432
           rot = {symAxis(lllaxis,3),symAxis(ll0axis,2),symAxis(c,4)};
+        case 47 % 532
+          a5 = c + 2/(1+sqrt(5)) * a;
+          rot = {symAxis(a5,5),symAxis(a,2),symAxis(b,2),symAxis(c,2)};
       end
 
       % apply inversion
@@ -210,12 +225,11 @@ classdef symmetry < handle
 
       % store symmetries
       rot = prod(rot{:});
+      if pg.LaueId == 47, rot = unique(rot*rot); end
 
     end
 
-    
   end
-  
   
 end
 

@@ -29,7 +29,7 @@ function kam = KAM(ebsd,varargin)
 % grain2d.GOS
 
 % ensure that we have not to deal with symmetry anymore
-ebsd = ebsd.project2FundamentalRegion;
+if isfield(ebsd.prop,'grainId'), ebsd = ebsd.project2FundamentalRegion; end
 
 if check_option(varargin,'max')
   fun = @(a,b) nanmax(a,[],b);
@@ -86,10 +86,17 @@ for radius = 1:order
       % avoid grain boundaries
       if isfield(ebsd.prop,'grainId')
         doInclude(doInclude) = ebsd.grainId(indN(doInclude)) == ebsd.grainId(doInclude);
-      end      
       
-      % compute misorientation angles
-      omega = angle(rot(doInclude),rot(indN(doInclude)));
+        % compute misorientation angles
+        omega = angle(rot(doInclude),rot(indN(doInclude)));
+        
+      else
+        
+        % if we had no grains ebsd.project2fundamentalRegion had no effect
+        % and we have to consider crystalsymmetry explicitely
+        omega = min(angle_outer(inv(rot(doInclude)) .* rot(indN(doInclude)),ebsd.CSList{idPhase}.properGroup.rot),[],2).';
+                
+      end      
       
       % apply angle threshold
       omega(omega > threshold) = NaN;

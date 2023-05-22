@@ -22,6 +22,11 @@ function value = mean(sF, varargin)
  
 nodes = quadratureS2Grid(256);
 
-value = mean(sF.eval(nodes),1);  
+value = mean(sF.eval(nodes),1);
+
+if isalmostreal(value,'componentwise')
+  value = real(value);
+end
+
 
 end

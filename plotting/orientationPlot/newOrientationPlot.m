@@ -54,7 +54,7 @@ if isNew || isempty(get(mtexFig.gca,'children'))
 end
 
 % create a new plot
-plotTypes = {'axisAngle','Bunge','Rodrigues','Rodriguez','homochoric','quaternion','conformal'};
+plotTypes = {'axisAngle','Bunge','Rodrigues','Rodriguez','homochoric','quaternion','conformal','cubochoric'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   if isa(CS1,'crystalSymmetry') && isa(CS2,'crystalSymmetry')
@@ -71,6 +71,8 @@ switch lower(plotType)
     oP = axisAnglePlot(mtexFig.gca,CS1,CS2,varargin{:});
   case {'homochoric'}
     oP = homochoricPlot(mtexFig.gca,CS1,CS2,varargin{:});
+  case {'cubochoric'}
+    oP = cubochoricPlot(mtexFig.gca,CS1,CS2,varargin{:});
   case {'rodrigues','rodriguez'}
     oP = RodriguesPlot(mtexFig.gca,CS1,CS2,varargin{:});
   case 'bunge'

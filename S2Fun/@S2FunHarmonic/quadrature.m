@@ -60,6 +60,11 @@ if isempty(nodes)
   return
 end
 
+if bw==0
+  sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
+  return
+end
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlan;
@@ -100,7 +105,7 @@ try
   fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
 end
 sF = S2FunHarmonic(fhat);
-sF.bandwidth = bw;
+sF.bandwidth = min([bw,sF.bandwidth]);
 
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || nodes.antipodal 

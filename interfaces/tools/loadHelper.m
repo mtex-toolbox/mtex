@@ -98,12 +98,14 @@ loader.getColumnData = @getColumnData;
   function v = getVector3d()
 
     conventions = {...
+      {'x','y','z'};...
+      {'Polar' 'Azimuth'};
       {'Polar Angle' 'Azimuth Angle'};
       {'Colatitude','Longitude'};
       {'Colattitude','Longitude'}; % for historical reasons
       {'Latitude','Longitude'};
       {'Lattitude','Longitude'};   % for historical reasons
-      {'x','y','z'};};
+      };
 
     type = find(cellfun(@(x) opts.hasMandatory(x),conventions),1,'first');
 
@@ -119,16 +121,16 @@ loader.getColumnData = @getColumnData;
       data(any(isnan(data(:,cols)),2),:) = [];
 
       % specimen directions
-      if type == 6  % xyz
+      if type == 1  % xyz
 
-        v = vector3d(data(:,cols).');
+        v = reshape(vector3d(data(:,cols).'),[],1);
 
       else % spherical
 
         theta = data(:,cols(1))*opts.Unit;
         rho   = data(:,cols(2))*opts.Unit;
 
-        if type >= 4 % latitude
+        if type >= 6 % latitude
           theta = pi/2 - theta;
         end
 

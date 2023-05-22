@@ -36,7 +36,11 @@ hold off
 % may use <EBSDSelect.html logical indexing> on our EBSD variable |ebsd| to
 % find all orientations that belong to a certain |grainId|.
 
-ori = ebsd(ebsd.grainId == 4).orientations
+% select a grain by x and y coordinates
+grainSel = grains(42,17)
+
+% all EBSD orientations within the grain
+ori = ebsd(grainSel).orientations
 
 %%
 % We could now use the command <orientation.mean |mean|> to compute the
@@ -56,7 +60,7 @@ plot(grains, grains.meanOrientation)
 % <MisorientationTheory.html misorientation> between each pixel orientation
 % to the grain mean orientation defined as
 
-mis2mean = inv(grains(4).meanOrientation) .* ori
+mis2mean = inv(grainSel.meanOrientation) .* ori
 
 %%
 % While the above command computes the misorientations to the grain mean
@@ -99,8 +103,6 @@ MGOS = ebsd.grainMean(mis2mean.angle,@max);
 plot(grains, MGOS ./ degree)
 mtexColorbar('title','MGOS in degree')
 
-
-
 %% Grain average misorientation (GAM)
 %
 % A measure that is often confused with the grain orientation spread is the
@@ -133,19 +135,19 @@ setColorRange([0,3])
 % |fibre.fit|> to find the best fitting fibre for a given list of
 % orientations. Lets do this for a single grain. 
 
-% select an interesting grain and visualize the orientations within the grain in a pole figure
-% id = 32; id = 160; seems to work
-id = 222;
+% visualize the orientations within the selected  grain in a pole figure
+figure(2)
 h = Miller({1,0,0},ebsd.CS);
-plotPDF(ebsd(grains(id)).orientations,h,'MarkerSize',2,'all')
+plotPDF(ebsd(grainSel).orientations,h,'MarkerSize',2,'all')
 
 % fit a fibre to the orientations within the grain
-[f,lambda,fit] = fibre.fit(ebsd(grains(id)).orientations);
+[f,lambda,fit] = fibre.fit(ebsd(grainSel).orientations,'local');
 
 % add the fibre to the pole figure
 hold on
 plotPDF(f.symmetrise,h,'lineColor','orange','linewidth',2)
 hold off
+
 
 %%
 % The function <fibre.fit.html |fibre.fit|> has three output arguments. The
@@ -159,7 +161,7 @@ f.h
 % We can see that the dispersion of directions is minimal for those
 % parallel to |f.r| respectively |f.h|. 
 hold on
-plot(ebsd(grains(id)).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
+plot(ebsd(grainSel).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
 hold off
 %%
 % The second output argument |lambda| are the eigenvalues of the
@@ -184,7 +186,7 @@ grainsLarge = grains(grains.grainSize > 50);
 for k = 1:length(grainsLarge)
   
   % fit a fibre
-  [f,lambda(k,:),fit(k)] = fibre.fit(ebsd(grainsLarge(k)).orientations);
+  [f,lambda(k,:),fit(k)] = fibre.fit(ebsd(grainsLarge(k)).orientations,'local');
   
   % store the misorientation axes in crystal and specimen symmetry
   GAX_C(k) = f.h;
@@ -200,11 +202,11 @@ end
 plot(grainsLarge,lambda(:,3))
 mtexTitle('$\lambda_3$')
 
-nextAxis
+nextAxis(1,2)
 plot(grainsLarge,lambda(:,2))
 mtexTitle('$\lambda_2$')
 
-nextAxis
+nextAxis(1,3)
 plot(grainsLarge,fit./degree)
 mtexTitle('fit')
 
@@ -246,7 +248,7 @@ plot(grainsLarge, color)
 % entirely gray if in the plane and get divided into black and white to
 % indicate which end points out of the plane and which into the plane.
 
-plot(grains,GOS./degree)
+plot(grains, GOS./degree)
 mtexColorbar('title','GOS in degree')
 
 hold on
@@ -262,7 +264,7 @@ hold off
 % deformation, crystal dispersion axes form a girdle with a normal parallel
 % to the shortening direction.
 
-plot(GAX_S,'antipodal','MarkerSize',2)
+plot(GAX_S,'antipodal','MarkerSize',4)
 
 %%
 % to get some idea about any preferred direction, we can add contours,
@@ -286,7 +288,6 @@ hold off
 %cs = ebsd(grains(id)).CS;
 %ori = ebsd(grain_selected).orientations;
 %plotPDF(ori,[Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
-
 
 %%
 % Testing on the distribution shows a gentle prolatness, nevertheless we

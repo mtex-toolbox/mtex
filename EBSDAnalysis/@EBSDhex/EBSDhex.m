@@ -210,8 +210,8 @@ classdef EBSDhex < EBSD
         x = col - (row - ebsd.offset * ~iseven(round(row))) / 2;
         z = row;
       else
-        x = row - (col - ebsd.offset * ~iseven(round(col))) / 2;
-        z = col;
+        z = row - (col - ebsd.offset * ~iseven(round(col))) / 2;
+        x = col;
       end
       y = -x-z;
       

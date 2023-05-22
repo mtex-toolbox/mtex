@@ -20,8 +20,7 @@ classdef homochoricPlot < axisAnglePlot
         end
       end
       
-      q = quaternion(ori);      
-      [x,y,z] = double(q.axis .* (3./4 * (q.angle - sin(q.angle))).^(1/3));
+      [x,y,z] = double(homochoric(ori));
             
     end
     

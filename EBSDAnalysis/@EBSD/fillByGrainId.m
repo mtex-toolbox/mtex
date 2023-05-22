@@ -9,7 +9,7 @@ function ebsd = fillByGrainId(ebsd)
 %
 
 % generate a regular grid
-ext = ebsd.extend;
+ext = ebsd.extent;
 dx = max(ebsd.unitCell(:,1))-min(ebsd.unitCell(:,1));
 dy = max(ebsd.unitCell(:,2))-min(ebsd.unitCell(:,2));
 [xgrid,ygrid] = meshgrid(ext(1):dx:ext(2),ext(3):dy:ext(4)); % ygrid runs first

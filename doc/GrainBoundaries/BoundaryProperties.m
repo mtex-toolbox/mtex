@@ -47,7 +47,7 @@ hold off
 gB8 = grains(8).boundary
 
 %%
-% This boundary consists of 8 segemts and hence ebsdId forms a 8x2 matrix
+% This boundary consists of 6 segemts and hence ebsdId forms a 8x2 matrix
 
 gB8.ebsdId
 
@@ -64,7 +64,7 @@ ebsd('id',gB8.ebsdId)
 gB8.grainId
 
 %%
-% results in 8x2 matrix indicating that grain 8 is an inclusion of grain
+% results in 9x2 matrix indicating that grain 8 is an inclusion of grain
 % 21.
 
 plot(grains(8),'FaceColor','DarkBlue','micronbar','off')
@@ -96,11 +96,11 @@ gB_Mg = gB('Magnesium','Magnesium')
 %%
 % Then the misorientation angles can be plotted by
 
-plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',3)
+plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
-% The *direction* property of the boundary segments is usefull when
+% The |direction| property of the boundary segments is usefull when
 % checking for tilt and twist boundaries, i.e., when we want to compare the
 % misorientation axis with the interface between the grains
 
@@ -109,7 +109,7 @@ ori = ebsd('id',gB_Mg.ebsdId).orientations;
 axes = axis(ori(:,1),ori(:,2),'antipodal')
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',3)
+plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4)
 
 %%
 % We observe that the angle is quite oscilatory. This is because of the
@@ -118,7 +118,7 @@ plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',3)
 % command <grainBoundary.calcMeanDirection.html calcMeanDirection>
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',3)
+plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4)
 
 %%
 % The *midPoint* property is usefull when  TODO:
@@ -143,7 +143,7 @@ sum(gB_Mg.segLength)
 components = unique(gB.componentId);
 for cId = components.'
   plot(gB(gB.componentId == cId),'lineColor',ind2color(cId),...
-    'micronbar','off','lineWidth',3,'displayName',num2str(cId))
+    'micronbar','off','lineWidth',4,'displayName',num2str(cId))
   hold on
 end
 hold off

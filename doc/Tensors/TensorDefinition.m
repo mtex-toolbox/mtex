@@ -72,11 +72,11 @@ vector3d(t)
 %
 % $$
 % \sigma_{ij} = 
-% \begin{bmatrix}
+% \left[\begin{array}{ccc}
 % \sigma_{11} & \sigma_{12} & \sigma_{13}  \\
 % \sigma_{21} & \sigma_{22} & \sigma_{23}  \\
 % \sigma_{31} & \sigma_{32} & \sigma_{33}  \\
-% \end{bmatrix}
+% \end{array}\right]
 % $$
 %
 % In MTEX, a second-rank tensor where only the main diagonal components are
@@ -150,8 +150,8 @@ C = tensor(M,'rank',4)
 % || @strainTensor || 2 || $\sigma_{ij}$  || @stressTensor || 2 || $\varepsilon_{ij}$ ||
 % || @strainRateTensor || 2 || $E$ || @velocityGradientTensor || 2 || $L$ ||
 % || @curvatureTensor || 2 || $\kappa_{ij}$ || @deformationGradientTensor || 2 || $F$ ||
-% || @refractiveIndexTensor || 2 || $\chi$ || @ChristoffelTensor || 2 || $M_ij$ || 
-% || @dislocationDensityTensor || 2 || $\alpha$  || @SchmidTensor || 2 || $M_{ij}$ ||
+% || @refractiveIndexTensor || 2 || $\chi$ || @ChristoffelTensor || 2 || $M_{ij}$ || 
+% || @dislocationDensityTensor || 2 || $\alpha$  || <SchmidTensor.html |SchmidTensor|> || 2 || $M_{ij}$ ||
 % || <tensor.leviCivita.html |leviCivita|> || 3 || $\varepsilon_{ijk}$ || @spinTensor || 2 || $\Omega$ ||
 %
 % Those specific tensors are defined by the syntax

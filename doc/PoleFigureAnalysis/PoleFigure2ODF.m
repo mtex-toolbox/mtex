@@ -61,11 +61,12 @@ plotDiff(pf,odf)
 %%
 % Assuming you have driven two ODFs from different pole figure measurements
 % or by ODF modeling. Then one can ask for the difference between both.
-% This difference is computed by the command <ODF.calcError.html
+% This difference is computed by the command <SO3Fun.calcError.html
 % calcError>.
 
-% define a unimodal ODF with the same modal orientation
-odf_model = unimodalODF(calcModes(odf),'halfwidth',15*degree)
+% define a unimodal ODF with the same preferred orientation 
+[~,ori_pref] = max(odf);
+odf_model = unimodalODF(ori_pref,'halfwidth',15*degree)
 
 % plot the pole figures
 plotPDF(odf_model,pf.allH,'antipodal','superposition',pf.c)

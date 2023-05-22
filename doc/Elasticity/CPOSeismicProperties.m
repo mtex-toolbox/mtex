@@ -10,7 +10,7 @@
 mtexdata forsterite
 
 %%
-% This dataset consists of the three main phases, olivine, enstatite and
+% This dataset consists of the three main phases, forsterite, enstatite and
 % diopside. As we want to plot the seismic properties of this aggregate, we
 % need (i) the modal proportions of each phase in this sample, (ii) their
 % orientations, which is given by their ODFs, (iii) the elastic constants 
@@ -33,16 +33,17 @@ plot(ebsd)
 
 %% Import the elastic stiffness tensors
 %
-% The elastic stiffness tensor of Olivine was reported in Abramson et al.,
-% 1997 (Journal of Geophysical Research) with respect to the crystal reference frame
+% The elastic stiffness tensor of Forsterite was reported in
+% Abramson et al., 1997 (Journal of Geophysical Research) with respect to
+% the crystal reference frame
 
-CS_Tensor_olivine = crystalSymmetry('222', [4.762 10.225 5.994],...
-    'mineral', 'olivine', 'color', 'light red');
+CS_Tensor_Fo = crystalSymmetry('222', [4.762 10.225 5.994],...
+    'mineral', 'Forsterite', 'color', 'light red');
   
 %%
 % and the density in g/cm^3
 
-rho_olivine = 3.3550;
+rho_Fo = 3.3550;
 
 %%
 % by the coefficients $C_{ij}$ in Voigt matrix notation
@@ -58,7 +59,7 @@ Cij = [[320.5  68.15  71.6     0     0     0];...
 % In order to define the stiffness tensor as an MTEX variable we use the
 % command @stiffnessTensor.
 
-C_olivine = stiffnessTensor(Cij,CS_Tensor_olivine,'density',rho_olivine);
+C_Fo = stiffnessTensor(Cij,CS_Tensor_Fo,'density',rho_Fo);
 
 %%
 % Note that when defining a single crystal tensor we shall always specify
@@ -121,12 +122,12 @@ C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx);
 % |plotSeismicVelocities|> to get an overview of the single crystal seismic
 % properties.
 
-plotSeismicVelocities(C_olivine)
+plotSeismicVelocities(C_Fo)
 
 % lets add the crystal axes to the second plot
 nextAxis(1,2)
 hold on
-text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_olivine),...
+text(Miller({1,0,0},{0,1,0},{0,0,1},CS_Tensor_Fo),...
   {'[100]','[010]','[001]'},'backgroundColor','w')
 hold off
 
@@ -138,7 +139,7 @@ hold off
 % <TensorAverage.html this section>. Here we use the command
 % <EBSD.calcTensor.html calcTensor>
 
-[CVoigt, CReuss, CHill] = calcTensor(ebsd,C_olivine,C_opx,C_cpx);
+[CVoigt, CReuss, CHill] = calcTensor(ebsd,C_Fo,C_opx,C_cpx);
 
 %%
 % For visualizing the polycrystal wave velocities we again use the command
@@ -158,15 +159,16 @@ odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 
 %%
 % Note that you do don't need to write the full name of each phase, only
-% the initial, that works when phases start with different letters. Also 
-% note that although we use an EBSD dataset in this example, you can perform the
-% same calculations with CPO data obtain by other methods (e.g. x-ray/neutron
-% diffraction) as you only need the ODF variable for the calculations
+% the initial, that works when phases start with different letters. Also
+% note that although we use an EBSD dataset in this example, you can
+% perform the same calculations with CPO data obtain by other methods (e.g.
+% x-ray/neutron diffraction) as you only need the ODF variable for the
+% calculations
 %
 % To calculate the average stiffness tensor from the ODFs we first compute
 % them from each phase seperately
 
-[CVoigt_ol, CReuss_ol, CHill_ol]    = mean(C_olivine,odf_ol);
+[CVoigt_ol, CReuss_ol, CHill_ol]    = mean(C_Fo,odf_ol);
 [CVoigt_opx, CReuss_opx, CHill_opx] = mean(C_opx,odf_opx);
 [CVoigt_cpx, CReuss_cpx, CHill_cpx] = mean(C_cpx,odf_cpx);
 
@@ -177,7 +179,10 @@ vol_ol  = length(ebsd('f')) ./ length(ebsd('indexed'));
 vol_opx = length(ebsd('e')) ./ length(ebsd('indexed'));
 vol_cpx = length(ebsd('d')) ./ length(ebsd('indexed'));
 
-CHill = vol_ol * CHill_ol + vol_opx * CHill_opx + vol_cpx * CHill_cpx;
+[CVoigt, CReuss, CHill] = mean([CVoigt_ol, CVoigt_opx, CVoigt_cpx],...
+  'weights',[vol_ol, vol_opx, vol_cpx]);
+
+CHill
 
 %%
 % Finally, we visualize the polycrystal wave velocities as above

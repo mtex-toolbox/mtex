@@ -1,5 +1,7 @@
-function progress(i,total,comment)
+function progress(i,total,comment,varargin)
 % display progress
+
+if check_option(varargin,'silent'); return; end
 
 global mtex_progress;
 global prevCharCnt;

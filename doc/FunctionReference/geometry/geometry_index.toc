@@ -19,3 +19,4 @@ S2Triangulation_index        S2Triangulation
 SO3Grid_index                SO3Grid
 embedding_index              embedding
 geometry_tools_index         misc functions
+misorientation_index         Phase Transistion Analysis

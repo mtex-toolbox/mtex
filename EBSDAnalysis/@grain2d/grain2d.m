@@ -2,15 +2,23 @@ classdef grain2d < phaseList & dynProp
   % class representing two dimensional grains
   %
   % Syntax
-  %   grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db)
+  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
   %
   % Input
-  %   ebsd - EBSD data set
-  %   V    - list of vertices
-  %   F    - list of edges
-  %   I_DG - incidence matrix - ebsd cells x grains
-  %   I_FD - incidence matrix - edges x ebsd cells
-  %   A_Db - adjacense matrix of cells
+  %  V    - n x 2 list of vertices
+  %  poly - cell array of the polyhedrons
+  %  ori  - array of mean orientations
+  %  CSList   - cell array of symmetries
+  %  phaseId  - list of phaseId for each grain
+  %  phaseMap -
+  %
+  % Example
+  %
+  %   V = [0 0; 1 0; 2 0; 0 1; 1 1; 2 1];
+  %   poly = {[1 2 5 4 1];[2 3 6 5 2]};
+  %   rot = rotation.rand(2,1);
+  %   grains = grain2d(V,poly,rot,crystalSymmetry.load('quartz'))
+  %   plot(grains,grains.meanOrientation)
   %
   % Class Properties
   %  phaseId - phase identifier of each grain
@@ -35,8 +43,7 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Hidden = true)
-    inclusionId = []; % number of elements in poly that model inclusions
-    qAdded      = 0;  % this is only for returning to calcGrains to avoid multiple outputs
+    inclusionId = []; % number of elements in poly that model inclusions    
   end
   
   % general properties
@@ -49,7 +56,6 @@ classdef grain2d < phaseList & dynProp
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
-    id2ind           % 
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
@@ -61,167 +67,90 @@ classdef grain2d < phaseList & dynProp
   end
   
   methods
-    function grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db,varargin)
+
+    function grains = grain2d(V, poly, ori, CSList, phaseId,  phaseMap, varargin)
       % constructor
+      % 
+      % Input
+      %  V    - n x 2 list of vertices
+      %  poly - cell array of the polyhedrons
+      %  ori  - array of mean orientations
+      %  CSList   - cell array of symmetries
+      %  phaseId  - list of phaseId for each grain
+      %  phaseMap - 
       
       if nargin == 0, return;end
-      
-      % compute phaseId's     
-      grains.phaseId = max(I_DG' * ...
-        spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2);
-      grains.phaseId(grains.phaseId==0) = 1;
-      grains.CSList = ebsd.CSList;
-      grains.phaseMap = ebsd.phaseMap;
-           
-      % split face x cell incidence matrix into
-      % I_FDext - faces x cells external grain boundaries
-      % I_FDint - faces x cells internal grain boundaries
-      [I_FDext,I_FDint] = calcBoundary;
 
-      % remove empty lines from I_FD, F, and V
-      isBoundary = full(any(I_FDext,2) | any(I_FDint,2));
-      F = F(isBoundary,:);
-      I_FDext = I_FDext.'; I_FDext = I_FDext(:,isBoundary).';
-      I_FDint = I_FDint.'; I_FDint = I_FDint(:,isBoundary).';
-      
-      % remove vertices that are not needed anymore
-      [inUse,~,F] = unique(F);
-      V = V(inUse,:);
-      F = reshape(F,[],2);
-      
-      % detect quadruple points
-      if check_option(varargin,'removeQuadruplePoints')
-        quadPoints = find(accumarray(reshape(F(full(any(I_FDext,2)),:),[],1),1) == 4);
+      grains.poly = poly;
+      grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
+
+      if nargin>=3 && ~isempty(ori)
+        grains.prop.meanRotation = ori;
       else
-        quadPoints = [];
+        grains.prop.meanRotation = rotation.nan(length(poly),1);        
       end
-      
-      if ~isempty(quadPoints) 
-      
-        % find the 4 edges connected to the quadpoints
-        I_FV = sparse(repmat((1:size(F,1)).',1,2),F,ones(size(F)));
-        
-        quadPoints = find(sum(I_FV) == 4).';
-        [iqF,~] = find(I_FV(:,quadPoints));
-      
-        % this is a length(quadPoints x 4 list of edges
-        iqF = reshape(iqF,4,length(quadPoints)).';
-      
-        % find the 4 vertices adfacent to each quadruple point
-        qV = [F(iqF.',1).';F(iqF.',2).'];
-        qV = qV(qV ~= reshape(repmat(quadPoints.',8,1),2,[]));
-        qV = reshape(qV,4,[]).';
-        
-        % compute angle with respect to quadruple point
-        qOmega = reshape(atan2(V(qV,1) - V(repmat(quadPoints,1,4),1),...
-          V(qV,2) - V(repmat(quadPoints,1,4),2)),[],4);
-      
-        % sort the angles
-        [~,qOrder] = sort(qOmega,2);
-      
-        % find common pixels for pairs of edges - first we try 1/4 and 2/3
-        s = size(iqF);
-        orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
-            
-        iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
-          I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
-      
-        % if not both have one common pixel
-        switchOrder = full(sum(iqD,2))~= 2;
-      
-        % switch to 3/4 and 1/2
-        qOrder(switchOrder,:) = qOrder(switchOrder,[4 1 2 3]);
-        orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
-        
-        iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
-          I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
-      
-        % some we will not be able to remove
-        ignore = full(sum(iqD,2)) ~= 2;
-        iqD(ignore,:) = [];
-        quadPoints(ignore) = [];
-        iqF(ignore,:) = [];
-        qV(ignore,:) = [];
-        qOrder(ignore,:) = [];
-        s = size(iqF);
-        orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
-        
-        % add an additional vertex (with the same coordinates) for each quad point
-        newVid = (size(V,1) + (1:length(quadPoints))).';
-        V = [V;V(quadPoints,:)];
-      
-        % include new vertex into face list, i.e. replace quadpoint -> newVid
-        Ftmp = F(iqF(orderSub(1)),:).';
-        Ftmp(Ftmp == quadPoints.') = newVid;
-        F(iqF(orderSub(1)),:) = Ftmp.';
-        
-        Ftmp = F(iqF(orderSub(2)),:).';
-        Ftmp(Ftmp == quadPoints.') = newVid;
-        F(iqF(orderSub(2)),:) = Ftmp.';
-        
-        %F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];        
-        %F(iqF(orderSub(2)),:) = [newVid,qV(orderSub(2))];
-        sw = F(:,1) > F(:,2);
-        F(sw,:) = fliplr(F(sw,:));
-        
-        [iqD,~] = find(iqD.'); iqD = reshape(iqD,2,[]).';
-             
-        % if we have different grains - we need a new boundary
-        newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
-      
-        % add new edges
-        F = [F; [quadPoints(newBd),newVid(newBd)]];
-        grains.qAdded = sum(newBd);
-        
-        % new rows to I_FDext
-        I_FDext = [I_FDext; ...
-          sparse(repmat((1:grains.qAdded).',1,2), iqD(newBd,:), 1, ...
-          grains.qAdded,size(I_FDext,2))];
-        
-        % new empty rows to I_FDint
-        I_FDint = [I_FDint; sparse(grains.qAdded,size(I_FDint,2))];
-      
-      end
-      
-      grains.id = (1:numel(grains.phaseId)).';
-      grains.grainSize = full(sum(I_DG,1)).';
-                        
-      grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
-      grains.boundary.scanUnit = ebsd.scanUnit;
-      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
-      
-      [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
-            
-      
-      function [I_FDext,I_FDint] = calcBoundary
-        % distinguish between interior and exterior grain boundaries      
-        
-        % cells that have a subgrain boundary, i.e. a boundary with a cell
-        % belonging to the same grain
-        sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
-        [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
-        sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 
-        % split grain boundaries A_Db into interior and exterior
-        A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
-        A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundray
-            
-        % create incidence graphs
-        I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
-        D_Fbg  = diag(any(I_FDbg,2));
-                
-        [ix,iy] = find(A_Db_ext);
-        D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+      if nargin>=4
+        grains.CSList = ensurecell(CSList);
+      else
+        grains.CSList = {'notIndexed'};
+      end
+
+      if nargin>=5
+        grains.phaseId = phaseId;
+      else
+        grains.phaseId = ones(length(poly),1);
+      end
+      
+      if nargin>=6
+        grains.phaseMap = phaseMap;
+      else
+        grains.phaseMap = 1:length(grains.CSList);
+      end
+
+      grains.id = (1:numel(grains.phaseId)).';
+      grains.grainSize = ones(size(poly));
+      
+      if isa(V,'grainBoundary') % grain boundary already given
+        grains.boundary = V;
+      else % otherwise compute grain boundary
         
-        I_FDext = (D_Fext| D_Fbg)*I_FD;
+        % compute boundary segments
+        F = arrayfun(@(i) poly{i}([1:end-grains.inclusionId(i)-1;2:end-grains.inclusionId(i)]),...
+          1:length(poly),'uniformOutput',false);
+        F = [F{:}].';
+
+        lBnd = cellfun(@(p) length(p),poly) - grains.inclusionId -1;
+
+        grainIds = repelem(1:length(grains),lBnd);
+
+        [~,iF,iG] = unique(sort(F,2),'rows','stable');
+        F = F(iF,:);
         
-        [ix,iy] = find(A_Db_int);
-        D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-        I_FDint = D_Fsub*I_FD;
+        % compute boundary grainIds
+        grainId = zeros(size(F));
+        grainId(:,1) = grainIds(iF); % first column - first apperance
+
+        % second column - second appearance
+        col2 = true(size(iG,1),1);
+        col2(iF) = false;
+        grainId(iG(col2),2) = grainIds(col2);
         
-      end           
+        % compute misorientation from mean orientations of the grain
+        mori = rotation.nan(size(F,1),1);
+        isNotBoundary = all(grainId,2);
+        mori(isNotBoundary) = ...
+          inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
+          .* grains.prop.meanRotation(grainId(isNotBoundary,1));
+
+        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId),...
+          grains.phaseId,mori,grains.CSList,grains.phaseMap);
+        
+      end
+      
+
     end
-    
+        
     function V = get.V(grains)
       V = grains.boundary.V;
     end
@@ -248,11 +177,6 @@ classdef grain2d < phaseList & dynProp
       polygons(isCell) = cellfun(@(x) [x{:}] ,grains.poly(isCell),'UniformOutput',false);
       idV = unique([polygons{:}]);
       
-    end
-    
-    function id2ind = get.id2ind(grains)
-      id2ind = zeros(max(grains.id),1);
-      id2ind(grains.id) = 1:length(grains);
     end
     
     function varargout = size(grains,varargin)
@@ -294,6 +218,11 @@ classdef grain2d < phaseList & dynProp
     function unit = get.scanUnit(grains)
       unit = grains.boundary.scanUnit;
     end
+
+    function grains = set.scanUnit(grains,unit)
+      grains.boundary.scanUnit = unit;
+      grains.innerBoundary.scanUnit = unit;
+    end
     
     function tP = get.triplePoints(grains)
       tP = grains.boundary.triplePoints;
@@ -307,10 +236,17 @@ classdef grain2d < phaseList & dynProp
       
       grains.boundary = grains.boundary.update(grains);
       grains.innerBoundary = grains.innerBoundary.update(grains);
+      grains.triplePoints = grains.triplePoints.update(grains);
       
     end
     
   end
-  
+
+  methods (Static = true)
+    
+    [grain2d] = load(fname)
+    
+  end
+
 end
 

@@ -25,8 +25,8 @@ hold off
 % let's simulate some EBSD data
 cs = crystalSymmetry('-3m');
 odf = unimodalODF(orientation.byEuler(0,0,0,cs));
-ori = calcOrientations(odf,100);
-ori_rotated = calcOrientations(rotate(odf,rotation.byEuler(60*degree,60*degree,0*degree)),100);
+ori = discreteSample(odf,100);
+ori_rotated = discreteSample(rotate(odf,rotation.byEuler(60*degree,60*degree,0*degree)),100);
 
 %%
 % plot them as a scatter plot in axis / angle parametrized orientation
@@ -119,4 +119,4 @@ plotPDF(odf,pf{1}.h,'antipodal','parent',axesPos)
 axesPos = subplot(1,3,3);
 
 % plot the difference pole figure at this position
-plotDiff(odf,pf({1}),'parent',axesPos)
+%plotDiff(odf,pf({1}),'parent',axesPos)

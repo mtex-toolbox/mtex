@@ -9,24 +9,24 @@ function e = calcError(pf,rec,varargin)
 %
 % Syntax
 %   e = calcError(pf,pf2) % compares two different @PoleFigure with same @S2Grid
-%   e = calcError(pf,rec) % compares @PoleFigure with the Recalculated @ODF
+%   e = calcError(pf,rec) % compares @PoleFigure with the Recalculated @SO3Fun
 %
 % Input
 %  pf,pf2 - @PoleFigure
-%  rec    - @ODF     
+%  rec    - @SO3Fun
 %
 % Output
 %  e - error
 %
 % Flags
-%  RP - (default) 
-%  l1 - L1 error
-%  l2 - L2 error
+%  RP    - RP value (default) |pfmeas - pfcalc|./ pfcalc
+%  l1    - l1 error           |pfmeas - pfcalc|
+%  l2    - l2 error           |pfmeas - pfcalc|.^2
 %
 % See also
-% ODF/calcError PoleFigure/calcNormalization PoleFigure/scale
+% SO3Fun/calcError PoleFigure/calcNormalization PoleFigure/scale
 
-argin_check(rec,{'ODF','PoleFigure'});
+argin_check(rec,{'SO3Fun','PoleFigure'});
 
 % calc difference PoleFigure
 errorpf = calcErrorPF(pf,rec,varargin{:});

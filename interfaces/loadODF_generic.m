@@ -84,7 +84,7 @@ weights = loader.getColumnData({'weights','weight','intensity'});
 if isempty(weights), weights = ones(size(q)); end
 
 % return varargin as options
-options = varargin;
+opt = varargin;
 if ischeck, odf = uniformODF;return;end
 
 if numel(unique(weights)) > 1
@@ -116,6 +116,6 @@ switch method
   case 'interp'
 
     disp('  Interpolating the ODF. This might take some time...')
-    odf = ODF.interp(ori,weights,varargin{:});
+    odf = SO3Fun.interpolate(ori,weights,varargin{:});
 
 end

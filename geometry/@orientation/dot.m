@@ -1,5 +1,5 @@
 function d = dot(o1,o2,varargin)
-% compute minimum dot(o1,o2) modulo symmetry
+% compute maximum dot(o1,o2) modulo symmetry
 %
 % Syntax
 %   d = dot(o1,o2)
@@ -43,14 +43,14 @@ if isa(o1,'orientation')
     % it is also possible to compute the misorientation angle between two
     % orientations of different phase. In this case the symmetry becomes
     % the product of both symmetries
-    if ~eq(o1.CS,o2.CS,'Laue')
+    if o1.CS.Laue ~= o2.CS.Laue
 
       try 
         o2 = ensureCS(o1.CS,o2);
       catch
       
         % this makes only sense when comparing orientations
-        assert(isa(o1.CS,'crystalSymmetry') && isa(o1.CS,'crystalSymmetry') ...
+        assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') ...
           && isa(o1.SS,'specimenSymmetry') && o2.SS.Laue == o1.SS.Laue,...
           'Symmetry missmatch');
 
@@ -61,9 +61,9 @@ if isa(o1,'orientation')
         
       end
 
-    elseif ~eq(o1.SS,o2.SS,'Laue') % comparing inverse orientations
+    elseif o1.SS.Laue ~= o2.SS.Laue % comparing inverse orientations
 
-      assert(isa(o1.SS,'crystalSymmetry') && isa(o1.SS,'crystalSymmetry') ...
+      assert(isa(o1.SS,'crystalSymmetry') && isa(o2.SS,'crystalSymmetry') ...
        && isa(o1.CS,'specimenSymmetry') && o2.CS.Laue == o1.CS.Laue,...
        'Symmetry missmatch');
 
@@ -73,6 +73,10 @@ if isa(o1,'orientation')
       qcs = rotation.id;
     end
   end
+  
+  if check_option(varargin,'noSym2'), qss = []; end
+  if check_option(varargin,'noSym1'), qcs = []; end
+  
 else
   
   oneIsLaue = isLaue(o2.SS) || isLaue(o2.CS);
@@ -97,7 +101,7 @@ ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
 
 
 % we have different algorithms depending whether one vector is single
-if length(qss) == 1 % no specimen symmetry
+if length(qss) <= 1 % no specimen symmetry
 
   % this is inv(o1) .* o2
   mori = itimes(o1,o2,1);
@@ -107,6 +111,15 @@ if length(qss) == 1 % no specimen symmetry
       
   d = reshape(d,size(mori));
   
+elseif length(qcs) <= 1 % no crystal symmetry
+  
+  % this is o1 .* inv(o2)
+  mori = itimes(o1,o2,0);
+
+  % take the maximum over all symmetric equivalent
+  d = max(dot_outer(mori,qss,'noSymmetry'),[],2);
+      
+  d = reshape(d,size(mori));
 
 elseif length(o1) == 1
 

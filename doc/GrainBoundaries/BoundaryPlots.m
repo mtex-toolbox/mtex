@@ -117,7 +117,7 @@ mtexColorbar('off')
 figure(2)
 plot(colorKey)
 hold on
-plot(axes,'MarkerFaceAlpha',0.1,'MarkerEdgeAlpha',0.3)
+plot(axes,'MarkerFaceAlpha',0.1,'MarkerEdgeAlpha',0.3,'MarkerColor','black')
 hold off
 
 %% The misorientation axes in specimen coordinates
@@ -164,7 +164,6 @@ colorKey = PatalaColorKey(gB_Fo);
 
 hold on
 plot(gB_Fo,'linewidth',7)
-set(gcf,'Renderer','painters')
 hold on
 plot(gB_Fo,colorKey.orientation2color(gB_Fo.misorientation),'linewidth',4)
 hold off
@@ -174,12 +173,11 @@ hold off
 % misorientation space
 
 figure(2)
-plot(colorKey)
+plot(colorKey,'layout',[3,4])
 
 % and plot the misorienations on top
-hold on
-plot(gB_Fo.misorientation,'MarkerFacecolor','black')
-hold off
+plot(gB_Fo.misorientation,...
+  'MarkerFacecolor','none','add2all','MarkerSize',4)
 
 %%
 % Lets illustrate this color coding also at a iron sample.
@@ -193,6 +191,7 @@ grains = smooth(grains,2);
 gB = grains.boundary('iron','iron');
 
 % and plot image quality + orientation
+close all
 plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
 CLim(gcm,[.5,5])
@@ -210,7 +209,7 @@ hold off
 % sections. Note that in this plot misorientations |mori| and |inv(mori)|
 % are associated.
 
-plot(colorKey,'axisAngle',(5:5:60)*degree)
+plot(colorKey,'axisAngle',(5:5:60)*degree,'layout',[3,4])
 
 plot(gB.misorientation,'points',300,'add2all',...
   'MarkerFaceColor','none','MarkerEdgeColor','w')

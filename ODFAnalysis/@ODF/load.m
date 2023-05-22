@@ -22,10 +22,11 @@ function [odf,interface,options] = load(fname,varargin)
 %  comment    - comment to be associated with the data
 %
 % Output
-%  odf - @ODF
+%  odf - @SO3Fun
 %
 % See also
-% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
+% SO3Fun.load loadODF_generic
 
-% TODO: remove call to loadData
-[odf,interface,options] = loadData(fname,'ODF',varargin{:});
+warning('The class ODF and also ODF.load is depreciated. Please use instead SO3Fun.load');
+
+[odf,interface,options] = SO3Fun.load(fname,varargin{:}); 

@@ -15,11 +15,15 @@ for k = 2:numel(varargin)
 
   ng = varargin{k};
   
+  if isempty(ng), continue; end
   grains.id = [grains.id; ng.id];
   grains.phaseId = [grains.phaseId; ng.phaseId];
   grains.grainSize = [grains.grainSize; ng.grainSize];
   grains.poly = [grains.poly; ng.poly];
+  grains.inclusionId = [grains.inclusionId; ng.inclusionId];
   grains.boundary = [grains.boundary; ng.boundary];
   grains.innerBoundary = [grains.innerBoundary; ng.innerBoundary];
+
+  
   
 end

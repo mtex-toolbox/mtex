@@ -3,61 +3,54 @@ function ebsd = loadEBSD_osc(fname,varargin)
 
 ebsd = EBSD;
 
-try
-  assertExtension(fname,'.osc');
+assertExtension(fname,'.osc');
 
-  CS = get_option(varargin,'CS',oscHeader(fname));
+CS = get_option(varargin,'CS',oscHeader(fname));
 
-  if check_option(varargin,'check')
-    return
+if check_option(varargin,'check'),return; end
+
+[data,Xstep,Ystep] = oscData( fname );
+
+%Need to handle data like prius or EDS
+nCols=size(data,2);
+  
+colNames={'phi1','Phi','phi2','x','y','ImageQuality',...
+  'ConfidenceIndex','Phase','SemSignal','Fit'};
+
+if nCols > 10
+  for col = length(colNames)+1:nCols
+    colNames{col}=strcat('unknown_',int2str(col));
   end
-
-  [data,Xstep,Ystep] = oscData( fname );
-
-  %Need to handle data like prius or EDS
-  nCols=size(data,2);
-
-  colNames={'phi1','Phi','phi2','x','y','ImageQuality',...
-    'ConfidenceIndex','Phase','SemSignal','Fit'};
-  if nCols > 10
-      for col = length(colNames)+1:nCols
-          colNames{col}=strcat('unknown_',int2str(col));
-      end
-      disp('Warning: more column data was passed in than expected. Check your column names make sense!')
-  elseif nCols < 5
-      error('Error: need to pass in atleast position and orientation data')
-  elseif nCols <9
-      disp('Warning: Less column data was passed in than expected. Check your column names make sense!')
-  end
-
-  loader = loadHelper(data,'ColumnNames',colNames(1:nCols),'Radians');
-
-  if Xstep ~= Ystep % probably hexagonal
-    unitCell = [...
-      -Xstep/2   -Ystep/3;
-      -Xstep/2    Ystep/3;
-      0         2*Ystep/3;
-      Xstep/2     Ystep/3;
-      Xstep/2    -Ystep/3;
-      0        -2*Ystep/3];
-  else
-    unitCell = [...
-      Xstep/2 -Ystep/2;
-      Xstep/2  Ystep/2;
-      -Xstep/2  Ystep/2;
-      -Xstep/2 -Ystep/2];
-  end
-
-  ebsd = EBSD(loader.getRotations(),...
-    loader.getColumnData('phase'),...
-    CS,...
-    loader.getOptions('ignoreColumns','phase'),...
-    'unitCell',unitCell);
-
-catch
-  interfaceError(fname)
+  disp('Warning: more column data was passed in than expected. Check your column names make sense!')
+elseif nCols < 5
+  error('Error: need to pass in atleast position and orientation data')
+elseif nCols <9
+  disp('Warning: Less column data was passed in than expected. Check your column names make sense!')
 end
 
+loader = loadHelper(data,'ColumnNames',colNames(1:nCols),'Radians');
+
+if Xstep ~= Ystep % probably hexagonal
+  unitCell = [...
+    -Xstep/2   -Ystep/3;
+    -Xstep/2    Ystep/3;
+    0         2*Ystep/3;
+    Xstep/2     Ystep/3;
+    Xstep/2    -Ystep/3;
+    0        -2*Ystep/3];
+else
+  unitCell = [...
+    Xstep/2 -Ystep/2;
+    Xstep/2  Ystep/2;
+    -Xstep/2  Ystep/2;
+    -Xstep/2 -Ystep/2];
+end
+
+ebsd = EBSD(loader.getRotations(),...
+  loader.getColumnData('phase'),...
+  CS,...
+  loader.getOptions('ignoreColumns','phase'),...
+  'unitCell',unitCell);
 
 % change reference frame, same as for .ang files
 rot = [...
@@ -345,7 +338,7 @@ for i=1:length(osc_phases)
   phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(32) char(32) char(32)]);
   if ~isempty(phaseLoc)
     nPhase=nPhase+1;
-    PhaseStart(nPhase)=phaseLoc+1;
+    PhaseStart(nPhase)=phaseLoc(1)+1;
     PhaseName{nPhase}=osc_phases{i};
   end
 end
@@ -354,7 +347,7 @@ if nPhase==0
     phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(0)]);
     if ~isempty(phaseLoc)
       nPhase=nPhase+1;
-      PhaseStart(nPhase)=phaseLoc+1;
+      PhaseStart(nPhase)=phaseLoc(1)+1;
       PhaseName{nPhase}=osc_phases{i};
     end
   end
@@ -385,6 +378,9 @@ for k = 1:nPhase
       warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
     case '1'
       options = {'X||a'};
+    case '131'
+      laueGroup = '432';
+      options = {''};
     case '20'
       laueGroup = {'2'};
       options = {'X||a'};

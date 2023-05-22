@@ -20,8 +20,13 @@ function sVF = quadrature(f, varargin)
 if isa(f,'vector3d')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
-  y = y.xyz;
-  sF = S2FunHarmonic.quadrature(v, y, varargin{:});
+  
+  if y.antipodal 
+    sVF = S2AxisFieldHarmonic.quadrature(v, y, varargin{:});
+    return
+  else
+    sF = S2FunHarmonic.quadrature(v, y.xyz, varargin{:});
+  end
 else
   sF = S2FunHarmonic.quadrature(@(v) g(v), varargin{:});
 end

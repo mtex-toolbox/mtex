@@ -25,7 +25,7 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  if check_option(varargin,'noQHull')
+  if ~check_option(varargin,'QHull')
   
     dt = delaunayTriangulation([X;dummyCoordinates]);
     [V,D] = voronoiDiagram(dt);
@@ -35,8 +35,26 @@ else
     [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
             
   end
-    
+
+  % we are only interested in voronoi cells corresponding to the given
+  % coordinates - not the dummy coordinates
   D = D(1:size(X,1));
+
+  % remove empty lines from D
+  % D = D(cellfun(@(x) ~isempty(x),D));
+  
+  % merge points that coincide
+  [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+  %D = cellfun(@(x) ic(x).',D,'UniformOutput',false);
+
+  % remove duplicated points in D
+  %D = cellfun(@(x) x(diff([x,x(1)])~=0),D,'UniformOutput',false);
+
+  % this is faster then the cellfun approach
+  for k = 1:length(D)
+    x = ic(D{k}).';              % merge points that coincide
+    D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
+  end
   
 end
 

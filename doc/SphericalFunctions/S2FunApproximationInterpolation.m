@@ -26,7 +26,7 @@ scatter(nodes, S.values, 'upper');
 %
 %%
 % The idea of the first approach is fairly simple. We create a function
-% which has *exaclty* the value of the given data in the nodes. But we
+% which has *exactly* the value of the given data in the nodes. But we
 % still have to decide what happens inbetween these nodes. For that, we
 % linearly interpolate between them, similarly as Matlat plots a
 % one-dimensional function
@@ -74,7 +74,7 @@ contourf(sFTri, 'upper');
 % chance of getting the error in the nodes zero but hope for a smoother
 % approximation. This can be achieved by the <vector3d.interp |interp|>
 % command of the class <vector3d.vector3d |vector3d|> when the argument
-% |'harmnicApproximation'|
+% |'harmonicApproximation'|
 
 sF = interp(nodes, S.values, 'harmonicApproximation');
 contourf(sF, 'upper');
@@ -97,9 +97,9 @@ norm(eval(sF, nodes) - S.values)
 % to obtain such an approximation works via spherical harmonics
 % (<S2FunHarmonicRepresentation Basics of spherical harmonics>). For that,
 % we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
-% f_{0,0},\dots,\hat f_{M,M})^T$ such that
+% f_0^0,\dots,\hat f_M^M)^T$ such that
 %
-% $$ g(x) = \sum_{m=0}^M\sum_{l = -m}^m \hat f_{m,l} Y_{m,l}(x) $$
+% $$ g(x) = \sum_{m=0}^M\sum_{l = -m}^m \hat f_m^l Y_m^l(x) $$
 %
 % approximates our function. A basic strategy to achieve this is through
 % least squares, where we minimize the functional 
@@ -115,7 +115,7 @@ norm(eval(sF, nodes) - S.values)
 % with the Fourier-matrix multible times, where the Fourier-matrix is given
 % by
 %
-% $$ F = [Y_{m,l}(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
+% $$ F = [Y_m^l(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
 %
 % This matrix-vector product can be computed efficiently with the use of
 % the nonequispaced spherical Fourier transform

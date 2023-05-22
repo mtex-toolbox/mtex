@@ -11,6 +11,8 @@ function setColorRange(varargin)
 %  figurelist - list of figure where the plots should be scaled  
 %
 % Options
+%  log         - scale plots logarithmic
+%  linear      - scale plots linear
 %  equal       - scale plots to the same range
 %  tight       - scale plots individually
 %  all         - scale all plots
@@ -33,6 +35,14 @@ end
 % find all axes
 mtexFig = getappdata(fig,'mtexFig');
 if isempty(mtexFig.children), return; end
+
+
+if check_option(varargin,'log')
+  set(mtexFig.children,'ColorScale','log');
+elseif check_option(varargin,'linear')
+  set(mtexFig.children,'ColorScale','linear')
+end
+
 
 if check_option(varargin,'equal')
 
@@ -62,13 +72,14 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
   
 else
   
-  error('First argument must either be the color range or the flag ''equal''');  
+  %error('First argument must either be the color range or the flag ''equal''');  
+  return
   
 end
 
 set(mtexFig.children,'CLim',limits);
-  try
-    set(mtexFig.cBarAxis,'Limits',limits);    
-  catch
-    set(mtexFig.cBarAxis,'CLim',limits);
-  end
+try
+  set(mtexFig.cBarAxis,'Limits',limits);
+catch
+  set(mtexFig.cBarAxis,'CLim',limits);
+end

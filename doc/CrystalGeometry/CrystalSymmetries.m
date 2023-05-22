@@ -1,10 +1,8 @@
 %% Crystal Symmetries
 % 
-%% Open in Editor
-%
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
-% since the concatenation of to symmetry operations is again a symmetry
+% since the concatenation of two symmetry operations is again a symmetry
 % operation. 
 %
 % Depending which symmetry operations are coonsidered the symmetry groups
@@ -14,7 +12,7 @@
 %% Purely enatiomorphic (rotational) symmetry groups
 %
 % There exist exactly 11 symmetry groups consisting of proper rotations
-% only, namely, 1, 2, 222, 3, 32, 4, 422, 6, 622, 32, 432. These are the so
+% only, namely, 1, 2, 222, 3, 23, 4, 422, 6, 622, 32, 432. These are the so
 % called enatiomorphic groups. All the groups can be defined in MTEX either
 % by its international notation
 

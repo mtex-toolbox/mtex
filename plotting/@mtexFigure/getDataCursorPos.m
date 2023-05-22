@@ -39,7 +39,7 @@ catch
 end
 
 % maybe data are stored in cdata
-if numel(values) ~=  numel(xd) && (numel(values) ~= size(xd,2) || size(xd,1) == 1)
+if numel(values) ~=  numel(xd) && (numel(values) ~= size(xd,2) || size(xd,1) == 1) || ~any(values(:))
   try values = get(target,'cdata'); end %#ok<TRYNC>
 end
 
@@ -71,7 +71,10 @@ else
 end
 
 if nargin > 1
-  id = ceil(id*maxId/numel(xd));
+	id = mod(id,maxId);
+	if id == 0
+		id = maxId;
+	end
 end
 
 end

@@ -1,5 +1,6 @@
 %% Slip Systems
 %
+%%
 % Plastic deformation in crystaline materials almost exclusively appears as
 % dislocation along lattice planes. Such deformations are described by the
 % normal vector *n* of the lattice plane and direction *b* of the slip. In

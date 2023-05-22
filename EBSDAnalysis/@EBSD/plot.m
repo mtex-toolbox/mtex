@@ -21,6 +21,9 @@ function [h,mP] = plot(ebsd,varargin)
 %   badMAD = ebsd.mad > 1;
 %   plot(ebsd(badMAD),'faceColor','black,'DisplayName','bad values')
 %
+%   % plot a subregion
+%   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
+%
 % Input
 %  ebsd - @EBSD
 %  color - length(ebsd) x 3 vector of RGB values
@@ -28,6 +31,7 @@ function [h,mP] = plot(ebsd,varargin)
 % Options
 %  micronbar - 'on'/'off'
 %  DisplayName - add a legend entry
+%  region - [xmin, xmax, ymin, ymax] plotting region
 %  
 % Flags
 %  points   - plot dots instead of unitcells
@@ -97,6 +101,13 @@ else % phase plot
     
     if check_option(varargin,'grayScale')
       color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
+    elseif check_option(varargin,{'color','faceColor'})
+      color = 'none';
+    elseif ~isa(ebsd.CSList{k},'symmetry') 
+      % do not plot notindexed phase if no color is given
+      continue;
+    elseif ~isempty(ebsd.CSList{k}.color)
+      color = ebsd.CSList{k}.color;
     else
       color = ebsd.subSet(ind).color;
     end
@@ -110,17 +121,19 @@ else % phase plot
   legend('-DynamicLegend','location','NorthEast');
   warning('on','MATLAB:legend:PlotEmpty');
   
+  set(gcf,'name','phase plot');
+  
 end
   
-% keep track of the extend of the graphics
+% keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 %if isNew, ; end % TODO set axis tight removes all the plot
 try axis(mP.ax,'tight'); end
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
-mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
-mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
-mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
+mP.extent(1) = min(mP.extent(1),min(ebsd.prop.x(:)));
+mP.extent(2) = max(mP.extent(2),max(ebsd.prop.x(:)));
+mP.extent(3) = min(mP.extent(3),min(ebsd.prop.y(:)));
+mP.extent(4) = max(mP.extent(4),max(ebsd.prop.y(:)));
 
 if nargout==0, clear h; end
 

@@ -2,18 +2,20 @@ function  [csAngle, csRadius] = characteristicShape(bc,bp,varargin)
 % Derive the characteristic shape from a boundary trend distribution given
 % in polar coordinates
 %
-% Input:
+% Syntax
+%
+%   [csAngle, csRadius] = characteristicShape(bc,bp)
+%
+% Input
 %  bc       - azimuth angle / bin center
 %  bp       - radius / bin population
 %
-% Output:
+% Output
 %  csAngle  - azimuth angle of characteristic shape
 %  csRadius - radius of characteristic shape
 %
-% Option
+% Options
 %  xy       - output in Cartesian coordiantes instead of polar coordiantes
-%             (note that in this case you need to ensure the plotting ref.
-%             frame to be identical with mtex)
 %
 
 bc=reshape(bc,[],1);

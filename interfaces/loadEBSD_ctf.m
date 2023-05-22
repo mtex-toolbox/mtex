@@ -26,7 +26,7 @@ try
   hl = file2cell(fname,100);
   
   % check that this is a channel text file
-  if isempty(strmatch('Channel Text File',hl{1}))
+  if isempty(strfind(hl{1},'Channel Text File'))
     error('MTEX:wrongInterface','Interface ctf does not fit file format!');
   elseif check_option(varargin,'check')
     return
@@ -50,7 +50,7 @@ try
     
     
     abc = sscanf( strrep(mpara{1},',','.'),'%f;%f;%f'); % Lattice ABC
-    abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
+    abg = sscanf( strrep(mpara{2},',','.'),'%f;%f;%f'); % Lattice alpha beta gamma
     
     % Phase name
     mineral = mpara{3};

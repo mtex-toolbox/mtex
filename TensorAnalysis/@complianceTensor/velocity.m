@@ -26,7 +26,7 @@ if nargin >= 2 && isa(varargin{1},'vector3d')
   generateFun = false;
 else
   if check_option(varargin,'harmonic')
-    M = 48;
+    M = get_option(varargin,'bandwidth',48);
     [x, W] = quadratureS2Grid(2*M);
     generateFun = 1;
   else
@@ -61,13 +61,13 @@ vp = D(3,:); vs1 = D(2,:); vs2 = D(1,:);
 pp = V(3,:); ps1 = V(2,:); ps2 = V(1,:);
 
 if generateFun == 1
-  vp  = S2FunHarmonicSym.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W);
-  vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W);
-  vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W);
+  vp  = S2FunHarmonicSym.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W,'antipodal');
+  vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W,'antipodal');
+  vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W,'antipodal');
     
-  pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W);
-  ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W);
-  ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W);
+  pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W,'antipodal');
+  ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W,'antipodal');
+  ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W,'antipodal');
 elseif generateFun == 2
   vp  = S2FunTri(x,vp);
   vs1 = S2FunTri(vp.tri,vs1);

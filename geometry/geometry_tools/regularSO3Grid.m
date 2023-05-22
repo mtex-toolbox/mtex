@@ -1,12 +1,12 @@
-function [S3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
+function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 % regular grid in Euler orientation space
 %
 % Syntax
-%   S3G = regularSO3Grid(cs)
-%   S3G = regularSO3Grid(cs,ss,'resolution',2.5*degree)     % specify the resolution
-%   S3G = regularSO3Grid(cs,ss,'resolution',5*degree,'ZYZ') % use ZYZ convention
-%   S3G = regularSO3Grid(cs,ss,'phi2','sections',10) % 10 phi2 sections
-%   S3G = regularSO3Grid
+%   SO3G = regularSO3Grid(cs)
+%   SO3G = regularSO3Grid(cs,ss,'resolution',2.5*degree)     % specify the resolution
+%   SO3G = regularSO3Grid(cs,ss,'resolution',5*degree,'ZYZ') % use ZYZ convention
+%   SO3G = regularSO3Grid(cs,ss,'phi2','sections',10)        % 10 phi2 sections
+%   SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',64) % 
 %
 % Input
 %  cs - @crystalSymmetry
@@ -20,14 +20,48 @@ function [S3G,S2G,sec,angles] = regularSO3Grid(CS,varargin)
 %  phi1 | Phi | phi2 - sections along which variable
 %
 % Output
+%  SO3G - @orientation
 %
 
-if nargin > 1 && isa(varargin{1},'symmetry')
-  SS = varargin{1};
-  varargin(1) = [];
-else
-  SS = specimenSymmetry;
+% extract symmetry
+[SRight,SLeft] = extractSym(varargin);
+
+% get Euler angle bounds
+[max_rho,max_theta,max_sec] = fundamentalRegionEuler(SRight,SLeft,varargin{:});
+
+if check_option(varargin,'Zfold')
+  m1 = SLeft.multiplicityZ;
+  m2 = SRight.multiplicityZ;
+  max_rho = 2*pi/m1;
+  max_theta = pi;
+  max_sec = 2*pi/m2;
 end
+
+if check_option(varargin,'ClenshawCurtis')
+  % a regular grid for ClenshawCurtis quadrature required bandwidth 2n 
+  % 2n+1 Clenshaw Curtis Quadrature rule -> (2n+2)x(2n+1)x(2n+2) points
+
+  N = ceil(get_option(varargin,'bandwidth',256)/2);
+  
+  a_len = round((2*N+2)*max_rho/(2*pi));
+  b_len = round((2*N)*max_theta/pi+1);
+  g_len = round((2*N+2)*max_sec/(2*pi));
+  
+  alpha = (0:a_len-1)*max_rho/(a_len);
+  gamma = (0:g_len-1)*max_sec/(g_len);
+  beta = linspace(0,max_theta,b_len);
+
+  [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
+  if check_option(varargin,'Euler')
+    SO3G = cat(4,alpha,beta,gamma);
+  else
+    SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
+  end
+
+  return
+
+end
+
 
 % determine sectioning type
 sectypes = {...
@@ -56,9 +90,6 @@ else % convention given
   sectype = sectypes{sectype}{1};
 
 end
-
-% get bounds
-[max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
 
 % make the sectioning variable to be the last one
 if any(strcmpi(sectype,{'alpha','phi1','Psi'}))
@@ -94,7 +125,7 @@ switch lower(sectype)
 end
 
 % define grid
-S3G = orientation.byEuler(sec_angle,theta,rho,convention,CS,SS);
+SO3G = orientation.byEuler(sec_angle,theta,rho,convention,SRight,SLeft);
 % store gridding, @TODO: check when its required, this is required for
 % export
 if nargout == 4

@@ -1,11 +1,12 @@
 function q = itimes(q1,q2,takeRight)
-% quaternion .* quaternion and quaternion .* vector3d 
+% computes inv(o1) .* o2 
 %
 % Syntax
 %   q = q1 .* q2
 %
 %   q = times(q1,q2)
-%   q = times(q1,q2,takeRight)
+%   q = itimes(q1,q2,1) % inv(o1) .* o2 
+%   q = itimes(q1,q2,0) % o1 .* inv(o2)
 %
 % Input
 %  q1 - @quaternion
@@ -16,7 +17,7 @@ function q = itimes(q1,q2,takeRight)
 %  q  - @quaternion
 
 % which input will become the output?
-if takeRight
+if takeRight 
   q = q2; 
   a1 = q1.a; b1 = -q1.b; c1 = -q1.c; d1 = -q1.d;
   a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;

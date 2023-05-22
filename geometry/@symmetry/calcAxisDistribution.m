@@ -14,7 +14,7 @@ function x = calcAxisDistribution(cs,varargin)
 %  adf - axes distribution function @S2Fun
 %
 % See also
-% ODF/calcAxisDistribution
+% SO3Fun/calcAxisDistribution
 
 [oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
 varargin = delete_option(varargin,'complete');

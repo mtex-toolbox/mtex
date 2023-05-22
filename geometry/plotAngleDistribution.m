@@ -11,7 +11,7 @@ function h = plotAngleDistribution(obj,varargin)
 %  CS - @symmetry
 %
 % Options
-%  resolution - resolution of the plots
+%  resolution, xy*degree - resolution of the plots (given as angle)
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
@@ -24,7 +24,7 @@ if isa(obj,'symmetry')
   maxOmega = maxAngle(obj,varargin{:});
 else
   maxOmega = maxAngle(obj.CS,obj.SS);
-  if ~isa(obj,'ODF'), plotType = 'bar'; end
+  if ~isa(obj,'SO3Fun'), plotType = 'bar'; end
 end
 
 % seach for existing bar plots and adjust bar center
@@ -80,7 +80,7 @@ end
 
 
 % compute angle distribution
-if isa(obj,'symmetry') || isa(obj,'ODF')
+if isa(obj,'symmetry') || isa(obj,'SO3Fun')
   [density,omega] = calcAngleDistribution(obj,varargin{:});
 else  
   d = histcounts(obj.angle,bins).';

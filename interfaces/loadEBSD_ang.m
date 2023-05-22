@@ -39,15 +39,16 @@ try
         
   try
     for i = 1:length(phasePos)
-      pos = phasePos(i);
       
+      str = hl(phasePos(i):min(phasePos(i)+100,end));
+            
       % load phase number
-      phase = readByToken(hl(pos:pos+100),'# Phase',i);
+      phase = readByToken(str,'# Phase',i);
             
       % load mineral data
-      mineral = readByToken(hl(pos:pos+100),'# MaterialName');
-      laue = readByToken(hl(pos:pos+100),'# Symmetry');
-      lattice = readByToken(hl(pos:pos+100),'# LatticeConstants',[1 1 1 90 90 90]);
+      mineral = readByToken(str,'# MaterialName');
+      laue = readByToken(str,'# Symmetry');
+      lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
       
       % setup crytsal symmetry
       options = {};
@@ -120,49 +121,57 @@ try
   % # NOTES: End
   %
   
-  
-  % if there was text then it describes the phase
-  if any(~isnum)
-    phaseCol = find(~isnum,1);
-  elseif size(data,2) <= 8 
-    phaseCol = 8;
-  else % take 8 or 9 depending which is more likely
-    col8 = unique(data(:,8));
-    col9 = unique(data(:,9));
-    
-    if ~all(ismember(col8,0:length(cs))), col8 = []; end
-    if ~all(ismember(col9,0:length(cs))), col9 = []; end
-    
-    phaseCol = 8 + (length(col9)>length(col8));
-  end
-  
   % set up columnnames
-  ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
-  switch phaseCol
-    case 8
-      ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+  version = readByToken(hl,'# VERSION','x');
+  switch version
+    case {'2', '3', '4', '5', '6'}
+      ColumnNames = {'phi1', 'PHI', 'phi2', 'x', 'y', 'iq', 'ci', 'phase', 'sem', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip', 'Custom_Value','unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+    case '7'
+      ColumnNames = {'phi1' 'PHI' 'phi2' 'x' 'y' 'iq' 'ci' 'phase' 'sem' 'fit_PRIAS' 'Custom' 'EDS' 'CM' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6' 'unknown7' 'unknown8' 'unknown9' 'unknown10'};
     otherwise
-      ColumnNames{phaseCol} = 'Phase';     
-  end       
+      ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
+
+      % if there was text then it describes the phase
+      if any(~isnum)
+        phaseCol = find(~isnum,1);
+      elseif size(data,2) <= 8
+        phaseCol = 8;
+      else % take 8 or 9 depending which is more likely
+        col8 = unique(data(:,8));
+        col9 = unique(data(:,9));
+    
+        if ~all(ismember(col8,0:length(cs))), col8 = []; end
+        if ~all(ismember(col9,0:length(cs))), col9 = []; end
+    
+        phaseCol = 8 + (length(col9)>length(col8));
+      end
+        
+      switch phaseCol
+        case 8
+          ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+        otherwise
+          ColumnNames{phaseCol} = 'Phase';
+      end
+  end
+    
   ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
   
   % import the data
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
     'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
   
-  
-  % Since explicitly non-indexed phases appear to have 4*pi for all Euler angles
+  % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
   % which are filtered by loadHelper() already AND ci==-1.
   % Taking phase 0 for non indexed does not really work in the case of single 
-  % phase ang files;  in only for multiphase data, notIndexed is 0
+  % phase ang files; only for multiphase data, notIndexed is 0
   % So here's the attempt to introduce notIndexed to .ang data
   % Set notIndexed (id 0 in multiphase, id -1 in single phase) for ci=-1 
   % as well as add empty points (those removed by loadHelper)
   
-  if length(cs)>2;
-      notIndexedID = 0;
+  if length(cs)>2
+    notIndexedID = 0;
   else
-      notIndexedID = -1;
+    notIndexedID = -1;
   end
   ebsd.phaseMap(1) = notIndexedID;
   ebsd(ebsd.prop.ci<0).phase=notIndexedID;

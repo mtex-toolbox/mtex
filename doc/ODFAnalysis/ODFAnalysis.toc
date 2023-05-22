@@ -3,14 +3,14 @@ ODFModeling                      Calculations
 ODFPlot                          Plot
 ODFPoleFigure                    Pole Figures
 ODFInversePoleFigure             Inverse Pole Figures
-EulerAngleSections               Euler Angle Section
+EulerAngleSections               Euler Angle Sections
 SigmaSections                    Sigma Sections
 ODFComponents                    Components
 ODFCharacteristics               Properties
-UnimodalODFs                     Unimodal ODF
+RadialODFs                       Radial ODF
 FibreODFs                        Fibre ODF
 BinghamODFs                      Bingham ODF
-HarmonicODFs                     Series Expansion 
+SO3FunHarmonicRepresentation     Series Expansion 
 ODFImport                        Import
 ODFExport                        Export
 RandomSampling                   Random Sampling

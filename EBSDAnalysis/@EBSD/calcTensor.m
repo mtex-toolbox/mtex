@@ -33,26 +33,38 @@ function varargout = calcTensor(ebsd,varargin)
 % consider only indexed pixels
 ebsd = ebsd.subSet(ebsd.isIndexed);
 
+% maybe we need to average the density as well
+density = nan(size(ebsd));
+
 % cycle through indexed phases
 for p = ebsd.indexedPhasesId
   
   % search for a fiting tensor
-  Tind = cellfun(@(t) isa(t,'tensor') && eq(t.CS,ebsd.CSList{p},'Laue'),varargin);
+  Tind = cellfun(@(t) isa(t,'tensor') && t.CS.Laue ==  ebsd.CSList{p}.Laue,varargin);
   if any(Tind)
     T = varargin{find(Tind,1)};
   else
     error('\nMissing tensor for phase: %s\n',ebsd.CSList{p}.mineral);
   end
   
+  % extract density
+  if isfield(T.opt,'density'), density(ebsd.phaseId == p) = T.opt.density; end
+
   % rotate tensors
   TRot(ebsd.phaseId == p) = ...
     orientation(ebsd.rotations(ebsd.phaseId == p),ebsd.CSList{p}) * T;
  
 end
- 
+
 % compute the averages
 [varargout{1:nargout}] = mean(TRot,varargin{:});
  
+% average density
+if isfield(T.opt,'density')
+  for k=1:nargout, varargout{k}.opt.density = mean(density); end
+end
+
+
 end
 
 function out = isappr(CS1,CS2)

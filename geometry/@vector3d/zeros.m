@@ -15,7 +15,8 @@ function v = zeros(varargin)
 % See also
 % zeros
 
-x = zeros(varargin{:});
-v = vector3d(x,x,x);
+s = varargin(cellfun(@isnumeric,varargin));
+x = zeros(s{:});
+v = vector3d(x,x,x,varargin{:});
 
 end

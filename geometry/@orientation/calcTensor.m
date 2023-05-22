@@ -26,6 +26,6 @@ function varargout = calcTensor(ori,T,varargin)
 %  geometric - geometric mean
 %
 % See also
-% tensor/mean ODF/calcTensor EBSD/calcTensor
+% tensor/mean SO3Fun/calcTensor EBSD/calcTensor
 
 [varargout{1:nargout}] = mean(ori .* T,varargin{:});

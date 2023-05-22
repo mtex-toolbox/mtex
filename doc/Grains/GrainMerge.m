@@ -71,19 +71,51 @@ mergedGrains(16).id
 
 childs = grains(parentId == mergedGrains(16).id)
 
-%% Calculate the twinned area
-% We can also answer the question about the relative area of these
-% initial grains that have undergone twinning to total area.
+%% Estimate twin area fraction
+% Determining which of the measured grains are orginal grains and which are
+% twins is a tough problem. Here we make a very simple assumption by
+% labeling those areas as twins that make up less than half of the merged
+% (original) parent grain
 
-twinId = unique(gB(isTwinning).grainId);
+% extract grain area for faster access
+gArea = grains.area;
 
-% compute the area fraction
-sum(area(grains(twinId))) / sum(area(grains)) * 100
+% loop over mergedGrains and determine children that are not twins
+isTwin = true(grains.length,1);
+for i = 1:mergedGrains.length
+   
+  % get child ids
+   childId = find(parentId==i);
+
+   % cluster grains of similar orientations
+   [fId,center] = calcCluster(grains.meanOrientation(childId),'maxAngle',...
+       15*degree,'method','hierarchical','silent');
+
+   % compute area of each cluster
+   clusterArea = accumarray(fId,gArea(childId));
+   
+   % label the grains of largest cluster as original grain
+   [~,fParent] = max(clusterArea);
+   isTwin(childId(fId==fParent)) = false;
+end
+
+% compute the area fraction of twins
+sum(area(grains(isTwin)))/sum(area(grains)) * 100
+
+% visualize the result
+close all
+plot(grains(~isTwin),'FaceColor','darkgray','displayName','not twin')
+hold on
+plot(grains(isTwin),'FaceColor','red','displayName','twin')
+hold on
+plot(mergedGrains.boundary,'linecolor','k','linewidth',2,'linestyle','-',...
+  'displayName','merged grains')
+mtexTitle('twin id')
 
 %%
-% The |parentId| may also used to compute properties of the parent grains
-% by averaging over the corresponding child grain properties. This can be
-% done with the Matlab command
+% The |parentId| may also be used to compute properties of the parent
+% grains by averaging over the corresponding child grain properties. This
+% can be done with the Matlab command
 % <mathworks.com/help/matlab/ref/accumarray.html accumarray>
 
 % this averages the GOS of the child grains into the parent grains

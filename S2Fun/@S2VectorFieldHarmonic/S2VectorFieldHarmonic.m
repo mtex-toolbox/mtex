@@ -18,18 +18,8 @@ methods
     % initialize a spherical vector field
     if nargin == 0, return; end
 
-    if length(sF) == 3
-      sVF.sF = sF(:);
-
-    elseif length(sF) == 2
-      f2 = @(y, v) ...
-        y(:, 1)./sin(v.theta).^2.*S2VectorField.rho(v)+ ...
-        y(:, 2).*S2VectorField.theta(v);
-      f = @(v) f2(sF.eval(v), v);
-
-      sVF = S2VectorFieldHarmonic.quadrature(@(v) f(v),'bandwidth',sF.bandwidth);
-    end
-
+    sVF.sF = sF(:);
+    
   end
 
   function bw = get.bandwidth(sVF), bw = sVF.sF.bandwidth; end

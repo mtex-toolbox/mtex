@@ -5,3 +5,4 @@ EBSDhex_index           EBSDhex
 grain2d_index           grain2d 
 grainBoundary_index     grainBoundary 
 triplePointList_index   triplePointList
+parentGrainReconstructor_index parentGrainReconstructor

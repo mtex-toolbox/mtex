@@ -1,5 +1,179 @@
 %% MTEX Changelog
 %
+%
+%% MTEX 5.10.0 5/2023
+%
+% *Weigthed Burgers Vector*
+%
+% With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
+% it is now possible to compute the weighted burgers vector both, using the
+% integral approach as well as the differentical approach.
+%
+% *Bain Group Determination* 
+% 
+% The function <calcVariantId.html |calcVariantId|> now returns an id for
+% the variant, the packet and the Bain group. The usage of this function is
+% demonstrated <MartensiteVariants.html here>.
+%
+% *Numerous minor addon, speed improvements, bug fixes*
+%
+% * New option |'max'| to <orientation.angle.html |angle(mori)|> to compute
+% the largest misorientation angle. Helpful for identifying twinning.
+% * Added checks for symmetry and positive definiteness when defining
+% stress, strain and ellasticity tensors.
+% * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
+% method for data cleaning in EBSD maps.
+% * Pseudesymmetries like now natively supported using the syntax
+% |crystalSymmetry('532')|
+% * |symmetrise(t,'iso')| return the isotropic portion of a tensor
+% * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
+% the symmetric decomposition of a tensor
+% * normalize the Taylor factor according to the strain
+% * display boundary length as default output
+% * better import of h5 files
+% * many more fixes and speed improvements
+%
+%% MTEX 5.9.0 2/2023
+%
+% *Habit Plane Detection*
+%
+% MTEX 5.9 includes powerful functions for the determination of predominant
+% habit planes and habit plane distributions. For the setting of a fully
+% transformed microstructure the are described in the paper <Habit plane
+% determination from reconstructed parent phase orientation maps>. Those
+% functions include
+%
+% * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
+% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
+% from families of grains or EBSD data.
+% * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
+% grain boundary normal distribution from a list of habit plane traces and
+% the corresponding grain orientations.
+% * new function <grainBoundary.characteristicShape.html
+% |characteristicShape(gB)|> to compute the characteristic shape from lists
+% of grain boundaries
+%
+% *Orientation dependent functions*
+%
+% The orientation distribution function (ODF) describes the relative volume
+% of crystal orientations within a material. As such it is a function that
+% associates to each orientation a number with unit mrd (multiples of
+% random distribution). However, in material science many other orientation
+% dependend functions are of importance, e.g., the Taylor factor with
+% respect to some outer strain depends on the local orientation. While ODFs
+% have ever since been at the heart of MTEX, this release is the first one
+% that includes full support for orientation dependent functions. Those
+% functions are called @SO3Fun and behave similar to sphercial functions
+% @S2Fun. In particular one can
+%
+% * add, substract, multiply and divide with them
+% * compare them
+% * detect global and local extrema
+% * visualize them in 3d and 2d sections
+% * compute gradients
+%
+% While implementing these new features we also significantly speeded up
+% all operations related with ODF operations. A full documentation of these
+% new features can be found <SO3FunConcept.html here>.
+%
+%
+%% MTEX 5.8.2 11/2022
+%
+% This is mainly a bug fix release. New functionalities include
+%
+% * <fibre.fit.html |fibre.fit(ori)|> and <fibre.fit.html |fibre.fit(odf)|>
+% robustly finds fibres in data sets of individual orientations and ODFs.
+% * <fibre.angle.html |angle(f1,f2)|> computes the angle between two
+% <OrientationFibre.html fibres>.
+% * <S2Fun/calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
+% symmetries in <ODFPoleFigure.html pole figures> or arbitrary
+% <S2FunConcept.html spherical functions>.
+%
+%% MTEX 5.8.0 01/2022
+%
+% MTEX 5.8 improves further on parent grain reconstruction by implementing
+% the novel <https://arxiv.org/abs/2201.02103 variant graph algorithm>
+% which is faster and more accurate than the prvious grain graph algorithm.
+%
+% *Improved parent grain reconstruction*
+%
+% Along with the new reconstruction algorithm the following new features
+% have been implemented:
+%
+% * manual interactive parent orientation selection using
+% <parentGrainReconstructor.selectInteractive.html |selectInteractive(job)|>
+% * new option |'reconsiderAll'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to recheck
+% all asignments of parent orientations.
+% * new option |'bestFit'| in
+% <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to consider
+% only the best fitting neighbor
+% * |job.votes| is now a table which contains the parentId votes and the
+% probabilities for all grains
+%
+% *Misc Changes*
+%
+% * new option |'region'| for |<EBSD.plot.html plot(ebsd)>| to plot only a
+% rectangular subregion of the map
+%
+%% MTEX 5.7.0 05/2021
+%
+% MTEX 5.7 improves on parent grain reconstruction. Changes include:
+%
+% *Improved parent grain reconstruction*
+%
+% * The ordering of the variants is stored within the OR misorientation |p2c|
+% as |p2c.variantMap|. In particular the variants in |p2c.variants| are
+% ordered by default according to the Morito convention. This can be easily
+% check by the command |round2Miller(p2c.variants)|
+% * The command |job.calcGBVotes| and |job.calcTPVotes| compute votes
+% associated with probabilities that are stored in |job.votes| and can
+% easily be analyzed.
+% * The options |'noP2C'| and |'noC2C'| have been replaced by |'p2c'| and
+% |'c2c'|.
+% * New option |job.useBoundaryMisorienation| which makes the parent grain
+% reconstructor to use the misorientations along the grain boundaries
+% instead of the misorientations between the grain mean orientations.
+% * added ShojiNishiyama orientation relationship.
+%
+% *Other Changes*
+%
+% * The command |findByOrientation| accepts a fibre as input.
+% * The antipodal |axisAngleColorKey| allows for option |'antipodal'|.
+% 
+%
+%% MTEX 5.6.1 03/2021
+%
+% This is mainly a bug fix release.
+%
+%% MTEX 5.6.0 01/2021
+%
+% MTEX 5.6 greatly simplifies parent grain reconstruction by introducing
+% the class <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|>. During the reconstruction procedure this
+% class keeps track of the correspondence between measured child grains and
+% the reconstructed parent grains. It provides the following functions for
+% recovering parent orientations which can be applied multiple times and in
+% any order to archieve the best possible reconstruction.
+%
+% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
+% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
+% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
+% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clusteres
+% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
+% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
+% * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
+%
+% The usage of this new class is demonstrated in <TiBetaReconstruction.html
+% Beta Titanium Reconstruction> and <MaParentGrainReconstruction.html
+% Parent Martensite Reconstruction>.
+%
+% *Compatibility fixes*
+%
+% MTEX 5.6 fixes several incompatibilities with Matlab versions earlier
+% then 2019b.
+%
 %% MTEX 5.5.0 11/2020
 %
 % *Orientation Embeddings*
@@ -82,11 +256,11 @@
 %
 % *Important Bug Fixes*
 %
-% * <ODF.volume.html |volume(odf)|> gave wrong results in the presense of
+% * <SO3Fun.volume.html |volume(odf)|> gave wrong results in the presense of
 % specimen symmetry and for centers close to the boundary of the
 % fundamental region.
 %
-% * <slibSystem.symmetrise.html |slibSystem.symmetrise.html|> gave
+% * <slipSystem.symmetrise.html |slipSystem.symmetrise|> gave
 % incorrect number of slipsystems due to a rounding error
 %
 %% MTEX 5.4.0 7/2020
@@ -129,7 +303,7 @@
 % * new helper function <majorityVote.html |majorityVote|> 
 % * new option |'noAntipodal'| for many commands like |symmetrise|,
 % |unique|, |dot|, |angle|
-% * new predefined orientation relationship |orientation.Burger|
+% * new predefined orientation relationship |orientation.Burgers|
 %
 %% MTEX 5.3.1 6/2020
 % 
@@ -393,7 +567,7 @@
 % allows to import arbitrary additional properties together with the
 % orientations, e.g., weights
 % * new option |logarithmic|
-% * new function <ODF.grad.html |grad|> to compute the gradient of and ODF
+% * new function <SO3Fun.grad.html |grad|> to compute the gradient of and ODF
 % at a certain orientation
 % * explicitely set the number of rows and columns in a MTEXFigure plot
 % with
@@ -552,7 +726,7 @@
 % *ODF component analysis*
 %
 % MTEX 5.0 allows for decomposing ODF into components using the command
-% <ODF.calcComponents.html calcComponents>. In its simplest form
+% <SO3Fun.calcComponents.html calcComponents>. In its simplest form
 %
 %   [mods,weights] = calcComponents(odf)
 %
@@ -569,7 +743,7 @@
 % The ODF component analysis is used as the new default algorithm in
 % <orientation.calcCluster.html calcCluster> for orientations. The idea is
 % to compute an ODF out of the orientations and call
-% <ODF.calcComponents.html calcComponents> with
+% <SO3Fun.calcComponents.html calcComponents> with
 %
 %   [center,~,centerId] = calcComponents(odf,'seed',ori)
 %
@@ -635,11 +809,11 @@
 %
 % *Other new functions*
 %
-% * <ODF.grad.html odf.grad> computes the gradient of an ODF at some
+% * <SO3Fun.grad.html odf.grad> computes the gradient of an ODF at some
 % orientation
 % * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
 % properties
-% * <ODF.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * <SO3Fun.fibreVolume.html  |fibreVolume|> works also for specimen symmetry
 % * allow to change the length of the scaleBar in EBSD plots
 %
 %% MTEX 4.5.2 11/2017
@@ -774,8 +948,8 @@
 %   f = fibre.fit([ori1,ori2,mean(ori1,ori2)])
 %
 % All commands that took a pair of directions to specify a fibre, e.g.,
-% <fibreODF.html fibreODF>, <ODF.fibreVolume.html fibreVolume>,
-% <ODF.plotFibre.html plotFibre> have been rewritten to accept a fibre as a
+% <fibreODF.html fibreODF>, <SO3Fun.fibreVolume.html fibreVolume>,
+% <SO3Fun.plotFibre.html plotFibre> have been rewritten to accept a fibre as a
 % single input argument. I.e. a fibre ODF is now defined by
 %
 %   odf = fibreODF(fibre.alpha(cs))
@@ -2015,7 +2189,7 @@
 %
 % *New ODF Class*
 %
-% * The new function <FourierODF.html FourierODF> provides an easy way to
+% * The new function <FourierODF.html |FourierODF|> provides an easy way to
 % define ODFs via their Fourier coefficients. In particular, MTEX allows now
 % to calculate with those ODFs in the same manner as with any other ODFs.
 %
@@ -2061,9 +2235,9 @@
 %
 % * ODF reconstruction and PDF calculation are about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
-% * ODF plotting and the calculation of <ODF.volume.html volume
-% fractions>, the <ODF.textureindex.html texture index>, the
-% <ODF.entropy.html entropy> and <ODF.calcFourier.html Fourier
+% * ODF plotting and the calculation of <SO3Fun.volume.html volume
+% fractions>, the <textureindex.html texture index>, the
+% <SO3Fun.entropy.html entropy> and <SO3Fun.calcFourier.html Fourier
 % coefficients> is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
@@ -2082,7 +2256,7 @@
 %
 % * |fibreVolume| calculates the
 % volume fraction within a fibre.
-% * |plotFourier| plots the Fourier coefficients of an ODF.
+% * |plotSpektra| plots the Fourier coefficients of an ODF.
 % * |setcolorrange| and the plotting option *colorrange* allow for
 % consistent color coding for arbitrary plots.
 % * A *colorbar* can be added to any plots.
@@ -2121,8 +2295,8 @@
 %
 %% MTEX 0.2 - 07/2007
 %
-% * new functions <ODF.textureindex.html textureindex>, <ODF.entropy.html
-% entropy>, <ODF.volume.html volume>
+% * new functions <textureindex.html texture index>, <SO3Fun.entropy.html
+% entropy>, <SO3Fun.volume.html volume>
 % * creatly improved help
 % * improved installation
 % * new options for plotting routines for specific ODF sections

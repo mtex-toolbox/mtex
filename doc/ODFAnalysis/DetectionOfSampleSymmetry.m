@@ -34,24 +34,24 @@ rot = rotation.byEuler(15*degree,12*degree,-5*degree);
 
 % Simulate individual orientations and rotate them.
 % Note that we loose the sample symmetry by rotating the orientations
-ori = rot * calcOrientations(odf,1000)
+ori = rot * discreteSample(odf,1000)
 
 % estimate an ODF from the individual orientations
 odf_est = calcDensity(ori,'halfwidth',10*degree)
 
 % and visualize it
-figure, plotPDF(odf_est,h,'antipodal',8,'silent');
+plotPDF(odf_est,h,'antipodal',8,'silent');
 
 %% Detect the sample symmetry axis in the reconstructed ODF
 % We observe that the reconstructed ODF has almost orthotropic symmetry,
-% but with respect to axed different from x, y, z. With the following
-% command we can determine an rotation such that the rotated ODF has almost
-% orthotropic symmetry with respect to x, y, z. The second argument is some
-% starting direction where MTEX locks for a symmetry axis.
+% but with respect to axes different from x, y, z. With the command 
+% <SO3Fun.centerSpecimen.html |centerSpecimen|> we can determine an rotation
+% such that the rotated ODF has almost orthotropic symmetry with respect 
+% to x, y, z. The second argument is some starting direction where MTEX 
+% looks for a symmetry axis.
 
 [odf_corrected,rot_inv] = centerSpecimen(odf_est);
 
-figure
 plotPDF(odf_corrected,h,'antipodal',8,'silent')
 
 % the difference between the applied rotation and the estimate rotation
@@ -60,7 +60,7 @@ angle(rot,inv(rot_inv)) / degree
 
 %% Sample symmetry in an ODF computed from pole figure data
 %
-% In the next example we apply the function |centerSpecimen| to an ODF
+% In the next example we apply the function <SO3Fun.centerSpecimen.html |centerSpecimen|> to an ODF
 % estimated from pole figure data. Lets start by importing them
 
 fname = fullfile(mtexDataPath,'PoleFigure','aachen_exp.EXP');
@@ -78,7 +78,7 @@ plotPDF(odf,h,'antipodal','silent')
 %%
 % Finally, we detect the orthotropic symmetry axes a1, a2, a3 by
 
-[~,~,a1,a2] = centerSpecimen(odf,yvector)
+[~,~,a1,a2] = centerSpecimen(odf,yvector,'Fourier')
 a3 = cross(a1,a2)
 
 annotate([a1,a2,a3],'label',{'RD','TD','ND'},'backgroundcolor','w','MarkerSize',8)

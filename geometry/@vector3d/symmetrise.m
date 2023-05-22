@@ -1,4 +1,4 @@
-function [v,l,sym] = symmetrise(v,S,varargin)
+function [v,l,sym] = symmetrise(v,varargin)
 % symmetrcially equivalent directions and its multiple
 %
 % Syntax
@@ -44,24 +44,33 @@ function [v,l,sym] = symmetrise(v,S,varargin)
 % m = Miller({1,0,0},{0,0,1},cs)
 % symmetrise(m)
 
-% treat as axes or not 
-antiSym = check_option(varargin,'antipodal') || v.antipodal;
+if nargin > 1 && isa(varargin{1},'symmetry')
+  S = varargin{1};
+  varargin(1) = [];
+else
+  S = specimenSymmetry;
+end
 
-% maybe we are going to ignore antipodal symmetry
-if check_option(varargin,'noAntipodal'), S = S.properGroup; end
+
+% symmetrisation includes antipodal symmetry?
+antiSym = check_option(varargin,'antipodal') || v.antipodal || S.isLaue;
+
+% there is no need to add antipodal symmetry twice
+if antiSym, S = S.properGroup; end
 
 if check_option(varargin,'unique')
 
-  antiUnique = antiSym && ~check_option(varargin,'noAntipodal');
+  % shall we use unique with antipodal?
+  if (check_option(varargin,'antipodal') || v.antipodal) ...
+      && ~check_option(varargin,'noAntipodal') 
   
-  if antiUnique % unqiue with antipodal -> no antipodal symmetrisation needed
-    
+    % if yes -> no antipodal symmetrisation needed
     antiSym = false;
-    S = S.properGroup;    % we also do not need to perform full symmetrisation
     apUnique = 'antipodal';
     
   else
     
+    % ensure unqiue ignores "antipodal"
     apUnique = 'noAntipodal';
     
   end  
@@ -76,26 +85,17 @@ end
 v = S.rot * v;
 
 % consider antipodal symmetry
-if antiSym && ~S.isLaue
-  
-  v = [v;-v];
-  
-  if check_option(varargin,'plot') %TODO
-    disp('Check This!');
-    del = v.z<-1e-6;
-    v.x(del) = [];
-    v.y(del) = [];
-    v.z(del) = [];
-  end
-end
+%if antiSym && ~S.isLaue, v = [v;-v]; end
+if antiSym && ~S.isLaue, v = reshape([1;-1] * reshape(v,1,[]),2*S.numSym,[]); end
 
+% finally ensure unqiue vectors if required
 if check_option(varargin,'unique')
   
   vSym = cell(size(v,2),1);
   idSym = cell(size(v,2),1);
   dim1 = size(v,1);
   for j = 1:size(v,2)
-    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',apUnique);
+    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',apUnique,'stable');
   end
 
   l  = cellfun(@length, vSym);
@@ -109,5 +109,6 @@ end
 % Miller/scatter       -> noAntipodal   as antipodal is treated by vector3d/scatter
 % checkZeroRange       ->  
 % Miller/multiplicity  ->
-% Miller/text          -> 
+% Miller/text          -> noAntipodal
 % fibre/symmetrise     -> 
+% SO3FunRBF/calcPDF    -> noAntipodal

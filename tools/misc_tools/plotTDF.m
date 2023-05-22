@@ -1,14 +1,17 @@
 function p1 = plotTDF(bc,pd,varargin)
 % Wrapper for the Matlab polar plot, can be used with calcTDF
 %
-% Input:
-%   bc          - azimuth value
-%   pd          - polar value
+% Input
+%  bc - azimuth value
+%  pd - polar value
 %
-% Options:
-%   nogrid      - get rid of grid on polar plot
-%   nolabels    - get rid of polar labels
-%   linewidth, linecolor, linestyle
+% Options
+%  nogrid   - get rid of grid on polar plot
+%  nolabels - get rid of polar labels
+%  linewidth - 
+%  linecolor -
+%  linestyle -
+%
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 

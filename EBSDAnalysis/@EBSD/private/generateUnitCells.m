@@ -17,9 +17,26 @@ y = reshape(bsxfun(@plus,xy(:,2),unitCell(:,2).'),[],1);
 % in general every measurment point generates 4 or 6 vertex points
 % some of them apear multiple times 
 % lets try to reduce them
-[~,m,n] = uniquetol([x-min(x) y-min(y)],0.01/sqrt(size(xy,1)),'ByRows',true );
+
+if ~check_option(varargin,'noStripes')
+  eps = abs(diff(unitCell));
+  eps = eps(eps > max(eps(:))/10);
+  eps = min(eps) / 12;
+  [~,m,n] = unique(round([x-min(x) y-min(y)]./eps),'rows');
+else
+  [~,m,n] = uniquetol([x-min(x) y-min(y)],0.01/sqrt(size(xy,1)),'ByRows',true );
+end
 
 v = [x(m) y(m)];
 
 % set faces
 faces = reshape(n, [], size(unitCell,1));
+
+% tic
+% [~,m,n] = unique(round([x-min(x) y-min(y)]./eps),'rows');
+% toc
+
+%%
+% tic
+% [~,m,n] = uniquetol([x-min(x) y-min(y)],0.01/sqrt(size(xy,1)),'ByRows',true );
+% toc

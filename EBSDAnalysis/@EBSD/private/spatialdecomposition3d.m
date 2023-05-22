@@ -14,7 +14,7 @@ if ~check_option(varargin,'voronoi') && size(x_D,1) > 1 %  check_option(varargin
   iX = 1+round(bsxfun(@rdivide,iX,dX));
 
   
-  sz = max(iX);  %extend, number of voxels in each direction
+  sz = max(iX);  %extent, number of voxels in each direction
   
   % generate a tetragonal unit cell
   id = s2i(sz,iX);

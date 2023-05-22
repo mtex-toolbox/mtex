@@ -1,10 +1,11 @@
 function v = log(ori,ori_ref,varargin)
-% the misorientation vector between two orientations 
+% misorientation vector between two orientations 
 %
-% Description
-%
-% Mathematically, misorientation vector is the the inverse of the
-% exponential map, hence the name log.
+% The misorientation vector can also be seen as the projection of an
+% orientarion onto the tangential space of the orientation space centered
+% at the orientation |ori_ref|. The inverse mapping from the tantential
+% space onto the orientation space is the exponential map |<Miller.exp.html
+% exp>|.
 %
 % Syntax
 %   m = log(mori) % the misorientation vector in crystal coordinats 

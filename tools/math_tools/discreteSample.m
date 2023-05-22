@@ -12,7 +12,7 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 %   gB = discreteSample(gB,points,'withoutReplacement')
 %
 % Input
-%  f      - density function, e.g., function handle, @S2Fun, @ODF
+%  f      - density function, e.g., function handle, @S2Fun, @SO3Fun
 %  gB     - @grainBoundary
 %  ebsd   - @EBSD
 %  ori    - @orientation
@@ -58,6 +58,12 @@ else
   
 end
 
-ind = discretesample(arg1,points);
+if numel(arg1) == 1 && arg1 == 1
+  ind = ones(points,1);
+else
+  ind = discretesample(arg1,points);
+end
 
 obj = subSet(obj,ind);
+
+end

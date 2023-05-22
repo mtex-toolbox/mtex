@@ -10,7 +10,7 @@
 % start with a trigonal alpha-fibre ODF which we define by
 
 cs = crystalSymmetry('32');
-fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.alpha(cs),'halfwidth',20*degree);
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 
 plot(fibre_odf,'sections',6,'silent')
 mtexColorbar
@@ -18,7 +18,7 @@ mtexColorbar
 %% Computing Random Orientations
 %
 % In order to compute $50000$ random orientation from the ODF |fibre_odf| we use
-% the command |<ODF.discreteSample.html discreteSample>|.
+% the command |<SO3Fun.discreteSample.html discreteSample>|.
 
 ori = fibre_odf.discreteSample(50000)
 
@@ -38,7 +38,7 @@ plot(fibre_odf,'sections',6,'silent','sigma','contour','linewidth',2)
 
 % plot the orientations into the sigma sections
 hold on
-plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.5,'all','MarkerEdgeColor','k','MarkerSize',4)
+plot(ori,'MarkerFaceColor','none','MarkerEdgeAlpha',0.25,'all','MarkerEdgeColor','k','MarkerSize',4)
 hold off
 
 %% ODF Estimation from Random Orientations
@@ -63,9 +63,8 @@ calcError(odf_rec,fibre_odf)
 
 %% Exporting Random Orientations
 %
-% In order to make use of the sampled orientations you pronbably want to
+% In order to make use of the sampled orientations you probably want to
 % <OrientationExport.html export> them as <RotationDefinition.html Euler
 % angles> into a text files. This can be done using the commands
 % |<quaternion.export.html export>| and |<orientation.export_VPSC.html
 % export_VPSC>|.
-

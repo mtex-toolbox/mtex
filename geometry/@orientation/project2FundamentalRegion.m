@@ -13,12 +13,12 @@ function ori = project2FundamentalRegion(ori,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-if ismember(ori.SS.id, [1,2])
+if isempty(ori.SS) || ismember(ori.SS.id, [1,2]) 
   ori = project2FundamentalRegion@quaternion(ori,ori.CS,varargin{:});
 else
   if ori.antipodal, ap = {'antipodal'}; else, ap = {}; end
   CS = ori.CS; SS = ori.SS;
-  ori = project2FundamentalRegion@quaternion(ori,CS,SS,ap{:},varargin{:});
+  ori = project2FundamentalRegion@quaternion(ori,CS,SS,varargin{:},ap{:});
 
   % ensure result is of type orientation
   if ~isa(ori,'orientation')

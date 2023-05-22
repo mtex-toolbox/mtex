@@ -248,10 +248,12 @@ classdef sphericalPlot < handle
       % the labels
       interpreter = getMTEXpref('textInterpreter');
       fs = getMTEXpref('FontSize');
+      
+      onoff = get_option(varargin,'labels','on');
       xlabel(sP.ax,get_option(varargin,'xlabel','rho'),...
-        'interpreter',interpreter,'FontSize',fs);
+        'interpreter',interpreter,'FontSize',fs,'visible',onoff);
       ylabel(sP.ax,get_option(varargin,'ylabel','theta'),...
-        'interpreter',interpreter,'FontSize',fs);
+        'interpreter',interpreter,'FontSize',fs,'visible',onoff);
       
     end
 
@@ -315,10 +317,12 @@ classdef sphericalPlot < handle
         h = Miller(unique(h),CS);
         
         % try direct coordinates
-        h.dispStyle = abs(h.dispStyle);
+        h.dispStyle = MillerConvention(abs(MillerConvention(h.dispStyle)));
         
         % if this gives no integer values - go to reciprocal coordinates
-        if any(angle(round(h),h)>1e-5), h.dispStyle = -h.dispStyle; end
+        if any(angle(round(h),h)>1e-5)
+          h.dispStyle = MillerConvention(-MillerConvention(h.dispStyle)); 
+        end
         h = round(h);
       end
       

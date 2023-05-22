@@ -1,7 +1,8 @@
 function display(S3G)
 % standard output
 
-displayClass(S3G,inputname(1));
+refSystems = [char(S3G.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(S3G.SS,'compact')];
 
-disp(['  symmetry: ',char(S3G.CS),' - ',char(S3G.SS)]);
-disp(['  grid    : ',char(S3G)]);
+displayClass(S3G,inputname(1),'moreInfo',refSystems);
+
+disp(['  grid: ',char(S3G)]);

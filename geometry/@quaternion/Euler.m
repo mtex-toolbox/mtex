@@ -96,12 +96,21 @@ if nargout == 0
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
 
-  if isa(quat,'rotation')
+  if isa(quat,'rotation') && any(isImproper(quat.subSet(':')))
     i = isImproper(quat);
     d = [d,i(:)];
     labels = [labels,{'Inv.'}];
   end
 
+  s = getClass(varargin,'struct');
+  if ~isempty(s)
+    fn = fieldnames(s);
+    labels = [labels,fn];
+    for k = length(fn)
+      d = [d,s.(fn{k})];
+    end    
+  end
+  
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);

@@ -2,10 +2,7 @@
 %
 % Simulate a set of pole figures for the SantaFe standard ODF, estimate
 % an ODF and compare it to the inital SantaFe ODF.
-
-%% Open in Editor
 %
-
 %% Simulate pole figures
 
 CS = crystalSymmetry('m-3m');
@@ -63,15 +60,15 @@ mtexColorMap white2black
 %%
 close all;
 % true ODF
-plotFourier(SantaFe,'bandwidth',32,'linewidth',2)
+plotSpektra(SantaFe,'bandwidth',32,'linewidth',2)
 % keep plot for adding the next plots
 hold all
 
 % With ghost correction:
-plotFourier(rec,'bandwidth',32,'linewidth',2)
+plotSpektra(rec,'bandwidth',32,'linewidth',2)
 
 % Without ghost correction:
-plotFourier(rec2,'bandwidth',32,'linewidth',2)
+plotSpektra(rec2,'bandwidth',32,'linewidth',2)
 
 legend({'true ODF','with ghost correction','without ghost correction'})
 % next plot command overwrites plot

@@ -21,7 +21,7 @@ function mdf = calcMDF(mori,varargin)
 %   mdf = calcMDF(grains('phase1').meanOrientation,'weights',grains('phase1').diameter)
 %
 %   % use a specific kernel
-%   psi = AbelPoissonKernel('halfwidth',10*degree)
+%   psi = SO3AbelPoissonKernel('halfwidth',10*degree)
 %   mdf = calcMDF(mori,'kernel',psi) 
 %
 %   % compute the MDF as a Fourier series of order 16
@@ -32,13 +32,13 @@ function mdf = calcMDF(mori,varargin)
 %  mori - misorientation
 %
 % Output
-%  mdf - @ODF
+%  mdf - @SO3Fun
 %
 % Options
 %  weights    - list of weights for the orientations
 %  halfwidth  - halfwidth of the kernel function
 %  resolution - resolution of the grid where the MDF is approximated
-%  kernel     - kernel function (default -- de la Valee Poussin kernel)
+%  kernel     - @SO3Kernel function (default -- SO3 de la Valee Poussin kernel)
 %  order      - order up to which Fourier coefficients are calculated
 %
 % Flags

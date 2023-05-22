@@ -18,7 +18,7 @@ ebsd(grains(grains.grainSize<5)) = [];
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 grains(grains.isBoundary) = [];
 
-grains=smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smooth(grains('indexed'),10,'moveTriplePoints');
 
 % plot all grains and highlight a specific one
 plot(grains)
@@ -215,7 +215,7 @@ mod(omega(id_min)./degree-90,180)
 
 close all
 pairs = [1 1; nchoosek(1:3,2)];
-phase = {'fo' 'en' 'di'};
+phase = {'Fo' 'En' 'Di'};
 for i=1:length(pairs)
   
   gB = grains.boundary(phase{pairs(i,:)});
@@ -225,10 +225,49 @@ for i=1:length(pairs)
   
 end
 hold off
-legend('Location','best' )
+legend('Location','southoutside','Orientation','horizontal')
 
 %%
 % We can see that Forsterite-Forsterite boundaries form a fabric slightly
 % more inclined with respect to the other phase boundariesand that the
 % phase boundaries between the two pyroxenes (Enstatite and Diopside) show
 % the lowest anisotropy.
+%
+%% Characteristic Shape
+%
+% The characteristic shape results from the cummulative sum of all grain
+% boundary segements ordered by the angle of the segment direction. It can
+% be regarded as to represent the average grain shape, however without the
+% need to use closed areas such as it would be required when working with
+% grains.
+%
+% Here we can compare the shape defined by Forterite-Forsterite,
+% Enstatite-Enstatite and Forsterite-Enstatite boundaries
+
+plotopts = {'normalize','linewidth',2, 'plain'};
+
+shapeF = characteristicShape(grains.boundary('Fo','Fo'))
+plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
+
+hold on
+shapeE = characteristicShape(grains.boundary('En','En'));
+plot(shapeE,plotopts{:},'DisplayName','En-En')
+
+hold on
+shapeEF = characteristicShape(grains.boundary('En','Fo'));
+plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
+hold off
+
+legend('Location','southoutside','Orientation','horizontal')
+
+%%
+% The output of the command <grainBoundary.characteristicShape.html
+% |characteristicShape|> is a <shape2d.shape2d.html |shape2d|> object which
+% behaves very similar to a <grain2d.grain2d.html |grain2d|> object. Hence
+% it is easy to derive things such as a long axis or e.g. the angle between
+% the longest and the shortest caliper which can be regarded as a measure
+% of asymmetry.
+
+angle(shapeF.caliper('longest'),shapeF.caliper('shortest'))/degree
+angle(shapeE.caliper('longest'),shapeE.caliper('shortest'))/degree
+angle(shapeEF.caliper('longest'),shapeF.caliper('shortest'))/degree

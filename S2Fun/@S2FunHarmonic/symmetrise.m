@@ -37,7 +37,7 @@ if isa(varargin{1},'vector3d')
   M = sF.bandwidth;
   sFs.bandwidth = M;
   sFs.fhat((0:M).^2+(1:M+1)) = sF.fhat((0:M).^2+(1:M+1));
-  %psi = kernel(real(sF.fhat((0:M).^2+(1:M+1))));
+  %psi = S2Kernel(real(sF.fhat((0:M).^2+(1:M+1))));
   m = 0:M;
   psi = S2Kernel(sqrt((2*m.'+1)).*real(sF.fhat((0:M).^2+(1:M+1)))./sqrt(4*pi));
   

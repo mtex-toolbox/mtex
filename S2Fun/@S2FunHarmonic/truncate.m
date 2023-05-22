@@ -20,6 +20,6 @@ fh = max(fh, [], 2);
 cutoff = max(fh) * 1e-8;
 bandwidth = find(fh > cutoff,1,'last')-1;
 if isempty(bandwidth) || ( bandwidth < 0 ), bandwidth = 0; end
-sF.fhat = sF.fhat(1:(bandwidth+1)^2, :);
+sF.fhat = sF.fhat(1:(bandwidth+1)^2, :,:,:);
 
 end

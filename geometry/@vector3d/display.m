@@ -1,9 +1,16 @@
 function display(v,varargin)
 % standard output
 
-vname = get_option(varargin,'name',inputname(1));
-varargin = delete_option(varargin,'name',1);
-displayClass(v,vname,varargin{:});
+if check_option(varargin,'onlyShowVectors')
+  d = [v.x(:),v.y(:),v.z(:)];
+  d(abs(d) < 1e-10) = 0;
+  
+  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+  return
+end
+
+displayClass(v,inputname(1),varargin{:});%...
+  %'moreInfo',char(v.refSystem,'compact'),varargin{:});
 
 if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 
@@ -19,11 +26,17 @@ end
 disp(char(dynOption(v)));
 
 % display coordinates
-if ~check_option(varargin,'skipCoordinates') && ...
-    (check_option(varargin,'all') || (length(v) < 20 && ~isempty(v)))
+if check_option(varargin,'skipCoordinates') || isempty(v) || getMTEXpref('generatingHelpMode')
+
+elseif check_option(varargin,'all') || (length(v) < 20)
   
-  d = [v.x(:),v.y(:),v.z(:)];
-  d(abs(d) < 1e-10) = 0;
-  
-  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+  display(v,'onlyShowVectors')
+
+else
+
+  disp(' ')
+  s = setappdata(0,'data2beDisplayed',v);
+  disp(['  <a href="matlab:display(getappdata(0,''',s,'''),''onlyShowVectors'')">show vectors</a>'])
+  disp(' ')
+
 end

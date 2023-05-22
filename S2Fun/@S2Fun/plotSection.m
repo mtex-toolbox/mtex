@@ -35,6 +35,8 @@ end
 S2 = [axis2quat(sec,omega),quaternion.nan(numel(sec))]*axis2quat(orth(sec),eta)*sec;
 
 d = reshape(sF.eval(S2),length(S2), []);
+if isa(d,'double') && ~isreal(d), d = real(d);end
+
 delta = getappdata(mtexFig.gca,'delta');
 if isempty(delta)
   delta = nanmax(d) / 200 ;
@@ -42,7 +44,7 @@ if isempty(delta)
 end
 delta = delta * get_option(varargin,'linewidth',1);
 
-if isa(d,'double') && ~isreal(d), d = real(d);end
+
 for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
 

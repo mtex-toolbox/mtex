@@ -68,9 +68,14 @@ classdef axisAngleColorKey < orientationColorKey
     function oM = axisAngleColorKey(varargin)
       oM = oM@orientationColorKey(varargin{:});
       oM.oriRef = get_option(varargin,'oriRef');
+      if ~isempty(oM.oriRef) 
+        oM.antipodal = oM.oriRef.antipodal;
+      end
       
       if isa(oM.CS2,'specimenSymmetry')
         sym = specimenSymmetry;
+      elseif oM.antipodal
+        sym = Laue(disjoint(oM.CS1,oM.CS2));
       else
         sym = properGroup(disjoint(oM.CS1,oM.CS2));
       end

@@ -74,7 +74,7 @@ plot(colorKey,'sections',6,'sigma')
 colorKey = spotColorKey(ebsd('Fo'));
 colorKey.center = mean(ebsd('Forsterite').orientations,'robust');
 colorKey.color = [0,0,1];
-colorKey.psi = deLaValleePoussinKernel('halfwidth',20*degree);
+colorKey.psi = SO3DeLaValleePoussinKernel('halfwidth',20*degree);
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
@@ -109,7 +109,7 @@ colorKey = ipfSpotKey(csFo);
 colorKey.inversePoleFigureDirection = f.r;
 colorKey.center = f.h;
 colorKey.color = [0 0 1];
-colorKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
+colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
@@ -165,7 +165,7 @@ colorKey = ipfSpotKey(csFo);
 colorKey.inversePoleFigureDirection = zvector;
 colorKey.center = Miller(1,1,1,csFo);
 colorKey.color = [0 0 1];
-colorKey.psi = S2DeLaValleePoussin('halfwidth',7.5*degree);
+colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
 
 hold on
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations),'FaceAlpha',0.5)

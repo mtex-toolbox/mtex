@@ -12,4 +12,3 @@ S2VectorField_index
 S2VectorFieldHarmonic_index
 S2VectorFieldTri_index
 S2Kernel_index
-S2DeLaValleePoussin_index de S2DeLaValleePoussin

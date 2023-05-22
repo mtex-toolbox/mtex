@@ -21,7 +21,8 @@ fontSize = round(15 * ppi/100);
 %fontSize = 15;
 setMTEXpref('FontSize',fontSize);
 set(0,'DefaultAxesFontSize',fontSize);
-set(0,'DefaultLegendFontSize',fontSize)
+set(0,'DefaultLegendFontSize',fontSize);
+try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC> 
 
 % default plotting of the coordinate axes
 setMTEXpref('xAxisDirection','north');
@@ -90,7 +91,13 @@ setMTEXpref('EBSDExtensions',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
 
 % set default colors
-%set(0,'DefaultAxesColorOrder',vega20)
+colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
+% in former MTEX version this was
+% color.rgb = vega20;
+setMTEXpref('colors',colors.rgb)
+
+% make these colors the default in Matlab
+set(0,'DefaultAxesColorOrder',colors.rgb)
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
@@ -197,16 +204,24 @@ setMTEXpref('memory',500*1024);
 %
 setMTEXpref('FFTAccuracy',1E-2);
 
-setMTEXpref('maxBandwidth',512);
+setMTEXpref('maxS2Bandwidth',512);
+
+setMTEXpref('maxSO3Bandwidth',64);
 
 %% degree character
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 
-degree_char = native2unicode([194 176],'UTF-8');
+degreeChar = native2unicode([194 176],'UTF-8');
 %degree_char = '?';
 
-setMTEXpref('degreeChar',degree_char);
+setMTEXpref('degreeChar',degreeChar);
+
+arrowChar = char(8594);
+%arrowChar = '→';
+%arrowChar = '~>';
+setMTEXpref('arrowChar',arrowChar);
+
 
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');

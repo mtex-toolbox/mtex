@@ -65,14 +65,8 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'symmetry')
     
-    phases = false(1,length(ebsd.CSList));
-    for k=1:length(ebsd.CSList)
-      if isa(ebsd.CSList{k},'symmetry') && ebsd.CSList{k} == subs{i} && ...
-          (isempty(subs{i}.mineral) || strcmp(ebsd.CSList{k}.mineral,subs{i}.mineral))
-        phases(k) = true;
-      end
-    end
-    ind = ind(:) & ebsd.phaseId==find(phases);
+    phaseId = ebsd.cs2phaseId(subs{i});
+    ind = ind(:) & ebsd.phaseId == phaseId;
     
   elseif isa(subs{i},'grain2d')
     
