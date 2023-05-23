@@ -220,8 +220,8 @@ try
   
   if ~isempty(str2num(cod))
     disp('MPOD-File from Material Properties Open Database (MPOD)')
-    disp(['> download : http://www.materialproperties.org/datafiles/' cod '.mpod'])
-    cif = urlread(['http://www.materialproperties.org/datafiles/' cod '.mpod']);
+    disp(['> download : http://mpod.cimav.edu.mx/datafiles/' cod '.mpod'])
+    cif = urlread(['http://mpod.cimav.edu.mx/datafiles/' cod '.mpod']);
   else
     cif = urlread(cod);
   end
