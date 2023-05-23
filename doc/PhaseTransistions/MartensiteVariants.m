@@ -251,7 +251,6 @@ drawNow(gcm)
 
 plot(grains('Fe'),color)
 
-
 %% Classification of child variants by Bain group Ids
 %
 % Another important classification is seperating the variants into their 
@@ -267,7 +266,6 @@ plot(grains('Fe'),color)
 % Bain group Ids serve as a convenient identifier to categorize, classify 
 % and differentiate the various transformation paths that may occur during 
 % phase transformation based on their crystallographic characteristics.
-
 
 color = ind2color(bainId);
 plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);
