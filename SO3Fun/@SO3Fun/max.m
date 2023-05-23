@@ -33,9 +33,9 @@ function [values,modes] = max(SO3F,varargin)
 % Example
 %
 %   %find the local maxima of the <SantaFe.html SantaFe> ODF
-%   mode = calcModes(SantaFe)
-%   plotPDF(SantaFe,Miller(0,0,1,mode.CS))
-%   annotate(mode)
+%   [value,ori] = max(SantaFe)
+%   plotPDF(SantaFe,Miller(0,0,1,ori.CS))
+%   annotate(ori)
 %
 % See also
 % SO3Fun/min
@@ -69,7 +69,8 @@ else
   S3G = get_option(varargin,'startingNodes');
   
   if isempty(S3G)
-    S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0);
+    antiFlag = {[],'antipodal'};
+    S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0,antiFlag{1+SO3F.antipodal});
   end
   S3G = reshape(S3G,[],1);
 

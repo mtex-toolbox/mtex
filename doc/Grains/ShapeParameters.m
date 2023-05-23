@@ -9,8 +9,8 @@
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %
-% || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in $\mu m^2$ || 
-% || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in $\mu m$ || 
+% || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in µm² || 
+% || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in µm || 
 % || <grain2d.subBoundarySize.html |subBoundarySize|> || number of inner boundaries || <grain2d.subBoundarySize.html |subBoundaryLength|> || length of inner boundaries in $\mu m$ || 
 % || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter ||
 % || <grain2d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 

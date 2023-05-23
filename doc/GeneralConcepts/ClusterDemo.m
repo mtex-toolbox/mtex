@@ -6,8 +6,9 @@
 % define an octohedral crystal symmetry
 cs  = crystalSymmetry('432');
 
-% define a radially symmetric ODF with two randomly selected peaks.
-odf = unimodalODF(orientation.rand(2,cs),'halfwidth',5*degree);
+% define an ODF with two radial peaks
+ori = orientation.byEuler([10 40]*degree,[30 50]*degree,[50 70]*degree,cs)
+odf = unimodalODF(ori,'halfwidth',5*degree);
 
 
 % view the odf 
@@ -35,8 +36,7 @@ annotate(center,'add2all');
 % Note that the upper and lower hemisphere plots are versions of each
 % other, reflected horizontally plus vertically.  This means that the
 % underlying data has antipodal symmetry, contributing equally to both
-% hemispheres.  Let's include that in the cluster sorting.
-
+% hemispheres. Let's include that in the cluster sorting.
 %%
 % repeat the calculation after changing all the vector3d to be antipodal
 r.antipodal = true;
@@ -87,10 +87,10 @@ d(d<0.01) = 0;
 % use the statistic toolbox
 try
   d = squareform(d);
-  z = linkage(d,'single');
+  z = linkage(d,'ward');
     
   %cId = cluster(z,'cutoff',30*degree);
-  cId = cluster(z,'maxclust',12);
+  cId = cluster(z,'maxclust',6);
 
   plotCluster(r,cId)
 catch

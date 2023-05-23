@@ -80,9 +80,9 @@ for k = 0:iterMax
   sumOmega(sumOmega>maxTravel) = [];
 
   % break if we have already numLocal points found
-  if nnz(id==1)>= numLocal &&...
+  if nnz(id==1)>= numLocal && ...
       max(mink(f(id==1),min(nnz(id),numLocal))) < ...
-      min(f(id>1)) + 10 * min(min(line_f-line_f(:,1)))
+      min([inf;f(id>1) + 10 * min(min(line_f-line_f(:,1)))])
     break
   end
   

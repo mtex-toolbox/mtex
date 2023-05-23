@@ -18,7 +18,7 @@ mtexColorMap LaboTeX
 mtexColorbar
 
 %%
-% The function <orientation.calcODF.html calcODF> implements the ODF
+% The function <rotation.calcDensity.html calcDensity> implements the ODF
 % estimation from EBSD data in MTEX. The underlying statistical method is
 % called kernel density estimation, which can be seen as a generalized
 % histogram. To be more precise, let's $\psi : SO(3) \to R$ be a radially

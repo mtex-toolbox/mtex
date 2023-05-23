@@ -79,11 +79,13 @@ rot.angle ./degree
 
 %%
 % Closely related to the axis angle parameterisation of a rotation is the
-% Rodriguess Frank vector. This is the rotational axis scaled by $\tan
-% \omega/2$, where $\omega$ is the rotational angle.
+% Rodriguess Frank vector. 
 
 R = rot.Rodrigues
 
+%%
+% This is the rotational axis scaled by $\tan \omega/2$, where $\omega$ is
+% the rotational angle.
 2 * atan(norm(R))./degree
 
 %%

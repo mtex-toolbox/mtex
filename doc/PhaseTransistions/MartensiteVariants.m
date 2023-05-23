@@ -219,6 +219,16 @@ plot(childOri,color,'axisAngle')
 % each other through specific symmetries. The crystallographic packet Id is
 % a means of identifying and distinguishing a specific packet of variants 
 % that share the same habit plane and exhibit related crystallographic 
+%
+% A crystallographic packet Id is used to identify a packet of variants
+% with the same habit plane (i.e. - the interfacial plane between the
+% parent and child crystal lattices along which the atomic rearrangements
+% occur during martensitic transformation).
+%
+% Within a crystallographic packet, the individual variants are related to
+% each other through specific symmetries. The crystallographic packet Id is
+% a means of identifying and distinguishing a specific packet of variants
+% that share the same habit plane and exhibit related crystallographic
 % orientations.
 
 color = ind2color(packetId);
@@ -266,6 +276,16 @@ plot(grains('Fe'),color)
 % Bain group Ids serve as a convenient identifier to categorize, classify 
 % and differentiate the various transformation paths that may occur during 
 % phase transformation based on their crystallographic characteristics.
+%
+% The concept of Bain groups is based on the Bain notation.The latter provides 
+% a concise system of representing the transformation path and the geometric
+% correspondence between the crystal structures of the parent austenite and 
+% child martensite phases. Each Bain group is labeled with a unique Bain 
+% group Id, which represents a distinct combination of orientation relationships 
+% between parent and child phases. 
+% Bain group Ids serve as a convenient identifier to categorize, classify and 
+% differentiate the various transformation paths that may occur during martensitic 
+% transformation based on their crystallographic characteristics.
 
 color = ind2color(bainId);
 plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);

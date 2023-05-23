@@ -137,7 +137,7 @@ if 0
   end
   meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
 else
-  [meanRotation, GOS] = accumarray(grainId,q,'robust');
+  [meanRotation, GOS] = accumarray(grainId(:),q(:),'robust');
 end
 % save 
 grains.prop.GOS = GOS;

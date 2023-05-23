@@ -21,9 +21,10 @@ CS2 = CS2.properGroup;
 
 % project to fundamental region
 % note: d(CS2 * q * CS1, q_ref) = d(q, inv(CS2) * q_ref * inv(CS1))
-q_refSym = mtimes(times(inv(CS2.rot),q_ref,1),inv(CS1.rot),0); 
+q_refSym = mtimes(mtimes(inv(CS2.rot),q_ref,1).',inv(CS1.rot),0); 
+q_refSym = reshape(q_refSym,length(q_ref),[]);
 
-if length(q)>100000
+if length(q)>100000 && length(q_ref) == 1
   
   % maybe q_ref has some multiplicity and we can save some time
   [q_refSym,m,~] = unique(q_refSym,'antipodal','noSymmetry'); 
@@ -37,7 +38,8 @@ if length(q)>100000
 else
     
   % take the minimum distances to all symmetric equivalent orientations
-  [~,ind] = max(abs(dot_outer(q,q_refSym,'noSymmetry','ignoreInv')),[],2);  
+  d = abs(dot(reshape(q,[],1),q_refSym,'noSymmetry','ignoreInv'));
+  [~,ind] = max(d,[],2);  
   [ics2,ics1] = ind2sub([numSym(CS2),numSym(CS1)],ind);
   
 end
