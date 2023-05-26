@@ -86,6 +86,7 @@ R = rot.Rodrigues
 %%
 % This is the rotational axis scaled by $\tan \omega/2$, where $\omega$ is
 % the rotational angle.
+
 2 * atan(norm(R))./degree
 
 %%
