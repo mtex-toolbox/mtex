@@ -1,33 +1,45 @@
-classdef grain3d
+classdef grain3d ...< phaseList & dynProp
   % class representing 3 dimensional grains
+
+  properties  % with as many rows as data
+    id=[]
+  end
+
   properties
-    id=[] 
+    boundary
+  end
+
+  properties (Dependent)
     V     %verticies
-    E     %edges
-    I_EF  %incidenc matrix edges x face
-    I_CF  %incidenc matrix cells x face
     poly  %cell arry with all faces
+    I_CF  %incidenc matrix cells x face
   end
 
   methods
 
-    function grains = grain3d(V,E,I_EF,I_CF,poly)
+    function grains = grain3d(V,poly,I_CF)
       %contructor
 
       grains.id=(1:size(I_CF,1)).';
-      grains.V=V;
-      grains.E=E;
-      grains.I_EF=I_EF;
-      grains.poly=poly;
-      grains.I_CF=I_CF;
+      grains.boundary=grain3Boundary(V,poly,I_CF);
     end
 
-    plot(this,GrainIDs)
+    function V = get.V(grains)
+      V = grains.boundary.V;
+    end
+
+    function poly = get.poly(grains)
+      poly = grains.boundary.poly;
+    end
+
+    function I_CF = get.I_CF(grains)
+      I_CF = grains.boundary.I_CF;
+    end
 
   end
 
   methods (Static = true)
-    [V,E,I_EF,I_CF,poly] = load(fname)
+    [grain3d] = load(fname)
   end
 end
 

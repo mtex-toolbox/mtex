@@ -1,12 +1,12 @@
-function [V,E,I_EF,I_CF, poly] = load(filepath)
+function [grains] = load(filepath)
   % load tesselation data from neper files
  
-  [V, E, I_EF, I_CF, poly] = readTess3File(filepath);
-
+  [V, poly, I_CF] = readTess3File(filepath);
+  grains=grain3d(V,poly,I_CF);
 
 end
 
-function [V, E, I_EF, I_CellsFaces, poly] = readTess3File(filepath)
+function [V, poly, I_CellsFaces] = readTess3File(filepath)
   % function for reading data from nepers tesselation files (.tess)
   %
   % Description
