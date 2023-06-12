@@ -20,8 +20,8 @@ SO3F = reshape(SO3F,prod(s));
 
 L = SO3F.bandwidth;
 
-cs = SO3F.CS.properGroup;
-ss = SO3F.SS.properGroup;
+cs = get_option(varargin,'CS',SO3F.CS.properGroup);
+ss = get_option(varargin,'SS',SO3F.SS.properGroup);
  
 if numSym(cs) ~= 1 % symmetrize crystal symmetry
   SO3F.fhat = convSO3(SO3F.fhat,cs.WignerD(L));
