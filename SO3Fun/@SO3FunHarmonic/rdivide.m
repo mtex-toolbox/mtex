@@ -27,7 +27,7 @@ end
 
 ensureCompatibleSymmetries(SO3F1,SO3F2);
 SO3F = SO3FunHandle(@(rot) SO3F1.eval(rot)./ SO3F2.eval(rot),SO3F1.SRight,SO3F1.SLeft);
-SO3F = SO3FunHarmonic(SO3F, 'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),2*max(SO3F1.bandwidth, SO3F2.bandwidth)));
+%SO3F = SO3FunHarmonic(SO3F);
 
 end
 
