@@ -37,6 +37,7 @@ ori(~isUniform) = times(reshape(SO3F.center(ic(~isUniform)),[],1), ...
   rotation.byAxisAngle(axis,angle),false);
 
 % random symmetry elements
+% TODO: Error in discreteSample(SantaFe,10)
 ori = ori .* SO3F.CS.rot(randi(SO3F.CS.numSym,npoints,1));
 if SO3F.SS.numSym>1
   ori = SO3F.SS.rot(randi(SO3F.SS.numSym,npoints,1)) .* ori;
