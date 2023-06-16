@@ -1,4 +1,4 @@
-function ind = id2ind(grains,id)
+function ind = id2ind(grains3,id)
 % find ind such that grains.id(ind) == id
 %
 % Syntax
@@ -11,5 +11,5 @@ function ind = id2ind(grains,id)
 % Output
 %  ind - a list indeces such that grains.id(ind) == id
 
-[~,ind] = ismember(id,grains.id);
+[~,ind] = ismember(id,grains3.id);
 ind = reshape(ind, size(id));

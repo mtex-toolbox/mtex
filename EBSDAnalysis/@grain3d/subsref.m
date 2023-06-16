@@ -1,4 +1,4 @@
-function varargout = subsref(grains,s)
+function varargout = subsref(grains3,s)
 % implements grains(1:3)
 %
 % Syntax
@@ -13,33 +13,32 @@ function varargout = subsref(grains,s)
 if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
   if strcmp(s(1).type,'{}')
-    ind = grains.id2ind(s(1).subs{1});
+    ind = grains3.id2ind(s(1).subs{1});
   else
-    ind = subsind(grains,s(1).subs);
+    ind = subsind(grains3,s(1).subs);
   end
   
   
-  grains = subSet(grains,ind);
+  grains3 = subSet(grains3,ind);
  
   % is there something more to do?
   if numel(s)>1
     s = s(2:end);
   else
-    varargout{1} = grains;
+    varargout{1} = grains3;
     return
   end
 end
 
 % maybe reference to a dynamic property
-%{
-if isProperty(grains,s(1).subs)
+if isProperty(grains3,s(1).subs)
   
-  [varargout{1:nargout}] = subsref@dynProp(grains,s);
+  [varargout{1:nargout}] = subsref@dynProp(grains3,s);
   
 else
-%}
-  [varargout{1:nargout}] = builtin('subsref',grains,s);
+
+  [varargout{1:nargout}] = builtin('subsref',grains3,s);
   
-%end
+end
 
 end

@@ -1,13 +1,14 @@
-function ind = subsind(grains,subs)
+function ind = subsind(grains3,subs)
+  
   if numel(subs)==2 && ischar(subs{1}) && strcmpi(subs{1},'id')
-    ind = reshape(grains.id2ind(subs{2}),size(subs{2}));
+    ind = reshape(grains3.id2ind(subs{2}),size(subs{2}));
     if any(ind(:)==0)
       error('No data with the specified ids in the data set');
     end
     return
   end
 
-  ind = true(length(grains),1);
+  ind = true(length(grains3),1);
       
   for i = 1:length(subs)
     
@@ -18,7 +19,7 @@ function ind = subsind(grains,subs)
     
     elseif isnumeric(subs{i})
       
-      if any(subs{i} <= 0 | subs{i} > length(grains))
+      if any(subs{i} <= 0 | subs{i} > length(grains3))
         error('Out of range; index must be a positive integer or logical.')
       end
       

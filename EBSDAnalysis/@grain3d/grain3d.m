@@ -3,6 +3,8 @@ classdef grain3d < phaseList & dynProp
 
   properties  % with as many rows as data
     id=[]
+    I_CF  %incidenc matrix cells x face
+    grainSize = [] % number of measurements per grain
   end
 
   properties
@@ -12,32 +14,40 @@ classdef grain3d < phaseList & dynProp
   properties (Dependent)
     V     %verticies
     poly  %cell arry with all faces
-    I_CF  %incidenc matrix cells x face
   end
 
   methods
 
-    function grains = grain3d(V,poly,I_CF, CSList, phaseList)
+    function grains = grain3d(V,poly,I_CF, ori, CSList, phaseList)
       %contructor
 
       if nargin >= 3
         grains.id=(1:size(I_CF,1)).';
-        grains.boundary=grain3Boundary(V,poly,I_CF);
+        grains.I_CF=I_CF;
+        grains.boundary=grain3Boundary(V,poly);
       else
         error 'too less arguments'
       end
 
-     if nargin>=4
+      if nargin>=4 && ~isempty(ori)
+        grains.prop.meanRotation = ori;
+      else
+        grains.prop.meanRotation = rotation.nan(length(poly),1);        
+      end
+
+      if nargin>=5
         grains.CSList = ensurecell(CSList);
       else
         grains.CSList = {'notIndexed'};
       end
 
-      if nargin>=5
+      if nargin>=6
         grains.phaseId = phaseList;
       else
         grains.phaseId = ones(length(grains.id),1);
       end
+
+      grains.grainSize = ones(size(poly));
 
     end
 
@@ -47,10 +57,6 @@ classdef grain3d < phaseList & dynProp
 
     function poly = get.poly(grains)
       poly = grains.boundary.poly;
-    end
-
-    function I_CF = get.I_CF(grains)
-      I_CF = grains.boundary.I_CF;
     end
 
   end

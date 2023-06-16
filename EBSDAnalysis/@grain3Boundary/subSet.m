@@ -1,4 +1,4 @@
-function gB = subSet(gB,ind)
+function gB3 = subSet(gB3,ind)
 % restrict 3d boundary
 %
 % Input
@@ -8,27 +8,14 @@ function gB = subSet(gB,ind)
 % Output
 %  gB - @grain3Boundary
 %
+gB3.poly = gB3.poly(ind);
 
-gB.I_CF = gB.I_CF(ind,:);
+stillNeededVs = unique([gB3.poly{:}]);
+gB3.V = gB3.V(stillNeededVs,:);
 
-notempty = any(gB.I_CF);
-gB.I_CF(:,~notempty) = [];
+gB3.poly = cellfun(@(Ply) {arrayfun(@(x) find(stillNeededVs==x),Ply)},gB3.poly);
 
-gB.poly = gB.poly(notempty);
+% properties
+gB3 = subSet@dynProp(gB3,ind);
 
-stillNeededVs = unique([gB.poly{:}]);
-gB.V = gB.V(stillNeededVs,:);
-
-%inefficient - still work needed
-%{
-for i=1:length(gB.poly)
-  Ply=gB.poly{i};
-  for j=1:length(Ply)
-    Ply(j) = find(stillNeededVs==Ply(j));
-  end
-  gB.poly{i}=Ply;
-end
-%}
-
-gB.poly = cellfun(@(Ply) {arrayfun(@(x) find(stillNeededVs==x),Ply)},gB.poly);
 end
