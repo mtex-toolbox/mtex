@@ -10,7 +10,7 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 %  cs,cs1,cs2 - @symmetry
 %
 % Output
-%  sR - @orientationRegion
+%  oR - @orientationRegion
 %  dc - @symmetry intersection between cs1 and cs2 
 %  nSym - number of disjoined symmetry elements in cs2 * cs1
 %

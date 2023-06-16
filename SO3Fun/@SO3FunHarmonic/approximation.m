@@ -54,7 +54,7 @@ if check_option(varargin,'constantWeights')
 elseif isempty(W)
   % TODO: calcVoronoiVolume is bad estimated
   [~,i,~] = unique(quaternion(nodes));
-  nodes=nodes(i); y=y(i,:);
+  nodes = nodes(i); y = y(i,:);
   W = calcVoronoiVolume(nodes);
 else
   W = accumarray(ind,W);
