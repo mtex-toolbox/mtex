@@ -66,7 +66,7 @@ if nargout >= 2
   
   omega = dot(variants(p2c,h1),h2);
   [~,packetId] = max(omega,[],1);
-  packetId = packetId(childId);
+  packetId = packetId(childId)';
 end
 
 % compute bainId if required
@@ -85,7 +85,7 @@ if nargout == 3
   
   omega = dot(variants(p2c,h1),h2);
   [~,bainId] = max(omega,[],1);
-  bainId = bainId(childId);
+  bainId = bainId(childId)';
 end
 
 end
