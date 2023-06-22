@@ -34,27 +34,56 @@ maxPhi2 = 2*pi/cs.multiplicityZ;
 % Phi
 maxPhi = pi / min(2,max(cs.multiplicityPerpZ, ss.multiplicityPerpZ));
 
-% correct if left symmetry is '121'
-if ss.properGroup.id == 6
-  if ismember(cs.properGroup.id,[3,12,22,28,36])
-    maxPhi = maxPhi*2;
-    maxPhi2 = maxPhi2/2;
-  elseif ismember(cs.properGroup.id,[6,19])
-    maxPhi1 = 2*pi;
-    maxPhi2 = pi/(2*cs.multiplicityZ);
-    maxPhi = pi;
+if check_option(varargin,{'ABG','Matthies','ZYZ','nfft'})
+
+  % correct if left symmetry is '211'
+  if ss.properGroup.id == 3
+    if ismember(cs.properGroup.id,[12,28,36])
+      maxPhi = maxPhi*2;
+      maxPhi2 = maxPhi2/2;
+    elseif ismember(cs.properGroup.id,[3,6,19,22])
+      maxPhi1 = 2*pi;
+      maxPhi2 = pi/(2*cs.multiplicityZ);
+      maxPhi = pi;
+    end
   end
-end
-% correct if left symmetry is '321'
-if ss.properGroup.id == 19 && isa(ss,'crystalSymmetry')
-  if ismember(cs.properGroup.id,[3,12,22,28,36,41,43])
-    maxPhi = maxPhi*2;
-    maxPhi2 = maxPhi2/2;
-  elseif ismember(cs.properGroup.id,[6,19])
-    maxPhi1 = 2*pi;
-    maxPhi2 = pi/(2*cs.multiplicityZ);
-    maxPhi = pi;
+  % correct if left symmetry is '312' or  '321'
+  if (ss.properGroup.id == 22 && isa(ss,'crystalSymmetry')) || (ss.properGroup.id == 19 && isa(ss,'specimenSymmetry'))
+    if ismember(cs.properGroup.id,[12,28,36,41,43])
+      maxPhi = maxPhi*2;
+      maxPhi2 = maxPhi2/2;
+    elseif ismember(cs.properGroup.id,[3,6,19,22])
+      maxPhi1 = 2*pi;
+      maxPhi2 = pi/(2*cs.multiplicityZ);
+      maxPhi = pi;
+    end
   end
+
+else  
+
+  % correct if left symmetry is '121'
+  if ss.properGroup.id == 6
+    if ismember(cs.properGroup.id,[3,12,22,28,36])
+      maxPhi = maxPhi*2;
+      maxPhi2 = maxPhi2/2;
+    elseif ismember(cs.properGroup.id,[6,19])
+      maxPhi1 = 2*pi;
+      maxPhi2 = pi/(2*cs.multiplicityZ);
+      maxPhi = pi;
+    end
+  end
+  % correct if left symmetry is '321'
+  if ss.properGroup.id == 19 && isa(ss,'crystalSymmetry')
+    if ismember(cs.properGroup.id,[3,12,22,28,36,41,43])
+      maxPhi = maxPhi*2;
+      maxPhi2 = maxPhi2/2;
+    elseif ismember(cs.properGroup.id,[6,19])
+      maxPhi1 = 2*pi;
+      maxPhi2 = pi/(2*cs.multiplicityZ);
+      maxPhi = pi;
+    end
+  end
+
 end
 
 % for antipodal symmetry we can reduce either phi1 or phi2 to one half
