@@ -117,11 +117,5 @@ end
 
 xyz(~isnan(xyz(:,1)),3) = 0;
 traces = reshape(vector3d(xyz.','antipodal'),sz);
-
-%Match the shape with grain2D.calcTraces
-traces = traces';
-rel= rel';
-cSize = cSize';
-
 end
 
