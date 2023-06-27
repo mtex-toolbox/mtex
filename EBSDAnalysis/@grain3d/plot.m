@@ -1,3 +1,3 @@
 function plot(grains)
-  drawMesh(grains.V,grains.poly)
+  drawMesh(grains.V.xyz,grains.poly)
 end

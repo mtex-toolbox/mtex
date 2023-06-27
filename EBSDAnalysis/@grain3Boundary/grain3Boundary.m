@@ -11,8 +11,18 @@ classdef grain3Boundary < phaseList & dynProp
   methods
 
     function gB = grain3Boundary(V,poly)
+      
+      if isa(V, 'vector3d')
+
+      elseif (isnumeric(V) && (size(V,2)==3))
+        V=vector3d(V);
+      else
+        error 'invalid V'
+      end
+
       gB.V=V;
       gB.poly=poly;
+      
     end
 
   end
