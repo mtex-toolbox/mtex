@@ -23,11 +23,14 @@ function m = mean(v,varargin)
 %
 
 % take care of nans
-goodpos = ~isnan(v);
-v = v.subSet(goodpos);
+badpos = isnan(v);
+v.x(badpos) =0;
+v.y(badpos) =0;
+v.z(badpos) =0;
 if check_option(varargin,'weights')
     w = get_option(varargin,'weights');
-    varargin = set_option(varargin,'weights',w(goodpos));
+    w(badpos) = 0;
+    varargin = set_option(varargin,'weights',w);
 end
 
 % robust estimator
