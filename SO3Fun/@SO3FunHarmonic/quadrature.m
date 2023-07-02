@@ -22,7 +22,6 @@ if ~check_option(varargin,'nfsoft')
   return
 end
 
-
 persistent keepPlanNSOFT;
 
 % kill plan
