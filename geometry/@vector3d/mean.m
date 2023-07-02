@@ -22,6 +22,14 @@ function m = mean(v,varargin)
 %  robust    - robust mean (with respect to outliers)
 %
 
+% take care of nans
+goodpos = ~isnan(v);
+v = v.subSet(goodpos);
+if check_option(varargin,'weights')
+    w = get_option(varargin,'weights');
+    varargin = set_option(varargin,'weights',w(goodpos));
+end
+
 % robust estimator
 if check_option(varargin,'robust') && length(v)>4
   
