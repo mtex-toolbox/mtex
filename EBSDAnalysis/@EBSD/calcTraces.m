@@ -117,6 +117,5 @@ end
 
 xyz(~isnan(xyz(:,1)),3) = 0;
 traces = reshape(vector3d(xyz.','antipodal'),sz);
-
 end
 

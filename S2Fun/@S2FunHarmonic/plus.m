@@ -10,14 +10,14 @@ function sF = plus(sF1, sF2)
 if isnumeric(sF1) && length(sF1) == 1
   s = size(sF2);
   sF = sF2.subSet(':');
-  sF.fhat(1, :) = sF.fhat(1, :)+sF1;
+  sF.fhat(1, :) = sF.fhat(1, :) + sqrt(4*pi)*sF1;
   sF = reshape(sF, s);
   return
 end
 if isnumeric(sF2) && length(sF2) == 1
   s = size(sF1);
   sF = sF1.subSet(':');
-  sF.fhat(1, :) = sF.fhat(1, :)+sF2;
+  sF.fhat(1, :) = sF.fhat(1, :) + sqrt(4*pi) * sF2;
   sF = reshape(sF, s);
   return
 end

@@ -35,39 +35,53 @@ if dxy==0
   dxy= (ly+ly)/2;
 end
 
-% reduce data set
-if length(xy)>10000, xy = subSample(xy,10000); end
+if length(xy)>10000 
+  xySmall = subSample(xy,10000); 
+else
+  xySmall = xy;
+end
 
 % remove dublicates from the coordinates
-xy = uniquetol(xy,0.01/sqrt(size(xy,1)),'ByRows',true);
+xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);
 
 try
   % compute Voronoi decomposition
-  [v, c] = voronoin(xy,{'Qz'});
+  [v, c] = voronoin(xySmall,{'Qz'});
   
   % compute the area of all Voronoi cells
   areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
   
   % the unit cell should be the Voronoi cell with the smalles area
-  [~, ci] = min(areaf);
+  [~, ci] = quantile(areaf,0.2);
   
   % compute vertices of the unit cell
-  unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
+  unitCell = [v(c{ci},1) - xySmall(ci,1),v(c{ci},2) - xySmall(ci,2)];
   % sometimes it happens that we have one point doubled, remove those
   ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
-  
     
-  if isRegularPoly(unitCell,varargin)
-    return
-  end
-  
   % second estimate of the grid resolution
   dxy2 = max(unitCell) - min(unitCell);
   
   if 100*dxy2 > dxy, dxy = dxy2;end
   
+  % check for rectangular grid
+  if length(uniquetol(abs(unitCell(:,1)),1e-1)) == 1 && ...
+      length(uniquetol(abs(unitCell(:,2)),1e-1)) == 1
+
+    % more robust estimate of dxy
+    dxy = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...
+      mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
+
+    unitCell = regularPoly(4,dxy,cellRot);
+
+  end
+  
+  if isRegularPoly(unitCell,varargin)
+    return
+  end
+
   
 catch %#ok<CTCH>
 end
@@ -81,7 +95,7 @@ cellRot = get_option(varargin,'GridRotation',0*degree);
 switch lower(cellType)
   
   case 'rectangular'
-    
+  
     unitCell = regularPoly(4,dxy,cellRot);
     
   case 'hexagonal'

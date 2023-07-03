@@ -1,6 +1,38 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 5.10.0 5/2023
+%
+% *Weigthed Burgers Vector*
+%
+% With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
+% it is now possible to compute the weighted burgers vector both, using the
+% integral approach as well as the differentical approach.
+%
+% *Bain Group Determination* 
+% 
+% The function <calcVariantId.html |calcVariantId|> now returns an id for
+% the variant, the packet and the Bain group. The usage of this function is
+% demonstrated <MartensiteVariants.html here>.
+%
+% *Numerous minor addon, speed improvements, bug fixes*
+%
+% * New option |'max'| to <orientation.angle.html |angle(mori)|> to compute
+% the largest misorientation angle. Helpful for identifying twinning.
+% * Added checks for symmetry and positive definiteness when defining
+% stress, strain and ellasticity tensors.
+% * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
+% method for data cleaning in EBSD maps.
+% * Pseudesymmetries like now natively supported using the syntax
+% |crystalSymmetry('532')|
+% * |symmetrise(t,'iso')| return the isotropic portion of a tensor
+% * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
+% the symmetric decomposition of a tensor
+% * normalize the Taylor factor according to the strain
+% * display boundary length as default output
+% * better import of h5 files
+% * many more fixes and speed improvements
+%
 %% MTEX 5.9.0 2/2023
 %
 % *Habit Plane Detection*
@@ -781,7 +813,7 @@
 % orientation
 % * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
 % properties
-% * <SO3Fun.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * <SO3Fun.fibreVolume.html  |fibreVolume|> works also for specimen symmetry
 % * allow to change the length of the scaleBar in EBSD plots
 %
 %% MTEX 4.5.2 11/2017
@@ -2157,7 +2189,7 @@
 %
 % *New ODF Class*
 %
-% * The new function <FourierODF.html FourierODF> provides an easy way to
+% * The new function <FourierODF.html |FourierODF|> provides an easy way to
 % define ODFs via their Fourier coefficients. In particular, MTEX allows now
 % to calculate with those ODFs in the same manner as with any other ODFs.
 %

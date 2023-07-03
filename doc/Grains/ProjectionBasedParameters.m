@@ -4,7 +4,7 @@
 % In this section we discuss shape parameters grains that depend on one
 % dimensional projections, i.e., 
 %
-% || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter in $\mu m$ || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || 
+% || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter in µm || <grain2d.diameter.html |diameter|>  || diameter in µm || 
 %
 % In order to demonstrate these parameters we first import a small sample
 % data set.
@@ -31,7 +31,7 @@ hold off
 %%
 % The most well known projection based parameter is the
 % <grain2d.diamter.html |diameter|> which refers to the longest distance
-% between any two boundary points and is given in $\mu m$.
+% between any two boundary points and is given in µm.
 
 grains(ind).diameter
 

@@ -33,7 +33,8 @@ global mtex_progress; mtex_progress = 0;
 
 options.outDir = fullfile(mtex_path,'doc','html');
 options.tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');
-options.publishSettings.stylesheet = fullfile(pwd,'general','publish.xsl');
+options.publishSettings.stylesheet = fullfile(pwd,'general','publish2.xsl');
+%options.publishSettings.stylesheet = fullfile(matlabroot, "/toolbox/matlab/codetools/private/mxdom2simplehtml.xsl"); 
 options.xml = [];
 options.LaTex = 'Matlab';
 options.force = check_option(varargin,'force');

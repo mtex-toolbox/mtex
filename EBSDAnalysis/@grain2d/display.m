@@ -55,8 +55,13 @@ end
 disp(' ')
 
 % show boundary and triple points
-disp([' ' varlink([inputname(1),'.boundary'],'boundary segments') ': ',int2str(length(grains.boundary))])
-disp([' ' varlink([inputname(1),'.innerBoundary'],'inner boundary segments') ': ',int2str(length(grains.innerBoundary))])
+su = strrep(grains.scanUnit,'um','µm');
+disp([' ' varlink([inputname(1),'.boundary'],'boundary segments') ': ', ...
+  int2str(length(grains.boundary)) ...
+  ' (' xnum2str(sum(grains.boundary.segLength)) ' ' su ')'])
+disp([' ' varlink([inputname(1),'.innerBoundary'],'inner boundary segments') ': ', ...
+  int2str(length(grains.innerBoundary)) ...
+  ' (' xnum2str(sum(grains.innerBoundary.segLength)) ' ' su ')'])
 disp([' ' varlink([inputname(1),'.triplePoints'],'triple points') ': ',int2str(length(grains.triplePoints))])
 disp(' ');
 

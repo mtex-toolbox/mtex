@@ -31,13 +31,22 @@ contourf(sF1, 'LineWidth', 2);
 %% 3D Plot
 % 3D plot of a sphere colored accordingly to the function values.
 plot3d(sF1);
+set(gca,'CameraUpVector',[0 10 0])
+set(gca,'CameraPosition',[-9 0 10])
 
 %% Surface Plot
-% 3D plot where the radius of the sphere is transformed according to the function values
-surf(sF2);
+% 3D plot where the radius of the sphere is transformed according to the
+% function values
+
+surf(sF1)
+axis off
+set(gca,'CameraUpVector',[0 1 0])
+set(gca,'CameraPosition',[-9 0 10])
+
 
 %% Section Plot
-% Plot the intersection of the surf plot with a plane defined by a normal vector |v|
+% Plot the intersection of the surf plot with a plane defined by a normal
+% vector |v|
 
 plotSection(sF2, zvector,'color','interp','linewidth',10)
 colormap spring
@@ -47,7 +56,8 @@ mtexTitle('Flowerpower!')
 % plotting the Fourier coefficients
 
 close all
-plotSpektra(sF1,'FontSize',15);
+plotSpektra(sF1,'FontSize',15,'linewidth',2);
+xlim([0,40])
 
 %%
 % The more specific plot options are covered in the respective classes.

@@ -118,7 +118,7 @@ for i = 1:size(y,2)
 end
 
 % the Taylor factor is simply the sum of the coefficents
-M = sum(b,2);
+M = sum(b,2) ./ norm(eps);
 
 % maybe there is nothing more to do
 if nargout <=2, return; end

@@ -16,7 +16,7 @@ if v.isNormalized, return; end
 
 nv = norm(v);
 if nargin == 2 && flag == 1
-  id = nv>eps;
+  id = abs(nv) > eps;
   v.x(id) = v.x(id)./nv(id);
   v.y(id) = v.y(id)./nv(id);
   v.z(id) = v.z(id)./nv(id);

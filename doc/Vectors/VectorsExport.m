@@ -1,4 +1,4 @@
-%% Exporting Vectors
+%% Importing and Exporting Vectors
 %
 %%
 % Large lists of vectors can be imported from a text file by the command

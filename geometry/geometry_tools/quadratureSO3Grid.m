@@ -1,5 +1,5 @@
-function [SO3G, W, M2] = quadratureSO3Grid(bandwidth, varargin)
-% Calculate the nodes and weights of specific quadrature grids on SO(3)
+function [SO3G, W] = quadratureSO3Grid(bandwidth, varargin)
+% nodes and weights for quadrature on SO(3)
 %   'ClenshawCurtis'  - combinate the Gauss quadrature in 1st and 3rd Euler angle 
 %                       (alpha, gamma) with Clenshaw Curtis quadrature in 2nd 
 %                       Euler angle (beta)

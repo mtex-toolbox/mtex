@@ -1,4 +1,6 @@
 function value = grad(psi,varargin)
+%
+% docu!
 
 N = psi.bandwidth;
 A = psi.A(:);

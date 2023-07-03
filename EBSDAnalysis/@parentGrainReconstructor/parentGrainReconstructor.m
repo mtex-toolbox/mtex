@@ -12,23 +12,26 @@ classdef parentGrainReconstructor < handle
 %  p2c0 - initial guess for the parent to child orientation relationship
 %
 % Class Properties
-%  grains    - grains at the current stage of reconstruction
-%  ebsd      - EBSD at the current stage of reconstruction
 %  csParent  - @crystalSymmetry of the parent phase
 %  csChild   - @crystalSymmetry of the child phase
 %  p2c       - refined parent to child orientation relationship
-%  mergeId   - list of ids to the merged grains
+%  ebsdPrior   - EBSD prior to reconstruction
+%  grainsPrior - grains prior to reconstruction
+%  transformedGrains - prior child grains that has been reconstrcuted
+%  grains    - grains at the current stage of reconstruction
+%  parentGrains - parent grains at current stage of reconstruction
+%  childGrains  - child grains at current stage of reconstruction
+%  ebsd      - EBSD at the current stage of reconstruction
+%  mergeId   - connection between prior and reconstructed grains
 %  graph     - grain graph with edges representing probabilities of adjecent grains to form a parent grain
 %  votes     - table of of votes for each grain
 %  numChilds     - number of child grains for each parent grain
 %  isTransformed - child grains that have been reverted from child to parent phase
 %  isChild       - child grains that have been reverted from child to parent phase
 %  isMerged      - child grains that have been merged into a parent grain    
-%  transformedGrains - transformed measured grains 
-%  parentGrains - measured and reconstructed parent grains
-%  childGrains  - not yet reconstructed child grains
 %  variantId    - reconstructed variant ids
 %  packetId     - reconstructed packet ids
+%  bainId       - reconstructed bain ids % AAG ADDED
 %
 % References
 %
@@ -43,14 +46,22 @@ classdef parentGrainReconstructor < handle
 %
 
   properties
-    grains         % grains at the current stage of reconstruction
+
     p2c            % parent to child orientation relationship
-    useBoundaryOrientations = false
-    
-    mergeId        % a list of ids to the merged grains
-    
+
+    ebsdPrior      % EBSD prior to reconstruction
+    grainsPrior    % grains prior to reconstruction
+
+    grains         % grains at the current stage of reconstruction
+
+    mergeId        % connects grainsPrior -> grains
+
     votes          % votes computed by calcGBVotes or calcTPVotes
     graph          % graph computed by calcGraph
+
+    useBoundaryOrientations = false
+    reportFit = true
+    
   end
   
   properties (Dependent=true)
@@ -78,14 +89,10 @@ classdef parentGrainReconstructor < handle
     
     variantId       %
     packetId        %
+    bainId          % 
     parentId        %
   end
   
-  properties (Hidden=true)
-    ebsdPrior      % EBSD prior to reconstruction
-    grainsPrior    % grains prior to reconstruction
-  end
-
   properties (Hidden=true, Dependent=true)
     hasVariantGraph
     hasGraph
@@ -210,24 +217,37 @@ classdef parentGrainReconstructor < handle
       end
     end
     
+    %% AAG ADDED
+    function out = get.bainId(job)   
+      
+        if isfield(job.grainsPrior.prop,'bainId')
+        out = job.grainsPrior.prop.bainId;
+      else
+        out = NaN(size(job.grainsPrior));
+      end
+    end
+    %% AAG ADDED
+
     function out = get.parentId(job)
-      
       out = nan(size(job.grainsPrior));
-      
       ind = job.isTransformed;
-      
       
       cOri = job.grainsPrior(ind).meanOrientation;
       pOri = job.grains(ind).meanOrientation;
 
       [~,out(ind)] = min(angle_outer(inv(cOri) .* pOri, ...
         variants(job.p2c, 'parent'),'noSym2'),[],2);
-
     end
     
     function set.packetId(job,id)
       job.grainsPrior.prop.packetId = id;
     end
+
+    %% AAG ADDED
+    function set.bainId(job,id)
+      job.grainsPrior.prop.bainId = id;
+    end
+    %% AAG ADDED
     
     function out = get.variantId(job)
       

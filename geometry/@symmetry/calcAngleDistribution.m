@@ -33,7 +33,7 @@ end
 
 % get range of rotational angles
 if isempty(varargin) || ~isnumeric(varargin{1})
-  omega = linspace(0,oR.maxAngle,300);
+  omega = linspace(0,oR.maxAngle,200);
 else
   % restrict omega
   omega = varargin{1};

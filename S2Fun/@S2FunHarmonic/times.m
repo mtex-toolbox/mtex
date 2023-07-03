@@ -16,7 +16,7 @@ function sF = times(sF1,sF2)
 
 if isnumeric(sF1) 
   sF = sF2;
-  sF.fhat = reshape(sF1,[1 size(sF1)]) .* sF1;
+  sF.fhat = reshape(sF1,[1 size(sF1)]) .* sF.fhat;
   return
 end
 if isnumeric(sF2)

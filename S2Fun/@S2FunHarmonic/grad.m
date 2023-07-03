@@ -43,6 +43,10 @@ if sF.bandwidth == 0
   return; 
 end
 
+if check_option(varargin,'old')
+  sVF = S2VectorFieldHarmonic.quadrature(@(v) localGrad([sF.drho; sF.dthetasin],v),'bandwidth',sF.bandwidth);
+  return
+end
 
 fhat = zeros((sF.bandwidth+2)^2,3);
 for n=0:sF.bandwidth
