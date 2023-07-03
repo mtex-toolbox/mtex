@@ -3,6 +3,7 @@ SchmidtFactor
 TaylorModel
 TaylorHex
 SachsModel
+SingleSlipModel
 SlipTransmission
 GND
 VPSCImport
