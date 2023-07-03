@@ -150,7 +150,7 @@ classdef quaternion
         beta  = acos(2*(rand(s{:})-0.5));
         gamma = 2*pi*rand(s{:});
 
-        q = euler2quat(alpha,beta,gamma);
+        q = euler2quat(alpha,beta,gamma,varargin{:});
       end
     end
     
