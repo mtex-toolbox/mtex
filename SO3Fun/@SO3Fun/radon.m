@@ -36,7 +36,7 @@ if isPF % pole figure
   for k = 1:length(h)
 
     % define fibres ->  max(length(h),length(r)) x resolution
-    ori = fibre2quat(h(k),S2G,'resolution',res);
+    ori = orientation(fibre2quat(h(k),S2G,'resolution',res),SO3F.CS,SO3F.SS);
     
     % evaluate ODF at these fibre
     f = SO3F.eval(ori);
