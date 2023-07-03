@@ -12,7 +12,7 @@
 % respect to a crystallopgraphic spin $\Omega(g)$ is governed by the
 % continuity equation
 % 
-% $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \text{div} \Omega = 0$$
+% $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \text{ div } \Omega = 0$$
 % 
 % The solution of this equation depends on the initial texture $f_0(g)$ at
 % time zero and the crystallographic spin $\Omega(g)$. In this model we
@@ -51,7 +51,7 @@ E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 % 
 % the orientation dependent strain rate tensor is identified as
 %
-% $$e_{i,j}(g) = 10/3 \left< S(g), E \right> S(g)$$
+% $$e(g) = 10/3 \left< S(g), E \right> S(g)$$
 %
 % and the corresponding crystallographic spin tensor as
 %
@@ -59,14 +59,13 @@ E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 %
 % This can be modeled in MTEX via
 
-% explicite version
-% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) * (ori * S(1)),[-1 -2])
-
 Omega = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* (ori * S(1))));
-%Omega = @(ori) vector3d(spinTensor((S(1) : (inv(ori) * E)) .* S(1)));
-
 Omega = SO3VectorFieldHarmonic.quadrature(Omega,cs)
 
+% other versions
+% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) * (ori * S(1)),[-1 -2])
+% Omega = @(ori) vector3d(spinTensor((S(1) : (inv(ori) * E)) .* S(1)));
+% Omega = SO3VectorFieldHarmonic.quadrature(Omega,cs)
 
 %%
 % We may visualize the orientation depedence of the spin tensor via
@@ -75,8 +74,7 @@ plot(Omega)
 
 %%
 % or the divergence of this vectorfield 
-
-plot(div(Omega),'sigma')
+plot(div(SO3VectorFieldHarmonic(Omega)))
 
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
@@ -117,14 +115,12 @@ mtexColorbar
 
 %% Checking the Continuity Equation
 % We may now check wether the continuity equation is satisfied. In a stable
-% state the time difference will be zero and hence $f \text{div} \Omega$
+% state the time difference will be zero and hence $\text{div}(f  \Omega) =
+% 0$
+%
+% TODO: this is currently not working and we do not know why!
 
-figure(1)
-plot(odf1 .* div(Omega),'sigma')
+plot(div(SO3VectorFieldHarmonic(Omega .* odf1)))
+mtexColorbar('location','south')
 
-%%
-% should be the negative of the inner product $\nabla f \cdot \Omega$
-
-figure(2)
-plot(dot(grad(odf1),Omega),'sigma')
 
