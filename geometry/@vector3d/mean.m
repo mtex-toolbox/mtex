@@ -22,16 +22,6 @@ function m = mean(v,varargin)
 %  robust    - robust mean (with respect to outliers)
 %
 
-% take care of nans
-badpos = isnan(v);
-v.x(badpos) =0;
-v.y(badpos) =0;
-v.z(badpos) =0;
-if check_option(varargin,'weights')
-    w = get_option(varargin,'weights');
-    w(badpos) = 0;
-    varargin = set_option(varargin,'weights',w);
-end
 
 % robust estimator
 if check_option(varargin,'robust') && length(v)>4
