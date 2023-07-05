@@ -38,7 +38,7 @@ if check_option(varargin,{'ABG','Matthies','ZYZ','nfft'})
  
   % correct if left symmetry is '211'
   if ss.properGroup.id == 3
-    if ismember(cs.properGroup.id,[12,28,36])
+    if ismember(cs.properGroup.id,[12,28,36,41,43])
       maxPhi = pi;
       maxPhi2 = maxPhi2/2;
     elseif ismember(cs.properGroup.id,[3,6,19,22])
@@ -63,7 +63,7 @@ else
 
   % correct if left symmetry is '121'
   if ss.properGroup.id == 6
-    if ismember(cs.properGroup.id,[3,12,22,28,36])
+    if ismember(cs.properGroup.id,[3,12,22,28,36,41,43])
       maxPhi = pi;
       maxPhi2 = maxPhi2/2;
     elseif ismember(cs.properGroup.id,[6,19])
