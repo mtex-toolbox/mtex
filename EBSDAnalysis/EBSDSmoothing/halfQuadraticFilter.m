@@ -23,6 +23,7 @@ classdef halfQuadraticFilter < EBSDFilter
       
       
       if nargin == 2, quality = ones(size(ori)); end
+      quality = quality ./ max(quality);
       
       % precompute neigbour ids
       if F.isHex
