@@ -7,6 +7,8 @@ function [values,nodes,weights] = evalOnCCGridUseSymmetries(SO3F,N,SRight,SLeft,
 % Curtis quadrature grid. Hence they are ignored, because they are also
 % ignored in the quadratureV2 algorithm.
 
+% Note that specimenSymmetry('23') does not exist and consequently does not work
+
 LId = SLeft.id;
 RId = SRight.id;
 
@@ -14,8 +16,6 @@ RId = SRight.id;
 if check_option(varargin,'complete') || (LId==1 && RId==1) || N<=5
   [nodes,weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'complete','ABG');
   values = SO3F.eval(nodes);
-%   [a,b,c] = Euler(nodes,'nfft');
-%   nodes = cat(4,a,b,c);
   return
 end
 
@@ -233,7 +233,6 @@ values = reshape(values,[len s(2:end)]);
 % If left symmetry includes an r-fold rotation around Z axis and right
 % symmetry includes an s-fold rotation around Z axis, then we have to 
 % multiply the weights with r*s.
-% [nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'Zfold','Euler');
 [nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'Zfold','ABG');
 
 end

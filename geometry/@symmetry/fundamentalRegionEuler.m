@@ -18,6 +18,7 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 % See also
 % symmetry/FundamentalRegion symmetry/FundamentalSector
 
+% Note that specimenSymmetry('23') does not exist and consequently does not work
 
 if nargin == 1, ss = specimenSymmetry; end
 
