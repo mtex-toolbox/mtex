@@ -1,9 +1,9 @@
-function SO3F = quadrature(f, varargin)
+function SO3F = quadratureNFSOFT(f, varargin)
 %
 % Syntax
-%   SO3F = SO3FunHarmonic.quadrature(nodes,values,'weights',w)
-%   SO3F = SO3FunHarmonic.quadrature(f)
-%   SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
+%   SO3F = SO3FunHarmonic.quadratureNFSOFT(nodes,values,'weights',w)
+%   SO3F = SO3FunHarmonic.quadrature(f,'nfsoft')
+%   SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', bandwidth,'nfsoft')
 %
 % Input
 %  values - double (first dimension has to be the evaluations)
@@ -16,11 +16,8 @@ function SO3F = quadrature(f, varargin)
 % Options
 %  bandwidth - minimal harmonic degree (default: 64)
 %
-
-if ~check_option(varargin,'nfsoft')
-  SO3F = SO3FunHarmonic.quadratureV2(f,varargin{:});
-  return
-end
+% See also
+% SO3FunHarmonic/quadrature
 
 persistent keepPlanNSOFT;
 
