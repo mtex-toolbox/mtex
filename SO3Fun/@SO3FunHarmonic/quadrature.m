@@ -20,6 +20,8 @@ function SO3F = quadrature(f, varargin)
 % See also
 % SO3FunHarmonic/quadratureNFSOFT
 
+% Tests
+% check_SO3FunHarmonicQuadrature
 
 if check_option(varargin,'nfsoft')
   SO3F = SO3FunHarmonic.quadratureNFSOFT(f,varargin{:});
