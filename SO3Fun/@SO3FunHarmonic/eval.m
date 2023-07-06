@@ -1,11 +1,11 @@
-function f = evalV2(SO3F,rot,varargin)
+function f = eval(SO3F,rot,varargin)
 % evaluates the rotational harmonic on a given set of points using a
 % representation based coefficient transform, that transforms 
 % a series of Wigner-D functions into a trivariate fourier series and using
 % NFFT at the end.
 %
 % Syntax
-%   f = evalV2(F,rot)
+%   f = eval(F,rot)
 %
 % Input
 %   F - @SO3FunHarmonic
@@ -15,7 +15,12 @@ function f = evalV2(SO3F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+
+if check_option(varargin,'nfsoft')
+  f = evalNFSOFT(F,rot,varargin{:});
+  return
+end
 
 persistent keepPlanNFFT;
 
@@ -110,7 +115,7 @@ for k = 1:length(SO3F)
     %        2^1 -> make size of result even
     %        2^2 -> fhat are the fourier coefficients of a real valued function
     %        2^4 -> use right and left symmetry
-    flags = 2^0+2^1+2^2+2^4;
+    flags = 2^0+2^1+2^2;%+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
@@ -124,7 +129,7 @@ for k = 1:length(SO3F)
     % flags: 2^0 -> use L_2-normalized Wigner-D functions
     %        2^1 -> make size of result even
     %        2^4 -> use right and left symmetry
-    flags = 2^0+2^1+2^4;
+    flags = 2^0+2^1;%+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
