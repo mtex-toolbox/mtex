@@ -5,7 +5,7 @@ function [values,nodes,weights] = evalOnCCGridUseSymmetries(SO3F,N,SRight,SLeft,
 % the symmetries.
 % Rotations around Z axis yields periodic function values on the Clenshaw 
 % Curtis quadrature grid. Hence they are ignored, because they are also
-% ignored in the quadratureV2 algorithm.
+% ignored in the quadrature algorithm.
 
 % Note that specimenSymmetry('23') does not exist and consequently does not work
 
