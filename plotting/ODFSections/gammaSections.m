@@ -27,7 +27,7 @@ classdef gammaSections < ODFSections
       oS = oS@ODFSections(varargin{:});
 
       % get fundamental plotting region
-      [alpha,beta,oS.maxGamma] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
+      [alpha,beta,oS.maxGamma] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:},'Matthies'); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',beta,'maxRho',alpha);
 
       % get sections
