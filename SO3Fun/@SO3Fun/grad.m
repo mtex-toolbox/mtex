@@ -1,5 +1,5 @@
 function g = grad(SO3F,varargin)
-% right-sided gradient of an SO3Fun
+% right-sided gradient of an SO3Fun w.r.t. the tangent space basis 
 %
 % Syntax
 %   G = SO3F.grad % compute the gradient
