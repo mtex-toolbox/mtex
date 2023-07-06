@@ -1,11 +1,11 @@
-function f =  eval(F,rot,varargin)
+function f =  evalNFSOFT(F,rot,varargin)
 % evaluates the rotational harmonic on a given set of points using NFSOFT
 %
 % gives a align for numel(F)==1 or otherwise transform the align of v to a
 % vector.
 %
 % Syntax
-%   f = eval(F,v)
+%   f = evalNFSOFT(F,v)
 %
 % Input
 %   F - @SO3FunHarmonic
@@ -15,16 +15,11 @@ function f =  eval(F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/evalV2 SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(F,rot)
 % end
-
-if ~check_option(varargin,'nfsoft')
-  f = evalV2(F,rot,varargin{:});
-  return
-end
 
 persistent keepPlan;
 
