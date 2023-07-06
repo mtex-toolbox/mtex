@@ -43,20 +43,12 @@ if check_option(varargin,'ClenshawCurtis')
 
   N = ceil(get_option(varargin,'bandwidth',256)/2);
   
-  a_len = round((2*N+2)*max_rho/(2*pi));
-  b_len = round((2*N)*max_theta/pi+1);
-  g_len = round((2*N+2)*max_sec/(2*pi));
-  
-  alpha = (0:a_len-1)*max_rho/(a_len);
-  gamma = (0:g_len-1)*max_sec/(g_len);
-  beta = linspace(0,max_theta,b_len);
+  alpha = 0:(2*pi)/(2*N+2):max_rho-1e-8;
+  beta = 0:(pi)/(2*N):max_theta+1e-8;
+  gamma = 0:(2*pi)/(2*N+2):max_sec-1e-8;
 
   [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
-  if check_option(varargin,'Euler')
-    SO3G = cat(4,alpha,beta,gamma);
-  else
-    SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
-  end
+  SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
 
   return
 

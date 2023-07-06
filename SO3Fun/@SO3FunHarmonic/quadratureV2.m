@@ -53,9 +53,7 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(bw,SRight,SLeft);
-  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
-  % we only need the size of nodes
-  nodes = nodes(:,:,:,1); 
+  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft,varargin{:}); 
   varargin{end+1} = 'ClenshawCurtis';
 
 else
@@ -213,13 +211,11 @@ end
 % --------------------------- functions -----------------------------------
 
 function bw = adjustBandwidth(bw,SRight,SLeft)
-  t1=1; t2=2; 
-  if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
-  if ismember(SLeft.id,22:24),  t2=4; end     % 2 | (N+1)
-  if ismember(SRight.id,22:24), t1=4; end     % 2 | (N+1)
-  while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
-    bw = bw+1;
-  end
+    [~,~,gMax] = fundamentalRegionEuler(SRight,SLeft,'ABG');
+    LCM = lcm((1+double(round(2*pi/gMax/SRight.multiplicityZ) == 4))*SRight.multiplicityZ,SLeft.multiplicityZ);
+    while mod(2*bw+2,LCM)~=0
+      bw = bw+1;
+    end
 end
 
 
