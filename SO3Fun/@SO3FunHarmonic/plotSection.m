@@ -36,7 +36,7 @@ end
 if SO3F.antipodal, ap = {'antipodal'}; else, ap = {}; end
 oS = newODFSectionPlot(SO3F.CS,SO3F.SS,ap{:},varargin{:});
 
-if ~isa(oS,'gammaSections') && ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections')
+if 1%~isa(oS,'gammaSections') && ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections')
   % plotSection@SO3Fun(SO3F.subSet(1),varargin{:});
   S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
   % plot on S3G with evalfft
