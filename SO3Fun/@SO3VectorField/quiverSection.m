@@ -49,7 +49,7 @@ if isa(SO3VF,'SO3VectorFieldHarmonic')
 end
 
 
-if isa(SO3VF,'SO3VectorFieldHarmonic') && (isa(oS,'phi2Sections') || isa(oS,'phi1Sections') || isa(oS,'gammaSections'))
+if 0% isa(SO3VF,'SO3VectorFieldHarmonic') && (isa(oS,'phi2Sections') || isa(oS,'phi1Sections') || isa(oS,'gammaSections'))
   for c=1:3
     [f(:,:,:,c),S3G0] = evalSectionsEquispacedFFT(SO3VF.SO3F(c),oS,'resolution',res,'shiftGrid',[1,1]*res/2,varargin{:});
   end
