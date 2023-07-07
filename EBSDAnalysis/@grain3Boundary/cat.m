@@ -1,4 +1,14 @@
 function [gB ,IA, IC] = cat(dim, varargin)
+% implements [gB1,gB2]
+%
+% Syntax
+%   gB = [gB1,gB2,gB3]
+%   [gB,IA,IC] = [gB1,gB2]
+%
+% Input
+%  gB - @grain3Boundary
+%
+%
 
   gB = cat@dynProp(dim,varargin{:});
 
@@ -10,10 +20,10 @@ function [gB ,IA, IC] = cat(dim, varargin)
 
     gB.poly = [gB.poly ; ngB.poly];
 
-    for j = (size(gB.poly,1)-size(ngB.poly,1)):size(gB.poly,1)
+    for j = (size(gB.poly,1)-size(ngB.poly,1)+1):size(gB.poly,1)
       poly=gB.poly{j};
-      for i = size(ngB.V,1):size(gB.V,1)
-        poly(i)=IC(poly(i));
+      for i = 1:length(poly)
+        poly(i)=IC(poly(i)+(length(IC)-length(ngB.V)));
       end
       gB.poly{j}=poly;
     end
