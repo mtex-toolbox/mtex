@@ -15,7 +15,7 @@ function f = eval(SO3F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
 if check_option(varargin,'nfsoft')
   f = evalNFSOFT(SO3F,rot,varargin{:});

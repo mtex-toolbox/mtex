@@ -5,9 +5,8 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,varargin)
 % where $a=0,...,H_1-1$, $b=0,...,H_2-1$ and $c=0,...,S_{num}$.
 %
 % Therefore we transform the SO(3) Fourier series to an usual Fourier series
-% equivalent as in the function <SO3FunHarmonic.evalV2.html |evalV2|>.
-% But we use an 2-variate equispaced FFT instead of the NFFT analogously to
-% <SO3FunHarmonic.evalEquispacedFFT.html |evalEquispacedFFT|>
+% equivalent as in the function <SO3FunHarmonic.eval.html |eval|>.
+% But we use an 2-variate equispaced FFT instead of the NFFT in second step.
 %
 % Syntax
 %   f = evalSectionsEquispacedFFT(SO3F)
@@ -27,7 +26,7 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,varargin)
 %  f - values at this grid points
 %
 % See also
-% SO3FunHarmonic/evalV2 SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/eval
+% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT
 
 N = SO3F.bandwidth;
 
@@ -38,7 +37,7 @@ if isempty(oS)
   shift = 1;
 elseif isa(oS,'gammaSections')
   gamma = oS.gamma;
-  shift = 0;
+  shift = 0; 
 elseif isa(oS,'phi2Sections')
   gamma = mod(oS.phi2+pi/2,2*pi);
   shift = 1;
