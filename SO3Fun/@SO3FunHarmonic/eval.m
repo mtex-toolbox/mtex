@@ -115,10 +115,11 @@ for k = 1:length(SO3F)
     %        2^1 -> make size of result even
     %        2^2 -> fhat are the fourier coefficients of a real valued function
     %        2^4 -> use right and left symmetry
-    flags = 2^0+2^1+2^2;%+2^4;
+    flags = 2^0+2^1+2^2+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+    ghat = symmetriseFourierCoefficients(ghat,flags,CS,SS,sym);
 %     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^0+2^1+2^2);
 
   else
@@ -129,10 +130,11 @@ for k = 1:length(SO3F)
     % flags: 2^0 -> use L_2-normalized Wigner-D functions
     %        2^1 -> make size of result even
     %        2^4 -> use right and left symmetry
-    flags = 2^0+2^1;%+2^4;
+    flags = 2^0+2^1+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
     ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+    ghat = symmetriseFourierCoefficients(ghat,flags,CS,SS,sym);
 %     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^1+2^2);
 
   end
