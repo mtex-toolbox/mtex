@@ -1,9 +1,12 @@
-function fhat = symmetrise_fouriercoefficients_aRBWT(fhat,input_flags,CS,SS,sym,varargin)
+function fhat = symmetriseWignerCoefficients(fhat,input_flags,CS,SS,sym,varargin)
 % Use function properties (realvalued, antipodal, CS, SS) to construct 
-% symmetric fourier coefficients
+% symmetric SO(3)-Fourier/Wigner coefficients after using the method 
+% adjoint_representationbased_coefficient_transform with flag 2^4 (use symmetries)
 
+% get bandwidth
 N=dim2deg(length(fhat));
 
+% extract flags
 flags=zeros(1,5);
 while input_flags>0
   a = floor(log2(input_flags));
@@ -11,6 +14,7 @@ while input_flags>0
   input_flags = input_flags-2^a;
 end
 
+% symmetrise Wigner coefficients
 for n=1:N
 
   ind = deg2dim(n)+1:deg2dim(n+1);

@@ -191,7 +191,7 @@ for index = 1:num
     sym([1,3])=1;
   end
   fhat(:,index) = adjoint_representationbased_coefficient_transform(bw,ghat,flags,sym);
-  fhat(:,index) = symmetrise_fouriercoefficients_aRBWT(fhat(:,index),flags,SRight,SLeft,sym);
+  fhat(:,index) = symmetriseWignerCoefficients(fhat(:,index),flags,SRight,SLeft,sym);
 %   fhat(:,index) = adjoint_representationbased_coefficient_transform_old(bw,ghat,flags);
 
 end
