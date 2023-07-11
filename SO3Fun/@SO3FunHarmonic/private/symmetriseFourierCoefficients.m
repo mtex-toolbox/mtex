@@ -7,7 +7,11 @@ function ghat = symmetriseFourierCoefficients(ghat,input_flags,CS,SS,sym,varargi
 % Compute bandwidth
 N = floor((size(ghat,1)-1)/2);
 
-% extract flags
+% extract flags:
+%        1 -> use L_2-normalized Wigner-D functions
+%        2 -> make size of result even
+%        3 -> fhat are the fourier coefficients of a real valued function
+%        5 -> use right and left symmetry
 flags=zeros(1,5);
 while input_flags>0
   a = floor(log2(input_flags));
@@ -16,9 +20,12 @@ while input_flags>0
 end
 
 % compute shift along 3rd dimension depending on whether the function is real-valued
-shift = flags(2);
+if ~flags(3)
+  shift = flags(2);
+else
+  shift = flags(2)*mod(N+1,2);
+end
 if flags(3)
-  shift = mod(N+1,2);
   ghat(:,:,1+shift) = ghat(:,:,1+shift)/2;
 end
 
@@ -26,6 +33,10 @@ end
 %     ghat(k,j,l) = (-1)^(k+l) * ghat(k,-j,l)
 ind = (-1).^((-N:N)'+reshape(-N*(1-flags(3)):N,1,1,[]));
 ghat(1+flags(2):end,(1:N)+flags(2),1+shift:end) = ind.*flip(ghat(1+flags(2):end,flags(2)+(N+2):end,1+shift:end),2);
+
+if ~flags(5)
+  return;
+end
 
 % An 2-fold rotation around Y-axis in right symmetry yields
 %     ghat(k,j,l) = (-1)^(k+j) * ghat(-k,j,l)
