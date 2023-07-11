@@ -35,7 +35,7 @@ if isRobust
 
   % compute the threshold
   threshold = 2.5*accumarray(subs,omega,size(a),@(x) quantile(x,0.8));
-  ind = omega <= threshold(subs);
+  ind = omega <= threshold(subs) | (isnan(threshold(subs)) & isnan(omega)) ;
 
   Rsubs = subs(ind);
   Rflip = flip(ind);

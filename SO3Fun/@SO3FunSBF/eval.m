@@ -13,7 +13,7 @@ mori = orientation.map(SO3F.sS.n,SO3F.CS.Y,...
 
 % Euler angles 
 % in the paper these are phi, theta, psi
-[phi1,Phi,phi2] = Euler(rot * ori * mori);
+[phi1,Phi,phi2] = Euler(rot * ori * mori,'Bunge');
 
 % 16d
 F = -sin(2*phi1) .* cos(Phi);

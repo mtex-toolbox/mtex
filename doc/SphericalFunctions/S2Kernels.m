@@ -15,6 +15,7 @@ axis off
 %% 
 % The dependency of the angle becomes more when plot along meridian
 
+close all
 plot(psi,'linewidth',2,'symmetric')
 
 %%

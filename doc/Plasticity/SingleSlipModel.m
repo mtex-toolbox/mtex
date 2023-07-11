@@ -12,7 +12,7 @@
 % respect to a crystallopgraphic spin $\Omega(g)$ is governed by the
 % continuity equation
 % 
-% $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \div \Omega$$
+% $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \text{ div } \Omega = 0$$
 % 
 % The solution of this equation depends on the initial texture $f_0(g)$ at
 % time zero and the crystallographic spin $\Omega(g)$. In this model we
@@ -23,35 +23,35 @@
 %% 
 % In this example we consider Olivine with has orthorhombic symmetry
 
-cs = crystalSymmetry('222',[4.779 10.277 5.995],'mineral','olivine')
+cs = crystalSymmetry('222',[4.779 10.277 5.995],'mineral','olivine');
 
 %%
 % and the three basic slip systems
 
 sS = slipSystem(Miller({1,0,0},{1,0,0},{0,0,1},cs,'uvw'),...
-  Miller({0,1,0},{0,0,1},{0,1,0},cs,'hkl'))
+  Miller({0,1,0},{0,0,1},{0,1,0},cs,'hkl'));
 
 %%
 % To each of the slip systems we can associate an orientation dependent
-% Schmid or deformation tensor
+% Schmid or deformation tensor $S(g)$
 
 S = sS.deformationTensor
 
 %%
-% and make the for the orientation dependent strain rate tensor $e$ the
-% ansatz $e_{ij}(g) = \gamma(g) S_{ij}$. Fitting this ansatz to a given a
-% macroscopic strain tensor
+% and make for the orientation dependent strain rate tensor $e(g)$ the
+% ansatz $e_{ij}(g) = \gamma(g) S_{ij}(g)$. Fitting this ansatz to a given
+% a macroscopic strain tensor
 
 E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 
 %%
 % via minimizing the square difference
 % 
-% $$\int \sum_{i,j} (e_{i,j}(g) - E_{i,j}) dg \to \text{min}$$
+% $$\int_{SO(3)} \sum_{i,j} (e_{i,j}(g) - E_{i,j})^2 dg \to \text{min}$$
 % 
 % the orientation dependent strain rate tensor is identified as
 %
-% $$e_{i,j}(g) = 10/3 \left< S(g), E right> S(g)$$
+% $$e(g) = 10/3 \left< S(g), E \right> S(g)$$
 %
 % and the corresponding crystallographic spin tensor as
 %
@@ -59,15 +59,13 @@ E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 %
 % This can be modeled in MTEX via
 
-% explicite version
-% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) * (ori * S(1)),[-1 -2])
-
 Omega = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* (ori * S(1))));
+Omega = SO3VectorFieldHarmonic.quadrature(Omega,cs)
 
-% does not yet work
-%Omega = @(ori) vector3d(spinTensor((S(1) : (inv(ori) * E)) .* S(1)));
-
-Omega = SO3VectorFieldHarmonic.quadrature(Omega)
+% other versions
+% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) * (ori * S(1)),[-1 -2])
+% Omega = @(ori) vector3d(spinTensor((S(1) : (inv(ori) * E)) .* S(1)));
+% Omega = SO3VectorFieldHarmonic.quadrature(Omega,cs)
 
 %%
 % We may visualize the orientation depedence of the spin tensor via
@@ -75,15 +73,14 @@ Omega = SO3VectorFieldHarmonic.quadrature(Omega)
 plot(Omega)
 
 %%
-% or the total amount of spin by
-
-plot(sqrt(normSquare(Omega)),'sigma')
+% or the divergence of this vectorfield 
+plot(div(SO3VectorFieldHarmonic(Omega)))
 
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
 % are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
 % This command takes as input the specific slips system |sS| and the
-% makroscopic strain tensor.
+% makroscopic strain tensor |E|
 
 odf1 = SO3FunSBF(sS(1),E)
 odf2 = SO3FunSBF(sS(2),E)
@@ -115,4 +112,15 @@ mtexColorbar
 
 plotPDF(odf1 + odf2 + odf3,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
+
+%% Checking the Continuity Equation
+% We may now check wether the continuity equation is satisfied. In a stable
+% state the time difference will be zero and hence $\text{div}(f  \Omega) =
+% 0$
+%
+% TODO: this is currently not working and we do not know why!
+
+plot(div(SO3VectorFieldHarmonic(Omega .* odf1)))
+mtexColorbar('location','south')
+
 
