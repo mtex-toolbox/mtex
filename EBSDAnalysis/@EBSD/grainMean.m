@@ -55,6 +55,10 @@ meanProp = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
 
 % convert from id to ind
 grains = getClass(varargin,'grain2d');
-if ~isempty(grains), meanProp = meanProp(grains.id); end
+if  ~isempty(grains)
+    meanProp = meanProp(grains.id);
+else
+    meanProp = meanProp(ebsd.grainId);
+end
 
 end
