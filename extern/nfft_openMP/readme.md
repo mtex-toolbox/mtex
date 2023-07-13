@@ -29,6 +29,6 @@ into this directory `mtex/extern/nfft_openMP`
 ```
 nfft/matlab/nfsoft/nfsoftmex.mex* 
 nfft/matlab/nfsft/nfsftmex.mex*
-nfft/matlab/nfsft/nfftmex.mex*
-nfft/matlab/nfsft/fptmex.mex* 
+nfft/matlab/nfft/nfftmex.mex*
+nfft/matlab/fpt/fptmex.mex* 
 ```
