@@ -24,8 +24,11 @@ make
 For Mac OSX related issues have a look at https://mtex-toolbox.github.io/installation
 
 ## Copy the NFFT Binaries into MTEX ##
-Copy the following files into this directory `mtex/extern/nfft_openMP`
+Copy the following files from the build directory (e.g. `nfft-3.5.3/matlab/nfsoft/.libs/`)
+into this directory `mtex/extern/nfft_openMP`
 ```
 nfft/matlab/nfsoft/nfsoftmex.mex* 
-nfft/matlab/nfsft/nfsftmex.mex* 
+nfft/matlab/nfsft/nfsftmex.mex*
+nfft/matlab/nfsft/nfftmex.mex*
+nfft/matlab/nfsft/fptmex.mex* 
 ```
