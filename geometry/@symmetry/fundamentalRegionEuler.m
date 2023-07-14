@@ -88,6 +88,7 @@ else
 end
 
 % for antipodal symmetry we can reduce either phi1 or phi2 to one half
+% TODO: check quadrature??
 if check_option(varargin,'antipodal'), maxPhi2 = maxPhi2 / 2; end
 
 

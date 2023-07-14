@@ -15,6 +15,7 @@ places = {'geometry/@S1Grid/private/S1Grid_',...
   'SO3Fun/@SO3FunHarmonic/private/adjoint',...
   'SO3Fun/@SO3FunHarmonic/private/representationbased'};
   
+% TODO: Check for mex-Compiler
 
 % compile all the files
 for p = 1:length(places)
