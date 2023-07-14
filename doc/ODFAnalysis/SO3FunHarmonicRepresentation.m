@@ -95,6 +95,58 @@ plot(odf,'sections',6,'silent','sigma')
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
+
+%% Construct ODFs from grids
+%
+% Assume you have some experiment which yields an ODF or some general 
+% |@SO3Fun|, i.e. some evaluation routine. 
+% Now you want to compute the corresponding |@SO3FunHarmonic|. Therefore
+% you have to evaluate on an specific grid and afterwards you compute the
+% Fourier coefficients by the command <SO3FunHarmonic.quadrature.html SO3FunHarmonic.quadrature>.
+%
+
+% Assume some routine
+mtexdata dubna
+odf = calcODF(pf,'resolution',5*degree,'zero_Range')
+
+% Specify the bandwidth and symmetries of your desired harmonic odf
+N = 50;
+SRight = crystalSymmetry('321');
+SLeft = specimenSymmetry;
+
+% Compute the quadrature grid and weights
+[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'ABG');
+% Evaluate your routine on that quadrature grid
+tic
+v = odf.eval(nodes);
+toc
+% and do quadrature
+F = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'ClenshawCurtis')
+
+%%
+% Lets take a look on the result
+
+plot(F)
+
+%%
+% Note that the evaluation could be expansive.
+% Further we did not use the full potential of the symmetries of our odf.
+% Sometimes there are symmetric equivalent nodes on the quadrature grid.
+% Hence it is sufficient to evaluate at one of this and reconstruct the 
+% others afterwards. 
+%
+
+tic
+[u,iori,iu] = uniqueQuadratureSO3Grid(nodes,N);
+v = odf.eval(u);
+v = v(iu);
+toc
+
+F2 = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'ClenshawCurtis')
+
+norm(F-F2)
+
+
 %% TODO: Add some non ODF example for an SO3Fun
 %
 %

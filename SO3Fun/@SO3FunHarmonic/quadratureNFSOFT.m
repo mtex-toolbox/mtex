@@ -1,4 +1,13 @@
 function SO3F = quadratureNFSOFT(f, varargin)
+% Compute the SO(3)-Fourier/Wigner coefficients of an given @SO3Fun or
+% given evaluations on a specific quadrature grid.
+%
+% This method evaluates the given SO3Fun on an with respect to symmetries 
+% fundamental Region. Afterwards it uses a NFSOFT (which includes a fast
+% polynom transform).
+% We prefer the faster, simpler and more stable |SO3FunHarmonic.quadrature|
+% method.
+% 
 %
 % Syntax
 %   SO3F = SO3FunHarmonic.quadratureNFSOFT(nodes,values,'weights',w)
@@ -53,7 +62,12 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(bw,SRight,SLeft);
-  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft,varargin{:});
+  [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  % Only evaluate unique orientations
+  [u,~,iu] = uniqueQuadratureSO3Grid(nodes,bw);
+  v = f.eval(u(:));
+  values = v(iu(:),:);
+  values = reshape(values,[length(nodes),size(f)]);
   [alpha,beta,gamma] = Euler(nodes,'nfft');
   nodes = [alpha(:),beta(:),gamma(:)];
 

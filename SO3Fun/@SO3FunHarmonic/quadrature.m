@@ -1,4 +1,13 @@
 function SO3F = quadrature(f, varargin)
+% Compute the SO(3)-Fourier/Wigner coefficients of an given @SO3Fun or
+% given evaluations on a specific quadrature grid.
+%
+% This method evaluates the given SO3Fun on an with respect to symmetries 
+% fundamental Region. Afterwards it uses a inverse trivariate nfft/fft and
+% an adjoint coefficient transform which is based on a representation
+% property of Wigner-D functions.
+% Hence it do not use the NFSOFT (which includes a fast polynom transform) 
+% as in the older method |SO3FunHarmonic.quadratureNFSOFT|.
 %
 % Syntax
 %   SO3F = SO3FunHarmonic.quadrature(nodes,values,'weights',w)
@@ -63,7 +72,12 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(bw,SRight,SLeft);
-  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft,varargin{:}); 
+  [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  % Only evaluate unique orientations
+  [u,~,iu] = uniqueQuadratureSO3Grid(nodes,bw);
+  v = f.eval(u(:));
+  values = v(iu(:),:);
+  values = reshape(values,[length(nodes),size(f)]);
   varargin{end+1} = 'ClenshawCurtis';
 
 else
@@ -226,97 +240,4 @@ function bw = adjustBandwidth(bw,SRight,SLeft)
     while mod(2*bw+2,LCM)~=0
       bw = bw+1;
     end
-end
-
-
-
-function [nodes,values] = round2equispacedGrid(nodes,values,bw,SRight,SLeft)
-
-  % Use crystal and specimen symmetries by only evaluating in fundamental
-  % region. Therefore adjust the bandwidth to crystal and specimen symmetry.
-   bw = adjustBandwidth(bw,SRight,SLeft);
-
-    grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
-    % in some special cases we need to evaluate the function handle in additional nodes
-    if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
-      %warning('off')
-      if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
-        grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
-      end
-      %warning('on')
-    end
-    [a,b,c] = nodes.project2EulerFR('nfft');
-    ori = [a,b,c];
-
-    I = zeros(length(values),3);
-    I(:,2) = round(ori(:,2).*(2*bw/pi));
-
-    % work on cases beta = 0 or pi
-    ind_beta0 = I(:,2)==0;
-    ind_betapi = I(:,2)==2*bw;
-    ori(ind_beta0,1) = mod(ori(ind_beta0,1) + ori(ind_beta0,3),2*pi);
-    ori(ind_beta0,3) = 0;
-    ori(ind_betapi,1) = mod(ori(ind_betapi,1) - ori(ind_betapi,3),2*pi);
-    ori(ind_betapi,3) = 0;
-
-    % get 1st and 3rd Euler angles
-    I(:,[1,3]) = round(ori(:,[1,3])*((bw+1)/pi));
-    I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
-
-    % get grid indices
-    ind = I * [size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1] + 1;
-
-    % add grid values with same indices
-    grid_values = zeros(size(grid_nodes));
-    B = accumarray(ind,values);
-    grid_values(1:length(B)) = B;
-
-    % set the equivalent nodes for beta=0 /pi
-    grid_values(:,1,:) = repmat(hankel(grid_values(:,1,1),circshift(grid_values(:,1,1),1)),SLeft.multiplicityZ,SRight.multiplicityZ);
-    if size(grid_values,2)==2*bw+1
-      grid_values(:,end,:) = toeplitz(grid_values(:,end,1),circshift(flip(grid_values(:,end,1)),1));
-    end
-    nodes = grid_nodes;
-    values = grid_values;
-
-% Alternatively split the values to all neigborhood nodes weighted by the distance
-% TODO: Special cases beta = 0 , pi/(2N) , pi*(1-1/(2N)) , pi do not work yet.
-%     bw=71;
-%     grid_nodes = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft);
-%     % in some special cases we need to evaluate the function handle in additional nodes
-%     if SRight.multiplicityPerpZ~=1 && SLeft.multiplicityPerpZ~=1
-%       warning('off')
-%       if (SLeft.id==19 && mod(N+1,2)==0) || (SLeft.id==22 && mod(N+1,12)==0) || (SLeft.id~=19 && SLeft.id~=22)
-%         grid_nodes = cat(3,grid_nodes,rotation.byEuler(pi/(bw+1),0,0).*grid_nodes(:,:,end));
-%       end
-%       warning('on')
-%     end
-%     [a,b,c] = nodes.project2EulerFR('nfft');
-%     ori = [a,b,c];
-%     
-%     I = permute(floor(ori.*[bw+1,2*bw,bw+1]/pi),[1,3,2]) ...
-%         + permute([0,0,0;0,0,1;0,1,0;0,1,1;1,0,0;1,0,1;1,1,0;1,1,1],[3,1,2]);
-% 
-%     I(:,[1,3]) = mod(I(:,[1,3]),(2*bw+2)./[SLeft.multiplicityZ,SRight.multiplicityZ]);
-%     ind = sum(I .* permute([size(grid_nodes,1)*size(grid_nodes,2); size(grid_nodes,1); 1],[2,3,1]),3) + 1;
-% 
-%     grid_values = zeros(size(grid_nodes));
-% 
-%     % get the neighbor grid nodes for every single node
-%     d = nan(length(values),8);
-%     for m=1:8
-%       if m==1 || m==3 || m==7
-%         ZZZ = ~isnan(ind(:,m));
-%       end
-%       d(ZZZ,m) = angle(grid_nodes(ind(ZZZ,m)),nodes(ZZZ));
-%     end
-%     d = 1./d;
-%     v = d.*(values./sum(d,2,'omitnan'));
-% 
-%     B = accumarray(id,v);
-%     grid_values(1:length(B)) = B;
-% 
-%     nodes = grid_nodes(grid_values~=0);
-%     values = grid_values(grid_values~=0);
-
 end

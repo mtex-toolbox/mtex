@@ -1,12 +1,33 @@
-function [SO3G, W] = quadratureSO3Grid(bandwidth, varargin)
-% nodes and weights for quadrature on SO(3)
+function [SO3G, W] = quadratureSO3Grid(N, varargin)
+% Compute nodes and weights for quadrature on SO(3). Therefore the
+% following quadrature rules are implemented yet:
+%
 %   'ClenshawCurtis'  - combinate the Gauss quadrature in 1st and 3rd Euler angle 
 %                       (alpha, gamma) with Clenshaw Curtis quadrature in 2nd 
 %                       Euler angle (beta)
+%   'GaussLegendre'   - combinate the Gauss quadrature in 1st and 3rd Euler angle 
+%                       (alpha, gamma) with Gauss Legendre quadrature in 2nd 
+%                       Euler angle (beta)
 %
 % Syntax
-%   [SO3G, W, M2] = quadratureSO3rid(M, 'ClenshawCurtis') quadrature grid of type Clenshaw Curtis
+%   SO3G = quadratureSO3rid(N, 'ClenshawCurtis')
+%   [SO3G, W] = quadratureSO3rid(N,CS,SS,'ClenshawCurtis') % quadrature grid of type Clenshaw Curtis
 %
+% Input
+%  N - bandwidth
+%  CS,SS  - @symmetries
+%
+% Output
+%  SO3G - @orientation grid
+%  W - quadrature weights
+%
+% Options
+%  ClenshawCurtis - use Clenshaw Curtis quadrature nodes and weights
+%  GaussLegendre - use Gauss Legendre quadrature nodes and weights (not implemented yet)
+%
+% See also
+% regularSO3Grid  SO3FunHarmonic/quadrature
+
 
 
 if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
@@ -16,22 +37,45 @@ end
 
 % TODO: Use Gauß-Legendre quadrature
 % if check_option(vargin,'gauss')
+%   
 % 
 %   return
 % end
 
 
 if check_option(varargin,'ClenshawCurtis')
-  SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',bandwidth,varargin{:},'ABG');
 
-  w = fclencurt2(bandwidth+1);
-  if size(SO3G,2) == 1+bandwidth/2
+  % The quadrature method itself only uses Z-fold rotational symmetry axis 
+  % (only use cyclic symmetry axis)
+  [SRight,SLeft] = extractSym(varargin);
+  sym = {'1','112','3','4','','6'};
+  if isa(SRight,'crystalSymmetry')
+    SRightNew = crystalSymmetry(sym{SRight.multiplicityZ});
+  else
+    SRightNew = specimenSymmetry(sym{SRight.multiplicityZ});
+  end
+  if isa(SLeft,'crystalSymmetry')
+    SLeftNew = crystalSymmetry(sym{SLeft.multiplicityZ});
+  else
+    SLeftNew = specimenSymmetry(sym{SLeft.multiplicityZ});
+  end
+  SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',N,SRightNew,SLeftNew,varargin{:},'ABG');
+  SO3G.CS = SRight; SO3G.SS = SLeft;
+  W = CCweights(N,SO3G);
+
+end
+
+end
+
+function W = CCweights(N,SO3G)
+
+  w = fclencurt2(N+1);
+  if size(SO3G,2) == 1+N/2
     w = w(1:size(SO3G,2));
   end
   % W = normalized volume * 2xGauß-quadrature-weights * Clenshaw-Curtis-quadrature-weights
   % W =     1/sqrt(8*pi^2)    *      (2*pi/(2*N+2))^2     *              w_b^N
   W = 1/(2*size(SO3G,1)*size(SO3G,3))*repmat(w',size(SO3G,1),1,size(SO3G,3));
-end
 
 end
 
