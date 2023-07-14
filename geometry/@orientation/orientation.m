@@ -288,6 +288,23 @@ methods (Static = true)
 
   end
 
+  function mori = Bagaryatsky(csTheta,csAlpha)
+    %
+    % Syntax:
+    %   mori = orientation.Bagaryatsky(csParent,csAlpha)
+    %
+    % Input
+    %  csTheta - cementite @crystalSymmetry
+    %  csAlpha - ferrite @crystalSymmetry
+    %
+    
+    mori = orientation.map(...
+      Miller(1,0,0,csTheta),Miller(1,-1,0,csAlpha),...
+      Miller(0,1,0,csTheta,'uvw'),Miller(1,1,1,csAlpha,'uvw'));    
+  end
+
+
+
   function mori = Burgers(csParent,csChild)
     %
     % Syntax:
@@ -302,11 +319,41 @@ methods (Static = true)
       mori = inv(orientation.Burgers(csChild,csParent));
     else
       mori = orientation.map(Miller(1,1,0,csParent),Miller(0,0,0,1,csChild),...
-        Miller(-1,1,-1,csParent),Miller(2,-1,-1,0,csChild));
+        Miller(-1,1,-1,csParent,'uvw'),Miller(2,-1,-1,0,csChild,'uvw'));
     end
     
   end
-  
+
+  function mori = PitschSchrader(csParent,csChild)
+    %
+    % Syntax:
+    %   mori = orientation.PitschSchrader(csParent,csChild)
+    %
+    % Input
+    %  csParent - parent @crystalSymmetry
+    %  csChild  - child @crystalSymmetry
+    %
+
+    mori = orientation.map(...
+      Miller(0,1,1,csParent),Miller(0,0,0,1,csChild),...
+      Miller(1,0,0,csParent,'uvw'),Miller(2,-1,-1,0,csChild,'uvw'));    
+  end
+
+  function mori = Potter(csParent,csChild)
+    %
+    % Syntax:
+    %   mori = orientation.Potter(csParent,csChild)
+    %
+    % Input
+    %  csParent - parent @crystalSymmetry
+    %  csChild  - child @crystalSymmetry
+    %
+    
+    mori = orientation.map(...
+      Miller(0,1,1,csParent),Miller(0,1,-1,1,csChild),...
+      Miller(1,1,-1,csParent,'uvw'),Miller(2,-1,-1,0,csChild,'uvw'));    
+  end
+
   function mori = Burger(varargin)
         
     warning('orientation.Burger has been renamed to orientation.Burgers')
