@@ -221,7 +221,7 @@ hold off
 % and its use is not recommendet.
 
 F = infimalConvolutionFilter;
-F.lambda = 0.01; % sssmoothing parameter for the gradient
+F.lambda = 0.01; % smoothing parameter for the gradient
 F.mu = 0.005;    % smoothing parameter for the hessian
 
 % smooth the data

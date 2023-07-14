@@ -19,7 +19,7 @@ beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 
 %%
 % that alligns (110) plane of the beta phase with the (0001) plane of the
-% alpha phase and the [1-11] direction of the beta phase with the [2110]
+% alpha phase and the [1-11] direction of the beta phase with the [-2110]
 % direction of the alpha phase.
 %
 % Note that all MTEX functions for parent grain reconstruction expect the
