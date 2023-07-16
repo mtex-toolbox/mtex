@@ -51,8 +51,8 @@ elseif nargin > 1 && isa(varargin{1},'SO3Fun') % use an ODF as input
   
     % calc Fourier coefficient of odf
     ind = deg2dim(l)+(1:(2*l+1)^2);
-    fhat_l = reshape(fhat(ind),2*l+1,2*l+1)./(2*l+1);
-      
+    fhat_l = reshape(fhat(ind),2*l+1,2*l+1)./sqrt(2*l+1);
+    
     % calc Fourier coefficients of the tensor
     T_hat = Fourier(T,'order',l);
   
