@@ -35,40 +35,44 @@ if check_option(varargin, 'gauss') || check_option(varargin, 'chebyshev')
   return
 end
 
+% Do not use 'antipodal' for evaluation or quadrature grid
+varargin = delete_option(varargin,'antipodal');
+
+% The quadrature method itself only uses Z-fold rotational symmetry axis
+% (only use cyclic symmetry axis)
+[SRight,SLeft] = extractSym(varargin);
+sym = {'1','112','3','4','','6'};
+if isa(SRight,'crystalSymmetry')
+  SRightNew = crystalSymmetry(sym{SRight.multiplicityZ});
+else
+  SRightNew = specimenSymmetry(sym{SRight.multiplicityZ});
+end
+if isa(SLeft,'crystalSymmetry')
+  SLeftNew = crystalSymmetry(sym{SLeft.multiplicityZ});
+else
+  SLeftNew = specimenSymmetry(sym{SLeft.multiplicityZ});
+end
+
+
 % TODO: Use Gauß-Legendre quadrature
-% if check_option(vargin,'gauss')
-%   
-% 
-%   return
-% end
+if check_option(varargin,'GaussLegendre')
+  
+  SO3G = regularSO3Grid('GaussLegendre','bandwidth',N,SRightNew,SLeftNew,varargin{:},'ABG');
+  SO3G.CS = SRight; SO3G.SS = SLeft;
+
+  % Weights
+  [~,w] = legendreNodesWeights(N/2+1,-1,1);
+  W = repmat(w'/(2*size(SO3G,1)*size(SO3G,3)),size(SO3G,1),1,size(SO3G,3));
+
+end
 
 
 if check_option(varargin,'ClenshawCurtis')
 
-  % The quadrature method itself only uses Z-fold rotational symmetry axis 
-  % (only use cyclic symmetry axis)
-  [SRight,SLeft] = extractSym(varargin);
-  sym = {'1','112','3','4','','6'};
-  if isa(SRight,'crystalSymmetry')
-    SRightNew = crystalSymmetry(sym{SRight.multiplicityZ});
-  else
-    SRightNew = specimenSymmetry(sym{SRight.multiplicityZ});
-  end
-  if isa(SLeft,'crystalSymmetry')
-    SLeftNew = crystalSymmetry(sym{SLeft.multiplicityZ});
-  else
-    SLeftNew = specimenSymmetry(sym{SLeft.multiplicityZ});
-  end
   SO3G = regularSO3Grid('ClenshawCurtis','bandwidth',N,SRightNew,SLeftNew,varargin{:},'ABG');
   SO3G.CS = SRight; SO3G.SS = SLeft;
-  W = CCweights(N,SO3G);
 
-end
-
-end
-
-function W = CCweights(N,SO3G)
-
+  % Weights
   w = fclencurt2(N+1);
   if size(SO3G,2) == 1+N/2
     w = w(1:size(SO3G,2));
@@ -76,6 +80,9 @@ function W = CCweights(N,SO3G)
   % W = normalized volume * 2xGauß-quadrature-weights * Clenshaw-Curtis-quadrature-weights
   % W =     1/sqrt(8*pi^2)    *      (2*pi/(2*N+2))^2     *              w_b^N
   W = 1/(2*size(SO3G,1)*size(SO3G,3))*repmat(w',size(SO3G,1),1,size(SO3G,3));
+
+
+end
 
 end
 

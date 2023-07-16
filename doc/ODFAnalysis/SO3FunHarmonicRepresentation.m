@@ -115,7 +115,7 @@ SRight = crystalSymmetry('321');
 SLeft = specimenSymmetry;
 
 % Compute the quadrature grid and weights
-[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft,'ABG');
+[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft);
 % Evaluate your routine on that quadrature grid
 tic
 v = odf.eval(nodes);
@@ -133,11 +133,11 @@ plot(F)
 % Further we did not use the full potential of the symmetries of our odf.
 % Sometimes there are symmetric equivalent nodes on the quadrature grid.
 % Hence it is sufficient to evaluate at one of this and reconstruct the 
-% others afterwards. 
+% others afterwards.
 %
 
 tic
-[u,iori,iu] = uniqueQuadratureSO3Grid(nodes,N);
+[u,~,iu] = uniqueQuadratureSO3Grid(nodes,N);
 v = odf.eval(u);
 v = v(iu);
 toc
@@ -146,6 +146,24 @@ F2 = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'Clenshaw
 
 norm(F-F2)
 
+%%
+% Furthermore, if the evaluation is very expansive it might be a good idea
+% to use the smaller Gauss-Legendre quadrature grid. In this case, however, 
+% the quadrature is more elaborate.
+%
+
+% Compute the quadrature grid and weights
+[nodes, weights] = quadratureSO3Grid(2*N,'GaussLegendre',SRight,SLeft);
+% Evaluate your routine on that quadrature grid
+tic
+[u,~,iu] = uniqueQuadratureSO3Grid(nodes,N);
+v = odf.eval(u);
+v = v(iu);
+toc
+% and do quadrature
+F3 = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N);
+
+norm(F-F3)
 
 %% TODO: Add some non ODF example for an SO3Fun
 %

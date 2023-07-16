@@ -166,6 +166,7 @@ for index = 1:num
   
   % use trivariate inverse equispaced fft in case of Clenshaw Curtis
   % quadrature grid and nfft otherwise 
+  % TODO: Do FFT x NFFT x FFT in case of GaussLegendre-Quadrature
   if check_option(varargin,'ClenshawCurtis')
 
     % Possibly use smaller input matrix by using the symmetries

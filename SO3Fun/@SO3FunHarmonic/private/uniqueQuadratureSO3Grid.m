@@ -35,21 +35,27 @@ while mod(2*t+2,LCM)~=0
   t = t+1;
 end
 if t~=N
-  error(['When trying to evaluate the function on the Clenshaw-Curtis quadrature ',...
-         'grid with bandwidth %i using the symmetries, an error was detected. ',...
-         'The specified bandwidth does not fit the symmetries. ' ...
-         'Use bandwidth %i instead.'],N,t);
+  error(['When trying to evaluate the function on Clenshaw-Curtis or Gauss-' ...
+         'Legendre quadrature grid with bandwidth %i using the symmetries, ' ...
+         'an error was detected. The specified bandwidth does not fit the ' ...
+         'symmetries. Use bandwidth %i instead.'],N,t);
+end
+
+if length(nodes(2,:,2))==N+1
+  u = regularSO3Grid('GaussLegendre','bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
+else
+  u = regularSO3Grid('ClenshawCurtis','bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
 end
 
 
-u = regularSO3Grid('ClenshawCurtis','bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
+% TODO: other grid for GaussLegendre
 
 
-% 1) Are there mirroring symmetries along alpha or gamma
+% 1) Are there mirroring symmetries along alpha, beta or gamma
 MirrorA = false;
 MirrorB = false;
 MirrorG = 0;
-[a,~,g] = fundamentalRegionEuler(SRight,SLeft,'ABG');
+[a,b,g] = fundamentalRegionEuler(SRight,SLeft,'ABG');
 [ae,~,ge] = Euler(u(end,2,end),'nfft');
 [~,be,~] = Euler(u(2,end,2),'nfft');
 if abs(2*pi/a - SLeft.multiplicityZ) > 1e-3
@@ -58,7 +64,7 @@ end
 if abs(2*pi/g - SRight.multiplicityZ) > 1e-3
   MirrorG = round(pi/g/SRight.multiplicityZ);    % has values {0,1,2} (number of mirroring axis)
 end
-if abs(be - pi/2) < 1e-3
+if abs(b - pi/2) < 1e-3
   MirrorB = true;
 end
 
@@ -66,6 +72,7 @@ end
 
 % 2) If Mirroring: In some special cases we need to evaluate the function handle in additional nodes
 addNodesA = false;
+addNodesB = false;
 addNodesG = false;
 % test for 2-fold mirror symmetry along alpha && next grid point is boundary of fundamental region
 if MirrorA && abs(ae+pi/(N+1)-a)<1e-3
@@ -79,6 +86,9 @@ if MirrorG>0 && abs(ge+pi/(N+1)-g)<1e-3
   warning off
   u = cat(1,u,u(end,:,:).*rotation.byEuler(pi/(N+1),0,0));
   warning on
+end
+if MirrorB && abs(be - pi/2)<1e-3
+  addNodesB = true;
 end
   
 v = reshape(1:length(u),size(u));
@@ -142,7 +152,11 @@ v = reshape(1:length(u),size(u));
    %      2nd Euler angle beta we may reconstruct full size of values
    if MirrorB
 
-    values_right = flip(v(:,1:end-1,:),2);
+    if addNodesB
+      values_right = flip(v(:,1:end-1,:),2);
+    else
+      values_right = flip(v(:,1:end,:),2);
+    end
     
     if SRight.multiplicityPerpZ==1 && SLeft.multiplicityPerpZ~=1
       values_right = flip(values_right,3);
