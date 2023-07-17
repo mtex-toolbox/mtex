@@ -96,8 +96,8 @@ hkl2 = rn2.hkl;
 
 % fit of planes
 omega_h = angle(rn2(:),n2(:)) + ...
-  (h(:).^2 + k(:).^2 + l(:).^2 + ...
-  sum(hkl2.^2,2) + 0.01*sum(hkl2<-0.1,2)) * penalty;
+  (h(:).^2 + k(:).^2 + 0.995*l(:).^2 + ...
+  hkl2.^2 * [1;1;0.995] + 0.01*sum(hkl2<-0.1,2)) * penalty;
 
 % all directions
 [u,v,w] = allHKL(maxIndex);
