@@ -4,7 +4,7 @@
 %
 % In this part we deal with multivariate functions of the form
 %
-% $$ f\colon \bf S^2\to \bf R^n $$.
+% $$ f\colon \bf{S}^2\to \bf{R}^n $$.
 %
 % * the structure of the nodes is always interpreted as a column vector
 % * the node index is the first dimension

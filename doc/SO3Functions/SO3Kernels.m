@@ -342,11 +342,11 @@ legend('\kappa = 0.2','\kappa = 0.3')
 % Otherwise it is has a contstant value, such that the mean of $\psi_r$ on 
 % $\mathcal{SO}(3)$ is 1. Hence we use the open set
 %
-% $$U_r = \{ \bf R \in \mathcal{SO}(3) \,|~ |\omega(\bf R)|<r \}$$
+% $$U_r = \{ \bf{R} \in \mathcal{SO}(3) \,\vert ~ \lvert \omega( \bf{R})\rvert <r \}$$
 % 
 % and define the bump kernel by
 %
-% $$ \tilde\psi_r(\bf R) = \frac1{|U_r|} \mathbf{1}_{\bf R \in U_r} $$
+% $$ \tilde\psi_r( \bf{R}) = \frac1{\lvert U_r \rvert } \mathbf{1}_{ \{ \bf{R} \in U_r \} } $$
 %
 % where $\mathbf{1}$ is the indicator function.
 %

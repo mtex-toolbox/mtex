@@ -46,11 +46,11 @@ reshape(f.fhat(11:35),5,5)
 %%
 % As an additional example lets define a harmonic function by its Fourier
 % coefficients $\hat f_0^{0,0} = 0.5$ and 
-% $\hat f_1 = \begin{array}{rrr} 
+% $\hat f_1 = \left(\begin{array}{rrr} 
 % 1 & 4 & 7 \\ 
 % 2 & 5 & 8 \\ 
 % 3 & 6 & 9 \\ 
-% \end{array}$
+% \end{array}\right)$
 
 f2 = SO3FunHarmonic([0.5,1:9]')
 

@@ -5,7 +5,7 @@
 %%
 % S2AxisFieldHarmonic handles functions of the form 
 %
-% $$ f\colon \bf S^2\to\bf R^3_{/<\pm \mathrm{Id}>}. $$
+% $$ f\colon \bf{S}^2\to\bf{R}^3_{/<\pm \mathrm{Id}>}. $$
 %
 %% Defining a S2AxisFieldHarmonic
 %
