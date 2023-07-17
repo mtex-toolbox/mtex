@@ -13,9 +13,19 @@ function val = cor(SO3F1,SO3F2)
 %  t - double
 %
 
+s = size(SO3F2);
+bw = min(SO3F1.bandwidth,SO3F1.bandwidth);
+SO3F1.bandwidth = bw;
+SO3F2.bandwidth = bw;
+
 SO3F1 = SO3F1.subSet(':');
 SO3F2 = SO3F2.subSet(':');
 
 val = SO3F1.fhat.' * conj(SO3F2.fhat) ;
+
+val = reshape(val,s);
+
+if SO3F1.isReal && SO3F2.isReal, val = real(val); end
+
 
 end
