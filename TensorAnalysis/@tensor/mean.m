@@ -40,26 +40,13 @@ if check_option(varargin,'iso') && T.rank==4
      
 elseif nargin > 1 && isa(varargin{1},'SO3Fun') % use an ODF as input
 
-  odf = varargin{1};
+  SO3F = SO3FunHarmonic(varargin{1},'bandwidth',T.rank);
+  TFun = Fourier(T);
 
   TVoigt = 0*T;
-  TVoigt.CS = odf.SS; 
-  
-  fhat = calcFourier(odf,min(T.rank,odf.bandwidth));
-  
-  for l = 0:min(T.rank,odf.bandwidth)
-  
-    % calc Fourier coefficient of odf
-    ind = deg2dim(l)+(1:(2*l+1)^2);
-    fhat_l = reshape(fhat(ind),2*l+1,2*l+1)./(2*l+1);
-      
-    % calc Fourier coefficients of the tensor
-    T_hat = Fourier(T,'order',l);
-  
-    % mean Tensor is the product of both
-    TVoigt = TVoigt + real(EinsteinSum(T_hat,[1:T.rank -1 -2],fhat_l,[-2 -1]));
-        
-  end
+  TVoigt.CS = SO3F.SS; 
+
+  TVoigt.M = cor(SO3F,TFun);
   
 elseif check_option(varargin,'weights')  % weighted mean
   

@@ -18,6 +18,14 @@ function t = norm(SO3F)
 %  resolution  - choose mesh width by calculation of mean
 %
 
-t = sqrt(mean(abs(SO3F).^2));
+% switch to harmonic representation
+SO3F = SO3FunHarmonic(SO3F);
+
+% compute the norm
+t = norm(SO3F);
+
+%fun = SO3FunHandle(@(ori) abs(SO3F.eval(ori)).^2,SO3F.CS, SO3F.SS);
+%t = sqrt(mean(fun));
+%t = sqrt(mean(abs(SO3F).^2));
     
 end
