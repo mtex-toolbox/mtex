@@ -50,7 +50,7 @@ end
 
 % compute spread for each cluster
 if nargout == 2
-  omega = real(acos(flip./s(subs) .* ...
+  omega = 2*real(acos(flip./s(subs) .* ...
     (q.a .* a(subs) + q.b .* b(subs) + q.c .* c(subs) + q.d .* d(subs))));
   GOS = accumarray(subs,omega,size(a),@mean);
 end
