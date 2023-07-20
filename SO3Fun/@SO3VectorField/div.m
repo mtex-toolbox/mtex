@@ -18,7 +18,7 @@ function d = div(SO3VF,varargin)
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
-  d = SO3FunHandle(@(rot) SO3VF.div(rot,varargin{:}),SO3VF.CS,specimenSymmetry);
+  d = SO3FunHandle(@(rot) SO3VF.div(rot,varargin{:}),SO3VF.CS,SO3VF.SS);
   return
 end
 

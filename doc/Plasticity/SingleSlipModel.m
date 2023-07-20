@@ -67,7 +67,7 @@ Omega1 = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* (ori * S(1))));
 Omega1 = SO3VectorFieldHarmonic.quadrature(Omega1,csOli)
 
 % other versions
-% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) * (ori * S(1)),[-1 -2])
+% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) .* (ori * S(1)),[-1 -2])
 % Omega2 = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* S(1)));
 % Omega2 = SO3VectorFieldHarmonic.quadrature(Omega2,csOli)
 
@@ -128,8 +128,8 @@ mtexColorbar
 % 0$
 %
 % TODO: this is currently not working!
-
-plot(div(SO3VectorFieldHarmonic(Omega .* odf1)))
+g = SO3VectorFieldHandle(@(ori) vector3d(Omega(ori)) , csOli);
+plot(div(SO3VectorFieldHarmonic(g .* odf1)))
 mtexColorbar('location','south')
 
 %%

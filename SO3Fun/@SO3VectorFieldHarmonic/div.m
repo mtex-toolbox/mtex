@@ -67,7 +67,7 @@ for n=0:SO3VF.bandwidth
 
 end
 
-d = SO3FunHarmonic( fhat,SO3VF.CS );
+d = SO3FunHarmonic( fhat ,SO3VF.CS,SO3VF.SS);
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};
