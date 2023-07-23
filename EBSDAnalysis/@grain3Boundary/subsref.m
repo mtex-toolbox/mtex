@@ -13,11 +13,25 @@ function varargout = subsref(gB3,s)
 if strcmp(s(1).type,'()')
 
   subs=s(1).subs;
-  
-  assert(length(subs)==1&& (isnumeric(subs{1}) || islogical(subs{1}))...
+
+  if (length(subs)==2 && (subs{2} == "ind"))
+    ind = subs{1};
+    assert((isnumeric(ind) || islogical(ind))...
     , 'indexing only supported for numerical or logical values')
+  elseif length(subs)==1
+    if isnumeric(subs{1})
+      id = subs{1};
+    elseif islogical(subs{1})
+      id = find(subs{1});
+    else
+      error 'indexing only supported for numerical or logical values'
+    end
+    ind = id2ind(gB3,id); % not implemented yet
+  else
+    error 'error'
+  end
   
-  gB3=subSet(gB3,subs{1});
+  gB3=subSet(gB3,ind);
   
   % is there something more to do?
   if numel(s)>1

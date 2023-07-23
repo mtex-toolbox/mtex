@@ -9,6 +9,7 @@ function gB3 = subSet(gB3,ind)
 %  gB - @grain3Boundary
 %
 gB3.poly = gB3.poly(ind);
+gB3.id = gB3.id(ind);
 
 stillNeededVs = unique([gB3.poly{:}]);
 gB3.V = gB3.V(stillNeededVs);

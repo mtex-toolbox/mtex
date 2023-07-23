@@ -1,6 +1,7 @@
 classdef grain3Boundary < phaseList & dynProp
 
   properties  %with as many rows as data
+    id = []
     poly  %cell arry with all faces
   end
   
@@ -22,6 +23,7 @@ classdef grain3Boundary < phaseList & dynProp
 
       gB.V=V;
       gB.poly=poly;
+      gB.id=1:length(poly);
       
     end
 
