@@ -2,7 +2,7 @@ classdef grain3d < phaseList & dynProp
   % class representing 3 dimensional grains
 
   properties  % with as many rows as data
-    id=[]
+    id = []
     I_CF  %incidenc matrix cells x face
     grainSize = [] % number of measurements per grain
   end
@@ -13,7 +13,6 @@ classdef grain3d < phaseList & dynProp
 
   properties (Dependent)
     V     %verticies
-    poly  %cell arry with all faces
   end
 
   methods
@@ -53,10 +52,6 @@ classdef grain3d < phaseList & dynProp
 
     function V = get.V(grains)
       V = grains.boundary.V;
-    end
-
-    function poly = get.poly(grains)
-      poly = grains.boundary.poly;
     end
 
   end

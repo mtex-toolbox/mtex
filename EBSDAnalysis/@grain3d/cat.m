@@ -6,8 +6,9 @@ function grains = cat(~,varargin)
 %   g = [grains('fe') grains('mg')]
 %   g = [grains(1:100) grains(500:end)]
 %
-% See also
-% grain2d/vertcat
+% Input
+%  grains - @grain3d
+%
 
 grains = cat@dynProp(1,varargin{:});
 
