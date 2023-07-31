@@ -42,7 +42,14 @@ classdef SO3FunSBF < SO3Fun
       CS = SO3F.sS.CS;      
     end
 
-  end  
+  end
+
+  methods (Static = true)
+  
+    [SO3F1,SO3F2,SO3F3] = example(varargin)
+    
+  end
+
 end
 
 % Testing Code
