@@ -10,7 +10,7 @@ function f = eval(SO3F,rot,varargin)
 s = size(rot);
 rot = rot(:);
 
-h = symmetrise(SO3F.h.normalize,'unqiue');
+h = symmetrise(SO3F.h.normalize,'unique');
 
 % rot x SS x CS x h
 gh = reshape((SO3F.SS.properGroup * rot).' * h, length(rot),[],length(SO3F.h));
