@@ -27,6 +27,9 @@ methods
 %     end
 
     f = SO3VF.fun(ori);
+    if check_option(varargin,'right')
+      f = inv(ori).*f;
+    end
   end
   
 end

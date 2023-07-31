@@ -17,4 +17,8 @@ function f = eval(SO3VF,rot,varargin)
 f = vector3d(SO3VF.SO3F.eval(rot)');
 f = reshape(f',size(rot));
 
+if check_option(varargin,'right')
+  f = inv(rot).*f;
+end
+
 end

@@ -12,6 +12,6 @@ function SO3F = normSquare(SO3VF)
 %
 
 SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)).^2,...
-  SO3VF.CS,SO3VF.SS,'bandwidth',2 * SO3VF.bandwidth);
+  SO3VF.CS,SO3VF.SS,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),2*SO3VF.bandwidth));
 
 end

@@ -33,7 +33,7 @@ if SO3VF.bandwidth == 0
   if nargin>1
     d = zeros(size(varargin{1}));
   else
-    d = SO3FunHarmonic(0,SO3VF.CS);
+    d = SO3FunHarmonic(0,SO3VF.CS,SO3VF.SS);
   end
   return; 
 end

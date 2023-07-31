@@ -19,7 +19,7 @@ function SO3F = L2normalizeFourierCoefficients(SO3F)
 fhat = SO3F.fhat;
 for n = 0:SO3F.bandwidth
   ind = deg2dim(n)+1:deg2dim(n+1);
-  fhat(ind) = fhat(ind) /sqrt(2*n+1);
+  fhat(ind,:) = fhat(ind,:) /sqrt(2*n+1);
 end
 SO3F.fhat = fhat;
 

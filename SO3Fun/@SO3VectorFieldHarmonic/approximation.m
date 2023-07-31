@@ -14,11 +14,23 @@ function SO3VF = approximation(nodes, values, varargin)
 % Options
 %   bandwidth - maximal degree of the Wigner-D functions (default: 128)
 %
+% See also
+% SO3FunHarmonic/approximation SO3VectorFieldHarmonic
+
 
 % TODO: This method uses the very expensive approximation method
 
+if isa(nodes,'orientation')
+  nodes.SS = specimenSymmetry;
+  SRight = nodes.CS;
+  SLeft = nodes.SS;
+else
+  [SRight,SLeft] = extractSym(varargin);
+  nodes = orientation(nodes,SRight,specimenSymmetry);
+end
+
 SO3F = SO3FunHarmonic.approximation(nodes(:),values.xyz,varargin{:});
 
-SO3VF = SO3VectorFieldHarmonic(SO3F);
+SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft);
 
 end

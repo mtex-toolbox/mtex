@@ -17,6 +17,9 @@ function SO3F = approximation(nodes, y, varargin)
 %  maxit            - maximum number of iterations for lsqr
 %  weights          - weight w_n for the nodes (default: Voronoi weights)
 %
+% See also
+% SO3Fun/interpolate SO3FunHarmonic/quadrature
+% SO3VectorFieldHarmonic/approximation
 
 if isa(nodes,'orientation')
   SRight = nodes.CS; SLeft = nodes.SS;
