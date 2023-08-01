@@ -1,5 +1,5 @@
 classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
-    ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3FunHarmonic < SO3Fun
+    ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF}) SO3FunHarmonic < SO3Fun
 % a class representing a harmonic function on the rotational group.
 %
 % Syntax
