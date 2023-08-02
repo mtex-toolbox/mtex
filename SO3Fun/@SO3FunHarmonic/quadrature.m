@@ -205,7 +205,10 @@ for index = 1:num
   end
   sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
          min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
-  
+  % if random samples the symmetry properties do not fit
+  if ~isa(f,'quadratureSO3Grid')
+    sym([1,3])=1;
+  end
   % use adjoint representation based coefficient transform
   fhat(:,index) = adjoint_representationbased_coefficient_transform(N,ghat,flags,sym);
   fhat(:,index) = symmetriseWignerCoefficients(fhat(:,index),flags,SRight,SLeft,sym);
