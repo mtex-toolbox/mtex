@@ -23,6 +23,13 @@ methods
   end
   
   function f = eval(SO3VF,ori,varargin)
+
+    % change evaluation method to quadratureSO3Grid/eval
+    if isa(ori,'quadratureSO3Grid')
+      f = eval(SO3VF,ori,varargin);
+      return
+    end
+
 %     if isa(ori,'orientation')
 %       ensureCompatibleSymmetries(SO3VF,ori)
 %     end

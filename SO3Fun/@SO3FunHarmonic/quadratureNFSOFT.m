@@ -62,21 +62,26 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(bw,SRight,SLeft);
-  [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  SO3G = quadratureSO3Grid(bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  W = SO3G.weights;
   % Only evaluate unique orientations
-  [u,~,iu] = uniqueQuadratureSO3Grid(nodes,bw);
-  v = f.eval(u(:));
-  values = v(iu(:),:);
-  values = reshape(values,[length(nodes),size(f)]);
-  [alpha,beta,gamma] = Euler(nodes,'nfft');
+  values = f.eval(SO3G);
+  values = reshape(values,[length(SO3G),size(f)]);
+  [alpha,beta,gamma] = Euler(SO3G.nodes,'nfft');
   nodes = [alpha(:),beta(:),gamma(:)];
 
 else
 
-  nodes = f(:);
+  if isa(f,'quadratureSO3Grid')
+    bw = f.bandwidth;
+    nodes = f.nodes(:);
+    W = f.weights(:);
+  else
+    nodes = f(:);
+    W = get_option(varargin,'weights',1);
+    W = W(:);
+  end
   values = varargin{1}(:);
-  W = get_option(varargin,'weights',1);
-  W = W(:);
 
   if isa(nodes,'orientation')
     SRight = nodes.CS; SLeft = nodes.SS;

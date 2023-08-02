@@ -1,4 +1,4 @@
-function [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,varargin)
+function [u,inodes,iu] = uniqueQuadratureSO3Grid(SO3G,varargin)
 % Nearly disjoint list of orientations of an quadratureSO3Grid.
 %
 % We use 2-fold rotational symmetries along Y-axis of left and right 
@@ -12,7 +12,7 @@ function [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,varargin)
 %
 % Output
 %  u  - @orientation
-%  iu - index such that nodes = u(iu)
+%  iu - index such that    nodes = u(iu)
 %
 % See also
 % orientation.unique SO3FunHarmonic.quadrature SO3FunHarmonic.quadratureNFSOFT
@@ -20,35 +20,14 @@ function [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,varargin)
 
 % Note that specimenSymmetry('23') does not exist and consequently does not work
 
-SRight = nodes.CS;
-SLeft = nodes.SS;
-
-LId = SLeft.id;
+SRight = SO3G.CS;
+SLeft = SO3G.SS;
 RId = SRight.id;
+LId = SLeft.id;
 
+N = SO3G.bandwidth;
 
-% check for suiting bandwidth
-[~,~,g] = fundamentalRegionEuler(SRight,SLeft,'ABG');
-t = N;
-LCM = lcm((1+double(round(2*pi/g/SRight.multiplicityZ) == 4))*SRight.multiplicityZ,SLeft.multiplicityZ);
-while mod(2*t+2,LCM)~=0
-  t = t+1;
-end
-if t~=N
-  error(['When trying to evaluate the function on Clenshaw-Curtis or Gauss-' ...
-         'Legendre quadrature grid with bandwidth %i using the symmetries, ' ...
-         'an error was detected. The specified bandwidth does not fit the ' ...
-         'symmetries. Use bandwidth %i instead.'],N,t);
-end
-
-if length(nodes(2,:,2))==N+1
-  u = regularSO3Grid('GaussLegendre','bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
-else
-  u = regularSO3Grid('ClenshawCurtis','bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
-end
-
-
-% TODO: other grid for GaussLegendre
+u = regularSO3Grid(SO3G.scheme,'bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
 
 
 % 1) Are there mirroring symmetries along alpha, beta or gamma
@@ -89,6 +68,10 @@ if MirrorG>0 && abs(ge+pi/(N+1)-g)<1e-3
 end
 if MirrorB && abs(be - pi/2)<1e-3
   addNodesB = true;
+end
+
+if nargout==1
+  return
 end
   
 v = reshape(1:length(u),size(u));

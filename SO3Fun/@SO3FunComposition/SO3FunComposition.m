@@ -107,23 +107,6 @@ methods
 
   end
   
-  function f = eval(SO3F,rot,varargin)
-    
-%     if isa(rot,'orientation')
-%       ensureCompatibleSymmetries(SO3F,rot)
-%     end
-
-    f = 0;
-    for k = 1:length(SO3F.components)
-      f = f + eval(SO3F.components{k},rot,varargin{:});
-    end
-
-    if isalmostreal(f)
-      f = real(f);
-    end
-    
-  end  
-  
   function w = get.weights(S3F)
     w = cellfun(@(x) mean(x,'all'), S3F.components);
   end

@@ -112,31 +112,38 @@ norm(eval(SO3F, nodes) - S.values)
 
 %% Quadrature
 %
-% Assume you have some experiment which yields an ODF or some general 
+% Assume we have some experiment which yields an ODF or some general 
 % |@SO3Fun|, i.e. some evaluation routine. 
 
 mtexdata dubna
 odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 %%
-% Now you want to compute the corresponding |@SO3FunHarmonic|. Therefore
-% you have to evaluate on an specific grid and afterwards you compute the
+% Now we want to compute the corresponding |@SO3FunHarmonic|. Therefore
+% we have to evaluate on an specific grid and afterwards we compute the
 % Fourier coefficients by the command <SO3FunHarmonic.quadrature.html SO3FunHarmonic.quadrature>.
 %
 
-% Specify the bandwidth and symmetries of your desired harmonic odf
+% Specify the bandwidth and symmetries of the desired harmonic odf
 N = 50;
-SRight = crystalSymmetry('321');
+SRight = odf.CS;
 SLeft = specimenSymmetry;
 
 % Compute the quadrature grid and weights
-[nodes, weights] = quadratureSO3Grid(2*N,'ClenshawCurtis',SRight,SLeft);
-% Evaluate your routine on that quadrature grid
+SO3G = quadratureSO3Grid(N,'ClenshawCurtis',SRight,SLeft);
+% Because of symmetries there are symmetric equivalent nodes on the quadrature grid.
+% Hence we evaluate the routine on a smaller unique grid and reconstruct afterwards.
 tic
-v = odf.eval(nodes);
+  v = odf.eval(SO3G);
 toc
-% and do quadrature
-F = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'ClenshawCurtis')
+% analogously we can do exactly the same by directly evaluating on the quadratureSO3Grid
+% v = odf.eval(SO3G.uniqueNodes);
+% v = v(SO3G.uniqueIndexes);
+
+% Afterwards do quadrature
+F = SO3FunHarmonic.quadrature(SO3G,v)
+% or analogously
+% F = SO3FunHarmonic.quadrature(SO3G.nodes,v,'weights',SO3G.weights,'bandwidth',N,'ClenshawCurtis')
 
 %%
 % Lets take a look on the result
@@ -144,38 +151,26 @@ F = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'ClenshawC
 plot(F)
 
 %%
-% Note that the evaluation could be expansive.
-% Further we did not use the full potential of the symmetries of our odf.
-% Sometimes there are symmetric equivalent nodes on the quadrature grid.
-% Hence it is sufficient to evaluate at one of this and reconstruct the 
-% others afterwards.
-%
+% If our odf is an |@SO3Fun| we can also directly use the command 
+% <SO3FunHarmonic.html SO3FunHarmonic>.
 
-tic
-[u,~,iu] = uniqueQuadratureSO3Grid(nodes,N);
-v = odf.eval(u);
-v = v(iu);
-toc
-
-F2 = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N,'ClenshawCurtis')
+F2 = SO3FunHarmonic(odf)
 
 norm(F-F2)
 
 %%
-% Furthermore, if the evaluation is very expansive it might be a good idea
+% Furthermore, if the evaluation step is very expansive it might be a good idea
 % to use the smaller Gauss-Legendre quadrature grid. In this case, however, 
 % the quadrature is more elaborate.
 %
 
 % Compute the quadrature grid and weights
-[nodes, weights] = quadratureSO3Grid(2*N,'GaussLegendre',SRight,SLeft);
+SO3G = quadratureSO3Grid(N,'GaussLegendre',SRight,SLeft);
 % Evaluate your routine on that quadrature grid
 tic
-[u,~,iu] = uniqueQuadratureSO3Grid(nodes,N);
-v = odf.eval(u);
-v = v(iu);
+  v = odf.eval(SO3G);
 toc
 % and do quadrature
-F3 = SO3FunHarmonic.quadrature(nodes,v,'weights',weights,'bandwidth',N);
+F3 = SO3FunHarmonic.quadrature(SO3G,v)
 
 norm(F-F3)

@@ -58,15 +58,12 @@ if isa(f,'SO3Fun')
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
   bw = adjustBandwidth(N,SRight,SLeft);
-  [nodes,W] = quadratureSO3Grid(2*bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  SO3G = quadratureSO3Grid(bw,'ClenshawCurtis',SRight,SLeft,'ABG');
   % Only evaluate unique orientations
-  [u,~,iu] = uniqueQuadratureSO3Grid(nodes,bw);
-  v = f.eval(u(:));
-  values = v(iu(:),:);
-  values = reshape(values,[length(nodes),size(f)]);
-  varargin{end+1} = 'ClenshawCurtis';
+  values = f.eval(SO3G);
+  values = reshape(values,[length(SO3G),size(f)]);
   % Do quadrature
-  SO3F = SO3FunHarmonic.quadrature(nodes,values,varargin{:},'weights',W,'bandwidth',bw,'ClenshawCurtis');
+  SO3F = SO3FunHarmonic.quadrature(SO3G,values,varargin{:});%,'weights',SO3G.weights,'bandwidth',bw,'ClenshawCurtis');
   SO3F.bandwidth = N;
   return
 end
@@ -87,10 +84,17 @@ end
 
 
 % 1) get weights and values for quadrature
-
-nodes = f;
+if isa(f,'quadratureSO3Grid')
+  N = f.bandwidth;
+  nodes = f.nodes;
+  W = f.weights;
+  varargin{end+1} = f.scheme;
+else
+  nodes = f;
+  W = get_option(varargin,'weights',1);
+end
 values = varargin{1};
-W = get_option(varargin,'weights',1);
+
 if ~check_option(varargin,'ClenshawCurtis')
   nodes = nodes(:);
   values = values(:);

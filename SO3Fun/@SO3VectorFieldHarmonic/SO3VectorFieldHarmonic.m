@@ -26,6 +26,7 @@ methods
     if nargin == 0, return; end
     if isa(SO3F,'SO3FunHarmonic')
       SO3VF.SO3F = SO3F(:);
+      % extract symmetry
       isSym = cellfun(@(x) isa(x,'symmetry'),varargin,'UniformOutput',true);
 %       if sum(isSym)>=1 && isa(varargin{1},'symmetry')
 %         [SRight,~] = extractSym(varargin);

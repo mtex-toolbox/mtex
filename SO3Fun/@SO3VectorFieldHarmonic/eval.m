@@ -10,6 +10,12 @@ function f = eval(SO3VF,rot,varargin)
 %   f - @vector3d
 %
 
+% change evaluation method to quadratureSO3Grid/eval
+if isa(rot,'quadratureSO3Grid')
+  f = eval(SO3VF,rot,varargin);
+  return
+end
+
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(SO3VF,rot)
 % end

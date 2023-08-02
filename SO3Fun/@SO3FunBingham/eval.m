@@ -1,6 +1,12 @@
 function f = eval(SO3F,rot,varargin)
 % evaluate an odf at rotation rot
 
+% change evaluation method to quadratureSO3Grid/eval
+if isa(rot,'quadratureSO3Grid')
+  f = eval(SO3F,rot,varargin);
+  return
+end
+
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(SO3F,rot)
 % end

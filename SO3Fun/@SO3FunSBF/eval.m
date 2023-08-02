@@ -1,6 +1,12 @@
 function f = eval(SO3F,ori,varargin)
 % evaluate an odf at orientation ori
 
+% change evaluation method to quadratureSO3Grid/eval
+if isa(ori,'quadratureSO3Grid')
+  f = eval(SO3F,ori,varargin);
+  return
+end
+
 % align external reference frame 
 % with the principal axes of the strain tensor
 [rot,e] = eig(double(SO3F.E),'vector');

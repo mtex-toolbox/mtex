@@ -44,6 +44,10 @@ methods
     if nargin == 0, return;end
     
     % convert arbitrary SO3Fun to SO3FunHarmonic
+    if isa(fhat,'function_handle')
+      [SRight,SLeft] = extractSym(varargin);
+      fhat = SO3FunHandle(fhat,SRight,SLeft);
+    end
     if isa(fhat,'SO3Fun')
       f_hat = calcFourier(fhat,varargin{:});
       SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
