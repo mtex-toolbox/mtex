@@ -108,8 +108,8 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
   // Be shure N>0. Otherwise return the trivial solution.
     if(N==0)
     {
-      ghat[0].real = fhat[0].real/(1+isReal);
-      ghat[0].imag = fhat[0].imag/(1+isReal);
+      ghat[0].real = fhat[0].real;
+      ghat[0].imag = fhat[0].imag;
       return;
     }
     
@@ -216,23 +216,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     
     // Be shure N>1, otherwise STOP.
     if (N==1)
-    {
-      if(isReal==1) // possibly we have to half the values in ghat(:,:,0)
-      {
-        for (j=0; j<3; j++)
-        {
-          for (k=0; k<3; k++)
-          {
-            ghat[k].real = ghat[k].real/2;
-            ghat[k].imag = ghat[k].imag/2;
-          }
-          // jump to next column
-          ghat += rowcol_len;
-        }
-      }
-      
       return;
-    }
     
     
     // define some usefull variables
