@@ -33,6 +33,7 @@ if symCenter
   c = repmat(c(:).',size(ori,1),1) / numSym(cs) / numSym(ss);
 end
  
+varargin = delete_option(varargin,'weights',1);
 SO3FH = SO3FunHarmonic.quadrature(ori,c,varargin{:},'bandwidth',L);
 
 SO3FH = conv(SO3FH,SO3F.psi);
