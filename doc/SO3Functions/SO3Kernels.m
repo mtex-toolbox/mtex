@@ -33,7 +33,7 @@
 psi = SO3Kernel([1;0;3;1])
 %%
 % We plot this function by evaluation of its Chebychev series in 
-% $\cos(\frac{\omega}{2})$ for $\omega\in[-pi,\pi].$
+% $\cos(\frac{\omega}{2})$ for $\omega \in [-\pi,\pi]$.
 %
 
 plot(psi)
@@ -336,11 +336,12 @@ hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
 %% The Bump kernel
-% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in L^2(\mathcal{SO}(3))$
-% is a radial symmetric kernel function depending on a parameter $r\in (0,pi)$.
-% The function value is 0, if the angle is greater then the halfwidth $r$.
-% Otherwise it is has a contstant value, such that the mean of $\psi_r$ on 
-% $\mathcal{SO}(3)$ is 1. Hence we use the open set
+% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
+% L^2(\mathcal{SO}(3))$ is a radial symmetric kernel function depending on
+% a parameter $r\in (0,\pi)$. The function value is 0, if the angle is
+% greater then the halfwidth $r$. Otherwise it is has a contstant value,
+% such that the mean of $\psi_r$ on $\mathcal{SO}(3)$ is 1. Hence we use
+% the open set
 %
 % $$U_r = \{ {\bf R} \in \mathcal{SO}(3) \,\vert ~ \lvert \omega( {\bf R})\rvert <r \}$$
 % 
