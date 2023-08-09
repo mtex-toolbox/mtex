@@ -51,6 +51,12 @@ methods
     end
     
   end
+
+  function SO3VF = set.tangentSpace(SO3VF,s)
+    if strcmp(s,'left') || strcmp(s,'right')
+      SO3VF.tangentSpace=s;
+    end
+  end
   
 end
 
