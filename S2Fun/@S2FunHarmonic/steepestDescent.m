@@ -43,7 +43,7 @@ gradsF = sF.grad;
 for k = 0:iterMax
 
   % negatove gradient is search direction
-  d = -normalize(gradsF.eval(v));
+  d = -normalize(gradsF.eval(v),1);
   
   % search line
   line_v = repmat(v,1,length(omega)) + d * omega;
@@ -80,9 +80,9 @@ for k = 0:iterMax
   sumOmega(sumOmega>maxTravel) = [];
 
   % break if we have already numLocal points found
-  if nnz(id==1)>= numLocal &&...
+  if nnz(id==1)>= numLocal && ...
       max(mink(f(id==1),min(nnz(id),numLocal))) < ...
-      min(f(id>1)) + 10 * min(min(line_f-line_f(:,1)))
+      min([inf;f(id>1) + 10 * min(min(line_f-line_f(:,1)))])
     break
   end
   

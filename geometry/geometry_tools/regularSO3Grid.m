@@ -29,34 +29,35 @@ function [SO3G,S2G,sec,angles] = regularSO3Grid(varargin)
 % get Euler angle bounds
 [max_rho,max_theta,max_sec] = fundamentalRegionEuler(SRight,SLeft,varargin{:});
 
-if check_option(varargin,'Zfold')
-  m1 = SLeft.multiplicityZ;
-  m2 = SRight.multiplicityZ;
-  max_rho = 2*pi/m1;
-  max_theta = pi;
-  max_sec = 2*pi/m2;
+N = ceil(get_option(varargin,'bandwidth',256)/2);
+
+if check_option(varargin,'GaussLegendre')
+  % a regular grid for Gauss Legendre quadrature required bandwidth 2n 
+  % 2n+1 Clenshaw Curtis Quadrature rule -> (2n+2)x(n+1)x(2n+2) points
+
+  nodes = legendreNodesWeights(N+1,-1,1);
+  theta = acos(nodes);
+  beta =  theta(theta<max_theta+1e-8);
+  alpha = 0:(2*pi)/(2*N+2):max_rho-1e-8;
+  gamma = 0:(2*pi)/(2*N+2):max_sec-1e-8;
+
+  [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
+  SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
+
+  return
+
 end
 
 if check_option(varargin,'ClenshawCurtis')
   % a regular grid for ClenshawCurtis quadrature required bandwidth 2n 
   % 2n+1 Clenshaw Curtis Quadrature rule -> (2n+2)x(2n+1)x(2n+2) points
 
-  N = ceil(get_option(varargin,'bandwidth',256)/2);
-  
-  a_len = round((2*N+2)*max_rho/(2*pi));
-  b_len = round((2*N)*max_theta/pi+1);
-  g_len = round((2*N+2)*max_sec/(2*pi));
-  
-  alpha = (0:a_len-1)*max_rho/(a_len);
-  gamma = (0:g_len-1)*max_sec/(g_len);
-  beta = linspace(0,max_theta,b_len);
+  alpha = 0:(2*pi)/(2*N+2):max_rho-1e-8;
+  beta = 0:(pi)/(2*N):max_theta+1e-8;
+  gamma = 0:(2*pi)/(2*N+2):max_sec-1e-8;
 
   [beta,gamma,alpha] = meshgrid(beta,gamma,alpha);
-  if check_option(varargin,'Euler')
-    SO3G = cat(4,alpha,beta,gamma);
-  else
-    SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
-  end
+  SO3G = orientation.byEuler(alpha,beta,gamma,'nfft',SRight,SLeft);
 
   return
 

@@ -34,7 +34,7 @@ Y.eval(v)
 %
 % Here we define the $L_2$-norm by
 %
-% $$ \| f \|_2 = \left(\int_{\mathrm{sphere}} |f(\xi)|^2 \,\mathrm d\xi\right)^{1/2} $$
+% $$ \| f \|_2 = \left(\int_{\mathrm{sphere}} \lvert f(\xi)\rvert^2 \,\mathrm d\xi\right)^{1/2} $$
 %
 % such that $ \| 1 \|_2^2 = 1$. Take a look on the section 
 % <S2FunOperations.html#5 Integration of S2Fun's>.

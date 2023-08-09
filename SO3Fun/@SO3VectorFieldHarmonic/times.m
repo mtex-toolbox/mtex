@@ -17,16 +17,16 @@ function SO3VF = times(SO3VF1,SO3VF2)
 %  SO3VF - @SO3VectorField
 %
 
-if isa(SO3VF2,'vector3d')
-  SO3VF2 = SO3VF2.xyz.';
+if isa(SO3VF1,'vector3d')
+  SO3VF1 = SO3VF1.xyz.';
 end
-
 if isnumeric(SO3VF1) || isa(SO3VF1,'SO3Fun')
   SO3VF = SO3VF2;
   SO3VF.SO3F = SO3VF.SO3F.*SO3VF1;
   return
 end
-if isnumeric(SO3VF2) || isa(SO3VF2,'SO3Fun')
+
+if isnumeric(SO3VF2) || isa(SO3VF2,'SO3Fun') || isa(SO3VF2,'vector3d')
   SO3VF = SO3VF2.*SO3VF1;
   return
 end

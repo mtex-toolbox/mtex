@@ -1,4 +1,13 @@
 function SO3F = quadrature(f, varargin)
+% Compute the SO(3)-Fourier/Wigner coefficients of an given @SO3Fun or
+% given evaluations on a specific quadrature grid.
+%
+% This method evaluates the given SO3Fun on an with respect to symmetries 
+% fundamental Region. Afterwards it uses a inverse trivariate nfft/fft and
+% an adjoint coefficient transform which is based on a representation
+% property of Wigner-D functions.
+% Hence it do not use the NFSOFT (which includes a fast polynom transform) 
+% as in the older method |SO3FunHarmonic.quadratureNFSOFT|.
 %
 % Syntax
 %   SO3F = SO3FunHarmonic.quadrature(nodes,values,'weights',w)
@@ -14,31 +23,21 @@ function SO3F = quadrature(f, varargin)
 %  SO3F - @SO3FunHarmonic
 %
 % Options
-%  bandwidth - minimal harmonic degree (default: 64)
+%  bandwidth      - minimal harmonic degree (default: 64)
+%  ClenshawCurtis - use Clenshaw Curtis quadrature nodes and weights
 %
+% See also
+% SO3FunHarmonic/quadratureNFSOFT
 
-if ~check_option(varargin,'nfsoft')
-  SO3F = SO3FunHarmonic.quadratureV2(f,varargin{:});
+% Tests
+% check_SO3FunHarmonicQuadrature
+
+if check_option(varargin,'nfsoft')
+  SO3F = SO3FunHarmonic.quadratureNFSOFT(f,varargin{:});
   return
 end
 
-
-persistent keepPlanNSOFT;
-
-% kill plan
-if check_option(varargin,'killPlan')
-  nfsoftmex('finalize',keepPlanNSOFT);
-  keepPlanNSOFT = [];
-  return
-end
-
-bw = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
-
-
-if isa(f,'function_handle')
-  [SRight,SLeft] = extractSym(varargin);
-  f = SO3FunHandle(f,SRight,SLeft);
-end
+N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
 
 try
   if f.antipodal
@@ -47,111 +46,188 @@ try
   end
 end
 
-% 1) compute/get weights and values for quadrature
 
+% Get nodes, values and weights for quadrature in case of SO3Fun
+if isa(f,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  f = SO3FunHandle(f,SRight,SLeft);
+end
 if isa(f,'SO3Fun')
-  
   SLeft = f.SLeft; SRight = f.SRight;
-
   % Use crystal and specimen symmetries by only evaluating at Clenshaw Curtis 
   % quadrature grid in fundamental region. 
   % Therefore adjust the bandwidth to crystal and specimen symmetry.
-  bw = adjustBandwidth(bw,SRight,SLeft);
-  [values,nodes,W] = evalOnCCGridUseSymmetries(f,bw,SRight,SLeft);
-  alpha = nodes(:,:,:,1); 
-  beta = nodes(:,:,:,2); 
-  gamma = nodes(:,:,:,3);
-  nodes = [alpha(:),beta(:),gamma(:)];
-
-else
-
-  nodes = f(:);
-  values = varargin{1}(:);
-  W = get_option(varargin,'weights',1);
-  W = W(:);
-
-  if isa(nodes,'orientation')
-    SRight = nodes.CS; SLeft = nodes.SS;
-  else
-    [SRight,SLeft] = extractSym(varargin);
-  end
-  nodes = Euler(nodes,'nfft');
-
+  bw = adjustBandwidth(N,SRight,SLeft);
+  SO3G = quadratureSO3Grid(bw,'ClenshawCurtis',SRight,SLeft,'ABG');
+  % Only evaluate unique orientations
+  values = f.eval(SO3G);
+  values = reshape(values,[length(SO3G),size(f)]);
+  % Do quadrature
+  SO3F = SO3FunHarmonic.quadrature(SO3G,values,varargin{:});%,'weights',SO3G.weights,'bandwidth',bw,'ClenshawCurtis');
+  SO3F.bandwidth = N;
+  return
 end
 
+
+
+
+
+persistent keepPlanNFFT;
+
+% kill plan
+if check_option(varargin,'killPlan')
+  nfftmex('finalize',keepPlanNFFT);
+  keepPlanNFFT = [];
+  SO3F=[];
+  return
+end
+
+
+% 1) get weights and values for quadrature
+if isa(f,'quadratureSO3Grid')
+  N = f.bandwidth;
+  nodes = f.nodes;
+  W = f.weights;
+  varargin{end+1} = f.scheme;
+else
+  nodes = f;
+  W = get_option(varargin,'weights',1);
+end
+values = varargin{1};
+
+if ~check_option(varargin,'ClenshawCurtis')
+  nodes = nodes(:);
+  values = values(:);
+  W = W(:);
+end
+
+if isa(nodes,'orientation')
+  SRight = nodes.CS; SLeft = nodes.SS;
+else
+  [SRight,SLeft] = extractSym(varargin);
+  nodes = orientation(nodes,SRight,SLeft);
+end
+
+% TODO: Look at approximation or interpolation
+%   % Speed up for a high number of nodes, by transforming the nodes to an 
+%   % equispaced Clenshaw Curtis grid.
+%   if length(nodes)>1e7 && length(values) == length(nodes) && length(W)==1
+%     warning('There are to many input nodes. Thatswhy an inexact rounded quadrature is used.')
+%     [nodes,values] = round2equispacedGrid(nodes,values,N,SRight,SLeft);
+%     varargin{end+1} = 'ClenshawCurtis';
+%   end
+
+
+% check for Inf-values (quadrature fails)
+if any(isinf(values))
+  error('There are poles at some quadrature nodes.')
+end
 
 if isempty(nodes)
   SO3F = SO3FunHarmonic(0,SRight,SLeft);
   return
 end
 
-
-% 2) Inverse NFSOFT
+% 2) Inverse trivariate NFFT/FFT and representation based wigner transform
 
 % create plan
 if check_option(varargin,'keepPlan')
-  plan = keepPlanNSOFT;
+  plan = keepPlanNFFT;
 else
   plan = [];
 end
 
-% initialize nfsoft
-if isempty(plan)
-  
-  % 2^4 -> nfsoft-represent
-  % 2^2 -> nfsoft-use-DPT
-  % 2^0 -> use normalized Wigner-D functions and fourier coefficients
-  nfsoft_flags = bitor(2^4,2^0)+2^2;
-  % nfft cutoff - 4
-  % fpt kappa - 1000
-  % fftw_size -> 2*ceil(1.5*L)
-  % initialize nfsoft plan
-  plan = nfsoftmex('init',bw,size(nodes,1),nfsoft_flags,0,4,1000,2*ceil(1.5*bw));
-  
-  % set rotations in Euler angles (nodes)
-  nfsoftmex('set_x',plan,nodes.');
-  
+% initialize nfft plan
+if isempty(plan) && ~check_option(varargin,'ClenshawCurtis')
+
+  %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
+  NN = 2*N+2;
+  FN = 2*ceil(1.5*NN);
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
+  %                         It is the default value
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
+  %                         measuring their execution time. This can take some time (often a few seconds).
+  fftw_flag = int8(64);
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(nodes),FN,FN,FN,4,int8(0),fftw_flag});
+
+  % set rotations as nodes in plan
+  nfftmex('set_x',plan,(Euler(nodes,'nfft').')/(2*pi));
   % node-dependent precomputation
-  nfsoftmex('precompute',plan);
+  nfftmex('precompute_psi',plan);
 
 end
 
 if check_option(varargin,'createPlan')
-  keepPlanNSOFT = plan;
+  keepPlanNFFT = plan;
+  SO3F=[];
   return
 end
 
 s = size(values);
-values = reshape(values, size(nodes,1), []);
+values = reshape(values, prod(size(nodes)), []);
 num = size(values, 2);
 
-fhat = zeros(deg2dim(bw+1), num);
+fhat = zeros(deg2dim(N+1), num);
 for index = 1:num
-  % adjoint nfsoft
+  
+  % use trivariate inverse equispaced fft in case of Clenshaw Curtis
+  % quadrature grid and nfft otherwise 
+  % TODO: Do FFT x NFFT x FFT in case of GaussLegendre-Quadrature
+  if check_option(varargin,'ClenshawCurtis')
 
-  values(isnan(values)) = 0;
+    % Possibly use smaller input matrix by using the symmetries
+    ghat = ifftn( W.* reshape(values(:, index),size(nodes)) ,[2*N+2,4*N,2*N+2]);
+    ghat = ifftshift(ghat);
+    ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end);
 
-  nfsoftmex('set_f', plan, W(:) .* values(:, index));
-  nfsoftmex('adjoint', plan);
-  % get fourier coefficients from plan and normalize
-  fhat(:, index) = nfsoftmex('get_f_hat', plan)*(sqrt(8)*pi);
+  else
+    
+    % adjoint nfft
+    nfftmex('set_f', plan, W(:) .* values(:, index));
+    nfftmex('adjoint', plan);
+    % adjoint fourier transform
+    ghat = nfftmex('get_f_hat', plan);
+    ghat = reshape(ghat,2*N+2,2*N+2,2*N+2);
+    ghat = ghat(2:end,2:end,2:end);
+
+  end
+
+  % shift rotational grid
+  [~,k,l] = meshgrid(-N:N,-N:N,-N:N);
+  ghat = (1i).^(l-k).*ghat;
+
+  % set flags and symmetry axis
+  flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
+  % TODO: Probably use limit 1e-5 because this is precision m of nfft
+  if isalmostreal(values(:,index),'precision',10,'norm',1) % real valued
+    flags = flags+2^2;
+  end
+  sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
+         min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
+  % if random samples the symmetry properties do not fit
+  if ~isa(f,'quadratureSO3Grid')
+    sym([1,3])=1;
+  end
+  % use adjoint representation based coefficient transform
+  fhat(:,index) = adjoint_representationbased_coefficient_transform(N,ghat,flags,sym);
+  fhat(:,index) = symmetriseWignerCoefficients(fhat(:,index),flags,SRight,SLeft,sym);
+%   fhat(:,index) = adjoint_representationbased_coefficient_transform_old(N,ghat,flags);
+
 end
 
 % kill plan
 if check_option(varargin,'keepPlan')
-  keepPlanNSOFT = plan;
-else
-  nfsoftmex('finalize', plan);
+  keepPlanNFFT = plan;
+elseif ~check_option(varargin, 'ClenshawCurtis')
+  nfftmex('finalize', plan);
 end
 
-
-% maybe we have a multivariate function
 try
-  fhat = reshape(fhat, [deg2dim(bw+1) s(2:end)]);
+  fhat = reshape(fhat, [deg2dim(N+1) s(2:end)]);
 end
 
-SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
-SO3F.bandwidth = bw;
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft,'bandwidth',N);
 
 % if antipodal consider only even coefficients
 SO3F.antipodal = check_option(varargin,'antipodal');
@@ -165,11 +241,9 @@ end
 % --------------------------- functions -----------------------------------
 
 function bw = adjustBandwidth(bw,SRight,SLeft)
-  t1=1; t2=2; 
-  if SRight.multiplicityPerpZ==1 || SLeft.multiplicityPerpZ==1, t2=1; end
-  if SLeft.id==22,  t2=4; end     % 2 | (N+1)
-  if SRight.id==22, t1=4; end     % 2 | (N+1)
-  while (mod(2*bw+2,SRight.multiplicityZ*t1) ~= 0 || mod(2*bw+2,SLeft.multiplicityZ*t2) ~= 0)
-    bw = bw+1;
-  end
+    [~,~,gMax] = fundamentalRegionEuler(SRight,SLeft,'ABG');
+    LCM = lcm((1+double(round(2*pi/gMax/SRight.multiplicityZ) == 4))*SRight.multiplicityZ,SLeft.multiplicityZ);
+    while mod(2*bw+2,LCM)~=0
+      bw = bw+1;
+    end
 end

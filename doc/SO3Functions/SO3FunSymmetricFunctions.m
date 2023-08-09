@@ -8,7 +8,6 @@
 %
 
 SO3F = SO3Fun.dubna
-SO3F.SLeft = specimenSymmetry('2');
 
 cs = SO3F.SRight
 ss = SO3F.SLeft
@@ -18,16 +17,17 @@ ss = SO3F.SLeft
 % composition of rotations is not commutative there exists a left and right
 % symmetry.
 
-rot = rotation.rand;
-SO3F.eval(ss.rot*rot*cs.rot)
+ori = orientation.rand(cs,ss);
+SO3F.eval(ori.symmetrise).'
 
 %%
 % The symmetries have, for example, an influence on the plot domain.
 
-plot(SO3F)
+plot(SO3F,'sigma')
 
 %%
-% * Note that only the important part with respect to the symmetry is plotted
+% * Note that only the important part with respect to the symmetry is
+% plotted
 % * you can plot the full rotation group using the argument |'complete'|
 
 %%
@@ -85,7 +85,7 @@ plot(SO3F2,'complete')
 % Note that you can expand every <SO3Fun.SO3Fun |SO3Fun|> to an
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
 
-SO3F3 = SO3FunHarmonic(SO3F1)
+SO3F3 = SO3FunHarmonic(SO3F)
 
 %%
 % and do the same as before.

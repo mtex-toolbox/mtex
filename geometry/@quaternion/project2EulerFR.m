@@ -15,7 +15,7 @@ function [phi1,Phi,phi2] = project2EulerFR(q,CS1,CS2,varargin)
 %
 
 % get the fundamental region
-[maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(CS1,CS2);
+[maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
 
 % symmetrise
 q_sym = (CS2.rotation_special * quaternion(q)).' * CS1.rotation_special;

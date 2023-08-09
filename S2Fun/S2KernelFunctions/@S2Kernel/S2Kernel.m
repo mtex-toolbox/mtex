@@ -53,16 +53,27 @@ classdef S2Kernel
 
     function plot(S2K,varargin)      
       
+      if check_option(varargin,{'3d','surf'})
+        plot(S2FunHarmonic(S2K),varargin{:});
+        return
+      end
+
       omega = get_option(varargin,'omega',linspace(0,180*degree,1000));
       
       f = S2K.eval(cos(omega));
       
       if check_option(varargin,'symmetric')
-        omega = [-omega,fliplr(omega)];
-        f = [f,fliplr(f)];
+        omega = [-fliplr(omega),omega];
+        f = [fliplr(f),f];
       end
       
       optiondraw(plot(omega./degree,f),varargin{:});
+      xlim(gca,[min(omega),max(omega)]./degree)
+
+    end
+    
+    function surf(S2K,varargin)
+      surf(S2FunHarmonic(S2K),varargin{:});
     end
     
     function display(S2K)
@@ -128,9 +139,9 @@ classdef S2Kernel
       small = 0;      
 
       % Get nodes and weights for Gauss-Legendre quadrature
-      [nodes,weights] = GaussLegendreNodesWeights(L+1,cos(maxAngle),1);
+      nodes = legendreNodesWeights(L+1,cos(maxAngle),1);
 %       % Get better accuracy by double sampling rate
-%       [nodes,weights] = GaussLegendreNodesWeights(2*L,-1,1);
+%       [nodes,weights] = legendreNodesWeights(2*L,-1,1);
 
       values = psi.eval(nodes);
 

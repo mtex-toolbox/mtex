@@ -11,10 +11,13 @@ function w = calcVoronoiVolume(rot,varargin)
 % See also
 % quaternion\calcVoronoi voronoin vector3d/calcVoronoiArea
 
+warning('calcVoronoiVolume is inexact up to now.')
+
 rot = quaternion(rot);
 rot = unique(rot);
 
 [V,C] = calcVoronoi(rot);
+
 % [V,C,E] = calcVoronoi(quaternion(rot));
 
 % q sind die Ecken der Tetraeder, d.h. die Zentren der Polyeder
@@ -48,6 +51,10 @@ w = w.^3/(sum(w.^3));
 end
 
 
+% TODO: Use tangent space as linear approximation and compute the volume there.
+
+
+% TODO: Compute the volume for quaternions on S^3.
 
 
 % The following is bad if there is one cell with 200 elements if all others

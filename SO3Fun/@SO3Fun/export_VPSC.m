@@ -18,7 +18,7 @@ function export_VPSC(SO3F,filename,varargin)
 points = get_option(varargin,'points',10000);
 
 % simulate orientations
-ori = calcOrientations(SO3F,points,varargin{:});
+ori = discreteSample(SO3F,points,varargin{:});
 
 % export EBSD
 export_VPSC(ori,filename,varargin{:});

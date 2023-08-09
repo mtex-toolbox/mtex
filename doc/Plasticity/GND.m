@@ -59,7 +59,7 @@ ipfKey = axisAngleColorKey(ebsd);
 ipfKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;
 
 % plot the data
-plot(ebsd,ipfKey.orientation2color(ebsd('indexed').orientations),'micronBar','off','figSize','medium')
+plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations),'micronBar','off','figSize','medium')
 
 hold on
 plot(grains.boundary,'linewidth',2)
@@ -185,14 +185,12 @@ a = norm(ebsd.CS.aAxis);
 % * |r|
 %
 % In this example we assume 
-
 % 
-%R = 
-%r_0 = 
-%U = norm(dS.b).^2
+% R = 
+% r_0 = 
+% U = norm(dS.b).^2
 
 nu = 0.3;
-
 
 % energy of the edge dislocations
 dS(dS.isEdge).u = 1;

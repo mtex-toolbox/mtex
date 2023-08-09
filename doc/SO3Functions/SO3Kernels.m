@@ -4,11 +4,11 @@
 % Also take a look at the page <ODFShapes.html ODFShapes>.
 %
 % We examine some radial symmetric kernel functions $\tilde \psi \colon \mathcal{SO}(3) \to \mathbb R$ 
-% on $\mathcal{SO}(3)$. For rotations $\bf R \in \mathcal{SO}(3)$ we write this
-% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega (\bf R)}2$ on 
+% on $\mathcal{SO}(3)$. For rotations ${\bf R} \in \mathcal{SO}(3)$ we write this
+% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega ({\bf R})}2$ on 
 % the real numbers. Hence we write
 %
-% $$ \psi(t) = \tilde\psi (\bf R). $$
+% $$ \psi(t) = \tilde\psi ({\bf R}). $$
 %
 % Moreover, we have $\psi \in L^2([-1,1],\sqrt{1-t^2}\mathrm{d}t)$ and we
 % describe these rotational kernel functions by there Chebyshev expansion
@@ -16,7 +16,7 @@
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal U_{2n}(t) $$
 %
 % where $\mathcal U_{n}$ denotes the Chebyshev polynomials of second kind and degree
-% $n\in\mathbb N$.
+% $n\in \mathbb N$.
 %
 % The class |@SO3Kernel| is needed in MTEX to define the specific form of
 % unimodal ODFs. It has to be passed as an argument when calling the
@@ -33,7 +33,7 @@
 psi = SO3Kernel([1;0;3;1])
 %%
 % We plot this function by evaluation of its Chebychev series in 
-% $\cos(\frac{\omega}{2})$ for $\omega\in[-pi,\pi].$
+% $\cos(\frac{\omega}{2})$ for $\omega \in [-\pi,\pi]$.
 %
 
 plot(psi)
@@ -192,10 +192,10 @@ legend('halfwidth = 15°','halfwidth = 20°')
 %
 % or directly by
 %
-% $$ \psi_{\kappa}(\cos\frac{\omega(\bf{R})}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathrm{e}^{\kappa \cos\omega(\bf{R})}$$
+% $$ \psi_{\kappa}(\cos\frac{\omega({\bf R})}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
+% \, \mathrm{e}^{\kappa \cos\omega({\bf R})}$$
 % 
-% while $\mathcal I_n,\,n\in\mathbb N_0$ denotes the the modified Bessel 
+% while $\mathcal I_n,\,n \in \mathbb N_0$ denotes the the modified Bessel 
 % functions of first kind
 %
 % $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
@@ -336,17 +336,18 @@ hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
 %% The Bump kernel
-% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in L^2(\mathcal{SO}(3))$
-% is a radial symmetric kernel function depending on a parameter $r\in (0,pi)$.
-% The function value is 0, if the angle is greater then the halfwidth $r$.
-% Otherwise it is has a contstant value, such that the mean of $\psi_r$ on 
-% $\mathcal{SO}(3)$ is 1. Hence we use the open set
+% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
+% L^2(\mathcal{SO}(3))$ is a radial symmetric kernel function depending on
+% a parameter $r\in (0,\pi)$. The function value is 0, if the angle is
+% greater then the halfwidth $r$. Otherwise it is has a contstant value,
+% such that the mean of $\psi_r$ on $\mathcal{SO}(3)$ is 1. Hence we use
+% the open set
 %
-% $$U_r = \{ \bf R \in \mathcal{SO}(3) \,|~ |\omega(\bf R)|<r \}$$
+% $$U_r = \{ {\bf R} \in \mathcal{SO}(3) \,\vert ~ \lvert \omega( {\bf R})\rvert <r \}$$
 % 
 % and define the bump kernel by
 %
-% $$ \tilde\psi_r(\bf R) = \frac1{|U_r|} \mathbf{1}_{\bf R \in U_r} $$
+% $$ \tilde\psi_r( {\bf R}) = \frac1{\lvert U_r \rvert } \mathbf{1}_{ \{ {\bf R} \in U_r \} } $$
 %
 % where $\mathbf{1}$ is the indicator function.
 %

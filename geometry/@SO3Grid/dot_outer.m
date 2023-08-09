@@ -19,16 +19,10 @@ if ~isa(S3G,'SO3Grid')
   return
 end
 
-epsilon = get_option(varargin,'epsilon',pi);
+if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
 
-if check_option(varargin,{'full','all'})
-  if check_option(varargin,'nospecimensymmetry')
-    S3G.SS = specimenSymmetry;
-  end
-  d = dot_outer@orientation(S3G,q,varargin{:});
-  
-else
-  
+  epsilon = get_option(varargin,'epsilon',pi);
+
   d = sparse(length(S3G),length(q));
   
   % rotate q according to SO3Grid.center
@@ -36,8 +30,6 @@ else
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);
-  
-  
   
   ygamma = [S3G.gamma.points];
   sgamma = [S3G.gamma.min];
@@ -72,5 +64,11 @@ else
     if nnz(dist) > 0, d = max(d,dist); end
     
   end    
-  
+else
+
+  if check_option(varargin,'nospecimensymmetry')
+    S3G.SS = specimenSymmetry;
+  end
+  d = dot_outer@orientation(S3G,q,varargin{:});
+
 end

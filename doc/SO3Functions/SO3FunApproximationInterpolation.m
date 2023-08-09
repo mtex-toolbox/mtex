@@ -108,3 +108,78 @@ norm(eval(SO3F, nodes) - S.values)
 % We end up with the Fourier-coefficients of our approximation $g$, which
 % describe our approximation.
 %
+
+
+%% Quadrature
+%
+% Assume we have some experiment which yields an ODF or some general 
+% |@SO3Fun|, i.e. some evaluation routine. 
+
+mtexdata dubna
+odf = calcODF(pf,'resolution',5*degree,'zero_Range')
+
+%%
+% Now we want to compute the corresponding |@SO3FunHarmonic|.
+% If our odf is an |@SO3Fun| or |@function_handle| we can directly use the command 
+% <SO3FunHarmonic.html SO3FunHarmonic>.
+
+F = SO3FunHarmonic(odf)
+
+%%
+% If there is an physical experiment which yields the function values for 
+% given orientations, we can also do the quadrature manually.
+%
+% Therefore we have to evaluate on an specific grid and afterwards we compute the
+% Fourier coefficients by the command <SO3FunHarmonic.quadrature.html SO3FunHarmonic.quadrature>.
+%
+
+% Specify the bandwidth and symmetries of the desired harmonic odf
+N = 50;
+SRight = odf.CS;
+SLeft = specimenSymmetry;
+
+% Compute the quadrature grid and weights
+SO3G = quadratureSO3Grid(N,'ClenshawCurtis',SRight,SLeft);
+% Because of symmetries there are symmetric equivalent nodes on the quadrature grid.
+% Hence we evaluate the routine on a smaller unique grid and reconstruct afterwards.
+% For SO3Fun's this is done internaly by evaluation.
+tic
+v = odf.eval(SO3G);
+toc
+% Analogously we can do exactly the same by directly evaluating on the 
+% unique nodes of the quadratureSO3Grid
+%v = odf.eval(SO3G.uniqueNodes);
+% and reconstruct the full grid (of symmetric values) afterwards
+%v = v(SO3G.uniqueIndexes);
+
+% At the end we do quadrature
+F1 = SO3FunHarmonic.quadrature(SO3G,v)
+% or analogously
+% F = SO3FunHarmonic.quadrature(SO3G.nodes,v,'weights',SO3G.weights,'bandwidth',N,'ClenshawCurtis')
+
+%%
+% Lets take a look on the result
+
+norm(F-F1)
+
+plot(F1)
+
+
+%%
+% Furthermore, if the evaluation step is very expansive it might be a good idea
+% to use the smaller Gauss-Legendre quadrature grid. 
+% The Gauss-Legendre quadrature lattice has half as many points as the default
+% Clenshaw-Curtis quadrature lattice. But the quadrature method is much 
+% more time consuming.
+%
+
+% Compute the quadrature grid and weights
+SO3G = quadratureSO3Grid(N,'GaussLegendre',SRight,SLeft);
+% Evaluate your routine on that quadrature grid
+tic
+  v = odf.eval(SO3G);
+toc
+% and do quadrature
+F2 = SO3FunHarmonic.quadrature(SO3G,v)
+
+norm(F-F2)

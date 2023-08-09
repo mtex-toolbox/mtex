@@ -60,7 +60,7 @@ D.eval(R)
 %
 % Here we define the $L_2$-norm by
 %
-% $$ \| f \|_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} \lvert f(\bf R) \rvert^2 \,\mathrm d \bf R \right)^{1/2} $$
+% $$ \| f \|_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} \lvert f( {\bf R}) \rvert^2 \,\mathrm d {\bf R} \right)^{1/2} $$
 %
 % such that the norm of the constant function $f=1$ is $1$. Take a look on the section 
 % <SO3FunOperations.html#6 Integration of SO3Fun's>.
@@ -76,15 +76,15 @@ norm(D)
 % The Wigner-D functions are the matrix elements of the representations
 % $D_n \colon SO(3) \to \mathbb C^{(2n+1)\times(2n+1)}$ on $SO(3)$. 
 % Since representations are group homomorphisms, we have
-% $D_n(\bf{R} \, \bf{Q}) = \frac1{\sqrt{2n+1}} \, D_n(\bf{Q}) \, D_n(\bf{R}).$
+% $D_n( {\bf R} \, {\bf Q} ) = \frac1{\sqrt{2n+1}} \, D_n( {\bf Q} ) \, D_n( {\bf R} ).$
 % Hence we get
 % 
-% $$ D_n^{k,l}(\bf{R}\,\bf{Q}) = \frac1{2n+1} \sum_{j=-n}^n D_n^{k,j}(\bf{Q})\,D_n^{j,l}(\bf{R}). $$
+% $$ D_n^{k,l}( {\bf R} \, {\bf Q} ) = \frac1{2n+1} \sum_{j=-n}^n D_n^{k,j}( {\bf Q} )\,D_n^{j,l}( {\bf R} ). $$
 %
 %%
 % Some symmetry properties of Wigner-D functions yields
 %
-% $$ D_n^{k,l}(\bf{R}) = \overline{D_n^{l,k}(\bf{R}^{-1})}. $$
+% $$ D_n^{k,l}( {\bf R} ) = \overline{D_n^{l,k}( {\bf R}^{-1} )}. $$
 %
 
 %% Symmetry properties of Wigner-d functions

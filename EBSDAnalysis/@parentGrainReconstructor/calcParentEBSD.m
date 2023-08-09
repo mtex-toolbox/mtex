@@ -9,7 +9,10 @@ function ebsd = calcParentEBSD(job)
 %
 % Output
 %  ebsd - reconstructed parent @EBSD
-%
+%  ebsd.grainId   - ids to the reconstructed parent grains                       x %                                                                                 12
+%  ebsd.variantId - the variantId of the child phase                             <                                                                                    -
+%  ebsd.packetId  - the packetId of the child phase                              <                                                                                    -
+%  ebsd.fit       - fit of the reconstruction
 
 % copy prior EBSD
 ebsd = job.ebsdPrior;
@@ -37,9 +40,11 @@ if nnz(isNowParent) == 0, return; end
   job.grains(ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
 
 % compute variantId
-vId = calcVariantId(ori, ebsd(isNowParent).orientations,job.p2c);
+[vId,pId] = calcVariantId(ori, ebsd(isNowParent).orientations,job.p2c);
 ebsd.prop.variantId = NaN(size(ebsd));
 ebsd.prop.variantId(isNowParent) = vId;
+ebsd.prop.packetId(isNowParent) = pId; 
+ebsd.prop.packetId(isNowParent) = pId; 
 
 % adjust parent and child orientations such that the misorientation is
 % closest to the given OR job.p2c

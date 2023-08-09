@@ -60,7 +60,7 @@ end
 S2F = 4 * pi * conv(S2F,SO3F.psi.radon);
 
 % add uniform portion
-S2F = S2F + sqrt(4*pi)*SO3F.c0;
+S2F = S2F + SO3F.c0;
 
 % evaluate S2Fun if needed
 if  ~isempty(r) &&  ~isempty(h)

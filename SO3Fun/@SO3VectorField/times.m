@@ -17,10 +17,11 @@ function SO3VF = times(SO3VF1,SO3VF2)
 %  SO3VF - @SO3VectorField
 %
 
-if isnumeric(SO3VF1)
+if isnumeric(SO3VF1) || isa(SO3VF1,'vector3d')
   SO3VF = SO3VF2 .* SO3VF1;
   return
 end
+
 if isnumeric(SO3VF2) || isa(SO3VF2,'vector3d')
   SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1.eval(rot) .* SO3VF2 ,SO3VF1.CS,SO3VF1.SS);
   return

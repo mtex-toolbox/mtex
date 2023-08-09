@@ -1,5 +1,5 @@
 function h = text3(v,varargin)
-% plot three dimensional arrows
+% plot three dimensional text
 %
 % Syntax
 %   text3(v,string)

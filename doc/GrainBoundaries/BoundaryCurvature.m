@@ -5,8 +5,8 @@
 % one over its radius. Hence, a straight line will have curvature 0 and a
 % circle of radius $2$ will have constant curvature $1/2$ everywhere.
 % Hence, the unit of the curvature computed in MTEX is one over the unit of
-% the EBSD coordinates which is usually $\mu m$. Let us demonstrate
-% boundary curvature use some artifical grain shapes
+% the EBSD coordinates which is usually 1/µm. Let us demonstrate boundary
+% curvature use some artifical grain shapes
 
 % import the artificial grain shapes
 mtexdata testgrains silent

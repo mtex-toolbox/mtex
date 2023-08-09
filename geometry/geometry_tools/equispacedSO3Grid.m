@@ -35,6 +35,14 @@ end
 % may be we should populate only a ball
 maxAngle = get_option(varargin,'maxAngle',2*pi);
 
+persistent tmp
+
+if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
+    isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution)
+  S3G = tmp.S3G;
+  return
+end
+
 if maxAngle < pi/2/CS.multiplicityZ
   S3G = localOrientationGrid(CS,SS,maxAngle,varargin{:});
   return
@@ -120,6 +128,9 @@ if check_option(varargin,'maxAngle')
   S3G = subGrid(S3G,center,maxAngle);
 end
 
+% store for later use
+tmp.S3G = S3G;
+tmp.maxAngle = maxAngle;
 
 end
 

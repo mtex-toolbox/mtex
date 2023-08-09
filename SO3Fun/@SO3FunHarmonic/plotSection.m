@@ -36,28 +36,28 @@ end
 if SO3F.antipodal, ap = {'antipodal'}; else, ap = {}; end
 oS = newODFSectionPlot(SO3F.CS,SO3F.SS,ap{:},varargin{:});
 
-if ~isa(oS,'gammaSections') && ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections')
+% The following does not really speed up since the plotting routine (and not evaluation is very expensive)
+% if isa(oS,'gammaSections')   % use equispaced fft
+%   % TODO: Use symmetries / do the same for alpha,phi1,phi2 sections
+%   oS.plotGrid = plotS2Grid(oS.sR,'resolution',2.5*degree,varargin{:});
+%   if isa(oS,'gammaSections')
+%     l = numel(oS.gamma);
+%   elseif isa(oS,'phi2Sections')
+%     l = numel(oS.phi2);
+%   elseif isa(oS,'phi1Sections')
+%     l = numel(oS.phi1);
+%   end
+%   oS.gridSize = (0:l) * length(oS.plotGrid);
+%   SO3F.isReal = 1;
+%   Z = evalSectionsEquispacedFFT(SO3F,oS,'resolution',2.5*degree,varargin{:});
+% else
   % plotSection@SO3Fun(SO3F.subSet(1),varargin{:});
   S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
   % plot on S3G with evalfft
   SO3F.isReal = 1;
   Z = SO3F.eval(S3G,varargin{:});
   clear S3G
-else % use equispaced fft
-  oS.plotGrid = plotS2Grid(oS.sR,'resolution',2.5*degree,varargin{:});
-  if isa(oS,'gammaSections')
-    l = numel(oS.gamma);
-  elseif isa(oS,'phi2Sections')
-    l = numel(oS.phi2);
-  elseif isa(oS,'phi1Sections')
-    l = numel(oS.phi1);
-  end
-  oS.gridSize = (0:l) * length(oS.plotGrid);
-  SO3F.isReal = 1;
-  Z = SO3F.evalSectionsEquispacedFFT(oS,'resolution',2.5*degree,varargin{:});
-  Z = permute(Z,[2,1,3]);
-end
-
+% end
 
 cR = [min(Z(:)),max(Z(:))];
 if isempty(cR)

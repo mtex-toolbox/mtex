@@ -25,9 +25,7 @@ function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 % extract options
 maxIter = get_option(varargin,'maxIter',100);
 res = get_option(varargin,'resolution',0.05*degree);
-omega = 1.5.^(-7:1:4) * degree;
-omega(omega<res) = [];
-omega = [0,omega];
+omega = [0,3.3,5]*degree;
 tol = get_option(varargin,'tolerance',0.5*degree);
 maxAngle = get_option(varargin,{'radius','angle'},inf);
 
@@ -49,33 +47,38 @@ weights = weights ./ sum(weights);
 
 centerId = 1:length(seed);
 modes = seed;
+omega = repmat(omega,length(modes),1);
 
 % join orientations if possible
 %[modes,~,id2] = unique(modes,'tolerance',tol);
 %centerId = id2(centerId);
 %weights = accumarray(id2,weights);
 
-finished = false(size(modes));
-
 G = SO3F.grad;
+
+v_max = SO3F.eval(modes);
 
 for k = 1:maxIter
   progress(k,maxIter,' finding ODF components: ');
 
   % gradient
-  g = normalize(G.eval(modes(~finished)),1);
+  g = normalize(G.eval(modes),1);
   
   % prepare for linesearch
-  line_ori = exp(repmat(modes(~finished),1,length(omega)),g * omega);
+  line_ori = exp(repmat(modes,1,size(omega,2)),g .* omega);
   
   % evaluate along lines
-  line_v = SO3F.eval(line_ori);
+  line_v = [v_max,SO3F.eval(line_ori(:,2:end))];
   
   % take the maximum
-  [v_max(~finished),id] = max(line_v,[],2);
+  [v_max,id] = max(line_v,[],2);
     
   % update orientions
-  modes(~finished) = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
+  modes = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
+
+  % update step size
+  ind = id==1 & omega(:,1) > res;
+  omega(ind,:) = omega(ind,:) ./ 2;
   
   %nnz(id>1)
   if all(id == 1), break; end
@@ -83,12 +86,13 @@ for k = 1:maxIter
   % join orientations if possible
   [~,~,id2] = unique(modes,'tolerance',tol);
 
-  modes = modes(maxVote(id2,v_max(~finished)));
+  ind = maxVote(id2,v_max);
+  modes = modes(ind);
+  omega = omega(ind,:);
+  v_max = v_max(ind,:);
 
   centerId = id2(centerId);
-  finished = accumarray(id2,finished,[],@any);
   if maxAngle == inf, weights = accumarray(id2,weights); end
-  length(modes);
 
 end
 

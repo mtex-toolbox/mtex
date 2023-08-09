@@ -76,6 +76,8 @@ classdef crystalSymmetry < symmetry
 %  43  cubic           O        432       m-3m     432
 %  44  cubic           Td       -43m      m-3m     432
 %  45  cubic           Oh       m-3m      m-3m     432
+%  46  icosahedral     I        532       -5-32/m  532
+%  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
 % See also
 % CrystalSymmetries CrystalShapes CrystalReferenceSystem CrystalOperations

@@ -25,7 +25,7 @@ function [r,ir,iu] = unique(r,varargin)
 
 a = r.a(:); b = r.b(:); c = r.c(:); d = r.d(:); i = r.i(:);
 
-if length(r) < 1000 && ~check_option(varargin,'tolerance')
+if check_option(varargin,'exact') || (length(r) < 1e5 && ~check_option(varargin,'tolerance'))
   
   abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d, i(:)];
 
@@ -44,6 +44,7 @@ else % faster but less accurate
   tol = get_option(varargin,'tolerance',5*degree);
 
   % ensure upper hemisphere
+  % Note that if d is near 0 this is inexact. For example Do again unique with index sets a<0, b<0 and c<0.
   ind = d < 0;
   a(ind) = -a(ind); b(ind) = -b(ind);
   c(ind) = -c(ind); d(ind) = -d(ind);

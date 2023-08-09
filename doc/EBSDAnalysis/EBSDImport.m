@@ -1,7 +1,7 @@
 %% Importing EBSD Data
 %
 %%
-% MTEX allows you to import EBSD data from a wide variety of file format.
+% MTEX allows you to import EBSD data from a wide variety of file formats.
 % In the most simplest case import can be done by the command
 % <EBSD.load.html EBSD.load>
 
@@ -22,7 +22,7 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 %
 %% Importing EBSD data using the import wizard
 %
-% In many cases however, importing EBSD data is not that straight forward
+% In many cases however, importing EBSD data is not that straightforward
 % as suggested above. The reason is that during the measuring process
 % different reference systems are involved and resulting coordinates, i.e.,
 % the spatial coordinates and the Euler angles, are often not stored in a
@@ -30,8 +30,8 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 % <EBSDReferenceFrame.html EBSD Reference Systems> for more information
 % about how to set up reference frames correctly.
 %
-% In order to help the user to import EBSD data consistently to fixed
-% specimen reference frame, which the user should know, MTEX provide the
+% In order to help the user to import EBSD data consistently to a fixed
+% specimen reference frame (which the user should know), MTEX provide the
 % <matlab:import_wizard('EBSD') import wizard> as a graphical user
 % interface. The |import_wizard| can be started either by typing into the
 % command line
@@ -50,10 +50,10 @@ import_wizard('EBSD')
 % * <CrystalSymmetries.html crystal symmetries> associated with phases 
 % * specimen symmetry and plotting conventions
 % 
-% The import wizard allows you to either creates directly a workspace
-% variable of type <EBSD.EBSD.html EBSD> or to generates an m-file which
+% The import wizard allows you to either create directly a workspace
+% variable of type <EBSD.EBSD.html EBSD> or to generates a m-file, which
 % contains all the customizations and allows you to import the data in
-% future sessions without the import wizzard. This last option is highly
+% future sessions without the import wizard. This last option is highly
 % recommended as the created script is also a good starting point for
 % further analysis and data processing.
 %
@@ -119,9 +119,8 @@ plot(ebsd)
 %
 %% Writing your own interface
 %
-% In case that the EBSD format is not supported, you can write an interface
-% by your own to import the data. Once you have written such an interface
-% that reads data from certain data files and generates an EBSD object you
+% In the rare case of an EBSD format that is not supported, the user can write its
+% own interface to import the data. Once you have sucessfully written that, you
 % can integrate this method into MTEX by copying it into the folder
 % |MTEX/qta/interfaces| and rename your function |loadEBSD_xxx|. Then it
 % will be automatical recognized by the import wizard. Examples how to

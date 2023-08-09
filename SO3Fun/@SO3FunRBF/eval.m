@@ -17,6 +17,12 @@ function f = eval(SO3F,g,varargin)
 %
 % $$ f(r) = sum_j w_j \psi(r,c_j) $$
 
+% change evaluation method to quadratureSO3Grid/eval
+if isa(g,'quadratureSO3Grid')
+  f = eval(SO3F,g,varargin);
+  return
+end
+
 % if isa(g,'orientation')
 %   ensureCompatibleSymmetries(SO3F,g)
 % end

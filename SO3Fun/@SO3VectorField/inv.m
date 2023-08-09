@@ -12,6 +12,7 @@ function SO3VF = inv(SO3VF)
 %  SO3F - @SO3VectorFieldHarmonic
 %  
 
+% Changeing the symmetries needs
 SO3VF = SO3VectorFieldHarmonic(SO3VF);
 SO3VF = inv(SO3VF);
 

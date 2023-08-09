@@ -1,4 +1,4 @@
-function oS = newODFSectionPlot(CS,SS,varargin)
+function oS = newODFSectionPlot(CS,varargin)
 % generate a new ODF section plot
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',...
@@ -14,6 +14,13 @@ oS = getClass(varargin,'ODFSections');
 if ~isempty(oS)
   setappdata(mtexFig.parent,'ODFSections',oS);
   return; 
+end
+
+if nargin > 1 && isa(varargin{1},'symmetry')
+  SS = varargin{1};
+  varargin(1) = [];
+else
+  SS = specimenSymmetry;
 end
 
 if nargin > 0 && (isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry'))

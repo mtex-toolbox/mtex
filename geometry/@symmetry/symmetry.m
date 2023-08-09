@@ -225,7 +225,7 @@ classdef symmetry < handle
 
       % store symmetries
       rot = prod(rot{:});
-      if pg.LaueId == 47, rot = unique(rot*rot); end
+      if pg.LaueId == 47, rot = unique(rot*rot,'exact'); end
 
     end
 

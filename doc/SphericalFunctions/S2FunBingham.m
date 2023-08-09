@@ -4,10 +4,10 @@
 % The Bingham distribution on the sphere is an antipodal symmetric
 % distribution (Bingham, 1974) with a probabiliy density function given by
 %
-% $$p_{b}(\hat{x}\vert AKA^T) = \frac{1}{F(\kappa_{1},\kappa_{2},\kappa_{3})}exp (\hat{x}^T AZA^T \hat{x})$$
+% $$p_{b}(\hat{x}\vert AKA^T) = \frac{1}{F(\kappa_{1},\kappa_{2},\kappa_{3})}\exp (\hat{x}^T AZA^T \hat{x})$$
 %
 % where $A$ is an orthognal covariance matrix, and $Z$ a concentration matrix
-% with $diag(\kappa_{1},\kappa_{2},\kappa_{3})$ with
+% with $\mathrm{diag}(\kappa_{1},\kappa_{2},\kappa_{3})$ with
 % $\kappa_{1} < \kappa_{2} < \kappa_{3}$.
 %
 % In mtex $Z$ is given by |Z = [k1,k2,k3]| with |k3 = 0| and $A$ is given by three

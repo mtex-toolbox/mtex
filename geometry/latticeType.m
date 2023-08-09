@@ -10,6 +10,7 @@ classdef latticeType < int32
     hexagonal    (6)
     cubic        (7)
     none         (8)
+    icosahedral  (9)
   end
   
   methods

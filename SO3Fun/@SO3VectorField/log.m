@@ -13,7 +13,6 @@ function SO3VF = log(F)
 
 SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.SRight,F.SLeft);
 
-
 function g = g(rot)
 g = F.eval(rot);
 g = vector3d(log(g.xyz.'));

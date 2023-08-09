@@ -4,7 +4,7 @@
 %
 % In this part we deal with multivariate functions of the form
 %
-% $$ f\colon \bf S^2\to \bf R^n $$.
+% $$ f\colon \bf{S}^2\to \bf{R}^n $$.
 %
 % * the structure of the nodes is always interpreted as a column vector
 % * the node index is the first dimension
@@ -115,20 +115,18 @@ sum(sF3, 2);
 %%
 % *min/max*
 %
-% If the |min| or |max| command gets a multivariate |S2FunHarmonic| the 
-% pointwise minimum or maximum is calculated along the first non-singelton 
-% dimension if not specified otherwise.
-%
+% If the |min| or |max| command gets a multivariate |S2FunHarmonic| the
+% pointwise minimum or maximum can calculated along the dimension specified 
+% as third argument.
 
-min(sF3);
+% this computes the minimum along the first dimension
+min(sF3,[],1);
 
 %%
 % *Remark on the matrix product*
 %
 % At this point the matrix product is implemented per element and not as 
 % the usual matrix product.
-
-
 
 %% Visualization of multivariate S2FunHarmonic
 %

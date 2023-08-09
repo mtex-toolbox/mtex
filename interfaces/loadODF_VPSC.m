@@ -42,7 +42,7 @@ for k = 1:numStrain
 
   % also store data (individual orientations, ellipsoids, Taylor factors)
   odf{k}.opt.orientations = ori;
-  odf{k}.opt.data = data;
+  odf{k}.opt.data = weights;
   
 end
 

@@ -1,7 +1,7 @@
 %% Definition of an SO3Fun
 % 
 %%
-% In MTEX rotational functions $F\colon\mathcal{SO}(3)\to\mathbb{C}$ are 
+% In MTEX rotational functions $F\colon\mathcal{SO}(3)\to \mathbb C$ are 
 % described by subclasses of the super class |@SO3Fun|. Hence we talk about
 % them as |SO3Funs|.
 %

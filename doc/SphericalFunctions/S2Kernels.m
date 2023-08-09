@@ -1,73 +1,62 @@
-%% S2-Kernel Functions
+%% Spherical Kernel Functions
 %
 %%
-% We examine some radial symmetric kernel functions $\tilde \psi \colon R \to R$
-% on the sphere.
-% We describe this functions by there Legendre polynomial expansion
+% A spherical kernel $\psi$ is a spherical function that depends only on
+% the angle towards the north pole $e_3$, 
+
+psi = S2DeLaValleePoussinKernel('halfwidth',10*degree)
+
+surf(psi,'resolution',2*degree,'EdgeColor','none')
+hold on
+arrow3d(2*zvector,'labeled')
+hold off
+axis off
+
+%% 
+% The dependency of the angle becomes more when plot along meridian
+
+close all
+plot(psi,'linewidth',2,'symmetric')
+
+%%
+% Examples of spherical kernel functions are
+%
+% * the de la Vallee Poussin kernel @S2DeLaValleePoussinKernel
+% * the Schulz defocusing kernel @SchulzDefocusingKernel
+% * the Dirichlet kernel @S2DirichletKernel
+% * the Bump kernel @S2BumpKernel
+% * the Abel Poussin kernel @S2AbelPoussinKernel.html de >
+% * the <S2AbelPoussinKernel.html vom Mises kernel>
+%
+%% Legendre coefficients
+% 
+% Every spherical kernel function $\psi$ can be associated with a function
+% $\Psi \colon [-1,1] \to \mathbb R$ defined on the interval $[-1,1]$ by
+% $\psi(v) = \Psi(v \cdot e_3)$. It turn out to be usefull to $\Psi$
+% approximate $\Psi$ by a expansion into Legendre polynomials $P_n$ of
+% degree $n$, i.e.,
 % 
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal P_{n}(t) $$
 %
-% where $\mathcal P_{n}$ denotes the Legendre polynomials with degree
-% $n\in\mathbb N$.
+% These Legendre coefficients are stored as the field |psi.A| and can be
+% easily visualized using the command <S2Kernel.plotSpectra.html
+% |plotSpectra|>.
+
+plotSpektra(psi)
+
+%% Applications
 %
-% The class |@S2Kernel| is needed in MTEX to define the specific form of
-% fibre ODFs. It has to be passed as an argument when calling the
-% methods <fibreODF.html fibreODF>.
+% Spherical kernel functions have different applications in MTEX. Those
+% include
 %
-
-
-% For rotations $R \in SO(3)$ we write this
-% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega(R)}2$ on 
-% the real numbers. Hence we write
-%
-% $$ \psi(t) = \tilde\psi(R) $$.
-%
-%
-%
-%%
-% Within the class |@S2Kernel| kernel functions are represented by
-% their Legendre coefficients, that are stored in the field |fun.A|. 
-% As an example lets define an spherical kernel function with
-% Legendre coefficients $a_0 = 1$, $a_1 = 0$, $a_2 = 3$ and $a_3 = 1$
-
-psi = S2Kernel([1;0;3;1])
-%%
-% We plot this function by evaluation of its Legendre series in $\cos(\omega)$
-% for $\omega\in[0,\pi].$
-
-plot(psi)
-
-%%
-% It is also possible to differentiate this S2Kernel functions with |grad|.
-% By default we get the derivative of $\psi(\cos(\theta))$ with respect to
-% $\theta$. 
-
-plot(psi.grad)
-%%
-% The flag |'polynomial'| yields the ploynomial derivative of $\psi(x)$ 
-% with respect to $x$. 
-
-plot(psi.grad,'polynomial')
-
-%%
-% We can define an fibre ODF from a kernel function $\psi$ and 2 spherical 
-% elements at a specific orientation $R$ by using the class 
-% <SO3FunCBF.html |SO3FunCBF|>, i.e.
-
-psi = S2DeLaValleePoussinKernel
-SO3F = SO3FunCBF(vector3d(1,0,0),vector3d(0,0,1),1,psi)
-plot(SO3F)
-
-%%
-% The following kernel function are predefined in MTEX
-%
-% * <S2Kernels.html#9 de la Vallee Poussin kernel>
-% * <S2Kernels.html#11 Dirichlet kernel>
-% * <S2Kernels.html#13 Bump kernel>
-% * Schulz defousing kernel
+% * kernel density estimation of directional data using the command
+% <vector3d.calcDensity.html |calcDensity|>
+% * defocusing correction of XRD data
+% * etimation of the habit plane normal distribution using the command
+% <calcGBND.html |calcGBND|>
+% * definition of fibe ODFs using the command <fibreODF.html |fibreODF|>
 %
 %
-
 %% The de La Vallee Poussin Kernel
 % The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
@@ -96,9 +85,9 @@ plot(SO3F)
 psi1 = S2DeLaValleePoussinKernel('halfwidth',15*degree)
 psi2 = S2DeLaValleePoussinKernel('halfwidth',20*degree)
 
-plot(psi1)
+plot(psi1,'linewidth',2,'symmetric')
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2,'symmetric')
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -106,22 +95,19 @@ legend('halfwidth = 15°','halfwidth = 20°')
 % Here the parameter $\kappa$ is $40.34$ for function $\psi_1$ and $22.64$ 
 % in function $\psi_2$.
 %
-% We also take a look at the Fourier coefficients
+% We also take a look at the Legendre coefficients
 
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Dirichlet Kernel
-% The <S2Kernels.S2DirichletKernel.html spherical Dirichlet or Christoffel-Darboux kernel> 
-% has the unique property of being a convergent finite series in Fourier 
-% coefficients with an integral of one.
-% This kernel is recommended for calculating physical properties as the 
-% Fourier coefficients always have a value of one for a given bandwidth.
-%
-% It is defined by its Legendre series
+% The <S2Kernels.S2DirichletKernel.html spherical Dirichlet or
+% Christoffel-Darboux kernel> is recommended for calculating physical
+% properties as the Legendre coefficients always have a value of one up to
+% the specified bandwidth:
 %
 % $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal P_{n}(t).$$
 %
@@ -130,46 +116,46 @@ legend('halfwidth = 15°','halfwidth = 20°')
 psi1 = S2DirichletKernel(10)
 psi2 = S2DirichletKernel(5)
 
-plot(psi1)
+plot(psi1,'linewidth',2,'symmetric')
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2,'symmetric')
 hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %%
-% By looking at the fourier coefficients we see, that they are exactly 1.
+% By looking at the Legendre coefficients we see, that they are exactly 1.
 
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('bandwidth = 5','bandwidth = 10')
 
 %% The Bump kernel
-% The <S2Kernels.S2BumpKernel.html spherical bump kernel> is a radial 
-% symmetric kernel function depending on the halfwidth $r\in (0,pi)$. 
-% The function value is 0, if the angle is greater then the halfwidth $r$. 
+% The <S2Kernels.S2BumpKernel.html spherical bump kernel> is a radial
+% symmetric kernel function depending on the halfwidth $r\in (0,pi)$. The
+% function value is 0, if the angle is greater then the halfwidth $r$.
 % Otherwise it is 1.
 %
 % The main problem of the bump kernel is that we need lots of legendre
-% coefficients to describe it. That possibly can result in high runtimes. 
+% coefficients to describe it. That possibly can result in high runtimes.
 %
 
 psi1 = S2BumpKernel(30*degree)
-psi2 = S2BumpKernel(40*degree)
+psi2 = S2BumpKernel(50*degree)
 
-plot(psi1)
+plot(psi1,'linewidth',2,'symmetric')
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2,'symmetric')
 hold off
 legend('halfwidth = 30°','halwidth = 40°')
 
 %%
 % We also take a look at the Fourier coefficients
 
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 

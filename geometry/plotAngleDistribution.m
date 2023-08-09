@@ -12,6 +12,7 @@ function h = plotAngleDistribution(obj,varargin)
 %
 % Options
 %  resolution, xy*degree - resolution of the plots (given as angle)
+%  numBins - number of bins
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
@@ -65,6 +66,7 @@ else
     % bin size given?
     if max(obj.angle) < maxOmega/2, maxOmega = max(obj.angle);end
     nbins = max(15,round(maxOmega/get_option(varargin,'resolution',5*degree)));
+    nbins = get_option(varargin,'numBins',nbins);
     
     % compute bins
     bins = linspace(-eps,maxOmega+0.01,nbins);

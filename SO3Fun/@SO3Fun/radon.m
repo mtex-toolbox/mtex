@@ -27,28 +27,31 @@ else
 end
 
 res = get_option(varargin,'RadonResolution',2*degree);
+bw = get_option(varargin,'bandwidth',round(128 ./ res *degree));
+
+[S2G,W] = quadratureS2Grid(2*bw);
 
 if isPF % pole figure
-
-  [S2G,W] = quadratureS2Grid(64);
      
   for k = 1:length(h)
 
     % define fibres ->  max(length(h),length(r)) x resolution
-    ori = fibre2quat(h(k),S2G,'resolution',res);
+    ori = orientation(fibre2quat(h(k),S2G,'resolution',res),SO3F.CS,SO3F.SS);
     
     % evaluate ODF at these fibre
     f = SO3F.eval(ori);
 
     % take the integral over the fibres
     pdf = mean(reshape(f,size(ori)),2);
-    S2F(k) = S2FunHarmonicSym.quadrature(S2G,pdf,'bandwidth',48,'weights',W,SO3F.SS); %#ok<AGROW>
+
+    % determine S2fun by quadrature
+    if angle(h(k),-h(k)) < 1e-5, flag = 'antipodal'; else, flag = []; end
+    S2F(k) = S2FunHarmonicSym.quadrature(S2G,pdf,...
+      'bandwidth',bw,'weights',W,SO3F.SS,flag); %#ok<AGROW>
 
   end
   
 else % inverse pole figure
-
-  [S2G,W] = quadratureS2Grid(64);
 
   for k = 1:length(r)
 
@@ -60,7 +63,7 @@ else % inverse pole figure
 
     % take the integral over the fibres
     pdf = mean(reshape(f,size(ori)),2);
-    S2F(k) = S2FunHarmonicSym.quadrature(S2G,pdf,'bandwidth',48,'weights',W,SO3F.CS); %#ok<AGROW>
+    S2F(k) = S2FunHarmonicSym.quadrature(S2G,pdf,'bandwidth',bw,'weights',W,SO3F.CS); %#ok<AGROW>
 
   end
   
@@ -73,7 +76,6 @@ if check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
   S2F.antipodal = true;
 end
 
-
 % evaluate S2Fun if needed
 if  ~isempty(r) &&  ~isempty(h)
   if length(h) >= length(r)
@@ -82,6 +84,3 @@ if  ~isempty(r) &&  ~isempty(h)
     S2F = S2F.eval(r).';
   end
 end
-
-
-

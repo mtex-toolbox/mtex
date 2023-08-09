@@ -1,4 +1,4 @@
-function SO3VF = abs(F)
+function SO3VF = abs(F,varargin)
 % overloads the componentwise absolute value |abs(SO3VF)| 
 %
 % Note that abs is not the length of a vector3d which is the evaluation of
@@ -19,8 +19,10 @@ function SO3VF = abs(F)
 SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.SRight,F.SLeft);
 
 function g = g(rot)
-g = F.eval(rot);
-g = vector3d(abs(g.xyz.'));
+s = size(rot);
+g = F.eval(rot(:));
+g = vector3d(abs(g.xyz.')).';
+g = reshape(g,s);
 end
 
 end
