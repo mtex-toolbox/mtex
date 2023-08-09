@@ -15,6 +15,9 @@ function d = dot(v1,v2,varargin)
 % Output
 %  d - double
 
+% if v1,v2 are vectors of the tangent space ensure that the representation is the same
+ensureCompatibleTangentSpaces(v1,v2)
+
 % compute dot product
 xx = v1.x .* v2.x;
 yy = v1.y .* v2.y;

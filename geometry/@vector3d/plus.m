@@ -12,7 +12,12 @@ try %#ok<TRYNC>
   v1.z = v1.z+v2.z;
   
   v1.isNormalized = false;
+  
+  % if v1,v2 are vectors of the tangent space ensure that the representation is the same
+  tS = ensureCompatibleTangentSpaces(v1,v2);
   v1.opt = struct;
+  if ~isempty(tS), v1.opt.tangentSpace = tS; end
+  
   return
 end
 

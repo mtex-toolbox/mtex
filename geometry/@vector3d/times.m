@@ -38,6 +38,9 @@ else
     v1.z = v1.z .* v2.z;
     v1.isNormalized = false;
     v = v1;
+    % if v1,v2 are vectors of the tangent space ensure that the representation is the same
+    tS = ensureCompatibleTangentSpaces(v1,v2);
+    if ~isempty(tS), v.opt.tangentSpace = tS; end
   catch
     error(['Undefined function or method ''times'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
   end

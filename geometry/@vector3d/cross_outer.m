@@ -15,3 +15,7 @@ v.y = v1.z(:) * v2.x(:).' -v1.x(:) * v2.z(:).';
 v.z = v1.x(:) * v2.y(:).' -v1.y(:) * v2.x(:).';
 
 v.isNormalized = false;
+
+% if v1,v2 are vectors of the tangent space ensure that the representation is the same
+tS = ensureCompatibleTangentSpaces(v1,v2);
+if ~isempty(tS), v.opt.tangentSpace = tS; end

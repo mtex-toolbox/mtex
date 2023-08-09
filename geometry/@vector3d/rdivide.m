@@ -22,6 +22,9 @@ else
     v.x = v1.x ./ d.x;
     v.y = v1.y ./ d.y;
     v.z = v1.z ./ d.z;
+    % if v1,d are vectors of the tangent space ensure that the representation is the same
+    tS = ensureCompatibleTangentSpaces(v1,d);
+    if ~isempty(tS), v.opt.tangentSpace = tS; end
   catch
     error(['Undefined function or method ''rdivide'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
   end

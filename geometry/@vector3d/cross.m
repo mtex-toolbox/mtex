@@ -19,4 +19,9 @@ else
   v.z = v1.x.*v2.y-v1.y.*v2.x;
   v.isNormalized = false;
   v.antipodal = v1.antipodal | v2.antipodal;
+
+  % if v1,v2 are vectors of the tangent space ensure that the representation is the same
+  tS = ensureCompatibleTangentSpaces(v1,v2);
+  if ~isempty(tS), v.opt.tangentSpace = tS; end
+
 end

@@ -17,8 +17,11 @@ else
     v.x = v1.x - v2.x;
     v.y = v1.y - v2.y;
     v.z = v1.z - v2.z;
+    % if v1,v2 are vectors of the tangent space ensure that the representation is the same
+    tS = ensureCompatibleTangentSpaces(v1,v2);
+    if ~isempty(tS), v.opt.tangentSpace = tS; end
   catch
-    if isa(v1,'vector3d') && isa(v1,'vector3d')
+    if isa(v1,'vector3d') && isa(v2,'vector3d')
       error('Incompatible matrix sizes %s and %s in vector3d/minus .',size2str(v1),size2str(v2));
     else
       error(['Undefined function or method ''minus'' for input arguments of type ' class(v1) ' and ' class(v2) '.']);
