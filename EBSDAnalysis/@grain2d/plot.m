@@ -102,9 +102,9 @@ elseif nargin>1 && isa(varargin{1},'vector3d')
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  pos = grains.centroid + 2*scaling * grains.N; 
-  h = plot(pos + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
-    'parent', mP.ax,varargin{:});
+  cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
+  pos = grains.centroid + 1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N;
+    h = plot(pos + cS,'parent', mP.ax,varargin{:});
   
   plotBoundary = false;
   
