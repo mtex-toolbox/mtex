@@ -20,8 +20,12 @@ function g = grad(SO3F,varargin)
 % orientation/exp SO3FunRBF/grad SO3FunCBF/grad SO3VectorFieldHarmonic
 
 % fallback to generic method
-if check_option(varargin,'check')
+if check_option(varargin,'check') 
   g = grad@SO3Fun(SO3F,varargin{:});
+  return
+end
+if check_option(varargin,'right')
+  g = grad_right(SO3F,varargin{:});
   return
 end
 
@@ -35,7 +39,7 @@ if SO3F.bandwidth == 0
   if nargin>1
     g = vector3d.zeros(size(varargin{1}));
   else
-    g = SO3FunHarmonic(0);
+    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS );
   end
   return; 
 end
