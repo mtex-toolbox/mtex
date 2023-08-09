@@ -23,11 +23,11 @@ if isnumeric(SO3VF1) || isa(SO3VF1,'vector3d')
 end
 
 if isnumeric(SO3VF2) || isa(SO3VF2,'vector3d')
-  SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1.eval(rot) .* SO3VF2 ,SO3VF1.CS,SO3VF1.SS);
+  SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1.eval(rot) .* SO3VF2 ,SO3VF1.CS,SO3VF1.SS,SO3VF1.tangentSpace);
   return
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2);
-SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1.eval(rot) .* SO3VF2.eval(rot),SO3VF1.SRight,SO3VF1.SLeft);
+SO3VF = SO3VectorFieldHandle(@(rot) SO3VF1.eval(rot) .* SO3VF2.eval(rot),SO3VF1.SRight,SO3VF1.SLeft,SO3VF1.tangentSpace);
 
 end

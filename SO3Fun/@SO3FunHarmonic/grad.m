@@ -78,6 +78,7 @@ g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};
   g = vector3d(g.eval(ori).').';
+  g.opt.tangentSpace = 'left';
 end
 
 end

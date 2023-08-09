@@ -35,7 +35,7 @@ else
 end
 
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,vec/10000,'left'));
+[x2,y2,z2] = oP.project(exp(S3G,vec/10000,SO3VF.tangentSpace));
 
 wasHold = ishold(gca); hold(gca,'on');
 

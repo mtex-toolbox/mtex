@@ -8,6 +8,7 @@ classdef SO3VectorField
 properties (Abstract = true)
   SRight % symmetry that acts from the right
   SLeft % symmetry that acts from the left
+  tangentSpace % classify whether left or right sided tangent space is used
 end
 
 properties (Dependent = true)

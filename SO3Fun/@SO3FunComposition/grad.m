@@ -1,5 +1,5 @@
 function g = grad(SO3F,varargin)
-% right-sided gradient of an SO3Fun
+% gradient of an SO3FunComposition
 %
 % Syntax
 %   G = SO3F.grad % compute the gradient
@@ -33,6 +33,13 @@ if nargin>1 && isa(varargin{1},'rotation')
   for i = 1:numel(SO3F.components)
     g = g + SO3F.components{i}.grad(varargin{:});
   end
+
+  if check_option(varargin,'right')
+    g.opt.tangentSpace = 'right';
+  else
+    g.opt.tangentSpace = 'left';
+  end
+
   return
 
 end
@@ -41,6 +48,9 @@ end
 g = 0;
 for i = 1:numel(SO3F.components)
   g = g + SO3F.components{i}.grad(varargin{:});
+end
+if check_option(varargin,'right')
+  g.tangentSpace = 'right';
 end
 
 end

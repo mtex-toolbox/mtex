@@ -22,10 +22,12 @@ if check_option(varargin,'check')
   d = div@SO3VectorField(SO3VF,varargin{:});
   return
 end
-% if check_option(varargin,'right')
-%   d = div_right(SO3VF,varargin{:});
-%   return
-% end
+if check_option(varargin,'right')
+  error(['You are computing the divergence w.r.t. the right-sided tangent ' ...
+           'space of an left-sided vector field.'])
+  d = div_right(SO3VF,varargin{:});
+  return
+end
 
 if nargin>1 && isa(varargin{1},'rotation') && isempty(varargin{1})
   d = [];

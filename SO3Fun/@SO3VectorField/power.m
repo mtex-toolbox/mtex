@@ -20,7 +20,7 @@ if ~isnumeric(a)
   error('The exponent has to be numeric.')
 end
 
-SO3VF = SO3VectorFieldHandle(@(rot) SO3VF.eval(rot).^(a(:)),SO3VF.SRight,SO3VF.SLeft);
+SO3VF = SO3VectorFieldHandle(@(rot) SO3VF.eval(rot).^(a(:)),SO3VF.SRight,SO3VF.SLeft,SO3VF.tangentSpace);
 
 
 end

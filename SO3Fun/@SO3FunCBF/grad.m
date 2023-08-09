@@ -1,5 +1,5 @@
 function g = grad(SO3F,varargin)
-% left-sided gradient of an SO3Fun
+% gradient of an SO3FunCBF
 %
 % Syntax
 %   G = SO3F.grad % compute the gradient
@@ -38,10 +38,21 @@ r = repelem(SO3F.r.normalize,l);
 w = repelem(SO3F.weights./l,l);
 
 g = vector3d.zeros(size(ori));
-for i = 1:length(h)
-  g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
-      cross(ori*h(i),r(i));
+
+if check_option(varargin,'right')
+  for i = 1:length(h)
+    g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
+        cross(h(i),inv(ori) * r(i));
+  end
+  g.opt.tangentSpace = 'right';
+else
+  for i = 1:length(h)
+    g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
+        cross(ori*h(i),r(i));
+  end
+  g.opt.tangentSpace = 'left';
 end
+
 end
 
 function test

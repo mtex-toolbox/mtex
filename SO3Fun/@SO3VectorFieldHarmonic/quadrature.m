@@ -20,6 +20,11 @@ function SO3VF = quadrature(f, varargin)
 if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
+  if isfield(y.opt,'tangentSpace') && strcmp(y.opt.tangentSpace,'right')
+    % make right sided tangent vectors to left sided
+    y = ori.*y;
+    warning('Changing the representation of the tangent space from right to left sided.')
+  end
   y = y.xyz;
   % Do quadrature without specimenSymmetry and set SLeft afterwards
   if isa(v,'orientation')
@@ -34,13 +39,25 @@ if isa(f,'rotation')
   return
 end
 
+
+
 if isa(f,'SO3VectorField')
+  if strcmp(f.tangentSpace,'right')
+    f = left(f);
+    warning('Changing the representation of the tangent space from right to left sided.')
+  end
   SRight = f.CS; SLeft = f.SS;
   f = SO3FunHandle(@(rot) f.eval(rot).xyz,SRight,SLeft);
 end
 
 if isa(f,'function_handle')
   [SRight,SLeft] = extractSym(varargin);
+  % Note that option 'right' in varargin is usually used to describe that the 
+  % output is wanted to be described w.r.t. right sided tangent vectors
+  % (NOT THE INPUT).
+  warning(['The given function_handle is asumed to describe elements w.r.t. ' ...
+           'the left side tangent space. If you want them to be right sided ' ...
+           'use SO3VectorFieldHandle(fun,SRight,SLeft,''right'') instead.'])
   v = f(rotation.id);
   if isnumeric(v) && numel(v)==3
     f = SO3FunHandle(f,SRight,SLeft);

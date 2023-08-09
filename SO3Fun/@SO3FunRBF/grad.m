@@ -24,6 +24,13 @@ function g = grad(SO3F,varargin)
 % See also
 % orientation/exp SO3FunHarmonic/grad SO3FunCBF/grad SO3VectorField
 
+% TODO: impement right-sided gradient
+if check_option(varargin,'right')
+  F = SO3FunHandle(@(r) SO3F.eval(r),SO3F.CS,SO3F.SS);
+  g = grad(F,varargin{:});
+  return
+end
+
 if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'quaternion')
   g = grad@SO3Fun(SO3F,varargin{:});
   return

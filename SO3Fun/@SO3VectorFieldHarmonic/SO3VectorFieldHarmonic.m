@@ -1,11 +1,12 @@
 classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF, ...
     ?SO3VectorFieldHandle,?vector3d}) SO3VectorFieldHarmonic < SO3VectorField
-% a class representing a function on the rotation group
+% a class representing left sided vector fields on the rotation group
 
 properties
   SO3F
   SLeft = specimenSymmetry
+  tangentSpace = 'left'
 end
 
 properties(Dependent = true)
@@ -49,6 +50,10 @@ methods
     end
     error('Input should be of type SO3FunHarmonic or SO3VectorField.')
 
+  end
+
+  function SO3VF = set.tangentSpace(SO3VF,s)
+    error('SO3VectorFieldHarmonics allways use left sided tangent space.')
   end
 
   function bw = get.bandwidth(SO3VF), bw = SO3VF.SO3F.bandwidth; end

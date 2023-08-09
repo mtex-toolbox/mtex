@@ -16,7 +16,7 @@ function SO3VF = abs(F,varargin)
 %  SO3VF - @SO3VectorField
 %
 
-SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.SRight,F.SLeft);
+SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.SRight,F.SLeft,F.tangentSpace);
 
 function g = g(rot)
 s = size(rot);

@@ -72,10 +72,11 @@ F = SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS);
 % TODO: implement class SO3VectorFieldHarmonicRight
 % g = SO3VectorFieldHarmonicRight( F ,SO3F.CS,SO3F.SS );
 g = SO3VectorFieldHandle(@(r) vector3d(F.subSet(1).eval(r),F.subSet(2).eval(r),F.subSet(3).eval(r)),SO3F.CS,SO3F.SS);
-
+g.tangentSpace = 'right';
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};
   g = vector3d(g.eval(ori).').';
+  g.opt.tangentSpace = 'right';
 end
 end
