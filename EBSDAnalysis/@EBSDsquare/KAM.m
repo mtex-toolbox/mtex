@@ -24,6 +24,7 @@ function kam = KAM(ebsd,varargin)
 %  threshold - ignore misorientation angles larger then threshold
 %  order     - consider neighbors of order n
 %  max       - take not the mean but the maximum misorientation angle
+%  weights   - filter mask
 %
 % See also
 % grain2d.GOS

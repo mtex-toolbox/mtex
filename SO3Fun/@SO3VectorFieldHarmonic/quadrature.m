@@ -41,7 +41,7 @@ end
 
 if isa(f,'function_handle')
   [SRight,SLeft] = extractSym(varargin);
-  v = f.eval(rotation.id);
+  v = f(rotation.id);
   if isnumeric(v) && numel(v)==3
     f = SO3FunHandle(f,SRight,SLeft);
   elseif isa(v,'vector3d')
