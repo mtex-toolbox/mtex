@@ -19,7 +19,8 @@ if SO3G.CS.multiplicityPerpZ * SO3G.CS.multiplicityPerpZ == 1
 end
 
 [u,~,iu] = uniqueQuadratureSO3Grid(SO3G);
-v = SO3F.eval(u);
-v = v(iu);
+v = reshape(SO3F.eval(u),[],max(size(SO3F)));
+v = v(iu,:);
+if max(size(SO3F))==1, v = reshape(v,size(SO3G)); end
 
 end
