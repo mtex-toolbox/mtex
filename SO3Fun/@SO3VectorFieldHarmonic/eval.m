@@ -28,9 +28,9 @@ end
 if check_option(varargin,'right')
   % make left sided to right sided tangent vectors
   f = inv(rot).*f;
-  f.opt.tangentSpace = 'right';
+  f = SO3TangentVector(f,'right');
 else
-  f.opt.tangentSpace = 'left';
+  f = SO3TangentVector(f,'left');
 end
 
 end

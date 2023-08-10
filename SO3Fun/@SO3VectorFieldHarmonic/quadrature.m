@@ -20,7 +20,7 @@ function SO3VF = quadrature(f, varargin)
 if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
-  if isfield(y.opt,'tangentSpace') && strcmp(y.opt.tangentSpace,'right')
+  if isa(y,'SO3TangentVector') && strcmp(y.tangentSpace,'right')
     % make right sided tangent vectors to left sided
     y = ori.*y;
     warning('Changing the representation of the tangent space from right to left sided.')

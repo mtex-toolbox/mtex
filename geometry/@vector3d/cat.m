@@ -27,9 +27,6 @@ for i = 1:numel(varargin)
     vy{i} = vs.y;
     vz{i} = vs.z;
     v.isNormalized = v.isNormalized & vs.isNormalized;
-    % if v,vs are vectors of the tangent space ensure that the representation is the same
-    tS = ensureCompatibleTangentSpaces(v,vs);
-    if ~isempty(tS), v.opt.tangentSpace = tS; end
   end
 end
 

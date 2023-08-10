@@ -17,9 +17,10 @@ function SO3VF = approximation(nodes, values, varargin)
 % See also
 % SO3FunHarmonic/approximation SO3VectorFieldHarmonic
 
-if isfield(values.opt,'tangentSpace') && strcmp(values.opt.tangentSpace,'right') 
+if isa(values,'SO3TangentVector') && strcmp(values.tangentSpace,'right') 
   % make right sided tangent vectors to left sided
   values = ori.*values;
+  varargin{end+1} = 'right';
 end
 
 % TODO: This method uses the very expensive approximation method
@@ -37,8 +38,7 @@ SO3F = SO3FunHarmonic.approximation(nodes(:),values.xyz,varargin{:});
 
 SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft);
 
-if check_option(varargin,'right') || ...
-    ( isfield(values.opt,'tangentSpace') && strcmp(values.opt.tangentSpace,'right') )
+if check_option(varargin,'right')
   SO3VF = right(SO3VF);
 end
 

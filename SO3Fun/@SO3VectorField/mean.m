@@ -15,9 +15,9 @@ if isalmostreal(v.xyz,'componentwise')
 end
 
 if check_option(SO3VF.tangentSpace,'right')
-  v.opt.tangentSpace = 'right';
+  v = SO3TangentVector(v,'right');
 else
-  v.opt.tangentSpace = 'left';
+  v = SO3TangentVector(v,'left');
 end
 
 end

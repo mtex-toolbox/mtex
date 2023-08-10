@@ -41,13 +41,13 @@ methods
     if check_option(varargin,'right') && strcmp(SO3VF.tangentSpace,'left')
       % make left sided to right sided tangent vectors
       f = inv(ori).*f;
-      f.opt.tangentSpace = 'right';
+      f = SO3TangentVector(f,'right');
     elseif check_option(varargin,'left') && strcmp(SO3VF.tangentSpace,'right')
       % make right sided to left sided tangent vectors
       f = ori.*f;
-      f.opt.tangentSpace = 'left';
+      f = SO3TangentVector(f,'left');
     else
-      f.opt.tangentSpace = SO3VF.tangentSpace;
+      f = SO3TangentVector(f,SO3VF.tangentSpace);
     end
     
   end

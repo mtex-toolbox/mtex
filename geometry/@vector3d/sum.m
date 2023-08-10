@@ -16,11 +16,5 @@ v.x = sum(v.x,varargin{:});
 v.y = sum(v.y,varargin{:});
 v.z = sum(v.z,varargin{:});
 
-if isfield(v.opt,'tangentSpace')
-  tS = v.opt.tangentSpace;
-  v.opt = struct;
-  v.opt.tangentSpace = tS;
-else
-  v.opt = struct;
-end
+v.opt = struct;
 v.isNormalized = false;

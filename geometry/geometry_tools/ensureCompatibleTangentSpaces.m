@@ -3,11 +3,11 @@ function tS = ensureCompatibleTangentSpaces(v1,v2)
 tS1 = [];
 tS2 = [];
 
-if isa(v1,'vector3d') && isfield(v1.opt,'tangentSpace')
-  tS1 = v1.opt.tangentSpace;
+if isa(v1,'SO3TangentVector')
+  tS1 = v1.tangentSpace;
 end
-if isa(v2,'vector3d') && isfield(v2.opt,'tangentSpace')
-  tS2 = v2.opt.tangentSpace;
+if isa(v2,'SO3TangentVector')
+  tS2 = v2.tangentSpace;
 end
 if isa(v1,'SO3VectorField')
   tS1 = v1.tangentSpace;

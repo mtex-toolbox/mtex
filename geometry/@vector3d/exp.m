@@ -31,21 +31,8 @@ else
   rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
 end
 
-if isfield(v.opt,'tangentSpace') 
-  tS = v.opt.tangentSpace;
+if nargin>2 && check_option(varargin,'left')
+  rot =  rot * rot_ref;
 else
-  tS = [];
-end
-if ( strcmp(tS,'right') && check_option(varargin,'left') ) || ...
-      ( strcmp(tS,'left') && check_option(varargin,'right') )
-  error(['The vectors are elements of one tangent space and you try to compute ' ...
-         'the exponential mapping w.r.t. the other representation of the tangent space.']);
-end
-
-if nargin >= 2
-  if ( nargin>2 && check_option(varargin,'left') ) || strcmp(tS,'left')
-    rot =  rot * rot_ref;
-  else
-    rot =  rot_ref .* rot;
-  end
+  rot =  rot_ref .* rot;
 end

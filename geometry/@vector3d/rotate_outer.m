@@ -54,9 +54,3 @@ if isa(q,'orientation')
   end
 
 end
-
-% When rotating tangent vectors it may changes the representation of the 
-% tangent space (left <-> right)
-if isfield(v.opt,'tangentSpace') 
-  v.opt = rmfield(v.opt,'tangentSpace');
-end

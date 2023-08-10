@@ -35,9 +35,9 @@ if nargin>1 && isa(varargin{1},'rotation')
   end
 
   if check_option(varargin,'right')
-    g.opt.tangentSpace = 'right';
+    g.tangentSpace = 'right';
   else
-    g.opt.tangentSpace = 'left';
+    g.tangentSpace = 'left';
   end
 
   return

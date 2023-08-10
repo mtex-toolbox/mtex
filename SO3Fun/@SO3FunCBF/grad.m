@@ -44,13 +44,13 @@ if check_option(varargin,'right')
     g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
         cross(h(i),inv(ori) * r(i));
   end
-  g.opt.tangentSpace = 'right';
+  g = SO3TangentVector(g,'right');
 else
   for i = 1:length(h)
     g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
         cross(ori*h(i),r(i));
   end
-  g.opt.tangentSpace = 'left';
+  g = SO3TangentVector(g,'left');
 end
 
 end
