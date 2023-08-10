@@ -30,6 +30,7 @@ if nargin == 1 || ~isa(varargin{1},'rotation')
 end
   
 rot = varargin{1};
+s = size(rot);
 rot = rot(:);
 varargin(1) = [];
 
@@ -41,9 +42,9 @@ deltaRot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
 if check_option(varargin,'right')
   f = reshape(SO3F.eval([rot*inv(deltaRot),rot*deltaRot]),length(rot),[]);
   g = SO3TangentVector(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3),'right') ./ delta;
-  g.opt.tangentSpace = 'right';
 else
   f = reshape(SO3F.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);
   g = SO3TangentVector(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3),'left') ./ delta;
-  g.opt.tangentSpace = 'left';
 end
+
+g = reshape(g,s);

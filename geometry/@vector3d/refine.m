@@ -14,7 +14,7 @@ d = squeeze(double(v));
   
 tri = convhulln(d);
   
-r = sum(vector3d(v(tri)),2);
+r = sum(vector3d(v.subSet(tri)),2);
 r = r./norm(r);
   
 [thetav] = polar(v);

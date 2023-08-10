@@ -31,6 +31,8 @@ if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'rotation')
 end
 
 ori = varargin{1};
+s = size(ori);
+ori = ori(:);
 
 % symmetrise - only crystal symmetry
 [h,l] = symmetrise(SO3F.h.normalize,'unique');
@@ -52,6 +54,8 @@ else
   end
   g = SO3TangentVector(g,'left');
 end
+
+g = reshape(g,s);
 
 end
 
