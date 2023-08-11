@@ -6,15 +6,15 @@ function SO3F = rotate(SO3F,rot,varargin)
 %   SO3F = rotate(SO3F,rot,'right')
 %
 % Input
-%  SO3F - @SO3FunCBF
+%  SO3F - @SO3FunBingham
 %  rot  - @rotation
 %
 % Output
-%  SO3F - @SO3FunCBF
+%  SO3F - @SO3FunBingham
 %
 % See also
 % SO3FunHandle/rotate_outer
-
+    
 if check_option(varargin,'right')
   cs = SO3F.CS.rot;
   if length(cs)>2 && ~any(rot == cs(:))
@@ -31,9 +31,9 @@ end
 
 
 if check_option(varargin,'right')
-  SO3F.h = inv(rot) * SO3F.h;
+  SO3F.A = orientation(SO3F.A * rot);
 else
-  SO3F.r = rot * SO3F.r;
+  SO3F.A = orientation(rot * SO3F.A);
 end
-    
+
 end
