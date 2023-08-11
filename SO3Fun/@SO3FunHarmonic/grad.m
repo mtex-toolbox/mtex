@@ -39,7 +39,7 @@ if SO3F.bandwidth == 0
   if nargin>1
     g = vector3d.zeros(size(varargin{1}));
   else
-    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS );
+    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS ,'left');
   end
   return; 
 end
@@ -73,7 +73,7 @@ for n=0:SO3F.bandwidth
 
 end
 
-g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS );
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS, 'left');
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};

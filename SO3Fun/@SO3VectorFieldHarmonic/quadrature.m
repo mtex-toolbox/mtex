@@ -20,32 +20,37 @@ function SO3VF = quadrature(f, varargin)
 if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
-  if isa(y,'SO3TangentVector') && strcmp(y.tangentSpace,'right')
-    % make right sided tangent vectors to left sided
-    y = ori.*y;
-    warning('Changing the representation of the tangent space from right to left sided.')
+  if isa(y,'SO3TangentVector') 
+    tS = y.tangentSpace;
+  else
+    tS = 'left';
+    warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
+             'the left side tangent space. If you want them to be right sided ' ...
+             'use SO3TangentVector(v,''right'') instead.'])
   end
   y = y.xyz;
-  % Do quadrature without specimenSymmetry and set SLeft afterwards
   if isa(v,'orientation')
     SRight = v.CS; SLeft = v.SS;
   else
     [SRight,SLeft] = extractSym(varargin);
     v = orientation(v,SRight,SLeft);
   end
-  v.SS = specimenSymmetry;
+  % Do quadrature without specimenSymmetry and set SLeft afterwards 
+  % (if left sided tangent space) clear crystalSymmetry otherwise 
+  if strcmp(tS,'right')
+    v.CS = crystalSymmetry;
+  else
+    v.SS = specimenSymmetry;
+  end
   SO3F = SO3FunHarmonic.quadrature(v, y, varargin{:});
-  SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft);
+  SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
   return
 end
 
 
 
 if isa(f,'SO3VectorField')
-  if strcmp(f.tangentSpace,'right')
-    f = left(f);
-    warning('Changing the representation of the tangent space from right to left sided.')
-  end
+  tS = f.tangentSpace;
   SRight = f.CS; SLeft = f.SS;
   f = SO3FunHandle(@(rot) f.eval(rot).xyz,SRight,SLeft);
 end
@@ -55,9 +60,10 @@ if isa(f,'function_handle')
   % Note that option 'right' in varargin is usually used to describe that the 
   % output is wanted to be described w.r.t. right sided tangent vectors
   % (NOT THE INPUT).
-  warning(['The given function_handle is asumed to describe elements w.r.t. ' ...
+  warning(['The given function_handle is assumed to describe elements w.r.t. ' ...
            'the left side tangent space. If you want them to be right sided ' ...
            'use SO3VectorFieldHandle(fun,SRight,SLeft,''right'') instead.'])
+  tS = 'left';
   v = f(rotation.id);
   if isnumeric(v) && numel(v)==3
     f = SO3FunHandle(f,SRight,SLeft);
@@ -69,10 +75,13 @@ if isa(f,'function_handle')
 end
 
 % Do quadrature without specimenSymmetry and set SLeft afterwards 
-SLeft = f.SS;
-f.SS = specimenSymmetry;
+% (if left sided tangent space) clear crystalSymmetry otherwise 
+if strcmp(tS,'right')
+  f.CS = crystalSymmetry;
+else
+  f.SS = specimenSymmetry;
+end
 SO3F = SO3FunHarmonic.quadrature(f,varargin{:});
-SO3VF = SO3VectorFieldHarmonic(SO3F,f.CS,SLeft);
-
+SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
 
 end

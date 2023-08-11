@@ -18,13 +18,13 @@ function SO3VF = rotate(SO3VF, rot,varargin)
 if check_option(varargin,'right')
   cs = SO3VF.CS.rot;
   if length(cs)>2 && ~any(rot == cs(:))
-    warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
+    warning('Rotating an SO3VectorField with crystal symmetry will remove the crystal symmetry')
     SO3VF.CS = crystalSymmetry;
   end
 else
   ss = SO3VF.SS.rot;
   if length(ss)>2 && ~any(rot == ss(:))
-    warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
+    warning('Rotating an SO3VectorField with specimen symmetry will remove the specimen symmetry')
     SO3VF.SS = specimenSymmetry;
   end
 end

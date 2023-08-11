@@ -16,21 +16,22 @@ function f = eval(SO3VF,rot,varargin)
 if isa(rot,'quadratureSO3Grid')
   f = eval(SO3VF,rot,varargin);
 else
-  
   % if isa(rot,'orientation')
   %   ensureCompatibleSymmetries(SO3VF,rot)
   % end
-
   f = vector3d(SO3VF.SO3F.eval(rot)');
   f = reshape(f',size(rot));
 end
 
+% Make output right/left deendent from the input flag
+f = SO3TangentVector(f,SO3VF.tangentSpace);
 if check_option(varargin,'right')
-  % make left sided to right sided tangent vectors
-  f = inv(rot).*f;
-  f = SO3TangentVector(f,'right');
-else
-  f = SO3TangentVector(f,'left');
+  f = right(f,rot);
 end
+if check_option(varargin,'left')
+  f = left(f,rot);
+end
+
+
 
 end

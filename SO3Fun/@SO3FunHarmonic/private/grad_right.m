@@ -33,8 +33,7 @@ if SO3F.bandwidth == 0
   if nargin>1
     g = vector3d.zeros(size(varargin{1}));
   else
-    F = SO3FunHarmonic([0,0,0],crystalSymmetry,SO3F.SS);
-    g = SO3VectorFieldHandle(@(r) vector3d(F.subSet(1).eval(r),F.subSet(2).eval(r),F.subSet(3).eval(r)),SO3F.CS,SO3F.SS);
+    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],crystalSymmetry,SO3F.SS) , SO3F.CS,SO3F.SS ,'right');
   end
   return; 
 end
@@ -68,10 +67,7 @@ for n=0:SO3F.bandwidth
 
 end
 
-F = SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS);
-% TODO: implement class SO3VectorFieldHarmonicRight
-% g = SO3VectorFieldHarmonicRight( F ,SO3F.CS,SO3F.SS );
-g = SO3VectorFieldHandle(@(r) vector3d(F.subSet(1).eval(r),F.subSet(2).eval(r),F.subSet(3).eval(r)),SO3F.CS,SO3F.SS,'right');
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS) , SO3F.CS,SO3F.SS ,'right');
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};

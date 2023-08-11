@@ -32,22 +32,19 @@ methods
     if isa(ori,'quadratureSO3Grid')
       f = eval(SO3VF,ori,varargin);
     else
-%     if isa(ori,'orientation')
-%       ensureCompatibleSymmetries(SO3VF,ori)
-%     end
+      % if isa(ori,'orientation')
+      % ensureCompatibleSymmetries(SO3VF,ori)
+      % end
       f = SO3VF.fun(ori);
     end
 
-    if check_option(varargin,'right') && strcmp(SO3VF.tangentSpace,'left')
-      % make left sided to right sided tangent vectors
-      f = inv(ori).*f;
-      f = SO3TangentVector(f,'right');
-    elseif check_option(varargin,'left') && strcmp(SO3VF.tangentSpace,'right')
-      % make right sided to left sided tangent vectors
-      f = ori.*f;
-      f = SO3TangentVector(f,'left');
-    else
-      f = SO3TangentVector(f,SO3VF.tangentSpace);
+    % Make output right/left deendent from the input flag
+    f = SO3TangentVector(f,SO3VF.tangentSpace);
+    if check_option(varargin,'right')
+      f = right(f,ori);
+    end
+    if check_option(varargin,'left')
+      f = left(f,ori);
     end
     
   end
