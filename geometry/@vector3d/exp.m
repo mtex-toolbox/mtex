@@ -32,7 +32,7 @@ else
 end
 
 if nargin>2 && check_option(varargin,'left')
-  rot =  rot * rot_ref;
+  rot =  rot .* rot_ref;
 else
   rot =  rot_ref .* rot;
 end
