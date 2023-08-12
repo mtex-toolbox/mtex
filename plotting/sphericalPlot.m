@@ -212,9 +212,10 @@ classdef sphericalPlot < handle
       
         x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
         y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
+        z = ensurecell(get(sP.boundary,'zData')); z = [z{:}];
         M = get(sP.hgt,'Matrix');
-        xy = M(1:2,1:2) * [x;y];
-        sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+        xyz = M(1:3,1:3) * [x;y;z];
+        sP.bounds = [min(xyz(1,:)),min(xyz(2,:)),max(xyz(1,:)),max(xyz(2,:))];
       
       end
         
@@ -264,8 +265,8 @@ classdef sphericalPlot < handle
       dgrid = pi/round((pi)/dgrid);
       
       % draw small circles
-      theta = dgrid:dgrid:pi/2-dgrid;
-      if sP.sphericalRegion.isLower, theta = pi-theta;end
+      theta = dgrid:dgrid:pi-dgrid;
+      
       for i = 1:length(theta), circ(sP,theta(i)); end
       
       % draw meridians
@@ -277,17 +278,14 @@ classdef sphericalPlot < handle
     function plotMeridians(sP,rho,varargin)
 
       % the points
-      if sP.sphericalRegion.isUpper
-        theta = linspace(-pi/2,pi/2,181);        
-      else
-        theta = linspace(3/2*pi,pi/2,181);
-      end
+      theta = linspace(-pi,pi,361);
+      
       [theta,rho] = meshgrid(theta,rho);
-      v =  vector3d('theta',theta,'rho',rho);
-      [x,y] = project(sP.proj,v.');
+      v =  vector3d.byPolar(theta,rho);
+      [x,y,z] = project(sP.proj,v.','noAntipodal');
 
       % grid
-      sP.grid = [sP.grid(:);line(x,y,'parent',sP.hgt,...
+      sP.grid = [sP.grid(:);line(x,y,z,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8])];
       
     end
@@ -295,13 +293,16 @@ classdef sphericalPlot < handle
     function circ(sP,theta,varargin)
 
       % the points to plot      
-      v = vector3d('theta',theta,'rho',linspace(0,2*pi,721));
-      
+      v = vector3d.byPolar(theta,linspace(0,2*pi,721));
+            
       % project
-      [dx,dy] = sP.proj.project(v);
+      [x,y,z] = sP.proj.project(v,'noAntipodal');
+
+      %d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2 + + diff(z([1:end,1])).^2);
+      %ind = find(d > diff(sP(i).bounds([1,3])) / 20);
 
       % plot
-      sP.grid(end+1) = line(dx,dy,'parent',sP.hgt,...
+      sP.grid(end+1) = line(x,y,z,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8]);
 
     end    

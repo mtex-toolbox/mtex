@@ -11,14 +11,17 @@ classdef plottingConvention < handle
     north
     south
     outOfScreen
-    intoScree
+    intoScreen
     viewOpt
   end
 
   methods
 
-    function pC = plottingConvention(varargin)
+    function pC = plottingConvention(outOfScreen,east)
       
+      if nargin >= 1, pC.outOfScreen = outOfScreen; end
+      if nargin >= 2, pC.east = east; end
+
     end
     
     function [x,y] = project(pC,v)
@@ -29,21 +32,57 @@ classdef plottingConvention < handle
 
     function v = iproject(pC,x,y)
       % project 
-
-      
+     
     end
 
+    function display(pC,varargin)
+      displayClass(pC,inputname(1),varargin{:});
+    
+      disp(' ')
+
+      props{1} = 'outOfScreen';
+      propV{1} = ['(' char(round(pC.outOfScreen)) ')'];
+
+      props{2} = 'north';
+      propV{2} = ['(' char(round(pC.north)) ')'];
+
+      props{3} = 'east';
+      propV{3} = ['(' char(round(pC.east)) ')'];
+      
+      % display all properties
+      cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+
+      disp(' ')
+
+    end
 
     function setView(pC,ax)
 
       if nargin == 1, ax = gca; end
 
-      cT = get(ax,'CameraTarget');
-      
-      set(ax,"CameraPosition",cT + 1000*pC.outOfScreen.xyz,...
-        "CameraUpVector",pC.north.xyz);
+      if isgraphics(ax,'axes') && isappdata(ax,'sphericalPlot')
 
-      %set(ax,pC.viewOpt{:});
+        sP = getappdata(ax,'sphericalPlot');
+
+        % define as hgtransform
+        mat = eye(4); mat(1:3,1:3) = inv(pC.rot.matrix);
+        set(sP.hgt,'Matrix',mat);
+
+        sP.updateBounds;
+
+      elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot
+        
+        cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
+        ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
+        ax.CameraUpVector = pC.north.xyz;
+
+      else % normal plot
+
+        ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
+        ax.CameraUpVector = pC.north.xyz;
+
+      end
+      
     end
 
     function opt = get.viewOpt(pC)
@@ -58,12 +97,7 @@ classdef plottingConvention < handle
 
     function set.outOfScreen(pC,n)
 
-      % compute new east vector "e" from the old east vector "E" such that
-      % e ⟂ n
-      % 
-      newNorth = cross(n,cross(n,pC.north));
-     
-      pC.rot = rotation.map(zvector,n,yvector,newNorth);
+      pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot;
 
     end
 
@@ -75,19 +109,20 @@ classdef plottingConvention < handle
     end
 
     function set.east(pC,e)
-
-      % compute new east vector "e" from the old east vector "E" such that
-      % e ⟂ n
-      % 
-      newNorth = cross(e,cross(e,pC.north));
-     
-      pC.rot = rotation.map(xvector,e,yvector,newNorth);
+      
+      pC.rot = rotation.map(pC.east,e) * pC.rot;
 
     end
 
     function v = get.north(pC) 
       
       v = pC.rot * vector3d.Y;
+
+    end
+
+    function set.north(pC,v)
+      
+      pC.rot = rotation.map(pC.north,v) * pC.rot;
 
     end
 

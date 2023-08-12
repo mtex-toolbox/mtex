@@ -7,13 +7,16 @@ classdef eareaProjection < sphericalProjection
       proj = proj@sphericalProjection(varargin{:});
     end
     
-    function [x,y] = project(sP,v,varargin)
+    function [x,y,z] = project(sP,v,varargin)
       % compute polar angles
   
-      [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
+      % map such that projection is towards xy plane
+      % and compute there spherical coordinats
+      v(~sP.sR.checkInside(v,varargin{:})) = NaN;
+      [rho,theta] = project@sphericalProjection(sP,inv(sP.pC.rot) * v,'complete',varargin{:});
 
       % map to upper hemisphere
-      ind = find(theta > pi/2+10^(-10));
+      ind = theta > pi/2+10^(-10);
       theta(ind)  = pi - theta(ind);
 
       % turn around antipodal vectors
@@ -27,7 +30,10 @@ classdef eareaProjection < sphericalProjection
       % compute coordinates
       x = reshape(cos(rho) .* r,size(v));
       y = reshape(sin(rho) .* r,size(v));
-      
+
+      % rotate back and turn into coordinates
+      [x,y,z] = double(sP.pC.rot * vector3d(x,y,0));
+
     end
     
     function v = iproject(sP,x,y)

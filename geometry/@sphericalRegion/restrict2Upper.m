@@ -1,6 +1,12 @@
- function sR = restrict2Upper(sR)
+function sR = restrict2Upper(sR,ref)
  
- sR.N = [zvector;sR.N(:)];
- sR.alpha = [0;sR.alpha(:)];
+if nargin==1
+  ref = zvector;
+elseif isa(ref,'plottingConvention')
+  ref = ref.outOfScreen;
+end
+
+sR.N = [ref;sR.N(:)];
+sR.alpha = [0;sR.alpha(:)];
  
- end
+end

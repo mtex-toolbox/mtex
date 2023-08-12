@@ -32,12 +32,12 @@ for j = 1:numel(sP)
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     
     % project data
-    [x,y] = project(sP(j).proj,v,'noAntipodal');
+    [x,y,z] = project(sP(j).proj,v,'noAntipodal');
     x(~sR.checkInside(v))=NaN;
                 
     % plot
     varargin = delete_option(varargin,'parent',1);
-    h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).hgt,...
+    h(i) = optiondraw(line('xdata',x,'ydata',y,'zdata',z,'parent',sP(j).hgt,...
       'color',[0.2 0.2 0.2],'linewidth',1.5,'hitTest','off'),varargin{:});
     
     % do not display in the legend
