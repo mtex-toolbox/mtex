@@ -27,7 +27,7 @@ methods
     if nargin == 0, return; end
     
     if isa(SO3F,'SO3FunHarmonic')
-      SO3VF.SO3F = SO3F(:);
+      SO3VF.SO3F = SO3FunHarmonic(SO3F(:));
       % extract symmetry
       isSym = cellfun(@(x) isa(x,'symmetry'),varargin,'UniformOutput',true);
       [SRight,SLeft] = extractSym(varargin);
@@ -44,7 +44,7 @@ methods
     end
 
     if isa(SO3F,'SO3VectorFieldHarmonic')
-      SO3VF = SO3F;
+      SO3VF = SO3VectorFieldHarmonic(SO3F.SO3F,SO3F.CS,SO3F.SS,SO3F.tangentSpace);
       return
     end
     
