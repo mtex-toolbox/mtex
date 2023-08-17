@@ -86,6 +86,9 @@ for issq = 1:length(qSS)
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
+g = SO3TangentVector(g,'left');
+
+
 % TODO: consider antipodal
 if SO3F.antipodal
   warning('not yet implemented!!')

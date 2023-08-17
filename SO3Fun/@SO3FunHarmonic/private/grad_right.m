@@ -30,7 +30,7 @@ end
 
 % if bandwidth is zero there is nothing to do
 if SO3F.bandwidth == 0 
-  if nargin>1
+  if nargin>1 && isa(varargin{1},'rotation')
     g = vector3d.zeros(size(varargin{1}));
   else
     g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],crystalSymmetry,SO3F.SS) , SO3F.CS,SO3F.SS ,'right');
@@ -38,8 +38,8 @@ if SO3F.bandwidth == 0
   return; 
 end
 
-fhat = ones(deg2dim(SO3F.bandwidth),3);
-for n=0:SO3F.bandwidth
+fhat = zeros(deg2dim(SO3F.bandwidth+1),3);
+for n=1:SO3F.bandwidth
   ind = deg2dim(n)+1:deg2dim(n+1);
   FHAT = reshape(SO3F.fhat(ind),2*n+1,2*n+1);
   
