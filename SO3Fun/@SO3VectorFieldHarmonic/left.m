@@ -18,7 +18,7 @@ end
 % check for conservative vector field and compute gradient of antiderivative
 c = SO3VF.curl;
 n = sqrt(sum(norm(c.SO3F).^2));
-if n<1e-4
+if n<1e-3
   SO3VF = SO3VF.antiderivative('conservative').grad('left');
   return
 end

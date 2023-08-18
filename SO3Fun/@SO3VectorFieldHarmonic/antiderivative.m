@@ -30,8 +30,8 @@ end
 if ~check_option(varargin,'conservative')
   c = SO3VF.curl;
   n = sqrt(sum(norm(c.SO3F).^2));
-  if n>1e-4
-    error(['The vector field is not conservative (not the gradient of some function),' ...
+  if n>1e-3
+    error(['The vector field is not conservative (not the gradient of some SO3Fun),' ...
            ' since the curl = ',n,' is not vanishing.'])
   end
 end
