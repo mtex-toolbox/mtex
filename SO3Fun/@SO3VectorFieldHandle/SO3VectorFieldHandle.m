@@ -5,7 +5,6 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
   
 properties
   fun
-  antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
   bandwidth = getMTEXpref('maxSO3Bandwidth');

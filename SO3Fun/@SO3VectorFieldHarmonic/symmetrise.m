@@ -18,10 +18,7 @@ function SO3VF = symmetrise(SO3VF,varargin)
 if SO3VF.bandwidth==0
   return
 end
-
-% Maybe we should not symmetrise SO3VF its specimenSymmetry.
-% Maybe also forbid symmetrising antipodal property.
-% Does antipodal make sense?
+varargin = delete_option(varargin,'antipodal');
 
 SO3VF.SO3F = symmetrise(SO3VF.SO3F,varargin{:});
 

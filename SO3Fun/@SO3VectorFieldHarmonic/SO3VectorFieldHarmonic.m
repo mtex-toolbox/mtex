@@ -15,7 +15,6 @@ properties(Dependent = true)
   y
   z
   bandwidth
-  antipodal
   isReal
 end
 
@@ -118,8 +117,6 @@ methods
   function SO3VF = set.y(SO3VF, y), SO3VF.SO3F(2) = y; end
   function SO3VF = set.z(SO3VF, z), SO3VF.SO3F(3) = z; end
 
-  function a = get.antipodal(SO3VF), a = SO3VF.SO3F.antipodal; end
-  function SO3VF = set.antipodal(SO3VF,a), SO3VF.SO3F.antipodal = a; end
   function r = get.isReal(SO3VF), r = SO3VF.SO3F.isReal; end  
   function SO3VF = set.isReal(SO3VF,r), SO3VF.SO3F.isReal = r; end
   

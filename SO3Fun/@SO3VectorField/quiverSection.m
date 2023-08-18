@@ -38,8 +38,7 @@ function quiverSection(SO3VF,varargin)
 % See also
 % saveFigure Plotting
 
-if SO3VF.antipodal, ap = {'antipodal'}; else, ap = {}; end
-oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,ap{:},varargin{:});
+oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
 
 res = 15*degree;
 % only plot the real part of SO3VF
