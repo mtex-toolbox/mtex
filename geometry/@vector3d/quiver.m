@@ -78,7 +78,7 @@ for j = 1:numel(sP)
   
   % make the quiver plot
   varargin = delete_option(varargin,'parent',1);
-  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSizeArg{:},'MaxHeadSize',mhs,'parent',sP(j).hgt),varargin{:});     %#ok<AGROW>
+  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,arrowSizeArg{:},'MaxHeadSize',mhs,'parent',sP(j).ax),varargin{:});     %#ok<AGROW>
   
   % finalize the plot
   % add annotations

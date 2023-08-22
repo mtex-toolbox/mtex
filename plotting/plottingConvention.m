@@ -63,11 +63,7 @@ classdef plottingConvention < handle
       if isgraphics(ax,'axes') && isappdata(ax,'sphericalPlot')
 
         sP = getappdata(ax,'sphericalPlot');
-
-        % define as hgtransform
-        mat = eye(4); mat(1:3,1:3) = inv(pC.rot.matrix);
-        set(sP.hgt,'Matrix',mat);
-
+       
         sP.updateBounds;
 
       elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot

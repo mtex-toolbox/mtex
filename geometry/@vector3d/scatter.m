@@ -39,7 +39,7 @@ h = [];
 for i = 1:numel(sP)
 
   % project data
-  [x,y,z] = project(sP(i).proj,v,varargin{:});
+  [x,y] = project(sP(i).proj,v,varargin{:});
 
   % check that there is something left to plot
   %if all(isnan(x) | isnan(y)), continue; end
@@ -47,22 +47,21 @@ for i = 1:numel(sP)
   % add some nans if lines are plotted
   if check_option(varargin,'edgecolor')
     
-    x = x(:); y = y(:); z = z(:);
+    x = x(:); y = y(:);
     % find large gaps
-    d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2 + + diff(z([1:end,1])).^2);
+    d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
     ind = find(d > diff(sP(i).bounds([1,3])) / 20);
     
     % and fill the gaps with nans
     for k = 1:numel(ind)
       x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
       y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
-      z = [z(1:ind(k)+k-1);nan;z(ind(k)+k:end)];
     end
   end
   
   % default arguments
-  patchArgs = {'parent',sP(i).hgt,...
-    'vertices',[x(:) y(:) z(:)],...
+  patchArgs = {'parent',sP(i).ax,...
+    'vertices',[x(:) y(:)],...
     'faces',1:numel(x),...
     'facecolor','none',...
     'edgecolor','none',...
@@ -88,21 +87,20 @@ for i = 1:numel(sP)
   % ------- colorcoding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).hgt,varargin{2:end});
+    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
     %sP(i).updateBounds(0.1);
   
   elseif check_option(varargin,'arrow')
     
     x(isnan(x)) = [];
     y(isnan(y)) = [];
-    z(isnan(y)) = [];
     if length(x)>1
       arrowOpt = extract_option(varargin,{'length','baseAngle','tipAngle',...
         'Width','Page','Ends','type','color'},...
         {'double','double','double',...
         'double','double','char','char','double'});
-      h(i) = arrow([x(1),y(1),z(1)],[x(2),y(2),z(2)],arrowOpt{:});
-      set(h(i),'Parent', sP(i).hgt);
+      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:});
+      set(h(i),'Parent', sP(i).ax);
     end
 
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
@@ -118,8 +116,8 @@ for i = 1:numel(sP)
 
     if numel(MarkerSize) > 1
       
-      h(i) = optiondraw(scatter(x(:),y(:),z(:),MarkerSize(:),cdata,'filled',...
-        'parent',sP(i).hgt),varargin{:}); %#ok<AGROW>
+      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),cdata,'filled',...
+        'parent',sP(i).ax),varargin{:}); %#ok<AGROW>
 
       set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
             
@@ -155,7 +153,7 @@ for i = 1:numel(sP)
     % draw patches
     if numel(MarkerSize) > 1
       
-      h(i) = optiondraw(scatter(x(:),y(:),z(:),MarkerSize(:),'parent',sP(i).hgt,...
+      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).ax,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>      
     
     else

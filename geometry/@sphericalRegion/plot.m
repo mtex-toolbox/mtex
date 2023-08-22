@@ -24,7 +24,7 @@ for j = 1:numel(sP)
   end
   
   % plot the region
-  omega = linspace(0,2*pi,721);
+  omega = linspace(0,2*pi,2161);
   for i=1:length(sR.N)
   
     rot = rotation.byAxisAngle(sR.N(i),omega);
@@ -32,12 +32,12 @@ for j = 1:numel(sP)
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     
     % project data
-    [x,y,z] = project(sP(j).proj,v,'noAntipodal');
+    [x,y] = project(sP(j).proj,v,'noAntipodal');
     x(~sR.checkInside(v))=NaN;
                 
     % plot
     varargin = delete_option(varargin,'parent',1);
-    h(i) = optiondraw(line('xdata',x,'ydata',y,'zdata',z,'parent',sP(j).hgt,...
+    h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).ax,...
       'color',[0.2 0.2 0.2],'linewidth',1.5,'hitTest','off'),varargin{:});
     
     % do not display in the legend
