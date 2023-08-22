@@ -7,7 +7,6 @@ classdef specimenSymmetry < symmetry
 
 properties
   axes = [xvector,yvector,zvector]; 
-  plotOptions = {}
 end
 
   methods

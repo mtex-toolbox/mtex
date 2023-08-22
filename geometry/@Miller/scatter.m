@@ -51,9 +51,9 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
 end
 
 if numel(varargin) > 0 && (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
-  varargin = [varargin(1),m.CS.plotOptions,varargin(2:end)];
+  varargin = [varargin(1),{m.CS.how2plot},varargin(2:end)];
 else
-  varargin = [m.CS.plotOptions,varargin];
+  varargin = [{m.CS.how2plot},varargin];
 end
 
 % plot them all with the same color
