@@ -1,18 +1,17 @@
-%% Neper
+%% The Neper Interface
 %
 %% General
-% Neper is an open source software package for polycrystal generation and
-% meshing developed by Romain Query. It can be obtained from
-% https://neper.info, where also the documentation is located.
+% <https://neper.info Neper> is an open source software package for
+% polycrystal generation and meshing developed by Romain Query.
 %
 % This module provides an comfortable interface to neper. It is used 
 % to simulate microstructures with certain parameters and load them back
 % into MTEX for analysis and further investigation with the various tools 
 % provided by MTEX.
 %
-% In order to do this, a slicing of the 3-dimensional tesselation is 
-% necessary after the simulation. The obtained 2-dimensional tesselation 
-% is processed as an object from the class |grain2d|. 
+% In order to do this, a slicing of the 3-dimensional tesselation is
+% necessary after the simulation. The obtained 2-dimensional tesselation is
+% processed as an object from the class @grain2d.
 %
 %% Contents
 % * Setting-up the neper instance and further options
