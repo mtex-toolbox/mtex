@@ -6,7 +6,7 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 % 3: new multiplot
 
 % get plotting convention
-pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
 
 % case 1: predefined axis
 % -----------------------
@@ -26,10 +26,10 @@ if check_option(varargin,'parent')
     
     % extract spherical region
     % TODO: it might happen that the spherical region needs two axes
-    sR = getPlotRegion(v,pC,varargin{:});
+    sR = getPlotRegion(v,how2plot,varargin{:});
     
     % extract projection
-    proj = getProjection(sR,pC,varargin{:});
+    proj = getProjection(sR,how2plot,varargin{:});
     
     % create a new spherical plot
     sP = sphericalPlot(ax,proj(1),varargin{:});
@@ -46,12 +46,18 @@ end
 
 if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
 
-  % get spherical region
-  sR = getPlotRegion(v,pC,varargin{:});
+  % maybe the spherical projection is already given
+  proj = getClass(varargin,'sphericalProjection');
+
+  if isempty(proj)
+    % get spherical region
+    sR = getPlotRegion(v,how2plot,varargin{:});
   
-  % extract projection(s)
-  % this might return two projections for upper and lower hemisphere
-  proj = getProjection(sR,pC,varargin{:});
+    % extract projection(s)
+    % this might return two projections for upper and lower hemisphere
+    proj = getProjection(sR,how2plot,varargin{:});
+  end
+  
   holdState = getHoldState(mtexFig.gca);
   
   for i = 1:numel(proj)
@@ -97,35 +103,34 @@ end
 end
 
 % ---------------------------------------------------------
-function sR = getPlotRegion(sR,pC,varargin)
+function sR = getPlotRegion(sR,how2plot,varargin)
 % returns spherical region to be plotted
 
 % default values from the vectors to plot
 if isa(sR,'vector3d')
   sR = sR.region(varargin{2:end});
-else
-  sR = sphericalRegion;
+elseif ~isa(sR,'sphericalRegion')
+  sR = getClass(varargin,'sphericalRegion',sphericalRegion);  
 end
-sR = getClass(varargin,'sphericalRegion',sR);
+
 
 % check for simple options
 if check_option(varargin,'complete')
   sR = sphericalRegion;
 end
 if check_option(varargin,'upper')
-  sR = sR.restrict2Upper(pC);
+  sR = sR.restrict2Upper(how2plot);
 elseif check_option(varargin,'lower')
-  sR = sR.restrict2Lower(pC);
+  sR = sR.restrict2Lower(how2plot);
 end
 
 % extract antipodal
-sR.antipodal = check_option(varargin,'antipodal') || ...
-  (isa(varargin{1},'vector3d') && varargin{1}.antipodal);
+sR.antipodal = check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
-if sR.antipodal && sR.isUpper(pC) && sR.isLower(pC) &&...
+if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
     ~check_option(varargin,'complete')
-  sR = sR.restrict2Upper(pC);
+  sR = sR.restrict2Upper(how2plot);
 end
 
 end

@@ -9,9 +9,9 @@ else
   ax = gca;
 end
 
-pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
 
-pC.setView(ax);
+how2plot.setView(ax);
 
 end
 
