@@ -101,6 +101,7 @@ clf;
 quiver3(sVF2);
 
 %% Some fun
+clf
 
 sVF = grad(S2Fun.smiley)
 

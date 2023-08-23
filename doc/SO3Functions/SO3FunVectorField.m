@@ -34,7 +34,7 @@ SO3VF.eval(rot)
 % directly by the command |SO3VectorFieldHarmonic|
 %
 
-SO3VectorFieldHarmonic(SO3VF)
+SO3VectorFieldHarmonic(SO3VF,'bandwidth',16)
 
 %%
 % *Definition via function values*
@@ -47,7 +47,7 @@ nodes = nodes(:);
 y = vector3d.byPolar(sin(3*nodes.angle), nodes.phi2+pi/2);
 %%
 % Now the actual command to get |SO3VF1| of type |SO3VectorFieldHarmonic|
-SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y)
+SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y,'bandwidth',16)
 
 %%
 % *Definition via function handle*
@@ -61,7 +61,7 @@ SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y)
 %% 
 % Now we can call the quadrature command to get |SO3VF2| of type
 % |SO3VectorFieldHarmonic|
-SO3VF2 = SO3VectorFieldHarmonic.quadrature(@(v) f(v))
+SO3VF2 = SO3VectorFieldHarmonic.quadrature(@(v) f(v),'bandwidth',16)
 
 %%
 % *Definition via <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>*
@@ -83,8 +83,10 @@ SO3VF3 = SO3VectorFieldHarmonic(SO3F)
 % Again the basic mathematical operations are supported:
 %%
 % addition/subtraction of a vector field and a vector or addition/subtraction of two vector fields
-SO3VF1 + SO3VF2; SO3VF1+vector3d(1, 0, 0);
-SO3VF1-SO3VF2; SO3VF2-vector3d(sqrt(2)/2, sqrt(2)/2, 0);
+SO3VF1 + SO3VF2
+SO3VF1 + vector3d.X
+SO3VF1 - SO3VF2
+SO3VF2 - vector3d(sqrt(2)/2, sqrt(2)/2, 0);
 
 %%
 % multiplication/division by a scalar or a |SO3Fun|
@@ -95,11 +97,13 @@ SO3F .* SO3VF1;
 
 %%
 % dot product with a vector or another vector field
-dot(SO3VF1, SO3VF2); dot(SO3VF1, vector3d(0, 0, 1));
+dot(SO3VF1, SO3VF2)
+dot(SO3VF1, vector3d(0, 0, 1));
 
 %%
 % cross product with a vector or another vector field
-cross(SO3VF1, SO3VF2); cross(SO3VF1, vector3d(0, 0, 1));
+cross(SO3VF1, SO3VF2); 
+cross(SO3VF1, vector3d(0, 0, 1));
 
 %%
 % mean vector of the vector field
