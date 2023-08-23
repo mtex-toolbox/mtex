@@ -12,4 +12,4 @@ function varargout = surf(m,cdata,varargin)
 % See also
 %
 
-[varargout{1:nargout}] = surf@vector3d(m,cdata,m.CS.how2plot,varargin{:},m.CS);
+[varargout{1:nargout}] = surf@vector3d(m,cdata,varargin{:},m.CS,m.CS.how2plot);

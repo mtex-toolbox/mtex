@@ -85,7 +85,7 @@ end
       cs = specimenSymmetry(rot,id{:},axes);
       
       if isfield(s,'opt'), cs.opt = s.opt; end
-      if isfield(s,'plotOptions'), cs.plotOptions = s.plotOptions; end      
+      if isfield(s,'how2plot'), cs.how2plot = s.how2plot; end      
             
     end
     

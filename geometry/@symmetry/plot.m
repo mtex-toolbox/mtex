@@ -20,7 +20,7 @@ omega = round(rot.angle./degree);
 uaxis(uaxis.z < 0) = -uaxis(uaxis.z < 0);
 
 % initalize plot
-sP = newSphericalPlot(zvector,'upper',s.how2plot,varargin{:});
+sP = newSphericalPlot(zvector,'upper',varargin{:},s.how2plot);
 
 % scale symbol size according to bounds
 d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));

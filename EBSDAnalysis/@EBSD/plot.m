@@ -129,6 +129,9 @@ end
 % keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 %if isNew, ; end % TODO set axis tight removes all the plot
+
+mP.how2plot.setView(mP.ax);
+
 try axis(mP.ax,'tight'); end
 %set(mP.ax,'zlim',[0,1.1]);
 mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
