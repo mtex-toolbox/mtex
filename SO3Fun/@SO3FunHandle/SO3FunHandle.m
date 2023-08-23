@@ -22,7 +22,7 @@ properties
   antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
-  bandwidth = 96
+  bandwidth = getMTEXpref('maxSO3Bandwidth');
 end
 
 methods

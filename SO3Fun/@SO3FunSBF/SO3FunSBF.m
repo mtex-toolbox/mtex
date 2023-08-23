@@ -42,6 +42,10 @@ classdef SO3FunSBF < SO3Fun
       CS = SO3F.sS.CS;      
     end
 
+    function bw = get.bandwidth(SO3F)
+      bw = getMTEXpref('maxSO3Bandwidth');
+    end
+
   end
 
   methods (Static = true)
