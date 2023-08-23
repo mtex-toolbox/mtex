@@ -17,9 +17,9 @@ function f = eval(SO3F,g,varargin)
 %
 % $$ f(r) = sum_j w_j \psi(r,c_j) $$
 
-% change evaluation method to quadratureSO3Grid/eval
+% change evaluation method to quadratureSO3Grid.eval
 if isa(g,'quadratureSO3Grid')
-  f = eval(SO3F,g,varargin);
+  f = quadratureSO3Grid.eval(SO3F,g,varargin{:});
   return
 end
 

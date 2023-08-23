@@ -3,9 +3,9 @@ function f = eval(SO3F,rot,varargin)
 %
 % sum_i \sum_j \sum_k  weights * psi(g*s_j h_i . s_k r_i)
 
-% change evaluation method to quadratureSO3Grid/eval
+% change evaluation method to quadratureSO3Grid.eval
 if isa(rot,'quadratureSO3Grid')
-  f = eval(SO3F,rot,varargin);
+  f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
   return
 end
 

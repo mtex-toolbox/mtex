@@ -1,7 +1,4 @@
-classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
-    ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF, ...
-    ?SO3VectorFieldHandle,?SO3VectorFieldHarmonic,?rotation,?quaternion})  ...
-    quadratureSO3Grid < orientation
+classdef (InferiorClasses = {?rotation,?quaternion}) quadratureSO3Grid < orientation
 % Compute nodes and weights for quadrature on SO(3). Therefore the
 % following quadrature rules are implemented yet:
 %
@@ -168,6 +165,10 @@ methods (Static = true, Hidden = true)
   end
 
 
+end
+
+methods (Static = true)
+  v = eval(SO3F, SO3G, varargin);
 end
 
 end

@@ -25,29 +25,6 @@ methods
     
   end
   
-  function f = eval(SO3VF,ori,varargin)
-
-    % change evaluation method to quadratureSO3Grid/eval
-    if isa(ori,'quadratureSO3Grid')
-      f = eval(SO3VF,ori,varargin);
-    else
-      % if isa(ori,'orientation')
-      % ensureCompatibleSymmetries(SO3VF,ori)
-      % end
-      f = SO3VF.fun(ori);
-    end
-
-    % Make output right/left deendent from the input flag
-    f = SO3TangentVector(f,SO3VF.tangentSpace);
-    if check_option(varargin,'right')
-      f = right(f,ori);
-    end
-    if check_option(varargin,'left')
-      f = left(f,ori);
-    end
-    
-  end
-
   function SO3VF = set.tangentSpace(SO3VF,s)
     if strcmp(s,'left') || strcmp(s,'right')
       SO3VF.tangentSpace = s;

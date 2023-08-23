@@ -15,11 +15,17 @@ function f =  evalNFSOFT(F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT 
 
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(F,rot)
 % end
+
+% change evaluation method to quadratureSO3Grid.eval
+if isa(rot,'quadratureSO3Grid')
+  f = quadratureSO3Grid.eval(F,rot,varargin{:});
+  return
+end
 
 persistent keepPlan;
 

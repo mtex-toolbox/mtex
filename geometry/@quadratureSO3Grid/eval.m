@@ -12,6 +12,8 @@ function v = eval(SO3F,SO3G,varargin)
 %  v - double
 %
 
+ensureCompatibleSymmetries(SO3F,SO3G)
+
 if SO3G.CS.multiplicityPerpZ * SO3G.CS.multiplicityPerpZ == 1
   % no further symmetry can be used
   v = eval(SO3F,SO3G.nodes);

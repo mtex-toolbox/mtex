@@ -24,7 +24,7 @@ function [f,nodes] = evalSectionsEquispacedFFT(SO3F,oS,varargin)
 %  f - values at this grid points
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT
 
 % TODO: Use symmetries to speed up 
 % TODO: Do the same for alpha,phi1,phi2 sections by shifting them to gamma
