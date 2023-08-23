@@ -12,19 +12,17 @@ function simulateGrains(this,varargin)
 %   ori=discreteSample(odf,numGrains)
 %   neper.simulateGrains(ori)
 %
-%
 % Input
 %  neper      - @neperInstance
 %  odf        - @SO3Fun
 %  numGrains  - number of grains
 %  ori        - @orientation
 % 
-%  Output
-%   allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
-%   allgrains.ori   - orientation file, euler-bunge format,
-%   ori_in.txt      - input orientations, rodrigues format
+% Output
+%  allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
+%  allgrains.ori   - orientation file, euler-bunge format,
+%  ori_in.txt      - input orientations, rodrigues format
 
-%%
 %change work directory
 if this.newfolder==true
   try
