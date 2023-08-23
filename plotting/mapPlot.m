@@ -6,6 +6,7 @@ classdef mapPlot < handle
     parent    % the figure that contains the map plot
     micronBar % 
     extent = [inf -inf inf -inf]   %
+    how2plot = plottingConvention % the plotting convention
   end
   
   properties (Dependent = true)
@@ -39,9 +40,8 @@ classdef mapPlot < handle
         'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
       
-                  
-      setCamera(ax,'default',varargin{:});
-      
+      mP.how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+
       setappdata(ax,'mapPlot',mP);
       
       % set zoom function
