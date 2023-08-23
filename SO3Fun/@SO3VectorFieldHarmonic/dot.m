@@ -31,7 +31,9 @@ if isa(SO3VF1, 'vector3d')
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
+bw = min(SO3VF1.bandwidth + SO3VF2.bandwidth, getMTEXpref('maxSO3Bandwidth'));
+
 f = SO3FunHandle(@(rot) dot(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.CS,SO3VF1.SS);
-SO3F = SO3FunHarmonic(f, varargin{:});
+SO3F = SO3FunHarmonic(f, 'bandwidth',bw, varargin{:});
 
 end

@@ -9,8 +9,7 @@ if check_option(varargin,'onlyShowVectors')
   return
 end
 
-displayClass(v,inputname(1),varargin{:});%...
-  %'moreInfo',char(v.refSystem,'compact'),varargin{:});
+displayClass(v,inputname(1),varargin{:});
 
 if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 
@@ -26,13 +25,13 @@ end
 disp(char(dynOption(v)));
 
 % display coordinates
-if check_option(varargin,'skipCoordinates') || isempty(v) || getMTEXpref('generatingHelpMode')
+if check_option(varargin,'skipCoordinates') || isempty(v) 
 
 elseif check_option(varargin,'all') || (length(v) < 20)
   
   display(v,'onlyShowVectors')
 
-else
+elseif ~getMTEXpref('generatingHelpMode')
 
   disp(' ')
   s = setappdata(0,'data2beDisplayed',v);
