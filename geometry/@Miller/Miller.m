@@ -38,7 +38,7 @@ classdef Miller < vector3d
   end
   
   properties (Access = private)
-    CSprivate = crystalSymmetry % crystal symmetry
+    CSprivate % crystal symmetry
   end
   
   properties (Dependent = true)
