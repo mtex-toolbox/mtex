@@ -1,4 +1,4 @@
-classdef symmetry < handle
+classdef symmetry < matlab.mixin.Copyable
 %
 % symmetry is an abstract class for crystal and specimen symmetries
 %
