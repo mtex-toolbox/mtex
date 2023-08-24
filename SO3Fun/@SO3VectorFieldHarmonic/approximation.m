@@ -18,8 +18,8 @@ function SO3VF = approximation(nodes, values, varargin)
 % SO3FunHarmonic/approximation SO3VectorFieldHarmonic
 
 
-if isa(y,'SO3TangentVector') 
-  tS = y.tangentSpace;
+if isa(values,'SO3TangentVector') 
+  tS = values.tangentSpace;
 else
   tS = 'left';
   warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
@@ -27,18 +27,18 @@ else
            'use SO3TangentVector(v,''right'') instead.'])
 end
 
-if isa(values,'orientation')
-  SRight = values.CS; SLeft = values.SS;
+if isa(nodes,'orientation')
+  SRight = nodes.CS; SLeft = nodes.SS;
 else
   [SRight,SLeft] = extractSym(varargin);
-  values = orientation(values,SRight,SLeft);
+  nodes = orientation(nodes,SRight,SLeft);
 end
 % Do quadrature without specimenSymmetry and set SLeft afterwards
 % (if left sided tangent space) clear crystalSymmetry otherwise
 if strcmp(tS,'right')
-  values.CS = crystalSymmetry;
+  nodes.CS = crystalSymmetry;
 else
-  values.SS = specimenSymmetry;
+  nodes.SS = specimenSymmetry;
 end
 
 SO3F = SO3FunHarmonic.approximation(nodes(:),values.xyz,varargin{:});

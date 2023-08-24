@@ -17,6 +17,11 @@ function f = eval(SO3F,rot,varargin)
 % See also
 % SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
+if check_option(varargin,'nfsoft')
+  f = evalNFSOFT(SO3F,rot,varargin{:});
+  return
+end
+
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(F,rot)
 % end
@@ -28,11 +33,6 @@ if isa(rot,'quadratureSO3Grid')
   else
     f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
   end
-  return
-end
-
-if check_option(varargin,'nfsoft')
-  f = evalNFSOFT(SO3F,rot,varargin{:});
   return
 end
 
