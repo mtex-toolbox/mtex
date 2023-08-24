@@ -32,6 +32,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) quadratureSO3Grid < orienta
 properties
   weights =[]
   scheme = 'ClenshawCurtis'
+  evalShape = []
 end
 
 properties (Dependent=true)
@@ -127,7 +128,6 @@ methods
     quadratureSO3Grid.check_bandwidth(SO3G.bandwidth,SO3G.CS,SO3G.SS,SO3G.scheme)
     [~,~,indexes] = uniqueQuadratureSO3Grid(SO3G);
   end
-
 
 end
 

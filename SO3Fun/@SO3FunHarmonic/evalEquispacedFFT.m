@@ -121,4 +121,9 @@ else
   f = exp(2i*pi*z) .* f;
 end
 
+% possibly ouput is a vector
+if strcmp(rot.evalShape,'vector') 
+  f = f(:);
+end
+
 end
