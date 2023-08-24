@@ -139,9 +139,9 @@ classdef S2Kernel
       small = 0;      
 
       % Get nodes and weights for Gauss-Legendre quadrature
-      nodes = legendreNodesWeights(L+1,cos(maxAngle),1);
-%       % Get better accuracy by double sampling rate
-%       [nodes,weights] = legendreNodesWeights(2*L,-1,1);
+      [nodes,weights] = legendreNodesWeights(L+1,cos(maxAngle),1);
+      %  Get better accuracy by double sampling rate
+      %  [nodes,weights] = legendreNodesWeights(2*L,-1,1);
 
       values = psi.eval(nodes);
 
@@ -159,9 +159,6 @@ classdef S2Kernel
         
         if small == 10, break;end
       end
-
     end
-
-
   end
 end

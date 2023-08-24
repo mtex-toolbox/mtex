@@ -13,10 +13,9 @@ function h = quiver3(SO3VF,varargin)
 % SO3VectorField/plot
 %
 
-if SO3VF.antipodal, ap = {'antipodal'}; else, ap = {}; end
 
 % generate a new 3d projection of the orientation space
-oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,ap{:},'project2FundamentalRegion',...
+oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,'project2FundamentalRegion',...
   varargin{:});
 
 % generate the plotting grid
@@ -35,7 +34,7 @@ else
 end
 
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,vec/10000,'left'));
+[x2,y2,z2] = oP.project(exp(S3G,vec/10000,SO3VF.tangentSpace));
 
 wasHold = ishold(gca); hold(gca,'on');
 

@@ -24,7 +24,7 @@ classdef parentGrainReconstructor < handle
 %  ebsd      - EBSD at the current stage of reconstruction
 %  mergeId   - connection between prior and reconstructed grains
 %  graph     - grain graph with edges representing probabilities of adjecent grains to form a parent grain
-%  votes     - table of of votes for each grain
+%  votes     - table of of votes with as many rows as job.grains
 %  numChilds     - number of child grains for each parent grain
 %  isTransformed - child grains that have been reverted from child to parent phase
 %  isChild       - child grains that have been reverted from child to parent phase

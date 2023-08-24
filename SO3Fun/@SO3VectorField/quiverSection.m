@@ -38,8 +38,7 @@ function quiverSection(SO3VF,varargin)
 % See also
 % saveFigure Plotting
 
-if SO3VF.antipodal, ap = {'antipodal'}; else, ap = {}; end
-oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,ap{:},varargin{:});
+oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
 
 res = 15*degree;
 % only plot the real part of SO3VF
@@ -67,7 +66,7 @@ if check_option(varargin,'normalize')
 else
   v = v ./ max(norm(v(:)));
 end
-S3G1 = exp(S3G0,v/10000,'left');
+S3G1 = exp(S3G0,v/10000,SO3VF.tangentSpace);
 
 
 oS.quiver(S3G0, S3G1,'noSymmetry',varargin{:});

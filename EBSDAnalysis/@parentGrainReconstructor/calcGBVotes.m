@@ -95,7 +95,7 @@ if check_option(varargin,'reconsiderAll')
   % accumulate votes, i.e. compute a probability for each grain / parentId
   % combination
   votes = accumVotes(repmat(grainInd,1,numV), repmat(1:numV,length(grainInd),1), fit,...
-    max(grainInd), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
+    length(job.grains), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
   
 else
   

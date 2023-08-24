@@ -29,7 +29,7 @@ delta = get_option(varargin,'delta',0.05*degree);
 
 deltaRot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
 
-if check_option(varargin,'right')
+if check_option(SO3VF.tangentSpace,'right')
   f = reshape(SO3VF.eval([rot*inv(deltaRot),rot*deltaRot]),length(rot),[]);
 else
   f = reshape(SO3VF.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);

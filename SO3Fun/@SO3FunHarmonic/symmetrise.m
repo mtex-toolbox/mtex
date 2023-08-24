@@ -1,14 +1,17 @@
 function SO3F = symmetrise(SO3F,varargin)
-% compute harmonic coefficients of SO3Fun by using symmetry properties
+% Symmetrise the harmonic coefficients of an SO3FunHarmonic w.r.t. its symmetries.
+% 
+% Therefore we compute the harmonic coefficients of the SO3FunHarmonic 
+% by using symmetry properties.
 %
 % Syntax
-%  f_hat = symmetrise(SO3F)
+%  SO3F = symmetrise(SO3F)
 %
 % Input
 %  SO3F - @SO3FunHarmonic
 %
 % Output
-%  f_hat - harmonic/Fouier/Wigner-D coefficients
+%  SO3F - @SO3FunHarmonic
 %
 
 if SO3F.bandwidth==0

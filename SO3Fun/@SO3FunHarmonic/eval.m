@@ -15,11 +15,19 @@ function f = eval(SO3F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
 
-% change evaluation method to quadratureSO3Grid/eval
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(F,rot)
+% end
+
+% change evaluation method to quadratureSO3Grid.eval
 if isa(rot,'quadratureSO3Grid')
-  f = eval(SO3F,rot,varargin);
+  if strcmp(rot.scheme,'ClenshawCurtis')
+    f = evalEquispacedFFT(SO3F,rot,varargin{:});
+  else
+    f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
+  end
   return
 end
 

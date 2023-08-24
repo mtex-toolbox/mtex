@@ -22,10 +22,12 @@ if check_option(varargin,'check')
   d = div@SO3VectorField(SO3VF,varargin{:});
   return
 end
-% if check_option(varargin,'right')
-%   d = div_right(SO3VF,varargin{:});
-%   return
-% end
+
+% Use right sided routine
+if check_option(SO3VF.tangentSpace,'right')
+  d = div_right(SO3VF,varargin{:});
+  return
+end
 
 if nargin>1 && isa(varargin{1},'rotation') && isempty(varargin{1})
   d = [];

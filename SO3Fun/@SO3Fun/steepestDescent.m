@@ -15,7 +15,7 @@ for k = 1:maxIter
   g = normalize(G.eval(ori));
 
   % prepare for linesearch
-  line_ori = exp(repmat(ori(:),1,length(omega)),g(:) * omega);
+  line_ori = exp(g(:) * omega,repmat(ori(:),1,length(omega)));
   
   % evaluate along lines
   line_v = odf.eval(line_ori);

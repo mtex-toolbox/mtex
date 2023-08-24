@@ -36,16 +36,16 @@ end
 
 % if bandwidth is zero there is nothing to do
 if SO3F.bandwidth == 0 
-  if nargin>1
+  if nargin>1 && isa(varargin{1},'rotation')
     g = vector3d.zeros(size(varargin{1}));
   else
-    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS );
+    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS ,'left');
   end
   return; 
 end
 
-fhat = ones(deg2dim(SO3F.bandwidth),3);
-for n=0:SO3F.bandwidth
+fhat = zeros(deg2dim(SO3F.bandwidth+1),3);
+for n=1:SO3F.bandwidth
   ind = deg2dim(n)+1:deg2dim(n+1);
   FHAT = reshape(SO3F.fhat(ind),2*n+1,2*n+1);
   
@@ -73,11 +73,11 @@ for n=0:SO3F.bandwidth
 
 end
 
-g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS );
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS, 'left');
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};
-  g = vector3d(g.eval(ori).').';
+  g = g.eval(ori);
 end
 
 end

@@ -1,8 +1,8 @@
 function f = eval(SO3F,rot,varargin)
 
-% change evaluation method to quadratureSO3Grid/eval
+% change evaluation method to quadratureSO3Grid.eval
 if isa(rot,'quadratureSO3Grid')
-  f = eval(SO3F,rot,varargin);
+  f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
   return
 end
 
