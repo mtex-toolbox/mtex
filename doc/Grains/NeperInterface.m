@@ -110,24 +110,25 @@ job.simulateGrains(oriList)
 
 N=vector3d(0,0,1);
 d=1;
-slice001 = job.getSlice(N,d);
+grains001 = job.getSlice(N,d);
 
 N=vector3d(1,-1,0);
 A=vector3d(2,2,1);
-slice2=job.getSlice(N,A);
+grains1_10=job.getSlice(N,A);
 
 N=vector3d(2,2,4);
 A=vector3d(2,2,1);
-slice3=job.getSlice(N,A);
+grains224=job.getSlice(N,A);
 
 %%
-plot(slice001,slice001.meanOrientation);
+plot(grains001,grains001.meanOrientation);
 hold on
-plot(slice2,slice2.meanOrientation);
+plot(grains1_10,grains1_10.meanOrientation);
 hold on
-plot(slice3,slice3.meanOrientation);
+plot(grains224,grains224.meanOrientation);
 
 % set camera
-
-
-
+how2plot = plottingConvention;
+how2plot.outOfScreen = vector3d(-10,-5,2)
+how2plot.east = vector3d(1,-2,0)
+setCamera(how2plot)
