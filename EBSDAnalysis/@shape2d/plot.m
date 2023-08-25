@@ -26,29 +26,7 @@ if plain
 end
 
 how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
-
-
-% set plotting convention such that the plot coinices with a map
-if ~isempty(h)
-  
-  switch round(angle(how2plot.east,xvector,zvector)/degree)
-    case 0
-      h.Parent.ThetaZeroLocation='right';
-    case 90
-      h.Parent.ThetaZeroLocation='top';
-    case 180
-      h.Parent.ThetaZeroLocation='left';
-    case 270
-      h.Parent.ThetaZeroLocation='bottom';
-  end
-
-  switch round(angle(how2plot.outOfScreen,zvector)/degree)
-    case 180
-      h.Parent.ThetaDir='clockwise';
-    case 0
-      h.Parent.ThetaDir='counterclockwise';
-  end
-end
+how2plot.setView;
 
 if nargout == 0, clear h; end
 

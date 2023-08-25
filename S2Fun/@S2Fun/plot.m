@@ -34,7 +34,7 @@ end
 
 if check_option(varargin,'rgb')
   
-  [h,ax] = plot(plotNodes,values,'surf','hold',varargin{:});
+  [h,ax] = plot(plotNodes{1},values{1},'surf','hold',varargin{:});
 
 else
   %h = []; ax = [];
