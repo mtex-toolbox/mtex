@@ -64,7 +64,6 @@ SO3G = quadratureSO3Grid(bw,'ClenshawCurtis',SRight,SLeft,'ABG');
   
 % Only evaluate unique orientations
 values = f.eval(SO3G);
-values = reshape(values,[length(SO3G),size(f)]);
   
 % ----------------------- (3) Do adjoint NSOFT ----------------------------
 

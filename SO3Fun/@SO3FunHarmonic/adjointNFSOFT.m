@@ -54,7 +54,8 @@ end
 
 if isa(rot,'quadratureSO3Grid')
   N = rot.bandwidth;
-  nodes = rot.nodes;
+  nodes = rot.fullGrid;
+  values = values(rot.iuniqueGrid);
   W = rot.weights;
 else
   N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));

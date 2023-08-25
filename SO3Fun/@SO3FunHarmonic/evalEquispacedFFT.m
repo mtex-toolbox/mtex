@@ -121,9 +121,7 @@ else
   f = exp(2i*pi*z) .* f;
 end
 
-% possibly ouput is a vector
-if strcmp(rot.evalShape,'vector') 
-  f = f(:);
-end
+% output is only the unique part of f
+f = f(rot.ifullGrid);
 
 end

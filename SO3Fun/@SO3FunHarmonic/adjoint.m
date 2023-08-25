@@ -65,7 +65,8 @@ end
 
 if isa(rot,'quadratureSO3Grid')
   N = rot.bandwidth;
-  nodes = rot.nodes;
+  nodes = rot.fullGrid;
+  values = values(rot.iuniqueGrid);
   W = rot.weights;
 else
   N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
@@ -179,7 +180,7 @@ fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
 % kill plan
 if check_option(varargin,'keepPlan')
   keepPlanNFFT = plan;
-else
+elseif ~isempty(plan)
   nfftmex('finalize', plan);
 end
 

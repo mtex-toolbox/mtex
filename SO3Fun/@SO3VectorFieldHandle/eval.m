@@ -20,16 +20,9 @@ function f = eval(SO3VF,ori,varargin)
 % end
 
 
-% change evaluation method to quadratureSO3Grid.eval
-if isa(ori,'quadratureSO3Grid') && strcmp(ori.scheme,'ClenshawCurtis') && contains(func2str(SO3VF.fun),'eval')
-  ori.evalShape = 'vector';
+% change evaluation method for quadratureSO3Grid
+if isa(ori,'quadratureSO3Grid')
   f = SO3VF.fun(ori);
-  if length(f)==length(ori)
-    f = reshape(f,size(ori));
-  end
-elseif isa(ori,'quadratureSO3Grid')
-  f = quadratureSO3Grid.eval(SO3VF,ori,varargin{:});
-  return  
 else
   s = size(ori);
   ori = ori(:);

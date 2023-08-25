@@ -32,14 +32,14 @@ classdef (InferiorClasses = {?rotation,?quaternion}) quadratureSO3Grid < orienta
 properties
   weights =[]
   scheme = 'ClenshawCurtis'
-  evalShape = []
+  iuniqueGrid
+  ifullGrid
 end
 
 properties (Dependent=true)
   bandwidth
-  nodes
-  uniqueNodes
-  uniqueIndexes
+  uniqueGrid
+  fullGrid
 end
 
 methods
@@ -83,7 +83,10 @@ methods
     % Construct quadrature nodes
     nodes = regularSO3Grid(scheme,'bandwidth',2*N,SRightNew,SLeftNew,varargin{:},'ABG');
     nodes.CS = SRight; nodes.SS = SLeft;
-    SO3G = SO3G@orientation(nodes);
+    [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,scheme);
+    SO3G = SO3G@orientation(u);
+    SO3G.iuniqueGrid = iu;
+    SO3G.ifullGrid = inodes;
     s = size(nodes);
   
     % Construct Weights
@@ -103,7 +106,7 @@ methods
   end
 
   function N = get.bandwidth(SO3G)
-    s = size(SO3G);
+    s = size(SO3G.iuniqueGrid);
     if strcmp(SO3G.scheme,'GaussLegendre')
       N = s(2)-1;
     else
@@ -115,18 +118,13 @@ methods
     SO3G = quadratureSO3Grid(N,SO3G.CS,SO3G.SS,SO3G.scheme);
   end
 
-  function nodes = get.nodes(SO3G)
+  function nodes = get.uniqueGrid(SO3G)
     nodes = orientation(SO3G);
   end
 
-  function u = get.uniqueNodes(SO3G)
+  function u = get.fullGrid(SO3G)
     quadratureSO3Grid.check_bandwidth(SO3G.bandwidth,SO3G.CS,SO3G.SS,SO3G.scheme)
-    u = uniqueQuadratureSO3Grid(SO3G);
-  end
-
-  function indexes = get.uniqueIndexes(SO3G)
-    quadratureSO3Grid.check_bandwidth(SO3G.bandwidth,SO3G.CS,SO3G.SS,SO3G.scheme)
-    [~,~,indexes] = uniqueQuadratureSO3Grid(SO3G);
+    u = SO3G.uniqueGrid.subSet(SO3G.iuniqueGrid);
   end
 
 end
@@ -165,10 +163,6 @@ methods (Static = true, Hidden = true)
   end
 
 
-end
-
-methods (Static = true)
-  v = eval(SO3F, SO3G, varargin);
 end
 
 end

@@ -26,13 +26,9 @@ end
 %   ensureCompatibleSymmetries(F,rot)
 % end
 
-% change evaluation method to quadratureSO3Grid.eval
-if isa(rot,'quadratureSO3Grid')
-  if strcmp(rot.scheme,'ClenshawCurtis')
-    f = evalEquispacedFFT(SO3F,rot,varargin{:});
-  else
-    f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
-  end
+% change evaluation method for quadratureSO3Grid
+if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
+  f = evalEquispacedFFT(SO3F,rot,varargin{:});
   return
 end
 
