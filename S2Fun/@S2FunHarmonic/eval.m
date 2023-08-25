@@ -11,10 +11,15 @@ function f =  eval(sF,v)
 %
 
 v = v(:);
+
 if sF.bandwidth == 0
   f = ones(size(v)).*sF.fhat/sqrt(4*pi);
   return;
+else
+  f = zeros([length(v) size(sF)]); 
 end
+
+if size(f,1)==0, return; end
 
 % initialize nfsft
 nfsftmex('precompute', sF.bandwidth, 1000, 1, 0);
@@ -23,7 +28,7 @@ plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
 nfsftmex('set_x', plan, [rho'; theta']); % set vertices
 nfsftmex('precompute_x', plan);
 
-f = zeros([length(v) size(sF)]);
+
 % nfsft
 for j = 1:length(sF)
   nfsftmex('set_f_hat_linear', plan, sF.fhat(:,j)); % set fourier coefficients
