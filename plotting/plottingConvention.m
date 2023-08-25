@@ -66,6 +66,24 @@ classdef plottingConvention < handle
        
         sP.updateBounds;
 
+      elseif isa(ax,'matlab.graphics.axis.PolarAxes')
+        
+        switch round(angle(pC.east,xvector,zvector)/degree)
+          case 0
+            ax.ThetaZeroLocation='right';
+          case 90
+            ax.ThetaZeroLocation='top';
+          case 180
+            ax.ThetaZeroLocation='left';
+          case 270
+            ax.ThetaZeroLocation='bottom';
+        end
+        if pC.outOfScreen.z<0
+          ax.ThetaDir='clockwise';
+        else
+          ax.ThetaDir='counterclockwise';
+        end
+
       elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot
         
         cameraDist = norm(ax.CameraPosition - ax.CameraTarget);

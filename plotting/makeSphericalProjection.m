@@ -11,6 +11,14 @@ function proj = makeSphericalProjection(varargin)
 %  complete, lower, upper
 %  
 
+
+ax = get_option(varargin,'parent',gca);
+if ishold(ax) && isappdata(ax,'sphericalPlot')
+  sP = getappdata(ax,'sphericalPlot');
+  proj = sP.proj;
+  return
+end
+
 % ------- extract plotting region ---------------
 % default values from the vectors to plot
 if nargin >= 1 && isa(varargin{1},'vector3d')
@@ -24,7 +32,7 @@ sR = getClass(varargin,'sphericalRegion',sR);
 how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
 
 % check for simple options
-if check_option(varargin,'complete')
+if check_option(varargin,{'complete','3d'})
   sR = sphericalRegion;
 end
 if check_option(varargin,'upper')
@@ -38,12 +46,16 @@ sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
-    ~check_option(varargin,'complete')
+    ~check_option(varargin,{'complete','3d'})
   sR = sR.restrict2Upper(how2plot);
 end
 
 % initialize the projections
-proj = get_option(varargin,'projection','earea');
+if check_option(varargin,'3d')
+  proj = '3d';
+else
+  proj = get_option(varargin,'projection','earea');
+end
 
 if ~isa(proj,'sphericalProjection')
 
@@ -61,7 +73,9 @@ if ~isa(proj,'sphericalProjection')
     case 'square',  proj = squareProjection(sR,how2plot);
       
     case 'gnonomic', proj = gnonomicProjection(sR,how2plot);
-      
+
+    case '3d',  proj = full3dProjection(sR,how2plot);
+
     otherwise
     
       error('%s\n%s','Unknown projection specified! Valid projections are:',...
@@ -69,7 +83,7 @@ if ~isa(proj,'sphericalProjection')
   end
 end
 
-if ~isa(proj,'plainProjection') && sR.isUpper(how2plot) && sR.isLower(how2plot)
+if ~isa(proj,'full3dProjection') && ~isa(proj,'plainProjection') && sR.isUpper(how2plot) && sR.isLower(how2plot)
   proj = [proj,proj];
   proj(1).sR = proj(1).sR.restrict2Upper(how2plot);
   proj(2).sR = proj(2).sR.restrict2Lower(how2plot);
