@@ -63,6 +63,7 @@ classdef grainBoundary < phaseList & dynProp
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
     V              % vertices x,y coordinates
+    N              % normal direction of the pseudo3d data    
   end
   
   methods
@@ -171,6 +172,18 @@ classdef grainBoundary < phaseList & dynProp
       end
     end
     
+    function N = get.N(gB)
+      N = gB.triplePoints.N;
+    end
+    
+    function gB = set.N(gB,N)
+      if isa(gB.triplePoints,'triplePointList')
+        gB.triplePoints.N = N;
+      else
+        gB.prop.N = N;
+      end
+    end
+
     function x = get.x(gB)
       x = gB.V(unique(gB.F(:)),1);
     end

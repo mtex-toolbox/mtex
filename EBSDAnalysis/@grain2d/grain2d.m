@@ -50,7 +50,6 @@ classdef grain2d < phaseList & dynProp
   properties    
     boundary = grainBoundary % boundary of the grains
     innerBoundary = grainBoundary % inner grain boundary
-    N = vector3d.Z % normal direction of the pseudo3d data    
   end
     
   properties (Dependent = true)
@@ -67,6 +66,7 @@ classdef grain2d < phaseList & dynProp
     idV        % active vertices
     rot2Plane  % rotation to xy plane
     plottingConvention % plotting convention
+    N          % normal direction of the pseudo3d data    
   end
   
   methods
@@ -166,7 +166,11 @@ classdef grain2d < phaseList & dynProp
     function V = get.V(grains)
       V = grains.boundary.V;
     end
-    
+
+    function N = get.N(grains)
+      N = grains.boundary.N;
+    end
+
     function x = get.x(grains)
       x = grains.V.x;
     end
@@ -176,10 +180,13 @@ classdef grain2d < phaseList & dynProp
     end
     
     function grains = set.V(grains,V)
-      
       grains.boundary.V = V;
       grains.innerBoundary.V = V;
-      
+    end
+
+    function grains = set.N(grains,N)
+      grains.boundary.N = N;
+      grains.innerBoundary.N = N;
     end
     
     function idV = get.idV(grains)

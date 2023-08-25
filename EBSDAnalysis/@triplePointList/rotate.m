@@ -34,4 +34,7 @@ center = get_option(varargin,'center',vector3d.zeros);
 % rotate vertices
 tP.V = center + rot * (tP.V - center);
 
+% rotate normal direction
+tP.N = rot * tP.N;
+
 end
