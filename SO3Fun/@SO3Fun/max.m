@@ -40,6 +40,8 @@ function [values,modes] = max(SO3F,varargin)
 % See also
 % SO3Fun/min
 
+modes=[];
+
 % max(SO3F1, SO3F2)
 if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   SO3F2 = varargin{1};

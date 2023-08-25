@@ -15,6 +15,10 @@ function rot = exp(v,rot_ref,varargin)
 %  mori - @rotation
 %  ori  - @orientation
 %
+% Option
+%  left  -
+%  right - 
+%
 % See also
 % Miller/exp orientation/log
 
@@ -33,6 +37,6 @@ end
 
 if nargin>2 && check_option(varargin,'left')
   rot =  rot .* rot_ref;
-else
+elseif nargin>1
   rot =  rot_ref .* rot;
 end

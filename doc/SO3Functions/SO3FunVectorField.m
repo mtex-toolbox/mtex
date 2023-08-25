@@ -92,7 +92,8 @@ SO3VF2 - vector3d(sqrt(2)/2, sqrt(2)/2, 0);
 % multiplication/division by a scalar or a |SO3Fun|
 2.*SO3VF1; SO3VF1./4;
 SO3F = SO3FunHarmonic.example;
-SO3F.SRight = specimenSymmetry;
+SO3F.SRight = specimenSymmetry; 
+SO3F = SO3F.symmetrise;
 SO3F .* SO3VF1;
 
 %%

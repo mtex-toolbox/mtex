@@ -43,7 +43,7 @@ if nnz(isNowParent) == 0, return; end
 [vId,pId] = calcVariantId(ori, ebsd(isNowParent).orientations,job.p2c);
 ebsd.prop.variantId = NaN(size(ebsd));
 ebsd.prop.variantId(isNowParent) = vId;
-ebsd.prop.packetId(isNowParent) = pId; 
+ebsd.prop.packetId = NaN(size(ebsd));
 ebsd.prop.packetId(isNowParent) = pId; 
 
 % adjust parent and child orientations such that the misorientation is
