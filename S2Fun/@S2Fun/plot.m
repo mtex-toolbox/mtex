@@ -21,7 +21,7 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 S2Proj = makeSphericalProjection(varargin{:});
 
 % generate a grid where the function will be plotted
-plotNodes = S2Proj.makeGrid(varargin{:});
+plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
 
 % evaluate the function on the plotting grid
 for i = 1:length(plotNodes)
