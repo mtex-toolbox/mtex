@@ -13,6 +13,10 @@ if check_option(varargin,'proper')
   CS = CS.properGroup;
   SS = SS.properGroup;
 end
+
+if check_option(varargin,'noSym1'), CS = []; end
+if check_option(varargin,'noSym2'), SS = []; end
+
 o = symmetrise@rotation(o,CS,SS);
 
 if o.antipodal, o = [o;inv(o)]; end
