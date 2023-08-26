@@ -82,9 +82,12 @@ end
 % --------------------------- functions -----------------------------------
 
 function bw = adjustBandwidth(bw,SRight,SLeft)
-    [~,~,gMax] = fundamentalRegionEuler(SRight,SLeft,'ABG');
-    LCM = lcm((1+double(round(2*pi/gMax/SRight.multiplicityZ) == 4))*SRight.multiplicityZ,SLeft.multiplicityZ);
-    while mod(2*bw+2,LCM)~=0
-      bw = bw+1;
-    end
+
+[~,~,gMax] = fundamentalRegionEuler(SRight,SLeft,'ABG');
+LCM = lcm((1+double(round(2*pi/gMax/SRight.multiplicityZ) == 4)) * ...
+  SRight.multiplicityZ, SLeft.multiplicityZ);
+while mod(2*bw+2,LCM)~=0
+  bw = bw+1;
+end
+
 end

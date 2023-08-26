@@ -1,5 +1,8 @@
 function f = eval(SO3F,rot,varargin)
-% evaluates the rotational harmonic on a given set of points using a
+% pointwise evaluation 
+%
+% Description
+% Evaluates the orientation dependent function $f$ on a given set of points using a
 % representation based coefficient transform, that transforms 
 % a series of Wigner-D functions into a trivariate fourier series and using
 % NFFT at the end.
