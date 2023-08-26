@@ -9,7 +9,11 @@ classdef symmetry < matlab.mixin.Copyable
 
   properties (SetAccess = immutable)
     id = 1;               % point group id, compare to symList    
-    rot = rotation.id     % the symmetry elements
+    rot = rotation.id     % the symmetry elements    
+  end
+
+  properties
+    multiplicityPerpZ
   end
   
   properties
@@ -44,6 +48,14 @@ classdef symmetry < matlab.mixin.Copyable
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
       
+      isPerpZ = isnull(dot(rot.axis,zvector)) & ~isnull(rot.angle);
+
+      if any(isPerpZ(:))
+        s.multiplicityPerpZ = round(2*pi/min(abs(angle(rot(isPerpZ)))));
+      end
+
+
+
     end
     
     
