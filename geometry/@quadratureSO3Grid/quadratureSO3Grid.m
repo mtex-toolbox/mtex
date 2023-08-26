@@ -46,20 +46,29 @@ methods
 
   function SO3G = quadratureSO3Grid(varargin)
   
-    % Get bandwidth
+    persistent keepSO3G;
+
+    % get bandwidth
     if nargin>0 && isnumeric(varargin{1}) && numel(varargin{1})==1
       N = varargin{1};
     else
       N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
     end
-    % Get symmetries
+    % get symmetries
     [SRight,SLeft] = extractSym(varargin);
-    % Get quadrature scheme
+    % get quadrature scheme
     if check_option(varargin,'GaussLegendre')
       scheme = 'GaussLegendre';
     else
       scheme = 'ClenshawCurtis';
     end
+
+    if isa(keepSO3G,'quadratureSO3Grid') && keepSO3G.bandwidth == N && ...
+        keepSO3G.CS == SRight && keepSO3G.SS == SLeft && strcmp(keepSO3G.scheme,scheme)
+      SO3G = keepSO3G;
+      return
+    end
+
     % check whether it is suitable
     quadratureSO3Grid.check_bandwidth(N,SRight,SLeft,scheme)
   
@@ -84,7 +93,11 @@ methods
     nodes = regularSO3Grid(scheme,'bandwidth',2*N,SRightNew,SLeftNew,varargin{:},'ABG');
     nodes.CS = SRight; nodes.SS = SLeft;
     [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,scheme);
-    SO3G = SO3G@orientation(u);
+    SO3G.CS = SRight;
+    SO3G.SS = SLeft;
+    SO3G.a = u.a; SO3G.b = u.b;
+    SO3G.c = u.c; SO3G.d = u.d;
+    SO3G.i = u.i; SO3G.antipodal = nodes.antipodal;    
     SO3G.iuniqueGrid = iu;
     SO3G.ifullGrid = inodes;
     s = size(nodes);
@@ -102,7 +115,9 @@ methods
     % W =     1/sqrt(8*pi^2)    *      (2*pi/(2*N+2))^2     *              w_b^N
     SO3G.weights = repmat(w'/(2*s(1)*s(3)),s(1),1,s(3));
     SO3G.scheme = scheme;
-  
+
+    keepSO3G = SO3G; % remember grid for future usage
+
   end
 
   function N = get.bandwidth(SO3G)
