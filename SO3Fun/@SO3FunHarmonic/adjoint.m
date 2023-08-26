@@ -63,23 +63,21 @@ end
 
 % -------------- (1) get weights and values for quadrature ----------------
 
+if isa(rot,'orientation')
+  SRight = rot.CS; SLeft = rot.SS;
+  if rot.antipodal, rot.antipodal = 0; varargin{end+1} = 'antipodal'; end
+else
+  [SRight,SLeft] = extractSym(varargin);
+  rot = orientation(rot,SRight,SLeft);
+end
+
 if isa(rot,'quadratureSO3Grid')
   N = rot.bandwidth;
-  nodes = rot.fullGrid;
   values = values(rot.iuniqueGrid);
   W = rot.weights;
 else
   N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
-  nodes = rot;
   W = get_option(varargin,'weights',1);
-end
-
-if isa(nodes,'orientation')
-  SRight = nodes.CS; SLeft = nodes.SS;
-  if rot.antipodal, rot.antipodal = 0; varargin{end+1} = 'antipodal'; end
-else
-  [SRight,SLeft] = extractSym(varargin);
-  nodes = orientation(nodes,SRight,SLeft);
 end
 
 % check for Inf-values (quadrature fails)
@@ -91,7 +89,7 @@ if any(isnan(values))
   values(isnan(values)) = 0;
 end
 
-if isempty(nodes)
+if isempty(rot)
   SO3F = SO3FunHarmonic(0,SRight,SLeft);
   return
 end
@@ -117,10 +115,10 @@ if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'Clensha
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
   fftw_flag = int8(64);
-  plan = nfftmex('init_guru',{3,NN,NN,NN,length(nodes),FN,FN,FN,4,int8(0),fftw_flag});
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),FN,FN,FN,4,int8(0),fftw_flag});
 
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,(Euler(nodes(:),'nfft').')/(2*pi));
+  nfftmex('set_x',plan,(Euler(rot(:),'nfft').')/(2*pi));
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
 
@@ -138,7 +136,7 @@ end
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 
   % Possibly use smaller input matrix by using the symmetries
-  ghat = ifftn( W.* reshape(values,size(nodes)) ,[2*N+2,4*N,2*N+2]);
+  ghat = ifftn( W.* reshape(values,size(W)) ,[2*N+2,4*N,2*N+2]);
   ghat = ifftshift(ghat);
   ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end);
 
@@ -156,8 +154,8 @@ end
 
 % --------------------- (3) shift rotational grid -------------------------
 
-z = reshape(-N:N,1,1,[]) - (-N:N).';
-ghat = (1i).^z.*ghat;
+z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
+ghat = z .* ghat;
 
 % --------- (4) adjoint representationbased coefficient transform ---------
 
