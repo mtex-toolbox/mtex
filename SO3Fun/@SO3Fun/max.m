@@ -54,9 +54,9 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   
 elseif ( nargin > 1 ) && ( isnumeric(varargin{1}) ) % max(SO3F1, SO3F2)
 
-  f = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
+  values = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
   if isa(SO3F,'SO3FunHarmonic')
-    values = SO3FunHarmonic(f,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
+    values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
   end
   
 else

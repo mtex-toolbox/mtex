@@ -18,15 +18,10 @@ function f = eval(SO3VF,rot,varargin)
 %   ensureCompatibleSymmetries(SO3VF,rot)
 % end
 
-% change evaluation method to quadratureSO3Grid.eval
+% change evaluation method for quadratureSO3Grid
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
   f = evalEquispacedFFT(SO3VF.SO3F,rot,varargin{:});
   f = vector3d(f.').';
-  if ~strcmp(rot.evalShape,'vector')
-    f = reshape(f.',size(rot));
-  end
-elseif isa(rot,'quadratureSO3Grid')
-  f = quadratureSO3Grid.eval(SO3VF,rot,varargin{:});
 else
   f = vector3d(SO3VF.SO3F.eval(rot).');
   f = reshape(f.',size(rot));

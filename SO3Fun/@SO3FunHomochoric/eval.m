@@ -12,11 +12,6 @@ function f = eval(SO3F,ori,varargin)
 %  f - odf(ori)
 %
 
-% change evaluation method to quadratureSO3Grid.eval
-if isa(ori,'quadratureSO3Grid')
-  f = quadratureSO3Grid.eval(SO3F,ori,varargin{:});
-  return
-end
 
 % if isa(ori,'orientation')
 %   ensureCompatibleSymmetries(SO3F,ori)

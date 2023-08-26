@@ -60,7 +60,7 @@ g = vector3d.zeros(size(rot));
 
 % comute the distance matrix and evaluate the kernel
 for issq = 1:length(qSS)
-  d = abs(dot_outer( center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
+  d = abs(dot_outer( SO3F.center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse

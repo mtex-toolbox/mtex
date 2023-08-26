@@ -22,9 +22,15 @@ function g = grad(SO3F,varargin)
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
-  g = SO3VectorFieldHandle(@(rot) SO3F.grad(rot,varargin{:}),SO3F.CS,SO3F.SS,varargin{:});
-  if check_option(varargin,'right')
-    g.tangentSpace = 'right';
+  
+  if SO3F.bandwidth < getMTEXpref('maxSO3Bandwidth') && ~check_option(varargin,'check')
+    SO3F = SO3FunHarmonic(SO3F);
+    g = grad(SO3F,varargin{:});
+  else
+    g = SO3VectorFieldHandle(@(rot) SO3F.grad(rot,varargin{:}),SO3F.CS,SO3F.SS,varargin{:});
+    if check_option(varargin,'right')
+      g.tangentSpace = 'right';
+    end
   end
   return
 end
