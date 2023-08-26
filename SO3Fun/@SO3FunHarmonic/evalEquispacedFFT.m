@@ -41,6 +41,7 @@ end
 
 
 N = SO3F.bandwidth;
+isReal = SO3F.isReal;
 
 
 % 1) Get lattice size on [0,2pi]^3
@@ -52,7 +53,7 @@ H = [2,4,2]*rot.bandwidth + [2,0,2];
 % flags: 2^0 -> use L_2-normalized Wigner-D functions
 %        2^2 -> fhat are the fourier coefficients of a real valued function
 %        2^4 -> use right and left symmetry
-if SO3F.isReal
+if isReal
   flags = 2^0+2^2+2^4;
   sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
     min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
@@ -68,12 +69,12 @@ end
 
 
 % 3) correct ghat by i^(-k+l)
-if SO3F.isReal
-  z = (-N:N)' - reshape(0:N,1,1,[]);
+if isReal
+  z = (1i).^((-N:N)' - reshape(0:N,1,1,[]));
 else
-  z = (-N:N)' - reshape(-N:N,1,1,[]);
+  z = (1i).^((-N:N)' - reshape(-N:N,1,1,[]));
 end
-ghat = ghat.*(1i).^z;
+ghat = ghat .* z;
 
 
 % 4) use rotational symmetries around Z-axis to speed up 
@@ -84,7 +85,7 @@ H(1) = H(1) / SRightZ;
 H(3) = H(3) / SLeftZ;
 if SLeftZ>1 || SRightZ>1
   ind1 =  [-flip(SRightZ:SRightZ:N),(0:SRightZ:N)] + (N+1);
-  if SO3F.isReal
+  if isReal
     ind3 =  (0:SLeftZ:N)+1;
   else
     ind3 =  [-flip(SLeftZ:SLeftZ:N),(0:SLeftZ:N)] + (N+1);
@@ -114,7 +115,7 @@ f = f(:,1:H(2)/2+1,:);
 % [0:2*|_N/r_|]x[0:2N]x[0:2*|_N/s_|]. With r- & s-fold rotational symmetry
 % around Z-axis and |_ ... _| denotes the round off operator.
 z = (0:H(1)-1).' * (floor(N/SRightZ)/H(1)) + (0:H(2)/2) * (N/H(2));
-if SO3F.isReal  
+if isReal  
   f = 2*real( exp(2i*pi*z) .* f );
 else
   z = z + reshape(0:H(3)-1,1,1,[]) * (floor(N/SLeftZ)/H(3));
