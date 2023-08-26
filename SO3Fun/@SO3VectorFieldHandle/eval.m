@@ -14,25 +14,13 @@ function f = eval(SO3VF,ori,varargin)
 % See also
 %
 
-
 % if isa(ori,'orientation')
 % ensureCompatibleSymmetries(SO3VF,ori)
 % end
 
+f = SO3VF.fun(ori);
 
-% change evaluation method for quadratureSO3Grid
-if isa(ori,'quadratureSO3Grid')
-  f = SO3VF.fun(ori);
-else
-  s = size(ori);
-  ori = ori(:);
-  f = SO3VF.fun(ori);
-  if length(f)==length(ori)
-    f = reshape(f,s);
-  end
-end
-
-% Make output right/left deendent from the input flag
+% Make output right/left dependent from the input flag
 f = SO3TangentVector(f,SO3VF.tangentSpace);
 if check_option(varargin,'right')
   f = right(f,ori);
