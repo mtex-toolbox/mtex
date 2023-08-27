@@ -85,7 +85,7 @@ classdef grainBoundary < phaseList & dynProp
       if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
       % assign properties
-      gB.triplePoints = struct('allV',V);
+      gB.triplePoints = struct('allV',V,'N',zvector);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -165,11 +165,7 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function gB = set.V(gB,V)
-      if isa(gB.triplePoints,'triplePointList')
-        gB.triplePoints.allV = V;
-      else
-        gB.prop.V = V;
-      end
+      gB.triplePoints.allV = V;
     end
     
     function N = get.N(gB)
@@ -177,11 +173,7 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function gB = set.N(gB,N)
-      if isa(gB.triplePoints,'triplePointList')
-        gB.triplePoints.N = N;
-      else
-        gB.prop.N = N;
-      end
+      gB.triplePoints.N = N;
     end
 
     function x = get.x(gB)
