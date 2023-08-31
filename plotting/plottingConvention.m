@@ -66,6 +66,8 @@ classdef plottingConvention < handle
        
         sP.updateBounds;
 
+        warning('Can not change plotting convention in sphercical projections after plotting!');
+
       elseif isa(ax,'matlab.graphics.axis.PolarAxes')
         
         switch round(angle(pC.east,xvector,zvector)/degree)
@@ -86,14 +88,21 @@ classdef plottingConvention < handle
 
       elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot
         
-        cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
-        ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
+        %cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
+        %ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
+        %ax.CameraUpVector = pC.north.xyz;
+        
         ax.CameraUpVector = pC.north.xyz;
+        view(ax,pC.outOfScreen.xyz);
+        
 
-      else % normal plot
+      else % map plot
 
-        ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
+        %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
+
         ax.CameraUpVector = pC.north.xyz;
+        view(ax,pC.outOfScreen.xyz);
+        
 
       end
       
