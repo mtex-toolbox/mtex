@@ -323,8 +323,8 @@ api.clearAllData();
     Export.interface          = [];
     Export.interfaceOptions   = {};
 
-    xaxis = NWSE(getMTEXpref('xAxisDirection'));
-    zaxis = UpDown(getMTEXpref('zAxisDirection'));
+    xaxis = 1;
+    zaxis = 1;
 
     Options.workpath     = getMTEXpref('ImportWizardPath');
 
