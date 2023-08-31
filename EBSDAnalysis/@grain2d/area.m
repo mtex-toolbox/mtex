@@ -25,7 +25,7 @@ else
   Vy = V.y;
 
   for ig = 1:length(poly)
-    A(ig) = -polySgnArea(Vx(poly{ig}),Vy(poly{ig}));
+    A(ig) = polySgnArea(Vx(poly{ig}),Vy(poly{ig}));
   end
 
 end
