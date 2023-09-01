@@ -258,7 +258,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             'Mineral',char(EBSDphases.(pN).Phase_Name)); 
         %             'X||a*','Y||b', 'Z||C');
     end
-    
+
 
     
     % write out first EBSD dataset
@@ -299,6 +299,10 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         end
     end
 
+    % allow user defined CS, overriding the above
+    if check_option(varargin,'CS');
+        CS = get_option(varargin,'CS');
+    end
         
     ebsdtemp = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
     ebsdtemp.opt.Header = EBSDheader;
