@@ -67,9 +67,9 @@ mtexColorbar
 %% Modifying the Colorrange After Plotting
 %
 % The color range of the figures can also be adjusted afterwards using the
-% command <mtexFigure.CLim.html CLim>
+% command <setColorRange.html CLim>
 
-CLim(gcm,[0.38,3.9])
+setColorRange([0.38,3.9])
 
 
 %% Logarithmic Plots
@@ -79,7 +79,7 @@ CLim(gcm,[0.38,3.9])
 
 close all;
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
-CLim(gcm,[0.01 12]);
+setColorRange([0.01 12]);
 mtexColorbar
 
 

@@ -34,8 +34,12 @@ end
 
 % find all axes
 mtexFig = getappdata(fig,'mtexFig');
-if isempty(mtexFig.children), return; end
+if isempty(mtexFig)
+  ax = findall(gcf,'type','axes');
+  mtexFig = struct('children',ax);
+end
 
+if isempty(mtexFig.children), return; end
 
 if check_option(varargin,'log')
   set(mtexFig.children,'ColorScale','log');
@@ -43,13 +47,12 @@ elseif check_option(varargin,'linear')
   set(mtexFig.children,'ColorScale','linear')
 end
 
-
 if check_option(varargin,'equal')
 
   % find maximum color range
   c = zeros(length(mtexFig.children),2);
   for i = 1:length(mtexFig.children)
-    c(i,:) = caxis(mtexFig.children(i));
+    c(i,:) = clim(mtexFig.children(i));
   end
   mi = min(c,[],1);
   ma = max(c,[],1);
