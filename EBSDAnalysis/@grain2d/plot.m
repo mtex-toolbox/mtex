@@ -324,8 +324,8 @@ if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
 if check_option(varargin,'region')
   region = get_option(varargin,'region');
-  ind = cellfun(@(p) any(V.x(p)>=region(1) & V.x(p)<=region(2) & ...
-    V.y(p)>=region(3) & V.y(p)<=region(4)),poly);
+  ind = cellfun(@(p) any(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+    V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
   
   d = d(ind,:);
   poly = poly(ind);
