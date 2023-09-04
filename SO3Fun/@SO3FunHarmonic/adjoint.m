@@ -80,6 +80,11 @@ else
   W = get_option(varargin,'weights',1);
 end
 
+% use full grid in case of Gauss-Legendre Quadrature grid
+if isa(rot,'quadratureSO3Grid')  && ~strcmp(rot.scheme,'ClenshawCurtis')
+  rot = rot.fullGrid;
+end
+
 % check for Inf-values (quadrature fails)
 if any(isinf(values))
   error('There are poles at some quadrature nodes.')
@@ -141,7 +146,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
   ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end);
 
 else
-    
+
   % adjoint nfft
   nfftmex('set_f', plan, W(:) .* values(:));
   nfftmex('adjoint', plan);

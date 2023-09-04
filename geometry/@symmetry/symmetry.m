@@ -52,6 +52,8 @@ classdef symmetry < matlab.mixin.Copyable
 
       if any(isPerpZ(:))
         s.multiplicityPerpZ = round(2*pi/min(abs(angle(rot(isPerpZ)))));
+      else
+        s.multiplicityPerpZ = 1;
       end
 
 
