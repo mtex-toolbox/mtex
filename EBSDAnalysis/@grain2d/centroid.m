@@ -15,6 +15,11 @@ function c = centroid(grains)
 % grain2d/fitEllipse
 %
 
+if isempty(grains)
+  c = vector3d;
+  return
+end
+
 cs = [0; cumsum(cellfun('prodofsize',grains.poly))];
 
 if length(grains) == 1 % compute in 3d
