@@ -63,7 +63,19 @@ end
       % versions
       
        % maybe there is nothing to do
-      if isa(s,'specimenSymmetry'), cs = s; return; end
+      if isa(s,'specimenSymmetry')
+        if isempty(s.multiplicityPerpZ)
+          isPerpZ = isnull(dot(s.rot.axis,zvector)) & ~isnull(s.rot.angle);
+
+          if any(isPerpZ(:))
+            s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
+          else
+            s.multiplicityPerpZ = 1;
+          end
+        end
+        cs = s; 
+        return; 
+      end
       
       if isfield(s,'rot')
         rot = s.rot;

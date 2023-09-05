@@ -24,8 +24,7 @@ f = SO3VF.fun(ori);
 f = SO3TangentVector(f,SO3VF.tangentSpace);
 if check_option(varargin,'right')
   f = right(f,ori);
-end
-if check_option(varargin,'left')
+elseif check_option(varargin,'left')
   f = left(f,ori);
 end
 
