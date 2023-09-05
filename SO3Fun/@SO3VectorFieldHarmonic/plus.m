@@ -18,7 +18,7 @@ function SO3VF = plus(SO3VF1, SO3VF2)
 %
 
 if isa(SO3VF1,'vector3d')
-  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2)
+  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
   SO3VF1 = SO3VF1.xyz.';
 end
 if isnumeric(SO3VF1) || isa(SO3VF1,'SO3Fun')
