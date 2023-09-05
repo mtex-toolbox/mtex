@@ -53,7 +53,7 @@ grod = ebsd.calcGROD(grains);
 
 % plot the misorientation angle of the GROD
 plot(ebsd,grod.angle./degree,'micronbar','off')
-mtexColorbar('title','misorientation angle to meanorientation in degree')
+mtexColorbar('title',{'misorientation angle in degree'})
 mtexColorMap LaboTeX
 
 % overlay grain and subgrain boundaries
@@ -88,7 +88,7 @@ mtexColorbar('title','GOS in degree')
 axCrystal = grod.axis;
 
 plot(axCrystal,'contourf','fundamentalRegion','antipodal','figSize','small')
-mtexColorbar('title','distribution of misorientation axes in mrd')
+mtexColorbar('title','mrd')
 
 %%
 % We observe that the distribution is very uniform and there is no prefered
