@@ -71,18 +71,22 @@ else
   rot = orientation(rot,SRight,SLeft);
 end
 
-if isa(rot,'quadratureSO3Grid')
+if isa(rot,'quadratureSO3Grid') 
   N = rot.bandwidth;
-  values = values(rot.iuniqueGrid);
-  W = rot.weights;
+  if strcmp(rot.scheme,'ClenshawCurtis')
+    values = values(rot.iuniqueGrid);
+    W = rot.weights;
+  else % use unique grid in NFFT in case of Gauss-Legendre quadrature
+    if SRight.multiplicityPerpZ*SLeft.multiplicityPerpZ == 1
+      GC = 1;
+    else
+      GC = groupcounts(rot.iuniqueGrid(:));
+    end
+    W = rot.weights(rot.ifullGrid).*GC;
+  end
 else
   N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
   W = get_option(varargin,'weights',1);
-end
-
-% use full grid in case of Gauss-Legendre Quadrature grid
-if isa(rot,'quadratureSO3Grid')  && ~strcmp(rot.scheme,'ClenshawCurtis')
-  rot = rot.fullGrid;
 end
 
 % check for Inf-values (quadrature fails)
@@ -173,8 +177,8 @@ end
 sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
        min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
 % if random samples the symmetry properties do not fit
-if ~isa(rot,'quadratureSO3Grid')
-  sym([1,3])=1;
+if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
+  sym([1,3]) = 1;
 end
 % use adjoint representation based coefficient transform
 fhat = adjoint_representationbased_coefficient_transform(N,ghat,flags,sym);
