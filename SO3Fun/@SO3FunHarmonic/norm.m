@@ -22,7 +22,6 @@ function n = norm(SO3F)
 %
 
 s = size(SO3F);
-SO3F = SO3F.subSet(':');
 n = sqrt(sum(abs(SO3F.fhat).^2, 1));
 n = reshape(n, s);
 

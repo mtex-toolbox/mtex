@@ -112,13 +112,14 @@ classdef pfSections < ODFSections
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
-      wasHold = ishold(ax);
-      hold(ax,'on');
-      r = equispacedS2Grid(oS.sR,'resolution',15*degree);
-      vF = oS.vectorField(r,oS.omega(sec));
-      quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
-      if ~wasHold, hold(ax,'off'); end
-
+      if ~check_option(varargin,'noGrid')
+        wasHold = ishold(ax);
+        hold(ax,'on');
+        r = equispacedS2Grid(oS.sR,'resolution',15*degree);
+        vF = oS.vectorField(r,oS.omega(sec));
+        h(end+1) = quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
+        if ~wasHold, hold(ax,'off'); end
+      end
     end
     
     function h = quiverSection(oS,ax,sec,v,data,varargin)

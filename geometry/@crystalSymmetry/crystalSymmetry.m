@@ -243,7 +243,19 @@ classdef crystalSymmetry < symmetry
       % versions
       
       % maybe there is nothing to do
-      if isa(s,'crystalSymmetry'), cs = s; return; end
+      if isa(s,'crystalSymmetry')
+        if isempty(s.multiplicityPerpZ)
+          isPerpZ = isnull(dot(s.rot.axis,zvector)) & ~isnull(s.rot.angle);
+
+          if any(isPerpZ(:))
+            s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
+          else
+            s.multiplicityPerpZ = 1;
+          end
+        end
+        cs = s;
+        return; 
+      end
       
       if isfield(s,'rot')
         rot = s.rot;

@@ -10,11 +10,11 @@
 % <matlab:doc('hold') hold off>. Let's demonstrate this using a simple
 % example.
 
-plot([2 2])
+plot([2 2],'LineWidth',2)
 
 hold all
 
-plot([1 3])
+plot([1 3],'LineWidth',2)
 
 hold off
 

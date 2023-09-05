@@ -14,6 +14,10 @@ classdef symmetry < matlab.mixin.Copyable
   end
   
   properties
+    multiplicityPerpZ
+  end
+  
+  properties
     opt = struct
   end
 
@@ -45,6 +49,16 @@ classdef symmetry < matlab.mixin.Copyable
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
       
+      isPerpZ = isnull(dot(rot.axis,zvector)) & ~isnull(rot.angle);
+
+      if any(isPerpZ(:))
+        s.multiplicityPerpZ = round(2*pi/min(abs(angle(rot(isPerpZ)))));
+      else
+        s.multiplicityPerpZ = 1;
+      end
+
+
+
     end
     
     

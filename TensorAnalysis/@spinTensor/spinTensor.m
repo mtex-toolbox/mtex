@@ -60,6 +60,14 @@ classdef spinTensor < velocityGradientTensor
       end
     end
     
+    function v = SO3TangentVector(Omega,varargin)
+      
+      if isa(Omega.CS,'crystalSymmetry')
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',varargin{:});
+      else
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',varargin{:});
+      end
+    end
     
     function rot = rotation(Omega)
       

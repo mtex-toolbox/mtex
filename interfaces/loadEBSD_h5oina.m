@@ -305,65 +305,68 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             'Mineral',char(EBSDphases.(pN).Phase_Name)); 
         %             'X||a*','Y||b', 'Z||C');
     end
-    
+
 
     
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
     % CS1 (sample surface) into CS0 (sample primary),
+    % CS2 into CS1 should be absolute orientation
+    % TODO! make sure those rotations are correctly applied, possibly
+    % EBSDheader.Specimen_Orientation_Euler <-- now done
+    % This is (sometimes?) contained in the 'Data Processing' header
+    if ~isempty(Processing_index) && nnz(Processingheader.Specimen_Orientation_Euler)>0
+        % Specimen_Orientation_Euler angles are in radians, Bunge convention
+        rc = rotation.byEuler(double(Processingheader.Specimen_Orientation_Euler));
     else
-      csm = crystalSymmetry(EBSDphases.(pN).Laue_Group);
+        rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler));
     end
-    if strcmp(csm.lattice,'trigonal') || strcmp(csm.lattice,'hexagonal')
-      langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
+
+    % set up EBSD data
+    if check_option(varargin,'CS0')
+        rot = rc*rotation.byEuler(EBSDdata.Euler'); 
     else
-      langle(isnull(langle-pi/2,1e-7))=pi/2;
+        rot = rotation.byEuler(EBSDdata.Euler'); %don't rotate - keep CS1 (default - acquisition surface0
+    end
+    phase = EBSDdata.Phase;
+    opt=struct;
+    pos = vector3d(EBSDdata.X,EBSDdata.Y,0);
+    opt.bc = EBSDdata.Band_Contrast;
+    opt.bs = EBSDdata.Band_Slope;
+    opt.bands = EBSDdata.Bands;
+    opt.MAD = EBSDdata.Mean_Angular_Deviation;
+    opt.quality = EBSDdata.Pattern_Quality;
+    
+    % if available, add EDS data
+    if exist('EDSdata','var')
+        eds_names = fieldnames(EDSdata);
+        for j =1 :length(eds_names)
+        opt.(eds_names{j}) = EDSdata.(eds_names{j});
+        end
+    end
+
+    % allow user defined CS, overriding the above
+    if check_option(varargin,'CS');
+        CS = get_option(varargin,'CS');
+    end
+        
+    ebsdtemp = EBSD(pos,rot,phase,CS,opt);
+    ebsdtemp.opt.Header = EBSDheader;
+
+     % if available, add Image data
+    if exist('Imagedata','var')
+        image_names = fieldnames(Imagedata);
+        for j =1 :length(image_names)
+        ebsdtemp.opt.Images.(image_names{j}) = Imagedata.(image_names{j});
+        end
+        ebsdtemp.opt.Images.Header = Imageheader;
     end
     
-    CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
-      double(EBSDphases.(pN).Lattice_Dimensions'),...
-      langle,...
-      'Mineral',char(EBSDphases.(pN).Phase_Name));
-    %             'X||a*','Y||b', 'Z||C');
-  end
-  
-  
-  % write out first EBSD dataset
-  % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
-  % CS1 (sample surface) into CS0 (sample primary),
-  % CS2 into CS1 should be absolute orientation
-  % TODO! make sure those rotations are correctly applied, possibly
-  % EBSDheader.Specimen_Orientation_Euler
-  
-  rc = rotation.byEuler(double(EBSDheader.Specimen_Orientation_Euler*degree)); % what definition? Bunge?
-  
-  % set up EBSD data
-  rot = rc*rotation.byEuler(EBSDdata.Euler');
-  phase = EBSDdata.Phase;
-  opt=struct;
-  pos = vector3d(EBSDdata.X,EBSDdata.Y,0);
-  opt.bc = EBSDdata.Band_Contrast;
-  opt.bs = EBSDdata.Band_Slope;
-  opt.bands = EBSDdata.Bands;
-  opt.MAD = EBSDdata.Mean_Angular_Deviation;
-  opt.quality = EBSDdata.Pattern_Quality;
-  
-  % if available, add EDS data
-  if exist('EDSdata','var')
-    eds_names = fieldnames(EDSdata);
-    for j =1 :length(eds_names)
-      opt.(eds_names{j}) = EDSdata.(eds_names{j});
+    if length(EBSD_index) > 1
+        ebsd{k} = ebsdtemp;
+    else
+        ebsd = ebsdtemp;
     end
-  end
-        
-  ebsdtemp = EBSD(pos,rot,phase,CS,opt);
-  ebsdtemp.opt.Header = EBSDheader;
-  
-  if length(EBSD_index) > 1
-    ebsd{k} = ebsdtemp;
-  else
-    ebsd = ebsdtemp;
-  end
     
 end
 

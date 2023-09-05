@@ -60,11 +60,19 @@ if isa(f,'function_handle')
   % Note that option 'right' in varargin is usually used to describe that the 
   % output is wanted to be described w.r.t. right sided tangent vectors
   % (NOT THE INPUT).
-  warning(['The given function_handle is assumed to describe elements w.r.t. ' ...
-           'the left side tangent space. If you want them to be right sided ' ...
-           'use SO3VectorFieldHandle(fun,SRight,SLeft,''right'') instead.'])
-  tS = 'left';
-  v = f(rotation.id);
+  
+  v = f(orientation.id(SRight,SLeft));
+  if isa(v,'SO3TangentVector') 
+    tS = v.tangentSpace;
+  elseif check_option(varargin,{'left','right'})
+    tS = extract_option(varargin,{'left','right'});
+  else
+    warning(['The given function_handle is assumed to describe elements w.r.t. ' ...
+      'the left side tangent space. If you want them to be right sided ' ...
+      'use SO3VectorFieldHandle(fun,SRight,SLeft,''right'') instead.'])
+    tS = 'left';
+  end
+
   if isnumeric(v) && numel(v)==3
     f = SO3FunHandle(f,SRight,SLeft);
   elseif isa(v,'vector3d')

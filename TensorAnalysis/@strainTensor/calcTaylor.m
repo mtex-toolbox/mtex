@@ -46,7 +46,8 @@ if sS.CS ~= eps.CS
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
   F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut,varargin{:}),sS.CS,eps.CS);
-  SO3F = SO3FunHarmonic(F,'bandwidth',bw);
+  % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
+  SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
   M = SO3F(1);
   if nargout>1
     b = [];

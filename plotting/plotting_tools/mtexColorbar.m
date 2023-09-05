@@ -21,6 +21,10 @@ function varargout = mtexColorbar(varargin)
 
 if isappdata(gcf,'mtexFig')
   [varargout{1:nargout}] = colorbar(gcm,varargin{:});
+elseif check_option(varargin,'title')
+  opt = delete_option(varargin,'title',1);
+  h = colorbar(opt{:});
+  h.Label.String = get_option(varargin,'title',h.Label.String);
 else
   [varargout{1:nargout}] = colorbar(varargin{:});
 end

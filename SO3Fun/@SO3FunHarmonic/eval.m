@@ -1,5 +1,8 @@
 function f = eval(SO3F,rot,varargin)
-% evaluates the rotational harmonic on a given set of points using a
+% pointwise evaluation 
+%
+% Description
+% Evaluates the orientation dependent function $f$ on a given set of points using a
 % representation based coefficient transform, that transforms 
 % a series of Wigner-D functions into a trivariate fourier series and using
 % NFFT at the end.
@@ -26,13 +29,9 @@ end
 %   ensureCompatibleSymmetries(F,rot)
 % end
 
-% change evaluation method to quadratureSO3Grid.eval
-if isa(rot,'quadratureSO3Grid')
-  if strcmp(rot.scheme,'ClenshawCurtis')
-    f = evalEquispacedFFT(SO3F,rot,varargin{:});
-  else
-    f = quadratureSO3Grid.eval(SO3F,rot,varargin{:});
-  end
+% change evaluation method for quadratureSO3Grid
+if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
+  f = evalEquispacedFFT(SO3F,rot,varargin{:});
   return
 end
 
