@@ -63,26 +63,36 @@ E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 %
 % This can be modeled in MTEX via
 
-Omega1 = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* (ori * S(1))));
-Omega1 = SO3VectorFieldHarmonic.quadrature(Omega1,csOli)
+% this is in crystal coordinates
+% Omega = @(ori) SO3TangentVector(spinTensor(((ori * S(2)) : E) .* S(2)));
+% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) .* (S(2)),[-1 -2])
 
-% other versions
-% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) .* (ori * S(1)),[-1 -2])
-% Omega2 = @(ori) vector3d(spinTensor(((ori * S(1)) : E) .* S(1)));
-% Omega2 = SO3VectorFieldHarmonic.quadrature(Omega2,csOli)
+% this is in specimen coordinates
+Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))));
 
-%%
-% We may visualize the orientation depedence of the spin tensor via
-
-plot(Omega1)
+Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
 
 %%
 
-%plot(dot(Omega1,zvector))
+% We may visualize the orientation depedence of the spin tensor as a quiver
+% plot
+plot(Omega,'section','sigma')
 
 %%
-% or the divergence of this vectorfield 
-plot(div(SO3VectorFieldHarmonic(Omega2)))
+% or as the divergence of this vectorfield 
+plotSection(div(Omega),'sigma')
+
+mtexColorMap blue2red
+mtexColorbar
+
+%% 
+% The divergence plots can be read as follows. Negative (blue) regions
+% indicate orientations that increase in volume, whereas positive regions
+% indicate orientations that decrease in volume. Accordingly, we expect the
+% texture to become more and more concentrated within the blue regions. In
+% the example example illustrated above with only the second slip system
+% beeing active, we would expect the c-axis to align more and more with the
+% the z-direction. 
 
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
@@ -94,6 +104,12 @@ odf1 = SO3FunSBF(sSOli(1),E)
 odf2 = SO3FunSBF(sSOli(2),E)
 odf3 = SO3FunSBF(sSOli(3),E)
 odf4 = SO3FunSBF(sSOrtho,E)
+
+%%
+% Lets check our expectation from the last paragraph by visualizing the
+% odf corresponding to the second slip system in sigma sections
+
+plotSection(odf2,'sigma')
 
 %%
 % Lets visualize these solution by their pole figures
@@ -117,25 +133,18 @@ mtexColorbar
 % uniform, where $n$ is the slip normal and $b$ is the slip direction.
 
 %%
-% 
+% Since in practice all three slip systems are active we can model the
+% resulting ODF as a linear combination of the different basis functions
 
 plotPDF(odf1 + odf2 + odf3,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
-%% Checking the Continuity Equation
-% We may now check wether the continuity equation is satisfied. In a stable
-% state the time difference will be zero and hence $\text{div}(f  \Omega) =
-% 0$
-%
-% TODO: this is currently not working!
-g = SO3VectorFieldHandle(@(ori) vector3d(Omega(ori)) , csOli);
-plot(div(SO3VectorFieldHarmonic(g .* odf1)))
-mtexColorbar('location','south')
+%% Checking the for steady state
+% We may also check for which orientations an ODF is already in a steady
+% state of the continous equation, i.e., the time derivative $\text{div}(f
+% \Omega) = 0$ is zero.
 
-%%
-
-plot(div(SO3VectorFieldHarmonic(odf1 .* Omega1)),'sigma')
-
-%%
-
-plot(dot(Omega1,grad(odf1)))
+plotSection(div(odf2 .* Omega),'sigma')
+mtexColorMap blue2red
+mtexColorbar
+setColorRange(max(abs(clim))*[-1,1])
