@@ -11,7 +11,7 @@ function [area,centroids] = calcVoronoiArea(v,varargin)
 % Options
 % incomplete -
 
-v = reshape(v,[],1);
+v = reshape(v.normalize,[],1);
 N = length(v);
 
 % in case of antipodal symmetry - add antipodal points
