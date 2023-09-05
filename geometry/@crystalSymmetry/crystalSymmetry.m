@@ -258,6 +258,8 @@ classdef crystalSymmetry < symmetry
 
           if any(isPerpZ(:))
             s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
+          else
+            s.multiplicityPerpZ = 1;
           end
         end
         cs = s;
