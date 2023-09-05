@@ -74,16 +74,17 @@ Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
 
 %%
 
-% We may visualize the orientation depedence of the spin tensor as a quiver
-% plot
-plot(Omega,'section','sigma')
+% We may visualize the orientation depedence of the spin tensor by plotting
+% its divergence in sigma sections and on top of it the spin tensors as a
+% quiver plot
 
-%%
-% or as the divergence of this vectorfield 
-plotSection(div(Omega),'sigma')
-
+plotSection(div(Omega),'sigma','noGrid')
 mtexColorMap blue2red
 mtexColorbar
+
+hold on
+plot(Omega,'add2all','linewidth',1,'color','k')
+hold off
 
 %% 
 % The divergence plots can be read as follows. Negative (blue) regions
@@ -93,7 +94,7 @@ mtexColorbar
 % the example example illustrated above with only the second slip system
 % beeing active, we would expect the c-axis to align more and more with the
 % the z-direction. 
-
+%
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
 % are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
@@ -112,15 +113,19 @@ odf4 = SO3FunSBF(sSOrtho,E)
 plotSection(odf2,'sigma')
 
 %%
-% Lets visualize these solution by their pole figures
+% We observe exactly the concentration of the c-axis around z as predicted
+% by the model. This can be seen even more clear when looking a the pole
+% figures
 
 h = Miller({1,0,0},{0,1,0},{0,0,1},csOli);
-plotPDF(odf1,h,'resolution',2*degree,'colorRange','equal')
+
+plotPDF(odf2,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
 %%
+% For completeness the pole figures of the other two basis functions.
 
-plotPDF(odf2,h,'resolution',2*degree,'colorRange','equal')
+plotPDF(odf1,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
 %%
@@ -131,7 +136,7 @@ mtexColorbar
 %% 
 % We observe that the pole figure with respect to $n \times b$ is always
 % uniform, where $n$ is the slip normal and $b$ is the slip direction.
-
+%
 %%
 % Since in practice all three slip systems are active we can model the
 % resulting ODF as a linear combination of the different basis functions
