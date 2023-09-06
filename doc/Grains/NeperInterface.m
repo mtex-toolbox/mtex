@@ -36,7 +36,7 @@ job = neperInstance
 % for example
 % job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
-% job.filePath = pwd;
+ job.filePath = [mtexDataPath filesep 'Neeper']
 
 %%
 % By default a new folder, named neper will be created for the tesselation 
