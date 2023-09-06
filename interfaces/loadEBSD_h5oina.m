@@ -38,28 +38,26 @@ p=1;
 q=1;
 %search for EBSD data
 for i = 1:length(all.Groups) % map site on sample
-    if ~isempty(all.Groups(i).Groups) % data on map site ('EBSD, EDS, Electron iamge etc)
-        for j=1:length(all.Groups(i).Groups)
-            if contains(all.Groups(i).Groups(j).Name,'EBSD')
-                EBSD_index{n} = [i j];
-                n = n+1;
-            end
-            if contains(all.Groups(i).Groups(j).Name,'EDS')
-                EDS_index{m} = [i j];
-                m = m+1;
-            end
-            if contains(all.Groups(i).Groups(j).Name,'Electron Image')
-                Image_index{p} = [i j];
-                p = p+1;
-            end
-
-            if contains(all.Groups(i).Groups(j).Name,'Data Processing')
-                Processing_index{q} = [i j];
-                q = q+1;
-            end
-            
-        end
-        
+  if ~isempty(all.Groups(i).Groups) % data on map site ('EBSD, EDS, Electron iamge etc)
+    for j=1:length(all.Groups(i).Groups)
+      if contains(all.Groups(i).Groups(j).Name,'EBSD')
+        EBSD_index{n} = [i j];
+        n = n+1;
+      end
+      if contains(all.Groups(i).Groups(j).Name,'EDS')
+        EDS_index{m} = [i j];
+        m = m+1;
+      end
+      if contains(all.Groups(i).Groups(j).Name,'Electron Image')
+        Image_index{p} = [i j];
+        p = p+1;
+      end
+      
+      if contains(all.Groups(i).Groups(j).Name,'Data Processing')
+        Processing_index{q} = [i j];
+        q = q+1;
+      end
+      
     end
   end
 end
@@ -368,6 +366,4 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         ebsd = ebsdtemp;
     end
     
-end
-
 end
