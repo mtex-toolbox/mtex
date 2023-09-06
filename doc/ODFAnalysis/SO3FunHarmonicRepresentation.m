@@ -1,8 +1,5 @@
 %% Harmonic Representation of Rotational Functions
 %
-
-error
-
 %%
 % Similarly as periodic functions may be represented as weighted sums of
 % sines and cosines a rotational function $f\colon \mathcal{SO}(3) \to

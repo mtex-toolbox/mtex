@@ -14,10 +14,6 @@
 % necessary after the simulation. The obtained 2-dimensional tesselation 
 % is processed as an object from the class |grain2d|. 
 %
-%% Contents
-% * Setting-up the neper instance and further options
-% * Simulation/tesselation
-% * Slicing
 %
 %% Setting-up the neper instance
 % If you do not want to make any further adjustments to the default values,
@@ -36,7 +32,7 @@ job = neperInstance
 % for example
 % job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
- job.filePath = [mtexDataPath filesep 'Neeper']
+ job.filePath = [mtexDataPath filesep 'Neeper'];
 
 %%
 % By default a new folder, named neper will be created for the tesselation 
@@ -83,22 +79,18 @@ job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 %
 % The tesselation is executed by the command |simulateGrains|. There are
 % two option to call it.
-% 1. by ODF and number of grains:
+%
+% # by an <ODFTheory.html ODF> and the number of grains
+% # by a list of orientations. In this case the length of the list
+% determines the number of grains.
+%
 
 cs = crystalSymmetry('432');
 ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
 
-job.simulateGrains(odf,numGrains)
-
-%%
-% 2. by list of orientations:
-% In this case the length of the list determines the number of Grains.
-
-oriList=odf.discreteSample(numGrains);
-
-job.simulateGrains(oriList)
+job.simulateGrains(odf,numGrains,'silent')
 
 %% Slicing
 % To get slices of your tesselation, that you can process with MTEX, the
@@ -108,17 +100,15 @@ job.simulateGrains(oriList)
 % consider that the slicing must align with the size of the domain/cube
 % (see Tesselation options - cubeSize)
 
-N=vector3d(0,0,1);
-d=1;
-grains001 = job.getSlice(N,d);
+% the normals of the slices
+N = [vector3d(0,0,1),vector3d(1,-1,0),vector3d(2,2,4)];
 
-N=vector3d(1,-1,0);
+% make all slices passing through this point
 A=vector3d(2,2,1);
-grains1_10=job.getSlice(N,A);
 
-N=vector3d(2,2,4);
-A=vector3d(2,2,1);
-grains224=job.getSlice(N,A);
+grains001 = job.getSlice(N(1),A,'silent');
+grains1_10= job.getSlice(N(2),A,'silent');
+grains224 = job.getSlice(N(3),A,'silent');
 
 %%
 plot(grains001,grains001.meanOrientation);

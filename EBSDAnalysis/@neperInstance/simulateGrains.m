@@ -1,4 +1,4 @@
-function simulateGrains(this,varargin)
+function simulateGrains(this,ori,varargin)
 % generating 3d neper tesselations
 %
 % Syntax
@@ -36,29 +36,15 @@ else
   cd(this.filePath);
 end
 
-%%
-assert(nargin>1,'too few input arguments')
-if nargin==3  %numGrains & odf
-  if isnumeric(varargin{1}) && isa(varargin{2},'SO3Fun')
-    numGrains=varargin{1};
-    ori = varargin{2}.discreteSample(numGrains);
-  elseif isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
-    numGrains=varargin{2};
-    ori = varargin{1}.discreteSample(numGrains);
-  else
-    error 'argument error'
-  end
-elseif nargin==2 %ori
-  if isa(varargin{1},'orientation')
-    ori=varargin{1};
-    numGrains=length(varargin{1});
-  else
-    error 'argument error'
-  end 
+if isa(ori,'SO3Fun')
+  numGrains=varargin{1};
+  ori = ori.discreteSample(numGrains);
+else
+  numGrains = length(ori);
 end
 
-%% parsing orientations
-CS=ori.CS.LaueName;
+% generate Neper symmetry names
+CS = ori.CS.LaueName;
 switch CS
   case '2/m11'
     CS='2/m';
@@ -73,13 +59,18 @@ switch CS
   otherwise
 end
 
-%% save ori to file
+% save ori to file
 oriFilename='ori_in.txt';
 fid=fopen(oriFilename,'w');
 
 fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
+if check_option(varargin,'silent')
+  output2file = ['>> ' this.filePath filesep 'neper.log'];
+else
+  output2file = '';
+end
 system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -id ' num2str(this.id) ' -morpho "' this.morpho '" ' ...
   ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
@@ -91,8 +82,9 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -oridescriptor rodrigues ' ... % orientation format in output file
   ' -oriformat plain ' ...
   ' -format tess,ori' ... % outputfiles
+  output2file ...
   ' && ' ...
   ...
-  this.cmdPrefix 'neper -V ' this.fileName3d '.tess']);
+  this.cmdPrefix 'neper -V ' this.fileName3d '.tess' output2file]);
 
   end

@@ -128,59 +128,48 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
 
   %% **format
   buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **format')))
-    error 'file has wrong structure. line 2 has to be " **format"! Be careful with blank characters.';
-  else
-    disp("reading **format ...");
-  end
-  format = fscanf(fid, '%s', 1);       
+  assert(strcmp(buffer, ' **format'),'file has wrong structure. line 2 has to be " **format"! Be careful with blank characters.')
+  format = fscanf(fid, '%s', 1);
   fgetl(fid);                %eliminate the \n character
 
   %% **general
   buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **general')))
-    error 'file has wrong structure. line 4 has to be " **general"! Be careful with blank characters.';
-  else
-    disp("reading **general ...");
-  end
+  assert(strcmp(buffer, ' **general'),...
+    'file has wrong structure. line 4 has to be " **general"! Be careful with blank characters.');
   dimension = fscanf(fid, '%d' , 1);
-  if dimension~=2
-    error 'only two dimensional tesselations supported'
-  end
+  assert(dimension==2,'only two dimensional tesselations supported')
+  
   type = fscanf(fid, '%s', 1);
   fgetl(fid);                %eliminate the \n character
 
   %% **cell
   buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **cell')))
-    error 'file has wrong structure. line 6 has to be " **cell"! Be careful with blank characters.';
-  else
-    disp("reading **cell ...");
-  end
+  assert(strcmp(buffer, ' **cell'),...
+    'file has wrong structure. line 6 has to be " **cell"! Be careful with blank characters.');
   total_number_of_cells = str2double(fgetl(fid));
 
   buffer=fgetl(fid);
   while (1)
     switch strtrim(buffer)
       case "*id"
-        disp ("reading  *id ...")
+        %disp ("reading  *id ...")
           cell_ids=fscanf(fid,'%u', inf);
           buffer=fgetl(fid);
       case "*crysym"
-        disp ("reading  *crysym ...");
+        %disp ("reading  *crysym ...");
         buffer=fgetl(fid);
         while(~isHeader(buffer))
           crysym=strtrim(buffer);
           buffer=fgetl(fid);
         end
       case {"*seed","*seed (id x y z weigth )"}
-        disp ("reading  *seed ...");                    %output as table
+        %disp ("reading  *seed ...");                    %output as table
         seedsTable=fscanf(fid,'%u %f %f %f %f ', [5 inf]);
         seedsTable=array2table(seedsTable');
         seedsTable.Properties.VariableNames(1:5)={'seed_id', 'seed_x', 'seed_y', 'seed_z', 'seed_weight'};
         buffer=fgetl(fid);
       case "*ori"
-        disp ("reading  *ori ...");
+        %disp ("reading  *ori ...");
         buffer=fgetl(fid);
         quaternion_descriptor=split(buffer, ':');
         switch lower(strtrim(quaternion_descriptor{1}))
@@ -201,7 +190,7 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
 
         buffer=fgetl(fid);
       case "**vertex"
-        disp("reading **vertex ...")
+        %disp("reading **vertex ...")
         break
       otherwise
         error('Error while reading cell parameters failed. file has wrong structure, expression "%s" not known', buffer)
@@ -222,7 +211,7 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
   if (strtrim(buffer)~="**edge")
     error ' **edge" not found'
   else
-    disp("reading **edge ...");
+    %disp("reading **edge ...");
   end
   skipEmptyLines(fid)
   total_number_of_edges=str2double(fgetl(fid));
@@ -245,7 +234,7 @@ function [dimension,V, poly,rot,crysym] = readTessFile(filepath)
   if (buffer~=" **face")
     error '" **face" not found'
   else
-    disp("reading **face ...");
+    %disp("reading **face ...");
   end
   skipEmptyLines(fid)
   total_number_of_faces=str2double(fgetl(fid));
