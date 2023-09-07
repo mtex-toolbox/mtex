@@ -167,6 +167,7 @@ classdef crystalSymmetry < symmetry
       % set axes, mineral name and color
       s.axes = axes;
       s.mineral = get_option(varargin,'mineral','');
+      s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
       
       if check_option(varargin,'density')
