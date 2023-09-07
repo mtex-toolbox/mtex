@@ -58,7 +58,7 @@ classdef sphericalPlot < handle
         sP.plotPlainGrid(varargin{:});
 
         % set view point
-        setCamera(sP.ax,'default',varargin{:});
+        %setCamera(sP.ax,'default',varargin{:});
 
       else
 
