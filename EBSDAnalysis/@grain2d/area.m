@@ -16,7 +16,7 @@ if length(grains)== 1   % 3d algorithm
   % signed area
   for i=1:length(grains)
     V = grains.V(poly{i});
-    A(i) = dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
+    A(i) = -dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
   end
 else 
   
