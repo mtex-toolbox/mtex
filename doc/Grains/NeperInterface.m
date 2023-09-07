@@ -111,6 +111,8 @@ grains1_10= job.getSlice(N(2),A,'silent');
 grains224 = job.getSlice(N(3),A,'silent');
 
 %%
+% the resulting slices are grain maps which we can visualize in 3d
+
 plot(grains001,grains001.meanOrientation);
 hold on
 plot(grains1_10,grains1_10.meanOrientation);
@@ -119,6 +121,6 @@ plot(grains224,grains224.meanOrientation);
 
 % set camera
 how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2)
-how2plot.east = vector3d(1,-2,0)
+how2plot.outOfScreen = vector3d(-10,-5,2);
+how2plot.east = vector3d(1,-2,0);
 setCamera(how2plot)
