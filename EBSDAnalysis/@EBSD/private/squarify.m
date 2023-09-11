@@ -3,38 +3,43 @@ function [ebsdGrid,newId] = squarify(ebsd,varargin)
 % set up the new unit cell
 uc = get_option(varargin,'unitCell',ebsd.unitCell);
 if isnumeric(uc), uc = vector3d(uc(:,1),uc(:,2),0); end
-if length(uniquetol(uc.x,0.01)) ~= 4 || length(uniquetol(uc.y,0.01)) ~= 4
+
+if ~check_option(varargin,'unitCell') && ...
+    (length(uniquetol(uc.x,0.01)) ~= 4 || length(uniquetol(uc.y,0.01)) ~= 4)
   uc = ebsd.dPos/2 * vector3d([1 1 -1 -1],[1 -1 -1 1],0);
 end
 
 ext = get_option(varargin,'extent',ebsd.extent);
 
 % generate regular grid
-prop = ebsd.prop;
-dx = max(uc.x)-min(uc.x);
-dy = max(uc.y)-min(uc.y);
+dxyz = [max(uc.x)-min(uc.x), max(uc.y)-min(uc.y), max(uc.z)-min(uc.z)];
+nGrid = 1 + max(0,round((ext([2 4 6]) - ext([1 3 5])) ./dxyz));
 
-[x,y] = meshgrid(linspace(ext(1),ext(2),1+round((ext(2)-ext(1))/dx)),...
-  linspace(ext(3),ext(4),1+round((ext(4)-ext(3))/dy))); % ygrid runs first
-pos = vector3d(x,y,0);
+% z runs first
+[x,y,z] = meshgrid(...
+  linspace(ext(1),ext(2),nGrid(1)),...
+  linspace(ext(3),ext(4),nGrid(2)),...
+  linspace(ext(5),ext(6),nGrid(3)));
+
+pos = vector3d(x,y,z);
 sGrid = size(x);
 
 % if original unit cell was to much different
-if 0 && length(ebsd.unitCell) ~= 4 || 1.5*max(norm(ebsd.unitCell)) < max(norm(uc))
+if length(ebsd.unitCell) ~= 4 || 1.5*max(norm(ebsd.unitCell)) < max(norm(uc))
   
   % interpolate
-  ebsd = interp(ebsd,x,y);
+  ebsd = interp(ebsd,pos);
 
   ebsdGrid = EBSDsquare(pos,reshape(ebsd.rotations,sGrid),...
-    ebsd.phaseId(:), ebsd.phaseMap,ebsd.CSList,[dx,dy],'options',ebsd.prop);
+    ebsd.phaseId(:), ebsd.phaseMap,ebsd.CSList,dxyz,'options',ebsd.prop);
   
   return
   
 end
 
 % detect position within grid
-newId = sub2ind(sGrid, 1 + round((ebsd.pos.y - ext(3))/dy), ...
-  1 + round((ebsd.pos.x - ext(1))/dx));
+newId = sub2ind(sGrid, 1 + round((ebsd.pos.y - ext(3))/dxyz(2)), ...
+  1 + round((ebsd.pos.x - ext(1))/dxyz(1)));
 
 % set phaseId to notIndexed at all empty grid points
 phaseId = nan(sGrid);
@@ -63,6 +68,6 @@ prop.oldId = nan(sGrid);
 prop.oldId(newId) = ebsd.id;
 
 ebsdGrid = EBSDsquare(pos,rotation(quaternion(a,b,c,d)),phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,[dx,dy],'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dxyz,'options',prop);
 
 end

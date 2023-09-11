@@ -23,7 +23,7 @@ classdef EBSDsquare < EBSD
   
   methods
       
-    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxy,varargin)
+    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
       % generate a rectangular EBSD object
       %
       % Syntax 
@@ -47,17 +47,17 @@ classdef EBSDsquare < EBSD
       ebsd = reshape(ebsd,sGrid);
                   
       % get unit cell
-      ebsd.dx = dxy(1);
-      ebsd.dy = dxy(2);
+      ebsd.dx = dxyz(1);
+      ebsd.dy = dxyz(2);
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = 0.5 * vector3d(dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1],0);
+        ebsd.unitCell = 0.5 * vector3d(dxyz(1) * [1;1;-1;-1],dxyz(2) * [1;-1;-1;1],0);
       end
       
       if isempty(pos)        
         [x,y] = meshgrid(1:size(rot,2),1:size(rot,1));
-        ebsd.pos = vector3d((x-1) * dxy(1),(y-1) * dxy(2),0);
+        ebsd.pos = vector3d((x-1) * dxyz(1),(y-1) * dxyz(2),0);
       end
            
     end
