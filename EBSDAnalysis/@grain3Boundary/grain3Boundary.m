@@ -1,12 +1,19 @@
 classdef grain3Boundary < phaseList & dynProp
 
-  properties  %with as many rows as data
+  properties  % with as many rows as data
     id = []
-    poly  %cell arry with all faces
+    poly  % cell arry with all faces
   end
   
   properties
-    V     %verticies
+    idV      % ids of the used verticies
+    allV     % verticies
+  end
+
+  properties (Dependent)
+    V
+    faceNormals
+    faceCentroids
   end
 
   methods
@@ -21,10 +28,27 @@ classdef grain3Boundary < phaseList & dynProp
         error 'invalid V'
       end
 
-      gB.V=V;
-      gB.poly=poly;
-      gB.id=1:length(poly);
+      gB.allV = V;
+      gB.idV = 1:length(V);
+      gB.poly = poly;
+      gB.id = 1:length(poly);
       
+    end
+
+    function V = get.V(gB3)
+      V = gB3.allV(gB3.idV);
+    end
+
+    function gB3 = set.V(gB3,V)
+      gB3.allV(gB3.idV) = V;
+    end
+
+    function normals = get.faceNormals(gB3)
+      normals = vector3d(meshFaceNormals(gB3.V.xyz, gB3.poly));
+    end
+
+    function centroids = get.faceCentroids(gB3)
+      centroids = vector3d(meshFaceCentroids(gB3.V.xyz, gB3.poly));
     end
 
   end

@@ -8,13 +8,11 @@ function gB3 = subSet(gB3,ind)
 % Output
 %  gB - @grain3Boundary
 %
+
 gB3.poly = gB3.poly(ind);
 gB3.id = gB3.id(ind);
 
-stillNeededVs = unique([gB3.poly{:}]);
-gB3.V = gB3.V(stillNeededVs);
-
-gB3.poly = cellfun(@(Ply) {arrayfun(@(x) find(stillNeededVs==x),Ply)},gB3.poly);
+gB3.idV = unique([gB3.poly{:}]);
 
 % properties
 gB3 = subSet@dynProp(gB3,ind);
