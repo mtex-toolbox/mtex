@@ -17,6 +17,7 @@ rho = v.rho;
 
 % we need this to avoid massive overhead when calling v(k) for all k
 fibgrid_xyz = fibgrid.xyz;
+fibgrid_rho = fibgrid.rho;
 v_xyz = v.xyz;
 
 % the resolution is slightly bigger than the max separation between 2 nodes
@@ -27,20 +28,20 @@ ind = zeros(s, 1);
 dist = zeros(s, 1);
 
 % compute the index range for theta
-thetamin = max(theta - epsilon, -pi/2);
-thetamax = min(theta + epsilon, pi/2);
-thetamin_id = max( floor((2*n+1)/2 * sin(thetamin)) + n+1, 1);
-thetamax_id = min( ceil((2*n+1)/2 * sin(thetamax)) + n+1, 2*n+1);
+thetamin = max(theta - epsilon, 0);
+thetamax = min(theta + epsilon, pi);
+thetamin_id = max(floor(-(2*n+1)/2 * cos(thetamin)) + n+1, 1);
+thetamax_id = min( ceil(-(2*n+1)/2 * cos(thetamax)) + n+1, 2*n+1);
 
 % compute the maximal allowed rho derivtion
 % rho is not uniformly distributed on [0,2*pi] thus we have to scale the
 % region w.r.t. rho by the ratio of the largest and the expected difference
 % between consecutive rho angles
-epsilon_rho = 1.1 * min(acos((max(cos(epsilon)-v.z.^2, 0)) ./ (1-v.z.^2)), pi);
+epsilon_rho = min(acos((max(cos(epsilon)-v.z.^2, 0)) ./ (1-v.z.^2)), pi);
 
 % this marks rows where the center is so close to the pole that we use all
 % points close enough to the pole as potential neighbors
-homerun = (epsilon_rho > pi) | (abs(theta) + 1.5*epsilon > pi/2);
+homerun = (epsilon_rho > pi-.1) | (abs(pi/2-theta) > pi/2-1.2*epsilon);
 
 for k = 1:s
   % grid indice suitable w.r.t. theta
@@ -50,7 +51,7 @@ for k = 1:s
   if homerun(k)
     best_id = I;
   else
-    temp = abs(fibgrid.rho(I) - rho(k));
+    temp = abs(fibgrid_rho(I) - rho(k));
     diff_rho = min(temp, 2*pi-temp);
     rho_good = diff_rho < epsilon_rho(k);
     best_id = I(rho_good);
