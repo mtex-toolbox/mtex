@@ -107,11 +107,11 @@ res = 2 * maxGamma / ap2;
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
 % TODO: this should be done better!!
-ind = fundamental_region(ori,CS,specimenSymmetry);
+ind = checkOutsideFR(ori,CS,specimenSymmetry);
 
 if nnz(ind) ~= 0
   % eliminate those rotations
-  ori(ind) = [];
+  ori = ori(~ind);
 
   % eliminate from index set
   gamma = subGrid(gamma,~ind);
@@ -145,7 +145,7 @@ end
 end
 
 % ---------------------------------------------------------------
-function ind = fundamental_region(q,cs,ss)
+function ind = checkOutsideFR(q,cs,ss)
 
 if isempty(q), ind = []; return; end
 
