@@ -7,6 +7,8 @@ classdef fibonacciS2Grid < vector3d
   % fibgrid = fibonacciS2Grid(N)
   % fibgrid = fibonacciS2Grid('points', N)
   % fibgrid = fibonacciS2Grid('resolution', res*degree)
+  % fibgrid = fibonacciS2Grid('points', N, 'saverho') saves the precise rho
+  %                                                   angles in the options
   %
   % Input
   % N - number of points
@@ -34,24 +36,44 @@ classdef fibonacciS2Grid < vector3d
   methods
     % constructor of the class fibonacciS2Grid
     function fibgrid = fibonacciS2Grid(varargin)
+      saverho = false;
+      % check if we should save the precise rho angles of the grid
+      saverho_specifier_pos = find(strcmp(varargin, 'saverho'), 1);
+      if ~isempty(saverho_specifier_pos)
+        saverho = true;
+        varargin(saverho_specifier_pos) = [];
+      end
+
+      % standard grid size is 1000
+      n = 1000;
+      if nargin == 0
+        n = 1000;
+      elseif size(varargin, 1) == 1
+        n = varargin{1};
+      else
+        % take given parameters into account
+        points_specifier_pos = find(strcmp(varargin, 'points'), 1);
+        if ~isempty(points_specifier_pos)
+          n = round(varargin(points_specifier_pos + 1) / 2);
+        else
+          res_specifier_pos = find(strcmp(varargin, 'resolution'), 1);
+          if ~isempty(res_specifier_pos)
+            res = varargin(res_specifier_pos + 1);
+            % this comes from fitting the grid sizes to the resolutions
+            n = round((exp(2.512) / res^2 - 1) / 2);
+          end
+        end
+      end
+
       % define the golden ratio
       phi = (1+sqrt(5)) / 2;
-      if (nargin==1) 
-        n = round((varargin{1}-1)/2);
-      elseif (nargin==2) 
-        if check_option(varargin, 'points')
-          n = round((varargin{2}-1) / 2);
-        elseif check_option(varargin, 'resolution')
-          res = varargin{2};
-          % this comes from fitting the grid sizes to the resolutions
-          n = round((exp(2.512) / res^2 - 1) / 2);
-        end
-      else
-        n = 1000;
-      end
+      
       % doing it in reverse results in incresing theta anlge
       idx = (n : -1 : -n)';
       rho = mod(2*pi/phi * idx, 2*pi);
+      if saverho
+        fibgrid.opt.rho = rho;
+      end
       sintheta = 2/(2*n+1) * idx;
       costheta = sqrt(1 - sintheta.^2);
       fibgrid.x = cos(rho) .* costheta;

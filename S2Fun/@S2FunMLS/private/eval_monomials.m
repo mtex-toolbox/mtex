@@ -1,7 +1,8 @@
-function vals = eval_monomials(v, deg)
+function vals = eval_monomials(v, deg, tangent)
 % eval all monomials of degree deg, deg-2, ..., mod(deg,2) on v
 % leave some out since we assume that v are spherical vectors, 
 % hence x^2+y^2+z^2 = 1
+% tangent is boolean - if true we set the z coordinate to 1 
 
 % get the number of functions corresponding to the degree
 dim = (deg + 1) * (deg + 2) / 2;

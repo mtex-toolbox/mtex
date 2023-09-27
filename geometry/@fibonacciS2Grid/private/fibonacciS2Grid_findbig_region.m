@@ -24,8 +24,12 @@ dist_cell = cell(s, 1);
 nn = zeros(s, 1);
 
 % we need this to avoid massive overhead when calling v(k) or v.rho(k)
+try 
+  rhoGrid = fibgrid.opt.rho;
+catch 
+  rhoGrid = fibgrid.rho;
+end
 fibgrid_xyz = fibgrid.xyz;
-fibgrid_rho = fibgrid.rho;
 v_xyz = v.xyz;
 
 % compute the index range for theta
@@ -49,7 +53,7 @@ for k = 1:s
   if homerun(k)
     best_id = I;
   else
-    temp = abs(fibgrid_rho(I) - rho(k));
+    temp = abs(rhoGrid(I) - rho(k));
     diff_rho = min(temp, 2*pi-temp);
     rho_good = diff_rho < epsilon_rho(k);
     best_id = I(rho_good);

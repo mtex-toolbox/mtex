@@ -10,6 +10,7 @@ classdef S2FunMLS < S2Fun
     all_degrees = false;  % use even AND odd degrees up to degree if true
     monomials = false;    % use monomials instead of sph. harm. if true
     centered = false;     % only evaluate the basis near the pole if true
+    tangent = false;      % use polynomials on the tangent space
   end
 
   methods
@@ -52,6 +53,16 @@ classdef S2FunMLS < S2Fun
       if ~isempty(center_specifier_pos)
         sF.centered = true;
         varargin(center_specifier_pos) = [];
+      end
+
+      tangent_specifier_pos = find(strcmp(varargin, 'tangent'), 1);
+      if ~isempty(tangent_specifier_pos)
+        sF.tangent = true;
+        % this is the same as using only even/odd centered monomials and
+        % setting the z-coordinate to 1
+        sF.centered = true;
+        sF.monomials = true;
+        varargin(tangent_specifier_pos) = [];
       end
 
       % if delta has not been set yet, set it now 

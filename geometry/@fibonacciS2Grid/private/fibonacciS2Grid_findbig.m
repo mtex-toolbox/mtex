@@ -16,8 +16,14 @@ theta = v.theta;
 rho = v.rho;
 
 % we need this to avoid massive overhead when calling v(k) for all k
+% if the grid is large it may be useful to save the precise rho values
+% during construction in the options and retrieve them here 
+try 
+  rhoGrid = fibgrid.opt.rho;
+catch 
+  rhoGrid = fibgrid.rho;
+end
 fibgrid_xyz = fibgrid.xyz;
-fibgrid_rho = fibgrid.rho;
 v_xyz = v.xyz;
 
 % the resolution is slightly bigger than the max separation between 2 nodes
@@ -51,7 +57,7 @@ for k = 1:s
   if homerun(k)
     best_id = I;
   else
-    temp = abs(fibgrid_rho(I) - rho(k));
+    temp = abs(rhoGrid(I) - rho(k));
     diff_rho = min(temp, 2*pi-temp);
     rho_good = diff_rho < epsilon_rho(k);
     best_id = I(rho_good);

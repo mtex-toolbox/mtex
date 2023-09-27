@@ -48,8 +48,8 @@ if sF.all_degrees
 else
   dim = (sF.degree + 1) * (sF.degree + 2) / 2;
   if sF.monomials
-    base_on_grid = eval_monomials(rot .* sF.nodes(g_id), sF.degree);
-    base_in_pole = eval_monomials(vector3d.Z, sF.degree);
+    base_on_grid = eval_monomials(rot .* sF.nodes(g_id), sF.degree, sF.tangent);
+    base_in_pole = eval_monomials(vector3d.Z, sF.degree, sF.tangent);
     base_on_v = repmat(base_in_pole, s, 1);
   else
     base_on_grid = eval_spherical_harmonics(rot .* sF.nodes(g_id), sF.degree);

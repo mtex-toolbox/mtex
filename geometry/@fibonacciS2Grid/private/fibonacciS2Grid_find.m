@@ -27,7 +27,13 @@ v_xyz = v.xyz;
 epsilon = fibgrid.resolution;
 
 % sort rho  and get the corresponding index vectors
-rhoGrid = fibgrid.rho;
+% if the grid is large it may be useful to save the precise rho values
+% during construction in the options and retrieve them here 
+try 
+  rhoGrid = fibgrid.opt.rho;
+catch 
+  rhoGrid = fibgrid.rho;
+end
 [rhoGrid_sorted,sort_id,rank_id] = unique(rhoGrid + pi);
 
 % the rho values are not uniformly distributed on [0,2*pi] which is why we
