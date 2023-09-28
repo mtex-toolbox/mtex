@@ -17,16 +17,14 @@ function SO3VF = quadrature(f, varargin)
 %  bw - degree of the Wigner-D functions (default: 64)
 %
 
+% ------------- quadrature nodes are given -------------------
 if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
   if isa(y,'SO3TangentVector') 
     tS = y.tangentSpace;
   else
-    tS = 'left';
-    warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
-             'the left side tangent space. If you want them to be right sided ' ...
-             'use SO3TangentVector(v,''right'') instead.'])
+    tS = SO3TangentSpace.extract(varargin{:});
   end
   y = y.xyz;
   if isa(v,'orientation')
@@ -37,7 +35,7 @@ if isa(f,'rotation')
   end
   % Do quadrature without specimenSymmetry and set SLeft afterwards 
   % (if left sided tangent space) clear crystalSymmetry otherwise 
-  if strcmp(tS,'right')
+  if tS.isRight
     v.CS = crystalSymmetry;
   else
     v.SS = specimenSymmetry;
@@ -46,8 +44,6 @@ if isa(f,'rotation')
   SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
   return
 end
-
-
 
 if isa(f,'SO3VectorField')
   tS = f.tangentSpace;
@@ -64,19 +60,22 @@ if isa(f,'function_handle')
   v = f(orientation.id(SRight,SLeft));
   if isa(v,'SO3TangentVector') 
     tS = v.tangentSpace;
-  elseif check_option(varargin,{'left','right'})
-    tS = extract_option(varargin,{'left','right'});
+  elseif isa(v,'spinTensor')
+    if v.CS == SRight
+      tS = SO3tangentSpace.right;
+    else
+      tS = SO3tangentSpace.left;      
+    end
   else
-    warning(['The given function_handle is assumed to describe elements w.r.t. ' ...
-      'the left side tangent space. If you want them to be right sided ' ...
-      'use SO3VectorFieldHandle(fun,SRight,SLeft,''right'') instead.'])
-    tS = 'left';
+    tS = SO3tangentSpace.extract(varargin{:});
   end
 
   if isnumeric(v) && numel(v)==3
     f = SO3FunHandle(f,SRight,SLeft);
   elseif isa(v,'vector3d')
     f = SO3FunHandle(@(rot) f(rot).xyz,SRight,SLeft);
+  elseif isa(v,'spinTensor')
+    f = SO3FunHandle(@(rot) vector3d(f(rot)).xyz,SRight,SLeft);
   else
     error('The given function handle do not fit to an SO3VectorField.')
   end
@@ -84,7 +83,8 @@ end
 
 % Do quadrature without specimenSymmetry and set SLeft afterwards 
 % (if left sided tangent space) clear crystalSymmetry otherwise 
-if strcmp(tS,'right')
+% this means left (the default) is the better option
+if tS.isRight
   f.CS = crystalSymmetry;
 else
   f.SS = specimenSymmetry;

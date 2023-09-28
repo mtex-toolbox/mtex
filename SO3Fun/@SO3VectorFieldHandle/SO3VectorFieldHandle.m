@@ -8,7 +8,6 @@ properties
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
   bandwidth = getMTEXpref('maxSO3Bandwidth');
-  tangentSpace = 'left'
 end
   
 methods
@@ -19,16 +18,9 @@ methods
     [SRight,SLeft] = extractSym(varargin);
     SO3VF.SRight = SRight;
     SO3VF.SLeft = SLeft;
-    if check_option(varargin,'right')
-      SO3VF.tangentSpace = 'right';
-    end
     
-  end
-  
-  function SO3VF = set.tangentSpace(SO3VF,s)
-    if strcmp(s,'left') || strcmp(s,'right')
-      SO3VF.tangentSpace = s;
-    end
+    SO3VF.tangentSpace = SO3TangentSpace.extract(varargin{:});
+    
   end
   
 end

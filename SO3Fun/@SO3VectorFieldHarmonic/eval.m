@@ -3,7 +3,6 @@ function f = eval(SO3VF,rot,varargin)
 % 
 % Syntax
 %   f = eval(SO3VF,rot)         % left tangent vector
-%   f = eval(SO3VF,rot,'right') % right tangent vector
 %
 % Input
 %   rot - @rotation
@@ -20,20 +19,16 @@ function f = eval(SO3VF,rot,varargin)
 
 % change evaluation method for quadratureSO3Grid
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
-  f = evalEquispacedFFT(SO3VF.SO3F,rot,varargin{:});
-  f = vector3d(f.').';
+  xyz = evalEquispacedFFT(SO3VF.SO3F,rot,varargin{:});
 else
-  f = vector3d(SO3VF.SO3F.eval(rot).');
-  f = reshape(f.',size(rot));
+  xyz = SO3VF.SO3F.eval(rot);
 end
 
-% Make output right/left deendent from the input flag
-f = SO3TangentVector(f,SO3VF.tangentSpace);
-if check_option(varargin,'right')
-  f = right(f,rot);
-end
-if check_option(varargin,'left')
-  f = left(f,rot);
-end
+% generate tangentspace vector
+f = reshape(SO3TangentVector(xyz.',SO3VF.internTangentSpace),size(rot));
+
+f = f.transformTangentSpace(SO3VF.tangentSpace,rot);
+
+
 
 end

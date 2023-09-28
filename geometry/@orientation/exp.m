@@ -23,7 +23,13 @@ if isa(v,'tensor')
 end
 
 % compute the orientation
-if check_option(varargin,'left')
+if isa(v,'SO3TangentVector')
+  tS = v.tangentSpace;
+else
+  tS = SO3TangentSpace.extract(varargin{:});
+end
+
+if tS.isLeft
   ori = times(expquat(v),ori,true);
 else
   ori = times(ori,expquat(v),false);
