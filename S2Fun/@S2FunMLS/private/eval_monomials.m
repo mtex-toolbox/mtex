@@ -1,4 +1,4 @@
-function vals = eval_monomials(v, deg, tangent)
+function vals = eval_monomials(v, deg, varargin)
 % eval all monomials of degree deg, deg-2, ..., mod(deg,2) on v
 % leave some out since we assume that v are spherical vectors, 
 % hence x^2+y^2+z^2 = 1
@@ -8,6 +8,9 @@ function vals = eval_monomials(v, deg, tangent)
 dim = (deg + 1) * (deg + 2) / 2;
 % extract the coordinates for nicer code
 x=v.x; y=v.y; z=v.z;
+if nargin == 3 && varargin{1} == true
+    z = ones(size(z));
+end
 % initialize vals
 vals = zeros(numel(x), dim);
 

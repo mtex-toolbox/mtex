@@ -30,29 +30,11 @@ else
   nn = sum(ind, 1);
 end
 
-% determine which basis to use and evaluate them on the grid and on v
+% determine the dimension of the ansatz space
 if sF.all_degrees
   dim = (sF.degree + 1)^2;
-  if sF.monomials
-base_on_grid = [eval_monomials(sF.nodes, sF.degree) ...
-      eval_monomials(sF.nodes, sF.degree-1)];
-    base_on_v = [eval_monomials(v, sF.degree) ...
-      eval_monomials(v, sF.degree-1)];
-  else
-    base_on_grid = [eval_spherical_harmonics(sF.nodes, sF.degree) ...
-      eval_spherical_harmonics(sF.nodes, sF.degree-1)];
-    base_on_v = [eval_spherical_harmonics(v, sF.degree) ...
-      eval_spherical_harmonics(v, sF.degree-1)];
-  end
 else
   dim = (sF.degree + 1) * (sF.degree + 2) / 2;
-  if sF.monomials
-    base_on_grid = eval_monomials(sF.nodes, sF.degree);
-    base_on_v = eval_monomials(v, sF.degree);
-  else
-    base_on_grid = eval_spherical_harmonics(sF.nodes, sF.degree);
-    base_on_v = eval_spherical_harmonics(v, sF.degree);
-  end
 end
 
 % create index vectors in order to use pagefuns
@@ -65,8 +47,15 @@ row_id = cumsum(B);
 col_id = (t_id-1) * nn_max + row_id;
 
 % evaluate the basis functions on the nodes
+% choose faster way between computing all values and reusing them or
+% computing values on fibgrid(g_id)
 B = zeros(dim, nn_max * s);
-B(:, col_id) = base_on_grid(g_id, :)';
+if nn_total > numel(sF.nodes.x)
+  base_on_grid = eval_base_functions(sF);
+  B(:, col_id) = base_on_grid(g_id, :)';
+else
+  B(:, col_id) = eval_base_functions(sF, sF.nodes.subSet(g_id))';
+end
 B_book = reshape(B, dim, nn_max, s);
 
 % assemble the Gram matrix
@@ -85,6 +74,7 @@ fdotu_book = sum(reshape(fdotu, dim, nn_max, s), 2);
 % solve the systems and evaluate the MLS approximation
 c_book = pagemldivide(G_book, fdotu_book);
 c = reshape(c_book, dim, s);
+base_on_v = eval_base_functions(sF, v);
 vals = sum(c' .* base_on_v, 2);
 
 if isreal(sF.values)

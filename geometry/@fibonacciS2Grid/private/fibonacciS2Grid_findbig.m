@@ -13,7 +13,7 @@ function varargout = fibonacciS2Grid_findbig(fibgrid, v)
 n = (numel(fibgrid.x) - 1) / 2;
 s = size(v, 1);
 theta = v.theta;
-rho = v.rho;
+rho = mod(v.rho, 2*pi);
 
 % we need this to avoid massive overhead when calling v(k) for all k
 % if the grid is large it may be useful to save the precise rho values
@@ -21,7 +21,7 @@ rho = v.rho;
 try 
   rhoGrid = fibgrid.opt.rho;
 catch 
-  rhoGrid = fibgrid.rho;
+  rhoGrid = mod(fibgrid.rho, 2*pi);
 end
 fibgrid_xyz = fibgrid.xyz;
 v_xyz = v.xyz;

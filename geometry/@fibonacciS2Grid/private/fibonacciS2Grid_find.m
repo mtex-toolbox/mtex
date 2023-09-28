@@ -13,7 +13,7 @@ function varargout = fibonacciS2Grid_find(fibgrid, v)
 n = (numel(fibgrid.x) - 1) / 2;
 s = size(v, 1);
 theta = v.theta;
-rho = v.rho + pi;
+rho = mod(v.rho, 2*pi);
 
 % initialize the returning values of the function
 ind = zeros(s, 1);
@@ -32,9 +32,9 @@ epsilon = fibgrid.resolution;
 try 
   rhoGrid = fibgrid.opt.rho;
 catch 
-  rhoGrid = fibgrid.rho;
+  rhoGrid = mod(fibgrid.rho, 2*pi);
 end
-[rhoGrid_sorted,sort_id,rank_id] = unique(rhoGrid + pi);
+[rhoGrid_sorted,sort_id,rank_id] = unique(rhoGrid);
 
 % the rho values are not uniformly distributed on [0,2*pi] which is why we
 % have to assume that the rho difference between consecutive rho values

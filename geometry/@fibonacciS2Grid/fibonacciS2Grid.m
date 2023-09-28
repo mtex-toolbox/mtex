@@ -49,12 +49,12 @@ classdef fibonacciS2Grid < vector3d
       if nargin == 0
         n = 1000;
       elseif size(varargin, 1) == 1
-        n = varargin{1};
+        n = round((varargin{1} - 1) / 2);
       else
         % take given parameters into account
         points_specifier_pos = find(strcmp(varargin, 'points'), 1);
         if ~isempty(points_specifier_pos)
-          n = round(varargin(points_specifier_pos + 1) / 2);
+          n = round(varargin(points_specifier_pos - 1) / 2);
         else
           res_specifier_pos = find(strcmp(varargin, 'resolution'), 1);
           if ~isempty(res_specifier_pos)
@@ -70,15 +70,15 @@ classdef fibonacciS2Grid < vector3d
       
       % doing it in reverse results in incresing theta anlge
       idx = (n : -1 : -n)';
-      rho = mod(2*pi/phi * idx, 2*pi);
-      if saverho
-        fibgrid.opt.rho = rho;
-      end
+      rho = mod(2*pi/phi * idx, 2*pi); 
       sintheta = 2/(2*n+1) * idx;
       costheta = sqrt(1 - sintheta.^2);
       fibgrid.x = cos(rho) .* costheta;
       fibgrid.y = sin(rho) .* costheta;
       fibgrid.z = sintheta;
+      if saverho
+        fibgrid.opt.rho = mod(rho, 2*pi);
+      end
     end
 
     % getters

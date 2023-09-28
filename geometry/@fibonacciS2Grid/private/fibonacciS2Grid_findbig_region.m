@@ -15,7 +15,7 @@ function varargout = fibonacciS2Grid_findbig_region(fibgrid, v, epsilon)
 n = (numel(fibgrid.x) - 1) / 2;
 s = size(v, 1);
 theta = v.theta;
-rho = v.rho;
+rho = mod(v.rho, 2*pi);
 
 % initialize the returning values of the function
 t_id_cell = cell(s, 1);
@@ -27,7 +27,7 @@ nn = zeros(s, 1);
 try 
   rhoGrid = fibgrid.opt.rho;
 catch 
-  rhoGrid = fibgrid.rho;
+  rhoGrid = mod(fibgrid.rho, 2*pi);
 end
 fibgrid_xyz = fibgrid.xyz;
 v_xyz = v.xyz;

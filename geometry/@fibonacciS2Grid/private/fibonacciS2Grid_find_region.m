@@ -15,7 +15,7 @@ function varargout = fibonacciS2Grid_find_region(fibgrid, v, epsilon)
 n = round(numel(fibgrid.x) - 1) / 2;
 s = size(v, 1);
 theta = v.theta;
-rho = v.rho + pi;
+rho = mod(v.rho, 2*pi);
 
 % we need this to avoid massive overhead when calling v(k) for each k
 fibgrid_xyz = fibgrid.xyz;
@@ -27,9 +27,9 @@ v_xyz = v.xyz;
 try 
   rhoGrid = fibgrid.opt.rho;
 catch 
-  rhoGrid = fibgrid.rho;
+  rhoGrid = mod(fibgrid.rho, 2*pi);
 end
-[rhoGrid_sorted,sort_id,rank_id] = unique(rhoGrid + pi);
+[rhoGrid_sorted,sort_id,rank_id] = unique(rhoGrid);
 
 % the rho values are not uniformly distributed on [0,2*pi] which is why we
 % have to assume that the rho difference between consecutive rho values
@@ -38,7 +38,7 @@ rhodiff = diff(rhoGrid_sorted);
 rhodiff_max = max(rhodiff);
 rhoscale = rhodiff_max * (2*n+1)/(2*pi);
 
-% initialize the returning values of the function
+% initialize the returning values of the function 
 test_id_cell = cell(s, 1);
 grid_id_cell = cell(s, 1);
 dist_cell = cell(s, 1);
