@@ -11,7 +11,7 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 %
 % Output
 %  Mfun    - @SO3FunHarmonic (orientation dependent Taylor factor)
-%  spinFun - @SO3VectorField
+%  spinFun - @SO3VectorFieldHarmonic
 %  M - taylor factor
 %  b - vector of slip rates for all slip systems 
 %  W - @spinTensor
@@ -39,10 +39,9 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 %   [M,~,W] = calcTaylor(eps,sS.symmetrise)
 %
 
-% TODO: Maybe rotate tangent space evertime to id
 % Compute the Taylor factor and strain dependent gradient independent of 
 % the orientation, i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
-if sS.CS ~= eps.CS
+if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
   F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut,varargin{:}),sS.CS,eps.CS);
@@ -51,11 +50,9 @@ if sS.CS ~= eps.CS
   M = SO3F(1);
   if nargout>1
     b = [];
-    % gradient in tangent space rotated to id
-    spin = SO3VectorFieldHarmonic(SO3F(2:4));
-    % gradient in tangent space at specific rotation
-    % Note that this VectorField is no longer symmetric
-    spin = SO3VectorFieldHandle(@(ori) inv(ori).*spin.eval(ori));
+    spin = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
+    % to be compareable set output to rightspintensor
+    spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
   end
   return
 end
@@ -119,7 +116,7 @@ for i = 1:size(y,2)
 end
 
 % the Taylor factor is simply the sum of the coefficents
-M = sum(b,2) ./ norm(eps);
+M = reshape(sum(b,2),size(eps)) ./ norm(eps);
 
 % maybe there is nothing more to do
 if nargout <=2, return; end
@@ -135,12 +132,9 @@ end
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
   [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:});
-  s = vector3d(spin).xyz;
-  Out(:,1) = Taylor;
+  Out(:,1) = Taylor(:);
   if numOut>1
-   s = vector3d(ori.*spin).xyz;
-   Out(:,2) = s(:,1);
-   Out(:,3) = s(:,2);
-   Out(:,4) = s(:,3);
+    v = ori .* vector3d(spin);
+    Out(:,2:4) = v.xyz;
   end
 end
