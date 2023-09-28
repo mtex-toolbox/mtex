@@ -1,16 +1,17 @@
-function L = uniaxial(d,r)
+function L = uniaxial(d,q)
 % defines uniaxial tension/compression tensors
 %
 % Syntax
 %
-%   % uniaxial tension
-%   L = velocityGradientTensor.uniaxial(d,r)
+%   % axi symmetric uniaxial tension
+%   L = r .* velocityGradientTensor.uniaxial(d,q)
 %
 %   % uniaxial compression
-%   L = velocityGradientTensor.uniaxial(d,-r)
+%   L = -velocityGradientTensor.uniaxial(d,q)
 %
 % Input
 %  d - tension direction @vector3d
+%  q - [0 .. 1] non axial symmetric portion (0.5 is symmetric and default)
 %  r - strain rate
 %
 % Output
@@ -18,10 +19,15 @@ function L = uniaxial(d,r)
 %
 
 if nargin == 0, d = vector3d.Z; end
-if nargin <= 1, r = 1; end
+if nargin <= 1, q = 0.5; end
 
 rot = rotation.map(d,xvector);
 
-L = r .* (inv(rot) * velocityGradientTensor(diag([1,-0.5,-0.5]))); %#ok<MINV>
+M = zeros([3,3,size(q)]);
+M(1,1,:,:) = 1;
+M(2,2,:,:) = -q;
+M(3,3,:,:) = q-1;
+
+L = inv(rot) .* velocityGradientTensor(M); %#ok<MINV>
 
 end
