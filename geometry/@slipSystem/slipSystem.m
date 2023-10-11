@@ -22,7 +22,7 @@ classdef slipSystem
   end
   
   methods
-    function sS = slipSystem(b,n,CRSS)
+    function sS = slipSystem(b,n,CRSS,cs)
       % defines a slipSystem
       %
       % Syntax
@@ -36,12 +36,18 @@ classdef slipSystem
       %
       
       if nargin == 0, return; end
-      
-      assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
+
+      if nargin == 4
+        b = Miller(b{:},'uvw',cs);
+        n = Miller(n{:},cs);
+      end
+        
+      assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...
         'Slip direction and plane normal should be orthogonal!')
       
       sS.b = b;
       sS.n = n;
+      
       if nargin < 3, CRSS = 1; end
       if numel(CRSS) ~= length(sS.b)
         CRSS = repmat(CRSS,size(sS.b));
