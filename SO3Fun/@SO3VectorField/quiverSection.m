@@ -47,7 +47,6 @@ if isa(SO3VF,'SO3VectorFieldHarmonic')
   SO3VF.isReal = 1;
 end
 
-
 % TODO: Not completly implemented yet, see SO3FunHarmonic/plotSection
 % if isa(SO3VF,'SO3VectorFieldHarmonic') && (isa(oS,'phi2Sections') || isa(oS,'phi1Sections') || isa(oS,'gammaSections'))
 %   for c=1:3
@@ -69,4 +68,4 @@ end
 S3G1 = exp(S3G0,v/10000,SO3VF.tangentSpace);
 
 
-oS.quiver(S3G0, S3G1,'noSymmetry',varargin{:});
+oS.quiver(S3G0, S3G1,'noSymmetry',varargin{:},'all');
