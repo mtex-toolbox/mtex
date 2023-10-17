@@ -12,4 +12,7 @@ function ind = id2ind(grains3,id)
 %  ind - a list indeces such that grains.id(ind) == id
 
 [~,ind] = ismember(id,grains3.id);
+if ~all(b)
+  error 'id not found'
+end
 ind = reshape(ind, size(id));

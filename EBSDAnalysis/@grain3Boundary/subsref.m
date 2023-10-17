@@ -26,7 +26,7 @@ if strcmp(s(1).type,'()')
     else
       error 'indexing only supported for numerical or logical values'
     end
-    ind = id2ind(gB3,id); % not implemented yet
+    ind = id2ind(gB3,id);
   else
     error 'error'
   end

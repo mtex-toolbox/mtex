@@ -13,6 +13,7 @@ classdef grain3d < phaseList & dynProp
 
   properties (Dependent)
     V     %verticies
+    poly  %
   end
 
   methods
@@ -52,6 +53,10 @@ classdef grain3d < phaseList & dynProp
 
     function V = get.V(grains)
       V = grains.boundary.V;
+    end
+
+    function poly = get.poly(grains)
+      poly = grains.boundary.poly;
     end
 
   end

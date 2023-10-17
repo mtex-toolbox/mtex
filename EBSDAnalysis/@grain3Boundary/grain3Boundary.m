@@ -23,15 +23,15 @@ classdef grain3Boundary < phaseList & dynProp
       if isa(V, 'vector3d')
 
       elseif (isnumeric(V) && (size(V,2)==3))
-        V=vector3d(V);
+        V=vector3d(V)';
       else
         error 'invalid V'
       end
 
       gB.allV = V;
-      gB.idV = 1:length(V);
+      gB.idV = (1:length(V))';
       gB.poly = poly;
-      gB.id = 1:length(poly);
+      gB.id = (1:length(poly))';
       
     end
 
@@ -40,15 +40,15 @@ classdef grain3Boundary < phaseList & dynProp
     end
 
     function gB3 = set.V(gB3,V)
-      gB3.allV(gB3.idV) = V;
+      gB3.allV = V;
     end
 
     function normals = get.faceNormals(gB3)
-      normals = vector3d(meshFaceNormals(gB3.V.xyz, gB3.poly));
+      normals = vector3d(meshFaceNormals(gB3.allV.xyz, gB3.poly))';
     end
 
     function centroids = get.faceCentroids(gB3)
-      centroids = vector3d(meshFaceCentroids(gB3.V.xyz, gB3.poly));
+      centroids = vector3d(meshFaceCentroids(gB3.allV.xyz, gB3.poly))';
     end
 
   end
