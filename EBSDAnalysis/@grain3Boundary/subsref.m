@@ -31,7 +31,7 @@ if strcmp(s(1).type,'()')
     error 'error'
   end
   
-  gB3=subSet(gB3,ind);
+  gB3 = subSet(gB3,ind);
   
   % is there something more to do?
   if numel(s)>1
