@@ -28,6 +28,6 @@ M(1,1,:,:) = 1;
 M(2,2,:,:) = -q;
 M(3,3,:,:) = q-1;
 
-L = inv(rot) .* velocityGradientTensor(M); %#ok<MINV>
+L = inv(rot) .* velocityGradientTensor(M);
 
 end
