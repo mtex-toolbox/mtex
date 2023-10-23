@@ -54,6 +54,8 @@ classdef grain2d < phaseList & dynProp
     
   properties (Dependent = true)
     meanOrientation  % mean orientation
+    medianOrientation  % median orientation
+    modeOrientation  % mode orientation
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
     GOS              % intragranular average misorientation angle    
@@ -86,8 +88,12 @@ classdef grain2d < phaseList & dynProp
 
       if nargin>=3 && ~isempty(ori)
         grains.prop.meanRotation = ori;
+        grains.prop.medianRotation = ori;
+        grains.prop.modeRotation = ori;
       else
-        grains.prop.meanRotation = rotation.nan(length(poly),1);        
+        grains.prop.meanRotation = rotation.nan(length(poly),1);    
+        grains.prop.medianRotation = rotation.nan(length(poly),1);
+        grains.prop.modeRotation = rotation.nan(length(poly),1);
       end
 
       if nargin>=4
@@ -210,7 +216,64 @@ classdef grain2d < phaseList & dynProp
       end
       
     end
-
+%%
+    function ori = get.medianOrientation(grains)
+      if isempty(grains)
+        ori = orientation;
+      else
+        ori = orientation(grains.prop.medianRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
+      end
+    end
+    
+    function grains = set.medianOrientation(grains,ori)
+      
+      if ~isempty(grains)
+      
+        if isnumeric(ori) && all(isnan(ori(:)))
+          grains.prop.medianRotation = rotation.nan(size(grains.prop.medianRotation));
+        else
+          % update rotation
+          grains.prop.medianRotation = rotation(ori);
+      
+          % update phase
+          grains.CS = ori.CS;
+        end
+      end
+      
+    end
+%%
+%%
+    function ori = get.modeOrientation(grains)
+      if isempty(grains)
+        ori = orientation;
+      else
+        ori = orientation(grains.prop.modeRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
+      end
+    end
+    
+    function grains = set.modeOrientation(grains,ori)
+      
+      if ~isempty(grains)
+      
+        if isnumeric(ori) && all(isnan(ori(:)))
+          grains.prop.modeRotation = rotation.nan(size(grains.prop.modeRotation));
+        else
+          % update rotation
+          grains.prop.modeRotation = rotation(ori);
+      
+          % update phase
+          grains.CS = ori.CS;
+        end
+      end
+      
+    end
+%%
     function gos = get.GOS(grains)
       gos = grains.prop.GOS;
     end

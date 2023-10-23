@@ -64,6 +64,8 @@ classdef EBSD < phaseList & dynProp & dynOption
     orientations    % rotation including symmetry
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
+    mis2median        % misorientation to the median orientation of the corresponding grain
+    mis2mode        % misorientation to the mode orientation of the corresponding grain
   end
   
   properties (Access = protected)
@@ -123,8 +125,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
     end
         
-    function ebsd = set.mis2mean(ebsd,ori)
-      
+    function ebsd = set.mis2mean(ebsd,ori)   
       if length(ori) == length(ebsd)
         ebsd.prop.mis2mean = rotation(ori(:));
       elseif length(ori) == nnz(ebsd.isIndexed)
@@ -134,10 +135,53 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.prop.mis2mean = rotation(ori) .* rotation.id(length(ebsd),1);
       else
         error('The list of mis2mean has to have the same size as the list of ebsd data.')
-      end
-      
+      end      
     end
-    
+
+    %%  
+    function ori = get.mis2median(ebsd)      
+      ori = ebsd.prop.mis2median;
+      try
+        ori = orientation(ori,ebsd.CS,ebsd.CS);
+      catch        
+      end
+    end
+        
+    function ebsd = set.mis2median(ebsd,ori)   
+      if length(ori) == length(ebsd)
+        ebsd.prop.mis2median = rotation(ori(:));
+      elseif length(ori) == nnz(ebsd.isIndexed)
+        ebsd.prop.mis2median = rotation.id(length(ebsd),1);
+        ebsd.prop.mis2median(ebsd.isIndexed) = rotation(ori);
+      elseif length(ori) == 1
+        ebsd.prop.mis2median = rotation(ori) .* rotation.id(length(ebsd),1);
+      else
+        error('The list of mis2median has to have the same size as the list of ebsd data.')
+      end      
+    end
+%%
+    %%  
+    function ori = get.mis2mode(ebsd)      
+      ori = ebsd.prop.mis2mode;
+      try
+        ori = orientation(ori,ebsd.CS,ebsd.CS);
+      catch        
+      end
+    end
+        
+    function ebsd = set.mis2mode(ebsd,ori)   
+      if length(ori) == length(ebsd)
+        ebsd.prop.mis2mode = rotation(ori(:));
+      elseif length(ori) == nnz(ebsd.isIndexed)
+        ebsd.prop.mis2mode = rotation.id(length(ebsd),1);
+        ebsd.prop.mis2mode(ebsd.isIndexed) = rotation(ori);
+      elseif length(ori) == 1
+        ebsd.prop.mis2mode = rotation(ori) .* rotation.id(length(ebsd),1);
+      else
+        error('The list of mis2mode has to have the same size as the list of ebsd data.')
+      end      
+    end
+%%
     function grainId = get.grainId(ebsd)
       try
         grainId = ebsd.prop.grainId;

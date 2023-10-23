@@ -1,5 +1,5 @@
 function value = mean(sF, varargin)
-% calculates the mean value for an univariate S2Fun or calculates the mean along a specified dimension fo a multimodal S2Fun
+% calculates the mean value for an univariate S2Fun or calculates the mean along a specified dimension for a multimodal S2Fun
 %
 % Syntax
 %   value = mean(sF)

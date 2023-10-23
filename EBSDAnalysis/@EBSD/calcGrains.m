@@ -1,4 +1,4 @@
-function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
+function [grains,grainId,mis2mean,mis2median,mis2mode] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
@@ -115,6 +115,8 @@ grainRange    = [0;cumsum(grains.grainSize)];        %
 firstD        = d(grainRange(2:end));
 q             = quaternion(ebsd.rotations);
 meanRotation  = q(firstD);
+medianRotation  = q(firstD);
+modeRotation  = q(firstD);
 GOS = zeros(length(grains),1);
 
 % choose between equivalent orientations in one grain such that all are
@@ -128,21 +130,38 @@ end
 % compute mean orientation and GOS
 if 0
   doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
-  abcd = zeros(length(doMeanCalc),4);
+  abcd_mean = zeros(length(doMeanCalc),4);
+  abcd_median = zeros(length(doMeanCalc),4);
+  abcd_mode = zeros(length(doMeanCalc),4);
   for k = 1:numel(doMeanCalc)
     qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
-    mq = mean(qind,'robust');
-    abcd(k,:) = [mq.a mq.b mq.c mq.d];
-    GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
+    mq_mean = mean(qind,'robust');
+    mq_median = median(qind,'robust');
+    mq_mode = mode(qind);
+    abcd_mean(k,:) = [mq_mean.a mq_mean.b mq_mean.c mq_mean.d];
+    abcd_median(k,:) = [mq_median.a mq_median.b mq_median.c mq_median.d];
+    abcd_mode(k,:) = [mq_mode.a mq_mode.b mq_mode.c mq_mode.d];
+    GOS(doMeanCalc(k)) = mean(angle(mq_mean,qind)); 
   end
-  meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
+  meanRotation(doMeanCalc)=reshape(quaternion(abcd_mean'),[],1);
+  medianRotation(doMeanCalc)=reshape(quaternion(abcd_median'),[],1);
+  modeRotation(doMeanCalc)=reshape(quaternion(abcd_mode'),[],1);
 else
   [meanRotation, GOS] = accumarray(grainId(:),q(:),'robust');
+%   medianRotation = accumarray(grainId(:),q(:),'robust');
+medianRotation = accumarray(grainId(:), q(:), [], @(x) medianQ(x));
+%   modeRotation = accumarray(grainId(:),q(:),'robust');
+modeRotation = accumarray(grainId(:), q(:), [], @(x) modeQ(x));
 end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
+grains.prop.medianRotation = reshape(medianRotation,[],1);
+grains.prop.modeRotation = reshape(modeRotation,[],1);
+
 mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
+mis2median = inv(rotation(q(:))) .* grains.prop.medianRotation(grainId(:));
+mis2mode = inv(rotation(q(:))) .* grains.prop.modeRotation(grainId(:));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
@@ -465,4 +484,15 @@ for k=1:size(I_FG,2)
   
 end
 
+end
+
+
+% Calculate the median of a list of quaternions
+function qMedian = medianQ(q)
+    qMedian = median(q);
+end
+
+% Calculate the mode of a list of quaternions
+function qMode = modeQ(q)
+    qMode = mode(q);
 end
