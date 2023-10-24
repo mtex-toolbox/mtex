@@ -256,6 +256,10 @@ classdef EBSD < phaseList & dynProp & dynOption
     function pC = get.plottingConvention(ebsd)
       pC = ebsd.pos.plottingConvention;
     end
+    
+    function ebsd = set.plottingConvention(ebsd,pC)
+      ebsd.pos.plottingConvention = pC;
+    end
 
 %     function dx = get.dx(ebsd)
 %       uc = ebsd.unitCell;
