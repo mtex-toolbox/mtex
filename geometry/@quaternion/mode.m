@@ -52,10 +52,19 @@ qm.a = VV(1); qm.b = VV(2); qm.c = VV(3); qm.d = VV(4);
 if isa(qm,'rotation'), qm.i = false; end
 
 if ~isRobust && length(q)>=4
-%     omega = angle(qm,q,'noSymmetry');
-%     id = omega <= quantile(omega,0.8)*2.5;
-%     if all(id), return; end
-    qMode = mode([q.subSet(':').a q.subSet(':').b q.subSet(':').c q.subSet(':').d]);
+    %     omega = angle(qm,q,'noSymmetry');
+    %     id = omega <= quantile(omega,0.8)*2.5;
+    %     if all(id), return; end
+    %     qMode = mode([q.subSet(':').a q.subSet(':').b q.subSet(':').c q.subSet(':').d])
+
+    %% calculate mode (not relying on MATLAB's in-built mode function)
+    inArray = [q.subSet(':').a q.subSet(':').b q.subSet(':').c q.subSet(':').d];
+    [uniqueRows,~,ic] = unique(inArray,'rows','stable');
+    counts = accumarray(ic, 1);
+    [~, maxIdx] = max(counts);
+    qMode = uniqueRows(maxIdx, :);
+    %%
+
     qm = quaternion(qMode(1,1),qMode(1,2),qMode(1,3),qMode(1,4));
     if nargout == 3
         %             [qm,lambda, V] = mode(q.subSet(id),varargin{:});

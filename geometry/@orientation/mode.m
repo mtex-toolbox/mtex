@@ -42,26 +42,27 @@ if check_option(varargin,'noSymmetry')
 
 else
 
-    s = size(o);
-
-    % first approximation
-    m = get_option(varargin,'q0');
-    if isempty(m), m = o.subSet(find(~isnan(o.a),1)); end
-
-    % project around q_mean
-    o = project2FundamentalRegion(o,m);
-
-    % compute mode without symmetry
-    %   m = mode@quaternion(o,varargin{:});
+    %     s = size(o);
+    %
+    %     % first approximation
+    %     m = get_option(varargin,'q0');
+    %     if isempty(m), m = o.subSet(find(~isnan(o.a),1)); end
+    %
+    %     % project around q_mean
+    %     o = project2FundamentalRegion(o,m);
+    %
+    %     % compute mode without symmetry
+    %     %   m = mode@quaternion(o,varargin{:});
+    %     [m, lambda, eigv] = mode@quaternion(o,varargin{:});
+    %
+    %     d = abs(quat_dot(o,m));
+    %     if min(d(:)) < cos(10*degree)
+    %         o = project2FundamentalRegion(o,m);
+    %         %     m = mode@quaternion(o,varargin{:});
+    %         [m, lambda, eigv] = mode@quaternion(o,varargin{:});
+    %     end
+    
     [m, lambda, eigv] = mode@quaternion(o,varargin{:});
-
-    d = abs(quat_dot(o,m));
-    if min(d(:)) < cos(10*degree)
-        o = project2FundamentalRegion(o,m);
-        %     m = mode@quaternion(o,varargin{:});
-        [m, lambda, eigv] = mode@quaternion(o,varargin{:});
-    end
-
     if nargout > 1, o = reshape(project2FundamentalRegion(o,m),s); end
 
 end
