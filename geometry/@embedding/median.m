@@ -1,13 +1,13 @@
 function obj = median(obj,varargin)
-% arithmetic mean of embedding
+% arithmetic median of embedding
 %
 % Syntax
-%   median(e)   % take the mean along the first non singular dimension
-%   median(e,d) % take the mean along dimension d
+%   median(e)   % take the median along the first non singular dimension
+%   median(e,d) % take the median along dimension d
 %
 % Input
 %  e - @embedding
-%  d - dimension of sum over
+%  d - dimension to calculate over
 %
 % Output
 %  e - @embedding
