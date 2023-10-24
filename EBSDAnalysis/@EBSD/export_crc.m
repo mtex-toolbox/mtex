@@ -18,12 +18,6 @@ function export_crc(ebsd,pfName)
 % and located at:
 % ~\mtex\EBSDAnalysis\@EBSD
 %
-%% Dependencies:
-% This function also uses the following scripts:
-% calcStepSize
-% getCPRInfo
-% located at: https://github.com/AzdiarGazder/mtexTools
-%
 %% Syntax:
 % exportCRC(ebsd,pfName)
 %
