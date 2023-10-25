@@ -57,6 +57,8 @@ if sS.CS.Laue ~= eps.CS.Laue
   return
 end
 
+% ensure slip systems are symmetrised including +- of each slipSystem
+sS = sS.ensureSymmetrised;
 
 % ensure strain is symmetric
 eps = eps.sym;
@@ -126,8 +128,6 @@ if nargout <=2, return; end
 spin = spinTensor(b*sSeps.antiSym);
 
 end
-
-
 
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
