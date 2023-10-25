@@ -1,25 +1,25 @@
-function [minMtheta, R, Mtheta, rhoTheta]  = calcRValue(ori,sS,varargin)
-% plastic anisotropy ratio from ODF or orientations
+function [R, minM, M]  = calcRValue(ori,sS,varargin)
+% plastic anisotropy ratio, R-value or Lankford coefficient from ODF or orientations
 %
 % Description
-% This function computes the minimum Taylor factor (M) and the plastic 
-% anisotropy ratio (R-value) as a function of the angle theta to the tensile 
-% direction.
+% This function computes the minimum Taylor factor (M) and the plastic
+% anisotropy ratio (R-value, Lankford coefficient) as a function of the
+% angle theta between the tensile direction and the rolling direction.
 %
 % Syntax:
-%  [minMtheta, R, Mtheta, rhoTheta] = calcRValue(ori,sS,tA,theta)
+%  [R, minM, M] = calcRValue(ori,sS,theta,tA)
 %
 % Input:
 %  ori - @orientation
 %  sS  - @slipSystem
-%  tA  - @vector3d - tensile axis
-%  theta - angle to the tensile direction, default 0,5,10,..,90 degree
+%  theta - angle between tA and rD, default 0,5,10,..,90 degree
+%  tA  - @vector3d - tensile axis, default x
+%  rD  - @vector3d - rolling direction, default z 
 %
 % Output:
-%  minMtheta - minimum Taylor factor
-%  R         - plastic anisotropy ratio (R-value) at minimum Taylor factor
-%  Mtheta    - Taylor factor
-%  rhoTheta  - plastic strain (rho)
+%  R    - plastic anisotropy ratio (R-value) with minimum Taylor factor as a function of theta
+%  minM - minimum Taylor factor as a function of theta
+%  M    - Taylor factor as a function of theta and R
 %
 % Options:
 %  silent - supress output
@@ -46,13 +46,8 @@ sS = sS.ensureSymmetrised;
 % get tensial axis and theta
 theta = linspace(0,90*degree,19);
 tA = xvector;
-
-if nargin >=3 && isa(varargin{1},'vector3d')
-  tA = varargin{1};
-
-  % get the theta angle
-  if nargin >=4 && isa(varargin{2},'double'), theta = varargin{2}; end
-end
+if nargin >=3 && isa(varargin{1},'double'), theta = varargin{1}; end
+if nargin >=4 && isa(varargin{2},'vector3d'), tA = varargin{2}; end
 
 % the rotation axis
 rA = zvector;
@@ -72,26 +67,26 @@ eps_sRF = velocityGradientTensor.uniaxial(tA,rho);
 strainTensor_xRF = inv(oriRot) * eps_sRF; %#ok<MINV>
                                                   
 % the Taylor factor for all strains and all orientations
-% Taylor factor (M) = ori x theta x strain (or rho) range
+% Taylor factor (M) = ori x theta x rho
 [M,~,~] = calcTaylor(strainTensor_xRF,sS);%,'silent');
-M = reshape(M,length(ori),length(theta),length(rho));
 
-% take the mean along ori -> Mtheta = strain x theta
-Mtheta = squeeze(mean(M,1)).'; 
+% average the Taylor factor over the texture (ori) -> M = rho x theta
+weights = get_option(varargin,'weights',ones(size(ori)));
+weights = weights ./ sum(weights);
+M = weights(:) .* reshape(M,length(ori),[]);
+M = reshape(M,length(theta),length(rho)).';
 
-% Find the minimum Taylor factor along the strain (or rho) range
-[minMtheta,idx] = min(Mtheta,[],1); 
+% find the minimum Taylor factor along the strain (rho)
+[minM,idx] = min(M,[],1); 
 
-% the corresponding R and rhoTheta values
-Rrange = rho ./ (1 - rho);
-R = Rrange(idx);
-rhoTheta = rho(idx);
+% the corresponding R value
+R = rho(idx) ./ (1 - rho(idx));
 
 if ~check_option(varargin,'silent')
   disp('---')
-  disp(['M at 0°  to RD = ',num2str(minMtheta(1))]);
-  disp(['M at 45° to RD = ',num2str(minMtheta(10))]);
-  disp(['M at 90° to RD = ',num2str(minMtheta(19))]);
+  disp(['M at 0°  to RD = ',num2str(minM(1))]);
+  disp(['M at 45° to RD = ',num2str(minM(10))]);
+  disp(['M at 90° to RD = ',num2str(minM(19))]);
   disp('---')
   disp(['R at 0°  to RD = ',num2str(R(1))]);
   disp(['R at 45° to RD = ',num2str(R(10))]);
