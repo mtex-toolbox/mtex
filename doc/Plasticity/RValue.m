@@ -47,7 +47,12 @@ sS = [slipSystem.basal(CS,1),...
 % angle $\theta$ between tensial direction and the ... direction.
 
 theta = linspace(0,90*degree,19);
-[R, minM, M] = calcRValue(grains.meanOrientation,sS,theta,'weights',grains.grainSize);
+[R, minM, M] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.grainSize);
+
+%%
+% The mean R-value is defined as ....
+
+Rbar = 0.5 * (R(1) + R(19) - 2*R(10))
 
 %%
 % This is recreates Fig. 3.10 on page 74 of: William F. Hosford, The
@@ -59,11 +64,11 @@ theta = linspace(0,90*degree,19);
 % ideal (1 1 0)[1 -1 2] Brass orientation. In the rolling direction test x
 % = [1 -1 2], and in the transverse test x = [-1 1 1].
 
-plot(linspace(0,1,11), M(:,[1,end]).','s-','lineWidth',1.5);
+plot(linspace(0,1,11), M(:,[1,10,19]).','s-','lineWidth',1.5);
 xlabel('{\rho} = -d{\epsilon}_Y / d{\epsilon}_X');
 ylabel('Relative strength, M = {\sigma}_x / {\tau}');
 
-legend('\theta=0^\circ','\theta=90^\circ','Location','north')
+legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','north')
 
 %%
 % some text
