@@ -24,7 +24,9 @@ else
   notempty=logical(grains3.I_CF);
 end
 
-grains3.I_CF(:,~notempty) = [];
+%grains3.I_CF(:,~notempty) = [];
+[~, boundId] = find(grains3.I_CF);
+boundInd = grains3.boundary.id2ind(unique(boundId));
 
-grains3.boundary=subSet(grains3.boundary, notempty);
+grains3.boundary=subSet(grains3.boundary, boundInd);
 end

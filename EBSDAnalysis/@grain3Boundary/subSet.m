@@ -12,7 +12,7 @@ function gB3 = subSet(gB3,ind)
 gB3.poly = gB3.poly(ind);
 gB3.id = gB3.id(ind);
 
-gB3.idV = unique([gB3.poly{:}]);
+gB3.idV = intersect(gB3.idV,unique([gB3.poly{:}]));
 
 % properties
 gB3 = subSet@dynProp(gB3,ind);

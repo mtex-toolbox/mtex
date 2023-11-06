@@ -18,7 +18,7 @@ classdef grain3d < phaseList & dynProp
 
   methods
 
-    function grains = grain3d(V,poly,I_CF, ori, CSList, phaseList)
+    function grains = grain3d(V, poly, I_CF, ori, CSList, phaseList)
       %contructor
 
       if nargin >= 3
