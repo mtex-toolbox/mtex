@@ -2,7 +2,8 @@ classdef grain3Boundary < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    poly  % cell arry with all faces
+    poly                  % cell arry with all faces
+    grainId = zeros(0,2)  % id's of the neigbouring grains to a face
   end
   
   properties
@@ -18,7 +19,7 @@ classdef grain3Boundary < phaseList & dynProp
 
   methods
 
-    function gB = grain3Boundary(V,poly)
+    function gB = grain3Boundary(V, poly, grainId, phaseId, CSList, phaseMap)
       
       if isa(V, 'vector3d')
 
@@ -32,6 +33,16 @@ classdef grain3Boundary < phaseList & dynProp
       gB.idV = (1:length(V))';
       gB.poly = poly;
       gB.id = (1:length(poly))';
+      gB.grainId = grainId;
+
+      gB.phaseId = zeros(size(grainId));
+      b = find(grainId(:,1));
+      gB.phaseId(b,1) = phaseId(grainId(b,1));
+      b = find(grainId(:,2));
+      gB.phaseId(b,2) = phaseId(grainId(b,2));
+
+      gB.CSList = CSList;
+      gB.phaseMap = phaseMap;
       
     end
 

@@ -24,7 +24,6 @@ classdef grain3d < phaseList & dynProp
       if nargin >= 3
         grains.id=(1:size(I_CF,1)).';
         grains.I_CF=I_CF;
-        grains.boundary=grain3Boundary(V,poly);
       else
         error 'too less arguments'
       end
@@ -54,6 +53,17 @@ classdef grain3d < phaseList & dynProp
       end
 
       grains.grainSize = ones(size(poly));
+
+      % compute neighbouring grains to a boundary segment
+      grainId = zeros(size(I_CF,2),2);
+      [a,b] = find(I_CF == 1);
+      grainId(b,1) = a;
+      [a,b] = find(I_CF == -1);
+      grainId(b,2) = a;
+
+      % boundary
+      grains.boundary=grain3Boundary(V, poly, grainId, grains.phaseId, ...
+        grains.CSList, grains.phaseMap);
 
     end
 
