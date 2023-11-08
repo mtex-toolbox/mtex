@@ -21,7 +21,7 @@ function [grains] = load(filepath)
   end
 
   CSList = {'notIndexed',crystalSymmetry(crysym)};
-  phaseList = 2*ones(size(poly));
+  phaseList = 2*ones(size(I_CF,1),1);
 
   grains = grain3d(V, poly, I_CF, ori, CSList, phaseList);
 
