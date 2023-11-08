@@ -6,7 +6,7 @@ classdef grain3Boundary < phaseList & dynProp
   end
   
   properties
-    idV      % ids of the used verticies
+    idV      % ids of the used verticies ?
     allV     % verticies
   end
 

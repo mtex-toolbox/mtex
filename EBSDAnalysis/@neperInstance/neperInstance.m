@@ -49,7 +49,7 @@ classdef neperInstance < handle
 %  newfolder  - boolean, if true, new folder will be created, default: true;
 %
 % See also
-% grain2d.load
+% grain2d.load grain3d.load
 
 
 properties

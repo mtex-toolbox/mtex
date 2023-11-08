@@ -47,6 +47,12 @@ classdef grain3d < phaseList & dynProp
         grains.phaseId = ones(length(grains.id),1);
       end
 
+      if nargin>=7
+        grains.phaseMap = phaseMap;
+      else
+        grains.phaseMap = 1:length(grains.CSList);
+      end
+
       grains.grainSize = ones(size(poly));
 
     end
