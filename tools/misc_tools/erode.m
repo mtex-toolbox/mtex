@@ -19,7 +19,7 @@ function ebsd = erode(ebsd,count, varargin)
 % Output
 %  ebsd - @EBSD without the eroded pixels
 % 
-% Example
+% Examples
 %
 % mtexdata small
 % plot(ebsd); hold on
@@ -31,7 +31,6 @@ function ebsd = erode(ebsd,count, varargin)
 % plot(ebsd); hold on
 % plot(ebsd('n'),'FaceColor','k'); hold off;
 % mtexTitle('no single nonIndexed pixels');  nextAxis
-
 % 
 % % erode isolated, nonIndexed points
 % for i=1:10
