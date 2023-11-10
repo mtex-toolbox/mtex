@@ -44,15 +44,19 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
-  F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut,varargin{:}),sS.CS,eps.CS);
-  % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
-  SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
-  M = SO3F(1);
-  if nargout>1
-    b = [];
-    spin = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
-    % to be compareable set output to rightspintensor
-    spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+  for k = 1:length(eps)
+    epsLocal = strainTensor(eps.M(:,:,k));
+    F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
+  
+    % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
+    SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
+    M(k) = SO3F(1);
+    if nargout>1
+      b = [];
+      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
+      % to be compareable set output to rightspintensor      
+      spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+    end
   end
   return
 end
