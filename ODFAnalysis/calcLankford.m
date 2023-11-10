@@ -1,4 +1,4 @@
-function [R, minM, M]  = calcLankford(ori,sS,varargin)
+function [R, M, minM]  = calcLankford(ori,sS,varargin)
 % Lankford coefficient or R-value from orientations or ODF
 %
 % Description
@@ -31,8 +31,8 @@ function [R, minM, M]  = calcLankford(ori,sS,varargin)
 %  
 % Output:
 %  R    - plastic anisotropy ratio (R-value) with minimum Taylor factor as a function of theta
-%  minM - minimum Taylor factor as a function of theta
 %  M    - Taylor factor as a function of theta and R
+%  minM - minimum Taylor factor as a function of theta
 %
 % Options:
 %  verbose - show summary
@@ -61,21 +61,35 @@ rho = linspace(0,1,11); % 0-100 % uniaxial tension
 TD = cross(RD,ND);
 eps =  strainTensor(RD * RD) - rho .* strainTensor(TD*TD) ...
   -(1 - rho) .* strainTensor(ND*ND);
-
-% rotate the tensile axis within the rolling plane by angle theta
-% eps -> theta x rho
-eps =  rotation.byAxisAngle(ND,-theta) *eps;
                                                  
-% the Taylor factor for all strains and all orientations
-% Taylor factor M = ori x theta x rho
-M = calcTaylor(inv(ori) * eps,sS);
+if isa(ori,"orientation")
 
-% average the Taylor factor over the texture (ori) -> M = theta x rho
-weights = get_option(varargin,'weights',ones(size(ori)));
-weights = weights ./ sum(weights);
-M = weights(:).' * reshape(M,length(ori),[]);
-% tranpose M -> rho x theta
-M = reshape(M,length(theta),length(rho)).';
+  % rotate the tensile axis within the rolling plane by angle theta
+  % eps -> theta x rho
+  eps =  rotation.byAxisAngle(ND,-theta) *eps;
+
+  % the Taylor factor for all strains and all orientations
+  % Taylor factor M = ori x theta x rho
+  M = calcTaylor(inv(ori) * eps,sS);
+
+  % average the Taylor factor over the texture (ori) -> M = theta x rho
+  weights = get_option(varargin,'weights',ones(size(ori)));
+  weights = weights ./ sum(weights);
+  M = weights(:).' * reshape(M,length(ori),[]);
+  % tranpose M -> rho x theta
+  M = reshape(M,length(theta),length(rho)).';
+
+else
+
+  bw = get_option(varargin,'bandwidth',16);
+  odf = SO3FunHarmonic(ori,'bandwidth',bw);
+  MFun = calcTaylor(eps,sS,'bandwidth',bw);
+
+  for k = 1:length(theta)
+    M(:,k) =  cor(MFun, rotate(odf,rotation.byAxisAngle(ND,theta(k))));
+  end
+
+end
 
 % find the minimum Taylor factor along the strain anisotropy
 [minM,idx] = min(M,[],1); 
