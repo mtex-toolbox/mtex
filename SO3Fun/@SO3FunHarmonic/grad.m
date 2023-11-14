@@ -73,7 +73,7 @@ for n=1:SO3F.bandwidth
 
 end
 
-g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS, 'left');
+g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) , SO3F.CS,SO3F.SS,SO3TangentSpace.leftVector);
 
 if nargin > 1 && isa(varargin{1},'rotation')
   ori = varargin{1};

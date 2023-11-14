@@ -109,8 +109,10 @@ if isappdata(0,'mtex')
   
   rmappdata(0,'mtex');
   if isappdata(0,'tmpData'), rmappdata(0,'tmpData'); end
-  if isappdata(0,'data2beDisplayed'), rmappdata(0,'data2beDisplayed'); end
-  
+  for k=1:10
+    name = ['data2beDisplayed_' int2str(k)];
+    if isappdata(0,name), rmappdata(0,name); end
+  end
   disp('I found another version of MTEX and remove it from the current search path!');
   
   close all

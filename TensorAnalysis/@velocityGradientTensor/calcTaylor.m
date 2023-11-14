@@ -1,4 +1,4 @@
-function [M,b,spin] = calcTaylor(eps,sS,varargin)
+function varargout = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
@@ -39,4 +39,4 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % spin = eps.antiSym;
 
 eps = strainTensor(eps);
-[M,b,spin] = calcTaylor(eps,sS,varargin{:});
+[varargout{1:nargout}] = calcTaylor(eps,sS,varargin{:});

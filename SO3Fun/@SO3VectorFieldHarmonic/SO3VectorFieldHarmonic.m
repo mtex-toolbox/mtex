@@ -7,7 +7,7 @@ properties
   SO3F
   SRight
   SLeft
-  tangentSpace = 'left'
+  tangentSpace = SO3TangentSpace.leftVector
 end
 
 properties(Dependent = true)
@@ -16,6 +16,10 @@ properties(Dependent = true)
   z
   bandwidth
   isReal
+end
+
+properties (Hidden = true)
+  internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
 end
 
 methods
@@ -27,23 +31,18 @@ methods
     
     if isa(SO3F,'SO3FunHarmonic')
       SO3VF.SO3F = SO3FunHarmonic(SO3F(:));
+      
       % extract symmetry
-      isSym = cellfun(@(x) isa(x,'symmetry'),varargin,'UniformOutput',true);
-      [SRight,SLeft] = extractSym(varargin);
-      if ~any(isSym), SRight=crystalSymmetry; end
-
-      if check_option(varargin,'right')
-        SO3VF.tangentSpace = 'right';
-        SO3VF.SRight = SRight;
-      else
-        SO3VF.tangentSpace = 'left';
-        SO3VF.SLeft = SLeft;
-      end
+      [SO3VF.SRight,SO3VF.SLeft] = extractSym(varargin);
+      SO3VF.SRight = SO3F.SRight;
+      
+      SO3VF.internTangentSpace = SO3TangentSpace.extract(varargin{:});
+   
       return
     end
 
     if isa(SO3F,'SO3VectorFieldHarmonic')
-      SO3VF = SO3VectorFieldHarmonic(SO3F.SO3F,SO3F.CS,SO3F.SS,SO3F.tangentSpace);
+      SO3VF = SO3VectorFieldHarmonic(SO3F.SO3F,SO3F.CS,SO3F.SS,SO3F.internTangentSpace);
       return
     end
     
@@ -55,57 +54,17 @@ methods
 
   end
 
-
   % -----------------------------------------------------------------------
-  % Representation of the tangent space   and   Symmetries
-
-  function SO3VF = set.tangentSpace(SO3VF,s)
-    if strcmp(s,'left') && strcmp(SO3VF.tangentSpace,'right')
-      SO3VF.tangentSpace = s;
-      SO3VF.SLeft = specimenSymmetry;
-      if length(SO3VF.SLeft.rot)>1
-        warning('You may loose symmetry.')
-      end
-    elseif strcmp(s,'right') && strcmp(SO3VF.tangentSpace,'left')
-      SO3VF.tangentSpace = s;
-      SO3VF.SRight = crystalSymmetry;
-      if length(SO3VF.SRight.rot)>1
-        warning('You may loose symmetry.')
-      end
-    end
-  end
 
 
-  function SRight = get.SRight(SO3VF)
-    if strcmp(SO3VF.tangentSpace,'left')
-      SRight = SO3VF.SO3F.SRight;
-    else
-      SRight = SO3VF.SRight;
-    end
-  end
   function SO3VF = set.SRight(SO3VF,SRight)
-    if strcmp(SO3VF.tangentSpace,'left')
-      SO3VF.SO3F.SRight = SRight;
-    else
-      SO3VF.SRight = SRight;
-    end
-  end
-  function SLeft = get.SLeft(SO3VF)
-    if strcmp(SO3VF.tangentSpace,'right')
-      SLeft = SO3VF.SO3F.SLeft;
-    else
-      SLeft = SO3VF.SLeft;
-    end
-  end
-  function SO3VF = set.SLeft(SO3VF,SLeft)
-    if strcmp(SO3VF.tangentSpace,'right')
-      SO3VF.SO3F.SLeft = SLeft;
-    else
-      SO3VF.SLeft = SLeft;
-    end
+    SO3VF.SRight = SRight;   
   end
 
-  % -----------------------------------------------------------------------
+  function SO3VF = set.SLeft(SO3VF,SLeft)
+    SO3VF.SLeft = SLeft;
+  end
+
 
   function bw = get.bandwidth(SO3VF), bw = SO3VF.SO3F.bandwidth; end
   function SO3VF = set.bandwidth(SO3VF,bw), SO3VF.SO3F.bandwidth = bw; end

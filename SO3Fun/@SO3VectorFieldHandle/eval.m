@@ -20,12 +20,6 @@ function f = eval(SO3VF,ori,varargin)
 
 f = SO3VF.fun(ori);
 
-% Make output right/left dependent from the input flag
 f = SO3TangentVector(f,SO3VF.tangentSpace);
-if check_option(varargin,'right')
-  f = right(f,ori);
-elseif check_option(varargin,'left')
-  f = left(f,ori);
-end
 
 end

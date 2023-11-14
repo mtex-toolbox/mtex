@@ -30,48 +30,36 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 %  SO3TV - @SO3TangentVector
 %
 % Options
-%  left/right - describes the representation of the tangent space (default: left)
+%  left  - ori_ref multiplies from the right (default)
+%  right - ori_ref multiplies from the left
 %
 % See also
 % vector3d.vector3d SO3VectorField.eval SO3VectorFieldHarmonic.eval
 % SO3Fun.grad SO3FunHarmonic.grad
 
+% t_left * ori_ref = ori_ref * t_right
+% -> t_left = ori_ref * t_right * inv(ori_ref)
+
+
 properties
-  tangentSpace
+  tangentSpace SO3TangentSpace
 end
 
 methods
 
   function SO3TV = SO3TangentVector(varargin)
     % constructor
-    v=[];
-    if nargin>0 && isa(varargin{1},'vector3d')
-      v = varargin{1};
-      varargin = {v.x,v.y,v.z,varargin{2:end}};
-    end
 
     SO3TV = SO3TV@vector3d(varargin{:});
 
-    if isa(v,'SO3TangentVector')
-      SO3TV = v;
-      return
-    end
-
-    if check_option(varargin,'right')
-      SO3TV.tangentSpace = 'right';
+    if nargin > 0 && isa(varargin{1},'SO3TangentVector')
+      
+      SO3TV = varargin{1};
     else
-      SO3TV.tangentSpace = 'left';
-    end
-
-  end
-
-  function SO3TV = set.tangentSpace(SO3TV,s)
-    if strcmp(s,'left') || strcmp(s,'right')
-      SO3TV.tangentSpace = s;
+      SO3TV.tangentSpace = getClass(varargin,'SO3TangentSpace',SO3TangentSpace.leftVector);
     end
   end
-
-
+  
   % -----------------------------------------------------------------------
   % check for some overloaded methods that the representation of the
   % tangent space is the same and assure that the result is again a
@@ -154,7 +142,24 @@ methods
     v = SO3TangentVector(v,tS);
   end
 
+  function tV = transformTangentSpace(tV,newtS,ori)
+    
+    if sign(tV.tangentSpace) > sign(newtS)
+      % transform from left to right
+      tV = inv(ori) .* tV;
+    elseif sign(tV.tangentSpace) < sign(newtS)
+      % transform from right to left 
+      tV = ori .* tV;
+    end
+
+    if abs(newtS) > 1
+      tV = spinTensor(tV);
+    else
+      tV = SO3TangentVector(tV,newtS);
+    end
+  end
+end
 end
 
-end
+
 

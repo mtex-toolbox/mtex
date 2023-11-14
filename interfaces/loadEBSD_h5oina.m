@@ -21,8 +21,7 @@ function [ebsd] = loadEBSD_h5oina(fname,varargin)
 %                        (replaces Bands, Error, Euler, MAD, Phase)
 %   fullDataset        - also read additional EBSD related data
 %                        (Beam_Position, Pattern Center etc...)
-% 
-% 
+%
 % TODO
 % 1) Test if EBSDheader.Specimen_Orientation_Euler does what it's supposed
 %    to do -> see below. <-- looks like this is in some datasets stored in
@@ -31,7 +30,6 @@ function [ebsd] = loadEBSD_h5oina(fname,varargin)
 %    cell?
 % 3) decide what header data to use and how to display it? Fix display for
 % the header to be shown correctly (bc. ebsd.opt.Header sort of works)
-
 
 all = h5info(fname);
 
@@ -294,7 +292,6 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
 
 
 
-    
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
     % CS1 (sample surface) into CS0 (sample primary),
@@ -311,7 +308,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
 
     % set up EBSD data
     if check_option(varargin,'CS0')
-        rot = rc*rotation.byEuler(EBSDdata.Euler'); 
+        rot = rc*rotation.byEuler(EBSDdata.Euler');
     else
         rot = rotation.byEuler(EBSDdata.Euler'); %don't rotate - keep CS1 (default - acquisition surface0
     end
@@ -351,23 +348,11 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
 
-    % 
-    % %---------------------old----------------------------
-    % phase = EBSDdata.Phase;
-    % opt=struct;
-    % pos = vector3d(EBSDdata.X,EBSDdata.Y,0);
-    % opt.bc = EBSDdata.Band_Contrast;
-    % opt.bs = EBSDdata.Band_Slope;
-    % opt.bands = EBSDdata.Bands;
-    % opt.MAD = EBSDdata.Mean_Angular_Deviation;
-    % opt.quality = EBSDdata.Pattern_Quality;
-    % %---------------------old----------------------------
-
     % if available, add EDS data
     if exist('EDSdata','var')
         eds_names = fieldnames(EDSdata);
         for j =1 :length(eds_names)
-        opt.(eds_names{j}) = EDSdata.(eds_names{j});
+            opt.(eds_names{j}) = EDSdata.(eds_names{j});
         end
     end
 
@@ -379,25 +364,25 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     ebsdtemp = EBSD(pos,rot,phase,CS,opt);
     ebsdtemp.opt.Header = EBSDheader;
 
-     % if available, add Image data
+    % if available, add Image data
     if exist('Imagedata','var')
         image_names = fieldnames(Imagedata);
         for j =1 :length(image_names)
-        ebsdtemp.opt.Images.(image_names{j}) = Imagedata.(image_names{j});
+            ebsdtemp.opt.Images.(image_names{j}) = Imagedata.(image_names{j});
         end
         ebsdtemp.opt.Images.Header = Imageheader;
     end
-    
+
     if length(EBSD_index) > 1
         ebsd{k} = ebsdtemp;
     else
         ebsd = ebsdtemp;
     end
 
-    warning(['Please make sure that you correct for the very probable ' ...
-         'inconsitencies between coordinate systems. '  ...
-         'Example:' newline ...
-         'rot = rotation.byAxisAngle(yvector,180*degree)' newline ...
-         'ebsd = rotate(ebsd,rot,''keepXY'')' newline]);
-
+end
+warning(['Please make sure that you correct for the very probable ' ...
+    'inconsitencies between coordinate systems. '  ...
+    'Example:' newline ...
+    'rot = rotation.byAxisAngle(yvector,180*degree)' newline ...
+    'ebsd = rotate(ebsd,rot,''keepXY'')' newline]);
 end

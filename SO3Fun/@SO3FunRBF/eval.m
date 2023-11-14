@@ -22,6 +22,11 @@ function f = eval(SO3F,g,varargin)
 %   ensureCompatibleSymmetries(SO3F,g)
 % end
 
+% the constant part
+f = SO3F.c0 * ones(size(g));
+
+if isempty(SO3F.weights), return; end
+
 % decide along which dimension to split the summation matrix
 if isa(g,'SO3Grid')
   lg1 = length(g);
@@ -43,7 +48,6 @@ else
 end
 
 % init variables
-f = SO3F.c0 * ones(size(g));
 iter = 0; numiter = 1; ind = 1; %for first run
 
 % now iterate along the splitting

@@ -151,7 +151,7 @@ classdef tensor < dynOption
 
       if T.rank == 2 || T.rank == 4
 
-        isSym = norm(T - ctranspose(T,'skipCorrection')) ./ norm(T) < 1e-6;
+        isSym = norm(T - ctranspose(T,'skipCorrection')) ./ (1e-12+norm(T)) < 1e-6;
       
       else
         

@@ -1,4 +1,4 @@
-function rot = exp(v,rot_ref,varargin)
+function rot = exp(v,rot_ref,tS)
 % rotation vector to rotation
 %
 % Syntax
@@ -35,7 +35,7 @@ else
   rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
 end
 
-if nargin>2 && check_option(varargin,'left')
+if nargin>2 && tS.isLeft
   rot =  rot .* rot_ref;
 elseif nargin>1
   rot =  rot_ref .* rot;

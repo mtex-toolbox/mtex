@@ -8,11 +8,10 @@ if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
 % verify all conditions are satisfies
-inside1 = dot_outer(oR.N,q)<1e-3;
-inside2 = dot_outer(oR.N,q)>-1e-3;
+d = dot_outer(oR.N,q);
 
 % either q or -q needs to satisfy the condition
-inside = reshape(all(inside1,1) | all(inside2,1),size(q));
+inside = reshape(all(d<1e-3,1) | all(d>-1e-3,1),size(q));
  
 end
  
