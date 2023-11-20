@@ -13,8 +13,6 @@ classdef grain3Boundary < phaseList & dynProp
 
   properties (Dependent)
     V
-    faceNormals
-    faceCentroids
   end
 
   methods
@@ -52,14 +50,6 @@ classdef grain3Boundary < phaseList & dynProp
 
     function gB3 = set.V(gB3,V)
       gB3.allV = V;
-    end
-
-    function normals = get.faceNormals(gB3)
-      normals = vector3d(meshFaceNormals(gB3.allV.xyz, gB3.poly))';
-    end
-
-    function centroids = get.faceCentroids(gB3)
-      centroids = vector3d(meshFaceCentroids(gB3.allV.xyz, gB3.poly))';
     end
 
   end
