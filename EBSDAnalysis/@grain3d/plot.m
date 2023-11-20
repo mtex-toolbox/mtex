@@ -1,5 +1,7 @@
 function varargout = plot(grains,varargin)
-% colorize grains
+% colorize grains, or more percise their faces
+%
+% Only outer faces, the inner grains have the color gray [0.5 0.5 0.5].
 %
 % Syntax
 %   plot(grains)          % colorize by phase

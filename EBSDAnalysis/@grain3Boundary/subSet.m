@@ -11,6 +11,8 @@ function gB3 = subSet(gB3,ind)
 
 gB3.poly = gB3.poly(ind);
 gB3.id = gB3.id(ind);
+gB3.grainId = gB3.grainId(ind,:);
+gB3.phaseId = gB3.phaseId(ind,:);
 
 gB3.idV = intersect(gB3.idV,unique([gB3.poly{:}]));
 

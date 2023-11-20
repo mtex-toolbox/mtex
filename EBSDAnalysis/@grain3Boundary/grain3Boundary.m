@@ -4,6 +4,7 @@ classdef grain3Boundary < phaseList & dynProp
     id = []
     poly                  % cell arry with all faces
     grainId = zeros(0,2)  % id's of the neigbouring grains to a face
+                          % (faceNormals direction from grain#1 to grain#2)
   end
   
   properties

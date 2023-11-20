@@ -3,8 +3,8 @@ classdef grain3d < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    I_CF  %incidenc matrix cells x face
-    grainSize = [] % number of measurements per grain
+    I_CF            % incidenc matrix cells x face
+    grainSize = []  % number of measurements per grain
   end
 
   properties
