@@ -14,6 +14,7 @@ classdef grain3d < phaseList & dynProp
   properties (Dependent)
     V     %verticies
     poly  %
+    meanOrientation
   end
 
   methods
@@ -73,6 +74,17 @@ classdef grain3d < phaseList & dynProp
 
     function poly = get.poly(grains)
       poly = grains.boundary.poly;
+    end
+
+    function ori = get.meanOrientation(grains)
+      if isempty(grains)
+        ori = orientation;
+      else
+        ori = orientation(grains.prop.meanRotation,grains.CS);
+        
+        % set not indexed orientations to nan
+        if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
+      end
     end
 
   end
