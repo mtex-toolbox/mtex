@@ -1,6 +1,60 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 6.0.beta.1 9/2023
+%
+% *Pseudo 3d EBSD and Grain maps*
+%
+% With version 6.0 MTEX starts to support pseudo 3d EBSD data. This means
+% that EBSD maps are not longer supposed to are in the xy-plane. For
+% example it is now possible to consider EBSD maps that represent the three
+% faces of a cube. To make this possible multiple changes at the core of
+% MTEX had to be introduced:
+%
+% * |ebsd.pos| gives the position of the EBSD measurements and is of type
+% @vector3d
+% * many grain properties like vertices |grains.V|, centroid |grains.centroid|
+% or long axis |grains.longAxis| are now of type @vector3d.
+% * |ebsd.N|, |grains.N| gives the normal direction of a EBSD map
+% * it is not possible to merge EBSD maps with different normal direction
+% into one variable
+%
+% *Free three dimensional plotting of EBSD maps, pole figures, etc.*
+%
+% * Plotting of EBSD and grain maps is now possible in 3d
+% * The alignment of x, y and z on the screen is now controlled by an
+% object of type @plottingConvention. The code
+%
+%   how2plot = plottinConvention
+%   how2plot.outOfScreen = ebsd.N
+%   how2plot.east = yvector
+%   plot(ebsd, how2plot)
+%
+% would plot an EBSD map with its normal direction out of the screen an the
+% y-vector pointing to north.
+% * A default plotting convention can be stored directly in the EBSD or
+% grain variable via
+%
+%   ebsd.plottingConvention = how2plot
+%
+% * The plotting convention can also passed to any spherical plot. This
+% allows e.g. to plot pole figures with an arbitrary direction sticking out
+% of the screen.
+%
+% * As consequence |'upper'| and |'lower'| refers to the outOFScreen
+% direction.
+%
+% *Interface to Neper*
+% Neper is an open source software package for 3d polycrystal generation
+% and meshing. It is now possible to call Neper from within MTEX, simulate
+% microstructures, generated slices through a 3d volume and import those
+% slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
+% more information.
+%
+%% MTEX 5.10.1 9/2023
+% 
+% This is mainly a bug fix release.
+%
 %% MTEX 5.10.0 5/2023
 %
 % *Weigthed Burgers Vector*
