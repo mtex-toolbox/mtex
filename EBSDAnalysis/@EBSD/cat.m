@@ -19,4 +19,5 @@ for k = 2:numel(varargin)
   ebsd.phaseId = cat(1,ebsd.phaseId,varargin{k}.phaseId);
   ebsd.id = cat(1,ebsd.id,varargin{k}.id);
   ebsd.rotations = cat(1,ebsd.rotations,varargin{k}.rotations);
+  ebsd.pos = cat(1,ebsd.pos,varargin{k}.pos);
 end
