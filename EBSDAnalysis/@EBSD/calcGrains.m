@@ -64,9 +64,8 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-if isa(ebsd,'EBSDsquare')
-  [V,F,I_FD] = spatialDecompositionAlpha(ebsd.prop.x, ebsd.prop.y,...
-    ebsd.isIndexed,ebsd.dx,ebsd.dy,ebsd.extent,varargin{:});
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
 else
   [V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
 end

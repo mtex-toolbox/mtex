@@ -68,11 +68,12 @@ classdef EBSDsquare < EBSD
       [x,y] = ind2sub(size(ebsd),ind);
     end
 
-    function [ebsd,newId] = gridify(ebsd,varargin)
+    function [ebsd,newId] = Bify(ebsd,varargin)
       % nothing to do :)
       newId = (1:length(ebsd)).';
     end
-           
+
+        
     % --------------------------------------------------------------
     
     function out = get.xmin(ebsd)
@@ -127,7 +128,19 @@ classdef EBSDsquare < EBSD
       end
       
     end
-    
+   
+    function h = gridBoundary(ebsd)
+
+      x = ebsd.xmin:ebsd.dx:ebsd.xmax;
+      y = ebsd.ymin-ebsd.dy:ebsd.dy:ebsd.ymax+ebsd.dy;
+
+      h= [
+        repmat(ebsd.xmin-ebsd.dx, numel(y),1), y.' ; ...
+        x.', repmat(ebsd.ymin-ebsd.dy, numel(x), 1) ; ...
+        x.', repmat(ebsd.ymax+ebsd.dy, numel(x), 1) ; ...
+        repmat(ebsd.xmax+ebsd.dx, numel(y),1), y.'];
+    end
+
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 
@@ -138,8 +151,7 @@ classdef EBSDsquare < EBSD
     % the following output should be constant
     % gO = log(ori1,ori2.symmetrise,'left') % true for this
     % gO = log(ori1.symmetrise,ori2,'left') % true for this
-    
-    
+       
   end
       
 end
