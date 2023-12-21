@@ -20,6 +20,7 @@ function [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin)
 X = ebsd.prop.x;
 Y = ebsd.prop.y;
 isIndexed = ebsd.isIndexed;
+ext = ebsd.extent;
 
 % get the alpha parameter
 dx = ebsd.dx;
@@ -48,6 +49,10 @@ else
   % 2. condition: dist to alpha shape should be larger dxy
   [~,dist] = nearestNeighbor(shp,X,Y);
   toAdd  = toAdd & dist > dxy;
+
+  % 3. condition point should not be directly at the boundary
+  toAdd  = toAdd & X > ext(1)+dxy/100 & X < ext(2)-dxy/100 & ... 
+    Y > ext(3)+dxy/100 & Y < ext(4)-dxy/100;
 
   % 3. condition: may not be needed
   %toAdd = toAdd & ~inShape(shp,X+(dx/2+eps),Y-(dy/2+eps));
