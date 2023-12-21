@@ -52,14 +52,12 @@ plot(ebsd)
 % <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
 % and returns a list of grain.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree)
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree);
+grains
 
 %%
-% The reconstructed grains are stored in the variable |grains|.
-% Note that also the notIndexed measurements are grouped into grains. This
-% allows later to analyze the shape of these unindexed regions.
-%
-% To visualize the grains we can plot its boundaries by the command
+% The reconstructed grains are stored in the variable |grains|. To
+% visualize the grains we can plot its boundaries by the command
 % <grainBoundary.plot.html |plot|>.
 
 % start overide mode
@@ -75,7 +73,7 @@ hold off
 % Increasing the parameter |'alpha'| larger unindexed regions are
 % associated to grains.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree)
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree);
 
 plot(ebsd)
 hold on
