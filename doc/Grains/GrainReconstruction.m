@@ -4,12 +4,12 @@
 % By grain reconstruction we mean the subdivision of the specimen, or more
 % precisely the measured surface of the specimen, into regions of similar
 % orientation which we then call grains. Note that there is no canonical
-% definition of what is a grain. The grain reconstruction method that is
-% default in MTEX is based on the definition of high angle grain boundaries
-% which are assumed at the perpendicular bisector between neighbouring
-% measurements whenever their misorientation angle exceeds a certain
-% threshold. According to this point of view grains are regions surrounded
-% by grain boundaries.
+% definition of what is a grain. The default grain reconstruction method in
+% MTEX is based on the definition of high angle grain boundaries which are
+% assumed at the perpendicular bisector between neighbouring measurements
+% whenever their misorientation angle exceeds a certain threshold.
+% According to this point of view grains are regions surrounded by grain
+% boundaries.
 %
 % In order to illustrate the grain reconstruction process we consider the
 % following sample data set
@@ -44,15 +44,15 @@ plot(ebsd)
 % smallest unindexed region that will not be entirely assigned to
 % surrounding grains. The default of this value is 2.2.
 %
-% The second parameter that is involved in grain reconstruction is the
-% threshold misorientation angle indicating a grain boundary. By default,
-% this value is set to 10 degrees. 
+% The second parameter involved in grain reconstruction is the threshold
+% misorientation angle indicating a grain boundary. By default, this value
+% is set to 10 degrees.
 %
 % All grain reconstruction methods in MTEX are accessible via the command 
 % <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
 % and returns a list of grain.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',1.2,'angle',10*degree);
 grains
 
 %%
@@ -75,13 +75,9 @@ hold off
 
 [grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree);
 
-plot(ebsd)
-hold on
-
 % plot the boundary of all grains
-plot(grains.boundary,'linewidth',1.5)
-
-% stop overide mode
+hold on
+plot(grains.boundary,'linewidth',1.5,'lineColor','red')
 hold off
 
 %% Clearing Single Pixel Grains
@@ -118,8 +114,3 @@ plot(ebsd)
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
-
-
-
-
-
