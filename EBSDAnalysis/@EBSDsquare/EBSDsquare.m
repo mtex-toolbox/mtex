@@ -125,7 +125,19 @@ classdef EBSDsquare < EBSD
       end
       
     end
-    
+   
+    function h = gridBoundary(ebsd)
+
+      x = ebsd.xmin:ebsd.dx:ebsd.xmax;
+      y = ebsd.ymin-ebsd.dy:ebsd.dy:ebsd.ymax+ebsd.dy;
+
+      h= [
+        repmat(ebsd.xmin-ebsd.dx, numel(y),1), y.' ; ...
+        x.', repmat(ebsd.ymin-ebsd.dy, numel(x), 1) ; ...
+        x.', repmat(ebsd.ymax+ebsd.dy, numel(x), 1) ; ...
+        repmat(ebsd.xmax+ebsd.dx, numel(y),1), y.'];
+    end
+
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 

@@ -69,7 +69,7 @@ hold off
 % compute this average by using the command <ebsd.grainMean.html
 % |grainMean|>.
 
-GOS = grainMean(ebsd, grod.angle);
+GOS = grainMean(ebsd, grod.angle, grains);
 
 plot(grains, GOS ./ degree)
 mtexColorbar('title','GOS in degree')

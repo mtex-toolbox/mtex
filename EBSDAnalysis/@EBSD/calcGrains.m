@@ -64,8 +64,12 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-pos = ebsd.rot2Plane * ebsd.pos;
-[V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.rot2Plane*ebsd.unitCell,varargin{:});
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  pos = ebsd.rot2Plane * ebsd.pos;
+  [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+end
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -76,12 +80,18 @@ pos = ebsd.rot2Plane * ebsd.pos;
 % A_db - neigbhouring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
+% now we remove all empty grains
+notEmpty = full(any(I_FD * I_DG,1)).';
+I_DG = I_DG(:,notEmpty);
+
 % compute grain ids
-[grainId,~] = find(I_DG.');
+%[grainId,~] = find(I_DG.');
+grainId = full(I_DG * (1:size(I_DG,2)).');
+
 
 % phaseId of each grain
 phaseId = full(max(I_DG' * ...
-  spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
+  spdiags(ebsd.phaseId,0,length(ebsd),length(ebsd)),[],2));
 phaseId(phaseId==0) = 1; % why this is needed?
 
 % compute boundary this gives
@@ -117,20 +127,21 @@ grains = inv(ebsd.rot2Plane) * grains;
 
 grainRange    = [0;cumsum(grains.grainSize)];        %
 firstD        = d(grainRange(2:end));
+phaseId       = ebsd.phaseId;
 q             = quaternion(ebsd.rotations);
 meanRotation  = q(firstD);
-GOS = zeros(length(grains),1);
 
 % choose between equivalent orientations in one grain such that all are
 % close together
 for pId = grains.indexedPhasesId
-  ndx = ebsd.phaseId(d) == pId;
+  ndx = phaseId(d) == pId;
   if ~any(ndx), continue; end
   q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{pId},meanRotation(g(ndx)));
 end
 
 % compute mean orientation and GOS
 if 0
+  GOS = zeros(length(grains),1);
   doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
   abcd = zeros(length(doMeanCalc),4);
   for k = 1:numel(doMeanCalc)
@@ -141,12 +152,13 @@ if 0
   end
   meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
 else
-  [meanRotation, GOS] = accumarray(grainId(:),q(:),'robust');
+  [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
 end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
-mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
+mis2mean = rotation.nan(size(ebsd));
+mis2mean(grainId>0) = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')

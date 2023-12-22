@@ -53,7 +53,7 @@ classdef dislocationSystem
           dS.b = sS.b;
           warning('I could not determine the correct length of the Burgers vector. Please adjust it manually.')
         end
-        dS.l = cross(sS.b,sS.n);
+        dS.l = -cross(sS.n,sS.b);
         
         % define screw dislocations
         b = 0.5*unique(sS.b,'antipodal','noSymmetry');

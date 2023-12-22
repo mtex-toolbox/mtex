@@ -32,6 +32,9 @@ else
   nodes = orientation(nodes,SRight,SLeft);
 end
 
+%
+nodes = nodes(:);
+y = reshape(y,length(nodes),[]);
 
 % make points unique
 s = size(y);
@@ -51,20 +54,10 @@ maxit = get_option(varargin, 'maxit', 50);
 % TODO: What bandwidth?
 bw = get_option(varargin, 'bandwidth', min(dim2deg(length(nodes)*2),getMTEXpref('maxSO3Bandwidth')));
 
-W = get_option(varargin, 'weights');
-if check_option(varargin,'constantWeights')
-  W = 1/length(nodes);
-elseif isempty(W)
-  % TODO: calcVoronoiVolume is bad estimated
-  [~,i,~] = unique(quaternion(nodes));
-  nodes = nodes(i); y = y(i,:);
-  W = calcVoronoiVolume(nodes);
-else
-  W = accumarray(ind,W);
-end
-
+% extract weights
+W = get_option(varargin, 'weights',1/length(nodes));
+if length(W)>1, W = accumarray(ind,W); end
 W = sqrt(W(:));
-
 
 b = W.*y;
 
@@ -93,18 +86,18 @@ function y = afun(transp_flag, x, nodes, W,bw)
 
 if strcmp(transp_flag, 'transp')
 
-  x = x.*W;
-%   F = SO3FunHarmonic.quadrature(nodes,x,'keepPlan','nfsoft','bandwidth',bw);
-  F = SO3FunHarmonic.quadrature(nodes,x,'bandwidth',bw);
+  x = x .* W;
+  %   F = SO3FunHarmonic.quadrature(nodes,x,'keepPlan','nfsoft','bandwidth',bw);
+  F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
   y = F.fhat;
 
 elseif strcmp(transp_flag, 'notransp')
 
   F = SO3FunHarmonic(x,nodes.CS,nodes.SS);
   F.bandwidth = bw;
-%   y = F.eval(nodes,'keepPlan','nfsoft');
+  %   y = F.eval(nodes,'keepPlan','nfsoft');
   y = F.eval(nodes);
-  y = y.*W;
+  y = y .* W;
 
 end
 

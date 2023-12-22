@@ -41,6 +41,9 @@
 % allows e.g. to plot pole figures with an arbitrary direction sticking out
 % of the screen.
 %
+% * As consequence |'upper'| and |'lower'| refers to the outOFScreen
+% direction.
+%
 % *Interface to Neper*
 % Neper is an open source software package for 3d polycrystal generation
 % and meshing. It is now possible to call Neper from within MTEX, simulate
