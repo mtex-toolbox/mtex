@@ -43,6 +43,7 @@ end
       
       s = s@symmetry(id,rot);
       s.axes = axes;
+      s.how2plot = getMTEXpref("xyzPlotting");
              
     end
     

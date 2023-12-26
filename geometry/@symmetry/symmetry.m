@@ -10,7 +10,6 @@ classdef symmetry < matlab.mixin.Copyable
   properties (SetAccess = immutable)
     id = 1;               % point group id, compare to symList    
     rot = rotation.id     % the symmetry elements
-    how2plot = plottingConvention
   end
   
   properties
@@ -19,6 +18,7 @@ classdef symmetry < matlab.mixin.Copyable
   
   properties
     opt = struct
+    how2plot = plottingConvention
   end
 
   properties (Dependent = true)

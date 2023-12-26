@@ -143,6 +143,8 @@ classdef vector3d < dynOption
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
        
+       v.plottingConvention = getClass(varargin,'plottingConvention',v.plottingConvention);
+
       end
     end
   
