@@ -49,7 +49,7 @@ if maxAngle < pi/2/CS.multiplicityZ
 end
 
 % get fundamental region
-[maxAlpha,maxBeta,maxGamma] = fundamentalRegionEuler(CS,SS,'SO3Grid',varargin{:});
+[maxAlpha,maxBeta,maxGamma] = fundamentalRegionEuler(CS,SS,'SO3Grid',varargin{:},'equispacedSO3Grid');
 maxGamma = maxGamma/2; % we will consider the interval -maxGamma/2 .. maxGamma/2
 if ~check_option(varargin,'center'), maxGamma = min(maxGamma,maxAngle);end
 
