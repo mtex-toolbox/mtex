@@ -14,7 +14,7 @@ function [grains] = load(filepath)
   % See also
   % loadNeperTess grain3d.load
 
-  [dimension, V, poly, ori, crysym, ~] = loadNeperTess(filepath);
+  [dimension, V, poly, ori, crysym, cell_ids] = loadNeperTess(filepath);
 
   if (dimension~=2)
     error 'Wrong dimension. Try grain2d.load instead.'
@@ -23,7 +23,7 @@ function [grains] = load(filepath)
   CSList = {'notIndexed',crystalSymmetry(crysym)};
   phaseList = 2*ones(size(poly));
 
-  grains = grain2d(V, poly, ori, CSList, phaseList);
+  grains = grain2d(V, poly, ori, CSList, phaseList, 'id', cell_ids);
 
   % check for clockwise poly's
   isNeg = (grains.area<0);
