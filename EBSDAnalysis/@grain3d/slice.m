@@ -3,12 +3,16 @@ function grains2d = slice(grains,varargin)
   % data
   %
   % Syntax
-  %   plane = createPlane([0.5 0.5 0.5],[1 1 1])
-  %   grain2d = grains.slice(plane)
   %
-  %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
   %   N = vector3d(1,1,1)             % plane normal
-  %   grain2d = grains.slice(P0,N)
+  %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
+  %   grain2d = grains.slice(N,P0)
+  % 
+  %   V = vector3d([0 1 0],[0 1 1],[0 1 0])
+  %   grain2d = grains.slice(V)       % three points
+  %
+  %   plane = createPlane(P0,N)       % note different sequence of inputs!
+  %   grain2d = grains.slice(plane)   % plane in matGeom format
   %
   % Input
   %  grains   - @grain3d
@@ -36,7 +40,7 @@ function grains2d = slice(grains,varargin)
 %%
 
 if nargin < 2
-  error 'too few arguments. plane needed'
+  error 'too few arguments'
 elseif nargin == 2
   plane = varargin{1};
 elseif nargin == 3
@@ -44,7 +48,10 @@ elseif nargin == 3
     varargin{1} = varargin{1}.xyz;
     varargin{2} = varargin{2}.xyz;
   end
-  plane = createPlane(varargin{1},varargin{2});
+  plane = createPlane(varargin{2},varargin{1});   % sequence of inputs: P0,N
+elseif nargin == 4
+  N = perp(varargin{1:3});
+  plane = createPlane(varargin{1}.xyz,N.xyz);
 else
   error 'Input error'
 end
@@ -56,6 +63,8 @@ E = meshEdges(poly);
 FE = meshFaceEdges(V, E, poly);
 
 crossingEdges = find(xor(isBelowPlane(V(E(:,1),:),plane),isBelowPlane(V(E(:,2),:),plane)));
+assert(~isempty(crossingEdges),'plane is outside of grain3d bounding box')
+
 crossingFE_all = cell2mat(cellfun((@(el) ismember(crossingEdges,el)'), FE, 'UniformOutput', false));
 intersecFaces = find(sum(crossingFE_all,2)==2);
 
