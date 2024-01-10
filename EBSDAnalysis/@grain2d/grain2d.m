@@ -2,7 +2,7 @@ classdef grain2d < phaseList & dynProp
   % class representing two dimensional grains
   %
   % Syntax
-  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
+  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap, 'id', idList)
   %
   % Input
   %  V    - n x 3 list of vertices
@@ -11,6 +11,7 @@ classdef grain2d < phaseList & dynProp
   %  CSList   - cell array of symmetries
   %  phaseId  - list of phaseId for each grain
   %  phaseMap -
+  %  idList   - option to provide grain ids
   %
   % Example
   %
@@ -71,7 +72,7 @@ classdef grain2d < phaseList & dynProp
   
   methods
 
-    function grains = grain2d(V, poly, ori, CSList, phaseId,  phaseMap, varargin)
+    function grains = grain2d(V, poly, varargin)
       % constructor
       % 
       % Input
@@ -87,31 +88,37 @@ classdef grain2d < phaseList & dynProp
       grains.poly = poly;
       grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
 
-      if nargin>=3 && ~isempty(ori)
-        grains.prop.meanRotation = ori;
+      if check_option(varargin,'id')
+        grains.id = reshape(get_option(varargin,'id'),size(poly));
+        varargin = delete_option(varargin,'id',1);
+      else
+        grains.id = (1:numel(grains.phaseId)).';
+      end
+
+      if length(varargin)>=1 && ~isempty(varargin{1})
+        grains.prop.meanRotation = varargin{1};
       else
         grains.prop.meanRotation = rotation.nan(length(poly),1);        
       end
 
-      if nargin>=4
-        grains.CSList = ensurecell(CSList);
+      if length(varargin)>=2
+        grains.CSList = ensurecell(varargin{2});
       else
         grains.CSList = {'notIndexed'};
       end
 
-      if nargin>=5
-        grains.phaseId = phaseId;
+      if length(varargin)>=3
+        grains.phaseId = varargin{3};
       else
         grains.phaseId = ones(length(poly),1);
       end
       
-      if nargin>=6
-        grains.phaseMap = phaseMap;
+      if length(varargin)>=4
+        grains.phaseMap = varargin{4};
       else
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = ones(size(poly));
       
       if isa(V,'grainBoundary') % grain boundary already given
