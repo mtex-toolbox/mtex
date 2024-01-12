@@ -51,10 +51,21 @@ try
 
       name = strrep(kGroupData(j).Name,' ','_');
 
-      name = strrep(name,'X_Position','x');
-      name = strrep(name,'Y_Position','y');
-      name = strrep(name,'X_SAMPLE','x');
-      name = strrep(name,'Y_SAMPLE','y');
+      % apparently files may contain either Position or BEAM to specify x,y
+      if strcmp(name,'X_Position')
+        name = strrep(name,'X_Position','x');
+      end
+      if strcmp(name,'X_Position')
+        name = strrep(name,'Y_Position','y');
+      end
+
+      if strcmp(name,'X_BEAM')
+        name = strrep(name,'X_BEAM','x');
+      end
+      if strcmp(name,'Y_BEAM')
+        name = strrep(name,'Y_BEAM','y');
+      end
+
 
       name = regexprep(name,'phi','Phi','ignorecase');
       name = regexprep(name,'phi1','phi1','ignorecase');
