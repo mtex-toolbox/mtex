@@ -24,7 +24,7 @@ classdef neperInstance < handle
 %   ori.CS=crystalSymmetry('mmm');
 %   odf=unimodalODF(orientation.rand)
 %   numGrains=100;
-%   myNeper.simulateGrains(odf,100)
+%   myNeper.simulateGrains(odf,numGrains)
 %
 %   N=vector3d(1,1,1);    % normal vector (a,b,c) of a plane
 %   d=1;                  % d of a plane equation(a,b,c,d)

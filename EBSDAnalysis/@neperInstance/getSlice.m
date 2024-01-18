@@ -34,8 +34,8 @@ else
 end
 
 %deleting old files, to make sure, to not load a wrong file, if slicing failed
-if isfile('2dslice.tess'), delete([this.fileName2d '.tess' ]); end
-if isfile('2dslice.ori'), delete([this.fileName2d '.ori' ]); end
+if isfile([this.fileName2d '.tess' ]), delete([this.fileName2d '.tess' ]); end
+if isfile([this.fileName2d '.ori' ]), delete([this.fileName2d '.ori' ]); end
 
 if check_option(varargin,'silent')
   output2file = ['>> ' this.filePath filesep 'neper.log '];
