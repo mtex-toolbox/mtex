@@ -42,19 +42,25 @@ function grains2d = slice(grains,varargin)
 if nargin < 2
   error 'too few arguments'
 elseif nargin == 2
-  plane = varargin{1};
+  if isa(varargin{1},'vector3d')
+    plane = fitPlane(varargin{1}.xyz);
+  else
+    plane = varargin{1};
+  end
 elseif nargin == 3
   if isa(varargin{1},'vector3d')
     varargin{1} = varargin{1}.xyz;
     varargin{2} = varargin{2}.xyz;
   end
   plane = createPlane(varargin{2},varargin{1});   % sequence of inputs: P0,N
-elseif nargin == 4
-  N = perp(varargin{1:3});
-  plane = createPlane(varargin{1}.xyz,N.xyz);
+elseif nargin >= 4
+  pts = [varargin{1:3}];
+  plane = fitPlane(pts.xyz);
 else
   error 'Input error'
 end
+
+assert(isPlane(plane),'Input error')
 
 V = grains.boundary.allV.xyz;
 poly = grains.poly;
