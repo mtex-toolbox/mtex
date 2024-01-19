@@ -80,7 +80,24 @@ intersecFaces = find(sum(crossingFE_all,2)==2);
 [~,i2] = sort(i);
 crossingFE_all = reshape(j(i2),2,[])';
 
-newV = vector3d(intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane)).';
+newV = intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane);
+
+% if one of the points of the edge lies within the plane, the line above 
+% produces a nan value for this edge
+if(any(isnan(newV)))
+  iN = any(isnan(newV),2);
+  d1 = distancePointPlane(V(E(crossingEdges(iN),1),:),plane);
+  d2 = distancePointPlane(V(E(crossingEdges(iN),2),:),plane);
+  if any([d1 d2]==0)
+    [~,j] = find([d1 d2]==0);
+    assert(length(j)==find(length(iN)),'intersecting crossing edges failed')
+    newV(iN,:) = V(E(crossingEdges(iN),j),:);
+  else
+    error 'intersecting crossing edges failed'
+  end
+end
+
+newV = vector3d(newV).';
 
 % intersec_CF = I_CF, but with only the intersected Faces in 2.dim and only
 % the intersected Cells in 1.dim (newIds)
