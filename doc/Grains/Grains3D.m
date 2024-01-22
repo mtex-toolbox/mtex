@@ -11,8 +11,9 @@ ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
 
-job.simulateGrains(odf,numGrains)
-grains = grain3d.load('allgrains.tess')
+grains = job.simulateGrains(odf,numGrains)
+% or you can load an existing tesselation file
+grains = grain3d.load('allgrains.tess');
 
 plot(grains,grains.meanOrientation)
 

@@ -1,4 +1,4 @@
-function simulateGrains(this,varargin)
+function varargout = simulateGrains(this,varargin)
 % generating 3d neper tesselations
 %
 % Syntax
@@ -78,10 +78,10 @@ end
 %% save ori to file
 oriFilename='ori_in.txt';
 fid=fopen(oriFilename,'w');
-
 fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
+%% calling neper
 system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -id ' num2str(this.id) ' -morpho "' this.morpho '" ' ...
   ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
@@ -96,5 +96,12 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' && ' ...
   ...
   this.cmdPrefix 'neper -V ' this.fileName3d '.tess']);
+
+%% return value
+if nargout >= 1
+  varargout = {grain3d.load([this.fileName3d '.tess'])};
+else
+  varargout = {};
+end
 
   end
