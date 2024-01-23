@@ -24,7 +24,21 @@ if check_option(varargin,'unitCell')
 else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
-
+  
+    if check_option(varargin,'jcvoronoi')
+       [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([X;dummyCoordinates]);
+        
+        V=[Vx,Vy];
+        E=[E1,E2];
+        
+        clear Vx Vy E1 E2
+    
+        [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+        F = sort(ic(E),2);
+        I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
+        
+        return
+    end
   if ~check_option(varargin,'QHull')
   
     dt = delaunayTriangulation([X;dummyCoordinates]);
