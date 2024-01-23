@@ -92,7 +92,7 @@ classdef grain2d < phaseList & dynProp
         grains.id = reshape(get_option(varargin,'id'),size(poly));
         varargin = delete_option(varargin,'id',1);
       else
-        grains.id = (1:numel(grains.phaseId)).';
+        grains.id = (1:length(poly)).';
       end
 
       if length(varargin)>=1 && ~isempty(varargin{1})
