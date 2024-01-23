@@ -1,6 +1,6 @@
-function varargout = plot(g3B)
+function varargout = plot(g3B,varargin)
 
-  h = drawMesh(g3B.allV.xyz,g3B.poly);
+  h = optiondraw(drawMesh(g3B.allV.xyz,g3B.poly),varargin{:});
 
   if nargout > 0
     varargout = {h};
