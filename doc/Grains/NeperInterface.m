@@ -25,17 +25,17 @@ job = neperInstance
 %% 
 % File options:
 % By default your neper will work under the temporary folder of your matlab
-% (matlab command |tempdir|). If you want to do your tesselations elsewhere or
-% your tesselations are already located under another path, you can change
+% (matlab command |tempdir|). If you want to do your tessellations elsewhere or
+% your tessellations are already located under another path, you can change
 % it:
 
 % for example
 % job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
- job.filePath = [mtexDataPath filesep 'Neeper'];
+ job.filePath = [mtexDataPath filesep 'Neper'];
 
 %%
-% By default a new folder, named neper will be created for the tesselation 
+% By default a new folder, named neper will be created for the tessellation 
 % data. If you do not want to create a new folder you can switch it of by 
 % setting |newfolder| to |false|.
 
@@ -45,7 +45,7 @@ job.newfolder = false;
 % If |newfolder| is true (default) the slicing module also works in the
 % subfolder neper, if it exists.
 %
-% By deafult the 3d tesselation data will be named "allgrains" with the
+% By default the 3d tesselation data will be named "allgrains" with the
 % endings .tess and .ori and the 2d slices will be named "2dslice" with the
 % ending .tess and .ori . You can change the file names in variables
 % |fileName3d| and |fileName2d|.
@@ -53,7 +53,7 @@ job.newfolder = false;
 job.fileName3d = 'my100grains';
 job.fileName2d = 'my100GrSlice';
 
-%% Tesselation options
+%% Tessellation options
 % The grains will be generated in cubic domain. By default the domain has
 % the edge length 1 in each direction. To change the size of the domain,
 % store a row vector with 3 entries (x,y,z) in the variable |cubeSize|.
@@ -61,10 +61,10 @@ job.fileName2d = 'my100GrSlice';
 job.cubeSize = [4 4 2];
 
 %%
-% Neper uses an id to identify the tesselation. This interger value "is
+% Neper uses an id to identify the tessellation. This integer value "is
 % used as seed of the random number generator to compute the (initial) 
 % seed positions" (neper.info/doc/neper_t.html#cmdoption-id) By default the
-% tesselation id is always |1|.
+% tessellation id is always |1|.
 
 job.id = 529;
 
@@ -93,12 +93,12 @@ numGrains=100;
 job.simulateGrains(odf,numGrains,'silent')
 
 %% Slicing
-% To get slices of your tesselation, that you can process with MTEX, the
-% command |getSlice| is used, wich returns a set of grains (|grain2d|). 
+% To get slices of your tessellation, that you can process with MTEX, the
+% command |getSlice| is used, which returns a set of grains (|grain2d|). 
 % It is called by giving the normal vector [a,b,c] of the plane and either 
 % a point that lies in the plane or the "d" of the plane equation. Please
 % consider that the slicing must align with the size of the domain/cube
-% (see Tesselation options - cubeSize)
+% (see Tessellation options - cubeSize)
 
 % the normals of the slices
 N = [vector3d(0,0,1),vector3d(1,-1,0),vector3d(2,2,4)];

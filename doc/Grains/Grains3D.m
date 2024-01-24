@@ -27,8 +27,16 @@ setCamera(how2plot)
 
 %%
 
-grains3.volume
+plot(grains3,grains3.volume)
+setCamera(how2plot)
 
+
+%% 
+
+figure
+grains = grains3(1:5)
+
+plot(grains)
 
 
 %% Slicing
@@ -49,7 +57,14 @@ plot(grains1_10,grains1_10.meanOrientation)
 
 setCamera(how2plot)
 
+%%
 
+grains = grains3(1:5)
+
+plot(grains,grains.meanOrientation)
+how2plot.outOfScreen = vector3d(-10,-4,1);
+how2plot.east = vector3d(2,-5,0);
+setCamera(how2plot)
 
 %%
 
