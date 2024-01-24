@@ -1,27 +1,27 @@
 function grains2d = slice(grains,varargin)
-  % grain3d.slice is a method to slice the 3d grain data to get grain2d
-  % data
-  %
-  % Syntax
-  %
-  %   N = vector3d(1,1,1)             % plane normal
-  %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
-  %   grain2d = grains.slice(N,P0)
-  % 
-  %   V = vector3d([0 1 0],[0 1 1],[0 1 0])
-  %   grain2d = grains.slice(V)       % three points
-  %
-  %   plane = createPlane(P0,N)       % note different sequence of inputs!
-  %   grain2d = grains.slice(plane)   % plane in matGeom format
-  %
-  % Input
-  %  grains   - @grain3d
-  %  plane    - plane in matGeom format
-  % Output
-  %  grain2d  - @grain2d
-  %
-  % See also
-  % grain2d
+% grain3d.slice is a method to slice the 3d grain data to get grain2d
+% data
+%
+% Syntax
+%
+%   N = vector3d(1,1,1)             % plane normal
+%   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
+%   grain2d = grains.slice(N,P0)
+%
+%   V = vector3d([0 1 0],[0 1 1],[0 1 0])
+%   grain2d = grains.slice(V)       % three points
+%
+%   plane = createPlane(P0,N)       % note different sequence of inputs!
+%   grain2d = grains.slice(plane)   % plane in matGeom format
+%
+% Input
+%  grains   - @grain3d
+%  plane    - plane in matGeom format
+% Output
+%  grain2d  - @grain2d
+%
+% See also
+% grain2d
 
 %%
 % plane           - plane in matGeom Format
