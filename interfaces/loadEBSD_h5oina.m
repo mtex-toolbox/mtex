@@ -253,6 +253,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     %   ----------------
 
 
+    CS=cell(1,length(phases.Groups)+1);
     CS{1}='notIndexed';
     for phaseN = 1:length(phases.Groups)
         pN = ['phase_' num2str(phaseN)];
@@ -283,7 +284,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             langle(isnull(langle-pi/2,1e-7))=pi/2;
         end
 
-        CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
+        CS{phaseN+1} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name));
