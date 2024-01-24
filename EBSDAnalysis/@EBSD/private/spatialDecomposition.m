@@ -10,6 +10,8 @@ function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
+dxy = max(vecnorm(unitCell(1)-unitCell,2,2));
+
 
 if check_option(varargin,'unitCell')
   
@@ -32,7 +34,7 @@ else
     E=[E1,E2];
     
     clear Vx Vy E1 E2
-    [V,~,ic] = unique(round(V*1e5)/1e5,'rows');
+    [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
     
     F = sort(ic(E),2);
     I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);

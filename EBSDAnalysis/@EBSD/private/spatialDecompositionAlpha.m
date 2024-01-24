@@ -67,18 +67,19 @@ y_ = [y_; Y(toAdd); bnd(:,2)];
 
 if check_option(varargin,'jcvoronoi')
   [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
-    
+
   V=[Vx,Vy];
   E=[E1,E2];
-    
+
   clear Vx Vy E1 E2
 
-  [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+  %[V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+  [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
   F = sort(ic(E),2);
 
   I_FD = sparse(max(I_ED1(I_ED2<=lmax)),numel(isIndexed));
   I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1);
-  
+
   % remove empty edges
   ind = any(I_FD,2);
   I_FD = I_FD(ind,:);
