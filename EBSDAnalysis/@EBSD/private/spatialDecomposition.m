@@ -8,7 +8,7 @@ function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
 
 % compute voronoi decomposition
 % V - list of vertices of the Voronoi cells
-% D   - cell array of Vornoi cells with centers X_D ordered accordingly
+% D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
 
 if check_option(varargin,'unitCell')
@@ -25,20 +25,20 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
   
-    if check_option(varargin,'jcvoronoi')
-       [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([X;dummyCoordinates]);
-        
-        V=[Vx,Vy];
-        E=[E1,E2];
-        
-        clear Vx Vy E1 E2
-        [V,~,ic] = unique(round(V*1e5)/1e5,'rows');
-
-        F = sort(ic(E),2);
-        I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
-        
-        return
-    end
+  if check_option(varargin,'jcvoronoi')
+    [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([X;dummyCoordinates]);
+    
+    V=[Vx,Vy];
+    E=[E1,E2];
+    
+    clear Vx Vy E1 E2
+    [V,~,ic] = unique(round(V*1e5)/1e5,'rows');
+    
+    F = sort(ic(E),2);
+    I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
+    
+    return
+  end
   if ~check_option(varargin,'QHull')
   
     dt = delaunayTriangulation([X;dummyCoordinates]);
