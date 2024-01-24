@@ -11,11 +11,25 @@ ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
 
-grains = job.simulateGrains(odf,numGrains)
+grains3 = job.simulateGrains(odf,numGrains)
 % or you can load an existing tesselation file
-grains = grain3d.load('allgrains.tess');
+%grains3 = grain3d.load('allgrains.tess','CS',cs)
 
-plot(grains,grains.meanOrientation)
+%%
+
+% set camera
+how2plot = plottingConvention;
+how2plot.outOfScreen = vector3d(-10,-5,2);
+how2plot.east = vector3d(1,-2,0);
+
+plot(grains3,grains3.meanOrientation)
+setCamera(how2plot)
+
+%%
+
+grains3.volume
+
+
 
 %% Slicing
 %
@@ -28,17 +42,27 @@ P0 = vector3d(0.5,0.5,0.5);
 % Slice by plane normal and point
 N = vector3d(1,-1,0);
 % not working yet (produces a V with NaN)
-grains1_10= grains.slice(N,P0);
+grains1_10= grains3.slice(N,P0)
+
+how2plot.outOfScreen = N;
+plot(grains1_10,grains1_10.meanOrientation)
+
+setCamera(how2plot)
+
+
+
+%%
+
 
 % Slice by matgeom plane
 N3 = vector3d(2,2,4);
 plane = createPlane(P0.xyz, N3.xyz);     % consider the different order
-grains224 = grains.slice(plane);
+grains224 = grains3.slice(plane);
 
 % Slice going through 3 points
 A = vector3d(0,0,0.5);
 B = vector3d(0,1,0.5);
-grains001 = grains.slice(P0,A,B);
+grains001 = grains3.slice(P0,A,B);
 
 % plot the slices
 plot(grains001,grains001.meanOrientation);
