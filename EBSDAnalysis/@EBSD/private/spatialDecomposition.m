@@ -32,9 +32,8 @@ else
         E=[E1,E2];
         
         clear Vx Vy E1 E2
-        [V,~,ic] = unique(floor(V*1e5)/1e5,'rows');
-%       [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
-       
+        [V,~,ic] = unique(round(V*1e5)/1e5,'rows');
+        
         F = sort(ic(E),2);
         I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
         
