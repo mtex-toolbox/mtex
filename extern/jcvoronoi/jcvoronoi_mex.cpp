@@ -28,7 +28,7 @@ public:
 
         auto X = std::move(inputs[0]);
         int NPOINT = (int) X.getDimensions()[0];
-
+    
         jcv_diagram diagram;
         jcv_point points[NPOINT];
 
@@ -41,8 +41,14 @@ public:
       
         jcv_diagram_generate(NPOINT,(const jcv_point *)points, 0, 0, &diagram);      
         
-        std::vector<double> Vx, Vy; 
+        std::vector<double> Vx, Vy;
+        Vx.reserve(5*NPOINT);
+        Vy.reserve(5*NPOINT);
         std::vector<int>  E1, E2 ,I_ED1,I_ED2;
+        E1.reserve(3*NPOINT);
+        E2.reserve(3*NPOINT);
+        I_ED1.reserve(5*NPOINT);
+        I_ED2.reserve(5*NPOINT);
         jcv_delauney_iter delauney;
         jcv_delauney_begin( &diagram, &delauney );
         jcv_delauney_edge delauney_edge;
@@ -66,13 +72,13 @@ public:
             }
         }
         jcv_diagram_free(&diagram);
+
         outputs[0] = factory.createArray((ArrayDimensions){(int)Vx.size(),1},Vx.begin(),Vx.end());
         outputs[1] = factory.createArray((ArrayDimensions){(int)Vy.size(),1},Vy.begin(),Vy.end());
         outputs[2] = factory.createArray((ArrayDimensions){(int)E1.size(),1},E1.begin(),E1.end());
         outputs[3] = factory.createArray((ArrayDimensions){(int)E2.size(),1},E2.begin(),E2.end());
         outputs[4] = factory.createArray((ArrayDimensions){(int)I_ED1.size(),1},I_ED1.begin(),I_ED1.end());
         outputs[5] = factory.createArray((ArrayDimensions){(int)I_ED2.size(),1},I_ED2.begin(),I_ED2.end());
-        
     }
 };
 
