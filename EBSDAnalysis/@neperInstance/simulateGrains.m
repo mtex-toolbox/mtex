@@ -38,17 +38,14 @@ end
 
 %%
 assert(nargin>1,'too few input arguments')
-if nargin==3  %numGrains & odf
-  if isnumeric(varargin{1}) && isa(varargin{2},'SO3Fun')
-    numGrains=varargin{1};
-    ori = varargin{2}.discreteSample(numGrains);
-  elseif isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
+if nargin>=3  % odf & numGrains
+  if isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
     numGrains=varargin{2};
     ori = varargin{1}.discreteSample(numGrains);
   else
     error 'argument error'
   end
-elseif nargin==2 %ori
+elseif nargin>=2 %ori
   if isa(varargin{1},'orientation')
     ori=varargin{1};
     numGrains=length(varargin{1});
@@ -102,7 +99,7 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
 
 %% return value
 if nargout >= 1
-  varargout = {grain3d.load([this.fileName3d '.tess'],ori.CS)};
+  varargout = {grain3d.load([this.fileName3d '.tess'],'CS',ori.CS)};
 else
   varargout = {};
 end
