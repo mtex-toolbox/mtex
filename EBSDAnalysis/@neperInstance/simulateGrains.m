@@ -1,5 +1,5 @@
 function varargout = simulateGrains(this,varargin)
-% generating 3d neper tesselations
+% generating 3d neper tessellations
 %
 % Syntax
 %   
@@ -20,7 +20,7 @@ function varargout = simulateGrains(this,varargin)
 %  ori        - @orientation
 % 
 %  Output
-%   allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
+%   allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
 %   allgrains.ori   - orientation file, euler-bunge format,
 %   ori_in.txt      - input orientations, rodrigues format
 
@@ -99,9 +99,9 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
 
 %% return value
 if nargout >= 1
-  varargout = {grain3d.load([this.fileName3d '.tess'])};
+  varargout = {grain3d.load([this.fileName3d '.tess'],ori.CS)};
 else
   varargout = {};
 end
 
-  end
+end

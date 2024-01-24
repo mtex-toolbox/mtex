@@ -3,7 +3,7 @@ classdef grain3d < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    I_CF            % incidenc matrix cells x face
+    I_CF            % incidence matrix cells x face
     grainSize = []  % number of measurements per grain
   end
 
@@ -12,7 +12,7 @@ classdef grain3d < phaseList & dynProp
   end
 
   properties (Dependent)
-    V     %verticies
+    V     % vertices
     poly  %
     meanOrientation
   end
@@ -20,7 +20,7 @@ classdef grain3d < phaseList & dynProp
   methods
 
     function grains = grain3d(V, poly, I_CF, ori, CSList, phaseList)
-      %contructor
+      % constructor
 
       if nargin >= 3
         grains.id=(1:size(I_CF,1)).';
@@ -55,7 +55,7 @@ classdef grain3d < phaseList & dynProp
 
       grains.grainSize = ones(size(poly));
 
-      % compute neighbouring grains to a boundary segment
+      % compute neighboring grains to a boundary segment
       grainId = zeros(size(I_CF,2),2);
       [a,b] = find(I_CF == 1);
       grainId(b,1) = a;
@@ -90,7 +90,7 @@ classdef grain3d < phaseList & dynProp
   end
 
   methods (Static = true)
-    [grain3d] = load(fname)
+    grain3d = load(fname,varargin)
   end
 end
 

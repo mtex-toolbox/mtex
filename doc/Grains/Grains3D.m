@@ -6,7 +6,7 @@
 %
 %%
 job = neperInstance
-cs = crystalSymmetry('432');
+cs = crystalSymmetry('432','mineral','copper');
 ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
