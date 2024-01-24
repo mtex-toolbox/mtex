@@ -1,5 +1,5 @@
 function [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin)
-% decomposite the spatial domain into cells D with vertices V
+% decompose the spatial domain into cells D with vertices V
 %
 % Input
 %  ebsd - @EBSDsquare, @EBSDhex
@@ -31,7 +31,7 @@ alpha = dxy * get_option(varargin,'alpha',2.2);
 % extend raster by one row / column in all directions
 bnd = gridBoundary(ebsd);
 
-% considere only indexed points
+% consider only indexed points
 x_ = X(isIndexed);
 y_ = Y(isIndexed);
 lmax = length(x_);
@@ -66,18 +66,26 @@ x_ = [x_; X(toAdd); bnd(:,1)];
 y_ = [y_; Y(toAdd); bnd(:,2)];
 
 if check_option(varargin,'jcvoronoi')
-   [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
+  [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
     
-    V=[Vx,Vy];
-    E=[E1,E2];
+  V=[Vx,Vy];
+  E=[E1,E2];
     
-    clear Vx Vy E1 E2
+  clear Vx Vy E1 E2
 
-    [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
-    F = sort(ic(E),2);
-    I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
-    
-    return
+  [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+  F = sort(ic(E),2);
+
+  I_FD = sparse(max(I_ED1(I_ED2<=lmax)),numel(isIndexed));
+  I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1);
+  
+  % remove empty edges
+  ind = any(I_FD,2);
+  I_FD = I_FD(ind,:);
+  F = F(ind,:);
+
+  return
+
 end
 
 
