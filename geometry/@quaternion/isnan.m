@@ -1,5 +1,5 @@
 function b = isnan(q)
 % check for nan values
 
-b = isnan(q.a);
+b = isnan(q.a) | isnan(q.b);
 

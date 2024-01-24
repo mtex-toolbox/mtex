@@ -26,14 +26,14 @@ if ~isempty(varargin) && isa(varargin{1},'symmetry')
 end
 
 % use fundamental region for the computation
-if cs.id == 0 ||  check_option(varargin,'oR')
+if cs.id == 0 || cs.id > 45 || check_option(varargin,'oR')
   [ad,omega] = oR.calcAngleDistribution;
   return
 end
 
 % get range of rotational angles
 if isempty(varargin) || ~isnumeric(varargin{1})
-  omega = linspace(0,oR.maxAngle,300);
+  omega = linspace(0,oR.maxAngle,200);
 else
   % restrict omega
   omega = varargin{1};

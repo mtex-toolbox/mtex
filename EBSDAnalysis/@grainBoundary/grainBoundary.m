@@ -63,6 +63,7 @@ classdef grainBoundary < phaseList & dynProp
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
     V              % vertices x,y coordinates
+    N              % normal direction of the pseudo3d data    
   end
   
   methods
@@ -84,7 +85,7 @@ classdef grainBoundary < phaseList & dynProp
       if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
       % assign properties
-      gB.triplePoints = struct('allV',V);
+      gB.triplePoints = struct('allV',V,'N',zvector);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -164,13 +165,17 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function gB = set.V(gB,V)
-      if isa(gB.triplePoints,'triplePointList')
-        gB.triplePoints.allV = V;
-      else
-        gB.prop.V = V;
-      end
+      gB.triplePoints.allV = V;
     end
     
+    function N = get.N(gB)
+      N = gB.triplePoints.N;
+    end
+    
+    function gB = set.N(gB,N)
+      gB.triplePoints.N = N;
+    end
+
     function x = get.x(gB)
       x = gB.V(unique(gB.F(:)),1);
     end
@@ -193,7 +198,7 @@ classdef grainBoundary < phaseList & dynProp
     function I_FG = get.I_FG(gB)
       ind = gB.grainId>0;
       iF = repmat(1:size(gB.F,1),1,2);
-      I_FG = sparse(iF(ind),gB.grainId(ind),true);
+      I_FG = logical(sparse(iF(ind),gB.grainId(ind),1));
     end   
     
     function A_F = get.A_F(gB)

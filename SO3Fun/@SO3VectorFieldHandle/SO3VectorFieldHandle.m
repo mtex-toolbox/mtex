@@ -1,13 +1,13 @@
-classdef (InferiorClasses = {?SO3FunHarmonic,?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
-    ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3VectorFieldHandle < SO3VectorField
-% a class represeneting a vector field on SO(3)
+classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
+    ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF})...
+    SO3VectorFieldHandle < SO3VectorField
+% a class representing a vector field on SO(3)
   
 properties
   fun
-  antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
-  bandwidth = 96
+  bandwidth = getMTEXpref('maxSO3Bandwidth');
 end
   
 methods
@@ -19,10 +19,8 @@ methods
     SO3VF.SRight = SRight;
     SO3VF.SLeft = SLeft;
     
-  end
-  
-  function f = eval(SO3VF,ori,varargin)
-    f = SO3VF.fun(ori);
+    SO3VF.tangentSpace = SO3TangentSpace.extract(varargin{:});
+    
   end
   
 end

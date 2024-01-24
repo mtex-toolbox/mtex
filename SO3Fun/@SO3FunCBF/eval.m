@@ -3,10 +3,15 @@ function f = eval(SO3F,rot,varargin)
 %
 % sum_i \sum_j \sum_k  weights * psi(g*s_j h_i . s_k r_i)
 
+
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(SO3F,rot)
+% end
+
 s = size(rot);
 rot = rot(:);
 
-h = symmetrise(SO3F.h.normalize,'unqiue');
+h = symmetrise(SO3F.h.normalize,'unique');
 
 % rot x SS x CS x h
 gh = reshape((SO3F.SS.properGroup * rot).' * h, length(rot),[],length(SO3F.h));

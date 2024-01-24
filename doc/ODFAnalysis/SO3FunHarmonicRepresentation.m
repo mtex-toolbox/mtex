@@ -1,10 +1,9 @@
 %% Harmonic Representation of Rotational Functions
 %
-
 %%
 % Similarly as periodic functions may be represented as weighted sums of
-% sines and cosines a rotational function $f\colon \mathcal{SO}(3)\to\mathbb C$ 
-% can be written as a series of the form
+% sines and cosines a rotational function $f\colon \mathcal{SO}(3) \to
+% \mathbb C$ can be written as a series of the form
 %
 % $$ f({\bf R}) = \sum_{n=0}^N \sum_{k,l = -n}^n \hat f_n^{k,l} \, \mathrm{D}_n^{k,l}({\bf R}) $$
 %
@@ -46,11 +45,11 @@ reshape(f.fhat(11:35),5,5)
 %%
 % As an additional example lets define a harmonic function by its Fourier
 % coefficients $\hat f_0^{0,0} = 0.5$ and 
-% $\hat f_1 = \begin{array}{rrr} 
+% $\hat f_1 = \left(\begin{array}{rrr} 
 % 1 & 4 & 7 \\ 
 % 2 & 5 & 8 \\ 
 % 3 & 6 & 9 \\ 
-% \end{array}$
+% \end{array}\right)$
 
 f2 = SO3FunHarmonic([0.5,1:9]')
 
@@ -94,6 +93,7 @@ plot(odf,'sections',6,'silent','sigma')
 %%
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
+
 
 %% TODO: Add some non ODF example for an SO3Fun
 %

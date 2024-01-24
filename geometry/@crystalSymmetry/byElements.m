@@ -8,7 +8,7 @@ rot = [rotation.id;rot(:)];
 for k = 1:100
   
   numRot = length(rot);
-  rot = unique(rot * rot,'tolerance',1e-2);
+  rot = unique(rot * rot,'tolerance',1e-2,'exact');
   if length(rot) <= numRot, break; end
   assert(length(rot) < 200,'No finite symmetry group could be build');
       

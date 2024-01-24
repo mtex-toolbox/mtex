@@ -70,10 +70,11 @@ end
 
 % maybe more then one orientation should be transformed
 if length(mori) > 1
-  n1 = Miller.nan(size(mori),mori.CS);
-  n2 = Miller.nan(size(mori),mori.SS);
-  d1 = Miller.nan(size(mori),mori.CS,'uvw');
-  d2 = Miller.nan(size(mori),mori.SS,'uvw');
+  n1 = Miller.nan(size(mori),mori.CS); d1 = n1;
+  n2 = Miller.nan(size(mori),mori.SS); d2 = n2;
+  d1.dispStyle = MillerConvention(-MillerConvention(n1.dispStyle));
+  d2.dispStyle = MillerConvention(-MillerConvention(n2.dispStyle));
+
   for i = 1:length(mori)
     [n1(i),n2(i),d1(i),d2(i)] = round2Miller(mori.subSet(i),varargin{:});
   end
@@ -83,8 +84,8 @@ if length(mori) > 1
 end
 
 penalty = get_option(varargin,'penalty',0.002);
-
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
+nextFit = get_option(varargin,'nextFit',1);
 
 % all plane normales
 [h,k,l] = allHKL(maxIndex);
@@ -95,8 +96,8 @@ hkl2 = rn2.hkl;
 
 % fit of planes
 omega_h = angle(rn2(:),n2(:)) + ...
-  (h(:).^2 + k(:).^2 + l(:).^2 + ...
-  sum(hkl2.^2,2) + 0.01*sum(hkl2<-0.1,2)) * penalty;
+  (h(:).^2 + k(:).^2 + 0.995*l(:).^2 + ...
+  hkl2.^2 * [1;1;0.995] + 0.01*sum(hkl2<-0.1,2)) * penalty;
 
 % all directions
 [u,v,w] = allHKL(maxIndex);
@@ -121,8 +122,9 @@ fit = bsxfun(@plus,omega_h(:),omega_d(:).') + ...
   100*(abs(pi/2-angle_outer(n1,d1,'noSymmetry'))>1e-5)+...
   100*(abs(pi/2-angle_outer(rn2,rd2,'noSymmetry'))>1e-5);
 
-[~,ind] = nanmin(fit(:));
-[ih,id] = ind2sub(size(fit),ind);
+fit_sorted = sort(fit(:));
+ind = find(fit(:)==fit_sorted(nextFit));
+[ih,id] = ind2sub(size(fit),ind(1));
 
 n1 = n1(ih);
 d1 = d1(id);

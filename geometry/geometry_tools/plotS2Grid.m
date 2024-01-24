@@ -22,6 +22,9 @@ function v = plotS2Grid(varargin)
 % get spherical region
 sR = extractSphericalRegion(varargin{:});
 
+% get plotting convention
+pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+
 % get resolution
 res = get_option(varargin,'resolution',1*degree);
 
@@ -62,5 +65,9 @@ else
 end
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
+% the above procdure does not work so well if we have a full sphere
+% and the theta region is not connected
+% thatswhy we have to check once again
+v(~sR.checkInside(v)) = nan;
 
 end

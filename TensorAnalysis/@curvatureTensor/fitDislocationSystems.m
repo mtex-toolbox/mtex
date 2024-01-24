@@ -57,7 +57,7 @@ for i = 1:length(kappa)
   % which is the linear programming problem solved below
   try %#ok<TRYNC>
     
-    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],1,options);
+    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],options);
  
     progress(i,length(kappa),' fitting: ');
 

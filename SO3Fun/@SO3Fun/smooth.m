@@ -3,10 +3,10 @@ function SO3F = smooth(SO3F,varargin)
 %
 % Input
 %  SO3F - @SO3Fun
-%  psi - @SO3Kernel (smoothing kernel)
+%  psi  - @SO3Kernel (smoothing kernel)
 %
-% Option
-%  halfwidth
+% Options
+%  halfwidth - halfwidth of the de la Vallee Poussin kernel to be used for smoothing
 %
 % Output
 %  SO3F - smoothed @SO3Fun

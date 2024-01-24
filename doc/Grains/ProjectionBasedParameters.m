@@ -4,7 +4,7 @@
 % In this section we discuss shape parameters grains that depend on one
 % dimensional projections, i.e., 
 %
-% || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter in $\mu m$ || <grain2d.diameter.html |diameter|>  || diameter in $\mu m$ || 
+% || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter in µm || <grain2d.diameter.html |diameter|>  || diameter in µm || 
 %
 % In order to demonstrate these parameters we first import a small sample
 % data set.
@@ -31,7 +31,7 @@ hold off
 %%
 % The most well known projection based parameter is the
 % <grain2d.diamter.html |diameter|> which refers to the longest distance
-% between any two boundary points and is given in $\mu m$.
+% between any two boundary points and is given in µm.
 
 grains(ind).diameter
 
@@ -43,7 +43,8 @@ grains(ind).diameter
 
 close all
 omega = linspace(0,180);
-plot(omega,grains(ind).caliper(omega*degree),'LineWidth',2)
+dir = vector3d.byPolar(90*degree,omega*degree);
+plot(omega,grains(ind).caliper(dir),'LineWidth',2)
 ylabel('length in $\mu$m','Interpreter','latex')
 xlabel('angle of the projection line in degree')
 xlim([0,180])
@@ -78,7 +79,7 @@ cMin = grains.caliper('shortest');
 cMax = grains.caliper('longest');
 
 plot(grains,(norm(cMax) - norm(cMin))./norm(cMax),'micronbar','off')
-mtexColorbar('title','TODO')
+mtexColorbar('title','c_{max} - c_{min}')
 
 %%
 % This longest and shortest caliper are comparable to
@@ -128,7 +129,8 @@ legend('Location','east')
 
 % projection angle
 omega = linspace(0,360*degree,361);
-c = grains('Fo').caliper(omega);
+dir = vector3d.byPolar(90*degree,omega);
+c = grains('Fo').caliper(dir);
 
 subplot(1,2,1)
 polarplot(omega,c,'LineWidth',2,'color',[0 0.25 0.5 0.25])
@@ -140,7 +142,7 @@ polarplot(omega,5*mean(c),'LineWidth',3,'color','k');
 hold off
 
 subplot(1,2,2)
-c = grains('Enstatite').caliper(omega);
+c = grains('Enstatite').caliper(dir);
 
 polarplot(omega,c,'LineWidth',2,'color',[0 0.25 0.5 0.25])
 title('Enstatite') 

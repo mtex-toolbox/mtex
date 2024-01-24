@@ -40,7 +40,10 @@ elseif isempty(n)
 end
 
 % seperate real and imaginary part
-if abs(imag(n))<=0.01*abs(real(n))
+if isnan(n)
+  s = 'NaN';
+  return
+elseif abs(imag(n))<=0.01*abs(real(n))
   n = real(n);
 elseif abs(real(n))<0.01*abs(imag(n))
   s = [xnum2str(imag(n),varargin),'i'];

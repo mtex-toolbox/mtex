@@ -22,10 +22,10 @@ if nargin == 3 && ~isa(CS2,'symmetry') && isa(CS2,'quaternion')
   
   q_ref = CS2;
   
-elseif nargin == 4 && isa(varargin{1},'quaternion')
+elseif nargin >= 4 && isa(varargin{1},'quaternion')
   
   q_ref = varargin{1};
-  varargin{1} = [];
+  varargin{1} = {};
   
 else
   
@@ -35,7 +35,7 @@ end
 
 % distingish different cases
 if nargin >= 3 && isa(CS2,'symmetry') && numSym(CS2)>1
-  if isempty(q_ref) || abs(q_ref.a)==1
+  if isempty(q_ref) || all(abs(q_ref.a)==1)
     q = project2FRCS2(q,CS1,CS2,varargin{:});
   else
     q = project2FRCS2_ref(q,CS1,CS2,q_ref);

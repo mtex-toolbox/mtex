@@ -11,6 +11,12 @@ function omega = angle(o1,varargin)
 % 
 % Output
 %  o1 x o2 - angle (double)
+%
+% Options
+%  noSymmetry - do ignore symmetry
+%  noSym1, noSym2 - do ignore only left or right symmetry
+%  max        - return the maximum rotational angle from all symmetrically equivalent
+%
 
 if nargin >= 2 && isa(varargin{1},'quaternion')
 

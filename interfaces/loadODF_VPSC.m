@@ -31,10 +31,6 @@ for k = 1:numStrain
   ori = orientation.byEuler(d(range,1:3) * degree,cs);
   weights = d(range,4);
   
-  if size(d,2) > 4
-   data = d(range,5:size(d,2));
-  end
-
   odf{k} = calcDensity(ori,'weights',weights,varargin{:}); %#ok<AGROW>
   odf{k}.opt.strain = d(1+(nOri+4)*(k-1),1); %#ok<AGROW>
   odf{k}.opt.strainEllipsoid = d(2+(nOri+4)*(k-1),1:3); %#ok<AGROW>
@@ -42,7 +38,7 @@ for k = 1:numStrain
 
   % also store data (individual orientations, ellipsoids, Taylor factors)
   odf{k}.opt.orientations = ori;
-  odf{k}.opt.data = data;
+  odf{k}.opt.data = d(range,5:size(d,2));
   
 end
 

@@ -58,7 +58,6 @@ lambda(1,:) = q + 2 * p .* cos(phi + (2*pi/3));
 lambda(3,:) = q + 2 * p .* cos(phi);
 lambda(2,:) = 3 * q - lambda(1,:) - lambda(3,:);     % since trace(A) = eig1 + eig2 + eig3
 
-
 if nargout > 1
   
   % this is only required for matlab versions prior to 2015
@@ -96,10 +95,14 @@ if nargout > 1
   % return only the largest eigen vector
   if check_option(varargin,'largest'), v = reshape(v(3,:),s); end
   
+  lambda(:,isnan(r)) = 0;
+
   % for some reason Matlab eig function changes to order outputs if called
   % with two arguments - so we should do the same
   [lambda,v] = deal(v,lambda);
-  
+ 
+else
+  lambda(:,isnan(r)) = 0;
 end
 
 end

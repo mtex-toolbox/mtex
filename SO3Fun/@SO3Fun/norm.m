@@ -1,7 +1,7 @@
 function t = norm(SO3F)
 % Calculate the L2-norm also known as texture index of a SO3Fun, by using
 %
-% $$ t = \sqrt{\int_{SO(3)} |f(R)|^2 dR}$$,
+% $$ t = \sqrt{\frac1{8\pi^2}\int_{SO(3)} |f(R)|^2 dR}$$,
 %
 % where $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 %
@@ -18,6 +18,14 @@ function t = norm(SO3F)
 %  resolution  - choose mesh width by calculation of mean
 %
 
-t = sqrt(mean(abs(SO3F).^2));
+% switch to harmonic representation
+SO3F = SO3FunHarmonic(SO3F);
+
+% compute the norm
+t = norm(SO3F);
+
+%fun = SO3FunHandle(@(ori) abs(SO3F.eval(ori)).^2,SO3F.CS, SO3F.SS);
+%t = sqrt(mean(fun));
+%t = sqrt(mean(abs(SO3F).^2));
     
 end

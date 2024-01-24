@@ -84,12 +84,13 @@ classdef ipfSections < ODFSections
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
-      hold on
-      h = equispacedS2Grid(oS.sR,'resolution',15*degree);
-      vF = oS.vectorField(h,oS.omega(sec));      
-      quiver(h,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
-      hold off
-      
+      if ~check_option(varargin,'noGrid')
+        hold on
+        S2G = equispacedS2Grid(oS.sR,'resolution',15*degree);
+        vF = oS.vectorField(S2G,oS.omega(sec));
+        h(end+1) = quiver(S2G,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
+        hold off
+      end
     end
     
     function vF = vectorField(oS,r,omega)

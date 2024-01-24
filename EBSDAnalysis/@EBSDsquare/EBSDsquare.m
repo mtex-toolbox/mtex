@@ -23,7 +23,7 @@ classdef EBSDsquare < EBSD
   
   methods
       
-    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxy,varargin)
+    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
       % generate a rectangular EBSD object
       %
       % Syntax 
@@ -47,17 +47,17 @@ classdef EBSDsquare < EBSD
       ebsd = reshape(ebsd,sGrid);
                   
       % get unit cell
-      ebsd.dx = dxy(1);
-      ebsd.dy = dxy(2);
+      ebsd.dx = dxyz(1);
+      ebsd.dy = dxyz(2);
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = 0.5 * vector3d(dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1],0);
+        ebsd.unitCell = 0.5 * vector3d(dxyz(1) * [1;1;-1;-1],dxyz(2) * [1;-1;-1;1],0);
       end
       
       if isempty(pos)        
         [x,y] = meshgrid(1:size(rot,2),1:size(rot,1));
-        ebsd.pos = vector3d((x-1) * dxy(1),(y-1) * dxy(2),0);
+        ebsd.pos = vector3d((x-1) * dxyz(1),(y-1) * dxyz(2),0);
       end
            
     end
@@ -66,8 +66,9 @@ classdef EBSDsquare < EBSD
       [x,y] = ind2sub(size(ebsd),ind);
     end
 
-    function ebsd = gridify(ebsd,varargin)
+    function [ebsd,newId] = gridify(ebsd,varargin)
       % nothing to do :)
+      newId = (1:length(ebsd)).';
     end
            
     % --------------------------------------------------------------
@@ -124,7 +125,19 @@ classdef EBSDsquare < EBSD
       end
       
     end
-    
+   
+    function h = gridBoundary(ebsd)
+
+      x = ebsd.xmin:ebsd.dx:ebsd.xmax;
+      y = ebsd.ymin-ebsd.dy:ebsd.dy:ebsd.ymax+ebsd.dy;
+
+      h= [
+        repmat(ebsd.xmin-ebsd.dx, numel(y),1), y.' ; ...
+        x.', repmat(ebsd.ymin-ebsd.dy, numel(x), 1) ; ...
+        x.', repmat(ebsd.ymax+ebsd.dy, numel(x), 1) ; ...
+        repmat(ebsd.xmax+ebsd.dx, numel(y),1), y.'];
+    end
+
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 

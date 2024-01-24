@@ -23,7 +23,7 @@ plot(grains,grains.meanOrientation)
 
 plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
-CLim(gcm,[.5,5])
+setColorRange([.5,5])
 
 % the option 'FaceAlpha',0.4 makes the plot a bit transluent
 hold on

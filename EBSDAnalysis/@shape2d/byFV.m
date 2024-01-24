@@ -14,29 +14,32 @@ function  shape = byFV(F,V,varargin)
 %
 
 % xy coordinates shifted to originate at 0
-xy = V(F(:,2),:) - V(F(:,1),:);
+seg = V(F(:,2),:) - V(F(:,1),:);
 
-% just consider one direction
-fcond = xy(:,2)<0;
-xy(fcond,:)=xy(fcond,:).*-1;
-dxy = [xy; -xy];
+% the normal direction to the segments
+[~,ind] = max(norm(seg));
+[~,ind2] = max(angle(seg,seg(ind)));
+N = cross(seg(ind),seg(ind2));
 
-% sort segments according to angle
-[~,id]= sort(atan2(dxy(:,2),dxy(:,1)));
-dxy = dxy(id,:);
+% consider also antipodal direction
+seg = [seg; -seg];
+
+% sort segments according to angle to the largest segment
+[~,id]= sort(angle(seg,seg(ind),N));
+seg = seg(id,:);
 
 % sum up
-xyn = cumsum(dxy);
+Vnew = cumsum(seg);
 
 % shift again
-xyn = [xyn(:,1) - mean(xyn(:,1)) xyn(:,2) - mean(xyn(:,2))];
+Vnew = Vnew - mean(Vnew);
 
 % simplify
 if ~check_option(varargin,'noSimplify')
-  id = floor(linspace(1,length(xyn),1024));
-  xyn = xyn(id,:);
+  id = floor(linspace(1,length(Vnew),1024));
+  Vnew = Vnew(id,:);
 end
 
-shape = shape2d(xyn);
+shape = shape2d(Vnew);
 
 end

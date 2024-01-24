@@ -35,11 +35,11 @@ else
   xyz = [x,y,z];  
 end
 
-tol = get_option(varargin,'tolerance',1e-8);
+tol = get_option(varargin,'tolerance',1e-6);
 
 % in case it should not be sorted
 if check_option(varargin,'stable')
-  [~,iv,iu] = unique(round(xyz./tol),'rows','stable');
+  [~,iv,iu] = unique(round(xyz./tol/(tol+max(xyz(:)))),'rows','stable');
 else
   [~,iv,iu] = uniquetol(xyz,tol,'ByRows',true,'DataScale',1);
 end

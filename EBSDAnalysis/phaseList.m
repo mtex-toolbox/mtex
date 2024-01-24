@@ -215,12 +215,14 @@ classdef phaseList
         mineral = cs.mineral;
       end
     end
+
+    function pL = set.mineral(pL,name)      
+      pL.CS.mineral = name;
+    end
     
     
     function pL = set.color(pL,color)
-      
       pL.CS.color = color;
-      
     end
     
     function rgb = get.color(pL)

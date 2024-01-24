@@ -1,10 +1,13 @@
-classdef (InferiorClasses = {?SO3FunHarmonic,?SO3FunBingham,?SO3FunCBF, ...
-    ?SO3FunComposition,?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF, ...
-    ?SO3VectorFieldHandle}) SO3VectorFieldHarmonic < SO3VectorField
-% a class representing a function on the rotation group
+classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
+    ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF, ...
+    ?SO3VectorFieldHandle,?vector3d}) SO3VectorFieldHarmonic < SO3VectorField
+% a class representing left sided vector fields on the rotation group
 
 properties
   SO3F
+  SRight
+  SLeft
+  tangentSpace = SO3TangentSpace.leftVector
 end
 
 properties(Dependent = true)
@@ -12,10 +15,11 @@ properties(Dependent = true)
   y
   z
   bandwidth
-  SLeft
-  SRight
-  antipodal
   isReal
+end
+
+properties (Hidden = true)
+  internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
 end
 
 methods
@@ -24,14 +28,24 @@ methods
     % initialize a rotational vector field
     
     if nargin == 0, return; end
+    
     if isa(SO3F,'SO3FunHarmonic')
-      SO3VF.SO3F = SO3F(:);
+      SO3VF.SO3F = SO3FunHarmonic(SO3F(:));
+      
+      % extract symmetry
+      [SO3VF.SRight,SO3VF.SLeft] = extractSym(varargin);
+      SO3VF.SRight = SO3F.SRight;
+      
+      SO3VF.internTangentSpace = SO3TangentSpace.extract(varargin{:});
+   
       return
     end
+
     if isa(SO3F,'SO3VectorFieldHarmonic')
-      SO3VF.SO3F = SO3F.SO3F;
+      SO3VF = SO3VectorFieldHarmonic(SO3F.SO3F,SO3F.CS,SO3F.SS,SO3F.internTangentSpace);
       return
     end
+    
     if isa(SO3F,'SO3VectorField')
       SO3VF = SO3VectorFieldHarmonic.quadrature(SO3F,varargin{:});
       return
@@ -39,6 +53,18 @@ methods
     error('Input should be of type SO3FunHarmonic or SO3VectorField.')
 
   end
+
+  % -----------------------------------------------------------------------
+
+
+  function SO3VF = set.SRight(SO3VF,SRight)
+    SO3VF.SRight = SRight;   
+  end
+
+  function SO3VF = set.SLeft(SO3VF,SLeft)
+    SO3VF.SLeft = SLeft;
+  end
+
 
   function bw = get.bandwidth(SO3VF), bw = SO3VF.SO3F.bandwidth; end
   function SO3VF = set.bandwidth(SO3VF,bw), SO3VF.SO3F.bandwidth = bw; end
@@ -50,13 +76,6 @@ methods
   function SO3VF = set.y(SO3VF, y), SO3VF.SO3F(2) = y; end
   function SO3VF = set.z(SO3VF, z), SO3VF.SO3F(3) = z; end
 
-  function SLeft = get.SLeft(SO3VF), SLeft = SO3VF.SO3F.SLeft; end
-  function SRight = get.SRight(SO3VF), SRight = SO3VF.SO3F.SRight; end  
-  function SO3VF = set.SLeft(SO3VF,SLeft), SO3VF.SO3F.SLeft = SLeft; end
-  function SO3VF = set.SRight(SO3VF,SRight), SO3VF.SO3F.SRight = SRight; end
-  
-  function a = get.antipodal(SO3VF), a = SO3VF.SO3F.antipodal; end
-  function SO3VF = set.antipodal(SO3VF,a), SO3VF.SO3F.antipodal = a; end
   function r = get.isReal(SO3VF), r = SO3VF.SO3F.isReal; end  
   function SO3VF = set.isReal(SO3VF,r), SO3VF.SO3F.isReal = r; end
   

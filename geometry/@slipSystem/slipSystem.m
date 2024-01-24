@@ -19,10 +19,11 @@ classdef slipSystem
   
   properties (Dependent = true)
     CS
+    isSymmetrised
   end
   
   methods
-    function sS = slipSystem(b,n,CRSS)
+    function sS = slipSystem(b,n,CRSS,cs)
       % defines a slipSystem
       %
       % Syntax
@@ -36,12 +37,18 @@ classdef slipSystem
       %
       
       if nargin == 0, return; end
-      
-      assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
+
+      if nargin == 4
+        b = Miller(b{:},'uvw',cs);
+        n = Miller(n{:},cs);
+      end
+        
+      assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...
         'Slip direction and plane normal should be orthogonal!')
       
       sS.b = b;
       sS.n = n;
+      
       if nargin < 3, CRSS = 1; end
       if numel(CRSS) ~= length(sS.b)
         CRSS = repmat(CRSS,size(sS.b));
@@ -58,6 +65,18 @@ classdef slipSystem
       end
     end
     
+    function out = get.isSymmetrised(sS)
+      if length(sS)<2
+        out = false;
+      else
+        out = eq(sS.subSet(1),sS.subSet(2));
+      end
+    end
+
+    function sS = ensureSymmetrised(sS,varargin)
+      if ~sS.isSymmetrised, sS = sS.symmetrise(varargin{:}); end
+    end
+
     function display(sS,varargin)
       % standard output
 

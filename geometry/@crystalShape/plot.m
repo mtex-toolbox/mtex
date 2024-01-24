@@ -88,7 +88,8 @@ if isNew
 end
 
 % do plot
-h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k'),varargin{:});
+h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k',...
+  'parent',get_option(varargin,'parent',mtexFig.currentAxes)),varargin{:});
 
 if isNew, drawNow(mtexFig,varargin{:}); end
 

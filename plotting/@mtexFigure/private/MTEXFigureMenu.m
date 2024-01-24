@@ -11,9 +11,12 @@ m = uimenu('label','MTEX');
 
 % make it second position
 mnchlds = allchild(gcf);
-p = find(mnchlds==findall(mnchlds,'Tag','figMenuFile'));
-mnchlds = [mnchlds(2:p-1) ; mnchlds(1) ; mnchlds(p:end)]; % permutate positions
-set(gcf,'Children',mnchlds)
+fMenu = findall(mnchlds,'Tag','figMenuFile');
+if ~isempty(fMenu)
+  p = find(mnchlds==fMenu);
+  mnchlds = [mnchlds(2:p-1) ; mnchlds(1) ; mnchlds(p:end)]; % permutate positions
+  set(gcf,'Children',mnchlds)
+end
   
 uimenu(m,'label','Export Image','callback',@Export);
 uimenu(m,'label','Colorbar','callback',@(a,b) mtexFig.colorbar);
@@ -267,11 +270,10 @@ uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 
 if strcmpi(get(obj,'label'),'tight')
-  mtexFig.CLim('tight');
+  setColorRange(gcf,'tight');
 else
-  mtexFig.CLim('equal');
+  setColorRange(gcf,'equal');
 end
-
 
 set(obj,'checked','on');
 

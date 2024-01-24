@@ -13,7 +13,7 @@ v = [v(:); -zvector];
   
 tri = convhulln(v.xyz);
   
-r = sum(vector3d(v(tri)),2);
+r = sum(vector3d(v.subSet(tri)),2);
 r = r./norm(r);
   
 r(t.theta > max(v.theta(:))) = [];

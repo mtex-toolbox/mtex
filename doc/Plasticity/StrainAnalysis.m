@@ -1,11 +1,6 @@
 %% Slip Transmition
 % How to analyse slip transmission at grain boundaries
 %
-%% Open in Editor
-%
-%% Contents
-%
-
 %% Import Titanium data
 % From Mercier D. - MTEX 2016 Workshop - TU Chemnitz (Germany)
 % Calculation and plot on GBs of m' parameter

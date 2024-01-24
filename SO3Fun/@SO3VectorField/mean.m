@@ -14,4 +14,10 @@ if isalmostreal(v.xyz,'componentwise')
   v = vector3d(real(v.xyz));
 end
 
+if check_option(SO3VF.tangentSpace,'right')
+  v = SO3TangentVector(v,'right');
+else
+  v = SO3TangentVector(v,'left');
+end
+
 end

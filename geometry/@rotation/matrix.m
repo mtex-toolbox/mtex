@@ -1,17 +1,14 @@
 function mat = matrix(rot)
-% quaternion to direction cosine matrix conversion
-% converts direction cosine matrix to quaternion
+% rotation matrix of a rotation
 %
 % Syntax
-%   mat = matrix(q)
+%   mat = matrix(rot)
 %
 % Input
-%
-%  q - @quaternion
+%  rot - @rotation
 %
 % Output
-%
-%  mat - vector of matrixes
+%  mat - list of matrices
 %
 % See also
 % mat2quat Euler axis2quat hr2quat

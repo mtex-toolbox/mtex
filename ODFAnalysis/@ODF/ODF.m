@@ -1,5 +1,5 @@
 classdef ODF
-% This class is obsolet since MTEX 6.0. Use the class @SO3Fun instead.
+% This class is obsolet since MTEX 5.9. Use the class @SO3Fun instead.
 % Anyway the class is preserved, so that saved @ODFs can be loaded.
   
   methods (Static = true)

@@ -12,7 +12,8 @@
 % fold and a 3 fold symmetry axis.
 
 rot2 = rotation.byAxisAngle(vector3d.Z,180*degree);
-rot5 = rotation.byAxisAngle(vector3d.byPolar(31.7171*degree,0*degree),72*degree);
+a5 = normalize(vector3d(0,2/(1+sqrt(5)),1));
+rot5 = rotation.byAxisAngle(a5,72*degree);
 %rot3 = rotation.byAxisAngle(vector3d.byPolar(20.9054*degree,90*degree),120*degree);
 
 cs = crystalSymmetry.byElements([rot5,rot2])

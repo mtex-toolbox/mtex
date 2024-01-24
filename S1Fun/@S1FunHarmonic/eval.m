@@ -13,4 +13,6 @@ plan.nfft_trafo;
 
 y = plan.f;
 
+if isalmostreal(y), y = real(y); end
+
 end

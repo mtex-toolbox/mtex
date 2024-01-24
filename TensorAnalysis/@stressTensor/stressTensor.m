@@ -4,7 +4,9 @@ classdef stressTensor < tensor
     function sT = stressTensor(varargin)
 
       sT = sT@tensor(varargin{:},'rank',2);
-      
+      if ~sT.isSymmetric, warning('Tensor is not symmetric!'); end
+
+
     end
   end
   

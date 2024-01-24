@@ -51,6 +51,18 @@ classdef phi1Sections < ODFSections
 
     end
 
+    function ori = quiverGrid(oS,varargin)
+
+      maxPhi = oS.sR.thetaMax;
+      maxphi2 = oS.sR.rhoMax;
+      res = get_option(varargin,'resolution',15*degree);
+      
+      [phi2,Phi,phi1] = meshgrid(res/2:res:maxphi2,res/2:res:maxPhi,oS.phi1);
+      
+      ori = orientation.byEuler(phi1,Phi,phi2,'Bunge',oS.CS,oS.SS);
+
+    end
+
     function n = numSections(oS)
       n = numel(oS.phi1);
     end
@@ -58,7 +70,9 @@ classdef phi1Sections < ODFSections
     function [S2Pos,secPos] = project(oS,ori,varargin)
 
       % maybe this can be done more efficiently
-      ori = ori.symmetrise('proper').';
+      if ~check_option(varargin,'noSymmetry')
+        ori = ori.symmetrise('proper',varargin{:}).';
+      end
       [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
       secPos = oS.secList(mod(phi1,oS.maxphi1),oS.phi1);
@@ -80,5 +94,24 @@ classdef phi1Sections < ODFSections
         'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
 
     end
+
+    function h = quiverSection(oS,ax,sec,v,data,varargin)
+      
+      % translate rotational data into tangential data
+      if iscell(data) && isa(data{1},'quaternion')
+        [v2,sec2] = project(oS,data{1},'noSymmetry','preserveOrder');
+        data{1} = v2 - v;
+        data{1}(sec2 ~= sec)=NaN;
+      end
+      if check_option(varargin,'normalize'), data{1} = normalize(data{1}); end
+      
+      % plot data
+      h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.phi1(sec)./degree),'^\circ'],...
+      'parent',ax,'projection','plain','xAxisDirection','east',...
+        'xlabel','$\varphi_2$','ylabel','$\Phi$',...
+        'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
+
+    end
+
   end
 end

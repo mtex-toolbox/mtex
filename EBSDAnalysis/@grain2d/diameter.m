@@ -1,24 +1,44 @@
-function [d] = diameter(grains)
+function d = diameter(grains)
 % diameter of a grain in measurement units
 % longest distance between any two vertices of the grain boundary
 
-% do extract this as it is much faster
-V = grains.V.xyz;
 poly = grains.poly;
-
 d = zeros(size(grains));
-warning('TODO')
 
-for ig = 1:length(grains)
+if length(grains) == 1 % compute in 3d
+
+  % get the coordinates
+  V = grains.V.xyz;
   
-  Vg = V(poly{ig},:);
+  for ig = 1:length(grains)
   
-  % if it is a large Vertex-Set, reduce it to its convex hull
-  % this needs to be fixed
-  %if size(Vg,1) > 100, Vg = Vg(convhulln(Vg),:); end
+    Vg = V(poly{ig},:);
+    
+    diffVg = bsxfun(@minus,reshape(Vg,[],1,3),reshape(Vg,1,[],3));
+    diffVg = sum(diffVg.^2,3);
   
-  diffVg = bsxfun(@minus,reshape(Vg,[],1,3),reshape(Vg,1,[],3));
-  diffVg = sum(diffVg.^2,3);
+    d(ig) = sqrt(max(diffVg(:)));
+  end
+
+else % 2d variant
+
+  % get the coordinates
+  scaling = 10000 ;
+  V = grains.rot2Plane .* grains.V;
+  V = round(scaling * [V.x(:),V.y(:)]);
+
+  for ig = 1:length(grains)
   
-  d(ig) = sqrt(max(diffVg(:)));  
+    Vg = V(poly{ig},:);
+  
+    % if it is a large Vertex-Set, reduce it to its convex hull
+    if size(Vg,1) > 100, Vg = Vg(convhulln(Vg),:); end
+  
+    diffVg = bsxfun(@minus,reshape(Vg,[],1,2),reshape(Vg,1,[],2));
+    diffVg = sum(diffVg.^2,3);
+  
+    d(ig) = sqrt(max(diffVg(:)));
+  end
+
+  d = d./scaling;
 end

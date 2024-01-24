@@ -96,7 +96,7 @@ if nargout == 0
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
 
-  if isa(quat,'rotation') && any(any(isImproper(quat)))
+  if isa(quat,'rotation') && any(isImproper(quat.subSet(':')))
     i = isImproper(quat);
     d = [d,i(:)];
     labels = [labels,{'Inv.'}];

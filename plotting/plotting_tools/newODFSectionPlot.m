@@ -1,4 +1,4 @@
-function oS = newODFSectionPlot(CS,SS,varargin)
+function oS = newODFSectionPlot(CS,varargin)
 % generate a new ODF section plot
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',...
@@ -16,19 +16,28 @@ if ~isempty(oS)
   return; 
 end
 
+if nargin > 1 && isa(varargin{1},'symmetry')
+  SS = varargin{1};
+  varargin(1) = [];
+else
+  SS = specimenSymmetry;
+end
+
 if nargin > 0 && (isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry'))
   default = 'phi2';
 else
   default = 'axisAngle';
 end
 
-switch lower(get_flag(varargin,{'phi2','phi1','gamma','sigma','axisAngle','pf','ipf','omega','Phi'},default))
+switch lower(get_flag(varargin,{'phi2','phi1','gamma','alpha','sigma','axisAngle','pf','ipf','omega','Phi'},default))
   case 'phi2'
     oS = phi2Sections(CS,SS,varargin{:});
   case 'phi1'
     oS = phi1Sections(CS,SS,varargin{:});
   case 'gamma'
     oS = gammaSections(CS,SS,varargin{:});
+  case 'alpha'
+    oS = alphaSections(CS,SS,varargin{:});
   case 'sigma'
     oS = sigmaSections(CS,SS,varargin{:});    
   case 'axisangle'

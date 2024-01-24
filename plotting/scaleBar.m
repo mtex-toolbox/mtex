@@ -132,7 +132,7 @@ methods
     xDir = mod((-1)^(az<0) * round(el / 90),4); % E-S-W-N is 0 1 2 3
     yDir = mod(xDir - round(az / 90),4); % E-S-W-N is 0 1 2 3
     
-    % get extend
+    % get extent
     dx = xlim(ax); dy = ylim(ax);
     if any(xDir == [1,2]), dx= fliplr(dx); end
     if any(yDir == [1,2]), dy= fliplr(dy); end

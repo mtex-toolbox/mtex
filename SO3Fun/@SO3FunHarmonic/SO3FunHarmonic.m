@@ -1,5 +1,5 @@
 classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
-    ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF}) SO3FunHarmonic < SO3Fun
+    ?SO3FunHandle,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF}) SO3FunHarmonic < SO3Fun
 % a class representing a harmonic function on the rotational group.
 %
 % Syntax
@@ -44,6 +44,10 @@ methods
     if nargin == 0, return;end
     
     % convert arbitrary SO3Fun to SO3FunHarmonic
+    if isa(fhat,'function_handle')
+      [SRight,SLeft] = extractSym(varargin);
+      fhat = SO3FunHandle(fhat,SRight,SLeft);
+    end
     if isa(fhat,'SO3Fun')
       f_hat = calcFourier(fhat,varargin{:});
       SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
@@ -189,7 +193,8 @@ end
 methods (Static = true)
   SO3F = approximation(v, y, varargin);
   SO3F = quadrature(f, varargin);
-  SO3F = quadratureV2(f, varargin);
+  SO3F = adjoint(rot,values,varargin);
+  SO3F = adjointNFSOFT(rot,values,varargin);
   %sF = regularisation(nodes,y,lambda,varargin);
   SO3F = WignerDmap(harmonicdegree,varargin);
   SO3F = example(varargin)

@@ -1,19 +1,35 @@
-function odf = rotate(odf,rot,varargin)
-% rotate ODF
+function SO3F = rotate(SO3F,rot,varargin)
+% rotate function on SO(3) by a rotation
+%
+% Syntax
+%   SO3F = rotate(SO3F,rot)
+%   SO3F = rotate(SO3F,rot,'right')
 %
 % Input
-%  odf - @SO3Fun
-%  q   - @rotation
+%  SO3F - @SO3FunComposition
+%  rot  - @rotation
 %
 % Output
-%  rotated odf - @SO3Fun
+%  SO3F - @SO3FunComposition
+%
+% See also
+% SO3FunHandle/rotate_outer
 
-ss = odf.SS.Laue;
-if length(ss)>2 && ~any(rot == ss(:))
-  warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-  odf.SS = specimenSymmetry;
+if check_option(varargin,'right')
+  cs = SO3F.CS.rot;
+  if length(cs)>2 && ~any(rot == cs(:))
+    warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
+    SO3F.CS = crystalSymmetry;
+  end
+else
+  ss = SO3F.SS.rot;
+  if length(ss)>2 && ~any(rot == ss(:))
+    warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
+    SO3F.SS = specimenSymmetry;
+  end
 end
 
-for i = 1:length(odf.components)
-  odf.components{i} = odf.components{i}.rotate(rot,varargin{:});  
+
+for i = 1:length(SO3F.components)
+  SO3F.components{i} = SO3F.components{i}.rotate(rot,varargin{:});  
 end

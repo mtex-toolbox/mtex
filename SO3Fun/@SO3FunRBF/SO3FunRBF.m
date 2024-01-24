@@ -42,12 +42,17 @@ classdef SO3FunRBF < SO3Fun
       if nargin == 0, return;end
       
       SO3F.center  = center;
+
+      if nargin==1, return;end
+      
       SO3F.psi     = psi;
+      
       if nargin > 2
         SO3F.weights = reshape(weights,size(center));
       else
         SO3F.weights = ones(size(center)) ./ length(center);
       end
+      
       if nargin > 3, SO3F.c0 = c0; end
       
     end

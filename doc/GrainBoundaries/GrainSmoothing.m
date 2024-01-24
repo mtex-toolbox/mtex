@@ -40,7 +40,7 @@ hold off
 
  
 %%
-% The grain boundary boundaries look noew a little bit more smooth and the
+% The grain boundary boundaries look now a little bit more smooth and the
 % total grain boundary length is reasonable reduced.
  
 sum(grains.boundary('indexed').segLength)

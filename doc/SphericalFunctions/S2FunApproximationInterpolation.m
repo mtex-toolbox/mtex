@@ -26,7 +26,7 @@ scatter(nodes, S.values, 'upper');
 %
 %%
 % The idea of the first approach is fairly simple. We create a function
-% which has *exaclty* the value of the given data in the nodes. But we
+% which has *exactly* the value of the given data in the nodes. But we
 % still have to decide what happens inbetween these nodes. For that, we
 % linearly interpolate between them, similarly as Matlat plots a
 % one-dimensional function
@@ -74,7 +74,7 @@ contourf(sFTri, 'upper');
 % chance of getting the error in the nodes zero but hope for a smoother
 % approximation. This can be achieved by the <vector3d.interp |interp|>
 % command of the class <vector3d.vector3d |vector3d|> when the argument
-% |'harmnicApproximation'|
+% |'harmonicApproximation'|
 
 sF = interp(nodes, S.values, 'harmonicApproximation');
 contourf(sF, 'upper');

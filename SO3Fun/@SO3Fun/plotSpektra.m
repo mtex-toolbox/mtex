@@ -14,7 +14,7 @@ function plotSpektra(SO3F,varargin)
 %  logarithmic - logarithmic plot
 %
 % See also
-% SO3Fun_calcFourier FourierODF
+% SO3Fun/calcFourier FourierODF
 
 SO3F = SO3FunHarmonic(SO3F,varargin{:});
 

@@ -31,7 +31,7 @@ else
   data = {};
 end
 
-if v.antipodal   %#ok<BDSCI,BDLGI>
+if v.antipodal
   v = [v;-v];
   data = [data;data];
 end
@@ -74,11 +74,12 @@ if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   
 end
 
-
 axis(ax,'equal','vis3d','off');
-
 set(ax,'XDir','rev','YDir','rev',...
-'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
+  'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
+
+pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+pC.setView(ax);
 
 hold(ax,'off')
 

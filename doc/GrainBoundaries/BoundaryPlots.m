@@ -108,7 +108,7 @@ hold on
 plot(gB_Fo,'lineColor','black','linewidth',6) % some black background for contrast
 plot(gB_Fo,color,'linewidth',4)
 hold off
-mtexColorbar('off')
+mtexColorbar('visible','off')
 
 %%
 % As a colorbar replacement we plot the color key and on top of it the
@@ -194,7 +194,7 @@ gB = grains.boundary('iron','iron');
 close all
 plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
-CLim(gcm,[.5,5])
+setColorRange([.5,5])
 hold on
 plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
 

@@ -1,4 +1,4 @@
-function grains = getSlice(this,varargin)
+function grains = getSlice(this,N,d,varargin)
 % generating 2d slices of 3d neper tesselations
 %
 % Syntax
@@ -23,7 +23,9 @@ function grains = getSlice(this,varargin)
 %  2dslice.tess   - 2d neper tesselation file, name specified at neper.fileName2d, stored under neper.filepath
 %  2dslice.ori    - file with orientations in euler-bunge format
 
-%%
+% compute distance to origin
+if isa(d,"vector3d"), d = dot(N,d); end
+
 %change work directory
 if this.newfolder==true && exist(this.folder,'dir')==7
   cd([this.filePath this.folder]);
@@ -32,39 +34,26 @@ else
 end
 
 %deleting old files, to make sure, to not load a wrong file, if slicing failed
-if isfile('2dslice.tess')
-  delete([this.fileName2d '.tess' ]);
-end
-if isfile('2dslice.ori')
-  delete([this.fileName2d '.ori' ]);
-end
+if isfile([this.fileName2d '.tess' ]), delete([this.fileName2d '.tess' ]); end
+if isfile([this.fileName2d '.ori' ]), delete([this.fileName2d '.ori' ]); end
 
-%%
-assert(nargin>1,'too few input arguments')
-if nargin>2 && isa(varargin{1},'vector3d')
-  n=varargin{1};
-  if isa(varargin{2},"vector3d")
-    d=dot(n,varargin{2});
-  elseif isnumeric(varargin{2}) && isscalar(varargin{2})
-    d=varargin{2};
-  else
-    error 'argument error'
-  end
+if check_option(varargin,'silent')
+  output2file = ['>> ' this.filePath filesep 'neper.log '];
 else
-  error 'argument error'
+  output2file = '';
 end
 
-%% get a slice
+% get a slice
 system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
-  '-transform "slice(' num2str(d) ',' num2str(n.x) ',' num2str(n.y) ',' num2str(n.z) ')" ' ... % this is (d,a,b,c) of a plane
+  '-transform "slice(' num2str(d) ',' num2str(N.x) ',' num2str(N.y) ',' num2str(N.z) ')" ' ... % this is (d,a,b,c) of a plane
   '-ori "file(' this.fileName3d '.ori)" ' ...
   '-o ' this.fileName2d ' ' ...
   '-oriformat geof ' ...
   '-oridescriptor rodrigues ' ...
   '-format tess,ori ' ...
+  output2file ...
   '&& ' ...
-  ...
-  this.cmdPrefix 'neper -V ' this.fileName2d '.tess']);
+  this.cmdPrefix 'neper -V ' this.fileName2d '.tess' output2file]);
 
 if ~isfile([this.fileName2d '.tess'])
   error 'slicing failed, try other plane parameters.'

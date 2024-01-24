@@ -9,7 +9,6 @@ classdef sphericalPlot < handle
     ticks    %
     labels   %
     ax       % axis
-    hgt      % hgtransform
     parent   % the figure that contains the spherical plot
     TL       %
     TR       %
@@ -51,7 +50,6 @@ classdef sphericalPlot < handle
       if isa(sP.proj,'plainProjection')
         
         % boundary
-        sP.hgt = ax;
         sP.updateBounds;
         axis(ax,'on');
         set(ax,'box','on','FontSize',getMTEXpref('FontSize'));
@@ -60,25 +58,25 @@ classdef sphericalPlot < handle
         sP.plotPlainGrid(varargin{:});
 
         % set view point
-        setCamera(sP.ax,'default',varargin{:});
+        %setCamera(sP.ax,'default',varargin{:});
 
       else
 
         %axis(ax,'on');
         %xlabel(ax,[],'visible','on','color','k');
         %ylabel(ax,[],'visible','on','color','k');
-        sP.hgt = hgtransform('parent',ax);
-
+        
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',sP.ax,varargin{:});
 
-        % set view point
-        setCamera(sP.ax,'default',varargin{:});
+        sP.updateBounds;
 
         % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
         sP.plotLabels(CS,varargin{:});
         
+        %sP.updateBounds;
+
         set(ax,'XTick',[],'YTick',[]);
         try
           set(ax,'XColor','none','YColor','none');
@@ -186,13 +184,13 @@ classdef sphericalPlot < handle
     function doGridInFront(sP)
       
       if ~isempty(sP.grid)
-        childs = allchild(sP.hgt);
+        childs = allchild(sP.ax);
   
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
         isLine = strcmp(get(childs,'type'),'line');
   
-        set(sP.hgt,'Children',[childs(istext); sP.boundary(:); sP.grid(:);...
+        set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);...
           childs(isLine & ~isgrid & ~istext);childs(~isLine & ~isgrid & ~istext)]);
       end
     end
@@ -212,9 +210,8 @@ classdef sphericalPlot < handle
       
         x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
         y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-        M = get(sP.hgt,'Matrix');
-        xy = M(1:2,1:2) * [x;y];
-        sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+        xyz = [x;y];
+        sP.bounds = [min(xyz(1,:)),min(xyz(2,:)),max(xyz(1,:)),max(xyz(2,:))];
       
       end
         
@@ -264,8 +261,8 @@ classdef sphericalPlot < handle
       dgrid = pi/round((pi)/dgrid);
       
       % draw small circles
-      theta = dgrid:dgrid:pi/2-dgrid;
-      if sP.sphericalRegion.isLower, theta = pi-theta;end
+      theta = dgrid:dgrid:pi-dgrid;
+      
       for i = 1:length(theta), circ(sP,theta(i)); end
       
       % draw meridians
@@ -277,17 +274,14 @@ classdef sphericalPlot < handle
     function plotMeridians(sP,rho,varargin)
 
       % the points
-      if sP.sphericalRegion.isUpper
-        theta = linspace(-pi/2,pi/2,181);        
-      else
-        theta = linspace(3/2*pi,pi/2,181);
-      end
+      theta = linspace(-pi,pi,361);
+      
       [theta,rho] = meshgrid(theta,rho);
-      v =  vector3d('theta',theta,'rho',rho);
-      [x,y] = project(sP.proj,v.');
+      v =  vector3d.byPolar(theta,rho);
+      [x,y] = project(sP.proj,v.','noAntipodal');
 
       % grid
-      sP.grid = [sP.grid(:);line(x,y,'parent',sP.hgt,...
+      sP.grid = [sP.grid(:);line(x,y,'parent',sP.ax,...
         'handlevisibility','off','color',[.8 .8 .8])];
       
     end
@@ -295,13 +289,16 @@ classdef sphericalPlot < handle
     function circ(sP,theta,varargin)
 
       % the points to plot      
-      v = vector3d('theta',theta,'rho',linspace(0,2*pi,721));
-      
+      v = vector3d.byPolar(theta,linspace(0,2*pi,721));
+            
       % project
-      [dx,dy] = sP.proj.project(v);
+      [x,y] = sP.proj.project(v,'noAntipodal');
+
+      %d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
+      %ind = find(d > diff(sP(i).bounds([1,3])) / 20);
 
       % plot
-      sP.grid(end+1) = line(dx,dy,'parent',sP.hgt,...
+      sP.grid(end+1) = line(x,y,'parent',sP.ax,...
         'handlevisibility','off','color',[.8 .8 .8]);
 
     end    

@@ -32,6 +32,10 @@ ori = orientation.byEuler(0,30*degree,15*degree,cs)
 [M,b,W] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
 
 %% The orientation dependence of the Taylor factor
+% For a fixed strain tensor |epsilon| and slip systems |sS| the Taylor
+% factor
+% 
+
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
 % Some applications of the Taylor theory of polycrystal plasticity.
 % Kristall Und Technik, 5(1), 145-175.
@@ -55,6 +59,20 @@ sP.plot(M,'smooth')
 
 mtexColorbar
 
+%%
+% Lets precompute the Taylor factor as |@SO3Fun| and the spin tensor as
+% |@SO3VectorField|. Hence we can evaluate them very fast for several times
+% in mush more orientations.
+
+% compute the Taylor factor independent from the orientations
+tic
+[TaylorF,~,Spin] = calcTaylor(epsilon,sS.symmetrise,'bandwidth',32);
+toc
+
+% plot the Taylor factor
+plotSection(TaylorF,'phi1',(0:10:90)*degree)
+
+mtexColorbar
 
 %% The orientation dependence of the spin
 % Compare Fig. 8 of the above paper
@@ -67,8 +85,8 @@ mtexColorbar
 
 sP = sigmaSections(cs,specimenSymmetry);
 oriGrid = sP.makeGrid('resolution',2.5*degree);
-[M,~,W] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
-sP.plot(W.angle./degree,'smooth')
+W = Spin.eval(oriGrid(:));
+sP.plot(spinTensor(W.').angle./degree,'smooth')
 mtexColorbar
 
 %% Most active slip direction
@@ -128,23 +146,28 @@ plot(sSGrains.b)
 %% Texture evolution during rolling
 
 % define some random orientations
-ori = orientation.rand(10000,cs);
+rng(0)
+ori = orientation.rand(1e5,grains.CS);
 
 % 30 percent plane strain
 q = 0;
 epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
 
-%
-numIter = 10;
+numIter = 100;
+
+% compute the Taylor factors and the orientation gradients
+[~,~,Spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
+
 progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  [M,~,W] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
+  W = spinTensor(Spin.eval(ori).').';
 
   % rotate the individual orientations
   ori = ori .* orientation(-W);
   progress(sas,numIter);
+
 end
 
 %%

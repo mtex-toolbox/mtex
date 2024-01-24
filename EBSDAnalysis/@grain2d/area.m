@@ -8,12 +8,24 @@ function A = area(grains,varargin)
 %  A  - list of areas (in measurement units)
 %
 
-% signed Area
 A = zeros(length(grains),1);
+poly = grains.poly;
 
-for i=1:length(grains)
+if length(grains)== 1   % 3d algorithm
 
-  V = grains.V(grains.poly{i});
-  A(i) = dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
+  % signed area
+  for i=1:length(grains)
+    V = grains.V(poly{i});
+    A(i) = -dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
+  end
+else 
+  
+  V = grains.rot2Plane .* grains.V;
+  Vx = V.x;
+  Vy = V.y;
+
+  for ig = 1:length(poly)
+    A(ig) = polySgnArea(Vx(poly{ig}),Vy(poly{ig}));
+  end
 
 end

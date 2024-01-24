@@ -17,7 +17,8 @@ classdef axisAnglePlot < orientationPlot
       ylabel(oP.ax,'$y$','Interpreter','LaTeX');
       zlabel(oP.ax,'$z$','Interpreter','LaTeX');
       
-      if ~check_option(varargin,'noBoundary') && ~strcmpi(oP.fRMode,'ignoreFundamentalRegion')
+      if get_option(varargin,'fundamentalRegion',true) && ~check_option(varargin,'noBoundary') ...
+          && ~strcmpi(oP.fRMode,'ignoreFundamentalRegion')
         opt = delete_option(varargin,{'color','linewidth','linecolor','edgecolor'},1);
         plot(oP.oR,'parent',oP.ax,'noBoundaryCheck',opt{:});
       end
@@ -31,7 +32,7 @@ classdef axisAnglePlot < orientationPlot
           case 'project2FundamentalRegion'
             ori = project2FundamentalRegion(ori);
           case 'restrict2FundamentalRegion'
-            ori(~oP.oR.checkInside) = NaN;
+            ori(~oP.oR.checkInside(ori)) = NaN;
         end
       end
       

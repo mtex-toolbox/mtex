@@ -88,7 +88,7 @@ plot(grains,grains.aspectRatio)
 % to specify the values of the aspect ration which should maped to the
 % top and bottom color of the colormap
 
-CLim(gcm,[1 5])
+setColorRange([1 5])
 
 %% Colorizing circular properties
 % Sometimes the property we want to display is a circular, e.g., the

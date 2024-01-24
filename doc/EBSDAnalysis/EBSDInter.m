@@ -19,6 +19,12 @@ ebsd = ebsd.project2FundamentalRegion(grains);
 plot(ebsd('indexed'),ebsd('indexed').orientations)
 
 %%
+% In most cases it is useful to gridify the data before doing
+% interpolation.
+
+ebsd = ebsd.gridify
+
+%%
 % Now we can use the command <EBSD.interp.html |interp|> to interpolate the
 % orientation at arbitrary coordinates |x| and |y|.
 
@@ -26,7 +32,7 @@ x = 30.5; y = 5.5;
 e1 = interp(ebsd,x,y)
 
 %%
-% By default the command <EBSD.interp.html |interp|> performs inverse
+% By default the command <EBSDSquare.interp.html |interp|> performs inverse
 % distance interpolation. This is different to 
 
 e2 = ebsd('xy',x,y)
@@ -44,7 +50,7 @@ angle(e1.orientations,e2.orientations)./degree
 
 % define a rotated coarse grid
 omega = 5*degree;
-[xmin, xmax, ymin, ymax] = ebsd.extend;
+[xmin, xmax, ymin, ymax] = ebsd.extent;
 x = linspace(xmin-cos(omega)*ymax,xmax,100);
 y = linspace(ymin-sin(omega)*xmax,ymax,50);
 [x,y] = meshgrid(x,y);

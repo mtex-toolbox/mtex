@@ -12,19 +12,17 @@ function varargout = simulateGrains(this,varargin)
 %   ori=discreteSample(odf,numGrains)
 %   neper.simulateGrains(ori)
 %
-%
 % Input
 %  neper      - @neperInstance
 %  odf        - @SO3Fun
 %  numGrains  - number of grains
 %  ori        - @orientation
 % 
-%  Output
-%   allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
-%   allgrains.ori   - orientation file, euler-bunge format,
-%   ori_in.txt      - input orientations, rodrigues format
+% Output
+%  allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
+%  allgrains.ori   - orientation file, euler-bunge format,
+%  ori_in.txt      - input orientations, rodrigues format
 
-%%
 %change work directory
 if this.newfolder==true
   try
@@ -59,8 +57,8 @@ elseif nargin==2 %ori
   end 
 end
 
-%% parsing orientations
-CS=ori.CS.LaueName;
+% generate Neper symmetry names
+CS = ori.CS.LaueName;
 switch CS
   case '2/m11'
     CS='2/m';
@@ -75,13 +73,17 @@ switch CS
   otherwise
 end
 
-%% save ori to file
+% save ori to file
 oriFilename='ori_in.txt';
 fid=fopen(oriFilename,'w');
 fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
-%% calling neper
+if check_option(varargin,'silent')
+  output2file = ['>> ' this.filePath filesep 'neper.log'];
+else
+  output2file = '';
+end
 system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -id ' num2str(this.id) ' -morpho "' this.morpho '" ' ...
   ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
@@ -93,9 +95,10 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -oridescriptor rodrigues ' ... % orientation format in output file
   ' -oriformat plain ' ...
   ' -format tess,ori' ... % outputfiles
+  output2file ...
   ' && ' ...
   ...
-  this.cmdPrefix 'neper -V ' this.fileName3d '.tess']);
+  this.cmdPrefix 'neper -V ' this.fileName3d '.tess' output2file]);
 
 %% return value
 if nargout >= 1

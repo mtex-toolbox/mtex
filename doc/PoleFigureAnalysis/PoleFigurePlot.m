@@ -42,7 +42,7 @@ mtexColorMap parula
 % to have the same color coding in all plots. This can be done as following
 
 mtexColorbar % remove colorbars
-CLim(gcm,'equal');
+setColorRange('equal');
 mtexColorbar % add a single colorbar
 
 %% Plotting Recalculated Pole Figures

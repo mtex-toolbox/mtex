@@ -17,6 +17,16 @@ function f = eval(SO3F,g,varargin)
 %
 % $$ f(r) = sum_j w_j \psi(r,c_j) $$
 
+
+% if isa(g,'orientation')
+%   ensureCompatibleSymmetries(SO3F,g)
+% end
+
+% the constant part
+f = SO3F.c0 * ones(size(g));
+
+if isempty(SO3F.weights), return; end
+
 % decide along which dimension to split the summation matrix
 if isa(g,'SO3Grid')
   lg1 = length(g);
@@ -38,7 +48,6 @@ else
 end
 
 % init variables
-f = SO3F.c0 * ones(size(g));
 iter = 0; numiter = 1; ind = 1; %for first run
 
 % now iterate along the splitting
@@ -66,7 +75,7 @@ while iter <= numiter
   if num == 1
     return
   elseif iter == 0 % iterate due to memory restrictions?
-    numiter = ceil( max(1,nnz(M))*num / getMTEXpref('memory',300 * 1024) );
+    numiter = ceil( max(1,nnz(M))*num / getMTEXpref('memory',512 * 1024) / 256 );
     diter = ceil(num / numiter);
   end
 

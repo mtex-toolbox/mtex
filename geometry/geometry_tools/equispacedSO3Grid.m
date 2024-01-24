@@ -35,6 +35,14 @@ end
 % may be we should populate only a ball
 maxAngle = get_option(varargin,'maxAngle',2*pi);
 
+persistent tmp
+
+if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
+    isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution)
+  S3G = tmp.S3G;
+  return
+end
+
 if maxAngle < pi/2/CS.multiplicityZ
   S3G = localOrientationGrid(CS,SS,maxAngle,varargin{:});
   return
@@ -99,11 +107,11 @@ res = 2 * maxGamma / ap2;
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
 % TODO: this should be done better!!
-ind = fundamental_region(ori,CS,specimenSymmetry);
+ind = checkOutsideFR(ori,CS,specimenSymmetry);
 
 if nnz(ind) ~= 0
   % eliminate those rotations
-  ori(ind) = [];
+  ori = ori(~ind);
 
   % eliminate from index set
   gamma = subGrid(gamma,~ind);
@@ -120,6 +128,9 @@ if check_option(varargin,'maxAngle')
   S3G = subGrid(S3G,center,maxAngle);
 end
 
+% store for later use
+tmp.S3G = S3G;
+tmp.maxAngle = maxAngle;
 
 end
 
@@ -134,7 +145,7 @@ end
 end
 
 % ---------------------------------------------------------------
-function ind = fundamental_region(q,cs,ss)
+function ind = checkOutsideFR(q,cs,ss)
 
 if isempty(q), ind = []; return; end
 

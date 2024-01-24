@@ -15,6 +15,7 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 %
 
 if isa(SO3VF2, 'vector3d') && length(SO3VF2)==1
+  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
   xyz = repmat(SO3VF2.xyz,size(SO3VF1.SO3F.fhat,1),1);
   SO3VF = SO3VF1;
   SO3VF.SO3F.fhat = cross(SO3VF1.SO3F.fhat,xyz,2);
@@ -30,7 +31,7 @@ if isa(SO3VF1, 'vector3d')
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
-f = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.CS,SO3VF1.SS);
+f = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.CS,SO3VF1.SS,SO3VF1.tangentSpace);
 SO3VF = SO3VectorFieldHarmonic(f, varargin{:});
 
 end

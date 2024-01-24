@@ -20,6 +20,7 @@ classdef triplePointList < phaseList & dynProp
     boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
     nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
     allV = vector3d           % vertices x,y coordinates
+    N = vector3d.Z            % normal direction of the pseudo3d data
   end
    
   properties (Dependent = true)

@@ -10,7 +10,7 @@ function f = eval(sVF,v)
 %   f - @vector3d
 %
 
-f = vector3d(sVF.sF.eval(v)');
+f = vector3d(real(sVF.sF.eval(v)'));
 f = f';
 
 end

@@ -22,6 +22,7 @@ function m = mean(v,varargin)
 %  robust    - robust mean (with respect to outliers)
 %
 
+
 % robust estimator
 if check_option(varargin,'robust') && length(v)>4
   

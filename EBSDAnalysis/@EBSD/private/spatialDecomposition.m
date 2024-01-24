@@ -14,7 +14,7 @@ if isempty(unitCell), unitCell = calcUnitCell(X); end
 if check_option(varargin,'unitCell')
   
   % compute the vertices
-  [V,faces] = generateUnitCells(X,unitCell,varargin{:});
+  [V,faces] = generateUnitCells(vector3d(X(:,1),X(:,2),0),unitCell,varargin{:});
  
   D = cell(size(X,1),1);
   for k=1:size(X,1)  

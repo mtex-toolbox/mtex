@@ -252,7 +252,7 @@ classdef sphericalRegion
         w = angle_outer(sR.N,sR.N);
         [i,j] = find(w == max(w(:)),1);
         
-        c = mean(sR.N([i,j]));
+        c = mean(normalize(sR.N([i,j])));
       
       elseif length(v) < 4
         

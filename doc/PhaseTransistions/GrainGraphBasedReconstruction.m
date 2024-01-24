@@ -137,7 +137,7 @@ hold off
 % probability is exactly 50 percent and the standard deviation
 % |'tolerance'|.
 
-job.calcGraph('threshold',2.5*degree,'tolerance',2.5*degree);
+job.calcGraph('threshold',2.5*degree,'tolerance',2.5*degree)
 
 %% 
 % We may visualize th graph adjusting the edgeAlpha of the boundaries

@@ -29,6 +29,7 @@ switch symmetry.pointGroups(cs.id).LaueId
   case 21 % 321
     rot = symAxis(a1,2);
   case 24 % 312
+    % there is no specimenSymmetry('312').
     rot = symAxis(m,2);
   case 42 % 23
     rot = symAxis(lllaxis,3) * symAxis(a1,2);

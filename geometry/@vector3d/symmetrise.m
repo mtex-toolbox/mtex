@@ -95,7 +95,7 @@ if check_option(varargin,'unique')
   idSym = cell(size(v,2),1);
   dim1 = size(v,1);
   for j = 1:size(v,2)
-    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',apUnique);
+    [vSym{j},idSym{j}] = unique(v.subSet(((1:dim1) + (j-1)*dim1).'),'noSymmetry',apUnique,'stable');
   end
 
   l  = cellfun(@length, vSym);

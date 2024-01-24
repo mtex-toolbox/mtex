@@ -17,7 +17,7 @@ classdef SO3FunCBF < SO3Fun
 %
 % Example
 %   
-%   f = fibre.beta(cs);
+%   fibre = fibre.beta(cs);
 %   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
 %
 
@@ -37,14 +37,22 @@ classdef SO3FunCBF < SO3Fun
   end
   
   methods
-    function SO3F = SO3FunCBF(h,r,weights,psi,varargin)
+    function SO3F = SO3FunCBF(varargin)
       
       if nargin == 0, return;end
       
-      SO3F.h = h;
-      SO3F.r = r;
-      SO3F.psi = psi;
-      SO3F.weights = weights;
+      if isa(varargin{1},'fibre')
+        f = varargin{1};
+        SO3F.h = f.h;
+        SO3F.r = f.r;
+      else
+        SO3F.h = varargin{1};
+        SO3F.r = varargin{2};
+        if isnumeric(varargin{3}), SO3F.weights = varargin{3}; end
+      end
+
+      hw = get_option(varargin,'halfwidth',10*degree);
+      SO3F.psi = getClass(varargin,'S2Kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
       SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
                   
     end

@@ -1,6 +1,136 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 6.0.beta.1 9/2023
+%
+% *Pseudo 3d EBSD and Grain maps*
+%
+% With version 6.0 MTEX starts to support pseudo 3d EBSD data. This means
+% that EBSD maps are not longer supposed to are in the xy-plane. For
+% example it is now possible to consider EBSD maps that represent the three
+% faces of a cube. To make this possible multiple changes at the core of
+% MTEX had to be introduced:
+%
+% * |ebsd.pos| gives the position of the EBSD measurements and is of type
+% @vector3d
+% * many grain properties like vertices |grains.V|, centroid |grains.centroid|
+% or long axis |grains.longAxis| are now of type @vector3d.
+% * |ebsd.N|, |grains.N| gives the normal direction of a EBSD map
+% * it is not possible to merge EBSD maps with different normal direction
+% into one variable
+%
+% *Free three dimensional plotting of EBSD maps, pole figures, etc.*
+%
+% * Plotting of EBSD and grain maps is now possible in 3d
+% * The alignment of x, y and z on the screen is now controlled by an
+% object of type @plottingConvention. The code
+%
+%   how2plot = plottinConvention
+%   how2plot.outOfScreen = ebsd.N
+%   how2plot.east = yvector
+%   plot(ebsd, how2plot)
+%
+% would plot an EBSD map with its normal direction out of the screen an the
+% y-vector pointing to north.
+% * A default plotting convention can be stored directly in the EBSD or
+% grain variable via
+%
+%   ebsd.plottingConvention = how2plot
+%
+% * The plotting convention can also passed to any spherical plot. This
+% allows e.g. to plot pole figures with an arbitrary direction sticking out
+% of the screen.
+%
+% * As consequence |'upper'| and |'lower'| refers to the outOFScreen
+% direction.
+%
+% *Interface to Neper*
+% Neper is an open source software package for 3d polycrystal generation
+% and meshing. It is now possible to call Neper from within MTEX, simulate
+% microstructures, generated slices through a 3d volume and import those
+% slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
+% more information.
+%
+%% MTEX 5.10.1 9/2023
+% 
+% This is mainly a bug fix release.
+%
+%% MTEX 5.10.0 5/2023
+%
+% *Weigthed Burgers Vector*
+%
+% With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
+% it is now possible to compute the weighted burgers vector both, using the
+% integral approach as well as the differentical approach.
+%
+% *Bain Group Determination* 
+% 
+% The function <calcVariantId.html |calcVariantId|> now returns an id for
+% the variant, the packet and the Bain group. The usage of this function is
+% demonstrated <MartensiteVariants.html here>.
+%
+% *Numerous minor addon, speed improvements, bug fixes*
+%
+% * New option |'max'| to <orientation.angle.html |angle(mori)|> to compute
+% the largest misorientation angle. Helpful for identifying twinning.
+% * Added checks for symmetry and positive definiteness when defining
+% stress, strain and ellasticity tensors.
+% * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
+% method for data cleaning in EBSD maps.
+% * Pseudesymmetries like now natively supported using the syntax
+% |crystalSymmetry('532')|
+% * |symmetrise(t,'iso')| return the isotropic portion of a tensor
+% * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
+% the symmetric decomposition of a tensor
+% * normalize the Taylor factor according to the strain
+% * display boundary length as default output
+% * better import of h5 files
+% * many more fixes and speed improvements
+%
+%% MTEX 5.9.0 2/2023
+%
+% *Habit Plane Detection*
+%
+% MTEX 5.9 includes powerful functions for the determination of predominant
+% habit planes and habit plane distributions. For the setting of a fully
+% transformed microstructure the are described in the paper <Habit plane
+% determination from reconstructed parent phase orientation maps>. Those
+% functions include
+%
+% * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
+% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
+% from families of grains or EBSD data.
+% * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
+% grain boundary normal distribution from a list of habit plane traces and
+% the corresponding grain orientations.
+% * new function <grainBoundary.characteristicShape.html
+% |characteristicShape(gB)|> to compute the characteristic shape from lists
+% of grain boundaries
+%
+% *Orientation dependent functions*
+%
+% The orientation distribution function (ODF) describes the relative volume
+% of crystal orientations within a material. As such it is a function that
+% associates to each orientation a number with unit mrd (multiples of
+% random distribution). However, in material science many other orientation
+% dependend functions are of importance, e.g., the Taylor factor with
+% respect to some outer strain depends on the local orientation. While ODFs
+% have ever since been at the heart of MTEX, this release is the first one
+% that includes full support for orientation dependent functions. Those
+% functions are called @SO3Fun and behave similar to sphercial functions
+% @S2Fun. In particular one can
+%
+% * add, substract, multiply and divide with them
+% * compare them
+% * detect global and local extrema
+% * visualize them in 3d and 2d sections
+% * compute gradients
+%
+% While implementing these new features we also significantly speeded up
+% all operations related with ODF operations. A full documentation of these
+% new features can be found <SO3FunConcept.html here>.
+%
+%
 %% MTEX 5.8.2 11/2022
 %
 % This is mainly a bug fix release. New functionalities include
@@ -737,7 +867,7 @@
 % orientation
 % * <grain2d.hist.html grain2d.hist> can now plot histogram of arbitrary
 % properties
-% * <SO3Fun.fibreVolume.html ODF.fibreVolume> works also for specimen symmetry
+% * <SO3Fun.fibreVolume.html  |fibreVolume|> works also for specimen symmetry
 % * allow to change the length of the scaleBar in EBSD plots
 %
 %% MTEX 4.5.2 11/2017
@@ -2113,7 +2243,7 @@
 %
 % *New ODF Class*
 %
-% * The new function <FourierODF.html FourierODF> provides an easy way to
+% * The new function <FourierODF.html |FourierODF|> provides an easy way to
 % define ODFs via their Fourier coefficients. In particular, MTEX allows now
 % to calculate with those ODFs in the same manner as with any other ODFs.
 %

@@ -22,10 +22,11 @@ properties
   antipodal = false
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
-  bandwidth = 96
+  bandwidth = getMTEXpref('maxSO3Bandwidth');
 end
 
 methods
+  
   function SO3F = SO3FunHandle(fun,varargin)
     
     SO3F.fun = fun;
@@ -36,18 +37,6 @@ methods
     
   end
   
-  function f = eval(SO3F,rot,varargin)
-    s = size(rot);
-    rot = rot(:);
-    f = SO3F.fun(rot);
-    if numel(f)==length(rot)
-      f = reshape(f,s);
-    end
-    if isalmostreal(f)
-      f = real(f);
-    end
-  end
-
 end
 
 

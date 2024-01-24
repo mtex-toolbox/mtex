@@ -20,7 +20,7 @@ cprintf(matrix,'-L',' ','-Lc',...
   {'phase' 'mineral' 'symmetry' 'grains' 'area' 'reconstructed'},...
   '-d','  ','-ic',true,'-la','T');
 
-if ~isempty(job.p2c)
+if ~isempty(job.p2c) & job.reportFit
   disp(' ');
   disp([' OR: ' char(job.p2c)]);
   prop = calcGBFit(job,'p2c','quick')./degree;

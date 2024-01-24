@@ -1,9 +1,14 @@
 classdef SO3VectorField
 % a class representing a vector field on the rotation group
 
+% properties
+%   SLeft = specimenSymmetry  % symmetry that acts from the left
+% end
+
 properties (Abstract = true)
-  SLeft  % symmetry that acts from the left
   SRight % symmetry that acts from the right
+  SLeft % symmetry that acts from the left
+  tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used
 end
 
 properties (Dependent = true)
@@ -13,20 +18,20 @@ end
 
 methods
 
-  function CS = get.CS(SO3F)
-    CS = SO3F.SRight;
+  function CS = get.CS(SO3VF)
+    CS = SO3VF.SRight;
   end
   
-  function SS = get.SS(SO3F)
-    SS = SO3F.SLeft;
+  function SS = get.SS(SO3VF)
+    SS = SO3VF.SLeft;
   end
   
-  function SO3F = set.CS(SO3F,CS)
-    SO3F.SRight = CS;
+  function SO3VF = set.CS(SO3VF,CS)
+    SO3VF.SRight = CS;
   end
   
-  function SO3F = set.SS(SO3F,SS)
-    SO3F.SLeft = SS;
+  function SO3VF = set.SS(SO3VF,SS)
+    SO3VF.SLeft = SS;
   end
   
 end

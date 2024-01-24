@@ -1,5 +1,5 @@
 function g = grad(SO3F,varargin)
-% right-sided gradient of an SO3Fun
+% gradient of an SO3FunCBF
 %
 % Syntax
 %   G = SO3F.grad % compute the gradient
@@ -21,7 +21,8 @@ function g = grad(SO3F,varargin)
 %
 % $$s(g1_i) = sum_j c_j DRK(<g h_j,r_j>) g h_j x r_j $$
 %
-
+% See also
+% orientation/exp SO3FunHarmonic/grad SO3FunRBF/grad SO3VectorField
 
 % fallback to generic method
 if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'rotation')
@@ -30,6 +31,8 @@ if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'rotation')
 end
 
 ori = varargin{1};
+s = size(ori);
+ori = ori(:);
 
 % symmetrise - only crystal symmetry
 [h,l] = symmetrise(SO3F.h.normalize,'unique');
@@ -37,10 +40,23 @@ r = repelem(SO3F.r.normalize,l);
 w = repelem(SO3F.weights./l,l);
 
 g = vector3d.zeros(size(ori));
-for i = 1:length(h)
-  g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
-      cross(h(i),inv(ori) * r(i));
+
+if check_option(varargin,'right')
+  for i = 1:length(h)
+    g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
+        cross(h(i),inv(ori) * r(i));
+  end
+  g = SO3TangentVector(g,'right');
+else
+  for i = 1:length(h)
+    g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
+        cross(ori*h(i),r(i));
+  end
+  g = SO3TangentVector(g,'left');
 end
+
+g = reshape(g,s);
+
 end
 
 function test

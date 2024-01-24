@@ -46,7 +46,7 @@ annotate(ori_pref,'marker','s','MarkerFaceColor','black')
 % entropy and the texture index. The texture index of an ODF $f$ is defined
 % as:
 %
-% $$ t = \int_{SO(3)} f(R)^2 dR$$
+% $$ t = \int_{SO(3)} f({R})^2 dR$$
 %
 % We may either compute this integral using the command <SO3Fun.sum.html
 % |sum|> directly by
@@ -62,7 +62,7 @@ t = norm(odf1)^2
 %%
 % The entropy of an ODF $f$ is defined as:
 %
-% $$ H = - \int_{SO(3)} f(R) \ln f(R) dR$$
+% $$ H = - \int_{SO(3)} f({R}) \ln f({R}) dR$$
 
 
 H = entropy(odf2)

@@ -15,6 +15,7 @@ function SO3F = dot(SO3VF1, SO3VF2, varargin)
 %
 
 if isa(SO3VF2, 'vector3d')
+  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
   SO3F = SO3VF1.SO3F;
   v = SO3VF2;
   SO3F = reshape(sum( SO3F .* reshape(v.xyz.',[3,size(v)]),1),size(v));
@@ -30,7 +31,9 @@ if isa(SO3VF1, 'vector3d')
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
+bw = min(SO3VF1.bandwidth + SO3VF2.bandwidth, getMTEXpref('maxSO3Bandwidth'));
+
 f = SO3FunHandle(@(rot) dot(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.CS,SO3VF1.SS);
-SO3F = SO3FunHarmonic(f, varargin{:});
+SO3F = SO3FunHarmonic(f, 'bandwidth',bw, varargin{:});
 
 end

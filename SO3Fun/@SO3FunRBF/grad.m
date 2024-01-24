@@ -1,5 +1,5 @@
 function g = grad(SO3F,varargin)
-% right-sided gradient of an SO3Fun
+% left-sided gradient of an SO3Fun
 %
 % Syntax
 %   G = SO3F.grad % compute the gradient
@@ -21,7 +21,15 @@ function g = grad(SO3F,varargin)
 %
 % $$s(g1_i) = sum_j c_j DK(g1_i,g2_j) $$
 %
+% See also
+% orientation/exp SO3FunHarmonic/grad SO3FunCBF/grad SO3VectorField
 
+% TODO: impement right-sided gradient
+if check_option(varargin,'right')
+  F = SO3FunHandle(@(r) SO3F.eval(r),SO3F.CS,SO3F.SS);
+  g = grad(F,varargin{:});
+  return
+end
 
 if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'quaternion')
   g = grad@SO3Fun(SO3F,varargin{:});
@@ -42,7 +50,7 @@ center = SO3F.center;
 qSS = unique(quaternion(SO3F.SS));
 % forget about second symmetry (this destroys the grid structure)
 % center = center(:);
-% center.SS = specimenSymmetry;
+center.SS = specimenSymmetry;
 
 psi = SO3F.psi;
 epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
@@ -52,7 +60,7 @@ g = vector3d.zeros(size(rot));
 
 % comute the distance matrix and evaluate the kernel
 for issq = 1:length(qSS)
-  d = abs(dot_outer( center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
+  d = abs(dot_outer( SO3F.center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse
@@ -64,7 +72,7 @@ for issq = 1:length(qSS)
 
   
   % the normalized logarithm
-  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),varargin{:});
+  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),'left',varargin{:});
   nv = norm(v);
   v(nv>0) = v(nv>0) ./ nv(nv>0);
   
@@ -74,9 +82,12 @@ for issq = 1:length(qSS)
   
   % sum over all neighbours
   g = g - reshape(v.' * SO3F.weights(:),size(g)) ;
-  
+
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
+
+g = SO3TangentVector(g,'left');
+
 
 % TODO: consider antipodal
 if SO3F.antipodal

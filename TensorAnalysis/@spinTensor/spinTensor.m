@@ -20,9 +20,6 @@ classdef spinTensor < velocityGradientTensor
       
       Omega = Omega@velocityGradientTensor(varargin{:},'rank',2);
       
-      % ensure it is antisymmetric
-      Omega.M = 0.5*(Omega.M - permute(Omega.M,[2 1 3:ndims(Omega.M)]));
-      
       if nargin == 0; return; end
       
       if isa(varargin{1},'rotation')
@@ -34,16 +31,21 @@ classdef spinTensor < velocityGradientTensor
         [x,y,z] = double(varargin{1});
         
         Omega.M = zeros([3,3,size(z)]);
-        Omega.M(2,1,:) =  z;
-        Omega.M(3,1,:) = -y;
-        Omega.M(3,2,:) =  x;
+        Omega.M(2,1,:,:,:) =  z;
+        Omega.M(3,1,:,:,:) = -y;
+        Omega.M(3,2,:,:,:) =  x;
 
-        Omega.M(1,2,:) = -z;
-        Omega.M(1,3,:) =  y;
-        Omega.M(2,3,:) = -x;
+        Omega.M(1,2,:,:,:) = -z;
+        Omega.M(1,3,:,:,:) =  y;
+        Omega.M(2,3,:,:,:) = -x;
         
         Omega.rank = 2;
         if isa(varargin{1},'Miller'), Omega.CS = varargin{1}.CS; end        
+
+      else % ensure it is antisymmetric
+
+        Omega.M = 0.5*(Omega.M - permute(Omega.M,[2 1 3:ndims(Omega.M)]));
+        
       end
       
     end    
@@ -57,9 +59,18 @@ classdef spinTensor < velocityGradientTensor
         if isa(Omega.CS,'crystalSymmetry')
           v = Miller(v,Omega.CS);
         end
+        v = reshape(v,size(Omega));
       end
     end
     
+    function v = SO3TangentVector(Omega,varargin)
+      
+      if isa(Omega.CS,'crystalSymmetry')
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',varargin{:});
+      else
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',varargin{:});
+      end
+    end
     
     function rot = rotation(Omega)
       

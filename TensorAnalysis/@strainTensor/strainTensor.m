@@ -10,6 +10,7 @@ classdef strainTensor < tensor
          varargin = set_option(varargin,'type','Lagrange');
       end
       sT = sT@tensor(varargin{:},'rank',2);
+      if ~all(sT.isSymmetric), warning('Tensor is not symmetric!'); end
     end
   end
 

@@ -9,8 +9,8 @@
 % R}(\alpha,\beta,\gamma)$ the $L_2$-normalized Wigner-D function of degree
 % $n$ and orders $k,l \in \{-n,\dots,n\}$ is defined by
 %
-% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{\mathrm i k\gamma}
-% \mathrm d_n^{k,l}(\cos\beta) \,e^{\mathrm i l\alpha} $$
+% $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{-\mathrm i k\gamma}
+% \mathrm d_n^{k,l}(\cos\beta) \,e^{-\mathrm i l\alpha} $$
 %
 % where $d_n^{k,l}$, denote the real valued Wigner-d functions, which are
 % defined in terms of Jacobi polynomial $P_s^{a,b}$  by
@@ -49,7 +49,7 @@ D = sqrt(3) * Wigner_D(1,R)
 % we can describe functions on the rotation group $SO(3)$ by there harmonic
 % representation using the class <SO3FunHarmonicRepresentation.html |SO3FunHarmonic|>.
 %
-% With that we define the Wigner-D function $D_1^{1,-1}$ by
+% Hence we define the Wigner-D function $D_1^{1,-1}$ by
 
 D = SO3FunHarmonic([0;0;0;1])
 D.eval(R)
@@ -60,12 +60,12 @@ D.eval(R)
 %
 % Here we define the $L_2$-norm by
 %
-% $$ \| f \|_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} |f(R)|^2 \,\mathrm d R \right)^{1/2} $$
+% $$ \| f \|_2 = \left(\frac1{8\pi^2}\,\int_{SO(3)} \lvert f( {\bf R}) \rvert^2 \,\mathrm d {\bf R} \right)^{1/2} $$
 %
-% such that $\| 1 \|_2^2 = 1$. Take a look on the section 
+% such that the norm of the constant function $f=1$ is $1$. Take a look on the section 
 % <SO3FunOperations.html#6 Integration of SO3Fun's>.
 %
-% Using that definition the Wigner-D functions in MTEX fulfill $\|
+% Using that definition the Wigner-D functions in MTEX are normalized, i.e. $\|
 % D_n^{k,l} \|_2 = 1$ for all $n,k,l$.
 
 
@@ -76,15 +76,15 @@ norm(D)
 % The Wigner-D functions are the matrix elements of the representations
 % $D_n \colon SO(3) \to \mathbb C^{(2n+1)\times(2n+1)}$ on $SO(3)$. 
 % Since representations are group homomorphisms, we have
-% $D_n(RQ) = \frac1{\sqrt{2n+1}} \, D_n(Q) \, D_n(R)$.
+% $D_n( {\bf R} \, {\bf Q} ) = \frac1{\sqrt{2n+1}} \, D_n( {\bf Q} ) \, D_n( {\bf R} ).$
 % Hence we get
 % 
-% $$ D_n^{k,l}(R\,Q) = \frac1{2n+1} \sum_{j=-n}^n D_n^{k,j}(Q)\,D_n^{j,l}(R) $$.
+% $$ D_n^{k,l}( {\bf R} \, {\bf Q} ) = \frac1{2n+1} \sum_{j=-n}^n D_n^{k,j}( {\bf Q} )\,D_n^{j,l}( {\bf R} ). $$
 %
 %%
 % Some symmetry properties of Wigner-D functions yields
 %
-% $$ D_n^{k,l}(R) = \overline{D_n^{l,k}(R^{-1})} $$.
+% $$ D_n^{k,l}( {\bf R} ) = \overline{D_n^{l,k}( {\bf R}^{-1} )}. $$
 %
 
 %% Symmetry properties of Wigner-d functions

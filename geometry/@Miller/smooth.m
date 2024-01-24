@@ -14,15 +14,9 @@ function varargout = smooth(m,varargin)
 
 % get plotting region
 sR = region(m,varargin{:});
-
-if ~isempty(varargin) && isnumeric(varargin{1})
-  varargin = [varargin{1},m.CS.plotOptions,varargin(2:end)];
-else
-  varargin = [m.CS.plotOptions,varargin];
-end
     
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR,m.CS);
+[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR, m.CS, m.CS.how2plot);
 
 function txt = tooltip(varargin)
 

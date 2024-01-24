@@ -3,7 +3,7 @@ ODFModeling                      Calculations
 ODFPlot                          Plot
 ODFPoleFigure                    Pole Figures
 ODFInversePoleFigure             Inverse Pole Figures
-EulerAngleSections               Euler Angle Section
+EulerAngleSections               Euler Angle Sections
 SigmaSections                    Sigma Sections
 ODFComponents                    Components
 ODFCharacteristics               Properties

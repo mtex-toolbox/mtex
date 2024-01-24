@@ -44,11 +44,11 @@ checkSinglePhase(ebsd2);
 
 % --------- determine minimum distance ----------------------
 
-% get max extend
-maxExtend = abs(diff(ebsd1.extend));
-maxExtend = norm(maxExtend(1:2:end));
+% get max extent
+maxExtent = abs(diff(ebsd1.extent));
+maxExtent = norm(maxExtent(1:2:end));
 
-minDistance = get_option(varargin,'minDistance',maxExtend/100);
+minDistance = get_option(varargin,'minDistance',maxExtent/100);
 
 % take a random sample
 samplSize = get_option(varargin,'sampleSize',100000);

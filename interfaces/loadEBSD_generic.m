@@ -26,9 +26,9 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  cs - @crystalSymmetry or cell array of @crystalSymmetry
 %
 % Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
-%  Columns           - postions of the columns to be imported
-%  radians           - treat input in radiand
+%  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
+%  Columns           - positions of the columns to be imported
+%  radians           - treat input in radiant
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
 %  Bunge             - [phi1 Phi phi2] Euler angle in Bunge convention (default)

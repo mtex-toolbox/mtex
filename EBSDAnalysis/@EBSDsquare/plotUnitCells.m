@@ -15,10 +15,12 @@ if check_option(varargin,'region')
   d = submatrix(d,ind);  
 else
   
-  ext = ebsd.extend;
+  ext = ebsd.extent;
   
 end
 
+alpha = get_option(varargin,'FaceAlpha',~isnan(d(:,:,1)));
+
 hold on
-h = imagesc(ext(1:2),ext(3:4),d,'parent',ax,'alphaData',~isnan(d(:,:,1)));
+h = imagesc(ext(1:2),ext(3:4),d,'parent',ax,'alphaData',alpha);
 hold off

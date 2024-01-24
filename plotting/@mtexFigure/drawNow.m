@@ -24,10 +24,10 @@ if check_option(varargin,'position')
   
 elseif check_option(varargin,'figSize') || mtexFig.figSizeFactor > 0 
   
-  screenExtend = get(0,'MonitorPositions');
+  screenExtent = get(0,'MonitorPositions');
     
   mtexFig.keepAspectRatio = true;
-  figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
+  figSize = screenExtent(1,3:4) - [0,120]; % consider only the first monitor
 
   switch get_option(varargin,'figSize','','char')
     case 'huge'
@@ -72,25 +72,25 @@ if check_option(varargin,'figSize') ||...
   [mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
   [mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
 else
-  screenExtend = get(0,'MonitorPositions');
+  screenExtent = get(0,'MonitorPositions');
 end
 
 % resize figure
-if exist('screenExtend','var')
+if exist('screenExtent','var')
   width = mtexFig.axesWidth;
   height = mtexFig.axesHeight;
-  position = [(screenExtend(1,3)-width)/2,(screenExtend(1,4)-height)/2,width,height];
+  position = [(screenExtent(1,3)-width)/2,(screenExtent(1,4)-height)/2,width,height];
 end
 
 % draw layout
 set(mtexFig.parent,'ResizeFcn',[]);
-set(mtexFig.parent,'position',position);
+if mtexFig.parent.WindowStyle~="docked", set(mtexFig.parent,'position',position); end
 updateLayout(mtexFig);
 set(mtexFig.parent,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
 
 % update colorrange
 if check_option(varargin,'colorrange')
-  mtexFig.CLim(get_option(varargin,'colorrange'),varargin{:});
+  setColorRange(mtexFig.parent,get_option(varargin,'colorrange'),varargin{:});
 end
 
 % update scale bars

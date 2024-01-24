@@ -80,7 +80,7 @@ mis2mean = calcGROD(ebsd, grains)
 % we use it to average the misorientation angle for each grain separately.
 
 % take the avarage of the misorientation angles for each grain
-GOS = ebsd.grainMean(mis2mean.angle);
+GOS = ebsd.grainMean(mis2mean.angle, grains);
 
 % plot it
 plot(grains, GOS ./ degree)
@@ -97,7 +97,7 @@ mtexColorbar('title','GOS in degree')
 % any other statistics like the median, or some quantile.
 
 % compute the maximum misorientation angles for each grain
-MGOS = ebsd.grainMean(mis2mean.angle,@max);
+MGOS = ebsd.grainMean(mis2mean.angle, grains, @max);
 
 % plot it
 plot(grains, MGOS ./ degree)
@@ -111,7 +111,7 @@ mtexColorbar('title','MGOS in degree')
 % grain. Hence, we can compute is by using the functions <EBSD.KAM.html
 % |ebsd.KAM|> and <EBSD.grainMean.html |grainMean|>.
 
-gam = ebsd.grainMean(ebsd.KAM);
+gam = ebsd.grainMean(ebsd.KAM, grains);
 
 plot(grains,gam./degree)
 mtexColorbar('title','GAM in degree')

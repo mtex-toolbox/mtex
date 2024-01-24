@@ -76,6 +76,8 @@ classdef crystalSymmetry < symmetry
 %  43  cubic           O        432       m-3m     432
 %  44  cubic           Td       -43m      m-3m     432
 %  45  cubic           Oh       m-3m      m-3m     432
+%  46  icosahedral     I        532       -5-32/m  532
+%  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
 % See also
 % CrystalSymmetries CrystalShapes CrystalReferenceSystem CrystalOperations
@@ -97,7 +99,6 @@ classdef crystalSymmetry < symmetry
     aAxisRec    % a*-axis reciprocal coordinate system
     bAxisRec    % b*-axis reciprocal coordinate system
     cAxisRec    % c*-axis reciprocal coordinate system
-    plotOptions
     X           % x-axis
     Y           % y-axis
     Z           % z-axis
@@ -165,12 +166,21 @@ classdef crystalSymmetry < symmetry
       % set axes, mineral name and color
       s.axes = axes;
       s.mineral = get_option(varargin,'mineral','');
+      s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
       
       if check_option(varargin,'density')
         s.opt.density = get_option(varargin,'density','');
       end
-      
+
+      % some defaults for the plotting convention
+      s.how2plot.outOfScreen = s.cAxisRec;
+      if id > 11
+        s.how2plot.east = s.aAxis;
+      else
+        s.how2plot.east = s.bAxis;
+      end
+
     end
     
     function x = get.X(cs)
@@ -221,22 +231,6 @@ classdef crystalSymmetry < symmetry
       gamma = angle(cs.axes(1),cs.axes(2));
     end    
    
-    function opt = get.plotOptions(cs)
-      % rotate the aAxis or bAxis into the right direction
-      
-      if ~isempty(getMTEXpref('aStarAxisDirection',[]))
-        cor = pi/2*(NWSE(getMTEXpref('aStarAxisDirection',[]))-1);
-        rho = -cs.aAxisRec.rho + cor;
-      elseif ~isempty(getMTEXpref('bAxisDirection',[]))
-        rho = -cs.bAxis.rho + pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
-      elseif ~isempty(getMTEXpref('aAxisDirection',[]))
-        rho = -cs.aAxis.rho + pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
-      else
-        rho = 0;
-      end
-      opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
-    end
-    
   end
   
   methods (Static = true)
@@ -250,7 +244,19 @@ classdef crystalSymmetry < symmetry
       % versions
       
       % maybe there is nothing to do
-      if isa(s,'crystalSymmetry'), cs = s; return; end
+      if isa(s,'crystalSymmetry')
+        if isempty(s.multiplicityPerpZ)
+          isPerpZ = isnull(dot(s.rot.axis,zvector)) & ~isnull(s.rot.angle);
+
+          if any(isPerpZ(:))
+            s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
+          else
+            s.multiplicityPerpZ = 1;
+          end
+        end
+        cs = s;
+        return; 
+      end
       
       if isfield(s,'rot')
         rot = s.rot;

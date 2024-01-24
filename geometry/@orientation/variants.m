@@ -12,6 +12,9 @@ function [out, bestFriends] = variants(p2c,varargin)
 %   % compute child variants specified by variantId
 %   oriChild = variants(p2c, oriParent, variantId)
 %
+%   % compute transformation ODF
+%   odfChild = variants(p2c, odfParent)
+%
 %   % compute all parent variants
 %   oriParent = variants(p2c, oriChild)
 %
@@ -22,6 +25,7 @@ function [out, bestFriends] = variants(p2c,varargin)
 %
 %  p2c - parent to child @orientation relationship
 %  oriParent - parent @orientation
+%  odfParent - parent ODF @SO3Fun
 %  hklParent - parent direction @Miller
 %  oriChild  - child @orientation
 %  hklChild  - child direction @Miller
@@ -37,6 +41,7 @@ function [out, bestFriends] = variants(p2c,varargin)
 %  hklParent - parent directions (numOri x numVariants)
 %  oriChild  - child @orientation  (numOri x numVariants)
 %  hklChild  - child directions (numOri x numVariants)
+%  odfPChild - child ODF @SO3Fun
 %
 % Example
 %   % parent symmetry
@@ -67,7 +72,12 @@ function [out, bestFriends] = variants(p2c,varargin)
 % calcParents
 
 % browse input
-if nargin>1 && isa(varargin{1},'orientation')
+if nargin>1 && isa(varargin{1},'SO3Fun')
+
+  out = transformODF(varargin{1},p2c,varargin{2:end});
+  return
+
+elseif nargin>1 && isa(varargin{1},'orientation')
   
   if varargin{1}.CS.Laue == p2c.CS.Laue
     

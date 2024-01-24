@@ -20,7 +20,10 @@ if nargin > 1
   delta = 0.1*degree;
   
   N = varargin{1};   % normal direction
-  t1 = perp(N);      % first tangential vector
+  t1 = vector3d(N.y,-N.x,0);  % first tangential vector
+  t1(norm(t1)==0) = xvector;
+  t1 = t1.normalize;
+
   t2 = normalize(cross(N,t1));  % second tangential vector
   
   % the exponential map on the sphere

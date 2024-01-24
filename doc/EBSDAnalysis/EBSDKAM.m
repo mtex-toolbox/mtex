@@ -10,7 +10,7 @@
 % 
 % $$\mathrm{KAM}_{i,j} = \frac{1}{|N(i,j)|}\sum_{(k,l) \in N(i,j)} \omega(o_{i,j}, o_{k,l}) $$
 % 
-% Here $\lvert N(i,j) \rvert$ denotes the number of all neighboring pixels
+% Here $|N(i,j)|$ denotes the number of all neighboring pixels
 % taking into account and $\omega(o_{i,j}, o_{k,l})$ the disorientation
 % angle between the orientation $o_{ij}$ in the center and the neighbouring
 % orientation $(o_{k,l})$. The specific choice of the set $N(i,j)$ of

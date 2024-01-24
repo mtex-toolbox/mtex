@@ -2,7 +2,7 @@ classdef grain2d < phaseList & dynProp
   % class representing two dimensional grains
   %
   % Syntax
-  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
+  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap, 'id', idList)
   %
   % Input
   %  V    - n x 3 list of vertices
@@ -11,6 +11,7 @@ classdef grain2d < phaseList & dynProp
   %  CSList   - cell array of symmetries
   %  phaseId  - list of phaseId for each grain
   %  phaseMap -
+  %  idList   - option to provide grain ids
   %
   % Example
   %
@@ -50,7 +51,6 @@ classdef grain2d < phaseList & dynProp
   properties    
     boundary = grainBoundary % boundary of the grains
     innerBoundary = grainBoundary % inner grain boundary
-    N = vector3d.Z % normal direction of the pseudo3d data    
   end
     
   properties (Dependent = true)
@@ -67,11 +67,12 @@ classdef grain2d < phaseList & dynProp
     idV        % active vertices
     rot2Plane  % rotation to xy plane
     plottingConvention % plotting convention
+    N          % normal direction of the pseudo3d data    
   end
   
   methods
 
-    function grains = grain2d(V, poly, ori, CSList, phaseId,  phaseMap, varargin)
+    function grains = grain2d(V, poly, varargin)
       % constructor
       % 
       % Input
@@ -87,31 +88,37 @@ classdef grain2d < phaseList & dynProp
       grains.poly = poly;
       grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
 
-      if nargin>=3 && ~isempty(ori)
-        grains.prop.meanRotation = ori;
+      if check_option(varargin,'id')
+        grains.id = reshape(get_option(varargin,'id'),size(poly));
+        varargin = delete_option(varargin,'id',1);
+      else
+        grains.id = (1:length(poly)).';
+      end
+
+      if length(varargin)>=1 && ~isempty(varargin{1})
+        grains.prop.meanRotation = varargin{1};
       else
         grains.prop.meanRotation = rotation.nan(length(poly),1);        
       end
 
-      if nargin>=4
-        grains.CSList = ensurecell(CSList);
+      if length(varargin)>=2
+        grains.CSList = ensurecell(varargin{2});
       else
         grains.CSList = {'notIndexed'};
       end
 
-      if nargin>=5
-        grains.phaseId = phaseId;
+      if length(varargin)>=3
+        grains.phaseId = varargin{3};
       else
         grains.phaseId = ones(length(poly),1);
       end
       
-      if nargin>=6
-        grains.phaseMap = phaseMap;
+      if length(varargin)>=4
+        grains.phaseMap = varargin{4};
       else
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = ones(size(poly));
       
       if isa(V,'grainBoundary') % grain boundary already given
@@ -166,7 +173,11 @@ classdef grain2d < phaseList & dynProp
     function V = get.V(grains)
       V = grains.boundary.V;
     end
-    
+
+    function N = get.N(grains)
+      N = grains.boundary.N;
+    end
+
     function x = get.x(grains)
       x = grains.V.x;
     end
@@ -176,10 +187,13 @@ classdef grain2d < phaseList & dynProp
     end
     
     function grains = set.V(grains,V)
-      
       grains.boundary.V = V;
       grains.innerBoundary.V = V;
-      
+    end
+
+    function grains = set.N(grains,N)
+      grains.boundary.N = N;
+      grains.innerBoundary.N = N;
     end
     
     function idV = get.idV(grains)

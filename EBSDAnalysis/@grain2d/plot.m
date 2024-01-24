@@ -28,7 +28,7 @@ function [h,mP] = plot(grains,varargin)
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
-  grains.plottingConvention,varargin{:});
+  varargin{:},grains.plottingConvention);
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -102,9 +102,9 @@ elseif nargin>1 && isa(varargin{1},'vector3d')
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  pos = grains.centroid + 2*scaling * grains.N; 
-  h = plot(pos + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
-    'parent', mP.ax,varargin{:});
+  cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
+  pos = grains.centroid + 1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N;
+    h = plot(pos + cS,'parent', mP.ax,varargin{:});
   
   plotBoundary = false;
   
@@ -183,7 +183,7 @@ if check_option(varargin,'DisplayName')
   legend('-DynamicLegend','location','NorthEast');
 end
 
-% keep track of the extend of the graphics
+% keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 if isNew
   
@@ -324,8 +324,8 @@ if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
 if check_option(varargin,'region')
   region = get_option(varargin,'region');
-  ind = cellfun(@(p) any(V.x(p)>=region(1) & V.x(p)<=region(2) & ...
-    V.y(p)>=region(3) & V.y(p)<=region(4)),poly);
+  ind = cellfun(@(p) any(V(p,1)>=region(1) & V(p,1)<=region(2) & ...
+    V(p,2)>=region(3) & V(p,2)<=region(4)),poly);
   
   d = d(ind,:);
   poly = poly(ind);

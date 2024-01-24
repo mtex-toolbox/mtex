@@ -1,4 +1,4 @@
-function rot = exp(v,rot_ref,varargin)
+function rot = exp(v,rot_ref,tS)
 % rotation vector to rotation
 %
 % Syntax
@@ -14,6 +14,10 @@ function rot = exp(v,rot_ref,varargin)
 % Output
 %  mori - @rotation
 %  ori  - @orientation
+%
+% Option
+%  left  -
+%  right - 
 %
 % See also
 % Miller/exp orientation/log
@@ -31,10 +35,8 @@ else
   rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
 end
 
-if nargin >= 2
-  if nargin>2 && check_option(varargin,'left')
-    rot =  rot * rot_ref;
-  else
-    rot =  rot_ref .* rot;
-  end
+if nargin>2 && tS.isLeft
+  rot =  rot .* rot_ref;
+elseif nargin>1
+  rot =  rot_ref .* rot;
 end

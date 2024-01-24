@@ -1,4 +1,4 @@
-function T = ctranspose(T)
+function T = ctranspose(T,varargin)
 % conjugate of a tensor
 %
 % Input
@@ -29,9 +29,12 @@ switch T.rank
     M = conj(permute(M,[2 1 3:ndims(T.M)]));
     
     % make some corrections
-    w = 1./(1+((1:6)>3));
-    w = w.' * w;
-    M = M .* w;
+    % TODO: why this is needed?
+    if ~check_option(varargin,'skipCorrection')
+      w = 1./(1+((1:6)>3));
+      w = w.' * w;
+      M = M .* w;
+    end
     
     % convert back to a 4 rank tensor
     T.M = tensor24(M,T.doubleConvention);
