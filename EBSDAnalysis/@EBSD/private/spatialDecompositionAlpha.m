@@ -65,6 +65,22 @@ end
 x_ = [x_; X(toAdd); bnd(:,1)];
 y_ = [y_; Y(toAdd); bnd(:,2)];
 
+if check_option(varargin,'jcvoronoi')
+   [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
+    
+    V=[Vx,Vy];
+    E=[E1,E2];
+    
+    clear Vx Vy E1 E2
+
+    [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
+    F = sort(ic(E),2);
+    I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
+    
+    return
+end
+
+
 % final computation of the voronoi decomposition
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Vornoi cells with centers X_D ordered accordingly
