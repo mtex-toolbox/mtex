@@ -55,7 +55,7 @@ try
       if strcmp(name,'X_Position')
         name = strrep(name,'X_Position','x');
       end
-      if strcmp(name,'X_Position')
+      if strcmp(name,'Y_Position')
         name = strrep(name,'Y_Position','y');
       end
 
