@@ -11,8 +11,41 @@ function ind = subsind(grains3,subs)
   ind = true(length(grains3),1);
       
   for i = 1:length(subs)
+ 
+    if ischar(subs{i}) && strcmpi(subs{i},'indexed')  % only indexed grains
+  
+      ind = ind & grains3.isIndexed;
+
+    elseif ischar(subs{i}) || iscellstr(subs{i})  % grains by phase
     
-    if isa(subs{i},'logical')
+      phases = false(length(grains3.phaseMap),1);
+      mineralsSubs = ensurecell(subs{i});
+      phaseNumbers = cellfun(@num2str,num2cell(grains3.phaseMap(:)),'Uniformoutput',false);
+      
+      for k=1:numel(mineralsSubs)
+        phases = phases ...
+          | strcmpi(grains3.mineralList(:),mineralsSubs{k}) ...
+          | strcmpi(phaseNumbers,mineralsSubs{k});
+      end
+  
+      % if no complete match was found allow also for partial match
+      if ~any(phases)
+        for k=1:numel(mineralsSubs)
+          phases = phases ...
+            | strncmpi(grains3.mineralList(:),mineralsSubs{k},length(mineralsSubs{k}));
+        end
+      end
+      
+      if ~any(phases)
+        disp(' ');
+        warning off backtrace
+        warning(['There is no such phase "' mineralsSubs{1} '". Maybe you mispelled it?']);
+        warning on backtrace
+      end
+      
+      ind = ind & phases(grains3.phaseId(:));
+
+    elseif isa(subs{i},'logical') 
     
       sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
       ind = ind & reshape(sub,size(ind));
