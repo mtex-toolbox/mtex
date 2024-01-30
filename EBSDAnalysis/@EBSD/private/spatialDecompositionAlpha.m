@@ -65,6 +65,9 @@ end
 x_ = [x_; X(toAdd); bnd(:,1)];
 y_ = [y_; Y(toAdd); bnd(:,2)];
 
+% final computation of the voronoi decomposition
+% V - list of vertices of the Voronoi cells
+% D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if check_option(varargin,'jcvoronoi')
   [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
 
@@ -87,14 +90,20 @@ if check_option(varargin,'jcvoronoi')
 
   return
 
+elseif check_option(varargin,'qhull')
+
+  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'});
+
+else
+
+  
+dtri = delaunayTriangulation(x_,y_);
+[V,D] = voronoiDiagram(dtri); % this needs the most time
+
 end
 
 
-% final computation of the voronoi decomposition
-% V - list of vertices of the Voronoi cells
-% D   - cell array of Vornoi cells with centers X_D ordered accordingly
-dtri = delaunayTriangulation(x_,y_);
-[V,D] = voronoiDiagram(dtri); % this needs the most time
+
 
 % we are only interested in voronoi cells corresponding to the given
 % coordinates - not the dummy coordinates (for the outer boundary)
