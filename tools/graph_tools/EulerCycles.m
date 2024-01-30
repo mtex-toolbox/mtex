@@ -1,7 +1,7 @@
 function poly = EulerCycles(F)
 % retrieve Euler cycles from an not oriented edge list
 
-% convert to consecute numbers
+% convert to consecutive numbers
 % now it remains to identify 1->2, 3->4, 5->6 and so on
 [~,A] = sort(F(:));
 B(A) = 1:numel(F);

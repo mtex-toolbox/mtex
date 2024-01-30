@@ -1,5 +1,5 @@
 function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
-% decomposite the spatial domain into cells D with vertices V,
+% decompose the spatial domain into cells D with vertices V,
 %
 % Output
 %  V - list of vertices
