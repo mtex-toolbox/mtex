@@ -56,8 +56,10 @@ function ind = subsind(grains3,subs)
         error('Out of range; index must be a positive integer or logical.')
       end
       
-      ind = subs{i};
-      return
+      A = false(size(ind));
+      A(subs{i}) = true;
+      ind = ind & A;
+
     else
       error 'not supported (yet)'
     end

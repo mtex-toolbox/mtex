@@ -68,8 +68,9 @@ for i = 1:length(subs)
       error('Out of range; index must be a positive integer or logical.')
     end
     
-    ind = subs{i};
-    return
+    A = false(size(ind));
+    A(subs{i}) = true;
+    ind = ind & A;
         
   elseif isa(subs{i},'polygon')
     
