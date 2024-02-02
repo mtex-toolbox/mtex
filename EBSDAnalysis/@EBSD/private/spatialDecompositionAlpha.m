@@ -65,47 +65,47 @@ end
 x_ = [x_; X(toAdd); bnd(:,1)];
 y_ = [y_; Y(toAdd); bnd(:,2)];
 
-% final computation of the voronoi decomposition
+% final computation of the Voronoi decomposition
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
-if check_option(varargin,'jcvoronoi')
-  [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
 
-  V=[Vx,Vy];
-  E=[E1,E2];
+method = getMTEXpref('voronoiMethod');
 
-  clear Vx Vy E1 E2
+switch lower(method)
+  case 'jcvoronoi'
 
-  %[V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
-  [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
-  F = sort(ic(E),2);
+    [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([x_,y_]);
 
-  I_FD = sparse(max(I_ED1(I_ED2<=lmax)),numel(isIndexed));
-  I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1);
+    V=[Vx,Vy];
+    E=[E1,E2];
 
-  % remove empty edges
-  ind = any(I_FD,2);
-  I_FD = I_FD(ind,:);
-  F = F(ind,:);
+    clear Vx Vy E1 E2
+
+    [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
+    F = sort(ic(E),2);
+
+    I_FD = sparse(max(I_ED1(I_ED2<=lmax)),numel(isIndexed));
+    I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1);
+
+    % remove empty edges
+    ind = any(I_FD,2);
+    I_FD = I_FD(ind,:);
+    F = F(ind,:);
 
   return
 
-elseif check_option(varargin,'qhull')
+  case 'qhull'
 
-  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'});
+    [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'});
 
-else
-
+  otherwise
   
-dtri = delaunayTriangulation(x_,y_);
-[V,D] = voronoiDiagram(dtri); % this needs the most time
+    dtri = delaunayTriangulation(x_,y_);
+    [V,D] = voronoiDiagram(dtri); % this needs the most time
 
 end
 
-
-
-
-% we are only interested in voronoi cells corresponding to the given
+% we are only interested in Voronoi cells corresponding to the given
 % coordinates - not the dummy coordinates (for the outer boundary)
 D= D(1:lmax);
 
@@ -117,7 +117,7 @@ D= D(1:lmax);
 % this is faster then the cellfun approach
 for k = 1:length(D)
   x = ic(D{k}).';              % merge points that coincide
-  D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
+  D{k} = x(diff([x,x(1)])~=0); % remove duplicates in D
 end
 
 % now we need some adjacencies and incidences
