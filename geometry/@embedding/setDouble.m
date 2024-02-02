@@ -1,6 +1,6 @@
 function obj = setDouble(obj,d)
 % convert embedding to packed double
-% iverse of double
+% inverse of double
 %
 % Syntax
 %

@@ -39,7 +39,7 @@ if 0 && obj.CS.Laue.id ==2
   
 end
 
-% initial guess - we need it to be sufficently close to avoid local extrema
+% initial guess - we need it to be sufficiently close to avoid local extrema
 if nargin == 1
   ori = equispacedSO3Grid(obj.CS,'points',10);
   
@@ -66,10 +66,10 @@ for i = 1:maxIter
   
   g = vector3d(dot(Tori,obj).').';
   
-  % eradicate normalizing of embedding: adapt length ofs gradient
+  % eradicate normalizing of embedding: adapt length of gradient
   %g = g * obj.rho^2;
   
-  % stop if gradient is sufficently small
+  % stop if gradient is sufficiently small
   if all(norm(g)<1e-10), break; end
   %disp([xnum2str(max(norm(g))) ' ' char(ori(1)) ' ' char(g(1))]);
   
