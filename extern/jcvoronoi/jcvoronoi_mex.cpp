@@ -28,10 +28,10 @@ public:
 
         auto X = std::move(inputs[0]);
         int NPOINT = (int) X.getDimensions()[0];
-    
-        jcv_diagram diagram;
-        jcv_point points[NPOINT];
 
+        jcv_diagram diagram;
+        jcv_point* points = (jcv_point*) malloc(sizeof(jcv_point)*NPOINT);
+        
         memset(&diagram, 0, sizeof(jcv_diagram));
         
         for (int i=0; i<NPOINT; i++) {
@@ -79,6 +79,8 @@ public:
         outputs[3] = factory.createArray((ArrayDimensions){(int)E2.size(),1},E2.begin(),E2.end());
         outputs[4] = factory.createArray((ArrayDimensions){(int)I_ED1.size(),1},I_ED1.begin(),I_ED1.end());
         outputs[5] = factory.createArray((ArrayDimensions){(int)I_ED2.size(),1},I_ED2.begin(),I_ED2.end());
+
+      free(points);
     }
 };
 
