@@ -233,7 +233,10 @@ classdef EBSDhex < EBSD
       row(~isInside) = NaN;
       col(~isInside) = NaN;
       
-      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      if nargout < 2
+        ind = ~isnan(row);
+        row(ind) = sub2ind(size(ebsd),row(ind),col(ind)); 
+      end
       
     end
 
@@ -290,7 +293,10 @@ classdef EBSDhex < EBSD
       % convert to offset coordinates
       [row,col] = ebsd.cube2hex(rx,ry,rz);
       
-      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      if nargout < 2
+        ind = ~isnan(row);
+        row(ind) = sub2ind(size(ebsd),row(ind),col(ind));
+      end
       
     end
 
