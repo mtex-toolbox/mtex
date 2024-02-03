@@ -37,6 +37,9 @@ elseif isa(b,'grain2d')
 
   r = rotate(b,a);
 
+  elseif isa(b,'grain3d')
+
+  r = rotate(b,a);
 else
   
   r = rotate_outer(b,a);

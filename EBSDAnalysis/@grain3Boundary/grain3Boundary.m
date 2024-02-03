@@ -50,7 +50,7 @@ classdef grain3Boundary < phaseList & dynProp
     end
 
     function gB3 = set.V(gB3,V)
-      gB3.allV = V;
+      gB3.allV(gB3.idV) = V;
     end
 
   end

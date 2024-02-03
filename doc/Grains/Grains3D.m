@@ -26,6 +26,14 @@ how2plot.east = vector3d(1,-2,0);
 plot(grains3,grains3.meanOrientation)
 setCamera(how2plot)
 
+%% Rotation
+% rotate 180 degrees about the x-axis
+rot = rotation.byAxisAngle(xvector,180*degree);
+grains3_rot = rot * grains3;   % or rotate(grains3,rot)
+
+% plotting
+plot(grains3_rot,grains3_rot.meanOrientation)
+
 %% 
 % colorize by volume
 plot(grains3,grains3.volume)

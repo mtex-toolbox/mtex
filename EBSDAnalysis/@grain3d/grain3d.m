@@ -72,6 +72,10 @@ classdef grain3d < phaseList & dynProp
       V = grains.boundary.V;
     end
 
+    function grains = set.V(grains,V)
+      grains.boundary.V = V;
+    end
+
     function poly = get.poly(grains)
       poly = grains.boundary.poly;
     end
