@@ -17,7 +17,7 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 % ensure column vectors
 xNew = xNew(:); yNew = yNew(:);
 
-% find nearest neighbour first
+% find nearest neighbor first
 idNearest = ebsd.xy2ind(xNew,yNew);
 
 % check nearest is inside the box

@@ -59,7 +59,7 @@ G = SO3F.grad;
 v_max = SO3F.eval(modes);
 
 for k = 1:maxIter
-  progress(k,maxIter,' finding ODF components: ');
+  progress(k,maxIter,' finding ODF components: ',varargin{:});
 
   % gradient
   g = normalize(G.eval(modes),1);

@@ -24,7 +24,7 @@ function [c,center] = calcCluster(ori,varargin)
 %   ori = odf.discreteSample(1500);
 %
 %   % find the clusters and its centers
-%   [cId,centerRec] = calcCluster(ori);
+%   [cId,centerRec] = calcCluster(ori,'silent');
 %
 %   % visualize result
 %   for i = 1:length(centerRec)

@@ -2,28 +2,30 @@
 %
 %%
 % The Bingham distribution on the sphere is an antipodal symmetric
-% distribution (Bingham, 1974) with a probabiliy density function given by
+% distribution (Bingham, 1974) with a probability density function given by
 %
 % $$p_{b}(\hat{x}\vert AKA^T) = \frac{1}{F(\kappa_{1},\kappa_{2},\kappa_{3})}\exp (\hat{x}^T AZA^T \hat{x})$$
 %
-% where $A$ is an orthognal covariance matrix, and $Z$ a concentration matrix
+% where $A$ is an orthogonal covariance matrix, and $Z$ a concentration matrix
 % with $\mathrm{diag}(\kappa_{1},\kappa_{2},\kappa_{3})$ with
 % $\kappa_{1} < \kappa_{2} < \kappa_{3}$.
 %
-% In mtex $Z$ is given by |Z = [k1,k2,k3]| with |k3 = 0| and $A$ is given by three
-% orthognal vectors.
+% In MTEX $Z$ is given by |Z = [k1,k2,k3]| with |k3 = 0| and $A$ is given
+% by three orthogonal vectors.
 %
-% <https://www.jstor.org/stable/2958339 Bingham, C., An Antipodally Symmetric Distribution on the Sphere, The Annals of Statistics Vol. 2, No. 6 (Nov., 1974), pp. 1201-1225>
+% <https://www.jstor.org/stable/2958339 Bingham, C., An Antipodally
+% Symmetric Distribution on the Sphere, The Annals of Statistics Vol. 2,
+% No. 6 (Nov., 1974), pp. 1201-1225>
 
 % A simple example:
-Z = [-10 -4 0]
-a = rotation.rand(1).*vector3d([xvector yvector zvector])
+Z = [-10 -4 0];
+a = rotation.rand(1).*vector3d([xvector yvector zvector]);
 bs2 = BinghamS2(Z,a);
 plot(bs2)
 
 %% Meaning of $Z$
-% $k1 = k2$ defines a rotationally symmetric point maximum and $k2 = 0$ defines
-% a girdle distribution.
+% $k1 = k2$ defines a rotational symmetric point maximum and $k2 = 0$
+% defines a girdle distribution.
 close
 kappa = [0 4 8 12 24];
 mtexFig = newMtexFigure('layout',[length(kappa) length(kappa)]);
