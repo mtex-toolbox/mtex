@@ -27,7 +27,7 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
   
-  method = getMTEXpref('voronoiMethod');
+  method = get_flag(varargin,{'jcvoronoi','qhull','matlab'}, getMTEXpref('voronoiMethod'));
 
   switch lower(method)
     case 'jcvoronoi'
