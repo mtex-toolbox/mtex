@@ -127,9 +127,8 @@ for m = 1:length(newIds)
   newPoly(m) = {currPoly};
 end
 
-% TODO: id in grain2d implementieren
 grains2d = grain2d(newV.xyz, newPoly, grains.meanOrientation(newIds),...
-  grains.CSList, grains.phaseId(newIds), grains.phaseMap);
+  grains.CSList, grains.phaseId(newIds), grains.phaseMap, 'id', newIds);
 
 % check for clockwise poly's
 isNeg = (grains2d.area<0);

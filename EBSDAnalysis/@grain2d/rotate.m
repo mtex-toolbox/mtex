@@ -4,7 +4,7 @@ function grains = rotate(grains,rot,varargin)
 % Syntax
 %
 %   % rotate the grains about the z-axis by 90*degree
-%   grains = rotate(grains,10*degree) 
+%   grains = rotate(grains,90*degree) 
 %
 %   % rotate about the x-axis
 %   grains = rotate(grains,rotation.byAxisAngle(xvector,180*degree)) 
