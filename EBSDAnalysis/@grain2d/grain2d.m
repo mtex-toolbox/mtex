@@ -25,7 +25,7 @@ classdef grain2d < phaseList & dynProp
   %  phaseId - phase identifier of each grain
   %  id            - id of each grain
   %  poly          - cell list of the vertex ids of each grain (index to V)
-  %  V             - list of verticies (x,y coordinates)
+  %  V             - list of vertices (x,y coordinates)
   %  boundary      - @grainBoundary
   %  innerBoundary - @grainBoundary
   %  triplePoints  - @triplePoints
@@ -56,7 +56,7 @@ classdef grain2d < phaseList & dynProp
   properties (Dependent = true)
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
-    scanUnit         % unit of the vertice coordinates
+    scanUnit         % unit of the vertex coordinates
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
