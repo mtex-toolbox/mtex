@@ -5,8 +5,8 @@ function varargout = simulateGrains(this,varargin)
 %   
 %   neper=neperInstance;
 %   neper.filepath='C:\\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
-%   numGrains=100;
-%   odf=unimodalODF(orientation.rand);
+%   numGrains = 100;
+%   odf = unimodalODF(orientation.rand);
 %   neper.simulateGrains(odf, numGrains)
 %
 %   ori=discreteSample(odf,numGrains)
@@ -19,8 +19,8 @@ function varargout = simulateGrains(this,varargin)
 %  ori        - @orientation
 % 
 % Output
-%  allgrains.tess  - tesselation file, name specified at neper.filename3d, stored under neper.filepath
-%  allgrains.ori   - orientation file, euler-bunge format,
+%  allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
+%  allgrains.ori   - orientation file, Euler-Bunge format,
 %  ori_in.txt      - input orientations, rodrigues format
 
 %change work directory

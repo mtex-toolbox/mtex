@@ -10,7 +10,7 @@ function mtex_settings
 %------------------------------------------------------------------------
 
 %% default global plotting options
-% here you can define default plott options
+% here you can define default plot options
 
 % default fontsize
 % the next lines try to set the fontsize depending on the screen resolution

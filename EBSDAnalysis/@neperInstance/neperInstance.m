@@ -11,13 +11,13 @@ classdef neperInstance < handle
 %
 %   %decide if new folder should be created in working directory, default: true
 %   myNeper.newFolder=false;
-%   %specifing filenames
+%   % specifying filenames
 %   myNeper.fileName3d='my100Grains';    %default: 'allgrains'
 %   myNeper.fileName2d='mySlice';        %default: '2dslice'
 %
-%   %specifying size of tesselation domain
+%   %specifying size of tessellation domain
 %   myNeper.cubeSize = [4 4 1];
-%   %defining tesselation id
+%   %defining tessellation id
 %   myNeper.id = 512;
 %
 %   ori=orientation.rand;
