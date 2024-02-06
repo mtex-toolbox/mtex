@@ -62,9 +62,16 @@ classdef grain3d < phaseList & dynProp
       [a,b] = find(I_CF == -1);
       grainId(b,2) = a;
 
+      % compute misorientation from mean orientations of the grain
+      mori = rotation.nan(size(grainId,1),1);
+      isNotBoundary = all(grainId,2);
+      mori(isNotBoundary) = ...
+        inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
+        .* grains.prop.meanRotation(grainId(isNotBoundary,1));
+
       % boundary
       grains.boundary=grain3Boundary(V, poly, grainId, grains.phaseId, ...
-        grains.CSList, grains.phaseMap);
+        mori, grains.CSList, grains.phaseMap);
 
     end
 

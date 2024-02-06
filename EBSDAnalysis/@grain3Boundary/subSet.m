@@ -13,6 +13,10 @@ gB3.poly = gB3.poly(ind);
 gB3.id = gB3.id(ind);
 gB3.grainId = gB3.grainId(ind,:);
 gB3.phaseId = gB3.phaseId(ind,:);
+gB3.misrotation = gB3.misrotation(ind);
+if ~isempty(gB3.ebsdId)
+  gB3.ebsdId = gB3.ebsdId(ind,:);
+end
 
 gB3.idV = intersect(gB3.idV,unique([gB3.poly{:}]));
 

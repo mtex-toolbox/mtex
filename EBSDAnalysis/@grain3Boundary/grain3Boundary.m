@@ -2,23 +2,26 @@ classdef grain3Boundary < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    poly                  % cell arry with all faces
-    grainId = zeros(0,2)  % id's of the neigbouring grains to a face
+    poly                  % cell array with all faces
+    grainId = zeros(0,2)  % id's of the neighboring grains to a face
                           % (faceNormals direction from grain#1 to grain#2)
+    ebsdId = zeros(0,2)  % id's of the neighboring ebsd data to a face
+    misrotation = rotation % misrotations
   end
   
   properties
-    idV      % ids of the used verticies ?
-    allV     % verticies
+    idV      % ids of the used vertices ?
+    allV     % vertices
   end
 
   properties (Dependent)
     V
+    misorientation
   end
 
   methods
 
-    function gB = grain3Boundary(V, poly, grainId, phaseId, CSList, phaseMap)
+    function gB = grain3Boundary(V, poly, grainId, phaseId, mori, CSList, phaseMap)
       
       if isa(V, 'vector3d')
 
@@ -33,6 +36,7 @@ classdef grain3Boundary < phaseList & dynProp
       gB.poly = poly;
       gB.id = (1:length(poly))';
       gB.grainId = grainId;
+      gB.misrotation = mori;
 
       gB.phaseId = zeros(size(grainId));
       b = find(grainId(:,1));
@@ -52,6 +56,17 @@ classdef grain3Boundary < phaseList & dynProp
     function gB3 = set.V(gB3,V)
       gB3.allV(gB3.idV) = V;
     end
+
+    function mori = get.misorientation(gB3)
+            
+      mori = orientation(gB3.misrotation,gB3.CS{:});
+      mori.antipodal = equal(checkSinglePhase(gB3),2);
+      
+      % set not indexed orientations to nan
+      if ~all(gB3.isIndexed), mori(~gB3.isIndexed) = NaN; end
+      
+    end
+
 
     function out = hasPhaseId(gB,phaseId,phaseId2)
       if isempty(phaseId), out = false(size(gB)); return; end
