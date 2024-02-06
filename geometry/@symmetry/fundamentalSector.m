@@ -4,7 +4,7 @@ function  sR = fundamentalSector(sym,varargin)
 % Syntax
 %   sR = fundamentalSector(cs)
 %
-%   % undamental sector for a specific misorientation angle
+%   % fundamental sector for a specific misorientation angle
 %   sR = fundamentalSector(cs,omega)
 %
 % Input
@@ -25,6 +25,9 @@ if check_option(varargin,'complete')
 end
 
 how2plot = getClass(varargin,'plottingConvention',sym.how2plot);
+if isempty(how2plot)
+  how2plot = getMTEXpref('xyzPlotting');
+end
 
 % antipodal symmetry is nothing else then adding inversion to the symmetry
 % group
