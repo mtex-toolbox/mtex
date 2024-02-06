@@ -53,6 +53,25 @@ classdef grain3Boundary < phaseList & dynProp
       gB3.allV(gB3.idV) = V;
     end
 
+    function out = hasPhaseId(gB,phaseId,phaseId2)
+      if isempty(phaseId), out = false(size(gB)); return; end
+      
+      if nargin == 2
+        out = any(gB.phaseId == phaseId,2);
+
+        % not indexed phase should include outer border as well
+        if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | ...
+          any(gB.phaseId == 0,2); end
+        
+      elseif isempty(phaseId2)
+        out = false(size(gB));
+      elseif phaseId == phaseId2
+        out = all(gB.phaseId == phaseId,2);
+      else
+        out = gB.hasPhaseId(phaseId) & gB.hasPhaseId(phaseId2);
+      end 
+    end
+
   end
 
 end

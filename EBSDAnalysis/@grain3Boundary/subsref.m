@@ -1,4 +1,4 @@
-function varargout = subsref(gB3,s)
+function varargout = subsref(gB,s)
 % implements gB(1:10)
 %
 % Syntax
@@ -14,42 +14,38 @@ if strcmp(s(1).type,'()')
 
   subs=s(1).subs;
 
-  if (length(subs)==2 && (subs{2} == "ind"))
-    ind = subs{1};
-    assert((isnumeric(ind) || islogical(ind))...
-    , 'indexing only supported for numerical or logical values')
-  elseif length(subs)==1
-    if isnumeric(subs{1})
-      id = subs{1};
-    elseif islogical(subs{1})
-      id = find(subs{1});
-    else
-      error 'indexing only supported for numerical or logical values'
-    end
-    ind = id2ind(gB3,id);
-  else
-    error 'error'
-  end
+  % turn phaseNames into crystalSymmetry
+  isCS = cellfun(@(x) ischar(x) | isa(x,'crystalSymmetry'),subs);  
+  phId = cellfun(@gB.name2id,subs(isCS));
+  isCS(isCS) = phId>0; phId(phId==0) = [];
+  subs(isCS) = gB.CSList(phId);
   
-  gB3 = subSet(gB3,ind);
+  % restrict to subet
+  ind = subsind(gB,subs);
+  gB = subSet(gB,ind);
+
+  % if a phase is specified flip boundaries such that the phase becomes first
+  if ~isempty(phId) && phId(1)>1
+    gB = flip(gB,gB.phaseId(:,1) ~= phId(1));
+  end
   
   % is there something more to do?
   if numel(s)>1
     s = s(2:end);
   else
-    varargout{1} = gB3;
+    varargout{1} = gB;
     return
   end
 end
 
 % maybe reference to a dynamic property
-if isProperty(gB3,s(1).subs)
+if isProperty(gB,s(1).subs)
   
-  [varargout{1:nargout}] = subsref@dynProp(gB3,s);
+  [varargout{1:nargout}] = subsref@dynProp(gB,s);
   
 else
 
-  [varargout{1:nargout}] = builtin('subsref',gB3,s);
+  [varargout{1:nargout}] = builtin('subsref',gB,s);
   
 end
 
