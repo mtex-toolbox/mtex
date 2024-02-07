@@ -21,16 +21,22 @@ classdef grain3Boundary < phaseList & dynProp
 
   methods
 
-    function gB = grain3Boundary(V, poly, grainId, phaseId, mori, CSList, phaseMap)
+    function gB = grain3Boundary(V, poly, ebsdInd, grainId, phaseId, mori, CSList, phaseMap, ebsdId, varargin)
+      %
+      % Input
+      %  V       - @vector3d list of vertices
+      %  poly    - list of boundary segments
+      %  ebsdInd - [Id1,Id2] list of adjacent EBSD index for each segment
+      %  grainId - [Id1,Id2] list of adjacent grainIds for each segment
+      %  phaseId - list of adjacent phaseIds for each segment     
+      %  mori    - misorientation at each segment
+      %  CSList  - list of phases
+      %  phaseMap - 
+      %  ebsdInd - [Id1,Id2] list of adjacent EBSD Ids for each segment
       
-      if isa(V, 'vector3d')
-
-      elseif (isnumeric(V) && (size(V,2)==3))
-        V=vector3d(V)';
-      else
-        error 'invalid V'
-      end
-
+      % ensure V is vector3d
+      V = reshape(vector3d(V),[],1);
+      
       gB.allV = V;
       gB.idV = (1:length(V))';
       gB.poly = poly;
@@ -38,11 +44,13 @@ classdef grain3Boundary < phaseList & dynProp
       gB.grainId = grainId;
       gB.misrotation = mori;
 
-      gB.phaseId = zeros(size(grainId));
-      b = find(grainId(:,1));
-      gB.phaseId(b,1) = phaseId(grainId(b,1));
-      b = find(grainId(:,2));
-      gB.phaseId(b,2) = phaseId(grainId(b,2));
+      gB.ebsdId = ebsdInd;
+      if nargin == 9 % store ebsd_id instead of index
+        gB.ebsdId(ebsdInd>0) = ebsdId(ebsdInd(ebsdInd>0));
+      end
+
+      gB.phaseId = zeros(size(ebsdInd));
+      gB.phaseId(ebsdInd>0) = phaseId(ebsdInd(ebsdInd>0));
 
       gB.CSList = CSList;
       gB.phaseMap = phaseMap;

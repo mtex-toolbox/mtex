@@ -70,7 +70,7 @@ classdef grain3d < phaseList & dynProp
         .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
       % boundary
-      grains.boundary=grain3Boundary(V, poly, grainId, grains.phaseId, ...
+      grains.boundary = grain3Boundary(V, poly, grainId, grainId, grains.phaseId, ...
         mori, grains.CSList, grains.phaseMap);
 
     end

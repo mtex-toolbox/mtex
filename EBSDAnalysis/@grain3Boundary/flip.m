@@ -7,20 +7,20 @@ function gB = flip(gB,ind)
 %
 % Input
 %  gB  - @grain3Boundary
-%  ind - indeces of the boundaries to flip
+%  ind - indices of the boundaries to flip
 %
 % Output
 %  gB - @grain3Boundary
 %
 
 if nargin == 2
-  % gB.ebsdId(ind,:) = fliplr(gB.ebsdId(ind,:));
+  gB.ebsdId(ind,:) = fliplr(gB.ebsdId(ind,:));
   gB.grainId(ind,:) = fliplr(gB.grainId(ind,:));
   gB.phaseId(ind,:) = fliplr(gB.phaseId(ind,:));
-  % gB.misrotation(ind) = inv(gB.misrotation(ind));
+  gB.misrotation(ind) = inv(gB.misrotation(ind));
 else
-  % gB.ebsdId = fliplr(gB.ebsdId);
+  gB.ebsdId = fliplr(gB.ebsdId);
   gB.grainId = fliplr(gB.grainId);
   gB.phaseId = fliplr(gB.phaseId);
-  % gB.misrotation = inv(gB.misrotation);
+  gB.misrotation = inv(gB.misrotation);
 end
