@@ -11,7 +11,7 @@ function ebsdNew = interp(ebsd,pos,varargin)
 % Output
 %  ebsdNew - @EBSD with coordinates (xNew,yNew)
 %
-% Option
+% Options
 %  nearest - neares neighbor interpolation
 %
 % See also

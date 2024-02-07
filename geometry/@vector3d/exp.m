@@ -7,6 +7,8 @@ function rot = exp(v,rot_ref,tS)
 %
 %   rot = exp(v,ori_ref) % orientation update
 %
+%   ori = exp(v,ori_ref,tS) % orientation update
+%
 % Input
 %  v - @vector3d rotation vector in specimen coordinates
 %  ori_ref - @orientation @rotation
@@ -14,10 +16,7 @@ function rot = exp(v,rot_ref,tS)
 % Output
 %  mori - @rotation
 %  ori  - @orientation
-%
-% Option
-%  left  -
-%  right - 
+%  tS   - @SO3TangentSpace
 %
 % See also
 % Miller/exp orientation/log

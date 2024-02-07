@@ -8,9 +8,8 @@ function proj = makeSphericalProjection(varargin)
 %  proj - @sphericalProjection
 %
 % Options
-%  complete, lower, upper
+%  complete, lower, upper - decide on the spherical part
 %  
-
 
 ax = get_option(varargin,'parent',gca);
 if ishold(ax) && isappdata(ax,'sphericalPlot')

@@ -6,7 +6,7 @@
 % crystals in thin sections of rocks.
 
 %% Import Olivine Data
-% In order to illustarte the effect of birefringence lets consider a
+% In order to illustrate the effect of birefringence lets consider a
 % olivine data set.
 
 mtexdata olivine

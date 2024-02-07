@@ -1,5 +1,5 @@
 function display(o)
-% standart output
+% standard output
 
 refSystems = [char(o.CS,'compact') ' ' getMTEXpref('arrowChar') ' ' char(o.SS,'compact')];
 

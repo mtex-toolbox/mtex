@@ -1,13 +1,16 @@
 function dist = angle(oR,q,varargin)
 % angle to the boundary of the OR
-% 
-% negative angle is inside OR, positive angle is outside OR
 %
 % Syntax
 %
+%   dist = angle(oR,ori)
+%
 % Input
+%  oR  - @orientationRegion
+%  ori - @orientation
 %
 % Output
+%  dist - distance to boundary, negative is inside, positive is outside
 %
 
 % verify all conditions are satisfies

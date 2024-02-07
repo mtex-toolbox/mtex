@@ -132,7 +132,10 @@ hold off
 % |rotate|>
 
 % define a rotation
-rot = rotation.byEuler(30*degree,0*degree,90*degree,'Bunge')
+rot = rotation.byEuler(30*degree,0*degree,90*degree,'Bunge');
 
-% plot the rotated function
-plot(rotate(2 * SO3F1 + SO3F2,rot),'sigma')
+% rotate the ODF
+SO3F = rotate(SO3FunHarmonic(2 * SO3F1 + SO3F2),rot)
+
+% and plot it
+plot(SO3F,'sigma')
