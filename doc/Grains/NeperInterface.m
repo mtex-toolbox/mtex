@@ -5,17 +5,17 @@
 % meshing developed by Romain Query. It can be obtained from
 % https://neper.info, where also the documentation is located.
 %
-% This module provides an comfortable interface to neper. It is used 
+% This module provides an comfortable interface to Neper. It is used 
 % to simulate microstructures with certain parameters and load them back
 % into MTEX for analysis and further investigation with the various tools 
 % provided by MTEX.
 %
-% In order to do this, a slicing of the 3-dimensional tesselation is 
-% necessary after the simulation. The obtained 2-dimensional tesselation 
+% In order to do this, a slicing of the 3-dimensional tessellation is 
+% necessary after the simulation. The obtained 2-dimensional tessellation 
 % is processed as an object from the class |grain2d|. 
 %
 %
-%% Setting-up the neper instance
+%% Setting-up the Neper instance
 % If you do not want to make any further adjustments to the default values,
 % this step could be done very easily. In this case please skip to chapter
 % "Simulating a microstructure with Neper"
@@ -24,8 +24,8 @@ job = neperInstance
 
 %% 
 % File options:
-% By default your neper will work under the temporary folder of your matlab
-% (matlab command |tempdir|). If you want to do your tessellations elsewhere or
+% By default your Neper will work under the temporary folder of your MATLAB
+% (MATLAB command |tempdir|). If you want to do your tessellations elsewhere or
 % your tessellations are already located under another path, you can change
 % it:
 
@@ -77,7 +77,7 @@ job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
 %% Simulating a microstructure with Neper
 %
-% The tesselation is executed by the command |simulateGrains|. There are
+% The tessellation is executed by the command |simulateGrains|. There are
 % two option to call it.
 %
 % # by an <ODFTheory.html ODF> and the number of grains
