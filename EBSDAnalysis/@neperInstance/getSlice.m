@@ -26,16 +26,11 @@ function grains = getSlice(this,N,d,varargin)
 % compute distance to origin
 if isa(d,"vector3d"), d = dot(N,d); end
 
-%change work directory
-if this.newfolder==true && exist(this.folder,'dir')==7
-  cd([this.filePath this.folder]);
-else
-  cd(this.filePath)
-end
+
 
 %deleting old files, to make sure, to not load a wrong file, if slicing failed
-if isfile([this.fileName2d '.tess' ]), delete([this.fileName2d '.tess' ]); end
-if isfile([this.fileName2d '.ori' ]), delete([this.fileName2d '.ori' ]); end
+if isfile([this.filePath filesep this.fileName2d '.tess' ]), delete([this.filePath filesep this.fileName2d '.tess' ]); end
+if isfile([this.filePath filesep this.fileName2d '.ori' ]), delete([this.filePath filesep this.fileName2d '.ori' ]); end
 
 if check_option(varargin,'silent')
   output2file = ['>> ' this.filePath filesep 'neper.log '];
@@ -44,21 +39,21 @@ else
 end
 
 % get a slice
-system([this.cmdPrefix 'neper -T -loadtess ' this.fileName3d '.tess ' ...
+system([this.cmdPrefix 'neper -T -loadtess ' this.filePath filesep this.fileName3d '.tess ' ...
   '-transform "slice(' num2str(d) ',' num2str(N.x) ',' num2str(N.y) ',' num2str(N.z) ')" ' ... % this is (d,a,b,c) of a plane
-  '-ori "file(' this.fileName3d '.ori)" ' ...
-  '-o ' this.fileName2d ' ' ...
+  '-ori "file(' this.filePath filesep this.fileName3d '.ori)" ' ...
+  '-o ' this.filePath filesep this.fileName2d ' ' ...
   '-oriformat geof ' ...
   '-oridescriptor rodrigues ' ...
   '-format tess,ori ' ...
   output2file ...
   '&& ' ...
-  this.cmdPrefix 'neper -V ' this.fileName2d '.tess' output2file]);
+  this.cmdPrefix 'neper -V ' this.filePath filesep this.fileName2d '.tess' output2file]);
 
-if ~isfile([this.fileName2d '.tess'])
+if ~isfile([this.filePath filesep this.fileName2d '.tess'])
   error 'slicing failed, try other plane parameters.'
 end
 
-grains = grain2d.load([this.fileName2d '.tess']);
+grains = grain2d.load([this.filePath filesep this.fileName2d '.tess']);
 
 end

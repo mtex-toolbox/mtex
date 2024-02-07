@@ -23,20 +23,6 @@ function varargout = simulateGrains(this,varargin)
 %  allgrains.ori   - orientation file, Euler-Bunge format,
 %  ori_in.txt      - input orientations, rodrigues format
 
-%change work directory
-if this.newfolder==true
-  try
-    cd([this.filePath filesep this.folder]);
-  catch
-    cd(this.filePath);
-    mkdir(this.folder);
-    cd(this.folder);
-  end
-else
-  cd(this.filePath);
-end
-
-%%
 assert(nargin>1,'too few input arguments')
 if nargin>=3  % odf & numGrains
   if isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
@@ -72,7 +58,7 @@ end
 
 % save ori to file
 oriFilename='ori_in.txt';
-fid=fopen(oriFilename,'w');
+fid=fopen([this.filePath filesep oriFilename],'w');
 fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
@@ -86,20 +72,20 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
   ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
   ' -oricrysym "' CS '" '...
-  ' -ori "file(' oriFilename ')" ' ... % read orientations from file, default rodrigues
+  ' -ori "file(' [this.filePath filesep oriFilename] ')" ' ... % read orientations from file, default rodrigues
   ' -statpoly faceeqs ' ... % some statistics on the faces
-  ' -o ' this.fileName3d ' ' ... % output file name
+  ' -o ' [this.filePath filesep this.fileName3d] ' ' ... % output file name
   ' -oridescriptor rodrigues ' ... % orientation format in output file
   ' -oriformat plain ' ...
   ' -format tess,ori' ... % outputfiles
   output2file ...
   ' && ' ...
   ...
-  this.cmdPrefix 'neper -V ' this.fileName3d '.tess' output2file]);
+  this.cmdPrefix 'neper -V ' [this.filePath filesep this.fileName3d] '.tess' output2file]);
 
 %% return value
 if nargout >= 1
-  varargout = {grain3d.load([this.fileName3d '.tess'],'CS',ori.CS)};
+  varargout = {grain3d.load([this.filePath filesep this.fileName3d '.tess'],'CS',ori.CS)};
 else
   varargout = {};
 end
