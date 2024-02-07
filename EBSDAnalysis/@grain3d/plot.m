@@ -6,11 +6,6 @@ function varargout = plot(grains,varargin)
 % Syntax
 %   plot(grains)          % colorize by phase
 %   plot(grains,property) % colorize by property
-%   
-% Example
-%
-%   plot(grains,grains.meanOrientation)
-%   plot(grains,grains.volume)
 %
 % Input
 %  grains  - @grain3d
