@@ -62,12 +62,12 @@ if isa(f,'function_handle')
     tS = v.tangentSpace;
   elseif isa(v,'spinTensor')
     if v.CS == SRight
-      tS = SO3tangentSpace.right;
+      tS = SO3TangentSpace.right;
     else
-      tS = SO3tangentSpace.left;      
+      tS = SO3TangentSpace.left;      
     end
   else
-    tS = SO3tangentSpace.extract(varargin{:});
+    tS = SO3TangentSpace.extract(varargin{:});
   end
 
   if isnumeric(v) && numel(v)==3

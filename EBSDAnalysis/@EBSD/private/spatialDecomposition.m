@@ -1,15 +1,17 @@
 function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
-% decomposite the spatial domain into cells D with vertices V,
+% decompose the spatial domain into cells D with vertices V,
 %
 % Output
 %  V - list of vertices
 %  F - list of faces
 %  I_FD - incidence matrix between faces to cells
 
-% compute voronoi decomposition
+% compute Voronoi decomposition
 % V - list of vertices of the Voronoi cells
-% D   - cell array of Vornoi cells with centers X_D ordered accordingly
+% D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
+dxy = max(vecnorm(unitCell(1)-unitCell,2,2));
+
 
 if check_option(varargin,'unitCell')
   
@@ -24,16 +26,34 @@ if check_option(varargin,'unitCell')
 else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
-
-  if ~check_option(varargin,'QHull')
   
-    dt = delaunayTriangulation([X;dummyCoordinates]);
-    [V,D] = voronoiDiagram(dt);
-    
-  else
+  method = get_flag(varargin,{'jcvoronoi','qhull','matlab'}, getMTEXpref('voronoiMethod'));
 
-    [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
-            
+  switch lower(method)
+    case 'jcvoronoi'
+  
+      [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([X;dummyCoordinates]);
+    
+      V=[Vx,Vy];
+      E=[E1,E2];
+    
+      clear Vx Vy E1 E2
+      [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
+    
+      F = sort(ic(E),2);
+      I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
+    
+      return
+
+    case 'qhull'
+
+      [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
+          
+    otherwise
+  
+      dt = delaunayTriangulation([X;dummyCoordinates]);
+      [V,D] = voronoiDiagram(dt);
+      
   end
 
   % we are only interested in voronoi cells corresponding to the given
@@ -84,11 +104,11 @@ end
 
 
 function dummyCoordinates = calcBoundary(X,unitCell,varargin)
-% dummy coordinates so that the voronoi-cells of X are finite
+% dummy coordinates so that the Voronoi-cells of X are finite
 
 dummyCoordinates = [];
 
-% specify a bounding polyogn
+% specify a bounding polygon
 method = get_option(varargin,'boundary','hull',{'char','double'});
 
 if ischar(method)
@@ -184,7 +204,7 @@ for k=1:size(boundingX,1)-1
   % mirror the point set X on each edge
   pX = X * -(T(offsetX(k,:)) * H(edgeDirection(k,:)) * T(offsetX(k,:)))';
   
-  % distance between original and mirrowed point
+  % distance between original and mirrored point
   dist = sqrt(sum((X(:,1:2)-pX(:,1:2)).^2,2));
  
   intendX = 2*radius*sign(edgeDirection(k,1:2));

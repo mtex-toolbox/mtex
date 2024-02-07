@@ -121,18 +121,18 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
 
     end
 
-
+    genericNameFix = {{' ' ' |-|,|:|%|~|#'},{'_'}};
     % read all EBSD data
     EBSDdata = struct;
     for thing = 1:length(EBSD_data.Datasets)
-        sane_name = regexprep(EBSD_data.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+        sane_name = regexprep(EBSD_data.Datasets(thing).Name,genericNameFix{:});
         EBSDdata.(sane_name)=double(h5read(fname,[EBSD_data.Name '/' EBSD_data.Datasets(thing).Name]));
     end
 
     %read EBSD header
     EBSDheader = struct;
     for thing = 1:length(EBSD_header.Datasets)
-        sane_name = regexprep(EBSD_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+        sane_name = regexprep(EBSD_header.Datasets(thing).Name,genericNameFix{:});
         content = h5read(fname,[EBSD_header.Name '/' EBSD_header.Datasets(thing).Name]);
         if any(size(content) ~=1) & isnumeric(content)
             content = reshape(content,1,[]);
@@ -141,6 +141,8 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
     % EDS data
+    %EDS name sanitizer
+    EDSNameFix = {{' |-|,|:|%|~|#|Î|±' char(945) char(946)},{'_' 'a' 'b'}};
     if ~isempty(EDS_index) & EDS_index{k}(1) == EBSD_index{k}(1)
         %read EDS data
         EDSdata = struct;
@@ -150,7 +152,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read all datsets
         for est=1:length(allEDS)
             for thing = 1:length(allEDS{est})
-                sane_name = regexprep(allEDS{est}(thing).Name,{' |-|,|:|%|~|#|Î|±' char(945) char(946)},{'_' 'a' 'b'});
+                sane_name = regexprep(allEDS{est}(thing).Name,EDSNameFix{:});
                 EDSdata.(sane_name)=double(h5read(fname,[EDSPATH{est} '/' allEDS{est}(thing).Name]));
             end
         end
@@ -158,7 +160,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read EDS header
         EDSheader = struct;
         for thing = 1:length(EDS_header.Datasets)
-            sane_name = regexprep(EDS_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+            sane_name = regexprep(EDS_header.Datasets(thing).Name,EDSNameFix{:});
             content = h5read(fname,[EDS_header.Name '/' EDS_header.Datasets(thing).Name]);
             if any(size(content) ~=1) & isnumeric(content)
                 content = reshape(content,1,[]);
@@ -169,16 +171,20 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
     % Eimage data
+    %image name sanitizer
+    EimageNameFix = {{' |-|,|:|%|~|#' '\(|\)'},{'_' ''}};
+
     if ~isempty(Image_index) & Image_index{k}(1) == EBSD_index{k}(1)
         %read image data
         Imagedata = struct;
+        
         % are there multiple datasets?
         allImage = {Image_data.Datasets}; %TODO - group FSE and SE images better
         ImagePATH = {Image_data.Name};
         %read all datsets
         for est=1:length(allImage)
             for thing = 1:length(allImage{est})
-                sane_name = regexprep(allImage{est}(thing).Name,' |-|,|:|%|~|#','_');
+                sane_name = regexprep(allImage{est}(thing).Name,EimageNameFix{:});
                 Imagedata.(sane_name)=double(h5read(fname,[ImagePATH{est} '/' allImage{est}(thing).Name]));
             end
         end
@@ -186,19 +192,19 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read image header
         Imageheader = struct;
         for thing = 1:length(Image_header.Datasets)
-            sane_name = regexprep(Image_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+            sane_name = regexprep(Image_header.Datasets(thing).Name,EimageNameFix{:});
             content = h5read(fname,[Image_header.Name '/' Image_header.Datasets(thing).Name]);
             if any(size(content) ~=1) & isnumeric(content)
                 content = reshape(content,1,[]);
             end
             Imageheader.(sane_name) = content;
         end
-
+        
         % try to gridify the images (read axis ij)
         try
             for est=1:length(allImage)
                 for thing = 1:length(allImage{est})
-                    sane_name = regexprep(allImage{est}(thing).Name,' |-|,|:|%|~|#','_');
+                    sane_name = regexprep(allImage{est}(thing).Name,EimageNameFix{:});
                     %assume image is read across rows first
                     Imagedata.(sane_name)=permute(reshape(Imagedata.(sane_name)(:),[Imageheader.X_Cells Imageheader.Y_Cells]),[2 1]);
                 end
@@ -217,7 +223,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read all datsets
         for est=1:length(allProcessing)
             for thing = 1:length(allProcessing{est})
-                sane_name = regexprep(allProcessing{est}(thing).Name,' |-|,|:|%|~|#','_');
+                sane_name = regexprep(allProcessing{est}(thing).Name,genericNameFix{:});
                 Processingdata.(sane_name)=double(h5read(fname,[ProcessingPATH{est} '/' allProcessing{est}(thing).Name]));
             end
         end
@@ -225,7 +231,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %read processing header
         Processingheader = struct;
         for thing = 1:length(Processing_header.Datasets)
-            sane_name = regexprep(Processing_header.Datasets(thing).Name,' |-|,|:|%|~|#','_');
+            sane_name = regexprep(Processing_header.Datasets(thing).Name,genericNameFix{:});
             content = h5read(fname,[Processing_header.Name '/' Processing_header.Datasets(thing).Name]);
             if any(size(content) ~=1) & isnumeric(content)
                 content = reshape(content,1,[]);
@@ -252,13 +258,13 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     phases = all.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(2).Groups(1);
     %   ----------------
 
-
+    CS=cell(1,length(phases.Groups)+1);
     CS{1}='notIndexed';
     for phaseN = 1:length(phases.Groups)
         pN = ['phase_' num2str(phaseN)];
         EBSDphases.(pN)= struct;
         for j = 1:length(phases.Groups(phaseN).Datasets)
-            sane_name = regexprep(phases.Groups(phaseN).Datasets(j).Name,' |-|,|:|%|~|#','_');
+            sane_name = regexprep(phases.Groups(phaseN).Datasets(j).Name,genericNameFix{:});
             content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
             % format uses an Id for laue groups we do not seem to have
             if strcmpi(sane_name,'Laue_Group')
@@ -283,7 +289,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             langle(isnull(langle-pi/2,1e-7))=pi/2;
         end
 
-        CS{phaseN} = crystalSymmetry(csm.pointGroup, ...
+        CS{phaseN+1} = crystalSymmetry(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name));

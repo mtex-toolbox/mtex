@@ -3,12 +3,12 @@
 % The Lankford parameter, also referred to as the Lankford coefficient, the
 % R-value or plastic strain ratio, is an important material property in the
 % field of mechanical metallurgy, particularly in the study of sheet metal
-% forming processes. It is often used to optimise manufacturing processes,
+% forming processes. It is often used to optimize manufacturing processes,
 % especially in industries like automotive and aerospace, where sheet metal
-% components are extensively utilised.
+% components are extensively utilized.
 % 
 % The Lankford parameter quantifies the anisotropy of a material's plastic
-% deformation behaviour. It is the ratio of the true width strain to the
+% deformation behavior. It is the ratio of the true width strain to the
 % true thickness strain at a particular value of length strain. This scalar
 % quantity is used extensively as an indicator of formability.
 % 
@@ -17,7 +17,7 @@
 %
 % * Materials with high R-values, typically ranging from ~1 to 2.5 
 %   or higher, exhibit a strong degree of anisotropy in their deformation 
-%   behaviour. This means they deform significantly more in one direction 
+%   behavior. This means they deform significantly more in one direction 
 %   compared to perpendicular directions. 
 %
 % * Alternatively, materials with low R-values, typically close to zero or 

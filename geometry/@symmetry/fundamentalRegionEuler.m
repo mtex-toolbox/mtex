@@ -18,6 +18,14 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 % See also
 % symmetry/FundamentalRegion symmetry/FundamentalSector
 
+
+if check_option(varargin,'complete')
+  maxPhi1 = 2*pi;
+  maxPhi = pi;
+  maxPhi2 = 2*pi;
+  return
+end
+
 % Note that specimenSymmetry('23') does not exist and consequently does not work
 
 if nargin == 1, ss = specimenSymmetry; end
@@ -34,6 +42,19 @@ maxPhi2 = 2*pi/cs.multiplicityZ;
 
 % Phi
 maxPhi = pi / min(2,max(cs.multiplicityPerpZ, ss.multiplicityPerpZ));
+
+
+if check_option(varargin,'equispacedSO3Grid')
+
+  % for antipodal symmetry we can reduce either phi1 or phi2 to one half
+  % TODO: This is not working generally
+  % if check_option(varargin,'antipodal'), maxPhi2 = maxPhi2 / 2; end
+  if check_option(varargin,'SO3Grid') && cs.Laue.id == 45
+    maxPhi = pi/3;
+  end
+  return
+
+end
 
 if check_option(varargin,{'ABG','Matthies','ZYZ','nfft'})
  
@@ -89,14 +110,7 @@ end
 
 % for antipodal symmetry we can reduce either phi1 or phi2 to one half
 % TODO: This is not working generally
-if check_option(varargin,'antipodal'), maxPhi2 = maxPhi2 / 2; end
-
-
-if check_option(varargin,'complete')
-  maxPhi1 = 2*pi;
-  maxPhi = pi;
-  maxPhi2 = 2*pi;
-end
+% if check_option(varargin,'antipodal'), maxPhi2 = maxPhi2 / 2; end
 
 if check_option(varargin,'SO3Grid') && cs.Laue.id == 45
   maxPhi = pi/3;

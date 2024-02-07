@@ -43,7 +43,7 @@ ebsd = ebsd.gridify
 ebsd(50,100)
 
 %% 
-% It is important to understand that the property of beeing shaped as a
+% It is important to understand that the property of being shaped as a
 % matrix is lost as soon as we <EBSDSelect.html select> a subset of data
 
 ebsdMg = ebsd('Magnesium')
@@ -56,7 +56,7 @@ ebsdMg = ebsd('Magnesium').gridify
 
 %%
 % The difference between both matrix shapes EBSD variables *ebsd* and
-% *ebsdMg* is that not indexed pixels in *ebsd* are stored as the seperate
+% *ebsdMg* is that not indexed pixels in |ebsd| are stored as the separate
 % phase *notIndexed* while in *ebsdMg* all pixels have phase Magnesium but
 % the Euler angles of the not indexed pixels are set to nan. This allows to
 % select and plot subregions of the EBSD in a very intuitive way by
@@ -64,7 +64,9 @@ ebsdMg = ebsd('Magnesium').gridify
 plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 
 %% The Gradient
-%
+% Data on a square or hexagonal grid has the additional advantage to allow
+% the computation of the orientations gradient, the incomplete Nye tensor,
+% as well the weighted Burgers vector.
 
 gradX = ebsdMg.gradientX;
 
@@ -106,13 +108,15 @@ unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 ebsdS = ebsd.gridify('unitCell',unitCell)
 
 % visualize the result
+plot(ebsd,ebsd.orientations)
+nextAxis
 plot(ebsdS, ebsdS.orientations)
 
 %%
 % In the above example we have chosen the square unit cell to have
-% approximately the same size as the hexgonal unit cell. This leads to
+% approximately the same size as the hexagonal unit cell. This leads to
 % quite some distortions as squares can not reproduces all the shapes of
-% the hexagones. We can reduce this issue by chosing the quare unit cell
+% the hexagons. We can reduce this issue by choosing the square unit cell
 % significantly smaller then the hexagonal unit cell.
 
 % a smaller unit cell
@@ -128,16 +132,16 @@ hold off
 
 %%
 % It is important to understand that the command <EBSD.gridify.html
-% gridify> does not increase the number of data points. As a consquence, we
-% end up with many white spots in the map which corresponds to orientations
-% that have been set to NaN. In order to fill these white spots, we may
-% either use the command <EBSD.fill.html fill> which performs nearest
-% neighbour interpolation or the command <EBSD.smooth smooth> which allows
-% for more suffisticated interpolation methods.
+% gridify> does not increase the number of data points. As a consequence,
+% we end up with many white spots in the map which corresponds to
+% orientations that have been set to NaN. In order to fill these white
+% spots, we may either use the command <EBSD.fill.html fill> which performs
+% nearest neighbor interpolation or the command <EBSD.smooth smooth> which
+% allows for more sophisticated interpolation methods.
 
 %%
 
-% nearest neigbour interpolation
+% nearest neighbor interpolation
 ebsdS1 = fill(ebsdS,grains)
 
 plot(ebsdS1('indexed'),ebsdS1('indexed').orientations)
@@ -147,11 +151,12 @@ hold off
 
 %%
 
-% interpolation using a TV regularisation term
+% interpolation using a TV regularization term
 F = halfQuadraticFilter;
 F.alpha = 0.5;
 ebsdS2 = smooth(ebsdS,F,'fill',grains)
 
+nextAxis
 plot(ebsdS2('indexed'),ebsdS2('indexed').orientations)
 hold on
 plot(grains.boundary,'lineWidth',2)

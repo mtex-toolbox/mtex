@@ -8,6 +8,7 @@ properties
   SLeft  = specimenSymmetry
   SRight = specimenSymmetry
   bandwidth = getMTEXpref('maxSO3Bandwidth');
+  tangentSpace = SO3TangentSpace.leftVector
 end
   
 methods

@@ -63,7 +63,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % GrainReconstruction GrainReconstructionAdvanced
 
 % subdivide the domain into cells according to the measurement locations,
-% i.e. by Voronoi teselation or unit cell
+% i.e. by Voronoi tessellation or unit cell
 if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
   [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
 else
@@ -77,7 +77,7 @@ end
 
 % determine which cells to connect
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
-% A_db - neigbhouring cells with (inner) grain boundary
+% A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
 % now we remove all empty grains
@@ -464,7 +464,7 @@ for k=1:size(I_FG,2)
   % inner and outer boundaries are circles in the face graph
   EC = EulerCycles(F(I_FG(:,k)>0,:));
           
-  % first cicle should be positive and all others negatively oriented
+  % first circle should be positive and all others negatively oriented
   for c = 1:numel(EC)
     if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
       EC{c} = fliplr(EC{c});

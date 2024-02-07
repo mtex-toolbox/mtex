@@ -30,7 +30,7 @@ ebsd = ebsd('indexed');
 
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',5*degree);
 ebsd(grains(grains.grainSize<=2)) = [];
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',5*degree);
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',5*degree,'qhull');
 
 grains = smooth(grains,4);
 
@@ -47,7 +47,7 @@ hold off
 
 %%
 % As expected, we recognize very small remaining fcc grains. This
-% high-temperatur phase is stabilized by the increasing nickel content
+% high-temperature phase is stabilized by the increasing nickel content
 % during transformation. The low-temperature bcc phase can solve in maximum
 % only 6\% nickel so that fcc has to assimilate the excess nickel. Size and
 % amount of fcc is therefore and indication of the overall nickel content.

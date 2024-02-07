@@ -42,9 +42,11 @@ SO3VectorFieldHarmonic(SO3VF,'bandwidth',16)
 % At first we need some example rotations
 nodes = equispacedSO3Grid(specimenSymmetry('1'),'points',1e3);
 nodes = nodes(:);
+
 %%
 % Next, we define function values for the rotations
 y = vector3d.byPolar(sin(3*nodes.angle), nodes.phi2+pi/2);
+
 %%
 % Now the actual command to get |SO3VF1| of type |SO3VectorFieldHarmonic|
 SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y,'bandwidth',16)
@@ -124,9 +126,6 @@ norm(SO3VF1);
 %
 % One can use the default |plot|-command
 plot(SO3VF1);
-
-%%
-% * same as quiver(sVF1)
 
 %%
 % or the 3D plot of the rotation group with the vectors on itself
