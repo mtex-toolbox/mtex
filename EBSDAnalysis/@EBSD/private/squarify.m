@@ -15,6 +15,8 @@ ext = get_option(varargin,'extent',ebsd.extent);
 dxyz = [max(uc.x)-min(uc.x), max(uc.y)-min(uc.y), max(uc.z)-min(uc.z)];
 nGrid = 1 + max(0,round((ext([2 4 6]) - ext([1 3 5])) ./dxyz));
 
+nGrid(isinf(nGrid)) = 1;
+
 % z runs first
 [x,y,z] = meshgrid(...
   linspace(ext(1),ext(2),nGrid(1)),...
