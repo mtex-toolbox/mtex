@@ -12,7 +12,7 @@ classdef halfQuadraticFilter < EBSDFilter
     l1TV      = true      % use l^1 norm for regularization
     alpha = 1;            % regularization parameter
     iterMax   = 1000;     % maximum number of iterations
-    tol   = 0.02*degree   % stopping criterium for the gradient descent
+    tol   = 0.02*degree   % stopping criteria for the gradient descent
     eps   = 1e-3;         % l^1 relaxation parameter
     threshold = 15*degree % threshold for subgrain boundaries
   end
@@ -32,7 +32,7 @@ classdef halfQuadraticFilter < EBSDFilter
         idNeighbours = squareNeighbors(size(ori));
       end
       
-      % the regulaisation parameter
+      % the regularization parameter
       %alpha = (0.5*degree)^(F.l1TV-F.l1DataFit) * 4 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       alpha = (0.25*degree)^F.l1TV * (0.5*degree)^(-F.l1DataFit) * 10 * F.alpha / size(idNeighbours,3); %#ok<*PROPLC>
       
@@ -46,11 +46,11 @@ classdef halfQuadraticFilter < EBSDFilter
       iter = 1;
       while iter==1 || (iter < F.iterMax && max(max(abs(g)))>F.tol)
                 
-        % extract neighbouring quaternions
+        % extract neighboring quaternions
         uu = repmat(u,1,1,size(idNeighbours,3));
         n = u(idNeighbours);
           
-        % compute weights to the neighboring pixels
+        % multiplier for regularization gradient
         if F.l1TV
           t = angle(uu,n);
           %w = (1+4*quality(idNeighbours(:,:,j))-quality)./5;
@@ -60,13 +60,15 @@ classdef halfQuadraticFilter < EBSDFilter
           w = alpha * ~isnan(n);
         end
         
-        % the gradient
+        % multiplier for data fit gradient
         if F.l1DataFit
           w0 = quality ./ sqrt(angle(q,u).^2+F.eps^2);
         else
           w0 = quality;
         end
         w0(isnan(w0)) = 0;
+
+        % the gradient
         g = w0 .* log(q,u) + nansum(w .* log(n,uu),3);
           
         % update step length
