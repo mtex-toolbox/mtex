@@ -41,6 +41,7 @@ classdef EBSDsquare < EBSD
       
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.opt = get_option(varargin,'opt',struct);
       
       % correctly reshape all properties
       ebsd = reshape(ebsd,sGrid);
