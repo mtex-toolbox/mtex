@@ -45,8 +45,7 @@ classdef neperInstance < handle
 %  iterMax    - max Iterations for morpho optimization process
 %  fileName2d - name for 2d outputs (fileendings .tess/.ori), default: '2dslice'
 %  fileName3d - name for 3d outputs (fileendings .tess/.ori/.stpoly), default: 'allgrains'
-%  filePath   - filepath working directory, default: tempdir
-%  newfolder  - boolean, if true, new folder will be created, default: true;
+%  filePath   - filepath working directory, default: tempdir/neper
 %
 % See also
 % grain2d.load grain3d.load
@@ -60,13 +59,15 @@ properties
   iterMax = 1000;
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
-  filePath = tempdir
-  newfolder = true;
+  filePath = [tempdir 'neper' filesep];
   
 end
 
+properties (Dependent)
+  filePathUnix                % differs from filePath for Windows systems
+end
+
 properties (Access = private)
-  folder = 'neper'
   cmdPrefix                    % contains char 'wsl' for windows systems
 end
 
@@ -103,6 +104,22 @@ methods (Static = true)
 
     plot(grains,grains.meanOrientation)
 
+  end
+
+end
+
+methods
+
+  function set.filePath(this,filepath)
+    if endsWith(filepath,filesep)
+      this.filePath = filepath;
+    else
+      this.filePath = [filepath filesep];
+    end 
+  end
+  
+  function path = get.filePathUnix(this)
+    path = path2unix(this.filePath);
   end
 
 end

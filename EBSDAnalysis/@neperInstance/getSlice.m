@@ -29,31 +29,31 @@ if isa(d,"vector3d"), d = dot(N,d); end
 
 
 %deleting old files, to make sure, to not load a wrong file, if slicing failed
-if isfile([this.filePath filesep this.fileName2d '.tess' ]), delete([this.filePath filesep this.fileName2d '.tess' ]); end
-if isfile([this.filePath filesep this.fileName2d '.ori' ]), delete([this.filePath filesep this.fileName2d '.ori' ]); end
+if isfile([this.filePath this.fileName2d '.tess' ]), delete([this.filePath this.fileName2d '.tess' ]); end
+if isfile([this.filePath this.fileName2d '.ori' ]), delete([this.filePath this.fileName2d '.ori' ]); end
 
 if check_option(varargin,'silent')
-  output2file = ['>> ' this.filePath filesep 'neper.log '];
+  output2file = ['>> ' this.filePathUnix 'neper.log '];
 else
   output2file = '';
 end
 
 % get a slice
-system([this.cmdPrefix 'neper -T -loadtess ' this.filePath filesep this.fileName3d '.tess ' ...
+system([this.cmdPrefix 'neper -T -loadtess ' this.filePathUnix this.fileName3d '.tess ' ...
   '-transform "slice(' num2str(d) ',' num2str(N.x) ',' num2str(N.y) ',' num2str(N.z) ')" ' ... % this is (d,a,b,c) of a plane
-  '-ori "file(' this.filePath filesep this.fileName3d '.ori)" ' ...
-  '-o ' this.filePath filesep this.fileName2d ' ' ...
+  '-ori "file(' this.filePathUnix this.fileName3d '.ori)" ' ...
+  '-o ' this.filePathUnix this.fileName2d ' ' ...
   '-oriformat geof ' ...
   '-oridescriptor rodrigues ' ...
   '-format tess,ori ' ...
   output2file ...
   '&& ' ...
-  this.cmdPrefix 'neper -V ' this.filePath filesep this.fileName2d '.tess' output2file]);
+  this.cmdPrefix 'neper -V ' this.filePathUnix this.fileName2d '.tess' output2file]);
 
-if ~isfile([this.filePath filesep this.fileName2d '.tess'])
+if ~isfile([this.filePath this.fileName2d '.tess'])
   error 'slicing failed, try other plane parameters.'
 end
 
-grains = grain2d.load([this.filePath filesep this.fileName2d '.tess']);
+grains = grain2d.load([this.filePath this.fileName2d '.tess']);
 
 end

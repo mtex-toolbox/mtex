@@ -4,7 +4,7 @@ function varargout = simulateGrains(this,varargin)
 % Syntax
 %   
 %   neper=neperInstance;
-%   neper.filepath='C:\\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
+%   neper.filepath='C:\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
 %   numGrains = 100;
 %   odf = unimodalODF(orientation.rand);
 %   neper.simulateGrains(odf, numGrains)
@@ -58,12 +58,12 @@ end
 
 % save ori to file
 oriFilename='ori_in.txt';
-fid=fopen([this.filePath filesep oriFilename],'w');
+fid=fopen([this.filePath oriFilename],'w');
 fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
 if check_option(varargin,'silent')
-  output2file = ['>> ' this.filePath filesep 'neper.log'];
+  output2file = ['>> ' this.filePathUnix 'neper.log'];
 else
   output2file = '';
 end
@@ -72,20 +72,20 @@ system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
   ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
   ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
   ' -oricrysym "' CS '" '...
-  ' -ori "file(' [this.filePath filesep oriFilename] ')" ' ... % read orientations from file, default rodrigues
+  ' -ori "file(' [this.filePathUnix oriFilename] ')" ' ... % read orientations from file, default rodrigues
   ' -statpoly faceeqs ' ... % some statistics on the faces
-  ' -o ' [this.filePath filesep this.fileName3d] ' ' ... % output file name
+  ' -o ' [this.filePathUnix this.fileName3d] ' ' ... % output file name
   ' -oridescriptor rodrigues ' ... % orientation format in output file
   ' -oriformat plain ' ...
   ' -format tess,ori' ... % outputfiles
   output2file ...
   ' && ' ...
   ...
-  this.cmdPrefix 'neper -V ' [this.filePath filesep this.fileName3d] '.tess' output2file]);
+  this.cmdPrefix 'neper -V ' [this.filePathUnix this.fileName3d] '.tess' output2file]);
 
 %% return value
 if nargout >= 1
-  varargout = {grain3d.load([this.filePath filesep this.fileName3d '.tess'],'CS',ori.CS)};
+  varargout = {grain3d.load([this.filePath this.fileName3d '.tess'],'CS',ori.CS)};
 else
   varargout = {};
 end
