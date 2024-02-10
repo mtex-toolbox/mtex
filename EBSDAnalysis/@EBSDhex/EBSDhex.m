@@ -40,6 +40,7 @@ classdef EBSDhex < EBSD
             
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.opt = get_option(varargin,'opt',struct);
                   
       % set up unit cell
       ebsd.dHex = dHex;

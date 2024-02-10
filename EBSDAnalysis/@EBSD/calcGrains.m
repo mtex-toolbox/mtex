@@ -104,9 +104,13 @@ if check_option(varargin,'removeQuadruplePoints')
 end
 
 % setup grains
+try
+  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+catch
+  poly = calcPolygons(I_FDext * I_DG,Fext,V);
+end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
-  calcPolygons(I_FDext * I_DG,Fext,V), ...
-  [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
+  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
 grains.grainSize = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);

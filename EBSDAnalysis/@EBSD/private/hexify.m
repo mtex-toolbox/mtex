@@ -11,7 +11,14 @@ dHex = mean(norm(unitCell));
 
 % alignment of the hexagon
 % true mean vertices are pointing towars y direction
-isRowAlignment = diff(min(abs(ebsd.unitCell.xy))) > 0;
+isRowAlignment = diff(min(abs(ebsd.unitCell))) > 0;
+
+% maybe the unit cell is a rotated hexagon
+if length(unique(unitCell)) == 12
+  % set up new unit cell
+  omega = (0:60:300)*degree + 30*isRowAlignment*degree;
+  unitCell = dHex * vector3d(cos(omega.'),sin(omega.'),0);
+end
 
 prop = ebsd.prop;
 
@@ -123,6 +130,6 @@ else
 end
 
 ebsdGrid = EBSDhex(vector3d(x,y,0),rot,phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop,'opt',ebsd.opt);
 
 end
