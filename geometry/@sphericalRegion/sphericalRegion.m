@@ -30,7 +30,11 @@ classdef sphericalRegion
     antipodal = false  % used for check_inside
   end
 
-  
+  properties (Dependent = true)
+    how2plot
+  end
+
+
   methods
         
     function sR = sphericalRegion(varargin)
@@ -41,7 +45,7 @@ classdef sphericalRegion
         sR.N = normalize(varargin{1});
         if nargin>=2 && isa(varargin{2},'double')
           sR.alpha = varargin{2};
-          if length(sR.alpha) == 1
+          if isscalar(sR.alpha)
             sR.alpha = repmat(sR.alpha,size(sR.N));
           end
         else
@@ -90,6 +94,14 @@ classdef sphericalRegion
       
     end
             
+    function h2p = get.how2plot(sR)
+      h2p = sR.N.plottingConvention;
+    end
+
+    function sR = set.how2plot(sR,how2plot)
+      sR.N.plottingConvention = how2plot;
+    end
+
     function th = thetaMin(sR)
       
       th = thetaRange(sR);

@@ -18,7 +18,7 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 sR = sF.s.fundamentalSector(varargin{:});
 
 % perform plotting
-[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:},sF.s.how2plot);
+[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:});
 
 
 function txt = tooltip(varargin)

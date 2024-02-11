@@ -3,7 +3,7 @@ function out = isUpper(sR, ref)
 sR.antipodal = false;
  
 if nargin==1
-  ref = zvector;
+  ref = sR.how2plot.outOfScreen;
 elseif isa(ref,'plottingConvention')
   ref = ref.outOfScreen;
 end
