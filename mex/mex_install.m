@@ -14,7 +14,8 @@ places = {'geometry/@S1Grid/private/S1Grid_',...
   'extern/insidepoly/',...
   'extern/jcvoronoi/',...
   'SO3Fun/@SO3FunHarmonic/private/adjoint',...
-  'SO3Fun/@SO3FunHarmonic/private/representationbased'};
+  'SO3Fun/@SO3FunHarmonic/private/representationbased',...
+  'tools/graph_tools/EulerCyclesC'};
   
 % TODO: Check for mex-Compiler
 
@@ -26,7 +27,7 @@ for p = 1:length(places)
       fName = fullfile(files(f).folder,files(f).name);
       disp(['... compiling ',files(f).name]);
       try
-        mex('-R2018a',fName);
+        mex('-R2018a','-outdir',[mtexpath filesep 'mex'],fName);
       catch %#ok<CTCH>
         if ~strfind(lasterr,'is not a MEX file.'), disp(lasterr); end
         %disp(['Compiling ' fName ' failed!']);

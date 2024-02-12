@@ -27,6 +27,10 @@ classdef crystalSymmetry < symmetry
 %  aAxisRec, bAxisRec, cAxisRec - reciprocal crystal axes @Miller
 %  axes                         - @vector3d 
 %
+% See also
+% CrystalSymmetries CrystalShapes CrystalReferenceSystem CrystalOperations
+%
+
 % Supported Symmetries
 %
 %  id  crystal system  Schoen-  Inter-    Laue     Rotational
@@ -79,8 +83,7 @@ classdef crystalSymmetry < symmetry
 %  46  icosahedral     I        532       -5-32/m  532
 %  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
-% See also
-% CrystalSymmetries CrystalShapes CrystalReferenceSystem CrystalOperations
+
 
   properties
     axes = [xvector,yvector,zvector]; % coordinate system

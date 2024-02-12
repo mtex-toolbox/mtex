@@ -1,7 +1,7 @@
 function sR = restrict2Upper(sR,ref)
  
 if nargin==1
-  ref = zvector;
+  ref = sR.how2plot.outOfScreen;
 elseif isa(ref,'plottingConvention')
   ref = ref.outOfScreen;
 end

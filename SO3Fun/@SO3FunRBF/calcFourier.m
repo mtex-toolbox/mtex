@@ -3,13 +3,13 @@ function f_hat = calcFourier(SO3F,varargin)
 %
 % Syntax
 %
-%  f_hat = calcFourier(SO3F)
+%   f_hat = calcFourier(SO3F)
 %
-%  f_hat = calcFourier(SO3F,'bandwidth',L)
+%   f_hat = calcFourier(SO3F,'bandwidth',L)
 %
 % Input
 %  SO3F - @SO3FunRBF
-%     L - maximum harmonic degree / bandwidth
+%  L    - maximum harmonic degree / bandwidth
 %
 % Output
 %  f_hat - harmonic/Fouier/Wigner-D coefficients

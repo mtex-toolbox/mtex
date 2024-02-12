@@ -6,7 +6,7 @@ function SO3VF = symmetrise(SO3VF,varargin)
 % by using symmetry properties.
 %
 % Syntax
-%  SO3VF = symmetrise(SO3VF)
+%   SO3VF = symmetrise(SO3VF)
 %
 % Input
 %  SO3VF - @SO3FunVectorFieldHarmonic

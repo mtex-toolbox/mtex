@@ -1,30 +1,27 @@
-function [dimension, V, poly, rot, crysym, varargout] = loadNeperTess(filepath)
-  % function for reading data from nepers tesselation files (.tess)
+function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
+  % function for reading data from nepers tessellation files (.tess)
   %
   % Description
   %
   % readTessFile is a helping function used from the grain2d.load and 
-  % grain3d.load method to read the data from the tesselation files that
+  % grain3d.load method to read the data from the tessellation files that
   % <neper.info/ neper> outputs
   %
   % Syntax
-  %   [dim, V, poly, rot, crysym, I_CellsFaces] = readTessFile('filepath/filename.tess')
+  %   [dim, V, poly, rot, CS, I_CellsFaces] = readTessFile('filepath/filename.tess')
   %
   % Input
   %  fname     - filepath
   %
   % Output
-  %  dim        - dimension of the tesselation (2 or 3)
+  %  dim        - dimension of the tessellation (2 or 3)
   %  V          - list of vertices(x,y,z)
-  %  poly       - cell arry with all faces
+  %  poly       - cell array with all faces
   %  rot        - rotation (orientation)
-  %  crysym     - crysym
-  %  varargout  - either I_CellsFaces (if dim == 3) or cell_ids (2d)
-  %  I_CellsFaces
-  %             - adjacency matrix cells - faces
-  %  cell_ids   - ids of the cells acording to initial 3d tesselation
-  %
-  %
+  %  CS         - @crystlSymmetry
+  %  I_CellsFaces  - adjacency matrix cells - faces
+  %  cell_ids   - ids of the cells according to initial 3d tessellation
+    %
   % See also
   % grain2d.load grain3d.load neperInstance
   %
@@ -116,7 +113,7 @@ function [dimension, V, poly, rot, crysym, varargout] = loadNeperTess(filepath)
       case "*crysym"
         buffer = fgetl(fid);
         while(~isHeader(buffer))
-          crysym = strtrim(buffer);
+          CS = strtrim(buffer);
           buffer = fgetl(fid);
         end
       case {"*seed","*seed (id x y z weigth )"}

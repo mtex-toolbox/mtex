@@ -12,17 +12,14 @@ classdef fibonacciS2Grid < vector3d
   %   fibgrid = fibonacciS2Grid('points', N, 'saverho') 
   %
   % Input
-  % N - number of points
-  % res - resolution of the grid 
+  %  N - number of points
+  %  res - resolution of the grid 
   %
   % Options
-  % points - number of points to be generated
-  % res    - desired resolution of the grid
+  %  points - number of points to be generated
+  %  res    - desired resolution of the grid
   %
-  % Class Properties
-  % inherited from vector3d
-  %
- 
+   
   % the dependent properties that are commented could be useful for finding
   % neighbors in large grids
   properties (Dependent = true)

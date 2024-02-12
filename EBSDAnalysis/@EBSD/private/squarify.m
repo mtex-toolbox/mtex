@@ -33,7 +33,7 @@ if length(ebsd.unitCell) ~= 4 || 1.5*max(norm(ebsd.unitCell)) < max(norm(uc))
   ebsd = interp(ebsd,pos);
 
   ebsdGrid = EBSDsquare(pos,reshape(ebsd.rotations,sGrid),...
-    ebsd.phaseId(:), ebsd.phaseMap,ebsd.CSList,dxyz,'options',ebsd.prop);
+    ebsd.phaseId(:), ebsd.phaseMap,ebsd.CSList,dxyz,'options',ebsd.prop,'opt',ebsd.opt);
   
   return
   
@@ -70,6 +70,6 @@ prop.oldId = nan(sGrid);
 prop.oldId(newId) = ebsd.id;
 
 ebsdGrid = EBSDsquare(pos,rotation(quaternion(a,b,c,d)),phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,dxyz,'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dxyz,'options',prop,'opt',ebsd.opt);
 
 end

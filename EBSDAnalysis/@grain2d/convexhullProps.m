@@ -18,8 +18,9 @@ function [cha, chp] = convexhullProps(grains)
 p = zeros(size(grains));
 
 % store this in local variables for speed reasons
-X = grains.V(:,1);
-Y = grains.V(:,2);
+V = grains.rot2Plane .* grains.V;
+X = V.x;
+Y = V.y;
 
 poly = grains.poly;
 % remove inclusions

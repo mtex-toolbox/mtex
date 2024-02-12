@@ -10,19 +10,19 @@ unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 dHex = mean(norm(unitCell));
 
 % alignment of the hexagon
-% true mean vertices are pointing towars y direction
-isRowAlignment = diff(min(abs(ebsd.unitCell.xy))) > 0;
+% true mean vertices are pointing towards y direction
+isRowAlignment = diff(min(abs([unitCell.x unitCell.y]))) > 0;
 
 prop = ebsd.prop;
 
 % number of rows and columns and offset
-% 1 means second row / column has positiv offset
-% -1 means second row / column has negativ offset
+% 1 means second row / column has positive offset
+% -1 means second row / column has negative offset
 ext = ebsd.extent;
 
 if isRowAlignment
   
-  % find point with smalles x value
+  % find point with smallest x value
   [~,i] = min(ebsd.pos.x);
   
   % and determine whether this is an even or odd column
@@ -33,7 +33,7 @@ if isRowAlignment
   
 else
   
-  % find point with smalles y value
+  % find point with smallest y value
   [~,i] = min(ebsd.pos.y);
   
   % and determine whether this is an even or odd column
@@ -123,6 +123,6 @@ else
 end
 
 ebsdGrid = EBSDhex(vector3d(x,y,0),rot,phaseId(:),...
-  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop);
+  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop,'opt',ebsd.opt);
 
 end

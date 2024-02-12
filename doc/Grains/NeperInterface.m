@@ -35,16 +35,6 @@ job = neperInstance
  job.filePath = [mtexDataPath filesep 'Neper'];
 
 %%
-% By default a new folder, named neper will be created for the tessellation 
-% data. If you do not want to create a new folder you can switch it of by 
-% setting |newfolder| to |false|.
-
-job.newfolder = false;
-
-%%
-% If |newfolder| is true (default) the slicing module also works in the
-% subfolder neper, if it exists.
-%
 % By default the 3d tesselation data will be named "allgrains" with the
 % endings .tess and .ori and the 2d slices will be named "2dslice" with the
 % ending .tess and .ori . You can change the file names in variables

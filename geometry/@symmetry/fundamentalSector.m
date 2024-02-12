@@ -122,6 +122,7 @@ if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
   N(isnull(N.x) & isnull(N.y)) = [];
 end
 
+N.plottingConvention = how2plot;
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 
 % determine the fundamental sector for misorientation axes with fixed
