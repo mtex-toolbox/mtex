@@ -14,11 +14,11 @@ crysmPath = '/DataStructure/DataContainer/CellEnsembleData/CrystalStructures';
 
 activeGrains = logical(h5read(fname, activePath))';
 
-Quaternions = h5read(fname, QuatsPath)';
-Quaternions = quaternion(Quaternions(activeGrains,:)').';
+abcd = h5read(fname, QuatsPath)';
+q = quaternion(abcd(activeGrains,:)').';
 
 crysm = h5read(fname,crysmPath);      % not helpful
-cs = {'notIndexed',crystalSymmetry("1")};
+csList = {'notIndexed',crystalSymmetry("432")};
 
 phaseList = h5read(fname,phasePath)' + 1;
 phaseList = phaseList(activeGrains,:);
@@ -32,11 +32,14 @@ poly = mat2cell(poly,ones(length(poly),1),3);
 
 GrainIds = h5read(fname,GrainIdPath)';
 
-% calculate I_CF - extremly expensive
-I_CF = sparse(max(GrainIds,[],'all'),length(GrainIds));
-ind=sub2ind(size(I_CF),GrainIds(GrainIds(:,1)>0,1),find(GrainIds(:,1)>0));
-I_CF(ind) = -1;
-ind = sub2ind(size(I_CF),GrainIds(GrainIds(:,2)>0,2),find(GrainIds(:,2)>0));
-I_CF(ind) = 1;
+% calculate I_CF - extremely expensive
+isPos = GrainIds(:,2) > 0;
+isNeg = GrainIds(:,1) > 0;
+
+cIds = [GrainIds(isNeg,1);GrainIds(isPos,2)];
+fIds = int32([find(isNeg);find(isPos)]);
+Ndir = [ones(nnz(isNeg),1);-ones(nnz(isPos),1)];
+
+I_CF = sparse(cIds,fIds,Ndir,max(GrainIds(:)),length(GrainIds));
   
-grains = grain3d(V,poly,I_CF,Quaternions,{'notIndexed',cs},phaseList)
+grains = grain3d(V,poly,I_CF,q,csList,phaseList);
