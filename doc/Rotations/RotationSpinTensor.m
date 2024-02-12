@@ -111,7 +111,7 @@ exp(v,rot_ref,'left')
 
 %% Disorientations under the presence of crystal symmetry
 % Under the presence of crystal symmetry the order whether a rotational
-% pertupation is applied from the left or from the right. Lets perform the
+% perturbation is applied from the left or from the right. Lets perform the
 % above calculations step by step in the presence of trigonal crystal
 % symmetry
 

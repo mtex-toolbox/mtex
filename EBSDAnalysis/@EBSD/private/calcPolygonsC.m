@@ -2,7 +2,7 @@ function poly = calcPolygonsC(I_FG,F,V)
 
 % compute cycles
 [grains, cycles, cyclePoints] = EulerCyclesC(I_FG,F,V);
-c = [cycles(:,1); length(cyclePoints)];
+c = [cycles(:,1); length(cyclePoints)+1];
 g = [grains(:,1); grains(end,1) + grains(end,2)];
 
 % add the final point to each cycle - we should do this already in the C code

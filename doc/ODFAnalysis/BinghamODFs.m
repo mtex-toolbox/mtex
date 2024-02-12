@@ -34,6 +34,7 @@ odf = BinghamODF(kappa,U,cs)
 %
 
 h = [Miller(0,0,1,cs) Miller(1,0,0,cs) Miller(1,1,1,cs)];
+plotzOutOfPlane
 plotPDF(odf,h,'antipodal','silent');
 
 %%
@@ -90,8 +91,8 @@ plotPDF(odf_est,h,'antipodal','silent')
 
 %plotPDF(odf_spherical,h,'antipodal','silent')
 
-%% Prolate case and fibre distribution
-% The prolate case correspondes to a fibre.
+%% Prolate case and fiber distribution
+% The prolate case corresponds to a fiber.
 
 odf_prolate = fibreODF(Miller(0,0,1,crystalSymmetry('1')),zvector,...
   'halfwidth',20*degree)

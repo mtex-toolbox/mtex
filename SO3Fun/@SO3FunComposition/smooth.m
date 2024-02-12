@@ -3,10 +3,10 @@ function SO3F = smooth(SO3F,varargin)
 %
 % Input
 %  SO3F - @SO3FunComposition
-%  psi - @SO3Kernel (smoothing kernel)
+%  psi  - @SO3Kernel (smoothing kernel)
 %
 % Options
-%  halfwidth
+%  halfwidth - halfwidth of the smoothing kernel
 %
 % Output
 %  SO3F - smoothed @SO3Fun

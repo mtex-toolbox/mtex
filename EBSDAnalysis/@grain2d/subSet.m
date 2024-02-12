@@ -49,10 +49,10 @@ grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
 % if we have only one grain - sort boundary segments
-if length(grains) == 1
+if isscalar(grains)
   FNew = [grains.poly{1}(1:end-1).',grains.poly{1}(2:end).'];
   
-  % remove inclusion embeddings
+  % remove inclusions
   if grains.inclusionId > 0
     ie = sum(FNew == FNew(1),2)==1;
     ie([1,end-grains.inclusionId]) = false;

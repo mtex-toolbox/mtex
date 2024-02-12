@@ -45,8 +45,8 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  unitCell - omit voronoi decomposition and treat a unitcell lattice
-%  qhull    - use qHull for the voronin decomposition
+%  unitCell - omit Voronoi decomposition and treat a unitcell lattice
+%  qhull    - use qHull for the Voronoi decomposition
 %
 % References
 %
@@ -171,16 +171,13 @@ if check_option(varargin,'variants')
   grains.prop.parentId = variantId(firstD,2);
 end
 
-
-
-
   function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
     % segmentation
     %
     %
     % Output
-    %  A_Db - adjecency matrix of grain boundaries
-    %  A_Do - adjecency matrix inside grain connections
+    %  A_Db - adjacency matrix of grain boundaries
+    %  A_Do - adjacency matrix inside grain connections
 
     % extract segmentation method
     grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);

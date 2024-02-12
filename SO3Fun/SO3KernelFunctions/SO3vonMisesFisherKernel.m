@@ -17,7 +17,7 @@ classdef SO3vonMisesFisherKernel < SO3Kernel
 %
 % $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
 % \cos \omega} \, \cos n\omega \, \mathrm d\omega $$.%
-% 
+%
 % Syntax
 %   psi = SO3vonMisesFisherKernel(100)
 %   psi = SO3vonMisesFisherKernel('halfwidth',5*degree)
