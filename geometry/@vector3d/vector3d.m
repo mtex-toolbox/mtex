@@ -74,7 +74,7 @@ classdef vector3d < dynOption
           v.opt = varargin{1}.opt;
           return
           
-        elseif isa(varargin{1},'double')
+        elseif isa(varargin{1},'float')
           xyz = varargin{1};
           if size(xyz,1) ~= 3, xyz = xyz.'; end
           v.x = xyz(1,:);

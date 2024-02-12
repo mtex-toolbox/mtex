@@ -10,5 +10,5 @@ for i = 1:length(grains.id)
   Polys(Cells_Faces == -1) = cellfun(@(c) fliplr(c), Polys(Cells_Faces == ...
     -1), 'UniformOutput', false);
 
-  volume(i) = meshVolume(grains.V.xyz, Polys);
+  volume(i) = meshVolume(grains.boundary.allV.xyz, Polys);
 end
