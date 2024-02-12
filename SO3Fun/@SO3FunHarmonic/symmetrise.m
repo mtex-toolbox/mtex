@@ -5,7 +5,7 @@ function SO3F = symmetrise(SO3F,varargin)
 % by using symmetry properties.
 %
 % Syntax
-%  SO3F = symmetrise(SO3F)
+%   SO3F = symmetrise(SO3F)
 %
 % Input
 %  SO3F - @SO3FunHarmonic
