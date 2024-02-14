@@ -1,5 +1,5 @@
 function varargout = plot(grains,varargin)
-% colorize 3 dimensional grains, or more percise their faces
+% colorize 3 dimensional grains, or more precise their faces
 %
 % Only outer faces, the inner grains have the color gray [0.5 0.5 0.5].
 %
