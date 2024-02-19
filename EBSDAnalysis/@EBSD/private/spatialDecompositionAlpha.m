@@ -84,11 +84,11 @@ switch lower(method)
     [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
     F = sort(ic(E),2);
 
-    I_FD = sparse(max(I_ED1(I_ED2<=lmax)),numel(isIndexed));
-    I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1);
+    I_FD = sparse(size(F,1),numel(isIndexed));
+    I_FD(:,isIndexed) = sparse(I_ED1(I_ED2<=lmax),I_ED2(I_ED2<=lmax),1,size(F,1),nnz(isIndexed));
 
-    % remove empty edges
-    ind = any(I_FD,2);
+    % remove empty faces
+    ind = any(I_FD,2) & diff(F,1,2)~=0;
     I_FD = I_FD(ind,:);
     F = F(ind,:);
 
@@ -120,7 +120,7 @@ for k = 1:length(D)
   D{k} = x(diff([x,x(1)])~=0); % remove duplicates in D
 end
 
-% now we need some adjacencies and incidences
+% now we need some adjacency and incidences
 iv = [D{:}];            % nodes incident to cells D
 id = zeros(size(iv));   % number the cells
     
