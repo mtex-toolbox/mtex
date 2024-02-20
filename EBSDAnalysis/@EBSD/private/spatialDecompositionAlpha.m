@@ -96,7 +96,7 @@ switch lower(method)
 
   case 'qhull'
 
-    [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'});
+    [V,D] = voronoin([x_,y_],{'Q5','Q6','Qs'});
 
   otherwise
   
