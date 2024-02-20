@@ -3,7 +3,7 @@ function criterion = gbc_angle(q,CS,Dl,Dr,threshold,varargin)
 
 d = angle(orientation(q(Dl),CS),orientation(q(Dr),CS));
 
-if length(threshold) == 1
+if isscalar(threshold)
 
   criterion = d < threshold;
 
