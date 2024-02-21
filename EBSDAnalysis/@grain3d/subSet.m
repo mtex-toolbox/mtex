@@ -18,13 +18,6 @@ grains3.grainSize = grains3.grainSize(ind);
 
 grains3.I_CF=grains3.I_CF(ind,:);
 
-if size(grains3.I_CF,1)>1
-  notempty=any(grains3.I_CF);
-else
-  notempty=logical(grains3.I_CF);
-end
-
-%grains3.I_CF(:,~notempty) = [];
 [~, boundId] = find(grains3.I_CF);
 boundInd = grains3.boundary.id2ind(unique(boundId));
 
