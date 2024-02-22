@@ -36,7 +36,7 @@ classdef phaseList
       pL.CSList = ensurecell(CSList);
       
       % check number of symmetries and phases coincides
-      if numel(pL.phaseMap)>1 && length(pL.CSList) == 1
+      if numel(pL.phaseMap)>1 && isscalar(pL.CSList)
         
         % if only one symmetry was specified 
         % apply this symmetry to all phases except a zero phase
@@ -121,7 +121,7 @@ classdef phaseList
     
     function pL = set.phase(pL,phase)
       
-      if numel(phase) == 1
+      if isscalar(phase)
         phase = repmat(phase,size(pL.phaseId));
       elseif numel(phase) == numel(pL.phaseId)
         phase = reshape(phase,size(pL.phaseId));
@@ -275,7 +275,7 @@ classdef phaseList
       if n==1
         e = size(pL.phaseId,1);
       else
-        e = size(pL.id,i);
+        e = size(pL.phaseId,i);
       end
     end
        

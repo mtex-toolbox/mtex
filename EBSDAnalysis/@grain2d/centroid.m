@@ -22,9 +22,9 @@ end
 
 cs = [0; cumsum(cellfun('prodofsize',grains.poly))];
 
-if length(grains) == 1 % compute in 3d
+if isscalar(grains) % compute in 3d
 
-  % duplicate vertices according to their occurence in the grain2s
+  % duplicate vertices according to their occurrence in the grain2s
   V = grains.V([grains.poly{:}]);
 
   % compute the relative area of the triangles between the edges an a
@@ -34,7 +34,7 @@ if length(grains) == 1 % compute in 3d
   % weight the vertices according to the area
   aV = a .* (V(1:end-1)+V(2:end));
 
-  % average the weighte vertices for each polygon (grain)
+  % average the weighted vertices for each polygon (grain)
   c = vector3d.nan(length(grains),1);
   for k=1:length(c)
     ndx = cs(k)+1:cs(k+1)-1;

@@ -11,7 +11,7 @@ function A = area(grains,varargin)
 A = zeros(length(grains),1);
 poly = grains.poly;
 
-if length(grains)== 1   % 3d algorithm
+if isscalar(grains)   % 3d algorithm
 
   % signed area
   for i=1:length(grains)

@@ -3,7 +3,9 @@ function d = det(v1,v2,v3)
 %
 % Input
 %  v1,v2,v3 - @vector3d
+%
 % Output
 %  d - double
+%
 
 d = dot(v1,cross(v2,v3));
