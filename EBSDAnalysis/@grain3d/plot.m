@@ -4,12 +4,14 @@ function varargout = plot(grains,varargin)
 % Only outer faces, the inner grains have the color gray [0.5 0.5 0.5].
 %
 % Syntax
-%   plot(grains)          % colorize by phase
-%   plot(grains,property) % colorize by property
+%   plot(grains)                              % colorize by phase
+%   plot(grains,property)                     % colorize by property
+%   plot(grains,property,'LineStyle','none')  % adapt LineStyle
 %
 % Input
 %  grains  - @grain3d
 %  property- n x 1 numeric or orientation
+%
 %
 % See also
 % grain2d/plot grain3Boundary/plot
@@ -24,7 +26,7 @@ if nargin>1 && isa(varargin{1},'orientation')
 
   oM = ipfColorKey(varargin{1});
   grainColor = oM.orientation2color(varargin{1});
-  varargin{1} = [];
+  varargin(1) = [];
 
   faceColor = 0.5 .* ones(size(poly,1),3);
 
@@ -36,7 +38,7 @@ elseif nargin>1 && isnumeric(varargin{1})
   % color by property
 
   grainColor = varargin{1};
-  varargin{1} = [];
+  varargin(1) = [];
 
   assert(any(numel(grainColor) == length(grains) * [1,3]),...
     'Number of grains must be the same as the number of data');
@@ -50,7 +52,8 @@ elseif nargin>1 && isnumeric(varargin{1})
   if (numel(grainColor) == length(grains));  colorbar; end
 
 elseif check_option(varargin,'FaceColor')
-  faceColor = get_option(varargin, 'FaceColor') .* ones(size(poly,1),3);
+  faceColor = repmat(str2rgb(get_option(varargin, 'FaceColor')), size(poly,1),1);
+  varargin = delete_option(varargin, 'FaceColor',1);
 else
   % color by phase
 
@@ -63,11 +66,25 @@ else
 
 end
 
-  h = zeros(size(poly));
-  for iPoly= 1:numel(poly)
+% to prevent errors from empty varargin, but not to check every iteration
+if isempty(varargin); varargin = set_option(varargin,'LineStyle','-'); end
+
+if iscell(poly)
+  h = zeros(size(poly,1),1);
+  for iPoly = 1:numel(poly)
   nodes = V(poly{iPoly}).xyz;
-  h(iPoly) = patch(nodes(:, 1), nodes(:, 2), nodes(:, 3), faceColor(iPoly,:));
+  h(iPoly) = patch(nodes(:, 1), nodes(:, 2), nodes(:, 3), faceColor(iPoly,:), varargin{:});
   end
+
+else  % speedup for triangulated meshes
+
+  [C,~,ic] = unique(faceColor,'rows');
+  h = zeros(size(C,1),1);
+  for i = 1:size(C,1)
+    ind = (ic == i);
+    h(i) = patch('Faces', poly(ind,:), 'Vertices', V.xyz, 'FaceColor', C(i,:), varargin{:});
+  end
+end
 
   if nargout>0
     varargout = {h};

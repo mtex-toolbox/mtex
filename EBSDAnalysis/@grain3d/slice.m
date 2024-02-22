@@ -26,7 +26,7 @@ function grains2d = slice(grains,varargin)
 %%
 % plane           - plane in matGeom Format
 % V               - n x 3 array with allVertices
-% poly            - n x 1 cell array
+% poly            - n x 1 cell array or n x 3 array
 % E               - Edges with respect indices of V
 % FE              - cell array of faces with respect to indices of E
 % crossingEdges   - indices of Edges crossing the plane
@@ -118,7 +118,7 @@ for m = 1:length(newIds)
   
   for n = 1:size(crossingFE,1)-1
     [i,j] = find(crossingFE==nextEdge);
-    assert(length(i)==1)
+    assert(isscalar(i))
     % abs(j-3) so 1=>2 and 2=>1
     nextEdge = crossingFE(i,abs(j-3));
     crossingFE(i,:) = [0 0];

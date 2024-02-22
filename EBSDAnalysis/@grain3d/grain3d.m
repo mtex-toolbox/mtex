@@ -14,7 +14,7 @@ classdef grain3d < phaseList & dynProp
 
   properties (Dependent)
     V     % vertices
-    poly  %
+    poly  % n x 1 cell array or n x 3 array with all faces
     meanOrientation
   end
 
@@ -54,7 +54,7 @@ classdef grain3d < phaseList & dynProp
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.grainSize = ones(size(poly));
+      grains.grainSize = ones(length(poly),1);
 
       % compute neighboring grains to a boundary segment
       grainId = zeros(size(I_CF,2),2);

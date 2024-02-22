@@ -2,7 +2,7 @@ classdef grain3Boundary < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    poly                  % cell array with all faces
+    poly                  % cell array or n x 3 array with all faces
     grainId = zeros(0,2)  % id's of the neighboring grains to a face
                           % (faceNormals direction from grain#1 to grain#2)
     ebsdId = zeros(0,2)  % id's of the neighboring ebsd data to a face
@@ -10,12 +10,12 @@ classdef grain3Boundary < phaseList & dynProp
   end
   
   properties
-    idV      % ids of the used vertices ?
     allV     % vertices
   end
 
   properties (Dependent)
-    V
+    idV      % ids of the used vertices
+    V        % used vertices, @vector3d
     misorientation
   end
 
@@ -25,20 +25,19 @@ classdef grain3Boundary < phaseList & dynProp
       %
       % Input
       %  V       - @vector3d list of vertices
-      %  poly    - list of boundary segments
+      %  poly    - cell array or n x 3 array of boundary faces, indices to V
+      %            for cell array closed loops (first V must match last V)
       %  ebsdInd - [Id1,Id2] list of adjacent EBSD index for each segment
       %  grainId - [Id1,Id2] list of adjacent grainIds for each segment
       %  phaseId - list of adjacent phaseIds for each segment     
       %  mori    - misorientation at each segment
       %  CSList  - list of phases
-      %  phaseMap - 
-      %  ebsdInd - [Id1,Id2] list of adjacent EBSD Ids for each segment
+      %  phaseMap- reference to CSList
       
       % ensure V is vector3d
       V = reshape(vector3d(V),[],1);
       
       gB.allV = V;
-      gB.idV = (1:length(V))';
       gB.poly = poly;
       gB.id = (1:length(poly))';
       gB.grainId = grainId;
@@ -63,6 +62,14 @@ classdef grain3Boundary < phaseList & dynProp
 
     function gB3 = set.V(gB3,V)
       gB3.allV(gB3.idV) = V;
+    end
+
+    function out = get.idV(gB3)
+      if iscell(gB3.poly)
+      out = unique([gB3.poly{:}]);
+      else
+      out = unique(gB3.poly);
+      end
     end
 
     function mori = get.misorientation(gB3)

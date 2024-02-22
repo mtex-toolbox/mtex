@@ -9,7 +9,7 @@ function ind = id2ind(gB3,id)
 %  id - a list of id's as stored in gB.id
 %
 % Output
-%  ind - a list indeces such that gB.id(ind) == id
+%  ind - a list indices such that gB.id(ind) == id
 
 [b,ind] = ismember(id,gB3.id);
 if ~all(b)

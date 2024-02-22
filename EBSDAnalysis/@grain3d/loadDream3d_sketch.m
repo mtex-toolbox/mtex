@@ -27,8 +27,6 @@ V = h5read(fname,Vpath)';
 
 poly = h5read(fname,polyPath)';
 poly = poly + 1;    % because dream3d indexes with 0 (see '_VertexIndices')
-% make poly cell array (necessary so for grain3d functions far)
-poly = mat2cell(poly,ones(length(poly),1),3);
 
 GrainIds = h5read(fname,GrainIdPath)';
 

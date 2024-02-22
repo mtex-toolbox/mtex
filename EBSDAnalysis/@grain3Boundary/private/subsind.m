@@ -28,7 +28,7 @@ if (length(subs)==2 && (subs{2} == "ind"))
   ind = subs{1};
   assert((isnumeric(ind) || islogical(ind))...
   , 'indexing only supported for numerical or logical values')
-elseif (length(subs)==1 | (length(subs)==2 && (subs{2} == "id")))
+elseif (isscalar(subs) || (length(subs)==2 && (subs{2} == "id")))
   if isnumeric(subs{1})
     id = subs{1};
   elseif islogical(subs{1})

@@ -19,9 +19,7 @@ function gB = cat(dim, varargin)
 
     [gB.id,IA,IB] = union(gB.id , ngB.id, 'stable');
 
-    gB.poly = [gB.poly(IA) ; ngB.poly(IB)];
-
-    gB.idV = union(gB.idV , ngB.idV, 'stable');
+    gB.poly = [gB.poly(IA,:) ; ngB.poly(IB,:)];
 
   end
 
