@@ -7,7 +7,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 % possible it autodetects the format of the file. Supported formats are
 % listed <supportedInterfaces.html here>. Additionally, EBSD data can be
 % read from column aligned text file or excel spread sheets. In those cases
-% it is neccesary to tell MTEX the column positions of the spatial
+% it is necessary to tell MTEX the column positions of the spatial
 % coordinates, the phase information as well as Euler angles.
 %
 % Syntax
@@ -27,8 +27,8 @@ function [ebsd,interface,options] = load(fname,varargin)
 %  cs - @crystalSymmetry or cell array of @crystalSymmetry
 %
 % Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
-%  Columns           - postions of the columns to be imported
+%  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
+%  Columns           - positions of the columns to be imported
 %  radians           - treat input in radiand
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
