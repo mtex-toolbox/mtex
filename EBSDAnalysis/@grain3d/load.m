@@ -14,20 +14,42 @@ function grains = load(filepath,varargin)
   %
   % See also
   % loadNeperTess grain2d.load
- 
-  [dim, V, poly, ori, crysym, I_CF] = loadNeperTess(filepath);
 
-  if (dim ~= 3)
-    error("Wrong dimension. Try grain2d.load instead.")
+
+  interface = get_option(varargin,'interface');
+  
+
+  if isempty(interface)
+    [~,~,ext] = fileparts(filepath);
+    switch ext
+      case '.tess'
+        interface = 'neper';
+      case '.dream3d'
+        interface = 'dream3d';
+      otherwise
+        error('Do not know which interface to use')
+    end
   end
+  
+  switch lower(interface)
+    case 'neper'
+      
+      [dim, V, poly, ori, crysym, I_CF] = loadNeperTess(filepath);
+
+      assert(dim == 3,"Wrong dimension. Try grain2d.load instead.")
+
+      phaseList = 2*ones(size(I_CF,1),1);
+
+      CSList = get_option(varargin,'CS',crystalSymmetry(crysym));
+      CSList = ensurecell(CSList);
+      if ~ischar(CSList{1}), CSList = ['notIndexed',CSList]; end
+      
+      grains = grain3d(V, poly, I_CF, ori, CSList, phaseList);
+
+    case 'dream3d'
+      
+      grains = loadGrains_Dream3d(filepath,varargin{:});
 
 
-  phaseList = 2*ones(size(I_CF,1),1);
-
-  CSList = get_option(varargin,'CS',crystalSymmetry(crysym));
-  CSList = ensurecell(CSList);
-  if ~ischar(CSList{1}), CSList = ['notIndexed',CSList]; end
-
-  grains = grain3d(V, poly, I_CF, ori, CSList, phaseList);
-
+  end
 end
