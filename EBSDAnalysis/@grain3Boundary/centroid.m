@@ -3,7 +3,7 @@ function c = centroid(gB3)
 
 if isnumeric(gB3.poly)
    
-  c = mean(gB3.allV(gB3.poly),2) ./ 3;
+  c = mean(gB3.allV(gB3.poly),2);
 
 else
 
