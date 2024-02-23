@@ -1,5 +1,5 @@
 function parent = connectedComponents(A)
-% label connected componentes in an graph (adjacency matrix)
+% label connected components in an graph (adjacency matrix)
 
 %elimination tree
 parent = etree(A);

@@ -13,7 +13,7 @@ function kam = KAM(ebsd,varargin)
 %   [grains, ebsd.grainId] = calcGrains(ebsd)
 %   plot(ebsd, ebsd.KAM./degree)
 %
-%   % consider also second order neigbors
+%   % consider also second order neighbors
 %   kam = KAM(ebsd,'order',2);
 %   plot(ebsd,kam./degree)
 %

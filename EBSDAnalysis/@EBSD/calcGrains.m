@@ -191,7 +191,7 @@ end
       gbcValue = repmat(gbcValue,size(ebsd.CSList));
     end
 
-    % get pairs of neighbouring cells {D_l,D_r} in A_D
+    % get pairs of neighboring cells {D_l,D_r} in A_D
     A_D = I_FD'*I_FD==1;
     [Dl,Dr] = find(triu(A_D,1));
 
@@ -234,7 +234,7 @@ end
       
       param = get_option(varargin,'mcl');
       if isempty(param), param = 1.4; end
-      if length(param) == 1, param = [param,4]; end
+      if isscalar(param), param = [param,4]; end
   
       A_Do = mclComponents(A_Do,param(1),param(2));
       A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
@@ -263,12 +263,12 @@ end
     % cells that have a subgrain boundary, i.e. a boundary with a cell
     % belonging to the same grain
     sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
-    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
+    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
     sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
     
     % split grain boundaries A_Db into interior and exterior
     A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
-    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundray
+    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundary
     
     % create incidence graphs
     I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;

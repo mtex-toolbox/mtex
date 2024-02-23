@@ -11,7 +11,7 @@ function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
 dxy = max(norm(unitCell(1)-unitCell));
-
+numX = height(X);
 
 if check_option(varargin,'unitCell')
   
@@ -41,8 +41,13 @@ else
       [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
     
       F = sort(ic(E),2);
-      I_FD = sparse(I_ED1(I_ED2<=height(X)),I_ED2(I_ED2<=height(X)),1);
+      I_FD = sparse(I_ED1(I_ED2<=numX),I_ED2(I_ED2<=numX),1,size(F,1),numX);
     
+      % remove empty faces
+      ind = any(I_FD,2) & diff(F,1,2)~=0;
+      I_FD = I_FD(ind,:);
+      F = F(ind,:);
+
       return
 
     case 'qhull'
@@ -56,7 +61,7 @@ else
       
   end
 
-  % we are only interested in voronoi cells corresponding to the given
+  % we are only interested in Voronoi cells corresponding to the given
   % coordinates - not the dummy coordinates
   D = D(1:size(X,1));
 
@@ -73,12 +78,12 @@ else
   % this is faster then the cellfun approach
   for k = 1:length(D)
     x = ic(D{k}).';              % merge points that coincide
-    D{k} = x(diff([x,x(1)])~=0); % remove dubplicates in D
+    D{k} = x(diff([x,x(1)])~=0); % remove duplicates in D
   end
   
 end
 
-% now we need some adjacencies and incidences
+% now we need some adjacency and incidences
 iv = [D{:}];            % nodes incident to cells D
 id = zeros(size(iv));   % number the cells
     
@@ -133,7 +138,7 @@ if ischar(method)
       
       k = convhull(x,y);
       
-      % erase all linear dependend points
+      % erase all linear depended points
       angle = atan2( x(k(1:end-1))-x(k(2:end)),...
         y(k(1:end-1))-y(k(2:end)) );      
       k = k([true; abs(diff(angle))>eps; true]);

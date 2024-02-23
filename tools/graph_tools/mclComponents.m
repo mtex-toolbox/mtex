@@ -4,11 +4,11 @@ function A = mclComponents(A,p,maxIter)
 % author: gregor arbylon.net
 %
 % Input
-%  A - adjecency matrix with weights between 0 and 1
+%  A - adjacency matrix with weights between 0 and 1
 %  p - parameter
 %
 % Output
-%  A - adjecency matrix of the components
+%  A - adjacency matrix of the components
 %
 
 if nargin < 3, maxIter = inf; end

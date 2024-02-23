@@ -293,7 +293,7 @@ classdef grainBoundary < phaseList & dynProp
 
   methods (Static = true)
       function gB = loadobj(gB)
-      % called by Matlab when an object is loaded from an .mat file
+      % called by MATLAB when an object is loaded from an .mat file
       % this overloaded method ensures compatibility with older MTEX
       % versions
       
