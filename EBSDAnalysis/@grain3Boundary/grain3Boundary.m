@@ -16,6 +16,7 @@ classdef grain3Boundary < phaseList & dynProp
   properties (Dependent)
     idV      % ids of the used vertices
     V        % used vertices, @vector3d
+    N        % face normal
     misorientation
   end
 
@@ -81,6 +82,34 @@ classdef grain3Boundary < phaseList & dynProp
       if ~all(gB3.isIndexed), mori(~gB3.isIndexed) = NaN; end
       
     end
+
+    function N = get.N(gB3)
+
+      if isnumeric(gB3.poly)
+        
+        VV = gB3.allV(gB3.poly);        
+        N = normalize(cross(VV(:,2)-VV(:,1),VV(:,3)-VV(:,1)));
+
+      else
+        % duplicate vertices according to their occurrence in the face
+        F = gB3.poly.';
+        VV = gB3.allV([F{:}]);
+        faceSize = cellfun(@numel,F).';
+        faceEnds = cumsum(faceSize);
+        faceId = repelem(1:length(gB3.poly),faceSize).';
+  
+        % some reference point within the face
+        c = accumarray(faceId,VV) ./ faceSize;
+
+        % center around this estimate - this ensures (0,0,0) is in the plane
+        VV = VV - c(faceId);
+
+        % compute normal directions
+        N = normalize(cross(VV(faceEnds-1),VV(faceEnds)));
+      end
+
+    end
+
 
 
     function out = hasPhaseId(gB,phaseId,phaseId2)
