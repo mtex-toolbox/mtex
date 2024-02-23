@@ -28,5 +28,10 @@ for k = 2:numel(varargin)
   grains.boundary = cat(1,grains.boundary, ng.boundary);
 
 end
+
+% we have to reorder the faces to fit the matrix I_CF
+[grains.boundary.id,ind] = sort(grains.boundary.id);
+grains.boundary.poly = grains.boundary.poly(ind,:);
+
 end
 
