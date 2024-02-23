@@ -61,7 +61,7 @@ job.id = 529;
 %%
 % Neper allows to specify the morphological properties of the cells. See
 % <https://neper.info/doc/neper_t.html#cmdoption-morpho> for more
-% information. By default graingrowth is used, that is an alias for:
+% information. By default grain growth is used, that is an alias for:
 
 job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
@@ -80,7 +80,18 @@ ori = orientation.rand(cs);
 odf = unimodalODF(ori);
 numGrains=100;
 
-job.simulateGrains(odf,numGrains,'silent')
+grains = job.simulateGrains(odf,numGrains,'silent')
+
+%% plot the grains
+
+plot(grains,grains.meanOrientation)
+
+how2plot = plottingConvention;
+how2plot.outOfScreen = vector3d(-10,-5,2);
+how2plot.east = vector3d(1,-2,0);
+setCamera(how2plot)
+
+
 
 %% Slicing
 % To get slices of your tessellation, that you can process with MTEX, the
@@ -110,7 +121,4 @@ hold on
 plot(grains224,grains224.meanOrientation);
 
 % set camera
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
 setCamera(how2plot)
