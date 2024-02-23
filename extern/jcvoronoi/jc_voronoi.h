@@ -1232,8 +1232,8 @@ void jcv_boxshape_fillgaps(const jcv_clipper* clipper, jcv_context_internal* all
         current = gap;
         next = site->edges;
     }
-
-    while( current && next )
+    int loopCounter = 0;
+    while( current && next && loopCounter++ < 1000 )
     {
         int current_edge_flags = jcv_get_edge_flags(&current->pos[1], &clipper->min, &clipper->max);
         if( current_edge_flags && !jcv_point_eq(&current->pos[1], &next->pos[0]))
@@ -1619,7 +1619,7 @@ void jcv_diagram_generate_useralloc(int num_points, const jcv_point* points, con
         jcv_finishline(internal, he->edge);
     }
 
-    jcv_fillgaps(d);
+    //jcv_fillgaps(d);
 }
 
 #endif // JC_VORONOI_IMPLEMENTATION
