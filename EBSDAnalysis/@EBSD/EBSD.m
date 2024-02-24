@@ -79,7 +79,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   end
 
   properties (Access = protected)
-    A_D = []        % adjecency matrix of the measurement points
+    A_D = []        % adjacency matrix of the measurement points
   end
   
   methods

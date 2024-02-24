@@ -1,22 +1,7 @@
 function poly = calcPolygonsC(I_FG,F,V)
 
 % compute cycles
-[grains, cycles, cyclePoints] = EulerCyclesC(I_FG,F,V);
-c = [cycles(:,1); length(cyclePoints)+1];
-g = [grains(:,1); grains(end,1) + grains(end,2)];
-
-% add the final point to each cycle - we should do this already in the C code
-% -------------------------------------------------------------------------
-cP = zeros(c(end)+length(c)-2,1);
-nc = diff(c);
-i = 1;
-for ic = 1:length(cycles)
-  ind = [c(ic):c(ic+1)-1,c(ic)];
-  cP(i:i+nc(ic)) = cyclePoints(ind);  
-  i = i + nc(ic) + 1;
-end
-c = c + (0:length(c)-1).';
-% -------------------------------------------------------------------------
+[g, c, cP] = EulerCyclesC(I_FG,F,V);
 
 % compute area of each cycle
 area = polySgnArea(V(cP,1),V(cP,2),c);

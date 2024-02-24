@@ -1,16 +1,23 @@
 function dist = angle(oR,q,varargin)
 % angle to the boundary of the OR
+% 
+% Description
+%
+% Computes the misorientation angle of orientations to the boundary of an
+% @orientationRegion. A negative angle indicates that the orientation is
+% inside the OR and a positive angle that it is outside the OR.
 %
 % Syntax
+%   omega = angle(oR,ori)
 %
 %   dist = angle(oR,ori)
 %
 % Input
-%  oR  - @orientationRegion
+%  oR - @orientationRegion
 %  ori - @orientation
 %
 % Output
-%  dist - distance to boundary, negative is inside, positive is outside
+%  omega - misorientation angle to the boundary of oR
 %
 
 % verify all conditions are satisfies
