@@ -22,6 +22,12 @@ classdef SO3vonMisesFisherKernel < SO3Kernel
 %   psi = SO3vonMisesFisherKernel(100)
 %   psi = SO3vonMisesFisherKernel('halfwidth',5*degree)
 %
+% Input
+%  kappa - kernel parameter
+%
+% Output
+%  psi - @SO3vonMisesFisherKernel
+%
 
 properties
   kappa = 90;

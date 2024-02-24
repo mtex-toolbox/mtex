@@ -55,7 +55,7 @@ classdef grain2d < phaseList & dynProp
   properties (Dependent = true)
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
-    scanUnit         % unit of the vertice coordinates
+    scanUnit         % unit of the spatial coordinates
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
