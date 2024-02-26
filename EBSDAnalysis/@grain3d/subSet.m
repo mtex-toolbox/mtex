@@ -27,6 +27,7 @@ grains3.I_GF = grains3.I_GF(ind,:);
 [~, boundId] = find(grains3.I_GF);
 boundInd = grains3.boundary.id2ind(unique(boundId));
 
+grains3.I_GF = grains3.I_GF(:,boundInd);
 grains3.boundary = subSet(grains3.boundary, boundInd);
 
 end
