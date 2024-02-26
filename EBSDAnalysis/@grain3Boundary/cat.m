@@ -17,7 +17,7 @@ for k = 2:numel(varargin)
     "concatenation is only possible for grain-sets with identical Point Sets")
 
   [gB.id,IA,IB] = union(gB.id , ngB.id, 'stable');
-  gB.poly = [gB.poly(IA,:) ; ngB.poly(IB,:)];
+  gB.F = [gB.F(IA,:) ; ngB.F(IB,:)];
     
 end
 

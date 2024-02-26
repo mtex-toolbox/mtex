@@ -9,7 +9,7 @@ function gB3 = subSet(gB3,ind)
 %  gB - @grain3Boundary
 %
 
-gB3.poly = gB3.poly(ind,:);
+gB3.F = gB3.F(ind,:);
 gB3.id = gB3.id(ind);
 gB3.grainId = gB3.grainId(ind,:);
 gB3.phaseId = gB3.phaseId(ind,:);

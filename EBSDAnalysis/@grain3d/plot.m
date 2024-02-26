@@ -19,7 +19,7 @@ function varargout = plot(grains,varargin)
 
 gB = grains.boundary;
 V = gB.allV;
-poly = gB.poly;
+F = gB.F;
 
 if nargin>1 && isa(varargin{1},'orientation')
   % color by orientation
@@ -28,9 +28,9 @@ if nargin>1 && isa(varargin{1},'orientation')
   grainColor = oM.orientation2color(varargin{1});
   varargin(1) = [];
 
-  faceColor = 0.5 .* ones(size(poly,1),3);
+  faceColor = 0.5 .* ones(size(F,1),3);
 
-  isouter = sum(grains.I_CF(:,gB.id) ,1)';
+  isouter = sum(grains.I_GF(:,gB.id) ,1)';
   faceColor(isouter==1,:) = grainColor(gB.grainId(isouter==1,1),:);
   faceColor(isouter==-1,:) = grainColor(gB.grainId(isouter==-1,2),:);
 
@@ -43,24 +43,24 @@ elseif nargin>1 && isnumeric(varargin{1})
   assert(any(numel(grainColor) == length(grains) * [1,3]),...
     'Number of grains must be the same as the number of data');
 
-  faceColor = NaN(size(poly,1),size(grainColor,2));
+  faceColor = NaN(size(F,1),size(grainColor,2));
 
-  isouter = sum(grains.I_CF(:,gB.id) ,1)';
+  isouter = sum(grains.I_GF(:,gB.id) ,1)';
   faceColor(isouter==1,:) = grainColor(gB.grainId(isouter==1,1),:);
   faceColor(isouter==-1,:) = grainColor(gB.grainId(isouter==-1,2),:);
 
   if (numel(grainColor) == length(grains));  colorbar; end
 
 elseif check_option(varargin,'FaceColor')
-  faceColor = repmat(str2rgb(get_option(varargin, 'FaceColor')), size(poly,1),1);
+  faceColor = repmat(str2rgb(get_option(varargin, 'FaceColor')), size(F,1),1);
   varargin = delete_option(varargin, 'FaceColor',1);
 else
   % color by phase
 
   grainColor = [1,1,1 ; grains.color];
-  faceColor = 0.5 .* ones(size(poly,1),3);
+  faceColor = 0.5 .* ones(size(F,1),3);
 
-  isouter = sum(grains.I_CF(:,gB.id) ,1)';
+  isouter = sum(grains.I_GF(:,gB.id) ,1)';
   faceColor(isouter==1,:) = grainColor(gB.phaseId(isouter==1,1),:);
   faceColor(isouter==-1,:) = grainColor(gB.phaseId(isouter==-1,2),:);
 
@@ -69,11 +69,11 @@ end
 % to prevent errors from empty varargin, but not to check every iteration
 if isempty(varargin); varargin = set_option(varargin,'LineStyle','-'); end
 
-if iscell(poly)
-  h = zeros(size(poly,1),1);
-  for iPoly = 1:numel(poly)
-  nodes = V(poly{iPoly}).xyz;
-  h(iPoly) = patch(nodes(:, 1), nodes(:, 2), nodes(:, 3), faceColor(iPoly,:), varargin{:});
+if iscell(F)
+  h = zeros(size(F,1),1);
+  for iF = 1:numel(F)
+  nodes = V(F{iF}).xyz;
+  h(iF) = patch(nodes(:, 1), nodes(:, 2), nodes(:, 3), faceColor(iF,:), varargin{:});
   end
 
 else  % speedup for triangulated meshes
@@ -82,7 +82,7 @@ else  % speedup for triangulated meshes
   h = zeros(size(C,1),1);
   for i = 1:size(C,1)
     ind = (ic == i);
-    h(i) = patch('Faces', poly(ind,:), 'Vertices', V.xyz, 'FaceColor', C(i,:), varargin{:});
+    h(i) = patch('Faces', F(ind,:), 'Vertices', V.xyz, 'FaceColor', C(i,:), varargin{:});
   end
 end
 

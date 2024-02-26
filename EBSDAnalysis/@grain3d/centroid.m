@@ -15,22 +15,22 @@ function c = centroid(grains, varargin)
 % grain3d/fitEllipse
 %
 
-if isnumeric(grains.poly)
+if isnumeric(grains.F)
   
   % vertices of all faces
-  V = grains.boundary.allV(grains.poly);
+  V = grains.boundary.allV(grains.F);
   
-  isF = any(grains.I_CF,1);
+  isF = any(grains.I_GF,1);
   
   % signed volumes of the tetrahedrons with center (0,0,0)
-  sgnVol = zeros(width(grains.I_CF),1);
+  sgnVol = zeros(width(grains.I_GF),1);
   sgnVol(isF) = det(V);
  
   % centroid of the tetrahedrons
-  c = vector3d.zeros(width(grains.I_CF),1);
+  c = vector3d.zeros(width(grains.I_GF),1);
   c(isF) = mean(V,2);
 
-  c = grains.I_CF * (sgnVol .* c) ./ (grains.I_CF * sgnVol);
+  c = grains.I_GF * (sgnVol .* c) ./ (grains.I_GF * sgnVol);
 
 else
 

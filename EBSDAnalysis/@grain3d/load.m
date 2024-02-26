@@ -34,17 +34,17 @@ function grains = load(filepath,varargin)
   switch lower(interface)
     case 'neper'
       
-      [dim, V, poly, ori, crysym, I_CF] = loadNeperTess(filepath);
+      [dim, V, F, ori, crysym, I_GF] = loadNeperTess(filepath);
 
       assert(dim == 3,"Wrong dimension. Try grain2d.load instead.")
 
-      phaseList = 2*ones(size(I_CF,1),1);
+      phaseList = 2*ones(size(I_GF,1),1);
 
       CSList = get_option(varargin,'CS',crystalSymmetry(crysym));
       CSList = ensurecell(CSList);
       if ~ischar(CSList{1}), CSList = ['notIndexed',CSList]; end
       
-      grains = grain3d(V, poly, I_CF, ori, CSList, phaseList);
+      grains = grain3d(V, F, I_GF, ori, CSList, phaseList);
 
     case 'dream3d'
       

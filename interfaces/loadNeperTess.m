@@ -8,7 +8,7 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
   % <neper.info/ neper> outputs
   %
   % Syntax
-  %   [dim, V, poly, rot, CS, I_CellsFaces] = readTessFile('filepath/filename.tess')
+  %   [dim, V, poly, rot, CS, I_GrainsFaces] = readTessFile('filepath/filename.tess')
   %
   % Input
   %  fname     - filepath
@@ -19,7 +19,7 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
   %  poly       - cell array with all faces
   %  rot        - rotation (orientation)
   %  CS         - @crystlSymmetry
-  %  I_CellsFaces  - adjacency matrix cells - faces
+  %  I_GrainsFaces  - adjacency matrix grains - faces
   %  cell_ids   - ids of the cells according to initial 3d tessellation
     %
   % See also
@@ -33,7 +33,7 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
       -format
         - string
       -dimension
-        - int - dimension of the tesselation
+        - int - dimension of the tessellation
       -type
         - string
       -total_number_of_cells
@@ -51,11 +51,11 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
       -quaternion_descriptor
         - string (1x1 cell)
       -I_EF
-        - obsolet: adjecency matrix edges - faces
+        - obsolete: adjacency matrix edges - faces
       -E
       	- list of edges as indices to V
-      -I_CellsFaces
-        - adjecency matrix cells - faces
+      -I_GrainsFaces
+        - adjacency matrix grains - faces
       -cell_ids
         - vector, Ids of the cells acording to initial 3d tesselation
       -dim        - int, dimension of the tesselation (2 or 3)
@@ -208,7 +208,6 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
   end
 
   %% **polyhedron
-  I_CellsFaces = [];
 
   if (dimension == 3)
 
@@ -220,7 +219,7 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
   else
     total_number_of_polyhedra = str2double(fgetl(fid));
 
-    I_CellsFaces = zeros(total_number_of_polyhedra,total_number_of_faces);  
+    I_GrainsFaces = zeros(total_number_of_polyhedra,total_number_of_faces);  
   
     for i = 1:total_number_of_polyhedra
       buffer = fgetl(fid);
@@ -228,10 +227,10 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
       currentNumOfFaces = str2double(CF(3));
       for j = 4:currentNumOfFaces+3
         el = str2double(CF(j));
-        I_CellsFaces(i, abs(el)) = sign(el)*1;
+        I_GrainsFaces(i, abs(el)) = sign(el)*1;
       end
     end
-    varargout{1} = I_CellsFaces;
+    varargout{1} = I_GrainsFaces;
   end
   elseif (dimension == 2)
     varargout{1} = cell_ids;

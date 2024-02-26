@@ -21,7 +21,7 @@ for k = 2:numel(varargin)
   [grains.id, ~, IB] = union(grains.id, ng.id, 'stable');
   ng=subSet(ng,IB);
 
-  grains.I_CF = [grains.I_CF ; ng.I_CF];
+  grains.I_GF = [grains.I_GF ; ng.I_GF];
   grains.phaseId = [grains.phaseId; ng.phaseId];
   grains.grainSize = [grains.grainSize; ng.grainSize];
 
@@ -29,9 +29,9 @@ for k = 2:numel(varargin)
 
 end
 
-% we have to reorder the faces to fit the matrix I_CF
+% we have to reorder the faces to fit the matrix I_GF
 [grains.boundary.id,ind] = sort(grains.boundary.id);
-grains.boundary.poly = grains.boundary.poly(ind,:);
+grains.boundary.F = grains.boundary.F(ind,:);
 
 end
 

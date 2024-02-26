@@ -10,9 +10,9 @@ function grains3 = subSet(grains3,ind)
 %
 
 % the properties are changed as follows
-% I_CF - remove lines to grains not required anymore
-% I_CF - keep columns
-% poly - remove not needed faces in grain3boundary
+% I_GF - remove lines to grains not required anymore
+% I_GF - keep columns
+% F    - remove not needed faces in grain3boundary
 % allV - is kept
 
 %properties
@@ -22,9 +22,9 @@ grains3.id = grains3.id(ind);
 grains3.phaseId = reshape(grains3.phaseId(ind),[],1);
 grains3.grainSize = grains3.grainSize(ind);
 
-grains3.I_CF = grains3.I_CF(ind,:);
+grains3.I_GF = grains3.I_GF(ind,:);
 
-[~, boundId] = find(grains3.I_CF);
+[~, boundId] = find(grains3.I_GF);
 boundInd = grains3.boundary.id2ind(unique(boundId));
 
 grains3.boundary = subSet(grains3.boundary, boundInd);

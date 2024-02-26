@@ -9,37 +9,37 @@ function vol = volume(grains, varargin)
 %
 
 
-if iscell(grains.poly)
+if iscell(grains.F)
 
   vol = zeros(size(grains.id));
   xyz = grains.boundary.allV.xyz;
-  isC = iscell(grains.poly);
+  isC = iscell(grains.F);
 
   for i = 1:length(grains.id)
-    Cells_Faces = grains.I_CF(i,:);
-    Polys = grains.poly(grains.boundary.id2ind(find(Cells_Faces)),:);
+    Grains_Faces = grains.I_GF(i,:);
+    Faces = grains.F(grains.boundary.id2ind(find(Grains_Faces)),:);
     
-    % flip Polys, so normal direction pointing outwards
-    Cells_Faces = nonzeros(Cells_Faces);
+    % flip Faces, so normal direction pointing outwards
+    Grains_Faces = nonzeros(Grains_Faces);
     if isC
-      Polys(Cells_Faces == -1) = cellfun(@(c) fliplr(c), ...
-        Polys(Cells_Faces == -1), 'UniformOutput', false);
+      Faces(Grains_Faces == -1) = cellfun(@(c) fliplr(c), ...
+        Faces(Grains_Faces == -1), 'UniformOutput', false);
     else
-      Polys(Cells_Faces == -1,:) = fliplr(Polys(Cells_Faces == -1,:));
+      Faces(Grains_Faces == -1,:) = fliplr(Faces(Grains_Faces == -1,:));
     end
 
-    vol(i) = meshVolume(xyz, Polys);
+    vol(i) = meshVolume(xyz, Faces);
   end
 
 else
 
   V = grains.boundary.allV;
 
-  isF = any(grains.I_CF,1);
-  sgnVol = zeros(width(grains.I_CF),1);
+  isF = any(grains.I_GF,1);
+  sgnVol = zeros(width(grains.I_GF),1);
 
-  sgnVol(isF) = det(V(grains.poly(:,1)),V(grains.poly(:,2)),V(grains.poly(:,3)));
+  sgnVol(isF) = det(V(grains.F(:,1)),V(grains.F(:,2)),V(grains.F(:,3)));
 
-  vol = grains.I_CF * sgnVol / 6;
+  vol = grains.I_GF * sgnVol / 6;
 
 end

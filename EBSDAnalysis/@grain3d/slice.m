@@ -26,7 +26,7 @@ function grains2d = slice(grains,varargin)
 %%
 % plane           - plane in matGeom Format
 % V               - n x 3 array with allVertices
-% poly            - n x 1 cell array or n x 3 array
+% F               - n x 1 cell array or n x 3 array
 % E               - Edges with respect indices of V
 % FE              - cell array of faces with respect to indices of E
 % crossingEdges   - indices of Edges crossing the plane
@@ -36,7 +36,7 @@ function grains2d = slice(grains,varargin)
 % newV            - crossingEdges intersected with plane @vector3d
 % newPoly         - intersected Polygons, indices to newV
 % newIds          - Ids of the cells in the slice
-% intersec_CF     - I_CF, but only intersected cells (newIds) and faces
+% intersec_GF     - I_GF, but only intersected cells (newIds) and faces
 %%
 
 if nargin < 2
@@ -63,10 +63,10 @@ end
 assert(isPlane(plane),'Input error')
 
 V = grains.boundary.allV.xyz;
-poly = grains.poly;
+F = grains.F;
 
-E = meshEdges(poly);
-FE = meshFaceEdges(V, E, poly);
+E = meshEdges(F);
+FE = meshFaceEdges(V, E, F);
 
 crossingEdges = find(xor(isBelowPlane(V(E(:,1),:),plane),isBelowPlane(V(E(:,2),:),plane)));
 assert(~isempty(crossingEdges),'plane is outside of grain3d bounding box')
@@ -99,17 +99,17 @@ end
 
 newV = vector3d(newV).';
 
-% intersec_CF = I_CF, but with only the intersected Faces in 2.dim and only
+% intersec_GF = I_GF, but with only the intersected Faces in 2.dim and only
 % the intersected Cells in 1.dim (newIds)
-intersec_CF = grains.I_CF(:,intersecFaces);
-newIds = find(any(intersec_CF,2));
-intersec_CF = logical(intersec_CF(newIds,:));
+intersec_GF = grains.I_GF(:,intersecFaces);
+newIds = find(any(intersec_GF,2));
+intersec_GF = logical(intersec_GF(newIds,:));
 
-newPoly = cell(size(intersec_CF,1),1);
+newPoly = cell(size(intersec_GF,1),1);
 
 for m = 1:length(newIds)
 
-  crossingFE = crossingFE_all(intersec_CF(m,:),:);
+  crossingFE = crossingFE_all(intersec_GF(m,:),:);
 
   currPoly = zeros(1,size(crossingFE,1)+1);
   currPoly(1:2) = crossingFE(1,:);

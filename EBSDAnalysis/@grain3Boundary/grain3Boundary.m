@@ -33,10 +33,10 @@ classdef grain3Boundary < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    poly                  % cell array or n x 3 array with all faces
+    F                     % cell array or n x 3 array with all faces
     grainId = zeros(0,2)  % id's of the neighboring grains to a face
                           % (faceNormals direction from grain#1 to grain#2)
-    ebsdId = zeros(0,2)  % id's of the neighboring ebsd data to a face
+    ebsdId = zeros(0,2)   % id's of the neighboring ebsd data to a face
     misrotation = rotation % misrotations
   end
   
@@ -53,12 +53,12 @@ classdef grain3Boundary < phaseList & dynProp
 
   methods
 
-    function gB = grain3Boundary(V, poly, ebsdInd, grainId, phaseId, mori, CSList, phaseMap, ebsdId, varargin)
+    function gB = grain3Boundary(V, F, ebsdInd, grainId, phaseId, mori, CSList, phaseMap, ebsdId, varargin)
       %
       % Input
       %  V       - @vector3d list of vertices
-      %  poly    - cell array of closed loops of indices to V describing the boundary faces
-      %  poly    - n x 3 array of indices to V describing the boundary faces
+      %  F       - cell array of closed loops of indices to V describing the boundary faces
+      %  F       - n x 3 array of indices to V describing the boundary faces
       %  ebsdInd - [Id1,Id2] list of adjacent EBSD index for each segment
       %  grainId - [Id1,Id2] list of adjacent grainIds for each segment
       %  phaseId - list of adjacent phaseIds for each segment     
@@ -70,8 +70,8 @@ classdef grain3Boundary < phaseList & dynProp
       V = reshape(vector3d(V),[],1);
       
       gB.allV = V;
-      gB.poly = poly;
-      gB.id = (1:length(poly))';
+      gB.F = F;
+      gB.id = (1:length(F))';
       gB.grainId = grainId;
       gB.misrotation = mori;
 
@@ -97,10 +97,10 @@ classdef grain3Boundary < phaseList & dynProp
     end
 
     function out = get.idV(gB3)
-      if iscell(gB3.poly)
-      out = unique([gB3.poly{:}]);
+      if iscell(gB3.F)
+      out = unique([gB3.F{:}]);
       else
-      out = unique(gB3.poly);
+      out = unique(gB3.F);
       end
     end
 
@@ -116,18 +116,18 @@ classdef grain3Boundary < phaseList & dynProp
 
     function N = get.N(gB3)
 
-      if isnumeric(gB3.poly)
+      if isnumeric(gB3.F)
         
-        VV = gB3.allV(gB3.poly);        
+        VV = gB3.allV(gB3.F);        
         N = normalize(cross(VV(:,2)-VV(:,1),VV(:,3)-VV(:,1)));
 
       else
         % duplicate vertices according to their occurrence in the face
-        F = gB3.poly.';
-        VV = gB3.allV([F{:}]);
-        faceSize = cellfun(@numel,F).';
+        Faces = gB3.F.';
+        VV = gB3.allV([Faces{:}]);
+        faceSize = cellfun(@numel,Faces).';
         faceEnds = cumsum(faceSize);
-        faceId = repelem(1:length(gB3.poly),faceSize).';
+        faceId = repelem(1:length(gB3.F),faceSize).';
   
         % some reference point within the face
         c = accumarray(faceId,VV) ./ faceSize;

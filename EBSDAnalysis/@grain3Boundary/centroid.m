@@ -1,21 +1,21 @@
 function c = centroid(gB3)
 % computes centroid of each face
 
-if isnumeric(gB3.poly)
+if isnumeric(gB3.F)
    
-  c = mean(gB3.allV(gB3.poly),2);
+  c = mean(gB3.allV(gB3.F),2);
 
 else
 
   % for testing the code of matgeom - we are much faster
-  % c = vector3d(meshFaceCentroids(gB3.allV.xyz, gB3.poly))';
+  % c = vector3d(meshFaceCentroids(gB3.allV.xyz, gB3.F))';
   
   % duplicate vertices according to their occurrence in the face
-  F = gB3.poly.';
+  F = gB3.F.';
   V = gB3.allV([F{:}]);
   faceSize = cellfun(@numel,F).';
   faceEnds = cumsum(faceSize);
-  faceId = repelem(1:length(gB3.poly),faceSize).';
+  faceId = repelem(1:length(gB3.F),faceSize).';
   
   % first poor estimate
   c = accumarray(faceId,V) ./ faceSize;
