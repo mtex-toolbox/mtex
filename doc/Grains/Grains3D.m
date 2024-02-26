@@ -45,6 +45,11 @@ figure
 grains = grains3(1:5)
 plot(grains)
 
+%% Triangulation
+% Some functions are much faster on triangulated meshes. Therefore you can
+% triangulate your grains with the following command.
+
+grainsTri = grains3.triangulate
 
 %% Slicing
 %
