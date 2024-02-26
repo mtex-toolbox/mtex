@@ -2,7 +2,7 @@
 %
 %%
 % grain3d is a structure to store 3D grain data. At the moment 3d data 
-% is usually obtained from <NeperInterface.html neper tesselations>.
+% is usually obtained from <NeperInterface.html neper tessellations>.
 %
 %%
 job = neperInstance
@@ -12,7 +12,7 @@ odf = unimodalODF(ori);
 numGrains=100;
 
 grains3 = job.simulateGrains(odf,numGrains)
-% or you can load an existing tesselation file
+% or you can load an existing tessellation file
 %grains3 = grain3d.load('allgrains.tess','CS',cs)
 
 %% Plotting Grains
