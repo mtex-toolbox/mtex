@@ -1,4 +1,35 @@
 classdef grain3Boundary < phaseList & dynProp
+%
+% Variables of type grain3Boundary represent 2-dimensional faces of
+% 3-dimensional grains. Those are typically
+% generated during grain reconstruction and are accessible via
+%
+%   grains.boundary
+%
+% Each grain boundary face stores many properties: its position within
+% the map, the ids of the adjacent grains, the ids of the adjacent EBSD
+% measurements, the grain boundary misorientation, etc. These properties
+% are explained in more detail in the section <Boundary3Properties.html
+% boundary properties>.
+%
+% Class Properties
+%  V            - [x,y] list of vertices 
+%  scanUnit     - scanning unit (default - um)
+%  tripleJunctions - @tripleJunctionList
+%  F            - list of boundary faces as ids to V
+%  grainId      - id's of the neighboring grains to a boundary segment
+%  ebsdId       - id's of the neighboring ebsd data to a boundary segment
+%  misrotation  - misrotation between neighboring ebsd data to a boundary segment
+%
+% Dependent Class Properties
+%  misorientation - disorientation between neighboring ebsd data to a boundary segment
+%  N              - normal of the boundary face as @vector3d
+%  centroid       - centroid of the boundary face as @vector3d
+%  I_VF           - incidence matrix vertices - edges
+%  I_FG           - incidence matrix edges - grains
+%  A_F            - adjacency matrix edges - edges
+%  A_V            - adjacency matrix vertices - vertices
+%
 
   properties  % with as many rows as data
     id = []
@@ -26,8 +57,8 @@ classdef grain3Boundary < phaseList & dynProp
       %
       % Input
       %  V       - @vector3d list of vertices
-      %  poly    - cell array or n x 3 array of boundary faces, indices to V
-      %            for cell array closed loops (first V must match last V)
+      %  poly    - cell array of closed loops of indices to V describing the boundary faces
+      %  poly    - n x 3 array of indices to V describing the boundary faces
       %  ebsdInd - [Id1,Id2] list of adjacent EBSD index for each segment
       %  grainId - [Id1,Id2] list of adjacent grainIds for each segment
       %  phaseId - list of adjacent phaseIds for each segment     
