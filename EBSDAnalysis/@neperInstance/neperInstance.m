@@ -80,6 +80,12 @@ methods
     else
       neper.cmdPrefix='';
     end
+
+    % ensure filePath exists
+    if ~exist(neper.filePath,'dir')
+      try mkdir(neper.filePath); end
+    end
+
   end
 
 end
