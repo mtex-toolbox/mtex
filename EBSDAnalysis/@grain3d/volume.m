@@ -16,7 +16,7 @@ if iscell(grains.F)
 
   for i = 1:length(grains.id)
     Grains_Faces = grains.I_GF(i,:);
-    Faces = grains.F(grains.boundary.id2ind(find(Grains_Faces)),:);
+    Faces = grains.F(find(Grains_Faces),:);
     
     % flip Faces, so normal direction pointing outwards
     Grains_Faces = nonzeros(Grains_Faces);

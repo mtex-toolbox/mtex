@@ -24,8 +24,8 @@ grains3.grainSize = grains3.grainSize(ind);
 
 grains3.I_GF = grains3.I_GF(ind,:);
 
-[~, boundId] = find(grains3.I_GF);
-boundInd = grains3.boundary.id2ind(unique(boundId));
+[~, boundInd] = find(grains3.I_GF);
+boundInd = unique(boundInd);
 
 grains3.I_GF = grains3.I_GF(:,boundInd);
 grains3.boundary = subSet(grains3.boundary, boundInd);
