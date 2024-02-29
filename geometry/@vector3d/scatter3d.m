@@ -5,9 +5,9 @@ function [h,ax] = scatter3d(v,varargin)
 %   scatter3d(v,data)
 %
 % Input
+%  v - @vector3d
 %
-% See also
-% savefigure
+
 
 % where to plot
 if check_option(varargin,'parent')
@@ -16,7 +16,7 @@ else
   ax = gca;
 end
 
-% plot a inner sphere that is not transluent
+% plot a inner sphere that is not translucent
 plotEmptySphere(ax);
 
 % normalize vectors
@@ -50,13 +50,13 @@ data = ensurecell(data);
 if isempty(data), data = {}; end
 h = optiondraw(scatter3(v.x(:),v.y(:),v.z(:),MarkerSize.^2,data{:},'filled','parent',ax),varargin{:});
 
-% add transperency if required
+% add transparency if required
 if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   
   faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
   edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
         
-  % we have to wait until the markes have been drawn
+  % we have to wait until the markers have been drawn
   mh = [];
   while isempty(mh)
     pause(0.01);
