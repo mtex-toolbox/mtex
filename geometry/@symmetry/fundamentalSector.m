@@ -119,7 +119,7 @@ end
 
 % this will be restricted later anyway
 if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
-  N(isnull(N.x) & isnull(N.y)) = [];
+  N(isnull(angle(N,how2plot.outOfScreen,'antipodal'))) = [];
 end
 
 N.plottingConvention = how2plot;
