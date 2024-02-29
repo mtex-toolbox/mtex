@@ -89,7 +89,8 @@ end
 % pixels to erode must be zmap AND have lower 
 % neighbor count than threshold 
 if exist('zmap','var')
-   peroded =zmap & sum(zmap(ind),3) <= count;
+   candidate = sum(zmap(ind),3) <= count;
+   peroded =zmap(:) & candidate(:);
    ebsd(peroded) = [];
 end
 
