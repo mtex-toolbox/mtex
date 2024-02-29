@@ -41,7 +41,7 @@ setMTEXpref('showCoordinates','off')
 % how to annotate pole figure plots
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'X','Y','Z'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 
 % you can uncomment the following line to disable the annotations
