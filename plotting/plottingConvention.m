@@ -6,13 +6,13 @@ classdef plottingConvention < handle
   end
   
   properties (Dependent=true)
-    east
-    west
-    north
-    south
-    outOfScreen
-    intoScreen
-    viewOpt
+    east   % axis that point east (default = x)
+    west   % axis that point west (default = -x)
+    north  % axis that point north (default = y)
+    south  % axis that point south (default = -y)
+    outOfScreen % axis that point out of screen (default = z)
+    intoScreen  % axis that point into screen (default = -z)
+    viewOpt  % translates screen orientation in MATLAB options
   end
 
   methods
@@ -114,40 +114,25 @@ classdef plottingConvention < handle
     end
 
 
-    function v = get.outOfScreen(pC) 
-      v = pC.rot * vector3d.Z;
-    end
+    function v = get.outOfScreen(pC), v = pC.rot * vector3d.Z; end
+    function set.outOfScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot; end
 
-    function set.outOfScreen(pC,n)
-
-      pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot;
-
-    end
+    function v = get.intoScreen(pC), v = -pC.rot * vector3d.Z; end
+    function set.intoScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,-n) * pC.rot; end
 
 
-    function v = get.east(pC) 
-      
-      v = pC.rot * vector3d.X;
+    function v = get.east(pC), v = pC.rot * vector3d.X; end
+    function set.east(pC,e), pC.rot = rotation.map(pC.east,e) * pC.rot; end
 
-    end
+    function v = get.west(pC), v = -pC.rot * vector3d.X; end
+    function set.west(pC,w), pC.rot = rotation.map(pC.east,-w) * pC.rot; end
 
-    function set.east(pC,e)
-      
-      pC.rot = rotation.map(pC.east,e) * pC.rot;
+    function v = get.north(pC), v = pC.rot * vector3d.Y; end
+    function set.north(pC,v), pC.rot = rotation.map(pC.north,v) * pC.rot; end
+    
+    function v = get.south(pC), v = -pC.rot * vector3d.Y; end
+    function set.south(pC,v), pC.rot = rotation.map(pC.north,-v) * pC.rot; end
 
-    end
-
-    function v = get.north(pC) 
-      
-      v = pC.rot * vector3d.Y;
-
-    end
-
-    function set.north(pC,v)
-      
-      pC.rot = rotation.map(pC.north,v) * pC.rot;
-
-    end
 
     function plot(pC, varargin)
 
@@ -190,6 +175,10 @@ classdef plottingConvention < handle
       grainsR = rotate(grains,rotation.rand);
       plot(grainsR,grainsR.meanOrientation,'micronbar','off');
       pC.outOfScreen = grainsR.N; pC.setView(gca)
+    end
+
+    function pC = default
+      pC = getMTEXpref('xyzPlotting');
     end
 
   end
