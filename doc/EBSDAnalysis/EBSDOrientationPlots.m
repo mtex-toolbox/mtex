@@ -45,7 +45,7 @@ plotSection(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 scatter(ebsd('Fo').orientations)
 
 %%
-% Here, the optional option 'center' specifies the center of the unique
+% Here, the optional option |'center'| specifies the center of the unique
 % region in the orientation space.
 
 

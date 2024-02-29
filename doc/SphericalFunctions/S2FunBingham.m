@@ -41,7 +41,7 @@ for k2 = kappa
     end
   end
 end
-CLim(mtexFig,'equal')
+setColorRange('equal')
 mtexFig.drawNow;
 
 %% Drawing a random sample of the Bingham distribution

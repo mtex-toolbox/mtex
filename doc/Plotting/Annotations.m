@@ -35,7 +35,7 @@ mtexColorbar('location','southOutSide','title','mrd')
 % added (see. <ColorMaps.html Color Coding>).
 
 mtexColorbar       % delete colorbar
-CLim(gcm,'equal'); % set equal color range to all plots
+setColorRange('equal'); % set equal color range to all plots
 mtexColorbar       % create a new colorbar
 
 
