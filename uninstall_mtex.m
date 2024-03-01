@@ -8,7 +8,7 @@ cellpath = cellpath(~cellfun('isempty',strfind(cellpath,getMTEXpref('mtexPath'))
 rmpath(cellpath{:});
 
 if ~savepath
-  disp('MTEX unistalled!');
+  disp('MTEX uninstalled!');
   setappdata(0,'MTEXInstalled',false);
 else
 
