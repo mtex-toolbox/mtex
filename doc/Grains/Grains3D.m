@@ -2,9 +2,18 @@
 %
 %%
 % grain3d is a structure to store 3D grain data. At the moment 3d data 
-% is usually obtained from <NeperInterface.html neper tessellations>.
+% is usually obtained from <NeperInterface.html neper tessellations> or 
+% triangulated Dream3d data sets.
 %
-%%
+%% Grain sets from Dream3d
+
+grains3 = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d'));
+
+% for triangulated data sets it may be useful to plot them without lines
+plot(grains3,grains3.meanOrientation,'LineStyle','none')
+
+%% Grain sets from neper
+
 job = neperInstance
 cs = crystalSymmetry('432','mineral','copper');
 ori = orientation.rand(cs);

@@ -1,19 +1,19 @@
 function grains = load(filepath,varargin)
-  % grain3d.load is a method to load the 3d data from the tessellation files that
-  % <neper.info/ neper> outputs
+  % grain3d.load is a method to load 3d grain data
   %
   % Syntax
   %   grains = grain3d.load('filepath/filename.tess','CS',CSList)
+  %   grains = grain3d.load('filepath/filename.dream3d')
   %
   % Input
   %  fname     - filename
   %  CSList    - list of crystal symmetries
   %
   % Output
-  %  grain2d - @grain2d
+  %  grain3d - @grain3d
   %
   % See also
-  % loadNeperTess grain2d.load
+  % loadNeperTess loadGrains_Dream3d grain2d.load
 
 
   interface = get_option(varargin,'interface');
