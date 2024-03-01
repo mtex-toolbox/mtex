@@ -76,7 +76,7 @@ intersecFaces = find(sum(crossingFE_all,2)==2);
 
 % crossingFE_all: 1.dim with respect to intersecFaces, 2.dim with respect to
 % crossingEdges
-[i,j] = find(crossingFE_all);
+[i,j] = find(crossingFE_all(intersecFaces,:));
 [~,i2] = sort(i);
 crossingFE_all = reshape(j(i2),2,[])';
 
@@ -134,6 +134,4 @@ grains2d = grain2d(newV.xyz, newPoly, grains.meanOrientation(newIds),...
 isNeg = (grains2d.area<0);
 grains2d.poly(isNeg) = cellfun(@fliplr, grains2d.poly(isNeg), 'UniformOutput', false);
 
-
-
-
+end
