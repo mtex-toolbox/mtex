@@ -23,18 +23,7 @@ classdef plottingConvention < handle
       if nargin >= 2, pC.east = east; end
 
     end
-    
-    function [x,y] = project(pC,v)
-      % project vector3d to screen
-
-      
-    end
-
-    function v = iproject(pC,x,y)
-      % project 
-     
-    end
-
+        
     function display(pC,varargin)
       displayClass(pC,inputname(1),varargin{:});
     
