@@ -90,7 +90,7 @@ set(mtexFig.parent,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
 
 % update colorrange
 if check_option(varargin,'colorrange')
-  setColorRange(mtexFig.parent,get_option(varargin,'colorrange'),varargin{:});
+  setColorRange(mtexFig,get_option(varargin,'colorrange'),varargin{:});
 end
 
 % update scale bars

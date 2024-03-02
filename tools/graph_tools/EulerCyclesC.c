@@ -78,12 +78,12 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V, mx
     double *I_FG_Pr = mxGetPr(I_FG);// Pr (sparse matrix)
 
     IntStack cyclePoints;
-    cyclePoints.maxSize = V_M*4;// TODO erstmal annahme: jeder Punkt kommt in 4 Cyclen vor
+    cyclePoints.maxSize = V_M*4 + 1000;// TODO erstmal annahme: jeder Punkt kommt in 4 Cyclen vor
     cyclePoints.buffer = mxMalloc(sizeof(int)*cyclePoints.maxSize);
     cyclePoints.index = 0;
 
     IntStack cycles;
-    cycles.maxSize = I_FG_N*2;// TODO erstmal annahme: ein Korn hat durchschnittlich maximal 2 cyclen
+    cycles.maxSize = I_FG_N*2 + 1000;// TODO erstmal annahme: ein Korn hat durchschnittlich maximal 2 cyclen
     cycles.buffer = mxMalloc(sizeof(int)*cycles.maxSize);
     cycles.index = 0;
 
@@ -181,24 +181,32 @@ void calcEulerCyclesGrain(int grainIndex, mwIndex *FindexGrain, int nFGrain,int 
                 for (next = 0; next < VNSize[currentV]; next++) {
                     if (F_usable_global[VNFindex[currentV*MAX_NEIGHBOURS + next]]) break;
                 }
-            }
-            //printf("next=%d\n",next);
-            if (next == -1 || next == VNSize[currentV]) {
-                // not found or at cycle start
+                if (next == VNSize[currentV]) {
+                    // not found
+                    push(cyclePoints, startV);// close polygon
+                    currentV = startV;
+                    nCyclePoints = 0;
+                    currentFGlobal = -1;
+                } else {
+                    // found
+                    currentFGlobal = VNFindex[currentV*MAX_NEIGHBOURS + next];
+                    currentV = VN[currentV*MAX_NEIGHBOURS + next];
+    
+                    push(cyclePoints, currentV);// add Point
+                    nCyclePoints += 1;// increase number of points
+    
+                    F_usable_global[currentFGlobal] = 0;// use face
+                    nFUsed++;
+                }
+            } else {
+                // if at start:
                 nCyclePoints = 0;
                 currentFGlobal = -1;
-            } else {
-                // found
-                currentFGlobal = VNFindex[currentV*MAX_NEIGHBOURS + next];
-                currentV = VN[currentV*MAX_NEIGHBOURS + next];
-
-                push(cyclePoints, currentV);// add Point
-                nCyclePoints += 1;// increase number of points
-
-                F_usable_global[currentFGlobal] = 0;// use face
-                nFUsed++;
             }
         }
+    }
+    if (currentFGlobal != -1 && startV != currentV) {
+        push(cyclePoints, startV);// close polygon
     }
 }
 

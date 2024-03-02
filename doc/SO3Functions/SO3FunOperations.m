@@ -2,7 +2,7 @@
 %
 %%
 % The idea of variables of type @SO3Fun is to calculate with rotational
-% functions similarly as Matlab does with vectors and matrices. In order to
+% functions similarly as MATLAB does with vectors and matrices. In order to
 % illustrate this we consider the following two rotational functions
 %
 % An ODF determined from XRD data
@@ -61,7 +61,7 @@ g.eval(inv(R))
 %
 % * if a single rotational function is provided the global maximum /
 % minimum of the function is computed
-% * if two rotational functions are provied, a rotational function defined
+% * if two rotational functions are provided, a rotational function defined
 % as the pointwise min/max between these two functions is computed
 % * if a rotational function and a single number are passed as arguments a
 % rotational function defined as the pointwise min/max between the function

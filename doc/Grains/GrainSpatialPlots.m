@@ -24,7 +24,7 @@ plot(grains)
 grains('Fo').CS.color
 
 %%
-% Accodingly, changing the color stored in the crystal symmetry changes the
+% Accordingly, changing the color stored in the crystal symmetry changes the
 % color in the map
 
 grains('Fo').CS.color = str2rgb('salmon')
@@ -38,7 +38,7 @@ plot(grains)
 % detect the largest grain
 [~,id] = max(grains.area);
 
-% plot the grain in dark black with some transperency
+% plot the grain in dark black with some transparency
 hold on
 plot(grains(id),'FaceColor','darkgray','FaceAlpha',0.5)
 hold off
@@ -47,14 +47,14 @@ hold off
 %% Orientation Maps
 % Coloring grains according to their mean orientations is very similar to
 % EBSD maps colored by orientations. The most important thing is that the
-% misorientation can only extracte from grains of the same phase.
+% misorientation can only extracted from grains of the same phase.
 
-% the implicite way
+% the implicit way
 plot(grains('Fo'),grains('fo').meanOrientation)
 
 %%
-% This implicte way gives no control about how the color is computed from
-% the meanorientation. When using the explicite way by defining a
+% This implicit way gives no control about how the color is computed from
+% the meanorientation. When using the explicit way by defining a
 % orientation to color map
 
 % this defines a ipf color key
@@ -83,22 +83,22 @@ plot(grains('fo'),color)
 plot(grains,grains.aspectRatio)
 
 %%
-% we see that we have a very alongated grain which makes it difficult to
-% distinguesh the aspect ration of the other grains. A solution for this is
-% to specify the values of the aspect ration which should maped to the
+% we see that we have a very elongated grain which makes it difficult to
+% distinguish the aspect ration of the other grains. A solution for this is
+% to specify the values of the aspect ration which should mapped to the
 % top and bottom color of the colormap
 
 setColorRange([1 5])
 
 %% Colorizing circular properties
 % Sometimes the property we want to display is a circular, e.g., the
-% direction of the grain alongation. In this case it is important to use a
+% direction of the grain elongation. In this case it is important to use a
 % circular colormap which assign the same color to high values and low
-% values. In the case of the direction of the grain alongation the angles 0
+% values. In the case of the direction of the grain elongation the angles 0
 % and 180 should get the same color since they represent the same
 % direction.
 
-% consider only alongated grains
+% consider only elongated grains
 alongated_grains = grains(grains.aspectRatio > 1.2);
 
 % angle of the long axis to (1 0 0)
@@ -118,7 +118,7 @@ mtexColorbar
 % In order to plot the orientations of EBSD data within certain grains one
 % first has to extract the EBSD data that belong to the specific grains.
 
-% let have a look at the bigest grain
+% let have a look at the biggest grain
 [~,id] = max(grains.area)
 
 % and select the corresponding EBSD data
@@ -155,7 +155,7 @@ plot(grains,grains.meanOrientation,'micronbar','off','figSize','large')
 % next we want to visualize the direction of the 100 axis
 dir = grains.meanOrientation * Miller(1,0,0,grains.CS);
 
-% the lenght of the vectors should depend on the grain diameter
+% the length of the vectors should depend on the grain diameter
 len = 0.25*grains.diameter;
 
 % arrows are plotted using the command quiver. We need to switch of auto

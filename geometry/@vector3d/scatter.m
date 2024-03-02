@@ -13,14 +13,14 @@ function [h,ax] = scatter(v,varargin)
 %  rgb   - a list of rgb color values
 %
 % Options
-%  Marker            - 's','o','diamont','p'
+%  Marker            - 's','o','diamond','p'
 %  MarkerFaceColor   - 'r','g','w','k','b'
 %  MarkerEdgeColor   - 'r','g','w','k','b'
 %  MarkerColor       - shortcut for the above two
 %  MarkerSize        - size of the markers in pixel
-%  MarkerAlpha       - transperency setting
-%  MarkerEdgeAlpha   - transperency setting
-%  MarkerFaceAlpha   - transperency setting
+%  MarkerAlpha       - transparency setting
+%  MarkerEdgeAlpha   - transparency setting
+%  MarkerFaceAlpha   - transparency setting
 %  DynamicMarkerSize - scale marker size when plot is resized
 %
 % Output
@@ -78,13 +78,13 @@ for i = 1:numel(sP)
   
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
 
-  % dynamic markersize
+  % dynamic marker-size
   if ~check_option(varargin,'MarkerSize') && ...
       (check_option(varargin,'dynamicMarkerSize') || length(v)>20)
     patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
   end
     
-  % ------- colorcoding according to the first argument -----------
+  % ------- color-coding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
     h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
@@ -165,13 +165,13 @@ for i = 1:numel(sP)
       % remove from legend
       set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 
-      % add transperency if required
+      % add transparency if required
       if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
         
         faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
         edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
         
-        % we have to wait until the markes have been drawn
+        % we have to wait until the markers have been drawn
         mh = [];
         while isempty(mh)
           pause(0.01);

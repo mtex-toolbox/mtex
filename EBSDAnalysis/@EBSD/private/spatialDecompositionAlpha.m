@@ -81,7 +81,7 @@ switch lower(method)
 
     clear Vx Vy E1 E2
 
-    [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
+    [V,~,ic] = unique(round(V*1e2/dxy)*dxy/1e2,'rows');
     F = sort(ic(E),2);
 
     I_FD = sparse(size(F,1),numel(isIndexed));

@@ -2,7 +2,17 @@ function q = setSubSet(q,ind,nq)
 % indexing of quaternions
 %
 % Syntax
-%   setSubSet(q,ind) % 
+%
+%   % q(ind) = nq
+%   q = setSubSet(q,ind,nq) 
+%
+% Input
+%  q - @quaternion
+%  ind - @double
+%  nq - @quaternion
+%
+% Output
+%  q - @quaternion
 %
 
 q.a(ind) = nq.a;

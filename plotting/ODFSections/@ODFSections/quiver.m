@@ -98,7 +98,7 @@ for s = 1:oS.numSections
   
 end
 
-setColorRange(mtexFig.parent,'equal');
+setColorRange(mtexFig,'equal');
 
 %if isNew || check_option(varargin,'figSize')
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});

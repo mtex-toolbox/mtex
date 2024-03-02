@@ -17,8 +17,8 @@ rot_right = rot_123 * rot_ref;
 rot_left = rot_ref * rot_123;
 
 %%
-% We may now ask for the first order Taylor coefficients of the
-% perturbation as delta goes to zero which we find by the formula
+% We may now ask for the first order Taylor coefficients of the perturbation
+% as delta goes to zero which we find by the formula
 %
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
 %
@@ -63,14 +63,14 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 %
 % The above definition of the spin tensor works only well if the
 % perturbation rotation has small rotational angle. For large perturbations
-% the <quaternion.logm.html matrix logarithm> provides the correct way to
-% translate rotational changes into skew symmetric matrices
+% the matrix logarithm <quaternion.logm.html |logm|> provides the correct
+% way to translate rotational changes into skew symmetric matrices
 
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
 
-S = logm(rot_ref * rot_123,rot_ref) 
+S = logm(rot_ref * rot_123,rot_ref)
 
-S = logm(rot_123 * rot_ref,rot_ref,'left') 
+S = logm(rot_123 * rot_ref,rot_ref,'left')
 
 %%
 % Again the entries $S_{21}$, $S_{31}$ and $S_{32}$ exactly coincide with
@@ -80,7 +80,7 @@ vector3d(S) * sqrt(14)
 
 %%
 % More directly this disorientation vector may be computed from two
-% rotations by the command <quaternion.log.html log>
+% rotations by the command <quaternion.log.html |log|>
 
 log(rot_ref * rot_123,rot_ref) * sqrt(14)
 
@@ -89,8 +89,8 @@ log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
 
 %% The other way round
 % Given a skew symmetric matrix |S| or a disorientation vector |v| we may
-% use the command <vector3d.exp.html exp> to apply this rotational
-% perturbation to a reference rotation *rot_ref*
+% use the command <vector3d.exp.html |exp|> to apply this rotational
+% perturbation to a reference rotation |rot_ref|
 
 S = logm(rot_ref * rot_123,rot_ref);
 rot_ref * rot_123
@@ -127,7 +127,7 @@ mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1)
 ori = ori_ref * mori_123
 
 %%
-% and compute the scew symmetric pertubation matrices
+% and compute the skew symmetric perturbation matrices
 
 S_right_L =  matrix(inv(rot_ref)) * T_right
 S_right_R = T_right * matrix(inv(rot_ref))
