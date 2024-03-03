@@ -103,6 +103,8 @@ classdef EBSD < phaseList & dynProp & dynOption
           ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
         end
         ebsd.opt = pos.opt;
+
+        ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
         return
       end
       
