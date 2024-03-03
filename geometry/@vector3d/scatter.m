@@ -22,6 +22,8 @@ function [h,ax] = scatter(v,varargin)
 %  MarkerEdgeAlpha   - transparency setting
 %  MarkerFaceAlpha   - transparency setting
 %  DynamicMarkerSize - scale marker size when plot is resized
+%  Grid              - whether to display a grid 
+%  grid_res          - resolution of the grid to be displayed 
 %
 % Output
 %
