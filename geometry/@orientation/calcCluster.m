@@ -43,7 +43,7 @@ if any(isnan(ori))
   
   c = nan(size(ori));
   notNaN = ~isnan(ori);
-  [c(notNaN),center] = calcCluster(ori.subSet(notNaN),varargin);
+  [c(notNaN),center] = calcCluster(ori.subSet(notNaN),varargin{:});
   
   return
 end
@@ -57,13 +57,18 @@ switch method
     weights = get_option(varargin,'weights',ones(size(ori)));
 
     % set up an ODF
-    odf = calcKernelODF(ori,'weights',weights,'halfwidth',5*degree,varargin{:});
+    odf = calcDensity(ori,'weights',weights,'halfwidth',5*degree,varargin{:});
 
     % find the modes of the ODF
     [center,~,c] = calcComponents(odf,'seed',ori,varargin{:});
     
+    numCluster = get_option(varargin,'numCluster',min(20,length(center)));
+
+    center = subSet(center,1:numCluster);
+    c(c>numCluster) = NaN;
+
     % post process cluster
-    for i = 1:min(length(center),20)
+    for i = 1:numCluster
     
       % remove points to far from the center
       ori_c = ori.subSet(c==i);
@@ -79,7 +84,6 @@ switch method
       center = subsasgn(center,i,odf.steepestDescent(center.subSet(i)));
       
     end
-    
     
   case 'hierarchical'
     [c,center] = doHClustering(ori,varargin{:});
