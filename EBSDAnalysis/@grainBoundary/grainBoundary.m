@@ -33,6 +33,7 @@ classdef grainBoundary < phaseList & dynProp
 %  componentSize  - number of segments that belong to the component
 %  x              - x coordinates of the vertices of the grains
 %  y              - y coordinates of the vertices of the grains    
+%  z              - z coordinates of the vertices of the grains    
 %
 
   
@@ -62,7 +63,8 @@ classdef grainBoundary < phaseList & dynProp
     componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
-    V              % vertices x,y coordinates
+    z              % z coordinates of the vertices of the grains
+    V              % vertices of the grains
     N              % normal direction of the pseudo3d data    
   end
   
@@ -177,17 +179,19 @@ classdef grainBoundary < phaseList & dynProp
     end
 
     function x = get.x(gB)
-      x = gB.V(unique(gB.F(:)),1);
+      x = gB.V.x(unique(gB.F(:)));
     end
     
     function y = get.y(gB)
-      y = gB.V(unique(gB.F(:)),2);
+      y = gB.V.y(unique(gB.F(:)));
+    end
+
+    function y = get.z(gB)
+      y = gB.V.z(unique(gB.F(:)));
     end
     
-    function xy = get.midPoint(gB)
-      xyA = gB.V(gB.F(:,1),:);
-      xyB = gB.V(gB.F(:,2),:);
-      xy = 0.5 * (xyA + xyB);
+    function m = get.midPoint(gB)      
+      m = mean(gB.V(gB.F),2);
     end
     
     function I_VF = get.I_VF(gB)
