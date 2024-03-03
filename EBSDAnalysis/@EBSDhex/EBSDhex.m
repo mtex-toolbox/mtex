@@ -305,8 +305,8 @@ classdef EBSDhex < EBSD
 
     function h = gridBoundary(ebsd)
 
-      dH = ebsd.dHex;
-      ext = ebsd.extent + 2*dH*[-1,1,-1,1];
+      dH = ebsd.dHex; ext = ebsd.extent;
+      ext = ext(1:4) + 2*dH*[-1,1,-1,1];
       x = ext(1):dH:ext(2);
       y = ext(3):dH:ext(4);
 
