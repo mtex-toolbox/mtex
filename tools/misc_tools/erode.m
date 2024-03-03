@@ -94,5 +94,7 @@ if exist('zmap','var')
    ebsd =EBSD(ebsd);
    ebsd = ebsd(~peroded);
 end
+% cleanup
+ebsd(ebsd.isnan)=[]
 
 end
