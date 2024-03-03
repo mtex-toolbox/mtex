@@ -69,7 +69,7 @@ y_ = [y_; Y(toAdd); bnd(:,2)];
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
 
-method = getMTEXpref('voronoiMethod');
+method = get_flag(varargin,{'jcvoronoi','qhull','matlab'}, getMTEXpref('voronoiMethod'));
 
 switch lower(method)
   case 'jcvoronoi'
