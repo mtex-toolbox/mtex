@@ -1,5 +1,24 @@
 classdef plottingConvention < handle
 % class describing the alignment of a reference frame on the screen
+%
+% Syntax
+%   % specify a custom plotting convention
+%   pC = plottingConvention(outOfScreen,east)
+%   plot(ebsd,pC)
+%
+%   % changing the default plotting convention
+%   plottingConvention.default.east = yvector
+%
+%   % changing the plotting convention for a dataset
+%   % to be used in all future plotting commands
+%   ebsd.plottingConvention = pC
+%
+% Input
+%  outOfScreen - @vector3d 
+%  east        - @vector3d
+%
+% Output
+%  pC - @plottingConvention
   
   properties
     rot = rotation.id % screen coordinates to reference coordinates
