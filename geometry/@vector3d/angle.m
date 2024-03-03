@@ -4,6 +4,7 @@ function a = angle(v1,v2,varargin)
 % Syntax
 %   omega = angle(v1,v2)
 %   omega = angle(v1,v2,'antipodal')
+%   omega = angle(v1,v2,'noSymmetry')
 %   omega = angle(v1,v2,N)
 %
 % Input
@@ -15,6 +16,8 @@ function a = angle(v1,v2,varargin)
 %
 % Options
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
+%  noSymmetry - ignore symmetry
+%
 
 if nargin == 3 && isa(varargin{1},'vector3d')
 
