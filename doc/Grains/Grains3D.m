@@ -7,10 +7,10 @@
 %
 %% Grain sets from Dream3d
 
-grains3 = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d'));
+grains_dream_3d = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d'));
 
 % for triangulated data sets it may be useful to plot them without lines
-plot(grains3,grains3.meanOrientation,'LineStyle','none')
+plot(grains_dream_3d,grains_dream_3d.meanOrientation,'LineStyle','none')
 
 %% Grain sets from neper
 
@@ -111,3 +111,10 @@ how2plot.outOfScreen = vector3d(-10,-4,1);
 how2plot.east = vector3d(2,-5,0);
 setCamera(how2plot)
 
+%% Slice Dream3d Grains
+
+N = vector3d(1,1,1);
+P0 = vector3d(0.5,0.5,0.5);
+
+slice = grains_dream_3d.slice(N,P0);
+plot(slice,slice.meanOrientation);

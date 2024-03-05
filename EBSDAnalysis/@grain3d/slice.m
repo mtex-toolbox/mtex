@@ -66,12 +66,15 @@ V = grains.boundary.allV.xyz;
 F = grains.F;
 
 E = meshEdges(F);
-FE = meshFaceEdges(V, E, F);
 
 crossingEdges = find(xor(isBelowPlane(V(E(:,1),:),plane),isBelowPlane(V(E(:,2),:),plane)));
 assert(~isempty(crossingEdges),'plane is outside of grain3d bounding box')
 
-crossingFE_all = cell2mat(cellfun((@(el) ismember(crossingEdges,el)'), FE, 'UniformOutput', false));
+crossingFE_all = zeros(size(F,1),size(crossingEdges,1));
+for i = 1:length(F)
+  crossingFE_all(i,:)=(sum(F(i,:)==E(crossingEdges,1),2)==1 & sum(F(i,:)==E(crossingEdges,2),2)==1)';
+end
+
 intersecFaces = find(sum(crossingFE_all,2)==2);
 
 % crossingFE_all: 1.dim with respect to intersecFaces, 2.dim with respect to
@@ -115,14 +118,30 @@ for m = 1:length(newIds)
   currPoly(1:2) = crossingFE(1,:);
   nextEdge = crossingFE(1,2);
   crossingFE(1,2) = 0;
+  numPoly = 1;        % number of closed loops
+  n = 1;
   
-  for n = 1:size(crossingFE,1)-1
+  while n <= size(crossingFE,1)+numPoly-2
     [i,j] = find(crossingFE==nextEdge);
-    assert(isscalar(i))
-    % abs(j-3) so 1=>2 and 2=>1
-    nextEdge = crossingFE(i,abs(j-3));
-    crossingFE(i,:) = [0 0];
-    currPoly(n+2) = nextEdge;
+    if nextEdge == 0  % more than one closed polygon
+      numPoly = numPoly + 1;
+      i = find(crossingFE(:,1)~=0);
+      i = i(1);
+      nextEdge = crossingFE(i,2);
+      crossingFE(i,2) = 0;
+      currPoly(n+1) = crossingFE(i,1);
+      currPoly(n+2) = nextEdge;
+    else
+      if ~isscalar(i)
+        i = i(1);
+        j = j(1);
+      end
+      % abs(j-3) so 1=>2 and 2=>1
+      nextEdge = crossingFE(i,abs(j-3));
+      crossingFE(i,:) = [0 0];
+      currPoly(n+2) = nextEdge;
+    end
+    n = n + 1;
   end
   newPoly(m) = {currPoly};
 end
