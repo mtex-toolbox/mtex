@@ -70,9 +70,14 @@ E = meshEdges(F);
 crossingEdges = find(xor(isBelowPlane(V(E(:,1),:),plane),isBelowPlane(V(E(:,2),:),plane)));
 assert(~isempty(crossingEdges),'plane is outside of grain3d bounding box')
 
-crossingFE_all = zeros(size(F,1),size(crossingEdges,1));
-for i = 1:length(F)
-  crossingFE_all(i,:)=(sum(F(i,:)==E(crossingEdges,1),2)==1 & sum(F(i,:)==E(crossingEdges,2),2)==1)';
+if iscell(F)
+  FE = meshFaceEdges(V, E, F);
+  crossingFE_all = cell2mat(cellfun((@(el) ismember(crossingEdges,el)'), FE, 'UniformOutput', false));
+else
+  crossingFE_all = zeros(size(F,1),size(crossingEdges,1));
+  for i = 1:length(F)
+    crossingFE_all(i,:)=(sum(F(i,:)==E(crossingEdges,1),2)==1 & sum(F(i,:)==E(crossingEdges,2),2)==1)';
+  end
 end
 
 intersecFaces = find(sum(crossingFE_all,2)==2);
