@@ -99,11 +99,12 @@ classdef grainBoundary < phaseList & dynProp
       end
 
       % compute boundary grainId and phaseId
+      [~,~,ic] = unique(ebsdInd(ebsdInd>0));
       gB.grainId = zeros(size(F,1),2);
-      gB.grainId(ebsdInd>0) = grainId(ebsdInd(ebsdInd>0));
+      gB.grainId(ebsdInd>0) = grainId(ic);
       
       gB.phaseId = zeros(size(F,1),2);
-      gB.phaseId(ebsdInd>0) = phaseId(ebsdInd(ebsdInd>0));
+      gB.phaseId(ebsdInd>0) = phaseId(ic);
 
       % sort columns such that first phaseId1 <= phaseId2
       doSort = gB.phaseId(:,1) > gB.phaseId(:,2) | ...

@@ -132,7 +132,7 @@ classdef grain2d < phaseList & dynProp
 
         lBnd = cellfun(@(p) length(p),poly) - grains.inclusionId -1;
 
-        grainIds = repelem(1:length(grains),lBnd);
+        grainIds = repelem(grains.id,lBnd);
 
         [~,iF,iG] = unique(sort(F,2),'rows','stable');
         F = F(iF,:);
@@ -150,10 +150,10 @@ classdef grain2d < phaseList & dynProp
         mori = rotation.nan(size(F,1),1);
         isNotBoundary = all(grainId,2);
         mori(isNotBoundary) = ...
-          inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
-          .* grains.prop.meanRotation(grainId(isNotBoundary,1));
+          inv(grains.prop.meanRotation(grains.id2ind(grainId(isNotBoundary,2)))) ...
+          .* grains.prop.meanRotation(grains.id2ind(grainId(isNotBoundary,1)));
 
-        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId,[],'all'),...
+        grains.boundary = grainBoundary(V,F,grainId,grains.id,...
           grains.phaseId,mori,grains.CSList,grains.phaseMap);
         
       end
