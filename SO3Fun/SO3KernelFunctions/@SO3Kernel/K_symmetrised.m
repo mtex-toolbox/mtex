@@ -7,8 +7,8 @@ function w = K_symmetrised(psi,q1,q2,CS,SS,varargin)
 %  CS, SS - crystal , specimen @symmetry
 %
 % Options
-%  exact - 
-%  epsilon - 
+%  exact - Use complete kernel functions and compute full distance matrix
+%  epsilon - cut kernel functions outside of [-2epsilon,2epsilon]
 %
 % Description
 % K(q1,q2) = Sum(S) Sum(l) A_l Tr T_l(s1^-1 q1 s2)
@@ -36,8 +36,10 @@ else
   lg2 = -length(q2);
 end
 
-
-if epsilon>2*pi/CS.Laue.multiplicityZ % full matrixes
+% TODO: Better use the diameter here
+% For triclinic symmetries the right hand side should be pi and >=
+% Note that the following condition occurs in SO3Fun.interpolate
+if epsilon>2*pi/CS.Laue.multiplicityZ % full matrices
  
   q1 = quaternion(q1);
   q2 = quaternion(q2);
