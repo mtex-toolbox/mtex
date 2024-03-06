@@ -12,6 +12,9 @@ function w = K_symmetrised(psi,q1,q2,CS,SS,varargin)
 %
 % Description
 % K(q1,q2) = Sum(S) Sum(l) A_l Tr T_l(s1^-1 q1 s2)
+%
+% See also
+% SO3FunRBF/eval SO3Fun/interpolate
 
 % only the pur rotational part is of interest 
 % TODO
