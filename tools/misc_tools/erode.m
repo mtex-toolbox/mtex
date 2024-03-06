@@ -12,9 +12,8 @@ function ebsd = erode(ebsd,count, varargin)
 %
 % Input
 %  ebsd   - @EBSD
-%  counts - number, upper threshold of same phase pixels
-%           around each pixel to premit erosion
-%  phse   - phase name, cell or string
+%  counts - upper threshold of same phase pixels around each pixel to permit erosion
+%  phase  - phase name, cell or string
 %
 % Output
 %  ebsd - @EBSD without the eroded pixels
@@ -90,8 +89,12 @@ end
 % pixels to erode must be zmap AND haver lower 
 % neighbor count than threshold 
 if exist('zmap','var')
-   peroded =zmap & sum(zmap(ind),3) <= count;
-   ebsd(peroded) = [];
+   candidate = sum(zmap(ind),3) <= count;
+   peroded =zmap(:) & candidate(:);
+   ebsd =EBSD(ebsd);
+   ebsd = ebsd(~peroded);
 end
+% cleanup
+ebsd(ebsd.isnan)=[]
 
 end

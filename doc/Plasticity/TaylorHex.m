@@ -11,6 +11,7 @@
 % First we need to set up hexagonal crystal symmetry.
 
 cs = crystalSymmetry.load('Mg-Magnesium.cif')
+cs = cs.properGroup;
 
 %% Setting up the basal fibre texture
 % 
@@ -19,6 +20,8 @@ cs = crystalSymmetry.load('Mg-Magnesium.cif')
 % This is typical for rolled Mg-sheet
 
 odf = fibreODF(cs.cAxis, vector3d.Z);
+%odf = uniformODF(cs)
+
 
 %% Plot polefigures of generated initial state without strains
 % define crystal orientations of interest for polefigures and plot figure
@@ -78,17 +81,65 @@ epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
 % well as the coeffeicients for each slip system for cold and hot state
 
 % simulated an initial orientation distribution of 10000 grains
-ori = odf.discreteSample(10000);
+ori = odf.discreteSample(100000);
 
 % apply the Taylor model 
-[~,bCold,Wcold] = calcTaylor( inv(ori) .* epsCold, sScold);
-[~,bWarm,Wwarm] = calcTaylor( inv(ori) .* epsWarm, sSwarm);
+[~,bCold,WcoldD] = calcTaylor( inv(ori) .* epsCold, sScold);
+[~,bWarm,WwarmD] = calcTaylor( inv(ori) .* epsWarm, sSwarm);
 
 %%
 % Apply the Taylor spin to the initial orientation distribution
 
-oriCold = ori .* orientation(-Wcold);
-oriWarm = ori .* orientation(-Wwarm);
+oriCold = ori .* orientation(-WcoldD);
+oriWarm = ori .* orientation(-WwarmD);
+
+%%
+
+oriWarm2 = ori .* orientation(-Wwarm.eval(ori));
+
+%%
+
+
+[~,~,Wcold] = calcTaylor(epsCold, sScold)
+[~,~,Wwarm] = calcTaylor(epsWarm, sSwarm)
+
+
+%%
+Wwarm2 = Wwarm;
+Wwarm2.SO3F = Wwarm2.SO3F.conv(psi);
+
+psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree)
+
+%%
+
+odf = SO3FunHarmonic(odf)
+
+odfWarm = doEulerStep(Wwarm2./2,odf,40)
+figure(1)
+plotPDF(odfWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
+mtexColorbar
+
+%%
+
+Wwarm3 = @(ori) calcSpin(ori,epsWarm,sSwarm)
+
+oriWarm = doEulerStep(Wwarm3,ori,10)
+figure(2)
+plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
+mtexColorbar
+
+%%
+
+plotPDF(odfWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
+
+%%
+
+plot(div(Wwarm),'sigma',[0,30]*degree,'resolution',0.5*degree,'noGrid')
+mtexColorMap blue2red
+hold on
+plot(Wwarm,'add2all','noGrid','color','black','resolution',5*degree)
+hold off
+
 
 %%
 % Plot pole figures in comparison to inital texture
@@ -98,7 +149,7 @@ plotPDF(oriCold,h,'antipodal','contourf','grid','grid_res',30*degree)
 mtexColorbar;
 
 nextAxis %create a new axis on the existing figure and put along side
-plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
+plotPDF(oriWarm2,h,'antipodal','contourf','grid','grid_res',30*degree)
 mtexColorbar;
 
 % get figure handle and set correct layout
@@ -129,3 +180,9 @@ set(gca, 'YScale', 'log','XTickLabel', {'RT' '250 °C'})
 legend({'Basal slip','Prismatic slip','Pyramidal slip','Comp. Twin'},...
     'Location','eastoutside')
 legend('boxoff')
+
+%%
+
+function W = calcSpin(ori,eps,sS)
+[~,~,W] = calcTaylor( inv(ori) .* eps, sS);
+end

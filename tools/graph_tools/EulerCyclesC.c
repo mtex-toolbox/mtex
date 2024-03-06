@@ -78,17 +78,17 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V, mx
     double *I_FG_Pr = mxGetPr(I_FG);// Pr (sparse matrix)
 
     IntStack cyclePoints;
-    cyclePoints.maxSize = V_M*4;// TODO erstmal annahme: jeder Punkt kommt in 4 Cyclen vor
+    cyclePoints.maxSize = V_M*4 + 1000;// TODO erstmal annahme: jeder Punkt kommt in 4 Cyclen vor
     cyclePoints.buffer = mxMalloc(sizeof(int)*cyclePoints.maxSize);
     cyclePoints.index = 0;
 
     IntStack cycles;
-    cycles.maxSize = I_FG_N*2*2;// TODO erstmal annahme: ein Korn hat durchschnittlich maximal 2 cyclen
+    cycles.maxSize = I_FG_N*2 + 1000;// TODO erstmal annahme: ein Korn hat durchschnittlich maximal 2 cyclen
     cycles.buffer = mxMalloc(sizeof(int)*cycles.maxSize);
     cycles.index = 0;
 
-    // [grain1CyclesStartIndex, nCyclesGrain1, grain2CyclesStartIndex, nCyclesGrain2, ...]
-    int* grainCycles = mxMalloc(sizeof(int)*I_FG_N*2);
+    // [grain1CyclesStartIndex, grain2CyclesStartIndex, ..., numberOfCycles]
+    int* grainCycles = mxMalloc(sizeof(int)*I_FG_N + 1);
     
     int *F_usable_global = mxMalloc(sizeof(int)*F_M);
     memset(F_usable_global, 0, sizeof(int)*F_M);
@@ -105,38 +105,35 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V, mx
         }
         //printf("\n");
 
-        grainCycles[I_FG_columnIndex*2] = cycles.index;// first cycle index of grain
-
+        grainCycles[I_FG_columnIndex] = cycles.index;// first cycle index of grain
         calcEulerCyclesGrain(I_FG_columnIndex, FindexGrain, nFGrain, VN, VNFindex, VNSize, F_doubles, F_M, F_usable_global, &cyclePoints, &cycles);
         
-        grainCycles[I_FG_columnIndex*2 + 1] = cycles.index - grainCycles[I_FG_columnIndex*2];// number of added cycles
-
         // TODO: maybe not neccesary
         for (int j = 0; j < nFGrain; j++) {
             F_usable_global[I_FG_Ir[I_FG_Pr_indexStart + j]] = 0;
         }
 
     }
-
+    grainCycles[I_FG_N] = cycles.index;// last element: total number of cycles
+    push(&cycles, cyclePoints.index);// last element: total number of cyclePoints
+    
     // generate output data
-    *outGrains = mxCreateDoubleMatrix(I_FG_N, 2, mxREAL);
+    *outGrains = mxCreateDoubleMatrix(I_FG_N + 1, 1, mxREAL);
     double* outGrains_doubles = mxGetDoubles(*outGrains);
-    for (int i = 0; i < I_FG_N; i++) {
-        outGrains_doubles[i] = grainCycles[i*2]/2 + 1;// cycles start Index (matlab)
-        outGrains_doubles[i + I_FG_N] = grainCycles[i*2 + 1]/2;// number of cycles in this grain
+    for (int i = 0; i < I_FG_N+1; i++) {
+        outGrains_doubles[i] = grainCycles[i] + 1;// cycles start Index (matlab: index starts with 1)
     }
 
-    *outCycles = mxCreateDoubleMatrix(cycles.index/2, 2, mxREAL);
+    *outCycles = mxCreateDoubleMatrix(cycles.index, 1, mxREAL);
     double* outCycles_doubles = mxGetDoubles(*outCycles);
-    for (int i = 0; i < cycles.index/2; i++) {
-        outCycles_doubles[i] = cycles.buffer[i*2] + 1;// points start Index (matlab)
-        outCycles_doubles[i + cycles.index/2] = cycles.buffer[i*2 + 1];// number of Points
+    for (int i = 0; i < cycles.index; i++) {
+        outCycles_doubles[i] = cycles.buffer[i] + 1;// points start Index (matlab: index starts with 1)
     }
 
     *outCyclePoints = mxCreateDoubleMatrix(cyclePoints.index, 1, mxREAL);
     double* outCyclePoints_doubles = mxGetDoubles(*outCyclePoints);
     for (int i = 0; i < cyclePoints.index; i++) {
-        outCyclePoints_doubles[i] = cyclePoints.buffer[i] + 1;// points (index) (matlab)
+        outCyclePoints_doubles[i] = cyclePoints.buffer[i] + 1;// points (index) (matlab: index starts with 1)
     }
 
 
@@ -170,7 +167,8 @@ void calcEulerCyclesGrain(int grainIndex, mwIndex *FindexGrain, int nFGrain,int 
             currentV = (int)F_doubles[currentFGlobal + F_M] - 1;// the other side
 
             push(cycles, cyclePoints->index);// start new cycle. the first point is located at cyclePoints->index
-            push(cyclePoints, currentV);// add first point
+            push(cyclePoints, startV);// add first point. this is the starting point and it will appear twice
+            push(cyclePoints, currentV);// add next point
             nCyclePoints = 1;
 
             F_usable_global[currentFGlobal] = 0;// use face
@@ -183,28 +181,32 @@ void calcEulerCyclesGrain(int grainIndex, mwIndex *FindexGrain, int nFGrain,int 
                 for (next = 0; next < VNSize[currentV]; next++) {
                     if (F_usable_global[VNFindex[currentV*MAX_NEIGHBOURS + next]]) break;
                 }
-            }
-            //printf("next=%d\n",next);
-            if (next == -1 || next == VNSize[currentV]) {
-                // not found or at cycle start
-                push(cycles, nCyclePoints);// finish cycle: set length
+                if (next == VNSize[currentV]) {
+                    // not found
+                    push(cyclePoints, startV);// close polygon
+                    currentV = startV;
+                    nCyclePoints = 0;
+                    currentFGlobal = -1;
+                } else {
+                    // found
+                    currentFGlobal = VNFindex[currentV*MAX_NEIGHBOURS + next];
+                    currentV = VN[currentV*MAX_NEIGHBOURS + next];
+    
+                    push(cyclePoints, currentV);// add Point
+                    nCyclePoints += 1;// increase number of points
+    
+                    F_usable_global[currentFGlobal] = 0;// use face
+                    nFUsed++;
+                }
+            } else {
+                // if at start:
                 nCyclePoints = 0;
                 currentFGlobal = -1;
-            } else {
-                // found
-                currentFGlobal = VNFindex[currentV*MAX_NEIGHBOURS + next];
-                currentV = VN[currentV*MAX_NEIGHBOURS + next];
-
-                push(cyclePoints, currentV);// add Point
-                nCyclePoints += 1;// increase number of points
-
-                F_usable_global[currentFGlobal] = 0;// use face
-                nFUsed++;
             }
         }
     }
-    if (nCyclePoints != 0) {
-        push(cycles, nCyclePoints);// finish cycle: set length
+    if (currentFGlobal != -1 && startV != currentV) {
+        push(cyclePoints, startV);// close polygon
     }
 }
 

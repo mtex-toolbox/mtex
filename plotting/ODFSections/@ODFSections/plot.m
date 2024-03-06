@@ -127,7 +127,7 @@ else
       
 end
 
-mtexFig.CLim('equal');
+setColorRange(mtexFig,'equal');
 
 %if isNew || check_option(varargin,'figSize')
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});

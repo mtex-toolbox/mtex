@@ -12,16 +12,14 @@ function [ebsd] = loadEBSD_h5oina(fname,varargin)
 %   ebsd = loadEBSD_h5oina('ebsdData.h5oina','CS0');
 %
 % Options
-%   CS0 - use sample primary coordinates (default - use acquisition
-%         coordinates CS1)
-%   skipAllButEBSD     - only read EBSD data (but NOT electron images, EDS)
-%   skipEDS            - do not read EDS data
-%   skipEimage         - do not read electron images
-%   useProcessedData   - use processed EBSD data instead of original
-%                        (replaces Bands, Error, Euler, MAD, Phase)
-%   fullDataset        - also read additional EBSD related data
-%                        (Beam_Position, Pattern Center etc...)
+%   CS0 - use sample primary coordinates (default ~ use acquisition coordinates CS1)
+%   skipAllButEBSD   - only read EBSD data, but NOT electron images, EDS
+%   skipEDS          - do not read EDS data
+%   skipEimage       - do not read electron images
+%   useProcessedData - use processed EBSD data instead of original, replaces Bands, Error, Euler, MAD, Phase
+%   fullDataset      - also read additional EBSD related data: Beam_Position, Pattern Center etc.
 %
+
 % TODO
 % 1) Test if EBSDheader.Specimen_Orientation_Euler does what it's supposed
 %    to do -> see below. <-- looks like this is in some datasets stored in

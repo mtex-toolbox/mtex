@@ -38,8 +38,8 @@ else
       E=[E1,E2];
     
       clear Vx Vy E1 E2
-      [V,~,ic] = unique(round(V*1e5/dxy)*dxy/1e5,'rows');
-    
+      [V,~,ic] = unique(round(V*1e2/dxy)*dxy/1e2,'rows');
+
       F = sort(ic(E),2);
       I_FD = sparse(I_ED1(I_ED2<=numX),I_ED2(I_ED2<=numX),1,size(F,1),numX);
     

@@ -92,7 +92,8 @@ end
 
     [r_local,~,value] = getDataCursorPos(mtexFig);
 
-    txt = [xnum2str(value) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+    txt = [xnum2str(value) ' at ( \theta=' int2str(r_local.theta/degree) mtexdegchar ...
+      ' , \rho=' int2str(r_local.rho/degree) mtexdegchar ' )'];
 
   end
 

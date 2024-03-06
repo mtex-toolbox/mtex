@@ -131,7 +131,7 @@ hold on
 plot(tP,sumMisAngle ./ degree,'markerEdgeColor','w','MarkerSize',8)
 hold off
 mtexColorMap(blue2redColorMap)
-CLim(gcm,[80,180])
+setColorRange([80,180])
 mtexColorbar
 
 %% Angles at triple points

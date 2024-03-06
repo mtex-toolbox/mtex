@@ -20,7 +20,7 @@ function [R, M, minM]  = calcLankford(ori,sS,varargin)
 % eliminating the need to trim ears during subsequent processing.
 %
 % Syntax:
-%  [R, minM, M] = calcRValue(ori,sS,theta,RD,ND)
+%   [R, minM, M] = calcRValue(ori,sS,theta,RD,ND)
 %
 % Input:
 %  ori - @orientation

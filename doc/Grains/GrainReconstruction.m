@@ -52,7 +52,7 @@ plot(ebsd)
 % <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
 % and returns a list of grain.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',1.2,'angle',10*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree);
 grains
 
 %%
@@ -69,22 +69,39 @@ plot(grains.boundary,'linewidth',1.5)
 % stop overide mode
 hold off
 
-%%
+%% Grainboundary Smoothing 
+% 
+% Due to the gridded nature of the EBSD measurement the reconstructed grain
+% boundaries often suffer from the staircase effect. This can be reduced by
+% smoothing the grain boundaries using the command <grain2d.smooth.html
+% |smooth|>
+
+grains = smooth(grains,5);
+
+% display the result
+plot(ebsd)
+hold on
+plot(grains.boundary,'linewidth',1.5)
+hold off
+
+%% Adapting the Alpha Paramter
 % Increasing the parameter |'alpha'| larger unindexed regions are
 % associated to grains.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree);
+grains = smooth(grains,5);
 
 % plot the boundary of all grains
+plot(ebsd)
 hold on
-plot(grains.boundary,'linewidth',1.5,'lineColor','red')
+plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %% Clearing Single Pixel Grains
 %
-% As we observe quite a few single pixel grains we might want to consider
-% them as misindexations and perform the grain reconstruction on the
-% cleaned up data set.
+% There are quite a few single pixel grains we might want to consider
+% as misindexations and perform the grain reconstruction on the
+% cleaned up data set. This is done as follows
 
 % detect single pixel grains
 isMisindexed = grains.grainSize==1;
@@ -96,20 +113,7 @@ ebsd(grains(isMisindexed)) = 'notIndexed';
 [grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree);
 
 % display the result
-plot(ebsd)
-hold on
-plot(grains.boundary,'linewidth',1.5)
-hold off
-
-%% Grainboundary Smoothing 
-% 
-% Finally we may not like the staircase effect of the grain boundaries.
-% This can be reduced by smoothing the grain boundaries using the command
-% <grain2d.smooth.html |smooth|>
-
 grains = smooth(grains,5);
-
-% display the result
 plot(ebsd)
 hold on
 plot(grains.boundary,'linewidth',1.5)

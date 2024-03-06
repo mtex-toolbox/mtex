@@ -11,7 +11,7 @@ close all; plotx2east
 % import the data
 mtexdata forsterite
 
-% restrict it to a subregion of interest.
+% restrict it to a sub-region of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
@@ -53,7 +53,7 @@ plot(grains(45).boundary,'lineWidth',4,'lineColor','DarkBlue')
 hold off
 
 %% 
-% For a multi-phase system, the location of specific phase transistions may
+% For a multi-phase system, the location of specific phase transitions may
 % be of interest. The following plot highlights all Forsterite to Enstatite
 % phase transitions
 
@@ -89,13 +89,13 @@ mtexColorbar('title','misorientation angle')
 %% The misorientation axes in crystal coordinates
 % Similarly as the rotational angle we may colorize the grain boundaries
 % also according the misorientation axes. First of all we have to decide
-% wheter we want to visualize the rotational axis in crystal or coordinate
+% whether we want to visualize the rotational axis in crystal or coordinate
 % system. Second we have to define a color key that translates rotational
 % axes into colors.
 %
 % Lets start with the rotational axes in crystal coordinates
 
-% computed the axes in specien coordinates
+% computed the axes in specimen coordinates
 axes = gB_Fo.misorientation.axis
 
 % define a color key
@@ -123,8 +123,8 @@ hold off
 %% The misorientation axes in specimen coordinates
 %
 % Analyzing the misorientation axis in specimen coordinates is a bit more
-% involved as it requires to extract the two neighbouring orientations to
-% each boundary segment. To do this we use the *ebsdId* stored in the
+% involved as it requires to extract the two neighboring orientations to
+% each boundary segment. To do this we use the |ebsdId| stored in the
 % boundary segments.
 
 figure(1)
@@ -148,7 +148,7 @@ hold off
 
 %% Full Misorientation Colorization
 %
-% In order to visuale the full misorientation, i.e., axis and angle, one
+% In order to visualize the full misorientation, i.e., axis and angle, one
 % has to define a corresponding color key. One option is the color key
 % described in the paper by S. Patala, J. K. Mason, and C. A. Schuh,
 % |Improved representations of misorientation information for grain
@@ -185,7 +185,7 @@ plot(gB_Fo.misorientation,...
 % import the data
 mtexdata csl
 
-% grain segementation and smoothing
+% grain segmentation and smoothing
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 grains = smooth(grains,2);
 gB = grains.boundary('iron','iron');
@@ -194,7 +194,7 @@ gB = grains.boundary('iron','iron');
 close all
 plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
-CLim(gcm,[.5,5])
+setColorRange([.5,5])
 hold on
 plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
 

@@ -75,7 +75,7 @@
 % *Lankford Parameter*
 % * <Lankford.html Lankford>
 %
-% *Numerous minor addon, speed improvements, bug fixes*
+% *Numerous minor improvements and bug fixes*
 % * h5 interface
 % * new function <SO3Fun.cor.html |cor(odf1,odf2>|> to compute the
 % correlation between two ODF

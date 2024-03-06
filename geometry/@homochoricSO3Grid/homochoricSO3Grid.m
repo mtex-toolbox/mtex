@@ -19,6 +19,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
   % Options
   %  maxAngle - radius of the ball to be filled
   %
+  
   % no difference is made between antipodal quaternions
     
   properties

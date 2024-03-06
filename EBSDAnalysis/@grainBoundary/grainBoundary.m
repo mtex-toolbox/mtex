@@ -6,7 +6,7 @@ classdef grainBoundary < phaseList & dynProp
 %
 %   grains.boundary
 %
-% Each grain boundary segement stores many properties: its position within
+% Each grain boundary segment stores many properties: its position within
 % the map, the ids of the adjacent grains, the ids of the adjacent EBSD
 % measurements, the grain boundary misorientation, etc. These properties
 % are explained in more detail in the section <BoundaryProperties.html
@@ -14,7 +14,7 @@ classdef grainBoundary < phaseList & dynProp
 %
 % Class Properties
 %  V            - [x,y] list of vertices 
-%  scanUnit     - scaning unit (default - um)
+%  scanUnit     - scanning unit (default - um)
 %  triplePoints - @triplePointList
 %  F            - list of boundary segments as ids to V
 %  grainId      - id's of the neighboring grains to a boundary segment
@@ -27,8 +27,8 @@ classdef grainBoundary < phaseList & dynProp
 %  midPoint       - x,y coordinates of the midpoint of the segments
 %  I_VF           - incidence matrix vertices - edges
 %  I_FG           - incidence matrix edges - grains
-%  A_F            - adjecency matrix edges - edges
-%  A_V            - adjecency matrix vertices - vertices
+%  A_F            - adjacency matrix edges - edges
+%  A_V            - adjacency matrix vertices - vertices
 %  componentId    - connected component id
 %  componentSize  - number of segments that belong to the component
 %  x              - x coordinates of the vertices of the grains
@@ -38,26 +38,26 @@ classdef grainBoundary < phaseList & dynProp
   
   % properties with as many rows as data
   properties
-    F = zeros(0,2)       % list of faces - indeces to V    
-    grainId = zeros(0,2) % id's of the neigbouring grains to a face
-    ebsdId = zeros(0,2)  % id's of the neigbouring ebsd data to a face
+    F = zeros(0,2)       % list of faces - indices to V    
+    grainId = zeros(0,2) % id's of the neighboring grains to a face
+    ebsdId = zeros(0,2)  % id's of the neighboring ebsd data to a face
     misrotation = rotation % misrotations
   end
   
   % general properties
   properties
-    scanUnit = 'um' % unit of the vertice coordinates
+    scanUnit = 'um' % unit of the vertex coordinates
     triplePoints = triplePointList  % triple points
   end
   
   properties (Dependent = true)
-    misorientation % misorientation between adjecent measurements to a boundary
+    misorientation % misorientation between adjacent measurements to a boundary
     direction      % direction of the boundary segment
     midPoint       % x,y coordinates of the midpoint of the segment
     I_VF           % incidence matrix vertices - edges
     I_FG           % incidence matrix edges - grains
-    A_F            % adjecency matrix edges - edges
-    A_V            % adjecency matrix vertices - vertices
+    A_F            % adjacency matrix edges - edges
+    A_V            % adjacency matrix vertices - vertices
     componentId    % connected component id
     componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
@@ -71,8 +71,8 @@ classdef grainBoundary < phaseList & dynProp
       % Input
       %  V       - [x,y] list of vertices
       %  F       - [v1,v2] list of boundary segments
-      %  ebsdInd - [Id1,Id2] list of adjecent EBSD pixels for each segment
-      %  mori    - misorientation between adjecent EBSD pixels for each segment
+      %  ebsdInd - [Id1,Id2] list of adjacent EBSD pixels for each segment
+      %  mori    - misorientation between adjacent EBSD pixels for each segment
       %  grainId - ebsd.grainId
       %  phaseId - ebsd.phaseId
       %  CSList   - 
@@ -284,7 +284,7 @@ classdef grainBoundary < phaseList & dynProp
 
   methods (Static = true)
       function gB = loadobj(gB)
-      % called by Matlab when an object is loaded from an .mat file
+      % called by MATLAB when an object is loaded from an .mat file
       % this overloaded method ensures compatibility with older MTEX
       % versions
       

@@ -342,7 +342,6 @@ pf = calcPoleFigure(SantaFe,h,'antipodal');
 
 % plot them
 plot(pf,'MarkerSize',5)
-mtexColorMap LaboTeX
 
 %%
 % and compute two ODFs from them
@@ -358,18 +357,19 @@ rec2 = calcODF(pf,'NoGhostCorrection','silent')
 % initial pole figures
 
 figure(1)
-plotPDF(rec,pf.h,'antipodal')
-mtexColorMap LaboTeX
+plotPDF(rec,pf.h,'antipodal','complete','upper')
+mtexColorMap parula
 
 %%
 figure(2)
-plotPDF(rec2,pf.h,'antipodal')
-mtexColorMap LaboTeX
+plotPDF(rec2,pf.h,'antipodal','complete','upper')
+mtexColorMap parula
 
 %%
 % However if we look at the ODF we see big differences. The so-called
 % ghosts.
 
+close all
 figure(1)
 plot(rec,'gray','contourf')
 mtexColorMap white2black
