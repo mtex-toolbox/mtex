@@ -7,7 +7,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   %
   % Syntax
   %
-  %   prop.xy = xy;
+  %   pos = vector3d(x,y,z);
   %   prop.mad = mad;
   %   CSList = {'notIndexed',CS1,CS2,CS3};
   %   rot = rotation.byEuler(phi1,Phi,phi2);
@@ -16,17 +16,14 @@ classdef EBSD < phaseList & dynProp & dynOption
   %   ebsd = EBSD(rot,phaseId,CSList,prop,'unitCell',unitCell)
   %
   % Input
+  %  pos         - @vector3d
   %  rot         - @rotation
   %  phaseId     - phase as index to CSList
   %  CS1,CS2,CS3 - @crystalSymmetry
-  %  prop        - struct with properties, xy is mandatory
-  %  unitCell    - vertices a single pixel
+  %  prop        - struct with properties (optional)
   %
   % Options
-  %  phase    - phase of each EBSD pixel
-  %  options  - struct with fields holding properties for each orientation
-  %  xy       - spatial coordinates n x 2, where n is the number of input orientations
-  %  unitCell - for internal use
+  %  unitCell - @vector3d
   %
   % Class Properties
   %  id        - unique id of each pixel
@@ -35,7 +32,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  phase     - phase of each pixel as imported 
   %  phaseMap  - convert between phase = phaseMap(phaseId)
   %  rotations - @rotation of each pixel
-  %  x, y      - coordinates of the center of each pixel 
+  %  pos       - @vector3d, coordinates of the center of each pixel 
   %  scanUnit  - unit of the x,y coordinates (um is default)
   %  prop      - auxiliary properties, e.g., MAD, BC, mis2mean
   %  isIndexed - is pixel indexed or not
@@ -99,8 +96,10 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
-        for fn = fieldnames(pos.prop)'
-          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+        if nargin > 4 && isstruct(prop)
+          for fn = fieldnames(pos.prop)'
+            ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+          end
         end
         ebsd.opt = pos.opt;
 
