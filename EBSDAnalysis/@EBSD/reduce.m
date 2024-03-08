@@ -8,6 +8,7 @@ function ebsd = reduce(ebsd,fak)
 % Input
 %  ebsd    - @EBSD
 %  factor  - resample ebsd at rate factor (integer)
+%
 % Output
 %  ebsd    - @EBSD
 %
@@ -37,11 +38,17 @@ elseif length(ebsd.unitCell) == 6 % hexgrid
   dy = max(ebsd.unitCell(:,2))-min(ebsd.unitCell(:,2));
   
   % detect position within grid
-  iy = round((ebsd.prop.y - ext(3))/dy*4/3);
-  ix = round((ebsd.prop.x - ext(1))/dx*2);
-
-  ebsd = ebsd.subSet(~mod(iy,fak) & ~mod(ix+iy,2*fak));
+  if dx>dy
+    ix = round((ebsd.prop.x - ext(1))/dx*4/3);
+    iy = round((ebsd.prop.y - ext(3))/dy*2);
     
+    ebsd = ebsd.subSet(~mod(iy,fak) & mod(ix+iy,2*fak));    
+  else
+    iy = round((ebsd.prop.y - ext(3))/dy*4/3);
+    ix = round((ebsd.prop.x - ext(1))/dx*2);
+
+    ebsd = ebsd.subSet(~mod(ix,fak) & ~mod(ix+iy,2*fak));    
+  end
   ebsd.unitCell = fak*ebsd.unitCell;
   
 end
