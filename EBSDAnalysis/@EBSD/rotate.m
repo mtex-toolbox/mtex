@@ -40,7 +40,7 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
 
-  % remove ana grid
+  % remove any grid
   ebsd = EBSD(ebsd);
 
   % the center of rotation
@@ -54,5 +54,5 @@ if ~check_option(varargin,'keepXY')
   ebsd.N = rot * ebsd.N;
 
   % rotate the unitcell
-  ebsd.unitCell = rot * ebsd.unitCell;
+  ebsd.unitCell = rot .* ebsd.unitCell;
 end
