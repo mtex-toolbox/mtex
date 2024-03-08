@@ -180,8 +180,7 @@ try
   % gridify might be easiest
   ebsd=ebsd.gridify;
   ind_no = isnan(ebsd.rotations);
-  ebsd=EBSD(ebsd);
-  ebsd(ind_no(:)).phase=notIndexedID;
+  ebsd(ind_no).phase=notIndexedID;
   
 catch
   interfaceError(fname);
