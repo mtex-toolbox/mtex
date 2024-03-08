@@ -157,6 +157,12 @@ theta = linspace(0,90*degree,19);
 [R, M, minM] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.grainSize,'verbose');
 
 %%
+
+odf = calcODF(grains.meanOrientation,'weights',grains.grainSize,'verbose');
+
+[R, M, minM] = calcLankford(odf,sS,theta);
+
+%%
 % The following plot shows the Lankford parameter, as a function
 % of the angle $\theta$ between the tensile direction and the notional 
 % rolling direction (in this case - x).

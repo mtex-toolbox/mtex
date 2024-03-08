@@ -13,6 +13,8 @@ function vals = eval(sF, v)
 %  vals  - the values of sF on v
 %
 
+
+v = v(:);
 if sF.centered
   vals = eval_centered(sF, v);
   return;

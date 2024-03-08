@@ -1,10 +1,10 @@
 %% Merging Grains
 %
 %%
-% Merging grains may be usefull when reconstructing parent grain
-% structures, i.e., before phase transistion or before twinning. In this
+% Merging grains may be useful when reconstructing parent grain
+% structures, i.e., before phase transition or before twinning. In this
 % section we will use a twinning example for illustration. Lets start by
-% importing some Magenesium data and reconstructing the grain structure:
+% importing some Magnesium data and reconstructing the grain structure:
 
 % load some example data
 mtexdata twins silent

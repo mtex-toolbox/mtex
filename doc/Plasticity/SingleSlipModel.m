@@ -46,7 +46,7 @@ S = sSOli.deformationTensor
 % ansatz $e_{ij}(g) = \gamma(g) S_{ij}(g)$. Fitting this ansatz to a given
 % a macroscopic strain tensor
 
-E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
+E = 0.3 * strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 
 %%
 % via minimizing the square difference
@@ -95,6 +95,58 @@ hold off
 % being active, we would expect the c-axis to align more and more with the
 % the z-direction. 
 %
+
+% the starting ODF
+odf0 = uniformODF(csOli);
+
+odf = doEulerStep(2*Omega,odf0,40)
+
+figure(2)
+plot(odf,'sigma')
+mtexColorbar
+
+
+%%
+
+numIter = 10;
+res = 1.25*degree;
+
+ori0 = equispacedSO3Grid(csOli,'resolution',res);
+
+ori = doEulerStep(Omega,ori0,numIter);
+
+%%
+
+odf = calcDensity(ori,'halfwidth',res*4);
+
+%%
+figure(2)
+plot(odf,'sigma')
+
+%%
+
+numIter = 20;
+res = 2.5*degree;
+
+ori0 = equispacedSO3Grid(csOli,'resolution',res);
+
+[V,C] = calcVoronoi(ori0,'struct');
+w0 = calcVoronoiVolume(ori0,V,C);
+
+ori = doEulerStep(Omega,ori0,numIter);
+
+y0 = 1;
+
+w1 = calcVoronoiVolume(ori);
+
+y1 = y0 .* (w0 ./ w1);
+
+odfx = SO3FunHarmonic.approximation(ori(:),y1(:))
+
+figure(3)
+plot(odfx,'sigma')
+
+
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
 % are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
@@ -110,7 +162,10 @@ odf4 = SO3FunSBF(sSOrtho,E)
 % Lets check our expectation from the last paragraph by visualizing the
 % odf corresponding to the second slip system in sigma sections
 
+figure(1)
+odf2 = SO3FunSBF(sSOli(2),E)
 plotSection(odf2,'sigma')
+mtexColorbar
 
 %%
 % We observe exactly the concentration of the c-axis around z as predicted
@@ -153,3 +208,4 @@ plotSection(div(odf2 .* Omega),'sigma')
 mtexColorMap blue2red
 mtexColorbar
 setColorRange(max(abs(clim))*[-1,1])
+

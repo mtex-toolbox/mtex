@@ -36,48 +36,35 @@ ori = orientation.byEuler(0,30*degree,15*degree,cs)
 % factor
 % 
 
+
+
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
 % Some applications of the Taylor theory of polycrystal plasticity.
 % Kristall Und Technik, 5(1), 145-175.
 % http://doi.org/10.1002/crat.19700050112
 
+% Lets precompute the Taylor factor as |@SO3Fun| and the spin tensor as
+% |@SO3VectorField|. Hence we can evaluate them very fast for several times
+% in mush more orientations.
+% compute Taylor factor for all orientations
+[M,~,W] = calcTaylor(epsilon,sS.symmetrise)
+
 % set up an phi1 section plot
 sP = phi1Sections(cs,specimenSymmetry('222'));
 sP.phi1 = (0:10:90)*degree;
 
-% generate an orientations grid
-oriGrid = sP.makeGrid('resolution',2.5*degree);
-oriGrid.SS = specimenSymmetry;
-
-% compute Taylor factor for all orientations
-tic
-[M,~,W] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
-toc
-
 % plot the taylor factor
-sP.plot(M,'smooth')
-
+plot(M,'smooth',sP)
 mtexColorbar
 
-%%
-% Lets precompute the Taylor factor as |@SO3Fun| and the spin tensor as
-% |@SO3VectorField|. Hence we can evaluate them very fast for several times
-% in mush more orientations.
-
-% compute the Taylor factor independent from the orientations
-tic
-[TaylorF,~,Spin] = calcTaylor(epsilon,sS.symmetrise,'bandwidth',32);
-toc
-
-% plot the Taylor factor
-plotSection(TaylorF,'phi1',(0:10:90)*degree)
-
-mtexColorbar
+hold on 
+plot(W,'linecolor','black')
+hold off
 
 %% The orientation dependence of the spin
 % Compare Fig. 8 of the above paper
 
-sP.plot(W.angle./degree,'smooth')
+sP.plot(norm(W)/degree,'smooth')
 mtexColorbar
 
 %%
@@ -85,7 +72,7 @@ mtexColorbar
 
 sP = sigmaSections(cs,specimenSymmetry);
 oriGrid = sP.makeGrid('resolution',2.5*degree);
-W = Spin.eval(oriGrid(:));
+W = spin.eval(oriGrid(:));
 sP.plot(spinTensor(W.').angle./degree,'smooth')
 mtexColorbar
 
@@ -156,13 +143,13 @@ epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
 numIter = 100;
 
 % compute the Taylor factors and the orientation gradients
-[~,~,Spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
+[~,~,spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
 
 progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  W = spinTensor(Spin.eval(ori).').';
+  W = spinTensor(spin.eval(ori).').';
 
   % rotate the individual orientations
   ori = ori .* orientation(-W);
@@ -200,3 +187,12 @@ ori = oS.makeGrid;
 %%
 
 plot(oS,M,'contourf')
+
+
+%%
+
+odf0 = uniformODF(cs);
+odf = doEulerStep(spin*0.1,odf0,20);
+plotPDF(odf,Miller({0,0,1},{1,1,1},cs),'contourf')
+
+

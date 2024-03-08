@@ -112,7 +112,7 @@ else
 
     [il,idr] = ind2sub([length(l),length(dr)],pos);
 
-    o1 = l(il) * o1 * dr(idr);
+    o1 = l(il) .* o1 .* dr(idr);
 
   elseif ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);

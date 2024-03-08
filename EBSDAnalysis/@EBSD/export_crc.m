@@ -145,7 +145,7 @@ end
 %% C7 = BS
 if flagOIFormat && isfield(ebsdGrid.prop,'bs') == 1
     grid.bs = fliplr(ebsdGrid.prop.bs.');
-    elseif isfield(ebsdGrid.prop,'ci') == 1
+elseif isfield(ebsdGrid.prop,'ci') == 1
     ci = round(255 * mat2gray(ebsdGrid.prop.ci));
     grid.bs = fliplr(ci.');
 elseif isfield(ebsdGrid.prop,'confidenceindex') == 1
