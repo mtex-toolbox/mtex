@@ -1,5 +1,5 @@
 function [V,C] = calcVoronoi(ori,varargin)
-% compute the the Voronoi decomposition for unit quaternions
+% compute the Voronoi decomposition for unit quaternions
 %
 % Input
 %  ori - @orientation
@@ -40,8 +40,10 @@ q = quaternion(oriExt);
 q = q .* (-1).^(q.a<0);
 
 % compute the delaunay triangulation
+if length(q)>1e5
+  warning('The Voronoi decomposition is calculated. This may take some time.')
+end
 faces = convhulln(squeeze(double(q)));
-
 % voronoi-vertices are the intersections of the perpendicular bisector
 V = cross(...
   q.subSet(faces(:,4))-q.subSet(faces(:,1)),...
