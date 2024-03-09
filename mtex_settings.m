@@ -207,6 +207,8 @@ setMTEXpref('memory',500*1024);
 %
 setMTEXpref('FFTAccuracy',1E-2);
 
+setMTEXpref('maxS1Bandwidth',1024);
+
 setMTEXpref('maxS2Bandwidth',512);
 
 setMTEXpref('maxSO3Bandwidth',64);
