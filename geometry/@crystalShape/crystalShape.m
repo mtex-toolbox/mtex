@@ -29,6 +29,7 @@ classdef crystalShape
     faceArea
     faceCenter
     volume
+    E % edges
   end
   
   methods
@@ -145,6 +146,13 @@ classdef crystalShape
      cSVol = 1/3*sum( ...
              dot(cS.faceCenter,normalize(unique(vector3d(symmetrise(cS.N)),'stable'))) ...
              .*cS.faceArea);
+    end
+
+    function E = get.E(cS)
+      F = cS.F.'; F = F(:);
+      E = [F(1:end-1),F(2:end)];
+      E = E(~any(isnan(E),2),:);
+      E = unique(sort(E,2),'rows');
     end
 
   end
