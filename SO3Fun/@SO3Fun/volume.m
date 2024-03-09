@@ -29,7 +29,7 @@ if isa(center,'fibre')
 else
   
   % get resolution
-  res = get_option(varargin,'RESOLUTION',min(1.25*degree,radius/30),'double');
+  res = get_option(varargin,'resolution',min(1.25*degree,radius/30),'double');
 
   % discretisation
   if nargin > 3 && isa(varargin{1},'orientation')
