@@ -42,7 +42,7 @@ x = 2*pi/N*(0:N-1).';
 y =  f(x(:));
 
 % S1F = S1FunHarmonicAdjoint(x,y,varargin{:},'weights',1/N,'bandwidth',N);
-fhat = fftshift(ifft(y));
+fhat = fftshift(ifft(y),1);
 fhat(1,:) = [];
 S1F = S1FunHarmonic(fhat);
 
