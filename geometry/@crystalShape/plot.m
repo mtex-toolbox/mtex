@@ -13,7 +13,7 @@ function h = plot(cS,varargin)
 %
 % Input
 %  cS  - @crystalShape
-%  x,y - coodinates
+%  x,y - coordinates
 %  xy  - nx2 or nx3 coordinate matrix
 %
 %  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
@@ -93,7 +93,11 @@ h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k',...
   'parent',get_option(varargin,'parent',mtexFig.currentAxes)),varargin{:});
 %h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
 
-if isNew, drawNow(mtexFig,varargin{:}); end
+if isNew
+  axis equal
+  drawNow(mtexFig,varargin{:}); 
+  fcw
+end
 
 if nargout == 0, clear h; end
 
