@@ -66,7 +66,7 @@ plot(SO3F2)
 % smoother function. But one has to keep in mind that the error in the data
 % nodes is not zero as in the case of interpolation.
 
-norm(eval(SO3F, nodes) - S.values)
+norm(eval(SO3F2, nodes) - S.values)
 
 %%
 % But this may not be of great importance like in the case of function
