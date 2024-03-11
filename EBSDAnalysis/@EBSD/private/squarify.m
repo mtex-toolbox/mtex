@@ -1,19 +1,19 @@
 function [ebsdGrid,newId] = squarify(ebsd,varargin)
 
-uc = get_option(varargin,'unitCell',ebsd.unitCell);
+unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 ext = get_option(varargin,'extent',ebsd.extent);
+prop = get_option(varargin,'prop',ebsd.prop);
 
 % generate regular grid
-prop = ebsd.prop;
-dx = max(uc(:,1))-min(uc(:,1));
-dy = max(uc(:,2))-min(uc(:,2));
+dx = max(unitCell(:,1))-min(unitCell(:,1));
+dy = max(unitCell(:,2))-min(unitCell(:,2));
 
 [prop.x,prop.y] = meshgrid(linspace(ext(1),ext(2),1+round((ext(2)-ext(1))/dx)),...
   linspace(ext(3),ext(4),1+round((ext(4)-ext(3))/dy))); % ygrid runs first
 sGrid = size(prop.x);
 
 % if original unit cell was to much different
-if numel(ebsd.unitCell) ~= 8 || 1.5*max(ebsd.unitCell(:)) < max(uc(:))
+if numel(ebsd.unitCell) ~= 8 || 1.5*max(ebsd.unitCell(:)) < max(unitCell(:))
   
   % interpolate
   ebsd = interp(ebsd,prop.x,prop.y);

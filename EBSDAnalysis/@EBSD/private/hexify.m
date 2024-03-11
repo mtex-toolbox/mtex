@@ -1,10 +1,11 @@
 function [ebsdGrid,newId] = hexify(ebsd,varargin)
 
+unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
+ext = get_option(varargin,'extent',ebsd.extent);
+prop = get_option(varargin,'prop',ebsd.prop);
+
 % allow to run again even if already EBSDhex
 ebsd=EBSD(ebsd);
-
-% extract new unitCell
-unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
 % size of a hexagon
 dHex = mean(sqrt(sum(unitCell.^2,2)));
@@ -20,13 +21,9 @@ if length(unique(unitCell)) == 12
   unitCell = dHex * [cos(omega.') sin(omega.')];
 end
 
-prop = ebsd.prop;
-
 % number of rows and columns and offset
 % 1 means second row / column has positiv offset
 % -1 means second row / column has negativ offset
-ext = ebsd.extent;
-
 if isRowAlignment
   
   % find point with smalles x value
