@@ -2,7 +2,7 @@
 %
 %% General
 % Neper is an open source software package for polycrystal generation and
-% meshing developed by Romain Query. It can be obtained from
+% meshing developed by Romain Quey. It can be obtained from
 % https://neper.info, where also the documentation is located.
 %
 % This module provides an comfortable interface to Neper. It is used 

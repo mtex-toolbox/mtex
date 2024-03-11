@@ -1,5 +1,5 @@
 function filePath = path2unix(filePath)
-% deals with the different fileseperators etc of Windows and unix systems
+% deals with the different file separators etc of Windows and Unix systems
   if ~strcmp(computer,'PCWIN64')
     return
   else
