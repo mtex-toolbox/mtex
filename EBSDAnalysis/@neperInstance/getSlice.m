@@ -33,7 +33,7 @@ if isfile([this.filePath this.fileName2d '.tess' ]), delete([this.filePath this.
 if isfile([this.filePath this.fileName2d '.ori' ]), delete([this.filePath this.fileName2d '.ori' ]); end
 
 if check_option(varargin,'silent')
-  output2file = ['>> ' this.filePathUnix 'neper.log '];
+  output2file = ['>> ' this.filePath 'neper.log '];
 else
   output2file = '';
 end

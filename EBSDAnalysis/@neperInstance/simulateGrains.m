@@ -10,13 +10,14 @@ function varargout = simulateGrains(this,varargin)
 %   neper.simulateGrains(odf, numGrains)
 %
 %   ori=discreteSample(odf,numGrains)
-%   neper.simulateGrains(ori)
+%   neper.simulateGrains(ori,'silent')
 %
 % Input
 %  neper      - @neperInstance
 %  odf        - @SO3Fun
 %  numGrains  - number of grains
 %  ori        - @orientation
+%  'silent'   - print log file, no console output
 % 
 % Output
 %  allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
@@ -63,7 +64,7 @@ fprintf(fid,'%f %f %f\n',ori.Rodrigues.xyz.');
 fclose(fid);
 
 if check_option(varargin,'silent')
-  output2file = ['>> ' this.filePathUnix 'neper.log'];
+  output2file = ['>> ' this.filePath 'neper.log'];
 else
   output2file = '';
 end
