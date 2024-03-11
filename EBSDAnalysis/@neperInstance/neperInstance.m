@@ -63,7 +63,7 @@ properties
   
 end
 
-properties (Dependent)
+properties (Dependent = true, Access = private)
   filePathUnix                % differs from filePath for Windows systems
 end
 
@@ -122,6 +122,11 @@ methods
     else
       this.filePath = [filepath filesep];
     end 
+
+    % ensure filePath exists
+    if ~exist(this.filePath,'dir')
+      mkdir(this.filePath);
+    end
   end
   
   function path = get.filePathUnix(this)
