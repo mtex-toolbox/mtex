@@ -31,8 +31,8 @@ if nargin>1 && isa(varargin{1},'orientation')
   faceColor = 0.5 .* ones(size(F,1),3);
 
   isouter = sum(grains.I_GF ,1)';
-  faceColor(isouter==1,:) = grainColor(gB.grainId(isouter==1,1),:);
-  faceColor(isouter==-1,:) = grainColor(gB.grainId(isouter==-1,2),:);
+  faceColor(isouter==1,:) = grainColor(id2ind(grains,gB.grainId(isouter==1,1)),:);
+  faceColor(isouter==-1,:) = grainColor(id2ind(grains,gB.grainId(isouter==-1,2)),:);
 
 elseif nargin>1 && isnumeric(varargin{1})
   % color by property
