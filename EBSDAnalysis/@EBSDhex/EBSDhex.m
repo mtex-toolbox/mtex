@@ -39,6 +39,7 @@ classdef EBSDhex < EBSD
             
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.opt = get_option(varargin,'opt',struct);
                   
       % set up unit cell
       ebsd.dHex = dHex;
@@ -233,7 +234,10 @@ classdef EBSDhex < EBSD
       row(~isInside) = NaN;
       col(~isInside) = NaN;
       
-      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      if nargout < 2
+        ind = ~isnan(row);
+        row(ind) = sub2ind(size(ebsd),row(ind),col(ind)); 
+      end
       
     end
 
@@ -290,11 +294,28 @@ classdef EBSDhex < EBSD
       % convert to offset coordinates
       [row,col] = ebsd.cube2hex(rx,ry,rz);
       
-      if nargout < 2, row = sub2ind(size(ebsd),row,col); end
+      if nargout < 2
+        ind = ~isnan(row);
+        row(ind) = sub2ind(size(ebsd),row(ind),col(ind));
+      end
       
     end
-    
-    
+
+    function h = gridBoundary(ebsd)
+
+      dH = ebsd.dHex;
+      ext = ebsd.extent + 2*dH*[-1,1,-1,1];
+      x = ext(1):dH:ext(2);
+      y = ext(3):dH:ext(4);
+
+      h= [
+        repmat(ext(1), numel(y),1), y.' ; ...
+        x.', repmat(ext(3), numel(x), 1) ; ...
+        x.', repmat(ext(4), numel(x), 1) ; ...
+        repmat(ext(2), numel(y),1), y.'];
+      
+    end
+       
     
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
@@ -306,7 +327,6 @@ classdef EBSDhex < EBSD
     % the following output should be constant
     % gO = log(ori1,ori2.symmetrise,'left') % true for this
     % gO = log(ori1.symmetrise,ori2,'left') % true for this
-    
     
   end
   

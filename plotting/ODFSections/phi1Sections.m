@@ -63,7 +63,6 @@ classdef phi1Sections < ODFSections
 
     end
 
-
     function n = numSections(oS)
       n = numel(oS.phi1);
     end
@@ -71,7 +70,9 @@ classdef phi1Sections < ODFSections
     function [S2Pos,secPos] = project(oS,ori,varargin)
 
       % maybe this can be done more efficiently
-      ori = ori.symmetrise('proper').';
+      if ~check_option(varargin,'noSymmetry')
+        ori = ori.symmetrise('proper',varargin{:}).';
+      end
       [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
       secPos = oS.secList(mod(phi1,oS.maxphi1),oS.phi1);

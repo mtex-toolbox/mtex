@@ -54,11 +54,14 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
 %pfAnnotations = @(varargin) [];
 setMTEXpref('pfAnnotations',pfAnnotations);
 
-% default spacing between muliple plots
+% default spacing between multiple plots
 setMTEXpref('outerPlotSpacing',10);
 % setMTEXpref('innerPlotSpacing',10);
 
-% defaut marker size
+% possible methods for Voronoi tessellation: matlab, qhull, jcvoronoi
+setMTEXpref('voronoiMethod','jcvoronoi');
+
+% default marker size
 % set the marker size depending on the fontSize
 % but you can change this also to a fixed value
 markerSize = 0.75*fontSize;

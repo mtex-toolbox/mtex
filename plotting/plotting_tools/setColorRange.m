@@ -33,7 +33,7 @@ else
 end
 
 % find all axes
-mtexFig = getappdata(fig,'mtexFig');
+mtexFig = getClass(varargin,'mtexFigure',getappdata(fig,'mtexFig'));
 if isempty(mtexFig.children), return; end
 
 

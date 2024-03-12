@@ -1,26 +1,25 @@
 classdef fibonacciS2Grid < vector3d
-  % The class fibonacciS2Grid creates equispaced grids on the sphere by placing
-  % points around a spiral around the sphere. The class also provies a
-  % method to find grid points around a given center with specified radius.
+  % The class fibonacciS2Grid creates equispaced grids on the sphere by
+  % placing points around a spiral around the sphere. The class also
+  % provides a method to find grid points around a given center with
+  % specified radius.
   %
   % Syntax
-  % fibgrid = fibonacciS2Grid(N)
-  % fibgrid = fibonacciS2Grid('points', N)
-  % fibgrid = fibonacciS2Grid('resolution', res*degree)
-  % fibgrid = fibonacciS2Grid('points', N, 'saverho') saves the precise rho
-  %                                                   angles in the options
+  %   fibgrid = fibonacciS2Grid(N)
+  %   fibgrid = fibonacciS2Grid('points', N)
+  %   fibgrid = fibonacciS2Grid('resolution', res*degree)
+  %   % saves the precise rho angles in the options
+  %   fibgrid = fibonacciS2Grid('points', N, 'saverho') 
   %
   % Input
-  % N - number of points
-  % res - resolution of the grid 
+  %  N - number of points
+  %  res - resolution of the grid 
   %
   % Options
-  % points - number of points to be generated
-  % res    - desired resolution of the grid
+  %  points - number of points to be generated
+  %  res    - desired resolution of the grid
   %
-  % Class Properties
-  % inherited from vector3d
- 
+   
   % the dependent properties that are commented could be useful for finding
   % neighbors in large grids
   properties (Dependent = true)

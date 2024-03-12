@@ -92,7 +92,7 @@ hold off
 
 %%
 % We clearly see how the noise has been reduces. In order to further reduce
-% the noise we may increase the number of neighbours that are taken into
+% the noise we may increase the number of neighbors that are taken into
 % account. 
 
 F.numNeighbours = 3;
@@ -162,14 +162,14 @@ hold off
 % consider for the denoising operation only neighboring orientations within
 % a certain window. The next filters belong to the class of variational
 % filters which determine the denoised orientation map as the solution of
-% an minimization problem that is simultanously close to the original map
+% an minimization problem that is simultaneously close to the original map
 % and "smooth". The resulting orientation map heavily depends on the
 % specific definition of "smooth" and on the regularization parameter which
 % controls the trade of between fitting the original data and forcing the
 % resulting map to be smooth.
 %
-% The @splineFilter uses as definition of smoothnes the curvature of the
-% orientation map. As a cosequence, the denoised images are very "round"
+% The @splineFilter uses as definition of smoothness the curvature of the
+% orientation map. As a consequence, the denoised images are very "round"
 % and similarly as for the @meanFilter subgrain boundaries will be smoothed
 % away. On the positive side the @meanFilter is up to now the only filter
 % that automatically calibrates the regularization parameter.
@@ -194,7 +194,7 @@ F.alpha
 %% The Halfquadratic Filter
 %
 % In the default setting the @halfQuadraticFilter uses definition of
-% smoothnes the <https://en.wikipedia.org/wiki/Total_variation_denoising
+% smoothness the <https://en.wikipedia.org/wiki/Total_variation_denoising
 % total variation> functional. This functional was developed to preserve
 % subgrain boundaries. Similarly as the @medianFilter it tends to carton
 % like images and staircasing.
@@ -217,8 +217,8 @@ hold off
 %% The Infimal Convolution Filter
 % 
 % The infimal convolution filter was designed as a compromise between the
-% @splineFilter and the @halfQuadraticFilter. It is still under deveopment
-% and its use is not recommendet.
+% @splineFilter and the @halfQuadraticFilter. It is still under development
+% and its use is not recommended.
 
 F = infimalConvolutionFilter;
 F.lambda = 0.01; % smoothing parameter for the gradient

@@ -44,19 +44,25 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
-  F = SO3FunHandle(@(rot) calcTaylorFun(rot,eps,sS,numOut,varargin{:}),sS.CS,eps.CS);
-  % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
-  SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
-  M = SO3F(1);
-  if nargout>1
-    b = [];
-    spin = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
-    % to be compareable set output to rightspintensor
-    spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+  for k = 1:length(eps)
+    epsLocal = strainTensor(eps.M(:,:,k));
+    F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
+  
+    % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
+    SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
+    M(k) = SO3F(1);
+    if nargout>1
+      b = [];
+      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
+      % to be compareable set output to rightspintensor      
+      spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+    end
   end
   return
 end
 
+% ensure slip systems are symmetrised including +- of each slipSystem
+sS = sS.ensureSymmetrised;
 
 % ensure strain is symmetric
 eps = eps.sym;
@@ -127,8 +133,6 @@ spin = spinTensor(b*sSeps.antiSym);
 
 end
 
-
-
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
   [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:});
@@ -138,3 +142,34 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
     Out(:,2:4) = v.xyz;
   end
 end
+
+function checkHex
+cs = crystalSymmetry.load('Mg-Magnesium.cif');
+cs = cs.properGroup;
+
+sScold = [slipSystem.basal(cs,1),...
+  slipSystem.prismatic2A(cs,66),...
+  slipSystem.pyramidalCA(cs,80),...
+  slipSystem.twinC1(cs,100)];
+
+% consider all symmetrically equivlent slip systems
+sScold = sScold.symmetrise;
+
+epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]));
+
+[~,~,W] = calcTaylor(epsCold,sScold);
+
+%%
+
+ori0 = orientation.rand(cs);
+ori0 = ori0.symmetrise;
+
+[~,~,Wori] = calcTaylor(inv(ori0)*epsCold,sScold);
+% this should give all the same vectors
+ori0 .* vector3d(Wori)
+
+ori0 .* vector3d(W.eval(ori0))
+
+end
+
+

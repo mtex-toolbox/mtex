@@ -3,7 +3,7 @@
 % During phase transformation or twinning the orientation of a crystal
 % rapidly flips from an initial state |oriA| into a transformed state
 % |oriB|. This relationship between the initial and transformed state can
-% be described by an orientation relationsship |OR|. To make the situation
+% be described by an orientation relationship |OR|. To make the situation
 % more precise, we consider the phase transformation from austenite to
 % ferrite via the Nishiyama Wassermann orientation relationship
 
@@ -15,17 +15,17 @@ csC = crystalSymmetry('432','mineral','Ferrite');
 p2c = orientation.NishiyamaWassermann(csP,csC);
 
 %%
-% Now an arbitrary  Austenite orientation 
+% Now an arbitrary austenite orientation 
 
 oriA = orientation.rand(csP)
 
 %%
-% is transformed in one of the following Ferrite orientations
+% is transformed in one of the following ferrite orientations
 
 oriB = variants(p2c,oriA)
 
 %%
-% These 12 Ferrite orientations are called variants of the orientation
+% These 12 ferrite orientations are called variants of the orientation
 % relationship. Lets visualize them in a pole figure plot
 
 hC = Miller({1,1,1},{1,1,0},csC);
@@ -57,7 +57,7 @@ mtexColorbar
 
 %%
 % We can draw some random orientations according this model ODF and apply
-% the same commands |variants| to compute all transfomed orientations in
+% the same commands |variants| to compute all transformed orientations in
 % one step
 
 % number of discrete orientations
@@ -100,211 +100,6 @@ norm(odfBSim).^2
 norm(odfB).^2
 
 
-%% the discrete route
-
-% draw random parent orientations
-parentOri = odfP.discreteSample(500000);
-
-% compute child orientations
-childOri = parentOri * inv(p2c);
-
-% compute child ODF
-odfC_discrete = calcDensity(childOri,'halfwidth',5*degree)
-
-% plot
-plotPDF(childOri,hC,'MarkerSize',5,'points',1000,'contourf');
-
-%% the continous route
-
-% compute the child ODF
-odfC = transformODF(odfP,p2c)
-
-% plot
-plotPDF(odfC,hC,'MarkerSize',5,'points',1000,'contourf');
-
-
-
-%%
-figure(1)
-plot(odfC_discrete)
-figure(2)
-plot(odfC)
-
-
-
-%%
-
-
-%color = ind2color(packetId);
-plotPDF(childOri,hC,'MarkerSize',5,'points',1000);
-
-nextAxis(1)
-hold on
-opt = {'MarkerFaceColor','none','MarkerEdgeColor','k','linewidth',3};
-plot(parentOri * hP(1).symmetrise ,opt{:})
-xlabel('$(100)$','Color','red','Interpreter','latex')
-
-nextAxis(2)
-plot(parentOri * hP(3).symmetrise ,opt{:})
-xlabel('$(111)$','Color','red','Interpreter','latex')
-
-nextAxis(3)
-plot(parentOri * hP(2).symmetrise ,opt{:})
-xlabel('$(110)$','Color','red','Interpreter','latex')
-hold off
-
-drawNow(gcm)
-
-%%
-odf = unimodalODF(csP,'halfwidth',5*degree)
-p2c = orientation.NishiyamaWassermann(csP,csC);
-vDistri = zeros(length(p2c.variants),1);
-vDistri(1) = 1;
-vDistri(2) = 1;
-vDistri(3) = 1;
-vDistri(4) = 1;
-%vDistri = ones(length(p2c.variants),1);
-vDistri = vDistri ./ sum(vDistri);
-odfT = SO3FunHandle(@(ori) fun(ori,odf,p2c,vDistri));
-%profile on
-odfT = SO3FunHarmonic(odfT)
-%profile viewer
-%%
-
-plotPDF(odfT,hC,'antipodal')
-
-%%
-
-for k = 1:12
-  vDistri = zeros(length(p2c.variants),1);
-  vDistri(k) = 1;
-  odfT = SO3FunHandle(@(ori) fun(ori,odf,p2c,vDistri));
-  odfV(k) = SO3FunHarmonic(odfT)
-end
-
-%%
-
-
-cs = crystalSymmetry('622');
-
-mori = orientation.map(Miller(1,1,-2,0,cs),Miller(2,-1,-1,0,cs),...
-  Miller(-1,0,1,1,cs),Miller(-1,1,0,1,cs))
-
-mori.angle('max')./degree
-mori.axis('max')
-
-% deformation tensor
-% --> ??
-
-
-
-% 1) initial ODF
-% 2) strain + twin system -> transformation texture
-% 3) check this with correlation
-% 4) two OR -> transformation texture -> fit variant selection
-% 5) check this with correlation -> error analysis 
-
-% questions:
-% 1) is variant selection correlated with strain?
-% 2) 
-% 3) 
-
-
-
-%%
-
-%odf = fibreODF(fibre.rand(p2c.CS))
-
-oR = fundamentalRegion(p2c.CS);
-
-
-ori = oR.V(2)
-
-odf = unimodalODF(orientation.rand(p2c.CS))
-
-
-
-
-%%
-
-p2c = orientation.KurdjumovSachs(csP,csC);
-
-vSel = zeros(1,24);
-%vSel(1:6) = 1;
-vSel = [1 0 0 1 0 0 0 1 0 0 1 0 1 0 0 1 0 0 0 0 1 0 0 1];
-
-odfC = transformODF(odf,p2c,'variantSelection',vSel)
-%odfC = transformODF(odf,p2c)
-
-%%
-
-plotPDF(odfC,hC,'antipodal')
-
-%%
-
-plot(odfC,'sigma')
-
-
-%%
-
-%%
-
-
-
-vSel = unimodalODF(csP.rot(2),'halfwidth',20*degree)
-vSelSym = FourierODF(vSel);
-vSelSym = vSelSym.symmetrise('CS',csP);
-vSel = vSel./vSelSym
-
-plot(vSel,'sigma')
-
-%%
-
-plotIPDF(vSel,xvector)
-
-
-
-%%
-oR = fundamentalRegion(p2c.CS)
-
-%odfP = unimodalODF(oR.V(1),'halfwidth',5*degree)
-odfP = unimodalODF(orientation.id(p2c.CS),'halfwidth',5*degree)
-
-plot(odfP,'sigma')
-%%
-
-odfC = transformODF(FourierODF(odfP),p2c,vSel)
-
-%%
-
-plotPDF(odfC,hC,'antipodal')
-
-%%
-
-plot(odfC,'sigma')
-
-%%
-
-for k = 1:24
-
-  vSel = unimodalODF(csP.rot(k),'halfwidth',20*degree);
-  vSelSym = FourierODF(vSel);
-  vSelSym = vSelSym.symmetrise('CS',csP);
-  vSel = vSel./vSelSym;
-
-  odfP = unimodalODF(orientation.id(p2c.CS),'halfwidth',10*degree);
-
-  odfC(k) = transformODF(FourierODF(odfP),p2c,vSel)
-
-end
-
-%%
-
-plotPDF(odfC(7),hC,'antipodal')
-
-%%
-
-cor(odfC,odfC)
 
 
 

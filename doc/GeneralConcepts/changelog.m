@@ -1,13 +1,96 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 6.0.beta.1 9/2023
+%
+% *Pseudo 3d EBSD and Grain maps*
+%
+% With version 6.0 MTEX starts to support pseudo 3d EBSD data. This means
+% that EBSD maps are not longer supposed to are in the xy-plane. For
+% example it is now possible to consider EBSD maps that represent the three
+% faces of a cube. To make this possible multiple changes at the core of
+% MTEX had to be introduced:
+%
+% * |ebsd.pos| gives the position of the EBSD measurements and is of type
+% @vector3d
+% * many grain properties like vertices |grains.V|, centroid |grains.centroid|
+% or long axis |grains.longAxis| are now of type @vector3d.
+% * |ebsd.N|, |grains.N| gives the normal direction of a EBSD map
+% * it is not possible to merge EBSD maps with different normal direction
+% into one variable
+%
+% *Free three dimensional plotting of EBSD maps, pole figures, etc.*
+%
+% * Plotting of EBSD and grain maps is now possible in 3d
+% * The alignment of x, y and z on the screen is now controlled by an
+% object of type @plottingConvention. The code
+%
+%   how2plot = plottinConvention
+%   how2plot.outOfScreen = ebsd.N
+%   how2plot.east = yvector
+%   plot(ebsd, how2plot)
+%
+% would plot an EBSD map with its normal direction out of the screen an the
+% y-vector pointing to north.
+% * A default plotting convention can be stored directly in the EBSD or
+% grain variable via
+%
+%   ebsd.plottingConvention = how2plot
+%
+% * The plotting convention can also passed to any spherical plot. This
+% allows e.g. to plot pole figures with an arbitrary direction sticking out
+% of the screen.
+%
+% * As consequence |'upper'| and |'lower'| refers to the outOFScreen
+% direction.
+%
+% *Interface to Neper*
+% Neper is an open source software package for 3d polycrystal generation
+% and meshing. It is now possible to call Neper from within MTEX, simulate
+% micro-structures, generated slices through a 3d volume and import those
+% slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
+% more information.
+%
+%% MTEX 5.11.0 2/2023
+% 
+% MTEX 5.11 will be the last release before MTEX 6.0. It significantly
+% improves grain reconstruction from 2d EBSD data.
+%
+% *Much Faster Grain Reconstruction*
+% Thanks to using the <https://github.com/JCash/voronoi jc_voronoi> as
+% tessellation method and some addition speedups grain reconstruction is
+% now more than 10 times faster then previously. The method used for
+% Voronoi tessellation is now specified in |mtex_settings| by the field
+% |'VoronoiMethod'|.
+%
+% *Much Better Grain Reconstruction*
+% With MTEX 5.11 MTEX uses <https://en.wikipedia.org/wiki/Alpha_shape alpha
+% shapes> to determine the shape of the grains in the presence of large
+% unindexed regions. Those alpha shapes are controlled by a single
+% parameter |'alpha'| with specifies to which extend indexed regions are
+% allowed to grow into not indexed regions. Have a look at
+% <GrainReconstruction.html grain reconstruction> for an illustration of
+% the new method.
+%
+% *Lankford Parameter*
+% * <Lankford.html Lankford>
+%
+% *Numerous minor improvements and bug fixes*
+% * h5 interface
+% * new function <SO3Fun.cor.html |cor(odf1,odf2>|> to compute the
+% correlation between two ODF
+% 
+%% MTEX 5.10.1 9/2023
+% 
+% This is mainly a bug fix release.
+%
 %% MTEX 5.10.0 5/2023
 %
 % *Weigthed Burgers Vector*
 %
 % With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
 % it is now possible to compute the weighted burgers vector both, using the
-% integral approach as well as the differentical approach.
+% integral approach as well as the differential approach.
 %
 % *Bain Group Determination* 
 % 
@@ -20,7 +103,7 @@
 % * New option |'max'| to <orientation.angle.html |angle(mori)|> to compute
 % the largest misorientation angle. Helpful for identifying twinning.
 % * Added checks for symmetry and positive definiteness when defining
-% stress, strain and ellasticity tensors.
+% stress, strain and elasticity tensors.
 % * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
 % method for data cleaning in EBSD maps.
 % * Pseudesymmetries like now natively supported using the syntax
@@ -59,20 +142,20 @@
 % of crystal orientations within a material. As such it is a function that
 % associates to each orientation a number with unit mrd (multiples of
 % random distribution). However, in material science many other orientation
-% dependend functions are of importance, e.g., the Taylor factor with
+% depended functions are of importance, e.g., the Taylor factor with
 % respect to some outer strain depends on the local orientation. While ODFs
 % have ever since been at the heart of MTEX, this release is the first one
 % that includes full support for orientation dependent functions. Those
-% functions are called @SO3Fun and behave similar to sphercial functions
+% functions are called @SO3Fun and behave similar to spherical functions
 % @S2Fun. In particular one can
 %
-% * add, substract, multiply and divide with them
+% * add, subtract, multiply and divide with them
 % * compare them
 % * detect global and local extrema
 % * visualize them in 3d and 2d sections
 % * compute gradients
 %
-% While implementing these new features we also significantly speeded up
+% While implementing these new features we also significantly speed up
 % all operations related with ODF operations. A full documentation of these
 % new features can be found <SO3FunConcept.html here>.
 %
@@ -82,9 +165,9 @@
 % This is mainly a bug fix release. New functionalities include
 %
 % * <fibre.fit.html |fibre.fit(ori)|> and <fibre.fit.html |fibre.fit(odf)|>
-% robustly finds fibres in data sets of individual orientations and ODFs.
+% robustly finds fibers in data sets of individual orientations and ODFs.
 % * <fibre.angle.html |angle(f1,f2)|> computes the angle between two
-% <OrientationFibre.html fibres>.
+% <OrientationFibre.html fibers>.
 % * <S2Fun/calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
 % symmetries in <ODFPoleFigure.html pole figures> or arbitrary
 % <S2FunConcept.html spherical functions>.
@@ -93,7 +176,7 @@
 %
 % MTEX 5.8 improves further on parent grain reconstruction by implementing
 % the novel <https://arxiv.org/abs/2201.02103 variant graph algorithm>
-% which is faster and more accurate than the prvious grain graph algorithm.
+% which is faster and more accurate than the previous grain graph algorithm.
 %
 % *Improved parent grain reconstruction*
 %
@@ -104,7 +187,7 @@
 % <parentGrainReconstructor.selectInteractive.html |selectInteractive(job)|>
 % * new option |'reconsiderAll'| in
 % <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to recheck
-% all asignments of parent orientations.
+% all assignments of parent orientations.
 % * new option |'bestFit'| in
 % <parentGrainReconstructor.calcGBVotes.html |calcGBVotes(job)| to consider
 % only the best fitting neighbor
@@ -138,7 +221,7 @@
 %
 % *Other Changes*
 %
-% * The command |findByOrientation| accepts a fibre as input.
+% * The command |findByOrientation| accepts a fiber as input.
 % * The antipodal |axisAngleColorKey| allows for option |'antipodal'|.
 % 
 %
@@ -154,7 +237,7 @@
 % class keeps track of the correspondence between measured child grains and
 % the reconstructed parent grains. It provides the following functions for
 % recovering parent orientations which can be applied multiple times and in
-% any order to archieve the best possible reconstruction.
+% any order to achieve the best possible reconstruction.
 %
 % * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
 % * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
@@ -171,12 +254,12 @@
 %
 % *Compatibility fixes*
 %
-% MTEX 5.6 fixes several incompatibilities with Matlab versions earlier
+% MTEX 5.6 fixes several incompatibilities with MATLAB versions earlier
 % then 2019b.
 %
 %% MTEX 5.5.0 11/2020
 %
-% *Orientation Embeddings*
+% *Orientation Embedding*
 %
 % Orientational embeddings are tensorial representations of orientations
 % with the specific property that each class of symmetrically equivalent
@@ -185,7 +268,7 @@
 % from boundary effects, i.e., the Euclidean distance between the tensors
 % is always close to the misorientation angle. This allows to lift any
 % method that works for multivariate data to orientations. More details of
-% this representation can be found in the chaper
+% this representation can be found in the chapter
 % <OrientationEmbeddings.html orientation embeddings> and the paper
 %
 % * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
@@ -231,11 +314,11 @@
 % * <EBSD.calcMis2Mean.html |calcMis2Mean|> computes the misorientation to
 % a grain reference orientation, i.e., the <EBSDGROD.html grain reference
 % orientation deviation (GROD)>.
-% * KAM computation has been speeded up signigicantly for hexonal and
+% * KAM computation has been speed up significantly for hexagonal and
 % square grids. Make sure to use the command |ebsd = ebsd.gridify| before
 % the KAM computation.
 % * new option |'edgeAlpha'| to control the transparency of grain
-% boundaries, e.g. in depedency of the misorientation angle.
+% boundaries, e.g. in dependency of the misorientation angle.
 % * more easily add new / change phases in an EBSD map by one of the
 % following commands
 %
@@ -256,7 +339,7 @@
 %
 % *Important Bug Fixes*
 %
-% * <SO3Fun.volume.html |volume(odf)|> gave wrong results in the presense of
+% * <SO3Fun.volume.html |volume(odf)|> gave wrong results in the presence of
 % specimen symmetry and for centers close to the boundary of the
 % fundamental region.
 %
@@ -276,7 +359,7 @@
 %
 % * <calcParent.html |calcParent|> computes the best fitting parent
 % orientations from child orientations
-% * <calcChildVariants.html |calcChildVariants|> seperates child variants
+% * <calcChildVariants.html |calcChildVariants|> separates child variants
 % into packets
 % * <calcParent2Child.html |calcParent2Child|> computes best fitting parent
 % to child orientation relationship from child to child misorientations
@@ -316,7 +399,7 @@
 % *Bug Fixes*
 %
 % * loading ang files
-% * importong ODFs
+% * importing ODFs
 % * inverse pole figures misses orientations
 % * <grain2d.hull convex hull> of grains has now correct boundaries
 %
@@ -329,7 +412,7 @@
 %
 % MTEX 5.3 is a humble release without big shiny improvements. On the other
 % hand is has seen some internal changes which lead to significant speed
-% improvements in some functions. Technicaly speaking the class @symmetry
+% improvements in some functions. Technically speaking the class @symmetry
 % is not derived from @rotation anymore but is a handle class. From the
 % users perspective almost no change will be noticed. Developers should
 % replace |length(cs)| by |numSym(cs)|.
@@ -339,7 +422,7 @@
 % Denoising of EBSD data using the
 % <https://mtex-toolbox.github.io/EBSDDenoising.html#10
 % |halfQuadraticFilter|> is now about 10 times faster, handles outliers
-% much better and runs natively on hexagonal grids.
+% much better and runs native on hexagonal grids.
 %
 % *New Functions*
 %
@@ -349,7 +432,7 @@
 % * shape functions <grain2d.surfor.html |surfor|>, <grain2d.paror.html
 % |paror|>, <grain2d.caliper.html |caliper|>
 % * <Miller.multiplicity.html |multiplicity|> for Miller, orientation and
-% fibre
+% fiber
 %
 %% MTEX 5.2.3 11/2019
 %
@@ -373,7 +456,7 @@
 % * much more content
 %
 % The new documentation is not yet perfect though we are working hard to
-% improve it. Thatswhy we are extremely happy for everybody who contributes
+% improve it. That's why we are extremely happy for everybody who contributes
 % additions to the documentation. This includes the correction of spelling
 % errors, theoretical parts, examples etc. Check out <Contribute2Doc.html
 % how to contribute to the documentation>.
@@ -381,7 +464,7 @@
 % *More Colors*
 %
 % All plotting commands in MTEX support now much more colors. By default
-% all the color names of the CSS palette can be choosen, e.g., aqua,
+% all the color names of the CSS palette can be chosen, e.g., aqua,
 % orange, gold, goldenrod, etc. To see a full list of supported colors do
 %
 %  colornames_view
@@ -430,13 +513,13 @@
 %
 % *Spherical Bingham Distribution* 
 %
-% Nativ support for spherical <BinghamS2.BinghamS2.html Bingham distributions>,
-% including the abbility to <BinghamS2.fit.html fit> them to directional
+% Native support for spherical <BinghamS2.BinghamS2.html Bingham distributions>,
+% including the ability to <BinghamS2.fit.html fit> them to directional
 % distributions.
 %
 % *Tensors*
 %
-% * Improved methods for the vizualisation of elastic properties, see
+% * Improved methods for the visualization of elastic properties, see
 % <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 % * several new functions like <tensor.trace.html |trace|>,
 % <tensor.svd.html |svd|>, <tensor.det.html |det|>, <tensor.colon.html

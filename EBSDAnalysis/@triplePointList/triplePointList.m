@@ -1,5 +1,5 @@
 classdef triplePointList < phaseList & dynProp
-  % triple points or triple juctions list of grain boundaries in 2-D
+  % triple points or triple junctions list of grain boundaries in 2-D
   %
   % triplePointList is used to extract, analyze and visualize triple points
   % between grain boundaries in  2-D.
@@ -16,17 +16,17 @@ classdef triplePointList < phaseList & dynProp
   % properties with as many rows as data
   properties
     id = zeros(0,1)           % indices of the vertices in grains.V
-    grainId = zeros(0,3)      % id's of the neigbouring grains to a face
-    boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
-    nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
+    grainId = zeros(0,3)      % id's of the neighboring grains to a face
+    boundaryId = zeros(0,3)   % id's of the neighboring ebsd data to a face
+    nextVertexId = zeros(0,3) % id's of the neighboring segment vertices
     allV = zeros(0,2)         % vertices x,y coordinates
   end
    
   properties (Dependent = true)
-    misorientation % misorientation between adjecent measurements to a boundary
+    misorientation % misorientation between adjacent measurements to a boundary
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
-    angles         % boundary segement angles at the triple points
+    angles         % boundary segment angles at the triple points
     V              % vertices x,y coordinates
   end
   

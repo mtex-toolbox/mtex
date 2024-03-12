@@ -45,7 +45,7 @@ elseif isa(sigma,'stressTensor')
   EV = eig(sigma);
   sigma = sigma ./ reshape(EV(3,:)-EV(1,:),size(sigma));
   
-  if length(sigma) == 1
+  if isscalar(sigma)
     SF = EinsteinSum(sigma,[-1,-2],n,-1,b,-2);
     SF = reshape(SF,size(sS));
   else

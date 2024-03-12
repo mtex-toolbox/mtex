@@ -4,20 +4,19 @@ function meanProp = grainMean(ebsd, prop, varargin)
 % Syntax
 %
 %   % recover grains and store grainId 
-%   [grains,ebsd.grainId]=calcGrains(ebsd)
+%   [grains,ebsd.grainId] = calcGrains(ebsd)
 %
 %   % compute average grain property
-%   meanProp = grainMean(ebsd, ebsd.ci);
-%   plot(grains,meanProp(grains.id))
+%   meanPropG = grainMean(ebsd, ebsd.ci, grains);
+%   plot(grains,meanPropG)
 %
-%   % ensures meanProp has the same ordering as grains
-%   meanProp = grainMean(ebsd, ebsd.ci, grains);
+%   % compute average grain property for each EBSD pixel
+%   meanPropE = grainMean(ebsd, ebsd.ci, grains);
+%   plot(ebsd,meanPropE)
 %
 %   % take not the mean but the maximum per grain
-%   meanProp = grainMean(ebsd, ebsd.ci, @max);
-%
-%   % full syntax
-%   meanProp = grainMean(ebsd, prop, grains, method)
+%   meanPropG = grainMean(ebsd, ebsd.ci, grains, @max);
+%   plot(grains,meanPropG)
 %
 % Input
 %  ebsd   - @EBSD (which must contain a grainId)
@@ -26,8 +25,8 @@ function meanProp = grainMean(ebsd, prop, varargin)
 %  method - function_handle
 %
 % Output
-%  meanProp - average property, sorted by grainId
-%  meanProp - average property, same size as grains (if specified)
+%  meanPropG - average property, sorted as grains
+%  meanPropE - average property, sorted as EBSD
 %
 % Options
 %  ulim   - upper limit to consider (upper limit)
@@ -53,8 +52,15 @@ method = getClass(varargin,'function_handle',@nanmean);
 % perform the averaging
 meanProp = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
 
-% convert from id to ind
 grains = getClass(varargin,'grain2d');
-if ~isempty(grains), meanProp = meanProp(grains.id); end
+if  ~isempty(grains)
+  % convert from grainId to grainIndex
+  meanProp = meanProp(grains.id);
+else
+  % convert to ebsd index
+  meanProp = meanProp(ebsd.grainId);
+end
+
+
 
 end

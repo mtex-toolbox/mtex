@@ -2,16 +2,19 @@ function vals = eval(sF, v)
 % evaluate sF on v via moving least squares (MLS) approximation
 %
 % Syntax
-% vals = sF.eval(v)
-% vals = eval(sF,v)
+%   vals = sF.eval(v)
+%   vals = eval(sF,v)
 %
 % Input
-% sF    - the function we want to approximate
-% v     - the points where we want to evaluate the MLS approximation
+%  sF    - the function we want to approximate
+%  v     - the points where we want to evaluate the MLS approximation
 %
 % Output
-% vals  - the values of sF on v
+%  vals  - the values of sF on v
+%
 
+
+v = v(:);
 if sF.centered
   vals = eval_centered(sF, v);
   return;

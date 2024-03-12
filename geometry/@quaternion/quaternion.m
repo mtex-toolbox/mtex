@@ -61,7 +61,7 @@ classdef quaternion
             q.a = D(1,:); q.b = D(2,:); q.c = D(3,:); q.d = D(4,:);
 
             s = size(D);
-            s = [1 s(2:ndims(D))];
+            s = [s(2:end) 1];
             
             q = reshape(q,s);
               

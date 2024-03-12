@@ -29,8 +29,8 @@ plot(grains.boundary,'lineWidth',2)
 hold off
 
 %% Misorientation angle at grain boundaries
-% Next we seperate the grain boundaries according to the misorientation
-% angle. More presicely, we distinguish those grain boundaries with
+% Next we separate the grain boundaries according to the misorientation
+% angle. More precisely, we distinguish those grain boundaries with
 % misorientation angle larger then 57 degree and those with a smaller
 % misorientation angle.
 

@@ -9,7 +9,7 @@ if isa(v2,'SO3TangentVector') || isa(v2,'SO3VectorField')
   tS2 = v2.tangentSpace;
 end
 
-if  ~isempty(tS1) && ~isempty(tS2) && ~strcmp(tS1,tS2)
+if  ~isempty(tS1) && ~isempty(tS2) && tS1 ~= tS2
   error('You are mixing left and right sided representation of the tangent spaces.')
 end
 

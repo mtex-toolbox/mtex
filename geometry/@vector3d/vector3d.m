@@ -25,13 +25,13 @@ classdef vector3d < dynOption
 %
 % Dependent Class Properties
 %  theta      - polar angle in radiant
-%  rho        - azimuthal angle in radiant
+%  rho        - azimuth angle in radiant
 %  resolution - mean distance between the points on the sphere
 %  xyz        - cart. coordinates as matrix
 %
 % Derived Classes
 %  @Miller - crystal directions
-%  @S2Grid - sphercial grid
+%  @S2Grid - spherical grid
 %
 % See also
 % VectorDefinition VectorsOperations VectorsAxes VectorsImport VectorsExport
@@ -64,11 +64,7 @@ classdef vector3d < dynOption
       
       elseif nargin == 0
       elseif nargin <= 2
-        if strcmp(class(varargin{1}),'vector3d') %#ok<STISA>
-          
-          v = varargin{1};
-          
-        elseif isa(varargin{1},'vector3d') % copy-constructor
+        if isa(varargin{1},'vector3d') % copy-constructor
           
           v.x = varargin{1}.x;
           v.y = varargin{1}.y;
@@ -124,9 +120,9 @@ classdef vector3d < dynOption
         end
   
         % try to correct
-        if numel(v.x) == 1, v.x = repmat(v.x,s);end
-        if numel(v.y) == 1, v.y = repmat(v.y,s);end
-        if numel(v.z) == 1, v.z = repmat(v.z,s);end
+        if isscalar(v.x), v.x = repmat(v.x,s);end
+        if isscalar(v.y), v.y = repmat(v.y,s);end
+        if isscalar(v.z), v.z = repmat(v.z,s);end
   
         % check again
         if numel(v.x) ~= numel(v.y) || (numel(v.x) ~= numel(v.z))

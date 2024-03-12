@@ -33,9 +33,9 @@ function [values,modes] = max(SO3F,varargin)
 % Example
 %
 %   %find the local maxima of the <SantaFe.html SantaFe> ODF
-%   mode = calcModes(SantaFe)
-%   plotPDF(SantaFe,Miller(0,0,1,mode.CS))
-%   annotate(mode)
+%   [value,ori] = max(SantaFe)
+%   plotPDF(SantaFe,Miller(0,0,1,ori.CS))
+%   annotate(ori)
 %
 % See also
 % SO3Fun/min SO3Fun/max

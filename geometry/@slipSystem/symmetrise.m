@@ -23,7 +23,8 @@ id = [];
 for i = 1:length(sS)
 
   % find all symmetrically equivalent
-  mm = symmetrise(sS.b(i),'unique',varargin{:});
+  mm = symmetrise(sS.b(i),'unique','antipodal');
+  if ~check_option(varargin,'antipodal'), mm = [mm;-mm]; end
   nn = symmetrise(sS.n(i),'unique','antipodal'); %#ok<*PROP>
   
   % find those which have the same angles as the original system

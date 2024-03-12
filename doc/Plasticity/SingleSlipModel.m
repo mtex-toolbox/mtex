@@ -9,16 +9,16 @@
 %% The Continuity Equation
 %
 % The evolution of the orientation distribution function (ODF) $f(g)$ with
-% respect to a crystallopgraphic spin $\Omega(g)$ is governed by the
+% respect to a crystallographic spin $\Omega(g)$ is governed by the
 % continuity equation
 % 
 % $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \text{ div } \Omega = 0$$
 % 
 % The solution of this equation depends on the initial texture $f_0(g)$ at
 % time zero and the crystallographic spin $\Omega(g)$. In this model we
-% assume the initial texture to be isotrope, i.e., $f_0 = 1$ and the
-% crystallopgraphic spin be associated with a single slip system. The full
-% ODF will be later modelled as a superposition of the single slip models.
+% assume the initial texture to be isotropic, i.e., $f_0 = 1$ and the
+% crystallographic spin be associated with a single slip system. The full
+% ODF will be later modeled as a superposition of the single slip models.
 %
 %% 
 % In this example we consider Olivine with has orthorhombic symmetry
@@ -46,7 +46,7 @@ S = sSOli.deformationTensor
 % ansatz $e_{ij}(g) = \gamma(g) S_{ij}(g)$. Fitting this ansatz to a given
 % a macroscopic strain tensor
 
-E = strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
+E = 0.3 * strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 
 %%
 % via minimizing the square difference
@@ -74,7 +74,7 @@ Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
 
 %%
 
-% We may visualize the orientation depedence of the spin tensor by plotting
+% We may visualize the orientation dependence of the spin tensor by plotting
 % its divergence in sigma sections and on top of it the spin tensors as a
 % quiver plot
 
@@ -92,14 +92,66 @@ hold off
 % indicate orientations that decrease in volume. Accordingly, we expect the
 % texture to become more and more concentrated within the blue regions. In
 % the example example illustrated above with only the second slip system
-% beeing active, we would expect the c-axis to align more and more with the
+% being active, we would expect the c-axis to align more and more with the
 % the z-direction. 
 %
+
+% the starting ODF
+odf0 = uniformODF(csOli);
+
+odf = doEulerStep(2*Omega,odf0,40)
+
+figure(2)
+plot(odf,'sigma')
+mtexColorbar
+
+
+%%
+
+numIter = 10;
+res = 1.25*degree;
+
+ori0 = equispacedSO3Grid(csOli,'resolution',res);
+
+ori = doEulerStep(Omega,ori0,numIter);
+
+%%
+
+odf = calcDensity(ori,'halfwidth',res*4);
+
+%%
+figure(2)
+plot(odf,'sigma')
+
+%%
+
+numIter = 20;
+res = 2.5*degree;
+
+ori0 = equispacedSO3Grid(csOli,'resolution',res);
+
+[V,C] = calcVoronoi(ori0,'struct');
+w0 = calcVoronoiVolume(ori0,V,C);
+
+ori = doEulerStep(Omega,ori0,numIter);
+
+y0 = 1;
+
+w1 = calcVoronoiVolume(ori);
+
+y1 = y0 .* (w0 ./ w1);
+
+odfx = SO3FunHarmonic.approximation(ori(:),y1(:))
+
+figure(3)
+plot(odfx,'sigma')
+
+
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
 % are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
 % This command takes as input the specific slips system |sS| and the
-% makroscopic strain tensor |E|
+% macroscopic strain tensor |E|
 
 odf1 = SO3FunSBF(sSOli(1),E)
 odf2 = SO3FunSBF(sSOli(2),E)
@@ -110,7 +162,10 @@ odf4 = SO3FunSBF(sSOrtho,E)
 % Lets check our expectation from the last paragraph by visualizing the
 % odf corresponding to the second slip system in sigma sections
 
+figure(1)
+odf2 = SO3FunSBF(sSOli(2),E)
 plotSection(odf2,'sigma')
+mtexColorbar
 
 %%
 % We observe exactly the concentration of the c-axis around z as predicted
@@ -146,10 +201,11 @@ mtexColorbar
 
 %% Checking the for steady state
 % We may also check for which orientations an ODF is already in a steady
-% state of the continous equation, i.e., the time derivative $\text{div}(f
+% state of the continuity equation, i.e., the time derivative $\text{div}(f
 % \Omega) = 0$ is zero.
 
 plotSection(div(odf2 .* Omega),'sigma')
 mtexColorMap blue2red
 mtexColorbar
 setColorRange(max(abs(clim))*[-1,1])
+

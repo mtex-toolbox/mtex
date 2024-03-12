@@ -19,6 +19,7 @@ classdef slipSystem
   
   properties (Dependent = true)
     CS
+    isSymmetrised
   end
   
   methods
@@ -64,6 +65,18 @@ classdef slipSystem
       end
     end
     
+    function out = get.isSymmetrised(sS)
+      if length(sS)<2
+        out = false;
+      else
+        out = eq(sS.subSet(1),sS.subSet(2));
+      end
+    end
+
+    function sS = ensureSymmetrised(sS,varargin)
+      if ~sS.isSymmetrised, sS = sS.symmetrise(varargin{:}); end
+    end
+
     function display(sS,varargin)
       % standard output
 

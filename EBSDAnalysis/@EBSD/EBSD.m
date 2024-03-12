@@ -23,7 +23,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  unitCell    - vertices a single pixel
   %
   % Options
-  %  phase    - specifing the phase of the EBSD object
+  %  phase    - specifying the phase of the EBSD object
   %  options  - struct with fields holding properties for each orientation
   %  xy       - spatial coordinates n x 2, where n is the number of input orientations
   %  unitCell - for internal use
@@ -37,7 +37,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   %  rotations - @rotation of each pixel
   %  x, y      - coordinates of the center of each pixel 
   %  scanUnit  - unit of the x,y coordinates (um is default)
-  %  prop      - auxilary properties, e.g., MAD, BC, mis2mean
+  %  prop      - auxiliary properties, e.g., MAD, BC, mis2mean
   %  isIndexed - is pixel indexed or not
   %  indexedPhaseId - phaseIds of all indexed phases
   %
@@ -69,7 +69,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   end
   
   properties (Access = protected)
-    A_D = []        % adjecency matrix of the measurement points
+    A_D = []        % adjacency matrix of the measurement points
   end
   
   methods
@@ -92,6 +92,8 @@ classdef EBSD < phaseList & dynProp & dynOption
           ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
         end
         ebsd.opt = rot.opt;
+
+        ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
         return
       end
       

@@ -12,14 +12,13 @@ function ebsd = erode(ebsd,count, varargin)
 %
 % Input
 %  ebsd   - @EBSD
-%  counts - number, upper threshold of same phase pixels
-%           around each pixel to premit erosion
-%  phse   - phase name, cell or string
+%  counts - upper threshold of same phase pixels around each pixel to permit erosion
+%  phase  - phase name, cell or string
 %
 % Output
 %  ebsd - @EBSD without the eroded pixels
 % 
-% Example
+% Examples
 %
 % mtexdata small
 % plot(ebsd); hold on
@@ -31,7 +30,6 @@ function ebsd = erode(ebsd,count, varargin)
 % plot(ebsd); hold on
 % plot(ebsd('n'),'FaceColor','k'); hold off;
 % mtexTitle('no single nonIndexed pixels');  nextAxis
-
 % 
 % % erode isolated, nonIndexed points
 % for i=1:10
@@ -56,43 +54,44 @@ function ebsd = erode(ebsd,count, varargin)
 % 
 % 
 
-
 % check if already gridified
-if any(size(ebsd)==1)
-    ebsd = ebsd.gridify;
-end
+if any(size(ebsd)==1), ebsd = ebsd.gridify; end
 
 % find the neighbors
 if size(ebsd.unitCell,1) == 6
-    ind = hexNeighbors(size(ebsd));
+  ind = hexNeighbors(size(ebsd));
 else
-    ind = squareNeighbors2(size(ebsd));
+  ind = squareNeighbors2(size(ebsd));
 end
 
 % if varargin is empty use entire map as 1, notIndexed as 0
 if isempty(varargin)
-    zmap = ~ebsd.isIndexed;
+  zmap = ~ebsd.isIndexed;
 end
 
 % if phase name is supplied use it accordingly
 if ~isempty(varargin) && isa(varargin{1},'char')
-   uid = unique(ebsd(varargin{1}).phase);
-   zmap = ebsd.phase == uid;
+  uid = unique(ebsd(varargin{1}).phase);
+  zmap = ebsd.phase == uid;
 end
 
 
 % if more than one phase is supplied use them all in order
 if ~isempty(varargin) && isa(varargin{1},'cell')
-   for i=1:length(varargin{1})  
-       ebsd = erode(ebsd,count,varargin{1}{i});
-   end
+  for i=1:length(varargin{1})
+    ebsd = erode(ebsd,count,varargin{1}{i});
+  end
 end
 
 % pixels to erode must be zmap AND haver lower 
 % neighbor count than threshold 
 if exist('zmap','var')
-   peroded =zmap & sum(zmap(ind),3) <= count;
-   ebsd(peroded) = [];
+   candidate = sum(zmap(ind),3) <= count;
+   peroded =zmap(:) & candidate(:);
+   ebsd =EBSD(ebsd);
+   ebsd = ebsd(~peroded);
 end
+% cleanup
+ebsd(ebsd.isnan)=[]
 
 end

@@ -13,7 +13,7 @@ function grains = smooth(grains,iter,varargin)
 %  moveOuterBoundary - do not exclude outer boundary from smoothing
 %  second_order, S2  - second order smoothing
 %  rate              - default smoothing kernel  
-%  gauss             - gaussian smoothing kernel  
+%  gauss             - Gaussian smoothing kernel  
 %  exp               - exponential smoothing kernel  
 %  umbrella          - umbrella smoothing kernel   
  
@@ -22,7 +22,7 @@ if nargin < 2 || isempty(iter), iter = 1; end
 % compute incidence matrix vertices - faces
 I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 
-% compute vertice adjacency matrix
+% compute vertices adjacency matrix
 A_V = I_VF * I_VF';
 t = size(A_V,1);
 

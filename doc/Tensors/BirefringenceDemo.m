@@ -49,11 +49,11 @@ hold off
 % principle values with the correct axes.
 
 %%
-% For Forsterite the priniple refractive values are 
+% For Forsterite the principle refractive values are 
 n_alpha = 1.635; n_beta = 1.651; n_gamma = 1.670;
 
 %%
-% with the largest refractive index n_gamma beeing alligned with the
+% with the largest refractive index n_gamma being aligned with the
 % a-axis, the intermediate index n_beta with the c-axis and the smallest
 % refractive index n_alpha with the b-axis. Hence, the refractive index
 % tensor for Forsterite takes the form
@@ -62,12 +62,12 @@ cs = ebsd('olivine').CS;
 rI_Fo = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
 %% 
-% For Fayalite the priniple refractive values
+% For Fayalite the principle refractive values
 
 n_alpha = 1.82; n_beta = 1.869; n_gamma = 1.879;
 
 %%
-% are aligned to the crystallograhic axes in an analogous way. Which leads
+% are aligned to the crystallographic axes in an analogous way. Which leads
 % to the refractive index tensor
 
 rI_Fa = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
@@ -75,9 +75,9 @@ rI_Fa = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
 
 %%
 % The refractive index of composite materials like Olivine can now be
-% modelled as the weighted sum of the of the refractive index tensors of
+% modeled as the weighted sum of the of the refractive index tensors of
 % Forsterite and Fayalite. Lets assume that the relative Forsterite content
-% (atomic percentage) is sgiven my
+% (atomic percentage) is given my
 
 XFo = 0.86; % 86 percent Forsterite
 
@@ -99,7 +99,7 @@ vprop = Miller(1,1,1,cs);
 [dn,pMin,pMax] = rI.birefringence(vprop)
 
 %%
-% If the polarization direction is ommited the results are spherical
+% If the polarization direction is omitted the results are spherical
 % functions which can be easily visualized.
 
 % compute the birefringence as a spherical function
@@ -116,7 +116,7 @@ quiver3(pMax)
 hold off
 
 %% The Optical Axis
-% The optial axes are all directions where the birefringence is zero
+% The optical axes are all directions where the birefringence is zero
 
 % compute the optical axes
 vOptical = rI.opticalAxis
@@ -130,9 +130,9 @@ arrow3d(vOptical,'antipodal','facecolor','red')
 hold off
 
 %% Spectral Transmission
-% If white light with a certain polarization is transmited though a crystal
-% with isotropic refrative index the light changes wavelength and hence
-% appears collored. The resulting color depending on the propagation
+% If white light with a certain polarization is transmitted though a crystal
+% with isotropic refractive index the light changes wavelength and hence
+% appears colored. The resulting color depending on the propagation
 % direction, the polarization direction and the thickness can be computed
 % by
 
@@ -143,14 +143,14 @@ rgb = rI.spectralTransmission(vprop,thickness,'polarizationDirection',p)
 
 %%
 % Effectively, the rgb value depend only on the angle tau between the
-% polariztzion direction and the slowest polarization direction |pMin|.
+% polarization direction and the slowest polarization direction |pMin|.
 % Instead of the polarization direction this angle may be specified
 % directly
 
 rgb = rI.spectralTransmission(vprop,thickness,'tau',30*degree)
 
 %%
-% If the angle tau is fixed and the propagation direction is ommited as
+% If the angle tau is fixed and the propagation direction is omitted as
 % input MTEX returns the rgb values as a spherical function. Lets plot
 % these functions for different values of tau.
 
@@ -203,7 +203,7 @@ polarizer = vector3d.X;
 thickness = 22800;
 
 %%
-% As usal we have two options: Either we transform the refractive index
+% As usual we have two options: Either we transform the refractive index
 % tensor into specimen coordinates or we transform the polarization
 % direction and the propagation directions into crystal coordinates.
 % Lets start with the first option:
@@ -225,7 +225,7 @@ plot(ebsd('olivine'),rgb)
 %%
 % and compare it with option two:
 
-% transfom the propation direction and the polarizer direction into a list
+% transform the propagation direction and the polarizer direction into a list
 % of directions with respect to crystal coordinates
 vprop_crystal = ori \ vprop;
 polarizer_crystal = ori \ polarizer;
@@ -238,13 +238,13 @@ plot(ebsd('olivine'),rgb)
 
 
 %% Spectral Transmission as a color key
-% The above computations can be automized by defining a spectral
+% The above computations can be automated by defining a spectral
 % transmission color key.
 
 % define the colorKey
 colorKey  = spectralTransmissionColorKey(rI,thickness);
 
-% the following are the defaults and can be ommited
+% the following are the defaults and can be omitted
 colorKey.propagationDirection = vector3d.Z; 
 colorKey.polarizer = vector3d.X; 
 colorKey.phi = 90 * degree;
@@ -271,7 +271,7 @@ rgb = colorKey.orientation2color(ori);
 
 plot(ebsd('olivine'), rgb)
 
-%% Illustrating the effect of rotating polarizer and analyser simultanously
+%% Illustrating the effect of rotating polarizer and analyzer simultaneously
 
 colorKey.polarizer = vector3d.X; 
 figure
@@ -287,7 +287,7 @@ stepSize = 2.5;
 
 for omega = 0:stepSize:90-stepSize
     
-  % update polarsation direction
+  % update polarization direction
   colorKey.polarizer = rotate(vector3d.X, omega * degree);
     
   % update rgb values

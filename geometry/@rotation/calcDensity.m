@@ -1,5 +1,5 @@
 function odf = calcDensity(ori,varargin)
-% computes an ODF from individuel orientations
+% computes an ODF from individual orientations
 %
 % The function *calcDensity* applies one of the following algorithms to compute
 % an ODF from a list of orientations.
@@ -31,7 +31,7 @@ function odf = calcDensity(ori,varargin)
 %
 % Options
 %  weights    - list of weights for the orientations
-%  halfwidth  - halfwidth of the kernel function
+%  halfwidth  - halfwidth of the kernel function (default is 10 degree)
 %  resolution - resolution of the grid where the ODF is approximated
 %  kernel     - SO3Kernel function (default -- SO3 de la Valee Poussin kernel)
 %  order      - order up to which Fourier coefficients are calculated

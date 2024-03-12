@@ -114,10 +114,30 @@ function d_new = recurrence(d_lmin1,d_lmin2,l,beta)
   % using factorial is faster but yields NaNs
   B_1 = ((l+1:2*l)>=(2*l+1:-1:l+1)').*(l:2*l-1) +1;
   B_2 = B_1-(2*l:-1:l)'; B_2(B_2<0.5)=1;
-  sq_binom = sqrt(prod(B_1./B_2,2)');
-  % absolut values of first and last line/column
-  d_exterior = [sq_binom, flip(sq_binom(1:end-1))] ...
-    .*(sin(beta/2).^(0:2*l)) .* (cos(beta/2).^(2*l:-1:0));
+  if beta==pi/2
+    A = sqrt(B_1'./B_2'/4);
+    if l>500
+      while size(A,1)>1;
+        len = size(A,1);
+        A = sort(A,1);
+        if ~iseven(len)
+          A(1,:) = A(end,:).*A(1,:);
+          A(end,:) = [];
+          len = len-1;
+        end
+        A = A(1:len/2,:).*flip(A(len/2+1:end,:),1);
+      end
+      sq_binom = A;
+    else
+      sq_binom = prod(A,1);
+    end
+    d_exterior = [sq_binom, flip(sq_binom(1:end-1))];
+  else
+    sq_binom = sqrt(prod(B_1'./B_2',1));
+    % absolut values of first and last line/column
+    d_exterior = [sq_binom, flip(sq_binom(1:end-1))] ...
+      .*(sin(beta/2).^(0:2*l)) .* (cos(beta/2).^(2*l:-1:0));
+  end
 
   % compose new Wigner-d
   d_new = zeros(2*l+1,l+1);

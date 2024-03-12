@@ -4,7 +4,7 @@
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the
 % the minimum and maximum value are known then one can specify the color
-% range directly using the options *colorrange* or *contourf*, or the
+% range directly using the options |'colorrange'| or |'contourf'|, or the
 % command <setColorRange.html setColorRange> is used which allows to set
 % the color range afterwards.
 %
@@ -20,10 +20,10 @@ pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 %% Tight Colorcoding
 %
-% When <PoleFigure.plot.html plot> is called without any colorcoding option, 
-% the plots are constructed using the  *tight* option to the range of the data 
-% independently from the other plots. This means that different pole
-% figures may have different color coding and in principle cannot be
+% When <PoleFigure.plot.html plot> is called without any colorcoding
+% option, the plots are constructed using the option |'tight'| to the range
+% of the data independently from the other plots. This means that different
+% pole figures may have different color coding and in principle cannot be
 % compared to each other.
 
 close all
@@ -32,17 +32,17 @@ mtexColorbar
 
 %% Equal Colorcoding
 %
-% The *tight* colorcoding can make the reading and comparison of two pole figures 
-% a bit hard. If you want to have one colorcoding for all plots within one figure use the
-% option *colorrange* to *equal*.
+% The |'tight'| colorcoding can make the reading and comparison of two pole
+% figures a bit hard. If you want to have one colorcoding for all plots
+% within one figure set the option |'colorrange'| to |'equal'|.
 
 plot(pf,'colorRange','equal')
 mtexColorbar
 
 %% Setting an Explicite Colorrange
 %
-% If you want to have a unified colorcoding for several figures you can
-% set the colorrange directly in the <SO3Fun.plotPDF.html plot command>
+% If you want to have a unified colorcoding for several figures you can set
+% the colorrange directly in the <SO3Fun.plotPDF.html plot command>
 
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
@@ -67,19 +67,18 @@ mtexColorbar
 %% Modifying the Colorrange After Plotting
 %
 % The color range of the figures can also be adjusted afterwards using the
-% command <mtexFigure.CLim.html CLim>
+% command <setColorRange.html |setColorRange|>
 
-CLim(gcm,[0.38,3.9])
-
+setColorRange([0.38,3.9])
 
 %% Logarithmic Plots
 %
 % Sometimes logarithmic scaled plots are of interest. For this case all
-% plots in MTEX understand the option *logarithmic*, e.g.
+% plots commands in MTEX understand the option |'logarithmic'|, e.g.
 
 close all;
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
-CLim(gcm,[0.01 12]);
+setColorRange([0.01 12]);
 mtexColorbar
 
 
@@ -96,7 +95,7 @@ mtexColorbar
 %
 % One can even use different colormaps within one figure
 
-% initialize an MTEXFigure
+% initialize an MTEX-figure
 mtexFig = newMtexFigure;
 
 % for three different colormaps 

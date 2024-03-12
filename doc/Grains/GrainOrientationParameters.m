@@ -54,7 +54,7 @@ plot(grains, grains.meanOrientation)
 %% Misorientation to the grain mean orientation
 %
 % Once we have a reference orientation for each grain - the grain
-% meanorientation |ori_ref| - we may want to analyse the deviation of the
+% meanorientation |ori_ref| - we may want to analyze the deviation of the
 % individual orientations within the grain from this reference orientation.
 % The _grain reference orientation deviation_ (GROD) is the
 % <MisorientationTheory.html misorientation> between each pixel orientation
@@ -79,8 +79,8 @@ mis2mean = calcGROD(ebsd, grains)
 % |grainMean|> which averages arbitrary EBSD properties over grains. Here,
 % we use it to average the misorientation angle for each grain separately.
 
-% take the avarage of the misorientation angles for each grain
-GOS = ebsd.grainMean(mis2mean.angle);
+% take the average of the misorientation angles for each grain
+GOS = ebsd.grainMean(mis2mean.angle, grains);
 
 % plot it
 plot(grains, GOS ./ degree)
@@ -97,7 +97,7 @@ mtexColorbar('title','GOS in degree')
 % any other statistics like the median, or some quantile.
 
 % compute the maximum misorientation angles for each grain
-MGOS = ebsd.grainMean(mis2mean.angle,@max);
+MGOS = ebsd.grainMean(mis2mean.angle, grains, @max);
 
 % plot it
 plot(grains, MGOS ./ degree)
@@ -111,7 +111,7 @@ mtexColorbar('title','MGOS in degree')
 % grain. Hence, we can compute is by using the functions <EBSD.KAM.html
 % |ebsd.KAM|> and <EBSD.grainMean.html |grainMean|>.
 
-gam = ebsd.grainMean(ebsd.KAM);
+gam = ebsd.grainMean(ebsd.KAM, grains);
 
 plot(grains,gam./degree)
 mtexColorbar('title','GAM in degree')
@@ -151,7 +151,7 @@ hold off
 
 %%
 % The function <fibre.fit.html |fibre.fit|> has three output arguments. The
-% first one |f| is the fittted fibre. From this we can easily detect the
+% first one |f| is the fitted fibre. From this we can easily detect the
 % prominent misorientation axis in specimen coordinates by |f.r| and in
 % crystal coordinates by |f.h|.
 

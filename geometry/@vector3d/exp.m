@@ -15,7 +15,7 @@ function rot = exp(v,rot_ref,tS)
 %  mori - @rotation
 %  ori  - @orientation
 %
-% Option
+% Options
 %  left  -
 %  right - 
 %
