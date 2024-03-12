@@ -1,12 +1,16 @@
-function p = planeIntersect(n1,n2,n3,d)
-% pointwise determinant or triple product of three vector3d
+function v = planeIntersect(n1,n2,n3,d)
+% intersection of three planes
 %
 % Input
-%  n1,n2,n3 - normal @vector3d
-%  d        - distance
+%  n1,n2,n3 - plane normal @vector3d, <x,n_i> = d_i
+%  d        - [d1,d2,d3] distances of the three planes to the origin
 %
 % Output
-%  d - double
+%  v - @vector3d
+%
+% See also
+% vector3d/lineIntersect
+%
 
 % ensure last argument is vector3d
 if nargin == 4
@@ -22,4 +26,4 @@ x = vector3d(n1.x,n2.x,n3.x);
 y = vector3d(n1.y,n2.y,n3.y);
 z = vector3d(n1.z,n2.z,n3.z);
 
-p = vector3d(det(d,y,z),det(x,d,z),det(x,y,d)) ./ D;
+v = vector3d(det(d,y,z),det(x,d,z),det(x,y,d)) ./ D;
