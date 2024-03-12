@@ -11,10 +11,17 @@ function h = plot(cS,varargin)
 %   plot(cS,'faceColor','red','faceAlpha',0.5,'edgeColor','k') % colorize by property
 %   plot(cS,'faceColor',cS.faceAraea)
 %
+%   % plot an inner plane
+%   plot(cS, Miller(1,1,0,cS.CS,'hkl'))
+%
+%   % visualize a slip system
+%   plot(cS, sS)
+%
 % Input
 %  cS  - @crystalShape
 %  x,y - coordinates
 %  xy  - nx2 or nx3 coordinate matrix
+%  sS  - @slipSystem
 %
 %  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
 %
@@ -69,6 +76,15 @@ if isnumeric(cS)
   cS = xyz + cS;
 end
 
+if isa(varargin{1},'slipSystem')
+  plotSlipSystem(cS,varargin{:});
+  return
+elseif isa(varargin{1},'vector3d')
+  plotInnerFace(cS,varargin{:});
+  return
+end
+
+
 % extract color
 fc = get_option(varargin,'FaceColor',cS.CS.color);
 
@@ -81,11 +97,7 @@ else
 end
 
 % make a nice axis if not yet done
-if isNew
-  axis('equal','vis3d','off');
-  fcw
-  view(3);
-end
+if isNew, axis; end
 
 % do plot
 V = reshape(double(cS.V),[],3);
@@ -94,9 +106,10 @@ h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k',...
 %h = optiondraw(patch('Faces',cS.F,'Vertices',V,'edgeColor','k'),varargin{:});
 
 if isNew
-  axis equal
   drawNow(mtexFig,varargin{:}); 
+  axis('equal','vis3d','off');
   fcw
+  view(3)
 end
 
 if nargout == 0, clear h; end
