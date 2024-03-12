@@ -4,6 +4,9 @@ unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 ext = get_option(varargin,'extent',ebsd.extent);
 prop = get_option(varargin,'prop',ebsd.prop);
 
+% allow to run again even if already EBSDsquare
+ebsd = EBSD(ebsd);
+
 % generate regular grid
 dx = max(unitCell(:,1))-min(unitCell(:,1));
 dy = max(unitCell(:,2))-min(unitCell(:,2));

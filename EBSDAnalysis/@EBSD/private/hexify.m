@@ -5,7 +5,7 @@ ext = get_option(varargin,'extent',ebsd.extent);
 prop = get_option(varargin,'prop',ebsd.prop);
 
 % allow to run again even if already EBSDhex
-ebsd=EBSD(ebsd);
+ebsd = EBSD(ebsd);
 
 % size of a hexagon
 dHex = mean(sqrt(sum(unitCell.^2,2)));
