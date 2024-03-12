@@ -45,8 +45,8 @@ function [grains,grainId,mis2mean,mis2median,mis2mode] = calcGrains(ebsd,varargi
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  unitCell - omit voronoi decomposition and treat a unitcell lattice
-%  qhull    - use qHull for the voronin decomposition
+%  unitCell - omit Voronoi decomposition and treat a unitcell lattice
+%  qhull    - use qHull for the Voronoi decomposition
 %
 % References
 %
@@ -63,8 +63,12 @@ function [grains,grainId,mis2mean,mis2median,mis2mode] = calcGrains(ebsd,varargi
 % GrainReconstruction GrainReconstructionAdvanced
 
 % subdivide the domain into cells according to the measurement locations,
-% i.e. by Voronoi teselation or unit cell
-[V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+% i.e. by Voronoi tessellation or unit cell
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  [V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+end
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -72,15 +76,21 @@ function [grains,grainId,mis2mean,mis2median,mis2mode] = calcGrains(ebsd,varargi
 
 % determine which cells to connect
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
-% A_db - neigbhouring cells with (inner) grain boundary
+% A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
+% now we remove all empty grains
+notEmpty = full(any(I_FD * I_DG,1)).';
+I_DG = I_DG(:,notEmpty);
+
 % compute grain ids
-[grainId,~] = find(I_DG.');
+%[grainId,~] = find(I_DG.');
+grainId = full(I_DG * (1:size(I_DG,2)).');
+
 
 % phaseId of each grain
 phaseId = full(max(I_DG' * ...
-  spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2));
+  spdiags(ebsd.phaseId,0,length(ebsd),length(ebsd)),[],2));
 phaseId(phaseId==0) = 1; % why this is needed?
 
 % compute boundary this gives
@@ -93,9 +103,13 @@ if check_option(varargin,'removeQuadruplePoints')
 end
 
 % setup grains
+try
+  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+catch
+  poly = calcPolygons(I_FDext * I_DG,Fext,V);
+end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
-  calcPolygons(I_FDext * I_DG,Fext,V), ...
-  [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
+  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
 grains.grainSize = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);
@@ -113,22 +127,22 @@ end
 
 grainRange    = [0;cumsum(grains.grainSize)];        %
 firstD        = d(grainRange(2:end));
+phaseId       = ebsd.phaseId;
 q             = quaternion(ebsd.rotations);
 meanRotation  = q(firstD);
-medianRotation  = q(firstD);
-modeRotation  = q(firstD);
-GOS = zeros(length(grains),1);
+
 
 % choose between equivalent orientations in one grain such that all are
 % close together
 for pId = grains.indexedPhasesId
-  ndx = ebsd.phaseId(d) == pId;
+  ndx = phaseId(d) == pId;
   if ~any(ndx), continue; end
   q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{pId},meanRotation(g(ndx)));
 end
 
 % compute mean orientation and GOS
 if 0
+  GOS = zeros(length(grains),1);
   doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
   abcd_mean = zeros(length(doMeanCalc),4);
   abcd_median = zeros(length(doMeanCalc),4);
@@ -147,21 +161,12 @@ if 0
   medianRotation(doMeanCalc)=reshape(quaternion(abcd_median'),[],1);
   modeRotation(doMeanCalc)=reshape(quaternion(abcd_mode'),[],1);
 else
-  [meanRotation, GOS] = accumarray(grainId(:),q(:),'robust');
-%   medianRotation = accumarray(grainId(:),q(:),'robust');
-medianRotation = accumarray(grainId(:), q(:), [], @(x) medianQ(x));
-%   modeRotation = accumarray(grainId(:),q(:),'robust');
-modeRotation = accumarray(grainId(:), q(:), [], @(x) modeQ(x));
+
 end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
-grains.prop.medianRotation = reshape(medianRotation,[],1);
-grains.prop.modeRotation = reshape(modeRotation,[],1);
 
-mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
-mis2median = inv(rotation(q(:))) .* grains.prop.medianRotation(grainId(:));
-mis2mode = inv(rotation(q(:))) .* grains.prop.modeRotation(grainId(:));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
@@ -170,15 +175,13 @@ if check_option(varargin,'variants')
     grains.prop.parentId = variantId(firstD,2);
 end
 
-
-
   function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
     % segmentation
     %
     %
     % Output
-    %  A_Db - adjecency matrix of grain boundaries
-    %  A_Do - adjecency matrix inside grain connections
+    %  A_Db - adjacency matrix of grain boundaries
+    %  A_Do - adjacency matrix inside grain connections
 
     % extract segmentation method
     grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
@@ -188,11 +191,11 @@ end
     gbc      = get_flag(varargin,gbcFlags,'angle');
     gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
 
-    if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
+    if isscalar(gbcValue) && length(ebsd.CSList) > 1
       gbcValue = repmat(gbcValue,size(ebsd.CSList));
     end
 
-    % get pairs of neighbouring cells {D_l,D_r} in A_D
+    % get pairs of neighboring cells {D_l,D_r} in A_D
     A_D = I_FD'*I_FD==1;
     [Dl,Dr] = find(triu(A_D,1));
 
@@ -211,7 +214,7 @@ end
 
     for p = 1:numel(ebsd.phaseMap)
   
-      % neighboured cells Dl and Dr have the same phase
+      % neighbored cells Dl and Dr have the same phase
       if maxDist > 0
         ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
       else
@@ -239,7 +242,7 @@ end
       
       param = get_option(varargin,'mcl');
       if isempty(param), param = 1.4; end
-      if length(param) == 1, param = [param,4]; end
+      if isscalar(param), param = [param,4]; end
   
       A_Do = mclComponents(A_Do,param(1),param(2));
       A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
@@ -268,12 +271,12 @@ end
     % cells that have a subgrain boundary, i.e. a boundary with a cell
     % belonging to the same grain
     sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
-    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
+    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
     sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
     
     % split grain boundaries A_Db into interior and exterior
     A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
-    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundray
+    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundary
     
     % create incidence graphs
     I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
@@ -470,7 +473,7 @@ for k=1:size(I_FG,2)
   % inner and outer boundaries are circles in the face graph
   EC = EulerCycles(F(I_FG(:,k)>0,:));
           
-  % first cicle should be positive and all others negatively oriented
+  % first circle should be positive and all others negatively oriented
   for c = 1:numel(EC)
     if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
       EC{c} = fliplr(EC{c});
