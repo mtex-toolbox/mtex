@@ -76,14 +76,15 @@ if isnumeric(cS)
   cS = xyz + cS;
 end
 
-if isa(varargin{1},'slipSystem')
-  plotSlipSystem(cS,varargin{:});
-  return
-elseif isa(varargin{1},'vector3d')
-  plotInnerFace(cS,varargin{:});
-  return
+if ~isempty(varargin)
+  if isa(varargin{1},'slipSystem')
+    plotSlipSystem(cS,varargin{:});
+    return
+  elseif isa(varargin{1},'vector3d')
+    plotInnerFace(cS,varargin{:});
+    return
+  end
 end
-
 
 % extract color
 fc = get_option(varargin,'FaceColor',cS.CS.color);
