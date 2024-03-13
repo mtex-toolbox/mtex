@@ -25,7 +25,7 @@
 % * The alignment of x, y and z on the screen is now controlled by an
 % object of type @plottingConvention. The code
 %
-%   how2plot = plottinConvention
+%   how2plot = plottingConvention
 %   how2plot.outOfScreen = ebsd.N
 %   how2plot.east = yvector
 %   plot(ebsd, how2plot)
