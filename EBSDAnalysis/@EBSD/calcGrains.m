@@ -62,6 +62,40 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
+
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  isGrid = true;
+else
+  isGrid = false;
+end
+
+
+if check_option(varargin,'minPixel')
+  if check_option(varargin,'byUnitCell') || check_option(varargin,'unitCell')
+     [~,~,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:},'unitCell');
+  elseif check_option(varargin,'byScalar')
+     [~,~,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+  else
+    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+      [~,~,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
+    else
+      [~,~,I_FD]= spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+    end
+  end  
+
+  [~,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+  gr2rm = find(full(sum(I_DG))<get_option(varargin,'minPixel'));
+  [id2rm,~] = find(I_DG(:,gr2rm));
+  ebsd.phaseId(id2rm) = NaN;
+  ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
+
+  if isGrid
+    ebsd = ebsd.gridify;
+  end
+end
+
+
+
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi tessellation or unit cell
 if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
@@ -103,11 +137,11 @@ if check_option(varargin,'removeQuadruplePoints')
 end
 
 % setup grains
-try
-  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
-catch
+% try
+%   poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+% catch
   poly = calcPolygons(I_FDext * I_DG,Fext,V);
-end
+% end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
   poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
@@ -165,6 +199,11 @@ if check_option(varargin,'variants')
     variantId = get_option(varargin,'variants');   
     grains.prop.variantId = variantId(firstD,1);
     grains.prop.parentId = variantId(firstD,2);
+end
+
+if check_option(varargin,'minPixel')
+    ebsd.grainId = grainId;
+    grainId = ebsd;
 end
 
   function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
