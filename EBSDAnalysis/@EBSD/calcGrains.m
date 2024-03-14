@@ -140,11 +140,11 @@ if check_option(varargin,'removeQuadruplePoints')
 end
 
 % setup grains
-try
-  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
-catch
+% try
+%   poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+% catch
   poly = calcPolygons(I_FDext * I_DG,Fext,V);
-end
+% end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
   poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
@@ -202,6 +202,11 @@ if check_option(varargin,'variants')
     variantId = get_option(varargin,'variants');   
     grains.prop.variantId = variantId(firstD,1);
     grains.prop.parentId = variantId(firstD,2);
+end
+
+if check_option(varargin,'minPixel')
+    ebsd.grainId = grainId;
+    grainId = ebsd;
 end
 
   function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
