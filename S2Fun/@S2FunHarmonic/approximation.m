@@ -12,7 +12,7 @@ function sF = approximation(nodes, y, varargin)
 %  bandwidth  - maximum degree of the spherical harmonics used to approximate the function
 %  to         - tolerance for lsqm
 %  maxIt      - maximum number of iterations for lsqm
-%  W          - weight w_n for the node nodes (default: voronoi weights)
+%  weights    - weight w_n for the node nodes (default: voronoi weights)
 %
 
 % make points unique

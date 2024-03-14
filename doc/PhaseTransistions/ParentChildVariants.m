@@ -1,9 +1,9 @@
 %% Parent Child Variants
 %
 %%
-% The crystallographic structure of most materials is dependend on external
+% The crystallographic structure of most materials is depended on external
 % conditions as temperature and pressure. When the external conditions
-% change the crystals may undergo a phase transition from the inital phase,
+% change the crystals may undergo a phase transition from the initial phase,
 % often called parent phase, into the child phase. While both phases still
 % have the same chemical composition their crystallographic structure might
 % be quite different. A typical example are the alpha and beta phase of
@@ -22,7 +22,7 @@ csAlpha = crystalSymmetry('622',[3 3 4.7],'mineral','Ti (alpha)');
 oriParent = orientation.rand(csBeta);
 
 %%
-% be the orientation of the atomic lattice befor phase transition and
+% be the orientation of the atomic lattice before phase transition and
 % |oriChild| the orientation of the atomic lattice after the phase
 % transition. Since during a phase transition the atoms reorder with
 % respect to a minimal energy constraint, both orientations |oriParent| and
@@ -39,7 +39,7 @@ beta2alpha = orientation.Burgers(csBeta,csAlpha)
 oriChild = oriParent * inv(beta2alpha)
 
 %%
-% This orientation relationship is characterised by alignment of hexagonal
+% This orientation relationship is characterized by alignment of hexagonal
 % (0001) plane with the cubic (110) plane and alignment of the hexagonal
 % [2-1-10] direction with the cubic [-11-1] direction.
 
@@ -85,7 +85,7 @@ oriParentSym = oriParent.symmetrise
 
 %%
 % Applying the |beta2alpha| phase relationship to these 24 different
-% represenations we obtain 24 child orientations.
+% representations we obtain 24 child orientations.
 
 oriChild = oriParentSym * inv(beta2alpha)
 
