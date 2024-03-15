@@ -20,6 +20,10 @@ classdef neperInstance < handle
 %   %defining tessellation id
 %   myNeper.id = 512;
 %
+%   %eventually set a list of additional options to be found here
+%   %to be found here: https://neper.info/doc/neper_t.html 
+%   myNeper.varNeperopts = '-regularization 1'
+%
 %   ori=orientation.rand;
 %   ori.CS=crystalSymmetry('mmm');
 %   odf=unimodalODF(orientation.rand)
@@ -57,6 +61,7 @@ properties
   cubeSize = [1 1 1];
   morpho = 'graingrowth';
   iterMax = 1000;
+  varNeperopts = [];          %set any option as specified in https://neper.info/doc/neper_t.html
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
   filePath = [tempdir 'neper' filesep];
