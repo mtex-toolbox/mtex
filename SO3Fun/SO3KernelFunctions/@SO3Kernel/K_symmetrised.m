@@ -39,7 +39,7 @@ else
   lg2 = -length(q2);
 end
 
-% TODO: Better use the diameter here
+% TODO: Better use the diameter here fundamentalRegion(CS,SS).maxAngle
 % For triclinic symmetries the right hand side should be pi and >=
 % Note that the following condition occurs in SO3Fun.interpolate
 if epsilon>2*pi/CS.Laue.multiplicityZ % full matrices

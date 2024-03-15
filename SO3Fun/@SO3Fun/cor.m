@@ -1,5 +1,5 @@
 function val = cor(SO3F1,SO3F2,varargin)
-% correlation between two two SO3Fun
+% correlation between two SO3Funs
 %
 % $$ cor(f_1,f_2) = \sqrt{\frac1{8\pi^2} \int_{SO(3)} f_1(R) f_2(R) dR$$,
 %

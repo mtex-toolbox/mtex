@@ -37,12 +37,12 @@ methods
 
     sF.antipodal = check_option(varargin,'antipodal');
     
-    % truncate zeros
-    N = sF.bandwidth;
-    p = flip(abs(sF.fhat(1:N,:))).^2 + abs(sF.fhat(N+2:end,:)).^2;
-    p = [abs(sF.fhat(N+1,:));sqrt(p)];
-    A = reshape(p,size(p,1),prod(size(sF)));
-    sF.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
+%     % truncate zeros
+%     N = sF.bandwidth;
+%     p = flip(abs(sF.fhat(1:N,:))).^2 + abs(sF.fhat(N+2:end,:)).^2;
+%     p = [abs(sF.fhat(N+1,:));sqrt(p)];
+%     A = reshape(p,size(p,1),prod(size(sF)));
+%     sF.bandwidth = max([0,find(sum(A,2) > 1e-15,1,'last')-1]);
 
   end
   
