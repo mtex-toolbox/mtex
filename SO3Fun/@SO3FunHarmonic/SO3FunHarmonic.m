@@ -86,9 +86,11 @@ methods
       SO3F.bandwidth = get_option(varargin,'bandwidth');
     end
 
-    SO3F = SO3F.symmetrise;
-
-    SO3F.antipodal = check_option(varargin,'antipodal');
+    if check_option(varargin,'antipodal')
+      SO3F.antipodal = 1;
+    elseif ~check_option(varargin,'skipSymmetrise')
+      SO3F = SO3F.symmetrise;
+    end
     
     % truncate zeros
     A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
