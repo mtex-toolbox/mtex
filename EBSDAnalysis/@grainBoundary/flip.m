@@ -19,7 +19,7 @@ if nargin == 2
   gB.phaseId(ind,:) = fliplr(gB.phaseId(ind,:));
   gB.misrotation(ind) = inv(gB.misrotation(ind));
 else
-  gB.eebsdId = fliplr(gB.ebsdId);
+  gB.ebsdId = fliplr(gB.ebsdId);
   gB.grainId = fliplr(gB.grainId);
   gB.phaseId = fliplr(gB.phaseId);
   gB.misrotation = inv(gB.misrotation);

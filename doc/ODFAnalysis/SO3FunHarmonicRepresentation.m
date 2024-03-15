@@ -1,10 +1,9 @@
 %% Harmonic Representation of Rotational Functions
 %
-
 %%
 % Similarly as periodic functions may be represented as weighted sums of
-% sines and cosines a rotational function $f\colon \mathcal{SO}(3)\to\mathbb C$ 
-% can be written as a series of the form
+% sines and cosines a rotational function $f\colon \mathcal{SO}(3) \to
+% \mathbb C$ can be written as a series of the form
 %
 % $$ f({\bf R}) = \sum_{n=0}^N \sum_{k,l = -n}^n \hat f_n^{k,l} \, \mathrm{D}_n^{k,l}({\bf R}) $$
 %

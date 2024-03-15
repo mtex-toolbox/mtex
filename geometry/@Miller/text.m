@@ -35,9 +35,6 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
   varargin = [varargin,{'skipSymmetrise','noAntipodal'}];
 end
 
-% ensure specific plot options
-varargin = [varargin(1),m.CS.plotOptions,varargin(2:end)];
-
-h = text@vector3d(m,varargin{:});
+h = text@vector3d(m,varargin{:},m.CS.how2plot);
 
 if nargout == 0, clear h; end

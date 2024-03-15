@@ -18,29 +18,35 @@ function [h,ax] = plot(sF,varargin)
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 
+S2Proj = makeSphericalProjection(varargin{:});
+
 % generate a grid where the function will be plotted
-plotNodes = plotS2Grid(varargin{:});
+plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
 
 % evaluate the function on the plotting grid
-values = reshape(sF.eval(plotNodes),[],length(sF));
+for i = 1:length(plotNodes)
+  values{i} = reshape(sF.eval(plotNodes{i}),[],length(sF)); %#ok<AGROW>
+end
 
-if check_option(varargin,'ensureNonNeg'), values = ensureNonNeg(values); end
+if check_option(varargin,'ensureNonNeg')
+  values = cellfun(@ensureNonNeg,values,'UniformOutput',false); 
+end
 
 if check_option(varargin,'rgb')
   
-  [h,ax] = plot(plotNodes,values,'surf','hold',varargin{:});
+  [h,ax] = plot(plotNodes{1},values{1},'surf','hold',varargin{:});
 
 else
-  h = []; ax = [];
+  %h = []; ax = [];
   for j = 1:length(sF)
-
-    if j > 1, mtexFig.nextAxis; end
+    for ul = 1:length(values)
     
-    % plot the function values
-    [ch,cax] = plot(plotNodes,values(:,j),'pcolor','hold',varargin{:});
-    h = [h,ch]; %#ok<*AGROW>
-    ax = [ax,cax];
-  
+      if j + ul > 2, mtexFig.nextAxis; end
+    
+      % plot the function values
+      [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),'pcolor','hold',S2Proj(ul),varargin{:});
+      
+    end
   end
 end
 
@@ -57,7 +63,13 @@ if nargout == 0, clear h; end
     [r_local,~,value] = getDataCursorPos(mtexFig);
     %v = sF.eval(r_local);
     
-    txt = [xnum2str(value) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+    %txt = [xnum2str(value) ' at (' xnum2str(r_local.theta/degree) ',' xnum2str(r_local.rho/degree) ')'];
+
+    txt = {...
+      ['value: ' xnum2str(value,'fixedWidth',5) ];...
+      ['x    : ' xnum2str(r_local.x,'precision',3)];...
+      ['y    : ' xnum2str(r_local.y,'precision',3)];...
+      ['z    : ' xnum2str(r_local.z,'precision',3)]};
   
   end
 

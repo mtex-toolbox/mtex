@@ -10,13 +10,13 @@ function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
-dxy = max(vecnorm(unitCell(1)-unitCell,2,2));
+dxy = max(norm(unitCell(1)-unitCell));
 numX = height(X);
 
 if check_option(varargin,'unitCell')
   
   % compute the vertices
-  [V,faces] = generateUnitCells(X,unitCell,varargin{:});
+  [V,faces] = generateUnitCells(vector3d(X(:,1),X(:,2),0),unitCell,varargin{:});
  
   D = cell(size(X,1),1);
   for k=1:size(X,1)  
@@ -168,8 +168,7 @@ elseif isa(method,'double')
   
 end
 
-
-radius = mean(sqrt(sum(unitCell.^2,2)));
+radius = mean(abs(unitCell));
 edgeLength = sqrt(sum(diff(boundingX).^2,2));
 
 % fill each line segment with nodes every 20 points (in average)
@@ -202,9 +201,8 @@ edgeAngle = atan2(edgeDirection(:,2),edgeDirection(:,1));
 edgeLength = sqrt(sum(edgeDirection.^2,2));
 
 % shift the starting vertex
-bX = squeeze(double(axis2quat(zvector,edgeAngle)* ...
-  vector3d([0; radius; 1])));
-offsetX = bX - boundingX(1:end-1,:);
+bX = axis2quat(zvector,edgeAngle) * vector3d(0, radius, 1);
+offsetX = bX.xyz - boundingX(1:end-1,:);
 
 for k=1:size(boundingX,1)-1
   

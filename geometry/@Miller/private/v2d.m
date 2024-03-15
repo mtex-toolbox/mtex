@@ -11,12 +11,11 @@ function uvtw = v2d(m,varargin)
 %  u,v,w - integer
 
 % set up matrix
-
 [x,y,z] = double(m.CS.axes);
 M = [x;y;z];
 
 % compute Miller indice
-mdouble = reshape(double(m),[],3).';
+mdouble = double(m);
 
 uvtw = (M \ mdouble)';
 

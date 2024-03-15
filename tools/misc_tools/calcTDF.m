@@ -40,9 +40,10 @@ if isa(g,'numeric')
     wlen = ones(size(g));
 end
 if isa(g, 'grain2d')
-    [azi,wlen,~]=principalComponents(g,'hull');
+    [~,a]=principalComponents(g,'hull');
     % sometimes wlne is a complex
-    wlen=real(wlen);
+    azi = a.rho;
+    wlen=norm(a);
     % note: maybe something more conservative like grain.diameter might
     % be good
     %wlen=g.diameter;

@@ -58,7 +58,7 @@ plot(ipfKey,'3d')
 
 %%
 % Next we proceed as with the crystal habitus and place a colored ball at
-% each posiotion of the big grains and rotate it according to the
+% each position of the big grains and rotate it according to the
 % meanorientation of the grain.
 
 plot(grains.boundary,'lineWidth',1.5,'micronbar','off')
@@ -70,7 +70,7 @@ legend off
 
 %%
 % Finally, we take the color in the center of the ball as the color
-% representing the orientation of the grain. This tranformation from a list
+% representing the orientation of the grain. This transformation from a list
 % of orientations into a list colors given as RGB values  is the central
 % purpose of the color key |ipfKey| we have defined above and is done by
 % the command |ipfKey.orientation2color|.
@@ -83,7 +83,7 @@ plot(big_grains('o'),colors)
 
 %% Basic Properties
 %
-% The interpetation of the colors becomes more simple if we plot the
+% The interpretation of the colors becomes more simple if we plot the
 % colored ball in stereographic projection and mark the crystallographic
 % axes.
 
@@ -110,7 +110,7 @@ plotIPDF(big_grains('olivine').meanOrientation,colors,vector3d.Z,...
 % This reference direction is stored as the property
 % |inversePoleFigureDirection| in the color key.
 
-% set the referece direction to X
+% set the reference direction to X
 ipfKey.inversePoleFigureDirection = vector3d.X;
 
 % compute the colors
@@ -146,12 +146,12 @@ plot(ipfKey)
 % operation. For this reason it is entirely justified to consider for the
 % ipf map proper symmetries only. Lets define the corresponding color key
 
-% the colore key corresponding to the purely enantiomorphic symmetry group
+% the color key corresponding to the purely enantiomorphic symmetry group
 ipfKey = ipfHSVKey(ebsd('olivine').CS.properGroup);
 plot(ipfKey)
 
 %%
-% We oberseve that the key is twice as large and hence allows for a better
+% We obverse that the key is twice as large and hence allows for a better
 % distinction between different orientations.
 
 close all

@@ -11,6 +11,7 @@
 sF = 0.01 + 10*S2Fun.smiley
 
 % and plot it as a smooth function
+plotx2north
 plot(sF,'upper')
 mtexColorMap blue2red
 mtexColorbar

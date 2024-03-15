@@ -99,16 +99,14 @@ setColorRange([1 5])
 % direction.
 
 % consider only elongated grains
-alongated_grains = grains(grains.aspectRatio > 1.5);
+alongated_grains = grains(grains.aspectRatio > 1.2);
 
-% get the grain elongation
-dir = alongated_grains.principalComponents;
-
-% transfer this into degree and project it into the interval [0,180]
-dir = mod(dir./degree,180);
+% angle of the long axis to (1 0 0)
+%omega = angle(alongated_grains.longAxis, vector3d.X, grains.N);
+omega = mod(alongated_grains.longAxis.rho, pi);
 
 % plot the direction
-plot(alongated_grains,dir,'micronbar','off')
+plot(alongated_grains,omega ./ degree,'micronbar','off')
 
 % change the default colormap to a circular one
 mtexColorMap HSV

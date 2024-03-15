@@ -13,4 +13,6 @@ function rot = byRodrigues(v,varargin)
 % See also
 % rotation/rotentation rotation/byEuler rotation/byMatrix rotation/map
 
+if ~isa(v,'vector3d'), v = vector3d.byXYZ(v); end
+
 rot = rotation.byAxisAngle(v,atan(norm(v))*2);

@@ -109,7 +109,7 @@ gB_axes = axis(ori(:,1),ori(:,2));
 
 % axes can be plotted using the command quiver
 hold on
-quiver(gB,gB_axes,'linewidth',1,'color','k','autoScaleFactor',0.3)
+quiver(gB,gB_axes,'linewidth',2,'color','k','autoScaleFactor',0.3)
 hold off
 
 %%

@@ -57,11 +57,11 @@ classdef shape2d < grain2d
     end
     
     function theta = get.theta(shape)
-      theta = atan2(shape.boundary.V(:,2),shape.boundary.V(:,1));
+      theta = angle(vector3d.X,shape.boundary.V,shape.N);
     end
     
     function rho = get.rho(shape)
-      rho = sqrt(shape.boundary.V(:,2).^2 + shape.boundary.V(:,1).^2);
+      rho = norm(shape.boundary.V);
     end
   end
     

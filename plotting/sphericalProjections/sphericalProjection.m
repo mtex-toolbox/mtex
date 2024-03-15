@@ -3,6 +3,7 @@ classdef sphericalProjection
   
   properties    
     sR = sphericalRegion
+    pC = plottingConvention
   end
 
   properties (Dependent = true)
@@ -12,10 +13,11 @@ classdef sphericalProjection
   methods
     
     
-    function sP = sphericalProjection(sR)
+    function sP = sphericalProjection(sR,pC)
       
       if nargin > 0, sP.sR = sR; end
-      
+      if nargin > 1, sP.pC = pC; end
+
     end
     
     function [rho,theta] = project(sP,v,varargin)
@@ -24,8 +26,10 @@ classdef sphericalProjection
       [theta,rho] = polar(v);
 
       % restrict to plotable domain
-      ind = ~sP.sR.checkInside(v,varargin{:});
-      rho(ind) = NaN; theta(ind) = NaN;
+      if ~check_option(varargin,'complete')
+        ind = ~sP.sR.checkInside(v,varargin{:});
+        rho(ind) = NaN; theta(ind) = NaN;
+      end
     end
     
     function a = antipodal.get(sP)
@@ -36,6 +40,14 @@ classdef sphericalProjection
       sP.sR.antipodal = a;
     end
     
+    function out = isUpper(sP)
+      out = sP.sR.isUpper(sP.pC);
+    end
+
+    function out = isLower(sP)
+      out = sP.sR.isLower(sP.pC);
+    end
+
   end
     
 end

@@ -17,7 +17,7 @@
 
 function S = colormap422(v)
 
-pts = reshape(double(v),[],3);
+pts = v.xyz;
 
 %%%%%% Fund ---> expandz %%%%%%%
 pts = [pts(:,1) pts(:,2) pts(:,3)./(tan(pi/8))];

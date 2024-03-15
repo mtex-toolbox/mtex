@@ -91,12 +91,7 @@ h5write(fname, [root '/PhaseIndex'],ebsd.phase(:).');
 
 fn = fields(ebsd.prop);
 
-
-if all(isfield(ebsd.prop,{'x','y','z'}))
-  coords = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
-elseif all(isfield(ebsd.prop,{'x','y'}))
-  coords = [ebsd.prop.x,ebsd.prop.y];
-end
+coords = [ebsd.pos.x(:),ebsd.pos.y(:),ebsd.pos.z(:)];
 
 if ~isempty(coords)
   h5create(fname,[root '/SpatialCoordinates'],[size(coords,2) n],'Datatype','single','ChunkSize',[size(coords,2) chnk],opts{:});

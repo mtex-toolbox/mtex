@@ -20,11 +20,12 @@ try
   
   loader  = localCRCLoader(crcFile,param);
   
-  q       = loader.getRotations();
-  phases  = loader.getColumnData('Phase');
-  options = loader.getOptions('ignoreColumns','phase');
+  rot       = loader.getRotations();
+  pos = vector3d(loader.getColumnData('x'),loader.getColumnData('y'),0);
+  phases  = loader.getColumnData('phase');
+  options = loader.getOptions('ignoreColumns',{'phase','x','y'});
   
-  ebsd = EBSD(q,phases,CS,options,'unitCell',param.unitCell);
+  ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
   ebsd.opt.cprInfo = cpr;
 catch %#ok<CTCH>
   interfaceError(fname);
@@ -86,11 +87,9 @@ end
         x = x*job.griddistx;
         y = y*job.griddisty;
         
-        param.unitCell = [...
-          job.griddistx   job.griddisty;
-          -job.griddistx   job.griddisty;
-          -job.griddistx  -job.griddisty;
-          job.griddistx  -job.griddisty;]/2;
+        param.unitCell = vector3d(job.griddistx*[1 1 -1 -1].',...
+          job.griddisty*[1 -1 -1 1].',0)/2;
+        
       end
       
       % if isfield(job,'left') && isfield(job,'top')

@@ -14,7 +14,12 @@ function v = byPolar(polarAngle,azimuthAngle,varargin)
 % Flags
 %  antipodal - include antipodal symmetry
 %
-  
+
+if nargin == 1
+  azimuthAngle = polarAngle(:,2);
+  polarAngle = polarAngle(:,1);
+end
+
 x = sin(polarAngle) .* cos(azimuthAngle);
 y = sin(polarAngle) .* sin(azimuthAngle);
 z = cos(polarAngle) .* ones(size(azimuthAngle));

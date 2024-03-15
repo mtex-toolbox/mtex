@@ -20,7 +20,11 @@ else
   omega = get_option(varargin,'omega',linspace(0,pi,181));
 end
 
-V = grains.V;
+% get the coordinates
+scaling = 10000 ;
+V = grains.rot2Plane .* grains.V;
+V = round(scaling * [V.x(:),V.y(:)]);
+
 poly = grains.poly;
 cumpl = zeros(length(grains),length(omega));
 

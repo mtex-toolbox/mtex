@@ -1,4 +1,5 @@
 function plotzOutOfPlane
 % set the default plot direction of the z-axis
 
-setMTEXpref('zAxisDirection','outOfPlane');
+how2plot = getMTEXpref('xyzPlotting');
+how2plot.outOfScreen = zvector;

@@ -45,12 +45,12 @@ else
     -Xstep/2  Ystep/2;
     -Xstep/2 -Ystep/2];
 end
+unitCell = vector3d(unitCell(:,1),unitCell(:,2),0);
 
-ebsd = EBSD(loader.getRotations(),...
-  loader.getColumnData('phase'),...
-  CS,...
-  loader.getOptions('ignoreColumns','phase'),...
-  'unitCell',unitCell);
+pos = loader.getPos;
+rot = loader.getRotations;
+phase = loader.getColumnData('phase');
+ebsd = EBSD(pos,rot,phase,CS,loader.getOptions, 'unitCell',unitCell);
 
 % change reference frame, same as for .ang files
 rot = [...

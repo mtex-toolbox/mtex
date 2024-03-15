@@ -15,9 +15,8 @@ function [lambda,v] = eig(v,varargin)
 %  v        - eigen vectors
 %
 
-M = [v.x v.y v.z]'*[v.x v.y v.z];
-[v, lambda] = eig3(M);
-lambda = lambda/length(v);
+xyz = v.xyz;
+[v, lambda] = eig3(xyz.' * xyz);
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same

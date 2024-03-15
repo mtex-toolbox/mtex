@@ -270,7 +270,7 @@ api.clearAllData();
       else
 
         data = [data{:}];
-        data.unitCell = calcUnitCell([data.x(:),data.y(:)]);
+        %data.unitCell = calcUnitCell([data.x(:),data.y(:)]);
 
       end
 
@@ -323,8 +323,8 @@ api.clearAllData();
     Export.interface          = [];
     Export.interfaceOptions   = {};
 
-    xaxis = NWSE(getMTEXpref('xAxisDirection'));
-    zaxis = UpDown(getMTEXpref('zAxisDirection'));
+    xaxis = 1;
+    zaxis = 1;
 
     Options.workpath     = getMTEXpref('ImportWizardPath');
 

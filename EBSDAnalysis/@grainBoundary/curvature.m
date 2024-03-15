@@ -15,7 +15,7 @@ function kappa = curvature(gB,n)
 %  kappa - 1/fitting Radius in EBSD units
 %
 
-mp = gB.midPoint;
+mp = gB.midPoint.xy;
 
 % adjecents matrix segments - segments
 A_F = gB.A_F;

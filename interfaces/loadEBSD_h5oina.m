@@ -318,8 +318,11 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
 
+    
     % what data should we read, all or just the standard
     phase = EBSDdata.Phase;
+    pos = vector3d(EBSDdata.X,EBSDdata.Y,0);
+
     opt=struct;
     optList_std  = {'X' 'Y' 'Band_Contrast' 'Band_Slope' 'Bands' 'Mean_Angular_Deviation' 'Pattern_Quality'};
     optNames_std = {'x' 'y' 'bc' 'bs' 'bands' 'MAD' 'quality'};
@@ -361,8 +364,8 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     if check_option(varargin,'CS');
         CS = get_option(varargin,'CS');
     end
-
-    ebsdtemp = EBSD(rot,phase,CS,opt,'unitCell',calcUnitCell([opt.x,opt.y]));
+        
+    ebsdtemp = EBSD(pos,rot,phase,CS,opt);
     ebsdtemp.opt.Header = EBSDheader;
 
     % if available, add Image data

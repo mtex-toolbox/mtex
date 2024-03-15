@@ -23,8 +23,8 @@ rot_left = rot_ref * rot_123;
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
 %
 
-T_right = (rot_right.matrix - rot_ref.matrix)./delta
-T_left = (rot_left.matrix - rot_ref.matrix)./delta
+T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
+T_left = (rot_left.matrix - rot_ref.matrix) ./ delta
 
 %%
 % Both matrices |T_right| and |T_left| are elements of the tangential space
@@ -48,7 +48,7 @@ S_left_R = T_left * matrix(inv(rot_ref))
 
 vector3d(spinTensor(S_right_R)) * sqrt(14)
 
-vector3d(spinTensor(S_left_L))  *sqrt(14)
+vector3d(spinTensor(S_left_L))  * sqrt(14)
 
 
 %%
@@ -66,6 +66,8 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 % the matrix logarithm <quaternion.logm.html |logm|> provides the correct
 % way to translate rotational changes into skew symmetric matrices
 
+rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
+
 S = logm(rot_ref * rot_123,rot_ref)
 
 S = logm(rot_123 * rot_ref,rot_ref,'left')
@@ -80,15 +82,13 @@ vector3d(S) * sqrt(14)
 % More directly this disorientation vector may be computed from two
 % rotations by the command <quaternion.log.html |log|>
 
-
-rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
 log(rot_ref * rot_123,rot_ref) * sqrt(14)
 
 log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
 
 
 %% The other way round
-% Given a skew symmetric matrix *S* or a disorientation vector *v* we may
+% Given a skew symmetric matrix |S| or a disorientation vector |v| we may
 % use the command <vector3d.exp.html |exp|> to apply this rotational
 % perturbation to a reference rotation |rot_ref|
 

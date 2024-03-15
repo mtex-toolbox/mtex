@@ -19,7 +19,7 @@ function sF = dot(sVF1, sVF2, varargin)
 if isa(sVF2, 'vector3d')
   
   sF = sVF1.sF;
-  sF.fhat = sum(sF.fhat .* repmat(squeeze(double(sVF2)).',size(sF.fhat,1),1),2);  
+  sF.fhat = sum(sF.fhat .* repmat(sVF2.xyz, size(sF.fhat,1),1),2);  
  
   if sVF2.antipodal
     sF = abs(sF);

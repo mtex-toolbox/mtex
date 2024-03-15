@@ -33,6 +33,7 @@ classdef grainBoundary < phaseList & dynProp
 %  componentSize  - number of segments that belong to the component
 %  x              - x coordinates of the vertices of the grains
 %  y              - y coordinates of the vertices of the grains    
+%  z              - z coordinates of the vertices of the grains    
 %
 
   
@@ -62,7 +63,9 @@ classdef grainBoundary < phaseList & dynProp
     componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
-    V              % vertices x,y coordinates
+    z              % z coordinates of the vertices of the grains
+    V              % vertices of the grains
+    N              % normal direction of the pseudo3d data    
   end
   
   methods
@@ -79,9 +82,12 @@ classdef grainBoundary < phaseList & dynProp
       %  phaseMap - 
       
       if nargin == 0, return; end
+
+      % ensure V is vector3d
+      if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
       % assign properties
-      gB.triplePoints = struct('allV',V);
+      gB.triplePoints = struct('allV',V,'N',zvector);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -149,9 +155,10 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function dir = get.direction(gB)      
-      v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
-      v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
-      dir = normalize(v1-v2);
+      
+      dir = normalize(gB.V(gB.F(:,1)) - gB.V(gB.F(:,2)));
+      dir.antipodal = true;
+      
     end
     
     
@@ -160,25 +167,31 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function gB = set.V(gB,V)
-      if isa(gB.triplePoints,'triplePointList')
-        gB.triplePoints.allV = V;
-      else
-        gB.prop.V = V;
-      end
+      gB.triplePoints.allV = V;
     end
     
+    function N = get.N(gB)
+      N = gB.triplePoints.N;
+    end
+    
+    function gB = set.N(gB,N)
+      gB.triplePoints.N = N;
+    end
+
     function x = get.x(gB)
-      x = gB.V(unique(gB.F(:)),1);
+      x = gB.V.x(unique(gB.F(:)));
     end
     
     function y = get.y(gB)
-      y = gB.V(unique(gB.F(:)),2);
+      y = gB.V.y(unique(gB.F(:)));
+    end
+
+    function y = get.z(gB)
+      y = gB.V.z(unique(gB.F(:)));
     end
     
-    function xy = get.midPoint(gB)
-      xyA = gB.V(gB.F(:,1),:);
-      xyB = gB.V(gB.F(:,2),:);
-      xy = 0.5 * (xyA + xyB);
+    function m = get.midPoint(gB)      
+      m = mean(gB.V(gB.F),2);
     end
     
     function I_VF = get.I_VF(gB)

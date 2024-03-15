@@ -31,11 +31,14 @@ h = surf(v.x,v.y,v.z,reshape(double(data),size(v,1),size(v,2),[]),'parent',ax,..
 % colormap
 if numel(v) == numel(data), mtexColorMap(ax,getMTEXpref('defaultColorMap')); end
 
-
 if ~ishold
- 
+
   axis(ax,'equal','vis3d','off');
 
   set(ax,'XDir','rev','YDir','rev',...
     'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
+
+  pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+  pC.setView(ax);
+
 end

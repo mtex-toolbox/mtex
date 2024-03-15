@@ -10,7 +10,7 @@ function tP = rotate(tP,rot,varargin)
 %   tP = rotate(tP,rotation.byAxisAngle(xvector,180*degree)) 
 %
 %   % rotate about a specific point
-%   tP = rotate(tP,180*degree,'center',[0,0])
+%   tP = rotate(tP,180*degree,'center',vector3d(20,10,0))
 %
 % Input
 %  tP- @triplePointList
@@ -18,7 +18,7 @@ function tP = rotate(tP,rot,varargin)
 %  rot   - @rotation
 %
 % Options
-%  center - [x,y] center of rotation, default is (0,0)
+%  center - center of rotation - @vector3d
 %
 % Flags
 %  keepXY    - rotate only the orientation data, i.e. the Euler angles
@@ -29,19 +29,12 @@ function tP = rotate(tP,rot,varargin)
 
 if isa(rot,'double'), rot = rotation.byAxisAngle(vector3d.Z,rot); end
 
-center = get_option(varargin,'center',[0,0]);
-  
-tP = tP - center;
-  
-% store coordinates as vector3d
-V = vector3d(tP.V(:,1),tP.V(:,2),0);
-  
-% rotate vertices
-V = rot * V;
+center = get_option(varargin,'center',vector3d.zeros);
     
-% store back
-tP.V = [V.x,V.y];
-  
-tP = tP + center;
+% rotate vertices
+tP.V = center + rot * (tP.V - center);
+
+% rotate normal direction
+tP.N = rot * tP.N;
 
 end

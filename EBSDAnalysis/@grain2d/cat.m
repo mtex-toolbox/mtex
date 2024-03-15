@@ -24,6 +24,7 @@ for k = 2:numel(varargin)
   grains.boundary = [grains.boundary; ng.boundary];
   grains.innerBoundary = [grains.innerBoundary; ng.innerBoundary];
 
-  
+  assert(angle(ng.N, grains.N,'antipodal')<1e-5,...
+    'Concatenating grains with different normals is not supported');
   
 end

@@ -39,7 +39,7 @@ left = mod(vertices(left)'-1,length(V))+1;
 
 % now we delete duplicated voronoi vertices
 eps = 10^-10; % machine precision
-[ignore,first,ind] = unique(round(squeeze(double(V))/eps)/eps,'rows');
+[ignore,first,ind] = unique(round(V.xyz/eps),'rows');
 V = V.subSet(first); 
 left = ind(left)';
 

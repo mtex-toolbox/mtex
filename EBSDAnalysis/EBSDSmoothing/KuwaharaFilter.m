@@ -41,7 +41,7 @@ classdef KuwaharaFilter < EBSDFilter
         quaternion.nan(n,size(q,2)+2*n)];
 
       % map quaternions into tangential space
-      tq = double(log(q));
+      tq = fullDouble(log(q));
      
       for d = 0:3
         

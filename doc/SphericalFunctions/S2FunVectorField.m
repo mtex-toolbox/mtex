@@ -99,3 +99,15 @@ plot(sVF1);
 % or the 3D plot of a sphere with the vectors on itself
 clf;
 quiver3(sVF2);
+
+%% Some fun
+clf
+
+sVF = grad(S2Fun.smiley)
+
+plot(dot(sVF,sVF))
+
+%%
+
+plot(dot(sVF,zvector))
+

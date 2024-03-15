@@ -50,7 +50,7 @@ if check_option(varargin,'integral') % the integral method
   W.y = filter2(fX,oriX.y) + filter2(fY,oriY.y);
   W.z = filter2(fX,oriX.z) + filter2(fY,oriY.z);
 
- % set everything to nan where the loop crosses a grain or outer domain boundary
+  % set everything to nan where the loop crosses a grain or outer domain boundary
   sq = 2*wS-1;
   W((ordfilt2(ebsd.grainId,sq^2,ones(sq,sq)) ~= ordfilt2(ebsd.grainId,1,ones(sq+2,sq+2))) | ...
     (ordfilt2(ebsd.grainId,1,ones(sq,sq)) ~= ordfilt2(ebsd.grainId,(sq+2)^2,ones(sq+2,sq+2)))) = NaN;

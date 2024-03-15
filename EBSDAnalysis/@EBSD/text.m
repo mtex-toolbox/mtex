@@ -16,7 +16,7 @@ if isnumeric(txt), txt = xnum2str(txt,'cell'); end
 
 fs = getMTEXpref('FontSize');
 
-h = optiondraw(text(ebsd.prop.x(:),ebsd.prop.y(:),txt,...
+h = optiondraw(text(ebsd.pos.x(:),ebsd.pos.y(:),ebsd.pos.z(:),txt,...
   'HorizontalAlignment','center','VerticalAlignment','middle','fontSize',fs),varargin{:});
 
 if nargout == 0, clear h; end

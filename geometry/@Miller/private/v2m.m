@@ -24,7 +24,7 @@ c_star = cross(a(1),a(2))./V;
 M = [x;y;z];
 
 % compute Miller indice
-v = reshape(double(m),[],3).';
+v = double(m);
 
 hkl = (M \ v)';
 

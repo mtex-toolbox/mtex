@@ -83,15 +83,12 @@ if ~isempty(varargin) && isa(varargin{1},'cell')
   end
 end
 
-% pixels to erode must be zmap AND haver lower 
+% pixels to erode must be zmap AND have lower 
 % neighbor count than threshold 
 if exist('zmap','var')
    candidate = sum(zmap(ind),3) <= count;
    peroded =zmap(:) & candidate(:);
-   ebsd =EBSD(ebsd);
-   ebsd = ebsd(~peroded);
+   ebsd(peroded) = [];
 end
-% cleanup
-ebsd(ebsd.isnan)=[]
 
 end

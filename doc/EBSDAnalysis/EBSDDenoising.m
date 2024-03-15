@@ -6,11 +6,11 @@
 % Systematic errors mostly occur due to a bad calibration of the EBSD
 % system and require additional knowledge to be corrected. Deviations from
 % the true orientation due to noisy Kikuchi pattern or tolerances of the
-% indecing algorithm can be modeled as random errors. In this section we
+% indexing algorithm can be modeled as random errors. In this section we
 % demonstrate how random errors can be significantly reduced using
 % denoising techniques.
 %
-% Simultanously while denoising orientation maps one can also fill not
+% Simultaneously while denoising orientation maps one can also fill not
 % indexed pixels. This is explained in the section <EBSDFilling.html Fill
 % Missing Data>.
 %
@@ -30,7 +30,7 @@ ebsd = ebsd('indexed');
 % remove some very small grains
 ebsd(grains(grains.grainSize<5)) = [];
 
-% redo grain segementation
+% redo grain segmentation
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree);
 
 % smooth grain boundaries

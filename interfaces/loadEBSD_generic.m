@@ -26,9 +26,9 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  cs - @crystalSymmetry or cell array of @crystalSymmetry
 %
 % Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
-%  Columns           - postions of the columns to be imported
-%  radians           - treat input in radiand
+%  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
+%  Columns           - positions of the columns to be imported
+%  radians           - treat input in radiant
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
 %  Bunge             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
@@ -77,33 +77,23 @@ try
 
   loader = loadHelper(d,varargin{:});
 
-  q      = loader.getRotations();
+  % extract rotations
+  rot = loader.getRotations;
+
+  % extract positions
+  pos = loader.getPos;
 
   % assign phases
-  if loader.hasColumn('Phase')
-
-    phase = loader.getColumnData('Phase');
-
+  if loader.hasColumns('Phase')
+    phase = loader.getColumnData('phase');
   else
-
-    phase = ones(length(q),1);
-
+    phase = ones(length(rot),1);
   end
 
   if max(phase)>max_num_phases
-
     warning('MTEX:toomanyphases', ...
       ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
     phase = ones(size(d,1),1);
-
-  end
-
-  % compute unit cells
-  if loader.hasColumn({'x' 'y'})
-
-    varargin = [varargin,'unitCell',....
-      calcUnitCell(loader.getColumnData({'x' 'y' 'z'}),varargin{:})];
-
   end
 
   % return varargin as options
@@ -115,7 +105,7 @@ try
     CSList{k+1} = crystalSymmetry('432','mineral',['unknown' int2str(k)]);
   end
   CSList = get_option(varargin,'CS',CSList);
-  ebsd = EBSD(q,phase,CSList,opt,varargin{:});
+  ebsd = EBSD(pos,rot,phase,CSList,opt,varargin{:});
 
 catch
   interfaceError(fname)

@@ -51,7 +51,7 @@ end
 h = [h,quiver3(circ.x,circ.y,circ.z,v.x,v.y,v.z,'parent',mtexFig.gca,opt{:})];
   
 % post process output
-view(mtexFig.gca,squeeze(double(N)));
+view(mtexFig.gca,N.xyz);
 set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
 optiondraw(h,varargin{:});
 

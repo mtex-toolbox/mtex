@@ -25,9 +25,8 @@ toc
 
 %% check S2Grid/find
 
-x = equispacedS2Grid('points',500);
+x = equispacedS2Grid('points',5000);
 plot(subGrid(x,find(x,xvector,10*degree)));
-full(find(x,xvector,10*degree))
 
 x = equispacedS2Grid('points',5000);
 y = vector3d(equispacedS2Grid('points',100));
@@ -54,12 +53,14 @@ y = equispacedSO3Grid(cs,ss,'points',100000);
 
 
 tic
-angle_outer(x,y,5*degree);
+dot_outer(x,y,'epsilon',5*degree);
 toc
 
 tic
-find(x,quaternion(y),5*degree);
+find(x,quaternion(y),'epsilon',5*degree);
 toc
+
+%%
 
 find(x,quaternion.id,20*degree)
 

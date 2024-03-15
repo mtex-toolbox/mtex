@@ -120,7 +120,6 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.grainSize>500);
 
-
 plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
 
 % and plot the crystal shapes

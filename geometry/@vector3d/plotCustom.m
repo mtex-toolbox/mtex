@@ -22,5 +22,5 @@ for j = 1:numel(sP)
   [x,y] = project(sP(j).proj,v,varargin{:});
 
   % plot custom
-  for i = 1:length(x), pcmd{1}(sP(j).hgt,x(i),y(i)); end
+  for i = 1:length(x), pcmd{1}(sP(j).ax,x(i),y(i)); end
 end

@@ -10,8 +10,8 @@ function M = transformationMatrix(cs1,cs2)
 % See also
 %
 
-axes1 = reshape(double(normalize(cs1.axes)),3,3);
-axes2 = reshape(double(normalize(cs2.axes)),3,3);
+axes1 = double(normalize(cs1.axes)).';
+axes2 = double(normalize(cs2.axes)).';
 
 % maybe we need even to change the correspondence of the crystal axes
 abc1 = norm(cs1.axes);
@@ -27,7 +27,6 @@ if ~all(abs(abc1-abc2)./sum(abc1)<0.01)
 end
   
 M = axes2^-1 * axes1;
-
 
 end
 

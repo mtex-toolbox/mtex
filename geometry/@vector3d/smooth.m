@@ -90,7 +90,7 @@ for j = 1:numel(sP)
   data = reshape(cdata,size(x));
 
   % plot contours
-  h = [h,betterContourf(sP(j).hgt,x,y,data,contours,varargin{:})]; %#ok<AGROW>
+  h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})]; %#ok<AGROW>
   
   if ~washold, hold(sP(j).ax,'off'); end
   

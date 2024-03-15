@@ -22,14 +22,13 @@ function mN = meshNorm(G,varargin)
 
 [V,C] = calcVoronoi(G);
 
-Vxyz = double(V);
-
-xyz = [G.x(:),G.y(:),G.z(:)];
+Vxyz = V.xyz;
+Gxyz = G.xyz;
 
 d = zeros(length(G),1);
 for k = 1:length(G)
 
-  d(k) = min(Vxyz(C{k},:) * xyz(k,:).');
+  d(k) = min(Vxyz(C{k},:) * Gxyz(k,:).');
     
 end
 

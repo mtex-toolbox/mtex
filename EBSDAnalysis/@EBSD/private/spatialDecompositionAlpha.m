@@ -17,8 +17,8 @@ function [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin)
 %  isIndexed - indexed pixels
 %  dx,dy     - spatial resolution
 %  ext       - extension
-X = ebsd.prop.x;
-Y = ebsd.prop.y;
+X = ebsd.pos.x;
+Y = ebsd.pos.y;
 isIndexed = ebsd.isIndexed;
 ext = ebsd.extent;
 
@@ -96,7 +96,7 @@ switch lower(method)
 
   case 'qhull'
 
-    [V,D] = voronoin([x_,y_],{'Q5','Q6','Qs'});
+    [V,D] = voronoin([x_(:),y_(:)],{'Q5','Q6','Qs'});
 
   otherwise
   

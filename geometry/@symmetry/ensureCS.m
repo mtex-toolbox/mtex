@@ -8,8 +8,8 @@ if csOld.Laue == csNew.Laue, return;end
 
 % check for compatibility
 try
-  axesOld = reshape(double(csOld.axes),3,3);
-  axesNew = reshape(double(csNew.axes),3,3);
+  axesOld = csOld.axes.xyz;
+  axesNew = csNew.axes.xyz;
 catch
   warning('MTEX:symmetry:missmatch',...
     'The symmetries %s and %s do not match!',char(csNew),char(csOld));

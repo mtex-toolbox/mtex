@@ -6,6 +6,7 @@ function ebsd = subSet(ebsd,ind,varargin)
 %
 
 ebsd = subSet@dynProp(ebsd,ind);
+ebsd.pos = ebsd.pos(ind);
 ebsd.rotations = ebsd.rotations(ind);
 ebsd.phaseId = reshape(ebsd.phaseId(ind),[],1);
 ebsd.id = ebsd.id(ind);

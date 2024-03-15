@@ -90,18 +90,24 @@ try
     else    
       isDegree = degree;
     end
-      
+    
+    if isfield(props,'z')
+      pos = vector3d(props.x,props.y,props.z);
+      props = rmfield(props,'z');
+    else
+      pos = vector3d(props.x,props.y,0);
+    end
     rot = rotation.byEuler(props.phi1*isDegree,props.Phi*isDegree,props.phi2*isDegree);
     phases = props.Phase;
 
-    props = rmfield(props,{'Phi','phi1','phi2','Phase'});
 
-    ebsd = EBSD(rot,phases,CS,props);
+    props = rmfield(props,{'Phi','phi1','phi2','Phase','x','y'});
+
+    ebsd = EBSD(pos,rot,phases,CS,props);
 
     ind = props.x > -11111;
     ebsd = ebsd(ind);
-    ebsd.unitCell = calcUnitCell([ebsd.prop.x,ebsd.prop.y]);
-
+    
     if length(kGroup.Groups) > 1
       header = h5group2struct(fname,kGroup.Groups(2));
     else

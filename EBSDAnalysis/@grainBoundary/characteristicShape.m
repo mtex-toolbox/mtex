@@ -14,4 +14,7 @@ function cShape = characteristicShape(gB,varargin)
 
 cShape = shape2d.byFV(gB.F,gB.V,varargin);
 
+% set normal vector
+cShape.N = gB.N;
+
 end

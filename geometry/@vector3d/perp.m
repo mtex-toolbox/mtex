@@ -14,7 +14,7 @@ function N = perp(v, varargin)
 
 if any(isnan(v)), v = v.subSet(~v.isnan); end
 
-[N,~] = eig3(v*v);
+[N,~] = eig(v);
 N = N.subSet(1);
 
 if check_option(varargin,'robust')

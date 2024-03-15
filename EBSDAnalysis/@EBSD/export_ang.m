@@ -107,31 +107,31 @@ fprintf(filePh,'# %s: \t%s\n','SCANID','');
 fprintf(filePh,'#\n');
 
 %Get data order x
-if ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(1,2)
+if ebsdGrid.pos.x(1,1)< ebsdGrid.pos.x(1,2)
   dim.x = 2;
-elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(1,2)
+elseif ebsdGrid.pos.x(1,1)> ebsdGrid.pos.x(1,2)
   dim.x = -2;
-elseif ebsdGrid.prop.x(1,1)< ebsdGrid.prop.x(2,1)
+elseif ebsdGrid.pos.x(1,1)< ebsdGrid.pos.x(2,1)
   dim.x = 1;
-elseif ebsdGrid.prop.x(1,1)> ebsdGrid.prop.x(2,1)
+elseif ebsdGrid.pos.x(1,1)> ebsdGrid.pos.x(2,1)
   dim.x = -1;
 end
 %Get data order y
-if ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(1,2)
+if ebsdGrid.pos.y(1,1)< ebsdGrid.pos.y(1,2)
   dim.y = 2;
-elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(1,2)
+elseif ebsdGrid.pos.y(1,1)> ebsdGrid.pos.y(1,2)
   dim.y = -2;
-elseif ebsdGrid.prop.y(1,1)< ebsdGrid.prop.y(2,1)
+elseif ebsdGrid.pos.y(1,1)< ebsdGrid.pos.y(2,1)
   dim.y = 1;
-elseif ebsdGrid.prop.y(1,1)> ebsdGrid.prop.y(2,1)
+elseif ebsdGrid.pos.y(1,1)> ebsdGrid.pos.y(2,1)
   dim.y = -1;
 end
 %Gather data
 flds{1} = ebsdGrid.rotations.phi1;
 flds{2} = ebsdGrid.rotations.Phi;
 flds{3} = ebsdGrid.rotations.phi2;
-flds{4} = ebsdGrid.prop.x;
-flds{5} = ebsdGrid.prop.y;
+flds{4} = ebsdGrid.pos.x;
+flds{5} = ebsdGrid.pos.y;
 if isfield(ebsd.prop,'iq')
   flds{6} = ebsdGrid.prop.iq;
 elseif isfield(ebsd.prop,'bc')

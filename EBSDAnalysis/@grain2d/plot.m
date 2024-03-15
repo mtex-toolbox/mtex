@@ -27,7 +27,8 @@ function [h,mP] = plot(grains,varargin)
 % create a new plot
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
-[mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
+  varargin{:},grains.plottingConvention);
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -101,10 +102,9 @@ elseif nargin>1 && isa(varargin{1},'vector3d')
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  xy = [grains.centroid,2*scaling*zUpDown];
-  
-  h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
-    'parent', mP.ax,varargin{:});
+  cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
+  pos = grains.centroid + 1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N;
+    h = plot(pos + cS,'parent', mP.ax,varargin{:});
   
   plotBoundary = false;
   
@@ -117,7 +117,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   
   % position in the map
   scaling = sqrt(grains.area);
-  shift = vector3d([grains.centroid,2*scaling*zUpDown].');
+  shift = grains.centroid + 2*scaling *grains.N;
   
   for k = 1:length(grains)
 
@@ -209,6 +209,8 @@ datacursormode off
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 try
   setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
+catch
+  warning('still can not concatenate grains on different slices')
 end
 
 if nargout == 0, clear h;end
@@ -233,7 +235,7 @@ if isempty(idSelected) || length(idSelected) ~= length(grains)
 end
 
 
-localId = findByLocation(grains,[pos(1,1) pos(1,2)]);
+localId = findByLocation(grains,pos(1,:));
 
 grain = grains.subSet(localId);
 
@@ -262,7 +264,11 @@ if grain.isIndexed
 else
   txt{2} = ['phase = not indexed'];
 end
-txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
+if size(grains.V,2) == 3
+  txt{3} = ['(x,y,z) = ', xnum2str(pos(1,:),'delimiter',', ')];
+else
+  txt{3} = ['(x,y) = ', xnum2str(pos(1,:),'delimiter',', ')];
+end
 if grain.isIndexed
   txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];
 end
@@ -354,8 +360,8 @@ for p=numel(Parts):-1:1
 
   % reduce face-vertex indices to required
   Faces = [Faces{:}];
-  vert  = sparse(Faces,1,1,size(V,1),1);
-  obj.Vertices = V(vert>0,:);
+  vert  = sparse(Faces,1,1,length(V),1);
+  obj.Vertices = V(vert>0).xyz;
 
   vert  = cumsum(full(vert)>0);
   Faces = nonzeros(vert(Faces));

@@ -10,7 +10,7 @@ function mtex_settings
 %------------------------------------------------------------------------
 
 %% default global plotting options
-% here you can define default plott options
+% here you can define default plot options
 
 % default fontsize
 % the next lines try to set the fontsize depending on the screen resolution
@@ -24,15 +24,9 @@ set(0,'DefaultAxesFontSize',fontSize);
 set(0,'DefaultLegendFontSize',fontSize);
 try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC> 
 
-% default plotting of the coordinate axes
-setMTEXpref('xAxisDirection','north');
-setMTEXpref('zAxisDirection','outOfPlane');
-
-setMTEXpref('bAxisDirection','east');
-setMTEXpref('aAxisDirection',''); % undefined
-
-%setMTEXpref('bAxisDirection',''); % undefined
-%setMTEXpref('aAxisDirection','east');
+% default plotting of specimen coordinates
+xyzPlot = plottingConvention(zvector,xvector);
+setMTEXpref('xyzPlotting',xyzPlot);
 
 % default figure size, possible values are a factor between 0 and 1 or
 % 'tiny', 'small', 'normal', 'large', 'huge'
@@ -47,7 +41,7 @@ setMTEXpref('showCoordinates','off')
 % how to annotate pole figure plots
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'X','Y','Z'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 
 % you can uncomment the following line to disable the annotations

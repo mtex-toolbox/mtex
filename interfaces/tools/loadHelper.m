@@ -1,46 +1,60 @@
-function loader = loadHelper( d, varargin )
+classdef loadHelper < handle
 % helps to load data-matrix with ColumnNames
-% restricts also data according to conventions (e.g. >4pi)
-%
-% Input
-%  d -  (n x m) matrix
-%  ColumnNames - (1 x m) cell of names
-%  Columns - (1 x m) cell of ColumnNames indizes
-%
-% Options
-%  KeepNaN - 
-%  Radians - 
-%  passive rotation - 
-%
-% Output
-%  loader  - structure with some funs
-%
 
+properties
+  data % (n x m) matrix
+  unit
+  opts
+end
 
-data = d;
+methods
 
-opts = localParseArgs(varargin{:});
+  function loader = loadHelper(d, varargin)
+    % Options
+    %  KeepNaN -
+    %  Radians -
+    %  passive rotation -
 
-loader.getRotations  = @getRotations;
-loader.getVector3d   = @getVector3d;
-loader.getOptions    = @getOptions;
-loader.hasColumn     = @hasColumn;
-loader.getColumnData = @getColumnData;
+    columnNames = stripws(lower(get_option(varargin,'ColumnNames')));
+    columns = get_option(varargin,'Columns',1:length(columnNames));
 
+    assert(length(columnNames) == length(columns), ...
+      'Length of ColumnNames and Columns differ');
 
-  function b = hasColumn(colname)
+    [columnNames, m] = unique(columnNames);
+    columns = columns(m);
 
-    b = opts.hasMandatory(colname);
+    loader.data = array2table(d(:,columns),'variableNames',columnNames);
 
+    % check some flags
+    loader.unit = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
+
+    varargin = delete_option(varargin,{'ColumnNames','Columns'},1);
+    loader.opts = delete_option(varargin,{'radians','radiant','radiand'});
+    
   end
 
-  function d = getColumnData(colname)
-
-    d =  data(:,opts.getColumns(colname));
-
+  function out = hasColumns(loader,names)
+    out = all(cellfun(@(name) any(strcmpi(loader.data.Properties.VariableNames,name)),...
+      stripws(ensurecell(names))));
   end
 
-  function q = getRotations()
+  function out = findColumn(loader,names)
+    out = find(cellfun(@(x) any(strcmpi(stripws(ensurecell(names)),x)), ...
+      loader.data.Properties.VariableNames),1);
+  end
+
+  function d = getColumnData(loader,colname)
+    try
+      pos = loader.findColumn(colname);
+      d =  table2array(loader.data(:,pos));
+      loader.data(:,pos) = [];
+    catch
+      error(['No data of type ' colname ' found'])
+    end
+  end
+
+  function rot = getRotations(loader)
 
     conventions = {...
       {'Euler 1' 'Euler 2' 'Euler 3'};
@@ -50,52 +64,46 @@ loader.getColumnData = @getColumnData;
       {'Psi','Theta','phi'};
       {'omega','Theta','phi'};
       {'Quat real','Quat i','Quat j','Quat k'}; };
+    
+    conventions = cellfun(@(s) stripws(lower(s)),conventions,'UniformOutput',false);
+
     convNames  = {...
       'Euler','Bunge', 'Matthies', 'Roe', 'Kocks', 'Canova', 'Quaternion' };
 
-    type = find(cellfun(@(x) opts.hasMandatory(x),conventions),1,'first');
+    type = find(cellfun(@(convention) loader.hasColumns(convention),conventions),1,'first');
 
-    if ~isempty(type)
+    assert(~isempty(type),'At least specify three Euler angles or four quaternion components should be specified!');
 
-      cols = opts.getColumns(conventions{type});
+    cols = conventions{type};
 
-      opts.ColumnNames = delete_option(opts.ColumnNames, ...
-        strrep(lower(conventions{type}),' ',''));
+    % set rows where angle is 4*pi to nan
+    ind = abs(table2array(loader.data(:,cols(1)))*loader.unit - 4*pi)<1e-3;
+    loader.data(ind,cols) = {nan};
 
-      %extract options
-      dg = opts.Unit;
-
-      % eliminate nans
-      if ~check_option(opts.Options,'keepNaN')
-        data(any(isnan(data(:,cols)),2),:) = [];
-      end
-
-      % eliminate rows where angle is 4*pi
-      ind = abs(data(:,cols(1))*dg-4*pi)<1e-3;
-      data(ind,:) = [];
-
-      if type <=6
-        flag = extract_option([convNames{type} opts.Options],convNames);
-        q = rotation.byEuler(data(:,cols(1))*dg,data(:,cols(2))*dg,data(:,cols(3))*dg,...
-          flag{:});
-      else
-        q = rotation('quaternion',...
-          data(:,cols(1)),data(:,cols(2)),data(:,cols(3)),data(:,cols(4)));
-      end
-
-      if check_option(opts.Options,{'passive','passive rotation'})
-        q = inv(q);
-      end
-
-    else
-
-      error('You should at least specify three Euler angles or four quaternion components!');
-
+    % eliminate nans
+    if ~check_option(loader.opts,'keepNaN')
+      ind = any(isnan(table2array(loader.data(:,cols))),2);
+      loader.data(ind,:) = [];
     end
+
+    rotData = table2array(loader.data(:,cols));
+    if type <=6
+      flag = extract_option([convNames{type} loader.opts],convNames);     
+      rot = rotation.byEuler(rotData * loader.unit, flag{:});
+    else
+      rot = rotation(quaternion(rotData));
+    end
+
+    if check_option(loader.opts,{'passive','passive rotation'})
+      rot = inv(rot);
+    end
+
+    % remove columns
+    loader.data(:,cols) = [];
 
   end
 
-  function v = getVector3d()
+  function v = getVector3d(loader)
 
     conventions = {...
       {'x','y','z'};...
@@ -106,99 +114,63 @@ loader.getColumnData = @getColumnData;
       {'Latitude','Longitude'};
       {'Lattitude','Longitude'};   % for historical reasons
       };
+    conventions = cellfun(@(s) stripws(lower(s)),conventions,'UniformOutput',false);
 
-    type = find(cellfun(@(x) opts.hasMandatory(x),conventions),1,'first');
+    type = find(cellfun(@(convention) loader.hasColumns(convention),conventions),1,'first');
 
+    assert(~isempty(type),'Columns for cartesian or spherical coordinates not specoified!');
 
-    if ~isempty(type)
+    cols = conventions{type};
 
-      cols = opts.getColumns(conventions{type});
+    % eliminate nans
+    if ~check_option(loader.opts,'keepNaN')
+      loader.data(any(isnan(table2array(loader.data(:,cols))),2),:) = [];
+    end
 
-      opts.ColumnNames = delete_option(opts.ColumnNames, ...
-        strrep(lower(conventions{type}),' ',''));
+    % specimen directions
+    if type == 1  % xyz
+      v = vector3d(table2array(loader.data(:,cols)));
+    else % spherical
 
-      % eliminate nans
-      data(any(isnan(data(:,cols)),2),:) = [];
+      theta = table2array(loader.data(:,cols(1))) * loader.unit;
+      rho   = table2array(loader.data(:,cols(2))) * loader.unit;
+            
+      if type >= 6, theta = pi/2 - theta; end % latitude
 
-      % specimen directions
-      if type == 1  % xyz
-
-        v = reshape(vector3d(data(:,cols).'),[],1);
-
-      else % spherical
-
-        theta = data(:,cols(1))*opts.Unit;
-        rho   = data(:,cols(2))*opts.Unit;
-
-        if type >= 6 % latitude
-          theta = pi/2 - theta;
-        end
-
-        v = vector3d.byPolar(theta,rho);
-
-      end
-
-    else
-
-      error('MTEX:MISSINGDATA',...
-        'You should at least specify the columns of the spherical of cartesian coordinates');
+      v = vector3d.byPolar(theta,rho);
 
     end
 
-  end
-
-  function options = getOptions(varargin)
-
-    opts.ColumnNames = delete_option(opts.ColumnNames,...
-      get_option(varargin,'ignoreColumns',[]));
-
-    optdata = getColumnData(opts.ColumnNames);
-
-    options = [opts.ColumnNames(:)';
-      mat2cell(optdata,size(optdata,1),ones(1,size(optdata,2)))];
-
-    options = struct(options{:});
+    % remove columns
+    loader.data(:,cols) = [];
 
   end
 
+  function options = getOptions(loader,varargin)    
 
+    % maybe we should ignore some columns
+    cols = ensurecell(get_option(varargin,'ignoreColumns',[]));
+    for k = 1:length(cols)
+      try
+        loader.data(:,cols{k}) = [];
+      end
+    end
+
+    options = table2struct(loader.data,'ToScalar',true);
+  end
+
+  function xyz = getPos(loader)
+
+    if loader.hasColumns({'x','y','z'})
+      xyz = vector3d(table2array(loader.data(:,{'x','y','z'})));
+      loader.data(:,{'x','y','z'}) = [];
+    elseif loader.hasColumns({'x','y'})
+      xyz = vector3d(table2array(loader.data(:,'x')), table2array(loader.data(:,'y')),0);
+      loader.data(:,{'x','y'}) = [];
+    else 
+      error('No columns with "x" and "y" coordinates found!')
+    end
+  end
 end
-
-
-function params = localParseArgs(varargin)
-
-columnNames = lower(get_option(varargin,'ColumnNames'));
-columns = get_option(varargin,'Columns',1:length(columnNames));
-
-assert(length(columnNames) == length(columns), 'Length of ColumnNames and Columns differ');
-
-[columnNames, m] = unique(columnNames);
-columns = columns(m);
-
-columnNames = stripws(columnNames(:));
-
-hasMandatoryCol = @(a) all(cellfun(@(x) any(find(strcmpi(stripws(columnNames),stripws(x)))),ensurecell(a)));
-layoutCol       = @(a) columns(cell2mat(...
-  cellfun(@(x) find(strcmpi(stripws(columnNames),stripws(x))),...
-  reshape(ensurecell(a),[],1),'UniformOutput',false)));
-
-% check some flags
-unit = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-
-varargin = delete_option(varargin,{'ColumnNames','Columns'},1);
-varargin = delete_option(varargin,{'radians','radiant','radiand'});
-
-
-params.ColumnNames       = columnNames;
-params.hasMandatory      = hasMandatoryCol;
-params.getColumns        = layoutCol;
-params.Unit              = unit;
-params.Options           = varargin;
-
-  function str = stripws(str)
-
-    str = strrep(str,' ','');
-
-  end
 
 end

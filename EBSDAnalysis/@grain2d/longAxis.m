@@ -16,7 +16,4 @@ function lA = longAxis(grains,varargin)
 % See also
 % grain2d/principalComponents
 
-omega = principalComponents(grains);
-
-lA = vector3d.byPolar(pi/2,omega,'antipodal');
-
+lA = grains.principalComponents;

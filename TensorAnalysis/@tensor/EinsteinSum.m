@@ -44,7 +44,7 @@ while iv < length(varargin) && ~ischar(varargin{iv})
   elseif isa(M2,'quaternion')
     M2 = matrix(M2);
   elseif isa(M2,'vector3d')
-    M2 = double(M2);
+    M2 = fullDouble(M2);
     M2 = permute(M2,[3 1 2]);
   end
  

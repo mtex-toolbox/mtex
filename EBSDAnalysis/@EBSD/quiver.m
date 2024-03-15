@@ -16,12 +16,12 @@ function h = quiver(ebsd,dir,varargin)
 %  maxHeadSize - size of the arrow
 %
 
-xy = [ebsd.prop.x(:),ebsd.prop.y(:)];
+c = ebsd.pos;
 
 if check_option(varargin,'antipodal') || dir.antipodal
 
   varargin = [{'MaxHeadSize',0,'linewidth',2,'autoScaleFactor',0.5},varargin];
-  xy = [xy;xy];
+  c = [c;c];
   dir = [dir(:);-dir(:)];
   
 else
@@ -30,7 +30,7 @@ else
     
 end
  
-h = optiondraw(quiver(xy(:,1),xy(:,2),dir.x,dir.y),varargin{:});
+h = optiondraw(quiver3(c.x,c.y,c.z,dir.x,dir.y,dir.z),varargin{:});
 
 if nargout == 0, clear h; end
 
