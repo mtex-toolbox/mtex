@@ -80,10 +80,10 @@ classdef phi2Sections < ODFSections
       [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
       secPos = oS.secList(phi2,oS.phi2);
-      Phi = min(max(Phi,1e-5),pi-1e-5);
+      Phi = min(max(Phi,1e-5,'includeNaN'),pi-1e-5,'includeNaN');
       S2Pos = vector3d.byPolar(Phi,phi1);
       
-      % try to handle the case that some orientations apear at different sections
+      % try to handle the case that some orientations appear at different sections
       if ~check_option(varargin,'preserveOrder')
       
         % if the angle Phi is 0 or pi we have to distribute the
@@ -95,7 +95,7 @@ classdef phi2Sections < ODFSections
         secPos = secPos(~ind1 & ~ind2);
         S2Pos = S2Pos(~ind1 & ~ind2);
 
-        % all others are distriputed accross all sections
+        % all others are distributed across all sections
         if any(ind1)
           secPos = [secPos, reshape(repmat(1:length(oS.phi2),1,nnz(ind1)),1,[])];
           newPhi1 = bsxfun(@minus,phi1(ind1)+phi2(ind1),oS.phi2.');

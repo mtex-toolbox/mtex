@@ -28,13 +28,14 @@ plotSection(nodes, S.values,'all');
 % Interpolation is done by the <SO3Fun.interpolate |interpolate|> command
 % of class <SO3Fun.SO3Fun |SO3Fun|> 
 
-SO3F = SO3Fun.interpolate(nodes, S.values,'exact');
+psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
+SO3F = SO3Fun.interpolate(nodes, S.values,'exact','kernel',psi);
 plot(SO3F)
 
 %% 
 % The interpolation is done by lsqr. Hence the error is not in machine
 % precision.
-norm(SO3F.eval(nodes) - S.values)
+norm(SO3F.eval(nodes) - S.values) / norm(S.values)
 
 %%
 % If we don't restrict ourselfs to the given function values in the nodes, we have more

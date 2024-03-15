@@ -20,14 +20,29 @@ cS = crystalShape.hex(ebsd.CS)
 
 % and plot it
 close all
-plot(cS)
+plot(cS,'faceAlpha',0.2)
 
 %% 
 % Internally, a crystal shape is represented as a list of faces which are
-% bounded by a list of vertices
+% bounded by a list of vertices |cS.V| and edges |cS.E|
 
 cS.V
 
+%%
+% Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
+% <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and <arrow3d.html
+% |arrow3d|> we may plot internal lattice planes, directions or slip
+% systems into the crystal shape
+
+sS = [slipSystem.pyramidal2CA(ebsd.CS), ...
+  slipSystem.pyramidalA(ebsd.CS)]
+
+plot(cS,'faceAlpha',0.2)
+hold on
+plot(cS,sS(2),'faceColor','blue')
+plot(cS,sS(1),'faceColor','red')
+
+hold off
 
 %% Calculating with crystal shapes
 % Crystal shapes are defined in crystal coordinates. Thus applying an
@@ -41,7 +56,7 @@ plot(ebsd,ebsd.orientations)
 hold on
 scaling = 100; % scale the crystal shape to have a nice size
 
-% plot at position (500,500) the orientatation of the corresponding crystal
+% plot at position (500,500) the orientation of the corresponding crystal
 plot(500,500,50, ebsd(500,500).orientations * cS * scaling)
 hold off
 
@@ -92,7 +107,7 @@ plot(grains(isBig),0.7*cS,'FaceColor','none','linewidth',2)
 hold off
 
 %%
-% In the same waywe may visualize grain orientations and grains size
+% In the same way we may visualize grain orientations and grains size
 % within pole figures
 
 plotPDF(grains(isBig).meanOrientation,Miller({1,0,-1,0},{0,0,0,1},ebsd.CS),'contour')
@@ -119,7 +134,7 @@ mori = orientation.byAxisAngle(Miller({1 0-1 0},ebsd.CS),34.9*degree)
 % plot the crystal in ideal orientation
 close all
 plot(cS,'FaceAlpha',0.5)
-
+ 
 % and on top of it in twinning orientation
 hold on
 plot(mori * cS *0.9,'FaceColor','orange')

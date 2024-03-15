@@ -183,7 +183,7 @@ end
     gbc      = get_flag(varargin,gbcFlags,'angle');
     gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
 
-    if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
+    if isscalar(gbcValue) && length(ebsd.CSList) > 1
       gbcValue = repmat(gbcValue,size(ebsd.CSList));
     end
 

@@ -1,9 +1,9 @@
 function ebsd = rotate(ebsd,rot,varargin)
-% rotate EBSD 
+% rotate EBSD maps
 %
 % Syntax
 %
-%   % roate the whoole data set about the z-axis by 90*degree
+%   % rotate EBSD map about the z-axis by 10*degree
 %   ebsd = rotate(ebsd,10*degree) 
 %
 %   % rotate about the x-axis

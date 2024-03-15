@@ -8,8 +8,8 @@ function varargout = scatter(o,varargin)
 %  ori - @orientation
 %
 % Options
-%  axisAngle - axis angle projection
-%  Rodrigues - rodrigues parameterization
+%  axisAngle - 3d axis angle plot
+%  Rodrigues - 3d Rodrigues vector plot
 %  Euler     - 3d Bunge Euler plot
 %  points    - number of orientations to be plotted
 %  center    - orientation center

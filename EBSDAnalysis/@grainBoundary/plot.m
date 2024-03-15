@@ -64,7 +64,7 @@ if nargout == 0, clear h; end
 % finalize plot
 if ~isstruct(mtexFig)  
   if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
-  if length(mtexFig.children)== 1, mtexFig.keepAspectRatio = false; end
+  if isscalar(mtexFig.children), mtexFig.keepAspectRatio = false; end
 end
 
 
@@ -93,8 +93,8 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   alpha = 0.01;
   
   % for colorizing the segments with different colors we have to make a lot
-  % of efford
-  % 1. in Matlab colors are asigned to vertices not to edges
+  % of effort
+  % 1. in MATLAB colors are assigned to vertices not to edges
   % 2. therefore we replace every vertex by two vertices 
   x = repelem(x(:).',1,2).';
   x(1) = []; x(end)=[];

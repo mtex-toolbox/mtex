@@ -5,10 +5,10 @@
 %
 % *Pseudo 3d EBSD and Grain maps*
 %
-% With version 6.0 MTEX starts to support pseudo 3d EBSD data. This means
-% that EBSD maps are not longer supposed to are in the xy-plane. For
+% With version 6.0, MTEX starts to support pseudo 3d EBSD data. This means
+% that EBSD maps are no longer restricted to the xy-plane. For
 % example it is now possible to consider EBSD maps that represent the three
-% faces of a cube. To make this possible multiple changes at the core of
+% faces of a cube. To make this possible, multiple changes at the core of
 % MTEX had to be introduced:
 %
 % * |ebsd.pos| gives the position of the EBSD measurements and is of type
@@ -25,20 +25,20 @@
 % * The alignment of x, y and z on the screen is now controlled by an
 % object of type @plottingConvention. The code
 %
-%   how2plot = plottinConvention
+%   how2plot = plottingConvention
 %   how2plot.outOfScreen = ebsd.N
 %   how2plot.east = yvector
 %   plot(ebsd, how2plot)
 %
-% would plot an EBSD map with its normal direction out of the screen an the
+% would plot an EBSD map with its normal direction out of the screen and the
 % y-vector pointing to north.
 % * A default plotting convention can be stored directly in the EBSD or
 % grain variable via
 %
 %   ebsd.plottingConvention = how2plot
 %
-% * The plotting convention can also passed to any spherical plot. This
-% allows e.g. to plot pole figures with an arbitrary direction sticking out
+% * The plotting convention can also be passed to any spherical plot. This
+% allows e.g. to plot pole figures with an arbitrary direction pointing out
 % of the screen.
 %
 % * As consequence |'upper'| and |'lower'| refers to the outOFScreen

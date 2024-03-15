@@ -11,6 +11,10 @@ function varargout = plot(ori,varargin)
 %  ori - @orientation
 %
 % Options
+%  axisAngle - 3d axis angle plot
+%  Rodrigues - 3d Rodrigues vector plot
+%  Euler     - 3d Bunge Euler plot
+%  points    - number of orientations to be plotted
 %  MarkerFaceColor - fill color of the marker
 %  MarkerEdgeColor - edge color of the marker
 %  MarkerSize      - size of the marker
@@ -18,8 +22,8 @@ function varargout = plot(ori,varargin)
 %  backgroundColor - background color of the text (none)
 %
 % Flags
+%  axisAngle  -
 %  filled  - MarkerFaceColor is MarkerEdgeColor
-%  labeled - 
 %
 % See also
 % orientation/scatter orientation/plotPDF orientation/plotODF

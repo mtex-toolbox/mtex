@@ -28,5 +28,5 @@ elseif check_option(varargin,'weights')
   weights = get_option(varargin,'weights');
   v = sum(weights(find(ori,center,radius,varargin{:})));
 else
-  v = nnz(angle(ori,center,varargin{:})<=radius) ./ length(ori);
+  v = nnz(angle(ori,center,varargin{:})<=radius) ./ nnz(~isnan(ori));
 end
