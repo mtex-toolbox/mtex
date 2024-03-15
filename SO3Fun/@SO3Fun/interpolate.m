@@ -161,7 +161,7 @@ while iter <= numiter
   %eval the kernel
   if along
     m = psi.K_symmetrised(S3G,ori(ind),ori.CS,ori.SS,varargin{:});
-    M = M + m;
+    M(:,ind) = M(:,ind) + m;
   else
     m = psi.K_symmetrised(S3G(ind),ori,ori.CS,ori.SS,varargin{:});
     M(ind,:) = M(ind,:) + m;
