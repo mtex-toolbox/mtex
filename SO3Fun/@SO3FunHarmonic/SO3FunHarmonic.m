@@ -65,18 +65,19 @@ methods
       
     % set fhat
     SO3F.fhat = fhat;
+    clear fhat;
     
     % extract symmetries
     [CS,SS] = extractSym(varargin);
     SO3F.SRight = CS; SO3F.SLeft = SS;
     
-    if norm(fhat(:))==0
+    if norm(SO3F.fhat(:))==0
       SO3F.bandwidth=0;
       return
     end
     
     % extend entries to full harmonic degree
-    s1 = size(fhat,1);
+    s1 = size(SO3F.fhat,1);
     if s1>=2
       SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
     end
@@ -112,7 +113,7 @@ methods
       F.fhat(oldLength+1:newLength,:)=0;
     else % delete zeros
       F.fhat = F.fhat(1:newLength,:);
-      F=reshape(F,s);
+      F = reshape(F,s);
     end
   end
   

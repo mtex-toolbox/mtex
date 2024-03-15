@@ -104,6 +104,7 @@ if any(H<sz)
   B(1:size(ghat,1),1:2*N+1,1:size(ghat,3)) = ghat;
   % Note that H(1) and H(2) should be biger than 1 to avoid errors by squeezing
   ghat = squeeze(sum(reshape(B,H(1),dim(1),H(2),dim(2),H(3),dim(3)),[2,4,6]));
+  clear B;
 end
 
 
