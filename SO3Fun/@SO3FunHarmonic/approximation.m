@@ -55,8 +55,13 @@ maxit = get_option(varargin, 'maxit', 50);
 bw = get_option(varargin, 'bandwidth', min(dim2deg(length(nodes)*2),getMTEXpref('maxSO3Bandwidth')));
 
 % extract weights
-W = get_option(varargin, 'weights',1/length(nodes));
-if length(W)>1, W = accumarray(ind,W); end
+W = get_option(varargin, 'weights');
+if isempty(W)
+  W = calcVoronoiVolume(nodes);
+%   W = 1/length(nodes);
+else
+  if length(W)>1, W = accumarray(ind,W); end
+end
 W = sqrt(W(:));
 
 b = W.*y;
