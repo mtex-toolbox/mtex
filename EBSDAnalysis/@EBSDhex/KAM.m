@@ -13,7 +13,7 @@ function kam = KAM(ebsd,varargin)
 %   [grains, ebsd.grainId] = calcGrains(ebsd)
 %   plot(ebsd, ebsd.KAM./degree)
 %
-%   % consider also second order neigbors
+%   % consider also second order neighbors
 %   kam = KAM(ebsd, 'order', 2);
 %   plot(ebsd, kam./degree)
 %
@@ -32,7 +32,7 @@ function kam = KAM(ebsd,varargin)
 if isfield(ebsd.prop,'grainId'), ebsd = ebsd.project2FundamentalRegion; end
 
 if check_option(varargin,'max')
-  fun = @(a,b) nanmax(a,[],b);
+  fun = @(a,b) max(a,[],b);
 else
   fun = @(a,b) nanplus(a,b);
 end
@@ -76,7 +76,7 @@ for radius = 1:order
     % for all phases
     for idPhase = ebsd.indexedPhasesId
 
-      % ommit nan neighbors
+      % omit nan neighbors
       doInclude = ~isnan(indN);
       
       % consider only pixels of the same phase
@@ -93,7 +93,7 @@ for radius = 1:order
       else
         
         % if we had no grains ebsd.project2fundamentalRegion had no effect
-        % and we have to consider crystalsymmetry explicitely
+        % and we have to consider crystal symmetry explicitly
         omega = min(angle_outer(inv(rot(doInclude)) .* rot(indN(doInclude)),ebsd.CSList{idPhase}.properGroup.rot),[],2).';
                 
       end      

@@ -28,7 +28,7 @@ eta = pi/2; omega = linspace(0,2*pi,361);
 if nargin > 2 && isnumeric(varargin{1})
   eta = varargin{1};
   
-  % extract azimuthal angle of section
+  % extract azimuth angle of section
   if nargin > 3 && isnumeric(varargin{2}), omega = varargin{2}; end  
 end
 
@@ -39,7 +39,7 @@ if isa(d,'double') && ~isreal(d), d = real(d);end
 
 delta = getappdata(mtexFig.gca,'delta');
 if isempty(delta)
-  delta = nanmax(d) / 200 ;
+  delta = max(d) / 200 ;
   setappdata(mtexFig.gca,'delta',delta);
 end
 delta = delta * get_option(varargin,'linewidth',1);

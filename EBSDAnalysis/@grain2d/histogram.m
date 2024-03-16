@@ -59,7 +59,7 @@ for id = grains.indexedPhasesId
   % compute the sum of areas belonging to the same bin
   
   areaPhase = area(grains.phaseId==id);
-  cumArea = accumarray(binId(binId>0),areaPhase(binId>0),[length(bins)-1 1],@nansum) ./ sum(area);
+  cumArea = accumarray(binId(binId>0),areaPhase(binId>0),[length(bins)-1 1]) ./ sum(area);
   
   h = [h,optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
     'FaceColor',grains.CSList{id}.color),varargin{:})]; %#ok<AGROW>

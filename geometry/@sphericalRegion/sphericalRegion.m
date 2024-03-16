@@ -164,8 +164,8 @@ classdef sphericalRegion
         
         theta(~ind) = NaN;
         
-        thetaMin = reshape(nanmin(theta),srho);
-        thetaMax = reshape(nanmax(theta),srho);
+        thetaMin = reshape(min(theta),srho);
+        thetaMax = reshape(max(theta),srho);
    
       else
         

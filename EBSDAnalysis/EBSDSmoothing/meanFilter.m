@@ -13,9 +13,6 @@ classdef meanFilter < EBSDFilter
 
     function F = meanFilter(varargin)      
       F.weights = get_option(varargin,'weights',ones(3));
-      
-      %[x,y] = meshgrid(-2:2)
-      %A = exp(-(x.^2+y.^2)/10)
     end
     
     function n = get.numNeighbours(F)
@@ -51,9 +48,9 @@ classdef meanFilter < EBSDFilter
         
         nq = quality + quality(idNeighbours);
         
-        denominator = nansum(nq,3);
+        denominator = sum(nq,3,'omitnan');
         denominator(denominator==0) = inf;
-        tq = (quality .* tq + nansum(nq .* ntq,3)) ./ denominator;
+        tq = (quality .* tq + sum(nq .* ntq,3,'omitnan')) ./ denominator;
      
       end
       

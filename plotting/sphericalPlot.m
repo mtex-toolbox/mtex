@@ -101,8 +101,8 @@ classdef sphericalPlot < handle
 
     function updateMinMax(sP,data)
       if nargin == 2
-        sP.minData = nanmin([sP.minData, nanmin(data(:))]);
-        sP.maxData = nanmax([sP.maxData, nanmax(data(:))]);
+        sP.minData = min([sP.minData, min(data(:))]);
+        sP.maxData = max([sP.maxData, max(data(:))]);
       end
       
       if sP.dispMinMax

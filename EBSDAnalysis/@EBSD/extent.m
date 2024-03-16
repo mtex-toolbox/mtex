@@ -15,9 +15,9 @@ function [xmin, xmax, ymin, ymax] = extent(ebsd)
 %  ext - bounds combined in one vector [xmin xmax ymin ymax]
 %
 
-xmin = nanmin(ebsd.prop.x(:));
-xmax = nanmax(ebsd.prop.x(:));
-ymin = nanmin(ebsd.prop.y(:));
-ymax = nanmax(ebsd.prop.y(:));
+xmin = min(ebsd.prop.x(:));
+xmax = max(ebsd.prop.x(:));
+ymin = min(ebsd.prop.y(:));
+ymax = max(ebsd.prop.y(:));
 
 if nargout <= 1, xmin = [xmin, xmax, ymin, ymax]; end

@@ -43,7 +43,7 @@ y = reshape(y, length(nodes), []);
 
 % take the mean over duplicated nodes
 for k = 1:size(y,2)
-  yy(:,k) = accumarray(ind,y(:,k),[],@nanmean); %#ok<AGROW>
+  yy(:,k) = accumarray(ind,y(:,k),[],@mean); %#ok<AGROW>
 end
 
 y = reshape(yy, [length(nodes) s(2:end)]);

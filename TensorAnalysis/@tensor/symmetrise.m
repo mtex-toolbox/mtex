@@ -80,12 +80,12 @@ T.M(~isnull(imag(T.M))) = NaN;
 T.M = real(T.M);
 
 % take the mean 
-T.M = nanmean(T.M,T.rank+1);
+T.M = mean(T.M,T.rank+1,'omitnan');
 
 % check whether something has changed 
 if any(abs(T.M(:)-M_old(:))./max(abs(M_old(:)))>1e-4 & ~isnull(M_old(:)))
   warning('MTEX:tensor',[T.CS.mineral ' Tensor does not pose the right symmetry']);
-  disp(['Deviation:' xnum2str(nanmax(abs(T.M(:)-M_old(:))))]);
+  disp(['Deviation:' xnum2str(max(abs(T.M(:)-M_old(:))))]);
 end
 
 % NaN values become zero again

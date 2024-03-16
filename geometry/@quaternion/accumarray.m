@@ -52,7 +52,9 @@ end
 if nargout == 2
   omega = 2*real(acos(flip./s(subs) .* ...
     (q.a .* a(subs) + q.b .* b(subs) + q.c .* c(subs) + q.d .* d(subs))));
-  GOS = accumarray(subs,omega,size(a),@mean);
+  
+  GOS = accumarray(subs,omega,size(a)) ./ accumarray(subs,1,size(a));
+
 end
 
 q.a = a ./ s; q.b = b ./ s; q.c = c ./ s; q.d = d ./ s;
