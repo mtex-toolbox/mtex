@@ -18,7 +18,7 @@ function y = nanmeanWeights(x,weights,dim)
 
 % only one or two elements 
 if isempty(x), y = NaN;	return; end
-if length(x)==1, y = x;	return; end
+if isscalar(x), y = x;	return; end
 
 % determine dimension
 if nargin < 3, dim = find(size(x)~=1,1,'first'); end

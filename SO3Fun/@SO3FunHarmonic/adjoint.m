@@ -167,7 +167,7 @@ else
   % adjoint nfft
   nfftmex('set_f', plan, W(:) .* values(:));
   nfftmex('adjoint', plan);
-  % adjoint fourier transform
+  % adjoint Fourier transform
   ghat = nfftmex('get_f_hat', plan);
   ghat = reshape(ghat,2*N+2,2*N+2,2*N+2);
   ghat = ghat(2:end,2:end,2:end);
@@ -179,7 +179,7 @@ end
 z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
 ghat = z .* ghat;
 
-% --------- (4) adjoint representationbased coefficient transform ---------
+% --------- (4) adjoint representation based coefficient transform ---------
 
 % set flags and symmetry axis
 flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
