@@ -15,7 +15,10 @@ isRobust = check_option(varargin,'robust');
 varargin = delete_option(varargin,'robust');
 
 % find a reference quaternion for each class
-ref = accumarray(subs,1:length(q),[],@(x) x(1));
+%ref = accumarray(subs,1:length(q),[],@(x) x(1));
+% this assumes that each index 1..n appears at least once
+[~,ref] = unique(subs);
+
 q_ref = q.subSet(ref(subs));
   
 flip = 1 - 2*(dot(q,q_ref,'noAntipodal') < 0);

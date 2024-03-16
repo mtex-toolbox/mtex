@@ -14,9 +14,11 @@ function v = accumarray(subs,v,varargin)
 if v.antipodal
   
   % find a reference vector for each class
-  ref = accumarray(subs,1:length(v),[],@(x) x(1));
+  % this assumes that each index 1..n appears at least once
+  %ref = accumarray(subs,1:length(v),[],@(x) x(1));
+  [~,ref] = unique(subs);
   v_ref = v.subSet(ref(subs));
-  
+    
   flip = 1 - 2*(dot(v,v_ref,'noAntipodal') < 0);
   
   v.x = accumarray(subs,v.x .* flip,varargin{:});

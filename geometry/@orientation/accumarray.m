@@ -6,13 +6,16 @@ function ori = accumarray(subs,ori,varargin)
 %
 % Input
 %  subs - 
-%  ori - @orienrtation
+%  ori - @orientation
 %
 % Output
 %  ori - @orientation
 
 % find a reference orientation for each class
-ref = accumarray(subs,1:length(ori),[],@(x) x(1));
+% this assumes that each index 1..n appears at least once
+%ref = accumarray(subs,1:length(ori),[],@(x) x(1));
+[~,ref] = unique(subs);
+
 ori_ref = ori.subSet(ref(subs));
   
 ori = project2FundamentalRegion(ori,ori_ref);
