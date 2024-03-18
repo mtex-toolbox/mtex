@@ -58,7 +58,7 @@ elseif check_option(varargin,'noSym1') || o1.CS.id == 1 || o1.CS.id == 1
   
 else
     
-  % symmetricaly equivalents of the identity 
+  % symmetrical equivalents of the identity 
   idSym = unique(o1.SS.properGroup.rot * o1.CS.properGroup.rot);
   
   % may be we can skip something

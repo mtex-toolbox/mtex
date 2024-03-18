@@ -16,11 +16,14 @@ function SO3F = rotate(SO3F,rot,varargin)
 % SO3FunHandle/rotate_outer
     
 if check_option(varargin,'right')
-  cs = SO3F.CS.rot;
-  if length(cs)>2 && ~any(rot == cs(:))
+
+  if isa(rot,'orientation') && rot.SS == SO3F.CS
+    
+  elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
     SO3F.CS = crystalSymmetry;
   end
+
 else
   ss = SO3F.SS.rot;
   if length(ss)>2 && ~any(rot == ss(:))

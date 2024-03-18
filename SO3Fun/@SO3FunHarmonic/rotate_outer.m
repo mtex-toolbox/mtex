@@ -14,21 +14,23 @@ function SO3F = rotate_outer(SO3F,rot,varargin)
 %
 % See also
 % SO3FunHandle/rotate_outer
-  
+
+
 if check_option(varargin,'right')
-  cs = SO3F.CS.rot;
-  if length(cs)>2 && ~all(any(rot(:).' == cs(:)))
+  
+  if isa(rot,'orientation') && rot.SS == SO3F.CS
+    SO3F.CS = rot.CS;
+  elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
     SO3F.CS = crystalSymmetry;
   end
+  
 else
-  ss = SO3F.SS.rot;
-  if length(ss)>2 && ~all(any(rot(:).' == ss(:)))
+  if numSym(SO3F.SS.Laue)>2 && ~all(any(rot(:).' == SO3F.SS.rot(:)))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
     SO3F.SS = specimenSymmetry;
   end
 end
-
 
 L = SO3F.bandwidth;
 D = conj(WignerD(inv(rot),'bandwidth',L));
@@ -36,7 +38,7 @@ D = reshape(D,[],length(rot));
 G = conv(SO3F,sqrt(2*(0:L)+1).');
 
 if check_option(varargin,'right')  
-  SO3F.fhat = convSO3(G.fhat,D);
+  SO3F.fhat = convSO3(G.fhat,D);  
 else
   SO3F.fhat = convSO3(D,G.fhat);
 end
