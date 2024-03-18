@@ -12,7 +12,7 @@ function h = arrow3d(vec,varargin)
 %  label - text to be displayed at the end of the arrow
 %  labeled - 
 %  faceColor - 
-%  arrowWidth - 
+%  arrowWidth - width of the tail (default 0.02)
 %  antipodal - 
 %
 % Example
@@ -25,7 +25,7 @@ function h = arrow3d(vec,varargin)
 %  hold off
 %
 % See also
-% savefigure vector3d/scatter3 vector3d/plot3 vector3d/text3
+% vector3d/scatter3 vector3d/plot3 vector3d/text3
 
 % where to plot
 if check_option(varargin,'parent')

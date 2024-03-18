@@ -10,16 +10,19 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 % Input
 %  fhat  - double (harmonic coefficient vector)
 %  CS,SS - @Symmetry 
-%  F     - @SO3Fun
+%  F     - @SO3Fun 
 %
 % Output
 %  SO3F - @SO3FunHarmonic
 %
+% Options
+%  bandwidth - bandwidth of the harmonic expansion
+%
 % Example
 %
-%   SO3F = SO3FunHarmonic(rand(deg2dim(6),1))
+%   F = SO3FunHandle(@(rot) rot.angle)
 %
-%   F = SO3FunRBF.example
+%   % convert into harmonic representation
 %   SO3F = SO3FunHarmonic(F)
 %
 
