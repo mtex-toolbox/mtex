@@ -4,7 +4,7 @@ function psi = conv(psi1,psi2,varargin)
 % We convolute an SO3Kernel $f$ with another SO3Kernel or an SO3Fun $g$
 % by the convolution
 %
-% $$ (f *_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
+% $$ (f {*}_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
 %
 % which in this case is similar to the so caled right sided convolution,
 % see SO3FunHarmonic/conv.
