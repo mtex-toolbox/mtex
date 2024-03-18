@@ -4,6 +4,7 @@ classdef S2FunHandle < S2Fun
 properties
   fun
   antipodal = false
+  bandwidth = getMTEXpref('maxS2Bandwidth')
 end
 
 
