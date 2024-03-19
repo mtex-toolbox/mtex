@@ -18,7 +18,8 @@ function SO3F = rotate_outer(SO3F,rot,varargin)
 
 if check_option(varargin,'right')
   
-  if isa(rot,'orientation') && rot.SS == SO3F.CS
+  if isa(rot,'orientation') 
+    assert(rot.SS == SO3F.CS,'symmetry missmatch');
     SO3F.CS = rot.CS;
   elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
@@ -26,7 +27,10 @@ if check_option(varargin,'right')
   end
   
 else
-  if numSym(SO3F.SS.Laue)>2 && ~all(any(rot(:).' == SO3F.SS.rot(:)))
+  if isa(rot,'orientation') 
+    assert(rot.CS == SO3F.SS,'symmetry missmatch');
+    SO3F.SS = rot.SS;
+  elseif numSym(SO3F.SS.Laue)>2 && ~all(any(rot(:).' == SO3F.SS.rot(:)))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
     SO3F.SS = specimenSymmetry;
   end
