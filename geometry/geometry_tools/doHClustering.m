@@ -1,5 +1,5 @@
 function [c,center] = doHClustering(obj,varargin)
-% hirarchical clustering of rotations and vectors
+% hierarchical clustering of rotations and vectors
 %
 % Syntax
 %   [c,center] = doHCluster(ori,'numCluster',n)

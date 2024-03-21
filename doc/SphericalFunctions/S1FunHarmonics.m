@@ -19,4 +19,21 @@
 
 fun = S1FunHarmonic([0;3;1;0;4])
 
+clf
 plot(fun)
+
+%%
+% More practically, periodic functions appear after density estimation from
+% circular data, e.g. of the azimuth angle of three dimensional vectors
+
+% some random directions
+v = vector3d.rand(1000);
+
+% perform density estimation of the azimuth angle
+fun = calcDensity(v.rho,'periodic')
+
+clf
+plot(fun,'linewidth',2)
+
+
+
