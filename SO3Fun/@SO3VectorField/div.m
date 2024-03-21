@@ -14,7 +14,7 @@ function d = div(SO3VF,varargin)
 %  d - @double divergence of |SO3VF| at rotation |rot|
 %
 % See also
-% SO3VectorFieldHarmonic/div SO3Fun/grad
+% SO3VectorFieldHarmonic.div SO3Fun.grad SO3Fun.curl 
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
@@ -29,7 +29,7 @@ delta = get_option(varargin,'delta',0.05*degree);
 
 deltaRot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
 
-if check_option(SO3VF.tangentSpace,'right')
+if SO3VF.tangentSpace.isRight
   f = reshape(SO3VF.eval([rot*inv(deltaRot),rot*deltaRot]),length(rot),[]);
 else
   f = reshape(SO3VF.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);

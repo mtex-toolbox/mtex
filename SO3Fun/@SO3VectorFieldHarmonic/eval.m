@@ -27,8 +27,8 @@ end
 % generate tangentspace vector
 f = reshape(SO3TangentVector(xyz.',SO3VF.internTangentSpace),size(rot));
 
-f = f.transformTangentSpace(SO3VF.tangentSpace,rot);
+tS = SO3TangentSpace.extract(varargin{:},SO3VF.tangentSpace);
 
-
+f = f.transformTangentSpace(tS,rot);
 
 end
