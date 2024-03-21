@@ -38,7 +38,8 @@ maxAngle = get_option(varargin,'maxAngle',2*pi);
 persistent tmp
 
 if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
-    isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution)
+    isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution) && ...
+    ~check_option(varargin,'points')
   S3G = tmp.S3G;
   return
 end
