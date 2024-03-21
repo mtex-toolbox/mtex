@@ -63,7 +63,7 @@ if isa(psi,'S2Fun')
   CS1 = crystalSymmetry; CS2 = specimenSymmetry;
   try CS1 = sF.s; end; try CS2 = sF2.s; end
     
-  sF = SO3FunHarmonic(fhat,CS1,CS2);
+  sF = SO3FunHarmonic(fhat,CS1,CS2,varargin{:});
     
   return
 end
