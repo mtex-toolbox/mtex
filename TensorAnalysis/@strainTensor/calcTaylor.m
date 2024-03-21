@@ -45,6 +45,7 @@ if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
   for k = 1:length(eps)
+    progress(k,length(eps));
     epsLocal = strainTensor(eps.M(:,:,k));
     F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
   
@@ -57,6 +58,12 @@ if sS.CS.Laue ~= eps.CS.Laue
       % to be compareable set output to rightspintensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
+  end
+  
+  % for some reason we need some smoothing of the vector field
+  if nargout>1
+    psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
+    spin.SO3F = spin.SO3F.conv(psi);
   end
   return
 end
@@ -129,7 +136,7 @@ if nargout <=2, return; end
 
 % the antisymmetric part of the deformation tensors gives the spin
 % in crystal coordinates
-spin = spinTensor(b*sSeps.antiSym);
+spin = spinTensor(b*sSeps);
 
 end
 
