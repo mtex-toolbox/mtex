@@ -20,7 +20,8 @@ function value = mean(sF, varargin)
 % pointwise means values along the first dimension
 %
  
-nodes = quadratureS2Grid(256);
+bw = get_option(varargin,'bandwidth',getMTEXpref('maxS2Bandwidth'));
+nodes = quadratureS2Grid(bw);
 
 value = mean(sF.eval(nodes),1);
 
