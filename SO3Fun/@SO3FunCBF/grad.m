@@ -41,21 +41,21 @@ w = repelem(SO3F.weights./l,l);
 
 g = vector3d.zeros(size(ori));
 
-if check_option(varargin,'right')
+tS = SO3TangentSpace.extract(varargin{:});
+
+if tS.isRight
   for i = 1:length(h)
     g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
         cross(h(i),inv(ori) * r(i));
   end
-  g = SO3TangentVector(g,'right');
 else
   for i = 1:length(h)
     g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
         cross(ori*h(i),r(i));
   end
-  g = SO3TangentVector(g,'left');
 end
 
-g = reshape(g,s);
+g = SO3TangentVector(reshape(g,s),tS);
 
 end
 
@@ -68,8 +68,8 @@ omega = 15 *degree;
 ref = orientation.byAxisAngle(vector3d(1,0,10),omega,cs)
 
 
-g1 = odf.grad(ref)
-g2 = odf.grad(ref,'check','delta',0.05*degree)
+g1 = odf.grad(ref,'left')
+g2 = odf.grad(ref,'check','delta',0.05*degree,'left')
   
 plot(omega./degree,[g1.x,g2.x])
 

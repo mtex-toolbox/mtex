@@ -53,7 +53,6 @@ methods
     SO3TV = SO3TV@vector3d(varargin{:});
 
     if nargin > 0 && isa(varargin{1},'SO3TangentVector')
-      
       SO3TV = varargin{1};
     else
       SO3TV.tangentSpace = getClass(varargin,'SO3TangentSpace',SO3TangentSpace.leftVector);

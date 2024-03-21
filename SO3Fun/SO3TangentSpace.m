@@ -18,6 +18,15 @@ classdef SO3TangentSpace < int32
       out = this < 0;
     end
 
+    function out = isVector(this)
+      out = abs(this)==1;
+    end
+
+    function out = isSpinTensor(this)
+      out = abs(this)==2;
+    end
+
+
     function toLeft(this,tV,ori_ref)
 
     end

@@ -74,7 +74,7 @@ for i = 1:maxIter
   %disp([xnum2str(max(norm(g))) ' ' char(ori(1)) ' ' char(g(1))]);
   
   % update ori
-  ori = exp(ori,g,'left');
+  ori = exp(ori, g, SO3TangentSpace.leftVector);
   
 end
 end

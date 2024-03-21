@@ -21,7 +21,7 @@ function SO3VF = approximation(nodes, values, varargin)
 if isa(values,'SO3TangentVector') 
   tS = values.tangentSpace;
 else
-  tS = 'left';
+  tS = SO3TangentSpace.leftVector;
   warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
            'the left side tangent space. If you want them to be right sided ' ...
            'use SO3TangentVector(v,''right'') instead.'])

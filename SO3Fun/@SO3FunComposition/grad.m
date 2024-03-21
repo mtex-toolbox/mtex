@@ -19,38 +19,10 @@ function g = grad(SO3F,varargin)
 % See also
 % SO3Fun/eval orientation/exp
 
-if nargin>1 && isa(varargin{1},'rotation')
-  
-  ori = varargin{1};
-  if isa(ori,'orientation')
-    ensureCompatibleSymmetries(SO3F,ori)
-  end
-  
-  g = vector3d.zeros(size(ori));
-  if isempty(ori), return; end
-
-  % compute the gradient for each component seperately
-  for i = 1:numel(SO3F.components)
-    g = g + SO3F.components{i}.grad(varargin{:});
-  end
-
-  if check_option(varargin,'right')
-    g.tangentSpace = 'right';
-  else
-    g.tangentSpace = 'left';
-  end
-
-  return
-
-end
-
 % compute the gradient for each component seperately
-g = 0;
-for i = 1:numel(SO3F.components)
+g = SO3F.components{1}.grad(varargin{:});
+for i = 2:numel(SO3F.components)
   g = g + SO3F.components{i}.grad(varargin{:});
-end
-if check_option(varargin,'right')
-  g.tangentSpace = 'right';
 end
 
 end

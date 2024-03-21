@@ -15,7 +15,7 @@
 R = rotation.byAxisAngle(xvector,20*degree)
 S1 = spinTensor(vector3d(0,0,1))
 % left tangent vector
-matrix(S1)*matrix(R)
+matrix(S1) * matrix(R)
 
 %%
 % Analogously the right tangent space is defined by
@@ -42,7 +42,7 @@ S = spinTensor(vL)
 % Note that the default tangent space representation is left.
 % We can construct an right tangent vector by
 
-vR = SO3TangentVector(vector3d(1,2,3),'right')
+vR = SO3TangentVector(vector3d(1,2,3),SO3TangentSpace.rightVector)
 
 %%
 % Here |vL| and |vR| have the same coordinates in different spaces (bases). 
@@ -81,7 +81,7 @@ rot = rotation.rand(3);
 F.grad(rot)
 
 % right gradient in rot
-inv(rot).*F.grad(rot)
+inv(rot) .* F.grad(rot)
 F.grad(rot,'right')
 
 %%

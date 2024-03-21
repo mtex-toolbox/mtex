@@ -29,10 +29,10 @@ Gz = SO3VF.z.grad(SO3VF.tangentSpace);
 
 c = SO3VectorFieldHarmonic([Gy.z-Gz.y;Gz.x-Gx.z;Gx.y-Gy.x],SO3VF.CS,SO3VF.SS,SO3VF.tangentSpace);
 
-if strcmp(SO3VF.tangentSpace,'right')
-  c = c+SO3VF;
+if SO3VF.tangentSpace.isRight
+  c = c + SO3VF;
 else
-  c = c-SO3VF;
+  c = c - SO3VF;
 end
 
 n = sqrt(sum(norm(c.SO3F).^2));
