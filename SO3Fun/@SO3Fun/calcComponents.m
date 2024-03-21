@@ -26,7 +26,7 @@ function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 maxIter = get_option(varargin,'maxIter',100);
 res = get_option(varargin,'resolution',0.05*degree);
 omega = [0,3.3,5]*degree;
-tol = get_option(varargin,'tolerance',0.5*degree);
+tol = get_option(varargin,'tolerance',1.5*degree);
 maxAngle = get_option(varargin,{'radius','angle'},inf);
 
 % initial seed
