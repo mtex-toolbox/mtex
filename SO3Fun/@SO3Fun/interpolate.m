@@ -9,8 +9,8 @@ function [SO3F,resvec] = interpolate(ori,values,varargin)
 %  values - double
 %
 % Flags
-%  lsqr      - least squares (Matlab)
-%  lsqnonneg - non negative least squares (Matlab, fast)
+%  lsqr      - least squares (MATLAB)
+%  lsqnonneg - non negative least squares (MATLAB, fast)
 %  lsqlin    - interior point non negative least squares (optimization toolbox, slow)
 %  nnls      - non negative least squares (W.Whiten)
 % 

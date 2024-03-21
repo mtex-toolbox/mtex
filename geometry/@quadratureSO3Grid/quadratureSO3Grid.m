@@ -1,13 +1,17 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) quadratureSO3Grid < orientation
-% Compute nodes and weights for quadrature on SO(3). Therefore the
-% following quadrature rules are implemented yet:
+% Compute nodes and weights for quadrature on SO(3).
+% 
+% Description
 %
-%   'ClenshawCurtis'  - combinate the Gauss quadrature in 1st and 3rd Euler angle 
-%                       (alpha, gamma) with Clenshaw Curtis quadrature in 2nd 
-%                       Euler angle (beta)
-%   'GaussLegendre'   - combinate the Gauss quadrature in 1st and 3rd Euler angle 
-%                       (alpha, gamma) with Gauss Legendre quadrature in 2nd 
-%                       Euler angle (beta)
+% The following quadrature rules are implemented:
+%
+% * |'ClenshawCurtis'| combines the Gauss quadrature in 1st and 3rd Euler
+% angle (alpha, gamma) with Clenshaw Curtis quadrature in 2nd Euler angle
+% (beta)
+%
+% * |'GaussLegendre'| combines the Gauss quadrature in 1st and 3rd Euler
+% angle (alpha, gamma) with Gauss Legendre quadrature in 2nd  Euler angle
+% (beta)
 %
 % Syntax
 %   SO3G = quadratureSO3rid(N, 'ClenshawCurtis')

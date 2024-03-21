@@ -1,5 +1,5 @@
 function SO3F = norm(SO3VF)
-% pointwise norm of the vector field
+% point-wise norm of the vector field
 %
 % Syntax
 %   SO3F = norm(SO3VF)

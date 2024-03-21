@@ -52,7 +52,7 @@ function h = calcEaring(indata,sS,prop,varargin)
 isFlag = check_option(varargin,'discrete');
 
 if isa(indata,'EBSD')
-  %% If using ebsd data, compute the weights using the ODF components or intensity
+  % If using ebsd data, compute the weights using the ODF components or intensity
   disp('---')
   disp('Calculating the ODF from ebsd data...');
   % compute an optimal kernel
@@ -67,7 +67,7 @@ if isa(indata,'EBSD')
     disp('---')
     disp('Calculating MTEX-default ODF components and volume fractions...');
     [ori, vol] = calcComponents(odf,'maxIter',1000,'exact');
-    % normalise the volume fraction
+    % normalize the volume fraction
     wt = vol./sum(vol);
     
   elseif isFlag == true
@@ -102,7 +102,7 @@ if isa(indata,'EBSD')
   disp('---')
   
 elseif isa(indata,'grain2d')
-  %% If using grain data, compute the weights using the grain area
+  % If using grain data, compute the weights using the grain area
   ori = indata.meanOrientation;
   wt = indata.area./sum(indata.area);
   

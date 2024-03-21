@@ -72,13 +72,41 @@
 % <GrainReconstruction.html grain reconstruction> for an illustration of
 % the new method.
 %
+% *Vector Fields in Orientation Space*
+% Functionality of <SO3VectorField.html Vector Fields in Orientation Space>
+% has been greatly extentend. It includes now functions to compute
+% <SO3VectorField.div.html the divergence |div(vF)|>,
+% <SO3VectorField.curl.html the curl |curl(vF)|> and the
+% <SO3VectorFieldHarmonic.antiderivative.html antiderivative> of a vector
+% field |vF| on orientation space. This new functionality can be used to
+% efficiently model texture evolution by numericaly solving the continuity
+% equation as it is demonstrated for <SingleSlipModel.html the single slip
+% model>. Crucial for this approach is the new command <doEulerStep.html
+% |doEulerStep|> which updates an ODF or a list of orientation according to
+% a vector field an orientation space which may be given e.g. by the
+% Taylor model.
+% 
+%
 % *Lankford Parameter*
-% * <Lankford.html Lankford>
+% The command <orientation.calcLankford.html |calcLankford|> allows for the
+% computation of the Lankford or R-value. A full discussion of the
+% corresponding analysis can be found <Lankford.html here>.
+%
+% *Transformation ODF*
+% The command <orientation.variants.html |variants(p2c,odfParent)|>
+% takes now as a second input a parent ODF and return the child ODF under
+% the assumption that all variants appear with the same frequency. This is
+% in more detail explained in the section <TransformationTexture.html
+% Transformation Texture>.
 %
 % *Numerous minor improvements and bug fixes*
-% * h5 interface
-% * new function <SO3Fun.cor.html |cor(odf1,odf2>|> to compute the
-% correlation between two ODF
+%
+% * new command <SO3Fun.transformReferenceFrame
+% |transformReferenceFrame(odf,csNew)|> that allows to switch between
+% different setups of the same symmetry, i.e. between 121 and 112.
+% * improved h5 interface
+% * new function <SO3Fun.cor.html |cor(odf1,odf2)|> to compute the
+% correlation between two ODFs.
 % 
 %% MTEX 5.10.1 9/2023
 % 
@@ -106,7 +134,7 @@
 % stress, strain and elasticity tensors.
 % * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
 % method for data cleaning in EBSD maps.
-% * Pseudesymmetries like now natively supported using the syntax
+% * Pseudesymmetries like 532 are now natively supported using the syntax
 % |crystalSymmetry('532')|
 % * |symmetrise(t,'iso')| return the isotropic portion of a tensor
 % * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes

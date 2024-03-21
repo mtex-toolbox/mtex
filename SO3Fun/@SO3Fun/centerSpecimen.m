@@ -1,15 +1,15 @@
 function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 % rotates an odf with specimen symmetry into its symmetry axes
 %
-% centerSpecimen(odf,center) trys to find the normal vectors of orthorhombic
+% centerSpecimen(odf,center) tries to find the normal vectors of orthorhombic
 % symmetry for the x mirror and y mirror plane and calculates an rotation needed
 % to rotate the odf back into these mirror planes.
-% the routine starts with an lookaround grid for a given center (default
+% the routine starts with a look around grid for a given center (default
 % xvector) to find a starting value for newton iteration.
 %
 % Input
 %  odf - @SO3Fun
-%  v0  - @vector3d initial gues for a symmetry axis (default xvector)
+%  v0  - @vector3d initial guess for a symmetry axis (default xvector)
 %
 % Output
 %  odf    - rotated @SO3Fun
@@ -20,9 +20,9 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %  SO3Grid    - a @SO3Grid where the @SO3Fun is evaluated on
 %  delta      - specifies the opening angle for the initial search grid around input center
 %  resolution - specifies the resolution for the initial search grid
-%  silent     - dont verbose number of initial axes and the newton iteration
+%  silent     - don't verbose number of initial axes and the newton iteration
 %
-%  fourier    - use fourier coefficents as objective function
+%  Fourier    - use Fourier coefficients as objective function
 %
 % Example:
 % 
@@ -42,7 +42,7 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %   h = [Miller(0,0,1,CS),Miller(0,1,1,CS),Miller(1,1,1,CS)];
 %   plotPDF(odf,h,'antipodal','complete');
 %
-%   %and now retrive the rotation back
+%   %and now retrieve the rotation back
 %   [odr,r,v1,v2] = centerSpecimen(odf);
 %   plotPDF(odr,h,'antipodal')
 %

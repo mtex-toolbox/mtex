@@ -1,8 +1,8 @@
 classdef velocityGradientTensor < tensor
   %
   %
-  % since solids are no compressible the all velovity gradient tensors have
-  % traec 0
+  % since solids are no compressible the all velocity gradient tensors have
+  % trace 0
   
   methods
     function L = velocityGradientTensor(varargin)
