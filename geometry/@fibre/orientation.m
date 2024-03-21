@@ -14,7 +14,7 @@ function [ori,omega] = orientation(f,varargin)
 %  points - number of points that are generated
 %
 
-[ori,omega] = rotation(f,varargin{:});
+[ori,omega] = rotation(f,'points',2000,varargin{:});
 
 if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
   ori = orientation(ori,f.CS,f.SS);

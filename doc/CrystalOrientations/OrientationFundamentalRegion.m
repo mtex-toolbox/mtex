@@ -13,7 +13,7 @@
 % origin represent the rotational angle and the vector represents the
 % rotational axis. In MTEX this can be represented as follows
 
-% triclic crystal symmetry
+% triclinic crystal symmetry
 cs = crystalSymmetry('triclinic')
 
 % the corresponding orientation space
@@ -56,7 +56,7 @@ hold off
 %% Crystal Symmetries
 % In case of crystal symmetries the orientation space can divided into as
 % many equivalent segments as the symmetry group has elements. E.g. in the
-% case of orthorombic symmetry the orientation space is subdivided into four
+% case of orthorhombic symmetry the orientation space is subdivided into four
 % equal parts, the central one looking like
 
 cs = crystalSymmetry('222')
@@ -112,7 +112,7 @@ hold off
 
 %% Fundamental regions of misorientations
 %
-% Misorientations are characterised by two crystal symmetries. A
+% Misorientations are characterized by two crystal symmetries. A
 % corresponding fundamental region is defined by
 
 oR = fundamentalRegion(ebsd('Fo').CS,ebsd('En').CS);
