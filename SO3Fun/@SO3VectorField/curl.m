@@ -17,9 +17,14 @@ function c = curl(SO3VF,varargin)
 % SO3VectorFieldHarmonic/curl SO3VectorField/div SO3Fun/grad
 
 
-% if strcmp(SO3VF.tangentSpace,'right')
+% if SO3VF.tangentSpace.isRight
 %   SO3VFl = left(SO3VF);
-%   c = curl(SO3VFl,varargin{:},'right');
+%   c = curl(SO3VFl,varargin{:});
+%   if nargin == 1 || ~isa(varargin{1},'rotation')  
+%     c = right(c);
+%   else
+%     c = right(c,varargin{1});
+%   end
 %   return
 % end
 

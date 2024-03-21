@@ -53,7 +53,7 @@ vR = SO3TangentVector(vector3d(1,2,3),SO3TangentSpace.rightVector)
 % is necessary.
 
 vR = right(vL,R)
-vL = left(vL,R)
+vL = left(vR,R)
 
 %%
 % We can do the same manually by
@@ -98,8 +98,8 @@ GR.eval(rot)
 %%
 % Again we are able to change the tangent space
 
-left(GL)
-right(GR)
+left(GR)
+right(GL)
 
 %%
 % Note that the symmetries do not work in the same way as for @SO3Fun's.

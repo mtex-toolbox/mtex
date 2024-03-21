@@ -26,9 +26,8 @@ classdef SO3TangentSpace < int32
       out = abs(this)==2;
     end
 
-
-    function toLeft(this,tV,ori_ref)
-
+    function tS = uminus(tS)
+      tS = SO3TangentSpace(-double(tS));
     end
         
   end
@@ -37,6 +36,11 @@ classdef SO3TangentSpace < int32
 
     function tS = extract(varargin)
       
+      % allow SO3TangentSpace.extract(varargin)
+      if length(varargin)==1 && isa(varargin{1},'cell')
+        varargin = varargin{:};
+      end
+
       tS = getClass(varargin,'SO3TangentSpace');
 
       if ~isempty(tS), return; end
