@@ -6,9 +6,9 @@
 %
 % The left tangent space is defined by
 %
-% $$ T_R SO(3) = \{ S \cdot R | S=-S^T  \} = \mathfrac{so}(3) \cdot R, $$
+% $$ T_R SO(3) = \{ S \cdot R | S=-S^T  \} = \mathfrak{so}(3) \cdot R, $$
 %
-% where $\mathfrac{so}(3)$ describes the set of all skew symmetric matices,
+% where $\mathfrak{so}(3)$ describes the set of all skew symmetric matices,
 % i.e. @spinTensor's.
 %
 
@@ -20,14 +20,15 @@ matrix(S1)*matrix(R)
 %%
 % Analogously the right tangent space is defined by
 %
-% $$ T_R SO(3) = \{ R \cdot S | S=-S^T  \} = R \cdot \mathfrac{so}(3). $$
+% $$ T_R SO(3) = \{ R \cdot S | S=-S^T  \} = R \cdot \mathfrak{so}(3). $$
 
 % right tangent vector
 S2 = spinTensor(vector3d(0,sin(20*degree),cos(20*degree)))
 matrix(R)*matrix(S2)
 
 %%
-% Note that this spaces are the same.
+% Note that the left and right tangent spaces describes the same in 
+% different notations.
 %
 % In MTEX a tangent vectors is defined by its @spinTensor and an attribute 
 % which describes whether it is right or left.
@@ -48,7 +49,7 @@ vR = SO3TangentVector(vector3d(1,2,3),'right')
 % Hence they describe different tangent vectors.
 %
 % We can also transform left tangent vectors to right tangent vectors and 
-% otherwise. Therefore the rotation in which the tangent space is located
+% vice versa. Therefore the rotation in which the tangent space is located
 % is necessary.
 
 vR = right(vL,R)
@@ -84,7 +85,7 @@ inv(rot).*F.grad(rot)
 F.grad(rot,'right')
 
 %%
-% The gradient can also computed as function, i.e. as @SO3VectorField,
+% The gradient can also be computed as function, i.e. as @SO3VectorField,
 % which internal is an 3 dimensional @SO3Fun.
 %
 
@@ -107,13 +108,9 @@ right(GR)
 % 
 % In case of right tangent space the evaluation in symmetric orientations
 % only make sense w.r.t. the left symmetry.
-% In case of left tangent space otherwise.
+% In case of left tangent space vice versa.
 
 ori = orientation.rand(GL.CS,GL.SS)
 GR.eval(ori.symmetrise)
 GL.eval(ori.symmetrise)
-
-
-
-
 

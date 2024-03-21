@@ -132,3 +132,23 @@ plot(SO3VF1);
 % or the 3D plot of the rotation group with the vectors on itself
 clf;
 quiver3(SO3VF2);
+
+%% Differential operators (Gradient, Divergence, Curl)
+%
+% The gradient of an @SO3Fun in some specific rotation is an element of 
+% the tangent space, i.e. an @SO3TangentVector. Hence 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
