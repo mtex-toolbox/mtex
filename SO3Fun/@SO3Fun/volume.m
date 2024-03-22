@@ -22,6 +22,8 @@ function v = volume(SO3F,center,radius,varargin)
 % See also
 % SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
 
+% TODO: direct computation for SO3FunHarmonic
+
 if isa(center,'fibre')
   
   v = fibreVolume(SO3F,center.h,center.r,radius,varargin{:});  
@@ -39,9 +41,12 @@ else
       'maxAngle',radius,'center',center,'resolution',res,varargin{:});
   end
 
+  % full grid size without symmetries: 
+  ntheta = fix(round(2*pi/res+1)/2);
+  theta =  (0.5:ntheta-0.5)*res;
+  points = sum(max(round(sin(theta)*2*ntheta),1)) * round(2*pi/res);
   % estimate volume portion of odf space
-  reference = 9897129 * 96 / numProper(SO3F.CS) / numProper(SO3F.SS);
-  f = min(1,length(S3G) * (res / 0.25 / degree)^3 / reference);
+  f = min( 1 , length(S3G) / points ) / numProper(SO3F.CS) / numProper(SO3F.SS);
   
   % eval odf
   if f == 0

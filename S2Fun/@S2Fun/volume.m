@@ -20,6 +20,8 @@ function v = volume(sF,center,radius,varargin)
 % See also
 % S2Fun/sum S2Fun/mean
 
+% TODO: direct computation for S2FunHarmonic
+
 % get resolution
 res = get_option(varargin,'resolution',min(0.1*degree,radius/200),'double');
 
