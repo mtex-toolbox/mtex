@@ -1,19 +1,19 @@
 %% Crystal Symmetries
 % 
-% Crystal symmetries are a sets of rotations and mirroring operations that
-% leave the lattice of a crystal invariant. They form so called groups
+% Crystal symmetries are sets of rotations and mirroring operations that
+% leave the lattice of a crystal invariant. They form the so called "groups"
 % since the concatenation of two symmetry operations is again a symmetry
 % operation. 
 %
-% Depending which symmetry operations are coonsidered the symmetry groups
+% Depending which symmetry operations are coonsidered, the symmetry groups
 % are categorized either into 230 space groups, 32 point groups or 11 Laue
 % groups.
 % 
-%% Purely enatiomorphic (rotational) symmetry groups
+%% Purely enantiomorphic (rotational) symmetry groups
 %
 % There exist exactly 11 symmetry groups consisting of proper rotations
 % only, namely, 1, 2, 222, 3, 23, 4, 422, 6, 622, 32, 432. These are the so
-% called enatiomorphic groups. All the groups can be defined in MTEX either
+% called enantiomorphic groups. All the groups can be defined in MTEX either
 % by its international notation
 
 cs = crystalSymmetry('432')
@@ -47,8 +47,8 @@ cs.Laue
 %
 % The Laue groups have always exactly twice as many symmetry elements as
 % the corresponding enantiomorphic group. As the following example
-% illustrates each symmetry element from the enantiomorphic group occurs
-% two times - with and without inversion - in the corresponding Laue group.
+% illustrates, each symmetry element from the enantiomorphic group occurs
+% twice - with and without inversion - in the corresponding Laue group.
 
 cs = crystalSymmetry('222');
 rotation(cs)
@@ -57,7 +57,7 @@ rotation(cs.Laue)
 
 %% Point groups
 %
-% While the enantiomorphic groups contain exclusivly proper rotations and
+% While the enantiomorphic groups contain exclusively proper rotations and
 % Laue groups contain a proper and an improper version of each rotation,
 % there are also symmetry groups with improper rotations that do not
 % contain the inversion, e.g. the point group mm2
