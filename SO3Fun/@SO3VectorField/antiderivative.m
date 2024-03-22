@@ -19,7 +19,7 @@ function f = antiderivative(SO3VF,varargin)
 % check whether the vector field is conservative
 if ~check_option(varargin,'conservative')
   c = SO3VF.curl;
-  n = sqrt(sum(norm(c.SO3F).^2));
+  n = norm(norm(c));
   if n>1e-3
     error(['The vector field is not conservative (not the gradient of some SO3Fun),' ...
            ' since the curl = ',n,' is not vanishing.'])

@@ -141,14 +141,14 @@ quiver3(SO3VF2);
 G = SO3F.grad
 
 %%
-% We can evaluate this to get the gradient of |SO3F| at some specifiv
+% We can evaluate this to get the gradient of |SO3F| at some specific
 % rotations or we can directly compute this @SO3TangentVector
 G.eval(rot)
 SO3F.grad(rot)
 
 %%
 % Now one can perform an minimization by gradient descent method which 
-% internally uses the gradient.
+% internally computes the gradient.
 
 plot(SO3F,'phi2',(0:3)*30*degree)
 rot = orientation.byEuler(300*degree,125*degree,30*degree);
@@ -168,11 +168,11 @@ annotate(rot)
 
 % curl of SO3VF1
 c1 = curl(SO3VF1)
-sqrt(sum(norm(c1.SO3F).^2))
+norm(norm(c1))
 
 % curl of G
 c2 = curl(G)
-sqrt(sum(norm(c2.SO3F).^2))
+norm(norm(c2))
 
 %%
 % Hence |SO3VF1| is not conservativ, but |G| is conservativ.
