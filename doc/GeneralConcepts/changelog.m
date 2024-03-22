@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 6.0.beta.1 9/2023
+%% MTEX 6.0.beta.4 4/2024
 %
 % *Pseudo 3d EBSD and Grain maps*
 %
@@ -51,7 +51,7 @@
 % slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
 % more information.
 %
-%% MTEX 5.11.0 2/2023
+%% MTEX 5.11.0 3/2024
 % 
 % MTEX 5.11 will be the last release before MTEX 6.0. It significantly
 % improves grain reconstruction from 2d EBSD data.
@@ -86,7 +86,6 @@
 % a vector field an orientation space which may be given e.g. by the
 % Taylor model.
 % 
-%
 % *Lankford Parameter*
 % The command <orientation.calcLankford.html |calcLankford|> allows for the
 % computation of the Lankford or R-value. A full discussion of the
@@ -99,6 +98,13 @@
 % in more detail explained in the section <TransformationTexture.html
 % Transformation Texture>.
 %
+% *Inner Planes in Crystal Shapes*
+% Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
+% <crystalShape.plot.html |plot(cS,sS)|> and <vector3d.arrow3d.html
+% |arrow3d|> it is now possible to plot internal lattice planes, directions
+% or slip systems into the crystal shape. This is explained in more detail
+% at <CrystalShapes.html Crystal Shapes>.
+%
 % *Numerous minor improvements and bug fixes*
 %
 % * new command <SO3Fun.transformReferenceFrame
@@ -107,6 +113,16 @@
 % * improved h5 interface
 % * new function <SO3Fun.cor.html |cor(odf1,odf2)|> to compute the
 % correlation between two ODFs.
+% * new function <vector3d.lineIntersect.html |lineIntersect|> to compute
+% the intersection between a line and a plane.
+% * new class <S1FunHarmonics.html |S1Fun|> to represent directional
+% properties in the plane.
+% * new function <S2Fun.volume.html |volume(S2F,center,radi)|> to compute
+% the volume of a spherical function within a ball.
+% * replaces |CLim| by <setColorRange.html |setColorRange|>
+% * <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|>
+% computes also the variant and packet ids
+% * many bug fixes
 % 
 %% MTEX 5.10.1 9/2023
 % 
@@ -114,7 +130,7 @@
 %
 %% MTEX 5.10.0 5/2023
 %
-% *Weigthed Burgers Vector*
+% *Weighted Burgers Vector*
 %
 % With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
 % it is now possible to compute the weighted burgers vector both, using the
