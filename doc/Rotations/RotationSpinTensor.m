@@ -144,4 +144,5 @@ exp(v,ori_ref,SO3TangentSpace.rightVector)
 % in specimen coordinates
 
 v = log(ori,ori_ref,SO3TangentSpace.leftVector)
+S = log(ori,ori_ref,SO3TangentSpace.leftSpinTensor)
 exp(v,ori_ref,SO3TangentSpace.leftVector)

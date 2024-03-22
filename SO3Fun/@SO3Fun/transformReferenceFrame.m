@@ -16,6 +16,7 @@ function SO3F = transformReferenceFrame(SO3F,cs)
 % ori = orientation.rand(cs1)
 % odf1 = SO3FunHarmonic(unimodalODF(ori))
 % %odf1 = BinghamODF([1 0 0 0],ori)
+% %odf1 = SO3FunHandle(@(ori) odf1.eval(ori),odf1.CS)
 % odf2 = transformReferenceFrame(odf1,cs2)
 %
 % plotPDF(odf1,Miller({1,0,0},{0,0,1},{0,1,0},cs1))
