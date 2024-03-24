@@ -24,7 +24,7 @@ if check_option(varargin,'check')
 end
 
 % Use right sided routine
-if SO3VF.tangentSpace.isRight
+if SO3VF.internTangentSpace.isRight
   d = div_right(SO3VF,varargin{:});
   return
 end

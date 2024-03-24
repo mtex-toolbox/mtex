@@ -11,13 +11,13 @@ function SO3VF = left(SO3VF,varargin)
 %  SO3VF - @SO3VectorFieldHarmonic  (the evaluation directly gives left-sided tangent vectors)
 %
 
-if SO3VF.tangentSpace.isRight
+if SO3VF.innerTangentSpace.isRight
   
   % check for conservative vector field and compute gradient of antiderivative
   c = SO3VF.curl;
   n = sqrt(sum(norm(c.SO3F).^2));
   if n<1e-3
-    SO3VF = SO3VF.antiderivative('conservative').grad(-SO3VF.tangentSpace);
+    SO3VF = SO3VF.antiderivative('conservative').grad(-SO3VF.innerTangentSpace);
     return
   end
 
