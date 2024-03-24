@@ -57,13 +57,16 @@
 % improves grain reconstruction from 2d EBSD data.
 %
 % *Much Faster Grain Reconstruction*
+%
 % Thanks to using the <https://github.com/JCash/voronoi jc_voronoi> as
 % tessellation method and some addition speedups grain reconstruction is
 % now more than 10 times faster then previously. The method used for
-% Voronoi tessellation is now specified in |mtex_settings| by the field
-% |'VoronoiMethod'|.
+% Voronoi tessellation is now specified in |mtex_settings| by the option
+% |'VoronoiMethod'|. You may want to set this option to |'qhull'| if you
+% experience problems with the |'jcvoronoi'| engine.
 %
 % *Much Better Grain Reconstruction*
+%
 % With MTEX 5.11 MTEX uses <https://en.wikipedia.org/wiki/Alpha_shape alpha
 % shapes> to determine the shape of the grains in the presence of large
 % unindexed regions. Those alpha shapes are controlled by a single
@@ -73,25 +76,28 @@
 % the new method.
 %
 % *Vector Fields in Orientation Space*
-% Functionality of <SO3VectorField.html Vector Fields in Orientation Space>
-% has been greatly extentend. It includes now functions to compute
+%
+% Functionality of <SO3FunVectorField.html Vector Fields in Orientation
+% Space> has been greatly extended. It includes now functions to compute
 % <SO3VectorField.div.html the divergence |div(vF)|>,
 % <SO3VectorField.curl.html the curl |curl(vF)|> and the
 % <SO3VectorFieldHarmonic.antiderivative.html antiderivative> of a vector
 % field |vF| on orientation space. This new functionality can be used to
-% efficiently model texture evolution by numericaly solving the continuity
+% efficiently model texture evolution by numerically solving the continuity
 % equation as it is demonstrated for <SingleSlipModel.html the single slip
 % model>. Crucial for this approach is the new command <doEulerStep.html
 % |doEulerStep|> which updates an ODF or a list of orientation according to
-% a vector field an orientation space which may be given e.g. by the
-% Taylor model.
+% a vector field an orientation space which may be given e.g. by the Taylor
+% model.
 % 
 % *Lankford Parameter*
+%
 % The command <orientation.calcLankford.html |calcLankford|> allows for the
 % computation of the Lankford or R-value. A full discussion of the
 % corresponding analysis can be found <Lankford.html here>.
 %
 % *Transformation ODF*
+%
 % The command <orientation.variants.html |variants(p2c,odfParent)|>
 % takes now as a second input a parent ODF and return the child ODF under
 % the assumption that all variants appear with the same frequency. This is
@@ -99,6 +105,7 @@
 % Transformation Texture>.
 %
 % *Inner Planes in Crystal Shapes*
+%
 % Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
 % <crystalShape.plot.html |plot(cS,sS)|> and <vector3d.arrow3d.html
 % |arrow3d|> it is now possible to plot internal lattice planes, directions
@@ -117,7 +124,7 @@
 % the intersection between a line and a plane.
 % * new class <S1FunHarmonics.html |S1Fun|> to represent directional
 % properties in the plane.
-% * new function <S2Fun.volume.html |volume(S2F,center,radi)|> to compute
+% * new function <S2Fun.volume.html |volume(S2F,center,radii)|> to compute
 % the volume of a spherical function within a ball.
 % * replaces |CLim| by <setColorRange.html |setColorRange|>
 % * <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|>
@@ -171,7 +178,7 @@
 % functions include
 %
 % * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
-% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
+% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habit plane traces
 % from families of grains or EBSD data.
 % * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
 % grain boundary normal distribution from a list of habit plane traces and
@@ -321,7 +328,7 @@
 %
 % *Low Angle Boundaries*
 %
-% With MTEX 5.5 we make low angle grain boundary analsis much more straight
+% With MTEX 5.5 we make low angle grain boundary analysis much more straight
 % forward by allowing to pass to the command <EBSD.calcGrains.html
 % |calcGrains|> two thresholds, i.e.,
 %
