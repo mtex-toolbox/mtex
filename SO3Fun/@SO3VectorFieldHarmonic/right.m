@@ -1,5 +1,5 @@
 function SO3VF = right(SO3VF,varargin)
-% change the representation of the tangent vectors to right sided
+% change the inner representation of the tangent vectors to right sided
 %
 % Syntax
 %   SO3VF = right(SO3VF)
@@ -11,13 +11,13 @@ function SO3VF = right(SO3VF,varargin)
 %  SO3VF - @SO3VectorFieldHarmonic  (the evaluation directly gives right-sided tangent vectors)
 %
 
-if SO3VF.tangentSpace.isRight, return, end
+if SO3VF.innerTangentSpace.isRight, return, end
 
 % check for conservative vector field and compute gradient of antiderivative
 c = SO3VF.curl;
 n = sqrt(sum(norm(c.SO3F).^2));
 if n<1e-3
-  SO3VF = SO3VF.antiderivative('conservative').grad(-SO3VF.tangentSpace);
+  SO3VF = SO3VF.antiderivative('conservative').grad(-SO3VF.innerTangentSpace);
   return
 end
 

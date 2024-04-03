@@ -8,15 +8,15 @@ set(mtexFig.children,'units','pixel');
 mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
   '-not','tag','Colorbar','-and','-not','tag','legend'));
 
-% this seems to be necesarry to get tight inset right
+% this seems to be necessary to get tight inset right
 if ~check_option(varargin,'keepAxisSize') 
   updateLayout(mtexFig);
 end
 
-% compute surounding box of each axis in pixel
+% compute surrounding box of each axis in pixel
 [mtexFig.tightInset,mtexFig.figTightInset] = calcTightInset(mtexFig);
 
-% determine prelimary figure size
+% determine preliminary figure size
 if check_option(varargin,'position')
   
   position = get_option(varargin,'position');
@@ -46,9 +46,10 @@ elseif check_option(varargin,'figSize') || mtexFig.figSizeFactor > 0
   figSize = figSize .* fac;
   
   n = numel(mtexFig.children);
-  if isappdata(mtexFig.children(1),'sphericalPlot') ...
-      || n > 1
+  if isappdata(mtexFig.children(1),'sphericalPlot') 
     figSize = figSize .* min([1 1]./fac,0.75*[n/(1+(n>4)), (1 + (n>4))]);
+  elseif isappdata(mtexFig.children(1),'mapPlot')
+    figSize = figSize .* min([1 1]./fac,[mtexFig.nrows mtexFig.ncols]);
   end
  
   % try to compensate tight inset

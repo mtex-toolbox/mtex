@@ -23,13 +23,15 @@ if check_option(varargin,'check')
   return
 end
 
-Gx = SO3VF.x.grad(SO3VF.tangentSpace);
-Gy = SO3VF.y.grad(SO3VF.tangentSpace);
-Gz = SO3VF.z.grad(SO3VF.tangentSpace);
+Gx = SO3VF.x.grad(SO3VF.internTangentSpace);
+Gy = SO3VF.y.grad(SO3VF.internTangentSpace);
+Gz = SO3VF.z.grad(SO3VF.internTangentSpace);
 
-c = SO3VectorFieldHarmonic([Gy.z-Gz.y;Gz.x-Gx.z;Gx.y-Gy.x],SO3VF.CS,SO3VF.SS,SO3VF.tangentSpace);
+c = SO3VectorFieldHarmonic([Gy.z-Gz.y;Gz.x-Gx.z;Gx.y-Gy.x],...
+  SO3VF.CS,SO3VF.SS,SO3VF.internTangentSpace);
+c.tangentSpace = SO3VF.tangentSpace;
 
-if SO3VF.tangentSpace.isRight
+if SO3VF.internTangentSpace.isRight
   c = c + SO3VF;
 else
   c = c - SO3VF;

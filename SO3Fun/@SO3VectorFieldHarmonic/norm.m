@@ -16,6 +16,7 @@ if SO3VF.bandwidth == 0
   return
 end
 
-SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS,'bandwidth',bw);
+SO3F = SO3FunHarmonic.quadrature(...
+  @(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS,'bandwidth',SO3VF.bandwidth);
 
 end
