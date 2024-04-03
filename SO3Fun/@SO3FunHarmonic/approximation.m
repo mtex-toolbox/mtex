@@ -12,7 +12,8 @@ function SO3F = approximation(nodes, y, varargin)
 %
 % Options
 %  constantWeights  - uses constant normalized weights (for example if the nodes are constructed by equispacedSO3Grid)
-%  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function
+%  weights          - weight w_n for the nodes (default: Voronoi weights)
+%  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
 %  tol              - tolerance for lsqr
 %  maxit            - maximum number of iterations for lsqr
 %  weights          - weight w_n for the nodes (default: Voronoi weights)
@@ -53,14 +54,17 @@ y = reshape(yy, [length(nodes) s(2:end)]);
 tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 50);
 
-% TODO: What bandwidth?
+% Choose low bandwidth and oversample
+oversamplingFactor = 2;
+numFreq = length(nodes)*numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1)/2;
 bw = get_option(varargin, 'bandwidth', min(dim2deg(length(nodes)*2),getMTEXpref('maxSO3Bandwidth')));
 
 % extract weights
 W = get_option(varargin, 'weights');
-if isempty(W)
+if check_option(varargin,'constantWeights')
+  W = 1/length(nodes);
+elseif isempty(W)
   W = calcVoronoiVolume(nodes);
-%   W = 1/length(nodes);
 else
   if length(W)>1, W = accumarray(ind,W); end
 end
@@ -114,5 +118,4 @@ end
 % precomputations before the lsqr-Method.
 
 % TODO: Try Cross-Vallidation, if there are to much points 
-% TODO: Possibly use the Round2ClenshawCurtis-function (see quadrature) or delete it
 
