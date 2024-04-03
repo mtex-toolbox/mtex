@@ -16,7 +16,8 @@ function SO3F = approximation(nodes, y, varargin)
 %  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
 %  tol              - tolerance for lsqr
 %  maxit            - maximum number of iterations for lsqr
-%  weights          - weight w_n for the nodes (default: Voronoi weights)
+%  regularization   - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F (there is given a regularization constant)
+%  SobolevIndex     - for regularization (default = 1)
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
@@ -57,7 +58,16 @@ maxit = get_option(varargin, 'maxit', 50);
 % Choose low bandwidth and oversample
 oversamplingFactor = 2;
 numFreq = length(nodes)*numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1)/2;
-bw = get_option(varargin, 'bandwidth', min(dim2deg(length(nodes)*2),getMTEXpref('maxSO3Bandwidth')));
+bw = get_option(varargin, 'bandwidth', min(dim2deg(round(numFreq/oversamplingFactor)),getMTEXpref('maxSO3Bandwidth')));
+regularize = 0; lambda=0; SobolevIndex=0;
+% Choose higher bandwidth and undersample. Now we need to do regularization
+% TODO: Maybe decide dependent on bw whether u want to undersample or not
+if check_option(varargin,'regularization')
+  regularize = 1;
+  lambda = get_option(varargin,'regularization',0.1);
+  SobolevIndex = get_option(varargin,'SobolevIndex',1);
+  bw = get_option(varargin, 'bandwidth', min(dim2deg(round(numFreq*oversamplingFactor)),getMTEXpref('maxSO3Bandwidth')));
+end
 
 % extract weights
 W = get_option(varargin, 'weights');
@@ -71,6 +81,9 @@ end
 W = sqrt(W(:));
 
 b = W.*y;
+if regularize
+  b = [b;zeros(deg2dim(bw+1),size(b,2))];
+end
 
 % create plan
 % SO3FunHarmonic([1;1]).eval(nodes,'createPlan','nfsoft')
@@ -79,7 +92,7 @@ b = W.*y;
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:, index),flag] = lsqr( ...
-    @(x, transp_flag) afun(transp_flag, x, nodes, W,bw), b(:, index), tol, maxit);
+    @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex), b(:, index), tol, maxit);
 end
 
 % kill plan
@@ -93,14 +106,23 @@ end
 
 
 
-function y = afun(transp_flag, x, nodes, W,bw)
+function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex)
 
 if strcmp(transp_flag, 'transp')
-
+  
+  if regularize
+    u = x(length(nodes)+1:end);
+    x = x(1:length(nodes));
+  end
   x = x .* W;
   %   F = SO3FunHarmonic.quadrature(nodes,x,'keepPlan','nfsoft','bandwidth',bw);
   F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
   y = F.fhat;
+  if regularize
+    F = SO3FunHarmonic(u);
+    SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);
+    y = y+SO3F.fhat;
+  end
 
 elseif strcmp(transp_flag, 'notransp')
 
@@ -109,6 +131,10 @@ elseif strcmp(transp_flag, 'notransp')
   %   y = F.eval(nodes,'keepPlan','nfsoft');
   y = F.eval(nodes);
   y = y .* W;
+  if regularize
+    SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);
+    y = [y;SO3F.fhat];
+  end
 
 end
 
