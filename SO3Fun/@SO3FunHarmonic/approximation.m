@@ -21,20 +21,22 @@ function SO3F = approximation(nodes, y, varargin)
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
 % SO3VectorFieldHarmonic/approximation
 
+
+nodes = nodes(:);
+y = reshape(y,length(nodes),[]);
+
 if isa(nodes,'orientation')
   SRight = nodes.CS; SLeft = nodes.SS;
   if nodes.antipodal
     nodes.antipodal = 0;
+    nodes = [nodes(:);inv(nodes)];
+    y = [y;y];
     varargin{end+1} = 'antipodal';
   end
 else
   [SRight,SLeft] = extractSym(varargin);
   nodes = orientation(nodes,SRight,SLeft);
 end
-
-%
-nodes = nodes(:);
-y = reshape(y,length(nodes),[]);
 
 % make points unique
 s = size(y);
