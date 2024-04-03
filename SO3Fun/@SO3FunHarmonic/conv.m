@@ -1,7 +1,7 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
 % convolution of a rotational function with a rotational or spherical function
 %
-% 1. *Convolution of two rotatinal functions*
+% 1. *Convolution of two rotational functions*
 %
 % If there are two |SO3Fun| $f \colon {}_{S_f^L } \backslash SO(3)
 % /_{S_f^R} \to \mathbb{C}$ where $S_f^L$ is the left symmetry and $S_f^R$ is
@@ -20,7 +20,7 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % is used as default. The convolution of matrices of SO3Functions with
 % matrices of SO3Functions works elementwise.
 % 
-% 2. *Convolution of a rotational function with a spherial function*
+% 2. *Convolution of a rotational function with a spherical function*
 %
 % The convolution of an |SO3Fun|  $f: {}_{S_f^L} \backslash SO(3) /_{S_f^R}
 % \to \mathbb{C}$ with an |S2Fun| $h \colon \mathbb S^2 /_{S_h} \to \mathbb C$
