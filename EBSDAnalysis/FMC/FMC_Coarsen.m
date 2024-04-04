@@ -47,9 +47,9 @@ alphaSumV = full(fmc.alpha*(sum(fmc.W,2)-diag(fmc.W)));
 % if s == 1 sort by weights
 % else sort by size
 if fmc.sLevel == 1
-  [tmp,iorder] = sort(sum(fmc.W),'descend');
+  [~,iorder] = sort(sum(fmc.W),'descend');
 else
-  [tmp,iorder] = sort(fmc.v, 'descend');
+  [~,iorder] = sort(fmc.v, 'descend');
   iorder = iorder';
 end
 
