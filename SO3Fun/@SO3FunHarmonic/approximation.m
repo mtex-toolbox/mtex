@@ -55,18 +55,16 @@ y = reshape(yy, [length(nodes) s(2:end)]);
 tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 50);
 
-% Choose low bandwidth and oversample
-oversamplingFactor = 2;
-numFreq = length(nodes)*numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1)/2;
-bw = get_option(varargin, 'bandwidth', min(dim2deg(round(numFreq/oversamplingFactor)),getMTEXpref('maxSO3Bandwidth')));
+% decide bandwidth
+[bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
+
+% decide whether to use regularization
 regularize = 0; lambda=0; SobolevIndex=0;
-% Choose higher bandwidth and undersample. Now we need to do regularization
-% TODO: Maybe decide dependent on bw whether u want to undersample or not
 if check_option(varargin,'regularization')
   regularize = 1;
   lambda = get_option(varargin,'regularization',0.1);
+  if ~isnumeric(lambda), lambda = 0.1; end
   SobolevIndex = get_option(varargin,'SobolevIndex',1);
-  bw = get_option(varargin, 'bandwidth', min(dim2deg(round(numFreq*oversamplingFactor)),getMTEXpref('maxSO3Bandwidth')));
 end
 
 % extract weights
@@ -139,6 +137,52 @@ elseif strcmp(transp_flag, 'notransp')
 end
 
 end
+
+
+% We have to decide which bandwidth we are using dependent from the
+% oversampling factor and whether we are doing regularization or not.
+function [bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
+
+bw = get_option(varargin,'bandwidth');
+nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
+
+% assume there is some bandwidth given
+if ~isempty(bw)
+  % degrees of freedom in frequency space 
+  numFreq = deg2dim(bw+1)/nSym*2;
+  if check_option(varargin,'regularization')
+    oversamplingFactor = length(nodes)/numFreq+1;
+  else
+    oversamplingFactor = length(nodes)/numFreq;
+  end
+  if oversamplingFactor<2
+    warning(['The oversampling factor in the approximation process is ', ...
+      num2str(oversamplingFactor),'. This could lead to a bad approximation. ' ...
+      'You may should use a lower or no bandwidth in the option list of the ' ...
+      'approximation method.'])
+  end
+  return
+end
+
+% Choose an fixed oversampling factor of 2
+oversamplingFactor = 2;
+bw = dim2deg(round( length(nodes)*nSym/2/oversamplingFactor ));
+bwReg = dim2deg(round( length(nodes)*nSym/2/(oversamplingFactor-1) ));
+
+if check_option(varargin,'regularization')
+  bw = bwReg;
+elseif bw<25
+  bw = bwReg;
+  varargin{end+1} = 'regularization';
+end
+
+bw = min(bw,getMTEXpref('maxSO3Bandwidth'));
+
+end
+
+
+
+
 
 % Possibly split the quadrature and eval functions. Therefore do the
 % precomputations before the lsqr-Method.
