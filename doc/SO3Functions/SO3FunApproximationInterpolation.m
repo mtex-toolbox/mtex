@@ -92,7 +92,7 @@ norm(eval(SO3F2, nodes) - S.values)
 % for the data nodes $x_m$, $m=1,\dots,M$, $f(x_m)$ the target function
 % values and $g(x_m)$ our approximation evaluated in the given data nodes.
 %
-% This can be done by the |lsqr| function of Matlab, which efficiently
+% This can be done by the |lsqr| method of Matlab, which efficiently
 % seeks for roots of the derivative of the given functional (also known as
 % normal equation). In the process we compute the matrix-vector product
 % with the Fourier-matrix multible times, where the Fourier-matrix is given
