@@ -105,7 +105,7 @@ function h=nfft(d,N,M,varargin)
         n_array = varargin{1};
         n_array = double(n_array(:)');
         args_cell_n_m_flags = [num2cell(n_array),varargin{2:end}];
-      elseif length(varargin{1}) == 1 % n(1),...,n(d) (oversampled N) as scalars
+      elseif isscalar(varargin{1}) % n(1),...,n(d) (oversampled N) as scalars
         args_cell_n_m_flags = varargin;
       else
         error('Invalid parameter n');

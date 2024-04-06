@@ -199,7 +199,7 @@ end
 
 % allow change of aspect ratio only for single figures
 if ~isstruct(mtexFig)
-  mtexFig.keepAspectRatio = length(mtexFig.children)== 1; 
+  mtexFig.keepAspectRatio = isscalar(mtexFig.children); 
 end
 
 % datacursormode does not work with grains due to a Matlab bug

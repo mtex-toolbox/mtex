@@ -49,7 +49,7 @@ else
   Psi = Psi./N;
 end
 
-if check_option(varargin,{'order','degree'}) && numel(l) == 1  
+if check_option(varargin,{'order','degree'}) && isscalar(l)  
   Psi = reshape(Psi,2*l+1,2*l+1,[]);
 end
 

@@ -37,7 +37,7 @@ classdef SO3TangentSpace < int32
     function tS = extract(varargin)
       
       % allow SO3TangentSpace.extract(varargin)
-      if length(varargin)==1 && isa(varargin{1},'cell')
+      if isscalar(varargin) && isa(varargin{1},'cell')
         varargin = varargin{:};
       end
 

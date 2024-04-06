@@ -12,7 +12,7 @@ methods
   end
   
   function f = eval(S2F,v)
-    if length(S2F)==1
+    if isscalar(S2F)
        f = S2F.fun(v);
     else
       f = vector3d.zeros(numel(v),length(S2F));

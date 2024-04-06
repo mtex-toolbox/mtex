@@ -433,15 +433,15 @@ if isempty(ispatch   ),   ispatch    = Inf;                end;
 o = ones(narrows,1);
 if (size(start     ,1)==1),   start      = o * start     ;   end;
 if (size(stop      ,1)==1),   stop       = o * stop      ;   end;
-if (length(len       )==1),   len        = o * len       ;   end;
-if (length(baseangle )==1),   baseangle  = o * baseangle ;   end;
-if (length(tipangle  )==1),   tipangle   = o * tipangle  ;   end;
-if (length(wid       )==1),   wid        = o * wid       ;   end;
-if (length(page      )==1),   page       = o * page      ;   end;
+if (isscalar(len       )),   len        = o * len       ;   end;
+if (isscalar(baseangle )),   baseangle  = o * baseangle ;   end;
+if (isscalar(tipangle  )),   tipangle   = o * tipangle  ;   end;
+if (isscalar(wid       )),   wid        = o * wid       ;   end;
+if (isscalar(page      )),   page       = o * page      ;   end;
 if (size(crossdir  ,1)==1),   crossdir   = o * crossdir  ;   end;
-if (length(ends      )==1),   ends       = o * ends      ;   end;
-if (length(shorten   )==1),   shorten    = o * shorten   ;   end;
-if (length(ispatch   )==1),   ispatch    = o * ispatch   ;   end;
+if (isscalar(ends      )),   ends       = o * ends      ;   end;
+if (isscalar(shorten   )),   shorten    = o * shorten   ;   end;
+if (isscalar(ispatch   )),   ispatch    = o * ispatch   ;   end;
 ax = repmat(gca,narrows,1);   %eaj 7/16/14  ax=gca; if ~isnumeric(ax), ax=double(ax); end; ax=o*ax;
 
 % if we've got handles, get the defaults from the handles

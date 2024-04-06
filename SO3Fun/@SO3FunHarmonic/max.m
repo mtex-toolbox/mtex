@@ -49,7 +49,7 @@ if nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal
   warning('By taking the maxima of SO3Funs, the functions should be real valued.')
 end
 
-if numel(SO3F)==1
+if isscalar(SO3F)
   [values,modes] = max@SO3Fun(SO3F,varargin{:});
   return
 end

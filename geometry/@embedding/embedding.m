@@ -235,7 +235,7 @@ classdef embedding
       s = varargin(cellfun(@isnumeric,varargin));
       if isempty(s)
         s = {1,1};
-      elseif length(s) == 1
+      elseif isscalar(s)
         s = [s,1];
       end
       

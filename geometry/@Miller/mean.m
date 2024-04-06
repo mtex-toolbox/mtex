@@ -23,7 +23,7 @@ persistent plan
 if isempty(hkl)
   m.x = NaN; m.y = NaN; m.z = NaN;
   return
-elseif length(hkl) == 1
+elseif isscalar(hkl)
   return;
 elseif check_option(varargin,'noSymmetry')
   m = mean@vector3d(hkl,varargin{:});

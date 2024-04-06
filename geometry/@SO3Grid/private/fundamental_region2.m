@@ -29,7 +29,7 @@ for i = 2:length(rc_sym)
   
     if isempty(oldD)
       d = orth(rc_sym(1));
-    elseif length(oldD) == 1
+    elseif isscalar(oldD)
       d = cross(oldD,rc_sym(1));
       if norm(d)<1e-5, d = orth(oldD);end
     else

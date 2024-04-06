@@ -13,7 +13,7 @@ function [ncols,nrows] = calcPartition(mtexFig,figSize,varargin)
 if ~strcmp(mtexFig.layoutMode,'auto')
   ncols = mtexFig.ncols; nrows = mtexFig.nrows;
   return
-elseif numel(mtexFig.children) == 1
+elseif isscalar(mtexFig.children)
   ncols = 1; nrows = 1;
   return
 end

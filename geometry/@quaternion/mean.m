@@ -28,7 +28,7 @@ if isempty(q) || all(isnan(q.a(:)))
   lambda = [0 0 0 1];
   if nargout == 3, V = nan(4); end
   return
-elseif length(q) == 1
+elseif isscalar(q)
   lambda = [0 0 0 1];
   if nargout == 3
     T = qq(q,varargin{:});

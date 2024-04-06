@@ -55,7 +55,7 @@ while ~feof(fid)
     iwin = str2double(l(26:30));
     isim = str2double(l(31:35));
     fmt= regexp(l(36:end),'\s*\((\d+)f(\d+)','tokens');
-    if length(fmt) == 1
+    if isscalar(fmt)
       fmt = fmt{1};
       col = str2double(fmt(1));
       dig = str2double(fmt(2));

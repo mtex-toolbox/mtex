@@ -190,7 +190,7 @@ methods
   function s = size(SO3F,varargin)
     s = size(SO3F.fhat);
     s = s(2:end);
-    if length(s) == 1, s = [s 1]; end
+    if isscalar(s), s = [s 1]; end
     if nargin > 1, s = s(varargin{1}); end
   end
   

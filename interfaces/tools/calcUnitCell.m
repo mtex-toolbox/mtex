@@ -67,8 +67,8 @@ try
   if 100*dxy2 > dxy, dxy = dxy2;end
   
   % check for rectangular grid
-  if length(uniquetol(abs(unitCell(:,1)),1e-1)) == 1 && ...
-      length(uniquetol(abs(unitCell(:,2)),1e-1)) == 1
+  if isscalar(uniquetol(abs(unitCell(:,1)),1e-1)) && ...
+      isscalar(uniquetol(abs(unitCell(:,2)),1e-1))
 
     % more robust estimate of dxy
     dxy = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...

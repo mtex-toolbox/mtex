@@ -62,7 +62,7 @@ classdef PoleFigure < dynProp & dynOption
       
       pf.allH = ensurecell(h);
       pf.allR = ensurecell(r);
-      if numel(pf.allR) == 1, pf.allR = repmat(pf.allR,size(pf.allH));end
+      if isscalar(pf.allR), pf.allR = repmat(pf.allR,size(pf.allH));end
       if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
       pf.allI = ensurecell(intensities);
             
@@ -121,7 +121,7 @@ classdef PoleFigure < dynProp & dynOption
     
     function pf = set.intensities(pf,i)
       
-      if numel(i) == 1
+      if isscalar(i)
         for ipf = 1:numel(pf.allI)
           
           pf.allI{ipf} = i*ones(size(pf.allI{ipf}));

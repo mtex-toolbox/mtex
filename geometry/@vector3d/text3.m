@@ -26,7 +26,7 @@ if check_option(varargin,'labeled')
   end
 else
   strings = ensurecell(varargin{1});
-  if length(v)>1 && length(strings)==1
+  if length(v)>1 && isscalar(strings)
     strings = repmat(strings,length(v),1);
   end
 end

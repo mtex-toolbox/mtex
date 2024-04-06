@@ -17,7 +17,7 @@ if isnumeric(SO3F1)
   SO3F = (SO3F2.' * SO3F1.').';
   return
 end
-if isnumeric(SO3F2) && (numel(SO3F1)==1 || numel(SO3F2)==1)
+if isnumeric(SO3F2) && (isscalar(SO3F1) || isscalar(SO3F2))
   SO3F = SO3F1 .* SO3F2;
   return
 end

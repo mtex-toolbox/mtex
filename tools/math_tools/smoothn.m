@@ -518,7 +518,7 @@ if nargout<3 && ~exitflag
         'Increase MaxIter option (OPTIONS.MaxIter) or decrease TolZ (OPTIONS.TolZ) value.'])
 end
 
-if numel(z)==1, z = z{:}; end
+if isscalar(z), z = z{:}; end
 
 
 %% GCV score

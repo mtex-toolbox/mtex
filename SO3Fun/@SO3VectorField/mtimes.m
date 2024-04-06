@@ -13,7 +13,7 @@ function SO3VF = mtimes(SO3VF1,SO3VF2)
 %  SO3VF - @SO3VectorField
 %
 
-if (isnumeric(SO3VF1) && numel(SO3VF1)==1) || (isnumeric(SO3VF2) && numel(SO3VF2)==1)
+if (isnumeric(SO3VF1) && isscalar(SO3VF1)) || (isnumeric(SO3VF2) && isscalar(SO3VF2))
   SO3VF = SO3VF1 .* SO3VF2;
   return
 end

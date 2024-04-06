@@ -21,7 +21,7 @@ for k=1:numel(S1F)
   y(:,k) = plan.f;
 end
 
-if numel(S1F)==1
+if isscalar(S1F)
   y = reshape(y,sz);
 end
 

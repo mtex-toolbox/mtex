@@ -2,7 +2,7 @@ function mtexColorMap(arg1,varargin)
 % define an MTEX colormap
 
 % get input
-if length(arg1)==1 && ishandle(arg1) &&...
+if isscalar(arg1) && ishandle(arg1) &&...
     (isa(arg1,'axis') || isa(arg1,'matlab.graphics.axis.Axes') || isa(arg1,'matlab.ui.Figure'))
   ax = arg1;
   name = varargin{1};

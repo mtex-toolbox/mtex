@@ -1608,7 +1608,7 @@ function	[ctbl,par]=CPRINTF_ascii2string(par,ctbl)
 	if	par.istbl
 	if	~hastab					&&...
 		par.hasopt.Lcs
-	if	numel(par.opt.Lcs) == 1
+	if	isscalar(par.opt.Lcs)
 		mrk=par.opt.Lcs;
 		ctbl(2,coff:coff+nc-1)=CPRINTF_repmat(mrk,[1,nc]);
 	else

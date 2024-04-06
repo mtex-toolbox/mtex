@@ -41,7 +41,7 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   f = @(v) min(fun.eval(v), varargin{1});
   v = S1FunHarmonic.quadrature(f);
   
-elseif length(fun) == 1
+elseif isscalar(fun)
 
   [v, x] = steepestDescent(fun, varargin{:});
   

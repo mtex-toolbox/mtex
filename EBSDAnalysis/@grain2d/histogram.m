@@ -35,7 +35,7 @@ end
 
 % generate bins
 if ~isempty(varargin) && isnumeric(varargin{1})
-  if numel(varargin{1})==1
+  if isscalar(varargin{1})
     nbins = varargin{1}; %define nbins
   elseif numel(varargin{1})>1
     bins = varargin{1}; %define bin edges automatically

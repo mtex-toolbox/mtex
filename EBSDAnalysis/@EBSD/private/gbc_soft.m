@@ -3,7 +3,7 @@ function criterion = gbc_soft(q,CS,Dl,Dr,threshold,varargin)
 o_Dl = orientation(q(Dl),CS);
 o_Dr = orientation(q(Dr),CS);
 
-if length(threshold) == 1
+if isscalar(threshold)
   threshold(2) = 0.5 * threshold;
 end
 

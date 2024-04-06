@@ -35,7 +35,7 @@ for phId = grains.indexedPhasesId
     
     oriRef = grains.meanRotation(ebsd.grainId(thisPhase));
 
-  elseif length(rotRef) == 1
+  elseif isscalar(rotRef)
     
     oriRef = repmat(rotRef, nnz(thisPhase),1);
   

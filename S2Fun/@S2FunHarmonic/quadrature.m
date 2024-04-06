@@ -42,7 +42,7 @@ else
   values = varargin{1};
   W = get_option(varargin,'weights',1);
   
-  if length(nodes)>100000 && length(values) == length(nodes) && length(W)==1
+  if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)
     % TODO: use a regular grid here and a faster search
     n2 = equispacedS2Grid('resolution',0.5*degree);
     id = find(n2,nodes);

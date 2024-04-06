@@ -70,7 +70,7 @@ for j = 1:numel(sP)
   contours = get_option(varargin,{'contourf','contour'},contours,'double');
   
   % specify contourlines explicitely
-  if length(contours) == 1
+  if isscalar(contours)
     if check_option(varargin,'log')
       contours = logspace(log10(colorRange(1)),log10(colorRange(2)),contours);
     else      
@@ -134,7 +134,7 @@ end
 % ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
 
-if numel(unique(data)) == 1, data(1) = data(1) + 2*eps; end
+if isscalar(unique(data)), data(1) = data(1) + 2*eps; end
 
 % workauround for a MATLAB Bug
 %if mean(X(:,1)) > mean(X(:,end))

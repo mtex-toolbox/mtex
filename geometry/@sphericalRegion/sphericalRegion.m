@@ -41,7 +41,7 @@ classdef sphericalRegion
         sR.N = normalize(varargin{1});
         if nargin>=2 && isa(varargin{2},'double')
           sR.alpha = varargin{2};
-          if length(sR.alpha) == 1
+          if isscalar(sR.alpha)
             sR.alpha = repmat(sR.alpha,size(sR.N));
           end
         else
@@ -137,11 +137,11 @@ classdef sphericalRegion
         thetaMin = zeros(size(rho));
         thetaMax = pi * ones(size(rho));
         return
-      elseif length(sR.N) == 1 && sR.N == vector3d.Z && sR.alpha == 0
+      elseif isscalar(sR.N) && sR.N == vector3d.Z && sR.alpha == 0
         thetaMin = zeros(size(rho));
         thetaMax = pi/2 * ones(size(rho));
         return
-      elseif length(sR.N) == 1 && sR.N == -vector3d.Z && sR.alpha == 0
+      elseif isscalar(sR.N) && sR.N == -vector3d.Z && sR.alpha == 0
         thetaMin = pi/2 * ones(size(rho));
         thetaMax = pi * ones(size(rho));
         return

@@ -24,7 +24,7 @@ CS2 = CS2.properGroup;
 q_refSym = mtimes(mtimes(inv(CS2.rot),q_ref,1).',inv(CS1.rot),0); 
 q_refSym = reshape(q_refSym,length(q_ref),[]);
 
-if length(q)>100000 && length(q_ref) == 1
+if length(q)>100000 && isscalar(q_ref)
   
   % maybe q_ref has some multiplicity and we can save some time
   [q_refSym,m,~] = unique(q_refSym,'antipodal','noSymmetry'); 

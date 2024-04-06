@@ -22,7 +22,7 @@ end
 [is1,is2] = find(isappr(dot_outer(s1.rot,rot2,'noSymmetry'),1,1e-4));
 
 % the trivial cases 
-if numel(is1) == 1
+if isscalar(is1)
   if isa(s1,'specimenSymmetry') || isa(s2,'specimenSymmetry')
     s1 = specimenSymmetry;
   else
