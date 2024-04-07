@@ -162,7 +162,6 @@ odf2 = g.antiderivative
 
 plot(odf2,'sigma')
 
-
 %% Overview of Operations for Orientational Vector Fields
 %
 % The following operations are defined for vector fields |VF|, |VF1|, |VF2|

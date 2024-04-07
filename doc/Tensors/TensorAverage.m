@@ -152,3 +152,4 @@ plotSeismicVelocities(CHill_glaucophane)
 % can be found in <CPOSeismicProperties.html here>
 
 %#ok<*ASGLU>
+%#ok<*NOPTS>

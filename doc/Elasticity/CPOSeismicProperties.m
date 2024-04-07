@@ -190,3 +190,4 @@ CHill
 plotSeismicVelocities(CHill)
 
 %#ok<*ASGLU>
+%#ok<*NOPTS>
