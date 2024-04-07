@@ -8,7 +8,7 @@
 %
 % $$ T_R SO(3) = \{ S \cdot R | S=-S^T  \} = \mathfrak{so}(3) \cdot R, $$
 %
-% where $\mathfrak{so}(3)$ describes the set of all skew symmetric matices,
+% where $\mathfrak{so}(3)$ describes the set of all skew symmetric matrices,
 % i.e. @spinTensor's.
 %
 
@@ -103,7 +103,7 @@ right(GL)
 
 %%
 % Note that the symmetries do not work in the same way as for @SO3Fun's.
-% Dependent from the choosed tangent space representation (left/right) one 
+% Dependent from the chosen tangent space representation (left/right) one 
 % of the symmetries has other properties.
 % 
 % In case of right tangent space the evaluation in symmetric orientations
@@ -114,3 +114,4 @@ ori = orientation.rand(GL.CS,GL.SS)
 GR.eval(ori.symmetrise)
 GL.eval(ori.symmetrise)
 
+%#ok<*NASGU>

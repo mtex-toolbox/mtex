@@ -67,7 +67,7 @@ kam = ebsd.KAM / degree;
 
 % lets plot it
 plot(ebsd,kam,'micronbar','off')
-caxis([0,15])
+setColorRange([0,15])
 mtexColorbar
 mtexColorMap LaboTeX
 hold on
@@ -86,7 +86,7 @@ hold off
 % subgrain boundaries can be effectively removed from the KAM.
 
 plot(ebsd,ebsd.KAM('threshold',2.5*degree) ./ degree,'micronbar','off')
-caxis([0,2])
+setColorRange([0,2])
 mtexColorbar
 mtexColorMap LaboTeX
 hold on
@@ -99,7 +99,7 @@ hold off
 % higher order neighbors
 
 plot(ebsd,ebsd.KAM('threshold',2.5*degree,'order',5) ./ degree,'micronbar','off')
-caxis([0,2])
+setColorRange([0,2])
 mtexColorbar
 mtexColorMap LaboTeX
 hold on
@@ -121,7 +121,7 @@ ebsdS = smooth(ebsd,F,'fill',grains);
 
 % plot the first order KAM
 plot(ebsdS,ebsdS.KAM('threshold',2.5*degree) ./ degree,'micronbar','off')
-caxis([0,2])
+setColorRange([0,2])
 mtexColorbar
 mtexColorMap LaboTeX
 hold on

@@ -180,3 +180,5 @@ mtexColorbar
 %% restore MTEX preferences
 
 setMTEXpref('pfAnnotations',storepfA);
+
+%#ok<*ASGLU>

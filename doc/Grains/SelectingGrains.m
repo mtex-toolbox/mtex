@@ -30,7 +30,7 @@ hold off
 
 %% Selecting grains by mouse
 % The most easiest way to select a grain is by using the mouse and the
-% command <grain2d.selectInteractive.html selectInteractive> which allows
+% command <grain2d.selectInteractive.html |selectInteractive|> which allows
 % you to select an arbitrary amount of grains. The index of the selected
 % grains appear as the global variable |indSelected| in your workspace
 
@@ -76,8 +76,8 @@ hold off
 %% Indexing by a Property
 % In order the generalize the above concept lets remember that the variable
 % |grains| is essentially a large vector of grains. Thus when applying a
-% function like <grain2d.area.html area> to this variable we obtain a
-% vector of the same lenght with numbers representing the area of each
+% function like <grain2d.area.html |area|> to this variable we obtain a
+% vector of the same length with numbers representing the area of each
 % grain
 
 grain_area = grains.area;
@@ -92,7 +92,7 @@ plot(grains,grain_area)
 %%
 % As a second application, we can ask for the largest grain within our data
 % set. The maximum value and its position within a vector are found by the
-% Matlab command |max|.
+% MATLAB command |max|.
 
 [max_area,max_id] = max(grain_area)
 
@@ -168,8 +168,8 @@ plot(selected_grains)
 
 %% The grainId and how to select EBSD inside specific grains
 %
-% Besides, the list of grains the command <EBSD.calcGrains.html calcGrains>
-% returns also two other output arguments. 
+% Besides, the list of grains the command <EBSD.calcGrains.html
+% |calcGrains|> returns also two other output arguments.
 
 plot(grains)
 largeGrains = grains(grains.grainSize > 50);
@@ -203,8 +203,8 @@ hold off
 %% Boundary grains
 % Sometimes it is desirable to remove all boundary grains as they might
 % distort grain statistics. To do so one should remember that each grain
-% boundary has a property |grainId| which stores the ids of the neigbouring
-% grains. In the case of an outer grain boundary, one of the neighbouring
+% boundary has a property |grainId| which stores the ids of the neighboring
+% grains. In the case of an outer grain boundary, one of the neighboring
 % grains has the id zero. We can filter out all these boundary segments by
 
 % ids of the outer boundary segment
@@ -237,6 +237,8 @@ plot(grains(grain_id))
 %   grains(grain_id) = []
 %
 % However, boundary grains can be selected more easily be the command
-% |<grain2d/isBoundary.html isBoundary>|. 
+% |<grain2d/isBoundary.html |isBoundary|>|. 
 
 plot(grains(~grains.isBoundary))
+
+%#ok<*GVMIS>

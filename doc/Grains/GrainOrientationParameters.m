@@ -189,7 +189,7 @@ for k = 1:length(grainsLarge)
   [f,lambda(k,:),fit(k)] = fibre.fit(ebsd(grainsLarge(k)).orientations,'local');
   
   % store the misorientation axes in crystal and specimen symmetry
-  GAX_C(k) = f.h;
+  GAX_C(k) = f.h; %#ok<*SAGROW>
   GAX_S(k) = f.r;
     
 end
@@ -304,3 +304,5 @@ hold off
 %T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
 %[T_spherical T_prolate T_oblate]
+
+%#ok<*NASGU>

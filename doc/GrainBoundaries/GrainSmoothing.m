@@ -20,7 +20,7 @@ mtexdata csl
 ebsd(grains(grains.grainSize<2))=[];
 grains = ebsd.calcGrains;
  
-% the data was accquired on a regular grid;
+% the data was acquired on a regular grid;
 plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on
 plot(grains.boundary('indexed'),'linewidth',5,'linecolor','YellowGreen')
@@ -31,7 +31,7 @@ axis([313 353 140 156])
 %%
 % With the default parameters we have the following result
 
-% smooth the grains with default paramters
+% smooth the grains with default parameters
 grains_smooth = smooth(grains);
  
 hold on
@@ -47,7 +47,7 @@ sum(grains.boundary('indexed').segLength)
 sum(grains_smooth.boundary('indexed').segLength)
  
 %%
-% However, if we look at the frequnecy distribution of grain boundary
+% However, if we look at the frequency distribution of grain boundary
 % segments, we find that some angle are over-represented which is due to
 % the fact that without any additional input argument, <grain2d.smooth.html
 % |grains.smooth|> performs just a single iteration
@@ -117,3 +117,4 @@ end
 %
 % Todo: different smoothing algorithms and 2nd order 
 
+ %#ok<*SAGROW>

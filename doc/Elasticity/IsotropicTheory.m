@@ -42,7 +42,7 @@ C = stiffnessTensor(...
 % microstructure and can not be computed without additional knowledge.
 %
 % Based on the Voigt effective stiffness tensor we may now compute upper,
-% directional independend bounds for all elastic moduli:
+% directional independent bounds for all elastic moduli:
 
 G = C_iso_Voigt.shearModulus
 K = C_iso_Voigt.bulkModulus
@@ -216,7 +216,7 @@ hold off
 
 %% Comparison of the bounds
 %
-% Finaly we compare the upper and lower Hashin Shtrikman bounds with the
+% Finally we compare the upper and lower Hashin Shtrikman bounds with the
 % Voigt and Reuss bounds.
 
 KReuss = C_iso_Reuss.bulkModulus;
@@ -240,3 +240,4 @@ disp(' ')
 % Note, that upper and lower bounds for all other elastic moduli can be
 % computed from these upper and lower bounds of the bulk and shear modulus.
 
+%#ok<*NASGU>

@@ -23,7 +23,7 @@ plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 % define maximum acceptable MAD value
 MAD_MAXIMUM= 1.3;
 
-% eliminate all meassurements with MAD larger than MAD_MAXIMUM
+% eliminate all measurements with MAD larger than MAD_MAXIMUM
 ebsd(ebsd.mad >MAD_MAXIMUM) = []
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
@@ -97,7 +97,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % average assumes that the elastic strain field in the aggregate is
 % constant everywhere, so that the strain in every position is equal to the
 % macroscopic strain of the sample. CVoigt is then estimated by a volume
-% average of local stiffnesses C(gi), where gi is the orientation given by
+% average of local stiffness C(gi), where gi is the orientation given by
 % a triplet of Euler angles and with orientation gi, and volume fraction
 % V(i). This is formally described as
 %
@@ -106,7 +106,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % The Reuss average on the other hand assumes that the stress field in the
 % aggregate is constant, so the stress in every point is set equal to the
 % macroscopic stress. CReuss is therefore estimated by the volume average
-% of local compliances S(gi) and can be described as
+% of local compliance S(gi) and can be described as
 %
 % $ \left<T\right>^{\text{Reuss}} = \left[ \sum_{m=1}^{M}  T(\mathtt{ori}_{m})^{-1} \right]^{-1}$
 %
@@ -127,7 +127,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 %% Averaging the elastic stiffness of an aggregate based on EBSD data
 % for a single phase (e.g. glaucophane) the syntax is
 
-[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane);
+[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane); 
 
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
@@ -150,3 +150,5 @@ plotSeismicVelocities(CHill_glaucophane)
 %%
 % More details on averaging the seismic properties considering the modal composition of different phases
 % can be found in <CPOSeismicProperties.html here>
+
+%#ok<*ASGLU>

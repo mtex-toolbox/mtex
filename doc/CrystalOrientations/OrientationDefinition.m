@@ -66,3 +66,5 @@ ori = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
 % equivalent orientations
 
 ori.symmetrise
+
+%#ok<*NASGU>

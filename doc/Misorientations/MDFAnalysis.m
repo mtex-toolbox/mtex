@@ -10,10 +10,10 @@
 % has to differentiate to cases
 %
 % # the boundary (correlated) misorientation distribution function
-% # the uncorelated misorientation distribution function
+% # the uncorrelated misorientation distribution function
 %
 % While the first one considers only misorientations at grain boundaries
-% the second one considers misorietation between arbitrary crystal
+% the second one considers misorientation between arbitrary crystal
 % orientations. To illustrate the difference lets consider the following
 % EBSD data set
 
@@ -27,7 +27,7 @@ grains = calcGrains(ebsd)
 %
 % In order to compute the boundary misorientation distribution function for
 % the phase transition from Forsterite to Enstatite we first extract the
-% misorientations along all Forsterite to Enstatite boundary segements
+% misorientations along all Forsterite to Enstatite boundary segments
 
 mori_boundary = grains.boundary('Fo','En').misorientation
 
@@ -51,7 +51,7 @@ plot(adf_boundary)
 
 %%
 % The misorientation distribution function can be processed as any other
-% ODF. E.g. we can compute the prefered misorientation via
+% ODF. E.g. we can compute the preferred misorientation via
 
 [v,mori] = max(mdf_boundary)
 
@@ -141,3 +141,5 @@ plotAxisDistribution(mdf)
 % <orientation.calcAxisDistribution.html calcAxisDistribution(grains)>.
 
 aD = calcDensity(axis(grains.boundary('fo','en').misorientation))
+
+ %#ok<*ASGLU>

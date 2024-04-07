@@ -17,7 +17,7 @@
 % orientation space, the colorspace should be exhaust by this region
 %
 % It should be noted that it is impossible to have all the 4 points
-% mentioned above be satisfied by a single colorcoding. Hence, some
+% mentioned above be satisfied by a single color coding. Hence, some
 % compromises have to be accepted and some assumptions have to be made.
 % While the traditional <EBSDAdvancedMaps.html#2 Euler angle coloring> will
 % assign different colors to similar orientations, i.e. will introduce
@@ -69,7 +69,7 @@ plot(colorKey,'sections',6,'sigma')
 %% Coloring certain orientations
 % We might be interested in locating some special orientation in our
 % orientation map. The definition of colors for certain orientations is
-% carried out similarly as in the case of fibres
+% carried out similarly as in the case of fibers
 
 colorKey = spotColorKey(ebsd('Fo'));
 colorKey.center = mean(ebsd('Forsterite').orientations,'robust');
@@ -78,7 +78,7 @@ colorKey.psi = SO3DeLaValleePoussinKernel('halfwidth',20*degree);
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
-% and the correspoding colormap
+% and the corresponding color-map
 figure(2)
 plot(colorKey,'sections',9,'sigma')
 
@@ -97,7 +97,7 @@ plot(odf,'sections',9,'silent','sigma')
 mtexColorbar
 
 
-%% Coloring fibres
+%% Coloring fibers
 % To color a fibre, one has to specify the crystal direction |h| together
 % with its RGB color and the specimen direction |r|, which should be marked.
 
@@ -132,12 +132,12 @@ plotIPDF(ebsd('fo').orientations,zvector,'markercolor','k','marker','x','points'
 hold off
 
 %%
-% we can easily extend the colorcoding
+% we can easily extend the color-coding
 
 % the centers in the inverse pole figure
 colorKey.center = Miller({0 0 1},{0 1 1},{1 1 1},{11 4 4},{5 0 2},{5 5 2},csFo);
 
-% the correspnding collors
+% the corresponding colors
 colorKey.color = [[1 0 0];[0 1 0];[0 0 1];[1 0 1];[1 1 0];[0 1 1]];
 
 % plot the key
@@ -171,3 +171,4 @@ hold on
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations),'FaceAlpha',0.5)
 hold off
 
+%#ok<*NASGU>

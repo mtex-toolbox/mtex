@@ -166,7 +166,7 @@ oS.h2 = Miller(-1,2,-1,0,odf.CS,'UVTW');
 
 % since h1 is not a symmetry axis of the crystal we need to consider 
 % all rotations up to 360 degree
-oS.omega = [0:20:340]*degree;
+oS.omega = (0:20:340)*degree;
 
 plot(odf,oS)
 

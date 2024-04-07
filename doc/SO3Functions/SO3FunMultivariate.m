@@ -163,3 +163,4 @@ plot3d(SO3F3)
 
 plotFibre(SO3F3,fibre.beta)
 
+%#ok<*VUNUS>

@@ -1,13 +1,13 @@
 %% Anisotropic Elasticity
 %
 %%
-% The linear theory of elasticity in anisotropic materials is essentialy
+% The linear theory of elasticity in anisotropic materials is essentially
 % based on the fourth order stiffness tensor |C|. Such a tensor is
 % represented in MTEX by a variable of type
 % <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>. Such a variable
 % can either by set up using a symmetric 6x6 matrix or by importing it from
-% an external file. The following examples does so for the stiffness
-% tensor for Olivine
+% an external file. The following examples does so for the stiffness tensor
+% for Olivine
 
 % file name
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
@@ -20,7 +20,7 @@ C = stiffnessTensor.load(fname,cs)
 
 %% Hooke's Law
 % The stiffness tensor tensor of a material is defined as the stress the
-% material expreances for a given strain
+% material experiences for a given strain
 
 eps = strainTensor(diag([1,1.1,0.9]),cs)
 
@@ -34,7 +34,7 @@ sigma = C : eps
 % The other way the compliance tensor |S = inv(C)| translates stress into
 % strain
 
-inv(C) : sigma
+inv(C) : sigma 
 
 %%
 % The elastic energy of the strain |eps| can be computed equivalently by
@@ -154,3 +154,7 @@ drawNow(gcm,'figSize','large')
 % traveling through a medium anisotropic compressibility causes also
 % anisotropic waves speeds. The analysis of this anisotropy is explained in
 % the section <WaveVelocities.html wave velocities>.
+%
+%#ok<*BDSCI> 
+%#ok<*NASGU>
+%#ok<*BDSCA>
