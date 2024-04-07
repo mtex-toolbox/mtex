@@ -92,8 +92,8 @@ for ih = 1:length(hGrid)
   [~,ih2] = max(calcPDF(odf,lhGrid,rGrid(ir)));
   
   % project to fibre
-  d = angle_outer(times(rotSym,lhGrid(ih2),1), times(inv(ori),rGrid(ir),0),'noSymmetry').';
-  [m,idSym] = min(d,[],2);
+  d = angle_outer(times(rotSym,lhGrid(ih2),1), times(inv(ori),rGrid(ir),0),'noSymmetry');
+  [m,idSym] = min(d,[],1);
   
   % robust estimate
   oriP = times(ori(m<quantile(m,0.8)), rotSym(idSym(m<quantile(m,0.8))),0);
@@ -109,7 +109,7 @@ for ih = 1:length(hGrid)
   
 end
 
-function test
+function test %#ok<DEFNU>
     
   cs = crystalSymmetry('432');
   f = fibre.rand(cs);
@@ -118,14 +118,14 @@ function test
   ori = discreteSample(odf,100000);
   
   tic
-  fRec = fibre.fit(ori,'refine')
+  fRec = fibre.fit(ori,'refine') %#ok<NOPRT>
   toc
   
-  mean(angle(fRec,ori))./degree
+  mean(angle(fRec,ori))./degree %#ok<NOPRT>
   
-  mean(angle(f,ori))./degree
+  mean(angle(f,ori))./degree %#ok<NOPRT>
   
-  angle(fRec,f)./degree
+  angle(fRec,f)./degree %#ok<NOPRT>
   
 end
 

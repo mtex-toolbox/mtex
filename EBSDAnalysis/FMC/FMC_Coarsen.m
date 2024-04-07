@@ -53,7 +53,7 @@ else
   iorder = iorder';
 end
 
-[i,tmp,w] = find(fmc.W);
+[i,~,w] = find(fmc.W);
 cs   = [0 cumsum(full(sum(fmc.W>0,1)))];
 Finv = false(fmc.sizeW,1);
 % traverse all rows of W and find the indices of all nonzero elements
@@ -102,7 +102,7 @@ i = find(Psum <= 0);
 fmc.Celements = [fmc.Celements i'];
 fmc.sizeWnext = numel(fmc.Celements);
 
-[tmp,j] = ismember(i,fmc.Celements);
+[~,j] = ismember(i,fmc.Celements);
 fmc.P = sparseConcat(fmc.P,i,j,ones(numel(i),1), [fmc.sizeW, fmc.sizeWnext]);
 
 end

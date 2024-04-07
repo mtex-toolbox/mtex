@@ -220,7 +220,7 @@ classdef parentGrainReconstructor < handle
     %% AAG ADDED
     function out = get.bainId(job)   
       
-        if isfield(job.grainsPrior.prop,'bainId')
+      if isfield(job.grainsPrior.prop,'bainId')
         out = job.grainsPrior.prop.bainId;
       else
         out = NaN(size(job.grainsPrior));

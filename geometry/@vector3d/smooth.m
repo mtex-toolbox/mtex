@@ -96,9 +96,9 @@ for j = 1:numel(sP)
   
   % --------------- finalize the plot ---------------------------
 
-  % adjust caxis according to colorRange
+  % adjust clim according to colorRange
   if ~any(isnan(colorRange)) && diff(colorRange)>0
-    caxis(sP(j).ax,colorRange); 
+    clim(sP(j).ax,colorRange); 
   end
   if check_option(varargin,'log'), set(sP(j).ax,'colorScale','log'); end
 

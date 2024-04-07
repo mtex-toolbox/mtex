@@ -57,7 +57,7 @@ if length(id) ==length(dir)
   for i = 2:size(c,1)
     hold on
     h(i) = optiondraw(quiver(xy(id == i,1),xy(id == i,2),...
-      dir.x(id == i),dir.y(id == i)),varargin{:},'color',c(i,:));
+      dir.x(id == i),dir.y(id == i)),varargin{:},'color',c(i,:)); %#ok<AGROW>
   end
   
 else

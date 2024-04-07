@@ -85,7 +85,7 @@ end
 function m = setDisplayStyle(millerObj,mode)
 m = millerObj;
 if isa(m,'Miller')
-  if any(strcmpi(m.CS.lattice,{'hexagonal','trigonal'})) == 1
+  if any(strcmpi(m.CS.lattice,{'hexagonal','trigonal'}))
     if strcmpi(mode,'direction')
       m.dispStyle = 'UVTW';
     elseif strcmpi(mode,'plane')
@@ -142,12 +142,12 @@ if any(strcmpi(mil.dispStyle,{'hkl','hkil'}))
   s = '(';
   for i = 1:length(mill)
     if check_option(varargin,'round')
-      s = [s,num2str(round(mil.(mill{i}),0))];
+      s = [s,num2str(round(mil.(mill{i}),0))]; %#ok<AGROW>
     else
-      s = [s,num2str(mil.(mill{i}),'%0.4f')];
+      s = [s,num2str(mil.(mill{i}),'%0.4f')]; %#ok<AGROW>
     end
     if i<length(mill)
-      s = [s,','];
+      s = [s,',']; %#ok<AGROW>
     end
   end
   s = [s,')'];
@@ -160,12 +160,12 @@ elseif any(strcmpi(mil.dispStyle,{'uvw','UVTW'}))
   s = '[';
   for i = 1:length(mill)
     if check_option(varargin,'round')
-      s = [s,num2str(round(mil.(mill{i}),0))];
+      s = [s,num2str(round(mil.(mill{i}),0))]; %#ok<AGROW>
     else
-      s = [s,num2str(mil.(mill{i}),'%0.4f')];
+      s = [s,num2str(mil.(mill{i}),'%0.4f')]; %#ok<AGROW>
     end
     if i<length(mill)
-      s = [s,','];
+      s = [s,',']; %#ok<AGROW>
     end
   end
   s = [s,']'];

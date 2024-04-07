@@ -5,20 +5,17 @@ function [binId, cumArea] = hist(grains,varargin)
 %   hist(grains)
 %   hist(grains,n) % specify the number of bins
 %
-%   % use an arbitrary property for the histogramm
+%   % use an arbitrary property for the histogram
 %   hist(grains,grains.equivalentRadius) 
 %
 %   binId = hist(grains) % returns the bin for each grain
 %    
 % Input
 %   grains - @grain2d
-%   n      - number of bins, default ist 15
+%   n      - number of bins, default is 15
 %   
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
-mtexFig.keepAspectRatio = false;
-
-% exract area and maybe an aditional property
+% extract area and maybe an additional property
 area = grains.area;
 if nargin>1 && isnumeric(varargin{1}) && length(varargin{1}) == length(grains)
   prop = varargin{1};
@@ -61,17 +58,21 @@ end
 % plot the result as a bar plot
 binCenter = 0.5*(bins(1:end-1)+bins(2:end));
 binWidth = 1 + 0.5*size(cumArea,2)>1;
-bar(binCenter,100*cumArea,'BarWidth',binWidth,'parent',mtexFig.gca)
-xlim(mtexFig.gca,[bins(1),bins(end)])
-if all(prop == area)
-  title(mtexFig.gca,'grain size distribution')
-  xlabel(mtexFig.gca,'grain area');
+b = bar(binCenter,100*cumArea,'BarWidth',binWidth,'FaceColor','flat');
+
+for id = 1:numel(idList)
+  b(id).CData = str2rgb(grains.CSList{idList(id)}.color);
 end
-ylabel(mtexFig.gca,'relative area (%)')
+
+b.CData
+xlim([bins(1),bins(end)])
+if all(prop == area)
+  title('grain size distribution')
+  xlabel('grain area');
+end
+ylabel('relative area (%)')
 
 min = grains.mineralList(idList);
 legend(min{:})
-
-if isNew, mtexFig.drawNow(varargin{:});end
 
 if nargout == 0, clear binId; end

@@ -89,7 +89,7 @@ while ~feof(fid)
     d{ih} = [];
     while length(d) < length(r) && ~feof(fid)
       l = fgetl(fid);
-      if length(l)<dig*col, 
+      if length(l)<dig*col 
         continue;
       end
       l = reshape(l(1:dig*col),dig,col).';

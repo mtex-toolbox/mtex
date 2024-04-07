@@ -1,4 +1,4 @@
-function [S2G, r]= refine(S2G)
+function S2G = refine(S2G)
 % refine S2Grid
 %
 % Input

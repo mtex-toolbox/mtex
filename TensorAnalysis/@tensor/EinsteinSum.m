@@ -24,7 +24,7 @@ function T = EinsteinSum(varargin)
 
 % TODO: check for correct symmetries !!!
 
-global useBSXFUN;
+global useBSXFUN; %#ok<GVMIS>
 
 M1 = 1; dimT1 = [];
 T = varargin{1};
@@ -48,7 +48,7 @@ while iv < length(varargin) && ~ischar(varargin{iv})
     M2 = permute(M2,[3 1 2]);
   end
  
-  %
+  % TODO
   if length(dimT2) > 1 && sum(dimT2<0)>1 && max(accumarray(-dimT2(dimT2<0).',1)>1)
     [M2,dimT2] = innerSum(M2,dimT2);
   end
@@ -59,7 +59,7 @@ while iv < length(varargin) && ~ischar(varargin{iv})
   rExt = max([0,ndims(M1) - length(dimT1), ndims(M2) - length(dimT2)]);
   
   % new order of dimensions for tensor 1
-  dimT1(dimT1>0) = dimT1(dimT1>0) - 1;  % we should start with zero to avoid the cap
+  dimT1(dimT1>0) = dimT1(dimT1>0) - 1;  %#ok<AGROW> % we should start with zero to avoid the cap
   exp1 = 1:rOut + rDel; exp1(dimT1 + rDel + 1) = []; % dimensions in reserve 
   order1 = [dimT1 + rDel + 1,...  the tensor components
     rOut + rDel + (1:rExt),...    none tensor components 
@@ -100,7 +100,7 @@ M1 = reshape(M1,[s(rDel+1:end) 1 1]);
 % rank 0 tensor should become double
 if rOut == 0
   T = M1; 
-elseif strcmp(class(T),'tensor') || check_option(varargin(iv:end),'keepClass')
+elseif strcmp(class(T),'tensor') || check_option(varargin(iv:end),'keepClass') %#ok<STISA>
   T.M = M1;
   T.rank = rOut;
 else

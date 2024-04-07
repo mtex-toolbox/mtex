@@ -154,7 +154,7 @@ classdef MLSSolver < pf2odfSolver
       r = equispacedS2Grid('upper','antipodal','resolution',5*degree);
       h = Miller({1,0,0},{1,1,1},{1,1,0},cs);
       pf = calcPoleFigure(odf,h,r);
-      odf = calcODF(pf)
+      odf = calcODF(pf);
       
       plotPDF(odf,h)
       plotFibre(odf,fibre.alpha(cs))
@@ -170,6 +170,7 @@ classdef MLSSolver < pf2odfSolver
       
       solver.init
       odf = solver.calcODF;
+      plot(odf)
       delete(solver);
       toc
       

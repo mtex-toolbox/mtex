@@ -27,9 +27,9 @@ fun.fhat = fun.fhat ./ fun.fhat(N+1);
 
 end
 
-function test
+function test %#ok<DEFNU>
 
-x = gB.direction.rho;
+x = gB.direction.rho; %#ok<NASGU>
 norm(gB.direction)
 
 
@@ -52,6 +52,6 @@ pdf = ifft(fft(Tp).*fft(G));
 % remove padding
 pdf = pdf(tn-t2+1:tn-t2+tn);
 % normalize values
-pdf = pdf./sum(pdf);
+pdf = pdf./sum(pdf); %#ok<NASGU>
 
 end

@@ -47,7 +47,7 @@ function test
 % for a certain position 
 theta = 45*degree;
 rho = 10*degree;
-v = vector3d.byPolar(theta,rho)
+v = vector3d.byPolar(theta,rho);
 l = 30;
 
 Y = sphericalY(l,v);

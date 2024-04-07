@@ -21,10 +21,7 @@ function h = histogram(grains,varargin)
 %  h - handle to the histogram graphics object
 %
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
-mtexFig.keepAspectRatio = false;
-
-% exract area and maybe an aditional property
+% extract area and maybe an additional property
 area = grains.area;
 if nargin>1 && isnumeric(varargin{1}) && length(varargin{1}) == length(grains)
   prop = varargin{1};
@@ -62,7 +59,7 @@ for id = grains.indexedPhasesId
   cumArea = accumarray(binId(binId>0),areaPhase(binId>0),[length(bins)-1 1]) ./ sum(area);
   
   h = [h,optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
-    'FaceColor',grains.CSList{id}.color),varargin{:})]; %#ok<AGROW>
+    'FaceColor',str2rgb(grains.CSList{id}.color)),varargin{:})]; %#ok<AGROW>
   if strcmp(get(h,'DisplayStyle'),'stairs')
     set(h(grains.indexedPhasesId==id),'EdgeColor',grains.CSList{id}.color);
   end
@@ -73,16 +70,14 @@ hold off
 
 % labels and title
 if all(prop == area)
-  title(mtexFig.gca,'grain size distribution')
-  xlabel(mtexFig.gca,'grain area');
+  title('grain size distribution')
+  xlabel('grain area');
 end
-yticklabels(mtexFig.gca,yticks*100)
-ylabel(mtexFig.gca,'relative area (%)')
+yticklabels(yticks*100)
+ylabel('relative area (%)')
 
 % legend
 min = grains.mineralList(grains.indexedPhasesId);
 legend(min{:})
-
-if isNew, mtexFig.drawNow(varargin{:});end
 
 if nargout == 0, clear h; end

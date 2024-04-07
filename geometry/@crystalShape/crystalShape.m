@@ -205,9 +205,9 @@ classdef crystalShape
     end
     
     function demo2
-      cS  = crystalShape.quartz
+      cS  = crystalShape.quartz;
       cs = cS.CS;
-      ori = orientation.rand(200,cs)
+      ori = orientation.rand(200,cs);
       
       plotSection(ori,0.6*(ori*cS),'sigma','sections',8)
       hold on

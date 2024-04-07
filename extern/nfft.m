@@ -33,7 +33,7 @@ properties(SetAccess='private')
 	M=[];   % number of sampling points (positive integer)
 end %properties
 
-properties(Hidden=true,SetAccess='private',GetAccess='private');
+properties(Hidden=true,SetAccess='private',GetAccess='private')
 	plan=[];                    % nfftmex plan number
 	x_is_set=false;             % flag if x is set
 	fhat_is_set=false;          % flag if fhat is set
@@ -170,7 +170,7 @@ end %function
 
 function set.N(h,N)
 	N = N(:)';
-	if( isempty(N) || size(N,1)~=1 || ~isnumeric(N) || ~isreal(N) || (sum(mod(N,2))>0) || ~prod(N>0))
+	if( isempty(N) || size(N,1)~=1 || ~isnumeric(N) || ~isreal(N) || (sum(mod(N,2))>0) || ~all(N>0))
 		error('The entries of the bandwidth vector N must be even positive integers.');
 	end
 	h.N = double(N);

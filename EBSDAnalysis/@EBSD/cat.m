@@ -1,4 +1,4 @@
-function ebsd = cat(dim,varargin)
+function ebsd = cat(~,varargin)
 % overloads [ebsd1,ebsd2,ebsd3..]
 %
 % Syntax 

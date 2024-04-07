@@ -195,20 +195,19 @@ classdef sphericalRegion
     end
 
     
-    function rh = maxRho(sR)
-    end
-        
+    %function rh = maxRho(sR)
+    % TODO
+    %end
+    %function e = edges(sR)     
+    % TODO
+    %end
+
     
     function v = vertices(sR)
       % get the vertices of the fundamental region
       
       v = unique(boundary(sR));
       
-    end
-    
-    function e = edges(sR)
-      
-            
     end
     
     function [v,e] = boundary(sR)
@@ -280,7 +279,7 @@ classdef sphericalRegion
       %N = [-zvector,yvector,vector3d('polar',pi/2,-pi/4),...
       %  vector3d('polar',pi/2,pi/2+pi/4)];
 
-      N = [zvector,xvector,yvector,vector3d.byPolar(pi/2,-pi/4),vector3d(-1,-1,1)];
+      N = [zvector,xvector,yvector,vector3d.byPolar(pi/2,-pi/4),vector3d(-1,-1,1)]; %#ok<NASGU>
 
       N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
       %N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];

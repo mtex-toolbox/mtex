@@ -12,7 +12,7 @@ criterion = 1 - 0.5 * (1 + erf(2*(angle(o_Dl,o_Dr) - threshold(1))./threshold(2)
 
 end
 
-function test
+function test %#ok<DEFNU>
 
 threshold = [10,2.5]*degree;
 misAngle = linspace(0,20*degree);

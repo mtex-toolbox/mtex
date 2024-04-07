@@ -41,7 +41,7 @@ try
   
   % read hkl
   [h,ok] = string2Miller(fgetl(fid));
-  if ~ok, h = string2Miller(fname);end;
+  if ~ok, h = string2Miller(fname);end
   
   % skip the next 6 lines
   %textscan(fid,'%s',6,'delimiter','\n','whitespace','');

@@ -60,7 +60,7 @@ if isscalar(varargin{1}) && ishandle(varargin{1}) && strcmp(get(varargin{1},'typ
 	varargin = varargin(2:end);
 else
 	hAx = gca;
-end;
+end
 
 errmsg = ['Invalid input.  Coordinates must be specified as 1 four-element \n' ...
 	'position vector or 2 equal length (x,y) vectors.'];

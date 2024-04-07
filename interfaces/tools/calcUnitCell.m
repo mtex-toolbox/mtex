@@ -32,7 +32,7 @@ dxy = sqrt(area / length(xy));
 if dxy==0
   lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
   if lx==0, lx=ly; else; ly=lx; end
-  dxy= (ly+ly)/2;
+  dxy= (lx+ly)/2;
 end
 
 if length(xy)>10000 
@@ -41,7 +41,7 @@ else
   xySmall = xy;
 end
 
-% remove dublicates from the coordinates
+% remove duplicates from the coordinates
 xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);
 
 try
@@ -52,7 +52,7 @@ try
   areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
   
-  % the unit cell should be the Voronoi cell with the smalles area
+  % the unit cell should be the Voronoi cell with the smallest area
   [~, ci] = quantile(areaf,0.2);
   
   % compute vertices of the unit cell

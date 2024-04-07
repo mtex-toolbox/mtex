@@ -74,7 +74,7 @@ if nargin>1 && isnumeric(varargin{1})
     % plot polygons
     for k = 1:max(property)
       h{k} = plotFaces(grains.poly(property==k), grains.V, ind2color(k),...
-        'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
+        'parent', mP.ax,varargin{:},'DisplayName',legendNames{k}); %#ok<AGROW>
       
       % reactivate legend information
       set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
@@ -122,7 +122,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   for k = 1:length(grains)
 
     h(k) = plot(rotate(S2F,grains.meanOrientation(k)),'parent', mP.ax,...
-    'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d');
+    'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d'); %#ok<AGROW>
     
   end
   
@@ -216,9 +216,7 @@ if nargout == 0, clear h;end
 end
 
 
-function spatialSelection(src,eventdata)
-
-persistent sel_handle;
+function spatialSelection(src,~)
 
 pos = get(gca,'CurrentPoint');
 %key = get(src, 'CurrentCharacter');
@@ -260,7 +258,7 @@ txt{1} = ['grainId = '  num2str(unique(grain.id))];
 if grain.isIndexed
   txt{2} = ['phase = ', grain.mineral];
 else
-  txt{2} = ['phase = not indexed'];
+  txt{2} = 'phase = not indexed';
 end
 txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
 if grain.isIndexed

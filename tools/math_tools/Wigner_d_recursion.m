@@ -117,7 +117,7 @@ function d_new = recurrence(d_lmin1,d_lmin2,l,beta)
   if beta==pi/2
     A = sqrt(B_1'./B_2'/4);
     if l>500
-      while size(A,1)>1;
+      while size(A,1)>1
         len = size(A,1);
         A = sort(A,1);
         if ~iseven(len)

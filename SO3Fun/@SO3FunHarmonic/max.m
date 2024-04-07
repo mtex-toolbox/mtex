@@ -38,7 +38,7 @@ function [values,modes] = max(SO3F,varargin)
 %   annotate(ori)
 %
 % See also
-% SO3Fun/min SO3Fun/max
+% SO3Fun/min SO3Fun/max SO3Fun/calcComponents
 
 if isa(SO3F,'SO3FunHarmonic') && ~SO3F.isReal
   SO3F = SO3F.isReal;

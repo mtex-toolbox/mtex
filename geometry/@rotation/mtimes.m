@@ -5,6 +5,8 @@ function r = mtimes(a,b,varargin)
 if isnumeric(a) 
   
   if size(a,2) == size(b,1)
+    % this is kind of a matrix product weights times rotations followed by
+    % normalization as an approximation of the weighted mean
     
     r = b;
     r.a = a * b.a;
@@ -21,7 +23,8 @@ if isnumeric(a)
     assert(all(abs(a(:))==1),'Rotations can be multiplied only by 1 or -1');
     tmp = rotation.id(size(a));
     tmp.i = (1-a)./2;
-    a = tmp;
+    r = tmp;
+
   end
   
 elseif isa(b,'vector3d')

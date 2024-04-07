@@ -372,7 +372,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
     % allow user defined CS, overriding the above
-    if check_option(varargin,'CS');
+    if check_option(varargin,'CS')
         CS = get_option(varargin,'CS');
     end
 

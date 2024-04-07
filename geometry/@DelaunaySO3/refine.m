@@ -23,7 +23,7 @@ octaeder = iCenterEdges(:,[1 3 4 5  3 4 5 6  1 2 3 4  2 3 4 6]);
 octaeder = reshape(octaeder.',4,[]);
 
 % set up tetraeder
-newTetra = [[base;corner],octaeder].';
+newTetra = [[base;corner],octaeder];
 
 % new vertices as mean of all edges
 centerEdges = mean2(DSO3.subSet(v(:,1)),DSO3.subSet(v(:,2)));
@@ -35,13 +35,13 @@ DSO3.c = [DSO3.c(:);centerEdges.c];
 DSO3.d = [DSO3.d(:);centerEdges.d];
 DSO3.i = zeros(size(DSO3.d));
 
-% set up new tetrahegons
-DSO3.tetra = sort(newTetra,2);
+% set up new tetrahedrons
+DSO3.tetra = sort(newTetra,1).';
 
-% compute neighbouring list
+% compute neighboring list
 DSO3.tetraNeighbour = calcNeighbour(DSO3.tetra);
 
-% the neighbours of the four corner tetrahegons
+% the neighbors of the four corner tetrahedrons
 %1 2 3 4
 %cornerNeighbour = 
 %DSO3.tetraNeighbour

@@ -26,7 +26,7 @@ job.calcHyperGraph2('threshold',5*degree,'c2c')
 numIters = [3 10 50];
 grainId = 1844;
 
-for k = 1:length(numIters);
+for k = 1:length(numIters)
     if k == 1
         job.clusterHyperGraph2('numIter',numIters(k),'inflationPower',1,'keepGraph')
         graphplotfunc(job,cond_grains,grainId,k,numIters)
@@ -36,7 +36,7 @@ for k = 1:length(numIters);
     end
 end
 
-for k = 1:length(numIters);
+for k = 1:length(numIters)
     if k == 1
         job.clusterHyperGraph2('numIter',numIters(k),'inflationPower',1.05,'keepGraph')
         graphplotfunc(job,cond_grains,grainId,k,numIters)

@@ -6,12 +6,17 @@ function [cs,mineral] = loadCIF(fname,varargin)
 % http://www.crystallography.net/cif/>
 %
 % Syntax
-%   loadCIF('5000035.cif')
-%   loadCIF(5000035)       % lookup online
+%   cs = loadCIF('Hematite.cif')
+%   cs = loadCIF('5000035.cif')
+%   cs = loadCIF(5000035)       % lookup online
 %
-% See also
-% symmetry
-
+% Input
+%  fname - file name
+%  cod   - 
+%
+% Output
+%  cs - @crystalSymmetry
+%
 
 if ~iscell(fname)
   if isnumeric(fname)
@@ -38,67 +43,60 @@ if ~iscell(fname)
   str = file2cell(fname);
 else
   str = fname;
-  name = '';
 end
 
-try
-  % get a name for it
-  mineral_names = {...
-    '_chemical_name_mineral',...
-    '_chemical_name_systematic',...
-    '_chemical_formula_structural',...
-    '_chemical_formula_sum'};
+% get a name for it
+mineral_names = {...
+  '_chemical_name_mineral',...
+  '_chemical_name_systematic',...
+  '_chemical_formula_structural',...
+  '_chemical_formula_sum'};
   
-  for alias = mineral_names
-    mineral = extract_token(str,alias{:});
-    if ~isempty(mineral), break; end
-  end
+for alias = mineral_names
+  mineral = extract_token(str,alias{:});
+  if ~isempty(mineral), break; end
+end
   
-  % find space group
-  group_aliases = {...
-    '_symmetry_space_group_name_H-M',...
-    '_symmetry_point_group_name_H-M',...
-    '_symmetry_cell_setting'};
-  for gp = group_aliases
-    group = extract_token(str,gp{:});
-    if ~isempty(group), break; end
-  end
+% find space group
+group_aliases = {...
+  '_symmetry_space_group_name_H-M',...
+  '_symmetry_point_group_name_H-M',...
+  '_symmetry_cell_setting'};
+for gp = group_aliases
+  group = extract_token(str,gp{:});
+  if ~isempty(group), break; end
+end
   
-  % find a,b,c
-  axis = [extract_token(str,'_cell_length_a',true) ...
-    extract_token(str,'_cell_length_b',true) ...
-    extract_token(str,'_cell_length_c',true)];
-  
-  % find alpha, beta, gamma
-  angles = [extract_token(str,'_cell_angle_alpha',true) ...
-    extract_token(str,'_cell_angle_beta',true) ...
-    extract_token(str,'_cell_angle_gamma',true)];
-  
-  if length(axis)<3,
-%     warning('crystallographic axis mismatch');    
-    axis = [1 1 1];
-  end
-  if length(angles)<3,
-%     warning('crystallographic angles mismatch');
-    angles = [90 90 90];    
-  end
-  
-  assert(~isempty(group));
-      
-  cs = crystalSymmetry(group,axis,angles*degree,'mineral',mineral);
-  
-catch
-  error(['Error reading cif file', fname]);
+% find a,b,c
+axis = [extract_token(str,'_cell_length_a',true) ...
+  extract_token(str,'_cell_length_b',true) ...
+  extract_token(str,'_cell_length_c',true)];
+
+% find alpha, beta, gamma
+angles = [extract_token(str,'_cell_angle_alpha',true) ...
+  extract_token(str,'_cell_angle_beta',true) ...
+  extract_token(str,'_cell_angle_gamma',true)];
+
+if length(axis)<3
+  %     warning('crystallographic axis mismatch');
+  axis = [1 1 1];
+end
+if length(angles)<3
+  %     warning('crystallographic angles mismatch');
+  angles = [90 90 90];
 end
 
+assert(~isempty(group));
 
+cs = crystalSymmetry(group,axis,angles*degree,'mineral',mineral);
 
+end
 
 function t = extract_token(str,token,numeric)
 
-pos = strmatch(token,str);
-if ~isempty(pos)
-  t = strtrim(regexprep(str{pos(1)},[token '|'''],''));
+pos = startsWith(str,token);
+if nnz(pos) == 1
+  t = strtrim(regexprep(str{pos},[token '|'''],''));
   if ~isempty(t)
     if nargin>2 && numeric
       t = sscanf(t,'%f');
@@ -106,6 +104,7 @@ if ~isempty(pos)
   end
 else
   t = '';
+end
 end
 
 function fname = copyonline(cod)
@@ -120,12 +119,12 @@ try
     return
   end
     
-  if ~isempty(str2num(cod))
+  if ~isnan(str2double(cod))
     disp('CIF-File from Crystallography Open Database')
     disp(['> download : http://www.crystallography.net/cif/' cod '.cif'])
-    cif = urlread(['http://www.crystallography.net/cif/' cod '.cif']);
+    cif = webread(['http://www.crystallography.net/cif/' cod '.cif']);
   else
-    cif = urlread(cod);
+    cif = webread(cod);
   end
 catch
   disp('> unluckily failed to find cif-file')
@@ -139,6 +138,6 @@ fwrite(fid,cif);
 fclose(fid);
 disp(['> copied to: ' fname]);
 
-
+end
 
 

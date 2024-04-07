@@ -41,8 +41,6 @@ for i = 1:length(sh)
   for j = 1:length(sr)
     dr = dot_outer(sr(j),r,'noSymmetry');
 
-    bw = SO3F.psi.bandwidth;
-    
     if length(dr)~=1
       s = dr;
       dr = dh.';

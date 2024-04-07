@@ -20,7 +20,7 @@ for itr = (m - 1):(-1):0
     begin_idx = 1;
     %itr
     for trans = 0:(num_trans - 1)
-        IDX = begin_idx + interval * [0:3];
+        IDX = begin_idx + interval * (0:3);
         %IDX
         X(IDX) = A * X(IDX);
         begin_idx = begin_idx + 4 * interval;

@@ -13,7 +13,7 @@ function ori = project(ori,varargin)
 %  phi1, Phi, phi2 - Euler angles
 %
 
-if isa(varargin{1},'fibre') % project to fibre
+if isa(varargin{1},'fibre') % project to fiber
     
   %f = varargin{1};
   
@@ -21,8 +21,8 @@ if isa(varargin{1},'fibre') % project to fibre
   h = varargin{1}; r = varargin{2};
   rotSym = ori.CS.properGroup.rot;
 
-  d = dot_outer(times(rotSym,h,1), times(inv(ori),r,0),'noSymmetry').';
-  [~,idSym] = max(d,[],2);
+  d = dot_outer(times(rotSym,h,1), times(inv(ori),r,0),'noSymmetry');
+  [~,idSym] = max(d,[],1);
   ori = times(ori, rotSym(idSym),0);
 
 else

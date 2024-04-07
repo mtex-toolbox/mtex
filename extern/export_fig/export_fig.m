@@ -255,7 +255,7 @@ function [imageData, alpha] = export_fig(varargin)
         fig = isolate_axes(fig);
     else
         % Check we have a figure
-        if ~isequal(get(fig, 'Type'), 'figure');
+        if ~isequal(get(fig, 'Type'), 'figure')
             error('Handle must be that of a figure, axes or uipanel');
         end
         % Get the old InvertHardcopy mode

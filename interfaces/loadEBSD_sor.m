@@ -42,7 +42,7 @@ try
     options = {'ColumnNames',{'Euler1','Euler2','Euler3','Weight'}};
   end
   if d{10}==0, options = [options,{'degree'}];end
-  if d{11}==0,
+  if d{11}==0
     options = [options,{'Bunge'}];
   else
     options = [options,{'Roe'}];

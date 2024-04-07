@@ -838,7 +838,7 @@ function	[ctbl,par]=CPRINTF_parse(par,varargin)
 		ix=1:nf*cs(1);
 		nx=numel(ix);
 		ni=numel(ttbl)/nx;
-	for	i=1:ni;
+	for	i=1:ni
 		cx=(i-1)*nx+ix;
 	if	bitand(i,1)
 		ttbl(cx)=CPRINTF_repmat(sf,[cs(1),1]);

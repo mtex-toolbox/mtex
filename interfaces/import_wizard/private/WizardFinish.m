@@ -216,7 +216,7 @@ end
           openUntitled( str, fname );
         end
       else
-        [file path] = uiputfile([fname '.m']);
+        [file, path] = uiputfile([fname '.m']);
         if ischar(file)
           fname = fullfile(path,file);
           fid = fopen(fname,'w');
@@ -253,7 +253,7 @@ end
             
             tmpString = 'crystalSymmetry()';
             
-          elseif ischar(cs{i});
+          elseif ischar(cs{i})
             
             tmpString = ['''' cs{i} ''''];
             
@@ -535,7 +535,7 @@ end
       
       rot = getSS('rotate');
       if getSS('rotOption') < 4 && ~isnull(angle(rot)) 
-        [p(1) p(2) p(3)] = Euler(rot,'ZXZ');
+        [p(1), p(2), p(3)] = Euler(rot,'ZXZ');
         str = [strrep(xnum2str(p/degree),' ','*degree,') '*degree'];
       else
         str = '';

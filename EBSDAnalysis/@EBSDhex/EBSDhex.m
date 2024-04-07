@@ -218,7 +218,7 @@ classdef EBSDhex < EBSD
       
     end
     
-    function [row,col] = cube2hex(ebsd,x,y,z)
+    function [row,col] = cube2hex(ebsd,x,~,z)
       % convert cube coordinates into offset coordinates
       
       if ebsd.isRowAlignment

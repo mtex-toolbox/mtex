@@ -157,7 +157,7 @@ end
 
 
 
-function [u s] = units(index)
+function [u, s] = units(index)
 
 u = 'pure number';
 s = 1;

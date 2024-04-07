@@ -92,7 +92,7 @@ function fh = isolate_axes(ah, vis)
         catch
             leg_pos = get(lh, 'Position');  % No OuterPosition in HG2, only in HG1
         end
-        if nLeg > 1;
+        if nLeg > 1
             leg_pos = cell2mat(leg_pos);
         end
         leg_pos(:,3:4) = leg_pos(:,3:4) + leg_pos(:,1:2);

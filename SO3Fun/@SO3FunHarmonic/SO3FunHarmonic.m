@@ -96,7 +96,7 @@ methods
     end
     
     % truncate zeros
-    A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
+    A = reshape(SO3F.power,size(SO3F.power,1),numel(SO3F));
     SO3F.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
 
   end
@@ -150,7 +150,7 @@ methods
     end
     dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
     nF = norm(F)';
-    out = prod(sqrt(dd(nF>0)) ./ nF(nF>0) <1e-4);
+    out = all( sqrt(dd(nF>0)) ./ nF(nF>0) < 1e-4 );
   end
   
   function F = set.antipodal(F,value)
@@ -192,6 +192,11 @@ methods
     s = s(2:end);
     if isscalar(s), s = [s 1]; end
     if nargin > 1, s = s(varargin{1}); end
+  end
+
+  function n = numel(SO3F)
+    s = size(SO3F.fhat);
+    n = prod(s(2:end));
   end
   
 end
