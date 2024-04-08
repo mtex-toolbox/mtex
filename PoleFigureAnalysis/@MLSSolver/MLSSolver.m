@@ -4,9 +4,10 @@ classdef MLSSolver < pf2odfSolver
 % reconstructing an ODF from arbitrarily scattered pole figure intensities.
 % The resulting ODF is represented as a weighted sum of unimodal
 % components. The shape and the number of component centers can be
-% specified. The algorithm is explained in detail in *A novel pole figure
-% inversion method: specification of the MTEX algorithm*, Hielscher,
-% Schaeben: J. of Appl. Cryst., 41(6), 2008.
+% specified. The algorithm is explained in detail in 
+%
+% * A novel pole figure inversion method: specification of the MTEX
+% algorithm*, Hielscher, Schaeben: J. of Appl. Cryst., 41(6), 2008.
 %
 % Syntax
 %
@@ -39,14 +40,14 @@ classdef MLSSolver < pf2odfSolver
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
     iterMin = 5;  % max number of iterations
-    lambda = 0;   % regularisation parameter
+    lambda = 0;   % regularization parameter
     RM = [];      % regularization matrix
   end
   
   properties (Access = private)
     nfft_gh  % list of nfft plans
     nfft_r   % list of nfft plans
-    A        % legendre coefficients of the kernel function
+    A        % Legendre coefficients of the kernel function
     refl     % cell
     u
     a
@@ -67,16 +68,17 @@ classdef MLSSolver < pf2odfSolver
       %solver.pf = unique(max(pf,0));
       solver.pf = max(pf,0);
 
-      % normalize very different polefigures
+      % normalize very different pole figures
       mm = max(pf.intensities(:));
 
+      delta = 2;
       for i = 1:pf.numPF
-        if mm > 5*max(pf.allI{i}(:))
-          pf.allI{i} = pf.allI{i} * mm/5/max(pf.allI{i}(:));
+        if mm > delta*max(pf.allI{i}(:))
+          solver.pf.allI{i} = solver.pf.allI{i} * mm/delta/max(pf.allI{i}(:));
         end
       end
       
-      % generate discretization of orientation space
+      % generate discretization of the orientation space
       solver.S3G = getClass(varargin,'SO3Grid');
       if isempty(solver.S3G)
         if pf.allR{1}.isOption('resolution')
@@ -115,7 +117,7 @@ classdef MLSSolver < pf2odfSolver
         solver.weights = num2cell(1./length(pf,[]));
       end
       
-      % regularisation
+      % regularization
       solver.lambda = get_option(varargin,'regularisation',0);
             
     end
