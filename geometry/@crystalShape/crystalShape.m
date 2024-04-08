@@ -19,7 +19,7 @@ classdef crystalShape
     V % vertices
     F % faces
 
-    habitus = 0 % describes how visibe mixed hkl faces are
+    habitus = 0 % describes how visible mixed hkl faces are
     extension = [1 1 1]; % describes distance of the faces in dependence of hkl
   end
   

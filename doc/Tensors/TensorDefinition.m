@@ -25,7 +25,7 @@
 %
 % In the following we explain how tensors of arbitrary rank can be defined
 % in MTEX. Independent of the rank any tensor is represented in MTEX by a
-% variable of type @tensor.
+% variable of type <tensor.tensor.html |tensor|>.
 %
 %
 %% Scalars (tensors of zero rank)
@@ -212,3 +212,4 @@ t = tensor.rand('rank',2)
 t = tensor.leviCivita
 
 %#ok<*NASGU>
+%#ok<*NOPTS>

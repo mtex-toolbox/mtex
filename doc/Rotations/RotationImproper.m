@@ -32,3 +32,4 @@ mir = reflection(vector3d(1,1,1))
 mir.isImproper
 
 %#ok<*NASGU>
+%#ok<*NOPTS>

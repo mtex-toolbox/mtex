@@ -23,7 +23,7 @@ function [odf,alpha] = calcODF(varargin)
 % Options
 %  kernel     - the ansatz functions (default = de la Vallee Poussin)
 %  halfwidth  - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  resolution - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
+%  resolution - localization grid for the ansatz functions (default = 3/2 resolution(pf))
 %  iterMax    - maximum number of iterations (default = 11)
 %  iterMin    - minimum number of iterations (default = 5)
 %  c0         - initial guess (default = [1 1 1 1 ... 1])
@@ -31,8 +31,8 @@ function [odf,alpha] = calcODF(varargin)
 % Flags
 %  zeroRange         - apply zero range method (default = )
 %  noGhostCorrection - omit ghost correction
-%  ensure_descent - stop iteration whenever no procress if observed
-%  force_iter_max - allway go until ITER_MAX
+%  ensure_descent - stop iteration whenever no progress if observed
+%  force_iter_max - always go until ITER_MAX
 %  silent         - no output
 %
 % Output

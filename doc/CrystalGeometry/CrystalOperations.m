@@ -74,7 +74,7 @@ drawNow(gcm,'figSize','normal')
 
 %%
 % 
-% The command <vector3d.eq.html |eq| or |==| > can be used to check whether
+% The command <vector3d.eq.html |eq| or |==|> can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
@@ -141,7 +141,7 @@ plot(p,'grid')
 % Converting a crystal direction which is represented by its coordinates
 % with respect to the crystal coordinate system $a$, $b$, $c$ into a
 % representation with respect to the associated Euclidean coordinate system
-% is done by the command <Miller.vector3d.html |vectord3d|>.
+% is done by the command <Miller.vector3d.html |vector3d|>.
 
 vector3d(m1)
 

@@ -36,7 +36,7 @@ eps = strainTensor(diag([1 0 -1]))
 %
 % and turns it into the stress tensor $\sigma$. In MTEX such tensor
 % products can be computed in its most general form by the command
-% <EinsteinSum.html EinsteinSum>.
+% <EinsteinSum.html |EinsteinSum|>.
 
 sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 
@@ -81,9 +81,9 @@ S = inv(C)
 c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 
 %%
-% Here we used the <tensor.inv.html inv> to compute the inverse of any rank
-% 2 or rank 4 tensor. There are shortcuts in MTEX for specific tensor
-% products. E.g. the relation between stress and strain can be more
+% Here we used the command <tensor.inv.html |inv|> to compute the inverse
+% of any rank 2 or rank 4 tensor. There are shortcuts in MTEX for specific
+% tensor products. E.g. the relation between stress and strain can be more
 % compactly written as a <tensor.colon.html double dot product>
 
 C * eps
@@ -92,7 +92,7 @@ C : eps
 %% 
 % The double dot product between two rank two tensors is essentially their
 % inner product and can be equivalently computed from the
-% |<tensor.trace.html trace>| of their matrix product
+% |<tensor.trace.html |trace|>| of their matrix product
 
 T1 : T2
 trace(T1 * T2')
@@ -131,3 +131,4 @@ T = rotate(T,r)
 
 %#ok<*NASGU>
 %#ok<*ASGLU>
+%#ok<*NOPTS>

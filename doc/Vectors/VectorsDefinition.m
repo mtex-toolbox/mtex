@@ -42,3 +42,4 @@ vector3d.rand
 [vector3d.ones vector3d.zeros vector3d.nan]
 
 %#ok<*NASGU>
+%#ok<*NOPTS>

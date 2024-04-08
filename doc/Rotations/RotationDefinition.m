@@ -151,26 +151,15 @@ rotation.fit(left,right)
 
 %% Random Rotations
 %
-% MTEX offers several ways for generating random rotations. In the most 
+% MTEX offers several ways for generating random rotations. The most
+% easiest way is to use the command <rotation.rand.html |rotation.rand|>
+% which generates an arbitrary number of random rotations
 
 rotation.rand(100)
 
-
-%% Logarithm, Exponential Mapping, Spin Tensor
-%
-% TODO
-
-S = spinTensor(rot)
-
-rotation(S)
-
-vector3d(S)
-
 %%
-
-v = log(rot)
-
-rotation(exp(v))
+% If you are interested in random rotations that follow a certain
+% distribution have a look at <RandomSampling.html random sampling>.
 
 %% Quaternions
 %
@@ -182,3 +171,4 @@ q = quaternion(1,0,0,0)
 rot = rotation(q)
 
 %#ok<*NASGU>
+%#ok<*NOPTS>

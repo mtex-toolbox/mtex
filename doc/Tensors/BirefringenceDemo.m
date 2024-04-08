@@ -1,4 +1,4 @@
-%% Birefrigence
+%% Birefringence 
 %
 % Birefringence is the optical property of a material having a refractive
 % index that depends on the polarization and propagation direction of
