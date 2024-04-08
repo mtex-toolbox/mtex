@@ -44,25 +44,17 @@ classdef fibonacciS2Grid < vector3d
       end
 
       % standard grid size is 1000
-      n = 1000;
-      if nargin == 0
-        n = 1000;
-      elseif size(varargin, 1) == 1
-        n = round((varargin{1} - 1) / 2);
+      if nargin > 0 && isnumeric(varargin{1})        
+        numPoints = varargin{1};
+      elseif check_option(varargin,'points')
+        numPoints = get_option(varargin,'points');
       else
-        % take given parameters into account
-        points_specifier_pos = find(strcmp(varargin, 'points'), 1);
-        if ~isempty(points_specifier_pos)
-          n = round(varargin(points_specifier_pos - 1) / 2);
-        else
-          res_specifier_pos = find(strcmp(varargin, 'resolution'), 1);
-          if ~isempty(res_specifier_pos)
-            res = varargin(res_specifier_pos + 1);
-            % this comes from fitting the grid sizes to the resolutions
-            n = round((exp(2.512) / res^2 - 1) / 2);
-          end
-        end
+        res = get_option(varargin,'resolution',5*degree);        
+        % this comes from fitting the grid sizes to the resolutions
+        numPoints = exp(2.512) / res^2;        
       end
+
+      n = round((numPoints - 1) / 2);
 
       % define the golden ratio
       phi = (1+sqrt(5)) / 2;
