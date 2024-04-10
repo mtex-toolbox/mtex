@@ -43,7 +43,7 @@ rot = rot(:);
 
 if F.bandwidth == 0
   f = ones(size(rot)) .* F.fhat;
-  if numel(F) == 1, f = reshape(f,s); end
+  if isscalar(F), f = reshape(f,s); end
   return;
 end
 
@@ -114,7 +114,7 @@ else
   nfsoftmex('finalize',plan);
 end
 
-if numel(F) == 1, f = reshape(f,s); end
+if isscalar(F), f = reshape(f,s); end
 
 if F.isReal, f = real(f); end
 

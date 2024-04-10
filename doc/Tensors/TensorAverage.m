@@ -23,15 +23,15 @@ plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 % define maximum acceptable MAD value
 MAD_MAXIMUM= 1.3;
 
-% eliminate all meassurements with MAD larger than MAD_MAXIMUM
+% eliminate all measurements with MAD larger than MAD_MAXIMUM
 ebsd(ebsd.mad >MAD_MAXIMUM) = []
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 %% Import the elastic stiffness tensors
 %
-% The elastic stiffness tensor of glaucophane was reported in Bezacier et al. 2010 
-% (Tectonophysics) with respect to the crystal reference frame
+% The elastic stiffness tensor of Glaucophane was reported in Bezacier et
+% al. 2010 (Tectonophysics) with respect to the crystal reference frame
 
 CS_Tensor_glaucophane = crystalSymmetry('2/m',[9.5334,17.7347,5.3008],...
   [90.00,103.597,90.00]*degree,'X||a*','Z||c','mineral','Glaucophane');
@@ -52,15 +52,17 @@ Cij = [[122.28   45.69   37.24   0.00   2.35   0.00];...
   [   0.00    0.00    0.00   8.89   0.00  51.24]];
 
 %%
-% The stiffness tensor in MTEX is defined via the command @stiffnessTensor.
+% The stiffness tensor in MTEX is defined via the command
+% <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>.
 
 C_glaucophane = stiffnessTensor(Cij,CS_Tensor_glaucophane,'density',rho_glaucophane);
 
 %%
-% The elastic stiffness tensor of epidote was reported in Aleksandrov et al. 1974 
-% 'Velocities of elastic waves in minerals at atmospheric pressure and
-% increasing the precision of elastic constants by means of EVM (in Russian)',
-% Izv. Acad. Sci. USSR, Geol. Ser.10, 15-24, with respect to the crystal reference frame
+% The elastic stiffness tensor of Epidote was reported in Aleksandrov et
+% al. 1974 'Velocities of elastic waves in minerals at atmospheric pressure
+% and increasing the precision of elastic constants by means of EVM (in
+% Russian)', Izv. Acad. Sci. USSR, Geol. Ser.10, 15-24, with respect to the
+% crystal reference frame
 
 CS_Tensor_epidote = crystalSymmetry('2/m',[8.8877,5.6275,10.1517],...
   [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
@@ -81,7 +83,7 @@ Cij = [[211.50    65.60    43.20     0.00     -6.50     0.00];...
   [   0.00     0.00     0.00    -2.30      0.00    79.50]];
 
 
-% And now we define the epidote stiffness tensor as a MTEX variable
+% And now we define the Epidote stiffness tensor as a MTEX variable
 
 C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 
@@ -97,7 +99,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % average assumes that the elastic strain field in the aggregate is
 % constant everywhere, so that the strain in every position is equal to the
 % macroscopic strain of the sample. CVoigt is then estimated by a volume
-% average of local stiffnesses C(gi), where gi is the orientation given by
+% average of local stiffness C(gi), where gi is the orientation given by
 % a triplet of Euler angles and with orientation gi, and volume fraction
 % V(i). This is formally described as
 %
@@ -106,7 +108,7 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % The Reuss average on the other hand assumes that the stress field in the
 % aggregate is constant, so the stress in every point is set equal to the
 % macroscopic stress. CReuss is therefore estimated by the volume average
-% of local compliances S(gi) and can be described as
+% of local compliance S(gi) and can be described as
 %
 % $ \left<T\right>^{\text{Reuss}} = \left[ \sum_{m=1}^{M}  T(\mathtt{ori}_{m})^{-1} \right]^{-1}$
 %
@@ -125,9 +127,9 @@ C_epidote = stiffnessTensor(Cij,CS_Tensor_epidote,'density',rho_epidote);
 % behavior).
 
 %% Averaging the elastic stiffness of an aggregate based on EBSD data
-% for a single phase (e.g. glaucophane) the syntax is
+% for a single phase (e.g. Glaucophane) the syntax is
 
-[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane);
+[CVoigt_glaucophane,CReuss_glaucophane,CHill_glaucophane] =  calcTensor(ebsd('glaucophane'),C_glaucophane); 
 
 %% ODF Estimation
 % Next, we estimate an ODF for the Epidote phase
@@ -142,7 +144,7 @@ odf_gl = calcDensity(ebsd('glaucophane').orientations,'halfwidth',10*degree);
   calcTensor(odf_gl,C_glaucophane);
   
 %%
-% To visualize the polycrystalline glaucophane wave velocities we can use the command
+% To visualize the polycrystalline Glaucophane wave velocities we can use the command
 % <stiffnessTensor.plotSeismicVelocities.html |plotSeismicVelocities|>
 
 plotSeismicVelocities(CHill_glaucophane)
@@ -150,3 +152,6 @@ plotSeismicVelocities(CHill_glaucophane)
 %%
 % More details on averaging the seismic properties considering the modal composition of different phases
 % can be found in <CPOSeismicProperties.html here>
+
+%#ok<*ASGLU>
+%#ok<*NOPTS>

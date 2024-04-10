@@ -43,7 +43,7 @@ function sym = loadSymmetry(fname, location)
   name = h5readatt(fname, location, 'name');
   
   info = h5info(fname, location);
-  if numel(info.Attributes) == 1
+  if isscalar(info.Attributes)
     sym = name;
   else
     axesLength = h5readatt(fname, location, 'axes');

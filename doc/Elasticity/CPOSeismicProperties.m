@@ -115,7 +115,7 @@ C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx);
 
 %% Single crystal seismic velocities
 %
-% The single crystal seismic velocites can be computed by the command
+% The single crystal seismic velocities can be computed by the command
 % <stiffnessTensor.velocity.html |velocity|> and are explained in more
 % detail <WaveVelocities.html here>. At this point we simply use the
 % command <stiffnessTensor.plotSeismicVelocities.html
@@ -166,7 +166,7 @@ odf_cpx = calcDensity(ebsd('d').orientations,'halfwidth',10*degree);
 % calculations
 %
 % To calculate the average stiffness tensor from the ODFs we first compute
-% them from each phase seperately
+% them from each phase separately
 
 [CVoigt_ol, CReuss_ol, CHill_ol]    = mean(C_Fo,odf_ol);
 [CVoigt_opx, CReuss_opx, CHill_opx] = mean(C_opx,odf_opx);
@@ -188,3 +188,6 @@ CHill
 % Finally, we visualize the polycrystal wave velocities as above
 
 plotSeismicVelocities(CHill)
+
+%#ok<*ASGLU>
+%#ok<*NOPTS>

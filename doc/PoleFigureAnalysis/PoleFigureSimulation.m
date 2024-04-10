@@ -24,13 +24,13 @@ plot(model_odf,'sections',6,'silent','sigma')
 % specified
 %
 % # an arbitrary <SO3Fun.SO3Fun.html ODF>
-% # a list of <Miller.Miller.html Miller indece>
+% # a list of <Miller.Miller.html Miller indices>
 % # a grid of <S2Grid.S2Grid.html specimen directions>
 % # superposition coefficients (optional)
 % # the magnitude of error (optional)
 %
 %%
-% The list of <Miller.Miller.html Miller indece>
+% The list of <Miller.Miller.html Miller indices>
 
 h = [Miller(1,1,1,cs),Miller(1,1,0,cs),Miller(1,0,1,cs),Miller(0,1,1,cs),...
   Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
@@ -103,3 +103,5 @@ ylim([0.07 0.32])
 xlabel('Number of Pole Figures');
 ylabel('Reconstruction Error');
 legend({'Without Ghost Correction','With Ghost Correction'});
+
+%#ok<*SAGROW>

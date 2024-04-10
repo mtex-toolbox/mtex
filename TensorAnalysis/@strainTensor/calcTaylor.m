@@ -51,11 +51,11 @@ if sS.CS.Laue ~= eps.CS.Laue
   
     % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
     SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
-    M(k) = SO3F(1);
+    M(k) = SO3F(1); %#ok<AGROW>
     if nargout>1
       b = [];
-      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
-      % to be compareable set output to rightspintensor      
+      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
+      % to be comparable set output to rightspintensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
   end
@@ -150,7 +150,7 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   end
 end
 
-function checkHex
+function checkHex %#ok<DEFNU>
 cs = crystalSymmetry.load('Mg-Magnesium.cif');
 cs = cs.properGroup;
 
@@ -159,7 +159,7 @@ sScold = [slipSystem.basal(cs,1),...
   slipSystem.pyramidalCA(cs,80),...
   slipSystem.twinC1(cs,100)];
 
-% consider all symmetrically equivlent slip systems
+% consider all symmetrically equivalent slip systems
 sScold = sScold.symmetrise;
 
 epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]));
@@ -173,9 +173,9 @@ ori0 = ori0.symmetrise;
 
 [~,~,Wori] = calcTaylor(inv(ori0)*epsCold,sScold);
 % this should give all the same vectors
-ori0 .* vector3d(Wori)
+ori0 .* vector3d(Wori) %#ok<NOPRT>
 
-ori0 .* vector3d(W.eval(ori0))
+ori0 .* vector3d(W.eval(ori0)) %#ok<NOPRT>
 
 end
 

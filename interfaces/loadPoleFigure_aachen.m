@@ -55,7 +55,7 @@ while ~feof(fid)
     iwin = str2double(l(26:30));
     isim = str2double(l(31:35));
     fmt= regexp(l(36:end),'\s*\((\d+)f(\d+)','tokens');
-    if length(fmt) == 1
+    if isscalar(fmt)
       fmt = fmt{1};
       col = str2double(fmt(1));
       dig = str2double(fmt(2));
@@ -89,7 +89,7 @@ while ~feof(fid)
     d{ih} = [];
     while length(d) < length(r) && ~feof(fid)
       l = fgetl(fid);
-      if length(l)<dig*col, 
+      if length(l)<dig*col 
         continue;
       end
       l = reshape(l(1:dig*col),dig,col).';

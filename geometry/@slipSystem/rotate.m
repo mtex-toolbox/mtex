@@ -4,7 +4,7 @@ function sS = rotate(sS,ori)
 sS.b = rotate(sS.b,ori);
 sS.n = rotate(sS.n,ori);
 
-if length(sS.CRSS) == 1
+if isscalar(sS.CRSS)
   sS.CRSS = repmat(sS.CRSS,size(sS.b));
 end
 

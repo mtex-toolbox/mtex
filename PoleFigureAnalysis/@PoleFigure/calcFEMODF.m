@@ -63,7 +63,7 @@ end
 M = vertcat(M{:});
 b = vertcat(b{:});
 
-vdisp(['starting solver'],varargin{:});
+vdisp('starting solver',varargin{:});
 vdisp(['matrix is ' sizestr(M) ],varargin{:});
 % solve the linear system of equation
 c = lsqnonneg(M,b);

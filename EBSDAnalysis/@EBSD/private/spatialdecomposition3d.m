@@ -54,12 +54,12 @@ elseif ~check_option(varargin,'voronoi')
   
   
   %  adding boundary voxels
-  [bind{1} bf{1}] = constr(sz,[0 0 0],0,nf);
-  [bind{2} bf{2}] = constr(sz,[1 0 0],0,nf);
-  [bind{3} bf{3}] = constr(sz,[0 0 0],2,nf);
-  [bind{4} bf{4}] = constr(sz,[0 1 0],2,nf);
-  [bind{5} bf{5}] = constr(sz,[0 0 0],4,nf);
-  [bind{6} bf{6}] = constr(sz,[0 0 1],4,nf);
+  [bind{1}, bf{1}] = constr(sz,[0 0 0],0,nf);
+  [bind{2}, bf{2}] = constr(sz,[1 0 0],0,nf);
+  [bind{3}, bf{3}] = constr(sz,[0 0 0],2,nf);
+  [bind{4}, bf{4}] = constr(sz,[0 1 0],2,nf);
+  [bind{5}, bf{5}] = constr(sz,[0 0 0],4,nf);
+  [bind{6}, bf{6}] = constr(sz,[0 0 1],4,nf);
   
   aind = unique([uint32(ind); vertcat(bind{:})]);
   [ix,iy,iz] = ind2sub(sz,aind);
@@ -131,19 +131,19 @@ else
         dy = linspace(a(2),b(2),v);
         dz = linspace(a(3),b(3),v);
         
-        [x y] = meshgrid(dx,dy);
+        [x, y] = meshgrid(dx,dy);
         z1 = [x(:) y(:)];
         z2 = z1;
         z1(:,3) = a(3)- d(3);
         z2(:,3) = b(3)+ d(3);
         
-        [x z] = meshgrid(dx,dz);
+        [x, z] = meshgrid(dx,dz);
         y1(:,[1 3]) = [x(:) z(:)];
         y2 = y1;
         y1(:,2) = a(2)- d(2);
         y2(:,2) = b(2)+ d(2);
         
-        [y z] = meshgrid(dy,dz);
+        [y, z] = meshgrid(dy,dz);
         x1(:,2:3) = [y(:) z(:)];
         x2 = x1;
         x1(:,1) = a(1)- d(1);
@@ -155,7 +155,7 @@ else
         dy = (max(x_D(:,2)) - min(x_D(:,2)));
         dz = (max(x_D(:,3)) - min(x_D(:,3)));
         
-        [x y z] = sphere;
+        [x, y, z] = sphere;
         
         dummy = [x(:).*dx+dx/2+min(x_D(:,1)) ...
           y(:).*dy+dy/2+min(x_D(:,2)) ...
@@ -170,7 +170,7 @@ else
     dy = (max(xy(:,2)) - min(xy(:,2)));
     dz = (max(xy(:,3)) - min(xy(:,3)));
     
-    [x y z] = sphere;
+    [x, y, z] = sphere;
     
     dummy = [x(:).*dx+dx/2 ...
       y(:).*dy+dy/2 ...
@@ -181,7 +181,7 @@ else
   end
   n = size(x_D,1);
   x_D = [x_D; dummy];
-  [v c] = voronoin(x_D,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
+  [v, c] = voronoin(x_D,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
   c(end-length(dummy)+1:end) = [];
   
   FD = cell(numel(c),1); VF = FD; % preallocate
@@ -196,7 +196,7 @@ else
   
   VF = vertcat(VF{:});
   FD = vertcat(FD{:});
-  [VF b faceID] = unique(sort(VF,2),'rows');
+  [VF, b, faceID] = unique(sort(VF,2),'rows');
   FD = sparse(faceID(:),FD(:),1,max(faceID(:)),n);
   
   A = triu(FD'*FD,1);
@@ -222,7 +222,7 @@ switch d
     dz(~any(s)+1) = dz(any(s)+1);
 end
 
-[bx by bz] = meshgrid(dx(1):dx(2),dy(1):dy(2),dz(1):dz(2));
+[bx, by, bz] = meshgrid(dx(1):dx(2),dy(1):dy(2),dz(1):dz(2));
 bind = s2i(sz,bx(:),by(:),bz(:));
 
 [ix,iy,iz] = ind2sub(sz,bind);

@@ -10,26 +10,26 @@ unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 dHex = mean(sqrt(sum(unitCell.^2,2)));
 
 % alignment of the hexagon
-% true mean vertices are pointing towars y direction
+% true mean vertices are pointing towards y direction
 isRowAlignment = diff(min(abs(ebsd.unitCell))) > 0;
 
 % maybe the unit cell is a rotated hexagon
-if length(unique(unitCell)) == 12
-  % set up new unit cell
-  omega = (0:60:300)*degree + 30*isRowAlignment*degree;
-  unitCell = dHex * [cos(omega.') sin(omega.')];
-end
+%if length(unique(unitCell)) == 12
+%  % set up new unit cell
+%  omega = (0:60:300)*degree + 30*isRowAlignment*degree;
+%  unitCell = dHex * [cos(omega.') sin(omega.')];
+%end
 
 prop = ebsd.prop;
 
 % number of rows and columns and offset
-% 1 means second row / column has positiv offset
-% -1 means second row / column has negativ offset
+% 1 means second row / column has positive offset
+% -1 means second row / column has negative offset
 ext = ebsd.extent;
 
 if isRowAlignment
   
-  % find point with smalles x value
+  % find point with smallest x value
   [~,i] = min(ebsd.prop.x);
   
   % and determine whether this is an even or odd column

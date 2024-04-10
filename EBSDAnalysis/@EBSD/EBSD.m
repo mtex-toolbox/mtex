@@ -3,7 +3,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   %
   % In MTEX a variable of type <EBSD.EBSD.html |EBSD|> is used to store
   % EBSD measurements as a table with rows containing the orientation, the
-  % spatial coordinates and the phase of each indiviudal measurement.
+  % spatial coordinates and the phase of each individual measurement.
   %
   % Syntax
   %
@@ -132,7 +132,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       elseif length(ori) == nnz(ebsd.isIndexed)
         ebsd.prop.mis2mean = rotation.id(length(ebsd),1);
         ebsd.prop.mis2mean(ebsd.isIndexed) = rotation(ori);
-      elseif length(ori) == 1
+      elseif isscalar(ori)
         ebsd.prop.mis2mean = rotation(ori) .* rotation.id(length(ebsd),1);
       else
         error('The list of mis2mean has to have the same size as the list of ebsd data.')
@@ -156,7 +156,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(size(ebsd));
         ebsd.prop.grainId(ebsd.isIndexed) = grainId;
-      elseif numel(grainId) == 1
+      elseif isscalar(grainId)
         ebsd.prop.grainId = grainId * ones(size(ebsd));
       else
         error('The list of grainId has to have the same size as the list of ebsd data.')
@@ -181,7 +181,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         if isa(ori,'quaternion')
           ebsd.rotations = rotation(ori);
           ebsd.CS = ori.CS;
-        elseif isnan(ori) && length(ori)==1
+        elseif isnan(ori) && isscalar(ori)
           ebsd.rotations = rotation.nan(size(ebsd));
         else
           error('type mismatch');

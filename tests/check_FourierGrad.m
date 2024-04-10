@@ -33,7 +33,7 @@ if max(norm(g1-g2)) < 1e-3, disp(' Test 1 passed'); end
 
 %% test 2
 
-ori = rotation.byAxisAngle(vector3d(1,2,0)s,omega);
+ori = rotation.byAxisAngle(vector3d(1,2,0),omega);
 
 g1 = fodf.grad(ori(:),'check','delta',0.1*degree);
 g2 = fodf.grad(ori(:));

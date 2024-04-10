@@ -274,8 +274,8 @@ for i = 1:length(flds)
     A(:,i) = reshape(temp,ebsd.length,1);
 end
 
-A(find(all([A(:,2)>-round0Thrsh,A(:,2)<round0Thrsh],2)),2) = 0;            %Rounding close to 0 X coordinates
-A(find(all([A(:,3)>-round0Thrsh,A(:,3)<round0Thrsh],2)),3) = 0;            %Rounding close to 0 Y coordinates
+A(all([A(:,2)>-round0Thrsh,A(:,2)<round0Thrsh],2),2) = 0;    %Rounding close to 0 X coordinates
+A(all([A(:,3)>-round0Thrsh,A(:,3)<round0Thrsh],2),3) = 0;    %Rounding close to 0 Y coordinates
 A(isnan(A)) = 0;                                                           %Set NaN to 0
 A(:,2) =  A(:,2) - A(1,2);                                                 %Set first x-value to 0
 A(:,3) =  A(:,3) - A(1,3);                                                 %Set first y-value to 0

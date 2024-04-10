@@ -7,12 +7,12 @@
 % <MTEXvsBungeConvention.html MTEX vs Bunge Convention>.
 %
 % Technically, a variable of type <orientation.orientation.html
-% orientation> is nothing else then a <rotation.rotation.html rotation>
+% |orientation|> is nothing else then a <rotation.rotation.html |rotation|>
 % that is accompanied by a crystal symmetry. Hence, all methods for
 % defining rotations (<RotationDefinition.html as explained here>) are also
 % applicable for orientations with the only difference that the crystal
 % symmetry has to be specified in form of a variable of type
-% <crystalSymmetry.crystalSymmetry.html crystalSymmetry>.
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>.
 
 % load copper cif file
 cs = crystalSymmetry.load('Cu-Copper.cif')
@@ -27,14 +27,14 @@ ori = orientation.byEuler(30*degree,50*degree,10*degree,cs)
 
 M = eye(3)
 
-ori = orientation.byMatrix(M)
+ori = orientation.byMatrix(M,cs)
 
 %% Miller indices 
 %
 % Another common way to specify an orientation is by the crystal directions
 % point towards the specimen directions Z and X. This can be done by the
-% command <orientation.byMiller.html byMiller>. E.g. in order to define 
-% the GOSS orientation (011)[100] we can write
+% command <orientation.byMiller.html |orientation.byMiller|>. E.g. in order
+% to define the GOSS orientation (011)[100] we can write
 
 orientation.byMiller([0 1 1],[1 0 0],cs)
 
@@ -52,7 +52,7 @@ ori = orientation.rand(100,cs)
 %% Specimen Symmetry
 % If one needs to consider also specimen symmetry this can be defined as a
 % variable of type <specimenSymmetry.specimenSymmetry.html
-% specimenSymmetry> and passed as an additional argument to all commands
+% |specimenSymmetry|> and passed as an additional argument to all commands
 % discussed above, e.g.,
 
 % define orthotropic specimen symmetry
@@ -66,3 +66,5 @@ ori = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
 % equivalent orientations
 
 ori.symmetrise
+
+%#ok<*NASGU>

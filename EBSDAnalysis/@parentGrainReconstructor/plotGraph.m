@@ -6,7 +6,7 @@ assert(~isempty(job.graph), 'No graph computed. Please use the command ''calcGra
 if job.hasVariantGraph
   
   error('not yet implemented')
-  p2cV = variants(job.p2c,'parent');
+  p2cV = variants(job.p2c,'parent'); %#ok<UNRCH>
   numV = length(p2cV);
 
   % h2ind 

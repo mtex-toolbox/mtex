@@ -35,7 +35,7 @@ for i = 1:cN
   
   for k = 1:length(psi)
     
-    % eval kernel
+    % evaluate kernel
     f = evalCos(psi(k),d);
     
     % remove diagonal
@@ -55,7 +55,7 @@ end
 %fprintf('\n');
 
 c = cumsum(c,1) ./ repmat(iN.',1,length(psi));
-[cm,ci] = max(c(end,:));
+[~,ci] = max(c(end,:));
 psi = psi(ci);
 
 return

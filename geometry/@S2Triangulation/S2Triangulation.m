@@ -108,9 +108,8 @@ classdef S2Triangulation
       sT = S2Triangulation(v);
       
       p = vector3d.rand(10);
-      id1 = sT.findTriangle(p)
-      id2 = sT.findTriangle2(p)
-      
+      id1 = sT.findTriangle(p); %#ok<NASGU>
+      id2 = sT.findTriangle2(p); %#ok<NASGU>
       
     end
     

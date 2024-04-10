@@ -13,7 +13,7 @@ C = stiffnessTensor(inv@tensor(S));
 end
 
 % this can be done more explicitely by
-function test
+function test %#ok<DEFNU>
 
 M = matrix(S,'voigt');
 
@@ -39,5 +39,6 @@ M = [[  C11   C12   C13    0     0     0];...
     [   0      0      0    0     0   1./M(6,6,:)]];
 % 
 C = reshape(stiffnessTensor(M,cs_tensor,'density',rho),size(S));
+disp(C)
 
 end

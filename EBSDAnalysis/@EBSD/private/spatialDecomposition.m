@@ -239,7 +239,7 @@ for k=1:size(boundingX,1)-1
     
   end
   
-  dummyCoordinates = [dummyCoordinates; tmpX];
+  dummyCoordinates = [dummyCoordinates; tmpX]; %#ok<AGROW>
   
 end
   

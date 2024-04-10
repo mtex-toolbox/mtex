@@ -12,7 +12,7 @@ function S2G = copy(S2G,condition)
 % S2Grid/copy
 
 if isa(condition,'vector3d'), condition = find(S2G,condition); end
-if isnumeric(condition), 
+if isnumeric(condition) 
   inds = false(length(S2G),1);
   inds(condition) = true;
   condition = inds; 

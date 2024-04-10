@@ -8,8 +8,8 @@
 I = - rotation.byEuler(0,0,0)
 
 %%
-% Note that this is convenient as both groupings of the operations "-" and
-% "*" should give the same result
+% Note that this is convenient as both groupings of the operations |-| and
+% |*| should give the same result
 
 - (rotation.byEuler(0,0,0) * xvector)
 (- rotation.byEuler(0,0,0)) * xvector
@@ -30,3 +30,6 @@ mir = reflection(vector3d(1,1,1))
 % To check whether a rotation is improper or not you can do
 
 mir.isImproper
+
+%#ok<*NASGU>
+%#ok<*NOPTS>

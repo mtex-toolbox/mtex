@@ -1,7 +1,7 @@
 function v = power(v,a)      
 % overloads v.^a componentwise for the coordinates of vector3d
 
-if numel(a)==1
+if isscalar(a)
   a=a.*[1,1,1];
 end
 if numel(a)==3

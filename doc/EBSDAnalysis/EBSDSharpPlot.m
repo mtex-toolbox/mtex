@@ -35,7 +35,7 @@ mtexColorbar
 % increase the contrast for the main group, we restrict the color range from
 % 110 degree to 120 degree.
 
-caxis([110 120]);
+setColorRange([110 120]);
 
 % by the following lines we colorcode the outliers in purple.
 cmap = colormap;
@@ -50,7 +50,7 @@ colormap(cmap)
 plot(ebsd,color)
 
 % set scaling of the angles to 110 - 120 degree
-caxis([110 120]);
+setColorRange([110 120]);
 
 % colorize outliers in purple.
 cmap = colormap;

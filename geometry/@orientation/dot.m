@@ -121,7 +121,7 @@ elseif length(qcs) <= 1 % no crystal symmetry
       
   d = reshape(d,size(mori));
 
-elseif length(o1) == 1
+elseif isscalar(o1)
 
   % symmetrising the single element is much faster
   o1 = mtimes(qss,mtimes(o1,qcs,0),1);
@@ -137,7 +137,7 @@ elseif length(o1) == 1
   
   d = reshape(max(abs(d),[],1),size(o2));
   
-elseif length(o2) == 1
+elseif isscalar(o2)
   
   % symmetrising the single element is much faster
   o2 = mtimes(qss,mtimes(o2,qcs,0),1);

@@ -30,11 +30,11 @@ classdef velocityGradientTensor < tensor
     L = simpleShear(d,n,e)
     
     
-        
-    function L = planeStrain(v1,v2,gamma)      
-      
-      L = velocityGradientTensor();
-    end
+    % TODO    
+    %function L = planeStrain(v1,v2,gamma)      
+    %  
+    %  L = velocityGradientTensor();
+    %end
 
     function L = spin(varargin)
       % define a spin tensor

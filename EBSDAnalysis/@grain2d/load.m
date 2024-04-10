@@ -239,7 +239,7 @@ function [dimension,V, poly,oriMatrix,crysym] = readTessFile(filepath)
   end
 
   %set Z to 0 if slice is from somewhere above/below but not rotated
-  if length(unique(V(:,3))) == 1
+  if isscalar(unique(V(:,3)))
         V(:,3) = 0;
   end
 

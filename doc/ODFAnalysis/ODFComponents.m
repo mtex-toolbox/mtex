@@ -29,8 +29,8 @@ mtexColorbar
 %%
 % Note that, similarly as the MATLAB
 % <https://de.mathworks.com/help/matlab/ref/max.html |max|> command, the
-% second output argument is the position where the maximum is atained. In
-% our case we observe that the maximum value is about |121|.  To visualize
+% second output argument is the position where the maximum is attained. In
+% our case we observe that the maximum value is about |121|. To visualize
 % the corresponding preferred orientation we plot it into the sigma
 % sections of the ODF.
 
@@ -117,3 +117,5 @@ vol * 100
 annotate(ori,'MarkerFaceColor','none','MarkerEdgeColor','white',...
   'linewidth',2,'MarkerSize',15,'marker','o')
 
+%#ok<*ASGLU>
+%#ok<*NOPTS>

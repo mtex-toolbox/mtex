@@ -42,12 +42,16 @@
 % At first we need some vertices
 nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
+
 %%
 % Next we define function values for the vertices
+
 y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
+
 %%
 % Now the actual command to get a 2x1 |sF1| of type 
 % <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
+
 sF1 = S2FunHarmonic.approximation(nodes, y)
 
 %%
@@ -59,9 +63,11 @@ sF1 = S2FunHarmonic.approximation(nodes, y)
 % double:
 
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
+
 %% 
 % Now we call the quadrature command to get 4x1 |sF2| of type 
 % <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
+
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 
 %%
@@ -81,7 +87,7 @@ sF3 = S2FunHarmonic(eye(9))
 %%
 % *Some default matrix and vector operations*
 %
-% You can concatenate and refer to functions as Matlab does with vectors and matrices
+% You can concatenate and refer to functions as MATLAB does with vectors and matrices
 
 sF4 = [sF1; sF2];
 sF4(2:3);
@@ -106,7 +112,7 @@ sF3 = reshape(sF3, 3, []);
 %
 % If we do not specify further options to |sum| or |mean| they give we the 
 % integral or the mean value back for each function.
-% You could also calculate the conventional sum or the meanvalue over a 
+% You could also calculate the conventional sum or the mean value over a 
 % dimension of a multivariate |S2FunHarmonic|.
 
 sum(sF1, 1);
@@ -132,3 +138,5 @@ min(sF3,[],1);
 %
 % The same plot commands as for univariate |S2FunHarmonic| work on multivariate as well.
 % The difference is that, now, each component is plotted next to one another.
+
+%#ok<*VUNUS>

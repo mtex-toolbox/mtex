@@ -3,8 +3,8 @@
 %%
 % This page describes how to use MTEX to estimate an ODF from pole figure
 % data. Starting point of any ODF reconstruction is a
-% <PoleFigure.PoleFigure.html PoleFigure> object which can be created e.g.
-% by
+% <PoleFigure.PoleFigure.html |PoleFigure|> object which can be created
+% e.g. by
 
 mtexdata dubna
 
@@ -18,17 +18,17 @@ plot(pf)
 
 %% ODF Estimation
 % ODF estimation from a pole figure object is done by the function 
-% <PoleFigure.calcODF.html calcODF>. The most simplest
+% <PoleFigure.calcODF.html |calcODF|>. The most simplest
 % syntax is
 
 odf = calcODF(pf)
 
 %% 
 % There are a lot of options to the function <PoleFigure.calcODF.html
-% calcODF>. You can specify the discretization, the functional to minimize,
-% the number of iteration or regularization to be applied. Furthermore, you
-% can specify ghost correction or the zero range method to be applied.
-% These options are discussed below.
+% |calcODF|>. You can specify the discretization, the functional to
+% minimize, the number of iteration or regularization to be applied.
+% Furthermore, you can specify ghost correction or the zero range method to
+% be applied. These options are discussed below.
 %
 %% 
 % You may want to verify that the pole figures are reproduced. Here is a
@@ -39,9 +39,9 @@ plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 
 %% Error analysis
 %
-% For a more quantitative description of the reconstruction quality, one can
-% use the function <PoleFigure.calcError.html calcError> to compute the
-% fit between the reconstructed ODF and the measured pole figure
+% For a more quantitative description of the reconstruction quality, one
+% can use the function <PoleFigure.calcError.html |calcError|> to compute
+% the fit between the reconstructed ODF and the measured pole figure
 % intensities. The following measured are available:
 %
 % * RP - error
@@ -54,7 +54,7 @@ calcError(pf,odf,'RP',1)
 % In order to recognize bad pole figure intensities, it is often useful to
 % plot difference pole figures between the normalized measured intensities
 % and the recalculated ODF. This can be done by the command
-% <PoleFigure.plotDiff.html PlotDiff>.
+% <PoleFigure.plotDiff.html |plotDiff|>.
 
 plotDiff(pf,odf)
 
@@ -62,7 +62,7 @@ plotDiff(pf,odf)
 % Assuming you have driven two ODFs from different pole figure measurements
 % or by ODF modeling. Then one can ask for the difference between both.
 % This difference is computed by the command <SO3Fun.calcError.html
-% calcError>.
+% |calcError|>.
 
 % define a unimodal ODF with the same preferred orientation 
 [~,ori_pref] = max(odf);
@@ -78,10 +78,11 @@ calcError(odf_model,odf)
 %
 % In MTEX the ODF is approximated by a superposition of up to 10,000,000
 % unimodal components. By exact number and position of these  components,
-% as well as its shape can be specified by the user. By default, the positions
-% are chosen equispaced in the orientation space with 1.5 times the
-% resolution of the pole figures and the components are de la Vallee
-% Poussin shaped with the same halfwidth as the resolution of the positions.
+% as well as its shape can be specified by the user. By default, the
+% positions are chosen equispaced in the orientation space with 1.5 times
+% the resolution of the pole figures and the components are de la Vallee
+% Poussin shaped with the same halfwidth as the resolution of the
+% positions.
 %
 % Next an example how to change the default resolution:
 
@@ -106,7 +107,7 @@ plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 % In the following example, the zero range method is applied with a
 % threshold 100. For more options to control the zero range method see the
 % documentation of <zeroRangeMethod.zeroRangeMethod.html zero_range> or
-% <zeroRangeMethod.plot.html zeroRangeMethod.plot>.
+% <zeroRangeMethod.plot.html |zeroRangeMethod.plot|>.
 
 odf = calcODF(pf,'zero_range')
 plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
@@ -117,16 +118,17 @@ plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 % first introduced by Matthies that increases the uniform portion of the
 % estimated ODF to reduce the so called _ghost error_. It applies
 % especially useful in the case of week ODFs. The classical example is the
-% <SantaFe.html SantaFe model ODF>. An analysis of the approximation error
+% <SantaFe.html Santa Fe model ODF>. An analysis of the approximation error
 % under ghost correction can be found <PoleFigureSantaFe.html here>
 %
 %% Theory
 %
 % ODF estimation in MTEX is based upon the modified least squares
-% estimator. The functional that is minimized is 
+% estimator. The functional that is minimized is
 %
 % $$f_{est} = argmin \sum_{i=1}^N \sum_{j=1}^{N_i}\frac{|\alpha_i R f(h_i,r_{ij}) - I_{ij})|^2}{I_{ij}  }$$
 % 
 % A precise description of the estimator and the algorithm can be found in
 % the paper _Pole Figure Inversion - The MTEX Algorithm_.
 
+%#ok<*NOPTS>

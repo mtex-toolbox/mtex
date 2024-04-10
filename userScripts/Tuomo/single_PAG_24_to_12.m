@@ -28,7 +28,7 @@ grainId = 4691;
 
 %%
 
-for k = 1:length(numIters);
+for k = 1:length(numIters)
     if k == 1
     job.clusterHyperGraph3('numIter',numIters(k),...
         'inflationPower',1,'merged','mergethreshold',8*degree,'keepGraph')

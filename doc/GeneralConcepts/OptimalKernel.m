@@ -112,3 +112,4 @@ xlabel('Number of orientations (log scale)')
 ylabel('Estimation Error in degrees')
 title('Error between original ODF model and the reconstructed ODF','FontWeight','bold')
 
+%#ok<*SAGROW>

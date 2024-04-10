@@ -38,7 +38,7 @@ function [values,modes] = max(SO3F,varargin)
 %   annotate(ori)
 %
 % See also
-% SO3Fun/min SO3Fun/max
+% SO3Fun/min SO3Fun/max SO3Fun/calcComponents
 
 if isa(SO3F,'SO3FunHarmonic') && ~SO3F.isReal
   SO3F = SO3F.isReal;
@@ -49,7 +49,7 @@ if nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal
   warning('By taking the maxima of SO3Funs, the functions should be real valued.')
 end
 
-if numel(SO3F)==1
+if isscalar(SO3F)
   [values,modes] = max@SO3Fun(SO3F,varargin{:});
   return
 end

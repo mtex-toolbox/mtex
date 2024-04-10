@@ -1,4 +1,4 @@
-function grains = cat(dim,varargin)
+function grains = cat(~,varargin)
 % implements [grain1, grain2]
 %
 % Syntax

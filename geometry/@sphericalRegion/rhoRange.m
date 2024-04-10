@@ -2,7 +2,7 @@ function [rhoMin,rhoMax] = rhoRange(sR)
 % compute range of the polar angle of a spherical region
 
 if isempty(sR.N) || ...
-    (length(sR.N) == 1 && ~isnull(sR.N.z) && sR.alpha == 0)
+    (isscalar(sR.N) && ~isnull(sR.N.z) && sR.alpha == 0)
         
   rhoMin = 0;
   rhoMax = 2*pi;

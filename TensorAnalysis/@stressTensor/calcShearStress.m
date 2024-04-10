@@ -25,14 +25,14 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 % See also
 %
 
+
+% TODO: replace m,n by SlipSystem
+
 if check_option(varargin,'symmetrise')
   
-  [m,l] = symmetrise(m,'antipodal');
-  [n,l] = symmetrise(n,'antipodal');
-  
-  %m = symmetrise(m);
-  %n = symmetrise(n);
-  
+  m = symmetrise(m,'unique');
+  n = symmetrise(n,'unique');
+    
   [r,c] = find(isnull(dot_outer(m,n,'noSymmetry')));
 
   m = m(r);

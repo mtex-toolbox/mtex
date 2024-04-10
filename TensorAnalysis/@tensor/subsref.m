@@ -5,7 +5,7 @@ if strcmp(s(1).type,'{}')
 
   s(1).type = '()';
   
-  if T.rank>1 && length(s(1).subs) == 1
+  if T.rank>1 && isscalar(s(1).subs)
   
     MLocal = reshape(T.M,[3^T.rank size(T) 1]);
     s.subs = [s.subs repcell(':',1,ndims(T.M)-T.rank)];
@@ -39,7 +39,7 @@ elseif strcmp(s(1).type,'()')
     
   T.M = subsref(T.M,s(1));
       
-  if numel(s)==1
+  if isscalar(s)
     varargout{1} = T;
     return;
   else
@@ -48,7 +48,7 @@ elseif strcmp(s(1).type,'()')
 end
   
 if isOption(T,s(1).subs)
-  if numel(s)==1
+  if isscalar(s)
     varargout{1} = T.opt.(s(1).subs);
   else
     [varargout{1:nargout}] = subsref(T.opt.(s(1).subs),s(2:end));

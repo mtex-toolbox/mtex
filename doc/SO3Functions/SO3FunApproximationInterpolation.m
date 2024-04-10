@@ -2,11 +2,11 @@
 %
 %%
 % On this page, we want to cover the topic of function approximation from
-% discrete values on the Rotation group. To simulate this, we have stored some
-% nodes and corresponding function values which we can load. The csv-file
-% contains the Euler angles $\phi_1$, $\Phi$ and $\phi_2$ of the nodes and the function
-% value in the fourth column. Lets import these data using the function
-% <orientation.load.html |load|> 
+% discrete values on the Rotation group. To simulate this, we have stored
+% some nodes and corresponding function values which we can load. The
+% csv-file contains the Euler angles $\phi_1$, $\Phi$ and $\phi_2$ of the
+% nodes and the function value in the fourth column. Lets import these data
+% using the function <orientation.load.html |load|>
 
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [nodes, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
@@ -26,7 +26,7 @@ plotSection(nodes, S.values,'all');
 %
 %%
 % Interpolation is done by the <SO3Fun.interpolate |interpolate|> command
-% of class <SO3Fun.SO3Fun |SO3Fun|> 
+% of class <SO3Fun.SO3Fun |SO3Fun|>
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
 SO3F = SO3Fun.interpolate(nodes, S.values,'exact','kernel',psi);
@@ -38,8 +38,8 @@ plot(SO3F)
 norm(SO3F.eval(nodes) - S.values) / norm(S.values)
 
 %%
-% If we don't restrict ourselfs to the given function values in the nodes, we have more
-% freedom, which can be seen in the case of approximation.
+% If we don't restrict ourselfs to the given function values in the nodes,
+% we have more freedom, which can be seen in the case of approximation.
 
 %% Approximation of noisy data
 %
@@ -58,7 +58,7 @@ plotSection(nodes,val,'all')
 % small.
 %
 %%
-% One way is to interpolate the function similary as before, without the 
+% One way is to interpolate the function similarly as before, without the 
 % option |'exact'|.
 %
 %%
@@ -74,11 +74,11 @@ SO3F2 = SO3FunHarmonic.approximation(nodes, val,'bandwidth',18)
 plot(SO3F2)
 
 %%
-% Plotting this function, we can immidiately see, that we have a much
+% Plotting this function, we can immediately see, that we have a much
 % smoother function. But one has to keep in mind that the error in the data
 % nodes is not zero as in the case of interpolation.
 
-norm(eval(SO3F2, nodes) - S.values)
+norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 
 %%
 % But this may not be of great importance like in the case of function

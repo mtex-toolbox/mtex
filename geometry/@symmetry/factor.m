@@ -21,7 +21,7 @@ end
 d = s1.rot(any(isappr(dot_outer(s1.rot,s2.rot),1),2));
 
 % second trivial case - disjoint is identity
-if length(d) == 1
+if isscalar(d)
   l = s1.rot;
   r = s2.rot;
   return

@@ -418,7 +418,7 @@ if nargout, hh = htab; end
       if indxvis
         viewpos = get(panel(indx),'Position');
         if viewpos(2)-viewpos(4)<0
-          if viewpos(4)+margins(4)<=tabpos(4);
+          if viewpos(4)+margins(4)<=tabpos(4)
             currval = min(0,viewpos(2)-margins(4)/2);
           else
             viewpos = get(title(indx),'Position');

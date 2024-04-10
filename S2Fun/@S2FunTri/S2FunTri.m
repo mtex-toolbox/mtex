@@ -64,7 +64,7 @@ classdef S2FunTri < S2Fun
       
       values = odf.calcPDF(Miller(1,0,0,odf.CS),v);
       
-      sF = S2FunTri(v,values)
+      sF = S2FunTri(v,values);
       
       plot(sF,'upper')
       

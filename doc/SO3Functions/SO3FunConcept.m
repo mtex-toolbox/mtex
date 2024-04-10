@@ -4,8 +4,8 @@
 % An orientation dependent function is a function that assigns to each
 % rotation or orientation a numerical value. An import example of a
 % rotational function is the <ODFTheory.html orientation density function
-% (ODF)> that assignes to each crystal orientation the probability of its
-% occurence within a specimen. Other examples are the Schmidt or the Taylor
+% (ODF)> that assigns to each crystal orientation the probability of its
+% occurrence within a specimen. Other examples are the Schmidt or the Taylor
 % factor as a function of the crystal orientation.
 %
 %% Definition of a orientation dependent function
@@ -31,7 +31,7 @@ SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
 % discussed <SO3FunDefinition.html here>. 
 % 
 %%
-% The entire information abot the orientation dependent function is now
+% The entire information about the orientation dependent function is now
 % stored in the variable |SO3F|. In order to determine its value for a
 % specific orientation |ori| the function <SO3Fun.eval.html |eval(ori)|> is
 % used
@@ -67,7 +67,7 @@ mtexColorMap parula
 % The power of representing an orientation dependent functions as a
 % variables of type @SO3Fun is that we may apply to it a
 % <SO3FunOperations.html large number of analysis tools>. In particular,
-% one can add, subtract and mutiply orientation dependent functions, plot
+% one can add, subtract and multiply orientation dependent functions, plot
 % them in various projections or detect the local minima or maxima. In the
 % case of our example function the local maxima refers to the orientations
 % with maximum rotational angle in cubic symmetry. We may compute them by
@@ -76,9 +76,9 @@ mtexColorMap parula
 [value,ori] = max(SO3F,'numLocal',10,'accuracy',0.001*degree)
 
 %%
-% We observe that there are exactly six symetrically not equivalent
+% We observe that there are exactly six symmetrically not equivalent
 % orientations that realize an orientation angle of about 62.994 degree and
-% form the vertices of the fundamental region in orienation space
+% form the vertices of the fundamental region in orientation space
 
 color = ind2color(repmat(1:length(ori),numSym(cs),1));
 plot(ori.symmetrise,color,'axisAngle','filled','markerSize',20,'restrict2FundamentalRegion')
@@ -89,13 +89,13 @@ plot(ori.symmetrise,color,'axisAngle','filled','markerSize',20,'restrict2Fundame
 %
 % || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
 % || as superposition of radial function || <RadialODFs.html SO3FunRBF> ||
-% || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> ||
+% || as superposition of fiber elements || <FibreODFs.html SO3FunCBF> ||
 % || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
 % || as sum of different components || @SO3FunComposition ||
-% || explicitely given by a formula || @SO3FunHandle ||
+% || explicitly given by a formula || @SO3FunHandle ||
 %
 % All representations allow the same operations which are specified for
-% the abstact class |@SO3Fun|. In particular it is possible
+% the abstract class |@SO3Fun|. In particular it is possible
 % to calculate with $SO(3)$ functions as with ordinary numbers, i.e., you
 % can add, multiply arbitrary functions, take the mean, integrate them or
 % compute gradients, see <SO3FunOperations.html Operations>.

@@ -107,3 +107,5 @@ close all
 plot(hw/degree,e)
 xlabel('halfwidth in degree')
 ylabel('esimation error')
+
+%#ok<*NASGU>

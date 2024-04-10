@@ -578,7 +578,7 @@ if doAnalyzeFile
         disp(['* ' ffn]);
         if numel(ferrmsg)==0
             sr_display_str = '';
-            for idx = 1:num_sr;
+            for idx = 1:num_sr
                 sr_display_str = [sr_display_str ' �' sr_input_ca{idx} '�']; %#ok<AGROW>
             end
             disp(['* read mode: ' readmode]);
@@ -1374,7 +1374,7 @@ if strcmpi(readmode,'line') || ~isempty(errmsg)
     if infolvl >= 2
         if num_colon>=0
             reference = num_colon;
-        elseif num_colon == -1;
+        elseif num_colon == -1
             reference = width_A;
         else
             reference = -num_colon;
@@ -2055,7 +2055,7 @@ sr_input_ca = {};
 if valpos(4) ~= 0
     if iscellstr(allargin{valpos(4)})
         sr_input_ca = allargin{valpos(4)};
-    elseif ischar(allargin{valpos(4)});
+    elseif ischar(allargin{valpos(4)})
         sr_input_ca = {allargin{valpos(4):end}};
         disp([mfilename ': for future versions, please use a single cell array of strings as an input argument for multiple replacement strings.'])
         has_sr_input_only = true;
@@ -2071,7 +2071,7 @@ end
 if valpos(5) ~= 0 && ~has_sr_input_only     % bad line strings
     if iscellstr(allargin{valpos(5)})
         kl_input_ca = allargin{valpos(5)};      
-    elseif ischar(allargin{valpos(5)});
+    elseif ischar(allargin{valpos(5)})
         kl_input_ca = {allargin{valpos(5)}};
         disp([mfilename ': for future versions, please use a single cell array of strings as an input argument for bad line marker strings.'])
     else
@@ -2125,14 +2125,14 @@ if valpos(10) ~= 0          % 'ReadMode'
     readmode = allargin{valpos(10)};
     is_argin_readmode = true;
     % force readmode to 'line' if num_colon < 0
-    if is_argin_num_colon && num_colon < 0 && ~strcmpi(readmode,'line');
+    if is_argin_num_colon && num_colon < 0 && ~strcmpi(readmode,'line')
         readmode = 'line';
         warning('txt2mat:ineptReadmode', ...
             'ReadMode is set to ''line'' as NumColumns was given as negative.') 
     end
 else
     is_argin_readmode = false;
-    if is_argin_num_colon && num_colon < 0;
+    if is_argin_num_colon && num_colon < 0
         readmode = 'line';
     else
         readmode = 'auto';

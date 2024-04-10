@@ -33,7 +33,7 @@ fclose(fid);
 d = A(position) == 2^bytes-1;
 A(position(d)) = intensity(d);
 
-[ix iy data] = find(reshape(A,rows,cols));
+[ix, iy, data] = find(reshape(A,rows,cols));
 ix = (ix-cols/2-.5);
 iy = (iy-rows/2-.5);
 

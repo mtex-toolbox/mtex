@@ -16,7 +16,7 @@ function [T,p,v] = bingham_test(ori,varargin)
 
 test_fun = parseArgs(varargin{:});
 
-if strfind(test_fun,'chat')
+if contains(test_fun,'chat')
   [kappa, lambda, ~, n] = c_hat(ori);
 else
   [~,~, lambda] = mean(ori,varargin{:});
@@ -24,11 +24,11 @@ else
   n = length(ori);
 end
 
-if isempty(strfind(test_fun,'chat'))
+if ~contains(test_fun,'chat')
   lambda = sort(lambda,'descend');
   kappa  = sort(kappa,'descend');
 else
-  if ~issorted(lambda(4:-1:1)),
+  if ~issorted(lambda(4:-1:1))
     warning('assure lambda 1 > lambda 2 .. > lambda 4, as well as corresonding chat');
   end
 end
@@ -80,7 +80,7 @@ end
 function [p,chin] = test_prolat(n,kappa,lambda)
   
   p = n/2.*(kappa(3,:)-kappa(4,:)).*(lambda(3,:)-lambda(4,:));
-  kappa = sort(kappa,'descend'); 
+  %kappa = sort(kappa,'descend'); 
   chin = 2; % freedom
 end
 function [p,chin] = test_prolat_chat(n,chat,lambda)

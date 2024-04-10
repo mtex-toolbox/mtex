@@ -55,18 +55,18 @@ function varargout = ds2nfu(varargin)
 error(nargchk(1, 3, nargin))
 
 % Determine if axes handle is specified
-if length(varargin{1})== 1 && ishandle(varargin{1}) && strcmp(get(varargin{1},'type'),'axes')	
+if isscalar(varargin{1}) && ishandle(varargin{1}) && strcmp(get(varargin{1},'type'),'axes')	
 	hAx = varargin{1};
 	varargin = varargin(2:end);
 else
 	hAx = gca;
-end;
+end
 
 errmsg = ['Invalid input.  Coordinates must be specified as 1 four-element \n' ...
 	'position vector or 2 equal length (x,y) vectors.'];
 
 % Proceed with remaining inputs
-if length(varargin)==1	% Must be 4 elt POS vector
+if isscalar(varargin)	% Must be 4 elt POS vector
 	pos = varargin{1};
 	if length(pos) ~=4
 		error(errmsg);

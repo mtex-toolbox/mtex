@@ -26,7 +26,7 @@ numIters = [0 1 3 10 50];
 grainId = 4691;
 
 %
-for k = 1:length(numIters);
+for k = 1:length(numIters)
     if k == 1
         job.clusterHyperGraph2('numIter',numIters(k),'inflationPower',1,'keepGraph')
         graphplotfunc(job,cond_grains,grainId,k,numIters)

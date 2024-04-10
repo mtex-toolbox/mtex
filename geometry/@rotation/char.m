@@ -8,7 +8,7 @@ elseif nargin == 1
   eps = 1;
 end
 
-if length(q) == 1
+if isscalar(q)
   [alpha,beta,gamma] = Euler(q);
   if check_option(varargin,'nodegree')
     degchar = '';

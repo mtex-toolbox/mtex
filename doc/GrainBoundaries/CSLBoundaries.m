@@ -8,7 +8,7 @@
 mtexdata csl
 plotx2east
 
-% grain segementation
+% grain segmentation
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % grain smoothing
@@ -25,11 +25,11 @@ plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
 setColorRange([.5,5])
 
-% the option 'FaceAlpha',0.4 makes the plot a bit transluent
+% the option 'FaceAlpha',0.4 makes the plot a bit translucent
 hold on
 plot(grains,grains.meanOrientation,'FaceAlpha',0.4,'linewidth',3)
 hold off
-
+%#ok<*ASGLU>
 %% Detecting CSL Boundaries
 % In order to detect CSL boundaries within the data set we first restrict
 % the grain boundaries to iron to iron phase transitions and check then the
@@ -94,7 +94,7 @@ plot(gB11,'lineColor','c','linewidth',2,'DisplayName','CSL 11')
 hold off
 
 %% Misorientations in the 3d fundamental zone
-% We can also look at the boundary misorienations in the 3 dimensional
+% We can also look at the boundary misorientations in the 3 dimensional
 % fundamental orientation zone.
 
 % compute the boundary of the fundamental zone
@@ -102,7 +102,7 @@ oR = fundamentalRegion(ebsd.CS,ebsd.CS,'antipodal');
 close all
 plot(oR)
 
-% plot 500 random misorientations in the 3d fundamenal zone
+% plot 500 random misorientations in the 3d fundamental zone
 mori = discreteSample(gB.misorientation,500);
 hold on
 plot(mori.project2FundamentalRegion)
@@ -136,7 +136,7 @@ annotate(CSL(9,ebsd.CS),'label','$CSL_9$','backgroundcolor','w')
 drawNow(gcm)
 
 %%
-% The MDF can be now used to compute prefered misorientations
+% The MDF can be now used to compute preferred misorientations
 
 [~,mori] = max(mdf,'numLocal',2)
 
@@ -149,7 +149,7 @@ drawNow(gcm)
 
 
 %%
-% or to plot the MDF along certain fibres
+% or to plot the MDF along certain fibers
 
 omega = linspace(0,60*degree);
 fibre100 = orientation.byAxisAngle(xvector,omega,mdf.CS,mdf.SS)
@@ -174,3 +174,5 @@ mori = orientation.byEuler(15*degree,28*degree,14*degree,mdf.CS,mdf.CS)
 mdf.eval(mori)
 
 mdf.eval(csl3)
+
+%#ok<*ASGLU>

@@ -22,7 +22,7 @@ if check_option(varargin,'equal')
   % find maximum color range
   c = zeros(length(mtexFig.children),2);
   for i = 1:length(mtexFig.children)
-    c(i,:) = caxis(mtexFig.children(i));
+    c(i,:) = clim(mtexFig.children(i));
   end
   mi = min(c,[],1);
   ma = max(c,[],1);
@@ -59,6 +59,6 @@ if exist('p','var')
   
   % set the caxis to all axes
   for i = 1:numel(mtexFig.children)
-    caxis(mtexFig.children(i),p);
+    clim(mtexFig.children(i),p);
   end
 end

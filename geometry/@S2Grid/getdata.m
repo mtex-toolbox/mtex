@@ -15,5 +15,5 @@ rho = double(S2G.rhoGrid);
 itheta = cumsum([0,GridLength(S2G.rhoGrid)]);
 prho = S2G.rhoGrid(1).max;
 rhomin = S2G.rhoGrid(1).min;
-rhomax = S2G.rhoGrid(1).max;
+%rhomax = S2G.rhoGrid(1).max;
 

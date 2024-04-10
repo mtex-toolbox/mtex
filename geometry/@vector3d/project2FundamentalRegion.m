@@ -83,17 +83,19 @@ dist = round(dist, 12);
 
 v = reshape(inv(subSet(cs,col)),size(v)) .* v;
 
-return
+end
+
+function test %#ok<DEFNU>
 
 % symmetrise
-v = symmetrise(sym,v);
+v = symmetrise(sym,v); %#ok<NODEF>
 
 % check which are inside the fundamental region
 inside = sR.checkInside(v);
 
 % extract one value per row
 [~,col] = max(inside,[],2);
-v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col));
+v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col)); %#ok<NASGU>
 
 % some testing code
 % v = vector3d.rand(100)
@@ -103,6 +105,8 @@ v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col));
 % plot(v_proj), hold on, plot(sR), hold off
 % all(sR.checkInside(v_proj))
 %
-cs = crystalSymmetry('321')
-h = plotS2Grid(cs.fundamentalSector)
+cs = crystalSymmetry('321');
+h = plotS2Grid(cs.fundamentalSector);
 plot(project2FundamentalRegion(h,cs))
+
+end

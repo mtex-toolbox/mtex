@@ -41,7 +41,7 @@ classdef sphericalRegion
         sR.N = normalize(varargin{1});
         if nargin>=2 && isa(varargin{2},'double')
           sR.alpha = varargin{2};
-          if length(sR.alpha) == 1
+          if isscalar(sR.alpha)
             sR.alpha = repmat(sR.alpha,size(sR.N));
           end
         else
@@ -137,11 +137,11 @@ classdef sphericalRegion
         thetaMin = zeros(size(rho));
         thetaMax = pi * ones(size(rho));
         return
-      elseif length(sR.N) == 1 && sR.N == vector3d.Z && sR.alpha == 0
+      elseif isscalar(sR.N) && sR.N == vector3d.Z && sR.alpha == 0
         thetaMin = zeros(size(rho));
         thetaMax = pi/2 * ones(size(rho));
         return
-      elseif length(sR.N) == 1 && sR.N == -vector3d.Z && sR.alpha == 0
+      elseif isscalar(sR.N) && sR.N == -vector3d.Z && sR.alpha == 0
         thetaMin = pi/2 * ones(size(rho));
         thetaMax = pi * ones(size(rho));
         return
@@ -195,20 +195,19 @@ classdef sphericalRegion
     end
 
     
-    function rh = maxRho(sR)
-    end
-        
+    %function rh = maxRho(sR)
+    % TODO
+    %end
+    %function e = edges(sR)     
+    % TODO
+    %end
+
     
     function v = vertices(sR)
       % get the vertices of the fundamental region
       
       v = unique(boundary(sR));
       
-    end
-    
-    function e = edges(sR)
-      
-            
     end
     
     function [v,e] = boundary(sR)
@@ -280,7 +279,7 @@ classdef sphericalRegion
       %N = [-zvector,yvector,vector3d('polar',pi/2,-pi/4),...
       %  vector3d('polar',pi/2,pi/2+pi/4)];
 
-      N = [zvector,xvector,yvector,vector3d.byPolar(pi/2,-pi/4),vector3d(-1,-1,1)];
+      N = [zvector,xvector,yvector,vector3d.byPolar(pi/2,-pi/4),vector3d(-1,-1,1)]; %#ok<NASGU>
 
       N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
       %N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];

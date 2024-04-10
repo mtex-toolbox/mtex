@@ -1,4 +1,4 @@
-function [v r]= refine(v)
+function [v, r]= refine(v)
 % refine vectors
 %
 % Input

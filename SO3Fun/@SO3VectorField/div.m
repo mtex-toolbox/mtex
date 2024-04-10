@@ -41,7 +41,6 @@ d = (f(:,4).x-f(:,1).x+f(:,5).y-f(:,2).y+f(:,6).z-f(:,3).z) ./ delta;
 end
 
 function TestDivergence
-clear
 
 r = rotation.rand;
 

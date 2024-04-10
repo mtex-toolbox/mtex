@@ -55,7 +55,7 @@ D = SO3FunHarmonic([0;0;0;1])
 D.eval(R)
 
 %%
-% Various normalizations for the Wigner-D functions are common in the
+% Various normalization for the Wigner-D functions are common in the
 % literature.
 %
 % Here we define the $L_2$-norm by
@@ -90,7 +90,7 @@ norm(D)
 %% Symmetry properties of Wigner-d functions
 % 
 % The Wigner-d functions by construction fulfill a lot of symmetry 
-% properties. Some importants are
+% properties. Some important are
 %  
 % $$ d_n^{k,l}(x) = d_n^{-k,-l}(x) = (-1)^{k+l}\, d_n^{l,k}(x) = (-1)^{k+l}\, d_n^{-l,-k}(x)$$
 % 
@@ -98,3 +98,5 @@ norm(D)
 %
 % $$d_n^{k,l}(\cos\beta) = (-1)^{k+l}\,d_n^{k,l}(\cos(-\beta))$$
 %
+
+%#ok<*NASGU>

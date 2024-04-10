@@ -15,7 +15,7 @@ function contour3s(x,y,z,Z,v,varargin)
 
 
 nrm = max(Z(:));
-if numel(v) == 1, v = linspace(0,nrm,v); end
+if isscalar(v), v = linspace(0,nrm,v); end
  
 if check_option(varargin,'contour3')
    

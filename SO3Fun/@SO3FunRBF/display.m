@@ -16,7 +16,7 @@ end
   
 if ~isempty(SO3F.center)
   
-  if length(SO3F.center)==1
+  if isscalar(SO3F.center)
     disp('  <strong>unimodal component</strong>');
   else
     disp('  <strong>multimodal components</strong>');

@@ -215,3 +215,5 @@ Rbar = 0.5 * (R(1) + R(19) + 2*R(10))
 %   eliminating the need to trim ears during subsequent processing.
 
 deltaR = 0.5 * (R(1) + R(19) - 2*R(10))
+
+%#ok<*ASGLU>

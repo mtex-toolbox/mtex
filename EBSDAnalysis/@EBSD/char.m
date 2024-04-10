@@ -24,5 +24,5 @@ for p = 1:numel(ebsd.phaseMap)
   ss = [ss, num2str(nnz(ebsd.phaseId == p)),' orientations '];    %#ok<AGROW>
   
   
-  s = strvcat(s,ss);
+  s = char(s,ss);
 end

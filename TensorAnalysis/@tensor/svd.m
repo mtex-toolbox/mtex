@@ -35,7 +35,7 @@ switch T.rank
     for i=1:length(T)
       [u,s] = mlsvd(T.M(:,:,:,:,i));
       S.M(:,:,:,:,i) = s;
-      U(i) = rotation.byMatrix(u{1});
+      U(i) = rotation.byMatrix(u{1}); %#ok<AGROW>
     end
     
   otherwise 

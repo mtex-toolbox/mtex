@@ -27,7 +27,7 @@ if isempty(o)
   if nargout > 2, lambda = zeros(1,4); end
   if nargout > 3, eigv = eye(4); end
   return  
-elseif length(o) == 1 
+elseif isscalar(o) 
   m = o;
   if nargout > 1
     eigv = eye(4);

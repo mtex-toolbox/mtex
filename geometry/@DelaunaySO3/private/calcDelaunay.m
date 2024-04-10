@@ -10,9 +10,13 @@ R = Rodrigues(ori);
 % step 3 find those close to boundaries of the fundamental region and
 % duplicate them 
 
+
+% TODO: not yet working 
+%#ok<*NASGU>
+%#ok<*AGROW>
+
 % get boundaries
-% TODO
-oR = fundamentalRegion(ori.CS);
+oR = fundamentalRegion(ori.CS); 
 %bounds = getFundamentalRegionRodrigues(ori.CS);
 
 % for all boundaries

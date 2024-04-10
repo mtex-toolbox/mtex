@@ -5,7 +5,7 @@
 % since the concatenation of two symmetry operations is again a symmetry
 % operation. 
 %
-% Depending which symmetry operations are coonsidered, the symmetry groups
+% Depending which symmetry operations are considered, the symmetry groups
 % are categorized either into 230 space groups, 32 point groups or 11 Laue
 % groups.
 % 
@@ -102,7 +102,7 @@ mtexTitle(char(cs.properSubGroup,'LaTex'))
 
 %% Alignment of the symmetry operations
 %
-% Although in general only 32 point groups are distingished, some of them
+% Although in general only 32 point groups are distinguished, some of them
 % allow for different alignments of the symmetry operations with respect to
 % the crystal axes. The following plots show three different alignments of
 % the point group 2mm. Note that the a-axis points in all three case
@@ -127,7 +127,7 @@ mtexTitle(char(cs,'LaTex'))
 annotate(cs.aAxis,'labeled')
 
 %%
-% Similarly as with mm2, there are different alignements for the point
+% Similarly as with mm2, there are different alignments for the point
 % groups 112, 121, 211, 11m, 1m1, m11, 321, 312, 3m1, 31m, etc.
 %
 
@@ -135,7 +135,7 @@ annotate(cs.aAxis,'labeled')
 %
 % If additionally to the proper and improper rotations also translations
 % are considered as symmetry operations the number of different symmetry
-% groups increases to 320. Those are exhaustivly described in the
+% groups increases to 320. Those are exhaustively described in the
 % international table of crystallography. 
 %
 % MTEX currently does not support space groups. If the name of a space
@@ -166,11 +166,13 @@ disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
 cs = crystalSymmetry.load('quartz')
 
 %%
-% or a Bruker phl file. As a phl file contains usually many phases the
-% output is a list of crystal symmetries
+% or a Bruker |.phl| file. As a |.phl| file contains usually many phases
+% the output is a list of crystal symmetries
 
 % import a list of crystal symmetries
 cs_list = crystalSymmetry.load('crystal.phl');
 
 % access the first symmetry in list
 cs_list{1}
+
+%#ok<*NASGU>

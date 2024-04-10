@@ -46,7 +46,7 @@ options = {arrowSize,'MaxHeadSize',mhs,'linewidth',2};
 v = v.*1.05;
 
 h = optiondraw(quiver3(v.x,v.y,v.z,d.x,d.y,d.z,options{:}),varargin{:});
-if d.antipodal %#ok<BDLGI>
+if d.antipodal
   washold = getHoldState(gca);
   hold on
   h = [h,optiondraw(quiver3(v.x,v.y,v.z,-d.x,-d.y,-d.z,options{:}),varargin{:})];
