@@ -167,7 +167,7 @@ norm(SO3F3)
 % which may not be much important since we had noisy function values given,
 % where we don't know the exact values anyways. 
 
-norm(eval(SO3F3, nodes) - S.values)
+norm(eval(SO3F3, nodes) - S.values) / norm(S.values)
 
 %% Quadrature
 %
