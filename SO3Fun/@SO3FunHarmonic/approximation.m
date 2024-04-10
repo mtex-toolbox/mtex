@@ -17,7 +17,7 @@ function SO3F = approximation(nodes, y, varargin)
 %  tol              - tolerance for lsqr
 %  maxit            - maximum number of iterations for lsqr
 %  regularization   - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F (there is given a regularization constant)
-%  SobolevIndex     - for regularization (default = 1)
+%  SobolevIndex     - for regularization (default = 2)
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
@@ -62,9 +62,12 @@ maxit = get_option(varargin, 'maxit', 50);
 regularize = 0; lambda=0; SobolevIndex=0;
 if check_option(varargin,'regularization')
   regularize = 1;
-  lambda = get_option(varargin,'regularization',0.1);
-  if ~isnumeric(lambda), lambda = 0.1; end
-  SobolevIndex = get_option(varargin,'SobolevIndex',1);
+  lambda = get_option(varargin,'regularization',0.0001);
+  if ~isnumeric(lambda), lambda = 0.0001; end
+  SobolevIndex = get_option(varargin,'SobolevIndex',2);
+  warning(['The least squares approximation is regularized with ' ...
+    'regularization parameter lambda ', num2str(lambda), ...
+    ' and Sobolev norm of Sobolev index ', num2str(SobolevIndex),'.'])
 end
 
 % extract weights
@@ -149,16 +152,12 @@ nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
 % assume there is some bandwidth given
 if ~isempty(bw)
   % degrees of freedom in frequency space 
-  numFreq = deg2dim(bw+1)/nSym*2;
-  if check_option(varargin,'regularization')
-    oversamplingFactor = length(nodes)/numFreq+1;
-  else
-    oversamplingFactor = length(nodes)/numFreq;
-  end
-  if oversamplingFactor<2
+  numFreq = deg2dim(bw+1)/nSym;
+  oversamplingFactor = length(nodes)/numFreq;
+  if oversamplingFactor<1.9 && ~check_option(varargin,'regularization')
     warning(['The oversampling factor in the approximation process is ', ...
       num2str(oversamplingFactor),'. This could lead to a bad approximation. ' ...
-      'You may should use a lower or no bandwidth in the option list of the ' ...
+      'You may should use the option ''regularization'' in the option list of the ' ...
       'approximation method.'])
   end
   return
@@ -166,13 +165,12 @@ end
 
 % Choose an fixed oversampling factor of 2
 oversamplingFactor = 2;
-bw = dim2deg(round( length(nodes)*nSym/2/oversamplingFactor ));
-bwReg = dim2deg(round( length(nodes)*nSym/2/(oversamplingFactor-1) ));
+bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
 
-if check_option(varargin,'regularization')
-  bw = bwReg;
-elseif bw<25
-  bw = bwReg;
+% TODO: Choose higher bandwidth, ov=0.5 and regularization if bw is to small
+if bw < 25
+  oversamplingFactor = 0.5;
+  bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
   varargin{end+1} = 'regularization';
 end
 
