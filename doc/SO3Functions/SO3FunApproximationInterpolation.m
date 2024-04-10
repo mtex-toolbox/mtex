@@ -41,25 +41,36 @@ norm(SO3F.eval(nodes) - S.values) / norm(S.values)
 % If we don't restrict ourselfs to the given function values in the nodes, we have more
 % freedom, which can be seen in the case of approximation.
 
-%% Approximation
+%% Approximation of noisy data
 %
-% In contrast to interpolation we are now not restricted to the function
-% values in the nodes but still want to keep the error reasonably small.
+% The exact interpolation from before is also computational hard if we have
+% a high number of nodes and function values given.
+%
+% Alternatively assume that our function values are noisy.
+
+val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
+
+plotSection(nodes,val,'all')
+
+%%
+% In contrast to interpolation we are now not restricted to the exact 
+% function values in the nodes but still want to keep the error reasonably 
+% small.
 %
 %%
 % One way is to interpolate the function similary as before, without the 
 % option |'exact'|.
 %
 %%
-% Another way is to approximate the rotational function with a series of 
-% <WignerFunctions.html Wigner-D functions> (Harmonic series). 
+% Another way is to approximate the rotational function with a SO3FunHarmonic,
+% which is a series of <WignerFunctions.html Wigner-D functions> (Harmonic series). 
 % We don't take as many Wigner-D functions as there are nodes,
 % such that we are in the overdetermined case. In that way we don't have a
 % chance of getting the error in the nodes zero but hope for a smoother
 % approximation. This can be achieved by the <SO3FunHarmonic.approximation |approximation|>
 % command of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> 
 
-SO3F2 = SO3FunHarmonic.approximation(nodes, S.values);
+SO3F2 = SO3FunHarmonic.approximation(nodes, val,'bandwidth',18)
 plot(SO3F2)
 
 %%
@@ -73,9 +84,8 @@ norm(eval(SO3F2, nodes) - S.values)
 % But this may not be of great importance like in the case of function
 % approximation from noisy function values, where we don't know the exact
 % function values anyways.
-
-%%
 %
+%%
 % The strategy underlying the |approximation|-command
 % to obtain such an approximation works via Wigner-D functions
 % (<SO3FunHarmonicSeries Basics of rotational harmonics>). For that,
@@ -109,7 +119,55 @@ norm(eval(SO3F2, nodes) - S.values)
 % We end up with the Fourier-coefficients of our approximation $g$, which
 % describe our approximation.
 %
+%%
+% Now we want to assure the approximation $g$ to be smooth.
+%
+% If we have a low number of nodes but our function is relatively sharp
+% (we try to compute an |@SO3FunHarmonic| with high bandwidth) we are in
+% the underdetermined case. Here we want the approximation $g$ to be smooth 
+% just to avoid overfitting.
+%
+% Therefore we penalise oscilations by adding the norm of $g$ to
+% the energy functional which is minimized  by lsqr. This is called
+% regularization and means we minimize the functional 
+%
+% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 + + \lambda \|g\|^2_{H^s}$$
+%
+% where $\lambda$ is the regularization parameter. The Sobolev norm 
+% $\|.\|_{H^s}$ of an |@SO3FunHarmonic| $g$ with harmonic coefficients 
+% $\hat{f}$ reads as
+%
+% $$\|g\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n \abs{\hat{f}_n^{k,l}}^2.$$
+%
+% The Sobolev index $s$ describes how smooth our approximation $g$ should 
+% be, i.e. the larger $s$ is, the faster the harmonic coefficients $\hat{f}_n^{k,l}$ converge 
+% towards 0 and the smoother the approximation $g$ is.
+%
+%%
+% We can use regularization in the command <SO3FunHarmonic.approximation |approximation|>
+% of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> by useing
+% the option 'regularization'.
 
+lambda = 0.0001;
+s = 2;
+SO3F3 = SO3FunHarmonic.approximation(nodes,val,'regularization',lambda,'SobolevIndex',s)
+plot(SO3F3)
+
+%%
+% Plotting this function, we can immidiately see, that we have a much
+% smoother function, i.e. the norm of |SO3F3| is smaller than the norm of
+% |SO3F2|.
+
+norm(SO3F2)
+norm(SO3F3)
+
+
+%% 
+% But this smoothing results in an higher error in the data points,
+% which may not be much important since we had noisy function values given,
+% where we don't know the exact values anyways. 
+
+norm(eval(SO3F3, nodes) - S.values)
 
 %% Quadrature
 %
