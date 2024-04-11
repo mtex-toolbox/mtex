@@ -62,7 +62,7 @@ plotSection(nodes,val,'all')
 % option |'exact'|.
 %
 %%
-% Another way is to approximate the rotational function with a SO3FunHarmonic,
+% Another way is to approximate the rotational function with a |@SO3FunHarmonic|,
 % which is a series of <WignerFunctions.html Wigner-D functions> (Harmonic series). 
 % We don't take as many Wigner-D functions as there are nodes,
 % such that we are in the overdetermined case. In that way we don't have a
@@ -86,9 +86,9 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 % function values anyways.
 %
 %%
-% The strategy underlying the |approximation|-command
+% The strategy underlying the <SO3FunHarmonic.approximation |approximation|>-command
 % to obtain such an approximation works via Wigner-D functions
-% (<SO3FunHarmonicSeries Basics of rotational harmonics>). For that,
+% (<SO3FunHarmonicRepresentation.html SO3FunHarmonicSeries Basics of rotational harmonics>). For that,
 % we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
 % f^{0,0}_0,\dots,\hat f^{N,N}_N)^T$ such that
 %
@@ -99,7 +99,7 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 %
 % $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 $$
 %
-% for the data nodes $x_m$, $m=1,\dots,M$, $f(x_m)$ the target function
+% for the data nodes $x_m$, $m=1,\dots,M$. Here $f(x_m)$ are the target function
 % values and $g(x_m)$ our approximation evaluated in the given data nodes.
 %
 % This can be done by the |lsqr| method of Matlab, which efficiently
@@ -120,33 +120,31 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 % describe our approximation.
 %
 %%
-% Now we want to assure the approximation $g$ to be smooth.
-%
 % If we have a low number of nodes but our function is relatively sharp
 % (we try to compute an |@SO3FunHarmonic| with high bandwidth) we are in
 % the underdetermined case. Here we want the approximation $g$ to be smooth 
 % just to avoid overfitting.
 %
 % Therefore we penalise oscilations by adding the norm of $g$ to
-% the energy functional which is minimized  by lsqr. This is called
-% regularization and means we minimize the functional 
+% the energy functional which is minimized  by |lsqr|. This is called
+% regularization and means we now minimize the functional 
 %
-% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 + + \lambda \|g\|^2_{H^s}$$
+% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 + \lambda \|g\|^2_{H^s}$$
 %
 % where $\lambda$ is the regularization parameter. The Sobolev norm 
 % $\|.\|_{H^s}$ of an |@SO3FunHarmonic| $g$ with harmonic coefficients 
 % $\hat{f}$ reads as
 %
-% $$\|g\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n \abs{\hat{f}_n^{k,l}}^2.$$
+% $$\|g\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
 %
 % The Sobolev index $s$ describes how smooth our approximation $g$ should 
 % be, i.e. the larger $s$ is, the faster the harmonic coefficients $\hat{f}_n^{k,l}$ converge 
 % towards 0 and the smoother the approximation $g$ is.
 %
 %%
-% We can use regularization in the command <SO3FunHarmonic.approximation |approximation|>
-% of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> by useing
-% the option 'regularization'.
+% We can use regularization by adding the option 'regularization' to the 
+% command <SO3FunHarmonic.approximation |approximation|> of the class 
+% <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 
 lambda = 0.0001;
 s = 2;

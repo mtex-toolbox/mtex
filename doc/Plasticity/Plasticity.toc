@@ -1,7 +1,6 @@
 SlipSystems
 SchmidtFactor
 TaylorModel
-TaylorHex
 SachsModel
 SingleSlipModel
 SlipTransmission

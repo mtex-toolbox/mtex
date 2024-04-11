@@ -6,19 +6,19 @@ function SO3F = approximation(nodes, y, varargin)
 % we compute the SO3FunHarmonic $f$ of an specific bandwidth which 
 % minimizes the least squares problem
 %
-% $$\min_f \sum_{i=1}^M |f(R_i) - y_i|^2.$$
+% $$\sum_{i=1}^M|f(R_i)-y_i|^2.$$
 %
 % If the oversampling factor is small (high bandwidth) it may be necessary
 % to assure decay of the harmonic coefficents. Therefore we regularize the
-% least squares problem by the Sobolev norm of f, i.e
+% least squares problem by the Sobolev norm of f, i.e we minimize
 %
-% $$\min_f \sum_{i=1}^M |f(R_i) - y_i|^2 + \lambda \|f\|^2_{H^s}$$
+% $$\sum_{i=1}^M|f(R_i)-y_i|^2 + \lambda \|f\|^2_{H^s}$$
 %
 % where $\lambda$ is the regularization parameter and $s$ the Sobolev
 % index. The Sobolev norm of an SO3FunHarmonic with harmonic coefficients 
 % $\hat{f}$ reads as
 %
-% $$\|f\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n \abs{\hat{f}_n^{k,l}}^2.$$
+% $$\|f\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
 %
 % Syntax
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f)
