@@ -1,6 +1,6 @@
 classdef PoleFigure < dynProp & dynOption
 %
-% The class *PoleFigure* is used to store experimetnal pole figure
+% The class *PoleFigure* is used to store experimental pole figure
 % intensitied, i.e., XRD, synchrotron or neuron data. It provides several
 % <PoleFigureCorrection.html data correction methods> as well as the
 % <PoleFigure2ODF.html reconstruction of an orientation density function
@@ -8,10 +8,11 @@ classdef PoleFigure < dynProp & dynOption
 % this section>.
 %
 % Input
-%  h     - crystal directions (@vector3d | @Miller)
-%  r     - specimen directions (@S2Grid)
+%  h - @Miller, crystal directions
+%  r - @S2Grid, specimen directions
 %  intensities - diffraction counts (double)
-%  CS,SS - crystal, specimen @symmetry
+%  CS - @crystalSymmetry
+%  SS - @specimenSymmetry
 %
 % Options
 %  superposition - weights for superposed crystal directions

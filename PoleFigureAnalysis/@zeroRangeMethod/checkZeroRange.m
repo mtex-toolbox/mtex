@@ -1,5 +1,5 @@
 function isZero = checkZeroRange(zrm,ori,i,varargin)
-% check for zero regions in experiementl pole figures
+% check for zero regions in experimental pole figures
 %
 % Syntax
 %
@@ -13,7 +13,7 @@ function isZero = checkZeroRange(zrm,ori,i,varargin)
 %  i   - check in the i~th pole figure
 %
 % Output
-%  isZero - boolean vector of length(ori)
+%  isZero - Boolean vector of length(ori)
 
 if isa(ori,'orientation')
   

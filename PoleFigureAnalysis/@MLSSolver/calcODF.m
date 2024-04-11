@@ -5,7 +5,7 @@ if ~isempty(solver.zrm)
   solver.S3G = subGrid(solver.S3G,~solver.zrm.checkZeroRange(solver.S3G));
 end
 
-% initalize solver
+% initialize solver
 solver.init;
 
 % get max iterations and min iterations 
@@ -26,11 +26,11 @@ alpha = solver.alpha;
 
 % ---------------- ghost correction ----------------------------
 
-% determine phon
+% determine background (phon)
 c0 = min(cellfun(@(x) quantile(max(0,x(:)),0.01), solver.pf.allI) ./ alpha(1:length(solver.pf.allI)));
 
 if c0 > 0.1 && c0 < 0.99 && ~check_option(varargin,'noGhostCorrection')
-  vdisp(['  I''m going to apply ghost correction. Uniform portion fixed to ',xnum2str(solver.c0)],varargin{:});
+  vdisp("  I''m going to apply ghost correction." + newline + "  Uniform portion fixed to c0 = " + xnum2str(c0),varargin{:});
 
   % subtract uniform portion from intensities
   solver.pf = max(0,solver.pf - alpha .* c0);
