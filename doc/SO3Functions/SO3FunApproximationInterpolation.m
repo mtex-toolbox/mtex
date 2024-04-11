@@ -1,22 +1,29 @@
-%% Rotational Approximation and Interpolation
+%% Approximating Orientation Dependent Functions from Discrete Data
 %
 %%
-% On this page, we want to cover the topic of function approximation from
-% discrete values on the Rotation group. To simulate this, we have stored
-% some nodes and corresponding function values which we can load. The
-% csv-file contains the Euler angles $\phi_1$, $\Phi$ and $\phi_2$ of the
-% nodes and the function value in the fourth column. Lets import these data
-% using the function <orientation.load.html |load|>
+% On this page we consider the problem of determining a smooth orientation
+% dependent function $f(\mathtt{ori})$ given a list of orientations
+% $\mathtt{ori}_n$ and a list of corresponding values $v_n$. These values
+% may by the volume of crystals with this specific orientation, as in the
+% case of an ODF, or to any other orientation dependent physical property.
+%
+% Such data may be stored in ASCII files which have lines of Euler
+% angles, representing the orientations, and values. Such data files may be
+% read using the command <orientation.load.html |load|>, where we have
+% to specify the position of the columns of the Euler angles as well as of
+% the additional properties.
 
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
-[nodes, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
+[ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 
 %%
-% The second output |S| is a struct that contains a field |S.values| with
-% the function values from the fourth column. Next, we can make a section
-% plot to see, what we are dealing with
+% As a result the command returns a list of orientations |ori| and a struct
+% |S|. The struct contains one field for each additional column in our data
+% file. In out toy example it is the field |S.values|. Lets generate a
+% discrete plot of the given orientations |ori| together with the values
+% |S.values|.
 
-plotSection(nodes, S.values,'all');
+plotSection(ori, S.values,'all');
 
 %%
 % Now, we want to find a function which coincides with the given function
@@ -29,16 +36,16 @@ plotSection(nodes, S.values,'all');
 % of class <SO3Fun.SO3Fun |SO3Fun|>
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
-SO3F = SO3Fun.interpolate(nodes, S.values,'exact','kernel',psi);
+SO3F = SO3Fun.interpolate(ori, S.values,'exact','kernel',psi);
 plot(SO3F)
 
 %% 
-% The interpolation is done by lsqr. Hence the error is not in machine
+% The interpolation is done by |lsqr|. Hence the error is not in machine
 % precision.
-norm(SO3F.eval(nodes) - S.values) / norm(S.values)
+norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 %%
-% If we don't restrict ourselfs to the given function values in the nodes,
+% If we don't restrict ourselves to the given function values in the nodes,
 % we have more freedom, which can be seen in the case of approximation.
 
 %% Approximation of noisy data
@@ -50,7 +57,7 @@ norm(SO3F.eval(nodes) - S.values) / norm(S.values)
 
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
-plotSection(nodes,val,'all')
+plotSection(ori,val,'all')
 
 %%
 % In contrast to interpolation we are now not restricted to the exact 
@@ -62,15 +69,16 @@ plotSection(nodes,val,'all')
 % option |'exact'|.
 %
 %%
-% Another way is to approximate the rotational function with a |@SO3FunHarmonic|,
-% which is a series of <WignerFunctions.html Wigner-D functions> (Harmonic series). 
-% We don't take as many Wigner-D functions as there are nodes,
-% such that we are in the overdetermined case. In that way we don't have a
-% chance of getting the error in the nodes zero but hope for a smoother
-% approximation. This can be achieved by the <SO3FunHarmonic.approximation |approximation|>
-% command of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> 
+% Another way is to approximate the rotational function with a
+% |@SO3FunHarmonic|, which is a series of <WignerFunctions.html Wigner-D
+% functions> (Harmonic series). We don't take as many Wigner-D functions as
+% there are nodes, such that we are in the overdetermined case. In that way
+% we don't have a chance of getting the error in the nodes zero but hope
+% for a smoother approximation. This can be achieved by the
+% <SO3FunHarmonic.approximation |approximation|> command of the class
+% <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
 
-SO3F2 = SO3FunHarmonic.approximation(nodes, val,'bandwidth',18)
+SO3F2 = SO3FunHarmonic.approximation(ori, val,'bandwidth',18)
 plot(SO3F2)
 
 %%
@@ -78,7 +86,7 @@ plot(SO3F2)
 % smoother function. But one has to keep in mind that the error in the data
 % nodes is not zero as in the case of interpolation.
 
-norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
+norm(eval(SO3F2, ori) - S.values) / norm(S.values)
 
 %%
 % But this may not be of great importance like in the case of function
@@ -102,10 +110,10 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 % for the data nodes $x_m$, $m=1,\dots,M$. Here $f(x_m)$ are the target function
 % values and $g(x_m)$ our approximation evaluated in the given data nodes.
 %
-% This can be done by the |lsqr| method of Matlab, which efficiently
+% This can be done by the |lsqr| method of MATLAB, which efficiently
 % seeks for roots of the derivative of the given functional (also known as
 % normal equation). In the process we compute the matrix-vector product
-% with the Fourier-matrix multible times, where the Fourier-matrix is given
+% with the Fourier-matrix multiple times, where the Fourier-matrix is given
 % by
 %
 % $$ F = [D_n^{k,l}(x_m)]_{m = 1,\dots,M;~n = 0,\dots,N,\,k,l = -n,\dots,n}. $$
@@ -125,7 +133,7 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 % the underdetermined case. Here we want the approximation $g$ to be smooth 
 % just to avoid overfitting.
 %
-% Therefore we penalise oscilations by adding the norm of $g$ to
+% Therefore we penalize oscillations by adding the norm of $g$ to
 % the energy functional which is minimized  by |lsqr|. This is called
 % regularization and means we now minimize the functional 
 %
@@ -142,17 +150,17 @@ norm(eval(SO3F2, nodes) - S.values) / norm(S.values)
 % towards 0 and the smoother the approximation $g$ is.
 %
 %%
-% We can use regularization by adding the option 'regularization' to the 
-% command <SO3FunHarmonic.approximation |approximation|> of the class 
+% We can use regularization by adding the option |'regularization'| to the
+% command <SO3FunHarmonic.approximation |approximation|> of the class
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 
 lambda = 0.0001;
 s = 2;
-SO3F3 = SO3FunHarmonic.approximation(nodes,val,'regularization',lambda,'SobolevIndex',s)
+SO3F3 = SO3FunHarmonic.approximation(ori,val,'regularization',lambda,'SobolevIndex',s)
 plot(SO3F3)
 
 %%
-% Plotting this function, we can immidiately see, that we have a much
+% Plotting this function, we can immediately see, that we have a much
 % smoother function, i.e. the norm of |SO3F3| is smaller than the norm of
 % |SO3F2|.
 
@@ -161,11 +169,11 @@ norm(SO3F3)
 
 
 %% 
-% But this smoothing results in an higher error in the data points,
+% This smoothing results in a larger error in the data points,
 % which may not be much important since we had noisy function values given,
 % where we don't know the exact values anyways. 
 
-norm(eval(SO3F3, nodes) - S.values) / norm(S.values)
+norm(eval(SO3F3, ori) - S.values) / norm(S.values)
 
 %% Quadrature
 %
@@ -199,7 +207,7 @@ SLeft = specimenSymmetry;
 SO3G = quadratureSO3Grid(N,'ClenshawCurtis',SRight,SLeft);
 % Because of symmetries there are symmetric equivalent nodes on the quadrature grid.
 % Hence we evaluate the routine on a smaller unique grid and reconstruct afterwards.
-% For SO3Fun's this is done internaly by evaluation.
+% For SO3Fun's this is done internally by evaluation.
 tic
 v = odf.eval(SO3G);
 toc
