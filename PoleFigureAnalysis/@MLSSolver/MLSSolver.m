@@ -4,9 +4,10 @@ classdef MLSSolver < pf2odfSolver
 % reconstructing an ODF from arbitrarily scattered pole figure intensities.
 % The resulting ODF is represented as a weighted sum of unimodal
 % components. The shape and the number of component centers can be
-% specified. The algorithm is explained in detail in *A novel pole figure
-% inversion method: specification of the MTEX algorithm*, Hielscher,
-% Schaeben: J. of Appl. Cryst., 41(6), 2008.
+% specified. The algorithm is explained in detail in 
+%
+% * A novel pole figure inversion method: specification of the MTEX
+% algorithm*, Hielscher, Schaeben: J. of Appl. Cryst., 41(6), 2008.
 %
 % Syntax
 %
@@ -39,14 +40,14 @@ classdef MLSSolver < pf2odfSolver
     ghostCorrection = 1
     iterMax = 10; % max number of iterations
     iterMin = 5;  % max number of iterations
-    lambda = 0;   % regularisation parameter
+    lambda = 0;   % regularization parameter
     RM = [];      % regularization matrix
   end
   
   properties (Access = private)
     nfft_gh  % list of nfft plans
     nfft_r   % list of nfft plans
-    A        % legendre coefficients of the kernel function
+    A        % Legendre coefficients of the kernel function
     refl     % cell
     u
     a
@@ -67,16 +68,17 @@ classdef MLSSolver < pf2odfSolver
       %solver.pf = unique(max(pf,0));
       solver.pf = max(pf,0);
 
-      % normalize very different polefigures
+      % normalize very different pole figures
       mm = max(pf.intensities(:));
 
+      delta = 10;
       for i = 1:pf.numPF
-        if mm > 5*max(pf.allI{i}(:))
-          pf.allI{i} = pf.allI{i} * mm/5/max(pf.allI{i}(:));
+        if mm > delta*max(pf.allI{i}(:))
+          solver.pf.allI{i} = solver.pf.allI{i} * mm/delta/max(pf.allI{i}(:));
         end
       end
       
-      % generate discretization of orientation space
+      % generate discretization of the orientation space
       solver.S3G = getClass(varargin,'SO3Grid');
       if isempty(solver.S3G)
         if pf.allR{1}.isOption('resolution')
@@ -109,13 +111,19 @@ classdef MLSSolver < pf2odfSolver
       solver.ghostCorrection = ~check_option(varargin,'noGhostCorrection');
 
       % compute quadrature weights
-      if numProper(solver.SS) == 1
+      if check_option(varargin,'quadratureWeights') && numProper(solver.SS) == 1
         solver.weights = cellfun(@(r) calcQuadratureWeights(r),solver.pf.allR,'UniformOutput',false);
       else
         solver.weights = num2cell(1./length(pf,[]));
       end
+
+      if check_option(varargin,'intensityWeights')
+        for k = 1:solver.pf.numPF
+          solver.weights{k} = solver.weights{k} .* (1+solver.pf{k}.intensities(:)).^(-1/2);
+        end
+      end
       
-      % regularisation
+      % regularization
       solver.lambda = get_option(varargin,'regularisation',0);
             
     end
@@ -154,7 +162,7 @@ classdef MLSSolver < pf2odfSolver
       r = equispacedS2Grid('upper','antipodal','resolution',5*degree);
       h = Miller({1,0,0},{1,1,1},{1,1,0},cs);
       pf = calcPoleFigure(odf,h,r);
-      odf = calcODF(pf)
+      odf = calcODF(pf);
       
       plotPDF(odf,h)
       plotFibre(odf,fibre.alpha(cs))
@@ -170,6 +178,7 @@ classdef MLSSolver < pf2odfSolver
       
       solver.init
       odf = solver.calcODF;
+      plot(odf)
       delete(solver);
       toc
       

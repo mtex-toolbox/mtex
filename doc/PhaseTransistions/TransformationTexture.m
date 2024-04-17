@@ -3,7 +3,7 @@
 % During phase transformation or twinning the orientation of a crystal
 % rapidly flips from an initial state |oriA| into a transformed state
 % |oriB|. This relationship between the initial and transformed state can
-% be described by an orientation relationsship |OR|. To make the situation
+% be described by an orientation relationship |OR|. To make the situation
 % more precise, we consider the phase transformation from austenite to
 % ferrite via the Nishiyama Wassermann orientation relationship
 
@@ -57,7 +57,7 @@ mtexColorbar
 
 %%
 % We can draw some random orientations according this model ODF and apply
-% the same commands |variants| to compute all transfomed orientations in
+% the same commands |variants| to compute all transformed orientations in
 % one step
 
 % number of discrete orientations
@@ -92,9 +92,9 @@ mtexColorbar
 
 % texture index of the transformed ODF computed from discrete orientations
 odfBSim = calcDensity(oriBSim)
-textureindex(odfBSim)
+norm(odfBSim)^2
 
 %%
 
 % texture index of the directly computed transformed ODF 
-textureindex(odfB)
+norm(odfB)^2

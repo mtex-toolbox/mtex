@@ -18,6 +18,14 @@ function h = plot(sF,varargin)
 %
 %
  
+if check_option(varargin,'notPolar')
+  M = 1e5;
+  x = (0:M-1)/(M-1)*2*pi;
+  y = sF.eval(x);
+  h = plot(x,y);
+  return
+end
+
 omega = linspace(0,2*pi,361);
 
 d = real(sF.eval(omega));

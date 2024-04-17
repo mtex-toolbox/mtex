@@ -25,7 +25,7 @@ if isa(pf2,'PoleFigure')
   end
 else
   
-  if numel(pf2) == length(pf) || length(pf2) == 1
+  if numel(pf2) == length(pf) || isscalar(pf2)
     pf.intensities = pf.intensities + pf2;
   elseif numel(pf2) == length(pf.allH)
     for i = 1:pf.numPF

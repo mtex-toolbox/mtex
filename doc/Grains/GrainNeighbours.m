@@ -1,11 +1,12 @@
 %% Grain Neighbors
 %
 %%
-% In this section we discuss how to analyze the neighbouring relationships
+% In this section we discuss how to analyze the neighboring relationships
 % between grains. While most of this can be done also on the level of grain
 % boundaries an local misorientations it is for large data sets sometimes
-% useful to consider misorientations between the meanorienations of grains.
-% We shall use the following Magnesium data set of our explainations.
+% useful to consider misorientations between the mean-orientations of
+% grains. We shall use the following Magnesium data set of our
+% explanations.
 
 % load sample EBSD data set
 mtexdata twins silent
@@ -22,8 +23,8 @@ plot(grains,grains.meanOrientation)
 %%
 % Central for the analysis of grain to grain relationships is the function 
 % <grain2d.neighbors.html |grains.neighbours|>. It return a list of pairs
-% of neighbouring grain ids. Each row of the list containes the ids of two
-% neighbouring grains. In the following lines choose the row number 170 and
+% of neighboring grain ids. Each row of the list contains the ids of two
+% neighboring grains. In the following lines choose the row number 170 and
 % outline the corresponding grains
 
 pairs = grains.neighbors;
@@ -56,7 +57,7 @@ twinning = orientation.map(Miller(0,1,-1,-2,CS),Miller(0,-1,1,-2,CS),...
 
 
 %%
-% In order to determine the percentage of twinnig pairs we do 
+% In order to determine the percentage of twining pairs we do 
 
 % which of the pairs are twinning
 isTwinning = angle(mori,twinning) < 3*degree;
@@ -66,11 +67,11 @@ isTwinning = angle(mori,twinning) < 3*degree;
 
 %%
 % It is important to understand that the list returned by
-% |grains.neighbours| containes only pairs such that both grains are
+% |grains.neighbours| contains only pairs such that both grains are
 % contained in |grains|. This allows the syntax |grains('phaseName')| to
-% extract only neighbour relation ships within one phase.
+% extract only neighbor relation ships within one phase.
 %%
-% In some case, e.g. if we ask for all neighbouring grains to a given
+% In some case, e.g. if we ask for all neighboring grains to a given
 % grains, it is useful to replace this constraint by the condition that at
 % least one grain should by part of |grains|. This can be accomplished by
 % the option |'full'|.
@@ -87,3 +88,5 @@ plot(grains(pairs).boundary,'lineColor','blue','lineWidth',3)
 hold on
 plot(grains(83).boundary,'lineColor','red','lineWidth',3)
 hold off
+
+%#ok<*NASGU>

@@ -27,7 +27,7 @@ delta = mean(norm(ebsd.unitCell));
 x_Dm = x_D-delta;  x_Dp = x_D+delta;
 
 nd = sparse(length(ebsd),size(xy,1));
-dim = size(x_D,2);
+
 for k=1:size(xy,1)
   
   candit = find(all(bsxfun(@le,x_Dm,xy(k,:)) & bsxfun(@ge,x_Dp,xy(k,:)),2));

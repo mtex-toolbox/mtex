@@ -23,7 +23,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
 %   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
 %
-%   % markovian clustering algorithm
+%   % Markovian clustering algorithm
 %   p = 1.5;    % inflation power (default = 1.4)
 %   maxIt = 10; % number of iterations (default = 4)
 %   delta = 5*degree % variance of the threshold angle
@@ -145,7 +145,7 @@ end
 
 % compute mean orientation and GOS
 if 0
-  GOS = zeros(length(grains),1);
+  GOS = zeros(length(grains),1); %#ok<UNRCH>
   doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
   abcd = zeros(length(doMeanCalc),4);
   for k = 1:numel(doMeanCalc)
@@ -156,7 +156,8 @@ if 0
   end
   meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
 else
-  [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
+  %[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
+  [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));
 end
 % save 
 grains.prop.GOS = GOS;
@@ -328,10 +329,10 @@ end
 
   function qAdded = removeQuadruplePoints
 
-    quadPoints = find(accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4);
+    quadPoints = accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4;
     qAdded = 0;
 
-    if isempty(quadPoints), return; end
+    if ~any(quadPoints), return; end
       
     % find the 4 edges connected to the quadpoints
     I_FV = sparse(repmat((1:size(Fext,1)).',1,2),Fext,ones(size(Fext)));
@@ -342,7 +343,7 @@ end
     % this is a length(quadPoints x 4 list of edges
     iqF = reshape(iqF,4,length(quadPoints)).';
       
-    % find the 4 vertices adfacent to each quadruple point
+    % find the 4 vertices adjacent to each quadruple point
     qV = [Fext(iqF.',1).';Fext(iqF.',2).'];
     qV = qV(qV ~= reshape(repmat(quadPoints.',8,1),2,[]));
     qV = reshape(qV,4,[]).';
@@ -376,7 +377,7 @@ end
     iqD(ignore,:) = [];
     quadPoints(ignore) = [];
     iqF(ignore,:) = [];
-    qV(ignore,:) = [];
+    %qV(ignore,:) = [];
     qOrder(ignore,:) = [];
     s = size(iqF);
     orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));

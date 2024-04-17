@@ -59,7 +59,7 @@ for i = 1:length(subs)
     
     phaseId = reshape(ebsd.phaseId,size(ebsd));
     phaseId(isnan(phaseId)) = 1+numel(phases);
-    phases(end+1) = false;
+    phases(end+1) = false; %#ok<AGROW>
     
     ind = ind & phases(phaseId);
     

@@ -20,7 +20,7 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 %
 % Syntax
 %   SO3TV = SO3TangentVector(x,y,z)
-%   SO3TV = SO3TangentVector(v,'right')
+%   SO3TV = SO3TangentVector(v,SO3TangentSpace.rightVector)
 %
 % Input
 %  x,y,z - cart. coordinates
@@ -53,10 +53,9 @@ methods
     SO3TV = SO3TV@vector3d(varargin{:});
 
     if nargin > 0 && isa(varargin{1},'SO3TangentVector')
-      
       SO3TV = varargin{1};
     else
-      SO3TV.tangentSpace = getClass(varargin,'SO3TangentSpace',SO3TangentSpace.leftVector);
+      SO3TV.tangentSpace = SO3TangentSpace.extract(varargin{:});
     end
   end
   

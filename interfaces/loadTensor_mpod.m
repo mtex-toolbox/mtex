@@ -133,7 +133,7 @@ for Entry = entry(~cellfun('isempty',entry))
   end
 end
 
-if numel(T) == 1, T = T{1};end
+if isscalar(T), T = T{1};end
 
 if isempty(T), interfaceError(fname); end
 
@@ -157,7 +157,7 @@ end
 
 
 
-function [u s] = units(index)
+function [u, s] = units(index)
 
 u = 'pure number';
 s = 1;

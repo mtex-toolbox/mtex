@@ -24,7 +24,8 @@ try
   if ~isempty(m), return;end
   
   % if this fails set to default value and report
-catch, end
+catch
+end
 
 m = Miller(1,0,0,CS);
 r = 0;
@@ -38,7 +39,8 @@ m = Miller(CS);
 for i = 1:length(e)
   try
     m(end+1) = Miller(fliplr(e{i}),CS);
-  catch, end
+  catch
+  end
 end
 
 if ~isempty(m)

@@ -11,3 +11,4 @@ S2FunSym                        Symmetric Function
 S2FunMultivariate               Multivariate Functions
 S2Kernels                       Spherical Kernel Functions
 SphericalHarmonics              Spherical Harmonics
+S1FunHarmonics                  Fourier Series

@@ -1,10 +1,10 @@
 %% Slip Systems
 %
 %%
-% Plastic deformation in crystaline materials almost exclusively appears as
-% dislocation along lattice planes. Such deformations are described by the
-% normal vector *n* of the lattice plane and direction *b* of the slip. In
-% the case of hexagonal alpha-Titanium with 
+% Plastic deformation in crystalline materials almost exclusively appears
+% as dislocation along lattice planes. Such deformations are described by
+% the normal vector *n* of the lattice plane and direction *b* of the slip.
+% In the case of hexagonal alpha-Titanium with
 
 cs = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)')
 
@@ -19,7 +19,7 @@ b = Miller(2,-1,-1,0,cs,'UVTW')
 n = Miller(0,1,-1,0,cs,'HKIL')
 
 %%
-% Putting both incredience together we can define a slip system in MTEX by
+% Putting both ingredients together we can define a slip system in MTEX by
 
 sSBasal = slipSystem(b,n)
 
@@ -36,7 +36,7 @@ sSBasal = slipSystem.basal(cs)
 sSBasalSym = sSBasal.symmetrise('antipodal')
 
 %%
-% The length of the burgers vector, i.e., the amount of displacment is
+% The length of the burgers vector, i.e., the amount of displacement is
 
 sSBasalSym.b.norm
 
@@ -65,6 +65,5 @@ ori = orientation.rand(cs)
 % transfer slip system into specimen coordinates
 ori * sSBasal
 
-
-
+%#ok<*NASGU>
 

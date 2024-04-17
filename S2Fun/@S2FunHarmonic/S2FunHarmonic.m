@@ -105,7 +105,7 @@ methods
   function d = size(sF, varargin)
     d = size(sF.fhat);
     d = d(2:end);
-    if length(d) == 1, d = [d 1]; end
+    if isscalar(d), d = [d 1]; end
     if nargin > 1, d = d(varargin{1}); end
   end
 

@@ -28,7 +28,7 @@ classdef triplePointList < phaseList & dynProp
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
     angles         % boundary segment angles at the triple points
-    V              % vertices x,y coordinates
+    V              % vertices x,y coordinates of the triple points
   end
   
   methods

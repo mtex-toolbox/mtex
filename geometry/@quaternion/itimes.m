@@ -27,7 +27,7 @@ else
   a2 = q2.a; b2 = -q2.b; c2 = -q2.c; d2 = -q2.d;
 end
  
-%standart algorithm
+% standard algorithm
 q.a = a1 .* a2 - b1 .* b2 - c1 .* c2 - d1 .* d2;
 q.b = b1 .* a2 + a1 .* b2 - d1 .* c2 + c1 .* d2;
 q.c = c1 .* a2 + d1 .* b2 + a1 .* c2 - b1 .* d2;

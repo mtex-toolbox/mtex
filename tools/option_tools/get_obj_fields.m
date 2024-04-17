@@ -8,7 +8,7 @@ for k=1:numel(varargin)
   end
 end
 
-if nargout > 0, 
+if nargout > 0 
   varargout{1} = vnames;
 else
   disp(vnames);

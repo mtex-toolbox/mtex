@@ -1,4 +1,4 @@
-function v = log(q,q_ref,varargin)
+function out = log(q, q_ref, tS, varargin)
 % the logarithmic map that translates a rotation into a rotation vector
 %
 % Syntax
@@ -19,8 +19,8 @@ function v = log(q,q_ref,varargin)
 % quaternion/logm vector3d/exp spinTensor/spinTensor
 
 % if reference point for tangential space is given - rotate
-if nargin >= 2
-  if check_option(varargin,'left')
+if nargin>=2
+  if nargin>2 && tS.isLeft
     %q = q .* q_ref';
     q = itimes(q, q_ref,false);
   else
@@ -36,4 +36,18 @@ denum = sqrt(1-a.^2);
 denum(denum == 0) = inf;
 omega = omega ./ denum;
 
-v = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
+% make it askew symmetric matrix / spin tensor
+if nargin > 2 && tS.isSpinTensor
+  
+  M = zeros([3,3,size(q)]);
+
+  M(2,1,:) =  q.d; M(1,2,:) = -M(2,1,:);
+  M(3,1,:) = -q.c; M(1,3,:) = -M(3,1,:); 
+  M(3,2,:) =  q.b; M(2,3,:) = -M(3,2,:);
+
+  % make it a spinTensor
+  out = spinTensor(omega .* M);
+
+else % make it a vector
+  out = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
+end

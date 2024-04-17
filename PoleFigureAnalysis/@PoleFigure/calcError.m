@@ -1,8 +1,8 @@
 function e = calcError(pf,rec,varargin)
 % RP and mean square error
 %
-% *calcError(pf,rec)* calculates reconstruction error between meassured 
-% intensities and the recalcuated ODF or between two meassured pole 
+% *calcError(pf,rec)* calculates reconstruction error between measured 
+% intensities and the recalculated ODF or between two measured pole 
 % figures. It can be specified whether the RP
 % error or the mean square error is calculated. The scaling coefficients
 % are calculated by the function PoleFigure/calcNormalization

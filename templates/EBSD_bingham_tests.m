@@ -48,7 +48,7 @@ fprintf('p-oblate    : %2.5f\t%2.5f\n', T_oblate    ,T_oblate_c)
 
 %% Variing the size of samples (parameters)
 
-[qm lambda EV kappa] = mean(ebsd);
+[qm, lambda, EV, kappa] = mean(ebsd);
 nto = sampleSize(ebsd);
 
 hold on, 
@@ -74,7 +74,7 @@ legend('spherical','prolatnes','oblatnes')
 for resolutions = [5 2.5 1.5] *degree
   ebsd_sim = calcEBSD(odf_model,nto,'resolution',resolutions);
 
-  [q_mean_sim lambda_sim EV_sim kappa_sim] = mean(ebsd_sim);
+  [q_mean_sim, lambda_sim, EV_sim, kappa_sim] = mean(ebsd_sim);
   
   % some output
   fprintf('kappa at resolution %2.2f:\n', resolutions/degree)

@@ -8,27 +8,36 @@ classdef spinTensor < velocityGradientTensor
 %   Omega = spinTensor(mori)
 %
 % Input
-%  S - skew symmetry matrix
+%  S - skew symmetric matrix
 %  v - @vector3d
 %  rot - @rotation
 %  mori - mis@orientation
-  
-  
+ 
   methods
     function Omega = spinTensor(varargin)
+            
+      %Omega = Omega@velocityGradientTensor(varargin{:});
+      Omega.rank = 2;
       
+      if nargin == 0, return; else, in = varargin{1}; end
       
-      Omega = Omega@velocityGradientTensor(varargin{:},'rank',2);
-      
-      if nargin == 0; return; end
-      
-      if isa(varargin{1},'rotation')
+      if isa(in,'tensor') && in.rank==2
+
+        % take only the antisymetric portion
+        Omega.M = 0.5*(in.M - permute(in.M,[2 1 3:ndims(in.M)]));
         
-        Omega = logm(varargin{:});
+        Omega.opt = in.opt;
+        Omega.CS = in.CS;
+
+      elseif isa(in,'rotation')
         
-      elseif isa(varargin{1},'vector3d')
+        Omega = logm(varargin{1});
+
+        if isa(varargin{1},'orientation') && M.CS == M.SS, Omega.CS = M.CS; end
         
-        [x,y,z] = double(varargin{1});
+      elseif isa(in,'vector3d')
+        
+        [x,y,z] = double(in);
         
         Omega.M = zeros([3,3,size(z)]);
         Omega.M(2,1,:,:,:) =  z;
@@ -39,12 +48,11 @@ classdef spinTensor < velocityGradientTensor
         Omega.M(1,3,:,:,:) =  y;
         Omega.M(2,3,:,:,:) = -x;
         
-        Omega.rank = 2;
-        if isa(varargin{1},'Miller'), Omega.CS = varargin{1}.CS; end        
+        if isa(in,'Miller'), Omega.CS = in.CS; end
 
-      else % ensure it is antisymmetric
+      elseif isnumeric(in) % ensure it is antisymmetric
 
-        Omega.M = 0.5*(Omega.M - permute(Omega.M,[2 1 3:ndims(Omega.M)]));
+        Omega.M = 0.5*(in - permute(in,[2 1 3:ndims(in)]));
         
       end
       
@@ -88,15 +96,17 @@ classdef spinTensor < velocityGradientTensor
       
     end
     
-    function rot = exp(Omega,ori_ref,varargin)
+    function rot = exp(Omega,ori_ref,tS)
+      
       rot = orientation(Omega);
       if nargin > 1
-        if check_option(varargin,'left')
-          rot = rot .* ori_ref;          
+        if nargin>2 && tS.isLeft
+          rot = rot .* ori_ref;
         else
           rot = ori_ref .* rot;
         end
       end
+
     end
     
     function omega = angle(Omega)

@@ -70,7 +70,7 @@ switch lower(get_option(varargin,'method','horn'))
 end
 end
 
-function check
+function check %#ok<DEFNU>
 
 r = rotation.rand;
 % u = [xvector;yvector;zvector];
@@ -86,7 +86,7 @@ vn = v + 0.1 .* vector3d.rand(size(v));
 rec = rotation.fit(u,vn,'method','horn');
 
 % the distance to the initial rotation
-angle(r,rec)./degree
+angle(r,rec)./degree %#ok<NOPRT>
 
 % the fit
 f = sum(dot(rec * u,vn.'));

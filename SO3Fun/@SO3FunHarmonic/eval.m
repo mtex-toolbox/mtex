@@ -53,7 +53,7 @@ M = length(rot);
 
 if SO3F.bandwidth == 0
   f = ones(size(rot)) .* SO3F.fhat;
-  if numel(SO3F) == 1, f = reshape(f,s); end
+  if isscalar(SO3F), f = reshape(f,s); end
   return;
 end
 
@@ -175,6 +175,6 @@ else
   nfftmex('finalize',plan);
 end
 
-if numel(SO3F) == 1, f = reshape(f,s); end
+if isscalar(SO3F), f = reshape(f,s); end
 
 end

@@ -13,7 +13,7 @@
 % origin represent the rotational angle and the vector represents the
 % rotational axis. In MTEX this can be represented as follows
 
-% triclic crystal symmetry
+% triclinic crystal symmetry
 cs = crystalSymmetry('triclinic')
 
 % the corresponding orientation space
@@ -56,7 +56,7 @@ hold off
 %% Crystal Symmetries
 % In case of crystal symmetries the orientation space can divided into as
 % many equivalent segments as the symmetry group has elements. E.g. in the
-% case of orthorombic symmetry the orientation space is subdivided into four
+% case of orthorhombic symmetry the orientation space is subdivided into four
 % equal parts, the central one looking like
 
 cs = crystalSymmetry('222')
@@ -112,7 +112,7 @@ hold off
 
 %% Fundamental regions of misorientations
 %
-% Misorientations are characterised by two crystal symmetries. A
+% Misorientations are characterized by two crystal symmetries. A
 % corresponding fundamental region is defined by
 
 oR = fundamentalRegion(ebsd('Fo').CS,ebsd('En').CS);
@@ -134,7 +134,7 @@ plot(grains.boundary('fo','En').misorientation)
 % orientations. The inverse of a misorientation is axis - angle
 % representation is simply the one with the same angle but antipodal axis.
 % Accordingly this additional symmetry is handled in MTEX by the keyword
-% *antipodal*. 
+% |'antipodal'|.
 
 oR = fundamentalRegion(ebsd('Fo').CS,ebsd('Fo').CS,'antipodal');
 
@@ -143,14 +143,14 @@ plot(oR)
 %%
 % We see that the fundamental region with antipodal symmetry has only half
 % the size as without. In the case of misorientations between the same
-% phase MTEX automatically sets the antipodal flag to the misorientations
-% and plots them accordingly.
+% phase MTEX automatically sets the flag |'antipodal'| to the
+% misorientations and plots them accordingly.
 
 mori = grains.boundary('Fo','Fo').misorientation
 plot(mori)
 
 %%
-% If you want to avoid this you can remove the anitpodal flag by
+% If you want to avoid this you can remove the flag |'antipodal'| by
 
 mori.antipodal = false;
 
@@ -169,3 +169,4 @@ plotSection(mori,'axisAngle')
 
 plotSection(mori,'axisAngle','antipodal')
 
+%#ok<*NASGU>

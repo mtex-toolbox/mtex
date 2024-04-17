@@ -8,7 +8,7 @@ psi = S2DeLaValleePoussinKernel('halfwidth',10*degree)
 
 surf(psi,'resolution',2*degree,'EdgeColor','none')
 hold on
-arrow3d(2*zvector,'labeled')
+arrow3d(2.4*zvector,'labeled','arrowwidth',0.01)
 hold off
 axis off
 
@@ -32,7 +32,7 @@ plot(psi,'linewidth',2,'symmetric')
 % 
 % Every spherical kernel function $\psi$ can be associated with a function
 % $\Psi \colon [-1,1] \to \mathbb R$ defined on the interval $[-1,1]$ by
-% $\psi(v) = \Psi(v \cdot e_3)$. It turn out to be usefull to $\Psi$
+% $\psi(v) = \Psi(v \cdot e_3)$. It turn out to be useful to $\Psi$
 % approximate $\Psi$ by a expansion into Legendre polynomials $P_n$ of
 % degree $n$, i.e.,
 % 
@@ -42,7 +42,7 @@ plot(psi,'linewidth',2,'symmetric')
 % easily visualized using the command <S2Kernel.plotSpectra.html
 % |plotSpectra|>.
 
-plotSpektra(psi)
+plotSpektra(psi,'linewidth',2)
 
 %% Applications
 %
@@ -52,18 +52,18 @@ plotSpektra(psi)
 % * kernel density estimation of directional data using the command
 % <vector3d.calcDensity.html |calcDensity|>
 % * defocusing correction of XRD data
-% * etimation of the habit plane normal distribution using the command
+% * estimation of the habit plane normal distribution using the command
 % <calcGBND.html |calcGBND|>
 % * definition of fibe ODFs using the command <fibreODF.html |fibreODF|>
 %
 %
-%% The de La Vallee Poussin Kernel
+%% The de la Vallee Poussin Kernel
 % The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
 % 
 % $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{\kappa}$$ 
 % 
-% for $t\in[0,1]$. The de la Vallee Poussin kernel additionaly has the 
+% for $t\in[0,1]$. The de la Vallee Poussin kernel additionally has the 
 % unique property that for a given halfwidth it can be described exactly 
 % by a finite number of Fourier coefficients. This kernel is recommended
 % for Texture analysis as it is always positive and there is no truncation 
@@ -76,7 +76,7 @@ plotSpektra(psi)
 % $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{L} a_n(\kappa) \mathcal P_{n}(t).$$
 %
 % We obtain the Legendre coefficients $a_n(\kappa)$ by $a_0=1$, 
-% $a_1=\frac{\kappa}{2+\kappa}$ and the three term recurence relation
+% $a_1=\frac{\kappa}{2+\kappa}$ and the three term recurrence relation
 %
 % $$ (\kappa+l+2) a_{l+1} = -(2l+1)\,a_l + (\kappa-l+1)\,a_{l-1}.$$
 %
@@ -137,7 +137,7 @@ legend('bandwidth = 5','bandwidth = 10')
 % function value is 0, if the angle is greater then the halfwidth $r$.
 % Otherwise it is 1.
 %
-% The main problem of the bump kernel is that we need lots of legendre
+% The main problem of the bump kernel is that we need lots of Legendre
 % coefficients to describe it. That possibly can result in high runtimes.
 %
 
@@ -158,4 +158,3 @@ hold on
 plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
-

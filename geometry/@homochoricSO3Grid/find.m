@@ -106,7 +106,7 @@ if nargin == 2 % closest point
         
         % overwrite new found indice
         % all indice now have a valid value ~= 0 (>= 1 of 8 neighbors in fR)
-        id(id==0) = idx(sub2ind(size(idx), [1:sum(id==0)]', idmin));
+        id(id==0) = idx(sub2ind(size(idx), (1:sum(id==0))', idmin));
         
     end
     

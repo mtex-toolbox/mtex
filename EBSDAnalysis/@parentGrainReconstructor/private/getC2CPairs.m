@@ -3,7 +3,7 @@ function [pairs,ori,weights] = getC2CPairs(job,varargin)
 %
 % 
 % Options
-%  index    - return as index to job.grains instread of grainId
+%  index    - return as index to job.grains instead of grainId
 %  minDelta - ignore grain pairs with similar orientations as they can not 
 %             vote for a unique parent orientation
 %  curvatureFactor - compute boundary weight from the curvature (default 0)

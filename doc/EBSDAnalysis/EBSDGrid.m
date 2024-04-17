@@ -55,11 +55,12 @@ ebsdMg = ebsd('Magnesium')
 ebsdMg = ebsd('Magnesium').gridify
 
 %%
-% The difference between both matrix shapes EBSD variables *ebsd* and
-% *ebsdMg* is that not indexed pixels in |ebsd| are stored as the separate
-% phase *notIndexed* while in *ebsdMg* all pixels have phase Magnesium but
-% the Euler angles of the not indexed pixels are set to nan. This allows to
-% select and plot subregions of the EBSD in a very intuitive way by
+% The difference between both matrix shapes EBSD variables |ebsd| and
+% |ebsdMg| is that not indexed pixels in |ebsd| are stored as the separate
+% phase |'notIndexed'| while in |ebsdMg| all pixels have phase Magnesium
+% but the Euler angles of the not indexed pixels are set to |nan|. This
+% allows to select and plot subregions of the EBSD map in a very intuitive
+% way by
 
 plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 
@@ -71,7 +72,7 @@ plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 gradX = ebsdMg.gradientX;
 
 plot(ebsdMg,norm(gradX))
-caxis([0,4*degree])
+setColorRange([0,4*degree])
 
 %% Hexagonal Grids
 %
@@ -180,3 +181,4 @@ ebsdGF = fill(ebsdG)
 
 plot(ebsdGF,ebsdGF.orientations)
 
+%#ok<*NASGU>

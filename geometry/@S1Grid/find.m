@@ -13,7 +13,7 @@ function ind = find(S1G,x,epsilon)
 % Output
 %  ind - int32
 
-if S1G(1).periodic, p = S1G.max - S1G.min; else p = 0; end
+if S1G(1).periodic, p = S1G.max - S1G.min; else, p = 0; end
 
 if nargin == 2
   ind = S1Grid_find(S1G.points(:),S1G.min,p,x);

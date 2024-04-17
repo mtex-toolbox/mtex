@@ -14,7 +14,7 @@ function v = log(ori,ori_ref,varargin)
 %   m = log(ori,ori_ref)
 %
 %   % the misorientation vector in specimen coordinats
-%   v = log(ori,ori_ref,'left')
+%   v = log(ori,ori_ref, SO3TangentSpace.leftVector)
 %   v = ori_ref .* m
 %
 % Input
@@ -54,8 +54,10 @@ ori = project2FundamentalRegion(ori);
 
 v = Miller(log@quaternion(ori),ori.CS);
 
-if nargin>2 && check_option(varargin,'left')
-  v = ori_ref .* v;
+if nargin>2
+  tS = SO3TangentSpace.extract(varargin{:},SO3TangentSpace.rightVector);
+  
+  if tS.isLeft, v = ori_ref .* v; end
 end
 
 end

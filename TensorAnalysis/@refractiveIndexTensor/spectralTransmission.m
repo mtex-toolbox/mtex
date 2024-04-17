@@ -41,9 +41,9 @@ if isempty(vprop)
 end
 
 % compute birefringence
-[n,nMin,nMax] = rI.birefringence(vprop);
+[n,nMin,~] = rI.birefringence(vprop);
 
-% for spectrum to rgb convertion
+% for spectrum to rgb conversion
 rgbMap = csvread(fullfile(mtex_path,'plotting','plotting_tools','ciexyz31_1.csv'));%CIE_1931_XYZ to RGB 65 whitepoint
 %X_Y_Z_convert = csvread('sbrgb10w.csv',0 ,1)';%Stiles & Burch
 

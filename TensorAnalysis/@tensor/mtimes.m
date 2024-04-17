@@ -6,7 +6,7 @@ if isa(T1,'double')
   T = T2;
   
   % the simple case
-  if numel(T1) == 1
+  if isscalar(T1)
     
     T.M = T1 * T.M;
     
@@ -22,7 +22,7 @@ elseif isa(T2,'double')
 
   T = T1;
   % the simple case
-  if numel(T2) == 1
+  if isscalar(T2)
 
     T.M = T.M * T2;
 

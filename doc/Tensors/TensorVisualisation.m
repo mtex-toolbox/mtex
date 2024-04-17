@@ -5,10 +5,9 @@
 %
 %% Visualization
 % The default plot for each tensor is its directional magnitude, i.e. for
-% each direction x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
+% each direction $x$ we plot the quantity $Q(x) = T_ijkl x_i x_j x_k x_l$
 
 setMTEXpref('defaultColorMap',blue2redColorMap);
-
 
 C = stiffnessTensor.rand
 

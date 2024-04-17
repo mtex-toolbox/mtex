@@ -47,13 +47,13 @@ alphaSumV = full(fmc.alpha*(sum(fmc.W,2)-diag(fmc.W)));
 % if s == 1 sort by weights
 % else sort by size
 if fmc.sLevel == 1
-  [tmp,iorder] = sort(sum(fmc.W),'descend');
+  [~,iorder] = sort(sum(fmc.W),'descend');
 else
-  [tmp,iorder] = sort(fmc.v, 'descend');
+  [~,iorder] = sort(fmc.v, 'descend');
   iorder = iorder';
 end
 
-[i,tmp,w] = find(fmc.W);
+[i,~,w] = find(fmc.W);
 cs   = [0 cumsum(full(sum(fmc.W>0,1)))];
 Finv = false(fmc.sizeW,1);
 % traverse all rows of W and find the indices of all nonzero elements
@@ -102,7 +102,7 @@ i = find(Psum <= 0);
 fmc.Celements = [fmc.Celements i'];
 fmc.sizeWnext = numel(fmc.Celements);
 
-[tmp,j] = ismember(i,fmc.Celements);
+[~,j] = ismember(i,fmc.Celements);
 fmc.P = sparseConcat(fmc.P,i,j,ones(numel(i),1), [fmc.sizeW, fmc.sizeWnext]);
 
 end
@@ -180,7 +180,7 @@ P = sparse(i,j,p,fmc.sizeW,fmc.sizeWnext) + ...
 % P(sub2ind(size(P),i,j)) = p; % slow for large
 
 fmc.Qvar = Qvar;
-fmc.O = quaternion(Oc.').';
+fmc.O = quaternion(Oc.');
 fmc.P = P;
 
 end

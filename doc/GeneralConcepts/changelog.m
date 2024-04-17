@@ -1,14 +1,14 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 6.0.beta.1 9/2023
+%% MTEX 6.0.beta.4 4/2024
 %
 % *Pseudo 3d EBSD and Grain maps*
 %
-% With version 6.0 MTEX starts to support pseudo 3d EBSD data. This means
-% that EBSD maps are not longer supposed to are in the xy-plane. For
+% With version 6.0, MTEX starts to support pseudo 3d EBSD data. This means
+% that EBSD maps are no longer restricted to the xy-plane. For
 % example it is now possible to consider EBSD maps that represent the three
-% faces of a cube. To make this possible multiple changes at the core of
+% faces of a cube. To make this possible, multiple changes at the core of
 % MTEX had to be introduced:
 %
 % * |ebsd.pos| gives the position of the EBSD measurements and is of type
@@ -30,15 +30,15 @@
 %   how2plot.east = yvector
 %   plot(ebsd, how2plot)
 %
-% would plot an EBSD map with its normal direction out of the screen an the
+% would plot an EBSD map with its normal direction out of the screen and the
 % y-vector pointing to north.
 % * A default plotting convention can be stored directly in the EBSD or
 % grain variable via
 %
 %   ebsd.plottingConvention = how2plot
 %
-% * The plotting convention can also passed to any spherical plot. This
-% allows e.g. to plot pole figures with an arbitrary direction sticking out
+% * The plotting convention can also be passed to any spherical plot. This
+% allows e.g. to plot pole figures with an arbitrary direction pointing out
 % of the screen.
 %
 % * As consequence |'upper'| and |'lower'| refers to the outOFScreen
@@ -51,19 +51,22 @@
 % slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
 % more information.
 %
-%% MTEX 5.11.0 2/2023
+%% MTEX 5.11.0 3/2024
 % 
 % MTEX 5.11 will be the last release before MTEX 6.0. It significantly
 % improves grain reconstruction from 2d EBSD data.
 %
 % *Much Faster Grain Reconstruction*
+%
 % Thanks to using the <https://github.com/JCash/voronoi jc_voronoi> as
 % tessellation method and some addition speedups grain reconstruction is
 % now more than 10 times faster then previously. The method used for
-% Voronoi tessellation is now specified in |mtex_settings| by the field
-% |'VoronoiMethod'|.
+% Voronoi tessellation is now specified in |mtex_settings| by the option
+% |'VoronoiMethod'|. You may want to set this option to |'qhull'| if you
+% experience problems with the |'jcvoronoi'| engine.
 %
 % *Much Better Grain Reconstruction*
+%
 % With MTEX 5.11 MTEX uses <https://en.wikipedia.org/wiki/Alpha_shape alpha
 % shapes> to determine the shape of the grains in the presence of large
 % unindexed regions. Those alpha shapes are controlled by a single
@@ -72,13 +75,61 @@
 % <GrainReconstruction.html grain reconstruction> for an illustration of
 % the new method.
 %
+% *Vector Fields in Orientation Space*
+%
+% Functionality of <SO3FunVectorField.html Vector Fields in Orientation
+% Space> has been greatly extended. It includes now functions to compute
+% <SO3VectorField.div.html the divergence |div(vF)|>,
+% <SO3VectorField.curl.html the curl |curl(vF)|> and the
+% <SO3VectorFieldHarmonic.antiderivative.html antiderivative> of a vector
+% field |vF| on orientation space. This new functionality can be used to
+% efficiently model texture evolution by numerically solving the continuity
+% equation as it is demonstrated for <SingleSlipModel.html the single slip
+% model>. Crucial for this approach is the new command <doEulerStep.html
+% |doEulerStep|> which updates an ODF or a list of orientation according to
+% a vector field an orientation space which may be given e.g. by the Taylor
+% model.
+% 
 % *Lankford Parameter*
-% * <Lankford.html Lankford>
+%
+% The command <orientation.calcLankford.html |calcLankford|> allows for the
+% computation of the Lankford or R-value. A full discussion of the
+% corresponding analysis can be found <Lankford.html here>.
+%
+% *Transformation ODF*
+%
+% The command <orientation.variants.html |variants(p2c,odfParent)|>
+% takes now as a second input a parent ODF and return the child ODF under
+% the assumption that all variants appear with the same frequency. This is
+% in more detail explained in the section <TransformationTexture.html
+% Transformation Texture>.
+%
+% *Inner Planes in Crystal Shapes*
+%
+% Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
+% <crystalShape.plot.html |plot(cS,sS)|> and <vector3d.arrow3d.html
+% |arrow3d|> it is now possible to plot internal lattice planes, directions
+% or slip systems into the crystal shape. This is explained in more detail
+% at <CrystalShapes.html Crystal Shapes>.
 %
 % *Numerous minor improvements and bug fixes*
-% * h5 interface
-% * new function <SO3Fun.cor.html |cor(odf1,odf2>|> to compute the
-% correlation between two ODF
+%
+% * new command <SO3Fun.transformReferenceFrame
+% |transformReferenceFrame(odf,csNew)|> that allows to switch between
+% different setups of the same symmetry, i.e. between 121 and 112.
+% * improved h5 interface
+% * new function <SO3Fun.cor.html |cor(odf1,odf2)|> to compute the
+% correlation between two ODFs.
+% * new function <vector3d.lineIntersect.html |lineIntersect|> to compute
+% the intersection between a line and a plane.
+% * new class <S1FunHarmonics.html |S1Fun|> to represent directional
+% properties in the plane.
+% * new function <S2Fun.volume.html |volume(S2F,center,radii)|> to compute
+% the volume of a spherical function within a ball.
+% * replaces |CLim| by <setColorRange.html |setColorRange|>
+% * <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|>
+% computes also the variant and packet ids
+% * many bug fixes
 % 
 %% MTEX 5.10.1 9/2023
 % 
@@ -86,7 +137,7 @@
 %
 %% MTEX 5.10.0 5/2023
 %
-% *Weigthed Burgers Vector*
+% *Weighted Burgers Vector*
 %
 % With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
 % it is now possible to compute the weighted burgers vector both, using the
@@ -106,7 +157,7 @@
 % stress, strain and elasticity tensors.
 % * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
 % method for data cleaning in EBSD maps.
-% * Pseudesymmetries like now natively supported using the syntax
+% * Pseudesymmetries like 532 are now natively supported using the syntax
 % |crystalSymmetry('532')|
 % * |symmetrise(t,'iso')| return the isotropic portion of a tensor
 % * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
@@ -127,7 +178,7 @@
 % functions include
 %
 % * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
-% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habbit plane traces
+% <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habit plane traces
 % from families of grains or EBSD data.
 % * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
 % grain boundary normal distribution from a list of habit plane traces and
@@ -277,7 +328,7 @@
 %
 % *Low Angle Boundaries*
 %
-% With MTEX 5.5 we make low angle grain boundary analsis much more straight
+% With MTEX 5.5 we make low angle grain boundary analysis much more straight
 % forward by allowing to pass to the command <EBSD.calcGrains.html
 % |calcGrains|> two thresholds, i.e.,
 %

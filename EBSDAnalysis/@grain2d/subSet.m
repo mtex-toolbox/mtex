@@ -1,4 +1,4 @@
-function grains = subSet(grains,ind)
+function grains = subSet(grains,ind, varargin)
 % 
 %
 % Input
@@ -8,6 +8,10 @@ function grains = subSet(grains,ind)
 % Output
 %  grains - @grain2d
 %
+% Options
+%  keepOrder - do not change order of the faces when restricting to a single grain
+%
+
 
 % restrict boundary
 if islogical(ind)
@@ -49,7 +53,8 @@ grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
 % if we have only one grain - sort boundary segments
-if isscalar(grains)
+if isscalar(grains) && ~check_option(varargin,'keepOrder')
+
   FNew = [grains.poly{1}(1:end-1).',grains.poly{1}(2:end).'];
   
   % remove inclusions

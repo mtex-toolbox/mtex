@@ -47,20 +47,19 @@ prop(prop<llim | prop > ulim)=nan;
 hasGrain = ebsd.grainId>0;
 
 % get averaging method
-method = getClass(varargin,'function_handle',@nanmean);
+method = getClass(varargin,'function_handle',@(x) mean(x,1,"omitmissing"));
 
 % perform the averaging
-meanProp = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
+mP = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
 
 grains = getClass(varargin,'grain2d');
 if  ~isempty(grains)
   % convert from grainId to grainIndex
-  meanProp = meanProp(grains.id);
+  meanProp = mP(grains.id);
 else
   % convert to ebsd index
-  meanProp = meanProp(ebsd.grainId);
+  meanProp = nan(size(ebsd));
+  meanProp(ebsd.grainId>0) = mP(ebsd.grainId(ebsd.grainId>0));
 end
-
-
 
 end

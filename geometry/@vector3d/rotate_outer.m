@@ -35,9 +35,9 @@ end
 
 % normal result is length(q) x length(v)
 % special cases are when length(q) == 1 or length(v)==1
-if length(v) == 1
+if isscalar(v)
   v = reshape(v,size(q));
-elseif length(q) == 1
+elseif isscalar(q)
   v = reshape(v,size(v));
 end
 

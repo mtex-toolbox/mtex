@@ -95,7 +95,7 @@ else
     res = res / 1.25;
 
     % neighborhood search
-    S3Glocal = localOrientationGrid(crystalSymmetry,crystalSymmetry,2*res,'resolution',res/2);
+    S3Glocal = localOrientationGrid(SO3F.SLeft,SO3F.SLeft,2*res,'resolution',res/2);
     newModes = (S3Glocal * modes).';
     f = eval(SO3F,newModes,varargin{:});
   

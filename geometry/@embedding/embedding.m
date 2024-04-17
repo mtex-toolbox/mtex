@@ -235,7 +235,7 @@ classdef embedding
       s = varargin(cellfun(@isnumeric,varargin));
       if isempty(s)
         s = {1,1};
-      elseif length(s) == 1
+      elseif isscalar(s)
         s = [s,1];
       end
       
@@ -421,14 +421,14 @@ classdef embedding
         mSample = project(Tmean);
               
         mSample2 = mean(localSample);
-        h(i) = angle(mSample,mSample2) ./ degree;
-        g(i) = mean(angle(localSample,mSample2))-mean(angle(localSample,mSample));
+        h(i) = angle(mSample,mSample2) ./ degree; %#ok<AGROW>
+        g(i) = mean(angle(localSample,mSample2))-mean(angle(localSample,mSample)); %#ok<AGROW>
         progress(i,n);
       end
       toc
       
       if n == 1
-        h
+        h %#ok<NOPRT>
       else
         figure(1)
         histogram(h);
@@ -471,7 +471,7 @@ classdef embedding
 
       for i = 1:length(n)
         e = embedding(orientation.rand(round(n(i)),cs));
-        nn(i) = norm(mean(e));
+        nn(i) = norm(mean(e)); %#ok<AGROW>
       end
       
       loglog(n,nn,'.')

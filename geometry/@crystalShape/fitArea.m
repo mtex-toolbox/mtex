@@ -13,6 +13,8 @@ function cS = fitArea(cS,faceArea)
 %  cS - @crystalShape
 %
 
+% TODO: not yet implemented
+
 % we are going to specify the distance of faces to the origin directly
 N = cS.N(:);
 if cS.habitus >0
@@ -26,7 +28,7 @@ N = N.normalize;
 % normalize to area
 fA = reshape(cS.faceArea,[],length(cS.N)); fA = fA(1,:);
 
-f = sum((fA(1,:) - faceArea(:).').^2)
+f = sum((fA(1,:) - faceArea(:).').^2); %#ok<NASGU>
 
 %l = fminsearch(@fit,ones(length(N),1));
 %l = fmincon(@fit,ones(length(N),1),[],[],[],[],0.1*ones(size(N)),10*ones(size(N)));
@@ -45,8 +47,6 @@ cS = cS.update;
   %  catch
   %    f = 100;
   %  end
-   s     
   %end
-
 
 end

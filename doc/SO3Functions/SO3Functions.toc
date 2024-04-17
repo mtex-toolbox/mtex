@@ -11,9 +11,9 @@ FibreODFs                         Fibre Functions
 BinghamODFs                       Bingham ODF
 ODFImport                         Import
 ODFExport                         Export
-SO3FunVectorField                 Vector Field
 SO3FunSymmetricFunctions          Symmetry
 SO3FunMultivariate                Multivariate Functions
+SO3FunVectorField                 Vector Field
 SO3FunTangentSpace                Tangent Space on the Rotation Group
 SO3Kernels                        Rotational Kernel Functions
 WignerFunctions                   Wigner-D Functions

@@ -24,7 +24,7 @@ CS2 = CS2.properGroup;
 q_refSym = mtimes(mtimes(inv(CS2.rot),q_ref,1).',inv(CS1.rot),0); 
 q_refSym = reshape(q_refSym,length(q_ref),[]);
 
-if length(q)>100000 && length(q_ref) == 1
+if length(q)>100000 && isscalar(q_ref)
   
   % maybe q_ref has some multiplicity and we can save some time
   [q_refSym,m,~] = unique(q_refSym,'antipodal','noSymmetry'); 
@@ -51,17 +51,19 @@ q = times(times(reshape(CS2.rot.subSet(ics2),size(q)), q, 1), ...
 end
 
 % some testing code
-function test
- cs1 = crystalSymmetry('432');
- cs2 = crystalSymmetry('32');
- 
- ori_ref = orientation.rand(cs1,cs2);
- ori = orientation.rand(1000 ,cs1,cs2);
- ori_proj = project2FundamentalRegion(ori,ori_ref);
- figure(1)
- histogram((angle(ori_proj,ori_ref,'noSymmetry')./degree))
- figure(2)
- histogram((angle(ori,ori_ref)./degree))
- figure(3)
-  histogram((angle(ori,ori_ref,'noSymmetry')./degree))
- end
+function test %#ok<DEFNU>
+
+cs1 = crystalSymmetry('432');
+cs2 = crystalSymmetry('32');
+
+ori_ref = orientation.rand(cs1,cs2);
+ori = orientation.rand(1000 ,cs1,cs2);
+ori_proj = project2FundamentalRegion(ori,ori_ref);
+figure(1)
+histogram((angle(ori_proj,ori_ref,'noSymmetry')./degree))
+figure(2)
+histogram((angle(ori,ori_ref)./degree))
+figure(3)
+histogram((angle(ori,ori_ref,'noSymmetry')./degree))
+
+end

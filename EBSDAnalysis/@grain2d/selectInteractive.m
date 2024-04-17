@@ -29,7 +29,7 @@ boundaryStyle = [{'lineWidth',4,'lineColor','w'},extract_argoption(varargin,{'li
 %waitfor(gcf)
 
 
-  function spatialSelection(src,eventdata)
+  function spatialSelection(~,~)
     
     pos = get(gca,'CurrentPoint');
         

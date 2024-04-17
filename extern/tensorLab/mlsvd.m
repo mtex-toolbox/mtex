@@ -54,7 +54,7 @@ isTMLSVD = false;
 if nargin >= 2
     isSTMLSVD = true;
     size_core = size_core(:)';
-    if length(size_core) == 1
+    if isscalar(size_core)
         tol = size_core;
         if tol < 0 || tol > 1
             error('mlsvd:tol','Tolerance should be in [0,1].');
@@ -69,7 +69,7 @@ if nargin >= 2
     end
 end
 if nargin == 3 && ~isempty(perm) && ~isstruct(perm)
-    if length(perm) == 1 && ~perm
+    if isscalar(perm) && ~perm
         isTMLSVD = true;
         isSTMLSVD = false;
     elseif length(perm) ~= N

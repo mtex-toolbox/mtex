@@ -65,7 +65,7 @@ ghat = ghat.*(1i).^z;
 
 % make sure the grid is equispaced
 res = get_option(varargin,'resolution',2.5*degree);
-if length(res)==1, res = [1,1]*res; end
+if isscalar(res), res = [1,1]*res; end
 [a_max,b_max,~] = fundamentalRegionEuler(SO3F.CS,SO3F.SS,'ABG');
 s = ceil([a_max,b_max]./res);
 res = [a_max,b_max]./s;

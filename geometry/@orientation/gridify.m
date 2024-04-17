@@ -19,7 +19,7 @@ function [S3G,weightsG,id] = gridify(ori,varargin)
 %  
 
 % define a indexed grid
-if ori.antipodal, aP = {'antipodal'}; else aP = {}; end
+if ori.antipodal, aP = {'antipodal'}; else, aP = {}; end
 S3G = equispacedSO3Grid(ori.CS,ori.SS,aP{:},varargin{:});
 
 % find correspondence between vectors and grid

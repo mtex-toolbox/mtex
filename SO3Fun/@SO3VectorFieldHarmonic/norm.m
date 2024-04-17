@@ -1,5 +1,5 @@
 function SO3F = norm(SO3VF)
-% pointwise norm of the vector field
+% point-wise norm of the vector field
 %
 % Syntax
 %   SO3F = norm(SO3VF)
@@ -11,6 +11,12 @@ function SO3F = norm(SO3VF)
 %  SO3F - @SO3FunHarmonic
 %
 
-SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS);
+if SO3VF.bandwidth == 0
+  SO3F = SO3FunHarmonic(0,SO3VF.CS,SO3VF.SS);
+  return
+end
+
+SO3F = SO3FunHarmonic.quadrature(...
+  @(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS,'bandwidth',SO3VF.bandwidth);
 
 end

@@ -45,7 +45,7 @@ hold off
 %% Merge grains along boundaries
 %
 % The command <grain2d.merge.html merge> will merge grains together that
-% have a commong boundary which is specified as the second argument. In our
+% have a common boundary which is specified as the second argument. In our
 % example we want to merge all grains that have a common twinning boundary
 % so we do
 
@@ -72,7 +72,7 @@ mergedGrains(16).id
 childs = grains(parentId == mergedGrains(16).id)
 
 %% Estimate twin area fraction
-% Determining which of the measured grains are orginal grains and which are
+% Determining which of the measured grains are original grains and which are
 % twins is a tough problem. Here we make a very simple assumption by
 % labeling those areas as twins that make up less than half of the merged
 % (original) parent grain
@@ -115,11 +115,11 @@ mtexTitle('twin id')
 %%
 % The |parentId| may also be used to compute properties of the parent
 % grains by averaging over the corresponding child grain properties. This
-% can be done with the Matlab command
+% can be done with the MATLAB command
 % <mathworks.com/help/matlab/ref/accumarray.html accumarray>
 
 % this averages the GOS of the child grains into the parent grains
-mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@nanmean);
+mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@mean);
 
 % visualize the result
 close all
@@ -127,13 +127,12 @@ plot(grains,grains.GOS ./ degree)
 hold on
 plot(mergedGrains.boundary,'lineColor','white','lineWidth',2)
 mtexTitle('original GOS')
-mtexColorbar
 
-nextAxis
+nextAxis(1,2)
 plot(mergedGrains,mergedGrains.GOS  ./ degree)
 mtexTitle('merged GOS')
 mtexColorbar
-caxis([0,1.5])
+setColorRange([0,1.5])
 
 %%
 % The above result is a bit unrealistic since the averages are computed
@@ -148,11 +147,8 @@ childArea = grains.area;
 mergedGrains.prop.GOS = accumarray(parentId,1:length(grains),size(mergedGrains),...
   @(id) nanmeanWeights(childGOS(id),childArea(id)));
 
-nextAxis(2), hold on
+nextAxis(1,3), hold on
 plot(mergedGrains,mergedGrains.GOS  ./ degree)
-setColorRange equal
-mtexColorbar
-caxis([0,1.5])
 
 %% Setting Up the EBSD Data for the Merged Grains
 % Note that the Id's of the merged grains does not fit the grainIds

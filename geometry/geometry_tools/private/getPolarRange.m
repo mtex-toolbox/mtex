@@ -49,7 +49,7 @@ if check_option(varargin,'restrict2MinMax'), bounds.FR = bounds.VR; end
 % number of points and resolution
 if check_option(varargin,'points')
   bounds.points = get_option(varargin,'points');
-  if length(bounds.points) == 1
+  if isscalar(bounds.points)
     bounds.res = sqrt(bounds.drho * bounds.dtheta/bounds.points);
     bounds.res = bounds.dtheta/round(bounds.dtheta/bounds.res);
     bounds.points = round([bounds.drho/bounds.res,bounds.dtheta/bounds.res]);
@@ -57,7 +57,7 @@ if check_option(varargin,'points')
 else
   bounds.res = get_option(varargin,'resolution',...
     5*degree ./ (1+check_option(varargin,'plot')));
-  if length(bounds.res) == 1
+  if isscalar(bounds.res)
     bounds.res = [bounds.res bounds.res];
   end
   bounds.points = ceil([bounds.drho / bounds.res(1),bounds.dtheta / bounds.res(2) + 1]);

@@ -2,14 +2,14 @@
 %
 %%
 % Spin tensors are skew symmetric tensors that can be used to describe
-% small rotational changes. Lets consider an arbitrary reference rotation
+% small rotational changes. Let us consider an arbitrary reference rotation
 
 rot_ref = rotation.byEuler(10*degree,20*degree,30*degree);
 
 %%
-% and perturb it by a rotation about the axis (123) and angle delta. Since
-% multiplication of rotations is not commutative we have to distinguish
-% between left and right perturbations
+% and perturb it by a rotation about the axis (123) and angle delta=0.01
+% degree. Since multiplication of rotations is not commutative we have to
+% distinguish between left and right perturbations
 
 delta = 0.01*degree;
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),delta);
@@ -17,8 +17,8 @@ rot_right = rot_123 * rot_ref;
 rot_left = rot_ref * rot_123;
 
 %%
-% We may now ask for the first order Taylor coefficients of the perturbation
-% as delta goes to zero which we find by the formula
+% We may now ask for the first order Taylor coefficients of the
+% perturbation as delta goes to zero which we find by the formula
 %
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
 %
@@ -61,30 +61,32 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 
 %% The Functions Exp and Log
 %
-% The above definition of the spin tensor works only well if the
-% perturbation rotation has small rotational angle. For large perturbations
-% the matrix logarithm <quaternion.logm.html |logm|> provides the correct
-% way to translate rotational changes into skew symmetric matrices
+% The above definition of the spin tensor works well only if the
+% perturbation has small rotational angle. For large perturbations the
+% matrix logarithm <quaternion.log.html |log|> provides the correct way
+% to translate rotational changes into skew symmetric matrices
 
-rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1)
+% define a large pertubation with rotational angle 1 radiant
+delta = 1; 
+rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1);
 
-S = logm(rot_ref * rot_123,rot_ref)
+S = log(rot_ref * rot_123,rot_ref, SO3TangentSpace.rightSpinTensor); S  * sqrt(14)
 
-S = logm(rot_123 * rot_ref,rot_ref,'left')
+
+S = log(rot_123 * rot_ref,rot_ref, SO3TangentSpace.leftSpinTensor); S  * sqrt(14)
+
 
 %%
 % Again the entries $S_{21}$, $S_{31}$ and $S_{32}$ exactly coincide with
-% the rotational axis multiplied with the rotational angle
-
-vector3d(S) * sqrt(14)
-
-%%
+% the rotational axis multiplied with the rotational angle.
+%
 % More directly this disorientation vector may be computed from two
-% rotations by the command <quaternion.log.html |log|>
+% rotations using the options |SO3TangentSpace.rightVector| and
+% |SO3TangentSpace.leftVector|
 
-log(rot_ref * rot_123,rot_ref) * sqrt(14)
+v = log(rot_ref * rot_123,rot_ref,SO3TangentSpace.rightVector); v * sqrt(14)
 
-log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
+v = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector); v * sqrt(14)
 
 
 %% The other way round
@@ -92,22 +94,25 @@ log(rot_123 * rot_ref,rot_ref,'left') * sqrt(14)
 % use the command <vector3d.exp.html |exp|> to apply this rotational
 % perturbation to a reference rotation |rot_ref|
 
-S = logm(rot_ref * rot_123,rot_ref);
+% the truth
 rot_ref * rot_123
-exp(S,rot_ref)
 
-v = log(rot_ref * rot_123,rot_ref);
-exp(v,rot_ref)
+% using a disorientation vector
+exp(v,rot_ref,SO3TangentSpace.rightVector)
+
+% using a spin tensor
+exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
 
 %%
 
-S = logm(rot_123 * rot_ref,rot_ref,'left');
+% the other truth
 rot_123 * rot_ref
-exp(S,rot_ref,'left')
 
-v = log(rot_123 * rot_ref,rot_ref,'left');
-exp(v,rot_ref,'left')
+% using a disorientation vector
+exp(v,rot_ref,SO3TangentSpace.leftVector)
 
+% using a spin tensor
+exp(S,rot_ref,SO3TangentSpace.leftSpinTensor)
 
 %% Disorientations under the presence of crystal symmetry
 % Under the presence of crystal symmetry the order whether a rotational
@@ -121,62 +126,23 @@ cs = crystalSymmetry('321');
 ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs);
 
 % next we disturb rot_ref by a rotation about the axis (123)
-mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1)
+mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1);
 
 % first we multiply from the right
 ori = ori_ref * mori_123
 
 %%
-% and compute the skew symmetric perturbation matrices
+% Computing the right tangential vector gives us the disorientation vector
+% in crystal coordinates
 
-S_right_L =  matrix(inv(rot_ref)) * T_right
-S_right_R = T_right * matrix(inv(rot_ref))
+v = log(ori,ori_ref,SO3TangentSpace.rightVector); round(v)
 
-S_left_L =  matrix(inv(rot_ref)) * T_left
-S_left_R = T_left * matrix(inv(rot_ref))
-
-
-%% make it a vector
-
-vR1 = vector3d(spinTensor(S_right_L))  *sqrt(14)
-vR2 = inv(rot_ref) * vector3d(spinTensor(S_right_R)) * sqrt(14)
-
-lR1 = rot_ref * vector3d(spinTensor(S_left_L))  *sqrt(14)
-lR2 = vector3d(spinTensor(S_left_R)) * sqrt(14)
-
-
-%% logarithm to vector3d
-
-log(ori_ref * mori_123,ori_ref)
-
-log(rot_123 * ori_ref,ori_ref,'left') * sqrt(14)
-
-%% logarithm to skew symmetric matrix
-
-S = logm(ori_ref * mori_123,ori_ref)
-round(vector3d(S))
-
-S = logm(rot_123 * ori_ref,ori_ref,'left')
-vector3d(S) * sqrt(14)
-
-
-%% The other way round
-
-S = logm(ori_ref * mori_123,ori_ref);
-ori_ref * mori_123
-exp(S,ori_ref)
-
-v = log(ori_ref * mori_123,ori_ref);
-exp(v,ori_ref)
+exp(v,ori_ref,SO3TangentSpace.rightVector)
 
 %%
+% computing the left tangential vector gives us the disorientation vector
+% in specimen coordinates
 
-S = logm(rot_123 * ori_ref,ori_ref,'left');
-rot_123 * ori_ref
-exp(S,ori_ref,'left')
-
-v = log(rot_123 * ori_ref,ori_ref,'left');
-exp(v,ori_ref,'left')
-
-%%
-
+v = log(ori,ori_ref,SO3TangentSpace.leftVector)
+S = log(ori,ori_ref,SO3TangentSpace.leftSpinTensor)
+exp(v,ori_ref,SO3TangentSpace.leftVector)

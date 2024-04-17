@@ -45,18 +45,25 @@ if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
   for k = 1:length(eps)
+    progress(k,length(eps));
     epsLocal = strainTensor(eps.M(:,:,k));
     F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
   
     % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
     SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
-    M(k) = SO3F(1);
+    M(k) = SO3F(1); %#ok<AGROW>
     if nargout>1
       b = [];
-      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector);
-      % to be compareable set output to rightspintensor      
+      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
+      % to be comparable set output to rightspintensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
+  end
+  
+  % for some reason we need some smoothing of the vector field
+  if nargout>1
+    psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
+    spin.SO3F = spin.SO3F.conv(psi);
   end
   return
 end
@@ -129,7 +136,7 @@ if nargout <=2, return; end
 
 % the antisymmetric part of the deformation tensors gives the spin
 % in crystal coordinates
-spin = spinTensor(b*sSeps.antiSym);
+spin = spinTensor(b*sSeps);
 
 end
 
@@ -143,7 +150,7 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   end
 end
 
-function checkHex
+function checkHex %#ok<DEFNU>
 cs = crystalSymmetry.load('Mg-Magnesium.cif');
 cs = cs.properGroup;
 
@@ -152,7 +159,7 @@ sScold = [slipSystem.basal(cs,1),...
   slipSystem.pyramidalCA(cs,80),...
   slipSystem.twinC1(cs,100)];
 
-% consider all symmetrically equivlent slip systems
+% consider all symmetrically equivalent slip systems
 sScold = sScold.symmetrise;
 
 epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]));
@@ -166,9 +173,9 @@ ori0 = ori0.symmetrise;
 
 [~,~,Wori] = calcTaylor(inv(ori0)*epsCold,sScold);
 % this should give all the same vectors
-ori0 .* vector3d(Wori)
+ori0 .* vector3d(Wori) %#ok<NOPRT>
 
-ori0 .* vector3d(W.eval(ori0))
+ori0 .* vector3d(W.eval(ori0)) %#ok<NOPRT>
 
 end
 

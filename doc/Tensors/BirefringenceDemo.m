@@ -1,4 +1,4 @@
-%% Birefrigence
+%% Birefringence 
 %
 % Birefringence is the optical property of a material having a refractive
 % index that depends on the polarization and propagation direction of
@@ -96,7 +96,7 @@ rI = XFo*rI_Fo + (1-XFo) * rI_Fa
 vprop = Miller(1,1,1,cs);
 
 % and compute the birefringence
-[dn,pMin,pMax] = rI.birefringence(vprop)
+[dn,pMin,pMax] = rI.birefringence(vprop) 
 
 %%
 % If the polarization direction is omitted the results are spherical
@@ -300,3 +300,5 @@ for omega = 0:stepSize:90-stepSize
   
 end
 
+%#ok<*NASGU>
+%#ok<*ASGLU>

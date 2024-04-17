@@ -21,10 +21,10 @@ function SO3VF = approximation(nodes, values, varargin)
 if isa(values,'SO3TangentVector') 
   tS = values.tangentSpace;
 else
-  tS = 'left';
+  tS = SO3TangentSpace.leftVector;
   warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
            'the left side tangent space. If you want them to be right sided ' ...
-           'use SO3TangentVector(v,''right'') instead.'])
+           'use SO3TangentVector(v,SO3TangentSpace.rightVector) instead.'])
 end
 
 if isa(nodes,'orientation')
@@ -35,7 +35,7 @@ else
 end
 % Do quadrature without specimenSymmetry and set SLeft afterwards
 % (if left sided tangent space) clear crystalSymmetry otherwise
-if strcmp(tS,'right')
+if tS.isRight
   nodes.CS = crystalSymmetry;
 else
   nodes.SS = specimenSymmetry;

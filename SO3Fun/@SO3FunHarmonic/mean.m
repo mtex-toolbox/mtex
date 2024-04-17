@@ -2,9 +2,9 @@ function value = mean(SO3F, varargin)
 % Calculates the mean value of a SO3FunHarmonic by using the first Wigner
 % coefficient, i.e.
 %
-% $$ mean(f) = \hat{f}_0^{0,0} = \frac1{8\pi^2} \int_{SO(3)} f(R) dR $$,
+% $$ mean(f) = \hat{f}_0^{0,0} = \frac1{8\pi^2} \int_{SO(3)} f( R ) dR $$,
 % 
-% where vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
+% where $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 % 
 % or calculates the mean along a specified dimension of a 
 % vector-valued SO3Fun.

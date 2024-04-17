@@ -46,14 +46,14 @@ if nargin > 1 && isa(varargin{2},'double')
 elseif nargin > 1 && isa(varargin{2},'vector3d') && isa(varargin{3},'vector3d')
         
   % if only one kappa was given extend in to the second one
-  if numel(varargin{1}) == 1, kappa(2) = varargin{1};end
+  if isscalar(varargin{1}), kappa(2) = varargin{1};end
 
   A = fibre2A(varargin{2},varargin{3});
 
 elseif nargin > 1 && isa(varargin{2},'fibre')
   
   % if only one kappa was given extend in to the second one
-  if numel(varargin{1}) == 1, kappa(2) = varargin{1};end
+  if isscalar(varargin{1}), kappa(2) = varargin{1};end
 
   A = fibre2A(varargin{2}.h,varargin{2}.r);  
 
@@ -68,7 +68,7 @@ else
 end
       
 % if only one orientation was given -> extend to matrix
-if length(A) == 1, A = quaternion(eye(4)) * A; end
+if isscalar(A), A = quaternion(eye(4)) * A; end
       
 A = orientation(A,CS,SS);
       

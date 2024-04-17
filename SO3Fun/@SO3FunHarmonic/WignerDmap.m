@@ -1,6 +1,6 @@
 function SO3F = WignerDmap(N,varargin)
 % create harmonic Representation of the normalized Wigner-D function with 
-% harmonic degree N and indices k,l : D^n_{k,l}
+% harmonic degree N and indices k,l : $D^n_{k,l}$
 %
 % Syntax
 %   SO3F = SO3FunHarmonic.WignerDmap(N,k,l)

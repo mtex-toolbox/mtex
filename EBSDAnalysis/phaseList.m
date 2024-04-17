@@ -281,7 +281,7 @@ classdef phaseList
        
     function out = isSinglePhase(pL)
       
-      % considere only indexed
+      % consider only indexed
       phaseId = pL.phaseId(pL.isIndexed,:);
       phaseId = phaseId(~any(isnan(phaseId),2),:);
       id = unique(phaseId,'rows');

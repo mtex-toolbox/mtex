@@ -1,5 +1,5 @@
 function h = plot(obj,varargin)
-% two dimensional plot of embeddings
+% two dimensional plot of an embedding
 %
 % Syntax
 %   plot(e)
@@ -16,7 +16,9 @@ d = double(obj);
 
 [~,d] = pca(d);
 
-scatter(d(:,1),d(:,2),varargin{:})
+h = scatter(d(:,1),d(:,2),varargin{:});
+
+if nargout == 0, clear h; end
 
 
 

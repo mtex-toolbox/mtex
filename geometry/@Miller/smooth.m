@@ -1,16 +1,20 @@
 function varargout = smooth(m,varargin)
-% plot Miller indece
+% contour plot of crystal directions
 %
 % Input
-%  m  - Miller
+%  m  - @Miller
 %
 % Options
+%  resolution - 
+%  contour  -
+%  contourf - 
 %
 % See also
 % vector3d/smooth
+%
 
 % create a new figure if needed
-[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+mtexFig = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % get plotting region
 sR = region(m,varargin{:});

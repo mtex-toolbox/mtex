@@ -37,11 +37,11 @@ for i = 1:length(rotAngle)
 end
 
 % shift the grid to center
-center = get_option(varargin,'center',rotation.id);
+center = get_option(varargin,'center',orientation.id(CS,SS));
 ori = mtimes(qId,center,1);
 
 % ensure we respect the fundamental region
-if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && length(center)==1
+if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && isscalar(center)
   
   % in order to avoid centers that are exactly at the boundary of the
   % fundamental region we distort the center slightly

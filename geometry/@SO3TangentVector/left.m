@@ -14,8 +14,8 @@ function SO3TV = left(SO3TV,rot,varargin)
 % See also
 % SO3TangentVector/SO3TangentVector SO3TangentVector/right
 
-if strcmp(SO3TV.tangentSpace,'left'), return; end
-
-SO3TV = SO3TangentVector( rot.*SO3TV , 'left');
+if SO3TV.tangentSpace.isRight
+  SO3TV = SO3TangentVector( rot.*SO3TV , -SO3TV.tangentSpace);
+end
 
 end

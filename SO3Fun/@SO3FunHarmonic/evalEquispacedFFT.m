@@ -102,8 +102,10 @@ if any(H<sz)
   dim = ceil(sz./H);
   B = zeros(dim.*H);
   B(1:size(ghat,1),1:2*N+1,1:size(ghat,3)) = ghat;
+  B = reshape(B,H(1),dim(1),H(2),dim(2),H(3),dim(3));
   % Note that H(1) and H(2) should be biger than 1 to avoid errors by squeezing
-  ghat = squeeze(sum(reshape(B,H(1),dim(1),H(2),dim(2),H(3),dim(3)),[2,4,6]));
+  ghat = squeeze(sum(B,[2,4,6]));
+  clear B;
 end
 
 

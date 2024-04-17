@@ -45,7 +45,7 @@ if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
     palpha = max(palpha,pi);
   end
   
-  % for finding the minimial beta angle
+  % for finding the minimal beta angle
   qcs = quaternion(S3G.CS.rotation_special);
   
   [xalpha,xbeta,xgamma] = Euler( qss * quaternion(q) * qcs ,'ZYZ');

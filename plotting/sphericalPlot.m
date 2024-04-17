@@ -99,8 +99,8 @@ classdef sphericalPlot < handle
 
     function updateMinMax(sP,data)
       if nargin == 2
-        sP.minData = nanmin([sP.minData, nanmin(data(:))]);
-        sP.maxData = nanmax([sP.maxData, nanmax(data(:))]);
+        sP.minData = min([sP.minData, min(data(:))]);
+        sP.maxData = max([sP.maxData, max(data(:))]);
       end
       
       if sP.dispMinMax
@@ -153,7 +153,7 @@ classdef sphericalPlot < handle
 
       function s = st2char(t)
 
-        if isa(t,'cell') && numel(t) == 1, t = t{1};end
+        if isa(t,'cell') && isscalar(t), t = t{1};end
         if isa(t,'vector3d')
           for i = 1:length(t)
 

@@ -97,7 +97,7 @@ end
 % * all symmetries as well as all orientations are purely rotational
 
 ignoreInv = ( oneIsLaue || ... TODO - here is missing a condition
-  (~isa(o1,'rotation') || ~isa(o2,'rotation') || all(o1.i(:) == o2.i(:))));
+  (~isa(o1,'rotation') || ~isa(o2,'rotation') || all(o1.i == o2.i,'all')));
 
 
 % we have different algorithms depending whether one vector is single
@@ -108,7 +108,7 @@ if length(qss) <= 1 % no specimen symmetry
 
   % take the maximum over all symmetric equivalent
   d = max(dot_outer(mori,qcs,'noSymmetry'),[],2);
-      
+
   d = reshape(d,size(mori));
   
 elseif length(qcs) <= 1 % no crystal symmetry
@@ -121,7 +121,7 @@ elseif length(qcs) <= 1 % no crystal symmetry
       
   d = reshape(d,size(mori));
 
-elseif length(o1) == 1
+elseif isscalar(o1)
 
   % symmetrising the single element is much faster
   o1 = mtimes(qss,mtimes(o1,qcs,0),1);
@@ -137,7 +137,7 @@ elseif length(o1) == 1
   
   d = reshape(max(abs(d),[],1),size(o2));
   
-elseif length(o2) == 1
+elseif isscalar(o2)
   
   % symmetrising the single element is much faster
   o2 = mtimes(qss,mtimes(o2,qcs,0),1);
@@ -156,12 +156,18 @@ elseif length(o2) == 1
 else % length(qss)>1 and two vectors to compare
 
   % remember shape
-  s = size(o1);
 
   % symmetrise o1 by qss and o2 by qcs
-  o1 = mtimes(qss,o1,1);
-  o2 = reshape(mtimes(o2,inv(qcs),0),[1,length(o2),length(qcs)]);
-  
+  if all(size(o1)==size(o2))
+    s = size(o1);
+    o1 = mtimes(qss,o1,1);
+    o2 = reshape(mtimes(o2,inv(qcs),0),[1,length(o2),length(qcs)]);
+  else
+    s = [length(o1),length(o2)];
+    o1 = mtimes(qss,o1,1);
+    o2 = reshape(mtimes(o2,inv(qcs),0),[1,1,length(o2),length(qcs)]);
+  end
+
   % inline dot product for speed reasons
   d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...
     bsxfun(@times,o1.c,o2.c) + bsxfun(@times,o1.d,o2.d)); %
@@ -170,7 +176,7 @@ else % length(qss)>1 and two vectors to compare
   if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i,o2.i); end
 
   % take the maximum over all symmetric equivalent
-  d = reshape(max(max(d,[],1),[],3),s);
+  d = reshape(max(max(d,[],1),[],ndims(d)),s);
 
 end
 

@@ -91,7 +91,7 @@ switch method
 end
 end
 
-function test
+function test %#ok<DEFNU>
   
 % generate orientation clustered around 5 centers
 cs = crystalSymmetry('432');
@@ -115,8 +115,8 @@ hold off
 %check the accuracy of the recomputed centers
 min(angle_outer(center,centerRec)./degree)
 
-odfRec = calcDensity(ori)
-[~,centerRec2] = max(odfRec,'numLocal',5)
+odfRec = calcDensity(ori) %#ok<NOPRT>
+[~,centerRec2] = max(odfRec,'numLocal',5) %#ok<NOPRT>
 min(angle_outer(center,centerRec2)./degree)
 end
 

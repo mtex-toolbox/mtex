@@ -23,7 +23,7 @@ function [q,iq,iu] = unique(q,varargin)
 %
 
 % maybe there is nothing to do
-if length(q) == 1 && nargout <= 1, return; end
+if isscalar(q) && nargout <= 1, return; end
 
 a = q.a(:);
 b = q.b(:);

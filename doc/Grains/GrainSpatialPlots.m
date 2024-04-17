@@ -65,7 +65,7 @@ ipfKey = ipfColorKey(grains('Fo'));
 
 ipfKey.inversePoleFigureDirection = xvector;
 
-% compute the colors from the meanorientations
+% compute the color from the meanorientation
 color = ipfKey.orientation2color(grains('Fo').meanOrientation);
 
 % and use them for plotting
@@ -176,3 +176,5 @@ plot(big_grains,big_grains.meanOrientation,'micronbar','off')
 
 % plot on top their ids
 text(big_grains,int2str(big_grains.id))
+
+%#ok<*NASGU>

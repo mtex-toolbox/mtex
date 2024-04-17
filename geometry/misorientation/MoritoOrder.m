@@ -20,7 +20,7 @@ p2cV = p2c.variants;
 
 % set up planes and directions
 % TODO: make this work for OR other than Kurdjumov Sachs
-[nParent,nChild,dParent,dChild] = round2Miller(p2cV(1));
+[nParent,nChild] = round2Miller(p2cV(1));
 
 csParent = p2cV.CS;
 csChild = p2cV.SS;

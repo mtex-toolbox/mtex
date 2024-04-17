@@ -52,7 +52,7 @@ phaseMap = get(grains,'phaseMap');
 phase = get(get(grains, 'EBSD'),'phase');
 isIndexed = ~isNotIndexed(get(grains, 'EBSD'));
 
-[Dl Dr] = find(A_D);
+[Dl, Dr] = find(A_D);
 
 use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
 Dl = Dl(use); Dr = Dr(use);

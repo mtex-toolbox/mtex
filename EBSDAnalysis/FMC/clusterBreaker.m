@@ -11,7 +11,7 @@ if ((flag(point) == 0) || (flag(point) > 1))
   flag(point) = 1;
     
   %Check for neighbors to see if single point
-  if ~any(assignments(NNlist{point}) == oldClust);
+  if ~any(assignments(NNlist{point}) == oldClust)
     flag(point) = -1;
     assignmentsN(point) = -1;
     

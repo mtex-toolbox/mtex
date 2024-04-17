@@ -1,7 +1,7 @@
 function value = sum(SO3F, varargin)
 % Calculates the integral of a SO3Fun based on
 % 
-% $$ v = \int_{SO(3)} f(R) dR $$
+% $$ v = \int_{SO(3)} f( R ) dR $$
 % 
 % with $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
 % 

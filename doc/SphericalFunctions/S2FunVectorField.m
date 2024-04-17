@@ -100,14 +100,4 @@ plot(sVF1);
 clf;
 quiver3(sVF2);
 
-%% Some fun
-clf
-
-sVF = grad(S2Fun.smiley)
-
-plot(dot(sVF,sVF))
-
-%%
-
-plot(dot(sVF,zvector))
-
+%#ok<*VUNUS>

@@ -1,8 +1,8 @@
 classdef velocityGradientTensor < tensor
   %
   %
-  % since solids are no compressible the all velovity gradient tensors have
-  % traec 0
+  % since solids are no compressible the all velocity gradient tensors have
+  % trace 0
   
   methods
     function L = velocityGradientTensor(varargin)
@@ -30,11 +30,11 @@ classdef velocityGradientTensor < tensor
     L = simpleShear(d,n,e)
     
     
-        
-    function L = planeStrain(v1,v2,gamma)      
-      
-      L = velocityGradientTensor();
-    end
+    % TODO    
+    %function L = planeStrain(v1,v2,gamma)      
+    %  
+    %  L = velocityGradientTensor();
+    %end
 
     function L = spin(varargin)
       % define a spin tensor

@@ -58,7 +58,7 @@ grains(9).grainSize
 grains(9).area
 
 %%
-% Hereby |grainSize| referes to the number of pixels that belong to a
+% Hereby |grainSize| refers to the number of pixels that belong to a
 % certain grain while |area| represents the actual area measured in
 % |(µm)^2|. We may analyze the distribution of grains by grain area using a
 % histogram.
@@ -74,14 +74,14 @@ ylabel('number of grains')
 % area. This can be achieved with the command <grain2d.histogram.html
 % |histogram(grains)|> or <grain2d.hist.html |hist(grains)|>
 
-hist(grains)
+hist(grains) %#ok<HIST>
 
 %%
 
 histogram(grains)
 
 %%
-% Simarly as |grainSize| and |area|, the one-dimensional meassures
+% Similarly as |grainSize| and |area|, the one-dimensional measures
 % |boundarySize| and |perimeter| give the length of the grain boundary as
 % number of segments and in |µm|, respectively.
 
@@ -89,8 +89,8 @@ grains(9).boundarySize
 grains(9).perimeter
 
 %%
-% We may compute these quantities also explicitely from the grain boundary
-% segents. In the following code the first command returns simply the
+% We may compute these quantities also explicitly from the grain boundary
+% segments. In the following code the first command returns simply the
 % number of boundary segments while the second one gives the total length
 % of the boundary by summing up the length of each individual boundary
 % segment
@@ -126,7 +126,7 @@ grains(9).equivalentPerimeter
 %%
 % As a consequence, the ratio between between actual grain perimeter and
 % the equivalent perimeter, the so called shape factor, is always larger
-% then 1. The <grain2d.shapeFactor.html |shapeFactor|> amd measures how
+% then 1. The <grain2d.shapeFactor.html |shapeFactor|> and measures how
 % different a certain shape is from a circle.
 
 plot(grains,grains.shapeFactor)

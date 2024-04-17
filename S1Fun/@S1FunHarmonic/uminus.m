@@ -1,5 +1,5 @@
-function fun = uminus(fun)
+function sF = uminus(sF)
 
-fun.fhat = -fun.fhat;
+sF.fhat = -sF.fhat;
 
 end

@@ -60,8 +60,8 @@ if check_option(varargin,'fill') || check_option(varargin,'extrapolate'), ebsd =
 filter = getClass(varargin,'EBSDFilter',splineFilter);
 filter.isHex = isa(ebsd,'EBSDhex');
 
-% if possible smooth each grain seperately 
-% otherwise each phase seperately
+% if possible smooth each grain separately 
+% otherwise each phase separately
 try
   grainId = ebsd.grainId;
 catch

@@ -168,9 +168,9 @@ if check_option(varargin,'keepGraph')
 end
 
 
-  function normalize2
+  function normalize2 %#ok<DEFNU>
     
-    % column re-normalisation
+    % column re-normalization
     % sum over all targets
     s = full(sum(A));
   
@@ -183,6 +183,7 @@ end
     A = A * dinv;
     
   end
+
   function normalize
     
     % column re-normalisation

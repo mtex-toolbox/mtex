@@ -10,14 +10,5 @@ function v = mean(SO3VF,varargin)
 res = get_option(varargin,'resolution',2.5*degree);
 nodes = equispacedSO3Grid(SO3VF.SRight,SO3VF.SLeft,'resolution',res);
 v = mean(SO3VF.eval(nodes(:)));
-if isalmostreal(v.xyz,'componentwise')
-  v = vector3d(real(v.xyz));
-end
-
-if check_option(SO3VF.tangentSpace,'right')
-  v = SO3TangentVector(v,'right');
-else
-  v = SO3TangentVector(v,'left');
-end
 
 end

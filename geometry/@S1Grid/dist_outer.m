@@ -1,7 +1,7 @@
 function d = dist_outer(S1G,x)
 % distance to all points of S1Grid
 
-if (length(x) == 1) 
+if (isscalar(x)) 
   if S1G(1).periodic
     x = mod(x-S1G(1).min,S1G(1).max-S1G(1).min)+S1G(1).min;
   end

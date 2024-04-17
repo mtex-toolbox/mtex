@@ -12,17 +12,18 @@ function sF = approximation(nodes, y, varargin)
 %  bandwidth  - maximum degree of the spherical harmonics used to approximate the function
 %  to         - tolerance for lsqm
 %  maxIt      - maximum number of iterations for lsqm
-%  W          - weight w_n for the node nodes (default: voronoi weights)
+%  weights    - weight w_n for the node nodes (default: Voronoi weights)
 %
 
 % make points unique
 s = size(y);
 y = reshape(y, length(nodes), []);
 [nodes,~,ind] = unique(nodes(:));
+y(isnan(y)) = 0;
 
 % take the mean over duplicated nodes
 for k = 1:size(y,2)
-  yy(:,k) = accumarray(ind,y(:,k),[],@nanmean); %#ok<AGROW>
+  yy(:,k) = accumarray(ind,y(:,k),[]) ./ accumarray(ind,1); %#ok<AGROW>
 end
 
 % consider the case of symmetry

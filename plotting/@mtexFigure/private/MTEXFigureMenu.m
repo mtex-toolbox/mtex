@@ -286,7 +286,7 @@ uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 map = get(obj,'label');
 map = feval([map 'ColorMap']);
-for ii=1:numel(mtexFig.children),
+for ii=1:numel(mtexFig.children)
   colormap(mtexFig.children(ii),map);
 end
 set(obj,'checked','on');

@@ -24,17 +24,13 @@ function g = grad(SO3F,varargin)
 % See also
 % orientation/exp SO3FunHarmonic/grad SO3FunCBF/grad SO3VectorField
 
-% TODO: implement right-sided gradient
-if check_option(varargin,'right')
-  F = SO3FunHandle(@(r) SO3F.eval(r),SO3F.CS,SO3F.SS);
-  g = grad(F,varargin{:});
-  return
-end
 
 if check_option(varargin,'check') || nargin == 1 || ~isa(varargin{1},'quaternion')
   g = grad@SO3Fun(SO3F,varargin{:});
   return
 end
+
+tS = SO3TangentSpace.extract(varargin{:});
 
 rot = varargin{1}; varargin(1) = [];
 
@@ -42,7 +38,6 @@ if isempty(SO3F.center)
   g = vector3d.zeros(size(rot));
   return
 end
-
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(rot);
@@ -58,36 +53,32 @@ epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
 % initialize output
 g = vector3d.zeros(size(rot));
 
-% comute the distance matrix and evaluate the kernel
+% compute the distance matrix and evaluate the kernel
 for issq = 1:length(qSS)
+
   d = abs(dot_outer( SO3F.center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse
-%   d(d<=cos(epsilon/2)) = 0;   % array size gets to big
+  %   d(d<=cos(epsilon/2)) = 0;   % array size gets to big
   [i,j] = find(d>cos(epsilon/2));
-  I = find(d>cos(epsilon/2));
-  V = d(I);
-  d = sparse(i,j,V,size(d,1),size(d,2));
-
-  
+  d = d(d>cos(epsilon/2));
+    
   % the normalized logarithm
-  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),'left',varargin{:});
-  nv = norm(v);
-  v(nv>0) = v(nv>0) ./ nv(nv>0);
+  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),tS);
+  v = v.normalize;
   
   % set up vector3d matrix - a tangential vector for any pair of
   % orientations
-  v = sparse(i,j,v,length(center),length(rot)) .* spfun(@psi.grad,d);
+  v = sparse(i,j,v .* psi.grad(d),length(center),length(rot));
   
   % sum over all neighbours
-  g = g - reshape(v.' * SO3F.weights(:),size(g)) ;
+  g = g - reshape(v.' * SO3F.weights(:),size(g));
 
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
-g = SO3TangentVector(g,'left');
-
+g = SO3TangentVector(g,tS);
 
 % TODO: consider antipodal
 if SO3F.antipodal

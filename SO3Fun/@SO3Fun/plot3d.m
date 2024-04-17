@@ -1,10 +1,6 @@
 function plot3d(odf,varargin)
 % plots odf
 
-if ~isa(odf,'SO3FunHarmonic')
-  warning('Imaginary parts of complex X and/or Y arguments ignored.')
-end
-
 if odf.antipodal, ap = {'antipodal'}; else, ap = {}; end
 
 [oP, isNew] = newOrientationPlot(odf.CS,odf.SS,ap{:},'project2FundamentalRegion',...

@@ -10,6 +10,8 @@ end
 
 if SO3F.antipodal, disp('  antipodal: true'); end
 
+disp(['  eval: ' char(SO3F.fun)]);
+
 % The computation may be to slow , For example: 
 % F = SO3FunHandle(@(rot) calcTaylor(inv(orientation(rot,cs))*eps,sS.symmetrise)
 % try

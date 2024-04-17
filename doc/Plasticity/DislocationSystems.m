@@ -2,7 +2,7 @@
 % 
 %%
 % Dislocation are microscopic displacements within the regular atom lattice
-% of a crystaline material ussualy as a result of plastic deformation.
+% of a crystalline material usually as a result of plastic deformation.
 % Dislocations are described by a Burgers vector describing the direction
 % of the atomic shift and a line vector describing the direction of the
 % displacements within the material. One distinguishes two cases:
@@ -79,7 +79,7 @@ a = norm(cs.aAxis);
 
 %% The Energy of Dislocations
 % The energy of each dislocation system can be stored in the property |u|.
-% By default this value it set to 1 but should be changed accoring to the
+% By default this value it set to 1 but should be changed according to the
 % specific model and the specific material.
 %
 % According to Hull & Bacon the energy U of edge and screw dislocations is
@@ -117,3 +117,4 @@ dS(dS.isScrew).u = 1 - 0.3;
 % E = 1 - poisson ratio
 % E = c * G * |b|^2,  - G - Schubmodul / Shear Modulus Energy per (unit length)^2
 
+%#ok<*NASGU>

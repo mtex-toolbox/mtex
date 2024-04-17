@@ -32,7 +32,7 @@ set(gcf,'WindowButtonDownFcn',{@doSelection,job});
 
 end
 
-function doSelection(src,eventdata,job)
+function doSelection(~,~,job)
 
 % remove old selection
 ax = gca;
@@ -73,12 +73,12 @@ for n=1:numV
     'backGroundColor',bgColor(n,:),'ForegroundColor',fgColor(n,:),...
     'String',[xnum2str(votesFit.fit(n)./degree) ' - ' ...
     xnum2str(votesProb.prob(votesProb.parentId==votesFit.parentId(n))) ],...
-    'Callback',{@setOri,job,localId,oriPV(n),ax});
+    'Callback',{@setOri,job,localId,oriPV(n),ax}); %#ok<STRNU>
 end
 
 end
 
-function setOri(a,b,job,id,pOri,ax)
+function setOri(~,~,job,id,pOri,ax)
 
 job.grains(id).meanOrientation = pOri;
 job.grains.update;
