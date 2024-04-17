@@ -71,7 +71,7 @@ classdef MLSSolver < pf2odfSolver
       % normalize very different pole figures
       mm = max(pf.intensities(:));
 
-      delta = 2;
+      delta = 10;
       for i = 1:pf.numPF
         if mm > delta*max(pf.allI{i}(:))
           solver.pf.allI{i} = solver.pf.allI{i} * mm/delta/max(pf.allI{i}(:));
@@ -111,10 +111,16 @@ classdef MLSSolver < pf2odfSolver
       solver.ghostCorrection = ~check_option(varargin,'noGhostCorrection');
 
       % compute quadrature weights
-      if numProper(solver.SS) == 1
+      if check_option(varargin,'quadratureWeights') && numProper(solver.SS) == 1
         solver.weights = cellfun(@(r) calcQuadratureWeights(r),solver.pf.allR,'UniformOutput',false);
       else
         solver.weights = num2cell(1./length(pf,[]));
+      end
+
+      if check_option(varargin,'intensityWeights')
+        for k = 1:solver.pf.numPF
+          solver.weights{k} = solver.weights{k} .* (1+solver.pf{k}.intensities(:)).^(-1/2);
+        end
       end
       
       % regularization
