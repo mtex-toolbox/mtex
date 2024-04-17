@@ -9,8 +9,8 @@ end
 solver.init;
 
 % get max iterations and min iterations 
-solver.iterMax = get_option(varargin,'iterMax',10);
-solver.iterMin = get_option(varargin,'iterMin',5);
+solver.iterMax = get_option(varargin,'iterMax',solver.iterMax);
+solver.iterMin = get_option(varargin,'iterMin',solver.iterMin);
 if solver.iterMax < solver.iterMin
     solver.iterMax=solver.iterMin;
 end
