@@ -26,13 +26,11 @@ function v = volume(SO3F,center,radius,varargin)
 % See also
 % SO3Fun/volume SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
 
-% TODO: direct computation for SO3FunHarmonic
 % TODO: antipodal is not considered up to now
-
-% if SO3F.antipodal
-%   error(['The antipodal property is not considered up to now by the volume' ...
-%     ' computation of an SO3Fun.'])
-% end
+if SO3F.antipodal
+  warning(['The antipodal property is not considered up to now by the volume' ...
+     ' computation of an SO3Fun.'])
+end
 
 if isa(center,'fibre')
   
@@ -44,7 +42,15 @@ end
 % series only works for a small radius
 cs = SO3F.CS;
 ss = SO3F.SS;
-if cs ~= crystalSymmetry || ss ~= specimenSymmetry
+if cs ~= crystalSymmetry
+  minAngle = uniquetol(cs.rot.angle/2);
+elseif ss ~= specimenSymmetry
+  minAngle = uniquetol(cs.rot.angle/2);
+else
+  minAngle = pi;
+end
+minAngle = min(minAngle(minAngle>0.01));
+if cs ~= crystalSymmetry && ss ~= specimenSymmetry || radius>minAngle
   v = volume@SO3Fun(SO3F,center,radius);
   return
 end
