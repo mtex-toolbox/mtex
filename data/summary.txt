@@ -1,6 +1,7 @@
 shortName  type        files
 dubna      PoleFigure  dubna/*.cnv
 geesthacht PoleFigure  geesthacht/ST42-104-110.dat
+steel      PoleFigure  steel/*.rw1
 ptx        PoleFigure  ptx/*.ptx
 aachen     EBSD        85_829grad_07_09_06.txt
 sharp      EBSD        sharp.txt
