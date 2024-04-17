@@ -1,10 +1,14 @@
 function v = volume(SO3F,center,radius,varargin)
-% ratio of orientations with a certain orientation
+% Integrates an SO3Fun on the region of all orientations that are close to  
+% a specified orientation (center) by a tolerance (radius), i.e.
+%
+% $$ \int_{\angle(R,c)<r} f(R) \, dR.$$
 %
 % Description
-% The function 'volume' returns the ratio of an orientation that is close
-% to an orientation (center) by a misorientation tolerance (radius) to the
-% volume of the entire odf.
+% The function 'volume' returns the ratio of the volume of an SO3Fun on the 
+% region (of all orientations that are close to a specified orientation 
+% (center) by a tolerance (radius)) to the volume of the entire rotational 
+% function.
 %
 % Syntax
 %   v = volume(odf,center,radius)
@@ -20,9 +24,15 @@ function v = volume(SO3F,center,radius,varargin)
 %  resolution - resolution of discretization
 %
 % See also
-% SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
+% SO3FunHarmonic/volume SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
 
 % TODO: direct computation for SO3FunHarmonic
+% TODO: antipodal is not considered up to now
+
+% if SO3F.antipodal
+%   error(['The antipodal property is not considered up to now by the volume' ...
+%     ' computation of an SO3Fun.'])
+% end
 
 if isa(center,'fibre')
   
@@ -37,6 +47,7 @@ else
   if nargin > 3 && isa(varargin{1},'orientation')
     S3G = varargin{1};
   else
+    % there is no antipodal option
     S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,...
       'maxAngle',radius,'center',center,'resolution',res,varargin{:});
   end
@@ -46,7 +57,7 @@ else
   theta =  (0.5:ntheta-0.5)*res;
   points = sum(max(round(sin(theta)*2*ntheta),1)) * round(2*pi/res);
   % estimate volume portion of odf space
-  f = min( 1 , length(S3G) / points ) / numProper(SO3F.CS) / numProper(SO3F.SS);
+  f = min( 1 , length(S3G) / points * numProper(SO3F.CS) * numProper(SO3F.SS) );
   
   % eval odf
   if f == 0
