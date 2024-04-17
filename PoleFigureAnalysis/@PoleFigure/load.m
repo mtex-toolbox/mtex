@@ -67,7 +67,10 @@ pf = [pf{:}];
 if nargin > 1 && iscell(varargin{1}) && ...
     all(cellfun('isclass',varargin{1},'Miller'))  
   pf.allH = varargin{1};
+elseif nargin > 1 && isa(varargin{1},'Miller')
+  pf.allH = vec2cell(varargin{1});
 end
+
 
 % structure coefficients
 if check_option(varargin,'superposition')
