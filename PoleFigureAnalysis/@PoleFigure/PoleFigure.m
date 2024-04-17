@@ -61,12 +61,17 @@ classdef PoleFigure < dynProp & dynOption
       
       if nargin == 0, return;end
       
-      pf.allH = ensurecell(h);
+      pf.allI = ensurecell(intensities);
+      if iscell(h)
+        pf.allH = h;
+      elseif isscalar(pf.allI)
+        pf.allH = {h};
+      else
+        pf.allH = vec2cell(h);
+      end
       pf.allR = ensurecell(r);
       if isscalar(pf.allR), pf.allR = repmat(pf.allR,size(pf.allH));end
       if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
-      pf.allI = ensurecell(intensities);
-            
       
       pf.c = ensurecell(get_option(varargin,'superposition',...
         cellfun(@(x) ones(1,length(x)),pf.allH,'uniformoutput',false)));
