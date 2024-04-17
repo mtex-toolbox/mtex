@@ -17,7 +17,7 @@ talpha = zeros(size(alpha));
 tu = cell(size(u));
 
 % steps 8 - 10: compute gradient v
-% step 8: regularisation
+% step 8: regularization
 if doReg
   v = alpha(n+1) * u{n+1} - alpha(n+1).^2 * (u{n+1} .* solver.c);
 else
@@ -40,7 +40,7 @@ for i = 1:n
   talpha(i) = 1 ./ (a{i}.' * tc);
 end
 
-% step 13: regularisation
+% step 13: regularization
 if doReg
   talpha(n+1) = 1./sum(tc);
   tu{n+1} = talpha(n+1) * (solver.RM * tc); 
@@ -68,8 +68,6 @@ for i = 1:n + doReg
   u{i} = (talpha(i) ./ denom(i)) * u{i} + (tau * alpha(i) / denom(i)) * tu{i}; 
 end
 
-
-
 % step 19 - alpha_i <- alpha_i talpha_i / denom 
 alpha = alpha .* talpha ./ denom;
 
@@ -94,7 +92,6 @@ if doReg
   B(n+1) = talpha(n+1).^2 * alpha(n+1) * (tc.' * u{n+1});
   C(n+1) = talpha(n+1) * alpha(n+1)^2 * (tc.' * tu{n+1});
 end
-
 
 % the candidates
 nc = 200;

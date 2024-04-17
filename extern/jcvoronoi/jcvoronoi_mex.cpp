@@ -73,12 +73,12 @@ public:
         }
         jcv_diagram_free(&diagram);
 
-        outputs[0] = factory.createArray((ArrayDimensions){(size_t)Vx.size(),1},Vx.begin(),Vx.end());
-        outputs[1] = factory.createArray((ArrayDimensions){(size_t)Vy.size(),1},Vy.begin(),Vy.end());
-        outputs[2] = factory.createArray((ArrayDimensions){(size_t)E1.size(),1},E1.begin(),E1.end());
-        outputs[3] = factory.createArray((ArrayDimensions){(size_t)E2.size(),1},E2.begin(),E2.end());
-        outputs[4] = factory.createArray((ArrayDimensions){(size_t)I_ED1.size(),1},I_ED1.begin(),I_ED1.end());
-        outputs[5] = factory.createArray((ArrayDimensions){(size_t)I_ED2.size(),1},I_ED2.begin(),I_ED2.end());
+        outputs[0] = factory.createArray(ArrayDimensions{(size_t)Vx.size(),1},Vx.begin(),Vx.end());
+        outputs[1] = factory.createArray(ArrayDimensions{(size_t)Vy.size(),1},Vy.begin(),Vy.end());
+        outputs[2] = factory.createArray(ArrayDimensions{(size_t)E1.size(),1},E1.begin(),E1.end());
+        outputs[3] = factory.createArray(ArrayDimensions{(size_t)E2.size(),1},E2.begin(),E2.end());
+        outputs[4] = factory.createArray(ArrayDimensions{(size_t)I_ED1.size(),1},I_ED1.begin(),I_ED1.end());
+        outputs[5] = factory.createArray(ArrayDimensions{(size_t)I_ED2.size(),1},I_ED2.begin(),I_ED2.end());
 
       free(points);
     }
