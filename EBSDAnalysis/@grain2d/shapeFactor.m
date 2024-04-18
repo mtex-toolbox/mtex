@@ -1,5 +1,5 @@
 function F = shapeFactor( grains )
-% calculates the shapefactor of the grain-polygon, without Holes
+% calculates the shape factor of the grain-polygon, without Holes
 %
 % define as
 %
@@ -12,7 +12,7 @@ function F = shapeFactor( grains )
 %  p - @grain2d
 %
 % Output
-%  F    - shapefactor
+%  F    - shape factor
 %
 % See also
 % polygon/aspectRatio polygon/equivalentPerimeter polygon/perimeter

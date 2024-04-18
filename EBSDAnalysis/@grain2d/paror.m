@@ -1,5 +1,5 @@
 function cumpl = paror(grains,varargin)
-% Returns the cummulative particle projection function.
+% Returns the cumulative particle projection function.
 % based on Panozzo, R., 1983. "Two-dimensional analysis of shape
 % fabric using projections of digitized lines in a plane". 
 % Tectonophysics 95, 279-294.
@@ -8,7 +8,7 @@ function cumpl = paror(grains,varargin)
 %  grains - @grain2d
 %
 % Output:
-%  cumpl  - cummulative projection length
+%  cumpl  - cumulative projection length
 %
 % Options:
 %  omega  - list of angles used in the projection function (default [0:1:180]*degree)  

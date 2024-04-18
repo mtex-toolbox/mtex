@@ -28,7 +28,9 @@ v = v .* multiplier;
 % now round
 v.x = round(v.x); v.y = round(v.y); v.z = round(v.z);
 
-d = angle(v,vOld) > 1*degree;
+delta = get_option(varargin,'accuracy',1*degree);
+
+d = angle(v,vOld) > delta;
 v.x(d>0.1*degree) = vOld.x(d);
 v.y(d>0.1*degree) = vOld.y(d);
 v.z(d>0.1*degree) = vOld.z(d);
