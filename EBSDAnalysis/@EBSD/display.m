@@ -56,6 +56,7 @@ disp(' ');
 disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',ebsd.phase,...
   'orientation',ebsd.rotations));
 disp([' Scan unit : ',ebsd.scanUnit]);
+disp([' normal vector: (',char(round(ebsd.N,'accuracy',5*degree)),')']);
 
 if min(ebsd.size) > 1
   if size(ebsd.unitCell,1) == 6
