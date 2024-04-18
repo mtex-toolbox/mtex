@@ -1,5 +1,5 @@
 function ebsd = fill(ebsd,varargin)
-% fill EBSD data by nearest neighbour
+% fill EBSD data by nearest neighbor interpolation
 %
 % Syntax
 %   ebsd_filled = fill(ebsd)
@@ -12,6 +12,9 @@ function ebsd = fill(ebsd,varargin)
 % Options
 %  extrapolate - extrapolate up the the outer boundaries
 %
+
+% TODO: this will not work for maps not in the xy plane
+
 
 if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 

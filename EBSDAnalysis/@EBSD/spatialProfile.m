@@ -17,7 +17,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %  xy - list of spatial coordinates |[x(:) y(:)]| 
 %
 % Output
-%  ebsdLine - @EBSD restrcited to the line of interest
+%  ebsdLine - @EBSD restricted to the line of interest
 %  dist - double distance along the line to the initial point
 %
 % Example
@@ -31,7 +31,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   % select line coordinates
 %   x = [15.5 27]; y = [20.5 11];
 %
-%   % draw line with some transluency
+%   % draw line with some translucency
 %   line(x,y,'color',[0.5 0.5 0.5 0.5],'linewidth',10)
 %
 %   % restrict ebsd data to this line
@@ -41,7 +41,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   ori = ebsdLine.orientations;
 %
 %   figure
-%   % plot misorienation angle along the profile
+%   % plot misorientation angle along the profile
 %   plot(dist,angle(ori,ori(1))./degree,'linewidth',2)
 %   xlabel('line'), ylabel('misorientation angle')
 
@@ -50,7 +50,7 @@ if nargin >= 3 && isnumeric(varargin{1})
   lineXY = [lineXY(:),varargin{1}(:)];
 end
 
-% work with homogenous coordinates
+% work with homogeneous coordinates
 xy1 = [ebsd.pos.x,ebsd.pos.y];
 xy1(:,end+1) = 1;
 

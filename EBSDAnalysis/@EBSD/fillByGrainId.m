@@ -1,5 +1,5 @@
 function ebsd = fillByGrainId(ebsd)
-% extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
+% extrapolate spatial EBSD data by nearest neighbor for tetragonal lattice
 %
 % Syntax
 %   ebsd = fill(ebsd)

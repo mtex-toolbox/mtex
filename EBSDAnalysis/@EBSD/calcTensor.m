@@ -11,7 +11,7 @@ function varargout = calcTensor(ebsd,varargin)
 %   % returns the specified  tensor
 %   THill = calcTensor(ebsd,T_phase1,T_phase2,'Hill') 
 %
-%   % geometric mean instead of arithmetric one
+%   % geometric mean instead of arithmetic one
 %   TGeom = calcTensor(ebsd,T_phase1,T_phase2,'geometric') 
 %
 % Input
@@ -39,7 +39,7 @@ density = nan(size(ebsd));
 % cycle through indexed phases
 for p = ebsd.indexedPhasesId
   
-  % search for a fiting tensor
+  % search for a fitting tensor
   Tind = cellfun(@(t) isa(t,'tensor') && t.CS.Laue ==  ebsd.CSList{p}.Laue,varargin);
   if any(Tind)
     T = varargin{find(Tind,1)};

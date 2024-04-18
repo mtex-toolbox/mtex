@@ -11,8 +11,8 @@ function kappa = curvature(ebsd,varargin)
 %  kappa - @curvatureTensor
  
 % set up curvature tensor
-% first column is gradients in x-direction in specimen coordiantes
-% second column is gradients in y-direction in specimen coordiantes
+% first column is gradients in x-direction in specimen coordinates
+% second column is gradients in y-direction in specimen coordinates
 kappa = dyad(ebsd.gradientX,vector3d.X) + ...
   dyad(ebsd.gradientY,vector3d.Y);
 
