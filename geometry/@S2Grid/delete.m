@@ -13,7 +13,7 @@ function S2G = delete(S2G,points)
 
 if isa(points,'vector3d'), points = find(S2G,points); end
 
-if isnumeric(points), 
+if isnumeric(points) 
   inds = false(length(S2G),1);
   inds(points) = true;
   points = inds; 

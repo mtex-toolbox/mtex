@@ -76,7 +76,7 @@ for j = 1:numel(sP)
     strings = ensurecell(varargin{1});
   end
 
-  if length(v)>1 && length(strings)==1, strings = repmat(strings,length(v),1); end
+  if length(v)>1 && isscalar(strings), strings = repmat(strings,length(v),1); end
   
 
   

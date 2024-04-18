@@ -13,7 +13,7 @@ grainPhaseId(grainId(grainId>0)) = gB.phaseId((grainId>0));
 [i,~,f] = find(gB.F);
 I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
 I_VG = (I_VF * gB.I_FG)==2;
-% triple points are those with exactly 3 neigbouring grains and 3
+% triple points are those with exactly 3 neighboring grains and 3
 % boundary segments
 itP = full(sum(I_VG,2)==3 & sum(I_VF,2)==3);
 [tpGrainId,~] = find(I_VG(itP,:).');
@@ -24,14 +24,14 @@ tpPhaseId = full(grainPhaseId(tpGrainId));
 % first step: compute faces at the triple point
 % clean up incidence matrix
 %I_FD(~any(I_FD,2),:) = [];
-% incidence matrix between triple points and voronoi cells
+% incidence matrix between triple points and Voronoi cells
 %I_TD = I_VF(itP,:) * I_FD;
 [tPBoundaryId,~] = find(I_VF(itP,:).');
 tPBoundaryId = reshape(tPBoundaryId,3,[]).';
 
 % get the three end vertices
 iV = reshape(gB.F(tPBoundaryId,:),[],6).';
-% TODO: the repmat can be removed in new versions of Matlab
+% TODO: the repmat can be removed in new versions of MATLAB
 iV = reshape(iV(iV ~= repmat(find(itP).',size(iV,1),1)).',3,[]).';
 
 tP = triplePointList(find(itP),gB.V,...

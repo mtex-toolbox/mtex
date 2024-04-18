@@ -16,7 +16,7 @@ end
 
 %% sort by saliency
 % sort all course nodes for all s by saliency from lowest to highest
-[tmp,elements] = sort(AllSals,'ascend'); %elements is list of indices representing the sorted AllSals list
+[~,elements] = sort(AllSals,'ascend'); %elements is list of indices representing the sorted AllSals list
 % all points assigned to own node Nx2 [assignment,confidence]
 % pointData is euler1 euler2 euler3 x y z confidence
 numPoints = numClusters(1);

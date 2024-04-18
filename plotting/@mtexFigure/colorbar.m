@@ -2,7 +2,7 @@ function h = colorbar(mtexFig,varargin)
 
 if isempty(mtexFig.cBarAxis) % create some new colorbars
     
-  if ~mtexFig.keepAspectRatio || equalScale ...
+  if (~mtexFig.keepAspectRatio || equalScale) ...
       && ~check_option(varargin,'multiple') % one new colorbar
   
     mtexFig.cBarAxis = addColorbar(mtexFig.children(end),varargin{:});

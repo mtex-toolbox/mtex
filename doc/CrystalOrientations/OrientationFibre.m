@@ -1,4 +1,4 @@
-%% Fibres of Orientations
+%% Fibers of Orientations
 %
 %% 
 % A fibre in orientation space is essentially a line connecting two
@@ -60,7 +60,7 @@ hold off
 
 %% Fibres in pole figures and inverse pole figures
 %
-% MTEX supports for fibres all the plotting options that are available for
+% MTEX supports for fibers all the plotting options that are available for
 % orientations. This included <OrientationPoleFigure.html pole figures> and
 % <OrientationInversePoleFigure.html inverse pole figures> using the
 % commands <fibre.plotPDF.html |plotPDF|> and <fibre.plotIPDF.html
@@ -69,7 +69,7 @@ hold off
 plotPDF(f,Miller({1,1,0},{1,1,1},cs),'linewidth',3,'lineColor','orange')
 
 %%
-% An important difference to orientation plots is that fibres are not
+% An important difference to orientation plots is that fibers are not
 % automatically symmetrised when plotted. To achieve this use the command
 % <fibre.symmetrise.html |symmetrise|>.
 
@@ -87,7 +87,7 @@ plotIPDF(f.symmetrise,r,'linewidth',3,'lineColor','orange')
 %
 % Alternatively, a fibre can also be defined by a pair of a crystal and a
 % specimen direction. In this case it consists of all orientations that
-% alignes the crystal direction parallel to the specimen direction. As an
+% aligns the crystal direction parallel to the specimen direction. As an
 % example we define the fibre of all orientations such that the c-axis
 % (001) is parallel to the z-axis by
 
@@ -98,7 +98,7 @@ plot(f,'linecolor','gold','linewidth',4,'project2FundamentalRegion','axisAngle')
 
 %%
 % If both directions of type Miller the fibre corresponds to all
-% misorientations which have these two direcetion parallel.
+% misorientations which have these two direction parallel.
 %
 % Finally, a fibre can be defined by an initial orientation |ori1| and a
 % direction |h|, i.e., all orientations |ori| of this fibre satisfy
@@ -112,15 +112,15 @@ f = fibre(ori1,Miller(1,1,1,cs))
 
 plot(f,'linecolor','darkred','linewidth',4,'project2FundamentalRegion','axisAngle')
 
-%% Predefined fibres
-% MTEX includes also a list of predefined fibres, e.g., alpha, beta, gamma,
-% epsilon, eta, tau and theta fibres. Those can be defined by
+%% Predefined fibers
+% MTEX includes also a list of predefined fibers, e.g., alpha, beta, gamma,
+% epsilon, eta, tau and theta fibers. Those can be defined by
 
 ss = specimenSymmetry('orthorhombic');
 beta = fibre.beta(cs,ss,'full')
 
 %%
-% Lets plot an overview of all predefined fibres with respect to
+% Lets plot an overview of all predefined fibers with respect to
 % orthorhombic specimen symmetry
 
 plot(fibre.alpha(cs,ss,'full'),'linewidth',3,'lineColor',ind2color(1),'DisplayName','alpha')
@@ -134,7 +134,7 @@ plot(fibre.theta(cs,ss,'full'),'linewidth',3,'lineColor',ind2color(7),'DisplayNa
 hold off
 legend('Location','best')
 
-%% Fibre ODFs
+%% Fiber ODFs
 % Note, that it is straight forward to define a corresponding fibre ODF by
 % the command <fibreODF.html |fibreODF|>
 

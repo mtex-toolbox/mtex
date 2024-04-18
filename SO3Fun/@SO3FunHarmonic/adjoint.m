@@ -113,7 +113,7 @@ else
 end
 
 % initialize nfft plan
-if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis'))
+if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')
 
   %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
   NN = 2*N+2;
@@ -149,12 +149,25 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
   ghat = ifftshift(ghat);
   ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end);
 
+elseif check_option(varargin,'directComputation')
+  % use symmetries
+  
+  % Do adjoint nsoft directly by evaluating the sum
+  nodes = Euler(rot(:),'nfft').';
+  ghat = zeros(2*N+1,2*N+1,2*N+1);
+  for m = 1:length(rot)
+    ghat = ghat + values(m)*exp(1i * ( ...
+                                    (-N:N)*nodes(2,m) ...
+                                    + (-N:N)'*nodes(3,m) ...
+                                    + permute(-N:N,[1,3,2])*nodes(1,m)) );
+  end
+
 else
 
   % adjoint nfft
   nfftmex('set_f', plan, W(:) .* values(:));
   nfftmex('adjoint', plan);
-  % adjoint fourier transform
+  % adjoint Fourier transform
   ghat = nfftmex('get_f_hat', plan);
   ghat = reshape(ghat,2*N+2,2*N+2,2*N+2);
   ghat = ghat(2:end,2:end,2:end);
@@ -166,7 +179,7 @@ end
 z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
 ghat = z .* ghat;
 
-% --------- (4) adjoint representationbased coefficient transform ---------
+% --------- (4) adjoint representation based coefficient transform ---------
 
 % set flags and symmetry axis
 flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
@@ -193,7 +206,7 @@ end
 
 % ------------------- (5) Construct SO3FunHarmonic ------------------------
 
-SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft,varargin{:});
 
 % if antipodal consider only even coefficients
 SO3F.antipodal = check_option(varargin,'antipodal');

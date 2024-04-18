@@ -37,7 +37,7 @@ sS = slipSystem(d,n)
 sS.SchmidFactor(r)
 
 %%
-% Ommiting the tension direction r the command
+% Omitting the tension direction r the command
 % <slipSystem.SchmidFactor.html SchmidFactor> returns the Schmid factor as
 % a <S2FunHarmonic.S2FunHarmonic.html spherical function>
 
@@ -71,7 +71,7 @@ sS.SchmidFactor(sigma)
 sSAll = sS.symmetrise('antipodal')
 
 %%
-% The option |antipodal| indicates that Burgers vectors in oposite
+% The option |antipodal| indicates that Burgers vectors in opposite
 % direction should not be distinguished.
 % Now
 
@@ -276,7 +276,7 @@ quiver ( grains , sSGrains.b)
 quiver ( grains , sSGrains.trace)
 hold off
 
-
-
+%#ok<*ASGLU>
+%#ok<*NASGU>
 
 

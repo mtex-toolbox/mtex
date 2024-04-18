@@ -14,7 +14,7 @@ T2 = tensor.rand('rank',2);
 % addition and multiplication
 T = T1 + 2 * T2;
 
-% pointwise product
+% point-wise product
 T = T1 .* T2;
 
 %% Tensor Products
@@ -36,7 +36,7 @@ eps = strainTensor(diag([1 0 -1]))
 %
 % and turns it into the stress tensor $\sigma$. In MTEX such tensor
 % products can be computed in its most general form by the command
-% <EinsteinSum.html EinsteinSum>.
+% <EinsteinSum.html |EinsteinSum|>.
 
 sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 
@@ -48,7 +48,7 @@ sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 %
 % $$ (a \otimes b)_{ij} = a_i b_j $$
 %
-% beween two rank one tensors
+% between two rank one tensors
 
 a = tensor([1;2;3],'rank',1);
 b = tensor([0;2;1],'rank',1);
@@ -73,7 +73,7 @@ EinsteinSum(a,-1,b,-1)
 %
 % $$ c = \sum_{i,j,k} S_{ijkk} v_i v_j $$
 %
-% where $C = S^{-1}$ is the inverse of the comcompliance thensor, i.e. the
+% where $C = S^{-1}$ is the inverse of the compliance tensor, i.e. the
 % stiffness tensor
 
 v = xvector;
@@ -81,10 +81,10 @@ S = inv(C)
 c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 
 %%
-% Here we used the <tensor.inv.html inv> to compute the inverse of any rank
-% 2 or rank 4 tensor. There are shortcuts in MTEX for specific tensor
-% products. E.g. the relation between stress and strain can be more
-% compactly written as a <tensor.colon.html edouble dot product>
+% Here we used the command <tensor.inv.html |inv|> to compute the inverse
+% of any rank 2 or rank 4 tensor. There are shortcuts in MTEX for specific
+% tensor products. E.g. the relation between stress and strain can be more
+% compactly written as a <tensor.colon.html double dot product>
 
 C * eps
 C : eps
@@ -92,7 +92,7 @@ C : eps
 %% 
 % The double dot product between two rank two tensors is essentially their
 % inner product and can be equivalently computed from the
-% |<tensor.trace.html trace>| of their matrix product
+% |<tensor.trace.html |trace|>| of their matrix product
 
 T1 : T2
 trace(T1 * T2')
@@ -128,3 +128,7 @@ T = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
 
 r = rotation.byAxisAngle(zvector,-45*degree);
 T = rotate(T,r)
+
+%#ok<*NASGU>
+%#ok<*ASGLU>
+%#ok<*NOPTS>

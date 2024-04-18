@@ -66,7 +66,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       % factor hres comes in in next step
       [X,Y,Z] = meshgrid(-n/2:n/2);
       
-      % write all coordniates of the N points (X,Y,Z) into an (N,3) array XYZ
+      % write all coordinates of the N points (X,Y,Z) into an (N,3) array XYZ
       XYZ = [X(:),Y(:),Z(:)] * hres;
       
       % shift indice for idxmap
@@ -77,9 +77,9 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       indexshift = (N-n-1) / 2;     
       
       % calculate coordinates of all points of the small grid
-      [x,y,z] = ind2sub([n+1,n+1,n+1],[1:(n+1)^3]);
+      [x,y,z] = ind2sub([n+1,n+1,n+1],1:(n+1)^3);
       
-      % add indexshift to those coordiantes and use sub2ind
+      % add indexshift to those coordinates and use sub2ind
       % to get indice of our small-grid-points in the big grid
       % we will use this for idxmap
       indice = sub2ind([N,N,N],x+indexshift,y+indexshift,z+indexshift);
@@ -87,7 +87,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       % transform the points (cubochoric representation of rotations) into unit quaternions
       q = cube2quat(XYZ);
       
-      % check, wcih ones are inside the S3G.oR
+      % check, which ones are inside the S3G.oR
       inside = checkInside(S3G.oR,q);
       
       S3G.a = q.a(inside)';
@@ -102,7 +102,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       % use calculated indice from above
       % idxmap is zero if point isnt inside fR
       % we enumerate the other points
-      S3G.idxmap(indice(inside)) = [1:sum(inside)]';
+      S3G.idxmap(indice(inside)) = (1:sum(inside))';
       
       % normalize
       S3G = normalize(S3G);

@@ -14,7 +14,7 @@ function SO3F = symmetrise(SO3F,varargin)
 %  SO3F - @SO3FunHarmonic
 %
 
-if SO3F.bandwidth==0
+if SO3F.bandwidth==0 || check_option(varargin,'skipSymmetrise')
   return
 end
 
@@ -23,8 +23,8 @@ SO3F = reshape(SO3F,prod(s));
 
 L = SO3F.bandwidth;
 
-cs = get_option(varargin,'CS',SO3F.CS.properGroup);
-ss = get_option(varargin,'SS',SO3F.SS.properGroup);
+cs = get_option(varargin,'CS',SO3F.CS);
+ss = get_option(varargin,'SS',SO3F.SS);
  
 if numSym(cs) ~= 1 % symmetrize crystal symmetry
   SO3F.fhat = convSO3(SO3F.fhat,cs.WignerD(L));

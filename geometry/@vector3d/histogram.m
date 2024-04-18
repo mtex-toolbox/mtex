@@ -27,11 +27,12 @@ if ~isempty(weights)
 
   [~,~,binId] = histcounts(data,sort(edges));
   binId(binId==0)=length(edges)-1;
-  h.BinCounts = accumarray(binId,weights,[length(h.BinEdges)-1 1],@nansum).' ./ sum(weights);
+  weights(isnan(weights)) = 0;
+  h.BinCounts = accumarray(binId,weights,[length(h.BinEdges)-1 1]).' ./ sum(weights);
 end
     
   
-% set plotting convention such that the plot coinices with a map
+% set plotting convention such that the plot coincides with a map
 how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
 how2plot.setView(h.Parent);
 

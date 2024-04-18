@@ -1,6 +1,6 @@
 classdef PoleFigure < dynProp & dynOption
 %
-% The class *PoleFigure* is used to store experimetnal pole figure
+% The class *PoleFigure* is used to store experimental pole figure
 % intensitied, i.e., XRD, synchrotron or neuron data. It provides several
 % <PoleFigureCorrection.html data correction methods> as well as the
 % <PoleFigure2ODF.html reconstruction of an orientation density function
@@ -8,10 +8,11 @@ classdef PoleFigure < dynProp & dynOption
 % this section>.
 %
 % Input
-%  h     - crystal directions (@vector3d | @Miller)
-%  r     - specimen directions (@S2Grid)
+%  h - @Miller, crystal directions
+%  r - @S2Grid, specimen directions
 %  intensities - diffraction counts (double)
-%  CS,SS - crystal, specimen @symmetry
+%  CS - @crystalSymmetry
+%  SS - @specimenSymmetry
 %
 % Options
 %  superposition - weights for superposed crystal directions
@@ -60,12 +61,17 @@ classdef PoleFigure < dynProp & dynOption
       
       if nargin == 0, return;end
       
-      pf.allH = ensurecell(h);
-      pf.allR = ensurecell(r);
-      if numel(pf.allR) == 1, pf.allR = repmat(pf.allR,size(pf.allH));end
-      if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
       pf.allI = ensurecell(intensities);
-            
+      if iscell(h)
+        pf.allH = h;
+      elseif isscalar(pf.allI)
+        pf.allH = {h};
+      else
+        pf.allH = vec2cell(h);
+      end
+      pf.allR = ensurecell(r);
+      if isscalar(pf.allR), pf.allR = repmat(pf.allR,size(pf.allH));end
+      if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
       
       pf.c = ensurecell(get_option(varargin,'superposition',...
         cellfun(@(x) ones(1,length(x)),pf.allH,'uniformoutput',false)));
@@ -121,7 +127,7 @@ classdef PoleFigure < dynProp & dynOption
     
     function pf = set.intensities(pf,i)
       
-      if numel(i) == 1
+      if isscalar(i)
         for ipf = 1:numel(pf.allI)
           
           pf.allI{ipf} = i*ones(size(pf.allI{ipf}));

@@ -129,10 +129,10 @@ rgb = hsv2rgb([x(:),ones(length(x),2)]);
 rgb = reshape([rgb;rgb],100,2,3);
 
 subplot(1,2,1)
-surf(ones(100,2),[rgb]), shading flat
+surf(ones(100,2),rgb), shading flat
 setCamera('default')
 
-% next the rescalled rainbow colors. Put both plots side by sie
+% next the re-scaled rainbow colors. Put both plots side by sie
 
 %figure(3)
 z = linspace(0,1,1000);

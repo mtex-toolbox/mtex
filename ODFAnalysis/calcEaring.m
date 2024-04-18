@@ -1,57 +1,58 @@
 function h = calcEaring(indata,sS,prop,varargin)
+% compute earing from odf and slip systems
 %
-%
-%% Function description:
-% This function calculates the height (h) at each peripheral position of
+% Description:
+% This function calculates the height |h| at each peripheral position of
 % a cup drawn from a polycrystalline bcc metal sheet.
 % In the analytical treatment, the polycrystalline sheet is assumed to be
 % an aggregate of single crystals (grains) with various orientations.
 % In the original paper, an orientation distribution function (ODF)
-% contructed from texture data was used to calculate the weight of each 
+% constructed from texture data was used to calculate the weight of each 
 % single crystal.
 % In this function, ebsd or grain data can be used:
-% - For ebsd data, an ODF is first calculated. 
+%
+% * For ebsd data, an ODF is first calculated. 
 %   Following that, there are 2 options:
 %   (1) Calculate ODF components & volume fractions using MTEX-default
 %   functions, or
 %   (2) Calculate the volume fractions of a discretised ODF.
 %   For both options, the volume fraction is used as the weight.
-% - Alternatively, for grain data, weights are computed using the grain
+% * Alternatively, for grain data, weights are computed using the grain
 %   area fraction.
 % The ear may be calculated crystallographically by considering both,
 % restricted glide and pencil glide; with the former returning better
 % predictions in the original paper.
 %
-%% Author:
-% Dr. Azdiar Gazder, 2023, azdiaratuowdotedudotau
+% Syntax
+%  calcEaring(grains,sS,prop)
 %
-%% Acknowledgements:
-% This function is based on the paper by:
-% N. Kantake, Y. Tozawa, S. Yamamoto, Calculations of earing in deep
+% Input
+%  ori  - @orientation
+%  sS   - @slipSystem
+%  prop - @struct
+%
+% Output
+%  h    - @double, height at each peripheral position of a cup drawn from a polycrystalline bcc metal sheet.
+%
+% Options
+%  discrete - use a discretised ODF
+%
+% Author
+%
+%  * Dr. Azdiar Gazder, 2023, azdiaratuowdotedudotau
+%
+% References
+% 
+% * N. Kantake, Y. Tozawa, S. Yamamoto, Calculations of earing in deep
 % drawing for bcc metal sheets using texture data, Int. J Mech. Sci.,
 % vol. 27(4), pp. 249-256, 1985.
 % https://www.sciencedirect.com/science/article/pii/0020740385900839
-%
-%% Syntax:
-%  calcEaring(grains,sS,prop)
-%
-%% Input:
-%  ori          - @orientation
-%  sS           - @slipSystem
-%  prop         - @struc
-%
-%% Output:
-%  h            - @double, height (h) at each peripheral position of
-%                 a cup drawn from a polycrystalline bcc metal sheet.
-%
-%% Options:
-% 'discrete'    - @char, flag for using a discretised ODF.
 %
 
 isFlag = check_option(varargin,'discrete');
 
 if isa(indata,'EBSD')
-  %% If using ebsd data, compute the weights using the ODF components or intensity
+  % If using ebsd data, compute the weights using the ODF components or intensity
   disp('---')
   disp('Calculating the ODF from ebsd data...');
   % compute an optimal kernel
@@ -66,7 +67,7 @@ if isa(indata,'EBSD')
     disp('---')
     disp('Calculating MTEX-default ODF components and volume fractions...');
     [ori, vol] = calcComponents(odf,'maxIter',1000,'exact');
-    % normalise the volume fraction
+    % normalize the volume fraction
     wt = vol./sum(vol);
     
   elseif isFlag == true
@@ -101,7 +102,7 @@ if isa(indata,'EBSD')
   disp('---')
   
 elseif isa(indata,'grain2d')
-  %% If using grain data, compute the weights using the grain area
+  % If using grain data, compute the weights using the grain area
   ori = indata.meanOrientation;
   wt = indata.area./sum(indata.area);
   

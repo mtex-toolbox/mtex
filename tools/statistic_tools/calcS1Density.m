@@ -16,11 +16,10 @@ y = get_option(varargin,'weights',ones(size(x)));
 fun = S1FunHarmonic.quadrature(x,y,'bandwidth',N,varargin{:});
 
 % convolution
-fun.fhat(1) = 0;
-fun.fhat(2:end) = fun.fhat(2:end) .* exp(- 0.5*sigma.^2 * (-N:N).^2).';
+fun.fhat = fun.fhat .* exp(- 0.5*sigma.^2 * (-N:N).^2).';
 
 % normalize
-fun.fhat = fun.fhat ./ fun.fhat(N+2);
+fun.fhat = fun.fhat ./ fun.fhat(N+1);
 
 % make antipodal if needed
 %fun.antipodal = check_option(varargin,'antipodal');
@@ -28,9 +27,9 @@ fun.fhat = fun.fhat ./ fun.fhat(N+2);
 
 end
 
-function test
+function test %#ok<DEFNU>
 
-x = gB.direction.rho;
+x = gB.direction.rho; %#ok<NASGU>
 norm(gB.direction)
 
 
@@ -53,6 +52,6 @@ pdf = ifft(fft(Tp).*fft(G));
 % remove padding
 pdf = pdf(tn-t2+1:tn-t2+tn);
 % normalize values
-pdf = pdf./sum(pdf);
+pdf = pdf./sum(pdf); %#ok<NASGU>
 
 end

@@ -5,7 +5,7 @@
 % that the correct choice of the kernel halfwidth is essential for creating a good
 % match between the true density function and the reconstructed density
 % function. If the halfwidth is set too small the reconstructed density
-% function is usually oscillating and the indiviudual sampling points are
+% function is usually oscillating and the individual sampling points are
 % visible as sharp peaks. If the halfwidth is too large the resulting
 % density function is usually too smooth and does not reproduce the
 % features of the original density function. 
@@ -14,24 +14,25 @@
 % kernel halfwidth depends not only on the number of sampling points but also
 % on the smoothness of the true but unknown density function. 
 % MTEX offers several options set by flags during the kernel calculation operation.  A very
-% conserative choice for the kernel halfwidth that takes into account only
+% conservative choice for the kernel halfwidth that takes into account only
 % the number of sampling points is implemented in MTEX with the flag |'magicRule'|. The flag
 % |'RuleOfThumb'| considers both the number of sampling
 % points and the variance of the sampling points as an estimate of the
 % smoothness of the true density function. The most advanced (and default)
 % method for estimating the optimal kernel halfwidth is
 % <orientation.KLCV.html Kullback Leibler cross validation>.
-% This method tests different kernel halfwidths on a subset of the
+% This method tests different kernel half-widths on a subset of the
 % random sample and selects the halfwidth which best reproduces the
-% ommited points of the random sample.
+% omitted points of the random sample.
 %
 % In order to demonstrate this functionality let's start with the following
 % orientation density function
 
-% Define trigonal crystal symmetry using Enantiomorphic Point Group notation
-cs = crystalSymmetry('32');
+% cubic crystal symmetry
+cs = crystalSymmetry('321');
 
-% Build a density function by combining a uniform texture with two pre-defined texture components
+% build a density function by combining a uniform texture with two
+% predefined texture components
 odf = 0.25*uniformODF(cs) + 0.25*unimodalODF(orientation.brass(cs)) + ...
   0.5*fibreODF(fibre.alpha(cs),'halfwidth',10*degree);
 
@@ -111,3 +112,4 @@ xlabel('Number of orientations (log scale)')
 ylabel('Estimation Error in degrees')
 title('Error between original ODF model and the reconstructed ODF','FontWeight','bold')
 
+%#ok<*SAGROW>

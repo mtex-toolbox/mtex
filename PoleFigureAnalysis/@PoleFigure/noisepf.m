@@ -19,7 +19,7 @@ function pf = noisepf(pf,fak,background,varargin)
 % SO3Fun/calcPoleFigure
 
 if nargin == 2, background = 0;end
-if numel(fak) == 1, fak = repmat(fak,pf.numPF,1);end
+if isscalar(fak), fak = repmat(fak,pf.numPF,1);end
 
 for i = 1:pf.numPF
   pf.allI{i} = ...

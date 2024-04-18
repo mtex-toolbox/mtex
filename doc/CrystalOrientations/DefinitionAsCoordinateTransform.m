@@ -4,10 +4,10 @@
 % In MTEX a crystal orientation is defined as the rotation that transforms
 % <CrystalDirections.html crystal coordinates>, i.e., a description of a
 % vector or a tensor with respect to the <CrystalReferenceSystem.html
-% crystal reference frame>, into specimen coordinates, i.e., a desciption
+% crystal reference frame>, into specimen coordinates, i.e., a description
 % of the same object with respect to a specimen fixed reference frame.
 %
-% In MTEX any orientation consists of two incredients. A
+% In MTEX any orientation consists of two ingredients. A
 % <rotation.rotation.html rotation>
 
 % lets take a random one
@@ -15,31 +15,31 @@ rot = rotation.rand
 
 %%
 % and a description of the crystal lattice, which are represented in MTEX
-% by variables of type <crystalSymmetry.crystalSymmetry.html crystalSymmetry>
+% by variables of type <crystalSymmetry.crystalSymmetry.html
+% |crystalSymmetry|>
 
 % lets take cubic crystal symmetry
 cs = crystalSymmetry.load("Al-Aluminum.cif")
 
 %%
-% Combining both incredients allows us to define an orientation
+% Combining both ingredients allows us to define an orientation
 
 ori = orientation(rot,cs)
 
 %%
 % As a consequence a variable of type orientation is at the same time of
-% type <rotation.rotation.html rotation> and hence allows for all
+% type <rotation.rotation.html |rotation|> and hence allows for all
 % <RotationOperations.html operations> that are available for rotations.
 %
 %% Crystal coordinates to specimen coordinates
 %
-% Let us consider to following direction with respect to the crystal
-% reference system
+% Let us consider the following crystal direction
 
 h = Miller(1,0,0,cs,'uvw')
 
 %%
-% Then in a grain with orientation |ori| this direction |h| has with
-% respect to the specimen reference system the coordinates
+% In a grain with orientation |ori| this direction |h| has the specimen
+% coordinates
 
 r = ori * h
 
@@ -63,7 +63,7 @@ ori * C
 
 %%
 % Objects that can be translated by orientations from crystal into specimen
-% cooordinates and vice verca include
+% coordinates and vice versa include
 %
 % * <Miller.Miller.html crystal directions>
 % * <tensor.tensor.html tensors>
@@ -83,8 +83,8 @@ inv(ori) * r
 % Note, that in literature orientations are often defined to transform
 % specimen coordinates into crystal coordinates, i.e., to coincide with the
 % inverse orientations in MTEX. The consequences of this differences are
-% exhaustivly discussed in the topic <MTEXvsBungeConvention.html
-% orientation convemtions>.
+% exhaustively discussed in the topic <MTEXvsBungeConvention.html
+% orientation conventions>.
 
 
 %% Specimen Rotation
@@ -101,9 +101,9 @@ rot = rotation.byAxisAngle(vector3d.X,60*degree);
 ori_new = rot * ori
 
 %%
-% It should also be noted, that orientations are sensitiv with respect to
+% It should also be noted, that orientations are sensitive with respect to
 % the alignment of the Euclidean reference frame $\vec X$, $\vec Y$, $\vec
 % Z$ with respect to the crystal axes $\vec a$, $\vec b$ and $\vec c$. This
 % issue is discussed in more detail in the topic
-% <CrystalReferenceSystem.html The crystal reference system>.
+% <CrystalReferenceSystem.html Crystal Reference Frames>.
 %

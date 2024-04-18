@@ -1,11 +1,6 @@
 function [vF1,vF2] = tangential(r,varargin)
 % reference vector field on the pole figure
 
-%if nargin == 1, rRef = zvector; end
-
-
-rRef = zvector;
-
 if nargin == 1
 
   vF1 = local(r);
@@ -17,7 +12,6 @@ else
 end
 
   function v = local(r)
-    
     
     %    v = normalize(rRef - r);
     %    v = normalize(v - dot(v,r) .* r);

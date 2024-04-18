@@ -12,10 +12,10 @@ else
 end
 maxData = max(data(~isnan(data) & ~isinf(data)));
 
-% get colorrange from data
+% get color range from data
 colorRange = [minData,maxData];
-minData = nanmin(data(:));
-maxData = nanmax(data(:));
+minData = min(data(:));
+maxData = max(data(:));
 if minData == maxData
   if minData == 0
     maxData = 1;

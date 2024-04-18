@@ -13,6 +13,10 @@ function [f,bandwidth] = calcDensity(x,varargin)
 % 
 % Output
 %  f - density as <https://de.mathworks.com/help/matlab/ref/griddedinterpolant.html griddedinterpolant>
+%  f - @S1FunHarmonic
+%
+% Options
+%  periodic - consider values as periodic
 %
 % See also
 % vector3d/calcDensity orientation/calcDensity

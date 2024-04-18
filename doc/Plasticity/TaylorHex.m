@@ -22,7 +22,6 @@ cs = cs.properGroup;
 odf = fibreODF(cs.cAxis, vector3d.Z);
 %odf = uniformODF(cs)
 
-
 %% Plot polefigures of generated initial state without strains
 % define crystal orientations of interest for polefigures and plot figure
 
@@ -95,61 +94,12 @@ oriWarm = ori .* orientation(-WwarmD);
 
 %%
 
-oriWarm2 = ori .* orientation(-Wwarm.eval(ori));
-
-%%
-
-
-[~,~,Wcold] = calcTaylor(epsCold, sScold)
-[~,~,Wwarm] = calcTaylor(epsWarm, sSwarm)
-
-
-%%
-Wwarm2 = Wwarm;
-Wwarm2.SO3F = Wwarm2.SO3F.conv(psi);
-
-psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree)
-
-%%
-
-odf = SO3FunHarmonic(odf)
-
-odfWarm = doEulerStep(Wwarm2./2,odf,40)
-figure(1)
-plotPDF(odfWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
-mtexColorbar
-
-%%
-
-Wwarm3 = @(ori) calcSpin(ori,epsWarm,sSwarm)
-
-oriWarm = doEulerStep(Wwarm3,ori,10)
-figure(2)
-plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
-mtexColorbar
-
-%%
-
-plotPDF(odfWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
-
-%%
-
-plot(div(Wwarm),'sigma',[0,30]*degree,'resolution',0.5*degree,'noGrid')
-mtexColorMap blue2red
-hold on
-plot(Wwarm,'add2all','noGrid','color','black','resolution',5*degree)
-hold off
-
-
-%%
-% Plot pole figures in comparison to inital texture
-
 nextAxis %create a new axis on the existing figure and put along side
 plotPDF(oriCold,h,'antipodal','contourf','grid','grid_res',30*degree)
 mtexColorbar;
 
 nextAxis %create a new axis on the existing figure and put along side
-plotPDF(oriWarm2,h,'antipodal','contourf','grid','grid_res',30*degree)
+plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
 mtexColorbar;
 
 % get figure handle and set correct layout
@@ -182,7 +132,3 @@ legend({'Basal slip','Prismatic slip','Pyramidal slip','Comp. Twin'},...
 legend('boxoff')
 
 %%
-
-function W = calcSpin(ori,eps,sS)
-[~,~,W] = calcTaylor( inv(ori) .* eps, sS);
-end

@@ -7,7 +7,7 @@ else
 
   for n = 1:length(L)
     
-    e(n) = 0.5 * svds(L.M(:,:,n),1);
+    e(n) = 0.5 * svds(L.M(:,:,n),1); %#ok<AGROW>
 
   end
 

@@ -102,10 +102,16 @@ classdef symmetry < matlab.mixin.Copyable
       if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
         fhat = cs.opt.fhat(1:deg2dim(L+1));
       else
-        c = ones(1,numSym(cs))/numSym(cs);
-        SO3F = SO3FunHarmonic.quadrature(cs.rot,c,'bandwidth',L,'nfsoft');
+        CS = cs.properGroup;
+        c = ones(1,numSym(CS))/numSym(CS);
+        if L<200
+          SO3F = SO3FunHarmonic.quadrature(CS.rot,c,'bandwidth',L,'nfsoft');
+        else
+          ori = orientation(CS.rot,CS);
+          SO3F = SO3FunHarmonic.quadrature(ori,c,'bandwidth',L,'directComputation','skipSymmetrise');
+        end
         fhat = SO3F.fhat;
-        fhat(abs(fhat)<1e-5)=0;
+        fhat(abs(fhat)<1e-5) = 0;
         fhat = sparse(fhat);
         cs.opt.fhat = fhat;
       end

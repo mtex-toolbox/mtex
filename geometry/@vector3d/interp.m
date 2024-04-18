@@ -27,7 +27,8 @@ if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistanc
 else
   % take the mean over duplicated nodes
   [v,~,ind] = unique(v(:));
-  y = accumarray(ind,y,[],@nanmean);
+  y(isnan(y)) = 0;
+  y = accumarray(ind,y,[],@mean);
 end
 
 if isempty(varargin) 

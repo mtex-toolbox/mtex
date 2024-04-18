@@ -10,7 +10,7 @@
 %
 % At the end all functions return a variable of type
 % <rotation.rotation.html |rotation|> which represents a list of rotations
-% that are internaly stored as <quaternion.quaternion.html quaternions>. An
+% that are internally stored as <quaternion.quaternion.html quaternions>. An
 % overview of different rotation representations by three dimensional
 % vectors and their properties can be found in the section
 % <RotationRepresentations.html Representations>.
@@ -21,7 +21,7 @@
 % rotations about fixed axes, e.g., first around the z axis, second around
 % the x axis and third again around the z. The corresponding rotational
 % angles are commonly called Euler angles. Beside the most common |ZXZ|
-% covention other choices of the axes are sometimes used. Sorted by
+% convention other choices of the axes are sometimes used. Sorted by
 % popularity in the texture analysis community these are
 %
 % * Bunge (phi1,Phi,phi2)       - ZXZ
@@ -52,9 +52,8 @@ rot = rotation.byEuler(30*degree,50*degree,10*degree,'Roe')
 %%
 % This does not change the way MTEX displays the rotation on the screen.
 % The default Euler angle convention for displaying a rotation can be
-% changed by the command <setMTEXpref.html setMTEXpref>, for a permanent
-% change the <matlab:edit('mtex_settings.m') mtex_settings> should be
-% edited. Compare
+% changed by the command <setMTEXpref.html |setMTEXpref|>, for a permanent
+% change the file |mtex_settings.m| should be edited. Compare
 
 setMTEXpref('EulerAngleConvention','Roe')
 rot
@@ -63,7 +62,7 @@ rot
 setMTEXpref('EulerAngleConvention','Bunge')
 rot
 
-%% Axis angle parametrisation and Rodrigues Frank vector
+%% Axis angle parametrization and Rodrigues Frank vector
 %
 % A very simple possibility to specify a rotation is to specify the
 % rotation axis and the rotation angle.
@@ -78,8 +77,8 @@ rot.axis
 rot.angle ./degree
 
 %%
-% Closely related to the axis angle parameterisation of a rotation is the
-% Rodriguess Frank vector. 
+% Closely related to the axis angle parametrization of a rotation is the
+% Rodriguez Frank vector. 
 
 R = rot.Rodrigues
 
@@ -113,10 +112,10 @@ rot = rotation.byMatrix(M)
 %% Four vectors defining a rotation
 %
 % Another useful method to define a rotation is by describing how in acts
-% on two given directions. More precisely, given four vectors u1, v1, u2,
-% v2 there is a unique rotation |rot| such that |rot * u1 = v1| and |rot *
-% u2 = v2|. E.g., to find the rotation the maps the x-axis onto the y-axis
-% and keeps the z-axis we do
+% on two given directions. More precisely, given four vectors |u1|, |v1|,
+% |u2|, |v2| there is a unique rotation |rot| such that |rot * u1 = v1| and
+% |rot * u2 = v2|. E.g., to find the rotation the maps the x-axis onto the
+% y-axis and keeps the z-axis we do
 
 u1 = vector3d.X;
 v1 = vector3d.Y;
@@ -136,42 +135,31 @@ rot = rotation.map(u1,v1,u2,v2)
 rot = rotation.map(zvector,yvector)
 
 %%
-% More generaly, one can fit a rotation |rot| to a list of left and right
+% More generally, one can fit a rotation |rot| to a list of left and right
 % vectors |l| and |r| such that |rot * l| is the best approximation of |r|.
 % This is done by the function <rotation.fit.html |rotation.fit|>
 
 % take five random left vectors
 left = vector3d.rand(5);
 
-% rotate them by rot and perturbe them a little bit
+% rotate them by rot and perturb them a little bit
 right = rot * left + 0.1 * vector3d.rand(1,5);
 
 % recover the rotation rot
 rotation.fit(left,right)
 
 
-%% Radom Rotations
+%% Random Rotations
 %
-% MTEX offers several ways for generating random rotations. In the most 
+% MTEX offers several ways for generating random rotations. The most
+% easiest way is to use the command <rotation.rand.html |rotation.rand|>
+% which generates an arbitrary number of random rotations
 
-
-
-
-%% Logarithm, Exponential Mapping, Spin Tensor
-%
-% TODO
-
-S = spinTensor(rot)
-
-rotation(S)
-
-vector3d(S)
+rotation.rand(100)
 
 %%
-
-v = log(rot)
-
-rotation(exp(v))
+% If you are interested in random rotations that follow a certain
+% distribution have a look at <RandomSampling.html random sampling>.
 
 %% Quaternions
 %
@@ -181,3 +169,6 @@ rotation(exp(v))
 q = quaternion(1,0,0,0)
 
 rot = rotation(q)
+
+%#ok<*NASGU>
+%#ok<*NOPTS>

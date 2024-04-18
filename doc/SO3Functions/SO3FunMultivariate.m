@@ -1,4 +1,4 @@
-%% Multivariate SO3Fun
+%% Multivariate Orientation Dependent Functions
 %
 %% Structural conventions of the input and output of multivariate SO3FunHarmonics
 %
@@ -44,12 +44,12 @@ nodes = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',1e5);
 nodes = nodes(:);
 %%
 % Next we define function values for the vertices
-y = [SO3Fun.dubna(nodes), (nodes.a.*nodes.b).^(1/4)];
+y = [SO3Fun.dubna(nodes), (nodes.a .* nodes.b).^(1/4)];
 nodes.CS = SO3Fun.dubna.CS;
 %%
 % Now the actual command to get a (2x1) |SO3F1| of type $~$
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> is
-SO3F1 = SO3FunHarmonic.approximation(nodes, y)
+SO3F1 = SO3FunHarmonic.approximation(nodes, y,'maxit',10)
 
 %%
 % It is also possible to interpolate one component by an
@@ -90,7 +90,7 @@ SO3F4 = SO3FunHarmonic(eye(10))
 %%
 % *Some default matrix and vector operations*
 %
-% You can concatenate and refer to functions as Matlab does with vectors and matrices
+% You can concatenate and refer to functions as MATLAB does with vectors and matrices
 
 SO3F5 = [SO3F1; SO3F3];
 SO3F5(2:4)
@@ -143,7 +143,7 @@ SO3F1 .* SO3F4
 
 %% Visualization of multivariate SO3FunHarmonic
 %
-% Similary to the univariate case we also can look at the Fourier
+% Similarly to the univariate case we also can look at the Fourier
 % coefficients of multivariate functions.
 
 plotSpektra(SO3F3)
@@ -163,3 +163,4 @@ plot3d(SO3F3)
 
 plotFibre(SO3F3,fibre.beta)
 
+%#ok<*VUNUS>

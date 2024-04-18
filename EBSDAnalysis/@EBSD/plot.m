@@ -147,7 +147,7 @@ else
   mP.micronBar.setOnTop  
 end
 
-if ~isstruct(mtexFig)  && length(mtexFig.children)== 1
+if ~isstruct(mtexFig)  && isscalar(mtexFig.children)
   mtexFig.keepAspectRatio = false; 
 end
 

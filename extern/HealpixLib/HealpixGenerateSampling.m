@@ -15,7 +15,7 @@ for pn = 1:n_total
     OUT(pn, :) = HealpixNestedIndex(n, pn - 1);
 end
 
-if mode == 'rindex'
+if mode == "rindex"
     OUT = uint16(OUT);
     return
 end

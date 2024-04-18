@@ -1,7 +1,7 @@
 function h = surf(sF,varargin)
 
 % rescale the function to be with 0.5 and 2
-if numel(sF) == 1 && sF.isReal
+if isscalar(sF) && sF.isReal
   
   a = min(sF);
   b = max(sF);

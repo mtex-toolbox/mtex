@@ -18,7 +18,7 @@
 % The central idea is that MTEX allows you to calculate mixture models, by
 % adding and subtracting arbitrary ODFs. Model ODFs may be used as
 % references for ODFs estimated from pole figure data or EBSD data and are
-% instrumental for simulating texture evolutions.
+% instrumental for simulating texture evolution.
 %
 %
 %% The Uniform ODF
@@ -37,7 +37,7 @@ odf = uniformODF(cs,ss)
 
 %% Combining model ODFs
 % All the above can be arbitrarily rotated and combined. For instance, the
-% classical Santafe example can be defined by commands
+% classical Santa Fe example can be defined by commands
 
 cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
@@ -50,5 +50,5 @@ odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
-
+%#ok<*NASGU>
 

@@ -23,7 +23,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     strings = ensurecell(varargin{1});
     if iscellstr(varargin{1}) && ~isempty(strings)
       
-      if numel(strings)==1
+      if isscalar(strings)
         strings = repcell(strings{1},length(m),1);
       else
         strings = strings(repelem(1:numel(strings),l));

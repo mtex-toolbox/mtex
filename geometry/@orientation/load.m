@@ -5,7 +5,7 @@ function [ori,varargout] = load(fname,varargin)
 %
 % orientation.load is a high level method for importing orientations from
 % column aligned text files or excel spread sheets. In those cases it is
-% neccesary to tell MTEX the column positions of the Euler angles and
+% necessary to tell MTEX the column positions of the Euler angles and
 % possible other properties.
 %
 % Syntax
@@ -19,13 +19,13 @@ function [ori,varargout] = load(fname,varargin)
 %  ss    - @specimenSymmetry (optional)
 %
 % Options
-%  columnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
-%  columns           - postions of the columns to be imported
-%  radians           - treat input in radiand
+%  columnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
+%  columns           - positions of the columns to be imported
+%  radians           - treat input in Radians
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
 %  Bunge             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
-%  passive           - interprete the orientation as passive rotationss
+%  passive           - interpret the orientation as passive rotations
 %
 % Output
 %  ori  - @orientation

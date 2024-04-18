@@ -77,7 +77,7 @@ classdef slipSystem
       if ~sS.isSymmetrised, sS = sS.symmetrise(varargin{:}); end
     end
 
-    function display(sS,varargin)
+    function display(sS,varargin) %#ok<DISPLAY>
       % standard output
 
       displayClass(sS,inputname(1),varargin{:},'moreInfo',char(sS.CS,'compact'));
@@ -119,8 +119,8 @@ classdef slipSystem
     function str = char(sS,varargin)
       
       for i = 1:length(sS)
-        str{i} = [char(sS.n(i),varargin{:}),char(sS.b(i),varargin{:})];
-        str{i} = strrep(str{i},'$$','');
+        str{i} = [char(sS.n(i),varargin{:}),char(sS.b(i),varargin{:})]; %#ok<AGROW>
+        str{i} = strrep(str{i},'$$',''); %#ok<AGROW>
       end
       if i == 1, str = char(str); end
 
@@ -150,7 +150,7 @@ classdef slipSystem
         slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(3,2,1,cs,'hkl'),varargin{:})];
      end
     
-     function sS = hcp(cs,varargin)
+     function sS = hcp(varargin) %#ok<STOUT>
        warning('There are no predefined slip systems for hcp yet. You might have to define those individually.');      
      end
      

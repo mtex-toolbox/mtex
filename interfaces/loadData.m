@@ -112,7 +112,7 @@ idata = cellfun('prodofsize',data);
 
 % ------------- apply options ----------------------------------
 
-if length(data) == 1 && iscell(data{1}), data = data{1}; end
+if isscalar(data) && iscell(data{1}), data = data{1}; end
 
 % set file name
 for i = 1:numel(data)

@@ -40,14 +40,13 @@ function quiverSection(SO3VF,varargin)
 
 oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
 
-res = 15*degree;
 % only plot the real part of SO3VF
 % TODO: Add isReal for SO3VectorField
 if isa(SO3VF,'SO3VectorFieldHarmonic')
   SO3VF.isReal = 1;
 end
 
-% TODO: Not completly implemented yet, see SO3FunHarmonic/plotSection
+% TODO: Not completely implemented yet, see SO3FunHarmonic/plotSection
 % if isa(SO3VF,'SO3VectorFieldHarmonic') && (isa(oS,'phi2Sections') || isa(oS,'phi1Sections') || isa(oS,'gammaSections'))
 %   for c=1:3
 %     [f(:,:,:,c),S3G0] = evalSectionsEquispacedFFT(SO3VF.SO3F(c),oS,'resolution',res,'shiftGrid',[1,1]*res/2,varargin{:});

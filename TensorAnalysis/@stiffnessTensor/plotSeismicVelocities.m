@@ -1,4 +1,4 @@
-function plotSeismicVelocities(C,varargin)
+function mtexFig = plotSeismicVelocities(C,varargin)
 %
 %
 % Syntax
@@ -18,7 +18,7 @@ function plotSeismicVelocities(C,varargin)
 % The layout of the plot is
 %
 % Plot matrix of anisotropic seismic properties
-%        1 Vp        2 AVs      3 S1 polarizations  4 Vs1
+%        1 Vp        2 AVs      3 S1 polarization  4 Vs1
 %        5 Vs2       6 dVs      7 Vp/Vs1            8 Vp/Vs2
 %
 
@@ -33,10 +33,10 @@ function plotSeismicVelocities(C,varargin)
 % Using a user defined grid use classical method not harmonic method.
 
 % Seismic velocities as functions on the sphere with harmonic method
-% is recommended for a smooth representation that actuately respects
+% is recommended for a smooth representation that actually respects
 % the symmetry of single crystals and can be plotted in 3D.
 %
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C);
+[vp,vs1,vs2,~,ps1,ps2] = velocity(C);
 %
 % you can sample the velocity values in any x,y,z direction by using
 % vp_xyz = eval(vp,vector3d(x,y,z)) or
@@ -47,7 +47,7 @@ function plotSeismicVelocities(C,varargin)
 % Plotting section
 %**************************************************************************
 
-% set colour map to seismic color map : red2blueColorMap
+% set color map to seismic color map : red2blueColorMap
 % Red = slow to Blue = fast in Seismology
 
 if ~check_option(varargin,'lower'), varargin = [varargin,'upper']; end
@@ -115,7 +115,7 @@ mtexTitle('S-wave anisotropy (%)','doNotDraw',titleOpt{:})
 
 % Max percentage anisotropy
 [maxAVs,maxAVsPos] = max(AVs);
-[minAVs,minAVsPos] = min(AVs);
+[~,minAVsPos] = min(AVs);
 
 xlabel(['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')],titleOpt{:})
 
@@ -248,6 +248,8 @@ hold off
 %**************************************************************************
 mtexColorMap red2blueColorMap
 mtexColorbar('figSize','huge')
+
+if nargout == 0, clear mtexFig; end
 
 
 end

@@ -162,7 +162,7 @@ end
 
 function varIn = brighten(varIn,varargin) % increase the brightness
 
-if isempty(varargin),
+if isempty(varargin)
     frac = .9; 
 else
     frac = varargin{1}; 

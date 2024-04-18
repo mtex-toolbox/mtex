@@ -44,13 +44,14 @@ A = A(id,:);
 [grainInd,nId] = find(A);
 grainInd = grainInd(:); nId = nId(:);
 
-% some neighbors coorespond to parent and some to child grains
+% some neighbors correspond to parent and some to child grains
 nInd = job.grains.id2ind(nId);
 isParent = job.grains.phaseId(nInd) == job.parentPhaseId;
 oriP = job.grains(nInd(isParent)).meanOrientation;
 
-isChild = job.grains.phaseId(nInd) == job.childPhaseId;
-oriChildV = variants(job.p2c,job.grains(nInd(isChild)).meanOrientation);
+% TODO -> this is currently not considered
+%isChild = job.grains.phaseId(nInd) == job.childPhaseId;
+%oriChildV = variants(job.p2c,job.grains(nInd(isChild)).meanOrientation);
 
 % compute fits to all neighbors
 fit = nan(length(nId),numV);

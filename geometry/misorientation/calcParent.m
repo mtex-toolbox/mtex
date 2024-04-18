@@ -49,7 +49,7 @@ numFit = get_option(varargin,'numFit',1);
 if p2c.SS ~= childOri.CS, p2c = inv(p2c); end
 
 % compute all parent variants
-if length(p2c) == 1, p2c = variants(p2c,'parent'); end
+if isscalar(p2c), p2c = variants(p2c,'parent'); end
 p2c = reshape(p2c,[],1);
 numV = length(p2c);
 

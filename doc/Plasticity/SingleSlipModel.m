@@ -70,6 +70,7 @@ E = 0.3 * strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 % this is in specimen coordinates
 Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))));
 
+% turn in into a harmonic function
 Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
 
 %%
@@ -96,57 +97,6 @@ hold off
 % the z-direction. 
 %
 
-% the starting ODF
-odf0 = uniformODF(csOli);
-
-odf = doEulerStep(2*Omega,odf0,40)
-
-figure(2)
-plot(odf,'sigma')
-mtexColorbar
-
-
-%%
-
-numIter = 10;
-res = 1.25*degree;
-
-ori0 = equispacedSO3Grid(csOli,'resolution',res);
-
-ori = doEulerStep(Omega,ori0,numIter);
-
-%%
-
-odf = calcDensity(ori,'halfwidth',res*4);
-
-%%
-figure(2)
-plot(odf,'sigma')
-
-%%
-
-numIter = 20;
-res = 2.5*degree;
-
-ori0 = equispacedSO3Grid(csOli,'resolution',res);
-
-[V,C] = calcVoronoi(ori0,'struct');
-w0 = calcVoronoiVolume(ori0,V,C);
-
-ori = doEulerStep(Omega,ori0,numIter);
-
-y0 = 1;
-
-w1 = calcVoronoiVolume(ori);
-
-y1 = y0 .* (w0 ./ w1);
-
-odfx = SO3FunHarmonic.approximation(ori(:),y1(:))
-
-figure(3)
-plot(odfx,'sigma')
-
-
 %% Solutions of the Continuity Equation
 % The solutions of the continuity equation can be analytically computed and
 % are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
@@ -163,7 +113,6 @@ odf4 = SO3FunSBF(sSOrtho,E)
 % odf corresponding to the second slip system in sigma sections
 
 figure(1)
-odf2 = SO3FunSBF(sSOli(2),E)
 plotSection(odf2,'sigma')
 mtexColorbar
 
@@ -176,6 +125,29 @@ h = Miller({1,0,0},{0,1,0},{0,0,1},csOli);
 
 plotPDF(odf2,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
+
+%% 
+% We could also have computed the solution of the continuity equation
+% numerically. To this end we utilize the command <doEulerStep.html
+% |doEulerStep|> which takes as input the crystallographic spin tensor
+% |Omega|, the initial odf |odf0| and the number of iterations to be
+% performed.
+
+% the starting ODF
+odf0 = uniformODF(csOli);
+
+% the transformed ODF
+odf = doEulerStep(2*Omega,odf0,40)
+
+figure(2)
+plot(odf,'sigma')
+mtexColorbar
+
+%%
+% Indeed the error between the numerical solution and the theoretical
+% solution is neglectable small. We may quantify the difference by
+
+mean(abs(odf - odf2))
 
 %%
 % For completeness the pole figures of the other two basis functions.

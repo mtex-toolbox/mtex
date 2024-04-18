@@ -7,7 +7,7 @@ if nargin == 0
 end
 
 % replace shortcuts by long color names
-if ischar(str) && length(str)==1
+if ischar(str) && isscalar(str)
   longNames = {'red','green','blue','yellow','cyan','black','white','magenta'};
   shortNames = {'r','g','b','y','c','k','w','m'};
   str = longNames{strcmpi(str,shortNames)};

@@ -16,19 +16,16 @@ function sF = le(sF1,sF2)
 
 if isnumeric(sF1)
   f1 = @(v) sF1;
-  N = 0;
 else
   f1 = @(v) sF1.eval(v);
-  N = sF1.bandwidth;
 end
 
 if isnumeric(sF2)
   f2 = @(v) sF2;
 else
   f2 = @(v) sF2.eval(v);
-  N = N + sF2.bandwidth;
 end
 
-sF = S2FunHarmonic.quadrature(@(v) f1(v) <= f2(v),'bandwidth',256);
+sF = S2FunHarmonic.quadrature(@(v) f1(v) <= f2(v));
 
 end

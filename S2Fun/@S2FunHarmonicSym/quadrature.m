@@ -42,7 +42,7 @@ if check_option(varargin,'symmetrise')
     % symmetrise weights
     if check_option(varargin,'weights')
       w = get_option(varargin,'weights') ./ numSym(symX);
-      if length(w) == 1
+      if isscalar(w)
         w = w * ones(size(varargin{2}));
       else
         w = repmat(reshape(w,1,[]),numSym(symX),1);

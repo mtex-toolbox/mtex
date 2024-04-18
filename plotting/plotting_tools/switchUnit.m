@@ -22,7 +22,7 @@ ref_values = [1e-24, 1e-21, 1e-18, 1e-15, 1e-12, 1e-9, 1e-6, 1e-3, 1e-0,...
 
 % Find unit index
 n_unit = ismember(ref_units, unit)==1; 
-if any(n_unit) == 0 % No unit found
+if ~any(n_unit) % No unit found
     ex = MException('MTEX:BadValue', ...
         ['Specified unit (' unit ') is invalid']);
     throw(ex);

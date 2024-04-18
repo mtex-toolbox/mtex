@@ -24,12 +24,13 @@ obj = obj .* norm(Tid)./norm(obj);
 % ensure obj is symmetric
 %obj = obj.sym;
 
-% special case for triclinic symmetry
+% special case for triclinic symmetry 
+% TODO: check this!
 if 0 && obj.CS.Laue.id ==2
   
   %weighted sum in Horn
-  for i = 1:length(obj.u)
-    r(i,:) = obj.u{i}(:);
+  for i = 1:length(obj.u) %#ok<UNRCH>
+    r(i,:) = obj.u{i}(:); %#ok<AGROW>
   end
   
   ori = orientation(fit(obj.l,r,obj.CS),obj.CS);
@@ -74,7 +75,7 @@ for i = 1:maxIter
   %disp([xnum2str(max(norm(g))) ' ' char(ori(1)) ' ' char(g(1))]);
   
   % update ori
-  ori = exp(ori,g,'left');
+  ori = exp(ori, g, SO3TangentSpace.leftVector);
   
 end
 end

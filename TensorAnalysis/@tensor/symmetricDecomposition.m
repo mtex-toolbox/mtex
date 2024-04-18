@@ -46,7 +46,7 @@ end
 T = T - varargout{1};
 
 for k = 1:length(csList)
-  varargout{k+1} = mean(csList{k}.rot * T);
+  varargout{k+1} = mean(csList{k}.rot * T); %#ok<AGROW>
   T = T - varargout{k+1};
 
 end

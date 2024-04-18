@@ -21,12 +21,14 @@ function d = double(E,varargin)
 
 if check_option(varargin,'full')
   
+  d = cell(1,length(E.u));
   for k = 1:length(E.u)
     if E.u{k}.rank ==1
       d{k} = double(E.u{k});
     else
       d{k} = reshape(double(E.u{k}),[],size(E,1));
-    end    
+    end
+    
   end
   
   d = vertcat(d{:}).';
@@ -161,7 +163,7 @@ switch E.CS.Laue.id
     d([5,17,20]) = sqrt(30) * d([5,17,20]);
     d([7,10,25]) = sqrt(20) * d([7,10,25]);
     d([8,9,12,14,18,19]) = sqrt(60) * d([8,9,12,14,18,19]);
-    d([13]) = sqrt(15*6) * d([13]);
+    d(13) = sqrt(15*6) * d(13);
     
   case 40 % D6
     M1 = reshape(E.u{1}.M,3^6,[]).';
@@ -171,7 +173,7 @@ switch E.CS.Laue.id
     d([5,17,20]) = sqrt(30) * d([5,17,20]);
     d([7,10,25]) = sqrt(20) * d([7,10,25]);
     d([8,9,12,14,18,19]) = sqrt(60) * d([8,9,12,14,18,19]);
-    d([13]) = sqrt(15*6) * d([13]);
+    d(13) = sqrt(15*6) * d(13);
      
     
   case 42 % T

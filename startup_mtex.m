@@ -380,7 +380,7 @@ saSubDirs = saSubDirs([saSubDirs.isdir]); %Handles files without extensions that
 %Loop through the directory list and recursively call this function.
 for intDirIndex = 1 : length(saSubDirs)
   strThisDirName = saSubDirs(intDirIndex).name;
-  blnIgnoreDir = any(strcmpi(strThisDirName, { 'private', 'CVS', '.', '..', caStrsIgnoreDirs{:} }));
+  blnIgnoreDir = any(strcmpi(strThisDirName, [ {'private'}, {'CVS'}, {'.'}, {'..'}, caStrsIgnoreDirs(:)' ]));
   blnDirBegins = any(strncmp(strThisDirName, {'@', '.','+'}, 1));
   if ~(blnIgnoreDir || blnDirBegins)
     strThisStartDir = sprintf('%s%s%s', strStartDir, strFileSep, strThisDirName);

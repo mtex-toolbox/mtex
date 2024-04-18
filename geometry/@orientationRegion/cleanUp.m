@@ -38,7 +38,7 @@ if isempty(nqa)
   oR.F = {};
   return
   
-elseif length(nqa)==1
+elseif isscalar(nqa)
   
   v = perp(nqa);
   rot = rotation.byAxisAngle(nqa,(0:90:270)*degree);

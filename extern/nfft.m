@@ -33,7 +33,7 @@ properties(SetAccess='private')
 	M=[];   % number of sampling points (positive integer)
 end %properties
 
-properties(Hidden=true,SetAccess='private',GetAccess='private');
+properties(Hidden=true,SetAccess='private',GetAccess='private')
 	plan=[];                    % nfftmex plan number
 	x_is_set=false;             % flag if x is set
 	fhat_is_set=false;          % flag if fhat is set
@@ -105,7 +105,7 @@ function h=nfft(d,N,M,varargin)
         n_array = varargin{1};
         n_array = double(n_array(:)');
         args_cell_n_m_flags = [num2cell(n_array),varargin{2:end}];
-      elseif length(varargin{1}) == 1 % n(1),...,n(d) (oversampled N) as scalars
+      elseif isscalar(varargin{1}) % n(1),...,n(d) (oversampled N) as scalars
         args_cell_n_m_flags = varargin;
       else
         error('Invalid parameter n');
@@ -170,7 +170,7 @@ end %function
 
 function set.N(h,N)
 	N = N(:)';
-	if( isempty(N) || size(N,1)~=1 || ~isnumeric(N) || ~isreal(N) || (sum(mod(N,2))>0) || ~prod(N>0))
+	if( isempty(N) || size(N,1)~=1 || ~isnumeric(N) || ~isreal(N) || (sum(mod(N,2))>0) || ~all(N>0))
 		error('The entries of the bandwidth vector N must be even positive integers.');
 	end
 	h.N = double(N);

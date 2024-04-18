@@ -33,7 +33,7 @@ function kam = KAM(ebsd,varargin)
 %weights = get_option(varargin,'weights',ones(3));
 
 if check_option(varargin,'max')
-  fun = @(a,b) nanmax(a,[],b);
+  fun = @(a,b) max(a,[],b);
 else
   fun = @(a,b) nanplus(a,b);
 end

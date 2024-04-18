@@ -11,11 +11,12 @@ function [cha, chp] = convexhullProps(grains)
 %
 % Output
 %  cha - area of convex hull
-%  chp - perimeter of covex hull
+%  chp - perimeter of convex hull
 %
 %
 
-p = zeros(size(grains));
+cha = zeros(size(grains));
+chp = cha;
 
 % store this in local variables for speed reasons
 V = grains.rot2Plane .* grains.V;

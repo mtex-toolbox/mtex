@@ -29,7 +29,7 @@ set(0,'FormatSpacing','compact')
 set(0,'DefaultFigureColor','white');
 plotx2east
 plotzOutOfPlane
-global mtex_progress; mtex_progress = 0;
+global mtex_progress; mtex_progress = 0; %#ok<GVMIS>
 
 options.outDir = fullfile(mtex_path,'doc','html');
 options.tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');

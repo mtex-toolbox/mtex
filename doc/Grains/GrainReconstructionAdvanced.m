@@ -123,14 +123,14 @@ hold on
 plot(grains_low.boundary)
 hold off
 %%
-% As an alternative MTEX includes the fast multiscale clustering method
+% As an alternative MTEX includes the fast multi-scale clustering method
 % (FMC method) which  constructs clusters in a hierarchical manner from
 % single pixels using fuzzy logic to account for local, as well as global
 % information.
 %
 % Analogous with the threshold angle, a  single parameter, C_Maha controls
 % the sensitivity of the segmentation. A C_Maha value of 3.5 properly 
-% identifies the  subgrain features. A C_Maha value of 3 captures more
+% identifies the  sub-grain features. A C_Maha value of 3 captures more
 % general features, while a value of 4 identifies finer features but is
 % slightly oversegmented.
 %
@@ -148,11 +148,11 @@ grains_FMC = smooth(grains_FMC);
 %plot(ebsd,oM.orientation2color(ebsd.orientations))
 plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
-% start overide mode
+% start override mode
 hold on
 plot(grains_FMC.boundary,'linewidth',1.5)
 
-% stop overide mode
+% stop override mode
 hold off
 
 %% Markovian Clustering Algorithm
@@ -171,12 +171,5 @@ plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
 hold on;plot(grains.boundary,'linewidth',2); hold off
 
-
-
-
-
-
-
-
-
-
+%#ok<*NASGU>
+%#ok<*ASGLU>

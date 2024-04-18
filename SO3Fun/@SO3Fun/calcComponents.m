@@ -26,7 +26,7 @@ function [modes, weights,centerId] = calcComponents(SO3F,varargin)
 maxIter = get_option(varargin,'maxIter',100);
 res = get_option(varargin,'resolution',0.05*degree);
 omega = [0,3.3,5]*degree;
-tol = get_option(varargin,'tolerance',0.5*degree);
+tol = get_option(varargin,'tolerance',1.5*degree);
 maxAngle = get_option(varargin,{'radius','angle'},inf);
 
 % initial seed
@@ -127,17 +127,18 @@ function test
 cs = crystalSymmetry('432');
 cs2 = specimenSymmetry;
 center = orientation.rand(5,cs,cs2);
-odf = unimodalODF(center,'halfwidth',5*degree)
+odf = unimodalODF(center,'halfwidth',5*degree) %#ok<NOPRT
 ori = discreteSample(odf,2000);
-odf2 = calcDensity(ori,'noFourier','exact','halfwidth',2.5*degree)
+odf2 = calcDensity(ori,'noFourier','exact','halfwidth',2.5*degree);
+disp(odf2)
 
 
-cs2 = crystalSymmetry('432')
+cs2 = crystalSymmetry('432');
 center = orientation.rand(5,cs,cs2);
-odf = unimodalODF(center,'halfwidth',2.5*degree)
+odf = unimodalODF(center,'halfwidth',2.5*degree);
 ori = discreteSample(odf,1000);
-odf2 = calcDensity(ori,'noFourier','exact','halfwidth',3*degree)
-
+odf2 = calcDensity(ori,'noFourier','exact','halfwidth',3*degree);
+disp(odf2)
 
 [modes,vol,cId] = odf2.calcComponents;
 

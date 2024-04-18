@@ -8,8 +8,9 @@
 mtexdata forsterite
 
 %%
-% These data consist of three indexed phases, Forsterite, Enstatite and Diopside. The not
-% indexed phase called _not Indexed_. The phases can be visualized by
+% These data consist of three indexed phases, Forsterite, Enstatite and
+% Diopside. The not indexed phase called _not Indexed_. The phases can be
+% visualized by
 
 close all; plotx2east
 plot(ebsd)
@@ -23,8 +24,8 @@ plot(ebsd)
 ebsd('Forsterite')
 
 %%
-% contains only the Forsterite measurements. In order to extract a couple of
-% phases, the mineral names have to be grouped in curled parenthesis.
+% contains only the Forsterite measurements. In order to extract a couple
+% of phases, the mineral names have to be grouped in curled parenthesis.
 
 ebsd({'Fo','En'})
 
@@ -42,15 +43,13 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 ipfKey = ipfColorKey(ebsd('Forsterite'));
 plot(ipfKey)
 
-
-
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
 % measurements inside a certain polygon, the restriction can be constructed
 % as follows:
 
 %%
-% First define a region by [xmin ymin xmax-xmin ymax-ymin]
+% First define a region by |[xmin ymin xmax-xmin ymax-ymin]|
 
 region = [5 2 10 5]*10^3;
 
@@ -62,7 +61,7 @@ plot(ebsd)
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
-% The command <EBSD.inpolygon.html inpolygon> checks for each EBSD data
+% The command <EBSD.inpolygon.html |inpolygon|> checks for each EBSD data
 % point whether it is inside a polygon or not, i.e.
 
 condition = inpolygon(ebsd,region);
@@ -87,8 +86,8 @@ plot(ebsd)
 %
 %% Remove Inaccurate Orientation Measurements
 %
-% *By MAD (mean angular deviation)* in the case of Oxford Channel programs, or *by
-% CI (Confidence Index)* in the case of OIM-TSL programs
+% *By MAD (mean angular deviation)* in the case of Oxford Channel programs,
+% or *by CI (Confidence Index)* in the case of OIM-TSL programs
 %
 % Most EBSD measurements contain quantities indicating inaccurate
 % measurements. 
@@ -110,7 +109,7 @@ mtexColorbar
 
 % plot a histogram
 close all
-hist(ebsd.mad)
+histogram(ebsd.mad)
 
 
 %%

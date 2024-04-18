@@ -24,7 +24,10 @@ rot = exp@vector3d(m);
 ori = orientation(rot,m.CS,m.CS);
 
 if nargin >= 2
-  if check_option(varargin,'left')
+
+  % default should be right
+  tS = SO3TangentSpace.extract(SO3TangentSpace.rightVector,varargin{:});
+  if tS.isLeft
     ori =  ori * ori_ref;
   else
     ori =  ori_ref .* ori;

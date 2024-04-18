@@ -1,5 +1,5 @@
 function varargout = plot(f,varargin)
-% plot a fibre
+% plot a fiber
 
 o = f.orientation(varargin{:});
 

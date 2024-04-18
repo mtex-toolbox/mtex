@@ -12,12 +12,8 @@ function SO3VF = inv(SO3VF)
 %  SO3F - @SO3VectorFieldHarmonic
 %  
 
-if check_option(SO3VF.tangentSpace,'left')
-  s = 'right';
-else
-  s = 'left';
-end
 
-SO3VF = SO3VectorFieldHandle(@(r) SO3VF.eval(inv(r)),SO3VF.SS,SO3VF.CS,s);
+SO3VF = SO3VectorFieldHandle(@(r) ...
+  SO3VF.eval(inv(r)), SO3VF.SS, SO3VF.CS, -SO3VF.tangentSpace);
 
 end

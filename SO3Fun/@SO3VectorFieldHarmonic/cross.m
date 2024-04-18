@@ -14,7 +14,7 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 %   SO3VF - @SO3VectorFieldHarmonic
 %
 
-if isa(SO3VF2, 'vector3d') && length(SO3VF2)==1
+if isa(SO3VF2, 'vector3d') && isscalar(SO3VF2)
   ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
   xyz = repmat(SO3VF2.xyz,size(SO3VF1.SO3F.fhat,1),1);
   SO3VF = SO3VF1;

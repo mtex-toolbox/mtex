@@ -68,13 +68,14 @@ if check_option(varargin,'reconsiderAll')
     w = 1;
   end
   
-  % some neighbors coorespond to parent and some to child grains
+  % some neighbors correspond to parent and some to child grains
   nInd = job.grains.id2ind(nId);
   isParent = job.grains.phaseId(nInd) == job.parentPhaseId;
   oriP = job.grains(nInd(isParent)).meanOrientation;
 
-  isChild = job.grains.phaseId(nInd) == job.childPhaseId;
-  oriChildV = variants(job.p2c,job.grains(nInd(isChild)).meanOrientation);
+  % this is if we want to check fit towards childs as well
+  %isChild = job.grains.phaseId(nInd) == job.childPhaseId;
+  %oriChildV = variants(job.p2c,job.grains(nInd(isChild)).meanOrientation);
 
   % compute fits to all neighbors
   fit = nan(length(nId),numV);
@@ -119,7 +120,7 @@ else
   % child-child - votes
   if noOpt || check_option(varargin,'c2c')
 
-    % extract child to child grain pairs with the coresponding orientations
+    % extract child to child grain pairs with the corresponding orientations
     % averaged along the boundary
     [grainId2, oriChild, w2] = getC2CPairs(job,'minDelta',2*degree,varargin{:});
     
@@ -129,8 +130,9 @@ else
     w2 = repmat(w2,1,1,numFit);
     fit2 = repmat(reshape(fit2,[],1,numFit),1,2,1);
     
-    
-    
+    % TODO: the curvature weight is currently not considered!!
+
+
   else
     parentId2 = [];
     fit2 = [];

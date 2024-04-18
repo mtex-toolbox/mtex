@@ -5,18 +5,18 @@ function rot = exp(v,rot_ref,tS)
 %
 %   mori = exp(v) % misorientation in specimen coordinates
 %
-%   rot = exp(v,ori_ref) % orientation update
+%   rot = exp(v,ori_ref,SO3TangentSpace.rightVector) % orientation update
 %
 %   ori = exp(v,ori_ref,tS) % orientation update
 %
 % Input
-%  v - @vector3d rotation vector in specimen coordinates
+%  v       - @vector3d, @SO3TangentVector
 %  ori_ref - @orientation @rotation
+%  tS      - @SO3TangentSpace
 %
 % Output
 %  mori - @rotation
 %  ori  - @orientation
-%  tS   - @SO3TangentSpace
 %
 % See also
 % Miller/exp orientation/log
@@ -34,8 +34,9 @@ else
   rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
 end
 
-if nargin>2 && tS.isLeft
-  rot =  rot .* rot_ref;
+if (nargin>2 && tS.isLeft) || ...
+    (isa(v,'SO3TangentVector') && v.tangentSpace.isLeft)
+  rot =  times(rot, rot_ref,1);
 elseif nargin>1
-  rot =  rot_ref .* rot;
+  rot =  times(rot_ref,rot,0);
 end

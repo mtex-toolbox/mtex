@@ -384,7 +384,7 @@ end
 
 methods (Static = true, Hidden = true)
 
-  function check_dot(cs)
+  function check_dot
   
     % first setting
     cs = crystalSymmetry('m-3m');

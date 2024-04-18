@@ -294,7 +294,21 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         %             'X||a*','Y||b', 'Z||C');
     end
 
-
+        
+    % check and fix conflicting mineral names
+    namePairs = nchoosek(2:numel(CS),2); %skip 1 because CS{1} is notIndexed
+    rpts=false(size(namePairs,1),1);
+    for n=1:size(namePairs,1)
+        rpts(n) = strcmpi(CS{namePairs(n,1)}.mineral,CS{namePairs(n,2)}.mineral);
+    end
+    namesRpt=namePairs(rpts,:);
+    % if there are repeated mineral names, append with _<number>
+    for p= 1:numel(namesRpt)
+        CS{namesRpt(p)}.mineral = [CS{namesRpt(p)}.mineral '_' num2str(p)]; 
+        %not an ideal solution if more than one mineral name has repeats
+        %since the numbering doesn't restart at 1, but it does guarantee
+        %unique mineral names
+    end
 
     % write out first EBSD dataset
     % EBSDheader.Specimen_Orientation_Euler: this should be the convention to map
@@ -361,7 +375,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     end
 
     % allow user defined CS, overriding the above
-    if check_option(varargin,'CS');
+    if check_option(varargin,'CS')
         CS = get_option(varargin,'CS');
     end
         

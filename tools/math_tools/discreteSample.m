@@ -58,7 +58,7 @@ else
   
 end
 
-if numel(arg1) == 1 && arg1 == 1
+if isscalar(arg1) && arg1 == 1
   ind = ones(points,1);
 else
   ind = discretesample(arg1,points);

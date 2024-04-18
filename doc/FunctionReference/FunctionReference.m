@@ -2,7 +2,7 @@
 %
 %%
 % Unlike most other texture analysis software MTEX does not have any graphical
-% user interface. Instead the user is suposed to write scripts. Those scripts
+% user interface. Instead the user is supposed to write scripts. Those scripts
 % usually have the following structure
 %
 % # import data
@@ -23,14 +23,14 @@
 % commands
 
 fileName = [mtexEBSDPath filesep 'Forsterite.ctf'];
-ebsd = EBSD.load(fileName)
+ebsd = EBSD.load(fileName,'convertEuler2SpatialReferenceFrame')
 
 %%
 % imports data from the file |fileName.ctf| and stores them in the variable
 % |ebsd| of type <https://mtex-toolbox.github.io/EBSD.EBSD.html |EBSD|>.
 %
-% Next one can pass the variable |ebsd| to diferent MTEX function. E.g. to
-% plot a phase plot one simply does 
+% Next one can pass the variable |ebsd| to different MTEX function. For
+% generating a phase plot is as simple as
 
 plot(ebsd)
 

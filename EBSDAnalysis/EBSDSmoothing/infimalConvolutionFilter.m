@@ -54,7 +54,7 @@ classdef infimalConvolutionFilter < EBSDFilter
       [M,N] = size(ori);
 
       
-      [qmean,q] = mean(ori);
+      [~,q] = mean(ori);
       q = quaternion(q);
       %u_0 = fullDouble(log(q,quaternion(qmean)));
       
@@ -204,8 +204,8 @@ classdef infimalConvolutionFilter < EBSDFilter
        
       end
       
-      diff(1) = [];
-      diff(iteration:end) = [];
+      %diff(1) = [];
+      %diff(iteration:end) = [];
       
       u(~mask) = u_sav(~mask);
       u_hat = reshape(u,M,N,dim);

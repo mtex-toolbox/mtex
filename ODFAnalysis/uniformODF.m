@@ -18,7 +18,7 @@ function odf = uniformODF(varargin)
 % FourierODF unimodalODF BinghamODF fibreODF
 
 v = 1;
-if nargin>0 && isnumeric(varargin{1}) && length(varargin{1})==1
+if nargin>0 && isnumeric(varargin{1}) && isscalar(varargin{1})
   v = varargin{1};
 end
 

@@ -19,7 +19,7 @@ classdef crystalShape
     V % vertices
     F % faces
 
-    habitus = 0 % describes how visibe mixed hkl faces are
+    habitus = 0 % describes how visible mixed hkl faces are
     extension = [1 1 1]; % describes distance of the faces in dependence of hkl
   end
   
@@ -205,9 +205,9 @@ classdef crystalShape
     end
     
     function demo2
-      cS  = crystalShape.quartz
+      cS  = crystalShape.quartz;
       cs = cS.CS;
-      ori = orientation.rand(200,cs)
+      ori = orientation.rand(200,cs);
       
       plotSection(ori,0.6*(ori*cS),'sigma','sections',8)
       hold on

@@ -17,8 +17,9 @@ classdef tensor < dynOption
     function T = tensor(M,varargin)
       % constructor
       %
-      % *tensor* is the low level constructor for a *tensor* object.
-      % For importing real world data you might want to use the *import_wizard*.
+      % *tensor* is the low level constructor for a |tensor| object.
+      % For importing real world data you might want to use the
+      % *import_wizard*.
       %
       % Syntax
       %   T = tensor(M,CS,'name',name,'unit',unit,'propertyname',property)
@@ -81,7 +82,7 @@ classdef tensor < dynOption
         end
         
         % consider the case of a row vector, which is most probably a 1-rank tensor
-        if ndims(T.M)==2 && size(T.M,1)==1 && size(T.M,2) > 1 && ...
+        if ismatrix(T.M) && size(T.M,1)==1 && size(T.M,2) > 1 && ...
             abs(T.rank) == 1
   
           disp(' ');

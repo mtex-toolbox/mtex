@@ -147,8 +147,8 @@ if ~isempty(job.votes)
     numV = length(p2cV);
     indV1 = [1;1+cumsum(numV * job.isChild + job.isParent)];
     ind_corvar = zeros(numV,1);
-    ind_corvar(bestFriend(find(~ismember([1:numV]',bestFriend)))) = ...
-        find(~ismember([1:numV]',bestFriend));
+    ind_corvar(bestFriend(~ismember((1:numV)',bestFriend))) = ...
+        find(~ismember((1:numV)',bestFriend));
 
     %best fitting variant ids and their closest variant
     pos = indV1(1:end-1) + job.votes.parentId(:,1) - 1;

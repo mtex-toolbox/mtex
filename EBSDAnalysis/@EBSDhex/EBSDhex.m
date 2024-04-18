@@ -101,7 +101,7 @@ classdef EBSDhex < EBSD
             
       if ebsd.isRowAlignment
         ori_right = ori(:,[2:end end-1]);
-        gX = log(ori_right,ori,'left') ./ ebsd.dHex;
+        gX = log(ori_right,ori,SO3TangentSpace.leftVector) ./ ebsd.dHex;
         gX(:,end) = - gX(:,end);
       
         % ignore grain boundaries if possible
@@ -123,7 +123,7 @@ classdef EBSDhex < EBSD
                 
         % compute gradient 1
         ind1 = sub2ind(size(ebsd), max(r,1), c);
-        gX1 = log(ori(ind1),ori,'left');
+        gX1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
         if isfield(ebsd.prop,'grainId')
           gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
@@ -131,7 +131,7 @@ classdef EBSDhex < EBSD
         
         % compute gradient 2
         ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
-        gX2 = log(ori(ind2),ori,'left');
+        gX2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
         if isfield(ebsd.prop,'grainId')
           gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
@@ -168,7 +168,7 @@ classdef EBSDhex < EBSD
                 
         % compute gradient 1
         ind1 = sub2ind(size(ebsd), r, max(1,c));
-        gY1 = log(ori(ind1),ori,'left');
+        gY1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
         if isfield(ebsd.prop,'grainId')
           gY1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
@@ -176,7 +176,7 @@ classdef EBSDhex < EBSD
         
         % compute gradient 2
         ind2 = sub2ind(size(ebsd), r, min(size(ebsd,2),c+1));
-        gY2 = log(ori(ind2),ori,'left');
+        gY2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
         if isfield(ebsd.prop,'grainId')
           gY2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
@@ -188,7 +188,7 @@ classdef EBSDhex < EBSD
                     
       else
         ori_up = ori([2:end end-1],:);
-        gY = log(ori_up,ori,'left') ./ ebsd.dy;
+        gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
         gY(end,:) = - gY(end,:);
         
         % ignore grain boundaries if possible
@@ -220,7 +220,7 @@ classdef EBSDhex < EBSD
       
     end
     
-    function [row,col] = cube2hex(ebsd,x,y,z)
+    function [row,col] = cube2hex(ebsd,x,~,z)
       % convert cube coordinates into offset coordinates
       
       if ebsd.isRowAlignment
@@ -327,8 +327,8 @@ classdef EBSDhex < EBSD
     % ori2 = orientation.rand(cs)
     %
     % the following output should be constant
-    % gO = log(ori1,ori2.symmetrise,'left') % true for this
-    % gO = log(ori1.symmetrise,ori2,'left') % true for this
+    % gO = log(ori1,ori2.symmetrise, SO3TangentSpace.leftVector) % true for this
+    % gO = log(ori1.symmetrise,ori2, SO3TangentSpace.leftVector) % true for this
     
   end
   

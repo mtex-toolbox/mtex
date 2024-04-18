@@ -7,12 +7,12 @@
 %
 % where $x$ and $y$ are the physical properties and $\mathbf A$ is a
 % material constant. In a typical example $y$ could be the force applied to
-% a spring, $x$ the displacement and $A$ describes the stiffnes of the
+% a spring, $x$ the displacement and $A$ describes the stiffness of the
 % spring which is essentially Hooks law.
 %
 % As soon as we consider more general forces and displacements they can not
 % be described anymore by scalar numbers $x$ and $y$ but vectors or
-% matrices are required. In its most general form the displacment is
+% matrices are required. In its most general form the displacement is
 % describes by a <strainTensor.html strain matrix> $\sigma_{ij}$ and the
 % force is described by a stiffness matrix $\varepsilon_{kl}$. In this setting
 % the linear relationship between the two matrices is described by the
@@ -20,12 +20,12 @@
 % C_{ijkl}$ which can be seen as a 4 dimensional generalization of a matrix.
 %
 % More, general a tensor of rank $r$ is a "matrix" of dimension $r$. If
-% $r=0$ we speek of scalars, if $r=1$ these are vectors and for $r=2$ they
+% $r=0$ we speak of scalars, if $r=1$ these are vectors and for $r=2$ they
 % are classical $3 \times 3$ matrices. 
 %
 % In the following we explain how tensors of arbitrary rank can be defined
 % in MTEX. Independent of the rank any tensor is represented in MTEX by a
-% variable of type @tensor.
+% variable of type <tensor.tensor.html |tensor|>.
 %
 %
 %% Scalars (tensors of zero rank)
@@ -51,8 +51,8 @@ t = tensor([1;2;3],'rank',1)
 
 %%
 % where 1, 2 and 3 are the components related to the axes A1, A2 and A3.
-% As rank 1 tensors are essentialy vectors we can freely convert tensors to
-% @vector3d and vice verca. 
+% As rank 1 tensors are essentially vectors we can freely convert tensors to
+% @vector3d and vice versa. 
 
 % define a tensor from a vector
 t = tensor(vector3d.X)
@@ -210,3 +210,6 @@ t = tensor.rand('rank',2)
 % is expressed as
 
 t = tensor.leviCivita
+
+%#ok<*NASGU>
+%#ok<*NOPTS>

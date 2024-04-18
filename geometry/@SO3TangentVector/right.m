@@ -12,10 +12,8 @@ function SO3TV = right(SO3TV,rot)
 %  SO3TV - @SO3TangentVector (right-sided tangent vectors)
 %
 
-if strcmp(SO3TV.tangentSpace,'right')
-  return
+if SO3TV.tangentSpace.isLeft
+  SO3TV = SO3TangentVector( inv(rot).*SO3TV , -SO3TV.tangentSpace);
 end
-
-SO3TV = SO3TangentVector( inv(rot).*SO3TV , 'right' );
 
 end

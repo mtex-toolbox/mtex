@@ -838,7 +838,7 @@ function	[ctbl,par]=CPRINTF_parse(par,varargin)
 		ix=1:nf*cs(1);
 		nx=numel(ix);
 		ni=numel(ttbl)/nx;
-	for	i=1:ni;
+	for	i=1:ni
 		cx=(i-1)*nx+ix;
 	if	bitand(i,1)
 		ttbl(cx)=CPRINTF_repmat(sf,[cs(1),1]);
@@ -1608,7 +1608,7 @@ function	[ctbl,par]=CPRINTF_ascii2string(par,ctbl)
 	if	par.istbl
 	if	~hastab					&&...
 		par.hasopt.Lcs
-	if	numel(par.opt.Lcs) == 1
+	if	isscalar(par.opt.Lcs)
 		mrk=par.opt.Lcs;
 		ctbl(2,coff:coff+nc-1)=CPRINTF_repmat(mrk,[1,nc]);
 	else

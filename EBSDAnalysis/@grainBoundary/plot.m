@@ -129,7 +129,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   % for some reason it is important to subdivide it into parts
   for k = 1:ceil(length(x)/1000) 
     
-    subId = max(1,(k-1)*1000) : min(k*1000,length(x)).';
+    subId = max(1,(k-1)*1000) : min(k*1000,length(x));
   
     % plot the line
     %z = zeros(length(subId),2);

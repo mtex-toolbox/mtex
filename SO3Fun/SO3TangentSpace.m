@@ -18,8 +18,16 @@ classdef SO3TangentSpace < int32
       out = this < 0;
     end
 
-    function toLeft(this,tV,ori_ref)
+    function out = isVector(this)
+      out = abs(this)==1;
+    end
 
+    function out = isSpinTensor(this)
+      out = abs(this)==2;
+    end
+
+    function tS = uminus(tS)
+      tS = SO3TangentSpace(-double(tS));
     end
         
   end
@@ -28,6 +36,11 @@ classdef SO3TangentSpace < int32
 
     function tS = extract(varargin)
       
+      % allow SO3TangentSpace.extract(varargin)
+      if isscalar(varargin) && isa(varargin{1},'cell')
+        varargin = varargin{:};
+      end
+
       tS = getClass(varargin,'SO3TangentSpace');
 
       if ~isempty(tS), return; end

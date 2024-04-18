@@ -2,12 +2,17 @@ function SO3F = rotate(SO3F,rot,varargin)
 % rotate function on SO(3) by a rotation
 %
 % Syntax
+%
+%   % rotate in specimen coordinates
 %   SO3F = rotate(SO3F,rot)
+%
+%   % rotate in crystal coordinates, e.g. for phase transformation
+%   % or reference frame transformation 
 %   SO3F = rotate(SO3F,rot,'right')
 %
 % Input
 %  SO3F - @SO3FunRBF
-%  rot  - @rotation
+%  rot  - @rotation, @orientation
 %
 % Output
 %  SO3F - @SO3FunRBF
@@ -16,23 +21,23 @@ function SO3F = rotate(SO3F,rot,varargin)
 % SO3FunHandle/rotate_outer
     
 if check_option(varargin,'right')
-  cs = SO3F.CS.rot;
-  if length(cs)>2 && ~any(rot == cs(:))
+
+  if isa(rot,'orientation')
+    assert(rot.SS == SO3F.CS,'symmetry missmatch')    
+  elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
     SO3F.CS = crystalSymmetry;
   end
+
+  SO3F.center = orientation(SO3F.center * rot);
 else
-  ss = SO3F.SS.rot;
-  if length(ss)>2 && ~any(rot == ss(:))
+  if isa(rot,'orientation')
+    assert(rot.CS == SO3F.SS,'symmetry missmatch')    
+  elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
     SO3F.SS = specimenSymmetry;
   end
-end
 
-
-if check_option(varargin,'right')
-  SO3F.center = orientation(SO3F.center * rot);
-else
   SO3F.center = orientation(rot * SO3F.center);
 end
 

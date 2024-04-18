@@ -4,12 +4,12 @@ function [pf,interface,options] = load(fname,varargin)
 % Description
 %
 % PoleFigure.load is a high level method for importing pole figure data
-% from external files. It autodetects the format of the file. As parameters
+% from external files. It auto-detects the format of the file. As parameters
 % the method requires the crystal and specimen @symmetry. Additionally it
 % is sometimes required to pass a list of crystal directions and a list of
 % structure coefficients. See <PoleFigureImport.html interfaces> for an
 % example how to import superposed pole figures. In the case of generic
-% ascii files each of which consist of a table containing in each row a
+% ASCII files each of which consist of a table containing in each row a
 % specimen direction and a diffraction intensity see
 % <loadPoleFigure_generic.html loadPoleFigure_generic> for additional
 % options. Furthermore, you can specify a comment to be associated with the
@@ -67,7 +67,10 @@ pf = [pf{:}];
 if nargin > 1 && iscell(varargin{1}) && ...
     all(cellfun('isclass',varargin{1},'Miller'))  
   pf.allH = varargin{1};
+elseif nargin > 1 && isa(varargin{1},'Miller')
+  pf.allH = vec2cell(varargin{1});
 end
+
 
 % structure coefficients
 if check_option(varargin,'superposition')

@@ -2,7 +2,7 @@ function s = char(ori,varargin)
 % orientation to char
 
 if isa(ori.CS,'crystalSymmetry') && isa(ori.SS,'crystalSymmetry') && ...
-    length(ori)==1 && ~check_option(varargin,'Euler')
+    isscalar(ori) && ~check_option(varargin,'Euler')
   
   [n1,n2,d1,d2] = round2Miller(ori,'maxHKL',5);
   mori_exact = orientation.map(n1,n2,d1,d2);

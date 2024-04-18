@@ -8,7 +8,7 @@ ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',20*degree)
 %ori = orientation.rand(100,cs);
 %ori = orientation(rotation(crystalSymmetry('O')),cs)
 
-% pertube data a bit
+% perturb data a bit
 %odf_pertube = unimodalODF(idquaternion,'halfwidth',0.5*degree);
 %ebsd = calcEBSD(odf_pertube,length(ori));
 %ori = ebsd.rotations .* orientation(ori.subsref(':'));
@@ -19,11 +19,11 @@ DSO3 = refine(DSO3);
 %DSO3 = refine(DSO3);
 %DSO3 = refine(DSO3);
 
-%% check adjacence matrix
-hist(sum(DSO3.A_tetra))
+%% check adjacency matrix
+histogram(sum(DSO3.A_tetra))
 
 
-%% check neigbouring matrix
+%% check neighboring matrix
 
 DSO3.tetraNeighbour(5,:)
 
@@ -46,7 +46,7 @@ plotPDF(odf,Miller(1,0,0,cs))
 
 mtexdata dubna
 
-odf = calcODF(pf,'zero_range')
+odf = calcODF(pf,'zero_range') %#ok<NODEF>
 
 %%
 
@@ -147,7 +147,7 @@ v = v(norm(v)<pi);
 
 %%
 
-ori = orientation.byAxisAngle(v,norm(v),cs)
+ori = orientation.byAxisAngle(v,norm(v),cs) 
 
 %%
 oR = fundamentalRegion(ori.CS,ori.SS);
@@ -166,7 +166,7 @@ max(angle(quaternion(ori(ind)))) / degree
 h = Miller(1,0,0,cs)
 r = regularS2Grid('antipodal')
 
-M = pdfMatrix(DSO3,h,r);
+M = pdfMatrix(DSO3,h,r); 
 
 %%
 
@@ -193,3 +193,7 @@ plotPDF(fodf,h)
 %%
 
 plot(fodf,'sigma')
+
+%#ok<*NASGU>
+%#ok<*NOPRT>
+%#ok<*ASGLU>

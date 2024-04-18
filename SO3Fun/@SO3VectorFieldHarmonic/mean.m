@@ -7,6 +7,6 @@ function v = mean(SO3VF)
 %   v - @vector3d
 %
 
-v = SO3TangentVector(SO3VF.SO3F.fhat(1, :),SO3VF.tangentSpace);
+v = SO3TangentVector(SO3VF.SO3F.fhat(1, :),SO3VF.internTangentSpace);
 
 end

@@ -1,36 +1,36 @@
 %% ODF Component Analysis
 %
 %%
-% A common way to interprete ODFs is to think of them as superposition of
+% A common way to interpret ODFs is to think of them as superposition of
 % different components that originate from different deformation processes
 % and describe the texture of the material. In this section we describe how
 % these components can be identified from a given ODF.
 %
-% We start by reconstruction a Quarz ODF from Neutron pole figure data.
+% We start by reconstruction a Quartz ODF from Neutron pole figure data.
 
-% import Neutron pole figure data from a Quarz specimen
+% import Neutron pole figure data from a Quartz specimen
 mtexdata dubna silent
 
 % reconstruct the ODF
 odf = calcODF(pf,'zeroRange');
 
 % visualize the ODF in sigma sections
-plotSection(odf,'sigma','sections',9,'layout',[3,3])
+plotSection(odf,'sigma','sections',12,'layout',[3,4])
 mtexColorbar
 
-%% The prefered orientation
+%% The preferred orientation
 % 
 % First of all we observe that the ODF posses a strong maximum. To find
-% this orientation that correspondes to the maximum ODF intensity we use
+% this orientation that corresponds to the maximum ODF intensity we use
 % the <SO3Fun.max.html |max|> command. 
 
 [value,ori] = max(odf)
 
 %%
-% Note that, similarly as the Matlab
+% Note that, similarly as the MATLAB
 % <https://de.mathworks.com/help/matlab/ref/max.html |max|> command, the
-% second output argument is the position where the maximum is atained. In
-% our case we observe that the maximum value is about |121|.  To visualize
+% second output argument is the position where the maximum is attained. In
+% our case we observe that the maximum value is about |121|. To visualize
 % the corresponding preferred orientation we plot it into the sigma
 % sections of the ODF.
 
@@ -44,7 +44,7 @@ annotate(ori)
 
 [value,ori] = max(odf,'numLocal',3)
 
-annotate(ori)
+annotate(ori(2:end),'MarkerFaceColor','red')
 
 %%
 % Note, that orientations are returned sorted according to their ODF value.
@@ -76,7 +76,7 @@ volume(odf,ori,delta) * 100
 volume(uniformODF(odf.CS),ori(1),delta) * 100
 
 %%
-% percent of the entiere orientations space. Putting these values in
+% percent of the entire orientations space. Putting these values in
 % relation it becomes clear, that all the components are multiple times
 % stronger than the uniform distribution. We may compute these factors by
 
@@ -101,8 +101,8 @@ volume(odf,ori,delta)*100
 % to analyze components that are close together. In such settings one may
 % want to use the command <SO3Fun.calcComponents.html |calcComponents|>. This
 % command starts with evenly distributed orientations and lets the crawl
-% towards the closest prefered orientation. At the end of this process the
-% command returns these prefered orientation and the percentage of
+% towards the closest preferred orientation. At the end of this process the
+% command returns these preferred orientation and the percentage of
 % orientations that crawled to each of them.
 
 [ori, vol] = calcComponents(odf);
@@ -110,9 +110,12 @@ ori
 vol * 100
 
 %%
-% These volumes allways sums up to apprximately 100 percent. While the
-% prefered orientations should be the same as those computed by the |max|
+% These volumes always sums up to approximately 100 percent. While the
+% preferred orientations should be the same as those computed by the |max|
 % command.
 
-annotate(ori,'MarkerFaceColor','red')
+annotate(ori,'MarkerFaceColor','none','MarkerEdgeColor','white',...
+  'linewidth',2,'MarkerSize',15,'marker','o')
 
+%#ok<*ASGLU>
+%#ok<*NOPTS>

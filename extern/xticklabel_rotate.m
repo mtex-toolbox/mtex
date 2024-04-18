@@ -76,19 +76,19 @@ function hText = xticklabel_rotate(XTick,rot,varargin)
 %   February 1998; Last revision: 24-Mar-2003
 
 % check to see if xticklabel_rotate has already been here (no other reason for this to happen)
-if isempty(get(gca,'XTickLabel')),
+if isempty(get(gca,'XTickLabel'))
     error('xticklabel_rotate : can not process, either xticklabel_rotate has already been run or XTickLabel field has been erased')  ;
 end
 
 % if no XTickLabel AND no XTick are defined use the current XTickLabel
 %if nargin < 3 & (~exist('XTick') | isempty(XTick)),
 % Modified with forum comment by "Nathan Pust" allow the current text labels to be used and property value pairs to be changed for those labels
-if (nargin < 3 || isempty(varargin{1})) & (~exist('XTick') | isempty(XTick)),
+if (nargin < 3 || isempty(varargin{1})) & (~exist('XTick') | isempty(XTick))
 	xTickLabels = get(gca,'XTickLabel')  ; % use current XTickLabel
 	if ~iscell(xTickLabels)
 		% remove trailing spaces if exist (typical with auto generated XTickLabel)
 		temp1 = num2cell(xTickLabels,2)         ;
-		for loop = 1:length(temp1),
+		for loop = 1:length(temp1)
 			temp1{loop} = deblank(temp1{loop})  ;
 		end
 		xTickLabels = temp1                     ;
@@ -97,17 +97,17 @@ varargin = varargin(2:length(varargin));
 end
 
 % if no XTick is defined use the current XTick
-if (~exist('XTick') | isempty(XTick)),
+if (~exist('XTick') | isempty(XTick))
     XTick = get(gca,'XTick')        ; % use current XTick 
 end
 
 %Make XTick a column vector
 XTick = XTick(:);
 
-if ~exist('xTickLabels'),
+if ~exist('xTickLabels')
 	% Define the xtickLabels 
 	% If XtickLabel is passed as a cell array then use the text
-	if (length(varargin)>0) & (iscell(varargin{1})),
+	if (length(varargin)>0) & (iscell(varargin{1}))
         xTickLabels = varargin{1};
         varargin = varargin(2:length(varargin));
 	else
@@ -115,14 +115,14 @@ if ~exist('xTickLabels'),
 	end
 end    
 
-if length(XTick) ~= length(xTickLabels),
+if length(XTick) ~= length(xTickLabels)
     error('xticklabel_rotate : must have same number of elements in "XTick" and "XTickLabel"')  ;
 end
 
 %Set the Xtick locations and set XTicklabel to an empty string
 set(gca,'XTick',XTick,'XTickLabel','')
 
-if nargin < 2,
+if nargin < 2
     rot = 90 ;
 end
 
@@ -220,7 +220,7 @@ set(gca,'position',newpos)                      ;
 
 % readjust position of text labels after resize of plot
 set(hText,'units','data')                       ;
-for loop= 1:length(hText),
+for loop= 1:length(hText)
     set(hText(loop),'position',[XTick(loop), y(loop)])  ;
 end
 
@@ -245,6 +245,6 @@ set(get(gca,'title'),'units','normalized')          ;
 set(hText,'units','normalized')                      ;
 set(gca,'units','normalized')                        ;
 
-if nargout < 1,
+if nargout < 1
     clear hText
 end

@@ -25,7 +25,7 @@ function y = nanmean(x,dim)
 
 % only one or two elements -> nan
 if isempty(x), y = NaN;	return; end
-if length(x)==1, y = x;	return; end
+if isscalar(x), y = x;	return; end
 
 if nargin < 2, dim = min(find(size(x)~=1)); end
 if isempty(dim), dim = 1;	end

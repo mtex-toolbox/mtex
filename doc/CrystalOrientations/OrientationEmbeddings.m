@@ -5,7 +5,7 @@
 % with the specific property that each class of symmetrically equivalent
 % orientations has a unique tensor representation. The easiest tensorial
 % representation of a rotation is its rotational matrix. However, in the
-% presense of crystal symmetry multiple rotational matrices describe the
+% presence of crystal symmetry multiple rotational matrices describe the
 % same orientation. This can be avoided by restricting the space of
 % admissible matrices to the so called fundamental region. However, this
 % creates the problem that two similar orientations may be represented by
@@ -13,7 +13,7 @@
 % if the orientations are close to the boundary of the fundamental region.
 %
 % The central problem is that the geometry of the fundamental region is not
-% the geometry of the orientation space. Lets demonstate this by taking
+% the geometry of the orientation space. Lets demonstrate this by taking
 % pairs $\mathtt{ori_1}$, $\mathtt{ori_2}$ of random orientations in the
 % fundamental region
 
@@ -32,7 +32,7 @@ ori2 = project2FundamentalRegion(orientation.rand(100000,cs));
 % \mathtt{R(ori_1)} - \mathtt{R(ori_2)} \rVert_2$ of the corresponding
 % <rotation.Rodrigues.html Rodrigues Frank vectors>.
 
-% compute the misorienation angles in degree
+% compute the misorientation angles in degree
 omega = angle(ori1,ori2)./degree;
 
 % compute the Euclidean distance between the rotational matrices
@@ -132,7 +132,7 @@ e = embedding(ori);
 % take the mean of the embeddings
 me = mean(e);
 
-% computet an orientation from the mean embedding
+% compute an orientation from the mean embedding
 orientation(me)
 
 %% Basic Properties
@@ -148,7 +148,7 @@ norm(embedding(orientation.rand(5,cs))).'
 % ball. Similarly as in spherical statistics the norm of the mean of the
 % embeddings can be interpreted as a measure of the dispersion of the
 % orientations. If the norm is close to 1 the orientations are tightly
-% concentrated around a prefered orientation, whereas if the norm is close
+% concentrated around a preferred orientation, whereas if the norm is close
 % to zero some of the orientations are at maximum distance to each other.
 %%
 % Lets compare the norm
@@ -164,7 +164,7 @@ norm(embedding(orientation.rand(5,cs))).'
 % angle between the orientations $\mathtt{ori}_i$ and the mean orientation
 % $\mathtt{mori}$.
 
-% genrate samples of orientations of different dispersion
+% generate samples of orientations of different dispersion
 n = []; sigma = [];
 for hw = logspace(-1,1.75,40)*degree
 
@@ -185,7 +185,7 @@ ylabel('$\sqrt{1-n}$','Interpreter','latex')
 
 %% 
 % It appears as if the norm of the mean embedding is a function of the
-% standaerd deviation. However, the reason for this false relationship is
+% standard deviation. However, the reason for this false relationship is
 % that we have generated the orientations out of a single family of random
 % variables - <RadialODFs.html#2 unimodal de la Vallee Poussin distributed
 % density functions>. A broader family of density function are the
@@ -211,7 +211,7 @@ scatter(sigma,sqrt(1-n),'linewidth',2)
 hold off
 
 %%
-% We observe that there is no one-to-one relatioenship between the discrete
+% We observe that there is no one-to-one relationship between the discrete
 % standard deviation. 
 %
 %% Operations
@@ -224,7 +224,7 @@ hold off
 % * <embedding.dot.html |dot|>
 % * <embedding.rotate.html |rotate|>, <embedding.rotate_outer.html |rotate_outer|>
 %
-%% Rerference
+%% Reference
 %
 % The theory behind these embeddings is explained in the paper
 %
@@ -234,3 +234,5 @@ hold off
 % Rotation Group Modulo Finite Symmetries_,
 % <https://arxiv.org/abs/2007.09664 arXiv:2007.09664>, 2020.
 %
+
+%#ok<*SAGROW>

@@ -22,7 +22,8 @@ ebsd = EBSD.load(fileName)
 % This command outputs ebsd data stored in a single variable, called
 % |ebsd|. This variable contains all relevant information, i.e., the
 % spatial coordinates, the orientation information, a description of the
-% crystal symmetries and all other parameters contained in the input data file.
+% crystal symmetries and all other parameters contained in the input data
+% file.
 %
 %
 %% Phase Plots

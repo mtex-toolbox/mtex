@@ -20,7 +20,7 @@ ebsd = EBSD;
 fid = fopen(fname);
 h1 = fgetl(fid);
 fclose(fid);
-if isempty(strfind(h1,'ACOM RES results'));
+if isempty(strfind(h1,'ACOM RES results'))
   error('MTEX:wrongInterface','Interface "ACOM" does not fit file format!');
 elseif check_option(varargin,'check')
   return

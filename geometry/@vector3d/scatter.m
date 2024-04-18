@@ -89,7 +89,7 @@ for i = 1:numel(sP)
   % ------- color-coding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
+    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end}); %#ok<AGROW>
     %sP(i).updateBounds(0.1);
   
   elseif check_option(varargin,'arrow')
@@ -101,7 +101,7 @@ for i = 1:numel(sP)
         'Width','Page','Ends','type','color'},...
         {'double','double','double',...
         'double','double','char','char','double'});
-      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:});
+      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:}); %#ok<AGROW>
       set(h(i),'Parent', sP(i).ax);
     end
 
@@ -182,11 +182,11 @@ for i = 1:numel(sP)
         end
                 
         for j = 1:length(mh)
-          mh(j).FaceColorData(4,:) = faceAlpha;
-          mh(j).FaceColorType = 'truecoloralpha';
+          mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
+          mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
           
-          mh(j).EdgeColorData(4,:) = edgeAlpha;
-          mh(j).EdgeColorType = 'truecoloralpha';
+          mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
+          mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
         end
          
       end
@@ -262,7 +262,7 @@ end
 
 
 % ---------------------------------------------------------------
-function localResizeScatterCallback(h,e,hax)
+function localResizeScatterCallback(~,~,hax)
 % get(fig,'position')
 
 hax = handle(hax);

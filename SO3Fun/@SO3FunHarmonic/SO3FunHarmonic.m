@@ -10,16 +10,19 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 % Input
 %  fhat  - double (harmonic coefficient vector)
 %  CS,SS - @Symmetry 
-%  F     - @SO3Fun
+%  F     - @SO3Fun 
 %
 % Output
 %  SO3F - @SO3FunHarmonic
 %
+% Options
+%  bandwidth - bandwidth of the harmonic expansion
+%
 % Example
 %
-%   SO3F = SO3FunHarmonic(rand(deg2dim(6),1))
+%   F = SO3FunHandle(@(rot) rot.angle)
 %
-%   F = SO3FunRBF.example
+%   % convert into harmonic representation
 %   SO3F = SO3FunHarmonic(F)
 %
 
@@ -65,18 +68,19 @@ methods
       
     % set fhat
     SO3F.fhat = fhat;
+    clear fhat;
     
     % extract symmetries
     [CS,SS] = extractSym(varargin);
     SO3F.SRight = CS; SO3F.SLeft = SS;
     
-    if norm(fhat(:))==0
+    if norm(SO3F.fhat(:))==0
       SO3F.bandwidth=0;
       return
     end
     
     % extend entries to full harmonic degree
-    s1 = size(fhat,1);
+    s1 = size(SO3F.fhat,1);
     if s1>=2
       SO3F.fhat(s1+1:deg2dim(dim2deg(s1-1)+2),:)=0;
     end
@@ -85,12 +89,14 @@ methods
       SO3F.bandwidth = get_option(varargin,'bandwidth');
     end
 
-    SO3F = SO3F.symmetrise;
-
-    SO3F.antipodal = check_option(varargin,'antipodal');
+    if check_option(varargin,'antipodal')
+      SO3F.antipodal = 1;
+    elseif ~check_option(varargin,'skipSymmetrise')
+      SO3F = SO3F.symmetrise;
+    end
     
     % truncate zeros
-    A = reshape(SO3F.power,size(SO3F.power,1),prod(size(SO3F)));
+    A = reshape(SO3F.power,size(SO3F.power,1),numel(SO3F));
     SO3F.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
 
   end
@@ -112,7 +118,7 @@ methods
       F.fhat(oldLength+1:newLength,:)=0;
     else % delete zeros
       F.fhat = F.fhat(1:newLength,:);
-      F=reshape(F,s);
+      F = reshape(F,s);
     end
   end
   
@@ -144,7 +150,7 @@ methods
     end
     dd = sum(abs(F.fhat-F.fhat(ind,:)).^2);
     nF = norm(F)';
-    out = prod(sqrt(dd(nF>0)) ./ nF(nF>0) <1e-4);
+    out = all( sqrt(dd(nF>0)) ./ nF(nF>0) < 1e-4 );
   end
   
   function F = set.antipodal(F,value)
@@ -184,8 +190,13 @@ methods
   function s = size(SO3F,varargin)
     s = size(SO3F.fhat);
     s = s(2:end);
-    if length(s) == 1, s = [s 1]; end
+    if isscalar(s), s = [s 1]; end
     if nargin > 1, s = s(varargin{1}); end
+  end
+
+  function n = numel(SO3F)
+    s = size(SO3F.fhat);
+    n = prod(s(2:end));
   end
   
 end

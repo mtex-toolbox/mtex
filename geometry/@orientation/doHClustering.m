@@ -74,7 +74,7 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   % apply clustering to grid
   [~,center] = doHClustering(S3G,varargin{:},'weights',weights,'exact');
 
-  % performe one step 
+  % perform one step 
   d = angle_outer(ori,center);
   [~,c] = min(d,[],2);
   
@@ -85,7 +85,7 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   end
   center = subsasgn(center,isnan(center),[]);
   
-  % performe one step 
+  % perform one step 
   d = angle_outer(ori,center);
   [~,c] = min(d,[],2);
   

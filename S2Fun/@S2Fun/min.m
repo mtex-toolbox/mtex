@@ -70,7 +70,7 @@ else % detect local or global minima
     end
   else
 
-    assert(length(sF)==1,'Search for local and global extrema ist only implmented for scalar functions.')
+    assert(isscalar(sF),'Search for local and global extrema ist only implmented for scalar functions.')
 
     antipodalFlag = {'','antipodal'};
 

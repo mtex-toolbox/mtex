@@ -32,16 +32,16 @@ if m1.CS.Laue  ~= m2.CS.Laue, warning('Symmetry mismatch'); end
 % equivalent directions
 if check_option(varargin,'all')
 
-  if length(m1) == 1
+  if isscalar(m1)
     m1 = repmat(m1,size(m2));
   else
     m2 = repmat(m2,size(m1));
   end
 
-elseif (length(m1)==1 || length(m2) == 1) % use dot_outer whenever possible
+elseif (isscalar(m1) || isscalar(m2)) % use dot_outer whenever possible
   d = dot_outer(m1,m2,varargin{:});
   
-  if length(m1) == 1
+  if isscalar(m1)
     d = reshape(d,[size(m2),size(d,3)]);
   else
     d = reshape(d,[size(m1),size(d,3)]);

@@ -1,4 +1,25 @@
 function odf = doEulerStep(spin,odf,numIter)
+% numericaly solve the continuity equation with a given spin tensor
+%
+% Syntax
+%
+%   odf_n = doEulerStep(spin,odf_0,numIter)
+%
+%   ori_n = doEulerStep(spin,ori_0,numIter)
+%
+% Input
+%  spin    - @SO3VectorField, orientation dependent spin tensor
+%  odf_0   - @SO3Fun, initial ODF
+%  ori_0   - @orientation, initial list of orientations
+%  numIter - number of iterations
+%
+% Output
+%  odf_n   - @SO3Fun, ODF after numIter iteration steps
+%  ori_n   - @orientation, orientations after numIter iteration steps
+%
+% See also
+% SingleSlipModel, Taylormodel, SO3Fun/div, strainTensor/calcTaylor
+%
 
 if nargin == 2, numIter = 1; end
 

@@ -1,7 +1,7 @@
 %% Taylor Model
 %
 %
-%% basic settings
+%% Basic Settings
 % display pole figure plots with RD on top and ND west
 plotx2north
 
@@ -14,16 +14,25 @@ pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
 
 setMTEXpref('pfAnnotations',pfAnnotations);
 
-%% Set up
-% consider cubic crystal symmetry
+%% Slip in Body Centered Cubic Materials
+%
+% In the following we consider crystallographic slip in bcc materials
+
+% define the slip systems in bcc
 cs = crystalSymmetry('432');
+sS = slipSystem.bcc(cs)
 
-% define a family of slip systems
-sS = slipSystem.bcc(cs);
+%%
+% under plane strain
 
-% some plane strain
 q = 0;
 epsilon = strainTensor(diag([1 -q -(1-q)]))
+
+%% The orientation dependence of the Taylor factor
+% For a family of slip systems |sS| the Taylor factor |M| describes the
+% total amount of slip activity that is required to deform a crystal in
+% orientation |ori| according to strain |epsilon|. In MTEX this can be
+% computed by the command <strainTensor.calcTaylor.html |calcTaylor|>.
 
 % define a crystal orientation
 ori = orientation.byEuler(0,30*degree,15*degree,cs)
@@ -31,53 +40,52 @@ ori = orientation.byEuler(0,30*degree,15*degree,cs)
 % compute the Taylor factor
 [M,b,W] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
 
-%% The orientation dependence of the Taylor factor
-% For a fixed strain tensor |epsilon| and slip systems |sS| the Taylor
-% factor
-% 
+M
+W
 
+%%
+% When called without specifying an orientation the command |calcTaylor|
+% computes the Taylor factor |M| as well as the spin tensors |W| as
+% <SO3FunConcept.html orientation dependent functions>, which can be easily
+% visualized and analyzed.
 
+[M,~,W] = calcTaylor(epsilon,sS.symmetrise)
 
+%%
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
 % Some applications of the Taylor theory of polycrystal plasticity.
 % Kristall Und Technik, 5(1), 145-175.
 % http://doi.org/10.1002/crat.19700050112
 
-% Lets precompute the Taylor factor as |@SO3Fun| and the spin tensor as
-% |@SO3VectorField|. Hence we can evaluate them very fast for several times
-% in mush more orientations.
-% compute Taylor factor for all orientations
-[M,~,W] = calcTaylor(epsilon,sS.symmetrise)
-
 % set up an phi1 section plot
 sP = phi1Sections(cs,specimenSymmetry('222'));
 sP.phi1 = (0:10:90)*degree;
 
-% plot the taylor factor
+% plot the Taylor factor
 plot(M,'smooth',sP)
 mtexColorbar
 
 hold on 
-plot(W,'linecolor','black')
+plot(W,'color','black')
 hold off
 
 %% The orientation dependence of the spin
-% Compare Fig. 8 of the above paper
+% The norm of the spin tensor is exactly the angle of misorientation a
+% crystal with the corresponding orientation experiences according to
+% Taylor theory. Compare Fig. 8 of the above paper
 
-sP.plot(norm(W)/degree,'smooth')
+plot(norm(W)/degree,'smooth',sP,'resolution',0.5*degree)
 mtexColorbar
 
 %%
 % Display the crystallographic spin in sigma sections
 
 sP = sigmaSections(cs,specimenSymmetry);
-oriGrid = sP.makeGrid('resolution',2.5*degree);
-W = spin.eval(oriGrid(:));
-sP.plot(spinTensor(W.').angle./degree,'smooth')
+plot(norm(W)./degree,'smooth',sP)
 mtexColorbar
 
-%% Most active slip direction
-% Next we consider a real world data set.
+%% Identification of the most active slip directions
+% Next we consider a real world data set
 
 mtexdata csl
 
@@ -89,7 +97,7 @@ grains = smooth(grains,5);
 grains(grains.grainSize <= 2) = []
 
 %%
-% Next we apply the Taylor model to each grain of our data set
+% and apply the Taylor model to each grain of our data set
 
 % some strain
 q = 0;
@@ -111,7 +119,7 @@ mtexColorbar
 % index of the most active slip system - largest b
 [~,bMaxId] = max(b,[],2);
 
-% rotate the moste active slip system in specimen coordinates
+% rotate the most active slip system in specimen coordinates
 sSGrains = grains.meanOrientation .* sS(bMaxId);
 
 % visualize slip direction and slip plane for each grain
@@ -173,26 +181,4 @@ mtexColorbar
 
 setMTEXpref('pfAnnotations',storepfA);
 
-%% Inverse Taylor
-%
-% Use with care!
-
-oS = axisAngleSections(cs,cs,'antipodal');
-oS.angles = 10*degree;
-
-ori = oS.makeGrid;
-
-[M,b,eps] = calcInvTaylor(ori,sS.symmetrise);
-
-%%
-
-plot(oS,M,'contourf')
-
-
-%%
-
-odf0 = uniformODF(cs);
-odf = doEulerStep(spin*0.1,odf0,20);
-plotPDF(odf,Miller({0,0,1},{1,1,1},cs),'contourf')
-
-
+%#ok<*ASGLU>

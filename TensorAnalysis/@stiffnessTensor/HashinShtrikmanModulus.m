@@ -21,7 +21,7 @@ function [khs, ghs, def] = HashinShtrikmanModulus(C,Ko,Go)
 %
 
 % ensure K0 and G0 have same size
-if numel(Go) == 1, Go = repmat(Go,size(Ko)); end
+if isscalar(Go), Go = repmat(Go,size(Ko)); end
 
 % the isotropic compliances elements (eq. 10-11 Watt Peselnick 1980)
 alpha = -3 ./ (3*Ko + 4*Go);

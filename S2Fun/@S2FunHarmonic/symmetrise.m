@@ -20,6 +20,11 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %  sFs - symmetrised @S2FunHarmonic
 %  psi - @S2Kernel
 
+if isa(sF,'S2FunHarmonicSym') && (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
+  sFs = sF.symmetrise(sF.s);
+  return
+end
+
 % symmetrise with respect to an axis
 if isa(varargin{1},'vector3d')
 
@@ -65,7 +70,7 @@ end
 
 % maybe there is nothing to do
 if sF.bandwidth == 0 || numSym(symX) == 1
-  sFs = S2FunHarmonicSym(sF.fhat, sym);
+  sFs = S2FunHarmonicSym(sF.fhat, sym,'skipSymmetrise');
   return;
 end
 
@@ -77,6 +82,6 @@ fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
 sF = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
 
 % set up S2FunHarmonicSym
-sFs = S2FunHarmonicSym(sF.fhat,sym);
+sFs = S2FunHarmonicSym(sF.fhat,sym,'skipSymmetrise');
 
 end

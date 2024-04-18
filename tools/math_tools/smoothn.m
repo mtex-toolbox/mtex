@@ -336,7 +336,7 @@ if ~ismember('Order',OptionNames)
     m = 2; % order
 else
     m = OPTIONS.Order;
-    if ~ismember(m,0:2);
+    if ~ismember(m,0:2)
         error('MATLAB:smoothn:IncorrectOrder',...
             'The order (OPTIONS.order) must be 0, 1 or 2.')
     end    
@@ -518,7 +518,7 @@ if nargout<3 && ~exitflag
         'Increase MaxIter option (OPTIONS.MaxIter) or decrease TolZ (OPTIONS.TolZ) value.'])
 end
 
-if numel(z)==1, z = z{:}; end
+if isscalar(z), z = z{:}; end
 
 
 %% GCV score

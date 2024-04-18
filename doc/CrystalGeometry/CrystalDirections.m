@@ -7,15 +7,16 @@
 %
 % Since lattice directions are always subject to a certain crystal
 % reference frame, the starting point for any crystal direction is the
-% definition of a variable of type @crystalSymmetry.
+% definition of a variable of type <crystalSymmetry.crystalSymmetry.html
+% |crystalSymmetry|>.
 
 cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
   'X||a*','Z||c','mineral','Talc');
 
 %%
-% The variable |cs| containes the geometry of the crystal reference frame
-% and, in particular, the alignment of the crystallographic a,b, and, c
-% axis.
+% The variable |cs| contains the geometry of the crystal reference frame
+% and, in particular, the alignment of the crystallographic $\vec a$, $\vec
+% b$, and, $\vec c$ axis.
 
 a = cs.aAxis
 b = cs.bAxis
@@ -26,8 +27,8 @@ c = cs.cAxis
 % \vec c$ is a vector with coordinates $u$, $v$, $w$ with respect to these
 % crystallographic axes. Such a direction is commonly denoted by $[uvw]$
 % with coordinates $u$, $v$, $w$ called Miller indices. In MTEX a lattice
-% direction is represented by a variable of type @Miller which is defined
-% by
+% direction is represented by a variable of type <Miller.Miller.html
+% |Miller|> which is defined by
 
 m = Miller(1,0,1,cs,'uvw')
 

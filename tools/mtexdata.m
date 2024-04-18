@@ -100,6 +100,11 @@ catch
         case 'ptx'
           CS = crystalSymmetry('mmm');
           out = PoleFigure.load(fName,CS);
+        case 'steel'
+          CS = crystalSymmetry('m-3m');
+          h = Miller({1 1 0},{2 0 0},{2 1 1},CS);
+          out = PoleFigure.load(fName,h,'interface','rw1');
+          out = rotate(out,90*degree);
       end
       
     case 'EBSD'

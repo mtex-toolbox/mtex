@@ -65,11 +65,11 @@ if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   end
                 
   for j = 1:length(mh)
-    mh(j).FaceColorData(4,:) = faceAlpha;
-    mh(j).FaceColorType = 'truecoloralpha';
+    mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
+    mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
     
-    mh(j).EdgeColorData(4,:) = edgeAlpha;
-    mh(j).EdgeColorType = 'truecoloralpha';
+    mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
+    mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
   end
   
 end

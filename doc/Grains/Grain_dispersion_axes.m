@@ -1,4 +1,4 @@
-%% Using fibres to evaluate grain dispersion axes
+%% Using fibers to evaluate grain dispersion axes
 
 %%
 % We will prepare some data to evaluate grain dispersion axes.
@@ -16,7 +16,7 @@ ebsd(grains(grains.isInclusion))=[];
 
 %%
 % We colorize axes of the misorientation to the grain mean orientation
-% in speciemn coordinates  
+% in specimen coordinates  
 
 ck = axisAngleColorKey(ebsd('f').CS);
 ck.oriRef=grains('id',ebsd('f').grainId).meanOrientation;
@@ -70,7 +70,7 @@ annotate(disp_ax_grid)
 annotate(disp_ax_grid,'plane','linestyle','--','linewidth',2)
 
 % While we might have guessed the result by eye, it is not too satisfying since 
-% the direction of the estiamted dispersion axis will always be located 
+% the direction of the estimated dispersion axis will always be located 
 % on a grid point
 %%
 % If we assume, the orientations are dispersed along one single axis, we
@@ -97,10 +97,10 @@ annotate(fib.r,'plane','linestyle','-.','linewidth',2,'lineColor','r')
 % it is fitted by the fibre
 fd = angle(fib,o)/degree;
 plot(o,fd)
-xlim([0 30]); ylim([60 90]); zlim([60 90])
+xlim([0 30]); ylim([20 70]); zlim([80 120])
 grid minor
 hold on
-plot(fib)
+plot(fib,'linewidth',2)
 hold off
 
 nextAxis
@@ -117,7 +117,7 @@ mtexColorbar('title', 'distance from fibre')
 
 %% Bulk evaluation
 % We can fit a fibre for each grain and write out the axes in crystal as 
-% well as in specimen coordiantes
+% well as in specimen coordinates
 
 %ids = grains('f').id;
 %clear fib_axSC fib_axCC

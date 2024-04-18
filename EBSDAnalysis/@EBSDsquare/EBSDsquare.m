@@ -99,7 +99,7 @@ classdef EBSDsquare < EBSD
       ori = ebsd.orientations;
       
       ori_right = ori(:,[2:end end-1]);
-      gX = log(ori_right,ori,'left') ./ ebsd.dx;
+      gX = log(ori_right,ori, SO3TangentSpace.leftVector) ./ ebsd.dx;
       gX(:,end) = - gX(:,end);
       
       % ignore grain boundaries if possible
@@ -117,7 +117,7 @@ classdef EBSDsquare < EBSD
       ori = ebsd.orientations;
           
       ori_up = ori([2:end end-1],:);
-      gY = log(ori_up,ori,'left') ./ ebsd.dy;
+      gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
       gY(end,:) = - gY(end,:);
       
       % ignore grain boundaries if possible
@@ -147,10 +147,9 @@ classdef EBSDsquare < EBSD
     % ori2 = orientation.rand(cs)
     %
     % the following output should be constant
-    % gO = log(ori1,ori2.symmetrise,'left') % true for this
-    % gO = log(ori1.symmetrise,ori2,'left') % true for this
-    
-    
+    % gO = log(ori1,ori2.symmetrise,SO3TangentSpace.leftVector) % true for this
+    % gO = log(ori1.symmetrise,ori2,SO3TangentSpace.leftVector) % true for this
+       
   end
       
 end

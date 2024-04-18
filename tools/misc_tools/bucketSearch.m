@@ -29,7 +29,7 @@ if nargout == 0 && nargin > 1 && size(V,2) <= 3 && size(V,1) < 100000
   
   if size(V,1) < 1000 && size(V,2) == 2
     
-    [vvx vvy]= voronoi(V(:,1),V(:,2));
+    [vvx, vvy]= voronoi(V(:,1),V(:,2));
     
     hold on
     plot(vvx,vvy,'linewidth',2,'color','k')

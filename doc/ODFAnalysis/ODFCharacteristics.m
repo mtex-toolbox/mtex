@@ -26,7 +26,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 
 %% Modal Orientations
-% The modal orientation of an ODF is the crystallographic prefered
+% The modal orientation of an ODF is the crystallographic preferred
 % orientation |ori_pref| of the texture. It is characterized as the maximum
 % of the ODF. In MTEX it is returned as the second output argument of the
 % command <SO3Fun.max.html |max|>
@@ -34,7 +34,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 [~,ori_pref] = max(odf3)
 
 %%
-% Lets mark this prefered orientation in the pole figures
+% Lets mark this preferred orientation in the pole figures
 
 plotPDF(odf3,pf.allH,'antipodal','superposition',pf.c);
 annotate(ori_pref,'marker','s','MarkerFaceColor','black')
@@ -85,7 +85,9 @@ V1 = volume(odf3, ori_pref, 30*degree) * 100
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
-% from the prefered fibre in percent:
+% from the preferred fibre in percent:
 
 V2 = volume(odf2,f001_x,20*degree) * 100
 
+%#ok<*NASGU>
+%#ok<*NOPTS>

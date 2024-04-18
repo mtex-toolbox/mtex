@@ -35,7 +35,7 @@ end
 
 % superposed pole figures
 sp = get_option(varargin,'superposition',1);
-assert(length(sp)== 1 || length(sp) == length(h),...
+assert(isscalar(sp) || length(sp) == length(h),...
   'Number of superposition coefficients must coinside with the number of pole figures');
 
 % compute pole density functions and average over superposition

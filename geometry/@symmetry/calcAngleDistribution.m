@@ -132,7 +132,7 @@ switch cs.LaueName
     xh2 = c;
     xh3 = sqrt(3)*a;
     xh4 = sqrt(a);
-    xh5 = sqrt(5)*a;
+    % xh5 = sqrt(5)*a;
         
     alpha1 = acos(xh1./rmag);
     alpha2 = acos(xh2./rmag);
@@ -176,7 +176,7 @@ switch cs.LaueName
     xh4 = sqrt(xh1^2+xh2^2);
     xh5 = sqrt(xh1^2+xh2^2 + xh1^2*xh2^2);
     xh6 = sqrt(a);
-    xh7 = sqrt(a+xh1^2+a*xh1^2);
+    % xh7 = sqrt(a+xh1^2+a*xh1^2);
         
     alpha1 = acos(xh1./rmag);
     alpha2 = acos(xh2./rmag);

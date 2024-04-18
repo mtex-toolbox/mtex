@@ -1,5 +1,5 @@
 function export_h5(ebsd,fname,varargin)
-% export EBSD data to a ascii file
+% export EBSD data to a ASCII file
 %
 % Input
 %  ebsd - @EBSD
@@ -116,11 +116,7 @@ for k=1:numel(fn)
   else
     if ~any(mod(p,1) ~= 0) % its an int
       
-      if min(p) >= 0
-        dtype = num2str(2^(sum(max(p) > 2.^(2.^(3:6))-1)+3),'uint%d');
-      else
-        dtype = num2str(2^(sum(max(p) > 2.^(2.^(3:6))-1)+3),'uint%d');
-      end
+      dtype = num2str(2^(sum(max(p) > 2.^(2.^(3:6))-1)+3),'uint%d');
       
     else
       dtype = 'single';

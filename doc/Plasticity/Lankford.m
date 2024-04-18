@@ -82,15 +82,14 @@
 CS = crystalSymmetry('m-3m', [1 1 1], 'mineral', 'fcc');
 
 % define the fcc slip system
-b = Miller(1,-1,0,CS,'uvw'); % slip direction
-n = Miller(1,1,-1,CS,'hkl'); % slip plane normal
-sS = slipSystem(b,n);
+sS = slipSystem.fcc(CS)
 
 % use MTEX's pre-defined (1 1 0)[1 -1 2] Brass orientation
 ori = orientation.brass(CS);
 
 % compute the Lankford parameter
-[R, M, minM] = calcLankford(ori,sS,'verbose');
+rho = linspace(0,1,11);
+[R, M, minM] = calcLankford(ori,sS,'verbose','rho',rho);
 
 %%
 % The summary results show that for the Brass orientation, it is not always
@@ -106,13 +105,32 @@ ori = orientation.brass(CS);
 % ideal Brass orientation. In the rolling direction test, x = [1 -1 2], and
 % in the transverse test x = [-1 1 1].
 
-plot(linspace(0,1,11), M(:,[1,10,19]).','s-','lineWidth',1.5);
+
+plot(rho, M(:,[1,10,19]).','-s','lineWidth',2);
+xlabel('{\rho} = -d{\epsilon}_Y / d{\epsilon}_X');
+ylabel('Relative strength, M = {\sigma}_x / {\tau}');
+legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','northeast');
+
+%% Example 2: The Lankford parameters from an ODF
+%
+% In the previous chapter we have assumed a perfectly Brass oriented
+% texture. Lets next assume a slight deviation around the preferred
+% orientation of about 10 degree modeled by the ODF
+
+odf = unimodalODF(ori,'halfwidth',10*degree)
+
+%%
+% Performing, the Lankford factor analysis on the ODF results in  
+
+[R, M, minM] = calcLankford(odf,sS,'silent','rho',rho);
+
+plot(rho, M(:,[1,10,19]).','-s','lineWidth',2);
 xlabel('{\rho} = -d{\epsilon}_Y / d{\epsilon}_X');
 ylabel('Relative strength, M = {\sigma}_x / {\tau}');
 legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','northeast');
 
 
-%% Example 2: The Lankford parameter (or R-value) of an ebsd map
+%% Example 3: The Lankford parameter of an EBSD map
 % In this demonstration an hcp titanium dataset is used
 
 % load an mtex ebsd map
@@ -157,12 +175,6 @@ theta = linspace(0,90*degree,19);
 [R, M, minM] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.grainSize,'verbose');
 
 %%
-
-odf = calcODF(grains.meanOrientation,'weights',grains.grainSize,'verbose');
-
-[R, M, minM] = calcLankford(odf,sS,theta);
-
-%%
 % The following plot shows the Lankford parameter, as a function
 % of the angle $\theta$ between the tensile direction and the notional 
 % rolling direction (in this case - x).
@@ -204,7 +216,4 @@ Rbar = 0.5 * (R(1) + R(19) + 2*R(10))
 
 deltaR = 0.5 * (R(1) + R(19) - 2*R(10))
 
-
-
-
-
+%#ok<*ASGLU>

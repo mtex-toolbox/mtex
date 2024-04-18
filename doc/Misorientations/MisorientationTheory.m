@@ -3,19 +3,14 @@
 %%
 % Misorientation describe the relative orientation of two crystal with
 % respect to each other. Those crystal may be of the same phase or of
-% different phases. Misorientation are used to describe 
-
-
-
-
-%% Grain Exchange Symmetry
-
-
-
-
-%%
+% different phases. Misorientation are used to describe orientation
+% relationships at grain boundaries, orientation relationships during phase
+% transformations or twinning and orientation gradients within grains.
+%
+%% Misorientations within the same phase
+%
 % Misorientation describes the relative orientation of two grains with
-% respect to each other. Important concepts are twinnings and
+% respect to each other. Important concepts are twinning and
 % CSL (coincidence site lattice) misorientations. To illustrate this
 % concept at a practical example let us first import some Magnesium EBSD
 % data.
@@ -71,7 +66,7 @@ angle(ori1, ori2.symmetrise,'noSymmetry')./ degree
 % before.
 
 %% Misorientations
-% Remember that both orientations ori1 and ori2 map crystal coordinates
+% Remember that both orientations |ori1| and |ori2| map crystal coordinates
 % onto specimen coordinates. Hence, the product of an inverse orientation
 % with another orientation transfers crystal coordinates from one crystal
 % reference frame into crystal coordinates with respect to another crystal
@@ -82,23 +77,23 @@ mori = inv(ori1) * ori2
 %%
 % In the present case the misorientation describes the coordinate transform
 % from the reference frame of grain 85 into the reference frame of crystal
-% 74. Take as an example the plane {11-20} with respect to the grain 85.
-% Then the plane in grain 74 which alignes parallel to this plane can be
-% computed by
+% 74. Take as an example the plane $\{11\bar{2}0\}$ with respect to the
+% grain 85. Then the plane in grain 74 which aligns parallel to this plane
+% can be computed by
 
 round(mori * Miller(1,1,-2,0,CS))
 
 
 %%
-% Conversely, the inverse of mori is the coordinate transform from crystal
-% 74 to grain 85.
+% Conversely, the inverse of |mori| is the coordinate transform from
+% crystal 74 to grain 85.
 
 round(inv(mori) * Miller(2,-1,-1,0,CS))
 
 
 %% Coincident lattice planes
 % The coincidence between major lattice planes may suggest that the
-% misorientation is a twinning misorientation. Lets analyse whether there
+% misorientation is a twinning misorientation. Lets analyze whether there
 % are some more alignments between major lattice planes.
 
 %m = Miller({1,-1,0,0},{1,1,-2,0},{1,-1,0,1},{0,0,0,1},CS);
@@ -123,9 +118,10 @@ annotate(mm,'labeled','MarkerSize',5,'figSize','large','textAboveMarker')
 legend({},'location','SouthEast','FontSize',13);
 
 %%
-% we observe an almost perfect match for the lattice planes {11-20} to
-% {-2110} and {1-101} to {-1101} and good coincidences for the lattice
-% plane {1-100} to {0001} and {0001} to {0-661}. Lets compute the angles
+% we observe an almost perfect match for the lattice planes
+% $\{11\bar{2}0\}$ to $\{\bar{2}110\}$ and $\{1\bar{1}01\}$ to
+% $\{\bar1101\}$ and good coincidences for the lattice plane $\{1\bar100\}$
+% to $\{0001\}$ and $\{0001\}$ to $\{0\bar661\}$. Lets compute the angles
 % explicitly
 
 angle(mori * Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS)) / degree
@@ -135,12 +131,12 @@ angle(mori * Miller(1,1,-2,2,CS),Miller(1,0,-1,0,CS)) / degree
 angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 
 %% Twinning misorientations
-% Lets define a misorientation that makes a perfect fit between the {11-20}
-% lattice planes and between the {10-11} lattice planes
+% Lets define a misorientation that makes a perfect fit between the
+% $\{11\bar20\}$ lattice planes and between the $\{10\bar11\}$ lattice
+% planes
 
 mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
   Miller(-1,0,1,1,CS),Miller(-1,1,0,1,CS))
-
 
 % the rotational axis
 round(mori.axis)
@@ -189,7 +185,7 @@ plot(gB(isTwinning),'edgecolor','w','linewidth',2)
 hold off
 
 %%
-% From this picture we see that large fraction of grain boudaries are
+% From this picture we see that large fraction of grain boundaries are
 % twinning boundaries. To make this observation more evident we may plot
 % the boundary misorientation angle distribution function. This is simply
 % the angle distribution of all boundary misorientations and can be
@@ -205,7 +201,8 @@ plotAngleDistribution(gB.misorientation)
 plotAxisDistribution(gB.misorientation,'contour')
 
 %%
-% which emphasises a strong portion of rotations about the (-12-10) axis.
+% which emphasizes a strong portion of rotations about the $(\bar12\bar10)$
+% axis.
 
 %% Phase transitions
 % Misorientations may not only be defined between crystal frames of the
@@ -216,8 +213,9 @@ CS_Hem = loadCIF('Hematite')
 
 %%
 % The phase transition from Magnetite to Hematite is described in
-% literature by {111}_m parallel {0001}_h and {-101}_m parallel {10-10}_h
-% The corresponding misorientation is defined in MTEX by
+% literature by $\{111\}_m$ parallel $\{0001\}_h$ and \{\bar101}_m$
+% parallel $\{10\bar10\}_h$. The corresponding misorientation is defined in
+% MTEX by
 
 Mag2Hem = orientation.map(...
   Miller(1,1,1,CS_Mag),Miller(0,0,0,1,CS_Hem),...

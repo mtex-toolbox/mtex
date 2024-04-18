@@ -1,12 +1,19 @@
-function S1F = mtimes(a,b,varargin)
+function sF = mtimes(sF1, sF2)
+%
+% Syntax
+%   sF = sF1 * sF2
+%   sF = a * sF1
+%   sF = sF1 * [1;1]
+%
 
-if isa(a,'S1FunHarmonic')
-
-  S1F = a;
-  S1F.fhat = S1F.fhat * b;
-
-elseif isa(b,'S1FunHarmonic')
-
+if isnumeric(sF1)
+  sF = sF2;
+  sF.fhat = sF1 * sF.fhat;
+elseif isnumeric(sF2)
+   sF = (sF2.' * sF1.').';
+  return
 else
+  error('not implemented yet; use .* or conv() instead');
+end
 
 end

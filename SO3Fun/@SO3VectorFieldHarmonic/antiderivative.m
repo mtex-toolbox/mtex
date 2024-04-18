@@ -47,7 +47,7 @@ for n=1:SO3VF.bandwidth
   l = (-n:n-1);
   dd = (-1).^(l<0) .* sqrt((n+l+1).*(n-l))/2;
 
-  if strcmp(SO3VF.tangentSpace,'right')
+  if SO3VF.internTangentSpace.isRight
     dd = dd.';
     FHAT = reshape(Z,2*n+1,2*n+1) * 1i ./(-n:n).';
     if n==1

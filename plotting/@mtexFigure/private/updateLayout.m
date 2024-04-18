@@ -39,7 +39,7 @@ for i = 1:length(mtexFig.children)
   end
 end
 
-if length(mtexFig.cBarAxis)==1 && i>1
+if isscalar(mtexFig.cBarAxis) && i>1
   pos = get(mtexFig.cBarAxis,'position');
   
   if pos(4)>pos(3) %Vertical bar

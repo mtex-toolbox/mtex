@@ -39,7 +39,7 @@ for i = -1:1
   for j = -1:1
     
     dist = sqrt(sum((d_ori((1:end-2)+1+i,(1:end-2)+1+j,:) - mean_ori).^2,3));
-    ind =  dist < 1.1*std;
+    %ind =  dist < 1.1*std;
     %weight = (dist < 1.1*std) ./ (dist.^2+0.0001);
     weight = 1 ./ (dist.^2+0.0001);
     

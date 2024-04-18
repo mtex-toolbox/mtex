@@ -2,7 +2,7 @@
  
  oR = varargin{1};
  
- for n = 2:numel(varargin);
+ for n = 2:numel(varargin)
    oR.N = [oR.N(:);varargin{n}.N(:)];
  end
  

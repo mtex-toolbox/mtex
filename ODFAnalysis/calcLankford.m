@@ -45,7 +45,7 @@ function [R, M, minM]  = calcLankford(ori,sS,varargin)
 
 sS = sS.ensureSymmetrised;
 
-% get tensial axis and theta
+% get tensile axis and theta
 theta = linspace(0,90*degree,19);
 RD = xvector; % default RD
 ND = zvector; % default ND
@@ -56,8 +56,8 @@ if nargin >=5 && isa(varargin{3},'vector3d'), ND = varargin{2}; end
 % strain tensor in the specimen reference frame (sRF)
 % it is not axi-symmetric since rho values are changing
 % rho = 0 -> only normal direction
-% rho = 1 -> only tranverse direction
-rho = linspace(0,1,11); % 0-100 % uniaxial tension 
+% rho = 1 -> only transverse direction
+rho = get_option(varargin,'rho',linspace(0,1,11));
 TD = cross(RD,ND);
 eps =  strainTensor(RD * RD) - rho .* strainTensor(TD*TD) ...
   -(1 - rho) .* strainTensor(ND*ND);

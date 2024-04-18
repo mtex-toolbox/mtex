@@ -1,37 +1,39 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
-% convolution of an SO3FunHarmonic with a function or a kernel on SO(3)
+% convolution of a rotational function with a rotational or spherical function
+%
+% 1. *Convolution of two rotational functions*
+%
+% If there are two |SO3Fun| $f \colon {}_{S_f^L } \backslash SO(3)
+% /_{S_f^R} \to \mathbb{C}$ where $S_f^L$ is the left symmetry and $S_f^R$ is
+% the right symmetry and $g: {}_{S_g^L} \backslash SO(3) /_{S_g^R} \to \mathbb
+% C$ given. Then the convolution $f {*}_L g \colon {}_{S_f^L} \backslash SO(3) /_{S_g^R} \to \mathbb C$
+% is defined by
+%
+% $$ (f {*}_L g)(R) = \frac{1}{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
+%
+% and the convolution $f {*}_R g \colon {}_{S_g^L}\backslash SO(3) /_{S_f^R} \to \mathbb{C}$
+% is defined by
+%
+% $$ (f {*}_R g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(R\,q^{-1}) \, dq $$
+%
+% with $vol(SO(3)) = \int_{SO(3)} 1 \, dR = 8\pi^2$. The convolution $*_L$
+% is used as default. The convolution of matrices of SO3Functions with
+% matrices of SO3Functions works elementwise.
 % 
-% 1) SO3Fun * SO3Fun
-% There are two SO3Funs $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
-% where $S_f^L$ is the Left symmetry and $S_f^R$ is the Right symmetry and
-% $g: _{S_g^L\backslash}SO(3)_{/S_g^R} \to \mathbb{C}$ given.
-% Then the convolution $ f *_L g : _{S_f^L\backslash}SO(3)_{/S_g^R} \to
-% \mathbb{C}$ is defined by
+% 2. *Convolution of a rotational function with a spherical function*
 %
-% $$ (f *_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
+% The convolution of an |SO3Fun|  $f: {}_{S_f^L} \backslash SO(3) /_{S_f^R}
+% \to \mathbb{C}$ with an |S2Fun| $h \colon \mathbb S^2 /_{S_h} \to \mathbb C$
+% yields the |S2Fun| $f*h \colon \mathbb S^2/_{S_f^L} \to \mathbb C$ with
 %
-% and the convolution $ f *_R g : _{S_g^L\backslash}SO(3)_{/S_f^R} \to
-% \mathbb{C}$ is defined by
+% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$
 %
-% $$ (f *_R g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(R\,q^{-1}) \, dq $$.
-%
-% with $vol(SO(3)) = \int_{SO(3)} 1 \, dR = 8\pi^2$.
-% The convolution $*_L$ is used as default.
-% The convolution of matrices of SO3Functions with matrices of SO3Functions
-% works elementwise.
+% 3. *Convolution of a rotational function with a kernel function*
 % 
-% 2) SO3Fun * S2Fun
-% The convolution of an SO3Fun  $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
-% with an S2Fun $h: \mathbb S^2_{/S_h} \to \mathbb{C}$ yields 
-% $f*h:\mathbb S^2_{/S_f^L} \to \mathbb{C}$ with
-%
-% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$.
-%
-% 3) In particular we convolute an SO3Fun with an SO3Kernel similar to the
-% first case. Therefore the Right and Left sided convolution are
-% equivalent. The convolution of an SO3Fun with an S2Kernel works analogue 
-% to case 2. 
-%
+% In particular we convolute an |SO3Fun| with an |SO3Kernel| similar to
+% the first case. Therefore the Right and Left sided convolution are
+% equivalent. The convolution of an |SO3Fun| with an |S2Kernel| works
+% analogue to case 2.%
 % 
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
