@@ -50,7 +50,6 @@ classdef EBSD3 < EBSD
     function ebsd = EBSD3(varargin)
       
       ebsd = ebsd@EBSD(varargin{:});
-            
       ebsd.N = vector3d.nan;
 
     end

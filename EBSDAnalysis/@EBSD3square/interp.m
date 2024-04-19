@@ -7,11 +7,11 @@ function ebsdNew = interp(ebsd, newPos, varargin)
 %   ebsdNew = interp(ebsd,newPos,'method','invDist')
 %
 % Input
-%  ebsd - @EBSD3
+%  ebsd - @EBSD3square
 %  newPos - new x,y coordinates (vector3d)
 %
 % Output
-%  ebsdNew - @EBSD with coordinates (xNew,yNew)
+%  ebsdNew - @EBSD3square with coordinates (xNew,yNew)
 %
 % Options
 %  method - 'invDist', 'nearest'
@@ -58,7 +58,7 @@ for fn = fieldnames(ebsd.prop).'
 end
 
 rot = reshape(rot,size(newPos));
-ebsdNew = EBSD3(newPos,rot,phaseId,ebsd.CSList,prop,'unitCell', ebsd.unitCell);
+ebsdNew = EBSD3square(newPos,rot,phaseId,ebsd.CSList,prop,[ebsd.dx,ebsd.dy,ebsd.dz],'unitCell',ebsd.unitCell);
 ebsdNew.phaseMap = ebsd.phaseMap;
 ebsdNew.phaseId = phaseId(:);
 ebsdNew.CSList = ebsd.CSList;
