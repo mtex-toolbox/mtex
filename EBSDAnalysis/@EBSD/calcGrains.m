@@ -62,6 +62,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
+% (1) 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi tessellation or unit cell
 if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
@@ -75,6 +76,7 @@ end
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
 
+% (2)
 % determine which cells to connect
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
@@ -94,14 +96,57 @@ phaseId = full(max(I_DG' * ...
   spdiags(ebsd.phaseId,0,length(ebsd),length(ebsd)),[],2));
 phaseId(phaseId==0) = 1; % why this is needed?
 
+% (3)
 % compute boundary this gives
 % I_FDext - faces x cells external grain boundaries
 % I_FDint - faces x cells internal grain boundaries
-[I_FDext, I_FDint, Fext, Fint] = calcBoundary;
+% [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
+
+% TODO:
+% should return
+[isExt, isInt] = calcBoundary(A_Db, I_DG, I_FD);
+
+isIntOrExt = isInt | isExt;
+
+% reduce F
+F = F(isIntOrExt,:);
+I_FD = I_FD(isIntOrExt,:);
+isInt = isInt(isIntOrExt);
+isExt = isExt(isIntOrExt);
+
+% reduce V
+[inUse,~,F] = unique(F(:));
+V = V(inUse,:);
+F = reshape(F,[],2);
+
+%(4)
+% detect and sort segments
+% sP  - list of segment points
+% s   - starting point of segements in sP
+% sfF - indices to F of the new face order
+[s, sP, sf, sfF, sfD] = TriplepointSegments(F,V);
+
+
+
+% * call c fun
+% * reorder F
+% * split F into Fext and Fint
+% * reorder and reduce I_FD and then split into I_FDext and I_FD_int
+
+F = F(sfF,:);
+F(sfD == 0,[1,2]) = F(sfD == 0,[2,1]);% flip direction
+I_FD = I_FD(sfF,:);
+
+Fext = F(isExt,:); % external boundary segments
+Fint = F(isInt,:); % internal boundary segments
+I_FDext = I_FD(isExt,:);
+I_FDint = I_FD(isInt,:);
+
 
 if check_option(varargin,'removeQuadruplePoints')
   qAdded = removeQuadruplePoints; 
 end
+
 
 % setup grains
 try
@@ -258,48 +303,6 @@ end
 
   end
 
-  function [I_FDext, I_FDint, Fext, Fint] = calcBoundary
-    % distinguish between interior and exterior grain boundaries
-    
-    % cells that have a subgrain boundary, i.e. a boundary with a cell
-    % belonging to the same grain
-    sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
-    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
-    sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
-    
-    % split grain boundaries A_Db into interior and exterior
-    A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
-    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundary
-    
-    % create incidence graphs
-    I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
-    D_Fbg  = diag(any(I_FDbg,2));
-    
-    [ix,iy] = find(A_Db_ext);
-    D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-    
-    I_FDext = (D_Fext| D_Fbg)*I_FD;
-    
-    [ix,iy] = find(A_Db_int);
-    D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-    I_FDint = D_Fsub*I_FD;
-    
-    % remove empty lines from I_FD, F, and V
-    isExt = full(any(I_FDext,2));
-    I_FDext = I_FDext.'; I_FDext = I_FDext(:,isExt).';
-
-    isInt = full(any(I_FDint,2));
-    I_FDint = I_FDint.'; I_FDint = I_FDint(:,isInt).';
-      
-    % remove vertices that are not needed anymore
-    [inUse,~,F] = unique(F(isExt | isInt,:));
-    V = V(inUse,:);
-    F = reshape(F,[],2);
-    Fext = F(isExt(isExt | isInt),:); % external boundary segments
-    Fint = F(isInt(isExt | isInt),:); % internal boundary segments
-
-  end
-
   function gB = makeBoundary(F,I_FD)
 
     % compute ebsdInd
@@ -448,6 +451,48 @@ end
 
 
 end
+
+function [isExt, isInt] = calcBoundary(A_Db, I_DG, I_FD)
+    % distinguish between interior and exterior grain boundaries
+    
+    % cells that have a subgrain boundary, i.e. a boundary with a cell
+    % belonging to the same grain
+    sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
+    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
+    sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
+    
+    % split grain boundaries A_Db into interior and exterior
+    A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
+    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundary
+    
+    % create incidence graphs
+    I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
+    D_Fbg  = diag(any(I_FDbg,2));
+    
+    [ix,iy] = find(A_Db_ext);
+    D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+    
+    I_FDext = (D_Fext| D_Fbg)*I_FD;
+    
+    [ix,iy] = find(A_Db_int);
+    D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+    I_FDint = D_Fsub*I_FD;
+    
+    % remove empty lines from I_FD, F, and V
+    isExt = full(any(I_FDext,2));
+    %I_FDext = I_FDext.'; I_FDext = I_FDext(:,isExt).';
+
+    isInt = full(any(I_FDint,2));
+    %I_FDint = I_FDint.'; I_FDint = I_FDint(:,isInt).';
+      
+    % remove vertices that are not needed anymore
+    %[inUse,~,F] = unique(F(isExt | isInt,:));
+    %V = V(inUse,:);
+    %F = reshape(F,[],2);
+    %Fext = F(isExt(isExt | isInt),:); % external boundary segments
+    %Fint = F(isInt(isExt | isInt),:); % internal boundary segments
+
+  end
 
 function poly = calcPolygons(I_FG,F,V)
 %
