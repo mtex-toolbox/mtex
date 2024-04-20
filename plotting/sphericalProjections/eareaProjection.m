@@ -88,7 +88,7 @@ classdef eareaProjection < sphericalProjection
           v = vector3d.byPolar(theta,rho);
         end
 
-        v = v.setOption('plot',true,'resolution',res,'region',sR);
+        v = v.setOption('plot',true,'resolution',res,'region',sP(iP).sR);
         % the above procdure does not work so well if we have a full sphere
         % and the theta region is not connected
         % thatswhy we have to check once again
