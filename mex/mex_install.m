@@ -34,7 +34,8 @@ for p = 1:length(places)
 
       if isempty(mexFileD) || check_option(varargin,'force') || ...
           mexFileD.datenum < files(f).datenum
-        disp(['... compiling ',files(f).name]);
+        disp([' * <a href="matlab:edit ' cFile '">' ...
+          files(f).name '</a> is compiling']);
 
         compFile = fullfile(files(f).folder,'compile.m');
         try
@@ -48,7 +49,8 @@ for p = 1:length(places)
           if ~contains(lasterr,'is not a MEX file.'), disp(lasterr); end %#ok<LERR>
         end
       else
-        disp(['... skipping ',files(f).name]);
+        disp([' * <a href="matlab:edit ' cFile '">' ...
+          files(f).name '</a> is up to data']);
       end
     end
   end
