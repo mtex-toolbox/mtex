@@ -173,7 +173,7 @@ hold off
 % output argument |fit|, which is the mean misorientation angle of the
 % orientations to the fitted fibre.
 
-lambda
+lambda 
 
 fit./degree
 
@@ -305,4 +305,5 @@ hold off
 
 %[T_spherical T_prolate T_oblate]
 
-%#ok<*NASGU>
+%#ok<*NASGU> 
+%#ok<*NOPTS>
