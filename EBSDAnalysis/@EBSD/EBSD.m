@@ -96,10 +96,8 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
-        if nargin > 4 && isstruct(prop)
-          for fn = fieldnames(pos.prop)'
-            ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
-          end
+        for fn = fieldnames(pos.prop)'
+          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
         end
         ebsd.opt = pos.opt;
 
