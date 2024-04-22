@@ -27,11 +27,6 @@ function v = volume(SO3F,center,radius,varargin)
 % SO3FunHarmonic/volume SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
 
 
-if SO3F.antipodal
-  warning(['The antipodal property is not considered up to now by the volume' ...
-    ' computation of an SO3Fun.'])
-end
-
 if isa(center,'fibre')
   v = fibreVolume(SO3F,center.h,center.r,radius,varargin{:});  
   return
@@ -39,6 +34,30 @@ end
   
 % get resolution
 res = get_option(varargin,'resolution',min(1.25*degree,radius/30),'double');
+
+% equispacedSO3Grid has not the option 'antipodal'. So we construct bigger
+% grid and restrict to antipodal grid
+if SO3F.antipodal
+  % discretization
+  S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res);
+  S3G = project2FundamentalRegion(S3G);
+  % cut to antipodal region
+  oR = fundamentalRegion(SO3F);
+  S3G = S3G(checkInside(oR,S3G));
+  points = length(S3G);
+  % cut to ball
+  center = orientation(center,cs,cs,'antipodal');
+  ind = min(angle(S3G,center.symmetrise.'),[],2) < radius;
+  S3G = S3G(ind);
+  S3G.antipodal = 1;
+
+  % volume portion
+  f = length(S3G)/points;
+
+  % eval odf
+  v = mean(eval(SO3F,S3G)) * f;
+  return
+end
 
 % discretisation
 if nargin > 3 && isa(varargin{1},'orientation')
@@ -49,6 +68,7 @@ else
     'maxAngle',radius,'center',center,'resolution',res,varargin{:});
 end
 
+% volume portion
 % full grid size without symmetries:
 ntheta = fix(round(2*pi/res+1)/2);
 theta =  (0.5:ntheta-0.5)*res;
