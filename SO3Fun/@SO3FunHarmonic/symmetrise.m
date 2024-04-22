@@ -13,7 +13,7 @@ function [SO3F,psi] = symmetrise(SO3F,varargin)
 % Input
 %  SO3F - @SO3FunHarmonic
 %  cs,ss - @crystalSymmetry, @specimenSymmetry
-%  ori - @orientation
+%  ori - @orientation (center)
 %
 %
 % Output
