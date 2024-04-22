@@ -5,7 +5,6 @@ function mex_install(mtexpath,varargin)
 %         --> Home/AddOns/Get Add-Ons ...
 %
 
-
 if nargin == 0, mtexpath = mtex_path;end
 
 places = {'geometry/@S1Grid/private/S1Grid_',...
@@ -21,19 +20,40 @@ places = {'geometry/@S1Grid/private/S1Grid_',...
   
 % TODO: Check for mex-Compiler
 
+mexPath = [mtexpath filesep 'mex'];
+
 % compile all the files
 for p = 1:length(places)
   files = dir([fullfile(mtexpath,places{p}),'*.c*']);
   for f = 1:length(files)
     if ~files(f).isdir
-      fName = fullfile(files(f).folder,files(f).name);
-      disp(['... compiling ',files(f).name]);
-      try
-        mex('-R2018a','-outdir',[mtexpath filesep 'mex'],fName);
-      catch %#ok<CTCH>
-        if ~strfind(lasterr,'is not a MEX file.'), disp(lasterr); end
-        %disp(['Compiling ' fName ' failed!']);
-      end      
+      cFile = fullfile(files(f).folder,files(f).name);
+
+      [~,fName,~] = fileparts(files(f).name);
+      mexFile = fullfile(mexPath,[fName '.' mexext]);
+      mexFileD = dir(mexFile);
+
+      if isempty(mexFileD) || check_option(varargin,'force') || ...
+          mexFileD.datenum < files(f).datenum
+        disp([' * <a href="matlab:edit ' cFile '">' ...
+          files(f).name '</a> is compiling']);
+
+        compFile = fullfile(files(f).folder,'compile.m');
+        try
+          if exist(compFile,"file")
+            run(compFile)
+            movefile(fullfile(files(f).folder,[fName '.' mexext]),mexFile,'f')
+          else
+            mex('-R2018a','-outdir',mexPath,cFile);
+          end
+        catch
+          if ~contains(lasterr,'is not a MEX file.'), disp(lasterr); end %#ok<LERR>
+        end
+      else
+        disp([' * <a href="matlab:edit ' cFile '">' ...
+          files(f).name '</a> is up to data']);
+      end
     end
   end
+end
 end

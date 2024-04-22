@@ -35,7 +35,7 @@ for ig = 1:size(I_FG,2) % for all grains
       cEnd = c(g(ig)+ic)-1;
 
       % first cycle should have positive area - all other cycles negative area
-      if xor(area(g(ig)-1+ic) < 0, I(ic)==1)
+      if xor(area(g(ig)-1+ic) < 0, I(1)==ic)
         ind = cStart:cEnd;
       else
         ind = cEnd:-1:cStart;
