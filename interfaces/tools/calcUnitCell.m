@@ -17,6 +17,8 @@ if isempty(xy)
   return;
 end
 
+if size(xy,2) == 3, xy = xy(:,1:2); end
+
 % first estimate of the grid resolution
 area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
 dxy = sqrt(area / length(xy));
