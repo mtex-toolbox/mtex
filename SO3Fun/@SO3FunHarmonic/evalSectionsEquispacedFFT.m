@@ -55,7 +55,7 @@ SO3F.bandwidth = N;
 flags = 2^0+2^2+2^4;
 sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
   min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
-ghat = representationbased_coefficient_transform(N,SO3F.fhat,flags,sym);
+ghat = wignerTrafo(N,SO3F.fhat,flags,sym);
 ghat = symmetriseFourierCoefficients(ghat,flags,SO3F.SRight,SO3F.SLeft,sym);
 ghat = permute(ghat,[3,2,1]);
 % correct ghat by i^(-k+l)

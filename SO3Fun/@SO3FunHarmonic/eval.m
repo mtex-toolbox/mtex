@@ -4,7 +4,7 @@ function f = eval(SO3F,rot,varargin)
 % Description
 % Evaluates the orientation dependent function $f$ on a given set of points using a
 % representation based coefficient transform, that transforms 
-% a series of Wigner-D functions into a trivariate fourier series and using
+% a series of Wigner-D functions into a trivariate Fourier series and using
 % NFFT at the end.
 %
 % Syntax
@@ -122,18 +122,18 @@ for k = 1:length(SO3F)
     %   j = -N+1:N      -> use ghat(k,-j,l) = (-1)^(k+l)*ghat(k,j,l)    (*)
     %   l =    0:N+ind  -> use ghat(-k,-j,-l) = conj(ghat(k,j,l))      (**)
     % we need to make the size (2N+2)^3 as the index set of the NFFT is -(N+1) ... N 
-    % Therfore we use ind in 2nd dimension to get even number of fourier coefficients
+    % Therefore we use ind in 2nd dimension to get even number of fourier coefficients
     % The additional indices produce 0-columns in front of ghat
     % flags: 2^0 -> use L_2-normalized Wigner-D functions
     %        2^1 -> make size of result even
-    %        2^2 -> fhat are the fourier coefficients of a real valued function
+    %        2^2 -> fhat are the Fourier coefficients of a real valued function
     %        2^4 -> use right and left symmetry
     flags = 2^0+2^1+2^2+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+    ghat = wignerTrafo(N,SO3F.fhat(:,k),flags,sym);
     ghat = symmetriseFourierCoefficients(ghat,flags,SO3F.SRight,SO3F.SLeft,sym);
-%     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^0+2^1+2^2);
+    %     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^0+2^1+2^2);
 
   else
 
@@ -146,7 +146,7 @@ for k = 1:length(SO3F)
     flags = 2^0+2^1+2^4;
     sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
          min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
-    ghat = representationbased_coefficient_transform(N,SO3F.fhat(:,k),flags,sym);
+    ghat = wignerTrafo(N,SO3F.fhat(:,k),flags,sym);
     ghat = symmetriseFourierCoefficients(ghat,flags,SO3F.SRight,SO3F.SLeft,sym);
 %     ghat = representationbased_coefficient_transform_old(N,SO3F.fhat(:,k),2^1+2^2);
 
@@ -155,7 +155,7 @@ for k = 1:length(SO3F)
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,ghat(:));
 
-  % fast fourier transform
+  % fast Fourier transform
   nfftmex('trafo',plan);
 
   % get function values from plan

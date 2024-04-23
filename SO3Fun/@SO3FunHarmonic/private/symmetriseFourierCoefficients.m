@@ -1,7 +1,7 @@
 function ghat = symmetriseFourierCoefficients(ghat,input_flags,CS,SS,sym,varargin)
 % Use function properties (realvalued, CS, SS) to construct 
 % symmetric Fourier coefficients after using the method 
-% representationbased_coefficient_transform with flag 2^4 (use symmetries)
+% wignerTrafo with flag 2^4 (use symmetries)
 
 
 % Compute bandwidth
@@ -10,7 +10,7 @@ N = floor((size(ghat,1)-1)/2);
 % extract flags:
 %        1 -> use L_2-normalized Wigner-D functions
 %        2 -> make size of result even
-%        3 -> fhat are the fourier coefficients of a real valued function
+%        3 -> fhat are the Fourier coefficients of a real valued function
 %        5 -> use right and left symmetry
 flags=zeros(1,5);
 while input_flags>0

@@ -157,9 +157,9 @@ elseif check_option(varargin,'directComputation')
   ghat = zeros(2*N+1,2*N+1,2*N+1);
   for m = 1:length(rot)
     ghat = ghat + values(m)*exp(1i * ( ...
-                                    (-N:N)*nodes(2,m) ...
-                                    + (-N:N)'*nodes(3,m) ...
-                                    + permute(-N:N,[1,3,2])*nodes(1,m)) );
+      (-N:N)*nodes(2,m) ...
+      + (-N:N)'*nodes(3,m) ...
+      + permute(-N:N,[1,3,2])*nodes(1,m)) );
   end
 
 else
@@ -194,7 +194,7 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
   sym([1,3]) = 1;
 end
 % use adjoint representation based coefficient transform
-fhat = adjoint_representationbased_coefficient_transform(N,ghat,flags,sym);
+fhat = wignerTrafoAdjoint(N,ghat,flags,sym);
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
 
 % kill plan
