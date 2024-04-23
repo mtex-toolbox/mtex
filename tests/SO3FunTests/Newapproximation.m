@@ -177,7 +177,7 @@ end
 S = G.' * G;
 
 fhat = rand(deg2dim(N+1),1);
-a=representationbased_coefficient_transform(N,fhat,2^0);
+a=wignerTrafo(N,fhat,2^0);
 
 
 b=G*fhat;
@@ -226,7 +226,7 @@ end
 
 
 
-a = representationbased_coefficient_transform(N,fhat,2^0);
+a = wignerTrafo(N,fhat,2^0);
 
 
 fhat2 = fhat;
