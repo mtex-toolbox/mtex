@@ -1,5 +1,5 @@
 function ebsd = fill(ebsd,varargin)
-% fill EBSD data by nearest neighbour
+% fill EBSD data by nearest neighbor
 %
 % Syntax
 %   ebsd_filled = fill(ebsd)

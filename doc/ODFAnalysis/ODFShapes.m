@@ -22,7 +22,6 @@ psi{6} = SO3GaussWeierstrassKernel(0.07);
 psi{7} = fibreVonMisesFisherKernel(7.2);
 psi{8} = SO3SquareSingularityKernel(0.72);
 
-
 %% 
 % Lets visualize these kernel functions as one dimensional sections through
 % the orientation space

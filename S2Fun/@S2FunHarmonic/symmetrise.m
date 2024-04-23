@@ -6,10 +6,9 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %   % symmetrise with respect to a crystal or specimen symmetry
 %   sFs = symmetrise(sF,cs)
 %   sFs = symmetrise(sF,ss)
-%   [sFs,psi] = symmetrise(sF,d)
 %
 %   % symmetrise with respect to an axis
-%   sFs = symmetrise(sF,d)
+%   [sFs,psi] = symmetrise(sF,d)
 %
 % Input
 %  sF    - @S2FunHarmonic
@@ -29,6 +28,11 @@ end
 if isa(varargin{1},'vector3d')
 
   center = vector3d(varargin{1});
+
+  if isa(sF,'S2FunHarmonicSym') && center ~= zvector
+    sF = S2FunHarmonic(sF);
+  end
+
   % start with a zero function
   sFs = sF; sFs.fhat = 0;
   
@@ -45,7 +49,6 @@ if isa(varargin{1},'vector3d')
   %psi = S2Kernel(real(sF.fhat((0:M).^2+(1:M+1))));
   m = 0:M;
   psi = S2Kernel(sqrt((2*m.'+1)).*real(sF.fhat((0:M).^2+(1:M+1)))./sqrt(4*pi));
-  
   
   % rotate sF back
   if center ~= zvector

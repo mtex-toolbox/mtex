@@ -1,8 +1,8 @@
 %% Triple points
 %
 %%
-% Triple points are automaticaly computed during grain reconstruction. They
-% are accessable similarly to <GrainBoundaries.html grain boundaries> as
+% Triple points are automatically computed during grain reconstruction. They
+% are accessible similarly to <GrainBoundaries.html grain boundaries> as
 % the property <triplePointList.triplePointList.html triplePoints> of the
 % grain list. When analyzing triple points it is a good idea to use the
 % option <QuadruplePoints.html |removeQuadruplePoints|> in
@@ -44,7 +44,7 @@ tP('Forsterite')
 tP('Forsterite','Forsterite')
 
 %%
-% Finaly, we may mark all inner Diopside triple points
+% Finally, we may mark all inner Diopside triple points
 
 hold on
 plot(tP('Diopside','Diopside','Diopside'),'displayName','Di-Di-Di','color','darkred','linewidth',2)
@@ -52,7 +52,7 @@ hold off
 
 %% Index triple points by grains
 %
-% Since, triple points are asociated to grains we may single out triple
+% Since, triple points are associated to grains we may single out triple
 % points that belong to a specific grain or some subset of grains.
 
 % find the index of the largest grain
@@ -110,7 +110,7 @@ plot(gB,'lineColor','w','linewidth',2)
 hold off
 
 %%
-% Once we have extracted the boundary segments adjecent to a triple point
+% Once we have extracted the boundary segments adjacent to a triple point
 % we may also extract the corresponding misorientations. The following
 % command gives a n x 3 list of misorientations where n is the number of
 % triple points
