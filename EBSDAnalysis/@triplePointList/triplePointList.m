@@ -95,7 +95,7 @@ classdef triplePointList < phaseList & dynProp
       d = tP.allV(iV) - tP.V;
 
       omega = angle(d(:,1),d(:,2:3));
-      omega(:,3) = 2*pi - nansum(omega,2);
+      omega(:,3) = 2*pi - sum(omega,2);
       
     end
     
