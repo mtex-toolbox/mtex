@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "binghamNormalizationConstant.h"
+#include "binghamNormalizationConstant.cpp"
 
 /*
  * Igor Gilitschenski, Gerhard Kurz, Simon J. Julier, Uwe D. Hanebeck,

@@ -53,7 +53,7 @@ methods
     psi.C = 1/(besseli(0,psi.kappa)-besseli(1,psi.kappa));
       
     % compute Legendre coefficients
-    psi.A = ones(L+1,1);
+    psi.A = ones(1,L+1);
     b = besseli(0:L+1,psi.kappa);
     psi.A(2:end) = diff(b(2:end)) ./ (b(2)-b(1));
     
