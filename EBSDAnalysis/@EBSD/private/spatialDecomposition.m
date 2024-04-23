@@ -243,7 +243,7 @@ for k=1:size(boundingX,1)-1
 end
 
 dxy = max(norm(unitCell(1)-unitCell));
-delta = dxy/1e2;
+delta = dxy/1e1;
 dummyCoordinates = unique(round(dummyCoordinates/delta)*delta,'first','rows');
 
 % remove those points which are inside the b
