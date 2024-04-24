@@ -19,7 +19,7 @@ if isempty(javachk('desktop'))
     ' (<a href="matlab:MTEXdoc">show documentation</a>)'])
   disp('  <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
   disp('  <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
-  disp('  <a href="matlab:import_wizard(''ODF'')">Import ODF data</a>')
+  disp('  <a href="matlab:check_mex">Check Installation</a>')
   disp(' ');
   
   if isappdata(0,'MTEXInstalled') && getappdata(0,'MTEXInstalled')
