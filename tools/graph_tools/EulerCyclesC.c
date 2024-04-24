@@ -95,9 +95,7 @@ void mexFunction(int nOutputs, mxArray *outputs[], int nInputs, const mxArray *i
 
 
 void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V_M, mxArray **outGrains, mxArray **outCycles, mxArray **outCyclePoints) {
-    printf("val...i\n");
     validateInputs(I_FG,F,V_M);
-    printf("val...i done\n");
 
     WorkingData w;
 
@@ -106,10 +104,8 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V_M, 
 
     w.F_M = mxGetM(F);// number of faces
     w.F_doubles = mxGetDoubles(F);
-    printf("jo\n");
     
     w.V_M = mxGetDoubles(V_M)[0];// number of vertices
-    printf("ju\n");
 
     // read sparse I_FG_N matrix:
     int I_FG_N = mxGetN(I_FG);// number of columns I_FG
