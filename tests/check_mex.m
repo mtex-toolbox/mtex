@@ -1,10 +1,13 @@
 function check_mex
 
 mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
-  "wignerTrafo" "wignerTrafoAdjoint" "nfftmex" "fptmex" ...
-  "nfsftmex" "nfsoftmex" "numericalSaddlepointWithDerivatives" ...
+  "wignerTrafo" "wignerTrafoAdjoint"  "numericalSaddlepointWithDerivatives" ...
   "S1Grid_find" "S1Grid_find_region" "S2Grid_find" "S2Grid_find_region" ...
-  "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region"];
+  "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...
+  "nfftmex" "fptmex" "nfsftmex" "nfsoftmex"
+  ];
+
+hasC = logical([1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 ]);
 
 res = false(size(mexFiles));
 
@@ -35,7 +38,16 @@ for k = 1:length(mexFiles)
   end
 end
 
-disp(newline + "checking complete" + newline)
+disp(newline + "check complete" + newline)
+
+if ~all(res(hasC))
+  disp("Not all mex files are running. You might want to call" + newline + ...
+    "  <a href=""matlab: mex_install"">mex_install</a>" + newline + ...
+    "to compile the mex files yourself.");
+  if ismac
+    disp("On a Mac this requires to instal XCode first!" + newline)
+  end
+end
 
 end
 
