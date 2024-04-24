@@ -1,6 +1,6 @@
 // Fabian Bär
 
-/** [grains, cycles, cyclePoints] = EulerCyclesC(I_FG,F,V)
+/** [grains, cycles, cyclePoints] = EulerCyclesC(I_FG,F,V_M)
  * calculates Euler cycles for each grain.
  *
  * grains: Each entry represents one grain, except for the last one. 
@@ -94,8 +94,8 @@ void mexFunction(int nOutputs, mxArray *outputs[], int nInputs, const mxArray *i
 }
 
 
-void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V, mxArray **outGrains, mxArray **outCycles, mxArray **outCyclePoints) {
-    validateInputs(I_FG,F,V);
+void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V_M, mxArray **outGrains, mxArray **outCycles, mxArray **outCyclePoints) {
+    validateInputs(I_FG,F,V_M);
 
     WorkingData w;
 
@@ -105,7 +105,7 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V, mx
     w.F_M = mxGetM(F);// number of faces
     w.F_doubles = mxGetDoubles(F);
     
-    w.V_M = mxGetM(V);// number of vertices
+    w.V_M = mxGetDoubles(V_M)[0];// number of vertices
 
     // read sparse I_FG_N matrix:
     int I_FG_N = mxGetN(I_FG);// number of columns I_FG
@@ -216,10 +216,10 @@ void buildNeighborList(WorkingData* w) {
 
         // validate face
         if (vStart < 0 || vStart >= w->V_M) {
-            error("F_V_out_of_bounds", "face contains node index out of bounds: vStart=%d is not between 1,%d", vStart+1, w->F_M);
+            error("F_V_out_of_bounds", "face contains node index out of bounds: vStart=%d is not between 1,%d", vStart+1, w->V_M);
         }
         if (vEnd < 0 || vEnd >= w->V_M) {
-            error("F_V_out_of_bounds", "face contains node index out of bounds: vEnd=%d is not between 1,%d", vEnd+1, w->F_M);
+            error("F_V_out_of_bounds", "face contains node index out of bounds: vEnd=%d is not between 1,%d", vEnd+1, w->V_M);
         }
 
         // prevent buffer overflow
@@ -366,7 +366,7 @@ void initIntStack(IntStack *intStack, int maxSize) {
     intStack->index = 0;
 }
 
-void validateInputs(const mxArray *I_FG, const mxArray *F, const mxArray *V) {
+void validateInputs(const mxArray *I_FG, const mxArray *F, const mxArray *V_M) {
     // check input
     if (!mxIsSparse(I_FG)) {
         error("I_FG_notSparse","I_FG is not sparse");
@@ -374,6 +374,10 @@ void validateInputs(const mxArray *I_FG, const mxArray *F, const mxArray *V) {
 
     if (mxGetM(I_FG) != mxGetM(F)) {
         error("I_FG_m","number of rows of I_FG (=%d) does not match number of rows F (=%d)",mxGetM(I_FG),mxGetM(F));
+    }
+
+    if (!mxIsNumeric(V_M) || mxGetM(V_M) != 1 || mxGetN(V_M) != 1) {
+        error("V_M","V_M ist not a scalar");
     }
 }
 
