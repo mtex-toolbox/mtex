@@ -6,11 +6,15 @@ mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
   "S1Grid_find" "S1Grid_find_region" "S2Grid_find" "S2Grid_find_region" ...
   "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region"];
 
+res = false(size(mexFiles));
+
 
 disp(newline + "I'm checking whether all mex files in " + newline + ...
   "  " + fullfile(mtex_path,"mex") + newline + "are present and running." + newline)
+  
+for k = 1:length(mexFiles)
 
-for mexFile = mexFiles
+  mexFile = mexFiles(k);
   
   fprintf(" checking: " + mexFile + "." + mexext);
 
@@ -21,11 +25,9 @@ for mexFile = mexFiles
   else
 
     try
-      out = feval("check_" + mexFile);
-    catch
-      out = false;
+      res(k) = feval("check_" + mexFile);
     end
-    if out
+    if res(k)
       fprintf(" <strong>ok</strong>" + newline);
     else
       fprintf(" <strong>failed</strong>" + newline);
@@ -41,8 +43,8 @@ function out = check_insidepoly_dblengine
 
 poly = [0.2 0.2; 0.7 0; 0.8 0.6; 0 1];
 
-x = rand(10);
-y = rand(10);
+x = rand(10,1);
+y = rand(10,1);
 
 out = all(insidepoly(x,y,poly(:,1),poly(:,2)) == ...
   inpolygon(x,y,poly(:,1),poly(:,2)));
