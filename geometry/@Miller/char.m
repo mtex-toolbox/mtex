@@ -1,5 +1,5 @@
 function c = char(m,varargin)
-% Miller indece to string
+% Miller indices to string
 %
 % Flags
 %  no_scopes - 
