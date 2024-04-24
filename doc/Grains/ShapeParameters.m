@@ -197,3 +197,5 @@ fractalDimension = ab(1)
 %%
 % It is important to understand that the fractal dimension computed this
 % way heavily depends on the smoothing applied to the grain boundaries.
+%
+%#ok<*NOPTS>

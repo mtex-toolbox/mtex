@@ -27,8 +27,9 @@ function [c,a,b] = fitEllipse(grains,varargin)
 % hold on
 % plot(grains.boundary,'lineWidth',2)
 % [c,a,b] = fitEllipse(grains(grains.grainSize>20));
-% plotEllipse(c,a,b,omega,'lineColor','w','linewidth',2)
+% plotEllipse(c,a,b,'lineColor','w','lineWidth',2)
 % hold off
+%
 
 c = grains.centroid;
 [a,b] = principalComponents(grains,varargin{:});

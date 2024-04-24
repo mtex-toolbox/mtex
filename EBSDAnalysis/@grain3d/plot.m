@@ -78,11 +78,16 @@ if iscell(F)
 
 else  % speedup for triangulated meshes
 
-  [C,~,ic] = unique(faceColor,'rows');
-  h = zeros(size(C,1),1);
-  for i = 1:size(C,1)
-    ind = (ic == i);
-    h(i) = patch('Faces', F(ind,:), 'Vertices', V.xyz, 'FaceColor', C(i,:), varargin{:});
+  if size(faceColor,2) == 1     % color by value
+    h = patch('Faces', F(:,:), 'Vertices', V.xyz, 'FaceVertexCData', faceColor, 'FaceColor','flat', varargin{:});
+    colorbar
+  else                        	% color by rgb triplet
+    [C,~,ic] = unique(faceColor,'rows');
+    h = zeros(size(C,1),1);
+    for i = 1:size(C,1)
+      ind = (ic == i);
+      h(i) = patch('Faces', F(ind,:), 'Vertices', V.xyz, 'FaceColor', C(i,:), varargin{:});
+    end
   end
 end
 

@@ -25,3 +25,5 @@ help/tmp/*
 resources/*
 *.c
 *.c
+*.asv
+myScripts

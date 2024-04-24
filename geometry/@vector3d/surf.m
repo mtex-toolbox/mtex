@@ -20,7 +20,7 @@ sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 for j = 1:numel(sP)
 
   % project data
-  [x,y] = project(sP(j).proj,v,'noAntipodal');
+  [x,y] = sP(j).proj.project(v,'noAntipodal');
     
   % extract non nan data
   ind = ~isnan(x);

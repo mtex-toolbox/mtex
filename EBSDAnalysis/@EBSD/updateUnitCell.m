@@ -3,7 +3,7 @@ function ebsd = updateUnitCell(ebsd,uc)
 % data set have been modified
 
 if nargin == 1 || isempty(uc)
-  uc = calcUnitCell([ebsd.pos.x(:),ebsd.pos.y(:)]); 
+  uc = calcUnitCell(ebsd.pos.xyz); 
 end
 
 if ~isa(uc,'vector3d'), uc = vector3d(uc(:,1),uc(:,2),0); end

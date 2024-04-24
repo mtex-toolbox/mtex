@@ -5,7 +5,7 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 %  xy       - midpoints of the cells
 %  unitCell - spatial coordinates of the unit cell
 %
-% Ouput
+% Output
 %  v     - list of vertices
 %  faces - list of faces
 
@@ -13,8 +13,8 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 V = reshape(pos(:) + unitCell(:).',[],1);
 
 % remove equal points
-% in general every measurment point generates 4 or 6 vertex points
-% some of them apear multiple times 
+% in general every measurement point generates 4 or 6 vertex points
+% some of them appear multiple times 
 % lets try to reduce them
 [~,m,n] = unique(V-V(1),'tolerance',0.01/sqrt(length(pos)));
 

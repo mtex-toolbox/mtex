@@ -24,6 +24,8 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 % See also
 % equispacedS2Grid, SO3Grid/SO3Grid
 
+% TODO: There is no option antipodal
+
 % extract specimen symmetry if provided
 if nargin == 1
   SS = specimenSymmetry('1');
@@ -40,7 +42,8 @@ persistent tmp
 if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
     isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution) && ...
     isappr(maxAngle,tmp.maxAngle) && ...
-    ~check_option(varargin,'points')
+    ~check_option(varargin,'points') && ...
+    tmp.S3G.antipodal == check_option(varargin,'antipodal')
   S3G = tmp.S3G;
   return
 end

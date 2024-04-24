@@ -5,7 +5,7 @@ function d = diameter(grains)
 poly = grains.poly;
 d = zeros(size(grains));
 
-if length(grains) == 1 % compute in 3d
+if isscalar(grains) % compute in 3d
 
   % get the coordinates
   V = grains.V.xyz;
