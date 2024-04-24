@@ -1,11 +1,10 @@
-function mex_install(mtexpath,varargin)
+function mex_install(varargin)
 % compiles all mex files for use with MTEX
 %
 % You need a mex Compiler for example MinGW64 for Windows 
 %         --> Home/AddOns/Get Add-Ons ...
 %
 
-if nargin == 0, mtexpath = mtex_path;end
 
 places = {'geometry/@S1Grid/private/S1Grid_',...
   'geometry/@S2Grid/private/S2Grid_',...
@@ -20,11 +19,11 @@ places = {'geometry/@S1Grid/private/S1Grid_',...
   
 % TODO: Check for mex-Compiler
 
-mexPath = [mtexpath filesep 'mex'];
+mexPath = [mtex_path filesep 'mex'];
 
 % compile all the files
 for p = 1:length(places)
-  files = dir([fullfile(mtexpath,places{p}),'*.c*']);
+  files = dir([fullfile(mtex_path,places{p}),'*.c*']);
   for f = 1:length(files)
     if ~files(f).isdir
       cFile = fullfile(files(f).folder,files(f).name);
