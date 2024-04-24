@@ -15,6 +15,7 @@ res = false(size(mexFiles));
 disp(newline + "I'm checking whether all mex files in " + newline + ...
   "  " + fullfile(mtex_path,"mex") + newline + "are present and running." + newline)
   
+err = cell(length(mexFiles),1);
 for k = 1:length(mexFiles)
 
   mexFile = mexFiles(k);
@@ -26,14 +27,23 @@ for k = 1:length(mexFiles)
     fprintf(" <strong>missing</strong>" + newline);
 
   else
-
+    
     try
       res(k) = feval("check_" + mexFile);
+    catch e
+      err{k} = e;
     end
     if res(k)
       fprintf(" <strong>ok</strong>" + newline);
     else
       fprintf(" <strong>failed</strong>" + newline);
+      if isempty(err{k})
+        disp("  --> wrong result");
+      else
+        id = pushTemp(err{k});
+        disp("  --> <a href=""matlab: rethrow(pullTemp(" + int2str(id) ...
+          + "))"">" + err{k}.message + "</a>");
+      end
     end
   end
 end
