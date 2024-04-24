@@ -7,6 +7,9 @@ mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
   "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region"];
 
 
+disp(newline + "I'm checking whether all mex files in " + newline + ...
+  "  " + fullfile(mtex_path,"mex") + newline + "are present and running." + newline)
+
 for mexFile = mexFiles
   
   fprintf(" checking: " + mexFile + "." + mexext);
@@ -29,6 +32,8 @@ for mexFile = mexFiles
     end
   end
 end
+
+disp(newline + "checking complete" + newline)
 
 end
 
@@ -243,13 +248,15 @@ function out = check_SO3Grid_find
 cs = crystalSymmetry('432');
 S3G = equispacedSO3Grid(cs);
 
-ori = orientation.rand(cs);
+ori = orientation.byEuler(41*degree,31*degree,40*degree,cs);
+
+%ori = orientation.rand(cs);
 
 i = find(S3G,ori);
 
 d = angle(S3G,ori);
 
-out = min(d)==d(i);
+out = min(d(:))==d(i);
 
 end
 
