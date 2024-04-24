@@ -6,15 +6,6 @@ function startup_mtex(varargin)
 % mtex_settings.m in this directory.
 %
 
-% this is a bugfix for MATLAB having very high cpu load on idle
-if isunix && ~ismac
-  try
-    %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
-    % to revert:
-    %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType([]);
-  end
-end
-
 % Check MATLAB version
 % --------------------
 lasterr('') %#ok<LERR> %reset all errors
@@ -61,13 +52,9 @@ p();
 mtex_settings;
 p();
 
-% old Matlab version
+% old MATLAB version
 global useBSXFUN;
 useBSXFUN = MATLABverLessThan('9.6');
-
-% check installation
-check_installation;
-p();
 
 % make help searchable
 if ~isdeployed
@@ -97,7 +84,7 @@ end
 % -----------------
 function do_install(local_path)
 
-% extract matlab search path
+% extract MATLAB search path
 cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
 
@@ -140,9 +127,9 @@ else
   setappdata(0,'MTEXInstalled',false);
 end
 
-% there should not be any other directory part of the search path execpt
+% there should not be any other directory part of the search path except
 % for the mtex root directory
-% remove all previous mtex pathes from search path
+% remove all previous mtex paths from search path
 if any(strcmpi(fullfile(local_path,'geometry'),cellpath))
   
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,local_path)));
