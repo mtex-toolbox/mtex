@@ -1,7 +1,7 @@
 function poly = calcPolygonsC(I_FG,F,V)
 
 % compute cycles
-[g, c, cP] = EulerCyclesC(I_FG,F,V);
+[g, c, cP] = EulerCyclesC(I_FG,F,size(V,1));
 
 % compute area of each cycle
 area = polySgnArea(V(cP,1),V(cP,2),c);
