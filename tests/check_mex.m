@@ -81,7 +81,7 @@ grains = calcGrains(ebsd('indexed')); %#ok<*NASGU>
 
 gB = grains.boundary;
 
-%[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,gB.V);
+[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.V));
 
 out = 1;
 
@@ -134,7 +134,9 @@ end
 
 function out = check_wignerTrafoAdjoint
 
-out = 1;
+S3F = @(rot) rot.angle;
+S3FH = SO3FunHarmonic(S3F);
+out = abs(norm(S3FH)-2.3)<1e-3;
 
 end
 
