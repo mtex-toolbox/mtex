@@ -96,8 +96,10 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
-        for fn = fieldnames(pos.prop)'
-          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+        if isprop(pos,'prop')
+          for fn = fieldnames(pos.prop)'
+            ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+          end
         end
         ebsd.opt = pos.opt;
 
