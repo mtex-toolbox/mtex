@@ -1330,7 +1330,7 @@
 % This applies the spline filter to the orientation data. Beside the spline
 % filter, many other filters are available. A general discussion on this
 % topic can be found <EBSDDenoising.html here>. To make use of a different
-% than the dafault filter use the syntax
+% than the default filter use the syntax
 %
 %   F = medianFilter
 %   F.numNeighbours = 2 % this way options for the filter can be set
@@ -1584,7 +1584,7 @@
 %   % select boundary from specific grains
 %   grains.boundary
 %
-%   % select boundary by phase transistion
+%   % select boundary by phase transition
 %   gB = grains.boundary('Forstarite','Enstatite')
 %
 %   % select boundary by misorientation angle
@@ -1636,7 +1636,7 @@
 %
 % *EBSD data are always spatially indexed*
 %
-% Starting with MTEX 4.0 EBSD data alway have to have x and y coordinates.
+% Starting with MTEX 4.0 EBSD data always have to have x and y coordinates.
 % EBSD data without spatial coordinates are imported simply as orientations.
 % As a consequence, all orientation related functionalities of EBSD data
 % have been moved to |orientations|, i.e., you can not do anymore
@@ -1645,7 +1645,7 @@
 %   calcODF(ebsd('Fo'))
 %   volume((ebsd('Fo'))
 %
-% But instead you have to explicitely state that you operate on the
+% But instead you have to explicitly state that you operate on the
 % orientations, i.e.
 %
 %   plotpdf(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
@@ -1709,7 +1709,7 @@
 %   condition = pf.intensities < 0
 %   pf(condition) = []
 %
-% In order to address individuell pole figures within a array of pole
+% In order to address individual pole figures within a array of pole
 % figures |pf| use the syntax
 %
 %   pf('111')
@@ -1753,7 +1753,7 @@
 % *Improved graphics*
 %
 % MTEX can now display colorbars next to pole figure, tensor or ODF plots
-% and offers much more powerfull options to customize the plots with titles,
+% and offers much more powerful options to customize the plots with titles,
 % legends, etc.
 %
 % *Functionality that has been (temporarily) removed*
@@ -1811,7 +1811,7 @@
 % * the flags |'north'| and |'south'| are obsolete and have been replaced
 % by |'upper'| and |'lower'|
 % * you can specify the outer boundary for grain reconstruction in
-% nonconvex EBSD data set by the option |'boundary'|
+% non-convex EBSD data set by the option |'boundary'|
 %
 %   poly = [ [x1,y1];[x2,y2];[xn,yn];[x1,y1] ]
 %   grains = calcGrains(ebsd,'boundary',poly)
@@ -2371,7 +2371,7 @@
 % (thanks to the new NFFT 4.0 library)
 % * ODF plotting and the calculation of <SO3Fun.volume.html volume
 % fractions>, the <textureindex.html texture index>, the
-% <SO3Fun.entropy.html entropy> and <SO3Fun.calcFourier.html Fourier
+% <SO3Fun.entropy.html |entropy|> and <SO3Fun.calcFourier.html Fourier
 % coefficients> is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
@@ -2431,7 +2431,7 @@
 %
 % * new functions <textureindex.html texture index>, <SO3Fun.entropy.html
 % entropy>, <SO3Fun.volume.html volume>
-% * creatly improved help
+% * greatly improved help
 % * improved installation
 % * new options for plotting routines for specific ODF sections
 % * many bugfixes

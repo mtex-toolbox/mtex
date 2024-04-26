@@ -2,18 +2,18 @@ function v = log(ori,ori_ref,varargin)
 % misorientation vector between two orientations 
 %
 % The misorientation vector can also be seen as the projection of an
-% orientarion onto the tangential space of the orientation space centered
-% at the orientation |ori_ref|. The inverse mapping from the tantential
+% orientation onto the tangential space of the orientation space centered
+% at the orientation |ori_ref|. The inverse mapping from the tangential
 % space onto the orientation space is the exponential map |<Miller.exp.html
 % exp>|.
 %
 % Syntax
-%   m = log(mori) % the misorientation vector in crystal coordinats 
+%   m = log(mori) % the misorientation vector in crystal coordinates 
 %
-%   % the misorientation vector in crystal coordinats 
+%   % the misorientation vector in crystal coordinates 
 %   m = log(ori,ori_ref)
 %
-%   % the misorientation vector in specimen coordinats
+%   % the misorientation vector in specimen coordinates
 %   v = log(ori,ori_ref, SO3TangentSpace.leftVector)
 %   v = ori_ref .* m
 %
