@@ -1,7 +1,7 @@
 function check_mex
 
 mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
-  "wignerTrafo" "wignerTrafoAdjoint"  "numericalSaddlepointWithDerivatives" ...
+  "wignerTrafomex" "wignerTrafoAdjointmex"  "numericalSaddlepointWithDerivatives" ...
   "S1Grid_find" "S1Grid_find_region" "S2Grid_find" "S2Grid_find_region" ...
   "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...
   "nfftmex" "fptmex" "nfsftmex" "nfsoftmex"
@@ -144,7 +144,7 @@ out = 1;
 end
 
 
-function out = check_wignerTrafo
+function out = check_wignerTrafomex
 
 SO3F = SO3Fun.dubna;
 SO3FH = SO3FunHarmonic(SO3F);
@@ -153,7 +153,7 @@ out = norm(SO3F.eval(S3G) - SO3FH.eval(S3G))/norm(SO3FH.eval(S3G)) < 0.01;
 
 end
 
-function out = check_wignerTrafoAdjoint
+function out = check_wignerTrafoAdjointmex
 
 S3F = @(rot) rot.angle;
 S3FH = SO3FunHarmonic(S3F);

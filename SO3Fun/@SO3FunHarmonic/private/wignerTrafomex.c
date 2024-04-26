@@ -1,11 +1,18 @@
 /*=========================================================================
- * representationbased_coefficient_transform.c - eval of SO3FunHarmonic
+ * wignerTrafomex.c - eval of SO3FunHarmonic
  * 
  * The inputs are the fourier coefficients (fhat) of the harmonic 
  * representation of a SO(3) function SO3F and the bandwidth (N).
  * This harmonic representation will be transformed to a FFT(3) in terms
  * of Euler angles.
- * We calculate as output the coresponding fourier coefficient matrix.
+ * We calculate as output the corresponding fourier coefficient matrix up to
+ * a multiplicative constant i^(k-l). That means:
+ * The wignerTrafomex function just computes
+ * $$\hat{h}_{k,j,l} = \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0)$$
+ * from the harmonic coefficients $\hat{f}_n^{k,l}$.
+ * But the Wigner transform which computes the Fourier coefficients $\hat{g}_{k,j,l}$ reads as
+ * $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0).$$
+ *
  * Therefore we use symmetry properties of SO3F to calculate only a part of
  * symmetrical SO(3) Fourier coefficients and to speed up the algorithm. 
  * The following symmetry properties are implemented:
@@ -54,7 +61,7 @@
  * Syntax
  *   flags = 2^0+2^2+2^4;
  *   sym_axis = [1,2,2,1];
- *   ghat = representationbased_coefficient_transform(N,fhat,flags,sym_axis);
+ *   ghat = wignerTrafomex(N,fhat,flags,sym_axis);
  * 
  * Input
  *  N        - bandwidth
@@ -69,7 +76,7 @@
  *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
  *
  * Output
- *  ghat - Wigner transformed SO(3) Fourier coefficients
+ *  ghat - up to a constant not (w.r.t. symmetries) reconstructed Wigner transformed SO(3) Fourier coefficients
  *
  *
  * This is a MEX-file for MATLAB.
@@ -353,29 +360,29 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // check data types
     // check for 2 input arguments (inCoeff & bandwith)
     if(nrhs<2)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:invalidNumInputs","More inputs are required.");
+      mexErrMsgIdAndTxt("wignerTrafomex:invalidNumInputs","More inputs are required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:maxlhs","One output required.");
+      mexErrMsgIdAndTxt("wignerTrafomex:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","First input argument bandwidth must be a scalar double.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notDouble","First input argument bandwidth must be a scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","Second input argument coefficient vector must be type double.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:inputNotVector","Second input argument coefficient vector must be a row vector.");
+      mexErrMsgIdAndTxt("wignerTrafomex:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
     // make sure the third input argument (input_flags) is double scalar (if existing)
     if( (nrhs>=3) && ( !mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) || mxGetNumberOfElements(prhs[2])!=1 ) )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notDouble","Third input argument flags must be a scalar double.");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notDouble","Third input argument flags must be a scalar double.");
 
     // make sure the fourth input argument (sym_axis) is double (if existing)
     if( (nrhs>=4) && ( !mxIsDouble(prhs[3]) || mxIsComplex(prhs[3]) || mxGetNumberOfElements(prhs[3])!=4 ) )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notDouble","Fourth input argument sym_axis must be a 4x1 double vector.");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notDouble","Fourth input argument sym_axis must be a 4x1 double vector.");
 
 
   // read input data
@@ -384,7 +391,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     // check whether bandwidth is natural number
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notInt","First input argument must be a natural number.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notInt","First input argument must be a natural number.");
     
     // make input matrix complex
     mxArray *zeiger = mxDuplicateArray(prhs[1]);
@@ -411,7 +418,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       sym_axis = s;
 
     if( ((sym_axis[0]!=sym_axis[2]) || (sym_axis[1]!=sym_axis[3])) && flags[3] )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notAntipodal","ODF can only be antipodal if both symmetries coincide!");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notAntipodal","ODF can only be antipodal if both symmetries coincide!");
 
 
     const int makeEven = flags[1];
