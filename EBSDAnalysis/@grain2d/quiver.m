@@ -2,9 +2,9 @@ function h = quiver(grains,dir,varargin)
 % plot directions at grain centers
 %
 % Syntax
-%   quiver(grains,dir,'linecolor','r')
+%   quiver(grains,dir,'color','r')
 %
-%   mtexdata fo
+%   mtexdata forsterite
 %   grains = calcGrains(ebsd('indexed'))
 %   quiver(grains,grains.meanRotation.axis,'color','r')
 %
