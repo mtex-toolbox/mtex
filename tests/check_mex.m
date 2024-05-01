@@ -11,10 +11,22 @@ hasC = logical([1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 ]);
 
 res = false(size(mexFiles));
 
-
-disp(newline + "I'm checking whether all mex files in " + newline + ...
-  "  " + fullfile(mtex_path,"mex") + newline + "are present and running." + newline)
-  
+wraptext([newline 'Mex files are compiled binaries that are used ' ...
+  'within MTEX to speed up time critical computations. ' ...
+  'As mex files are specific to different operating systems it is ' ...
+  'not so easy for MTEX provide working binaries for different types ' ...
+  'of systems.']);
+disp([newline 'I''m now going to check all the mex files in' newline ...
+  newline '  ' fullfile(mtex_path,'mex') newline newline ...
+  'In case some of the mex files are not working, you have two options' newline ...
+  ' 1. Use the command ' ...
+  '<a href="matlab: mex_install(''force'')">mex_install</a> ' ...
+  'to compile the mex files yourself' newline ...
+  '    On a Mac this requires that you install XCode first.' newline ...  
+  ' 2. Switch to a slower Matlab based implementation.' newline ...
+  ]);
+ 
+err = cell(length(mexFiles),1);
 for k = 1:length(mexFiles)
 
   mexFile = mexFiles(k);
@@ -26,28 +38,37 @@ for k = 1:length(mexFiles)
     fprintf(" <strong>missing</strong>" + newline);
 
   else
-
+    
     try
       res(k) = feval("check_" + mexFile);
+    catch e
+      err{k} = e;
     end
     if res(k)
       fprintf(" <strong>ok</strong>" + newline);
     else
       fprintf(" <strong>failed</strong>" + newline);
+      if isempty(err{k})
+        disp("  --> wrong result");
+      else
+        id = pushTemp(err{k});
+        disp("  --> <a href=""matlab: rethrow(pullTemp(" + int2str(id) ...
+          + "))"">" + err{k}.message + "</a>");
+      end
     end
   end
 end
 
 disp(newline + "check complete" + newline)
 
-if ~all(res(hasC))
-  disp("Not all mex files are running. You might want to call" + newline + ...
-    "  <a href=""matlab: mex_install"">mex_install</a>" + newline + ...
-    "to compile the mex files yourself.");
-  if ismac
-    disp("On a Mac this requires to instal XCode first!" + newline)
-  end
-end
+% if ~all(res(hasC))
+%   disp("Not all mex files are running. You might want to call" + newline + ...
+%     "  <a href=""matlab: mex_install"">mex_install</a>" + newline + ...
+%     "to compile the mex files yourself.");
+%   if ismac
+%     disp("On a Mac this requires to instal XCode first!" + newline)
+%   end
+% end
 
 end
 
@@ -81,7 +102,7 @@ grains = calcGrains(ebsd('indexed')); %#ok<*NASGU>
 
 gB = grains.boundary;
 
-%[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,gB.V);
+[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.V));
 
 out = 1;
 
@@ -134,7 +155,9 @@ end
 
 function out = check_wignerTrafoAdjoint
 
-out = 1;
+S3F = @(rot) rot.angle;
+S3FH = SO3FunHarmonic(S3F);
+out = abs(norm(S3FH)-2.3)<1e-3;
 
 end
 

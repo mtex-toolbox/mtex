@@ -1,4 +1,31 @@
 function [v,varargout] = volume(SO3F,center,radius,varargin)
+% ratio of orientations with a certain orientation
+%
+% Description
+% The function 'volume' returns the ratio of an orientation that is close
+% to an orientation (center) by a misorientation tolerance (radius) to the
+% volume of the entire odf.
+%
+% Syntax
+%   v = volume(odf,center,radius)
+%   v = volume(odf,fibre,radius) % gives the volume with a fibre
+%
+% Input
+%  odf    - @SO3Fun
+%  center - @orientation
+%  fibre  - @fibre
+%  radius - double
+%
+% Options
+%  resolution - resolution of discretization
+%
+% See also
+% SO3Fun/fibreVolume SO3Fun/entropy SO3Fun/textureindex
+
+if isa(center,'fibre')
+  v = fibreVolume(SO3F,center.h,center.r,radius,varargin{:});
+  return
+end
 
 % for large angles or specimen symmetry take the quadrature based algorithm
 if radius > pi / SO3F.CS.multiplicityZ || ...

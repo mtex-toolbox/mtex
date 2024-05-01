@@ -13,15 +13,16 @@ classdef grain3Boundary < phaseList & dynProp
 % boundary properties>.
 %
 % Class Properties
-%  V            - [x,y] list of vertices 
+%  allV         - @vector3d list of all stored vertices 
 %  scanUnit     - scanning unit (default - um)
 %  tripleJunctions - @tripleJunctionList
-%  F            - list of boundary faces as ids to V
+%  F            - list of boundary faces as ids to allV
 %  grainId      - id's of the neighboring grains to a boundary segment
 %  ebsdId       - id's of the neighboring ebsd data to a boundary segment
 %  misrotation  - misrotation between neighboring ebsd data to a boundary segment
 %
 % Dependent Class Properties
+%  V              - @vector3d list of active/used vertices 
 %  misorientation - disorientation between neighboring ebsd data to a boundary segment
 %  N              - normal of the boundary face as @vector3d
 %  centroid       - centroid of the boundary face as @vector3d
@@ -41,7 +42,7 @@ classdef grain3Boundary < phaseList & dynProp
   end
   
   properties
-    allV     % vertices
+    allV     % vertices, @vector3d
   end
 
   properties (Dependent)

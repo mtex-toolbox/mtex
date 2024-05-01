@@ -7,18 +7,28 @@ function v = fibreVolume(odf,h,r,radius,varargin)
 %
 % Syntax
 %   v = fibreVolume(odf,h,r,radius)
+%   v = fibreVolume(odf,fibre,radius)
 %
 % Input
 %  odf    - @SO3Fun
 %  h      - @Miller
 %  r      - @vector3d
 %  radius - double
+%  fibre  - @fibre
 %
 % Options
 %  resolution - resolution of discretization
 %
 % See also
 % SO3Fun/volume SO3Fun/entropy SO3Fun/textureindex
+
+if isa(h,'fibre')
+  if nargin >3
+    varargin=[radius,varargin];
+  end
+  v = fibreVolume(odf,h.h,h.r,r,varargin{:});
+  return
+end
 
 % check input
 argin_check(h,{'Miller','vector3d'});

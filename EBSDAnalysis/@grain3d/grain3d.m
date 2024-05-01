@@ -14,7 +14,7 @@ classdef grain3d < phaseList & dynProp
 
   properties (Dependent)
     V     % vertices
-    F  % n x 1 cell array or n x 3 array with all faces
+    F     % n x 1 cell array or n x 3 array with all faces
     meanOrientation
   end
 
