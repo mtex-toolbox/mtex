@@ -127,13 +127,13 @@ F = reshape(F,[],2);
 [s, sP, sf, sfF, sfD] = TriplepointSegments(F,V);
 
 
-
-% * call c fun
 % * reorder F
 % * split F into Fext and Fint
 % * reorder and reduce I_FD and then split into I_FDext and I_FD_int
 
 F = F(sfF,:);
+isExt = isExt(sfF);
+isInt = isInt(sfF);
 F(sfD == 0,[1,2]) = F(sfD == 0,[2,1]);% flip direction
 I_FD = I_FD(sfF,:);
 
@@ -142,7 +142,7 @@ Fint = F(isInt,:); % internal boundary segments
 I_FDext = I_FD(isExt,:);
 I_FDint = I_FD(isInt,:);
 
-
+% does this still work? TODO
 if check_option(varargin,'removeQuadruplePoints')
   qAdded = removeQuadruplePoints; 
 end
