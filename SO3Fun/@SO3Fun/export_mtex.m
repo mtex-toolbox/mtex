@@ -75,7 +75,7 @@ for i = 1:length(SO3F.components)
       fprintf(fid,'%% alpha   beta    gamma   weight\n');
     end
 
-    fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,SO3F.components{i}.weights].');
+    fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,SO3F.components{i}.weights(:)].');
 
   end
 end
