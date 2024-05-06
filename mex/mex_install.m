@@ -42,7 +42,7 @@ for p = 1:length(places)
             run(compFile)
             movefile(fullfile(files(f).folder,[fName '.' mexext]),mexFile,'f')
           else
-            mex('-R2018a','-outdir',mexPath,cFile);            
+            mex('-R2018a','-outdir',mexPath,cFile);
           end
         catch
           if ~contains(lasterr,'is not a MEX file.'), disp(lasterr); end %#ok<LERR>

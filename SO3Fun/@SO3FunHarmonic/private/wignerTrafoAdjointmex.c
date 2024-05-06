@@ -64,6 +64,7 @@
 #include <stdio.h>
 #include <complex.h>
 #include <string.h>
+#include <omp.h>      // For parallelisation
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
 #include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
@@ -147,20 +148,20 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
   // Compute fhat by iterating over harmonic degree n of Wigner-d matrices
   // in outermost loop. Start with n=0 and n=1 manually and use a loop for
   // the remaining indices n > 1.
-    // Create pointers for help, that saves the starting positions of ghat and fhat
-    mxComplexDouble *start_ghat, *start_fhat;
-    start_ghat = ghat;
-    start_fhat = fhat;
+    // Create pointer that saves the position ghat(0,0,0)
+    mxComplexDouble *center_ghat;
+    center_ghat = ghat + N + N*rowcol_len + N*matrix_size;
 
   // Do step n = 0.
     // Write ghat(0,0,0) in fhat(1), since Wigner_d(0,pi/2) = 1.
-    *fhat = ghat[matrix_size*N + rowcol_len*N + N];
+    ghat = center_ghat;
+    *fhat = *ghat;
     // Set pointer fhat to next harmonic degree (to the 2nd value of fhat)
     fhat ++;
     
   // Do step n = 1, without use of symmetry
     // jump to ghat(-1,0,-1)
-    ghat += matrix_size*(N-1) + rowcol_len*N + (N-1);
+    ghat += -matrix_size -1;
 
     // fill fhat with values fhat(n,k,l) = sum_{j=-n}^n ghat(k,j,l) * d^1(j,k) * d^1(j,l)
     double value;
@@ -181,9 +182,6 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
       // jump to next column
       ghat += -3+matrix_size;
     }
-    // reset pointer ghat to ghat(-N,-N,-N)
-    ghat = start_ghat;
-    
 
     // Be shure N>1, otherwise STOP.
     if (N==1)
@@ -194,9 +192,12 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
     const int shift_tocenterwigner = (2*N+1)*N+N;
     double pm;
     int column, L_min, L_max, K_min, K_max, K_shift, L_shift;
-    mxComplexDouble *ghat2;
+    mxComplexDouble *ghat2, *iter_fhat;
     mxDouble *wigk, *wigl;
-  
+    
+  // define pointer that saves the position of fhat_1^(0,0)
+    iter_fhat = fhat-5;
+
   // Do recursion for 1 < n <= N and use symmetry:
     for (n=2; n<=N; n++)
     {
@@ -205,9 +206,6 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
       
       // jump to the center of Wigner-d matrix
       wigd +=  shift_tocenterwigner;
-
-      // shift pointer ghat to ghat(-n,0,-n)
-      ghat += matrix_size*(N-n)+rowcol_len*N+(N-n);
 
       //pm = -1.0;
 
@@ -237,10 +235,10 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
         if((SRightY*SLeftY==1) && (isReal==1) && (isAntipodal==0))
           K_max=0;
 
+      // move pointer to fhat_n^(0,0)
+      iter_fhat += (4*n*n+1);
 
-      // Iteration:
-      fhat += L_shift*(2*n+1);
-      ghat += L_shift*matrix_size;
+      #pragma omp parallel for firstprivate(ghat,fhat,wigd,K_min,K_max) private(pm,wigk,wigl,ghat2,column,value)        // Parallelization
       for (l= L_min; l<=L_max; l+=SLeftZ)
       {
         if(isAntipodal==1)
@@ -258,8 +256,10 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
             K_min = l;
         }
 
-        ghat += n+K_min;    // new
-        fhat += n+K_min;    // new                                     
+        // shift pointer ghat to (K_min,0,l)
+        ghat = center_ghat + K_min + l*matrix_size;
+        // shift pointer fhat to fhat_n^(K_min,l)
+        fhat = iter_fhat + K_min + l*(2*n+1);        
 
         for (k= K_min; k<=K_max; k+=SRightZ)
         {
@@ -285,21 +285,11 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
             ghat2 -= rowcol_len;
             ghat += rowcol_len;
           }
-          fhat += SRightZ;                                // changed
-          ghat += SRightZ -rowcol_len*(n+1);              // changed
+          fhat += SRightZ;
+          ghat += SRightZ -rowcol_len*(n+1);
         }
-        fhat += 1-SRightZ + (n-K_max);                    // new
-        fhat += (SLeftZ-1)*(2*n+1);                      // new
-        ghat += 1-SRightZ + (n-K_max);                    // new
-        ghat += (SLeftZ-1)*matrix_size;                  // new
-        ghat += -(2*n+1)+matrix_size;
       }
-      // shift fhat to next harmonic degree in case of used symmetries
-      fhat += (1-SLeftZ)*(2*n+1) + (n-L_max)*(2*n+1);
       
-      // reset pointer ghat to ghat(-N,-N,-N)
-      ghat = start_ghat;
-
       // permute the pointers (wigd, wigdmin1 and wigdmin2) for the next
       // recursions step for the calculation of the Wigner-d matrices.
       // Therefore the two most recently computed Wigner-d matrices are
@@ -320,29 +310,6 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
     mxDestroyArray(D);
     mxDestroyArray(D_min1);
     mxDestroyArray(D_min2);
-
-
-//   // Set symmetric fourier coefficients if the SO3FunHarmonic is real valued
-//     if (isReal==1)
-//     {
-//       fhat = start_fhat+10;
-//       int u_square, u_end;
-//       mxComplexDouble *fhat_sym;
-//       for (n=2; n<=N; n++)
-//       {
-//         u_square = (2*n+1)*(2*n+1);
-//         fhat_sym = fhat + u_square-1;
-//         u_end = (2*n+1)*n;
-//         for (k=0; k<u_end; k++)
-//         {
-//           fhat_sym[-k].real = fhat[k].real;
-//           fhat_sym[-k].imag = -fhat[k].imag;
-//         }
-//         fhat += u_square;
-//       }
-//     }
-
-
 
 }
 

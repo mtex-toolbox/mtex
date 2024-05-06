@@ -86,9 +86,10 @@
 #include <mex.h>
 #include <math.h>
 #include <matrix.h>
-#include <stdio.h>
+#include <stdio.h>    // For printf
 #include <complex.h>
 #include <string.h>
+#include <omp.h>      // For parallelisation
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
 #include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
@@ -179,6 +180,8 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     mxComplexDouble *start_ghat;
     start_ghat = ghat;
     mxComplexDouble *iter_fhat;
+    mxComplexDouble *iter_ghat;
+    mxDouble *iter_wigd;
     
 
   // Do recursion for n = 0.
@@ -217,12 +220,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     }
     // Set pointer fhat to next harmonic degree (to the 11th value of fhat)
     fhat += 9 - 3*isReal;
-    // reset pointer ghat to ghat(-N,-N,-N)
-    ghat = start_ghat;
     
     
     // Be shure N>1, otherwise STOP.
-    if (N==1)
+    if (N==1) 
       return;
     
     
@@ -238,9 +239,9 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       // Calculate Wigner-d matrix
       wigner_d_recursion_at_pi_half(N,n,wigd_min2,wigd_min1,wigd);
       
-      // jump to the center of Wigner-d matrix
+      // jump to the center of Wigner-d matrix and save this position
       wigd +=  shift_tocenterwigner;
-     
+      iter_wigd = wigd;
       
       // Compute ghat by adding over all summands of current harmonic 
       // degree n. Therefore it is sufficient to compute ghat only for 
@@ -271,9 +272,13 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
         L_min=0;
 
 
-      // shift pointer ghat to ghat(0,0,0) if F is real valued and to
-      // ghat(0,0,-n) otherwise (if ghat is fullsized matrix) 
-      ghat += (1-isReal)*matrix_size*(N+L_min) + rowcol_len*N + N;
+      // Set pointer ghat to ghat(0,0,0) if F is real valued and to
+      // ghat(0,0,-n) otherwise (if ghat is fullsized matrix)
+      // Moreover save this position for further iterations
+      //      Note: ghat = start_ghat  would reset pointer ghat to ghat(-N,-N,0) 
+      //            if F is real valued and ghat(-N,-N,-N) otherwise [if ghat is fullsized]
+      ghat = start_ghat + (1-isReal)*matrix_size*(N+L_min) + rowcol_len*N + N;
+      iter_ghat = ghat;
       // Set pointer of fhat to the central value fhat(n,0,-n) or fhat(n,0,0) 
       // and save this position for further iterations
       fhat += n + (L_min+n)*(2*n+1) ;
@@ -284,15 +289,23 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       // The Wigner-d functions satisfy the symmetry property
       //          d_n(j,k)*d_n(j,l) = d_n(k,-j)*d_n(l,-j)
       // in MTEX. We use this in the following.
+      #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value)        // Parallelization
       for (j=0; j<=n; j++)
       {
+        // jump to actual column
+        ghat = iter_ghat + j*rowcol_len;
+        // reset pointer fhat
+        fhat = iter_fhat;
+        // use column -j of the Wigner-d matrix
+        wigd = iter_wigd - j*(2*N+1);
+
         for (l= L_min; l<=L_max; l+=SLeftZ)
         {
           for (k= K_min; k<=K_max; k+=SRightZ)
           {
             // compute value
             value = wigd[k]*wigd[l];
-            
+
             // set value
             ghat[k].real += fhat[k].real*value;
             ghat[k].imag += fhat[k].imag*value;
@@ -302,19 +315,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
           ghat += SLeftZ*matrix_size;
           fhat += SLeftZ*(2*n+1);
         }
-        // reset pointer fhat
-        fhat = iter_fhat;
-        // jump to next column
-        ghat += -matrix_size*(L_max-L_min+SLeftZ) + rowcol_len;
-        // use next column of Wigner-d matrix
-        wigd -= 2*N+1;
       }
-      
-      // reset pointer ghat to ghat(-N,-N,0) if F is real valued and 
-      // ghat(-N,-N,-N) otherwise [if ghat is fullsized]
-      ghat = start_ghat;
-      // Set pointer fhat to first value in next harmonic degree
-      fhat += -n + (2*n+1)*(n+1-L_min);
+
+      // Set pointer fhat back to the first value fhat(n+1,-n-1,-n-1) of next harmonic degree
+      fhat = iter_fhat -n + (2*n+1)*(n+1-L_min);
 
       // permute the pointers (wigd, wigdmin1 and wigdmin2) for the next
       // recursions step for the calculation of the Wigner-d matrices.
