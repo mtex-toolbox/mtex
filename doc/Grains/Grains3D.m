@@ -12,6 +12,12 @@ grains_dream_3d = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStat
 % for triangulated data sets it may be useful to plot them without lines
 plot(grains_dream_3d,grains_dream_3d.meanOrientation,'LineStyle','none')
 
+%% Plot the normal directions of one grain
+grains = grains_dream_3d(1)
+dir = grains.I_GF(1,:)' .* grains.boundary.N  % flip according to I_GF
+quiver(grains.boundary,dir)
+plot(grains)
+
 %% Grain sets from neper
 
 job = neperInstance

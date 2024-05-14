@@ -57,7 +57,15 @@ poly = poly + 1;    % because dream3d indexes with 0 (see '_VertexIndices')
 
 GrainIds = h5read_multi(fname,GrainIdPath)';
 
-% calculate I_CF
+%% calculate I_CF
+% GrainIds is sorted so that GrainIds(:,2)-GrainIds(:,1)>=0. That means 
+% for each grain in the first column (Id>0) the normal direction is
+% positive
+
+if ~(all(GrainIds(:,2)-GrainIds(:,1)>=0))
+  GrainIds(GrainIds(:,2)-GrainIds(:,1)<0,:) = fliplr(GrainIds(GrainIds(:,2)-GrainIds(:,1)<0,:));
+end
+
 isPos = GrainIds(:,2) > 0;
 isNeg = GrainIds(:,1) > 0;
 

@@ -2,14 +2,11 @@ function h = quiver(gB,dir,varargin)
 % plot directions at grain centers
 %
 % Syntax
-%   quiver(grains,dir,'linecolor','r')
+%   quiver(grains3.boundary,grains3.boundary.N,'color','r')
 %
-%   mtexdata fo
-%   grains = calcGrains(ebsd('indexed'))
-%   quiver(grains,grains.meanRotation.axis,'color','r')
 %
 % Input
-%  grains - @grain2d
+%  gB - @grain3Boundary
 %  dir    - @vector3d
 %
 % Options
