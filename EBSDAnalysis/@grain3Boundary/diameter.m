@@ -1,16 +1,17 @@
-function d = diameter(grains)
+function d = diameter(gB)
 % diameter of a grain in measurement units
 % longest distance between any two vertices of the grain boundary
 
-F = grains.F;
-d = zeros(size(grains));
+F = gB.F;
+d = zeros(size(gB));
 
 % get the coordinates
-V = grains.allV.xyz;
+V = gB.allV.xyz;
+b = iscell(F);
 
-for ig = 1:length(grains)
+for ig = 1:length(gB)
 
-  Vg = V(F{ig},:);
+  if b; Vg = V(F{ig},:); else; Vg = V(F(ig,:),:); end
   
   diffVg = bsxfun(@minus,reshape(Vg,[],1,3),reshape(Vg,1,[],3));
   diffVg = sum(diffVg.^2,3);
