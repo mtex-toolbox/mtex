@@ -118,7 +118,7 @@ how2plot.east = vector3d(2,-5,0);
 setCamera(how2plot)
 
 %% Slice Dream3d Grains
-
+% still inefficient, expensive
 N = vector3d(1,1,1);
 P0 = vector3d(0.5,0.5,0.5);
 
