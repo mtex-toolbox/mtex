@@ -123,23 +123,23 @@ classdef plottingConvention < handle
 
 
     function v = get.outOfScreen(pC), v = pC.rot * vector3d.Z; end
-    function set.outOfScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot; end
+    function set.outOfScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,n,pC.east,pC.east) * pC.rot; end
 
     function v = get.intoScreen(pC), v = -pC.rot * vector3d.Z; end
-    function set.intoScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,-n) * pC.rot; end
+    function set.intoScreen(pC,n), pC.rot = rotation.map(pC.outOfScreen,-n,pC.east,pC.east) * pC.rot; end
 
 
     function v = get.east(pC), v = pC.rot * vector3d.X; end
-    function set.east(pC,e), pC.rot = rotation.map(pC.east,e) * pC.rot; end
+    function set.east(pC,e), pC.rot = rotation.map(pC.east,e,pC.outOfScreen,pC.outOfScreen) * pC.rot; end
 
     function v = get.west(pC), v = -pC.rot * vector3d.X; end
-    function set.west(pC,w), pC.rot = rotation.map(pC.east,-w) * pC.rot; end
+    function set.west(pC,w), pC.rot = rotation.map(pC.east,-w,pC.outOfScreen,pC.outOfScreen) * pC.rot; end
 
     function v = get.north(pC), v = pC.rot * vector3d.Y; end
-    function set.north(pC,v), pC.rot = rotation.map(pC.north,v) * pC.rot; end
+    function set.north(pC,v), pC.rot = rotation.map(pC.north,v,pC.outOfScreen,pC.outOfScreen) * pC.rot; end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
-    function set.south(pC,v), pC.rot = rotation.map(pC.north,-v) * pC.rot; end
+    function set.south(pC,v), pC.rot = rotation.map(pC.north,-v,pC.outOfScreen,pC.outOfScreen) * pC.rot; end
 
 
     function plot(pC, varargin)
