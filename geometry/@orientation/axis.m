@@ -49,10 +49,17 @@ if nargin >= 2 && isa(varargin{1},'orientation')
  
   if o1.CS == o1.SS
   
-    po2 = project2FundamentalRegion(o2, o1);
-    mori = inv(po2) .* o1;
+    if numel(o1.a) <= numel(o2.a)
+      po2 = project2FundamentalRegion(o2, o1);
+      mori = inv(po2) .* o1;
 
-    a = o1 .* mori.axis('noSymmetry');
+      a = o1 .* mori.axis('noSymmetry');
+    else
+      po1 = project2FundamentalRegion(o1, o2);
+      mori = inv(po1) .* o2;
+
+      a = - o2 .* mori.axis('noSymmetry');
+    end
   
   else
     
