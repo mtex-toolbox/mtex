@@ -49,17 +49,21 @@ end
 assert(isPlane(plane),'Input error')
 
 %% TODO:
-% faces with more than 2 intersected edges  (line 79)
-% handling of crossroads and inclusions     (line 145, 156)
+% faces with more than 2 intersected edges  (line 83)
+% handling of crossroads and inclusions     (line 146, 157)
 
 %%
-V = grains.boundary.allV.xyz;   % all vertices as xyz
-F = grains.F;                   % all faces (polys) as nx1-cell or nx3 array
-E = meshEdges(F);               % incidence matrix edges - vertices (indices to V)
+inters_grains = grains.intersected(plane); % restrict to affected cells
+newIds = inters_grains.id;                 % Ids of the new grains2d
 
-%% identify which cells, faces and edges are affected
+V = inters_grains.boundary.allV.xyz;    % all vertices as xyz
+V_is_below_P = isBelowPlane(V,plane);   % check if V is below plane
+F = inters_grains.F;                    % all faces (polys) as nx1-cell or nx3 array
+E = meshEdges(F);                       % incidence matrix edges - vertices (indices to V)
+
+%% identify which faces and edges are affected
 % list of edges crossing the plane, indices to E
-crossingEdges = find(xor(isBelowPlane(V(E(:,1),:),plane),isBelowPlane(V(E(:,2),:),plane)));
+crossingEdges = find(xor(V_is_below_P(E(:,1)),V_is_below_P(E(:,2))));
 assert(length(crossingEdges)>=3,'plane is outside of grain3d bounding box')
 
 % compute incidence matrix F - crossingEdges
@@ -87,7 +91,7 @@ crossingFE_all = reshape(j(i2),2,[])';
 % intersecFaces   - list of intersected faces, indices to F
 % crossingFE_all  - incidence matrix, 1.dim with respect to intersecFaces, 2.dim with respect to crossingEdges
 
-%% newV, newIds
+%% newV
 % compute new vertices of the 2d slice (crossingEdges intersected with plane)
 newV = intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane);   % nx3 array of vertices (xyz)
 
@@ -109,13 +113,10 @@ end
 % make newV list of @vector3d
 newV = vector3d(newV).';
 
-% restrict I_GF to the intersected Cells (newIds) and the intersected Faces (intersecFaces)
-intersec_GF = grains.I_GF(:,intersecFaces);
-newIds = find(any(intersec_GF,2));
-intersec_GF = logical(intersec_GF(newIds,:));
+% restrict I_GF to the intersected Faces (intersecFaces)
+intersec_GF = logical(inters_grains.I_GF(:,intersecFaces));
 
 % newV        - vertices of the new grains2d slice (crossingEdges intersected with plane)
-% newIds      - Ids of the new grains2d (Ids of the intersected cells)
 % intersec_GF - Incidence matrix newIds - intersecFaces
 
 %% new polygons for grains2d
