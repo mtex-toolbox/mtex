@@ -2,7 +2,7 @@
 
 % Use MultiCore Programming (openmp) for Linux and Windows
 
-if isunix
+if isunix && ~ismac
   options = {'CFLAGS=\$CFLAGS -fopenmp','LDFLAGS=\$LDFLAGS -fopenmp'};
 elseif ispc
   options = {'COMPFLAGS=$COMPFLAGS /openmp'};

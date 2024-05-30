@@ -78,13 +78,13 @@ H = entropy(odf2)
 % <SO3Fun.fibreVolume.html |fibreVolume|>
 
 %%
-% The relative volume in percent of crystals with missorientation maximum
+% The relative volume in percent of crystals with misorientation maximum
 % 30 degree from the preferred orientation |ori_pref|:
 
 V1 = volume(odf3, ori_pref, 30*degree) * 100
 
 %%
-% The relative volume of crystals with missorientation maximum 20 degree
+% The relative volume of crystals with misorientation maximum 20 degree
 % from the preferred fibre in percent:
 
 V2 = volume(odf2,f001_x,20*degree) * 100

@@ -89,7 +89,9 @@
 #include <stdio.h>    // For printf
 #include <complex.h>
 #include <string.h>
-#include <omp.h>      // For parallelisation
+#ifdef _OPENMP // For parallelisation
+#include <omp.h>
+#endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
 #include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
