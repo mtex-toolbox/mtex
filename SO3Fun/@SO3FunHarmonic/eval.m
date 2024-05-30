@@ -107,17 +107,18 @@ if check_option(varargin,'createPlan')
   return
 end
 
+% If SO3F is real valued we have the symmetry properties (*) and (**) for
+% the Fourier coefficients. We will use this to speed up computation.
+if SO3F.isReal
+  flags = 2^0+2^1+2^2+2^4;
+else
+  flags = 2^0+2^1+2^4;
+end
+
 f = zeros([length(rot) size(SO3F)]);
 for k = 1:length(SO3F)
 
-  % If SO3F is real valued we have the symmetry properties (*) and (**) for 
-  % the Fourier coefficients. We will use this to speed up computation.
-  if SO3F.isReal
-    flags = 2^0+2^1+2^2+2^4;
-  else
-    flags = 2^0+2^1+2^4;
-  end
-  ghat = wignerTrafo(SO3F(k),flags,'bandwidth',N);
+  ghat = wignerTrafo(SO3F.subSet(k),flags,'bandwidth',N);
 
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,ghat(:));
