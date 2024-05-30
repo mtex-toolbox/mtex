@@ -6,7 +6,7 @@ function psi = conv(psi1,psi2,varargin)
 %
 % $$ (f {*}_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
 %
-% which in this case is similar to the so caled right sided convolution,
+% which in this case is similar to the so called right sided convolution,
 % see SO3FunHarmonic/conv.
 %
 % The convolution of an SO3Kernel with an S2Kernel or an S2Fun $h$ is
