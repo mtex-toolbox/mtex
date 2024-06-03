@@ -71,7 +71,9 @@ classdef gammaSections < ODFSections
     function [S2Pos,secPos] = project(oS,ori,varargin)
 
       % maybe this can be done more efficiently
-      ori = ori.symmetrise('proper').';
+      if ~check_option(varargin,'noSymmetry')
+        ori = ori.symmetrise('proper').';
+      end
       [alpha,beta,gamma] = Euler(ori,'ZYZ'); %#ok<*PROPLC>
 
       secPos = oS.secList(gamma,oS.gamma);
