@@ -86,6 +86,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = rot.unitCell;
         ebsd.scanUnit = rot.scanUnit;
         ebsd.A_D = rot.A_D;
+        ebsd.plottingConvention = pos.plottingConvention;
         for fn = fieldnames(rot.prop)'
           ebsd.prop.(char(fn))= rot.prop.(char(fn))(:);
         end
