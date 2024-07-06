@@ -12,7 +12,7 @@ function varargout = plot(v,varargin)
 % Input
 %   v - @vector3d
 %   value - values to be displayed
-%   rgb - 
+%   rgb - [r g b] list of colors
 %
 % Options
 %  Marker           - 'square', 'triangle', 'o','diamond' 
