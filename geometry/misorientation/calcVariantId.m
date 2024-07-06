@@ -1,4 +1,4 @@
-function [childId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,varargin)
+function [childId,packetId,bainId,fit] = calcVariantId(parentOri,childOri,p2c,varargin)
 % compute variantIds, packetId and bainId from parent / child orientation pairs
 %
 % Syntax
@@ -34,20 +34,20 @@ function [childId,packetId,bainId] = calcVariantId(parentOri,childOri,p2c,vararg
 %  variantId - variant id
 %  packetId  - packet id
 %  bainId    - bain id
-%
+%  fit       - fit between parentOri and childOri vs. to the OR
 
 % all child variants
 childVariants  = variants(p2c, parentOri);
 
 if size(childVariants,1) == 1
-    childVariants = repmat(childVariants,length(childOri),1);
+  childVariants = repmat(childVariants,length(childOri),1);
 end
 
 % compute distance to all possible variants
-d = dot(childVariants,repmat(childOri(:),1,size(childVariants,2)));
+fit = angle(childVariants,repmat(childOri(:),1,size(childVariants,2)));
 
 % take the best fit
-[~,childId] = max(d,[],2);
+[fit,childId] = min(fit,[],2);
 
 
 % compute packetId if required
@@ -70,7 +70,7 @@ if nargout >= 2
 end
 
 % compute bainId if required
-if nargout == 3
+if nargout >= 3
   if ~isempty(varargin) && any(strcmpi(varargin,'bain')) % definition given
     h1 = varargin{find(strcmpi('bain',varargin)==1)+1};
     h2 = varargin{find(strcmpi('bain',varargin)==1)+2};
