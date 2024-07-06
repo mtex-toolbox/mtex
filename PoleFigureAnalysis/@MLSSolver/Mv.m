@@ -23,5 +23,9 @@ I = real(nfsftmex('get_f', solver.nfft_r(i)));
 
 % sum up specimen symmetry
 I = mean(reshape(I,[],length(solver.pf,i)),1).';
-  
+
+% here we should sum over the different components of the area detector
+
+
+
 end  
