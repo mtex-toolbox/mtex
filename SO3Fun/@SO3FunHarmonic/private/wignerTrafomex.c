@@ -1,11 +1,18 @@
 /*=========================================================================
- * representationbased_coefficient_transform.c - eval of SO3FunHarmonic
+ * wignerTrafomex.c - eval of SO3FunHarmonic
  * 
  * The inputs are the fourier coefficients (fhat) of the harmonic 
  * representation of a SO(3) function SO3F and the bandwidth (N).
  * This harmonic representation will be transformed to a FFT(3) in terms
  * of Euler angles.
- * We calculate as output the coresponding fourier coefficient matrix.
+ * We calculate as output the corresponding fourier coefficient matrix up to
+ * a multiplicative constant i^(k-l). That means:
+ * The wignerTrafomex function just computes
+ * $$\hat{h}_{k,j,l} = \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0)$$
+ * from the harmonic coefficients $\hat{f}_n^{k,l}$.
+ * But the Wigner transform which computes the Fourier coefficients $\hat{g}_{k,j,l}$ reads as
+ * $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0).$$
+ *
  * Therefore we use symmetry properties of SO3F to calculate only a part of
  * symmetrical SO(3) Fourier coefficients and to speed up the algorithm. 
  * The following symmetry properties are implemented:
@@ -54,7 +61,7 @@
  * Syntax
  *   flags = 2^0+2^2+2^4;
  *   sym_axis = [1,2,2,1];
- *   ghat = representationbased_coefficient_transform(N,fhat,flags,sym_axis);
+ *   ghat = wignerTrafomex(N,fhat,flags,sym_axis);
  * 
  * Input
  *  N        - bandwidth
@@ -69,7 +76,7 @@
  *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
  *
  * Output
- *  ghat - Wigner transformed SO(3) Fourier coefficients
+ *  ghat - up to a constant not (w.r.t. symmetries) reconstructed Wigner transformed SO(3) Fourier coefficients
  *
  *
  * This is a MEX-file for MATLAB.
@@ -79,9 +86,12 @@
 #include <mex.h>
 #include <math.h>
 #include <matrix.h>
-#include <stdio.h>
+#include <stdio.h>    // For printf
 #include <complex.h>
 #include <string.h>
+#ifdef _OPENMP // For parallelisation
+#include <omp.h>
+#endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
 #include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
@@ -172,6 +182,8 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     mxComplexDouble *start_ghat;
     start_ghat = ghat;
     mxComplexDouble *iter_fhat;
+    mxComplexDouble *iter_ghat;
+    mxDouble *iter_wigd;
     
 
   // Do recursion for n = 0.
@@ -210,12 +222,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     }
     // Set pointer fhat to next harmonic degree (to the 11th value of fhat)
     fhat += 9 - 3*isReal;
-    // reset pointer ghat to ghat(-N,-N,-N)
-    ghat = start_ghat;
     
     
     // Be shure N>1, otherwise STOP.
-    if (N==1)
+    if (N==1) 
       return;
     
     
@@ -231,9 +241,9 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       // Calculate Wigner-d matrix
       wigner_d_recursion_at_pi_half(N,n,wigd_min2,wigd_min1,wigd);
       
-      // jump to the center of Wigner-d matrix
+      // jump to the center of Wigner-d matrix and save this position
       wigd +=  shift_tocenterwigner;
-     
+      iter_wigd = wigd;
       
       // Compute ghat by adding over all summands of current harmonic 
       // degree n. Therefore it is sufficient to compute ghat only for 
@@ -264,9 +274,13 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
         L_min=0;
 
 
-      // shift pointer ghat to ghat(0,0,0) if F is real valued and to
-      // ghat(0,0,-n) otherwise (if ghat is fullsized matrix) 
-      ghat += (1-isReal)*matrix_size*(N+L_min) + rowcol_len*N + N;
+      // Set pointer ghat to ghat(0,0,0) if F is real valued and to
+      // ghat(0,0,-n) otherwise (if ghat is fullsized matrix)
+      // Moreover save this position for further iterations
+      //      Note: ghat = start_ghat  would reset pointer ghat to ghat(-N,-N,0) 
+      //            if F is real valued and ghat(-N,-N,-N) otherwise [if ghat is fullsized]
+      ghat = start_ghat + (1-isReal)*matrix_size*(N+L_min) + rowcol_len*N + N;
+      iter_ghat = ghat;
       // Set pointer of fhat to the central value fhat(n,0,-n) or fhat(n,0,0) 
       // and save this position for further iterations
       fhat += n + (L_min+n)*(2*n+1) ;
@@ -277,15 +291,23 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       // The Wigner-d functions satisfy the symmetry property
       //          d_n(j,k)*d_n(j,l) = d_n(k,-j)*d_n(l,-j)
       // in MTEX. We use this in the following.
+      #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value)        // Parallelization
       for (j=0; j<=n; j++)
       {
+        // jump to actual column
+        ghat = iter_ghat + j*rowcol_len;
+        // reset pointer fhat
+        fhat = iter_fhat;
+        // use column -j of the Wigner-d matrix
+        wigd = iter_wigd - j*(2*N+1);
+
         for (l= L_min; l<=L_max; l+=SLeftZ)
         {
           for (k= K_min; k<=K_max; k+=SRightZ)
           {
             // compute value
             value = wigd[k]*wigd[l];
-            
+
             // set value
             ghat[k].real += fhat[k].real*value;
             ghat[k].imag += fhat[k].imag*value;
@@ -295,19 +317,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
           ghat += SLeftZ*matrix_size;
           fhat += SLeftZ*(2*n+1);
         }
-        // reset pointer fhat
-        fhat = iter_fhat;
-        // jump to next column
-        ghat += -matrix_size*(L_max-L_min+SLeftZ) + rowcol_len;
-        // use next column of Wigner-d matrix
-        wigd -= 2*N+1;
       }
-      
-      // reset pointer ghat to ghat(-N,-N,0) if F is real valued and 
-      // ghat(-N,-N,-N) otherwise [if ghat is fullsized]
-      ghat = start_ghat;
-      // Set pointer fhat to first value in next harmonic degree
-      fhat += -n + (2*n+1)*(n+1-L_min);
+
+      // Set pointer fhat back to the first value fhat(n+1,-n-1,-n-1) of next harmonic degree
+      fhat = iter_fhat -n + (2*n+1)*(n+1-L_min);
 
       // permute the pointers (wigd, wigdmin1 and wigdmin2) for the next
       // recursions step for the calculation of the Wigner-d matrices.
@@ -353,29 +366,29 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // check data types
     // check for 2 input arguments (inCoeff & bandwith)
     if(nrhs<2)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:invalidNumInputs","More inputs are required.");
+      mexErrMsgIdAndTxt("wignerTrafomex:invalidNumInputs","More inputs are required.");
     // check for 1 output argument (outFourierCoeff)
     if(nlhs!=1)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:maxlhs","One output required.");
+      mexErrMsgIdAndTxt("wignerTrafomex:maxlhs","One output required.");
     
     // make sure the first input argument (bandwidth) is double scalar
     if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","First input argument bandwidth must be a scalar double.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notDouble","First input argument bandwidth must be a scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
     if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notDouble","Second input argument coefficient vector must be type double.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:inputNotVector","Second input argument coefficient vector must be a row vector.");
+      mexErrMsgIdAndTxt("wignerTrafomex:inputNotVector","Second input argument coefficient vector must be a row vector.");
     
     // make sure the third input argument (input_flags) is double scalar (if existing)
     if( (nrhs>=3) && ( !mxIsDouble(prhs[2]) || mxIsComplex(prhs[2]) || mxGetNumberOfElements(prhs[2])!=1 ) )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notDouble","Third input argument flags must be a scalar double.");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notDouble","Third input argument flags must be a scalar double.");
 
     // make sure the fourth input argument (sym_axis) is double (if existing)
     if( (nrhs>=4) && ( !mxIsDouble(prhs[3]) || mxIsComplex(prhs[3]) || mxGetNumberOfElements(prhs[3])!=4 ) )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notDouble","Fourth input argument sym_axis must be a 4x1 double vector.");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notDouble","Fourth input argument sym_axis must be a 4x1 double vector.");
 
 
   // read input data
@@ -384,7 +397,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     
     // check whether bandwidth is natural number
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
-      mexErrMsgIdAndTxt("representationbased_coefficient_transform:notInt","First input argument must be a natural number.");
+      mexErrMsgIdAndTxt("wignerTrafomex:notInt","First input argument must be a natural number.");
     
     // make input matrix complex
     mxArray *zeiger = mxDuplicateArray(prhs[1]);
@@ -411,7 +424,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       sym_axis = s;
 
     if( ((sym_axis[0]!=sym_axis[2]) || (sym_axis[1]!=sym_axis[3])) && flags[3] )
-      mexErrMsgIdAndTxt( "representationbased_coefficient_transform:notAntipodal","ODF can only be antipodal if both symmetries coincide!");
+      mexErrMsgIdAndTxt( "wignerTrafomex:notAntipodal","ODF can only be antipodal if both symmetries coincide!");
 
 
     const int makeEven = flags[1];

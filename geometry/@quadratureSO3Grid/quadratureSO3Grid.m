@@ -32,9 +32,18 @@ classdef (InferiorClasses = {?rotation,?quaternion}) quadratureSO3Grid < orienta
 % See also
 % regularSO3Grid  SO3FunHarmonic/quadrature
 
+% TODO: Save storage with: Define quadratureSO3Grid as own class with 
+% properties 
+%   bandwidth
+%   CS
+%   SS
+%   scheme = 'ClenshawCurtis'
+% end
+% and methods SLeft, SRight, orientation
+% and reconstruct orientations if needed (subsref function)
 
 properties
-  weights =[]
+  weights = []
   scheme = 'ClenshawCurtis'
   iuniqueGrid
   ifullGrid

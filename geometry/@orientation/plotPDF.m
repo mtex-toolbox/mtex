@@ -23,7 +23,7 @@ function plotPDF(ori,varargin)
 %
 % Flags
 %  noTitle    - suppress the Miller indices at the top
-%  noSymmetry - ignore symmetricaly equivalent points
+%  noSymmetry - ignore symmetrically equivalent points
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  complete   - ignore fundamental region
 %  upper      - restrict to upper hemisphere
@@ -113,6 +113,12 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
   samples = discretesample(length(ori),points);
   ori= ori.subSet(samples);
   if ~isempty(data), data = data(samples,:,:); end
+
+  % subsample MarkerSize if needed
+  pos = find_option(varargin,'MarkerSize');
+  if pos>0 && length(varargin{pos+1})>1
+    varargin{pos+1} = varargin{pos+1}(samples);
+  end
 
 end
 

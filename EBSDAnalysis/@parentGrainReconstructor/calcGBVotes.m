@@ -43,9 +43,8 @@ else
 
 end
 
-% if we reconsider all grains we need a seperate algorithm
+% if we reconsider all grains we need a separate algorithm
 if check_option(varargin,'reconsiderAll')
-
   
   % the original child orientation
   ori = job.grainsPrior('id',id(wasChild)).meanOrientation;
@@ -79,6 +78,7 @@ if check_option(varargin,'reconsiderAll')
 
   % compute fits to all neighbors
   fit = nan(length(nId),numV);
+  % fit is a [grainInd,nId] x numV table
   for iV = 1:numV
  
     % parent - parent fit
@@ -96,7 +96,7 @@ if check_option(varargin,'reconsiderAll')
   % accumulate votes, i.e. compute a probability for each grain / parentId
   % combination
   votes = accumVotes(repmat(grainInd,1,numV), repmat(1:numV,length(grainInd),1), fit,...
-    length(job.grains), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
+    size(A,1), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
   
 else
   

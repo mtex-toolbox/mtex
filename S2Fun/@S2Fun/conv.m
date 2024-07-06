@@ -1,5 +1,5 @@
 function SO3F = conv(sF1,sF2,varargin)
-% convolution with a function or a kernel on SO(3)
+% convolution with a function or a kernel on the sphere
 %
 % Syntax
 %   SO3F = conv(sF1,sF2)

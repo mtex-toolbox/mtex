@@ -79,7 +79,10 @@ end
 % if more than one phase is supplied use them all in order
 if ~isempty(varargin) && isa(varargin{1},'cell')
   for i=1:length(varargin{1})
-    ebsd = erode(ebsd,count,varargin{1}{i});
+    % try only if phase exists
+    try
+      ebsd = erode(ebsd,count,varargin{1}{i});
+    end
   end
 end
 

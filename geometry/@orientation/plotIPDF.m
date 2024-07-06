@@ -68,6 +68,12 @@ if (length(ori)*numSym(ori.CS)*numSym(ori.SS) > 100000 || check_option(varargin,
   ori = ori.subSet(samples);
   if ~isempty(data), data = data(:,samples,:); end
 
+  % subsample MarkerSize if needed
+  pos = find_option(varargin,'MarkerSize');
+  if pos>0 && length(varargin{pos+1})>1
+    varargin{pos+1} = varargin{pos+1}(samples);
+  end
+
 end
 
 for ir = 1:length(r)

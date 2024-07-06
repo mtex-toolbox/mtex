@@ -20,13 +20,34 @@
 % \left(\frac{1+x}{2}\right)^{\frac{b}2} P_s^{a,b}(x)$$
 % 
 % using the constants $a =|k-l|$, $b =|k+l|$, $s = n - \max\{|k|,|l|\}$ and
-% $\nu = \min\{0,k\}+\min\{0,l\}$ if $l \geq k$; $\nu =
-% \min\{0,k\}+\min\{0,l\} + k+l$ otherwise.
+% 
+% $$ \nu = \begin{cases} \min\{0,k\}+\min\{0,l\} & \text{if } l \geq k,\\ 
+% \min\{0,k\}+\min\{0,l\} + k+l & \text{otherwise}. \end{cases}$$
 %
-% This definition is slightly different to other well known definitions,
-% because the Wigner-D functions are defined compatible to the
-% <SphericalHarmonics.html spherical harmonics> which form an orthonormal
-% basis on the 2-sphere.
+% The differential representation of the Wigner-d functions reads as
+%
+% $$ d_n^{k,l}(x) = (-1)^{n-l+\min{0,k\}+\min{0,l\}} \frac1{2^n} \left( \frac{(n+l)!}{(n+k)!(n-k)!(n-l)!} \right)^{1/2}  
+%  (1-x)^{\frac{k-l}2} (1+x)^{-\frac{k+l}2} \frac{d^{n-l}}{dx^{n-l}}((1-x)^{n-k}(1+x)^{n+k})$$
+%
+% The Wigner-D functions are defined in MTEX slightly different to other 
+% well known definitions, because the Wigner-D functions are defined 
+% compatible to the <SphericalHarmonics.html spherical harmonics> which 
+% form an orthonormal basis on the 2-sphere and therefore are use to build 
+% <S2FunHarmonicRepresentation.html S2FunHarmonics>.
+%
+% The differences of the Wigner-D functions to common definitions are:
+%     * In the definition of $D_n^{k,l}$ the indices $k,l$ are changed in the $e^{i\cdot}$ functions.
+%     * $D_n^{k,l}$ are normalized by the constant $\sqrt{2n+1}$.
+%     * The sign of $d_n^{k,l}$ is multiplied with $\min\{0,k\}+\min\{0,l\}$.
+%
+% Common definitions can be found in
+%
+% D. A. Varshalovich, A. N. Moskalev, and V. K. Khersonskii. Quantum theory 
+% of angular momentum. Irreducible tensors, spherical harmonics, vector 
+% coupling coefficients, 3nj symbols. 
+% World Scientific Publishing Co.,Inc., Teaneck, NJ, 1988.
+% isbn: 9971-50-107-4. doi: 10.1142/0270.
+%
 %
 %% 
 % In MTEX the Wigner-D and Wigner-d functions are available through the
@@ -79,7 +100,7 @@ norm(D)
 % $D_n( {\bf R} \, {\bf Q} ) = \frac1{\sqrt{2n+1}} \, D_n( {\bf Q} ) \, D_n( {\bf R} ).$
 % Hence we get
 % 
-% $$ D_n^{k,l}( {\bf R} \, {\bf Q} ) = \frac1{2n+1} \sum_{j=-n}^n D_n^{k,j}( {\bf Q} )\,D_n^{j,l}( {\bf R} ). $$
+% $$ D_n^{k,l}( {\bf R} \, {\bf Q} ) = \frac1{\sqrt{2n+1}} \sum_{j=-n}^n D_n^{k,j}( {\bf Q} )\,D_n^{j,l}( {\bf R} ). $$
 %
 %%
 % Some symmetry properties of Wigner-D functions yields
@@ -97,6 +118,7 @@ norm(D)
 % $$ d_n^{k,l}(x) = (-1)^{n+k+l}\,d_n^{-k,l}(-x) = (-1)^{n+k+l}\,d_n^{k,-l}(-x) $$
 %
 % $$d_n^{k,l}(\cos\beta) = (-1)^{k+l}\,d_n^{k,l}(\cos(-\beta))$$
+%
 %
 
 %#ok<*NASGU>

@@ -45,7 +45,7 @@ function [odf,opt] = loadODF_generic(fname,varargin)
 %      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
 %      'Columns',[1,2,3,4])
 %
-  % See also
+% See also
 % import_wizard loadODF ODF_demo
 
 % get options

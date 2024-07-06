@@ -55,26 +55,10 @@ H = [2,4,2]*rot.bandwidth + [2,0,2];
 %        2^4 -> use right and left symmetry
 if isReal
   flags = 2^0+2^2+2^4;
-  sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
-    min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
-  ghat = wignerTrafo(N,SO3F.fhat,flags,sym);
-  ghat = symmetriseFourierCoefficients(ghat,flags,SO3F.SRight,SO3F.SLeft,sym);
 else
   flags = 2^0+2^4;
-  sym = [min(SO3F.SRight.multiplicityPerpZ,2),SO3F.SRight.multiplicityZ,...
-    min(SO3F.SLeft.multiplicityPerpZ,2),SO3F.SLeft.multiplicityZ];
-  ghat = wignerTrafo(N,SO3F.fhat,flags,sym);
-  ghat = symmetriseFourierCoefficients(ghat,flags,SO3F.SRight,SO3F.SLeft,sym);
 end
-
-
-% 3) correct ghat by i^(-k+l)
-if isReal
-  z = (1i).^((-N:N)' - reshape(0:N,1,1,[]));
-else
-  z = (1i).^((-N:N)' - reshape(-N:N,1,1,[]));
-end
-ghat = ghat .* z;
+ghat = wignerTrafo(SO3F,flags,'bandwidth',N);
 
 
 % 4) use rotational symmetries around Z-axis to speed up 

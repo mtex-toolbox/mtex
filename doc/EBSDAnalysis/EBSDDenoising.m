@@ -10,9 +10,8 @@
 % demonstrate how random errors can be significantly reduced using
 % denoising techniques.
 %
-% Simultaneously while denoising orientation maps one can also fill not
-% indexed pixels. This is explained in the section <EBSDFilling.html Fill
-% Missing Data>.
+% Denoising orientation maps may also include filling not indexed pixels.
+% This is explained in the section <EBSDFilling.html Fill Missing Data>.
 %
 %%
 % We shall demonstrate the denoising capabilities of MTEX at the hand of an
@@ -51,7 +50,7 @@ hold off
 % clearly visible. To do so we colorize the orientation data with respect
 % to their misorientation to the grain mean orientation
 
-% the axisAngleColorKey colorizes misorientation according to their axis
+% the @axisAngleColorKey colorizes misorientation according to their axis
 % and angle
 colorKey = axisAngleColorKey;
 

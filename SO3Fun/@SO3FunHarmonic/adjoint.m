@@ -174,12 +174,11 @@ else
 
 end
 
-% --------------------- (3) shift rotational grid -------------------------
+% --------------------- (3) adjoint Wigner transform ----------------------
 
+% shift rotational grid
 z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
 ghat = z .* ghat;
-
-% --------- (4) adjoint representation based coefficient transform ---------
 
 % set flags and symmetry axis
 flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
@@ -193,9 +192,11 @@ sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
 if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
   sym([1,3]) = 1;
 end
-% use adjoint representation based coefficient transform
-fhat = wignerTrafoAdjoint(N,ghat,flags,sym);
+% use adjoint Wigner transform
+fhat = wignerTrafoAdjointmex(N,ghat,flags,sym);
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
+
+
 
 % kill plan
 if check_option(varargin,'keepPlan')
@@ -204,7 +205,7 @@ elseif ~isempty(plan)
   nfftmex('finalize', plan);
 end
 
-% ------------------- (5) Construct SO3FunHarmonic ------------------------
+% ------------------- (4) Construct SO3FunHarmonic ------------------------
 
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft,varargin{:});
 

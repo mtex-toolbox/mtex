@@ -1,7 +1,7 @@
 function fhat = symmetriseWignerCoefficients(fhat,input_flags,CS,SS,sym,varargin)
 % Use function properties (realvalued, antipodal, CS, SS) to construct 
 % symmetric SO(3)-Fourier/Wigner coefficients after using the method 
-% adjoint_representationbased_coefficient_transform with flag 2^4 (use symmetries)
+% wignerTrafoAdjointmex with flag 2^4 (use symmetries)
 
 % get bandwidth
 N=dim2deg(length(fhat));
