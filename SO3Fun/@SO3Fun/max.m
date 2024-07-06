@@ -2,7 +2,7 @@ function [values,modes] = max(SO3F,varargin)
 % global, local and pointwise maxima of functions on SO(3)
 %
 % Syntax
-%   [v,pos] = max(SO3F) % the position where the maximum is atained
+%   [v,pos] = max(SO3F) % the position where the maximum is attained
 %
 %   [v,pos] = max(SO3F,'numLocal',5) % the 5 largest local maxima
 %

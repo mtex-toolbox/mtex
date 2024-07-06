@@ -19,7 +19,7 @@ function job = calcVariantGraph(job, varargin)
 %
 % Description
 % 
-% The weights of the graph are computed from a cummulative Gaussian
+% The weights of the graph are computed from a cumulative Gaussian
 % distribution with mean given by the option |'threshold'| and variance
 % given by the option |'tolerance'|. The options |'C2C'| and |'P2C'| may be
 % used to restrict the graph to specific neighborhood relationships.
@@ -81,7 +81,7 @@ if ~isempty(job.parentGrains) && (check_option(varargin,'P2C') || noOpt)
   % get all child to child grain pairs
   [grainPairs, oriParent, oriChild] = getP2CPairs(job,'index',varargin{:});
   
-  % the corresponding indeces in the sparse matrix
+  % the corresponding indices in the sparse matrix
   indP = indV1(grainPairs(:,1));
   indC = indV1(grainPairs(:,2));
   
@@ -108,7 +108,7 @@ if check_option(varargin,'C2C') || noOpt
   % get all child to child grain pairs
   [grainPairs, oriChild, weights] = getC2CPairs(job,'index',varargin{:});
   
-  % the corresponding indeces in the sparse matrix
+  % the corresponding indices in the sparse matrix
   indC = indV1(grainPairs);
     
   oriChild2 = oriChild(:,2) * p2cV;

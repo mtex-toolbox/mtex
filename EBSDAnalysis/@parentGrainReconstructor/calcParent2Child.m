@@ -76,7 +76,7 @@ end
 % consider also child to child 
 if (noOpt && angle(p2c0)>5*degree) || check_option(varargin,'c2c') 
 
-  % get neighbouring grain pairs
+  % get neighboring grain pairs
   [c2cPairs, oriChild] = getC2CPairs(job, varargin{:});
   
   % compute c2c misorientation

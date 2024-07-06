@@ -34,6 +34,7 @@ end
 % maybe there is nothing to do
 if isempty(pairs)
   ori = reshape(orientation(job.csChild),[],2);
+  weights = 1;
   return
 end
 
