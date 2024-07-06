@@ -11,14 +11,14 @@ plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 
 %%
 % The data set contains 99.8 percent alpha titanium and 0.2 percent beta
-% titanium. Our goal is to reconstuct the original beta phase. The
+% titanium. Our goal is to reconstruct the original beta phase. The
 % original grain structure appears almost visible for human eyes.
 % Our computations will be based on the Burgers orientation relationship
 
 beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 
 %%
-% that alligns (110) plane of the beta phase with the (0001) plane of the
+% that aligns (110) plane of the beta phase with the (0001) plane of the
 % alpha phase and the [1-11] direction of the beta phase with the [-2110]
 % direction of the alpha phase.
 %
@@ -32,7 +32,7 @@ beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 % |parentGrainReconstructor|>. During the reconstruction process this class
 % keeps track about the relationship between the measured child grains and
 % the recovered parent grains. In order to set this variable up we first
-% need to compute the initital child grains from out EBSD data set.
+% need to compute the initial child grains from out EBSD data set.
 
 % reconstruct grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree);
@@ -92,7 +92,7 @@ job.calcVariantGraph('threshold',1.5*degree)
 
 %%
 % In a second step we cluster the variant graph and at the same time
-% compute probabilites for potential parent orientations using the command
+% compute probabilities for potential parent orientations using the command
 % <parentGrainReconstructor.clusterVariantGraph |job.clusterVariantGraph|>
 
 job.clusterVariantGraph('numIter',3)
@@ -188,3 +188,4 @@ hold on
 parentGrains = smooth(job.grains,5);
 plot(parentGrains.boundary,'lineWidth',3,'lineColor','White')
 hold off
+
