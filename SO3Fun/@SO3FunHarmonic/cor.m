@@ -10,7 +10,7 @@ function val = cor(SO3F1,SO3F2)
 %  SO3F1, SO3F2 - @SO3FunHarmonic
 %
 % Output
-%  t - double
+%  c - double
 %
 
 SO3F1 = SO3FunHarmonic(SO3F1);

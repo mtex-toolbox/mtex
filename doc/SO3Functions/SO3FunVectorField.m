@@ -133,7 +133,7 @@ hold off
 % We observe how the gradients all points towards the closest local
 % maximum. This is actually the foundation of the
 % <SO3Fun.steepestDescent.html steepest descent algorithm> used by MTEX in
-% the commands <SO3Fun.max.html |max(odf)|> and <SO3Fun.max.html
+% the commands <SO3Fun.max.html |max(odf)|> and <SO3Fun.calcComponents.html
 % |calcComponents(odf)|>
 %
 %%

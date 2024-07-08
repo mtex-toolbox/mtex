@@ -43,7 +43,7 @@ rot = rotation.byAxisAngle(xvector,90*degree);
 % multiply this kernel function with the sin of the polar angle
 fun = @(v) pi/2*psi.eval(rot*v) .* sin(angle(v,zvector));
 
-% the final kernel function as S2Harmonic
+% the final kernel function as S2FunHarmonic
 psi = S2FunHarmonic.quadrature(fun, 'bandwidth', bw,'antipodal');
 
 %% testing only

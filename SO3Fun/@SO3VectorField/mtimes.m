@@ -18,6 +18,6 @@ if (isnumeric(SO3VF1) && isscalar(SO3VF1)) || (isnumeric(SO3VF2) && isscalar(SO3
   return
 end
 
-error('Operator * is not supported for operands of this types. Use .* or conv() instead.')
+error('Operator * is not supported for operands of this types. Use .* or conv() or dot() instead.')
 
 end

@@ -22,7 +22,7 @@
 
 % Define the true density function, in this case made by combining two
 % Gaussians
-f = @(x) Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x);
+f = @(x) (Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x))/2;
 
 % generate 1000 points linearly spaced between 0 and 1
 x = linspace(0,1,1000);
