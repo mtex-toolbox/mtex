@@ -10,7 +10,7 @@ function [h,ax] = plot(sR,varargin)
 % initialize spherical plots
 sP = newSphericalPlot(sR,varargin{:});
 
-h = [];
+h = gobjects(numel(sP),1);
 for j = 1:numel(sP)
   
   % ensure sector is at this hemisphere TODO
@@ -24,7 +24,7 @@ for j = 1:numel(sP)
   end
   
   % plot the region
-  omega = linspace(0,2*pi,721);
+  omega = linspace(0,2*pi,2161);
   for i=1:length(sR.N)
   
     rot = rotation.byAxisAngle(sR.N(i),omega);
@@ -41,7 +41,7 @@ for j = 1:numel(sP)
       'color',[0.2 0.2 0.2],'linewidth',1.5,'hitTest','off'),varargin{:});
     
     % do not display in the legend
-    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
 
   end
 end

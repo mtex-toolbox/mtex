@@ -1,5 +1,5 @@
 function odf = calcODF(varargin)
-% computes an ODF from individuel orientations
+% computes an ODF from individual orientations
 %
 % The function *calcODF* applies one of the following algorithms to compute
 % an ODF from a list of orientations.
@@ -38,9 +38,9 @@ function odf = calcODF(varargin)
 %
 % Flags
 %  silent     - no output
-%  exact      - no approximation to a corser grid
+%  exact      - no approximation to a coarser grid
 %  Fourier    - force Fourier method
-%  Bingham    - model bingham odf
+%  Bingham    - model Bingham odf
 %  noFourier  - no Fourier method
 %
 % See also

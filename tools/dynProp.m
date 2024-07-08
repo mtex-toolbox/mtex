@@ -179,7 +179,7 @@ classdef dynProp
               
         c  = cprintf(full(d),'-Lc',fn,'-L',' ','-d','   ','-ic',true);
       else
-        c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);
+        c  = cprintf(fn(:)','-L',' <strong>Properties</strong>: ','-d',', ','-ic',true);
       end  
     
       function out = prop2List(prop)
