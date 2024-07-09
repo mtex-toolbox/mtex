@@ -21,7 +21,7 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 % system $\vec a$, $\vec b$, $\vec c$.
 %
 % Note, that also the alignment of the crystal axes $\vec a$, $\vec b$ and
-% $\vec c$ with respect to the atomic lattice, and hence it symmetries,
+% $\vec c$ with respect to the atomic lattice, and hence its symmetries,
 % follows different conventions. These are discussed in the section
 % <SymmetryAlignment.html Alignment of the Crystal Axes>.
 % 
