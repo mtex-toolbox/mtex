@@ -21,7 +21,7 @@ function grains2d = slice(grains,varargin)
 %  grain2d  - @grain2d
 %
 % See also
-% grain2d
+% grain2d grain3d/intersected
 
 %% Processing inputs
 % plane           - plane in matGeom Format

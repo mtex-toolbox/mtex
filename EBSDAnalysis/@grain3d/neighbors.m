@@ -20,7 +20,7 @@ function pairs = neighbors(grains,varargin)
 %  pairs  - index list of size N x 2
 %
 % See also
-% numNeighbors
+% grain3d/numNeighbors
 
 
 % extract grainIds for each boundary segment

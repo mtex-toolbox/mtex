@@ -3,11 +3,11 @@ function pairs = neighbors(grains,varargin)
 %
 % Syntax
 %
-%   % neighbouring relationships within grains
+%   % neighboring relationships within grains
 %   pairs = neighbors(grains)
 %   pairs = neighbors(grains1,grains2)
 %
-%   % all neighbouring relationships
+%   % all neighboring relationships
 %   pairs = neighbors(grains,'full')
 %
 % Input
