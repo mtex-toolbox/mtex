@@ -16,6 +16,7 @@ classdef grain3d < phaseList & dynProp
     V     % vertices
     F     % n x 1 cell array or n x 3 array with all faces
     meanOrientation
+    numFaces  % number of boundary faces per grain
   end
 
   methods
@@ -97,6 +98,10 @@ classdef grain3d < phaseList & dynProp
         % set not indexed orientations to nan
         if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
       end
+    end
+
+    function num = get.numFaces(grains)
+      num = sum(logical(grains.I_GF),2);
     end
 
   end
