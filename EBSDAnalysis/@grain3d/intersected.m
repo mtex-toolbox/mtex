@@ -1,18 +1,19 @@
-function grains = intersected(grains,varargin)
-% grain3d.intersected is a method to restrict 3D grain data to the cells
-% that are intersected by a plane in 3D space 
+function intersected_cells = intersected(grains,varargin)
+% grain3d.intersected is a method to determine if a 3D grain data cell
+% is intersected by a plane in 3D space 
 %
 % Syntax
 %
 %   N = vector3d(1,1,1)             % plane normal
 %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
-%   grain = grains.intersected(N,P0)
+%   is_intersected = grains.intersected(N,P0)
 %
 %   V = vector3d([0 1 0],[0 1 1],[0 1 0])
-%   grain = grains.intersected(V)       % set of points
+%   is_intersected = grains.intersected(V)       % set of points
+%   grains = grains(is_intersected)
 %
 %   plane = createPlane(P0,N)       % note different sequence of inputs!
-%   grain = grains.intersected(plane)   % plane in matGeom format
+%   is_intersected = grains.intersected(plane)   % plane in matGeom format
 %
 % Input
 %  grains   - @grain3d
@@ -50,24 +51,17 @@ assert(isPlane(plane),'Input error')
 %%
 V = grains.boundary.allV.xyz;   % all vertices as xyz
 F = grains.F;                   % all faces (polys) as nx1-cell or nx3 array
-log_I_GF = logical(grains.I_GF);
+I_GF = grains.I_GF;
 
 % look which of the vertices are above and which below
 V_above_below = isBelowPlane(V,plane);
-
-% cell array with all vertices for each grain
-grains_V = cell(grains.size);
+% look which boundary faces have vertices above AND below
 if iscell(F)
-  for i = 1:size(log_I_GF,1)
-    grains_V(i) = {unique([F{log_I_GF(i,:),:}])};
-  end
+  F_affected = cellfun(@(a) any(V_above_below(a))&~all(V_above_below(a)),F);
 else
-  for i = 1:size(log_I_GF,1)
-    grains_V(i) = {unique([F(log_I_GF(i,:),:)])};
-  end
+  F_affected = V_above_below(F);
+  F_affected = any(F_affected,2)&~all(F_affected,2);
 end
 
-% search for grains, that have vertices above AND below the plane
-intersected_cells = cellfun(@(cell) any(V_above_below(cell))&~all(V_above_below(cell)), grains_V);
-
-grains = grains.subSet(intersected_cells);
+F_affected = repmat(F_affected,[1 size(I_GF,1)])';
+intersected_cells = any(logical(I_GF)&F_affected,2);

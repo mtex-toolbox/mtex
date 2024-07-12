@@ -53,7 +53,7 @@ assert(isPlane(plane),'Input error')
 % handling of crossroads and inclusions     (line 146, 157)
 
 %%
-inters_grains = grains.intersected(plane); % restrict to affected cells
+inters_grains = grains.subSet(grains.intersected(plane)); % restrict to affected cells
 newIds = inters_grains.id;                 % Ids of the new grains2d
 
 V = inters_grains.boundary.allV.xyz;    % all vertices as xyz
