@@ -83,8 +83,9 @@ plot(SO3F2)
 
 %%
 % Plotting this function, we can immediately see, that we have a much
-% smoother function. But one has to keep in mind that the error in the data
-% nodes is not zero as in the case of interpolation.
+% smoother function. But one has to keep in mind that we can not expect the 
+% error in the data nodes to be zero, as this would mean overfitting to the 
+% noisy input data.
 
 norm(eval(SO3F2, ori) - S.values) / norm(S.values)
 

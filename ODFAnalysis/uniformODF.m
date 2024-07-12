@@ -2,10 +2,10 @@ function odf = uniformODF(varargin)
 % define a uniform ODF
 %
 % Description
-% *unimodalODF* defines a constant ODF with respect to the symmetries.
+% A *uniformODF* defines a constant ODF.
 %
 % Syntax
-%   odf = unimodalODF(CS,SS)  % specify crystal and specimen symmetry
+%   odf = uniformODF(CS,SS)
 %
 % Input
 %  CS, SS - crystal, specimen @symmetry

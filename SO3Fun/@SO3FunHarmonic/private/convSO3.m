@@ -9,7 +9,7 @@ s2 = size(fhat2);
 L = min(dim2deg(s1(1)),dim2deg(s2(1)));
 
 % new size
-l=length(s2)-length(s1);
+l = length(s2)-length(s1);
 s = max([s1(2:end),ones(1,l);s2(2:end),ones(1,-l)]);
 
 % compute Fourier coefficients of the convolution

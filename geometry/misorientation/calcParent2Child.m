@@ -12,10 +12,10 @@ function [p2cOld, omega] = calcParent2Child(mori,p2c,varargin)
 % Input
 %  childOri - child @orientation
 %  c2c      - child to child mis@orientation
-%  p2c0     - initial guess of the parent to child orienation relationship
+%  p2c0     - initial guess of the parent to child orientation relationship
 %
 % Output
-%  p2c      - parent to child orienation relationship
+%  p2c      - parent to child orientation relationship
 %  fit      - disorientation angle between all c2c misorientations and the computed one
 %
 % Options
@@ -69,7 +69,7 @@ while k <= maxIt
   % compute best fitting variant
   [omega, variant] = min(omega,[],2);  
   
-  % take only those c2c misorientations that are suffiently close to the
+  % take only those c2c misorientations that are sufficiently close to the
   % current candidate
   ind = omega < min(threshold, quantile(omega, quant));
   

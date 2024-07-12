@@ -46,7 +46,7 @@ job = parentGrainReconstructor(ebsd,grains);
 %%
 % The |parentGrainReconstructor| guesses from the EBSD data what is the
 % parent and what is the child phase. If this guess is not correct it might
-% be specified explicitely by defining an initial guess for the parent to
+% be specified explicitly by defining an initial guess for the parent to
 % child orientation relationship first and passing it as a third argument to
 % |<parentGrainReconstructor.parentGrainReconstructor.html
 % parentGrainReconstructor>|. Here we define this initial guess seperately
@@ -69,7 +69,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % It is well known that the phase transformation from austenite to
 % martensite is not described by a fixed orientation relationship. In fact,
 % the actual orientation relationship needs to be determined for each
-% sample individualy. Here, we used the iterative method proposed by Tuomo
+% sample individually. Here, we used the iterative method proposed by Tuomo
 % Nyyssönen and implemented in the function <calcParent2Child.html
 % |calcParent2Child|> that starts at our initial guess of the orientation
 % relation ship and iterates towards a more optimal orientation

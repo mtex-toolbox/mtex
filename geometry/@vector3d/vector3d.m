@@ -76,10 +76,17 @@ classdef vector3d < dynOption
           
         elseif isa(varargin{1},'float')
           xyz = varargin{1};
-          if size(xyz,1) ~= 3, xyz = xyz.'; end
-          v.x = xyz(1,:);
-          v.y = xyz(2,:);
-          v.z = xyz(3,:);
+
+          if numel(xyz) == 2
+            v.x = xyz(1);
+            v.y = xyz(2);
+            v.z = 0;
+          else
+            if size(xyz,1) ~= 3, xyz = xyz.'; end
+            v.x = xyz(1,:);
+            v.y = xyz(2,:);
+            v.z = xyz(3,:);
+          end
         else
           error('wrong type of argument');
         end       

@@ -113,7 +113,12 @@ if check_option(varargin,'ODFstats')
  disp(['   Mean error during interpolating ODF   : ',xnum2str(mean(err))]);
 end
 
-SO3F = SO3F + sum(w).*unimodalODF(S3G,psi,'weights',w./sum(w));
+% if check_option(varargin,'exact')
+%   % Dont remove small values
+%   SO3F = SO3F + SO3FunRBF(S3G,psi,w);
+% else
+SO3F = SO3F + unimodalODF(S3G,psi,'weights',w);
+% end
 
 % ensure normalization to 1 if we are sufficiently close to 1
 if abs(sum(SO3F.weights)-1)<0.1

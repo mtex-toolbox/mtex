@@ -159,43 +159,53 @@ classdef dynProp
     function c = char(dp,varargin)
       
       fn = fieldnames(dp.prop);
-      fn_ext = [];
       
-      if ~isempty(fn) && length(dp.prop.(fn{1}))<=20
+      numdP = length(dp.prop.(fn{1}));
+
+      if ~isempty(fn) && numdP<=20
+      
+        numCustom = length(varargin)/2;
+        fn = [varargin(1:2:end).'; fn];
+
+        d = cell(numdP,length(fn));
         
-        d = zeros(numel(dp.prop.(fn{1})),0);
-        
-        for i = 1:2:length(varargin)
-          [propName,value] = prop2list(varargin{i:i+1});
-          d = [d,value];%#ok<AGROW>
-          fn_ext = [fn_ext,propName];%#ok<AGROW>
+        for i = 1:numCustom
+          d(:,i) = prop2List(varargin{2*i});
         end
         
-        for j = 1:numel(fn)
-          [propName,value] = prop2list(fn{j},vertcat(dp.prop.(fn{j})));
-          fn_ext = [fn_ext,propName]; %#ok<AGROW>
-          d = [d,value]; %#ok<AGROW>          
+        for j = numCustom+1 : numel(fn)
+          d(:,j) = prop2List(dp.prop.(fn{j}));
         end
-        
-        c  = cprintf(full(d),'-Lc',fn_ext,'-L',' ','-d','   ','-ic',true);
+              
+        c  = cprintf(full(d),'-Lc',fn,'-L',' ','-d','   ','-ic',true);
       else
-        c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);
+        c  = cprintf(fn(:)','-L',' <strong>Properties</strong>: ','-d',', ','-ic',true);
       end  
-      
-      
-      function [prop,value] = prop2list(prop,value)
-        
-        if isa(value,'quaternion')
-          [w1,w2,w3,prop] = Euler(value);
-          value = round([w1(:),w2(:),w3(:)]/degree);
-        else
-          prop = {prop};
-          value = value(:);
-        end 
-        
+    
+      function out = prop2List(prop)
+
+        out = cell(size(prop,1),1);
+        for k = 1:size(prop,1)
+          if isa(prop,'quaternion')
+            out{k} = char(prop(k),'Euler');
+          elseif isa(prop,'vector3d')
+            out{k} = ['(' xnum2str(prop(k).xyz,'delimiter',',') ')'];
+          elseif isnumeric(prop) && isscalar(prop)
+            out{k} = prop(k,:);
+          elseif isnumeric(prop)
+            out{k} = xnum2str(prop(k,:));
+          elseif iscell(prop)
+            out{k} = char(prop{k});
+          else
+            out{k} = char(prop(k,:));
+          end
+        end
       end
-        
+
     end
+
+
+    
     
     % -----------------------------------------------
     function display(dp,varargin)

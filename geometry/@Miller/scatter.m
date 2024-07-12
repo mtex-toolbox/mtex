@@ -30,7 +30,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
             
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
     
-    % plot only unqiue points
+    % plot only unique points
     [m,l] = symmetrise(m,'unique','noAntipodal',varargin{:}); % symmetrise without repetition
     
     if check_option(varargin,'label')

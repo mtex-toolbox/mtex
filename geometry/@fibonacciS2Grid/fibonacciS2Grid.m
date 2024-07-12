@@ -36,6 +36,7 @@ classdef fibonacciS2Grid < vector3d
     % constructor of the class fibonacciS2Grid
     function fibgrid = fibonacciS2Grid(varargin)
       saverho = false;
+
       % check if we should save the precise rho angles of the grid
       saverho_specifier_pos = find(strcmp(varargin, 'saverho'), 1);
       if ~isempty(saverho_specifier_pos)
@@ -59,7 +60,7 @@ classdef fibonacciS2Grid < vector3d
       % define the golden ratio
       phi = (1+sqrt(5)) / 2;
       
-      % doing it in reverse results in incresing theta anlge
+      % doing it in reverse results in increasing theta angle
       idx = (n : -1 : -n)';
       rho = mod(2*pi/phi * idx, 2*pi); 
       sintheta = 2/(2*n+1) * idx;

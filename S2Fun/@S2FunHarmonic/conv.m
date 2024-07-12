@@ -1,7 +1,8 @@
 function sF = conv(sF, psi, varargin)
-% spherical convolution of sF with a radial function psi 
+% spherical convolution of sF with a radial function or another
+% sperical function psi
 %
-% There are two S2Funs $f: \mathbb S^2 /_{s_1} \to \mathbb{C}$
+% If there are two S2Funs $f: \mathbb S^2 /_{s_1} \to \mathbb{C}$
 % $g: \mathbb S^2 /_{s_2} \to \mathbb{C}$ given, where $s_1$ and $s_2$ 
 % denotes the symmetries.
 % Then the convolution $f*g: {}_{s_2} \backslash SO(3) /_{s_1} \to
@@ -20,7 +21,7 @@ function sF = conv(sF, psi, varargin)
 % Input
 %  sF, sF1, sF1 - @S2FunHarmonic
 %  psi - @S2Kernel
-%  A   - list of Legendre coeficients
+%  A   - list of Legendre coefficients
 %
 % Output
 %  sF   - @S2FunHarmonic
@@ -32,7 +33,7 @@ function sF = conv(sF, psi, varargin)
 
 % The convolution is defined like above. But in MTEX the convolution of two
 % S2Funs is mostly calculated by
-%                    inv(4*pi*conv(SO3F1,conj(SO3F2))).
+%                    inv(4*pi*conv(sF1,conj(sF2))).
 %
 
 

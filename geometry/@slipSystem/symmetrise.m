@@ -30,7 +30,7 @@ for i = 1:length(sS)
   % find those which have the same angles as the original system
   % for slip system this is of course 90 degree
   [r,c] = find(isnull(dot(sS.n(i),sS.b(i),'noSymmetry')-...
-    dot_outer(mm,nn,'noSymmetry')));
+    dot_outer(mm,nn,'noSymmetry'),1e-7));
 
   % restricht to the orthogonal ones
   b = [b;mm(r(:))]; %#ok<*AGROW>

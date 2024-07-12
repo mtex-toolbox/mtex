@@ -180,7 +180,7 @@ else % child variants
   end
   
   if exist('oriParent','var')
-    out = reshape(oriParent.project2FundamentalRegion,[],1) * inv(p2cVariants);
+    out = reshape(oriParent.project2FundamentalRegion,[],1) .* inv(p2cVariants);
   elseif exist('MillerParent','var')
     out = p2cVariants .* reshape(MillerParent,[],1);
   else

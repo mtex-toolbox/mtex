@@ -24,7 +24,7 @@ function selectInteractive(job,varargin)
 %
 
 
-% datacursormode does not work with grains due to a Matlab bug
+% datacursormode does not work with grains due to a MATLAB bug
 datacursormode off
 
 % define a hand written selector
@@ -53,28 +53,42 @@ hold off
 setappdata(ax,'handleSelected',handleSelected);
 
 votesFit = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
-votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24,'tolerance',5*degree,'curvatureFactor',1);
+%votesProb = job.calcGBVotes(grain.id,'reconsiderAll','numFit',24,'tolerance',5*degree,'curvatureFactor',1);
 
-fig = figure(100);
+persistent fig
+try 
+figure(fig)
+catch
+  fig = figure(100); 
+end
+
+%profile on
 clf(fig)
 set(fig,'name',['grain: ' xnum2str(grain.id)])
 numV = size(votesFit.parentId,2);
-cKey = ipfHSVKey(job.csParent);
+persistent cKey;
+if isempty(cKey) || cKey.CS1 ~= job.csParent
+  cKey = ipfHSVKey(job.csParent);
+end
 
 oriPV = variants(job.p2c,job.grainsPrior(localId).meanOrientation,votesFit.parentId);
 
 bgColor = cKey.orientation2color(oriPV);
 fgColor = bgColor .* sum(bgColor,2) < 1.5;
 
-for n=1:numV
-    
+numVRed = min(numV,5);
+for n=1:numVRed
+ 
+  %s = [' - ' xnum2str(votesProb.prob(votesProb.parentId==votesFit.parentId(n)))];
+  s = [];
   handles.b{n} = uicontrol('Style','PushButton','Units','normalized',...
-    'Position',[0.1 (n-1)/numV 0.8 0.9*1/numV],...
+    'Position',[0.1 (n-1)/numVRed 0.8 0.9*1/numVRed],...
     'backGroundColor',bgColor(n,:),'ForegroundColor',fgColor(n,:),...
-    'String',[xnum2str(votesFit.fit(n)./degree) ' - ' ...
-    xnum2str(votesProb.prob(votesProb.parentId==votesFit.parentId(n))) ],...
-    'Callback',{@setOri,job,localId,oriPV(n),ax}); %#ok<STRNU>
+    'String',[xnum2str(votesFit.fit(n)./degree) s],...
+    'Callback',{@setOri,job,localId,oriPV(n),ax},'FontSize',16,'FontWeight','bold'); %#ok<STRNU>
+
 end
+%profile viewer
 
 end
 

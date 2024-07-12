@@ -40,9 +40,9 @@ classdef rotation < quaternion & dynOption
   end
 
   properties (Dependent = true)
-    phi1 % Bunge Euler angle 1
-    Phi  % Bunge Euler angle 2
-    phi2 % Bunge Euler angle 3
+    phi1  % Bunge Euler angle 1
+    Phi   % Bunge Euler angle 2
+    phi2  % Bunge Euler angle 3
   end
 
   methods
@@ -129,17 +129,29 @@ classdef rotation < quaternion & dynOption
     end
 
     function phi1 = get.phi1(rot)
-      [phi1,~,~] = Euler(rot);
+      [phi1,~,~] = Euler(rot,'Bunge');
     end
 
     function Phi = get.Phi(rot)
-      [~,Phi,~] = Euler(rot);
+      [~,Phi,~] = Euler(rot,'Bunge');
     end
 
     function phi2 = get.phi2(rot)
-      [~,~,phi2] = Euler(rot);
+      [~,~,phi2] = Euler(rot,'Bunge');
     end
 
+    function alpha = alpha(rot)
+      [alpha,~,~] = Euler(rot,'Matthies');
+    end
+
+    function beta = beta(rot)
+      [~,beta,~] = Euler(rot,'Matthies');
+    end
+ 
+    function gamma = gamma(rot) 
+      % This can not be a property since SO3Grid allready has the property gamma
+      [~,~,gamma] = Euler(rot,'Matthies');
+    end
   end
 
   methods (Static = true)
