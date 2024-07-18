@@ -45,11 +45,12 @@ if isscalar(mtexFig.cBarAxis) && i>1
   if pos(4)>pos(3) %Vertical bar
     
     pos(4) = mtexFig.nrows * mtexFig.axisHeight + ...
-      (mtexFig.nrows-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4])));
+      (mtexFig.nrows-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4]))) - ...
+      (mtexFig.cBarAxis.Ruler.Exponent~=0)*2*mtexFig.cBarAxis.FontSize;
     pos(2) = axisPos(2)+1;
     pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing + ...
       sum(mtexFig.tightInset([1,3]))) + mtexFig.outerPlotSpacing;
-
+    
   else  %Horizontal bar
     
     pos(3)=mtexFig.ncols*(mtexFig.axisWidth) + ...
