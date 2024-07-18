@@ -34,7 +34,7 @@ if symCenter
 end
  
 varargin = delete_option(varargin,'weights',1);
-SO3FH = SO3FunHarmonic.quadrature(ori,c,varargin{:},'bandwidth',L);
+SO3FH = SO3FunHarmonic.adjoint(ori,c,varargin{:},'bandwidth',L);
 
 SO3FH = conv(SO3FH,SO3F.psi);
 
