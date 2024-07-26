@@ -16,12 +16,12 @@ function E = entropy(sF, varargin)
 %
 
 % get some quadrature nodes
-[nodes, W] = quadratureS2Grid(max(128,sF.bandwidth));
+S2G = quadratureS2Grid(max(128,sF.bandwidth));
 
-f = sF.eval(nodes);
+f = sF.eval(S2G(:));
 
 % compute the entropy
-E = -real(sum(W .* f .* log(f),1)) / 4 /pi;
+E = -real(sum(S2G.weights(:) .* f .* log(f),1)) / 4 /pi;
 E = reshape(E,size(sF));
 
 end

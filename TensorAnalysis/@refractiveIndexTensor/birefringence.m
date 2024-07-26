@@ -35,7 +35,8 @@ function [n,pMin,pMax,nMin,nMax] = birefringence(rI,vprop)
 if nargin == 1 || isempty(vprop)
 
   M = 48;
-  [vprop, W] = quadratureS2Grid(2*M);
+  vprop = quadratureS2Grid(2*M);
+  W = vprop.weights(:); vprop = vprop(:);
 
   [n,pMin,pMax] = birefringence(rI,vprop);
 

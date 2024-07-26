@@ -31,11 +31,9 @@ bw = get_option(varargin, 'bandwidth', 128);
 if isa(f,'S2Fun'), f = @(v) f.eval(v); end
 
 if isa(f,'function_handle')
-  if check_option(varargin, 'gauss')
-    [nodes, W] = quadratureS2Grid(2*bw, 'gauss');
-  else
-    [nodes, W] = quadratureS2Grid(2*bw);
-  end
+  nodes = quadratureS2Grid(bw,varargin{:});
+  W = nodes.weights(:);
+  nodes = nodes(:);
   values = f(nodes(:));
 else
   nodes = f(:);

@@ -24,7 +24,7 @@ methods
       truncate(sF);
       return
     elseif isa(fhat,'S2Fun')
-      sF = S2FunHarmonic.quadrature(fhat);
+      sF = S2FunHarmonic.quadrature(fhat,varargin{:});
       return
     elseif isa(fhat,'S2Kernel')
       psi = fhat;
