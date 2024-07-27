@@ -30,7 +30,7 @@ methods
     if nargin == 0, return; end
     
     if isa(SO3F,'SO3FunHarmonic')
-      SO3VF.SO3F = SO3FunHarmonic(SO3F(:));
+      SO3VF.SO3F = SO3FunHarmonic(SO3F(:),varargin{:});
       
       % extract symmetry
       [SO3VF.SRight,SO3VF.SLeft] = extractSym(varargin);

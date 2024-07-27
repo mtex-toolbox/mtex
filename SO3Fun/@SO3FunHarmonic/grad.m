@@ -81,8 +81,8 @@ if tS.isLeft
   end
 
   % no more specimen symmetry
-  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry) ,...
-    SO3F.CS,SO3F.SS,tS);
+  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry,varargin{:}) ,...
+    SO3F.CS,SO3F.SS,tS,'skipSymmetrise');
 
 else
 
@@ -116,8 +116,8 @@ else
   end
 
   % no more crystal symmetry
-  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS),...
-    SO3F.CS,SO3F.SS ,tS);
+  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS,varargin{:}),...
+    SO3F.CS,SO3F.SS ,tS,'skipSymmetrise');
 
 end
 
