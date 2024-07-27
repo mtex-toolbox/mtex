@@ -153,7 +153,7 @@ classdef sphericalRegion
       
       if nargin == 2
         
-        theta = linspace(0,pi,10000);
+        theta = linspace(0,pi,10001);
         
         srho = size(rho);
         [rho,theta] = meshgrid(rho,theta);

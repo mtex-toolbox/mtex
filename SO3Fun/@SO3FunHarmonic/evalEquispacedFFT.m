@@ -18,8 +18,23 @@ function f = evalEquispacedFFT(SO3F,rot,varargin)
 %  f - values at this grid points
 %  nodes - @orientation
 %
+% Example
+%   % construct quadrature grid and evaluate there. Output will be a unique
+%   % part of this grid
+%   SO3F = SO3FunHarmonic.example;
+%   rot = quadratureSO3Grid(64,SO3F.CS)
+%   v = evalEquispacedFFT(SO3F,rot)
+%
+%   % for big grid sizes the construction of the quadrature grid is memory
+%   % expansive. Hence construct struct, but the output is full sized
+%   rot = struct('scheme','ClenshawCurtis','bandwidth',350,'CS',SO3F.CS,'SS',specimenSymmetry)
+%   v = evalEquispacedFFT(SO3F,rot);
+%
 % See also
 % SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalSectionsEquispacedFFT
+
+% TODO: Extend to general equispaced grids and usage by plotting allows to
+% plot SO3FunHarmonics of high bandwidth
 
 if ~strcmp(rot.scheme,'ClenshawCurtis')
   error(['Evaluation of SO3FunHarmonics by an equispaced FFT is only implemented ' ...
@@ -109,6 +124,8 @@ else
 end
 
 % output is only the unique part of f
-f = f(rot.ifullGrid);
+if isa(rot,'quadratureSO3Grid')
+  f = f(rot.ifullGrid);
+end
 
 end
