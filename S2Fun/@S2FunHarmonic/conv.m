@@ -48,9 +48,9 @@ if isa(psi,'S2Fun')
   
   if isa(psi,'S2FunHarmonic')
     sF2 = psi;
-    bw = get_option(varargin,'bandwidth',min(sF.bandwidth,sF2.bandwidth));
+    bw = min(get_option(varargin,'bandwidth',NaN),min(sF.bandwidth,sF2.bandwidth));
   else
-    bw = get_option(varargin,'bandwidth',sF.bandwidth);
+    bw = min(get_option(varargin,'bandwidth',NaN),sF.bandwidth);
     sF2 = S2FunHarmonic.quadrature(psi,'bandwidth',bw);
   end
   
