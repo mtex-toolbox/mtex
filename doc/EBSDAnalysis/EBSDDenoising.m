@@ -6,13 +6,12 @@
 % Systematic errors mostly occur due to a bad calibration of the EBSD
 % system and require additional knowledge to be corrected. Deviations from
 % the true orientation due to noisy Kikuchi pattern or tolerances of the
-% indecing algorithm can be modeled as random errors. In this section we
+% indexing algorithm can be modeled as random errors. In this section we
 % demonstrate how random errors can be significantly reduced using
 % denoising techniques.
 %
-% Simultanously while denoising orientation maps one can also fill not
-% indexed pixels. This is explained in the section <EBSDFilling.html Fill
-% Missing Data>.
+% Denoising orientation maps may also include filling not indexed pixels.
+% This is explained in the section <EBSDFilling.html Fill Missing Data>.
 %
 %%
 % We shall demonstrate the denoising capabilities of MTEX at the hand of an
@@ -30,7 +29,7 @@ ebsd = ebsd('indexed');
 % remove some very small grains
 ebsd(grains(grains.grainSize<5)) = [];
 
-% redo grain segementation
+% redo grain segmentation
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree);
 
 % smooth grain boundaries
@@ -51,7 +50,7 @@ hold off
 % clearly visible. To do so we colorize the orientation data with respect
 % to their misorientation to the grain mean orientation
 
-% the axisAngleColorKey colorizes misorientation according to their axis
+% the @axisAngleColorKey colorizes misorientation according to their axis
 % and angle
 colorKey = axisAngleColorKey;
 

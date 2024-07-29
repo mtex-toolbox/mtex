@@ -4,7 +4,7 @@ function I = Mv(solver,c,i)
 % Input
 %  solver - Solver
 %  c - coefficients
-%  i - intensities
+%  i - pole figure index
 %
 
 % compute Fourier coefficients
@@ -21,7 +21,16 @@ nfsftmex('set_f_hat_linear', solver.nfft_r(i), fhat);
 nfsftmex('trafo', solver.nfft_r(i));
 I = real(nfsftmex('get_f', solver.nfft_r(i)));
 
-% sum up specimen symmetry
-I = mean(reshape(I,[],length(solver.pf,i)),1).';
-  
+if isfield(solver.pf.prop,'bankId')
+  % average values over a bank
+  I = accumarray(solver.pf.prop.bankId{i},I,[max(solver.pf.prop.bankId{i}),1],@mean);
+
+  % expand
+  I = I(solver.pf.prop.bankId{i});
+else
+
+  % sum up specimen symmetry
+  I = mean(reshape(I,[],length(solver.pf,i)),1).';
+end
+
 end  

@@ -93,6 +93,19 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
 else % phase plot
 
+  if ebsd.isSinglePhase
+    
+    str = inputname(1);
+    if isempty(str), str = "ebsd"; end
+    
+    warning("You asked me to make a phase plot of single phase map. " + ...
+      "This might not what you are looking for. " + ...
+      "In order to colorize the map according to the orientations you should do" + ...
+      newline + newline + ...
+      "plot(" + str + "," + str + ".orientations)" + newline);
+  end
+
+
   for k=1:numel(ebsd.phaseMap)
       
     ind = ebsd.phaseId == k;
