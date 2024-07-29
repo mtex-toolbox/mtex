@@ -69,9 +69,9 @@ ghat = wignerTrafo(SO3F,flags,'bandwidth',N);
 % precompute grid size for fft
 theta = oS.plotGrid.theta(:,1);
 rho = oS.plotGrid.rho(1,:);
-[~,rhoMax] = rhoRange(oS.sR);
-[~,thetaMax] = thetaRange(oS.sR,1);
-H = [round(2*pi/thetaMax)*(length(theta)-1),round(2*pi/rhoMax)*(length(rho)-1)];
+[rhoMin,rhoMax] = rhoRange(oS.sR);
+[thetaMin,thetaMax] = thetaRange(oS.sR,rho(1));
+H = [round(2*pi/abs(thetaMax-thetaMin))*(length(theta)-1),round(2*pi/abs(rhoMax-rhoMin))*(length(rho)-1)];
 
 % sigmaSections are equispaced w.r.t. an rank-1 lattice in alpha and gamma.
 % Hence we compute them seperatly.
@@ -88,8 +88,9 @@ if isa(oS,'sigmaSections')
   sec = oS.omega;
   for ind = 1:length(sec)
     
+    shift = (S3G(2,1,1).gamma-pi/6);
     % shift Fourier series by section angle and pi/6
-    hhat = ghat .* exp(-1i*(-N:N)'*(pi/6+sec(ind)));
+    hhat = ghat .* exp(-1i*(-N:N)'*(shift+pi/6+sec(ind)) -1i*(0:N)*shift);
     
     % transform rank-1 lattice based bivariate Fourier series 
     % (along alpha x gamma) into univariate Fourier series of length H(1)
