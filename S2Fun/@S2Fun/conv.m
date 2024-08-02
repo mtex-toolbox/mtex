@@ -14,7 +14,7 @@ function SO3F = conv(sF1,sF2,varargin)
 %  SO3F - @SO3FunHarmonic
 %
 % See also
-% S2FunHarmonic/conv S2Kernel/conv SO3Fun/conv SO3FunHarmonic/conv
+% S2FunHarmonic/conv S2Kernel/conv SO3FunHarmonic/conv
 
 if isnumeric(sF1)
   SO3F = conv(sF2,sF1,varargin{:});

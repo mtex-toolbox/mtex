@@ -50,9 +50,9 @@ end
 %       Possibly use LaueGroups or properGroups
 %       By changing that also update the code in SO3FunComposition.
 
-if isa(SO3F2,'S2FunHarmonicSym')
+if isa(SO3F2,'S2FunHarmonic')
   % compare symmetries in case of convolution with S2Fun
-  if SO3F1.SRight ~= SO3F2.s
+  if (isa(SO3F2,'S2FunHarmonicSym') && (SO3F1.SLeft ~= SO3F2.s)) || (~isa(SO3F2,'S2FunHarmonicSym') && (SO3F1.SLeft ~= specimenSymmetry))
     error('By convolution of a @SO3Fun with a @S2Fun the symmetries have to be compatible.')
   end
   return

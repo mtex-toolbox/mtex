@@ -1,24 +1,8 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
 % convolution of an SO3FunRBF with another SO3FunRBF or an SO3Kernel
 %
-% There are two SO3Funs $f: _{S_f^L\backslash}SO(3)_{/S_f^R} \to \mathbb{C}$
-% where $S_f^L$ is the Left symmetry and $S_f^R$ is the Right symmetry and
-% $g: _{S_g^L\backslash}SO(3)_{/S_g^R} \to \mathbb{C}$ given.
-% Then the convolution $ f *_L g : _{S_f^L\backslash}SO(3)_{/S_g^R} \to
-% \mathbb{C}$ is defined by
-%
-% $$ (f *_L g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
-%
-% and the convolution $ f *_R g : _{S_g^L\backslash}SO(3)_{/S_f^R} \to
-% \mathbb{C}$ is defined by
-%
-% $$ (f *_R g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(R\,q^{-1}) \, dq $$.
-%
-% with $vol(SO(3)) = \int_{SO(3)} 1 \, dR = 8\pi^2$.
-% The convolution $*_L$ is used as default.
-% The convolution of matrices of SO3Functions with matrices of SO3Functions
-% works elementwise.
-%
+% For detailed information about the definition of the convolution take a 
+% look in the <SO3FunConvolution.html documentation>.
 %
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
@@ -33,7 +17,7 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %  SO3F - @SO3FunRBF
 %
 % See also
-% SO3FunHarmonic/conv  SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv
+% SO3FunHarmonic/conv SO3FunCBF/conv SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv
 
 
 % The convolution is defined like above. But in MTEX the convolution of two

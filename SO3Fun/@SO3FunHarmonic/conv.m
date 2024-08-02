@@ -24,9 +24,9 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %
 % The convolution of an |SO3Fun|  $f: {}_{S_f^L} \backslash SO(3) /_{S_f^R}
 % \to \mathbb{C}$ with an |S2Fun| $h \colon \mathbb S^2 /_{S_h} \to \mathbb C$
-% yields the |S2Fun| $f*h \colon \mathbb S^2/_{S_f^L} \to \mathbb C$ with
+% yields the |S2Fun| $f*h \colon \mathbb S^2/_{S_f^R} \to \mathbb C$ with
 %
-% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq $$
+% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q\,\xi) \, dq $$
 %
 % 3. *Convolution of a rotational function with a kernel function*
 % 
@@ -35,6 +35,15 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % equivalent. The convolution of an |SO3Fun| with an |S2Kernel| works
 % analogue to case 2.%
 % 
+% convolution of a rotational function with a rotational or spherical function
+% or a kernel function
+%
+% For detailed information about the definition of the convolution take a 
+% look in the <SO3FunConvolution.html documentation>.
+% 
+% The convolution of matrices of SO3Functions with matrices of SO3Functions 
+% works elementwise.
+%
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
 %   SO3F = conv(SO3F1,SO3F2,'Right')
@@ -118,7 +127,7 @@ if isa(SO3F2,'S2Fun')
     end
   end
 
-  % we need that SO3F1.SRight == SO3F.Sym
+  % we need that SO3F1.SLeft == SO3F2.Sym
   if numProper(SO3F1.SLeft) == 1 
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   elseif isa(SO3F2,'S2FunHarmonicSym')
@@ -126,7 +135,7 @@ if isa(SO3F2,'S2Fun')
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   else
     warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...
-      'right symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])
+      'left symmetry of the SO3Fun has to be compatible with the unknown symmetry.'])
     SO3F = S2FunHarmonic(fhat);
   end
 

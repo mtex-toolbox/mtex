@@ -1,16 +1,18 @@
 function SO3F = conv(SO3F1,SO3F2,varargin)
-% convolution with a function or a kernel on SO(3)
+% convolution of an fibre odf with a kernel function
+%
+% For detailed information about the definition of the convolution take a 
+% look in the <SO3FunConvolution.html documentation>.
 %
 % Syntax
-%   SO3F = conv(SO3F1,SO3F2)
 %   SO3F = conv(SO3F1,psi)
 %
 % Input
-%  SO3F1, SO3F2 - @SO3Fun
+%  SO3F1 - @SO3FunCBF
 %  psi  - convolution @SO3Kernel
 %
 % Output
-%  SO3F - @SO3FunHarmonic
+%  SO3F - @SO3FunCBF
 %
 % See also
 % SO3FunHarmonic/conv SO3FunRBF/conv SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv 

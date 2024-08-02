@@ -8,6 +8,7 @@ S2FunRadon                      Radon Transform
 S2FunVectorField                Vector Field
 S2FunAxisField                  Axis Field
 S2FunSym                        Symmetric Function
+SO3FunConvolution               Convolution
 S2FunMultivariate               Multivariate Functions
 S2Kernels                       Spherical Kernel Functions
 SphericalHarmonics              Spherical Harmonics

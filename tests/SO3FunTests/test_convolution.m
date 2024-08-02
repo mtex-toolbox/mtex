@@ -39,7 +39,7 @@ F2.eval(r)
 clear 
 rng('default')
 
-F1 = SO3FunHarmonic(rand(1e3,1),crystalSymmetry('1'),specimenSymmetry('3'))
+F1 = SO3FunHarmonic(rand(1e3,1),specimenSymmetry('1'),specimenSymmetry('222'))
 F2 = SO3FunHarmonic(rand(1e2,1),crystalSymmetry('4'),specimenSymmetry('1'))
 r = rotation.rand
 
@@ -69,9 +69,9 @@ mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(r.*inv(rot))))
 rng('default')
 p = vector3d.rand;
 
-F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i,crystalSymmetry('622'),specimenSymmetry('3'));
+F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i,crystalSymmetry('432'),specimenSymmetry('222'));
 %F1.isReal=1
-F2 = S2FunHarmonicSym(rand(40^2,1)+1i*rand(40^2,1),specimenSymmetry('622'));
+F2 = S2FunHarmonicSym(rand(40^2,1)+1i*rand(40^2,1),specimenSymmetry('222'));
 
 C = conv(F1,F2);
 C.eval(p)
@@ -212,8 +212,9 @@ F2 = S2FunHarmonic(rand(2^2,1)+rand(2^2,1)*1i);
 C = conv(F1,F2)
 C.eval(r)
 
-C2 = SO3FunHandle(@(rot) mean(S2FunHandle(@(v) F1.eval(v).*F2.eval(inv(rot).*(v)))),specimenSymmetry('1'),specimenSymmetry('2'))
-C2.eval(r)
+c2 = S2FunHandle(@(v) F1.eval(v).*F2.eval(r*v))
+mean(c2.eval(equispacedS2Grid('resolution',0.5*degree)))
+
 
 % bisherige Definition
 % C3 = inv(4*pi*conv(F1,conj(F2)))

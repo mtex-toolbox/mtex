@@ -12,6 +12,7 @@ BinghamODFs                       Bingham ODF
 ODFImport                         Import
 ODFExport                         Export
 SO3FunSymmetricFunctions          Symmetry
+SO3FunConvolution                 Convolution
 SO3FunMultivariate                Multivariate Functions
 SO3FunVectorField                 Vector Field
 SO3FunTangentSpace                Tangent Space on the Rotation Group

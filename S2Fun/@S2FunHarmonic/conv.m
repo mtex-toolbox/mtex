@@ -2,17 +2,6 @@ function sF = conv(sF, psi, varargin)
 % spherical convolution of sF with a radial function or another
 % sperical function psi
 %
-% If there are two S2Funs $f: \mathbb S^2 /_{s_1} \to \mathbb{C}$
-% $g: \mathbb S^2 /_{s_2} \to \mathbb{C}$ given, where $s_1$ and $s_2$ 
-% denotes the symmetries.
-% Then the convolution $f*g: {}_{s_2} \backslash SO(3) /_{s_1} \to
-% \mathbb{C}$ is defined by
-%
-% $$(f * g)(R) = \frac1{4\pi} \int_{S^2} f(R^{-1}\xi) \cdot g(\xi) \, d\xi$$
-%
-% with $vol(S^2) = \int_{S^2} 1 \, d\xi = 4\pi$. Note that $s_1$ is the
-% right symmetry of $f*g$ and $s_2$ is the left symmetry.
-%
 % Syntax
 %   sF = conv(sF, psi)
 %   sF = conv(sF, A)
