@@ -44,7 +44,10 @@ classdef SO3FunRBF < SO3Fun
       if ~isa(center,'orientation'), center = orientation(center); end
       SO3F.center  = center;
 
-      if nargin==1, return; end
+      if nargin==1
+        SO3F.weights = ones(size(center))./length(center);
+        return; 
+      end
       
       SO3F.psi = psi;
       

@@ -36,7 +36,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 end
 
 % Do direct computation for small number of orientations
-if length(rot)<10 || (length(rot)<50 & SO3F.bandwidth>200)
+if length(rot)<10 || (length(rot)<50 && SO3F.bandwidth>200)
   % varargin{end+1} = 'direct';
   f = directEval(SO3F,rot,varargin{:});
   return
@@ -169,13 +169,24 @@ function f = directEval(SO3F,rot,varargin)
 
 N = SO3F.bandwidth;
 abg = Euler(rot,'Matthies')';
-for k=1:length(SO3F)
-  ghat = wignerTrafo(SO3F.subSet(k),2^0+2^2+2^4,'bandwidth',N);
-  for i=1:length(rot)
-    f(i,k) = sum(ghat.*exp(-1i*abg(2,i)*(-N:N)-1i*abg(3,i)*(-N:N)'-1i*abg(1,i)*reshape(0:N,1,1,[])),"all");
+if SO3F.isReal
+  for k=1:length(SO3F)
+    ghat = wignerTrafo(SO3F.subSet(k),2^0+2^2+2^4,'bandwidth',N);
+    for i=1:length(rot)
+      f(i,k) = sum(ghat.*exp(-1i*abg(2,i)*(-N:N)-1i*abg(3,i)*(-N:N)'-1i*abg(1,i)*reshape(0:N,1,1,[])),"all");
+    end
+  end
+  f = 2*real(f);
+else
+  for k=1:length(SO3F)
+    ghat = wignerTrafo(SO3F.subSet(k),2^0+2^4,'bandwidth',N);
+    for i=1:length(rot)
+      f(i,k) = sum(ghat.*exp(-1i*abg(2,i)*(-N:N)-1i*abg(3,i)*(-N:N)'-1i*abg(1,i)*reshape(-N:N,1,1,[])),"all");
+    end
   end
 end
-f = 2*real(f);
+  
+  
 if isscalar(SO3F), f = reshape(f,size(rot)); end
 
 end

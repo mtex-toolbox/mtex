@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?rotation,?quaternion}) quadratureS2Grid < vector3d
+classdef quadratureS2Grid < vector3d
 % Compute nodes and weights for quadrature on Sphere.
 % 
 % Description

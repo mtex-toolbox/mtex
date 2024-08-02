@@ -15,7 +15,7 @@ methods
   function sF = S2FunHarmonicSym(fhat, s,varargin)
     if nargin == 0, return; end
     if isa(fhat,'S2FunHarmonic')
-      sF = S2FunHarmonicSym(fhat.fhat,s);
+      sF = S2FunHarmonicSym(fhat.fhat,s,varargin{:});
       return
     elseif isa(fhat,'S2Fun')
       fhat = S2FunHarmonic.quadrature(fhat);
@@ -35,7 +35,7 @@ methods
     sF.fhat = fhat;
     sF.s = s;
     if ~check_option(varargin,'skipSymmetrise')
-      sF.symmetrise;
+      sF = sF.symmetrise;
     end
   end
   
