@@ -96,7 +96,7 @@ methods
         data = load(fullfile(mtexDataPath,'vector3d','quadratureS2Grid_chebyshev.mat'),name);
       end
   
-      data = struct2array(data);
+      data = cell2mat(struct2cell(data));
       nodes = vector3d.byPolar(data(:, 1), data(:, 2));
       S2G.x = nodes.x; S2G.y = nodes.y; S2G.z = nodes.z;
     

@@ -29,13 +29,13 @@ function [ori,S] = loadOrientation_generic(fname,varargin)
 %  prop - struct with fields for the additional columns
 %
 % Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
-%  Columns           - postions of the columns to be imported
-%  RADIANS           - treat input in radiand
+%  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
+%  Columns           - positions of the columns to be imported
+%  RADIANS           - treat input in radiant
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
-%  ABG               - [alpha beta gamma] Euler angle in Mathies convention
+%  ABG               - [alpha beta gamma] Euler angle in Matthies convention
 %  PASSIVE           - 
 %
 % Example
