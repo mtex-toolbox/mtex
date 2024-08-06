@@ -48,7 +48,8 @@ g = SO3FunHarmonic.example
 
 c = conv(f,g)
 
-r = orientation.rand(c.CS,c.SS)
+% Test
+r = orientation.rand(c.CS,c.SS);
 c.eval(r)
 mean(SO3FunHandle(@(q) f.eval(q).*g.eval(inv(q).*r)))
 
@@ -79,7 +80,8 @@ g = SO3FunRBF(orientation.rand(ss,cs))
 
 c = conv(f,g,'right')
 
-r = orientation.rand(c.CS,c.SS)
+% Test
+r = orientation.rand(c.CS,c.SS);
 c.eval(r)
 mean(SO3FunHandle(@(q) f.eval(q).*g.eval(r.*inv(q))))
 
@@ -111,10 +113,10 @@ g = S2FunHarmonic(S2DeLaValleePoussinKernel)
 
 c = conv(f,g)
 
-r = orientation.rand(c.CS,c.SS)
+% Test
+r = orientation.rand(c.CS,c.SS);
 c.eval(r)
-
-c2 = S2FunHandle(@(v) f.eval(inv(r)*v).*g.eval(v))
+c2 = S2FunHandle(@(v) f.eval(inv(r)*v).*g.eval(v));
 v = equispacedS2Grid('resolution',0.2*degree);
 mean(c2.eval(v))
 
@@ -137,7 +139,8 @@ h = S2FunHarmonicSym(S2Fun.smiley,ss)
 
 c = conv(f,h)
 
-v = Miller.rand(c.CS)
+% Test
+v = Miller.rand(c.CS);
 c.eval(v)
 mean(SO3FunHandle(@(q) f.eval(q).*h.eval(q*v)))
 
@@ -154,12 +157,15 @@ h = S2FunHarmonicSym(S2Fun.smiley,f.CS)
 
 c = conv(inv(f),h)
 
+% Test
 v = vector3d.rand;
 c.eval(v)
 mean(SO3FunHandle(@(q) f.eval(q).*h.eval(inv(q)*v)))
 
 %% Convolution with kernel function
 % 
+% * rotational kernel functions * 
+%
 % Since <SO3Kernels.html |SO3Kernel's|> are special orientation dependent
 % functions we can easily describe them as |SO3Fun's|. Hence the
 % convolution with <SO3Kernels.html |SO3Kernel's|> is exactly the same as
@@ -179,14 +185,40 @@ psi = SO3DeLaValleePoussinKernel
 c = conv(f,psi)
 
 %%
+%
+% * spherical kernel functions * 
+%
+% Let a spherical kernel function $\psi(\vec v \cdot \vec e_3)$ be defined
+% as in <S2Kernels.html |S2Kernel's|>. Then the convolution with a @S2Fun reads as
+%
+% $$ (f * \psi) (\vec v) = \frac1{4\pi} \int_{S^2} f(\xi) \, \psi(\xi \cdot \vec v) \, d\xi. $$
+%
 % Note that <S2Kernels.html |S2Kernel's|> are special spherical functions.
 % Hence we can easily describe them as |S2Fun's| and convolute them as
-% described above.
+% described above for convolution of two spherical functions
 %
+% $$ (f * \psi) (R) = \frac1{4\pi} \int_{S^2} f(R^{-1}\,\xi) \, \psi(\xi \cdot \vec e_3) \, d\xi. $$
+%
+% The first formula yields a @S2Fun while the second formula yields a @SO3Fun.
+% They are equal for $\vec v = R^{-1} \vec e_3$.
 %
 
-f = S2FunHarmonic.smiley
+% Test
+f = S2Fun.smiley
 psi = S2DeLaValleePoussinKernel
 
-c = conv(f,psi)
+c1 = conv(f,psi)
+
+% Test
+v = vector3d.rand;
+c1.eval(v)
+xi = equispacedS2Grid('resolution',0.2*degree);
+mean(f.eval(xi).*psi.eval(cos(angle(xi,v).')))
+
+% compare with spherical convolution
+r = rotation.map(v,zvector);
+h = S2FunHarmonic(psi);
+c2 = conv(f,h);
+c2.eval(r)
+mean(f.eval(inv(r)*xi).*h.eval(xi))
 

@@ -29,12 +29,16 @@ plot(psi,'linewidth',2,'symmetric')
 % * the <S2AbelPoussinKernel.html vom Mises kernel>
 %
 %% Legendre coefficients
-% 
-% Every spherical kernel function $\psi$ can be associated with a function
-% $\Psi \colon [-1,1] \to \mathbb R$ defined on the interval $[-1,1]$ by
-% $\psi(v) = \Psi(v \cdot e_3)$. It turn out to be useful to $\Psi$
-% approximate $\Psi$ by a expansion into Legendre polynomials $P_n$ of
-% degree $n$, i.e.,
+%
+% Using mathematical notation we define this spherical kernel functions in 
+% the following way:
+%
+% Every spherical kernel function $\Psi\colon \mathcal{S}_2 \to \mathbb{R}$ 
+% can be associated with a function $\psi \colon [-1,1] \to \mathbb R$ 
+% defined on the interval $[-1,1]$ by $\Psi(\vec v) = \psi(t)$ with 
+% $t=\cos(\sphericalangle(\vec v,\vec e_3)) = \vec v \cdot \vec e_3$. 
+% It turns out to be useful to approximate $\psi$ by a expansion into 
+% Legendre polynomials $P_n$ of degree $n$, i.e.,
 % 
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal P_{n}(t) $$
 %

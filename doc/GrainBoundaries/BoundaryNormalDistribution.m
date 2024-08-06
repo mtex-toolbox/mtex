@@ -9,7 +9,7 @@
 % habits from observations of planar sections> in J. Am. Ceram. Soc.,
 % 85(11):2799–2804, 2002.
 %
-% * R. Hielscher, R. Kilian, E. Wünsche: Efficient computation of the
+% * R. Hielscher, R. Kilian, K. Marquardt, E. Wünsche: Efficient computation of the
 % grain boundary normal distribution from two dimensional EBSD data, not
 % yet published.
 %
