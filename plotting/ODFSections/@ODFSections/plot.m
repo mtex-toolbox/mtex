@@ -4,6 +4,7 @@ function plot(oS,varargin)
 % Syntax
 %   plot(oS,ori)
 %   plot(oS,fibre)
+%   plot(oS,odf)
 %
 %   grid = oS.makeGrid;
 %   values = odf.eval(grid)
@@ -11,6 +12,7 @@ function plot(oS,varargin)
 %
 % Input
 %  oS    - @ODFSections
+%  odf   - @SO3Fun
 %  ori   - @orientation
 %  fibre - @fibre
 %
@@ -37,6 +39,9 @@ if nargin>1 && isa(varargin{1},'quaternion')
 elseif nargin>1 && isa(varargin{1},'fibre')
   ori = orientation(varargin{1});
   numData = 0;
+elseif nargin>1 && isa(varargin{1},'SO3Fun')
+  plot(varargin{1},oS,varargin{2:end});
+  return
 elseif ~isempty(oS.plotGrid)
   numData = oS.gridSize(end);
 else 
