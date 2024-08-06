@@ -264,6 +264,10 @@ classdef phaseList
       [varargout{1:nargout}] = size(pL.phaseId(:,1),varargin{:});
     end
     
+    function out = numel(pL)
+      out = size(pL.phaseId,1);
+    end
+
     function out = length(pL)
       out = size(pL.phaseId,1);
     end
