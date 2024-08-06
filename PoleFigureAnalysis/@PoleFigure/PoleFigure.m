@@ -1,7 +1,7 @@
 classdef PoleFigure < dynProp & dynOption
 %
 % The class *PoleFigure* is used to store experimental pole figure
-% intensitied, i.e., XRD, synchrotron or neuron data. It provides several
+% intensities, i.e., XRD, synchrotron or neuron data. It provides several
 % <PoleFigureCorrection.html data correction methods> as well as the
 % <PoleFigure2ODF.html reconstruction of an orientation density function
 % (ODF)>. Importing pole figure data is explained in <PoleFigureImport.html

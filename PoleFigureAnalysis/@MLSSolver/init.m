@@ -3,7 +3,7 @@ function init(solver,varargin)
 % extract pole figures
 pf = solver.pf;
 
-% kernel coefficents
+% kernel coefficients
 A = solver.psi.A(:);
 A = A ./ (2*(0:length(A)-1)+1).';
 if pf.antipodal

@@ -77,7 +77,7 @@ eps = eps.sym;
 % compute the deformation tensors for all slip systems
 sSeps = sS.deformationTensor;
 
-% initalize the coefficients
+% initialize the coefficients
 b = zeros(length(eps),length(sS));
 
 % critical resolved shear stress - CRSS
