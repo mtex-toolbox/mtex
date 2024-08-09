@@ -49,17 +49,13 @@ classdef dynOption
     % -------------------------------------------
     function dOpt = setOption(dOpt,varargin)
       for i = 1:2:numel(varargin) 
-        for j = 1:numel(dOpt)
-          dOpt(j).opt.(varargin{i}) = varargin{i+1};
-        end
+        dOpt.opt.(varargin{i}) = varargin{i+1};
       end
     end
         
     % -------------------------------------------
     function varargout = getOption(dOpt,name)
-      for j = 1:numel(dOpt)
-        varargout{j} = dOpt(j).opt.(name);
-      end
+      varargout{1} = dOpt.opt.(name);
     end
     
     % -------------------------------------------
