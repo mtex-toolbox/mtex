@@ -1,4 +1,4 @@
-%% Sigle Slip Model
+%% Single Slip Model
 %
 % Details to this model can be found in
 %
