@@ -9,19 +9,19 @@ function [h,mP] = plot(gB,varargin)
 %   plot(gB('Forsterite','Forsterite'),gB('Forsterite','Forsterite').misorientation.angle)
 %
 %   % colorize segments according to a list of RGB values
-%   plot(gB('Forsterite','Forsterite'),colorList)
+%   plot(gB('Forsterite','Forsterite'),color)
 %
 % Input
 %  grains - @grain2d
 %  gB     - @grainBoundary
-%  colorList - n x 3 list of RGB values
+%  color  - n x 3 list of RGB values
 %  
 % Options
 %  linewidth - line width
-%  linecolor - line color
+%  LineColor - line color
 %  edgeAlpha - (list of) transparency values between 0 and 1
 %  region    - [xmin xmax ymin ymax] plot only a subregion
-%  displayName - label to appear in the legend
+%  DisplayName - label to appear in the legend
 %  smooth      - try to make a smooth connections at the vertices
 %
 
@@ -40,8 +40,10 @@ if ~isempty(reg)
 end
 
 % create a new plot
+pC = gB.plottingConvention.copy;
+if isnull(dot(pC.outOfScreen,gB.N)), pC.outOfScreen = gB.N; end
 mtexFig = newMtexFigure(varargin{:});
-[mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot(pC,'scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if get_option(varargin,'linewidth',0) > 3 || check_option(varargin,'smooth')
   plotOrdered2(gB,varargin{:});

@@ -22,13 +22,18 @@ function [h,mP] = plot(grains,varargin)
 % See also
 % EBSD/plot grainBoundary/plot
 
-% --------------------- compute colorcoding ------------------------
+% --------------------- compute color coding ------------------------
+
+% ensure we do not plot perpendicular to the slice
+
+pC = grains.plottingConvention.copy;
+if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
 % create a new plot
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
-  varargin{:},grains.plottingConvention);
+  pC, varargin{:});
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -156,7 +161,7 @@ else % otherwise phase plot
     if ischar(color), [~,color] = colornames(getMTEXpref('colorPalette'),color); end
 
     % plot polygons
-    h{k} = plotFaces(grains.poly(ind),grains.V,color,...
+    h{k} = plotFaces(grains.poly(ind),grains.allV,color,...
       'parent', mP.ax,'DisplayName',grains.mineralList{k},varargin{:}); %#ok<AGROW>
 
     % reactivate legend information
@@ -345,7 +350,7 @@ Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
 obj.FaceColor = 'flat';
 obj.EdgeColor = 'None';
 obj.hitTest = 'off';
-h = [];
+h = gobjects(numel(Parts),1);
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse
