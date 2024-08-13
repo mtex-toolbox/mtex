@@ -1,13 +1,14 @@
 function gpnd = calcGBND(gB,ebsd,varargin)
-% compute the grain boundary plane distribution
+% estimate grain boundary plane distribution from 2d sections
 %
 % Syntax
 %
-%   GBPD = calcGBND(gB,ebsd)
-%   GBPD = calcGBND(gB,grains)
+%   % compute gbnd in crystal coordinates
+%   gbnd = calcGBND(gB,ebsd)
+%   gbnd = calcGBND(gB,grains)
 %
 %   % use a specific halfwidth
-%   GBPD = calcGBND(gB,ebsd,'halfwidth',10*degree)
+%   gbnd = calcGBND(gB,ebsd,'halfwidth',10*degree)
 %
 % Input
 %  gB   - @grainBoundary
@@ -15,8 +16,10 @@ function gpnd = calcGBND(gB,ebsd,varargin)
 %  grains - @grain2d
 %
 % Output
-%
 %  gpnd - @S2FunHarmonic
+%
+% Options
+%  halfwidth - used for kernel density estimation
 %
 % See also
 %
