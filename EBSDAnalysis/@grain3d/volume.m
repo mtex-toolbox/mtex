@@ -14,14 +14,16 @@ if iscell(grains.F)
   vol = zeros(size(grains.id));
   xyz = grains.boundary.allV.xyz;
 
+  [grainId,faceID,inOut] = find(grains.I_GF);
   for i = 1:length(grains.id)
-    Grains_Faces = grains.I_GF(i,:);
-    Faces = grains.F(find(Grains_Faces),:);
+        
+    ind = grainId==i;
+
+    Faces = grains.F(faceID(ind));
     
     % flip Faces, so normal direction pointing outwards
-    Grains_Faces = nonzeros(Grains_Faces);
-    Faces(Grains_Faces == -1) = cellfun(@(c) fliplr(c), ...
-      Faces(Grains_Faces == -1), 'UniformOutput', false);
+    Faces(inOut(ind) == -1) = cellfun(@(c) fliplr(c), ...
+      Faces(inOut(ind) == -1), 'UniformOutput', false);
 
     vol(i) = meshVolume(xyz, Faces);
   end
