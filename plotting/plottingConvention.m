@@ -1,4 +1,4 @@
-classdef plottingConvention < handle
+classdef plottingConvention < matlab.mixin.Copyable
 % class describing the alignment of a reference frame on the screen
 %
 % Syntax
