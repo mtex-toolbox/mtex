@@ -32,7 +32,7 @@ for i = 1:length(sS)
   [r,c] = find(isnull(dot(sS.n(i),sS.b(i),'noSymmetry')-...
     dot_outer(mm,nn,'noSymmetry'),1e-7));
 
-  % restricht to the orthogonal ones
+  % restrict to the orthogonal ones
   b = [b;mm(r(:))]; %#ok<*AGROW>
   n = [n;nn(c(:))];
   CRSS = [CRSS;repmat(sS.CRSS(i),length(r),1)];
