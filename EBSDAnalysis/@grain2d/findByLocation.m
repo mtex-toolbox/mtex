@@ -23,7 +23,7 @@ poly = grains.poly;
 % restrict vertices to available grains
 iV = unique([poly{:}]);
 
-V = grains.V.xyz;
+V = grains.allV.xyz;
 if size(V,2) == 3
   if length(pos)==2
     pos = [pos,0];

@@ -41,7 +41,7 @@ mpR = mp(u(:,2),:);
 
 % try to make the order compatible 
 % the sign of the curvature should correlate with the order of the vertices
-%distL = gB.V(gB.F(has2n,1),:) - m
+%distL = gB.allV(gB.F(has2n,1),:) - m
 %switchLR = 
 
 

@@ -8,7 +8,7 @@ d = zeros(size(grains));
 if isscalar(grains) % compute in 3d
 
   % get the coordinates
-  V = grains.V.xyz;
+  V = grains.allV.xyz;
   
   for ig = 1:length(grains)
   
@@ -24,7 +24,7 @@ else % 2d variant
 
   % get the coordinates
   scaling = 10000 ;
-  V = grains.rot2Plane .* grains.V;
+  V = grains.rot2Plane .* grains.allV;
   V = round(scaling * [V.x(:),V.y(:)]);
 
   for ig = 1:length(grains)

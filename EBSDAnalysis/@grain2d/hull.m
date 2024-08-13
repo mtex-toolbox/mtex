@@ -3,7 +3,7 @@ function grains = hull(grains)
 
 % here we short rotate first !!
 
-V = grains.V.xyz;
+V = grains.allV.xyz;
 F = [];
 
 for i = 1:length(grains)

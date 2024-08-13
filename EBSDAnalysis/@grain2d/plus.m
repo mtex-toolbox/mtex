@@ -19,4 +19,4 @@ if ~isa(shift,'vector3d')
   shift = vector3d(shift(:,1),shift(:,2),0);
 end
 
-grains.V = grains.V + shift;
+grains.allV = grains.allV + shift;

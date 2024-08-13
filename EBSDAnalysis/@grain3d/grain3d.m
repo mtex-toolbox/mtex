@@ -14,6 +14,7 @@ classdef grain3d < phaseList & dynProp
 
   properties (Dependent)
     V     % vertices
+    allV  % all vertices
     F     % n x 1 cell array or n x 3 array with all faces
     meanOrientation
     numFaces  % number of boundary faces per grain
@@ -78,11 +79,15 @@ classdef grain3d < phaseList & dynProp
     end
 
     function V = get.V(grains)
-      V = grains.boundary.V;
+      error('implement this!')
     end
 
-    function grains = set.V(grains,V)
-      grains.boundary.V = V;
+    function V = get.allV(grains)
+      V = grains.boundary.allV;
+    end
+   
+    function grains = set.allV(grains,V)
+      grains.boundary.allV = V;
     end
 
     function F = get.F(grains)

@@ -55,7 +55,8 @@ classdef grain2d < phaseList & dynProp
     
   properties (Dependent = true)
     meanOrientation  % mean orientation
-    V                % vertices with x,y coordinates
+    V                % reduced list vertices @vector3d
+    allV             % full list vertices @vector3d
     scanUnit         % unit of the spatial coordinates
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
@@ -159,18 +160,23 @@ classdef grain2d < phaseList & dynProp
       end
 
       % determine a normal direction such that the area is positive
-      grains.N = perp(grains.V - grains.V(1));
+      grains.N = perp(grains.allV - grains.allV(1));
       grains.N.antipodal = false;
       if sum(grains.area) < 0, grains.N = -grains.N; end
 
       % check for 3d plane
-      d=dot(grains.V(1),grains.N);
-      assert(max(abs(dot(grains.V,grains.N)-d))<abs(d)*1e-5 ...
-        || max(abs(dot(grains.V,grains.N)-d))<1e-11,'grains are not within one plane');
+      d=dot(grains.allV(1),grains.N);
+      assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
+        || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
 
     end
-        
+    
+    function V = get.allV(grains)
+      V = grains.boundary.allV;
+    end
+
     function V = get.V(grains)
+      error('implement this!')
       V = grains.boundary.V;
     end
 
@@ -179,16 +185,16 @@ classdef grain2d < phaseList & dynProp
     end
 
     function x = get.x(grains)
-      x = grains.V.x;
+      x = grains.allV.x;
     end
     
     function y = get.y(grains)
-      y = grains.V.y;
+      y = grains.allV.y;
     end
     
-    function grains = set.V(grains,V)
-      grains.boundary.V = V;
-      grains.innerBoundary.V = V;
+    function grains = set.allV(grains,V)
+      grains.boundary.allV = V;
+      grains.innerBoundary.allV = V;
     end
 
     function grains = set.N(grains,N)
@@ -210,7 +216,11 @@ classdef grain2d < phaseList & dynProp
     end
 
     function pC = get.plottingConvention(grains)
-      pC = grains.V.plottingConvention;
+      pC = grains.allV.plottingConvention;
+    end
+
+    function grains = set.plottingConvention(grains,pC)
+      grains.allV.plottingConvention = pC;
     end
 
 
@@ -296,8 +306,8 @@ classdef grain2d < phaseList & dynProp
       end
       
       % ensure V is vector3d
-      if isa(grains.V,'double')
-        grains.V = vector3d(grains.V(:,1),grains.V(:,2),0);
+      if isa(grains.allV,'double')
+        grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end
 
     end

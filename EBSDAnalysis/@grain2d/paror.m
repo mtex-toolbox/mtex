@@ -22,7 +22,7 @@ end
 
 % get the coordinates
 scaling = 10000 ;
-V = grains.rot2Plane .* grains.V;
+V = grains.rot2Plane .* grains.allV;
 V = round(scaling * [V.x(:),V.y(:)]);
 
 poly = grains.poly;

@@ -15,7 +15,7 @@ classdef triplePointList < phaseList & dynProp
   
   % properties with as many rows as data
   properties
-    id = zeros(0,1)           % indices of the vertices in grains.V
+    id = zeros(0,1)           % indices of the vertices in grains.allV
     grainId = zeros(0,3)      % id's of the neigbouring grains to a face
     boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
     nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
@@ -76,6 +76,10 @@ classdef triplePointList < phaseList & dynProp
     
     function v = get.V(tP)
       v = tP.allV(tP.id,:);
+    end
+
+    function tP = set.V(tP,vNew)
+      tP.allV(tP.id,:) = vNew;
     end
     
     function x = get.x(tP)

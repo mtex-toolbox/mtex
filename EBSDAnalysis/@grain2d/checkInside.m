@@ -72,8 +72,8 @@ end
 isInside = false(size(xy,1),length(grains));
 
 poly = grains.poly;
-Vx = grains.V.x;
-Vy = grains.V.y;
+Vx = grains.allV.x;
+Vy = grains.allV.y;
 incl = grains.inclusionId;
 
 % use internal or external inpolygon engine?

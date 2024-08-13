@@ -19,7 +19,7 @@ cha = zeros(size(grains));
 chp = cha;
 
 % store this in local variables for speed reasons
-V = grains.rot2Plane .* grains.V;
+V = grains.rot2Plane .* grains.allV;
 X = V.x;
 Y = V.y;
 

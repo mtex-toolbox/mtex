@@ -25,7 +25,7 @@ cs = [0; cumsum(cellfun('prodofsize',grains.poly))];
 if isscalar(grains) % compute in 3d
 
   % duplicate vertices according to their occurrence in the grain2s
-  V = grains.V([grains.poly{:}]);
+  V = grains.allV([grains.poly{:}]);
 
   % compute the relative area of the triangles between the edges an a
   % potential center (here (0,0,0) - but the center does not matter here)
@@ -45,7 +45,7 @@ else % the same algorithm in 2d
 
   % get the coordinates
   rot = grains.rot2Plane;
-  V = rot .* grains.V;
+  V = rot .* grains.allV;
   
   faceOrder = [grains.poly{:}];
 

@@ -20,11 +20,11 @@ function [a,b] = principalComponents(grains,varargin)
 % ignore holes
 poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput',false);
 
-if length(grains) == 1 % 3d algorithm (more nice :))
+if isscalar(grains) % 3d algorithm (more nice :))
   
   % centroids
   c = grains.centroid;
-  V = grains.V;
+  V = grains.allV;
 
   % loop over all grains
   a = vector3d.nan(length(grains),1); a.antipodal = true;
@@ -52,7 +52,7 @@ if length(grains) == 1 % 3d algorithm (more nice :))
 else % 2d algorithm
   
   rot = grains.rot2Plane;
-  V = rot .* grains.V;
+  V = rot .* grains.allV;
   V = [V.x(:),V.y(:)];
   
   % centroids

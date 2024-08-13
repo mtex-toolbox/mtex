@@ -21,12 +21,12 @@ function c = caliper(grains,varargin)
 %  longest   - longest caliper = diameter of the grain
 %              
 
-V = grains.V;
+V = grains.allV;
 
 if nargin > 1 && isa(varargin{1},'vector3d')
 
   dir = varargin{1};
-  proj = dot_outer(grains.V, dir);
+  proj = dot_outer(V, dir);
   
   if length(dir)>1
     c = cellfun(@(id) max(proj(id,:) - min(proj(id,:)),[],1),grains.poly,'UniformOutput',false);
@@ -62,7 +62,7 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
   scaling = 10000 ;
-  V = grains.rot2Plane .* grains.V;
+  V = grains.rot2Plane .* V;
   V = round(scaling *[V.x(:),V.y(:)]);
   c = nan(size(grains));
   omega = nan(size(grains));
@@ -92,7 +92,7 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
 else
   
   poly = grains.poly;
-  V = grains.rot2Plane .* grains.V;
+  V = grains.rot2Plane .* V;
   V = [V.x(:),V.y(:)];
   c = nan(size(grains));
   

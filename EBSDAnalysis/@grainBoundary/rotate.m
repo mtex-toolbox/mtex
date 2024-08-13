@@ -32,7 +32,7 @@ if isa(rot,'double'), rot = rotation.byAxisAngle(vector3d.Z,rot); end
 center = get_option(varargin,'center',vector3d.zeros);
   
 % rotate vertices
-gB.V = center + rot * (gB.V - center);
+gB.allV = center + rot * (gB.allV - center);
  
 
 end

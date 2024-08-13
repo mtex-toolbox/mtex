@@ -74,7 +74,7 @@ if nargin>1 && isnumeric(varargin{1})
     
     % plot polygons
     for k = 1:max(property)
-      h{k} = plotFaces(grains.poly(property==k), grains.V, ind2color(k),...
+      h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k}); %#ok<AGROW>
       
       % reactivate legend information
@@ -85,7 +85,7 @@ if nargin>1 && isnumeric(varargin{1})
   
   else % % plot polygons
 
-    h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+    h = plotFaces(grains.poly,grains.allV,property,'parent', mP.ax,varargin{:});
   
   end
 
@@ -132,7 +132,7 @@ elseif check_option(varargin,'FaceColor')
   
   % plot polygons
   color = str2rgb(get_option(varargin,'FaceColor'));
-  h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
+  h = plotFaces(grains.poly,grains.allV,color,'parent', mP.ax,varargin{:});
   
   % reactivate legend information
   if check_option(varargin,'displayName')
@@ -262,7 +262,7 @@ if grain.isIndexed
 else
   txt{2} = 'phase = not indexed';
 end
-if size(grains.V,2) == 3
+if size(grains.allV,2) == 3
   txt{3} = ['(x,y,z) = ', xnum2str(pos(1,:),'delimiter',', ')];
 else
   txt{3} = ['(x,y) = ', xnum2str(pos(1,:),'delimiter',', ')];

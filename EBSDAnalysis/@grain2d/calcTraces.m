@@ -41,7 +41,7 @@ rel = zeros(sz);
 
 % extract grain geometry
 rot = grains.rot2Plane;
-V = rot .* grains.boundary.V;
+V = rot .* grains.boundary.allV;
 V = V.xyz;
 F = grains.boundary.F;
 I_BG = grains.boundary.I_FG;

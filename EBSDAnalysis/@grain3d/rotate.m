@@ -37,6 +37,6 @@ if ~check_option(varargin,'keepXY')
   if ~isa(center,'vector3d'); error('center has to be a @vector3d'); end
 
   % rotate vertices
-  grains.V = center + rot .* (grains.V - center);
+  grains.allV = center + rot .* (grains.allV - center);
 
 end
