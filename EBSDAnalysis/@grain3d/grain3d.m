@@ -18,6 +18,7 @@ classdef grain3d < phaseList & dynProp
     F     % n x 1 cell array or n x 3 array with all faces
     meanOrientation
     numFaces  % number of boundary faces per grain
+    extent
   end
 
   methods
@@ -76,6 +77,11 @@ classdef grain3d < phaseList & dynProp
       grains.boundary = grain3Boundary(V, F, grainId, grainId, grains.phaseId, ...
         mori, grains.CSList, grains.phaseMap);
 
+    end
+
+    function ext= get.extent(grains)
+      V = grains.boundary.V; %#ok<PROP>
+      ext = [min(V.x) max(V.x) min(V.y) max(V.y) min(V.z) max(V.z)]; %#ok<PROP>
     end
 
     function V = get.V(grains)
