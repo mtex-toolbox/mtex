@@ -15,7 +15,7 @@ r = vector3d.Z
 
 %%
 % Next the crystal direction corresponding to the specimen direction |r|
-% according to the orientation |r| are computed
+% according to the orientation |ori| are computed
 
 h = inv(ori) * r
 
