@@ -89,7 +89,3 @@ mori = ori1_Bunge * inv(ori2_Bunge)
 % * misorientations - unchanged
 % * misorientation Euler angles - take Euler angles of inverse misorientation
 %
-
-%#ok<*NASGU>
-
-
