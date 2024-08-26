@@ -106,10 +106,13 @@ if length(qss) <= 1 % no specimen symmetry
   % this is inv(o1) .* o2
   mori = itimes(o1,o2,1);
 
-  % take the maximum over all symmetric equivalent
-  d = max(dot_outer(mori,qcs,'noSymmetry'),[],2);
+  % take the maximum over all symmetric equivalent, ignoring inversion
+  d = max(dot_outer(mori,qcs,'noSymmetry','ignoreInv'),[],2);
 
   d = reshape(d,size(mori));
+  
+  % consider inversion if needed
+  if ~ignoreInv, d = d .* ~xor(o1.i,o2.i); end
   
 elseif length(qcs) <= 1 % no crystal symmetry
   
@@ -117,9 +120,12 @@ elseif length(qcs) <= 1 % no crystal symmetry
   mori = itimes(o1,o2,0);
 
   % take the maximum over all symmetric equivalent
-  d = max(dot_outer(mori,qss,'noSymmetry'),[],2);
-      
+  d = max(dot_outer(mori,qss,'noSymmetry','ignoreInv'),[],2);
+
   d = reshape(d,size(mori));
+
+  % consider inversion if needed
+  if ~ignoreInv, d = d .* ~xor(o1.i,o2.i); end
 
 elseif isscalar(o1)
 
@@ -133,7 +139,7 @@ elseif isscalar(o1)
   d = q1 * q2.';
   
   % consider inversion if needed
-  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i(:),o2.i(:).'); end
+  if ~ignoreInv, d = d .* ~xor(o1.i(:),o2.i(:).'); end
   
   d = reshape(max(abs(d),[],1),size(o2));
   
@@ -149,7 +155,7 @@ elseif isscalar(o2)
   d = q1 * q2.';
   
   % consider inversion if needed
-  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i(:),o2.i(:).'); end
+  if ~ignoreInv, d = d .* ~xor(o1.i(:),o2.i(:).'); end
   
   d = reshape(max(abs(d),[],2),size(o1));
   
@@ -169,11 +175,11 @@ else % length(qss)>1 and two vectors to compare
   end
 
   % inline dot product for speed reasons
-  d = abs(bsxfun(@times,o1.a,o2.a) + bsxfun(@times,o1.b,o2.b) + ...
-    bsxfun(@times,o1.c,o2.c) + bsxfun(@times,o1.d,o2.d)); %
+  d = abs(o1.a .* o2.a + o1.b .* o2.b + o1.c .* o2.c +o1.d .* o2.d);
+
 
   % consider inversion
-  if ~ignoreInv, d = d .* ~bsxfun(@xor,o1.i,o2.i); end
+  if ~ignoreInv, d = d .* ~xor(o1.i,o2.i); end
 
   % take the maximum over all symmetric equivalent
   d = reshape(max(max(d,[],1),[],ndims(d)),s);
