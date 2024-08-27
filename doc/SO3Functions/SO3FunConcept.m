@@ -34,21 +34,21 @@ SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
 % The entire information about the orientation dependent function is now
 % stored in the variable |SO3F|. In order to determine its value for a
 % specific orientation |ori| the function <SO3Fun.eval.html |eval(ori)|> is
-% used
+% used.
 
 ori = orientation.rand(cs)
 SO3F.eval(ori)
 
 %% Plotting an orientation Dependent Function
 % 
-% Orientation dependent functions are most of visualized by sections
-% according to the third Euler angle $\varphi_2$
+% Orientation dependent functions are most often visualized by sections
+% according to the third Euler angle $\varphi_2$.
 % 
 
 plotSection(SO3F)
 
 %%
-% The plot tells us for which Euler angles the the resulting rotational
+% The plot tells us for which Euler angles the resulting rotational
 % angle is large and for which Euler angles it is low. The plot of this
 % "angle function" |SO3F| becomes trivial if represented in an axis angle
 % sections
@@ -71,7 +71,7 @@ mtexColorMap parula
 % them in various projections or detect the local minima or maxima. In the
 % case of our example function the local maxima refers to the orientations
 % with maximum rotational angle in cubic symmetry. We may compute them by
-% the command <SO3Fun.max.html |max|>
+% the command <SO3Fun.max.html |max|>.
 
 [value,ori] = max(SO3F,'numLocal',10,'accuracy',0.001*degree)
 
@@ -88,10 +88,10 @@ plot(ori.symmetrise,color,'axisAngle','filled','markerSize',20,'restrict2Fundame
 % Internally MTEX represents rotational functions in different ways:
 %
 % || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
-% || as superposition of radial function || <RadialODFs.html SO3FunRBF> ||
+% || as superposition of radial functions || <RadialODFs.html SO3FunRBF> ||
 % || as superposition of fiber elements || <FibreODFs.html SO3FunCBF> ||
-% || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
-% || as sum of different components || @SO3FunComposition ||
+% || as a Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
+% || as a sum of different components || @SO3FunComposition ||
 % || explicitly given by a formula || @SO3FunHandle ||
 %
 % All representations allow the same operations which are specified for
