@@ -41,7 +41,7 @@ SO3F.eval(ori)
 
 %% Plotting an orientation Dependent Function
 % 
-% Orientation dependent functions are most of visualized by sections
+% Orientation dependent functions are most often visualized by sections
 % according to the third Euler angle $\varphi_2$
 % 
 
