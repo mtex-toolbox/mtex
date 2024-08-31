@@ -39,13 +39,12 @@ if strcmpi(get_option(varargin,'color'),'interp')
   
   h = surface(x,y,z,[norm(d),norm(d)],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
   
-else
-  
+else  
   h = plot3(d.x,d.y,d.z,'parent',mtexFig.gca);
 end
 
 view(mtexFig.gca,sec.xyz)
-set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
+mtexFig.gca.DataAspectRatio = [1 1 1];
 optiondraw(h,varargin{:});
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end

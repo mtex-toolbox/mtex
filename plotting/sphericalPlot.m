@@ -37,7 +37,7 @@ classdef sphericalPlot < handle
       end
       
       sP.ax = ax;    
-      sP.parent = get(ax,'parent');
+      sP.parent = ax.Parent;
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
       setappdata(ax,'sphericalPlot',sP);
@@ -77,7 +77,7 @@ classdef sphericalPlot < handle
         
         %sP.updateBounds;
 
-        set(ax,'XTick',[],'YTick',[]);
+        ax.XTick = []; ax.YTick = [];
         try
           set(ax,'XColor','none','YColor','none');
           xlabel(ax,[],'visible','on','color','k');
@@ -104,11 +104,11 @@ classdef sphericalPlot < handle
       end
       
       if sP.dispMinMax
-        set(sP.TL,'string',{'Max:',xnum2str(sP.maxData)},'visible','on');
-        set(sP.BL,'string',{'Min:',xnum2str(sP.minData)},'visible','on');
+        sP.TL.String = {'Max:',xnum2str(sP.maxData)};
+        sP.BL.String = {'Min:',xnum2str(sP.minData)};
+        sP.TL.Visible = 'on'; sP.BL.Visible = 'on';
       else
-        set(sP.BL,'visible','off');
-        set(sP.TL,'visible','off');
+        sP.TL.Visible = 'off'; sP.BL.Visible = 'off';
       end
     end
     
@@ -144,10 +144,10 @@ classdef sphericalPlot < handle
         set([sP.TR sP.BR],'HorizontalAlignment','right');
 
       else
-        if ~isempty(t.TL), set(sP.TL,'String',t.TL); end
-        if ~isempty(t.BL), set(sP.BL,'String',t.BL); end
-        if ~isempty(t.TR), set(sP.TR,'String',t.TR); end
-        if ~isempty(t.BR), set(sP.BR,'String',t.BR); end        
+        if ~isempty(t.TL), sP.TL.String = t.TL; end
+        if ~isempty(t.BL), sP.BL.String = t.BL; end
+        if ~isempty(t.TR), sP.TR.String = t.TR; end
+        if ~isempty(t.BR), sP.BR.String = t.BR; end        
       end
       
 
@@ -187,11 +187,11 @@ classdef sphericalPlot < handle
         childs = allchild(sP.ax);
   
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
-        istext = strcmp(get(childs,'type'),'text');
-        isLine = strcmp(get(childs,'type'),'line');
+        istext = isgraphics(childs,'text');
+        isLine = isgraphics(childs,'line');
   
-        set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);...
-          childs(isLine & ~isgrid & ~istext);childs(~isLine & ~isgrid & ~istext)]);
+        sP.ax.Children = [childs(istext); sP.boundary(:); sP.grid(:);...
+          childs(isLine & ~isgrid & ~istext);childs(~isLine & ~isgrid & ~istext)];
       end
     end
     
@@ -208,10 +208,9 @@ classdef sphericalPlot < handle
         
       else
       
-        x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
-        y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-        xyz = [x;y];
-        sP.bounds = [min(xyz(1,:)),min(xyz(2,:)),max(xyz(1,:)),max(xyz(2,:))];
+        x = [sP.boundary.XData];
+        y = [sP.boundary.YData];
+        sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
       
       end
         
@@ -235,11 +234,11 @@ classdef sphericalPlot < handle
       theta = round(linspace(polarRange(1),polarRange(3),4)/degree);
       rho = round(linspace(polarRange(2),polarRange(4),4)/degree);            
       
-      set(sP.ax,'XTick',rho);
-      set(sP.ax,'YTick',theta);
+      sP.ax.XTick = rho; sP.ax.YTick = theta;
       if strcmpi(get_option(varargin,'coordinates','on'),'off')
-        set(sP.ax,'xtickLabel',{},'ytickLabel',{});
-        set(sP.ax,'tickLength',[0,0]);
+        sP.ax.XTickLabel = {};
+        sP.ax.YTickLabel = {};
+        sP.ax.TickLength = [0,0];
       end
 
       % the labels

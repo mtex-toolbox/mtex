@@ -53,7 +53,7 @@ end
 
 % if no DisplayName is set remove patch from legend
 if ~check_option(varargin,'DisplayName')
-  set(get(get(h(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
 else
   legend('-DynamicLegend','location','NorthEast');
 end
@@ -129,6 +129,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   
    % subdivion
   % for some reason it is important to subdivide it into parts
+  p = gobjects(1,ceil(length(x)/1000));
   for k = 1:ceil(length(x)/1000) 
     
     subId = max(1,(k-1)*1000) : min(k*1000,length(x));
@@ -140,7 +141,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
       'FaceColor','none','EdgeColor','interp','parent',mP.ax);
     
     if k>1
-      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      p(k).Annotation.LegendInformation.IconDisplayStyle = 'off';      
     end
     
   end
@@ -153,13 +154,14 @@ else % color given directly
   
   % subdivion
   % for some reason it is important to subdivide it into parts
+  p = gobjects(1,ceil(length(x)/2000));
   for k = 1:ceil(length(x)/2000) 
     subId = max(1,(k-1)*2000) : min(k*2000,length(x));
     p(k) = line(x(subId),y(subId),z(subId),...
       'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
     
     if k>1
-      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      p(k).Annotation.LegendInformation.IconDisplayStyle = 'off';
     end
     
   end

@@ -69,7 +69,7 @@ for j = 1:numel(sP)
   contours = get_option(varargin,'contours',50);
   contours = get_option(varargin,{'contourf','contour'},contours,'double');
   
-  % specify contourlines explicitely
+  % specify contour lines explicitly
   if isscalar(contours)
     if check_option(varargin,'log')
       contours = logspace(log10(colorRange(1)),log10(colorRange(2)),contours);
@@ -100,7 +100,7 @@ for j = 1:numel(sP)
   if ~any(isnan(colorRange)) && diff(colorRange)>0
     clim(sP(j).ax,colorRange); 
   end
-  if check_option(varargin,'log'), set(sP(j).ax,'colorScale','log'); end
+  if check_option(varargin,'log'), sP(j).ax.ColorScale = 'log'; end
 
   % colormap
   if ~strcmpi(get_option(varargin,'fill'),'off')
@@ -175,6 +175,6 @@ else
 end
 
 % do not display in the legend
-set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+h.Annotation.LegendInformation.IconDisplayStyle = 'off';
 
 end

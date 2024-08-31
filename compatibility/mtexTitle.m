@@ -35,23 +35,22 @@ if check_option(varargin,'global') && ~verLessThan('matlab','9.5')
 else
   h = optiondraw(title(ax,s,...
     'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1)),varargin{:});
+  ax.Title.Visible = "on";
 
-  set(get(ax,'Title'),'Visible','on');
 end
 
 if check_option(varargin,'alignLeftOutside')
-  set(h, 'horizontalAlignment', 'left');
-  set(h, 'units', 'normalized');
-  h.Position(1)=0;
+  h.HorizontalAlignment = "left";
+  h.Units = "normalized";
+  h.Position(1) = 0;
 elseif check_option(varargin,'alignLeftInside')
-  set(h, 'horizontalAlignment', 'left');
-  set(h, 'units', 'normalized');
-  h1 = get(h, 'position');
-  set(h, 'position', [0 0.9 h1(3)])% 10% below
+  h.HorizontalAlignment = "left";
+  h.Units = "normalized";
+  h.Position = [0,0.9,h.Position(3)]; % 10% below  
 end
 
 try
-  mtexFig = getappdata(get(ax,'Parent'),'mtexFig');
+  mtexFig = getappdata(ax.Parent,'mtexFig');
   drawNow(mtexFig,varargin{:});
 end
 

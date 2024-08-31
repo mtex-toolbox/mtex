@@ -242,7 +242,7 @@ classdef embedding
       % random vector in linear space
       obj.M = rand(prod([s{:}]),obj.dim);
       
-      % reshapre correctly
+      % reshape correctly
       obj = reshape(obj./norm(obj),[s{:}]);
       
     end

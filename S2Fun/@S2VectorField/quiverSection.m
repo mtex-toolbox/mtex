@@ -42,7 +42,7 @@ if check_option(varargin,'normalized'), v = v.normalize; end
 if v.antipodal
   opt = {'showArrowHead','off'};
   h = quiver3(circ.x,circ.y,circ.z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:});
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h.Annotation.LegendInformation.IconDisplayStyle = 'off';
 else
   opt = {};
   h = [];
@@ -52,7 +52,7 @@ h = [h,quiver3(circ.x,circ.y,circ.z,v.x,v.y,v.z,'parent',mtexFig.gca,opt{:})];
   
 % post process output
 view(mtexFig.gca,N.xyz);
-set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
+mtexFig.gca.DataAspectRatio = [1 1 1];
 optiondraw(h,varargin{:});
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end

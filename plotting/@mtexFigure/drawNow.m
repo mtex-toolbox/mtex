@@ -84,10 +84,10 @@ if exist('screenExtent','var')
 end
 
 % draw layout
-set(mtexFig.parent,'ResizeFcn',[]);
-if mtexFig.parent.WindowStyle~="docked", set(mtexFig.parent,'position',position); end
+mtexFig.parent.ResizeFcn = [];
+if mtexFig.parent.WindowStyle~="docked", mtexFig.parent.Position = position; end
 updateLayout(mtexFig);
-set(mtexFig.parent,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
+mtexFig.parent.ResizeFcn = @(src,evt) updateLayout(mtexFig);
 
 % update colorrange
 if check_option(varargin,'colorrange')
@@ -98,13 +98,6 @@ end
 for i = 1:numel(mtexFig.children)
   mP = getappdata(mtexFig.children(i),'mapPlot');
   if ~isempty(mP), mP.micronBar.update; end  
-end
-
-% maybe we should switch to zBuffer
-if getMTEXpref('openglBug') && isRGB(mtexFig.parent)
-  try
-    set(mtexFig.parent,'renderer','zBuffer');
-  end
 end
 
 end

@@ -1,3 +1,3 @@
-function mfig = mtexFig
+function mfig = gcm
 
 mfig = getappdata(gcf,'mtexFig');

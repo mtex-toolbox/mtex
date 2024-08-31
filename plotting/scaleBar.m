@@ -117,11 +117,11 @@ methods
   
   
   function set.visible(sB,value)
-    set(sB.hgt,'visible',value);
+    sB.hgt.Visible = value;
   end
   
   function value = get.visible(sB)
-    value = get(sB.hgt,'visible');
+    value = sB.hgt.Visible;
   end
   
   function update(sB)

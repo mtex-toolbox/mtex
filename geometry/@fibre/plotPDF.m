@@ -45,7 +45,8 @@ for i = 1:length(h), h{i} = f.CS.ensureCS(h{i}); end
 
 if isNew
   pfAnnotations = getMTEXpref('pfAnnotations');
-  set(mtexFig.parent,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  mtexFig.parent.Name = ...
+    ['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"'];
 else
   pfAnnotations = @(varargin) 1;
 end
@@ -67,9 +68,8 @@ for i = 1:length(h)
     pfAnnotations('parent',mtexFig.gca,'doNotDraw');
   end
   setappdata(cax,'h',h{i});
-  set(cax,'tag','pdf');
+  [cax.Tag] = deal('pdf');
   setappdata(cax,'SS',f.SS);
-
 end
 
 if isNew || check_option(varargin,'figSize')

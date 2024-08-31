@@ -64,12 +64,13 @@ f.SS = oP.SS;
 %
 color = get_option(varargin,'edgeColor',color);
 
-% some of the edges should not be ploted
+% some of the edges should not be plotted
 f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
 f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
 
-% plot the fibres
+% plot the fibers
 if all(size(color) == [length(f),3])
+  h4 = gobjects(length(f));
   for i = 1:length(f)
     h4(i) = plot(f(i),'color',color(i,:),'linewidth',3,'noBoundaryCheck','parent',oP.ax);
   end
@@ -82,6 +83,6 @@ hold off
 
 h = [h1,h2,h3,h4];
 for i = 1:length(h)
-  set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
 end
 if nargout == 0,  clear h; end

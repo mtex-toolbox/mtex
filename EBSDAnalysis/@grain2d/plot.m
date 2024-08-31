@@ -78,12 +78,14 @@ if nargin>1 && isnumeric(varargin{1})
     varargin = delete_option(varargin,'displayName',1);
     
     % plot polygons
+    h = gobjects(max(property));
     for k = 1:max(property)
       h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k}); %#ok<AGROW>
       
       % reactivate legend information
-      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+      h{k}.Annotation.LegendInformation.IconDisplayStyle = 'on';
+      
       hold on
     end
     hold off
@@ -141,7 +143,7 @@ elseif check_option(varargin,'FaceColor')
   
   % reactivate legend information
   if check_option(varargin,'displayName')
-    set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    h(end).Annotation.LegendInformation.IconDisplayStyle = 'on';    
   end
   
 else % otherwise phase plot
@@ -166,7 +168,7 @@ else % otherwise phase plot
 
     % reactivate legend information
     if ~isempty(h{k})
-      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+      h{k}(end).Annotation.LegendInformation.IconDisplayStyle = 'on';      
     end
         
   end
@@ -180,7 +182,7 @@ end
 if plotBoundary
   hold on
   hh = plot(grains.boundary,varargin{:});
-  set(get(get(hh(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
   hold off
 end
   
@@ -391,7 +393,7 @@ for p=numel(Parts):-1:1
   h(p) = optiondraw(patch(obj),varargin{:});
 
   % remove them from legend
-  set(get(get(h(p),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h(p).Annotation.LegendInformation.IconDisplayStyle = 'off';
   
 end
 

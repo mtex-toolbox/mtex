@@ -35,7 +35,7 @@ end
 varargin = delete_option(varargin,{'add2all','parent'},[0,1]);
   
 for ax = allAxes(:).'
-  switch get(ax,'tag')
+  switch ax.Tag
     
     case 'pdf' % pole figure annotations
         
