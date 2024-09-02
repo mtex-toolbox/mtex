@@ -1,4 +1,4 @@
-function [h,ax] = plot3d(plane,varargin)
+function [h,ax] = plot(plane,varargin)
 % plot planes in 3d space
 %
 % Syntax
