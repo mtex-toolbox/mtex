@@ -24,15 +24,13 @@ else
 end
 
 % extract axis bounds to crop plane
-lim = get(ax, 'xlim');
+lim = ax.XLim;
 xmin = lim(1);
 xmax = lim(2);
-lim = get(ax, 'ylim');
+lim = ax.YLim;
 ymin = lim(1);
 ymax = lim(2);
-lim = get(ax, 'zlim');
-zmin = lim(1);
-zmax = lim(2);
+zlim = ax.ZLim;
 
 % find intercept
 % TODO: more efficient
