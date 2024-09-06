@@ -113,9 +113,8 @@ classdef SO3FunRBF < SO3Fun
   end
   
   methods (Static = true)
-    
+    SO3F = interpolate(ori,values,varargin)
     SO3F = example(varargin)
-
   end
   
 end
