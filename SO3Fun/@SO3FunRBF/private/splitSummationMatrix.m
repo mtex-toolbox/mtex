@@ -1,5 +1,3 @@
-
-
 function M = splitSummationMatrix(psi,S3G,ori,varargin)
 
 % decide along which dimension to split the summation matrix
