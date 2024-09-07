@@ -1,6 +1,6 @@
 function SO3F = approximation(nodes, y, varargin)
 % approximate an SO3FunRBF by given function values at given nodes
-% w.r.t. some noise as described by the
+% w.r.t. some noise as described by [1].
 %
 % For $M$ given orientations $R_i$ and corresponding function values $y_i$
 % we compute the SO3FunRBF $f$ which minimizes the least squares problem
@@ -29,6 +29,9 @@ function SO3F = approximation(nodes, y, varargin)
 % harmonic method is better suited for low bandwidth, since the system matrix
 % becomes very large for high bandwidth.
 %
+% For the spatial method, instead of least squarse also the
+% maximum-likelihood estimate can be computed.
+%
 % If no method specific, the function will choose the best method suited
 % based on some heuristics.
 %
@@ -37,9 +40,9 @@ function SO3F = approximation(nodes, y, varargin)
 % Syntax
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f)
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'resolution',5*degree)
-%   SO3F = SO3FunRBF.approximation(fhat, [])
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'kernel', psi)
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT)
+%   SO3F = SO3FunRBF.approximation(SO3Fun,'kernel',psi)
 %
 % Input
 %  nodes   - rotational grid @SO3Grid, @orientation, @rotation or harmonic
@@ -53,14 +56,15 @@ function SO3F = approximation(nodes, y, varargin)
 %  kernel           - @SO3Kernel
 %  halfwidth        - use @SO3DeLaValleePoussinKernel with halfwidth
 %  resolution       - resolution of the grid nodes of the @SO3Grid
+%  approxresolution - if input it @SO3Fun, evaluate function on an  approximation grid with resolution specified
 %  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
-%  tol              - tolerance for mlsq
-%  maxit            - maximum number of iterations for mlsq
+%  tol              - tolerance for mlsq/ml
+%  maxit            - maximum number of iterations for mlsq/ml
 %
 % Flags
-%  spatial/spm      - spatial method
+%  spatial/spm      - spatial method (default, not specified)
+%  likelihood/mlm   - maximum likelihood estimate for spatial method
 %  harmonic/fourier - harmonic method
-%  mlm              - maximum likelihood method?
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/approximation WignerD
@@ -139,10 +143,13 @@ c0 = c0./sum(c0(:));
 itermax = get_option(varargin,'iter_max',100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
-
+if check_option(varargin,{'mlm','likelihood','maximumlikelihood'})
+    chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
+else
+    chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
 end
 
+end
 
 function chat = harmonicMethod(SO3G,psi,fhat,y0,varargin)
 

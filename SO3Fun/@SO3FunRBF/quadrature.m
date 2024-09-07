@@ -1,9 +1,9 @@
 function SO3F = quadrature(f, varargin)
-% Compute the kernel density coefficients of an given @SO3Fun or
-% given evaluations on a specific quadrature grid.
+% Compute the kernel density coefficients of a given @SO3Fun or
+% given evaluations on a specific approximation grid.
 %
-% This method evaluates the given SO3Fun on an with respect to an
-% approximation grid. Afterwards approximates the @SO3FunRBF.
+% This method calls SO3FunRBF/approximation, and exists only to have an 
+% equivalent function name to SO3FunHarmonic/quadrature
 %
 % Syntax
 %   SO3F = SO3FunRBF.quadrature(nodes,values)

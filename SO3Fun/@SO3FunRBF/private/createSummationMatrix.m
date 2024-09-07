@@ -5,7 +5,7 @@ function M = createSummationMatrix(psi,S3G,ori,varargin)
 
 % this check is also present in psi.K_symmetrised
 if check_option(varargin,'exact') 
-  epsilon = pi; 
+  epsilon = pi;
 else
   epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3.5)); 
 end
