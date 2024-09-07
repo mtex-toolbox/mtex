@@ -45,19 +45,7 @@ end
 % kernel for representing the ODF
 psi = get_option(varargin,'kernel',SO3DeLaValleePoussinKernel('halfwidth',res));
 
-
-% system matrix
-if check_option(varargin,'exact') 
-  epsilon = pi; 
-else 
-  epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3.5)); 
-end
-if epsilon>2*pi/ori.CS.Laue.multiplicityZ % compute full matrix
-  M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);
-else % compute sparse matrix
-  M = splitSummationMatrix(psi,S3G,ori);
-end
-
+M = createSummationMatrix(psi,S3G,ori,varargin{:});
 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
 

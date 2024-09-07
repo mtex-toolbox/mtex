@@ -130,9 +130,7 @@ end
 
 function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
-% vdisp([' approximation grid: ' char(SO3G)],varargin{:});
-
-Psi = splitSummationMatrix(psi,SO3G,nodes,varargin{:});
+Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
 c0 = Psi*y(:);
 c0(c0<=eps) = eps;

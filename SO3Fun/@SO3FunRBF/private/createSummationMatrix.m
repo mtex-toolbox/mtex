@@ -1,4 +1,19 @@
-function M = splitSummationMatrix(psi,S3G,ori,varargin)
+function M = createSummationMatrix(psi,S3G,ori,varargin)
+% creates system matrix Psi, length(S3G) x length(ori) to solve a system of
+% linear equations Psi*c = I, where c are the weights for the kernels psi
+% and I is the intensity to fit.
+
+% this check is also present in psi.K_symmetrised
+if check_option(varargin,'exact') 
+  epsilon = pi; 
+else
+  epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3.5)); 
+end
+
+if epsilon>2*pi/ori.CS.Laue.multiplicityZ % compute full matrix
+  M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS,varargin{:});
+  return
+end
 
 % decide along which dimension to split the summation matrix
 if isa(S3G,'SO3Grid')
