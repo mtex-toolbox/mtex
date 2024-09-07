@@ -176,6 +176,32 @@ norm(SO3F3)
 
 norm(eval(SO3F3, ori) - S.values) / norm(S.values)
 
+%%
+% Alternatively, the noisy data can be also approximated using a kernel
+% density. We may study the effect of adjusting the kernel halfwidth to the
+% error
+
+hw = [20,15,12.5,10,7.5,5,2.5];
+err = zeros(size(hw));
+for k = 1:numel(hw)
+    SO3Fhw = SO3FunRBF.approximation(ori,val,'halfwidth',hw(k)*degree);
+    err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
+end
+
+%%
+% We may find the best fit with a halfwidth of 5°. If the system is
+% underdetermined using a too small halfwidth, we may not be able to fit
+% kernel weights without additional assumptions about the smoothness of the
+% data.
+
+[hw;err]
+
+plot(hw,err,'o--')
+set(gca,'xdir','reverse')
+xlabel('halfwidth [deg]')
+ylabel('relative error')
+
+
 %% Quadrature
 %
 % Assume we have some experiment which yields an ODF or some general 
@@ -249,3 +275,15 @@ toc
 F2 = SO3FunHarmonic.quadrature(SO3G,v)
 
 norm(F-F2)
+
+%%
+% It is also possible convert the harmonic function back to a kernel
+% density representation
+
+F3 = SO3FunRBF.approximation(F,'halfwidth',5*degree,'approxresolution',5*degree);
+
+% norm(F-F3)
+calcError(odf,F)
+calcError(odf,F3)
+
+

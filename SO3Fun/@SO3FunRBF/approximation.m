@@ -32,9 +32,6 @@ function SO3F = approximation(nodes, y, varargin)
 % For the spatial method, instead of least squarse also the
 % maximum-likelihood estimate can be computed.
 %
-% If no method specific, the function will choose the best method suited
-% based on some heuristics.
-%
 % Reference: [1] Schaeben, H., Bachmann, F. & Fundenberger, JJ. Construction of weighted crystallographic orientations capturing a given orientation density function. J Mater Sci 52, 2077–2090 (2017). https://doi.org/10.1007/s10853-016-0496-1
 %
 % Syntax
