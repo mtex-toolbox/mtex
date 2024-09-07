@@ -130,56 +130,18 @@ end
 
 function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
-vdisp([' approximation grid: ' char(SO3G)],varargin{:});
-% vdisp([' evaluation    grid: ' char(nodes)],varargin{:});
+% vdisp([' approximation grid: ' char(SO3G)],varargin{:});
 
-N = length(SO3G);
-M = length(nodes);
-
-% Psi = splitSummationMatrix(psi,SO3G,nodes,'epsilon',epsilon, varargin{:});
-Psi = sparse(N,M);
-
-if check_option(varargin,'epsilon')
-    epsilon = get_option(varargin,'epsilon',hw*3.5);
-else
-    omega = linspace(0,pi,10000);
-    fomega = psi.eval(cos(omega/2));
-    comega = cumsum(abs(fomega));
-    [comega,nd ] =  unique(comega./comega(end));
-    omega = omega(nd);
-    epsilon =  interp1(comega,omega,.995);
-end
-
-if epsilon/psi.halfwidth>4
-    epsilon = pi;
-end
-
-[CS,SS] = deal(SO3G.CS,SO3G.SS);
-
-P = nnz(psi.K_symmetrised(SO3G(1),nodes,CS,SS,'nocubictrifoldaxis','epsilon',epsilon));
-diter = ceil(N/2/( M*P / getMTEXpref('memory',300 * 1024) ));
-cc = [0:diter:N-1 N];
-
-nsteps = numel(cc)-1;
-msg1 = ' creating system matrix: ';
-progress(0,nsteps,msg1,varargin{:});
-for l=1:nsteps
-    ndx = cc(l)+1:cc(l+1);
-    Psi(ndx,:) = psi.K_symmetrised(SO3G(ndx),nodes,CS,SS,'nocubictrifoldaxis','epsilon',epsilon);
-    progress(l,nsteps,msg1,varargin{:})
-end
+Psi = splitSummationMatrix(psi,SO3G,nodes,varargin{:});
 
 c0 = Psi*y(:);
 c0(c0<=eps) = eps;
 c0 = c0./sum(c0(:));
 
-progress(nsteps,nsteps,msg1,varargin{:})
-vdisp('',varargin{:}) % cleanup prevCharCnt
-
 itermax = get_option(varargin,'iter_max',100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-chat = mlsq(Psi',y(:),c0(:),itermax,tol);
+chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
 
 end
 
