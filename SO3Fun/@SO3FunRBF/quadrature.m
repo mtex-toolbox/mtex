@@ -25,9 +25,5 @@ function SO3F = quadrature(f, varargin)
 % See also
 % SO3FunRBF/approximation, SO3FunHarmonic/quadrature
 
-
-% Tests
-% check_SO3FunRBFQuadrature
-
 SO3F = SO3FunRBF.approximation(f,varargin{:});
 
