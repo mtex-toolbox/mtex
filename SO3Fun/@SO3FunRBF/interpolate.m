@@ -47,6 +47,7 @@ psi = get_option(varargin,'kernel',SO3DeLaValleePoussinKernel('halfwidth',res));
 
 M = createSummationMatrix(psi,S3G,ori,varargin{:});
 
+resvec = []; % fix: only lsqr creates the resvec 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls'},'lsqr')
 
   case 'lsqlin'
