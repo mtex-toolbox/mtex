@@ -72,6 +72,8 @@ function SO3F = approximation(nodes, y, varargin)
 
 if nargin < 2
     y = [];
+else
+    varargin = [y,varargin];
 end
 
 if check_option(varargin,'kernel')
@@ -92,14 +94,11 @@ else
     SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
 end
 
-[CS,SS] = deal(SO3G.CS,SO3G.SS);
-
 % if input is a SO3Fun, either set up an nodes/y or fourier coeff
 if isa(nodes,'SO3Fun')
-    y0 = nodes.eval(SO3G); % initial guess for coefficients
-    if check_option([y,varargin],{'harmonic','fourier'}) % get_flag?
+    if check_option(varargin,{'harmonic','fourier'}) % get_flag?
+        y0 = nodes.eval(SO3G); % initial guess for coefficients
         nodes = calcFourier(nodes,'bandwidth',psi.bandwidth+1);
-        varargin = [y,varargin];
         y = [];
     else
         approxres = get_option(varargin,'approxresolution',res/2);
@@ -114,24 +113,89 @@ if isa(nodes,'SO3Fun')
     end
 end
 
+
 if isa(nodes,'orientation')
-    SO3F = spatialMethod(SO3G,psi,y0,nodes,y,varargin{:});
+    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
 elseif isempty(y)
-    SO3F = harmonicMethod(SO3G,psi,y0,nodes,varargin{:});
+    chat = harmonicMethod(SO3G,psi,nodes,y0,varargin{:});
+end
+
+if check_option(varargin,{'nothinning','-nothinning'})
+    SO3F = SO3FunRBF(SO3G,psi,chat);
+else
+    SO3F = unimodalODF(SO3G,psi,'weights',chat);
 end
 
 end
 
-function SO3F = spatialMethod(SO3G,psi,y0,nodes,y,varargin)
+function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
-% not yet implemented
+vdisp([' approximation grid: ' char(SO3G)],varargin{:});
+% vdisp([' evaluation    grid: ' char(nodes)],varargin{:});
+
+N = length(SO3G);
+M = length(nodes);
+
+% Psi = splitSummationMatrix(psi,SO3G,nodes,'epsilon',epsilon, varargin{:});
+Psi = sparse(N,M);
+
+if check_option(varargin,'epsilon')
+    epsilon = get_option(varargin,'epsilon',hw*3.5);
+else
+    omega = linspace(0,pi,10000);
+    fomega = psi.eval(cos(omega/2));
+    comega = cumsum(abs(fomega));
+    [comega,nd ] =  unique(comega./comega(end));
+    omega = omega(nd);
+    epsilon =  interp1(comega,omega,.995);
+end
+
+if epsilon/psi.halfwidth>4
+    epsilon = pi;
+end
+
+[CS,SS] = deal(SO3G.CS,SO3G.SS);
+
+P = nnz(psi.K_symmetrised(SO3G(1),nodes,CS,SS,'nocubictrifoldaxis','epsilon',epsilon));
+diter = ceil(N/2/( M*P / getMTEXpref('memory',300 * 1024) ));
+cc = [0:diter:N-1 N];
+
+nsteps = numel(cc)-1;
+msg1 = ' creating system matrix: ';
+progress(0,nsteps,msg1,varargin{:});
+for l=1:nsteps
+    ndx = cc(l)+1:cc(l+1);
+    Psi(ndx,:) = psi.K_symmetrised(SO3G(ndx),nodes,CS,SS,'nocubictrifoldaxis','epsilon',epsilon);
+    progress(l,nsteps,msg1,varargin{:})
+end
+
+c0 = Psi*y(:);
+c0(c0<=eps) = eps;
+c0 = c0./sum(c0(:));
+
+progress(nsteps,nsteps,msg1,varargin{:})
+vdisp('',varargin{:}) % cleanup prevCharCnt
+
+itermax = get_option(varargin,'iter_max',100);
+tol = get_option(varargin,{'tol','tolerance'},1e-3);
+
+chat = mlsq(Psi',y(:),c0(:),itermax,tol);
 
 end
 
 
-function SO3F = harmonicMethod(SO3G,psi,y0,fhat,varargin)
+function chat = harmonicMethod(SO3G,psi,fhat,y0,varargin)
 
-NPsi = length(SO3G);
+N = length(SO3G);
+
+% initial guess for coefficients
+if isempty(y0)
+    c0 = ones(N,1)./N;
+else
+    c0 = y0(:) ; %odf.eval(SO3G);
+    c0(c0<=eps) = eps;
+    c0 = c0./sum(c0(:));
+end
 
 % get fourier coefficients for each node
 Fstar = WignerD(SO3G,'kernel',psi);
@@ -149,48 +213,6 @@ end
 itermax = get_option(varargin,'iter_max',100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-% initial guess for coefficients
-if isempty(y0)
-    c0 = ones(NPsi,1)./NPsi;
-else
-    c0 = y0(:) ; %odf.eval(SO3G);
-    c0(c0<=eps) = eps;
-    c0 = c0./sum(c0(:));
-end
-
-[chat,~] = mlsq(Fstar,fhat,c0(:),itermax,tol);
-chat = real(chat); % sqrt(conj(chat).*chat)?
-% 
-% if nargout>1
-%     err.residuals = Fstar*chat - fhat;
-% 
-%     err.realWeights = wreal;
-%     err.realL1 = norm(real(err.residuals),1);
-%     err.realL2 = norm(real(err.residuals),2);
-%     err.realLInf = norm(real(err.residuals),Inf);
-% 
-%     err.imagWeights = wimag;
-% 
-%     err.imagL1 = norm(imag(err.residuals),1);
-%     err.imagL2 = norm(imag(err.residuals),2);
-%     err.imagLInf = norm(imag(err.residuals),Inf);
-%     err.L1 = norm(err.residuals,1);
-%     err.L2 = norm(err.residuals,2);
-%     err.LInf = norm(err.residuals,Inf);
-%     err.iter = it;
-% end
-
-% SO3F = unimodalODF(SO3G,psi,CS,SS,'weights',chat);
-
-if ~check_option(varargin,{'nothinning','-nothinning'})
-    del = chat > 1/(1e2*NPsi);
-    if any(~del)
-        SO3G = subGrid(SO3G,del);
-        chat = chat(del);
-        chat = chat./sum(chat);
-    end
-end
-
-SO3F = SO3FunRBF(SO3G,psi,chat);
+chat = mlsq(Fstar,fhat,c0(:),itermax,tol);
 
 end

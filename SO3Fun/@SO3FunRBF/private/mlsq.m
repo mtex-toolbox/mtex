@@ -8,7 +8,7 @@ function [chat,k] = mlsq(Psi,I,c0,itermax,tol)
 %   itermax - maximum number of iterations
 %   tol     - abort if change smaller than tolerance
 
-chat = c0;
+chat = real(c0);
 r = Psi*chat-I;     % initial residual
 oldErr = Inf;
 for k=1:itermax
@@ -24,7 +24,7 @@ for k=1:itermax
     taub = max(min(taub,taumax),0);
 
     % update coeffients
-    chat = chat - taub*ctilde;
+    chat = real(chat - taub*ctilde);
 
     % update residuals
     r = r-taub*rtilde; % r = Psi*chat-I;
