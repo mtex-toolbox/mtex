@@ -1,12 +1,25 @@
 function [chat,k] = mlsq(Psi,I,c0,itermax,tol)
-% modified least squares, sum(c0) =1, c0>0
+% modified least squares, Psi*c = I, sum(c) = 1, c>0
 %
 % Input
-%   Psi     - system matrix
-%   I       - intensities
-%   c0      - initial coefficients for each kernel
+%   Psi     - system matrix (N x M), can be complex
+%   I       - intensities (N x 1), can be complex
+%   c0      - initial coefficients (M x 1), real valued
 %   itermax - maximum number of iterations
 %   tol     - abort if change smaller than tolerance
+
+if nargin < 5
+    tol = 1-5;
+end
+
+if nargin < 4
+    itermax = 100;
+end
+
+if nargin < 3 
+    M = size(Psi,2);
+    c0 = ones(M,1)./M;
+end
 
 chat = real(c0);
 r = Psi*chat-I;     % initial residual
