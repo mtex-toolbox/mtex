@@ -10,7 +10,7 @@ function h = quiver3(sAF,varargin)
 
 % maybe we should an empty sphere as background
 ax = get_option(varargin,'parent',gca);
-if ~any(isgraphics(ax.Children),'surface')
+if ~any(isgraphics(ax.Children,'surface'))
   plotEmptySphere;
 end
 
