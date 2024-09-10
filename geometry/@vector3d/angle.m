@@ -35,7 +35,9 @@ if nargin == 3 && isa(varargin{1},'vector3d')
 
 else
 
-  a = dot(v1.normalize,v2.normalize,varargin{:});
+  a = dot(v1,v2,varargin{:});
+  if ~v1.isNormalized, a = a ./ norm(v1); end
+  if ~v2.isNormalized, a = a ./ norm(v2); end
 
   a = real(acos(a));
 
