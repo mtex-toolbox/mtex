@@ -20,7 +20,7 @@ while any(~isInside) % as long there is something to do
 end
 
 % normalize to sum 1
-bario = bsxfun(@rdivide,bario,sum(bario,2));
+bario = bario ./ sum(bario,2);
 
 % write as sparse matrix
 % position is vertexid 

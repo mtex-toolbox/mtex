@@ -221,8 +221,8 @@ for k=1:size(boundingX,1)-1
     
     tmpX = pX(dist < m*radius,1:2);
     
-    right = (bsxfun(@minus, tmpX, boundingX(k,1:2)  - intendX ) * edgeDirection(k,1:2)') < 0;
-    left  = (bsxfun(@minus, tmpX, boundingX(k+1,1:2)+ intendX ) * edgeDirection(k,1:2)') > 0;
+    right = ((tmpX - boundingX(k,1:2)   - intendX ) * edgeDirection(k,1:2)') < 0;
+    left  = ((tmpX - boundingX(k+1,1:2) + intendX ) * edgeDirection(k,1:2)') > 0;
    
     tmpX = tmpX( ~(right | left) ,:);
      

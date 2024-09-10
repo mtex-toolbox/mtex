@@ -112,13 +112,13 @@ i1 = g1.i(:);
 a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
 i2 = g2rot.i;
 
-% this is implicite dot_outer
-d = ~bsxfun(@xor,i1,i2(:,1).') .* ...
+% this is implicit dot_outer
+d = ~xor(i1,i2(:,1).') .* ...
   abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']);
 
 for k=2 : size(a2,2)  
   d = max(d,...                       % g1 x g2 x CS * SS
-    ~bsxfun(@xor,i1,i2(:,k).') .* ...
+    ~xor(i1,i2(:,k).') .* ...
     abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); 
 end
 

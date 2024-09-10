@@ -98,13 +98,13 @@ classdef phi2Sections < ODFSections
         % all others are distributed across all sections
         if any(ind1)
           secPos = [secPos, reshape(repmat(1:length(oS.phi2),1,nnz(ind1)),1,[])];
-          newPhi1 = bsxfun(@minus,phi1(ind1)+phi2(ind1),oS.phi2.');
+          newPhi1 = (phi1(ind1)+phi2(ind1)) - oS.phi2.';
           S2Pos = [S2Pos,reshape(vector3d.byPolar(1e-5,newPhi1),1,[])];
         end
         
         if any(ind2)
           secPos = [secPos, reshape(repmat(1:length(oS.phi2),1,nnz(ind2)),1,[])];
-          newPhi1 = bsxfun(@plus,phi1(ind2)-phi2(ind2), oS.phi2.');
+          newPhi1 = (phi1(ind2) - phi2(ind2)) + oS.phi2.';
           S2Pos = [S2Pos,reshape(vector3d.byPolar(pi-1e-5,newPhi1),1,[])];
         end
       end

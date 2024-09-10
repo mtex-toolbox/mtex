@@ -96,8 +96,7 @@ omega = linspace(0,2*pi,200);
 
 xy = [sin(omega(:)) .* dx,cos(omega(:)) .* dy];
 
-xy = (A * xy.').';
-xy = bsxfun(@plus,xy,[cx,cy]);
+xy = (A * xy.').' + [cx,cy];
 
 patch('vertices',xy,'faces',1:size(xy,1),varargin{:});
 

@@ -57,7 +57,7 @@ if nargin == 4
   A = permute(fullDouble([vector3d(v1(:)),v2t(:),v3(:)]),[2 3 4 1]); %  3 x 3(xyz) x 1 x N
   B = permute(fullDouble([vector3d(u1(:)),u2t(:),u3(:)]),[2 4 3 1]); %  3 x 1 x 3(xyz) x N
 
-  M = squeeze(sum(bsxfun(@times,A,B),1));
+  M = squeeze(sum(A .* B,1));
 
   % convert to quaternion
   rot = rotation.byMatrix(M);

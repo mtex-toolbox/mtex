@@ -13,7 +13,7 @@ for ig = 1:length(gB)
 
   if b; Vg = V(F{ig},:); else; Vg = V(F(ig,:),:); end
   
-  diffVg = bsxfun(@minus,reshape(Vg,[],1,3),reshape(Vg,1,[],3));
+  diffVg = reshape(Vg,[],1,3) - reshape(Vg,1,[],3);
   diffVg = sum(diffVg.^2,3);
 
   d(ig) = sqrt(max(diffVg(:)));

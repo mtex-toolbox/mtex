@@ -20,7 +20,7 @@ abc2 = norm(cs2.axes);
 if ~all(abs(abc1-abc2)./sum(abc1)<0.01)
   
   % find best fit 
-  [~,i] = min(abs(bsxfun(@minus,abc1.',abc2)));
+  [~,i] = min(abs(abc1.' - abc2));
 
   axes1 = axes1(i,:);
   

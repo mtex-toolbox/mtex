@@ -14,7 +14,7 @@ if isscalar(grains) % compute in 3d
   
     Vg = V(poly{ig},:);
     
-    diffVg = bsxfun(@minus,reshape(Vg,[],1,3),reshape(Vg,1,[],3));
+    diffVg = reshape(Vg,[],1,3) - reshape(Vg,1,[],3);
     diffVg = sum(diffVg.^2,3);
   
     d(ig) = sqrt(max(diffVg(:)));
@@ -34,7 +34,7 @@ else % 2d variant
     % if it is a large Vertex-Set, reduce it to its convex hull
     if size(Vg,1) > 100, Vg = Vg(convhulln(Vg),:); end
   
-    diffVg = bsxfun(@minus,reshape(Vg,[],1,2),reshape(Vg,1,[],2));
+    diffVg = reshape(Vg,[],1,2) - reshape(Vg,1,[],2);
     diffVg = sum(diffVg.^2,3);
   
     d(ig) = sqrt(max(diffVg(:)));

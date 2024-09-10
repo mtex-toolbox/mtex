@@ -23,8 +23,7 @@ s = get_option(varargin,'subSample',1);
 ux = ux(1:s:end);
 uy = uy(1:s:end);
 
-ind = any(bsxfun(@eq,x,ux.'),2);
-ind = ind & any(bsxfun(@eq,y,uy.'),2);
+ind = any(x == ux.',2) & any(y == uy.',2);
 
 r = get_option(varargin,'region',[min(ux),min(uy),max(ux),max(uy)]);
 

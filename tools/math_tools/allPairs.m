@@ -14,7 +14,7 @@ else
   %
   x = x(:);
   y = y(:);
-  iseq = bsxfun(@eq,x,y.');
+  iseq = x == y.';
   
   [ix,iy] = find(iseq);
   
