@@ -32,11 +32,11 @@ classdef sphericalProjection
       end
     end
     
-    function a = antipodal.get(sP)
+    function a = get.antipodal(sP)
       a = sP.sR.antipodal;
     end
     
-    function sP = antipodal.set(sP,a)
+    function sP = set.antipodal(sP,a)
       sP.sR.antipodal = a;
     end
     
