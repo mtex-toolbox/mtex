@@ -22,7 +22,7 @@ function varargout = simulateGrains(this,varargin)
 % Output
 %  allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
 %  allgrains.ori   - orientation file, Euler-Bunge format,
-%  ori_in.txt      - input orientations, rodrigues format
+%  ori_in.txt      - input orientations, Rodrigues format
 
 assert(nargin>1,'too few input arguments')
 if nargin>=3  % odf & numGrains

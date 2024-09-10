@@ -71,7 +71,7 @@ d(type==4,:) = reshape(double(typecast(...
 d(type~=4,:) = double(data(1+ndx(type~=4),:));
 
 if params.cells
-  % append implicite coordinates
+  % append implicit coordinates
   
   d(end+1,:) = params.x;
   d(end+1,:) = params.y;
