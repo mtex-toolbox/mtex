@@ -95,12 +95,11 @@ for j = 1:numel(sP)
     if check_option(varargin,'addMarkerSpacing')
       
       xy = [x(i),y(i)];
-      tag = {'UserData',xy,'tag'};
             
       if xy(2) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
-        tag = [tag,'setAboveMarker'];
+        tag = {'UserData',xy,'tag','setAboveMarker'}; 
       else        
-        tag = [tag,'setBelowMarker'];
+        tag = {'UserData',xy,'tag','setBelowMarker'}; 
       end
     else
       tag = {};
@@ -110,10 +109,10 @@ for j = 1:numel(sP)
       'HorizontalAlignment','center','VerticalAlignment','middle',...
       tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
     
-    if check_option(varargin,'textcolor')
-      h.Color = str2rgb(get_option(varargin,'textcolor'));
-    end
-    
+  end
+
+  if check_option(varargin,'textcolor')
+    [h.Color] = deal(str2rgb(get_option(varargin,'textcolor')));
   end
 
   % finish plot
