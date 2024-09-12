@@ -14,7 +14,7 @@ methods
   end
   
   function f = eval(S2F,v)
-    f = S2F.fun(v);
+    f = S2F.fun(v+0.000001*xvector);
   end
   
 end
