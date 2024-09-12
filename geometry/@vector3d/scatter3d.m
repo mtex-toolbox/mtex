@@ -60,8 +60,7 @@ if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   mh = [];
   while isempty(mh)
     pause(0.01);
-    hh = handle(h);
-    mh = [hh.MarkerHandle];
+    mh = [h.MarkerHandle];
   end
                 
   for j = 1:length(mh)

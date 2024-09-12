@@ -182,8 +182,7 @@ for i = 1:numel(sP)
         mh = [];
         while isempty(mh)
           pause(0.01);
-          hh = handle(h(i));
-          mh = [hh.MarkerHandle];
+          mh = [h(i).MarkerHandle];
         end
                 
         for j = 1:length(mh)

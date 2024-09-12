@@ -26,8 +26,6 @@ function grains = getSlice(this,N,d,varargin)
 % compute distance to origin
 if isa(d,"vector3d"), d = dot(N,d); end
 
-
-
 %deleting old files, to make sure, to not load a wrong file, if slicing failed
 if isfile([this.filePath this.fileName2d '.tess' ]), delete([this.filePath this.fileName2d '.tess' ]); end
 if isfile([this.filePath this.fileName2d '.ori' ]), delete([this.filePath this.fileName2d '.ori' ]); end

@@ -25,7 +25,7 @@ mtex_settings
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 setMTEXpref('generatingHelpMode',true);
-set(groot,'FormatSpacing','compact')
+format compact
 set(groot,'DefaultFigureColor','white');
 plotx2east
 plotzOutOfPlane
