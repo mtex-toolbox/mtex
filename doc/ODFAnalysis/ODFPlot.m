@@ -5,9 +5,9 @@
 % dimensional, non Euclidean orientation space its proper visualization is
 % a challenging task. In general one distinguishes two approaches
 %
-% # Choose a parameterisation of the orientation space by three variables,
+% # Choose a parametrization of the orientation space by three variables,
 % e.g., by the Euler angles $\varphi_1$, $\Phi$, $\varphi_2$ and make a
-% three dimensional half transluent contour plot of the function
+% three dimensional half translucent contour plot of the function
 % # Choose a series of two dimensional sections through the orientation
 % space and plot the ODF only at the sections.
 %
@@ -72,12 +72,11 @@ ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
 % A big disadvantage of the Euler angle representation of the orientation
 % space is that it very badly follows the curved geometry of the space.
 %
-% Especially for misorientation distribution functions a better alternativ
+% Especially for misorientation distribution functions a better alternative
 % is the three dimensional axis angle space. To visualize an ODF with
-% respect to this parameterization simply add the option |'axisAngle'|
+% respect to this parametrization simply add the option |'axisAngle'|
 
 plot3d(odf,'axisAngle','figSize','large')
-
 
 %% ODF Sections
 %
@@ -101,7 +100,7 @@ plotSection(odf)
 %
 % In fact MTEX highly recommends the so called sigma sections as they
 % provide a much less distorted representation of the orientation space. A
-% detailed description of the sigma sections can be found in the chaper
+% detailed description of the sigma sections can be found in the chapter
 % <SigmaSections.html sigma sections>.
 
 plotSection(odf,'sigma')

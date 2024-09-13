@@ -1,5 +1,5 @@
 classdef S2VectorFieldHandle < S2VectorField
-% a class represeneting a function on the sphere
+% a class representing a function on the sphere
   
 properties
   fun
