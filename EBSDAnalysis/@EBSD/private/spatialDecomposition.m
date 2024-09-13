@@ -10,13 +10,13 @@ function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
 % V - list of vertices of the Voronoi cells
 % D   - cell array of Voronoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
-dxy = max(vecnorm(unitCell(1)-unitCell,2,2));
+dxy = max(norm(unitCell(1)-unitCell));
 numX = size(X,1);
 
 if check_option(varargin,'unitCell')
   
   % compute the vertices
-  [V,faces] = generateUnitCells(X,unitCell,varargin{:});
+  [V,faces] = generateUnitCells(vector3d(X(:,1),X(:,2),0),unitCell,varargin{:});
  
   D = cell(size(X,1),1);
   for k=1:size(X,1)  
@@ -38,7 +38,8 @@ else
       E=[E1,E2];
     
       clear Vx Vy E1 E2
-      [V,~,ic] = unique(round(V*1e2/dxy)*dxy/1e2,'rows');
+      delta = dxy/1e4;
+      [V,~,ic] = unique(round(V/delta)*delta,'rows');
 
       F = sort(ic(E),2);
       I_FD = sparse(I_ED1(I_ED2<=numX),I_ED2(I_ED2<=numX),1,size(F,1),numX);
@@ -126,7 +127,7 @@ if ischar(method)
       delta = get_option(varargin,'tight',0.95,'double');
       k = boundary(x,y,delta);
       
-      % erase all linear dependend points
+      % erase all linear dependent points
       angle = atan2( x(k(1:end-1))-x(k(2:end)),...
         y(k(1:end-1))-y(k(2:end)) );      
       k = k([true; abs(diff(angle))>eps; true]);
@@ -168,12 +169,11 @@ elseif isa(method,'double')
   
 end
 
-
-radius = mean(sqrt(sum(unitCell.^2,2)));
+radius = mean(abs(unitCell));
 edgeLength = sqrt(sum(diff(boundingX).^2,2));
 
 % fill each line segment with nodes every 20 points (in average)
-nto = fix((edgeLength>0)*4); fix(edgeLength*(2*radius));
+nto = (edgeLength>0)*4; %fix(edgeLength*(2*radius));
 
 cs = cumsum([1; 1 + nto]);
 boundingX(cs,:) = boundingX;
@@ -202,9 +202,8 @@ edgeAngle = atan2(edgeDirection(:,2),edgeDirection(:,1));
 edgeLength = sqrt(sum(edgeDirection.^2,2));
 
 % shift the starting vertex
-bX = squeeze(double(axis2quat(zvector,edgeAngle)* ...
-  vector3d([0; radius; 1])));
-offsetX = bX - boundingX(1:end-1,:);
+bX = axis2quat(zvector,edgeAngle) * vector3d(0, radius, 1);
+offsetX = bX.xyz - boundingX(1:end-1,:);
 
 for k=1:size(boundingX,1)-1
   
@@ -222,8 +221,8 @@ for k=1:size(boundingX,1)-1
     
     tmpX = pX(dist < m*radius,1:2);
     
-    right = (bsxfun(@minus, tmpX, boundingX(k,1:2)  - intendX ) * edgeDirection(k,1:2)') < 0;
-    left  = (bsxfun(@minus, tmpX, boundingX(k+1,1:2)+ intendX ) * edgeDirection(k,1:2)') > 0;
+    right = ((tmpX - boundingX(k,1:2)   + intendX ) * edgeDirection(k,1:2)') < 0;
+    left  = ((tmpX - boundingX(k+1,1:2) - intendX ) * edgeDirection(k,1:2)') > 0;
    
     tmpX = tmpX( ~(right | left) ,:);
      
@@ -242,8 +241,10 @@ for k=1:size(boundingX,1)-1
   dummyCoordinates = [dummyCoordinates; tmpX]; %#ok<AGROW>
   
 end
-  
-dummyCoordinates = unique(dummyCoordinates,'first','rows');
+
+dxy = max(norm(unitCell(1)-unitCell));
+delta = dxy/1e1;
+dummyCoordinates = unique(round(dummyCoordinates/delta)*delta,'first','rows');
 
 % remove those points which are inside the b
 

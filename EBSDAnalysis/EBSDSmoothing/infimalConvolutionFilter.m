@@ -56,7 +56,7 @@ classdef infimalConvolutionFilter < EBSDFilter
       
       [~,q] = mean(ori);
       q = quaternion(q);
-      %u_0 = double(log(q,quaternion(qmean)));
+      %u_0 = fullDouble(log(q,quaternion(qmean)));
       
       %u_0 = double(ori);
       u_0 = double(q);

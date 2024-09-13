@@ -2,14 +2,14 @@ function varargout = gridify(ebsd,varargin)
 % extend EBSD data to an grid
 %
 % Description This function transforms unordered EBSD data sets into a
-% matrix shaped regular grid. No interpolation is done herby. Grid points
+% matrix shaped regular grid. No interpolation is done hereby. Grid points
 % in the regular grid that do not have a correspondence in the regular grid
 % are set to NaN. Having the EBSD data in matrix form has several
 % advantages:
 %
 % * required for <OrientationGradient.html gradient>,
 % <EBSDsquare.curvature.html curvature> and <GND> computation
-% * much faster visualisation of big maps
+% * much faster visualization of big maps
 % * much faster computation of the kernel average misorientation
 %
 % Syntax

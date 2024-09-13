@@ -24,7 +24,7 @@ end
 if isnumeric(SO3F2)
   SO3F = SO3FunHarmonic(SO3F1);
   SO3F2 = reshape(SO3F2,[1 1 size(SO3F2)]);
-  SO3F.fhat = sum(bsxfun(@times,SO3F.fhat,SO3F2),3);
+  SO3F.fhat = sum(SO3F.fhat .* SO3F2,3);
   s = size(SO3F.fhat);
   SO3F.fhat = reshape(SO3F.fhat,s(1),s(2),[]);
   return

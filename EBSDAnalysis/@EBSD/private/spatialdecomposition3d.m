@@ -8,11 +8,8 @@ if ~check_option(varargin,'voronoi') && size(x_D,1) > 1 %  check_option(varargin
   dX = abs(2*unitCell([1 13 17]));
   
   % grid coordinates
-  
-  
-  iX = bsxfun(@minus,x_D,min(x_D));
-  iX = 1+round(bsxfun(@rdivide,iX,dX));
-
+  iX = x_D - min(x_D);
+  iX = 1+round(iX ./ dX);
   
   sz = max(iX);  %extent, number of voxels in each direction
   

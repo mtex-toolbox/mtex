@@ -47,7 +47,7 @@ for j = 1:length(sF)
   if v.antipodal
     opt = {'showArrowHead','off'};
     hh = quiver3(x,y,z,-v.x,-v.y,-v.z,'parent',mtexFig.gca,opt{:});
-    set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    hh.Annotation.LegendInformation.IconDisplayStyle = "off";
     h = [h,hh]; %#ok<AGROW>
   else
     opt = {};
@@ -58,7 +58,7 @@ for j = 1:length(sF)
   
 end
 optiondraw(h,varargin{:});
-view(mtexFig.gca,squeeze(double(sec)));
-set(mtexFig.gca,'dataAspectRatio',[1 1 1]);
+view(mtexFig.gca,sec.xyz);
+mtexFig.gca.DataAspectRatio = [1 1 1];
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end

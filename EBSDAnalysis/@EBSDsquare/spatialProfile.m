@@ -59,11 +59,7 @@ i(isOutside) = []; j(isOutside) = [];
 
 idList = sub2ind(size(ebsd),i,j);
 
-% make distList
-xy = [ebsd.subSet(idList).prop.x ebsd.subSet(idList).prop.y];
-dist = sqrt( (xy(1,1)-xy(2:end,1)).^2 + (xy(1,2)-xy(2:end,2)).^2);
-distList = [0; dist];
-
 ebsd = ebsd.subSet(idList);
 
-
+% make distList
+distList = norm(ebsd.pos(1) - ebsd.pos(1:end));

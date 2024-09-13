@@ -91,9 +91,7 @@ end
 if exist('zmap','var')
    candidate = sum(zmap(ind),3) <= count;
    peroded =zmap(:) & candidate(:);
-   ebsd = ebsd(~peroded);
+   ebsd(peroded) = [];
 end
-% cleanup
-ebsd(ebsd.isnan) = [];
 
 end

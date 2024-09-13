@@ -242,7 +242,7 @@ classdef embedding
       % random vector in linear space
       obj.M = rand(prod([s{:}]),obj.dim);
       
-      % reshapre correctly
+      % reshape correctly
       obj = reshape(obj./norm(obj),[s{:}]);
       
     end
@@ -418,7 +418,7 @@ classdef embedding
         localSample = sample((i-1)*100+(1:100));
         T = embedding(localSample);
         Tmean = mean(T);
-        mSample = project(Tmean);
+        mSample = project(Tmean); %#ok<PRJET>
               
         mSample2 = mean(localSample);
         h(i) = angle(mSample,mSample2) ./ degree; %#ok<AGROW>
@@ -505,7 +505,7 @@ classdef embedding
       
         e = embedding(ori) + 0.01 * n;
                 
-        [oriRec, ~, numIter] = project(e);
+        [oriRec, ~, numIter] = project(e); %#ok<PRJET>
       
         if max(angle(ori,oriRec)./degree)<1e-5
           disp([cs.LaueName, ' ..... passed, iterations: ' int2str(numIter)]);

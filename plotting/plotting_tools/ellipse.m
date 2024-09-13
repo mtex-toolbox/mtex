@@ -5,9 +5,9 @@ function h = ellipse(r,a,b,varargin)
 %  r        -  @rotation i.e. matrix of three orthogonal vectors specifying ellipse position
 %  a,b      -  long/short half axes of ellipse in radian
 
-h = [];
 rho=(0:1:360)*degree;
 
+h = gobjects(1,length(r));
 for i = 1:length(r)
 
     % distances of points on ellipse from origin
@@ -20,7 +20,7 @@ for i = 1:length(r)
      c=rotate(c,r(i));
   
     % plot ellipse
-    h = [h,line(c,varargin{:},'hold','add2all')]; %#ok<AGROW>
+    h(i) = line(c,varargin{:},'hold','add2all');
   
 end
 

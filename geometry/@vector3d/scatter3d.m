@@ -60,8 +60,7 @@ if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   mh = [];
   while isempty(mh)
     pause(0.01);
-    hh = handle(h);
-    mh = [hh.MarkerHandle];
+    mh = [h.MarkerHandle];
   end
                 
   for j = 1:length(mh)
@@ -74,11 +73,12 @@ if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   
 end
 
-
 axis(ax,'equal','vis3d','off');
-
 set(ax,'XDir','rev','YDir','rev',...
-'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
+  'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
+
+pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+pC.setView(ax);
 
 hold(ax,'off')
 

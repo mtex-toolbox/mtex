@@ -41,10 +41,10 @@ X2 = repmat(xy2(:,1),1,n_rows_2);
 Y2 = repmat(xy2(:,2),1,n_rows_2);
 
 % end points boundary segments
-X3 = repmat(gB.V(gB.F(:,1),1).',n_rows_1,1);
-Y3 = repmat(gB.V(gB.F(:,1),2).',n_rows_1,1);
-X4 = repmat(gB.V(gB.F(:,2),1).',n_rows_1,1);
-Y4 = repmat(gB.V(gB.F(:,2),2).',n_rows_1,1);
+X3 = repmat(gB.allV.x(gB.F(:,1)).',n_rows_1,1);
+Y3 = repmat(gB.allV.y(gB.F(:,1)).',n_rows_1,1);
+X4 = repmat(gB.allV.x(gB.F(:,2)).',n_rows_1,1);
+Y4 = repmat(gB.allV.y(gB.F(:,2)).',n_rows_1,1);
 
 X4_X3 = X4-X3;
 Y1_Y3 = Y1-Y3;

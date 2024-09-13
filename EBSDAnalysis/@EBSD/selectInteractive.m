@@ -25,10 +25,10 @@ try set(ax,'Interactions',[]); end
 try ax.Interactions.Enabled = 'off'; end
 
 waitforbuttonpress;
-point1 = get(ax,'CurrentPoint');
+point1 = ax.CurrentPoint;
 rbbox; % dragg a rectangle
 
-point2 = get(ax,'CurrentPoint');    % button up detected
+point2 = ax.CurrentPoint;    % button up detected
 point1 = point1(1,1:2);            % extract x and y
 point2 = point2(1,1:2);
 

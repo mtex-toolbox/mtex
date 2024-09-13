@@ -64,7 +64,7 @@ classdef tensor < dynOption
       T.doubleConvention = check_option(varargin,'doubleConvention');
       
       if isa(M,'vector3d') % conversion from vector3d
-        T.M = shiftdim(double(M),ndims(M));
+        T.M = shiftdim(fullDouble(M),ndims(M));
         T.rank = 1;
         if isa(M,'Miller'), T.CS = M.CS; end
       

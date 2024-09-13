@@ -24,7 +24,7 @@ if check_option(varargin,'full')
   d = cell(1,length(E.u));
   for k = 1:length(E.u)
     if E.u{k}.rank ==1
-      d{k} = reshape([E.u{k}.x';E.u{k}.y';E.u{k}.z'],[],size(E,1));
+      d{k} = double(E.u{k});
     else
       d{k} = reshape(double(E.u{k}),[],size(E,1));
     end
@@ -61,15 +61,14 @@ switch E.CS.Laue.id
     
   case 2 % C1
     
-    d = cat(3,double(E.u{1}),double(E.u{2}),double(E.u{3}));
-    d = reshape(d,[],9);
+    d = [E.u{1}.xyz,E.u{2}.xyz,E.u{3},xyz];
     
   case {5,8,11} % C2
 
     M2 = reshape(E.u{2}.M,9,[]).';
     M3 = reshape(E.u{3}.M,9,[]).';
     
-    d = [reshape(double(E.u{1}),[],3), M2(:,ind2),M3(:,ind2)];
+    d = [E.u{1}.xyz, M2(:,ind2),M3(:,ind2)];
     d(:,[5,6,8]) = sqrt(2) * d(:,[5,6,8]);
     d(:,[10,11,13]) = sqrt(2) *  d(:,[10,11,13]);
     d = isometricdot(d,4,7);
@@ -113,7 +112,7 @@ switch E.CS.Laue.id
   case 18 % C3
 
     M = reshape(E.u{1}.M,27,[]).';
-    d = [M(:,ind3),reshape(double(E.u{2}),[],3)];
+    d = [M(:,ind3),E.u{2}.xyz];
     %d(:,[1,2,3,5,6,7]) = d(:,[1,2,3,5,6,7]).*sqrt(3);
     d(:,4) = d(:,4).*sqrt(6);
     d = isometricdot3d(d,3,5);
@@ -143,7 +142,7 @@ switch E.CS.Laue.id
   case 27 % C4
     
     M1 = reshape(E.u{1}.M,3^4,[]).';   
-    d = [M1(:,ind4),reshape(double(E.u{2}),[],3)];
+    d = [M1(:,ind4),E.u{2}.xyz];
     d([2,3,7,10,12,14]) =  sqrt(4) * d([2,3,7,10,12,14]);
     d([4,6,13]) = sqrt(6) * d([4,6,13]);
     d([5,8,9]) = sqrt(12) * d([5,8,9]);
@@ -158,7 +157,7 @@ switch E.CS.Laue.id
     
   case 35 % C6
     M1 = reshape(E.u{1}.M,3^6,[]).';
-    d = [M1(:,ind6(1:end-1)),reshape(double(E.u{2}),[],3)];
+    d = [M1(:,ind6(1:end-1)),E.u{2}.xyz];
     d([2,3,16,21,23,27]) = sqrt(6) * d([2,3,16,21,23,27]);
     d([4,6,11,15,24,26]) = sqrt(15) *  d([4,6,11,15,24,26]);
     d([5,17,20]) = sqrt(30) * d([5,17,20]);

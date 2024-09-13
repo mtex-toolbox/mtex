@@ -59,7 +59,8 @@ plot(grains,M)
 largeGrains = grains(grains.grainSize > 10)
 
 hold on
-quiver(grains,cross(sSGrain.n,zvector),'displayName','slip plane')
+traces = cross(sSGrain.n,grains.N);
+quiver(grains,traces,'displayName','slip plane trace')
 hold on
 quiver(grains,sSGrain.b,'displayName','slip direction')
 hold off

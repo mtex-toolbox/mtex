@@ -159,7 +159,11 @@ classdef dynProp
     function c = char(dp,varargin)
       
       fn = fieldnames(dp.prop);
-      
+      if isempty(fn)
+        c = [];
+        return;
+      end
+
       numdP = length(dp.prop.(fn{1}));
 
       if ~isempty(fn) && numdP<=20

@@ -23,8 +23,8 @@ rot_left = rot_ref * rot_123;
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
 %
 
-T_right = (rot_right.matrix - rot_ref.matrix)./delta
-T_left = (rot_left.matrix - rot_ref.matrix)./delta
+T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
+T_left = (rot_left.matrix - rot_ref.matrix) ./ delta
 
 %%
 % Both matrices |T_right| and |T_left| are elements of the tangential space
@@ -48,7 +48,7 @@ S_left_R = T_left * matrix(inv(rot_ref))
 
 vector3d(spinTensor(S_right_R)) * sqrt(14)
 
-vector3d(spinTensor(S_left_L))  *sqrt(14)
+vector3d(spinTensor(S_left_L))  * sqrt(14)
 
 
 %%

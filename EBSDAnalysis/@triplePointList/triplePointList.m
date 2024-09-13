@@ -15,11 +15,12 @@ classdef triplePointList < phaseList & dynProp
   
   % properties with as many rows as data
   properties
-    id = zeros(0,1)           % indices of the vertices in grains.V
-    grainId = zeros(0,3)      % id's of the neighboring grains to a face
-    boundaryId = zeros(0,3)   % id's of the neighboring ebsd data to a face
-    nextVertexId = zeros(0,3) % id's of the neighboring segment vertices
-    allV = zeros(0,2)         % vertices x,y coordinates
+    id = zeros(0,1)           % indices of the vertices in grains.allV
+    grainId = zeros(0,3)      % id's of the neigbouring grains to a face
+    boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
+    nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
+    allV = vector3d           % vertices x,y coordinates
+    N = vector3d.Z            % normal direction of the pseudo3d data
   end
    
   properties (Dependent = true)
@@ -76,13 +77,17 @@ classdef triplePointList < phaseList & dynProp
     function v = get.V(tP)
       v = tP.allV(tP.id,:);
     end
+
+    function tP = set.V(tP,vNew)
+      tP.allV(tP.id,:) = vNew;
+    end
     
     function x = get.x(tP)
-      x = tP.V(:,1);
+      x = tP.V.x;
     end
     
     function y = get.y(tP)
-      y = tP.V(:,2);
+      y = tP.V.y;
     end
     
     function omega = get.angles(tP)
@@ -91,11 +96,10 @@ classdef triplePointList < phaseList & dynProp
       iV = tP.nextVertexId;
 
       % compute the angles between them
-      dx = reshape(tP.allV(iV,1),[],3) - repmat(tP.V(:,1),1,3);
-      dy = reshape(tP.allV(iV,2),[],3) - repmat(tP.V(:,2),1,3);
+      d = tP.allV(iV) - tP.V;
 
-      omega = sort(atan2(dy,dx),2);
-      omega = mod(diff(omega(:,[1:3,1]),1,2),2*pi);
+      omega = angle(d(:,1),d(:,2:3));
+      omega(:,3) = 2*pi - sum(omega,2);
       
     end
     

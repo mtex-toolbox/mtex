@@ -10,6 +10,8 @@ function dist = angle(oR,q,varargin)
 % Syntax
 %   omega = angle(oR,ori)
 %
+%   dist = angle(oR,ori)
+%
 % Input
 %  oR - @orientationRegion
 %  ori - @orientation

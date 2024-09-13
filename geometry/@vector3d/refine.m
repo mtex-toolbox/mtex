@@ -10,15 +10,12 @@ function [v, r]= refine(v)
 v.resolution = v.resolution / 2;
   
 v = [v(:); -zvector];
-d = squeeze(double(v));
   
-tri = convhulln(d);
+tri = convhulln(v.xyz);
   
 r = sum(vector3d(v.subSet(tri)),2);
 r = r./norm(r);
   
-[thetav] = polar(v);
-[theta] = polar(r);
-r(theta > max(thetav(:))) = [];
+r(t.theta > max(v.theta(:))) = [];
 
 v = [v; r(:)];

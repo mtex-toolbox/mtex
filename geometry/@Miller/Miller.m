@@ -38,7 +38,7 @@ classdef Miller < vector3d
   end
   
   properties (Access = private)
-    CSprivate = crystalSymmetry % crystal symmetry
+    CSprivate % crystal symmetry
   end
   
   properties (Dependent = true)
@@ -200,13 +200,10 @@ classdef Miller < vector3d
     function hkl = get.hkl(m)
       
       % get reciprocal axes
-      M = squeeze(double(m.CS.axesDual)).';
+      M = double(m.CS.axesDual);
       
-      % get xyz coordinates
-      v = reshape(double(m),[],3).';
-
       % compute reciprocal coordinates
-      hkl = (M \ v)';
+      hkl = (M \ m.xyz.')';
       
     end
 
@@ -233,7 +230,7 @@ classdef Miller < vector3d
       hkl = hkl(:,[1:2,end]);
       
       % get reciprocal axes
-      M = squeeze(double(m.CS.axesDual));
+      M = m.CS.axesDual.xyz;
       
       % compute x, y, z coordinates
       m.x = hkl * M(:,1);
@@ -296,10 +293,10 @@ classdef Miller < vector3d
     function uvw = get.uvw(m)
     
       % get crystal coordinate system (a,b,c)
-      M = squeeze(double(m.CS.axes)).';
+      M = double(m.CS.axes);
 
       % get x, y, z coordinates
-      xyz = reshape(double(m),[],3).';
+      xyz = double(m);
 
       % compute u, v, w coordinates
       uvw = (M \ xyz)';
@@ -339,7 +336,7 @@ classdef Miller < vector3d
       if size(uvw,2) == 4, error('Use UVTW to set four Miller indice!'); end
                
       % get direct axes 
-      M = squeeze(double(m.CS.axes));
+      M = m.CS.axes.xyz;
       
       % compute x, y, z coordinates
       m.x = uvw * M(:,1);

@@ -18,8 +18,8 @@ function p = paris(grains)
 % store this in local variables for speed reasons
 p = zeros(size(grains));
 
-X = grains.V(:,1);
-Y = grains.V(:,2);
+X = grains.allV.x;
+Y = grains.allV.y;
 
 
 poly = grains.poly;
@@ -57,4 +57,3 @@ for id = 1:length(grains)
   p(id) = 200*(perimeterGrain - perimeterHull)./perimeterHull;
   
 end
-

@@ -23,7 +23,7 @@ classdef EBSDsquare < EBSD
   
   methods
       
-    function ebsd = EBSDsquare(rot,phaseId,phaseMap,CSList,dxy,varargin)
+    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
       % generate a rectangular EBSD object
       %
       % Syntax 
@@ -33,6 +33,7 @@ classdef EBSDsquare < EBSD
       
       sGrid = size(rot);
       
+      ebsd.pos = pos;
       ebsd.rotations = rotation(rot);
       ebsd.phaseId = phaseId(:);
       ebsd.phaseMap = phaseMap;
@@ -47,20 +48,17 @@ classdef EBSDsquare < EBSD
       ebsd = reshape(ebsd,sGrid);
                   
       % get unit cell
-      ebsd.dx = dxy(1);
-      ebsd.dy = dxy(2);
+      ebsd.dx = dxyz(1);
+      ebsd.dy = dxyz(2);
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = 0.5 * [dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1]];
+        ebsd.unitCell = 0.5 * vector3d(dxyz(1) * [1;1;-1;-1],dxyz(2) * [1;-1;-1;1],0);
       end
       
-      if ~isfield(ebsd.prop,'x')
-        
+      if isempty(pos)        
         [x,y] = meshgrid(1:size(rot,2),1:size(rot,1));
-                
-        ebsd.prop.x = (x-1) * dxy(1);
-        ebsd.prop.y = (y-1) * dxy(2);
+        ebsd.pos = vector3d((x-1) * dxyz(1),(y-1) * dxyz(2),0);
       end
            
     end
@@ -69,28 +67,27 @@ classdef EBSDsquare < EBSD
       [x,y] = ind2sub(size(ebsd),ind);
     end
 
-    function [ebsd,newId] = Bify(ebsd,varargin)
+    function [ebsd,newId] = gridify(ebsd,varargin)
       % nothing to do :)
       newId = (1:length(ebsd)).';
     end
-
-        
+           
     % --------------------------------------------------------------
     
     function out = get.xmin(ebsd)
-      out = ebsd.prop.x(1);
+      out = ebsd.pos.x(1);
     end
     
     function out = get.xmax(ebsd)
-      out = ebsd.prop.x(end);
+      out = ebsd.pos.x(end);
     end
     
     function out = get.ymin(ebsd)
-      out = ebsd.prop.y(1);
+      out = ebsd.pos.y(1);
     end
     
     function out = get.ymax(ebsd)
-      out = ebsd.prop.y(end);
+      out = ebsd.pos.y(end);
     end
     
     

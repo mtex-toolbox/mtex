@@ -16,4 +16,4 @@ function gB = plus(gB,xy)
 if isa(xy,'grainBoundary'), [xy,gB] = deal(gB,xy); end
 if isa(xy,'vector3d'), xy = [xy.x,xy.y]; end
 
-gB.V = gB.V + repmat(xy,size(gB.V,1),1);
+gB.allV = gB.allV + repmat(xy,size(gB.allV,1),1);

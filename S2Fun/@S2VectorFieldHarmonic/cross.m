@@ -13,9 +13,9 @@ function sVF1 = cross(sVF1, sVF2, varargin)
 
 if isa(sVF2, 'vector3d')
   
-  xyz = repmat(squeeze(double(sVF2)).',size(sVF1.sF.fhat,1),1);
+  xyz = repmat(sVF2.xyz, size(sVF1.sF.fhat,1),1);
   
-  sVF1.sF.fhat = cross(sVF1.sF.fhat,xyz,2);
+  sVF1.sF.fhat = cross(sVF1.sF.fhat, xyz, 2);
   
 else
   f = @(v) cross(sVF1.eval(v), sVF2.eval(v));

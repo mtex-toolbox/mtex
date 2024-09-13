@@ -56,7 +56,7 @@ p();
 global useBSXFUN;
 useBSXFUN = MATLABverLessThan('9.6');
 
-% make help searchable
+% make help search-able
 if ~isdeployed
   if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))
     disp('Creating search data base for MTEX documentation.')

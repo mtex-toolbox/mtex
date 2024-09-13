@@ -12,7 +12,7 @@ function [traces, rel, cSize] =  calcTraces(ebsd,varargin)
 %
 % Output
 %  traces - @vector3d size max(clusterId(:,1)) x max(clusterId(:,2)) ....
-%  rel    - relyability index
+%  rel    - reliability index
 %  cSize  - cluster size
 %
 % Options
@@ -26,6 +26,10 @@ function [traces, rel, cSize] =  calcTraces(ebsd,varargin)
 % planes from two-dimensional reconstructed parent phase orientation maps>,
 % arXiv, 2022
 %
+
+if ~isnull(angle(ebsd.N,zvector,'antipodal'))
+  warning('not yet implemented')
+end
 
 % ensure EBSD is at a grid
 [ebsd,newId] = ebsd.gridify;
@@ -108,7 +112,7 @@ for i = 1:length(ic)
       M = Y(:) .* [x(:)-mxy(2),y(:)-mxy(1)];
       [lambda,xyz(ic(i),1:2),~] = eig2(M' * M);
 
-      % relieability
+      % reliability
       rel(ic(i)) = (lambda(2) - lambda(1))./lambda(2);
 
   end

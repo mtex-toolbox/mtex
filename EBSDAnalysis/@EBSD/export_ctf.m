@@ -115,8 +115,8 @@ fprintf(filePh,'Author\t%s\r\n',getenv('USERNAME'));
 fprintf(filePh,'JobMode\tGrid\r\n');
 
 % write grid info
-xVec = unique(ebsd.prop.x);
-yVec = unique(ebsd.prop.y);
+xVec = unique(ebsd.pos.x);
+yVec = unique(ebsd.pos.y);
 dx = abs(xVec(1)-xVec(2));
 dy = abs(yVec(1)-yVec(2));
 
@@ -191,8 +191,8 @@ fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r
 % end
 
 %Compute X and Y data
-X = ebsd.prop.x;
-Y = ebsd.prop.y;
+X = ebsd.pos.x;
+Y = ebsd.pos.y;
 
 % Check for deleted phases
 phase = ebsd.phase;
@@ -256,7 +256,7 @@ end
 % Set nan data points to 0
 for ii = 1:length(flds), flds{ii}(isnan(flds{ii})) = 0; end
 % Make X increase first
-[~,ind] = sort(ebsd.prop.y);
+[~,ind] = sort(ebsd.pos.y);
 
 %Write data
  A = zeros(ebsd.length,11); %initialize

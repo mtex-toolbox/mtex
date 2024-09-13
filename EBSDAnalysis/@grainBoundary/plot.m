@@ -9,26 +9,26 @@ function [h,mP] = plot(gB,varargin)
 %   plot(gB('Forsterite','Forsterite'),gB('Forsterite','Forsterite').misorientation.angle)
 %
 %   % colorize segments according to a list of RGB values
-%   plot(gB('Forsterite','Forsterite'),colorList)
+%   plot(gB('Forsterite','Forsterite'),color)
 %
 % Input
 %  grains - @grain2d
 %  gB     - @grainBoundary
-%  colorList - n x 3 list of RGB values
+%  color  - n x 3 list of RGB values
 %  
 % Options
 %  linewidth - line width
-%  linecolor - line color
+%  LineColor - line color
 %  edgeAlpha - (list of) transparency values between 0 and 1
 %  region    - [xmin xmax ymin ymax] plot only a subregion
-%  displayName - label to appear in the legend
+%  DisplayName - label to appear in the legend
 %  smooth      - try to make a smooth connections at the vertices
 %
 
 reg = get_option(varargin,'region');
 if ~isempty(reg)
   
-  V = gB.V;
+  V = gB.allV.xyz;
   F = gB.F;
   ind = V(F(:,1),1) > reg(1) & V(F(:,1),1) < reg(2)  & ...
     V(F(:,2),1) > reg(1) & V(F(:,2),1) < reg(2) & ...
@@ -40,8 +40,10 @@ if ~isempty(reg)
 end
 
 % create a new plot
+pC = gB.plottingConvention.copy;
+if isnull(dot(pC.outOfScreen,gB.N)), pC.outOfScreen = gB.N; end
 mtexFig = newMtexFigure(varargin{:});
-[mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot(pC,'scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if get_option(varargin,'linewidth',0) > 3 || check_option(varargin,'smooth')
   plotOrdered2(gB,varargin{:});
@@ -51,7 +53,7 @@ end
 
 % if no DisplayName is set remove patch from legend
 if ~check_option(varargin,'DisplayName')
-  set(get(get(h(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
 else
   legend('-DynamicLegend','location','NorthEast');
 end
@@ -71,7 +73,7 @@ end
 function plotOrdered2(gB,varargin)
 
 % add a nan vertex at the end - patch should not close the faces
-V = [gB.V;nan(1,2)];
+V = [gB.allV.xyz; nan(1,3)];
 
 % extract the edges
 F = gB.F;
@@ -80,8 +82,10 @@ F = gB.F;
 [EC,Fid] = EulerCycles2(F);
 
 x = NaN(length(EC),1); y = x;
+z = zeros(size(x));
 x(~isnan(EC)) = V(EC(~isnan(EC)),1);
 y(~isnan(EC)) = V(EC(~isnan(EC)),2);
+if size(V,2) == 3, z(~isnan(EC)) = V(EC(~isnan(EC)),3); end
 
 % color given by second argument
 if nargin > 1 && isnumeric(varargin{1}) && ...
@@ -110,6 +114,13 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   y(3:2:end-1) = (1-alpha)*yy(3:2:end-1) + alpha*yy(4:2:end);
   y(end+1) = NaN;
 
+  z = repelem(z(:).',1,2).';
+  z(1) = []; z(end)=[];
+  zz = z;
+  z(2:2:end-1) = (1-alpha)*zz(2:2:end-1) + alpha*zz(1:2:end-2);
+  z(3:2:end-1) = (1-alpha)*zz(3:2:end-1) + alpha*zz(4:2:end);
+  z(end+1) = NaN;
+
   % align the data
   data = repelem(data(Fid(~isnan(Fid)),:),2,1);
   color = nan(length(y),size(data,2));
@@ -118,18 +129,19 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   
    % subdivion
   % for some reason it is important to subdivide it into parts
+  p = gobjects(1,ceil(length(x)/1000));
   for k = 1:ceil(length(x)/1000) 
     
     subId = max(1,(k-1)*1000) : min(k*1000,length(x));
   
     % plot the line
-    z = zeros(length(subId),2);
-    p(k) = surface([x(subId),x(subId)],[y(subId),y(subId)],z,...
+    %z = zeros(length(subId),2);
+    p(k) = surface([x(subId),x(subId)],[y(subId),y(subId)],[z(subId),z(subId)],...
       repmat(color(subId,:,:),1,2,1),...
       'FaceColor','none','EdgeColor','interp','parent',mP.ax);
     
     if k>1
-      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      p(k).Annotation.LegendInformation.IconDisplayStyle = 'off';      
     end
     
   end
@@ -142,12 +154,14 @@ else % color given directly
   
   % subdivion
   % for some reason it is important to subdivide it into parts
+  p = gobjects(1,ceil(length(x)/2000));
   for k = 1:ceil(length(x)/2000) 
     subId = max(1,(k-1)*2000) : min(k*2000,length(x));
-    p(k) = line(x(subId),y(subId),'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
+    p(k) = line(x(subId),y(subId),z(subId),...
+      'hitTest','off','parent',mP.ax,'color',color,'lineJoin','round');
     
     if k>1
-      set(get(get(p(k),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      p(k).Annotation.LegendInformation.IconDisplayStyle = 'off';
     end
     
   end
@@ -161,7 +175,7 @@ end
 
 function plotSimple(gB,varargin)
 obj.Faces    = gB.F;
-obj.Vertices = gB.V;
+obj.Vertices = gB.allV.xyz;
 obj.parent = mP.ax;
 obj.FaceColor = 'none';
 

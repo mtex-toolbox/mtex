@@ -19,7 +19,7 @@ rot = rotation.id(size(id));
 rot(id) = rotation.rand;
 
 
-ebsd = EBSDsquare(rot,2*ones(size(rot)),1:2,{'not indexed',cs},[1 1]);
+ebsd = EBSDsquare([],rot,2*ones(size(rot)),1:2,{'not indexed',cs},[1 1]);
 
 %%
 

@@ -40,7 +40,7 @@ if ~check_option(varargin,'noNormalization')
   sF = sqrt(4*pi) * sF ./ sF.fhat(1);
 end
 
-% convolute with kernel function
+% convolution with kernel function
 sF = conv(sF,psi);
 
 % symmetrise with respect to crystal symmetry

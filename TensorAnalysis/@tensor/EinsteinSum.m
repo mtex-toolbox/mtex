@@ -44,7 +44,7 @@ while iv < length(varargin) && ~ischar(varargin{iv})
   elseif isa(M2,'quaternion')
     M2 = matrix(M2);
   elseif isa(M2,'vector3d')
-    M2 = double(M2);
+    M2 = fullDouble(M2);
     M2 = permute(M2,[3 1 2]);
   end
  
@@ -74,24 +74,15 @@ while iv < length(varargin) && ~ischar(varargin{iv})
    
   M1 = ipermute(M1,order1);
   M2 = ipermute(M2,order2);
+  M1 = M1 .* M2;
     
-  if useBSXFUN
-    M1 = bsxfun(@times, M1, M2);
-  else
-    M1 = M1 .* M2;
-  end
-  
   % setup dimT1
   dimT1 = [-rDel:-1,1:rOut];
   
 end
 
 % sum over the dimensions to be removed
-if useBSXFUN
-  for d = 1:rDel, M1 = sum(M1,d); end
-else
-  if rDel>0, M1 = sum(M1,1:rDel); end
-end
+if rDel>0, M1 = sum(M1,1:rDel); end
 
 % and remove these leading dimensions
 s = size(M1);
@@ -152,7 +143,7 @@ function [a,b] = findDouble(x)
 %  return;
 %end
 
-d = bsxfun(@minus,x,x') == 0 & bsxfun(@times,x<0,x'<0);
+d =  x == x.' & x<0;
 d = d & ~tril(ones(size(d)));
 [a,b] = find(d);
 a = a'; b = b';

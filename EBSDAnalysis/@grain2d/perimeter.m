@@ -40,7 +40,7 @@ else
     poly{i} = poly{i}(1:end-incl(i));
   end
 
-  V = grains.V;
+  V = grains.allV.xyz;
 
   peri =  cellfun(@(ind) sum(sqrt(sum(diff(V(ind,:)).^2,2))),poly);
   

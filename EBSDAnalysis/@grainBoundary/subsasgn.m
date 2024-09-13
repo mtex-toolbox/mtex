@@ -39,7 +39,7 @@ switch s(1).type
       id2 = subsasgn(gB.F(:,2),s(1),b.F(:,2));      
       gB.F = [id1(:),id2(:)];
       
-      gB.V = b.V;      
+      gB.allV = b.allV;      
       gB.CSList = b.CSList;
       gB.phaseMap = b.phaseMap;
 

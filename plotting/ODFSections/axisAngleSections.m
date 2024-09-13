@@ -86,11 +86,10 @@ classdef axisAngleSections < ODFSections
       if isempty(findall(ax,'tag','outerBoundary'))
         
         % plot outer boundary
-        opt = oS.jointCS.plotOptions;
         [~,cax] = plot(fundamentalSector(oS.jointCS,varargin{:}),'hold',...
           'TR',['\omega = ' xnum2str(oS.angles(sec)./degree,'precision',0.1),'^\circ'],'color',[0.8 0.8 0.8],...
           'doNotDraw','tag','outerBoundary','noLabel',...
-          'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',opt{:});
+          'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',oS.jointCS.how2plot);
         
         % for all generated axes
         for ax = cax(:).'

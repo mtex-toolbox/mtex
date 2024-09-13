@@ -26,7 +26,7 @@ dxy = symbolSize .* (1+3*sin(v.theta)) .* [cos(v.rho) sin(v.rho)] ;
 nxy = symbolSize .* [sin(v.rho) -cos(v.rho)] ;
 
 p = struct;
-p.Vertices = [center + dxy; center - dxy; center + nxy; center - nxy ];
+p.Vertices = repmat(center.xy,4,1) + [dxy; -dxy; nxy; -nxy ];
 p.Faces = (1:n).' +[0 2*n n 3*n 0];
 p.FaceVertexCData = color .* [0.5 + 0.5*cos(v.theta);0.5 - 0.5*cos(v.theta) ; 0.5 * ones(2*n,1)];
 p.FaceColor ='interp';

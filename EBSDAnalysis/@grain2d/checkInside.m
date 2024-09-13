@@ -52,10 +52,10 @@ if isa(xy,'grain2d') % check grains inside grains
 elseif isa(xy,'EBSD') % check ebsd unitcells entirely inside grain
   
   % extract unit cell
-  uc = xy.unitCell;
+  uc = xy.unitCell.xyz;
   
   % for EBSD data the complete unitcell should be contained
-  xy = [xy.prop.x(:),xy.prop.y(:)];
+  xy = xy.pos.xyz;
   
   % we have to allow boundary here
   isInside = grains.checkInside(xy+repmat(uc(1,:),size(xy,1),1),'includeBoundary');
@@ -72,7 +72,8 @@ end
 isInside = false(size(xy,1),length(grains));
 
 poly = grains.poly;
-V = grains.V;
+Vx = grains.allV.x;
+Vy = grains.allV.y;
 incl = grains.inclusionId;
 
 % use internal or external inpolygon engine?
@@ -88,9 +89,9 @@ for i = 1:length(poly)
   
   % extract xy values of the boundary and use inpolygon
   if inpolyEngine
-    [in,on] = insidepoly(xy(:,1),xy(:,2),V(p,1),V(p,2));
+    [in,on] = insidepoly(xy(:,1),xy(:,2),Vx(p),Vy(p));
   else
-    [in,on] = inpolygon(xy(:,1),xy(:,2),V(p,1),V(p,2));
+    [in,on] = inpolygon(xy(:,1),xy(:,2),Vx(p),Vy(p));
   end
     
   if includeBoundary

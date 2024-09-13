@@ -9,6 +9,7 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
     
   else % many new colorbars
     
+    mtexFig.cBarAxis = gobjects(numel(mtexFig.children),1);
     for i = 1:numel(mtexFig.children)      
       mtexFig.cBarAxis(i) = addColorbar(mtexFig.children(i),varargin{:});
     end
@@ -16,30 +17,20 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
   end  
   
   % adjust width of the colorbars
-  pos = ensurecell(get(mtexFig.cBarAxis,'position'));
+  pos = {mtexFig.cBarAxis.Position};
   for i = 1:numel(pos)
     if pos{i}(3)<pos{i}(4)
-      pos{i}(3)=getMTEXpref('FontSize');
+      pos{i}(3) = getMTEXpref('FontSize');
     else
-      pos{i}(4)=getMTEXpref('FontSize');
-    end
-    set(mtexFig.cBarAxis(i),'position',pos{i});
+      pos{i}(4) = getMTEXpref('FontSize');
+    end    
   end
+  [mtexFig.cBarAxis.Position] = deal(pos{:});
   
   if check_option(varargin,'title')
-    cBarTitle = get_option(varargin,'title');
-    for i = 1:numel(mtexFig.cBarAxis)
-      try
-        l = get(mtexFig.cBarAxis(i),'Label');
-        l.String = cBarTitle;
-      catch
-        if iscell(cBarTitle) && numel(cBarTitle) == numel(mtexFig.cBarAxis)
-            ylabel(mtexFig.cBarAxis(i),cBarTitle{i});
-        else
-            ylabel(mtexFig.cBarAxis(i),cBarTitle);
-        end
-      end
-    end
+    cBarTitle = ensurecell(get_option(varargin,'title'));
+    label = [mtexFig.cBarAxis.Label];
+    [label.String] = deal(cBarTitle{:});
   end
   
 else % remove old colorbars
@@ -54,15 +45,11 @@ if nargout == 1, h = mtexFig.cBarAxis; end
   function h = addColorbar(peer,varargin)
     
     % if lower bound is close to zero - make it exactly zero
-    c = get(peer,'CLim');
-    if abs(c(1) / (c(2)-c(1)))<1e-3
-      try
-        assert(strcmp(get(peer,'ColorScale'),'log'));
-      catch
-        set(peer,'CLim',[0,c(2)]);
-      end
+    if peer.ColorScale == "linear" && ...
+        abs(peer.CLim(1) / diff(peer.CLim)) < 1e-3
+      peer.CLim(1) = 0;
     end
-    
+
     fs = getMTEXpref('FontSize');
     location = ['eastoutside',extract_option(varargin,{'eastoutside','southoutside',...
       'northoutside','westoutside'})];
@@ -70,11 +57,7 @@ if nargout == 1, h = mtexFig.cBarAxis; end
       'FontSize',fs),varargin{:});
     
     if check_option(varargin,'title')
-      try
-        h.Label.String = get_option(varargin,'title');
-      catch
-        ylabel(h,get_option(varargin,'title'))
-      end
+      h.Label.String = get_option(varargin,'title');
     end
         
   end  

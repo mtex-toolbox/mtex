@@ -40,7 +40,7 @@ handleSelected = getappdata(ax,'handleSelected');
 try delete(handleSelected); end %#ok<TRYNC>
 
 % new grainid
-pos = get(ax,'CurrentPoint');
+pos = ax.CurrentPoint;
 localId = findByLocation(job.grains,[pos(1,1) pos(1,2)]);
 
 if isempty(localId), return; end

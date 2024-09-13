@@ -33,6 +33,7 @@ classdef grainBoundary < phaseList & dynProp
 %  componentSize  - number of segments that belong to the component
 %  x              - x coordinates of the vertices of the grains
 %  y              - y coordinates of the vertices of the grains    
+%  z              - z coordinates of the vertices of the grains    
 %
 
   
@@ -62,7 +63,11 @@ classdef grainBoundary < phaseList & dynProp
     componentSize  % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
-    V              % vertices x,y coordinates
+    z              % z coordinates of the vertices of the grains
+    allV           % list of all vertices
+    V              % vertices that are part of the grain boundary
+    N              % normal direction of the pseudo3d data    
+    plottingConvention % default plotting convention
   end
   
   methods
@@ -79,9 +84,12 @@ classdef grainBoundary < phaseList & dynProp
       %  phaseMap - 
       
       if nargin == 0, return; end
+
+      % ensure V is vector3d
+      if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
       % assign properties
-      gB.triplePoints = struct('allV',V);
+      gB.triplePoints = struct('allV',V,'N',zvector);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -149,41 +157,60 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function dir = get.direction(gB)      
-      v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
-      v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
-      dir = normalize(v1-v2);
+      
+      dir = normalize(gB.allV(gB.F(:,1)) - gB.allV(gB.F(:,2)));
+      dir.antipodal = true;
+      
     end
     
-    
-    function V = get.V(gB)
+    function pC = get.plottingConvention(gB)
+      pC = gB.allV.plottingConvention;
+    end
+
+    function gB = set.plottingConvention(gB,pC)
+      gB.allV.plottingConvention = pC;
+    end
+
+    function V = get.allV(gB)
       V = gB.triplePoints.allV;
     end
     
-    function gB = set.V(gB,V)
-      if isa(gB.triplePoints,'triplePointList')
-        gB.triplePoints.allV = V;
-      else
-        gB.prop.V = V;
-      end
+    function gB = set.allV(gB,V)
+      gB.triplePoints.allV = V;
     end
     
+    function V = get.V(gB)
+      error('implement this!')
+      %V = reshape(gB.triplePoints.allV(gB.F),length(gB),2);
+    end
+    
+    function N = get.N(gB)
+      N = gB.triplePoints.N;
+    end
+    
+    function gB = set.N(gB,N)
+      gB.triplePoints.N = N;
+    end
+
     function x = get.x(gB)
-      x = gB.V(unique(gB.F(:)),1);
+      x = gB.allV.x(unique(gB.F(:)));
     end
     
     function y = get.y(gB)
-      y = gB.V(unique(gB.F(:)),2);
+      y = gB.allV.y(unique(gB.F(:)));
+    end
+
+    function y = get.z(gB)
+      y = gB.allV.z(unique(gB.F(:)));
     end
     
-    function xy = get.midPoint(gB)
-      xyA = gB.V(gB.F(:,1),:);
-      xyB = gB.V(gB.F(:,2),:);
-      xy = 0.5 * (xyA + xyB);
+    function m = get.midPoint(gB)      
+      m = mean(gB.allV(gB.F),2);
     end
     
     function I_VF = get.I_VF(gB)
       [i,~,f] = find(gB.F);
-      I_VF = sparse(f,i,true,size(gB.V,1),size(gB.F,1));
+      I_VF = sparse(f,i,true,size(gB.allV,1),size(gB.F,1));
     end
 
     function I_FG = get.I_FG(gB)
@@ -200,8 +227,8 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function A_V = get.A_V(gB)
-      A_V = sparse(gB.F(:,1),gB.F(:,2),1:size(gB.F,1),size(gB.V,1),size(gB.V,1)) ...
-        + sparse(gB.F(:,2),gB.F(:,1),1:size(gB.F,1),size(gB.V,1),size(gB.V,1));
+      A_V = sparse(gB.F(:,1),gB.F(:,2),1:size(gB.F,1),size(gB.allV,1),size(gB.allV,1)) ...
+        + sparse(gB.F(:,2),gB.F(:,1),1:size(gB.F,1),size(gB.allV,1),size(gB.allV,1));
     end
     
     %function tp = get.triplePoints(gB)

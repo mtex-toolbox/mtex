@@ -34,15 +34,18 @@ end
 
 % find all axes
 mtexFig = getClass(varargin,'mtexFigure',getappdata(fig,'mtexFig'));
-if isempty(mtexFig.children), return; end
+if isempty(mtexFig)
+  ax = findall(gcf,'type','axes');
+  mtexFig = struct('children',ax);
+end
 
+if isempty(mtexFig.children), return; end
 
 if check_option(varargin,'log')
   set(mtexFig.children,'ColorScale','log');
 elseif check_option(varargin,'linear')
   set(mtexFig.children,'ColorScale','linear')
 end
-
 
 if check_option(varargin,'equal')
 

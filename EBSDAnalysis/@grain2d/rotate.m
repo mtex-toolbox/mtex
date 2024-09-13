@@ -4,7 +4,7 @@ function grains = rotate(grains,rot,varargin)
 % Syntax
 %
 %   % rotate the grains about the z-axis by 90*degree
-%   grains = rotate(grains,10*degree) 
+%   grains = rotate(grains,90*degree) 
 %
 %   % rotate about the x-axis
 %   grains = rotate(grains,rotation.byAxisAngle(xvector,180*degree)) 
@@ -36,20 +36,15 @@ end
 
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
-  
-  center = get_option(varargin,'center',[0,0]);
-  
-  grains = grains - center;
-  
-  % store coordinates as vector3d
-  V = vector3d(grains.V(:,1),grains.V(:,2),0);
-  
+
+  % the center of rotation
+  center = get_option(varargin,'center',vector3d(0,0,0));
+  if ~isa(center,'vector3d'), center = vector3d(center(1),center(2),0); end
+
   % rotate vertices
-  V = rot * V;
-    
-  % store back
-  grains.V = [V.x(:),V.y(:)];
+  grains.allV = center + rot .* (grains.allV - center);
   
-  grains = grains + center;
-  
+  % rotate normal direction
+  grains.N = rot * grains.N;
+
 end

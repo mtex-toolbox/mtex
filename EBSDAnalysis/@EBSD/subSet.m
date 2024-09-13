@@ -6,10 +6,10 @@ function ebsd = subSet(ebsd,ind,varargin)
 %
 
 ebsd = subSet@dynProp(ebsd,ind);
+ebsd.pos = ebsd.pos(ind);
 ebsd.rotations = ebsd.rotations(ind);
 ebsd.phaseId = reshape(ebsd.phaseId(ind),[],1);
 ebsd.id = ebsd.id(ind);
-%if ~isempty(ebsd.grainId), ebsd.grainId = ebsd.grainId(ind); end
 if ~isempty(ebsd.A_D), ebsd.A_D = ebsd.A_D(ind(:),ind(:)); end
 
 if (isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')) && ...

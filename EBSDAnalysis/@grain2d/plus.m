@@ -1,20 +1,22 @@
-function grains = plus(grains,xy)
+function grains = plus(grains,shift)
 % shift grains in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   grains = grains + [100,0] 
+%   grains = grains + vector3d(100,200,0) 
 %
 % Input
 %  grains- @grain2d
-%  xy - x and y coordinates of the shift
+%  shift - @vector3d, coordinates of the shift
 %
 % Output
 %  grains - @grain2d
 
-if isa(xy,'grain2d'), [xy,grains] = deal(grains,xy); end
+if isa(shift,'grain2d'), [shift,grains] = deal(grains,shift); end
 
-if isa(xy,'vector3d'), xy = [xy.x,xy.y]; end
+if ~isa(shift,'vector3d')
+  shift = vector3d(shift(:,1),shift(:,2),0);
+end
 
-grains.V = grains.V + repmat(xy,size(grains.V,1),1);
+grains.allV = grains.allV + shift;

@@ -7,7 +7,6 @@ classdef specimenSymmetry < symmetry
 
 properties
   axes = [xvector,yvector,zvector]; 
-  plotOptions = {}
 end
 
   methods
@@ -44,6 +43,7 @@ end
       
       s = s@symmetry(id,rot);
       s.axes = axes;
+      s.how2plot = getMTEXpref("xyzPlotting");
              
     end
     
@@ -98,7 +98,7 @@ end
       cs = specimenSymmetry(rot,id{:},axes);
       
       if isfield(s,'opt'), cs.opt = s.opt; end
-      if isfield(s,'plotOptions'), cs.plotOptions = s.plotOptions; end      
+      if isfield(s,'how2plot'), cs.how2plot = s.how2plot; end      
             
     end
     

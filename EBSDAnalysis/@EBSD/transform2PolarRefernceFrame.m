@@ -7,7 +7,7 @@ function ebsd = transform2PolarRefernceFrame(ebsd,center,varargin)
 %
 % Input
 %  ebsd   - @EBSD
-%  center - (x,y) coordinates 
+%  center - (x,y) coordinates / @vector3d
 %
 % Output
 %
@@ -16,20 +16,18 @@ function ebsd = transform2PolarRefernceFrame(ebsd,center,varargin)
 % See also
 %
 
-if nargin == 1
-  center = [mean(ebsd.prop.x(:)),mean(ebsd.prop.y(:))];
-end
+center = vector3d(center);
 
 % compute signed angle of each map position to X with respect to center
 % position
-v = vector3d(ebsd.prop.x - center(1), ebsd.prop.y - center(2),0);
-omega = angle(v,xvector,zvector);
+v = ebsd.pos - center;
+omega = angle(v,xvector,ebsd.N);
 
 % maybe we need to replace omega by -omega
-rot = rotation.byAxisAngle(zvector,omega);
+rot = rotation.byAxisAngle(ebsd.N,omega);
 
 ebsd.rotations = rot .* ebsd.rotations;
 ebsd.prop.r    = norm(v);
-ebsd.prop.phi  = atan2(v.y,v.y);
+ebsd.prop.phi  = atan2(v.y,y.x);
 
 end

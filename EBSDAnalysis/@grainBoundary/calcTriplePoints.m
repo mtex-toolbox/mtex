@@ -11,7 +11,7 @@ grainPhaseId(grainId(grainId>0)) = gB.phaseId((grainId>0));
 
 % compute triple points
 [i,~,f] = find(gB.F);
-I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
+I_VF = sparse(f,i,1,size(gB.allV,1),size(gB.F,1));
 I_VG = (I_VF * gB.I_FG)==2;
 % triple points are those with exactly 3 neighboring grains and 3
 % boundary segments
@@ -34,7 +34,7 @@ iV = reshape(gB.F(tPBoundaryId,:),[],6).';
 % TODO: the repmat can be removed in new versions of MATLAB
 iV = reshape(iV(iV ~= repmat(find(itP).',size(iV,1),1)).',3,[]).';
 
-tP = triplePointList(find(itP),gB.V,...
+tP = triplePointList(find(itP),gB.allV,...
   tpGrainId,tPBoundaryId,tpPhaseId,iV,gB.phaseMap,gB.CSList);
 
 end

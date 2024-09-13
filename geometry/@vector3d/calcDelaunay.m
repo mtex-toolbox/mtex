@@ -13,9 +13,7 @@ v = reshape(v,[],1) + 0.001*vector3d.rand(length(v));
 v = v ./ norm(v);
 
 % compute convex hull
-xyz = squeeze(shiftdim(double(v),1));
-
-face = convhulln(xyz')';
+face = convhulln(v.xyz).';
 face = flipud(face);
 
 % rotate each column so smallest entry is first.

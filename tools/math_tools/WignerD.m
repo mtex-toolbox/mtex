@@ -44,7 +44,7 @@ else
 end
 
 if isa(psi,'SO3Kernel')
-  Psi = bsxfun(@times,expandPsi(psi,l)./N,Psi);
+  Psi = expandPsi(psi,l)./N .* Psi;
 else
   Psi = Psi./N;
 end

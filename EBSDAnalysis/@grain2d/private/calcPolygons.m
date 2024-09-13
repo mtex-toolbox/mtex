@@ -7,6 +7,7 @@ function [poly,inclId] = calcPolygons(I_FG,F,V)
 
 inclId = zeros(size(I_FG,2),1);
 poly = cell(size(I_FG,2),1);
+if isa(V,'vector3d'), V = V.xyz; end
 
 if isempty(I_FG), return; end
 

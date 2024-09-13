@@ -6,6 +6,7 @@ classdef mapPlot < handle
     parent    % the figure that contains the map plot
     micronBar % 
     extent = [inf -inf inf -inf]   %
+    how2plot = plottingConvention % the plotting convention
   end
   
   properties (Dependent = true)
@@ -19,11 +20,17 @@ classdef mapPlot < handle
       if nargin == 0, return;end
       
       % maybe there is already a map plot
-      if isappdata(ax,'mapPlot') && ~ishold(ax)
+      if isappdata(ax,'mapPlot') && ishold(ax)
         mP = getappdata(ax,'mapPlot');
         return
       end
-      
+        
+      if ax.Type == "polaraxes", 
+        delete(ax);
+        ax = axes;
+      end
+      cla(ax,'reset'), rmallappdata(ax);
+
       mP.ax = ax;
       mP.parent = get(ax,'parent');      
       
@@ -33,15 +40,16 @@ classdef mapPlot < handle
       set(ax,'TickDir','out',...
         'XMinorTick','off',...
         'YMinorTick','off',...
+        'ZMinorTick','off',...
         'XTickLabel',{},...
         'yTickLabel',{},...
+        'zTickLabel',{},...
         'Layer','top',...
         'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
       
-                  
-      setCamera(ax,'default',varargin{:});
-      
+      mP.how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+      mP.how2plot.setView;
       setappdata(ax,'mapPlot',mP);
       
       % set zoom function
@@ -57,13 +65,15 @@ classdef mapPlot < handle
       % coordinates
       showCoordinates = get_option(varargin,'coordinates',getMTEXpref('showCoordinates'));
       if strcmpi(showCoordinates,'on')
-        set(ax,'xtickLabelMode','auto','ytickLabelMode','auto');
+        set(ax,'xtickLabelMode','auto','ytickLabelMode','auto','ZTickLabelMode','auto');
         xlabel(ax,'x')
         ylabel(ax,'y')
+        zlabel(ax,'z')
       else
         set(ax,'tickLength',[0,0]);
         xlabel(ax,'x','visible','off')
         ylabel(ax,'y','visible','off')
+        zlabel(ax,'z','visible','off')
       end
       
       % add a micron bar
@@ -75,6 +85,7 @@ classdef mapPlot < handle
       else
         mP.micronBar.visible = vis;
       end
+
     end
         
   end

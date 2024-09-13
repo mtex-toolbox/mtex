@@ -89,7 +89,8 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
-  plot(ebsd.prop.x,ebsd.prop.y,zUpDown * cS.diameter,ebsd.orientations * cS,varargin{2:end});
+  pos = ebsd.pos + cS.diameter * ebsd.N;
+  plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,varargin{2:end});
   
 else % phase plot
 
@@ -141,12 +142,15 @@ end
 % keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 %if isNew, ; end % TODO set axis tight removes all the plot
+
+mP.how2plot.setView(mP.ax);
+
 try axis(mP.ax,'tight'); end
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extent(1) = min(mP.extent(1),min(ebsd.prop.x(:)));
-mP.extent(2) = max(mP.extent(2),max(ebsd.prop.x(:)));
-mP.extent(3) = min(mP.extent(3),min(ebsd.prop.y(:)));
-mP.extent(4) = max(mP.extent(4),max(ebsd.prop.y(:)));
+mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
+mP.extent(2) = max(mP.extent(2),max(ebsd.pos.x(:)));
+mP.extent(3) = min(mP.extent(3),min(ebsd.pos.y(:)));
+mP.extent(4) = max(mP.extent(4),max(ebsd.pos.y(:)));
 
 if nargout==0, clear h; end
 

@@ -3,8 +3,7 @@ function rgb  = num2rgb(val,cmap,varargin)
 %
 % Input:
 %  val      - list of scalar values
-%  cmap     - name of the colormap, either buildin or mtexColormap
-%             or
+%  cmap     - name of the colormap, either builtin or mtexColormap
 %
 % Output:
 %  rgb      - n-by-3 rgb triplets

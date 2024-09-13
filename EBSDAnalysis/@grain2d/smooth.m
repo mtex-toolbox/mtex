@@ -17,6 +17,16 @@ function grains = smooth(grains,iter,varargin)
 %  exp               - exponential smoothing kernel  
 %  umbrella          - umbrella smoothing kernel   
  
+if abs(dot(grains.N,zvector)) ~= 1
+
+  [grains,rot] = rotate2Plane(grains);
+  grains = smooth(grains);
+  grains = inv(rot) * grains;
+  return
+
+end
+
+
 if nargin < 2 || isempty(iter), iter = 1; end
 
 % compute incidence matrix vertices - faces
@@ -46,7 +56,7 @@ end
 weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
 lambda = get_option(varargin,weight,.5);
 
-V = full(grains.V);
+V = grains.allV.xyz;
 isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
 
 for l=1:iter
@@ -67,7 +77,7 @@ for l=1:iter
   end
 
   % take the mean over the neigbours
-  Vt = A_V*V;
+  Vt = A_V * V;
   
   m = sum(A_V,2);
   
@@ -80,4 +90,4 @@ for l=1:iter
   
 end
 
-grains.V = V;
+grains.allV = vector3d.byXYZ(V);

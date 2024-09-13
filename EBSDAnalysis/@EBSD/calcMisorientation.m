@@ -44,15 +44,9 @@ checkSinglePhase(ebsd2);
 
 % --------- determine minimum distance ----------------------
 
-%extract coordinates
-X1 = ebsd1.prop.x;
-Y1 = ebsd1.prop.y;
-X2 = ebsd2.prop.x;
-Y2 = ebsd2.prop.y;
-
 % get max extent
-maxExtent = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
-  (max([Y1;Y2])-min([Y1;Y2]))^2);
+maxExtent = abs(diff(ebsd1.extent));
+maxExtent = norm(maxExtent(1:2:end));
 
 minDistance = get_option(varargin,'minDistance',maxExtent/100);
 
@@ -62,8 +56,8 @@ samplSize = get_option(varargin,'sampleSize',100000);
 i1 = randi(length(ebsd1),samplSize,1);
 i2 = randi(length(ebsd2),samplSize,1);
 
-% ensure points are not to close together
-d = sqrt((X1(i1)-X2(i2)).^2 + (X1(i1)-X2(i2)).^2);
+% ensure points are not too close together
+d = norm(ebsd1.pos(i1) - ebsd2.pos(i2));
 
 ind = d > minDistance;
 i1 = i1(ind); i2 = i2(ind);

@@ -12,6 +12,9 @@ function cShape = characteristicShape(gB,varargin)
 %  cShape - @shape2d
 %
 
-cShape = shape2d.byFV(gB.F,gB.V,varargin);
+cShape = shape2d.byFV(gB.F, gB.allV, varargin{:});
+
+% set normal vector
+cShape.N = gB.N;
 
 end

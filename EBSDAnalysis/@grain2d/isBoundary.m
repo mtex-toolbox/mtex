@@ -19,10 +19,10 @@ function out = isBoundary(grains,ext)
 
 if nargin > 1
   
-  dx = min(sqrt(sum(diff(grains.V).^2,2)));
+  dx = min(sqrt(sum(diff(grains.allV).^2,2)));
     
   % find boundary vertices
-  isBndV = any(grains.V < ext([1 3]) + dx/2,2) |  any(grains.V > ext([2 4]) - dx/2,2);
+  isBndV = any(grains.allV < ext([1 3]) + dx/2,2) |  any(grains.allV > ext([2 4]) - dx/2,2);
   
   % take all grains with a boundary vertexs
   out = cellfun(@(x) any(isBndV(x)), grains.poly);

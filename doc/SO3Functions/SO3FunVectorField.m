@@ -227,7 +227,7 @@ y = vector3d.byPolar(sin(3*nodes.angle), nodes.phi2+pi/2);
 
 %%
 % Now the actual command to get |SO3VF1| of type |SO3VectorFieldHarmonic|
-SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y)
+SO3VF1 = SO3VectorFieldHarmonic.approximation(nodes, y,'bandwidth',16)
 
 %%
 % *Definition via function handle*

@@ -59,7 +59,7 @@ classdef axisAnglePlot < orientationPlot
       omega = shiftdim(omega,1);
       
       maxOmega = oP.oR.maxAngle(S2G);
-      omega = bsxfun(@times,omega,maxOmega);
+      omega = omega .* maxOmega;
       
       S2G = repmat(S2G,[1 1 size(omega,3)]);
       

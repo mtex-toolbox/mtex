@@ -17,12 +17,7 @@ if isempty(xy)
   return;
 end
 
-if size(xy,2) == 3
-  unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});...
-    calcUnitCell(xy(:,[1 3]), varargin{:}); ...
-    calcUnitCell(xy(:,[2 3]), varargin{:})];
-  return
-end
+if size(xy,2) == 3, xy = xy(:,1:2); end
 
 % first estimate of the grid resolution
 area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
