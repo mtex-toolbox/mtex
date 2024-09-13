@@ -100,4 +100,9 @@ for i = 1:numel(mtexFig.children)
   if ~isempty(mP), mP.micronBar.update; end  
 end
 
+% use antialiasing to generate a nice figure
+if check_option(varargin,'final') && getMTEXpref('generatingHelpMode')
+  myaa('publish')
+end
+
 end
