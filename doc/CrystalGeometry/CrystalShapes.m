@@ -21,6 +21,7 @@ cS = crystalShape.hex(ebsd.CS)
 % and plot it
 close all
 plot(cS,'faceAlpha',0.2)
+drawNow(gcm,'final')
 
 %% 
 % Internally, a crystal shape is represented as a list of faces which are
@@ -41,8 +42,8 @@ plot(cS,'faceAlpha',0.2)
 hold on
 plot(cS,sS(2),'faceColor','blue')
 plot(cS,sS(1),'faceColor','red')
-
 hold off
+drawNow(gcm,'final')
 
 %% Calculating with crystal shapes
 % Crystal shapes are defined in crystal coordinates. Thus applying an
@@ -57,9 +58,9 @@ hold on
 scaling = 100; % scale the crystal shape to have a nice size
 
 % plot at position (500,500) the orientation of the corresponding crystal
-plot(500,500,50, ebsd(500,500).orientations * cS * scaling)
+plot(500,500,50, ebsd(500,500).orientations * cS * scaling,'faceAlpha',0.5,'linewidth',2)
 hold off
-
+drawNow(gcm,'final')
 
 %%
 % As we have seen in the previous section we can apply several operations
@@ -80,7 +81,9 @@ grains = calcGrains(ebsd);
 grains = smooth(grains,5);
 
 % and plot them
-plot(grains,grains.meanOrientation)
+cKey = ipfColorKey(grains);
+color = cKey.orientation2color(grains.meanOrientation);
+plot(grains,color,'FaceAlpha',0.5,'linewidth',2)
 
 % find the big ones
 isBig = grains.grainSize>50;
@@ -91,20 +94,26 @@ cSGrains = grains(isBig).meanOrientation * cS * 0.7 * sqrt(grains(isBig).area);
 
 % now we can plot these crystal shapes at the grain centers
 hold on
-plot(grains(isBig).centroid + cSGrains)
+plot(grains(isBig).centroid + cSGrains,'FaceColor',color(isBig,:),'FaceAlpha',0.7)
 hold off
+drawNow(gcm,'final')
 
 %% Plotting crystal shapes
 % The above can be accomplished a bit more directly and a bit more nice
 % with
 
 % plot a grain map
-plot(grains,grains.meanOrientation)
+%plot(grains,grains.meanOrientation,'figSize','large')
+plot(grains.boundary,'figSize','large','linewidth',4)
 
-% and on top for each large grain a crystal shape
+% and on top for each large grain a crystal shape colored according to the
+% grain orientation
+
 hold on
-plot(grains(isBig),0.7*cS,'FaceColor','none','linewidth',2)
+plot(grains(isBig), 0.7*cS, 'FaceColor', color(isBig,:), ...
+  'linewidth',2,'FaceAlpha',0.7 )
 hold off
+drawNow(gcm,'final')
 
 %%
 % In the same way we may visualize grain orientations and grains size
@@ -140,6 +149,7 @@ hold on
 plot(mori * cS *0.9,'FaceColor','orange')
 hold off
 view(45,20)
+drawNow(gcm,'final')
 
 %% Defining complicated crystal shapes
 %
@@ -173,9 +183,9 @@ cS = crystalShape(N)
 plot(cS)
 
 %%
-% i.e. we see only  the possitive and negative rhomboedrons, but the
+% i.e. we see only  the positive and negative rhomboedrons, but the
 % hexagonal prism are to far away from the origin to cut the shape. We may
-% decrease the distance, by multiplying the coresponding normal with a
+% decrease the distance, by multiplying the corresponding normal with a
 % factor larger then 1.
 
 N = [2*m,r,z];
@@ -184,19 +194,19 @@ cS = crystalShape(N);
 plot(cS)
 
 %%
-% Next in a typical Quartz crystal the negativ rhomboedron is a bit smaller
-% then the positiv rhomboedron. Lets correct for this.
+% Next in a typical Quartz crystal the negative rhomboedron is a bit smaller
+% then the positive rhomboedron. Lets correct for this.
 
-% collect the face normal with the right scalling
+% collect the face normal with the right scaling
 N = [2*m,r,0.9*z];
 
 cS = crystalShape(N);
 plot(cS)
 
 %%
-% Finaly, we add the tridiagonal bipyramid and the positive Trapezohedron
+% Finally, we add the tridiagonal bipyramid and the positive Trapezohedron
 
-% collect the face normal with the right scalling
+% collect the face normal with the right scaling
 N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
 
 cS = crystalShape(N);
@@ -226,7 +236,7 @@ end
 % this end MTEX allows to model the shape with a habitus and a extension
 % parameter. This approach has been developed by J. Enderlein in
 % <https://library.wolfram.com/infocenter/Articles/3279 A package for
-% displaying crystal morphology. Mathematica Journal, 7(1), 1997>. The two
+% displaying crystal morphology. Mathematical Journal, 7(1), 1997>. The two
 % parameters are used to model the distance of a face from the origin.
 % Setting all parameters to one we obtain
 
