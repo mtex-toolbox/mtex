@@ -38,7 +38,7 @@ else
       E=[E1,E2];
     
       clear Vx Vy E1 E2
-      delta = dxy/1e2;
+      delta = dxy/1e4;
       [V,~,ic] = unique(round(V/delta)*delta,'rows');
 
       F = sort(ic(E),2);
@@ -127,7 +127,7 @@ if ischar(method)
       delta = get_option(varargin,'tight',0.95,'double');
       k = boundary(x,y,delta);
       
-      % erase all linear dependend points
+      % erase all linear dependent points
       angle = atan2( x(k(1:end-1))-x(k(2:end)),...
         y(k(1:end-1))-y(k(2:end)) );      
       k = k([true; abs(diff(angle))>eps; true]);
