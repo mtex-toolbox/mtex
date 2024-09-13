@@ -15,6 +15,7 @@ function q = project2FR_ref(q,qCS,q_ref)
 %
 
 qCS = qCS.rot;
+qCS = qCS.subSet(~qCS.i);
 
 s = size(q);
 q.a = q.a(:); q.b = q.b(:); q.c = q.c(:); q.d = q.d(:);
