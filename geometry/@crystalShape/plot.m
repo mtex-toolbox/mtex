@@ -92,6 +92,10 @@ fc = get_option(varargin,'FaceColor',cS.CS.color);
 if isnumeric(fc) && size(fc,1) == size(cS.F,1)
   varargin = set_option(varargin,'FaceColor','flat');
   varargin = [varargin,'FaceVertexCData',fc];
+elseif isnumeric(fc) && size(fc,1) == length(cS)
+  varargin = set_option(varargin,'FaceColor','flat');
+  fc = repelem(fc,size(cS.F,1)./length(cS),1);
+  varargin = [varargin,'FaceVertexCData',fc];
 else
   if isempty(fc), fc = 'LightSkyBlue'; end
   varargin = set_option(varargin,'FaceColor',str2rgb(fc));
