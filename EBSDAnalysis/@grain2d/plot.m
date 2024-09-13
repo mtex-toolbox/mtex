@@ -241,6 +241,7 @@ end
 
 
 localId = findByLocation(grains,pos(1,:));
+if numel(localId)>1, localId = localId(1); end
 
 grain = grains.subSet(localId);
 
