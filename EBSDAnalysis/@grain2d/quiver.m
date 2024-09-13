@@ -2,7 +2,7 @@ function h = quiver(grains,dir,varargin)
 % plot directions at grain centers
 %
 % Syntax
-%   quiver(grains,dir,'linecolor','r')
+%   quiver(grains,dir,'lineColor','r')
 %
 %   mtexdata fo
 %   grains = calcGrains(ebsd('indexed'))
@@ -47,7 +47,7 @@ else
     
 end
  
-% if different color are given - seperate them
+% if different color are given - separate them
 [c,~,id] = unique(c,'rows');
 
 if length(id) ==length(dir)

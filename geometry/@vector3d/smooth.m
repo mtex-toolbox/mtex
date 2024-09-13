@@ -34,7 +34,7 @@ for j = 1:numel(sP)
 
     sR = sP(j).sphericalRegion;
     if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end %#ok<AGROW> 
-    S2G = plotS2Grid(sR);
+    S2G = plotS2Grid(sR,varargin{:});
 
     cdata = calcDensity(v(:),S2G,'halfwidth',5*degree,varargin{:});    
     cdata = reshape(cdata,size(S2G));
