@@ -110,7 +110,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         if size(pos,2)==3
           pos = vector3d.byXYZ(pos);
         else
-          pos = vector3d.byXYZ(pos(:,1),pos(:,2),0);
+          pos = vector3d(pos(:,1),pos(:,2),0);
         end
       end
       ebsd.pos = pos;
