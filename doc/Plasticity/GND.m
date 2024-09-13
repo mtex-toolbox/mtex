@@ -174,21 +174,19 @@ a = norm(ebsd.CS.aAxis);
 %
 % $$ U_{\mathrm{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
 %
-% $$ U_{\mathrm{edge}} = (1-\nu) U_{\mathrm{screw}} $$
+% $$ U_{\mathrm{edge}} = \frac{1}{(1-\nu)} U_{\mathrm{screw}} $$
 %
 % where
 % 
-% * |G| is 
+% * |G| is the shear modulus
 % * |b| is the length of the Burgers vector
 % * |nu| is the Poisson ratio
 % * |R|
 % * |r|
 %
 % In this example we assume 
-% 
-% R = 
-% r_0 = 
-% U = norm(dS.b).^2
+% $$ U_{\mathrm{edge}} = 1 $$
+% $$ U_{\mathrm{screw}} = 1-\nu $$
 
 nu = 0.3;
 
