@@ -108,7 +108,7 @@ end
       (zNew(isIndexed) - ebsd.prop.z(idn)).^2);
     
     weights = 1./ (delta + dist);
-    if isfield(prop,'grainId')
+    if ebsd.hasGrainId
       doInclude = doInclude & (ebsd.prop.grainId(idn) == prop.grainId(isIndexed)) & ...
         angle(ebsd.rotations(idn),rot(isIndexed)) < 2.5*degree;
     else

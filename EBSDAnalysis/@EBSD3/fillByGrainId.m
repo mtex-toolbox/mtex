@@ -40,7 +40,7 @@ end
 
 % the grainIds
 grainId = zeros(sGrid);
-if isprop(ebsd,'grainId'), grainId(ind) = ebsd.grainId; end
+if ebsd.hasGrainId, grainId(ind) = ebsd.prop.grainId; end
 ebsd.prop.grainId = grainId(:);
 
 % the phaseId

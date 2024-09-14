@@ -217,6 +217,10 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
     end
       
+    function out = hasGrainId(ebsd)
+      out = isfield(ebsd.prop,'grainId');
+    end
+
     function ori = get.orientations(ebsd)
       if isempty(ebsd)
         ori = orientation;

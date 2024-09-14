@@ -65,7 +65,7 @@ for p=1:numel(ebsd.phaseMap)
 end
 
 % decide which orientations to consider
-if isfield(ebsd.prop,'grainId') && ~check_option(varargin,'threshold')  
+if ebsd.hasGrainId && ~check_option(varargin,'threshold')  
   % ignore grain boundaries
   ind = ebsd.prop.grainId(Dl) == ebsd.prop.grainId(Dr);
 else

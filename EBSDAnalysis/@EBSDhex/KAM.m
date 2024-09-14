@@ -29,7 +29,7 @@ function kam = KAM(ebsd,varargin)
 % grain2d.GOS
 
 % ensure that we have not to deal with symmetry anymore
-if isfield(ebsd.prop,'grainId'), ebsd = ebsd.project2FundamentalRegion; end
+if ebsd.hasGrainId, ebsd = ebsd.project2FundamentalRegion; end
 
 if check_option(varargin,'max')
   fun = @(a,b) max(a,[],b);
@@ -84,7 +84,7 @@ for radius = 1:order
       doInclude(doInclude) = ebsd.phaseId(indN(doInclude)) == idPhase;
       
       % avoid grain boundaries
-      if isfield(ebsd.prop,'grainId')
+      if ebsd.hasGrainId
         doInclude(doInclude) = ebsd.grainId(indN(doInclude)) == ebsd.grainId(doInclude);
       
         % compute misorientation angles

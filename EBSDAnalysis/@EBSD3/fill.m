@@ -37,7 +37,7 @@ ebsd.phaseId(nanId) = ebsd.phaseId(newId);
 ebsd.rotations(nanId) = ebsd.rotations(newId);
   
 % interpolate grainId
-try
+if ebsd.hasGrainId
   ebsd.prop.grainId(nanId) = ebsd.prop.grainId(newId);
 end
   

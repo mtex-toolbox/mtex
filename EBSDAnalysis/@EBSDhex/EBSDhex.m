@@ -125,7 +125,7 @@ classdef EBSDhex < EBSD
         ind1 = sub2ind(size(ebsd), max(r,1), c);
         gX1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
         end
         
@@ -133,7 +133,7 @@ classdef EBSDhex < EBSD
         ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
         gX2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
         end
                 
@@ -170,7 +170,7 @@ classdef EBSDhex < EBSD
         ind1 = sub2ind(size(ebsd), r, max(1,c));
         gY1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gY1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
         end
         
@@ -178,7 +178,7 @@ classdef EBSDhex < EBSD
         ind2 = sub2ind(size(ebsd), r, min(size(ebsd,2),c+1));
         gY2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gY2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
         end
                 
