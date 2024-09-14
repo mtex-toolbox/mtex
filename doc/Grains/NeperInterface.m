@@ -78,12 +78,13 @@ job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 cs = crystalSymmetry('432');
 ori = orientation.rand(cs);
 odf = unimodalODF(ori);
-numGrains=100;
+numGrains = 1000;
 
 grains = job.simulateGrains(odf,numGrains,'silent')
 
 %% plot the grains
 
+clf
 plot(grains,grains.meanOrientation)
 
 how2plot = plottingConvention;
@@ -94,22 +95,20 @@ setCamera(how2plot)
 
 
 %% Slicing
-% To get slices of your tessellation, that you can process with MTEX, the
-% command |getSlice| is used, which returns a set of grains (|grain2d|). 
-% It is called by giving the normal vector [a,b,c] of the plane and either 
-% a point that lies in the plane or the "d" of the plane equation. Please
-% consider that the slicing must align with the size of the domain/cube
-% (see Tessellation options - cubeSize)
+% We may generate arbitrary slices of the three dimensional grains using
+% the command <grain3d.slice.html |slice|>. It is called by giving the
+% normal vector |[a,b,c]| of the plane and either a point that lies in the
+% plane or the distance of the plane to the origin.
 
 % the normals of the slices
 N = [vector3d(0,0,1),vector3d(1,-1,0),vector3d(2,2,4)];
 
 % make all slices passing through this point
-A=vector3d(2,2,1);
+A = vector3d(2,2,1);
 
-grains001 = job.getSlice(N(1),A,'silent');
-grains1_10= job.getSlice(N(2),A,'silent');
-grains224 = job.getSlice(N(3),A,'silent');
+grains001 = grains.slice(N(1),A);
+grains1_10= grains.slice(N(2),A);
+grains224 = grains.slice(N(3),A);
 
 %%
 % the resulting slices are grain maps which we can visualize in 3d
@@ -119,6 +118,20 @@ hold on
 plot(grains1_10,grains1_10.meanOrientation);
 hold on
 plot(grains224,grains224.meanOrientation);
+hold off
+
+% set camera
+setCamera(how2plot)
+
+%%
+% plot all grains intersecting a plane
+
+inPlane = grains.intersected(N(1),A);
+
+plot(grains001,grains001.meanOrientation);
+hold on
+plot(grains(inPlane),grains(inPlane).meanOrientation)
+hold off
 
 % set camera
 setCamera(how2plot)
