@@ -51,6 +51,9 @@ if ~isempty(i)
   end
 end
 
+v = rmOption(v,'theta','rho');
+
+
 if isa(q,'orientation')
   
   if isa(q.SS,'crystalSymmetry')

@@ -41,6 +41,9 @@ elseif isscalar(q)
   v = reshape(v,size(v));
 end
 
+% remove any stored theta / rho angles
+v = rmOption(v,'theta','rho');
+
 % if output has symmetry set it to Miller
 if isa(q,'orientation')
   
