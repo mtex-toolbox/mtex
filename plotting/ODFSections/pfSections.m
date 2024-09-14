@@ -48,7 +48,7 @@ classdef pfSections < ODFSections
 
     function ori = makeGrid(oS,varargin)
 
-      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.plotGrid = plotS2Grid(oS.sR,varargin{:},oS.SS.how2plot);
       oS.gridSize = (0:numel(oS.omega)) * length(oS.plotGrid);
 
       ori = orientation.nan(oS.plotGrid.size(1),oS.plotGrid.size(2),numel(oS.omega),oS.CS1,oS.CS2);
@@ -126,7 +126,7 @@ classdef pfSections < ODFSections
 
       % translate rotational data into tangential data
       if iscell(data) && isa(data{1},'quaternion')
-        [v2,sec2] = project(oS,data{1},'noSymmetry');
+        [v2,sec2] = project(oS,data{1},'noSymmetry'); %#ok<PRJET>
         data{1} = v2 - v;
         data{1}(sec2 ~= sec)=NaN;
       end
