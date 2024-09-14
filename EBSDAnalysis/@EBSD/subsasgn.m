@@ -83,16 +83,12 @@ switch s(1).type
       
       ebsd = subsasgn@dynOption(ebsd,s,b);
       
-    elseif ebsd.isProperty(s(1).subs) % otherwise a property
+    elseif ebsd.isProperty(s(1).subs) && ~any(strcmp(s(1).subs,{'mis2mean','grainId'})) 
+      % or an dynamic property
       
       ebsd = subsasgn@dynProp(ebsd,s,b);
       
-      % maybe we should update the unit cell
-      if any(strcmp(s(1).subs,{'x','y'}))
-        ebsd = ebsd.updateUnitCell;
-      end
-      
-    else
+    else % otherwise
       
       ebsd = builtin('subsasgn',ebsd,s,b);
       
