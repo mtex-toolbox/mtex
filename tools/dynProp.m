@@ -89,9 +89,9 @@ classdef dynProp
           end
       
         case '.'
-          if ismethod(dp,s(1).subs) || isprop(dp,s(1).subs)
+          if ismethod(dp,s(1).subs) || ismember(s(1).subs,properties(dp))
             [varargout{1:nargout}] = builtin('subsref',dp,s);
-          else
+          else            
             varargout{1} = subsref(dp.prop,s);
           end
           
@@ -130,9 +130,8 @@ classdef dynProp
             end
             
           end
-        otherwise
-    
-          if isprop(dp,s(1).subs)
+        case '.'
+          if ismethod(dp,s(1).subs) || ismember(s(1).subs,properties(dp))
             dp = builtin('subsasgn',dp,s,value);
           else
             dp.prop =  builtin('subsasgn',dp.prop,s,value);
