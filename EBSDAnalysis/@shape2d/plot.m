@@ -10,11 +10,9 @@ function h = plot(shape,varargin)
 
 plain =  check_option(varargin,'plain');
 normalize =  check_option(varargin,'normalize');
-
 varargin = delete_option(varargin,{'normalize' 'plain'});
 
-
-if normalize, shape.V = shape.V / sqrt(shape.area); end
+if normalize, shape.allV = shape.allV / sqrt(abs(shape.area)); end
 
 h = polarplot(shape.theta,shape.rho,varargin{:});
 

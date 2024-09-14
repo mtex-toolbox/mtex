@@ -23,7 +23,7 @@ function value = mean(sF, varargin)
 bw = get_option(varargin,'bandwidth',getMTEXpref('maxS2Bandwidth'));
 nodes = quadratureS2Grid(bw);
 
-value = mean(sF.eval(nodes),1);
+value = mean(reshape(sF.eval(nodes),[],numel(sF)),1);
 
 if isalmostreal(value,'componentwise')
   value = real(value);

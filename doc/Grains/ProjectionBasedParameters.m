@@ -270,6 +270,6 @@ legend('Location','southoutside','Orientation','horizontal')
 % the longest and the shortest caliper which can be regarded as a measure
 % of asymmetry.
 
-angle(shapeF.caliper('longest'),shapeF.caliper('shortest'))/degree
-angle(shapeE.caliper('longest'),shapeE.caliper('shortest'))/degree
-angle(shapeEF.caliper('longest'),shapeF.caliper('shortest'))/degree
+angle(shapeF.caliper('longest'),shapeF.caliper('shortest')) / degree
+angle(shapeE.caliper('longest'),shapeE.caliper('shortest')) / degree
+angle(shapeEF.caliper('longest'),shapeF.caliper('shortest')) / degree

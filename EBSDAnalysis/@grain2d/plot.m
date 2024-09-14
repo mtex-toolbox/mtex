@@ -18,6 +18,7 @@ function [h,mP] = plot(grains,varargin)
 %  displayName - name used in legend
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 
 %  scale       - scaling of crystal shapes and tensorial properties (0.3)
+%  micronBar   - 'on' / 'off'
 %
 % See also
 % EBSD/plot grainBoundary/plot

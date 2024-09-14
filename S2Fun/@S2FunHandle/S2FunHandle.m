@@ -1,5 +1,5 @@
 classdef S2FunHandle < S2Fun
-% a class represeneting a function on the sphere
+% spherical function given by a function handle
   
 properties
   fun
