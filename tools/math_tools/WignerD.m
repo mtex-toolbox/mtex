@@ -41,9 +41,8 @@ else
 end
 
 if isa(psi,'SO3Kernel')
-  Psi = expandPsi(psi,l)./N .* Psi;
-else
-  Psi = Psi./N;
+    % convolve with kernel
+    Psi = expandPsi(psi,l).*Psi;
 end
 
 if check_option(varargin,{'order','degree'}) && isscalar(l)
