@@ -1,5 +1,5 @@
 classdef S2FunHandle < S2Fun
-% a class represeneting a function on the sphere
+% spherical function given by a function handle
   
 properties
   fun
@@ -14,7 +14,7 @@ methods
   end
   
   function f = eval(S2F,v)
-    f = S2F.fun(v);
+    f = S2F.fun(v+0.000001*xvector);
   end
   
 end

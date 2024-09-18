@@ -27,7 +27,7 @@ if nargin == 3 || (isa(q1,'quaternion') && isa(q2,'quaternion'))
   if isa(q,'rotation')
     try ia = q1.i; catch, ia = false(size(q1.a)); end
     try ib = q2.i; catch, ib = false(size(q2.a)); end
-    q.i = bsxfun(@xor,ia(:),ib(:).');
+    q.i = xor(ia(:),ib(:).');
   end
   
 

@@ -88,7 +88,7 @@ classdef meanFilter < EBSDFilter
         quaternion.nan(drowL,size(q,2)+ncol)];
 
       % map quaternions into tangential space
-      tq = double(log(q));
+      tq = fullDouble(log(q));
       count = zeros(size(tqMean));
       
       % take the mean

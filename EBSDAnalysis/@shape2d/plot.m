@@ -10,11 +10,9 @@ function h = plot(shape,varargin)
 
 plain =  check_option(varargin,'plain');
 normalize =  check_option(varargin,'normalize');
-
 varargin = delete_option(varargin,{'normalize' 'plain'});
 
-
-if normalize, shape.V = shape.V / sqrt(shape.area); end
+if normalize, shape.allV = shape.allV / sqrt(abs(shape.area)); end
 
 h = polarplot(shape.theta,shape.rho,varargin{:});
 
@@ -25,29 +23,8 @@ if plain
   h.Parent.RTick = [];
 end
 
-% set plotting convention such that the plot coinices with a map
-if ~isempty(h)
-  
-  x = getMTEXpref('xAxisDirection');
-  switch x
-    case 'east'
-      h.Parent.ThetaZeroLocation='right';
-    case 'north'
-      h.Parent.ThetaZeroLocation='top';
-    case 'west'
-      h.Parent.ThetaZeroLocation='left';
-    case 'south'
-      h.Parent.ThetaZeroLocation='bottom';
-  end
-
-  z  = getMTEXpref('zAxisDirection');
-  switch z
-    case 'intoPlane'
-      h.Parent.ThetaDir='clockwise';
-    case 'outOfPlane'
-      h.Parent.ThetaDir='counterclockwise';
-  end
-end
+how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+how2plot.setView;
 
 if nargout == 0, clear h; end
 

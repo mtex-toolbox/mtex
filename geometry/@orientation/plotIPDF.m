@@ -91,7 +91,7 @@ for ir = 1:length(r)
 
   % plot annotations
   setappdata(cax,'inversePoleFigureDirection',r(ir));
-  set(cax,'tag','ipdf');
+  [cax.Tag] = deal('ipdf');
   setappdata(cax,'CS',ori.CS);
   setappdata(cax,'SS',ori.SS);
 

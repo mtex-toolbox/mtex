@@ -43,11 +43,12 @@ rot(isIndexed) = ebsd.rotations(idNearest);
 phaseId = ones(size(xNew));
 phaseId(isIndexed) = ebsd.phaseId(idNearest);
 
-% copy properties
-prop = struct('x',xNew,'y',yNew);
-for fn = fieldnames(ebsd.prop).'
-  if any(strcmp(char(fn),{'x','y','z'})), continue;end
+pos = vector3d(xNew,yNew,0);
 
+% copy properties
+prop = struct;
+for fn = fieldnames(ebsd.prop).'
+  
   if isnumeric(ebsd.prop.(char(fn))) || islogical(ebsd.prop.(char(fn)))
     prop.(char(fn)) = nan(size(xNew));
   else
@@ -56,7 +57,7 @@ for fn = fieldnames(ebsd.prop).'
   prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
 end
 
-ebsdNew = EBSD(rot,phaseId,ebsd.CSList,prop);
+ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop);
 ebsdNew.phaseMap = ebsd.phaseMap;
 ebsdNew.phaseId = phaseId(:);
 ebsdNew.CSList = ebsd.CSList;
@@ -96,8 +97,8 @@ end
     idn = ones(size(doInclude));
     idn(doInclude) = sub2ind(size(ebsd), iyn(doInclude), ixn(doInclude));
     
-    dist = sqrt((xNew(isIndexed) - ebsd.prop.x(idn)).^2 + ...
-      (yNew(isIndexed) - ebsd.prop.y(idn)).^2);
+    dist = sqrt((xNew(isIndexed) - ebsd.pos.x(idn)).^2 + ...
+      (yNew(isIndexed) - ebsd.pos.y(idn)).^2);
     
     weights = 1./ (delta + dist);
     if isfield(prop,'grainId')

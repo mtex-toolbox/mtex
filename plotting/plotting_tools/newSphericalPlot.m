@@ -5,6 +5,9 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 % 2: axis is hold and has sphericalRegion -> use multiplot
 % 3: new multiplot
 
+% get plotting convention
+how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+
 % case 1: predefined axis
 % -----------------------
 if check_option(varargin,'parent')
@@ -23,10 +26,10 @@ if check_option(varargin,'parent')
     
     % extract spherical region
     % TODO: it might happen that the spherical region needs two axes
-    sR = getPlotRegion(v,varargin{:});
+    sR = getPlotRegion(v,how2plot,varargin{:});
     
     % extract projection
-    proj = getProjection(sR,varargin{:});
+    proj = getProjection(sR,how2plot,varargin{:});
     
     % create a new spherical plot
     sP = sphericalPlot(ax,proj(1),varargin{:});
@@ -43,12 +46,18 @@ end
 
 if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
 
-  % get spherical region
-  sR = getPlotRegion(v,varargin{:});
+  % maybe the spherical projection is already given
+  proj = getClass(varargin,'sphericalProjection');
+
+  if isempty(proj)
+    % get spherical region
+    sR = getPlotRegion(v,how2plot,varargin{:});
   
-  % extract projection(s)
-  % this might return two projections for upper and lower hemisphere
-  proj = getProjection(sR,varargin{:});
+    % extract projection(s)
+    % this might return two projections for upper and lower hemisphere
+    proj = getProjection(sR,how2plot,varargin{:});
+  end
+  
   holdState = getHoldState(mtexFig.gca);
   
   for i = 1:numel(proj)
@@ -59,9 +68,9 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     
     % display upper/lower if needed
     if numel(proj)>1          
-      if ~proj(i).sR.isUpper
+      if ~proj(i).isUpper
         tr = {'TR','lower'};
-      elseif ~proj(i).sR.isLower
+      elseif ~proj(i).isLower
         tr = {'TR','upper'};
       else
         tr = {};
@@ -94,40 +103,39 @@ end
 end
 
 % ---------------------------------------------------------
-function sR = getPlotRegion(varargin)
+function sR = getPlotRegion(sR,how2plot,varargin)
 % returns spherical region to be plotted
 
 % default values from the vectors to plot
-if isa(varargin{1},'vector3d')
-  sR = varargin{1}.region(varargin{2:end});
-else
-  sR = sphericalRegion;
+if isa(sR,'vector3d')
+  sR = sR.region(varargin{:});
+elseif ~isa(sR,'sphericalRegion')
+  sR = getClass(varargin,'sphericalRegion',sphericalRegion);  
 end
-sR = getClass(varargin,'sphericalRegion',sR);
+
 
 % check for simple options
 if check_option(varargin,'complete')
   sR = sphericalRegion;
 end
 if check_option(varargin,'upper')
-  sR = sR.restrict2Upper;
+  sR = sR.restrict2Upper(how2plot);
 elseif check_option(varargin,'lower')
-  sR = sR.restrict2Lower;
+  sR = sR.restrict2Lower(how2plot);
 end
 
 % extract antipodal
-sR.antipodal = check_option(varargin,'antipodal') || ...
-  (isa(varargin{1},'vector3d') && varargin{1}.antipodal);
+sR.antipodal = check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
-if sR.antipodal && sR.isUpper && sR.isLower &&...
+if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
     ~check_option(varargin,'complete')
-  sR = sR.restrict2Upper;
+  sR = sR.restrict2Upper(how2plot);
 end
 
 end
 % ---------------------------------------------------------
-function proj = getProjection(sR,varargin)
+function proj = getProjection(sR,pC,varargin)
 
 proj = get_option(varargin,'projection','earea');
 
@@ -136,17 +144,17 @@ if ~isa(proj,'sphericalProjection')
   switch proj
     case 'plain', proj = plainProjection(sR);
     
-    case {'stereo','eangle'}, proj = eangleProjection(sR); % equal angle
+    case {'stereo','eangle'}, proj = eangleProjection(sR,pC); % equal angle
       
-    case 'edist', proj = edistProjection(sR); % equal distance
+    case 'edist', proj = edistProjection(sR,pC); % equal distance
 
-    case {'earea','schmidt'}, proj = eareaProjection(sR); % equal area
+    case {'earea','schmidt'}, proj = eareaProjection(sR,pC); % equal area
         
-    case 'orthographic',  proj = orthographicProjection(sR);
+    case 'orthographic',  proj = orthographicProjection(sR,pC);
     
-    case 'square',  proj = squareProjection(sR);
+    case 'square',  proj = squareProjection(sR,pC);
       
-    case 'gnonomic', proj = gnonomicProjection(sR);
+    case 'gnonomic', proj = gnonomicProjection(sR,pC);
       
     otherwise
     
@@ -155,10 +163,10 @@ if ~isa(proj,'sphericalProjection')
   end
 end
 
-if ~isa(proj,'plainProjection') && sR.isUpper && sR.isLower  
+if ~isa(proj,'plainProjection') && sR.isUpper(pC) && sR.isLower(pC)  
   proj = [proj,proj];
-  proj(1).sR = proj(1).sR.restrict2Upper;
-  proj(2).sR = proj(2).sR.restrict2Lower;
+  proj(1).sR = proj(1).sR.restrict2Upper(pC);
+  proj(2).sR = proj(2).sR.restrict2Lower(pC);
 end
 
 

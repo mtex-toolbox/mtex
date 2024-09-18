@@ -67,7 +67,8 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
   [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
 else
-  [V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+  pos = ebsd.rot2Plane * ebsd.pos;
+  [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
 end
 % V - list of vertices
 % F - list of faces
@@ -120,6 +121,9 @@ if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
   mergeQuadrupleGrains;
 end
 
+% rotate grains back
+grains = inv(ebsd.rot2Plane) * grains;
+
 % calc mean orientations, GOS and mis2mean
 % ----------------------------------------
 
@@ -163,9 +167,9 @@ mis2mean(grainId>0) = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(gr
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
-    variantId = get_option(varargin,'variants');   
-    grains.prop.variantId = variantId(firstD,1);
-    grains.prop.parentId = variantId(firstD,2);
+  variantId = get_option(varargin,'variants');
+  grains.prop.variantId = variantId(firstD,1);
+  grains.prop.parentId = variantId(firstD,2);
 end
 
   function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
@@ -193,12 +197,7 @@ end
     [Dl,Dr] = find(triu(A_D,1));
 
     if check_option(varargin,'maxDist')
-      xyDist = sqrt((ebsd.prop.x(Dl)-ebsd.prop.x(Dr)).^2 + ...
-        (ebsd.prop.y(Dl)-ebsd.prop.y(Dr)).^2);
-
-      dx = sqrt(sum((max(ebsd.unitCell)-min(ebsd.unitCell)).^2));
-      maxDist = get_option(varargin,'maxDist',3*dx);
-      % maxDist = get_option(varargin,'maxDist',inf);
+      maxDist = get_option(varargin,'maxDist',3*ebsd.dPos);
     else
       maxDist = 0;
     end
@@ -207,13 +206,14 @@ end
 
     for p = 1:numel(ebsd.phaseMap)
   
-      % neighbored cells Dl and Dr have the same phase
+      % neighboured cells Dl and Dr have the same phase
+      ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+
+      % do not connect points to far away from each other
       if maxDist > 0
-        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p & xyDist < maxDist;
-      else
-        ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
+        ndx = ndx & norm(ebsd.pos(Dl) - ebsd.pos(Dr)) < maxDist; 
       end
-  
+      
       connect(ndx) = true;
   
       % check, whether they are indexed

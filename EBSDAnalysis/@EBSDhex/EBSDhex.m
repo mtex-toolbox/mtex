@@ -22,7 +22,7 @@ classdef EBSDhex < EBSD
   
   methods
       
-    function ebsd = EBSDhex(rot,phaseId,phaseMap,CSList,dHex,isRowAlignment,varargin)
+    function ebsd = EBSDhex(pos,rot,phaseId,phaseMap,CSList,dHex,isRowAlignment,varargin)
       % generate a hexagonal EBSD object
       %
       % Syntax 
@@ -31,6 +31,7 @@ classdef EBSDhex < EBSD
       if nargin == 0, return; end            
       
       sGrid = size(rot);
+      ebsd.pos = pos;
       ebsd.rotations = rotation(rot);
       ebsd.phaseId = phaseId(:);
       ebsd.phaseMap = phaseMap;
@@ -46,18 +47,19 @@ classdef EBSDhex < EBSD
       ebsd.isRowAlignment = isRowAlignment;
       
       omega = (0:60:300)*degree + 30*isRowAlignment*degree;
-      ebsd.unitCell = dHex * [cos(omega.') sin(omega.')];
+      ebsd.unitCell = dHex * vector3d(cos(omega.'), sin(omega.'),0);
       
-      if ~isfield(ebsd.prop,'x')
+      if isempty(pos)
         [cols,rows] = meshgrid(1:size(rot,2),1:size(rot,1));
 
         if ebsd.isRowAlignment
-          ebsd.prop.x = (cols-1+0.5*iseven(rows)) * ebsd.dx;
-          ebsd.prop.y = (rows-1) * ebsd.dy;
+          x = (cols-1+0.5*iseven(rows)) * ebsd.dx;
+          y = (rows-1) * ebsd.dy;
         else
-          ebsd.prop.x = (cols-1) * ebsd.dx;
-          ebsd.prop.y = (rows-1+0.5*iseven(cols)) * ebsd.dy;
+          x = (cols-1) * ebsd.dx;
+          y = (rows-1+0.5*iseven(cols)) * ebsd.dy;
         end
+        ebsd.pos = vector3d(x,y,0);
       end
       
     end
@@ -67,9 +69,9 @@ classdef EBSDhex < EBSD
     
     function of = get.offset(ebsd)
       if ebsd.isRowAlignment
-        of = sign(ebsd.prop.x(2,1) - ebsd.prop.x(1,1));
+        of = sign(ebsd.pos.x(2,1) - ebsd.pos.x(1,1));
       else
-        of = sign(ebsd.prop.y(1,2) - ebsd.prop.y(1,1));
+        of = sign(ebsd.pos.y(1,2) - ebsd.pos.y(1,1));
       end
     end
     
@@ -123,7 +125,7 @@ classdef EBSDhex < EBSD
         ind1 = sub2ind(size(ebsd), max(r,1), c);
         gX1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
         end
         
@@ -131,7 +133,7 @@ classdef EBSDhex < EBSD
         ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
         gX2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
         end
                 
@@ -168,7 +170,7 @@ classdef EBSDhex < EBSD
         ind1 = sub2ind(size(ebsd), r, max(1,c));
         gY1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gY1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
         end
         
@@ -176,7 +178,7 @@ classdef EBSDhex < EBSD
         ind2 = sub2ind(size(ebsd), r, min(size(ebsd,2),c+1));
         gY2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
         
-        if isfield(ebsd.prop,'grainId')
+        if ebsd.hasGrainId
           gY2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
         end
                 
@@ -265,8 +267,8 @@ classdef EBSDhex < EBSD
     function [row,col] = xy2ind(ebsd,x,y)
       % nearest neighbour search
       
-      x = x-ebsd.prop.x(1);
-      y = y-ebsd.prop.y(1);
+      x = x-ebsd.pos.x(1);
+      y = y-ebsd.pos.y(1);
       
       
       % convert to axial coordinates
@@ -303,8 +305,8 @@ classdef EBSDhex < EBSD
 
     function h = gridBoundary(ebsd)
 
-      dH = ebsd.dHex;
-      ext = ebsd.extent + 2*dH*[-1,1,-1,1];
+      dH = ebsd.dHex; ext = ebsd.extent;
+      ext = ext(1:4) + 2*dH*[-1,1,-1,1];
       x = ext(1):dH:ext(2);
       y = ext(3):dH:ext(4);
 

@@ -146,7 +146,7 @@ N = [4 3 2 3 4;...
   4 3 2 3 4];
 
 cs = crystalSymmetry;
-ebsd = EBSDsquare(rotation.nan(5,5),N,0:4,{cs,cs,cs,cs,cs},[10 10]);
+ebsd = EBSDsquare([],rotation.nan(5,5),N,0:4,{cs,cs,cs,cs,cs},[10 10]);
 plot(ebsd,'EdgeColor','black','micronbar','off','figSize','small')
 legend off
 
@@ -164,7 +164,7 @@ N = [3 2 2 2 3;...
   3 3 3 3 4];
 
 cs = crystalSymmetry;
-ebsd = EBSDhex(rotation.nan(6,5),N,0:4,{cs,cs,cs,cs,cs},10,1,1);
+ebsd = EBSDhex([],rotation.nan(6,5),N,0:4,{cs,cs,cs,cs,cs},10,1,1);
 plot(ebsd,'edgecolor','k','micronbar','off','figSize','small')
 legend off
 text(ebsd,N)

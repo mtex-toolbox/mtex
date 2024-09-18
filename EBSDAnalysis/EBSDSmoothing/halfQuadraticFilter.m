@@ -1,6 +1,6 @@
 classdef halfQuadraticFilter < EBSDFilter
   % haldQuadraticFilter uses the techniques elaborated half-quadratic
-  % minmization on manifolds to denoise EBSD data.
+  % minimization on manifolds to denoise EBSD data.
   % For further details of the algorithm see:
   % R. Bergmann, R. H. Chan, R. Hielscher, J. Persch, G. Steidl
   % Restoration of Manifold-Valued Images by Half-Quadratic Minimization.

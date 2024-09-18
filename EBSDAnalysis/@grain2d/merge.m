@@ -220,7 +220,7 @@ I_FG(:,1:numel(keepId)) = [];
 
 newInd = numel(keepId)+(1:size(I_FG,2));
 [grainsMerged.poly(newInd), grainsMerged.inclusionId(newInd)] = ...
-  calcPolygons(I_FG,grainsMerged.boundary.F,grainsMerged.boundary.V);
+  calcPolygons(I_FG,grainsMerged.boundary.F,grainsMerged.allV);
 
 % 9. update properties
 

@@ -1,21 +1,11 @@
- function out = isLower(sR)
+function out = isLower(sR,ref)
 
- sR.antipodal = false;
- 
- if sR.checkInside(-zvector)
- 
-   out = true;
+if nargin==1
+  ref = sR.how2plot.outOfScreen;
+elseif isa(ref,'plottingConvention')
+  ref = ref.outOfScreen;
+end
 
- elseif any(sR.N == zvector) && any(sR.alpha(sR.N == zvector)>=0)
-   
-   out = false;
-   
- else
-   
-   r = regularS2Grid;
-   r(r.z>-1e-6) = [];
-   out = volume(sR.restrict2Lower,r)>0;
-   
- end
+out = isUpper(sR,-ref);
  
- end
+end

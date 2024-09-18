@@ -17,7 +17,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %  xy - list of spatial coordinates |[x(:) y(:)]| 
 %
 % Output
-%  ebsdLine - @EBSD restrcited to the line of interest
+%  ebsdLine - @EBSD restricted to the line of interest
 %  dist - double distance along the line to the initial point
 %
 % Example
@@ -31,7 +31,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   % select line coordinates
 %   x = [15.5 27]; y = [20.5 11];
 %
-%   % draw line with some transluency
+%   % draw line with some translucency
 %   line(x,y,'color',[0.5 0.5 0.5 0.5],'linewidth',10)
 %
 %   % restrict ebsd data to this line
@@ -41,7 +41,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   ori = ebsdLine.orientations;
 %
 %   figure
-%   % plot misorienation angle along the profile
+%   % plot misorientation angle along the profile
 %   plot(dist,angle(ori,ori(1))./degree,'linewidth',2)
 %   xlabel('line'), ylabel('misorientation angle')
 
@@ -50,11 +50,11 @@ if nargin >= 3 && isnumeric(varargin{1})
   lineXY = [lineXY(:),varargin{1}(:)];
 end
 
-% work with homogenous coordinates
-xy1 = [ebsd.prop.x,ebsd.prop.y];
+% work with homogeneous coordinates
+xy1 = [ebsd.pos.x,ebsd.pos.y];
 xy1(:,end+1) = 1;
 
-radius = unitCellDiameter(ebsd.unitCell)/2;
+radius = ebsd.dPos/2;
 
 distList = 0;
 idList = [];
@@ -87,7 +87,7 @@ for k=1:size(lineXY,1)-1
   dist = x_DX(id,1);
   
   % if we start with B, reverse the distance
-  if double(s<0), dist = max(dist)-dist; end
+  if s<0, dist = max(dist)-dist; end
   
   [dist, ndx] = sort(dist);
   idList = [idList; id(ndx)]; %#ok<AGROW>
@@ -98,14 +98,4 @@ end
 distList(1) = [];
 ebsd = ebsd.subSet(idList);
 
-
-% ----------------------------------------------------------------
-function d = unitCellDiameter(unitCell)
-
-
-diffVg = bsxfun(@minus,...
-  reshape(unitCell,[size(unitCell,1),1,size(unitCell,2)]),...
-  reshape(unitCell,[1,size(unitCell)]));
-diffVg = sum(diffVg.^2,3);
-d  = sqrt(max(diffVg(:)));
 

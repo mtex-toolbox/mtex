@@ -95,7 +95,8 @@ if isNew
   else
     pfAnnotations = @(varargin) 1;
   end
-  set(mtexFig.parent,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  mtexFig.parent.Name = "Pole figures of """ + ...
+    get_option(varargin,'FigureTitle',inputname(1)) + """";
 else
   pfAnnotations = @(varargin) 1;
 end

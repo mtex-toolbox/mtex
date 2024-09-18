@@ -20,12 +20,13 @@ try
   end
 
   loader  = localCRCLoader(crcFile,param);
-
-  q       = loader.getRotations();
-  phases  = loader.getColumnData('Phase');
-  options = loader.getOptions('ignoreColumns','phase');
   
-  ebsd = EBSD(q,phases,CS,options,'unitCell',param.unitCell);
+  rot       = loader.getRotations();
+  pos = vector3d(loader.getColumnData('x'),loader.getColumnData('y'),0);
+  phases  = loader.getColumnData('phase');
+  options = loader.getOptions('ignoreColumns',{'phase','x','y'});
+  
+  ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
   ebsd.opt.cprInfo = cpr;
 catch %#ok<CTCH>
   interfaceError(fname);
@@ -70,7 +71,7 @@ d(type==4,:) = reshape(double(typecast(...
 d(type~=4,:) = double(data(1+ndx(type~=4),:));
 
 if params.cells
-  % append implicite coordinates
+  % append implicit coordinates
   
   d(end+1,:) = params.x;
   d(end+1,:) = params.y;

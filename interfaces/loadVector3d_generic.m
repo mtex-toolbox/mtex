@@ -53,9 +53,9 @@ end
 loader = loadHelper(d,varargin{:});
 
 % get x,y,z
-v = loader.getVector3d();
+v = loader.getVector3d;
   
 % extract additional properties
-S = loader.getOptions();
+S = loader.getOptions;
 
 if isCheck, S = options; end

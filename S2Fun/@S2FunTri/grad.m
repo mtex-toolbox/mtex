@@ -3,7 +3,7 @@ function g = grad(sF, v) % gradient
 if nargin == 2 % direct evaluation
   v = v(:);
   bario = sF.tri.calcBario(v);
-  g = vector3d(zeros(3, length(v)));
+  g = vector3d.zeros(length(v),1);
   for i = 1:length(v)
     I = find(bario(i, :));
     if length(I) == 3

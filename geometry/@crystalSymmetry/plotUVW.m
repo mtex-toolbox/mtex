@@ -21,7 +21,7 @@ if ~check_option(varargin,'complete'), options = [options,{'upper'}]; end
 
 % plot them
 washold = getHoldState(mtexFig.gca);
-hold(mtexFig.gca,'all')
+hold(mtexFig.gca,'on')
 for i = 1:length(m)
   m(i).scatter(options{:});
 end

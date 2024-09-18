@@ -23,7 +23,7 @@ methods(Static = true)
   vF = polar(rRef);
   [t1,t2] = tangential(rRef);
   vF = oneSingularity(rRef);
-  vF = sigma;
+  vF = sigma(varargin);
   
 end
 

@@ -20,14 +20,14 @@ d = reshape(sF.eval(S2G),size(S2G, 1), size(S2G, 2), []);
     
 if isa(d,'double') && ~isreal(d), d = real(d);end
   
+h = gobjects(1,length(sF));
 for j = 1:length(sF)
   if j > 1, mtexFig.nextAxis; end
   [x,y,z] = double((abs(d(:, :, j))).*S2G);
     
   h(j) = optiondraw(surf(x,y,z,'parent',mtexFig.gca), varargin{:});
-  set(h,'CData',d(:, :, j))
-  axis equal
-  optiondraw(h,varargin{:});
+  h(j).CData = d(:, :, j);
+  axis(mtexFig.gca,'equal');
 end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end

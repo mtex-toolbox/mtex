@@ -103,7 +103,7 @@ for ia = 1:3
 end
 
 % setup new x, y, z directions
-xyzNew = vector3d(zeros(3));
+xyzNew = vector3d.zeros(1,3);
 for ia = 1:3
   
   switch lower(alignment{ia})
@@ -147,7 +147,7 @@ for ia = 1:3
 end
 
 % set up the transformation matrix
-M = reshape(double(normalize(xyzNew)),3,3);
+M = double(normalize(xyzNew)).';
 
 % check for orthogonality
 if norm(M^(-1) - M') > 1e-6
@@ -157,7 +157,7 @@ end
 if det(M) < 0, M(2,:) = -M(2,:);end
 
 % now compute the new a, b, c axes
-abc = vector3d((M * reshape(double(normalize([a,b,c])),3,3).')) .* axisLength(:).';
+abc = vector3d(M * double([a,b,c])) .* axisLength(:).';
 
 if check_option(varargin,'rotAxes')
   abc = get_option(varargin,'rotAxes') * abc;

@@ -1,20 +1,26 @@
- function out = isUpper(sR)
+function out = isUpper(sR, ref)
 
- sR.antipodal = false;
+sR.antipodal = false;
  
-  if sR.checkInside(zvector)
- 
-   out = true;
+if nargin==1
+  ref = sR.how2plot.outOfScreen;
+elseif isa(ref,'plottingConvention')
+  ref = ref.outOfScreen;
+end
 
-  elseif any(sR.N == -zvector) && any(sR.alpha(sR.N == -zvector)>=0)
+if sR.checkInside(ref)
+ 
+  out = true;
+
+elseif any(sR.N == -ref) && any(sR.alpha(sR.N == -ref)>=0)
    
-   out = false;
+  out = false;
    
- else
+else
    
-   r = regularS2Grid;
-   r(r.z<+1e-6) = [];
-   out = volume(sR.restrict2Upper,r)>0;
+  r = regularS2Grid;
+  r(dot(r,ref)<+1e-6) = [];
+  out = volume(sR.restrict2Upper(ref),r)>0;
    
  end
   

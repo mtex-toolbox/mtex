@@ -270,11 +270,10 @@ uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 
 if strcmpi(get(obj,'label'),'tight')
-  mtexFig.CLim('tight');
+  setColorRange(gcf,'tight');
 else
-  mtexFig.CLim('equal');
+  setColorRange(gcf,'equal');
 end
-
 
 set(obj,'checked','on');
 

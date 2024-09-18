@@ -1,11 +1,11 @@
-function ebsd = shift(ebsd,xy)
-% shift spatial ebsd-data about (x,y)
+function ebsd = shift(ebsd,v)
+% shift spatial ebsd-data about vector3d
 %
 % Input
 %  ebsd - @EBSD
-%  xy   - coordinates
+%  v    - @vector3d
 %
 % Output
 %  shifted ebsd - @EBSD
 
-ebsd = affinetrans(ebsd,[],xy);
+ebsd = ebsd + v;

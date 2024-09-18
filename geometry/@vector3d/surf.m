@@ -20,7 +20,7 @@ sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 for j = 1:numel(sP)
 
   % project data
-  [x,y] = project(sP(j).proj,v,'noAntipodal');
+  [x,y] = sP(j).proj.project(v,'noAntipodal');
     
   % extract non nan data
   ind = ~isnan(x);
@@ -33,7 +33,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).hgt,...
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax,...
     'edgeColor','none'); %#ok<AGROW>
       
   hold(sP(j).ax,'off')

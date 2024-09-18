@@ -117,11 +117,11 @@ methods
   
   
   function set.visible(sB,value)
-    set(sB.hgt,'visible',value);
+    sB.hgt.Visible = value;
   end
   
   function value = get.visible(sB)
-    value = get(sB.hgt,'visible');
+    value = sB.hgt.Visible;
   end
   
   function update(sB)
@@ -156,6 +156,7 @@ methods
     set(sB.txt,'position',[dx(1),dy(1)])
     textHeight = get(sB.txt, 'Extent');
     textHeight = min(textHeight(3:4)) * sign(diff(dy));
+    if isnan(textHeight), textHeight = (5+sB.txt.FontSize) *sign(diff(dy)); end
     gapY = textHeight/3;
     gapX = abs(gapY) * sign(diff(dx));
 

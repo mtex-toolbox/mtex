@@ -19,16 +19,16 @@ grains = grains.smooth
 plot(grains,grains.meanOrientation)
 
 %%
-% Now we can extract from the grains its boundary and save it to a seperate
+% Now we can extract from the grains its boundary and save it to a separate
 % variable
 
 gB = grains.boundary
 
 %%
 % The output tells us that we have 3219 Magnesium to Magnesium boundary
-% segments and 606 boundary segements where the grains are cutted by the
+% segments and 606 boundary segments where the grains are cut by the
 % scanning boundary. To restrict the grain boundaries to a specific phase
-% transistion you shall do
+% transition you shall do
 
 gB_MgMg = gB('Magnesium','Magnesium')
 
@@ -46,16 +46,3 @@ gB_MgMg = gB('Magnesium','Magnesium')
 
 plot(gB_MgMg,gB_MgMg.misorientation.angle./degree,'linewidth',2)
 mtexColorbar
-
-%%
-
-
-
-hold on
-plot(gB('notIndexed'),'lineColor','blue','linewith',5)
-hold off
-
-
-%%
-
-grains.innerBoundary

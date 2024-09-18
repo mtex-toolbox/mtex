@@ -11,9 +11,9 @@ A(1:bw+1) = psi.A(1:bw+1);
 A = A./ (2*n+1);
 
 if check_option(varargin,'logarithmic')
-  optiondraw(loglog(n, abs(A), 'marker','o','MarkerSize',5),varargin{:});
+  optiondraw(loglog(1+n, abs(A), 'marker','o','MarkerSize',5),varargin{:});
 else
-  optiondraw(semilogx(n, A, 'marker','o','MarkerSize',5),varargin{:});
+  optiondraw(semilogx(1+n, A, 'marker','o','MarkerSize',5),varargin{:});
 end
 set(gcf,'Name',['Legendre coefficients of the kernel ',inputname(1)]);
 

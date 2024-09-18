@@ -44,7 +44,7 @@ plot(ebsd,'coordinates','on')
 %% Orientation Plots
 %
 % Analyzing orientations of an EBSD map can be done only for each phase
-% seperately. The key syntax to restrict the data to a single phase is 
+% separately. The key syntax to restrict the data to a single phase is 
 
 ebsd('Forsterite')
 
@@ -60,7 +60,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 
 %%
 % In this standard form a default color coding of the orientations is
-% choosen. A more complete discussion about how to colorize orientations
+% chosen. A more complete discussion about how to colorize orientations
 % can be found in the topic <EBSDIPFMap.html IPF Maps>.
 
 %% Grain reconstruction
@@ -71,14 +71,14 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % Grain detection from 2d and 3d EBSD data> and the topic
 % <GrainReconstruction.html Grain Reconstruction>. The syntax is
 
-% reconstruct grains with a theshold angle of 10 degrees
+% reconstruct grains with a threshold angle of 10 degrees
 grains = calcGrains(ebsd('indexed'),'theshold',10*degree)
 
 % smooth the grains to avoid the staircase effect
 grains = smooth(grains,5);
 
 %%
-% This creates a variable |grains| of type @grain2d which containes the
+% This creates a variable |grains| of type @grain2d which contains the
 % full <ShapeParameters.html geometric information> about all grains and
 % their <BoundaryProperties.html boundaries>. As the simplest
 % application we may just plot the grain boundaries
@@ -99,17 +99,17 @@ hold off
 % define the crystal shape of Forsterite and store it in the variable cS
 cS = crystalShape.olivine(ebsd('Forsterite').CS)
 
-% select only grains with more then 100 pixels
-grains = grains(grains.grainSize > 100);
+% select only Forsterite grains with more then 100 pixels
+grains = grains('Forsterite',grains.grainSize > 100);
 
 % plot crystal shapes at the positions of the Forsterite grains
 hold on
-plot(grains('Forsterite'),0.7*cS,'FaceColor',[0.3 0.5 0.3])
+plot(grains,0.7*cS,'colored')
 hold off
 
 %% Pole Figures
 % 
-% One of the most important tools for analysing the orientations in an EBSD
+% One of the most important tools for analyzing the orientations in an EBSD
 % map are <OrientationPoleFigure.html pole figure plots>. Those answer the
 % question of how selected crystal directions, here |h|, are aligned with respect to specimen directions
 

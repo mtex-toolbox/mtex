@@ -66,7 +66,7 @@ ylabel('$|| \mathtt{R(ori_1)} - \mathtt{R(ori_2)}||_2$','Interpreter','latex')
 % compute the average of two orientations by taking the mean of the
 % corresponding Rodrigues vectors. 
 % 
-% Lets have a look at an extremal case of finding the mean orientations of
+% Lets have a look at the extreme case of finding the mean orientations of
 % the orientations $(44^{\circ},0^{\circ},0^{\circ})$ and
 % $(46^{\circ},0^{\circ},0^{\circ})$
 
@@ -118,6 +118,8 @@ ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_2}) ||_2$','Inter
 % We observe that the distance in the embedding differs slightly from the
 % misorientation angle. However, especially for small misorientation angles
 % the approximation is very good.
+%
+%%
 %
 % Lets go back to our second example of averaging the orientations
 % $(44^{\circ},0^{\circ},0^{\circ})$ and $(46^{\circ},0^{\circ},0^{\circ})$. If
@@ -224,6 +226,17 @@ hold off
 % * <embedding.dot.html |dot|>
 % * <embedding.rotate.html |rotate|>, <embedding.rotate_outer.html |rotate_outer|>
 %
+%% Low dimensional representation
+% Internally the tensorial representation of the is slightly larger than
+% required. In many practical 
+
+distD = vecnorm(double(e1) - double(e2),2,2);
+
+close all
+scatter(omega,distD)
+xlabel('$\omega(\mathtt{ori}_1,\mathtt{ori}_2)$','Interpreter','latex')
+ylabel('$||\mathcal E(\mathtt{ori_1}) - \mathcal E(\mathtt{ori_2}) ||_2$','Interpreter','latex')
+
 %% Reference
 %
 % The theory behind these embeddings is explained in the paper

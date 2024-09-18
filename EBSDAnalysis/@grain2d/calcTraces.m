@@ -40,7 +40,9 @@ omega = nan(sz);
 rel = zeros(sz);
 
 % extract grain geometry
-V = grains.boundary.V;
+rot = grains.rot2Plane;
+V = rot .* grains.boundary.allV;
+V = V.xyz;
 F = grains.boundary.F;
 I_BG = grains.boundary.I_FG;
 grainId = grains.id;
@@ -133,4 +135,4 @@ for i = 1:length(ic)
 
 end
 
-traces = vector3d.byPolar(pi/2,omega,'antipodal');
+traces = inv(rot) .* vector3d.byPolar(pi/2,omega,'antipodal');

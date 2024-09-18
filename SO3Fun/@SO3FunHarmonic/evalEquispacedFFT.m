@@ -22,8 +22,8 @@ function f = evalEquispacedFFT(SO3F,rot,varargin)
 %   % construct quadrature grid and evaluate there. Output will be a unique
 %   % part of this grid
 %   SO3F = SO3FunHarmonic.example;
-%   rot = quadratureSO3Grid(64,SO3F.CS)
-%   v = evalEquispacedFFT(SO3F,rot)
+%   rot = quadratureSO3Grid(62,SO3F.CS)
+%   v = evalEquispacedFFT(SO3F,rot);
 %
 %   % for big grid sizes the construction of the quadrature grid is memory
 %   % expansive. Hence construct struct, but the output is full sized

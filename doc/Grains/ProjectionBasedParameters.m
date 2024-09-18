@@ -43,7 +43,8 @@ grains(ind).diameter
 
 close all
 omega = linspace(0,180);
-plot(omega,grains(ind).caliper(omega*degree),'LineWidth',2)
+dir = vector3d.byPolar(90*degree,omega*degree);
+plot(omega,grains(ind).caliper(dir),'LineWidth',2)
 ylabel('length in $\mu$m','Interpreter','latex')
 xlabel('angle of the projection line in degree')
 xlim([0,180])
@@ -78,7 +79,7 @@ cMin = grains.caliper('shortest');
 cMax = grains.caliper('longest');
 
 plot(grains,(norm(cMax) - norm(cMin))./norm(cMax),'micronbar','off')
-mtexColorbar('title','TODO')
+mtexColorbar('title','c_{max} - c_{min}')
 
 %%
 % This longest and shortest caliper are comparable to
@@ -128,7 +129,8 @@ legend('Location','east')
 
 % projection angle
 omega = linspace(0,360*degree,361);
-c = grains('Fo').caliper(omega);
+dir = vector3d.byPolar(90*degree,omega);
+c = grains('Fo').caliper(dir);
 
 subplot(1,2,1)
 polarplot(omega,c,'LineWidth',2,'color',[0 0.25 0.5 0.25])
@@ -140,7 +142,7 @@ polarplot(omega,5*mean(c),'LineWidth',3,'color','k');
 hold off
 
 subplot(1,2,2)
-c = grains('Enstatite').caliper(omega);
+c = grains('Enstatite').caliper(dir);
 
 polarplot(omega,c,'LineWidth',2,'color',[0 0.25 0.5 0.25])
 title('Enstatite') 
@@ -268,6 +270,6 @@ legend('Location','southoutside','Orientation','horizontal')
 % the longest and the shortest caliper which can be regarded as a measure
 % of asymmetry.
 
-angle(shapeF.caliper('longest'),shapeF.caliper('shortest'))/degree
-angle(shapeE.caliper('longest'),shapeE.caliper('shortest'))/degree
-angle(shapeEF.caliper('longest'),shapeF.caliper('shortest'))/degree
+angle(shapeF.caliper('longest'),shapeF.caliper('shortest')) / degree
+angle(shapeE.caliper('longest'),shapeE.caliper('shortest')) / degree
+angle(shapeEF.caliper('longest'),shapeF.caliper('shortest')) / degree

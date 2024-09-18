@@ -2,9 +2,9 @@ function h = quiver(grains,dir,varargin)
 % plot directions at grain centers
 %
 % Syntax
-%   quiver(grains,dir,'linecolor','r')
+%   quiver(grains,dir,'color','r')
 %
-%   mtexdata fo
+%   mtexdata forsterite
 %   grains = calcGrains(ebsd('indexed'))
 %   quiver(grains,grains.meanRotation.axis,'color','r')
 %
@@ -17,7 +17,7 @@ function h = quiver(grains,dir,varargin)
 %  maxHeadSize - size of the arrow
 %
 
-xy = grains.centroid;
+pos = grains.centroid;
 
 if ~check_option(varargin,'noScaling')
   
@@ -38,7 +38,7 @@ if check_option(varargin,'antipodal') || dir.antipodal
   % double color;
   if isnumeric(c) && length(c) == length(dir), c = [c;c]; end
 
-  xy = [xy;xy];
+  pos = [pos;pos];
   dir = [dir(:);-dir(:)];
 
 else
@@ -47,21 +47,21 @@ else
     
 end
  
-% if different color are given - seperate them
+% if different color are given - separate them
 [c,~,id] = unique(c,'rows');
 
-if length(id) ==length(dir)
+if length(id) == length(dir)
 
   varargin = delete_option(varargin,'color',1);
 
   for i = 2:size(c,1)
     hold on
-    h(i) = optiondraw(quiver(xy(id == i,1),xy(id == i,2),...
-      dir.x(id == i),dir.y(id == i)),varargin{:},'color',c(i,:)); %#ok<AGROW>
+    h(i) = optiondraw(quiver3(pos.x(id == i),pos.y(id == i),pos.z(id == i),...
+      dir.x(id == i),dir.y(id == i),dir.z(id == i)),varargin{:},'color',c(i,:));  %#ok<AGROW>
   end
   
 else
-  h = optiondraw(quiver(xy(:,1),xy(:,2),dir.x,dir.y),varargin{:});
+  h = optiondraw(quiver3(pos.x,pos.y,pos.z,dir.x,dir.y,dir.z),varargin{:});
 end
 
 if nargout == 0, clear h; end

@@ -20,7 +20,7 @@ omega = round(rot.angle./degree);
 uaxis(uaxis.z < 0) = -uaxis(uaxis.z < 0);
 
 % initalize plot
-sP = newSphericalPlot(zvector,'upper',varargin{:},s.plotOptions{:});
+sP = newSphericalPlot(zvector,'upper',varargin{:},s.how2plot);
 
 % scale symbol size according to bounds
 d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));
@@ -42,23 +42,26 @@ for i = 1:length(uaxis)
   multiI = round(360./min(omega(Improper(:) & id == i & omega(:)>0)));
   n = [1,-1].*uaxis(i);
   
+  [theta,rho] = polar(inv(sP.proj.pC.rot) * n(1)); %#ok<MINV,POLAR>
+  rho(theta<1e-3) = pi/2;
+
   if isempty([multiP,multiI]), continue; end
     
   multi = max([multiP,multiI]);
   
   % plot a proper rotation or the exterior of an improper rotation 
   if multi > 2 || ~isempty(multiP)
-    plotCustom(n,{@(ax,x,y) npoly(x,y,multi,1.1*symbolSize,n(1).rho,'parent',ax,'edgecolor','w','linewidth',1)});
+    plotCustom(n,{@(ax,x,y) npoly(x,y,multi,1.1*symbolSize,rho,'parent',ax,'edgecolor','w','linewidth',1)});
   end
   
   % if the improper multiplicity is larger then the proper multiplicity
   if multiI > multiP
     % plot the interior white
     plotCustom(n,{@(ax,x,y) ...
-      npoly(x,y,multi,0.9*symbolSize,n(1).rho,'parent',ax,'FaceColor','w')});
+      npoly(x,y,multi,0.9*symbolSize,rho,'parent',ax,'FaceColor','w')});
     
     % and on top of it the proper multiplicity - a bit smaller
-    plotCustom(n,{@(ax,x,y) npoly(x,y,multiP,0.9*symbolSize,n(1).rho,'parent',ax)});
+    plotCustom(n,{@(ax,x,y) npoly(x,y,multiP,0.9*symbolSize,rho,'parent',ax)});
   end
     
 end
@@ -93,8 +96,7 @@ omega = linspace(0,2*pi,200);
 
 xy = [sin(omega(:)) .* dx,cos(omega(:)) .* dy];
 
-xy = (A * xy.').';
-xy = bsxfun(@plus,xy,[cx,cy]);
+xy = (A * xy.').' + [cx,cy];
 
 patch('vertices',xy,'faces',1:size(xy,1),varargin{:});
 

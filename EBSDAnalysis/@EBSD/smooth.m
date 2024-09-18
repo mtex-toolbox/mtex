@@ -137,5 +137,7 @@ ebsd.rotations = rot;
 ebsd.phaseId(isnan(rot(:))) = 1;
 
 % remove nan data used to generate the grid
-ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
+if ~check_option(varargin,'keepGrid')
+  ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
+end
 

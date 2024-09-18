@@ -33,26 +33,8 @@ end
     
   
 % set plotting convention such that the plot coincides with a map
-x = getMTEXpref('xAxisDirection');
-switch x
-  case 'east'
-    h.Parent.ThetaZeroLocation='right';
-  case 'north'
-    h.Parent.ThetaZeroLocation='top';
-  case 'west'
-    h.Parent.ThetaZeroLocation='left';
-  case 'south'
-    h.Parent.ThetaZeroLocation='bottom';
-end
-
-z  = getMTEXpref('zAxisDirection');
-switch z
-  case 'intoPlane'
-    h.Parent.ThetaDir='clockwise';
-  case 'outOfPlane'
-    h.Parent.ThetaDir='counterclockwise';
-end
-
+how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+how2plot.setView(h.Parent);
 
 if nargout == 0, clear h; end
 

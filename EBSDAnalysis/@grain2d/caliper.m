@@ -4,15 +4,16 @@ function c = caliper(grains,varargin)
 %
 % Syntax
 %
-%   c = caliper(grains,omega)
+%   c = caliper(grains,dir)
 %   cV = caliper(grains,'shortest')
 %   cV = caliper(grains,'longest')
 %
 % Input:
 %  grains   - @grain2d
+%  dir      - @vector3d
 %
 % Output:
-%  c     - caliper at angle |omega|
+%  c     - caliper at direction |dir|
 %  cV    - @vector3d, norm(cV) is the length
 %
 % Options:
@@ -20,14 +21,14 @@ function c = caliper(grains,varargin)
 %  longest   - longest caliper = diameter of the grain
 %              
 
-V = grains.V;
+V = grains.allV;
 
-if nargin > 1 && isnumeric(varargin{1})
+if nargin > 1 && isa(varargin{1},'vector3d')
 
-  omega = varargin{1}(:).';
-  proj = V * [cos(omega);sin(omega)];
+  dir = varargin{1};
+  proj = dot_outer(V, dir);
   
-  if length(omega)>1
+  if length(dir)>1
     c = cellfun(@(id) max(proj(id,:) - min(proj(id,:)),[],1),grains.poly,'UniformOutput',false);
     c = vertcat(c{:});
   else
@@ -61,10 +62,10 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
   
   poly = grains.poly;
   scaling = 10000 ;
-  V = round(scaling * grains.V);
+  V = grains.rot2Plane .* V;
+  V = round(scaling *[V.x(:),V.y(:)]);
   c = nan(size(grains));
   omega = nan(size(grains));
-
   
   for ig = 1:length(grains)
     
@@ -91,7 +92,8 @@ elseif nargin > 1 && check_option(varargin,{'shortest','shortestPerp'})
 else
   
   poly = grains.poly;
-  V = grains.V;
+  V = grains.rot2Plane .* V;
+  V = [V.x(:),V.y(:)];
   c = nan(size(grains));
   
   for ig = 1:length(grains)
@@ -109,7 +111,7 @@ else
     [i1,i2] = ind2sub(size(dist),id);
     
     % get the angle with x-axis
-    omega(ig) = atan2(Vg(i1,2) - Vg(i2,2), Vg(i1,1) - Vg(i2,1));
+    omega(ig) = atan2(Vg(i1,2) - Vg(i2,2), Vg(i1,1) - Vg(i2,1)); %#ok<AGROW>
   
   end
   
@@ -118,7 +120,7 @@ else
 end
 
 % convert to vector3d
-c = c(:) .* vector3d.byPolar(pi/2,omega(:),'antipodal');
+c = c(:) .* (inv(grains.rot2Plane) .* vector3d.byPolar(pi/2,omega(:),'antipodal'));
 
 end
 

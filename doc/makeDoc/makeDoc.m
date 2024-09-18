@@ -25,8 +25,8 @@ mtex_settings
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 setMTEXpref('generatingHelpMode',true);
-set(0,'FormatSpacing','compact')
-set(0,'DefaultFigureColor','white');
+format compact
+set(groot,'DefaultFigureColor','white');
 plotx2east
 plotzOutOfPlane
 global mtex_progress; mtex_progress = 0; %#ok<GVMIS>

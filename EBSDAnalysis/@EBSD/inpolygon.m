@@ -29,9 +29,9 @@ end
 
 % check for inside
 if ~getMTEXpref('insidepoly')
-  ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+  ind = inpolygon(ebsd.pos.x,ebsd.pos.y,xy(:,1),xy(:,2));
 else
-  ind = insidepoly(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
+  ind = insidepoly(ebsd.pos.x,ebsd.pos.y,xy(:,1),xy(:,2));
 end
   
 end

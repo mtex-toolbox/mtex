@@ -14,7 +14,7 @@ function h = histogram(grains,varargin)
 %
 % Input
 %  grains - @grain2d
-%  n      - number of bin edges, default ist 15, (number of bins is n-1)
+%  n      - number of bin edges, default is 15, (number of bins is n-1)
 %  bins   - vector of bin edges
 %
 % Output
@@ -27,7 +27,7 @@ if nargin>1 && isnumeric(varargin{1}) && length(varargin{1}) == length(grains)
   prop = varargin{1};
   varargin(1) = [];
 else
-    prop = area;
+  prop = area;
 end
 
 % generate bins
@@ -44,24 +44,24 @@ end
 if ~exist('bins','var'), bins = linspace(0,max(prop)+eps,nbins); end
 
 % loop through all phases
-h = [];
-for id = grains.indexedPhasesId
-    
+h = gobjects(1,numel(grains.indexedPhasesId));
+for k = 1:numel(grains.indexedPhasesId)
+ 
+  id = grains.indexedPhasesId(k);
   % find for each area the binId
   [~,~,binId] = histcounts(prop(grains.phaseId==id),bins);
   if any(~binId,'all')
     warning([num2str(nnz(~binId)) ' grains outside bin limits not plotted!']);
   end
   
-  % compute the sum of areas belonging to the same bin
-  
+  % compute the sum of areas belonging to the same bin  
   areaPhase = area(grains.phaseId==id);
   cumArea = accumarray(binId(binId>0),areaPhase(binId>0),[length(bins)-1 1]) ./ sum(area);
   
-  h = [h,optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
-    'FaceColor',str2rgb(grains.CSList{id}.color)),varargin{:})]; %#ok<AGROW>
-  if strcmp(get(h,'DisplayStyle'),'stairs')
-    set(h(grains.indexedPhasesId==id),'EdgeColor',grains.CSList{id}.color);
+  h(k) = optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
+    'FaceColor',str2rgb(grains.CSList{id}.color)),varargin{:});
+  if h(k).DisplayStyle == "stairs"
+    h(k).EdgeColor = grains.CSList{id}.color;
   end
   hold on
   

@@ -66,7 +66,7 @@ else
   h = plotS2Grid(sR,'resolution',res,varargin{:});
 
   % plot
-  varargin = [delete_option(varargin,'complete'),dcs.plotOptions];
+  varargin = [delete_option(varargin,'complete'),{dcs.how2plot}];
   if isa(obj,'symmetry')
     density = pos(calcAxisDistribution(cs1,cs2,h,varargin{:}));
   else

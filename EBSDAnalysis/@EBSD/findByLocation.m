@@ -20,10 +20,9 @@ function map = findByLocation( ebsd, xy, y )
 
 if nargin==3, xy = [xy(:),y(:)]; end
 
-x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
+x_D = [ebsd.pos.x(:),ebsd.pos.y(:)];
 
-
-delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
+delta = mean(norm(ebsd.unitCell));
 
 x_Dm = x_D-delta;  x_Dp = x_D+delta;
 
@@ -31,8 +30,8 @@ nd = sparse(length(ebsd),size(xy,1));
 
 for k=1:size(xy,1)
   
-  candit = find(all(bsxfun(@le,x_Dm,xy(k,:)) & bsxfun(@ge,x_Dp,xy(k,:)),2));
-  dist = sqrt(sum(bsxfun(@minus,x_D(candit,:),xy(k,:)).^2,2));
+  candit = find(all(x_Dm <= xy(k,:) & x_Dp >= xy(k,:),2));
+  dist = sqrt(sum(x_D(candit,:) - xy(k,:).^2,2));
   [~, i] = min(dist);
   nd(candit(i),k) = 1;
   

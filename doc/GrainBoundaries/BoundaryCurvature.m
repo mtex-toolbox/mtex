@@ -24,7 +24,7 @@ plotx2east
 gB = grains.boundary;
 
 % plot some dark background
-plot(gB,'linewidth',10,'micronbar','off');  
+plot(gB,'linewidth',10,'micronbar','off');
 
 % colorize boundaries by curvature
 hold on

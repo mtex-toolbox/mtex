@@ -48,7 +48,7 @@ if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
 end
 
 % maybe reference to a dynamic property
-if isProperty(ebsd,s(1).subs)
+if isProperty(ebsd,s(1).subs) && ~any(strcmp(s(1).subs,{'mis2mean','grainId'}))
   
   [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
   

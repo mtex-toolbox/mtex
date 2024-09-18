@@ -42,13 +42,13 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
+    plottingConvention = plottingConvention
   end
     
   properties (Dependent = true)
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
-    xyz
   end
   
   methods
@@ -74,14 +74,19 @@ classdef vector3d < dynOption
           v.opt = varargin{1}.opt;
           return
           
-        elseif isa(varargin{1},'double')
+        elseif isa(varargin{1},'float')
           xyz = varargin{1};
-          if all(size(xyz) == [1,3])
-            xyz = xyz.';
+
+          if numel(xyz) == 2
+            v.x = xyz(1);
+            v.y = xyz(2);
+            v.z = 0;
+          else
+            if size(xyz,1) ~= 3, xyz = xyz.'; end
+            v.x = xyz(1,:);
+            v.y = xyz(2,:);
+            v.z = xyz(3,:);
           end
-          v.x = xyz(1,:);
-          v.y = xyz(2,:);
-          v.z = xyz(3,:);
         else
           error('wrong type of argument');
         end       
@@ -145,6 +150,8 @@ classdef vector3d < dynOption
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
        
+       v.plottingConvention = getClass(varargin,'plottingConvention',v.plottingConvention);
+
       end
     end
   
@@ -168,10 +175,12 @@ classdef vector3d < dynOption
       end
     end
     
-    function xyz = get.xyz(v)
-      
-      xyz = [v.x(:),v.y(:),v.z(:)];
-      
+    function xyz = xyz(v)
+      xyz = [v.x(:),v.y(:),v.z(:)];      
+    end
+
+    function xy = xy(v)
+      xy = [v.x(:),v.y(:)];      
     end
     
     function res = get.resolution(v)
@@ -233,7 +242,15 @@ classdef vector3d < dynOption
     v = rand(varargin)
     v = byPolar(polarAngle,azimuthAngle,varargin)
     [v,interface,options] = load(fname,varargin)
-    
+
+    function v = byXYZ(d,varargin)
+      if size(d,2) == 3
+        v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+      else
+        v = vector3d(d(:,1),d(:,2),0,varargin{:});
+      end
+    end
+
     function v = X(varargin)
       % the vector (1,0,0)
       %

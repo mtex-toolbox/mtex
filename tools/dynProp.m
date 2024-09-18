@@ -89,12 +89,11 @@ classdef dynProp
           end
       
         case '.'
-          if ismethod(dp,s(1).subs) || isprop(dp,s(1).subs)
-            [varargout{1:nargout}] = builtin('subsref',dp,s);
-          else
+          if isfield(dp.prop,s(1).subs) 
             varargout{1} = subsref(dp.prop,s);
-          end
-          
+          else
+            [varargout{1:nargout}] = builtin('subsref',dp,s);
+          end          
       end
     end
       
@@ -130,12 +129,11 @@ classdef dynProp
             end
             
           end
-        otherwise
-    
-          if isprop(dp,s(1).subs)
-            dp = builtin('subsasgn',dp,s,value);
-          else
+        case '.'
+          if isfield(dp.prop,s(1).subs)
             dp.prop =  builtin('subsasgn',dp.prop,s,value);
+          else
+            dp = builtin('subsasgn',dp,s,value);
           end
       end      
     end
@@ -159,7 +157,11 @@ classdef dynProp
     function c = char(dp,varargin)
       
       fn = fieldnames(dp.prop);
-      
+      if isempty(fn)
+        c = [];
+        return;
+      end
+
       numdP = length(dp.prop.(fn{1}));
 
       if ~isempty(fn) && numdP<=20

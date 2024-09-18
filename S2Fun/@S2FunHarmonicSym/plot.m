@@ -17,13 +17,8 @@ function varargout = plot(sF,varargin)
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 sR = sF.s.fundamentalSector(varargin{:});
 
-% set axes alignment
-if isa(sF.s,'crystalSymmetry')
-  varargin = [sF.s.plotOptions,varargin];
-end
-
 % perform plotting
-[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:});
+[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,sF.s.how2plot,varargin{:});
 
 
 function txt = tooltip(varargin)

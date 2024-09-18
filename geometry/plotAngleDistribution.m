@@ -28,7 +28,7 @@ else
   if ~isa(obj,'SO3Fun'), plotType = 'bar'; end
 end
 
-% seach for existing bar plots and adjust bar center
+% search for existing bar plots and adjust bar center
 h = findobj(mtexFig.gca,'type','bar','-or','type','hgGroup');
 h = flipud(h(:));
 
@@ -98,10 +98,8 @@ if strcmp(plotType,'bar')
 
   % update legend
   lg = [lg;{[obj.CS.mineral '-' obj.SS.mineral]}];
-  for i=1:length(h)
-    set(h(i),'DisplayName',lg{i});
-  end
-
+  [h.DisplayName] = deal(lg{:});
+  
 else
 
   h = optiondraw(plot(omega/degree,faktor * max(0,density),...

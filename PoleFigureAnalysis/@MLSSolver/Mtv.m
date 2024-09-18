@@ -9,9 +9,14 @@ function d = Mtv(solver,I,ind)
 %  d - coefficients
 %
 
-% extend specimen symmetry
-lss = numProper(solver.SS);
-I_ext = repmat(I.',lss,1)./lss;
+% extension for area detectors
+if 0
+  I_ext = I(solver.ext);
+
+else % extend specimen symmetry
+  lss = numProper(solver.SS);
+  I_ext = repmat(I.',lss,1)./lss;
+end
 
 % compute Fourier coefficients
 nfsftmex('set_f', solver.nfft_r(ind), I_ext);

@@ -42,14 +42,14 @@ plot(grains.boundary,'color','k','linewidth',1.5)
 hold off
 
 %%
-% We may also visualize the different quarz orientations together with the
+% We may also visualize the different quartz orientations together with the
 % grain boundaries.
 
 % plot a phase map of three of the phases based on the grains data 
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.4)
 
 hold on
-% add the quarz orientations as ipf map based on EBSD data
+% add the quartz orientations as ipf map based on EBSD data
 plot(ebsd_region('Quartz'),ebsd_region('Quartz').orientations)
 
 % plot grain boundaries so that those in the Quartz are shown
@@ -58,9 +58,9 @@ legend off
 hold off
 
 %%
-% For the map created, most of the phases are coloured based on where they
+% For the map created, most of the phases are colored based on where they
 % exist, while only the Quartz phase is colored according to the
-% orientation. The quartz orientations are colured using the following ipf
+% orientation. The quartz orientations are colored using the following ipf
 % color key
 
 close all
@@ -69,8 +69,8 @@ plot(ipfKey)
 
 
 %%
-% Alternatively, we may colorize each quarz grain according to its mean
-% orientation.  Again, the other phases are colured based on where they
+% Alternatively, we may colorize each quartz grain according to its mean
+% orientation.  Again, the other phases are colored based on where they
 % exist.
 
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.4)
@@ -85,7 +85,7 @@ legend off
 % have a misorientation with rotational axis close to the c-axis.
 
 close all
-% copy all boundaries between Andesina Orthoclase to a new variable
+% copy all boundaries between Andesina, Orthoclase to a new variable
 AOboundary = grains.boundary('Andesina','Orthoclase');
 % copy the misorientation angle of this boundary in radians to a new variable.
 angle = AOboundary.misorientation.angle;

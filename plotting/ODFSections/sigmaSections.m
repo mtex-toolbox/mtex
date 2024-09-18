@@ -15,7 +15,7 @@ classdef sigmaSections < pfSections
       
       oS.updateTol(oS.omega);
       
-      oS.referenceField = S2VectorField.sigma;
+      oS.referenceField = S2VectorField.sigma(varargin{:},oS.SS.how2plot);
             
     end            
   end  

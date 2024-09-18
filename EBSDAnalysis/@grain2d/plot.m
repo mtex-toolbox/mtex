@@ -18,16 +18,23 @@ function [h,mP] = plot(grains,varargin)
 %  displayName - name used in legend
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 
 %  scale       - scaling of crystal shapes and tensorial properties (0.3)
+%  micronBar   - 'on' / 'off'
 %
 % See also
 % EBSD/plot grainBoundary/plot
 
-% --------------------- compute colorcoding ------------------------
+% --------------------- compute color coding ------------------------
+
+% ensure we do not plot perpendicular to the slice
+
+pC = grains.plottingConvention.copy;
+if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
 % create a new plot
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
-[mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
+  pC, varargin{:});
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -72,19 +79,21 @@ if nargin>1 && isnumeric(varargin{1})
     varargin = delete_option(varargin,'displayName',1);
     
     % plot polygons
+    h = gobjects(max(property));
     for k = 1:max(property)
-      h{k} = plotFaces(grains.poly(property==k), grains.V, ind2color(k),...
+      h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k}); %#ok<AGROW>
       
       % reactivate legend information
-      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+      h{k}.Annotation.LegendInformation.IconDisplayStyle = 'on';
+      
       hold on
     end
     hold off
   
   else % % plot polygons
 
-    h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+    h = plotFaces(grains.poly,grains.allV,property,'parent', mP.ax,varargin{:});
   
   end
 
@@ -101,10 +110,9 @@ elseif nargin>1 && isa(varargin{1},'vector3d')
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
-  xy = [grains.centroid,2*scaling*zUpDown];
-  
-  h = plot(xy + scaling .* (rotate(varargin{1},grains.meanOrientation)),...
-    'parent', mP.ax,varargin{:});
+  cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
+  pos = grains.centroid + 1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N;
+    h = plot(pos + cS,'parent', mP.ax,varargin{:});
   
   plotBoundary = false;
   
@@ -117,7 +125,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   
   % position in the map
   scaling = sqrt(grains.area);
-  shift = vector3d([grains.centroid,2*scaling*zUpDown].');
+  shift = grains.centroid + 2*scaling *grains.N;
   
   for k = 1:length(grains)
 
@@ -132,11 +140,11 @@ elseif check_option(varargin,'FaceColor')
   
   % plot polygons
   color = str2rgb(get_option(varargin,'FaceColor'));
-  h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
+  h = plotFaces(grains.poly,grains.allV,color,'parent', mP.ax,varargin{:});
   
   % reactivate legend information
   if check_option(varargin,'displayName')
-    set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+    h(end).Annotation.LegendInformation.IconDisplayStyle = 'on';    
   end
   
 else % otherwise phase plot
@@ -156,12 +164,12 @@ else % otherwise phase plot
     if ischar(color), [~,color] = colornames(getMTEXpref('colorPalette'),color); end
 
     % plot polygons
-    h{k} = plotFaces(grains.poly(ind),grains.V,color,...
+    h{k} = plotFaces(grains.poly(ind),grains.allV,color,...
       'parent', mP.ax,'DisplayName',grains.mineralList{k},varargin{:}); %#ok<AGROW>
 
     % reactivate legend information
     if ~isempty(h{k})
-      set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+      h{k}(end).Annotation.LegendInformation.IconDisplayStyle = 'on';      
     end
         
   end
@@ -175,7 +183,7 @@ end
 if plotBoundary
   hold on
   hh = plot(grains.boundary,varargin{:});
-  set(get(get(hh(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
   hold off
 end
   
@@ -209,6 +217,8 @@ datacursormode off
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 try
   setappdata(mP.ax,'grains',[grains;getappdata(mP.ax,'grains')]);
+catch
+  warning('still can not concatenate grains on different slices')
 end
 
 if nargout == 0, clear h;end
@@ -231,7 +241,8 @@ if isempty(idSelected) || length(idSelected) ~= length(grains)
 end
 
 
-localId = findByLocation(grains,[pos(1,1) pos(1,2)]);
+localId = findByLocation(grains,pos(1,:));
+if numel(localId)>1, localId = localId(1); end
 
 grain = grains.subSet(localId);
 
@@ -260,7 +271,11 @@ if grain.isIndexed
 else
   txt{2} = 'phase = not indexed';
 end
-txt{3} = ['(x,y) = ', xnum2str([pos(1,1) pos(1,2)],'delimiter',', ')];
+if size(grains.allV,2) == 3
+  txt{3} = ['(x,y,z) = ', xnum2str(pos(1,:),'delimiter',', ')];
+else
+  txt{3} = ['(x,y) = ', xnum2str(pos(1,:),'delimiter',', ')];
+end
 if grain.isIndexed
   txt{4} = ['Euler = ' char(grain.meanOrientation,'nodegree')];
 end
@@ -339,7 +354,7 @@ Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
 obj.FaceColor = 'flat';
 obj.EdgeColor = 'None';
 obj.hitTest = 'off';
-h = [];
+h = gobjects(numel(Parts),1);
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse
@@ -352,8 +367,8 @@ for p=numel(Parts):-1:1
 
   % reduce face-vertex indices to required
   Faces = [Faces{:}];
-  vert  = sparse(Faces,1,1,size(V,1),1);
-  obj.Vertices = V(vert>0,:);
+  vert  = sparse(Faces,1,1,length(V),1);
+  obj.Vertices = V(vert>0).xyz;
 
   vert  = cumsum(full(vert)>0);
   Faces = nonzeros(vert(Faces));
@@ -380,7 +395,7 @@ for p=numel(Parts):-1:1
   h(p) = optiondraw(patch(obj),varargin{:});
 
   % remove them from legend
-  set(get(get(h(p),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h(p).Annotation.LegendInformation.IconDisplayStyle = 'off';
   
 end
 

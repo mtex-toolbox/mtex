@@ -43,9 +43,9 @@ close all
 plot(oS)
 
 %%
-% In the above plot each pixel correspondes to a unique orientation. Which
-% is specified by the position of the c-axis beeing in the position of the
-% pixel and the a-axis beeing aligned with the small arrow at this
+% In the above plot each pixel corresponds to a unique orientation. Which
+% is specified by the position of the c-axis being in the position of the
+% pixel and the a-axis being aligned with the small arrow at this
 % position. As an example lets consider the orientation
 
 ori1 = orientation.map(cs.cAxis,vector3d.Z,cs.aAxis,vector3d.X)

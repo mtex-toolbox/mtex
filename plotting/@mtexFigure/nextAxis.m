@@ -12,7 +12,7 @@ else
   mtexFig.layoutMode = 'user';
 end
 
-set(mtexFig.parent,'CurrentAxes',mtexFig.gca);
+mtexFig.parent.CurrentAxes = mtexFig.gca;
 
 if nargout > 0, ax = mtexFig.gca;end
 

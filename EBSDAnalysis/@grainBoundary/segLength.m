@@ -9,7 +9,7 @@ function  l = segLength(gB,varargin)
 %
 
 if nargin == 2
-  l = sqrt(sum((gB.V(gB.F(varargin{1},1),:) - gB.V(gB.F(varargin{1},2),:)).^2,2));
+  l = norm(gB.allV(gB.F(varargin{1},1)) - gB.allV(gB.F(varargin{1},2)));
 else
-  l = sqrt(sum((gB.V(gB.F(:,1),:) - gB.V(gB.F(:,2),:)).^2,2));
+  l = norm(gB.allV(gB.F(:,1)) - gB.allV(gB.F(:,2)));
 end

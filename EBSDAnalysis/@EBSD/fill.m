@@ -1,5 +1,5 @@
 function ebsd = fill(ebsd,varargin)
-% fill EBSD data by nearest neighbour
+% fill EBSD data by nearest neighbor interpolation
 %
 % Syntax
 %   ebsd_filled = fill(ebsd)
@@ -13,6 +13,9 @@ function ebsd = fill(ebsd,varargin)
 %  extrapolate - extrapolate up the the outer boundaries
 %
 
+% TODO: this will not work for maps not in the xy plane
+
+
 if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 
 % the values to be filled
@@ -24,10 +27,10 @@ else
   opt = 'none';
 end
 
-F = scatteredInterpolant([ebsd.prop.x(~nanId),ebsd.prop.y(~nanId)],...
+F = scatteredInterpolant([ebsd.pos.x(~nanId),ebsd.pos.y(~nanId)],...
   find(~nanId),'nearest',opt); 
 
-newId = F(ebsd.prop.x(nanId),ebsd.prop.y(nanId));
+newId = F(ebsd.pos.x(nanId),ebsd.pos.y(nanId));
 
 nanId(nanId) = ~isnan(newId);
 newId(isnan(newId)) = [];

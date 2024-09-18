@@ -36,8 +36,7 @@ opt = delete_option(varargin,...
 [sP, isNew] = newSphericalPlot(v,opt{:},'doNotDraw');
 varargin = delete_option(varargin,'parent',1);
 
-h = [];
-
+h = gobjects(1,numel(sP));
 for i = 1:numel(sP)
 
   % project data
@@ -62,7 +61,7 @@ for i = 1:numel(sP)
   end
   
   % default arguments
-  patchArgs = {'parent',sP(i).hgt,...
+  patchArgs = {'parent',sP(i).ax,...
     'vertices',[x(:) y(:)],...
     'faces',1:numel(x),...
     'facecolor','none',...
@@ -89,7 +88,7 @@ for i = 1:numel(sP)
   % ------- color-coding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).hgt,varargin{2:end}); %#ok<AGROW>
+    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
     %sP(i).updateBounds(0.1);
   
   elseif check_option(varargin,'arrow')
@@ -101,8 +100,8 @@ for i = 1:numel(sP)
         'Width','Page','Ends','type','color'},...
         {'double','double','double',...
         'double','double','char','char','double'});
-      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:}); %#ok<AGROW>
-      set(h(i),'Parent', sP(i).hgt);
+      h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:});
+      h(i).Parent = sP(i).ax;
     end
 
   elseif ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
@@ -118,18 +117,23 @@ for i = 1:numel(sP)
 
     if numel(MarkerSize) > 1
       
+      ish = ishold(sP(i).ax);
+      if ~ish, hold(sP(i).ax); end
       h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),cdata,'filled',...
-        'parent',sP(i).hgt),varargin{:}); %#ok<AGROW>
+        'parent',sP(i).ax),varargin{:});
+      if ~ish, hold(sP(i).ax); end
+      
 
-      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
             
     else % draw patches
     
       h(i) = optiondraw(patch(patchArgs{:},...
         'facevertexcdata',cdata,...
         'markerfacecolor','flat',...
-        'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
-      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+        'markeredgecolor','flat'),varargin{2:end});
+      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+      
     end
       
   else % --------- colorcoding according to nextStyle -----------------
@@ -155,17 +159,18 @@ for i = 1:numel(sP)
     % draw patches
     if numel(MarkerSize) > 1
       
-      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).hgt,...
-        'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>      
+      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).ax,...
+        'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:});
     
     else
        
       h(i) = optiondraw(patch(patchArgs{:},...
         'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
+        'MarkerEdgeColor',mec),varargin{:});
       
       % remove from legend
-      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      
+      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";      
 
       % add transparency if required
       if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
@@ -177,8 +182,7 @@ for i = 1:numel(sP)
         mh = [];
         while isempty(mh)
           pause(0.01);
-          hh = handle(h(i));
-          mh = [hh.MarkerHandle];
+          mh = [h(i).MarkerHandle];
         end
                 
         for j = 1:length(mh)
@@ -195,17 +199,17 @@ for i = 1:numel(sP)
       % invisible scatter dot just for legend
       if check_option(varargin,'DisplayName')
         
-        holdState = get(sP(i).ax,'nextPlot');
-        set(sP(i).ax,'nextPlot','add');
+        holdState = sP(i).ax.NextPlot;
+        sP(i).ax.NextPlot = "add";
         if check_option(varargin,'edgecolor')
           line([NaN NaN],[NaN NaN],'color',str2rgb(get_option(varargin,'edgecolor')),...
           'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
-          'linewidth',get(h(1),'LineWidth'));
+          'linewidth',h(1).LineWidth);
         else
           optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
             'MarkerEdgeColor',mec),varargin{:});
         end
-        set(sP(i).ax,'nextPlot',holdState);
+        sP(i).ax.NextPlot = holdState;
       end
     end
   end
@@ -289,28 +293,28 @@ u = findobj(hax,'Tag','dynamicMarkerSize');
 
 if isempty(u), return;end
 
-p = get(u(1),'parent');
-while ~isgraphics(p,'axes'), p = get(p,'parent'); end
+p = u(1).Parent;
+while ~isgraphics(p,'axes'), p = p.Parent; end
 
 
-unit = get(p,'unit');
-set(p,'unit','pixel')
-pos = get(p,'position');
+oldUnit = p.Units;
+p.Units = 'pixel';
+pos = p.Position;
 l = min([pos(3),pos(4)]);
 if l < 0, return; end 
 
 maxSize = getMTEXpref('markerSize');
 
 for i = 1:length(u)
-  d = get(u(i),'UserData');
-  o = get(u(i),'MarkerSize');
+  d = u(i).UserData;
+  o = u(i).MarkerSize;
   %n = l/350 * d;
   n = min(l/250 * d,maxSize);
-  if abs((o-n)/o) > 0.05, set(u(i),'MarkerSize',n);end
+  if abs((o-n)/o) > 0.05, u(i).MarkerSize = n; end
   
 end
 
-set(p,'unit',unit);
+p.Units = oldUnit;
 
 end
 
@@ -319,22 +323,22 @@ function correctTextPostion(t,markerSize,direction)
 
 for it = 1:length(t)
   
-  xy = get(t(it),'UserData');
+  xy = t(it).UserData;
   if any(isnan(xy)), continue; end
-  set(t(it),'unit','data','position',[xy,0]);
-  set(t(it),'unit','pixels');
-  xy = get(t(it),'position');
+  set(t(it),'units','data','position',[xy,0]);
+  t(it).Units = 'pixels';
+  xy = t(it).Position;
   if isappdata(t(it),'extent')
     extent = getappdata(t(it),'extent');
   else
-    extent = get(t(it),'extent');
+    extent = t(it).Extent;
     setappdata(t(it),'extent',extent);
   end
-  margin = get(t(it),'margin');
+  margin = t(it).Margin;
   xy(2) = xy(2) + direction*(extent(4)/2 + margin + markerSize/2 + 5);
     
-  set(t(it),'position',xy);
-  set(t(it),'unit','data');
+  t(it).Position = xy;
+  t(it).Units = 'data';
 end
 
 end

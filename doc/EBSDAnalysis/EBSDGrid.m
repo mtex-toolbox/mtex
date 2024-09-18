@@ -103,7 +103,7 @@ plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
 % <EBSD.gridify.html gridify> a square unit cell by the option |unitCell|.
 
 % define a square unit cell
-unitCell = [-2.5 -2.5; -2.5 2.5; 2.5 2.5; 2.5 -2.5];
+unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 
 % use the square unit cell for gridify
 ebsdS = ebsd.gridify('unitCell',unitCell)
@@ -121,7 +121,7 @@ plot(ebsdS, ebsdS.orientations)
 % significantly smaller then the hexagonal unit cell.
 
 % a smaller unit cell
-unitCell = [-1 -1; -1 1; 1 1; 1 -1];
+unitCell = vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 
 % use the small square unit cell for gridify
 ebsdS = ebsd.gridify('unitCell',unitCell)

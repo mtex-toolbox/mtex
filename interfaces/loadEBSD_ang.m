@@ -86,7 +86,7 @@ try
   isnum = cellfun(@(x) ~isempty(str2num(x)),parts);
   
   if any(~isnum) % if there are any strings
-    % try to replace minearal names by numbers
+    % try to replace mineral names by numbers
     ReplaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
     ReplaceExpr = {'ReplaceExpr',ReplaceExpr};
   else

@@ -32,11 +32,11 @@ if ~isempty(reg)
   
   ind = tP.x > reg(1) & tP.x < reg(2) &  tP.y > reg(3) & tP.y < reg(4);
 
-  obj.Vertices = tP.V(ind,:);
+  obj.Vertices = tP.V(ind).xyz;
   
 else
   
-  obj.Vertices = tP.V;  
+  obj.Vertices = tP.V.xyz;
 end
 
 obj.Faces    = 1:size(obj.Vertices,1);
@@ -79,17 +79,19 @@ end
 
 h = optiondraw(patch(obj),varargin{:});
 
-set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+% switch off legend
+h.Annotation.LegendInformation.IconDisplayStyle = 'off';      
+
     
 % since the legend entry for patch object is not nice we draw an
 % invisible scatter dot just for legend
 if check_option(varargin,'DisplayName') && exist('defColor','var')
-  holdState = get(mP.ax,'nextPlot');
-  set(mP.ax,'nextPlot','add');
+  holdState = mP.ax.NextPlot;
+  mP.ax.NextPlot = 'add';
   optiondraw(scatter(0,0,'parent',mP.ax,'visible','off',...
-    'MarkerFaceColor',get(h,'MarkerFaceColor'),...
-    'MarkerEdgeColor',get(h,'MarkerEdgeColor')),varargin{:});
-  set(mP.ax,'nextPlot',holdState);
+    'MarkerFaceColor',h.MarkerFaceColor,...
+    'MarkerEdgeColor',h.MarkerEdgeColor),varargin{:});
+  mP.ax.NextPlot = holdState;
   
   legend('-DynamicLegend','location','NorthEast');
 end

@@ -4,14 +4,14 @@ function h = plotUnitCells(ebsd,d,varargin)
 
 unitCell = ebsd.unitCell;
 
-xy = [ebsd.prop.x(:),ebsd.prop.y(:)];
+pos = ebsd.pos;
 if check_option(varargin,'region')
   
   reg = get_option(varargin,'region');
     
-  ind = xy(:,1) > reg(1) & xy(:,1) < reg(2) & xy(:,2) > reg(3) & xy(:,2) < reg(4);
+  ind = pos.x > reg(1) & pos.x < reg(2) & pos.y > reg(3) & pos.y < reg(4);
   
-  xy = xy(ind,:);
+  pos = pos(ind,:);
   
   if numel(d) == numel(ind) || numel(ind) == size(d,1)
     d = d(ind,:);
@@ -31,9 +31,9 @@ else
   
 end
 
-if numel(d) == size(xy,1) || numel(d) == 3*size(xy,1)
+if numel(d) == length(pos) || numel(d) == 3*length(pos)
 
-  obj.FaceVertexCData = reshape(d,size(xy,1),[]);
+  obj.FaceVertexCData = reshape(d,length(pos),[]);
   
   if check_option(varargin,{'transparent','translucent','faceAlpha'})
   
@@ -59,12 +59,12 @@ switch lower(type)
   case 'unitcell'
     
     % generate patches
-    [obj.Vertices, obj.Faces] = generateUnitCells(xy,unitCell,varargin{:});
+    [obj.Vertices, obj.Faces] = generateUnitCells(pos,unitCell,varargin{:});
     
   case {'points','measurements'}
     
-    obj.Vertices = xy;
-    obj.Faces    = (1:size(xy,1))';
+    obj.Vertices = [pos.x(:),pos.y(:),pos.z(:)];
+    obj.Faces    = (1:length(pos))';
     
     obj.FaceColor = 'none';
     obj.EdgeColor = 'flat';
@@ -76,10 +76,7 @@ end
 h = optiondraw(patch(obj,'parent',ax),varargin{:});
 
 if ~check_option(varargin,'DisplayName')
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  h.Annotation.LegendInformation.IconDisplayStyle = 'off';
 end
 
 if nargout == 0, clear h;end
-
-
-

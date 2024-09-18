@@ -7,6 +7,8 @@ function rot = exp(v,rot_ref,tS)
 %
 %   rot = exp(v,ori_ref,SO3TangentSpace.rightVector) % orientation update
 %
+%   ori = exp(v,ori_ref,tS) % orientation update
+%
 % Input
 %  v       - @vector3d, @SO3TangentVector
 %  ori_ref - @orientation @rotation

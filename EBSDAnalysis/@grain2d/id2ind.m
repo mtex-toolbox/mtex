@@ -9,7 +9,7 @@ function ind = id2ind(grains,id)
 %  id - a list of id's as stored in grains.id
 %
 % Output
-%  ind - a list indeces such that grains.id(ind) == id
+%  ind - a list indices such that grains.id(ind) == id
 
 [~,ind] = ismember(id,grains.id);
 ind = reshape(ind, size(id));

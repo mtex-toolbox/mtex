@@ -108,7 +108,7 @@ hold on
 plot(gB_Fo,'lineColor','black','linewidth',6) % some black background for contrast
 plot(gB_Fo,color,'linewidth',4)
 hold off
-mtexColorbar('off')
+mtexColorbar('visible','off')
 
 %%
 % As a colorbar replacement we plot the color key and on top of it the

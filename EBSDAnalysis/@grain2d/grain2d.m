@@ -2,15 +2,16 @@ classdef grain2d < phaseList & dynProp
   % class representing two dimensional grains
   %
   % Syntax
-  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap)
+  %   grains = grain2d(V, poly, ori, CSList, phaseId, phaseMap, 'id', idList)
   %
   % Input
-  %  V    - n x 2 list of vertices
+  %  V    - n x 3 list of vertices
   %  poly - cell array of the polyhedrons
   %  ori  - array of mean orientations
   %  CSList   - cell array of symmetries
   %  phaseId  - list of phaseId for each grain
   %  phaseMap -
+  %  idList   - option to provide grain ids
   %
   % Example
   %
@@ -24,7 +25,7 @@ classdef grain2d < phaseList & dynProp
   %  phaseId - phase identifier of each grain
   %  id            - id of each grain
   %  poly          - cell list of the vertex ids of each grain (index to V)
-  %  V             - list of verticies (x,y coordinates)
+  %  V             - list of vertices (x,y coordinates)
   %  boundary      - @grainBoundary
   %  innerBoundary - @grainBoundary
   %  triplePoints  - @triplePoints
@@ -54,7 +55,8 @@ classdef grain2d < phaseList & dynProp
     
   properties (Dependent = true)
     meanOrientation  % mean orientation
-    V                % vertices with x,y coordinates
+    V                % reduced list vertices @vector3d
+    allV             % full list vertices @vector3d
     scanUnit         % unit of the spatial coordinates
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
@@ -63,16 +65,19 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Dependent = true, Access = protected)
-    idV % active vertices    
+    idV        % active vertices
+    rot2Plane  % rotation to xy plane
+    plottingConvention % plotting convention
+    N          % normal direction of the pseudo3d data    
   end
   
   methods
 
-    function grains = grain2d(V, poly, ori, CSList, phaseId,  phaseMap, varargin)
+    function grains = grain2d(V, poly, varargin)
       % constructor
       % 
       % Input
-      %  V    - n x 2 list of vertices
+      %  V    - @vector3d
       %  poly - cell array of the polyhedrons
       %  ori  - array of mean orientations
       %  CSList   - cell array of symmetries
@@ -84,31 +89,37 @@ classdef grain2d < phaseList & dynProp
       grains.poly = poly;
       grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
 
-      if nargin>=3 && ~isempty(ori)
-        grains.prop.meanRotation = ori;
+      if check_option(varargin,'id')
+        grains.id = reshape(get_option(varargin,'id'),size(poly));
+        varargin = delete_option(varargin,'id',1);
+      else
+        grains.id = (1:length(poly)).';
+      end
+
+      if length(varargin)>=1 && ~isempty(varargin{1})
+        grains.prop.meanRotation = varargin{1};
       else
         grains.prop.meanRotation = rotation.nan(length(poly),1);        
       end
 
-      if nargin>=4
-        grains.CSList = ensurecell(CSList);
+      if length(varargin)>=2
+        grains.CSList = ensurecell(varargin{2});
       else
         grains.CSList = {'notIndexed'};
       end
 
-      if nargin>=5
-        grains.phaseId = phaseId;
+      if length(varargin)>=3
+        grains.phaseId = varargin{3};
       else
         grains.phaseId = ones(length(poly),1);
       end
       
-      if nargin>=6
-        grains.phaseMap = phaseMap;
+      if length(varargin)>=4
+        grains.phaseMap = varargin{4};
       else
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = ones(size(poly));
       
       if isa(V,'grainBoundary') % grain boundary already given
@@ -143,31 +154,52 @@ classdef grain2d < phaseList & dynProp
           inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
           .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
-        grains.boundary = grainBoundary(V,F,grainId,1:max(grainId),...
+        grains.boundary = grainBoundary(V,F,grainId,grains.id,...
           grains.phaseId,mori,grains.CSList,grains.phaseMap);
         
       end
-      
+
+      % determine a normal direction such that the area is positive
+      grains.N = perp(grains.allV - grains.allV(1));
+      grains.N.antipodal = false;
+      if sum(grains.area) < 0, grains.N = -grains.N; end
+
+      % check for 3d plane
+      d=dot(grains.allV(1),grains.N);
+      assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
+        || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
 
     end
-        
+    
+    function V = get.allV(grains)
+      V = grains.boundary.allV;
+    end
+
     function V = get.V(grains)
+      error('implement this!')
       V = grains.boundary.V;
     end
-    
+
+    function N = get.N(grains)
+      N = grains.boundary.N;
+    end
+
     function x = get.x(grains)
-      x = grains.boundary.x;
+      x = grains.allV.x;
     end
     
     function y = get.y(grains)
-      y = grains.boundary.y;
+      y = grains.allV.y;
     end
     
-    function grains = set.V(grains,V)
-      
-      grains.boundary.V = V;
-      grains.innerBoundary.V = V;
-      
+    function grains = set.allV(grains,V)
+      grains.boundary.allV = V;
+      grains.innerBoundary.allV = V;
+    end
+
+    function grains = set.N(grains,N)
+      grains.boundary.N = N;
+      grains.innerBoundary.N = N;
     end
     
     function idV = get.idV(grains)
@@ -179,6 +211,19 @@ classdef grain2d < phaseList & dynProp
       
     end
     
+    function rot = get.rot2Plane(grains)
+      rot = rotation.map(grains.N,vector3d.Z);
+    end
+
+    function pC = get.plottingConvention(grains)
+      pC = grains.allV.plottingConvention;
+    end
+
+    function grains = set.plottingConvention(grains,pC)
+      grains.allV.plottingConvention = pC;
+    end
+
+
     function varargout = size(grains,varargin)
       [varargout{1:nargout}] = size(grains.id,varargin{:});
     end
@@ -246,6 +291,27 @@ classdef grain2d < phaseList & dynProp
     
     [grain2d] = load(fname)
     
+    function grains = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % transform to class if not yet done
+      if isa(s,'grain2d')
+        grains = s; 
+      else
+        grains = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
+        grains.opt = s.opt;
+        grains.scanUnit = s.scanUnit;
+      end
+      
+      % ensure V is vector3d
+      if isa(grains.allV,'double')
+        grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
+      end
+
+    end
+
   end
 
 end

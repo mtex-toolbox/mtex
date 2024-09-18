@@ -1,12 +1,14 @@
 function grains = hull(grains)
 % replace grains by its convex hull
 
-V = grains.V;
+% here we short rotate first !!
+
+V = grains.allV.xyz;
 F = [];
 
 for i = 1:length(grains)
   
-  ind = convhulln(V(grains.poly{i},:));
+  ind = convhulln(V(grains.poly{i},1:2));
     
   p = grains.poly{i}([ind(:,1);ind(1,1)].');
   grains.poly{i} = p;
