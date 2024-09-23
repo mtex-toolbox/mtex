@@ -1,4 +1,4 @@
-function [h,ax] = plot(plane,varargin)
+function varargout = plot(plane,varargin)
 % plot planes in 3d space
 %
 % Syntax
@@ -100,3 +100,7 @@ for i = 1:numel(plane)
 end
 
 h = patch('Faces',Faces,'Vertices',Vertices, varargin{:});
+
+if nargout>0
+    varargout = {h,ax};
+end
