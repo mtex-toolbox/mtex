@@ -63,7 +63,7 @@ for i = 1:numel(plane)
   z_bound_min = Z<zmin;
   z_bound_max = Z>zmax;
   
-  if any(z_bound_min)&&any(z_bound_max)&&any(isnan(Z))&&any(isinf(Z))
+  if any(z_bound_min)||any(z_bound_max)||any(isnan(Z))||any(isinf(Z))
     if any(z_bound_min&z_bound_max)
       Z(z_bound_min) = zmin;
       Z(z_bound_max) = zmax;
@@ -74,7 +74,7 @@ for i = 1:numel(plane)
     X = 1/A*(D-C*Z-B*Y);
     x_bound_min = X<xmin;
     x_bound_max = X>xmax;
-    if any(x_bound_min)&&any(x_bound_max)&&any(isnan(X))&&any(isinf(X))
+    if any(x_bound_min)||any(x_bound_max)||any(isnan(X))||any(isinf(X))
       if any(x_bound_min&x_bound_max)
         X(x_bound_min) = xmin;
         X(x_bound_max) = xmax;
@@ -83,11 +83,20 @@ for i = 1:numel(plane)
         Z = [zmin zmax zmax zmin];
       end
       Y = 1/B*(D-C*Z-A*X);
+
+      y_bound_min = Y<ymin;
+      y_bound_max = Y>ymax;
+      if any(y_bound_min)||any(y_bound_max)||any(isnan(Y))||any(isinf(Y))
+          warning('plane outside of current plot boundaries. Nothing to plot')
+          return
+      end
+
     end
 
-    Vertices((i-1)*4+1:(i-1)*4+4,:) = [X' Y' Z'];
-  
   end
+
+  Vertices((i-1)*4+1:(i-1)*4+4,:) = [X' Y' Z'];
+  
 end
 
 h = patch('Faces',Faces,'Vertices',Vertices, varargin{:});
