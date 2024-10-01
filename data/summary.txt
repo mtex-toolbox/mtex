@@ -1,7 +1,6 @@
 shortName  type        files
 dubna      PoleFigure  dubna/*.cnv
 geesthacht PoleFigure  geesthacht/ST42-104-110.dat
-steel      PoleFigure  steel/*.rw1
 ptx        PoleFigure  ptx/*.ptx
 aachen     EBSD        85_829grad_07_09_06.txt
 sharp      EBSD        sharp.txt
@@ -23,3 +22,4 @@ emsland    EBSD        Emsland_plessite_500x_15.ctf
 alphaBetaTitanium EBSD EDXLMDTi64.cpr
 testgrains grain2d     testgrains.mat
 dubnaODF   SO3Fun      ..
+trueEbsdWCCo   EBSD    trueEbsdWCCo.mat
