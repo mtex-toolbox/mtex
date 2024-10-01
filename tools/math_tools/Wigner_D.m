@@ -1,5 +1,7 @@
 function dmn = Wigner_D(L,rot)
-% compute the Wigner d and Wigner D functions
+% computes the Wigner d and Wigner D functions
+%
+% Description
 % Note that for rot = pi/2 and high L the relative error of some matrix 
 % entries of the Wigner-d matrix increase rapidly. Moreover the matrix is 
 % no longer symmetric w.r.t. d(k,l)=d(-k,l).

@@ -1,4 +1,4 @@
-classdef grain3d < phaseList & dynProp
+classdef grain3d < phaseList & dynProp 
   % class representing 3 dimensional grains
 
   properties  % with as many rows as data

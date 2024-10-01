@@ -2,7 +2,7 @@
 %
 %%
 % grain3d is a structure to store 3D grain data. At the moment 3d data 
-% is usually obtained from <NeperInterface.html neper tessellations> or 
+% is usually obtained from <NeperInterface.html Neper tessellations> or 
 % triangulated Dream3d data sets.
 %
 %% Grain sets from Dream3d
@@ -14,16 +14,25 @@ plot(grains_dream_3d,grains_dream_3d.meanOrientation,'LineStyle','none')
 
 %% Plot the normal directions of one grain
 grains = grains_dream_3d(1)
-dir = grains.I_GF(1,:)' .* grains.boundary.N  % flip according to I_GF
+dir = grains.I_GF(1,:)' .* grains.boundary.N % flip according to I_GF
 quiver(grains.boundary,dir)
 plot(grains)
 
-%% Grain sets from neper
+%% Grain sets from Neper
+% <https://neper.info Neper> is a software package for the simulation of
+% three dimensional microstructures. After installation it can be directly
+% called by MTEX. The general workflow is explained <NeperInterface.html
+% here>. Here we use it to quickly generate a copper microstructure with
+% specific texture and specific distribution of boundary normals.
 
+% set up the communication with Neper
 job = neperInstance
-cs = crystalSymmetry('432','mineral','copper');
-ori = orientation.rand(cs);
-odf = unimodalODF(ori);
+
+% define crystal symmetry
+cs = loadCIF('Cu-Copper.cif');
+
+% some odf in brass orientation
+odf = unimodalODF(orientation.brass(cs));
 numGrains=100;
 
 grains3 = job.simulateGrains(odf,numGrains)
@@ -124,3 +133,5 @@ P0 = vector3d(0.5,0.5,0.5);
 
 slice = grains_dream_3d.slice(N,P0);
 plot(slice,slice.meanOrientation);
+
+%#ok<*NOPTS>

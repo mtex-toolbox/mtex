@@ -12,7 +12,7 @@ function out = mtexdata(name,varargin)
 % read list of all available sample data
 list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
 
-type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun'}, {'pf','ebsd','grains','odf'});
+type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun','grain3d'}, {'pf','ebsd','grains','odf','grains'});
 
 if nargin < 1
 

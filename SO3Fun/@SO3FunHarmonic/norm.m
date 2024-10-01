@@ -1,6 +1,6 @@
 function n = norm(SO3F,SobolevIndex)
 % Calculate the L2-norm also known as texture index of a SO3FunHarmonic, by
-% using Parsevalls equality for the integral
+% using Parseval's equality for the integral
 %
 % $$ t = \sqrt{\frac1{8\pi^2}\int_{SO(3)} |f( R ) |^2 dR},$$
 %

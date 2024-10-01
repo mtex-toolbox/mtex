@@ -9,7 +9,7 @@ function SO3F = approximation(nodes, y, varargin)
 % $$\sum_{i=1}^M|f(R_i)-y_i|^2.$$
 %
 % If the oversampling factor is small (high bandwidth) it may be necessary
-% to assure decay of the harmonic coefficents. Therefore we regularize the
+% to assure decay of the harmonic coefficients. Therefore we regularize the
 % least squares problem by the Sobolev norm of f, i.e we minimize
 %
 % $$\sum_{i=1}^M|f(R_i)-y_i|^2 + \lambda \|f\|^2_{H^s}$$
