@@ -40,12 +40,9 @@ classdef plottingConvention < matlab.mixin.Copyable
 
   methods
 
-    function pC = plottingConvention(outOfScreen,east)
-      
+    function pC = plottingConvention(outOfScreen,east)      
       if nargin >= 1, pC.outOfScreen = outOfScreen; end
-      if nargin >= 2, pC.east = east; end
-      pC.lastSet = zvector;
-
+      if nargin >= 2, pC.east = east; end      
     end
         
     function display(pC,varargin)
