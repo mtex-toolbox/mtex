@@ -15,6 +15,7 @@ function h = quiver(grains,dir,varargin)
 % Options
 %  antipodal   - plot directions or axes
 %  maxHeadSize - size of the arrow
+%  project2Plane - project direction into plane
 %
 
 pos = grains.centroid;
@@ -26,6 +27,11 @@ if ~check_option(varargin,'noScaling')
   varargin = ['linewidth',2,'autoScale','off',varargin];
 else
   varargin = ['linewidth',2,'autoScaleFactor',0.25,varargin];
+end
+
+if check_option(varargin,'project2plane')
+  N = grains.N.normalize;
+  dir = dir - dot(dir,N)*N;
 end
 
 % get color
