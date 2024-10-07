@@ -96,7 +96,11 @@ switch lower(plotType)
   
   case 'scatter'
   
-    [varargout{1:nargout}] = v.scatter(varargin{:});
+    if ishold && isappdata(gca,'mapPlot') 
+      [varargout{1:nargout}] = v.mapScatter(varargin{:});
+    else
+      [varargout{1:nargout}] = v.scatter(varargin{:});
+    end
     
   case 'smooth'
     
