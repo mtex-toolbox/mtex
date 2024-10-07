@@ -110,9 +110,8 @@ function sR = getPlotRegion(sR,how2plot,varargin)
 if isa(sR,'vector3d')
   sR = getClass(varargin,'sphericalRegion',sR.region(varargin{:}));
 elseif ~isa(sR,'sphericalRegion')
-  sR = getClass(varargin,'sphericalRegion',sphericalRegion);  
+  sR = getClass(varargin,'sphericalRegion',sphericalRegion);
 end
-
 
 % check for simple options
 if check_option(varargin,'complete')
@@ -125,7 +124,7 @@ elseif check_option(varargin,'lower')
 end
 
 % extract antipodal
-sR.antipodal = check_option(varargin,'antipodal');
+sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
