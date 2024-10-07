@@ -14,6 +14,9 @@ function SO3F = approximation(nodes, y, varargin)
 % with specific kernel $\psi$ centered at $N$ nodes weighted by $w_j,\sum_{j}^{N}w_{j}=1$
 % as described by [1].
 %
+% We can also use the approximation command to approximate an SO3FunRBF 
+% from some given SO3Fun.
+%
 % Two routes are implemented, refered to as spatial method and harmonic method.
 % The spatial method sets up a (sparse) system matrix $\Psi\in\mathbb{R}^{M\times N}$
 % with entries

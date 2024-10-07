@@ -20,6 +20,9 @@ function SO3F = approximation(nodes, y, varargin)
 %
 % $$\|f\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
 %
+% We can also use the approximation command to approximate an SO3FunHarmonic 
+% from some given SO3Fun by evaluating on some specific grid and doing quadrature.
+%
 % Syntax
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f)
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f,'constantWeights')
