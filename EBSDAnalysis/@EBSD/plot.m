@@ -42,7 +42,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   mtexdata forsterite
 %   plot(ebsd)
 %
-%   % colorize accoding to orientations
+%   % colorize according to orientations
 %   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 %
 %   % colorize according to MAD
@@ -118,7 +118,7 @@ else % phase plot
     elseif check_option(varargin,{'color','faceColor'})
       color = 'none';
     elseif ~isa(ebsd.CSList{k},'symmetry') 
-      % do not plot notindexed phase if no color is given
+      % do not plot notIndexed phase if no color is given
       continue;
     elseif ~isempty(ebsd.CSList{k}.color)
       color = ebsd.CSList{k}.color;

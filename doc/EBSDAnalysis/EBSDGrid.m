@@ -109,7 +109,7 @@ unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 ebsdS = ebsd.gridify('unitCell',unitCell)
 
 % visualize the result
-plot(ebsd,ebsd.orientations)
+plot(ebsd,ebsd.orientations,'layout',[1,2])
 nextAxis
 plot(ebsdS, ebsdS.orientations)
 

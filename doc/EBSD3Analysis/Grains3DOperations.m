@@ -4,7 +4,7 @@
 % grains. Lets start by importing some example data set and plot it from a
 % nice perspective
 
-mtexdata sampleGrains3d
+mtexdata NeperGrain3d
 
 %%
 % The grains are stored in variable |grains| which 

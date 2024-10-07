@@ -106,5 +106,11 @@ mtexColorMap white2black
 % MTEX also offers a three-dimensional plot of pole figures which even
 % might be rotated freely in space
 
-plotPDF(odf,Miller(1,1,0,odf.CS),'3d')
+howt2plot = plottingConvention;
+howt2plot.north = zvector;
+howt2plot.outOfScreen = vector3d(-2,-1,0);
+
+close all
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d',howt2plot)
+setCamera(howt2plot)
 mtexColorMap parula

@@ -209,16 +209,11 @@ mtexColorbar location southoutside
 sSactive = grains.meanOrientation .* sS(active);
 
 hold on
-plot(grains,sS(active))
-hold off
-
-%%
-hold on
 % visualize the trace of the slip plane
 quiver(grains,sSactive.trace,'color','b')
 
 % and the slip direction
-quiver(grains,sSactive.b,'color','r')
+quiver(grains,sSactive.b,'color','r','project2Plane')
 hold off
 
 %%
@@ -283,6 +278,6 @@ hold off
 
 %#ok<*NASGU> 
 %#ok<*ASGLU>
-
+%#ok<*MINV>
 
 

@@ -37,7 +37,7 @@ plot(oR)
 axis off
 
 %%
-% or define an approbiate color key
+% or define an appropriate color key
 
 ipfKey = ipfHSVKey(cs);
 

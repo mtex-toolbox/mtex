@@ -79,7 +79,7 @@ plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all')
 % If you have the statistics toolbox, you can make some calculations about
 % the spread of points assigned to each cluster.
 
-% compute the full distance matrix between all combinations of vector3D
+% compute the full distance matrix between all combinations of vectors
 d = angle_outer(r,r);
 % convert all small values to zero to simplify later calculations
 d(d<0.01) = 0;

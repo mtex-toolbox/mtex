@@ -45,7 +45,7 @@ oriChild = oriParent * inv(beta2alpha)
 
 % (110) / (0001) pole figure
 plotPDF(oriParent,Miller(1,1,0,csBeta),...
-  'MarkerSize',20,'MarkerFaceColor','none','linewidth',4)
+  'MarkerSize',20,'MarkerFaceColor','none','linewidth',4,'layout',[1,2])
 hold on
 plot(oriChild.symmetrise * Miller(0,0,0,1,csAlpha),'MarkerSize',12)
 xlabel(char(Miller(0,0,0,1,csAlpha)),'color',ind2color(2))
@@ -141,3 +141,4 @@ plotIPDF(variants(beta2alpha,oriParent),vector3d.Z)
 %% Parent Variants
 %
 % TODO
+%#ok<*MINV>

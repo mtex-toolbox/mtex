@@ -6,7 +6,7 @@
 %
 % <https://doi.org/10.1016/j.scriptamat.2008.01.050 Pantleon, Resolving the
 % geometrically necessary dislocation content by conventional electron
-% backscattering diffraction, Scripta Materialia, 2008>
+% back-scattering diffraction, Scripta Materialia, 2008>
 %
 % Lets start by importing orientation data from 2 percent uniaxial deformed
 % steel DC06 and visualize those data in an ipf map.
@@ -47,15 +47,15 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %% Data cleaning
-% The computation of geometrically neccesary dislocations from EBSD maps
+% The computation of geometrically necessary dislocations from EBSD maps
 % depends on local orientation changes in the map. In order to make those
-% visible we switch to a different color key that colorises the
+% visible we switch to a different color key that colorizes the
 % misorientation of an pixel with respect to the grain meanorientation.
 
 % a key the colorizes according to misorientation angle and axis
 ipfKey = axisAngleColorKey(ebsd);
 
-% set the grain mean orientations as reference orinetations
+% set the grain mean orientations as reference orientations
 ipfKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;
 
 % plot the data
