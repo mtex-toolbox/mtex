@@ -85,7 +85,12 @@ classdef grain3d < phaseList & dynProp
     end
 
     function V = get.V(grains)
-      error('implement this!')
+      if iscell(grains.F)
+        ind = unique([grains.F{:}]);
+      else
+        ind = unique(grains.F(:));
+      end
+      V = grains.allV(ind);
     end
 
     function V = get.allV(grains)
