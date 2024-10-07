@@ -11,14 +11,14 @@
 % * Brass, Brass2
 % * PLage, PLage2, QLage, QLage2, QLage3, QLage4
 %
-% For visualisation we fix a generic cubic crystal symmetry and
+% For visualization we fix a generic cubic crystal symmetry and
 % orthorhombic specimen symmetry
 
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('orthorhombic');
 
 %%
-% and select a subset of the above predifined orientations
+% and select a subset of the above predefined orientations
 
 components = [...
   orientation.goss(cs,ss),...

@@ -23,7 +23,6 @@ odf = fibreODF(Miller(1,1,0,cs),zvector)
 % general on the upper hemisphere and the lower hemisphere. By
 % default MTEX plots, in this case, both hemispheres. The upper on the
 % left-hand side and the lower on the right-hand side.
-% TODO: this is currently missing
 
 plotPDF(odf,Miller(1,1,0,cs),'minmax')
 
@@ -108,3 +107,4 @@ mtexColorMap white2black
 % might be rotated freely in space
 
 plotPDF(odf,Miller(1,1,0,odf.CS),'3d')
+mtexColorMap parula

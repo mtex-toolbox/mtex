@@ -12,7 +12,7 @@
 % load sample EBSD data set
 mtexdata forsterite silent
 
-% reconstruct grains, discard boudnary grains and smooth them
+% reconstruct grains, discard boundary grains and smooth them
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 ebsd(grains(grains.grainSize<5)) = [];
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
@@ -231,14 +231,14 @@ legend('Location','southoutside','Orientation','horizontal')
 
 %%
 % We can see that Forsterite-Forsterite boundaries form a fabric slightly
-% more inclined with respect to the other phase boundariesand that the
+% more inclined with respect to the other phase boundaries and that the
 % phase boundaries between the two pyroxenes (Enstatite and Diopside) show
 % the lowest anisotropy.
 %
 %% Characteristic Shape
 %
-% The characteristic shape results from the cummulative sum of all grain
-% boundary segements ordered by the angle of the segment direction. It can
+% The characteristic shape results from the cumulative sum of all grain
+% boundary segments ordered by the angle of the segment direction. It can
 % be regarded as to represent the average grain shape, however without the
 % need to use closed areas such as it would be required when working with
 % grains.

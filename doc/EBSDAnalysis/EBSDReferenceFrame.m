@@ -11,7 +11,7 @@
 % for this while importing the data into MTEX. This section explains in
 % detail how to do this.
 %
-%% On Sreen Orientation of the EBSD Map
+%% On Screen Orientation of the EBSD Map
 %
 % Many people are concerned when the images produced by MTEX are not
 % aligned exactly as they are in their commercial software. It is indeed
@@ -91,8 +91,9 @@ largeGrains = grains(grains.grainSize>500)
 
 % and plot the crystal shapes
 hold on
-plot(largeGrains,cS)
+plot(largeGrains,cS,'colored')
 hold off
+legend off
 
 %%
 % It may also be helpful to inspect pole figures 
@@ -124,7 +125,8 @@ plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
 
 % and plot the crystal shapes
 hold on
-plot(largeGrains,cS)
+plot(largeGrains,cS,'colored')
+legend off
 hold off
 
 
@@ -145,7 +147,8 @@ plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
 
 % and plot the crystal shapes
 hold on
-plot(largeGrains,cS)
+plot(largeGrains,cS,'colored')
+legend off
 hold off
 
 
@@ -176,6 +179,7 @@ plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
 
 % and plot the crystal shapes
 hold on
-plot(largeGrains,cS)
+plot(largeGrains,cS,'colored')
+legend off
 hold off
 

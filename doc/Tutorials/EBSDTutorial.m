@@ -25,7 +25,6 @@ ebsd = EBSD.load(fileName)
 % crystal symmetries and all other parameters contained in the input data
 % file.
 %
-%
 %% Phase Plots
 %
 % In this example, the output above shows that the data set contains
@@ -64,7 +63,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % can be found in the topic <EBSDIPFMap.html IPF Maps>.
 
 %% Grain reconstruction
-% 
+%
 % MTEX contains a sophisticated algorithm for reconstructing the grain
 % structure from EBSD data as described in the paper
 % <https://www.researchgate.net/publication/51806709_Grain_detection_from_2d_and_3d_EBSD_data-Specification_of_the_MTEX_algorithm
@@ -93,7 +92,7 @@ hold off
 % In order to make the visualization of crystal orientations more intuitive
 % MTEX supports <CrystalShapes.html crystal shapes>. Those are polyhedrons
 % computed to match the typical shape of ideal crystals. In order to
-% overlay the EBSD map with crystal shapes orienteted accordingly to the
+% overlay the EBSD map with crystal shapes oriented accordingly to the
 % orientations of the grains we proceed as follows.
 
 % define the crystal shape of Forsterite and store it in the variable cS
@@ -131,3 +130,6 @@ r = vector3d.Z;
 % plot the position of the z-Axis in crystal coordinates
 plotIPDF(ebsd('Forsterite').orientations,r,'MarkerSize',5,...
   'MarkerFaceAlpha',0.05,'MarkerEdgeAlpha',0.05)
+
+%%
+%#ok<*NOPTS>

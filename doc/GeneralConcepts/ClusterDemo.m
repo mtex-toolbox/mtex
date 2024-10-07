@@ -3,7 +3,7 @@
 % vector3d and crystal directions to groups by proximity.
 %
 %%
-% define an octohedral crystal symmetry
+% define a cubic crystal symmetry
 cs  = crystalSymmetry('432');
 
 % define an ODF with two radial peaks
@@ -17,16 +17,15 @@ plotPDF(odf,Miller(1,0,0,odf.CS),'contour','linewidth',2);
 % generate 10k orientations from this randomly defined ODF function
 ori = odf.discreteSample(10000);
 
-% convert the orientations to vector3D
+% convert the orientations to vector3d
 r = ori * Miller(1,0,0,odf.CS);
 
 %%
-% assign each vector3d to one of twelve clusters, and calculate the
-% vector3D located at the center of each cluster
+% assign each vector to one of twelve clusters and calculate the center
+% of each cluster
 [cId,center] = calcCluster(r,'numCluster',12);
 
-% plot the clusters, sorted by colour
-figure;
+% plot the clusters, sorted by color
 plot(r,ind2color(cId))
 
 % annotate all the cluster centers, on all figures.
@@ -41,12 +40,14 @@ annotate(center,'add2all');
 % repeat the calculation after changing all the vector3d to be antipodal
 r.antipodal = true;
 
-% repeat the calculation assigning vector3D to clusters.  Due to the
-% increase in symmetry, there are only six clusters now.
+% repeat the calculation assigning the vectors to clusters.  Due to the
+% increased symmetry there are only six clusters now.
 [cId,center] = calcCluster(r,'numCluster',6);
 
-% plot the vectors.  Note that we no longer get an upper and lower hemisphere plot; the antipodal symmetry tells MTEX they are equivilent and so one sufficient to represent the data.
-figure;plot(r,ind2color(cId))
+% plot the vectors.  Note that we no longer get an upper and lower
+% hemisphere plot; the antipodal symmetry tells MTEX they are equivalent
+% and so one sufficient to represent the data.
+plot(r,ind2color(cId))
 
 % annotate the cluster centers.
 annotate(center,'add2all')
@@ -59,18 +60,18 @@ h = ori \ vector3d(1,1,0);
 % assign the crystal directions to two clusters
 [cId,center] = calcCluster(h,'numCluster',2);
 
-% plot the crystal symmetry data on appropiate fundamental sector
+% plot the crystal symmetry data on appropriate fundamental sector
 plot(h.project2FundamentalRegion,ind2color(cId),'fundamentalSector')
 
-% annote the cluster centers
+% annotate the cluster centers
 annotate(center,'add2all')
 
 %%
-% just as we calculated clusters for vector3D and crystal directions, we're
+% just as we calculated clusters for vectors and crystal directions, we're
 % now going to do so for orientations
 [cId,center] = calcCluster(ori,'numCluster',2,'method','hierarchical');
 
-% create a pole figure of the orientations coloured by the cluster they
+% create a pole figure of the orientations colored by the cluster they
 % belong to.
 plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all')
 
