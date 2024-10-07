@@ -75,14 +75,13 @@ job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 % determines the number of grains.
 %
 
-cs = crystalSymmetry('432');
-ori = orientation.rand(cs);
-odf = unimodalODF(ori);
+odf = SO3Fun.dubna
 numGrains = 1000;
 
 grains = job.simulateGrains(odf,numGrains,'silent')
 
 %% plot the grains
+% Lets visualize the grains and adjust a nice view point.
 
 clf
 plot(grains,grains.meanOrientation)
@@ -91,7 +90,6 @@ how2plot = plottingConvention;
 how2plot.outOfScreen = vector3d(-10,-5,2);
 how2plot.east = vector3d(1,-2,0);
 setCamera(how2plot)
-
 
 
 %% Slicing
@@ -108,12 +106,12 @@ A = vector3d(2,2,1);
 
 grains001 = grains.slice(N(1),A);
 grains1_10= grains.slice(N(2),A);
-grains224 = grains.slice(N(3),A);
+grains224 = grains.slice(N(3),A)
 
 %%
 % the resulting slices are grain maps which we can visualize in 3d
 
-plot(grains001,grains001.meanOrientation);
+plot(grains001,grains001.meanOrientation,'micronbar','off');
 hold on
 plot(grains1_10,grains1_10.meanOrientation);
 hold on
@@ -128,7 +126,7 @@ setCamera(how2plot)
 
 inPlane = grains.intersected(N(1),A);
 
-plot(grains001,grains001.meanOrientation);
+plot(grains001,grains001.meanOrientation,'micronbar','off');
 hold on
 plot(grains(inPlane),grains(inPlane).meanOrientation)
 hold off
