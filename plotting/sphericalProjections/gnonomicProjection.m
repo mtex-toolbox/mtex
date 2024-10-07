@@ -12,15 +12,6 @@ classdef gnonomicProjection < sphericalProjection
   
       [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
 
-      % map to upper hemisphere
-      ind = find(theta > pi/2+10^(-10));
-      theta(ind)  = pi - theta(ind);
-
-      % turn around antipodal vectors
-      sP.sR.antipodal = false; v.antipodal = false;
-      ind = ~sP.sR.checkInside(v);
-      rho(ind) = rho(ind) + pi;
-      
       % formula for stereographic projection
       r =  tan(theta);
             
@@ -33,7 +24,9 @@ classdef gnonomicProjection < sphericalProjection
     function v = iproject(sP,x,y)
       rho = atan2(y,x);
       theta = atan(sqrt(x.^2 + y.^2));
-      v = vector3d('theta',theta,'rho',rho);
+      v = vector3d.byPolar(theta,rho);
+      if sP.isLower, v.z = -v.z; end
+      v = sP.pC.rot * v;
     end
     
   end

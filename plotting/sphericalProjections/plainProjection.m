@@ -10,8 +10,14 @@ classdef plainProjection < sphericalProjection
     function [rho,theta] = project(sP,v,varargin)
       % compute polar angles
   
-      [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
-      
+      [theta,rho] = polar(v); %#ok<POLAR>
+
+      % restrict to plot able domain
+      if ~check_option(varargin,'complete')
+        ind = ~sP.sR.checkInside(v,varargin{:});
+        rho(ind) = NaN; theta(ind) = NaN;
+      end
+
       rho = reshape(rho,size(v))./ degree;
       theta = reshape(theta,size(v))./ degree;
       

@@ -23,13 +23,21 @@ classdef sphericalProjection
     function [rho,theta] = project(sP,v,varargin)
       % compute polar angles
       
-      [theta,rho] = polar(v);
+      % map such that projection is towards xy plane
+      % and compute there spherical coordinates
+      v(~sP.sR.checkInside(v,varargin{:})) = NaN;
+      v = v.rmOption('theta','rho');
+      [theta,rho] = polar(inv(sP.pC.rot) * v); %#ok<MINV,POLAR>
+      
+      % map to upper hemisphere
+      ind = theta > pi/2+10^(-10);
+      theta(ind)  = pi - theta(ind);
 
-      % restrict to plotable domain
-      if ~check_option(varargin,'complete')
-        ind = ~sP.sR.checkInside(v,varargin{:});
-        rho(ind) = NaN; theta(ind) = NaN;
-      end
+      % turn around antipodal vectors
+      sP.sR.antipodal = false; v.antipodal = false;
+      ind = ~sP.sR.checkInside(v);
+      rho(ind) = rho(ind) + pi;
+
     end
     
     function a = get.antipodal(sP)
