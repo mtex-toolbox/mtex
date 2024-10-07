@@ -224,6 +224,12 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC = getMTEXpref('xyzPlotting');
     end
 
+    function setDefault
+      pC = getMTEXpref('xyzPlotting');
+      pC.rot = rotation.id;
+    end
+
+
   end
 
 end
