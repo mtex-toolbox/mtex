@@ -50,7 +50,7 @@ if isempty(psi)
 end
 
 % get weights
-weights = get_option(varargin,'weights',ones(size(center))./length(center));
+weights = get_option(varargin,'weights',ones(size(center))./length(center)./psi.A(1));
 assert(numel(weights) == length(center),...
   'Number of orientations and weights must be equal!');
 

@@ -54,7 +54,7 @@ classdef SO3FunRBF < SO3Fun
       if nargin > 2
         SO3F.weights = reshape(weights,size(center));
       else
-        SO3F.weights = ones(size(center)) ./ length(center);
+        SO3F.weights = ones(size(center)) ./ length(center)./psi.A(1);
       end
       
       if nargin > 3, SO3F.c0 = c0; end
@@ -115,7 +115,6 @@ classdef SO3FunRBF < SO3Fun
   methods (Static = true)
     [SO3F,resvec] = interpolate(ori,values,varargin)
     SO3F = approximation(v, y, varargin);
-    SO3F = quadrature(f, varargin);
     SO3F = example(varargin)
   end
   

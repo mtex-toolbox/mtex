@@ -111,7 +111,7 @@ SO3F = SO3F + unimodalODF(S3G,psi,'weights',w);
 
 % ensure normalization to 1 if we are sufficiently close to 1
 if abs(sum(SO3F.weights)-1)<0.1
-  SO3F.weights = SO3F.weights ./ sum(SO3F.weights);
+  SO3F.weights = SO3F.weights ./ sum(SO3F.weights) ./ psi.A(1);
 end
 
 end
