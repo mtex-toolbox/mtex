@@ -1,4 +1,4 @@
-function [SO3F,resvec] = interpolate(ori,values,varargin)
+function SO3F = interpolate(ori,values,varargin)
 % compute an ODF by interpolating orientations and weights
 %
 % Syntax
@@ -18,6 +18,6 @@ function [SO3F,resvec] = interpolate(ori,values,varargin)
 %  SO3F - @SO3FunRBF
 %
 % See also
-% SO3FunRBF.interpolate
+% SO3FunRBF.approximation
 
-[SO3F,resvec] = SO3FunRBF.interpolate(ori,values,varargin{:});
+SO3F = SO3FunRBF.approximation(ori,values,'exact',varargin{:});

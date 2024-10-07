@@ -3,12 +3,14 @@ classdef SO3FunRBF < SO3Fun
 %
 % Syntax
 %   SO3F = SO3FunRBF(center,psi,weights,c0)
+%   SO3F = SO3FunRBF(F)
 %
 % Input
 %  center  - @orientation
 %  psi     - @SO3Kernel
 %  weights - double
 %  c0      - double
+%  F       - @SO3Fun
 %
 % Output
 %  SO3F - @SO3FunRBF
@@ -37,11 +39,21 @@ classdef SO3FunRBF < SO3Fun
   
   methods
     
-    function SO3F = SO3FunRBF(center,psi,weights,c0)
+    function SO3F = SO3FunRBF(center,psi,weights,c0,varargin)
                  
       if nargin == 0, return;end
+
+      if isa(center,'SO3Fun')
+        if nargin>=4, varargin = [c0,varargin]; end
+        if nargin>=3, varargin = [weights,varargin]; end
+        if nargin>=2, varargin = [psi,varargin]; end
+        SO3F = SO3FunRBF.approximation(center,varargin{:});
+        return
+      end
       
-      if ~isa(center,'orientation'), center = orientation(center); end
+      if ~isa(center,'orientation')
+        center = orientation(center); 
+      end
       SO3F.center  = center;
 
       if nargin==1

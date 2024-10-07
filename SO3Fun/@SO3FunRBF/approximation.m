@@ -24,13 +24,17 @@ function SO3F = approximation(nodes, y, varargin)
 % and grid nodes $R_j,j=1,...,N$.
 % The harmonic method computes a system matrix $\Psi\in\mathbb{C}^{L\times M}$,
 % where the columns refer to the WignerD function of each grid node $R_j$.
-% Both systems are solved by a modified least squares. The spatial method
-% is well suited for sharp functions (i.e. high bandwidth), whereas the
-% harmonic method is better suited for low bandwidth, since the system matrix
-% becomes very large for high bandwidth.
+% Both systems are solved by a modified least squares. 
+% 
+% The spatial method is well suited for sharp functions (i.e. high bandwidth),
+% whereas the harmonic method is better suited for low bandwidth, since the 
+% system matrix becomes very large for high bandwidths.
 %
-% For the spatial method, instead of least squarse also the
-% maximum-likelihood estimate can be computed.
+% For the spatial method, instead of least squares also the maximum-likelihood 
+% estimate can be computed. 
+% Note that both of this methods have the condition that we approximate a 
+% odf (the mean of the SO3Fun is 1).
+% Hence we can also use some standard least squares methods. 
 %
 % Reference: [1] Schaeben, H., Bachmann, F. & Fundenberger, JJ. Construction of weighted crystallographic orientations capturing a given orientation density function. J Mater Sci 52, 2077–2090 (2017). https://doi.org/10.1007/s10853-016-0496-1
 %
@@ -59,6 +63,10 @@ function SO3F = approximation(nodes, y, varargin)
 %  maxit            - maximum number of iterations for mlsq/ml
 %
 % Flags
+%  lsqr             - least squares (MATLAB)
+%  lsqnonneg        - non negative least squares (MATLAB, fast)
+%  lsqlin           - interior point non negative least squares (optimization toolbox, slow)
+%  nnls             - non negative least squares (W.Whiten)
 %  spatial/spm      - spatial method (default, not specified)
 %  likelihood/mlm   - maximum likelihood estimate for spatial method
 %  harmonic/fourier - harmonic method
@@ -71,95 +79,183 @@ function SO3F = approximation(nodes, y, varargin)
 % check_WignerD
 % check_SO3FunRBFApproximation
 
-if nargin < 2
-    y = [];
-else
-    varargin = [y,varargin];
-end
-
+% get kernel
 if check_option(varargin,'kernel')
-    psi = get_option(varargin,'kernel');
-elseif check_option(varargin,'halfwidth','double')
-    psi = SO3DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth'));
+  psi = get_option(varargin,'kernel');
+  hw = psi.halfwidth;
 else
-    psi = SO3DeLaValleePoussinKernel('halfwidth',10*degree);
+  hw = get_option(varargin,'halfwidth',5*degree);
+  psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
 end
-hw = psi.halfwidth;
 
-% extract the grid to use for the SO3FunRBF
-res = get_option(varargin,'resolution',max(0.75*degree,hw));
-if isa(res,'SO3Grid')
-    SO3G = res;
-    res = res.resolution;
+% get center of approximated SO3FunRBF
+if check_option(varargin,'exact') && isa(nodes,'rotation')
+  SO3G = nodes;
 else
-    SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
+  res = get_option(varargin,'resolution',max(0.75*degree,hw));
+  SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
+  res = SO3G.resolution;
 end
+
+
+
 
 % if input is a SO3Fun, either set up an nodes/y or fourier coeff
 if isa(nodes,'SO3Fun')
-    if check_option(varargin,{'harmonic','fourier'}) % get_flag?
-        y0 = nodes.eval(SO3G); % initial guess for coefficients
-        nodes = calcFourier(nodes,'bandwidth',psi.bandwidth+1);
-        y = [];
-    else
-        approxres = get_option(varargin,'approxresolution',res/2);
-        if isa(res,'SO3Grid')
-            so3approx = approxres;
-        else
-            so3approx = extract_SO3grid(nodes,varargin{:},...
-                'resolution',get_option(varargin,'approxresolution',res/2));
-        end
-        y = nodes.eval(so3approx);
-        nodes = so3approx;
-    end
+  
+  if nargin>1
+    varargin = [y,varargin];
+  end
+  f = nodes;
+  
+  % maybe we have to normalize at the end
+  if abs(mean(f.mean-1))<0.1
+    varargin = [varargin,'odf'];
+  end
+
+  if check_option(varargin,{'harmonic','fourier'}) % get_flag?
+    y0 = f.eval(SO3G); % initial guess for coefficients
+    fhat = calcFourier(f,'bandwidth',psi.bandwidth+1);   % Why +1 ???
+    y = []; nodes = [];
+    % compute weights
+    chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
+  else
+    approxres = get_option(varargin,'approxresolution',res/2);
+    nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
+    y = f.eval(nodes);
+  end
+
+elseif ~isa(nodes,'orientation')% preserve SO3Grid structure
+  if length(nodes) ~= numel(y)
+    error('Approximation of a SO3FunRBF is only possible for univariate functions.')
+  end
+  nodes = orientation(nodes);
 end
 
 
+
+
+SO3F = 0;
 if isa(nodes,'orientation')
-    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
-elseif isempty(y)
-    chat = harmonicMethod(SO3G,psi,nodes,y0,varargin{:});
+  % construct the uniform portion first
+  y = y(:);
+  m = min(y);
+  if abs(m)<1e-4*abs(max(y))
+    m=0;
+  end
+  y = y - m;
+  SO3F = m * uniformODF(nodes.CS,nodes.SS);
+
+  % compute weights
+  chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
 end
 
-if check_option(varargin,{'nothinning','-nothinning'})
-    SO3F = SO3FunRBF(SO3G,psi,chat);
+% construct SO3FunRBF
+if check_option(varargin,{'nothinning','-nothinning','exact'})
+  SO3F = SO3F + SO3FunRBF(SO3G,psi,chat);
 else
-    SO3F = unimodalODF(SO3G,psi,'weights',chat);
+  SO3F = SO3F + unimodalODF(SO3G,psi,'weights',chat);
 end
 
+% normalize odf
+if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'odf')
+  SO3F.weights = SO3F.weights ./ sum(SO3F.weights);
 end
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
 
 function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
-c0 = Psi*y(:);
-c0(c0<=eps) = eps;
-c0 = c0./sum(c0(:));
+if check_option(varargin,'odf')
+  varargin = ['mlsq',varargin];
+end
 
-itermax = get_option(varargin,'iter_max',100);
-tol = get_option(varargin,{'tol','tolerance'},1e-3);
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
 
-if check_option(varargin,{'mlm','likelihood','maximumlikelihood'})
-    chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
-else
-    chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
+  case 'lsqlin'
+
+    tolCon = get_option(varargin,'lsqlin_tolCon',1e-10);
+    tolX = get_option(varargin,'lsqlin_tolX',1e-14);
+    tolFun = get_option(varargin,'lsqlin_tolFun',1e-10);
+
+    options = optimoptions('lsqlin','Algorithm','interior-point',...
+      'Display','iter','TolCon',tolCon,'TolX',tolX,'TolFun',tolFun);
+
+    n2 = size(Psi,1);
+
+    chat = lsqlin(Psi',y,-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
+
+  case 'nnls'
+
+    chat = nnls(full(Psi).',y,struct('Iter',1000));
+
+  case 'lsqnonneg'
+
+    chat = lsqnonneg(Psi',y);
+
+  case 'lsqr'
+
+    tol = get_option(varargin,{'tol','tolerance'},1e-2);
+    iters = get_option(varargin,{'iter','iter_max','iters'},30);
+    [chat,flag] = lsqr(Psi',y,tol,iters);
+
+    %In case a user wants the best possible tolerence, just keep increasing
+    %tolerance
+    cnt=0;
+    while flag > 0
+      tol = tol*1.3;
+      disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
+      [chat,flag] = lsqr(Psi',y,tol,50);
+      cnt=cnt+1;
+      if cnt > 5
+        disp('   more than 5 lsqr tolerance cut backs')
+        disp('   consider using a larger tolerance')
+        break
+      end
+    end
+
+  case {'mlrl','mlsq'}  % we have constraints that 
+
+    % initial guess for coefficients
+    c0 = Psi*y(:);
+    c0(c0<=eps) = eps;
+    c0 = c0./sum(c0(:));
+
+    itermax = get_option(varargin,{'iter','iter_max','iters'},100);
+    tol = get_option(varargin,{'tol','tolerance'},1e-3);
+
+    if check_option(varargin,{'mlm','likelihood','maximumlikelihood'})
+      chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
+    else
+      chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
+    end
+
 end
 
 end
+
+
 
 function chat = harmonicMethod(SO3G,psi,fhat,y0,varargin)
 
-N = length(SO3G);
-
 % initial guess for coefficients
-if isempty(y0)
-    c0 = ones(N,1)./N;
-else
-    c0 = y0(:) ; %odf.eval(SO3G);
-    c0(c0<=eps) = eps;
-    c0 = c0./sum(c0(:));
-end
+c0 = y0(:) ; %odf.eval(SO3G);
+c0(c0<=eps) = eps;
+c0 = c0./sum(c0(:));
 
 % get fourier coefficients for each node
 Fstar = WignerD(SO3G,'kernel',psi);
@@ -174,7 +270,7 @@ if size(fhat,1) ~= size(Fstar,1)
     fhat(size(Fstar,1)+1:end) = [];
 end
 
-itermax = get_option(varargin,'iter_max',100);
+itermax = get_option(varargin,{'iter','iter_max','iters'},100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
 chat = mlsq(Fstar,fhat,c0(:),itermax,tol);
