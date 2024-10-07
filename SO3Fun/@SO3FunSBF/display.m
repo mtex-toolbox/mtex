@@ -2,7 +2,7 @@ function display(SO3F,varargin)
 % called by standard output
 
 if check_option(varargin,'skipHeader')
-  disp('  <strong>structural basis function</strong>');
+  disp(strong("  structural basis function"));
 else
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   if SO3F.antipodal, disp('  antipodal: true'); end
