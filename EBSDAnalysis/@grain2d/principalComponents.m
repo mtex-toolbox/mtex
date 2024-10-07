@@ -1,5 +1,5 @@
 function [a,b] = principalComponents(grains,varargin)
-% returns the principalcomponents of grain polygon, without Holes
+% returns the principal components of grain polygon, without Holes
 % in this version omega is no longer supported, use a.rho instead.
 %
 % Input
@@ -44,7 +44,7 @@ if isscalar(grains) % 3d algorithm (more nice :))
     % compute eigen values and vectors
     [eVec, eVal] = eig3(Vg * Vg);
     
-    % halfaxes are square roots of the eigenvalues
+    % half-axes are square roots of the eigenvalues
     a(k) = sqrt(eVal(3)) * eVec(3);
     b(k) = sqrt(eVal(2)) * eVec(2);
     

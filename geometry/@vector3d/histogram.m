@@ -1,4 +1,22 @@
 function h = histogram(v,varargin)
+% polar histogram 
+%
+% Syntax
+%   h = histogram(v)
+%
+%   h = histogram(v,'weights',w)
+%
+% Input
+%  v - @vector3d
+%  w - double
+%
+% Output
+%  h - graphics handle
+%
+% Options
+%  antipodal - include antipodal symmetry
+%
+
 
 weights = get_option(varargin,'weights');
 varargin = delete_option(varargin,'weights',1);
