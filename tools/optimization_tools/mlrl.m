@@ -1,13 +1,22 @@
 function [chat,k] = mlrl(Psi,I,c0,itermax,tol)
 % maximum likelihood estimate for Psi*c = I, sum(c) = 1, I>0, c>0 with richard-lucy iteration
 %
+% Syntax
+%  c = mlrl(Psi,I)
+%  c = mlrl(Psi,I,c0)
+%  [c,k] = mlrl(Psi,I,c0,itermax,tol)
+%
 % Input
 %   Psi     - system matrix (N x M)
 %   I       - intensities (N x 1)
 %   c0      - initial coefficients (M x 1), real valued
 %   itermax - maximum number of iterations
 %   tol     - abort if change smaller than tolerance
-
+%
+% Output
+%   c - coefficients (Mx1), real valued
+%   k - number of iterations
+%
 
 if nargin < 5
     tol = 1/size(Psi,2)^2;
