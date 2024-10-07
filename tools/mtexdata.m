@@ -81,6 +81,22 @@ catch
   end
   
   switch type
+
+    case 'grain3d'
+      switch name
+        case 'NeperGrain3d'
+          job = neperInstance;
+
+          job.cubeSize = [100 100 100];
+
+          job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+
+          odf = SO3Fun.dubna;
+          numGrains = 1000;
+
+          out = job.simulateGrains(odf,numGrains,'silent');
+      end
+
     case 'SO3Fun'
       switch name
         case 'dubnaODF'

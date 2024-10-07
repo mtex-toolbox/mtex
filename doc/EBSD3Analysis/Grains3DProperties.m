@@ -17,8 +17,7 @@
 % We start our discussion by importing some sample data set of three
 % dimensional grains
 
-mtexdata sampleGrains3d
-grains.color = 'lightblue';
+mtexdata NeperGrain3d
 
 plot(grains,grains.meanOrientation,'micronbar','off')
 
