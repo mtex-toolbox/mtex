@@ -33,7 +33,7 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 % $\vec b$ and $\vec z$ parallel to $\vec c$ is a canonical choice.
 %
 % As for such symmetries this is also the default in MTEX there is no need
-% to specify the alignment seperately.
+% to specify the alignment separately.
 %
 %% Trigonal and hexagonal materials
 %

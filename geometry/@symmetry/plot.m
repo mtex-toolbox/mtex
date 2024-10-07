@@ -7,8 +7,10 @@ function plot(s,varargin)
 %   plot(cs,'symbolSize',2,'mirrorLineWidth',5)
 %
 % Input
-%  cs - crystalSymmetry
+%  cs - @crystalSymmetry
 %
+% Options
+%  projection - earea, eangle
 
 % extract symmetry elements
 rot = s.rot;
@@ -19,7 +21,7 @@ omega = round(rot.angle./degree);
 [uaxis, ~, id] = unique(axis,'antipodal','tolerance',0.1);
 uaxis(uaxis.z < 0) = -uaxis(uaxis.z < 0);
 
-% initalize plot
+% initialize plot
 sP = newSphericalPlot(zvector,'upper',varargin{:},s.how2plot);
 
 % scale symbol size according to bounds
