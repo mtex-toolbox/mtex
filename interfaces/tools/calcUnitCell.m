@@ -45,7 +45,7 @@ if isempty(dxy)
   % second estimate of the grid resolution 
   % works good for square grids that are not rotated
   dxy2 = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...
-  mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
+    mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
 
 else
 
@@ -54,24 +54,17 @@ else
 end  
 
 % check for square grid
-if abs(dxy2(1) - dxy2(2))/min(dxy2) <  1e-3
+if abs(dxy2(1) - dxy2(2))/min(dxy2) <  1e-3 && ...
+    abs((min(diff(uniquetol(xy(xy(:,1)==xy(2,1),2),'DataScale',1))) - dxy2(2))/dxy2(2)) < 0.01 && ...
+    abs((min(diff(uniquetol(xy(xy(:,2)==xy(2,2),1),'DataScale',1))) - dxy2(1))/dxy2(1)) < 0.01
   unitCell = regularPoly(4,dxy2,0);
   return
 end
 
+
 % if we are not sure we make a voronoi decomposition
 % with a reduced data set
-% TODO: maybe the subsample function below is better
-if length(xy)>10000   
-  q = 10000/length(xy);
-  qxmin = quantile(xy(:,1),sqrt(q)/2);
-  qxmax = quantile(xy(:,1),1-sqrt(q)/2);
-  qymin = quantile(xy(:,2),sqrt(q)/2);
-  qymax = quantile(xy(:,2),1-sqrt(q)/2);
-  xySmall = xy(  xy(:,1)<qxmax & xy(:,2)<qymax & xy(:,1)> qxmin & xy(:,2)<qymin  ,:);
-else
-  xySmall = xy;
-end
+xySmall = subSample(xy,10000);
 
 % remove duplicates from the coordinates
 xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);
@@ -98,14 +91,15 @@ try
     
   % third estimate of the grid resolution
   dxy2 = min(vecnorm(unitCell.',2));
-  
+catch
+  unitCell = [];
 end
 
 dxy = dxy2;
 
 %if 100*dxy3 > dxy2, dxy = dxy2; end
    
-if isRegularPoly(unitCell,varargin)
+if ~isempty(unitCell) && isRegularPoly(unitCell,varargin)
   return
 end
 
