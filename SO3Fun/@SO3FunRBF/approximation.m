@@ -121,39 +121,38 @@ if isa(nodes,'SO3Fun')
   if check_option(varargin,{'harmonic','fourier'}) % get_flag?
     y0 = f.eval(SO3G); % initial guess for coefficients
     fhat = calcFourier(f,'bandwidth',psi.bandwidth+1);   % Why +1 ???
-    y = []; nodes = [];
     % compute weights
     chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
   else
     approxres = get_option(varargin,'approxresolution',res/2);
     nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
     y = f.eval(nodes);
+    % compute weights
+    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
   end
 
-elseif ~isa(nodes,'orientation')% preserve SO3Grid structure
+else
+
   if length(nodes) ~= numel(y)
     error('Approximation of a SO3FunRBF is only possible for univariate functions.')
   end
-  nodes = orientation(nodes);
-end
-
-
-
-
-SO3F = 0;
-if isa(nodes,'orientation')
-  % construct the uniform portion first
-  y = y(:);
-  m = min(y);
-  if abs(m)<1e-4*abs(max(y))
-    m=0;
+  if ~isa(nodes,'orientation')% preserve SO3Grid structure
+    nodes = orientation(nodes);
   end
-  y = y - m;
-  SO3F = m * uniformODF(nodes.CS,nodes.SS);
-
   % compute weights
   chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
+  
 end
+
+% Note: In case of interpolation we may construct the uniform portion first
+%       This does not make sense in case of approximation of noisy data
+% y = y(:);
+% m = min(y);
+% if abs(m) < 1e-4*abs(max(y))
+%   m=0;
+% end
+% y = y - m;
+% SO3F = m * uniformODF(nodes.CS,nodes.SS);
 
 % construct SO3FunRBF
 if check_option(varargin,{'nothinning','-nothinning','exact'})
