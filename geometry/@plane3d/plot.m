@@ -1,5 +1,5 @@
 function varargout = plot(plane,varargin)
-% plot planes in 3d space
+% plot planes in 3d space clipped by current axis
 %
 % Syntax
 %   plot(plane3d)
