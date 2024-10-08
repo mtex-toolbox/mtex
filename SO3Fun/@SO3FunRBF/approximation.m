@@ -83,6 +83,10 @@ function SO3F = approximation(nodes, y, varargin)
 % check_WignerD
 % check_SO3FunRBFApproximation
 
+if isa(nodes,'SO3Fun') && nargin>1
+  varargin = [y,varargin];
+end
+
 % get kernel
 if check_option(varargin,'kernel')
   psi = get_option(varargin,'kernel');
@@ -106,10 +110,7 @@ end
 
 % if input is a SO3Fun, either set up an nodes/y or fourier coeff
 if isa(nodes,'SO3Fun')
-  
-  if nargin>1
-    varargin = [y,varargin];
-  end
+
   f = nodes;
   
   % maybe we have to normalize at the end
@@ -163,7 +164,7 @@ end
 
 % normalize odf
 if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'odf')
-  SO3F.weights = SO3F.weights ./ sum(SO3F.weights);
+  SO3F.weights = SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
 end
 
 
