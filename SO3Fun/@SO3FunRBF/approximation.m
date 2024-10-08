@@ -63,15 +63,16 @@ function SO3F = approximation(nodes, y, varargin)
 %  approxresolution - if input it @SO3Fun, evaluate function on an  approximation grid with resolution specified
 %  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
 %  tol              - tolerance for mlsq/ml
-%  maxit            - maximum number of iterations for mlsq/ml
+%  iter_max         - maximum number of iterations for mlsq/ml
 %
 % Flags
 %  lsqr             - least squares (MATLAB)
 %  lsqnonneg        - non negative least squares (MATLAB, fast)
 %  lsqlin           - interior point non negative least squares (optimization toolbox, slow)
 %  nnls             - non negative least squares (W.Whiten)
-%  spatial/spm      - spatial method (default, not specified)
+%  mlsq             - modified least squares (default)
 %  likelihood/mlm   - maximum likelihood estimate for spatial method
+%  spatial/spm      - spatial method (default, not specified)
 %  harmonic/fourier - harmonic method
 %
 % See also
@@ -187,7 +188,7 @@ if check_option(varargin,'odf')
   varargin = ['mlsq',varargin];
 end
 
-switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood','maximumlikelihood','mlrl','mlsq'},'lsqr')
 
   case 'lsqlin'
 
@@ -231,7 +232,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
       end
     end
 
-  case {'mlrl','mlsq'}  % we have constraints that 
+  case {'mlm','likelihood','maximumlikelihood','mlrl','mlsq'}  % we have constraints that 
 
     % initial guess for coefficients
     c0 = Psi*y(:);
@@ -241,7 +242,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     itermax = get_option(varargin,{'iter','iter_max','iters'},100);
     tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-    if check_option(varargin,{'mlm','likelihood','maximumlikelihood'})
+    if check_option(varargin,{'mlm','likelihood','maximumlikelihood','mlrl'})
       chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
     else
       chat = mlsq(Psi.',y(:),c0(:),itermax,tol);

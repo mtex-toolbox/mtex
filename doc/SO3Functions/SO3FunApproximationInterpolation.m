@@ -32,11 +32,11 @@ plotSection(ori, S.values,'all');
 %% Interpolation
 %
 %%
-% Interpolation is done by the <SO3Fun.interpolate |interpolate|> command
-% of class <SO3Fun.SO3Fun |SO3Fun|>
+% Interpolation is done by the <SO3FunRBF.approximation |approximation|> command
+% of class <SO3FunRBF.SO3FunRBF |SO3FunRBF|>
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
-SO3F = SO3Fun.interpolate(ori, S.values,'exact','kernel',psi);
+SO3F = SO3FunRBF.approximation(ori, S.values,'exact','kernel',psi);
 plot(SO3F)
 
 %% 
@@ -212,7 +212,13 @@ odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 %%
 % Now we want to compute the corresponding |@SO3FunHarmonic|.
-% If our odf is an |@SO3Fun| or |@function_handle| we can directly use the command 
+% If our odf is an |@SO3Fun| or |@function_handle| we can use the command
+% <SO3FunHarmonic.approximation.html SO3FunHarmonic.approximation>
+
+F = SO3FunHarmonic.approximation(odf)
+
+%%
+% Alternatively we can directly use the constructor, i.e. we use the command 
 % <SO3FunHarmonic.html SO3FunHarmonic>.
 
 F = SO3FunHarmonic(odf)

@@ -30,7 +30,7 @@ fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
-SO3F = SO3FunRBF.approximation(ori, S.values,'kernel',psi);
+SO3F = SO3FunRBF.approximation(ori, S.values,'kernel',psi,'odf');
 err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 
 assert(err < 0.02,'SO3FunRBFApproximation:Dubna:SO3G',...
@@ -38,7 +38,7 @@ assert(err < 0.02,'SO3FunRBFApproximation:Dubna:SO3G',...
 
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
-SO3F = SO3FunRBF.approximation(ori, val,'kernel',psi);
+SO3F = SO3FunRBF.approximation(ori, val,'kernel',psi,'odf');
 err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 
 assert(err < 0.05,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
