@@ -26,11 +26,11 @@
 %
 % The differential representation of the Wigner-d functions reads as
 %
-% $$ d_n^{k,l}(x) = (-1)^{n-l+\min{0,k\}+\min{0,l\}} \frac1{2^n} \left( \frac{(n+l)!}{(n+k)!(n-k)!(n-l)!} \right)^{1/2}  
+% $$ d_n^{k,l}(x) = (-1)^{n-l+\min\{0,k\}+\min\{0,l\}} \frac1{2^n} \left( \frac{(n+l)!}{(n+k)!(n-k)!(n-l)!} \right)^{1/2}  
 %  (1-x)^{\frac{k-l}2} (1+x)^{-\frac{k+l}2} \frac{d^{n-l}}{dx^{n-l}}((1-x)^{n-k}(1+x)^{n+k})$$
 %
-% The Wigner-D functions are defined in MTEX slightly different to other 
-% well known definitions, because the Wigner-D functions are defined 
+% The above definition of the Wigner-D functions in MTEX is slightly
+% different to other well known definitions from literature, they are defined 
 % compatible to the <SphericalHarmonics.html spherical harmonics> which 
 % form an orthonormal basis on the 2-sphere and therefore are use to build 
 % <S2FunHarmonicRepresentation.html S2FunHarmonics>.
