@@ -21,7 +21,7 @@ classdef phi2Sections < ODFSections
       %
       % Options
       %  sections - number of sections
-      %  phi2 - explicite section values
+      %  phi2     - explicit section values
       %
 
       oS = oS@ODFSections(varargin{:});
@@ -40,6 +40,7 @@ classdef phi2Sections < ODFSections
       oS.phi2 = get_option(varargin,'phi2',oS.phi2,'double');
 
       oS.updateTol(oS.phi2);
+
     end
 
     function ori = makeGrid(oS,varargin)
@@ -117,12 +118,14 @@ classdef phi2Sections < ODFSections
 
     function h = plotSection(oS,ax,sec,v,data,varargin)
 
+      
       % plot data
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.phi2(sec)./degree),'^\circ'],...
-        'parent',ax,'projection','plain','xAxisDirection','east',...
-        'xlabel','$\varphi_1$','ylabel','$\Phi$','dynamicMarkerSize',...
-        'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
+        'projection','plain','xlabel','$\varphi_1$','ylabel','$\Phi$',...
+        'parent',ax,'dynamicMarkerSize', varargin{:},'doNotDraw');
 
+      h.Parent.YDir = "reverse";
+      
     end
     
     function h = quiverSection(oS,ax,sec,v,data,varargin)
