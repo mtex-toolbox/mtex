@@ -156,9 +156,9 @@ end
 
 % construct SO3FunRBF
 if check_option(varargin,{'nothinning','-nothinning','exact'})
-  SO3F = SO3F + SO3FunRBF(SO3G,psi,chat);
+  SO3F = SO3FunRBF(SO3G,psi,chat);
 else
-  SO3F = SO3F + unimodalODF(SO3G,psi,'weights',chat);
+  SO3F = unimodalODF(SO3G,psi,'weights',chat);
 end
 
 % normalize odf
