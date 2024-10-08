@@ -33,7 +33,6 @@ ebsd = rotate(ebsd,rotation('axis',-zvector,'angle',90*degree));
 plot(ebsd,'micronbar','off')
 
 %% Import the elastic stiffness tensors
-
 % The elastic stiffness tensor of Forsterite was reported in
 % Abramson et al., 1997 (Journal of Geophysical Research) with respect to
 % the crystal reference frame

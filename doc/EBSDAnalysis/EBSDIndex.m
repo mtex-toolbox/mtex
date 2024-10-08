@@ -2,8 +2,8 @@
 %
 %%
 % In previous chapters we have discussed how to select EBSD data by
-% properties. In this chapter we are intested in the order the EBSD are
-% stored within MTEX. Lets start by importing some sample data
+% properties. In this chapter we discus the ordering of EBSD pixels  within
+% MTEX. Lets start by importing some sample data
 
 mtexdata twins
 
@@ -17,13 +17,12 @@ plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
 
 %%
 % In the above plot each square corresponds to one entry in the variable
-% |ebsd|. Lets visualize the order
+% |ebsd| which as an index from 1 to 98. Let us visualize this index
 
 text(ebsd,1:length(ebsd))
 
 %%
-% We may easily select specific measurement pixels by specifying their
-% indeces
+% We may easily select specific pixels by specifying their indices
 
 hold on
 plot(ebsd(16:18),'edgeColor','red','facecolor','none','linewidth',4)
@@ -33,15 +32,15 @@ hold off
 %%
 % Whether lines or columns run first is not related to MTEX but inherits
 % from the ordering of the imported EBSD data. Since, we have restricted
-% our large EBSD map to the small subset the indece of restricted data does
-% not coincide with the indece of the imported data anymore. However, the
-% original indeces are still stored in |ebsd.id|. Lets visualize them
+% our large EBSD map to the small subset the indices of restricted data
+% does not coincide with the indices of the imported data anymore. However,
+% the original indices are still stored in |ebsd.id|. Lets visualize those
 
 plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
 text(ebsd,ebsd.id)
 
 %%
-% In order to select EBSD data according to their original id use the
+% In order to select EBSD data according to their original |id| use the
 % option |'id'|, i.e.,
 
 hold on
@@ -74,7 +73,7 @@ hold off
 
 %%
 % Note that the <EBSD.gridify.html |gridify|> command changes the order of
-% measurements. They are now sort such that rows runs first and columns
+% measurements. They are now sorted such that rows runs first and columns
 % second, as this is the default convention how Matlab indexes matrices.
 
 plot(ebsd,ebsd.orientations,'micronbar','off')
@@ -108,7 +107,7 @@ str = arrayfun(@(a,b) ['(' int2str(a) ',' int2str(b) ')'],i,j,'UniformOutput',fa
 text(ebsd,str)
 
 %% Cube Coordinates
-% In hexognal grids it is sometimes advantageous to use three digit cube
+% In hexagonal grids it is sometimes advantageous to use three digit cube
 % coordinates to index the cell. This can be done using the commands
 % <EBSDhex.hex2cube.html |hex2cube|> and <EBSDhex.cube2hex.html
 % |cube2hex|>. Much more details on indexing hex grids can be found at
