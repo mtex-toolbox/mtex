@@ -116,8 +116,8 @@ for l=1:numel(L)
     n = 2*L(l)+1;
     sign = L(l)+2:2:n;
 
-    Jalpha = exp(1i*alpha(:)*m);
-    Jgamma = exp(1i*m.'*gamma(:).');
+    Jalpha = exp(-1i*alpha(:)*m);
+    Jgamma = exp(-1i*m.'*gamma(:).');
     Jalpha(:,sign) = -Jalpha(:,sign);
     Jgamma(sign,:) = -Jgamma(sign,:);
 
@@ -130,7 +130,7 @@ for l=1:numel(L)
     end
 
     for k=1:numel(ubeta)
-        Jbeta = expm(-ubeta(k)*Jy_l)./sqrt(n);
+        Jbeta = expm(-ubeta(k)*Jy_l);
 
         if do_conv
             % convolve, see also SO3FunHarmonic\conv

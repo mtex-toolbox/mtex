@@ -84,7 +84,7 @@ else
 end
 
 % multiplication in harmonic domain
-L = min(psi1.bandwidth,psi2.bandwidth);     
+L = min(psi1.bandwidth,length(A2)-1);     
 psi = SO3Kernel(A1(1:L+1) .* A2(1:L+1));
 
 

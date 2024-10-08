@@ -173,11 +173,9 @@ end
 
 
 
-
-
-
-
-
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                             LSQR solver
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
@@ -262,6 +260,7 @@ c0(c0<=eps) = eps;
 c0 = c0./sum(c0(:));
 
 % get fourier coefficients for each node
+psi = conv(psi,1./sqrt(2*(0:psi.bandwidth)+1));
 Fstar = WignerD(SO3G,'kernel',psi);
 
 % sparsify
@@ -277,6 +276,6 @@ end
 itermax = get_option(varargin,{'iter','iter_max','iters'},100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-chat = mlsq(Fstar,fhat,c0(:),itermax,tol);
+chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
 
 end
