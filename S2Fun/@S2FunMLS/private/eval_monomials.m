@@ -6,8 +6,10 @@ function vals = eval_monomials(v, deg, varargin)
 
 % get the number of functions corresponding to the degree
 dim = (deg + 1) * (deg + 2) / 2;
+
 % extract the coordinates for nicer code
-x=v.x; y=v.y; z=v.z;
+x = v.x; y = v.y; z = v.z;
+
 if nargin == 3 && varargin{1} == true
     z = ones(size(z));
 end

@@ -1,5 +1,7 @@
-function vals = eval_centered(sF, v)
+function [vals, conds] = eval_centered(sF, v)
+
 % evaluate sF on v via moving least squares (MLS) approximation
+% provide the possibility of also returning the condition numbers of the gram matrices
 %
 % Syntax
 % vals = sF.eval(v)
@@ -25,34 +27,40 @@ else
   nn = sum(ind, 1);
 end
 
+% determine the dimension of the ansatz space
+if sF.all_degrees
+  dim = (sF.degree + 1)^2;
+else
+  dim = (sF.degree + 1) * (sF.degree + 2) / 2;
+end
+
 % compute the rotations that shift each element of v into the north pole
 rot = rotation.map(v, vector3d.Z);
 rot = rot(t_id);
+rotneighbors = rot .* sF.nodes(g_id);
 
 % determine which basis to use and evaluate them on the grid and on v
 if sF.all_degrees
-  dim = (sF.degree + 1)^2;
   if sF.monomials
-    base_on_grid = [eval_monomials(rot .* sF.nodes(g_id), sF.degree) ...
-      eval_monomials(rot .* sF.nodes(g_id), sF.degree-1)];
+    base_on_grid = [eval_monomials(rotneighbors, sF.degree) ...
+                    eval_monomials(rotneighbors, sF.degree-1)];
     base_in_pole = [eval_monomials(vector3d.Z, sF.degree) ...
-      eval_monomials(vector3d.Z, sF.degree-1)];
+                    eval_monomials(vector3d.Z, sF.degree-1)];
     base_on_v = repmat(base_in_pole, s, 1);
   else
-    base_on_grid = [eval_monomials(rot .* sF.nodes(g_id), sF.degree) ...
-      eval_monomials(rot .* sF.nodes(g_id), sF.degree-1)];
+    base_on_grid = [eval_monomials(rotneighbors, sF.degree) ...
+                    eval_monomials(rotneighbors, sF.degree-1)];
     base_in_pole = [eval_monomials(vector3d.Z, sF.degree) ...
-      eval_monomials(vector3d.Z, sF.degree-1)];
+                    eval_monomials(vector3d.Z, sF.degree-1)];
     base_on_v = repmat(base_in_pole, s, 1);
   end
 else
-  dim = (sF.degree + 1) * (sF.degree + 2) / 2;
   if sF.monomials
-    base_on_grid = eval_monomials(rot .* sF.nodes(g_id), sF.degree, sF.tangent);
+    base_on_grid = eval_monomials(rotneighbors, sF.degree, sF.tangent);
     base_in_pole = eval_monomials(vector3d.Z, sF.degree, sF.tangent);
     base_on_v = repmat(base_in_pole, s, 1);
   else
-    base_on_grid = eval_spherical_harmonics(rot .* sF.nodes(g_id), sF.degree);
+    base_on_grid = eval_spherical_harmonics(rotneighbors, sF.degree);
     base_in_pole = eval_spherical_harmonics(vector3d.Z, sF.degree);
     base_on_v = repmat(base_in_pole, s, 1);
   end
@@ -85,13 +93,32 @@ fXw(col_id) = sF.values(g_id) .* w(col_id);
 fdotu = B .* fXw';
 fdotu_book = sum(reshape(fdotu, dim, nn_max, s), 2);
 
+% rescale the system before solving it
+% the row i and column i are rescaled by 1/sqrt(Gii), such that the absolute
+% values on the diagonal become 1
+pageidx = (1:dim+1:dim^2)';
+bookidx = (1:dim^2:s*dim^2)-1;
+idx = pageidx + bookidx;
+S = zeros(dim, dim, s);
+S(idx(:)) = 1 ./ sqrt(abs(G_book(idx(:))));
+G_book_scaled = pagemtimes(pagemtimes(S, G_book), S);
+fdotu_book = pagemtimes(S, fdotu_book);
+
 % solve the systems and evaluate the MLS approximation
-c_book = pagemldivide(G_book, fdotu_book);
+c_book = pagemldivide(G_book_scaled, fdotu_book);
+c_book = pagemtimes(S, c_book);
 c = reshape(c_book, dim, s);
 vals = sum(c' .* base_on_v, 2);
 
 if isreal(sF.values)
   vals = real(vals);
+end
+
+if nargout == 2
+  conds = zeros(s, 1);
+  for i = 1 : s
+    conds(i) = cond(G_book_scaled(:,:,i));
+  end
 end
 
 end

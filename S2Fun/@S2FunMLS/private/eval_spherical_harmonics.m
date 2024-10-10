@@ -27,6 +27,7 @@ else
 end
 
 Y = S2FunHarmonic(M');
+
 vals = Y.eval(v);
 
 end

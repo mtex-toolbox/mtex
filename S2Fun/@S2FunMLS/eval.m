@@ -1,5 +1,7 @@
-function vals = eval(sF, v)
+function [vals, conds] = eval(sF, v)
+
 % evaluate sF on v via moving least squares (MLS) approximation
+% provide the possibility of also returning the condition numbers of the gram matrices
 %
 % Syntax
 %   vals = sF.eval(v)
@@ -16,7 +18,11 @@ function vals = eval(sF, v)
 
 v = v(:);
 if sF.centered
-  vals = eval_centered(sF, v);
+  if nargout == 1
+    vals = eval_centered(sF, v);
+  else
+    [vals, conds] = eval_centered(sF, v);
+  end
   return;
 end
 
@@ -57,7 +63,7 @@ if nn_total > numel(sF.nodes.x)
   base_on_grid = eval_base_functions(sF);
   B(:, col_id) = base_on_grid(g_id, :)';
 else
-  B(:, col_id) = eval_base_functions(sF, sF.nodes.subSet(g_id))';
+  B(:, col_id) = eval_base_functions(sF, sF.nodes(g_id))';
 end
 B_book = reshape(B, dim, nn_max, s);
 
@@ -74,14 +80,33 @@ fXw(col_id) = sF.values(g_id) .* w(col_id);
 fdotu = B .* fXw';
 fdotu_book = sum(reshape(fdotu, dim, nn_max, s), 2);
 
+% rescale the system before solving it
+% the row i and column i are rescaled by 1/sqrt(Gii), such that the absolute
+% values on the diagonal become 1
+pageidx = (1:dim+1:dim^2)';
+bookidx = (1:dim^2:s*dim^2)-1;
+idx = pageidx + bookidx;
+S = zeros(dim, dim, s);
+S(idx(:)) = 1 ./ sqrt(abs(G_book(idx(:))));
+G_book_scaled = pagemtimes(pagemtimes(S, G_book), S);
+fdotu_book = pagemtimes(S, fdotu_book);
+
 % solve the systems and evaluate the MLS approximation
-c_book = pagemldivide(G_book, fdotu_book);
+c_book = pagemldivide(G_book_scaled, fdotu_book);
+c_book = pagemtimes(S, c_book);
 c = reshape(c_book, dim, s);
 base_on_v = eval_base_functions(sF, v);
 vals = sum(c' .* base_on_v, 2);
 
 if isreal(sF.values)
   vals = real(vals);
+end
+
+if nargout == 2
+  conds = zeros(s, 1);
+  for i = 1 : s
+    conds(i) = cond(G_book_scaled(:,:,i));
+  end
 end
 
 end

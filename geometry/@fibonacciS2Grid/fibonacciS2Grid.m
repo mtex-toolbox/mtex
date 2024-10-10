@@ -36,7 +36,6 @@ classdef fibonacciS2Grid < vector3d
     % constructor of the class fibonacciS2Grid
     function fibgrid = fibonacciS2Grid(varargin)
       saverho = false;
-
       % check if we should save the precise rho angles of the grid
       saverho_specifier_pos = find(strcmp(varargin, 'saverho'), 1);
       if ~isempty(saverho_specifier_pos)
@@ -75,7 +74,7 @@ classdef fibonacciS2Grid < vector3d
 
     % getters
     function filldist = get.filldist(fibgrid)
-      randvec = vector3d.rand(10000);
+      randvec = vector3d.rand(100000);
       [~, d] = fibgrid.find(randvec);
       filldist = max(d);
     end
