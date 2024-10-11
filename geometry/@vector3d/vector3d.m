@@ -1,6 +1,6 @@
 classdef vector3d < dynOption
 %
-% The class vector3d describes three dimensional vectors, given by
+% The class |vector3d| describes three dimensional vectors, given by
 % their coordinates x, y, z and allows to calculate with them as
 % comfortable as with real numbers.
 %

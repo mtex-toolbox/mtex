@@ -1,11 +1,32 @@
 classdef stressTensor < tensor
-  
+%
+% The class |stressTensor| describes a (list) of stress tensors.
+%
+% Syntax
+%
+%   % specify stress tensor by matrix
+%   M = [1 0 0; 0 0 0; 0 0 0];
+%   sigma = stressTensor(M)
+%
+%   % uniaxial stress in direction v
+%   sigma = stressTensor.uniaxial(v)
+%
+% Input
+%  M - 3x3 symmetric matrix
+%  v - @vector3d
+%
+% Output
+%  sigma - @stressTensor
+%
+% See also
+% slipSystem.SchmidFactor
+%
+
   methods
     function sT = stressTensor(varargin)
 
       sT = sT@tensor(varargin{:},'rank',2);
       if ~sT.isSymmetric, warning('Tensor is not symmetric!'); end
-
 
     end
   end
