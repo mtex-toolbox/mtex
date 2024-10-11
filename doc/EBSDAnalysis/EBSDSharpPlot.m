@@ -103,7 +103,10 @@ hold off
 
 
 %% The axis angle color key
-% 
+% A second option to visualize small orientation deviation, e.g. within a
+% grains is the <axisAngleColorKey.axisAngleColorKey.html axis-angle color
+% key>. In order to demonstrate this color key let us first separate the
+% EBSD into grains.
 
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
 ebsd(grains(grains.grainSize<=3)) = [];
@@ -112,6 +115,9 @@ ebsd(grains(grains.grainSize<=3)) = [];
 grains = smooth(grains,5);
 
 %%
+% In order to apply the @axisAngleColorKey we need to specify the crystal
+% symmetry and a reference orientation |oriRef|. Often the meanorientation
+% of the grains is a good choice.
 
 ipfKey = axisAngleColorKey(ebsd('indexed'));
 
@@ -125,6 +131,8 @@ plot(grains.boundary,'lineWidth',4)
 hold off
 
 %%
+% Being able to visualize very small orientation changes gives us better
+% way to observe how <EBSDDenoising.html EBSD denoising methods> work
 
 F = halfQuadraticFilter;
 

@@ -6,7 +6,7 @@
 % |omega|, and the lengths |a|, |b| of the long axis and short axes that
 % are computed by the command <grain2d.fitEllipse.html |[omega,a,b] =
 % grains.fitEllipse|>  the following properties based on the fitted
-% ellipses are avaiable.
+% ellipses are available.
 %
 % || <grain2d.longAxis.html |longAxis|> || long axis as @vector3d || <grain2d.shortAxis.html |shortAxis|>  || short axis as @vector3d ||
 % || <grain2d.centroid.html |centroid|> || midpoint  || <grain2d.aspectRatio.html |aspectRatio|>  || long axis / short axis ||
@@ -23,7 +23,7 @@ ebsd(grains(grains.grainSize<10)) = [];
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
 grains(grains.isBoundary) = [];
 
-grains=smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smooth(grains('indexed'),10,'moveTriplePoints');
 
 % plot the grains
 plot(grains,'micronbar','off','lineWidth',2)
@@ -49,16 +49,16 @@ plotEllipse(grains.centroid,a,b,omega,'lineColor','w','linewidth',2)
 %% Long and Short Axes
 %
 % The direction of the long and the short axis of the fitted ellipse can be
-% obtained by the comands <grain2d.longAxis.html |grains.longAxis|> and
+% obtained by the commands <grain2d.longAxis.html |grains.longAxis|> and
 % <grain2d.shortAxis.html |grains.shortAxis|>. These directions are only
 % well defined if the fitted ellipse is not to close to a perfect circle. A
 % measure for how distinct the ellipse is from a perfect circle is the
 % <grain2d.aspectRatio.html aspect ratio> which is defined as the quotient
 % $a/b$ between the longest and the shortest axis. For a perfect circle
-% the apect ratio is $1$ and increases to infinity when the ellipse becomes
+% the aspect ratio is $1$ and increases to infinity when the ellipse becomes
 % more and more elongated.
 %
-% Lets colorize the grains by their apect ratio and plot on top the long
+% Lets colorize the grains by their aspect ratio and plot on top the long
 % axis directions:
 
 % visualize the aspect ratio
@@ -71,18 +71,18 @@ hold on
 quiver(grains,grains.longAxis,'Color','white')
 hold off
 
-%% Shape perfered orientation
+%% Shape preferred orientation
 %
 % If we look at grains, we might wonder if there is a characteristic
 % difference in the grain shape fabric between e.g. Forsterite and
-% Enstatite. In contrast to crystal prefered orientations which which
-% describe on the alignment of the atome lattices the shape prefered
-% orientation (SPO) describes the algnment of the grains by shape in the
+% Enstatite. In contrast to crystal preferred orientations which which
+% describe on the alignment of the atom lattices the shape preferred
+% orientation (SPO) describes the alignment of the grains by shape in the
 % bulk fabric. 
 %
 % *Long Axis Distribution*
 % 
-% The most direct way to analyse shape prefered orientations are rose
+% The most direct way to analyze shape preferred orientations are rose
 % diagrams of the distribution of the grain long axes. For those diagrams
 % it is useful to weight the long axis by the grain area such that larger
 % grains have a bigger impact on the distribution and by the aspect ratio
@@ -131,6 +131,9 @@ plotTDF(bc,freq/sum(freq));
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
 mtexTitle('long axes')
+
+% we have to set the plotting convention manually
+setView(ebsd.plottingConvention)
 
 %% *Shortest Caliper Distribution*
 %

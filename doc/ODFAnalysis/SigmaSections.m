@@ -139,7 +139,7 @@ plot(odf,'sections',6,'silent','sigma')
 % we can clearly distinguish the two spots in the middle indicating two
 % radial symmetric portions. On the other hand the spots at 001 appear in
 % every section indicating a fibre at position [001](100). Knowing that
-% sigma sections are nothing else then the splitted 001 pole figure they
+% sigma sections are nothing else then the split 001 pole figure they
 % are much more simple to interpret then usual phi2 sections.
 
 %% Customizations

@@ -1,4 +1,4 @@
-%% Slip Transmition
+%% Slip Transmission
 % How to analyze slip transmission at grain boundaries
 %
 %% Import Titanium data
@@ -59,12 +59,12 @@ plot(grains,M)
 largeGrains = grains(grains.grainSize > 10)
 
 hold on
-traces = cross(sSGrain.n,grains.N);
-quiver(grains,traces,'displayName','slip plane trace')
+quiver(grains,sSGrain.trace,'displayName','slip plane trace')
 hold on
-quiver(grains,sSGrain.b,'displayName','slip direction')
+quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
+legend show
 %%
 % We may also analyze the distribution of the slip directions in a pole
 % figure plot

@@ -13,7 +13,7 @@
 % much faster for gridded data. Those functions include <EBSDPlotting.html
 % plotting>, <EBSDGradient.html gradient computation> and
 % <EBSDDenoising.html denoising>. The key command to make MTEX aware of
-% EBSD data on a hexagonal or square grid is <EBSD.gridify.html gridify>.
+% EBSD data on a hexagonal or square grid is <EBSD.gridify.html |gridify|>.
 %
 % In order to explain the corresponding concept in more detail lets import
 % some sample data.
@@ -31,7 +31,7 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 ebsd.unitCell
 
 %%
-% If we apply the command <EBSD.gridify.html gridify> to the data set
+% If we apply the command <EBSD.gridify.html |gridify|> to the data set
 
 ebsd = ebsd.gridify
 
@@ -50,7 +50,7 @@ ebsdMg = ebsd('Magnesium')
 
 %%
 % However, we may always force it into matrix form by reapplying the
-% command <EBSD.gridify.html gridify>
+% command <EBSD.gridify.html |gridify|>
 
 ebsdMg = ebsd('Magnesium').gridify
 
@@ -100,7 +100,7 @@ plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
 %
 % Sometimes it is required to resample EBSD data on a hex grid on a square
 % grid. This can be accomplished by passing to the command
-% <EBSD.gridify.html gridify> a square unit cell by the option |unitCell|.
+% <EBSD.gridify.html |gridify|> a square unit cell by the option |unitCell|.
 
 % define a square unit cell
 unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
@@ -133,11 +133,11 @@ hold off
 
 %%
 % It is important to understand that the command <EBSD.gridify.html
-% gridify> does not increase the number of data points. As a consequence,
+% |gridify|> does not increase the number of data points. As a consequence,
 % we end up with many white spots in the map which corresponds to
 % orientations that have been set to NaN. In order to fill these white
-% spots, we may either use the command <EBSD.fill.html fill> which performs
-% nearest neighbor interpolation or the command <EBSD.smooth smooth> which
+% spots, we may either use the command <EBSD.fill.html |fill|> which performs
+% nearest neighbor interpolation or the command <EBSD.smooth |smooth|> which
 % allows for more sophisticated interpolation methods.
 
 %%
@@ -157,14 +157,14 @@ F = halfQuadraticFilter;
 F.alpha = 0.5;
 ebsdS2 = smooth(ebsdS,F,'fill',grains)
 
-nextAxis
+nextAxis(1,2)
 plot(ebsdS2('indexed'),ebsdS2('indexed').orientations)
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
 
 %% Gridify on Rotated Maps
-% A similar situation occurs if <EBSD.gridify.html gridify> is applied to
+% A similar situation occurs if <EBSD.gridify.html |gridify|> is applied to
 % rotated data.
 
 ebsd = rotate(ebsd,20*degree)
@@ -175,7 +175,7 @@ plot(ebsdG,ebsdG.orientations)
 
 %%
 % Again we may observe white spots within the map which we can easily fill
-% with the <EBSD.fill.html fill> command.
+% with the <EBSD.fill.html |fill|> command.
 
 ebsdGF = fill(ebsdG)
 

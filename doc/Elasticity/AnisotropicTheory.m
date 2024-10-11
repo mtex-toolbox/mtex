@@ -55,7 +55,7 @@ d = vector3d.X;
 E = C.YoungsModulus(d)
 
 %%
-% If the direction |d| is omitted Youngs modulus is returned as a
+% If the direction |d| is omitted Young's modulus is returned as a
 % <S2FunHarmonic.S2FunHarmonic.html spherical function>.
 
 % compute Young's modulus as a directional dependent function
@@ -67,6 +67,7 @@ E.eval(d)
 % or plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C.YoungsModulus,'complete','upper')
+text([xvector,yvector,zvector],'labeled','BackgroundColor','w')
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -81,6 +82,7 @@ beta = linearCompressibility(C)
 
 % plot it
 plot(beta,'complete','upper')
+text([xvector,yvector,zvector],'labeled','BackgroundColor','w')
 
 % evaluate the function at a specific direction
 beta.eval(d)
@@ -128,6 +130,7 @@ G = C.shearModulus(n,d)
 
 %%
 newMtexFigure('layout',[1,3])
+
 % shear plane
 n = Miller(1,0,0,cs);
 plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)

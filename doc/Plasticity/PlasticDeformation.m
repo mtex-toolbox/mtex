@@ -18,11 +18,12 @@ d = Miller(0,-1,1,CS,'uvw')
 
 %%
 % For tension in direction 123
+
 r = normalize(vector3d(1,2,3))
 
 %%
 % the Schmid factor for the slip system [0-11](111) is defined by
-%
+
 tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
 
 %%
@@ -32,18 +33,18 @@ tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
 sS = slipSystem(d,n)
 
 %%
-% and using the command <slipSystem.SchmidFactor.html SchmidFactor>
+% and using the command <slipSystem.SchmidFactor.html |SchmidFactor|>
 
 sS.SchmidFactor(r)
 
 %%
-% Omitting the tension direction r the command
-% <slipSystem.SchmidFactor.html SchmidFactor> returns the Schmid factor as
+% Omitting the tension direction |r| the command
+% <slipSystem.SchmidFactor.html |SchmidFactor|> returns the Schmid factor as
 % a <S2FunHarmonic.S2FunHarmonic.html spherical function>
 
 SF = sS.SchmidFactor
 
-% plot the Schmid factor in dependency of the tension direction
+% plot the Schmid factor as a function of the tension direction
 plot(SF)
 
 % find the tension directions with the maximum Schmid factor
@@ -54,7 +55,7 @@ annotate(pos)
 
 %% Stress Tensor
 % Instead by the tension direction the stress might be specified by a
-% stress tensor
+% <stressTensor.stressTensor.html stress tensor>
 
 sigma = stressTensor.uniaxial(vector3d.Z)
 
@@ -252,7 +253,7 @@ hold on
 quiver(grains,sSactive.trace,'color','b')
 
 % and the slip direction
-quiver(grains,sSactive.b,'color','r')
+quiver(grains,sSactive.b,'color','r','project2plane')
 
 hold off
 
@@ -272,8 +273,8 @@ mtexColorbar southoutside
 [ bMax , bMaxId ] = max( b , [ ] , 2 ) ;
 sSGrains = grains.meanOrientation .* sS(bMaxId) ;
 hold on
-quiver ( grains , sSGrains.b)
-quiver ( grains , sSGrains.trace)
+quiver ( grains , sSGrains.b,'project2plane','color','r')
+quiver ( grains , sSGrains.trace,'color','b')
 hold off
 
 %#ok<*NASGU> 

@@ -140,7 +140,7 @@ hold off
 % Obviously, both orientations are not symmetrically equivalent as -43m
 % does not have a four fold axis. This can also be seen from the pole
 % figure plots above which are different for, e.g., (111). However, when
-% looking at an arbitrary pole figure with additionaly imposed antipodal
+% looking at an arbitrary pole figure with additionally imposed antipodal
 % symmetry both orientations appears at exactly the same positions
 
 plotPDF(ori1,h,'MarkerSize',12,'antipodal')
@@ -172,16 +172,14 @@ hold off
 % i.e. its point group is a Laue group. If the point group of the crystal
 % was already a Laue group then Fridel's law does not impose any additional
 % ambiguity.
-
-%%
-
-
+%
 %% The inherent ambiguity of the pole figure - ODF relationship
 %
-% Unfortunately, knowing all diffraction pole figures of an ODF is even for
-% centrosymmetric symmetries not sufficient to recover the ODF unambiguously.
-% To understand the reason for this ambiguity we consider triclinic
-% symmetry and a week unimodal ODF with prefered orientation (0,0,0).
+% Unfortunately, even for centrosymmetric crystal symmetry, knowing all
+% pole figures of an ODF is not sufficient to recover the ODF
+% unambiguously. To understand the reason for this ambiguity we consider
+% triclinic symmetry and a week unimodal ODF with preferred orientation
+% (0,0,0).
 
 cs = crystalSymmetry('-1');
 
@@ -204,8 +202,6 @@ plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs))
 
 close all
 plotSpektra(odf1,'linewidth',2)
-%set(gca,'yScale','log')
-
 
 %%
 % Next, we define a second ODF which differs by the first one only in the
@@ -217,21 +213,21 @@ odf2 = conv(odf1,A)
 
 hold on
 plotSpektra(odf2,'linewidth',2)
-%set(gca,'yScale','log')
+
 hold off
 legend('odf1','odf2')
 
 %%
-% The point is that all pole figures of odf1 look exactly the same as the
-% pole figures of odf2.
+% The point is that all pole figures of |odf1| look exactly the same as the
+% pole figures of |odf2|.
 
 
 plotPDF(odf2,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 %%
 % and hence, it is impossible for any reconstruction algorithm to decide
-% whether odf1 or odf2 is the correct reconstruction. In order to compare
-% odf1 and odf2, we visualize them along the alpha fibre
+% whether |odf1| or |odf2| is the correct reconstruction. In order to
+% compare odf1 and odf2, we visualize them along the alpha fiber
 
 alphaFibre = orientation.byAxisAngle(zvector,(-180:180)*degree,cs);
 
@@ -261,22 +257,21 @@ legend('odf1','odf2')
 xlim([-180,180])
 
 %%
-% We obtain two completely different ODF: odf1 has a prefered orientation
-% at (0,0,0) while odf2 has prefered orientations at all rotations about
-% 180 degrees. These two ODFs have completely identical pole figures and
-% hence, it is impossible by any reconstruction method to decide which of
-% these two ODF was the correct one. It was the idea of Matthies to say
+% We obtain two completely different ODFs: |odf1| has a preferred
+% orientation at $(0,0,0)$ while |odf2| has preferred orientations at all
+% rotations about 180 degrees. These two ODFs have identical pole figures
+% and hence, it is impossible by any reconstruction method to decide which
+% of these two ODF was the correct one. It was the idea of Matthies to say
 % that a physical meaningful ODF usually consists of a uniform portion and
-% some components of prefered orientations. Thus in the reconstruction odf1
-% should be prefered over odf2. The idea to distinguish between odf1 and
-% odf2 is that odf1 has a larger uniform portion and hence maximizing the
-% uniform portion can be used as a method to single out a physical meaningful
-% solution.
+% some components of preferred orientations. Thus in the reconstruction
+% |odf1| should be preferred over |odf2|. The idea to distinguish between
+% |odf1| and |odf2| is that |odf1| has a larger uniform portion and hence
+% maximizing the uniform portion can be used as a method to single out a
+% physical meaningful solution.
 
 %%
-% Let's demonstrate this by the given example and simulate some pole figures
-% out of odf2.
-
+% Let's demonstrate this by the given example and simulate some pole
+% figures out of |odf2|.
 
 h = Miller({1,0,0},{1,0,0},{0,1,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1},cs);
 pf = calcPoleFigure(odf1,h);
@@ -297,8 +292,8 @@ odf_rec2 = calcODF(pf,'noGhostCorrection','silent')
 
 %%
 % When comparing the reconstructed ODFs we observe that by using ghost
-% correction we are able to recover odf1 quite nicely, while without ghost
-% correction we obtain a mixture between odf1 and odf2.
+% correction we are able to recover |odf1| quite nicely, while without
+% ghost correction we obtain a mixture between |odf1| and |odf2|.
 
 close all
 plot(-180:180,odf_rec1.eval(alphaFibre),'linewidth',2)
@@ -387,7 +382,7 @@ close all;
 plotSpektra(SantaFe,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 
 % keep plot for adding the next plots
-hold all
+hold on
 
 % the harmonic coefficients of the reconstruction with ghost correction:
 plotSpektra(rec,'bandwidth',32,'linewidth',2,'MarkerSize',10)

@@ -1,121 +1,81 @@
 %% Operations with Three-Dimensional Grains
 %
-% In this section we explain some basic operations with three dimensional
-% grains. Lets start by importing some example data set and plot it from a
-% nice perspective
+%%
+% On this page we explain some basic operations with three dimensional
+% grains. Let us start by importing some example data set and plot it from
+% a nice perspective
 
 mtexdata NeperGrain3d
 
-%%
-% The grains are stored in variable |grains| which 
-
-
-
-%% Plotting Grains
-% By default three dimensional grains are plotted by color
-
-% set camera
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
-
 % colorize by mean orientation
 plot(grains,grains.meanOrientation)
-setCamera(how2plot)
-
-
-
+setCamera(plottingConvention.default3D)
 
 %% Slicing
-%
-% To get the usually used 2d grain data, it is possible to slice 3d grains
-% by different methods.
+% We can extract from 3d grain data 2d grain data by slicing them along one
+% or multiple planes. This is done using the command <grain3d.slice.html
+% |slice|>. This command requires two inputs to characterize a plane -
+% the plane normal |N| and an arbitrary point |P0| within the plane.
 
-% make all slices passing through this point
-P0 = vector3d(0.5,0.5,0.5);
+% a point where the slice should pass through
+P0 = vector3d(50,50,50);
 
-% Slice by plane normal and point
+% the normal direction of the slice
 N = vector3d(1,-1,0);
-grains1_10 = grains3.slice(N,P0)
+
+% compute the slice
+grains1_10 = grains.slice(N,P0)
+
+% visualize the slice
+plot(grains1_10,grains1_10.meanOrientation,'micronbar','off')
+setCamera(plottingConvention.default3D)
+
+%%
+% We may adjust the @plottingConvention such that the normal direction is
+% perpendicular to the screen.
 
 how2plot = plottingConvention;
 how2plot.outOfScreen = N;
-plot(grains1_10,grains1_10.meanOrientation)
+how2plot.north = zvector
 setCamera(how2plot)
 
 %%
+% We may use the exact same syntax to generate multiple slices.
 
-% Slice by matgeom plane
-N3 = vector3d(2,2,4);
-plane = createPlane(P0.xyz, N3.xyz);     % consider the different order
-grains224 = grains3.slice(plane);
+N = vector3d.Z;
+for k = 1:19:99
+  
+  grainSlice = grains.slice(N, vector3d(0,0,k));
 
-% Slice going through 3 points
-A = vector3d(0,0,0.5);
-B = vector3d(0,1,0.5);
-grains001 = grains3.slice(P0,A,B);
+  plot(grainSlice,grainSlice.meanOrientation)
+  hold on
 
-% plot the slices
-plot(grains001,grains001.meanOrientation);
-hold on
-plot(grains1_10,grains1_10.meanOrientation);
-hold on
-plot(grains224,grains224.meanOrientation);
+end
+hold off
 
-% set camera
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
-setCamera(how2plot)
-
-%% 
-% Plot single 3D grains together with slices
-grains = grains3(1:5)
-
-plot(grains,grains.meanOrientation)
-how2plot.outOfScreen = vector3d(-10,-4,1);
-how2plot.east = vector3d(2,-5,0);
-setCamera(how2plot)
-
-
-
-
-%% Selecting 
-
-
-
-%% Rotation
-% rotate 180 degrees about the x-axis
-rot = rotation.byAxisAngle(xvector,180*degree);
-grains3_rot = rot * grains3;   % or rotate(grains3,rot)
-
-% plotting
-plot(grains3_rot,grains3_rot.meanOrientation)
-
-%% 
-% colorize by volume
-plot(grains3,grains3.volume)
-setCamera(how2plot)
-
-
+setCamera(plottingConvention.default3D)
 
 %% Triangulation
 % Some functions are much faster on triangulated meshes. Therefore you can
-% triangulate your grains with the following command.
+% triangulate your grains with the command <grain3d.triangulate.html
+% |triangulate|>.
 
-grainsTri = grains3.triangulate
-
+grainsTri = grains(20).triangulate
 
 plot(grainsTri,grainsTri.meanOrientation)
 
 
+%% Rotation
+% Not surprisingly we can use the command <grain3d.rotate.html |rotate|> to
+% apply any rotation to three dimensional grains. Note that a rotation
+% changes the spatial coordinates as well as the orientations of the
+% grains.
 
-%% Slice Dream3d Grains
-% still inefficient, expensive
-N = vector3d(1,1,1);
-P0 = vector3d(0.5,0.5,0.5);
+rot = rotation.byAxisAngle(vector3d(1,1,1),30*degree);
+grains_rot = rot * grains;   % or rotate(grains3,rot)
 
-slice = grains_dream_3d.slice(N,P0);
-plot(slice,slice.meanOrientation);
+% plotting
+plot(grains_rot,grains_rot.meanOrientation)
+
 
 %#ok<*NOPTS>
