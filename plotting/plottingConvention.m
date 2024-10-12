@@ -232,6 +232,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC = getMTEXpref('xyzPlotting');
     end
 
+    function pC = default3D
+      pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
+    end
+
     function setDefault
       pC = getMTEXpref('xyzPlotting');
       pC.rot = rotation.id;
