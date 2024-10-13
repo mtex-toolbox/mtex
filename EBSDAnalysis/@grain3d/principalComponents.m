@@ -61,9 +61,9 @@ if isnumeric(grains.F)
   v = v .* (vol ./ (4/3*pi*prod(norm(v),2))).^(1/3);
 
   if nargout > 1
-    a = v(:,1);
+    a = v(:,3);
     b = v(:,2);
-    c = v(:,3);
+    c = v(:,1);
   else
     a = v;
   end

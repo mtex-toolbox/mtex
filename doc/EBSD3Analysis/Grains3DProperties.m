@@ -79,6 +79,26 @@ xlabel('surface (µm²)')
 
 scatter(grains.volume.^(1/3), grains.diameter)
 
+%% Ellipsoid Based Properties
+% Similarly as for two dimensional grains the command
+% <grain3d.principalComponents.html |principalComponents|> computes the
+% principle axes |a|, |b| and |c| of each grain. These can be interpreted
+% as the half-axes of an ellipsoid fitted to the grain.
+
+[a,b,c] = principalComponents(grains.triangulate);
+
+%%
+% Lets use these half-axes to visualize the 3d-grains as ellipsoids
+% colorized by the grain orientation. This is done using the command
+% <plotEllipsoid.html |plotEllipsoid|>
+
+% compute the color for each ellipsoid
+cKey = ipfColorKey(grains.CS);
+color = cKey.orientation2color(grains.meanOrientation);
+
+h = plotEllipsoid(grains.centroid,a,b,c,'faceColor',color);
+
+
 %% Vertices, grain and surface centroids
 % Each grain has a set of vertices |grains.V| and a centroid
 % |grains.centroid|. Furthermore, each grain boundary element has a
