@@ -4,16 +4,18 @@
 % Variables of type @grain3d store 3D grain data. At the moment 3d grains
 % can be imported from <NeperInterface.html Neper% > or from Dream3d.
 %
-%% Grain sets from Dream3d
+%% Importing 3D-Grains from Dream3d
+% As with any data we can import 
 
-grains = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d'));
+% specify the file name
+fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
+grains = grain3d.load(fname);
 
 % for triangulated data sets it may be useful to plot them without lines
 plot(grains,grains.meanOrientation,'LineStyle','none')
 
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
+% use a nice plotting convention
+how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
 %%
@@ -26,7 +28,7 @@ setCamera(how2plot)
 plot(grains(id),grains(id).meanOrientation)
 setCamera(how2plot)
 
-%% Grain sets from Neper
+%% %% Importing 3D-Grains from Neper
 % <https://neper.info Neper> is a software package for the simulation of
 % three dimensional microstructures. After installation it can be directly
 % called by MTEX. The general workflow is explained <NeperInterface.html
