@@ -7,7 +7,7 @@
 % the smiley
 sF1 = S2Fun.smiley;
 
-% some osilatory function
+% some oscillatory function
 f = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 150);
 
@@ -15,6 +15,7 @@ sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 150);
 % The default <S2Fun.plot.html |plot|> command generates a colored plot
 % without contours
 
+plotx2north
 plot(sF1)
 
 %%
@@ -30,9 +31,14 @@ contourf(sF1, 'LineWidth', 2);
 
 %% 3D Plot
 % 3D plot of a sphere colored accordingly to the function values.
+
 plot3d(sF1);
-set(gca,'CameraUpVector',[0 10 0])
-set(gca,'CameraPosition',[-9 0 10])
+mtexColorMap parula
+how2plot = plottingConvention;
+how2plot.north = xvector;
+how2plot.outOfScreen = vector3d(0,1,2);
+setCamera(how2plot)
+
 
 %% Surface Plot
 % 3D plot where the radius of the sphere is transformed according to the
@@ -40,9 +46,7 @@ set(gca,'CameraPosition',[-9 0 10])
 
 surf(sF1)
 axis off
-set(gca,'CameraUpVector',[0 1 0])
-set(gca,'CameraPosition',[-9 0 10])
-
+setCamera(how2plot)
 
 %% Section Plot
 % Plot the intersection of the surf plot with a plane defined by a normal

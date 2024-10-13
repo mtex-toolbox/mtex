@@ -1,4 +1,5 @@
 function n = norm(obj,varargin)
+% norm of an embedding
 
 n = 0;
 for i = 1:length(obj.u)

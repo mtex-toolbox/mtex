@@ -12,7 +12,7 @@ function out = mtexdata(name,varargin)
 % read list of all available sample data
 list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
 
-type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun'}, {'pf','ebsd','grains','odf'});
+type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun','grain3d'}, {'pf','ebsd','grains','odf','grains'});
 
 if nargin < 1
 
@@ -81,6 +81,22 @@ catch
   end
   
   switch type
+
+    case 'grain3d'
+      switch name
+        case 'NeperGrain3d'
+          job = neperInstance;
+
+          job.cubeSize = [100 100 100];
+
+          job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+
+          odf = SO3Fun.dubna;
+          numGrains = 1000;
+
+          out = job.simulateGrains(odf,numGrains,'silent');
+      end
+
     case 'SO3Fun'
       switch name
         case 'dubnaODF'

@@ -1,4 +1,4 @@
-function h = project2FundamentalRegion(h, varargin)
+function varargout = project2FundamentalRegion(h, varargin)
 % projects vectors to the fundamental sector of the inverse pole figure
 %
 % Input
@@ -8,10 +8,12 @@ function h = project2FundamentalRegion(h, varargin)
 %  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 % Output
-%  h - @Miller
+%  h   - @Miller
+%  sym - @rotation the symmetry element used for the projection
+%
 
 if nargin>1 && isa(varargin{1},'symmetry')
-  h = project2FundamentalRegion@vector3d(h,varargin{:});
+  [varargout{1:nargout}] = project2FundamentalRegion@vector3d(h,varargin{:});
 else
-  h = project2FundamentalRegion@vector3d(h,h.CS,varargin{:});
+  [varargout{1:nargout}] = project2FundamentalRegion@vector3d(h,h.CS,varargin{:});
 end

@@ -23,7 +23,6 @@ odf = fibreODF(Miller(1,1,0,cs),zvector)
 % general on the upper hemisphere and the lower hemisphere. By
 % default MTEX plots, in this case, both hemispheres. The upper on the
 % left-hand side and the lower on the right-hand side.
-% TODO: this is currently missing
 
 plotPDF(odf,Miller(1,1,0,cs),'minmax')
 
@@ -107,4 +106,11 @@ mtexColorMap white2black
 % MTEX also offers a three-dimensional plot of pole figures which even
 % might be rotated freely in space
 
-plotPDF(odf,Miller(1,1,0,odf.CS),'3d')
+howt2plot = plottingConvention;
+howt2plot.north = zvector;
+howt2plot.outOfScreen = vector3d(-2,-1,0);
+
+close all
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d',howt2plot)
+setCamera(howt2plot)
+mtexColorMap parula

@@ -83,13 +83,11 @@ mori = inv(ori1) * ori2
 
 round(mori * Miller(1,1,-2,0,CS))
 
-
 %%
 % Conversely, the inverse of |mori| is the coordinate transform from
 % crystal 74 to grain 85.
 
 round(inv(mori) * Miller(2,-1,-1,0,CS))
-
 
 %% Coincident lattice planes
 % The coincidence between major lattice planes may suggest that the
@@ -105,14 +103,14 @@ for im = 1:length(m)
   % plot the lattice planes of grains 85 with respect to the
   % reference frame of grain 74
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
-    'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
-  hold all
+    'DisplayName',char(m(im)),'figSize','large','noLabel','upper','textBelowMarker')
+  hold on
 end
 hold off
 
 % mark the corresponding lattice planes in the twin
 mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
-annotate(mm,'labeled','MarkerSize',5,'figSize','large','textAboveMarker')
+annotate(mm,'labeled','MarkerSize',5,'figSize','large','textBelowMarker')
 
 % show legend
 legend({},'location','SouthEast','FontSize',13);
@@ -236,3 +234,5 @@ symmetrise(ori_Mag) * inv(Mag2Hem)
 
 plotPDF(symmetrise(ori_Mag) * inv(Mag2Hem),...
   Miller({1,0,-1,0},{1,1,-2,0},{0,0,0,1},CS_Hem))
+
+ %#ok<*MINV>

@@ -18,7 +18,7 @@ classdef symmetry < matlab.mixin.Copyable
   
   properties
     opt = struct
-    how2plot = plottingConvention
+    how2plot
   end
 
   properties (Dependent = true)
@@ -57,7 +57,7 @@ classdef symmetry < matlab.mixin.Copyable
         s.multiplicityPerpZ = 1;
       end
 
-
+      s.how2plot = plottingConvention;
 
     end
     

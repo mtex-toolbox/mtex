@@ -12,8 +12,9 @@ function h = quiver(ebsd,dir,varargin)
 %  dir  - @vector3d
 %
 % Options
-%  antipodal - plot directions or axes
-%  maxHeadSize - size of the arrow
+%  antipodal     - plot directions or axes
+%  maxHeadSize   - size of the arrow
+%  project2Plane - project direction into plane
 %
 
 c = ebsd.pos;
@@ -25,8 +26,13 @@ if check_option(varargin,'antipodal') || dir.antipodal
   dir = [dir(:);-dir(:)];
   
 else
-  
+
   varargin = [{'MaxHeadSize',5,'linewidth',2,'autoScaleFactor',0.5},varargin];
+
+  if check_option(varargin,'project2plane')
+    N = grains.N.normalize;
+    dir = dir - dot(dir,N)*N;
+  end
     
 end
  

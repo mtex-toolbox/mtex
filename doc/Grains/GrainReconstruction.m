@@ -49,7 +49,7 @@ plot(ebsd)
 % is set to 10 degrees.
 %
 % All grain reconstruction methods in MTEX are accessible via the command 
-% <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
+% <EBSD.calcGrains.html |calcGrains|> which takes as input an EBSD data set
 % and returns a list of grain.
 
 [grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree);
@@ -60,13 +60,13 @@ grains
 % visualize the grains we can plot its boundaries by the command
 % <grainBoundary.plot.html |plot|>.
 
-% start overide mode
+% start override mode
 hold on
 
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',1.5)
 
-% stop overide mode
+% stop override mode
 hold off
 
 %% Grainboundary Smoothing 
@@ -84,7 +84,7 @@ hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
 
-%% Adapting the Alpha Paramter
+%% Adapting the Alpha Parameter
 % Increasing the parameter |'alpha'| larger unindexed regions are
 % associated to grains.
 

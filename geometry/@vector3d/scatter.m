@@ -283,10 +283,10 @@ markerSize = max(markerSize);
 
 % correct text positions
 t = findobj(hax,'Tag','setBelowMarker');
-correctTextPostion(t,markerSize,-1);
+correctTextPostion(hax,t,markerSize,-1);
 
 t = findobj(hax,'Tag','setAboveMarker');
-correctTextPostion(t,markerSize,1);
+correctTextPostion(hax,t,markerSize,1);
 
 % ------------- scale scatterplots -------------------------------
 u = findobj(hax,'Tag','dynamicMarkerSize');
@@ -318,27 +318,23 @@ p.Units = oldUnit;
 
 end
 
-function correctTextPostion(t,markerSize,direction)
+function correctTextPostion(ax,t,markerSize,dir)
 % adjust text positions
+
+if isempty(t), return; end
+
+[~,p2dy] = pix2data(ax);
+
+if ax.YDir=="reverse", dir = -dir; end
 
 for it = 1:length(t)
   
   xy = t(it).UserData;
   if any(isnan(xy)), continue; end
-  set(t(it),'units','data','position',[xy,0]);
-  t(it).Units = 'pixels';
-  xy = t(it).Position;
-  if isappdata(t(it),'extent')
-    extent = getappdata(t(it),'extent');
-  else
-    extent = t(it).Extent;
-    setappdata(t(it),'extent',extent);
-  end
-  margin = t(it).Margin;
-  xy(2) = xy(2) + direction*(extent(4)/2 + margin + markerSize/2 + 5);
-    
-  t(it).Position = xy;
-  t(it).Units = 'data';
+
+  t(it).Position(2) = xy(2) + dir * ...
+    (t(it).Extent(4)/2 + t(it).Margin + p2dy * (markerSize/2 + 4*(dir>0)));
+  
 end
 
 end

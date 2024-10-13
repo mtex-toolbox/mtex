@@ -2,7 +2,7 @@ function display(SO3F,varargin)
 % standard output
 
 if check_option(varargin,'skipHeader')
-  disp('  <strong>harmonic component</strong>');
+  disp(strong("  harmonic component"));
 else
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   if SO3F.antipodal, disp('  antipodal: true'); end

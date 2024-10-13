@@ -258,22 +258,22 @@ classdef crystalSymmetry < symmetry
           end
         end
         cs = s;
-        return; 
+        if isa(s.how2plot,'plottingConvention'), return; end        
       end
       
-      if isfield(s,'rot')
+      if isfield(s,'rot') || isprop(s,'rot')
         rot = s.rot;
       else
         rot = rotation(s.a,s.b,s.c,s.d,s.i);
       end
       
-      if isfield(s,'axes')
+      if isfield(s,'axes')  || isprop(s,'axes')
         axes = s.axes;
       else
         axes = [];
       end
       
-      if isfield(s,'id')
+      if isfield(s,'id')  || isprop(s,'id')
         id = {'pointId',s.id};
       else
         id = {};
@@ -281,9 +281,9 @@ classdef crystalSymmetry < symmetry
             
       cs = crystalSymmetry(rot,id{:},axes);
       
-      if isfield(s,'mineral'), cs.mineral = s.mineral; end
-      if isfield(s,'color'), cs.color = s.color; end
-      if isfield(s,'opt'), cs.opt = s.opt; end
+      if isfield(s,'mineral') || isprop(s,'mineral'), cs.mineral = s.mineral; end
+      if isfield(s,'color') || isprop(s,'color'), cs.color = s.color; end
+      if isfield(s,'opt') || isprop(s,'opt'), cs.opt = s.opt; end
             
     end
     

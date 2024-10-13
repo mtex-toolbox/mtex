@@ -17,40 +17,41 @@ close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
-% and have a look into the 100 inverse pole figure.
+% and have a look into the 101 inverse pole figure.
+r = vector3d(1,0,1);
 
 % compute the positions in the inverse pole figure
-h = ebsd.orientations .\ vector3d.X;
+h = ebsd.orientations .\ r;
 h = project2FundamentalRegion(h);
 
 % compute the azimuth angle in degree
 color = h.rho ./ degree;
 
-plotIPDF(ebsd.orientations,vector3d.X,'property',color,'MarkerSize',3,'grid')
+plotIPDF(ebsd.orientations,r,'property',color,'MarkerSize',3,'grid')
 mtexColorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth
-% angle 115 degrees with some outliers at 65 degree. In order to
+% angle -20 degrees with some outliers at -35 degree. In order to
 % increase the contrast for the main group, we restrict the color range from
 % 110 degree to 120 degree.
 
-setColorRange([110 120]);
+setColorRange([-25 -15]);
 
-% by the following lines we colorcode the outliers in purple.
+% by the following lines we colorize the outliers in purple.
 cmap = colormap;
 cmap(end,:) = [1 0 1]; % make last color purple
 cmap(1,:) = [1 0 1];   % make first color purple
 colormap(cmap)
 
 %%
-% The same colorcoding we can now apply to the EBSD map.
+% The same color coding we can now apply to the EBSD map.
 
 % plot the data with the customized color
 plot(ebsd,color)
 
 % set scaling of the angles to 110 - 120 degree
-setColorRange([110 120]);
+setColorRange([-25 -15]);
 
 % colorize outliers in purple.
 cmap = colormap;
@@ -58,7 +59,7 @@ cmap(end,:) = [1 0 1];
 cmap(1,:) = [1 0 1];
 colormap(cmap)
 
-%% Sharpening the default colorcoding
+%% Sharpening the default color coding
 % Next, we want to apply the same ideas as above to the default MTEX color
 % key, i.e. we want to stretch the colors such that they cover just the
 % orientations of interest.
@@ -102,7 +103,10 @@ hold off
 
 
 %% The axis angle color key
-% 
+% A second option to visualize small orientation deviation, e.g. within a
+% grains is the <axisAngleColorKey.axisAngleColorKey.html axis-angle color
+% key>. In order to demonstrate this color key let us first separate the
+% EBSD into grains.
 
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
 ebsd(grains(grains.grainSize<=3)) = [];
@@ -111,6 +115,9 @@ ebsd(grains(grains.grainSize<=3)) = [];
 grains = smooth(grains,5);
 
 %%
+% In order to apply the @axisAngleColorKey we need to specify the crystal
+% symmetry and a reference orientation |oriRef|. Often the meanorientation
+% of the grains is a good choice.
 
 ipfKey = axisAngleColorKey(ebsd('indexed'));
 
@@ -124,6 +131,8 @@ plot(grains.boundary,'lineWidth',4)
 hold off
 
 %%
+% Being able to visualize very small orientation changes gives us better
+% way to observe how <EBSDDenoising.html EBSD denoising methods> work
 
 F = halfQuadraticFilter;
 
@@ -137,32 +146,6 @@ plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
 hold on
 plot(grains.boundary,'lineWidth',4)
 hold off
-
-%%
-
-F = infimalConvolutionFilter;
-F.lambda = 0.01;
-F.mu = 0.02;
-
-ebsdS = smooth(ebsd,F);
-
-[grains,ebsdS.grainId] = calcGrains(ebsdS,'angle',1*degree);
-%ebsdS(grains(grains.grainSize<=3)) = [];
-%[grains,ebsdS.grainId] = calcGrains(ebsdS,'angle',1.5*degree);
-
-grains = smooth(grains,5);
-
-
-% use for the reference orientation the grain mean orientation
-ipfKey.oriRef = grains(ebsdS('indexed').grainId).meanOrientation;
-%ipfKey.oriRef = mean(ebsdS('indexed').orientations);
-
-plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations),'micronbar','off')
-
-hold on
-plot(grains.boundary,'lineWidth',4)
-hold off
-
 
 %% 
 % Another example is when analyzing the orientation distribution within

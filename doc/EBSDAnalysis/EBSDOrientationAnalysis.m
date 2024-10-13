@@ -1,4 +1,4 @@
-%% EBSD Orientation Anaylsis
+%% EBSD Orientation Analysis
 %
 %% 
 % Here we discuss tools for the analysis of EBSD data which are independent
@@ -41,7 +41,7 @@ hold off
 
 %%
 % we can check how large is the number of orientations that are in the
-% (100) polegigure within a 10-degree fibre around the great circle with
+% (100) pole figure within a 10-degree fibre around the great circle with
 % center |rOrth|. The following line gives the result in percent
 
 100 * sum(angle(r,rOrth)>80*degree) / length(ori)
@@ -76,9 +76,9 @@ plot(odf,f)
 ylim([0,26])
 
 %%
-% We see that to ODF is far from beeing constant along the fibre. Thus,
-% together with an observation about the small fibre volume, we would reject
-% the hypothesis of a fibre texture.
+% We see that to ODF is far from being constant along the fibre. Thus,
+% together with an observation about the small fibre volume, we would
+% reject the hypothesis of a fibre texture.
 %
 % Let's finally plot the ODF in orientation space to verify our decision
 

@@ -1,4 +1,4 @@
-function T = sym(T,varargin)
+function S = sym(T,varargin)
 % the symmetric part S = 0.5*(T + T') of a tensor
 %
 % Description

@@ -14,5 +14,3 @@ how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
 how2plot.setView(ax);
 
 end
-
-

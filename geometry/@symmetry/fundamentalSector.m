@@ -87,13 +87,20 @@ switch sym.id
     N = getMinAxes(sym.rot);
   case {5,8} % 2/m11 12/m1
     N = [zvector,getMinAxes(sym.rot)];
+    ind = isnull(dot(N,how2plot.outOfScreen)) & ...  
+      angle(how2plot.east,N,how2plot.outOfScreen) > 180*degree;
+    N(ind) = -N(ind);
   case 11
   case 12 % 222
   case {13,14,15} % 2mm, m2m, mm2
     N = sym.rot(sym.rot.i).axis; % take mirror planes
-    ind = angle(N,vector3d(sym.aAxis))< 45*degree;
+    ind = isnull(dot(N,how2plot.outOfScreen)) & ...  
+      mod(angle(how2plot.east,N,how2plot.outOfScreen)+5*degree,2*pi) > 180*degree;
     N(ind) = -N(ind);
   case 16 % mmm
+    ind = isnull(dot(N,how2plot.outOfScreen)) & ...  
+      mod(angle(how2plot.east,N,how2plot.outOfScreen)+5*degree,2*pi) > 180*degree;
+    N(ind) = -N(ind);
   case 17 % 3
   case 18 % -3
   case {19,20,21} % 321, 3m1, -3m1

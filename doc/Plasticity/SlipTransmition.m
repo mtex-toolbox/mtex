@@ -53,26 +53,28 @@ sSGrain = grains.meanOrientation .* sSBasal(id)
 % of the grains
 
 hold on
-quiver(grains,cross(sSGrain.n,zvector),'displayName','slip plane')
+quiver(grains,sSGrain.trace,'displayName','slip plane')
 hold on
-quiver(grains,sSGrain.b,'displayName','slip direction')
+quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
+legend show
+
 %%
-% We may also analyse the distribution of the slip directions in a pole
+% We may also analyze the distribution of the slip directions in a pole
 % figure plot
 
 plot(sSGrain.b)
 
 %%
-% The same as a contour plot. We see a clear trend towards the east.
+% The same as a contour plot. We see a clear trend in east/west direction.
 
 plot(sSGrain.b,'contourf')
+
 
 %% Resolved shear stress
 % We could do the same as above with a more general stress tensor. However,
 % the result is a bit different. 
-% TODO: why the directions do not point towards east???
 
 % more general syntax for the same stress tensor
 sigma = stressTensor.uniaxial(xvector);
@@ -90,14 +92,15 @@ mtexColorbar
 % active slip system in specimen coordinates
 sSGrain = grains.meanOrientation .* sSBasal(id)
 
-% and plot then the plance normal and the Burgers vectors into the centers
+% and plot then the plane normal and the Burgers vectors into the centers
 % of the grains
 hold on
-quiver(grains,cross(sSGrain.n,zvector),'displayName','slip plane')
+quiver(grains,sSGrain.trace,'displayName','slip plane')
 hold on
-quiver(grains,sSGrain.b,'displayName','slip direction')
+quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
+legend show
 
 %% Compatibility of slip systems
 %
@@ -116,12 +119,12 @@ hold on
 plot(gB,mP,'linewidth',3)
 mtexColorbar
 
-% and plot then the plance normal and the Burgers vectors into the centers
+% and plot then the plane normal and the Burgers vectors into the centers
 % of the grains
 hold on
-quiver(grains,cross(sSGrain.n,zvector),'displayName','slip plane')
+quiver(grains,sSGrain.trace,'displayName','slip plane')
 hold on
-quiver(grains,sSGrain.b,'displayName','slip direction')
+quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
 %% Plot m' in misorientation space
@@ -142,3 +145,4 @@ mP = max(mPrime(sSBasal,moriGrid*sSBasal.symmetrise),[],2);
 sP.plot(mP,'smooth')
 mtexColorbar
 
+ %#ok<*MINV>

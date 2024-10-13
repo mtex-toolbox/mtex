@@ -89,8 +89,8 @@ optQuiver = {'linewidth',2,'autoScaleFactor',0.35,'doNotDraw'};
 optQuiverProp = {'color','k','linewidth',2,'autoScaleFactor',0.25,'doNotDraw'};
 prop = S2VectorFieldHarmonic.normal; % the propagation direction
 
-% wave velocyties
-close all
+% wave velocities
+%close all
 plotSection(vp,planeNormal,optSec{:},'DisplayName','Vp')
 hold on
 plotSection(vs1,planeNormal,optSec{:},'DisplayName','Vs1')

@@ -24,7 +24,7 @@ for j = 1:numel(sP)
   end
   
   % plot the region
-  omega = linspace(0,2*pi,2161);
+  omega = linspace(0,2*pi,8641);
   for i=1:length(sR.N)
   
     rot = rotation.byAxisAngle(sR.N(i),omega);

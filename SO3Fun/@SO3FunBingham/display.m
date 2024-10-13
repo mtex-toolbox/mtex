@@ -3,7 +3,7 @@ function display(SO3F,varargin)
 
 
 if check_option(varargin,'skipHeader')
-  disp('  <strong>bingham component</strong>');
+  disp(strong("  bingham component"));
 else
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   disp(' ');

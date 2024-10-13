@@ -1,9 +1,9 @@
 classdef pfSections < ODFSections
 
   properties
-    h1        % the pole figure which is splitted up
+    h1        % the pole figure which is split up
     h2        %
-    omega
+    omega     % the parameter that defines the splitting sections
     sR
     referenceField
   end
@@ -14,9 +14,9 @@ classdef pfSections < ODFSections
 
   methods
 
-    function oS = pfSections(CS1,CS2,varargin)
+    function oS = pfSections(CS1,varargin)
 
-      oS = oS@ODFSections(CS1,CS2);
+      oS = oS@ODFSections(CS1,varargin{:});
 
       if isa(CS1,'crystalSymmetry')
         oS.h1 = CS1.cAxisRec; % c*
@@ -28,9 +28,9 @@ classdef pfSections < ODFSections
 
       oS.maxOmega = get_option(varargin,'maxOmega',2*pi / CS1.nfold(oS.h1));
       if angle(oS.h1,-oS.h1) < 1e-2
-        oS.sR = CS2.fundamentalSector('upper',varargin{:});
+        oS.sR = oS.CS2.fundamentalSector('upper',varargin{:});
       else
-        oS.sR = CS2.fundamentalSector(varargin{:});
+        oS.sR = oS.CS2.fundamentalSector(varargin{:});
       end
 
       % get sections

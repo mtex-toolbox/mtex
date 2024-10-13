@@ -23,7 +23,7 @@ sR.N
 v = Miller(2,3,1,cs)
 
 %%
-% We may check wether a direction is inside the fundamental region by the
+% We may check whether a direction is inside the fundamental region by the
 % command <sphericalRegion.checkInside.html checkInside>
 
 sR.checkInside(v)

@@ -38,7 +38,7 @@ if nargin == 4
 
   % check vectors are not colinear
   if any(abs(dot(u1,u2,'noSymmetry'))>1-eps)
-    warning('Input vectors should not be colinear!');
+    error('Input vectors should not be colinear!');
   end
 
   % a third orthogonal vector

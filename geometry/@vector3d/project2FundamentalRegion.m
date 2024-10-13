@@ -1,4 +1,4 @@
-function v = project2FundamentalRegion(v,cs,varargin)
+function [v,sym] = project2FundamentalRegion(v,cs,varargin)
 % projects vectors to the fundamental sector of the inverse pole figure
 %
 % Syntax
@@ -10,6 +10,10 @@ function v = project2FundamentalRegion(v,cs,varargin)
 %  v      - @vector3d
 %  cs     - @symmetry
 %  center - @vector3d
+%
+% Output
+%  v   - @vector3d 
+%  sym - @rotation the symmetry element used for the projection
 %
 % Options
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
@@ -81,7 +85,8 @@ dist = round(dist, 12);
 
 [~,col] = max(dist,[],2);
 
-v = reshape(inv(subSet(cs,col)),size(v)) .* v;
+sym = reshape(inv(subSet(cs,col)),size(v));
+v = sym .* v;
 
 end
 

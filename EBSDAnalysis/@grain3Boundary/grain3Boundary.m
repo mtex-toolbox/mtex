@@ -50,6 +50,9 @@ classdef grain3Boundary < phaseList & dynProp
     V        % used vertices, @vector3d
     N        % face normal
     misorientation
+    I_FG     % incidence matrix: faces <-> grains
+    I_VF     % incidence matrix: vertices <-> faces
+    I_VG     % incidence matrix: vertices <-> grains
   end
 
   methods
@@ -99,9 +102,9 @@ classdef grain3Boundary < phaseList & dynProp
 
     function out = get.idV(gB3)
       if iscell(gB3.F)
-      out = unique([gB3.F{:}]);
+        out = unique([gB3.F{:}]);
       else
-      out = unique(gB3.F);
+        out = unique(gB3.F);
       end
     end
 
@@ -142,7 +145,33 @@ classdef grain3Boundary < phaseList & dynProp
 
     end
 
+    function I_FG = get.I_FG(gB3)
+      
+      idF = repmat((1:length(gB3)).',1,2);
+      ind = gB3.grainId>0;
 
+      I_FG = sparse(idF(ind),gB3.grainId(ind),1,length(gB3),max(gB3.grainId(:)));
+
+    end
+
+    function I_VF = get.I_VF(gB3)
+      
+      if iscell(gB3.F)
+        V = [gB3.F{:}]; %#ok<PROP>
+        numV = cellfun(@numel,gB3.F);
+        F = repelem(1:length(gB3.F),1,numV); %#ok<PROP>
+      else
+        V = gB3.F; %#ok<PROP>
+        F = repmat(uint64(1:length(gB3.F)),3,1).'; %#ok<PROP>
+      end
+      I_VF = sparse(V,F,1); %#ok<PROP>
+      I_VF = I_VF ~= 0;
+
+    end
+
+    function I_VG = get.I_VG(gB3)
+      I_VG = (gB3.I_VF * gB3.I_FG)>0;
+    end
 
     function out = hasPhaseId(gB,phaseId,phaseId2)
       if isempty(phaseId), out = false(size(gB)); return; end

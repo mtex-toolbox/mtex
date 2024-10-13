@@ -40,7 +40,7 @@ mori = inv(grains(pairs(170,1)).meanOrientation) * grains(pairs(170,2)).meanOrie
 
 %%
 % This can be generalized to compute the misorientations between
-% neighbouring grains using
+% neighboring grains using
 
 mori = inv(grains(pairs(:,1)).meanOrientation) .* grains(pairs(:,2)).meanOrientation
 
@@ -89,4 +89,6 @@ hold on
 plot(grains(83).boundary,'lineColor','red','lineWidth',3)
 hold off
 
-%#ok<*NASGU>
+%#ok<*NASGU> 
+%#ok<*NOPTS>
+%#ok<*MINV>

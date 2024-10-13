@@ -1,5 +1,5 @@
-%% Slip Transmition
-% How to analyse slip transmission at grain boundaries
+%% Slip Transmission
+% How to analyze slip transmission at grain boundaries
 %
 %% Import Titanium data
 % From Mercier D. - MTEX 2016 Workshop - TU Chemnitz (Germany)
@@ -51,7 +51,7 @@ eps = strainTensor(diag([-q 1 -(1-q)]));
 
 sSGrain = grains.meanOrientation .* sS(id)
 
-% and plot then the plance normal and the Burgers vectors into the centers
+% and plot then the plane normal and the Burgers vectors into the centers
 % of the grains
 
 plot(grains,M)
@@ -59,14 +59,14 @@ plot(grains,M)
 largeGrains = grains(grains.grainSize > 10)
 
 hold on
-traces = cross(sSGrain.n,grains.N);
-quiver(grains,traces,'displayName','slip plane trace')
+quiver(grains,sSGrain.trace,'displayName','slip plane trace')
 hold on
-quiver(grains,sSGrain.b,'displayName','slip direction')
+quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
+legend show
 %%
-% We may also analyse the distribution of the slip directions in a pole
+% We may also analyze the distribution of the slip directions in a pole
 % figure plot
 
 plot(sSGrain.b)

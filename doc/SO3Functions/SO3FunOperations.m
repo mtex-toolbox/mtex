@@ -118,7 +118,7 @@ grad(SO3F1,R)
 G = grad(SO3F1)
 
 % plot the gradient on top of the function
-plot(SO3F1,'upper','sigma')
+plot(SO3F1,'sigma')
 hold on
 plot(G,'color','black','linewidth',2,'resolution',5*degree)
 hold off

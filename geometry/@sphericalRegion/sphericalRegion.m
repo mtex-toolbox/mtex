@@ -3,7 +3,7 @@ classdef sphericalRegion
 % The class *sphericalRegion* describes a region on the sphere that is
 % bounded by small circles. For a list of normal vectors $N_i$ and
 % coefficients $\alpha_i$ the region is defined as all vectors $v$ on the
-% sphere that satify for all $i$ the condition
+% sphere that satisfy for all $i$ the condition
 %
 % $$v \cdot N_i \le \alpha_i$$
 % 

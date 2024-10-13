@@ -11,7 +11,7 @@ classdef eareaProjection < sphericalProjection
       % compute polar angles
   
       % map such that projection is towards xy plane
-      % and compute there spherical coordinats
+      % and compute there spherical coordinates
       v(~sP.sR.checkInside(v,varargin{:})) = NaN;
       v = v.rmOption('theta','rho');
       [theta,rho] = polar(inv(sP.pC.rot) * v);

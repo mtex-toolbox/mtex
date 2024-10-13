@@ -25,7 +25,7 @@
 % In the case of square and hexagonal grids the order of neighbors is
 % illustrated below
 
-plotSquareNeighbours; nextAxis; plotHexNeighbours
+plotSquareNeighbours; nextAxis(1,2); plotHexNeighbours
 
 %% A Deformed Ferrite Specimen
 %

@@ -23,7 +23,7 @@ classdef plottingConvention < matlab.mixin.Copyable
   properties
     rot = rotation.id % screen coordinates to reference coordinates
   end
-  
+
   properties (Dependent=true)
     east   % axis that point east (default = x)
     west   % axis that point west (default = -x)
@@ -34,13 +34,15 @@ classdef plottingConvention < matlab.mixin.Copyable
     viewOpt  % translates screen orientation in MATLAB options
   end
 
+  properties (Hidden=true)
+    lastSet = []
+  end
+
   methods
 
-    function pC = plottingConvention(outOfScreen,east)
-      
+    function pC = plottingConvention(outOfScreen,east)      
       if nargin >= 1, pC.outOfScreen = outOfScreen; end
-      if nargin >= 2, pC.east = east; end
-
+      if nargin >= 2, pC.east = east; end      
     end
         
     function display(pC,varargin)
@@ -102,7 +104,7 @@ classdef plottingConvention < matlab.mixin.Copyable
         
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
-        
+        ax.CameraUpVector = pC.north.xyz;
 
       else % map plot
 
@@ -110,8 +112,8 @@ classdef plottingConvention < matlab.mixin.Copyable
 
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
+        ax.CameraUpVector = pC.north.xyz;
         
-
       end
       
     end
@@ -125,56 +127,62 @@ classdef plottingConvention < matlab.mixin.Copyable
     function v = get.outOfScreen(pC), v = pC.rot * vector3d.Z; end
     function set.outOfScreen(pC,n)
       try
-        pC.rot = rotation.map(pC.outOfScreen,n,pC.east,pC.east) * pC.rot;
+        pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
       catch
         pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot;
       end
+      pC.lastSet = n;
     end
 
     function v = get.intoScreen(pC), v = -pC.rot * vector3d.Z; end
     function set.intoScreen(pC,n)
       try
-        pC.rot = rotation.map(pC.outOfScreen,-n,pC.east,pC.east) * pC.rot;
+        pC.rot = rotation.map(pC.outOfScreen,-n,pC.lastSet,pC.lastSet) * pC.rot;
       catch
         pC.rot = rotation.map(pC.outOfScreen,-n) * pC.rot;
       end
+      pC.lastSet = n;
     end
 
 
     function v = get.east(pC), v = pC.rot * vector3d.X; end
     function set.east(pC,e)
       try
-        pC.rot = rotation.map(pC.east,e,pC.outOfScreen,pC.outOfScreen) * pC.rot; 
+        pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot; 
       catch ME
         pC.rot = rotation.map(pC.east,e) * pC.rot;
       end
+      pC.lastSet = e;
     end
 
     function v = get.west(pC), v = -pC.rot * vector3d.X; end
     function set.west(pC,w)
       try
-        pC.rot = rotation.map(pC.east,-w,pC.outOfScreen,pC.outOfScreen) * pC.rot; 
+        pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot; 
       catch
         pC.rot = rotation.map(pC.east,-w) * pC.rot; 
       end
+      pC.lastSet = w;
     end
 
     function v = get.north(pC), v = pC.rot * vector3d.Y; end
     function set.north(pC,v)
       try
-        pC.rot = rotation.map(pC.north,v,pC.outOfScreen,pC.outOfScreen) * pC.rot; 
+        pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot; 
       catch
         pC.rot = rotation.map(pC.north,v) * pC.rot; 
       end
+      pC.lastSet = v;
     end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
     function set.south(pC,v)
       try
-        pC.rot = rotation.map(pC.north,-v,pC.outOfScreen,pC.outOfScreen) * pC.rot;
+        pC.rot = rotation.map(pC.north,-v,pC.lastSet,pC.lastSet) * pC.rot;
       catch ME
         pC.rot = rotation.map(pC.north,-v) * pC.rot;
-      end      
+      end
+      pC.lastSet = v;
     end
 
     function plot(pC, varargin)
@@ -223,6 +231,16 @@ classdef plottingConvention < matlab.mixin.Copyable
     function pC = default
       pC = getMTEXpref('xyzPlotting');
     end
+
+    function pC = default3D
+      pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
+    end
+
+    function setDefault
+      pC = getMTEXpref('xyzPlotting');
+      pC.rot = rotation.id;
+    end
+
 
   end
 

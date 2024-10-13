@@ -97,10 +97,10 @@ r = plotS2Grid('resolution',0.5*degree,'upper');
 tau = sSAll.SchmidFactor(r);
 
 % tau is a matrix with columns representing the Schmid factors for the
-% different slip systems. Lets take the maximum rhowise
+% different slip systems. Lets take the maximum row-wise
 [tauMax,id] = max(abs(tau),[],2);
 
-% vizualize the maximum Schmid factor
+% visualize the maximum Schmid factor
 contourf(r,tauMax)
 mtexColorbar
 
@@ -115,8 +115,8 @@ mtexColorMap(vega20(12))
 % remains the same. We can even visualize the the plane normal and the slip
 % direction
 
-% if we ommit the option antipodal we can distinguish
-% between the oposite burger vectors
+% if we omit the option antipodal we can distinguish
+% between the opposite burger vectors
 sSAll = sS.symmetrise
 
 % take as directions the centers of the fundamental regions
@@ -141,7 +141,7 @@ hold off
 %%
 % If we perform this computation in terms of spherical functions we obtain
 
-% ommiting |r| gives us a list of 12 spherical functions
+% omitting |r| gives us a list of 12 spherical functions
 tau = sSAll.SchmidFactor
 
 % now we take the max of the absolute value over all these functions
@@ -164,6 +164,7 @@ ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
 grains = calcGrains(ebsd);
 grains = smooth(grains,5);
 
+plotx2east
 plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',2)
@@ -186,16 +187,16 @@ sS = sS.symmetrise;
 sSLocal = grains.meanOrientation * sS
 
 %%
-% These slip systems are now arranged in matrix form
-% where the rows corrspond to the crystal reference frames of the different
-% grains and the rows are the symmetrically equivalent slip systems.
-% Computing the Schmid faktor we end up with a matrix of the same size
+% These slip systems are now arranged in matrix form where the rows
+% correspond to the crystal reference frames of the different grains and
+% the rows are the symmetrically equivalent slip systems. Computing the
+% Schmid factor we end up with a matrix of the same size
 
 % compute Schmid factor
 sigma = stressTensor.uniaxial(vector3d.Z)
 SF = sSLocal.SchmidFactor(sigma);
 
-% take the maxium allong the rows
+% take the maximum along the rows
 [SFMax,active] = max(SF,[],2);
 
 % plot the maximum Schmid factor
@@ -231,13 +232,13 @@ sigmaLocal = inv(grains.meanOrientation) * sigma
 %%
 % This becomes a list of stress tensors with respect to crystal coordinates
 % - one for each grain. Now we have both the slip systems as well as the
-% stress tensor in crystal coordiantes and can compute the Schmid factor
+% stress tensor in crystal coordinates and can compute the Schmid factor
 
 % the resulting matrix is the same as above
 SF = sS.SchmidFactor(sigmaLocal);
 
 % and hence we may proceed analogously
-% take the maxium allong the rows
+% take the maximum along the rows
 [SFMax,active] = max(SF,[],2);
 
 % plot the maximum Schmid factor
@@ -272,11 +273,12 @@ mtexColorbar southoutside
 [ bMax , bMaxId ] = max( b , [ ] , 2 ) ;
 sSGrains = grains.meanOrientation .* sS(bMaxId) ;
 hold on
-quiver ( grains , sSGrains.b)
+bVec = sSGrains.b; bVec.z = 0;
+quiver ( grains , bVec)
 quiver ( grains , sSGrains.trace)
 hold off
 
 %#ok<*ASGLU>
 %#ok<*NASGU>
-
-
+%#ok<*NOPTS>
+%#ok<*MINV>

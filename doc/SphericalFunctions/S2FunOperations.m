@@ -8,6 +8,7 @@
 sF1 = S2Fun.smiley;
 sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree)
 
+plotx2north
 plot(sF1,'upper')
 nextAxis
 plot(sF2,'upper')
@@ -125,7 +126,7 @@ plot(rotate(15 * sF1 + sF2,rot),'upper')
 
 
 %%
-% A special case of rotation is symmetrysing it with respect to some
+% A special case of rotation is symmetrising it with respect to some
 % symmetry. The following example symmetrises our smiley with respect to
 % a two fold axis in $z$-direction 
 

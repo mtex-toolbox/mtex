@@ -8,7 +8,7 @@ if ~check_option(varargin,'skipHeader')
 end
 
 if SO3F.c0 ~= 0
-  disp('  <strong>uniform component</strong>');
+  disp(strong("  uniform component"));
   disp(['  weight: ',xnum2str(SO3F.c0)]);
   
   disp(' ');
@@ -17,9 +17,9 @@ end
 if ~isempty(SO3F.center)
   
   if isscalar(SO3F.center)
-    disp('  <strong>unimodal component</strong>');
+    disp(strong("  unimodal component"));
   else
-    disp('  <strong>multimodal components</strong>');
+    disp(strong("  multimodal components"));
   end
   disp(['  kernel: ',char(SO3F.psi)]);
   if isa(SO3F.center,'SO3Grid')

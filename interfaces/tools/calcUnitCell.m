@@ -15,26 +15,56 @@ function unitCell = calcUnitCell(xy,varargin)
 if isempty(xy)
   unitCell = [];
   return;
+elseif size(xy,2) == 3
+  xy = xy(:,1:2);
 end
 
-if size(xy,2) == 3, xy = xy(:,1:2); end
+% maybe everything is given by options
+dxy = get_option(varargin,'GridResolution',[]);
+cellType = get_option(varargin,'GridType','');
+cellRot = get_option(varargin,'GridRotation',0*degree);
 
-% first estimate of the grid resolution
-area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
-dxy = sqrt(area / length(xy));
+if isempty(dxy)
+  
+  % first estimate of the grid resolution - very rough idea
+  area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
+  dxy = sqrt(area / length(xy));
 
-% compensate for single line EBSD
-if dxy==0
-  lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
-  if lx==0, lx=ly; else; ly=lx; end
-  dxy= (lx+ly)/2;
-end
+  % compensate for single line EBSD
+  if dxy == 0
+    lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
+    if lx==0, lx=ly; else; ly=lx; end
+    dxy = (lx+ly)/2;
+  end
 
-if length(xy)>10000 
-  xySmall = subSample(xy,10000); 
+  if ~(dxy > 0)
+    unitCell = regularPoly(4,1,0);
+    return
+  end
+
+  % second estimate of the grid resolution 
+  % works good for square grids that are not rotated
+  dxy2 = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...
+    mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
+
 else
-  xySmall = xy;
+
+  dxy2 = dxy;
+
+end  
+
+% check for square grid
+if abs(dxy2(1) - dxy2(2))/min(dxy2) <  1e-3 && ...
+    abs((min(diff(uniquetol(xy(xy(:,1)==xy(2,1),2),'DataScale',1))) - dxy2(2))/dxy2(2)) < 0.01 && ...
+    abs((min(diff(uniquetol(xy(xy(:,2)==xy(2,2),1),'DataScale',1))) - dxy2(1))/dxy2(1)) < 0.01
+  unitCell = regularPoly(4,dxy2,0);
+  return
 end
+
+
+% if we are not sure we make a voronoi decomposition
+% with a reduced data set
+xySmall = subSample(xy,10000);
 
 % remove duplicates from the coordinates
 xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);
@@ -48,43 +78,38 @@ try
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
   
   % the unit cell should be the Voronoi cell with the smallest area
-  [~, ci] = quantile(areaf,0.2);
+  areaf(areaf < quantile(areaf,0.8)/100) = inf;
+  [~, ci] = quantile(areaf,0.05);
+  %[~, ci] = min(areaf);
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xySmall(ci,1),v(c{ci},2) - xySmall(ci,2)];
+  % unitCell = [v(c{ci},1),v(c{ci},2)];
   % sometimes it happens that we have one point doubled, remove those
   ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
     
-  % second estimate of the grid resolution
-  dxy2 = max(unitCell) - min(unitCell);
-  
-  if 100*dxy2 > dxy, dxy = dxy2;end
-  
-  % check for rectangular grid
-  if isscalar(uniquetol(abs(unitCell(:,1)),1e-1)) && ...
-      isscalar(uniquetol(abs(unitCell(:,2)),1e-1))
-
-    % more robust estimate of dxy
-    dxy = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...
-      mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
-
-    unitCell = regularPoly(4,dxy,cellRot);
-
-  end
-  
-  if isRegularPoly(unitCell,varargin)
-    return
-  end
-
-  
-catch %#ok<CTCH>
+  % third estimate of the grid resolution
+  dxy2 = min(vecnorm(unitCell.',2));
+catch
+  unitCell = [];
 end
 
-% get grid options
-dxy = get_option(varargin,'GridResolution',dxy);
-cellType = get_option(varargin,'GridType','rectangular');
-cellRot = get_option(varargin,'GridRotation',0*degree);
+dxy = dxy2;
+
+%if 100*dxy3 > dxy2, dxy = dxy2; end
+   
+if ~isempty(unitCell) && isRegularPoly(unitCell,varargin)
+  return
+end
+
+if isempty(cellType)
+  if length(unitCell) == 6
+    cellType = 'hexagonal';
+  else
+    cellType = 'rectangular';
+  end
+end
 
 % otherwise take a regular unit cell
 switch lower(cellType)
@@ -131,7 +156,7 @@ isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy
   norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
 
 
-% find a quare subset of about N points
+% find a square subset of about N points
 function xy = subSample(xy,N)
 
 xminmax = [min(xy(:,1));max(xy(:,1))];

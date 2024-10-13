@@ -111,7 +111,8 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   scaling = sqrt(grains.area);
   cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
-  pos = grains.centroid + 1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N;
+  pos = grains.centroid + ...
+    1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N * sign(dot(grains.N,pC.outOfScreen));
     h = plot(pos + cS,'parent', mP.ax,varargin{:});
   
   plotBoundary = false;

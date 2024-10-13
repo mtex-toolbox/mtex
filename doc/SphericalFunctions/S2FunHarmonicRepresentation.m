@@ -28,6 +28,7 @@
 
 fun = S2FunHarmonic([1;0;3;0])
 
+plotx2north
 plot(fun)
 
 %%

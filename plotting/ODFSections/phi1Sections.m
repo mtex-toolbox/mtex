@@ -21,13 +21,15 @@ classdef phi1Sections < ODFSections
       %
       % Options
       %  sections - number of sections
-      %  phi1 - explicite section values
+      %  phi1 - explicit section values
       %
 
       oS = oS@ODFSections(varargin{:});
 
       % get fundamental plotting region
       [oS.maxphi1,Phi,maxphi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
+      Phi = get_option(varargin,'maxPhi',Phi);
+      maxphi2 = get_option(varargin,'maxphi2',maxphi2);
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',maxphi2);
 
       % get sections
@@ -89,9 +91,10 @@ classdef phi1Sections < ODFSections
 
       % plot data
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.phi1(sec)./degree),'^\circ'],...
-        'parent',ax,'projection','plain','xAxisDirection','east',...
         'xlabel','$\varphi_2$','ylabel','$\Phi$','dynamicMarkerSize',...
-        'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
+        'parent',ax,'projection','plain', varargin{:},'doNotDraw');
+
+      h.Parent.YDir = "reverse";
 
     end
 

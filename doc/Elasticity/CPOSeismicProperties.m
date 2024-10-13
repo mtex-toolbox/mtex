@@ -8,6 +8,7 @@
 % Let's first import an example dataset from the MTEX toolbox
 
 mtexdata forsterite
+plotx2north
 
 %%
 % This dataset consists of the three main phases, forsterite, enstatite and
@@ -29,10 +30,9 @@ mtexdata forsterite
 
 ebsd = rotate(ebsd,rotation('axis',-zvector,'angle',90*degree));
 
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 
 %% Import the elastic stiffness tensors
-%
 % The elastic stiffness tensor of Forsterite was reported in
 % Abramson et al., 1997 (Journal of Geophysical Research) with respect to
 % the crystal reference frame

@@ -7,7 +7,7 @@ function h = text(m,varargin)
 % Options
 %  symmetrised - plot symmetrically equivalent directions
 %  antipodal   - include antipodal symmetry
-%  labeled     - plot Miller indice as label
+%  labeled     - plot Miller indices as label
 %  label       - plot user label
 %
 % See also
