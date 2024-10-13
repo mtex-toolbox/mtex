@@ -14,7 +14,7 @@ function SO3F = approximation(nodes, y, varargin)
 % with specific kernel $\psi$ centered at $N$ nodes weighted by $w_j,\sum_{j}^{N}w_{j}=1$
 % as described by [1].
 %
-% We can also use the approximation command to approximate an SO3FunRBF 
+% We can also use the approximation command to approximate an SO3FunRBF
 % from some given SO3Fun.
 %
 % Two routes are implemented, refered to as spatial method and harmonic method.
@@ -27,17 +27,17 @@ function SO3F = approximation(nodes, y, varargin)
 % and grid nodes $R_j,j=1,...,N$.
 % The harmonic method computes a system matrix $\Psi\in\mathbb{C}^{L\times M}$,
 % where the columns refer to the WignerD function of each grid node $R_j$.
-% Both systems are solved by a modified least squares. 
-% 
+% Both systems are solved by a modified least squares.
+%
 % The spatial method is well suited for sharp functions (i.e. high bandwidth),
-% whereas the harmonic method is better suited for low bandwidth, since the 
+% whereas the harmonic method is better suited for low bandwidth, since the
 % system matrix becomes very large for high bandwidths.
 %
-% For the spatial method, instead of least squares also the maximum-likelihood 
-% estimate can be computed. 
-% Note that both of this methods have the condition that we approximate a 
+% For the spatial method, instead of least squares also the maximum-likelihood
+% estimate can be computed.
+% Note that both of this methods have the condition that we approximate a
 % odf (the mean of the SO3Fun is 1).
-% Hence we can also use some standard least squares methods. 
+% Hence we can also use some standard least squares methods.
 %
 % Reference: [1] Schaeben, H., Bachmann, F. & Fundenberger, JJ. Construction of weighted crystallographic orientations capturing a given orientation density function. J Mater Sci 52, 2077–2090 (2017). https://doi.org/10.1007/s10853-016-0496-1
 %
@@ -45,6 +45,7 @@ function SO3F = approximation(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f)
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'resolution',5*degree)
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'kernel', psi)
+%   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'density')
 %   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT)
 %   SO3F = SO3FunRBF.approximation(SO3Fun,'kernel',psi)
 %
@@ -74,6 +75,8 @@ function SO3F = approximation(nodes, y, varargin)
 %  likelihood/mlm   - maximum likelihood estimate for spatial method
 %  spatial/spm      - spatial method (default, not specified)
 %  harmonic/fourier - harmonic method
+%  nothinning       - keep all approximation nodes, irrespective of the associated weight
+%  odf              - ensure that SO3FunRBF is a density
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/approximation WignerD
@@ -84,64 +87,64 @@ function SO3F = approximation(nodes, y, varargin)
 % check_SO3FunRBFApproximation
 
 if isa(nodes,'SO3Fun') && nargin>1
-  varargin = [y,varargin];
+    varargin = [y,varargin];
 end
 
 % get kernel
 if check_option(varargin,'kernel')
-  psi = get_option(varargin,'kernel');
-  hw = psi.halfwidth;
+    psi = get_option(varargin,'kernel');
+    hw = psi.halfwidth;
 else
-  hw = get_option(varargin,'halfwidth',5*degree);
-  psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
+    hw = get_option(varargin,'halfwidth',5*degree);
+    psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
 end
 
 % get center of approximated SO3FunRBF
 if check_option(varargin,'exact') && isa(nodes,'rotation')
-  SO3G = nodes;
+    SO3G = nodes;
 else
-  res = get_option(varargin,'resolution',max(0.75*degree,hw));
-  SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
-  res = SO3G.resolution;
+    res = get_option(varargin,'resolution',max(0.75*degree,hw));
+    SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
+    res = SO3G.resolution;
 end
-
-
 
 
 % if input is a SO3Fun, either set up an nodes/y or fourier coeff
 if isa(nodes,'SO3Fun')
 
-  f = nodes;
-  
-  % maybe we have to normalize at the end
-  if abs(mean(f.mean-1))<0.1
-    varargin = [varargin,'odf'];
-  end
+    f = nodes;
 
-  if check_option(varargin,{'harmonic','fourier'}) % get_flag?
-    y0 = f.eval(SO3G); % initial guess for coefficients
-    fhat = calcFourier(f,'bandwidth',psi.bandwidth+1);   % Why +1 ???
-    % compute weights
-    chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
-  else
-    approxres = get_option(varargin,'approxresolution',res/2);
-    nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
-    y = f.eval(nodes);
-    % compute weights
-    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
-  end
+    % maybe we have to normalize at the end
+    varargin = [varargin,'mean',f.mean];
+    % %mean does not say anything about f(g) < 0 -> no odf
+    % if abs(mean(f.mean-1))<0.1
+    %   varargin = [varargin,'odf'];
+    % end
+
+    if check_option(varargin,{'harmonic','fourier'}) % get_flag?
+        y0 = f.eval(SO3G); % initial guess for coefficients
+        fhat = calcFourier(f,'bandwidth',psi.bandwidth+1);   % Why +1 ???
+        % compute weights
+        chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
+    else
+        approxres = get_option(varargin,'approxresolution',res/2);
+        nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
+        y = f.eval(nodes);
+        % compute weights
+        chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
+    end
 
 else
 
-  if length(nodes) ~= numel(y)
-    error('Approximation of a SO3FunRBF is only possible for univariate functions.')
-  end
-  if ~isa(nodes,'orientation')% preserve SO3Grid structure
-    nodes = orientation(nodes);
-  end
-  % compute weights
-  chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
-  
+    if length(nodes) ~= numel(y)
+        error('Approximation of a SO3FunRBF is only possible for univariate functions.')
+    end
+    if ~isa(nodes,'orientation')% preserve SO3Grid structure
+        nodes = orientation(nodes);
+    end
+    % compute weights
+    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
+
 end
 
 % Note: In case of interpolation we may construct the uniform portion first
@@ -155,17 +158,17 @@ end
 % SO3F = m * uniformODF(nodes.CS,nodes.SS);
 
 % construct SO3FunRBF
-if check_option(varargin,{'nothinning','-nothinning','exact'})
-  SO3F = SO3FunRBF(SO3G,psi,chat);
+if check_option(varargin,{'odf'}) || all(chat>=0)
+    SO3F = unimodalODF(SO3G,psi,'weights',chat,varargin{:});
 else
-  SO3F = unimodalODF(SO3G,psi,'weights',chat);
+    SO3F = SO3FunRBF(SO3G,psi,chat);
 end
 
 % normalize odf
-if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'odf')
-  SO3F.weights = SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
+if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'mean')
+    m = get_option(varargin,'mean',(1-SO3F.c0)/psi.A(1));
+    SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:));
 end
-
 
 end
 
@@ -182,69 +185,76 @@ function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
-if check_option(varargin,'odf')
-  varargin = ['mlsq',varargin];
+if check_option(varargin,{'odf'}) || ...
+    (check_option(varargin,{'mean'}) && (all(y(:) >= 0) || all(y(:) <= 0)))
+    varargin = ['mlsq',varargin];
 end
 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood','maximumlikelihood','mlrl','mlsq'},'lsqr')
 
-  case 'lsqlin'
+    case 'lsqlin'
 
-    tolCon = get_option(varargin,'lsqlin_tolCon',1e-10);
-    tolX = get_option(varargin,'lsqlin_tolX',1e-14);
-    tolFun = get_option(varargin,'lsqlin_tolFun',1e-10);
+        tolCon = get_option(varargin,'lsqlin_tolCon',1e-10);
+        tolX = get_option(varargin,'lsqlin_tolX',1e-14);
+        tolFun = get_option(varargin,'lsqlin_tolFun',1e-10);
 
-    options = optimoptions('lsqlin','Algorithm','interior-point',...
-      'Display','iter','TolCon',tolCon,'TolX',tolX,'TolFun',tolFun);
+        options = optimoptions('lsqlin','Algorithm','interior-point',...
+            'Display','iter','TolCon',tolCon,'TolX',tolX,'TolFun',tolFun);
 
-    n2 = size(Psi,1);
+        n2 = size(Psi,1);
 
-    chat = lsqlin(Psi',y,-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
+        chat = lsqlin(Psi',y,-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
 
-  case 'nnls'
+    case 'nnls'
 
-    chat = nnls(full(Psi).',y,struct('Iter',1000));
+        chat = nnls(full(Psi).',y,struct('Iter',1000));
 
-  case 'lsqnonneg'
+    case 'lsqnonneg'
 
-    chat = lsqnonneg(Psi',y);
+        chat = lsqnonneg(Psi',y);
 
-  case 'lsqr'
+    case 'lsqr'
 
-    tol = get_option(varargin,{'tol','tolerance'},1e-2);
-    iters = get_option(varargin,{'iter','iter_max','iters'},30);
-    [chat,flag] = lsqr(Psi',y,tol,iters);
+        tol = get_option(varargin,{'tol','tolerance'},1e-2);
+        iters = get_option(varargin,{'iter','iter_max','iters'},30);
+        [chat,flag] = lsqr(Psi',y,tol,iters);
 
-    %In case a user wants the best possible tolerence, just keep increasing
-    %tolerance
-    cnt=0;
-    while flag > 0
-      tol = tol*1.3;
-      disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
-      [chat,flag] = lsqr(Psi',y,tol,50);
-      cnt=cnt+1;
-      if cnt > 5
-        disp('   more than 5 lsqr tolerance cut backs')
-        disp('   consider using a larger tolerance')
-        break
-      end
-    end
+        %In case a user wants the best possible tolerence, just keep increasing
+        %tolerance
+        cnt=0;
+        while flag > 0
+            tol = tol*1.3;
+            disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
+            [chat,flag] = lsqr(Psi',y,tol,50);
+            cnt=cnt+1;
+            if cnt > 5
+                disp('   more than 5 lsqr tolerance cut backs')
+                disp('   consider using a larger tolerance')
+                break
+            end
+        end
 
-  case {'mlm','likelihood','maximumlikelihood','mlrl','mlsq'}  % we have constraints that 
+    case {'mlm','likelihood','maximumlikelihood','mlrl','mlsq'}  % we have constraints that
 
-    % initial guess for coefficients
-    c0 = Psi*y(:);
-    c0(c0<=eps) = eps;
-    c0 = c0./sum(c0(:));
+        m = get_option(varargin,'mean',1.0);
+        % initial guess for coefficients
+        c0 = Psi*y(:);
+        if check_option(varargin,'odf')
+            c0(c0<eps) = eps; % all weights must be positive
+        else
+            cx = abs(c0)<=eps;
+            c0(cx) = sign(c0(cx))*eps;
+        end
+        c0 = m*c0./sum(c0(:));
 
-    itermax = get_option(varargin,{'iter','iter_max','iters'},100);
-    tol = get_option(varargin,{'tol','tolerance'},1e-3);
+        itermax = get_option(varargin,{'iter','iter_max','iters'},100);
+        tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-    if check_option(varargin,{'mlm','likelihood','maximumlikelihood','mlrl'})
-      chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
-    else
-      chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
-    end
+        if check_option(varargin,{'mlm','likelihood','maximumlikelihood','mlrl'})
+            chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
+        else
+            chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
+        end
 
 end
 
@@ -252,12 +262,15 @@ end
 
 
 
-function chat = harmonicMethod(SO3G,psi,fhat,y0,varargin)
+function chat = harmonicMethod(SO3G,psi,fhat,y,varargin)
 
-% initial guess for coefficients
-c0 = y0(:) ; %odf.eval(SO3G);
-c0(c0<=eps) = eps;
-c0 = c0./sum(c0(:));
+if (any(y(:) < 0) && any(0 < y(:)))
+    error('SO3FunRBF:approximation','can not approximate non-density like functions with the harmonic method')
+end
+
+% if check_option(varargin,'mean') && (all(y > 0) || all(y < 0))
+%     varargin = ['mlsq',varargin];
+% end
 
 % get fourier coefficients for each node
 psi = conv(psi,1./sqrt(2*(0:psi.bandwidth)+1));
@@ -276,6 +289,11 @@ end
 itermax = get_option(varargin,{'iter','iter_max','iters'},100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
+m = get_option(varargin,'mean',1.0);
+% initial guess for coefficients
+c0 = y(:) ; %odf.eval(SO3G);
+c0(c0<=eps) = eps;
+c0 = m*c0./sum(c0(:));
 chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
 
 end

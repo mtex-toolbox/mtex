@@ -31,9 +31,6 @@ if nargin < 3
     c0 = ones(M,1)./M;
 end
 
-if any(I < 0) && any(0 < I)
-    error('mlsq:ensureNonNegative','All intensities must be non-negative or negative. Mixed intensities, mixed results.');
-end
 
 chat = real(c0);
 r = Psi*chat-I;     % initial residual
