@@ -14,6 +14,15 @@ end
 
 function err = calc_err(SO3F,C)
 
+% apply l2-normalization and conjugate
+% see also L2normalizeFourierCoefficients
+L = dim2deg(length(C));
+for n=1:L
+    ind = deg2dim(n)+1:deg2dim(n+1);
+    C(ind,:) = conj(C(ind,:)) / sqrt(2*n+1);
+end
+
+% reference coefficents
 Cx = calcFourier(SO3F,'bandwidth',dim2deg(numel(C))+1); % +1 looks like a bug in mtex
 err = sum(conj(Cx-C).*(Cx-C));
 
