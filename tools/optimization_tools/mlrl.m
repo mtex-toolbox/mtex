@@ -32,7 +32,7 @@ if nargin < 3
 end
 
 if any(I(:)<0)
-    error('ml:ensureNonNegative','The intensities must be non-negative.');
+    error('mlrl:ensureNonNegative','The intensities must be non-negative.');
 end
 
 [oldc,chat] = deal(c0,c0);
@@ -50,5 +50,10 @@ for k=1:itermax
     end
     oldc = chat;
 end
+
+if k == itermax
+    warning('mlrl:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
+end
+
 end
 
