@@ -17,10 +17,10 @@ function plotEllipse(c,a,b,varargin)
 % grain2d/plot grainBoundary/plot grain2d/principalComponents
 %
 
-% angle discretisation
+% angle discretization
 phi = [linspace(0,2*pi,100),nan]; 
 
-% ellipse discretisation
+% ellipse discretization
 v = (a(:) * cos(phi) + b(:)*sin(phi) + c(:)).';
 
 % plot
@@ -29,9 +29,10 @@ varargin = delete_option(varargin,'lineColor');
 
 if isnumeric(c) && numel(c)>3 % plot multiple ellipses with different colors
 
+  h = gobjects(size(c,1),1);
   for i = 1:size(c,1)
     h(i) = optiondraw(line(v.x(:,i),v.y(:,i),v.z(:,i),'color',c(i,:)),varargin{:});
-    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    h(i).Annotation.LegendInformation.IconDisplayStyle = 'off';
   end
   
 else % plot only one object
