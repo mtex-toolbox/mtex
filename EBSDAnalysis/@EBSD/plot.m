@@ -94,7 +94,7 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
 else % phase plot
 
-  if ebsd.isSinglePhase
+  if ebsd.isSinglePhase && ~check_option(varargin,'faceColor')
     
     str = inputname(1);
     if isempty(str), str = "ebsd"; end
