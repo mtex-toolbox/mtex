@@ -50,12 +50,10 @@ hold off
 % clearly visible. To do so we colorize the orientation data with respect
 % to their misorientation to the grain mean orientation
 
-% the @axisAngleColorKey colorizes misorientation according to their axis
-% and angle
+% the axisAngleColorKey colorizes misorientation according to their axis and angle
 colorKey = axisAngleColorKey;
 
-% we need to set the reference orientations are the mean orientation of
-% each grain
+% we set the reference orientations as the mean orientation of each grain
 colorKey.oriRef = grains(ebsd.grainId).meanOrientation;
 
 % lets plot the result

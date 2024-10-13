@@ -78,7 +78,7 @@ hold off
 % In the case of trigonal and hexagonal crystal symmetry often four digit
 % Miller indices $[UVTW]$ and $(HKIL)$ are used, as they make it more easy
 % to identify symmetrically equivalent directions. This notation is
-% redundant as the first three Miller indeces always sum up to zero, i.e.,
+% redundant as the first three Miller indices always sum up to zero, i.e.,
 % $U + V + T = 0$ and $H + K + I = 0$. The syntax is
 
 % import trigonal Quartz lattice structure
