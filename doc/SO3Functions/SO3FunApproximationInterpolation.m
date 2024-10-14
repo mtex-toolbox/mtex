@@ -45,6 +45,11 @@ plot(SO3F)
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 %%
+% Also, interpolation might not guarantee non-negativity of the function
+
+min(SO3F)
+
+%%
 % If we don't restrict ourselves to the given function values in the nodes,
 % we have more freedom, which can be seen in the case of approximation.
 
@@ -168,7 +173,6 @@ plot(SO3F3)
 norm(SO3F2)
 norm(SO3F3)
 
-
 %% 
 % This smoothing results in a larger error in the data points,
 % which may not be much important since we had noisy function values given,
@@ -178,13 +182,15 @@ norm(eval(SO3F3, ori) - S.values) / norm(S.values)
 
 %%
 % Alternatively, the noisy data can be also approximated using a kernel
-% density. We may study the effect of adjusting the kernel halfwidth to the
+% density. Using the |odf| flag, we additionally make sure that the function
+% does not have non-negative function values and is normalized to 1.
+% We may study the effect of adjusting the kernel halfwidth to the
 % error
 
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-    SO3Fhw = SO3FunRBF.approximation(ori,val,'halfwidth',hw(k)*degree);
+    SO3Fhw = SO3FunRBF.approximation(ori,val,'halfwidth',hw(k)*degree,'odf');
     err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
 end
 
