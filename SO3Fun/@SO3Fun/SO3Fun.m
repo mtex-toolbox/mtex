@@ -50,7 +50,7 @@ classdef SO3Fun < dynOption
   
     [SO3F,interface,options] = load(fname,varargin)
     SO3F = dubna(varargin)
-    SO3F = interpolate(ori,values,varargin)
+    [SO3F,resvec] = interpolate(ori,values,varargin)
     
   end
 
