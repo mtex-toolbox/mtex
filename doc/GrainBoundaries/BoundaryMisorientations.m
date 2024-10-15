@@ -1,13 +1,13 @@
 %% Misorientations at grain boundaries
-% Analyse misorientations along grain boundaries
+% Analyze misorientations along grain boundaries
 %
-% This example explains how to analyse boundary misorientation by means of
+% This example explains how to analyze boundary misorientation by means of
 % misorientation axes
 %
 %% Import EBSD data and select a subregion
 %
 % First step is as always to import the data. Here we restrict the big data
-% set to a subregion to make the results easier to visulize
+% set to a subregion to make the results easier to visualize
 
 % take some MTEX data set
 mtexdata forsterite
@@ -23,18 +23,18 @@ region = [xmin ymin xmax-xmin ymax-ymin];
 
 % visualize the whole data set
 plot(ebsd)
-% and marke the sub region
+% and mark the sub region
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 % select EBSD data within region
 condition = inpolygon(ebsd,region); % select indices by polygon
 ebsd = ebsd(condition);
 
-%% Grain modelling
+%% Grain reconstruction
 %
-% Second step is the modelling of the grains and grain boundaries
+% Second step is the reconstruction of the grains and grain boundaries
 
-% segmentation angle typically 10 to 15 degrees that seperates to grains
+% segmentation angle typically 10 to 15 degrees that separates two grains
 seg_angle = 10;
 
 % minimum indexed points per grain between 5 and 10
@@ -47,7 +47,7 @@ min_points = 10;
 grains = grains(grains.grainSize > min_points);
 
 % re-calculate grain model to cleanup grain boundaries with less than
-% minimum index points used ebsd points within grains having the minium
+% minimum index points used ebsd points within grains having the minimum
 % indexed number of points (e.g. 10 points)
 ebsd = ebsd(grains);
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',seg_angle*degree);
@@ -56,7 +56,7 @@ ebsd = ebsd(grains);
 grains = smooth(grains,4);
 
 % plot the data
-% Note, only the forsterite grains are colorred. Grains with different
+% Note, only the forsterite grains are colored. Grains with different
 % phase remain white
 plot(grains('fo'),grains('fo').meanOrientation,'micronbar','off','figSize','large')
 hold on
@@ -105,7 +105,7 @@ gB = gB(1:Sampling_N:end);
 ori = ebsd('id',gB.ebsdId).orientations;
 
 % the misorientation axis in specimen coordinates
-gB_axes = axis(ori(:,1),ori(:,2));
+gB_axes = axis(ori(:,1),ori(:,2),'antipodal');
 
 % axes can be plotted using the command quiver
 hold on
@@ -118,6 +118,6 @@ hold off
 % abrupt changes at the left hands side grain boundary. The reason for this
 % is that the misorientations angle at this boundary is close to the
 % maximum misorientation angle of 120 degree. As a consequence, slight
-% changes in the misorientation may leed to a completely different
+% changes in the misorientation may lead to a completely different
 % disorientation, i.e., a different but symmetrically equivalent
 % misorientation has a smaller misorientation angle.

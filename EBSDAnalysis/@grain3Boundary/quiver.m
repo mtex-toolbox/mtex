@@ -42,7 +42,7 @@ end
  
   
 if size(c,1) == length(dir)
-  % if different color are given - seperate them
+  % if different color are given - separate them
 
   [c,~,id] = unique(c,'rows');
   varargin = delete_option(varargin,'color',1);

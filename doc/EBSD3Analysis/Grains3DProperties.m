@@ -22,10 +22,7 @@ mtexdata NeperGrain3d
 plot(grains,grains.meanOrientation,'micronbar','off')
 
 % set camera
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
-setCamera(how2plot)
+setCamera(plottingConvention.default3D)
 
 %% Grain volume
 %
@@ -85,7 +82,7 @@ scatter(grains.volume.^(1/3), grains.diameter)
 % principle axes |a|, |b| and |c| of each grain. These can be interpreted
 % as the half-axes of an ellipsoid fitted to the grain.
 
-[a,b,c] = principalComponents(grains.triangulate);
+[a,b,c] = principalComponents(grains);
 
 %%
 % Lets use these half-axes to visualize the 3d-grains as ellipsoids
@@ -96,8 +93,7 @@ scatter(grains.volume.^(1/3), grains.diameter)
 cKey = ipfColorKey(grains.CS);
 color = cKey.orientation2color(grains.meanOrientation);
 
-h = plotEllipsoid(grains.centroid,a,b,c,'faceColor',color);
-
+plotEllipsoid(grains.centroid,a,b,c,'faceColor',color);
 
 %% Vertices, grain and surface centroids
 % Each grain has a set of vertices |grains.V| and a centroid
@@ -135,7 +131,7 @@ close all
 plot(grains.boundary('indexed'),...
   grains.boundary('indexed').misorientation.angle./degree,'micronbar','off')
 
-setCamera(how2plot)
+setCamera(plottingConvention.default3D)
 colorbar('location','southoutside')
 
 %%
