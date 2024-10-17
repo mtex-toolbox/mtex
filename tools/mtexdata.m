@@ -59,7 +59,12 @@ catch
   % load from internet when required
   if isempty(dir(fName))
     
-    url = ['https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/data/' type '/' char(list(name,:).files)];
+    if strcmpi(name,'trueEbsdWCCo')
+      url = 'https://zenodo.org/records/13870131/files/trueEbsdWCCo.mat';
+    else
+      url = ['https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/data/' type '/' char(list(name,:).files)];
+    end
+
     disp('  downloading data from ')
     disp(' ');
     disp(['   <a href="' url '">' url '</a>'])
@@ -245,6 +250,15 @@ catch
 
           out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
           
+        case 'trueebsdwcco'
+          
+          load(fName,'out');
+          
+        case '3d'
+          
+          warning('TO BE IMPLEMENTED');
+          out = EBSD3;
+
       end
       
   end    
