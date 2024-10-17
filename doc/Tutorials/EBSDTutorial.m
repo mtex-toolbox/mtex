@@ -71,7 +71,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % <GrainReconstruction.html Grain Reconstruction>. The syntax is
 
 % reconstruct grains with a threshold angle of 10 degrees
-grains = calcGrains(ebsd('indexed'),'theshold',10*degree)
+grains = calcGrains(ebsd('indexed'),'theshold',10*degree,'minPixel',5)
 
 % smooth the grains to avoid the staircase effect
 grains = smooth(grains,5);

@@ -6,7 +6,7 @@
 % orientation which we then call grains. Note that there is no canonical
 % definition of what is a grain. The default grain reconstruction method in
 % MTEX is based on the definition of high angle grain boundaries which are
-% assumed at the perpendicular bisector between neighbouring measurements
+% assumed at the perpendicular bisector between neighboring measurements
 % whenever their misorientation angle exceeds a certain threshold.
 % According to this point of view grains are regions surrounded by grain
 % boundaries.
@@ -48,11 +48,15 @@ plot(ebsd)
 % misorientation angle indicating a grain boundary. By default, this value
 % is set to 10 degrees.
 %
+% Finally, the option |'minPixel'| controls the minimum size of a
+% reconstructed grain. Grains with less pixels are considered as not
+% indexed.
+%
 % All grain reconstruction methods in MTEX are accessible via the command 
 % <EBSD.calcGrains.html |calcGrains|> which takes as input an EBSD data set
 % and returns a list of grain.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree,'minPixel',5);
 grains
 
 %%
@@ -69,7 +73,7 @@ plot(grains.boundary,'linewidth',1.5)
 % stop override mode
 hold off
 
-%% Grainboundary Smoothing 
+%% Grain Boundary Smoothing 
 % 
 % Due to the gridded nature of the EBSD measurement the reconstructed grain
 % boundaries often suffer from the staircase effect. This can be reduced by
@@ -88,32 +92,10 @@ hold off
 % Increasing the parameter |'alpha'| larger unindexed regions are
 % associated to grains.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',5);
 grains = smooth(grains,5);
 
 % plot the boundary of all grains
-plot(ebsd)
-hold on
-plot(grains.boundary,'linewidth',1.5)
-hold off
-
-%% Clearing Single Pixel Grains
-%
-% There are quite a few single pixel grains we might want to consider
-% as misindexations and perform the grain reconstruction on the
-% cleaned up data set. This is done as follows
-
-% detect single pixel grains
-isMisindexed = grains.grainSize==1;
-
-% set the corresponding EBSD data to notIndexed
-ebsd(grains(isMisindexed)) = 'notIndexed';
-
-% redo grain reconstruction
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',3.2,'angle',10*degree);
-
-% display the result
-grains = smooth(grains,5);
 plot(ebsd)
 hold on
 plot(grains.boundary,'linewidth',1.5)

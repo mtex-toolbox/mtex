@@ -19,8 +19,8 @@
 mtexdata ferrite silent
 
 % remove one pixel grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<5)) = [];
+%[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+%ebsd(grains(grains.grainSize<5)) = [];
 
 %%
 % For the computation of low-angle boundaries we specify two thresholds
@@ -28,7 +28,8 @@ ebsd(grains(grains.grainSize<5)) = [];
 % boundaries whereas the second is used for the high-angle grain
 % boundaries.
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',[1*degree, 10*degree]);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),...
+  'threshold',[1*degree, 10*degree],'minPixel',5);
 
 % lets smooth the grain boundaries a bit
 grains = smooth(grains,5)
@@ -81,8 +82,8 @@ mtexColorbar
 
 %% Misorientation at Subgrain Boundaries
 %
-% Appart from the spatial distribution of the subgrain boundaries we may
-% also analyse the distribution of their misorientations. 
+% Apart from the spatial distribution of the subgrain boundaries we may
+% also analyze the distribution of their misorientations. 
 
 % extract all subgrain boundary misorientation
 mori = grains.innerBoundary.misorientation;
@@ -94,13 +95,13 @@ mtexColorbar
 
 %% 
 % A more detailed analysis of the misorientation axes at subgrain
-% boundaries can be found in the chapter <TiltAndTwistBoundaries.html Tild
+% boundaries can be found in the chapter <TiltAndTwistBoundaries.html Tilt
 % and Twist Boundaries>.
 %
 %% Connected Components
 %
 % Sometimes one would like to distinguish between large connected networks
-% of low-angle boundaries and singular disconected segments. This can be
+% of low-angle boundaries and singular disconnected segments. This can be
 % done using the command <grainBoundary.componentSize.html
 % |componentSize|>. This command return for each segment the total number
 % of segments it is connected with. In the following figure we use this to

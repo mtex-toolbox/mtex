@@ -13,13 +13,8 @@ mtexdata forsterite silent
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-
-% remove very small grains
-ebsd(grains(grains.grainSize <= 5)) = [];
-
 % and recompute grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
 
 % smooth the grains a bit
 grains = smooth(grains,4);
