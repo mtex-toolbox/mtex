@@ -22,6 +22,8 @@ function h = plotSection(sF,sec,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
+pC = getClass(varargin,'plottingConvention',plottingConvention.default);
+
  
 % extract polar angle of section
 eta = pi/2; omega = linspace(0,2*pi,361);
@@ -67,7 +69,12 @@ for j = 1:length(sF)
     
     h{j} = plot3(x,y,z,'parent',mtexFig.gca);
   end
-  view(mtexFig.gca,sec.xyz);
+
+  if angle(pC.outOfScreen,sec,'antipodal','noSymmetry')>1*degree
+    pC.outOfScreen = sec;
+  end
+
+  pC.setView;
   mtexFig.gca.DataAspectRatio = [1 1 1];
   axis(mtexFig.gca,'off');
   optiondraw(h{j},varargin{:});
