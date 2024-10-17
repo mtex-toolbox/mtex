@@ -48,5 +48,12 @@ for k = 1:length(center)
 
 end
 hold(holdSate);
+
+axis equal tight
+fcw
+setCamera(plottingConvention.default3D)
   
 end
+
+
+
