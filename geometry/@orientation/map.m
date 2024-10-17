@@ -1,24 +1,41 @@
 function ori = map(varargin)
 % define orientations by pairs of vectors
 %
-% Description
-% Define an orientation that maps |u1| onto |v1| and |u2| onto |v2|
-%
 % Syntax
-%   ori = orientation.map(u1,v1)
-%   ori = orientation.map(u1,v1,u2,v2)
-%   ori = orientation.map(u1,v1,u2,v2,CS,SS)
+%
+%   h = Miller({1,0,0},{0,0,1},cs) % two crystal directions
+%   r = [xvector, yvector]         % two specimen directions
+%   ori = orientation.map(h(1),r(1),h(2),r(2))
+%
+% defines an orientation |ori| that appears
+% 
+%  * in the |(100)| pole figure at position |z| and in the |(001)| pole
+%  figure at position |y|.
+%  * in the |z| inverse pole figure at position |(100)| and in the |y|
+%  inverse pole figure at position |(001)|.
+%
+%   nAlpha = Miller({1,0,0},csAlpha,'hkl')
+%   nBeta  = Miller({0,1,1},csBeta, 'hkl')
+%   dAlpha = Miller({1,1,1},csAlpha,'uvw')
+%   dBeta  = Miller({0,1,-1},csBeta, 'uvw')
+%   mori = orientation.map(nAlpha,nBeta,dAlpha,dBeta)
+%
+% defines an misorientation that aligns the lattice plane |(1,0,0)| of the
+% alpha phase with the lattice plane |(011)| of the beta phase and the
+% lattice direction |[111]| of the alpha phase with the lattice direction
+% |[01-1]| of the beta phase.
 %
 % Input
-%  u1, v1, u2, v2 - @vector3d @Miller
-%  CS - @crystalSymmetry
-%  SS - @specimenSymmetry
+%  h - @Miller 
+%  r - @vector3d
+%  nAlpha, nBeta - @Miller
+%  dAlpha, dBeta - @Miller
 %
 % Output
 %  ori - @orientation
 %
 % See also
-% orientation/orientation orientation/byMiller orientation/byAxisAngle
+% DefinitionAsCoordinateTransform orientation/byMiller orientation/byAxisAngle
 % orientation/byEuler
 
 % find and remove symmetries
