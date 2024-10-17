@@ -33,7 +33,7 @@ grainIds(~isRecData) = 1;
 % consider only child pixels that have been reconstructed to parent
 % grains
 isNowParent = ebsd.phaseId == job.childPhaseId &...
-  job.grains.phaseId(grainIds) == job.parentPhaseId;
+  job.grains.phaseId(grainIds(:)) == job.parentPhaseId;
 
 % maybe there is nothing to do
 if nnz(isNowParent) == 0, return; end
