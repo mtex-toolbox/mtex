@@ -39,7 +39,9 @@ else
     
       clear Vx Vy E1 E2
       delta = dxy/1e4;
-      [V,~,ic] = unique(round(V/delta)*delta,'rows');
+      [~,ia,ic] = unique(round((V - V(1,:))/delta)*delta,'rows');
+      V = V(ia,:);
+      
 
       F = sort(ic(E),2);
       I_FD = sparse(I_ED1(I_ED2<=numX),I_ED2(I_ED2<=numX),1,size(F,1),numX);
