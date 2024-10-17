@@ -37,14 +37,27 @@ if check_option(varargin,'rgb')
   [h,ax] = plot(plotNodes{1},values{1},'surf','hold',varargin{:});
 
 else
-  %h = []; ax = [];
+  h = gobjects(length(S2Proj),length(sF));
+  ax = h;
+  ulLabel = {};
   for j = 1:length(sF)
+
+    cR = [min(min(values{1}(:,j)),min(values{end}(:,j))),...
+      max(max(values{1}(:,j)),max(values{end}(:,j)))];
+    
     for ul = 1:length(values)
     
       if j + ul > 2, mtexFig.nextAxis; end
-    
+      
+      if length(S2Proj) == 2 && ul == 1
+        ulLabel = {'TR','upper'};
+      elseif length(S2Proj) == 2 
+        ulLabel = {'TR','lower'};
+      end
+      
       % plot the function values
-      [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),'pcolor','hold',S2Proj(ul),varargin{:});
+      [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),ulLabel{:},...
+        'pcolor','hold','colorRange',cR,S2Proj(ul),varargin{:});
       
     end
   end
