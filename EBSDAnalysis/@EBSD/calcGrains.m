@@ -38,10 +38,11 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %
 % Options
 %  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
+%  minPixel         - minimum number of pixels that form a grain
 %  boundary         - bounds the spatial domain ('convexhull', 'tight')
 %  maxDist          - maximum distance to for two pixels to be in one grain (default inf)
 %  fmc       - fast multiscale clustering method
-%  mcl       - markovian clustering algorithm
+%  mcl       - Markovian clustering algorithm
 %  custom    - use a custom property for grain separation
 %
 % Flags
@@ -62,13 +63,49 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
+% minimum number of pixels per grain
+minPixel = get_option(varargin,'minPixel',1);
+
+pos = ebsd.rot2Plane * ebsd.pos;
+
+% next we switch algorithm depending on how sparse the indexed points are
+ext = ebsd.extent;
+uniArea = prod(norm(ebsd.unitCell([2,4])-ebsd.unitCell([1,3])));
+isSparse = nnz(ebsd.isIndexed) < 0.75 * prod(ext([2,4])-ext([1,3])) / uniArea;
+
+if minPixel > 1
+  if isSparse
+    [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+  else
+    [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
+  end
+  [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+
+  % number of pixels of each grain
+  numPixel = full(sum(I_DG,1));
+  toRemove = ~(I_DG * (numPixel >= minPixel).');
+
+  ebsd.phaseId(toRemove) = 1;
+  pos(toRemove) = [];
+else
+  toRemove = false;
+end
+
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi tessellation or unit cell
 if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
   [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
 else
-  pos = ebsd.rot2Plane * ebsd.pos;
   [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+
+  % we have to enlarge I_FD such that it fits the original EBSD set
+  if any(toRemove)
+    [f,d] = find(I_FD);
+    allD = 1:length(toRemove);
+    allD(toRemove) = [];
+    d = allD(d);    
+    I_FD = sparse(f,d,1,size(F,1),length(ebsd));    
+  end
 end
 % V - list of vertices
 % F - list of faces
@@ -87,7 +124,6 @@ I_DG = I_DG(:,notEmpty);
 % compute grain ids
 %[grainId,~] = find(I_DG.');
 grainId = full(I_DG * (1:size(I_DG,2)).');
-
 
 % phaseId of each grain
 phaseId = full(max(I_DG' * ...
@@ -162,8 +198,9 @@ end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
-mis2mean = rotation.nan(size(ebsd));
-mis2mean(grainId>0) = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
+%mis2mean = rotation.nan(size(ebsd));
+%mis2mean(grainId>0) = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
+mis2mean = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')

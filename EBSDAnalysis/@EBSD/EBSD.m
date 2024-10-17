@@ -215,6 +215,9 @@ classdef EBSD < phaseList & dynProp & dynOption
       else
         error('The list of grainId has to have the same size as the list of ebsd data.')
       end
+
+      % EBSD data that do not belong to a grain are set to notIndexed
+      ebsd.phaseId(ebsd.grainId == 0) = 1;
     end
       
     function out = hasGrainId(ebsd)
