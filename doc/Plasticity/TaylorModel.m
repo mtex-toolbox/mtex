@@ -116,6 +116,7 @@ sS = symmetrise(slipSystem.fcc(grains.CS));
 %%
 
 % colorize grains according to Taylor factor
+plotzOutOfPlane, plotx2east
 plot(grains,M)
 mtexColorMap white2black
 mtexColorbar
@@ -128,9 +129,9 @@ sSGrains = grains.meanOrientation .* sS(bMaxId);
 
 % visualize slip direction and slip plane for each grain
 hold on
-quiver(grains,sSGrains.b,'autoScaleFactor',0.5,'displayName','Burgers vector')
+quiver(grains,sSGrains.b,'autoScaleFactor',0.7,'displayName','Burgers vector','project2plane')
 hold on
-quiver(grains,sSGrains.trace,'autoScaleFactor',0.5,'displayName','slip plane trace')
+quiver(grains,sSGrains.trace,'autoScaleFactor',0.7,'displayName','slip plane trace')
 hold off
 
 %%
@@ -140,7 +141,7 @@ hold off
 
 figure(2)
 plot(sSGrains.b)
-
+text([xvector,yvector,zvector],'labeled','BackGroundcolor','w')
 
 %% Texture evolution during rolling
 

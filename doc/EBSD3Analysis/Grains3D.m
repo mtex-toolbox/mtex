@@ -4,7 +4,7 @@
 % Variables of type @grain3d store 3D grain data. At the moment 3d grains
 % can be imported from <NeperInterface.html Neper% > or from Dream3d.
 %
-%% Importing 3D-Grains from Dream3d
+%% Import Grains from Dream3d
 % As with any data we can import 
 
 % specify the file name
@@ -25,10 +25,10 @@ setCamera(how2plot)
 % index of the grain with the largest volume
 [~,id] = max(grains.volume)
 
-plot(grains(id),grains(id).meanOrientation)
+plot(grains(id),'edgeAlpha',0.15)
 setCamera(how2plot)
 
-%% %% Importing 3D-Grains from Neper
+%% Import Grains from Neper
 % <https://neper.info Neper> is a software package for the simulation of
 % three dimensional microstructures. After installation it can be directly
 % called by MTEX. The general workflow is explained <NeperInterface.html
@@ -63,24 +63,35 @@ N = vector3d(1,-1,1);
 
 grains_2d = grains.slice(N,P0)
 
-% plot the slice and adjust the plotting convention such that N points out
-% of screen
-plot(grains_2d,grains_2d.meanOrientation,'micronbar','off')
-how2plot = plottingConvention;
-how2plot.outOfScreen = N;
+plot(grains_2d,grains_2d.meanOrientation,'micronbar','off','linewidth',2)
 setCamera(how2plot)
+
+%%
+% It might be reasonable to adjust the plotting convention such that
+% the normal direction |N| points out of screen.
+
+how2plot = plottingConvention;
+how2plot.outOfScreen = N; how2plot.east = vector3d(1,1,0);
+
+setCamera(how2plot), axis off, xlabel('') , ylabel('')
 
 %% Grains intersecting a slice
 %
-% Lets plot the grains intersecting the plane in 3d
+% Using the function <grain3d.intersected |intersected|> we can identify
+% all grains that intersect a given plane. Lets simply add 3d the shapes of
+% all grains intersecting the plane.
 
 isInter = grains.intersected(N,P0);
+
+[a,b,c] = grains(isInter).principalComponents;
+
 hold on
-plot(grains(isInter),grains(isInter).meanOrientation)
+plot(grains(isInter),grains(isInter).meanOrientation,'faceAlpha',0.5)
+%plotEllipsoid(grains(isInter).centroid,a,b,c,'faceAlpha',0.5)
 hold off
 
 how2plot.north = N;
-how2plot.outOfScreen = vector3d(1,-1,-1)
+how2plot.outOfScreen = vector3d(1,-1,-1);
 setCamera(how2plot)
 
 %% Plot the normal directions of one grain
