@@ -151,14 +151,14 @@ hold off
 % Another example is when analyzing the orientation distribution within
 % grains
 
-mtexdata forsterite
+mtexdata forsterite silent
 ebsd = ebsd('indexed');
 
 % segment grains
 [grains,ebsd.grainId] = calcGrains(ebsd);
 
 % find largest grains
-largeGrains = grains(grains.grainSize > 800)
+largeGrains = grains(grains.grainSize > 800);
 
 ebsd = ebsd(largeGrains(1))
 

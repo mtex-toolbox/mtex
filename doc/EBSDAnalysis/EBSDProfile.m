@@ -2,13 +2,13 @@
 %
 %%
 % When analyzing texture gradients it is sometime helpful to look at
-% the EBSD data rstricted to a single line and plot profiles of certain
-% properties along this line. In order to illustarte this at an example let
+% the EBSD data restricted to a single line and plot profiles of certain
+% properties along this line. In order to illustrate this at an example let
 % us import some EBSD data, reconstruct grains and select the grain with
 % the largest GOS (grain orientation spread) for further analysis.
 
 close all
-mtexdata forsterite
+mtexdata forsterite silent
 plotx2east
 
 % reconstruct grains

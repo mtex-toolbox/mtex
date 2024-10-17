@@ -12,17 +12,15 @@
 % to minimize the misorientation angle of $\mathrm{GROD}_{i,j}$.
 %
 % Let us demonstrate the computation of the grain reference orientation
-% feviation at the example of a deformed Ferrite specimen. Lets import the
+% deviation at the example of a deformed Ferrite specimen. Lets import the
 % data first, reconstruct the grain structure and perform some denoising of
-% the orientation data as the we are going to analyse the misorientation
-% axes which are very noise senitive.
+% the orientation data as the we are going to analyze the misorientation
+% axes which are very noise sensitive.
 
 mtexdata ferrite silent
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-% remove one-three pixel grains
-ebsd(grains(grains.grainSize <= 3)) = [];
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',[1*degree, 10*degree]);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),...
+  'threshold',[1*degree, 10*degree],'minPixel',3);
 
 % smooth grain boundaries
 grains = smooth(grains,5);
@@ -76,7 +74,7 @@ mtexColorbar('title','GOS in degree')
 
 %% The Misorientation Axis in Crystal Coordinates
 %
-% When analysing the misorientation axis of the grain reference orientation
+% When analyzing the misorientation axis of the grain reference orientation
 % deviations we have to distinguish whether we look at them in crystal
 % coordinates or in specimen coordinates. Let's start with the crystal
 % coordinates. In this case we use the command <orientation.axis.html
@@ -91,7 +89,7 @@ plot(axCrystal,'contourf','fundamentalRegion','antipodal','figSize','small')
 mtexColorbar('title','mrd')
 
 %%
-% We observe that the distribution is very uniform and there is no prefered
+% We observe that the distribution is very uniform and there is no preferred
 % misorientation axes. Lets have a look at the spatial distribution of the
 % misorientation axes. To this end we firs have to define a directional
 % color key.
@@ -107,7 +105,7 @@ plot(colorKey,'figSize','small')
 % compute the color from the misorientation axis
 color = colorKey.direction2color(axCrystal);
 
-% and set the transperency from the misorientation angle
+% and set the transparency from the misorientation angle
 alpha = min(grod.angle/degree/7.5,1);
 
 % plot the data
@@ -120,7 +118,7 @@ hold off
 
 %%
 % The misorientation axis in crystal coordinates can be related to active
-% slipsystems. See: V. Tong, E. Wielewski, B. Britton
+% slip systems. See: V. Tong, E. Wielewski, B. Britton
 % <https://arxiv.org/abs/1803.00236 Characterisation of slip and twinning
 % in high rate deformed zirconium with electron backscatter diffraction>,
 % 2018.
@@ -140,7 +138,7 @@ mtexColorbar('title','distribution of misorientation axes in mrd')
 
 %%
 % When looking at the distribution of the misorientation axes in specimen
-% coordinates we observe some strongly prefered directions.
+% coordinates we observe some strongly preferred directions.
 %
 % As the misorientation axes in specimen coordinates have no symmetry at
 % all (not even antipodal symmetry) we may use a full color key to colorize
@@ -154,7 +152,7 @@ plot(colorKey,'figSize','small')
 % The spatial plot of the misorientation axes in crystal coordinates
 % follows the same lines as the plot in specimen coordinates.
 
-% compute color and transperency
+% compute color and transparency
 omega = min(grod.angle/degree/7.5,1);
 color = colorKey.direction2color(axSpecimen);
 

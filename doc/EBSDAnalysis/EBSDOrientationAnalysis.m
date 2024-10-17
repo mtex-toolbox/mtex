@@ -54,6 +54,7 @@ hold off
 plotIPDF(ebsd('Forsterite').orientations,rOrth,'smooth')
 mtexColorbar
 
+%%
 %From the inverse pole figure, it becomes clear that the orientations are
 % close to the fibre |Miller(0,1,0)|, |rOrth|. Let's check this by computing
 % the fibre volume in percent

@@ -78,9 +78,9 @@ setColorRange([0,4*degree])
 %
 % Next lets import some data on a hexagonal grid
 
-mtexdata copper
+mtexdata copper silent
 
-[grains, ebsd.grainId] = calcGrains(ebsd)
+[grains, ebsd.grainId] = calcGrains(ebsd);
 ebsd = ebsd.gridify
 
 plot(ebsd,ebsd.orientations)
@@ -92,7 +92,6 @@ plot(ebsd,ebsd.orientations)
 plot(ebsd(1:10,:),ebsd(1:10,:).orientations,'micronbar','off')
 
 %%
-%
 
 plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
 
@@ -167,7 +166,7 @@ hold off
 % A similar situation occurs if <EBSD.gridify.html |gridify|> is applied to
 % rotated data.
 
-ebsd = rotate(ebsd,20*degree)
+ebsd = rotate(ebsd,20*degree);
 
 ebsdG = ebsd.gridify
 

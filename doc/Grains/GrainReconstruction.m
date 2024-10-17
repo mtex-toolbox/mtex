@@ -42,11 +42,11 @@ plot(ebsd)
 % The extent to which unindexed pixels are assigned is controlled by the
 % parameter |'alpha'|. Roughly speaking this parameter is the radius of the
 % smallest unindexed region that will not be entirely assigned to
-% surrounding grains. The default of this value is 2.2.
+% surrounding grains. The default of this value is |alpha = 2.2|.
 %
-% The second parameter involved in grain reconstruction is the threshold
-% misorientation angle indicating a grain boundary. By default, this value
-% is set to 10 degrees.
+% The second parameter |'angle'| involved in grain reconstruction is the
+% threshold misorientation angle indicating a grain boundary. By default,
+% this value is set to |angle = 10*degree|.
 %
 % Finally, the option |'minPixel'| controls the minimum size of a
 % reconstructed grain. Grains with less pixels are considered as not

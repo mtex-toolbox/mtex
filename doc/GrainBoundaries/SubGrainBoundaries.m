@@ -12,15 +12,10 @@
 % grain boundaries.
 %
 % In order to demonstrate the analysis of subgrain boundaries in MTEX we
-% start by importing an sample EBSD data set and preforming some polishing
-% by removing all 5 pixel grains.
+% start by importing an sample EBSD data set
 
 % load some test data
 mtexdata ferrite silent
-
-% remove one pixel grains
-%[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-%ebsd(grains(grains.grainSize<5)) = [];
 
 %%
 % For the computation of low-angle boundaries we specify two thresholds

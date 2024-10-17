@@ -3,15 +3,14 @@
 %%
 % MTEX allows you to import EBSD data from a wide variety of file formats.
 % In the most simplest case import can be done by the command
-% <EBSD.load.html EBSD.load>
+% <EBSD.load.html |EBSD.load|>
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'],'convertEuler2SpatialReferenceFrame')
 
 %%
 % This command automatically detects the file format and generates a
-% variable of type <EBSD.EBSD.html EBSD> which contains all the
-% information of the EBSD data set. Let us quickly do an orientation plot
-% of the Magnesium phase
+% variable of type @EBSD which contains all the information of the EBSD
+% data set. Let us quickly do an orientation plot of the Magnesium phase
 
 plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 
@@ -22,8 +21,8 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 %
 %% Importing EBSD data using the import wizard
 %
-% In many cases however, importing EBSD data is not that straightforward
-% as suggested above. The reason is that during the measuring process
+% In many cases however, importing EBSD data is not that straightforward as
+% suggested above. The reason is that during the measuring process
 % different reference systems are involved and resulting coordinates, i.e.,
 % the spatial coordinates and the Euler angles, are often not stored in a
 % consistent way by commercial software. Please read
@@ -51,11 +50,11 @@ import_wizard('EBSD')
 % * specimen symmetry and plotting conventions
 % 
 % The import wizard allows you to either create directly a workspace
-% variable of type <EBSD.EBSD.html EBSD> or to generates a m-file, which
-% contains all the customization and allows you to import the data in
-% future sessions without the import wizard. This last option is highly
-% recommended as the created script is also a good starting point for
-% further analysis and data processing.
+% variable of type @EBSD or to generates a m-file, which contains all the
+% customization and allows you to import the data in future sessions
+% without the import wizard. This last option is highly recommended as the
+% created script is also a good starting point for further analysis and
+% data processing.
 %
 %% The Import Script
 %

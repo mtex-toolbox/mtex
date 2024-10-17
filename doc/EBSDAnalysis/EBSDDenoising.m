@@ -24,13 +24,7 @@ mtexdata twins
 ebsd = ebsd('indexed');
 
 % reconstruct the grain structure
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',10*degree);
-
-% remove some very small grains
-ebsd(grains(grains.grainSize<5)) = [];
-
-% redo grain segmentation
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
 grains = smooth(grains,5);

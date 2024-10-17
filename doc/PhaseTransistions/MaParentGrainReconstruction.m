@@ -13,17 +13,12 @@
 % We shall use the following sample data set.
 
 % load the data
-mtexdata martensite 
+mtexdata martensite
+ebsd = ebsd.gridify;
 plotx2east
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree);
-
-% remove small grains
-ebsd(grains(grains.grainSize < 3)) = [];
-
-% reidentify grains with small grains removed:
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd, 'angle', 3*degree, 'alpha', 3.1, 'minPixel',2);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
@@ -134,7 +129,7 @@ hold off
 % at which the probability is exactly 50 percent and the standard deviation
 % |'tolerance'|.
 
-job.calcVariantGraph('threshold',2.5*degree,'tolerance',2.5*degree)
+job.calcVariantGraph('threshold',3.5*degree,'tolerance',2.5*degree)
 
 %%
 % For large maps it can be useful to perform the segmentation in a two step
@@ -196,7 +191,7 @@ job.selectInteractive
 % from the surrounding already reconstructed parent grains. 
 
 % compute the votes
-job.calcGBVotes('p2c','reconsiderAll')
+job.calcGBVotes('p2c','reconsiderAll','threshold',3*degree,'tolerance',1.5*degree)
 
 % assign parent orientations according to the votes
 job.calcParentFromVote
@@ -259,7 +254,7 @@ hold off
 
 %%
 % We can also directly identify the child grains belonging to the selected
-% parent grains. Remeber that the initial grains are stored in
+% parent grains. Remember that the initial grains are stored in
 % |job.grainsPrior| and that the vector |job.mergeId| stores for every
 % initial grain the |id| of the corresponding parent grain. Combining these
 % two information we do
@@ -289,7 +284,7 @@ childOri = job.ebsdPrior(childGrains).orientations;
 % the orientation of parent grain 279
 parentOri = grainSelected.meanOrientation;
 
-% lets compute the variant and packeIds
+% compute variantIds and packeIds
 [variantId, packetId] = calcVariantId(parentOri,childOri,job.p2c);
 
 % colorize child orientations by packetId
@@ -335,8 +330,7 @@ plot(job.grains.boundary,'lineWidth',2)
 hold off
 
 
-%% Denoise the parent map
-%
+%% Fill the parent map
 % Finally, we may apply filtering to the parent map to fill non indexed or
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map

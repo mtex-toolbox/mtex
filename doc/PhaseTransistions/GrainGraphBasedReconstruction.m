@@ -2,7 +2,7 @@
 %
 %% 
 % This script demonstrates the grain graph approach to parent phase
-% reconstrution in a martensitic material. The methods are
+% reconstruction in a martensitic material. The methods are
 % described in more detail in the publications 
 %
 % * <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
@@ -19,13 +19,7 @@ mtexdata martensite
 plotx2east
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree);
-
-% remove small grains
-ebsd(grains(grains.grainSize < 3)) = [];
-
-% reidentify grains with small grains removed:
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree,'minPixel',2);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
@@ -48,10 +42,10 @@ job = parentGrainReconstructor(ebsd,grains);
 %%
 % The |parentGrainReconstructor| guesses from the EBSD data what is the
 % parent and what is the child phase. If this guess is not correct it might
-% be specified explicitely by defining an initial guess for the parent to
+% be specified explicitly by defining an initial guess for the parent to
 % child orientation relationship first and passing it as a third argument to
 % |<parentGrainReconstructor.parentGrainReconstructor.html
-% parentGrainReconstructor>|. Here we define this initial guess seperately
+% parentGrainReconstructor>|. Here we define this initial guess separately
 % as the Kurdjumov Sachs orientation relationship
 
 % initial guess for the parent to child orientation relationship
@@ -71,7 +65,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % It is well known that the phase transformation from austenite to
 % martensite is not described by a fixed orientation relationship. In fact,
 % the actual orientation relationship needs to be determined for each
-% sample individualy. Here, we used the iterative method proposed by Tuomo
+% sample individually. Here, we used the iterative method proposed by Tuomo
 % Nyyssönen and implemented in the function <calcParent2Child.html
 % |calcParent2Child|> that starts at our initial guess of the orientation
 % relation ship and iterates towards a more optimal orientation
@@ -100,16 +94,16 @@ histogram(job.calcGBFit./degree,'BinMethod','sqrt')
 hold off
 
 %%
-% We may explicitely compute the misfit for all child to child
+% We may explicitly compute the misfit for all child to child
 % boundaries using the command <parentGrainReconstructor.calcGBFit.html
 % |calcGBFit|>. Beside the list |fit| it returns also the list of grain
-% pairs for which these fits have been computed. Using th command
+% pairs for which these fits have been computed. Using the command
 % <grainBoundary.selectByGrainId.html |selectByGrainId|> we can find the
 % corresponding boundary segments and colorize them according to this
 % misfit. In the code below we go one step further and adjust the
 % transparency as a function of the misfit.
 
-% compute the misfit for all child to child grain neighbours
+% compute the misfit for all child to child grain neighbors
 [fit,c2cPairs] = job.calcGBFit;
 
 % select grain boundary segments by grain ids
@@ -126,7 +120,7 @@ hold off
 
 %% Graph based parent grain reconstruction
 %
-% Next we set up a graph where each edge describes two neighbouring grains
+% Next we set up a graph where each edge describes two neighboring grains
 % and the value of this edge is the probability that these two grains
 % belong to the same parent grain. This graph is computed by the function
 % <parentGrainReconstructor.calcGraph.html |calcGraph|>. The probability
@@ -140,7 +134,7 @@ hold off
 job.calcGraph('threshold',2.5*degree,'tolerance',2.5*degree)
 
 %% 
-% We may visualize th graph adjusting the edgeAlpha of the boundaries
+% We may visualize the graph adjusting the edgeAlpha of the boundaries
 % between grains according to the edge value of the graph. This can be
 % accomplished by the command <parentGrainReconstructor.plotGraph.html
 % |plotGraph|>
@@ -160,8 +154,8 @@ hold off
 job.clusterGraph('inflationPower',1.6)
 
 %%
-% Finaly, we assume a single parent orientation for each cluster and use it
-% to compute a parent orientation for each child grain beeing part of a
+% Finally, we assume a single parent orientation for each cluster and use it
+% to compute a parent orientation for each child grain being part of a
 % cluster. This is done by the command
 % <parentGrainReconstructor.calcParentFromGraph.html
 % |calcParentFromGraph|>.
@@ -173,12 +167,12 @@ job.calcParentFromGraph
 plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 %%
-% We observe that almost all child grains have been fliped into parent
+% We observe that almost all child grains have been flipped into parent
 % grains. The command <parentGrainReconstructor.calcParentFromGraph.html
 % |calcParentFromGraph|> has two additional outputs. The misorientation
 % angle between the reconstructed parent orientation of each child grain
 % and the mean parent orientation of the corresponding parent grain is 
-% stored in |job.grains.fit| while |job.grains.clusterSize| containes the
+% stored in |job.grains.fit| while |job.grains.clusterSize| contains the
 % size of each cluster.
 
 figure
@@ -189,7 +183,7 @@ mtexColorbar
 
 %%
 % We may use these quantities to undo the parent orientation reconstruction
-% for child grains with a misfit exeeding a certain threshold or belonging
+% for child grains with a misfit exceeding a certain threshold or belonging
 % to a too small cluster. This can be done by the command
 % <parentGrainReconstructor.revert.html |job.revert|> 
 
@@ -200,11 +194,11 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 %%
 % When used without any input argument
 % <parentGrainReconstructor.revert.html |job.revert|> will undo all
-% reconstructed parent grain. This is helpfull when experimenting with
+% reconstructed parent grain. This is helpful when experimenting with
 % different parameters.
 %
 % In order to fill the holes corresponding to the remaining child grains we
-% inspect their misorientations to neighbouring already reconstructed
+% inspect their misorientations to neighboring already reconstructed
 % parent grains. Each of these misorientations votes for a certain parent
 % orientation. We choose the parent orientation that gets the most votes.
 % The corresponding commands <parentGrainReconstructor.calcGBVotes.html
@@ -225,7 +219,7 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 %% Merge similar grains and inclusions
 %
-% We observe that we have many neighbouring parent grains with similar
+% We observe that we have many neighboring parent grains with similar
 % orientations. These can be merged into big parent grains using the
 % command <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|>
 
@@ -276,7 +270,7 @@ hold off
 
 %%
 % We can also directly identify the child grains belonging to the selected
-% parent grains. Remeber that the initial grains are stored in
+% parent grains. Remember that the initial grains are stored in
 % |job.grainsPrior| and that the vector |job.mergeId| stores for every
 % initial grain the |id| of the corresponding parent grain. Combining these
 % two information we do
@@ -336,7 +330,7 @@ parentEBSD = job.calcParentEBSD;
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large')
 
 %%
-% We obtain even a measure |parentEBSD.fit| for the corespondence between
+% We obtain even a measure |parentEBSD.fit| for the correspondence between
 % the parent orientation reconstructed from the single pixel and the parent
 % orientation of the grain. Lets visualize this fit
 
@@ -354,7 +348,7 @@ hold off
 
 %% Denoise the parent map
 %
-% Finaly we may apply filtering to the parent map to fill non indexed or
+% Finally, we may apply filtering to the parent map to fill non indexed or
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
@@ -363,7 +357,7 @@ hold off
 % remove very small grains
 parentEBSD(parentGrains(parentGrains.grainSize<10)) = [];
 
-% redo grain reconstrucion
+% redo grain reconstruction
 [parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 parentGrains = smooth(parentGrains,10);
 
