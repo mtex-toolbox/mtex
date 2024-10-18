@@ -66,16 +66,32 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % minimum number of pixels per grain
 minPixel = get_option(varargin,'minPixel',1);
 
-pos = ebsd.rot2Plane * ebsd.pos;
+pos = ebsd.rot2Plane .* ebsd.pos(:);
 
 % next we switch algorithm depending on how sparse the indexed points are
 ext = ebsd.extent;
 uniArea = prod(norm(ebsd.unitCell([2,4])-ebsd.unitCell([1,3])));
-isSparse = nnz(ebsd.isIndexed) < 0.75 * prod(ext([2,4])-ext([1,3])) / uniArea;
+isSparse = nnz(ebsd.isIndexed) < 0.9 * prod(ext([2,4])-ext([1,3])) / uniArea;
 
 if minPixel > 1
+
   if isSparse
-    [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+
+    % if we are later going to use the alphaShape algorithm we should 
+    % temporarily remove not indexed pixels here
+    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')      
+      toRemove = ~ebsd.isIndexed(:);
+    else
+      toRemove = false(numel(pos),1);
+    end
+    [V,F,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],ebsd.unitCell,varargin{:});
+    if any(toRemove)
+      [f,d] = find(I_FD);
+      allD = 1:length(toRemove);
+      allD(toRemove) = [];
+      d = allD(d);
+      I_FD = sparse(f,d,1,size(F,1),length(ebsd));
+    end
   else
     [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
   end
@@ -83,8 +99,9 @@ if minPixel > 1
 
   % number of pixels of each grain
   numPixel = full(sum(I_DG,1));
-  toRemove = ~(I_DG * (numPixel >= minPixel).');
 
+  % now we set pixels to not indexed that belong to too small grains
+  toRemove = ~(I_DG * (numPixel >= minPixel).');
   ebsd.phaseId(toRemove) = 1;
   pos(toRemove) = [];
 else
