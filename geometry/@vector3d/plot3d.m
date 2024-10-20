@@ -38,7 +38,7 @@ if ~ishold
   set(ax,'XDir','rev','YDir','rev',...
     'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
 
-  pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+  pC = plottingConvention.default3D;
   pC.setView(ax);
 
 end
