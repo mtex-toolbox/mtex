@@ -188,10 +188,16 @@ classdef HSVDirectionKey < directionColorKey
         case {42,43}, oM.refl = oM.sR.N(end-2) - oM.sR.N(end-1);      % 432, m-3            
       end
       
-      % reduce fundamental sector by reflectors for black-white colorcoding
+      % reduce fundamental sector by reflectors for black-white color coding
       oM.sR.N = [oM.sR.N(:);oM.refl(:)];
       oM.sR.alpha = [oM.sR.alpha(:);zeros(length(oM.refl),1)];
-      oM.whiteCenter = oM.sR.center;
+
+      if isa(oM.sym,'crystalSymmetry')
+        oM.whiteCenter = Miller(oM.sR.center,oM.sym);
+      else
+        oM.whiteCenter = oM.sR.center;
+      end
+        
       
     end    
   end
