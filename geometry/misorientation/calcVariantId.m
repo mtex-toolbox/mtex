@@ -59,7 +59,9 @@ if nargout >= 2
       error('Input for packet ID calculation must be Miller.');
     end
   else % definition assumed
-    warning('Packet ID calculation assuming {111}_p||{110}_c');
+    if ~getMTEXpref('generatingHelpMode')
+      warning('Packet ID calculation assuming {111}_p||{110}_c');
+    end
     h1 = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
     h2 = Miller(1,0,1,p2c.SS);
   end
@@ -78,7 +80,9 @@ if nargout >= 3
       error('Input for bain ID calculation must be Miller.');
     end
   else % definition assumed
-    warning('Bain ID calculation assuming {001}_p||{100}_c');
+    if ~getMTEXpref('generatingHelpMode')
+      warning('Bain ID calculation assuming {001}_p||{100}_c');
+    end
     h1 = Miller({0,0,1},{1,0,0},{0,1,0},p2c.CS);
     h2 = Miller(1,0,0,p2c.SS);
   end
