@@ -34,7 +34,7 @@ grains(ind).diameter
 
 %%
 % The diameter is a special case of the <grain2d.caliper.html |caliper|> or
-% Feret diameter of a grain. By definition the caliper is the length of a
+% Ferret diameter of a grain. By definition the caliper is the length of a
 % grain when projected onto a line. We may trace the caliper with respect
 % to projection direction
 
@@ -109,7 +109,7 @@ legend('Location','east')
 
 %% PAROR and SURFOR
 % 
-% Another way of quantifying shape farbics is by making use of the
+% Another way of quantifying shape fabrics is by making use of the
 % cumulative projection function of the grains or the grain boundary
 % segments. These methods are heavily inspired by
 % <https://en.wikipedia.org/wiki/Flatland Edwin A. Abbotts 'Flatland - A
@@ -117,7 +117,7 @@ legend('Location','east')
 % "Two-dimensional analysis of shape fabric using projections of digitized
 % lines in a plane". Tectonophysics 95, 279-294. and Panozzo, R., 1984,
 % "Two-dimensional strain from the orientation of lines in a plane." J.
-% Struct. Geol. 6, 215-221. implemented in Mtex as <grain2d.paror.html
+% Struct. Geol. 6, 215-221. implemented in MTEX as <grain2d.paror.html
 % |grains.paror|> and <grainBoundary.surfor.html |grainBoudnary.surfor|>
 %
 % As mentioned above the function <grain2d.caliper.html |caliper|> can be

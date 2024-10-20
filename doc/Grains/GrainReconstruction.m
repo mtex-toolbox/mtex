@@ -89,10 +89,15 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %% Adapting the Alpha Parameter
-% Increasing the parameter |'alpha'| larger unindexed regions are
+% Increasing the parameter |'alpha'| larger not indexed regions are
 % associated to grains.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',5);
+% reload the data
+mtexdata forsterite silent
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+ebsd = ebsd.gridify;
+
+[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',3);
 grains = smooth(grains,5);
 
 % plot the boundary of all grains

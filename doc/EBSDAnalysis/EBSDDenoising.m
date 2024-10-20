@@ -20,14 +20,14 @@
 % import the data
 mtexdata twins
 
-% consider only indexed data
-ebsd = ebsd('indexed');
-
 % reconstruct the grain structure
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
 grains = smooth(grains,5);
+
+% consider only indexed data
+ebsd = ebsd('indexed');
 
 % plot the orientation map
 ipfKey = ipfColorKey(ebsd.CS.properGroup);

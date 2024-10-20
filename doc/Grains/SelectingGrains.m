@@ -15,7 +15,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 ebsd = ebsd('indexed');
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 
 % smooth them
 grains = smooth(grains,5);
@@ -37,9 +37,9 @@ hold off
 selectInteractive(grains,'lineColor','gold')
 
 % this simulates a mouse click
-pause(0.1)
+pause(1)
 simulateClick(9000,3500)
-pause(0.1)
+pause(1)
 
 global indSelected;
 grains(indSelected)

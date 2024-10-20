@@ -41,12 +41,21 @@ plot(m,'labeled','grid')
 annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
 
 %%
-% Note that MTEX by default aligns spherical projections of crystal
-% directions such that the b-axis points towards east and the z-axis points
-% out of the plane. This behaviour can be changed by the commands
-% |plota2east|, |plota2north|, |plota2west|, |plota2south|, |plotb2east|,
-% |plotb2north|, |plotb2west|, |plotb2south|, or |plotaStar2East|.
-%
+% Note that for triclinic and monoclinic symmetries MTEX aligns spherical
+% projections of crystal directions such that the b-axis points towards
+% east and c* points out of the plane. This behavior can be changed by
+% altering the <plottingConvention.plottingConvention.html plotting
+% convention> stored in |cs.how2plot|. E.g. we might want to have the
+% a-axis to point to east
+
+% change the plotting convention
+cs.how2plot.east = cs.aAxis;
+
+plot(m,'labeled','grid')
+
+annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
+
+
 %% Crystal Lattice Planes
 %
 % A crystal lattice plane $(hkl)$ is commonly described by its normal

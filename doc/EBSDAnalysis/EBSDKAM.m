@@ -35,11 +35,7 @@ plotSquareNeighbours; nextAxis(1,2); plotHexNeighbours
 
 mtexdata ferrite
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-% remove one-three pixel grains
-ebsd(grains(grains.grainSize <= 3)) = [];
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',3);
 grains = smooth(grains,5);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations)

@@ -14,11 +14,10 @@
 
 % load the data
 mtexdata martensite
-ebsd = ebsd.gridify;
 plotx2east
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd, 'angle', 3*degree, 'alpha', 3.1, 'minPixel',2);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree, 'minPixel',2);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
@@ -49,7 +48,6 @@ job = parentGrainReconstructor(ebsd,grains);
 
 % initial guess for the parent to child orientation relationship
 job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
-%job.p2c = orientation.NishiyamaWassermann(job.csParent, job.csChild)
 
 %%
 % The output of the variable |job| tells us the amount of parent and child

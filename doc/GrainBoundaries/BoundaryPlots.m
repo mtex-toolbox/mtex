@@ -1,6 +1,5 @@
 %% Boundary Plots
 %
-%
 %%
 % Here we describe how to visualize grain boundary properties, e.g.,
 % misorientation angle, misorientation axes. Therefore lets start by
@@ -27,7 +26,7 @@ grains = smooth(grains,4);
 gB = grains.boundary
 
 %%
-% We may use the <grainBoundary.plot.html plot> command to visualize the
+% We may use the <grainBoundary.plot.html |plot|> command to visualize the
 % grain boundaries in the map
 
 % plot phases and grain boundaries

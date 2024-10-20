@@ -6,7 +6,7 @@
 % the following calcite data set
 
 % plotting conventions
-plotx2east, plotb2east
+plotx2east
 mtexdata sharp
 
 ebsd = ebsd('calcite');
@@ -100,18 +100,14 @@ hold off
 % closely around the white center. Together with the fact that the
 % transition from white to color is quite rapidly, this gives a high
 % contrast.
-
-
+%
 %% The axis angle color key
 % A second option to visualize small orientation deviation, e.g. within a
 % grains is the <axisAngleColorKey.axisAngleColorKey.html axis-angle color
 % key>. In order to demonstrate this color key let us first separate the
 % EBSD into grains.
 
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
-ebsd(grains(grains.grainSize<=3)) = [];
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree);
-
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
 grains = smooth(grains,5);
 
 %%
@@ -122,9 +118,9 @@ grains = smooth(grains,5);
 ipfKey = axisAngleColorKey(ebsd('indexed'));
 
 % use for the reference orientation the grain mean orientation
-ipfKey.oriRef = grains.meanOrientation(ebsd.grainId);
+ipfKey.oriRef = grains.meanOrientation(ebsd('indexed').grainId);
 
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations))
 
 hold on
 plot(grains.boundary,'lineWidth',4)
@@ -148,14 +144,13 @@ plot(grains.boundary,'lineWidth',4)
 hold off
 
 %% 
-% Another example is when analyzing the orientation distribution within
-% grains
+% Another application for sharp color keys is the analysis of orientation
+% gradients within grains
 
 mtexdata forsterite silent
-ebsd = ebsd('indexed');
 
 % segment grains
-[grains,ebsd.grainId] = calcGrains(ebsd);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % find largest grains
 largeGrains = grains(grains.grainSize > 800);

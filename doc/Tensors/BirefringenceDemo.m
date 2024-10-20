@@ -12,30 +12,30 @@
 mtexdata olivine
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize < 5)) = [];
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
 
 % some data denoising
 grains = smooth(grains,5);
 
-F = splineFilter;
-ebsd = smooth(ebsd,F,'fill',grains);
+F = halfQuadraticFilter;
+ebsd = smooth(ebsd('indexed'),F,'fill',grains);
 
 %%
 
 % plot the olivine phase
-plot(ebsd('olivine'),ebsd('olivine').orientations);
+plot(ebsd('olivine'),ebsd('olivine').orientations,'FaceAlpha',0.5);
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
 
-gg = grains(grains.grainSize > 100);
-gg = gg('o')
-cS = crystalShape.olivine;
+% and on top the crystal shapes
+bigGrains = grains(grains.grainSize > 100,'olivine');
+cKey = ipfColorKey(bigGrains);
+color = cKey.orientation2color(bigGrains.meanOrientation);
 hold on
-plot(gg,0.8*cS,'FaceColor','none')
+plot(bigGrains,0.8*crystalShape.olivine,'FaceColor',color,'faceAlpha',0.7)
 hold off
+drawNow(gcm,'final')
 
 %% The refractive index tensor
 %
@@ -107,6 +107,7 @@ vprop = Miller(1,1,1,cs);
 
 % plot it
 plot3d(dn,'complete')
+mtexColorMap parula
 mtexColorbar
 
 % and on top of it the polarization directions
@@ -122,11 +123,12 @@ hold off
 vOptical = rI.opticalAxis
 
 % and check the birefringence is zero
-rI.birefringence(rI.opticalAxis)
+rI.birefringence(vOptical)
 
 % annotate them to the birefringence plot
 hold on
-arrow3d(vOptical,'antipodal','facecolor','red')
+vOptical.antipodal = false;
+arrow3d([vOptical,-vOptical] ,'facecolor','red')
 hold off
 
 %% Spectral Transmission

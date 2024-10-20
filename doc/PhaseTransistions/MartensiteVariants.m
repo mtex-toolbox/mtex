@@ -3,18 +3,16 @@
 %%
 % In this section, we discuss the austenite (fcc) to ferrite (bcc) phase
 % transformation using an example EBSD data set of a Plessite
-% microstructure from the Emsland iron meteorite. 
-% Plessite, from the Greek word "plythos" meaning "filling" iron, comprises
-% an intimate mixed intergrowth of parent Taenite (austentic fcc) and child 
-% Kamacite (bcc). 
+% microstructure from the Emsland iron meteorite. Plessite, from the Greek
+% word "plythos" meaning "filling" iron, comprises an intimate mixed
+% intergrowth of parent Taenite (austentic fcc) and child Kamacite (bcc).
 % Plessite develops at low temperatures from retained Taenite and fills the
 % spaces between Widmanstatten patterns. It occurs as the volumes remaining
-% between already transformed Kamacite surrounded by very thin Taenite 
-% ribbons. 
-% Plessite contains child bcc and parent fcc phases, with the orientation 
-% of the fcc phase indicating the orientation of the formerly huge parent 
-% grains in the planetary body which can easily reach the dimension of 
-% meters.
+% between already transformed Kamacite surrounded by very thin Taenite
+% ribbons. Plessite contains child bcc and parent fcc phases, with the
+% orientation of the fcc phase indicating the orientation of the formerly
+% huge parent grains in the planetary body which can easily reach the
+% dimension of meters.
 
 plotx2east
 
@@ -26,12 +24,7 @@ cs_bcc = ebsd('Fe').CS;
 cs_aus = ebsd('Aus').CS;
 
 % recover grains
-ebsd = ebsd('indexed');
-
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',5*degree);
-ebsd(grains(grains.grainSize<=2)) = [];
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',5*degree,'qhull');
-
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',2);
 grains = smooth(grains,4);
 
 %%
@@ -42,7 +35,7 @@ grains = smooth(grains,4);
 plot(ebsd('Fe'),ebsd('Fe').orientations)
 hold on
 plot(grains.boundary,'lineWidth',2,'lineColor','gray')
-plot(grains('Aus'),'FaceColor','blue','edgeColor','b','lineWidth',1,'DisplayName','Austenite')
+plot(grains('Aus'),'FaceColor','blue','DisplayName','Austenite')
 hold off
 
 %%
@@ -133,7 +126,7 @@ mean(angle(mori, KS)) ./ degree
 %
 % We could ask ourselves if there is another orientation relationship that 
 % better matches the measured misorientations than the KS orientation 
-% relationship. In this case, a canocial candidate would be the 
+% relationship. In this case, a canonical candidate would be the 
 % <orientation.mean.html |mean|> of all misorientations.
 
 % The mean of all measured parent-to-child misorientations:
@@ -181,14 +174,13 @@ mean(angle(mori,p2cIter)) ./degree
 % orientation relationship, we may proceed further by classifying the child
 % orientations into different variants.
 %
-% A variant refers to a specific orientation or crystallographic 
+% A variant refers to a specific orientation or crystallographic
 % arrangement of the child phase within the context of the original parent
-% orientation.
-% Depending on the operative orientation relationship and parent-child 
-% crystal symmetries, a single parent phase orientation results in multiple
-% child phase orientations (i.e.- variants). The variant Id is a convinient
-% way to label or identify a specific variant within the child 
-% microstructure.
+% orientation. Depending on the operative orientation relationship and
+% parent-child crystal symmetries, a single parent phase orientation
+% results in multiple child phase orientations (i.e.- variants). The
+% variant Id is a convenient way to label or identify a specific variant
+% within the child microstructure.
 %
 % Child variant Ids are computed by the command
 % <calcVariantId.html |calcVariantId|>.
@@ -207,7 +199,7 @@ plot(childOri,color,'axisAngle')
 
 %% Classification of child variants by crystallographic packet Ids
 %
-% An important classification is seperating the variants into their various
+% An important classification is separating the variants into their various
 % crystallographic packets. 
 %
 % A crystallographic packet Id is used to identify a packet of variants 
@@ -255,7 +247,7 @@ drawNow(gcm)
 % As we see from the above pole figures, the red, blue, orange and green
 % orientations are distinguished by which of the symmetrically equivalent
 % (111) austenite axes is aligned to the (110) ferrite axis.
-%%
+%
 % We may also use the packet Id color to distinguish different child
 % packets in the EBSD map.
 
@@ -263,29 +255,29 @@ plot(grains('Fe'),color)
 
 %% Classification of child variants by Bain group Ids
 %
-% Another important classification is seperating the variants into their 
+% Another important classification is separating the variants into their 
 % various Bain groups. 
 %
-% The concept of Bain groups is based on the Bain notation.The latter 
+% The concept of Bain groups is based on the Bain notation.The latter
 % provides a concise system of representing the transformation path and the
-% geometric correspondence between the crystal structures of the parent and 
-% child phases. 
-% Each Bain group is labeled with a unique Bain group Id, which represents
-% a distinct combination of orientation relationships between parent and 
-% child phases. 
-% Bain group Ids serve as a convenient identifier to categorize, classify 
-% and differentiate the various transformation paths that may occur during 
-% phase transformation based on their crystallographic characteristics.
+% geometric correspondence between the crystal structures of the parent and
+% child phases. Each Bain group is labeled with a unique Bain group Id,
+% which represents a distinct combination of orientation relationships
+% between parent and child phases. Bain group Ids serve as a convenient
+% identifier to categorize, classify and differentiate the various
+% transformation paths that may occur during phase transformation based on
+% their crystallographic characteristics.
 %
-% The concept of Bain groups is based on the Bain notation.The latter provides 
-% a concise system of representing the transformation path and the geometric
-% correspondence between the crystal structures of the parent austenite and 
-% child martensite phases. Each Bain group is labeled with a unique Bain 
-% group Id, which represents a distinct combination of orientation relationships 
-% between parent and child phases. 
-% Bain group Ids serve as a convenient identifier to categorize, classify and 
-% differentiate the various transformation paths that may occur during martensitic 
-% transformation based on their crystallographic characteristics.
+% The concept of Bain groups is based on the Bain notation.The latter
+% provides a concise system of representing the transformation path and the
+% geometric correspondence between the crystal structures of the parent
+% austenite and child martensite phases. Each Bain group is labeled with a
+% unique Bain group Id, which represents a distinct combination of
+% orientation relationships between parent and child phases. Bain group Ids
+% serve as a convenient identifier to categorize, classify and
+% differentiate the various transformation paths that may occur during
+% martensitic transformation based on their crystallographic
+% characteristics.
 
 color = ind2color(bainId);
 plotPDF(childOri,color,h_bcc,'MarkerSize',5,'points',1000);
@@ -311,8 +303,8 @@ drawNow(gcm)
 % As we see from the above pole figures, the red, blue, and orange
 % orientations are distinguished by which of the symmetrically equivalent
 % (100) austenite axes is aligned to the (100) ferrite axis.
-%%
-% Similarly, we may also use the Bain group Id color to distinguish 
+%
+% Similarly, we may also use the Bain group Id color to distinguish
 % different child Bain groups in the EBSD map.
 
 plot(grains('Fe'),color)

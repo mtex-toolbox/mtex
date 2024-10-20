@@ -29,7 +29,7 @@ ebsd = EBSD.load(fileName,'convertEuler2SpatialReferenceFrame')
 % imports data from the file |fileName.ctf| and stores them in the variable
 % |ebsd| of type <https://mtex-toolbox.github.io/EBSD.EBSD.html |EBSD|>.
 %
-% Next one can pass the variable |ebsd| to diferent MTEX function. E.g. to
+% Next one can pass the variable |ebsd| to different MTEX function. E.g. to
 % plot a phase plot one simply does 
 
 plot(ebsd)
@@ -37,7 +37,7 @@ plot(ebsd)
 %%
 % The grain structure is reconstructed by the command 
 
-grains = calcGrains(ebsd)
+grains = calcGrains(ebsd('indexed'),'minPixel',3)
 
 %%
 % which returns a new variable of type <grain2d.grain2d.html |grain2d|>,
@@ -51,7 +51,7 @@ hold off
 %%
 % An MTEX script is a sequence of MTEX commands. Usually, these are
 % accompanied by comments (lines starting with |%|), describing the purpose
-% of each command and making the scipt understandable in the future. It is
+% of each command and making the script understandable in the future. It is
 % also good practice to subdivide MTEX scripts into sections by adding
 % lines starting with |%%| and executing those scripts only section by
 % section |Shift Strg Enter|.
