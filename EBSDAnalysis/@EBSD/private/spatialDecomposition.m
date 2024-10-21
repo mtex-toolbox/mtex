@@ -40,8 +40,7 @@ else
       clear Vx Vy E1 E2
       delta = dxy/1e4;
       [~,ia,ic] = unique(round((V - V(1,:))/delta)*delta,'rows');
-      V = V(ia,:);
-      
+      V = V(ia,:);      
 
       F = sort(ic(E),2);
       I_FD = sparse(I_ED1(I_ED2<=numX),I_ED2(I_ED2<=numX),1,size(F,1),numX);
@@ -68,12 +67,11 @@ else
   % coordinates - not the dummy coordinates
   D = D(1:size(X,1));
 
-  % remove empty lines from D
-  % D = D(cellfun(@(x) ~isempty(x),D));
-  
   % merge points that coincide
-  [V,~,ic] = uniquetol(V,1e-5,'ByRows',true,'DataScale',1);
-  %D = cellfun(@(x) ic(x).',D,'UniformOutput',false);
+  delta = dxy/1e3;
+  ind = find(isfinite(V(:,1)),1);
+  [~,ia,ic] = unique(round((V - V(ind,:))/delta)*delta,'rows');
+  V = V(ia,:);
 
   % remove duplicated points in D
   %D = cellfun(@(x) x(diff([x,x(1)])~=0),D,'UniformOutput',false);
