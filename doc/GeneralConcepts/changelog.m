@@ -1,15 +1,27 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 6.0.beta.4 4/2024
+%% MTEX 6.0 10/2024
+% MTEX 6.0 is major release that includes numerous new features and
+% internal changes. Although we tried hard to make 
+%
+%
+% *Full 3d-Grains*
+%
+% With MTEX 6.0 three dimensional grain networks can be imported from
+% <https://neper.info/index.html Neper> or <https://dream3d.bluequartz.net
+% Dream 3d> and analyzed in a similar powerful way as you are used to do it
+% with 2d grains. Have a look at <Grains3DOperations.html 3d-grain
+% operations> and <Grains3DProperties.html 3d-grain properties> for more
+% information.
 %
 % *Pseudo 3d EBSD and Grain maps*
 %
-% With version 6.0, MTEX starts to support pseudo 3d EBSD data. This means
-% that EBSD maps are no longer restricted to the xy-plane. For
-% example it is now possible to consider EBSD maps that represent the three
-% faces of a cube. To make this possible, multiple changes at the core of
-% MTEX had to be introduced:
+% Additionally, all previous 2d-classes like @EBSD, @grain2d,
+% @grainBoundary are not longer restricted to the xy-plane. For example it
+% is now possible to consider EBSD maps that represent the three faces of a
+% cube. To make this possible, multiple changes at the core of MTEX had to
+% be introduced:
 %
 % * |ebsd.pos| gives the position of the EBSD measurements and is of type
 % @vector3d
@@ -51,6 +63,31 @@
 % slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
 % more information.
 %
+% *Misc Changes*
+%
+% * new option |'minPixel'| for the command <ebsd.calcGrains.html
+% |calcGrains|> which allows to set a minimum grain size
+% * <xxx ipf-sections> are a novel way of representing the orientation
+% space
+% * |grains(id).V| now returns only the vertices of the respective grain
+% * |dot(vF1,vF2)| computes the inner product between two spherical vector
+% fields.
+% * the option |'FaceColor'| now allows to <CrystalShapes.html colorize
+% crystal shapes according to their orientation>
+% * <mtexFigure.drawNow.html |drawNow(gcm,'antiAliased')|> generates anti-aliased images
+% * <EBSD.transform2PolarReferenceFrame.html
+% |transform2PolarReferenceFrame|> transforms ebsd data into a polar
+% reference frame
+% * support for area detectors in ODF reconstruction from pole figure data
+% * when computing parent EBSD data using
+% <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|> the
+% parent orientation will now be constant within the parent grains. In
+% order to enforce the old behavior of a fixed OR but varying parent
+% orientation use the new option |'exactOR'|.
+% * new interface to <sht files>
+% * new function <stripStar.html |stripStar|>
+% * 
+
 %% MTEX 5.11.0 3/2024
 % 
 % MTEX 5.11 will be the last release before MTEX 6.0. It significantly
