@@ -38,7 +38,7 @@ else
       E=[E1,E2];
     
       clear Vx Vy E1 E2
-      delta = dxy/1e4;
+      delta = dxy/1e3;
       [~,ia,ic] = unique(round((V - V(1,:))/delta)*delta,'rows');
       V = V(ia,:);      
 
@@ -246,8 +246,7 @@ dxy = max(norm(unitCell(1)-unitCell));
 delta = dxy/1e1;
 dummyCoordinates = unique(round(dummyCoordinates/delta)*delta,'first','rows');
 
-% remove those points which are inside the b
-
+% remove those points which are inside the bounding box
 id = inpolygon(dummyCoordinates(:,1),dummyCoordinates(:,2),boundingX(:,1),boundingX(:,2));
 
 dummyCoordinates(id,:) = [];
