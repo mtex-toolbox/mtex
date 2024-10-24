@@ -23,10 +23,18 @@ if check_option(varargin,'unitCell')
     D{k} = faces(k,:);
   end
   
+elseif check_option(varargin,'quick')
+  
+  [~,~,~,~,I_ED1,I_ED2] = jcvoronoi_mex(X);
+    
+  V = []; F = [];
+  I_FD = sparse(I_ED1,I_ED2,1);
+  return
+
 else
-  
+
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
-  
+    
   method = get_flag(varargin,{'jcvoronoi','qhull','matlab'}, getMTEXpref('voronoiMethod'));
 
   switch lower(method)
@@ -72,7 +80,7 @@ else
   ind = find(isfinite(V(:,1)),1);
   [~,ia,ic] = unique(round((V - V(ind,:))/delta)*delta,'rows');
   V = V(ia,:);
-
+  
   % remove duplicated points in D
   %D = cellfun(@(x) x(diff([x,x(1)])~=0),D,'UniformOutput',false);
 

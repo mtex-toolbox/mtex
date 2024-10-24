@@ -75,7 +75,7 @@ isSparse = nnz(ebsd.isIndexed) < 0.9 * prod(ext([2,4])-ext([1,3])) / uniArea;
 
 if minPixel > 1
 
-  if isSparse
+  if 1 || isSparse
 
     % if we are later going to use the alphaShape algorithm we should 
     % temporarily remove not indexed pixels here
@@ -84,18 +84,19 @@ if minPixel > 1
     else
       toRemove = false(numel(pos),1);
     end
-    [V,F,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],ebsd.unitCell,varargin{:});
+    [~,~,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],...
+      ebsd.unitCell,'quick',varargin{:});
     if any(toRemove)
       [f,d] = find(I_FD);
       allD = 1:length(toRemove);
       allD(toRemove) = [];
       d = allD(d);
-      I_FD = sparse(f,d,1,size(F,1),length(ebsd));
+      I_FD = sparse(f,d,1,max(f),length(ebsd));
     end
   else
-    [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
+    [~,~,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
   end
-  [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+  [~,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 
   % number of pixels of each grain
   numPixel = full(sum(I_DG,1));
@@ -175,7 +176,7 @@ if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
 end
 
 % rotate grains back
-grains = inv(ebsd.rot2Plane) * grains;
+grains = inv(ebsd.rot2Plane) * grains; %#ok<MINV>
 
 % calc mean orientations, GOS and mis2mean
 % ----------------------------------------
@@ -260,25 +261,20 @@ end
 
     for p = 1:numel(ebsd.phaseMap)
   
-      % neighboured cells Dl and Dr have the same phase
+      % neighbored cells Dl and Dr have the same phase
       ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
 
       % do not connect points to far away from each other
       if maxDist > 0
         ndx = ndx & norm(ebsd.pos(Dl) - ebsd.pos(Dr)) < maxDist; 
       end
-      
-      connect(ndx) = true;
-  
-      % check, whether they are indexed
-      ndx = ndx & ebsd.isIndexed(Dl) & ebsd.isIndexed(Dr);
-  
+     
       % now check for the grain boundary criterion
-      if any(ndx)
-    
+      if any(ndx) && isa(ebsd.CSList{p},'symmetry')    
         connect(ndx) = feval(['gbc_' gbc],...
           ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
-   
+      else
+        connect(ndx) = 1;
       end
     end
 
