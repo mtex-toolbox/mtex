@@ -22,5 +22,6 @@ try %#ok<TRYNC>
   sP.axes = s.axes;       % coordinate system
   sP.mineral = s.mineral; % mineral name
   sP.color  = s.color;    % color used for EBSD / grain plotting
+  sP.how2plot = s.how2plot; % copy plotting convention
 end
   

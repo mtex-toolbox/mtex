@@ -19,6 +19,7 @@ try %#ok<TRYNC>
   sL.axes = s.axes;       % coordinate system
   sL.mineral = s.mineral; % mineral name
   sL.color  = s.color;    % color used for EBSD / grain plotting
+  sL.how2plot = s.how2plot;
 end
 
 end
