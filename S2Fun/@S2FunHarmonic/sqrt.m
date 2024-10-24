@@ -16,5 +16,6 @@ function sF = sqrt(sF, varargin)
 %
 
 sF = sF.quadrature(@(v) sqrt(sF.eval(v)),varargin{:});
+sF.isReal = true;
 
 end
