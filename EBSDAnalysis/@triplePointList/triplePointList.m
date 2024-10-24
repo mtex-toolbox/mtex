@@ -16,9 +16,9 @@ classdef triplePointList < phaseList & dynProp
   % properties with as many rows as data
   properties
     id = zeros(0,1)           % indices of the vertices in grains.allV
-    grainId = zeros(0,3)      % id's of the neigbouring grains to a face
-    boundaryId = zeros(0,3)   % id's of the neigbouring ebsd data to a face
-    nextVertexId = zeros(0,3) % id's of the neighbouring segment vertices
+    grainId = zeros(0,3)      % id's of the neighboring grains to a face
+    boundaryId = zeros(0,3)   % id's of the neighboring ebsd data to a face
+    nextVertexId = zeros(0,3) % id's of the neighboring segment vertices
     allV = vector3d           % vertices x,y coordinates
     N = vector3d.Z            % normal direction of the pseudo3d data
   end

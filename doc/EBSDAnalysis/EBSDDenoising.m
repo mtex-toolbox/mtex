@@ -35,7 +35,7 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 % and on top the grain boundaries
 hold on
-plot(grains.boundary,'linewidth',2)
+plot(grains.boundary,'linewidth',2,'linecolor','white')
 hold off
 
 %%
@@ -58,8 +58,8 @@ hold off
 
 %%
 % We clearly observe some deformation gradients withing the grains which
-% are superposed by random noise. 
-
+% are superposed by random noise.
+%
 %% The Mean Filter
 %
 % The simplest filter to apply to orientation data is the @meanFilter which

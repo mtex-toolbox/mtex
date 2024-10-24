@@ -69,7 +69,7 @@ plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
 %
 % Another example is the change from a square to an hexagonal grid or vice
 % versa. In this case the command <EBSD.interp.html |interp|> is
-% implicitely called by the command <EBSD.gridify.html |gridify|>. In order
+% implicitly called by the command <EBSD.gridify.html |gridify|>. In order
 % to demonstrate this functionality we start by EBSD data on a hex grid
 
 mtexdata ferrite silent

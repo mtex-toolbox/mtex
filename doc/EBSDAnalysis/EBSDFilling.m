@@ -49,7 +49,7 @@ plot(ebsdSub,ebsdSub.orientations)
 % reconstruct the grain structure from the remaining 25 percent of pixels.
 
 % reconstruct the grain structure
-[grainsSub,ebsdSub.grainId] = calcGrains(ebsdSub,'angle',10*degree);
+[grainsSub,ebsdSub.grainId] = calcGrains(ebsdSub('indexed'),'angle',10*degree,'minPixel',2);
 
 grainsSub = smooth(grainsSub,5);
 
@@ -59,12 +59,12 @@ hold off
 
 %%
 % The easiest way to reconstruct missing data is to use the command
-% <EBSD.fill.html |fill|> which interpolates missing data using the method of
-% nearest neighbor. It is very recommended to pass the grain structure
+% <EBSD.fill.html |fill|> which interpolates missing data using the method
+% of nearest neighbor. It is recommended to pass the grain structure
 % |grainsSub| as an additional argument to the |fill| function. In this
 % case the nearest neighbors are chosen within the grains.
 
-ebsdSub_filled = fill(ebsdSub,grainsSub);
+ebsdSub_filled = fill(ebsdSub('indexed'),grainsSub);
 
 plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
@@ -80,15 +80,13 @@ F = halfQuadraticFilter;
 F.alpha = 0.25;
 
 % interpolate the missing data 
-ebsdSub_filled = smooth(ebsdSub,F,'fill',grainsSub);
-ebsdSub_filled = ebsdSub_filled('indexed');
+ebsdSub_filled = smooth(ebsdSub('indexed'),F,'fill',grainsSub);
 
 plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
 hold on
 plot(grainsSub.boundary,'linewidth',1.5)
 hold off
-
 
 %% An Example from Geoscience
 %

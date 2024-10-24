@@ -159,7 +159,8 @@ colorKey = PatalaColorKey(gB_Fo);
 hold on
 plot(gB_Fo,'linewidth',7)
 hold on
-plot(gB_Fo,colorKey.orientation2color(gB_Fo.misorientation),'linewidth',4)
+color = colorKey.orientation2color(gB_Fo.misorientation);
+plot(gB_Fo,squeeze(color),'linewidth',4)
 hold off
 
 %%
@@ -194,8 +195,9 @@ plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
 
 % define the color key and colorize the grain boundaries
 colorKey = PatalaColorKey(gB)
+color = colorKey.orientation2color(gB.misorientation);
 hold on
-plot(gB,colorKey.orientation2color(gB.misorientation),'linewidth',4,'smooth')
+plot(gB,squeeze(color),'linewidth',4,'smooth')
 hold off
 
 %%

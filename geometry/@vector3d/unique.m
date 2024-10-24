@@ -2,7 +2,7 @@ function [v,iv,iu] = unique(v,varargin)
 % disjoint list of vectors
 %
 % Syntax
-%   u = unique(v) % find disjoined elements of the vector v
+%   u = unique(v) % find disjoint elements of the vector v
 %   u = unique(v,'tolerance',0.01) % use tolerance 0.01
 %   [u,iv,iu] = unique(v,varargin)] 
 %    

@@ -7,11 +7,11 @@
 %
 % $$ f({\bf v}) = \sum_{m=0}^M \sum_{l = -m}^m \hat f_m^l Y_m^l({\bf v}) $$
 %
-% with respect to Fouriers coefficients $\hat f_m^l$ and the so called
+% with respect to Fourier coefficients $\hat f_m^l$ and the so called
 % <SphericalHarmonics.html spherical harmonics> $Y_m^l({\bf v})$.
 %
-% There exists various normalizations for the sperical harmonics. 
-% In MTEX the $L_2$ norm of the spherical harmonics equals
+% There exists various normalizations for the spherical harmonics. In MTEX
+% the $L_2$ norm of the spherical harmonics equals
 %
 % $$\| Y_m^l \|_2 = 1$$
 %
@@ -35,7 +35,7 @@ plot(fun)
 % This function has the cut off degree $M=1$. As a rule of thumb: smooth
 % functions require only a small cut off degree whereas functions with
 % jumps or sharp edges requires a high cut off degree. If the cut off
-% degree is choosen to small truncation error in the form of high order
+% degree is chosen to small truncation error in the form of high order
 % oscillations are observable like in the following demonstration for the
 % cut off degrees $M=64$ and $M=32$.
 
@@ -45,13 +45,13 @@ clf;
 for bw = [256 128 64 32 16 8]
   sF.bandwidth = bw;
   nextAxis;
-  pcolor(sF, 'upper');
+  pcolor(sF, 'upper','colorRange',[0,0.75]);
   mtexTitle(['M = ' num2str(bw)]);
 end
 
 %%
 % The computation of the Fourier coefficients can be done in several ways.
-% Lets first assume that the function $f$ is known explicitely, e.g.,
+% Lets first assume that the function $f$ is known explicitly, e.g.,
 % $f({\bf v})=({\bf v} \cdot {\bf x})^3$. In MTEX we can express this as
 
 fun = @(v) dot(v,vector3d.X).^9;
@@ -103,6 +103,6 @@ plotSpektra(S2F,'linewidth',2)
 % harmonic series expansion is the harmonic cut off degree $M$. .
 %
 %% 
-% To concluse this session we plot the first ten spherical harmonics
+% To conclude this session we plot the first ten spherical harmonics
 
 surf(S2FunHarmonic(eye(10)))

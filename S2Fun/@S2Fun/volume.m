@@ -10,14 +10,14 @@ function v = volume(sF,center,radius,varargin)
 % by a tolerance (radius)) to the volume of the entire spherical function.
 %
 % Note that if the S2Fun $f$ is 'antipodal' the volume in any center with
-% radius 90° will return the mean value of the S2Fun, which is infact the 
+% radius 90° will return the mean value of the S2Fun, which is in fact the
 % volume of the whole sphere.
 %
 % Syntax
 %   v = volume(sF,center,radius)
 %
 % Input
-%  sF    - @S2Fun
+%  sF     - @S2Fun
 %  center - @vector3d
 %  radius - double
 %

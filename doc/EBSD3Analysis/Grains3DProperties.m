@@ -4,10 +4,10 @@
 % grains, e.g. |grains.meanOrientation|. However, the geometric properties
 % are quite different. These are 
 %
-% || |grainSize| || number of pixels per grain || |volume| || volume in µm³ || 
+% || |grainSize| || number of pixels per grain || <grain3d.volume.html |volume|> || volume in µm³ || 
 % || |numFaces| || number boundary elements per grain || <grain3d.surface.html |surface|>  || surface area in µm² || 
 % || <grain3d.diameter.html |diameter|>  || diameter in µm || |caliper|  || not yet implemented ||
-% || <grain3d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
+% || <grain3d.equivalentSurface.html |equivalentSurface|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
 % || <grain3d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
 % || <grain3d.hasHole.html |hasHole|>  || TODO  || <grain3d.isInclusion.html |isInclusion|>  || TODO  ||
 % || <grain3d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <grain3Boundary.grain3Boundary.html |boundary|>  || list of  boundary faces ||

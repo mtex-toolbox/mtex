@@ -47,9 +47,13 @@ grains = job.simulateGrains(odf,numGrains,'silent')
 % or you can load an existing tessellation file
 %grains = grain3d.load('allgrains.tess','CS',cs)
 
+%%
+
 % colorize by mean orientation
-plot(grains,grains.meanOrientation,'micronbar','off')
+plot(grains,grains.meanOrientation,'micronbar','off','faceAlpha',0.5)
 setCamera(how2plot)
+
+%%
 
 %% Slicing
 %

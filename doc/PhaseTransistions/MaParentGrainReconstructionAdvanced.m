@@ -18,13 +18,7 @@ csBCC = ebsd.CSList{2}; % austenite bcc:
 csFCC = ebsd.CSList{3}; % martensite fcc:
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree);
-
-% remove small grains
-ebsd(grains(grains.grainSize < 4)) = [];
-
-% reidentify grains with small grains removed:
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree,'minPixel',5);
 
 % plot the data and the grain boundaries
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
@@ -36,7 +30,7 @@ hold off
 % It is well known that the phase transformation from austenite to
 % martensite is not described by a fixed orientation relationship. In fact,
 % the actual orientation relationship needs to be determined for each
-% sample individualy. Here, we used the iterative method proposed by Tuomo
+% sample individually. Here, we used the iterative method proposed by Tuomo
 % Nyyssönen and implemented in the function <calcParent2Child.html
 % |calcParent2Child|> that starts at an initial guess of the orientation
 % relation ship and iterates towards the true orientation relationship.
@@ -52,10 +46,10 @@ KS = orientation.KurdjumovSachs(csFCC,csBCC);
 % a list of child to child misorientations or, equivalently, a two column
 % matrix of child orientations. Here we go with the second option and setup
 % this two column orientation matrix from the mean orientations of
-% neighbouring grains which can be found using the command
+% neighboring grains which can be found using the command
 % <grain2d.neighbours.html |neighbours|>
 
-% get neighbouring grain pairs
+% get neighboring grain pairs
 grainPairs = grains.neighbors;
 
 % ignore pairs with misorientation angle smaller then 5 degree
@@ -88,7 +82,7 @@ xlabel('disorientation angle')
 [gB,pairId] = grains.boundary.selectByGrainId(grainPairs);
 
 %%
-% abd then pass the variable |fit| as second input argument to the
+% and then pass the variable |fit| as second input argument to the
 % <grainBoundary.plot.html |plot|> command
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
@@ -109,7 +103,7 @@ setColorRange([0,5])
 %% Create a similarity matrix
 %
 % Next we set up a adjacency matrix |A| that describes the probability that
-% two neighbouring grains belong to the same parent grains. This
+% two neighboring grains belong to the same parent grains. This
 % probability is computed from the misfit of the misorientation between two
 % child grains to the theoretical child to child misorientation. More
 % precisely, we model the probability by a cumulative Gaussian distribution
@@ -163,7 +157,8 @@ parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(parentGrains.boundary,'linewidth',4)
+plot(parentGrains.boundary,'linewidth',4,'lineColor','w')
+plot(parentGrains.boundary,'linewidth',2,'lineColor','k')
 hold off
 
 %% Compute parent grain orientations
@@ -194,7 +189,7 @@ parentGrains(fit<5*degree).meanOrientation = parentOri(fit<5*degree);
 parentGrains = parentGrains.update;
 
 % merge grains with similar orientation
-[parentGrains, mergeId] = merge(parentGrains,'threshold',3*degree);
+[parentGrains, mergeId] = merge(parentGrains,'threshold',4*degree);
 parentEBSD('indexed').grainId = mergeId(parentEBSD('indexed').grainId);
 
 %%

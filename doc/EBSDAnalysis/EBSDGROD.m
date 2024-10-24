@@ -54,7 +54,7 @@ plot(ebsd,grod.angle./degree,'micronbar','off')
 mtexColorbar('title',{'misorientation angle in degree'})
 mtexColorMap LaboTeX
 
-% overlay grain and subgrain boundaries
+% overlay grain and sub-grain boundaries
 hold on
 plot(grains.boundary,'lineWidth',1.5)
 plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
@@ -119,7 +119,7 @@ hold off
 %%
 % The misorientation axis in crystal coordinates can be related to active
 % slip systems. See: V. Tong, E. Wielewski, B. Britton
-% <https://arxiv.org/abs/1803.00236 Characterisation of slip and twinning
+% <https://arxiv.org/abs/1803.00236 Characterization of slip and twinning
 % in high rate deformed zirconium with electron backscatter diffraction>,
 % 2018.
 %

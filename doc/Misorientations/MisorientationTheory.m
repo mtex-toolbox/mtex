@@ -21,26 +21,27 @@ mtexdata twins silent
 ebsd('M').CS = ebsd('M').CS.properGroup;
 
 % compute grains
-grains = calcGrains(ebsd('indexed'),'threshold',5*degree);
+grains = calcGrains(ebsd('indexed'),'threshold',5*degree,'minPixel',5);
+grains = smooth(grains,5);
 CS = grains.CS; % extract crystal symmetry
 
 %%
 % Next we plot the grains together with their mean orientation and
-% highlight grain 74 and grain 85
+% highlight grain 43 and grain 52
 
 plot(grains,grains.meanOrientation,'micronbar','off')
 
 hold on
-plot(grains([74,85]).boundary,'edgecolor','w','linewidth',2)
+plot(grains([43,52]).boundary,'edgecolor','w','linewidth',2)
 hold off
 
-text(grains([74,85]),{'1','2'})
+text(grains([43,52]),{'1','2'})
 
 %%
-% After extracting the mean orientation of grain 74 and 85
+% After extracting the mean orientation of grain 43 and 52
 
-ori1 = grains(74).meanOrientation;
-ori2 = grains(85).meanOrientation;
+ori1 = grains(43).meanOrientation;
+ori2 = grains(52).meanOrientation;
 
 %%
 % we may compute the misorientation angle between both orientations by
@@ -76,16 +77,16 @@ mori = inv(ori1) * ori2
 
 %%
 % In the present case the misorientation describes the coordinate transform
-% from the reference frame of grain 85 into the reference frame of crystal
-% 74. Take as an example the plane $\{11\bar{2}0\}$ with respect to the
-% grain 85. Then the plane in grain 74 which aligns parallel to this plane
+% from the reference frame of grain 52 into the reference frame of crystal
+% 43. Take as an example the plane $\{11\bar{2}0\}$ with respect to the
+% grain 85. Then the plane in grain 43 which aligns parallel to this plane
 % can be computed by
 
 round(mori * Miller(1,1,-2,0,CS))
 
 %%
 % Conversely, the inverse of |mori| is the coordinate transform from
-% crystal 74 to grain 85.
+% crystal 43 to grain 52.
 
 round(inv(mori) * Miller(2,-1,-1,0,CS))
 
@@ -100,8 +101,8 @@ m = Miller({1,-1,0,0},{1,1,-2,0},{-1,0,1,1},{0,0,0,1},CS);
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 85 with respect to the
-  % reference frame of grain 74
+  % plot the lattice planes of grains 52 with respect to the
+  % reference frame of grain 43
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper','textBelowMarker')
   hold on
@@ -130,11 +131,11 @@ angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 
 %% Twinning misorientations
 % Lets define a misorientation that makes a perfect fit between the
-% $\{11\bar20\}$ lattice planes and between the $\{10\bar11\}$ lattice
-% planes
+% $\{11\bar20\}$, $\{2\bar1\bar10\}$ lattice planes and the $[0001]$, $[01\bar10]$
+% lattice directions.
 
 mori = orientation.map(Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),...
-  Miller(-1,0,1,1,CS),Miller(-1,1,0,1,CS))
+  Miller(0,0,0,1,CS,'uvw'),Miller(0,1,-1,0,CS,'uvw'))
 
 % the rotational axis
 round(mori.axis)
@@ -149,11 +150,11 @@ mori.angle / degree
 % cycle through all major lattice planes
 close all
 for im = 1:length(m)
-  % plot the lattice planes of grains 85 with respect to the
-  % reference frame of grain 74
+  % plot the lattice planes of grains 52 with respect to the
+  % reference frame of grain 43
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
     'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
-  hold all
+  hold on
 end
 hold off
 
@@ -174,7 +175,7 @@ legend({},'location','NorthWest','FontSize',13);
 gB = grains.boundary('Mag','Mag');
 
 % check for small deviation from the twinning misorientation
-isTwinning = angle(gB.misorientation,mori) < 5*degree;
+isTwinning = angle(gB.misorientation,mori) < 7.5*degree;
 
 % plot the grains and highlight the twinning boundaries
 plot(grains,grains.meanOrientation,'micronbar','off')
