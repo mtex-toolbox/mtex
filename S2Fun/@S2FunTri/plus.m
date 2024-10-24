@@ -1,5 +1,6 @@
 function sF = plus(sF1,sF2)
-     
+% overloads sF1 + sF2
+
 if isnumeric(sF1)
             
   sF = sF2;

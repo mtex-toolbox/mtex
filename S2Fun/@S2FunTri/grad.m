@@ -1,4 +1,18 @@
-function g = grad(sF, v) % gradient
+function g = grad(sF, v)
+% gradient of a spherical function
+%
+% Syntax
+%   sVF = grad(sF)  % returns the gradient as a spherical vector field 
+%   g = grad(sF, v) % return the gradient in point v as vector3d
+%
+% Input
+%  sF - @S2FunTri
+%  v - @vector3d
+%
+% Output
+%  sVF - @sphericalVectorFieldHarmonic
+%    g - @vector3d
+%
 
 if nargin == 2 % direct evaluation
   v = v(:);

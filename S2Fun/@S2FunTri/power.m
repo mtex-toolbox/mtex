@@ -1,4 +1,5 @@
 function sF = power(sF1,sF2)
+% implements sF1.^sF2
         
 if isnumeric(sF1)
   

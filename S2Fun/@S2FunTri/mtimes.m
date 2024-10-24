@@ -1,5 +1,6 @@
 function sF = mtimes(sF1,sF2)
-       
+% implements sF1 * sF2      
+
 if isnumeric(sF1)
   
   sF = sF2;
