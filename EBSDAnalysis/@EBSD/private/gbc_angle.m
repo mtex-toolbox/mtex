@@ -1,4 +1,4 @@
-function criterion = gbc_angle(q,CS,Dl,Dr,threshold,varargin)
+function criterion = gbc_angle(q,cs,Dl,Dr,threshold,varargin)
 %
 % Input
 %  q  - quaternion
@@ -10,14 +10,10 @@ function criterion = gbc_angle(q,CS,Dl,Dr,threshold,varargin)
 %  d - 0 no boundary, 0.5 low angle boundary, 1 high angle boundary
 %
 
-d = angle(orientation(q(Dl),CS),orientation(q(Dr),CS));
-
-if isscalar(threshold)
-
-  criterion = d < threshold;
-
-else
+mori = itimes(q(Dl),q(Dr),1);
+d = max(abs(dot_outer(mori,cs.properGroup.rot)),[],2);
   
-  criterion = 0.5 * ((d < threshold(1)) + (d < threshold(2)));
-  
-end
+criterion = mean(d > cos(threshold/2),2);
+
+
+
