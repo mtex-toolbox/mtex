@@ -1,7 +1,7 @@
 %% Import Script for EBSD Data
 %
 % This script was automatically created by the import wizard. You should
-% run the whoole script or parts of it in order to import your data. There
+% run the whole script or parts of it in order to import your data. There
 % is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
@@ -10,8 +10,7 @@
 CS = {crystal symmetry};
 
 % plotting convention
-setMTEXpref('xAxisDirection',{xAxisDirection});
-setMTEXpref('zAxisDirection',{zAxisDirection});
+how2plot = plottingConvention({zAxisDirection},{xAxisDirection});
 
 %% Specify File Names
 
@@ -29,6 +28,7 @@ Z = {Z-values};
 
 % create an EBSD variable containing the data
 ebsd = EBSD.load(fname,CS,'interface',{interface},{Z},{options});
+ebsd.plottingConvention = how2plot;
 
 %% Correct Data
 

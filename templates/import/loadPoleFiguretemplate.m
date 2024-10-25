@@ -1,7 +1,7 @@
 %% Import Script for PoleFigure Data
 %
 % This script was automatically created by the import wizard. You should
-% run the whoole script or parts of it in order to import your data. There
+% run the whole script or parts of it in order to import your data. There
 % is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
@@ -13,8 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-setMTEXpref('xAxisDirection',{xAxisDirection});
-setMTEXpref('zAxisDirection',{zAxisDirection});
+how2plot = plottingConvention({zAxisDirection},{xAxisDirection});
+setMTEXpref('xyzPlotting',how2plot);
 
 %% Specify File Names
 
@@ -37,11 +37,11 @@ pname = {path to defbg files};
 fname_defbg = {defbg file names};
 
 
-%% Specify Miller Indice
+%% Specify Miller Indices
 
 h = {Miller};
 
-%% Specifiy Structural Coefficients for Superposed Pole Figures
+%% Specify Structural Coefficients for Superposed Pole Figures
 
 c = {structural coefficients};
 
@@ -53,10 +53,10 @@ pf = PoleFigure.load(fname,h,CS,SS,{structural coefficients},'interface',{interf
 % background
 pf_bg = PoleFigure.load(fname_bg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
-% defocussing
+% defocusing
 pf_def = PoleFigure.load(fname_def,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
-% defocussing background
+% defocusing background
 pf_defbg = PoleFigure.load(fname_defbg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
 % correct data

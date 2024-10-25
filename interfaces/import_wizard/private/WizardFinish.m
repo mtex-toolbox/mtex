@@ -299,18 +299,20 @@ end
     
     function str = getXAxis()
       
-      xaxis = 1 + mod(getSS('direction')-1,4);
+      NWSE = {'xvector','-yvector','-xvector','yvector','xvector','yvector','-xvector','-yvector'};
       
-      str = ['''' NWSE(xaxis) ''''];
+      str = ['' NWSE(getSS('direction')) ''];
       
     end
     
     function str = getZAxis()
       
+      UpDown = {'zvector','-zvector'};
+
       % plotting convention
       zaxis = 1 + (getSS('direction') > 4);
       
-      str = ['''' UpDown(zaxis) ''''];
+      str = ['' UpDown(zaxis) ''];
       
     end
     
