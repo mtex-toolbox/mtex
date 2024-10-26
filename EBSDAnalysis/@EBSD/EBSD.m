@@ -256,7 +256,11 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
 
     function rot = get.rot2Plane(ebsd)
-      rot = rotation.map(ebsd.N,vector3d.Z);
+      if angle(ebsd.N, vector3d.Z,'antipodal')==0
+        rot = rotation.id;
+      else
+        rot = rotation.map(ebsd.N,vector3d.Z);
+      end
     end
 
     function pC = get.plottingConvention(ebsd)

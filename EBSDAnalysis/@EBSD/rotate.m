@@ -55,4 +55,11 @@ if ~check_option(varargin,'keepXY')
 
   % rotate the unitcell
   ebsd.unitCell = rot .* ebsd.unitCell;
+
+  % remove numerical errors
+  ebsd.N = ebsd.N.round2zero;
+
+  ebsd.pos = ebsd.pos.round2zero;
+  ebsd.unitCell = ebsd.unitCell.round2zero;
+  
 end

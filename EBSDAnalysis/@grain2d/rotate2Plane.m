@@ -1,20 +1,11 @@
-function [grainsR,rot] = rotate2Plane(grains)
-  N=grains.N;
-  Z=vector3d.Z;
-  
-  if norm(N)~=1
-    N=1/norm(N)*N;
-  end
+function [grains, rot] = rotate2Plane(grains)
+% rotate grains to xy plane
 
-  v=cross(N,Z);
-  omega=acos(dot(Z,N)/(norm(Z)*norm(N)));
+if angle(grains.N, zvector,'antipodal') == 0
+  rot = rotation.id;
+else
+  rot = rotation.map(grains.N, zvector);
+  grains = rot .* grains;
+end
 
-
-  if N.z<0
-    omega=pi-omega;
-  end
-
-  rot=rotation.byAxisAngle(v,omega);
-
-  grainsR=rot*grains;
 end
