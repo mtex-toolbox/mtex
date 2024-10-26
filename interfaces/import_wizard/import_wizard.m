@@ -19,13 +19,10 @@ if check_option(varargin,'test')
   return
 end
 
-
-
 api = WizardDataApi(api);
 api = WizardEmptyGUIApi(api);
 api = WizardProgressApi(api,@pageImportData);
 api.initProgressApi();
-
 
 
 

@@ -40,7 +40,7 @@ elseif isa(b,'grain2d')
 
   r = rotate(b,a);
 
-  elseif isa(b,'grain3d')
+elseif isa(b,'grain3d')
 
   r = rotate(b,a);
 else

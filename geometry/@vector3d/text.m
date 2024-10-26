@@ -14,6 +14,7 @@ function h = text(v,varargin)
 %
 % Options
 %  textColor - rgb or color name
+%  textAboveMarker - display the text above the marker
 %
 % See also
 

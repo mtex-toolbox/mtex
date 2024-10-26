@@ -1,7 +1,7 @@
 function sL = Laue(s)
 % return the corresponding Laue group 
 
-% maybe we have alread computed the Laue group
+% maybe we have already computed the Laue group
 if ~isempty(s.LaueRef)
 
   sL = s.LaueRef;
