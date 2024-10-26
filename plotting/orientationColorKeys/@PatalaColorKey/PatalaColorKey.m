@@ -23,7 +23,7 @@ classdef PatalaColorKey < orientationColorKey
       v = Rodrigues(mori.project2FundamentalRegion('antipodal'));
 
       % this is to adjust to the "correct" fundamental sector
-      v = rotate(v,-oM.CS1.bAxis.rho);
+      v = rotate(v,-oM.CS1.aAxis.rho);
       
       switch oM.CS1.LaueName
         case 'm-3m'
