@@ -28,7 +28,15 @@ try
   cs{1} = 'notIndexed';
 
   % read file header
-  hl = file2cell(fname,2000);
+  nh = 1000;
+  while true
+    hl = file2cell(fname,nh);
+
+    % number of header lines
+    nh = find(strncmp('#',hl,1),1,'last');
+    
+    if nh < length(hl) || nh>1e5, break; else, nh = nh + 1000; end
+  end
   
   %phasePos = strmatch('# Phase ',hl);
   % some ang files come with a line starting "# Phase index"
@@ -77,8 +85,7 @@ try
   
   if check_option(varargin,'check'), return;end
   
-  % number of header lines
-  nh = find(strmatch('#',hl),1,'last');
+  
   
   % mineral name to phase number conversion needed?
   parts = regexpsplit(hl{end-1},'\s*');
