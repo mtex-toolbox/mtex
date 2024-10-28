@@ -50,7 +50,7 @@ try
       laue = readByToken(str,'# Symmetry');
       lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
       
-      % setup crytsal symmetry
+      % setup crystal symmetry
       options = {};
       switch laue
         case {'-3m' '32' '3' '62' '6'}
@@ -121,7 +121,7 @@ try
   % # NOTES: End
   %
   
-  % set up columnnames
+  % set up column names
   version = readByToken(hl,'# VERSION','x');
   switch version
     case {'2', '3', '4', '5', '6'}
@@ -158,7 +158,7 @@ try
   
   % import the data
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-    'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
+    'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN');
   
   % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
   % which are filtered by loadHelper() already AND ci==-1.
@@ -174,13 +174,7 @@ try
     notIndexedID = -1;
   end
   ebsd.phaseMap(1) = notIndexedID;
-  ebsd(ebsd.prop.ci<0).phase=notIndexedID;
-  
-  % reconstruct empty points previously removed by loadHelper
-  % gridify might be easiest
-  ebsd=ebsd.gridify;
-  ind_no = isnan(ebsd.rotations);
-  ebsd(ind_no).phase=notIndexedID;
+  ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
   
 catch
   interfaceError(fname);
