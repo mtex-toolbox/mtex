@@ -102,7 +102,7 @@ grains = calcGrains(ebsd('indexed')); %#ok<*NASGU>
 
 gB = grains.boundary;
 
-[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.V));
+[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.allV));
 
 out = 1;
 
