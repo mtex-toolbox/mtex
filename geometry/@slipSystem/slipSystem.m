@@ -91,8 +91,8 @@ classdef slipSystem
         dispData(sS)
       elseif ~getMTEXpref('generatingHelpMode')
         disp(' ')
-        setappdata(0,'dispLastData',@() dispData(sS));
-        disp('  <a href="matlab:feval(getappdata(0,''dispLastData''))">display all coordinates</a>')
+        s = setAllAppdata(0,'data2beDisplayed',@() dispData(sS));
+        disp(['  <a href="matlab:feval(getappdata(0,''',s,'''))">display all coordinates</a>'])
         disp(' ')
       end
       

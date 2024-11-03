@@ -23,7 +23,7 @@ if length(m) < 20 && ~isempty(m)
 elseif ~getMTEXpref('generatingHelpMode') && ~isempty(m)
 
   disp(' ')
-  s = setappdata(0,'data2beDisplayed',m);
+  s = setAllAppdata(0,'data2beDisplayed',m);
   disp(['  <a href="matlab:display(getappdata(0,''',s,'''),''onlyShowMiller'')">show Miller</a>'])
   disp(' ')
 

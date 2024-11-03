@@ -221,13 +221,13 @@ for i = 1:numel(sP)
       hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
         'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
       % save listener, otherwise  callback may die
-      setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+      setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
     catch
       if ~isappdata(hax, 'dynamicMarkerSizeListener')
         hListener = addlistener(hax,'Position','PostSet',...
           @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
         %      localResizeScatterCallback([],[],sP(i).ax);
-        setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+        setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
       end
       %disp('some Error!');
     end

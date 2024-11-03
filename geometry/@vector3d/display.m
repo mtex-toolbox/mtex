@@ -34,7 +34,7 @@ elseif check_option(varargin,'all') || (length(v) < 20)
 elseif ~getMTEXpref('generatingHelpMode')
 
   disp(' ')
-  s = setappdata(0,'data2beDisplayed',v);
+  s = setAllAppdata(0,'data2beDisplayed',v);
   disp(['  <a href="matlab:display(getappdata(0,''',s,'''),''onlyShowVectors'')">show vectors</a>'])
   disp(' ')
 

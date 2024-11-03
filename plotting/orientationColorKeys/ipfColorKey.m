@@ -43,8 +43,8 @@ classdef ipfColorKey < orientationColorKey
         set(mtexFig.parent,'name',['IPF key for ' name])
       end
       set(caxes,'tag','ipdf')
-      setappdata(caxes,'CS',oM.CS1);
-      setappdata(caxes,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
+      setAllAppdata(caxes,'CS',oM.CS1,...
+        'inversePoleFigureDirection',oM.inversePoleFigureDirection);
             
       try
         mtexFig.drawNow('figSize','small',varargin{:});

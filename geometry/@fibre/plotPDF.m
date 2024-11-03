@@ -67,9 +67,8 @@ for i = 1:length(h)
   if isa(f.SS,'specimenSymmetry')
     pfAnnotations('parent',mtexFig.gca,'doNotDraw');
   end
-  setappdata(cax,'h',h{i});
   [cax.Tag] = deal('pdf');
-  setappdata(cax,'SS',f.SS);
+  setAllAppdata(cax,'h',h{i},'SS',f.SS);
 end
 
 if isNew || check_option(varargin,'figSize')

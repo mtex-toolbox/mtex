@@ -41,9 +41,7 @@ for i = 1:length(pf.allH)
 end
 
 if isNew % finalize plot
-  setappdata(gcf,'h',pf.allH);
-  setappdata(gcf,'SS',pf.SS);
-  setappdata(gcf,'CS',pf.CS);
+  setAllAppdata(gcf, 'h',pf.allH, 'SS',pf.SS,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});

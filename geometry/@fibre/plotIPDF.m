@@ -56,10 +56,9 @@ for ir = 1:length(r)
 
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
-  setappdata(cax,'inversePoleFigureDirection',r(ir));
   [cax.Tag] = deal('ipdf');
-  setappdata(cax,'CS',f.CS);
-  setappdata(cax,'SS',f.SS);
+  setAllAppdata(cax,'CS',f.CS,'SS',f.SS,...
+    'inversePoleFigureDirection',r(ir));
 
 end
 
