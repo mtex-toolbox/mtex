@@ -18,7 +18,7 @@ function flag = get_flag(option_list,flag_list,default)
 % See also
 % check_option set_option delete_option
 
-if nargin <= 2, flag = [];else flag = default;end
+if nargin <= 2, flag = [];else, flag = default;end
 
 pos = find_option(option_list,flag_list);
 

@@ -1,5 +1,5 @@
 function pos = find_option(option_list,option,type)
-% find positions of the options in option_list
+% find the latest position of an option in an option_list
 %
 % Input
 %  option_list - Cell Array
@@ -7,53 +7,39 @@ function pos = find_option(option_list,option,type)
 %  type        - list of allowed option classes
 %
 % Output
-%  pos         - double
+%  pos         - position of the option, zero if not found
 
-if ischar(option)
-  found = strcmpi(option_list,option);
-else
+option_list = convertContainedStringsToChars(option_list);
+
+if iscell(option) % check for multiple options
+
   found = false(size(option_list));
-  for k=1:length(option)
-    found = found | strcmpi(option{k},option_list);
+  for k = 1:length(option)
+    found = found | strcmpi(option_list,option{k});
   end
+ 
+else % check for a single option
+  found = strcmpi(option_list,option);
 end
-pos = find(found);
 
-if isempty(pos)
+if ~any(found)
   
   pos = 0;
 
-elseif nargin == 2 % not option value required
+else
 
-  pos = pos(end); % take the last occurence
+  pos = find(found,1,"last");
 
-else % option value required
+  if nargin > 2 % option value required
 
-  % last option can not have an value
-  if pos(end) == length(option_list), pos(end) = [];end
+    % ensure we have the correct type
+    if pos < length(option_list) && ... we need space for the option to check
+      ~(ischar(type) && ~isa(option_list{pos+1},type)) && ... single class provided
+      ~(iscell(type) && ~any(cellfun(@(x) isa(option_list{pos+1},x),type))) % multiple classes
 
-  if isempty(pos)
-
-    pos = 0;
-
-  elseif isempty(type) % no specific type required
-    
-    pos = pos(end)+1;
-    
-  else % check type of all found options starting with the last one
-    
-    if isa(type,'char')
-      for p = length(pos):-1:1
-        if isa(option_list{pos(p)+1},type), pos = pos(p)+1; return, end
-      end
-    elseif isa(type,'cell')
-      for p = length(pos):-1:1
-        if any(cellfun(@(x) isa(option_list{pos(p)+1},x),type))
-          pos = pos(p)+1; return
-        end
-      end
+      pos = pos + 1; % return next position
+    else
+      pos = 0;
     end
-
-    pos = 0;
   end
 end
