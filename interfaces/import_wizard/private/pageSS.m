@@ -93,19 +93,24 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
     direction = find(cell2mat(get(gui.hXYZ,'value')));
 
     setSS('direction',direction);
-    xaxis = 1 + mod(direction-1,4);
-    zaxis = 1 + (direction > 4);
-
-    setMTEXpref('xAxisDirection',NWSE(xaxis));
-    setMTEXpref('zAxisDirection',UpDown(zaxis));
-
+   
+    NWSE = {xvector,-yvector,-xvector,yvector,xvector,yvector,-xvector,-yvector};
+    UpDown = {zvector,-zvector};
+    how2plot = plottingConvention.default;
+    how2plot.east = NWSE{direction};
+    how2plot.outOfScreen = UpDown{1+(direction>4)};
+      
     % for all axes
     ax = findobj(0,'type','axes');
     fax = [];
     for a = 1:numel(ax)
-      if ~isappdata(ax(a),'projection'), continue;end
-      setCamera(ax(a),'xAxisDirection',NWSE(xaxis),'zAxisDirection',UpDown(zaxis));
-      fax = [fax,ax(a)]; %#ok<AGROW>
+      if isappdata(ax(a),'mapPlot')
+        setCamera(ax(a));
+        fax = [fax,ax(a)]; %#ok<AGROW>
+      elseif isappdata(ax(a),'sphericalPlot')
+        warning('rotation of pole figures in the import wizard needs to be implemented!')
+        % TODO add rotation of pole figure plots
+      end
     end
 
     %

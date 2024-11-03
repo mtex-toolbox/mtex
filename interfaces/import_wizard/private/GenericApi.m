@@ -152,7 +152,7 @@ localUpdateTableHeaders()
 
   function s = localCreateCodes()
     
-    % polefigure & vector3d
+    % pole figure & vector3d
     switch api.Type
       case {'PoleFigure','vector3d'}
         names = {...
