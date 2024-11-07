@@ -69,8 +69,12 @@ for i = 1:length(vec)
   % plot as surface plot
   h(i) = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
     'facecolor','k','edgecolor','none'),varargin{:});
-  
+
+  h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+
 end
+
+
 
 % set caxis back
 clim(ax,cax);
