@@ -1,11 +1,10 @@
-%% Fibre ODFs
+%% Fiber ODFs
 %
 % TODO: extend this
 %%
-% A fibre is represented in MTEX by a variable of type <fibre.fibre.html
-% fibre>.
+% A fibre is represented in MTEX by a variable of type @fibre.
 
-cs = crystalSymmetry.load('Ti-Titanium-alpha.cif')
+cs = crystalSymmetry('cubic')
 
 % define the fibre to be the beta fibre
 f = fibre.beta(cs)

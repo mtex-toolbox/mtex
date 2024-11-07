@@ -64,6 +64,7 @@ oR = fundamentalRegion(cs);
 
 close all
 plot(oR_all)
+axis off
 hold on
 plot(oR,'color','r')
 hold off

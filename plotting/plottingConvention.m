@@ -76,7 +76,7 @@ classdef plottingConvention < matlab.mixin.Copyable
        
         sP.updateBounds;
 
-        warning('Can not change plotting convention in sphercical projections after plotting!');
+        warning('Can not change plotting convention in spherical projections after plotting!');
 
       elseif isa(ax,'matlab.graphics.axis.PolarAxes')
         

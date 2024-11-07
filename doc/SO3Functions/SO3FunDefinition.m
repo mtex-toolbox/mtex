@@ -1,7 +1,7 @@
 %% Definition of an SO3Fun
 % 
 %%
-% In MTEX rotational functions $F\colon\mathcal{SO}(3)\to \mathbb C$ are 
+% In MTEX rotational functions $F\colon\mathcal{SO}(3)\to \mathbb C$ are
 % described by subclasses of the super class |@SO3Fun|. Hence we talk about
 % them as |SO3Funs|.
 %
@@ -21,16 +21,16 @@
 %
 %% 
 % All representations allow the same operations which are specified for
-% the abstact class |@SO3Fun|. In particular it is possible
+% the abstract class |@SO3Fun|. In particular it is possible
 % to calculate with $\mathcal{SO}(3)$ functions as with ordinary numbers, 
 % i.e., you can add, multiply arbitrary functions, take the mean, 
 % integrate them or compute gradients, see <SO3FunOperations.html Operations>.
 %
 %% Definition of SO3Fun's
 % Every rotational function has a left and a right symmetry, see
-% <SO3FunSymmetricFunctions.html symmetric Functions>.
-% If we do not specify symmetries by construction then the symmetry group 
-% '1' is used as default, i.e. there are no symmetric rotations.
+% <SO3FunSymmetricFunctions.html symmetric Functions>. If we do not specify
+% symmetries by construction triclinic symmetry is used as default, i.e.
+% there are no symmetric rotations.
 %
 % Moreover |SO3Fun's| have the property |antipodal| which could be used to
 % set the function as antipodal.
@@ -92,14 +92,14 @@ fhat = rand(1e4,1);
 SO3F4 = SO3FunHarmonic(fhat,cs)
 
 %%
-% The |bandwith| decribes the maximal harmonic degree of the harmonic series
+% The |bandwidth| describes the maximal harmonic degree of the harmonic series
 % expansion.
 %
 % By the property |isReal| we are able to change between real and complex
-% valued |SO3FunHarmonic's|.
-% Note that creation of an real vealued SO3FunHarmonic changes the Fourier
-% coefficient vector. So it is not possible to reconstruct the previous
-% function. But computing with real valued functions is much faster.
+% valued |SO3FunHarmonic's|. Note that creation of an real valued
+% SO3FunHarmonic changes the Fourier coefficient vector. So it is not
+% possible to reconstruct the previous function. But computing with real
+% valued functions is faster.
 %
 
 SO3F4.eval(rot)
@@ -107,20 +107,18 @@ SO3F4.eval(rot)
 SO3F4.isReal = 1
 SO3F4.eval(rot)
 
-
 %% 
 % For further information on the Fourier coefficients, the bandwidth and
-% other properties , see 
-% <SO3FunHarmonicRepresentation.html Harmonic Representation of Rotational Functions>.
+% other properties, see <SO3FunHarmonicRepresentation.html Harmonic
+% Representation of Rotational Functions>.
 %
 %%
 %
 % *Definition of Radial Basis Functions*
 %
-% Radial Basis functions are of class |@SO3FunRBF|. They are defined by
-% a kernel function |@SO3Kernel| which is cenetered on |orientations| with
-% some weights.
-%
+% Radial Basis functions are of class |@SO3FunRBF|. They are defined as
+% superposition of weighted kernel functions |@SO3Kernel| centered on a set
+% of orientations |ori|
 
 ori = orientation.rand(1e3,cs);
 w = ones(1e3,1);
@@ -129,7 +127,7 @@ SO3F5 = SO3FunRBF(ori,psi,w,1.2)
 
 
 %%
-% For further information on them, see <RadialODFs.html SO3FunRBF>.
+% For further information on them, see <RadialODFs.html |SO3FunRBF|>.
 %
 %%
 %

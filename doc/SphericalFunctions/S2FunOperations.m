@@ -137,7 +137,6 @@ cs = crystalSymmetry('112');
 sFs = symmetrise(sF1, cs)
 
 % plot it
-plota2east
 plot(sFs,'upper','complete')
 
 %%
