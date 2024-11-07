@@ -43,8 +43,7 @@ S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
 SO3F.isReal = 1;
 
 if ~isa(oS,'phi2Sections') && ~isa(oS,'phi1Sections') && ...
-    ~isa(oS,'gammaSections') && ~isa(oS,'alphaSections') && ...
-    ~isa(oS,'sigmaSections')
+    ~isa(oS,'gammaSections') && ~isa(oS,'alphaSections') 
   varargin{end+1}='check';
 end
 
@@ -73,6 +72,8 @@ rho = oS.plotGrid.rho(1,:);
 [thetaMin,thetaMax] = thetaRange(oS.sR,rho(1));
 H = [round(2*pi/abs(thetaMax-thetaMin))*(length(theta)-1),round(2*pi/abs(rhoMax-rhoMin))*(length(rho)-1)];
 
+
+% TODO:
 % sigmaSections are equispaced w.r.t. an rank-1 lattice in alpha and gamma.
 % Hence we compute them seperatly.
 if isa(oS,'sigmaSections')
