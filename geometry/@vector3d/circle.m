@@ -21,18 +21,21 @@ else
   omega  = 90*degree; 
 end
 
-h = [];
+if isscalar(normals), normals = repmat(normals,size(omega)); end
+if isscalar(omega), omega = repmat(omega,size(normals)); end
+
+h = gobjects;
 
 for i = 1:length(normals)
 
   n = normals.subSet(i);
   
   % generate circles
-  c = axis2quat(n,(0:1:360)*degree) * axis2quat(orth(n),omega)*n;
+  c = axis2quat(n,(0:1:360)*degree) * axis2quat(orth(n),omega(i))*n;
   
   % plot circles
   h = [h,line(c,varargin{:},'hold','doNotDraw')]; %#ok<AGROW>
   
 end
 
-if nargout == 0, clear h;end
+if nargout == 0, clear h; end
