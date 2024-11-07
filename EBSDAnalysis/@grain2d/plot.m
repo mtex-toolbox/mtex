@@ -287,8 +287,7 @@ for k = 1:length(txt)
 end
 disp(' ');
 
-setappdata(gca,'idSelected',idSelected);
-setappdata(gca,'handleSelected',handleSelected);
+setAllAppdata(gca,'idSelected',idSelected,'handleSelected',handleSelected);
 
 end
 

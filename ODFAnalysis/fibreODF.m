@@ -34,8 +34,8 @@ if isa(varargin{1},'fibre')
   SS = varargin{1}.SS;
   varargin(1) = [];
 else
-  h = argin_check(varargin{1},'Miller');
-  r = argin_check(varargin{2},'vector3d');
+  h = varargin{1};
+  r = varargin{2};
   
   % get specimen symmetry
   if isa(r,'Miller')

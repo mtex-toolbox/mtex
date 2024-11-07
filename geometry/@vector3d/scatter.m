@@ -88,7 +88,7 @@ for i = 1:numel(sP)
   % ------- color-coding according to the first argument -----------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot(x,y,zUpDown * varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
+    h(i) = plot(x,y,varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
     %sP(i).updateBounds(0.1);
   
   elseif check_option(varargin,'arrow')
@@ -221,13 +221,13 @@ for i = 1:numel(sP)
       hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
         'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
       % save listener, otherwise  callback may die
-      setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+      setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
     catch
       if ~isappdata(hax, 'dynamicMarkerSizeListener')
         hListener = addlistener(hax,'Position','PostSet',...
           @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
         %      localResizeScatterCallback([],[],sP(i).ax);
-        setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+        setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
       end
       %disp('some Error!');
     end

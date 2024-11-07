@@ -20,16 +20,19 @@ function out = check_option(option_list,option,varargin)
 if isempty(option_list)
   out = false;
 elseif nargin == 2  
-  if ischar(option)
-    out = any(strcmpi(option_list,option));
+
+  option_list = convertContainedStringsToChars(option_list);
+
+  if iscell(option)
+    out = any(cellfun(@(opt) any(strcmpi(option_list,opt)),option));
   else
-    out = false;
-    for k = 1:length(option)
-      out = out || any(strcmpi(option_list,option{k}));
-    end
-  end  
+    out = any(strcmpi(option_list,option));
+  end
+
 elseif nargin == 3
+
   out = find_option(option_list,option,varargin{:}) > 0;
+
 else
   pos = find_option(option_list,option);
   out = pos > 0 && numel(option_list)>pos && ischar(option_list{pos+1}) && ...

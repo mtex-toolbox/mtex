@@ -1,5 +1,5 @@
 function display(q,varargin)
-% standart output
+% standard output
 
 if check_option(varargin,'onlyShowQuaternions')
   d = [q.a(:),q.b(:),q.c(:),q.d(:)];
@@ -19,7 +19,7 @@ if length(q) < 20 && ~isempty(q)
 elseif ~getMTEXpref('generatingHelpMode') && ~isempty(q)
 
   disp(' ')
-  s = setappdata(0,'data2beDisplayed',q);
+  s = setAllAppdata(0,'data2beDisplayed',q);
   disp(['  <a href="matlab:display(getappdata(0,''',s,'''),''onlyShowQuaternions'')">show quaternions</a>'])
   disp(' ')
 

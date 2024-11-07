@@ -50,8 +50,7 @@ end
 if autoColor
   ci(1) = mod(ci(1),cm) + 1;
 end
-setappdata(ax,'PlotColorIndex',ci(1));
-setappdata(ax,'PlotLineStyleIndex',ci(2));
+setAllAppdata(ax,'PlotColorIndex',ci(1),'PlotLineStyleIndex',ci(2));
 
 if isempty(l) && ~isempty(m)
   l = 'none';

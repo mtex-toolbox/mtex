@@ -39,10 +39,9 @@ for i = 1:length(r)
 
   % store geometry
   [cax.Tag] = deal('ipdf');
-  setappdata(cax,'inversePoleFigureDirection',r(i));
-  setappdata(cax,'CS',SO3F.CS);
-  setappdata(cax,'SS',SO3F.SS);
-
+  setAllAppdata(cax,'CS',SO3F.CS,'SS',SO3F.SS, ...
+    'inversePoleFigureDirection',r(i));
+  
 end
 
 if isNew % finalize plot

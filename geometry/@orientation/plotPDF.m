@@ -149,9 +149,9 @@ for i = 1:length(h)
 
   % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');
-  setappdata(cax,'h',h{i});
+  
   set(cax,'tag','pdf');
-  setappdata(cax,'SS',ori.SS);
+  setAllAppdata(cax,'SS',ori.SS,'h',h{i});
 
   % TODO: unifyMarkerSize
 

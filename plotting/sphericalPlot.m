@@ -40,7 +40,7 @@ classdef sphericalPlot < handle
       sP.parent = ax.Parent;
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
-      setappdata(ax,'sphericalPlot',sP);
+      setAllAppdata(ax,'sphericalPlot',sP);
       
       % store hold status
       washold = getHoldState(ax);

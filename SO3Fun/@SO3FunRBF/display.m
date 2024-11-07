@@ -4,6 +4,7 @@ function display(SO3F,varargin)
 if ~check_option(varargin,'skipHeader')
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
   if SO3F.antipodal, disp('  antipodal: true'); end
+  if numel(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
   disp(' ');
 end
 
@@ -34,8 +35,8 @@ if ~isempty(SO3F.center)
        Euler(SO3F.center,s)
     elseif ~getMTEXpref('generatingHelpMode')
       disp(' ')
-      s = setappdata(0,'data2beDisplayed',SO3F.center);
-      setappdata(0,'data2beDisplayedWeights',s);
+      s = setAllAppdata(0,'data2beDisplayed',SO3F.center);
+      setAllAppdata(0,'data2beDisplayedWeights',s);
       disp(['  <a href="matlab:Euler(getappdata(0,''',s,'''),getappdata(0,''data2beDisplayedWeights''))">show centers of the components and corresponding weights</a>'])
       disp(' ')
     end

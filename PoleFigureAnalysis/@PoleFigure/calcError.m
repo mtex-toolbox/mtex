@@ -26,8 +26,6 @@ function e = calcError(pf,rec,varargin)
 % See also
 % SO3Fun/calcError PoleFigure/calcNormalization PoleFigure/scale
 
-argin_check(rec,{'SO3Fun','PoleFigure'});
-
 % calc difference PoleFigure
 errorpf = calcErrorPF(pf,rec,varargin{:});
 

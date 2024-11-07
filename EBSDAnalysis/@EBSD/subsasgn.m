@@ -45,15 +45,17 @@ switch s(1).type
 
     s(1).subs = {subsind(ebsd,s(1).subs)};
         
-    if isempty(b)
+    if isempty(b) % we are going to remove some points
       
-      ebsd = subsasgn@dynProp(ebsd,s(1),[]);
-      ebsd.pos = subsasgn(ebsd.pos,s(1),[]);
-      ebsd.rotations = subsasgn(ebsd.rotations,s(1),[]);
-      ebsd.id = subsasgn(ebsd.id,s(1),[]);
-      ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),[]);      
+      if any(s(1).subs{1}) % maybe there is nothing to do?
+        ebsd = subsasgn@dynProp(ebsd,s(1),[]);
+        ebsd.pos = subsasgn(ebsd.pos,s(1),[]);
+        ebsd.rotations = subsasgn(ebsd.rotations,s(1),[]);
+        ebsd.id = subsasgn(ebsd.id,s(1),[]);
+        ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),[]);
       
-      ebsd = EBSD(ebsd);
+        ebsd = EBSD(ebsd);
+      end
       
     elseif ischar(b)
       

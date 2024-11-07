@@ -33,7 +33,7 @@ elseif length(o) < 20 && ~isempty(o)
   Euler(o);
 elseif ~getMTEXpref('generatingHelpMode') && ~isempty(o)
   disp(' ')
-  s = setappdata(0,'data2beDisplayed',o);
+  s = setAllAppdata(0,'data2beDisplayed',o);
   disp(['  <a href="matlab:Euler(getappdata(0,''',s,'''))">show Euler angles</a>'])
   disp(' ')
 end

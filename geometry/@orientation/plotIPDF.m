@@ -90,10 +90,8 @@ for ir = 1:length(r)
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
   % plot annotations
-  setappdata(cax,'inversePoleFigureDirection',r(ir));
   [cax.Tag] = deal('ipdf');
-  setappdata(cax,'CS',ori.CS);
-  setappdata(cax,'SS',ori.SS);
+  setAllAppdata(cax,'CS',ori.CS,'SS',ori.SS,'inversePoleFigureDirection',r(ir));
 
   % TODO: unifyMarkerSize
 

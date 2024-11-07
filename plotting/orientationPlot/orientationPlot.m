@@ -45,7 +45,7 @@ classdef orientationPlot < handle
       if isempty(oP.fRMode) && ~check_option(varargin,'complete')
         oP.fRMode = 'project2FundamentalRegion';
       end
-      setappdata(oP.ax,'orientationPlot',oP);
+      setAllAppdata(oP.ax,'orientationPlot',oP);
     end
         
     function CS = get.CS(oS), CS = oS.CS1; end

@@ -26,9 +26,8 @@ end
 
 if isNew % finalize plot
   set(gcf,'tag','pdf');
-  setappdata(gcf,'SS',zrm.pf.SS);
-  setappdata(gcf,'h',zrm.pf.allH);
   set(gcf,'Name','Zero Range');
+  setAllAppdata(gcf,'SS',zrm.pf.SS,'h',zrm.pf.allH);  
 end
 
 drawNow(gcm)

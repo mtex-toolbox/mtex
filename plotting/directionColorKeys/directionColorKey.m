@@ -60,7 +60,7 @@ classdef directionColorKey < handle
       
       [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:});
             
-      setappdata(caxes,'CS',dM.sym);
+      setAllAppdata(caxes,'CS',dM.sym);
             
       % annotate crystal directions
       if check_option(varargin,'3d')

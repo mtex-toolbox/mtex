@@ -1,5 +1,13 @@
-function varargout = setappdata(ax,varargin)
+function varargout = setAllAppdata(ax,varargin)
 % make setappdata work with multiple handles
+%
+% Syntax
+%   setAllAppdata(ax,'name',value)
+%
+% Input
+%  ax - axes handle
+%  value - 
+%
 
 % Save multiple data2beDisplayed
 persistent iter
@@ -20,6 +28,8 @@ if check_option(varargin,'data2beDisplayed')
   return
 end
 
-for a = ax(:).'
-  [varargout{1:nargout}] = builtin('setappdata',a,varargin{:}); 
+for k = 1:2:length(varargin)
+  for a = ax(:).'
+    setappdata(a,varargin{k:k+1});
+  end
 end

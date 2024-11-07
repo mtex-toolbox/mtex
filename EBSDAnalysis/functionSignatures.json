@@ -3,11 +3,11 @@
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"},
-	{"name":"columnNames", "kind":"namevalue", "type":"cell"},
-	{"name":"columns", "kind":"namevalue", "type":"double"},
-	{"name":"interface", "kind":"namevalue", "type":"double"},
-        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+      {"name":"filename1", "kind":"required",   "type":"filepath"},
+      {"name":"columnNames", "kind":"namevalue", "type":"cell"},
+      {"name":"columns", "kind":"namevalue", "type":"double"},
+      {"name":"interface", "kind":"namevalue", "type":"double"},
+      {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
     ]
 },
 
@@ -24,19 +24,20 @@
 {
     "inputs":
     [
-        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-	{"name":"method", "kind":"flag", "type":"choices={'custom', 'angle','FMC'}"},
-        {"name":"unitCell", "kind":"flag"}
+      {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+      {"name":"angle", "kind":"namevalue", "type":"double"},
+      {"name":"minPixel", "kind":"namevalue", "type":"double"},
+      {"name":"alpha", "kind":"namevalue", "type":"double"}
     ]
 },
 "rotate":
 {
     "inputs":
     [
-        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-	{"name":"rot", "kind":"required",   "type":"choices={'double','rotation'}"},
-	{"name":"method", "kind":"flag", "type":"choices={'keepXY', 'keepEuler'}"},
-	{"name":"center", "kind":"namevalue", "type":"double"}
+      {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+      {"name":"rot", "kind":"required",   "type":"choices={'double','rotation'}"},
+      {"name":"method", "kind":"flag", "type":"choices={'keepXY', 'keepEuler'}"},
+      {"name":"center", "kind":"namevalue", "type":"double"}
     ]
 },
 "plot":
