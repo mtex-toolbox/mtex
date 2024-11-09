@@ -8,18 +8,50 @@ function A = area(grains,varargin)
 %  A  - list of areas (in measurement units)
 %
 
-A = zeros(length(grains),1);
-poly = grains.poly;
+if 1 % 3d algorithm without loop
 
-if isscalar(grains)   % 3d algorithm
+  allV = grains.allV.xyz;
+
+  allV = allV([grains.poly{:}].',:);
+  grainStart =  cumsum([1;cellfun(@numel,grains.poly)]);
+
+  N = grains.N.xyz;
+
+  A = polySgnArea3(allV,N,grainStart);
+
+elseif 0 || isscalar(grains)   % 3d algorithm with loop
+
+  A = zeros(length(grains),1);
+  poly = grains.poly;
+
+  allV = grains.allV.xyz;
+  N = grains.N.xyz;
 
   % signed area
   for i=1:length(grains)
-    V = grains.allV(poly{i});
-    A(i) = -dot(grains.N, sum(cross(V(2:end),V(1:end-1)))) / 2;
+    
+    %A(i) = -dot(N, sum(cross(allV(poly{i}(2:end),:),...
+    %  allV(poly{i}(1:end-1),:)))) / 2;
+
+    A(i) = polySgnArea3(allV(poly{i},:),N);
+
   end
-else 
+
+elseif 1 % 2d algorithm without loop
+
+  V = grains.rot2Plane .* grains.allV;
+  Vx = V.x([grains.poly{:}].');
+  Vy = V.y([grains.poly{:}].');
   
+  grainStart =  cumsum([1;cellfun(@numel,grains.poly)]);
+
+  A = polySgnArea(Vx,Vy,grainStart);
+
+else  % 2d algorithm
+  
+  A = zeros(length(grains),1);
+  poly = grains.poly;
+
   V = grains.rot2Plane .* grains.allV;
   Vx = V.x;
   Vy = V.y;
