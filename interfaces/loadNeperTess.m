@@ -1,32 +1,196 @@
-function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
-  % function for reading data from nepers tessellation files (.tess)
-  %
-  % Description
-  %
-  % readTessFile is a helping function used from the grain2d.load and 
-  % grain3d.load method to read the data from the tessellation files that
-  % <neper.info/ neper> outputs
-  %
-  % Syntax
-  %   [dim, V, poly, rot, CS, I_GrainsFaces] = readTessFile('filepath/filename.tess')
-  %
-  % Input
-  %  fname     - filepath
-  %
-  % Output
-  %  dim        - dimension of the tessellation (2 or 3)
-  %  V          - list of vertices(x,y,z)
-  %  poly       - cell array with all faces
-  %  rot        - rotation (orientation)
-  %  CS         - @crystlSymmetry
-  %  I_GrainsFaces  - adjacency matrix grains - faces
-  %  cell_ids   - ids of the cells according to initial 3d tessellation
-    %
-  % See also
-  % grain2d.load grain3d.load neperInstance
-  %
+function [dimension, V, F, ori, CS, varargout] = loadNeperTess(filepath)
+% function for reading data from Neper tessellation files (.tess)
+%
+% Description
+%
+% readTessFile is a helping function used from the grain2d.load and
+% grain3d.load method to read the data from the tessellation files that
+% <neper.info/ neper> outputs
+%
+% Syntax
+%   [dim, V, poly, rot, CS, I_GrainsFaces] = readTessFile('filepath/filename.tess')
+%
+% Input
+%  fname    - file name
+%
+% Output
+%  dim      - dimension of the tessellation (2 or 3)
+%  V        - list of vertices(x,y,z)
+%  F        - cell array with all faces
+%  ori      - rotation (orientation)
+%  CS       - @crystalSymmetry
+%  I_GF     - incidence matrix grains - faces
+%  cell_ids - ids of the cells according to initial 3d tessellation
+%
+% See also
+% grain2d.load grain3d.load neperInstance
+%
 
-  %{
+fid = fopen(filepath, 'r');
+assert(fid ~= -1,'file could not be opened')
+
+assert(strtrim(fgetl(fid)) == "***tess",...
+  'file has wrong structure. line 1 has to be "***tess"!');
+
+% format is something like version
+assert(strtrim(fgetl(fid)) == "**format",...
+  'file has wrong structure. line 2 has to be " **format"! Be careful with blank characters.');
+format = fgetl(fid); %#ok<NASGU>
+
+%% **general
+assert(strtrim(fgetl(fid)) == "**general",...
+  'file has wrong structure. line 4 has to be " **general"! Be careful with blank characters.');
+dimension = fscanf(fid, '%d' , 1);
+type = fscanf(fid, '%s', 1); %#ok<NASGU>
+fgetl(fid);                %eliminate the \n character
+
+%% grain orientations -> **cell
+
+assert(strtrim(fgetl(fid)) == "**cell",...
+  'file has wrong structure. line 6 has to be " **cell"! Be careful with blank characters.');
+
+numGrains = str2double(fgetl(fid)); %#ok<NASGU>
+
+buffer=fgetl(fid);
+while true
+  switch strtrim(buffer)
+    case "*id"
+      cell_ids = fscanf(fid,'%u', inf);
+      buffer = fgetl(fid);
+    case "*crysym"
+      buffer = fgetl(fid);
+      while(~isHeader(buffer))
+        CS = strtrim(buffer);
+        buffer = fgetl(fid);
+      end
+    case {"*seed","*seed (id x y z weigth )"}
+      % we do not need this
+      seeds = fscanf(fid,'%u %f %f %f %f ', [5 inf]); %#ok<NASGU>
+      buffer = fgetl(fid);
+    case "*ori"
+      buffer = fgetl(fid);
+      quaternion_descriptor = split(buffer, ':');
+      switch lower(strtrim(quaternion_descriptor{1}))
+        case 'quaternion'
+          abcd = fscanf(fid,'%f %f %f %f ',[4 inf]);
+          ori = rotation(abcd);
+        case 'rodrigues'
+          vec = fscanf(fid,'%f %f %f ',[3 inf]);
+          ori = rotation.byRodrigues(vec.');
+        otherwise
+          error('orientation in wrong format. currently only available for quaternion');
+      end
+        
+      % convert to passive rotation if needed
+      %if ~strcmpi(strtrim(quaternion_descriptor{2}),'active')
+      %rot = inv(rot);
+      %end
+
+      buffer=fgetl(fid);
+    case "**vertex"
+      % this we will consider in the next section
+      break
+    otherwise
+      error('Error while reading cell parameters failed. file has wrong structure, expression "%s" not known', buffer)
+  end
+end
+
+%% load vertices -> **vertex
+numV = str2double(fgetl(fid)); %#ok<NASGU>
+V = fscanf(fid,'%u %f %f %f %d ',[5 inf])';
+V = V(:,2:4);
+
+%% load edges -> **edge
+% we do not need the edges
+skipEmptyLines(fid)
+assert(strtrim(fgetl(fid)) == "**edge",' **edge" not found');
+
+skipEmptyLines(fid)
+numEdges = str2double(fgetl(fid));
+skipEmptyLines(fid)
+
+%E = zeros(numEdges,2);
+for i = 1:numEdges
+  fgetl(fid);
+  %buffer = fgetl(fid);
+  %buffer = split(buffer);
+  %E(i,:) = str2double(buffer(3:4));
+end
+
+%% load faces -> **face
+
+skipEmptyLines(fid)
+assert(strtrim(fgetl(fid)) == "**face", '" **face" not found');
+skipEmptyLines(fid)
+numAllFaces = str2double(fgetl(fid));
+
+% read in poly
+F = cell(numAllFaces,1);
+for i = 1:numAllFaces
+
+  % first line is faceId, numVertex, VId1, VId2, ....., VIdN
+  value = str2num(fgetl(fid)); %#ok<ST2NM>
+
+  F{i} = value([3:end,3]);
+
+  % then we skip the next 3 lines
+  fgetl(fid); fgetl(fid); fgetl(fid);
+end
+
+%% load grains -> **polyhedron
+
+if dimension == 3
+
+  skipEmptyLines(fid)
+  assert(strtrim(fgetl(fid)) == "**polyhedron",'" **polyhedron" not found')
+  
+  % next line contains number of polyhedrons/grains
+  numGrains = str2double(fgetl(fid));
+  
+  % read all polyhedrons
+  % unfortunately textscan is to stupid to read textfiles with varying
+  % line length
+  for k = 1:numGrains, grains{k} = str2num(fgetl(fid)); end %#ok<ST2NM,AGROW>
+  
+  % each line of contains
+  % grainId numFaces FaceId1 FaceId2 FaceId2 ... FaceId1
+  % we store these data in a grains x faces incidence matrix
+  % with values +-1 indicting whether the face normal points out of the grain
+  grainId = cellfun(@(x) x(1),grains);
+  numFaces = cellfun(@(x) x(2),grains);
+  faceId = cellfun(@(x) x(3:end),grains,'UniformOutput',false);
+  
+  grainId = repelem(grainId,numFaces);
+  faceId = [faceId{:}];
+  I_GF = sparse(grainId, abs(faceId), sign(faceId), max(grainId),numAllFaces);
+  
+  varargout{1} = I_GF;
+  
+elseif (dimension == 2)
+  varargout{1} = cell_ids;
+end
+
+fclose(fid);
+end
+
+function skipEmptyLines(fid)
+% function to ignore/skip possible empty lines
+i = ftell(fid);
+skipEmptyLinesBuffer = fgetl(fid);
+while (skipEmptyLinesBuffer == "")
+  i = ftell(fid);
+  skipEmptyLinesBuffer = fgetl(fid);
+end
+fseek(fid, i, "bof");
+
+end
+
+function returnvalue = isHeader(buffer)
+% function to check if buffer is Header (=starts with *)
+returnvalue = strncmp(strtrim(buffer), "*", 1);
+end
+
+%{
   variables:
       -filepath
         - string - file that was read
@@ -64,198 +228,4 @@ function [dimension, V, poly, rot, CS, varargout] = loadNeperTess(filepath)
       -rot        - rotation (orientation)
       -crysym     - crysym, character string
   
-  %}
-  
-  %% open file
-  fid = fopen(filepath, 'r');
-
-  if (fid == -1)
-    error 'file could not be opened'
-  end
-
-  %% ***tess
-  % read file line for line
-  buffer = fgetl(fid);
-  if (~(strcmp(buffer, '***tess')))
-    error 'file has wrong structure. line 1 has to be "***tess"!';
-  end
-
-  %% **format
-  buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **format')))
-    error 'file has wrong structure. line 2 has to be " **format"! Be careful with blank characters.';
-  end
-  format = fscanf(fid, '%s', 1);       
-  fgetl(fid);                %eliminate the \n character
-
-  %% **general
-  buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **general')))
-    error 'file has wrong structure. line 4 has to be " **general"! Be careful with blank characters.';
-  end
-  dimension = fscanf(fid, '%d' , 1);
-  type = fscanf(fid, '%s', 1);
-  fgetl(fid);                %eliminate the \n character
-
-  %% **cell
-  buffer = fgetl(fid);
-  if (~(strcmp(buffer, ' **cell')))
-    error 'file has wrong structure. line 6 has to be " **cell"! Be careful with blank characters.';
-  end
-  total_number_of_cells = str2double(fgetl(fid));
-
-  buffer=fgetl(fid);
-  while (1)
-    switch strtrim(buffer)
-      case "*id"
-        cell_ids = fscanf(fid,'%u', inf);
-        buffer = fgetl(fid);
-      case "*crysym"
-        buffer = fgetl(fid);
-        while(~isHeader(buffer))
-          CS = strtrim(buffer);
-          buffer = fgetl(fid);
-        end
-      case {"*seed","*seed (id x y z weigth )"}
-        seeds = fscanf(fid,'%u %f %f %f %f ', [5 inf]);
-        seeds = seeds';
-        buffer = fgetl(fid);
-      case "*ori"
-        buffer = fgetl(fid);
-        quaternion_descriptor = split(buffer, ':');
-        switch lower(strtrim(quaternion_descriptor{1}))
-          case 'quaternion'
-            eulerAngles = fscanf(fid,'%f %f %f %f ',[4 inf]);
-            rot = rotation(quaternion(eulerAngles));
-          case 'rodrigues'
-            vec = fscanf(fid,'%f %f %f ',[3 inf]);
-            rot = rotation.byRodrigues(vec.');
-          otherwise
-            error('orientation in wrong format. currently only available for quaternion');
-        end
-        
-        % convert to passive rotation if needed
-        %if ~strcmpi(strtrim(quaternion_descriptor{2}),'active')
-        %rot = inv(rot);
-        %end
-
-        buffer=fgetl(fid);
-      case "**vertex"
-        break
-      otherwise
-        error('Error while reading cell parameters failed. file has wrong structure, expression "%s" not known', buffer)
-    end
-  end
-
-  %% **vertex
-  total_number_of_vertices = str2double(fgetl(fid));
-  V = fscanf(fid,'%u %f %f %f %d ',[5 inf])';
-  V = V(:,2:4);
-
-  %% **edge
-  skipEmptyLines(fid)
-  buffer = fgetl(fid);
-  if (strtrim(buffer) ~= "**edge")
-    error ' **edge" not found'
-  end
-  skipEmptyLines(fid)
-  total_number_of_edges = str2double(fgetl(fid));
-  skipEmptyLines(fid)
-
-  E = zeros(total_number_of_edges,2);
-  for i = 1:total_number_of_edges                  
-    buffer = fgetl(fid);
-    buffer = split(buffer);
-    E(i,:) = str2double(buffer(3:4));
-  end
-
-  %% **face
-  skipEmptyLines(fid)
-  buffer = fgetl(fid);
-  if (buffer ~= " **face")
-    error '" **face" not found'
-  end
-  skipEmptyLines(fid)
-  total_number_of_faces = str2double(fgetl(fid));
-
-  %I_EF = zeros(total_number_of_edges,total_number_of_faces);  
-  poly{total_number_of_faces,1} = [];
-
-  % read in poly
-  for i = 1:total_number_of_faces
-
-    buffer = fgetl(fid);
-    buffer = split(buffer);
-
-    for j = 4:3+str2num(cell2mat(buffer(3)))
-      poly{i} = [poly{i,1} str2double(buffer(j))];
-    end
-    poly{i} = [poly{i,1} str2double(buffer(4))];
-
-    %buffer = ...
-      fgetl(fid);
-    %{
-    EF = split(buffer);
-    sizeEF = str2double(EF(2));
-    for j = 3:sizeEF+2
-      el = str2double(EF(j));
-      I_EF(abs(el), i) = sign(el)*1;
-    end
-    %}
-
-    fgetl(fid);
-    fgetl(fid);
-  end
-
-  %% **polyhedron
-
-  if (dimension == 3)
-
-  skipEmptyLines(fid)
-  buffer = fgetl(fid);
-
-  if (buffer ~= " **polyhedron")
-    error '" **polyhedron" not found'
-  else
-    total_number_of_polyhedra = str2double(fgetl(fid));
-
-    I_GrainsFaces = zeros(total_number_of_polyhedra,total_number_of_faces);  
-  
-    for i = 1:total_number_of_polyhedra
-      buffer = fgetl(fid);
-      CF = split(buffer);
-      currentNumOfFaces = str2double(CF(3));
-      for j = 4:currentNumOfFaces+3
-        el = str2double(CF(j));
-        I_GrainsFaces(i, abs(el)) = sign(el)*1;
-      end
-    end
-    varargout{1} = I_GrainsFaces;
-  end
-  elseif (dimension == 2)
-    varargout{1} = cell_ids;
-  end
-  
-
-  %% close file
-  fclose(fid);
-end 
-
-%%
-function skipEmptyLines(fid)
-  % function to ignore/skip possible empty lines
-  i = ftell(fid);
-  skipEmptyLinesBuffer = fgetl(fid);
-  while (skipEmptyLinesBuffer == "")
-    i = ftell(fid);
-    skipEmptyLinesBuffer = fgetl(fid);
-  end
-  fseek(fid, i, "bof");
-
-end
-
-%%
-function returnvalue = isHeader(buffer)
-  % function to check if buffer is Header (=starts with *)
-  returnvalue = strncmp(strtrim(buffer), "*", 1);
-end
+%}
