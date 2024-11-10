@@ -1,4 +1,4 @@
-function grains2d = slice(grains,varargin)
+function grains2d = slice(grains,plane,varargin)
 % grain3d.slice is a method to intersect 3D grain data by a plane to get 
 % grain2d slices
 %
@@ -8,45 +8,22 @@ function grains2d = slice(grains,varargin)
 %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
 %   grain2d = grains.slice(N,P0)
 %
-%   V = vector3d([0 1 0],[0 1 1],[0 1 0])
-%   grain2d = grains.slice(V)       % set of points
-%
-%   plane = createPlane(P0,N)       % note different sequence of inputs!
-%   grain2d = grains.slice(plane)   % plane in matGeom format
+%   plane = plane3d.fit(v)
+%   grain2d = grains.slice(plane)  
 %
 % Input
 %  grains   - @grain3d
-%  plane    - plane in matGeom format
+%  plane    - @plane3d
+%
 % Output
 %  grain2d  - @grain2d
 %
 % See also
 % grain2d grain3d/intersected
 
-%% Processing inputs
-% plane           - plane in matGeom Format
-if nargin < 2
-  error 'too few arguments'
-elseif nargin == 2            
-  if isa(varargin{1},'vector3d')                  % set of points
-    plane = fitPlane(varargin{1}.xyz);
-  else
-    plane = varargin{1};                          % plane in matGeom format
-  end
-elseif nargin == 3
-  if isa(varargin{1},'vector3d')                  % N & P0 as vector3d
-    varargin{1} = varargin{1}.xyz;
-    varargin{2} = varargin{2}.xyz;
-  end                                             % N & P0 as xyz
-  plane = createPlane(varargin{2},varargin{1});   % different sequence of inputs for createPlane: P0,N
-elseif nargin >= 4
-  pts = [varargin{1:3}];                          % three points within the plane
-  plane = fitPlane(pts.xyz);
-else
-  error 'Input error'
-end
 
-assert(isPlane(plane),'Input error')
+if ~isa(plane,'plane3d'), plane = plane3d(plane,varargin{:}); end
+
 
 %% TODO:
 % faces with more than 2 intersected edges  (line 83)
@@ -56,10 +33,10 @@ assert(isPlane(plane),'Input error')
 inters_grains = grains.subSet(grains.intersected(plane)); % restrict to affected cells
 newIds = inters_grains.id;                 % Ids of the new grains2d
 
-V = inters_grains.boundary.allV.xyz;    % all vertices as xyz
-V_is_below_P = isBelowPlane(V,plane);   % check if V is below plane
-F = inters_grains.F;                    % all faces (polys) as nx1-cell or nx3 array
-E = meshEdges(F);                       % incidence matrix edges - vertices (indices to V)
+V = inters_grains.boundary.allV;  % all vertices as xyz
+V_is_below_P = dist(plane,V)>0;   % check if V is below plane
+F = inters_grains.F;              % all faces (polys) as nx1-cell or nx3 array
+E = meshEdges(F);                 % incidence matrix edges - vertices (indices to V)
 
 %% identify which faces and edges are affected
 % list of edges crossing the plane, indices to E
@@ -93,25 +70,8 @@ crossingFE_all = reshape(j(i2),2,[])';
 
 %% newV
 % compute new vertices of the 2d slice (crossingEdges intersected with plane)
-newV = intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane);   % nx3 array of vertices (xyz)
-
-% if one of the points of the edge lies directly within the plane, intersectEdgePlane 
-% produces a nan value for this edge, solution:
-if(any(isnan(newV)))
-  iN = any(isnan(newV),2);
-  d1 = distancePointPlane(V(E(crossingEdges(iN),1),:),plane);
-  d2 = distancePointPlane(V(E(crossingEdges(iN),2),:),plane);
-  if any([d1 d2]==0)
-    [~,j] = find([d1 d2]==0);
-    assert(length(j)==find(length(iN)),'intersecting crossing edges failed')
-    newV(iN,:) = V(E(crossingEdges(iN),j),:);
-  else
-    error 'intersecting crossing edges failed'
-  end
-end
-
-% make newV list of @vector3d
-newV = vector3d(newV).';
+%newV = intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane);   % nx3 array of vertices (xyz)
+newV = intersect(plane,V(E(crossingEdges,1),:), V(E(crossingEdges,2),:));
 
 % restrict I_GF to the intersected Faces (intersecFaces)
 intersec_GF = logical(inters_grains.I_GF(:,intersecFaces));
@@ -172,7 +132,7 @@ for m = 1:length(newIds)
 end
 
 %% new 2d grains
-grains2d = grain2d(newV.xyz, newPoly, grains.meanOrientation(newIds),...
+grains2d = grain2d(newV, newPoly, grains.meanOrientation(newIds),...
   grains.CSList, grains.phaseId(newIds), grains.phaseMap, 'id', newIds);
 
 % check for clockwise poly's
