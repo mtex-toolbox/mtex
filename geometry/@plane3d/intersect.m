@@ -11,13 +11,11 @@ function v = intersect(plane,v1,v2)
 % Output
 %  v - intersection points @vector3d
 
-if nargin == 3, d = 1; end
-
 % direction vector of the line
 l = v2 - v1;
 
 % compute intersection point
-lambda = (d - dot_outer(v1,plane.N,'noSymmetry')) ./ dot(l,plane.N,'noSymmetry');
+lambda = (plane.d - dot_outer(v1,plane.N,'noSymmetry')) ./ dot(l,plane.N,'noSymmetry');
 
 % verify intersection point is between v1 and v2
 lambda(lambda<-1e-13) = nan;
