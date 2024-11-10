@@ -16,16 +16,18 @@ wraptext([newline 'Mex files are compiled binaries that are used ' ...
   'As mex files are specific to different operating systems it is ' ...
   'not so easy for us to provide working binaries for different types ' ...
   'of systems.']);
-disp([newline 'I''m now going to check all the mex files in' newline ...
-  newline '  ' fullfile(mtex_path,'mex') newline newline ...
-  'In case some of the mex files are not working, you have two options' newline ...
-  ' 1. Use the command ' ...
-  '<a href="matlab: mex_install(''force'')">mex_install</a> ' ...
-  'to compile the mex files yourself' newline ...
-  '    On a Mac this requires that you install XCode first.' newline ...  
-  ' 2. Switch to a slower Matlab based implementation.' newline ...
-  ]);
- 
+
+% disp([newline 'I''m now going to check all the mex files in' newline ...
+%   newline '  ' fullfile(mtex_path,'mex') newline newline ...
+%   'In case some of the mex files are not working, you have two options' newline ...
+%   ' 1. Use the command ' ...
+%   '<a href="matlab: mex_install(''force'')">mex_install</a> ' ...
+%   'to compile the mex files yourself' newline ...
+%   '    On a Mac this requires that you install XCode first.' newline ...  
+%   ' 2. Switch to a slower Matlab based implementation.' newline ...
+%   ]);
+
+isMissing = false;
 err = cell(length(mexFiles),1);
 for k = 1:length(mexFiles)
 
@@ -34,8 +36,9 @@ for k = 1:length(mexFiles)
   fprintf(" checking: " + mexFile + "." + mexext);
 
   if ~exist(fullfile(mtex_path, "mex",mexFile + "." + mexext),'file')
-
-    fprintf(" <strong>missing</strong>" + newline);
+    
+    fprintf(2," <strong>missing</strong>" + newline);
+    isMissing = true;
 
   else
     
@@ -47,7 +50,7 @@ for k = 1:length(mexFiles)
     if res(k)
       fprintf(" <strong>ok</strong>" + newline);
     else
-      fprintf(" <strong>failed</strong>" + newline);
+      fprintf(2," <strong>failed</strong>" + newline);
       if isempty(err{k})
         disp("  --> wrong result");
       else
@@ -59,16 +62,23 @@ for k = 1:length(mexFiles)
   end
 end
 
-disp(newline + "check complete" + newline)
+if isMissing
+  wraptext(newline + "Some of the binaries are missing. The most likely " + ...
+    "reason is that your antivirus program has prevented the extraction of " + ...
+    "these files from the zip archive. You can download the binaries also " + ...
+    "directly from <a href=""https://github.com/mtex-toolbox/mtex/tree/develop/mex"">" + ...
+    "https://github.com/mtex-toolbox/mtex/tree/develop/mex</a>.")
 
-% if ~all(res(hasC))
-%   disp("Not all mex files are running. You might want to call" + newline + ...
-%     "  <a href=""matlab: mex_install"">mex_install</a>" + newline + ...
-%     "to compile the mex files yourself.");
-%   if ismac
-%     disp("On a Mac this requires to instal XCode first!" + newline)
-%   end
-% end
+elseif ~all(res)
+  disp("Not all mex files are running. You might want to call" + newline + ...
+    "  <a href=""matlab: mex_install('force')"">mex_install('force')</a>" + newline + ...
+    "to compile the mex files yourself.");
+  if ismac
+    disp("On a Mac this requires to install XCode first!" + newline)
+  end
+else
+  disp(newline + "check succesful!" + newline)
+end
 
 end
 
@@ -136,7 +146,6 @@ plan.x = rand(100,1);
 plan.nfft_adjoint;
 delete(plan);
 out = 1;
-
 end
 
 function out = check_fptmex
@@ -286,8 +295,6 @@ cs = crystalSymmetry('432');
 S3G = equispacedSO3Grid(cs);
 
 ori = orientation.byEuler(41*degree,31*degree,40*degree,cs);
-
-%ori = orientation.rand(cs);
 
 i = find(S3G,ori);
 
