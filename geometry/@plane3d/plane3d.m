@@ -1,98 +1,61 @@
 classdef plane3d < dynOption
 %
 % The class plane3d describes a pane in 3D space, given by
-% the plane equation ax+by+cz=d (general form).
+% the plane equation N.v = d
 %
 % Syntax
-%   plane = plane3d(a,b,c,d)
-%   plane = plane3d.byPoints(pts_list)
-%   plane = plane3d.byNormalform(N,P0)
+%   plane = plane3d(N,d)
+%   plane = plane3d(N,v0)
+%   plane = plane3d.byPoints(v)
 %
 % Input
-%  a,b,c,d  - cart. coordinates
-%  pts_list - list of points within the plane @vector3d
-%  N, P0    - Plane normal and point within plane @vector3d
+%  N - normal direction @vector3d
+%  d - distance to origin
+%  v0, v - @vector3d 
 %
 % Output
 %  plane - @plane3d
 %
-%
-% Dependent Class Properties
-%  N - normal vector
-%
-%
 % See also
 % vector3d
 
-  properties 
-    a = []; 
-    b = []; 
-    c = []; 
-    d = [];
-    plottingConvention = plottingConvention
-  end
-    
-  properties (Dependent = true)
-    N   % normal vector
-  end
+properties
+  N % normal direction
+  d % distance to origin
+end
   
-  methods
+methods
     
-    function plane = plane3d(varargin)
-      % constructor of the class vector3d
+  function plane = plane3d(N,d,varargin)
+    % constructor of the class vector3d
+    
+    if isa(N,'vector3d')
       
-      if nargin >=4 && isnumeric(varargin{1})
-        
-        plane.a = varargin{1};
-        plane.b = varargin{2};
-        plane.c = varargin{3};
-        plane.d = varargin{4};
-
-        if sum(abs([plane.a,plane.b,plane.c])) == 0
-          error('at least one parameter must not be 0')
-        end
+      plane.N = normalize(N);
       
-      elseif nargin <= 1 & size(varargin{1},2)>=4
-        abc = varargin{1};
-
-        plane.a = abc(:,1);
-        plane.b = abc(:,2);
-        plane.c = abc(:,3);
-        plane.d = abc(:,4);
-
+      if nargin>1 && isnumeric(d)
+        plane.d = d ./ norm(N);
+      elseif nargin>1 && isa(d,'vector3d')
+        plane.d = dot(plane.N,d);
       else
-        error('wrong numer or type of inputs')
-                
+        plane.d = zeros(size(N));
       end
+
+    elseif isa(N,'plane3d')
+      plane = N;
     end
-    
-    function normal = get.N(plane)
-      normal = normalize(vector3d(plane.a,plane.b,plane.c));
-    end
-    
   end
+    
+end
   
-  methods (Static = true)
+methods (Static = true)
 
-    function plane = byPoints(d,varargin)
-      if length(d) >= 3
-        plane = byNormalform(perp(d),d(1),varargin{:});
-      else
-        error('Enter at least 3 points within the plane')
-      end
+  function plane = byPoints(d,varargin)
+    if length(d) >= 3
+      plane = plane3d(perp(d),d(1),varargin{:});
+    else
+      error('Enter at least 3 points within the plane')
     end
-
-    function plane = byNormalform(N,P0,varargin)
-      if isa(N,'vector3d')
-        a = N.x;
-        b = N.y;
-        c = N.z;
-        d = sum(N.xyz.*P0.xyz,2);
-        plane = plane3d(a,b,c,d, varargin{:});
-      else
-        error('Enter normal and P0 as vector3d')
-      end
-    end
-    
   end
+end
 end
