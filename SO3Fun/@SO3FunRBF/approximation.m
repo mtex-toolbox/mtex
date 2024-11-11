@@ -166,8 +166,8 @@ end
 
 % normalize odf
 if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'mean')
-    m = get_option(varargin,'mean',(1-SO3F.c0)/psi.A(1));
-    SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:));
+    m = get_option(varargin,'mean',1);
+    SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
 end
 
 end
@@ -294,6 +294,7 @@ m = get_option(varargin,'mean',1.0);
 c0 = y(:) ; %odf.eval(SO3G);
 c0(c0<=eps) = eps;
 c0 = m*c0./sum(c0(:));
+
 chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
 
 end
