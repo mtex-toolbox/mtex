@@ -1,9 +1,7 @@
-function grains2d = slice(grains,plane,varargin)
-% grain3d.slice is a method to intersect 3D grain data by a plane to get 
-% grain2d slices
+function grains2 = slice(grains3,plane,varargin)
+% slice 3d-grains to obtain 2d-grains
 %
 % Syntax
-%
 %   N = vector3d(1,1,1)             % plane normal
 %   P0 = vector3d(0.5, 0.5, 0.5)    % point within plane
 %   grain2d = grains.slice(N,P0)
@@ -12,131 +10,79 @@ function grains2d = slice(grains,plane,varargin)
 %   grain2d = grains.slice(plane)  
 %
 % Input
-%  grains   - @grain3d
+%  grains3   - @grain3d
 %  plane    - @plane3d
 %
 % Output
-%  grain2d  - @grain2d
+%  grains2  - @grain2d
 %
 % See also
 % grain2d grain3d/intersected
 
-
 if ~isa(plane,'plane3d'), plane = plane3d(plane,varargin{:}); end
 
+% step 1: find intersected grains
+isInter = grains3.intersected(plane);
 
-%% TODO:
-% faces with more than 2 intersected edges  (line 83)
-% handling of crossroads and inclusions     (line 146, 157)
+I_GF = grains3.I_GF;
+FId = find(any(I_GF(isInter,:)));
 
-%%
-inters_grains = grains.subSet(grains.intersected(plane)); % restrict to affected cells
-newIds = inters_grains.id;                 % Ids of the new grains2d
+% step 2: compute edges
+if iscell(grains3.F)
 
-V = inters_grains.boundary.allV;  % all vertices as xyz
-V_is_below_P = dist(plane,V)>0;   % check if V is below plane
-F = inters_grains.F;              % all faces (polys) as nx1-cell or nx3 array
-E = meshEdges(F);                 % incidence matrix edges - vertices (indices to V)
+  F = grains3.F(any(grains3.I_GF(isInter,:)));
+  numE = cellfun(@numel,F)-1; % number of edge per face
+  E1 = cellfun(@(x) x(1:end-1),F,'UniformOutput',false);
+  E2 = cellfun(@(x) x(2:end),F,'UniformOutput',false);
+  [E,~,EId] = unique(sort([E1{:};E2{:}],1).','rows');
+  FId = repelem(FId,numE).';
 
-%% identify which faces and edges are affected
-% list of edges crossing the plane, indices to E
-crossingEdges = find(xor(V_is_below_P(E(:,1)),V_is_below_P(E(:,2))));
-assert(length(crossingEdges)>=3,'plane is outside of grain3d bounding box')
+else % triangulated shape
 
-% compute incidence matrix F - crossingEdges
-if iscell(F)
-  % input (grains3d) is not triangulated
-  FE = meshFaceEdges(V, E, F);  % n x 1 cell list of Faces, indices of E
-  crossingFE_all = cell2mat(cellfun((@(el) ismember(crossingEdges,el)'), FE, 'UniformOutput', false));
-else
-  % input (grains3d) is triangulated
-  crossingFE_all = zeros(size(F,1),size(crossingEdges,1));
-  for i = 1:length(F)
-    crossingFE_all(i,:)=(sum(F(i,:)==E(crossingEdges,1),2)==1 & sum(F(i,:)==E(crossingEdges,2),2)==1)';
-  end
+  F = grains3.F(any(grains3.I_GF(isInter,:)),:);
+  E = [F(:,1),F(:,2);F(:,2),F(:,3);F(:,3),F(:,1)];
+  FId = [FId,FId,FId].';
+
+  [E,~,EId] = unique(sort(E,2),'rows');  
+
 end
 
-% list of only intersected faces, indices to F
-intersecFaces = find(sum(crossingFE_all,2)==2);   % a face is intersected if (at least) 2 crossing Edges belong to it
+% step 3: compute intersection points -> new vertices
+VNew = plane.intersect(grains3.allV(E(:,1)),grains3.allV(E(:,2)));
+isInterE = ~isnan(VNew);
+VNew = VNew(isInterE);
 
-% restrict crossingFE_all to intersected Faces
-[i,j] = find(crossingFE_all(intersecFaces,:));
-[~,i2] = sort(i);
-crossingFE_all = reshape(j(i2),2,[])';
+% step 4: compute 
+% incidence matrix faces - reduced edges aka VNew
+I_FVNew = sparse(FId(isInterE(EId)),EId(isInterE(EId)),true,...
+  size(I_GF,2), size(E,1));
+I_FVNew = I_FVNew(:,isInterE);
 
-% crossingEdges   - list of edges crossing the plane, indices to E
-% intersecFaces   - list of intersected faces, indices to F
-% crossingFE_all  - incidence matrix, 1.dim with respect to intersecFaces, 2.dim with respect to crossingEdges
+% faces that have two intersections create a new edge in the plane
+hasEdge = sum(I_FVNew,2) == 2;
+I_FVNew(~hasEdge,:) = 0; % TODO: what do we do in case of 1 or more than 3 intersections points
+[FNew,FOld] = find(I_FVNew.');
+FNew = reshape(FNew,2,[]).';
+FOld = FOld(2:2:end).';
 
-%% newV
-% compute new vertices of the 2d slice (crossingEdges intersected with plane)
-%newV = intersectEdgePlane([V(E(crossingEdges,1),:) V(E(crossingEdges,2),:)],plane);   % nx3 array of vertices (xyz)
-newV = intersect(plane,V(E(crossingEdges,1),:), V(E(crossingEdges,2),:));
+% this seems to work
+%mapScatter(VNew)
+%line(VNew.x(FNew).',VNew.y(FNew).',VNew.z(FNew).')
+%
+%mapScatter(VNew)
+%for k = 1:size(FNew,1)
+%  line(VNew.x(FNew(k,:)).',VNew.y(FNew(k,:)).',VNew.z(FNew(k,:)).')
+%  pause
+%end
 
-% restrict I_GF to the intersected Faces (intersecFaces)
-intersec_GF = logical(inters_grains.I_GF(:,intersecFaces));
+% incidence matrix between the intersected grains and the new edges FNew
+I_FNewG = (I_GF(isInter,FOld)~=0).';
 
-% newV        - vertices of the new grains2d slice (crossingEdges intersected with plane)
-% intersec_GF - Incidence matrix newIds - intersecFaces
+% step 5: compute polygons
+poly = calcPolygonsC(I_FNewG,FNew,VNew,plane.N);
 
-%% new polygons for grains2d
-% empty cell array
-newPoly = cell(size(intersec_GF,1),1);
-
-% assemble polygon for each intersected cell
-for m = 1:length(newIds)
-
-  % list n x 2 of all affected faces for this cell (2 intersected edges per face), 1.dim: intersecFaces, indices to crossingEdges
-  crossingFE = crossingFE_all(intersec_GF(m,:),:);
-
-  % empty cell for poly, initialize with first line, set next edge
-  currPoly = zeros(1,size(crossingFE,1)+1);
-  currPoly(1:2) = crossingFE(1,:);
-  nextEdge = crossingFE(1,2);
-  % set only second column of this row to 0, so can detect closed loops later
-  crossingFE(1,2) = 0;
-  % initialize iterator and closed loop counter
-  numPoly = 1;        % number of closed loops
-  n = 1;
-  
-  while n <= size(crossingFE,1)+numPoly-2   % one more round for each closed loop
-    % find adjacent face (same edge)
-    [i,j] = find(crossingFE==nextEdge);
-
-    if nextEdge == 0  % closed loop -> more than one closed polygon
-      numPoly = numPoly + 1;
-      % chose next face, that has not been processed
-      i = find(crossingFE(:,1)~=0);
-      i = i(1);
-      nextEdge = crossingFE(i,2);
-      crossingFE(i,2) = 0;   % set only second column of this row to 0, so can detect closed loops later
-      % overwrite last 0 in poly and add new edge
-      currPoly(n+1) = crossingFE(i,1);
-      currPoly(n+2) = nextEdge;
-    else
-      if ~isscalar(i) % points of contact/Crossroads (inclusions, ...)
-        % take first alternative
-        i = i(1);
-        j = j(1);
-      end
-      % take next edge from the other column (abs(j-3) so 1=>2 and 2=>1)
-      nextEdge = crossingFE(i,abs(j-3));
-      % set this row to zero, add edge to poly
-      crossingFE(i,:) = [0 0];
-      currPoly(n+2) = nextEdge;
-    end
-    n = n + 1;
-  end
-  % add polygon for this cell to list, move on to next cell
-  newPoly(m) = {currPoly};
-end
-
-%% new 2d grains
-grains2d = grain2d(newV, newPoly, grains.meanOrientation(newIds),...
-  grains.CSList, grains.phaseId(newIds), grains.phaseMap, 'id', newIds);
-
-% check for clockwise poly's
-isNeg = (grains2d.area<0);
-grains2d.poly(isNeg) = cellfun(@fliplr, grains2d.poly(isNeg), 'UniformOutput', false);
+% new 2d grains
+grains2 = grain2d(VNew, poly, grains3.meanOrientation(isInter),...
+  grains3.CSList, grains3.phaseId(isInter), grains3.phaseMap, 'id', find(isInter));
 
 end
