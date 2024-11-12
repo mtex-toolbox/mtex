@@ -26,24 +26,27 @@ if nargin < 4
     itermax = 100;
 end
 
+if ~isa(Psi,'function_handle')
+    Psi = @(x,transp_flag) afun(transp_flag,x,Psi);
+end
+
 if nargin < 3
-    M = size(Psi,2);
+    M = length(Psi(I,'transp'));
     c0 = ones(M,1)./M;
 end
 
-
 chat = real(c0);
-r = Psi*chat-I;     % initial residual
+r = Psi(chat,'notransp')-I;     % initial residual
 oldErr = Inf;
 for k=1:itermax
-    gradient =  r'*Psi;
+    gradient =  Psi(r,'transp')';
     lambda = real(gradient - gradient*chat); % imaginary part should be numerical error
     % estimate coefficients
     ctilde = lambda(:).*chat;
 
     % estimate step size
     taumax = 1./max(abs(lambda));
-    rtilde = Psi*ctilde;
+    rtilde = Psi(ctilde,'notransp');
     taub = real((rtilde'*r)./(rtilde'*rtilde));
     taub = sign(taub)*max(min(abs(taub),taumax),0);
 
@@ -65,4 +68,12 @@ if k == itermax
 end
 
 
+end
+
+function y = afun(transp_flag,x,Psi)
+if strcmp(transp_flag, 'notransp')
+  y = Psi*x;
+elseif strcmp(transp_flag, 'transp')
+  y = (x'*Psi)';
+end
 end

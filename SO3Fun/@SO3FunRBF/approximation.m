@@ -65,6 +65,7 @@ function SO3F = approximation(nodes, y, varargin)
 %  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
 %  tol              - tolerance for mlsq/ml
 %  iter_max         - maximum number of iterations for mlsq/ml
+%  SO3Grid
 %
 % Flags
 %  lsqr             - least squares (MATLAB)
@@ -87,7 +88,7 @@ function SO3F = approximation(nodes, y, varargin)
 % check_SO3FunRBFApproximation
 
 if isa(nodes,'SO3Fun') && nargin>1
-    varargin = [y,varargin];
+    varargin = {y,varargin{:}};
 end
 
 % get kernel
@@ -115,15 +116,13 @@ if isa(nodes,'SO3Fun')
     f = nodes;
 
     % maybe we have to normalize at the end
+    % TODO: Computation of mean might be time consuming
     varargin = [varargin,'mean',f.mean];
     % %mean does not say anything about f(g) < 0 -> no odf
-    % if abs(mean(f.mean-1))<0.1
-    %   varargin = [varargin,'odf'];
-    % end
 
-    if check_option(varargin,{'harmonic','fourier'}) % get_flag?
+    if check_option(varargin,{'harmonic','fourier'})
         y0 = f.eval(SO3G); % initial guess for coefficients
-        fhat = calcFourier(f,'bandwidth',psi.bandwidth+1);   % Why +1 ???
+        fhat = calcFourier(f,'bandwidth',psi.bandwidth);
         % compute weights
         chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
     else
@@ -177,7 +176,7 @@ end
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                             LSQR solver
+%                      spatial Method - LSQR solver
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -262,6 +261,10 @@ end
 
 
 
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     harmonic Method - LSQR solver
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function chat = harmonicMethod(SO3G,psi,fhat,y,varargin)
 
 if (any(y(:) < 0) && any(0 < y(:)))
@@ -272,29 +275,57 @@ end
 %     varargin = ['mlsq',varargin];
 % end
 
-% get fourier coefficients for each node
-psi = conv(psi,1./sqrt(2*(0:psi.bandwidth)+1));
-Fstar = WignerD(SO3G,'kernel',psi);
-
-% sparsify
-Fstar(abs(Fstar) < 10*eps) = 0;
-Fstar = sparse(Fstar);
-
-% pad fourier coefficients if necessary
-if size(fhat,1) ~= size(Fstar,1)
-    fhat(size(Fstar,1)+1) = 0;
-    fhat(size(Fstar,1)+1:end) = [];
-end
+bw = psi.bandwidth;
 
 itermax = get_option(varargin,{'iter','iter_max','iters'},100);
 tol = get_option(varargin,{'tol','tolerance'},1e-3);
 
-m = get_option(varargin,'mean',1.0);
 % initial guess for coefficients
+m = get_option(varargin,'mean',1.0);
 c0 = y(:) ; %odf.eval(SO3G);
 c0(c0<=eps) = eps;
 c0 = m*c0./sum(c0(:));
 
-chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
+if deg2dim(psi.bandwidth+1)*length(SO3G)*8 < 0.5*2^30 % use direct computation
+
+    % get fourier coefficients for each node
+    psi = conv(psi,1./sqrt(2*(0:bw)+1));
+    Fstar = WignerD(SO3G,'kernel',psi);
+
+    % sparsify
+    Fstar(abs(Fstar) < 10*eps) = 0;
+    Fstar = sparse(Fstar);
+
+    % lsqr
+    chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
+
+else % use NFFT-based matrix-vector multiplication
+
+    % get weights
+    W = calcFourier(conv(SO3FunHarmonic(0*fhat+1),psi));
+
+    % lsqr
+    chat = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat,c0(:),itermax,tol);
 
 end
+
+end
+
+function y = afun(transp_flag, x, nodes, W, bw)
+
+if strcmp(transp_flag, 'transp')
+
+  x = x .* W;
+  F = SO3FunHarmonic(x,nodes.CS,nodes.SS);
+  F.bandwidth = bw;
+  y = F.eval(nodes);
+  
+elseif strcmp(transp_flag, 'notransp')
+
+  F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
+  y = F.fhat;
+  y = y .* W;
+end
+
+end
+
