@@ -15,7 +15,7 @@ function plane = cat(dim,varargin)
 % plane3d/horzcat, plane3d/vertcat
 
 
-% remove emtpy arguments
+% remove empty arguments
 varargin(cellfun('isempty',varargin)) = [];
 plane = varargin{1};
 
@@ -31,7 +31,5 @@ for i = 1:numel(varargin)
   end
 end
 
-plane.a = cat(dim,a(:));
-plane.b = cat(dim,b(:));
-plane.c = cat(dim,c(:));
+plane.N = cat(dim,N(:));
 plane.d = cat(dim,d(:));

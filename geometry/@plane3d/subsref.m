@@ -4,9 +4,7 @@ function varargout = subsref(plane,s)
 switch s(1).type
   case '()'
     
-    plane.a = subsref(plane.a,s(1));
-    plane.b = subsref(plane.b,s(1));
-    plane.c = subsref(plane.c,s(1));
+    plane.N = subsref(plane.N,s(1));
     plane.d = subsref(plane.d,s(1));
 
     plane.opt = struct;

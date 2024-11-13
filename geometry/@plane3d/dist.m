@@ -12,7 +12,9 @@ function d = dist(plane, v)
 % 
 
 if isa(v,'vector3d')
+
   d = dot(plane.N,v) - plane.d;
+  
 elseif isa(v,'plane3d')
 
   lambda = dot(plane.N,v.N);

@@ -45,7 +45,35 @@ methods
       plane = N;
     end
   end
+
+  function display(plane,varargin) %#ok<DISPLAY>
+    % standard output
     
+    displayClass(plane,inputname(1),varargin{:},'moreInfo');
+    
+    if length(plane)>1, disp([' size: ' size2str(plane)]); end
+    
+    disp(' ');
+    
+    if length(plane)<=45 && ~isempty(plane)
+      dispData(plane)
+    elseif ~getMTEXpref('generatingHelpMode')
+      disp(' ')
+      s = setAllAppdata(0,'data2beDisplayed',@() dispData(plane));
+      disp(['  <a href="matlab:feval(getappdata(0,''',s,'''))">display all coordinates</a>'])
+      disp(' ')
+    end
+    
+    function dispData(plane)
+      % display coordinates
+      N = round(plane.N); %#ok<PROPLC>
+      d = [N.xyz round(100*plane.d)./100]; %#ok<PROPLC>
+      d(abs(d) < 1e-10) = 0; %#ok<PROPLC>
+      cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' 'd'});%#ok<PROPLC>
+    end
+  end
+
+
 end
   
 methods (Static = true)
