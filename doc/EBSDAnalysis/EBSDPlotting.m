@@ -88,7 +88,6 @@ plot(ebsd('Forsterite'),colors)
 % Combining different plots can be done either by plotting only subsets of
 % the EBSD data or using the option |'faceAlpha'| to control transparency.
 
-close all;
 plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 

@@ -25,8 +25,21 @@ setCamera(how2plot)
 % index of the grain with the largest volume
 [~,id] = max(grains.volume)
 
-plot(grains(id),'edgeAlpha',0.15)
+plot(grains(id),'edgeAlpha',0.15,'micronBar','off')
 setCamera(how2plot)
+
+%% 
+% Lets finally plot a slice through this 3d data set
+
+% define the plane by a normal direction and a point 
+plane = plane3d(vector3d(1,1,1),vector3d(-20,20,-15));
+
+% compute the sliced grains
+grains2 = slice(grains,plane)
+
+% plot them
+plot(grains2,grains2.meanOrientation)
+
 
 %% Import Grains from Neper
 % <https://neper.info Neper> is a software package for the simulation of
@@ -52,8 +65,6 @@ grains = job.simulateGrains(odf,numGrains,'silent')
 % colorize by mean orientation
 plot(grains,grains.meanOrientation,'micronbar','off','faceAlpha',0.5)
 setCamera(how2plot)
-
-%%
 
 %% Slicing
 %
