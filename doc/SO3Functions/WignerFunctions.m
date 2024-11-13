@@ -51,15 +51,15 @@
 %
 %% 
 % In MTEX the Wigner-D and Wigner-d functions are available through the
-% command <Wigner_D.html |Wigner_D|>
+% command <WignerD.html |WignerD|>
 
-% the Wigner-d function of degree 1
-beta = 0.5;
-d = Wigner_D(1,beta)
+% the Wigner-d functions of degree 1
+beta = pi/2;
+d = WignerD(beta,1)
 
-% the Wigner-D function of degree 1
+% the normalized Wigner-D functions of degree 1 evaluated in R
 R = rotation.rand;
-D = sqrt(3) * Wigner_D(1,R)
+D = WignerD(R,1,'normalize')
 
 %%
 % Here the orders $k$, $l$ work as row and column indices.

@@ -8,19 +8,19 @@
  * 
  * Syntax
  *   d = Wigner_d_fast(dlmin1,dlmin2,beta)
- *   d = Wigner_d_fast(L,beta)
+ *   d = Wigner_d_fast(beta,L)
  * 
  * Input
- *   L             - harmonic degree
  *   beta          - second Euler angle
+ *   L             - harmonic degree
  *   dlmin1,dlmin2 - Wigner-d matrices of harmonic degree L-1 and L-2
  * 
  * Output
  *   d - Wigner d matrix of harmonic degree L
  * 
  * Example
- *   d = Wigner_d_fast(Wigner_D(4,pi/2),Wigner_D(3,pi/2),pi/2)
- *   d = Wigner_d_fast(64,pi/2)
+ *   d = Wigner_d_fast(WignerD(pi/2,4),Wigner_D(pi/2,3),pi/2)
+ *   d = Wigner_d_fast(pi/2,64)
  *
  * Tip: If 2nd Euler angle beta is unknown, it can be computed simply by:
  *            d^L(-L,-L) = cos(beta/2)^(2*L)
@@ -747,13 +747,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     if (nrhs==2)
     {
-      // make sure the first input argument (bandwidth) is double scalar
+      // make sure the first input argument (second Euler angle - beta) is double scalar
       if( !mxIsDouble(prhs[0]) || mxIsComplex(prhs[0]) || mxGetNumberOfElements(prhs[0])!=1 )
-        mexErrMsgIdAndTxt("Wigner_d:notDouble","Input bandwidth must be a scalar double.");
-      
-      // make sure the second input argument (second Euler angle - beta) is double scalar
-      if( !mxIsDouble(prhs[1]) || mxIsComplex(prhs[1]) || mxGetNumberOfElements(prhs[1])!=1 )
         mexErrMsgIdAndTxt("Wigner_d:notDouble","Input Euler angle must be a scalar double.");
+      
+      // make sure the second input argument (bandwidth) is double scalar      
+      if( !mxIsDouble(prhs[1]) || mxIsComplex(prhs[1]) || mxGetNumberOfElements(prhs[1])!=1 )
+        mexErrMsgIdAndTxt("Wigner_d:notDouble","Input bandwidth must be a scalar double.");
     }
     else
     {
@@ -812,14 +812,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else
     {
       // get the value of the scalar input bandwidth
-      bandwidth = mxGetScalar(prhs[0]);
+      bandwidth = mxGetScalar(prhs[1]);
       
       // check whether bandwidth is natural number
       if( (round(bandwidth)-bandwidth)!=0 || bandwidth<0 )
         mexErrMsgIdAndTxt("Wigner_d:notInt","Input bandwidth must be a natural number.");
       
       // get the value of the scalar input Euler angle
-      beta = mxGetScalar(prhs[1]);
+      beta = mxGetScalar(prhs[0]);
     }
     
     // check whether beta is in [0,pi]

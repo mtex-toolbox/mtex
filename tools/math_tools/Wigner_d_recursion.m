@@ -7,11 +7,11 @@ function dmn = Wigner_d_recursion(varargin)
 % Syntax
 %   dmn = Wigner_d_recursion(dlmin1,dlmin2,beta)
 %   dmn = Wigner_d_recursion(dlmin1,dlmin2,beta,'half')
-%   dmn = Wigner_d_recursion(L,beta)
+%   dmn = Wigner_d_recursion(beta,L)
 %
 % Input
-%   L   - harmonic degree
 %   beta - second Euler angle
+%   L   - harmonic degree
 %   dlmin1,dlmin2 - Wigner-d matrices of harmonic degree L-1 and L-2
 %
 % Output
@@ -19,8 +19,8 @@ function dmn = Wigner_d_recursion(varargin)
 %         or cell-array of all Wigner-d matrices up to harmonic degree L
 %
 % Example
-%   Wigner_d_recursion(Wigner_D(4,pi/2),Wigner_D(3,pi/2),pi/2)
-%   Wigner_d_recursion(64,pi/2)
+%   Wigner_d_recursion(WignerD(pi/2,4),Wigner_D(pi/2,3),pi/2)
+%   Wigner_d_recursion(pi/2,64)
 %
 
 % Idea: We construct the current Wigner-d matrix by three term recurrsion.
@@ -62,15 +62,15 @@ if length(varargin)>=3
 else
 
   % load input
-  L = varargin{1};
-  beta = varargin{2};
+  beta = varargin{1};
+  L = varargin{2};
   
   % create cell array
   dmn = cell(L,1);
   
   % generate start values
   dlmin2 = zeros(3,2); dlmin2(2,2) = 1;
-  dlmin1 = Wigner_D(1,beta); dmn{1} = dlmin1; dlmin1 = dlmin1(:,1:2);
+  dlmin1 = WignerD(beta,1); dmn{1} = dlmin1; dlmin1 = dlmin1(:,1:2);
   
   for l=2:L
     

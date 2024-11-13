@@ -11,17 +11,17 @@ beta =rand*pi;
 
 % past method 
 tic
-a = Wigner_D(N,beta);
+a = WignerD(beta,N);
 toc
 
 % new faster method
 tic
-b = Wigner_d_fast(N,beta);
+b = Wigner_d_fast(beta,N);
 toc
 
 % create cell array of all Wigner-ds with harmonic degree smaller then L
 tic
-c = Wigner_d_recursion(N,beta);
+c = Wigner_d_recursion(beta,N);
 toc
 
 % get new Wigner-d from previous two
