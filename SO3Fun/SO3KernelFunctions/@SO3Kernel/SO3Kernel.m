@@ -21,6 +21,10 @@ classdef SO3Kernel
   
     % constructor
     function psi = SO3Kernel(A)
+      if nargin>0 && isa(A,'SO3Kernel')
+        A = A.A;
+      end
+
       if nargin > 0
         psi.A = A(:);
         %psi.A = cutA(psi);

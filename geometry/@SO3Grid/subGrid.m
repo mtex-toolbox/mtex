@@ -25,6 +25,10 @@ else
   ind(q) = true;
 end
 
+if all(ind(:))
+  return
+end
+
 G.a = G.a(ind);
 G.b = G.b(ind);
 G.c = G.c(ind);
