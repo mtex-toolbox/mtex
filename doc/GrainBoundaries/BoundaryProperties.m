@@ -6,7 +6,7 @@
 % grain boundaries.
 
 % load some example data
-mtexdata twins
+mtexdata twins silent
 ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 
 % detect grains
@@ -47,12 +47,12 @@ hold off
 gB8 = grains(8).boundary
 
 %%
-% This boundary consists of 6 segemts and hence ebsdId forms a 8x2 matrix
+% This boundary consists of 6 segments and hence ebsdId forms a 8x2 matrix
 
 gB8.ebsdId
 
 %%
-% It is important to understand that the *id* is not neccesarily the same
+% It is important to understand that the *id* is not necessarily the same
 % as the index in the list. In order to index an variable of type EBSD by
 % id and not by index the following syntax has to be used
 
@@ -100,7 +100,7 @@ plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
-% The |direction| property of the boundary segments is usefull when
+% The |direction| property of the boundary segments is useful when
 % checking for tilt and twist boundaries, i.e., when we want to compare the
 % misorientation axis with the interface between the grains
 
@@ -112,29 +112,25 @@ axes = axis(ori(:,1),ori(:,2),'antipodal')
 plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4)
 
 %%
-% We observe that the angle is quite oscilatory. This is because of the
+% We observe that the angle is quite oscillatory. This is because of the
 % stair casing effect when reconstructing grains from gridded EBSD data.
 % The weaken this effect we may average the segment directions using the
-% command <grainBoundary.calcMeanDirection.html calcMeanDirection>
+% command <grainBoundary.calcMeanDirection.html |calcMeanDirection|>
 
 % plot the angle between the misorientation axis and the boundary direction
 plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4)
 
 %%
-% The *midPoint* property is usefull when  TODO:
-
-
-%%
-% While the command
-
-length(gB_Mg)
+% The *midPoint* property is useful when  TODO:
 
 %%
-% gives us the total number of all Magnesium to Magnesium grain boundary
-% segements the following command gives us its their total length in um.
+% While the command <grainBoundary.length.html |length(gB_Mg)|> gives the
+% total number of all Magnesium to Magnesium grain boundary segments the
+% command <grainBoundary.segLength.html |segLength(gB_Mg)|> gives the
+% length of each segment in µm. The total length of all Magnesium to
+% Magnesium grain boundary segments is hence 
 
 sum(gB_Mg.segLength)
-
 
 %% Connected components
 % 

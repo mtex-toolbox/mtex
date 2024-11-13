@@ -183,7 +183,7 @@ cS = crystalShape(N)
 plot(cS)
 
 %%
-% i.e. we see only  the positive and negative rhomboedrons, but the
+% i.e. we see only  the positive and negative rhododendrons, but the
 % hexagonal prism are to far away from the origin to cut the shape. We may
 % decrease the distance, by multiplying the corresponding normal with a
 % factor larger then 1.
@@ -191,17 +191,17 @@ plot(cS)
 N = [2*m,r,z];
 
 cS = crystalShape(N);
-plot(cS)
+plot(cS,'colored')
 
 %%
-% Next in a typical Quartz crystal the negative rhomboedron is a bit smaller
-% then the positive rhomboedron. Lets correct for this.
+% Next in a typical Quartz crystal the negative rhododendron is a bit smaller
+% then the positive rhododendron. Lets correct for this.
 
 % collect the face normal with the right scaling
 N = [2*m,r,0.9*z];
 
 cS = crystalShape(N);
-plot(cS)
+plot(cS,'colored')
 
 %%
 % Finally, we add the tridiagonal bipyramid and the positive Trapezohedron
@@ -210,25 +210,7 @@ plot(cS)
 N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
 
 cS = crystalShape(N);
-plot(cS)
-
-%% Marking crystal faces
-% We may colorize the faces according to their lattice planes using the
-% command
-
 plot(cS,'colored')
-
-%%
-% or even label the faces directly
-
-plot(cS)
-N = unique(cS.N.symmetrise,'noSymmetry','stable');
-fC = cS.faceCenter;
-
-for i = 1:length(N)
-  text3(fC(i),char(round(N(i)),'latex'),'scaling',1.1,'interpreter','latex')
-end
-
 
 
 %% Defining complicated crystals more simple
@@ -252,9 +234,9 @@ plot(cS,'colored')
 %%
 % The scale parameter models the inverse extension of the crystal in each
 % dimension. In order to make the crystal a bit longer and the negative
-% rhomboedrons smaller we could do
+% rhododendrons smaller we could do
 
-extension = [0.9 1.1 1];
+extension = [1 1.2 1.1];
 cS = crystalShape(N,habitus,extension);
 plot(cS,'colored')
 
@@ -282,6 +264,9 @@ plot(cS)
 hold on
 plot(cS(Miller(0,-1,1,0,cs)),'FaceColor','DarkRed') 
 hold off
+
+% zoom a bit out to fit the screen
+camzoom(0.7)
 
 %% Gallery of hardcoded crystal shapes
 

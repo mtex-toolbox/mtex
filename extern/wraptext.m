@@ -36,15 +36,20 @@ function strw = wraptext(str,width)
 % 
 % See also: sprintf, fprintf, regexp, and disp. 
 %% Error checks: 
+
 assert(nargin>0,'The wrapdisp function requires at least one input.') 
+
+if isstring(str), str = char(str); end
+
 assert(ischar(str)==1,'Input str must be a string.') 
+
 %% Input parsing: 
 % If no width is specified, use width of command window: 
 if nargin==1
-    cms = get(0,'CommandWindowSize'); 
-    width = cms(1); 
+  cms = get(0,'CommandWindowSize');
+  width = cms(1);
 else
-    assert(isscalar(width)==1,'Width must be a scalar.') 
+  assert(isscalar(width)==1,'Width must be a scalar.')
 end
 % Find spaces: 
 r = regexp(str,' '); 

@@ -1,10 +1,25 @@
-function poly = calcPolygonsC(I_FG,F,V)
+function poly = calcPolygonsC(I_FG,F,V,N)
+%
+% Input
+%  I_FG - 
+%  F - 
 
 % compute cycles
 [g, c, cP] = EulerCyclesC(I_FG,F,size(V,1));
+% g - each entry represents one grain, except for the last one. 
+%     For each grain, the first index of the cycles belonging to this grain is stored.
+%     The last element is the total number of cycles.
+% c - Each entry represents one cycle, except for the last one.
+%     For each cycle, the first index of cyclePoints belonging to this cycle is stored.
+%     The last element is the total number of cyclePoints.
+% cP - cyclePoints: Array of point indices (V).
 
 % compute area of each cycle
-area = polySgnArea(V(cP,1),V(cP,2),c);
+if isnumeric(V)
+  area = polySgnArea(V(cP,1),V(cP,2),c);
+else
+  area = polySgnArea3(V(cP,:).xyz,N.xyz,c);
+end
 
 % convert to cell array 
 poly = cell(size(I_FG,2),1);

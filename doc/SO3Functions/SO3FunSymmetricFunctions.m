@@ -1,11 +1,10 @@
 %% Symmetry Properties of Orientation Functions
 %
 %%
-% Every <SO3Fun.SO3Fun |SO3Fun|> has a left and a right symmetry.
-% For further information on symmetries look at <CrystalSymmetries.html
-% crystal symmetries>, <SpecimenSymmetry.html specimen symmetries> and, 
-% <QuasiCrystals.html Quasi symmetries>.
-%
+% Every <SO3Fun.SO3Fun |SO3Fun|> has a left and a right symmetry. In case
+% of ODFs the right symmetry is the <CrystalSymmetries.html crystal
+% symmetry> and the left symmetry is the <SpecimenSymmetry.html specimen
+% symmetry>.
 
 SO3F = SO3Fun.dubna
 
@@ -44,10 +43,11 @@ SO3F.SLeft = specimenSymmetry('432')
 % Here it is possible to get the symmetries directly from the fourier
 % coefficients. 
 % 
-% Similary if we want to change the symmetry of a function it is not enough
+% Similarly, if we want to change the symmetry of a function it is not enough
 % to change it. We also have to symmetries this function.
 
 SO3F2 = SO3FunHarmonic(rand(1e3,1))
+SO3F2.isReal = true
 SO3F2.fhat(1:10)
 
 %%
@@ -56,7 +56,7 @@ plot(SO3F2)
 
 %%
 % Changing the symmetry has no effect on the Fourier coefficients.
-% No we are only plotting the given function on some fundamental region.
+% Now we are only plotting the given function on some fundamental region.
 
 SO3F2.SRight = crystalSymmetry('2')
 SO3F2.fhat(1:10)
@@ -66,9 +66,9 @@ SO3F2.fhat(1:10)
 plot(SO3F2)
 
 %%
-% Symmetrizing the Fourier coefficients transforms the coefficients. 
-% So we symmetrize the function and it is no longer possible to go back to
-% the non symmetrized function from before.
+% Symmetrising the Fourier coefficients transforms the coefficients. So we
+% symmetrise the function and it is no longer possible to go back to the
+% non symmetrised function from before.
 
 SO3F2 = SO3F2.symmetrise
 SO3F2.fhat(1:10)

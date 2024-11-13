@@ -31,7 +31,7 @@ C = stiffnessTensor(...
 %
 % An isotropic Albite material we assume here to consist of randomly
 % oriented grains forming an uniform (isotropic) texture. In this case the
-% Voigt and Reuss avarages provide upper and lower bounds for the elastic
+% Voigt and Reuss averages provide upper and lower bounds for the elastic
 % properties of the material. 
 
 [C_iso_Voigt,C_iso_Reuss,C_iso_Hill] = mean(C,uniformODF(C.CS))
@@ -94,7 +94,7 @@ inv(complianceTensor(...
 
 %% Lame constants
 %
-% The second way to represent the elastic behaviour of an isotropic medium
+% The second way to represent the elastic behavior of an isotropic medium
 % is by means of the Lame constants
 
 lambda = nu/(1-2*nu) /(1+nu) * E;
@@ -135,7 +135,7 @@ sigma = stressTensor(2 * mu * eps + lambda * trace(eps) * tensor.eye)
 %
 %% 
 % The upper and lower Hashin-Shtrikman bounds for the bulk and shear
-% moduli are found as a solution of an optimzation problem. Lets first set
+% moduli are found as a solution of an optimization problem. Lets first set
 % up the search domain
 
 % define a 2 dimensional domain of bulk and shear moduli
@@ -147,7 +147,7 @@ Go = linspace(GMin,GMax,300);
 
 %% 
 % Next the initial stiffness tensor is updated such that the residual
-% stiffness tensor |R| remains either possitve or negative definite.
+% stiffness tensor |R| remains either positive or negative definite.
 % 
 
 tic

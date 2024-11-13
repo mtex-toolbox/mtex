@@ -94,9 +94,9 @@ cS_x2a = crystalShape.quartz(cs_x2a);
 
 close all
 figure(1)
-plot(cS_x2a,'figSize','small')
+plot(cS_x2a,'figSize','small','colored')
 hold on
-arrow3d(0.5*[xvector,yvector,zvector],'labeled')
+arrow3d(0.6*[xvector,yvector,zvector],'labeled')
 hold off
 
 %%
@@ -104,11 +104,10 @@ hold off
 cS_y2a = crystalShape.quartz(cs_y2a);
 
 figure(2)
-plot(cS_y2a,'figSize','small')
+plot(cS_y2a,'figSize','small','colored')
 hold on
-arrow3d(0.5*[xvector,yvector,zvector],'labeled')
+arrow3d(0.6*[xvector,yvector,zvector],'labeled')
 hold off
-
 
 %%
 % Most important is the difference if Euler angles are used to describe
@@ -143,7 +142,6 @@ angle(ori_x2a, ori_y2a) ./ degree
 % into the reference frame |cs_x2a|
 
 ori_x2a.transformReferenceFrame(cs_y2a)
-
 
 %% Triclinic and monoclinic symmetries
 %

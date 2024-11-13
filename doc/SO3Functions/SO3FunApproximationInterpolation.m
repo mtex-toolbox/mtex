@@ -32,17 +32,22 @@ plotSection(ori, S.values,'all');
 %% Interpolation
 %
 %%
-% Interpolation is done by the <SO3Fun.interpolate |interpolate|> command
-% of class <SO3Fun.SO3Fun |SO3Fun|>
+% Interpolation is done by the <SO3FunRBF.approximation |approximation|> command
+% of class <SO3FunRBF.SO3FunRBF |SO3FunRBF|>
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
-SO3F = SO3Fun.interpolate(ori, S.values,'exact','kernel',psi);
+SO3F = SO3FunRBF.approximation(ori, S.values,'exact','kernel',psi);
 plot(SO3F)
 
 %% 
 % The interpolation is done by |lsqr|. Hence the error is not in machine
 % precision.
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
+
+%%
+% Also, interpolation might not guarantee non-negativity of the function
+
+min(SO3F)
 
 %%
 % If we don't restrict ourselves to the given function values in the nodes,
@@ -168,13 +173,40 @@ plot(SO3F3)
 norm(SO3F2)
 norm(SO3F3)
 
-
 %% 
 % This smoothing results in a larger error in the data points,
 % which may not be much important since we had noisy function values given,
 % where we don't know the exact values anyways. 
 
 norm(eval(SO3F3, ori) - S.values) / norm(S.values)
+
+%%
+% Alternatively, the noisy data can be also approximated using a kernel
+% density. Using the |odf| flag, we additionally make sure that the function
+% does not have non-negative function values and is normalized to 1.
+% We may study the effect of adjusting the kernel halfwidth to the
+% error
+
+hw = [20,15,12.5,10,7.5,5,2.5];
+err = zeros(size(hw));
+for k = 1:numel(hw)
+    SO3Fhw = SO3FunRBF.approximation(ori,val,'halfwidth',hw(k)*degree,'odf');
+    err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
+end
+
+%%
+% We may find the best fit with a halfwidth of 5°. If the system is
+% underdetermined using a too small halfwidth, we may not be able to fit
+% kernel weights without additional assumptions about the smoothness of the
+% data.
+
+[hw;err]
+
+plot(hw,err,'o--')
+set(gca,'xdir','reverse')
+xlabel('halfwidth [deg]')
+ylabel('relative error')
+
 
 %% Quadrature
 %
@@ -186,7 +218,13 @@ odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 %%
 % Now we want to compute the corresponding |@SO3FunHarmonic|.
-% If our odf is an |@SO3Fun| or |@function_handle| we can directly use the command 
+% If our odf is an |@SO3Fun| or |@function_handle| we can use the command
+% <SO3FunHarmonic.approximation.html SO3FunHarmonic.approximation>
+
+F = SO3FunHarmonic.approximation(odf)
+
+%%
+% Alternatively we can directly use the constructor, i.e. we use the command 
 % <SO3FunHarmonic.html SO3FunHarmonic>.
 
 F = SO3FunHarmonic(odf)
@@ -249,3 +287,15 @@ toc
 F2 = SO3FunHarmonic.quadrature(SO3G,v)
 
 norm(F-F2)
+
+%%
+% It is also possible convert the harmonic function back to a kernel
+% density representation
+
+F3 = SO3FunRBF.approximation(F,'halfwidth',5*degree,'approxresolution',5*degree);
+
+% norm(F-F3)
+calcError(odf,F)
+calcError(odf,F3)
+
+

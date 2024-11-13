@@ -106,7 +106,7 @@ plotIPDF(big_grains('olivine').meanOrientation,colors,vector3d.Z,...
 %%
 % Instead of colorizing which crystal axis is pointing out of the specimen
 % surface we may also colorizing which crystal axis is pointing towards the
-% rolling or folliation direction or any other specimen fixed direction.
+% rolling or foliation direction or any other specimen fixed direction.
 % This reference direction is stored as the property
 % |inversePoleFigureDirection| in the color key.
 

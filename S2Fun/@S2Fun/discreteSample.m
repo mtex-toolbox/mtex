@@ -10,6 +10,7 @@ function v = discreteSample(S2Fun,n,varargin)
 %
 % Output
 %  v -  @vector3d
+%    -  @Miller in case of S2Fun is of type @S2FunHarmonicSym
 %
 
 res = get_option(varargin,'resolution',0.5*degree);
@@ -24,6 +25,9 @@ v = S2G(discretesample(d,n));
 
 % some local distortions
 v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
+
+% if there is a symmetry, return a Miller
+if isa(S2Fun,'S2FunHarmonicSym'), v = Miller(v,S2Fun.CS); end
 
 % set antipodal if function is antipodal
 if S2Fun.antipodal == 1; v.antipodal = 1; end

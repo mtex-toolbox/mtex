@@ -55,7 +55,7 @@ plot3d(odf)
 
 %%
 % This return the common $90^{\circ} \times 90^{\circ} \times 90^{\circ}$
-% cube for cubic crystal and orthorombic specimen symmetry. For an
+% cube for cubic crystal and orthorhombic specimen symmetry. For an
 % arbitrary orientation
 
 ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))

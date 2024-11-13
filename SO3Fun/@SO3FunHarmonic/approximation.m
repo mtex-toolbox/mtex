@@ -20,16 +20,21 @@ function SO3F = approximation(nodes, y, varargin)
 %
 % $$\|f\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
 %
+% We can also use the approximation command to approximate an SO3FunHarmonic 
+% from some given SO3Fun by evaluating on some specific grid and doing quadrature.
+%
 % Syntax
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f)
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f,'constantWeights')
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'regularization')
 %   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'regularization',0.1,'SobolevIndex',1)
+%   SO3F = SO3FunHarmonic.approximation(F1)  % do quadrature
 %
 % Input
 %  SO3Grid - rotational grid
 %  f       - function values on the grid (maybe multidimensional)
+%  F1      - @SO3Fun
 %
 % Options
 %  constantWeights  - uses constant normalized weights (for example if the nodes are constructed by equispacedSO3Grid)
@@ -44,6 +49,13 @@ function SO3F = approximation(nodes, y, varargin)
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
 % SO3VectorFieldHarmonic/approximation
 
+if isa(nodes,'SO3Fun') || isa(nodes,'quadratureSO3Grid')
+  if nargin>1
+    varargin = [y,varargin];
+  end
+  SO3F = SO3FunHarmonic.quadrature(nodes,varargin{:});
+  return
+end
 
 nodes = nodes(:);
 y = reshape(y,length(nodes),[]);
