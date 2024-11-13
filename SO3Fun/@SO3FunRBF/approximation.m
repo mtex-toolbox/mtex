@@ -289,8 +289,11 @@ c0 = m*c0./sum(c0(:));
 if deg2dim(psi.bandwidth+1)*length(SO3G)*8 < 0.5*2^30 % use direct computation
 
     % get fourier coefficients for each node
-    psi = conv(psi,1./sqrt(2*(0:bw)+1));
-    Fstar = WignerD(SO3G,'kernel',psi);
+    a = zeros(deg2dim(bw+1),1);
+    for i=0:bw
+      a(deg2dim(i)+1:deg2dim(i+1)) = psi.A(i+1)/sqrt(2*i+1);
+    end
+    Fstar = WignerD(SO3G,'bandwidth',bw).*a;
 
     % sparsify
     Fstar(abs(Fstar) < 10*eps) = 0;
@@ -302,7 +305,10 @@ if deg2dim(psi.bandwidth+1)*length(SO3G)*8 < 0.5*2^30 % use direct computation
 else % use NFFT-based matrix-vector multiplication
 
     % get weights
-    W = calcFourier(conv(SO3FunHarmonic(0*fhat+1),psi));
+    W = zeros(deg2dim(bw+1),1);
+    for i=0:bw
+      W(deg2dim(i)+1:deg2dim(i+1)) = psi.A(i+1)/(2*i+1);
+    end
 
     % lsqr
     chat = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat,c0(:),itermax,tol);
