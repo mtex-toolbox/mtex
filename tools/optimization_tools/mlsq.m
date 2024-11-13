@@ -18,53 +18,49 @@ function [chat,k] = mlsq(Psi,I,c0,itermax,tol)
 %   k - number of iterations
 %
 
-if nargin < 5
-    tol = 1-5;
-end
+if nargin < 5, tol = 1-5; end
 
-if nargin < 4
-    itermax = 100;
-end
+if nargin < 4, itermax = 100; end
 
 if ~isa(Psi,'function_handle')
-    Psi = @(x,transp_flag) afun(transp_flag,x,Psi);
+  Psi = @(x,transp_flag) afun(transp_flag,x,Psi);
 end
 
 if nargin < 3
-    M = length(Psi(I,'transp'));
-    c0 = ones(M,1)./M;
+  M = length(Psi(I,'transp'));
+  c0 = ones(M,1)./M;
 end
 
 chat = real(c0);
 r = Psi(chat,'notransp')-I;     % initial residual
 oldErr = Inf;
 for k=1:itermax
-    gradient =  Psi(r,'transp')';
-    lambda = real(gradient - gradient*chat); % imaginary part should be numerical error
-    % estimate coefficients
-    ctilde = lambda(:).*chat;
+  gradient =  Psi(r,'transp')';
+  lambda = real(gradient - gradient*chat); % imaginary part should be numerical error
+  % estimate coefficients
+  ctilde = lambda(:).*chat;
+  
+  % estimate step size
+  taumax = 1./max(abs(lambda));
+  rtilde = Psi(ctilde,'notransp');
+  taub = real((rtilde'*r)./(rtilde'*rtilde));
+  taub = sign(taub)*max(min(abs(taub),taumax),0);
 
-    % estimate step size
-    taumax = 1./max(abs(lambda));
-    rtilde = Psi(ctilde,'notransp');
-    taub = real((rtilde'*r)./(rtilde'*rtilde));
-    taub = sign(taub)*max(min(abs(taub),taumax),0);
-
-    % update residuals
-    r = r-taub*rtilde; % r = Psi*chat-I;
-
-    % compute error
-    newErr = norm(r);
-    if oldErr-newErr < tol
-        break; % abort if change to small (or getting worse)
-    end
-    % update coeffients if new error is smaller
-    chat = real(chat - taub*ctilde);
-    oldErr = newErr;
+  % update residuals
+  r = r-taub*rtilde; % r = Psi*chat-I;
+  
+  % compute error
+  newErr = norm(r);
+  if oldErr-newErr < tol
+    break; % abort if change to small (or getting worse)
+  end
+  % update coefficients if new error is smaller
+  chat = real(chat - taub*ctilde);
+  oldErr = newErr;
 end
 
 if k == itermax
-    warning('mlsq:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
+  warning('mlsq:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
 end
 
 
