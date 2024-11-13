@@ -81,8 +81,35 @@ I_FNewG = (I_GF(isInter,FOld)~=0).';
 % step 5: compute polygons
 poly = calcPolygonsC(I_FNewG,FNew,VNew,plane.N);
 
+oldId = find(isInter);
+
+if 1 % this handles the case that a 3d grain is split into multiple 2d grains
+newPoly = {};
+for k = 1:length(poly)
+
+  % remove repeated values
+  poly{k} = poly{k}([true,diff(poly{k})~=0]);
+
+  ind = find(poly{k}(2:end)==poly{k}(1));
+  if length(ind)<=1, continue; end
+
+  % we need to check whether we have an inclusion or an separate grain
+  % right now we assume no inclusions
+  for i = 1:length(ind)-1
+    if ind(i)+1 == ind(i+1), continue; end
+    if poly{k}(ind(i)+2) ~= poly{k}(ind(i+1)), continue; end
+    newPoly = [newPoly;{poly{k}(ind(i+1):-1:ind(i)+2)}]; %#ok<AGROW>
+    oldId = [oldId;oldId(k)]; %#ok<AGROW>
+  end
+  poly{k} = poly{k}(1:ind(1)+1);
+
+end
+poly = [poly; newPoly];
+end
+
 % new 2d grains
-grains2 = grain2d(VNew, poly, grains3.meanOrientation(isInter),...
-  grains3.CSList, grains3.phaseId(isInter), grains3.phaseMap, 'id', find(isInter));
+grains2 = grain2d(VNew, poly, grains3.meanOrientation(oldId),...
+  grains3.CSList, grains3.phaseId(oldId), grains3.phaseMap, 'id', 1:length(poly));
+grains2.prop.Id3d = oldId;
 
 end
