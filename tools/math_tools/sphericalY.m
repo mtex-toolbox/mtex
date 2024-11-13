@@ -24,25 +24,22 @@ function Y = sphericalY(l, v, varargin)
 if check_option(varargin,'nfsft') && l > 0
   
   % precomputation for nfsft
-  nfsft_precompute(l,1000);
-  plan = nfsft_init_advanced(l,1,NFSFT_NORMALIZED);
+  nfsftmex('precompute',l,1000,0,0);
+  plan = nfsftmex('init_advanced',l,1,1);
 
-  nfsft_set_x(plan,[rho;theta]);
-  
-  % node-dependent precomputation
-  nfsft_precompute_x(plan);
-  
+  nfsftmex('set_x',plan,[rho;theta]);
+    
   % Set Fourier coefficients.
-  nfsft_set_f(plan,1);
+  nfsftmex('set_f',plan,1);
 
   % transform
-  nfsft_adjoint(plan);
+  nfsftmex('adjoint',plan);
   
   % store results
-  Y = nfsft_get_f_hat_linear(plan);
+  Y = nfsftmex('get_f_hat_linear',plan);
   Y = Y((end-2*l):end)';
   
-  nfsft_finalize(plan);
+  nfsftmex('finalize',plan);
   
   return
 end
