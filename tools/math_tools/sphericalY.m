@@ -16,7 +16,11 @@ function Y = sphericalY(l, v, varargin)
 %  Y - (2l+1) x length(v) matrix of function values
 %
 % See also
-% wignerD
+% WignerD
+
+if isa(l,'vector3d')
+  vec=v; v = l; l = vec;
+end
 
 [theta,rho] = polar(v);
 

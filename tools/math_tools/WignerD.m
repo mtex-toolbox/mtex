@@ -33,6 +33,9 @@ function Psi = WignerD(ori,varargin)
 if nargin<2
   varargin={2};
 end
+if isa(varargin{1},'rotation')
+  r = varargin{1}; varargin{1} = ori; ori = r;
+end
 if isa(varargin{1},'double')
   varargin = ['degree',varargin];
 end
