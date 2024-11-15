@@ -65,13 +65,13 @@ odf.eval(ori)
 
 %%
 % The resulting value needs to be interpreted as multiple of random
-% distribution (mrd). This means for the specimen under investiagtion it is
-% less likely to have an crystal with orientation (0,0,0) compared to a
-% completely untextured specimen which has the orientation distribution
-% function constant to $1$.
+% distribution (mrd). This means that for the specimen under investigation it is
+% less likely to have a crystal with orientation (0,0,0) compared to a
+% completely untextured specimen which has a constant orientation distribution
+% function that is equal to $1$ everywhere.
 %
 % Since, an ODF can be evaluated at any point in the orientation space we
-% may visualize it as an contour plot in 3d
+% may visualize it as a contour plot in 3d
 
 plot3d(odf,'Euler')
 hold on
@@ -79,8 +79,8 @@ plot(ebsd.orientations,'Euler','MarkerEdgeColor','k')
 hold off
 
 %%
-% Three dimensional plot of an ODF in Euler angle space are for various
-% reason not very recommendet. A geometrically much more reasonable
-% representation are so called <SigmaSections.html sigma sections>.
+% Three dimensional plots of an ODF in Euler angle space are for various
+% reason not very recommended. A geometrically much more reasonable
+% representation are so-called <SigmaSections.html sigma sections>.
 
 plotSection(odf,'sigma')
