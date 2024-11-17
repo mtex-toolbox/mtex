@@ -52,7 +52,12 @@ methods
       SO3F.weights = ones(numel(center),1) ./ numel(center);
     end
     
-    if nargin > 3, SO3F.c0 = c0; end
+    if nargin > 3
+      SO3F.c0 = c0;
+    else
+      s = [size(SO3F.weights) 1];
+      SO3F.c0 = zeros(s(2:end));
+    end
       
   end
 
@@ -106,15 +111,11 @@ methods
   end
     
   function s = size(SO3F,varargin)
-    s = size(SO3F.weights);
-    s = s(2:end);
-    if isscalar(s), s = [s 1]; end
-    if nargin > 1, s = s(varargin{1}); end
+    s = size(SO3F.c0,varargin{:});
   end
 
   function n = numel(SO3F)
-    s = size(SO3F.weights);
-    n = prod(s(2:end));
+    n = numel(SO3F.c0);
   end
   
   function l = length(SO3F), l = max(size(SO3F)); end
@@ -132,6 +133,7 @@ methods
   function varargout = subsref(SO3F,s)
     switch s(1).type
       case '()'
+        SO3F.c0 = subsref(SO3F.c0,s(1));
         s(1).subs = [':' s(1).subs];
         SO3F.weights = subsref(SO3F.weights,s(1));
         
@@ -151,6 +153,7 @@ methods
     if ~isa(SO3F,'SO3FunHarmonic') && ~isempty(b)
       SO3F = b;
       SO3F.weights = [];
+      SO3F.c0 = [];
     end
     
     switch s(1).type
@@ -158,23 +161,30 @@ methods
       
         if numel(s) > 1, b =  builtin('subsasgn', subsref(SO3F,s(1)), s(2:end), b); end
     
-        s(1).subs = [':' s(1).subs];
+        sExt = s(1); sExt.subs = [':' sExt.subs];
     
         % remove functions
         if isempty(b)
-          SO3F.weights = subsasgn(SO3F.weights,s(1),b);
+          SO3F.c0 = subsasgn(SO3F.c0,s(1),b);          
+          SO3F.weights = subsasgn(SO3F.weights,sExt,b);
           return
         end
     
         ensureCompatibleSymmetries(SO3F,b);
             
-        SO3F.weights = subsasgn(SO3F.weights,s(1), reshape(b.weights,[],size(b,1),size(b,2)));
+        SO3F.c0 = subsasgn(SO3F.c0,s(1),b.c0);
+        SO3F.weights = subsasgn(SO3F.weights,sExt, b.weights);
         
       otherwise
     
         SO3F =  builtin('subsasgn',SO3F,s,b);
     end
   end
+
+  function S3F = reshape(S3F,varargin)
+    S3F.c0 = reshape(S3F.c0, varargin{:});
+  end
+
 
 end
   

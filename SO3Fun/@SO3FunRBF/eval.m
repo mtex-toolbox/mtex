@@ -2,11 +2,14 @@ function f = eval(SO3F,g,varargin)
 % evaluate sum of unimodal components at orientation g
 %
 % Syntax
-%   f = SO3F.eval(g)
+%   f = eval(SO3F,rot)
 %
 % Input
 %  SO3F - @SO3FunUnimodal
 %  rot  - @rotation
+%
+% Output
+%  f - double [numrot x size(SO3F)]
 %
 % Options
 %  exact   -
@@ -23,7 +26,7 @@ function f = eval(SO3F,g,varargin)
 % end
 
 % the constant part
-f = SO3F.c0 * ones(size(g));
+f = reshape(SO3F.c0,1,[]) .* ones(numel(g),1);
 
 if isempty(SO3F.weights), return; end
 
@@ -63,13 +66,13 @@ while iter <= numiter
     if SO3F.antipodal
       M = 0.5*(M + SO3F.psi.K_symmetrised(g,inv(SO3F.center(ind)),SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:}));
     end
-    f = f + reshape(full(M * reshape(SO3F.weights(ind),[],1)),size(f));
+    f = f + reshape(full(M * SO3F.weights(ind,:)),size(f));
   else
     M = SO3F.psi.K_symmetrised(g(ind),SO3F.center,SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:});
     if SO3F.antipodal
       M = 0.5*(M + SO3F.psi.K_symmetrised(inv(g(ind)),SO3F.center,SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:}));
     end
-    f(ind) = f(ind) + reshape(full(M * SO3F.weights(:)),size(f(ind)));
+    f(ind,:) = f(ind,:) + reshape(full(M * SO3F.weights),size(f(ind,:)));
   end
 
   if num == 1
@@ -84,9 +87,6 @@ while iter <= numiter
   iter = iter + 1;
 end
 
-if isalmostreal(f)
-  f = real(f);
-end
-
+if ~isreal(f) && isalmostreal(f), f = real(f); end
 
 end

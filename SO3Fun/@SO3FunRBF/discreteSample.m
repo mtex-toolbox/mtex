@@ -3,41 +3,50 @@ function ori = discreteSample(SO3F,npoints,varargin)
 %
 
 % spread points over different centers
-ic = discretesample([SO3F.weights(:);SO3F.c0], npoints).';
+ic = nan(npoints,numel(SO3F));
+for k = 1:numel(SO3F)
+  x = [full(SO3F.weights(:,k));SO3F.c0(k)];
+  if sum(x)>0
+    ic(:,k) = discretesample(x, npoints);
+  end
+end
     
-isUniform = ic == length(SO3F.weights)+1;
+ori = orientation.nan(npoints,numel(SO3F),SO3F.CS,SO3F.SS);
 
-% some uniform random orientations
-ori = orientation.rand(length(ic),SO3F.CS,SO3F.SS);
+% the uniform random orientations
+isUniform = ic == size(SO3F.weights,1)+1;
+ori(isUniform) = orientation.rand(nnz(isUniform),SO3F.CS,SO3F.SS);
 
-% the remaining points
-npoints = nnz(~isUniform);
-if npoints == 0, return; end
+% the not uniform random orientations
+isRBF = ic <= size(SO3F.weights,1);
+if ~any(isRBF), return; end
 
 % take random rotational axes for the remaining samples
-axis = vector3d.rand(npoints);
+axis = vector3d.rand(nnz(isRBF));
 
 % random rotational angles
-M = 1000000; % discretisation parameter
+M = 1000000; % discretization parameter
 
 hw = min(4*SO3F.psi.halfwidth,90*degree);
 t = linspace(cos(hw),1,M);
 
-% compute cummulative distribution function
+% compute cumulative distribution function
 c = 4 / pi * cumsum(sqrt(1-t.^2) .* SO3F.psi.eval(t)) / M;
 c = c ./ c(end);
 
 % random sample with respect to the CDF
-r = rand(npoints,1);
+r = rand(nnz(isRBF),1);
 [~,id] = histc(r,c);
 angle = 2 * acos(t(id)).';
 
 % set up random orientations
-ori(~isUniform) = times(reshape(SO3F.center(ic(~isUniform)),[],1), ...
+ori(isRBF) = times(reshape(SO3F.center(ic(isRBF)),[],1), ...
   rotation.byAxisAngle(axis,angle),false);
 
 % random symmetry elements
-ori = ori .* SO3F.CS.rot(randi(SO3F.CS.numSym,length(ori),1));
+ori = ori .* SO3F.CS.rot(randi(SO3F.CS.numSym,size(ori)));
 if SO3F.SS.numSym>1
-  ori = SO3F.SS.rot(randi(SO3F.SS.numSym,length(ori),1)) .* ori;
+  ori = SO3F.SS.rot(randi(SO3F.SS.numSym,size(ori))) .* ori;
 end
+
+if npoints == 1, ori = reshape(ori,size(SO3F)); end
