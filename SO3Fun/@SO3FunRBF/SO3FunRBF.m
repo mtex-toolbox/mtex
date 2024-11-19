@@ -47,15 +47,16 @@ methods
     if nargin >= 2, SO3F.psi = psi; end
       
     if nargin > 2
-      SO3F.weights = weights;
+      SO3F.weights = reshape(weights,length(SO3F.center),[]);
     else
+      weights = 1;
       SO3F.weights = ones(numel(center),1) ./ numel(center);
     end
     
     if nargin > 3
       SO3F.c0 = c0;
     else
-      s = [size(SO3F.weights) 1];
+      s = [size(weights) 1];
       SO3F.c0 = zeros(s(2:end));
     end
       
@@ -118,7 +119,7 @@ methods
     n = numel(SO3F.c0);
   end
   
-  function l = length(SO3F), l = max(size(SO3F)); end
+  function l = length(SO3F), l = numel(SO3F); end
 
   function n = numArgumentsFromSubscript(varargin), n = 0; end
   
