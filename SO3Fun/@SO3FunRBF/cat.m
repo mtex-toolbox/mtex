@@ -13,6 +13,8 @@ for i = 2:numel(varargin)
     
   ensureCompatibleSymmetries(SO3F,varargin{i});
 
+  SO3F.c0 = cat(dim, SO3F.c0, varargin{i}.c0);
+
   SO3F.weights = cat(1+dim, ...
     reshape(SO3F.weights,N,[],size(SO3F.weights,3)), ...
     reshape(varargin{i}.weights,N,[],size(varargin{i}.weights,3)));
