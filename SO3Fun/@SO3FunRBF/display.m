@@ -8,10 +8,15 @@ if ~check_option(varargin,'skipHeader')
   disp(' ');
 end
 
-if SO3F.c0 ~= 0
+if any(SO3F.c0 ~= 0)
   disp(strong("  uniform component"));
-  disp(['  weight: ',xnum2str(SO3F.c0)]);
-  
+  if isscalar(SO3F)
+    disp(['  weight: ',xnum2str(SO3F.c0)]);
+  elseif length(SO3F)<4
+    disp(['  weights: [',xnum2str(SO3F.c0), ']']);
+  else
+    disp(['  weight: ',xnum2str(mean(SO3F.c0(:)))]);
+  end
   disp(' ');
 end
   
@@ -25,19 +30,28 @@ if ~isempty(SO3F.center)
   disp(['  kernel: ',char(SO3F.psi)]);
   if isa(SO3F.center,'SO3Grid')
     disp(['  center: ',char(SO3F.center)]);
+    % TODO: weights
     disp(['  weight: ',xnum2str(sum(SO3F.weights(:)))]);
     disp(' ');
   else
     disp(['  center: ',num2str(length(SO3F.center)), ' orientations']);
-    s.weight = SO3F.weights(:);
+    s.weight = SO3F.weights(:); 
 
     if length(SO3F.center) < 20 && ~isempty(SO3F.center)
-       Euler(SO3F.center,s)
+      if isscalar(SO3F)
+        Euler(SO3F.center,s)
+      else
+        Euler(SO3F.center)
+      end
     elseif ~getMTEXpref('generatingHelpMode')
       disp(' ')
-      s = setAllAppdata(0,'data2beDisplayed',SO3F.center);
+      a = setAllAppdata(0,'data2beDisplayed',SO3F.center);
       setAllAppdata(0,'data2beDisplayedWeights',s);
-      disp(['  <a href="matlab:Euler(getappdata(0,''',s,'''),getappdata(0,''data2beDisplayedWeights''))">show centers of the components and corresponding weights</a>'])
+      if isscalar(SO3F)
+        disp(['  <a href="matlab:Euler(getappdata(0,''',a,'''),getappdata(0,''data2beDisplayedWeights''))">show centers of the components and corresponding weights</a>'])
+      else
+        disp(['  <a href="matlab:Euler(getappdata(0,''',a,'''))">show centers of the components</a>'])
+      end
       disp(' ')
     end
     

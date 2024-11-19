@@ -11,7 +11,15 @@ else
 end
 
 disp(['  bandwidth: ' num2str(SO3F.bandwidth)]);
-disp(['  weight: ' xnum2str(mean(SO3F.subSet(1)))]);
+
+if isscalar(SO3F) 
+  disp(['  weight: ' xnum2str(mean(SO3F))]);
+elseif length(SO3F)<4
+  disp(['  weights: [' xnum2str(mean(SO3F)),']']);
+else
+  disp(['  weight: ' xnum2str(mean(mean(SO3F))) ]);
+end
+
 disp(' ');
 
 end
