@@ -30,11 +30,13 @@ ori = SO3F.center;
 symCenter = 10*length(SO3F.center) * numSym(cs) * numSym(ss) < max(L^3,100);
 if symCenter
   ori = symmetrise(SO3F.center,'proper');
-  c = repmat(c(:).',size(ori,1),1) / numSym(cs) / numSym(ss);
+  c = repmat(c,size(ori,1),1) / numSym(cs) / numSym(ss);
+  ori = ori(:);
 end
  
 varargin = delete_option(varargin,'weights',1);
 SO3FH = SO3FunHarmonic.adjoint(ori,c,varargin{:},'bandwidth',L);
+SO3FH = reshape(SO3FH,size(SO3F));
 
 SO3FH = conv(SO3FH,SO3F.psi);
 

@@ -4,7 +4,7 @@ function fhat = symmetriseWignerCoefficients(fhat,input_flags,CS,SS,sym,varargin
 % wignerTrafoAdjointmex with flag 2^4 (use symmetries)
 
 % get bandwidth
-N=dim2deg(length(fhat));
+N=dim2deg(size(fhat,1));
 
 % extract flags
 flags=zeros(1,5);
@@ -18,25 +18,25 @@ end
 for n=1:N
 
   ind = deg2dim(n)+1:deg2dim(n+1);
-  A = reshape(fhat(ind),2*n+1,2*n+1);
+  A = reshape(fhat(ind,:),2*n+1,2*n+1,[]);
   
   if sym(1)+sym(3)~=2
     % There is a 2-fold crystal symmetry Y-axis
     if ismember(CS.id,3:5) || ...
         (ismember(CS.id,19:21) && isa(CS,'specimenSymmetry')) || ...
         (ismember(CS.id,22:24) && isa(CS,'crystalSymmetry'))
-      A(n+2:end,:) = (-1).^(n+(1:n)').*flip(A(1:n,:),1);
+      A(n+2:end,:,:) = (-1).^(n+(1:n)').*flip(A(1:n,:,:),1);
     elseif CS.multiplicityPerpZ~=1
-      A(n+2:end,:) = (-1)^n *flip(A(1:n,:),1);
+      A(n+2:end,:,:) = (-1)^n *flip(A(1:n,:,:),1);
     end
   
     % There is a 2-fold specimen symmetry Y-axis
     if ismember(SS.id,3:5) ||...
         (ismember(SS.id,19:21) && isa(SS,'specimenSymmetry')) || ...
         (ismember(SS.id,22:24) && isa(SS,'crystalSymmetry'))      
-      A(:,n+2:end) = (-1).^(n+(1:n)) .* flip(A(:,1:n),2);
+      A(:,n+2:end,:) = (-1).^(n+(1:n)) .* flip(A(:,1:n,:),2);
     elseif SS.multiplicityPerpZ~=1
-      A(:,n+2:end) = (-1)^n * flip(A(:,1:n),2);
+      A(:,n+2:end,:) = (-1)^n * flip(A(:,1:n,:),2);
     end
   end
   
@@ -45,7 +45,8 @@ for n=1:N
   
   % f is antipodal
   if flags(4), A = A + (A==0).*flip(flip(A,1),2).'; end
-  fhat(ind) = A(:);
+  
+  fhat(ind,:) = reshape(A,(2*n+1)^2,[]);
 
 end
 
