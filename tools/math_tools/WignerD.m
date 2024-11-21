@@ -54,8 +54,10 @@ if check_option(varargin,'sphericalHarmonics') && isscalar(ori) % define by sphe
   %  $$ D_n^{k,l}(R) = \int_{S^2} Y_n^k(\xi) \, \overline{Y_n^l(R\cdot\xi)} d{\xi} $$
   Psi = wignerDmatrixSphericalHarm(ori,l,varargin{:});
 
-elseif 0 % TODO: use wigner trafo trick
-
+elseif check_option(varargin,'fastMethod') && isscalar(ori) % use wigner-d recursion
+  
+  Psi = wignerDmatrixRecursion(ori,l,varargin{:});
+  % TODO: wigner trafo trick is not faster
 
 else % use matrix exponential
 
@@ -97,6 +99,30 @@ for i=l
     D = sqrt(2*i+1) * D;
   end
  
+  Psi = [Psi;D(:)];
+end
+
+end
+
+
+function Psi = wignerDmatrixRecursion(ori,l,varargin)
+
+Psi=[];
+[alpha,beta,gamma] = Euler(ori,'abg');
+
+for i=l
+  D = exp(-1i*gamma*(-i:i)') .* Wigner_d_fast(beta,i) .* exp(-1i*alpha*(-i:i));
+
+  if isa(ori,'orientation')
+    [cs,ss] = deal(ori.CS.properGroup,ori.SS.properGroup);
+    Tcs = reshape(WignerD(cs,'degree',i),2*i+1,2*i+1);
+    Tss = reshape(WignerD(ss,'degree',i),2*i+1,2*i+1);
+    D = Tcs * D * Tss /(2*i+1);
+  end
+  if check_option(varargin,'normalize')
+    D = sqrt(2*i+1) * D;
+  end
+
   Psi = [Psi;D(:)];
 end
 
