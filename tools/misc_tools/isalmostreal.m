@@ -15,12 +15,19 @@ function out = isalmostreal(A,varargin)
 %  out - logical
 %
 % Options
-%  precision - exponential treshold
+%  precision - exponential threshold
 %  norm      - is used to compare the real and imaginary parts of A (default 1)
 %
 
 if isa(A,'vector3d')
   A = A.xyz;
+end
+
+% if there are too many inputs, it might be sufficient to check only a few
+% of them
+if numel(A) > 1e7
+  ind = randi(numel(A),1e7,1); 
+  A = A(ind);
 end
 
 A = A(~isnan(A));
