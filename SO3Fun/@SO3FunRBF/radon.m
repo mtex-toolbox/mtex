@@ -25,7 +25,7 @@ else
   isPF = length(h) < length(r);
 end
 
-% globaly set antipodal
+% globally set antipodal
 isAntipodal = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
   (nargin > 1 && ~isempty(h) && h.antipodal) || ...
   (nargin > 2 && ~isempty(r) && r.antipodal);
@@ -39,7 +39,7 @@ if isPF % pole figure
     sh = symmetrise(sh,SO3F.CS,'unique');
     
     S2F(k) = S2FunHarmonicSym.quadrature(SO3F.center*sh,...
-      repmat(SO3F.weights(:),1,length(sh)),SO3F.SS,...
+      repmat(full(SO3F.weights(:)),1,length(sh)),SO3F.SS,...
       'symmetrise','bandwidth',SO3F.psi.bandwidth) ./ length(sh); %#ok<AGROW>
     
   end

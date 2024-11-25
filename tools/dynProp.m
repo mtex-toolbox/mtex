@@ -192,6 +192,8 @@ classdef dynProp
             out{k} = char(prop(k),'Euler');
           elseif isa(prop,'vector3d')
             out{k} = ['(' xnum2str(prop(k).xyz,'delimiter',',') ')'];
+          elseif isa(prop,'SO3Fun')
+            out{k} = xnum2str(mean(prop(k)));
           elseif isnumeric(prop) && isscalar(prop)
             out{k} = prop(k,:);
           elseif isnumeric(prop)

@@ -63,6 +63,8 @@ end
 
 % -------------- (1) get weights and values for quadrature ----------------
 
+len = size(values,2); % multivariate case
+
 if isa(rot,'orientation')
   SRight = rot.CS; SLeft = rot.SS;
   if rot.antipodal, rot.antipodal = 0; varargin{end+1} = 'antipodal'; end
@@ -75,9 +77,7 @@ if isa(rot,'quadratureSO3Grid')
   %  TODO: Multivariate quadratureSO3Grid
   N = rot.bandwidth;
   if strcmp(rot.scheme,'ClenshawCurtis')
-    % TODO
-    values = values( rot.iuniqueGrid(:) + length(rot)*(0:size(values,2)-1) );
-    
+    values = reshape(values(rot.iuniqueGrid,:),[size(rot.iuniqueGrid) size(values,2)]);
     W = rot.weights;
   else % use unique grid in NFFT in case of Gauss-Legendre quadrature
     if SRight.multiplicityPerpZ*SLeft.multiplicityPerpZ == 1
@@ -145,7 +145,6 @@ end
 % use trivariate inverse equispaced fft in case of Clenshaw Curtis
 % quadrature grid and nfft otherwise 
 % TODO: Do FFT x NFFT x FFT in case of GaussLegendre-Quadrature
-len = size(values,2); % multivariate
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 
   % Possibly use smaller input matrix by using the symmetries
@@ -207,12 +206,12 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
   sym([1,3]) = 1;
 end
 % use adjoint Wigner transform
+fhat = zeros(deg2dim(N+1),len);
 for i=1:len
+  progress(i,len)
   fhat(:,i) = wignerTrafoAdjointmex(N,ghat(:,:,:,i),flags,sym);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
-
-
 
 % kill plan
 if check_option(varargin,'keepPlan')
