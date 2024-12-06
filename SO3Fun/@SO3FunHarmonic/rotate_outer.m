@@ -37,14 +37,13 @@ else
 end
 
 L = SO3F.bandwidth;
-D = conj(WignerD(inv(rot),'bandwidth',L));
+D = conj(WignerD(rot,'bandwidth',L,'normalize'));
 D = reshape(D,[],length(rot));
-G = conv(SO3F,sqrt(2*(0:L)+1).');
 
 if check_option(varargin,'right')  
-  SO3F.fhat = convSO3(G.fhat,D);  
+  SO3F.fhat = convSO3(SO3F.fhat,D);  
 else
-  SO3F.fhat = convSO3(D,G.fhat);
+  SO3F.fhat = convSO3(D,SO3F.fhat);
 end
 
 end
