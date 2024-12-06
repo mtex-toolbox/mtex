@@ -21,9 +21,9 @@ function value = mean(sF, varargin)
 %
  
 bw = get_option(varargin,'bandwidth',getMTEXpref('maxS2Bandwidth'));
-nodes = quadratureS2Grid(bw);
+S2G = quadratureS2Grid(bw);
 
-value = mean(reshape(sF.eval(nodes),[],numel(sF)),1);
+value = 1/(4*pi)*sum(reshape(sF.eval(S2G).*S2G.weights,[],numel(sF)),1);
 
 if isalmostreal(value,'componentwise')
   value = real(value);
