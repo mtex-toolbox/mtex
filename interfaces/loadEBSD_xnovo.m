@@ -78,25 +78,17 @@ center = getData([map '/Center']);       % or use h5group2struct(fname,h5info(fn
 voxsiz = getData([map '/Spacing']);
 % vshift = getData([map '/VirtualShift']); %only relevant to convert back to original motor position (e.g. to register multiple datasets)
 
-unitCell = @(dX)  [ ...
-    -dX(1)/2   -dX(2)/2
-    -dX(1)/2    dX(2)/2
-    dX(1)/2    dX(2)/2
-    dX(1)/2   -dX(2)/2
-    -dX(1)/2   -dX(3)/2
-    dX(1)/2   -dX(3)/2
-    dX(1)/2    dX(3)/2
-    -dX(1)/2    dX(3)/2
-    -dX(2)/2   -dX(3)/2
-    -dX(2)/2    dX(3)/2
-    dX(2)/2    dX(3)/2
-    dX(2)/2   -dX(3)/2];
+unitCell = 0.5 * vector3d(voxsiz(1) * [1;1;-1;-1;1;1;-1;-1],...
+                          voxsiz(2) * [1;-1;-1;1;1;-1;-1;1],...
+                          voxsiz(3) * [1;1;1;1;-1;-1;-1;-1]);
+   
 
 numvox = size(msk);
 dpos = @(ndx) (0:numvox(ndx)-1)*voxsiz(ndx) - (numvox(ndx)-1)*voxsiz(ndx)/2 + center(ndx);
 [x,y,z] = ndgrid(dpos(1),dpos(2),dpos(3));
 
-ebsd = EBSD3(vector3d(x(:),y(:),z(:)),q(:),double(msk(:)),CSList,opt);
+%directly initialize EBSD3square?
+ebsd = EBSD3(vector3d(x(:),y(:),z(:)),q(:),double(msk(:)),CSList,opt,'unitCell',unitCell);
 ebsd.scanUnit = 'mm';
 
 end
