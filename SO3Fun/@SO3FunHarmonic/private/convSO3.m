@@ -1,4 +1,7 @@
 function fhat = convSO3(fhat1,fhat2)
+% compute the convolution w.r.t. the coefficient vectors
+%
+% $$ \hat{f}_n^{k,l} = \frac{1}{\sqrt{2n+1}} \, \sum_{j=-n}^{n} \hat{f_1}_n^{k,j} \cdot \hat{f_2}_n^{j,l}$$
 %
 
 % old sizes
