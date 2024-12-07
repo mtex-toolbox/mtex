@@ -30,7 +30,14 @@ if isa(pfcalc,'SO3Fun')
   pfcalc = calcPoleFigure(pfcalc,pfmeas.allH,pfmeas.allR,'superposition',pfmeas.c);
 end
 
-progress(0,pfmeas.numPF);
+
+if check_option(varargin,'silent')
+    varg = {'progress','silent'};
+else
+    varg = {};
+end
+
+progress(0,pfmeas.numPF,varg{:});
 for i = 1:pfmeas.numPF
   
   % normalization
@@ -54,5 +61,5 @@ for i = 1:pfmeas.numPF
     %d = abs(d1-d2)./(d1+epsilon*alpha);
   end
   pfcalc.allI{i} = d;
-  progress(i,pfmeas.numPF);
+  progress(i,pfmeas.numPF,varg{:});
 end
