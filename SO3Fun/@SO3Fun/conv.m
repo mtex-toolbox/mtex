@@ -10,7 +10,6 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 %
 % Syntax
 %   SO3F = conv(SO3F1,SO3F2)
-%   SO3F = conv(SO3F1,SO3F2,'Right')
 %   SO3F = conv(SO3F1,psi)
 %   sF2 = conv(SO3F1,sF1)
 %   sF2 = conv(SO3F1,phi)

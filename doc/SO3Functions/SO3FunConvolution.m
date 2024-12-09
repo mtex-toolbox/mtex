@@ -13,16 +13,11 @@
 % We have to distinguish which objects are convoluted.
 %
 % * <SO3FunConvolution.html#3 Convolution of two SO3Fun's>
-% * <SO3FunConvolution.html#8 Convolution of two S2Fun's>
-% * <SO3FunConvolution.html#10 Convolution of a SO3Fun and a S2Fun>
-% * <SO3FunConvolution.html#13 Convolution with SO3Kernel's and SO2Kernel's>
+% * <SO3FunConvolution.html#7 Convolution of two S2Fun's>
+% * <SO3FunConvolution.html#9 Convolution of a SO3Fun and a S2Fun>
+% * <SO3FunConvolution.html#12 Convolution with SO3Kernel's and SO2Kernel's>
 %
 %% Convolution of two rotational functions
-%
-% Here we distinguish two definitions. They are named the left $*_L$ and 
-% right $*_R$ sided convolution.
-% 
-% * The left sided convolution (default)* 
 %
 % Let two |SO3Fun's| $f \colon {}_{S_L } \backslash SO(3)
 % /_{S_x} \to \mathbb{C}$ where $S_L$ is the left symmetry and $S_x$ is
@@ -38,10 +33,10 @@ f = SO3FunRBF(orientation.rand(ss1,ss2))
 
 
 %% 
-% Then the convolution $f {*}_L g \colon {}_{S_L} \backslash SO(3) /_{S_R} \to \mathbb C$
+% Then the convolution $f {*} g \colon {}_{S_L} \backslash SO(3) /_{S_R} \to \mathbb C$
 % is defined by
 %
-% $$ (f {*}_L g)(R) = \frac{1}{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
+% $$ (f {*} g)(R) = \frac{1}{8\pi^2} \int_{SO(3)} f(q) \cdot g(q^{-1}\,R) \, dq $$
 %
 % where the right symmetry of $f$ have to coincide with the left symmetry of $g$.
 % The normalization factor of the integral reads as 
@@ -55,28 +50,18 @@ c.eval(r)
 mean(SO3FunHandle(@(q) f.eval(q).*g.eval(inv(q).*r)))
 
 %%
-% Note that the left sided convolution $*_L$ is used as default in MTEX. 
+% Note that the left sided convolution from the above definition is used 
+% as default in MTEX. 
 %
-% *The right sided convolution*
+% The right sided convolution coincides with the commutation
 %
-% As contrast we have the second definition:
-%
-% Let two |SO3Fun's| $f \colon {}_{S_x } \backslash SO(3) /_{S_R} \to
-% \mathbb{C}$ where $S_x$ is the left symmetry and $S_R$ is the right
-% symmetry and $g: {}_{S_L} \backslash SO(3) /_{S_x} \to \mathbb C$ where
-% $S_L$ is the left symmetry and $S_x$ is the right symmetry be given.
-
-f = SO3FunRBF(orientation.rand(g.CS,g.CS))
-
-%%
-% The convolution $f {*}_R g \colon {}_{S_L}\backslash SO(3) /_{S_R} \to \mathbb{C}$
-% is defined by
-%
-% $$ (f {*}_R g)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(R\,q^{-1}) \, dq $$
+% $$ (g {*} f)(R) = \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot g(R\,q^{-1}) \, dq $$
 %
 % where the left symmetry of $f$ have to coincide with the right symmetry of $g$.
 
-c = conv(f,g,'right')
+f = SO3FunRBF(orientation.rand(g.CS,g.CS))
+
+c = conv(g,f)
 
 % Test
 r = orientation.rand(c.CS,c.SS);
@@ -162,7 +147,7 @@ mean(SO3FunHandle(@(q) f.eval(q).*h.eval(inv(q)*v)))
 
 %% Convolution with kernel function
 % 
-% * rotational kernel functions * 
+% *Rotational kernel functions* 
 %
 % Since <SO3Kernels.html |SO3Kernel's|> are special orientation dependent
 % functions we can easily describe them as |SO3Fun's|. Hence the
@@ -172,9 +157,8 @@ mean(SO3FunHandle(@(q) f.eval(q).*h.eval(inv(q)*v)))
 % Note that <SO3Kernels.html |SO3Kernel's|> are radial basis
 % functions which only depends on the rotation angle $\omega$.
 % Since the rotation angle of two matrices satisfies 
-% $\omega(q^{-1}\,R)=\omega(R\,q^{-1})$, the left and right sided 
-% convolution are equivalent by convolution with |SO3Kernels|. Moreover the
-% convolution is commutative in this case.
+% $\omega(q^{-1}\,R)=\omega(R\,q^{-1})$, the convolution with |SO3Kernels|
+% is commutative.
 %
 
 f = SO3FunHarmonic.example
@@ -184,10 +168,11 @@ c = conv(f,psi)
 
 %%
 %
-% * spherical kernel functions * 
+% *Spherical kernel functions* 
 %
 % Let a spherical kernel function $\psi(\vec v \cdot \vec e_3)$ be defined
-% as in <S2Kernels.html |S2Kernel's|>. Then the convolution with a @S2Fun reads as
+% as in <S2Kernels.html |S2Kernel's|>. Then the convolution with a @S2Fun $f$ 
+% reads as
 %
 % $$ (f * \psi) (\vec v) = \frac1{4\pi} \int_{S^2} f(\xi) \, \psi(\xi \cdot \vec v) \, d\xi. $$
 %

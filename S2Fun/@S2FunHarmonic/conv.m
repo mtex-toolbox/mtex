@@ -1,6 +1,9 @@
 function sF = conv(sF, psi, varargin)
 % spherical convolution of sF with a radial function or another
-% sperical function psi
+% sperical function psi.
+%
+% For detailed information about the definition of the convolution take a 
+% look in the <SO3FunConvolution.html documentation>.
 %
 % Syntax
 %   sF = conv(sF, psi)

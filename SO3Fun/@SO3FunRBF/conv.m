@@ -20,11 +20,6 @@ function SO3F = conv(SO3F1,SO3F2,varargin)
 % SO3FunHarmonic/conv SO3FunCBF/conv SO3Kernel/conv S2FunHarmonic/conv S2Kernel/conv
 
 
-% The convolution is defined like above. But in MTEX the convolution of two
-% SO3Funs is mostly calculated by
-%                    conv(inv(conj(SO3F1)),SO3F2).
-%
-
 
 if isnumeric(SO3F1)
   SO3F = conv(SO3F2,SO3F1,varargin{:});
@@ -64,14 +59,7 @@ end
 
 
 % b) pure RBF method
-% i) right sided convolution
-if check_option(varargin,'Right')
-  SO3F = inv(conv(inv(SO3F1),inv(SO3F2)));
-  return
-end
-
-% ii) left sided convolution (default)
-ensureCompatibleSymmetries(SO3F1,SO3F2,'conv_Left');
+ensureCompatibleSymmetries(SO3F1,SO3F2,'conv');
 warning(['The convolution of two SO3FunRBFs could be done fast by pure RBF method.' ...
   'For big center sizes this yields an SO3FunRBF with lots of centers, which is ' ...
   'not manageable anymore. Possibly transform one SO3FunRBF to an SO3FunHarmonic.']);
