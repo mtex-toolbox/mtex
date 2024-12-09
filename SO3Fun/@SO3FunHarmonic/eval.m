@@ -1,5 +1,5 @@
 function f = eval(SO3F,rot,varargin)
-% pointwise evaluation 
+% point-wise evaluation 
 %
 % Description
 % Evaluates the orientation dependent function $f$ on a given set of points using a
@@ -8,14 +8,14 @@ function f = eval(SO3F,rot,varargin)
 % NFFT at the end.
 %
 % Syntax
-%   f = eval(F,rot)
+%   f = eval(SO3F,rot)
 %
 % Input
-%   F - @SO3FunHarmonic
+%   SO3F - @SO3FunHarmonic
 %   rot - @rotation (evaluation nodes)
 %
 % Output
-%   f - double
+%   f - double [numrot x size(SO3F)]
 %
 % See also
 % SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT

@@ -8,7 +8,7 @@ function ghat = wignerTrafo(SO3F,varargin)
 % linear operator
 % $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0).$$
 %
-% Normaly the indices of the output Fourier array ghat(l,j,k) runs over 
+% Normally the indices of the output Fourier array ghat(l,j,k) runs over 
 % k,j,l=-N,...,N.
 %
 % If SO3F is real valued the Fourier array ghat(l,j,k) is of size
@@ -59,7 +59,7 @@ sym = [min(cs.multiplicityPerpZ,2),cs.multiplicityZ,...
     
 % Wigner transform
 ghat = wignerTrafomex(N,SO3F.fhat,flags,sym);
-% reconstruct symmetric coeffients
+% reconstruct symmetric coefficients
 ghat = symmetriseFourierCoefficients(ghat,flags,cs,ss,sym);
 
 end
