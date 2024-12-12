@@ -324,8 +324,10 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     else
         rot = rotation.byEuler(EBSDdata.Euler'); %don't rotate - keep CS1 (default - acquisition surface0
     end
-
-
+    
+    if size(rot,2)>1
+        rot = transpose(rot);
+    end
     
     % what data should we read, all or just the standard
     phase = EBSDdata.Phase;
