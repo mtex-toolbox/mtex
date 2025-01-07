@@ -1,14 +1,13 @@
 classdef S1Fun
 % an abstract class representing functions on the 1-sphere
 %
-% 
 % See also
 % S1FunHarmonic
-   
-  methods
 
-  end    
-
+  properties (Abstract = true)
+    antipodal 
+    bandwidth % 
+  end 
   
   methods (Abstract = true)
     

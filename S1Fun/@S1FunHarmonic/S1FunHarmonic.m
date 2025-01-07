@@ -22,6 +22,10 @@ methods
       sF.fhat = fhat.fhat;
       return
     end
+    if isa(fhat,'S1Fun') || isa(fhat,'function_handle')
+      sF = S1FunHarmonic.quadrature(fhat,varargin{:});
+      return
+    end
     
     sF.fhat = fhat;
     
