@@ -5,10 +5,10 @@ function SO3F = sqrt(SO3F, varargin)
 %   SO3F = sqrt(SO3F)
 %
 % Input
-%  SO3F - @SO3FunHarmonic
+%  SO3F - @SO3Fun
 %
 % Output
-%  SO3F - @SO3FunHarmonic
+%  SO3F - @SO3Fun
 %
 
 SO3F = SO3F.^(1/2);

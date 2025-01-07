@@ -12,7 +12,7 @@ function f_hat = calcFourier(SO3F,varargin)
 %  L - maximum harmonic degree
 %
 % Output
-%  f_hat - harmonic/Fouier/Wigner-D coefficients
+%  f_hat - harmonic/Fourier/Wigner-D coefficients
 %
 
 SO3F = SO3FunHarmonic.quadrature(SO3F,varargin{:});

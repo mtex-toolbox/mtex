@@ -16,10 +16,11 @@ function n = norm(SO3F,SobolevIndex)
 %
 % Syntax
 %   t = norm(SO3F)
-%   t = norm(SO3F,'Sobolev')
+%   t = norm(SO3F,s)
 % 
 % Input
 %  SO3F - @SO3FunHarmonic
+%  s - @double (Sobolev index)
 %
 % Output
 %  t - double
