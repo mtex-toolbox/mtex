@@ -109,6 +109,7 @@ if check_option(varargin,'constantWeights')
   W = 1/length(nodes);
 elseif isempty(W)
   W = calcVoronoiVolume(nodes);
+  W = W./sum(W);
 else
   if length(W)>1, W = accumarray(ind,W); end
 end
