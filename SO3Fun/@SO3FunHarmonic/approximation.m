@@ -1,4 +1,4 @@
-function SO3F = approximation(nodes, y, varargin)
+function [SO3F,lsqrParameters] = approximation(nodes, y, varargin)
 % approximate an SO3FunHarmonic by given function values at given nodes 
 % w.r.t. some noise.
 %
@@ -86,7 +86,7 @@ end
 y = reshape(yy, [length(nodes) s(2:end)]);
 
 tol = get_option(varargin, 'tol', 1e-6);
-maxit = get_option(varargin, 'maxit', 50);
+maxit = get_option(varargin, 'maxit', 200);
 
 % decide bandwidth
 [bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
@@ -125,9 +125,10 @@ end
 
 % least squares solution
 for index = 1:size(y,2)
-  [fhat(:, index),flag] = lsqr( ...
+  [fhat(:, index),flag(:, index),relres(:, index),iter(:, index),resvec(:, index),lsvec(:, index)] = lsqr( ...
     @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex), b(:, index), tol, maxit);
 end
+lsqrParameters = {flag,relres,iter,resvec,lsvec};
 
 % kill plan
 % SO3FunHarmonic.quadrature(1,'killPlan','nfsoft')
