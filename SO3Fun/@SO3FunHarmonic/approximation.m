@@ -49,11 +49,14 @@ function [SO3F,lsqrParameters] = approximation(nodes, y, varargin)
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
 % SO3VectorFieldHarmonic/approximation
 
-if isa(nodes,'SO3Fun') || isa(nodes,'quadratureSO3Grid')
-  if nargin>1
-    varargin = [y,varargin];
-  end
-  SO3F = SO3FunHarmonic.quadrature(nodes,varargin{:});
+if isa(nodes,'SO3Fun')
+  if nargin>1, varargin = [y,varargin]; end
+  f_hat = calcFourier(nodes,varargin{:});
+  SO3F = SO3FunHarmonic(f_hat,nodes.SRight,nodes.SLeft,varargin{:});
+  return
+end
+if isa(nodes,'quadratureSO3Grid')
+  SO3F = SO3FunHarmonic.quadrature(nodes,y,varargin{:});
   return
 end
 
@@ -95,8 +98,8 @@ maxit = get_option(varargin, 'maxit', 200);
 regularize = 0; lambda=0; SobolevIndex=0;
 if check_option(varargin,'regularization')
   regularize = 1;
-  lambda = get_option(varargin,'regularization',0.0001);
-  if ~isnumeric(lambda), lambda = 0.0001; end
+  lambda = get_option(varargin,'regularization',5e-7);
+  if ~isnumeric(lambda), lambda = 5e-7; end
   SobolevIndex = get_option(varargin,'SobolevIndex',2);
   warning(['The least squares approximation is regularized with ' ...
     'regularization parameter lambda ', num2str(lambda), ...
