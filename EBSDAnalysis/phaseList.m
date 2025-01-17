@@ -15,6 +15,7 @@ classdef phaseList
     mineralList     % list of mineral names
     indexedPhasesId % id's of all non empty indexed phase
     color           % color of one specific phase
+    colorList       % list of all mineral colors
   end
     
   methods
@@ -220,7 +221,6 @@ classdef phaseList
       pL.CS.mineral = name;
     end
     
-    
     function pL = set.color(pL,color)
       pL.CS.color = color;
     end
@@ -246,6 +246,17 @@ classdef phaseList
       
     end
     
+    function cList = get.colorList(pL)
+      cList = repcell(zeros(1,3),numel(pL.CSList),1);
+
+      ind = pL.indexedPhasesId;
+      cList(ind) = cellfun(@(cs) cs.color,...
+        pL.CSList(ind),'UniformOutput',false);
+
+      cList = vertcat(cList{:});
+    end
+
+
     function minerals = get.mineralList(pL)
       isCS = cellfun('isclass',pL.CSList,'crystalSymmetry');
       minerals(isCS) = cellfun(@(x) x.mineral,pL.CSList(isCS),'uniformoutput',false);
