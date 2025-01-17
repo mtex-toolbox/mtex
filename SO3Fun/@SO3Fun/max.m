@@ -28,7 +28,7 @@ function [values,modes] = max(SO3F,varargin)
 %  startingNodes - @rotation / @orientation
 %  tolerance     - minimum distance between two peaks
 %  resolution    - minimum step size 
-%  maxStepSize   - maximm step size
+%  maxStepSize   - maximum step size
 %
 % Example
 %

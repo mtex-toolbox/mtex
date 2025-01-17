@@ -42,7 +42,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   mtexdata forsterite
 %   plot(ebsd)
 %
-%   % colorize accoding to orientations
+%   % colorize according to orientations
 %   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 %
 %   % colorize according to MAD

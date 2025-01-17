@@ -1,6 +1,6 @@
 function sF = SHTextractor(file)
 % Extract the corresponding S2FunHarmonic of an SHT file.
-% examples of SHT files can be finded at 
+% examples of SHT files can be found at 
 % https://github.com/EMsoft-org/SHTdatabase/tree/master/EBSD
 %
 % Syntax
