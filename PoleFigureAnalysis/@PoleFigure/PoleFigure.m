@@ -51,6 +51,7 @@ classdef PoleFigure < dynProp & dynOption
     r                   % specimen directions
     intensities         % diffraction intensities
     antipodal
+    how2plot            % plotting convention
   end
   
   methods
@@ -93,11 +94,19 @@ classdef PoleFigure < dynProp & dynOption
     end
         
     function CS = get.CS(pf)
-      
       CS = pf.allH{1}.CS;
-      
     end
     
+    function pC = get.how2plot(pf)
+      pC = pf.allR{1}.how2plot;
+    end
+
+    function pf = set.how2plot(pf,pC)
+      for k=1:length(pf.allR)
+        pf.allR{k}.how2plot = pC;
+      end
+    end
+
     function h = get.h(pf)
       h = pf.allH;
       h = horzcat(h{:});
