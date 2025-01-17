@@ -6,7 +6,12 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 % 3: new multiplot
 
 % get plotting convention
-how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+try
+  how2plot = v.how2plot;
+catch ME
+  how2plot = getMTEXpref('xyzPlotting');
+end
+how2plot = getClass(varargin,'plottingConvention',how2plot);
 
 % case 1: predefined axis
 % -----------------------
