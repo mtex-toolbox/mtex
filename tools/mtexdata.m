@@ -12,7 +12,7 @@ function out = mtexdata(name,varargin)
 % read list of all available sample data
 list = readtable(fullfile(mtexDataPath,'summary.txt'),'ReadRowNames',true);
 
-type2var = containers.Map({'PoleFigure', 'EBSD', 'grain2d','SO3Fun','grain3d'}, {'pf','ebsd','grains','odf','grains'});
+type2var = containers.Map({'PoleFigure', 'EBSD', 'EBSD3','grain2d','SO3Fun','grain3d'}, {'pf','ebsd','ebsd3','grains','odf','grains'});
 
 if nargin < 1
 
@@ -48,10 +48,9 @@ type = char(list(name,:).type);
 % change warning to error to make it catchable
 w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
 try
-  
   matFile = fullfile(mtexDataPath,[ lower(name) '.mat']);
+  assert(~check_option(varargin,'force'));
   load(matFile,'out');
-
 catch
  
   fName = fullfile(mtexDataPath,type,char(list(name,:).files));
@@ -86,6 +85,14 @@ catch
   end
   
   switch type
+
+
+    case 'EBSD3'
+      switch name
+        case 'xnovo'
+          out = loadEBSD_xnovo(fName);
+      end
+
 
     case 'grain3d'
       switch name
