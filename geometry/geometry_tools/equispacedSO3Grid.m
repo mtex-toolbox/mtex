@@ -45,6 +45,7 @@ if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
     ~check_option(varargin,'points') && ...
     tmp.S3G.antipodal == check_option(varargin,'antipodal')
   S3G = tmp.S3G;
+  S3G.SS.how2plot = SS.how2plot;
   return
 end
 
@@ -89,7 +90,7 @@ alphabeta = equispacedS2Grid('resolution',res,...
 
 ap2 = round(2*maxGamma/res);
 
-[beta,alpha] = polar(alphabeta);
+[beta,alpha] = polar(alphabeta); %#ok<POLAR>
 
 % calculate gamma shift
 re = cos(beta).*cos(alpha) + cos(alpha);
@@ -110,7 +111,7 @@ gamma = S1Grid(gamma,-maxGamma+dGamma(1,:),...
 
 res = 2 * maxGamma / ap2;
 
-% eliminiate 3 fold symmetry axis of cubic symmetries
+% eliminate 3 fold symmetry axis of cubic symmetries
 % TODO: this should be done better!!
 ind = checkOutsideFR(ori,CS,specimenSymmetry);
 
@@ -156,7 +157,7 @@ if isempty(q), ind = []; return; end
 
 c = {};
 
-% eliminiate 3 fold symmetry axis of cubic symmetries
+% eliminate 3 fold symmetry axis of cubic symmetries
 switch cs.LaueName
 
   case   {'m-3m','m-3'}
