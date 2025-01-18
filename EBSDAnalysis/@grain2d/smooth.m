@@ -21,7 +21,7 @@ if abs(dot(grains.N,zvector)) ~= 1
 
   [grains,rot] = rotate2Plane(grains);
   grains = smooth(grains);
-  grains = inv(rot) * grains;
+  grains = inv(rot) * grains; %#ok<MINV>
   return
 
 end
@@ -76,7 +76,7 @@ for l=1:iter
     A_V = sparse(i,j,w,t,t);
   end
 
-  % take the mean over the neigbours
+  % take the mean over the neighbors
   Vt = A_V * V;
   
   m = sum(A_V,2);
@@ -90,4 +90,4 @@ for l=1:iter
   
 end
 
-grains.allV = vector3d.byXYZ(V);
+grains.allV = vector3d.byXYZ(V,grains.how2plot);

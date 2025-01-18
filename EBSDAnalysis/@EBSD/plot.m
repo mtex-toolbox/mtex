@@ -51,12 +51,13 @@ function [h,mP] = plot(ebsd,varargin)
 % See also
 % EBSDSpatialPlots
 
-%
+% ignore empty EBSD sets
 if isempty(ebsd), return; end
 
 % create a new plot
 mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
-[mP,isNew] = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot(ebsd.how2plot,'scanUnit',ebsd.scanUnit,...
+  'parent',mtexFig.gca,varargin{:});
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')

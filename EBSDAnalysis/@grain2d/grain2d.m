@@ -67,7 +67,7 @@ classdef grain2d < phaseList & dynProp
   properties (Dependent = true, Access = protected)
     idV        % active vertices
     rot2Plane  % rotation to xy plane
-    plottingConvention % plotting convention
+    how2plot   % plotting convention
     N          % normal direction of the pseudo3d data    
   end
   
@@ -215,12 +215,12 @@ classdef grain2d < phaseList & dynProp
       rot = rotation.map(grains.N,vector3d.Z);
     end
 
-    function pC = get.plottingConvention(grains)
-      pC = grains.allV.plottingConvention;
+    function pC = get.how2plot(grains)
+      pC = grains.allV.how2plot;
     end
 
-    function grains = set.plottingConvention(grains,pC)
-      grains.allV.plottingConvention = pC;
+    function grains = set.how2plot(grains,pC)
+      grains.allV.how2plot = pC;
     end
 
 

@@ -192,9 +192,10 @@ catch
           
         case 'twins'
           
-          plotx2east; plotzOutOfPlane
+          pC = plottingConvention;
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
-        
+          out.how2plot = pC;
+
         case 'copper'
 
           plotx2east; plotzOutOfPlane

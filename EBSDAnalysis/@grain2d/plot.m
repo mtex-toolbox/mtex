@@ -27,7 +27,7 @@ function [h,mP] = plot(grains,varargin)
 
 % ensure we do not plot perpendicular to the slice
 
-pC = grains.plottingConvention.copy;
+pC = grains.how2plot.copy;
 if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
 % create a new plot

@@ -67,7 +67,7 @@ classdef grainBoundary < phaseList & dynProp
     allV           % list of all vertices
     V              % vertices that are part of the grain boundary
     N              % normal direction of the pseudo3d data    
-    plottingConvention % default plotting convention
+    how2plot       % default plotting convention
   end
   
   methods
@@ -163,12 +163,12 @@ classdef grainBoundary < phaseList & dynProp
       
     end
     
-    function pC = get.plottingConvention(gB)
-      pC = gB.allV.plottingConvention;
+    function pC = get.how2plot(gB)
+      pC = gB.allV.how2plot;
     end
 
-    function gB = set.plottingConvention(gB,pC)
-      gB.allV.plottingConvention = pC;
+    function gB = set.how2plot(gB,pC)
+      gB.allV.how2plot = pC;
     end
 
     function V = get.allV(gB)

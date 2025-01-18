@@ -70,9 +70,10 @@ classdef EBSD < phaseList & dynProp & dynOption
   end
    
   properties (Dependent = true)
-    dPos          % spacing of the positions
+    dPos       % spacing of the positions
     rot2Plane  % rotation to xy plane
-    plottingConvention % plotting convention
+    how2plot   % plotting convention    
+    plottingConvention % plotting convention    
   end
 
   properties (Access = protected)
@@ -264,11 +265,19 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
 
     function pC = get.plottingConvention(ebsd)
-      pC = ebsd.pos.plottingConvention;
+      pC = ebsd.pos.how2plot;
     end
     
     function ebsd = set.plottingConvention(ebsd,pC)
-      ebsd.pos.plottingConvention = pC;
+      ebsd.pos.how2plot = pC;
+    end
+
+    function pC = get.how2plot(ebsd)
+      pC = ebsd.pos.how2plot;
+    end
+    
+    function ebsd = set.how2plot(ebsd,pC)
+      ebsd.pos.how2plot = pC;
     end
 
 %     function dx = get.dx(ebsd)

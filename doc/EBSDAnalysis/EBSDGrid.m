@@ -18,7 +18,6 @@
 % In order to explain the corresponding concept in more detail lets import
 % some sample data.
 
-plottingConvention.setDefault
 mtexdata twins
 
 plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)

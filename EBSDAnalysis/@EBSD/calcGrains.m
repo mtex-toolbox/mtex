@@ -361,7 +361,7 @@ end
     d = diff([0;fId]);
     fId = cumsum(d>0) + (d==0)*size(F,1);
             
-    %  ebsdInd - [Id1,Id2] list of adjecent EBSD pixels for each segment
+    %  ebsdInd - [Id1,Id2] list of adjacent EBSD pixels for each segment
     ebsdInd = zeros(size(F,1),2);
     ebsdInd(fId) = eId;
           
@@ -373,6 +373,7 @@ end
       .* ebsd.rotations(ebsdInd(isNotBoundary,1));
     
     gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,ebsd.phaseMap,ebsd.id);
+    gB.how2plot = ebsd.how2plot;
 
   end
 

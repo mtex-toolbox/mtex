@@ -132,7 +132,7 @@ legend('Forsterite','Enstatite','Location','eastoutside')
 mtexTitle('long axes')
 
 % we have to set the plotting convention manually
-setView(ebsd.plottingConvention)
+setView(ebsd.how2plot)
 
 %% *Shortest Caliper Distribution*
 %

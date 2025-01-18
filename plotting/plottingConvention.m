@@ -11,7 +11,7 @@ classdef plottingConvention < matlab.mixin.Copyable
 %
 %   % changing the plotting convention for a dataset
 %   % to be used in all future plotting commands
-%   ebsd.plottingConvention = pC
+%   ebsd.how2plot = pC
 %
 % Input
 %  outOfScreen - @vector3d 
@@ -185,6 +185,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = v;
     end
 
+    function makeDefault(pC)
+      setMTEXpref('xyzPlotting',pC);
+    end
+
     function plot(pC, varargin)
 
       ax = get_option(varargin,'parent',gca);
@@ -235,12 +239,6 @@ classdef plottingConvention < matlab.mixin.Copyable
     function pC = default3D
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
     end
-
-    function setDefault
-      pC = getMTEXpref('xyzPlotting');
-      pC.rot = rotation.id;
-    end
-
 
   end
 

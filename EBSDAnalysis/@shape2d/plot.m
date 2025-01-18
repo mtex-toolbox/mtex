@@ -23,8 +23,8 @@ if plain
   h.Parent.RTick = [];
 end
 
-how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
-how2plot.setView;
+pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+pC.setView;
 
 if nargout == 0, clear h; end
 

@@ -20,11 +20,6 @@ switch lower(pref)
     set(0,'DefaultAxesFontSize',value);
     set(0,'DefaultLegendFontSize',value);
     group.innerPlotSpacing = 1.5*value;
-  case 'xyzplotting'
-    v = vector3d;
-    pC = v.plottingConvention;
-    pC.rot = value.rot;
-    value = pC;
 end
 
 group.(pref) = value;

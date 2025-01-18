@@ -95,11 +95,11 @@ classdef sphericalRegion
     end
             
     function h2p = get.how2plot(sR)
-      h2p = sR.N.plottingConvention;
+      h2p = sR.N.how2plot;
     end
 
     function sR = set.how2plot(sR,how2plot)
-      sR.N.plottingConvention = how2plot;
+      sR.N.how2plot = how2plot;
     end
 
     function th = thetaMin(sR)

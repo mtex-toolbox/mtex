@@ -16,7 +16,9 @@ function [lambda,v] = eig(v,varargin)
 %
 
 xyz = v.xyz;
+pC = v.how2plot;
 [v, lambda] = eig3(xyz.' * xyz);
+v.how2plot = pC;
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same
