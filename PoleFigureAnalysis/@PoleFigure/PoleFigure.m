@@ -85,7 +85,11 @@ classdef PoleFigure < dynProp & dynOption
       pf.SS = getClass(varargin,'specimenSymmetry',pf.SS);
       
     end
-    
+
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
+    end
+
     function pf = set.CS(pf,CS)
       
       for i = 1:length(pf.allH)
