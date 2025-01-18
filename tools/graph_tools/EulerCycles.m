@@ -33,7 +33,7 @@ for ipoly = 1:numF
     nextB = B(currentiB + numF);
   end
   
-  if mod(nextB,2), nextB = nextB + 1; else nextB = nextB - 1; end
+  if mod(nextB,2), nextB = nextB + 1; else, nextB = nextB - 1; end
   
   currentiB = iB(nextB);
   
@@ -44,7 +44,7 @@ for ipoly = 1:numF
 
 end
 
-% entries of poly should be indeces of vertices
+% entries of poly should be indices of vertices
 poly = F(polyB).';
 
 numTours = numel(tourStart)-1;

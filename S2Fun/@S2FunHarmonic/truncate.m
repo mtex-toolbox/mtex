@@ -1,6 +1,5 @@
 function sF = truncate(sF)
-% truncate neglectable coefficients
-% this includes a bit of regularisation 
+% truncate negligible coefficients this includes a bit of regularization 
 % 
 % Syntax
 %   sF = truncate(sF)

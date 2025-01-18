@@ -10,7 +10,7 @@
 CS = {crystal symmetry};
 
 % plotting convention
-how2plot = plottingConvention({zAxisDirection},{xAxisDirection});
+pC = plottingConvention({zAxisDirection},{xAxisDirection});
 
 %% Specify File Names
 
@@ -28,7 +28,7 @@ Z = {Z-values};
 
 % create an EBSD variable containing the data
 ebsd = EBSD.load(fname,CS,'interface',{interface},{Z},{options});
-ebsd.plottingConvention = how2plot;
+ebsd.how2plot = pC;
 
 %% Correct Data
 

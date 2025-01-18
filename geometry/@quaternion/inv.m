@@ -1,5 +1,5 @@
 function q = inv(q)
-% quaternion of the inverse roation
+% quaternion of the inverse rotation
 %
 % Input
 %  q - @quaternion
