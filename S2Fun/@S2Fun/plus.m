@@ -6,6 +6,12 @@ if isa(sF2,'S2FunHarmonic')
   return
 end
 
-sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v));
+if isnumeric(sF1)
+  sF = S2FunHandle(@(v) sF1 + sF2.eval(v),sF2.s);
+elseif isnumeric(sF2)
+  sF = S2FunHandle(@(v) sF1.eval(v) + sF2,sF1.s);
+else
+  sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v),sF1.s);
+end
 
 end

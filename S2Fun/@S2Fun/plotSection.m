@@ -22,8 +22,7 @@ function h = plotSection(sF,sec,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-pC = getClass(varargin,'plottingConvention',plottingConvention.default);
-
+pC = getClass(varargin,'plottingConvention',sF.how2plot);
  
 % extract polar angle of section
 eta = pi/2; omega = linspace(0,2*pi,361);

@@ -3,6 +3,7 @@ classdef S2FunHarmonic < S2Fun
 
 properties
   fhat = []; % harmonic coefficients
+  s          % symmetry
 end
 
 properties (Dependent=true)
@@ -21,7 +22,8 @@ methods
     % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic
     if isa(fhat,'S2FunHarmonic')
       sF.fhat = fhat.fhat;
-      truncate(sF);
+      sF.s = fhat.s;
+      sF = truncate(sF);
       return
     elseif isa(fhat,'S2Fun')
       sF = S2FunHarmonic.quadrature(fhat, varargin{:});
@@ -36,13 +38,15 @@ methods
       return
     end
 
-    % construct S2FunHarmonic from fourier coefficient vector
+    % construct S2FunHarmonic from Fourier coefficients
     s = size(fhat);
     bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
     sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
     
     sF.antipodal = check_option(varargin,'antipodal');
     
+    sF.s = getClass(varargin,'symmetry',specimenSymmetry);
+
     % truncate zeros
     %sF = sF.truncate;
 

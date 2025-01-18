@@ -15,7 +15,7 @@ function sF = times(sF1,sF2)
 %
 
 if isnumeric(sF1)
-  sF = S2FunHandle(@(v) sF1 .* sF2.eval(v));
+  sF = S2FunHandle(@(v) sF1 .* sF2.eval(v),sF2.s);
   return
 end
 
@@ -29,6 +29,6 @@ if isa(sF2,'S2FunHarmonic')
   return
 end
 
-sF = S2FunHandle(@(v) sF1.eval(v) .* sF2.eval(v));
+sF = S2FunHandle(@(v) sF1.eval(v) .* sF2.eval(v),sF1.s);
 
 end

@@ -4,13 +4,19 @@ classdef S2FunHandle < S2Fun
 properties
   fun
   antipodal = false
+  s     % reference system
   bandwidth = getMTEXpref('maxS2Bandwidth')
 end
 
 
 methods
-  function S2F = S2FunHandle(fun)
+  function S2F = S2FunHandle(fun,sym)
     S2F.fun = fun;
+    if nargin == 1
+      S2F.s = specimenSymmetry;
+    else
+      S2F.s = sym;
+    end
   end
   
   function f = eval(S2F,v)

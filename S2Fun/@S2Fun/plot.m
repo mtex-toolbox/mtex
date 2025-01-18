@@ -18,7 +18,7 @@ function [h,ax] = plot(sF,varargin)
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 
-S2Proj = makeSphericalProjection(varargin{:});
+S2Proj = makeSphericalProjection(sF.how2plot,varargin{:});
 
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));

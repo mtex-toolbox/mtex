@@ -35,7 +35,7 @@ if nargin > 1
   sVF = ((sF.eval(v1)-sFN) .* t1 + (sF.eval(v2)-sFN) .* t2) ./ delta;
   
 else
-  sVF = S2VectorFieldHarmonic.quadrature(@(v) grad(sF,v));
+  sVF = S2VectorFieldHarmonic.quadrature(@(v) grad(sF,v),sF.s);
 end
 
 end

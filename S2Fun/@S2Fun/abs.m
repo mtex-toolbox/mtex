@@ -14,6 +14,6 @@ function sF = abs(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = S2FunHandle(@(v) abs(sF.eval(v)));
+sF = S2FunHandle(@(v) abs(sF.eval(v)),sF.s);
 
 end

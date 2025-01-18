@@ -15,13 +15,14 @@ function sF = rdivide(sF1, sF2)
 %
 
 if isnumeric(sF1)
-  sF = S2FunHandle(@(v) sF1./ sF2.eval(v));
+  sF = S2FunHandle(@(v) sF1./ sF2.eval(v),sF2.s);
   return
 end
 
 if isa(sF2,'S2FunHarmonic')
   f = @(v) sF1.eval(v)./sF2.eval(v);
   sF = S2FunHarmonic.quadrature(f);
+  sF.how2plot = sF1.how2plot;
   return
 end
 

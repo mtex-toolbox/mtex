@@ -1,6 +1,6 @@
 function sF = uminus(sF)
-% overloads |-sF|
+% overloads -sF
 
-sF = S2FunHandle(@(v) - sF.eval(v));
+sF = S2FunHandle(@(v) - sF.eval(v),sF.s);
 
 end

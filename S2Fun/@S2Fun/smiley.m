@@ -6,6 +6,11 @@ if nargin == 0 || ~isa(varargin{1},'vector3d')
   else
     f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v),varargin{:});
   end
+
+  f.how2plot = plottingConvention;
+  f.how2plot.outOfScreen = zvector;
+  f.how2plot.north = xvector;
+
   return;
 end
 

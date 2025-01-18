@@ -35,6 +35,7 @@ if isa(f,'function_handle')
   W = nodes.weights(:);
   nodes = nodes(:);
   values = f(nodes(:));
+  nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
 else
   nodes = f(:);
   values = varargin{1};
@@ -109,5 +110,7 @@ sF.bandwidth = min([bw,sF.bandwidth]);
 if check_option(varargin,'antipodal') || nodes.antipodal 
   sF = sF.even;
 end
+
+sF.how2plot = nodes.how2plot;
 
 end

@@ -12,6 +12,6 @@ function sF = rotate_outer(sF, rot)
 %  sF - @S2Fun
 %
 
-sF = S2FunHandle(@(v) sF.eval(inv(rot).*v));
+sF = S2FunHandle(@(v) sF.eval(inv(rot).*v),sF.s);
 
 end
