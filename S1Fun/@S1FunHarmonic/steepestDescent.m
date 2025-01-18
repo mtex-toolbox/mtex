@@ -1,12 +1,13 @@
-function [v,x] = steepestDescent(fun, varargin)
+function [x,v] = steepestDescent(fun, varargin)
 % calculates the minimum of a spherical function
-% Syntax
-%   [v,pos] = steepestDescent(sF) % the position where the minimum is attained
 %
-%   [v,pos] = steepestDescent(sF,'numLocal',5) % the 5 largest local minima
+% Syntax
+%   [pos,v] = steepestDescent(sF) % the position where the minimum is attained
+%
+%   [pos,v] = steepestDescent(sF,'numLocal',5) % the 5 largest local minima
 %
 %   % with all options
-%   [v,pos] = steepestDescent(sF, 'startingnodes')
+%   [pos,v] = steepestDescent(sF, 'startingnodes')
 %
 % Output
 %  v - double

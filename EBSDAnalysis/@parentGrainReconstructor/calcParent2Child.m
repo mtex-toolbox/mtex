@@ -62,7 +62,7 @@ if nnz(job.ebsdPrior.phaseId==job.parentPhaseId) > 0.01 * length(job.ebsdPrior) 
   
   if check_option(varargin,'peakFitting')    
     mdf = calcDensity(p2c(ind),'halfwidth',1*degree);
-    p2c0 = steepestDescent(mdf,p2c0);
+    p2c0 = steepestDescent(-mdf,p2c0);
   end
   
   p2cData = p2c0;

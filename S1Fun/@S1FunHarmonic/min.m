@@ -43,7 +43,7 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   
 elseif isscalar(fun)
 
-  [v, x] = steepestDescent(fun, varargin{:});
+  [x, v] = steepestDescent(fun, varargin{:});
   
 else
   s = size(fun);

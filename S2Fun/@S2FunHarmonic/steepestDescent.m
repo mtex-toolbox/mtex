@@ -1,12 +1,12 @@
-function [f,v] = steepestDescent(sF, v, varargin)
-% calculates the minimum of a spherical harminc
+function [v, f] = steepestDescent(sF, v, varargin)
+% calculates the minimum of a spherical harmonic
 % Syntax
-%   [v,pos] = steepestDescent(sF) % the position where the minimum is atained
+%   [pos, v] = steepestDescent(sF) % the position where the minimum is attained
 %
-%   [v,pos] = steepestDescent(sF,'numLocal',5) % the 5 largest local minima
+%   [pos, v] = steepestDescent(sF,'numLocal',5) % the 5 largest local minima
 %
 %   % with all options
-%   [v,pos] = steepestDescent(sF, 'startingnodes')
+%   [pos, v] = steepestDescent(sF, 'startingnodes')
 %
 % Output
 %  v - double
@@ -18,7 +18,7 @@ function [f,v] = steepestDescent(sF, v, varargin)
 %  startingNodes - @vector3d
 %  tolerance     - minimum distance between two peaks
 %  resolution    - minimum step size 
-%  maxStepSize   - maximm step size
+%  maxStepSize   - maximum step size
 
 % parameters
 res = get_option(varargin,'resolution',0.025*degree);
@@ -28,7 +28,7 @@ maxStepSize = get_option(varargin,'maxStepSize',inf);
 maxTravel = get_option(varargin,'maxTravel',inf);
 numLocal = get_option(varargin,'numLocal',1);
 
-% possible steplength
+% possible step length
 omega = 1.25.^(-30:1:10) * degree; %omega = 1.25.^(-30:1:12) * degree;
 omega(omega<res) = [];
 omega(omega>maxStepSize) = [];
@@ -42,7 +42,7 @@ gradsF = sF.grad;
 % actual steepest descent
 for k = 0:iterMax
 
-  % negatove gradient is search direction
+  % negative gradient is search direction
   d = -normalize(gradsF.eval(v),1);
   
   % search line

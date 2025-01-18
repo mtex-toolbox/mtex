@@ -21,22 +21,29 @@ function rot = exp(v,rot_ref,tS)
 % See also
 % Miller/exp orientation/log
 
-% norm of the vector is rotational angle
-omega = norm(v);
+if isa(rot_ref,'vector3d')
 
-alpha = zeros(size(omega));
-ind = omega ~=0;
-alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
+  rot = normalize(rot_ref + v);
 
-if nargin > 1 && isa(rot_ref,'rotation')
-  rot = rotation(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
 else
-  rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);  
-end
 
-if (nargin>2 && tS.isLeft) || ...
-    (isa(v,'SO3TangentVector') && v.tangentSpace.isLeft)
-  rot =  times(rot, rot_ref,1);
-elseif nargin>1
-  rot =  times(rot_ref,rot,0);
+  % norm of the vector is rotational angle
+  omega = norm(v);
+
+  alpha = zeros(size(omega));
+  ind = omega ~=0;
+  alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
+
+  if nargin > 1 && isa(rot_ref,'rotation')
+    rot = rotation(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
+  else
+    rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
+  end
+
+  if (nargin>2 && tS.isLeft) || ...
+      (isa(v,'SO3TangentVector') && v.tangentSpace.isLeft)
+    rot =  times(rot, rot_ref,1);
+  elseif nargin>1
+    rot =  times(rot_ref,rot,0);
+  end
 end

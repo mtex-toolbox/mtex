@@ -104,7 +104,7 @@ else % detect local or global minima
   if exist('sym','var') && isa(sym,'crystalSymmetry'), pos = Miller(pos, sym); end
 
   % perform local search
-  [value, pos] = steepestDescent(sF, pos, varargin{:}, 'maxTravel',2*res0);
+  [pos, value] = steepestDescent(sF, pos, varargin{:}, 'maxTravel',2*res0);
   
   % format output
   [value, I] = sort(value);
