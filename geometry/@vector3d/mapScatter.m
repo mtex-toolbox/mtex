@@ -10,7 +10,7 @@ function [h,ax] = mapScatter(v,varargin)
 
 % create a new plot
 mtexFig = newMtexFigure(varargin{:});
-[mP,isNew] = newMapPlot('parent',mtexFig.gca,varargin{:});
+[mP,isNew] = newMapPlot('parent',mtexFig.gca,varargin{:},v.how2plot);
 
 if nargin > 1 && isnumeric(varargin{1})
   data = varargin{1};

@@ -34,7 +34,7 @@ if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
-  pC, varargin{:});
+  varargin{:}, pC);
 
 if isempty(grains)
   if nargout==1, h = [];end

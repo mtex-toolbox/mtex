@@ -4,7 +4,7 @@ function h = plot(g3B,varargin)
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit','um','parent',mtexFig.gca,...
-  g3B.allV.how2plot, varargin{:});
+  varargin{:}, g3B.how2plot);
 
 if isempty(g3B)
   if nargout==1, h = [];end

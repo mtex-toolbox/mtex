@@ -21,7 +21,7 @@ function h = plot(grains,varargin)
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit','um','parent',mtexFig.gca,...
-  grains.allV.how2plot, varargin{:});
+  varargin{:}, grains.how2plot);
 
 if isempty(grains)
   if nargout==1, h = [];end

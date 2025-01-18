@@ -22,8 +22,7 @@ function h = plot(tP,varargin)
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:});
-
+mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:},tP.allV.how2plot);
 
 numTP = length(tP);
 
