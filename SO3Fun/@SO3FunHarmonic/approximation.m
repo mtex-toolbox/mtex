@@ -91,20 +91,13 @@ y = reshape(yy, [length(nodes) s(2:end)]);
 tol = get_option(varargin, 'tol', 1e-6);
 maxit = get_option(varargin, 'maxit', 200);
 
+% regularization options
+lambda = get_option(varargin,'regularization',0.0001);
+SobolevIndex = get_option(varargin,'SobolevIndex',2);
+regularize = lambda > 0;
+
 % decide bandwidth
 [bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
-
-% decide whether to use regularization
-regularize = 0; lambda=0; SobolevIndex=0;
-if check_option(varargin,'regularization')
-  regularize = 1;
-  lambda = get_option(varargin,'regularization',5e-7);
-  if ~isnumeric(lambda), lambda = 5e-7; end
-  SobolevIndex = get_option(varargin,'SobolevIndex',2);
-  warning(['The least squares approximation is regularized with ' ...
-    'regularization parameter lambda ', num2str(lambda), ...
-    ' and Sobolev norm of Sobolev index ', num2str(SobolevIndex),'.'])
-end
 
 % extract weights
 W = get_option(varargin, 'weights');
@@ -141,9 +134,6 @@ lsqrParameters = {flag,relres,iter,resvec,lsvec};
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft);     
 
 end
-
-
-
 
 function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex)
 
@@ -191,7 +181,7 @@ nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
 if ~isempty(bw)
   % degrees of freedom in frequency space 
   numFreq = deg2dim(bw+1)/nSym;
-  % TODO: False oversampling factor, see corrosions data example in paper (cubic symmetry)
+  % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
   oversamplingFactor = length(nodes)/numFreq;
   if oversamplingFactor<1.9 && ~check_option(varargin,'regularization')
     warning(['The oversampling factor in the approximation process is ', ...
