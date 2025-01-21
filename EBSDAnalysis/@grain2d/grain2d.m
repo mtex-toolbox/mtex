@@ -176,8 +176,11 @@ classdef grain2d < phaseList & dynProp
     end
 
     function V = get.V(grains)
-      error('implement this!')
-      V = grains.boundary.V;
+      
+      poly = grains.poly; %#ok<PROP>
+      iV = unique(cat(2,poly{:})); %#ok<PROP>
+      V = grains.boundary.allV(iV);
+
     end
 
     function N = get.N(grains)
