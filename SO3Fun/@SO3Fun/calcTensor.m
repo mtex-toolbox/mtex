@@ -14,7 +14,7 @@ function varargout = calcTensor(odf,T,varargin)
 %  T    - @tensor
 %
 % Options
-%  Voigt     - Boigt mean
+%  Voigt     - Voigt mean
 %  Reuss     - Reuss mean
 %  Hill      - Hill mean
 %  geometric - geometric mean

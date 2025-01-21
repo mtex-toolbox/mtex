@@ -35,13 +35,13 @@ if isPF % pole figure
      
   for k = 1:length(h)
 
-    % define fibres ->  max(length(h),length(r)) x resolution
+    % define fibers ->  max(length(h),length(r)) x resolution
     ori = orientation(fibre2quat(h(k),S2G(:),'resolution',res),SO3F.CS,SO3F.SS);
     
-    % evaluate ODF at these fibre
+    % evaluate ODF at these fibers
     f = SO3F.eval(ori);
 
-    % take the integral over the fibres
+    % take the integral over the fibers
     pdf = mean(reshape(f,size(ori)),2);
 
     % determine S2fun by quadrature
@@ -55,13 +55,13 @@ else % inverse pole figure
 
   for k = 1:length(r)
 
-    % define fibres ->  max(length(h),length(r)) x resolution
+    % define fibers ->  max(length(h),length(r)) x resolution
     ori = inv(fibre2quat(r(k),S2G(:),'resolution',res));
     
-    % evaluate ODF at these fibre
+    % evaluate ODF at these fiber
     f = SO3F.eval(ori);
 
-    % take the integral over the fibres
+    % take the integral over the fibers
     pdf = mean(reshape(f,size(ori)),2);
     S2F(k) = S2FunHarmonicSym.quadrature(S2G(:),pdf,'bandwidth',bw,'weights',S2G.weight(:),SO3F.CS); %#ok<AGROW>
 
@@ -69,7 +69,7 @@ else % inverse pole figure
   
 end
 
-% globaly set antipodal
+% globally set antipodal
 if check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
     (nargin > 1 && ~isempty(h) && h.antipodal) || ...
     (nargin > 2 && ~isempty(r) && r.antipodal)

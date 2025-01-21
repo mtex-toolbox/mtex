@@ -79,7 +79,7 @@ function SO3F = approximation(nodes, y, varargin)
 %  likelihood/mlm   - maximum likelihood estimate for spatial method
 %  spatial/spm      - spatial method (default, not specified)
 %  harmonic/fourier - harmonic method
-%  nothinning       - keep all approximation nodes, irrespective of the associated weight
+%  noThinning       - keep all approximation nodes, irrespective of the associated weight
 %  odf              - ensure that SO3FunRBF is a density
 %
 % See also
