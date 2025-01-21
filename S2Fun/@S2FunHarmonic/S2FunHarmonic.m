@@ -35,6 +35,7 @@ methods
       for l = 0:bw
         sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
       end
+      sF.s = getClass(varargin,'symmetry',specimenSymmetry);
       return
     end
 

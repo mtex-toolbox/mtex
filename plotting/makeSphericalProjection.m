@@ -28,7 +28,7 @@ end
 sR = getClass(varargin,'sphericalRegion',sR);
 
 % get plotting convention
-how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
 
 % check for simple options
 if check_option(varargin,{'complete','3d'})

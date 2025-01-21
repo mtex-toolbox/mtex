@@ -23,7 +23,7 @@ function v = plotS2Grid(varargin)
 sR = extractSphericalRegion(varargin{:});
 
 % get plotting convention
-pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+pC = getClass(varargin,'plottingConvention',plottingConvention.default);
 
 % get resolution
 res = get_option(varargin,'resolution',1*degree);

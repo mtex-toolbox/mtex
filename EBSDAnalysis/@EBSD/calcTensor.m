@@ -56,6 +56,8 @@ for p = ebsd.indexedPhasesId
  
 end
 
+TRot.how2plot = ebsd.how2plot;
+
 % compute the averages
 [varargout{1:nargout}] = mean(TRot,varargin{:});
  

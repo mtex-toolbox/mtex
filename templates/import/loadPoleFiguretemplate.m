@@ -14,7 +14,7 @@ SS = {specimen symmetry};
 
 % plotting convention
 how2plot = plottingConvention({zAxisDirection},{xAxisDirection});
-setMTEXpref('xyzPlotting',how2plot);
+how2plot.makeDefault;
 
 %% Specify File Names
 

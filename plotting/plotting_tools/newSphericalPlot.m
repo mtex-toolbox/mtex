@@ -9,7 +9,7 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 try
   how2plot = v.how2plot;
 catch ME
-  how2plot = getMTEXpref('xyzPlotting');
+  how2plot = plottingConvention.default;
 end
 how2plot = getClass(varargin,'plottingConvention',how2plot);
 

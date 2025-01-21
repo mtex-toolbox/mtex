@@ -48,7 +48,7 @@ classdef mapPlot < handle
         'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
       
-      mP.how2plot = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+      mP.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
       mP.how2plot.setView;
       setappdata(ax,'mapPlot',mP);
       

@@ -45,7 +45,7 @@ if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
     ~check_option(varargin,'points') && ...
     tmp.S3G.antipodal == check_option(varargin,'antipodal')
   S3G = tmp.S3G;
-  S3G.SS.how2plot = SS.how2plot;
+  S3G.SS = SS;
   return
 end
 

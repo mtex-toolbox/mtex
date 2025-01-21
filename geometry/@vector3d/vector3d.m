@@ -51,7 +51,7 @@ classdef vector3d < dynOption
     resolution % mean distance between the points on the sphere
     plottingConvention
   end
-  
+
   methods
     
     function v = vector3d(varargin)
@@ -64,6 +64,9 @@ classdef vector3d < dynOption
         v.z = varargin{3};
       
       elseif nargin == 0
+
+        v.how2plot = plottingConvention.default;
+
       elseif nargin <= 2
         if isa(varargin{1},'vector3d') % copy-constructor
           
@@ -89,6 +92,7 @@ classdef vector3d < dynOption
             v.y = xyz(2,:);
             v.z = xyz(3,:);
           end
+          v.how2plot = plottingConvention.default;
         else
           error('wrong type of argument');
         end       

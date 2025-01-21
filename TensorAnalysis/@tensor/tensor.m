@@ -10,6 +10,7 @@ classdef tensor < dynOption
   properties (Dependent = true)
     isSymmetric
     isSkewSymmetric
+    how2plot % plotting convention
   end
 
   methods
@@ -149,20 +150,20 @@ classdef tensor < dynOption
     end
 
     function isSym = get.isSymmetric(T)
-
       if T.rank == 2 || T.rank == 4
-
         isSym = norm(T - ctranspose(T,'skipCorrection')) ./ (1e-12+norm(T)) < 1e-6;
-      
       else
-        
         error('not yet implemented');
-        
-      end
-      
-
+      end     
     end
 
+    function pC = get.how2plot(T)
+      pC = T.CS.how2plot;
+    end
+
+    function T = set.how2plot(T,pC)
+      T.CS.how2plot = pC;
+    end
 
   end
   

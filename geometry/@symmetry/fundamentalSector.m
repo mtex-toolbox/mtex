@@ -26,7 +26,7 @@ end
 
 pC = getClass(varargin,'plottingConvention',sym.how2plot);
 if isempty(pC)
-  pC = getMTEXpref('xyzPlotting');
+  pC = plottingConvention.default;
 end
 
 % antipodal symmetry is nothing else then adding inversion to the symmetry

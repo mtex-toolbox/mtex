@@ -1,9 +1,10 @@
 classdef S2FunTri < S2Fun
-% a class represeneting a function on the sphere
+% a class representing a function on the sphere
   
   properties
     tri          % S2Triangulation
     values = []  % function values
+    s 
   end
   
   properties (Dependent = true)
@@ -13,7 +14,7 @@ classdef S2FunTri < S2Fun
   
   methods
     
-    function sF = S2FunTri(nodes,values)      
+    function sF = S2FunTri(nodes,values,s)      
       % initialize a spherical function
       
       if isa(nodes,'function_handle')
@@ -29,6 +30,14 @@ classdef S2FunTri < S2Fun
       end
       
       sF.values = values;
+
+      if nargin == 3
+        sF.s = s;
+      else
+        sF.s  = specimenSymmetry;
+        sF.s.how2plot = nodes.how2plot;
+      end
+
     end
     
     function v = get.vertices(S2F)

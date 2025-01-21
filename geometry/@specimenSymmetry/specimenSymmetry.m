@@ -43,7 +43,7 @@ end
       
       s = s@symmetry(id,rot);
       s.axes = axes;
-      s.how2plot = getMTEXpref("xyzPlotting");
+      s.how2plot = plottingConvention.default;
              
     end
     

@@ -77,7 +77,7 @@ axis(ax,'equal','vis3d','off');
 set(ax,'XDir','rev','YDir','rev',...
   'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
 
-pC = getClass(varargin,'plottingConvention',getMTEXpref('xyzPlotting'));
+pC = getClass(varargin,'plottingConvention',plottingConvention.default);
 pC.setView(ax);
 
 hold(ax,'off')

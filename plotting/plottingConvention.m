@@ -186,7 +186,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
     function makeDefault(pC)
-      setMTEXpref('xyzPlotting',pC);
+      plottingConvention.default(pC)
     end
 
     function plot(pC, varargin)
@@ -231,9 +231,14 @@ classdef plottingConvention < matlab.mixin.Copyable
       plot(grainsR,grainsR.meanOrientation,'micronbar','off');
       pC.outOfScreen = grainsR.N; pC.setView(gca)
     end
-
-    function pC = default
-      pC = getMTEXpref('xyzPlotting');
+    
+    function pC = default(pC)
+      persistent pCdefault
+      if nargin == 1
+        pCdefault =  pC;
+      else
+        pC = pCdefault;
+      end
     end
 
     function pC = default3D

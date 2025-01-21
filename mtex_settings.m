@@ -25,8 +25,8 @@ set(0,'DefaultLegendFontSize',fontSize);
 try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC> 
 
 % default plotting of specimen coordinates
-xyzPlot = plottingConvention(zvector,xvector);
-setMTEXpref('xyzPlotting',xyzPlot);
+pC = plottingConvention(zvector,xvector);
+pC.makeDefault;
 
 % default figure size, possible values are a factor between 0 and 1 or
 % 'tiny', 'small', 'normal', 'large', 'huge'

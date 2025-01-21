@@ -1,7 +1,5 @@
 function setMTEXpref(pref,value)
 
-group = getappdata(0,'mtex');
-
 switch lower(pref)
   case 'xaxisdirection'
     switch value
@@ -17,11 +15,15 @@ switch lower(pref)
       plotzOutOfPlane;
     end
   case 'fontsize'
+    group = getappdata(0,'mtex');
     set(0,'DefaultAxesFontSize',value);
     set(0,'DefaultLegendFontSize',value);
     group.innerPlotSpacing = 1.5*value;
+    setappdata(0,'mtex',group);
+  case 'xyzplotting'
+    value.makeDefault;
+  otherwise
+    group = getappdata(0,'mtex');
+    group.(pref) = value;
+    setappdata(0,'mtex',group);
 end
-
-group.(pref) = value;
-
-setappdata(0,'mtex',group);

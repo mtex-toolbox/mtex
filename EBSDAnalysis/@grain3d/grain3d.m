@@ -19,6 +19,7 @@ classdef grain3d < phaseList & dynProp
     meanOrientation
     numFaces  % number of boundary faces per grain
     extent
+    how2plot % plotting convention
   end
 
   methods
@@ -99,6 +100,14 @@ classdef grain3d < phaseList & dynProp
    
     function grains = set.allV(grains,V)
       grains.boundary.allV = V;
+    end
+
+    function pC = get.how2plot(grains)
+      pC = grains.allV.how2plot;
+    end
+
+    function grains = set.how2plot(grains,pC)
+      grains.allV.how2plot = pC;
     end
 
     function F = get.F(grains)
