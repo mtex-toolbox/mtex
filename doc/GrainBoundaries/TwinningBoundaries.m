@@ -86,18 +86,31 @@ round2Miller(mori_mean)
 % Bases on the output above we may now define the special orientation
 % relationship as
 
-twinning = orientation.map(Miller(0,1,-1,-1,CS),Miller(-1,1,0,-1,CS),...
-  Miller(1,0,-1,1,CS,'uvw'),Miller(1,0,-1,-1,CS,'uvw'))
+twinning = orientation.map(Miller(1,-1,0,1,CS),Miller(1,0,-1,-1,CS),...
+  Miller(0,1,-1,1,CS,'uvw'),Miller(1,-1,0,1,CS,'uvw'))
 
 %%
-% and observe that it is actually a rotation about axis (-1210) and angle
-% 86.3 degree
+% Considering the disorientation angle we observe that it is 86.3 degree
+% with respect to the axis (-1210)
 
 % the rotational axis
 round(twinning.axis)
 
 % the rotational angle
 twinning.angle / degree
+
+%% 
+% However, remembering that twinning refers to rotations about 180 degrees
+% we may ask for the symmetrically equivalent misorientation with the
+% maximum misorientation angle. This can be computed using the option
+% |'max'|
+
+angle(twinning,'max')/degree
+
+%% 
+% The corresponding rotational axis is 
+
+v = round(Miller(axis(twinning,'max'),'UVTW'))
 
 %%
 % Next, we check for each boundary segment whether it is a twinning boundary,
