@@ -1,177 +1,160 @@
-%% Definition of an SO3Fun
+%% Definition of Orientation Dependent Functions
 % 
-%%
-% In MTEX rotational functions $F\colon\mathcal{SO}(3)\to \mathbb C$ are
-% described by subclasses of the super class |@SO3Fun|. Hence we talk about
-% them as |SO3Funs|.
+%% Types of Orientation Dependent Functions
 %
-%% Overview on the subclasses of SO3Fun
+% In MTEX any rotation / orientation dependent function is a variable of
+% type @SO3Fun. Internally, MTEX supports different types of representing
+% such functions, e.g. by harmonic expansion or as superposition of kernel
+% functions which are implemented as subclasses of the super class @SO3Fun:
 %
-% Internally MTEX represents rotational functions in different ways:
+% || harmonic series expansion || <SO3FunHarmonicRepresentation.html |SO3FunHarmonic|> || Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
+% || superposition of radial functions || <RadialODFs.html SO3FunRBF> || arbitrary superposition || @SO3FunComposition| ||
+% || superposition of fibre elements || <FibreODFs.html SO3FunCBF> || explicit formula || @SO3FunHandle ||
 %
-% || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> || as Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
-% || as superposition of radial function || <RadialODFs.html SO3FunRBF> || as sum of different components || @SO3FunComposition ||
-% || as superposition of fibre elements || <FibreODFs.html SO3FunCBF> || explicitely given by a formula || @SO3FunHandle ||
+% All representations allow for nearly the same operations. Furthermore,
+% you can freely combine different representations within one expression.
+% The most general representation is |SO3FunHarmonic|, i.e. every
+% orientation dependent function |S3F| can be transformed into a harmonic
+% series expansion using the syntax |SO3FunHarmonic(S3F)|. That
+% transformation is known as <Quadrature.html quadrature>. Furthermore,
+% many operations are only possible or significantly faster in the harmonic
+% representation.
 %
-%% Generalizations of Rotational Functions
+% Additionally, MTEX supports orientation dependent vector fields by the
+% class <SO3FunVectorField.html SO3VectorField>.
 %
-% || rotational vector fields || <SO3FunVectorField.html SO3VectorField> ||
-% || radial rotational functions || <SO3Kernels.html SO3Kernel> ||
+% In the following, we quickly show to set up the different types of
+% orientation dependent functions.
 %
+%% By an explicit formula
 %
-%% 
-% All representations allow the same operations which are specified for
-% the abstract class |@SO3Fun|. In particular it is possible
-% to calculate with $\mathcal{SO}(3)$ functions as with ordinary numbers, 
-% i.e., you can add, multiply arbitrary functions, take the mean, 
-% integrate them or compute gradients, see <SO3FunOperations.html Operations>.
+% Assume we have an explicit formula or algorithm to compute for an
+% orientation a value. This could be the Taylor factor or any other
+% physical property. Here we simply use the rotational angle. In order to
+% a variable of type @SO3Fun representing the rotational angle in degree we
+% to do two steps.
 %
-%% Definition of SO3Fun's
-% Every rotational function has a left and a right symmetry, see
-% <SO3FunSymmetricFunctions.html symmetric Functions>. If we do not specify
-% symmetries by construction triclinic symmetry is used as default, i.e.
-% there are no symmetric rotations.
-%
-% Moreover |SO3Fun's| have the property |antipodal| which could be used to
-% set the function as antipodal.
-%
-%%
-%
-% *Definition of anonymous functions on SO(3)*
-%
-% Functions of class |@SO3FunHandle| are defined by an
+% *Step 1: Define the relationship as an anonymous functions on SO(3)*
+% 
+% The concept of anonymous functions in Matlab is explained
 % <https://de.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html
-% anonymous function>.
-% 
+% here>. In shorts it assigns a command / formula to a variable. 
 
 f = @(ori) angle(ori)./degree
-SO3F1 = SO3FunHandle(f)
 
+%%
+% *Step 2: Define a variable of type |SO3FunHandle|*
+%
+% Next, we use the anonymous function to define a variable of type
+% @SO3FunHandle.
+
+% define a crystal symmetry
 cs = crystalSymmetry('cubic');
-SO3F2 = SO3FunHandle(f,cs)
+
+% define the SO3Fun
+SO3F = SO3FunHandle(f,cs)
+
+% visualize the function
+plot(SO3F)
 
 %%
-% Now we are able to evaluate this |@SO3FunHandle|
-%
+% The plot shows the variation of the rotational angle with respect to the
+% Euler angles under consideration of the crystal symmetry.
 
-rot = rotation.rand(2);
-SO3F2.eval(rot)
+%% As Harmonic Expansion
+%
+% As mentioned above we can translate any orientation dependent function
+% into its harmonic series expansion. This is done by the command
+% @SO3FunHarmonic.
+
+% transform SO3F into a harmonic series expansion
+SO3F = SO3FunHarmonic(SO3F,'bandwidth',16)
+
+% visualize the function
+plot(SO3F)
 
 %%
-% And following that, it is easy to describe every |@SO3Fun| by an
-% |@SO3FunHandle|.
-%
+% The difference to the previous plot is the cut off error due to the fixed
+% bandwidth. Choosing a larger bandwidth would reduce the cut off error.
+% Currently, a bandwidth of up to 128 works reasonably fast in MTEX. We may
+% visualize the decay of the harmonic coefficients as follows
 
-SO3FunHandle(@(rot) SO3F1.eval(rot))
-
-%%
-%
-% *Definition of Harmonic Series on SO(3)*
-%
-% The class |@SO3FunHarmonic| described rotational functions by there 
-% harmonic series. MTEX is very fast by computing with this
-% |SO3FunHarmonic's|. Hence sometimes it might be a good idea to expand any
-% |@SO3Fun| in its harmonic series. Therefore only the command 
-% <SO3FunHarmonic.SO3FunHarmonic SO3FunHarmonic> is needed.
-% But note that this approximation may lead to inaccuracies.
-%
-
-SO3F3 = SO3FunHarmonic(SO3F2)
-
-%%
-% Moreover if MTEX computes with an |@SO3FunHarmonic| and any |@SO3Fun| it
-% is also expanded to an |@SO3FunHarmonic|. You can prevent that by 
-% transformation to a |@SO3FunHandle| like before.
-%
-%%
-% Generally |SO3FunHarmonic's| are defined by there Fourier coefficient 
-% vector.
-%
-
-fhat = rand(1e4,1);
-SO3F4 = SO3FunHarmonic(fhat,cs)
-
-%%
-% The |bandwidth| describes the maximal harmonic degree of the harmonic series
-% expansion.
-%
-% By the property |isReal| we are able to change between real and complex
-% valued |SO3FunHarmonic's|. Note that creation of an real valued
-% SO3FunHarmonic changes the Fourier coefficient vector. So it is not
-% possible to reconstruct the previous function. But computing with real
-% valued functions is faster.
-%
-
-SO3F4.eval(rot)
-
-SO3F4.isReal = 1
-SO3F4.eval(rot)
+close all
+plotSpektra(SO3F,'linewidth',2)
 
 %% 
 % For further information on the Fourier coefficients, the bandwidth and
 % other properties, see <SO3FunHarmonicRepresentation.html Harmonic
 % Representation of Rotational Functions>.
 %
+%% Superposition of Radial Functions
+%
+% Radial functions are functions that depend only on the distance to some
+% reference orientation. Typical examples are the de la Vallee Poussin
+% kernel, the Abel Poisson kernel, the Gauss Weierstrass kernel or the von
+% Mises Fisher kernel. The characterizing parameter of all these kernel
+% functions is their halfwidth, i.e., the angular distance at which the
+% function values is only half the function value at the center. 
+
+% define the kernel de la Vallee Poussin kernel with halfwidth 15 degree
+psi = SO3DeLaValleePoussinKernel('halfwidth',15*degree)
+
+close all
+plot(psi)
+
+
 %%
-%
-% *Definition of Radial Basis Functions*
-%
-% Radial Basis functions are of class |@SO3FunRBF|. They are defined as
-% superposition of weighted kernel functions |@SO3Kernel| centered on a set
-% of orientations |ori|
+% Using a large number of such kernel functions centered at different
+% orientations allows to approximate arbitrary orientation dependent
+% function. In MTEX superposition of radial functions naturally occur when
+% performing ODF reconstruction from pole figure data or kernel density
+% estimation from a small number of orientations, e.g.
 
-ori = orientation.rand(1e3,cs);
-w = ones(1e3,1);
-psi = SO3DeLaValleePoussinKernel
-SO3F5 = SO3FunRBF(ori,psi,w,1.2)
+% some random orientations
+ori = orientation.rand(200,cs);
 
+% perform kernel density estimation
+SO3F = calcDensity(ori,'kernel',psi)
 
 %%
-% For further information on them, see <RadialODFs.html |SO3FunRBF|>.
+% For further information see <RadialODFs.html |superposition of radial
+% function|>.
 %
-%%
+%% Superposition of Fiber Elements
 %
-% *Definition of fibre elements*
-%
-% They are described by the class |@SO3FunCBF|.
-% We construct them by a fibre on SO(3) together with some halfwidth.
-%
+% Similarly as with radial functions, we may also represent an orientation
+% dependent function also as a superposition of fibre components. The
+% typical case is that we want to model an fiber ODF. This can be done as
+% follows
 
+% define a fibre
 f = fibre.beta(cs)
-SO3F6 = SO3FunCBF(f,'halfwidth',10*degree)
+
+% define a density function along this fiber
+SO3F = SO3FunCBF(f,'halfwidth',10*degree)
+
+% plot it
+plot(SO3F)
 
 %%
-% For further information, see <FibreODFs.html SO3FunCBF>.
-
-%%
+% For further information, see <FibreODFs.html fiber ODFs>.
 %
-% *Definition of Bingham distributions*
+%% The Bingham Distribution
 %
-% Bingham distribution functions are described by the class 
-% |@SO3FunBingham|. One can construct them by
-%
+% A last family of orientation dependent functions are
+% <SO3FunBingham.SO3FunBingham.html Bingham distributions>. Those are
+% parameterized by a vector |U| of four orientations and a vector |kappa|
+% of four values specifying the length and direction the half axes of a
+% four dimensional ellipsoid. 
 
 kappa = [100 90 80 0];
-U = eye(4);
-SO3F7 = BinghamODF(kappa,U,cs)
+U = [orientation.byAxisAngle(xvector,[0,180]*degree,cs),...
+  orientation.byAxisAngle([yvector,zvector],180*degree,cs)]
+  
+SO3F = BinghamODF(kappa,U)
+
+plot(SO3F)
 
 %%
 % For further information, see <BinghamODFs.html SO3FunBingham>.
 %
-%%
-%
-% *Sum of different subclasses of SO3Fun*
-%
-% By adding some subclasses of |@SO3Fun| we can save the sum by storing the
-% single components itself.
-%
-
-SO3F2 + SO3FunComposition(SO3F4) + SO3F5 + SO3F6 + SO3F7
-
-%%
-% Note that the sum of any |@SO3Fun| with an |@SO3FunHarmonic| yields an
-% |@SO3FunHarmonic|. Hence you need to add an |@SO3FunHarmonic| in exactly 
-% that way. Otherwise the sum is expanded to an |@SO3FunHarmonic| in every
-% summation step.
-
-

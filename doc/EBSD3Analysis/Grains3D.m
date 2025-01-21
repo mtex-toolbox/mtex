@@ -12,7 +12,7 @@ fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
 grains = grain3d.load(fname);
 
 % for triangulated data sets it may be useful to plot them without lines
-plot(grains,grains.meanOrientation,'LineStyle','none')
+plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off')
 
 % use a nice plotting convention
 how2plot = plottingConvention.default3D;
