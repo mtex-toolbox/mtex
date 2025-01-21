@@ -27,8 +27,8 @@ classdef EBSD3square < EBSD3
   
   methods
       
-    function ebsd = EBSD3square(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
-      % generate a rectangular EBSD object
+    function ebsd = EBSD3square(pos,rot,phases,CSList,dxyz,varargin)
+      % generate a EBSD object
       %
       % Syntax 
       %   EBSD3square(rot,phases,CSList)
@@ -39,22 +39,18 @@ classdef EBSD3square < EBSD3
       
       ebsd.pos = pos;
       ebsd.rotations = rotation(rot);
-      ebsd.phaseId = phaseId(:);
-      ebsd.phaseMap = phaseMap;
-      ebsd.CSList = CSList;
-      ebsd.id = 1:prod(sGrid);
+      ebsd = ebsd.init(phases,CSList);
+      ebsd.id = (1:numel(phases)).';
       
       % extract additional properties
-      ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.prop = get_option(varargin,'prop',struct);
       ebsd.opt = get_option(varargin,'opt',struct);
       
       % correctly reshape all properties
       ebsd = reshape(ebsd,sGrid);
                   
       % get unit cell
-      ebsd.dx = dxyz(1);
-      ebsd.dy = dxyz(2);
-      ebsd.dz = dxyz(3);
+      ebsd.dx = dxyz(1); ebsd.dy = dxyz(2); ebsd.dz = dxyz(3);
 
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
