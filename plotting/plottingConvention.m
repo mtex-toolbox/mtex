@@ -186,7 +186,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
     function makeDefault(pC)
-      plottingConvention.default(pC)
+      plottingConvention.default(pC);
     end
 
     function plot(pC, varargin)
@@ -237,6 +237,7 @@ classdef plottingConvention < matlab.mixin.Copyable
       if nargin == 1
         pCdefault =  pC;
       else
+        if isempty(pCdefault), pCdefault = plottingConvention; end
         pC = pCdefault;
       end
     end
