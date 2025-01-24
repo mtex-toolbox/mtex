@@ -31,11 +31,11 @@ U     = eye(4);          % orthogonal matrix
 odf = BinghamODF(kappa,U,cs)
 
 %%
-%
+% Lets visualize the ODF as pole figures
 
 h = [Miller(0,0,1,cs) Miller(1,0,0,cs) Miller(1,1,1,cs)];
 plotzOutOfPlane
-plotPDF(odf,h,'antipodal','silent');
+plotPDF(odf,h,'antipodal','silent','layout',[1 3]);
 
 %%
 %

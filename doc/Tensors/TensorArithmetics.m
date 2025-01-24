@@ -1,4 +1,4 @@
-%% Tensor Arithmetics
+%% Tensor Arithmetic
 %
 % MTEX offers powerful functionalities to calculate with tensors and lists
 % of tensors without the need of many nested loops. 

@@ -45,9 +45,9 @@ plot(min(2*SO3F1,SO3F2),'sigma');
 % We also can work with the pointwise <SO3Fun.conj.html |conj|>, 
 % <SO3Fun.exp.html |exp|> or <SO3Fun.log.html |log|> of an |SO3Fun|.
 %
-% For a given function $f\colon SO(3) \to \mathbb C$ we get a second function
-% $g\colon SO(3) \to \mathbb C$ where $g( {\bf R}) = f( {\bf R}^{-1})$ by the method 
-% <SO3Fun.inv.html |inv|>, i.e.
+% For a given function $f\colon SO(3) \to \mathbb C$ we get a second
+% function $g\colon SO(3) \to \mathbb C$ where $g( {\bf R}) = f( {\bf
+% R}^{-1})$ by the method <SO3Fun.inv.html |inv|>, i.e.
 
 g = inv(SO3F1)
 
@@ -66,9 +66,8 @@ g.eval(inv(R))
 % * if a rotational function and a single number are passed as arguments a
 % rotational function defined as the pointwise min/max between the function
 % and the value is computed
-
-% * if additionally the option 'numLocal' is provided the certain number of
-% local minima / maxima is computed
+% * if additionally the option |'numLocal'| is provided the certain number
+% of local minima / maxima is computed
 
 plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
 
@@ -80,8 +79,8 @@ annotate(maxnodes)
 % The surface integral of a spherical function can be computed by either
 % <SO3Fun.mean.html |mean|> or <SO3Fun.sum.html |sum|>. The difference
 % between both commands is that <SO3Fun.sum.html |sum|> normalizes the
-% integral of the identical function on the rotation group to $8 \pi^2$, the command
-% <SO3Fun.mean.html |mean|> normalizes it to one. Compare
+% integral of the identical function on the rotation group to $8 \pi^2$,
+% the command <SO3Fun.mean.html |mean|> normalizes it to one. Compare
 
 mean(SO3F1)
 
@@ -104,8 +103,8 @@ norm(SO3F1)
 
 %% Differentiation
 % The gradient of a $SO(3)$ function in a specific point can be described
-% by a <vector3d.vector3d.html three-dimensional vector> which
-% can be computed by the command <SO3Fun.grad.html |grad|>
+% by a <vector3d.vector3d.html three-dimensional vector> which can be
+% computed by the command <SO3Fun.grad.html |grad|>
 
 grad(SO3F1,R)
 
@@ -120,16 +119,16 @@ G = grad(SO3F1)
 % plot the gradient on top of the function
 plot(SO3F1,'sigma')
 hold on
-plot(G,'color','black','linewidth',2,'resolution',5*degree)
+plot(G,'color','black','linewidth',1,'resolution',5*degree)
 hold off
 
 %%
 % We observe long arrows at the positions of big changes in intensity and
 % almost invisible arrows in regions of constant intensity.
 %
-%% Rotating rotational functions
-% Rotating a $SO(3)$ function works with the command <SO3Fun.rotate.html
-% |rotate|>
+%% Rotating orientation dependent functions
+% Rotating an orientation dependent function works with the command
+% <SO3Fun.rotate.html |rotate|>
 
 % define a rotation
 rot = rotation.byEuler(30*degree,0*degree,90*degree,'Bunge');

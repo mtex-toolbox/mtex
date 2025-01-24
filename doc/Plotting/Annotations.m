@@ -22,8 +22,8 @@ mtexColorbar
 %%
 % Executing the command <mtexColorbar.html |mtexColorbar|> twice deletes
 % the colorbar. You can also have a horizontal colorbar at the bottom of
-% the figure by setting the option |location| to |southOutside|. Further,
-% we can set a title to the colorbar to describe the unit.
+% the figure by setting the option |'location'| to |'southOutside'|.
+% Further, we can set a title to the colorbar to describe the unit.
 
 % delete vertical colorbar
 mtexColorbar
@@ -101,7 +101,7 @@ annotate(mod2,...
 %
 % If you have multiple data in one plot then it makes sense to add a legend
 % saying which color / symbol correspond to which data set. The key is to
-% use the option *DisplayName* available for all plotting commands to
+% use the option |'DisplayName'| available for all plotting commands to
 % include the resulting graphical object into the legend and give it a
 % name.
 
@@ -131,9 +131,10 @@ legend show
 % Adding a Spherical Grid
 %
 % Sometimes it is useful to have a spherical grid in your plot to make the
-% projection easier to understand or if you need to know some angular relationships.
-% For this reason, there is the option *grid*, which enables the grid and the
-% option *grid_res*, which allows to specify the spacing of the grid lines.
+% projection easier to understand or if you need to know some angular
+% relationships. For this reason, there is the option |'grid'|, which
+% enables the grid and the option |'grid_res'|, which allows to specify the
+% spacing of the grid lines.
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(0,0,1,cs)],'grid','grid_res',15*degree,'antipodal');
 mtexColorMap white2black

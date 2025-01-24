@@ -155,7 +155,7 @@ drawNow(gcm,'final')
 %
 % For symmetries other then hexagonal or cubic one would like to have
 % more complicated crystal shape representing the true appearance. To this
-% end one has to include more faces into the representation and carefuly
+% end one has to include more faces into the representation and carefully
 % adjust their distance to the origin.
 %
 %% 
