@@ -18,7 +18,7 @@ switch lower(pref)
     group = getappdata(0,'mtex');
     set(0,'DefaultAxesFontSize',value);
     set(0,'DefaultLegendFontSize',value);
-    group.fontSize = value;
+    group.FontSize = value;
     group.innerPlotSpacing = 1.5*value;
     setappdata(0,'mtex',group);
   case 'xyzplotting'
