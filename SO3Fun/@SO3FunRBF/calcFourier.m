@@ -2,9 +2,7 @@ function f_hat = calcFourier(SO3F,varargin)
 % compute harmonic coefficients of SO3Fun
 %
 % Syntax
-%
 %   f_hat = calcFourier(SO3F)
-%
 %   f_hat = calcFourier(SO3F,'bandwidth',L)
 %
 % Input
