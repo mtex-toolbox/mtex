@@ -12,7 +12,6 @@ odf = unimodalODF(axis2quat(vector3d(2,-3,-5),60*degree),cs);
 fodf = calcFourier(odf,'bandwidth',32);
 fodf = FourierODF(fodf);
 
-%fourier(fodf,'order',1)
 
 %% plotPDF
 
@@ -49,7 +48,6 @@ odf = fibreODF(Miller(1,3,2,cs),vector3d(4,2,1),'halfwidth',20*degree)
 fodf = calcFourier(odf,'bandwidth',32); 
 fodf = FourierODF(fodf);
 
-%fourier(fodf,'order',2)
 
 %% plotPDF
 
