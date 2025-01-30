@@ -1,5 +1,5 @@
-function SO3F = approximation(nodes, y, varargin)
-% approximate an SO3FunRBF by given function values at given nodes
+function SO3F = approximate(nodes, y, varargin)
+% Approximate an SO3FunRBF by given function values at given nodes
 % w.r.t. some noise as described by [1].
 %
 % For $M$ given orientations $R_i$ and corresponding function values $y_i$
@@ -14,7 +14,7 @@ function SO3F = approximation(nodes, y, varargin)
 % with specific kernel $\psi$ centered at $N$ nodes weighted by $w_j,\sum_{j}^{N}w_{j}=1$
 % as described by [1].
 %
-% We can also use the approximation command to approximate an SO3FunRBF
+% We can also use the approximate command to approximate an SO3FunRBF
 % from some given SO3Fun.
 %
 % Two methods are implemented, referred to as spatial method and harmonic
@@ -45,17 +45,19 @@ function SO3F = approximation(nodes, y, varargin)
 % https://doi.org/10.1007/s10853-016-0496-1
 %
 % Syntax
-%   SO3F = SO3FunRBF.approximation(SO3Grid, f)
-%   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'resolution',5*degree)
-%   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'kernel', psi)
-%   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'density')
-%   SO3F = SO3FunRBF.approximation(SO3Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT)
-%   SO3F = SO3FunRBF.approximation(SO3Fun,'kernel',psi)
+%   SO3F = SO3FunRBF.approximate(nodes,y)
+%   SO3F = SO3FunRBF.approximate(nodes,y, 'resolution',5*degree)
+%   SO3F = SO3FunRBF.approximate(nodes,y, 'kernel', psi)
+%   SO3F = SO3FunRBF.approximate(nodes,y, 'density')
+%   SO3F = SO3FunRBF.approximate(nodes,y, 'bandwidth', 48, 'tol', TOL, 'maxit', MAXIT)
+%   SO3F = SO3FunRBF.approximate(odf,'kernel',psi)
 %
 % Input
-%  nodes   - rotational grid @SO3Grid, @orientation, @rotation or harmonic
+%  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic
 %            coefficents
-%  y       - function values on the grid (maybe multidimensional) or empty
+%  y     - function values on the grid (maybe multidimensional) or empty
+%  odf   - @SO3Fun
+%  psi   - @SO3Kernel
 %
 % Output
 %  SO3F - @SO3FunRBF
@@ -83,7 +85,7 @@ function SO3F = approximation(nodes, y, varargin)
 %  odf              - ensure that SO3FunRBF is a density
 %
 % See also
-% SO3Fun/interpolate SO3FunHarmonic/approximation WignerD
+% SO3Fun/interpolate SO3FunHarmonic/approximate WignerD SO3FunRBF
 
 
 % Tests
@@ -147,7 +149,7 @@ else
 
 end
 
-% Note: In case of interpolation we may construct the uniform portion first
+% Note: In case of exact interpolation we may construct the uniform portion first
 %       This does not make sense in case of approximation of noisy data
 % y = y(:);
 % m = min(y);

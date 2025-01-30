@@ -18,6 +18,6 @@ function SO3F = interpolate(ori,values,varargin)
 %  SO3F - @SO3FunRBF
 %
 % See also
-% SO3FunRBF.approximation
+% SO3FunRBF.approximate
 
-SO3F = SO3FunRBF.approximation(ori,values,'exact',varargin{:});
+SO3F = SO3FunRBF.approximate(ori,values,'exact',varargin{:});

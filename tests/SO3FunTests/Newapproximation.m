@@ -10,7 +10,7 @@ q = orientation.rand(1e5,G.CS);
 % q = G.discreteSample(6e4);
 f = G.eval(q);
 
-F2 = SO3FunHarmonic.approximation(q,f,'tol',1e-6,'maxit',50,'bandwidth',25)
+F2 = SO3FunHarmonic.approximate(q,f,'tol',1e-6,'maxit',50,'bandwidth',25)
 figure(2)
 plot(F2)
 

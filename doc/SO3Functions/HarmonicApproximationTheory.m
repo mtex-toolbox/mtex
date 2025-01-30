@@ -39,11 +39,11 @@ plotSection(ori, S.values,'all');
 %
 %%
 % In MTEX interpolation is done by the 
-% <SO3FunRBF.approximation |SO3FunRBF.approximation|> command
+% <SO3FunRBF.approximate |SO3FunRBF.approximate|> command
 % of class <SO3FunRBF.SO3FunRBF |SO3FunRBF|> with the flag |'exact'|.
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
-SO3F = SO3FunRBF.approximation(ori, S.values,'exact','kernel',psi);
+SO3F = SO3FunRBF.approximate(ori, S.values,'exact','kernel',psi);
 plot(SO3F)
 
 %% 
@@ -85,10 +85,10 @@ plotSection(ori,val,'all')
 %
 % The first is to approximate the data by a orientation dependent function
 % of class |@SO3FunRBF|. Similarly as before we use the command 
-% <SO3FunRBF.approximation |SO3FunRBF.approximation|> without the 
+% <SO3FunRBF.approximate |SO3FunRBF.approximate|> without the 
 % option |'exact'|.
 
-SO3F1 = SO3FunRBF.approximation(ori, val,'kernel',psi);
+SO3F1 = SO3FunRBF.approximate(ori, val,'kernel',psi);
 plot(SO3F1)
 
 %%
@@ -106,7 +106,7 @@ norm(eval(SO3F1, ori) - S.values) / norm(S.values)
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-    SO3Fhw = SO3FunRBF.approximation(ori,val,'halfwidth',hw(k)*degree,'odf');
+    SO3Fhw = SO3FunRBF.approximate(ori,val,'halfwidth',hw(k)*degree,'odf');
     err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
 end
 
@@ -136,10 +136,10 @@ ylabel('relative error')
 % shrinks the error in the nodes zero. But it yields a smoother approximation. 
 %
 % In MTEX this can be achieved by the
-% <SO3FunHarmonic.approximation |SO3FunHarmonic.approximation|> command of the class
+% <SO3FunHarmonic.approximate |SO3FunHarmonic.approximate|> command of the class
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 
-SO3F2 = SO3FunHarmonic.approximation(ori, val,'bandwidth',32)
+SO3F2 = SO3FunHarmonic.approximate(ori, val,'bandwidth',32)
 plot(SO3F2)
 
 %%
@@ -154,7 +154,7 @@ norm(eval(SO3F2, ori) - S.values) / norm(S.values)
 % values anyways.
 %
 %%
-% The strategy underlying the <SO3FunHarmonic.approximation |approximation|>-command
+% The strategy underlying the <SO3FunHarmonic.approximate |approximate|>-command
 % to obtain such an approximation works via Wigner-D functions
 % (<SO3FunHarmonicRepresentation.html SO3FunHarmonicSeries Basics of rotational harmonics>). 
 % For that, we seek for so-called Fourier coefficients 
@@ -213,12 +213,12 @@ norm(eval(SO3F2, ori) - S.values) / norm(S.values)
 %
 %%
 % We can use regularization by adding the option |'regularization'| to the
-% command <SO3FunHarmonic.approximation |SO3FunHarmonic.approximation|> of the class
+% command <SO3FunHarmonic.approximate |SO3FunHarmonic.approximate|> of the class
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 
 lambda = 5e-7;
 s = 2;
-SO3F3 = SO3FunHarmonic.approximation(ori,val,'bandwidth',32,'regularization',lambda,'SobolevIndex',s)
+SO3F3 = SO3FunHarmonic.approximate(ori,val,'bandwidth',32,'regularization',lambda,'SobolevIndex',s)
 plot(SO3F3)
 
 %%
@@ -252,9 +252,9 @@ odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 %%
 % Now we want to compute (expand) the corresponding |@SO3FunHarmonic|.
 % If our odf is an |@SO3Fun| or |@function_handle| we can use the command
-% <SO3FunHarmonic.approximation.html SO3FunHarmonic.approximation>
+% <SO3FunHarmonic.approximate.html SO3FunHarmonic.approximate>
 
-F = SO3FunHarmonic.approximation(odf)
+F = SO3FunHarmonic.approximate(odf)
 
 %%
 % Alternatively we can directly use the constructor, i.e. we use the command 
@@ -333,7 +333,7 @@ calcError(F,F2)
 % It is also possible to convert the harmonic function back to a kernel
 % density representation
 
-F3 = SO3FunRBF.approximation(F,'halfwidth',5*degree,'approxresolution',5*degree);
+F3 = SO3FunRBF.approximate(F,'halfwidth',5*degree,'approxresolution',5*degree);
 
 calcError(odf,F)
 calcError(odf,F3)

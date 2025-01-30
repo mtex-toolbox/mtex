@@ -1,5 +1,5 @@
-function [SO3F,lsqrParameters] = approximation(nodes, y, varargin)
-% approximate an SO3FunHarmonic by given function values at given nodes 
+function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
+% Approximate an SO3FunHarmonic by given function values at given nodes 
 % w.r.t. some noise.
 %
 % For $M$ given orientations $R_i$ and corresponding function values $y_i$ 
@@ -24,30 +24,32 @@ function [SO3F,lsqrParameters] = approximation(nodes, y, varargin)
 % from some given SO3Fun by evaluating on some specific grid and doing quadrature.
 %
 % Syntax
-%   SO3F = SO3FunHarmonic.approximation(SO3Grid, f)
-%   SO3F = SO3FunHarmonic.approximation(SO3Grid, f,'constantWeights')
-%   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
-%   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'regularization')
-%   SO3F = SO3FunHarmonic.approximation(SO3Grid, f, 'regularization',0.1,'SobolevIndex',1)
-%   SO3F = SO3FunHarmonic.approximation(F1)  % do quadrature
+%   SO3F = SO3FunHarmonic.approximate(nodes,y)
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'equalWeights')
+%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
+%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'regularization')
+%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'regularization',0.1,'SobolevIndex',1)
+%   SO3F = SO3FunHarmonic.approximate(odf)  % do quadrature
 %
 % Input
-%  SO3Grid - rotational grid
-%  f       - function values on the grid (maybe multidimensional)
-%  F1      - @SO3Fun
+%  nodes - rotational grid
+%  y     - function values on the grid (maybe multidimensional)
+%  odf   - @SO3Fun
 %
 % Options
-%  constantWeights  - uses constant normalized weights (for example if the nodes are constructed by equispacedSO3Grid)
-%  weights          - weight w_n for the nodes (default: Voronoi weights)
+%  equalWeights - uses equal weights (for example if the nodes are constructed by equispacedSO3Grid)
+%  weights      - weight w_n for the nodes (default: Voronoi weights)
 %  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
 %  tol              - tolerance for lsqr
 %  maxit            - maximum number of iterations for lsqr
 %  regularization   - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F (there is given a regularization constant)
 %  SobolevIndex     - for regularization (default = 2)
 %
+% flags
+%
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/quadrature
-% SO3VectorFieldHarmonic/approximation
+% SO3VectorFieldHarmonic/approximate
 
 if isa(nodes,'SO3Fun')
   if nargin>1, varargin = [y,varargin]; end
@@ -97,11 +99,11 @@ SobolevIndex = get_option(varargin,'SobolevIndex',2);
 regularize = lambda > 0;
 
 % decide bandwidth
-[bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
+bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
 
 % extract weights
 W = get_option(varargin, 'weights');
-if check_option(varargin,'constantWeights')
+if check_option(varargin,'meanWeights')
   W = 1/length(nodes);
 elseif isempty(W)
   W = calcVoronoiVolume(nodes);
@@ -131,7 +133,9 @@ lsqrParameters = {flag,relres,iter,resvec,lsvec};
 % SO3FunHarmonic.quadrature(1,'killPlan','nfsoft')
 % SO3FunHarmonic(1).eval(1,'killPlan','nfsoft')
 
-SO3F = SO3FunHarmonic(fhat,SRight,SLeft);     
+SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
+
+% TODO: antipodal is lost
 
 end
 
@@ -171,8 +175,8 @@ end
 
 
 % We have to decide which bandwidth we are using dependent from the
-% oversampling factor and whether we are doing regularization or not.
-function [bw,varargin] = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
+% oversampling factor.
+function bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
 
 bw = get_option(varargin,'bandwidth');
 nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
@@ -183,10 +187,10 @@ if ~isempty(bw)
   numFreq = deg2dim(bw+1)/nSym;
   % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
   oversamplingFactor = length(nodes)/numFreq;
-  if oversamplingFactor<1.9 && ~check_option(varargin,'regularization')
+  if oversamplingFactor<1.9 && get_option(varargin,'regularization',1)==0
     warning(['The oversampling factor in the approximation process is ', ...
       num2str(oversamplingFactor),'. This could lead to a bad approximation. ' ...
-      'You may should use the option ''regularization'' in the option list of the ' ...
+      'You may should not set the regularization parameter to 0 in the ' ...
       'approximation method.'])
   end
   return
@@ -195,13 +199,6 @@ end
 % Choose an fixed oversampling factor of 2
 oversamplingFactor = 2;
 bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
-
-% TODO: Choose higher bandwidth, ov=0.5 and regularization if bw is to small
-if bw < 25
-  oversamplingFactor = 0.5;
-  bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
-  varargin{end+1} = 'regularization';
-end
 
 bw = min(bw,getMTEXpref('maxSO3Bandwidth'));
 

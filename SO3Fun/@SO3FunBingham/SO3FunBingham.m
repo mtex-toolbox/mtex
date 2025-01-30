@@ -85,7 +85,8 @@ classdef SO3FunBingham < SO3Fun
   end
 
   methods (Static = true)
-  
+    
+    SO3F = approximate(ori, varargin);
     SO3F = example(varargin)
     
   end

@@ -47,7 +47,7 @@ classdef SO3FunRBF < SO3Fun
         if nargin>=4, varargin = [c0,varargin]; end
         if nargin>=3, varargin = [weights,varargin]; end
         if nargin>=2, varargin = [psi,varargin]; end
-        SO3F = SO3FunRBF.approximation(center,varargin{:});
+        SO3F = SO3FunRBF.approximate(center,varargin{:});
         return
       end
       

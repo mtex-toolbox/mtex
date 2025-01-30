@@ -1,8 +1,8 @@
-function SO3VF = approximation(nodes, values, varargin)
+function SO3VF = approximate(nodes, values, varargin)
 %
 % Syntax
-%   SO3VF = SO3VectorFieldHarmonic.approximation(nodes, values)
-%   SO3VF = SO3VectorFieldHarmonic.approximation(nodes, values, 'bandwidth', bw)
+%   SO3VF = SO3VectorFieldHarmonic.approximate(nodes, values)
+%   SO3VF = SO3VectorFieldHarmonic.approximate(nodes, values, 'bandwidth', bw)
 %
 % Input
 %   nodes - @rotation
@@ -15,7 +15,7 @@ function SO3VF = approximation(nodes, values, varargin)
 %   bandwidth - maximal degree of the Wigner-D functions (default: 128)
 %
 % See also
-% SO3FunHarmonic/approximation SO3VectorFieldHarmonic
+% SO3FunHarmonic/approximate SO3VectorFieldHarmonic
 
 
 if isa(values,'SO3TangentVector') 
@@ -41,7 +41,7 @@ else
   nodes.SS = specimenSymmetry;
 end
 
-SO3F = SO3FunHarmonic.approximation(nodes(:),values.xyz,varargin{:});
+SO3F = SO3FunHarmonic.approximate(nodes(:),values.xyz,varargin{:});
 SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
 
 end

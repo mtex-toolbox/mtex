@@ -35,15 +35,15 @@ plotSection(ori, S.values,'all','sigma');
 %% Approximation by Harmonic Expansion
 %
 % An approximation by harmonic expansion is computed by the command
-% <SO3FunHarmonic.approximation.html |SO3FunHarmonic.approximation|> 
+% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> 
 
 % SO3F = SO3Fun.interpolate(ori,S.values,'harmonic')
-SO3F = SO3FunHarmonic.approximation(ori,S.values)
+SO3F = SO3FunHarmonic.approximate(ori,S.values)
 plot(SO3F,'sigma')
 
 
 %%
-% Note that |SO3FunHarmonic.approximation| does not aim at replicating the
+% Note that |SO3FunHarmonic.approximate| does not aim at replicating the
 % values exactly. In fact the relative error between given data and the
 % function approximation is
 
@@ -54,7 +54,7 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 % regularization. The default regularization parameter is $\lambda =
 % 0.0001$. We can switch off regularization by setting this value to $0$.
 
-SO3F = SO3FunHarmonic.approximation(ori,S.values,'regularization',0)
+SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -70,7 +70,7 @@ plot(SO3F,'sigma')
 %
 % An alternative way of regularization is to reduce the harmonic bandwidth
 
-SO3F = SO3FunHarmonic.approximation(ori,S.values,'bandwidth',16)
+SO3F = SO3FunHarmonic.approximate(ori,S.values,'bandwidth',16)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -91,11 +91,11 @@ min(SO3F)
 %% Approximation by Radial Functions 
 %
 % The command for approximating orientation dependent data by a
-% superposition of radial functions is <SO3FunRBF.approximation.html
-% |SO3FunRBF.approximation|>. 
+% superposition of radial functions is <SO3FunRBF.approximate.html
+% |SO3FunRBF.approximate|>. 
 
 % SO3F = SO3Fun.interpolate(ori,val,'odf');
-SO3F = SO3FunRBF.approximation(ori,S.values,'odf');
+SO3F = SO3FunRBF.approximate(ori,S.values,'odf');
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -116,7 +116,7 @@ mean(SO3F)
 % large halfwidth results in a very smooth approximating function whereas a
 % very small halfwidth may result in overfitting
 
-SO3F = SO3FunRBF.approximation(ori,S.values,'halfwidth',2.5*degree,'odf');
+SO3F = SO3FunRBF.approximate(ori,S.values,'halfwidth',2.5*degree,'odf');
 
 plot(SO3F,'sigma')
 
@@ -129,7 +129,7 @@ plot(SO3F,'sigma')
 % If we omit the option |'odf'| the resulting function may have negative
 % values similar to the harmonic setting
 
-SO3F = SO3FunRBF.approximation(ori,S.values);
+SO3F = SO3FunRBF.approximate(ori,S.values);
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -142,16 +142,15 @@ plot(SO3F,'sigma')
 % symmetry. TODO!
 
 cs = crystalSymmetry("1");
-ori = equispacedSO3Grid(cs)
 
-odf = fibreODF(fibre.rand(ori.CS))
+odf = fibreODF(fibre.rand(cs))
 
 figure(1)
 plot(odf)
 
 %%
 
-SO3F = calcBinghamODF(ori,'weights',odf.eval(ori))
+SO3F = SO3FunBingham.approximate(odf)
 
 figure(2)
 plot(SO3F)

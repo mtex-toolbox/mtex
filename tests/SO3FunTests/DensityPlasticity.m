@@ -80,10 +80,10 @@ a2 = a2(:); b2 = b2(:);
 y1 = y(:).*(a1./b1);
 y2 = y(:).*(a2./b2);
 
-fb1 = SO3FunHarmonic.approximation(t2,y1,'bandwidth',35);
+fb1 = SO3FunHarmonic.approximate(t2,y1,'bandwidth',35);
 figure(2)
 plot(fb1)
-fb2 = SO3FunHarmonic.approximation(t2,y2,'bandwidth',35);
+fb2 = SO3FunHarmonic.approximate(t2,y2,'bandwidth',35);
 figure(3)
 plot(fb2)
 
