@@ -3,25 +3,30 @@ function SO3F = approximate(nodes,y,varargin)
 % via kernel density estimation
 %
 % Syntax
-%   SO3F = SO3FunBingham.approximate(nodes, y)
 %   SO3F = SO3FunBingham.approximate(odf)
 %   SO3F = SO3FunBingham.approximate(odf,'resolution',5*degree)
-%   SO3F = SO3FunBingham.approximate(odf,nodes)
+%   SO3F = SO3FunBingham.approximate(odf,'SO3Grid',S3G)
+%   SO3F = SO3FunBingham.approximate(nodes, y)
 %
 % Input
+%  odf   - @SO3Fun
 %  nodes - rotational grid @SO3Grid, @orientation, @rotation
-%  y    - function values on the grid (maybe empty)
-%  odf  - @SO3Fun
+%  y     - function values on the grid (maybe empty)
 %
 % Output
 %  SO3F - @SO3FunBingham
 %
 % Options
 %  resolution - resolution of the grid nodes of the @SO3Grid
+%  SO3Grid    - grid nodes of the @SO3Grid
 %
 % See also
 % calcBinghamODF SO3Fun/interpolate
 
+if isa(nodes,'function_handle')
+  [SRight,SLeft] = extractSym([y,varargin]);
+  nodes = SO3FunHandle(nodes,SRight,SLeft);
+end
 
 if isa(nodes,'SO3Fun')
   odf = nodes;

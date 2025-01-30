@@ -9,18 +9,23 @@ function SO3F = adjoint(rot,values, varargin)
 % as in the older method |SO3FunHarmonic.adjointNFSOFT|.
 %
 % Syntax
+%   SO3F = SO3FunHarmonic.adjoint(rot,values)
 %   SO3F = SO3FunHarmonic.adjoint(rot,values,'bandwidth',32,'weights',w)
 %
 % Input
-%  rot  - @quadratureSO3Grid, @rotation, @orientation
+%  rot  - @quadratureSO3Grid, @rotation, @orientation, @SO3Grid
 %  values - double
 %
 % Output
 %  SO3F - @SO3FunHarmonic
 %
 % Options
-%  bandwidth - minimal harmonic degree (default: 64)
-%  weights - quadrature weights
+%  bandwidth - maximal harmonic degree (default: 64)
+%  weights   - quadrature weights
+%
+% Flags
+%  'nfsoft'            - use (mostly slower) NFSOFT algorithm
+%  'directComputation' - direct evaluation of Fourier sums (no nfft)
 %
 % See also
 % SO3FunHarmonic/quadrature SO3FunHarmonic/adjointNFSOFT

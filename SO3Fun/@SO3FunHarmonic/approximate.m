@@ -24,32 +24,40 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 % from some given SO3Fun by evaluating on some specific grid and doing quadrature.
 %
 % Syntax
+%   SO3F = SO3FunHarmonic.approximate(odf)                 % exact computation by quadrature
+%   SO3F = SO3FunHarmonic.approximate(odf,'bandwidth',48)  % exact computation by quadrature
 %   SO3F = SO3FunHarmonic.approximate(nodes,y)
-%   SO3F = SO3FunHarmonic.approximate(nodes,y,'equalWeights')
-%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
-%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'regularization')
-%   SO3F = SO3FunHarmonic.approximate(nodes,y, 'regularization',0.1,'SobolevIndex',1)
-%   SO3F = SO3FunHarmonic.approximate(odf)  % do quadrature
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'bandwidth',48)
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'weights','equal')
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'bandwidth',48,'weights',W,'tol',1e-6,'maxit',200)
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'regularization',0) % no regularization
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'regularization',1e-4,'SobolevIndex',2)
+%   [SO3F,lsqrParameters] = SO3FunHarmonic.approximate(___)
 %
 % Input
+%  odf   - @SO3Fun
 %  nodes - rotational grid
 %  y     - function values on the grid (maybe multidimensional)
-%  odf   - @SO3Fun
+%
+% Output
+%  SO3F
+%  lsqrParameters
 %
 % Options
-%  equalWeights - uses equal weights (for example if the nodes are constructed by equispacedSO3Grid)
-%  weights      - weight w_n for the nodes (default: Voronoi weights)
-%  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
-%  tol              - tolerance for lsqr
-%  maxit            - maximum number of iterations for lsqr
-%  regularization   - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F (there is given a regularization constant)
-%  SobolevIndex     - for regularization (default = 2)
-%
-% flags
+%  bandwidth      - maximal harmonic degree (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
+%  weights        - corresponding to the nodes (default: Voronoi weights, 'equal': all nodes are weighted similar, numeric array W: specific weights for every node)
+%  tol            - tolerance as termination condition for lsqr
+%  maxit          - maximum number of iterations as termination condition for lsqr
+%  regularization - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F with regularization parameter lambda (default: 1e-4)(0: no regularization)
+%  SobolevIndex   - for regularization (default = 2)
 %
 % See also
-% SO3Fun/interpolate SO3FunHarmonic/quadrature
-% SO3VectorFieldHarmonic/approximate
+% SO3Fun/interpolate SO3FunHarmonic/quadrature SO3VectorFieldHarmonic/approximate
+
+if isa(nodes,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  nodes = SO3FunHandle(nodes,SRight,SLeft);
+end
 
 if isa(nodes,'SO3Fun')
   if nargin>1, varargin = [y,varargin]; end
@@ -124,8 +132,9 @@ end
 
 % least squares solution
 for index = 1:size(y,2)
-  [fhat(:, index),flag(:, index),relres(:, index),iter(:, index),resvec(:, index),lsvec(:, index)] = lsqr( ...
-    @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex), b(:, index), tol, maxit);
+  [fhat(:, index),flag(:, index),relres(:, index),iter(:, index),resvec(:, index),lsvec(:, index)] ...
+    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex),...
+    b(:, index), tol, maxit);
 end
 lsqrParameters = {flag,relres,iter,resvec,lsvec};
 

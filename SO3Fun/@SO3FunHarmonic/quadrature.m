@@ -10,23 +10,28 @@ function SO3F = quadrature(f, varargin)
 % as in the older method |SO3FunHarmonic.quadratureNFSOFT|.
 %
 % Syntax
-%   SO3F = SO3FunHarmonic.quadrature(nodes,values,'weights',w)
+%   SO3F = SO3FunHarmonic.quadrature(nodes,values)
+%   SO3F = SO3FunHarmonic.quadrature(nodes,values,'bandwidth',48,'weights',w)
 %   SO3F = SO3FunHarmonic.quadrature(f)
-%   SO3F = SO3FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
+%   SO3F = SO3FunHarmonic.quadrature(f,'bandwidth',bandwidth,quadratureScheme)
 %
 % Input
 %  nodes  - @quadratureSO3Grid, @rotation, @orientation
 %  values - double (first dimension has to be the evaluations)
-%  f - function handle in @orientation (first dimension has to be the evaluations)
+%  f      - @SO3Fun, function handle in @orientation (first dimension has to be the evaluations)
 %
 % Output
 %  SO3F - @SO3FunHarmonic
 %
 % Options
-%  bandwidth      - minimal harmonic degree (default: 64)
+%  bandwidth - maximal harmonic degree (default: 64)
+%  weights   - 
+%
+% Flags
+%  quadratureScheme - ('ClenshawCurtis'|'GaussLegendre') --> default: CC
 %
 % See also
-% SO3FunHarmonic/adjoint
+% SO3FunHarmonic/adjoint SO3FunHarmonic/approximate SO3FunHarmonic
 
 
 % Tests

@@ -53,8 +53,7 @@ function SO3F = approximate(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximate(odf,'kernel',psi)
 %
 % Input
-%  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic
-%            coefficents
+%  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic coefficents
 %  y     - function values on the grid (maybe multidimensional) or empty
 %  odf   - @SO3Fun
 %  psi   - @SO3Kernel
