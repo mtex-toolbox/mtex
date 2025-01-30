@@ -4,6 +4,7 @@ function Psi = WignerD(ori,varargin)
 %
 % Syntax
 %   Dl = WignerD(g,l)
+%   Dl = WignerD(g,l,'normalize')
 %   Dl = WignerD(g,'degree',l)
 %   D  = WignerD(g,'bandwidth',l)
 %   dl = WignerD(beta,l)

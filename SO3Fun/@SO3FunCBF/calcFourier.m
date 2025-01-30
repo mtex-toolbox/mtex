@@ -4,7 +4,6 @@ function f_hat = calcFourier(SO3F,varargin)
 % Syntax
 %
 %   f_hat = calcFourier(SO3F)
-%
 %   f_hat = calcFourier(SO3F,'bandwidth',L)
 %
 % Input
