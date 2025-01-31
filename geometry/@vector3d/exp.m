@@ -21,7 +21,7 @@ function rot = exp(v,rot_ref,tS)
 % See also
 % Miller/exp orientation/log
 
-if isa(rot_ref,'vector3d')
+if nargin > 1 && isa(rot_ref,'vector3d')
 
   rot = normalize(rot_ref + v);
 
