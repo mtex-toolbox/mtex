@@ -57,22 +57,18 @@ end
 methods(Static = true)
   
   function SO3VF = X(varargin)
-    
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.X(size(varargin{1})),varargin{:});
-    
   end
   
   function SO3VF = Y(varargin)
-    
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.Y(size(varargin{1})),varargin{:});
-    
   end
   
   function SO3VF = Z(varargin)
-    
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.Z(size(varargin{1})),varargin{:});
-    
   end 
+
+  SO3VF = interpolate(ori,values,varargin)
   
 end
 

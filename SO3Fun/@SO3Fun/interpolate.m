@@ -3,21 +3,37 @@ function SO3F = interpolate(ori,values,varargin)
 %
 % Syntax
 %   odf = SO3Fun.interpolate(ori,values)
+%   odf = SO3Fun.interpolate(ori,values,'harmonic')
 %
 % Input
 %  ori - @orientation
 %  values - double
 %
-% Flags
-%  lsqr      - least squares (MATLAB)
-%  lsqnonneg - non negative least squares (MATLAB, fast)
-%  lsqlin    - interior point non negative least squares (optimization toolbox, slow)
-%  nnls      - non negative least squares (W.Whiten)
-% 
 % Output
-%  SO3F - @SO3FunRBF
+%  SO3F - @SO3Fun
+%
+% Flags
+%  ('harmonic'|'bingham'|'RBF') - approximation method (default: 'RBF')
 %
 % See also
-% SO3FunRBF.approximate
+% SO3FunRBF.approximate SO3FunHarmonic.approximate SO3FunBingham.approximate
 
-SO3F = SO3FunRBF.approximate(ori,values,'exact',varargin{:});
+if check_option(varargin,'bingham')
+  SO3F = SO3FunBingham.approximate(ori,values,varargin);
+  return
+end
+if check_option(varargin,'harmonic')
+  SO3F = SO3FunHarmonic.approximate(ori,values,varargin);
+  return
+end
+
+% default, because faster
+SO3F = SO3FunRBF.approximate(ori,values,varargin);
+
+
+
+
+
+
+
+

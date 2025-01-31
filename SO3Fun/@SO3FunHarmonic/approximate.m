@@ -98,11 +98,11 @@ end
 
 y = reshape(yy, [length(nodes) s(2:end)]);
 
-tol = get_option(varargin, 'tol', 1e-6);
-maxit = get_option(varargin, 'maxit', 200);
+tol = get_option(varargin, 'tol', 1e-3);
+maxit = get_option(varargin, 'maxit', 100);
 
 % regularization options
-lambda = get_option(varargin,'regularization',0.0001);
+lambda = get_option(varargin,'regularization',5e-7);
 SobolevIndex = get_option(varargin,'SobolevIndex',2);
 regularize = lambda > 0;
 

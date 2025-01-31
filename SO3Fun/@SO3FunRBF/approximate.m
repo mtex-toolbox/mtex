@@ -66,7 +66,6 @@ function SO3F = approximate(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','tol',1e-3,'maxit',100)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'odf')
 %
-%
 % Input
 %  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic coefficents
 %  y     - function values on the grid (maybe multidimensional) or empty
@@ -77,6 +76,7 @@ function SO3F = approximate(nodes, y, varargin)
 %  SO3F - @SO3FunRBF
 %
 % Options
+%  kernel           - SO3Kernel of the result SO3FunRBF
 %  SO3Grid          - center of the result SO3FunRBF
 %  resolution       - resolution of the @SO3Grid which is the center of the result SO3FunRBF
 %  approxresolution - resolution of the approximation grid, which is used to evaluate the input odf, if we use the spatial method (not the harmonic method)
@@ -87,7 +87,7 @@ function SO3F = approximate(nodes, y, varargin)
 %  'exact'    - if rotations are given, then use nodes as center of result SO3FunRBF and try to do exact computations
 %  'harmonic' - if an SO3Fun is given, then use harmonic method for approximation, see above (spatial method is default)
 %  'odf'      - ensure that result SO3FunRBF is a density (i.e. positiv and mean is 1)
-%  method     - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
+%  LSQRsolver     - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
 %
 % LSQR-Solvers
 %  lsqr             - least squares (MATLAB)
@@ -211,21 +211,21 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     
     n2 = size(Psi,1);
     
-    chat = lsqlin(Psi',y,-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
+    chat = lsqlin(Psi',y(:),-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
     
   case 'nnls'
     
-    chat = nnls(full(Psi).',y,struct('Iter',1000));
+    chat = nnls(full(Psi).',y(:),struct('Iter',1000));
     
   case 'lsqnonneg'
     
-    chat = lsqnonneg(Psi',y);
+    chat = lsqnonneg(Psi',y(:));
     
   case 'lsqr'
     
     tol = get_option(varargin,'tol',1e-2);
     iters = get_option(varargin,'maxit',30);
-    [chat,flag] = lsqr(Psi',y,tol,iters);
+    [chat,flag] = lsqr(Psi',y(:),tol,iters);
     
     % In case a user wants the best possible tolerance, just keep
     % increasing tolerance
@@ -233,7 +233,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     while flag > 0
       tol = tol*1.3;
       disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
-      [chat,flag] = lsqr(Psi',y,tol,50);
+      [chat,flag] = lsqr(Psi',y(:),tol,50);
       cnt=cnt+1;
       if cnt > 5
         disp('   more than 5 lsqr tolerance cut backs')

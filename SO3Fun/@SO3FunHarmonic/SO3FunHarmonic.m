@@ -202,7 +202,7 @@ methods
 end
 
 methods (Static = true)
-  [SO3F,lsqrParameters] = approximation(v, y, varargin);
+  [SO3F,lsqrParameters] = approximate(v, y, varargin);
   SO3F = quadrature(f, varargin);
   SO3F = adjoint(rot,values,varargin);
   SO3F = adjointNFSOFT(rot,values,varargin);
