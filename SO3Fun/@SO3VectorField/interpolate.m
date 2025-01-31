@@ -15,3 +15,5 @@ function SO3VF = interpolate(ori,values,varargin)
 % SO3VectorFieldHarmonic.approximate SO3FunHarmonic.approximate 
 
 SO3VF = SO3VectorFieldHarmonic.approximate(ori,values,varargin{:});
+
+% TODO: componentwise SO3FunRBF.approximate

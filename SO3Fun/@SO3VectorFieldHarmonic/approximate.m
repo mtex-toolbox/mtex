@@ -17,9 +17,6 @@ function SO3VF = approximate(nodes, values, varargin)
 %   SO3VF = SO3VectorFieldHarmonic.approximate(nodes,y,'bandwidth',48,'weights',W,'tol',1e-6,'maxit',200)
 %   SO3VF = SO3VectorFieldHarmonic.approximate(nodes,y,'regularization',0) % no regularization
 %   SO3VF = SO3VectorFieldHarmonic.approximate(nodes,y,'regularization',1e-4,'SobolevIndex',2)
-% Syntax
-%   SO3VF = SO3VectorFieldHarmonic.approximate(nodes, values)
-%   SO3VF = SO3VectorFieldHarmonic.approximate(nodes, values, 'bandwidth', bw)
 %
 % Input
 %  odf   - @SO3VectorField
@@ -39,6 +36,21 @@ function SO3VF = approximate(nodes, values, varargin)
 %
 % See also
 % SO3FunHarmonic/approximate SO3VectorFieldHarmonic
+
+if isa(nodes,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  nodes = SO3VectorFieldHandle(nodes,SRight,SLeft);
+end
+if isa(nodes,'SO3VectorField')
+  if nargin>1, varargin = [values,varargin]; end
+  SO3VF = SO3VectorFieldHarmonic.quadrature(nodes,varargin{:});
+  return
+end
+if isa(nodes,'quadratureSO3Grid')
+  SO3VF = SO3VectorFieldHarmonic.quadrature(nodes,values,varargin{:});
+  return
+end
+
 
 
 if isa(values,'SO3TangentVector') 

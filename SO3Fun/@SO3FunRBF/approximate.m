@@ -127,7 +127,7 @@ if isa(nodes,'SO3Fun')
   % maybe we have to normalize at the end
   % TODO: Computation of mean might be time consuming
   varargin = [varargin,'mean',f.mean];
-  % %mean does not say anything about f(g) < 0 -> no odf
+  % mean does not say anything about f(g) < 0 -> no odf
 
   if check_option(varargin,'harmonic')
     y0 = f.eval(SO3G); % initial guess for coefficients
