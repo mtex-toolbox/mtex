@@ -116,7 +116,8 @@ mean(SO3F)
 % large halfwidth results in a very smooth approximating function whereas a
 % very small halfwidth may result in overfitting
 
-SO3F = SO3FunRBF.approximate(ori,S.values,'halfwidth',2.5*degree,'odf');
+psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
+SO3F = SO3FunRBF.approximate(ori,S.values,'kernel',psi,'odf');
 
 plot(SO3F,'sigma')
 

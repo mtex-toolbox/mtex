@@ -27,17 +27,18 @@ function SO3F = approximate(nodes, y, varargin)
 % $R_i,i=1,...,M$ and grid nodes $R_j,j=1,...,N$. The harmonic method
 % computes a system matrix $\Psi\in\mathbb{C}^{L\times M}$, where the
 % columns refer to the WignerD function of each grid node $R_j$. Both
-% systems are solved by a modified least squares gradient descent.
+% systems are solved by least squares gradient descent.
 %
 % The spatial method is well suited for sharp functions (i.e. high
 % bandwidth), whereas the harmonic method is better suited for low
 % bandwidth, since the system matrix becomes very large for high
 % bandwidths.
 %
-% For the spatial method, instead of least squares also the
-% maximum-likelihood estimate can be computed. Note that both of this
+% For the spatial method, instead of modified least squares (mlsq) also the
+% maximum-likelihood estimate (mlrl) can be computed. Note that both of this
 % methods have the condition that we approximate a odf (the mean of the
-% SO3Fun is 1). Hence we can also use some standard least squares methods.
+% SO3Fun is 1). We can also use some standard least squares methods (for 
+% example lsqr).
 %
 % Reference: [1] Schaeben, H., Bachmann, F. & Fundenberger, JJ.
 % Construction of weighted crystallographic orientations capturing a given
@@ -46,42 +47,55 @@ function SO3F = approximate(nodes, y, varargin)
 %
 % Syntax
 %   SO3F = SO3FunRBF.approximate(nodes,y)
-%   SO3F = SO3FunRBF.approximate(nodes,y, 'resolution',5*degree)
-%   SO3F = SO3FunRBF.approximate(nodes,y, 'kernel', psi)
-%   SO3F = SO3FunRBF.approximate(nodes,y, 'density')
-%   SO3F = SO3FunRBF.approximate(nodes,y, 'bandwidth', 48, 'tol', TOL, 'maxit', MAXIT)
-%   SO3F = SO3FunRBF.approximate(odf,'kernel',psi)
+%   SO3F = SO3FunRBF.approximate(nodes,y,'exact')
+%   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi)
+%   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'exact')
+%   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'resolution',5*degree)
+%   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'SO3Grid',S3G)
+%   SO3F = SO3FunRBF.approximate(nodes,y,'mlsq','tol',1e-3,'maxit',100,'odf')
+%
+%   SO3F = SO3FunRBF.approximate(f)
+%   SO3F = SO3FunRBF.approximate(f,'kernel',psi)
+%   SO3F = SO3FunRBF.approximate(f,'SO3Grid',S3G)
+%   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'SO3Grid',S3G)
+%   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'resolution',5*degree)
+%   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'resolution',5*degree,'approxresolution',2*degree)
+%   SO3F = SO3FunRBF.approximate(f,'mlsq','tol',1e-3,'maxit',100,'odf')
+%
+%   SO3F = SO3FunRBF.approximate(f,'harmonic')
+%   SO3F = SO3FunRBF.approximate(f,'harmonic','tol',1e-3,'maxit',100)
+%   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'odf')
+%
 %
 % Input
 %  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic coefficents
 %  y     - function values on the grid (maybe multidimensional) or empty
-%  odf   - @SO3Fun
-%  psi   - @SO3Kernel
+%  f     - @SO3Fun
+%  psi   - @SO3Kernel of the approximated SO3FunRBF (default: SO3DeLaValleePoussinKernel('halfwidth',5*degree))
 %
 % Output
 %  SO3F - @SO3FunRBF
 %
 % Options
-%  kernel           - @SO3Kernel
-%  halfwidth        - use @SO3DeLaValleePoussinKernel with halfwidth
-%  resolution       - resolution of the grid nodes of the @SO3Grid
-%  approxresolution - if input it @SO3Fun, evaluate function on an  approximation grid with resolution specified
-%  bandwidth        - maximum degree of the Wigner-D functions used to approximate the function (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
-%  tol              - tolerance for mlsq/ml
-%  iter_max         - maximum number of iterations for mlsq/ml
-%  SO3Grid
+%  SO3Grid          - center of the result SO3FunRBF
+%  resolution       - resolution of the @SO3Grid which is the center of the result SO3FunRBF
+%  approxresolution - resolution of the approximation grid, which is used to evaluate the input odf, if we use the spatial method (not the harmonic method)
+%  tol              - tolerance as termination condition for lsqr/mlsq/...
+%  maxit            - maximum number of iterations as termination condition for lsqr/mlsq/...
 %
 % Flags
+%  'exact'    - if rotations are given, then use nodes as center of result SO3FunRBF and try to do exact computations
+%  'harmonic' - if an SO3Fun is given, then use harmonic method for approximation, see above (spatial method is default)
+%  'odf'      - ensure that result SO3FunRBF is a density (i.e. positiv and mean is 1)
+%  method     - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
+%
+% LSQR-Solvers
 %  lsqr             - least squares (MATLAB)
 %  lsqnonneg        - non negative least squares (MATLAB, fast)
 %  lsqlin           - interior point non negative least squares (optimization toolbox, slow)
 %  nnls             - non negative least squares (W.Whiten)
-%  mlsq             - modified least squares (default)
-%  likelihood/mlm   - maximum likelihood estimate for spatial method
-%  spatial/spm      - spatial method (default, not specified)
-%  harmonic/fourier - harmonic method
-%  noThinning       - keep all approximation nodes, irrespective of the associated weight
-%  odf              - ensure that SO3FunRBF is a density
+%  mlsq             - modified least squares (with positivity condition and normalization to mean 1)
+%  mlrl             - maximum likelihood estimate (with positivity condition and normalization to mean 1)
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/approximate WignerD SO3FunRBF
@@ -93,22 +107,15 @@ function SO3F = approximate(nodes, y, varargin)
 
 if isa(nodes,'SO3Fun') && nargin>1, varargin = {y,varargin{:}}; end
 
-% get kernel
-if check_option(varargin,'kernel')
-  psi = get_option(varargin,'kernel');
-  hw = psi.halfwidth;
-else
-  hw = get_option(varargin,'halfwidth',5*degree);
-  psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
-end
+% get kernel of approximated SO3FunRBF
+psi = getClass(varargin,'SO3Kernel',SO3DeLaValleePoussinKernel('halfwidth',5*degree));
 
 % get center of approximated SO3FunRBF
-if check_option(varargin,'exact') && isa(nodes,'rotation')
+res = get_option(varargin,'resolution',max(0.75*degree,psi.halfwidth));
+SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
+res = SO3G.resolution;
+if isa(nodes,'rotation') && check_option(varargin,'exact')
   SO3G = nodes;
-else
-  res = get_option(varargin,'resolution',max(0.75*degree,hw));
-  SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
-  res = SO3G.resolution;
 end
 
 
@@ -122,7 +129,7 @@ if isa(nodes,'SO3Fun')
   varargin = [varargin,'mean',f.mean];
   % %mean does not say anything about f(g) < 0 -> no odf
 
-  if check_option(varargin,{'harmonic','fourier'})
+  if check_option(varargin,'harmonic')
     y0 = f.eval(SO3G); % initial guess for coefficients
     fhat = calcFourier(f,'bandwidth',psi.bandwidth);
     % compute weights
@@ -159,15 +166,17 @@ end
 % SO3F = m * uniformODF(nodes.CS,nodes.SS);
 
 % construct SO3FunRBF
-if check_option(varargin,{'odf'}) || all(chat>=0)
+if check_option(varargin,'odf')
+  % remove to small values
   SO3F = unimodalODF(SO3G,psi,'weights',chat,varargin{:});
+  m = 1;
 else
   SO3F = SO3FunRBF(SO3G,psi,chat);
+  m = get_option(varargin,'mean',[]);
 end
 
 % normalize odf
-if abs(sum(chat)*psi.A(1)+SO3F.c0-1)<0.1 || check_option(varargin,'mean')
-  m = get_option(varargin,'mean',1);
+if ~isempty(m)
   SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
 end
 
@@ -184,12 +193,12 @@ function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
-if check_option(varargin,{'odf'}) || ...
-    (check_option(varargin,{'mean'}) && (all(y(:) >= 0) || all(y(:) <= 0)))
+if check_option(varargin,'odf') || ...
+    (check_option(varargin,'mean') && (all(y(:) >= 0) || all(y(:) <= 0)))
   varargin = ['mlsq',varargin];
 end
 
-switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood','maximumlikelihood','mlrl','mlsq'},'lsqr')
+switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
 
   case 'lsqlin'
       
@@ -214,8 +223,8 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood',
     
   case 'lsqr'
     
-    tol = get_option(varargin,{'tol','tolerance'},1e-2);
-    iters = get_option(varargin,{'iter','iter_max','iters'},30);
+    tol = get_option(varargin,'tol',1e-2);
+    iters = get_option(varargin,'maxit',30);
     [chat,flag] = lsqr(Psi',y,tol,iters);
     
     % In case a user wants the best possible tolerance, just keep
@@ -233,7 +242,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood',
       end
     end
     
-  case {'mlm','likelihood','maximumlikelihood','mlrl','mlsq'}  % we have constraints that
+  case {'mlrl','mlsq'}  % we have constraints that
     
     m = get_option(varargin,'mean',1.0);
     % initial guess for coefficients
@@ -246,10 +255,10 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlm','likelihood',
     end
     c0 = m*c0./sum(c0(:));
     
-    itermax = get_option(varargin,{'iter','iter_max','iters'},100);
-    tol = get_option(varargin,{'tol','tolerance'},1e-3);
+    itermax = get_option(varargin,'maxit',100);
+    tol = get_option(varargin,'tol',1e-3);
     
-    if check_option(varargin,{'mlm','likelihood','maximumlikelihood','mlrl'})
+    if check_option(varargin,'mlrl')
       chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
     else
       chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
@@ -275,8 +284,8 @@ assert(any(y(:) < 0) && any(0 < y(:)),...
 
 bw = psi.bandwidth;
 
-itermax = get_option(varargin,{'iter','iter_max','iters'},100);
-tol = get_option(varargin,{'tol','tolerance'},1e-3);
+itermax = get_option(varargin,'maxit',100);
+tol = get_option(varargin,'tol',1e-3);
 
 % initial guess for coefficients
 m = get_option(varargin,'mean',1.0);

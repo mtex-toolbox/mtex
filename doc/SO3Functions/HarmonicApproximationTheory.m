@@ -106,7 +106,8 @@ norm(eval(SO3F1, ori) - S.values) / norm(S.values)
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-    SO3Fhw = SO3FunRBF.approximate(ori,val,'halfwidth',hw(k)*degree,'odf');
+    psi = SO3DeLaValleePoussinKernel('halfwidth',hw(k)*degree);
+    SO3Fhw = SO3FunRBF.approximate(ori,val,'kernel',psi,'odf');
     err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
 end
 
@@ -333,7 +334,8 @@ calcError(F,F2)
 % It is also possible to convert the harmonic function back to a kernel
 % density representation
 
-F3 = SO3FunRBF.approximate(F,'halfwidth',5*degree,'approxresolution',5*degree);
+psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
+F3 = SO3FunRBF.approximate(F,'kernel',psi,'approxresolution',5*degree);
 
 calcError(odf,F)
 calcError(odf,F3)
