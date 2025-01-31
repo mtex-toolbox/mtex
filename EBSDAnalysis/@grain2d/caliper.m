@@ -1,5 +1,5 @@
 function c = caliper(grains,varargin)
-% Calliper (Feret diameter) of a grain in measurement units, the projection
+% Caliper (Feret diameter) of a grain in measurement units, the projection
 % length normal to it and its direction/trend.
 %
 % Syntax
