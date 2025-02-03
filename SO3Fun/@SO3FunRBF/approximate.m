@@ -76,6 +76,7 @@ function SO3F = approximate(nodes, y, varargin)
 %  SO3F - @SO3FunRBF
 %
 % Options
+%  halfwidth        - halfwidth of the SO3Kernel of the result SO3FunRBF
 %  kernel           - SO3Kernel of the result SO3FunRBF
 %  SO3Grid          - center of the result SO3FunRBF
 %  resolution       - resolution of the @SO3Grid which is the center of the result SO3FunRBF
@@ -108,7 +109,8 @@ function SO3F = approximate(nodes, y, varargin)
 if isa(nodes,'SO3Fun') && nargin>1, varargin = {y,varargin{:}}; end
 
 % get kernel of approximated SO3FunRBF
-psi = getClass(varargin,'SO3Kernel',SO3DeLaValleePoussinKernel('halfwidth',5*degree));
+hw = get_option(varargin,'halfwidth',5*degree);
+psi = getClass(varargin,'SO3Kernel',SO3DeLaValleePoussinKernel('halfwidth',hw));
 
 % get center of approximated SO3FunRBF
 res = get_option(varargin,'resolution',max(0.75*degree,psi.halfwidth));

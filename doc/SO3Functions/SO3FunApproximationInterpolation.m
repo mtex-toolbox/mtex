@@ -52,7 +52,7 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 %%
 % The reason for this difference is that MTEX by default applies
 % regularization. The default regularization parameter is $\lambda =
-% 0.0001$. We can switch off regularization by setting this value to $0$.
+% 5\cdot 10^{-7}$. We can switch off regularization by setting this value to $0$.
 
 SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
 
@@ -137,7 +137,7 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 plot(SO3F,'sigma')
 
-%% Approximating using the Bingham distribution
+%% Approximation using the Bingham distribution
 %
 % Approximation with the Bingham distribution currently works only with no
 % symmetry. TODO!
