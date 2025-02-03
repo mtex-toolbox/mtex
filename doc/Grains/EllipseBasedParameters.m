@@ -32,23 +32,22 @@ plot(grains,'micronbar','off','lineWidth',2)
 % The basic command for fitting ellipses is <grain2d.fitEllipse
 % |fitEllipse|>
 
-[omega,a,b] = grains.fitEllipse;
+[c,a,b] = grains.fitEllipse;
 
-plotEllipse(grains.centroid,a,b,omega,'lineColor','w','linewidth',2)
+plotEllipse(c,a,b,'lineColor','w','linewidth',2)
 
 %%
-% The returned variable |omega| is the angle describing the rotation of the
-% ellipses and |a| and |b| are the length of the longest and shortest half
-% axis. The midpoints of the ellipses can be computed by the command
-% <grain2d.centroid.html |grains.centroid|>.  Note, that the ellipses are
-% scaled such that the area of the ellipse coincides with the actual grain
-% area. Alternatively, one can also scale the ellipse to fit the boundary
-% length by using the option |boundary|.
+% The returned variable |c| is the centroid of the grains, |a| and |b| are 
+% of type <vector3d.vector3d.html |vector3d|> and are longest and shortest 
+% half axes. Note, that the ellipses are scaled such that the area of the 
+% ellipse coincides with the actual grain area. Alternatively, one can also
+% scale the ellipse to fit the boundary length by using the option |boundary|.
 %
+
 %% Long and Short Axes
 %
-% The direction of the long and the short axis of the fitted ellipse can be
-% obtained by the commands <grain2d.longAxis.html |grains.longAxis|> and
+% The direction of the long and the short axis of the fitted ellipse can also
+% be obtained by the commands <grain2d.longAxis.html |grains.longAxis|> and
 % <grain2d.shortAxis.html |grains.shortAxis|>. These directions are only
 % well defined if the fitted ellipse is not to close to a perfect circle. A
 % measure for how distinct the ellipse is from a perfect circle is the
@@ -136,11 +135,17 @@ setView(ebsd.how2plot)
 
 %% *Shortest Caliper Distribution*
 %
-% Alternatively, we may wonder if the common long axis of grains is does
+% Alternatively, we may wonder if the common long axis of grains is 
 % suitably represented by the direction normal to the shortest caliper of
 % the grains. This can particularly be the case for aligned rectangular
-% particles. The command <calcTDF.html |calcTDF|> also takes a list of
-% angles and a list of weights or lengths as input
+% particles where the long axes often switch between the diagonals of 
+% the particle. The <caliper.html |caliper|> or Feret of grains represents 
+% the projection lengths of grains in relation to a projection direction.
+% With the option 'shortestPerp', the function returns the normal to the
+% projection direction with the shortest projection length of a grain. In 
+% order to plot the result we could use a <vector3d.histogram.html
+% |histogram|>, compute a density function or use <calcTDF.html |calcTDF|> 
+% with a list of angles and a list of weights or lengths as input.
 
 cPerpF = caliper(grains('fo'),'shortestPerp');
 cPerpE = caliper(grains('en'),'shortestPerp');
@@ -168,12 +173,15 @@ hold off
 mtexTitle('n.t.s. density estimate')
 legend('Forsterite','Enstatite','Location','eastoutside')
 
-%%
+%% *SPO defined by grain boundary segments*
+%
 % Because best fit ellipses are always symmetric and the projection
 % function of an entire grain always only consider the convex hull, grain
-% shape fabrics can also be characterized by the the length weighted rose
-% diagram of the directions of grain boundary segments.
+% shape fabrics can also be characterized by the length weighted rose
+% diagram of the directions of grain boundary segments which considers the
+% entire shape defined by the grain boudnary segments of the grain.
   
+subplot(1,2,2)
 [freqF,bcF] = calcTDF(grains('fo').boundary);
 plotTDF(bcF,freqF/sum(freqF));
 pdfF = circdensity(bcF, freqF, 5*degree,'sum');
@@ -181,7 +189,7 @@ hold on
 plotTDF(bcF,pdfF);
 hold off
 mtexTitle('Forsterite grain boundaries')
-nextAxis
+subplot(1,2,2)
 [freqE,bcE] = calcTDF(grains('en').boundary);
 plotTDF(bcE,freqE/sum(freqE));
 pdfE = circdensity(bcE, freqE, 5*degree,'sum');
@@ -190,25 +198,31 @@ plotTDF(bcE,pdfE);
 hold off
 mtexTitle('Enstatite grain boundaries')
 
+
 %% Characteristic Shape
 %
 % Note that this distribution is very prone to inherit artifacts based on
 % the fact that most EBSD maps are sampled on a regular grid. We tried to
-% overcome this problem by heavily smoothing the grain boundary. The little 
-% peaks at 0 and 90 degree are very likely still related to this sampling
-% artifact.
+% overcome this problem by heavily smoothing the grain boundary. However,
+% if you recognize little peaks at 0 and 90 degree, they are most likely
+% related to this sampling artifact.
 %
-% If we just add up all the individual elements of the rose diagram in
-% order of increasing angles, we derive the characteristic shape. It can be
-% regarded as to represent the average grain shape.
+% If we just add up all the individual boundary elements of the rose diagram 
+% in order of increasing angles, we derive the characteristic shape. It can
+% be regarded as to represent the average grain shape.
+% The < grainBoundary.characteristicShape.html |characteristicShape|>does
+% not require entire grains as input but works with a list of
+% < BoundarySelect.html |grain boundaries|>. Many operations such as
+% |aspectRatio| or |longAxis| also work on the characteristic shape.
+% 
 
-[csAngleF, csRadiusF] = characteristicShape(bcF,freqF);
-[csAngleE, csRadiusE] = characteristicShape(bcE,freqE);
+cshapeF = characteristicShape(grains('F').boundary);
+cshapeE = characteristicShape(grains('E').boundary);
 
 close all
-plotTDF(csAngleF,csRadiusF,'nolabels');
+plot(cshapeF,'linewidth',2);
 hold on
-plotTDF(csAngleE,csRadiusE,'nolabels');
+plot(cshapeE,'linewidth',2);
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
 

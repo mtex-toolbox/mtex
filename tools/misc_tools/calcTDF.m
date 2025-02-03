@@ -40,7 +40,7 @@ if isa(g,'numeric')
     wlen = ones(size(g));
 end
 if isa(g, 'grain2d')
-    [~,a]=principalComponents(g,'hull');
+    a = principalComponents(g,'hull');
     % sometimes wlne is a complex
     azi = a.rho;
     wlen=norm(a);

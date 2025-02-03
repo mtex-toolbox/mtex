@@ -5,7 +5,7 @@ function [c,a,b] = fitEllipse(grains,varargin)
 % Syntax
 %
 %   [c,a,b] = fitEllipse(grains);
-%   plotEllipse(c,a,b,omega,'lineColor','r')
+%   plotEllipse(c,a,b,'lineColor','r')
 %
 % Input:
 %  grains   - @grain2d

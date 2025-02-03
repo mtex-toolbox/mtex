@@ -37,7 +37,7 @@ classdef grain3d < phaseList & dynProp
       if nargin>=4 && ~isempty(ori)
         grains.prop.meanRotation = ori;
       else
-        grains.prop.meanRotation = rotation.nan(length(F),1);        
+        grains.prop.meanRotation = rotation.nan(length(grains.id),1);        
       end
 
       if nargin>=5
@@ -58,7 +58,7 @@ classdef grain3d < phaseList & dynProp
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.grainSize = ones(length(F),1);
+      grains.grainSize = ones(length(grains.id),1);
 
       % compute neighboring grains to a boundary segment
       grainId = zeros(size(I_GF,2),2);
