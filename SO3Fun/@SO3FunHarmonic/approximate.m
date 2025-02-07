@@ -44,12 +44,13 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 %  lsqrParameters
 %
 % Options
-%  bandwidth      - maximal harmonic degree (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
-%  weights        - corresponding to the nodes (default: Voronoi weights, 'equal': all nodes are weighted similar, numeric array W: specific weights for every node)
-%  tol            - tolerance as termination condition for lsqr
-%  maxit          - maximum number of iterations as termination condition for lsqr
-%  regularization - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F with regularization parameter lambda (default: 1e-4)(0: no regularization)
-%  SobolevIndex   - for regularization (default = 2)
+%  bandwidth       - maximal harmonic degree (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
+%  weights         - corresponding to the nodes (default: Voronoi weights, 'equal': all nodes are weighted similar, numeric array W: specific weights for every node)
+%  tol             - tolerance as termination condition for lsqr
+%  maxit           - maximum number of iterations as termination condition for lsqr
+%  regularization  - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F with regularization parameter lambda (default: 1e-4)(0: no regularization)
+%  SobolevIndex    - for regularization (default = 2)
+%  cutOffParameter - 
 %
 % See also
 % SO3Fun/interpolate SO3FunHarmonic/quadrature SO3VectorFieldHarmonic/approximate
@@ -132,9 +133,12 @@ end
 
 % least squares solution
 for index = 1:size(y,2)
-  [fhat(:, index),flag(:, index),relres(:, index),iter(:, index),resvec(:, index),lsvec(:, index)] ...
-    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex),...
+  [fhat(:, index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
+    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex,varargin),...
     b(:, index), tol, maxit);
+end
+if any(flag == 1)
+  warning('lsqr:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
 end
 lsqrParameters = {flag,relres,iter,resvec,lsvec};
 
@@ -148,7 +152,9 @@ SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 
 end
 
-function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex)
+function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex,varargin)
+
+cutOff = get_option(varargin,'cutOffParameter',1);
 
 if strcmp(transp_flag, 'transp')
   
@@ -158,20 +164,20 @@ if strcmp(transp_flag, 'transp')
   end
   x = x .* W;
   %   F = SO3FunHarmonic.quadrature(nodes,x,'keepPlan','nfsoft','bandwidth',bw);
-  F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
+  F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw,'cutoffParameter',cutOff);
   y = F.fhat;
   if regularize
     F = SO3FunHarmonic(u);
     SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);
     y = y+SO3F.fhat;
   end
-
+ 
 elseif strcmp(transp_flag, 'notransp')
 
   F = SO3FunHarmonic(x,nodes.CS,nodes.SS);
   F.bandwidth = bw;
   %   y = F.eval(nodes,'keepPlan','nfsoft');
-  y = F.eval(nodes);
+  y = F.eval(nodes,'cutoffParameter',cutOff);
   y = y .* W;
   if regularize
     SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);

@@ -92,7 +92,7 @@ if isempty(plan)
     fftw_flag = int8(64);
     nfft_flag = int8(0);
   % nfft_cutoff parameter 
-    m = 4;
+    m = get_option(varargin,'cutoffParameter',4);
   % oversampling factor
     sigma = 3;
     fftw_size = 2*ceil(sigma/2*NN);

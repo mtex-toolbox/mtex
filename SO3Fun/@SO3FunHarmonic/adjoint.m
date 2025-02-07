@@ -120,19 +120,26 @@ end
 % initialize nfft plan
 if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')
 
-  %plan = nfftmex('init_3d',2*N+2,2*N+2,2*N+2,M);
-  NN = 2*N+2;
-  FN = 2*ceil(1.5*NN);
+  % nfft size
+    NN = 2*N+2;
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
   %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-  fftw_flag = int8(64);
-  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),FN,FN,FN,4,int8(0),fftw_flag});
+    fftw_flag = int8(64);
+    nfft_flag = int8(0);
+  % nfft_cutoff parameter
+    m = get_option(varargin,'cutoffParameter',4);
+  % oversampling factor
+    sigma = 3;
+    fftw_size = 2*ceil(sigma/2*NN);
+  % initialize nfft plan
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flag,fftw_flag});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,(Euler(rot(:),'nfft').')/(2*pi));
+
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
 
