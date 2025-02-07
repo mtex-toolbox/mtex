@@ -14,8 +14,16 @@ while input_flags>0
   input_flags = input_flags-2^a;
 end
 
+% symmetrise for n=1
+if N>=1
+  CShat = CS.WignerD('order',1);
+  fhat(2:10) = reshape(CShat,3,3) * reshape(fhat(2:10),3,3) ./ sqrt(3);
+  SShat = SS.WignerD('order',1);
+  fhat(2:10) = reshape(fhat(2:10),3,3) * reshape(SShat,3,3) ./ sqrt(3);
+end
+
 % symmetrise Wigner coefficients
-for n=1:N
+for n=2:N
 
   ind = deg2dim(n)+1:deg2dim(n+1);
   A = reshape(fhat(ind),2*n+1,2*n+1);
@@ -42,7 +50,7 @@ for n=1:N
   
   % f is real valued
   if flags(3), A = A + (A==0).*conj(flip(flip(A,1),2)); end
-  
+
   % f is antipodal
   if flags(4), A = A + (A==0).*flip(flip(A,1),2).'; end
   fhat(ind) = A(:);
