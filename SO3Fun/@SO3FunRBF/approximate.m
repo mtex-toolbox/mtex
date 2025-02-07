@@ -52,7 +52,7 @@ function SO3F = approximate(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'exact')
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'resolution',5*degree)
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'SO3Grid',S3G)
-%   SO3F = SO3FunRBF.approximate(nodes,y,'mlsq','tol',1e-3,'maxit',100,'odf')
+%   SO3F = SO3FunRBF.approximate(nodes,y,'mlsq','tol',1e-3,'maxit',100,'density')
 %
 %   SO3F = SO3FunRBF.approximate(f)
 %   SO3F = SO3FunRBF.approximate(f,'kernel',psi)
@@ -60,11 +60,11 @@ function SO3F = approximate(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'SO3Grid',S3G)
 %   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'resolution',5*degree)
 %   SO3F = SO3FunRBF.approximate(f,'kernel',psi,'resolution',5*degree,'approxresolution',2*degree)
-%   SO3F = SO3FunRBF.approximate(f,'mlsq','tol',1e-3,'maxit',100,'odf')
+%   SO3F = SO3FunRBF.approximate(f,'mlsq','tol',1e-3,'maxit',100,'density')
 %
 %   SO3F = SO3FunRBF.approximate(f,'harmonic')
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','tol',1e-3,'maxit',100)
-%   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'odf')
+%   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'density')
 %
 % Input
 %  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic coefficents
@@ -87,8 +87,8 @@ function SO3F = approximate(nodes, y, varargin)
 % Flags
 %  'exact'    - if rotations are given, then use nodes as center of result SO3FunRBF and try to do exact computations
 %  'harmonic' - if an SO3Fun is given, then use harmonic method for approximation, see above (spatial method is default)
-%  'odf'      - ensure that result SO3FunRBF is a density (i.e. positiv and mean is 1)
-%  LSQRsolver     - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
+%  'density'  - ensure that result SO3FunRBF is a density function (i.e. positiv and mean is 1)
+%  LSQRsolver - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
 %
 % LSQR-Solvers
 %  lsqr             - least squares (MATLAB)
@@ -114,6 +114,10 @@ psi = getClass(varargin,'SO3Kernel',SO3DeLaValleePoussinKernel('halfwidth',hw));
 
 % get center of approximated SO3FunRBF
 res = get_option(varargin,'resolution',max(0.75*degree,psi.halfwidth));
+if isa(nodes,'quaternion') && ~isa(nodes,'orientation')
+  [CS,SS] = extractSym(varargin);
+  nodes = orientation(nodes,CS,SS);
+end
 SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
 res = SO3G.resolution;
 if isa(nodes,'rotation') && check_option(varargin,'exact')
@@ -129,7 +133,7 @@ if isa(nodes,'SO3Fun')
   % maybe we have to normalize at the end
   % TODO: Computation of mean might be time consuming
   varargin = [varargin,'mean',f.mean];
-  % mean does not say anything about f(g) < 0 -> no odf
+  % mean does not say anything about f(g) < 0 -> no density
 
   if check_option(varargin,'harmonic')
     y0 = f.eval(SO3G); % initial guess for coefficients
@@ -149,9 +153,6 @@ else
   if length(nodes) ~= numel(y)
     error('Approximation of a SO3FunRBF is only possible for univariate functions.')
   end
-  if ~isa(nodes,'orientation') % preserve SO3Grid structure
-    nodes = orientation(nodes);
-  end
   % compute weights
   chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
 
@@ -168,7 +169,7 @@ end
 % SO3F = m * uniformODF(nodes.CS,nodes.SS);
 
 % construct SO3FunRBF
-if check_option(varargin,'odf')
+if check_option(varargin,'density')
   % remove to small values
   SO3F = unimodalODF(SO3G,psi,'weights',chat,varargin{:});
   m = 1;
@@ -195,14 +196,24 @@ function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
-if check_option(varargin,'odf') || ...
-    (check_option(varargin,'mean') && (all(y(:) >= 0) || all(y(:) <= 0)))
+% Use 'mlsq' method if an density is approximated or the input is nearly 
+% positive and we have (or can easily compute) the expected mean of the result
+eps = max(y(:))*1e-3;
+if check_option(varargin,'density')
   varargin = ['mlsq',varargin];
+elseif check_option(varargin,'mean') && (all(y(:)>-eps) || all(y(:)<eps))
+  varargin = ['mlsq',varargin];
+elseif numel(nodes)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
+  W = calcVoronoiVolume(nodes);
+  W = W./sum(W);
+  meanV = sum(W(:).*y(:));
+  varargin = ['mlsq','mean',meanV,varargin];
 end
+
 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
 
-  case 'lsqlin'
+  case 'lsqlin' % requires optimization Toolbox
       
     tolCon = get_option(varargin,'lsqlin_tolCon',1e-10);
     tolX = get_option(varargin,'lsqlin_tolX',1e-14);
@@ -215,41 +226,29 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     
     chat = lsqlin(Psi',y(:),-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
     
-  case 'nnls'
+  case 'nnls' % only computable if Psi is small, i.e. low number of nodes and SO3Grid is small
     
     chat = nnls(full(Psi).',y(:),struct('Iter',1000));
     
-  case 'lsqnonneg'
+  case 'lsqnonneg' % very slow / bad / maybe oscillating
     
     chat = lsqnonneg(Psi',y(:));
     
-  case 'lsqr'
+  case 'lsqr' % works good 
     
     tol = get_option(varargin,'tol',1e-2);
     iters = get_option(varargin,'maxit',30);
     [chat,flag] = lsqr(Psi',y(:),tol,iters);
-    
-    % In case a user wants the best possible tolerance, just keep
-    % increasing tolerance
-    cnt=0;
-    while flag > 0
-      tol = tol*1.3;
-      disp(['   lsqr tolerance cut back: ',xnum2str(max(tol))])
-      [chat,flag] = lsqr(Psi',y(:),tol,50);
-      cnt=cnt+1;
-      if cnt > 5
-        disp('   more than 5 lsqr tolerance cut backs')
-        disp('   consider using a larger tolerance')
-        break
-      end
+    if flag == 1
+      warning('lsqr:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
     end
-    
-  case {'mlrl','mlsq'}  % we have constraints that
+  
+  case {'mlrl','mlsq'}  % we have constraints that c>0
     
     m = get_option(varargin,'mean',1.0);
     % initial guess for coefficients
     c0 = Psi*y(:);
-    if check_option(varargin,'odf')
+    if check_option(varargin,'density')
       c0(c0<eps) = eps; % all weights must be positive
     else
       cx = abs(c0)<=eps;
@@ -261,9 +260,9 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     tol = get_option(varargin,'tol',1e-3);
     
     if check_option(varargin,'mlrl')
-      chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);
+      chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
     else
-      chat = mlsq(Psi.',y(:),c0(:),itermax,tol);
+      chat = mlsq(Psi.',y(:),c0(:),itermax,tol); % --> data should be positive; works nice 
     end
     
 end
