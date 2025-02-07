@@ -49,8 +49,11 @@ else % faster but less accurate
   a(ind) = -a(ind); b(ind) = -b(ind);
   c(ind) = -c(ind); d(ind) = -d(ind);
   
-  [~,ir,iu] = uniquetol([a,b,c,d,i],tol / 100 / degree, ...
-    'ByRows',true,'DataScale',1);
+  if check_option(varargin,'stable')
+    [~,ir,iu] = unique(round([a,b,c,d,i]*100*degree./tol),'rows','stable');
+  else
+    [~,ir,iu] = uniquetol([a,b,c,d,i],tol / 100 / degree,'ByRows',true,'DataScale',1);
+  end
 
 end
 
