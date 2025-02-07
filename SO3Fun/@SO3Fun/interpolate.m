@@ -19,17 +19,20 @@ function SO3F = interpolate(ori,values,varargin)
 % SO3FunRBF.approximate SO3FunHarmonic.approximate SO3FunBingham.approximate
 
 if check_option(varargin,'bingham')
-  SO3F = SO3FunBingham.approximate(ori,values,varargin);
+  SO3F = SO3FunBingham.approximate(ori,values,varargin{:});
   return
 end
 if check_option(varargin,'harmonic')
-  SO3F = SO3FunHarmonic.approximate(ori,values,varargin);
+  SO3F = SO3FunHarmonic.approximate(ori,values,varargin{:});
+  % SO3F = smooth(SO3F);
   return
 end
 
 % default, because faster
-SO3F = SO3FunRBF.approximate(ori,values,varargin);
+SO3F = SO3FunRBF.approximate(ori,values,varargin{:});
 
+% TODO: Maybe transform to SO3FunHarmonic at the end
+% SO3F = SO3FunHarmonic(SO3F);
 
 
 

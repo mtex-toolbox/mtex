@@ -90,14 +90,18 @@ end
 % make points unique
 s = size(y);
 y = reshape(y, length(nodes), []);
-[nodes,~,ind] = unique(nodes(:),'tolerance',0.02);
-
+if numel(nodes)>2e5
+  [nodes,~,ind] = unique(nodes(:),'tolerance',0.02,'stable');
+else
+  [nodes,~,ind] = unique(nodes(:),'tolerance',0.02);
+end
 % take the mean over duplicated nodes
 for k = 1:size(y,2)
   yy(:,k) = accumarray(ind,y(:,k),[],@mean); %#ok<AGROW>
 end
-
 y = reshape(yy, [length(nodes) s(2:end)]);
+
+
 
 tol = get_option(varargin, 'tol', 1e-3);
 maxit = get_option(varargin, 'maxit', 100);
@@ -112,11 +116,11 @@ bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
 
 % extract weights
 W = get_option(varargin, 'weights');
-if check_option(varargin,'meanWeights')
-  W = 1/length(nodes);
-elseif isempty(W)
-  W = calcVoronoiVolume(nodes);
+if strcmp(W,'Voronoi') || (isempty(W) && numel(nodes)<1e4)
+  W = calcVoronoiVolume(nodes);  % --> Time Consuming
   W = W./sum(W);
+elseif isempty(W) || strcmp(W,'equal')
+  W = 1/length(nodes);
 else
   if length(W)>1, W = accumarray(ind,W); end
 end
