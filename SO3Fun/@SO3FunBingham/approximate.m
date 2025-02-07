@@ -21,7 +21,7 @@ function SO3F = approximate(nodes,y,varargin)
 %  SO3Grid    - grid nodes of the @SO3Grid
 %
 % See also
-% calcBinghamODF SO3Fun/interpolate
+% calcBinghamODF rotation/interp
 
 if isa(nodes,'function_handle')
   [SRight,SLeft] = extractSym([y,varargin]);

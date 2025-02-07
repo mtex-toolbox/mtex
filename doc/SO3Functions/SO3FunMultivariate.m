@@ -60,7 +60,7 @@ SO3F1 = SO3FunHarmonic.approximate(nodes, y,'maxit',10)
 % It is also possible to interpolate one component by an
 % <SO3FunHarmonic.SO3FunRBF |SO3FunRBF|>, that means
 
-SO3F2 = SO3FunHarmonic.interpolate(nodes,y(:,1))
+SO3F2 = interp(nodes,y(:,1))
 
 %%
 % This is only possible for univariate functions.

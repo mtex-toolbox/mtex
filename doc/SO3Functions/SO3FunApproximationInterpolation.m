@@ -27,18 +27,24 @@ plotSection(ori, S.values,'all','sigma');
 
 %%
 % The process of finding a function which coincides with the given function
-% values in the nodes reasonably well is called approximation. MTEX support
-% different approximation schemes: approximation by harmonic expansion,
-% approximation by radial functions and approximation by a Bingham
+% values in the nodes reasonably well is called interpolation/approximation. 
+% MTEX support different approximation schemes: approximation by harmonic 
+% expansion, approximation by radial functions and approximation by a Bingham
 % distribution.
+%
+% In MTEX we have the general command <rotation.interp.html |interp|> for
+% any of this methods.
 %
 %% Approximation by Harmonic Expansion
 %
 % An approximation by harmonic expansion is computed by the command
-% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> 
+% <rotation.interp.html |interp|> command with the flag |'harmonic'|. 
+% Internally we use the 
+% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> method
+% here.
 
-% SO3F = SO3Fun.interpolate(ori,S.values,'harmonic')
-SO3F = SO3FunHarmonic.approximate(ori,S.values)
+SO3F = interp(ori,S.values,'harmonic')
+% SO3F = SO3FunHarmonic.approximate(ori,S.values)
 plot(SO3F,'sigma')
 
 
@@ -54,7 +60,8 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 % regularization. The default regularization parameter is $\lambda =
 % 5\cdot 10^{-7}$. We can switch off regularization by setting this value to $0$.
 
-SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
+SO3F = interp(ori,S.values,'harmonic','regularization',0)
+% SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -70,7 +77,8 @@ plot(SO3F,'sigma')
 %
 % An alternative way of regularization is to reduce the harmonic bandwidth
 
-SO3F = SO3FunHarmonic.approximate(ori,S.values,'bandwidth',16)
+SO3F = interp(ori,S.values,'harmonic','bandwidth',16)
+% SO3F = SO3FunHarmonic.approximate(ori,S.values,'bandwidth',16)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -90,12 +98,13 @@ min(SO3F)
 %
 %% Approximation by Radial Functions 
 %
-% The command for approximating orientation dependent data by a
+% The internal command for approximating orientation dependent data by a
 % superposition of radial functions is <SO3FunRBF.approximate.html
-% |SO3FunRBF.approximate|>. 
+% |SO3FunRBF.approximate|>.
+% Generally we can use the <rotation.interp.html |interp|> command.
 
-% SO3F = SO3Fun.interpolate(ori,val,'odf');
-SO3F = SO3FunRBF.approximate(ori,S.values,'odf');
+SO3F = interp(ori,val,'density');
+% SO3F = SO3FunRBF.approximate(ori,S.values,'density');
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -103,8 +112,8 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 plot(SO3F,'sigma')
 
 %%
-% The option |'ODF'| ensures that the resulting function is nonnegative and
-% is normalized to $1$
+% The option |'density'| ensures that the resulting function is nonnegative
+% and is normalized to $1$.
 
 min(SO3F)
 
@@ -117,7 +126,8 @@ mean(SO3F)
 % very small halfwidth may result in overfitting
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
-SO3F = SO3FunRBF.approximate(ori,S.values,'kernel',psi,'odf');
+SO3F = interp(ori,val,'kernel',psi,'density');
+% SO3F = SO3FunRBF.approximate(ori,S.values,'kernel',psi,'density');
 
 plot(SO3F,'sigma')
 
@@ -127,10 +137,11 @@ plot(SO3F,'sigma')
 % theory of RBF approximation>.
 %
 %% 
-% If we omit the option |'odf'| the resulting function may have negative
+% If we omit the option |'density'| the resulting function may have negative
 % values similar to the harmonic setting
 
-SO3F = SO3FunRBF.approximate(ori,S.values);
+SO3F = interp(ori,val);
+% SO3F = SO3FunRBF.approximate(ori,S.values);
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)

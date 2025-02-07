@@ -53,7 +53,7 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 %  cutOffParameter - 
 %
 % See also
-% SO3Fun/interpolate SO3FunHarmonic/quadrature SO3VectorFieldHarmonic/approximate
+% rotation/interp SO3FunHarmonic/quadrature SO3VectorFieldHarmonic/approximate
 
 if isa(nodes,'function_handle')
   [SRight,SLeft] = extractSym(varargin);

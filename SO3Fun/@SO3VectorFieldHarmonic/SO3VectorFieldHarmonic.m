@@ -83,7 +83,7 @@ end
 
 methods(Static = true)
   SO3VF = quadrature(f, varargin)
-  SO3VF = approximation(f, varargin)
+  SO3VF = approximate(f, varargin)
 end
 
 end

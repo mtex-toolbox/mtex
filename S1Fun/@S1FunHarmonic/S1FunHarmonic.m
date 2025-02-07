@@ -128,7 +128,7 @@ methods
 end
 
 methods (Static = true)
-%   sF = approximation(v, y, varargin);
+%   sF = approximate(v, y, varargin);
   sF = quadrature(f, varargin);
 end
 

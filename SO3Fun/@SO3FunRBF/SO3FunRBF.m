@@ -125,7 +125,6 @@ classdef SO3FunRBF < SO3Fun
   end
   
   methods (Static = true)
-    [SO3F,resvec] = interpolate(ori,values,varargin)
     SO3F = approximate(v, y, varargin);
     SO3F = example(varargin)
   end

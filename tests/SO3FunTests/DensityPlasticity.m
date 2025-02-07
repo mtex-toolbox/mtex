@@ -24,7 +24,7 @@ a = calcVoronoiArea(t); a = a(:);
 b = calcVoronoiArea(t2); b = b(:);
 max(a./b)
 y = f.eval(t).*(a./b);
-f3 = S2FunHarmonic.approximation(t2,y);
+f3 = S2FunHarmonic.approximate(t2,y);
 nextAxis
 plot(f3)
 

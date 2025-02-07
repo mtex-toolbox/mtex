@@ -99,7 +99,7 @@ function SO3F = approximate(nodes, y, varargin)
 %  mlrl             - maximum likelihood estimate (with positivity condition and normalization to mean 1)
 %
 % See also
-% SO3Fun/interpolate SO3FunHarmonic/approximate WignerD SO3FunRBF
+% rotation/interp SO3FunHarmonic/approximate WignerD SO3FunRBF
 
 
 % Tests

@@ -20,7 +20,7 @@ nodes = nodes(:);
 y = vector3d(sin(5*nodes.x), 1, nodes.y, 'antipodal');
 %%
 % Now the actual command to get |sAF1| of type <S2AxisFieldHarmonic.S2AxisFieldHarmonic |S2AxisFieldHarmonic|>
-sAF1 = S2AxisFieldHarmonic.approximation(nodes, y)
+sAF1 = S2AxisFieldHarmonic.approximate(nodes, y)
 
 %%
 % *Definition via function handle*

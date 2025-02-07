@@ -28,7 +28,7 @@ scatter(nodes, S.values, 'upper');
 % The idea of the first approach is fairly simple. We create a function
 % which has *exactly* the value of the given data in the nodes. But we
 % still have to decide what happens inbetween these nodes. For that, we
-% linearly interpolate between them, similarly as Matlat plots a
+% linearly interpolate between them, similarly as Matlab plots a
 % one-dimensional function
 
 close all
@@ -43,7 +43,7 @@ plot(rand(10,1), '.-','linewidth',2)
 sFTri = interp(nodes, S.values, 'linear');
 
 %%
-% To see that we realy have the exact function values, we can evaluate
+% To see that we really have the exact function values, we can evaluate
 % |sFTri| of type <S2FunTri.S2FunTri |S2FunTri|> and compare it with the
 % original data values.
 
@@ -80,7 +80,7 @@ sF = interp(nodes, S.values, 'harmonicApproximation');
 contourf(sF, 'upper');
 
 %%
-% Plotting this function, we can immidiately see, that we have a much
+% Plotting this function, we can immediately see, that we have a much
 % smoother function. But one has to keep in mind that the error in the data
 % nodes is not zero as in the case of interpolation.
 
@@ -112,7 +112,7 @@ norm(eval(sF, nodes) - S.values)
 % This can be done by the |lsqr| function of Matlab, which efficiently
 % seeks for roots of the derivative of the given functional (also known as
 % normal equation). In the process we compute the matrix-vector product
-% with the Fourier-matrix multible times, where the Fourier-matrix is given
+% with the Fourier-matrix multiple times, where the Fourier-matrix is given
 % by
 %
 % $$ F = [Y_m^l(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$

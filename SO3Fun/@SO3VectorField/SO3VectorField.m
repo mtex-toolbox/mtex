@@ -68,7 +68,6 @@ methods(Static = true)
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.Z(size(varargin{1})),varargin{:});
   end 
 
-  SO3VF = interpolate(ori,values,varargin)
   
 end
 

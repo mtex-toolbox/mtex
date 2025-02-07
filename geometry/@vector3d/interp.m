@@ -53,7 +53,7 @@ if isa(varargin{1},'vector3d')
 
   elseif check_option(varargin, {'harmonicApproximation','harmonic'})
 
-    sF = S2FunHarmonic.approximation(v, y, varargin{:});
+    sF = S2FunHarmonic.approximate(v, y, varargin{:});
     yi = sF.eval(vi);
 
   else
@@ -89,7 +89,7 @@ if isa(varargin{1},'vector3d')
   end
 else % varargin{1} not numeric
   if check_option(varargin, {'harmonicApproximation','harmonic'})
-    yi = S2FunHarmonic.approximation(v, y, varargin{:});
+    yi = S2FunHarmonic.approximate(v, y, varargin{:});
 
   elseif check_option(varargin, 'linear')
     yi = S2FunTri(v,y);

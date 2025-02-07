@@ -17,7 +17,7 @@ nodes = nodes(:);
 y = vector3d.byPolar(sin(3*nodes.theta), nodes.rho+pi/2);
 %%
 % Now the actual command to get |sVF1| of type |S2VectorFieldHarmonic|
-sVF1 = S2VectorFieldHarmonic.approximation(nodes, y)
+sVF1 = S2VectorFieldHarmonic.approximate(nodes, y)
 
 %%
 % *Definition via function handle*

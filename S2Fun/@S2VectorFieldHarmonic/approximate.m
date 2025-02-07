@@ -1,4 +1,4 @@
-function sVF = approximation(v, y, varargin)
+function sVF = approximate(v, y, varargin)
 %
 % Syntax
 %   sVF = S2VectorField.quadrature(v, value)

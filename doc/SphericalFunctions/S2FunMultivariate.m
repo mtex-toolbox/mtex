@@ -52,7 +52,7 @@ y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 % Now the actual command to get a 2x1 |sF1| of type 
 % <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
 
-sF1 = S2FunHarmonic.approximation(nodes, y)
+sF1 = S2FunHarmonic.approximate(nodes, y)
 
 %%
 % *Definition via function handle*
