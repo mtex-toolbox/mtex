@@ -28,7 +28,7 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 %   SO3F = SO3FunHarmonic.approximate(odf,'bandwidth',48)  % exact computation by quadrature
 %   SO3F = SO3FunHarmonic.approximate(nodes,y)
 %   SO3F = SO3FunHarmonic.approximate(nodes,y,'bandwidth',48)
-%   SO3F = SO3FunHarmonic.approximate(nodes,y,'weights','equal')
+%   SO3F = SO3FunHarmonic.approximate(nodes,y,'weights','Voronoi')
 %   SO3F = SO3FunHarmonic.approximate(nodes,y,'bandwidth',48,'weights',W,'tol',1e-6,'maxit',200)
 %   SO3F = SO3FunHarmonic.approximate(nodes,y,'regularization',0) % no regularization
 %   SO3F = SO3FunHarmonic.approximate(nodes,y,'regularization',1e-4,'SobolevIndex',2)
@@ -45,12 +45,12 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 %
 % Options
 %  bandwidth       - maximal harmonic degree (Be careful by setting the bandwidth by yourself, since it may yields undersampling)
-%  weights         - corresponding to the nodes (default: Voronoi weights, 'equal': all nodes are weighted similar, numeric array W: specific weights for every node)
+%  weights         - corresponding to the nodes (default is 'equal': all nodes are weighted similar; 'Voronoi': Voronoi volumes; numeric array W: specific weights for every node)
 %  tol             - tolerance as termination condition for lsqr
 %  maxit           - maximum number of iterations as termination condition for lsqr
 %  regularization  - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F with regularization parameter lambda (default: 1e-4)(0: no regularization)
 %  SobolevIndex    - for regularization (default = 2)
-%  cutOffParameter - 
+%  cutOffParameter - cut off parameter m of the window functions in NFFT
 %
 % See also
 % rotation/interp SO3FunHarmonic/quadrature SO3VectorFieldHarmonic/approximate

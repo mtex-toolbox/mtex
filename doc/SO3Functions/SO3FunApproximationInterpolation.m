@@ -27,13 +27,27 @@ plotSection(ori, S.values,'all','sigma');
 
 %%
 % The process of finding a function which coincides with the given function
-% values in the nodes reasonably well is called interpolation/approximation. 
+% values in the nodes reasonably well is called approximation (or interpolation). 
 % MTEX support different approximation schemes: approximation by harmonic 
 % expansion, approximation by radial functions and approximation by a Bingham
 % distribution.
 %
 % In MTEX we have the general command <rotation.interp.html |interp|> for
 % any of this methods.
+%
+%%
+% The Approximation by radial functions should be preferred, if:
+%
+% * The underlying function is a density function, i.e. it is positiv and has mean value 1 (use the flag 'density')
+% * Low/Medium number of nodes
+%
+% The Approximation by harmonic expansion should be preferred, if:
+%  
+% * The underlying function describes some other orientation dependent relationship
+% * Lots of nodes, outliers and noise
+%
+% But this are only hints. In practical applications we should try both
+% methods and decide on the basis of computational costs and the results.
 %
 %% Approximation by Harmonic Expansion
 %
@@ -151,18 +165,25 @@ plot(SO3F,'sigma')
 %% Approximation using the Bingham distribution
 %
 % Approximation with the Bingham distribution currently works only with no
-% symmetry. TODO!
+% symmetry. TODO! 
+% TODO: Dont work
 
+% simulate nodes and values from an odf
+rng(0)
 cs = crystalSymmetry("1");
+odf = fibreODF(fibre.rand(cs));
+S3G = equispacedSO3Grid(cs);
+v = odf.eval(S3G);
 
-odf = fibreODF(fibre.rand(cs))
-
+% plot the underlying odf
 figure(1)
 plot(odf)
 
 %%
+% Now we try to approximate the Bingham distribution from the given
+% orientations and there corresponding function values.
 
-SO3F = SO3FunBingham.approximate(odf)
+SO3F = SO3FunBingham.approximate(S3G,v)
 
 figure(2)
 plot(SO3F)
