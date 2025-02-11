@@ -58,7 +58,6 @@ plotSection(ori, S.values,'all','sigma');
 % here.
 
 SO3F = interp(ori,S.values,'harmonic')
-% SO3F = SO3FunHarmonic.approximate(ori,S.values)
 plot(SO3F,'sigma')
 
 
@@ -71,11 +70,10 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 %%
 % The reason for this difference is that MTEX by default applies
-% regularization. The default regularization parameter is $\lambda =
-% 5\cdot 10^{-7}$. We can switch off regularization by setting this value to $0$.
+% regularization. The default regularization parameter is $\lambda = 5\cdot
+% 10^{-7}$. We can switch off regularization by setting this value to $0$.
 
 SO3F = interp(ori,S.values,'harmonic','regularization',0)
-% SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -92,7 +90,6 @@ plot(SO3F,'sigma')
 % An alternative way of regularization is to reduce the harmonic bandwidth
 
 SO3F = interp(ori,S.values,'harmonic','bandwidth',16)
-% SO3F = SO3FunHarmonic.approximate(ori,S.values,'bandwidth',16)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -107,7 +104,7 @@ plot(SO3F,'sigma')
 min(SO3F)
 
 %%
-% This possibility to guaranty non negativity is the central advantage of
+% The possibility to guaranty non negativity is the central advantage of
 % kernel based approximation. 
 %
 %% Approximation by Radial Functions 
@@ -117,8 +114,7 @@ min(SO3F)
 % |SO3FunRBF.approximate|>.
 % Generally we can use the <rotation.interp.html |interp|> command.
 
-SO3F = interp(ori,val,'density');
-% SO3F = SO3FunRBF.approximate(ori,S.values,'density');
+SO3F = interp(ori,S.values,'density');
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -129,9 +125,9 @@ plot(SO3F,'sigma')
 % The option |'density'| ensures that the resulting function is nonnegative
 % and is normalized to $1$.
 
-min(SO3F)
+minValue = min(SO3F)
 
-mean(SO3F)
+meanValue = mean(SO3F)
 
 %% 
 % The key parameter when approximation by radial functions is the halfwidth
@@ -141,7 +137,6 @@ mean(SO3F)
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
 SO3F = interp(ori,val,'kernel',psi,'density');
-% SO3F = SO3FunRBF.approximate(ori,S.values,'kernel',psi,'density');
 
 plot(SO3F,'sigma')
 
@@ -151,11 +146,10 @@ plot(SO3F,'sigma')
 % theory of RBF approximation>.
 %
 %% 
-% If we omit the option |'density'| the resulting function may have negative
-% values similar to the harmonic setting
+% If we omit the option |'density'| the resulting function may have
+% negative values similar to the harmonic setting
 
-SO3F = interp(ori,val);
-% SO3F = SO3FunRBF.approximate(ori,S.values);
+SO3F = interp(ori,S.values);
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)

@@ -36,12 +36,12 @@ function [SO3F,lsqrParameters] = approximate(nodes, y, varargin)
 %
 % Input
 %  odf   - @SO3Fun
-%  nodes - rotational grid
+%  nodes - grid of @rotation
 %  y     - function values on the grid (maybe multidimensional)
 %
 % Output
-%  SO3F
-%  lsqrParameters
+%  SO3F - @SO3FunHarmonic
+%  lsqrParameters - double
 %
 % Options
 %  bandwidth       - maximal harmonic degree (Be careful by setting the bandwidth by yourself, since it may yields undersampling)

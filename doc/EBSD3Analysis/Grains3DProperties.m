@@ -125,7 +125,8 @@ quiver(grains(5).boundary,grains(5).boundary.N,'antipodal','linewidth',2)
 hold off
 
 %%
-
+% In the next plot we colorize the boundary planes by the misorientation
+% angle of the neighbouring grains.
 
 close all
 plot(grains.boundary('indexed'),...
