@@ -20,8 +20,8 @@ if ischar(data)
   data = [];
 end
 
-% in older matlab version we have to plot contour and countour lines
-% seperately to avoid artefacts
+% in older matlab version we have to plot contour and contour lines
+% separately to avoid artifacts
 if verLessThan('matlab','8.5')
  
   [varargout{1:nargout}] = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});

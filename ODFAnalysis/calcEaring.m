@@ -24,7 +24,7 @@ function h = calcEaring(indata,sS,prop,varargin)
 % predictions in the original paper.
 %
 % Syntax
-%  calcEaring(grains,sS,prop)
+%   calcEaring(grains,sS,prop)
 %
 % Input
 %  ori  - @orientation

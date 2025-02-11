@@ -1,4 +1,5 @@
 function out = rdivide(T,S)
+% T1 ./ T2
 
 if isa(S,'double') 
   
