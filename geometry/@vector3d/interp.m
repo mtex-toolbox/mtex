@@ -6,7 +6,7 @@ function yi = interp(v,y,varargin)
 %   sF = interp(v,y,'harmonic')   % approximation with spherical harmonics
 %   yi = interp(v,y,vi,'linear')  % linear interpolation
 %   yi = interp(v,y,vi,'spline')  % spline interpolation (default)
-%   yi = interp(v,y,vi,'nearest') % nearest neigbour interpolation
+%   yi = interp(v,y,vi,'nearest') % nearest neighbor interpolation
 %   yi = interp(v,y,vi,'inverseDistance') % inverse distance interpolation
 %   yi = interp(v,y,vi,'harmonic') % approximation with spherical harmonics
 %

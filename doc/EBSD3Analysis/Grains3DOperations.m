@@ -21,7 +21,7 @@ setCamera(plottingConvention.default3D)
 P0 = vector3d(50,50,50);
 
 % the normal direction of the slice
-N = vector3d(1,-1,0);
+N = vector3d(1,-1,1);
 
 % compute the slice
 grains1_10 = grains.slice(N,P0)
@@ -60,22 +60,19 @@ setCamera(plottingConvention.default3D)
 % triangulate your grains with the command <grain3d.triangulate.html
 % |triangulate|>.
 
-grainsTri = grains(20).triangulate
+grainsTri = grains(20:21).triangulate
 
 plot(grainsTri,grainsTri.meanOrientation)
-
 
 %% Rotation
 % Not surprisingly we can use the command <grain3d.rotate.html |rotate|> to
 % apply any rotation to three dimensional grains. Note that a rotation
-% changes the spatial coordinates as well as the orientations of the
-% grains.
+% changes the spatial coordinates as well as the orientation of the grains.
 
 rot = rotation.byAxisAngle(vector3d(1,1,1),30*degree);
 grains_rot = rot * grains;   % or rotate(grains3,rot)
 
 % plotting
 plot(grains_rot,grains_rot.meanOrientation)
-
 
 %#ok<*NOPTS>

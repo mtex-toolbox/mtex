@@ -1,4 +1,5 @@
  function oR = horzcat(varargin)
+ % [oR1,oR2]
  
  oR = varargin{1};
  

@@ -1,4 +1,5 @@
 function out = eq(sR1,sR2)
+% oR1 == oR2
 
 out = false;
 sR1 = cleanUp(sR1);

@@ -1,4 +1,5 @@
 function h = colorbar(mtexFig,varargin)
+% colorbar
 
 if isempty(mtexFig.cBarAxis) % create some new colorbars
     

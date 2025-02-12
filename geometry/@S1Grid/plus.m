@@ -1,5 +1,5 @@
 function c = plus(a,b)
-% 
+% a + b
 
 if isa(a,'S1Grid') 
   c = a;

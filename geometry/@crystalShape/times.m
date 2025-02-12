@@ -1,4 +1,5 @@
 function cS = times(alpha,cS)
+% scale crystal shapes: alpha * cS
 
 if ~isa(cS,'crystalShape')
   [cS,alpha] = deal(alpha,cS); 

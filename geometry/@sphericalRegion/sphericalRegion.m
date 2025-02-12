@@ -102,24 +102,30 @@ classdef sphericalRegion
       sR.N.how2plot = how2plot;
     end
 
+    function out = ne(sR1,sR2)
+      out = ~eq(sR1,sR2);
+    end
+
+    function sR = horzcat(varargin) 
+      sR = varargin{1};
+      for n=2:numel(varargin)
+        sR.N = [sR.N(:);varargin{n}.N(:)];
+        sR.alpha = [sR.alpha(:);varargin{n}.alpha(:)];
+      end
+    end
+
+
     function th = thetaMin(sR)
-      
       th = thetaRange(sR);
-      
     end
     
-    function th = thetaMax(sR)
-      
-      [~,th] = thetaRange(sR);
-      
+    function th = thetaMax(sR)      
+      [~,th] = thetaRange(sR);      
     end
       
     function rh = rhoMax(sR)
-
       [~,rh] = rhoRange(sR);
       if length(rh) ~=1, rh = 2*pi; end
-      
-      
     end
     
     function rh = rhoMin(sR)

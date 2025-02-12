@@ -1,4 +1,5 @@
 function h = surf(sF,varargin)
+% surface plot of a spherical function
 %
 % Syntax
 %   surf(sF)
@@ -8,7 +9,7 @@ function h = surf(sF,varargin)
 %  sF - @S2Fun
 %
 % Options
-%  resolution
+%  resolution - resolution of the plotting grid in degree
 %
 
 % rescale the function to be with 0.5 and 2
