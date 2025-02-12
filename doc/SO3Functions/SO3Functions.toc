@@ -4,6 +4,9 @@ SO3FunOperations                  Operations
 ODFPlot                           Plotting
 EulerAngleSections                Euler Angle Sections
 SigmaSections                     Sigma Sections
+SO3FunApproximationTheory         Approximation and Interpolation
+HarmonicApproximationTheory       Harmonic Approximation
+RBFApproximationTheory            RBF-Kernel Approximation
 SO3FunApproximationInterpolation  Approximation and Interpolation
 HarmonicApproximationTheory       Theory of Harmonic Approximation
 SO3FunHarmonicRepresentation      Harmonic Representation

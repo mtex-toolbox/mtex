@@ -3,7 +3,7 @@
 %%
 % On this page we consider the problem of determining a smooth orientation
 % dependent function $f(\mathtt{ori})$ given a list of orientations
-% $\mathtt{ori}_n$ and a list of corresponding values $v_n$. These values
+% $\mathtt{ori}_m$ and a list of corresponding values $v_m$. These values
 % may be the volume of crystals with a specific orientation, as in the
 % case of an ODF, or any other orientation dependent physical property.
 %
@@ -187,3 +187,42 @@ SO3F = SO3FunBingham.approximate(S3G,v)
 
 figure(2)
 plot(SO3F)
+
+
+
+%% Alternative Non-ODF example
+%
+% Lets consider an academic example which do not describe an underlying odf.
+% Hence we have given noisy evaluations of the function
+% $$ f(\mat R) = \cos(\omega(R)) \cdot \sin(3\cdot \varphi_1(R))+\frac12 $$
+% in some random orientations, where $\omega(R)$ is the angle of the 
+% rotation $R$ and $\varphi_1(R)$ is the $varphi_1$-Euler angle of $R$.
+% 
+
+f = SO3FunHandle(@(r) cos(r.angle).*sin(3*r.phi1) + 0.5);
+plot(f,'sigma')
+
+% random orientations and noisy evaluations
+rng(0)
+ori2 = orientation.rand(1e5);
+val2 = f.eval(ori2);
+val2 = val2 + randn(size(val2)) * 0.05 * std(val2);
+
+%%
+% Lets compare the harmonic approximation and the RBF-Kernel approximation 
+% with respect to this example.
+%
+%%
+% *Harmonic Approximation*
+%
+
+FH = interp(ori2, val2,'harmonic')
+plot(FH,'sigma')
+
+%%
+% *RBF-Kernel Approximation*
+%
+
+FK = interp(ori2, val2)
+plot(FK,'sigma')
+

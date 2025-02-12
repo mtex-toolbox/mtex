@@ -1,405 +1,237 @@
-%% Approximating Orientation Dependent Functions from Discrete Data
+%% RBF-Kernel Approximation from Discrete Data
 %
 %%
-% On this page we consider the problem of determining a smooth orientation
-% dependent function $f(\mathtt{ori})$ given a list of orientations
-% $\mathtt{ori}_n$ and a list of corresponding values $v_n$. These values
-% may be the volume of crystals with a specific orientation, as in the
-% case of an ODF, or any other orientation dependent physical property.
+% On this page we consider the problem of determining the Radial Basis 
+% Function (|@SO3FunRBF|) of a smooth orientation dependent function 
+% $f(\mathtt{ori})$ given a list of orientations $\mathtt{ori}_m$ and a 
+% list of corresponding values $v_m$. These values may be the volume of 
+% crystals with a specific orientation, as in the case of an ODF, or any 
+% other orientation dependent physical property.
 %
-% Orientation dependent data may be stored in ASCII files with lines of
-% Euler angles, representing the orientations, and values. Such data files
-% can be imported by the command <orientation.load.html
-% |orientation.load.html|>, where we have to specify the position of the
-% columns of the Euler angles as well as of the additional properties.
+% A more general documentation about approximation of discrete data in MTEX
+% can be found in the section <SO3FunApproximationTheory.html Approximating 
+% Orientation Dependent Functions from Discrete Data>.
+%
+%%
+% In general we should favor RBF-kernel approximation, if the data coincide
+% to an underlying density function (odf,mdf,...) or if the number of data
+% points (given rotations and function values) and the noise ratio are not
+% too large.
+%
+%%
+% In the following we take a look on the approximation problem from
+% <SO3FunApproximationTheory.html general approximation theory>,
+% where we compared the  harmonic approximation with kernel approximation.
+%
+% Here we additionally assume that our function values are noisy.
 
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 
-%%
-% As a result the command returns a list of orientations |ori| and a struct
-% |S|. The struct contains one field for each additional column in our data
-% file. In our toy example it is the field |S.values|. Lets generate a
-% discrete plot of the given orientations |ori| together with the values
-% |S.values|.
+val = S.values + randn(size(S.values)) * 0.2 * std(S.values);
 
-plotSection(ori, S.values,'all','sigma');
+plotSection(ori,val,'all','sigma')
 
 %%
-% The process of finding a function which coincides with the given function
-% values in the nodes reasonably well is called approximation. MTEX support
-% different approximation schemes: approximation by harmonic expansion,
-% approximation by radial functions and approximation by a Bingham
-% distribution.
+% The basic strategy is to approximate the 
+% data by a |@SO3FunRBF|, see <RadialODFs.html Radial Basis Functions on SO(3)>. 
 %
-%% Approximation by Harmonic Expansion
+% Hence we determine rotations $R_1,\dots,R_N$ and seek the corresponding 
+% coefficients $\vec c=(c_1,\dots,c_N)$ such that
 %
-% An approximation by harmonic expansion is computed by the command
-% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> 
-
-SO3F = SO3FunHarmonic.approximate(ori,S.values)
-plot(SO3F,'sigma')
-
-%%
-% Note that |SO3FunHarmonic.approximate| does not aim at replicating the
-% values exactly. In fact the relative error between given data and the
-% function approximation is
-
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
-
-%%
-% The reason for this difference is that MTEX by default applies
-% regularization. The default regularization parameter is $\lambda =
-% 0.0001$. We can switch of regularization by setting this value to $0$.
-
-SO3F = SO3FunHarmonic.approximate(ori,S.values,'regularization',0)
-
-% the relative error
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
-
-plot(SO3F,'sigma')
-
-%%
-% We observe that the relative error is much smaller, however the
-% oscillatory behavior of the approximated function indicates overfitting.
-% An alternative way of regularization is to reduce the harmonic bandwidth
-
-SO3F = SO3FunHarmonic.approximate(ori,S.values,'bandwidth',16)
-
-% the relative error
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
-
-plot(SO3F,'sigma')
-
-%%
-% One big disadvantage of harmonic approximation is that the resulting
-% function is not guarantied to be non negative, even if all given function
-% values have been non negative.
-
-min(SO3F)
-
-%%
-% This possibility to guaranty non negativity is the central advantage of
-% kernel based approximation. 
-%
-%% Approximation by Radial Functions 
-%
-% The command for approximating orientation dependent data by a
-% superposition of radial functions is <SO3FunRBF.approximate.html
-% |SO3FunRBF.approximate|>. 
+% $$ f(x) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega(x,R_n)}{2}) $$
 % 
+% approximates our data reasonable well. In this formula, $\Psi$ describes 
+% a <SO3Kernels.html SO(3)-Kernel Function>. Hence, $f$ is a superposition 
+% of one rotational kernel function centered on the orientations
+% $R_1,\dots,R_N$ and weighted by the coefficients $c_1,\dots,c_N$.
+% 
+% A basic strategy is to apply least squares approximation, where we 
+% compute the coefficients $c_n$ by minimizing the functional 
+%
+% $$ \sum_{m=1}^M|f(x_m)-v_m|^2 $$
+%
+% for the given data points $(x_m,v_m)$, $m=1,\dots,M$. Here $x_m$ denotes
+% the given orientations and $v_m$ the corresponding function values.
+%
+% This least squares problem can also be written in matrix vector notation
+% $ \argmin_{\vec x} \| K \cdot c - v \|, $
+% where $x=(x_1,\dots,x_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
+% matrix $[\Psi(\cos\frac{\omega(x_m,R_n)}{2})]_{m,n}$.
+%
+% This least squares problem can be solved by the |lsqr| method from MATLAB,
+% which efficiently seeks for roots of the derivative of the given 
+% functional (also known as normal equation).
+%
+% Alternatively there is also a modified least square method |mlsq|, which
+% search for a solution $c_1,\dots,c_N$ that satisfies $c>0$ and 
+% $\sum_{n=1}^N c_n = 1$. This method can be used if the underlying
+% function is a density, i.e. it is nonnegative and has mean 1.
+%
+%%
+% In MTEX approximation by a superposition of radial functions is computed 
+% by default with the command <rotation.interp.html |interp|>.
+% Here MTEX internally call the underlying
+% <SO3FunRBF.approximate |SO3FunRBF.approximate|> command of the 
+% class <SO3FunRBF.SO3FunRBF |SO3FunRBF|>.
+%
 
-SO3F = SO3FunRBF.approximate(ori,val,'odf');
-
-% the relative error
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
-
-plot(SO3F,'sigma')
+SO3F1 = interp(ori,val,'density')
+% SO3F1 = SO3FunRBF.approximate(ori,val,'density')
+plot(SO3F1,'sigma')
 
 %%
-% The option |'ODF'| ensures that the resulting function is nonnegative and
-% is normalized to $1$
+% The flag |'density'| tells MTEX to use the |mlsq| solver, which ensures 
+% that the resulting function is nonnegative and normalized to mean $1$.
+% This yields also the denoising effect.
 
-min(SO3F)
+min(SO3F1)
 
-mean(SO3F)
+mean(SO3F1)
 
-%% 
-% The key parameter when approximation by radial functions is the halfwidth
-% of the kernel function. This can be set by the option |'halfwidth'|. A
-% large halfwidth results in a very smooth approximating function whereas a
-% very small halfwidth may result in overfitting
+%%
+% One has to keep in mind that we can not expect the error in the data 
+% nodes to be zero, because we compute a smooth function from the noisy 
+% input data.
 
-psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
-SO3F = SO3FunRBF.approximate(ori,val,'kernel',psi,'odf');
-
-plot(SO3F,'sigma')
+norm(SO3F1.eval(ori) - val) / norm(val)
 
 
 %%
+% In contrast, if we do not tell MTEX, that we try to approximate a density
+% function, the solver has less information and the result is not denoised.
 
-SO3F2 = SO3FunHarmonic.approximate(ori, S.values,'bandwidth',31)
+SO3F2 = interp(ori,val)
+% SO3F2 = SO3FunRBF.approximate(ori,val)
 plot(SO3F2,'sigma')
 
-%%
 
-
-
-%% Interpolation
+%% Adjustment of the Kernel Function
 %
-% Interpolation is done by the command <SO3FunRBF.approximate
-% |approximate|> of the class <SO3FunRBF.SO3FunRBF |SO3FunRBF|> in
-% conjunction with the option |'exact'|
+% The key parameter when approximating by radial basis functions is the 
+% halfwidth of the kernel function $\Psi$. This can be set by the option 
+% |'halfwidth'|. A large halfwidth results in a very smooth approximated 
+% function whereas a very small halfwidth may result in overfitting
 
-psi = SO3DeLaValleePoussinKernel('halfwidth',7.5*degree)
-SO3F = SO3FunRBF.approximate(ori, S.values,'exact','kernel',psi);
-plot(SO3F)
-
-%% 
-% The interpolation is done by |lsqr|. Hence the error is not in machine
-% precision.
-
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
+SO3F3 = interp(ori,val,'halfwidth',2*degree,'density')
+% SO3F3 = SO3FunRBF.approximate(ori,val,'halfwidth',2*degree,'density')
+plot(SO3F3,'sigma')
 
 %%
-% Also, interpolation might not guarantee non-negativity of the function
-
-min(SO3F)
-
-%%
-% If we don't restrict ourselves to the given function values in the nodes,
-% we have more freedom, which can be seen in the case of approximation.
-
-%% Approximation of noisy data
+% Note that the option 'halfwidth' also adjusts the resolution of the
+% center orientation grid of the rotational kernel functions of the
+% approximated |@SO3FunRBF|, i.e. the resolution of the grid of
+% $R_1,\dots,R_N$ in the above formulas.
 %
-% The exact interpolation from before is also computational hard if we have
-% a high number of nodes and function values given.
-%
-% Alternatively assume that our function values are noisy.
+% We can preserve the resolution of this grid by adding the option 
+% 'resolution'. Therefore we obtain a smoothed function of |SO3F1|.
 
-val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
-
-plotSection(ori,val,'all')
+SO3F4 = interp(ori,val,'halfwidth',10*degree,'resolution',5*degree,'density')
+% SO3F4 = SO3FunRBF.approximate(ori,val,'halfwidth',2*degree,'resolution',5*degree,'density')
+plot(SO3F4,'sigma')
 
 %%
-% In contrast to interpolation we are now not restricted to the exact 
-% function values in the nodes but still want to keep the error reasonably 
-% small.
-%
-% One way is to interpolate the function similarly as before, without the 
-% option |'exact'|.
-%
-%%
-% Another way is to approximate the rotational function with a
-% |@SO3FunHarmonic|, which is a series of <WignerFunctions.html Wigner-D
-% functions> (Harmonic series). We don't take as many Wigner-D functions as
-% there are nodes, such that we are in the overdetermined case. In that way
-% we don't have a chance of getting the error in the nodes zero but hope
-% for a smoother approximation. This can be achieved by the
-% <SO3FunHarmonic.approximate |approximate|> command of the class
-% <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
+% We can also input centers $R_1,\dots,R_N$ for the rotational kernel 
+% functions by the option 'SO3Grid'.
 
-SO3F2 = SO3FunHarmonic.approximate(ori, val,'bandwidth',18)
-plot(SO3F2)
+S3G = regularSO3Grid('resolution',5*degree,crystalSymmetry)
+SO3F5 = interp(ori,val,'SO3Grid',S3G,'density')
+% SO3F5 = SO3FunRBF.approximate(ori,val,'SO3Grid',S3G,'density')
+plot(SO3F5,'sigma')
 
 %%
-% Plotting this function, we can immediately see, that we have a much
-% smoother function. But one has to keep in mind that we can not expect the
-% error in the data nodes to be zero, as this would mean overfitting to the
-% noisy input data.
-
-norm(eval(SO3F2, ori) - S.values) / norm(S.values)
-
-%%
-% But this may not be of great importance like in the case of function
-% approximation from noisy function values, where we don't know the exact
-% function values anyways.
-%
-%%
-% The strategy underlying the <SO3FunHarmonic.approximate
-% |approximate|>-command to obtain such an approximation works via
-% Wigner-D functions (<SO3FunHarmonicRepresentation.html
-% SO3FunHarmonicSeries Basics of rotational harmonics>). For that, we seek
-% for so-called Fourier-coefficients ${\bf \hat f} = (\hat
-% f^{0,0}_0,\dots,\hat f^{N,N}_N)^T$ such that
-%
-% $$ g(x) = \sum_{n=0}^N\sum_{k,l = -n}^n \hat f_n^{k,l} D_n^{k,l}(x) $$
-%
-% approximates our function. A basic strategy to achieve this is through
-% least squares, where we minimize the functional
-%
-% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 $$
-%
-% for the data nodes $x_m$, $m=1,\dots,M$. Here $f(x_m)$ are the target
-% function values and $g(x_m)$ our approximation evaluated in the given
-% data nodes.
-%
-% This can be done by the |lsqr| method of MATLAB, which efficiently seeks
-% for roots of the derivative of the given functional (also known as normal
-% equation). In the process we compute the matrix-vector product with the
-% Fourier-matrix multiple times, where the Fourier-matrix is given by
-%
-% $$ F = [D_n^{k,l}(x_m)]_{m = 1,\dots,M;~n = 0,\dots,N,\,k,l = -n,\dots,n}. $$
-%
-% This matrix-vector product can be computed efficiently with the use of
-% the nonequispaced SO(3) Fourier transform
-% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsoft.php NSOFT>
-% or faster by the combination of an Wigner-transform together with a 
-% <https://www-user.tu-chemnitz.de/~potts/nfft/index.php NFFT>.
-%
-% We end up with the Fourier-coefficients of our approximation $g$, which
-% describe our approximation.
-%
-%%
-% If we have a low number of nodes but our function is relatively sharp
-% (we try to compute an |@SO3FunHarmonic| with high bandwidth) we are in
-% the underdetermined case. Here we want the approximation $g$ to be smooth 
-% just to avoid overfitting.
-%
-% Therefore we penalize oscillations by adding the norm of $g$ to
-% the energy functional which is minimized  by |lsqr|. This is called
-% regularization and means we now minimize the functional 
-%
-% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 + \lambda \|g\|^2_{H^s}$$
-%
-% where $\lambda$ is the regularization parameter. The Sobolev norm 
-% $\|.\|_{H^s}$ of an |@SO3FunHarmonic| $g$ with harmonic coefficients 
-% $\hat{f}$ reads as
-%
-% $$\|g\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
-%
-% The Sobolev index $s$ describes how smooth our approximation $g$ should
-% be, i.e. the larger $s$ is, the faster the harmonic coefficients
-% $\hat{f}_n^{k,l}$ converge towards 0 and the smoother the approximation
-% $g$ is.
-%
-%%
-% We can use regularization by adding the option |'regularization'| to the
-% command <SO3FunHarmonic.approximate |approximate|> of the class
-% <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
-
-lambda = 0.0001;
-s = 2;
-SO3F3 = SO3FunHarmonic.approximate(ori,val,'regularization',lambda,'SobolevIndex',s)
-plot(SO3F3)
-
-%%
-% Plotting this function, we can immediately see, that we have a much
-% smoother function, i.e. the norm of |SO3F3| is smaller than the norm of
-% |SO3F2|.
-
-norm(SO3F2)
-norm(SO3F3)
-
-%% 
-% This smoothing results in a larger error in the data points,
-% which may not be much important since we had noisy function values given,
-% where we don't know the exact values anyways. 
-
-norm(eval(SO3F3, ori) - S.values) / norm(S.values)
-
-%%
-% Alternatively, the noisy data can be also approximated using a kernel
-% density. Using the |odf| flag, we additionally make sure that the function
-% does not have non-negative function values and is normalized to 1.
-% We may study the effect of adjusting the kernel halfwidth to the
-% error
+% Lets study the effect of adjusting the kernel halfwidth to the error.
 
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-    psi = SO3DeLaValleePoussinKernel('halfwidth',hw(k)*degree);
-    SO3Fhw = SO3FunRBF.approximate(ori,val,'kernel',psi,'odf');
-    err(k) = norm(eval(SO3Fhw, ori) - S.values) / norm(S.values);
+    SO3Fhw = interp(ori,val,'halfwidth',hw(k)*degree,'density');
+    err(k) = norm(SO3Fhw.eval(ori) - S.values) / norm(S.values);
 end
-%%
-psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
-SO3Fhw = SO3FunRBF.approximate(ori,val,'kernel',psi,'odf');
 
-plot(SO3Fhw)
-
-%%
-% We may find the best fit with a halfwidth of 5°. If the system is
-% underdetermined using a too small halfwidth, we may not be able to fit
-% kernel weights without additional assumptions about the smoothness of the
-% data.
-
-close all
 plot(hw,err,'o--')
 set(gca,'xdir','reverse')
 xlabel('halfwidth [deg]')
 ylabel('relative error')
 
+%%
+% We may find the best fit with a halfwidth of 7.5°. If the system is
+% underdetermined using a too small halfwidth, we may not be able to fit
+% kernel weights without additional assumptions about the smoothness of the
+% data.
 
-%% Quadrature
-%
-% Assume we have some experiment which yields an ODF or some general 
-% |@SO3Fun|, i.e. some evaluation routine. 
-
-mtexdata dubna
-odf = calcODF(pf,'resolution',5*degree,'zero_Range')
+SO3F6 = interp(ori,val,'halfwidth',7.5*degree,'density')
+% SO3F6 = SO3FunRBF.approximate(ori,val,'halfwidth',7.5*degree,'density')
+plot(SO3F6,'sigma')
 
 %%
-% Now we want to compute the corresponding |@SO3FunHarmonic|.
-% If our odf is an |@SO3Fun| or |@function_handle| we can use the command
-% <SO3FunHarmonic.approximate.html SO3FunHarmonic.approximate>
+% Note that the option |'halfwidth'| tells MTEX to use the 
+% |@SO3DeLaValleePoussinKernel| of this specific halfwidth. But we can also
+% choose a different <SO3Kernels.html rotational kernel function> by the
+% option |'kernel'|.
 
-F = SO3FunHarmonic.approximate(odf)
+psi = SO3AbelPoissonKernel('halfwidth',5*degree)
+SO3F7 = interp(ori,val,'kernel',psi,'density')
+% SO3F7 = SO3FunRBF.approximate(ori,val,'kernel',psi,'density')
+plot(SO3F7,'sigma')
 
-%%
-% Alternatively we can directly use the constructor, i.e. we use the command 
-% <SO3FunHarmonic.html SO3FunHarmonic>.
-
-F = SO3FunHarmonic(odf)
-
-%%
-% If there is an physical experiment which yields the function values for 
-% given orientations, we can also do the quadrature manually.
+%% Exact Interpolation
 %
-% Therefore we have to evaluate on an specific grid and afterwards we compute the
-% Fourier coefficients by the command <SO3FunHarmonic.quadrature.html SO3FunHarmonic.quadrature>.
-%
+% Assume, that our function values are not noisy. Then we may want to do
+% exact interpolation, i.e. we want the error to be almost 0.
+% 
+% Up to now we used a special rotational grid for the centers of rotational 
+% kernel function the approximated |@SO3FunRBF|.
+% Now we can add the flag |'exact'| to use the input nodes as centers for 
+% the rotational kernel functions. Therefore the kernel matrix $K$ becomes
+% symmetric, positive definite and the above linear system $K\cdot c=v$ has
+% a solution, i.e the error in lsqr may becomes 0.
+% The disadvantage is that the kernel matrix is no longer sparse. Hence the
+% computational costs may explode.
 
-% Specify the bandwidth and symmetries of the desired harmonic odf
-N = 50;
-SRight = odf.CS;
-SLeft = specimenSymmetry;
-
-% Compute the quadrature grid and weights
-SO3G = quadratureSO3Grid(N,'ClenshawCurtis',SRight,SLeft);
-% Because of symmetries there are symmetric equivalent nodes on the quadrature grid.
-% Hence we evaluate the routine on a smaller unique grid and reconstruct afterwards.
-% For SO3Fun's this is done internally by evaluation.
 tic
-v = odf.eval(SO3G);
+SO3F8 = SO3FunRBF.approximate(ori, S.values,'exact','halfwidth',7.5*degree);
 toc
-% Analogously we can do exactly the same by directly evaluating on the 
-% unique nodes of the quadratureSO3Grid
-%v = odf.eval(SO3G.uniqueNodes);
-% and reconstruct the full grid (of symmetric values) afterwards
-%v = v(SO3G.uniqueIndexes);
-
-% At the end we do quadrature
-F1 = SO3FunHarmonic.quadrature(SO3G,v)
-% or analogously
-% F = SO3FunHarmonic.quadrature(SO3G.nodes,v,'weights',SO3G.weights,'bandwidth',N,'ClenshawCurtis')
+plot(SO3F8)
 
 %%
-% Lets take a look on the result
+% Note that future computations with this |@SO3FunRBF| are also very time 
+% consuming, since most methods are faster if the center orientations 
+% build a specific grid, which is not the case here.
+%
+% The interpolation is done by |lsqr|. Hence the error is dependent from 
+% the termination conditions and not in machine precision.
 
-norm(F-F1)
-
-plot(F1)
-
+norm(SO3F8.eval(ori) - S.values) / norm(S.values)
 
 %%
-% Furthermore, if the evaluation step is very expansive it might be a good idea
-% to use the smaller Gauss-Legendre quadrature grid. 
-% The Gauss-Legendre quadrature lattice has half as many points as the default
-% Clenshaw-Curtis quadrature lattice. But the quadrature method is much 
-% more time consuming.
+% Also, interpolation might not guarantee non-negativity of the function
+
+min(SO3F8)
+
+%% LSQR-Parameters
+%
+% The |lsqr| solver and the |mlsq| solver, which are used to minimize the least
+% squares problem from above has some predefined termination conditions.
+% We can specify the method tolerance with the option |'tol'| 
+% (default 1e-3) and the maximum number of iterations by the option 
+% |'maxit'| (default 30/100).
+%
+% Thus we are able to control the precision of the result and computational 
+% time of the least squares methods in the approximation process.
 %
 
-% Compute the quadrature grid and weights
-SO3G = quadratureSO3Grid(N,'GaussLegendre',SRight,SLeft);
-% Evaluate your routine on that quadrature grid
+% default Parameters
 tic
-  v = odf.eval(SO3G);
+[f1,iter1] = SO3FunRBF.approximate(ori, val);
 toc
-% and do quadrature
-F2 = SO3FunHarmonic.quadrature(SO3G,v)
+fprintf(['Number of iterations = ',num2str(iter1),'\n', ...
+         'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)),'\n\n'])
 
-norm(F-F2)
-
-%%
-% It is also possible convert the harmonic function back to a kernel
-% density representation
-
-psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
-F3 = SO3FunRBF.approximate(F,'kernel',psi,'approxresolution',5*degree);
-
-% norm(F-F3)
-calcError(odf,F)
-calcError(odf,F3)
-
+% new termination conditions
+tic
+[f2,iter2] = SO3FunRBF.approximate(ori, val,'tol',1e-15,'maxit',100);
+toc
+fprintf(['Number of iterations = ',num2str(iter2),'\n', ...
+         'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])
 

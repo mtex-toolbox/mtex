@@ -1,4 +1,16 @@
-%% Approximation of noisy data
+%% Harmonic Approximation from Discrete Data
+%
+%%
+% On this page we consider the problem of determining the harmonic 
+% expansion (|@SO3FunHarmonic|) of a smooth orientation dependent function 
+% $f(\mathtt{ori})$ given a list of orientations $\mathtt{ori}_m$ and a 
+% list of corresponding values $v_m$. These values may be the volume of 
+% crystals with a specific orientation, as in the case of an ODF, or any 
+% other orientation dependent physical property.
+%
+% A more general documentation about approximation of discrete data in MTEX
+% can be found in the section <SO3FunApproximationTheory.html Approximating 
+% Orientation Dependent Functions from Discrete Data>.
 %
 %%
 % In general we should favor harmonic approximation, if the underlying
@@ -19,10 +31,10 @@
 %
 %%
 % In the following we take a look on the approximation problem from
-% <SO3FunApproximationInterpolation.html general approximation theory>,
+% <SO3FunApproximationTheory.html general approximation theory>,
 % where we compared the  harmonic approximation with kernel approximation.
 %
-% In the following we additionally assume that our function values are noisy.
+% Here we additionally assume that our function values are noisy.
 
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
@@ -31,9 +43,9 @@ val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
 plotSection(ori,val,'all','sigma')
 
-%%
-% The basic strategy underlying the 
-% <SO3FunHarmonic.approximate |approximate|>-command is to approximate the 
+%% Harmonic Approximation (without Regularization)
+%
+% The basic strategy is to approximate the 
 % data by a |@SO3FunHarmonic| (Harmonic series), i.e. a series of 
 % <WignerFunctions.html Wigner-D functions>, see 
 % <SO3FunHarmonicRepresentation.html SO3FunHarmonicSeries Basics of rotational harmonics>. 
@@ -70,13 +82,12 @@ plotSection(ori,val,'all','sigma')
 %
 %%
 % In MTEX approximation by harmonic expansion is computed by the command
-% <rotation.interp.html |interp|> command with the flag |'harmonic'|. 
-%
+% <rotation.interp.html |interp|> with the flag |'harmonic'|. 
 % Here MTEX internally call the underlying
 % <SO3FunHarmonic.approximate |SO3FunHarmonic.approximate|> command of the 
 % class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 %
-% The approximation process described above does not use regularisation. 
+% The approximation process described above does not use regularization. 
 % Therefore, for demonstration purposes, we'll set the parameter 
 % |'regularization'| to $0$ for the moment. More on this topic later.
 %
@@ -219,26 +230,31 @@ plot(SO3F5,'sigma')
 %%
 % Note that we have to adapt the regularization parameter $\lambda$.
 %
-%% Alternative example
+%% LSQR-Parameters
 %
-% Lets consider a academic example which do not describe an underlying odf.
-% Hence we have given noisy evaluations of the function
-% $$ f(\mat R) = \cos(\omega(R)) \cdot \sin(3\cdot \varphi_1(R))+\frac12 $$
-% in some random orientations, where $\omega(R)$ is the angle of the 
-% rotation $R$ and $\varphi_1(R)$ is the $varphi_1$-Euler angle of $R$.
-% 
+% Note that the |lsqr| solver from Matlab, which is used to minimize the least
+% squares problem from above has some termination conditions.
+% We can specify the method tolerance of |lsqr| with the option |'tol'| 
+% (default 1e-3) and the maximum number of iterations by the option 
+% |'maxit'| (default 100).
+%
+% Thus we are able to control the precision of the result and computational 
+% time of the lsqr-method in the approximation process.
+%
+% Moreover we obtain the |lsqr| parameters in a second output argument in the
+% <SO3FunHarmonic.approximate |approximate|>-command.
+%
 
-f = SO3FunHandle(@(r) cos(r.angle).*sin(3*r.phi1) + 0.5);
-plot(f,'sigma')
+% default Parameters
+tic
+[f1,p1] = SO3FunHarmonic.approximate(ori, val);
+toc
+fprintf(['Number of iterations = ',num2str(p1{3}),'\n', ...
+         'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)+5e-7*norm(f1,2)),'\n\n'])
 
-% random orientations and noisy evaluations
-ori2 = orientation.rand(1e5);
-val2 = f.eval(ori2);
-val2 = val2 + randn(size(val2)) * 0.05 * std(val2);
-
-%%
-% The harmonic approximation yields
-
-g = interp(ori2, val2,'harmonic')
-plot(g,'sigma')
-
+% new termination conditions
+tic
+[f2,p2] = SO3FunHarmonic.approximate(ori, val,'tol',1e-15);
+toc
+fprintf(['Number of iterations = ',num2str(p2{3}),'\n', ...
+         'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])
