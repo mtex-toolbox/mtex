@@ -1,4 +1,4 @@
-function SO3F = approximate(nodes, y, varargin)
+function [SO3F,iter] = approximate(nodes, y, varargin)
 % Approximate an SO3FunRBF by given function values at given nodes
 % w.r.t. some noise as described by [1].
 %
@@ -47,7 +47,7 @@ function SO3F = approximate(nodes, y, varargin)
 %
 % Syntax
 %   SO3F = SO3FunRBF.approximate(nodes,y)
-%   SO3F = SO3FunRBF.approximate(nodes,y,'exact')
+%   SO3F = SO3FunRBF.approximate(nodes,y,'halfwidth',1*degree)
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi)
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'exact')
 %   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi,'resolution',5*degree)
@@ -66,14 +66,18 @@ function SO3F = approximate(nodes, y, varargin)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','tol',1e-3,'maxit',100)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'density')
 %
+%   [SO3F,lsqrIter] = SO3FunRBF.approximate(___)
+%
 % Input
 %  nodes - rotational grid @SO3Grid, @orientation, @rotation or harmonic coefficents
 %  y     - function values on the grid (maybe multidimensional) or empty
 %  f     - @SO3Fun
 %  psi   - @SO3Kernel of the approximated SO3FunRBF (default: SO3DeLaValleePoussinKernel('halfwidth',5*degree))
+%  S3G   - @rotation
 %
 % Output
-%  SO3F - @SO3FunRBF
+%  SO3F     - @SO3FunRBF
+%  lsqrIter - number of iterations of the LSQR-Solver
 %
 % Options
 %  halfwidth        - halfwidth of the SO3Kernel of the result SO3FunRBF
@@ -86,9 +90,9 @@ function SO3F = approximate(nodes, y, varargin)
 %
 % Flags
 %  'exact'    - if rotations are given, then use nodes as center of result SO3FunRBF and try to do exact computations
-%  'harmonic' - if an SO3Fun is given, then use harmonic method for approximation, see above (spatial method is default)
 %  'density'  - ensure that result SO3FunRBF is a density function (i.e. positiv and mean is 1)
 %  LSQRsolver - ('lsqr'|'lsqnonneg'|'lsqlin'|'nnls'|'mlsq'|'mlrl') specify least square solver for spatial method --> default: lsqr
+%  'harmonic' - if an SO3Fun is given, then use harmonic method for approximation, see above (spatial method is default)
 %
 % LSQR-Solvers
 %  lsqr             - least squares (MATLAB)
@@ -139,13 +143,13 @@ if isa(nodes,'SO3Fun')
     y0 = f.eval(SO3G); % initial guess for coefficients
     fhat = calcFourier(f,'bandwidth',psi.bandwidth);
     % compute weights
-    chat = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
+    [chat,iter] = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
   else
     approxres = get_option(varargin,'approxresolution',res/2);
     nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
     y = f.eval(nodes);
     % compute weights
-    chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
+    [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin{:});
   end
   
 else
@@ -154,7 +158,7 @@ else
     error('Approximation of a SO3FunRBF is only possible for univariate functions.')
   end
   % compute weights
-  chat = spatialMethod(SO3G,psi,nodes,y,varargin{:});
+  [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin{:});
 
 end
 
@@ -192,7 +196,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function chat = spatialMethod(SO3G,psi,nodes,y,varargin)
+function [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
@@ -210,7 +214,7 @@ elseif numel(nodes)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
   varargin = ['mlsq','mean',meanV,varargin];
 end
 
-
+iter=[];
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
 
   case 'lsqlin' % requires optimization Toolbox
@@ -236,9 +240,9 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     
   case 'lsqr' % works good 
     
-    tol = get_option(varargin,'tol',1e-2);
-    iters = get_option(varargin,'maxit',30);
-    [chat,flag] = lsqr(Psi',y(:),tol,iters);
+    itermax = get_option(varargin,'maxit',30);
+    tol = get_option(varargin,'tol',1e-3);
+    [chat,flag,~,iter] = lsqr(Psi',y(:),tol,itermax);
     if flag == 1
       warning('lsqr:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
     end
@@ -260,9 +264,9 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     tol = get_option(varargin,'tol',1e-3);
     
     if check_option(varargin,'mlrl')
-      chat = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
+      [chat,iter] = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
     else
-      chat = mlsq(Psi.',y(:),c0(:),itermax,tol); % --> data should be positive; works nice 
+      [chat,iter] = mlsq(Psi.',y(:),c0(:),itermax,tol); % --> data should be positive; works nice 
     end
     
 end
@@ -274,7 +278,7 @@ end
 %                     harmonic Method - LSQR solver
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function chat = harmonicMethod(SO3G,psi,fhat,y,varargin)
+function [chat,iter] = harmonicMethod(SO3G,psi,fhat,y,varargin)
 
 assert(any(y(:) < 0) && any(0 < y(:)),...
   'SO3FunRBF:approximation','can not approximate non-density like functions with the harmonic method')
@@ -307,8 +311,8 @@ if deg2dim(psi.bandwidth+1)*length(SO3G)*8 < 0.5*2^30 % use direct computation
   Fstar(abs(Fstar) < 10*eps) = 0;
   Fstar = sparse(Fstar);
   
-  % lsqr
-  chat = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
+  % modified least square
+  [chat,iter] = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
   
 else % use NFFT-based matrix-vector multiplication
   
@@ -318,8 +322,8 @@ else % use NFFT-based matrix-vector multiplication
     W(deg2dim(i)+1:deg2dim(i+1)) = psi.A(i+1)/(2*i+1);
   end
   
-  % lsqr
-  chat = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat,c0(:),itermax,tol);
+  % modified least square
+  [chat,iter] = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat,c0(:),itermax,tol);
   
 end
 

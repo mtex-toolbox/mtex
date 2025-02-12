@@ -18,7 +18,7 @@ function [chat,k] = mlsq(Psi,I,c0,itermax,tol)
 %   k - number of iterations
 %
 
-if nargin < 5, tol = 1-5; end
+if nargin < 5, tol = 1e-5; end
 
 if nargin < 4, itermax = 100; end
 

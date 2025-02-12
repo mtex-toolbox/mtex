@@ -125,7 +125,7 @@ classdef SO3FunRBF < SO3Fun
   end
   
   methods (Static = true)
-    SO3F = approximate(v, y, varargin);
+    [SO3F,iter] = approximate(v, y, varargin);
     SO3F = example(varargin)
   end
   
