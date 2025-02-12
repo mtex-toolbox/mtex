@@ -25,8 +25,6 @@
 %
 % Here we additionally assume that our function values are noisy.
 
-error
-
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 
@@ -87,9 +85,9 @@ plot(SO3F1,'sigma')
 % that the resulting function is nonnegative and normalized to mean $1$.
 % This yields also the denoising effect.
 
-min(SO3F1)
+minValue = min(SO3F1)
 
-mean(SO3F1)
+meanValue = mean(SO3F1)
 
 %%
 % One has to keep in mind that we can not expect the error in the data 
@@ -209,7 +207,7 @@ norm(SO3F8.eval(ori) - S.values) / norm(S.values)
 %%
 % Also, interpolation might not guarantee non-negativity of the function
 
-min(SO3F8)
+minValue = min(SO3F8)
 
 %% LSQR-Parameters
 %
