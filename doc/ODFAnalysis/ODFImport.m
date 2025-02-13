@@ -36,10 +36,9 @@ fname = [mtexDataPath '/ODF/odf.txt'];
 % TODO: write about halfwidth and the missing 1-1 relationship between ODF
 % and single orientations.
 % the resolution used for the reconstruction of the ODF
-res = 10*degree;
 
 % load the data
-odf = SO3Fun.load(fname,'CS',cs,'resolution',res,'Bunge',...
+odf = SO3Fun.load(fname,'CS',cs,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
 
 % plot data

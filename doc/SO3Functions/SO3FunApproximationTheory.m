@@ -136,7 +136,7 @@ meanValue = mean(SO3F)
 % very small halfwidth may result in overfitting
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',2.5*degree);
-SO3F = interp(ori,val,'kernel',psi,'density');
+SO3F = interp(ori,S.values,'kernel',psi,'density');
 
 plot(SO3F,'sigma')
 
