@@ -91,7 +91,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
   mtexFig.drawNow(varargin{:});
   isNew = true;
           
-elseif check_option(varargin,'add2all') % add to or overide existing axes
+elseif check_option(varargin,'add2all') % add to or override existing axes
     
   for i = 1:numel(mtexFig.children)
     

@@ -1,5 +1,5 @@
 classdef S2AxisField
-% a class represeneting a axis field on the sphere
+% a class representing a axis field on the sphere
 
 methods
 
