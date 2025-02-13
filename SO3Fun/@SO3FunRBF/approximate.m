@@ -106,15 +106,16 @@ function [SO3F,iter] = approximate(nodes, y, varargin)
 % rotation/interp SO3FunHarmonic/approximate WignerD SO3FunRBF
 
 
-% Tests
-% check_WignerD
-% check_SO3FunRBFApproximation
+if isa(nodes,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  nodes = SO3FunHandle(nodes,SRight,SLeft);
+end
 
 if isa(nodes,'SO3Fun') && nargin>1, varargin = {y,varargin{:}}; end
 
 % get kernel of approximated SO3FunRBF
 hw = get_option(varargin,'halfwidth',5*degree);
-psi = getClass(varargin,'SO3Kernel',SO3DeLaValleePoussinKernel('halfwidth',hw));
+psi = get_option(varargin,'kernel',SO3DeLaValleePoussinKernel('halfwidth',hw));
 
 % get center of approximated SO3FunRBF
 res = get_option(varargin,'resolution',max(0.75*degree,psi.halfwidth));
@@ -122,8 +123,10 @@ if isa(nodes,'quaternion') && ~isa(nodes,'orientation')
   [CS,SS] = extractSym(varargin);
   nodes = orientation(nodes,CS,SS);
 end
-SO3G = extract_SO3grid(nodes,varargin{:},'resolution',res);
-res = SO3G.resolution;
+SO3G = get_option(varargin,'SO3Grid',equispacedSO3Grid(nodes.CS,nodes.SS,'resolution',res));
+try
+  res = SO3G.resolution;
+end
 if isa(nodes,'rotation') && check_option(varargin,'exact')
   SO3G = nodes;
 end
@@ -146,7 +149,7 @@ if isa(nodes,'SO3Fun')
     [chat,iter] = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});
   else
     approxres = get_option(varargin,'approxresolution',res/2);
-    nodes = extract_SO3grid(f,varargin{:},'resolution',approxres);
+    nodes = get_option(varargin,'SO3Grid',equispacedSO3Grid(f.CS,f.SS,'resolution',approxres));
     y = f.eval(nodes);
     % compute weights
     [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin{:});
@@ -280,12 +283,11 @@ end
 
 function [chat,iter] = harmonicMethod(SO3G,psi,fhat,y,varargin)
 
-assert(any(y(:) < 0) && any(0 < y(:)),...
+% TODO: lsqr should be possible for non density functions
+
+assert(all(y(:) < 0) || all(0 < y(:)),...
   'SO3FunRBF:approximation','can not approximate non-density like functions with the harmonic method')
 
-% if check_option(varargin,'mean') && (all(y > 0) || all(y < 0))
-%     varargin = ['mlsq',varargin];
-% end
 
 bw = psi.bandwidth;
 

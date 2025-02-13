@@ -55,8 +55,8 @@ plotSection(ori,val,'all','sigma')
 % the given orientations and $v_m$ the corresponding function values.
 %
 % This least squares problem can also be written in matrix vector notation
-% $ \argmin_{\vec x} \| K \cdot c - v \|, $
-% where $x=(x_1,\dots,x_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
+% $ \argmin_{c} \| K \cdot c - v \|, $
+% where $c=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
 % matrix $[\Psi(\cos\frac{\omega(x_m,R_n)}{2})]_{m,n}$.
 %
 % This least squares problem can be solved by the |lsqr| method from MATLAB,
