@@ -73,6 +73,10 @@ methods
     end
   end
 
+  function plane = rotate_outer(plane,rot)
+    plane.N = rot * plane.N;
+  end
+
 
 end
   
