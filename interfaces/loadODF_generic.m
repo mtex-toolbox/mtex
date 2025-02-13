@@ -116,6 +116,6 @@ switch method
   case 'interp'
 
     disp('  Interpolating the ODF. This might take some time...')
-    odf = interp(ori,weights,varargin{:});
+    odf = interp(ori,weights,'density',varargin{:});
 
 end
