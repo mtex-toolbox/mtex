@@ -21,6 +21,9 @@ function grains2 = slice(grains3,plane,varargin)
 
 if ~isa(plane,'plane3d'), plane = plane3d(plane,varargin{:}); end
 
+% we want to avoid that the plane go exactly through the vertices
+plane.d = plane.d + 0.001 * (-1)^(plane.d>0);
+
 % step 1: find intersected grains
 isInter = grains3.intersected(plane);
 

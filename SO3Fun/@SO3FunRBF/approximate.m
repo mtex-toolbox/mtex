@@ -114,7 +114,8 @@ end
 if isa(nodes,'SO3Fun') && nargin>1, varargin = {y,varargin{:}}; end
 
 % get kernel of approximated SO3FunRBF
-hw = get_option(varargin,'halfwidth',5*degree);
+hw = get_option(varargin,'resolution',5*degree);
+hw = get_option(varargin,'halfwidth',hw);
 psi = get_option(varargin,'kernel',SO3DeLaValleePoussinKernel('halfwidth',hw));
 
 % get center of approximated SO3FunRBF

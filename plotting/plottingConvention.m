@@ -105,7 +105,7 @@ classdef plottingConvention < matlab.mixin.Copyable
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
         ax.CameraUpVector = pC.north.xyz;
-
+        ax.CameraViewAngleMode = 'auto';
       else % map plot
 
         %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
@@ -113,7 +113,7 @@ classdef plottingConvention < matlab.mixin.Copyable
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
         ax.CameraUpVector = pC.north.xyz;
-        
+        ax.CameraViewAngleMode = 'auto';
       end
       
     end

@@ -26,7 +26,6 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute color coding ------------------------
 
 % ensure we do not plot perpendicular to the slice
-
 pC = grains.how2plot.copy;
 if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
@@ -73,7 +72,7 @@ if nargin>1 && isnumeric(varargin{1})
 
   legendNames = get_option(varargin,'displayName');
   
-    % if many legend names are given - seperate grains by color / value
+    % if many legend names are given - separate grains by color / value
   if iscell(legendNames) && max(property)<50
   
     varargin = delete_option(varargin,'displayName',1);
@@ -82,7 +81,7 @@ if nargin>1 && isnumeric(varargin{1})
     h = gobjects(max(property));
     for k = 1:max(property)
       h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
-        'parent', mP.ax,varargin{:},'DisplayName',legendNames{k}); %#ok<AGROW>
+        'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
       
       % reactivate legend information
       h{k}.Annotation.LegendInformation.IconDisplayStyle = 'on';

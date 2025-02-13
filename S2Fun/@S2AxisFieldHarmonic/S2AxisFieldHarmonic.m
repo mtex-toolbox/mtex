@@ -1,17 +1,17 @@
 classdef S2AxisFieldHarmonic < S2AxisField
-% a class represeneting a axis field on the sphere
+% a class representing a axis field on the sphere
 
 properties
-  sF;
+  sF
 end
 
 properties(Dependent = true, Access = protected)
-  xx;
-  xy;
-  yy;
-  xz;
-  yz;
-  zz;
+  xx
+  xy
+  yy
+  xz
+  yz
+  zz
 end
 
 properties(Dependent = true)
@@ -48,7 +48,7 @@ end
 
 methods(Static = true)
   sAF = quadrature(f, varargin)
-  sAF = approximation(v, y, varargin)
+  sAF = approximate(v, y, varargin)
   function sAF = normal
     sAF = S2AxisFieldHarmonic.quadrature(@(v) v(:),'bandwidth',2);
   end
