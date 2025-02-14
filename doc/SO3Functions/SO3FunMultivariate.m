@@ -54,7 +54,7 @@ nodes.CS = SO3Fun.dubna.CS;
 % Now the actual command to get a (2x1) |SO3F1| of type $~$
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> is
 
-SO3F1 = SO3FunHarmonic.approximate(nodes, y,'maxit',10)
+SO3F1 = SO3FunHarmonic.interpolate(nodes, y,'maxit',10)
 
 %%
 % It is also possible to interpolate one component by an

@@ -56,6 +56,7 @@ methods
       SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
       return
     end
+    
     if isa(fhat,'SO3Kernel')
       psi = fhat;
       bw = psi.bandwidth;
@@ -202,7 +203,8 @@ methods
 end
 
 methods (Static = true)
-  [SO3F,lsqrParameters] = approximate(v, y, varargin);
+  [SO3F,lsqrParameters] = interpolate(v, y, varargin);
+  SO3F = approximate(f, varargin);
   SO3F = quadrature(f, varargin);
   SO3F = adjoint(rot,values,varargin);
   SO3F = adjointNFSOFT(rot,values,varargin);

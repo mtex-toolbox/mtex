@@ -84,7 +84,7 @@ plotSection(ori,val,'all','sigma')
 % In MTEX approximation by harmonic expansion is computed by the command
 % <rotation.interp.html |interp|> with the flag |'harmonic'|. 
 % Here MTEX internally call the underlying
-% <SO3FunHarmonic.approximate |SO3FunHarmonic.approximate|> command of the 
+% <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|> command of the 
 % class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 %
 % The approximation process described above does not use regularization. 
@@ -95,7 +95,7 @@ plotSection(ori,val,'all','sigma')
 % the parameter bandwidth.
 
 SO3F1 = interp(ori, val,'harmonic','regularization',0,'bandwidth',17)
-% SO3F1 = SO3FunHarmonic.approximate(ori, val,'regularization',0,'bandwidth',17)
+% SO3F1 = SO3FunHarmonic.interpolate(ori, val,'regularization',0,'bandwidth',17)
 plot(SO3F1,'sigma')
 
 %%
@@ -111,7 +111,6 @@ norm(eval(SO3F1, ori) - val) / norm(val)
 % overdetermined case and obtain oversampling.  
 
 SO3F2 = interp(ori, val,'harmonic','regularization',0,'bandwidth',32)
-% SO3F2 = SO3FunHarmonic.approximate(ori, val,'regularization',0,'bandwidth',32)
 plot(SO3F2,'sigma')
 
 %%
@@ -162,13 +161,13 @@ legend('Bandwidth 17','Bandwidth 32')
 % approximation $f$.
 %
 %%
-% The command <SO3FunHarmonic.approximate |SO3FunHarmonic.approximate|> 
+% The command <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|> 
 % of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> applies
 % regularization by default. The default regularization parameter is 
 % $\lambda = 5\cdot 10^{-7}$ and the default Sobolev index $s=2$;
 
 SO3F3 = interp(ori, val,'harmonic','bandwidth',32)
-% SO3F3 = SO3FunHarmonic.approximate(ori,val,'bandwidth',32)
+% SO3F3 = SO3FunHarmonic.interpolate(ori,val,'bandwidth',32)
 plot(SO3F3,'sigma')
 
 %%
@@ -224,7 +223,7 @@ legend(['\lambda = ',num2str(reg(ind(1)))],['\lambda = ',num2str(reg(ind(2)))],[
 % Fourier coefficients should decrease more slowly.
 
 SO3F5 = interp(ori, val,'harmonic','bandwidth',32,'regularization',0.001,'SobolevIndex',1)
-% SO3F5 = SO3FunHarmonic.approximate(ori,val,'bandwidth',32,'regularization',0.001,'SobolevIndex',1)
+% SO3F5 = SO3FunHarmonic.interpolate(ori,val,'bandwidth',32,'regularization',0.001,'SobolevIndex',1)
 plot(SO3F5,'sigma')
 
 %%
@@ -242,19 +241,19 @@ plot(SO3F5,'sigma')
 % time of the lsqr-method in the approximation process.
 %
 % Moreover we obtain the |lsqr| parameters in a second output argument in the
-% <SO3FunHarmonic.approximate |approximate|>-command.
+% <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|>-command.
 %
 
 % default Parameters
 tic
-[f1,p1] = SO3FunHarmonic.approximate(ori, val);
+[f1,p1] = SO3FunHarmonic.interpolate(ori, val);
 toc
 fprintf(['Number of iterations = ',num2str(p1{3}),'\n', ...
          'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)+5e-7*norm(f1,2)),'\n\n'])
 
 % new termination conditions
 tic
-[f2,p2] = SO3FunHarmonic.approximate(ori, val,'tol',1e-15);
+[f2,p2] = SO3FunHarmonic.interpolate(ori, val,'tol',1e-15);
 toc
 fprintf(['Number of iterations = ',num2str(p2{3}),'\n', ...
          'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])

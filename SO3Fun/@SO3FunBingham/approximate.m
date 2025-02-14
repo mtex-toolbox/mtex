@@ -1,17 +1,14 @@
-function SO3F = approximate(nodes,y,varargin)
-% Approximate BinghamODF from individual orientations or a given SO3Fun
-% via kernel density estimation
+function SO3F = approximate(f,varargin)
+% Approximate BinghamODF from a given SO3Fun via kernel density estimation
 %
 % Syntax
 %   SO3F = SO3FunBingham.approximate(odf)
 %   SO3F = SO3FunBingham.approximate(odf,'resolution',5*degree)
 %   SO3F = SO3FunBingham.approximate(odf,'SO3Grid',S3G)
-%   SO3F = SO3FunBingham.approximate(nodes, y)
 %
 % Input
-%  odf   - @SO3Fun
-%  nodes - rotational grid @SO3Grid, @orientation, @rotation
-%  y     - function values on the grid (maybe empty)
+%  odf - @SO3Fun
+%  S3G - @rotation
 %
 % Output
 %  SO3F - @SO3FunBingham
@@ -21,23 +18,21 @@ function SO3F = approximate(nodes,y,varargin)
 %  SO3Grid    - grid nodes of the @SO3Grid
 %
 % See also
-% calcBinghamODF rotation/interp
+% calcBinghamODF SO3FunBingham
 
-if isa(nodes,'function_handle')
-  [SRight,SLeft] = extractSym([y,varargin]);
-  nodes = SO3FunHandle(nodes,SRight,SLeft);
+if isa(f,'function_handle')
+  [SRight,SLeft] = extractSym(varargin);
+  f = SO3FunHandle(f,SRight,SLeft);
 end
 
-if isa(nodes,'SO3Fun')
-  odf = nodes;
-  if nargin>1, varargin = {y,varargin{:}}; end
+if isa(f,'SO3Fun')
   res = get_option(varargin,'resolution',5*degree);
-  nodes = extract_SO3grid(odf,varargin{:},'resolution',res);
-  y = odf.eval(nodes);
+  nodes = extract_SO3grid(f,varargin{:},'resolution',res);
+  y = f.eval(nodes);
 end
 
 if isnumeric(nodes) && nargin==1
-  y=[];
+  y = [];
 end
 
 SO3F = calcBinghamODF(nodes,'weights',y);

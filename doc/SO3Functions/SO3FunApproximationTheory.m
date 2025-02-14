@@ -38,7 +38,7 @@ plotSection(ori, S.values,'all','sigma');
 %%
 % The Approximation by radial functions should be preferred, if:
 %
-% * The underlying function is a density function, i.e. it is positiv and has mean value 1 (use the flag 'density')
+% * The underlying function is a density function, i.e. it is positive and has mean value 1 (use the flag 'density')
 % * Low/Medium number of nodes
 %
 % The Approximation by harmonic expansion should be preferred, if:
@@ -52,9 +52,9 @@ plotSection(ori, S.values,'all','sigma');
 %% Approximation by Harmonic Expansion
 %
 % An approximation by harmonic expansion is computed by the command
-% <rotation.interp.html |interp|> command with the flag |'harmonic'|. 
-% Internally we use the 
-% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> method
+% <rotation.interp.html |interp|> with the flag |'harmonic'|. 
+% Internally MTEX uses the 
+% <SO3FunHarmonic.interpolate.html |SO3FunHarmonic.interpolate|> method
 % here.
 
 SO3F = interp(ori,S.values,'harmonic')
@@ -62,7 +62,7 @@ plot(SO3F,'sigma')
 
 
 %%
-% Note that |SO3FunHarmonic.approximate| does not aim at replicating the
+% Note that |SO3FunHarmonic.interpolate| does not aim at replicating the
 % values exactly. In fact the relative error between given data and the
 % function approximation is
 
@@ -110,8 +110,8 @@ min(SO3F)
 %% Approximation by Radial Functions 
 %
 % The internal command for approximating orientation dependent data by a
-% superposition of radial functions is <SO3FunRBF.approximate.html
-% |SO3FunRBF.approximate|>.
+% superposition of radial functions is <SO3FunRBF.interpolate.html
+% |SO3FunRBF.interpolate|>.
 % Generally we can use the <rotation.interp.html |interp|> command.
 
 SO3F = interp(ori,S.values,'density');
@@ -176,8 +176,15 @@ plot(odf)
 %%
 % Now we try to approximate the Bingham distribution from the given
 % orientations and there corresponding function values.
+%
+% This is computed by the <rotation.interp.html |interp|>-command with the 
+% flag |'bingham'|. 
+% Internally MTEX uses the 
+% <SO3FunBingham.interpolate.html |SO3FunBingham.interpolate|>-method
+% here.
 
-SO3F = SO3FunBingham.approximate(S3G,v)
+SO3F = interp(S3G,v,'bingham')
+% SO3F = SO3FunBingham.interpolate(S3G,v)
 
 figure(2)
 plot(SO3F)

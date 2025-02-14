@@ -43,7 +43,8 @@ classdef SO3FunRBF < SO3Fun
                  
       if nargin == 0, return;end
 
-      if isa(center,'SO3Fun')
+      % convert arbitrary SO3Fun to SO3FunRBF
+      if isa(center,'function_handle') || isa(center,'SO3Fun')
         if nargin>=4, varargin = {c0,varargin{:}}; end
         if nargin>=3, varargin = {weights,varargin{:}}; end
         if nargin>=2, varargin = {psi,varargin{:}}; end
@@ -125,7 +126,8 @@ classdef SO3FunRBF < SO3Fun
   end
   
   methods (Static = true)
-    [SO3F,iter] = approximate(v, y, varargin);
+    [SO3F,iter] = approximate(f, varargin);
+    [SO3F,iter] = interpolate(v, y, varargin);
     SO3F = example(varargin)
   end
   

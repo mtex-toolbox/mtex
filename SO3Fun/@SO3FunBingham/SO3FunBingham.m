@@ -40,7 +40,15 @@ classdef SO3FunBingham < SO3Fun
   
   methods
     
-    function SO3F = SO3FunBingham(kappa,A,cs)
+    function SO3F = SO3FunBingham(kappa,A,cs,varargin)
+
+      % convert arbitrary SO3Fun to SO3FunBingham
+      if isa(kappa,'function_handle') || isa(kappa,'SO3Fun')
+        if nargin>=3, varargin = {cs,varargin{:}}; end
+        if nargin>=2, varargin = {A,varargin{:}}; end
+        SO3F = SO3FunBingham.approximate(kappa,varargin{:});
+        return
+      end
         
       if nargin == 0, return;end
       
@@ -86,7 +94,8 @@ classdef SO3FunBingham < SO3Fun
 
   methods (Static = true)
     
-    SO3F = approximate(ori, varargin);
+    SO3F = approximate(f, varargin);
+    SO3F = interpolate(nodes,y, varargin);
     SO3F = example(varargin)
     
   end

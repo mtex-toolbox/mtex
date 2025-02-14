@@ -72,12 +72,12 @@ plotSection(ori,val,'all','sigma')
 % In MTEX approximation by a superposition of radial functions is computed 
 % by default with the command <rotation.interp.html |interp|>.
 % Here MTEX internally call the underlying
-% <SO3FunRBF.approximate |SO3FunRBF.approximate|> command of the 
+% <SO3FunRBF.interpolate |SO3FunRBF.interpolate|> command of the 
 % class <SO3FunRBF.SO3FunRBF |SO3FunRBF|>.
 %
 
 SO3F1 = interp(ori,val,'density')
-% SO3F1 = SO3FunRBF.approximate(ori,val,'density')
+% SO3F1 = SO3FunRBF.interpolate(ori,val,'density')
 plot(SO3F1,'sigma')
 
 %%
@@ -102,7 +102,7 @@ norm(SO3F1.eval(ori) - val) / norm(val)
 % function, the solver has less information and the result is not denoised.
 
 SO3F2 = interp(ori,val)
-% SO3F2 = SO3FunRBF.approximate(ori,val)
+% SO3F2 = SO3FunRBF.interpolate(ori,val)
 plot(SO3F2,'sigma')
 
 
@@ -114,7 +114,7 @@ plot(SO3F2,'sigma')
 % function whereas a very small halfwidth may result in overfitting
 
 SO3F3 = interp(ori,val,'halfwidth',2*degree,'density')
-% SO3F3 = SO3FunRBF.approximate(ori,val,'halfwidth',2*degree,'density')
+% SO3F3 = SO3FunRBF.interpolate(ori,val,'halfwidth',2*degree,'density')
 plot(SO3F3,'sigma')
 
 %%
@@ -127,7 +127,7 @@ plot(SO3F3,'sigma')
 % 'resolution'. Therefore we obtain a smoothed function of |SO3F1|.
 
 SO3F4 = interp(ori,val,'halfwidth',10*degree,'resolution',5*degree,'density')
-% SO3F4 = SO3FunRBF.approximate(ori,val,'halfwidth',2*degree,'resolution',5*degree,'density')
+% SO3F4 = SO3FunRBF.interpolate(ori,val,'halfwidth',2*degree,'resolution',5*degree,'density')
 plot(SO3F4,'sigma')
 
 %%
@@ -136,7 +136,7 @@ plot(SO3F4,'sigma')
 
 S3G = regularSO3Grid('resolution',5*degree,crystalSymmetry)
 SO3F5 = interp(ori,val,'SO3Grid',S3G,'density')
-% SO3F5 = SO3FunRBF.approximate(ori,val,'SO3Grid',S3G,'density')
+% SO3F5 = SO3FunRBF.interpolate(ori,val,'SO3Grid',S3G,'density')
 plot(SO3F5,'sigma')
 
 %%
@@ -161,7 +161,7 @@ ylabel('relative error')
 % data.
 
 SO3F6 = interp(ori,val,'halfwidth',7.5*degree,'density')
-% SO3F6 = SO3FunRBF.approximate(ori,val,'halfwidth',7.5*degree,'density')
+% SO3F6 = SO3FunRBF.interpolate(ori,val,'halfwidth',7.5*degree,'density')
 plot(SO3F6,'sigma')
 
 %%
@@ -172,7 +172,7 @@ plot(SO3F6,'sigma')
 
 psi = SO3AbelPoissonKernel('halfwidth',5*degree)
 SO3F7 = interp(ori,val,'kernel',psi,'density')
-% SO3F7 = SO3FunRBF.approximate(ori,val,'kernel',psi,'density')
+% SO3F7 = SO3FunRBF.interpolate(ori,val,'kernel',psi,'density')
 plot(SO3F7,'sigma')
 
 %% Exact Interpolation
@@ -190,7 +190,7 @@ plot(SO3F7,'sigma')
 % computational costs may explode.
 
 tic
-SO3F8 = SO3FunRBF.approximate(ori, S.values,'exact','halfwidth',7.5*degree);
+SO3F8 = SO3FunRBF.interpolate(ori, S.values,'exact','halfwidth',7.5*degree);
 toc
 plot(SO3F8)
 
@@ -223,14 +223,14 @@ minValue = min(SO3F8)
 
 % default Parameters
 tic
-[f1,iter1] = SO3FunRBF.approximate(ori, val);
+[f1,iter1] = SO3FunRBF.interpolate(ori, val);
 toc
 fprintf(['Number of iterations = ',num2str(iter1),'\n', ...
          'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)),'\n\n'])
 
 % new termination conditions
 tic
-[f2,iter2] = SO3FunRBF.approximate(ori, val,'tol',1e-15,'maxit',100);
+[f2,iter2] = SO3FunRBF.interpolate(ori, val,'tol',1e-15,'maxit',100);
 toc
 fprintf(['Number of iterations = ',num2str(iter2),'\n', ...
          'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])

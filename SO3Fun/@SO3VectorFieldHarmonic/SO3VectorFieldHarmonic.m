@@ -84,6 +84,7 @@ end
 methods(Static = true)
   SO3VF = quadrature(f, varargin)
   SO3VF = approximate(f, varargin)
+  SO3VF = interpolate(nodes, values, varargin)
 end
 
 end

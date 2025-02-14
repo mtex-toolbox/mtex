@@ -60,7 +60,7 @@ plot(odf,'sigma')
 % with one of this schemes, then we will get exactly this function back.
 %
 %%
-% In MTEX we use the command <SO3FunHarmonic.html SO3FunHarmonic> to expand
+% In MTEX we use the command <SO3FunHarmonic.html |SO3FunHarmonic|> to expand
 % any |@SO3Fun| or |@function_handle| into an |@SO3FunHarmonic|.
 % 
 
@@ -69,7 +69,7 @@ plot(SO3F1,'sigma')
 
 %%
 % Here MTEX internally calls the 
-% <SO3FunHarmonic.approximate.html SO3FunHarmonic.approximate> method.
+% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> method.
 
 SO3F1 = SO3FunHarmonic.approximate(odf)
 
@@ -89,7 +89,7 @@ plot(SO3F2,'sigma')
 % numbers), then we proceed as follows.
 %
 % One idea could be to perform the experiment for random orientations and 
-% <SO3Fun.Approximation approximate this discrete data> in a second step.
+% <SO3FunApproximationTheory interpolate this discrete data> in a second step.
 %
 % But, if we can choose the orientations by our own, we should better 
 % choose an optimal/minimal orientation grid, perform the experiment on 
@@ -97,7 +97,7 @@ plot(SO3F2,'sigma')
 % by quadrature.
 %
 % This is exactly what happens internally when we call the 
-% <SO3FunHarmonic.approximate.html SO3FunHarmonic>-command.
+% |SO3FunHarmonic|-command.
 % In fact this is a special case of approximation of discrete data for a 
 % very specific grid.
 %
@@ -117,7 +117,7 @@ v = EXPERIMENT(ori);
 
 % At the end we do quadrature
 E1 = SO3FunHarmonic.quadrature(CC_grid,v)
-% E1 = SO3FunHarmonic.approximate(CC_grid,v) % does the same
+% E1 = SO3FunHarmonic.interpolate(CC_grid,v) % does the same
 
 %%
 % Furthermore, if the experimental step is very expansive it might be a 
@@ -136,7 +136,7 @@ v = EXPERIMENT(ori);
 
 % Do quadrature
 E2 = SO3FunHarmonic.quadrature(GL_grid,v)
-% E2 = SO3FunHarmonic.approximate(GL_grid,v) % does the same
+% E2 = SO3FunHarmonic.interpolate(GL_grid,v) % does the same
 
 %%
 % Both of this quadrature schemes yield exactly the same |@SO3FunHarmonic|.
@@ -183,17 +183,17 @@ calcError(E1,E2)
 % be applied if we try to approximate a density function.
 %
 %%
-% In MTEX we use the command <SO3FunRBF.html SO3FunRBF> to represent
+% In MTEX we use the command <SO3FunRBF.html |SO3FunRBF|> to represent
 % any |@SO3Fun| or |@function_handle| by an |@SO3FunRBF|.
 % 
 
 SO3F3 = SO3FunRBF(odf,'density')
-% SO3F3 = SO3FunRBF.approximate(odf)
+% SO3F3 = SO3FunRBF.approximate(odf,'density')
 plot(SO3F3,'sigma')
 
 %%
 % Here MTEX internally calls the 
-% <SO3FunRBF.approximate.html SO3FunRBF.approximate> method.
+% <SO3FunRBF.approximate.html |SO3FunRBF.approximate|> method.
 %
 %%
 % The flag |'density'| tells MTEX to use the |mlsq| solver, which ensures 
@@ -221,7 +221,7 @@ plot(SO3F5,'sigma')
 
 %%
 
-SO3F6 = SO3FunRBF.approximate(F,'halfwidth',5*degree,'approxresolution',5*degree)
+SO3F6 = SO3FunRBF(F,'halfwidth',5*degree,'approxresolution',5*degree)
 plot(SO3F6,'sigma')
 
 %%
@@ -267,7 +267,7 @@ calcError(odf,SO3F6)
 %
 %%
 % In MTEX we call this by adding the option |'harmonic'| to the
-% <SO3FunRBF.html SO3FunRBF>-command.
+% <SO3FunRBF.html |SO3FunRBF|>-command.
 
 SO3F7 = SO3FunRBF(odf,'harmonic')
 plot(SO3F7,'sigma')

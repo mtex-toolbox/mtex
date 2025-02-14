@@ -14,10 +14,14 @@ function SO3VF = quadrature(f, varargin)
 %  SO3VF - @SO3VectorFieldHarmonic
 %
 % Options
-%  bw - degree of the Wigner-D functions (default: 64)
+%  bandwidth - degree of the Wigner-D functions (default: 64)
 %
+% See also
+% SO3FunHarmonic.quadrature
 
-% ------------- quadrature nodes are given -------------------
+
+% --------------------- (1) Input is (nodes,values) -----------------------
+
 if isa(f,'rotation')
   v = f;
   y = getClass(varargin,'vector3d'); % function values
@@ -44,6 +48,9 @@ if isa(f,'rotation')
   SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
   return
 end
+
+
+% ------ (2) Get nodes, values and weights in case of SO3VectorField ------
 
 if isa(f,'SO3VectorField')
   tS = f.tangentSpace;
@@ -89,6 +96,9 @@ if tS.isRight
 else
   f.SS = specimenSymmetry;
 end
+
+% ---------------- (3) Do quadrature on the components --------------------
+
 SO3F = SO3FunHarmonic.quadrature(f,varargin{:});
 SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
 
