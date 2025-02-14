@@ -2,7 +2,7 @@ function SO3F = adjoint(rot,values, varargin)
 % Compute the adjoint SO(3)-Fourier/Wigner transform of given evaluations 
 % on specific nodes.
 %
-% This method uses a inverse trivariate nfft/fft and an adjoint coefficient 
+% This method uses a adjoint trivariate nfft/fft and an adjoint coefficient 
 % transform which is based on a representation property of Wigner-D 
 % functions.
 % Hence it do not use the NFSOFT (which includes a fast polynom transform) 
@@ -29,6 +29,7 @@ function SO3F = adjoint(rot,values, varargin)
 %
 % See also
 % SO3FunHarmonic/quadrature SO3FunHarmonic/adjointNFSOFT
+% SO3FunHarmonic/approximate
 
 
 
