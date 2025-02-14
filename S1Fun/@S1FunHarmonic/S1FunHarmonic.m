@@ -128,8 +128,10 @@ methods
 end
 
 methods (Static = true)
-%   sF = approximate(v, y, varargin);
-  sF = quadrature(f, varargin);
+  S1F = interpolate(nodes, values, varargin);
+  S1F = approximate(f, varargin);
+  S1F = quadrature(f, varargin);
+  S1F = adjoint(nodes,values,varargin);
 end
 
 end

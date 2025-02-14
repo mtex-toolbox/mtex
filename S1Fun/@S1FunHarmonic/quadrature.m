@@ -15,7 +15,8 @@ function S1F = quadrature(f,varargin)
 %
 % Options
 %  bandwidth - minimal degree of the complex exponentials
-%
+%  S1Grid - quadrature grid
+%  weights - quadrature weights
 
 
 % --------------------- (1) Input is (nodes,values) -----------------------
@@ -25,28 +26,44 @@ if isa(f,'double')
   return
 end
 
-% ------------------------- (2) Input is S1Fun ----------------------------
+% ---------- (2) Get nodes, values and weights in case of S1Fun -----------
 
-if isa(f,'S1Fun')
-  g = @(x) f.eval(x);
-  S1F = S1FunHarmonic.quadrature(g,'bandwidth',f.bandwidth,varargin{:});
-  return
+if isa(f,'function_handle')
+  f = S1FunHandle(f);
 end
 
-% ------ (3) Get nodes, values and weights in case of function handle -----
+bw = get_option(varargin,'bandwidth', min(getMTEXpref('maxS1Bandwidth'),f.bandwidth));
 
-M = get_option(varargin,'bandwidth',getMTEXpref('maxS1Bandwidth'));
-N = 2*(M+1);
+S1G = get_option(varargin,'S1Grid',[]); S1G = S1G(:);
+weights = get_option(varargin,'weights',[]); weights = weights(:);
+if isempty(S1G)
+  % Gaussian Quadrature Grid as default
+  N = 2*(bw+1);
+  S1G = 2*pi/N*(0:N-1).';
+  weights = 1/N;
+  varargin = [varargin,'Gaussian'];
+elseif isempty(w)
+  % use Voronoi volumes as weights
+  S1G = sort(S1G);
+  dist = (S1G(2:end)-S1G(1:end-1)); 
+  distEnd = 2*pi+S1G(1)-S1G(end);
+  weights = 0.5*([distEnd;dist]+[dist;distEnd]);
+end
 
-x = 2*pi/N*(0:N-1).';
-y =  f(x(:));
+values =  f.eval(S1G(:));
 
-% S1F = S1FunHarmonicAdjoint(x,y,varargin{:},'weights',1/N,'bandwidth',N);
-fhat = fftshift(ifft(y),1);
-fhat(1,:) = [];
-S1F = S1FunHarmonic(fhat);
+% ------------------------ (3) Do adjoint NFFT ----------------------------
+
+S1F = S1FunHarmonic.adjoint(S1G,values,varargin{:},'weights',weights,'bandwidth',bw);
+
 
 end
+
+
+
+
+
+
 
 function S1F = S1FunHarmonicAdjoint(nodes,values,varargin)
   
