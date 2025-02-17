@@ -1,4 +1,6 @@
 function sVF = quadrature(f, varargin)
+% Compute the S2-Fourier/harmonic coefficients of an given @S2VectorField or
+% given evaluations on a specific quadrature grid.
 %
 % Syntax
 %   sVF = S2VectorField.quadrature(v, value)
@@ -8,7 +10,7 @@ function sVF = quadrature(f, varargin)
 % Input
 %   value - @vector3d
 %   v - @vector3d
-%   f - function handle in @vector3d
+%   f - @S2VectorField, @function_handle in vector3d
 %
 % Output
 %   sVF - @S2VectorFieldHarmonic
@@ -16,6 +18,10 @@ function sVF = quadrature(f, varargin)
 % Options
 %   bw - degree of the spherical harmonic (default: 128)
 %
+% See also
+% S2VectorFieldHarmonic/approximate S2VectorFieldHarmonic
+% S2FunHarmonic.quadrature
+
 
 if isa(f,'vector3d')
   v = f;
@@ -34,8 +40,12 @@ end
 sVF = S2VectorFieldHarmonic(sF);
 
 function g = g(v)
-g = f(v);
-g = g.xyz;
+  if isa(f,'S2VectorField')
+    g = f.eval(v);
+  else
+    g = f(v);
+  end
+  g = g.xyz;
 end
 
 end
