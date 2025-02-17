@@ -78,7 +78,7 @@ b = W.*y;
 % create plan
 xi = S2FunHarmonic(0); xi.bandwidth=bw;
 xi.eval(nodes,'createPlan');
-S2FunHarmonic.adjoint(nodes,y,'createPlan','bandwidth',bw);
+S2FunHarmonic.adjoint(nodes,y(:,1),'createPlan','bandwidth',bw);
 
 % least squares solution
 for index = 1:size(y,2)

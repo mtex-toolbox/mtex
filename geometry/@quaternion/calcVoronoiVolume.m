@@ -11,7 +11,9 @@ function w = calcVoronoiVolume(rot,V,C,varargin)
 % See also
 % quaternion\calcVoronoi voronoin vector3d/calcVoronoiArea
 
-rot = rot.project2FundamentalRegion;
+if isa(rot,'orientation')
+  rot = rot.project2FundamentalRegion;
+end
 
 % maybe voronoi decomposition has already been computed
 if nargin == 1, [V,C] = calcVoronoi(rot,'struct'); end

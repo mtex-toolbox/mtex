@@ -24,7 +24,7 @@ methods
     elseif isa(sF,'S2VectorField') || (isa(sF,'function_handle') && isa(sF(zvector),'vector3d'))
       sVF = S2VectorFieldHarmonic.quadrature(sF,varargin{:});
       return
-    elseif isa(fhat,'S2FunHarmonic')
+    elseif isa(sF,'S2FunHarmonic')
       % do not truncate
     elseif isa(sF,'S2Fun') || (isa(sF,'function_handle') && isa(sF(zvector),'double'))
       sF = S2FunHarmonic(sF,varargin{:});

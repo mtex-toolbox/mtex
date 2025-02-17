@@ -40,7 +40,8 @@ if length(vec)~=numel(values)
   S2FunHarmonic.adjoint(vec,values(:,1),'createPlan',varargin{:});
   sF=[];
   for ind = 1:prod(size(values,2))
-    sF(:,ind) = S2FunHarmonic.adjoint(vec,values(:,ind),'keepPlan',varargin{:});
+    G = S2FunHarmonic.adjoint(vec,values(:,ind),'keepPlan',varargin{:});
+    sF = [sF,G];
   end
   S2FunHarmonic.adjoint(zvector,1,'killPlan');
   sF = reshape(sF, s);

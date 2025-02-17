@@ -52,6 +52,11 @@ dublicated(ismember(dublicated,last)) = [];
 left(dublicated) = [];
 center(dublicated) = [];
 
+% delete the cells of the doubled quaternions
+ind = center<=n/2;
+center = center(ind);
+left = left(ind);
+
 C = cell(n,1);
 last = [0;find(diff(center));length(center)];
 for k=1:length(last)-1  
@@ -64,9 +69,8 @@ C = C(1:length(C)/2);
 % simplify if the same vertex occurs several times in a cell 
 C = cellfun(@unique,C,'UniformOutput',false);
  
-% Now in V some rotations occurs a second time by there opposite quaternion
+% TODO: Now in V some rotations occurs a second time by there opposite quaternion
 % for example try: unique(rotation(V))
-
 
 % compute edges
 if nargout>3
@@ -82,7 +86,9 @@ if nargout>3
   % E = adjacency(G);
 end
 
-
+if check_option(varargin,'struct')
+  C = struct('center',center(:),'vertices',left(:));
+end
 
 
 
