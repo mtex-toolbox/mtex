@@ -212,6 +212,16 @@ setColorRange('tight')
 mtexColorbar
 
 %%
+% For large regularization parameters the function is almost 0. The
+% regularization term has to much impact on the energy functional, compared 
+% to the error term.
+% As the regularization parameter is gradually reduced, the influence of 
+% the error term increases. Higher frequencies and stronger changes in the 
+% function values are no longer penalized as much. 
+% However, as soon as the regularisation parameter becomes too small, the 
+% noise increases, which leads to overfitting. Ultimately, we see 
+% oversampling again when $lambda$ approaches 0.
+%
 % Lets take a look on the spectra.
 
 ind = [3,5,9,13];

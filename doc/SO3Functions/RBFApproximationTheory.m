@@ -134,7 +134,7 @@ plot(SO3F4,'sigma')
 % We can also input centers $R_1,\dots,R_N$ for the rotational kernel 
 % functions by the option 'SO3Grid'.
 
-S3G = regularSO3Grid('resolution',5*degree,crystalSymmetry)
+S3G = regularSO3Grid('resolution',10*degree,crystalSymmetry)
 SO3F5 = interp(ori,val,'SO3Grid',S3G,'density')
 % SO3F5 = SO3FunRBF.interpolate(ori,val,'SO3Grid',S3G,'density')
 plot(SO3F5,'sigma')
@@ -192,7 +192,7 @@ plot(SO3F7,'sigma')
 tic
 SO3F8 = SO3FunRBF.interpolate(ori, S.values,'exact','halfwidth',7.5*degree);
 toc
-plot(SO3F8)
+plot(SO3F8,'sigma')
 
 %%
 % Note that future computations with this |@SO3FunRBF| are also very time 

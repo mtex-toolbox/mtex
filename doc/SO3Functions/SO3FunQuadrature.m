@@ -221,7 +221,7 @@ plot(SO3F5,'sigma')
 
 %%
 
-SO3F6 = SO3FunRBF(F,'halfwidth',5*degree,'approxresolution',5*degree)
+SO3F6 = SO3FunRBF(odf,'halfwidth',5*degree,'approxresolution',5*degree)
 plot(SO3F6,'sigma')
 
 %%
