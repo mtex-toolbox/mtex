@@ -4,9 +4,11 @@ function SO3F = quadrature(f, varargin)
 %
 % Therefore we obtain the Fourier coefficients with numerical integration
 % (quadrature), i.e. we choose a quadrature scheme of meaningful quadrature 
-% nodes $R_m$ and quadrature weights $\omega_m$
+% nodes $R_m$ and quadrature weights $\omega_m$ and compute
 %
-% $$ \hat f_n^{k,l} = \int_{SO(3)} f(R)\, \overline{D_n^{k,l}(R)} \mathrm{d}\my(R) \approx \sum_{m=1}^M \omega_m \, f(R_m) \, \overline{D_n^{k,l}(R_m)}. $$
+% $$ \hat f_n^{k,l} = \int_{SO(3)} f(R)\, \overline{D_n^{k,l}(R)} \mathrm{d}\my(R) \approx \sum_{m=1}^M \omega_m \, f(R_m) \, \overline{D_n^{k,l}(R_m)}, $$
+%
+% for all $n=0,\dots,N$ and $k,l=-n,\dots,n$. 
 %
 % Therefore this method evaluates the given SO3Fun on a with respect to 
 % symmetries fundamental Region. Afterwards it uses a inverse trivariate 

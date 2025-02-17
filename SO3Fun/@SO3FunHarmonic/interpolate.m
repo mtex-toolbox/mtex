@@ -2,8 +2,8 @@ function [SO3F,lsqrParameters] = interpolate(nodes, y, varargin)
 % Approximate an SO3FunHarmonic by given function values at given nodes 
 % w.r.t. some noise.
 %
-% For $M$ given orientations $R_i$ and corresponding function values $y_i$ 
-% we compute the SO3FunHarmonic $f$ of an specific bandwidth which 
+% Let $M$ orientations $R_i$ and corresponding function values $y_i$ be
+% given. We compute the SO3FunHarmonic $f$ of an specific bandwidth which 
 % minimizes the least squares problem
 %
 % $$\sum_{i=1}^M|f(R_i)-y_i|^2.$$
@@ -88,7 +88,7 @@ end
 y = reshape(yy, [length(nodes) s(2:end)]);
 
 
-
+% get interpolation parameters
 tol = get_option(varargin, 'tol', 1e-3);
 maxit = get_option(varargin, 'maxit', 100);
 
@@ -118,8 +118,9 @@ if regularize
 end
 
 % create plan
-% SO3FunHarmonic([1;1]).eval(nodes,'createPlan','nfsoft')
-% SO3FunHarmonic.quadrature(nodes,1,'createPlan','nfsoft','bandwidth',bw)
+% xi = SO3FunHarmonic([1;1]); xi.bandwidth=bw;
+% xi.eval(nodes,'createPlan','nfsoft');
+% SO3FunHarmonic.adjoint(nodes,y,'createPlan','nfsoft','bandwidth',bw);
 
 % least squares solution
 for index = 1:size(y,2)
@@ -133,7 +134,7 @@ end
 lsqrParameters = {flag,relres,iter,resvec,lsvec};
 
 % kill plan
-% SO3FunHarmonic.quadrature(1,'killPlan','nfsoft')
+% SO3FunHarmonic.adjoint(1,1,'killPlan','nfsoft')
 % SO3FunHarmonic(1).eval(1,'killPlan','nfsoft')
 
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft);

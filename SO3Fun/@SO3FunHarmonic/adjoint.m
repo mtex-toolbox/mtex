@@ -2,8 +2,8 @@ function SO3F = adjoint(rot,values, varargin)
 % Compute the adjoint SO(3)-Fourier/Wigner transform of given evaluations 
 % on specific nodes.
 %
-% This method uses a adjoint trivariate nfft/fft and an adjoint coefficient 
-% transform which is based on a representation property of Wigner-D 
+% This method uses an adjoint trivariate nfft/fft and an adjoint coefficient 
+% transform which is based on a representation property of the Wigner-D 
 % functions.
 % Hence it do not use the NFSOFT (which includes a fast polynom transform) 
 % as in the older method |SO3FunHarmonic.adjointNFSOFT|.
@@ -29,7 +29,7 @@ function SO3F = adjoint(rot,values, varargin)
 %
 % See also
 % SO3FunHarmonic/quadrature SO3FunHarmonic/adjointNFSOFT
-% SO3FunHarmonic/approximate
+% SO3FunHarmonic/approximate SO3FunHarmonic/interpolate
 
 
 
@@ -40,6 +40,16 @@ if check_option(varargin,'nfsoft')
 end
 
 persistent keepPlanNFFT;
+
+% kill plan
+if check_option(varargin,'killPlan') 
+  if isempty(keepPlanNFFT), return, end
+  nfftmex('finalize',keepPlanNFFT);
+  keepPlanNFFT = [];
+  SO3F=[];
+  return
+end
+
 
 % Multivariate functions
 if length(rot)~=numel(values)
@@ -55,17 +65,6 @@ if length(rot)~=numel(values)
   SO3F = reshape(SO3F, s);
   return
 end
-
-% kill plan
-if check_option(varargin,'killPlan') 
-  if isempty(keepPlanNFFT), return, end
-  nfftmex('finalize',keepPlanNFFT);
-  keepPlanNFFT = [];
-  SO3F=[];
-  return
-end
-
-
 
 % -------------- (1) get weights and values for quadrature ----------------
 
