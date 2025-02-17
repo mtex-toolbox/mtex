@@ -80,6 +80,8 @@ xi = S2FunHarmonic(0); xi.bandwidth=bw;
 xi.eval(nodes,'createPlan');
 S2FunHarmonic.adjoint(nodes,y(:,1),'createPlan','bandwidth',bw);
 
+% TODO: Regularization
+
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:, index), flag(index)] = lsqr(...
