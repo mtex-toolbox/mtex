@@ -11,7 +11,7 @@ function meanProp = grainMean(ebsd, prop, varargin)
 %   plot(grains,meanPropG)
 %
 %   % compute average grain property for each EBSD pixel
-%   meanPropE = grainMean(ebsd, ebsd.ci, grains);
+%   meanPropE = grainMean(ebsd, ebsd.ci);
 %   plot(ebsd,meanPropE)
 %
 %   % take not the mean but the maximum per grain
