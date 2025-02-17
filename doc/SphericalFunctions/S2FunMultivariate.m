@@ -52,7 +52,7 @@ y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 % Now the actual command to get a 2x1 |sF1| of type 
 % <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
 
-sF1 = S2FunHarmonic.approximate(nodes, y)
+sF1 = S2FunHarmonic.interpolate(nodes, y)
 
 %%
 % *Definition via function handle*
@@ -68,7 +68,8 @@ f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y,
 % Now we call the quadrature command to get 4x1 |sF2| of type 
 % <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
 
-sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
+sF2 = S2FunHarmonic(f, 'bandwidth', 50)
+% sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 
 %%
 % *Definition via Fourier-coefficients*

@@ -17,7 +17,7 @@ nodes = nodes(:);
 y = vector3d.byPolar(sin(3*nodes.theta), nodes.rho+pi/2);
 %%
 % Now the actual command to get |sVF1| of type |S2VectorFieldHarmonic|
-sVF1 = S2VectorFieldHarmonic.approximate(nodes, y)
+sVF1 = S2VectorFieldHarmonic.interpolate(nodes, y)
 
 %%
 % *Definition via function handle*
@@ -31,7 +31,9 @@ f = @(v) vector3d(v.x, v.y, 0*v.x);
 %% 
 % Now we can call the quadrature command to get |sVF2| of type
 % |S2VectorFieldHarmonic|
-sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
+sVF2 = S2VectorFieldHarmonic(@(v) f(v))
+% sVF2 = S2VectorFieldHarmonic.quadrature(@(v) f(v))
+
 
 %%
 % *Definition via <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>*

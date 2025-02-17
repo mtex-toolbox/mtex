@@ -27,7 +27,8 @@ y = vector3d(sin(5*nodes.x), 1, nodes.y, 'antipodal');
 %%
 % Now the actual command to get |sAF1| of type
 % <S2AxisFieldHarmonic.S2AxisFieldHarmonic |S2AxisFieldHarmonic|>
-sAF1 = S2AxisFieldHarmonic.approximate(nodes, y)
+
+sAF1 = S2AxisFieldHarmonic.interpolate(nodes, y)
 
 plot(sAF1)
 
@@ -45,7 +46,8 @@ f = @(v) vector3d(v.x, v.y, 0*v.x, 'antipodal');
 % Now you can call the quadrature command to get |sAF2| of type
 % <S2AxisFieldHarmonic.S2AxisFieldHarmonic |S2AxisFieldHarmonic|>
 
-sAF2 = S2AxisFieldHarmonic.quadrature(@(v) f(v))
+sAF2 = S2AxisFieldHarmonic(@(v) f(v))
+% sAF2 = S2AxisFieldHarmonic.quadrature(@(v) f(v))
 
 clf;
 quiver3(sAF2);
