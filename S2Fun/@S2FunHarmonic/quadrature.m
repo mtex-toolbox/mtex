@@ -1,4 +1,18 @@
 function sF = quadrature(f, varargin)
+% Compute the S2-Fourier/harmonic coefficients of an given @S2Fun or
+% given evaluations on a specific quadrature grid.
+%
+% Therefore we obtain the Fourier coefficients with numerical integration
+% (quadrature), i.e. we choose a quadrature scheme of meaningful quadrature 
+% nodes $v_m$ and quadrature weights $\omega_m$ and compute
+%
+% $$ \hat f_n^{k} = \int_{S^2} f(v)\, \overline{Y_n^{k}(v)} \mathrm{d}\my(v) \approx \sum_{m=1}^M \omega_m \, f(v_m) \, \overline{Y_n^{k}(v_m)}, $$
+%
+% for all $n=0,\dots,N$ and $k=-n,\dots,n$. 
+%
+% Therefore this method evaluates the given S2Fun on the quadrature grid.
+% Afterwards it uses the adjoint NFSFT (nonequispaced fast spherical 
+% Fourier transform) to quickly compute the above sums.
 %
 % Syntax
 %   sF = S2FunHarmonic.quadrature(nodes,values,'weights',w)
@@ -16,101 +30,46 @@ function sF = quadrature(f, varargin)
 % Options
 %  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %
+% See also
+% S2FunHarmonic/approximate S2FunHarmonic
 
-persistent keepPlan;
+% --------------------- (1) Input is (nodes,values) -----------------------
 
-% kill plan
-if check_option(varargin,'killPlan')
-  nfsftmex('finalize',keepPlan);
-  keepPlan = [];
+if isa(f,'vector3d')
+  sF = S2FunHarmonic.adjoint(f,varargin{:});
   return
 end
 
-bw = get_option(varargin, 'bandwidth', 128);
-
-if isa(f,'S2Fun'), f = @(v) f.eval(v); end
+% ---------- (2) Get nodes, values and weights in case of S2Fun ----------
 
 if isa(f,'function_handle')
-  nodes = quadratureS2Grid(bw,varargin{:});
-  W = nodes.weights(:);
-  nodes = nodes(:);
-  values = f(nodes(:));
-  nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+  sym = extractSym(varargin);
+  f = S2FunHandle(f,sym);
+end
+
+if f.antipodal
+  f.antipodal = 0;
+  varargin{end+1} = 'antipodal';
+end
+
+bw = get_option(varargin,'bandwidth', 128);
+
+if check_option(varargin,'S2Grid')
+  S2G = get_option(varargin,'S2Grid');
 else
-  nodes = f(:);
-  values = varargin{1};
-  W = get_option(varargin,'weights',1);
-  
-  if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)
-    % TODO: use a regular grid here and a faster search
-    n2 = equispacedS2Grid('resolution',0.5*degree);
-    id = find(n2,nodes);
-    values = accumarray(id,values,[length(n2),1]);
-    
-    id = values>0;
-    nodes = reshape(n2.subGrid(id),[],1);
-    values = values(id);
-    nodes.antipodal = f.antipodal;
-  end
+  S2G = quadratureS2Grid(bw,varargin{:});
 end
 
-if isempty(nodes)
-  sF = S2FunHarmonic(0);
-  return
-end
+% evaluate on S2Grid
+values = f.eval(S2G);
+S2G.how2plot = getClass(varargin,'plottingConvention',S2G.how2plot);
 
-if bw==0
-  sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
-  return
-end
+% ----------------------- (3) Do adjoint NSOFT ----------------------------
 
-% create plan
-if check_option(varargin,'keepPlan')
-  plan = keepPlan;
-else
-  plan = [];
-end
-
-% initialize nfsft
-if isempty(plan)
-  nfsftmex('precompute', bw, 1000, 1, 0);
-  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-  nfsftmex('precompute_x', plan);
-end
-
-s = size(values);
-values = reshape(values, length(nodes), []);
-num = size(values, 2);
-
-fhat = zeros((bw+1)^2, num);
-for index = 1:num
-  % adjoint nfsft
-  nfsftmex('set_f', plan, W(:) .* values(:, index));
-  nfsftmex('adjoint', plan);
-  fhat(:, index) = nfsftmex('get_f_hat_linear', plan);
-end
-
-% kill plan
-if check_option(varargin,'keepPlan')
-  keepPlan = plan;
-else
-  nfsftmex('finalize', plan);
-end
-
-
-% maybe we have a multivariate function
-try
-  fhat = reshape(fhat, [(bw+1)^2 s(2:end)]);
-end
-sF = S2FunHarmonic(fhat);
-sF.bandwidth = min([bw,sF.bandwidth]);
+sF = S2FunHarmonic.adjoint(S2G,values,varargin{:});
+sF.bandwidth = bw;
 
 % if antipodal consider only even coefficients
-if check_option(varargin,'antipodal') || nodes.antipodal 
+if check_option(varargin,'antipodal') || S2G.antipodal 
   sF = sF.even;
-end
-
-sF.how2plot = nodes.how2plot;
-
 end

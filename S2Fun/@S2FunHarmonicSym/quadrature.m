@@ -1,4 +1,6 @@
 function sFs = quadrature(varargin)
+% Compute the S2-Fourier/harmonic coefficients of an given @S2Fun or
+% given evaluations on a specific quadrature grid.
 %
 % Syntax
 %   sF = S2FunHarmonicSym.quadrature(nodes,values,'weights',w,CS)
@@ -18,6 +20,8 @@ function sFs = quadrature(varargin)
 %  symmetrise - apply symmetrisation, only required if the function is not yet symmetric
 %  bandwidth - harmonic cut off degree
 %
+% See also
+% S2FunHarmonic/quadrature
 
 % extract symmetry
 sym = getClass(varargin,'symmetry',specimenSymmetry);

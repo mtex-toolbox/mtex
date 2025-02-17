@@ -123,8 +123,10 @@ methods
 end
 
 methods (Static = true)
-  sF = approximate(v, y, varargin);
+  sF = approximate(f, varargin);
   sF = quadrature(f, varargin);
+  sF = adjoint(vec,values,varargin);
+  sF = interpolate(v, y, varargin);
   sF = regularisation(nodes,y,lambda,varargin);
 end
 
