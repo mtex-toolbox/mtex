@@ -1,24 +1,23 @@
-function sAF = approximate(v, y, varargin)
+function sAF = approximate(f, varargin)
+% computes an approximation from a given spherical axis field by computing 
+% the spherical Fourier coefficients with quadrature componentwise.
 %
 % Syntax
-%   sAF = S2AxisField.approximate(v, value)
-%   sAF = S2AxisField.approximate(v, value, 'bandwidth', bw)
+%   sAF = S2AxisFieldHarmonic.approximate(f)
+%   sAF = S2AxisFieldHarmonic.approximate(f, 'bandwidth', bw)
 %
 % Input
-%   value - @vector3d
-%   v - @vector3d (antipodal)
+%  f - function handle in @vector3d
 %
 % Output
-%   sAF - @S2AxisFieldHarmonic
+%  sAF - @S2AxisFieldHarmonic
 %
 % Options
-%   bw - degree of the spherical harmonic (default: 128)
+%  bw - degree of the spherical harmonic (default: 128)
 %
+% See also
+% S2AxisFieldHarmonic/quadrature S2AxisFieldHarmonic
 
-[x,y,z] = double(y);
-Ma = [x(:).*x(:),x(:).*y(:),y(:).*y(:),x(:).*z(:),y(:).*z(:),z(:).*z(:)];
-sF = S2FunHarmonic.approximate(v, Ma, varargin{:});
-
-sAF = S2AxisFieldHarmonic(sF);
+sAF = S2AxisFieldHarmonic.quadrature(f,varargin{:});
 
 end

@@ -1,9 +1,12 @@
 function sAF = quadrature(f, varargin)
+% Compute the S2-Fourier/harmonic coefficients of an given @S2AxisField or
+% given evaluations on a specific quadrature grid, by componentwise 
+% spherical quadrature.
 %
 % Syntax
-%   sF = S2AxisField.quadrature(v, value)
-%   sF = S2AxisField.quadrature(f)
-%   sF = S2AxisField.quadrature(f, 'bandwidth', M)
+%   sF = S2AxisFieldHarmonic.quadrature(v, value)
+%   sF = S2AxisFieldHarmonic.quadrature(f)
+%   sF = S2AxisFieldHarmonic.quadrature(f, 'bandwidth', bw)
 %
 % Input
 %  v - @vector3d 
@@ -11,8 +14,10 @@ function sAF = quadrature(f, varargin)
 %  f - function handle in @vector3d
 %
 % Options
-%  M - degree of the spherical harmonic (default: 128)
+%  bw - maximal degree of the spherical harmonic (default: 128)
 %
+% See also
+% S2AxisFieldHarmonic/approximate S2AxisFieldHarmonic
 
 if isa(f,'vector3d')
   nodes = f;
