@@ -24,6 +24,16 @@ methods
     % initialize a spherical vector field
     if nargin == 0, return; end
 
+    % do approximation in case of function input
+    if isa(sF,'S2AxisFieldHarmonic')
+      sVF = sF;
+      return
+    elseif isa(sF,'S2AxisField') || isa(sF,'function_handle')
+      sVF = S2AxisFieldHarmonic.quadrature(sF,varargin{:});
+      return
+    end
+
+    % constructor
     if length(sF) == 6
       sVF.sF = sF(:);
     end

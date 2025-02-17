@@ -1,5 +1,6 @@
 function sF = regularisation(nodes,y,lambda,varargin)
 % computes a regularisation
+%
 % Syntax
 %   sF = S2FunHarmonic.regularisation(S2Grid,f,lambda)
 %   sF = S2FunHarmonic.regularisation(S2Grid,f,lambda,'bandwidth',

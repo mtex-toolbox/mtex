@@ -28,8 +28,10 @@ methods
     % initialize a rotational vector field
     
     if nargin == 0, return; end
+
+    if isa(SO3F,'SO3Fun') || (isa(SO3F,'function_handle') && isnumeric(SO3F.eval(rotation.id)))
+      SO3F = SO3FunHarmonic(SO3F,varargin{:});
     
-    if isa(SO3F,'SO3FunHarmonic')
       SO3VF.SO3F = SO3FunHarmonic(SO3F(:),varargin{:});
       
       % extract symmetry
@@ -46,11 +48,11 @@ methods
       return
     end
     
-    if isa(SO3F,'SO3VectorField')
+    if isa(SO3F,'SO3VectorField') || (isa(SO3F,'function_handle') && isa(SO3F.eval(rotation.id),'vector3d'))
       SO3VF = SO3VectorFieldHarmonic.quadrature(SO3F,varargin{:});
       return
     end
-    error('Input should be of type SO3FunHarmonic or SO3VectorField.')
+    error('Input should be of type SO3Fun or SO3VectorField.')
 
   end
 

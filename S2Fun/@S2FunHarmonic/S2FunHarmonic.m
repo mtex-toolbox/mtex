@@ -25,7 +25,7 @@ methods
       sF.s = fhat.s;
       sF = truncate(sF);
       return
-    elseif isa(fhat,'S2Fun')
+    elseif isa(fhat,'S2Fun') || isa(fhat,'function_handle')
       sF = S2FunHarmonic.quadrature(fhat, varargin{:});
       return
     elseif isa(fhat,'S2Kernel')
@@ -99,14 +99,14 @@ methods
 
   function sF = set.isReal(sF,value)
     if ~value, return; end
-    s = size(sF);
-    sF = reshape(sF,prod(s));
+    sz = size(sF);
+    sF = reshape(sF,prod(sz));
     ind = zeros((sF.bandwidth+1)^2,1);
     for l = 0:sF.bandwidth
       ind(l^2+1:(l+1)^2) = (l+1)^2:-1:l^2+1;
     end
     sF.fhat = 0.5*(sF.fhat+conj(sF.fhat(ind,:)));
-    sF=reshape(sF,s);
+    sF=reshape(sF,sz);
   end
 
   function d = size(sF, varargin)
