@@ -46,11 +46,7 @@ end
 
 y = reshape(yy, [length(nodes) s(2:end)]);
 
-% get interpolation parameters
-tol = get_option(varargin, 'tol', 1e-6);
-maxit = get_option(varargin, 'maxit', 40);
-
-% determine bandwidth
+% determine bandwidth && antipodal option
 if check_option(varargin, 'antipodal') || nodes.antipodal
   nodes.antipodal = true;
   bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes))));
@@ -61,12 +57,24 @@ if check_option(varargin, 'antipodal') || nodes.antipodal
   end
 else
   bw = get_option(varargin, 'bandwidth', ceil(sqrt(length(nodes)/2)));
-  mask = speye((bw+1)^2);
+  mask = 1;
+end
+
+% regularization options
+lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},0);
+regularize = lambda > 0;
+What = get_option(varargin,'fourier_weights');
+if isempty(What) && regularize 
+  SobolevIndex = get_option(varargin,'SobolevIndex',2);
+  What = (2*(0:bw)+1).^(2*SobolevIndex);
+  What = repelem(What,1:2:(2*bw+1))';
 end
 
 % get weights
 W = get_option(varargin, 'weights');
-if isempty(W) 
+if strcmp(W,'equal')
+  W = 1/length(nodes);
+elseif isempty(W) 
   W = calcVoronoiArea(nodes)/4/pi;
 else
   W = W(ind);
@@ -74,18 +82,23 @@ end
 W = sqrt(W(:));
 
 b = W.*y;
+if regularize
+  b = [b;zeros((bw+1)^2,size(b,2))];
+end
+
+% get lsqr parameters
+tol = get_option(varargin, 'tol', 1e-6);
+maxit = get_option(varargin, 'maxit', 40);
 
 % create plan
 xi = S2FunHarmonic(0); xi.bandwidth=bw;
 xi.eval(nodes,'createPlan');
 S2FunHarmonic.adjoint(nodes,y(:,1),'createPlan','bandwidth',bw);
 
-% TODO: Regularization
-
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:, index), flag(index)] = lsqr(...
-    @(x, transp_flag) afun(transp_flag, x, nodes, W, bw, mask,varargin), ...
+    @(x, transp_flag) afun(transp_flag, x, nodes, W, bw, mask, regularize, lambda, What, varargin), ...
     b(:, index), tol, maxit);
   fhat(:, index) = mask*fhat(:, index);
 end
@@ -101,18 +114,27 @@ sF = S2FunHarmonic(fhat);
 sF.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
 
 % ensure symmetry if required
-if isa(nodes,'Miller'), sF = sF.symmetrise(nodes.CS); end
+if isa(nodes,'Miller')
+  sF = sF.symmetrise(nodes.CS); 
+end
 
 end
 
-function y = afun(transp_flag, x, nodes, W, bw, mask, varargin)
+function y = afun(transp_flag, x, nodes, W, bw, mask, regularize, lambda, What, varargin)
 
 if strcmp(transp_flag, 'transp')
 
+  if regularize
+    u = x(length(nodes)+1:end);
+    x = x(1:length(nodes));
+  end
   x = x .* W;
   % F = S2FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
   F = S2FunHarmonic.adjoint(nodes,x,'keepPlan','bandwidth',bw);
   y = mask * F.fhat;
+  if regularize
+    y = y + u .* (sqrt(lambda)*sqrt(What));
+  end
 
 elseif strcmp(transp_flag, 'notransp')
 
@@ -120,6 +142,9 @@ elseif strcmp(transp_flag, 'notransp')
   F.bandwidth = bw;
   y = F.eval(nodes,'keepPlan');
   y = y .* W;
+  if regularize
+    y = [y;F.fhat .* (sqrt(lambda)*sqrt(What))];
+  end
 
 end
 
