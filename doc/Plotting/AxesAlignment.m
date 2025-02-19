@@ -36,7 +36,7 @@ plot(v1,'label','v_1','figSize','small')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% Note that @plottingConvention is a handle class, i.e. changing
+% Note that |@plottingConvention| is a handle class, i.e. changing
 % |v1.how2plot| changes also |v2.how2plot|
 
 v2.how2plot
@@ -46,7 +46,7 @@ annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
 % In order to have different plotting axes alignments within one MTEX
-% session we have to define a new @plottingConvention by
+% session we have to define a new |@plottingConvention| by
 
 % instantiate a new plotting convention and sets it up
 pC2 = plottingConvention; pC2.north = yvector
@@ -62,8 +62,8 @@ plot(v2,'upper','label','v_2')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% When initiating a new @vector3d MTEX uses |plottingConvention.default| as
-% default plotting convention. This default plotting convention can be
+% When initiating a new |@vector3d| MTEX uses |plottingConvention.default|
+% as default plotting convention. This default plotting convention can be
 % changed by
 
 plotx2north
