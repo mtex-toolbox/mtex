@@ -61,6 +61,8 @@ for j = 1:length(sF)
     
     h{j} = surface(x,y,z,[d,d],'parent',mtexFig.gca,'edgecolor','none','facecolor','interp');
     
+  elseif check_option(varargin,'polarplot')
+    h{j} = polarplot(omega,d(1:end-1,j));
   else
     x = d(:, j) .* S2.x;
     y = d(:, j) .* S2.y;
@@ -73,10 +75,14 @@ for j = 1:length(sF)
     pC.outOfScreen = sec;
   end
 
-  pC.setView;
-  mtexFig.gca.DataAspectRatio = [1 1 1];
-  axis(mtexFig.gca,'off');
+  if isAxisHandle(mtexFig.gca)
+    mtexFig.gca.DataAspectRatio = [1 1 1];
+    axis(mtexFig.gca,'off');
+  end
+  pC.setView(mtexFig.gca);
+  
   optiondraw(h{j},varargin{:});
+  
 end
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
