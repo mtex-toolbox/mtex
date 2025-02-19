@@ -184,7 +184,7 @@ plot(SO3F,'sigma')
 tic
 SO3F = SO3FunRBF.interpolate(ori, S.values,'exact','halfwidth',7.5*degree);
 toc
-plot(SO3F)
+plot(SO3F,'sigma')
 
 %%
 % Note that future computations with this |@SO3FunRBF| are also very time 
