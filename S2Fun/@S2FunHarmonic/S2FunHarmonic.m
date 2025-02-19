@@ -127,7 +127,7 @@ methods (Static = true)
   sF = quadrature(f, varargin);
   sF = adjoint(vec,values,varargin);
   sF = interpolate(v, y, varargin);
-  sF = regularisation(nodes,y,lambda,varargin);
+  sF = regularize(nodes,y,lambda,varargin);
 end
 
 end

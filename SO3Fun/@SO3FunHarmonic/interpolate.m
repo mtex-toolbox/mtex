@@ -87,18 +87,18 @@ for k = 1:size(y,2)
 end
 y = reshape(yy, [length(nodes) s(2:end)]);
 
-
-% get interpolation parameters
-tol = get_option(varargin, 'tol', 1e-3);
-maxit = get_option(varargin, 'maxit', 100);
-
-% regularization options
-lambda = get_option(varargin,'regularization',5e-7);
-SobolevIndex = get_option(varargin,'SobolevIndex',2);
-regularize = lambda > 0;
-
 % decide bandwidth
 bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
+
+% regularization options
+lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},5e-7);
+regularize = lambda > 0;
+What = get_option(varargin,'fourier_weights');
+if isempty(What) && regularize 
+  SobolevIndex = get_option(varargin,'SobolevIndex',2);
+  What = (2*(0:bw)+1).^(2*SobolevIndex);
+  What = repelem(What,(1:2:(2*bw+1)).^2)';
+end
 
 % extract weights
 W = get_option(varargin, 'weights');
@@ -117,6 +117,10 @@ if regularize
   b = [b;zeros(deg2dim(bw+1),size(b,2))];
 end
 
+% get lsqr parameters
+tol = get_option(varargin, 'tol', 1e-3);
+maxit = get_option(varargin, 'maxit', 100);
+
 % create plan
 % xi = SO3FunHarmonic([1;1]); xi.bandwidth=bw;
 % xi.eval(nodes,'createPlan','nfsoft');
@@ -125,7 +129,7 @@ end
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:, index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
-    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex,varargin),...
+    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin),...
     b(:, index), tol, maxit);
 end
 if any(flag == 1)
@@ -143,7 +147,7 @@ SO3F = SO3FunHarmonic(fhat,SRight,SLeft);
 
 end
 
-function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,SobolevIndex,varargin)
+function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin)
 
 cutOff = get_option(varargin,'cutOffParameter',1);
 
@@ -158,9 +162,7 @@ if strcmp(transp_flag, 'transp')
   F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw,'cutoffParameter',cutOff);
   y = F.fhat;
   if regularize
-    F = SO3FunHarmonic(u);
-    SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);
-    y = y+SO3F.fhat;
+    y = y + u .* (sqrt(lambda)*sqrt(What));
   end
  
 elseif strcmp(transp_flag, 'notransp')
@@ -171,8 +173,7 @@ elseif strcmp(transp_flag, 'notransp')
   y = F.eval(nodes,'cutoffParameter',cutOff);
   y = y .* W;
   if regularize
-    SO3F = conv(F,sqrt(lambda)*(2*(0:bw)+1).'.^SobolevIndex);
-    y = [y;SO3F.fhat];
+    y = [y; F.fhat .* (sqrt(lambda)*sqrt(What))];
   end
 
 end

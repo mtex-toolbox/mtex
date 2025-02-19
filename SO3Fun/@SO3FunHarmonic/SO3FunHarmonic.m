@@ -208,7 +208,7 @@ methods (Static = true)
   SO3F = quadrature(f, varargin);
   SO3F = adjoint(rot,values,varargin);
   SO3F = adjointNFSOFT(rot,values,varargin);
-  %sF = regularisation(nodes,y,lambda,varargin);
+  SO3F = regularize(nodes,y,lambda,varargin);
   SO3F = WignerDmap(harmonicdegree,varargin);
   SO3F = example(varargin)
 end
