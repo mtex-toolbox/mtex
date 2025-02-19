@@ -18,16 +18,16 @@ function  [csAngle, csRadius] = characteristicShape(bc,bp,varargin)
 %  xy       - output in Cartesian coordiantes instead of polar coordiantes
 %
 
-bc=reshape(bc,[],1);
-bp=reshape(bp,[],1);
+bc = reshape(bc,[],1);
+bp = reshape(bp,[],1);
 
 % assume input comes from calcBoundaryTDF?
 if bp(1)==bp(end)
-    bp(end)= [];
-    bc(end)=[];
+  bp(end)= [];
+  bc(end)=[];
 end
 
-% make x,y coordiantes
+% make x,y coordinates
 xy=[cos(bc).*bp sin(bc).*bp];
 xy = cumsum(xy);
 % normalize to pathlength

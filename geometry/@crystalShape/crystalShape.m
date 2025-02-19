@@ -157,7 +157,7 @@ classdef crystalShape
 
 
     function cS = reshape(cS,varargin)
-      warning('not yet implemented')
+      % do nothing
     end
 
   end
