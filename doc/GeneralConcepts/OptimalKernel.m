@@ -2,28 +2,28 @@
 %
 %%
 % In the section <DensityEstimation.html density estimation> we have seen
-% that the correct choice of the kernel halfwidth is essential for creating a good
-% match between the true density function and the reconstructed density
-% function. If the halfwidth is set too small the reconstructed density
-% function is usually oscillating and the individual sampling points are
-% visible as sharp peaks. If the halfwidth is too large the resulting
-% density function is usually too smooth and does not reproduce the
-% features of the original density function. 
+% that the correct choice of the kernel halfwidth is essential for creating
+% a good match between the true density function and the reconstructed
+% density function. If the halfwidth is set too small the reconstructed
+% density function is usually oscillating and the individual sampling
+% points are visible as sharp peaks. If the halfwidth is too large the
+% resulting density function is usually too smooth and does not reproduce
+% the features of the original density function.
 %
 % Finding an optimal kernel halfwidth is a hard problem as the optimal
-% kernel halfwidth depends not only on the number of sampling points but also
-% on the smoothness of the true but unknown density function. 
-% MTEX offers several options set by flags during the kernel calculation operation.  A very
-% conservative choice for the kernel halfwidth that takes into account only
-% the number of sampling points is implemented in MTEX with the flag |'magicRule'|. The flag
-% |'RuleOfThumb'| considers both the number of sampling
-% points and the variance of the sampling points as an estimate of the
-% smoothness of the true density function. The most advanced (and default)
-% method for estimating the optimal kernel halfwidth is
-% <orientation.KLCV.html Kullback Leibler cross validation>.
-% This method tests different kernel half-widths on a subset of the
-% random sample and selects the halfwidth which best reproduces the
-% omitted points of the random sample.
+% kernel halfwidth depends not only on the number of sampling points but
+% also on the smoothness of the true but unknown density function. MTEX
+% offers several options set by flags during the kernel calculation
+% operation.  A very conservative choice for the kernel halfwidth that
+% takes into account only the number of sampling points is implemented in
+% MTEX with the flag |'magicRule'|. The flag |'RuleOfThumb'| considers both
+% the number of sampling points and the variance of the sampling points as
+% an estimate of the smoothness of the true density function. The most
+% advanced (and default) method for estimating the optimal kernel halfwidth
+% is <orientation.KLCV.html Kullback Leibler cross validation>. This method
+% tests different kernel half-widths on a subset of the random sample and
+% selects the halfwidth which best reproduces the omitted points of the
+% random sample.
 %
 % In order to demonstrate this functionality let's start with the following
 % orientation density function
@@ -33,8 +33,9 @@ cs = crystalSymmetry('321');
 
 % build a density function by combining a uniform texture with two
 % predefined texture components
-odf = 0.25*uniformODF(cs) + 0.25*unimodalODF(orientation.brass(cs)) + ...
-  0.5*fibreODF(fibre.alpha(cs),'halfwidth',10*degree);
+odf = 0.25*uniformODF(cs) + ...
+  0.25 * unimodalODF(orientation.byEuler([35,45,0]*degree,cs)) + ...
+  0.5 * fibreODF(Miller(7,-1,10,cs),vector3d(7,-5,11),'halfwidth',10*degree);
 
 % plot the density function as six sigma sections 
 plot(odf,'sections',6,'silent','sigma')
@@ -48,13 +49,15 @@ ori = odf.discreteSample(10000)
 
 %%
 % Next we estimate the optimal <ODFShapes.html kernel function> using the
-% command |<orientation.calcKernel.html calcKernel>| with the default settings.
+% command |<orientation.calcKernel.html calcKernel>| with the default
+% settings.
 
 psi  = calcKernel(ori)
 
 %%
-% This kernel can now be used to reconstruct the original ODF from the sampled points using the command
-% <DensityEsimation.html density estimation>
+% This kernel can now be used to reconstruct the original ODF from the
+% sampled points using the command <DensityEsimation.html density
+% estimation>
 
 odf_rec = calcDensity(ori,'kernel',psi)
 
@@ -102,9 +105,7 @@ for i = 1:6
   
 end
 
-%% 
 % Plot the error to the number of single orientations sampled from the original ODF.
-
 close all;
 loglog(10.^(1:length(e)),e,'LineWidth',2)
 legend('Default','RuleOfThumb','magicRule')

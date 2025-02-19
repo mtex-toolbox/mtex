@@ -2,14 +2,11 @@
 %
 %%
 % In this section we discuss geometric properties of grains that are
-% related to ellipses fitted to the grains. Additionally to the orientation
-% |omega|, and the lengths |a|, |b| of the long axis and short axes that
-% are computed by the command <grain2d.fitEllipse.html |[omega,a,b] =
-% grains.fitEllipse|>  the following properties based on the fitted
-% ellipses are available.
-%
-% || <grain2d.longAxis.html |longAxis|> || long axis as @vector3d || <grain2d.shortAxis.html |shortAxis|>  || short axis as @vector3d ||
-% || <grain2d.centroid.html |centroid|> || midpoint  || <grain2d.aspectRatio.html |aspectRatio|>  || long axis / short axis ||
+% related to ellipses fitted to the grains. Most importantly these are the
+% centroid |c|, the long axis |a| and the short axis |b| that are computed
+% by the command <grain2d.fitEllipse.html |[c,a,b] = grains.fitEllipse|>.
+% Based on these quantities the <grain2d.aspectRatio.html |aspectRatio|> is
+% defined as the quotient |a/b| between long and short axis.
 %
 % In order to demonstrate these properties we start by reconstructing the
 % grain structure from a sample EBSD data set.
@@ -43,7 +40,6 @@ plotEllipse(c,a,b,'lineColor','w','linewidth',2)
 % ellipse coincides with the actual grain area. Alternatively, one can also
 % scale the ellipse to fit the boundary length by using the option |boundary|.
 %
-
 %% Long and Short Axes
 %
 % The direction of the long and the short axis of the fitted ellipse can also
@@ -135,16 +131,16 @@ setView(ebsd.how2plot)
 
 %% *Shortest Caliper Distribution*
 %
-% Alternatively, we may wonder if the common long axis of grains is 
+% Alternatively, we may wonder if the common long axis of grains is
 % suitably represented by the direction normal to the shortest caliper of
 % the grains. This can particularly be the case for aligned rectangular
-% particles where the long axes often switch between the diagonals of 
-% the particle. The <caliper.html |caliper|> or Feret of grains represents 
-% the projection lengths of grains in relation to a projection direction.
-% With the option 'shortestPerp', the function returns the normal to the
-% projection direction with the shortest projection length of a grain. In 
+% particles where the long axes often switch between the diagonals of the
+% particle. The <caliper.html |caliper|> or Feret of grains represents the
+% projection lengths of grains in relation to a projection direction. With
+% the option |'shortestPerp'|, the function returns the normal to the
+% projection direction with the shortest projection length of a grain. In
 % order to plot the result we could use a <vector3d.histogram.html
-% |histogram|>, compute a density function or use <calcTDF.html |calcTDF|> 
+% |histogram|>, compute a density function or use <calcTDF.html |calcTDF|>
 % with a list of angles and a list of weights or lengths as input.
 
 cPerpF = caliper(grains('fo'),'shortestPerp');
@@ -179,9 +175,9 @@ legend('Forsterite','Enstatite','Location','eastoutside')
 % function of an entire grain always only consider the convex hull, grain
 % shape fabrics can also be characterized by the length weighted rose
 % diagram of the directions of grain boundary segments which considers the
-% entire shape defined by the grain boudnary segments of the grain.
+% entire shape defined by the grain boundary segments of the grain.
   
-subplot(1,2,2)
+subplot(1,2,1)
 [freqF,bcF] = calcTDF(grains('fo').boundary);
 plotTDF(bcF,freqF/sum(freqF));
 pdfF = circdensity(bcF, freqF, 5*degree,'sum');
@@ -190,6 +186,7 @@ plotTDF(bcF,pdfF);
 hold off
 mtexTitle('Forsterite grain boundaries')
 subplot(1,2,2)
+
 [freqE,bcE] = calcTDF(grains('en').boundary);
 plotTDF(bcE,freqE/sum(freqE));
 pdfE = circdensity(bcE, freqE, 5*degree,'sum');
@@ -197,7 +194,6 @@ hold on
 plotTDF(bcE,pdfE);
 hold off
 mtexTitle('Enstatite grain boundaries')
-
 
 %% Characteristic Shape
 %
@@ -207,14 +203,13 @@ mtexTitle('Enstatite grain boundaries')
 % if you recognize little peaks at 0 and 90 degree, they are most likely
 % related to this sampling artifact.
 %
-% If we just add up all the individual boundary elements of the rose diagram 
-% in order of increasing angles, we derive the characteristic shape. It can
-% be regarded as to represent the average grain shape.
-% The < grainBoundary.characteristicShape.html |characteristicShape|>does
-% not require entire grains as input but works with a list of
-% < BoundarySelect.html |grain boundaries|>. Many operations such as
+% If we just add up all the individual boundary elements of the rose
+% diagram in order of increasing angles, we derive the characteristic
+% shape. It can be regarded as to represent the average grain shape. The <
+% grainBoundary.characteristicShape.html |characteristicShape|>does not
+% require entire grains as input but works with a list of
+% <BoundarySelect.html grain boundaries>. Many operations such as
 % |aspectRatio| or |longAxis| also work on the characteristic shape.
-% 
 
 cshapeF = characteristicShape(grains('F').boundary);
 cshapeE = characteristicShape(grains('E').boundary);

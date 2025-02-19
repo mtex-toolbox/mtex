@@ -65,11 +65,10 @@ sF1 = S2FunHarmonic.interpolate(nodes, y)
 f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
 
 %% 
-% Now we call the quadrature command to get 4x1 |sF2| of type 
-% <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
+% Next we convert this function handle into a 
+% <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|> of size $4 \times 1$
 
 sF2 = S2FunHarmonic(f, 'bandwidth', 50)
-% sF2 = S2FunHarmonic.quadrature(f, 'bandwidth', 50)
 
 %%
 % *Definition via Fourier-coefficients*
@@ -137,7 +136,8 @@ min(sF3,[],1);
 
 %% Visualization of multivariate S2FunHarmonic
 %
-% The same plot commands as for univariate |S2FunHarmonic| work on multivariate as well.
-% The difference is that, now, each component is plotted next to one another.
+% The same plot commands as for univariate |S2FunHarmonic| work on
+% multivariate as well. The difference is that, now, each component is
+% plotted next to one another.
 
 %#ok<*VUNUS>

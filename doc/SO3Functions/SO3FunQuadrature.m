@@ -64,23 +64,17 @@ plot(odf,'sigma')
 % any |@SO3Fun| or |@function_handle| into an |@SO3FunHarmonic|.
 % 
 
-SO3F1 = SO3FunHarmonic(odf)
-plot(SO3F1,'sigma')
+SO3F = SO3FunHarmonic(odf)
+plot(SO3F,'sigma')
 
 %%
-% Here MTEX internally calls the 
-% <SO3FunHarmonic.approximate.html |SO3FunHarmonic.approximate|> method.
+% Internally MTEX calls <SO3FunHarmonic.approximate.html
+% |SO3FunHarmonic.approximate|>. We can specify the bandwidth of the
+% approximated |@SO3FunHarmonic| with the option |'bandwidth'| and we can
+% tell MTEX to use the other quadrature scheme.
 
-SO3F1 = SO3FunHarmonic.approximate(odf)
-
-%%
-% We can specify the bandwidth of the approximated |@SO3FunHarmonic| with 
-% the option |'bandwidth'| and we can tell MTEX to use the other quadrature
-% scheme.
-%
-
-SO3F2 = SO3FunHarmonic(odf,'bandwidth',10,'GaussLegendre')
-plot(SO3F2,'sigma')
+SO3F = SO3FunHarmonic(odf,'bandwidth',10,'GaussLegendre')
+plot(SO3F,'sigma')
 
 %%
 % If we do not have an |@SO3Fun| or |@function_handle|, but we try to 
@@ -88,8 +82,9 @@ plot(SO3F2,'sigma')
 % Matlab function (where we can put in specific orientations and get out 
 % numbers), then we proceed as follows.
 %
-% One idea could be to perform the experiment for random orientations and 
-% <SO3FunApproximationTheory interpolate this discrete data> in a second step.
+% One idea could be to perform the experiment for random orientations and
+% <SO3FunApproximationTheory interpolate this discrete data> in a second
+% step.
 %
 % But, if we can choose the orientations by our own, we should better 
 % choose an optimal/minimal orientation grid, perform the experiment on 
@@ -110,8 +105,9 @@ ss = specimenSymmetry;
 % Compute the quadrature grid and weights
 CC_grid = quadratureSO3Grid(bw,'ClenshawCurtis',cs,ss);
 
-% Because of symmetries there are symmetric equivalent nodes in the quadrature grid.
-% Hence we perform our experiment on a smaller unique grid.
+% Because of symmetries there are symmetric equivalent nodes in the
+% quadrature grid. Hence we perform our experiment on a smaller unique
+% grid.
 ori = CC_grid(:)
 v = EXPERIMENT(ori);
 
@@ -120,12 +116,11 @@ E1 = SO3FunHarmonic.quadrature(CC_grid,v)
 % E1 = SO3FunHarmonic.interpolate(CC_grid,v) % does the same
 
 %%
-% Furthermore, if the experimental step is very expansive it might be a 
-% good idea to use the smaller Gauss-Legendre quadrature grid. 
-% The Gauss-Legendre quadrature lattice has half as many points as the 
-% default Clenshaw-Curtis quadrature lattice. But the quadrature method is 
-% slightly more time consuming.
-%
+% Furthermore, if the experimental step is very expansive it might be a
+% good idea to use the smaller Gauss-Legendre quadrature grid. The
+% Gauss-Legendre quadrature lattice has half as many points as the default
+% Clenshaw-Curtis quadrature lattice. But the quadrature method is slightly
+% more time consuming.
 
 % Compute the Gauss-Legendre quadrature grid and weights
 GL_grid = quadratureSO3Grid(bw,'GaussLegendre',cs,ss);
@@ -136,7 +131,6 @@ v = EXPERIMENT(ori);
 
 % Do quadrature
 E2 = SO3FunHarmonic.quadrature(GL_grid,v)
-% E2 = SO3FunHarmonic.interpolate(GL_grid,v) % does the same
 
 %%
 % Both of this quadrature schemes yield exactly the same |@SO3FunHarmonic|.
