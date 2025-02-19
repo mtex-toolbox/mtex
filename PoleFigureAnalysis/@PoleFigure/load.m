@@ -75,5 +75,8 @@ end
 % structure coefficients
 if check_option(varargin,'superposition')
   pf.c = get_option(varargin,'superposition');
+else
+  for k = 1:length(pf.allH)
+    pf.c{k} = ones(1,length(pf.allH{k}));
+  end
 end
-
