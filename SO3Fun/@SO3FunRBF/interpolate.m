@@ -11,11 +11,11 @@ function [SO3F,iter] = interpolate(nodes, y, varargin)
 %
 % $$ f(R)=\sum_{j=1}^{N}w_j\psi(\omega(R_j,R)) $$
 %
-% with specific kernel $\psi$ centered at $N$ nodes weighted by $w_j,\sum_{j}^{N}w_{j}=1$
-% as described by [1].
+% with specific kernel $\psi$ centered at $N$ nodes weighted by
+% $w_j,\sum_{j}^{N}w_{j}=1$ as described by [1].
 %
-% Therefore we set up a (sparse) system matrix $\Psi\in\mathbb{R}^{M\times N}$ 
-% with entries
+% Therefore we set up a (sparse) system matrix $\Psi\in\mathbb{R}^{M\times
+% N}$ with entries
 %
 % $$ \Psi_{i,j}=\psi(\omega(R_i,R_j)) $$
 %
@@ -23,11 +23,10 @@ function [SO3F,iter] = interpolate(nodes, y, varargin)
 % $R_i,i=1,...,M$ and grid nodes $R_j,j=1,...,N$. This system is solved by 
 % least squares gradient descent.
 %
-% Instead of modified least squares (mlsq) also the
-% maximum-likelihood estimate (mlrl) can be computed. Note that both of this
-% methods have the condition that we approximate a odf (the mean of the
-% SO3Fun is 1). We can also use some standard least squares methods (for 
-% example lsqr).
+% Instead of modified least squares (mlsq) also the maximum-likelihood
+% estimate (mlrl) can be computed. Note that both of this methods have the
+% condition that we approximate a odf (the mean of the SO3Fun is 1). We can
+% also use some standard least squares methods (for example lsqr).
 %
 % Reference: [1] Schaeben, H., Bachmann, F. & Fundenberger, JJ.
 % Construction of weighted crystallographic orientations capturing a given

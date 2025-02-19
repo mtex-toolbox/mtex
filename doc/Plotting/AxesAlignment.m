@@ -1,38 +1,52 @@
-%% Axes Alignment
+%% On Screen Coordinate System Alignment 
 %
 %%
-% In MTEX each plottable variable has a property |how2plot| which tells
-% MTEX how to align the corresponding coordinate system on screen.
+% In this section we discuss how MTEX aligns coordinate systems on the
+% screen and how to change it. In MTEX it is possible to mix different
+% alignment. At the same time MTEX tries to be as consistent as possible,
+% e.g. by aligning EBSD maps and pole figures with respect to the same
+% reference directions.
+%
+% Different alignments are typically used when
+% 
+% * displaying directions in crystal vs. specimen reference frame
+% * displaying orthogonal 2d EBSD sections
+% 
+%%
+% In MTEX each plottable variable has a property |how2plot|
 
-v1 = vector3d(1,1,1)
-v2 = vector3d(-1,1,1)
+v1 = vector3d(1,1,1);
+v2 = vector3d(-1,1,1);
 v1.how2plot
 
-plot(v1,'upper','label','v_1')
+%%
+% The property |how2plot| is a handle class of type |@plottingConvention|
+% and tells MTEX how to align the corresponding coordinate system on
+% screen.
+
+plot(v1,'label','v_1','figSize','small')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% The property |how2plot| is a handle class of type @plottingConvention. 
 % We can change it by setting |north|, |east| or |outOfScreen| to other
 % directions.
 
 v1.how2plot.outOfScreen = yvector
-plot(v1,'upper','label','v_1')
+plot(v1,'label','v_1','figSize','small')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% Note that because @plottingConvention is a handle class, i.e. changing
+% Note that |@plottingConvention| is a handle class, i.e. changing
 % |v1.how2plot| changes also |v2.how2plot|
 
 v2.how2plot
 
-nextAxis
-plot(v2,'upper','label','v_2')
+plot(v2,'label','v_2','figSize','small')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% In order to have different plotting axes alignments within one MTEX session
-% we have to define a new @plottingConvention by
+% In order to have different plotting axes alignments within one MTEX
+% session we have to define a new |@plottingConvention| by
 
 % instantiate a new plotting convention and sets it up
 pC2 = plottingConvention; pC2.north = yvector
@@ -48,8 +62,8 @@ plot(v2,'upper','label','v_2')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
-% When initiating a new @vector3d MTEX uses |plottingConvention.default| as
-% default plotting convention. This default plotting convention can be
+% When initiating a new |@vector3d| MTEX uses |plottingConvention.default|
+% as default plotting convention. This default plotting convention can be
 % changed by
 
 plotx2north
@@ -81,13 +95,3 @@ pf.how2plot.makeDefault
 plottingConvention.default
 
 %%
-
-
-
-
-
-
-
-
-
-

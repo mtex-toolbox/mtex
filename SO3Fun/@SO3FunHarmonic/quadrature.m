@@ -77,7 +77,7 @@ SRight = f.SRight; SLeft = f.SLeft;
 % Curtis quadrature grid in fundamental region. 
 % Therefore adjust the bandwidth to crystal and specimen symmetry.
 bw = adjustBandwidth(N,SRight,SLeft);
-if check_option('SO3Grid')
+if check_option(varargin,'SO3Grid')
   SO3G = get_option(varargin,'SO3Grid');
 elseif check_option(varargin,'GaussLegendre')
   SO3G = quadratureSO3Grid(bw,'GaussLegendre',SRight,SLeft,'ABG');

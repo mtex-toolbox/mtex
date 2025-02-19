@@ -60,7 +60,7 @@ for k=1:itermax
 end
 
 if k == itermax
-  warning('mlsq:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
+  % warning('mlsq:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
 end
 
 

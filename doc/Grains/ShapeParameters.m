@@ -35,7 +35,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 ebsd = ebsd('indexed');
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
+[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 
 % smooth them
 grains = smooth(grains,5);
@@ -198,4 +198,4 @@ fractalDimension = ab(1)
 % It is important to understand that the fractal dimension computed this
 % way heavily depends on the smoothing applied to the grain boundaries.
 %
-%#ok<*NOPTS>
+%#ok<*NOPTS> 

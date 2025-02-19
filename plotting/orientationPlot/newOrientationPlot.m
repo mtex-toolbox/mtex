@@ -35,7 +35,7 @@ if ~isNew && isappdata(mtexFig.gca,'orientationPlot')
   
   if oP.CS1.properGroup.id ~= CS1.properGroup.id ...
       || oP.CS2.properGroup.id ~= CS2.properGroup.id
-    warning('Possible symmetry mismach!')
+    %warning('Possible symmetry mismach!')
   end
   return, 
 end

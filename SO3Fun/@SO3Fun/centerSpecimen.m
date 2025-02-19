@@ -26,9 +26,9 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %
 % Example:
 % 
-%   %Starting with an synthetic odf with orthorhombic symmetry
-%   CS = crystalSymmetry('cubic')
-%   SS = specimenSymmetry('orthorhombic')
+%   % starting with an synthetic odf with orthorhombic symmetry
+%   CS = crystalSymmetry('cubic');
+%   SS = specimenSymmetry('orthorhombic');
 %   ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...
 %          orientation.byEuler( 60*degree, 54.73*degree, 45*degree,CS,SS) ...
 %          orientation.byEuler(70*degree,90*degree,45*degree,CS,SS)...
@@ -36,17 +36,18 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %
 %   odf = unimodalODF(SS*ori);
 %
-%   %we define a rotational displacement
-%   r2 = rotation.byEuler( 6*degree,4*degree,0*degree)
+%   % we define a rotational displacement
+%   r2 = rotation.byEuler( 6*degree,4*degree,0*degree);
 %   odf = rotate(odf,r2);
 %   h = [Miller(0,0,1,CS),Miller(0,1,1,CS),Miller(1,1,1,CS)];
-%   plotPDF(odf,h,'antipodal','complete');
+%   plotPDF(odf,h,'antipodal','complete','upper');
 %
-%   %and now retrieve the rotation back
+%   % lets try to retrieve the original orthorhombic odf back
 %   [odr,r,v1,v2] = centerSpecimen(odf);
 %   plotPDF(odr,h,'antipodal')
 %
-
+% See also
+%
 
 % get options
 if nargin < 2, v0 = xvector; end
