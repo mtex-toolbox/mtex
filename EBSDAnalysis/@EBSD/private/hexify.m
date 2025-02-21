@@ -122,7 +122,7 @@ else
   
 end
 
-ebsdGrid = EBSDhex(vector3d(x,y,0),rot,phaseId(:),...
+ebsdGrid = EBSDhex(vector3d(x,y,0,ebsd.how2plot), rot, phaseId(:), ...
   ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop,'opt',ebsd.opt);
 
 % go with the old unitcell if it is very close to the new one to avoid

@@ -23,7 +23,7 @@ nGrid(isinf(nGrid)) = 1;
   linspace(ext(3),ext(4),nGrid(2)),...
   linspace(ext(5),ext(6),nGrid(3)));
 
-pos = vector3d(x,y,z);
+pos = vector3d(x,y,z,ebsd.how2plot);
 sGrid = size(x);
 
 % if original unit cell was to much different
