@@ -3,7 +3,7 @@ function c = char(s,varargin)
 
 if check_option(varargin,'compact')
 
-  c = 'xyz';
+  c = char(s.how2plot);
   if s.id > 1, c = [c,' (' s.pointGroup ')']; end
   
 elseif check_option(varargin,'verbose')
