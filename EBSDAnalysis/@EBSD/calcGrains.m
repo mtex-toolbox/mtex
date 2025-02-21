@@ -271,7 +271,7 @@ end
      
       % now check for the grain boundary criterion
       if any(ndx) && isa(ebsd.CSList{p},'symmetry')    
-        connect(ndx) = feval(['gbc_' gbc],...
+        connect(ndx) = feval("gbc_" + gbc,...
           ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
       else
         connect(ndx) = 1;
