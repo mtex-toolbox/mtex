@@ -18,7 +18,6 @@ function h = plotAngleDistribution(obj,varargin)
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
 mtexFig.keepAspectRatio = false;
 
-
 % compute angles
 plotType = 'line';
 if isa(obj,'symmetry')
@@ -46,6 +45,8 @@ if ~isempty(h)
 
   if strcmp(plotType,'bar')
     delete(h); % remove old bars
+    % reset color order
+    mtexFig.gca.ColorOrderIndex = 1;
   
     % add a new column
     density(:,end+1) = 0;
@@ -97,7 +98,8 @@ if strcmp(plotType,'bar')
   xlim(mtexFig.gca,[0,max(bins)/degree])
 
   % update legend
-  lg = [lg;{[obj.CS.mineral '-' obj.SS.mineral]}];
+  displayName = get_option(varargin,'DisplayName',[obj.CS.mineral '-' obj.SS.mineral]);
+  lg = [lg;{displayName}];
   [h.DisplayName] = deal(lg{:});
   
 else
