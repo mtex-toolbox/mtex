@@ -66,6 +66,26 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     end
 
+    function c = char(pC,varargin)
+
+      arrows = '←→↑↓'; xyz = 'xyz';
+
+      [ud,north] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]);
+      c = [xyz(north) arrows(ud+2)];
+
+      
+      [lr,east] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]);
+
+      if isempty(ud) || isempty(lr)
+        c = 'xyz';
+      elseif lr == 1
+        c = [c,arrows(2),xyz(east)];
+      else
+        c = [xyz(east),arrows(1),fliplr(c)]; 
+      end
+
+    end
+
     function setView(pC,ax)
 
       if nargin == 1, ax = gca; end

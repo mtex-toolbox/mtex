@@ -1,7 +1,7 @@
 function  display(grains,varargin)
 % standard output
 
-displayClass(grains,inputname(1));
+displayClass(grains,inputname(1),'moreInfo',char(grains.how2plot,'compact'));
 
 disp(' ')
 %disp(char(dynOption(grains)));
