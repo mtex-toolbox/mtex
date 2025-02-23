@@ -18,7 +18,7 @@
 % subgrain boundaries and discuss whether they vote for twist or tilt
 % boundaries. We start by importing an sample EBSD data set and computing
 % all subgrain boundaries as it is described in more detail in the chapter
-% <subGrainBoundaries.html Subgrain Boundaries>.
+% <SubGrainBoundaries.html Subgrain Boundaries>.
 
 % load some test data
 mtexdata forsterite silent
