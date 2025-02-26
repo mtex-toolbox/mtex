@@ -52,21 +52,23 @@ end
 
 
 % Multivariate functions
-if length(rot)~=numel(values)
-  s = size(values); s = s(2:end);
-  values = reshape(values,length(rot),[]);
-  SO3FunHarmonic.adjoint(rot,values(:,1),'createPlan',varargin{:});
-  SO3F = [];
-  for ind = 1:prod(size(values,2))
-    G = SO3FunHarmonic.adjoint(rot,reshape(values(:,ind),size(rot)),'keepPlan',varargin{:});
-    SO3F = [SO3F,G];
-  end
-  SO3FunHarmonic.adjoint(rotation.id,1,'killPlan');
-  SO3F = reshape(SO3F, s);
-  return
-end
+% if length(rot)~=numel(values)
+%   s = size(values); s = s(2:end);
+%   values = reshape(values,length(rot),[]);
+%   SO3FunHarmonic.adjoint(rot,values(:,1),'createPlan',varargin{:});
+%   SO3F = [];
+%   for ind = 1:prod(size(values,2))
+%     G = SO3FunHarmonic.adjoint(rot,reshape(values(:,ind),size(rot)),'keepPlan',varargin{:});
+%     SO3F = [SO3F,G];
+%   end
+%   SO3FunHarmonic.adjoint(rotation.id,1,'killPlan');
+%   SO3F = reshape(SO3F, s);
+%   return
+% end
 
 % -------------- (1) get weights and values for quadrature ----------------
+
+len = size(values,2); % multivariate case
 
 if isa(rot,'orientation')
   SRight = rot.CS; SLeft = rot.SS;
@@ -77,9 +79,10 @@ else
 end
 
 if isa(rot,'quadratureSO3Grid') 
+  %  TODO: Multivariate quadratureSO3Grid
   N = rot.bandwidth;
   if strcmp(rot.scheme,'ClenshawCurtis')
-    values = values(rot.iuniqueGrid);
+    values = reshape(values(rot.iuniqueGrid,:),[size(rot.iuniqueGrid) size(values,2)]);
     W = rot.weights;
   else % use unique grid in NFFT in case of Gauss-Legendre quadrature
     if SRight.multiplicityPerpZ*SLeft.multiplicityPerpZ == 1
@@ -157,18 +160,25 @@ end
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 
   % Possibly use smaller input matrix by using the symmetries
-  ghat = ifftn( W.* reshape(values,size(W)) ,[2*N+2,4*N,2*N+2]);
-  ghat = ifftshift(ghat);
-  ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end);
+  if len==1
+    ghat = ifftn( W.* reshape(values,size(W),len) ,[2*N+2,4*N,2*N+2]);
+    ghat = ifftshift(ghat);
+  else % multivariate
+    ghat = ifft(ifft(ifft(W.*reshape(values,[size(W),len]),2*N+2,1),4*N,2),2*N+2,3);
+    ghat = ifftshift(ifftshift(ifftshift(ghat,1),2),3);
+  end
+
+  ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end,:);
 
 elseif check_option(varargin,'directComputation')
-  % use symmetries
+  % TODO: use symmetries
   
   % Do adjoint nsoft directly by evaluating the sum
   nodes = Euler(rot(:),'nfft').';
-  ghat = zeros(2*N+1,2*N+1,2*N+1);
+  ghat = zeros(2*N+1,2*N+1,2*N+1,len);
+
   for m = 1:length(rot)
-    ghat = ghat + values(m)*exp(1i * ( ...
+    ghat = ghat + reshape(values(m,:),1,1,1,[]).*exp(1i * ( ...
       (-N:N)*nodes(2,m) ...
       + (-N:N)'*nodes(3,m) ...
       + permute(-N:N,[1,3,2])*nodes(1,m)) );
@@ -177,12 +187,15 @@ elseif check_option(varargin,'directComputation')
 else
 
   % adjoint nfft
-  nfftmex('set_f', plan, W(:) .* values(:));
+  ghat = zeros(8*(N+1)^3,len);
+  for i=1:len
+  nfftmex('set_f', plan, W(:) .* values(:,i));
   nfftmex('adjoint', plan);
   % adjoint Fourier transform
-  ghat = nfftmex('get_f_hat', plan);
-  ghat = reshape(ghat,2*N+2,2*N+2,2*N+2);
-  ghat = ghat(2:end,2:end,2:end);
+  ghat(:,i) = nfftmex('get_f_hat', plan);
+  end
+  ghat = reshape(ghat,2*N+2,2*N+2,2*N+2,len);
+  ghat = ghat(2:end,2:end,2:end,:);
 
 end
 
@@ -205,10 +218,12 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
   sym([1,3]) = 1;
 end
 % use adjoint Wigner transform
-fhat = wignerTrafoAdjointmex(N,ghat,flags,sym);
+fhat = zeros(deg2dim(N+1),len);
+for i=1:len
+  progress(i,len)
+  fhat(:,i) = wignerTrafoAdjointmex(N,ghat(:,:,:,i),flags,sym);
+end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
-
-
 
 % kill plan
 if check_option(varargin,'keepPlan')
