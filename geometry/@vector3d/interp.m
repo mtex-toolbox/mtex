@@ -17,7 +17,7 @@ function sF = interp(v,y,varargin)
 %
 % Input
 %  v - data points @vector3d
-%  y - data values (@double, @vector3d)
+%  y - data values (double, @vector3d)
 %  vi - interpolation points @vector3d
 %
 % Output

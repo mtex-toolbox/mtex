@@ -13,11 +13,11 @@ function out = intersected(grains,plane,varargin)
 %   grains = grains(is_intersected)
 %
 % Input
-%  grains   - @grain3d
-%  plane    - @plane3d
+%  grains - @grain3d
+%  plane  - @plane3d
 %
 % Output
-%  out  - @logical
+%  out  - logical
 %
 % See also
 % grain3d/slice

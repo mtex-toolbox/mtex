@@ -38,8 +38,8 @@ childOri(wasChildGrain) = job.grains.meanRotation(wasChildGrain);
 parentOri = orientation.nan(length(job.grains),1,job.csParent);
 parentOri(wasParentGrain) = job.grains.meanRotation(wasParentGrain);
 
-% weights are previous grainSize
-weights = job.grains.grainSize;
+% weights are previous numPixel
+weights = job.grains.numPixel;
 
 % (1) fake merge
 [~, mergeId] = merge(job.grains,job.graph,'testRun');

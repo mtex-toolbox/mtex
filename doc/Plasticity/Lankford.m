@@ -133,24 +133,18 @@ legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','northeas
 %% Example 3: The Lankford parameter of an EBSD map
 % In this demonstration an hcp titanium dataset is used
 
-% load an mtex ebsd map
+% load an MTEX ebsd map
 mtexdata titanium
 
 % define the crystal system
 CS = ebsd.CS;
 
 % reconstruct the grains
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
-
-% remove small grains
-ebsd(grains(grains.grainSize <= 5)) = [];
-
-% recalculate the grains
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',6);
 
 % plot the orientations
 plot(ebsd,ebsd.orientations);
-hold all
+hold on
 plot(grains.boundary,'lineWidth',2);
 hold off
 
@@ -172,7 +166,7 @@ sS = [slipSystem.basal(CS,1),...
 % In the case of the latter, the default reference direction is $x$.
 
 theta = linspace(0,90*degree,19);
-[R, M, minM] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.grainSize,'verbose');
+[R, M, minM] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.numPixel,'verbose');
 
 %%
 % The following plot shows the Lankford parameter, as a function

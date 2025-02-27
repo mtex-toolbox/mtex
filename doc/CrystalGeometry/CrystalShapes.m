@@ -86,7 +86,7 @@ color = cKey.orientation2color(grains.meanOrientation);
 plot(grains,color,'FaceAlpha',0.5,'linewidth',2)
 
 % find the big ones
-isBig = grains.grainSize>50;
+isBig = grains.numPixel>50;
 
 % define a list of crystal shape that is oriented as the grain mean
 % orientation and scaled according to the grain area

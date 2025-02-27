@@ -5,15 +5,10 @@
 % analyzing data with very small deviation in orientation. Let us consider
 % the following calcite data set
 
-% plotting conventions
-plotx2east
 mtexdata sharp
-
-ebsd = ebsd('calcite');
 
 ipfKey = ipfColorKey(ebsd);
 
-close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
@@ -75,14 +70,14 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %% 
 % We observe that the orientation map is almost completely gray, except for
-% the  outliers which appears black. Next, we use the option |maxAngle| to
-% increase contrast in the grayish part
+% the  outliers which appears black. Next, we use the option |'maxAngle'|
+% to increase contrast in the grayish part
 
 ipfKey.maxAngle = 7.5*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 %%
-% You may play around with the option |maxAngle| to obtain better
+% You may play around with the option |'maxAngle'| to obtain better
 % results. As for interpretation keep in mind that white color represents
 % the mean orientation and the color becomes more saturated and later dark
 % as the orientation to color diverges from the mean orientation.
@@ -103,9 +98,8 @@ hold off
 %
 %% The axis angle color key
 % A second option to visualize small orientation deviation, e.g. within a
-% grains is the <axisAngleColorKey.axisAngleColorKey.html axis-angle color
-% key>. In order to demonstrate this color key let us first separate the
-% EBSD into grains.
+% grains is the |@axisAngleColorKey|. In order to demonstrate this color
+% key let us first separate the EBSD into grains.
 
 [grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
 grains = smooth(grains,5);
@@ -115,7 +109,7 @@ grains = smooth(grains,5);
 % symmetry and a reference orientation |oriRef|. Often the meanorientation
 % of the grains is a good choice.
 
-ipfKey = axisAngleColorKey(ebsd('indexed'));
+ipfKey = axisAngleColorKey(ebsd);
 
 % use for the reference orientation the grain mean orientation
 ipfKey.oriRef = grains.meanOrientation(ebsd('indexed').grainId);
@@ -153,7 +147,7 @@ mtexdata forsterite silent
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
 % find largest grains
-largeGrains = grains(grains.grainSize > 800);
+largeGrains = grains(grains.numPixel > 800);
 
 ebsd = ebsd(largeGrains(1))
 

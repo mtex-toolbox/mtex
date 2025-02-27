@@ -19,8 +19,8 @@ function varargout = max(varargin)
 %  c        - double
 %
 % Output
-%  v - double
-%  pos - @double
+%  v   - double
+%  pos - double
 %
 % Options
 %  kmax          - number of iterations

@@ -11,7 +11,7 @@ setMTEXpref('FontSize',14)
 ebsd = mtexdata('martensite');
 %% Compute, filter and smooth grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',2*degree);
-ebsd(grains(grains.grainSize < 3)) = [];
+ebsd(grains(grains.numPixel < 3)) = [];
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',2*degree);
 grains = smooth(grains,5);
 %% Define and refine parent-to-child orientation relationship

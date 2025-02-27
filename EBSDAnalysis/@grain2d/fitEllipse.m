@@ -26,7 +26,7 @@ function [c,a,b] = fitEllipse(grains,varargin)
 % plot(ebsd('indexed'),ebsd('indexed').orientations,'micronbar','off')
 % hold on
 % plot(grains.boundary,'lineWidth',2)
-% [c,a,b] = fitEllipse(grains(grains.grainSize>20));
+% [c,a,b] = fitEllipse(grains(grains.numPixel>20));
 % plotEllipse(c,a,b,'lineColor','w','lineWidth',2)
 % hold off
 %

@@ -7,9 +7,9 @@ end
 
 properties (Dependent=true)
   bandwidth  % maximum harmonic degree / bandwidth
-  antipodal  %
-  even
-  odd
+  antipodal  % f(x) = f(x + pi)
+  even       % f(x) = f(-x)
+  odd		 % f(x) = -f(-x) 
   isReal
 end
 

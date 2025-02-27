@@ -41,16 +41,8 @@ seg_angle = 10;
 min_points = 10;
 
 % restrict to indexed only points
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',seg_angle*degree);
-
-% remove small grains with less than min_points indexed points 
-grains = grains(grains.grainSize > min_points);
-
-% re-calculate grain model to cleanup grain boundaries with less than
-% minimum index points used ebsd points within grains having the minimum
-% indexed number of points (e.g. 10 points)
-ebsd = ebsd(grains);
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',seg_angle*degree);
+[grains,ebsd.grainId,ebsd.mis2mean] = ...
+  calcGrains(ebsd('indexed'),'angle',seg_angle*degree,'minPixel',min_points);
 
 % smooth grains
 grains = smooth(grains,4);

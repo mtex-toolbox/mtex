@@ -11,7 +11,7 @@ function f = antiderivative(SO3VF,varargin)
 %
 % Output
 %  F - @SO3FunHarmonic
-%  f - @double
+%  f - double
 % 
 % See also
 % SO3VectorFieldHarmonic/antiderivative SO3FunHarmonic/grad SO3VectorFieldHarmonic/curl SO3VectorFieldHarmonic

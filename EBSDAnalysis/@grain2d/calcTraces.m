@@ -16,7 +16,7 @@ function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
 %  cSize  - cluster size, , same size as traces
 %
 % Options
-%  minClusterSize - minimum grainSize required for trace computation (default: 100)
+%  minClusterSize - minimum numPixel required for trace computation (default: 100)
 %  shape - characteristic shape based algorithm
 %  calliper - use shortest calliper instead of eigenvectors
 %  hist  - circular histogram based algorithm
@@ -31,7 +31,7 @@ function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
 % generate clusters
 if nargin == 1 || ~isnumeric(clusterId), clusterId = ones(length(grains),1); end
 notZero = all(clusterId>0,2);
-cSize = accumarray(clusterId(notZero,:),grains.grainSize(notZero));
+cSize = accumarray(clusterId(notZero,:),grains.numPixel(notZero));
 ic = find(cSize > get_option(varargin,'minClusterSize',100));
 
 % prepare output

@@ -4,7 +4,7 @@ displayClass(job,inputname(1),varargin{:});
 
 disp(' ');
 
-gs = job.grains.grainSize;
+gs = job.grains.numPixel;
 p = 100*sum(gs(job.grains.phaseId == job.parentPhaseId)) / sum(gs);
 matrix(1,:) = {'parent', job.csParent.mineral, job.csParent.pointGroup, ...
   nnz(job.isParent),[xnum2str(p) '%'],...

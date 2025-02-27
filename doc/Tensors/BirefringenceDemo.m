@@ -29,7 +29,7 @@ plot(grains.boundary,'lineWidth',2)
 hold off
 
 % and on top the crystal shapes
-bigGrains = grains(grains.grainSize > 100,'olivine');
+bigGrains = grains(grains.numPixel > 100,'olivine');
 cKey = ipfColorKey(bigGrains);
 color = cKey.orientation2color(bigGrains.meanOrientation);
 hold on

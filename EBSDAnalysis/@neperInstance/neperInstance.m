@@ -6,7 +6,7 @@ classdef neperInstance < handle
 % 
 %   myNeper=neperInstance
 %
-%   %select working folder, default: @tempdir
+%   %select working folder, default: |tempdir|
 %   myNeper.filePath='C:\\Users\user\Work\Mtex\NeperExamples'; 
 %
 %   %decide if new folder should be created in working directory, default: true

@@ -173,7 +173,7 @@ childOri = grains('Iron bcc').meanOrientation;
 % the parent orientation we are going to compute
 parentOri = orientation.nan(max(parentId),1,fcc2bcc.CS);
 fit = inf(size(parentOri));
-weights = grains('Iron bcc').grainSize;
+weights = grains('Iron bcc').numPixel;
 
 % loop through all parent grains
 for k = 1:max(parentId)
@@ -271,11 +271,9 @@ mtexColorbar
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
+[parentGrains, parentEBSD.grainId] = ...
+  calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 
-parentEBSD(parentGrains(parentGrains.grainSize<10)) = [];
-
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 parentGrains = smooth(parentGrains,5);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')

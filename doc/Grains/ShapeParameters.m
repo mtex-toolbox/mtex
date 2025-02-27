@@ -9,7 +9,7 @@
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %
-% || |grainSize| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in µm² || 
+% || |numPixel| || number of pixels per grain || <grain2d.area.html |area|>  || grain area in µm² || 
 % || <grain2d.boundarySize.html |boundarySize|>  || number of boundary segments || <grain2d.perimeter.html |perimeter|>  || perimeter in µm || 
 % || <grain2d.subBoundarySize.html |subBoundarySize|> || number of inner boundaries || <grain2d.subBoundarySize.html |subBoundaryLength|> || length of inner boundaries in µm || 
 % || <grain2d.diameter.html |diameter|>  || diameter in µm || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter ||
@@ -51,14 +51,14 @@ hold off
 
 %% Grain size vs. grain area and boundary size vs. perimeter
 %
-% The most basic properties are grainSize and grain area. Those can be
-% computed by
+% The most basic properties are number of pixels and grain area. Those can
+% be computed by
 
-grains(9).grainSize
+grains(9).numPixel
 grains(9).area
 
 %%
-% Hereby |grainSize| refers to the number of pixels that belong to a
+% Hereby |numPixel| refers to the number of pixels that belong to a
 % certain grain while |area| represents the actual area measured in
 % |(µm)^2|. We may analyze the distribution of grains by grain area using a
 % histogram.
@@ -81,7 +81,7 @@ hist(grains) %#ok<HIST>
 histogram(grains)
 
 %%
-% Similarly as |grainSize| and |area|, the one-dimensional measures
+% Similarly as |numPixel| and |area|, the one-dimensional measures
 % |boundarySize| and |perimeter| give the length of the grain boundary as
 % number of segments and in |µm|, respectively.
 

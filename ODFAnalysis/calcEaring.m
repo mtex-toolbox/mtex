@@ -29,10 +29,10 @@ function h = calcEaring(indata,sS,prop,varargin)
 % Input
 %  ori  - @orientation
 %  sS   - @slipSystem
-%  prop - @struct
+%  prop - struct
 %
 % Output
-%  h    - @double, height at each peripheral position of a cup drawn from a polycrystalline bcc metal sheet.
+%  h    - double, height at each peripheral position of a cup drawn from a polycrystalline bcc metal sheet.
 %
 % Options
 %  discrete - use a discretised ODF

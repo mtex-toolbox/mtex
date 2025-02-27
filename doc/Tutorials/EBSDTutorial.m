@@ -99,7 +99,7 @@ hold off
 cS = crystalShape.olivine(ebsd('Forsterite').CS)
 
 % select only Forsterite grains with more then 100 pixels
-grains = grains('Forsterite',grains.grainSize > 100);
+grains = grains('Forsterite',grains.numPixel > 100);
 
 % plot crystal shapes at the positions of the Forsterite grains
 hold on

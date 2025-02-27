@@ -159,7 +159,7 @@ grains('forsterite')
 % Logical indexing allows also for more complex queries, e.g. selecting all
 % grains perimeter larger than 6000 and at least 600 measurements within
 
-condition = grains.perimeter>6000 & grains.grainSize >= 600;
+condition = grains.perimeter>6000 & grains.numPixel >= 600;
 
 selected_grains = grains(condition)
 
@@ -172,7 +172,7 @@ plot(selected_grains)
 % |calcGrains|> returns also two other output arguments.
 
 plot(grains)
-largeGrains = grains(grains.grainSize > 50);
+largeGrains = grains(grains.numPixel > 50);
 
 text(largeGrains,largeGrains.id)
 

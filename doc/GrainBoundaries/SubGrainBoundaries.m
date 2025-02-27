@@ -63,7 +63,7 @@ hold off
 % In the following figure we use it to visualize the density of subgrain
 % boundaries per grain pixel.
 
-plot(grains, grains.subBoundarySize ./ grains.grainSize)
+plot(grains, grains.subBoundarySize ./ grains.numPixel)
 mtexColorbar
 
 %% 

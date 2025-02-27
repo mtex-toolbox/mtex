@@ -1,10 +1,12 @@
 classdef SO3DeLaValleePoussinKernel < SO3Kernel
+% De La Vallee Poussin kernel on the orientation space
+%
 % The rotational de la Vallee Poussin kernel is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
 % for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
-% Poussin kernel additionaly has the unique property that for
+% Poussin kernel additionally has the unique property that for
 % a given halfwidth it can be described exactly by a finite number of 
 % Fourier coefficients. This kernel is recommended for Texture analysis as 
 % it is always positive in orientation space and there is no truncation 

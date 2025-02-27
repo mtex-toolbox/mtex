@@ -36,7 +36,7 @@ function [R, M, minM]  = calcLankford(ori,sS,varargin)
 %
 % Options:
 %  verbose - show summary
-%  weights - @double, containing texture information
+%  weights - double, containing texture information
 %
 % Authors:
 % * Dr. Azdiar Gazder, 2023
