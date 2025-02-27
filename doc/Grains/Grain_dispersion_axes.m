@@ -7,7 +7,7 @@ mtexdata forsterite
 [grains,ebsd.grainId] = ebsd.calcGrains;
 
 % just use the larger grains of forsterite
-ebsd(grains(grains.grainSize< 100))='notIndexed';
+ebsd(grains(grains.numPixel< 100))='notIndexed';
 ebsd({'e' 'd'})='notIndexed';
 
 % lets also ignore inclusions for a nicer plotting experience

@@ -49,12 +49,9 @@ psi = calcKernel(ebsd.orientations)
 % grains.
 
 % grains reconstruction
-grains = calcGrains(ebsd);
+grains = calcGrains(ebsd,'minPixel',5);
 
-% correct for to small grains
-grains = grains(grains.grainSize>5);
-
-% compute optimal halfwidth from the meanorientations of grains
+% compute optimal halfwidth from the meanorientation of grains
 psi = calcKernel(grains('co').meanOrientation)
 
 % compute the ODF with the kernel psi

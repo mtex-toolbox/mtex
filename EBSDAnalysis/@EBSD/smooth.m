@@ -25,7 +25,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   [grains,ebsd.grainId] = calcGrains(ebsd);
 %
 %   % find largest grains
-%   largeGrains = grains(grains.grainSize>800);
+%   largeGrains = grains(grains.numPixel>800);
 %   ebsd = ebsd(largeGrains(1));
 %
 %   figure

@@ -43,7 +43,7 @@ grains.poly = grains.poly(ind);
 grains.inclusionId = grains.inclusionId(ind);
 grains.id = grains.id(ind);
 grains.phaseId = reshape(grains.phaseId(ind),[],1);
-grains.grainSize = grains.grainSize(ind);
+grains.numPixel = grains.numPixel(ind);
 
 %if ~islogical(ind)
 %  grains.prop.meanRotation = reshape(grains.prop.meanRotation, size(ind));

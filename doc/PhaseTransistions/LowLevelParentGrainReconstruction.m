@@ -251,7 +251,7 @@ sum(hasVote)
 % alpha grains into the already reconstructed beta grain. This reduces the
 % amount of grains not yet reconstructed to
 
-sum(parentGrains('Ti (alpha').grainSize) ./ sum(parentGrains.grainSize)*100
+sum(parentGrains('Ti (alpha').numPixel) ./ sum(parentGrains.numPixel)*100
 
 %%
 % percent. One way to proceed would be to repeat the steps of this section

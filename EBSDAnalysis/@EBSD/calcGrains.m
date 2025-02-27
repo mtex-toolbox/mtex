@@ -166,7 +166,7 @@ end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
   poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
 
-grains.grainSize = full(sum(I_DG,1)).';
+grains.numPixel = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);
 grains.scanUnit = ebsd.scanUnit;
 
@@ -183,7 +183,7 @@ grains = inv(ebsd.rot2Plane) * grains; %#ok<MINV>
 
 [d,g] = find(I_DG);
 
-grainRange    = [0;cumsum(grains.grainSize)];        %
+grainRange    = [0;cumsum(grains.numPixel)];        %
 firstD        = d(grainRange(2:end));
 phaseId       = ebsd.phaseId;
 q             = quaternion(ebsd.rotations);
@@ -200,7 +200,7 @@ end
 % compute mean orientation and GOS
 if 0
   GOS = zeros(length(grains),1); %#ok<UNRCH>
-  doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
+  doMeanCalc = find(grains.numPixel>1 & grains.isIndexed);
   abcd = zeros(length(doMeanCalc),4);
   for k = 1:numel(doMeanCalc)
     qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));

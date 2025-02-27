@@ -29,7 +29,7 @@ classdef grain2d < phaseList & dynProp
   %  boundary      - @grainBoundary
   %  innerBoundary - @grainBoundary
   %  triplePoints  - @triplePoints
-  %  grainSize     - number if pixels belonging to the grain
+  %  numPixel     - number if pixels belonging to the grain
   %  GOS           - grain orientation spread
   %  meanOrientation - average grain orientation (<GrainOrientationParameters.html only single phase>)
   %
@@ -40,7 +40,7 @@ classdef grain2d < phaseList & dynProp
   properties
     poly={}    % cell list of polygons forming the grains
     id=[]      % id of each grain    
-    grainSize = [] % number of measurements per grain
+    numPixel = [] % number of measurements per grain
   end
   
   properties (Hidden = true)
@@ -62,6 +62,7 @@ classdef grain2d < phaseList & dynProp
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
     triplePoints     % triple points
+    grainSize        % depreciated for numPixel
   end
   
   properties (Dependent = true, Access = protected)
@@ -120,7 +121,7 @@ classdef grain2d < phaseList & dynProp
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.grainSize = ones(size(poly));
+      grains.numPixel = ones(size(poly));
       
       if isa(V,'grainBoundary') % grain boundary already given
         grains.boundary = V;
@@ -171,6 +172,16 @@ classdef grain2d < phaseList & dynProp
 
     end
     
+    function n = get.grainSize(grains)
+      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+      n = grains.numPixel;
+    end
+
+    function grains = set.grainSize(grains,n)
+      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+      grains.numPixel = n;
+    end
+
     function V = get.allV(grains)
       V = grains.boundary.allV;
     end

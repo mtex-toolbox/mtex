@@ -66,5 +66,5 @@ if isempty(grains), return; end
 
 % show properties
 disp(char(dynProp(grains.prop),...
-  'Id',grains.id,'Phase',grains.phase,'Pixels',grains.grainSize))
+  'Id',grains.id,'Phase',grains.phase,'Pixels',grains.numPixel))
 disp(' ')

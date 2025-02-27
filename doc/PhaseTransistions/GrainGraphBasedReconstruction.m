@@ -352,13 +352,9 @@ hold off
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
+[parentGrains, parentEBSD.grainId] = ...
+  calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 
-% remove very small grains
-parentEBSD(parentGrains(parentGrains.grainSize<10)) = [];
-
-% redo grain reconstruction
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 parentGrains = smooth(parentGrains,10);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')

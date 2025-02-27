@@ -20,7 +20,7 @@ grains3 = subSet@dynProp(grains3,ind);
 
 grains3.id = grains3.id(ind);
 grains3.phaseId = reshape(grains3.phaseId(ind),[],1);
-grains3.grainSize = grains3.grainSize(ind);
+grains3.numPixel = grains3.numPixel(ind);
 
 grains3.I_GF = grains3.I_GF(ind,:);
 

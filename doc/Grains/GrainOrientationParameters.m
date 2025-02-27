@@ -178,7 +178,7 @@ fit./degree
 %%
 % Lets perform the above analysis for all large grains
 
-grainsLarge = grains(grains.grainSize > 50);
+grainsLarge = grains(grains.numPixel > 50);
 lambda = nan(length(grainsLarge),4);
 
 % loop through all grains

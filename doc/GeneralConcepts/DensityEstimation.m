@@ -275,7 +275,7 @@ hold off
 % explained in the sections <S2FunBingham.html The Spherical Bingham
 % Distribution> and <BinghamODFs.html The Rotational Bingham Distribution>.
 %
-%% Density Estimtation with Weights
+%% Density Estimation with Weights
 % In many use cases one has a weighted random sample. A typical example is
 % if one wants to estimate a orientation distribution function from grain
 % orientations. In this cases big grains should contribute more to the ODF
@@ -286,4 +286,4 @@ hold off
 mtexdata titanium silent
 grains = calcGrains(ebsd);
 
-odf = calcDensity(grains.meanOrientation,'weights',grains.grainSize)
+odf = calcDensity(grains.meanOrientation,'weights',grains.numPixel)

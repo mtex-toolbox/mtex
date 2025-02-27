@@ -168,7 +168,7 @@ hold off
 plot(grains,grains.meanOrientation,'micronbar','off','region',[50 300 100 250])
 
 % only the big grains
-big_grains = grains(grains.grainSize>100);
+big_grains = grains(grains.numPixel>100);
 
 % plot on top their ids
 text(big_grains,int2str(big_grains.id))

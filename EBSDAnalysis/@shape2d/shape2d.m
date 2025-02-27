@@ -36,7 +36,7 @@ classdef shape2d < grain2d
       shape.phaseId = 1;
       shape.phaseMap = 1;
       shape.id = 1;
-      shape.grainSize = 1;
+      shape.numPixel = 1;
       
       if isa(V,'grainBoundary') % grain boundary already given
         shape.boundary = V;

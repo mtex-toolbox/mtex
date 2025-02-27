@@ -5,7 +5,7 @@ classdef grain3d < phaseList & dynProp
     id = []
     I_GF            % incidence matrix grains x face 
                     % for -1 face normals are pointing inside
-    grainSize = []  % number of measurements per grain
+    numPixel = []  % number of measurements per grain
   end
 
   properties
@@ -20,6 +20,7 @@ classdef grain3d < phaseList & dynProp
     numFaces  % number of boundary faces per grain
     extent
     how2plot % plotting convention
+    grainSize % depreciated for numPixel
   end
 
   methods
@@ -58,7 +59,7 @@ classdef grain3d < phaseList & dynProp
         grains.phaseMap = 1:length(grains.CSList);
       end
 
-      grains.grainSize = ones(length(grains.id),1);
+      grains.numPixel = ones(length(grains.id),1);
 
       % compute neighboring grains to a boundary segment
       grainId = zeros(size(I_GF,2),2);
@@ -128,6 +129,16 @@ classdef grain3d < phaseList & dynProp
 
     function num = get.numFaces(grains)
       num = sum(logical(grains.I_GF),2);
+    end
+
+    function n = get.grainSize(grains)
+      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+      n = grains.numPixel;
+    end
+
+    function grains = set.grainSize(grains,n)
+      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+      grains.numPixel = n;
     end
 
   end

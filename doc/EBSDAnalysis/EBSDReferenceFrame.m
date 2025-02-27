@@ -85,7 +85,7 @@ grains = calcGrains(ebsd('indexed'));
 cS = crystalShape.olivine;
 
 % select only large grains
-largeGrains = grains(grains.grainSize>500)
+largeGrains = grains(grains.numPixel>500)
 
 % and plot the crystal shapes
 hold on
@@ -117,7 +117,7 @@ ebsd_rot = rotate(ebsd,rot,'keepEuler');
 grains = calcGrains(ebsd_rot('indexed'));
 
 % select only large grains
-largeGrains = grains(grains.grainSize>500);
+largeGrains = grains(grains.numPixel>500);
 
 plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
 
@@ -138,7 +138,7 @@ ebsd_rot = rotate(ebsd,rot,'keepXY');
 grains = calcGrains(ebsd_rot('indexed'));
 
 % select only large grains
-largeGrains = grains(grains.grainSize>500);
+largeGrains = grains(grains.numPixel>500);
 
 
 plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
@@ -170,7 +170,7 @@ ebsd_rot = rotate(ebsd,rot);
 grains = calcGrains(ebsd_rot('indexed'));
 
 % select only large grains
-largeGrains = grains(grains.grainSize>500);
+largeGrains = grains(grains.numPixel>500);
 
 
 plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')

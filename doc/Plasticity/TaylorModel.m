@@ -94,11 +94,8 @@ mtexColorbar
 mtexdata csl
 
 % compute grains
-grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd('indexed'),'minPixel',3);
 grains = smooth(grains,5);
-
-% remove small grains
-grains(grains.grainSize <= 2) = []
 
 %%
 % and apply the Taylor model to each grain of our data set

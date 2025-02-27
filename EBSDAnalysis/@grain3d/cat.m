@@ -23,7 +23,7 @@ for k = 2:numel(varargin)
 
   grains.I_GF = [grains.I_GF ; ng.I_GF];
   grains.phaseId = [grains.phaseId; ng.phaseId];
-  grains.grainSize = [grains.grainSize; ng.grainSize];
+  grains.numPixel = [grains.numPixel; ng.numPixel];
 
   grains.boundary = cat(1,grains.boundary, ng.boundary);
 

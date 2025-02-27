@@ -336,7 +336,7 @@ hold off
 [parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
 
 % remove very small grains
-parentEBSD(parentGrains(parentGrains.grainSize<10)) = [];
+parentEBSD(parentGrains(parentGrains.numPixel<10)) = [];
 
 % redo grain reconstruction
 [parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);

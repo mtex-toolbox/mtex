@@ -3,7 +3,7 @@
 %% 1) no fill, no grains, all pixels
 mtexdata small
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
-ebsd(grains(grains.grainSize<=3)) = [];
+ebsd(grains(grains.numPixel<=3)) = [];
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
 F = splineFilter; 
 ebsd = smooth(ebsd,F);
@@ -17,7 +17,7 @@ hold off
 %% 2) no fill, no grains, indexed pixels
 mtexdata small
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<=3)) = [];
+ebsd(grains(grains.numPixel<=3)) = [];
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
 F = splineFilter; 
 ebsd = smooth(ebsd('indexed'),F);
@@ -33,7 +33,7 @@ hold off
 %% 3) fill, no grains, all pixels
 mtexdata small
 [grains,ebsd.grainId] = calcGrains(ebsd);
-ebsd(grains(grains.grainSize<=3)) = [];
+ebsd(grains(grains.numPixel<=3)) = [];
 [grains,ebsd.grainId] = calcGrains(ebsd);
 F = splineFilter; 
 ebsd = smooth(ebsd,F,'fill');
@@ -49,7 +49,7 @@ hold off
 %% 4) fill, no grains, indexed pixels
 mtexdata small
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<=3)) = [];
+ebsd(grains(grains.numPixel<=3)) = [];
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
 F = splineFilter; 
 ebsd = smooth(ebsd('indexed'),F,'fill');
@@ -65,7 +65,7 @@ hold off
 %% 5) fill, grains, indexed pixels
 mtexdata small
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
-ebsd(grains(grains.grainSize<=3)) = [];
+ebsd(grains(grains.numPixel<=3)) = [];
 [grains,ebsd('indexed').grainId] = calcGrains(ebsd('indexed'));
 F = splineFilter; 
 ebsd = smooth(ebsd('indexed'),F,'fill',grains);

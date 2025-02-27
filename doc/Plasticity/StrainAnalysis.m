@@ -56,7 +56,7 @@ sSGrain = grains.meanOrientation .* sS(id)
 
 plot(grains,M)
 
-largeGrains = grains(grains.grainSize > 10)
+largeGrains = grains(grains.numPixel > 10)
 
 hold on
 quiver(grains,sSGrain.trace,'displayName','slip plane trace')
