@@ -31,8 +31,10 @@ function SO3F = interp(ori,values,varargin)
 % Vector fields
 if check_option(values,'vector3d')
   SO3F = SO3VectorFieldHarmonic.interpolate(ori,values,varargin{:});
-  % TODO: componentwise SO3FunRBF.interpolate
-  % TODO: Add SO3VectorFieldRBF
+
+  if check_option(varargin,{'RBF','kernel'})
+  SO3F = SO3VectorFieldRBF.interpolate(ori,values,varargin{:});
+  end
   return
 end
 
