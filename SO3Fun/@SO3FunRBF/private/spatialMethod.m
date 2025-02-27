@@ -29,6 +29,14 @@ function [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin)
 %  LSQRMethod  -  ('lsqr'|'lsqlin'|'lsqnonneg'|'nnls'|'mlrl'|'mlsq')
 
 
+% Multidim. Vector Fields:
+if numel(nodes)~=numel(y(:))
+  sz = size(y); sz = [sz(2:end),1];
+  y = reshape(y,numel(nodes),[]);
+else
+  y = y(:);
+end
+
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
 %   - the input is nearly positive and we have (or can easily compute) the expected mean of the result
@@ -40,13 +48,20 @@ elseif check_option(varargin,'mean') && (all(y(:)>-eps) || all(y(:)<eps))
 elseif numel(nodes)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
   W = calcVoronoiVolume(nodes);
   W = W./sum(W);
-  meanV = sum(W(:).*y(:));
+  meanV = sum(W(:).*y);
   varargin = ['mlsq','mean',meanV,varargin];
 end
 
 
 % Compute Kernel-matrix
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
+
+m = get_option(varargin,'mean',1.0);
+if length(m)<prod(sz)
+  m = ones(sz)*m;
+end
+
+for Index = 1:prod(sz)
 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
 
@@ -58,47 +73,50 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     options = optimoptions('lsqlin','Algorithm','interior-point',...
       'Display','iter','TolCon',tolCon,'TolX',tolX,'TolFun',tolFun);
     n2 = size(Psi,1);
-    chat = lsqlin(Psi',y(:),-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
+    chat(:,Index) = lsqlin(Psi',y(:,Index),-eye(n2,n2),zeros(n2,1),[],[],[],[],[],options);
     
   case 'nnls' % only computable if Psi is small, i.e. low number of nodes and SO3Grid is small
     
-    chat = nnls(full(Psi).',y(:),struct('Iter',1000));
+    chat(:,Index) = nnls(full(Psi).',y(:,Index),struct('Iter',1000));
     
   case 'lsqnonneg' % very slow / bad / maybe oscillating
     
-    chat = lsqnonneg(Psi',y(:));
+    chat(:,Index) = lsqnonneg(Psi',y(:,Index));
     
   case 'lsqr' % works good 
     
     itermax = get_option(varargin,'maxit',30);
     tol = get_option(varargin,'tol',1e-3);
-    [chat,flag,~,iter] = lsqr(Psi',y(:),tol,itermax);
+    [chat(:,Index),flag,~,iter] = lsqr(Psi',y(:,Index),tol,itermax);
     if flag == 1
       warning('lsqr:maxit','Maximum number of iterations reached, result may not have converged to the optimum yet.');
     end
   
   case {'mlrl','mlsq'}  % we have constraints that c>0
     
-    m = get_option(varargin,'mean',1.0);
     % initial guess for coefficients
-    c0 = Psi*y(:);
+    c0 = Psi*y(:,Index);
     if check_option(varargin,'density')
       c0(c0<eps) = eps; % all weights must be positive
     else
       cx = abs(c0)<=eps;
       c0(cx) = sign(c0(cx))*eps;
     end
-    c0 = m*c0./sum(c0(:));
+    c0 = m(Index)*c0./sum(c0(:));
     
     itermax = get_option(varargin,'maxit',100);
     tol = get_option(varargin,'tol',1e-3);
     
     if check_option(varargin,'mlrl')
-      [chat,iter] = mlrl(Psi.',y(:),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
+      [chat(:,Index),iter] = mlrl(Psi.',y(:,Index),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
     else
-      [chat,iter] = mlsq(Psi.',y(:),c0(:),itermax,tol); % --> data should be positive; works nice 
+      [chat(:,Index),iter] = mlsq(Psi.',y(:,Index),c0(:),itermax,tol); % --> data should be positive; works nice 
     end
     
 end
+
+end
+
+chat = reshape(chat,[numel(nodes) sz]);
 
 end

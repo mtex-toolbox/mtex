@@ -44,6 +44,10 @@ methods
     if nargin == 0, return; end
 	
 	% convert arbitrary SO3Fun to SO3FunRBF
+    if isa(center,'SO3FunRBF')
+      SO3F = center;
+      return
+    end
     if isa(center,'function_handle') || isa(center,'SO3Fun')
       if nargin>=4, varargin = {c0,varargin{:}}; end
       if nargin>=3, varargin = {weights,varargin{:}}; end
@@ -205,6 +209,13 @@ methods
     S3F.c0 = reshape(S3F.c0, varargin{:});
   end
 
+  function S3F = transpose(S3F)
+    S3F.c0 = s3F.c0.';
+  end
+
+  function S3F = ctranspose(S3F)
+    S3F.c0 = S3F.c0';
+  end
 
 end
   

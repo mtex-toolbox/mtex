@@ -30,6 +30,13 @@ function [chat,iter] = harmonicMethod(SO3G,psi,fhat,y,varargin)
 %  LSQRMethod  -  ('lsqr'|'mlrl'|'mlsq')
 %
 
+% Multidim. Vector Fields
+if numel(SO3G)~=numel(y(:))
+  sz = size(fhat); sz = [sz(2:end),1];
+  y = reshape(y,numel(SO3G),[]);
+else
+  y = y(:);
+end
 
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
@@ -42,7 +49,7 @@ elseif check_option(varargin,'mean') && (all(y(:)>-eps) || all(y(:)<eps))
 elseif numel(nodes)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
   W = calcVoronoiVolume(nodes);
   W = W./sum(W);
-  meanV = sum(W(:).*y(:));
+  meanV = sum(W(:).*y);
   varargin = ['mlsq','mean',meanV,varargin];
 end
 
@@ -69,7 +76,9 @@ if ~check_option(varargin,'mlsq')
     Fstar = sparse(Fstar);
 
     % least squares
-    [chat,flag,~,iter] = lsqr(conj(Fstar),fhat,tol,itermax);
+    for Index=1:prod(sz)
+      [chat(:,Index),flag,~,iter] = lsqr(conj(Fstar),fhat(:,Index),tol,itermax);
+    end
 
   else % use NFFT-based matrix-vector multiplication
 
@@ -80,13 +89,17 @@ if ~check_option(varargin,'mlsq')
     end
 
     % least squares
-    [chat,flag,~,iter] = lsqr( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat, tol, itermax);
+    for Index=1:prod(sz)
+      [chat(:,Index),flag,~,iter] = lsqr( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat(:,Index), tol, itermax);
+    end
 
   end
 
   if flag == 1
     warning('lsqr:maxit','Maximum number of iterations reached, result may not have converged to the optimum yet.');
   end
+
+  chat = reshape(chat,[numel(SO3G) sz]);
 
   return
 
@@ -98,9 +111,13 @@ end
 
 % initial guess for coefficients
 m = get_option(varargin,'mean',1.0);
-c0 = y(:) ; %odf.eval(SO3G);
+if length(m)<prod(sz)
+  m = ones(sz)*m;
+end
+
+c0 = y ; %odf.eval(SO3G);
 c0(c0<=eps) = eps;
-c0 = m*c0./sum(c0(:));
+c0 = reshape(m,[1 sz]).*c0./sum(c0,1);
 
 itermax = get_option(varargin,'maxit',100);
 tol = get_option(varargin,'tol',1e-3);
@@ -119,8 +136,9 @@ if deg2dim(psi.bandwidth+1)*length(SO3G)*8 < 0.5*2^30 % use direct computation
   Fstar = sparse(Fstar);
   
   % modified least squares
-  [chat,iter] = mlsq(conj(Fstar),fhat,c0(:),itermax,tol);
-
+  for Index=1:prod(sz)
+    [chat(:,Index),iter] = mlsq(conj(Fstar),fhat(:,Index),c0(:,Index),itermax,tol);
+  end
   
 else % use NFFT-based matrix-vector multiplication
   
@@ -131,9 +149,13 @@ else % use NFFT-based matrix-vector multiplication
   end
   
   % modified least squares
-  [chat,iter] = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat,c0(:),itermax,tol);
-  
+  for Index=1:prod(sz)
+    [chat(:,Index),iter] = mlsq( @(x, transp_flag) afun(transp_flag, x, SO3G(:), W, bw), fhat(:,Index),c0(:,Index),itermax,tol);
+  end
+
 end
+
+chat = reshape(chat,[numel(SO3G) sz]);
 
 end
 

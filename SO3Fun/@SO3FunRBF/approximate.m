@@ -103,7 +103,11 @@ else
 end
   
 % construct SO3FunRBF
-if check_option(varargin,'density')
+if check_option(varargin,'density') && numel(f)>1
+  sz = size(chat);
+  SO3F = SO3FunRBF(SO3G,psi,chat,zeros([sz(2:end) 1]));
+  m = 1;
+elseif check_option(varargin,'density')
   SO3F = unimodalODF(SO3G,psi,'weights',chat,varargin{:}); % remove to small values
   m = 1;
 else
@@ -113,7 +117,8 @@ end
 
 % normalize odf
 if ~isempty(m)
-  SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
+  sz = size(SO3F);
+  SO3F.weights = reshape(m,[1,sz]) .* SO3F.weights ./ sum(SO3F.weights,1) .* (1-reshape(SO3F.c0,[1,sz])) /psi.A(1);
 end
 
 end
