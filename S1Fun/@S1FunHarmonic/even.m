@@ -2,9 +2,9 @@ function sF = even(sF, varargin)
 % even or antipodal part of a spherical function
 %
 % Syntax
-%   sF = sF.even
+%   sF = even(sF)
 %
 
-sF.antipodal = 1;
+sF.even = 1;
 
 end
