@@ -11,7 +11,7 @@ function d = div_right(SO3VF,varargin)
 %
 % Output
 %  D - @SO3FunHarmonic
-%  d - @double divergence of |SO3VF| at rotation |rot|
+%  d - divergence of |SO3VF| at rotation |rot|
 %
 % See also
 % SO3VectorField/div SO3FunHarmonic/grad

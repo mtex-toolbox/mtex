@@ -11,7 +11,7 @@ function rot = exp(v,rot_ref,tS)
 %
 % Input
 %  v       - @vector3d, @SO3TangentVector
-%  ori_ref - @orientation @rotation
+%  ori_ref - @orientation, @rotation
 %  tS      - @SO3TangentSpace
 %
 % Output

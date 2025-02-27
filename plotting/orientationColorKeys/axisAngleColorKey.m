@@ -55,8 +55,7 @@ classdef axisAngleColorKey < orientationColorKey
   % Reference: Thomsen et al.: Quaternion-based disorientation coloring of
   % orientation maps, 2017
   %
-  
-  
+    
   properties
     dirMapping % direction mapping
     oriRef     % the reference orientation 

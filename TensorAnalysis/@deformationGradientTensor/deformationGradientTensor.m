@@ -1,5 +1,5 @@
 classdef deformationGradientTensor < tensor
-  % 
+  % class representing a deformation gradient tensor
   % 
   % The deformation gradient F contains the full information about the
   % local rotation and deformation of the material. It also shows, for

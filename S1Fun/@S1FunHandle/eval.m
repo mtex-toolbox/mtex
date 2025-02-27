@@ -6,7 +6,7 @@ function f = eval(sF,omega,varargin)
 %
 % Input
 %   sF - @S1FunHandle
-%   omega - @double (evaluation nodes)
+%   omega - double (evaluation nodes)
 %
 % Output
 %   f - double

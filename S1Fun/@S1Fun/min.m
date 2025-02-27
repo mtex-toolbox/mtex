@@ -28,7 +28,7 @@ function varargout = min(varargin)
 % Options
 %  kmax          - number of iterations
 %  numLocal      - number of local minima to return
-%  startingNodes - @double
+%  startingNodes - double
 %  tolerance     - minimum distance between two peaks
 %  resolution    - minimum step size 
 %  maxStepSize   - maximm step size

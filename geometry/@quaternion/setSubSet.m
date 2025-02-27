@@ -8,8 +8,8 @@ function q = setSubSet(q,ind,nq)
 %
 % Input
 %  q - @quaternion
-%  ind - @double
-%  nq - @quaternion
+%  ind - double
+%  nq  - @quaternion
 %
 % Output
 %  q - @quaternion

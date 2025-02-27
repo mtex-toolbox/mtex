@@ -19,6 +19,7 @@ classdef plottingConvention < matlab.mixin.Copyable
 %
 % Output
 %  pC - @plottingConvention
+%
   
   properties
     rot = rotation.id % screen coordinates to reference coordinates

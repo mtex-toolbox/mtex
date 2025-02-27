@@ -20,7 +20,7 @@ function n = norm(SO3F,SobolevIndex)
 % 
 % Input
 %  SO3F - @SO3FunHarmonic
-%  s - @double (Sobolev index)
+%  s - double (Sobolev index)
 %
 % Output
 %  t - double
