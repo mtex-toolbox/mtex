@@ -7,7 +7,8 @@ end
 
 properties (Dependent=true)
   bandwidth  % maximum harmonic degree / bandwidth
-  antipodal  %
+  antipodal  % f(x) = f(x + pi)
+  even       % f(x) = f(-x)
   isReal
 end
 
@@ -69,7 +70,7 @@ methods
     end
   end
   
-  function out = get.antipodal(sF)
+  function out = get.even(sF)
     if sF.bandwidth == 0
       out = true;
       return
@@ -81,7 +82,7 @@ methods
     % test whether fhat is symmetric fhat_n = conj(fhat_-n)
   end
   
-  function sF = set.antipodal(sF,value)
+  function sF = set.even(sF,value)
     %if value, sF = sF.even; end
     if ~value, return; end
     s = size(sF);
@@ -90,6 +91,31 @@ methods
     sF = reshape(sF,s);
   end
 
+  function out = get.antipodal(sF)
+    bw = sF.bandwidth;
+    if bw == 0 || norm(sF) == 0
+      out = true;
+    else
+      if iseven(bw)
+        ind = 2:2:2*bw-1;
+      else
+        ind = 1:2:2*bw+1;
+      end
+      out = norm(sF.fhat(ind)) ./ norm(sF) < 1e-8;
+    end
+  end
+
+  function sF = set.antipodal(sF,value)
+    if ~value, return; end
+    bw = sF.bandwidth;
+    if iseven(bw)
+      ind = 2:2:2*bw-1;
+    else
+      ind = 1:2:2*bw+1;      
+    end
+    sF.fhat(ind) = 0;
+  end
+   
   function out = get.isReal(sF)
     if sF.bandwidth == 0
       out = isalmostreal(sF.fhat,'precision',4);
