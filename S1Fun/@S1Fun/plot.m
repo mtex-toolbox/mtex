@@ -32,3 +32,4 @@ d = real(sF.eval(omega));
 
 h = polarplot(omega,d,varargin{:});
 
+if nargout == 0, clear h; end
