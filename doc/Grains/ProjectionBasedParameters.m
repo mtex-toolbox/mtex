@@ -160,11 +160,18 @@ close all
 cumplF = paror(grains('fo'),omega);
 cumplE = paror(grains('en'),omega);
 
-subplot(1,2,1)
-polarplot(omega,cumplF,'LineWidth',3,'color','k')
+plOpt = {'LineWidth',3,'color','k'};
 
-subplot(1,2,2)
-polarplot(omega,cumplE,'LineWidth',3,'color','k')
+subplot(2,2,1)
+plot(omega/degree,cumplF,plOpt{:}); xlim([0 180]);
+title('paror Forsterite')
+subplot(2,2,2)
+polarplot(omega,cumplF,plOpt{:})
+subplot(2,2,3)
+plot(omega/degree,cumplE,plOpt{:}); xlim([0 180]);
+title('paror Enstatite')
+subplot(2,2,4)
+polarplot(omega,cumplE,plOpt{:})
 
 
 %%
@@ -183,6 +190,27 @@ min(cumplF), min(cumplE)
 % longest projection and the normal the minimum position represents the
 % preferred axis related to the normal to the shortest projection function.
 
+% for the Forsterite
+
+% using S1Fun
+% for the Forsterite
+sF_Fo = S1FunHarmonic.interpolate(omega,cumplF);
+[~, maxposfo] = max(sF_Fo);
+[~, minposfo] = min(sF_Fo);
+
+mod(maxposfo,pi)/degree
+mod(minposfo-pi/2,pi)/degree
+
+% for the Enstatite
+sF_Fo = S1FunHarmonic.interpolate(omega,cumplE);
+[~, maxposfo] = max(sF_Fo);
+[~, minposfo] = min(sF_Fo);
+
+mod(maxposfo,pi)/degree
+mod(minposfo-pi/2,pi)/degree
+
+
+% or finding maxima and minima
 % for the Forsterite
 [~, id_max] = max(cumplF);
 [~, id_min] = min(cumplF);
@@ -231,7 +259,7 @@ legend('Location','southoutside','Orientation','horizontal')
 % more inclined with respect to the other phase boundaries and that the
 % phase boundaries between the two pyroxenes (Enstatite and Diopside) show
 % the lowest anisotropy.
-%
+
 %% Characteristic Shape
 %
 % The characteristic shape results from the cumulative sum of all grain
@@ -245,27 +273,23 @@ legend('Location','southoutside','Orientation','horizontal')
 
 plotopts = {'normalize','linewidth',2, 'plain'};
 
-shapeF = characteristicShape(grains.boundary('Fo','Fo'))
-plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
-
+shapeF = characteristicShape(grains.boundary('f','f'))
+plot(shapeF,plotopts{:})
 hold on
 shapeE = characteristicShape(grains.boundary('En','En'));
 plot(shapeE,plotopts{:},'DisplayName','En-En')
-
 hold on
 shapeEF = characteristicShape(grains.boundary('En','Fo'));
 plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
 hold off
 
-legend('Location','southoutside','Orientation','horizontal')
+legend('Fo-Fo','En-En','En-Fo','Location','northeastoutside', ...
+       'FontSize', 24)
 
-%%
-% The output of the command <grainBoundary.characteristicShape.html
-% |characteristicShape|> is a <shape2d.shape2d.html |shape2d|> object which
-% behaves very similar to a <grain2d.grain2d.html |grain2d|> object. Hence
-% it is easy to derive things such as a long axis or e.g. the angle between
-% the longest and the shortest caliper which can be regarded as a measure
-% of asymmetry.
+% The output of `characteristicShape` is a `shape2d` object which behaves
+% very similar to a `grain2d` object, hence it is easy to derive things
+% such as a long axis or e.g. the angle between the longest and the shortest
+% caliper which can be regarded as a measure of asymmetry.
 
 angle(shapeF.caliper('longest'),shapeF.caliper('shortest')) / degree
 angle(shapeE.caliper('longest'),shapeE.caliper('shortest')) / degree

@@ -97,37 +97,43 @@ title('Enstatite')
 
 %% 
 % Instead of the histogram we may also fit a circular density distribution
-% to the to the long axes using the command <calcDensity.thml
+% to the to the long axes using the command <calcDensity.html
 % |calcDensity|>.
 
 tdfForsterite = calcDensity(grains('forsterite').longAxis,...
-  'weights',norm(grains('forsterite').longAxis),'halfwidth');
+  'weights',norm(grains('forsterite').longAxis));
 
 tdfEnstatite = calcDensity(grains('enstatite').longAxis,...
   'weights',norm(grains('enstatite').longAxis));
 
-plotSection(tdfForsterite, vector3d.Z, 'linewidth', 3)
+% Since the inpout was of type |@vector3d|, the result is a spherical 
+% function |@S2FunHarmonic|. We can visualize a section using 
+% <S2Fun.plotSection.html| plotSection|>.
 
+plotSection(tdfForsterite, vector3d.Z, 'linewidth', 3)
 hold on
 plotSection(tdfEnstatite, vector3d.Z, 'linewidth', 3)
 hold off
 
-%%
-% 
+% Alternatively, since all vectors are within the plane, only one angle is
+% revelevant, one can also compute a S1Fun using |vector3d.rho| and
+% <calcDensity.html|calcDensity|> with the option |'periodic'|.
 
-close all
-[freq,bc] = calcTDF(grains('fo'),'binwidth',3*degree);
-plotTDF(bc,freq/sum(freq));
+tdfForsterite = calcDensity(grains('forsterite').longAxis.rho,...
+  'weights',norm(grains('forsterite').longAxis), ...
+  'periodic','antipodal','sigma',5*degree);
 
-[freq,bc] = calcTDF(grains('en'),'binwidth',3*degree);
+tdfEnstatite = calcDensity(grains('enstatite').longAxis.rho,...
+  'weights',norm(grains('enstatite').longAxis), ...
+  'periodic','antipodal','sigma',5*degree);
+
+plot(tdfForsterite, 'linewidth', 2)
 hold on
-plotTDF(bc,freq/sum(freq));
+plot(tdfEnstatite, 'linewidth', 2)
 hold off
-legend('Forsterite','Enstatite','Location','eastoutside')
-mtexTitle('long axes')
-
 % we have to set the plotting convention manually
 setView(ebsd.how2plot)
+
 
 %% *Shortest Caliper Distribution*
 %
@@ -146,54 +152,67 @@ setView(ebsd.how2plot)
 cPerpF = caliper(grains('fo'),'shortestPerp');
 cPerpE = caliper(grains('en'),'shortestPerp');
 
-[freqF,bcF] = calcTDF(cPerpF.rho, 'weights',cPerpF.norm, 'binwidth',3*degree);
-[freqE,bcE] = calcTDF(cPerpE.rho, 'weights',cPerpE.norm, 'binwidth',3*degree);
+S1F_fo = calcDensity(cPerpF.rho, 'weights',cPerpF.norm, ...
+  'periodic','antipodal','sigma',1*degree);
+S1F_en = calcDensity(cPerpE.rho, 'weights',cPerpE.norm,...
+  'periodic','antipodal','sigma',1*degree);
 
-plotTDF(bcF,freqF/sum(freqF));
+plot(S1F_fo);
 hold on
-plotTDF(bcE,freqE/sum(freqE));
+plot(S1F_en);
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
+setView(ebsd.how2plot)
 
 
 %%
-% We can also smooth the functions with a wrapped Gaussian
+% If we consider the function a little to rough, we can smooth the function
+% using a kernel.
 
-pdfF = circdensity(bcF, freqF, 5*degree,'sum');
-pdfE = circdensity(bcE, freqE, 5*degree,'sum');
+psi = S1DeLaValleePoussinKernel('halfwidth',5*degree)
 
-plotTDF(bcF,pdfF);
+S1_fo_smooth = conv(funcPerp_fo,psi)
+S1_en_smooth = conv(funcPerp_en,psi)
+
+plot(S1_fo_smooth);
 hold on
-plotTDF(bcE,pdfE);
+plot(S1_en_smooth);
 hold off
-mtexTitle('n.t.s. density estimate')
 legend('Forsterite','Enstatite','Location','eastoutside')
+setView(ebsd.how2plot)
+
 
 %% *SPO defined by grain boundary segments*
 %
-% Because best fit ellipses are always symmetric and the projection
-% function of an entire grain always only consider the convex hull, grain
-% shape fabrics can also be characterized by the length weighted rose
-% diagram of the directions of grain boundary segments which considers the
-% entire shape defined by the grain boundary segments of the grain.
-  
-subplot(1,2,1)
-[freqF,bcF] = calcTDF(grains('fo').boundary);
-plotTDF(bcF,freqF/sum(freqF));
-pdfF = circdensity(bcF, freqF, 5*degree,'sum');
-hold on
-plotTDF(bcF,pdfF);
-hold off
-mtexTitle('Forsterite grain boundaries')
-subplot(1,2,2)
+% Best fit ellipses are always symmetric and the projection
+% function of an entire grain always only consider the convex hull. 
+% Grain shape fabrics can also be characterized by a rose diagram of the 
+% directions of grain boundary segments which can consider the
+% entire shape of the grain defined by the grain boundary segments but also
+% works for non fully enclosed shapes i.e. just a special selection of
+% grains. Here, we can weight each <grainBoundary.grainBoundary.html| direction |>
+% of a grain boundary by its <grainBoundary.segLength.html| segment length|>.
+% 
+% Let's compare different types of boundaries
 
-[freqE,bcE] = calcTDF(grains('en').boundary);
-plotTDF(bcE,freqE/sum(freqE));
-pdfE = circdensity(bcE, freqE, 5*degree,'sum');
+gbfun_fofo = calcDensity(grains.boundary('fo','fo').direction.rho, ...
+    'weights',grains.boundary('fo','fo').segLength,'periodic','antipodal');
+gbfun_foen = calcDensity(grains.boundary('fo','en').direction.rho, ...
+    'weights',grains.boundary('fo','en').segLength,'periodic','antipodal');
+gbfun_enen = calcDensity(grains.boundary('en','en').direction.rho, ...
+    'weights',grains.boundary('en','en').segLength,'periodic','antipodal');
+
+
+plot(gbfun_fofo,'displayName','Forsterite-Forsterite','linewidth',2);
 hold on
-plotTDF(bcE,pdfE);
+plot(gbfun_foen,'displayName','Forsterite-Enstatite','linewidth',2);
+hold on
+plot(gbfun_enen,'displayName','Enstatite-Enstatite','linewidth',2);
 hold off
-mtexTitle('Enstatite grain boundaries')
+
+legend
+
+setView(ebsd.how2plot)
 
 %% Characteristic Shape
 %
@@ -220,6 +239,7 @@ hold on
 plot(cshapeE,'linewidth',2);
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
+
 
 %%
 % We may wonder if these results are significantly different or not
