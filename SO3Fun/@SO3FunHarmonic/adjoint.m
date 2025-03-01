@@ -161,7 +161,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 
   % Possibly use smaller input matrix by using the symmetries
   if len==1
-    ghat = ifftn( W.* reshape(values,size(W),len) ,[2*N+2,4*N,2*N+2]);
+    ghat = ifftn( W.* reshape(values,[size(W),len]) ,[2*N+2,4*N,2*N+2]);
     ghat = ifftshift(ghat);
   else % multivariate
     ghat = ifft(ifft(ifft(W.*reshape(values,[size(W),len]),2*N+2,1),4*N,2),2*N+2,3);
