@@ -158,7 +158,9 @@ function out = check_wignerTrafomex
 SO3F = SO3Fun.dubna;
 SO3FH = SO3FunHarmonic(SO3F);
 S3G = equispacedSO3Grid(SO3F.CS);
-out = norm(SO3F.eval(S3G) - SO3FH.eval(S3G))/norm(SO3FH.eval(S3G)) < 0.01;
+v1 = SO3F.eval(S3G);
+v2 = SO3FH.eval(S3G);
+out = norm(v1(:) - v2(:))/norm(v2(:)) < 0.01;
 
 end
 
