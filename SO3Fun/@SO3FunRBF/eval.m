@@ -53,6 +53,9 @@ end
 % init variables
 iter = 0; numiter = 1; ind = 1; %for first run
 
+% extract coefficients
+c = reshape(SO3F.weights,[],numel(SO3F));
+
 % now iterate along the splitting
 while iter <= numiter
   if iter > 0% split
@@ -66,13 +69,13 @@ while iter <= numiter
     if SO3F.antipodal
       M = 0.5*(M + SO3F.psi.K_symmetrised(g,inv(SO3F.center(ind)),SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:}));
     end
-    f = f + reshape(full(M * SO3F.weights(ind,:)),size(f));
+    f = f + reshape(full(M * c(ind,:)),size(f));
   else
     M = SO3F.psi.K_symmetrised(g(ind),SO3F.center,SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:});
     if SO3F.antipodal
       M = 0.5*(M + SO3F.psi.K_symmetrised(inv(g(ind)),SO3F.center,SO3F.CS,SO3F.SS,'nocubictrifoldaxis',varargin{:}));
     end
-    f(ind,:) = f(ind,:) + reshape(full(M * SO3F.weights),size(f(ind,:)));
+    f(ind,:) = f(ind,:) + reshape(full(M * c),size(f(ind,:)));
   end
 
   if num == 1
