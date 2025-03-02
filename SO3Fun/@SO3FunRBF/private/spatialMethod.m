@@ -29,9 +29,9 @@ function [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin)
 %  LSQRMethod  -  ('lsqr'|'lsqlin'|'lsqnonneg'|'nnls'|'mlrl'|'mlsq')
 
 
-% Multidim. Vector Fields:
+% multidim. Vector Fields:
+sz = size(y); sz = [sz(2:end),1];
 if numel(nodes)~=numel(y(:))
-  sz = size(y); sz = [sz(2:end),1];
   y = reshape(y,numel(nodes),[]);
 else
   y = y(:);
@@ -117,6 +117,6 @@ end
 
 end
 
-chat = reshape(chat,[numel(nodes) sz]);
+chat = reshape(chat,[size(chat,1) sz]);
 
 end
