@@ -1,5 +1,6 @@
 function f = eval(SO3F,rot,varargin)
-
+% eval function at given rotations
+%
 
 %     if isa(rot,'orientation')
 %       ensureCompatibleSymmetries(SO3F,rot)

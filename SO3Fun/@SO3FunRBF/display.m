@@ -31,7 +31,6 @@ if ~isempty(SO3F.center)
     if isscalar(SO3F)
       disp(['  weight: ', xnum2str(sum(SO3F.weights))]);
     elseif length(SO3F)<4
-
       disp(['  weight: [', xnum2str(sum(SO3F.weights)), ']']);
     end
     disp(' ');
