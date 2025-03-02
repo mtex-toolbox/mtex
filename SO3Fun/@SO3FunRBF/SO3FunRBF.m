@@ -210,7 +210,7 @@ methods
   end
 
   function S3F = transpose(S3F)
-    S3F.c0 = s3F.c0.';
+    S3F.c0 = S3F.c0.';
   end
 
   function S3F = ctranspose(S3F)
