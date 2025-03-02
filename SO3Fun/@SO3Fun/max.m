@@ -97,7 +97,7 @@ else
     % neighborhood search
     S3Glocal = localOrientationGrid(SO3F.SLeft,SO3F.SLeft,2*res,'resolution',res/2);
     newModes = (S3Glocal * modes).';
-    f = eval(SO3F,newModes,varargin{:});
+    f = reshape(eval(SO3F,newModes,varargin{:}),size(newModes));
   
     if numLocal == 1
 
