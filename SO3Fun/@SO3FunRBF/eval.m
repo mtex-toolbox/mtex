@@ -60,7 +60,7 @@ c = reshape(SO3F.weights,[],numel(SO3F));
 while iter <= numiter
   if iter > 0% split
     ind = 1 + (1+(iter-1)*diter:min(num-1,iter*diter));
-    if isempty(ind), return; end
+    if isempty(ind), break; end
   end
 
   %eval the kernel
@@ -79,7 +79,7 @@ while iter <= numiter
   end
 
   if num == 1
-    return
+    break
   elseif iter == 0 % iterate due to memory restrictions?
     numiter = ceil( max(1,nnz(M))*num / getMTEXpref('memory',512 * 1024) / 256 );
     diter = ceil(num / numiter);
@@ -91,5 +91,6 @@ while iter <= numiter
 end
 
 if ~isreal(f) && isalmostreal(f), f = real(f); end
+if isscalar(SO3F), f = reshape(f,size(g)); end
 
 end
