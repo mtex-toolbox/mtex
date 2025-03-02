@@ -109,6 +109,7 @@ classdef PoleFigure < dynProp & dynOption
       for k=1:length(pf.allR)
         pf.allR{k}.how2plot = pC;
       end
+      pf.SS.how2plot = pC;
     end
 
     function h = get.h(pf)
