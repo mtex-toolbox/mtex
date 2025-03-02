@@ -28,7 +28,10 @@ function f = eval(SO3F,g,varargin)
 % the constant part
 f = reshape(SO3F.c0,1,[]) .* ones(numel(g),1);
 
-if isempty(SO3F.weights), return; end
+if isempty(SO3F.weights)
+  if isscalar(SO3F), f = reshape(f,size(g)); end
+  return; 
+end
 
 % decide along which dimension to split the summation matrix
 if isa(g,'SO3Grid')
