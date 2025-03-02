@@ -60,11 +60,6 @@ S1F = S1FunHarmonic.adjoint(S1G,values,varargin{:},'weights',weights,'bandwidth'
 end
 
 
-
-
-
-
-
 function S1F = S1FunHarmonicAdjoint(nodes,values,varargin)
   
 N = get_option(varargin,'bandwidth',getMTEXpref('maxS1Bandwidth'));

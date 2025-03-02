@@ -1,5 +1,5 @@
 function odfC = transformODF(odfP,p2c,varargin)
-% transformatation texture
+% transformation texture
 %
 % Description
 % ...

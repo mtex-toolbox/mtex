@@ -14,9 +14,6 @@ function h = plot(sF,varargin)
 % Input
 %  sF - @S1Fun
 %
-% Output
-%
-%
  
 if check_option(varargin,'notPolar')
   M = 1e5;
@@ -33,3 +30,4 @@ d = real(sF.eval(omega));
 h = polarplot(omega,d,varargin{:});
 
 if nargout == 0, clear h; end
+
