@@ -3,9 +3,10 @@ function ori = discreteSample(SO3F,npoints,varargin)
 %
 
 % spread points over different centers
-ic = nan(npoints,numel(SO3F));
-
-if ~isempty(SO3F.weights)
+if isempty(SO3F.weights)
+  ic = ones(npoints,numel(SO3F));
+else
+  ic = nan(npoints,numel(SO3F));
   for k = 1:numel(SO3F)
     x = [full(SO3F.weights(:,k));SO3F.c0(k)];
     if sum(x)>0
