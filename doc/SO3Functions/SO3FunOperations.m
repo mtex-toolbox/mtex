@@ -72,8 +72,8 @@ g.eval(inv(R))
 plot(2 * SO3F1 + SO3F2,'phi2',(0:3)*30*degree)
 
 % compute and mark the global maximum
-[maxvalue, maxnodes] = max(2 * SO3F1 + SO3F2,'numLocal',2);
-annotate(maxnodes)
+[maxValue, maxNodes] = max(2 * SO3F1 + SO3F2,'numLocal',2)
+annotate(maxNodes)
 
 %% Integration
 % The surface integral of a spherical function can be computed by either

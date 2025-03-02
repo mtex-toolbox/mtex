@@ -75,8 +75,9 @@ SO3F2 = interp(nodes,y(:,1))
 
 f = @(rot) [exp(rot.a+rot.b+rot.c)+50*(rot.b-cos(pi/3)).^3.*(rot.b-cos(pi/3) > 0), rot.a, rot.b, rot.c];
 %% 
-% Now we call the quadrature command to get (4x1) |SO3F3| of type $~$
-% <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>
+% Now we call the quadrature command to get (4x1) |SO3F3| of type
+% |@SO3FunHarmonic|
+
 SO3F3 = SO3FunHarmonic.quadrature(f, 'bandwidth', 50,SO3F1.CS)
 
 %%

@@ -1,4 +1,12 @@
-function fun = calcS1Density(x,varargin)
+function S1F = calcS1Density(x,varargin)
+% compute periodic density on [0,2 pi] 
+%
+% Input
+%  x - double 
+% Output
+%  S1F - @S1FunHarmonic
+%
+
 
 if ~check_option(varargin,'sigma')
   % automatic bandwidth selection
@@ -13,13 +21,13 @@ end
 N = round(4/sigma);
 
 y = get_option(varargin,'weights',ones(size(x)));
-fun = S1FunHarmonic.quadrature(x,y,'bandwidth',N,varargin{:});
+S1F = S1FunHarmonic.quadrature(x,y,'bandwidth',N,varargin{:});
 
 % convolution
-fun.fhat = fun.fhat .* exp(- 0.5*sigma.^2 * (-N:N).^2).';
+S1F.fhat = S1F.fhat .* exp(- 0.5*sigma.^2 * (-N:N).^2).';
 
 % normalize
-fun.fhat = fun.fhat ./ fun.fhat(N+1);
+S1F.fhat = S1F.fhat ./ S1F.fhat(N+1);
 
 % make antipodal if needed
 %fun.antipodal = check_option(varargin,'antipodal');

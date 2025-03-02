@@ -8,12 +8,9 @@
 % set up a nice colormap
 setMTEXpref('defaultColorMap',blue2redColorMap);
 
-% import some EBSD data
-ebsd = EBSD.load([mtexDataPath '/EBSD/data.ctf'],...
-  'convertEuler2SpatialReferenceFrame');
+mtexdata epidote
 
 % visualize a subset of the data
-
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 

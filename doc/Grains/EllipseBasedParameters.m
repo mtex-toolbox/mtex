@@ -171,8 +171,8 @@ setView(ebsd.how2plot)
 
 psi = S1DeLaValleePoussinKernel('halfwidth',5*degree)
 
-S1_fo_smooth = conv(funcPerp_fo,psi)
-S1_en_smooth = conv(funcPerp_en,psi)
+S1_fo_smooth = conv(S1F_fo,psi)
+S1_en_smooth = conv(S1F_en,psi)
 
 plot(S1_fo_smooth);
 hold on

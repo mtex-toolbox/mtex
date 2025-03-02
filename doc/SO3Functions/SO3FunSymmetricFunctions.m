@@ -18,7 +18,7 @@ ss = SO3F.SLeft
 
 ori = orientation.rand(cs,ss);
 SO3F.eval(ori.symmetrise).'
-SO3F.eval(ss*ori*cs)
+SO3F.eval(ss*ori*cs).'
 
 %%
 % The symmetries have, for example, an influence on the plot domain.
@@ -26,13 +26,13 @@ SO3F.eval(ss*ori*cs)
 plot(SO3F,'sigma')
 
 %%
-% * Note that only the important part with respect to the symmetry is
+% * Note that only the fundamental region with respect to the symmetry is
 % plotted
-% * you can plot the full rotation group using the argument |'complete'|
-
-%%
-% In most subclasses of <SO3Fun.SO3Fun |SO3Fun|> the symmetries are 
-% independent from the rest of variables of the function. So one can change 
+% * you can plot the entire orientation space using the argument
+% |'complete'|
+%
+% In most subclasses of <SO3Fun.SO3Fun |SO3Fun|> the symmetries are
+% independent from the rest of variables of the function. So one can change
 % them very easy and only effects the function values.
 
 SO3F.SLeft = specimenSymmetry('432')

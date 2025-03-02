@@ -9,7 +9,7 @@
 mtexdata dubna
 
 %%
-% See <PoleFigureImport.html Import> for more infomation how to import
+% See <PoleFigureImport.html Import> for more information how to import
 % pole figure data and to create a pole figure object.
 
 % plot pole figures

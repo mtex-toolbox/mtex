@@ -28,7 +28,8 @@ plotx2north
 % horizontal. We can correct the data by rotating the whole dataset by 90
 % degree around the z-axis
 
-ebsd = rotate(ebsd,rotation('axis',-zvector,'angle',90*degree));
+rot = rotation.byAxisAngle(zvector,-90*degree);
+ebsd = rot * ebsd;
 
 plot(ebsd,'micronbar','off')
 
