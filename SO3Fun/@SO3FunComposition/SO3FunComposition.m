@@ -108,7 +108,7 @@ methods
   end
   
   function w = get.weights(S3F)
-    w = cellfun(@(x) mean(x,'all'), S3F.components);
+    w = cellfun(@(x) mean(x), S3F.components);
   end
 
   function out = get.antipodal(S3F)
