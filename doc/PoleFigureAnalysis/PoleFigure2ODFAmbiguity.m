@@ -6,18 +6,19 @@
 %
 %% The ambiguity due to too few pole figures
 %
-% Due to experimental limitations, one is usually restricted to a short list
-% of crystal directions (Miller indices) for which diffraction pole figures
-% can be measured. In general, more measured pole figures implies more
-% reliable ODF reconstruction and low-symmetry materials and weak textures
-% usually requires more pole figures then sharp texture with a high
-% crystal symmetry. From a theoretical point of view, the number of pole
-% figures should be at a level with the square root of the number of pole
-% points in each pole figure. This is of course far from experimentally
-% possible.
+% Due to experimental limitations, one is usually restricted to a short
+% list of crystal directions (Miller indices) for which diffraction pole
+% figures can be measured. In general, more measured pole figures implies
+% more reliable ODF reconstruction and low-symmetry materials and weak
+% textures usually requires more pole figures then sharp texture with a
+% high crystal symmetry. From a theoretical point of view, the number of
+% pole figures should be at a level with the square root of the number of
+% pole points in each pole figure. This is of course far from
+% experimentally possible.
 %
-% Let's demonstrate the ambiguity due to too few pole figures at the example
-% of two orthorhombic ODFs. The first ODF has three modes at the positions
+% Let's demonstrate the ambiguity due to too few pole figures at the
+% example of two orthorhombic ODFs. The first ODF has three modes at the
+% positions
 
 cs = crystalSymmetry('mmm');
 
@@ -117,8 +118,8 @@ plot(odf,'sigma')
 
 %% The ambiguity due to too Friedel's law
 %
-% Due to Friedel's law pole figure data always impose antipodal symmetry. In
-% order to demonstrate the consequences of this antipodal symmetry we
+% Due to Friedel's law pole figure data always impose antipodal symmetry.
+% In order to demonstrate the consequences of this antipodal symmetry we
 % consider crystal symmetry -43m
 
 cs = crystalSymmetry('-43m')
@@ -165,13 +166,13 @@ hold off
 
 
 %%
-% As a consequence of Friedels law, all noncentrosymmetric information about
-% the texture is lost in the diffraction pole figures and we can only aim
-% at recovering the centrosymmetric portion. In particular, any ODF that is
-% reconstructed by MTEX from diffraction pole figures is centrosymmetric,
-% i.e. its point group is a Laue group. If the point group of the crystal
-% was already a Laue group then Fridel's law does not impose any additional
-% ambiguity.
+% As a consequence of Friedels law, all noncentrosymmetric information
+% about the texture is lost in the diffraction pole figures and we can only
+% aim at recovering the centrosymmetric portion. In particular, any ODF
+% that is reconstructed by MTEX from diffraction pole figures is
+% centrosymmetric, i.e. its point group is a Laue group. If the point group
+% of the crystal was already a Laue group then Fridel's law does not impose
+% any additional ambiguity.
 %
 %% The inherent ambiguity of the pole figure - ODF relationship
 %

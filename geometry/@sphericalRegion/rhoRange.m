@@ -12,14 +12,14 @@ end
 % antipodal should not increase spherical region
 sR.antipodal = false;
 
-% discretisation
+% discretization
 omega = linspace(0,2*pi,361);
 
 % start with equator
 v = vector3d('theta',pi/2,'rho',omega);
 rho = v.rho(sR.checkInside(v));
 
-% cylce through boundary
+% cycle through boundary
 for i = 1:length(sR.N)
   
   b = vector3d('theta',acos(sR.alpha(i)),'rho',omega);

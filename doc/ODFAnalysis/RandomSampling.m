@@ -44,7 +44,7 @@ hold off
 %% ODF Estimation from Random Orientations
 %
 % From the last plot we clearly see that the orientations are more dense
-% close to the alpha fibre. In order more quantitative meaure for how well
+% close to the alpha fibre. In order more quantitative measure for how well
 % do the orientations approximate the ODF we may use the orientations to
 % <DensityEstimation.html estimate a new ODF> and compare the fit of this
 % estimate ODF with the initial ODF.

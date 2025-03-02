@@ -20,8 +20,8 @@ model_odf = 0.5*uniformODF(cs) + ...
 plot(model_odf,'sections',6,'silent','sigma')
 
 %%
-% In order to simulate pole figure data, the following parameters have to be
-% specified
+% In order to simulate pole figure data, the following parameters have to
+% be specified
 %
 % # an arbitrary <SO3Fun.SO3Fun.html ODF>
 % # a list of <Miller.Miller.html Miller indices>
@@ -36,18 +36,19 @@ h = [Miller(1,1,1,cs),Miller(1,1,0,cs),Miller(1,0,1,cs),Miller(0,1,1,cs),...
   Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 
 %%
-% The <S2Grid.S2Grid.html grid> of specimen directions
+% The <regularS2Grid.html grid> of specimen directions
 
 r = regularS2Grid('resolution',5*degree);
 
 %%
 % Now the pole figures can be simulated using the command
-% <SO3Fun.calcPoleFigure.html calcPoleFigure>. 
+% <SO3Fun.calcPoleFigure.html |calcPoleFigure|>. 
 
 pf = calcPoleFigure(model_odf,h,r)
 
 %%
-% Add some noise to the data. Here we assume that the mean intensity is 1000.
+% Add some noise to the data. Here we assume that the mean intensity is
+% 1000.
 
 pf = noisepf(pf,1000);
 
@@ -78,10 +79,10 @@ calcError(odf,model_odf,'resolution',5*degree)
 
 %% Exploration of the relationship between estimation error and number of pole figures
 %
-% For a more systematic analysis of the estimation error, we vary the number
-% of pole figures used for ODF estimation from 1 to 7 and calculate for any
-% number of pole figures the approximation error. Furthermore, we also
-% apply ghost correction and compare the approximation error to the
+% For a more systematic analysis of the estimation error, we vary the
+% number of pole figures used for ODF estimation from 1 to 7 and calculate
+% for any number of pole figures the approximation error. Furthermore, we
+% also apply ghost correction and compare the approximation error to the
 % previous reconstructions.
 
 e = [];
