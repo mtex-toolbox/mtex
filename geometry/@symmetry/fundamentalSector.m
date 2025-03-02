@@ -15,7 +15,7 @@ function  sR = fundamentalSector(sym,varargin)
 %  sR - @sphericalRegion
 %
 % Options
-%  antipodal - include [[VectorsAxes.html,antipodal symmetry]]
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 
 % maybe there is nothing to do
@@ -78,15 +78,15 @@ switch sym.id
   case 2 % -1
     N = pC.outOfScreen;
   case {3,6,9} % 211, 121, 112
-    if isnull(dot(getMinAxes(sym.rot),zvector))
-      N = zvector;
+    if isnull(dot(getMinAxes(sym.rot),pC.outOfScreen))
+      N = pC.outOfScreen ;
     end
   case 4
     N = -getMinAxes(sym.rot);
   case {7,10} % m11, 1m1, mm1
     N = getMinAxes(sym.rot);
   case {5,8} % 2/m11 12/m1
-    N = [zvector,getMinAxes(sym.rot)];
+    N = [pC.outOfScreen,getMinAxes(sym.rot)];
     ind = isnull(dot(N,pC.outOfScreen)) & ...  
       angle(pC.east,N,pC.outOfScreen) > 180*degree;
     N(ind) = -N(ind);

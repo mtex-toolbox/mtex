@@ -38,12 +38,12 @@ end
 if center == zvector
   rx = ref - center; 
 else
-  rx = zvector - center;
+  rx = sR.how2plot.outOfScreen - center;
 end
 rho = calcAngle(center,rx,v);
 
 ind = isnull(angle(center,sR.vertices));
-if any(ind) % if center is in a vertice
+if any(ind) % if center is in a vertex
   
   alpha = sR.innerAngle;
   rho = mod(rho,alpha(ind)) * 2*pi ./ alpha(ind);

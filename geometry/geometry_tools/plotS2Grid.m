@@ -5,8 +5,8 @@ function v = plotS2Grid(varargin)
 %   plotS2Grid('resolution',[5*degree 2.5*degree])
 %
 % Options
-%  resolution - resolution in polar and azimthal direction
-%  hemisphere - 'lower', 'uper', 'complete', 'sphere', 'identified'
+%  resolution - resolution in polar and azimuthal direction
+%  hemisphere - 'lower', 'upper', 'complete', 'sphere', 'identified'
 %  minRho     - starting rho angle (default 0)
 %  maxRho     - maximum rho angle (default 2*pi)
 %  minTheta   - starting theta angle (default 0)
@@ -23,25 +23,29 @@ function v = plotS2Grid(varargin)
 sR = extractSphericalRegion(varargin{:});
 
 % get plotting convention
-pC = getClass(varargin,'plottingConvention',plottingConvention.default);
+pC = getClass(varargin,'plottingConvention',sR.how2plot);
+
+% rotate sR it such that pC.outOfPlane points to z
+rot = rotation.map(pC.outOfScreen,zvector);
+sRRot = rot*sR;
 
 % get resolution
 res = get_option(varargin,'resolution',1*degree);
 
-[rhoMin,rhoMax] = rhoRange(sR);
+[rhoMin,rhoMax] = rhoRange(sRRot);
 rho = linspace(rhoMin(1),rhoMax(1),round(1+(rhoMax(1)-rhoMin(1))/res));
 for i = 2:length(rhoMin)
   rho = [rho,nan,linspace(rhoMin(i),rhoMax(i),round(1+(rhoMax(i)-rhoMin(i))/res))]; %#ok<AGROW>
 end
 
-[thetaMin,thetaMax] = thetaRange(sR,rho);
+[thetaMin,thetaMax] = thetaRange(sRRot,rho);
 
 % remove values out of region
 ind = (thetaMax > 1e-5) & (thetaMin < pi - 1e-5);
 
 ind(end) = ind(end-1); ind(1) = ind(2);
 
-% we should put some nans to seperate regions
+% we should put some nans to separate regions
 rho(diff(ind) == 1) = nan;
 ind(diff(ind) == 1) = true;
 
@@ -61,11 +65,14 @@ else
 
   rho = repmat(rho,ntheta,1);
 
-  v = vector3d('theta',theta,'rho',rho);
+  v = vector3d.byPolar(theta,rho);
 end
 
+% rotate back
+v = inv(rot) .* v;
+
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
-% the above procdure does not work so well if we have a full sphere
+% the above procedure does not work so well if we have a full sphere
 % and the theta region is not connected
 % thatswhy we have to check once again
 v(~sR.checkInside(v)) = nan;
