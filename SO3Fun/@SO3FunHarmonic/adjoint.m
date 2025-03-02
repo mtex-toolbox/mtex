@@ -68,7 +68,9 @@ end
 
 % -------------- (1) get weights and values for quadrature ----------------
 
-len = size(values,2); % multivariate case
+sz = size(values);
+len = prod(sz(2:end)); % multivariate case
+values = reshape(values,[],len);
 
 if isa(rot,'orientation')
   SRight = rot.CS; SLeft = rot.SS;
@@ -189,10 +191,10 @@ else
   % adjoint nfft
   ghat = zeros(8*(N+1)^3,len);
   for i=1:len
-  nfftmex('set_f', plan, W(:) .* values(:,i));
-  nfftmex('adjoint', plan);
-  % adjoint Fourier transform
-  ghat(:,i) = nfftmex('get_f_hat', plan);
+    nfftmex('set_f', plan, W(:) .* values(:,i));
+    nfftmex('adjoint', plan);
+    % adjoint Fourier transform
+    ghat(:,i) = nfftmex('get_f_hat', plan);
   end
   ghat = reshape(ghat,2*N+2,2*N+2,2*N+2,len);
   ghat = ghat(2:end,2:end,2:end,:);
@@ -235,6 +237,7 @@ end
 % ------------------- (4) Construct SO3FunHarmonic ------------------------
 
 SO3F = SO3FunHarmonic(fhat,SRight,SLeft,varargin{:});
+SO3F = reshape(SO3F,sz(2:end));
 
 % if antipodal consider only even coefficients
 SO3F.antipodal = check_option(varargin,'antipodal');
