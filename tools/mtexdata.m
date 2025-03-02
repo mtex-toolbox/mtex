@@ -116,6 +116,7 @@ catch
           out = calcODF(pf);
       end
     case 'PoleFigure'
+      pC = plottingConvention(zvector,xvector);
       switch name
         case 'dubna'
           CS = loadCIF('quartz');
@@ -134,7 +135,7 @@ catch
           out = PoleFigure.load(fName,h,'interface','rw1');
           out = rotate(out,90*degree);
       end
-      
+      out.how2plot = pC;
     case 'EBSD'
       switch lower(name)
         
