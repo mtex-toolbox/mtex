@@ -16,10 +16,15 @@ function SO3F = times(SO3F1,SO3F2)
 
 if isnumeric(SO3F1)
   SO3F = SO3F2;
-  SO3F.weights = SO3F.weights .* SO3F1;
-  SO3F.c0 = SO3F.c0 .* SO3F1;  
+  SO3F.c0 = SO3F.c0 .* SO3F1;
+  SO3F.weights = SO3F.weights .* reshape(SO3F1,[1 size(SO3F1)]);
   return
-end  
+end
+
+if isnumeric(SO3F2)
+  SO3F = SO3F2 .* SO3F1;
+  return
+end
 
 SO3F = times@SO3Fun(SO3F1,SO3F2);
 

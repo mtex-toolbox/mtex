@@ -64,7 +64,9 @@ methods
     if nargin >= 2, SO3F.psi = psi; end
       
     if nargin > 2
-      weights = reshape(weights,length(SO3F.center),[]);
+      if numel(weights) == length(SO3F.center)
+        weights = weights(:);
+      end
     else
       weights = ones(numel(center),1) ./ numel(center);
     end

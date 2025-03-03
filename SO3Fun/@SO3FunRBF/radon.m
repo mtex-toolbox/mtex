@@ -14,6 +14,12 @@ function S2F = radon(SO3F,h,r,varargin)
 %  S2F - @S2FunHarmonic
 %
 
+% not multidim
+if ~isscalar(SO3F)
+  warning('not supported for multidim. vector fields.')
+  SO3F = SO3F(1);
+end
+
 % S2Fun in h or r?
 if nargin<3, r = []; end
 

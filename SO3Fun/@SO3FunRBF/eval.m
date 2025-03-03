@@ -94,6 +94,10 @@ while iter <= numiter
 end
 
 if ~isreal(f) && isalmostreal(f), f = real(f); end
-if isscalar(SO3F), f = reshape(f,size(g)); end
+if isscalar(SO3F)
+  f = reshape(f,size(g)); 
+else
+  f = reshape(f,[numel(g) size(SO3F)]);
+end
 
 end

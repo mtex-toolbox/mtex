@@ -35,6 +35,7 @@ else
 
 
   SO3F.weights = full(sum(SO3F.weights,dim+1,varargin{:}));
+  SO3F.c0 = sum(SO3F.c0,dim,varargin{:});
   value = SO3F;
 
 end

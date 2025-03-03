@@ -13,7 +13,7 @@ function SO3F = inv(SO3F)
 %  
 
 % stop in simple case
-if SO3F.bandwidth == 0 || SO3F.antipodal==true
+if isempty(SO3F.center) || SO3F.antipodal==true
   return
 end
 

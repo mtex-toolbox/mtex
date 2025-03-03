@@ -39,8 +39,8 @@ end
 SO3F2 = varargin{1};
 
 if isnumeric(SO3F1) || isnumeric(SO3F2) || ...
-    (isa(SO3F1,'SO3FunRBF') && all(SO3F1.c0~=0) && isempty(SO3F1.weights)) || ...
-    (isa(SO3F2,'SO3FunRBF') && all(SO3F2.c0~=0) && isempty(SO3F2.weights))
+    (isa(SO3F1,'SO3FunRBF') && all(SO3F1.c0(:)~=0) && isempty(SO3F1.weights)) || ...
+    (isa(SO3F2,'SO3FunRBF') && all(SO3F2.c0(:)~=0) && isempty(SO3F2.weights))
   return
 end
 

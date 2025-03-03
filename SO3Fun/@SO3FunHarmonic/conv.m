@@ -97,10 +97,6 @@ if isa(SO3F2,'S2Fun')
     SO3F = S2FunHarmonic(fhat);
   end
 
-
-
-
-
   return
 
 end

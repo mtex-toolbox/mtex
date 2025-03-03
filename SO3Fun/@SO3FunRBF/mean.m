@@ -24,7 +24,8 @@ if nargin == 1
 else
   
   SO3F.weights = full(mean(SO3F.weights,dim+1,varargin{:}));
-  value = mean(value,dim+1,varargin{:}) + SO3F;
+  SO3F.c0 = mean(value,dim,varargin{:});
+  value = SO3F;
   
 end
 
