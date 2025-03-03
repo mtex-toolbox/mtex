@@ -159,6 +159,7 @@ else
   nfftmex('finalize',plan);
 end
 
+% reshape output
 if isscalar(SO3F), f = reshape(f,s); end
 
 end
@@ -186,7 +187,11 @@ else
   end
 end
   
-  
-if isscalar(SO3F), f = reshape(f,size(rot)); end
+% reshape output
+if isscalar(SO3F)
+  f = reshape(f,size(rot)); 
+else
+  f = reshape(f,[numel(rot) size(SO3F)]);
+end
 
 end

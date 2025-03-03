@@ -57,8 +57,8 @@ end
 Psi = createSummationMatrix(psi,SO3G,nodes,varargin{:});
 
 m = get_option(varargin,'mean',1.0);
-if length(m)<prod(sz)
-  m = ones(sz)*m;
+if numel(m)<prod(sz)
+  m = ones(sz).*m;
 end
 
 for Index = 1:prod(sz)
