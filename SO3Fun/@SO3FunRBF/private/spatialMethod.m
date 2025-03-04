@@ -30,12 +30,11 @@ function [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin)
 
 
 % multidim. Vector Fields:
-sz = size(y); sz = [sz(2:end),1];
+sz = [1,1];
 if numel(nodes)~=numel(y(:))
-  y = reshape(y,numel(nodes),[]);
-else
-  y = y(:);
+  sz = size(y); sz = [sz(2:end),1];
 end
+y = reshape(y,numel(nodes),[]);
 
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
