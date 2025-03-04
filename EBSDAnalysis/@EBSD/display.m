@@ -57,8 +57,8 @@ disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',reshape(ebsd.phase,size(ebsd))
   'orientation',ebsd.rotations));
 disp(strong(" Scan unit") + " : " + ebsd.scanUnit);
 ext = ebsd.extent;
-disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2)) + "] x [" + ...
-  xnum2str(ext(3:4)) + "] x [" + xnum2str(ext(5:6)) + "]");
+disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',', ') + "] x [" + ...
+  xnum2str(ext(3:4),'delimiter',', ') + "] x [" + xnum2str(ext(5:6),'delimiter',', ') + "]");
 disp(strong(" Normal vector") + ": (" + ...
   char(round(ebsd.N,'accuracy',5*degree)) + ")");
 
