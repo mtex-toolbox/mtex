@@ -212,7 +212,7 @@ for k=-n:n
   end
 end
 
-WignerD(n,beta)-D
+WignerD(beta,n)-D
 
 %% Wigner-D functions
 F = SO3FunHarmonic([zeros(1,9);eye(9)])

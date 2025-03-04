@@ -19,7 +19,7 @@ displayClass(o,inputname(1),'className',type,'moreInfo',refSystems);
 if length(o)~=1, disp(['  size: ' size2str(o)]); end
 
 if o.antipodal
-  disp('  antipodal:         true');
+  disp('  antipodal: true');
 end
   
 if isMisorientation(o) && isscalar(o) && angle(o,round2Miller(o))<1e-3
