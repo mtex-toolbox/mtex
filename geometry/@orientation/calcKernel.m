@@ -15,13 +15,15 @@ function psi = calcKernel(ori,varargin)
 % Flags
 %  magicrule   - 
 %  RuleOfThumb - 
-%  LSCV        - least squares cross valiadation
+%  LSCV        - least squares cross validation
 %  KLCV        - Kullback Leibler cross validation (default)
 %  BCV         - biased cross validation
 %
 % See also
 % EBSD/calcODF orientation/BCV orientation/KLCV orientation/LSCV
 
+% consider only orientations that not nan
+ori = ori.subSet(~ori.isnan);
 
 % if there are to many orientations -> subsampling
 numOri = length(ori);
