@@ -39,7 +39,7 @@ plot(odf,'sigma')
 %  
 % The Fourier coefficients are defined by
 %
-% $$ \hat f^{k,l}_n = \int_{SO(3)} f({\bf R}) \cdot \overline{D_n^{k,l}({\bf R})} \mathrm{d}\my({\bf R}) $$
+% $$ \hat f^{k,l}_n = \int_{SO(3)} f({\bf R}) \cdot \overline{D_n^{k,l}({\bf R})} \,\mathrm{d}\mu({\bf R}) $$
 % 
 % and we compute this integral by numerical integration, which is also 
 % called quadrature, i.e.
@@ -143,15 +143,15 @@ calcError(E1,E2)
 % The basic strategy is to approximate the given function $f$  
 % by a |@SO3FunRBF|, see <RadialODFs.html Radial Basis Functions on SO(3)>. 
 %
-% Hence we determine rotations $R_1,\dots,R_N$ and seek the corresponding 
+% Hence we determine rotations $\bf{R}_1,\dots,\bf{R}_N$ and seek the corresponding 
 % coefficients $\vec c=(c_1,\dots,c_N)$ such that
 %
-% $$ g(x) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega(x,R_n)}{2}) $$
+% $$ g(x) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega(x,{\bf{R}}_n)}{2}) $$
 % 
 % approximates $f$ reasonable well, i.e. $f\approx g$. 
 % In this formula, $\Psi$ describes a <SO3Kernels.html SO(3)-Kernel 
 % Function>. Hence, $f$ is a superposition of one rotational kernel 
-% function centered on the orientations $R_1,\dots,R_N$ and weighted by the 
+% function centered on the orientations $\bf{R}_1,\dots,\bf{R}_N$ and weighted by the 
 % coefficients $c_1,\dots,c_N$.
 % 
 % A basic strategy is to apply least squares approximation, where we 
@@ -164,7 +164,7 @@ calcError(E1,E2)
 % This least squares problem can also be written in matrix vector notation
 % $ \argmin_{c} \| K \cdot c - v \|, $
 % where $x=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
-% matrix $[\Psi(\cos\frac{\omega(x_m,R_n)}{2})]_{m,n}$.
+% matrix $[\Psi(\cos\frac{\omega(x_m,{\bf{R}}_n)}{2})]_{m,n}$.
 %
 % This least squares problem can be solved by the |lsqr| method from MATLAB,
 % which efficiently seeks for roots of the derivative of the given 
@@ -181,9 +181,9 @@ calcError(E1,E2)
 % any |@SO3Fun| or |@function_handle| by an |@SO3FunRBF|.
 % 
 
-SO3F3 = SO3FunRBF(odf,'density')
-% SO3F3 = SO3FunRBF.approximate(odf,'density')
-plot(SO3F3,'sigma')
+SO3F2 = SO3FunRBF(SO3F,'density')
+% SO3F2 = SO3FunRBF.approximate(SO3F,'density')
+plot(SO3F2,'sigma')
 
 %%
 % Here MTEX internally calls the 
@@ -193,38 +193,38 @@ plot(SO3F3,'sigma')
 % The flag |'density'| tells MTEX to use the |mlsq| solver, which ensures 
 % that the resulting function is nonnegative and normalized to mean $1$.
 
-minValue = min(SO3F3)
+minValue = min(SO3F2)
 
-meanValue = mean(SO3F3)
+meanValue = mean(SO3F2)
 
 %%
 % We can specify the kernel of the approximated |@SO3FunRBF| with 
 % the option |'kernel'| or |'halfwidth'| and we can use the options 
 % |'SO3Grid'| and |'resolution'| to choose some specific set of rotations 
-% as centers $R_1,\dots,R_N$ of the approximation $g$.
+% as centers $\bf{R}_1,\dots,\bf{R}_N$ of the approximation $g$.
 
-SO3F4 = SO3FunRBF(odf,'halfwidth',5*degree,'resolution',10*degree)
+SO3F3 = SO3FunRBF(SO3F,'halfwidth',5*degree,'resolution',10*degree)
+plot(SO3F3,'sigma')
+
+%%
+
+S3G = orientation.rand(1000,SO3F.CS);
+psi = SO3AbelPoissonKernel('halfwidth',5*degree);
+SO3F4 = SO3FunRBF(SO3F,'kernel',psi,'SO3Grid',S3G)
 plot(SO3F4,'sigma')
 
 %%
 
-S3G = orientation.rand(1000,odf.CS);
-psi = SO3AbelPoissonKernel('halfwidth',5*degree);
-SO3F5 = SO3FunRBF(odf,'kernel',psi,'SO3Grid',S3G)
+SO3F5 = SO3FunRBF(SO3F,'halfwidth',5*degree,'approxresolution',5*degree)
 plot(SO3F5,'sigma')
-
-%%
-
-SO3F6 = SO3FunRBF(odf,'halfwidth',5*degree,'approxresolution',5*degree)
-plot(SO3F6,'sigma')
 
 %%
 % The errors are
 
-calcError(odf,SO3F3)
-calcError(odf,SO3F4)
-calcError(odf,SO3F5)
-calcError(odf,SO3F6)
+calcError(SO3F,SO3F2)
+calcError(SO3F,SO3F3)
+calcError(SO3F,SO3F4)
+calcError(SO3F,SO3F5)
 
 %%
 % If we do not have an |@SO3Fun| or |@function_handle|, but we try to 
@@ -237,17 +237,17 @@ calcError(odf,SO3F6)
 %% RBF-Kernel Approximation by minimizing the harmonic Error
 % 
 % The basic idea is the same as in the previous section.
-% We determine rotations $R_1,\dots,R_M$ and seek the 
+% We determine rotations $\bf{R}_1,\dots,\bf{R}_M$ and seek the 
 % corresponding coefficients $\vec c=(c_1,\dots,c_N)$ of
 %
-% $$ g(x) = \sum_{m=1}^M c_m \, \Psi(\cos\frac{\omega(x,R_m)}{2}), $$
+% $$ g(x) = \sum_{m=1}^M c_m \, \Psi(\cos\frac{\omega(x,{\bf{R}}_m)}{2}), $$
 %
 % such that $g$ approximates $f$ in a certain sense.
 % But in what sense exactly? 
 %
 % In the previous section, we minimized the pointwise error (in spatial 
 % domain) between $f$ and $g$ on some grid, i.e. we minimized 
-% $ \ds \sum_{m=1}^M|f(x_m)-g(x_m)|^2 $ in $M$ points.
+% $ \sum\limits_{m=1}^M|f(x_m)-g(x_m)|^2 $ in $M$ points.
 %
 % Now we will minimize the error in frequency domain. Hence, the 
 % Fourier coefficients of $f$ are supposed to be nearly the same as the 
@@ -255,7 +255,7 @@ calcError(odf,SO3F6)
 %
 % So, we will try to determine the coefficients $c_1,\dots,c_M$ such that 
 %
-% $$ \sum_n=0^N \sum_{k,l=-n}^n (\hat f_n^{k,l} - \hat g_n^{k,l})^2 $$
+% $$ \sum_{n=0}^N \sum_{k,l=-n}^n |\hat f_n^{k,l} - \hat g_n^{k,l}|^2 $$
 % 
 % is minimized.
 %
@@ -263,8 +263,8 @@ calcError(odf,SO3F6)
 % In MTEX we call this by adding the option |'harmonic'| to the
 % <SO3FunRBF.html |SO3FunRBF|>-command.
 
-SO3F7 = SO3FunRBF(odf,'harmonic')
-plot(SO3F7,'sigma')
+SO3F6 = SO3FunRBF(SO3F,'harmonic')
+plot(SO3F6,'sigma')
 
 
 %% LSQR-Parameters
@@ -278,7 +278,7 @@ plot(SO3F7,'sigma')
 % Thus we are able to control the precision of the result and computational 
 % time of the least squares methods in the approximation process.
 %
-%
+%%
 %
 %
 %

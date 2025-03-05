@@ -90,6 +90,7 @@ y = reshape(yy, [length(nodes) s(2:end)]);
 % decide bandwidth
 bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
 
+% TODO: ad hoc method to decide for regularization parameter
 % regularization options
 lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},5e-7);
 regularize = lambda > 0;

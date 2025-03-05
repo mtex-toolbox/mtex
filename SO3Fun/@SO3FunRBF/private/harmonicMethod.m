@@ -31,12 +31,11 @@ function [chat,iter] = harmonicMethod(SO3G,psi,fhat,y,varargin)
 %
 
 % Multidim. Vector Fields
+sz = [1,1];
 if numel(SO3G)~=numel(y(:))
   sz = size(fhat); sz = [sz(2:end),1];
-  y = reshape(y,numel(SO3G),[]);
-else
-  y = y(:);
 end
+y = reshape(y,numel(SO3G),[]);
 
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
@@ -46,8 +45,8 @@ if check_option(varargin,'density')
   varargin = ['mlsq',varargin];
 elseif check_option(varargin,'mean') && (all(y(:)>-eps) || all(y(:)<eps))
   varargin = ['mlsq',varargin];
-elseif numel(nodes)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
-  W = calcVoronoiVolume(nodes);
+elseif numel(SO3G)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
+  W = calcVoronoiVolume(SO3G);
   W = W./sum(W);
   meanV = sum(W(:).*y);
   varargin = ['mlsq','mean',meanV,varargin];

@@ -55,7 +55,7 @@ plotSection(ori,val,'all','sigma')
 % the given orientations and $v_m$ the corresponding function values.
 %
 % This least squares problem can also be written in matrix vector notation
-% $ \argmin_{c} \| K \cdot c - v \|, $
+% $ \mathrm{argmin}\limits_{c} \| K \cdot c - v \|, $
 % where $c=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
 % matrix $[\Psi(\cos\frac{\omega(x_m,R_n)}{2})]_{m,n}$.
 %
@@ -65,7 +65,7 @@ plotSection(ori,val,'all','sigma')
 %
 % Alternatively there is also a modified least square method |mlsq|, which
 % search for a solution $c_1,\dots,c_N$ that satisfies $c>0$ and 
-% $\sum_{n=1}^N c_n = 1$. This method can be used if the underlying
+% $\sum\limits_{n=1}^N c_n = 1$. This method can be used if the underlying
 % function is a density, i.e. it is nonnegative and has mean 1.
 %
 %%

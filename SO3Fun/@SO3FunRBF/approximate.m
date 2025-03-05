@@ -91,6 +91,7 @@ varargin = [varargin,'mean',f.mean];
 
 if check_option(varargin,'harmonic')
   y0 = f.eval(SO3G); % initial guess for coefficients
+  f.bandwidth = psi.bandwidth;
   fhat = calcFourier(f,'bandwidth',psi.bandwidth);
   % LEAST-SQUARES-PROBLEM
   [chat,iter] = harmonicMethod(SO3G,psi,fhat,y0,varargin{:});

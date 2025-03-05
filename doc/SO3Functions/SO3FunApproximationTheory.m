@@ -195,7 +195,9 @@ plot(SO3F)
 %
 % Lets consider an academic example which do not describe an underlying odf.
 % Hence we have given noisy evaluations of the function
-% $$ f(\mat R) = \cos(\omega(R)) \cdot \sin(3\cdot \varphi_1(R))+\frac12 $$
+%
+% $$ f(R) = \cos(\omega(R)) \cdot \sin(3\cdot \varphi_1(R))+\frac12 $$
+%
 % in some random orientations, where $\omega(R)$ is the angle of the 
 % rotation $R$ and $\varphi_1(R)$ is the $varphi_1$-Euler angle of $R$.
 % 

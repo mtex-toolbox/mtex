@@ -218,9 +218,9 @@ mtexColorbar
 % As the regularization parameter is gradually reduced, the influence of 
 % the error term increases. Higher frequencies and stronger changes in the 
 % function values are no longer penalized as much. 
-% However, as soon as the regularisation parameter becomes too small, the 
+% However, as soon as the regularization parameter becomes too small, the 
 % noise increases, which leads to overfitting. Ultimately, we see 
-% oversampling again when $lambda$ approaches 0.
+% oversampling again when $\lambda$ approaches 0.
 %
 % Lets take a look on the spectra.
 
