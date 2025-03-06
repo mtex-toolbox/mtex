@@ -73,8 +73,8 @@ plot(SO3F,'sigma')
 % approximated |@SO3FunHarmonic| with the option |'bandwidth'| and we can
 % tell MTEX to use the other quadrature scheme.
 
-SO3F = SO3FunHarmonic(odf,'bandwidth',10,'GaussLegendre')
-plot(SO3F,'sigma')
+SO3F2 = SO3FunHarmonic(odf,'bandwidth',10,'GaussLegendre')
+plot(SO3F2,'sigma')
 
 %%
 % If we do not have an |@SO3Fun| or |@function_handle|, but we try to 
@@ -95,6 +95,10 @@ plot(SO3F,'sigma')
 % |SO3FunHarmonic|-command.
 % In fact this is a special case of approximation of discrete data for a 
 % very specific grid.
+%
+% In the following, the |EXPERIMENT|-method is something, where we put in
+% orientations and obtain corresponding values. That could be a physical 
+% experiment or maybe also some computational routine.
 %
 
 % Specify the bandwidth and symmetries of the desired harmonic odf
@@ -180,10 +184,13 @@ calcError(E1,E2)
 % In MTEX we use the command <SO3FunRBF.html |SO3FunRBF|> to represent
 % any |@SO3Fun| or |@function_handle| by an |@SO3FunRBF|.
 % 
+% In the following we want to use this to transform a given 
+% |@SO3FunHarmonic| back into a |@SO3FunRBF|.
+%
 
-SO3F2 = SO3FunRBF(SO3F,'density')
+SO3F3 = SO3FunRBF(SO3F,'density')
 % SO3F2 = SO3FunRBF.approximate(SO3F,'density')
-plot(SO3F2,'sigma')
+plot(SO3F3,'sigma')
 
 %%
 % Here MTEX internally calls the 
@@ -193,9 +200,9 @@ plot(SO3F2,'sigma')
 % The flag |'density'| tells MTEX to use the |mlsq| solver, which ensures 
 % that the resulting function is nonnegative and normalized to mean $1$.
 
-minValue = min(SO3F2)
+minValue = min(SO3F3)
 
-meanValue = mean(SO3F2)
+meanValue = mean(SO3F3)
 
 %%
 % We can specify the kernel of the approximated |@SO3FunRBF| with 
@@ -203,28 +210,28 @@ meanValue = mean(SO3F2)
 % |'SO3Grid'| and |'resolution'| to choose some specific set of rotations 
 % as centers $\bf{R}_1,\dots,\bf{R}_N$ of the approximation $g$.
 
-SO3F3 = SO3FunRBF(SO3F,'halfwidth',5*degree,'resolution',10*degree)
-plot(SO3F3,'sigma')
+SO3F4 = SO3FunRBF(SO3F,'halfwidth',5*degree,'resolution',10*degree)
+plot(SO3F4,'sigma')
 
 %%
 
 S3G = orientation.rand(1000,SO3F.CS);
 psi = SO3AbelPoissonKernel('halfwidth',5*degree);
-SO3F4 = SO3FunRBF(SO3F,'kernel',psi,'SO3Grid',S3G)
-plot(SO3F4,'sigma')
+SO3F5 = SO3FunRBF(SO3F,'kernel',psi,'SO3Grid',S3G)
+plot(SO3F5,'sigma')
 
 %%
 
-SO3F5 = SO3FunRBF(SO3F,'halfwidth',5*degree,'approxresolution',5*degree)
-plot(SO3F5,'sigma')
+SO3F6 = SO3FunRBF(SO3F,'halfwidth',5*degree,'approxresolution',5*degree)
+plot(SO3F6,'sigma')
 
 %%
 % The errors are
 
-calcError(SO3F,SO3F2)
 calcError(SO3F,SO3F3)
 calcError(SO3F,SO3F4)
 calcError(SO3F,SO3F5)
+calcError(SO3F,SO3F6)
 
 %%
 % If we do not have an |@SO3Fun| or |@function_handle|, but we try to 
@@ -263,8 +270,8 @@ calcError(SO3F,SO3F5)
 % In MTEX we call this by adding the option |'harmonic'| to the
 % <SO3FunRBF.html |SO3FunRBF|>-command.
 
-SO3F6 = SO3FunRBF(SO3F,'harmonic')
-plot(SO3F6,'sigma')
+SO3F7 = SO3FunRBF(SO3F,'harmonic')
+plot(SO3F7,'sigma')
 
 
 %% LSQR-Parameters
@@ -288,7 +295,7 @@ plot(SO3F6,'sigma')
 %
 %
 %%
-
+% This is a black box function which is used above. Just ignore it.
 function v = EXPERIMENT(ori)
   v = SO3Fun.dubna.eval(ori);
 end

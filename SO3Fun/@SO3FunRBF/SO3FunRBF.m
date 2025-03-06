@@ -3,7 +3,10 @@ classdef SO3FunRBF < SO3Fun
 %
 % Syntax
 %   SO3F = SO3FunRBF(center,psi,weights,c0)
+%
 %   SO3F = SO3FunRBF(F)
+%   SO3F = SO3FunRBF(F,'kernel',psi,__) % See SO3FunRBF.approximate for options list
+%   SO3F = SO3FunRBF(F,'harmonic',__) % See SO3FunRBF.approximate for option list
 %
 % Input
 %  center  - @orientation
@@ -22,6 +25,8 @@ classdef SO3FunRBF < SO3Fun
 %   psi = SO3DeLaValleePoussinKernel(10);
 %   SO3F = SO3FunRBF(ori,psi,w)
 %
+% See also
+% SO3FunRBF/approximate
 
 properties
   c0 = 0                           % constant portion
@@ -39,46 +44,69 @@ end
 
 methods
     
-  function SO3F = SO3FunRBF(center,psi,weights,c0,varargin)
+  function SO3F = SO3FunRBF(center,varargin)
       
     if nargin == 0, return; end
 	
-	% convert arbitrary SO3Fun to SO3FunRBF
-    if isa(center,'SO3FunRBF')
+  	% convert arbitrary SO3Fun to SO3FunRBF
+    if isa(center,'SO3FunRBF') 
+      % check input: 'kernel', 'halfwidth', 'SO3Grid', 'resolution'
+      psi = get_option(varargin,'kernel');
+      hw = get_option(varargin,'halfwidth');
+      SO3G = get_option(varargin,'SO3Grid');
+      res = get_option(varargin,'resolution');
       SO3F = center;
-      return
+      if (isempty(psi) || SO3F.psi==psi) && ... 
+         (isempty(hw) || (isa(SO3F.psi,'SO3DeLaValleePoussinKernel') && abs(SO3F.psi.halfwidth-hw)<0.25*degree)) && ...
+         (isempty(SO3G) || (numel(SO3F.center)==numel(SO3G) && all(reshape(SO3F.center==SO3G,[],1)) )) && ...
+         (isempty(res) || (isa(SO3F.center,'SO3Grid') && abs(SO3F.center.resolution-res)<0.25*degree))
+        return
+      end
     end
     if isa(center,'function_handle') || isa(center,'SO3Fun')
-      if nargin>=4, varargin = {c0,varargin{:}}; end
-      if nargin>=3, varargin = {weights,varargin{:}}; end
-      if nargin>=2, varargin = {psi,varargin{:}}; end
       SO3F = SO3FunRBF.approximate(center,varargin{:});
       return
     end
       
+    % get orientation grid
     if ~isa(center,'orientation')
       center = orientation(center);
     end
     SO3F.center = center;
     
-    if nargin >= 2, SO3F.psi = psi; end
+    % get kernel
+    psi = getClass(varargin,'SO3Kernel');
+    if ~isempty(psi), SO3F.psi = psi; end
       
-    if nargin > 2
-      if numel(weights) == length(SO3F.center)
+    % get weights and constant part c0
+    idw = cellfun(@(x) isnumeric(x) && ( (numel(x)==numel(center)) || (size(x,1)==numel(center)) ),varargin);
+    idw = find(idw,1);
+    if isempty(idw)
+      idc0 = cellfun(@(x) isnumeric(x),varargin);
+      if isempty(find(idc0,1))
+        c0=0; 
+      else
+        c0 = varargin{find(idc0,1)};
+      end
+      weights = ones([numel(center),size(c0)]) ./ numel(center);
+    else
+      weights = varargin{idw};
+      varargin{idw}=[];
+      if numel(weights) == length(center)
         weights = weights(:);
       end
-    else
-      weights = ones(numel(center),1) ./ numel(center);
+      sz = size(weights); sz = sz(2:end);
+      if isscalar(sz), sz = [sz,1]; end
+      idc0 = cellfun(@(x) isnumeric(x) && all(size(x)==sz) ,varargin);
+      if isempty(find(idc0,1))
+        c0=zeros(sz); 
+      else
+        c0 = varargin{find(idc0,1)};
+      end
     end
     SO3F.weights = weights;
-
-    if nargin > 3
-      SO3F.c0 = c0;
-    else
-      s = [size(weights) 1];
-      SO3F.c0 = zeros(s(2:end));
-    end
-      
+    SO3F.c0 = c0;
+    
   end
 
     
