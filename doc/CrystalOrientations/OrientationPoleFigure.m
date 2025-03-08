@@ -21,13 +21,13 @@ h = Miller({1,0,0},cs);
 r = ori * h.symmetrise
 
 %%
-% and ploted in a spherical projection
+% and plotted in a spherical projection
 
 plot(r)
 
 %%
 % Since the trigonal symmetry group has six symmetry elements the
-% orientation appears at six possitions.
+% orientation appears at six positions.
 %
 % A shortcut for the above computations is the command
 

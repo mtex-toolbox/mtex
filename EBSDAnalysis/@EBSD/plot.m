@@ -146,7 +146,7 @@ end
 
 mP.how2plot.setView(mP.ax);
 
-try axis(mP.ax,'tight'); end
+try axis(mP.ax,'tight'); end %#ok<TRYNC>
 %set(mP.ax,'zlim',[0,1.1]);
 mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
 mP.extent(2) = max(mP.extent(2),max(ebsd.pos.x(:)));
@@ -188,7 +188,7 @@ if ~isempty(id)
   if ebsd.isIndexed(id)
     txt{5} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
-  try
+  try %#ok<TRYNC>
     txt{end+1} = ['grainId = ' xnum2str(ebsd.grainId(id))];
   end
   if ~isempty(value)

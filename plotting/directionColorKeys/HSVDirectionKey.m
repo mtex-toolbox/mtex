@@ -1,7 +1,7 @@
 classdef HSVDirectionKey < directionColorKey
   % converts crystal or specimen directions to rgb values
   %
-  % The priciple idea is to take the fundamental sector, apply white to the
+  % The principle idea is to take the fundamental sector, apply white to the
   % center and red, blue and green to the vertices. This works well if all
   % the edges of the fundamental sector are reflections, i.e. for for m, mm2,
   % mmm, 3m, 4mm, 4/mmm, 6mm, -62m, 6/mmm, -43m, m-3m.
