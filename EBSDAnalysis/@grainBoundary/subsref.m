@@ -16,7 +16,7 @@ if strcmp(s(1).type,'()')
   subs = s(1).subs;
   
   % turn phaseNames into crystalSymmetry
-  isCS = cellfun(@(x) ischar(x) | isa(x,'crystalSymmetry'),subs);  
+  isCS = cellfun(@(x) ischar(x) | isstring(x) | isa(x,'crystalSymmetry'),subs);  
   phId = cellfun(@gB.name2id,subs(isCS));
   isCS(isCS) = phId>0; phId(phId==0) = [];
   subs(isCS) = gB.CSList(phId);
