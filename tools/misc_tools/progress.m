@@ -1,5 +1,9 @@
 function progress(i,total,comment,varargin)
 % display progress
+%
+% Syntax
+%   progress(iter,maxiter)
+%
 
 if check_option(varargin,'silent'); return; end
 

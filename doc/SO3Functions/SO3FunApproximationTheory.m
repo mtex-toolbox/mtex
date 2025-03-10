@@ -159,7 +159,8 @@ plot(SO3F,'sigma')
 %% Approximation using the Bingham distribution
 %
 % Approximation with the Bingham distribution currently works only with no
-% symmetry. TODO! 
+% symmetry. 
+%
 % TODO: Dont work
 
 % simulate nodes and values from an odf
@@ -196,10 +197,10 @@ plot(SO3F)
 % Lets consider an academic example which do not describe an underlying odf.
 % Hence we have given noisy evaluations of the function
 %
-% $$ f(R) = \cos(\omega(R)) \cdot \sin(3\cdot \varphi_1(R))+\frac12 $$
+% $$ f({\bf{R}}) = \cos(\omega({\bf{R}})) \cdot \sin(3\cdot \varphi_1({\bf{R}}))+\frac12 $$
 %
-% in some random orientations, where $\omega(R)$ is the angle of the 
-% rotation $R$ and $\varphi_1(R)$ is the $varphi_1$-Euler angle of $R$.
+% in some random orientations, where $\omega({\bf{R}})$ is the angle of the 
+% rotation $\bf{R}$ and $\varphi_1({\bf{R}})$ is the $varphi_1$-Euler angle of $\bf{R}$.
 % 
 
 f = SO3FunHandle(@(r) cos(r.angle).*sin(3*r.phi1) + 0.5);

@@ -150,7 +150,7 @@ calcError(E1,E2)
 % Hence we determine rotations $\bf{R}_1,\dots,\bf{R}_N$ and seek the corresponding 
 % coefficients $\vec c=(c_1,\dots,c_N)$ such that
 %
-% $$ g(x) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega(x,{\bf{R}}_n)}{2}) $$
+% $$ g(\bf{x}) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega({\bf{x}},{\bf{R}}_n)}{2}) $$
 % 
 % approximates $f$ reasonable well, i.e. $f\approx g$. 
 % In this formula, $\Psi$ describes a <SO3Kernels.html SO(3)-Kernel 
@@ -161,14 +161,14 @@ calcError(E1,E2)
 % A basic strategy is to apply least squares approximation, where we 
 % compute the coefficients $c_n$ by minimizing the functional 
 %
-% $$ \sum_{m=1}^M|f(x_m)-g(x_m)|^2 $$
+% $$ \sum_{m=1}^M|f({\bf{x}}_m)-g({\bf{x}}_m)|^2 $$
 %
-% for some specific orientations $x_1,\dots,x_M$.
+% for some specific orientations $\bf{x}_1,\dots,\bf{x}_M$.
 %
 % This least squares problem can also be written in matrix vector notation
 % $ \argmin_{c} \| K \cdot c - v \|, $
 % where $x=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
-% matrix $[\Psi(\cos\frac{\omega(x_m,{\bf{R}}_n)}{2})]_{m,n}$.
+% matrix $[\Psi(\cos\frac{\omega({\bf{x}}_m,{\bf{R}}_n)}{2})]_{m,n}$.
 %
 % This least squares problem can be solved by the |lsqr| method from MATLAB,
 % which efficiently seeks for roots of the derivative of the given 
@@ -247,14 +247,14 @@ calcError(SO3F,SO3F6)
 % We determine rotations $\bf{R}_1,\dots,\bf{R}_M$ and seek the 
 % corresponding coefficients $\vec c=(c_1,\dots,c_N)$ of
 %
-% $$ g(x) = \sum_{m=1}^M c_m \, \Psi(\cos\frac{\omega(x,{\bf{R}}_m)}{2}), $$
+% $$ g({\bf{x}}) = \sum_{m=1}^M c_m \, \Psi(\cos\frac{\omega({\bf{x}},{\bf{R}}_m)}{2}), $$
 %
 % such that $g$ approximates $f$ in a certain sense.
 % But in what sense exactly? 
 %
 % In the previous section, we minimized the pointwise error (in spatial 
 % domain) between $f$ and $g$ on some grid, i.e. we minimized 
-% $ \sum\limits_{m=1}^M|f(x_m)-g(x_m)|^2 $ in $M$ points.
+% $ \sum\limits_{m=1}^M|f({\bf{x}}_m)-g({\bf{x}}_m)|^2 $ in $M$ points.
 %
 % Now we will minimize the error in frequency domain. Hence, the 
 % Fourier coefficients of $f$ are supposed to be nearly the same as the 
