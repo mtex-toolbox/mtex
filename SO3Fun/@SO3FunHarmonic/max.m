@@ -28,7 +28,11 @@ function [values,modes] = max(SO3F,varargin)
 %  startingNodes - @rotation / @orientation
 %  tolerance     - minimum distance between two peaks
 %  resolution    - minimum step size 
-%  maxStepSize   - maximm step size
+%  maxStepSize   - maximum step size
+%
+% Flags
+%  gradDescent - use gradient Descent (slower)
+%  noNFFT      - (together with 'gradDescent') prevent usage of NFFT-methods by direct summation (slow, but computable for very high bandwiths if matlab brokes in other cases)
 %
 % Example
 %
@@ -48,6 +52,13 @@ if nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal
   varargin{1}.isReal = 1;
   warning('By taking the maxima of SO3Funs, the functions should be real valued.')
 end
+
+% Do gradient descent
+if check_option(varargin,'gradDescent')
+  [values,modes] = maxSteepestDescent(SO3F,varargin{:});
+  return
+end
+
 
 if isscalar(SO3F)
   [values,modes] = max@SO3Fun(SO3F,varargin{:});
@@ -75,11 +86,57 @@ if nargin>1 && (isa(varargin{1},'SO3FunHarmonic') || isnumeric(varargin{1}))
 end
 
 len = get_option(varargin,'numLocal',1);
-values = zeros(len,prod(s));
+values = zeros(len,prod(s)); 
 modes = rotation.id(len,prod(s));
 for k=1:numel(SO3F)
   [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
   values(:,k)=v; modes(:,k)=m;
 end
+
+end
+
+
+
+function [values,modes] = maxSteepestDescent(SO3F,varargin)
+  
+  % get symmetry
+  cs = SO3F.SRight;
+  ss = SO3F.SLeft;
+
+  % 1. Evaluate on very large global grid by FFT
+  N = get_option(varargin,'bandwidth',128);
+  % make bw suitable
+  N = quadratureSO3Grid.adjust_bandwidth(N,cs,ss);
+  % TODO: adjust kernel to bandwidth
+  hw = get_option(varargin,'halfwidth',2*pi/(2*N+2));
+  f = smooth(SO3F,SO3DeLaValleePoussinKernel('halfwidth',hw));
+  % prevent construction of memory consuming rotation grids.
+  rot = struct('scheme','ClenshawCurtis','bandwidth',N,'CS',cs,'SS',ss);
+  y = evalEquispacedFFT(f,rot);
+  
+  % 2. Find maximal values
+  width=5;
+  msk = true(2*width+1,2*width+1,2*width+1);
+  msk(width+1,width+1,width+1) = false;
+  y_dil = imdilate(y,msk);
+  M = y > y_dil;
+  
+  % 3. Indicate corresponding rotations
+  [u,~,id] = quadratureSO3Grid.uniqueQuadratureSO3Grid(N,'ClenshawCurtis',cs,ss);
+  tol = get_option(varargin,'tolerance',5*degree);
+  r = unique(u(id(M)),'tolerance',tol);
+  
+  % 4. Do Steepest Descent with direct Evaluation on that Maxima
+  if check_option(varargin,'noNFFT')
+    [modes,values] = steepestDescent(SO3F,r,'skipSymmetrise','unique',3*degree,'noNFFT');
+  else
+    [modes,values] = steepestDescent(SO3F,r,'skipSymmetrise','unique',3*degree);
+  end
+
+  % 5. Make output
+  len = min(get_option(varargin,'numLocal',1),length(values));
+  [values,id] = sort(values,'descend');
+  values = values(1:len);
+  modes = project2FundamentalRegion(modes(id(1:len)),'Bunge');
 
 end

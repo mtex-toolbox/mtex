@@ -17,13 +17,21 @@ ori = ori(:);
 for k = 1:maxIter
 
   % gradient
-  g = normalize(G.eval(ori));
-
+  if check_option(varargin,'noNFFT')
+    g = normalize(G.eval(ori,'noNFFT'));
+  else
+    g = normalize(G.eval(ori));
+  end
   % prepare for linesearch
   line_ori = exp(g(:) * omega,repmat(ori(:),1,length(omega)));
   
   % evaluate along lines
-  line_v = odf.eval(line_ori);
+  if check_option(varargin,'noNFFT')
+    line_v = odf.eval(line_ori,'noNFFT');
+  else
+    line_v = odf.eval(line_ori);
+  end
+
   
   % take the maximum
   [value,id] = max(line_v,[],2);
@@ -31,7 +39,15 @@ for k = 1:maxIter
   % update orientations
   ori = line_ori(sub2ind(size(line_ori),(1:length(ori)).',id));
   
+  tol = get_option(varargin,'unique');
+  if ~isempty(tol)
+    [ori,id] = unique(ori,'tolerance',tol);
+    value = value(id);
+    s = size(ori);
+  end
+
   if all(id == 1), break; end
+  progress(k,maxIter)
   % fprintf(['Step size:',num2str(omega(max(id))/degree),'°\n'])
 end
 
