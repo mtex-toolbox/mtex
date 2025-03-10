@@ -12,13 +12,13 @@ if nargin == 2, threshold = 5*degree; end
 
 ind = false(size(gB));
 
-% whiches phases to use
+% which phases to use
 phase1 = find(cellfun(@(cs) isa(cs,'crystalSymmetry') && ...
   cs == mori.CS,gB.CSList));
 phase2 = find(cellfun(@(cs) isa(cs,'crystalSymmetry') && ...
   cs == mori.SS,gB.CSList));
 
-% cycle through all indexed phase transistions
+% cycle through all indexed phase transitions
 pairs = allPairs(phase1,phase2);
 
 for ip = 1:size(pairs,1)

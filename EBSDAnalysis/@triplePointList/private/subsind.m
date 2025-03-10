@@ -9,7 +9,7 @@ else
 end
 
 % select for minerals
-isMineralName = cellfun(@ischar,subs);
+isMineralName = cellfun(@(x) ischar(x) | isstring(x),subs);
 if any(isMineralName)
   ind = gB.hasPhase(subs{isMineralName});
 end

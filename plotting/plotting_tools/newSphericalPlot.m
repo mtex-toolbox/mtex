@@ -11,7 +11,7 @@ try
 catch ME
   how2plot = plottingConvention.default;
 end
-how2plot = getClass(varargin,'plottingConvention',how2plot);
+how2plot = copy(getClass(varargin,'plottingConvention',how2plot));
 
 % case 1: predefined axis
 % -----------------------

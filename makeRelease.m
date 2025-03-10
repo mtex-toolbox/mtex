@@ -11,7 +11,7 @@ end
 unix(['rm -rf ',rDir]);
 unix(['cp -R ' mtex_path ' ' rDir]);
 
-rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' 'data/EBSD/*'};
+rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' 'data/EBSD/*' '.mailmap' 'gitTricks.md'};
 for rd = rmList 
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end

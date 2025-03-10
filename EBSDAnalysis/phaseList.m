@@ -345,7 +345,7 @@ classdef phaseList
     
     function id = cs2phaseId(pL,cs)
       
-      if ischar(cs) && strcmpi(cs,'notIndexed')
+      if (ischar(cs) || isstring(cs))  && strcmpi(cs,'notIndexed')
         id = 1;
         return;
       elseif ~isa(cs,'crystalSymmetry')
@@ -367,11 +367,11 @@ classdef phaseList
     function phId = name2id(pL,ph)
       % convert phase name to id
               
-      if ischar(ph)
+      if ischar(ph) || isstring(ph)
         alt_mineral = cellfun(@num2str,num2cell(pL.phaseMap),'Uniformoutput',false);
         ph = strrep(ph,')','\)');
         ph = strrep(ph,'(','\(');
-        ph = ~cellfun('isempty',regexpi(pL.mineralList(:),['^' ph])) | ...
+        ph = ~cellfun('isempty',regexpi(pL.mineralList(:),"^" + ph)) | ...
           strcmpi(alt_mineral(:),ph);
         phId = find(ph,1);
         if isempty(phId), phId = 0; end

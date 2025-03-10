@@ -75,7 +75,7 @@ for j = 1:length(sF)
     pC.outOfScreen = sec;
   end
 
-  if isAxisHandle(mtexFig.gca)
+  if isa(mtexFig.gca,'matlab.graphics.axis.Axes')
     mtexFig.gca.DataAspectRatio = [1 1 1];
     axis(mtexFig.gca,'off');
   end

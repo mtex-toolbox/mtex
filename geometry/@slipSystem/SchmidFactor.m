@@ -40,6 +40,11 @@ elseif isa(sigma,'vector3d')
 % Schmid factor with respect to a stress tensor
 elseif isa(sigma,'stressTensor')
   
+  if isa(n,'Miller') && sigma.CS ~= n.CS
+    warning('The reference system of the stress tensor and the slip systems do not match!');
+  end
+
+
   % normalize the stress tensor
   % such that the resulting Schmid factor is always between [0, 0.5]
   EV = eig(sigma);

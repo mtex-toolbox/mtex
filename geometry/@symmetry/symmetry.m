@@ -49,7 +49,7 @@ classdef symmetry < matlab.mixin.Copyable
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
       
-      isPerpZ = isnull(dot(rot.axis,zvector)) & ~isnull(rot.angle);
+      isPerpZ = isnull(dot(rot.axis,zvector),1e-4) & ~isnull(rot.angle,1e-4);
 
       if any(isPerpZ(:))
         s.multiplicityPerpZ = round(2*pi/min(abs(angle(rot(isPerpZ)))));
