@@ -66,6 +66,8 @@ if ~isdeployed
   end
 end
 
+check_mex('fast')
+
 % finish
 if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
@@ -76,8 +78,6 @@ end
 if isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
   MTEXmenu;
 end
-
-check_mex('fast')
 
 end
 
