@@ -47,7 +47,8 @@ prop(prop<llim | prop > ulim)=nan;
 hasGrain = ebsd.grainId>0;
 
 % get averaging method
-method = getClass(varargin,'function_handle',@(x) mean(x,1,"omitmissing"));
+%method = getClass(varargin,'function_handle',@(x) mean(x,1,"omitmissing"));
+method = getClass(varargin,'function_handle',@(x) mean(x,1,"omitnan"));
 
 % perform the averaging
 mP = accumarray(ebsd.grainId(hasGrain),prop(hasGrain),[],method);
