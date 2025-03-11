@@ -77,6 +77,8 @@ if isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
   MTEXmenu;
 end
 
+check_mex('fast')
+
 end
 
 

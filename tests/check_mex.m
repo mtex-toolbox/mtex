@@ -1,11 +1,14 @@
-function check_mex
+function check_mex(varargin)
 
 mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
-  "wignerTrafomex" "wignerTrafoAdjointmex"  "numericalSaddlepointWithDerivatives" ...
   "S1Grid_find" "S1Grid_find_region" "S2Grid_find" "S2Grid_find_region" ...
-  "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...
-  "nfftmex" "fptmex" "nfsftmex" "nfsoftmex"
+  "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...  
+  "nfftmex" "fptmex" "nfsftmex" "nfsoftmex" ...
+  "wignerTrafomex" "wignerTrafoAdjointmex"  "numericalSaddlepointWithDerivatives" ...
   ];
+
+fName = fullfile(mtex_path, "mex",mexFiles{1} + "." + mexext);
+if check_option(varargin,'fast') && exist(fName,'file'), return, end
 
 hasC = logical([1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 ]);
 
@@ -32,32 +35,44 @@ err = cell(length(mexFiles),1);
 for k = 1:length(mexFiles)
 
   mexFile = mexFiles(k);
-  
+ 
   fprintf(" checking: " + mexFile + "." + mexext);
+  fName = fullfile(mtex_path, "mex",mexFile + "." + mexext);
 
-  if ~exist(fullfile(mtex_path, "mex",mexFile + "." + mexext),'file')
+  if ~exist(fName,'file')
     
     fprintf(2," <strong>missing</strong>" + newline);
-    isMissing = true;
 
-  else
-    
     try
-      res(k) = feval("check_" + mexFile);
-    catch e
-      err{k} = e;
+      url = "https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/mex/" ...
+        + mexFile + "." + mexext;
+
+      disp("  downloading data from  <a href=""" + url + """>" + url + "</a>")
+      disp("  and saving it to " + fName);
+    
+      websave(fName,url);
+
+      fprintf(" checking: " + mexFile + "." + mexext);
+    catch
+      isMissing = true;
     end
-    if res(k)
-      fprintf(" <strong>ok</strong>" + newline);
+  end
+      
+  try
+    res(k) = feval("check_" + mexFile);
+  catch e
+    err{k} = e;
+  end
+  if res(k)
+    fprintf(" <strong>ok</strong>" + newline);
+  else
+    fprintf(2," <strong>failed</strong>" + newline);
+    if isempty(err{k})
+      disp("  --> wrong result");
     else
-      fprintf(2," <strong>failed</strong>" + newline);
-      if isempty(err{k})
-        disp("  --> wrong result");
-      else
-        id = pushTemp(err{k});
-        disp("  --> <a href=""matlab: rethrow(pullTemp(" + int2str(id) ...
-          + "))"">" + err{k}.message + "</a>");
-      end
+      id = pushTemp(err{k});
+      disp("  --> <a href=""matlab: rethrow(pullTemp(" + int2str(id) ...
+        + "))"">" + err{k}.message + "</a>");
     end
   end
 end
