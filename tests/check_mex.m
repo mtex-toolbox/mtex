@@ -5,7 +5,7 @@ mexFiles = ["jcvoronoi_mex" "EulerCyclesC" "insidepoly_dblengine" ...
   "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...  
   "nfftmex" "fptmex" "nfsftmex" "nfsoftmex" ...
   "wignerTrafomex" "wignerTrafoAdjointmex"  "numericalSaddlepointWithDerivatives" ...
-  ];
+  "SHTextractormex"];
 
 fName = fullfile(mtex_path, "mex",mexFiles{1} + "." + mexext);
 if check_option(varargin,'fast') && exist(fName,'file'), return, end
@@ -321,6 +321,9 @@ out = min(d(:))==d(i);
 
 end
 
+function out = check_SHTextractormex
+out = 1;
+end
 
 function xxxx
 cs = crystalSymmetry('trigonal');
