@@ -1,5 +1,5 @@
 function [n1,n2,d1,d2] = matchLattice(mori,varargin)
-% find lattice alignements for arbitrary misorientations
+% find lattice alignments for arbitrary misorientations
 %
 % Description
 %
@@ -38,7 +38,7 @@ delta = get_option(varargin,'threshold',1*degree);
 
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},3);
 
-% all plane normales
+% all plane normals
 hkl = allHKL(maxIndex);
 
 n1 = Miller(hkl(:,1),hkl(:,2),hkl(:,3),mori.CS);
