@@ -66,6 +66,8 @@ if ~isdeployed
   end
 end
 
+check_mex('fast')
+
 % finish
 if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));

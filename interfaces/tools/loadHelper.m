@@ -81,11 +81,6 @@ methods
     loader.data(ind,cols) = {nan};
 
     % eliminate nans
-    if ~check_option(loader.opts,'keepNaN')
-      ind = any(isnan(table2array(loader.data(:,cols))),2);
-      loader.data(ind,:) = [];
-    end
-
     rotData = table2array(loader.data(:,cols));
     if type <=6
       flag = extract_option([convNames{type} loader.opts],convNames);     

@@ -88,7 +88,7 @@ switch sym.id
   case {5,8} % 2/m11 12/m1
     N = [pC.outOfScreen,getMinAxes(sym.rot)];
     ind = isnull(dot(N,pC.outOfScreen)) & ...  
-      angle(pC.east,N,pC.outOfScreen) > 180*degree;
+      mod(angle(pC.east,N,pC.outOfScreen)+5*degree,2*pi) > 180*degree;       
     N(ind) = -N(ind);
   case 11
   case 12 % 222

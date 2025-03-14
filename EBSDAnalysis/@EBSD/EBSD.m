@@ -131,6 +131,12 @@ classdef EBSD < phaseList & dynProp & dynOption
             
       ebsd.N = perp(ebsd.unitCell);
 
+      % orientations of not indexed pixels should be nan
+      ebsd.rotations(~ebsd.isIndexed) = nan;
+
+      % phase of nan orientations should be notIndexed
+      ebsd.phaseId(isnan(ebsd.rotations)) = 1;
+
     end
     
     % --------------------------------------------------------------
@@ -219,6 +225,12 @@ classdef EBSD < phaseList & dynProp & dynOption
 
       % EBSD data that do not belong to a grain are set to notIndexed
       ebsd.phaseId(ebsd.grainId == 0) = 1;
+
+      % phaseId should be the same within one grain 
+      ind = ebsd.grainId>0;
+      grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
+      ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
+      
     end
       
     function out = hasGrainId(ebsd)
@@ -233,7 +245,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori.SS.how2plot = ebsd.how2plot;
         
         % set not indexed orientations to nan
-        if ~all(ebsd.isIndexed), ori(~ebsd.isIndexed) = NaN; end
+        if ~all(ebsd.isIndexed(:)), ori(~ebsd.isIndexed) = NaN; end
         
       end
     end

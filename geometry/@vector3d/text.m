@@ -85,7 +85,7 @@ for j = 1:numel(sP)
     if isnan(x(i)), continue; end
     
     s = strings{i};
-    if ~ischar(s), s = char(s,interpreter);end
+    if ~ischar(s) && ~isstring(s), s = char(s,interpreter);end
 
     if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
       s = ['$' s '$']; %#ok<AGROW>

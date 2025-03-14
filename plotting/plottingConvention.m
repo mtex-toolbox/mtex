@@ -47,7 +47,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
         
     function display(pC,varargin)
-      displayClass(pC,inputname(1),varargin{:});
+      displayClass(pC,inputname(1),'moreInfo',char(pC,'compact'),varargin{:});
     
       if ~check_option(varargin,'skipHeader'), disp(' '); end
 

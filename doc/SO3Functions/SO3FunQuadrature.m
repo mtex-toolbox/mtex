@@ -6,7 +6,7 @@
 % a |@function_handle|, a more complex Matlab function or a physical
 % experiment.
 % 
-% On this page we will explain how to compute the corresponding 
+% On this page we will explain how to compute the corresponding
 % |@SO3FunHarmonic| and |@SO3FunRBF| that approximates $f$ reasonable well.
 %
 %%

@@ -7,10 +7,10 @@ function val = cor(SO3F1,SO3F2,varargin)
 %   c = cor(SO3F1,SO3F2)
 % 
 % Input
-%  SO3F1, SO3F2 - @SO3FunHarmonic
+%  SO3F1, SO3F2 - @SO3Fun
 %
 % Output
-%  t - double
+%  c - double
 %
 
 res = get_option(varargin,'resolution',2.5*degree);

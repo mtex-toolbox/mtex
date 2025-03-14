@@ -11,7 +11,7 @@
 % might be remarkable. For those cases, *MTEX* provides the option
 % *ghost_correction* which tries to determine the uniform portion of the
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
-% substracting this uniform portion. This is almost the approach Matthies
+% subtracting this uniform portion. This is almost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
 % In this section, we are going to demonstrate the power of ghost correction
 % at a simple, synthetic example.
@@ -85,7 +85,7 @@ plot(rec_cor,'sections',9,'silent','sigma')
 close all
 f = fibre(Miller(0,1,0,cs),yvector);
 plot(odf,f,'linewidth',2);
-hold all
+hold on
 
 %%
 % radial plot without ghost correction:
@@ -131,7 +131,7 @@ plotSpektra(odf,'linewidth',2)
 
 %%
 % keep plotting windows and add next plots
-hold all
+hold on
 
 %%
 % Without ghost correction:

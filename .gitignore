@@ -24,6 +24,14 @@ help/tmp/*
 /myToken.txt
 resources/*
 *.c
-*.c
 *.asv
 myScripts
+/data/Neper/neper.log
+/data/Neper/ori_in.txt
+/data/Neper/my100GrSlice.ori
+/data/Neper/my100GrSlice.tess
+/data/Neper/my100grains.ori
+/data/Neper/my100grains.stpoly
+/data/Neper/my100grains.tess
+.mailmap
+gitTricks.md
