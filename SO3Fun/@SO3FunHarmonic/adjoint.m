@@ -208,7 +208,11 @@ z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
 ghat = z .* ghat;
 
 % set flags and symmetry axis
-flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
+if SLeft.id==0 || SRight.id==0 % do not use symmetry properties, if symmetries are not standardized
+  flags = 2^0;  % use L2-normalized Wigner-D functions
+else
+  flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
+end
 % TODO: Probably use limit 1e-5 because this is precision m of nfft
 if isalmostreal(values,'precision',10,'norm',1) % real valued
   flags = flags+2^2;
