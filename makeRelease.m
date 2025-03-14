@@ -1,9 +1,17 @@
-function makeRelease
+function makeRelease(ver)
 
 % ensure we are up to data
 system("git pull");
 
-ver = input("Enter Name of Version (default=" + getMTEXpref('version') + "): ",'s');
+if nargin == 0
+  ver = input("Enter Name of Version (default=" + getMTEXpref('version') + "): ",'s');
+else
+  if ~strcmpi(input(['Do you really want to release ' ver '? Y/N [N]:'],'s'),'Y')
+    return;
+  end
+end
+
+
 
 if isempty(ver)
   ver = getMTEXpref('version');
