@@ -1,5 +1,5 @@
 function dspace = dspacing(h)
-% space between crystal planes
+% distance between lattice planes
 
 
 dspace = 1./norm(h);

@@ -8,7 +8,7 @@ function h = plot(sF,varargin)
 %   theta = pi/3;   % polar angle 
 %   plotSection(sF,N,theta) % plot small circle at 30 degree from the north pole
 %
-%   rho = linspace(0,pi); % azimuthal angle
+%   rho = linspace(0,pi); % azimuth angle
 %   plotSection(sF,N,theta,rho) % plot half small circle at 30 degree
 %
 % Input
