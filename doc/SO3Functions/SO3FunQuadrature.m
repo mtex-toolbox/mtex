@@ -147,15 +147,15 @@ calcError(E1,E2)
 % The basic strategy is to approximate the given function $f$  
 % by a |@SO3FunRBF|, see <RadialODFs.html Radial Basis Functions on SO(3)>. 
 %
-% Hence we determine rotations $\bf{R}_1,\dots,\bf{R}_N$ and seek the corresponding 
+% Hence we determine rotations ${\bf{R}}_1,\dots,{\bf{R}}_N$ and seek the corresponding 
 % coefficients $\vec c=(c_1,\dots,c_N)$ such that
 %
-% $$ g(\bf{x}) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega({\bf{x}},{\bf{R}}_n)}{2}) $$
+% $$ g({\bf{x}}) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega({\bf{x}},{\bf{R}}_n)}{2}) $$
 % 
 % approximates $f$ reasonable well, i.e. $f\approx g$. 
 % In this formula, $\Psi$ describes a <SO3Kernels.html SO(3)-Kernel 
 % Function>. Hence, $f$ is a superposition of one rotational kernel 
-% function centered on the orientations $\bf{R}_1,\dots,\bf{R}_N$ and weighted by the 
+% function centered on the orientations ${\bf{R}}_1,\dots,{\bf{R}}_N$ and weighted by the 
 % coefficients $c_1,\dots,c_N$.
 % 
 % A basic strategy is to apply least squares approximation, where we 
@@ -163,10 +163,10 @@ calcError(E1,E2)
 %
 % $$ \sum_{m=1}^M|f({\bf{x}}_m)-g({\bf{x}}_m)|^2 $$
 %
-% for some specific orientations $\bf{x}_1,\dots,\bf{x}_M$.
+% for some specific orientations ${\bf{x}}_1,\dots,{\bf{x}}_M$.
 %
 % This least squares problem can also be written in matrix vector notation
-% $ \argmin_{c} \| K \cdot c - v \|, $
+% $ \mathrm{argmin}_{c} \| K \cdot c - v \|, $
 % where $x=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
 % matrix $[\Psi(\cos\frac{\omega({\bf{x}}_m,{\bf{R}}_n)}{2})]_{m,n}$.
 %
@@ -208,7 +208,7 @@ meanValue = mean(SO3F3)
 % We can specify the kernel of the approximated |@SO3FunRBF| with 
 % the option |'kernel'| or |'halfwidth'| and we can use the options 
 % |'SO3Grid'| and |'resolution'| to choose some specific set of rotations 
-% as centers $\bf{R}_1,\dots,\bf{R}_N$ of the approximation $g$.
+% as centers ${\bf{R}}_1,\dots,{\bf{R}}_N$ of the approximation $g$.
 
 SO3F4 = SO3FunRBF(SO3F,'halfwidth',5*degree,'resolution',10*degree)
 plot(SO3F4,'sigma')
@@ -244,7 +244,7 @@ calcError(SO3F,SO3F6)
 %% RBF-Kernel Approximation by minimizing the harmonic Error
 % 
 % The basic idea is the same as in the previous section.
-% We determine rotations $\bf{R}_1,\dots,\bf{R}_M$ and seek the 
+% We determine rotations ${\bf{R}}_1,\dots,{\bf{R}}_M$ and seek the 
 % corresponding coefficients $\vec c=(c_1,\dots,c_N)$ of
 %
 % $$ g({\bf{x}}) = \sum_{m=1}^M c_m \, \Psi(\cos\frac{\omega({\bf{x}},{\bf{R}}_m)}{2}), $$
@@ -262,7 +262,7 @@ calcError(SO3F,SO3F6)
 %
 % So, we will try to determine the coefficients $c_1,\dots,c_M$ such that 
 %
-% $$ \sum_{n=0}^N \sum_{k,l=-n}^n |\hat f_n^{k,l} - \hat g_n^{k,l}|^2 $$
+% $$ \sum\limits_{n=0}^N \sum\limits_{k,l=-n}^n | \hat{f}_n^{k,l} - \hat{g}_n^{k,l} |^2 $$
 % 
 % is minimized.
 %

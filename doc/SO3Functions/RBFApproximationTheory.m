@@ -100,6 +100,18 @@ SO3F = interp(ori,val)
 plot(SO3F,'sigma')
 mtexColorbar
 
+%%
+% Hence the result is not automatically a density function (nonnegative and
+% mean 1).
+
+minValue = min(SO3F)
+meanValue = mean(SO3F)
+
+%%
+% But since it is not denoised, it is overfitted and the error becomes small.
+
+norm(SO3F.eval(ori) - val) / norm(val)
+
 %% Adjustment of the Kernel Function
 %
 % The key parameter when approximating by radial basis functions is the

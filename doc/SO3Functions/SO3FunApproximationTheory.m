@@ -89,7 +89,7 @@ plot(SO3F,'sigma')
 %
 % An alternative way of regularization is to reduce the harmonic bandwidth
 
-SO3F = interp(ori,S.values,'harmonic','bandwidth',16)
+SO3F = interp(ori,S.values,'harmonic','regularization',0,'bandwidth',16)
 
 % the relative error
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
@@ -155,6 +155,14 @@ SO3F = interp(ori,S.values);
 norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 plot(SO3F,'sigma')
+
+%%
+% In general, omitting the option |'density'| does not yield to a density
+% function (nonnegative and mean 1).
+
+minValue = min(SO3F)
+
+meanValue = mean(SO3F)
 
 %% Approximation using the Bingham distribution
 %
