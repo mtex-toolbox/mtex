@@ -34,7 +34,7 @@ ver = strrep(lower(ver),' ','-');
 % commit and push new version file
 system("git commit VERSION -m """ + ver + """");
 system("git tag -a " + ver + " -m ""Release of " + ver + """");
-system("git push")
+system("git push --tags")
 
 rDir = fullfile(mtex_path,'..','releases',ver);
 zipName = [rDir,'.zip'];
