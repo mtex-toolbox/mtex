@@ -1,17 +1,42 @@
 function makeRelease
 
-ver = strrep(lower(getMTEXpref('version')),' ','-');
+% ensure we are up to data
+system("git pull");
+
+ver = input("Enter Name of Version (default=" + getMTEXpref('version') + "): ",'s');
+
+if isempty(ver)
+  ver = getMTEXpref('version');
+elseif length(ver)<5
+  return
+else
+  setMTEXpref("version",ver)
+end
+
+% change to mtex path
+cd(mtex_path)
+
+% store new version file
+fid = fopen("VERSION","w");
+fprintf(fid,ver);
+fclose(fid);
+
+ver = strrep(lower(ver),' ','-');
+
+% commit and push new version file
+system("git commit VERSION -m """ + ver + """");
+system("git tag -a " + ver + " -m ""Release of " + ver + """");
+system("git push")
+
 rDir = fullfile(mtex_path,'..','releases',ver);
 zipName = [rDir,'.zip'];
 
-if ~strcmpi(input(['Do you really want to release ' ver '? Y/N [N]:'],'s'),'Y')
-  return;
-end
-  
 unix(['rm -rf ',rDir]);
 unix(['cp -R ' mtex_path ' ' rDir]);
 
-rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' 'data/EBSD/*' '.mailmap' 'gitTricks.md'};
+rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' ...
+  'data/EBSD/*' '.mailmap' 'gitTricks.md' 'makeRelease.m' ...
+  'mex/*.mex*'};
 for rd = rmList 
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end
@@ -44,6 +69,8 @@ doRelease = ['gh release create ' ver ' ' zipName];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
 disp('uploading release to GitHub ...')
+disp('')
+disp(doRelease)
 unix(['terminator -e "' doRelease '"']);
 
 end
