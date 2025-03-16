@@ -142,7 +142,7 @@ N = [4 3 2 3 4;...
   4 3 2 3 4];
 
 cs = crystalSymmetry;
-ebsd = EBSDsquare([],rotation.nan(5,5),N,0:4,{cs,cs,cs,cs,cs},[10 10]);
+ebsd = EBSDsquare([],rotation.nan(5,5),N,0:4,{cs,cs,cs,cs,cs},'dxy',[10 10]);
 plot(ebsd,'EdgeColor','black','micronbar','off','figSize','small')
 legend off
 

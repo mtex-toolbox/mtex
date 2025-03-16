@@ -41,7 +41,7 @@ end
 if ~check_option(varargin,'keepXY')
 
   % remove any grid
-  ebsd = EBSD(ebsd);
+  if isa(ebsd,'EBSDHex'), ebsd = EBSD(ebsd); end
 
   % the center of rotation
   center = get_option(varargin,'center',vector3d(0,0,0));
