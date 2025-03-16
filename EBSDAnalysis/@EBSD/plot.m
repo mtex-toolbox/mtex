@@ -107,6 +107,9 @@ else % phase plot
       strong("plot(" + str + "," + str + ".orientations)") + newline);
   end
 
+  warning('off','MATLAB:legend:PlotEmpty');
+  l = legend(mP.ax,'-DynamicLegend','location','NorthEast');
+  warning('on','MATLAB:legend:PlotEmpty');
 
   for k=1:numel(ebsd.phaseMap)
       
@@ -127,14 +130,18 @@ else % phase plot
       color = ebsd.subSet(ind).color;
     end
     
+    if any(strcmp(ebsd.mineralList{k},l.String))
+      entry = {};
+    else
+      entry = {'DisplayName',ebsd.mineralList{k}};
+    end
+    
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
-      'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
+      'parent', mP.ax,entry{:},varargin{:}); %#ok<AGROW>
   
   end
   
-  warning('off','MATLAB:legend:PlotEmpty');
-  legend('-DynamicLegend','location','NorthEast');
-  warning('on','MATLAB:legend:PlotEmpty');
+  
   
   set(gcf,'name','phase plot');
   
