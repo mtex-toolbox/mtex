@@ -3,7 +3,6 @@ classdef SO3FunRBF < SO3Fun
 %
 % Syntax
 %   SO3F = SO3FunRBF(center,psi,weights,c0)
-%
 %   SO3F = SO3FunRBF(F)
 %   SO3F = SO3FunRBF(F,'kernel',psi,__) % See SO3FunRBF.approximate for options list
 %   SO3F = SO3FunRBF(F,'harmonic',__) % See SO3FunRBF.approximate for option list
@@ -45,9 +44,8 @@ end
 methods
     
   function SO3F = SO3FunRBF(center,varargin)
-      
     if nargin == 0, return; end
-	
+	  
   	% convert arbitrary SO3Fun to SO3FunRBF
     if isa(center,'SO3FunRBF') 
       % check input: 'kernel', 'halfwidth', 'SO3Grid', 'resolution'

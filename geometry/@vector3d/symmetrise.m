@@ -1,5 +1,5 @@
 function [v,l,sym] = symmetrise(v,varargin)
-% symmetrcially equivalent directions and its multiple
+% symmetrically equivalent directions and its multiple
 %
 % Syntax
 %   vSym = symmetrise(v,S)

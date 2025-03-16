@@ -4,7 +4,6 @@ classdef S2Triangulation
   properties
     vertices = vector3d % 
     edges    = vector3d %
-    
     T         % list of triangles
     midPoints % midPoint of each triangle
     A_V       % adjacency matrix of the vertices
