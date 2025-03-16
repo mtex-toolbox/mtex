@@ -9,11 +9,14 @@ classdef EBSD3square < EBSD3
   % general properties
   properties
     dx
-    dy   
+    dy
     dz
   end
   
   properties (Dependent = true)    
+    d1
+    d2
+    d3    
     gradientX       % orientation gradient in x
     gradientY       % orientation gradient in y
     gradientZ       % orientation gradient in z    
@@ -68,6 +71,16 @@ classdef EBSD3square < EBSD3
     function [ebsd,newId] = gridify(ebsd,varargin)
       % nothing to do :)
       newId = (1:length(ebsd)).';
+    end
+
+    function out = get.d1(ebsd)
+      out = ebsd.pos(2,1,1) - ebsd.pos(1,1,1);
+    end
+    function out = get.d2(ebsd)
+      out = ebsd.pos(1,2,1) - ebsd.pos(1,1,1);
+    end
+    function out = get.d3(ebsd)
+      out = ebsd.pos(1,1,2) - ebsd.pos(1,1,1);
     end
            
     function gX = get.gradientX(ebsd)
