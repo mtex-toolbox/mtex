@@ -77,7 +77,7 @@ elseif check_option(varargin,'weights')
 else
   % take the voteId with the most votes
   
-  hasVote = accumarray(id(:),votes(:),[maxId 1],@nansum);
+  hasVote = accumarray(id(:),votes(:),[maxId 1],@(x) sum(x,'omitnan'));
   
   vote = accumarray(id(:),votes(:),[maxId 1],@(x) mode(x(~isnan(x))));
   

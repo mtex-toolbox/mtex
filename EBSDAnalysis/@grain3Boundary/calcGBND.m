@@ -15,7 +15,7 @@ function gbnd = calcGBND(gB3,varargin)
 % Input
 %  gB3 - @grain3Boundary
 %  grains - single phase @grain3d
-%  grains - single phase @EBSD3
+%  ebsd - single phase @EBSD3
 %
 % Output
 %  gbnd - @S2Fun

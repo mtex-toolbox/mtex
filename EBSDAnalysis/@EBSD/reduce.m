@@ -31,7 +31,6 @@ if length(ebsd.unitCell) == 4
   
 elseif length(ebsd.unitCell) == 6 % hexgrid
   
-  
   % generate regular grid
   ext = ebsd.extent;
   dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);

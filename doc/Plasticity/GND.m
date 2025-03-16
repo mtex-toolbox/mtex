@@ -123,7 +123,6 @@ end
 setColorRange([-0.005,0.005])
 drawNow(gcm,'figSize','large')
 
-
 %% The incomplete dislocation density tensor
 % According to Kroener the curvature tensor is directly related to the
 % dislocation density tensor. 
@@ -140,7 +139,7 @@ alpha(2,3)
 % The central idea of Pantleon is that the dislocation density tensor is
 % build up by single dislocations with different densities such that the
 % total energy is minimum. Depending on the atomic lattice different
-% dislocattion systems have to be considered. In present case of a body
+% dislocation systems have to be considered. In present case of a body
 % centered cubic (bcc) material 48 edge dislocations and 4 screw
 % dislocations have to be considered. Those principle dislocations are
 % defined in MTEX either by their Burgers and line vectors or by
