@@ -20,8 +20,8 @@ function ebsdNew = interp(ebsd,pos,varargin)
 % ensure column vectors
 pos = pos(:);
 
-% find nearest neighbour first
-idNearest = ebsd.xy2ind(pos.x,pos.y);
+% find nearest neighbor first
+idNearest = ebsd.pos2ind(pos.x,pos.y);
 
 % check nearest is inside the box
 isIndexed = ~isnan(idNearest);

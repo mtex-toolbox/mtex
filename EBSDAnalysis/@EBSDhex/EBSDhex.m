@@ -264,8 +264,8 @@ classdef EBSDhex < EBSD
     end
     
     
-    function [row,col] = xy2ind(ebsd,x,y)
-      % nearest neighbour search
+    function [row,col] = pos2ind(ebsd,x,y)
+      % nearest neighbor search
       
       x = x-ebsd.pos.x(1);
       y = y-ebsd.pos.y(1);
