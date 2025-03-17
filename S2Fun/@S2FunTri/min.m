@@ -1,4 +1,4 @@
-function [sF,v] = min(sF,varargin)
+function [sF,pos] = min(sF,varargin)
 % global, local and pointwise minima of spherical functions
 %
 % Syntax
@@ -49,9 +49,10 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
 else % detect global minima
   
   % TODO: local
-  nL = check_option(varargin,'numLocal',1);
-  [sF,pos] = mink(sF.values(:),nL);
-  v = sF.vertices(pos);
+  nL = get_option(varargin,'numLocal',1);
+  [value,pos] = mink(sF.values(:),nL);
+  pos = sF.vertices(pos);
+  sF = value;
 
 end
 
