@@ -260,7 +260,7 @@ legend('Location','southoutside','Orientation','horizontal')
 % need to use closed areas such as it would be required when working with
 % grains.
 %
-% Here we can compare the shape defined by Forterite-Forsterite,
+% Here we can compare the shape defined by Forsterite-Forsterite,
 % Enstatite-Enstatite and Forsterite-Enstatite boundaries
 
 plotopts = {'normalize','linewidth',2, 'plain'};
@@ -279,7 +279,7 @@ legend('Location','southoutside','Orientation','horizontal')
 
 %%
 % The output of |characteristicShape| is a @shape2d object which behaves
-% very similar to a `grain2d` object, hence it is easy to derive things
+% very similar to a @grain2d object, hence it is easy to derive things
 % such as a long axis or e.g. the angle between the longest and the
 % shortest caliper which can be regarded as a measure of asymmetry.
 

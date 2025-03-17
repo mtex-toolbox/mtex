@@ -8,7 +8,6 @@
 % Let's first import an example dataset from the MTEX toolbox
 
 mtexdata forsterite
-plotx2north
 
 %%
 % This dataset consists of the three main phases, forsterite, Enstatite and
@@ -28,10 +27,12 @@ plotx2north
 % horizontal. We can correct the data by rotating the whole dataset by 90
 % degree around the z-axis
 
-rot = rotation.byAxisAngle(zvector,-90*degree);
-ebsd = rot * ebsd;
+ebsd = rotation.byAxisAngle(zvector,-90*degree) * ebsd;
 
+% we shall plot x to the north for a better screen fit
+ebsd.how2plot.north = xvector;
 plot(ebsd,'micronbar','off')
+
 
 %% Import the elastic stiffness tensors
 % The elastic stiffness tensor of Forsterite was reported in
