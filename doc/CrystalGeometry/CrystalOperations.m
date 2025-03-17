@@ -1,13 +1,13 @@
-%% Operations Crystal Directions
+%% Operations on Crystal Directions
 %
 %%
 % In this section we discuss basic operations with crystal directions.
 % Therefore, lets start by importing the trigonal Quartz crystal symmetry
 
-cs = loadCIF('quartz')
+cs = loadCIF('quartz');
 
 %%
-% and consider two hexagonal prism normal
+% and consider two hexagonal prism normals
 
 m1 = Miller(1,-1,0,0,cs)
 m2 = Miller(1,0,-1,0,cs)

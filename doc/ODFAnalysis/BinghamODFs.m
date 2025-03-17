@@ -34,11 +34,11 @@ odf = BinghamODF(kappa,U,cs)
 % Lets visualize the ODF as pole figures
 
 h = [Miller(0,0,1,cs) Miller(1,0,0,cs) Miller(1,1,1,cs)];
-plotzOutOfPlane
 plotPDF(odf,h,'antipodal','silent','layout',[1 3]);
 
 %%
-%
+% and in Euler angle space
+
 plot(odf,'sections',6)
 
 %% The bipolar case and unimodal distribution
@@ -46,18 +46,15 @@ plot(odf,'sections',6)
 
 odf_spherical = unimodalODF(orientation.rand(cs),'halfwidth',20*degree)
 
-%%
-%
-
 plotPDF(odf_spherical,h,'antipodal','silent')
 
 %%
 % Next, we simulate individual orientations from this odf, in a scattered
 % axis/angle plot in which the simulated data looks like a sphere
 
-ori_spherical = discreteSample(odf_spherical,1000);
+ori_spherical = discreteSample(odf_spherical,10000);
 close all
-scatter(ori_spherical)
+scatter(ori_spherical,'axisAngle')
 
 %%
 % From this simulated EBSD data, we can estimate the parameters of the
@@ -94,11 +91,7 @@ plotPDF(odf_est,h,'antipodal','silent')
 %% Prolate case and fiber distribution
 % The prolate case corresponds to a fiber.
 
-odf_prolate = fibreODF(Miller(0,0,1,crystalSymmetry('1')),zvector,...
-  'halfwidth',20*degree)
-
-%%
-%
+odf_prolate = fibreODF(fibre.rand(cs),'halfwidth',20*degree)
 
 plotPDF(odf_prolate,h,'upper','silent')
 
@@ -106,14 +99,17 @@ plotPDF(odf_prolate,h,'upper','silent')
 % As before, we generate some random orientations from a model odf. The
 % shape in an axis/angle scatter plot reminds of a cigar
 
-ori_prolate = discreteSample(odf_prolate,1000);
-close all
-scatter(ori_prolate)
+ori_prolate = discreteSample(odf_prolate,10000);
+
+plot(ori_prolate,'axisAngle')
 
 %%
 % We estimate the parameters of the Bingham distribution
 
-calcBinghamODF(ori_prolate)
+odf = calcBinghamODF(ori_prolate)
+
+plotPDF(odf,h,'upper','silent')
+
 
 %%
 % and test on the three cases
@@ -129,10 +125,7 @@ calcBinghamODF(ori_prolate)
 % prolate. We construct the Bingham distribution from the parameters, it
 % might show some skewness
 
-odf_prolate = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
-
-%%
-%
+odf_prolate = BinghamODF(kappa,U,cs)
 
 plotPDF(odf_prolate,h,'antipodal','silent')
 
@@ -140,24 +133,23 @@ plotPDF(odf_prolate,h,'antipodal','silent')
 % The oblate case of the Bingham distribution has no direct counterpart in
 % terms of texture components, thus we can construct it straightforward
 
-odf_oblate = BinghamODF([50 50 50 0],eye(4),crystalSymmetry,specimenSymmetry)
-
-%%
-%
+odf_oblate = BinghamODF([50 50 50 0],eye(4),cs)
 
 plotPDF(odf_oblate,h,'antipodal','silent')
 
   %%
 % The oblate cases in axis/angle space remind on a disk 
 
-ori_oblate = discreteSample(odf_oblate,1000);
+ori_oblate = discreteSample(odf_oblate,10000);
 close all
-scatter(ori_oblate)
+scatter(ori_oblate,'axisAngle')
 
 %%
 % We estimate the parameters again
 
-calcBinghamODF(ori_oblate)
+odf = calcBinghamODF(ori_oblate)
+
+plotPDF(odf,h,'antipodal')
 
 %%
 % and do the tests

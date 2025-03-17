@@ -84,7 +84,7 @@ norm(eval(sF, nodes) - S.values)
 % But this may not be of great importance like in the case of function
 % approximation from noisy function values, where we don't know the exact
 % function values anyways.
-
+%
 %%
 %
 % The strategy underlying the |interp(...,'harmonicApproximation')|-command
