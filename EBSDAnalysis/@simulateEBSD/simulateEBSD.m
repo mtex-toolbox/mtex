@@ -3,7 +3,7 @@ classdef simulateEBSD < handle
     %
     % It allows to simulate a single/multigradient EBSD map with a free
     % choice of the starting orientation, size, misorientation axis,
-    % direction of misorientaiton increase, type and range of noise
+    % direction of misorientation increase, type and range of noise
     % Multiple gradients can be superposed and you can use an existing map
     % and add noise or deform it.
     %

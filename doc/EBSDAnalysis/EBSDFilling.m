@@ -15,7 +15,7 @@
 % orientation map of deformed Magnesium 
 
 % import the data
-mtexdata ferrite
+mtexdata ferrite 
 
 % consider only indexed data
 ebsd = ebsd('indexed');
@@ -95,8 +95,8 @@ hold off
 % 25 percent missing pixels. Lets start by importing the data and
 % reconstructing the grain structure.
 
-close all; plotx2east
-mtexdata forsterite
+close all;
+mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[10 4 5 3]*10^3));
 plot(ebsd('Fo'),ebsd('Fo').orientations)
 hold on
@@ -115,7 +115,7 @@ hold off
 % Using the option |'fill'| the command |smooth| fills the holes inside the
 % grains. Note that the nonindexed pixels at the grain boundaries are kept
 % untouched. In order to allow MTEX to decide whether a pixel is inside a
-% grain or not, the |grain| variable has to be passed as an additional
+% grain or not, the |grains| variable has to be passed as an additional
 % argument.
 
 F = halfQuadraticFilter;
@@ -152,8 +152,7 @@ ipfKey.oriRef = grains(ebsdS('En').grainId).meanOrientation;
 
 plot(ebsdS('En'),ipfKey.orientation2color(ebsdS('En').orientations))
 
-
-% plot boundary
+% plot boundaries
 plot(grains.boundary,'linewidth',4)
 plot(grains('En').boundary,'lineWidth',4,'lineColor','r')
 hold off
@@ -172,10 +171,7 @@ ipfKey.oriRef = grains(ebsd('En').grainId).meanOrientation;
 
 plot(ebsd('En'),ipfKey.orientation2color(ebsd('En').orientations))
 
-
-% plot boundary
+% plot boundaries
 plot(grains.boundary,'linewidth',4)
 plot(grains('En').boundary,'lineWidth',4,'lineColor','r')
 hold off
-
-

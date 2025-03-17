@@ -9,7 +9,6 @@
 
 close all
 mtexdata forsterite silent
-plotx2east
 
 % reconstruct grains
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));

@@ -14,8 +14,6 @@
 % huge parent grains in the planetary body which can easily reach the
 % dimension of meters.
 
-plotx2east
-
 % import the ebsd data
 mtexdata emsland
 

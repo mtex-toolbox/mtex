@@ -84,7 +84,6 @@ ebsd = ebsd.gridify
 
 plot(ebsd,ebsd.orientations)
 
-
 %%
 % Indexing works here similarly as for square grids
 

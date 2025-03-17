@@ -2,7 +2,7 @@
 %
 %%
 % Unlike most other texture analysis software MTEX does not have any
-% graphical user interface. Instead the user is suposed to write scripts.
+% graphical user interface. Instead the user is supposed to write scripts.
 % Those scripts usually have the following structure
 %
 % # import data

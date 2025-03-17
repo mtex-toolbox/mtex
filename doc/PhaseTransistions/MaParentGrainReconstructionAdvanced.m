@@ -11,7 +11,6 @@
 
 % load the data
 mtexdata martensite 
-plotx2east
 
 % extract fcc and bcc symmetries
 csBCC = ebsd.CSList{2}; % austenite bcc:

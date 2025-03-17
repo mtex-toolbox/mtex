@@ -113,7 +113,6 @@ sS = symmetrise(slipSystem.fcc(grains.CS));
 %%
 
 % colorize grains according to Taylor factor
-plotzOutOfPlane, plotx2east
 plot(grains,M)
 mtexColorMap white2black
 mtexColorbar

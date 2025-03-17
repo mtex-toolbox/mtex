@@ -34,11 +34,11 @@ plot(grains,'micronbar','off','lineWidth',2)
 plotEllipse(c,a,b,'lineColor','w','linewidth',2)
 
 %%
-% The returned variable |c| is the centroid of the grains, |a| and |b| are 
-% of type <vector3d.vector3d.html |vector3d|> and are longest and shortest 
-% half axes. Note, that the ellipses are scaled such that the area of the 
-% ellipse coincides with the actual grain area. Alternatively, one can also
-% scale the ellipse to fit the boundary length by using the option |boundary|.
+% The returned variable |c| is the centroid of the grains, |a| and |b| are
+% of type |@vector3d| and are longest and shortest half axes. Note, that
+% the ellipses are scaled such that the area of the ellipse coincides with
+% the actual grain area. Alternatively, one can also scale the ellipse to
+% fit the boundary length by using the option |boundary|.
 %
 %% Long and Short Axes
 %
@@ -106,17 +106,20 @@ tdfForsterite = calcDensity(grains('forsterite').longAxis,...
 tdfEnstatite = calcDensity(grains('enstatite').longAxis,...
   'weights',norm(grains('enstatite').longAxis));
 
-% Since the inpout was of type |@vector3d|, the result is a spherical 
-% function |@S2FunHarmonic|. We can visualize a section using 
+%%
+% Since the input was of type |@vector3d|, the result is a spherical
+% function |@S2FunHarmonic|. We can visualize a section using
 % <S2Fun.plotSection.html| plotSection|>.
 
+close all
 plotSection(tdfForsterite, vector3d.Z, 'linewidth', 3)
 hold on
 plotSection(tdfEnstatite, vector3d.Z, 'linewidth', 3)
 hold off
 
+%%
 % Alternatively, since all vectors are within the plane, only one angle is
-% revelevant, one can also compute a S1Fun using |vector3d.rho| and
+% relevant, one can also compute an |@S1Fun| using |vector3d.rho| and
 % <calcDensity.html|calcDensity|> with the option |'periodic'|.
 
 tdfForsterite = calcDensity(grains('forsterite').longAxis.rho,...
@@ -127,10 +130,14 @@ tdfEnstatite = calcDensity(grains('enstatite').longAxis.rho,...
   'weights',norm(grains('enstatite').longAxis), ...
   'periodic','antipodal','sigma',5*degree);
 
+close all
 plot(tdfForsterite, 'linewidth', 2)
 hold on
 plot(tdfEnstatite, 'linewidth', 2)
 hold off
+mtexTitle('long axes')
+legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
+
 % we have to set the plotting convention manually
 setView(ebsd.how2plot)
 
@@ -153,15 +160,16 @@ cPerpF = caliper(grains('fo'),'shortestPerp');
 cPerpE = caliper(grains('en'),'shortestPerp');
 
 S1F_fo = calcDensity(cPerpF.rho, 'weights',cPerpF.norm, ...
-  'periodic','antipodal','sigma',1*degree);
+  'periodic','antipodal','sigma',5*degree);
 S1F_en = calcDensity(cPerpE.rho, 'weights',cPerpE.norm,...
-  'periodic','antipodal','sigma',1*degree);
+  'periodic','antipodal','sigma',5*degree);
 
-plot(S1F_fo);
+plot(S1F_fo,'linewidth',2);
 hold on
-plot(S1F_en);
+plot(S1F_en,'linewidth',2);
 hold off
-legend('Forsterite','Enstatite','Location','eastoutside')
+mtexTitle('perpendicular to short axes')
+legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
 setView(ebsd.how2plot)
 
 
@@ -169,18 +177,18 @@ setView(ebsd.how2plot)
 % If we consider the function a little to rough, we can smooth the function
 % using a kernel.
 
-psi = S1DeLaValleePoussinKernel('halfwidth',5*degree)
+psi = S1DeLaValleePoussinKernel('halfwidth',10*degree)
 
 S1_fo_smooth = conv(S1F_fo,psi)
 S1_en_smooth = conv(S1F_en,psi)
 
-plot(S1_fo_smooth);
+plot(S1_fo_smooth,'linewidth',2);
 hold on
-plot(S1_en_smooth);
+plot(S1_en_smooth,'linewidth',2);
 hold off
-legend('Forsterite','Enstatite','Location','eastoutside')
+mtexTitle('perpendicular to short axes')
+legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
 setView(ebsd.how2plot)
-
 
 %% *SPO defined by grain boundary segments*
 %
@@ -202,7 +210,6 @@ gbfun_foen = calcDensity(grains.boundary('fo','en').direction.rho, ...
 gbfun_enen = calcDensity(grains.boundary('en','en').direction.rho, ...
     'weights',grains.boundary('en','en').segLength,'periodic','antipodal');
 
-
 plot(gbfun_fofo,'displayName','Forsterite-Forsterite','linewidth',2);
 hold on
 plot(gbfun_foen,'displayName','Forsterite-Enstatite','linewidth',2);
@@ -210,7 +217,7 @@ hold on
 plot(gbfun_enen,'displayName','Enstatite-Enstatite','linewidth',2);
 hold off
 
-legend
+legend('Location','eastoutside','numColumns',1)
 
 setView(ebsd.how2plot)
 
@@ -234,9 +241,9 @@ cshapeF = characteristicShape(grains('F').boundary);
 cshapeE = characteristicShape(grains('E').boundary);
 
 close all
-plot(cshapeF,'linewidth',2);
+plot(cshapeF, 'linewidth',2);
 hold on
-plot(cshapeE,'linewidth',2);
+plot(cshapeE, 'linewidth',2);
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
 

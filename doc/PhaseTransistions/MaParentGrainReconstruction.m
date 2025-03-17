@@ -14,7 +14,6 @@
 
 % load the data
 mtexdata martensite
-plotx2east
 
 % grain reconstruction
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree, 'minPixel',2);

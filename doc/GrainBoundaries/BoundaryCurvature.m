@@ -14,8 +14,6 @@ mtexdata testgrains silent
 % select and smooth a few interesting grains
 grains = smooth(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),10);
 
-plotx2east
-
 %%
 % Therefore, we first extract all boundary segments and colorize them
 % according to their curvature.

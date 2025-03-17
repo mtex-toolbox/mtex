@@ -5,7 +5,7 @@
 % misorientation angle, misorientation axes. Therefore lets start by
 % importing some EBSD data and reconstructing the grain structure.
 
-close all; plotx2east
+close all;
 
 % import the data
 mtexdata forsterite

@@ -6,7 +6,6 @@
 % structure.
 
 mtexdata csl
-plotx2east
 
 % grain segmentation
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));

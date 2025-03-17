@@ -37,17 +37,6 @@ function vol = plot(ebsd,varargin)
 %  points   - plot dots instead of unitcells
 %  exact    - plot exact unitcells, even for large maps
 %
-% Example
-%
-%   mtexdata forsterite
-%   plot(ebsd)
-%
-%   % colorize according to orientations
-%   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
-%
-%   % colorize according to MAD
-%   plot(ebsd,ebsd.mad,'micronbar','off')
-%
 % See also
 % EBSDSpatialPlots
 

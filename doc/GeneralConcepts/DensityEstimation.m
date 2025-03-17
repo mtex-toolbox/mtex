@@ -22,6 +22,7 @@
 
 % Define the true density function, in this case made by combining two
 % Gaussians
+
 f = @(x) (Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x))/2;
 
 % generate 1000 points linearly spaced between 0 and 1
@@ -62,7 +63,7 @@ hold off
 %% Kernel Density Estimation 
 %
 % The idea of kernel density estimation is to pick some kernel function
-% $\psi$, e.g. a Gaussian with mean $0$ and stadard deviation $0.05$,
+% $\psi$, e.g. a Gaussian with mean $0$ and standard deviation $0.05$,
 
 psi = Gaussian(0,0.05);
 
@@ -120,15 +121,17 @@ legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$','interpreter','Latex'),
 
 %%
 % In general a too small halfwidth leads to heavily oscillating functions,
-% while a too large halfwdith will result in excessively smooth functions.
+% while a too large halfwidth will result in excessively smooth functions.
 % In the case of one dimensional data kernel density estimation MTEX
-% includes automatic optomization of the halfwidth when using the command
+% includes automatic optimization of the halfwidth when using the command
 % <calcDensity.html |calcDensity|>.
 
 fN = calcDensity(xN,'range',[0;1]);
 
-% Optionally, we may control the halfwidth by the option 'bandwidth'
-%fN = calcDensity(xN,'range',[0;1],'bandwidth',0.004);
+%%
+% Optionally, we may control the halfwidth by the option |'bandwidth'|,
+% i.e.,
+% |fN = calcDensity(xN,'range',[0;1],'bandwidth',0.004)|
 
 plot(x,f(x),'linewidth',2)
 hold on
@@ -142,7 +145,7 @@ hold off
 %
 %% Kernel Density Estimation in d-Dimensions
 % The command <calcDensity.html calcDensity> may also be applied to
-% $d$-dimenional data. For simplicity lets consider a two-dimensional
+% $d$-dimensional data. For simplicity lets consider a two-dimensional
 % example where both $x$ and $y$ coordinates are distributed according to
 % the distribution $f$ defined at the very beginning of this section.
 
@@ -238,7 +241,7 @@ hold off
 %% Density Estimation for Orientation Data
 %
 % Density estimation from orientations sets the connection between
-% individal crystal orientations, as e.g. measured by EBSD, and the
+% individual crystal orientations, as e.g. measured by EBSD, and the
 % orientation distribution function of a specimen. Considering the
 % Forsterite orientations from the above EBSD map the corresponding ODF
 % computes to
@@ -246,7 +249,7 @@ hold off
 odf = calcDensity(ebsd('Forsterite').orientations,'halfwidth',10*degree)
 
 %%
-% Lets visualize the ODF in phi2 sections and plot on top of it the
+% Lets visualize the ODF in |phi2| sections and plot on top of it the
 % individual orientation measurements from the EBSD map
 
 plotSection(odf,'contourf')
@@ -258,7 +261,7 @@ plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.25,...
 hold off
 
 %%
-% A more detailed describtion of ODF estimation from individual orientation
+% A more detailed description of ODF estimation from individual orientation
 % measurements can be found in the section <EBSD2ODF.html ODF Estimation
 % from EBSD data>.
 %

@@ -45,12 +45,12 @@ function [grainsMerged,parentId] = merge(grains,varargin)
 % Example:
 %
 %   mtexdata small
-%   grains = smooth(calcGrains(ebsd))
+%   grains = smooth(calcGrains(ebsd,'minPixel',5))
 %
-%   % merge all neigbouring Diopside grains
+%   % merge all neighboring Diopside grains
 %   gB = grains.boundary('Diopside','Diopside')
 %   [grains_m,parentId] = merge(grains,gB)
-
+%
 
 % 1. set up merge matrix
 maxId = max(grains.id); % initial, empty merge matrix

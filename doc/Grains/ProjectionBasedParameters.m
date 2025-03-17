@@ -67,7 +67,6 @@ quiver(grains(ind),grains(ind).caliper('longest'),'noScaling')
 quiver(grains(ind),grains(ind).caliper('shortest'),'noScaling')
 hold off
 
-
 %%
 % The difference between the longest and the shortest caliper can be taken
 % as a measure how round a grain is. 
@@ -190,24 +189,19 @@ min(cumplF), min(cumplE)
 % longest projection and the normal the minimum position represents the
 % preferred axis related to the normal to the shortest projection function.
 
-% for the Forsterite
-
-% using S1Fun
-% for the Forsterite
+% using S1Fun for the Forsterite
 sF_Fo = S1FunHarmonic.interpolate(omega,cumplF);
 [~, maxposfo] = max(sF_Fo);
 [~, minposfo] = min(sF_Fo);
 
-mod(maxposfo,pi)/degree
-mod(minposfo-pi/2,pi)/degree
+[mod(maxposfo,pi) mod(minposfo-pi/2,pi)] /degree
 
 % for the Enstatite
 sF_Fo = S1FunHarmonic.interpolate(omega,cumplE);
 [~, maxposfo] = max(sF_Fo);
 [~, minposfo] = min(sF_Fo);
 
-mod(maxposfo,pi)/degree
-mod(minposfo-pi/2,pi)/degree
+[mod(maxposfo,pi) mod(minposfo-pi/2,pi)]/degree
 
 
 % or finding maxima and minima
@@ -215,15 +209,13 @@ mod(minposfo-pi/2,pi)/degree
 [~, id_max] = max(cumplF);
 [~, id_min] = min(cumplF);
 
-mod(omega(id_max)./degree,180)
-mod(omega(id_min)./degree-90,180)
+[mod(omega(id_max)./degree,180) mod(omega(id_min)./degree-90,180)]
 
 % for the Enstatite
 [~, id_max] = max(cumplE);
 [~, id_min] = min(cumplE);
 
-mod(omega(id_max)./degree,180)
-mod(omega(id_min)./degree-90,180)
+[mod(omega(id_max)./degree,180) mod(omega(id_min)./degree-90,180)]
 
 %%
 % The smaller the difference between these values, the closer the fabric is
@@ -283,13 +275,13 @@ shapeEF = characteristicShape(grains.boundary('En','Fo'));
 plot(shapeEF,plotopts{:},'DisplayName','En-Fo')
 hold off
 
-legend('Fo-Fo','En-En','En-Fo','Location','northeastoutside', ...
-       'FontSize', 24)
+legend('Location','southoutside','Orientation','horizontal')
 
-% The output of `characteristicShape` is a `shape2d` object which behaves
+%%
+% The output of |characteristicShape| is a @shape2d object which behaves
 % very similar to a `grain2d` object, hence it is easy to derive things
-% such as a long axis or e.g. the angle between the longest and the shortest
-% caliper which can be regarded as a measure of asymmetry.
+% such as a long axis or e.g. the angle between the longest and the
+% shortest caliper which can be regarded as a measure of asymmetry.
 
 angle(shapeF.caliper('longest'),shapeF.caliper('shortest')) / degree
 angle(shapeE.caliper('longest'),shapeE.caliper('shortest')) / degree

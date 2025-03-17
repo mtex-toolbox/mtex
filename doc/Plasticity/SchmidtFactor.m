@@ -164,7 +164,6 @@ ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
 grains = calcGrains(ebsd);
 grains = smooth(grains,5);
 
-plotx2east
 plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',2)

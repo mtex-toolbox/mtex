@@ -101,14 +101,14 @@ ori = ebsd(largeGrain).orientations
 
 % recenter the fundamental zone to the mean orientation
 center = largeGrain.meanOrientation;
-plot(rotate(oR,center))
 
 % project the orientations into the fundamental region around the mean
 % orientation
 ori = ori.project2FundamentalRegion(center)
 
-hold on
 plot(ori,'axisAngle')
+hold on
+plot(center,'MarkerFaceColor','r','MarkerSize',20)
 hold off
 
 %% Fundamental regions of misorientations
@@ -124,7 +124,6 @@ plot(oR)
 % Let plot grain boundary misorientations within this fundamental region
 
 plot(grains.boundary('fo','En').misorientation)
-
 
 %% Fundamental regions of misorientations with antipodal symmetry
 %

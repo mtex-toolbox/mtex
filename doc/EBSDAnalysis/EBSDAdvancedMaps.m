@@ -3,11 +3,11 @@
 %%
 % In order to visualize orientation maps one has to assign a color to each
 % possible orientation. As an example, one may think of representing an
-% orientation by its Euler angles ph1, Phi, phi2 and taking these as the
-% RGB values of a color. Of course, there are many other ways to do this.
-% Before presenting all the possibilities MTEX offers to assign a color to
-% each orientation let us shortly summarize what properties we expect from
-% such an assignment.
+% orientation by its Euler angles |phi1|, |Phi|, |phi2| and taking these as
+% the RGB values of a color. Of course, there are many other ways to do
+% this. Before presenting all the possibilities MTEX offers to assign a
+% color to each orientation let us shortly summarize what properties we
+% expect from such an assignment.
 %
 % # crystallographic equivalent orientations should have the same color
 % # similar orientations should have similar colors
@@ -29,20 +29,20 @@
 % on the information one want to extract from the orientation data. To do
 % so MTEX offers the following possibilities:
 %
-% * <ipfHSVKey.html ipfHSVKey> the default color key
-% * <ipfTSLKey.html ipfTSLKey>
-% * <ipfHKLKey.html ipfHKLKey>
-% * <BungeColorKey.html BungeColorKey>
-% * <PatalaColorKey.PatalaColorKey.html PatalaColorKey>
-% * <axisAngleColorKey.html axisAngleColorKey>
-% * <spotColorKey.html spotColorKey>
-% * <ipfSpotKey.html ipfSpotKey>
+% * |@ipfHSVKey| the default color key
+% * |@ipfTSLKey|
+% * |@ipfHKLKey|
+% * |@BungeColorKey|
+% * |@PatalaColorKey|
+% * |@axisAngleColorKey|
+% * |@spotColorKey|
+% * |@ipfSpotKey|
 %
 % In order to demonstrate these color keys we first import some toy data
 % set.
 
-close all; plotx2east
-mtexdata forsterite
+close all;
+mtexdata forsterite silent
 csFo = ebsd('Forsterite').CS;
 
 %% Euler Angle Coloring

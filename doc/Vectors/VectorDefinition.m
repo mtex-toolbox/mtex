@@ -46,7 +46,6 @@ polar_angle = 60*degree;
 azimuth_angle = 45*degree;
 v = vector3d.byPolar(polar_angle,azimuth_angle)
 
-plotx2east
 plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 

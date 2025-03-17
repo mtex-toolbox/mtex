@@ -25,13 +25,13 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
 %
 % Input
-%  ebsd - @EBSD
+%  ebsd  - @EBSD
 %  color - length(ebsd) x 3 vector of RGB values
 %
 % Options
-%  micronbar - 'on'/'off'
+%  micronbar   - 'on'/'off'
 %  DisplayName - add a legend entry
-%  region - [xmin, xmax, ymin, ymax] plotting region
+%  region      - [xmin, xmax, ymin, ymax] plotting region
 %  
 % Flags
 %  points   - plot dots instead of unitcells
