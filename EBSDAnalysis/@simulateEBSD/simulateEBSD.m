@@ -3,7 +3,7 @@ classdef simulateEBSD < handle
     %
     % It allows to simulate a single/multigradient EBSD map with a free
     % choice of the starting orientation, size, misorientation axis,
-    % direction of misorientation increase, type and range of noise
+    % direction of misorientaiton increase, type and range of noise
     % Multiple gradients can be superposed and you can use an existing map
     % and add noise or deform it.
     %
@@ -29,19 +29,28 @@ classdef simulateEBSD < handle
     % ebsdSIM.makeMap
     % plot(ebsdSIM.EBSDsim)
     %
-    % %% set the misorientation axis and gradient direction (optional)
+    %
+    % %% 1) create a simple gradient
+    % % 1a) set the misorientation axis
     % ebsdSIM.axS = vector3d(1,1,0)
-    % % set the direction towards which the misorientation increases
+    % % 1b) set the direction towards which the misorientation increases
     % ebsdSIM.gradDir = vector3d(1,0,0);
+    % % 1c) create the gradient
+    % ebsdSIM.addFeature_simpleGradient
     %
-    % %% create a simple gradient
-    % ebsdSIM.simpleGradient
-    %
-    % %% add noise 'uniform' or 'logn' (optional)
+    % %% 2) add noise
+    % % 2a) specify noise type: 'uniform' or 'logn'
     % ebsdSIM.noiseFun = 'logn'
+    % % 2b) specify maximum noise
     % ebsdSIM.noiseMax = 0.1*degree;
-    %
+    % % 2c) create noise
     % ebsdSIM.addnoise
+    % 
+    % %% 3) add a circular "subgrain"
+    % % 3a) set the misorientation axis
+    % ebsdSIM.axS = vector3d(1,1,1)
+    % % 3b) add "subgrain"
+    % ebsdSIM.addFeature_circularSubgrain
     %
     % %% inspect the result
     % ebsd = ebsdSIM.EBSDsim;
@@ -125,36 +134,56 @@ classdef simulateEBSD < handle
 
 
         %make a simple gradient
-        function simpleGradient(job)
-            % function ebsd = simpleLinearGradient(ebsd,axS,gradDir,mori_angle,CS,o_noise,noise_level,stepsSize)
-            % ebsd can be empty or in order to make more complicated gradient
-            % superposed
-
-            % % if misorientation axis was in cC, convert to sC
-            % if isa(job.axS,'Miller'), job.axS = inv(job.EBSDsim.orientations).* job.axS; end
-            %
-            % % 1) define misorientation vector in specimen coordinates
-            % % direction of the vector is the misorientation axis, angle it's length
-            % ms = job.axS * job.mori_angle;
-            %
-            % % 2) the misorientation should increase along gradDir
-            % % normalize ebsd position vectors to stepsize
-            % pos = job.EBSDsim.pos / job.stepSize;
-            % % incremental position: length of pos projected on gradient direction
-            % ipos = pos .* (job.gradDir.normalize).^2;
-            %
-            % % 3) scale misorientation by the norm of ipos which should get the
-            % % misorientation at pixel positions
-            % mpp = norm(ipos) .* -ms;
-            %
-            % % 4) new ori
-            % ori_new =  exp(job.EBSDsim.orientations,mpp,SO3TangentSpace.leftVector);
-
-            % 4) turn back into orientations and update ebsd orientations
+        function addFeature_simpleGradient(job)
+            
+            % simply update orientations according to gradient and axis
             job.EBSDsim.orientations = updateOri(job.EBSDsim, job);
 
         end
 
+        %make a simple gradient
+        function addFeature_circularSubgrain(job)
+            
+            % 1) determine region of subgrain and assign domainID
+            c = [job.xdim/2 job.ydim/2]; 
+            r = min(c)/2;
+            theta = linspace(0,2*pi,360);
+            job.domainID = ...
+                job.EBSDsim.inpolygon([cos(theta)*r; sin(theta)*r]' + c);
+            
+            % 2) update orientation inside domainID  
+            ms = job.axS * job.mori_angle;
+            job.EBSDsim.orientations(job.domainID) = ...
+                    exp(job.EBSDsim.orientations(job.domainID),ms,SO3TangentSpace.leftVector);
+
+        end
+
+        %make a single step
+        function addFeature_singleStep(job)
+            
+            % 1) determine region of sugrain and assign domainID
+            %  now set subregions
+            %   a _______f
+            %    |       |
+            %    |b_c    |
+            %       |d___|e
+
+            a = [job.xdim/3               0];
+            b = [job.xdim/3      job.ydim/2];
+            c = [2*job.xdim/3    job.ydim/2];
+            d = [2*job.xdim/3      job.ydim];
+            e=  [job.xdim          job.ydim];
+            f=  [job.xdim                 0];
+            
+            job.domainID = ...
+                job.EBSDsim.inpolygon([a;b;c;d;e;f]);
+
+            % 2) update orientation inside domainID  
+            ms = job.axS * job.mori_angle;
+            job.EBSDsim.orientations(job.domainID) = ...
+                    exp(job.EBSDsim.orientations(job.domainID),ms,SO3TangentSpace.leftVector);
+        end
+        
 
         %add noise
         function addnoise(job)
