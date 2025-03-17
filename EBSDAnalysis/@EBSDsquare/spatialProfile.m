@@ -50,7 +50,7 @@ if nargin >= 3 && isnumeric(varargin{1})
   lineXY = [lineXY(:),varargin{1}(:)];
 end
 
-[i,j] = xy2ind(ebsd,lineXY);
+[i,j] = pos2ind(ebsd,lineXY);
 
 [i,j] = bresenham(i(1),j(1),i(2),j(2));
 

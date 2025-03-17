@@ -70,13 +70,13 @@ if isa(ori,"orientation")
 
   % the Taylor factor for all strains and all orientations
   % Taylor factor M = ori x theta x rho
-  M = calcTaylor(inv(ori) * eps,sS);
+  M = calcTaylor(inv(ori) * eps,sS); %#ok<MINV>
 
   % average the Taylor factor over the texture (ori) -> M = theta x rho
   weights = get_option(varargin,'weights',ones(size(ori)));
   weights = weights ./ sum(weights);
   M = weights(:).' * reshape(M,length(ori),[]);
-  % tranpose M -> rho x theta
+  % transpose M -> rho x theta
   M = reshape(M,length(theta),length(rho)).';
 
 else

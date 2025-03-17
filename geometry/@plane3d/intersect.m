@@ -11,6 +11,11 @@ function v = intersect(plane,v1,v2)
 % Output
 %  v - intersection points @vector3d
 
+if nargin == 2
+  v2 = v1(:,2);
+  v1 = v1(:,1);
+end
+
 % direction vector of the line
 l = v2 - v1;
 
