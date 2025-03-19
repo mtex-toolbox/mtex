@@ -23,16 +23,17 @@ function selectInteractive(job,varargin)
 %  numFit - number of fits to be computed
 %
 
+cKey = getClass(varargin,'orientationColorKey',ipfHSVKey(job.csParent));
 
 % datacursormode does not work with grains due to a MATLAB bug
 datacursormode off
 
 % define a hand written selector
-set(gcf,'WindowButtonDownFcn',{@doSelection,job});
+set(gcf,'WindowButtonDownFcn',{@doSelection,job,cKey});
 
 end
 
-function doSelection(~,~,job)
+function doSelection(~,~,job,cKey)
 
 % remove old selection
 ax = gca;
@@ -66,10 +67,6 @@ end
 clf(fig)
 set(fig,'name',['grain: ' xnum2str(grain.id)])
 numV = size(votesFit.parentId,2);
-persistent cKey;
-if isempty(cKey) || cKey.CS1 ~= job.csParent
-  cKey = ipfHSVKey(job.csParent);
-end
 
 oriPV = variants(job.p2c,job.grainsPrior(localId).meanOrientation,votesFit.parentId);
 
@@ -85,20 +82,20 @@ for n=1:numVRed
     'Position',[0.1 (n-1)/numVRed 0.8 0.9*1/numVRed],...
     'backGroundColor',bgColor(n,:),'ForegroundColor',fgColor(n,:),...
     'String',[xnum2str(votesFit.fit(n)./degree) s],...
-    'Callback',{@setOri,job,localId,oriPV(n),ax},'FontSize',16,'FontWeight','bold'); %#ok<STRNU>
+    'Callback',{@setOri,job,localId,oriPV(n),bgColor(n,:),ax},'FontSize',16,'FontWeight','bold'); %#ok<STRNU>
 
 end
 %profile viewer
 
 end
 
-function setOri(~,~,job,id,pOri,ax)
+function setOri(~,~,job,id,pOri,color,ax)
 
 job.grains(id).meanOrientation = pOri;
 job.grains.update;
 
 hold(ax,'on')
-plot(job.grains(id),pOri,'parent',ax);
+plot(job.grains(id),color,'parent',ax);
 hold(ax,'off')
 
 end
