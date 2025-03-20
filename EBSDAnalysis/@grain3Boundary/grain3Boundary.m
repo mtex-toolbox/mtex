@@ -200,6 +200,14 @@ methods
       out = gB.hasPhaseId(phaseId) & gB.hasPhaseId(phaseId2);
     end
   end
+
+  function gB = update(gB,grains)
+      
+    gB.phaseId = zeros(size(gB.F,1),2);
+    isBoundary = gB.grainId > 0;
+    gB.phaseId(isBoundary) = grains.phaseId(grains.id2ind(gB.grainId(isBoundary)));
+    
+  end
   
 end
 

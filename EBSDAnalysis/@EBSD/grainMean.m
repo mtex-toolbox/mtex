@@ -35,7 +35,9 @@ function meanProp = grainMean(ebsd, prop, varargin)
 
 % check for grainId
 if isempty(ebsd.grainId)
-  error('There is no ebsd.grainId. Run calcGrains first.')
+  mtexError(' No grainId stored in the EBSD variable. \n%s\n\n%s\n',...
+          ' Use the following command to store grainIds within EBSD data',...
+          ' [grains,ebsd.grainId] = calcGrains(ebsd)')  
 end
 
 % some limits
