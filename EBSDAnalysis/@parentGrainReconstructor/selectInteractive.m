@@ -10,7 +10,8 @@ function selectInteractive(job,varargin)
 %   job.calcGBVotes('p2c', 'threshold', 3*degree, 'tol', 1.5*degree)
 %
 % Input
-%  job - @parentGrainReconstructor
+%  job  - @parentGrainReconstructor
+%  cKey - @orientationColorKey
 %
 % Output
 %  job.votes - table of votes

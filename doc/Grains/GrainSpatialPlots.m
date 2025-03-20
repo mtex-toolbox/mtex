@@ -5,7 +5,6 @@
 
 % import a demo data set
 mtexdata forsterite silent
-plotx2east
 
 % perform grain segmentation
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'minPixel',5);
