@@ -42,11 +42,14 @@ end
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
-  
+
   oM = ipfColorKey(varargin{1});
+  oM.inversePoleFigureDirection = ...
+    get_option(varargin,{'inversePoleFigureDirection','ipfd'},zvector);
+
   varargin{1} = oM.orientation2color(varargin{1});
   
-  if ~getMTEXpref('generatingHelpMode')
+  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,'inversePoleFigureDirection')
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
