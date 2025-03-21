@@ -3,8 +3,9 @@ function id = findByLocation( grains, pos )
 %
 % Input
 %  grains - @grain2d
-%  xy     - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
-%
+%  pos    - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
+%           or @vector3d
+%  
 % Output
 %  grains - list of grainIds
 %
@@ -23,10 +24,15 @@ poly = grains.poly;
 % restrict vertices to available grains
 iV = unique([poly{:}]);
 
+% maybe input pos is a vector3d
+if isa(pos,'vector3d')
+    pos = pos.xyz;
+end
+
 V = grains.allV.xyz;
 if size(V,2) == 3
-  if length(pos)==2
-    pos = [pos,0];
+  if size(pos,2)==2
+    pos = [pos,zeros(length(pos),1)];
   end
   mat = grains.rot2Plane.matrix;
   V = (mat * V.').'; V = V(:,1:2);
