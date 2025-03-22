@@ -140,6 +140,12 @@ methods
    end
   end
 
+  function S3F = set.antipodal(S3F,val)
+    for k=1:length(S3F.components)
+        S3F.components{k}.antipodal = val;
+   end
+  end
+
 end
 
 
