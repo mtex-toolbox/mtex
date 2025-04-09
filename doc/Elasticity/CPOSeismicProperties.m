@@ -8,30 +8,31 @@
 % Let's first import an example dataset from the MTEX toolbox
 
 mtexdata forsterite
-plotx2north
 
 %%
-% This dataset consists of the three main phases, forsterite, enstatite and
-% diopside. As we want to plot the seismic properties of this aggregate, we
+% This dataset consists of the three main phases, forsterite, Enstatite and
+% Diopside. As we want to plot the seismic properties of this aggregate, we
 % need (i) the modal proportions of each phase in this sample, (ii) their
-% orientations, which is given by their ODFs, (iii) the elastic constants 
+% orientations, which is given by their ODFs, (iii) the elastic constants
 % of the minerals and (iv) their densities. One can use the modal
-% proportions that appear in the command window (ol=62 %, en=11%, dio=4%), 
+% proportions that appear in the command window (ol=62%, en=11%, dio=4%),
 % but there is a lot of non-indexed data. You can recalculate the data only
 % for the indexed data
 
 %% Correct EBSD spatial coordinates
 %
 % This EBSD dataset has the foliation N-S, but standard CPO plots and
-% physical properties in geosciences use an external reference frame where
+% physical properties in geoscience use an external reference frame where
 % the foliation is vertical E-W and the lineation is also E-W but
 % horizontal. We can correct the data by rotating the whole dataset by 90
 % degree around the z-axis
 
-rot = rotation.byAxisAngle(zvector,-90*degree);
-ebsd = rot * ebsd;
+ebsd = rotation.byAxisAngle(zvector,-90*degree) * ebsd;
 
+% we shall plot x to the north for a better screen fit
+ebsd.how2plot.north = xvector;
 plot(ebsd,'micronbar','off')
+
 
 %% Import the elastic stiffness tensors
 % The elastic stiffness tensor of Forsterite was reported in
@@ -67,7 +68,7 @@ C_Fo = stiffnessTensor(Cij,CS_Tensor_Fo,'density',rho_Fo);
 % the crystal reference system which has been used to represent the tensor
 % by its coordinates $c_{ijkl}$. 
 %
-% Now we define the stiffness tensor of enstatite, reported by Chai et al. 
+% Now we define the stiffness tensor of Enstatite, reported by Chai et al. 
 % 1997 (Journal of Geophysical Research)
 
 % the crystal reference system

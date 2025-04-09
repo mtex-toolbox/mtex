@@ -11,7 +11,6 @@
 
 % take some MTEX data set
 mtexdata forsterite
-plotx2east
 
 % define a sub region
 xmin = 25000;

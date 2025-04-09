@@ -32,7 +32,6 @@ ebsd = EBSD.load(fileName)
 % spatial distribution of the different phases can be visualized by the
 % plotting command
 
-plotx2east % this command tells MTEX to plot the x coordinates increasing to the east (left)
 plot(ebsd,'coordinates','on')
 
 %% 

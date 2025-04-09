@@ -25,13 +25,13 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
 %
 % Input
-%  ebsd - @EBSD
+%  ebsd  - @EBSD
 %  color - length(ebsd) x 3 vector of RGB values
 %
 % Options
-%  micronbar - 'on'/'off'
+%  micronbar   - 'on'/'off'
 %  DisplayName - add a legend entry
-%  region - [xmin, xmax, ymin, ymax] plotting region
+%  region      - [xmin, xmax, ymin, ymax] plotting region
 %  
 % Flags
 %  points   - plot dots instead of unitcells
@@ -61,16 +61,19 @@ mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
-    
+
   oM = ipfColorKey(varargin{1});
+  oM.inversePoleFigureDirection = ...
+    get_option(varargin,{'inversePoleFigureDirection','ipfd'},zvector);
+
   varargin{1} = oM.orientation2color(varargin{1});
   
-  if ~getMTEXpref('generatingHelpMode')
+  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,'inversePoleFigureDirection')
     disp('  I''m going to colorize the orientation data with the ');
-    disp('  standard MTEX ipf colorkey. To view the colorkey do:');
+    disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
-    disp('  ipfKey = ipfColorKey(ori_variable_name)')
-    disp('  plot(ipfKey)')
+    disp('  colorKey = ipfColorKey(ori_variable_name)')
+    disp('  plot(colorKey)')
   end
 end
 
@@ -107,6 +110,9 @@ else % phase plot
       strong("plot(" + str + "," + str + ".orientations)") + newline);
   end
 
+  warning('off','MATLAB:legend:PlotEmpty');
+  l = legend(mP.ax,'-DynamicLegend','location','NorthEast');
+  warning('on','MATLAB:legend:PlotEmpty');
 
   for k=1:numel(ebsd.phaseMap)
       
@@ -127,14 +133,18 @@ else % phase plot
       color = ebsd.subSet(ind).color;
     end
     
+    if any(strcmp(ebsd.mineralList{k},l.String))
+      entry = {};
+    else
+      entry = {'DisplayName',ebsd.mineralList{k}};
+    end
+    
     h(k) = plotUnitCells(ebsd.subSet(ind), color,...
-      'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
+      'parent', mP.ax,entry{:},varargin{:}); %#ok<AGROW>
   
   end
   
-  warning('off','MATLAB:legend:PlotEmpty');
-  legend('-DynamicLegend','location','NorthEast');
-  warning('on','MATLAB:legend:PlotEmpty');
+  
   
   set(gcf,'name','phase plot');
   

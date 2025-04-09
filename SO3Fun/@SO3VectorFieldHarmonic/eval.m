@@ -5,13 +5,20 @@ function f = eval(SO3VF,rot,varargin)
 %   f = eval(SO3VF,rot)         % left tangent vector
 %
 % Input
-%   rot - @rotation
+%  rot - @rotation
 %
 % Output
-%   f - @vector3d
+%  f - @vector3d
+%
+% Options
+%  bandwidth - cut bandwidth of the harmonic series in evaluation process
+%
+% Flags
+%  nfsoft - use Nonequispace Fast Fourier Transform of the NFFT3 Toolbox (expensive precomputations)
+%  noNFFT - do direct evaluation of the harmonic series for every orientation (Works for very high bandwidth if the nfft runs out of memory, but gets expensive for many orientations. Hence number of orientations should be less than 100)
 %
 % See also
-% 
+%  SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT
 
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(SO3VF,rot)
@@ -21,7 +28,7 @@ function f = eval(SO3VF,rot,varargin)
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
   xyz = evalEquispacedFFT(SO3VF.SO3F,rot,varargin{:});
 else
-  xyz = SO3VF.SO3F.eval(rot);
+  xyz = SO3VF.SO3F.eval(rot,varargin{:});
 end
 
 % generate tangentspace vector

@@ -170,11 +170,12 @@ catch
             crystalSymmetry('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
             crystalSymmetry('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
 
-          plotx2east;
-          plotzOutOfPlane
           out = loadEBSD_generic(fName,'CS',CS, ...
             'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
           
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
+
         case 'olivine'
           
           out = EBSD.load(fName);
@@ -186,7 +187,8 @@ catch
           out = rotate(out,rot);
 
           % plotting conventions
-          plotx2east; plotzOutOfPlane;
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
           
           % rotate only the spatial data about the y-axis
           % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
@@ -199,8 +201,10 @@ catch
 
         case 'copper'
 
-          plotx2east; plotzOutOfPlane
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
 
         case 'single'
 
@@ -234,14 +238,16 @@ catch
           
         case 'forsterite'
 
-          plotx2east; plotzOutOfPlane
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
 
         case 'small'
 
-          plotx2east; plotzOutOfPlane
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
           out = out(out.inpolygon([33 4.5 3 3]*10^3));
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
 
         case lower('alphaBetaTitanium')
 
@@ -258,7 +264,9 @@ catch
         case 'emsland'
 
           out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
-          
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
+
         case 'trueebsdwcco'
           
           load(fName,'out');

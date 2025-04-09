@@ -1,4 +1,4 @@
-function [sF,v] = min(sF1, sF2)
+function [sF,pos] = min(sF,varargin)
 % global, local and pointwise minima of spherical functions
 %
 % Syntax
@@ -26,32 +26,36 @@ function [sF,v] = min(sF1, sF2)
 % Options
 %  numLocal      - number of peaks to return
 %
-        
-if nargin == 1
-           
-  [sF,pos] = min(sF1.values(:));
-           
-  v = sF1.vertices(pos);
-  v = v.rmOption('resolution');
-  
-elseif isnumeric(sF1)
-            
-  sF = sF2;
-            
-  sF.values = min(sF1, sF.values);
-                    
-elseif isnumeric(sF2)
-            
-  sF = sF1;
-            
-  sF.values = min(sF.values, sF2);
-        
-else
-            
-  sF=sF1;
-        
-  sF.values = min(sF1.values, sF2.values);
-   
+
+if isnumeric(sF)
+  sF = min(varargin{1},sF,varargin{2:end});
+  return
 end
-        
+
+% pointwise minimum of two spherical functions
+if nargin > 1 && isa(varargin{1}, 'S2FunTri') && varargin{1}.tri==sF.tri
+
+  sF.values = min(sF.values, varargin{1}.values);
+
+elseif ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
+
+  sF.values = min( sF.values, reshape(varargin{1}.eval(sF.vertices),size(sF.values)) );  
+
+% pointwise minimum of spherical harmonics
+elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
+  
+  sF.values = min(sF.values,varargin{1});
+
+else % detect global minima
+  
+  % TODO: local
+  nL = get_option(varargin,'numLocal',1);
+  [value,pos] = mink(sF.values(:),nL);
+  pos = sF.vertices(pos);
+  sF = value;
+
+end
+
+
+
 end

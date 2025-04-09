@@ -2,28 +2,18 @@ classdef EBSDsquare < EBSD
   % EBSD data on a rectangular grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
   
-  % properties with as many rows as data
-  properties
-  end
-  
-  % general properties
-  properties
-    dx
-    dy    
-  end
-  
-  properties (Dependent = true)    
-    gradientX       % orientation gradient in x
-    gradientY       % orientation gradient in y
-    xmin
-    xmax
-    ymin
-    ymax
+  properties (Dependent = true)
+    gradient1 % orientation gradient in dimension 1
+    gradient2 % orientation gradient in dimension 2
+    gradientX % orientation gradient in x
+    gradientY % orientation gradient in y
+    gradientZ % orientation gradient in z
+    d1, d2    % @vector3d, directions of the two grid dimensions 
   end
   
   methods
       
-    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
+    function ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList,varargin)
       % generate a rectangular EBSD object
       %
       % Syntax 
@@ -31,6 +21,17 @@ classdef EBSDsquare < EBSD
       
       if nargin == 0, return; end            
       
+      if isa(pos,"EBSD") 
+        ebsd.id = pos.id;
+        ebsd.pos = pos.pos; 
+        ebsd.phaseId = pos.phaseId;
+        ebsd.CSList = pos.CSList;
+        ebsd.phaseMap = pos.phaseMap;
+        ebsd.rotations = pos.rotations;
+        
+        return
+      end
+
       sGrid = size(rot);
       
       ebsd.pos = pos;
@@ -41,24 +42,23 @@ classdef EBSDsquare < EBSD
       ebsd.id = 1:prod(sGrid);
       
       % extract additional properties
-      ebsd.prop = get_option(varargin,'options',struct);
+      ebsd.prop = get_option(varargin,'prop',struct);
       ebsd.opt = get_option(varargin,'opt',struct);
       
       % correctly reshape all properties
       ebsd = reshape(ebsd,sGrid);
-                  
-      % get unit cell
-      ebsd.dx = dxyz(1);
-      ebsd.dy = dxyz(2);
-      if check_option(varargin,'unitCell')
-        ebsd.unitCell = get_option(varargin,'unitCell',[]);
-      else
-        ebsd.unitCell = 0.5 * vector3d(dxyz(1) * [1;1;-1;-1],dxyz(2) * [1;-1;-1;1],0);
-      end
       
       if isempty(pos)        
         [x,y] = meshgrid(1:size(rot,2),1:size(rot,1));
+        dxyz = get_option(varargin,'dxy',[1 1]);
         ebsd.pos = vector3d((x-1) * dxyz(1),(y-1) * dxyz(2),0);
+      end
+      
+      % get unit cell
+      if check_option(varargin,'unitCell')
+        ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      else
+        ebsd.unitCell = 0.5 * (ebsd.d1 * [1;1;-1;-1] + ebsd.d2 * [1;-1;-1;1]);
       end
            
     end
@@ -72,71 +72,111 @@ classdef EBSDsquare < EBSD
       newId = (1:length(ebsd)).';
     end
            
+    function e = end(ebsd,i,n)
+      if n==1
+        e = size(ebsd.id,1);
+      else
+        e = size(ebsd.id,i);
+      end
+    end
+
     % --------------------------------------------------------------
     
-    function out = get.xmin(ebsd)
-      out = ebsd.pos.x(1);
+    function out = get.d1(ebsd)
+      out = ebsd.pos(2,1) - ebsd.pos(1,1);
+    end
+    function out = get.d2(ebsd)
+      out = ebsd.pos(1,2) - ebsd.pos(1,1);
     end
     
-    function out = get.xmax(ebsd)
-      out = ebsd.pos.x(end);
-    end
-    
-    function out = get.ymin(ebsd)
-      out = ebsd.pos.y(1);
-    end
-    
-    function out = get.ymax(ebsd)
-      out = ebsd.pos.y(end);
-    end
-    
-    
-    function gX = get.gradientX(ebsd)
-      % gives the gradient in X direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-      
-      ori_right = ori(:,[2:end end-1]);
-      gX = log(ori_right,ori, SO3TangentSpace.leftVector) ./ ebsd.dx;
-      gX(:,end) = - gX(:,end);
-      
-      % ignore grain boundaries if possible
-      try
-        gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
-      end
-      
-    end
-    
-    function gY = get.gradientY(ebsd)
-      % gives the gradient in Y direction with respect to specimen
-      % coordinate system
+    function g1 = get.gradient1(ebsd)
+      % gradient in first dimension in specimen coordinates
       
       % extract orientations
       ori = ebsd.orientations;
           
       ori_up = ori([2:end end-1],:);
-      gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
-      gY(end,:) = - gY(end,:);
+      g1 = log(ori_up,ori, SO3TangentSpace.leftVector) ./ norm(ebsd.d1);
+      g1(end,:) = - g1(end,:);
       
       % ignore grain boundaries if possible
-      try
-        gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
+      if isfield(ebsd.prop,'grainId')
+        g1(ebsd.prop.grainId ~= ebsd.prop.grainId([2:end end-1],:)) = NaN;
+      end      
+    end
+
+    function g2 = get.gradient2(ebsd)
+      % gradient in second dimension in specimen coordinates
+            
+      % extract orientations
+      ori = ebsd.orientations;
+      
+      ori_right = ori(:,[2:end end-1]);
+      g2 = log(ori_right,ori, SO3TangentSpace.leftVector) ./ norm(ebsd.d2);
+      g2(:,end) = - g2(:,end);
+      
+      % ignore grain boundaries if possible
+      if isfield(ebsd.prop,'grainId')
+        g2(ebsd.prop.grainId ~= ebsd.prop.grainId(:,[2:end end-1])) = NaN;
       end
       
     end
+
+    function gX = get.gradientX(ebsd)
+      % gradient in X direction in specimen coordinates
+      if abs(dot(normalize(ebsd.d1),xvector)) > 1-1e-6
+        gX = ebsd.gradient1 * sign(dot(ebsd.d1,xvector));
+      elseif abs(dot(normalize(ebsd.d2),xvector)) > 1-1e-6
+        gX = ebsd.gradient2 * sign(dot(ebsd.d2,xvector));
+      elseif abs(dot(ebsd.N,xvector)) < 1e-6
+        error('Todo')
+      else
+        gX = vector3d.nan(size(ebsd));
+      end      
+    end
+
+    function gY = get.gradientY(ebsd)
+      % gradient in Y direction in specimen coordinates
+
+      if abs(dot(normalize(ebsd.d1),yvector)) > 1-1e-6
+        gY = ebsd.gradient1 * sign(dot(ebsd.d1,yvector));
+      elseif abs(dot(normalize(ebsd.d2),yvector)) > 1-1e-6
+        gY = ebsd.gradient2 * sign(dot(ebsd.d2,yvector));
+      elseif abs(dot(ebsd.N,yvector)) < 1e-6
+        error('Todo')
+      else
+        gY = vector3d.nan(size(ebsd));
+      end
+    end
+
+    function gY = get.gradientZ(ebsd)
+      % gradient in Z direction in specimen coordinates
+
+      if abs(dot(normalize(ebsd.d1),zvector)) > 1-1e-6
+        gY = ebsd.gradient1 * sign(dot(ebsd.d1,zvector));
+      elseif abs(dot(normalize(ebsd.d2),zvector)) > 1-1e-6
+        gY = ebsd.gradient2 * sign(dot(ebsd.d2,zvector));
+      elseif abs(dot(ebsd.N,zvector)) < 1e-6
+        error('Todo')
+      else
+        gY = vector3d.nan(size(ebsd));
+      end
+    end
    
     function h = gridBoundary(ebsd)
+      % this is used by the alpha shape algorithm
+      % which assumes that we are in the xy plane
 
-      x = ebsd.xmin:ebsd.dx:ebsd.xmax;
-      y = ebsd.ymin-ebsd.dy:ebsd.dy:ebsd.ymax+ebsd.dy;
+      ext = ebsd.extent;
+      delta = ebsd.dPos;
+      x = ext(1):delta:ext(2);
+      y = ext(3)-delta:delta:ext(4)+delta;
 
       h= [
-        repmat(ebsd.xmin-ebsd.dx, numel(y),1), y.' ; ...
-        x.', repmat(ebsd.ymin-ebsd.dy, numel(x), 1) ; ...
-        x.', repmat(ebsd.ymax+ebsd.dy, numel(x), 1) ; ...
-        repmat(ebsd.xmax+ebsd.dx, numel(y),1), y.'];
+        repmat(ext(1)-delta, numel(y),1), y.' ; ...
+        x.', repmat(ext(3)-delta, numel(x), 1) ; ...
+        x.', repmat(ext(4)+delta, numel(x), 1) ; ...
+        repmat(ext(2)+delta, numel(y),1), y.'];
     end
 
     % some testing code - gradient can be either in specimen coordinates or

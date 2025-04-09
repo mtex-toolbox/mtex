@@ -201,10 +201,11 @@ classdef phaseList
         try %#ok<TRYNC>
          if isa(pL.(char(fn)),'phaseList')
            pL.(char(fn)).CSList = pL.CSList;
+           pL.(char(fn)).phaseMap = pL.phaseMap;
          end
         end
       end
-      
+
     end
     
     function mineral = get.mineral(pL)
@@ -305,7 +306,6 @@ classdef phaseList
       
     end
     
-    
     function id = checkSinglePhase(pL)
       % ensure single phase
       
@@ -320,23 +320,27 @@ classdef phaseList
         id = unique(phaseId,'rows');
         
         if numel(id)>size(pL.phaseId,2)     
-        
-          error('MTEX:MultiplePhases',['\n' ...
+          
+          mtexError([...
             '----------------------------------------------------------------\n'...
-            'Your variable contains the phases: ' ...
+            ' Your variable contains the phases: ' ...
             pL.mineralList{id(1)} ', ' pL.mineralList{id(2)} '\n\n' ...
-            'However, you are executing a command that is only permitted for a single phase!\n\n' ...
-            'Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
+            ' However, you are executing a command that is only permitted for a single phase!\n\n' ...
+            ' Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
             ' for how to restrict EBSD data or grains to a single phase.\n' ...
             '----------------------------------------------------------------\n']);
+
         end
       elseif isempty(id) || ~all(any(bsxfun(@eq,id,pL.indexedPhasesId(:)),1))
-        error('MTEX:NoPhase','There are no indexed data in this variable!');
+        mtexError([...
+          '----------------------------------------------------------------\n'...
+          ' There are no indexed data in this variable!\n' ...
+          ' Maybe you misspelled a phase name?\n' ...
+          '----------------------------------------------------------------\n']);
+        error('MTEX:NoPhase','');
       end
       
     end
-    
-    
     
   end
   
@@ -364,21 +368,35 @@ classdef phaseList
       
     end
     
-    function phId = name2id(pL,ph)
+    function phId = name2id(pL,phName)
       % convert phase name to id
               
-      if ischar(ph) || isstring(ph)
-        alt_mineral = cellfun(@num2str,num2cell(pL.phaseMap),'Uniformoutput',false);
-        ph = strrep(ph,')','\)');
-        ph = strrep(ph,'(','\(');
-        ph = ~cellfun('isempty',regexpi(pL.mineralList(:),"^" + ph)) | ...
-          strcmpi(alt_mineral(:),ph);
-        phId = find(ph,1);
-        if isempty(phId), phId = 0; end
-      elseif isa(ph,'symmetry')
-        phId = find(cellfun(@(cs) cs==ph,pL.CSList));
+      if ischar(phName) || isstring(phName)
+
+        phaseNumbers = cellfun(@num2str,num2cell(pL.phaseMap(:)),'Uniformoutput',false);
+    
+        % maybe we have a perfect match
+        phases = strcmpi(pL.mineralList(:),phName) | strcmpi(phaseNumbers,phName);
+
+        % if no perfect match was found allow also for partial matches
+        if ~any(phases)
+          phases = strncmpi(pL.mineralList(:),phName,length(phName));
+        end
+
+        switch nnz(phases)
+          case 0
+            phId = 0;
+          case 1
+            phId = find(phases);
+          otherwise
+            mtexError(" Multiple phases matching your shortcut '" + phName + "'.\n" + ...
+              " Please provide the full phase name.");
+        end
+        
+      elseif isa(phName,'symmetry')
+        phId = find(cellfun(@(cs) cs==phName,pL.CSList));
       else
-        phId = find(ph == pL.phaseMap);
+        phId = find(phName == pL.phaseMap);
       end
       
     end

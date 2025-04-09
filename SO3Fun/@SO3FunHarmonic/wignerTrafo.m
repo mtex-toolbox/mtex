@@ -56,7 +56,17 @@ cs = SO3F.SRight;
 ss = SO3F.SLeft;
 sym = [min(cs.multiplicityPerpZ,2),cs.multiplicityZ,...
        min(ss.multiplicityPerpZ,2),ss.multiplicityZ];
-    
+
+% do not use symmetric properties, if symmetries are not standardized
+if cs.id==0 || ss.id==0
+  flags = dec2bin(flags); 
+  flags = flip(str2num(flags(:)));
+  if length(flags)>=5
+    flags(5) = 0;
+  end
+  flags = bin2dec(sprintf('%d',flip(flags)));
+end
+
 % Wigner transform
 ghat = wignerTrafomex(N,SO3F.fhat,flags,sym);
 % reconstruct symmetric coefficients

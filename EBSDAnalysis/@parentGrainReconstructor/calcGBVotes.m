@@ -96,14 +96,14 @@ if check_option(varargin,'reconsiderAll')
   % accumulate votes, i.e. compute a probability for each grain / parentId
   % combination
   votes = accumVotes(repmat(grainInd,1,numV), repmat(1:numV,length(grainInd),1), fit,...
-    size(A,1), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
+    length(id), 'weights', repmat(w,1,numV), varargin{:},'numFit',numV);
   
 else
   
   % parent-child - votes
   if ~isempty(job.parentGrains) && (noOpt || check_option(varargin,'p2c'))
   
-    % extract parent to child grain pairs with the coresponding orientations
+    % extract parent to child grain pairs with the corresponding orientations
     % averaged along the boundary
     [grainPairs, oriParent, oriChild] = getP2CPairs(job,varargin{:});
     grainId1 = repmat(grainPairs(:,2),1,numFit);

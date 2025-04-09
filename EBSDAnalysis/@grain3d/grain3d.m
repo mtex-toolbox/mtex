@@ -127,6 +127,23 @@ classdef grain3d < phaseList & dynProp
       end
     end
 
+    function grains = set.meanOrientation(grains,ori)
+      if ~isempty(grains)
+      
+        if isnumeric(ori) && all(isnan(ori(:)))
+          grains.prop.meanRotation = rotation.nan(size(grains.prop.meanRotation));
+        else
+          % update rotation
+          grains.prop.meanRotation = rotation(ori);
+      
+          % update phase
+          grains.CS = ori.CS;
+        end
+
+        grains = grains.update;
+      end
+    end
+
     function num = get.numFaces(grains)
       num = sum(logical(grains.I_GF),2);
     end
@@ -140,6 +157,11 @@ classdef grain3d < phaseList & dynProp
       warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
       grains.numPixel = n;
     end
+
+    function grains = update(grains)
+      grains.boundary = grains.boundary.update(grains);
+    end
+
 
   end
 

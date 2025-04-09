@@ -4,48 +4,47 @@ classdef S2FunTri < S2Fun
   properties
     tri          % S2Triangulation
     values = []  % function values
-    s 
+    s = specimenSymmetry
+    antipodal = false
+    isReal = true
   end
   
   properties (Dependent = true)
     vertices
-    antipodal
   end
   
   methods
     
     function sF = S2FunTri(nodes,values,s)      
       % initialize a spherical function
-      
+      if isa(nodes,'S2Fun')
+        nodes = @(n) nodes.eval(n);
+      end
+
       if isa(nodes,'function_handle')
         n = equispacedS2Grid('resolution',1.5*degree);
         values = nodes(n);
         nodes = n;
       end
-            
+
       if isa(nodes,'S2Triangulation')
         sF.tri = nodes;
       else
+        if nargin==2, s = specimenSymmetry; end
+        nodes = symmetrise(nodes(:)',s);
+        values = repmat(values(:)',size(nodes,1),1);
+        nodes.antipodal = false;
         sF.tri = S2Triangulation(nodes);
       end
       
       sF.values = values;
 
-      if nargin == 3
-        sF.s = s;
-      else
-        sF.s  = specimenSymmetry;
-        sF.s.how2plot = nodes.how2plot;
-      end
+      sF.s.how2plot = nodes.how2plot;
 
     end
     
     function v = get.vertices(S2F)
       v = S2F.tri.vertices;
-    end
-    
-    function v = get.antipodal(S2F)
-      v = S2F.tri.antipodal;
     end
     
     function S2F = set.vertices(S2F,v)

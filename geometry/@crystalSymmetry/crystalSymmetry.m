@@ -178,7 +178,7 @@ classdef crystalSymmetry < symmetry
 
       % some defaults for the plotting convention
       s.how2plot.outOfScreen = s.cAxisRec;
-      if id > 11
+      if id > 11 || id==0
         s.how2plot.east = s.aAxis;
       else
         s.how2plot.east = s.bAxis;

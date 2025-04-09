@@ -14,7 +14,7 @@
 % In order to illustrate the grain reconstruction process we consider the
 % following sample data set
 
-close all; plotx2east
+close all
 
 % import the data
 mtexdata forsterite

@@ -12,7 +12,7 @@ mtexdata forsterite
 % Diopside. The not indexed phase called _not Indexed_. The phases can be
 % visualized by
 
-close all; plotx2east
+close all;
 plot(ebsd)
 
 %% Selecting a certain phase
@@ -86,11 +86,11 @@ plot(ebsd)
 %
 %% Remove Inaccurate Orientation Measurements
 %
-% *By MAD (mean angular deviation)* in the case of Oxford Channel programs,
-% or *by CI (Confidence Index)* in the case of OIM-TSL programs
-%
 % Most EBSD measurements contain quantities indicating inaccurate
-% measurements. 
+% measurements, e.g. MAD (mean angular deviation) in the case of Oxford
+% Channel programs, or CI (Confidence Index) in the case of OIM-TSL
+% programs.
+% 
 
 close all
 plot(ebsd,ebsd.mad)
@@ -104,25 +104,21 @@ plot(ebsd,ebsd.bc)
 mtexColorbar
 
 %%
-% Here we will use the MAD to identify and eliminate
-% inaccurate measurements.
+% Here we will use the MAD to identify and eliminate inaccurate
+% measurements.
 
 % plot a histogram
 close all
 histogram(ebsd.mad)
-
 
 %%
 
 % take only those measurements with MAD smaller then one
 ebsd_corrected = ebsd(ebsd.mad<0.8)
 
-
 %%
 %
 
 close all
 plot(ebsd_corrected)
-
-
 

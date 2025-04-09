@@ -12,20 +12,17 @@ mtexdata forsterite
 
 ebsd('Fo').orientations
 
-
 %% Scatter Pole Figure Plot
 % A pole figure showing scattered points of these data figure can be
 % produced by the command <orientation.plotPDF.html |plotPDF|>.
 
 plotPDF(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 
-
 %% Scatter (Inverse) Pole Figure Plot
 % Accordingly, scatter points in inverse pole figures are produced by the
 % command  <orientation.plotIPDF.html |plotIPDF|>.
 
 plotIPDF(ebsd('Fo').orientations,xvector)
-
 
 %% Scatter Plot in ODF Sections
 % The plotting of scatter points in sections of the orientation space is
@@ -48,13 +45,11 @@ scatter(ebsd('Fo').orientations)
 %%
 % Here, the optional option |'center'| specifies the center of the unique
 % region in the orientation space.
-
-
+%
 %% Orientation plots for EBSD and grains
 % Since EBSD and grain data involves single orientations, the above plotting
 % commands are also applicable for those objects.
-
-%%
+%
 % Let us consider some grains <EBSD.calcGrains.html reconstructed> from the
 % EBSD data
 

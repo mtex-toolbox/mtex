@@ -24,7 +24,7 @@ ebsd = EBSD;
 try
   assertExtension(fname,'.ang');
 
-  %maybe we need to introduce a nonIndexed phase
+  % maybe we need to introduce a notIndexed phase
   cs{1} = 'notIndexed';
 
   % read file header

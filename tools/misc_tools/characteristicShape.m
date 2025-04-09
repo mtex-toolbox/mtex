@@ -15,7 +15,7 @@ function  [csAngle, csRadius] = characteristicShape(bc,bp,varargin)
 %  csRadius - radius of characteristic shape
 %
 % Options
-%  xy       - output in Cartesian coordiantes instead of polar coordiantes
+%  xy       - output in Cartesian coordinates instead of polar coordinates
 %
 
 bc = reshape(bc,[],1);

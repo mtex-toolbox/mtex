@@ -16,7 +16,7 @@ mtexdata twins;
 % this command here is important :)
 ebsd = ebsd.project2FundamentalRegion(grains);
 
-plot(ebsd('indexed'),ebsd('indexed').orientations)
+plot(ebsd,ebsd.orientations)
 
 %%
 % In most cases it is useful to gridify the data before doing

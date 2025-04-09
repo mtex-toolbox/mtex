@@ -166,7 +166,7 @@ hold off
 % when applying the option sharp MTEX colors the mean orientation as white
 % and scales the maximum saturation to fit the maximum misorientation
 % angle. This way deviations of the orientation within one grain can be
-% visualized. 
+% visualized.
 
 % plot a grain 
 plot(largeGrains(1).boundary,'linewidth',2)

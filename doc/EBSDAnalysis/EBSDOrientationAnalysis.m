@@ -7,7 +7,6 @@
 
 mtexdata forsterite silent
 
-plotx2east
 plot(ebsd)
 
 %% Orientation plot
@@ -33,7 +32,6 @@ rOrth = perp(r)
 
 % output
 plot(rOrth,'add2all','Marker','square','markerColor','DarkRed')
-
 
 %%
 % we can check how large is the number of orientations that are in the
@@ -92,4 +90,3 @@ plot(odf,'sigma')
 % and all our previous analysis suffer from the fact that too few grains
 % have been measured. For texture analysis, it would have been favorable to
 % measure at a lower resolution but a larger region.
-

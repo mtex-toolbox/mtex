@@ -18,7 +18,7 @@ ss = SO3F.SLeft
 
 ori = orientation.rand(cs,ss);
 SO3F.eval(ori.symmetrise).'
-SO3F.eval(ss*ori*cs).'
+SO3F.eval(ss*ori*cs)
 
 %%
 % The symmetries have, for example, an influence on the plot domain.

@@ -1,4 +1,4 @@
-function sF1 = le(sF1,sF2)
+function sF = le(sF1,sF2)
 % overloads sF1 <= sF2
 %
 % Syntax
@@ -14,13 +14,28 @@ function sF1 = le(sF1,sF2)
 %  sF - S2FunTri
 %
 
-% ensure first argument is S2FunTri
-if ~isa(sF1,'S2FunTri'), [sF1,sF2] = deal(-sF2,-sF2); end
-
-if isnumeric(sF2)
-  sF1.values = sF1.values <= sF2;
-else
-  sF1.values = sF1.values <= sF2.values;
+if isnumeric(sF1)
+  sF = sF2;
+  sF.values = sF1 <= sF2.values;
+  return
+elseif isnumeric(sF2)
+  sF = sF2;
+  sF.values = sF1 <= sF2.values;
+  return
 end
+
+if ~isa(sF2,'S2FunTri')
+  sF2 = S2FunTri(sF1.vertices,sF2.eval(sF1.vertices));
+end
+
+if sF1.tri == sF2.tri
+  sF = sF1;
+  sF.values = sF1.values <= sF2.values;
+else
+  v = [sF1.vertices(:);sF2.vertices(:)];
+  n = [sF1.values(:)<=sF2.eval(sF1.vertices(:)); sF1.eval(sF2.vertices(:))<=sF2.values(:)];
+  sF = S2FunTri(v,n); 
+end
+
 
 end

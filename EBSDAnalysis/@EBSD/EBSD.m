@@ -12,8 +12,8 @@ classdef EBSD < phaseList & dynProp & dynOption
   %   CSList = {'notIndexed',CS1,CS2,CS3};
   %   rot = rotation.byEuler(phi1,Phi,phi2);
   %
-  %   ebsd = EBSD(rot,phaseId,CSList,prop)
-  %   ebsd = EBSD(rot,phaseId,CSList,prop,'unitCell',unitCell)
+  %   ebsd = EBSD(pos,rot,phaseId,CSList,prop)
+  %   ebsd = EBSD(pos,rot,phaseId,CSList,prop,'unitCell',unitCell)
   %
   % Input
   %  pos         - @vector3d
@@ -117,7 +117,14 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.pos = pos;
 
       ebsd.rotations = rotation(rot);
-      ebsd = ebsd.init(phases,CSList);      
+      if check_option(varargin,'phaseMap')
+        ebsd.phaseId = phases;
+        ebsd.CSList = CSList;
+        ebsd.phaseMap = get_option(varargin,'phaseMap');
+      else
+        ebsd = ebsd.init(phases,CSList);
+      end
+      
       ebsd.id = (1:numel(phases)).';
             
       % extract additional properties
@@ -292,28 +299,6 @@ classdef EBSD < phaseList & dynProp & dynOption
     function ebsd = set.how2plot(ebsd,pC)
       ebsd.pos.how2plot = pC;
     end
-
-%     function dx = get.dx(ebsd)
-%       uc = ebsd.unitCell;
-%       if size(uc,1) == 4
-%         dx = max(uc(:,1)) - min(uc(:,1));
-%       elseif size(uc,1) == 6
-%         dx = max(uc(:,1)) - min(uc(:,1));
-%       else
-%         dx = inf;
-%       end
-%     end
-%     
-%     function dy = get.dy(ebsd)
-%       uc = ebsd.unitCell;
-%       if size(uc,1) == 4
-%         dy = max(uc(:,2)) - min(uc(:,2));
-%       elseif size(uc,1) == 6
-%         dy = max(uc(:,2)) - min(uc(:,2));
-%       else
-%         dy = inf;
-%       end
-%     end
     
   end
   

@@ -69,10 +69,10 @@ job.p2c = beta2alpha
 % * |job.transformedGrains| - child grains in |grainsMeasured| with computed
 % parent grain
 %
-% Additionaly, the <parentGrainReconstructor.parentGrainReconstructor.html
+% Additionally, the <parentGrainReconstructor.parentGrainReconstructor.html
 % |parentGrainReconstructor|> class provides the following operations for
 % parent grain reconstruction. These operators can be applied multiple
-% times and in any order to archieve the best possible reconstruction.
+% times and in any order to achieve the best possible reconstruction.
 %
 % * |job.calcVariantGraph| - compute the variant graph
 % * |job.clusterVariantGraph| - compute votes from the variant graph
@@ -164,7 +164,7 @@ plot(parentEBSD('Ti (Beta)'),color,'figSize','large')
 
 %%
 % The recovered EBSD variable |parentEBSD| contains a measure
-% |parentEBSD.fit| for the corespondence between the beta orientation
+% |parentEBSD.fit| for the correspondence between the beta orientation
 % reconstructed for a single pixel and the beta orientation of the grain.
 % Lets visualize this
 

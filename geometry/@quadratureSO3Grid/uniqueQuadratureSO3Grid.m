@@ -1,11 +1,11 @@
-function [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,scheme,varargin)
+function [u,inodes,iu] = uniqueQuadratureSO3Grid(N,scheme,varargin)
 % Nearly disjoint list of orientations of an quadratureSO3Grid.
 %
 % We use 2-fold rotational symmetries along Y-axis of left and right 
 % symmetries to manually 'unique' the fundamental region.
 %
 % Syntax
-%   [u,~,iu] = uniqueQuadratureSO3Grid(nodes,N)
+%   [u,~,iu] = uniqueQuadratureSO3Grid(N,scheme,SRight,SLeft)
 %
 % Input
 %  nodes - @orientation
@@ -23,12 +23,14 @@ function [u,inodes,iu] = uniqueQuadratureSO3Grid(nodes,N,scheme,varargin)
 
 % Note that specimenSymmetry('23') does not exist and consequently does not work
 
-SRight = nodes.CS;
-SLeft = nodes.SS;
+[SRight,SLeft] = extractSym(varargin);
+% SRight = nodes.CS;
+% SLeft = nodes.SS;
 RId = SRight.id;
 LId = SLeft.id;
 
 u = regularSO3Grid(scheme,'bandwidth',2*N,SRight,SLeft,varargin{:},'ABG');
+
 
 
 % 1) Are there mirroring symmetries along alpha, beta or gamma
@@ -77,7 +79,7 @@ u = u(:);
 if nargout==1
   return
 end
-  
+
 
 % 4.1) If one of the symmetries implies a 2-fold mirror symmetry along
 %      3rd Euler angle gamma we may reconstruct full size of values

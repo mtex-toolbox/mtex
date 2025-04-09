@@ -5,7 +5,7 @@
 % visualize spatial orientation data. Let us first import some sample EBSD
 % data.
 
-close all; plotx2east
+close all;
 mtexdata forsterite
 csFo = ebsd('Forsterite').CS;
 

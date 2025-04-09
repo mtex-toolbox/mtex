@@ -49,7 +49,7 @@ if isempty(weights)
 
   psi = get_option(varargin,'kernel');
   if ~isempty(psi)
-    weights = psi(sqrt(ebsd.dy^2 * i.^2 + ebsd.dx^2 * j.^2));
+    weights = psi(sqrt(norm(ebsd.d1)^2 * i.^2 + norm(ebsd.d2)^2 * j.^2));
   end
 else
   

@@ -29,8 +29,15 @@ if ~isempty(SO3F.center)
   if isa(SO3F.center,'SO3Grid')
     disp(['  center: ',char(SO3F.center)]);
     if isscalar(SO3F)
-      disp(['  weight: ', xnum2str(sum(SO3F.weights))]);
-    elseif length(SO3F)<4
+      out = sum(SO3F.weights);
+      % do not display all x-trillion weights
+      if length(out) > 5 
+          out = [xnum2str(out(1:5)) ' ...']; 
+      else
+          out = xnum2str(out); 
+      end
+      disp(['  weight: ',out]);
+    elseif length(SO3F)<4 % will actually never be called like this
       disp(['  weight: [', xnum2str(sum(SO3F.weights)), ']']);
     end
     disp(' ');

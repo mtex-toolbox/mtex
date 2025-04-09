@@ -6,10 +6,20 @@
 % ${\bf \xi} = (\sin \theta \cos \rho, \sin \theta \sin \rho, \cos \theta)$ the
 % spherical harmonic of degree $m$ and order $l$ is defined by
 %
-% $$ Y_m^l({\bf \xi}) = \sqrt{\frac{2m+1}{4\pi}}P_m^{|l|}(\cos\rho)\mathrm e^{\mathrm i l\theta} $$
+% $$ Y_m^l({\bf \xi}) = \sqrt{\frac{2m+1}{4\pi}} \, P_m^{|l|}(\cos\theta) \, \mathrm e^{\mathrm i l\rho} $$
 %
-% where $P_m^{|l|}$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
-% associated Legendre-Polynomials.
+% where $P_m^{|l|}\colon[-1,1]\to\mathbb R$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
+% associated Legendre-Polynomials defined by
+%
+% $$ P_m^l(x) = \sqrt{(m-l)!}{(m+l)!} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
+%
+% and $P_m\colon[-1,1]\to\mathbb R$ denotes the Legendre polynomials
+% given by their corresponding Rodrigues formula
+%
+% $$ P_m(x) = \frac{1}{2^m\,m!} \, \frac{d^m}{dx^m}(x^2-1)^m. $$
+%
+% Hence in MTEX the spherical harmonics are normalized with respect to the
+% $L^2(\mathbb S^2)$ norm.
 %
 % We get the function values of the spherical harmonics of degree 1 in a 
 % point v by the command |sphericalY|, i.e.
