@@ -5,60 +5,45 @@ function [ebsd] = loadEBSD_oh5(fname,varargin)
 % modified from loadEBSD_h5oina
 %
 % Syntax
-%   % import EBSD data in acquisition surface coordinates (CS1)
-%   ebsd = loadEBSD_oh5('ebsdData.oh5');
+% Import EBSD data 
+%  ebsd = loadEBSD_oh5('ebsdData.oh5');
 %
 % Flags
-%  convertSpatial2EulerReferenceFrame -
-%  convertEuler2SpatialReferenceFrame -
+%  convertSpatial2EulerReferenceFrame 
+%  convertEuler2SpatialReferenceFrame 
 %
 % Options
 %
 %
 % TODO
 % 1) option to import only specific EBSD maps
-% 2) import images (FOVIMAGE)
+% 2) import other kinds of data (images, EDS?)
 
-genericNameFix = {{'\W'},{'_'}};
-all = h5info(fname);
-
-% task: find all groups called EBSD, therein header and PHASE
-EBSD_index = {};
-n = 1;
-
-%search for EBSD data ('OIM Map #')
-% all.Groups =  % project name
-for i = 1:length(all.Groups.Groups)  % loop  through samples
-    if ~isempty(all.Groups.Groups(i).Groups)
-        for j=1:length(all.Groups.Groups(i).Groups) % loop through areas
-            if ~isempty(all.Groups.Groups(i).Groups(j).Groups)
-                for k=1:length(all.Groups.Groups(i).Groups(j).Groups) % loop through EBSD maps
-
-                    if contains(all.Groups.Groups(i).Groups(j).Groups(k).Name,'OIM Map')
-                        EBSD_index{n} = [i j k];
-                        n = n+1;
-                    end
-                end
-
-            end
-        end
-    end
+% check file extension before proceeding, avoid mixing up with other hdf5
+% formats
+assertExtension(fname,'.oh5');
+if check_option(varargin,'check')
+    ebsd = [];
+    return
 end
 
-if length(EBSD_index) > 1
+genericNameFix = {{'\W'},{'_'}};
+
+% task: find all groups called EBSD. they may be nested in different
+% layers.
+locEbsd = locFindH5Groups(fname,'EBSD');
+
+if length(locEbsd) > 1
+    ebsd = cell(length(locEbsd),1);
     disp('more than 1 EBSD dataset in the file, output will be a cell')
 end
 
-for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple datasets
+for k = 1 :length(locEbsd) % TODO: find a good way to write out multiple datasets
     % % EBSD dataset
     % EBSD orientations are contained in Group /*/OIM Map*/EBSD/ANG/DATA
-    EBSD_data = h5info(fname,...
-        [all.Groups.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(EBSD_index{k}(3)).Name ...
-        '/EBSD/Data']);
+    EBSD_data = h5info(fname,[locEbsd(k).Name '/Data']);
     %EBSD header
-    EBSD_header = h5info(fname,...
-        [all.Groups.Groups(EBSD_index{k}(1)).Groups(EBSD_index{k}(2)).Groups(EBSD_index{k}(3)).Name ...
-        '/EBSD/Header']);
+    EBSD_header = h5info(fname,[locEbsd(k).Name '/Header']);
 
     % read this EBSD map
     % read all EBSD data
@@ -67,23 +52,6 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
         sane_name = regexprep(EBSD_data.Datasets(thing).Name,genericNameFix{:});
         EBSDdata.(sane_name)=double(h5read(fname,[EBSD_data.Name '/' EBSD_data.Datasets(thing).Name]));
     end
-    % output isa (for a map with 618239 points)
-    % % struct with fields:
-    % %
-    % %                    CI: [618239×1 double]
-    % %                   Fit: [618239×1 double]
-    % %                    IQ: [618239×1 double]
-    % %    PRIAS_Bottom_Strip: [618239×1 double]
-    % %   PRIAS_Center_Square: [618239×1 double]
-    % %       PRIAS_Top_Strip: [618239×1 double]
-    % %                 Phase: [618239×1 double]
-    % %                   Phi: [618239×1 double]
-    % %                  Phi1: [618239×1 double]
-    % %                  Phi2: [618239×1 double]
-    % %            SEM_Signal: [618239×1 double]
-    % %                 Valid: [618239×1 double]
-    % %            X_Position: [618239×1 double]
-    % %            Y_Position: [618239×1 double]
 
     %read EBSD header
     EBSDheader = struct;
@@ -125,27 +93,6 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             content = h5read(fname,[phases.Groups(phaseN).Name '/' phases.Groups(phaseN).Datasets(j).Name]);
             EBSDphases.(pN).(sane_name) = content;
         end
-        % output isa (for Al phase)
-        % % struct with fields:
-        % %                  Atoms: [1×1 struct]
-        % % Crystal_Axes_Alignment: 2
-        % %                Formula: "Al "
-        % %                LGsymID: 43
-        % %     Lattice_Constant_a: 4.0400
-        % % Lattice_Constant_alpha: 90
-        % %     Lattice_Constant_b: 4.0400
-        % %  Lattice_Constant_beta: 90
-        % %     Lattice_Constant_c: 4.0400
-        % % Lattice_Constant_gamma: 90
-        % %           MaterialName: "Al (Aluminum, Aluminium) "
-        % %            NumberAtoms: 0
-        % %         NumberFamilies: 69
-        % %                PGsymID: 131
-        % %         SpaceGroupHall: "-p_4_2_3 "
-        % %       SpaceGroupNumber: 221
-        % %      SpaceGroupSetting: 1
-        % %               Symmetry: 43
-        % %           hkl_Families: [1×1 struct]
 
         ldims = double([EBSDphases.(pN).Lattice_Constant_a,...
             EBSDphases.(pN).Lattice_Constant_b, ...
@@ -184,7 +131,6 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     % write back to CS
     for i = 2:length(CS), CS{i}.mineral = char(phaseNames(i-1)); end
 
-
     % write out first EBSD dataset
     rot = rotation.byEuler(EBSDdata.Phi1,EBSDdata.Phi,EBSDdata.Phi2);
 
@@ -200,28 +146,22 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     optList_std  = {'IQ' 'CI' 'SEM_Signal' 'Fit' 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip'};
     optNames_std = {'iq', 'ci', 'sem', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip'};
 
-    if check_option(varargin,'fullDataset') % use all fields, just repalce standard names
 
-        optList = fieldnames(EBSDdata); % all names
-        %throw out all fields that have already been read in separately
-        optList = optList(~strcmp('Phase', optList));
-        optList = optList(~strcmp('Phi', optList));
-        optList = optList(~strcmp('Phi1', optList));
-        optList = optList(~strcmp('Phi2', optList));
-        optList = optList(~strcmp('X_Position', optList));
-        optList = optList(~strcmp('Y_Position', optList));
+    optList = fieldnames(EBSDdata); % all names
+    %throw out all fields that have already been read in separately
+    optList = optList(~strcmp('Phase', optList));
+    optList = optList(~strcmp('Phi', optList));
+    optList = optList(~strcmp('Phi1', optList));
+    optList = optList(~strcmp('Phi2', optList));
+    optList = optList(~strcmp('X_Position', optList));
+    optList = optList(~strcmp('Y_Position', optList));
 
-        % check if names need replacement
-        optNames = optList;
-        for jj = 1:length(optNames)
-            if any(strcmp(optNames{jj},optList_std))
-                optNames{jj} = optNames_std{strcmp(optNames{jj},optList_std)};
-            end
+    % check if names need replacement
+    optNames = optList;
+    for jj = 1:length(optNames)
+        if any(strcmp(optNames{jj},optList_std))
+            optNames{jj} = optNames_std{strcmp(optNames{jj},optList_std)};
         end
-
-    else % just use standard fields and names
-        optList  = optList_std;
-        optNames = optNames_std;
     end
 
     % populate opt
@@ -237,8 +177,57 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
     ebsdtemp = EBSD(pos,rot,phase,CS,opt);
     ebsdtemp.opt.Header = EBSDheader;
 
+    %% correct reference frames
+    % modified from ang loader
 
-    if length(EBSD_index) > 1
+    % change reference frame
+    rotCor = [...
+        rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
+        rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
+        rotation.byAxisAngle(xvector,180*degree),...         % setting 3
+        rotation.byAxisAngle(yvector,180*degree)];           % setting 4
+
+    % read the correction setting from h5 EBSD header
+    corSetting = double(h5read(fname,[EBSD_header.Name '/Coordinate System/ID']));
+
+    if check_option(varargin,'convertSpatial2EulerReferenceFrame')
+        flag = 'keepEuler';
+        opt = 'convertSpatial2EulerReferenceFrame';
+    elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
+        flag = 'keepXY';
+        opt = 'convertEuler2SpatialReferenceFrame';
+    else
+        if ~check_option(varargin,'wizard')
+            warning(['.oh5 files use inconsistent conventions for spatial ' ...
+                'coordinates and Euler angles. I''m defaulting to  ' ...
+                '''convertEuler2SpatialReferenceFrame'', i.e. ''keepXY'', to correct this']);
+        end
+        flag = 'keepXY';
+        opt = 'convertEuler2SpatialReferenceFrame';       
+    end
+
+    ebsdtemp = rotate(ebsdtemp,rotCor(corSetting),flag);
+
+    % set up how2plot
+    switch flag
+        case 'keepXY'
+            ebsdtemp.how2plot=plottingConvention(-zvector,xvector);
+        case 'keepEuler'
+            switch corSetting
+                case 1
+                    ebsdtemp.how2plot=plottingConvention(zvector,yvector);
+                case 2
+                    ebsdtemp.how2plot=plottingConvention(zvector,-yvector);
+                case 3
+                    ebsdtemp.how2plot=plottingConvention(zvector,-xvector);
+                case 4
+                    ebsdtemp.how2plot=plottingConvention(zvector,xvector);
+            end
+    end
+
+
+    %build cell if required
+    if length(locEbsd) > 1
         ebsd{k} = ebsdtemp;
     else
         ebsd = ebsdtemp;
@@ -247,51 +236,3 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
 end
 
 
-%% correct reference frames
-% modified from ang loader
-
-% change reference frame
-rot = [...
-  rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-  rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-  rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-  rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-% read the correction setting from h5 EBSD header
-corSetting = double(h5read(fname,[EBSD_header.Name '/Coordinate System/ID']));
-
-if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  flag = 'keepEuler';
-  opt = 'convertSpatial2EulerReferenceFrame';
-elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
-  flag = 'keepXY';
-  opt = 'convertEuler2SpatialReferenceFrame';
-else  
-  if ~check_option(varargin,'wizard')
-    warning(['.oh5 files use inconsistent conventions for spatial ' ...
-      'coordinates and Euler angles. I''m defaulting to  ' ...
-      '''convertEuler2SpatialReferenceFrame'', i.e. ''keepXY'', to correct this']);
-  end
-  flag = 'keepXY';
-  opt = 'convertEuler2SpatialReferenceFrame';
-  return  
-end
-
-ebsd = rotate(ebsd,rot(corSetting),flag);
-
-% set up how2plot
-switch flag
-    case 'keepXY'        
-        ebsd.how2plot=plottingConvention(-zvector,xvector);        
-    case 'keepEuler'
-        switch corSetting
-            case 1
-                ebsd.how2plot=plottingConvention(zvector,yvector);
-            case 2
-                ebsd.how2plot=plottingConvention(zvector,-yvector);
-            case 3
-                ebsd.how2plot=plottingConvention(zvector,-xvector);
-            case 4
-                ebsd.how2plot=plottingConvention(zvector,xvector);
-        end
-end
