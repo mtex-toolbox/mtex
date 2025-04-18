@@ -188,7 +188,7 @@ sSLocal = grains.meanOrientation * sS
 %%
 % These slip systems are now arranged in matrix form where the rows
 % correspond to the crystal reference frames of the different grains and
-% the rows are the symmetrically equivalent slip systems. Computing the
+% the columns are the symmetrically equivalent slip systems. Computing the
 % Schmid factor we end up with a matrix of the same size
 
 % compute Schmid factor
