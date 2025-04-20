@@ -4,11 +4,14 @@ function A = area(grains,varargin)
 % Input
 %  grains - @grain2d
 %
+% Options
+%  3d - use 3D algorithm
+%
 % Output
 %  A  - list of areas (in measurement units)
 %
 
-if 1 % 3d algorithm without loop
+if check_option(varargin,'3d') % 3d algorithm without loop
 
   allV = grains.allV.xyz;
 
@@ -19,7 +22,7 @@ if 1 % 3d algorithm without loop
 
   A = polySgnArea3(allV,N,grainStart);
 
-elseif 0 || isscalar(grains)   % 3d algorithm with loop
+elseif 0 || isscalar(grains) & check_option(varargin,'3d')  % 3d algorithm with loop
 
   A = zeros(length(grains),1);
   poly = grains.poly;
