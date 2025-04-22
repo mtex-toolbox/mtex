@@ -21,9 +21,9 @@ function f =  evalNFSOFT(F,rot,varargin)
 %   ensureCompatibleSymmetries(F,rot)
 % end
 
-% change evaluation method to quadratureSO3Grid.eval
-if isa(rot,'quadratureSO3Grid')
-  f = quadratureSO3Grid.eval(F,rot,varargin{:});
+% change evaluation method for quadratureSO3Grid
+if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
+  f = evalEquispacedFFT(F,rot,varargin{:});
   return
 end
 
