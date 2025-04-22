@@ -2,38 +2,31 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 % return index of all points in an epsilon neighborhood of a vector
 %
 % Syntax
-%   ind = find(v,w)         % find closest point out of v to w
-%   ind = find(v,w,epsilon) % find all points out of v in an epsilon neighborhood of w
-%   ind = find(v,w,k)       % find k nearest points out of v to w
+%   [ind,d] = find(v,w)         % find closest point out of v to w
+%   [I,d]   = find(v,w,epsilon) % find all points out of v in an epsilon neighborhood of w
+%   [ind,d] = find(v,w,k)       % find k nearest points out of v to w
 %
 % Input
-%  v, w         - @vector3d
-%  epsilon_or_k - epsilon or k (see below), depending on what the user wants
-%  epsilon      - double
-%  k            - int32
+%  v, w      - @vector3d
+%  epsilon   - double
+%  k         - int32
 %
 % Options
-%  antipodal    - include <VectorsAxes.html antipodal symmetry>
+%  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 % Output
-%  ind          - int32 array for k nearest neighbors,
-%               - sparse logical incidence matrix for region search
-%  d            - double array for k nearest neighbors, 
-%               - sparse double array for region search (0 whenever ind is 0)
+%  ind       - int32 array for k nearest neighbors,
+%  I         - sparse logical incidence matrix for region search
+%  d         - distance to the found neighbors, same size as ind or I
 
-% check for antipodal option
-if (numel(varargin) > 0)
-  if (strcmp(varargin{1}, 'antipodal'))
-    % storing the option in v lets @vector3d.angle take care of computing the
-    % distance the right way 
-    v.antipodal = true;
-  end
-end
+% storing the option in v lets @vector3d.angle take care of computing the
+% distance the right way
+v.antipodal = v.antipodal | check_option(varargin,'antipodal');
 
-% if v or w is antipodal, we also search for neighbors on the opposite side of
-% the sphere
-% later, we will have to 'project' the indice back down to the original grid v
-% this is done via the modulo operator, see below
+
+% if v or w is antipodal, we also search for neighbors on the opposite side
+% of the sphere later, we will have to 'project' the indices back down to
+% the original grid v this is done via the modulo operator, see below
 orig_size = numel(v);
 if (v.antipodal || w.antipodal)
   v = [v;-v];
@@ -61,7 +54,7 @@ if (nargin >= 3)
     row_idx = repelem((1:numel(w)), lens);
     col_idx = cell2mat(ind');
     % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-    % 'project' the indice down to the original grid v
+    % 'project' the indices down to the original grid v
     col_idx = mod(col_idx-1, orig_size) + 1; 
     ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), numel(v)); 
     if (nargout == 2)
@@ -78,6 +71,6 @@ else
     d = angle(v.subSet(ind), w);
   end
   % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-  % 'project' the indice down to the original grid v
+  % 'project' the indices down to the original grid v
   ind = mod(ind-1, orig_size) + 1;
 end
