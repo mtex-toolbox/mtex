@@ -63,6 +63,9 @@ while true
         CS = strtrim(buffer);
         buffer = fgetl(fid);
       end
+    case "*mode"
+      modes = fscanf(fid,'%u', inf);
+      buffer = fgetl(fid);
     case {"*seed","*seed (id x y z weigth )"}
       % we do not need this
       seeds = fscanf(fid,'%u %f %f %f %f ', [5 inf]); %#ok<NASGU>

@@ -5,34 +5,34 @@
 % all documentation pages are essentially MTEX scripts. You have a copy of
 % them in your MTEX download, with a file name equal to the last part of
 % the URL with .html swapped for .m (so this page is |Documentation.m|).
-% This means you can open them in Matlab by typing
+% This means you can open them in MATLAB by typing
 %
 %   edit fileName
 %
-% This allows you to execute the sections by step by step and investiage
+% This allows you to execute the sections step by step and investigate
 % the effect of each single MTEX command. It also should motivate you to
-% play around with different parameters, different input files or further
+% play around with different parameters, different input files, or further
 % analysis steps. Eventually, these documentation scripts may serve as a
 % good starting point for your own analysis scripts.
 %
 %% Contributing to the Documentation
 %
 % Documenting a project like MTEX is a challenging and ongoing task.
-% Therefore we are extremely happy about any spelling fixes, examples,
-% theoretical explainations, special use cases, etc. As a bonus everybody
-% who contributed to MTEX will automatically appear at the
+% Therefore, we are extremely happy about any spelling fixes, examples,
+% theoretical explanations, special use cases, etc. As a bonus, everybody
+% who contributes to MTEX will automatically appear on the
 % <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors
 % page>.
 %
 % The easiest way to suggest changes to the MTEX documentation is online
-% via Github. This is done as follows:
+% via GitHub. This is done as follows:
 %
 % # sign into <https://github.com GitHub>
 % # open the help page you want to change, e.g., this one
 % # click
 % <https://github.com/mtex-toolbox/mtex/blob/develop/doc/Documentation.m
-% edit page> which leads you to the file on <https://github.com GitHub>
-% # click the little pencil in the top right corner which allows you to
+% edit page>, which leads you to the file on <https://github.com GitHub>
+% # click the little pencil in the top right corner, which allows you to
 % edit the script online
 % # enter or copy and paste your changes into the site
 % # click at the bottom *Propose changes*
