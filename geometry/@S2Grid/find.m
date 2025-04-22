@@ -20,7 +20,7 @@ function varargout = find(S2G,v,varargin)
 d = [];
 if S2G.antipodal, v = [v(:),-v(:)]; end
 
-% compute polar coordinats
+% compute polar coordinates
 ytheta = double(S2G.thetaGrid);
 yrho = double(S2G.rhoGrid);
 iytheta = cumsum([0,GridLength(S2G.rhoGrid)]);
