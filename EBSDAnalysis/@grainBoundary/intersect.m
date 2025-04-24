@@ -13,23 +13,24 @@ function  [x,y,segLength] = intersect(gB,xy1,xy2,varargin)
 %  x,y - list of intersection points
 %
 % Example
-%  mtexdata small
-%  grains = calcGrains(ebsd('indexed'))
-%  grains = smooth(grains,4)
-%  plot(grains.boundary,'micronbar','off')
-%  % define some line
-%  xy1 = [33500,4500];  % staring point
-%  xy2 = [36000,7500]; % end point
-%  line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linewidth',1.5,'color','g')
-%  [x,y] = grains.boundary.intersect(xy1,xy2);
-%  hold on
-%  scatter(x,y,'red')
+%   mtexdata small
+%   grains = calcGrains(ebsd('indexed'),'minPixel',3)
+%   grains = smooth(grains,4)
+%   plot(grains.boundary,'micronbar','off')
+%   % define some line
+%   xy1 = [33500,4500]; % starting point
+%   xy2 = [36000,7500]; % end point
+%   line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linewidth',1.5,'color','g')
+%   [x,y] = grains.boundary.intersect(xy1,xy2);
+%   hold on
+%   scatter(x,y,'red','linewidth',2)
 %
-%  % find the number of intersection points  
-%  sum(~isnan(x))
-%  % mark the intersected boundary segments
-%  plot(grains.boundary(~isnan(x)),'lineColor','b','linewidth',2)
-%  hold off
+%   % find the number of intersection points  
+%   sum(~isnan(x))
+%   % mark the intersected boundary segments
+%   plot(grains.boundary(~isnan(x)),'lineColor','b','linewidth',2)
+%   hold off
+%
 
 n_rows_1 = size(xy1,1);
 n_rows_2 = length(gB);

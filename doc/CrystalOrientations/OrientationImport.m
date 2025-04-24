@@ -5,13 +5,13 @@
 % defined the corresponding <CrystalSymmetries.html crystal symmetry>, e.g.
 % by a cif file
 
-cs = crystalSymmetry.load('quartz.cif')
+cs = crystalSymmetry.load('quartz.cif');
 
 %%
 % In the second step we may use the command <orientation.load.html
 % |orientation.load|> to load the data. This function requires that one
 % specifies the meaning of the column of the import file by the option
-% |columnNames|.
+% |'columnNames'|.
 
 fname = fullfile(mtexDataPath,'orientation','Tongue_Quartzite_Bunge_Euler');
 ori = orientation.load(fname,'columnNames',{'phi1','Phi','phi2'},cs)
