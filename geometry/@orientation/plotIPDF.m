@@ -15,7 +15,7 @@ function plotIPDF(ori,varargin)
 %
 % Options
 %  RESOLUTION - resolution of the plots
-%  property   - user defined colorcoding
+%  property   - user defined color coding
 %  MarkerSize -
 %  MarkerFaceColor -
 %  MarkerEdgeColor -
@@ -28,7 +28,7 @@ function plotIPDF(ori,varargin)
 %  filled    - fill the marker with current color
 %
 % See also
-% S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot saveFigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
@@ -76,6 +76,7 @@ if (length(ori)*numSym(ori.CS)*numSym(ori.SS) > 100000 || check_option(varargin,
 
 end
 
+gList = gobjects(0,1);
 for ir = 1:length(r)
 
   if ir>1, mtexFig.nextAxis; end
@@ -85,7 +86,7 @@ for ir = 1:length(r)
   h = ori(:) \ rSym;
 
   %  plot
-  [~,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
+  [g,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','doNotDraw',varargin{:});
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
@@ -93,9 +94,14 @@ for ir = 1:length(r)
   [cax.Tag] = deal('ipdf');
   setAllAppdata(cax,'CS',ori.CS,'SS',ori.SS,'inversePoleFigureDirection',r(ir));
 
-  % TODO: unifyMarkerSize
-
+  % store handles to patch objects
+  gList = [gList;g(:)]; %#ok<AGROW>
+  
 end
+
+% unify dynamic marker size
+gList = findall(gList,'tag','dynamicMarkerSize');
+try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
 
 if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
