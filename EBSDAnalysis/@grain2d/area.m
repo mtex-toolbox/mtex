@@ -5,13 +5,14 @@ function A = area(grains,varargin)
 %  grains - @grain2d
 %
 % Options
-%  3d - use 3D algorithm
+%  2d - use 2D algorithm (testing only)
+%  3dLoop - use 3D algorithm with loop (testing only)
 %
 % Output
 %  A  - list of areas (in measurement units)
 %
 
-if check_option(varargin,'3d') % 3d algorithm without loop
+if nargin == 0 % 3d algorithm without loop
 
   allV = grains.allV.xyz;
 
@@ -22,7 +23,7 @@ if check_option(varargin,'3d') % 3d algorithm without loop
 
   A = polySgnArea3(allV,N,grainStart);
 
-elseif 0 || isscalar(grains) & check_option(varargin,'3d')  % 3d algorithm with loop
+elseif check_option(varargin,'3dLoop')  % 3d algorithm with loop
 
   A = zeros(length(grains),1);
   poly = grains.poly;
@@ -40,7 +41,7 @@ elseif 0 || isscalar(grains) & check_option(varargin,'3d')  % 3d algorithm with 
 
   end
 
-elseif 1 % 2d algorithm without loop
+elseif check_option(varargin,'2d') % 2d algorithm without loop
 
   V = grains.rot2Plane .* grains.allV;
   Vx = V.x([grains.poly{:}].');
@@ -50,7 +51,7 @@ elseif 1 % 2d algorithm without loop
 
   A = polySgnArea(Vx,Vy,grainStart);
 
-else  % 2d algorithm
+elseif check_option(varargin,'2dLoop') % 2d algorithm
   
   A = zeros(length(grains),1);
   poly = grains.poly;
@@ -62,5 +63,9 @@ else  % 2d algorithm
   for ig = 1:length(poly)
     A(ig) = polySgnArea(Vx(poly{ig}),Vy(poly{ig}));
   end
+
+else
+
+  error('wrong option!');
 
 end
