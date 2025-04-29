@@ -9,18 +9,20 @@ v = v(:);
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 
-% create index vectors in order to use pagefuns
+% the created vector col_id helps to create the (sF.dim x N) matrix G, which
+% holds the values of the basis functions at all neighbors of all centers from v
+% col_id skips entries, whenever a center has not nn_max many neighbors 
 nn_total = sum(nn);
 nn_max = max(nn);
 start_id = cumsum(nn(1:N-1)) + 1;
 temp = ones(nn_total, 1);
 temp(start_id) = 1 - nn(1:N-1);
-% col_id helps to create the (sF.dim x N) matrix G, which holds the values of
-% the basis functions at all neighbors of all centers from v  
-% col_id skips entries, whenever a center has not nn_max many neighbors
 temp = cumsum(temp);
 col_id = (v_id-1) * nn_max + temp;
 
+% compute for every center from v the matrix of all basis functions evaluated at
+% all neighbors of this center 
+% ==============================================================================
 G = zeros(sF.dim, nn_max * N); 
 if (~sF.centered)
   % evaluate the basis functions on the nodes
@@ -65,6 +67,7 @@ else
   G(:, col_id) = basis_on_grid';
 end
 G_book = reshape(G, sF.dim, nn_max, N);
+% ==============================================================================
 
 % compute the weights
 weights = zeros(N * nn_max, 1);
