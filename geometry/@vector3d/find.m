@@ -27,50 +27,43 @@ v.antipodal = v.antipodal | check_option(varargin,'antipodal');
 % if v or w is antipodal, we also search for neighbors on the opposite side
 % of the sphere later, we will have to 'project' the indices back down to
 % the original grid v this is done via the modulo operator, see below
+% TODO: project to northern and epsilon-Schlauch an äquator
 orig_size = numel(v);
 if (v.antipodal || w.antipodal)
   v = [v;-v];
 end
 
-if (nargin >= 3)
-  % k given ==> find k nearest neighbors
-  if (floor(epsilon_or_k) == epsilon_or_k)
-    k = epsilon_or_k;
-    ind = knnsearch(v.xyz, w.xyz, 'K', k);
-    if (nargout == 2)
-      d = angle(v.subSet(ind), w);
-    end
-    % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-    % 'project' the indice down to the original grid v
-    ind = mod(ind-1, orig_size) + 1;
+if nargin==2, epsilon_or_k=1; end
 
-  % epsilon given ==> perform range-search with radius epsilon
-  else
-    epsilon = epsilon_or_k;
-    % scale spherical region to euclidean region before starting rangesearch
-    ind = rangesearch(v.xyz, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon)));
-    % first convert ind into sparse logical matrix of size numel(w) x numel(v)
-    lens = cellfun(@numel, ind);
-    row_idx = repelem((1:numel(w)), lens);
-    col_idx = cell2mat(ind');
-    % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-    % 'project' the indices down to the original grid v
-    col_idx = mod(col_idx-1, orig_size) + 1; 
-    ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), numel(v)); 
-    if (nargout == 2)
-      d = angle(v.subSet(col_idx), w.subSet(row_idx));
-      % also convert d to sparse after computing it
-      d = sparse(row_idx, col_idx, d, numel(w), numel(v));
-    end
-  end
-
-% only 2 inputs specified ==> perform nearest-neighbor search
-else 
-  ind = knnsearch(v.xyz, w.xyz);
+% k given ==> find k nearest neighbors
+if (floor(epsilon_or_k) == epsilon_or_k)
+  ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k;
   if (nargout == 2)
     d = angle(v.subSet(ind), w);
   end
   % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-  % 'project' the indices down to the original grid v
+  % 'project' the indice down to the original grid v
   ind = mod(ind-1, orig_size) + 1;
+  return
 end
+
+% epsilon given ==> perform range-search with radius epsilon
+
+% scale spherical region to euclidean region before starting rangesearch
+ind = rangesearch(v.xyz, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
+% first convert ind into sparse logical matrix of size numel(w) x numel(v)
+lens = cellfun(@numel, ind);
+row_idx = repelem((1:numel(w)), lens);
+col_idx = cell2mat(ind');
+% if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
+% 'project' the indices down to the original grid v
+col_idx = mod(col_idx-1, orig_size) + 1;
+ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), numel(v));
+
+if (nargout == 2)
+  d = angle(v.subSet(col_idx), w.subSet(row_idx));
+  % also convert d to sparse after computing it
+  d = sparse(row_idx, col_idx, d, numel(w), numel(v));
+end
+
+

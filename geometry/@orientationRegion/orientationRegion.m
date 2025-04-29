@@ -1,5 +1,5 @@
 classdef orientationRegion
-  %sphericalRegion implements a region in orientation space
+  % implements a region in orientation space
   % The region is bounded by planes normal to quaternions N i.e., all
   % quaternions q inside a region satisfy the condition dot(q, N) <= 0 or
   % dot(-q, N) <= 0 for all N

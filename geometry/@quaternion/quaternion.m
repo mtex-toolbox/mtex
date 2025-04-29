@@ -108,6 +108,10 @@ classdef quaternion
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
     end
+       
+    function abcd = abcd(q)
+      abcd = [q.a(:),q.b(:),q.c(:),q.d(:)];      
+    end
     
   end
   
