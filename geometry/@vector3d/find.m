@@ -33,11 +33,13 @@ if (v.antipodal || w.antipodal)
   v = [v;-v];
 end
 
-if nargin==2, epsilon_or_k=1; end
+if (nargin == 2)
+  epsilon_or_k = 1; 
+end
 
 % k given ==> find k nearest neighbors
 if (floor(epsilon_or_k) == epsilon_or_k)
-  ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k;
+  ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k);
   if (nargout == 2)
     d = angle(v.subSet(ind), w);
   end

@@ -2,15 +2,21 @@ classdef S2FunMLS < S2Fun
   % a class representing a function on the sphere
 
   properties
-    nodes     = [];   % points where the function values are known
-    values    = [];   % the corresponding values
-    degree    = 2;    % the polynomial degree used for approximation
-    delta     = 0;    % support radius of the weight function
-    w         = @(t)(max(1-t, 0).^4 .* (4*t+1)); % wendland weight function
+    nodes       = [];   % points where the function values are known
+    values      = [];   % the corresponding values
+    degree      = 3;    % the polynomial degree used for approximation
+    delta       = 0;    % support radius of the weight function
+    nn          = 0;    % specified number of neighbors to use 
+    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % wendland weight function
     all_degrees = false;  % use even AND odd degrees up to degree if true
-    monomials = false;    % use monomials instead of sph. harm. if true
-    centered = false;     % only evaluate the basis near the pole if true
-    tangent = false;      % use polynomials on the tangent space
+    monomials   = true;    % use monomials instead of sph. harm. if true
+    centered    = false;     % only evaluate the basis near the pole if true
+    tangent     = false;      % use polynomials on the tangent space
+    s           = crystalSymmetry('1');   % TODO: symmetry
+  end
+
+  properties (Dependent)
+    dim;
   end
 
   methods
@@ -18,11 +24,10 @@ classdef S2FunMLS < S2Fun
     function sF = S2FunMLS(nodes, values, varargin)
       % set the mandatory inputs
       % some grids in mtex are provided as row vectors 
-      if size(nodes, 1) > size(nodes, 2) 
-        sF.nodes = nodes;
-      else 
-        sF.nodes = nodes';
+      if size(nodes, 1) < size(nodes, 2) 
+        nodes = nodes';
       end
+      sF.nodes = nodes;
       sF.values = values;
 
       % set degree if given
@@ -30,10 +35,19 @@ classdef S2FunMLS < S2Fun
         sF.degree = varargin{1};
         varargin(1) = [];
       end
-      % set delta if given
+      % set delta or k if given
       if nargin >= 4 && isnumeric(varargin{1})
-        sF.delta = varargin{1};
+        temp = varargin{1};
+        % if the input is a whole number, assume that nn is specified
+        if (floor(temp) == temp)
+          sF.nn = temp;
+        else
+          sF.delta = temp;
+        end
         varargin(1) = [];
+      % otherwise set k = 2 * dim
+      else
+        sF.nn = 2 * sF.dim;
       end
 
       % apply flags in the function arguments and remove them afterwards
@@ -66,7 +80,7 @@ classdef S2FunMLS < S2Fun
       end
 
       % if delta has not been set yet, set it now 
-      if sF.delta == 0
+      if ((sF.delta == 0) && (sF.nn == 0))
         sF.delta = compute_delta(sF);
       end
 
@@ -93,14 +107,17 @@ classdef S2FunMLS < S2Fun
 
     % compute delta if none was specified
     function delta = compute_delta(sF)
-      if sF.all_degrees
-        dim = (sF.degree + 1)^2;
-      else
-        dim = (sF.degree + 1) * (sF.degree + 2) / 2;
-      end
       % compute the smallest delta such that 2.5*dim spherical caps with
       % radius resolution/2 fit into one spherical cap with radius delta
-      delta = acos(max(1 - 2.5*dim*(1 - cos(sF.nodes.resolution/2)), -1));
+      delta = acos(max(1 - 2.5*sF.dim*(1 - cos(sF.nodes.resolution/2)), -1));
+    end
+
+    function dimension = get.dim(sF)
+      if (sF.all_degrees == true)
+        dimension = (sF.degree + 1)^2;
+      else
+        dimension = (sF.degree + 1) * (sF.degree + 2) / 2;
+      end
     end
 
   end

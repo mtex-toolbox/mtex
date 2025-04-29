@@ -1,4 +1,4 @@
-function base_vals = eval_base_functions(sF, varargin)
+function base_vals = eval_basis_functions(sF, varargin)
 
 % decide which bases to use and call the corresponding eval function
 % eval on the nodes v or on the grid of sF if v is not given in varargin
