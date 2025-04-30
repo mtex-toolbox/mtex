@@ -49,33 +49,48 @@ fR = fundamentalRegion(v.CS,v.SS,ap{:});
 
 % decide for tolerance epsilon
 if (floor(epsilon_or_k) == epsilon_or_k)
-  % worst case
-  epsilon = fR.maxAngle/2;
-  % expected epsilon for uniform distributed points
-  % V = 1/v.CS.numSym/v.SS.numSym/(1+v.antipodal);
-  % epsilon = (6*pi*epsilon_or_k*V/length(v))^(1/3);
-  % epsilon = 1.3*epsilon % use slightly greater range
+  if check_option(varargin,'worstCaseError')
+    epsilon = fR.maxAngle/2;
+  else
+    % expected epsilon for uniform distributed points
+    V = 1/v.CS.numSym/v.SS.numSym/(1+v.antipodal);
+    epsilon = (6*pi*epsilon_or_k*V/length(v))^(1/3);
+    epsilon = 2*epsilon; % use slightly greater range
+  end
 else
   epsilon = epsilon_or_k;
 end
 
 % project v to fundamental region with some band of tolerance omega
 v = v.symmetrise;
-id = fR.checkInside(v,'tolerance',epsilon/2+1e-4);
+id = fR.checkInside(v,'tolerance',epsilon+1e-4);
 v = v.subSet(id);
 v = v.subSet(':');
 [~,id] = find(id);  % x = id.*(1:10000); x(id);
 
 % w project to fundamental region
-w = quaternion(project2FundamentalRegion(w));
-v = quaternion(v);
+wq = quaternion(project2FundamentalRegion(w));
+vq = quaternion(v);
 
 % find points on fundamental region
-[ind,d] = find@quaternion(v,w,epsilon_or_k,varargin{:});
+[ind,d] = find@quaternion(vq,wq,epsilon_or_k,varargin{:});
 
-% TODO: write cosistent Code
 if (floor(epsilon_or_k) == epsilon_or_k)
   ind = id(ind);
+  
+  % determine not correctly classified points and search again for them
+  nCC = max(d,[],2) > min(pi-angle(wq,fR.N) + epsilon,[],2);
+  if sum(nCC)>0
+    if nCC<100
+      d2 = angle(v,wq(nCC)).';
+      [d2,ind2] = mink(d2,epsilon_or_k,2);
+    else
+      [ind2,d2] = find(v,w.subSet(nCC),epsilon_or_k,'worstCaseError');
+    end
+    ind(nCC) = ind2;
+    d(nCC) = d2;
+  end
+
 else
   S = sparse(1:length(id), id, true, length(id), max(id));
   ind = ind * S;
