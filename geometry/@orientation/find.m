@@ -31,6 +31,7 @@ if nargin==2, epsilon_or_k=1; end
 %
 
 % TODO: Do not work for some symmetries
+% Bug in project2FundamentalRegion
 
 % Check for matching symmetries
 v = orientation(v.subSet(':'));
@@ -39,28 +40,35 @@ if v.CS~=w.CS || v.SS~=w.SS
   error('The symmetries have to coincide.')
 end
 
-% TODO: antipodal
-ap={};
+% compute fundamental Region
+ap ={};
+if v.antipodal
+  ap={'antipodal'};
+end
+fR = fundamentalRegion(v.CS,v.SS,ap{:});
 
 % decide for tolerance epsilon
 if (floor(epsilon_or_k) == epsilon_or_k)
-  % TODO: decide for epsilon range manually (dependent to v).
-  epsilon = 10*degree;
+  % worst case
+  epsilon = fR.maxAngle/2;
+  % expected epsilon for uniform distributed points
+  % V = 1/v.CS.numSym/v.SS.numSym/(1+v.antipodal);
+  % epsilon = (6*pi*epsilon_or_k*V/length(v))^(1/3);
+  % epsilon = 1.3*epsilon % use slightly greater range
 else
   epsilon = epsilon_or_k;
 end
 
 % project v to fundamental region with some band of tolerance omega
-fR = fundamentalRegion(v.CS,v.SS,ap{:});
-% TODO: only symmetrise points that are in the epsilon-distance of the boundary of the fundamental region
 v = v.symmetrise;
 id = fR.checkInside(v,'tolerance',epsilon/2+1e-4);
 v = v.subSet(id);
-[~,id]=find(id);
 v = v.subSet(':');
+[~,id] = find(id);  % x = id.*(1:10000); x(id);
 
 % w project to fundamental region
-w = project2FundamentalRegion(w);
+w = quaternion(project2FundamentalRegion(w));
+v = quaternion(v);
 
 % find points on fundamental region
 [ind,d] = find@quaternion(v,w,epsilon_or_k,varargin{:});
