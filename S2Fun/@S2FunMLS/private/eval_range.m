@@ -44,10 +44,10 @@ else
   % determine which basis to use and evaluate them on the grid and on v
   if sF.all_degrees
     if sF.monomials
-      basis_on_grid = [eval_monomials(rotneighbors, sF.degree) ...
-        eval_monomials(rotneighbors, sF.degree-1)];
-      basis_in_pole = [eval_monomials(vector3d.Z, sF.degree) ...
-        eval_monomials(vector3d.Z, sF.degree-1)];
+      basis_on_grid = [eval_monomials_S2(rotneighbors, sF.degree) ...
+        eval_monomials_S2(rotneighbors, sF.degree-1)];
+      basis_in_pole = [eval_monomials_S2(vector3d.Z, sF.degree) ...
+        eval_monomials_S2(vector3d.Z, sF.degree-1)];
     else
       basis_on_grid = [eval_spherical_harmonics(rotneighbors, sF.degree) ...
         eval_spherical_harmonics(rotneighbors, sF.degree-1)];
@@ -56,8 +56,8 @@ else
     end
   else
     if sF.monomials
-      basis_on_grid = eval_monomials(rotneighbors, sF.degree, sF.tangent);
-      basis_in_pole = eval_monomials(vector3d.Z, sF.degree, sF.tangent);
+      basis_on_grid = eval_monomials_S2(rotneighbors, sF.degree, sF.tangent);
+      basis_in_pole = eval_monomials_S2(vector3d.Z, sF.degree, sF.tangent);
     else
       basis_on_grid = eval_spherical_harmonics(rotneighbors, sF.degree);
       basis_in_pole = eval_spherical_harmonics(vector3d.Z, sF.degree);
