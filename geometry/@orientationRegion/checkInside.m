@@ -13,7 +13,7 @@ function inside = checkInside(oR,q,varargin)
 %  id - @logical
 %
 % Options
-%  'tolerance' - tolerance on the Grain Boundary (1e-3)
+%  'tolerance' - tolerance at the region boundary (default: 1e-3)
 %
 
 % get tolerance
