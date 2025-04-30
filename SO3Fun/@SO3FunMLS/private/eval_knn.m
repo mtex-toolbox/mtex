@@ -1,9 +1,9 @@
-function [vals, conds] = eval_knn(sF, v)
+function [vals, conds] = eval_knn(sF, ori)
 
 % get some parameters 
-dimensions = size(v);
-v = v(:);
-N = numel(v);
+dimensions = size(ori);
+ori = ori(:);
+N = numel(ori);
 nn = sF.nn;
 nn_total = nn * N;
 
@@ -13,12 +13,12 @@ if (sF.nn < sF.dim)
     ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
     'nn has been set to 2 * dim.']));
 end
-
-[ind, dist] = sF.nodes.find(v, nn); 
+ 
+[ind, dist] = sF.nodes.find(ori, nn); 
 % grid_id = id of the neighbors (in the grid of sF)
 grid_id = reshape(ind', nn_total, 1);
 % v_id = id of entry of v (where we want to eval sF)
-v_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
+ori_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
 
 % compute for every center from v the matrix of all basis functions evaluated at
 % all neighbors of this center 
@@ -32,15 +32,14 @@ if (~sF.centered)
   else
     G = eval_basis_functions(sF, sF.nodes(grid_id))';
   end
-  g_book = reshape(eval_basis_functions(sF, v)', sF.dim, 1, N);
+  g_book = reshape(eval_basis_functions(sF, ori)', sF.dim, 1, N);
 else
-  % compute the rotations that shift each element of v into the north pole
-  rot = rotation.map(v, vector3d.Z);
-  rot = rot(v_id);
-  rotneighbors = rot .* sF.nodes(grid_id);
+  % compute the inverse oris, then rotate all neighbors towards the north pole 
+  inv_oris = inv(ori(ori_id));
+  rotneighbors = inv_oris .* sF.nodes(grid_id);
 
   basis_on_grid = eval_basis_functions(sF, rotneighbors);
-  basis_in_pole = eval_basis_functions(sF, vector3d.Z);
+  basis_in_pole = eval_basis_functions(sF, orientation.id);
 
   g_book = repmat(basis_in_pole', 1, 1, N);
   G = basis_on_grid';
