@@ -47,7 +47,6 @@ if nargin==2, epsilon_or_k=1; end
 % add -v to v
 % TODO: Do better with respect to epsilon
 orig_size = numel(v);
-v = quaternion(v);
 v = [-v;v];
 
 % k given ==> find k nearest neighbors
