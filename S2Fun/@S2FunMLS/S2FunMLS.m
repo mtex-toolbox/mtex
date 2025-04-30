@@ -2,16 +2,16 @@ classdef S2FunMLS < S2Fun
   % a class representing a function on the sphere
 
   properties
-    nodes       = [];   % points where the function values are known
-    values      = [];   % the corresponding values
-    degree      = 3;    % the polynomial degree used for approximation
-    delta       = 0;    % support radius of the weight function
-    nn          = 0;    % specified number of neighbors to use 
+    nodes       = [];      % points where the function values are known
+    values      = [];      % the corresponding values
+    degree      = 3;       % the polynomial degree used for approximation
+    delta       = 0;       % support radius of the weight function
+    nn          = 0;       % specified number of neighbors to use 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % wendland weight function
-    all_degrees = false;  % use even AND odd degrees up to degree if true
+    all_degrees = false;   % use even AND odd degrees up to degree if true
     monomials   = true;    % use monomials instead of sph. harm. if true
-    centered    = false;     % only evaluate the basis near the pole if true
-    tangent     = false;      % use polynomials on the tangent space
+    centered    = false;   % only evaluate the basis near the pole if true
+    tangent     = false;   % use polynomials on the tangent space
     s           = crystalSymmetry('1');   % TODO: symmetry
   end
 
@@ -103,6 +103,17 @@ classdef S2FunMLS < S2Fun
         end
       end
 
+      if (sF.nn < sF.dim)
+        sF.nn = 2 * sF.dim;
+        warning(sprintf(...
+          ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
+          'nn has been set to 2 * dim.']));
+      end
+
+      if (sF.delta == 0)
+        sF.delta = guess_delta(sF);
+      end
+
     end
 
     % compute delta if none was specified
@@ -118,6 +129,10 @@ classdef S2FunMLS < S2Fun
       else
         dimension = (sF.degree + 1) * (sF.degree + 2) / 2;
       end
+    end
+
+    function d = guess_delta(sF)
+      d = acos(1 - 4 * sF.dim / numel(sF.nodes));
     end
 
   end

@@ -11,15 +11,15 @@ end
 % determine which basis to use and evaluate it on v
 if sF.all_degrees
   if sF.monomials
-    base_vals = [eval_monomials(v, sF.degree) ... 
-      eval_monomials(v, sF.degree-1)];
+    base_vals = [eval_monomials_S2(v, sF.degree) ... 
+      eval_monomials_S2(v, sF.degree-1)];
   else
     base_vals = [eval_spherical_harmonics(v, sF.degree) ...
       eval_spherical_harmonics(v, sF.degree-1)];
   end
 else
   if sF.monomials
-    base_vals = eval_monomials(v, sF.degree);
+    base_vals = eval_monomials_S2(v, sF.degree, sF.tangent);
   else
     base_vals = eval_spherical_harmonics(v, sF.degree);
   end

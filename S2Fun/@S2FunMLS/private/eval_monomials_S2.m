@@ -1,17 +1,16 @@
 function vals = eval_monomials_S2(v, deg, varargin)
-% eval all monomials of degree deg, deg-2, ..., mod(deg,2) on v
-% leave some out since we assume that v are spherical vectors, 
-% hence x^2+y^2+z^2 = 1
+% evaluate the monomials of degree deg, deg-2, ..., mod(deg,2) on v
+% leave some out since we v consists of spherical vectors, thus x^2+y^2+z^2 = 1
 
-% get number of points in v and dimension of ansatz space
 N = numel(v.x);
 dim = (deg + 1) * (deg + 2) / 2;
 
-% tangent is boolean - if true we set the z coordinate to 1 
+% if the tangent parameter is true, we set the z coordinate to 1 
 if nargin == 3 && varargin{1} == true
     v.z = ones(size(z));
 end
 
+% compute the exponents (in each coordinate) of the basis monomials 
 r = mod(deg, 2);
 exponents = zeros(dim, 3);
 idx = 1;
@@ -23,7 +22,7 @@ for k = 0 : deg
 end
 
 exponents = reshape(exponents', 1, 3, dim);
-vals = [v.x v.y v.z] .^ exponents;
-vals = reshape(vals, N);
+vals = prod([v.x v.y v.z] .^ exponents, 2);
+vals = reshape(vals, N, dim);
 
-end
+end 
