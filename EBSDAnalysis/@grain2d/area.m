@@ -12,7 +12,7 @@ function A = area(grains,varargin)
 %  A  - list of areas (in measurement units)
 %
 
-if nargin == 0 % 3d algorithm without loop
+if nargin == 1 % 3d algorithm without loop
 
   allV = grains.allV.xyz;
 
