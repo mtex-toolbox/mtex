@@ -36,9 +36,10 @@ elseif check_option(varargin,'max')
   q = quaternion(o1);
   
   % for misorientations we do not have to consider all symmetries
-  [l,d,r] = factor(o1.CS,o1.SS);
-  dr = d * r;
-  qs = l * dr;
+  % CS -> r, SS -> l
+  % d(l * q * r * d, id) = d(q,inv(l) * id * inv(rd)) = d(q,inv(rd*l))
+  [r,d,l] = factor(o1.CS,o1.SS);
+  qs = r * d * l;
   
   % compute all distances to the symmetric equivalent orientations
   % and take the minimum

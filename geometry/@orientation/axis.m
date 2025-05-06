@@ -62,15 +62,18 @@ if nargin >= 2 && isa(varargin{1},'orientation')
     end
   
   else
-    
-    [l,d,r] = factor(o1.CS.properGroup,o2.CS.properGroup);
-    l = l * d;
-    % we are looking for l,r from L and R such that
-    % angle(o1*l , o2*r) is minimal
-    % this is equivalent to angle(inv(o2)*o1 , r*inv(l)) is minimal
 
+    % for misorientations we do not have to consider all symmetries
+    % CS -> r, SS -> l
+    % d(l * q * r * d, id) = d(q,inv(l) * id * inv(rd)) = d(q,inv(rd*l))
+    [r,d,l] = factor(o1.CS.properGroup,o2.CS.properGroup);    
+    r = r * d;
+
+    % we are looking for l,r that minimize
+    % angle(o1*r , o2*l) = angle(inv(l) * inv(o2) * o1 * r , id) 
+    % = angle(inv(o2)*o1 , l * inv(r))
     mori = inv(o2) .* o1; %#ok<*MINV>
-    idSym = r * inv(l);
+    idSym = l * inv(r);
 
     d = -inf(size(mori));
     idMax = ones(size(mori));
@@ -82,12 +85,12 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
     % this projects mori into the fundamental zone
     [row,col] = ind2sub(size(idSym),idMax);
-    pMori = times(inv(r(row)), mori, 0) .* reshape(l(col),size(col)); 
+    pMori = times(inv(l(row)), mori, 0) .* reshape(r(col),size(col)); 
 
     % now the misorientation axis is given by in specimen coordinates is
     % given by either of the following two lines
-    %ax = times(o1, l(col), 1) .* axis(pMori);
-    a = times(o2, r(row), 1) .* axis(pMori);
+    %ax = times(o1, r(col), 1) .* axis(pMori);
+    a = times(o2, l(row), 1) .* axis(pMori);
         
   end
 
@@ -105,21 +108,19 @@ else
   
   % project to Fundamental region to get the axis with the smallest angle
   if check_option(varargin,'max')
-    % do not care about inversion
-    q = quaternion(o1);
-  
+      
     % for misorientations we do not have to consider all symmetries
-    [l,d,r] = factor(o1.CS,o1.SS);
-    dr = d * r;
-    qs = inv(l) * inv(dr);
+    [r,d,l] = factor(o1.CS,o1.SS);
+    rd = r * d;
+    qs = inv(rd * l);
   
     % compute all distances to the symmetric equivalent orientations
     % and take the minimum
-    [~,pos] = min(abs(dot_outer(q,qs)),[],2);
-
-    [il,idr] = ind2sub([length(l),length(dr)],pos);
-
-    o1 = l(il) .* o1 .* dr(idr);
+    [~,pos] = min(abs(dot_outer(o1,qs,'noSymmetry')),[],2);
+    [idr,il] = ind2sub([length(rd),length(l)],reshape(pos,size(o1)));
+    
+    % consider symmetric equivalent with maximum rotational angle
+    o1 = l(il) .* o1 .* rd(idr);
 
   elseif ~check_option(varargin,'noSymmetry')
     o1 = project2FundamentalRegion(o1);
