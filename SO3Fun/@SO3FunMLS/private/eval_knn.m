@@ -24,21 +24,15 @@ if (~sF.centered)
   % evaluate for every ori all basis functions at all neighbors ...
   % NOTE: projecting to fR is very important, since later we treat all oris as 
   %       points on the sphere S^3 and use monomials
-  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
-  % the projected orientations might be at the opposite side of S^3
-  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
-  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
-  G = eval_basis_functions(sF, projected)';
+  projected = project2FundamentalRegion(sF.nodes(grid_id), ori(ori_id)); 
+  G = eval_basis_functions(sF, projected)'; 
   % ... and also in the oris themselves
   g_book = reshape(eval_basis_functions(sF, ori)', sF.dim, 1, N);
 else
   % shift the local problems to be centered around orientation.id
   % this enhances the condition of the gram matrices dramatically
   inv_oris = reshape(inv(ori(ori_id)), size(sF.nodes(grid_id)));
-  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
-  % the projected orientations might be at the opposite side of S^3
-  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
-  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
+  projected = project2FundamentalRegion(sF.nodes(grid_id), ori(ori_id));
   rotneighbors = inv_oris .* projected;
 
   % evaluate for every ori all basis functions at all neighbors ...
