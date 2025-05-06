@@ -50,14 +50,14 @@ classdef SO3FunMLS < SO3Fun
   end
 
   methods
-    % TODO: decide Bandwidth
     
     function SO3F = SO3FunMLS(nodes, values, varargin)
 
       if nargin == 0, return; end
  
       SO3F.nodes = nodes; % preserve grid structure
-      SO3F.values = reshape(values,length(nodes),[]); % allow vector fields
+      sz = size(values);
+      SO3F.values = reshape(values , [length(nodes) , sz(find(cumprod(sz)==length(nodes))+1:end)] );
 
       % set optional arguments
       SO3F.degree = get_option(varargin,'degree',3);
@@ -72,15 +72,16 @@ classdef SO3FunMLS < SO3Fun
       end
 
       % get the weight function if one is specified
-      if check_option(varargin,'hat')
+      fun = getClass(varargin,'function_handle');
+      if ~isempty(fun)
+        SO3F.w = fun;
+      elseif check_option(varargin,'hat')
         SO3F.w = @(t)(max(1-t, 0));
       elseif check_option(varargin,'squared hat')
         SO3F.w = @(t)(max(1-t, 0).^2);
       elseif check_option(varargin,'indicator')
         SO3F.w = @(t)(t .* (t < 1));
       end
-      wendland = @(t)(max(1-t, 0).^4 .* (4*t+1));
-      SO3F.w = getClass(varargin,'function_handle',wendland);
 
       % set delta or k if given
       if nargin > 2 && isnumeric(varargin{1})
@@ -104,21 +105,21 @@ classdef SO3FunMLS < SO3Fun
       
     end
 
-    function dimension = get.dim(sF)
-      if (sF.all_degrees == true)
-        dimension = nchoosek(sF.degree + 3, 3) + nchoosek(sF.degree + 2, 3);
+    function dimension = get.dim(SO3F)
+      if (SO3F.all_degrees == true)
+        dimension = nchoosek(SO3F.degree + 3, 3) + nchoosek(SO3F.degree + 2, 3);
       else
-        dimension = nchoosek(sF.degree + 3, 3);
+        dimension = nchoosek(SO3F.degree + 3, 3);
       end
     end
 
-    function d = guess_delta(sF)
+    function d = guess_delta(SO3F)
       % for N nodes on one hemisphere, the expected number of nodes in a
       % spherical cap of angular radius phi is
       %         N * 2/pi * (phi - sin(phi) * cos(phi))
       % choose delta such that the expected number of neighbors is 2*sF.dim
       syms phi;
-      d = double(vpasolve(phi-sin(phi)*cos(phi) - pi*sF.dim/numel(sF.nodes)));
+      d = double(vpasolve(phi-sin(phi)*cos(phi) - pi*SO3F.dim/numel(SO3F.nodes)));
       % the quaterion distance is twice the spherical distance
       d = 2 * d;
     end
@@ -158,6 +159,11 @@ classdef SO3FunMLS < SO3Fun
         antipodal = false;
       end
     end
+
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
+    end
+
   end
 
 end
