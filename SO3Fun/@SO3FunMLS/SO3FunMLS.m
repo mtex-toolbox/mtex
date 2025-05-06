@@ -23,7 +23,6 @@ classdef SO3FunMLS < SO3Fun
 %  all_degrees  - use even AND odd degrees up to degree if true
 %  centered     - only evaluate the basis near the pole if true
 %  tangent      - use polynomials on the tangent space
-%  monomials    -
 %  hat          - use hat function as weight function
 %  squared_hat  - use squared-hat function as weight function
 %  indicator    - use indicator function as weight function
@@ -40,7 +39,6 @@ classdef SO3FunMLS < SO3Fun
     all_degrees = false % use even AND odd degrees up to degree if true
     centered    = false % only evaluate the basis near the pole if true
     tangent     = false % use polynomials on the tangent space
-    % monomials
     bandwidth   = getMTEXpref('maxSO3Bandwidth');
   end
 
@@ -92,8 +90,12 @@ classdef SO3FunMLS < SO3Fun
       end
       % if the input is a whole number, assume that nn is specified
       if (floor(temp) == temp)
-        warning('The specified number of neighbors nn was less than the dimension dim. nn has been set to 2 * dim.');
-        SO3F.nn = max(temp,2*SO3F.dim);
+        if (temp < SO3F.dim)
+          warning('The specified number of neighbors nn was less than the dimension dim. nn has been set to 2 * dim.');
+          SO3F.nn = 2*SO3F.dim;
+        else 
+          SO3F.nn = temp;
+        end
         SO3F.delta = guess_delta(SO3F);
       else
         SO3F.nn = 2 * SO3F.dim;
@@ -104,14 +106,21 @@ classdef SO3FunMLS < SO3Fun
 
     function dimension = get.dim(sF)
       if (sF.all_degrees == true)
-        dimension = nchoosek(sF.degree + 3, 3) + nchoosek(sF.degree+2, 2);
+        dimension = nchoosek(sF.degree + 3, 3) + nchoosek(sF.degree + 2, 3);
       else
         dimension = nchoosek(sF.degree + 3, 3);
       end
     end
 
     function d = guess_delta(sF)
-      d = acos(1 - 2 * sF.dim / numel(sF.nodes));
+      % for N nodes on one hemisphere, the expected number of nodes in a
+      % spherical cap of angular radius phi is
+      %         N * 2/pi * (phi - sin(phi) * cos(phi))
+      % choose delta such that the expected number of neighbors is 2*sF.dim
+      syms phi;
+      d = double(vpasolve(phi-sin(phi)*cos(phi) - pi*sF.dim/numel(sF.nodes)));
+      % the quaterion distance is twice the spherical distance
+      d = 2 * d;
     end
 
     function SO3F = set.SRight(SO3F,S)
@@ -149,8 +158,6 @@ classdef SO3FunMLS < SO3Fun
         antipodal = false;
       end
     end
-
-
   end
 
 end

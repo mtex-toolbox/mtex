@@ -1,6 +1,5 @@
 function [vals, conds] = eval_knn(sF, ori)
 
-% get some parameters 
 dimensions = size(ori);
 ori = ori(:);
 N = numel(ori);
@@ -20,29 +19,33 @@ grid_id = reshape(ind', nn_total, 1);
 % v_id = id of entry of v (where we want to eval sF)
 ori_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
 
-% compute for every center from v the matrix of all basis functions evaluated at
-% all neighbors of this center 
+% Compute G_book. Each page contains the values of the basis at all neighbors. 
 if (~sF.centered)
-  % evaluate the basis functions on the nodes
-  % choose faster way between computing all values and reusing them or
-  % computing values on fibgrid(grid_id)
-  if nn_total > numel(sF.nodes.a)
-    basis_on_grid = eval_basis_functions(sF); 
-    G = basis_on_grid(grid_id, :)';
-  else
-    G = eval_basis_functions(sF, sF.nodes(grid_id))';
-  end
+  % evaluate for every ori all basis functions at all neighbors ...
+  % NOTE: projecting to fR is very important, since later we treat all oris as 
+  %       points on the sphere S^3 and use monomials
+  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
+  % the projected orientations might be at the opposite side of S^3
+  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
+  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
+  G = eval_basis_functions(sF, projected)';
+  % ... and also in the oris themselves
   g_book = reshape(eval_basis_functions(sF, ori)', sF.dim, 1, N);
 else
-  % compute the inverse oris, then rotate all neighbors towards the north pole 
-  inv_oris = inv(ori(ori_id));
-  rotneighbors = inv_oris .* sF.nodes(grid_id);
+  % shift the local problems to be centered around orientation.id
+  % this enhances the condition of the gram matrices dramatically
+  inv_oris = reshape(inv(ori(ori_id)), size(sF.nodes(grid_id)));
+  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
+  % the projected orientations might be at the opposite side of S^3
+  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
+  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
+  rotneighbors = inv_oris .* projected;
 
-  basis_on_grid = eval_basis_functions(sF, rotneighbors);
+  % evaluate for every ori all basis functions at all neighbors ...
+  G = eval_basis_functions(sF, rotneighbors)';
   basis_in_pole = eval_basis_functions(sF, orientation.id);
-
+  % ... and also in the oris themselves
   g_book = repmat(basis_in_pole', 1, 1, N);
-  G = basis_on_grid';
 end 
 G_book = reshape(G, sF.dim, nn, N);
 
@@ -64,7 +67,6 @@ g_book = g_book ./ s;
 genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
 
 % assemble the right hand side of the Gram system
-% also rescale the right hand sides of the Gram systems
 f_book = reshape(sF.values(grid_id), nn, 1, N);
 vals = sum(f_book .* genfuns_book, 1);
 vals = vals(:);

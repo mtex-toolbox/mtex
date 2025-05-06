@@ -4,6 +4,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
   % Syntax
   %   S3G = homochoricSO3Grid(CS)
   %   S3G = homochoricSO3Grid(CS,SS,'resolution',2.5*degree)  % specify the resolution
+  %   S3G = homochoricSO3Grid(CS,SS,'N', 100000)  % specify the number of orientations 
   %
   %   % fill only a ball with radius of 20 degree
   %   S3G = equispacedSO3Grid(CS,'maxAngle',20*degree)
@@ -46,12 +47,16 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       S3G.oR = fundamentalRegion(S3G.CS,S3G.SS,varargin{:});
       S3G.antipodal = check_option(varargin,'antipodal');
       
-      S3G.res = get_option(varargin,'resolution',5*degree);
-      
-      % compute the resolution for the cubegrid
-      % N points on the interval [-pi^(2/3)/2,pi^(2/3)/2] give
-      %   hres = pi^(2/3)/N = 2*pi / (2*pi(1/3)) * S3G.res
-      N = round(2 * pi / S3G.res);
+      if (check_option(varargin, 'N'))
+        N = round(get_option(varargin, 'N') ^ (1/3));
+        S3G.res = 2 * pi / N;
+      else 
+        S3G.res = get_option(varargin,'resolution', 5*degree);
+        % compute the resolution for the cubegrid
+        % N points on the interval [-pi^(2/3)/2,pi^(2/3)/2] give
+        %   hres = pi^(2/3)/N = 2*pi / (2*pi(1/3)) * S3G.res
+        N = round(2 * pi / S3G.res);
+      end
       hres = pi^(2/3) / N;
       
       % get max angle of S3G.oR
@@ -59,7 +64,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       
       % get number of poins along each axis s. th. grid is surely contained
       % take the min because we never want to get more than N ;-)
-      % subtract 1 because in the naxt step both borders are contained 
+      % subtract 1 because in the next step both borders are contained 
       n = min(N, 2 * ceil(maximumAngle/S3G.res) + mod(N,2)) - 1;
       
       % generate the smallest cube that contains all points of the grid 
@@ -67,7 +72,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
       [X,Y,Z] = meshgrid(-n/2:n/2);
       
       % write all coordinates of the N points (X,Y,Z) into an (N,3) array XYZ
-      XYZ = [X(:),Y(:),Z(:)] * hres;
+      XYZ = [X(:),Y(:),Z(:)] * hres; 
       
       % shift indice for idxmap
       % whole grid is NxNxN and we do nxnxn

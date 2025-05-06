@@ -1,13 +1,12 @@
 function [vals, conds] = eval_range(sF, ori)
 
-% some initializing
 dimensions = size(ori);
 ori = ori(:);
 N = size(ori, 1);
 vals = zeros(N, 1);
 conds = zeros(N, 1);
  
-% get the neighbors 
+% get the neighbors and count them
 ind = sF.nodes.find(ori, sF.delta); 
 nn = sum(ind, 2);
 
@@ -31,7 +30,7 @@ if (sum(I) > 0)
   end
 end
 
-% now continue with the points that have suffieciently many neighbors 
+% now continue with the points that have sufficiently many neighbors 
 J = ~I;
 ori = ori.subSet(J);
 N = sum(J);
@@ -43,33 +42,35 @@ nn = sum(ind, 2);
 % holds the values of the basis functions at all neighbors of all centers from v
 % col_id skips entries, whenever a center has not nn_max many neighbors 
 nn_total = sum(nn);
-nn_max = max(nn);
+nn_max = max(nn); 
 start_id = cumsum(nn(1:N-1)) + 1;
 temp = ones(nn_total, 1);
 temp(start_id) = 1 - nn(1:N-1);
 temp = cumsum(temp);
 col_id = (ori_id-1) * nn_max + temp;
 
-% compute for every center from v the matrix of all basis functions evaluated at
-% all neighbors of this center 
+% Compute G_book. Each page contains the values of the basis at all neighbors. 
 G = zeros(sF.dim, nn_max * N); 
 if (~sF.centered)
-  % evaluate the basis functions on the nodes
-  % choose faster way between computing all values and reusing them or
-  % computing values on fibgrid(grid_id)
-  if nn_total > numel(sF.nodes.a)
-    basis_on_grid = eval_basis_functions(sF);
-    G(:, col_id) = basis_on_grid(grid_id, :)';
-  else
-    G(:, col_id) = eval_basis_functions(sF, sF.nodes(grid_id))';
-  end
+  % evaluate for every ori all basis function
+  % NOTE: projecting to fR is very important, since later we treat all oris as 
+  %       points on the sphere S^3 and use monomialss at all neighbors ...
+  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
+  % the projected orientations might be at the opposite side of S^3
+  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
+  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
+  G(:, col_id) = eval_basis_functions(sF, projected)';
   basis_in_ori = eval_basis_functions(sF, ori);
 else
-  % compute the rotations that shift each element of v into the north pole
-  inv_oris = inv(ori(ori_id));
-  rotneighbors = inv_oris .* sF.nodes(grid_id);
+  % shift the local problems to be centered around orientation.id
+  inv_oris = reshape(inv(ori(ori_id)), size(sF.nodes(grid_id)));
+  projected = project2FundamentalRegion(sF.nodes(grid_id), sF.nodes.CS, ori(ori_id));
+  % the projected orientations might be at the opposite side of S^3
+  I = sum(projected.abcd .* ori(ori_id).abcd, 2) < 0;
+  projected(I) = orientation(projected(I)) * orientation([-1,0,0,0]);
+  rotneighbors = inv_oris .* projected;
 
-  % determine which basis to use and evaluate them on the grid and on v
+  % evaluate the basis funcitons on the grid
   basis_on_grid = eval_basis_functions(sF, rotneighbors);
   basis_in_pole = eval_basis_functions(sF, orientation.id);
   
@@ -82,7 +83,7 @@ G_book = reshape(G, sF.dim, nn_max, N);
 weights = zeros(N * nn_max, 1);
 weights(col_id) = sF.w(nonzeros(dist) / sF.delta);
 
-% compute rescaling parameters for bether condition of the gram matrix
+% compute rescaling parameters for better condition of the gram matrices
 s = sqrt(abs(sum(reshape(G.^2 .* weights', sF.dim, nn_max, N), 2)));
 sT = pagetranspose(s);
 

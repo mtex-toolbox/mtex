@@ -72,7 +72,7 @@ col_idx = mod(col_idx-1, orig_size) + 1;
 ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), orig_size); 
 
 if (nargout == 2)
-  d = angle(v.subSet(col_idx), w.subSet(row_idx));
+  d = angle(v.subSet(col_idx), reshape(w.subSet(row_idx), numel(row_idx), 1));
   % also convert d to sparse after computing it
   d = sparse(row_idx, col_idx, d, numel(w), orig_size);
 end
