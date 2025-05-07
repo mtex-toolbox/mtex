@@ -42,6 +42,77 @@ function [values,modes] = max(SO3F,varargin)
 
 modes=[];
 
+%% Vector valued functions
+if nargin>1 && (isa(varargin{1},'SO3Fun') || isnumeric(varargin{1}))
+  SO3F2 = varargin{1};
+else
+  SO3F2 = [];
+end
+
+% max(SO3F1,[],dim)
+if numel(SO3F)>1 && nargin>2 && isempty(varargin{1}) && isnumeric(varargin{2})
+  dim = varargin{2};
+  values = SO3FunHandle(@(rot) max(SO3F.eval(rot),[],dim+1),SO3F.CS,SO3F.SS);
+  if isa(SO3F,'SO3FunHarmonic')
+    values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
+  end
+  return
+end
+
+% max(SO3F1,'numLocal',5) or max(SO3F1)
+if numel(SO3F)>1 && isempty(SO3F2)
+  len = get_option(varargin,'numLocal',1);
+  values = zeros(len,numel(SO3F));
+  modes = rotation.id(len,numel(SO3F));
+  for k=1:numel(SO3F)
+    [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
+    values(:,k)=v; modes(:,k)=m;
+  end
+  return  
+end
+
+% max(SO3F1,const) or max(SO3F1,SO3F2)
+if numel(SO3F)>1 || numel(SO3F2)>1
+  % Expand SO3F & SO3F2 to matching sizes
+  if numel(SO3F)>1
+    SO3F = SO3F.*ones(size(SO3F2));
+    s = size(SO3F);
+  end
+  if numel(SO3F2)>1
+    SO3F2 = SO3F2.*ones(size(SO3F));
+    s = size(SO3F2);
+  end
+  % Compute componentwise max
+  % TODO: by one function handle vectorized
+  values=[];
+  for i=1:prod(s)
+    if isscalar(SO3F) 
+      a = SO3F;
+    elseif isa(SO3F,'SO3Fun')
+      a = SO3F.subSet(i);
+    else
+      a = SO3F(i);
+    end
+    if isscalar(SO3F2)
+      b = SO3F2;
+    elseif isa(SO3F2,'SO3Fun')
+      b = SO3F2.subSet(i);
+    else
+      b = SO3F2(i);
+    end
+    A = max@SO3Fun(a,b,varargin{:});
+    values = [values,A];
+  end
+  values = reshape(values,s);
+  return
+end
+
+
+
+
+%% Single valued functions
+
+
 % max(SO3F1, SO3F2)
 if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   SO3F2 = varargin{1};
@@ -51,87 +122,91 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
     values = SO3FunHarmonic(values,'bandwidth', ...
         min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));  
   end
-  
-elseif ( nargin > 1 ) && ( isnumeric(varargin{1}) ) % max(SO3F1, SO3F2)
+  return
+end
 
+% max(SO3F1,const)
+if ( nargin > 1 ) && ( isnumeric(varargin{1}) )
   values = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
   if isa(SO3F,'SO3FunHarmonic')
     values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
   end
-  
-else
+  return
+end
 
-  % initial resolution
-  res0 = get_option(varargin,'resolution',5*degree);
+% max(SO3F)
 
-  % target resolution
-  targetRes = get_option(varargin,'accuracy',0.25*degree);
+% initial resolution
+res0 = get_option(varargin,'resolution',5*degree);
 
-  % initial seed
-  S3G = get_option(varargin,'startingNodes');
-  
-  if isempty(S3G)
-    antiFlag = {[],'antipodal'};
-    S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0,antiFlag{1+SO3F.antipodal});
+% target resolution
+targetRes = get_option(varargin,'accuracy',0.25*degree);
+
+% initial seed
+S3G = get_option(varargin,'startingNodes');
+
+if isempty(S3G)
+  antiFlag = {[],'antipodal'};
+  S3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,'resolution',res0,antiFlag{1+SO3F.antipodal});
+end
+S3G = reshape(S3G,[],1);
+
+% evaluate function on grid
+f = eval(SO3F,S3G,varargin{:});
+
+% take only local minima as starting points
+ind = isLocalMinD(-f,S3G,1.5*res0,varargin{:});
+modes = S3G(ind);
+values = f(ind);
+
+% the total walking distance
+sumOmega = zeros(size(modes));
+
+numLocal = get_option(varargin, 'numLocal',1);
+
+% local refinement
+res = res0;
+while res > targetRes
+  res = res / 1.25;
+
+  % neighborhood search
+  S3Glocal = localOrientationGrid(SO3F.SLeft,SO3F.SLeft,2*res,'resolution',res/2);
+  newModes = (S3Glocal * modes).';
+  f = reshape(eval(SO3F,newModes,varargin{:}),size(newModes));
+
+  if numLocal == 1
+
+    [values,id] = max(f(:));
+    modes = newModes(id);
+
+  else
+    [values,id] = max(f,[],2);
+    modes = newModes(sub2ind(size(newModes),(1:length(modes)).',id));
+
+    % keep track of the walking distance
+    omega = S3Glocal.angle;
+    sumOmega = sumOmega + omega(id);
+
+    % maybe we can reduce the number of points a bit
+    [~,~,I] = unique(modes, 'tolerance', 1.5*res0,'noSymmetry');
+    modes = normalize(accumarray(I,modes));
+    values = accumarray(I,values,[],@mean);
+    sumOmega = accumarray(I,sumOmega,[],@min);
+
+    % consider only points that did not walked too far
+    values(sumOmega>5*res0) = [];
+    modes(sumOmega>5*res0) = [];
+    sumOmega(sumOmega>5*res0) = [];
   end
-  S3G = reshape(S3G,[],1);
+end
 
-  % evaluate function on grid
-  f = eval(SO3F,S3G,varargin{:});
+[modes,~,I] = unique(modes, 'tolerance', 1.5*res0);
+values = accumarray(I,values,[],@mean);
 
-  % take only local minima as starting points
-  ind = isLocalMinD(-f,S3G,1.5*res0,varargin{:});
-  modes = S3G(ind);
-  values = f(ind);
-
-  % the total walking distance
-  sumOmega = zeros(size(modes));
-
-  numLocal = get_option(varargin, 'numLocal',1);
-
-  % local refinement
-  res = res0;
-  while res > targetRes
-    res = res / 1.25;
-
-    % neighborhood search
-    S3Glocal = localOrientationGrid(SO3F.SLeft,SO3F.SLeft,2*res,'resolution',res/2);
-    newModes = (S3Glocal * modes).';
-    f = reshape(eval(SO3F,newModes,varargin{:}),size(newModes));
-  
-    if numLocal == 1
-
-      [values,id] = max(f(:));
-      modes = newModes(id);
-        
-    else
-      [values,id] = max(f,[],2);
-      modes = newModes(sub2ind(size(newModes),(1:length(modes)).',id));
-
-      % keep track of the walking distance
-      omega = S3Glocal.angle;
-      sumOmega = sumOmega + omega(id);
-
-      % maybe we can reduce the number of points a bit
-      [~,~,I] = unique(modes, 'tolerance', 1.5*res0,'noSymmetry');
-      modes = normalize(accumarray(I,modes));
-      values = accumarray(I,values,[],@mean);
-      sumOmega = accumarray(I,sumOmega,[],@min);
-
-      % consider only points that did not walked too far
-      values(sumOmega>5*res0) = [];
-      modes(sumOmega>5*res0) = [];
-      sumOmega(sumOmega>5*res0) = [];
-    end
-  end
-
-  [modes,~,I] = unique(modes, 'tolerance', 1.5*res0);
-  values = accumarray(I,values,[],@mean);
-
-  % format output
-  [values, I] = sort(values,'descend');
-  numLocal = min(length(values), numLocal);
-  values = values(1:numLocal);
-  modes = modes(I(1:numLocal));
+% format output
+[values, I] = sort(values,'descend');
+numLocal = min(length(values), numLocal);
+values = values(1:numLocal);
+modes = modes(I(1:numLocal));
   
 end
