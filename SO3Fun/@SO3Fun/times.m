@@ -25,8 +25,11 @@ if isa(SO3F2,'SO3FunRBF') && isempty(SO3F2.center) && isa(SO3F1,'SO3Fun')
 end
 
 if isnumeric(SO3F1)
-  dim = length(size(SO3F1));
-  SO3F = SO3FunHandle(@(rot) permute(SO3F1,[dim+1 1:dim]) .* reshape(SO3F2.eval(rot),[numel(rot) size(SO3F2)]),SO3F2.CS,SO3F2.SS);
+  if isscalar(SO3F1)
+    SO3F = SO3FunHandle(@(rot) SO3F1 .* SO3F2.eval(rot),SO3F1.SRight,SO3F1.SLeft);
+  else
+    SO3F = SO3FunHandle(@(rot) reshape(SO3F1,[1 size(SO3F1)]) .* reshape(SO3F2.eval(rot),[numel(rot) size(SO3F2)]),SO3F2.SRight,SO3F2.SLeft);
+  end
   return
 end
 

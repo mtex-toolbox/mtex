@@ -16,7 +16,11 @@ function SO3F = rdivide(SO3F1, SO3F2)
 
 
 if isnumeric(SO3F1)
-  SO3F = SO3FunHandle(@(rot) SO3F1 ./ SO3F2.eval(rot),SO3F2.SRight,SO3F2.SLeft);
+  if isscalar(SO3F1)
+    SO3F = SO3FunHandle(@(rot) SO3F1 ./ SO3F2.eval(rot),SO3F2.SRight,SO3F2.SLeft);
+  else
+    SO3F = SO3FunHandle(@(rot) reshape(SO3F1,[1 size(SO3F1)]) ./ reshape(SO3F2.eval(rot),[numel(rot) size(SO3F2)]),SO3F2.SRight,SO3F2.SLeft);
+  end
   SO3F = SO3FunHarmonic(SO3F, 'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),2*SO3F2.bandwidth));
   return
 end

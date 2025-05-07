@@ -16,10 +16,10 @@ if ~isnumeric(a)
   error('The exponent has to be numeric.')
 end
 
-if isscalar(SO3F)
-  SO3F = SO3FunHandle(@(rot) reshape(SO3F.eval(rot),[],1).^reshape(a,[1 size(a)]),SO3F.SRight,SO3F.SLeft);
+if isscalar(a)
+  SO3F = SO3FunHandle(@(rot) SO3F.eval(rot).^a,SO3F.SRight,SO3F.SLeft);
 else
-  SO3F = SO3FunHandle(@(rot) SO3F.eval(rot).^reshape(a,[1 size(a)]),SO3F.SRight,SO3F.SLeft);
+  SO3F = SO3FunHandle(@(rot) reshape(SO3F.eval(rot),[numel(rot) size(SO3F)]).^reshape(a,[1 size(a)]),SO3F.SRight,SO3F.SLeft);
 end
 
 end
