@@ -26,11 +26,16 @@ if SO3F.all_degrees, disp('  all_degrees: true'); end
 if SO3F.centered, disp('  centered: true'); end
 if SO3F.tangent, disp('  tangent: true'); end
 
-% TODO: multidim and Voronoi weights
-if isscalar(SO3F) 
-  disp(['  weight: ' xnum2str(mean(SO3F.values))]);
+if length(SO3F.nodes)<1e4 || length(SO3F)>3
+  w = calcVoronoiVolume(SO3F.nodes); w = w./sum(w);
+else
+  w = 1/length(SO3F.nodes);
+end
+
+if isscalar(SO3F)
+  disp(['  weight: ' xnum2str(sum(SO3F.values.*w))]);
 elseif length(SO3F)<4
-  disp(['  weights: [' xnum2str(mean(SO3F.values)),']']);
+  disp(['  weights: [' xnum2str(sum(SO3F.values.*w)),']']);
 end
 
 disp(' ')
