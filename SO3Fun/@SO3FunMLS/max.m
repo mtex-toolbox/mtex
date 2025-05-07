@@ -45,6 +45,13 @@ if nargin==1
   return
 end
 
+if isa(SO3F1,'SO3FunMLS') && isa(varargin{1},'SO3FunMLS') && ...
+    length(SO3F1.nodes) == length(SO3F2.nodes) && ...
+    all(SO3F1.nodes(:) == SO3F2.nodes(:))
+  SO3F.values = max(SO3F.values,varargin{1}.values);
+  return
+end
+
 [values,modes] = max@SO3Fun(SO3F,varargin{:});
 
 end

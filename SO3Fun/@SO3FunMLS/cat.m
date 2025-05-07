@@ -8,10 +8,11 @@ SO3F = varargin{1};
 for i = 2:numel(varargin)
 
   N = numel(SO3F.nodes);
-  assert(N == numel(varargin{i}.nodes),...
+  assert(N == numel(varargin{i}.nodes) &&  all(SO3F.nodes(:) == varargin{i}.nodes(:)),...
     "I can only combine SO3FunRBF with the same center");
 
   ensureCompatibleSymmetries(SO3F,varargin{i});
 
   SO3F.values = cat(1+dim, SO3F.values, varargin{i}.values);
+  
 end
