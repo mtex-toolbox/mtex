@@ -16,8 +16,8 @@ function val = cor(SO3F1,SO3F2,varargin)
 res = get_option(varargin,'resolution',2.5*degree);
 nodes = equispacedSO3Grid(SO3F1.SRight,SO3F1.SLeft,'resolution',res);
 
-value1 = SO3F1.eval(nodes(:));
-value2 = SO3F2.eval(nodes(:));
+value1 = reshape(SO3F1.eval(nodes),[numel(nodes) size(SO3F1)]);
+value2 = reshape(SO3F2.eval(nodes),[numel(nodes) size(SO3F2)]);
 
 val = (value1.' * conj(value2))/length(nodes);
 
