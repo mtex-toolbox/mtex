@@ -57,7 +57,7 @@ classdef SO3FunMLS < SO3Fun
  
       SO3F.nodes = nodes; % preserve grid structure
       sz = size(values);
-      SO3F.values = reshape(values , [length(nodes) , sz(find(cumprod(sz)==length(nodes))+1:end)] );
+      SO3F.values = reshape(values , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
       % set optional arguments
       SO3F.degree = get_option(varargin,'degree',3);
