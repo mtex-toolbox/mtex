@@ -24,14 +24,14 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 
 if nargin==2, epsilon_or_k=1; end
 
-% TODO: Implement 2nd version the find method.
-%         - vp = project2FundamentalRegion(v);
-%         - find neighbors for all points.
-%         - if     distance of v to boundary < inner distance / eps  shift FR and do again for this points 
-%
+% TODO: This does not work in case of 2 symmetries, where the space has corners.
+%       Implement 2nd version the find method.
+%       --> symmetries w and search again for the symmetric values of
+%       w(ind), where ind = angle(w,fR) < min(d,2)
 
-% TODO: Do not work for some symmetries
-% Bug in project2FundamentalRegion
+if v.CS.numSym>1 && v.SS.numSym>1
+  error('The orientation.find method does not work if there is a left AND a right symmetry.')
+end
 
 % Check for matching symmetries
 v = orientation(v.subSet(':'));

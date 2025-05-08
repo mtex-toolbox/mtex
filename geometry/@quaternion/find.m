@@ -20,6 +20,8 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %  d            - double array for k nearest neighbors, 
 %               - sparse double array for region search (0 whenever ind is 0)
 
+% TODO: knnsearch() and rangesearch() needs Statistical Toolbox
+
 
 if isa(w,'fibre')
   d = angle(w,v.subSet(:));
