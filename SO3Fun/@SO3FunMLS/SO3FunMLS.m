@@ -28,6 +28,7 @@ classdef SO3FunMLS < SO3Fun
 %  indicator    - use indicator function as weight function
 %
 
+% TODO: transform into local interpolation-class where SO3FunMLS is a specific subclass
 
   properties
     nodes       = [];   % orientations where the function values are known
@@ -68,7 +69,6 @@ classdef SO3FunMLS < SO3Fun
       if check_option(varargin,'tangent')
         SO3F.tangent = true;
         SO3F.centered = true;
-        % SO3F.monomials = true;
       end
 
       % get the weight function if one is specified
