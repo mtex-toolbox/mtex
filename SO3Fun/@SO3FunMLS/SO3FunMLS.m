@@ -106,11 +106,12 @@ classdef SO3FunMLS < SO3Fun
     end
 
     function dimension = get.dim(SO3F)
-      if (SO3F.all_degrees == true)
-        dimension = nchoosek(SO3F.degree + 3, 3) + nchoosek(SO3F.degree + 2, 3);
-      else
-        dimension = nchoosek(SO3F.degree + 3, 3);
+      if (SO3F.degree == 0)
+        dimension = 1;
+        return;
       end
+      dimension = nchoosek(SO3F.degree + 3, 3) + ...
+        SO3F.all_degrees * nchoosek(SO3F.degree + 2, 3);
     end
 
     function d = guess_delta(SO3F)

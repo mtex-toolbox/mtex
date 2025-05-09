@@ -7,6 +7,11 @@ else
   ori = varargin{1};
 end
 
+if (sF.degree == 0)
+  basis_values = ones(size(ori));
+  return;
+end
+
 % determine which basis to use and evaluate it on ori
 if sF.all_degrees
     basis_values = [eval_monomials_S3(ori, sF.degree) ...
