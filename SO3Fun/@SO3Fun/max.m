@@ -42,16 +42,19 @@ function [values,modes] = max(SO3F,varargin)
 
 modes=[];
 
-%% Vector valued functions
-if nargin>1 && (isa(varargin{1},'SO3Fun') || isnumeric(varargin{1}))
-  SO3F2 = varargin{1};
-else
-  SO3F2 = [];
+if isnumeric(SO3F)
+  [values,modes] = max(varargin{1},SO3F,varargin{:});
+  return
 end
 
+
 % max(SO3F1,[],dim)
-if numel(SO3F)>1 && nargin>2 && isempty(varargin{1}) && isnumeric(varargin{2})
+if nargin>2 && isempty(varargin{1}) && isnumeric(varargin{2})
   dim = varargin{2};
+  if isscalar(SO3F)
+    values = SO3F;
+    return
+  end
   values = SO3FunHandle(@(rot) max(SO3F.eval(rot),[],dim+1),SO3F.CS,SO3F.SS);
   if isa(SO3F,'SO3FunHarmonic')
     values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
@@ -60,7 +63,8 @@ if numel(SO3F)>1 && nargin>2 && isempty(varargin{1}) && isnumeric(varargin{2})
 end
 
 % max(SO3F1,'numLocal',5) or max(SO3F1)
-if numel(SO3F)>1 && isempty(SO3F2)
+% componentwise
+if numel(SO3F)>1 && (nargin==1 || (~isa(varargin{1},'SO3Fun') && ~isnumeric(varargin{1})) )
   len = get_option(varargin,'numLocal',1);
   values = zeros(len,numel(SO3F));
   modes = rotation.id(len,numel(SO3F));
@@ -71,53 +75,29 @@ if numel(SO3F)>1 && isempty(SO3F2)
   return  
 end
 
-% max(SO3F1,const) or max(SO3F1,SO3F2)
-if numel(SO3F)>1 || numel(SO3F2)>1
-  % Expand SO3F & SO3F2 to matching sizes
-  if numel(SO3F)>1
-    SO3F = SO3F.*ones(size(SO3F2));
-    s = size(SO3F);
+% max(SO3F1,const)
+if ( nargin > 1 ) && ( isnumeric(varargin{1}) )
+  c = varargin{1};
+  if isscalar(SO3F) && isscalar(c)
+    values = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
+  else
+    values = SO3FunHandle(@(rot) max(reshape(SO3F.eval(rot),[numel(rot) size(SO3F)]),reshape(c,[1 size(c)])),SO3F.CS,SO3F.SS);
   end
-  if numel(SO3F2)>1
-    SO3F2 = SO3F2.*ones(size(SO3F));
-    s = size(SO3F2);
+  if isa(SO3F,'SO3FunHarmonic')
+    values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
   end
-  % Compute componentwise max
-  % TODO: by one function handle vectorized
-  values=[];
-  for i=1:prod(s)
-    if isscalar(SO3F) 
-      a = SO3F;
-    elseif isa(SO3F,'SO3Fun')
-      a = SO3F.subSet(i);
-    else
-      a = SO3F(i);
-    end
-    if isscalar(SO3F2)
-      b = SO3F2;
-    elseif isa(SO3F2,'SO3Fun')
-      b = SO3F2.subSet(i);
-    else
-      b = SO3F2(i);
-    end
-    A = max@SO3Fun(a,b,varargin{:});
-    values = [values,A];
-  end
-  values = reshape(values,s);
   return
 end
-
-
-
-
-%% Single valued functions
-
 
 % max(SO3F1, SO3F2)
 if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   SO3F2 = varargin{1};
   ensureCompatibleSymmetries(SO3F,SO3F2);
-  values = SO3FunHandle(@(rot) max(SO3F.eval(rot),SO3F2.eval(rot)),SO3F.CS,SO3F.SS);
+  if isscalar(SO3F) && isscalar(SO3F2)
+    values = SO3FunHandle(@(rot) max(SO3F.eval(rot),SO3F2.eval(rot)),SO3F.CS,SO3F.SS);
+  else
+    values = SO3FunHandle(@(rot) max(reshape(SO3F.eval(rot),[numel(rot) size(SO3F)]),reshape(SO3F2.eval(rot),[numel(rot) size(SO3F2)])),SO3F.CS,SO3F.SS);
+  end
   if isa(SO3F,'SO3FunHarmonic') || isa(SO3F2,'SO3FunHarmonic')
     values = SO3FunHarmonic(values,'bandwidth', ...
         min(getMTEXpref('maxSO3Bandwidth'),max(SO3F.bandwidth,SO3F2.bandwidth)));  
@@ -125,14 +105,6 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'SO3Fun') )
   return
 end
 
-% max(SO3F1,const)
-if ( nargin > 1 ) && ( isnumeric(varargin{1}) )
-  values = SO3FunHandle(@(rot) max(SO3F.eval(rot),varargin{1}),SO3F.CS,SO3F.SS);
-  if isa(SO3F,'SO3FunHarmonic')
-    values = SO3FunHarmonic(values,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),SO3F.bandwidth));
-  end
-  return
-end
 
 % max(SO3F)
 
