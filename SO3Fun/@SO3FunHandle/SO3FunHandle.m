@@ -28,6 +28,13 @@ end
 methods
   
   function SO3F = SO3FunHandle(fun,varargin)
+
+    if isa(fun,'SO3Fun')
+      SO3F.fun = @(rot) fun.eval(rot);
+      SO3F.SRight = fun.SRight;
+      SO3F.SLeft = fun.SLeft;
+      return
+    end
     
     SO3F.fun = fun;
 
