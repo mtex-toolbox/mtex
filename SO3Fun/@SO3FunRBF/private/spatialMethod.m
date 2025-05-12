@@ -60,6 +60,11 @@ if numel(m)<prod(sz)
   m = ones(sz).*m;
 end
 
+% Preallocate storage
+chat = zeros(numel(SO3G),prod(sz));
+iter = zeros(1,prod(sz));
+
+
 for Index = 1:prod(sz)
 
 switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsqr')
@@ -86,10 +91,7 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     
     itermax = get_option(varargin,'maxit',30);
     tol = get_option(varargin,'tol',1e-3);
-    [chat(:,Index),flag,~,iter] = lsqr(Psi',y(:,Index),tol,itermax);
-    if flag == 1
-      warning('lsqr:maxit','Maximum number of iterations reached, result may not have converged to the optimum yet.');
-    end
+    [chat(:,Index),~,~,iter(Index)] = lsqr(Psi',y(:,Index),tol,itermax);
   
   case {'mlrl','mlsq'}  % we have constraints that c>0
     
@@ -107,14 +109,19 @@ switch get_flag(varargin,{'lsqr','lsqlin','lsqnonneg','nnls','mlrl','mlsq'},'lsq
     tol = get_option(varargin,'tol',1e-3);
     
     if check_option(varargin,'mlrl')
-      [chat(:,Index),iter] = mlrl(Psi.',y(:,Index),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
+      [chat(:,Index),iter(Index)] = mlrl(Psi.',y(:,Index),c0(:),itermax,tol/size(Psi,2)^2);  % --> Data have to be positive; dont works
     else
-      [chat(:,Index),iter] = mlsq(Psi.',y(:,Index),c0(:),itermax,tol); % --> data should be positive; works nice 
+      [chat(:,Index),iter(Index)] = mlsq(Psi.',y(:,Index),c0(:),itermax,tol); % --> data should be positive; works nice 
     end
     
 end
 
 end
+
+if max(iter) == itermax
+  warning('lsqr:maxit','Maximum number of iterations reached, result may not have converged to the optimum yet.');
+end
+
 
 chat = reshape(chat,[size(chat,1) sz]);
 

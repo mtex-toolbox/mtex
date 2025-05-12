@@ -100,9 +100,9 @@ if isa(nodes,'rotation') && check_option(varargin,'exact')
 end
 
 % check multivariate
-if length(nodes) ~= numel(y)
-  error('Approximation of a SO3FunRBF is only possible for univariate functions.')
-end
+% if length(nodes) ~= numel(y)
+%   error('Approximation of a SO3FunRBF is only possible for univariate functions.')
+% end
 
 % LEAST-SQUARES-PROBLEM
 [chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin{:});
@@ -128,7 +128,7 @@ end
 
 % normalize odf
 if ~isempty(m)
-  SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
+  SO3F.weights = m .* SO3F.weights ./ sum(SO3F.weights) .* (1-reshape(SO3F.c0,[1 size(SO3F.c0)]))/psi.A(1);
 end
 
 end
