@@ -18,6 +18,10 @@ function [vals, conds] = eval(sF, ori)
 % I = ori.a < 0;
 % ori(I) = ori(I) * orientation([-1,0,0,0]);
 
+if ~isa(ori,'orientation')
+  ori = orientation(ori,sF.CS,sF.SS);
+end
+
 if (nargout == 1)
   if (sF.nn >= sF.dim)
     vals = eval_knn(sF, ori);

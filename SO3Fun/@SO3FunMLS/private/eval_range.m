@@ -3,8 +3,9 @@ function [vals, conds] = eval_range(sF, ori)
 dimensions = size(ori);
 ori = ori(:);
 N = size(ori, 1);
-vals = zeros(N, 1);
+vals = zeros(N, numel(sF));
 conds = zeros(N, 1);
+sz = size(sF); sF = sF.subSet(':');
  
 % get the neighbors and count them
 ind = sF.nodes.find(ori, sF.delta); 
@@ -15,14 +16,14 @@ I = nn < sF.dim;
 if (sum(I) > 0)
   warning(sprintf( ...
     ['Some centers did not have sufficiently many neighbors. \n' ...
-    '\t In this case the <dimension> closest neighbors have been used.']));
+    '\t In this case the ', num2str(sF.dim), ' closest neighbors have been used.']));
   
   nn_original = sF.nn;
   sF.nn = sF.dim;
   if (nargout == 2)
-    [vals(I), conds(I)] = sF.eval(ori.subSet(I));
+    [vals(I,:), conds(I)] = sF.eval(ori.subSet(I));
   else
-    vals(I) = sF.eval(ori.subSet(I));
+    vals(I,:) = sF.eval(ori.subSet(I));
   end
   sF.nn = nn_original;
   if (sum(I) == N)
@@ -88,15 +89,21 @@ Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
 % compute the generating functions
 g_book = reshape(basis_in_ori', sF.dim, 1, N) ./ s;
 genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
+genfuns_book = permute(genfuns_book,[1,3,2]);
 
 % compute the values of the MLS approximation
-f = zeros(N * nn_max, 1);
-f(col_id) = sF.values(grid_id);
-f_book = reshape(f, nn_max, 1, N);
+f = zeros(N * nn_max, numel(sF));
+f(col_id,:) = sF.values(grid_id,:);
+f_book = reshape(f, nn_max, N, numel(sF));
 valsJ = sum(f_book .* genfuns_book, 1);
-vals(J) = valsJ(:);
-vals = reshape(vals, dimensions);
-if isreal(sF.values)
+vals(J,:) = reshape(valsJ,[numel(ori) numel(sF)]);
+if isscalar(sF)
+  vals = reshape(vals, dimensions);
+else
+  vals = reshape(vals, [prod(dimensions) sz]);
+end
+
+if isalmostreal(sF.values)
   vals = real(vals); 
 end
 
