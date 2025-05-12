@@ -7,6 +7,11 @@ SO3F = varargin{1};
 
 for i = 2:numel(varargin)
 
+  if ~isa(varargin{i},'SO3FunRBF')
+    SO3F = cat(dim,SO3FunHandle(SO3F),varargin{i:end});
+    return
+  end
+
   N = numel(SO3F.center);
   assert(N == numel(varargin{i}.center) && all(SO3F.center(:) == varargin{i}.center(:)),...
     "I can only combine SO3FunRBF with the same center");
