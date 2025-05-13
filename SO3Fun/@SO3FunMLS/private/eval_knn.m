@@ -1,5 +1,7 @@
 function [vals, conds] = eval_knn(sF, ori)
 
+% TODO: allocate storage
+
 dimensions = size(ori);
 ori = ori(:);
 N = numel(ori);
@@ -47,13 +49,13 @@ G_book = reshape(G, sF.dim, nn, N);
 deltas = 1.1 * max(dist, [], 2); 
 weights = sF.w(dist ./ deltas);
 W_book = reshape(weights', 1, nn, N);
+clear dist weights
 
 % compute rescaling parameters for bether condition of the gram matrix
 s = sqrt(sum(G_book.^2 .* W_book, 2));
-sT = pagetranspose(s);
 
 % start computing the (rescaled) Gram matrix
-W_times_G_book = pagetranspose(G_book .* W_book) ./ sT;
+W_times_G_book = pagetranspose(G_book .* W_book ./ s);
 Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
 
 % compute the generating functions

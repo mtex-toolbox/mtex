@@ -22,6 +22,8 @@ if ~isa(ori,'orientation')
   ori = orientation(ori,sF.CS,sF.SS);
 end
 
+% TODO: sF.nn > sF.dim everytime, since it is set this way in the constructor
+
 if (nargout == 1)
   if (sF.nn >= sF.dim)
     vals = eval_knn(sF, ori);
