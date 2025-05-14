@@ -125,6 +125,22 @@ classdef SO3FunMLS < SO3Fun
       d = 2 * d;
     end
 
+    % if only delta is specified, guess nn for this delta
+    function nn = guess_nn(SO3F, varargin)
+      testnodes = equispacedSO3Grid(SO3F.nodes.CS, 'points', 1000);
+      ind = SO3F.nodes.find(testnodes, SO3F.delta);
+      if (numel(varargin) == 0)
+        nn = ceil(mean(sum(ind, 2)));
+        return;
+      end
+
+      if (varargin{1} == "min")
+        nn = floor(min(sum(ind, 2)));
+      elseif (varargin{1} == "max")
+        nn = ceil(max(sum(ind, 2)));
+      end
+    end
+
     function SO3F = set.SRight(SO3F,S)
       SO3F.nodes.CS = S;
     end
