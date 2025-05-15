@@ -29,7 +29,21 @@ W_book = reshape(W_book', 1, nn, N);
 f_book = reshape(SO3F.values(grid_id,:), nn, N, numel(SO3F));
 
 % Compute G_book. Each page contains the values of the basis at all neighbors. 
-if (~SO3F.centered)
+% if CS is trivial and SO3F.centered is disabled, we can speed up things
+if ((SO3F.CS.id == 1) && (SO3F.centered == false) && (nn_total > numel(SO3F.nodes)))
+  G = eval_basis_functions(SO3F)';
+  G = G(:,grid_id);
+  % for odd monomials we have p(-o) = -p(o)
+  if (mod(SO3F.degree, 2) == 1)
+    temp1 = reshape(repmat(ori, 1, nn).', nn_total, 1);
+    temp2 = SO3F.nodes.abcd;
+    temp2 = temp2(grid_id,:);
+    I = sum(temp1.abcd .* temp2, 2) < 0;
+    G(:,I) = - G(:,I);
+    clear temp1 temp2 I;
+  end
+  g_book = reshape(eval_basis_functions(SO3F, ori)', SO3F.dim, 1, N);
+elseif (~SO3F.centered)
   % evaluate for every ori all basis functions at all neighbors ...
   % NOTE: projecting to fR is very important, since later we treat all oris as 
   %       points on the sphere S^3 and use monomials
