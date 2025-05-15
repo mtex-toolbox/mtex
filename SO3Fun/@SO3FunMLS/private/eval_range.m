@@ -59,9 +59,32 @@ f = zeros(N * nn_max, numel(SO3F));
 f(col_id,:) = SO3F.values(grid_id,:);
 f_book = reshape(f, nn_max, N, numel(SO3F));
 
-% Compute G_book. Each page contains the values of the basis at all neighbors. 
 G = zeros(SO3F.dim, nn_max * N); 
-if (~SO3F.centered)
+% Compute G_book. Each page contains the values of the basis at all neighbors. 
+% if CS is trivial and SO3F.centered is disabled, we can speed up things
+if ((SO3F.CS.id == 1) && (SO3F.centered == false) && (nn_total > numel(SO3F.nodes)))
+  basis_on_grid = eval_basis_functions(SO3F)';
+  G(:,col_id) = basis_on_grid(:,grid_id);
+  clear basis_on_grid;
+  % for odd monomials we have p(-o) = -p(o)
+  if ((mod(SO3F.degree, 2) == 1) || (SO3F.all_degrees == true))
+    temp1 = ori.abcd;
+    temp1 = temp1(ori_id,:);
+    temp2 = SO3F.nodes.abcd;
+    temp2 = temp2(grid_id,:);
+    I = col_id(sum(temp1 .* temp2, 2) < 0);
+    % if all_degrees is enabled, there are even and odd monomials in the basis
+    if (SO3F.all_degrees == false)
+      marker = true(1, SO3F.dim);
+    else
+      marker = [true(1,nchoosek(SO3F.degree+3,3)), false(1,nchoosek(SO3F.degree+2,3))];
+      marker = logical(marker - (1-mod(SO3F.degree, 2)));
+    end
+    G(marker,I) = - G(marker,I);
+    clear temp1 temp2 I;
+  end
+  basis_in_ori = eval_basis_functions(SO3F, ori);
+elseif (~SO3F.centered)
   % evaluate for every ori all basis function
   % NOTE: projecting to fR is very important, since later we treat all oris as 
   %       points on the sphere S^3 and use monomialss at all neighbors ...

@@ -34,12 +34,19 @@ if ((SO3F.CS.id == 1) && (SO3F.centered == false) && (nn_total > numel(SO3F.node
   G = eval_basis_functions(SO3F)';
   G = G(:,grid_id);
   % for odd monomials we have p(-o) = -p(o)
-  if (mod(SO3F.degree, 2) == 1)
+  if ((mod(SO3F.degree, 2) == 1) || (SO3F.all_degrees == true))
     temp1 = reshape(repmat(ori, 1, nn).', nn_total, 1);
     temp2 = SO3F.nodes.abcd;
     temp2 = temp2(grid_id,:);
     I = sum(temp1.abcd .* temp2, 2) < 0;
-    G(:,I) = - G(:,I);
+    % if all_degrees is enabled, there are even and odd monomials in the basis
+    if (SO3F.all_degrees == false)
+      marker = true(1, SO3F.dim);
+    else
+      marker = [true(1,nchoosek(SO3F.degree+3,3)), false(1,nchoosek(SO3F.degree+2,3))];
+      marker = logical(marker - (1-mod(SO3F.degree, 2)));
+    end
+    G(marker,I) = - G(marker,I);
     clear temp1 temp2 I;
   end
   g_book = reshape(eval_basis_functions(SO3F, ori)', SO3F.dim, 1, N);
