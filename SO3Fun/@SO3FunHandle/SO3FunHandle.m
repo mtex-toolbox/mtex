@@ -43,6 +43,10 @@ methods
     SO3F.SLeft = SLeft;
     
   end
+
+  function n = numArgumentsFromSubscript(varargin)
+    n = 0;
+  end
   
 end
 
