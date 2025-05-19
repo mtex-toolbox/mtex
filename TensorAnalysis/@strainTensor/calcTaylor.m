@@ -2,7 +2,7 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
-%   [MFun,~,spinFun] = calcTaylor(eps,sS,'SO3Fun','bandwidth',32)
+%   [MFun,~,spinFun] = calcTaylor(eps,sS,'bandwidth',32)
 %   [M,b,W] = calcTaylor(eps,sS)
 %
 % Input
@@ -48,7 +48,7 @@ if sS.CS.Laue ~= eps.CS.Laue
     progress(k,length(eps));
     epsLocal = strainTensor(eps.M(:,:,k));
     F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
-  
+    
     % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
     SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
     M(k) = SO3F(1); %#ok<AGROW>
