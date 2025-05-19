@@ -25,6 +25,9 @@ end
 rot = varargin{1};
 varargin(1) = [];
 
+sz = size(rot);
+rot = rot(:);
+
 delta = get_option(varargin,'delta',0.05*degree);
 
 deltaRot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
@@ -37,6 +40,8 @@ end
 
 
 d = (f(:,4).x-f(:,1).x+f(:,5).y-f(:,2).y+f(:,6).z-f(:,3).z) ./ delta;
+
+d = reshape(d,sz);
 
 end
 
