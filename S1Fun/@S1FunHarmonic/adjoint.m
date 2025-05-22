@@ -30,7 +30,7 @@ sz = size(values);
 
 if check_option(varargin,'Gaussian')
   % adjoint fft
-  fhat = fftshift(ifft(values),1);
+  fhat = size(values,1) * fftshift(ifft(values),1);
   fhat(1,:) = [];
 else
   % adjoint nfft
