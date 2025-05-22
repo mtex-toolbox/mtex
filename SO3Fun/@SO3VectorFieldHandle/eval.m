@@ -19,6 +19,11 @@ function f = eval(SO3VF,ori,varargin)
 
 f = SO3VF.fun(ori);
 
-f = SO3TangentVector(f,SO3VF.tangentSpace);
+f = reshape(SO3TangentVector(f.',SO3TangentSpace.leftVector),size(ori));
+
+tS = SO3TangentSpace.extract(varargin{:},SO3VF.tangentSpace);
+
+f = f.transformTangentSpace(tS,ori);
+
 
 end

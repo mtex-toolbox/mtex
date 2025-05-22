@@ -38,7 +38,7 @@ else
   f = reshape(SO3VF.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);
 end
 
-
+f = vector3d(f);
 d = (f(:,4).x-f(:,1).x+f(:,5).y-f(:,2).y+f(:,6).z-f(:,3).z) ./ delta;
 
 d = reshape(d,sz);

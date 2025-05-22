@@ -1,64 +1,32 @@
-function [M,b,spin] = calcTaylor2(epsilon,sS,varargin)
-% compute Taylor factor and strain dependent orientation gradient
+function [M,b,spin] = calcTaylorAll(epsilon,sS,varargin)
+% compute the Taylor factor and the simplex of all feasible solutions of 
+% the linear program (Taylor model).
 %
-% Since the spin tensor as solution of the Taylor model is not unique, we 
-% compute the set of all optimal spin tensors for every given orientation.
-% Hence we compute not only one, but all spin tensors where the energy 
-% functional in the Taylor model becomes minimal.
-%
-% This set of optimizers is a simplex, which means that every convex 
-% combination of solutions is again a solution. 
-% We described the simlex by its edges.
-%
-% By usage of the flag 'mean' we obtain the center of gravity of the
-% simplex as unique solution.
+% Afterwards we compute the Burgers vector and strain dependent orientation 
+% spin as mean vector of the simplex or by inverse distancing.
 %
 % Syntax
-%   [MFun,~,spinFun] = calcTaylor2(eps,sS,'bandwidth',32)
-%   [M,b,W] = calcTaylor2(eps,sS)
-%   [M,b,W] = calcTaylor2(eps,sS,'mean')
+%   [~,NoE] = calcTaylor(eps,sS,'numberOfEdges');
+%   [M,b,W] = calcTaylor(eps,sS)
+%   [M,b,W] = calcTaylor(eps,sS,'inverseDistance',0.01,'uniqueTol',1e-9)
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
 %  sS  - @slipSystem list in crystal coordinates
 %
 % Output
-%  Mfun    - @SO3FunHarmonic (orientation dependent Taylor factor)
-%  spinFun - @SO3VectorFieldHarmonic
-%  M - Taylor factor
-%  b - vectors of slip rates for all slip systems (We obtain the edges of the simplex of all solutions) 
-%  W - @spinTensor (We obtain the edges of the simplex of all solutions) 
+%  NoE - Number of edges of the simplex that describes the optimal set
+%  M - taylor factor
+%  b - vector of slip rates for all slip systems 
+%  W - @spinTensor
+%
+% Options
+%  inverseDistance - edges are optimal if there corresponding minimal value <= (1+tol)*M. Moreover b is the inverse-distance weighted mean of the simplex.
+%  uniqueTol - unite all edges that are simmilar w.r.t. this tolerance
 %
 % Flags
-%  mean - return not the simplex of all optimizers, but its center of gravity
+%  'numberOfEdges' - Obtain the number of edges of the optimal set (simplex)
 %
-% Example
-%   
-%   % define 10 percent strain
-%   eps = 0.1 * strainTensor(diag([1 -0.75 -0.25]))
-%
-%   % define a crystal orientation
-%   cs = crystalSymmetry('cubic')
-%   ori = orientation.byEuler(0,30*degree,15*degree,cs)
-%
-%   % define a slip system
-%   sS = slipSystem.fcc(cs)
-%
-%   % compute the Taylor factor w.r.t. the given orientation
-%   [M,b,W] = calcTaylor2(inv(ori)*eps,sS.symmetrise)
-%
-%   % update orientation
-%   oriNew = ori .* orientation(-W)
-%
-%
-%   % compute the Taylor factor and spin Tensor w.r.t. any orientation
-%   [M,~,W] = calcTaylor2(eps,sS.symmetrise)
-%
-
-% TODO: Compute the Taylor factor and strain dependent gradient independent of 
-% the orientation, i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
-
-
 
 sSys = sS.ensureSymmetrised;
 
@@ -101,7 +69,7 @@ Feasible = r == pagerank(cat(2, A, repmat(epsilon,1,1,size(A,3)) ));
 A = A(:,:,Feasible);
 ind = ind(:,squeeze(Feasible)');
 if any(r(Feasible)<numCons)
-  warning('The solution of some linear systems is not unique. Some solutions may disappear.')
+  warning('The solutions of some linear systems are not unique. Some solutions may disappear.')
 end
 
 % compute solution
@@ -112,7 +80,7 @@ TF = sum(permute(tau(ind),[1,3,2]).*abs(g));
 M = min(TF,[],3)';
 
 % maybe there is nothing more to do
-if nargout==1, return; end
+if nargout<=1, return; end
 
 % Compute Burgers vector and spin tensors:
 %     - Mean: uTol = tol = 1e-9
@@ -144,7 +112,7 @@ if uTol>=0
 end
 
 % if number of edges of the simplex is observed
-if check_option(varargin,'num')
+if check_option(varargin,'numberOfEdges')
   b = histc(Rot_id,1:max(Rot_id));
   return
 end
@@ -155,15 +123,13 @@ b = accumarray(Rot_id, (1:length(Rot_id))', [], @(x) {G(:,x)'})';
 
 % TODO: This can be done better
 if check_option(varargin,'inverseDistance')
-  TF = TF(id);
+  TF = squeeze(TF(id));
   % cluster with respect to the inputs
   w = arrayfun(@(i) 1 - (TF(Rot_id == i)-M(i))/(M(i)*tol) , 1:max(Rot_id), 'UniformOutput', false);
   b = cell2mat(cellfun(@(bi,wi) sum(wi.*bi,1)'/sum(wi)  ,b,w,'UniformOutput',false))';
 elseif check_option(varargin,'mean')
   % unstetig an Stellen, wo sich Anzahl der Ecken des Simplex ändert
   b = cell2mat(cellfun(@(bi) mean(bi,1)',b,'UniformOutput',false))';
-elseif max(Rot_id)==1
-  b = b{1};
 end
 
 

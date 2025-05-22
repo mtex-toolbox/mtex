@@ -51,7 +51,7 @@ if sS.CS.Laue ~= eps.CS.Laue
     F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
     
     % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
-    SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
+    SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre','regularization',0);
     M(k) = SO3F(1); %#ok<AGROW>
     if nargout>1
       b = [];
@@ -69,13 +69,19 @@ if sS.CS.Laue ~= eps.CS.Laue
   return
 end
 
-[M,b,spin] = calcTaylor1(eps,sS,varargin{:});
+if nargout<=1
+  M = calcTaylor1(eps,sS,varargin{:});
+elseif nargout==2
+  [M,b,~] = calcTaylor1(eps,sS,varargin{:});
+else
+  [M,b,spin] = calcTaylor1(eps,sS,varargin{:});
+end
 
 end
 
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
-  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:});
+  [Taylor,~,spin] = calcTaylor1(inv(ori)*eps,sS,varargin{:});
   Out(:,1) = Taylor(:);
   if numOut>1
     v = ori .* vector3d(spin);
