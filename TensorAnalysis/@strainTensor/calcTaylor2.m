@@ -114,8 +114,14 @@ M = min(TF,[],3)';
 % maybe there is nothing more to do
 if nargout==1, return; end
 
+% Compute Burgers vector and spin tensors:
+%     - Mean: uTol = tol = 1e-9
+%     - Inverse Distance: uTol=-1; tol = ...
+
 % find edges with minimal Taylor factor
-id = find(TF<1.0001*M');
+tol = get_option(varargin,'inverseDistance',max(get_option(varargin,'uniqueTol',1e-9),0));
+
+id = find(TF<=(1+tol)*M');
 [Rot_id,LS_id]=ind2sub(size(TF,[2,3]),id);
 g = g(:,id);
 
@@ -126,15 +132,35 @@ G = zeros(2*numSP,length(id));
 G(sSi,:) = max(gamma,0);
 G(sSi_op,:) = max(-gamma,0);
 
-% cluster with respect to the inputs
-b = arrayfun(@(i) unique(G(:,Rot_id == i)','rows'), 1:max(Rot_id), 'UniformOutput', false);
+% unite edges that occur several times in the solution simplex of an orientation
+uTol = get_option(varargin,'uniqueTol',1e-9);
+if uTol>=0
+  G = [Rot_id';G];
+  % TODO: Data scale with respect to tau*M
+  [G,IA] = uniquetol(G',uTol,'byRows',true,'DataScale',max( max(abs(g(:))) , 1 ) );
+  Rot_id = G(:,1);
+  id = id(IA);
+  G = G(:,2:end)';
+end
 
+% if number of edges of the simplex is observed
 if check_option(varargin,'num')
-  b = cell2mat(cellfun(@(bi) size(bi,1),b,'UniformOutput',false))';
+  b = histc(Rot_id,1:max(Rot_id));
   return
 end
 
-if check_option(varargin,'mean')
+% Cluster Solutions into cell array
+b = accumarray(Rot_id, (1:length(Rot_id))', [], @(x) {G(:,x)'})';
+
+
+% TODO: This can be done better
+if check_option(varargin,'inverseDistance')
+  TF = TF(id);
+  % cluster with respect to the inputs
+  w = arrayfun(@(i) 1 - (TF(Rot_id == i)-M(i))/(M(i)*tol) , 1:max(Rot_id), 'UniformOutput', false);
+  b = cell2mat(cellfun(@(bi,wi) sum(wi.*bi,1)'/sum(wi)  ,b,w,'UniformOutput',false))';
+elseif check_option(varargin,'mean')
+  % unstetig an Stellen, wo sich Anzahl der Ecken des Simplex ändert
   b = cell2mat(cellfun(@(bi) mean(bi,1)',b,'UniformOutput',false))';
 elseif max(Rot_id)==1
   b = b{1};
@@ -152,6 +178,7 @@ if ~iscell(b)
   spin = spinTensor(b*sSeps2);
 else
   spin = spinTensor(gamma'*sSeps);
+  % TODO: Speed up
   spin = arrayfun(@(i) spin(Rot_id == i), 1:max(Rot_id), 'UniformOutput', false);
 end
 

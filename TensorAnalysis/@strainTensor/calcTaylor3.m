@@ -23,7 +23,6 @@ spin = SO3VectorFieldHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,varargin{:}),sS
 psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
 % spin = spin.conv(psi);
 
-
 end
 
 function Out = calcTaylorFun(rot,eps,sS,varargin)
