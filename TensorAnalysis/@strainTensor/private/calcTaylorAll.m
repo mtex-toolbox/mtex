@@ -138,14 +138,13 @@ if nargout <=2, return; end
 
 % the antisymmetric part of the deformation tensors gives the spin
 % in crystal coordinates
+sSys2 = sS.ensureSymmetrised;
+sSeps2 = sSys2.deformationTensor;
 if ~iscell(b)
-  sSys2 = sS.ensureSymmetrised;
-  sSeps2 = sSys2.deformationTensor;
   spin = spinTensor(b*sSeps2);
 else
-  spin = spinTensor(gamma'*sSeps);
   % TODO: Speed up
-  spin = arrayfun(@(i) spin(Rot_id == i), 1:max(Rot_id), 'UniformOutput', false);
+  spin = cellfun(@(bi) spinTensor(bi*sSeps2) , b, 'UniformOutput', false);
 end
 
 end
