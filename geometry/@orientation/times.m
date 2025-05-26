@@ -31,7 +31,7 @@ end
 if ~isa(b,'quaternion')
   sz = size(b);
   r = rotate(b(:),a(:));
-  r = reshape(r,sz);
+  try, r = reshape(r,sz); end
   return
 end
 
