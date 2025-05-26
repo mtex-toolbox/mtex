@@ -114,6 +114,8 @@ end
 % if number of edges of the simplex is observed
 if check_option(varargin,'numberOfEdges')
   b = histc(Rot_id,1:max(Rot_id));
+  TF(TF<=(1+tol)*M') = Inf;
+  spin = min(TF,[],3)'-(1+tol)*M;
   return
 end
 

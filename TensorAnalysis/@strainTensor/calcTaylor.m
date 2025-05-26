@@ -1,9 +1,9 @@
-function [M,b,spin,NoE] = calcTaylor(eps,sS,varargin)
+function [M,b,spin,NoE,D2S] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
 %   [MFun,~,spinFun] = calcTaylor(eps,sS,'bandwidth',32)
-%   [M,b,W] = calcTaylor(eps,sS)
+%   [M,b,W,NoE,D2S] = calcTaylor(eps,sS)
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
@@ -15,6 +15,8 @@ function [M,b,spin,NoE] = calcTaylor(eps,sS,varargin)
 %  M - taylor factor
 %  b - vector of slip rates for all slip systems 
 %  W - @spinTensor
+%  NoE - Number of edges in the simplex of the optimal set
+%  D2S - Absolute Distance of other edges to the simplex
 %
 % Example
 %   
@@ -63,12 +65,14 @@ if sS.CS.Laue ~= eps.CS.Laue
   end
   
   % Compute Number of Edges
-  NoE = SO3FunHandle(@(rot) calcTaylorNum(rot,epsLocal,sS,varargin{:}),sS.CS,eps.CS);
+  NoE = SO3FunHandle(@(rot) calcTaylorEdges(rot,epsLocal,sS,varargin{:}),sS.CS,eps.CS);
+  D2S = SO3FunHandle(@(rot) calcTaylorDist2OS(rot,epsLocal,sS,varargin{:}),sS.CS,eps.CS);
 
   return
 end
 
-NoE=[];
+NoE = [];
+D2S = [];
 if nargout<=1
   M = calcTaylorAll(eps,sS,varargin{:});
 elseif nargout==2
@@ -97,11 +101,15 @@ function Out = calcTaylorSpin(rot,eps,sS,varargin)
   end
 end
 
-function Out = calcTaylorNum(rot,eps,sS,varargin)
+function Out = calcTaylorEdges(rot,eps,sS,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
   [~,Out] = calcTaylorAll(inv(ori)*eps,sS,varargin{:},'numberOfEdges');
 end
 
+function Out = calcTaylorDist2OS(rot,eps,sS,varargin)
+  ori = orientation(rot,sS.CS,eps.CS);
+  [~,~,Out] = calcTaylorAll(inv(ori)*eps,sS,varargin{:},'numberOfEdges');
+end
 
 
 
