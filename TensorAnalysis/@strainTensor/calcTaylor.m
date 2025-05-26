@@ -56,7 +56,7 @@ if sS.CS.Laue ~= eps.CS.Laue
   if check_option(varargin,{'mean','inverseDistance'})
     b = SO3FunHandle(@(rot) calcTaylorB(rot,epsLocal,sS,varargin{:}),sS.CS,eps.CS);
     spin = SO3VectorFieldHandle(@(rot) calcTaylorSpin(rot,epsLocal,sS,varargin{:}),SO3TangentSpace.leftVector,sS.CS,eps.CS);
-    spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+    spin.tangentSpace  = SO3TangentSpace.leftSpinTensor;
   else
     b = @(rot) calcTaylorB(rot,epsLocal,sS,varargin{:});
     spin = @(rot) calcTaylorSpin(rot,epsLocal,sS,varargin{:});
@@ -89,7 +89,7 @@ function Out = calcTaylorSpin(rot,eps,sS,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
   [~,~,spin] = calcTaylorAll(inv(ori)*eps,sS,varargin{:});
   if check_option(varargin,{'mean','inverseDistance'})
-    v = ori(:) .* vector3d(spin);
+    v = vector3d(ori(:) .* spin);
     Out = v.xyz;
   else
     ori = arrayfun(@(i) ori(i) , 1:length(ori), 'UniformOutput', false);

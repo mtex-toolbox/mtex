@@ -177,6 +177,10 @@ classdef tensor < dynOption
       v = vector3d(t);
       z = v.z;
     end
+    function xyz = xyz(v)
+      v = v.subSet(':');
+      xyz = [v.x,v.y,v.z];      
+    end
 
   end
   

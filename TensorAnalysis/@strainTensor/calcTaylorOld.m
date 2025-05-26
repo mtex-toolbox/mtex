@@ -57,15 +57,15 @@ if sS.CS.Laue ~= eps.CS.Laue
       b = [];
       spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
       % to be comparable set output to rightspintensor      
-      spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
+      spin.tangentSpace  = SO3TangentSpace.leftSpinTensor;
     end
   end
   
   % for some reason we need some smoothing of the vector field
-  if nargout>1
-    psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
-    spin.SO3F = spin.SO3F.conv(psi);
-  end
+  % if nargout>1
+  %   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
+  %   spin.SO3F = spin.SO3F.conv(psi);
+  % end
   return
 end
 
@@ -84,7 +84,7 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   [Taylor,~,spin] = calcTaylor1(inv(ori)*eps,sS,varargin{:});
   Out(:,1) = Taylor(:);
   if numOut>1
-    v = ori .* vector3d(spin);
+    v = vector3d(ori(:).*spin);
     Out(:,2:4) = v.xyz;
   end
 end
