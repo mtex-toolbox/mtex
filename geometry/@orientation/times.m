@@ -29,9 +29,7 @@ end
 
 % consider the cases ori * Miller, ori * tensor, ori * slipSystem
 if ~isa(b,'quaternion')
-  sz = size(b);
-  r = rotate(b(:),a(:));
-  try, r = reshape(r,sz); end
+  r = rotate(b,a);
   return
 end
 
