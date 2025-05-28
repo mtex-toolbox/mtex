@@ -38,7 +38,7 @@ epsilon = strainTensor(diag([1 -q -(1-q)]))
 ori = orientation.byEuler(0,30*degree,15*degree,cs)
 
 % compute the Taylor factor
-[M,b,W] = calcTaylor(inv(ori)*epsilon,sS.symmetrise);
+[M,b,W] = calcTaylorOld(inv(ori)*epsilon,sS.symmetrise);
 
 M
 W
@@ -49,11 +49,11 @@ W
 % <SO3FunConcept.html orientation dependent functions>, which can be easily
 % visualized and analyzed.
 
-[M,~,W] = calcTaylor(epsilon,sS.symmetrise)
+[M,~,W] = calcTaylorOld(epsilon,sS.symmetrise)
 
 % evaluate the Taylor factor at an arbitrary orientation
 M.eval(ori)
-W.eval(ori)
+inv(ori).*W.eval(ori)
 
 %%
 % The following code reproduces Fig. 5 of the paper of Bunge, H. J. (1970).
@@ -108,7 +108,7 @@ epsilon = strainTensor(diag([1 -q -(1-q)]))
 sS = symmetrise(slipSystem.fcc(grains.CS));
 
 % apply Taylor model
-[M,b,W] = calcTaylor(inv(grains.meanOrientation)*epsilon,sS);
+[M,b,W] = calcTaylorOld(inv(grains.meanOrientation)*epsilon,sS);
 
 %%
 
@@ -152,7 +152,7 @@ epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
 numIter = 100;
 
 % compute the Taylor factors and the orientation gradients
-[~,~,spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
+[~,~,spin] = calcTaylorOld(epsilon ./ numIter, sS.symmetrise);
 
 progress(0,numIter);
 for sas=1:numIter

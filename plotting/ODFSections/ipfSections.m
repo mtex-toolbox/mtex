@@ -57,11 +57,26 @@ classdef ipfSections < ODFSections
       
     end
 
+    function ori = quiverGrid(oS,varargin)
+      
+      S2G = equispacedS2Grid(oS.sR,varargin{:});
+      
+      ori = orientation.nan(S2G.size(1),S2G.size(2),numel(oS.omega),oS.CS1,oS.CS2);
+      for iOmega = 1:numel(oS.omega)
+
+        h2 = oS.vectorField(S2G,oS.omega(iOmega));
+        ori(:,:,iOmega) = reshape(orientation.map(S2G,oS.r1,h2,oS.r2),size(S2G));
+
+      end
+    end
+
     function n = numSections(oS)
       n = numel(oS.omega);
     end
     
     function [h1,secPos] = project(oS,ori,varargin)
+      
+      ori = ori(:);
 
       % determine position in the inverse pole figure
       h1 = ori .\ oS.r1;
@@ -69,7 +84,7 @@ classdef ipfSections < ODFSections
 
       % determine omega angle
       h2 = sym .* (ori .\ oS.r2);
-      vF = vectorField(oS,h1);
+      vF = vectorField(oS,h1,0);
       
       omegaSec = angle(vF, h2, h1);
 
@@ -101,8 +116,23 @@ classdef ipfSections < ODFSections
       end
     end
     
-    function vF = vectorField(oS,r,omega)
+    function h = quiverSection(oS,ax,sec,v,data,varargin)
+
+      % translate rotational data into tangential data
+      if iscell(data) && isa(data{1},'quaternion')
+        [v2,sec2] = project(oS,data{1},'noSymmetry'); %#ok<PRJET>
+        data{1} = v2 - v;
+        data{1}(sec2 ~= sec)=NaN;
+      end
+      if check_option(varargin,'normalize'), data{1} = normalize(data{1}); end
       
+      % plot data
+      h = quiver(v,data{:},oS.sR,oS.CS1,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
+        'parent',ax,varargin{:},'doNotDraw');
+
+    end
+
+    function vF = vectorField(oS,r,omega)
       
       vF = oS.referenceField.eval(r);
       
