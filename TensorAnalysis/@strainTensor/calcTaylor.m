@@ -1,4 +1,4 @@
-function [M,b,spin] = calcTaylorOld(eps,sS,varargin)
+function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
