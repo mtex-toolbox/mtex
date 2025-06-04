@@ -63,14 +63,16 @@ ind = ind';
 % List of all linear systems
 A = reshape(P(:,ind(:)),numCons,numCons,[]);
 
-% delete matrices if rank(A) < rank(A|eps)
-r = pagerank(A);
-Feasible = r == pagerank(cat(2, A, repmat(epsilon,1,1,size(A,3)) ));
+% delete matrices if rank(A) < 5
+% Most of these matrices are infeasible, if rank(A) < rank(A|b).
+% If b is unfortunately selected and it yields rank(A) = rank(A|b) < 5, then the 
+% solutions can be obtained by substituting one of the dependent columns of A 
+% with an independent column of P. This column will be inactive in the solution 
+% since epsilon is in the span of A.
+% The Substituted Matrix is allready contained in the array.
+Feasible = pagerank(A) == 5;
 A = A(:,:,Feasible);
 ind = ind(:,squeeze(Feasible)');
-if any(r(Feasible)<numCons)
-  warning('The solutions of some linear systems are not unique. Some solutions may disappear.')
-end
 
 % compute solution
 g = pagemldivide(A,epsilon);
