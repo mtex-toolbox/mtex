@@ -44,7 +44,7 @@ function [M,b,spin,NoE,D2S] = calcTaylorNew(eps,sS,varargin)
 if sS.CS.Laue ~= eps.CS.Laue
 
   if length(eps)>1
-    error('Not implemented yet. Use the older ''calcTaylorOld'' method.')
+    error('Not implemented yet. Use the older ''calcTaylor'' method.')
   end
 
   % TODO: For efficient computation of SO3FunHarmonics look into TaylorOld.

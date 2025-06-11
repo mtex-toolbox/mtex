@@ -1,4 +1,4 @@
-function [M,b,spin] = calcTaylorAll(epsilon,sS,varargin)
+function b = calcTaylorBurgersV(epsilon,sS,spin,varargin)
 % compute the Taylor factor and the simplex of all feasible solutions of 
 % the linear program (Taylor model).
 %
@@ -43,25 +43,32 @@ tau = sSys.CRSS(:);
 % strain (right side of the constraints)
 epsilon = epsilon.sym;
 epsilon = reshape(epsilon.M,9,[]);
-eqCons = all(~isnan(epsilon) & [1,1,1,0,1,1,0,0,0]',2); % indices of equation constraints
-epsilon = epsilon(eqCons,:);
+if any(isnan(epsilon))
+  error('Relaxed Model is not implemented yet.') 
+end
+epsilon = epsilon([1,2,3,5,6],:);
 
 % dimensions
-numCons = sum(eqCons);
 numSP = length(sSys);
 
 % Plastic deformation tensor, that is contributed by a slip plane, if it is activ (Matrix of the constraints)
 sSeps = sSys.deformationTensor;
 P = reshape(matrix(sSeps.sym),9,[]);
-P = P(eqCons,:);
+P = P([1,2,3,5,6],:);
+
+% the antisymmetric part of the deformation tensors gives the spin in crystal coordinates
+Q = reshape(matrix(sSeps.antiSym),9,[]);
+Q = Q([6,7,2],:);
 
 % compute all possible combinations of numCons slip planes
-ind = nchoosek(1:numSP,numCons);
+ind = nchoosek(1:numSP+1,8);
 ind = ind';
 
 % Solve the linear systems to find the edges of the feasible set
 % List of all linear systems
-A = reshape(P(:,ind(:)),numCons,numCons,[]);
+sigma = spin.xyz;
+M = [P,[0,0,0,0,0]';Q,sigma'];
+A = reshape(M(:,ind(:)),8,8,[]);
 
 % delete matrices if rank(A) < 5
 % Most of these matrices are infeasible, if rank(A) < rank(A|b).
@@ -70,84 +77,46 @@ A = reshape(P(:,ind(:)),numCons,numCons,[]);
 % with an independent column of P. This column will be inactive in the solution 
 % since epsilon is in the span of A.
 % The Substituted Matrix is allready contained in the array.
-Feasible = pagerank(A) == 5;
+Feasible = pagerank(A) == 8;
 A = A(:,:,Feasible);
 ind = ind(:,squeeze(Feasible)');
 
 % compute solution
-g = pagemldivide(A,epsilon);
+g = pagemldivide(A,[epsilon;0;0;0]);
 
 % corresponding Taylor factor
+tau = [tau;0];
 TF = sum(permute(tau(ind),[1,3,2]).*abs(g));
 M = min(TF,[],3)';
-
-% maybe there is nothing more to do
-if nargout<=1, return; end
 
 % Compute Burgers vector and spin tensors:
 %     - Mean: uTol = tol = 1e-9
 %     - Inverse Distance: uTol=-1; tol = ...
 
 % find edges with minimal Taylor factor
-tol = get_option(varargin,'inverseDistance',max(get_option(varargin,'tolerance',1e-9),0));
+tol = max(get_option(varargin,'tolerance',1e-9),0);
 
 id = find(TF<=(1+tol)*M');
 [Rot_id,LS_id]=ind2sub(size(TF,[2,3]),id);
 g = g(:,id);
 
 % construct vector of edges of the simplex which is the Taylor solution
-gamma = zeros(length(sSi),length(id));
-gamma(ind(:,LS_id)+numSP*(0:length(id)-1)) = g;
+gamma = zeros(length(sSi)+1,length(id));
+gamma(ind(:,LS_id)+(numSP+1)*(0:length(id)-1)) = g;
+gamma(end,:) = [];
 G = zeros(2*numSP,length(id));
 G(sSi,:) = max(gamma,0);
 G(sSi_op,:) = max(-gamma,0);
 
 % unite edges that occur several times in the solution simplex of an orientation
-if ~check_option(varargin,'inverseDistance')
-  G = [Rot_id';G];
-  [G,IA] = uniquetol(G',1e-6,'byRows',true,'DataScale', max(max(abs(G')),1) );
-  Rot_id = G(:,1);
-  id = id(IA);
-  G = G(:,2:end)';
-end
-
-% if number of edges of the simplex is observed
-if check_option(varargin,'numberOfEdges')
-  b = histc(Rot_id,1:max(Rot_id));
-  TF(TF<=(1+tol)*M') = Inf;
-  spin = min(TF,[],3)'-(1+tol)*M;
-  return
-end
+G = [Rot_id';G];
+[G,IA] = uniquetol(G',1e-6,'byRows',true,'DataScale', max(max(abs(G')),1) );
+Rot_id = G(:,1);
+id = id(IA);
+G = G(:,2:end)';
 
 % Cluster Solutions into cell array
 b = accumarray(Rot_id, (1:length(Rot_id))', [], @(x) {G(:,x)'})';
-
-
-% TODO: This can be done better
-if check_option(varargin,'inverseDistance')
-  TF = squeeze(TF(id));
-  % cluster with respect to the inputs
-  w = arrayfun(@(i) 1 - (TF(Rot_id == i)-M(i))/(M(i)*tol) , 1:max(Rot_id), 'UniformOutput', false);
-  b = cell2mat(cellfun(@(bi,wi) sum(wi.*bi,1)'/sum(wi)  ,b,w,'UniformOutput',false))';
-elseif check_option(varargin,'mean')
-  % unstetig an Stellen, wo sich Anzahl der Ecken des Simplex ändert
-  b = cell2mat(cellfun(@(bi) mean(bi,1)',b,'UniformOutput',false))';
-end
-
-
-% maybe there is nothing more to do
-if nargout <=2, return; end
-
-% the antisymmetric part of the deformation tensors gives the spin
-% in crystal coordinates
-sSys2 = sS.ensureSymmetrised;
-sSeps2 = sSys2.deformationTensor;
-if ~iscell(b)
-  spin = spinTensor(b*sSeps2);
-else
-  % TODO: Speed up
-  spin = cellfun(@(bi) spinTensor(bi*sSeps2) , b, 'UniformOutput', false);
-end
 
 end
 
