@@ -64,9 +64,18 @@ if exist('ori','var') || isempty(oS.plotGrid)
     disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
       int2str(length(ori)),' given orientations']);
 
+    l = length(ori);
     samples = discretesample(length(ori),points);
     ori = ori(samples);
     if ~isempty(data), data = data(samples,:); end
+    
+    mcf = get_option(varargin,'MarkerFaceColor',[]);
+    if isnumeric(mcf) && ~isempty(mcf) && numel(mcf)~=3
+      mcf = reshape(mcf,l,[]);
+      mcf = mcf(samples,:);
+      varargin = set_option(varargin,'MarkerFaceColor',mcf);
+    end
+
   end
   
   if length(ori)>1 && ~isempty(data)

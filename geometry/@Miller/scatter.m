@@ -18,14 +18,14 @@ function varargout = scatter(m,varargin)
 % Allow color coding with several colors
 mcf = get_option(varargin,'MarkerFaceColor',[]);
 if isnumeric(mcf) && ~isempty(mcf)
-  if numel(mcf) == length(m)
-    mcf = reshape(mcf,[],1);
-  elseif numel(mcf)~=3
-    mcf = reshape(mcf,[],3);
+  if numel(mcf) == 3
+  elseif (numel(mcf) == length(m)) || (numel(mcf) == 3*length(m))
+    mcf = reshape(mcf,length(m),[]);
+    varargin = {mcf,varargin{:}};
+    varargin = delete_option(varargin,'MarkerFaceColor');
+  else
+    error('Number of MarkerFaceColors does not match to the number of elements.')
   end
-  varargin = {mcf,varargin{:}};
-  varargin = delete_option(varargin,'MarkerFaceColor');
-  % varargin = set_option(varargin,'FaceVertexCdata',mcf);
 end
 
 % symmetrise if needed
