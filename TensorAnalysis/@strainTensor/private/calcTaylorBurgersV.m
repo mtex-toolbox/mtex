@@ -1,4 +1,4 @@
-function b = calcTaylorBurgersV(epsilon,sS,spin,varargin)
+function b = calcTaylorBurgersV(eps,sS,spin,varargin)
 % compute the Taylor factor and the simplex of all feasible solutions of 
 % the linear program (Taylor model).
 %
@@ -41,8 +41,8 @@ sSys = sSys(sSi);     % i.e. sS.symmetrise('antipodal')
 tau = sSys.CRSS(:);
 
 % strain (right side of the constraints)
-epsilon = epsilon.sym;
-epsilon = reshape(epsilon.M,9,[]);
+eps = eps.sym;
+epsilon = reshape(eps.M,9,[]);
 if any(isnan(epsilon))
   error('Relaxed Model is not implemented yet.') 
 end
@@ -87,7 +87,7 @@ g = pagemldivide(A,[epsilon;0;0;0]);
 % corresponding Taylor factor
 tau = [tau;0];
 TF = sum(permute(tau(ind),[1,3,2]).*abs(g));
-M = min(TF,[],3)';
+M = min(TF,[],3)'./norm(eps);
 
 % Compute Burgers vector and spin tensors:
 %     - Mean: uTol = tol = 1e-9

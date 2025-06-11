@@ -1,4 +1,4 @@
-function [M,b,spin] = calcTaylorAll(epsilon,sS,varargin)
+function [M,b,spin] = calcTaylorAll(eps,sS,varargin)
 % compute the Taylor factor and the simplex of all feasible solutions of 
 % the linear program (Taylor model).
 %
@@ -41,8 +41,8 @@ sSys = sSys(sSi);     % i.e. sS.symmetrise('antipodal')
 tau = sSys.CRSS(:);
 
 % strain (right side of the constraints)
-epsilon = epsilon.sym;
-epsilon = reshape(epsilon.M,9,[]);
+eps = eps.sym;
+epsilon = reshape(eps.M,9,[]);
 eqCons = all(~isnan(epsilon) & [1,1,1,0,1,1,0,0,0]',2); % indices of equation constraints
 epsilon = epsilon(eqCons,:);
 
@@ -79,7 +79,7 @@ g = pagemldivide(A,epsilon);
 
 % corresponding Taylor factor
 TF = sum(permute(tau(ind),[1,3,2]).*abs(g));
-M = min(TF,[],3)';
+M = min(TF,[],3)'./norm(eps);
 
 % maybe there is nothing more to do
 if nargout<=1, return; end
