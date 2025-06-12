@@ -85,7 +85,7 @@ for i = 1:numel(sP)
     patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
   end
     
-  % ------- color-coding according to the first argument -----------
+  % ------------- color-coding according to the first argument ----------------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
     h(i) = plot(x,y,varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
