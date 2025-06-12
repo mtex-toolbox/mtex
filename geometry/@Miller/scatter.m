@@ -14,20 +14,6 @@ function varargout = scatter(m,varargin)
 % See also
 % vector3d/scatter
 
-
-% Allow color coding with several colors
-mcf = get_option(varargin,'MarkerFaceColor',[]);
-if isnumeric(mcf) && ~isempty(mcf)
-  if numel(mcf) == 3
-  elseif (numel(mcf) == length(m)) || (numel(mcf) == 3*length(m))
-    mcf = reshape(mcf,length(m),[]);
-    varargin = {mcf,varargin{:}};
-    varargin = delete_option(varargin,'MarkerFaceColor');
-  else
-    error('Number of MarkerFaceColors does not match to the number of elements.')
-  end
-end
-
 % symmetrise if needed
 if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')  
       
