@@ -3,7 +3,7 @@ classdef eangleProjection < sphericalProjection
   
   methods 
         
-     function proj = eangleProjection(varargin)
+    function proj = eangleProjection(varargin)
       proj = proj@sphericalProjection(varargin{:});
     end
     
