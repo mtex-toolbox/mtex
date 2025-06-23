@@ -1,12 +1,12 @@
-function q = subSet(q,ind)
+function q = subSet(q,varargin)
 % indexing of quaternions
 %
 % Syntax
 %   subSet(q,ind) % 
 %
 
-q.a = q.a(ind);
-q.b = q.b(ind);
-q.c = q.c(ind);
-q.d = q.d(ind);
+q.a = q.a(varargin{:});
+q.b = q.b(varargin{:});
+q.c = q.c(varargin{:});
+q.d = q.d(varargin{:});
 
