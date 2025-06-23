@@ -1,8 +1,8 @@
-function v = subSet(v,ind)
+function v = subSet(v,varargin)
 % subindex vector3d
 
-v.x = v.x(ind);
-v.y = v.y(ind);
-v.z = v.z(ind);
+v.x = v.x(varargin{:});
+v.y = v.y(varargin{:});
+v.z = v.z(varargin{:});
   
 end
