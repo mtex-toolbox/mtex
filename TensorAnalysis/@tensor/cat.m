@@ -3,11 +3,21 @@ function T = cat(dim,varargin)
 
 % copy first
 T = varargin{1};
+i=2;
+while isempty(T)
+  T = varargin{i};
+  i=i+1;
+end
 
 % copy data
 M = cell(size(varargin));
 
 for i = 1:numel(varargin)
+
+  if isempty(varargin{i})
+    M{i} = [];
+    continue
+  end
 
   M{i}= varargin{i}.M;
   
@@ -15,7 +25,7 @@ for i = 1:numel(varargin)
   assert(T.rank == varargin{i}.rank,'Tensors should have equal rank!');
 
   % check for equal symetries
-  assert(T.CS == varargin{1}.CS,'Tensors should have equal symmetry');
+  assert(T.CS == varargin{i}.CS,'Tensors should have equal symmetry');
     
 end
 
