@@ -7,7 +7,7 @@ function out = check_option(option_list,option,varargin)
 %
 % Input
 %  option_list - Cell Array
-%  option_name - String
+%  option_name - String / Cell Array
 %  option      - String
 %  type        - class
 %
