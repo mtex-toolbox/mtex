@@ -72,7 +72,9 @@ methods
       error('The rotations which belong to the tangent vectors and defines the tangent space are missing.')
     end
     SO3TV.rot = varargin{id(1)};
-    if any(size(SO3TV.rot)~=size(SO3TV))
+    if length(SO3TV.rot) == numel(SO3TV)
+      SO3TV.rot = reshape(SO3TV.rot,size(SO3TV));
+    elseif any(size(SO3TV.rot)~=size(SO3TV))
       try 
         SO3TV.rot = SO3TV.rot.*rotation.id(size(SO3TV));
       catch

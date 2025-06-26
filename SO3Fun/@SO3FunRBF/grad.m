@@ -14,7 +14,7 @@ function g = grad(SO3F,varargin)
 %
 % Output
 %  G - @SO3VectorField
-%  g - @vector3d
+%  g - @SO3TangentField
 %
 % Description
 % general formula:
@@ -35,7 +35,7 @@ tS = SO3TangentSpace.extract(varargin{:});
 rot = varargin{1}; varargin(1) = [];
 
 if isempty(SO3F.center)
-  g = vector3d.zeros(size(rot));
+  g = SO3TangentVector( vector3d.zeros(size(rot)) , rot );
   return
 end
 
@@ -78,7 +78,7 @@ for issq = 1:length(qSS)
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
-g = SO3TangentVector(g,tS);
+g = SO3TangentVector(g,rot,tS);
 
 % TODO: consider antipodal
 if SO3F.antipodal
