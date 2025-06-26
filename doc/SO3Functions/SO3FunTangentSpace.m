@@ -35,14 +35,14 @@ matrix(R)*matrix(S2)
 % Moreover the @spinTensor is saved as @vector3d, in the following way:
 %
 
-vL = SO3TangentVector(vector3d(1,2,3))
+vL = SO3TangentVector(vector3d(1,2,3),R)
 S = spinTensor(vL)
 
 %%
 % Note that the default tangent space representation is left.
 % We can construct an right tangent vector by
 
-vR = SO3TangentVector(vector3d(1,2,3),SO3TangentSpace.rightVector)
+vR = SO3TangentVector(vector3d(1,2,3),R,SO3TangentSpace.rightVector)
 
 %%
 % Here |vL| and |vR| have the same coordinates in different spaces (bases). 
@@ -52,8 +52,8 @@ vR = SO3TangentVector(vector3d(1,2,3),SO3TangentSpace.rightVector)
 % vice versa. Therefore the rotation in which the tangent space is located
 % is necessary.
 
-vR = right(vL,R)
-vL = left(vR,R)
+vR = right(vL)
+vL = left(vR)
 
 %%
 % We can do the same manually by

@@ -57,7 +57,7 @@ classdef vector3d < dynOption
     function v = vector3d(varargin)
       % constructor of the class vector3d
       
-      if nargin >=3 && isnumeric(varargin{1})
+      if nargin >=3 && isnumeric(varargin{1}) && isnumeric(varargin{2}) && isnumeric(varargin{3})
         
         v.x = varargin{1};
         v.y = varargin{2};

@@ -20,10 +20,11 @@ function f = eval(SO3VF,rot,varargin)
 xyz = SO3VF.SO3F.eval(rot);
 
 % generate tangentspace vector
-f = reshape(SO3TangentVector(xyz.',SO3VF.internTangentSpace),size(rot));
+f = SO3TangentVector(xyz.',rot(:),SO3VF.internTangentSpace);
+f = reshape(f,size(rot));
 
 tS = SO3TangentSpace.extract(varargin{:},SO3VF.tangentSpace);
 
-f = f.transformTangentSpace(tS,rot);
+f = transformTangentSpace(f,tS);
 
 end

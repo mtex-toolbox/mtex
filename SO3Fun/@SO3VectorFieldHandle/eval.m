@@ -19,10 +19,14 @@ function f = eval(SO3VF,ori,varargin)
 
 f = SO3VF.fun(ori);
 
-f = reshape(SO3TangentVector(f.',SO3VF.tangentSpace),size(ori));
+% generate tangent space vector
+if ~isa(f,'SO3TangentVector')
+  f = SO3TangentVector(f.',ori(:),SO3VF.tangentSpace);
+  f = reshape(f,size(ori));
+end
 
+% Maybe change tangent space
 tS = SO3TangentSpace.extract(varargin{:},SO3VF.tangentSpace);
-
-f = f.transformTangentSpace(tS,ori);
+f = transformTangentSpace(f,tS);
 
 end

@@ -71,12 +71,12 @@ classdef spinTensor < velocityGradientTensor
       end
     end
     
-    function v = SO3TangentVector(Omega,varargin)
+    function v = SO3TangentVector(Omega,rot,varargin)
       
       if isa(Omega.CS,'crystalSymmetry')
-        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',varargin{:});
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',rot,varargin{:});
       else
-        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',varargin{:});
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',rot,varargin{:});
       end
     end
     

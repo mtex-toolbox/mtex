@@ -20,11 +20,7 @@ function c = curl(SO3VF,varargin)
 % if SO3VF.tangentSpace.isRight
 %   SO3VFl = left(SO3VF);
 %   c = curl(SO3VFl,varargin{:});
-%   if nargin == 1 || ~isa(varargin{1},'rotation')  
-%     c = right(c);
-%   else
-%     c = right(c,varargin{1});
-%   end
+%   c = right(c);
 %   return
 % end
 
@@ -51,9 +47,9 @@ dy = ( f(:,4).z-f(:,1).z - (f(:,6).x-f(:,3).x) ) ./ delta;
 dz = ( f(:,5).x-f(:,2).x - (f(:,4).y-f(:,1).y) ) ./ delta;
 
 if SO3VF.tangentSpace.isRight
-  c = SO3TangentVector(dx,dy,dz,SO3VF.tangentSpace) + SO3VF.eval(rot);
+  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace) + SO3VF.eval(rot(:));
 else
-  c = SO3TangentVector(dx,dy,dz,SO3VF.tangentSpace) - SO3VF.eval(rot);
+  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace) - SO3VF.eval(rot(:));
 end
 
 end

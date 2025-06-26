@@ -49,6 +49,9 @@ else % make it a vector
   
   v = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
   if nargin<=2, tS=[]; end
+  if nargin<=1 
+    q_ref = q.id(q);
+  end
   out = SO3TangentVector(v,q_ref,tS);
 
 end

@@ -64,11 +64,11 @@ E = 0.3 * strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 % This can be modeled in MTEX via
 
 % this is in crystal coordinates
-% Omega = @(ori) SO3TangentVector(spinTensor(((ori * S(2)) : E) .* S(2)));
+% Omega = @(ori) SO3TangentVector(spinTensor(((ori * S(2)) : E) .* S(2)),ori);
 % Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) .* (S(2)),[-1 -2])
 
 % this is in specimen coordinates
-Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))));
+Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))),ori);
 
 % turn in into a harmonic function
 Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
