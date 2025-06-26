@@ -1,12 +1,11 @@
-function SO3TV = left(SO3TV,rot,varargin)
+function SO3TV = left(SO3TV)
 % change the representation of the tangent vectors to left sided
 %
 % Syntax
-%   SO3TV = left(SO3TV,rot)
+%   SO3TV = left(SO3TV)
 %
 % Input
 %  SO3TV - @SO3TangentVector
-%  rot - @rotation of the corresponding tangent space
 %
 % Output
 %  SO3TV - @SO3TangentVector (left-sided tangent vectors)
@@ -15,7 +14,8 @@ function SO3TV = left(SO3TV,rot,varargin)
 % SO3TangentVector/SO3TangentVector SO3TangentVector/right
 
 if SO3TV.tangentSpace.isRight
-  SO3TV = SO3TangentVector( rot.*SO3TV , -SO3TV.tangentSpace);
+  % transform from right to left
+  SO3TV = SO3TangentVector( SO3TV.rot.*SO3TV , SO3TV.rot, -SO3TV.tangentSpace);
 end
 
 end

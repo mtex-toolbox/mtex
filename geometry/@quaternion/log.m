@@ -46,7 +46,11 @@ if nargin > 2 && tS.isSpinTensor
   out = spinTensor(omega .* M);
 
 else % make it a vector
-  out = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
+  
+  v = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
+  if nargin<=2, tS=[]; end
+  out = SO3TangentVector(v,q_ref,tS);
+
 end
 
 

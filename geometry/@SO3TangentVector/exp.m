@@ -1,12 +1,11 @@
-function rot = exp(v,rot_ref,varargin)
-% rotation vector to rotation
+function rot = exp(v,varargin)
+% tangent vector to rotation
 %
 % Syntax
-%   rot = exp(v,ori_ref)  % orientation update
+%   rot = exp(v)  % orientation update
 %
 % Input
 %  v - @SO3TangentVector rotation vector in specimen coordinates
-%  ori_ref - @orientation @rotation
 %
 % Output
 %  rot  - @rotation
@@ -16,6 +15,7 @@ function rot = exp(v,rot_ref,varargin)
 
 
 tS = v.tangentSpace;
+rot_ref = v.rot;
 
 rot = exp@vector3d(v,rot_ref,tS);
 
