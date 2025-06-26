@@ -5,9 +5,6 @@ function out = log(q, q_ref, tS, varargin)
 %   v = log(q) % rotation vector with reference to the identical rotation
 %   v = log(q,q_ref) % rotation vector with reference q_ref
 %
-%   v = loq(q,'right')
-%   v = loq(q,'left')
-%
 % Input
 %  q - @quaternion
 %  q_ref - @quaternion
@@ -20,12 +17,12 @@ function out = log(q, q_ref, tS, varargin)
 
 % if reference point for tangential space is given - rotate
 if nargin>=2
-  if nargin>2 && tS.isLeft
-    %q = q .* q_ref';
-    q = itimes(q, q_ref,false);
-  else
+  if nargin>2 && tS.isRight
     %q = times(q_ref', q,1);
     q = itimes(q_ref, q,true);
+  else
+    %q = q .* q_ref';
+    q = itimes(q, q_ref,false);
   end
 end
 
@@ -51,3 +48,5 @@ if nargin > 2 && tS.isSpinTensor
 else % make it a vector
   out = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
 end
+
+
