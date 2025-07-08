@@ -111,7 +111,7 @@ poly = [poly; newPoly];
 end
 
 % new 2d grains
-grains2 = grain2d(VNew, poly, grains3.meanOrientation(oldId),...
+grains2 = grain2d(VNew, poly, grains3.prop.meanRotation(oldId),...
   grains3.CSList, grains3.phaseId(oldId), grains3.phaseMap, 'id', 1:length(poly));
 grains2.prop.Id3d = oldId;
 
