@@ -71,7 +71,7 @@ methods
     if isempty(id)
       error('The rotations which belong to the tangent vectors and defines the tangent space are missing.')
     end
-    SO3TV.rot = varargin{id(1)};
+    SO3TV.rot = rotation(varargin{id(1)});
     if length(SO3TV.rot) == numel(SO3TV)
       SO3TV.rot = reshape(SO3TV.rot,size(SO3TV));
     elseif any(size(SO3TV.rot)~=size(SO3TV))
@@ -98,20 +98,24 @@ methods
 
   function tV = transformTangentSpace(tV,newtS)
     
+    rot = tV.rot;
     if sign(tV.tangentSpace) > sign(newtS)
       % transform from left to right
-      tV = inv(tV.rot) .* tV;
+      tV = inv(rot) .* tV;
     elseif sign(tV.tangentSpace) < sign(newtS)
       % transform from right to left 
-      tV = tV.rot .* tV;
+      tV = rot .* tV;
     end
 
     if abs(newtS) > 1
       tV = spinTensor(tV);
     else
-      tV = SO3TangentVector(tV,newtS);
+      tV = SO3TangentVector(tV,rot,newtS);
     end
   end
+
+
+  
 end
 end
 
