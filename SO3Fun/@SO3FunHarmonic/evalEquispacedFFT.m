@@ -41,7 +41,9 @@ if ~strcmp(rot.scheme,'ClenshawCurtis')
          'for quadratureSO3Grid with ClenshawCurtis scheme.'])
 end
 
-ensureCompatibleSymmetries(SO3F,rot)
+% if isa(rot,'orientation')
+%   ensureCompatibleSymmetries(SO3VF,rot)
+% end
 
 % multivariate functions
 if length(SO3F)>1
