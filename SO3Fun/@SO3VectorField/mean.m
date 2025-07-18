@@ -9,6 +9,8 @@ function v = mean(SO3VF,varargin)
 
 res = get_option(varargin,'resolution',2.5*degree);
 nodes = equispacedSO3Grid(SO3VF.SRight,SO3VF.SLeft,'resolution',res);
-v = mean(SO3VF.eval(nodes(:)));
+v = mean(vector3d(SO3VF.eval(nodes(:))));
+
+
 
 end
