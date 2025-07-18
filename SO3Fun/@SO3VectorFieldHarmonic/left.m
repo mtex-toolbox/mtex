@@ -3,6 +3,7 @@ function SO3VF = left(SO3VF,varargin)
 %
 % Syntax
 %   SO3VF = left(SO3VF)
+%   SO3VF = left(SO3VF,'internTangentSpace')
 %
 % Input
 %  SO3VF - @SO3VectorFieldHarmonic
@@ -11,8 +12,12 @@ function SO3VF = left(SO3VF,varargin)
 %  SO3VF - @SO3VectorFieldHarmonic  (the evaluation directly gives left-sided tangent vectors)
 %
 
-if SO3VF.internTangentSpace.isRight
-  
+% change outer tangent space representation to left
+SO3VF.tangentSpace = abs(SO3VF.tangentSpace);
+
+
+if SO3VF.internTangentSpace.isRight && check_option(varargin,'internTangentSpace')
+
   % check for conservative vector field and compute gradient of antiderivative
   c = SO3VF.curl;
   n = sqrt(sum(norm(c.SO3F).^2));
@@ -23,8 +28,8 @@ if SO3VF.internTangentSpace.isRight
 
   % do quadrature
   bw = get_option(varargin,'bandwidth',SO3VF.bandwidth+1);
-  SO3VF = left@SO3VectorField(SO3VF);
-  SO3VF = SO3VectorFieldHarmonic(SO3VF,'bandwidth',bw,varargin{:});
+  f = SO3FunHandle(@(r) SO3VF.eval(r).xyz,SO3VF.CS);
+  SO3VF = SO3VectorFieldHarmonic(f,'bandwidth',bw,SO3VF.hiddenCS,SO3VF.hiddenSS,SO3VF.tangentSpace);
 
 end
 

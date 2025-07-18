@@ -21,7 +21,7 @@ f = SO3VF.fun(ori);
 
 % generate tangent space vector
 if ~isa(f,'SO3TangentVector')
-  f = SO3TangentVector(f.',ori(:),SO3VF.tangentSpace);
+  f = SO3TangentVector(f.',ori(:),SO3VF.internTangentSpace,SO3VF.hiddenCS,SO3VF.hiddenSS);
   f = reshape(f,size(ori));
 end
 

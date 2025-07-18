@@ -16,12 +16,13 @@ function SO3VF = abs(F,varargin)
 %  SO3VF - @SO3VectorField
 %
 
-SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.SRight,F.SLeft,F.tangentSpace);
+SO3VF = SO3VectorFieldHandle(@(rot) g(rot),F.hiddenCS,F.hiddenSS,F.tangentSpace);
 
 function g = g(rot)
 s = size(rot);
-g = F.eval(rot(:));
-g = vector3d(abs(g.xyz.')).';
+g = F.eval(rot);
+g = vector3d(abs(g.xyz));
+g = SO3TangentVector(g,rot(:),F.tangentSpace,F.hiddenCS,F.hiddenSS);
 g = reshape(g,s);
 end
 

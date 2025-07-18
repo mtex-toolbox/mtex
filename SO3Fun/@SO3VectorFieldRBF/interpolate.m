@@ -49,14 +49,15 @@ function SO3VF = interpolate(nodes, values, varargin)
 % See also
 % rotation/interp SO3FunRBF/interpolate 
 
-
 if isa(values,'SO3TangentVector') 
   tS = values.tangentSpace;
 else
-  tS = SO3TangentSpace.leftVector;
-  warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
-           'the left side tangent space. If you want them to be right sided ' ...
-           'use SO3TangentVector(v,SO3TangentSpace.rightVector) instead.'])
+  tS = SO3TangentSpace.extract(varargin);
+  if sign(tS)>0
+    warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
+             'the left side tangent space. If you want them to be right sided ' ...
+             'use SO3TangentVector(v,SO3TangentSpace.rightVector) instead.'])
+  end
 end
 
 if isa(nodes,'orientation')
@@ -74,7 +75,15 @@ else
   nodes.SS = specimenSymmetry;
 end
 
-SO3F = SO3FunRBF.interpolate(nodes(:),values.xyz,varargin{:});
+if isa(values,'vector3d')
+  values = values.xyz;
+end
+
+if any(size(values) ~= [numel(nodes),3])
+  error('The shape of the array of values does not match.')
+end
+
+SO3F = SO3FunRBF.interpolate(nodes(:),values,varargin{:});
 SO3VF = SO3VectorFieldRBF(SO3F,SRight,SLeft,tS);
 
 end

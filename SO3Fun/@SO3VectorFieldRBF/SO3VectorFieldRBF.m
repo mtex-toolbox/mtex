@@ -19,6 +19,7 @@ end
 
 properties (Hidden = true)
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
+  hiddenSymmetry symmetry = specimenSymmetry;
 end
 
 methods
