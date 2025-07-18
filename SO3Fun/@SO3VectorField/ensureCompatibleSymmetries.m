@@ -22,13 +22,13 @@ function ensureCompatibleSymmetries(SO3VF,varargin)
 %
 
 if isa(SO3VF,'SO3VectorField')
-  SO3VF = SO3FunHarmonic(0,SO3VF.SRight,SO3VF.SLeft);
+  f1 = SO3FunHarmonic(0,SO3VF.SRight,SO3VF.SLeft);
 end
 if nargin>1 && isa(varargin{1},'SO3VectorField')
   ensureCompatibleTangentSpaces(SO3VF,varargin{1});
   varargin{1} = SO3FunHarmonic(0,varargin{1}.SRight,varargin{1}.SLeft);
 end
 
-ensureCompatibleSymmetries(SO3VF,varargin{:},'SO3VectorField')
+ensureCompatibleSymmetries(f1,varargin{:},'SO3VectorField')
 
 end
