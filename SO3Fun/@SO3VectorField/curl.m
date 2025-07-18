@@ -26,7 +26,7 @@ function c = curl(SO3VF,varargin)
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  
-  c = SO3VectorFieldHandle(@(rot) SO3VF.curl(rot,varargin{:}),SO3VF.CS,SO3VF.SS,SO3VF.tangentSpace);
+  c = SO3VectorFieldHandle(@(rot) SO3VF.curl(rot,varargin{:}),SO3VF.hiddenCS,SO3VF.hiddenSS,SO3VF.tangentSpace);
   return
 end
 
@@ -46,10 +46,13 @@ dx = ( f(:,6).y-f(:,3).y - (f(:,5).z-f(:,2).z) ) ./ delta;
 dy = ( f(:,4).z-f(:,1).z - (f(:,6).x-f(:,3).x) ) ./ delta;
 dz = ( f(:,5).x-f(:,2).x - (f(:,4).y-f(:,1).y) ) ./ delta;
 
+cs = SO3VF.hiddenCS;
+ss = SO3VF.hiddenSS;
+
 if SO3VF.tangentSpace.isRight
-  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace) + SO3VF.eval(rot(:));
+  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace,cs,ss) + SO3VF.eval(rot(:));
 else
-  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace) - SO3VF.eval(rot(:));
+  c = SO3TangentVector(dx,dy,dz,rot(:),SO3VF.tangentSpace,cs,ss) - SO3VF.eval(rot(:));
 end
 
 end

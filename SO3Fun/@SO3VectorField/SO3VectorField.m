@@ -8,8 +8,15 @@ classdef SO3VectorField
 properties (Abstract = true)
   SRight % symmetry that acts from the right
   SLeft % symmetry that acts from the left
-  tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used
+  tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is asumed in evaluation
 end
+
+properties (Abstract = true,Hidden = true)
+  internTangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used by definition of the object
+  hiddenCS symmetry
+  hiddenSS symmetry
+end
+
 
 properties (Dependent = true)
   CS
@@ -33,7 +40,7 @@ methods
   function SO3VF = set.SS(SO3VF,SS)
     SO3VF.SLeft = SS;
   end
-  
+ 
 end
 
 methods (Hidden = true)

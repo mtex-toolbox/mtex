@@ -2,12 +2,14 @@ function SO3VF = quadrature(f, varargin)
 %
 % Syntax
 %   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value)
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(tVec)
 %   SO3VF = SO3VectorFieldHarmonic.quadrature(f)
 %   SO3VF = SO3VectorFieldHarmonic.quadrature(f, 'bandwidth', bw)
 %
 % Input
 %  rot - @rotation, @orientation
-%  value - @vector3d
+%  value - @vector3d, @spinTensor
+%  tVec - @SO3TangentVector
 %  f - function handle , @SO3VectorField
 %
 % Output
@@ -20,73 +22,110 @@ function SO3VF = quadrature(f, varargin)
 % SO3FunHarmonic.quadrature
 
 
-% --------------------- (1) Input is (nodes,values) -----------------------
+% TODO: adjust new tangential vector represnetation
+%       adjust for spin Tensors
 
-if isa(f,'rotation')
-  v = f;
-  y = getClass(varargin,'vector3d'); % function values
-  if isa(y,'SO3TangentVector') 
-    tS = y.tangentSpace;
-  else
-    tS = SO3TangentSpace.extract(varargin{:});
+
+
+% -------------------------------------------------------------------------
+% --------------------- (1) Input is (nodes,values) -----------------------
+% -------------------------------------------------------------------------
+
+% extract data
+if isa(f,'SO3TangentVector')
+  rot = f.rot;
+  tS = f.tangentSpace;
+  val = vector3d(f);
+  varargin = {f.hiddenCS, f.hiddenSS, varargin{:}};
+elseif isa(f,'rotation') && isa(varargin{1},'SO3TangentVector')
+  if varargin{1}.rot ~= f
+    error('The input nodes do not match to the rotations which define the tangent spaces of the tangent vectors.')
   end
-  y = y.xyz;
-  if isa(v,'orientation')
-    SRight = v.CS; SLeft = v.SS;
+  rot = f;
+  tS = varargin{1}.tangentSpace;
+  val = vector3d(varargin{1});
+  varargin = { varargin{1}.hiddenCS , varargin{1}.hiddenSS , varargin{:} };
+elseif isa(f,'rotation') && ( isa(varargin{1},'vector3d') || isa(varargin{1},'spinTensor') )
+  rot = f;
+  tS = SO3TangentSpace.extract(varargin{:});
+  val = vector3d(varargin{1});
+end
+
+% Do quadrature
+if exist('rot','var')
+
+  val = val.xyz;
+  [SRight,SLeft] = extractSym(varargin);
+  if isa(rot,'orientation')
+    if SRight.id==1
+      SRight = rot.SRight;
+    end
+    if SLeft.id==1
+      SLeft = rot.SLeft;
+    end
   else
-    [SRight,SLeft] = extractSym(varargin);
-    v = orientation(v,SRight,SLeft);
+    rot = orientation(rot,SRight,SLeft);
   end
+
   % Do quadrature without specimenSymmetry and set SLeft afterwards 
   % (if left sided tangent space) clear crystalSymmetry otherwise 
-  if tS.isRight
-    v.CS = crystalSymmetry;
+  if isa(rot,'quadratureSO3Grid')
+    if tS.isRight
+      rot = quadratureSO3Grid(rot,crystalSymmetry);
+    else
+      rot = quadratureSO3Grid(rot,rot.CS,specimenSymmetry);
+    end    
   else
-    v.SS = specimenSymmetry;
+    if tS.isRight
+      rot.CS = crystalSymmetry;
+    else
+      rot.SS = specimenSymmetry;
+    end
   end
-  SO3F = SO3FunHarmonic.quadrature(v, y, varargin{:});
+
+  SO3F = SO3FunHarmonic.quadrature(rot, val, varargin{:});
   SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
   return
+
 end
 
 
-% ------ (2) Get nodes, values and weights in case of SO3VectorField ------
+% -------------------------------------------------------------------------
+% ------------------------ (2) Transform to SO3Fun ------------------------
+% -------------------------------------------------------------------------
+
+tS = SO3TangentSpace.extract(varargin{:});
 
 if isa(f,'SO3VectorField')
   tS = f.tangentSpace;
-  SRight = f.CS; SLeft = f.SS;
-  f = SO3FunHandle(@(rot) f.eval(rot).xyz,SRight,SLeft);
+  SRight = f.hiddenCS; SLeft = f.hiddenSS;
+  % TODO: evaluation with quadratureSO3Grid
+  varargin = {varargin{:},'bandwidth',f.bandwidth};
+  f = SO3FunHandle(@(rot) f.eval(rot).xyz,f.CS,f.SS);
 end
 
 if isa(f,'function_handle')
-  [SRight,SLeft] = extractSym(varargin);
-  % Note that option 'right' in varargin is usually used to describe that the 
-  % output is wanted to be described w.r.t. right sided tangent vectors
-  % (NOT THE INPUT).
   
-  v = f(orientation.id(SRight,SLeft));
-  if isa(v,'SO3TangentVector') 
+  % extract tangent space
+  v = f(rotation.id);
+  if isa(v,'SO3TangentVector')
     tS = v.tangentSpace;
-  elseif isa(v,'spinTensor')
-    if v.CS == SRight
-      tS = SO3TangentSpace.right;
-    else
-      tS = SO3TangentSpace.left;      
-    end
-  else
-    tS = SO3TangentSpace.extract(varargin{:});
   end
 
-  if isnumeric(v) && numel(v)==3
+  % extract symmetry
+  [SRight,SLeft] = extractSym(varargin);
+
+  % construct SO3Fun
+  if isnumeric(v)
     f = SO3FunHandle(f,SRight,SLeft);
-  elseif isa(v,'vector3d')
-    f = SO3FunHandle(@(rot) f(rot).xyz,SRight,SLeft);
   elseif isa(v,'spinTensor')
     f = SO3FunHandle(@(rot) vector3d(f(rot)).xyz,SRight,SLeft);
   else
-    error('The given function handle do not fit to an SO3VectorField.')
+    f = SO3FunHandle(@(rot) f(rot).xyz,SRight,SLeft);
   end
+
 end
+
 
 % Do quadrature without specimenSymmetry and set SLeft afterwards 
 % (if left sided tangent space) clear crystalSymmetry otherwise 
@@ -97,9 +136,11 @@ else
   f.SS = specimenSymmetry;
 end
 
+% -------------------------------------------------------------------------
 % ---------------- (3) Do quadrature on the components --------------------
+% -------------------------------------------------------------------------
 
-SO3F = SO3FunHarmonic.quadrature(f,varargin{:});
+SO3F = SO3FunHarmonic(f,varargin{:});
 SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
 
 end

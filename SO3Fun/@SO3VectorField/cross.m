@@ -16,7 +16,7 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 
 if isa(SO3VF2, 'vector3d') && isscalar(SO3VF2)
   ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
-  SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2),SO3VF1.CS,SO3VF1.SS,SO3VF1.tangentSpace);
+  SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2),SO3VF1.hiddenCS,SO3VF1.hiddenSS,SO3VF1.tangentSpace);
   if SO3VF2.antipodal
     SO3VF = abs(SO3VF);
   end
@@ -29,6 +29,6 @@ if isa(SO3VF1, 'vector3d')
 end
 
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
-SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.CS,SO3VF1.SS,SO3VF1.tangentSpace);
+SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.hiddenCS,SO3VF1.hiddenSS,SO3VF1.tangentSpace);
 
 end
