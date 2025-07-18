@@ -48,6 +48,30 @@ properties
   rot
 end
 
+properties (Hidden = true)
+  hiddenCS symmetry = crystalSymmetry;
+  hiddenSS symmetry = specimenSymmetry;
+end
+
+% There is a left and a right tangent space representation.
+%
+% A SO3TangentVector w.r.t. left sided tangent space representation is
+% described by S * R, where S denotes a skew symmetric matrix (spin tensor)
+% and R is the rotation where the tangent space is located.
+% In case of right sided tangent space it is described by R * S.
+% 
+% Hence tangent vectors are defined by 2 parts:
+%   - the 3 components of the skew symmetric matrix S   --> vector3d
+%   - the rotation, where the tangent space is located  --> rot
+%
+% The most common application is the gradient of some SO3Fun (i.e. the 
+% evaluation of SO3VectorFields). Therefore only one of the symmetries is
+% preserved on the orientation (dependent on the tangent space 
+% representation). The other symmetry is hidden, but both symmetries 
+% interchange, if the tangent space representation is switched.
+%
+% Thats why, both symmetries are stored in the properties hiddenCS and hiddenSS.
+
 methods
 
   function SO3TV = SO3TangentVector(varargin)
@@ -55,8 +79,7 @@ methods
     
     % reconstruct SO3TangentVector (apply options and maybe change attributes)
     if nargin > 0 && isa(varargin{1},'SO3TangentVector')
-      varargin{end+1} = varargin{1}.rot;
-      varargin{end+2} = varargin{1}.tangentSpace;
+      varargin = {varargin{:}, varargin{1}.rot, varargin{1}.tangentSpace, varargin{1}.hiddenCS, varargin{1}.hiddenSS};
       varargin{1} = vector3d(varargin{1});
     end
 
@@ -64,30 +87,67 @@ methods
     SO3TV = SO3TV@vector3d(varargin{:});
 
     % tangent space representation
-    SO3TV.tangentSpace = SO3TangentSpace.extract(varargin{:});
-      
-    % rotations
-    id = find(cellfun(@(i) isa(i,'quaternion') , varargin));
+    tS = SO3TangentSpace.extract(varargin);
+    SO3TV.tangentSpace = tS;
+
+    % get rotations
+    id = find(cellfun(@(i) isa(i,'quaternion') , varargin),1);
     if isempty(id)
-      error('The rotations which belong to the tangent vectors and defines the tangent space are missing.')
+      error('The orientations which belong to the tangent vectors and defines the tangent space are missing.')
     end
-    SO3TV.rot = rotation(varargin{id(1)});
-    if length(SO3TV.rot) == numel(SO3TV)
-      SO3TV.rot = reshape(SO3TV.rot,size(SO3TV));
-    elseif any(size(SO3TV.rot)~=size(SO3TV))
+    rot = orientation(varargin{id});
+
+    % Bring both to same dimension size
+    sa = size(rot); sb = size(SO3TV);
+    maxDims = max(length(sa), length(sb));
+    sa(end+1:maxDims) = 1; sb(end+1:maxDims) = 1;
+
+    if length(rot) == numel(SO3TV)
+      rot = reshape(rot,size(SO3TV));
+    elseif any(sa~=sb)
       try 
-        SO3TV.rot = SO3TV.rot.*rotation.id(size(SO3TV));
+        rot = rot.*rotation.id(size(SO3TV));
       catch
-        error('The sizes of the tangent vectors and there rotations do not match.')
+        error('The sizes of the tangent vectors and there orientations do not match.')
       end
     end
+
+    % get symmetries
+    [cs,ss] = extractSym(varargin);
+    if cs.id==1
+      cs = rot.CS;
+    end
+    if ss.id==1
+      ss = rot.SS;
+    end
+    SO3TV.hiddenCS = cs;
+    SO3TV.hiddenSS = ss;
+
+    SO3TV.rot = rotation(rot);
 
   end
   
   % -----------------------------------------------------------------------
 
+  % Get and Set outer symmetries dependent of the tangent space representation
+  function r = get.rot(SO3TV)
+    r = orientation(SO3TV.rot);
+    if sign(SO3TV.tangentSpace)>0
+      r.CS = SO3TV.hiddenCS;
+      r.SS = ID1(SO3TV.hiddenSS);
+    else
+      r.CS = ID1(SO3TV.hiddenCS);
+      r.SS = SO3TV.hiddenSS;
+    end
+  end
+
+
+  % -----------------------------------------------------------------------
+
   % When rotating tangent vectors it may changes the representation of the
   % tangent space (left <-> right)
+  % this funtions are necessary for .left and .right methods 
+  % (we need to forget the tangent vector structure and rotate vector3d)
   function v = rotate(v,q,varargin)
     v = rotate@vector3d(vector3d(v),q,varargin{:});
   end
@@ -98,7 +158,10 @@ methods
 
   function tV = transformTangentSpace(tV,newtS)
     
-    rot = tV.rot;
+    rot = rotation(tV.rot);
+    cs = tV.hiddenCS;
+    ss = tV.hiddenSS;
+    
     if sign(tV.tangentSpace) > sign(newtS)
       % transform from left to right
       tV = inv(rot) .* tV;
@@ -110,7 +173,7 @@ methods
     if abs(newtS) > 1
       tV = spinTensor(tV);
     else
-      tV = SO3TangentVector(tV,rot,newtS);
+      tV = SO3TangentVector(tV,rot,newtS,cs,ss);
     end
   end
 
