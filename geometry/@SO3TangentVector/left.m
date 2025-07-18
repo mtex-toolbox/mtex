@@ -15,7 +15,7 @@ function SO3TV = left(SO3TV)
 
 if SO3TV.tangentSpace.isRight
   % transform from right to left
-  SO3TV = SO3TangentVector( SO3TV.rot.*SO3TV , SO3TV.rot, -SO3TV.tangentSpace);
+  SO3TV = SO3TangentVector( rotation(SO3TV.rot).*SO3TV , SO3TV.rot, -SO3TV.tangentSpace,SO3TV.hiddenCS,SO3TV.hiddenSS);
 end
 
 end
