@@ -69,6 +69,7 @@ classdef spinTensor < velocityGradientTensor
         end
         v = reshape(v,size(Omega));
       end
+      
     end
     
     function v = SO3TangentVector(Omega,rot,varargin)
@@ -78,6 +79,7 @@ classdef spinTensor < velocityGradientTensor
       else
         v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',rot,varargin{:});
       end
+
     end
     
     function rot = rotation(Omega)
