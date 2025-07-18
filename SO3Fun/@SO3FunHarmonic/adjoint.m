@@ -22,10 +22,14 @@ function SO3F = adjoint(rot,values, varargin)
 % Options
 %  bandwidth - maximal harmonic degree (default: 64)
 %  weights   - quadrature weights
+%  cutOffParameter - set parameter precision parameter m for nfft
 %
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
 %  'directComputation' - direct evaluation of Fourier sums (no nfft)
+%  'createPlan'        - NFFT3-Flags
+%  'keepPlan'          - NFFT3-Flags
+%  'deletePlan'        - NFFT3-Flags
 %
 % See also
 % SO3FunHarmonic/quadrature SO3FunHarmonic/adjointNFSOFT
