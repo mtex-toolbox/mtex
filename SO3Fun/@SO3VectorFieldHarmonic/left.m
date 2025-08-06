@@ -11,6 +11,10 @@ function SO3VF = left(SO3VF,varargin)
 % Output
 %  SO3VF - @SO3VectorFieldHarmonic  (the evaluation directly gives left-sided tangent vectors)
 %
+% Options
+%  internTangentSpace - Change the intern tangent space representation of SO3VF to left
+%
+
 
 % change outer tangent space representation to left
 SO3VF.tangentSpace = abs(SO3VF.tangentSpace);
