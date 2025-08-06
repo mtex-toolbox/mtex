@@ -24,8 +24,8 @@ end
 % determine which representation we want the evaluations to have. Hence if
 % we evaluate a SO3Vectorfield in some rotation, we obtain a tangent vector
 % w.r.t. the inner tangent space representation. Afterwards MTEX converts
-% this tangent vector to the desired representation decribed by the
-% property tangentSpace.
+% this tangent vector to the desired representation, which is described by 
+% the property tangentSpace.
 % 
 % Since for vector fields one of the symmmetries dissapear (dependent on 
 % the tangent space representation), we introduce 2 hidden symmetry 
@@ -33,8 +33,9 @@ end
 % SO3VectorFields properly.
 % Note that the symmetries of the inner SO3Fun depends on the inner tangent
 % space representation, while the symmetries of the vector field depends on
-% the outer tangent space.
+% the outer tangent space representation.
 %
+
 properties (Hidden = true)
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
   hiddenCS symmetry = crystalSymmetry;

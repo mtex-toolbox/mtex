@@ -17,8 +17,8 @@ function SO3VF = interpolate(nodes, values, varargin)
 %   SO3VF = SO3VectorFieldHarmonic.interpolate(nodes,y,'regularization',1e-4,'SobolevIndex',2)
 %
 % Input
-%  nodes - @rotation
-%  y     - @vector3d
+%  nodes - @rotation, @orientation
+%  y - @vector3d, @spinTensor, @SO3TangentVector
 %
 % Output
 %  SO3VF - @SO3VectorFieldHarmonic
@@ -40,42 +40,85 @@ if isa(nodes,'quadratureSO3Grid')
 end
 
 
-if isa(values,'SO3TangentVector') 
-  tS = values.tangentSpace;
-else
-  tS = SO3TangentSpace.extract(varargin);
-  if sign(tS)>0
-    warning(['The given vector3d values v are assumed to describe elements w.r.t. ' ...
-             'the left side tangent space. If you want them to be right sided ' ...
-             'use SO3TangentVector(v,SO3TangentSpace.rightVector) instead.'])
+% extract data (rot, val, tS)
+if isa(nodes,'SO3TangentVector')
+  
+  if nargin>1
+    varargin = {values,varargin{:}};
   end
+  
+  tS = SO3TangentSpace.extract(varargin{:},nodes.tangentSpace);
+  % Maybe change tangent space
+  nodes = transformTangentSpace(nodes,tS);
+  
+  rot = nodes.rot;
+  val = vector3d(nodes);
+  varargin = {nodes.hiddenCS, nodes.hiddenSS, varargin{:}};
+
+elseif isa(nodes,'rotation') && isa(values,'SO3TangentVector')
+  
+  tS = SO3TangentSpace.extract(varargin{:},values.tangentSpace);
+  % Maybe change tangent space
+  values = transformTangentSpace(values,tS);
+  
+  % check for same rotations & same symmetries
+  r = values.rot;
+  if isa(nodes,'orientation')
+    r.CS = nodes.CS; r.SS = nodes.SS;
+  end
+  if any(r(:) ~= nodes(:))
+    error('The input nodes have to be the same as the rotations which define the tangent spaces of the tangent vectors.')
+  end
+  
+  rot = values.rot;
+  val = vector3d(values);
+  varargin = { values.hiddenCS , values.hiddenSS , varargin{:} };
+
+elseif isa(nodes,'rotation') && ( isa(values,'vector3d') || isa(values,'spinTensor'))
+
+  rot = nodes;
+  tS = SO3TangentSpace.extract(varargin{:});
+  val = vector3d(values);
+  % It will be ensured later, that one of the symmetries of the input 
+  % orientation has id=1 (dependent on the tangent space representation) 
+
 end
 
-if isa(nodes,'orientation')
-  SRight = nodes.CS; SLeft = nodes.SS;
+
+% Check input values
+if isnumeric(val)
+  error('The input values have to be of class vector3d.')
+end
+if numel(val) ~= numel(rot)
+  error('The numbers of nodes and values do not match.')
+end
+
+
+% extract symmetries
+[SRight,SLeft] = extractSym(varargin);
+if isa(rot,'orientation')
+  if SRight.id==1
+    SRight = rot.CS;
+  end
+  if SLeft.id==1
+    SLeft = rot.SS;
+  end
 else
-  [SRight,SLeft] = extractSym(varargin);
-  nodes = orientation(nodes,SRight,SLeft);
+  rot = orientation(rot,SRight,SLeft);
 end
 
-% Do quadrature without specimenSymmetry and set SLeft afterwards
-% (if left sided tangent space) clear crystalSymmetry otherwise
+
+% For interpolation, one of the symmetries needs to have id=1.
+% This depends on the tangent space representation 
 if tS.isRight
-  nodes.CS = crystalSymmetry;
+  rot.CS = crystalSymmetry;
 else
-  nodes.SS = specimenSymmetry;
-end
-
-if isa(values,'vector3d')
-  values = values.xyz;
-end
-
-if any(size(values) ~= [numel(nodes),3])
-  error('The shape of the array of values does not match.')
+  rot.SS = specimenSymmetry;
 end
 
 
-SO3F = SO3FunHarmonic.interpolate(nodes(:),values.xyz,varargin{:});
+% do interpolation
+SO3F = SO3FunHarmonic.interpolate(rot(:),val.xyz,varargin{:});
 SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
 
 end
