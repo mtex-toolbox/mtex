@@ -3,7 +3,7 @@ function SO3VF = normalize(SO3VF)
 %
 
 % prevent additional quadrature
-f = SO3VectorFieldHandle(@(r) normalize(SO3VF.eval(r)),SO3VF.CS,SO3VF.SS);
-SO3VF = SO3VectorFieldRBF(f);
+SO3VF = normalize@SO3VectorField(SO3VF);
+SO3VF = SO3VectorFieldRBF(SO3VF);
 
 end
