@@ -1,39 +1,71 @@
-%%
 clear
+
+
+
+
+
+
+
+
+
+
+
+
+%%
+% -------------------------------------------------------------------------
+% --------------------- Test SO3VectorFieldHarmonics ----------------------
+% -------------------------------------------------------------------------
+
 
 % construct Vector Fields
 f = SO3Fun.dubna;
 cs = f.CS;
 ss = specimenSymmetry('222');
 f.SS = ss;
-g1 = f.grad
-g2 = g1.right
+g1 = f.grad;
+g2 = g1.right;
 h1 = g1.right('internTangentSpace');
-h2 = h1.left
+h2 = h1.left;
 
-% % Test left and right and constructor
+%% Test left and right and constructor
 
 % orientations
 r1 = orientation.rand(cs);
 r2 = orientation.rand(crystalSymmetry,ss);
 
 % test
-g1.eval(r1.symmetrise) - h2.eval(r1.symmetrise)
-g2.eval(r2.symmetrise) - h1.eval(r2.symmetrise)
+norm(g1.eval(r1.symmetrise) - h2.eval(r1.symmetrise))
+norm(g2.eval(r2.symmetrise) - h1.eval(r2.symmetrise))
 
-% % Test curl and antiderivative
+%% Test curl and antiderivative and gradient
 
 % curl
-norm(g1.curl)
-norm(g2.curl)
-norm(h1.curl)
-norm(h2.curl)
+norm(norm(g1.curl))
+norm(norm(g2.curl))
+norm(norm(h1.curl))
+norm(norm(h2.curl))
 
 % antiderivative
 norm(g1.antiderivative+1-SO3FunHarmonic(f))
 norm(g2.antiderivative+1-SO3FunHarmonic(f))
 norm(h1.antiderivative+1-SO3FunHarmonic(f))
 norm(h2.antiderivative+1-SO3FunHarmonic(f))
+
+%% Test divergence
+
+% left vs right div
+norm(g1.div - g2.div)
+norm(g1.div - h1.div)
+norm(g1.div - g1.div('check'))
+
+%% Test curl
+
+g = SO3VectorFieldHarmonic(SO3FunHarmonic.example.*[1,2,3]);
+h = g.right.curl;
+
+r = symmetrise(orientation.rand(cs));
+norm(norm ( r .* h.eval(r) - g.curl(r) ))
+
 
 %% Test quadrature
 clear
@@ -66,17 +98,104 @@ v = g.eval(r);
 h = SO3VectorFieldHarmonic.quadrature(r,v,'bandwidth',20,cs,ss,SO3TangentSpace.leftSpinTensor);
 norm(norm(h-g))
 
-%%
-
-g = g.right;
-
 % Test 4
-h = SO3VectorFieldHarmonic.quadrature(g);
+gr = g.right;
+h = SO3VectorFieldHarmonic.quadrature(gr);
 h = right(left(h,'internTangentSpace'));
-norm(norm(h-g))
+norm(norm(h-gr))
 
 % Test 5
+h1 = SO3VectorFieldHarmonic(g)
+h2 = SO3VectorFieldHarmonic(g.right)
+norm(norm(h1-h2.left))
+
+%% Test Evaluation routine 
+
+% Test 1
 q = quadratureSO3Grid(23,crystalSymmetry,ss);
-v = g.eval(q);
-v2 = g.eval(q(:));
+v = gr.eval(q);
+v2 = gr.eval(q(:));
 max(norm(vector3d(v)-vector3d(v2)))
+
+%% Test interpolate method
+clear
+
+f = SO3Fun.dubna;
+cs = f.CS;
+ss = specimenSymmetry('222');
+f.SS = ss;
+g = f.grad;
+N = 23;
+g.bandwidth = N;
+
+q = quadratureSO3Grid(N,cs);
+rot = q.fullGrid;
+val = g.eval(rot);
+val = right(val);
+
+h = SO3VectorFieldHarmonic.interpolate(rot,val,SO3TangentSpace.leftVector,'regularization',0,'bandwidth',N,'weights',q.weights,cs,ss);
+norm(norm(h-g))
+
+
+
+
+
+
+
+%%
+% -------------------------------------------------------------------------
+% ----------------------- Test gradient methods ---------------------------
+% -------------------------------------------------------------------------
+
+clear
+r = rotation.rand;
+
+% SO3FunHarmonic
+f = SO3FunHarmonic.example;
+norm(f.grad(r) - f.grad(r,'check'))
+
+% SO3FunCBF
+f = SO3FunCBF.example;
+h = SO3FunHarmonic(f);
+norm(f.grad(r) - h.grad(r))
+
+% SO3FunRBF
+f = SO3FunRBF.example;
+h = SO3FunHarmonic(f);
+norm(f.grad(r) - h.grad(r))
+
+%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
