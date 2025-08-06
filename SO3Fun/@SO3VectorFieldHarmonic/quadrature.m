@@ -134,7 +134,6 @@ if isa(f,'SO3VectorField')
   tS = SO3TangentSpace.extract(varargin{:},f.tangentSpace);
   f.tangentSpace = tS;
   SRight = f.hiddenCS; SLeft = f.hiddenSS;
-  % TODO: evaluation with quadratureSO3Grid
   varargin = {varargin{:},'bandwidth',f.bandwidth};
   f = SO3FunHandle(@(rot) f.eval(rot).xyz,f.CS,f.SS);
 end

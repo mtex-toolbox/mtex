@@ -123,7 +123,6 @@ methods
 
   % -----------------------------------------------------------------------
 
-  % TODO: Use check_symmetry in evaluation routine
   function check_symmetry(SO3VF)
     % check whether the symmetries of the inner SO3Fun are suitable to the 
     % symmetries of the vector field w.r.t. the tangent space

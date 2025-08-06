@@ -164,9 +164,18 @@ f = SO3FunRBF.example;
 h = SO3FunHarmonic(f);
 norm(f.grad(r) - h.grad(r))
 
+
+
 %%
+% -------------------------------------------------------------------------
+% ------------------------ Test SO3VectorFieldRBF -------------------------
+% -------------------------------------------------------------------------
 
-
+clear
+f = SO3Fun.dubna;
+ss = specimenSymmetry('222');
+f.SS = ss;
+g = SO3VectorFieldRBF(f.*[1,2,3])
 
 
 
