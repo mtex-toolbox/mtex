@@ -14,9 +14,27 @@ properties (Dependent = true)
   SRight
 end
 
+% The SO3TangentField objects have a inner tangent space representation.
+% Hence they are constructed and stored with respect to this.
+% Nevertheless, we can use the (ordinary) tangentSpace property to
+% determine which representation we want the evaluations to have. Hence if
+% we evaluate a SO3Vectorfield in some rotation, we obtain a tangent vector
+% w.r.t. the inner tangent space representation. Afterwards MTEX converts
+% this tangent vector to the desired representation, which is described by 
+% the property tangentSpace.
+% 
+% Since for vector fields one of the symmmetries dissapear (dependent on 
+% the tangent space representation), we introduce 2 hidden symmetry 
+% properties for the initial symmetries, to describe the symmetries of the 
+% SO3VectorFields properly.
+% Note that the symmetries of the inner SO3Fun depends on the inner tangent
+% space representation, while the symmetries of the vector field depends on
+% the outer tangent space representation.
+%
+
 properties (Hidden = true)
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
-  hiddenCS symmetry = specimenSymmetry;
+  hiddenCS symmetry = crystalSymmetry;
   hiddenSS symmetry = specimenSymmetry;
 end
   
