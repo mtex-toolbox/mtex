@@ -55,7 +55,7 @@ else
   end
 end
 
-g = SO3TangentVector(g,ori,tS);
+g = SO3TangentVector(g,ori,tS,SO3F.CS,SO3F.SS);
 g = reshape(g,s);
 
 end

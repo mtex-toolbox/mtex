@@ -32,22 +32,56 @@ if ~check_option(varargin,'conservative')
   n = sqrt(sum(norm(c.SO3F).^2));
   if n>1e-3
     error(['The vector field is not conservative (not the gradient of some SO3Fun),' ...
-           ' since the curl = ',n,' is not vanishing.'])
+           ' since the curl = ',n,' is not vanishing. ' ...
+           'Hence, we can not compute the antiderivative.'])
   end
 end
 
-% compute antiderivative
-fhat = zeros(deg2dim(SO3VF.bandwidth+1),1);
-for n=1:SO3VF.bandwidth
-  ind = deg2dim(n)+1:deg2dim(n+1);
-  Z = SO3VF.SO3F.fhat(ind,3);
-  Y = SO3VF.SO3F.fhat(ind,2);
-  Y = reshape(Y,2*n+1,2*n+1);
-  
-  l = (-n:n-1);
-  dd = (-1).^(l<0) .* sqrt((n+l+1).*(n-l))/2;
 
-  if SO3VF.internTangentSpace.isRight
+% the actual allgorithm
+tS = SO3VF.internTangentSpace;
+fhat = zeros(deg2dim(SO3VF.bandwidth+1),1);
+
+if tS.isLeft
+
+  for n=1:SO3VF.bandwidth
+
+    ind = deg2dim(n)+1:deg2dim(n+1);
+    Z = SO3VF.SO3F.fhat(ind,3);
+    Y = SO3VF.SO3F.fhat(ind,2);
+    Y = reshape(Y,2*n+1,2*n+1);
+    
+    % compute derivative of Wigner-d functions
+    l = (-n:n-1);
+    dd = (-1).^(l<0) .* sqrt((n+l+1).*(n-l))/2;
+    
+    % compute antiderivative
+    FHAT = reshape(Z,2*n+1,2*n+1) * 1i ./(-n:n);
+    if n==1
+      FHAT(:,n+1) = -Y(:,n+1+1)./dd(:,n+1);
+    else
+      FHAT(:,n+1) = (-Y(:,n+1+1)+dd(:,n+2).*FHAT(:,n+3))./dd(:,n+1);
+    end
+
+    % get Fourier coefficients
+    fhat(ind) = FHAT(:);
+
+  end
+
+else
+
+  for n=1:SO3VF.bandwidth
+
+    ind = deg2dim(n)+1:deg2dim(n+1);
+    Z = SO3VF.SO3F.fhat(ind,3);
+    Y = SO3VF.SO3F.fhat(ind,2);
+    Y = reshape(Y,2*n+1,2*n+1);
+
+    % compute derivative of Wigner-d functions 
+    l = (-n:n-1);
+    dd = (-1).^(l<0) .* sqrt((n+l+1).*(n-l))/2;
+
+    % compute antiderivative
     dd = dd.';
     FHAT = reshape(Z,2*n+1,2*n+1) * 1i ./(-n:n).';
     if n==1
@@ -55,18 +89,15 @@ for n=1:SO3VF.bandwidth
     else
       FHAT(n+1,:) = (Y(n+1+1,:)+dd(n+2,:).*FHAT(n+3,:))./dd(n+1,:);
     end
-  else
-    FHAT = reshape(Z,2*n+1,2*n+1) * 1i ./(-n:n);
-    if n==1
-      FHAT(:,n+1) = -Y(:,n+1+1)./dd(:,n+1);
-    else
-      FHAT(:,n+1) = (-Y(:,n+1+1)+dd(:,n+2).*FHAT(:,n+3))./dd(:,n+1);
-    end
+
+    % get Fourier coefficients
+    fhat(ind) = FHAT(:);
+
   end
-  
-  fhat(ind) = FHAT(:);
+
 end
 
+% construct antiderivative
 f = SO3FunHarmonic( fhat , SO3VF.hiddenCS,SO3VF.hiddenSS);
 
 if nargin > 1 && isa(varargin{1},'rotation')

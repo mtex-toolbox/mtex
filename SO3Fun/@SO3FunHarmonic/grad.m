@@ -30,29 +30,29 @@ end
 
 % eval at list of tensors of length zero -> nothing to do
 if nargin>1 && isa(varargin{1},'rotation') && isempty(varargin{1})
-  g = SO3TangentVector(vector3d,varargin{:}); 
+  g = SO3TangentVector(vector3d,varargin{:},SO3F.CS,SO3F.SS); 
   return
 end
 
 % SO3Fun has bandwidth zero -> nothing to do
 if SO3F.bandwidth == 0 
   if nargin>1 && isa(varargin{1},'rotation')
-    g = SO3TangentVector(vector3d.zeros(size(varargin{1})),varargin{:});
+    g = SO3TangentVector(vector3d.zeros(size(varargin{1})),varargin{:},SO3F.CS,SO3F.SS);
   else
-    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],...
-      SO3F.CS,specimenSymmetry) , SO3F.CS, SO3F.SS , varargin{:});
+    g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0]) , SO3F.CS, SO3F.SS , varargin{:});
   end
-  return; 
+  return;
 end
 
-tS = SO3TangentSpace.extract(varargin{:});
-% now the actual algorithm
 
+% now the actual algorithm
+tS = SO3TangentSpace.extract(varargin{:});
 fhat = zeros(deg2dim(SO3F.bandwidth+1),3);
 
 if tS.isLeft
 
   for n=1:SO3F.bandwidth
+   
     ind = deg2dim(n)+1:deg2dim(n+1);
     FHAT = reshape(SO3F.fhat(ind),2*n+1,2*n+1);
     
@@ -81,7 +81,7 @@ if tS.isLeft
   end
 
   % no more specimen symmetry
-  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry,varargin{:}) ,...
+  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,ID1(SO3F.SS),varargin{:}) ,...
     SO3F.CS,SO3F.SS,tS,'skipSymmetrise');
 
 else
@@ -116,12 +116,10 @@ else
   end
 
   % no more crystal symmetry
-  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,crystalSymmetry,SO3F.SS,varargin{:}),...
-    SO3F.CS,SO3F.SS ,tS,'skipSymmetrise');
+  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,ID1(SO3F.CS),SO3F.SS,varargin{:}),...
+    SO3F.CS,SO3F.SS,tS,'skipSymmetrise');
 
 end
-
-g.tangentSpace = tS;
 
 if nargin > 1 && isa(varargin{1},'rotation'), g = g.eval(varargin{1}); end
 
