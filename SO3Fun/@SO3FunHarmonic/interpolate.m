@@ -109,7 +109,7 @@ if strcmp(W,'Voronoi') || (isempty(W) && numel(nodes)<1e4)
 elseif isempty(W) || strcmp(W,'equal')
   W = 1/length(nodes);
 elseif length(W)>1
-  W = accumarray(ind,W);
+  W = accumarray(ind,W(:));
 end
 W = sqrt(W(:));
 
