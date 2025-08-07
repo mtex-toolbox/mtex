@@ -130,7 +130,7 @@ mean(SO3FunHandle(@(q) f.eval(q).*h.eval(q*v),c.CS))
 %%
 % If you want to compute the convolution of $f: {}_{'1'} \backslash SO(3) /_{S_R}
 % \to \mathbb{C}$ and $h \colon \mathbb S^2 /_{S_R} \to \mathbb C$ which
-% yields $f*h \colon \mathbb S^2/_{S_R} \to \mathbb C$ and is defined as
+% yields $f*h \colon \mathbb S^2/_{'1'} \to \mathbb C$ and is defined as
 %
 % $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq. $$
 %
