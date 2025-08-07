@@ -37,6 +37,17 @@ r2 = orientation.rand(crystalSymmetry,ss);
 norm(g1.eval(r1.symmetrise) - h2.eval(r1.symmetrise))
 norm(g2.eval(r2.symmetrise) - h1.eval(r2.symmetrise))
 
+%% Test eval
+
+% omit left symmetry
+e = r2.symmetrise.inv .* g1.eval(r2.symmetrise);
+norm(e-e(1))
+
+% omit right symmetry
+e = r1.symmetrise .* g2.eval(r1.symmetrise);
+norm(e-e(1))
+
+
 %% Test curl and antiderivative and gradient
 
 % curl
@@ -166,6 +177,8 @@ norm(f.grad(r) - h.grad(r))
 
 
 
+
+
 %%
 % -------------------------------------------------------------------------
 % ------------------------ Test SO3VectorFieldRBF -------------------------
@@ -173,38 +186,36 @@ norm(f.grad(r) - h.grad(r))
 
 clear
 f = SO3Fun.dubna;
+cs = f.CS;
 ss = specimenSymmetry('222');
 f.SS = ss;
-g = SO3VectorFieldRBF(f.*[1,2,3])
+g1 = SO3VectorFieldRBF(f.grad);
+g2 = g1.right;
 
+%% Test approximation
 
+norm(norm(f.grad-g1)) ./ norm(norm(f.grad))
 
+%% Test interpolate method
 
+rot = g1.SO3F.center;
+val = g1.eval(rot);
+h = SO3VectorFieldRBF.interpolate(rot,val,SO3TangentSpace.leftVector,cs,ss);
+norm(norm(h-g1)) / norm(norm(g1))
 
+%% Test evaluation routine
 
+r1 = orientation.rand(crystalSymmetry,ss);
+r2 = orientation.rand(cs);
 
+% Test 1
+e = r1.symmetrise.inv .* g1.eval(r1.symmetrise);
+norm(e-e(1))
 
+% Test 2
+e = r2.symmetrise .* g2.eval(r2.symmetrise);
+norm(e-e(1))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% Test 3
+norm( g1.eval(r1) - left(g2.eval(r1)) )
 
