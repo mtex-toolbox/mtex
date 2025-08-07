@@ -22,11 +22,13 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 % Syntax
 %   SO3TV = SO3TangentVector(x,y,z,ori)
 %   SO3TV = SO3TangentVector(v,ori,SO3TangentSpace.rightVector)
+%   SO3TV = SO3TangentVector(v,ori,SO3TangentSpace.rightVector,cs,ss)
 %
 % Input
 %  x,y,z - cart. coordinates
 %  v - @vector3d
 %  ori - @orientation
+%  cs,ss - @symmetry
 %
 % Output
 %  SO3TV - @SO3TangentVector

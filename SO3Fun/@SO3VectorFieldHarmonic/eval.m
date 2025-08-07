@@ -2,7 +2,7 @@ function f = eval(SO3VF,rot,varargin)
 % evaluate the SO3VectorFieldHarmonic in rotations
 % 
 % Syntax
-%   f = eval(SO3VF,rot)         % left tangent vector
+%   f = eval(SO3VF,rot)         
 %
 % Input
 %  rot - @rotation

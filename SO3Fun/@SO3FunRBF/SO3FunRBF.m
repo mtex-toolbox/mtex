@@ -61,6 +61,7 @@ methods
         return
       end
     end
+    
     if isa(center,'function_handle') || isa(center,'SO3Fun')
       SO3F = SO3FunRBF.approximate(center,varargin{:});
       return
