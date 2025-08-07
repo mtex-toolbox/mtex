@@ -2,7 +2,7 @@ function f = eval(SO3VF,ori,varargin)
 % evaluate the SO3VectorFieldHandle in rotations
 % 
 % Syntax
-%   f = eval(SO3VF,rot)         % left tangent vector
+%   f = eval(SO3VF,rot)    
 %
 % Input
 %   rot - @rotation
@@ -16,6 +16,7 @@ function f = eval(SO3VF,ori,varargin)
 % if isa(ori,'orientation')
 % ensureCompatibleSymmetries(SO3VF,ori)
 % end
+
 
 f = SO3VF.fun(ori);
 
