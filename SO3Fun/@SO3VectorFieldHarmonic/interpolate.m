@@ -111,9 +111,9 @@ end
 % For interpolation, one of the symmetries needs to have id=1.
 % This depends on the tangent space representation 
 if tS.isRight
-  rot.CS = crystalSymmetry;
+  rot.CS = ID1(rot.CS);
 else
-  rot.SS = specimenSymmetry;
+  rot.SS = ID1(rot.SS);
 end
 
 

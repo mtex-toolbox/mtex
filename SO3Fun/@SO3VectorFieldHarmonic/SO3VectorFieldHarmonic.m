@@ -72,7 +72,7 @@ methods
     % dependent on the intern tangent space representation)
     SO3VF.hiddenCS = cs;
     SO3VF.hiddenSS = ss;
-    if sign(tS)>0
+    if tS.isLeft
       SO3F.SRight = cs;
       SO3F.SLeft = ID1(ss);
     else

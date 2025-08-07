@@ -41,6 +41,15 @@ end
 methods
   function SO3VF = SO3VectorFieldHandle(fun,varargin)
     
+    if isa(fun,'SO3VectorField')
+      SO3VF.fun = @(rot) fun.eval(rot);
+      SO3VF.internTangentSpace = fun.tangentSpace;
+      SO3VF.tangentSpace = SO3TangentSpace.extract(varargin,fun.tangentSpace);
+      SO3VF.hiddenCS = fun.hiddenCS;
+      SO3VF.hiddenSS = fun.hiddenSS;
+      return
+    end
+    
     SO3VF.fun = fun;
     
     % set symmetries

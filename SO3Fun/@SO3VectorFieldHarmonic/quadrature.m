@@ -135,7 +135,7 @@ if isa(f,'SO3VectorField')
   f.tangentSpace = tS;
   SRight = f.hiddenCS; SLeft = f.hiddenSS;
   varargin = {varargin{:},'bandwidth',f.bandwidth};
-  f = SO3FunHandle(@(rot) f.eval(rot).xyz,f.CS,f.SS);
+  f = SO3FunHandle(@(rot) f.eval(rot).xyz,SRight,SLeft);
 end
 
 if isa(f,'function_handle')
@@ -158,13 +158,12 @@ if isa(f,'function_handle')
 end
 
 
-% Do quadrature without specimenSymmetry and set SLeft afterwards 
-% (if left sided tangent space) clear crystalSymmetry otherwise 
-% this means left (the default) is the better option
+% For quadrature, one of the symmetries needs to have id=1.
+% This depends on the tangent space representation 
 if tS.isRight
-  f.CS = crystalSymmetry;
+  f.CS = ID1(f.CS);
 else
-  f.SS = specimenSymmetry;
+  f.SS = ID1(f.SS);
 end
 
 % -------------------------------------------------------------------------
