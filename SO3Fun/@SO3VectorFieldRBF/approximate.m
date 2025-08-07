@@ -17,55 +17,60 @@ function SO3VF = approximate(f, varargin)
 % See also
 % SO3FunRBF/approximate SO3VectorFieldRBF SO3VectorFieldHarmonic/quadrature
 
+% extract tangentSpace and symmetries
+tS = SO3TangentSpace.extract(varargin{:});
+[SRight,SLeft] = extractSym(varargin);
+
+
+if isa(f,'SO3VectorFieldRBF')
+  tS = SO3TangentSpace.extract(varargin{:},f.tangentSpace);
+  if f.internTangentSpace == tS
+    SO3VF = f;
+    f.tangentSpace = tS;
+    return
+  end
+end
+
 
 if isa(f,'SO3VectorField')
-  tS = f.tangentSpace;
-  SRight = f.CS; SLeft = f.SS;
+  tS = SO3TangentSpace.extract(varargin{:},f.tangentSpace);
+  f.tangentSpace = tS;
+  SRight = f.hiddenCS; SLeft = f.hiddenSS;
   f = SO3FunHandle(@(rot) f.eval(rot).xyz,SRight,SLeft);
 end
 
+
 if isa(f,'function_handle')
-  [SRight,SLeft] = extractSym(varargin);
-  % Note that option 'right' in varargin is usually used to describe that the 
-  % output is wanted to be described w.r.t. right sided tangent vectors
-  % (NOT THE INPUT).
   
-  v = f(orientation.id(SRight,SLeft));
-  if isa(v,'SO3TangentVector') 
+  % extract tangent space
+  v = f(rotation.id);
+  if isa(v,'SO3TangentVector')
     tS = v.tangentSpace;
-  elseif isa(v,'spinTensor')
-    if v.CS == SRight
-      tS = SO3TangentSpace.right;
-    else
-      tS = SO3TangentSpace.left;      
-    end
-  else
-    tS = SO3TangentSpace.extract(varargin{:});
   end
 
-  if isnumeric(v) && numel(v)==3
+  % construct SO3Fun
+  if isnumeric(v)
     f = SO3FunHandle(f,SRight,SLeft);
-  elseif isa(v,'vector3d')
-    f = SO3FunHandle(@(rot) f(rot).xyz,SRight,SLeft);
   elseif isa(v,'spinTensor')
     f = SO3FunHandle(@(rot) vector3d(f(rot)).xyz,SRight,SLeft);
   else
-    error('The given function handle do not fit to an SO3VectorField.')
+    f = SO3FunHandle(@(rot) f(rot).xyz,SRight,SLeft);
   end
+
 end
 
-% Do quadrature without specimenSymmetry and set SLeft afterwards 
-% (if left sided tangent space) clear crystalSymmetry otherwise 
-% this means left (the default) is the better option
+
+% For approximation, one of the symmetries needs to have id=1.
+% This depends on the tangent space representation
 if tS.isRight
-  f.CS = crystalSymmetry;
+  f.CS = ID1(f.CS);
 else
-  f.SS = specimenSymmetry;
+  f.SS = ID1(f.SS);
 end
 
 % ----------------- Do approximation on the components --------------------
 
-SO3F = SO3FunRBF.approximate(f,varargin{:});
+SO3F = SO3FunRBF(f,varargin{:});
 SO3VF = SO3VectorFieldRBF(SO3F,SRight,SLeft,tS);
 
 end
