@@ -42,9 +42,12 @@ methods
   function SO3VF = SO3VectorFieldHandle(fun,varargin)
     
     if isa(fun,'SO3VectorField')
+      % (When there are multiple concatenations, we try to prevent the tangential space from switching back and forth repeatedly.)
+      tS = fun.tangentSpace;
+      fun.tangentSpace = fun.internTangentSpace;
       SO3VF.fun = @(rot) fun.eval(rot);
-      SO3VF.internTangentSpace = fun.tangentSpace;
-      SO3VF.tangentSpace = SO3TangentSpace.extract(varargin,fun.tangentSpace);
+      SO3VF.internTangentSpace = fun.internTangentSpace;
+      SO3VF.tangentSpace = SO3TangentSpace.extract(varargin,tS);
       SO3VF.hiddenCS = fun.hiddenCS;
       SO3VF.hiddenSS = fun.hiddenSS;
       return

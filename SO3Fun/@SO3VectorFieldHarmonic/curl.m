@@ -28,7 +28,7 @@ Gy = SO3VF.y.grad(SO3VF.internTangentSpace);
 Gz = SO3VF.z.grad(SO3VF.internTangentSpace);
 
 c = SO3VectorFieldHarmonic([Gy.z-Gz.y;Gz.x-Gx.z;Gx.y-Gy.x],...
-  SO3VF.CS,SO3VF.SS,SO3VF.internTangentSpace);
+  SO3VF.hiddenCS,SO3VF.hiddenSS,SO3VF.internTangentSpace);
 c.tangentSpace = SO3VF.tangentSpace;
 
 if SO3VF.internTangentSpace.isRight
