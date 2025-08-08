@@ -1,17 +1,13 @@
-function v = plus(v1,v2,varargin)
+function v = plus(v1,v2)
+% overload plus +
+
+if ~isa(v1,'SO3TangentVector') || ~isa(v2,'SO3TangentVector')
+  error('For tangent vectors, it is only possible to calculate the cross product with tangent vectors.')
+end
+tS = v1.tangentSpace;
+v2 = transformTangentSpace(v2,tS);
 
 tS = ensureCompatibleTangentSpaces(v1,v2,'equal');
-v = plus@vector3d(v1,v2,varargin{:});
-
-if isa(v1,'SO3TangentVector')
-  r = v1.rot;
-  cs = v1.hiddenCS;
-  ss = v1.hiddenSS;
-else
-  r = v2.rot;
-  cs = v2.hiddenCS;
-  ss = v2.hiddenSS;
-end
-v = SO3TangentVector(v,r,tS,cs,ss);
+v = plus@vector3d(v1,v2);
 
 end
