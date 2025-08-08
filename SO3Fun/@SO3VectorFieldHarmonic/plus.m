@@ -3,39 +3,39 @@ function SO3VF = plus(SO3VF1, SO3VF2)
 %
 % Syntax
 %   SO3VF = SO3VF1 + SO3VF2
-%   SO3VF = a + SO3VF1
-%   SO3VF = SO3VF1 + a
-%   SO3VF = SO3VF1 + SO3F;
-%   SO3VF = SO3F + SO3VF2;
 %
 % Input
 %  SO3VF1, SO3VF2 - @SO3VectorField
-%  a - double, @vector3d
-%  SO3F - @SO3Fun
 %
 % Output
-%  SO3VF - @SO3VectorField
+%  SO3VF - @SO3VectorFieldHarmonic
 %
 
-if isa(SO3VF1,'vector3d')
-  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
-  SO3VF1 = SO3VF1.xyz.';
-end
-if isnumeric(SO3VF1) || isa(SO3VF1,'SO3Fun')
-  SO3VF = SO3VF2;
-  SO3VF.SO3F = SO3VF1 + SO3VF2.SO3F;
-  return
+if ~isa(SO3VF1,'SO3VectorField') || ~isa(SO3VF2,'SO3VectorField')
+  error('In case of SO3VectorFields, it only make sense to sum with other SO3VectorFields.')
 end
 
-if isnumeric(SO3VF2) || isa(SO3VF2,'vector3d') || isa(SO3VF2,'SO3Fun')
-  SO3VF = SO3VF2 + SO3VF1;
-  return
+
+% ensure compatible symmetries
+em = (SO3VF1.hiddenCS ~= SO3VF2.hiddenCS) || (SO3VF1.hiddenSS ~= SO3VF2.hiddenSS);
+if em
+  error('The symmetries are not compatible. (Calculations with @SO3VectorField''s needs suitable intern symmetries.)')
 end
 
-ensureCompatibleSymmetries(SO3VF1,SO3VF2)
+
+% get tangent space and make compatible
+tS = SO3VF1.tangentSpace;
+tS_I = SO3VF1.internTangentSpace;
+SO3VF1.tangentSpace = tS_I;
+SO3VF2.tangentSpace = tS_I;
+
+% transform to vector fields and maybe change internTangentSpace to tangentSpace
 SO3VF1 = SO3VectorFieldHarmonic(SO3VF1);
 SO3VF2 = SO3VectorFieldHarmonic(SO3VF2);
+
+% summation of compatible Vector Fields
 SO3VF = SO3VF1;
-SO3VF.SO3F = SO3VF1.SO3F+SO3VF2.SO3F;
+SO3VF.SO3F = SO3VF1.SO3F + SO3VF2.SO3F;
+SO3VF.tangentSpace = tS;
 
 end
