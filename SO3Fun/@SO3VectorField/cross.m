@@ -3,32 +3,36 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 %
 % Syntax
 %   SO3VF = cross(SO3VF1, SO3VF2)
-%   SO3VF = cross(v, SO3VF2)
-%   SO3VF = cross(SO3VF1, v)
 %
 % Input
 %   SO3VF1, SO3VF2 - @SO3VectorField
-%   v - @vector3d
 %
 % Output
 %   SO3VF - @SO3VectorField
 %
 
-if isa(SO3VF2, 'vector3d') && isscalar(SO3VF2)
-  ensureCompatibleTangentSpaces(SO3VF1,SO3VF2);
-  SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2),SO3VF1.hiddenCS,SO3VF1.hiddenSS,SO3VF1.tangentSpace);
-  if SO3VF2.antipodal
-    SO3VF = abs(SO3VF);
-  end
-  return
+if ~isa(SO3VF1,'SO3VectorField') ||  ~isa(SO3VF2,'SO3VectorField')
+  error('For SO3VectorFields, it only make sense to calculate the pointwise cross product with other SO3VectorFields.')
 end
 
-if isa(SO3VF1, 'vector3d')
-  SO3VF = -cross(SO3VF2,SO3VF1);
-  return
+
+% ensure compatible symmetries
+em = (SO3VF1.hiddenCS ~= SO3VF2.hiddenCS) || (SO3VF1.hiddenSS ~= SO3VF2.hiddenSS);
+if em
+  error('The symmetries are not compatible. (Calculations with @SO3VectorField''s needs suitable intern symmetries.)')
 end
 
-ensureCompatibleSymmetries(SO3VF1,SO3VF2)
-SO3VF = SO3VectorFieldHandle(@(rot) cross(SO3VF1.eval(rot),SO3VF2.eval(rot)),SO3VF1.hiddenCS,SO3VF1.hiddenSS,SO3VF1.tangentSpace);
+
+% get tangent space and make compatible 
+% (When there are multiple concatenations, we try to prevent the tangential space from switching back and forth repeatedly.)
+tS = SO3VF1.tangentSpace;
+tS_I = SO3VF1.internTangentSpace;
+SO3VF1.tangentSpace = tS_I;
+SO3VF2.tangentSpace = tS_I;
+
+% standard fallback
+fun = @(rot) cross( SO3VF1.eval(rot) , SO3VF2.eval(rot) );
+SO3VF = SO3VectorFieldHandle(fun,SO3VF1.hiddenCS,SO3VF1.hiddenSS,tS_I);
+SO3VF.tangentSpace = tS;
 
 end

@@ -15,6 +15,6 @@ function SO3VF = rotate(SO3VF,varargin)
 % See also
 % SO3VectorFieldHandle/rotate
 
-SO3VF = SO3VectorFieldHandle(@(rot) SO3VF.eval(rot),SO3VF.CS,SO3VF.SS);
+SO3VF = SO3VectorFieldHandle(SO3VF);
 
 SO3VF = rotate(SO3VF,varargin{:});
