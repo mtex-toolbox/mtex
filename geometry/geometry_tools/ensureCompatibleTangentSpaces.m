@@ -9,8 +9,10 @@ end
 if isa(v2,'SO3TangentVector') || isa(v2,'SO3VectorField')
   tS2 = v2.tangentSpace;
 end
+% TODO: change this (This shouldnt be an error. The tangent spaces should be changed to be suitable.)
 if  ~isempty(tS1) && ~isempty(tS2) && tS1 ~= tS2
-  error('You are mixing left and right sided representation of the tangent spaces.')
+  error(['You are mixing left and right sided representation of the tangent spaces. ' ...
+    'Change the Code to ensure suitable representations.'])
 end
 
 % Obtain tangent space
