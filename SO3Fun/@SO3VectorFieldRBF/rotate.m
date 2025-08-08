@@ -1,4 +1,4 @@
-function SO3VF = rotate(SO3VF, rot,varargin)
+function SO3VF = rotate(SO3VF, q,varargin)
 % rotate a SO3 vector field by one rotation
 %
 % Syntax
@@ -16,21 +16,21 @@ function SO3VF = rotate(SO3VF, rot,varargin)
 % SO3VectorFieldHandle/rotate
 
 if check_option(varargin,'right')
-  cs = SO3VF.CS.rot;
-  if length(cs)>2 && ~any(rot == cs(:))
+  cs = SO3VF.hiddenCS;
+  if length(cs.rot)>2 && ~any(q == cs.rot(:))
     warning('Rotating an SO3VectorField with crystal symmetry will remove the crystal symmetry')
-    SO3VF.CS = crystalSymmetry;
+    SO3VF.hiddenCS = ID1(cs);
   end
 else
-  ss = SO3VF.SS.rot;
-  if length(ss)>2 && ~any(rot == ss(:))
+  ss = SO3VF.hiddenSS;
+  if length(ss.rot)>2 && ~any(q == ss.rot(:))
     warning('Rotating an SO3VectorField with specimen symmetry will remove the specimen symmetry')
-    SO3VF.SS = specimenSymmetry;
+    SO3VF.hiddenSS = ID1(ss);
   end
 end
 
 
-SO3VF.SO3F = rotate(SO3VF.SO3F, rot,varargin{:});
+SO3VF.SO3F = rotate(SO3VF.SO3F, q,varargin{:});
 
 
 end
