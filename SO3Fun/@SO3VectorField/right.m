@@ -14,4 +14,6 @@ function SO3VF = right(SO3VF,varargin)
 % change outer tangent space representation to right
 SO3VF.tangentSpace = -abs(SO3VF.tangentSpace);
 
+% TODO: FLag: internTangentSpace
+
 end

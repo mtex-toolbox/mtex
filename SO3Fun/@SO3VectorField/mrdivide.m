@@ -12,10 +12,10 @@ function SO3VF = mrdivide(SO3VF,s)
 %  SO3VF - @SO3VectorField
 %
 
-if ~isnumeric(s)
+if ~isnumeric(s) || ~isscalar(s)
   error('Second argument has to be numeric. Use ./ instead.')
 end
 
-SO3VF = times(SO3VF,inv(s));
+SO3VF = times(1./s,SO3VF);
 
 end
