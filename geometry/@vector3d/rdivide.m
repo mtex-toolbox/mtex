@@ -1,5 +1,5 @@
 function v = rdivide(v1,d)
-% scalar division v ./ s
+% pointwise division v ./ s
 
 if isa(d,'SO3VectorField') || isa(d,'S2VectorField')
   v = (1./d) .* v1;

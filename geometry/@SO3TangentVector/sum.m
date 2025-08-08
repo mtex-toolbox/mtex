@@ -1,4 +1,5 @@
 function s = sum(v,varargin)
+% overload sum
 
 s = sum@vector3d(v,varargin{:});
 

@@ -1,17 +1,11 @@
-function v = rdivide(v1,v2,varargin)
+function v = rdivide(v,a)
+% overload pointwise division ./
 
-tS = ensureCompatibleTangentSpaces(v1,v2,'equal');
-v = rdivide@vector3d(v1,v2,varargin{:});
-
-if isa(v1,'SO3TangentVector')
-  r = v1.rot;
-  cs = v1.hiddenCS;
-  ss = v1.hiddenSS;
-else
-  r = v2.rot;
-  cs = v2.hiddenCS;
-  ss = v2.hiddenSS;
+if ~isnumeric(a)
+  error(['For tangent vectors, there is no division method. ' ...
+    'It is only possible to divide by numbers.'])
 end
-v = SO3TangentVector(v,r,tS,cs,ss);
+
+v = times(v,1./a);
 
 end

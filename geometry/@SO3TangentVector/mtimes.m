@@ -1,19 +1,11 @@
-function v = mtimes(v1,v2,varargin)
+function v = mtimes(v1,v2)
+% overload product *
 
-tS = ensureCompatibleTangentSpaces(v1,v2,'equal');
-v = mtimes@vector3d(v1,v2,varargin{:});
-
-if isa(v,'vector3d')
-  if isa(v1,'SO3TangentVector')
-    r = v1.rot;
-    cs = v1.hiddenCS;
-    ss = v1.hiddenSS;
-  else
-    r = v2.rot;
-    cs = v2.hiddenCS;
-    ss = v2.hiddenSS;
-  end
-  v = SO3TangentVector(v,r,tS,cs,ss);
+if ~isnumeric(v1) && ~isnumeric(v2)
+  error(['For tangent vectors, there is no multiplication method. ' ...
+    'It is only possible to scale and sum them.'])
 end
+
+v = mtimes@vector3d(v1,v2);
 
 end
