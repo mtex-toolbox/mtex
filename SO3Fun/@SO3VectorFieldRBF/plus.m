@@ -24,7 +24,7 @@ end
 
 
 % symmetries and tangent spaces have to coincide
-if isa(SO3VF1,'SO3VectorFieldRBF') && isa(SO3VF2,'SO3VectorFieldRBF') && sign(SO3VF1.internTangentSpace) == sign(SO3V2.internTangentSpace)
+if isa(SO3VF1,'SO3VectorFieldRBF') && isa(SO3VF2,'SO3VectorFieldRBF') && sign(SO3VF1.internTangentSpace) == sign(SO3VF2.internTangentSpace)
   fun = SO3VF1.SO3F + SO3VF2.SO3F;
   % Note that if the SO3FunRBF's do not match, we may obtain a SO3FunHandle
   if isa(fun,'SO3FunRBF')

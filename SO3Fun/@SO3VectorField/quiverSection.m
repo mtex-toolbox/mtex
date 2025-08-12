@@ -38,7 +38,7 @@ function quiverSection(SO3VF,varargin)
 % See also
 % saveFigure Plotting
 
-oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
+oS = newODFSectionPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,varargin{:});
 
 % only plot the real part of SO3VF
 % TODO: Add isReal for SO3VectorField
