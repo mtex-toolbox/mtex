@@ -15,7 +15,7 @@ function h = quiver3(SO3VF,varargin)
 
 
 % generate a new 3d projection of the orientation space
-oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,'project2FundamentalRegion',...
+oP = newOrientationPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,'project2FundamentalRegion',...
   varargin{:});
 
 % generate the plotting grid

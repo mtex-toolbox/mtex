@@ -1,16 +1,6 @@
 clear
 
 
-
-
-
-
-
-
-
-
-
-
 %%
 % -------------------------------------------------------------------------
 % --------------------- Test SO3VectorFieldHarmonics ----------------------
@@ -75,7 +65,7 @@ g = SO3VectorFieldHarmonic(SO3FunHarmonic.example.*[1,2,3]);
 h = g.right.curl;
 
 r = symmetrise(orientation.rand(cs));
-norm(norm ( r .* h.eval(r) - g.curl(r) ))
+norm(norm ( r .* h.eval(r) - vector3d(g.curl(r)) ))
 
 
 %% Test quadrature
@@ -116,8 +106,8 @@ h = right(left(h,'internTangentSpace'));
 norm(norm(h-gr))
 
 % Test 5
-h1 = SO3VectorFieldHarmonic(g)
-h2 = SO3VectorFieldHarmonic(g.right)
+h1 = SO3VectorFieldHarmonic(g);
+h2 = SO3VectorFieldHarmonic(g.right);
 norm(norm(h1-h2.left))
 
 %% Test Evaluation routine 
@@ -145,7 +135,7 @@ val = g.eval(rot);
 val = right(val);
 
 h = SO3VectorFieldHarmonic.interpolate(rot,val,SO3TangentSpace.leftVector,'regularization',0,'bandwidth',N,'weights',q.weights,cs,ss);
-norm(norm(h-g))
+norm(norm(h-g)) / norm(norm(h))
 
 
 
@@ -210,12 +200,12 @@ r2 = orientation.rand(cs);
 
 % Test 1
 e = r1.symmetrise.inv .* g1.eval(r1.symmetrise);
-norm(e-e(1))
+norm(norm(e-e(1)))
 
 % Test 2
 e = r2.symmetrise .* g2.eval(r2.symmetrise);
-norm(e-e(1))
+norm(norm(e-e(1)))
 
 % Test 3
-norm( g1.eval(r1) - left(g2.eval(r1)) )
+norm(norm( g1.eval(r1) - left(g2.eval(r1)) ))
 

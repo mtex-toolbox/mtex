@@ -1,8 +1,8 @@
-function varargout = quiver(sVF,varargin)
-% quiver spherical vector field
+function varargout = quiver(SO3VF,varargin)
+% quiver rotational vector field
 %
 % Syntax
-%   quiver3(sVF)
+%   quiver(SO3VF)
 %
 % Options
 %  normalized - normalize vectors
@@ -10,10 +10,10 @@ function varargout = quiver(sVF,varargin)
 %  maxHeadSize - head size
 
 % See also
-%   S2VectorField/plot
+% SO3VectorField/plot
 %
 
 % plot the function values
-[varargout{1:nargout}] = plot(sVF,varargin{:});
+[varargout{1:nargout}] = plot(SO3VF,varargin{:});
 
 end

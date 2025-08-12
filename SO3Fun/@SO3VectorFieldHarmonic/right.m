@@ -4,6 +4,7 @@ function SO3VF = right(SO3VF,varargin)
 % Syntax
 %   SO3VF = right(SO3VF)
 %   SO3VF = right(SO3VF),'internTangentSpace')
+%
 % Input
 %  SO3VF - @SO3VectorFieldHarmonic
 %
