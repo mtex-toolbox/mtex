@@ -16,11 +16,7 @@ if ~isa(SO3VF1,'SO3VectorField') || ~isa(SO3VF2,'SO3VectorField')
 end
 
 
-% ensure compatible symmetries
-em = (SO3VF1.hiddenCS ~= SO3VF2.hiddenCS) || (SO3VF1.hiddenSS ~= SO3VF2.hiddenSS);
-if em
-  error('The symmetries are not compatible. (Calculations with @SO3VectorField''s needs suitable intern symmetries.)')
-end
+ensureCompatibleSymmetries(SO3VF1,SO3VF2)
 
 
 % get tangent space and make compatible 

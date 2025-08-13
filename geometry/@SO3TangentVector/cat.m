@@ -7,16 +7,9 @@ tS = v.tangentSpace;
 r = [];
 
 for i = ind(1:end)
-
-  % ensure compatible symmetries
-  em = (v.hiddenCS ~= varargin{i}.hiddenCS) || (v.hiddenSS ~= varargin{i}.hiddenSS);
-  if em
-    error('The symmetries are not compatible. (Calculations with @SO3TangentVector''s needs suitable intern symmetries.)')
-  end
-
+  ensureCompatibleSymmetries(v,varargin{i})
   varargin{i} = transformTangentSpace(varargin{i},tS);
   r = cat(dim,r,varargin{i}.rot);
-
 end
 
 v = cat@vector3d(dim,varargin{:});

@@ -7,7 +7,7 @@ end
 tS = v1.tangentSpace;
 v2 = transformTangentSpace(v2,tS);
 
-tS = ensureCompatibleTangentSpaces(v1,v2,'equal');
+ensureCompatibleTangentSpaces(v1,v2,'equal');
 v = plus@vector3d(v1,v2);
 
 end
