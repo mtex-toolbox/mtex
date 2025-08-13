@@ -22,7 +22,7 @@ switch s(1).type
       v.rot = subsasgn(v.rot,s(1),b);
       v.isNormalized = false;
     else
-      ensureCompatibleTangentSpaces(v,b);
+      b = transformTangentSpace(b,v.tangentSpace);
       v.x = subsasgn(v.x,s(1),b.x);
       v.y = subsasgn(v.y,s(1),b.y);
       v.z = subsasgn(v.z,s(1),b.z);
