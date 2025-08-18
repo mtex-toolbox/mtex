@@ -56,7 +56,7 @@ classdef splineFilter < EBSDFilter
         [tq,F.alpha] = smoothn({tq.x,tq.y,tq.z},F.alpha,rob{:});
             
         % project back to orientation space
-        ori = orientation(expquat(vector3d(tq{:}),quaternion(qmean)),ori.CS,ori.SS);
+        ori = orientation(expquat(vector3d(tq{:}),quaternion(qmean),'right'),ori.CS,ori.SS);
       end
     end
     

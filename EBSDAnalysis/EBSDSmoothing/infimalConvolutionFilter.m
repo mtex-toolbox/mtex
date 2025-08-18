@@ -210,7 +210,7 @@ classdef infimalConvolutionFilter < EBSDFilter
       u(~mask) = u_sav(~mask);
       u_hat = reshape(u,M,N,dim);
       
-      %ori = orientation(expquat(vector3d(u_hat(:,:,1),u_hat(:,:,2),u_hat(:,:,3)),quaternion(qmean)),ori.CS,ori.SS);
+      %ori = orientation(expquat(vector3d(u_hat(:,:,1),u_hat(:,:,2),u_hat(:,:,3)),quaternion(qmean),'right'),ori.CS,ori.SS);
       
       ori.a = u_hat(:,:,1);
       ori.b = u_hat(:,:,2);

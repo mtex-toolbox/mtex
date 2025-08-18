@@ -79,7 +79,7 @@ classdef halfQuadraticFilter < EBSDFilter
         g = g ./ lambda;
         
         % update u
-        u = expquat(g,u);
+        u = expquat(g,u,'right');
                 
         iter = iter + 1;
       end

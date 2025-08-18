@@ -1,12 +1,12 @@
-function q = expquat(tq,q)
+function r = expquat(tq,varargin)
 % matrix exponential to convert skew symmetric matrices into quaternions
 %
 % Syntax
-%   q = expquat(M)
-%   q = expquat(T)
-%   q = expquat(tq)
-%   q = expquat(tq)
-%   q = expquat(tq,q) % exponential map relative to quaternion q
+%   r = expquat(M)
+%   r = expquat(T)
+%   r = expquat(tq)
+%   r = expquat(tq)
+%   r = expquat(tq,q) % exponential map relative to quaternion q
 %
 % Input
 %  M - skew symmetric matrix ~ element of the Lie algebra
@@ -15,7 +15,7 @@ function q = expquat(tq,q)
 %  a - [a12, a13, a23] matrix entries of the skew symmetric matrix
 %
 % Output
-%  q - @quaternion
+%  r - @quaternion
 %
 % See also
 % quaternion_matrix Euler axis2quat hr2quat
@@ -36,19 +36,16 @@ tq = vector3d(reshape(tq,[],3).').';
 
 end
 
-% norm of the vector is rotational angle
-omega = norm(tq);
-
-invOmega = 1./omega;
-invOmega(omega==0) = 0;
-tq = (sin(omega/2) .* invOmega) .* tq ;
-
-[x,y,z] = double(tq);
-
-if nargin == 2 
-  q =  times(q, quaternion(cos(omega/2),x,y,z),0);
+% extract data
+if nargin>1 && isa(varargin{1},'quaternion')
+  q = varargin{1};
 else
-  q = quaternion(cos(omega/2),x,y,z);
+  q = quaternion.id;
 end
+tS = SO3TangentSpace.extract(varargin);
+
+% perform exponential map
+r = exp(tq,q,tS);
+
 
 end
