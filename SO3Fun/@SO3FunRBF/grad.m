@@ -82,7 +82,8 @@ for issq = length(qSS):-1:1
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
-g = SO3TangentVector(g,rot,tS,SO3F.CS,SO3F.SS);
+g = SO3TangentVector(g,rot,SO3TangentSpace.leftVector,SO3F.CS,SO3F.SS);
+g = transformTangentSpace(g,tS);
 
 % TODO: consider antipodal
 if SO3F.antipodal
