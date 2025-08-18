@@ -146,9 +146,12 @@ methods
 
   % -----------------------------------------------------------------------
 
+  % TODO: rotating tangent vectors is not clear. 
+  %       It could be defined as rotation of the tangent space with q or as
+  %       rotation of the vector.
   % When rotating tangent vectors it may changes the representation of the
   % tangent space (left <-> right)
-  % this funtions are necessary for .left and .right methods 
+  % This funtions are necessary for .left and .right methods 
   % (we need to forget the tangent vector structure and rotate vector3d)
   function v = rotate(v,q,varargin)
     v = rotate@vector3d(vector3d(v),q,varargin{:});

@@ -102,12 +102,19 @@ sqrt(mean(abs(SO3F1).^2))
 norm(SO3F1)
 
 %% Differentiation
-% The gradient of a $SO(3)$ function in a specific point can be described
-% by a <vector3d.vector3d.html three-dimensional vector> which can be
-% computed by the command <SO3Fun.grad.html |grad|>
+% The gradient of a $SO(3)$ function in a specific point is described
+% by a <SO3TangentVector.SO3TangentVector.html SO3TangentVector>-object, 
+% which can be computed by the command <SO3Fun.grad.html |grad|>
 
 grad(SO3F1,R)
 
+%%
+% This |SO3TangentVector| describes an element of a tangent space on the 
+% rotation group $SO(3)$ at some specific rotation.
+%
+% For detailed information on this tangent space representation, see
+% <SO3FunTangentSpace.html Tangent Space Representation on SO(3)>
+%
 %%
 % The gradients of a $SO(3)$ function in all points form a $SO(3)$
 % vector field and are returned by the function <SO3Fun.grad.html |grad|> 

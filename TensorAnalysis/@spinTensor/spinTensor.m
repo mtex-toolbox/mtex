@@ -99,6 +99,21 @@ classdef spinTensor < velocityGradientTensor
     end
     
     function rot = exp(Omega,ori_ref,tS)
+      % tangent vector to rotation
+      %
+      % Syntax
+      %   mori = exp(v) % misorientation in specimen coordinates
+      %   ori = exp(v,ori_ref) % orientation update
+      %   ori = exp(v,ori_ref,tS) % orientation update
+      %
+      % Input
+      %  v       - @vector3d, @SO3TangentVector
+      %  ori_ref - @orientation, @rotation
+      %  tS      - @SO3TangentSpace
+      %
+      % Output
+      %  mori - @rotation
+      %  ori  - @orientation
       
       rot = orientation(Omega);
       if nargin > 1
