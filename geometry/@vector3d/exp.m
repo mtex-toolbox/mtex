@@ -22,11 +22,17 @@ function rot = exp(v,varargin)
 % Miller/exp orientation/log
 
 
+% -------------------------------------------------------------------------
+% ---------------------- exponential map on S2 ----------------------------
+% -------------------------------------------------------------------------
+if nargin > 1 && isa(varargin{1},'vector3d')
+  rot = normalize(varargin{1} + v);
+  return
+end
 
-% if nargin > 1 && isa(varargin{1},'vector3d')
-%   rot = normalize(rot_ref + v);
-%   return
-% end
+% -------------------------------------------------------------------------
+% ---------------------- exponential map on SO(3) -------------------------
+% -------------------------------------------------------------------------
 
 % extract data
 if nargin>1 && isa(varargin{1},'quaternion')
