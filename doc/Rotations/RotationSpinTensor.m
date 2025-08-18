@@ -98,7 +98,7 @@ v = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector); v * sqrt(14)
 rot_ref * rot_123
 
 % using a disorientation vector
-exp(v,rot_ref,SO3TangentSpace.rightVector)
+exp(vector3d(v),rot_ref,SO3TangentSpace.rightVector)
 
 % using a spin tensor
 exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
@@ -109,7 +109,7 @@ exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
 rot_123 * rot_ref
 
 % using a disorientation vector
-exp(v,rot_ref,SO3TangentSpace.leftVector)
+exp(vector3d(v),rot_ref,SO3TangentSpace.leftVector)
 
 % using a spin tensor
 exp(S,rot_ref,SO3TangentSpace.leftSpinTensor)
@@ -135,7 +135,7 @@ ori = ori_ref * mori_123
 % Computing the right tangential vector gives us the disorientation vector
 % in crystal coordinates
 
-v = log(ori,ori_ref,SO3TangentSpace.rightVector); round(v)
+v = Miller(log(ori,ori_ref,SO3TangentSpace.rightVector),ori.CS); round(v)
 
 exp(v,ori_ref,SO3TangentSpace.rightVector)
 
