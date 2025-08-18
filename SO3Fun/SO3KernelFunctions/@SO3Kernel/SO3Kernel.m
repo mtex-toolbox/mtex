@@ -126,10 +126,13 @@ classdef SO3Kernel
     function A = calcFourier(psi,L,maxAngle)
       
       if nargin == 2, maxAngle = pi;end      
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);
+      epsilon = getMTEXpref('FFTAccuracy',1E-2);  % SO3Riesz.A --> This Error bound may be not good enough
       small = 0;      
       warning off; %#ok<*WNOFF>
       
+      % TODO: Do this quadrature without loop 
+      % (Bump.grad)
+      % (SO3SobolevKernel.grad) ()
       for l = 0:L
         fun = @(omega) psi.eval(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
         A(l+1) = 2/pi*quadgk(fun ,0,maxAngle,'MaxIntervalCount',2000); %#ok<AGROW>

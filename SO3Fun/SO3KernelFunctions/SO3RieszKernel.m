@@ -3,26 +3,13 @@ classdef SO3RieszKernel < SO3Kernel
 % 
 % |q1-q2|^2 = <q1-q2,q1-q2> = |q1|^2 + |q2|^2 - 2<q1,q1> = 2 - 2 cos w/2
 % 
+% We can define the Riesz kernel $\psi_{s}$ depending on a parameter 
+% $s$ by 
 %
-% 
-% $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
-% 
-% for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
-% Poussin kernel additionaly has the unique property that for
-% a given halfwidth it can be described exactly by a finite number of 
-% Fourier coefficients. This kernel is recommended for Texture analysis as 
-% it is always positive in orientation space and there is no truncation 
-% error in Fourier space.
-%
-% Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ 
-% depending on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its 
-% finite Chebyshev expansion
-%
-% $$ \psi_{s}(q_1,q_2) = \frac{1}{\lVert q_1  q_2 \rVert^s}$$.
+% $$ \psi_{s}(q_1,q_2) = \frac{1}{\lVert q_1 - q_2 \rVert^s}$$.
 %
 % Syntax
 %   psi = SO3RieszKernel(s)
-%   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree)
 %
 % Input
 %  s - exponent
@@ -36,9 +23,17 @@ end
       
 methods
     
-  function psi = SO3RieszKernel(s)
+  function psi = SO3RieszKernel(s,varargin)
 
     if nargin == 1, psi.s = s; end
+    
+    % extract bandwidth
+    L = get_option(varargin,'bandwidth',1000);
+
+    acc = getMTEXpref('FFTAccuracy');
+    setMTEXpref('FFTAccuracy',1e-10)
+    psi.A = calcFourier(psi,1000);
+    setMTEXpref('FFTAccuracy',acc)
 
   end
   
@@ -49,6 +44,17 @@ methods
   function value = eval(psi,co2)    
     
     value = 1./(((1 - co2)./2).^(psi.s / 2));
+
+  end
+
+  function value = grad(psi,co2)    
+
+    if nargin == 2
+      value = -psi.s/8 * sqrt(1-co2.^2) .* 1./(((1 - co2)./2).^(psi.s / 2 +1));
+      %value = 2 * psi.C * psi.kappa *co2.^(2*psi.kappa-1);
+    else      
+      value = SO3KernelHandle(@(co2) -psi.s/8 * sqrt(1-co2.^2) .* 1./(((1 - co2)./2).^(psi.s / 2 +1)));
+    end
 
   end
   

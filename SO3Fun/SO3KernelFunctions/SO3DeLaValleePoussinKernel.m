@@ -5,7 +5,8 @@ classdef SO3DeLaValleePoussinKernel < SO3Kernel
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
-% for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
+% for $t\in[0,1]$, where $B$ denotes the Beta function and kappa is a 
+% positive integer. The de la Vallee 
 % Poussin kernel additionally has the unique property that for
 % a given halfwidth it can be described exactly by a finite number of 
 % Fourier coefficients. This kernel is recommended for Texture analysis as 
