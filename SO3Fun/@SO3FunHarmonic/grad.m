@@ -6,7 +6,7 @@ function g = grad(SO3F,varargin)
 %   g = SO3F.grad(rot) % evaluate the gradient in rot
 %
 %   % go 5 degree in direction of the gradient
-%   ori_new = exp(rot,5*degree*normalize(g)) 
+%   ori_new = exp(5*degree*normalize(g),rot) 
 %
 %   % the right tangent vector
 %   g = SO3F.grad(rot,SO3TangentSpace.rightVector)
