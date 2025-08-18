@@ -2,7 +2,7 @@ function [x,value] = steepestDescent(fun,x,varargin)
 % find minimum with steepest descent
 %
 % Input
-%  fun - @S2Fun, @SO3Fun
+%  fun - @S2Fun
 %  x   - initial seed @vector3d, @rotation
 %
 % Output

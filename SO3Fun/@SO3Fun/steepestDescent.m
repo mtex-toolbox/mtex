@@ -23,7 +23,7 @@ for k = 1:maxIter
     g = normalize(G.eval(ori));
   end
   % prepare for linesearch
-  line_ori = exp(g(:) * omega,repmat(ori(:),1,length(omega)));
+  line_ori = exp(g(:) * omega,repmat(ori(:),1,length(omega)),G.tangentSpace);
   
   % evaluate along lines
   if check_option(varargin,'noNFFT')
