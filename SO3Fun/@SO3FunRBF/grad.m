@@ -54,18 +54,22 @@ epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
 g = vector3d.zeros(size(rot));
 
 % compute the distance matrix and evaluate the kernel
-for issq = 1:length(qSS)
+for issq = length(qSS):-1:1
 
-  d = abs(dot_outer( SO3F.center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
+  d = abs(dot_outer( center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse
   %   d(d<=cos(epsilon/2)) = 0;   % array size gets to big
   [i,j] = find(d>cos(epsilon/2));
   d = d(d>cos(epsilon/2));
+  d = d(:);
     
   % the normalized logarithm
-  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),tS);
+  r1 = reshape(qSS(issq) * center(i),[],1);
+  r2 = reshape(q2(j),[],1);
+
+  v = r2 .* Miller(log(r1,r2,SO3TangentSpace.rightVector),r1.CS);
   v = v.normalize;
   
   % set up vector3d matrix - a tangential vector for any pair of
