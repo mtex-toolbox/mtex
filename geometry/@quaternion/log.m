@@ -1,5 +1,10 @@
-function out = log(q, q_ref, tS, varargin)
-% the logarithmic map that translates a rotation into a rotation vector
+function out = log(q, varargin)
+% the logarithmic map that translates a rotation into a tangent vector.
+%
+% Therefore it converts a given rotation, relative to a reference rotation, 
+% into its corresponding tangent vector in the tangent space at the 
+% reference. 
+% Hence, the log-function computes the relative rotation.
 %
 % Syntax
 %   v = log(q) % rotation vector with reference to the identical rotation
@@ -10,19 +15,28 @@ function out = log(q, q_ref, tS, varargin)
 %  q_ref - @quaternion
 %
 % Output
-%  v - @vector3d
+%  v - @SO3TangentVector, @spinTensor
 %
 % See also
-% quaternion/logm vector3d/exp spinTensor/spinTensor
+% quaternion/logm orientation/log vector3d/exp spinTensor/spinTensor
+
+% extract data
+if nargin>1 && isa(varargin{1},'quaternion')
+  q_ref = varargin{1};
+else
+  q_ref = quaternion.id;
+end
+tS = SO3TangentSpace.extract(varargin);
+
 
 % if reference point for tangential space is given - rotate
-if nargin>=2
-  if nargin>2 && tS.isRight
+if q_ref ~= quaternion.id
+  if tS.isRight
     %q = times(q_ref', q,1);
-    q = itimes(q_ref, q,true);
+    q = itimes(q_ref, q,true); % inv(q_ref) .* q 
   else
     %q = q .* q_ref';
-    q = itimes(q, q_ref,false);
+    q = itimes(q, q_ref,false); % q .* inv(q_ref)
   end
 end
 
@@ -34,13 +48,13 @@ denum(denum == 0) = inf;
 omega = omega ./ denum;
 
 % make it askew symmetric matrix / spin tensor
-if nargin > 2 && tS.isSpinTensor
+if tS.isSpinTensor
   
   M = zeros([3,3,size(q)]);
 
-  M(2,1,:) =  q.d; M(1,2,:) = -M(2,1,:);
-  M(3,1,:) = -q.c; M(1,3,:) = -M(3,1,:); 
-  M(3,2,:) =  q.b; M(2,3,:) = -M(3,2,:);
+  M(2,1,:) =  q.d(:); M(1,2,:) = -M(2,1,:);
+  M(3,1,:) = -q.c(:); M(1,3,:) = -M(3,1,:); 
+  M(3,2,:) =  q.b(:); M(2,3,:) = -M(3,2,:);
 
   % make it a spinTensor
   out = spinTensor(omega .* M);
@@ -48,10 +62,6 @@ if nargin > 2 && tS.isSpinTensor
 else % make it a vector
   
   v = vector3d(omega .* q.b, omega .* q.c, omega .* q.d);
-  if nargin<=2, tS=[]; end
-  if nargin<=1 
-    q_ref = q.id(q);
-  end
   out = SO3TangentVector(v,q_ref,tS);
 
 end

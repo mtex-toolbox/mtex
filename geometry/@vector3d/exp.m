@@ -1,4 +1,4 @@
-function rot = exp(v,rot_ref,tS)
+function rot = exp(v,varargin)
 % rotation vector to rotation
 %
 % Syntax
@@ -21,29 +21,34 @@ function rot = exp(v,rot_ref,tS)
 % See also
 % Miller/exp orientation/log
 
-if nargin > 1 && isa(rot_ref,'vector3d')
 
-  rot = normalize(rot_ref + v);
 
+% if nargin > 1 && isa(varargin{1},'vector3d')
+%   rot = normalize(rot_ref + v);
+%   return
+% end
+
+% extract data
+if nargin>1 && isa(varargin{1},'quaternion')
+  rot_ref = varargin{1};
 else
+  rot_ref = quaternion.id;
+end
+tS = SO3TangentSpace.extract(varargin);
 
-  % norm of the vector is rotational angle
-  omega = norm(v);
 
-  alpha = zeros(size(omega));
-  ind = omega ~=0;
-  alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
+% norm of the vector is rotational angle
+omega = norm(v);
 
-  if nargin > 1 && isa(rot_ref,'rotation')
-    rot = rotation(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
-  else
-    rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
-  end
+alpha = zeros(size(omega));
+ind = omega ~=0;
+alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
 
-  if (nargin>2 && tS.isLeft) || ...
-      (isa(v,'SO3TangentVector') && v.tangentSpace.isLeft)
-    rot =  times(rot, rot_ref,1);
-  elseif nargin>1
-    rot =  times(rot_ref,rot,0);
-  end
+rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
+
+% rotate tangent space to reference rotation
+if tS.isLeft
+  rot =  times(rot, rot_ref,1);
+else
+  rot =  times(rot_ref,rot,0);
 end
