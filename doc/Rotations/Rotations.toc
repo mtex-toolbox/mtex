@@ -5,4 +5,5 @@ RotationPlotting    Plotting
 RotationImport      Import
 RotationExport      Export 
 RotationFibre       Fibres
+RotationTangentSpace     Tangent Spaces and Tangent Vectors on the Rotation Group
 RotationSpinTensor  Spin Tensor

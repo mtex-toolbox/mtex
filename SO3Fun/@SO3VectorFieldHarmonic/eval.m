@@ -38,7 +38,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
     warning('During evaluation: The symmetries of the quadratureSO3Grid do not match to the symmetries of the SO3VectorField.')
   end
   
-  if SO3VF.SO3F.CS == rot.CS && SO3VF.SO3F.SS == rot.SS % no symmetries or identic tangent spaces
+  if SO3VF.SO3F.CS == rot.CS && SO3VF.SO3F.SS == rot.SS % no symmetries or identical tangent spaces
     xyz = evalEquispacedFFT(SO3VF.SO3F,rot,varargin{:});
   else
     % xyz = eval(SO3VF.SO3F,rot(:),varargin{:});

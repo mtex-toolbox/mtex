@@ -11,16 +11,16 @@ properties (Abstract = true)
   tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is asumed in evaluation
 end
 
-% The SO3TangentField objects have a inner tangent space representation.
+% The SO3VectorField objects have a inner tangent space representation.
 % Hence they are constructed and stored with respect to this.
 % Nevertheless, we can use the (ordinary) tangentSpace property to
 % determine which representation we want the evaluations to have. Hence if
-% we evaluate a SO3Vectorfield in some rotation, we obtain a tangent vector
+% we evaluate a SO3VectorField in some rotation, we obtain a tangent vector
 % w.r.t. the inner tangent space representation. Afterwards MTEX converts
 % this tangent vector to the desired representation, which is described by 
 % the property tangentSpace.
 % 
-% Since for vector fields one of the symmmetries dissapear (dependent on 
+% Since for vector fields one of the symmetries disappear (dependent on 
 % the tangent space representation), we introduce 2 hidden symmetry 
 % properties for the initial symmetries, to describe the symmetries of the 
 % SO3VectorFields properly.

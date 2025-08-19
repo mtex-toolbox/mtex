@@ -17,7 +17,6 @@ ODFExport                         Export
 SO3FunSymmetricFunctions          Symmetry
 SO3FunConvolution                 Convolution
 SO3FunMultivariate                Multivariate Functions
-SO3FunVectorField                 Vector Field
-SO3FunTangentSpace                Tangent Space on the Rotation Group
+SO3FunVectorField                 Rotational Vector Fields
 SO3Kernels                        Rotational Kernel Functions
 WignerFunctions                   Wigner-D Functions

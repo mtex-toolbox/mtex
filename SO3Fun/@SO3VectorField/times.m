@@ -9,7 +9,7 @@ function SO3VF = times(SO3VF1,SO3VF2)
 %
 % Input
 %  SO3VF - @SO3VectorField
-%  a - double, @vector3d
+%  a - double
 %  SO3F - @SO3Fun
 %
 % Output

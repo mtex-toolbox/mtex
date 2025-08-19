@@ -113,7 +113,7 @@ grad(SO3F1,R)
 % rotation group $SO(3)$ at some specific rotation.
 %
 % For detailed information on this tangent space representation, see
-% <SO3FunTangentSpace.html Tangent Space Representation on SO(3)>
+% <RotationTangentSpace.html Tangent Space Representation on SO(3)>
 %
 %%
 % The gradients of a $SO(3)$ function in all points form a $SO(3)$
