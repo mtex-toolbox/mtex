@@ -10,12 +10,12 @@ function [values,modes] = max(SO3F,varargin)
 %   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions
 %   SO3F = max(SO3F1, SO3F2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % compute the maximum of a multivariate function along dim
+%   % compute the maximum of a vector valued function along dim
 %   SO3F = max(SO3Fmulti,[],dim)
 %
 % Input
 %  SO3F, SO3F1, SO3F2 - @SO3Fun
-%  SO3Fmulti          - a multivariate @SO3Fun
+%  SO3Fmulti          - a vector valued @SO3Fun
 %  c                  - double
 %
 % Output

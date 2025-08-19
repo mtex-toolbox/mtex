@@ -10,12 +10,12 @@ function varargout = max(varargin)
 %   sF = max(sF1, sF2) % maximum of two spherical functions
 %   sF = max(sF1, sF2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % compute the maximum of a multivariate function along dim
+%   % compute the maximum of a vector valued function along dim
 %   sF = max(sFmulti,[],dim)
 %
 % Input
 %  sF, sF1, sF2 - @S2Fun
-%  sFmulti - a multivariate @S2Fun
+%  sFmulti - a vector valued @S2Fun
 %  c       - double
 %
 % Output

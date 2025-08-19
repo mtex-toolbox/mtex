@@ -55,7 +55,7 @@ if check_option(varargin,'killPlan')
 end
 
 
-% Multivariate functions
+% vector valued functions
 % if length(rot)~=numel(values)
 %   s = size(values); s = s(2:end);
 %   values = reshape(values,length(rot),[]);
@@ -73,7 +73,7 @@ end
 % -------------- (1) get weights and values for quadrature ----------------
 
 sz = size(values);
-len = prod(sz(2:end)); % multivariate case
+len = prod(sz(2:end)); % vector valued case
 values = reshape(values,[],len);
 
 if isa(rot,'orientation')

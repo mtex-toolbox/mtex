@@ -45,7 +45,7 @@ end
 %   ensureCompatibleSymmetries(SO3VF,rot)
 % end
 
-% multivariate functions
+% vector valued functions
 if length(SO3F)>1
   f = zeros([length(rot) size(SO3F)]);
   for k=1:length(SO3F)

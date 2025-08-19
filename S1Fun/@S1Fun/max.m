@@ -13,12 +13,12 @@ function [values,modes] = max(sF,varargin)
 %   sF = max(sF1, sF2) % pointwise maximum of two S1Fun's
 %   sF = max(sF1, sF2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % pointwise maxima of a multivariate function along dim
+%   % pointwise maxima of a vector valued function along dim
 %   sF = max(S1Fmulti,[],dim)
 %
 % Input
 %  sF, sF1, sF2 - @S1Fun
-%  S1Fmulti     - a multivariate @S1Fun
+%  S1Fmulti     - a vector valued @S1Fun
 %  c            - double
 %
 % Output

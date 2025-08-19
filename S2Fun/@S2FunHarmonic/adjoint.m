@@ -33,7 +33,7 @@ if check_option(varargin,'killPlan')
   return
 end
 
-% Multivariate functions
+% vector valued functions
 if length(vec)~=numel(values)
   s = size(values); s = s(2:end);
   values = reshape(values,length(vec),[]);

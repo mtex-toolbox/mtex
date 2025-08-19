@@ -16,7 +16,7 @@ ODFImport                         Import
 ODFExport                         Export
 SO3FunSymmetricFunctions          Symmetry
 SO3FunConvolution                 Convolution
-SO3FunMultivariate                Multivariate Functions
+SO3FunVectorValued                Vector Valued Functions
 SO3FunVectorField                 Rotational Vector Fields
 SO3Kernels                        Rotational Kernel Functions
 WignerFunctions                   Wigner-D Functions

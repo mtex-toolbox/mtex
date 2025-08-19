@@ -99,7 +99,7 @@ if isa(nodes,'rotation') && check_option(varargin,'exact')
   SO3G = nodes;
 end
 
-% check multivariate
+% check vector valued
 if length(nodes) ~= numel(y)
   error('Approximation of a SO3FunRBF is only possible for univariate functions.')
 end

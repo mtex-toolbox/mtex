@@ -255,7 +255,7 @@ SO3VF2 = SO3VectorFieldHarmonic.quadrature(@(v) f(v))
 %%
 % *Definition via <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>*
 %
-% If we directly call the constructor with a multivariate
+% If we directly call the constructor with a vector valued
 % <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> with three entries it 
 % will create a |SO3VectorFieldHarmonic| with |SO3F(1)|, |SO3F(2)|, and 
 % |SO3F(3)| the $x$, $y$, and $z$ component.

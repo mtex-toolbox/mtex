@@ -13,12 +13,12 @@ function varargout = min(varargin)
 %   SO3F = min(SO3F1, SO3F2) % pointwise minimum of two SOFun
 %   SO3F = min(SO3F1, SO3F2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % pointwise minima of a multivariate function along dim
+%   % pointwise minima of a vector valued function along dim
 %   SO3F = min(SO3Fmulti,[],dim)
 %
 % Input
 %  SO3F, SO3F1, SO3F2 - @SO3Fun
-%  SO3Fmulti          - a multivariate @SO3Fun
+%  SO3Fmulti          - a vector valued @SO3Fun
 %  c                  - double
 %
 % Output
