@@ -56,7 +56,7 @@ if check_option(varargin,'normalize')
 else
   v = v ./ max(norm(v(:)));
 end
-S3G1 = exp(S3G0,v/10000,SO3VF.tangentSpace);
+S3G1 = exp(v/10000,S3G0,SO3VF.tangentSpace);
 
 
 oS.quiver(S3G0, S3G1,'noSymmetry',varargin{:},'all');

@@ -29,11 +29,14 @@ function SO3F = interp(ori,values,varargin)
 % SO3FunBingham.interpolate SO3VectorFieldHarmonic.interpolate
 
 % Vector fields
-if check_option(values,'vector3d')
-  SO3F = SO3VectorFieldHarmonic.interpolate(ori,values,varargin{:});
-
+if isa(ori,'SO3TangentVector') && nargin==1
+  values = [];
+end
+if isa(ori,'SO3TangentVector') || isa(values,'vector3d')
   if check_option(varargin,{'RBF','kernel'})
-  SO3F = SO3VectorFieldRBF.interpolate(ori,values,varargin{:});
+    SO3F = SO3VectorFieldRBF.interpolate(ori,values,varargin{:});
+  else
+    SO3F = SO3VectorFieldHarmonic.interpolate(ori,values,varargin{:});
   end
   return
 end

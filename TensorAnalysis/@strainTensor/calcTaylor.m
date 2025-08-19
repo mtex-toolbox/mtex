@@ -54,7 +54,7 @@ if sS.CS.Laue ~= eps.CS.Laue
     M(k) = SO3F(1); %#ok<AGROW>
     if nargout>1
       b = [];
-      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
+      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3F.CS,SO3F.SS,SO3TangentSpace.leftVector); %#ok<AGROW>
       % to be comparable set output to rightspintensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
