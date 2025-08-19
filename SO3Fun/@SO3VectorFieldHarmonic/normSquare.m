@@ -16,7 +16,10 @@ if SO3VF.bandwidth == 0
   return
 end
 
-SO3F = SO3FunHarmonic.quadrature(@(rot) norm(SO3VF.eval(rot)).^2,...
-  SO3VF.hiddenCS,SO3VF.hiddenSS,'bandwidth',min(getMTEXpref('maxSO3Bandwidth'),2*SO3VF.bandwidth));
+
+% do quadrature
+fun = @(rot) reshape( norm(vector3d(SO3VF.SO3F.eval(rot))).^2 , size(rot));
+bw = min(getMTEXpref('maxSO3Bandwidth'),2*SO3VF.bandwidth);
+SO3F = SO3FunHarmonic.quadrature(fun,SO3VF.hiddenCS,SO3VF.hiddenSS,'bandwidth',bw);
 
 end
