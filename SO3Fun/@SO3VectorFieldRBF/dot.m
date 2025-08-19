@@ -30,19 +30,11 @@ if isa(SO3VF2, 'vector3d')
   SO3F = SO3VF1.SO3F;
   v = SO3VF2;
   SO3F = reshape(sum( SO3F .* reshape(v.xyz.',[3,size(v)]),1),size(v));
-  if SO3VF2.antipodal
-    SO3F = abs(SO3F);
-  end
   return
 end
 
-
-% Note that for SO3VF.SO3F = dot(SO3VF1.SO3F,SO3VF2.SO3F) the tangentSpaces 
-% and internTangentSpaces have to be the same and we need to know that both
-% are harmonic vector fields
+% general method
 SO3F = dot@SO3VectorField(SO3VF1,SO3VF2);
 
-bw = min(getMTEXpref('maxSO3Bandwidth'),SO3VF1.bandwidth + SO3VF2.bandwidth);
-SO3F = SO3FunHarmonic(SO3F,'bandwidth', bw, varargin{:});
 
 end
