@@ -102,7 +102,7 @@ sqrt(mean(abs(SO3F1).^2))
 norm(SO3F1)
 
 %% Differentiation
-% The gradient of a $SO(3)$ function in a specific point is described
+% The gradient of an $SO(3)$ function in a specific point is described
 % by a <SO3TangentVector.SO3TangentVector.html SO3TangentVector>-object, 
 % which can be computed by the command <SO3Fun.grad.html |grad|>
 
@@ -132,6 +132,12 @@ hold off
 %%
 % We observe long arrows at the positions of big changes in intensity and
 % almost invisible arrows in regions of constant intensity.
+%
+% Note that, roughly speaking, the gradient at a given rotation indicates 
+% the direction of steepest ascent of |SO3F1|. 
+% In the above plot, this gradient is represented by an arrow pointing 
+% along that direction.
+% By following this arrow via the exponential map, one obtains a new rotation.
 %
 %% Rotating orientation dependent functions
 % Rotating an orientation dependent function works with the command
