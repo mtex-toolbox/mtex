@@ -7,7 +7,7 @@ end
 tS = v1.tangentSpace;
 v2 = transformTangentSpace(v2,tS);
 
-tS = ensureCompatibleTangentSpaces(v1,v2,'AllEqual');
+ensureCompatibleTangentSpaces(v1,v2,'AllEqual');
 v = cross_outer@vector3d(vector3d(v1),vector3d(v2),varargin{:});
 v = SO3TangentVector(v,v1.rot(1),tS,v1.hiddenCS,v1.hiddenSS);
 
