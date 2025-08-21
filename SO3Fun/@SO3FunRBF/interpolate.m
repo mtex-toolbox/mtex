@@ -99,13 +99,11 @@ if isa(nodes,'rotation') && check_option(varargin,'exact')
   SO3G = nodes;
 end
 
-% check vector valued
-if length(nodes) ~= numel(y)
-  error('Approximation of a SO3FunRBF is only possible for univariate functions.')
+% vector valued case
+for index = 1:size(y,2)
+  % LEAST-SQUARES-PROBLEM
+  [chat(:,index),iter(index)] = spatialMethod(SO3G,psi,nodes,y(:,index),varargin{:});
 end
-
-% LEAST-SQUARES-PROBLEM
-[chat,iter] = spatialMethod(SO3G,psi,nodes,y,varargin{:});
 
 % Note: In case of exact interpolation we may construct the uniform portion first
 %       This does not make sense in case of approximation of noisy data
@@ -118,8 +116,11 @@ end
 % SO3F = m * uniformODF(nodes.CS,nodes.SS);
 
 % construct SO3FunRBF
-if check_option(varargin,'density')
+if check_option(varargin,'density') && numel(chat)==numel(SO3G)
   SO3F = unimodalODF(SO3G,psi,'weights',chat,varargin{:});   % remove to small values
+  m = 1;
+elseif check_option(varargin,'density') % vector valued function
+  SO3F = SO3FunRBF(SO3G,psi,chat);
   m = 1;
 else
   SO3F = SO3FunRBF(SO3G,psi,chat);
@@ -128,7 +129,7 @@ end
 
 % normalize odf
 if ~isempty(m)
-  SO3F.weights = m * SO3F.weights / sum(SO3F.weights(:)) * (1-SO3F.c0)/psi.A(1);
+  SO3F.weights = m * SO3F.weights ./ sum(SO3F.weights) .* (1-SO3F.c0')/psi.A(1);
 end
 
 end
