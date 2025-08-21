@@ -34,7 +34,7 @@ classdef SO3BumpKernel < SO3Kernel
       end
       
       % extract bandwidth
-      L = get_option(varargin,'bandwidth',1000);
+      L = get_option(varargin,'bandwidth',getMTEXpref('maxS1Bandwidth'));
       
       % compute Chebyshev coefficients      
       psi.A = calcFourier(psi,L,psi.delta);

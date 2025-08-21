@@ -11,10 +11,12 @@ classdef SO3KernelHandle < SO3Kernel
       
       % extract parameter and halfwidth
       if nargin == 0, return;end
-      
+
       psi.fun = fun;
-      psi.A = calcFourier(psi,getMTEXpref('maxS2Bandwidth'),varargin{:});
-                
+      L = get_option(varargin,'bandwidth',getMTEXpref('maxS1Bandwidth'));
+      psi.A = calcFourier(psi,L,varargin{:});
+      % psi.A = cutA(psi);
+
     end
   
     function c = char(psi)

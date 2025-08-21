@@ -22,7 +22,7 @@ classdef SO3DirichletKernel < SO3Kernel
     
     function psi = SO3DirichletKernel(N)
       
-      psi.A = 2.*(0:N)+1;
+      psi.A = 2.*(0:N)'+1;
             
     end
   

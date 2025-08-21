@@ -33,9 +33,8 @@ classdef SO3AbelPoissonKernel < SO3Kernel
       L = get_option(varargin,'bandwidth',1000);
       
       % compute Chebyshev coefficients
-      psi.A = 1;
+      psi.A = ones(L+1,1);
       for i=1:L, psi.A(i+1) = (2*i+1)*exp(log(psi.kappa)*2*i);end
-      
       psi.A = psi.cutA;
           
     end

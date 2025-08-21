@@ -36,9 +36,17 @@ end
       
 methods
     
-  function psi = SO3RieszKernel(s)
+  function psi = SO3RieszKernel(s,varargin)
 
-    if nargin == 1, psi.s = s; end
+    if nargin >= 1
+      psi.s = s;
+    end
+
+    % extract bandwidth
+    L = get_option(varargin,'bandwidth',getMTEXpref('maxS1Bandwidth'));
+
+    % compute Chebyshev coefficients
+    psi.A = calcFourier(psi,L);
 
   end
   

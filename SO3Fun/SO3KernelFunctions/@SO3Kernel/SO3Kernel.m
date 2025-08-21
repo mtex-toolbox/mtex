@@ -20,15 +20,24 @@ classdef SO3Kernel
   methods
   
     % constructor
-    function psi = SO3Kernel(A)
-      if nargin>0 && isa(A,'SO3Kernel')
-        A = A.A;
+    function psi = SO3Kernel(A,varargin)
+      
+      if nargin==0
+        psi.A=0;
+        return
+      end
+      if isa(A,'function_handle')
+        psi = SO3KernelHandle(A,varargin{:});
+        return
+      end
+      if isa(A,'SO3Kernel')
+        psi = A;
+        return
       end
 
-      if nargin > 0
-        psi.A = A(:);
-        %psi.A = cutA(psi);
-      end
+      psi.A = A(:);
+      %psi.A = cutA(psi);
+      
     end
   
     % standard output
