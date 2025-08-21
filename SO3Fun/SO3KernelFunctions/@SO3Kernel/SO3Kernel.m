@@ -131,28 +131,7 @@ classdef SO3Kernel
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
       A = psi.A(1:min([ind+1,length(A)]));
     end
-    
-    function A = calcFourier(psi,L,maxAngle)
-      
-      if nargin == 2, maxAngle = pi;end      
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);
-      small = 0;      
-      warning off; %#ok<*WNOFF>
-      
-      for l = 0:L
-        fun = @(omega) psi.eval(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
-        A(l+1) = 2/pi*quadgk(fun ,0,maxAngle,'MaxIntervalCount',2000); %#ok<AGROW>
-        
-        if abs(A(l+1)) < epsilon
-          small = small + 1;
-        else
-          small = 0;
-        end
-        
-        if small == 10, break;end
-      end
-    end
-    
+       
   end
 end
 
