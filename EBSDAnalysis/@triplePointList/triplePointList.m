@@ -154,8 +154,9 @@ classdef triplePointList < phaseList & dynProp
     function tP = update(tP,grains)
       
       tP.phaseId = zeros(size(tP.grainId));
-      isIndexed = tP.grainId > 0;
-      tP.phaseId(isIndexed) = grains.phaseId(grains.id2ind(tP.grainId(isIndexed)));      
+
+      ind = grains.id2ind(tP.grainId);
+      tP.phaseId(ind>0) = grains.phaseId(ind(ind>0));
       
     end
     

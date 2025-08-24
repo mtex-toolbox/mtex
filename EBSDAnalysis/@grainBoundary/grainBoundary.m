@@ -303,8 +303,8 @@ classdef grainBoundary < phaseList & dynProp
     function gB = update(gB,grains)
       
       gB.phaseId = zeros(size(gB.F,1),2);
-      isBoundary = gB.grainId > 0;
-      gB.phaseId(isBoundary) = grains.phaseId(grains.id2ind(gB.grainId(isBoundary)));      
+      ind = grains.id2ind(gB.grainId);
+      gB.phaseId(ind>0) = grains.phaseId(ind(ind>0));
       
     end
   end
