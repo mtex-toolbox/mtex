@@ -53,12 +53,20 @@ classdef SO3FunMLS < SO3Fun
   methods
     
     function SO3F = SO3FunMLS(nodes, values, varargin)
-
+    % initialize a SO(3)-valued function
+    
       if nargin == 0, return; end
- 
+    
+      % convert arbitrary SO3Fun to SO3FunHarmonic
+      if isa(nodes,'function_handle') || isa(nodes,'SO3Fun')
+        if nargin == 1, values=[]; end
+        SO3F = SO3FunMLS.approximate(nodes,values,varargin{:});
+        return
+      end
+    
       SO3F.nodes = nodes; % preserve grid structure
-      sz = size(values);
-      SO3F.values = reshape(values , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
+      sz = [size(values),1];
+      SO3F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
       % set optional arguments
       SO3F.degree = get_option(varargin,'degree',3);
@@ -183,4 +191,10 @@ classdef SO3FunMLS < SO3Fun
 
   end
 
+  methods (Static = true)
+    SO3F = interpolate(varargin);
+    SO3F = approximate(f, varargin);
+    SO3F = example(varargin)
+  end
+  
 end
