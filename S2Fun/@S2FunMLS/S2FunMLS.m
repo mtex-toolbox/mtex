@@ -17,6 +17,7 @@ classdef S2FunMLS < S2Fun
 
   properties (Dependent)
     dim;
+    antipodal
   end
 
   methods
@@ -50,33 +51,15 @@ classdef S2FunMLS < S2Fun
         sF.nn = 2 * sF.dim;
       end
 
-      % apply flags in the function arguments and remove them afterwards
-      alldeg_specifier_pos = find(strcmp(varargin, 'all_degrees'), 1);
-      if ~isempty(alldeg_specifier_pos)
-        sF.all_degrees = true;
-        varargin(alldeg_specifier_pos) = [];
-      end
+      % apply boolean flag arguments
+      sF.all_degrees = get_option(varargin, 'all_degrees', false, 'logical');
+      sF.monomials = get_option(varargin, 'monomials', true, 'logical');
+      sF.centered = get_option(varargin, 'centered', false, 'logical');
+      sF.tangent = get_option(varargin, 'tangent', false, 'logical');
 
-      monomial_specifier_pos = find(strcmp(varargin, 'monomials'), 1);
-      if ~isempty(monomial_specifier_pos)
+      % if tanget is set to true, we must use monomials
+      if (sF.tangent == true)
         sF.monomials = true;
-        varargin(monomial_specifier_pos) = [];
-      end
-
-      center_specifier_pos = find(strcmp(varargin, 'centered'), 1);
-      if ~isempty(center_specifier_pos)
-        sF.centered = true;
-        varargin(center_specifier_pos) = [];
-      end
-
-      tangent_specifier_pos = find(strcmp(varargin, 'tangent'), 1);
-      if ~isempty(tangent_specifier_pos)
-        sF.tangent = true;
-        % this is the same as using only even/odd centered monomials and
-        % setting the z-coordinate to 1
-        sF.centered = true;
-        sF.monomials = true;
-        varargin(tangent_specifier_pos) = [];
       end
 
       % if delta has not been set yet, set it now 
@@ -84,25 +67,21 @@ classdef S2FunMLS < S2Fun
         sF.delta = compute_delta(sF);
       end
 
-      % get the weight function if one is specified
-      if numel(varargin) > 0
-        parser = inputParser;
-        addParameter(parser, "weight", sF.w);
-        parse(parser, varargin{:});
-        weight_arg = string(parser.Results.weight);
-        if isa(weight_arg, 'string')
-          if strcmp(weight_arg, 'hat')
-            sF.w = @(t)(max(1-t, 0));
-          elseif  strcmp(weight_arg, 'squared hat')
-            sF.w = @(t)(max(1-t, 0).^2);
-          elseif strcmp(weight_arg, 'indicator')
-            sF.w = @(t)(t .* (t < 1));
-          end
-        elseif isa(weight_arg, "function_handle")
-          sF.w = parser.results.weight;
+      weight = get_option(varargin, 'weight');
+      if (isa(weight, 'function_handle'))
+        sF.w = weight;
+      elseif (isa(weight, 'string'))
+        if strcmp(weight_arg, 'hat')
+          sF.w = @(t)(max(1-t, 0));
+        elseif  strcmp(weight_arg, 'squared hat')
+          sF.w = @(t)(max(1-t, 0).^2);
+        elseif strcmp(weight_arg, 'indicator')
+          sF.w = @(t)(t .* (t < 1));
         end
+      else
+        sF.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
       end
-
+  
       if (sF.nn < sF.dim)
         sF.nn = 2 * sF.dim;
         warning(sprintf(...
@@ -128,6 +107,14 @@ classdef S2FunMLS < S2Fun
         dimension = (sF.degree + 1)^2;
       else
         dimension = (sF.degree + 1) * (sF.degree + 2) / 2;
+      end
+    end
+
+    function antipodal = get.antipodal(SO3F)
+      try
+        antipodal = SO3F.nodes.antipodal;
+      catch
+        antipodal = false;
       end
     end
 
