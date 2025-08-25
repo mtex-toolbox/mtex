@@ -47,6 +47,10 @@ methods
     sF.s = SS;
   end
 
+  function n = numel(sF)
+    n = prod(size(sF)); %#ok<PSIZE>
+  end
+
  end
 
 

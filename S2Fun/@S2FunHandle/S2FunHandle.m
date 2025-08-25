@@ -19,6 +19,18 @@ methods
     end
   end
   
+  function d = size(S2F,varargin)
+
+    v = S2F.fun(xvector);
+    
+    d = size(v);
+    d = d(2:end);
+    if isscalar(d), d = [d 1]; end
+    if nargin > 1, d = d(varargin{1}); end
+
+  end
+
+
   function f = eval(S2F,v)
     f = S2F.fun(v+0.000001*xvector);
   end
