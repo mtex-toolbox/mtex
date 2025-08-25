@@ -134,6 +134,8 @@ classdef parentGrainReconstructor < handle
         [~,minPhase] = min(numPhase);
         if minPhase ~= maxPhase
           job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
+        else
+          job.csParent = struct("mineral",'undefined',"pointGroup",'');
         end      
       end
       
