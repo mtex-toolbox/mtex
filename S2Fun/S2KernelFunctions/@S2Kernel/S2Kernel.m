@@ -43,6 +43,8 @@ classdef S2Kernel
     function v = eval(S2K,x)
       % evaluate the kernel function at nodes x
     
+      if isa(x,'vector3d'), x = dot(x,zvector); end
+
       % TODO: make this faster using a polynomial transform and a nfct
       if isempty(S2K.evalFun)
         v = ClenshawL(S2K.A,x);
