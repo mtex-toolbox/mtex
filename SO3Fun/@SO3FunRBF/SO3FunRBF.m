@@ -251,6 +251,11 @@ methods (Static = true)
   [SO3F,iter] = approximate(f, varargin);
   [SO3F,iter] = interpolate(v, y, varargin); 
   SO3F = example(varargin)
+
+  function SO3F = loadobj(SO3F)
+    SO3F.weights = reshape(SO3F.weights,numel(SO3F.center),[]);
+  end
+
 end
   
 end

@@ -315,12 +315,26 @@ classdef grain2d < phaseList & dynProp
       if isa(s,'grain2d')
         grains = s; 
       else
-        grains = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
-        grains.opt = s.opt;
-        grains.scanUnit = s.scanUnit;
+
+        grains = grain2d;
+        grains.poly = s.poly;
+        grains.id = s.id;
+        if isfield(s,'numPixel')
+          grains.numPixel = s.numPixel;
+        else
+          grains.numPixel = s.grainSize;
+        end
+        grains.inclusionId = s.inclusionId;
+        grains.boundary = s.boundary;
+        grains.innerBoundary = s.innerBoundary;
+        grains.phaseId = s.phaseId;
+        grains.CSList = s.CSList;
+        grains.phaseMap = s.phaseMap;
+        grains.prop = s.prop;
+
       end
       
-      % ensure V is vector3d
+      % ensure allV is vector3d
       if isa(grains.allV,'double')
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end

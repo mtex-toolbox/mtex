@@ -162,4 +162,28 @@ classdef triplePointList < phaseList & dynProp
     
   end
 
+  methods (Static = true)
+    
+    function tP = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      % transform to class if not yet done
+      if isstruct(s)
+        tP = triplePointList;        
+      else
+        tP = s; 
+      end
+
+      if size(tP.allV,2)==2 && all(all(tP.allV.x == tP.allV.y))
+        tP.allV.x = tP.allV.x(:,1);
+        tP.allV.y = tP.allV.y(:,2);
+        tP.allV.z = zeros(size(tP.allV.y));
+      end
+
+    end
+
+  end
+
 end

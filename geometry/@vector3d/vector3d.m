@@ -290,7 +290,15 @@ classdef vector3d < dynOption
       x = ones(s{:});
       v = vector3d(0,0,x,varargin{:});
     end    
-    
+
+    function v = loadobj(v)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+
+      if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
+
+    end
     
   end
 end
