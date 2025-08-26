@@ -1,0 +1,20 @@
+# Runs MATLAB with MTEX in a Docker container, in browser mode
+# Requires a .env file with:
+#   MLM_LICENSE_FILE=27000@MyServerName
+#   TEST_DATA=/path/to/some/test/data
+# Just "docker compose up" and go to http://localhost:8888
+
+services:
+  mtex-matlab:
+    image: mtex-matlab:latest
+    ports:
+      - "8888:8888"
+    shm_size: 512M
+    environment:
+      - MLM_LICENSE_FILE=${MLM_LICENSE_FILE}
+    user: root
+    volumes:
+      - .:/mtex-tools
+      - ${TEST_DATA}:/data:rw
+    working_dir: /mtex-tools
+    command: -browser
