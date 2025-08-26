@@ -15,6 +15,12 @@ function [vals, conds] = eval(sF, v)
 %  vals  - the values of sF on v
 %
 
+dimensions = size(v);
+N = numel(v);
+vals = zeros(N, numel(sF));
+
+% TODO: do this in batches that fit into RAM
+
 if (nargout == 1)
   if (sF.nn >= sF.dim)
     vals = eval_knn(sF, v);
@@ -28,5 +34,10 @@ else
     [vals, conds] = eval_range(sF, v);
   end
 end
+
+vals = reshape(vals, [dimensions, numel(sF)]);
+if (nargout == 2)
+  conds = reshape(conds, [dimensions numel(sF)]);
+end 
 
 end

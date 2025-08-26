@@ -24,7 +24,7 @@ function sF = adjoint(vec,values, varargin)
 % S2FunHarmonic/interpolate
 
 
-persistent keepPlanNSFT;
+  persistent keepPlanNSFT;
 
 % kill plan
 if check_option(varargin,'killPlan')
@@ -39,14 +39,18 @@ if length(vec)~=numel(values)
   values = reshape(values,length(vec),[]);
   S2FunHarmonic.adjoint(vec,values(:,1),'createPlan',varargin{:});
   sF=[];
-  for ind = 1:prod(size(values,2))
+  for ind = 1:prod(size(values, 2))
     G = S2FunHarmonic.adjoint(vec,values(:,ind),'keepPlan',varargin{:});
     sF = [sF,G];
   end
   S2FunHarmonic.adjoint(zvector,1,'killPlan');
-  sF = reshape(sF, s);
+  sF = reshape(sF, s); 
   return
 end
+
+sz = size(values);
+len = prod(sz(2:end)); % multivariate case
+values = reshape(values, [], len);
 
 
 % --------------- (1) get weights and values for quadrature ---------------

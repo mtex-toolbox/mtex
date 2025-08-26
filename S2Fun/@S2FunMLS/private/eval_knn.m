@@ -66,11 +66,16 @@ genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
 
 % assemble the right hand side of the Gram system
 % also rescale the right hand sides of the Gram systems
-f_book = reshape(sF.values(grid_id), nn, 1, N);
-vals = sum(f_book .* genfuns_book, 1);
+f_book = reshape(sF.values(grid_id,:)', numel(sF), nn, N);
+vals = permute(pagemtimes(f_book, genfuns_book), [3, 1, 2]);
 vals = vals(:);
-vals = reshape(vals, dimensions);
-if isreal(sF.values)
+if isscalar(sF)
+  vals = reshape(vals, dimensions);
+else 
+  vals = reshape(vals, [numel(v), size(sF)]);
+end
+
+if isalmostreal(sF.values)
   vals = real(vals);
 end
 

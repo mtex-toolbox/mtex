@@ -1,5 +1,5 @@
 function SO3F = squeeze(SO3F, varargin)
-% overloads permute
+% overloads squeeze
 
 s = size(SO3F);
 s = s(s~=1);

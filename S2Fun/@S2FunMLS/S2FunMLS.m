@@ -16,24 +16,32 @@ classdef S2FunMLS < S2Fun
   end
 
   properties (Dependent)
-    dim;
+    dim
     antipodal
   end
 
   methods
     % initialize a spherical function
-    function sF = S2FunMLS(nodes, values, varargin)
-      % set the mandatory inputs
-      % some grids in mtex are provided as row vectors 
-      if size(nodes, 1) < size(nodes, 2) 
-        nodes = nodes';
+    function S2F = S2FunMLS(nodes, values, varargin)
+      % initialize a S2-valued function
+
+      if nargin == 0, return; end
+
+      % convert arbitrary S2Fun to S2FunHarmonic
+      if isa(nodes,'function_handle') || isa(nodes,'S2Fun')
+        if nargin == 1, values=[]; end
+        S2F = S2FunMLS.approximate(nodes,values,varargin{:});
+        return
       end
-      sF.nodes = nodes;
-      sF.values = values;
+
+      % preserve grid structure
+      S2F.nodes = nodes;
+      sz = [size(values), 1];
+      S2F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
       % set degree if given
       if nargin >= 3 && isnumeric(varargin{1})
-        sF.degree = varargin{1};
+        S2F.degree = varargin{1};
         varargin(1) = [];
       end
       % set delta or k if given
@@ -41,87 +49,95 @@ classdef S2FunMLS < S2Fun
         temp = varargin{1};
         % if the input is a whole number, assume that nn is specified
         if (floor(temp) == temp)
-          sF.nn = temp;
+          S2F.nn = temp;
         else
-          sF.delta = temp;
+          S2F.delta = temp;
         end
         varargin(1) = [];
       % otherwise set k = 2 * dim
       else
-        sF.nn = 2 * sF.dim;
+        S2F.nn = 2 * S2F.dim;
       end
 
+      S2F.s = get_option(varargin, 'symmetry', crystalSymmetry('1'), 'crystalSymmetry');
+
       % apply boolean flag arguments
-      sF.all_degrees = get_option(varargin, 'all_degrees', false, 'logical');
-      sF.monomials = get_option(varargin, 'monomials', true, 'logical');
-      sF.centered = get_option(varargin, 'centered', false, 'logical');
-      sF.tangent = get_option(varargin, 'tangent', false, 'logical');
+      S2F.all_degrees = get_option(varargin, 'all_degrees', false, 'logical');
+      S2F.monomials = get_option(varargin, 'monomials', true, 'logical');
+      S2F.centered = get_option(varargin, 'centered', false, 'logical');
+      S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
+
 
       % if tanget is set to true, we must use monomials
-      if (sF.tangent == true)
-        sF.monomials = true;
+      if (S2F.tangent == true)
+        S2F.monomials = true;
       end
 
       % if delta has not been set yet, set it now 
-      if ((sF.delta == 0) && (sF.nn == 0))
-        sF.delta = compute_delta(sF);
+      if ((S2F.delta == 0) && (S2F.nn == 0))
+        S2F.delta = compute_delta(S2F);
       end
 
       weight = get_option(varargin, 'weight');
       if (isa(weight, 'function_handle'))
-        sF.w = weight;
+        S2F.w = weight;
       elseif (isa(weight, 'string'))
         if strcmp(weight_arg, 'hat')
-          sF.w = @(t)(max(1-t, 0));
+          S2F.w = @(t)(max(1-t, 0));
         elseif  strcmp(weight_arg, 'squared hat')
-          sF.w = @(t)(max(1-t, 0).^2);
+          S2F.w = @(t)(max(1-t, 0).^2);
         elseif strcmp(weight_arg, 'indicator')
-          sF.w = @(t)(t .* (t < 1));
+          S2F.w = @(t)(t .* (t < 1));
         end
       else
-        sF.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+        S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
       end
   
-      if (sF.nn < sF.dim)
-        sF.nn = 2 * sF.dim;
+      if (S2F.nn < S2F.dim)
+        S2F.nn = 2 * S2F.dim;
         warning(sprintf(...
           ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
           'nn has been set to 2 * dim.']));
       end
 
-      if (sF.delta == 0)
-        sF.delta = guess_delta(sF);
+      if (S2F.delta == 0)
+        S2F.delta = guess_delta(S2F);
       end
 
     end
 
     % compute delta if none was specified
-    function delta = compute_delta(sF)
+    function delta = compute_delta(S2F)
       % compute the smallest delta such that 2.5*dim spherical caps with
       % radius resolution/2 fit into one spherical cap with radius delta
-      delta = acos(max(1 - 2.5*sF.dim*(1 - cos(sF.nodes.resolution/2)), -1));
+      delta = acos(max(1 - 2.5*S2F.dim*(1 - cos(S2F.nodes.resolution/2)), -1));
     end
 
-    function dimension = get.dim(sF)
-      if (sF.all_degrees == true)
-        dimension = (sF.degree + 1)^2;
+    function dimension = get.dim(S2F)
+      if (S2F.all_degrees == true)
+        dimension = (S2F.degree + 1)^2;
       else
-        dimension = (sF.degree + 1) * (sF.degree + 2) / 2;
+        dimension = (S2F.degree + 1) * (S2F.degree + 2) / 2;
       end
     end
 
-    function antipodal = get.antipodal(SO3F)
+    function antipodal = get.antipodal(S2F)
       try
-        antipodal = SO3F.nodes.antipodal;
+        antipodal = S2F.nodes.antipodal;
       catch
         antipodal = false;
       end
     end
 
-    function d = guess_delta(sF)
-      d = acos(1 - 4 * sF.dim / numel(sF.nodes));
+    function d = guess_delta(S2F)
+      d = acos(1 - 4 * S2F.dim / numel(S2F.nodes));
     end
 
+  end
+
+  methods (Static = true)
+    S2F = interpolate(varargin);
+    S2F = approximate(f, varargin);
   end
 
 end

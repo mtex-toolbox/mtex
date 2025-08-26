@@ -60,8 +60,12 @@ else
   S2G = quadratureS2Grid(bw,varargin{:});
 end
 
+% reshape grid into vector if f is S2FunMLS 
+if (isa(f, 'S2FunMLS')), S2G = reshape(S2G, [], 1); end
+
 % evaluate on S2Grid
 values = f.eval(S2G);
+
 S2G.how2plot = getClass(varargin,'plottingConvention',S2G.how2plot);
 
 % ----------------------- (3) Do adjoint NSOFT ----------------------------

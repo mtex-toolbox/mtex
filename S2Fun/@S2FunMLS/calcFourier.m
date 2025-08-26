@@ -1,12 +1,12 @@
-function f_hat = calcFourier(SO3F,varargin)
-% compute harmonic coefficients of SO3FunMLS
+function f_hat = calcFourier(S2F,varargin)
+% compute harmonic coefficients of S2FunMLS
 %
 % Syntax
-%   f_hat = calcFourier(SO3F)
-%   f_hat = calcFourier(SO3F,'bandwidth',L)
+%   f_hat = calcFourier(S2F)
+%   f_hat = calcFourier(S2F,'bandwidth',L)
 %
 % Input
-%  SO3F - @SO3FunMLS
+%  S2F - @S2FunMLS
 %  L    - maximum harmonic degree
 %
 % Output
@@ -14,29 +14,29 @@ function f_hat = calcFourier(SO3F,varargin)
 %
 
 % decide bandwidth
-bw = chooseBandwidth(SO3F.nodes,SO3F.values,SO3F.SRight,SO3F.SLeft,varargin{:});
+bw = chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:});
 
 if check_option(varargin,'ClenshawCurtis')
-  SO3F = SO3FunHarmonic.quadrature(SO3F,varargin{:},'bandwidth',bw);
+  S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw);
 else
-  SO3F = SO3FunHarmonic.quadrature(SO3F,varargin{:},'bandwidth',bw,'GaussLegendre');
+  S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw,'GaussLegendre');
 end
-f_hat = SO3F.fhat;
+f_hat = S2F.fhat;
 
 end
 
 % We have to decide which bandwidth we are using dependent from the
 % oversampling factor.
-% The same method is used in SO3FunHarmonic/interpolate
-function bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
+% The same method is used in S2FunHarmonic/interpolate
+function bw = chooseBandwidth(nodes, y, s, varargin)
 
 bw = get_option(varargin,'bandwidth');
-nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
+nSym = numSym(s.properGroup) * (isalmostreal(y)+1);
 
 % assume there is some bandwidth given
 if ~isempty(bw)
   % degrees of freedom in frequency space 
-  numFreq = deg2dim(bw+1)/nSym;
+  numFreq = (bw+1)^2 / nSym;
   % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
   oversamplingFactor = length(nodes)/numFreq;
   if oversamplingFactor<1.9
@@ -50,6 +50,6 @@ end
 oversamplingFactor = 2;
 bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
 
-bw = min(bw,getMTEXpref('maxSO3Bandwidth'));
+bw = min(bw,getMTEXpref('maxS2Bandwidth'));
 
 end

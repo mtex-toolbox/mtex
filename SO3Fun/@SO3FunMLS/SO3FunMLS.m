@@ -44,7 +44,7 @@ classdef SO3FunMLS < SO3Fun
   end
 
   properties (Dependent)
-    dim;
+    dim
     antipodal
     SLeft
     SRight
