@@ -43,7 +43,7 @@ T = convhull([VPlane.x,VPlane.y]);
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 h = optiondraw(patch('Faces',T.','Vertices',V.xyz,'edgeColor','black',...
-  'parent',get_option(varargin,'parent',mtexFig.currentAxes)),varargin{:});
+  'parent',get_option(varargin,'parent',mtexFig.gca)),varargin{:});
 
 if isNew, drawNow(mtexFig,varargin{:}); end
 

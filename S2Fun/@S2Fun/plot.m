@@ -15,10 +15,12 @@ function [h,ax] = plot(sF,varargin)
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},'xyz');
+
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 
-S2Proj = makeSphericalProjection(sF.how2plot,varargin{:});
+S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
@@ -74,15 +76,20 @@ if nargout == 0, clear h; end
   function txt = tooltip(varargin)
     
     [r_local,~,value] = getDataCursorPos(mtexFig);
-    %v = sF.eval(r_local);
-    
-    %txt = [xnum2str(value) ' at (' xnum2str(r_local.theta/degree) ',' xnum2str(r_local.rho/degree) ')'];
-
-    txt = {...
-      ['value: ' xnum2str(value,'fixedWidth',5) ];...
-      ['x    : ' xnum2str(r_local.x,'precision',3)];...
-      ['y    : ' xnum2str(r_local.y,'precision',3)];...
-      ['z    : ' xnum2str(r_local.z,'precision',3)]};
+   
+    switch tooltipFormat
+      case "xyz"
+        txt = {...
+          ['value: ' xnum2str(value,'fixedWidth',5) ];...
+          ['x    : ' xnum2str(r_local.x,'precision',3)];...
+          ['y    : ' xnum2str(r_local.y,'precision',3)];...
+          ['z    : ' xnum2str(r_local.z,'precision',3)]};
+      case {"uvw", "hkl","UVTW","hkil"}
+        r_local = Miller(r_local,sF.CS);
+        r_local.dispStyle = tooltipFormat;
+        
+        txt = [xnum2str(value) ' at ' char(round(r_local))];
+    end
   
   end
 

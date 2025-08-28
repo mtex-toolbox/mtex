@@ -1,45 +1,60 @@
 %% The Schmid Factor
 %
 %%
-% Let us assume a Nickel crystal
-
-CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
-
-%%
-% Since Nickel is fcc a dominant slip system is given by the slip plane
-% normal
-
-n = Miller(1,1,1,CS,'hkl')
-
-%%
-% and the slip direction (which needs to be orthogonal)
-
-d = Miller(0,-1,1,CS,'uvw')
-
-%%
-% For tension in direction 123
-r = normalize(vector3d(1,2,3))
-
-%%
-% the Schmid factor for the slip system [0-11](111) is defined by
+% The Schmid factor $\tau$ is a purely geometric quantity that describes
+% how well a slip system is aligned to a specific tension direction or
+% stress tensor. A Schmid factor $\tau=0$ indicates that the slip system
+% can not be active since either the tension direction is perpendicular to
+% the slip direction or the normal direction of the slip plane.
 %
-tau = dot(d,r,'noSymmetry') * dot(n,r,'noSymmetry')
+% In order to investigate this quantity in more detail lets consider an fcc
+% material with its dominant $[0 1 \bar{1}](1 1 1)$ slip system and tension
+% in direction $r = (001)$
+
+% define symmetry and slip system
+cs = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel');
+sS = slipSystem.fcc(cs)
+
+r = vector3d.Z;
 
 %%
-% The same computation can be performed by defining the slip system as an
-% MTEX variable
+% Lets visualize the situation
 
-sS = slipSystem(d,n)
+% define and plot the crystal shape
+cS = crystalShape.cube(cs);
+plot(cS,'faceAlpha',0.5)
+hold on
+plot(cS,sS,'facecolor','blue','label','b')
+arrow3d(-0.8*sS.n,'faceColor','black','linewidth',2,'label','n')
+plottingConvention.default3D().setView
+
+arrow3d(0.4*r,'faceColor','red','linewidth',2,'label','r')
+hold off
+
+%% Definition of the Schmid factor
+%
+% The Schmid factor $\tau$ is defined as the product of the cosines of the
+% angles between the tension direction $\vec r$ with the normal direction
+% $\vec n=(1 1 1)$ and the Burgers vector $\vec b=[0 1 \bar{1}]$ of the
+% slip system:
+% 
+% $$\tau = \cos \angle(\vec r,\vec n) \cdot \cos \angle(\vec r,\vec b) $$
+% 
+
+tau = cos(angle(r,sS.n,'noSymmetry')) * cos(angle(r,sS.b,'noSymmetry'))
 
 %%
-% and using the command <slipSystem.SchmidFactor.html SchmidFactor>
+% The same computation can be performed more comfortably using the command
+% |<slipSystem.SchmidFactor.html SchmidFactor>|
 
 sS.SchmidFactor(r)
 
 %%
-% Omitting the tension direction r the command
-% <slipSystem.SchmidFactor.html SchmidFactor> returns the Schmid factor as
-% a <S2FunHarmonic.S2FunHarmonic.html spherical function>
+% Omitting the tension direction |r| the command
+% |<slipSystem.SchmidFactor.html SchmidFactor>| returns the Schmid factor
+% as a spherical function of type @S2FunHarmonic which can be used for
+% visualization or detecting the tension directions with highest / lowest
+% Schmid factor.
 
 SF = sS.SchmidFactor
 
@@ -52,11 +67,12 @@ plot(SF)
 % and annotate them
 annotate(pos)
 
-%% Stress Tensor
-% Instead by the tension direction the stress might be specified by a
-% stress tensor
+%% The Schmid factor for general stress tensors
+%
+% Instead by the tension direction |r| the stress might be specified by a
+% @stressTensor |sigma|
 
-sigma = stressTensor.uniaxial(vector3d.Z)
+sigma = stressTensor.uniaxial(r)
 
 %%
 % Then the Schmid factor for the slip system |sS| and the stress tensor
@@ -64,16 +80,32 @@ sigma = stressTensor.uniaxial(vector3d.Z)
 
 sS.SchmidFactor(sigma)
 
-%% Active Slip System
+%% Multiple Slip Systems
 % In general a crystal contains not only one slip system but at least all
 % symmetrically equivalent ones. Those can be computed with
 
 sSAll = sS.symmetrise('antipodal')
 
 %%
-% The option |antipodal| indicates that Burgers vectors in opposite
-% direction should not be distinguished.
-% Now
+% The option |'antipodal'| indicates that Burgers vectors in opposite
+% direction should not be distinguished. Lets visualize the situation
+
+close all
+t = tiledlayout(3,4,'TileSpacing','tight','Padding','tight', 'TileIndexing', 'columnmajor');
+for k = 1:length(sSAll)
+  ax = nexttile;
+  plot(cS,'faceAlpha',0.5,'parent',ax)
+  title(ax,['\textbf{' int2str(k) '}:' char(sSAll(k),'latex')],'Interpreter','latex')
+  axis off
+  hold on
+  plot(cS,sSAll(k),'facecolor','blue','parent',ax)
+  plottingConvention.default3D().setView
+  arrow3d(0.4*r,'faceColor','red','linewidth',3)
+  hold off
+end
+
+%%
+% Computing the Schmid factors for all those slip systems simultaneously by
 
 tau = sSAll.SchmidFactor(r)
 
@@ -87,7 +119,8 @@ sSAll(id)
 
 %%
 % The above computation can be easily extended to a list of tension
-% directions
+% directions. This allows us to display the maximum Schmid factor over all
+% slip systems as a function of the tension direction.
 
 % define a grid of tension directions
 r = plotS2Grid('resolution',0.5*degree,'upper');
@@ -100,42 +133,38 @@ tau = sSAll.SchmidFactor(r);
 % different slip systems. Lets take the maximum row-wise
 [tauMax,id] = max(abs(tau),[],2);
 
-% visualize the maximum Schmid factor
+% visualize the maximum Schmid factor as a function of the tension
+% direction
 contourf(r,tauMax)
 mtexColorbar
 
 %%
-% We may also plot the index of the active slip system
+% We may also plot the index of the active slip system as a function of the
+% tension direction
+
 pcolor(r,id)
 
 mtexColorMap(vega20(12))
 
 %%
 % and observe that within the fundamental sectors the active slip system
-% remains the same. We can even visualize the the plane normal and the slip
-% direction
-
-% if we omit the option antipodal we can distinguish
-% between the opposite burger vectors
-sSAll = sS.symmetrise
+% remains the same. Lets annotate which are the active slip systems
 
 % take as directions the centers of the fundamental regions
-r = symmetrise(CS.fundamentalSector.center,CS);
+rCenter = symmetrise(cs.fundamentalSector.center,cs);
+rCenter = rCenter(rCenter.z>=0);
 
 % compute the Schmid factor
-tau = sSAll.SchmidFactor(r);
+tau = sSAll.SchmidFactor(rCenter);
 
-% here we do not need to take the absolute value since we consider both
-% burger vectors +/- b
-[~,id] = max(tau,[],2);
+% find the slip system with the maximum Schmid factor
+[~,id] = max(abs(tau),[],2);
 
-% plot active slip plane in red
+% display the slip system with the maximum Schmid factor
 hold on
-quiver(r,sSAll(id).n,'LineWidth',2,'Color','r');
-
-% plot active slip direction in green
-hold on
-quiver(r,sSAll(id).b.normalize,'LineWidth',2,'Color','g');
+for k = 1:length(rCenter)
+ text(rCenter(k),char(sSAll(id(k)),'latex'),'Interpreter','latex')
+end
 hold off
 
 %%
@@ -188,7 +217,7 @@ sSLocal = grains.meanOrientation * sS
 %%
 % These slip systems are now arranged in matrix form where the rows
 % correspond to the crystal reference frames of the different grains and
-% the rows are the symmetrically equivalent slip systems. Computing the
+% the columns are the symmetrically equivalent slip systems. Computing the
 % Schmid factor we end up with a matrix of the same size
 
 % compute Schmid factor

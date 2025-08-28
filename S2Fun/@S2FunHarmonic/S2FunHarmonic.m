@@ -116,10 +116,6 @@ methods
     if nargin > 1, d = d(varargin{1}); end
   end
 
-  function n = numel(sF)
-    n = prod(size(sF)); %#ok<PSIZE>
-  end
-
 end
 
 methods (Static = true)
@@ -128,6 +124,16 @@ methods (Static = true)
   sF = adjoint(vec,values,varargin);
   sF = interpolate(v, y, varargin);
   sF = regularize(nodes,y,lambda,varargin);
+
+  function sF = loadobj(sF)
+    % called by Matlab when an object is loaded from an .mat file
+    % this overloaded method ensures compatibility with older MTEX
+    % versions
+
+    if isempty(sF.s), sF.s = specimenSymmetry; end
+                  
+  end
+
 end
 
 end

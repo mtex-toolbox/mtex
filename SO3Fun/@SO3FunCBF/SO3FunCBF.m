@@ -45,10 +45,18 @@ classdef SO3FunCBF < SO3Fun
         f = varargin{1};
         SO3F.h = f.h;
         SO3F.r = f.r;
+        wPos = 2;
       else
+        wPos = 3;
         SO3F.h = varargin{1};
         SO3F.r = varargin{2};
-        if isnumeric(varargin{3}), SO3F.weights = varargin{3}; end
+      end
+
+      if nargin>=wPos && isnumeric(varargin{wPos})
+        SO3F.weights = varargin{wPos};
+      else
+        n = max(numel(SO3F.h),numel(SO3F.r));
+        SO3F.weights = ones(n,1) / n;
       end
 
       hw = get_option(varargin,'halfwidth',10*degree);

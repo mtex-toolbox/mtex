@@ -40,7 +40,7 @@ classdef SO3SquareSingularityKernel < SO3Kernel
       L = get_option(varargin,'bandwidth',1000);
                  
       % compute Legendre coefficients
-      psi.A = ones(1,L+1);
+      psi.A = ones(L+1,1);
       psi.A(2) = (1+psi.kappa^2)/2/psi.kappa ...
         -1/log((1+psi.kappa)/(1-psi.kappa));
 
@@ -49,7 +49,7 @@ classdef SO3SquareSingularityKernel < SO3Kernel
         (2*l+1) * (1+psi.kappa^2) * psi.A(l+1))/2/psi.kappa/(l+1);
       end
       
-      psi.A = psi.A .*(2*(0:L)+1);
+      psi.A = psi.A .*(2*(0:L)'+1);
       
       psi.A = psi.cutA;
           

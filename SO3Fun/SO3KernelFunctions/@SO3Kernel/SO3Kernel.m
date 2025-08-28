@@ -20,15 +20,24 @@ classdef SO3Kernel
   methods
   
     % constructor
-    function psi = SO3Kernel(A)
-      if nargin>0 && isa(A,'SO3Kernel')
-        A = A.A;
+    function psi = SO3Kernel(A,varargin)
+      
+      if nargin==0
+        psi.A=0;
+        return
+      end
+      if isa(A,'function_handle')
+        psi = SO3KernelHandle(A,varargin{:});
+        return
+      end
+      if isa(A,'SO3Kernel')
+        psi = A;
+        return
       end
 
-      if nargin > 0
-        psi.A = A(:);
-        %psi.A = cutA(psi);
-      end
+      psi.A = A(:);
+      %psi.A = cutA(psi);
+      
     end
   
     % standard output
@@ -122,28 +131,7 @@ classdef SO3Kernel
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
       A = psi.A(1:min([ind+1,length(A)]));
     end
-    
-    function A = calcFourier(psi,L,maxAngle)
-      
-      if nargin == 2, maxAngle = pi;end      
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);
-      small = 0;      
-      warning off; %#ok<*WNOFF>
-      
-      for l = 0:L
-        fun = @(omega) psi.eval(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
-        A(l+1) = 2/pi*quadgk(fun ,0,maxAngle,'MaxIntervalCount',2000); %#ok<AGROW>
-        
-        if abs(A(l+1)) < epsilon
-          small = small + 1;
-        else
-          small = 0;
-        end
-        
-        if small == 10, break;end
-      end
-    end
-    
+       
   end
 end
 

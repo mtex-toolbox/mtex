@@ -54,7 +54,6 @@ if check_option(varargin,'colored')
   return
 end
 
-
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
@@ -106,7 +105,7 @@ if isNew, axis; end
 
 % do plot
 h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k',...
-  'parent',get_option(varargin,'parent',mtexFig.currentAxes)),varargin{:});
+  'parent',get_option(varargin,'parent',mtexFig.gca)),varargin{:});
 
 if isNew
   drawNow(mtexFig,varargin{:}); 

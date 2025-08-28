@@ -28,7 +28,7 @@ classdef mtexFigure < handle
 %
 % Dependent Class Properties
 %   currentAxes      - handle of the current axis
-%   currentId        - id of te current axis 
+%   currentId        - id of the current axis 
 %   axesWidth        - 
 %   axesHeight       -
 %   outerPlotSpacing -

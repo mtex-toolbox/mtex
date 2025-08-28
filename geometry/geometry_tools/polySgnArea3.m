@@ -8,7 +8,7 @@ function area = polySgnArea3(xyz,N,grainStart)
 % Input
 %
 
-cxyz = cross(xyz(2:end,:),xyz(1:end-1,:));
+cxyz = cross(xyz(2:end,:),xyz(1:end-1,:),2);
 
 if nargin == 3
 

@@ -49,7 +49,6 @@ fit = angle(childVariants,repmat(childOri(:),1,size(childVariants,2)));
 % take the best fit
 [fit,childId] = min(fit,[],2);
 
-
 % compute packetId if required
 if nargout >= 2
   if ~isempty(varargin) && any(strcmpi(varargin,'packet')) % definition given
@@ -60,7 +59,7 @@ if nargout >= 2
     end
   else % definition assumed
     if ~getMTEXpref('generatingHelpMode')
-      warning('Packet ID calculation assuming {111}_p||{110}_c');
+      disp(' Packet ID calculation assuming {111}_p||{110}_c');
     end
     h1 = Miller({1,1,1},{1,-1,1},{-1,1,1},{1,1,-1},p2c.CS);
     h2 = Miller(1,0,1,p2c.SS);
@@ -81,7 +80,7 @@ if nargout >= 3
     end
   else % definition assumed
     if ~getMTEXpref('generatingHelpMode')
-      warning('Bain ID calculation assuming {001}_p||{100}_c');
+      disp(' Bain ID calculation assuming {001}_p||{100}_c');
     end
     h1 = Miller({0,0,1},{1,0,0},{0,1,0},p2c.CS);
     h2 = Miller(1,0,0,p2c.SS);

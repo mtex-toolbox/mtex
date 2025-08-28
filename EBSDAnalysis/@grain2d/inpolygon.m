@@ -32,6 +32,6 @@ g_ctd=grains.centroid; % Grains centroid
 
 if ~isempty(g_ctd(:,1))
   %  check for inside
-  ind = inpolygon(g_ctd(:,1),g_ctd(:,2),xy(:,1),xy(:,2));
+  ind = inpolygon(g_ctd.x,g_ctd.y,xy(:,1),xy(:,2));
   
 end

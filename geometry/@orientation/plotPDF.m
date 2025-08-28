@@ -123,6 +123,8 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
 
 end
 
+gList = gobjects(0,1);
+
 % plot
 for i = 1:length(h)
 
@@ -137,12 +139,12 @@ for i = 1:length(h)
   r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
   opt = replicateMarkerSize(varargin,numSym(ori.SS)*length(sh));
 
-  % maybe we can restric ourselfs to the upper hemisphere
+  % maybe we can restrict ourselfs to the upper hemisphere
   if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
     opt = [opt,'upper']; %#ok<AGROW>
   end
 
-  [~,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
+  [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
     ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
@@ -153,9 +155,13 @@ for i = 1:length(h)
   set(cax,'tag','pdf');
   setAllAppdata(cax,'SS',ori.SS,'h',h{i});
 
-  % TODO: unifyMarkerSize
+  gList = [gList;g(:)]; %#ok<AGROW>  
 
 end
+
+% unify dynamic marker size
+gList = findall(gList,'tag','dynamicMarkerSize');
+try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
 
 if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
