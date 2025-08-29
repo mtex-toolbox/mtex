@@ -20,7 +20,6 @@ classdef SO3FunMLS < SO3Fun
 %  degree - the polynomial degree used for approximation
 %
 % Flags
-%  all_degrees  - use even AND odd degrees up to degree if true
 %  centered     - only evaluate the basis near the pole if true
 %  tangent      - use polynomials on the tangent space
 %  hat          - use hat function as weight function
@@ -37,7 +36,6 @@ classdef SO3FunMLS < SO3Fun
     delta       = 0     % support radius of the weight function
     nn          = 0     % specified number of neighbors to use 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1));        % wendland weight function
-    all_degrees = false % use even AND odd degrees up to degree if true
     centered    = false % only evaluate the basis near the pole if true
     tangent     = false % use polynomials on the tangent space
     bandwidth   = getMTEXpref('maxSO3Bandwidth');
@@ -72,7 +70,6 @@ classdef SO3FunMLS < SO3Fun
       SO3F.degree = get_option(varargin,'degree',3);
       
       % apply flags in the function arguments and remove them afterwards
-      SO3F.all_degrees = check_option(varargin,'all_degrees');
       SO3F.centered = check_option(varargin,'centered');
       if check_option(varargin,'tangent')
         SO3F.tangent = true;
@@ -118,8 +115,7 @@ classdef SO3FunMLS < SO3Fun
         dimension = 1;
         return;
       end
-      dimension = nchoosek(SO3F.degree + 3, 3) + ...
-        SO3F.all_degrees * nchoosek(SO3F.degree + 2, 3);
+      dimension = nchoosek(SO3F.degree + 3, 3);
     end
 
     function d = guess_delta(SO3F)

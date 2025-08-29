@@ -1,6 +1,6 @@
 function [vals, conds] = eval_range(sF, v)
 
-% some initializing
+% get parameters
 dimensions = size(v);
 v = v(:);
 N = size(v, 1);
@@ -12,11 +12,14 @@ ind = sF.nodes.find(v, sF.delta);
 nn = sum(ind, 2);
 
 % for points with too less neighbors, we instead choose the sF.dim nearest ones
+% TODO: choose more neighbors than only the sF.dim nearest ones, since the
+% expectation of the lebesgue constant is infinite in this setting
+% (interpolation)
 I = nn < sF.dim;
 if (sum(I) > 0)
   warning(sprintf( ...
     ['Some centers did not have sufficiently many neighbors. \n' ...
-    '\t In this case the <dimension> closest neighbors have been used.']));
+    '\t In this case the numer of neighbors was set to the dimension of the ansatz space.']));
   
   nn_original = sF.nn;
   sF.nn = sF.dim;
@@ -31,7 +34,7 @@ if (sum(I) > 0)
   end
 end
 
-% now continue with the points that have suffieciently many neighbors 
+% now continue with the points that have sufficiently many neighbors
 J = ~I;
 v = v.subSet(J);
 N = sum(J);
@@ -39,7 +42,7 @@ N = sum(J);
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 
-% the created vector col_id helps to create the (sF.dim x N) matrix G, which
+% the index vector col_id helps to construct the (sF.dim x N) matrix G, which
 % holds the values of the basis functions at all neighbors of all centers from v
 % col_id skips entries, whenever a center has not nn_max many neighbors 
 nn_total = sum(nn);
@@ -52,9 +55,9 @@ col_id = (v_id-1) * nn_max + temp;
 
 % compute for every center from v the matrix of all basis functions evaluated at
 % all neighbors of this center 
-G = zeros(sF.dim, nn_max * N); 
+G = zeros(sF.dim, nn_max * N);
+% evaluate the basis functions on the nodes
 if (~sF.centered)
-  % evaluate the basis functions on the nodes
   % choose faster way between computing all values and reusing them or
   % computing values on fibgrid(grid_id)
   if nn_total > numel(sF.nodes.x)
@@ -70,7 +73,7 @@ else
   rot = rot(v_id);
   rotneighbors = rot .* sF.nodes(grid_id);
 
-  % determine which basis to use and evaluate them on the grid and on v
+  % determine which basis to use and evaluate it on the grid and on v
   basis_on_grid = eval_basis_functions(sF, rotneighbors);
   basis_in_pole = eval_basis_functions(sF, vector3d.Z);
   

@@ -67,6 +67,3 @@ if (nargout == 2)
   % also convert d to sparse after computing it
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end
-
-
-v = vector3d

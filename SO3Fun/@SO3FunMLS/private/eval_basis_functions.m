@@ -12,12 +12,6 @@ if (sF.degree == 0)
   return;
 end
 
-% determine which basis to use and evaluate it on ori
-if sF.all_degrees
-    basis_values = [eval_monomials_S3(ori, sF.degree) ...
-      eval_monomials_S3(ori, sF.degree-1)];
-else
-    basis_values = eval_monomials_S3(ori, sF.degree, sF.tangent);
-end
+basis_values = eval_monomials_S3(ori, sF.degree, sF.tangent);
 
 end

@@ -1,4 +1,5 @@
 function vals = eval_spherical_harmonics(v, deg)
+
 % eval the spherical harmonics of degree deg, deg-2 , ..., mod(deg,2) on v
 
 % get the number of functions corresponding to the degree

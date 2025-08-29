@@ -15,12 +15,11 @@ function [vals, conds] = eval(SO3F, ori)
 %  vals  - the values of SO3F on ori
 %
 
-% I = ori.a < 0;
-% ori(I) = ori(I) * orientation([-1,0,0,0]);
 
 if ~isa(ori,'orientation')
   ori = orientation(ori, SO3F.CS, SO3F.SS);
 end
+
 
 dimensions = size(ori);
 N = prod(dimensions);
@@ -28,6 +27,7 @@ vals = zeros(N, numel(SO3F));
 if (nargout == 2)
   conds = zeros(N, 1);
 end
+
 
 % we perform the computation in batches of 1GB (2^30 Bytes) RAM 
 nn = SO3F.nn;

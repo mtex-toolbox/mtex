@@ -1,12 +1,13 @@
 function [vals, conds] = eval_knn(sF, v)
 
-% get some parameters 
+% get parameters
 dimensions = size(v);
 v = v(:);
 N = numel(v);
 nn = sF.nn;
 nn_total = nn * N;
 
+% if the oversampling factor is below 1, set it to 2
 if (sF.nn < sF.dim)
   sF.nn = 2 * sF.dim;
   warning(sprintf(...
@@ -14,19 +15,19 @@ if (sF.nn < sF.dim)
     'nn has been set to 2 * dim.']));
 end
 
+% find neighbors
 [ind, dist] = sF.nodes.find(v, nn); 
-% grid_id = id of the neighbors (in the grid of sF)
+% id of the neighbors (in the grid of sF)
 grid_id = reshape(ind', nn_total, 1);
-% v_id = id of entry of v (where we want to eval sF)
+% id of entry of v (where we want to eval sF)
 v_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
 
-% compute for every center from v the matrix of all basis functions evaluated at
-% all neighbors of this center 
+
+% evaluate the basis functions on the nodes
 if (~sF.centered)
-  % evaluate the basis functions on the nodes
   % choose faster way between computing all values and reusing them or
-  % computing values on fibgrid(grid_id)
-  if nn_total > numel(sF.nodes.a)
+  % computing values on sF.nodes(grid_id)
+  if nn_total > numel(sF.nodes.x)
     basis_on_grid = eval_basis_functions(sF); 
     G = basis_on_grid(grid_id, :)';
   else
@@ -47,7 +48,8 @@ else
 end 
 G_book = reshape(G, sF.dim, nn, N);
 
-% compute the weights, set delta slighlty larger than the farthest neighbor 
+% compute the weights, set delta slighlty larger than the farthest neighbor
+% TODO: choose an objectively good value for this
 deltas = 1.1 * max(dist, [], 2); 
 weights = sF.w(dist ./ deltas);
 W_book = reshape(weights', 1, nn, N);
@@ -56,7 +58,7 @@ W_book = reshape(weights', 1, nn, N);
 s = sqrt(sum(G_book.^2 .* W_book, 2));
 sT = pagetranspose(s);
 
-% start computing the (rescaled) Gram matrix
+% start computing the (rescaled) Gram matrix (with 1s on main diag)
 W_times_G_book = pagetranspose(G_book .* W_book) ./ sT;
 Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
 

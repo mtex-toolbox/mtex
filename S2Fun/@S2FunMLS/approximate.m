@@ -4,14 +4,14 @@ function S2F = approximate(f, varargin)
 % Syntax
 %   S2F = S2FunMLS.approximate(f)
 %   S2F = S2FunMLS.approximate(f,S2G)
-%   S2F = S2FunMLS.approximate(f,'resolution',4*degree)
+%   S2F = S2FunMLS.approximate(f,'resolution',*degree)
 %
 % Input
 %  f     - @S2Fun, @function_handle
-%  S2G  - @vector3d      % interpolation grid
+%  S2G   - @vector3d      % interpolation grid
 %
 % Output
-%  S2F  - @S2FunMLS
+%  S2F   - @S2FunMLS
 %
 % Options
 %
@@ -25,10 +25,10 @@ if isa(f,'function_handle')
 end
 
 % get grid
-S2G = getClass(varargin,'rotation');
+S2G = getClass(varargin,'vector3d');
 if isempty(S2G)
   res = get_option(varargin,'resolution',5*degree);
-  S2G = equispacedSO3Grid(f.CS,f.SS,'resolution',res);
+  S2G = vector3d(equispacedS2Grid(f.CS,f.SS,'resolution',res));
 end
 
 % compute values
