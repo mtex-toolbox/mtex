@@ -48,10 +48,12 @@ end
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 
+
 if (sF.subsample == true)
   dist = angle(v.subSet(v_id), sF.nodes.subSet(grid_id));
   dist = sparse(v_id, grid_id, dist, N, numel(sF.nodes));
 end
+
 
 % the index vector col_id helps to construct the (sF.dim x N) matrix G, which
 % holds the values of the basis functions at all neighbors of all centers from v

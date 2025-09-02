@@ -22,6 +22,7 @@ if (sF.subsample == true)
   nn_total = N * sF.dim;
   nn = sF.dim;
 end
+
 % id of the neighbors (in the grid of sF)
 grid_id = reshape(ind', nn_total, 1);
 % id of entry of v (where we want to eval sF)
