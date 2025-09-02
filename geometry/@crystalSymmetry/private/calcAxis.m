@@ -47,6 +47,8 @@ if ~check_option(varargin,'force')
       assert(axisLength(1)== axisLength(2),'For tetragonal lattices a and b must be equal!');
     case 'cubic'
       assert(all(axisLength(1)== axisLength),'For cubic lattices a, b and c must be equal!');
+    case 'icosahedral'
+      assert(all(axisLength(1)== axisLength),'For icosahedral lattices a, b and c must be equal!');
   end
 end
 

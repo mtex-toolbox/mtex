@@ -55,6 +55,12 @@ methods
       return
     end
 
+    % SO3F should only have one symmetry. The other is hidden.
+    if SO3F.CS.id>1 && SO3F.SS.id>1
+      warning(['The intern SO3FunHarmonic should only have one symmetry, ' ...
+        'since the second symmetry acts as outer symmetry on the vector field.'])
+    end
+
     % extract tangent space representation
     tS = SO3TangentSpace.extract(varargin);
     SO3VF.internTangentSpace = tS;
