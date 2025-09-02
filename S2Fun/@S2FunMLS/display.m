@@ -20,15 +20,17 @@ end
 
 disp(['  weight function: ' char(S2F.w)]);
 disp(['  polynomial degree: ' num2str(S2F.degree)]);
+disp(['  dimension of the ansatz space: ' num2str(S2F.dim)]);
 disp(['  support radius of the weight function: ' xnum2str(S2F.delta/degree) mtexdegchar]); 
 disp(['  number of neighbors: ' num2str(S2F.nn)])
+disp(['  oversampling factor: ' num2str(S2F.nn / S2F.dim)]);
 
-if S2F.all_degrees, disp('  all_degrees: true'); end
 if S2F.centered, disp('  centered: true'); end
 if S2F.tangent, disp('  tangent: true'); end
+if S2F.subsample, disp('  perform optimal subsampling: true'); end
 
 if length(S2F.nodes)<1e4 || length(S2F)>3
-  w = calcVoronoiVolume(S2F.nodes); w = w./sum(w);
+  w = calcVoronoiArea(S2F.nodes); w = w./sum(w);
 else
   w = 1/length(S2F.nodes);
 end

@@ -67,19 +67,13 @@ if ((SO3F.CS.id == 1) && (SO3F.centered == false) && (nn_total > numel(SO3F.node
   G(:,col_id) = basis_on_grid(:,grid_id);
   clear basis_on_grid;
   % for odd monomials we have p(-o) = -p(o)
-  if ((mod(SO3F.degree, 2) == 1) || (SO3F.all_degrees == true))
+  if (mod(SO3F.degree, 2) == 1)
     temp1 = ori.abcd;
     temp1 = temp1(ori_id,:);
     temp2 = SO3F.nodes.abcd;
     temp2 = temp2(grid_id,:);
     I = col_id(sum(temp1 .* temp2, 2) < 0);
-    % if all_degrees is enabled, there are even and odd monomials in the basis
-    if (SO3F.all_degrees == false)
-      marker = true(1, SO3F.dim);
-    else
-      marker = [true(1,nchoosek(SO3F.degree+3,3)), false(1,nchoosek(SO3F.degree+2,3))];
-      marker = logical(marker - (1-mod(SO3F.degree, 2)));
-    end
+    marker = true(1, SO3F.dim);
     G(marker,I) = - G(marker,I);
     clear temp1 temp2 I;
   end
