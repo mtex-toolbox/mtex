@@ -52,6 +52,7 @@ RO = RO ./ mean(RO);
 RT = calcAngleDistribution(ori.CS,ori.SS,theta);
 RT = RT(:) ./ mean(RT);
 
-m = 0.5 * mean(abs(RT-RO));
+m = 0.5 * mean(abs(RT-RO'));
 end
+
 
