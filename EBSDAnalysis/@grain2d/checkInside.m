@@ -76,6 +76,9 @@ Vx = grains.allV.x;
 Vy = grains.allV.y;
 incl = grains.inclusionId;
 
+% make sure xy is vector3d
+if ~isa(xy,'vector3d'), xy = vector3d(xy); end
+
 % use internal or external inpolygon engine?
 inpolyEngine = getMTEXpref('insidepoly');
 
@@ -101,3 +104,4 @@ for i = 1:length(poly)
   end
   
 end
+
