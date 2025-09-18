@@ -18,8 +18,7 @@ classdef S2Kernel
   properties (Hidden = true)
     evalFun = []
   end
-  
-  
+
   methods
     
     function S2K = S2Kernel(A, varargin)
@@ -47,20 +46,38 @@ classdef S2Kernel
 
       % TODO: make this faster using a polynomial transform and a nfct
       if isempty(S2K.evalFun)
-        v = ClenshawL(S2K.A,x);
+
+        if numel(x)>10000
+          xx = linspace(-1,1,1000);
+          gI = griddedInterpolant(xx,ClenshawL(S2K.A,xx),"cubic");         
+          v = gI(x);
+        else
+          v = ClenshawL(S2K.A,x);
+        end
+
       else
         v = S2K.evalFun(x);
       end
     end
 
+    function S2K = mtimes(a,S2K)
+      if isa(S2K,"numeric"), [a,S2K] = deal(S2K,a); end
+
+      S2K = S2KernelHandle(@(t) a * S2K.eval(t),a * S2K.A);
+
+    end
+
     function plot(S2K,varargin)      
-      
+
+      if isappdata(gcf,'mtexFig'), clf; end
+
       if check_option(varargin,{'3d','surf'})
         plot(S2FunHarmonic(S2K),varargin{:});
         return
       end
 
-      omega = get_option(varargin,'omega',linspace(0,180*degree,1000));
+      omega = get_option(varargin,'omega',...
+        linspace(0,get_option(varargin,'maxAngle',180*degree),1000));
       
       f = S2K.eval(cos(omega));
       
@@ -69,7 +86,7 @@ classdef S2Kernel
         f = [fliplr(f),f];
       end
       
-      optiondraw(plot(omega./degree,f),varargin{:});
+      optiondraw(plot(omega./degree,f),'linewidth',2,varargin{:});
       xlim(gca,[min(omega),max(omega)]./degree)
 
     end
