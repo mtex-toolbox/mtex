@@ -55,7 +55,7 @@ if sS.CS.Laue ~= eps.CS.Laue
     if nargout>1
       b = [];
       spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
-      % to be comparable set output to rightspintensor      
+      % to be comparable set output to rightSpinTensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
   end
@@ -84,7 +84,7 @@ b = zeros(length(eps),length(sS));
 % by now assumed to be identical - might also be stored in sS
 CRSS = sS.CRSS(:);%ones(length(sS),1);
 
-% decompose eps into sum of disclocation tensors, that is we look for
+% decompose eps into sum of dislocation tensors, that is we look for
 % coefficients b such that sSepsSym * b = eps
 
 % since the strain tensor is symmetric we require only 5 entries out of it
@@ -128,7 +128,7 @@ for i = 1:size(y,2)
   if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end
 
-% the Taylor factor is simply the sum of the coefficents
+% the Taylor factor is simply the sum of the coefficients
 M = reshape(sum(b,2),size(eps)) ./ norm(eps);
 
 % maybe there is nothing more to do

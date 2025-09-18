@@ -21,7 +21,7 @@ if strcmp(s(1).type,'()')
   isCS(isCS) = phId>0; phId(phId==0) = [];
   subs(isCS) = gB.CSList(phId);
   
-  % restrict to subet
+  % restrict to subset
   ind = subsind(gB,subs);
   gB = subSet(gB,ind);
 

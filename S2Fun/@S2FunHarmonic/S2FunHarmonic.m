@@ -106,7 +106,7 @@ methods
       ind(l^2+1:(l+1)^2) = (l+1)^2:-1:l^2+1;
     end
     sF.fhat = 0.5*(sF.fhat+conj(sF.fhat(ind,:)));
-    sF=reshape(sF,sz);
+    sF = reshape(sF,sz);
   end
 
   function d = size(sF, varargin)
