@@ -16,7 +16,7 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %  d     - @vector3d
 %
 % Output
-%  sFs - symmetrised @S2FunHarmonic
+%  sFs - @S2FunHarmonic
 %  psi - @S2Kernel
 
 if isa(sF,'S2FunHarmonicSym') && (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
@@ -77,14 +77,11 @@ if sF.bandwidth == 0 || numSym(symX) == 1
   return;
 end
 
-% define a symmetrized evaluation function
+% define a symmetrised evaluation function
 f = @(v) sF.eval(v);
 fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
 
 % compute Fourier coefficients by quadrature
-sF = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
-
-% set up S2FunHarmonicSym
-sFs = S2FunHarmonicSym(sF.fhat,sym,'skipSymmetrise');
+sFs = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
 
 end

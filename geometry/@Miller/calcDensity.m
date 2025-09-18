@@ -46,10 +46,12 @@ end
 
 % convolution with kernel function
 sF = conv(sF,psi);
+sF.CS = h.CS;
 
 % symmetrise with respect to crystal symmetry
 if ~check_option(varargin,'noSymmetry')
-  sF = sF.symmetrise(h.CS);
+  sF = S2FunHarmonicSym(sF,h.CS);
+  sF = sF.symmetrise;
 end
 
 % if required compute function values
