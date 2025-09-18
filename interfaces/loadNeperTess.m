@@ -112,13 +112,7 @@ skipEmptyLines(fid)
 numEdges = str2double(fgetl(fid));
 skipEmptyLines(fid)
 
-%E = zeros(numEdges,2);
-for i = 1:numEdges
-  fgetl(fid);
-  %buffer = fgetl(fid);
-  %buffer = split(buffer);
-  %E(i,:) = str2double(buffer(3:4));
-end
+Lines = textscan(fid, '%[^\n]', numEdges, 'Delimiter', '\n');
 
 %% load faces -> **face
 
@@ -127,17 +121,18 @@ assert(strtrim(fgetl(fid)) == "**face", '" **face" not found');
 skipEmptyLines(fid)
 numAllFaces = str2double(fgetl(fid));
 
-% read in poly
+% Read the next 4*numAllFaces lines in one call
+Lines = textscan(fid, '%[^\n]', 4*numAllFaces, 'Delimiter', '\n');
+Lines = Lines{1};
+
+% Keep only the header line of each 4-line face block
+Lines = Lines(1:4:end);
+
+% each line line is: faceId, numVertex, VId1, VId2, ....., VIdN
 F = cell(numAllFaces,1);
-for i = 1:numAllFaces
-
-  % first line is faceId, numVertex, VId1, VId2, ....., VIdN
-  value = str2num(fgetl(fid)); %#ok<ST2NM>
-
-  F{i} = value([3:end,3]);
-
-  % then we skip the next 3 lines
-  fgetl(fid); fgetl(fid); fgetl(fid);
+for i = 1:numAllFaces  
+  value = sscanf(Lines{i},'%d'); 
+  F{i} = value([3:end,3]).';
 end
 
 %% load grains -> **polyhedron
@@ -151,17 +146,18 @@ if dimension == 3
   numGrains = str2double(fgetl(fid));
   
   % read all polyhedrons
-  % unfortunately textscan is to stupid to read textfiles with varying
-  % line length
-  for k = 1:numGrains, grains{k} = str2num(fgetl(fid)); end %#ok<ST2NM,AGROW>
-  
+  Lines = textscan(fid, '%[^\n]', numGrains, 'Delimiter', '\n');
+  Lines = Lines{1};
+  grains = cell(numGrains,1);
+  for k = 1:numGrains, grains{k} = sscanf(Lines{k},'%d'); end
+   
   % each line of contains
   % grainId numFaces FaceId1 FaceId2 FaceId2 ... FaceId1
   % we store these data in a grains x faces incidence matrix
   % with values +-1 indicting whether the face normal points out of the grain
   grainId = cellfun(@(x) x(1),grains);
   numFaces = cellfun(@(x) x(2),grains);
-  faceId = cellfun(@(x) x(3:end),grains,'UniformOutput',false);
+  faceId = cellfun(@(x) x(3:end).',grains,'UniformOutput',false);
   
   grainId = repelem(grainId,numFaces);
   faceId = [faceId{:}];
