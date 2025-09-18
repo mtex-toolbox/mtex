@@ -1,11 +1,13 @@
-function gpnd = calcGBND(gB,ebsd,varargin)
-% estimate grain boundary plane distribution from 2d sections
+function gbnd = calcGBND(gB,ebsd,varargin)
+% estimate GBND and GBCD from 2d boundary segments
 %
 % Syntax
 %
-%   % compute gbnd in crystal coordinates
 %   gbnd = calcGBND(gB,ebsd)
 %   gbnd = calcGBND(gB,grains)
+%
+%   % the gbcd for a specific misorientation
+%   gbcd = calcGBND(gB,grains,mori)
 %
 %   % use a specific halfwidth
 %   gbnd = calcGBND(gB,ebsd,'halfwidth',10*degree)
@@ -14,12 +16,14 @@ function gpnd = calcGBND(gB,ebsd,varargin)
 %  gB   - @grainBoundary
 %  ebsd - @EBSD 
 %  grains - @grain2d
+%  mori - mis@orientation or orientation relationship
 %
 % Output
-%  gpnd - @S2FunHarmonic
+%  gbnd - @S2FunHarmonic
 %
 % Options
 %  halfwidth - used for kernel density estimation
+%  nonneg    - use a nonnegative kernel
 %
 % See also
 %
@@ -35,61 +39,122 @@ function gpnd = calcGBND(gB,ebsd,varargin)
 % yet published.
 
 
-%% step 1: extract orientations
+% restrict to boundaries with the correct phase
 
-phaseId = ebsd.indexedPhasesId;
-ind = gB.phaseId == phaseId;
+odf = getClass(varargin,'SO3Fun');
+moriRef = getClass(varargin,'orientation');
+takeBoth = false;
 
+if ~isempty(moriRef) % GBCD
+   
+  % extract the right grain boundaries
+  phId = [gB.cs2phaseId(moriRef.CS),gB.cs2phaseId(moriRef.SS)]; 
+  ind = all(gB.phaseId == phId,2) | all(gB.phaseId == fliplr(phId),2);
+  gB = gB.subSet(ind);
+
+  % make sure gB has correct phase as first phase
+  if diff(phId) ~= 0
+
+    gB = flip(gB,gB.phaseId(:,1) ~= phId(1));
+
+  elseif angle(moriRef,inv(moriRef)) > 5*degree
+    
+    % if is is the same phase check for misorientation    
+    omega = angle(gB.misorientation,[moriRef,inv(moriRef)]);
+    gB = flip(gB,diff(omega,1,2)<0);
+
+  else
+
+    takeBoth = true;
+    
+  end
+
+end
+
+% extract orientations
 if isa(ebsd,'EBSD')
-  ori = ebsd('id',gB.ebsdId(ind)).orientations;
+  ori1 = ebsd('id',gB.ebsdId(:,1)).orientations;
+  ori2 = ebsd('id',gB.ebsdId(:,2)).orientations;
 elseif isa(ebsd,'grain2d')
-  ori = ebsd('id',gB.grainId(ind)).meanOrientation;
+  ori1 = ebsd('id',gB.grainId(:,1)).meanOrientation;
+  ori2 = ebsd('id',gB.grainId(:,2)).meanOrientation;
 else
   error('second argument should be of type EBSD or grain2d')
 end
 
-% grain boundary directions
-l = gB.direction; l.antipodal = false;
-l = [l,l];
-l = l(ind);
+% weights
+weights = gB.segLength;
 
-% rotations that rotate
-% o -> x
-% l -> z
+% traces
+l = gB.direction; 
+
+hw = get_option(varargin,'halfwidth',10*degree);
+psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
+dSym1 = [];
+
+if ~isempty(moriRef) && takeBoth
+
+  mori = inv(ori1) .* ori2;
+  ind = angle(mori,moriRef) < 2*hw;
+  mori = mori(ind);
+  
+  [sym1,sym2,dSym1] = project2FundamentalRegion(mori,moriRef);
+
+  ori = rotation([ori1(ind) .* sym1; ori2(ind) .* sym2]);
+  l = [l(ind);l(ind)];
+  weights = [weights(ind);weights(ind)];
+
+elseif ~isempty(moriRef) % use only ori1
+
+  % match misorientation
+  csRot = moriRef.CS.properGroup.rot;
+  [d,idCS] = max(dot_outer(inv(ori2) .* ori1, moriRef * csRot,'noSym1'),[],2);
+  doInclude = d > cos(2*hw);
+  
+  % update ori
+  ori = rotation(ori1(doInclude) .* inv(csRot(idCS(doInclude))));
+  
+  % restrict weights and traces
+  weights = weights(doInclude) .* psi.eval(d(doInclude));
+  l = l(doInclude);
+
+else
+
+  assert(size(unique(gB.phaseId,'rows'),1)==1,'grain boundary should contain phase of one type');
+
+  l = [l,l];
+  weights = [weights,weights];
+  ori = [ori1,ori2];
+  
+end
+
+if ~isempty(odf) % this seems not to be very effective
+  weights = weights ./ odf.eval(ori);
+end
+
+
+% rotations that rotate  o -> x and l -> z
 rot = rotation.map(repmat(ebsd.N,size(l)),xvector,l,zvector);
 
-%%
+% step 2: define a kernel function that is a fibre through the
+% crystallographic z-axis and the crystallographic x-axis
+[~,psi] = calcGBNDKernel(varargin{:},'harmonic');
 
-weights = gB.segLength; weights = [weights,weights]; weights = weights(ind);
+% step 3: compute the orientation density of the modified boundary orientations
+odf = calcDensity(rot(:) .* ori(:),'weights',weights,...
+  'kernel',SO3DirichletKernel(psi.bandwidth),'harmonic','noSymmetry');
 
+% step 4: convolution
+gbnd = conv(odf,psi);
 
-%% step 2: define kernel function
+% symmetrisation
+if ~isempty(dSym1), gbnd = symmetrise(gbnd,dSym1); end
 
-% define a kernel function that is a fibre through the crystallograhic
-% z-axis and the crystallographic x-axis
-psi = S2FunHarmonic(S2DeLaValleePoussinKernel('halfwidth',5*degree,varargin{:}));
-
-psi = psi.radon;
-
-bw = min(getMTEXpref('maxS2Bandwidth'),psi.bandwidth);
-
-% multiply this kernel function with the sin of the polar angle
-psiCor = S2FunHarmonic.quadrature(...
-  @(v) pi/2 * psi.eval(v) .* sin(angle(v,xvector)),'bandwidth', bw,'antipodal');
-
-
-%% step 3: compute orientation density
-
-% compute the orientation density of the modified boundary orientations
-odf = calcDensity(rot(:) .* ori,'weights',weights,...
-  'kernel',SO3DirichletKernel(bw),'harmonic');
-
-%% step 4: convolution
-gpnd = conv(odf,psiCor);
+gbnd = S2FunHarmonic(gbnd.fhat,moriRef.CS);
 
 end
 
-%% testing only
+% testing only
 
 %n = 100000;
 %cs = crystalSymmetry('3','x||b');

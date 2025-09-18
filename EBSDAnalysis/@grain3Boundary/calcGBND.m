@@ -9,13 +9,17 @@ function gbnd = calcGBND(gB3,varargin)
 %   % grain boundary normal distribution in crystal coordinates
 %   gbnd = calcGBND(gB3,grains)
 %
+%   % GBCD for misorientation moriRef
+%   gbnd = calcGBND(gB3,grains,moriRef)
+%
 %   % grain boundary normal distribution in crystal coordinates
 %   gbnd = calcGBND(gB3,ebsd)
 %
 % Input
-%  gB3 - @grain3Boundary
-%  grains - single phase @grain3d
-%  ebsd - single phase @EBSD3
+%  gB3     - @grain3Boundary
+%  grains  - single phase @grain3d
+%  ebsd    - single phase @EBSD3
+%  moriRef - mis@orientation
 %
 % Output
 %  gbnd - @S2Fun
@@ -27,16 +31,16 @@ function gbnd = calcGBND(gB3,varargin)
 grains = getClass(varargin,'grain3d');
 
 % a reference orientation
-mori = getClass(varargin,'orientation');
+moriRef = getClass(varargin,'orientation');
 
-% the gbnd for a specific misorientation
-if ~isempty(mori) && ~isempty(grains)
+% the gbcd for the specific misorientation moriRef
+if ~isempty(moriRef) && ~isempty(grains)
   
   hw = get_option(varargin,'halfwidth',10*degree);
   psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
 
   % extract the right grain boundaries
-  phId = [gB3.cs2phaseId(mori.CS),gB3.cs2phaseId(mori.CS)];  
+  phId = [gB3.cs2phaseId(moriRef.CS),gB3.cs2phaseId(moriRef.CS)];  
   ind = all(gB3.phaseId == phId,2);
   gB3 = gB3.subSet(ind);
 
@@ -45,40 +49,30 @@ if ~isempty(mori) && ~isempty(grains)
   ori1 = grains.meanOrientation(grainInd(:,1));
   ori2 = grains.meanOrientation(grainInd(:,2));
 
-  % match misorientation
-  csRot = mori.CS.rot;
-  [d,idCS] = max(dot_outer(ori2 .* inv(ori1), mori * csRot,'noSym1'),[],2);
+  mori = inv(ori1) .* ori2;
+  omega = angle(mori,moriRef);
+  doInclude = omega < 2*hw;
+  mori = mori(doInclude);
+
+  weights = gB3.area(doInclude) .* psi.eval(cos(omega(doInclude)));
+
+  [sym1,sym2,csRed] = project2FundamentalRegion(mori,moriRef);
   
-  doInclude = d > cos(hw);
-  
-  % compute the normal directions in crystal coordinates
-  N =  inv(ori1(doInclude) .* inv(csRot(idCS(doInclude))) ) .* ...
-    gB3.N(doInclude);
+  N =  inv(ori1(doInclude) .* sym1) .* gB3.N(doInclude);
 
-  % compute weights
-  weights = gB3.area(doInclude) .* psi.eval(d(doInclude)); 
-
-  if phId(1) == phId(2)
-    % we need also consider the other way round
-    [d,idCS] = max(dot_outer(ori1 .* inv(ori2), mori * csRot,'noSym1'),[],2);
-
-    doInclude = d > cos(hw);
+  if moriRef.antipodal
     
-    % compute the normal directions in crystal coordinates
-    N = [N; -(inv(ori2(doInclude) .* inv(csRot(idCS(doInclude))) ) .* ...
-      gB3.N(doInclude))];
-
-    weights = [weights; gB3.area(doInclude) .* psi.eval(d(doInclude))];
-
+    N =  [N; inv(ori2(doInclude) .* sym2) .* gB3.N(doInclude)];
+    weights = [weights;weights];
+  
   end
 
-
-  gbnd = calcDensity(N,'weights',weights,varargin{:},'noSymmetry');
+  gbnd = calcDensity(N,'weights',weights,varargin{:},'noSymmetry','antipodal');
+  gbnd = symmetrise(gbnd,csRed);
+  gbnd.CS = moriRef.CS;
 
   
-
-
-elseif ~isempty(grains)
+elseif ~isempty(grains) % the crystal GBND
   
   N = [gB3.N,gB3.N];
   weights = gB3.area; weights = repmat(weights,1,2);
@@ -95,7 +89,7 @@ elseif ~isempty(grains)
 
   gbnd = calcDensity(N,'weights',weights,varargin{:},'antipodal');
 
-else
+else % the specimen GBND
 
   gbnd = calcDensity(gB3.N,'weights',gB3.area,varargin{:},'antipodal');
 
