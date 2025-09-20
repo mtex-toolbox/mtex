@@ -42,16 +42,15 @@ if nnz(isNowParent) == 0, return; end
 if check_option(varargin,'exactOR')
 
   ori = calcParent(ebsd(isNowParent).orientations,...
-    job.grains(ebsd.grainId(isNowParent)).meanOrientation,job.p2c);
+    job.grains(ebsd.grainId(isNowParent)).meanOrientation, job.p2c);
 else
 
   ori = job.grains(ebsd.grainId(isNowParent)).meanOrientation;
  
 end
 
-
 % compute variantId
-[vId,pId,~,fit] = calcVariantId(ori, ebsd(isNowParent).orientations,job.p2c);
+[vId,pId,~,fit] = calcVariantId(ori, ebsd(isNowParent).orientations, job.p2c);
 ebsd.prop.variantId = NaN(size(ebsd));
 ebsd.prop.variantId(isNowParent) = vId;
 ebsd.prop.packetId = NaN(size(ebsd));

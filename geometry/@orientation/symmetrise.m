@@ -1,5 +1,24 @@
 function o = symmetrise(o,varargin)  
 % all crystallographically equivalent orientations
+%
+% Syntax
+%
+%  oriSym = symmetrise(ori)
+%
+%  oriSym = symmetrise(ori,'antipodal')
+% 
+% Input
+%  ori - @orientation 
+%
+% Output
+%  oriSym - @orientation (numel(CS) * numel(SS)) x numel(ori)
+%
+% Flags
+%  proper - consider only proper symmetry operations
+%  noSym1 - ignore left symmetry 
+%  noSym2 - ignore right symmetry
+%  unique - return unique list of symmetrically equivalent orientations
+%
 
 if nargin > 1 && isa(varargin{1},'symmetry')
   CS = varargin{1};

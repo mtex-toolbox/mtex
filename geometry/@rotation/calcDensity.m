@@ -52,7 +52,6 @@ if ~isa(ori,'orientation')
   ori = orientation(ori,CS,SS);
 end
 
-
 % TODO this could be done better!!!
 % add grain exchange symmetry
 if check_option(varargin,'antipodal') && ori.CS == ori.SS
