@@ -15,12 +15,12 @@
 % is processed as an object from the class |grain2d|. 
 %
 %
-%% Setting-up the Neper instance
+%% Setting-up the Neper
 % If you do not want to make any further adjustments to the default values,
 % this step could be done very easily. In this case please skip to chapter
 % "Simulating a microstructure with Neper"
 
-job = neperInstance
+neper.init
 
 %% 
 % File options:
@@ -32,7 +32,7 @@ job = neperInstance
 % for example
 % job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 % or
- job.filePath = [mtexDataPath filesep 'Neper'];
+ neper.filePath = [mtexDataPath filesep 'Neper'];
 
 %%
 % By default the 3d tesselation data will be named "allgrains" with the
@@ -40,15 +40,14 @@ job = neperInstance
 % ending .tess and .ori . You can change the file names in variables
 % |fileName3d| and |fileName2d|.
 
-job.fileName3d = 'my100grains';
-job.fileName2d = 'my100GrSlice';
+neper.fileName3d = 'my100grains';
 
 %% Tessellation options
 % The grains will be generated in cubic domain. By default the domain has
 % the edge length 1 in each direction. To change the size of the domain,
 % store a row vector with 3 entries (x,y,z) in the variable |cubeSize|.
 
-job.cubeSize = [4 4 2];
+neper.cubeSize = [4 4 2];
 
 %%
 % Neper uses an id to identify the tessellation. This integer value "is
@@ -56,14 +55,14 @@ job.cubeSize = [4 4 2];
 % seed positions" (neper.info/doc/neper_t.html#cmdoption-id) By default the
 % tessellation id is always |1|.
 
-job.id = 529;
+neper.id = 529;
 
 %%
 % Neper allows to specify the morphological properties of the cells. See
 % <https://neper.info/doc/neper_t.html#cmdoption-morpho> for more
 % information. By default grain growth is used, that is an alias for:
 
-job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+neper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
 %% Simulating a microstructure with Neper
 %
@@ -78,7 +77,7 @@ job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 odf = SO3Fun.dubna
 numGrains = 1000;
 
-grains = job.simulateGrains(odf,numGrains,'silent')
+grains = neper.simulateGrains(numGrains,odf,'silent')
 
 %% plot the grains
 % Lets visualize the grains and adjust a nice view point.
@@ -86,9 +85,7 @@ grains = job.simulateGrains(odf,numGrains,'silent')
 clf
 plot(grains,grains.meanOrientation)
 
-how2plot = plottingConvention;
-how2plot.outOfScreen = vector3d(-10,-5,2);
-how2plot.east = vector3d(1,-2,0);
+how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
 

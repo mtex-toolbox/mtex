@@ -28,6 +28,7 @@ elseif strcmpi(name,'clear')
 
   files = dir(fullfile(mtexDataPath,'*.mat'));
   files = files(~strncmp('testgrains.mat',{files.name},14));
+  files = files(~strncmp('quartzPattern.mat',{files.name},14));
   for k=1:numel(files)
     delete(fullfile(mtexDataPath,[files(k).name]));
   end
@@ -97,16 +98,16 @@ catch
     case 'grain3d'
       switch name
         case 'NeperGrain3d'
-          job = neperInstance;
+          neper.init; %#ok<NODEF>
 
-          job.cubeSize = [100 100 100];
+          neper.cubeSize = [100 100 100];
 
-          job.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+          neper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
           odf = SO3Fun.dubna;
           numGrains = 1000;
 
-          out = job.simulateGrains(odf,numGrains,'silent');
+          out = neper.simulateGrains(numGrains,odf,'silent');
       end
 
     case 'SO3Fun'

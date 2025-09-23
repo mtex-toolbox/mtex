@@ -23,7 +23,7 @@ function [dimension, V, F, ori, CS, varargout] = loadNeperTess(filepath)
 %  cell_ids - ids of the cells according to initial 3d tessellation
 %
 % See also
-% grain2d.load grain3d.load neperInstance
+% grain2d.load grain3d.load neper
 %
 
 fid = fopen(filepath, 'r');

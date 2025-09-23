@@ -49,14 +49,14 @@ plot(grains2,grains2.meanOrientation)
 % specific texture and specific distribution of boundary normals.
 
 % set up the communication with Neper
-job = neperInstance;
+neper.init
 
 % define a texture 
 cs = crystalSymmetry.load('quartz.cif','color','lightblue');
 odf = fibreODF(cs.cAxis,vector3d(1,1,1));
 
-numGrains=100;
-grains = job.simulateGrains(odf,numGrains,'silent')
+numGrains = 100;
+grains = neper.simulateGrains(numGrains,odf,'silent')
 % or you can load an existing tessellation file
 %grains = grain3d.load('allgrains.tess','CS',cs)
 

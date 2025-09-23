@@ -1,44 +1,38 @@
-function varargout = simulateGrains(this,varargin)
+function varargout = simulateGrains(varargin)
 % generating 3d neper tessellations
 %
 % Syntax
 %   
-%   neper=neperInstance;
+%   neper.init
 %   neper.filepath='C:\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
 %   numGrains = 100;
 %   odf = unimodalODF(orientation.rand);
-%   neper.simulateGrains(odf, numGrains)
+%   grains = neper.simulateGrains(numGrains, odf)
 %
-%   ori=discreteSample(odf,numGrains)
-%   neper.simulateGrains(ori,'silent')
+%   ori = discreteSample(odf,numGrains)
+%   grains = neper.simulateGrains(ori,'silent')
 %
 % Input
-%  neper      - @neperInstance
-%  odf        - @SO3Fun
-%  numGrains  - number of grains
-%  ori        - @orientation
-%  'silent'   - print log file, no console output
+%  numGrains - number of grains
+%  odf       - @SO3Fun
+%  ori       - @orientation
+%  'silent'  - print log file, no console output
 % 
 % Output
-%  allgrains.tess  - tessellation file, name specified at neper.filename3d, stored under neper.filepath
-%  allgrains.ori   - orientation file, Euler-Bunge format,
-%  ori_in.txt      - input orientations, Rodrigues format
+%  grains - @grain3d
+%
 
-assert(nargin>1,'too few input arguments')
-if nargin>=3  % odf & numGrains
-  if isnumeric(varargin{2}) && isa(varargin{1},'SO3Fun')
-    numGrains=varargin{2};
-    ori = varargin{1}.discreteSample(numGrains);
-  else
-    error 'argument error'
-  end
-elseif nargin>=2 %ori
-  if isa(varargin{1},'orientation')
-    ori=varargin{1};
-    numGrains=length(varargin{1});
-  else
-    error 'argument error'
-  end 
+
+this = neper.instance;
+
+assert(nargin>0,'too few input arguments')
+
+if isnumeric(varargin{1})
+  numGrains = varargin{1};
+  ori = varargin{2}.discreteSample(numGrains);
+else
+  ori=varargin{1};
+  numGrains=length(varargin{1});
 end
 
 % generate Neper symmetry names

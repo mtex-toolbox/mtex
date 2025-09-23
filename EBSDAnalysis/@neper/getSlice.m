@@ -1,17 +1,17 @@
-function grains = getSlice(this,N,d,varargin)
+function grains = getSlice(N,d,varargin)
 % generating 2d slices of 3d neper tesselations
 %
 % Syntax
 %   
-%   neper=neperInstance;
-%   neper.simulateGrains(unimodalODF(orientation.rand), 100)
+%   neper.init;
+%   grains3 = neper.simulateGrains(100,unimodalODF(orientation.rand))
 %
 %   N=vector3d(1,1,1);   % normal vector of a plane
 %   d=1;                 % d of plane equation
-%   grains=neper.getSlice(N,d)
+%   grains2 = neper.getSlice(N,d)
 %
-%   A=vector3d(1/3,1/3,1/3) %position vector of a point from the plane
-%   grains=neper.getSlice(N,A)
+%   A = vector3d(1/3,1/3,1/3) %position vector of a point from the plane
+%   grains = neper.getSlice(N,A)
 %
 % Input
 %  N - slice normal @vector3d
@@ -22,6 +22,8 @@ function grains = getSlice(this,N,d,varargin)
 %  grains         - @grain2d
 %  2dslice.tess   - 2d neper tesselation file, name specified at neper.fileName2d, stored under neper.filepath
 %  2dslice.ori    - file with orientations in euler-bunge format
+
+this = neper.instance;
 
 % compute distance to origin
 if isa(d,"vector3d"), d = dot(N,d); end

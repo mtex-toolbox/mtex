@@ -1,42 +1,38 @@
-classdef neperInstance < handle
+classdef (Sealed) neper < handle
 % class that provides an interface to the crystal simulation software
 % neper (see https://neper.info)
 %
 % Syntax
 % 
-%   myNeper=neperInstance
+%   neper.init
 %
 %   %select working folder, default: |tempdir|
-%   myNeper.filePath='C:\\Users\user\Work\Mtex\NeperExamples'; 
+%   neper.filePath='C:\\Users\user\Work\Mtex\NeperExamples'; 
 %
-%   %decide if new folder should be created in working directory, default: true
-%   myNeper.newFolder=false;
 %   % specifying filenames
-%   myNeper.fileName3d='my100Grains';    %default: 'allgrains'
-%   myNeper.fileName2d='mySlice';        %default: '2dslice'
+%   neper.fileName3d='my100Grains';    %default: 'allgrains'
 %
 %   %specifying size of tessellation domain
-%   myNeper.cubeSize = [4 4 1];
+%   neper.cubeSize = [4 4 1];
 %   %defining tessellation id
-%   myNeper.id = 512;
+%   neper.id = 512;
 %
 %   %eventually set a list of additional options to be found here
 %   %to be found here: https://neper.info/doc/neper_t.html 
-%   myNeper.varNeperopts = '-regularization 1'
+%   neper.varNeperopts = '-regularization 1'
 %
-%   ori=orientation.rand;
-%   ori.CS=crystalSymmetry('mmm');
-%   odf=unimodalODF(orientation.rand)
-%   numGrains=100;
-%   myNeper.simulateGrains(odf,numGrains)
+%   cs = crystalSymmetry('mmm');
+%   odf = unimodalODF(orientation.rand(cs))
+%   numGrains = 100;
+%   myNeper.simulateGrains(numGrains,odf)
 %
-%   N=vector3d(1,1,1);    % normal vector (a,b,c) of a plane
-%   d=1;                  % d of a plane equation(a,b,c,d)
-%   grains=myNeper.getSlice(N,d)
+%   N = vector3d(1,1,1);    % normal vector (a,b,c) of a plane
+%   d = 1;                  % d of a plane equation(a,b,c,d)
+%   grains = neper.getSlice(N,d)
 %
-%   N=vector3d(0,0,1);    % normal vector of a plane
-%   A=vector3d(0,0,0.5);  % point from the plane
-%   grains2=myNeper.getSlice(N,A)
+%   N = vector3d(0,0,1);    % normal vector of a plane
+%   A = vector3d(0,0,0.5);  % point from the plane
+%   grains2 = neper.getSlice(N,A)
 %
 %   plot(grains,grains.meanOrientation)
 %   hold
@@ -54,9 +50,7 @@ classdef neperInstance < handle
 % See also
 % grain2d.load grain3d.load
 
-
 properties
-
   id = 1;
   cubeSize = [1 1 1];
   morpho = 'graingrowth';
@@ -65,32 +59,34 @@ properties
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
   fileName3d = 'allgrains'    %name for 3d outputs (fileendings .tess/.ori/.stpoly)
   filePath = [tempdir 'neper' filesep];
-  
+  cmdPrefix                   % contains char 'wsl' for windows systems
 end
 
 properties (Dependent = true, Access = private)
   filePathUnix                % differs from filePath for Windows systems
 end
 
-properties (Access = private)
-  cmdPrefix                    % contains char 'wsl' for windows systems
-end
+methods (Access = private)
 
-methods
-
-  function neper = neperInstance()
+  function this = neper()
     % constructor
     if computer=="PCWIN64"
-      neper.cmdPrefix='wsl ';
+      this.cmdPrefix='wsl ';
     else
-      neper.cmdPrefix='';
+      this.cmdPrefix='';
     end
 
     % ensure filePath exists
-    if ~exist(neper.filePath,'dir')
-      try mkdir(neper.filePath); end
+    if ~exist(this.filePath,'dir')
+      try mkdir(this.filePath); end
     end
 
+    % assert Neper is installed
+    out = system([this.cmdPrefix 'neper']);
+    if out~=0
+      warning('Could not find Neper.')
+    end
+    
   end
 
 end
@@ -98,9 +94,21 @@ end
 
 methods (Static = true)
 
+  function obj = instance()
+    persistent UNIQUE
+    if isempty(UNIQUE) || ~isvalid(UNIQUE)
+      UNIQUE = neper();
+    end
+    obj = UNIQUE;
+  end
+
+  function init()
+    assignin('caller','neper',neper.instance());
+  end
+
   function grains = test
 
-    neper = neperInstance;
+    neper = neper.instance;
     
     numGrains=100;
     ori=orientation.rand();
@@ -116,6 +124,10 @@ methods (Static = true)
     plot(grains,grains.meanOrientation)
 
   end
+
+  grains = simulateGrains(varargin)
+  grains = simulateTwinGrains(varargin)
+  grains = getSlice(varargin)
 
 end
 
