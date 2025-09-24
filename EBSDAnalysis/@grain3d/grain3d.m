@@ -18,7 +18,8 @@ classdef grain3d < phaseList & dynProp
     F     % n x 1 cell array or n x 3 array with all faces
     meanOrientation
     numFaces  % number of boundary faces per grain
-    extent
+    extent   %
+    midPoint % midPoint of extent
     how2plot % plotting convention
     grainSize % depreciated for numPixel
   end
@@ -84,6 +85,12 @@ classdef grain3d < phaseList & dynProp
     function ext= get.extent(grains)
       V = grains.boundary.V; %#ok<PROP>
       ext = [min(V.x) max(V.x) min(V.y) max(V.y) min(V.z) max(V.z)]; %#ok<PROP>
+    end
+
+    function mP = get.midPoint(grains)
+      V = grains.boundary.V; %#ok<PROP>
+      mP = 0.5 * vector3d(min(V.x), min(V.y), min(V.z)) + ...
+        0.5 * vector3d(max(V.x),max(V.y), max(V.z));
     end
 
     function V = get.V(grains)
