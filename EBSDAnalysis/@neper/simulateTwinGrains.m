@@ -63,37 +63,40 @@ system(com);
 
 grains = grain3d.load([this.filePathUnix this.fileName3d '.tess']);
 
-% populate orientations
-
-sep = zeros(1,numGrains+1);
-l = 1;
+% determine number of twins for each host grain
+numTwins = zeros(1,numGrains);
+l = 1; k = 1; 
+dk = 50; % chunksize for efficient searching should be larger than actual number of childs
 Nxyz = grains.boundary.N.xyz;
+nAxyz = nA.xyz;
 I_GF = grains.I_GF;
-nAxyz = nA(l).xyz;
-for k = 1:length(grains)  
-  progress(k,length(grains));  
-  if all(abs(Nxyz(find(I_GF(k,:)),:) * nAxyz.') < cos(1e-3)) %#ok<FNDSB>
-    l = l+1;
-    sep(l) = k-1;
-    nAxyz = nA(l).xyz;
+
+while k <= numel(grains)  
+  progress(k,length(grains));
+
+  dk = min(dk,size(I_GF,1)-k+1);
+  [Gid,Fid] = find(I_GF(k:k+dk-1,:));
+  isPlane = abs(Nxyz(Fid,:) * nAxyz(l,:).') < cos(1e-3);
+  
+  pos = find(accumarray(Gid,isPlane,[dk,1],@all),1);
+  
+  if isempty(pos)
+    numTwins(l) = dk;
+    break
+  else
+    numTwins(l) = pos;
+    k = k + pos;
+    l = l+1;    
   end
 end
-sep(end) = k;
 
+% the parent ids
+hostId = repelem(1:numGrains,numTwins);
 
-oriAll = orientation.nan(length(grains),1,odf.CS);
-
-for k = 1:length(sep)-1
-
-  ind = sep(k)+1 : sep(k+1);
-
-  oriAll(ind) = rotation.rand(length(ind),1,'maxAngle',2*degree) * ori(k);
-
-  oriAll(ind(2:2:end)) = oriAll(ind(2:2:end)) .* mori;
-
-end
-
-grains.meanOrientation = oriAll;
+% define twinned orientations
+ori = rotation.rand(length(grains),1,'maxAngle',2*degree) .* ori(hostId);
+ori(2:2:end) = ori(2:2:end) .* mori;
+grains.meanOrientation =  ori;
 
 % update boundary misorientations
 gId = grains.boundary.grainId;
