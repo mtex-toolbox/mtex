@@ -43,7 +43,7 @@ fprintf(fid,"%d %f %f %f\n",d.');
 fclose(fid);
 
 aspectRatio = get_option(varargin,'aspectRatio','(1,1,1)');
-lamellaWidth = get_option(varargin,'width',0.015);
+lamellaWidth = get_option(varargin,'width',(prod(this.cubeSize) / numGrains)^(1/3)/4);
 
 if check_option(varargin,'silent')
   output2file = ['>> ' this.filePath 'neper.log'];
