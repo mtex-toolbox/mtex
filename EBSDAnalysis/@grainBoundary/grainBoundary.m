@@ -47,6 +47,7 @@ classdef grainBoundary < phaseList & dynProp
   
   % general properties
   properties
+    segments = []   % list of boundary segments as [v1 v2 v3 NaN v4 v5]
     scanUnit = 'um' % unit of the vertex coordinates
     triplePoints = triplePointList  % triple points
   end
