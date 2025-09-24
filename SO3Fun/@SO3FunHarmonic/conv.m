@@ -88,7 +88,7 @@ if isa(SO3F2,'S2Fun')
   % we need that SO3F1.SLeft == SO3F2.Sym
   if numProper(SO3F1.SLeft) == 1 
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
-  elseif isa(SO3F2,'S2FunHarmonicSym')
+  elseif isa(SO3F2,'S2Fun')
     ensureCompatibleSymmetries(SO3F1,SO3F2);    
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   else
