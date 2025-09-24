@@ -72,13 +72,14 @@ methods (Access = private)
     % constructor
     if computer=="PCWIN64"
       this.cmdPrefix='wsl ';
+      % maybe we need to do something like system(['cmd /c "' command '"']);
     else
       this.cmdPrefix='';
     end
 
     % ensure filePath exists
     if ~exist(this.filePath,'dir')
-      try mkdir(this.filePath); end
+      try mkdir(this.filePath); end %#ok<TRYNC>
     end
 
     % assert Neper is installed
@@ -127,6 +128,7 @@ methods (Static = true)
 
   grains = simulateGrains(varargin)
   grains = simulateTwinGrains(varargin)
+  grains = simulateChildGrains(varargin)
   grains = getSlice(varargin)
 
 end
