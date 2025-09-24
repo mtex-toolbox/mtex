@@ -95,6 +95,8 @@ for k = 1:numel(fname)
 end
 
 % combine multiple inputs
+% ISSUE -- we don't always want to do this e.g. multiple maps in h5
+% file may not be related
 ebsd = [ebsd{:}];
 
 % ensure unique phases
