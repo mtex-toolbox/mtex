@@ -32,9 +32,17 @@ phasePath = "/DataStructure/DataContainer/CellFeatureData/Phases";
 crysmPath = "/DataStructure/DataContainer/CellEnsembleData/CrystalStructures";
 
 %%
-activeGrains = logical(h5read_multi(fname, activePath))';
+
 
 abcd = h5read_multi(fname, QuatsPath)';
+
+try
+  activeGrains = logical(h5read_multi(fname, activePath))';
+catch ME
+  activeGrains = true(size(abcd,1));
+end
+
+
 q = quaternion(abcd(activeGrains,:)').';
 
 % import crystal symmetry - can we get some more information here?
