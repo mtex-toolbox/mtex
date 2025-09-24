@@ -15,7 +15,12 @@ function [h,ax] = plot(sF,varargin)
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},'xyz');
+if isa(sF.CS,'crystalSymmetry')
+  tooltipFormat = sF.CS.lattice.hklForm;
+else
+  tooltipFormat = 'xyz';
+end
+tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},tooltipFormat);
 
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end

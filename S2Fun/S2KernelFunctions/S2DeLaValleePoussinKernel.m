@@ -79,6 +79,8 @@ classdef S2DeLaValleePoussinKernel < S2Kernel
     function value = eval(psi,t)
       % evaluate the kernel function at nodes x
 
+      if isa(t,'vector3d'), t = dot(t,zvector); end
+
       value  = (1+psi.kappa) * ((1+t)/2).^psi.kappa;
       
     end

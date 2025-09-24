@@ -20,6 +20,14 @@
     ]
 },
 
+"grain3d.load":
+{
+    "inputs":
+    [
+      {"name":"filename1", "kind":"required",   "type":"filepath"}
+    ]
+},
+
 "calcGrains":
 {
     "inputs":

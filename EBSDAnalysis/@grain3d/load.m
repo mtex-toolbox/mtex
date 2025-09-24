@@ -15,10 +15,8 @@ function grains = load(filepath,varargin)
   % See also
   % loadNeperTess loadGrains_Dream3d grain2d.load
 
-
   interface = get_option(varargin,'interface');
   
-
   if isempty(interface)
     [~,~,ext] = fileparts(filepath);
     switch ext
