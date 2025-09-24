@@ -248,13 +248,17 @@ classdef phaseList
     end
     
     function cList = get.colorList(pL)
-      cList = repcell(zeros(1,3),numel(pL.CSList),1);
+
+      colors = getMTEXpref('PhaseColorOrder');
+      cList = zeros(numel(pL.CSList),3);
 
       ind = pL.indexedPhasesId;
-      cList(ind) = cellfun(@(cs) cs.color,...
-        pL.CSList(ind),'UniformOutput',false);
-
-      cList = vertcat(cList{:});
+      for k = pL.indexedPhasesId
+        color = pL.CSList{ind}.color;
+        if isempty(color), color = colors{ind}; end
+        if ischar(color), color = str2rgb(color); end
+        cList(ind,:) = color;
+      end
     end
 
 
