@@ -24,9 +24,9 @@ c = SO3F.weights;
 % the center orientations
 ori = SO3F.center;
 
-% for a few center symmetrize before computing c_hat
+% for a few center symmetrise before computing c_hat
 symCenter = 10*length(SO3F.center) * numSym(cs) * numSym(ss) < max(L^3,100);
-if symCenter
+if symCenter && ~check_option(varargin,'noSymmetry')
   ori = symmetrise(SO3F.center,'proper');
   c = repmat(c,size(ori,1),1) / numSym(cs) / numSym(ss);
   ori = ori(:);
@@ -38,7 +38,9 @@ SO3FH = reshape(SO3FH,size(SO3F));
 
 SO3FH = conv(SO3FH,SO3F.psi);
 
-if ~symCenter, SO3FH = symmetrise(SO3FH); end
+if ~symCenter && ~check_option(varargin,'noSymmetry')
+  SO3FH = symmetrise(SO3FH); 
+end
 
 % add constant portion
 SO3FH = SO3FH + SO3F.c0;
