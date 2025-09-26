@@ -10,15 +10,17 @@ function grains = smooth(grains,iter,varargin)
 %
 % Options
 %  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
-%  moveOuterBoundary - do not exclude outer boundary from smoothing (note: when grains
-                       were segmented using alphaShapes, all grains next to holes have 
-                       an outer boundary!)
+%  moveOuterBoundary - do not exclude outer boundary from smoothing 
 %  second_order, S2  - second order smoothing
 %  rate              - default smoothing kernel  
 %  gauss             - Gaussian smoothing kernel  
 %  exp               - exponential smoothing kernel  
 %  umbrella          - umbrella smoothing kernel   
- 
+%
+% Description 
+% Note: when grains were segmented using alphaShapes, all grains next to holes
+% have outer boundary!
+
 if abs(dot(grains.N,zvector)) ~= 1
 
   [grains,rot] = rotate2Plane(grains);
