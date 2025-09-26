@@ -18,8 +18,8 @@ alpha = get_option(varargin,'alpha',2);
 ind = [];
 for ipf = 1:pf.numPF
   
-  % find neighbours
-  next = find(pf.allR{ipf},pf.allR{ipf},3*pf.allR{ipf}.resolution);
+  % find neighbors
+  next = find(pf.allR{ipf}, pf.allR{ipf}, 3*pf.allR{ipf}.resolution);
   
   %remove diagonal
   next(speye(length(next))==1) = false;

@@ -1,20 +1,20 @@
 function  grains = loadGrains_Dream3d(fname)
-  % loadGrains_Dream3d is a method to load 3d grain data from dream3d
-  %
-  % Syntax
-  %   grains = grain3d.load('filepath/filename.dream3d','interface','dream3d)
-  %   grains = loadGrains_Dream3d('filepath/filename.dream3d')
-  %
-  % Input
-  %  fname     - filename
-  %
-  % Output
-  %  grain3d - @grain3d
-  %
-  % See also
-  % grain3d.load loadNeperTess
+% loadGrains_Dream3d is a method to load 3d grain data from dream3d
+%
+% Syntax
+%   grains = grain3d.load('filepath/filename.dream3d','interface','dream3d)
+%   grains = loadGrains_Dream3d('filepath/filename.dream3d')
+%
+% Input
+%  fname     - filename
+%
+% Output
+%  grain3d - @grain3d
+%
+% See also
+% grain3d.load loadNeperTess
 
-%% Hard coded data paths 
+% Hard coded data paths 
 % (for FileVersion '8.0')
 %
 % You can adapt the data paths by making them string arrays. The function
@@ -31,8 +31,12 @@ QuatsPath = "/DataStructure/DataContainer/CellFeatureData/AvgQuats";
 phasePath = "/DataStructure/DataContainer/CellFeatureData/Phases";
 crysmPath = "/DataStructure/DataContainer/CellEnsembleData/CrystalStructures";
 
-%%
-
+% check for grain data
+try
+  grainIds = h5read_multi(fname,GrainIdPath).';
+catch
+  error('The file does not contain any grain information.')
+end
 
 abcd = h5read_multi(fname, QuatsPath)';
 
@@ -41,7 +45,6 @@ try
 catch ME
   activeGrains = true(size(abcd,1));
 end
-
 
 q = quaternion(abcd(activeGrains,:)').';
 
@@ -63,27 +66,27 @@ V = double(h5read_multi(fname,Vpath)');
 poly = h5read_multi(fname,polyPath)';
 poly = poly + 1;    % because dream3d indexes with 0 (see '_VertexIndices')
 
-GrainIds = h5read_multi(fname,GrainIdPath)';
-
-%% calculate I_CF
-% GrainIds is sorted so that GrainIds(:,2)-GrainIds(:,1)>=0. That means 
+% calculate I_CF
+% grainIds is sorted so that grainIds(:,2) >= grainIds(:,1)>=0. That means
 % for each grain in the first column (Id>0) the normal direction is
 % positive
+ind = grainIds(:,2)<grainIds(:,1);
+if any(ind), grainIds(ind,:) = fliplr(grainIds(ind,:)); end
 
-if ~(all(GrainIds(:,2)-GrainIds(:,1)>=0))
-  GrainIds(GrainIds(:,2)-GrainIds(:,1)<0,:) = fliplr(GrainIds(GrainIds(:,2)-GrainIds(:,1)<0,:));
-end
+isPos = grainIds(:,2) > 0;
+isNeg = grainIds(:,1) > 0;
 
-isPos = GrainIds(:,2) > 0;
-isNeg = GrainIds(:,1) > 0;
-
-cIds = [GrainIds(isNeg,1);GrainIds(isPos,2)];
+cIds = [grainIds(isNeg,1);grainIds(isPos,2)];
 fIds = int32([find(isNeg);find(isPos)]);
 Ndir = [ones(nnz(isNeg),1);-ones(nnz(isPos),1)];
 
-I_CF = sparse(cIds,fIds,Ndir,max(GrainIds(:)),length(GrainIds));
+I_CF = sparse(cIds,fIds,Ndir,max(grainIds(:)),length(grainIds));
   
 grains = grain3d(V,poly,I_CF,q,csList,phaseList);
+
+warning(['Grains imported from Dream3d may not have set there normals consistently. ' ...
+  'Please run <a href="matlab:grains=grains.orientFaces">grains=grains.orientFaces</a>']);
+
 end
 
 function out = h5read_multi(fname, datapath)

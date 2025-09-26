@@ -3,9 +3,9 @@ function o = symmetrise(o,varargin)
 %
 % Syntax
 %
-%  oriSym = symmetrise(ori)
+%   oriSym = symmetrise(ori)
 %
-%  oriSym = symmetrise(ori,'antipodal')
+%   oriSym = symmetrise(ori,'antipodal')
 % 
 % Input
 %  ori - @orientation 

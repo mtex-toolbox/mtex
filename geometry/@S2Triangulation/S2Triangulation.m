@@ -99,6 +99,13 @@ classdef S2Triangulation
       sT.vertices.how2plot = pC;
     end
 
+    function e = eq(sT1,sT2)
+      e=false;
+      if length(sT1.vertices)==length(sT2.vertices) && all(sT1.vertices(:)==sT2.vertices(:))
+        e = true;
+      end
+    end
+
   end
 
   methods (Static = true)

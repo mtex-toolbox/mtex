@@ -2,7 +2,7 @@ function grains = orientFaces(grains)
 % that up grain.I_GF such that +/- 1 indicates outgoing/ingoing normals
 %
 % Syntax
-%  grains = grains.orientFaces
+%   grains = grains.orientFaces
 %
 % Description 
 %

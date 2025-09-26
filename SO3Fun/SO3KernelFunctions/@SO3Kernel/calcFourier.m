@@ -1,6 +1,23 @@
 function A = calcFourier(psi,M,varargin)
 % Compute the Chebychev coefficients by gaussian quadrature rule.
 %
+% Syntax
+%   A = calcFourier(psi,L)
+%   A = calcFourier(psi,L,'GaussKronrod')
+%   A = calcFourier(psi,L,maxAngle,'GaussKronrod')
+%
+% Input
+%  psi - @SO3Kernel
+%  L - bandwidth
+%  maxAngle - double
+%
+% Output
+%  A - double (Chebychev coefficient vector)
+%
+% Options
+%  'GaussKronrod' - Use Gauss-Kronrod quadrature
+%
+% Description
 %
 % *Extended explanation of the FFT-Based Quadrature Method:*
 %
@@ -55,23 +72,6 @@ function A = calcFourier(psi,M,varargin)
 %
 % [1] - G.Plonka, D.Potts, G.Steidl, M.Tasche: Numerical Fourier Analysis, Birkhäuser (Cham), 2018
 %
-%
-% Syntax
-%   A = calcFourier(psi,L)
-%   A = calcFourier(psi,L,'GaussKronrod')
-%   A = calcFourier(psi,L,maxAngle,'GaussKronrod')
-%
-% Input
-%  psi - @SO3Kernel
-%  L - bandwidth
-%  maxAngle - double
-%
-% Output
-%  A - double (Chebychev coefficient vector)
-%
-% Option
-%  'GaussKronrod' - Use Gauss-Kronrod quadrature
-%
 
 M = 2*M+2;
 
@@ -102,8 +102,6 @@ A = 1/sqrt(2*M) * real(-1i* exp(-pi*1i*(1:M)'/(2*M)) .* yhat(1:M));
 A = A(1:2:end);
 
 end
-
-
 
 
 function A = calcFourierGK(psi,L,varargin)

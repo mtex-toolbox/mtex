@@ -1,4 +1,19 @@
 function value = grad(psi,co2)
+% magnitude of gradient
+%
+% Syntax
+%   value = psi.grad(t)
+%
+%   psiG = psi.grad
+%
+% Input
+%  psi - @SO3Kernel
+%  t   - cos(angle/2)
+%
+% Output
+%  value - magnitude of gradient
+%  psiG  - magnitude of gradient @SO3Kernel 
+%
 
 
 N = psi.bandwidth;

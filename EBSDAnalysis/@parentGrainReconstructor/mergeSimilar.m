@@ -1,5 +1,5 @@
 function job = mergeSimilar(job, varargin)
-% merge neighbouring grains with similar orientation
+% merge neighboring grains with similar orientation
 %
 % Syntax
 %   job.mergeSimilar('threshold',5*degree)

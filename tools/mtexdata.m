@@ -98,8 +98,8 @@ catch
     case 'grain3d'
       switch name
         case 'NeperGrain3d'
-          neper.init; %#ok<NODEF>
-
+          
+          neper = neperInstance;
           neper.cubeSize = [100 100 100];
 
           neper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
