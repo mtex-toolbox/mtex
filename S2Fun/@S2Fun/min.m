@@ -66,7 +66,7 @@ elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
     d = varargin{2};
   end
   f = @(v) min(reshape(sF.eval(v),[length(v),s]), [], d(1)+1);
-  bvalue = S2FunHarmonic.quadrature(f);
+  value = S2FunHarmonic.quadrature(f);
   value.CS = sF.CS;
 
 else % detect local or global minima
