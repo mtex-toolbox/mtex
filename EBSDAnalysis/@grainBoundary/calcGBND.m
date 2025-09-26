@@ -17,6 +17,7 @@ function gbnd = calcGBND(gB,ebsd,varargin)
 %  ebsd - @EBSD 
 %  grains - @grain2d
 %  mori - mis@orientation or orientation relationship
+%  odf  - @SO3Fun used for texture correction
 %
 % Output
 %  gbnd - @S2FunHarmonic
@@ -68,6 +69,12 @@ if ~isempty(moriRef) % GBCD
     takeBoth = true;
     
   end
+
+  cs = moriRef.CS;
+
+else
+
+  cs = gB.CS{1};
 
 end
 
@@ -138,19 +145,38 @@ rot = rotation.map(repmat(ebsd.N,size(l)),xvector,l,zvector);
 
 % step 2: define a kernel function that is a fibre through the
 % crystallographic z-axis and the crystallographic x-axis
-[~,psi] = calcGBNDKernel(varargin{:},'harmonic');
+[Psi,psi] = calcGBNDKernel(varargin{:},'harmonic');
 
 % step 3: compute the orientation density of the modified boundary orientations
-odf = calcDensity(rot(:) .* ori(:),'weights',weights,...
+gbnd = calcDensity(rot(:) .* ori(:),'weights',weights,...
   'kernel',SO3DirichletKernel(psi.bandwidth),'harmonic','noSymmetry');
 
 % step 4: convolution
-gbnd = conv(odf,psi);
+gbnd = conv(gbnd,psi);
+
+% step 5: ODF correction
+odf = getClass(varargin,'SO3Fun');
+if ~isempty(odf)
+
+  % compute correction kernel
+  chi = S2KernelHandle(@(t) 2 * sqrt(1-t.^2) .* ...
+    integral(@(rho) Psi.eval(sqrt(1-t.^2) .* sin(rho)),0,pi,"AbsTol",0.01,'ArrayValued',true));
+
+  chi.bandwidth = 128;
+
+  ipf = radon(odf,[],gB.N);
+
+  gbnd = gbnd ./ conv(ipf,chi);
+
+  % renormalize
+  gbnd = gbnd ./ mean(gbnd);
+
+end
 
 % symmetrisation
 if ~isempty(dSym1), gbnd = symmetrise(gbnd,dSym1); end
 
-gbnd = S2FunHarmonic(gbnd.fhat,moriRef.CS);
+gbnd = S2FunHarmonic(gbnd.fhat,cs);
 
 end
 
