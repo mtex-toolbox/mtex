@@ -82,6 +82,9 @@ f = @(v) sF.eval(v);
 fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
 
 % compute Fourier coefficients by quadrature
-sFs = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
+sFsym = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
+sFs = sF;
+sFs.fhat = sFsym.fhat;
+
 
 end
