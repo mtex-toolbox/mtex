@@ -10,7 +10,9 @@ function grains = smooth(grains,iter,varargin)
 %
 % Options
 %  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
-%  moveOuterBoundary - do not exclude outer boundary from smoothing
+%  moveOuterBoundary - do not exclude outer boundary from smoothing (note: when grains
+                       were segmented using alphaShapes, all grains next to holes have 
+                       an outer boundary!)
 %  second_order, S2  - second order smoothing
 %  rate              - default smoothing kernel  
 %  gauss             - Gaussian smoothing kernel  
