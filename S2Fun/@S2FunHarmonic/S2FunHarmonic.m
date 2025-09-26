@@ -75,7 +75,7 @@ methods
     sF = reshape(sF,numel(sF));
     sF = truncate(sF);
     normF = sum(abs(sF.fhat-sF.even.fhat).^2);
-    out = all(sqrt(normF) < 1e-5*norm(sF));
+    out = all(all(sqrt(normF) < 1e-5*norm(sF)));
   end
   
   function sF = set.antipodal(sF,value)
