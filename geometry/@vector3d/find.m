@@ -55,10 +55,11 @@ ind = rangesearch(v.xyz, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
 lens = cellfun(@numel, ind);
 row_idx = repelem((1:numel(w)), lens);
 col_idx = cell2mat(ind');
+
 % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
 % 'project' the indices down to the original grid v
 col_idx = mod(col_idx-1, orig_size) + 1;
-ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), numel(v));
+ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), orig_size);
 
 if (nargout == 2)
   d = angle(v.subSet(col_idx), w.subSet(row_idx));
