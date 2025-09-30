@@ -197,7 +197,7 @@ classdef phaseList
       end
          
       % set CSList also to all children
-      for fn = fieldnames(pL).'
+      for fn = setdiff(fieldnames(pL).','grainSize')
         try %#ok<TRYNC>
          if isa(pL.(char(fn)),'phaseList')
            pL.(char(fn)).CSList = pL.CSList;
