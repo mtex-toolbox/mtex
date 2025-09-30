@@ -1,4 +1,4 @@
-function grains = simulateGrains(numGrains, varargin)
+function grains = simulateGrains(ori,varargin)
 % generating 3d neper tessellations
 %
 % Syntax
@@ -24,38 +24,36 @@ function grains = simulateGrains(numGrains, varargin)
 
 this = neper.instance;
 
-assert(nargin>0,'too few input arguments')
+if isnumeric(ori)
+  numGrains = ori;
+  ori = varargin{1}.discreteSample(numGrains);
+else
+  numGrains=length(ori);
+end
 
 if check_option(varargin,'silent')
-  output2file = ['>> ' this.filePath 'neper.log'];
+  screenOutput = ['>> ' this.filePath 'neper.log'];
 else
-  output2file = '';
+  screenOutput = '';
 end
 
-system([this.cmdPrefix 'neper -T -n ' num2str(numGrains) ...
-  ' -id ' num2str(this.id) ' -morpho "' this.morpho '" ' ...
-  ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
-  ' -morphooptistop "itermax=' num2str(this.iterMax) '" ' ... % decreasing the iterations makes things go a bit faster for testing
-  ' ' num2str(this.varNeperopts) ' '... %add additional neper options, full syntax
-  ' -statpoly faceeqs ' ... % some statistics on the faces
-  ' -o ' [this.filePathUnix this.fileName3d] ' ' ... % output file name
-  ' -format tess' ... % outputfiles
-  output2file ...
-  ' && ' ...
-  ...
-  this.cmdPrefix 'neper -V ' [this.filePathUnix this.fileName3d] '.tess' output2file]);
-
-grains = grain3d.load([this.filePath this.fileName3d '.tess']);
-
-
-% set orientations
-if ~isa(varargin{1},'orientation')
-  ori = varargin{1}.discreteSample(length(grains)); % if neper regularization is used, length(grains) might be different from numGrains
-else
-  ori=varargin{1};
+morpho = char(this.morpho);
+if check_option(varargin,'aspectRatio')
+  morpho = [morpho,',aspratio (' ...
+    xnum2str(get_option(varargin,'aspectRatio'),'delimiter',',') ')'];
 end
 
-grains.CSList{2} =ori.CS;
+com  = [this.cmdPrefix ' neper -T -n ' num2str(numGrains) ...
+  ' -morpho "' morpho '"' ...
+  ' -morphooptistop "iter=' num2str(this.iterMax) '"' ...
+  ' -domain "' char(this.geometry) '"' ...
+  ' -o ' this.filePathUnix this.fileName3d screenOutput];
+
+system(com);
+
+grains = grain3d.load([this.filePath this.fileName3d '.tess'],'CS',ori.CS);
+
+% set the grain orientations
 grains.meanOrientation = ori;
 
 end

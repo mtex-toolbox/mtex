@@ -53,7 +53,8 @@ classdef (Sealed) neper < handle
 properties
   id = 1;
   cubeSize = [1 1 1];
-  morpho = 'graingrowth';
+  geometry = "cube(1,1,1)";   %cylinder(h,d,numFaces), sphere(d,numFaces)
+  morpho   = 'graingrowth';
   iterMax = 1000;
   varNeperopts = [];          %set any option as specified in https://neper.info/doc/neper_t.html
   fileName2d = '2dslice'      %name for 2d outputs (fileendings .tess/.ori)
@@ -103,13 +104,14 @@ methods (Static = true)
     obj = UNIQUE;
   end
 
-  function init()
-    assignin('caller','neper',neper.instance());
+  function out = init()
+    out = neper.instance();
+    assignin('caller','neper',out);
   end
 
   function grains = test
 
-    neper = neper.instance;
+    np = np.instance;
     
     numGrains=100;
     ori=orientation.rand();
@@ -119,8 +121,8 @@ methods (Static = true)
     n=vector3d(1,1,1);
     d=1;
 
-    neper.simulateGrains(ori)
-    grains=neper.getSlice(n,d);
+    np.simulateGrains(ori)
+    grains=np.getSlice(n,d);
 
     plot(grains,grains.meanOrientation)
 

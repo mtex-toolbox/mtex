@@ -39,7 +39,6 @@ fid = fopen(lamFile,'w');
 fprintf(fid,"%d %f %f %f\n",[(1:length(nA)).',nA.xyz].');
 fclose(fid);
 
-aspectRatio = get_option(varargin,'aspectRatio','(1,1,1)');
 lamellaWidth = get_option(varargin,'width',0.015);
 
 if check_option(varargin,'silent')
@@ -48,12 +47,18 @@ else
   output2file = '';
 end
 
+morpho = char(this.morpho);
+if check_option(varargin,'aspectRatio')
+  morpho = [morpho,',aspratio (' ...
+    xnum2str(get_option(varargin,'aspectRatio'),'delimiter',',') ')'];
+end
+
 % simulate grains without macroscopic preferred normal direction
 com  = [this.cmdPrefix ' neper -T -n ' num2str(numParents) ...
-  '::from_morpho -morpho "diameq:normal(10,1),aspratio' aspectRatio ...
+  '::from_morpho -morpho "' morpho ...
   '::lamellar(w=' xnum2str(lamellaWidth) ',v=msfile(' lamFile '))"' ...
   ' -morphooptistop "iter=' num2str(this.iterMax) '"' ...
-  ' -domain "cube(' num2str(this.cubeSize(1)) ',' num2str(this.cubeSize(2)) ',' num2str(this.cubeSize(3)) ')"' ...
+  ' -domain "' char(this.geometry) '"' ...
   ' -o ' this.filePathUnix this.fileName3d output2file];
 
 system(com);
