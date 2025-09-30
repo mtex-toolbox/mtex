@@ -57,25 +57,21 @@ pf = noisepf(pf,1000);
 
 plot(pf)
 
-
 %% ODF Estimation from Pole Figure Data
 %
-% From these simulated pole figures we can now estimate an ODF,
+% From these simulated pole figures we can now estimate an ODF
 
 odf = calcODF(pf)
-
 
 %%
 % which can be plotted,
 
 plot(odf,'sections',6,'silent','sigma')
 
-
 %%
 % and compared to the original model ODF.
 
 calcError(odf,model_odf,'resolution',5*degree)
-
 
 %% Exploration of the relationship between estimation error and number of pole figures
 %
@@ -95,8 +91,7 @@ for i = 1:pf.numPF
 
 end
 
-%% 
-% Plot the error in dependency of the number of single orientations.
+% visualize the result
 
 close all;
 plot(1:pf.numPF,e,'LineWidth',2)
