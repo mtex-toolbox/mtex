@@ -19,7 +19,7 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %  sFs - @S2FunHarmonic
 %  psi - @S2Kernel
 
-if isa(sF,'S2FunHarmonicSym') && (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
+if (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
   sFs = sF.symmetrise(sF.s);
   return
 end
