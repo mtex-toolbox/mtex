@@ -129,6 +129,8 @@ else % detect local or global minima
   end
   pos = pos(I(1:n));
 
+  if isa(sF.CS,'crystalSymmetry'), pos = Miller(pos,sF.CS); end
+
 end
 
 end
