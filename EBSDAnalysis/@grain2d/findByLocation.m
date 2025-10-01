@@ -3,14 +3,13 @@ function id = findByLocation( grains, pos )
 %
 % Input
 %  grains - @grain2d
-%  pos    - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
-%           or @vector3d
+%  pos    - @vector3d, [x(:) y(:)], or [x(:) y(:) z(:)]
 %  
 % Output
 %  grains - list of grainIds
 %
 % Example
-%  plotx2east
+%  
 %  plot(grains)
 %  p = ginput(1)
 %  id = findByLocation(grains,p);
@@ -24,20 +23,11 @@ poly = grains.poly;
 % restrict vertices to available grains
 iV = unique([poly{:}]);
 
-% maybe input pos is a vector3d
-if isa(pos,'vector3d')
-    pos = pos.xyz;
-end
+% project to plane
+V = xyz(grains.rot2Plane * grains.allV); V = V(:,1:2);
 
-V = grains.allV.xyz;
-if size(V,2) == 3
-  if size(pos,2)==2
-    pos = [pos,zeros(length(pos),1)];
-  end
-  mat = grains.rot2Plane.matrix;
-  V = (mat * V.').'; V = V(:,1:2);
-  pos = (mat * pos.').'; pos = pos(:,1:2);  
-end
+pos = xyz(grains.rot2Plane * vector3d(pos));
+pos = pos(:,1:2);
 
 % and search for the closest vertex
 if size(pos,1) == 1
@@ -59,6 +49,7 @@ for k=1:numel(poly)
   V_k = V(poly{k},:);
   for j=1:size(pos,1)
     inside(k) = inside(k) + inpolygon(pos(j,1),pos(j,2),V_k(:,1),V_k(:,2));
+    %inside(k) = inside(k) | insidepoly(pos(j,1),pos(j,2),V_k(:,1),V_k(:,2));
   end
   inside(k)=any(inside(k),1);
 end
