@@ -1,4 +1,4 @@
-function out = isBoundary(grains,ext)
+function out = isBoundary(grains,ebsd)
 % check whether a grain is a boundary grain
 %
 % Syntax
@@ -6,12 +6,13 @@ function out = isBoundary(grains,ext)
 %   % decide by missing outside data points
 %   out = isBoundary(grains)
 %
-%   % deside by extent of the ebsd map
-%   out = isBoundary(grains,ebsd.extent)
+%   % decide by extent of the ebsd map
+%   out = isBoundary(grains,ebsd)
 %
 % Input
-%
 %  grains - @grain2d
+%  ebsd   - @EBSD
+%  poly   - 
 %
 % Output
 %  out - logical
@@ -19,12 +20,16 @@ function out = isBoundary(grains,ext)
 
 if nargin > 1
   
-  dx = min(sqrt(sum(diff(grains.allV).^2,2)));
-    
-  % find boundary vertices
-  isBndV = any(grains.allV < ext([1 3]) + dx/2,2) |  any(grains.allV > ext([2 4]) - dx/2,2);
+  dxy = ebsd.dPos;
+  ext = ebsd.extent;
+ 
+  %rot = rotation.map(grains.N, zvector);
+  xy = grains.allV.xyz; xy = xy(:,1:2);
   
-  % take all grains with a boundary vertexs
+  % find boundary vertices
+  isBndV = any(xy < ext([1 3]) + dxy/2,2) |  any(xy > ext([2 4]) - dxy/2,2);
+  
+  % take all grains with a boundary vertex
   out = cellfun(@(x) any(isBndV(x)), grains.poly);
   
 else
