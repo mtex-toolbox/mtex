@@ -20,8 +20,6 @@ if check_option(varargin,'lazy')
   return
 end
 
-% Use Varshalovich 5.8.3(a) equation (10)&(11):
-
 % fallback to generic method
 if check_option(varargin,'check')
   sVF = grad@S2Fun(sF,varargin{:});
@@ -48,6 +46,7 @@ if check_option(varargin,'old')
   return
 end
 
+% Use Varshalovich 5.8.3(a) equation (10)&(11):
 fhat = zeros((sF.bandwidth+2)^2,3);
 for n=0:sF.bandwidth
 

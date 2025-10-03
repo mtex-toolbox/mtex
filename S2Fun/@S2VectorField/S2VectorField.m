@@ -1,5 +1,5 @@
 classdef S2VectorField
-% a class represeneting a vector field on the sphere
+% class representing a vector field on the sphere
 
 methods
 

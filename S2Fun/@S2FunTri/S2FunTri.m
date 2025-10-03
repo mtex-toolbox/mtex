@@ -53,6 +53,19 @@ classdef S2FunTri < S2Fun
       S2F.tri.update;
     end
 
+    function display(sF,varargin)
+
+      displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
+
+      if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
+
+      disp(['  vertices: ' size2str(sF.vertices)]);
+      if sF.antipodal, disp('  antipodal: true'); end
+      disp(' ');
+
+    end
+
+
   end    
 
   

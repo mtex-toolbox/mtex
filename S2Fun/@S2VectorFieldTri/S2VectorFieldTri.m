@@ -1,5 +1,5 @@
 classdef S2VectorFieldTri < S2VectorField
-% a class represeneting a function on the sphere
+% a class representing a vector valued function on the sphere
   
   properties
     tri       % S2Triangulation
@@ -47,11 +47,20 @@ classdef S2VectorFieldTri < S2VectorField
       S2F.tri.vertices = v;
       S2F.tri.update;
     end
+
+    function display(sF,varargin)
+
+      %displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
+      displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
+
+      if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
+
+      disp(['  vertices: ' size2str(sF.vertices)]);
+      if sF.antipodal, disp('  antipodal: true'); end
+      disp(' ');
+
+    end
     
   end
 
 end
-  
-
-
-
