@@ -96,7 +96,7 @@ hold on
 plotSection(vs1,planeNormal,optSec{:},'DisplayName','Vs1')
 plotSection(vs2,planeNormal,optSec{:},'DisplayName','Vs2')
 
-% polarisation directions
+% polarization directions
 quiverSection(vp,pp,planeNormal,'color','c',optQuiver{:},'DisplayName','pp')
 quiverSection(vs1,ps1,planeNormal,'color','g',optQuiver{:},'DisplayName','ps1')
 quiverSection(vs2,ps2,planeNormal,'color','m',optQuiver{:},'DisplayName','ps2')
@@ -124,7 +124,7 @@ hold on
 plotSection(1./vs1,planeNormal,optSec{:},'DisplayName','Vs1')
 plotSection(1./vs2,planeNormal,optSec{:},'DisplayName','Vs2')
 
-% polarisation directions
+% polarization directions
 quiverSection(1./vp,pp,planeNormal,'color','c',optQuiver{:},'DisplayName','pp')
 quiverSection(1./vs1,ps1,planeNormal,'color','g',optQuiver{:},'DisplayName','ps1')
 quiverSection(1./vs2,ps2,planeNormal,'color','m',optQuiver{:},'DisplayName','ps2')

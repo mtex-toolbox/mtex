@@ -71,7 +71,7 @@
 % predicting how a material will deform under different loading conditions. 
 % 
 % In terms of MATLAB and the MTEX toolbox, the the Lankford parameter or 
-% R-value is modelled or estimated on the basis of crystallographic 
+% R-value is modeled or estimated on the basis of crystallographic 
 % orientations and the Taylor theory as demonstrated below.
 
 %% Example 1: The Lankford parameter (or R-value) of a single orientation
