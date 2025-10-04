@@ -8,7 +8,7 @@ function r = times(a,b,takeRight)
 %
 % Input
 %  o - @orientation
-%  h - @Miller indice
+%  h - @Miller crystal direction
 %  r - @vector3d
 %
 % See also
