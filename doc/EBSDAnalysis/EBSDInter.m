@@ -38,7 +38,7 @@ e1 = interp(ebsd,x,y)
 e2 = ebsd('xy',x,y)
 
 %%
-% which returns the nearest neighbour EBSD measurement. Lets have a look at
+% which returns the nearest neighbor EBSD measurement. Lets have a look at
 % the difference
 
 angle(e1.orientations,e2.orientations)./degree

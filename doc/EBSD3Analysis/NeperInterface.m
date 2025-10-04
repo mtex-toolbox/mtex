@@ -43,11 +43,11 @@ neper.init;
 neper.fileName3d = 'my100grains';
 
 %% Tessellation options
-% The grains will be generated in cubic domain. By default the domain has
-% the edge length 1 in each direction. To change the size of the domain,
-% store a row vector with 3 entries (x,y,z) in the variable |cubeSize|.
+% The outer geometry of the volume can be controlled by the field
+% |neper.geometry|. Default is |"cube(1,1,1)"|. Other option are
+% |"cylinder(h,d,numFaces)"| and |"sphere(d,numFaces)"|.
 
-neper.cubeSize = [4 4 2];
+neper.geometry = "cube(4,4,2)";
 
 %%
 % Neper uses an id to identify the tessellation. This integer value "is

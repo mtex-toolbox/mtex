@@ -1,10 +1,32 @@
 %% MTEX Changelog
 %
+%% MTEX 6.1 10/2025
+%
+% MTEX 6.1 does not come with major new features but with tons of speed ups
+% and bug fixes. A lot of effort has been put into increasing the stability
+% of the provided mex files. On startup MTEX automatically checks whether
+% all mex files are installed. If not it attempts to download them from
+% Github. If this fails as well, i.e. because your antivirus program
+% intervenes, it tries to compile those mex files from source. The relevant
+% commands are
+%
+% * |check_mex| checks all mex files
+% * |mex_install| recompiles all mex files, on Windows you need to install
+% the free Addon MinGW compiler within Matlab
+% 
+% We will not list all speedups and minor improvements but only highlight
+% which syntax has changed.
+%
+% * |grains.grainSize| has been renamed to |grains.numPixel|
+% * the @plottingConvention is not now stored in |grains.how2plot|,
+% |ebsd.how2plot|, .... For more details look
+% <here https://mtex-toolbox.github.io/AxesAlignment.html>
+% * |how2plot.makeDefault| make a plotting convention the default
+% convention for all new data.
 %
 %% MTEX 6.0 10/2024
 % MTEX 6.0 is major release that includes numerous new features and
-% internal changes. Although we tried hard to make 
-%
+% internal changes.
 %
 % *Full 3d-Grains*
 %
