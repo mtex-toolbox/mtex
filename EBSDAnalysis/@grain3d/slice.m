@@ -27,6 +27,8 @@ plane.d = plane.d + 0.001 * (-1)^(plane.d>0);
 % step 1: find intersected grains
 isInter = grains3.intersected(plane);
 
+if ~any(isInter), grains2 = grain2d; return, end
+
 I_GF = grains3.I_GF;
 FId = find(any(I_GF(isInter,:)));
 
