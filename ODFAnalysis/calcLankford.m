@@ -51,7 +51,7 @@ RD = xvector; % default RD
 ND = zvector; % default ND
 if nargin >=3 && isa(varargin{1},'double'), theta = varargin{1}; end
 if nargin >=4 && isa(varargin{2},'vector3d'), RD = varargin{2}; end
-if nargin >=5 && isa(varargin{3},'vector3d'), ND = varargin{2}; end
+if nargin >=5 && isa(varargin{3},'vector3d'), ND = varargin{3}; end
 
 % strain tensor in the specimen reference frame (sRF)
 % it is not axi-symmetric since rho values are changing
