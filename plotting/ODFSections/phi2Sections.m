@@ -45,7 +45,7 @@ classdef phi2Sections < ODFSections
 
     function ori = makeGrid(oS,varargin)
 
-      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.plotGrid = plotS2Grid(oS.sR,'plain',varargin{:});
       oS.gridSize = (0:numel(oS.phi2)) * length(oS.plotGrid);
       phi1 = repmat(oS.plotGrid.rho,[1,1,numel(oS.phi2)]);
       Phi = repmat(oS.plotGrid.theta,[1,1,numel(oS.phi2)]);
