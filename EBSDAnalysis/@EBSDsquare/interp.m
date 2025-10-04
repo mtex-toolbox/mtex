@@ -1,4 +1,4 @@
-function ebsdNew = interp(ebsd,xNew,yNew,varargin)
+function ebsdNew = interp(ebsd,newPos,varargin)
 % interpolate at arbitrary points (x,y)
 %
 % Syntax
@@ -19,48 +19,47 @@ function ebsdNew = interp(ebsd,xNew,yNew,varargin)
 % See also
 %  
 
-% ensure column vectors
-xNew = xNew(:); yNew = yNew(:);
+if ~isa(newPos,'vector3d'), newPos = vector3d(newPos,varargin{1},0); end
 
-% find nearest neighbour first
-ix = 1 + (xNew-ebsd.xmin)./ebsd.dx;
-iy = 1 + (yNew-ebsd.ymin)./ebsd.dy;
-
-ixn = round(ix); iyn = round(iy);
-
-% check nearest is inside the box
-isIndexed = ixn > 0 & iyn > 0 & ixn <= size(ebsd,2) & iyn <= size(ebsd,1);
-
-% check nearest is indexed
-isIndexed(isIndexed) = ebsd.isIndexed(sub2ind(size(ebsd), iyn(isIndexed), ixn(isIndexed)));
-idNearest = sub2ind(size(ebsd), iyn(isIndexed), ixn(isIndexed));
-
+% new size
+sizeNew = size(newPos);
 
 % nearest neighbor interpolation first
-rot = rotation.nan(size(xNew));
-rot(isIndexed) = ebsd.rotations(idNearest);
+try
+  F = griddedInterpolant(ebsd.pos.x,ebsd.pos.y,ebsd.id,"nearest","none");
+catch
+  F = griddedInterpolant(ebsd.pos.x',ebsd.pos.y',ebsd.id',"nearest","none");
+end
 
-phaseId = ones(size(xNew));
-phaseId(isIndexed) = ebsd.phaseId(idNearest);
+idNew = F(newPos.x,newPos.y);
+isIndexed = ~isnan(idNew);
+idNew = idNew(isIndexed);
+rot = rotation.nan(sizeNew);
+rot(isIndexed) = ebsd.rotations(idNew);
 
-pos = vector3d(xNew,yNew,0);
+phaseId = ones(prod(sizeNew),1);
+phaseId(isIndexed) = ebsd.phaseId(idNew);
 
 % copy properties
-prop = struct;
+prop = struct();
 for fn = fieldnames(ebsd.prop).'
   
   if isnumeric(ebsd.prop.(char(fn))) || islogical(ebsd.prop.(char(fn)))
-    prop.(char(fn)) = nan(size(xNew));
+    prop.(char(fn)) = nan(sizeNew);
   else
-    prop.(char(fn)) = ebsd.prop.(char(fn)).nan(size(xNew));
+    prop.(char(fn)) = ebsd.prop.(char(fn)).nan(sizeNew);
   end
-  prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
+  prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNew);
 end
 
-ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop);
-ebsdNew.phaseMap = ebsd.phaseMap;
-ebsdNew.phaseId = phaseId(:);
-ebsdNew.CSList = ebsd.CSList;
+switch nnz(sizeNew>1)
+  case {0,1}
+    ebsdNew = EBSD(newPos,rot,phaseId,ebsd.CSList,prop,'phaseMap',ebsd.phaseMap);
+  case 2
+    ebsdNew = EBSDsquare(newPos,rot,phaseId,ebsd.phaseMap,ebsd.CSList,'prop',prop,'opt',ebsd.opt);  
+end
+
+return
 
 % more advanced interpolation methods
 
@@ -77,7 +76,7 @@ switch method
     % set up the interpolation matrix
     M = sparse(nnz(isIndexed),length(ebsd));
   
-    % go through all first order neighbours
+    % go through all first order neighbors
     M = M + updateM(floor(ix),floor(iy));
     M = M + updateM(ceil(ix),floor(iy));
     M = M + updateM(floor(ix),ceil(iy));
