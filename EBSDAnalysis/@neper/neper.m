@@ -13,7 +13,7 @@ classdef (Sealed) neper < handle
 %   neper.fileName3d='my100Grains';    %default: 'allgrains'
 %
 %   %specifying size of tessellation domain
-%   neper.cubeSize = [4 4 1];
+%   neper.geometry = "cube(4,4,1)";
 %   %defining tessellation id
 %   neper.id = 512;
 %
@@ -40,7 +40,7 @@ classdef (Sealed) neper < handle
 %
 % Class Properties
 %  id         - integer, "used [...] to compute the (initial) seed positions"
-%  cubeSize   - 1x3 rowvector, size of the tesselation domain box, default: [1 1 1]
+%  geometry   - "cube(x,y,z)" or "cylinder(h,d,numFaces)" or "sphere(d,numFaces)"
 %  morpho     - cell morphology, see neper.info/doc/neper_t.html#morphology-options -default: graingrowth
 %  iterMax    - max Iterations for morpho optimization process
 %  fileName2d - name for 2d outputs (fileendings .tess/.ori), default: '2dslice'
@@ -52,7 +52,6 @@ classdef (Sealed) neper < handle
 
 properties
   id = 1;
-  cubeSize = [1 1 1];
   geometry = "cube(1,1,1)";   %cylinder(h,d,numFaces), sphere(d,numFaces)
   morpho   = 'graingrowth';
   iterMax = 1000;

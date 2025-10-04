@@ -42,8 +42,13 @@ fid = fopen(lamFile,'w');
 fprintf(fid,"%d %f %f %f\n",d.');
 fclose(fid);
 
-aspectRatio = get_option(varargin,'aspectRatio','(1,1,1)');
-lamellaWidth = get_option(varargin,'width',(prod(this.cubeSize) / numGrains)^(1/3)/4);
+try
+  cubeSize = sscanf(this.geometry,'cube(%f,%f,%f)');
+catch
+  cubeSize = 1;
+end
+
+lamellaWidth = get_option(varargin,'width',(prod(cubeSize) / numGrains)^(1/3)/4);
 
 if check_option(varargin,'silent')
   output2file = ['>> ' this.filePath 'neper.log'];
