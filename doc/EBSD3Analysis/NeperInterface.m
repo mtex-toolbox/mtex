@@ -20,7 +20,7 @@
 % this step could be done very easily. In this case please skip to chapter
 % "Simulating a microstructure with Neper"
 
-neper.init
+neper.init;
 
 %% 
 % File options:

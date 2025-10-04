@@ -3,7 +3,7 @@ function grains = simulateTwinGrains(numGrains, mori, odf, bndA, varargin)
 %
 % Syntax
 %   
-%   neper.init
+%   initNeper
 %   numGrains = 100;
 %   odf = unimodalODF(orientation.rand);
 %   grains = neper.simulateTwinGrains(numGrains, mori, odf, bndA)
@@ -13,7 +13,7 @@ function grains = simulateTwinGrains(numGrains, mori, odf, bndA, varargin)
 %  mori - twinning orientation relationship
 %  odf  - @SO3Fun
 %  bndA - @S2Fun crystal boundary normal distribution
-%  'silent'   - print log file, no console output
+%  'silent' - print log file, no console output
 % 
 % Output
 %  grains - @grain3d

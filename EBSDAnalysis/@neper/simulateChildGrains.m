@@ -3,7 +3,7 @@ function grains = simulateChildGrains(numParents, p2c, varargin)
 %
 % Syntax
 %   
-%   neper.init
+%   initNeper
 %   numGrains = 100;
 %   odf = unimodalODF(orientation.rand);
 %   grains = neper.simulateChildGrains(numGrains, p2c, odfParent, habitPlane)

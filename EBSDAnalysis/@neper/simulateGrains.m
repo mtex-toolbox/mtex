@@ -3,7 +3,7 @@ function grains = simulateGrains(ori,varargin)
 %
 % Syntax
 %   
-%   neper.init
+%   initNeper
 %   neper.filepath='C:\Users\user\Work\Mtex\NeperExamples' %select working folder, default: @tempdir
 %   numGrains = 100;
 %   odf = unimodalODF(orientation.rand);

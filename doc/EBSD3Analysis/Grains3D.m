@@ -49,7 +49,7 @@ plot(grains2,grains2.meanOrientation)
 % specific texture and specific distribution of boundary normals.
 
 % set up the communication with Neper
-neper.init
+neper.init;
 
 % define a texture 
 cs = crystalSymmetry.load('quartz.cif','color','lightblue');
