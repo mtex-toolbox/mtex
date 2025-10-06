@@ -100,7 +100,7 @@ catch
         case 'NeperGrain3d'
           
           neper = initNeper;
-          neper.cubeSize = [100 100 100];
+          neper.geometry = "cube(100,100,100)";
 
           neper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
 
