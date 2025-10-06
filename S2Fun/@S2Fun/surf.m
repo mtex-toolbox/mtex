@@ -9,6 +9,7 @@ function h = surf(sF,varargin)
 %  sF - @S2Fun
 %
 % Options
+%  noScaling  - ovoid rescaling for better visualization
 %  resolution - resolution of the plotting grid in degree
 %
 
