@@ -1,5 +1,5 @@
 function [obj,ind] = discreteSample(obj,points,varargin)
-% take a diskrete sample from a list of vectors, orientations, grains, EBSD
+% take a discrete sample from a list of vectors, orientations, grains, EBSD
 %
 % Syntax
 %
