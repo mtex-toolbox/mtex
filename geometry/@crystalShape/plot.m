@@ -25,9 +25,24 @@ function h = plot(cS,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the appearance, e.g. 'EdgeColor'
 %
+% Example
+%   % define and plot a crystal shape
+%   cS = crystalShape.olivine;
+%   plot(cS,'faceAlpha',0.2,'colored')
+%   
+%   % define and plot a crystal plane and a crystal direction
+%   d = Miller(1,0,1,'uvw',cS.CS); 
+%   n = Miller(1,0,-1,'hkl',cS.CS); 
+%   hold on
+%   plotInnerFace(cS,n,'faceColor','red','DisplayName','$\{10\bar1\}$','faceAlpha',0.5)
+%   plotInnerDirection(cS,d,'faceColor','blue','arrowWidth',0.05,'DisplayName','$\langle 101 \rangle$')
+%   hold off
+%
 % See also
 % grains/plot
 
+% create a new plot
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 if check_option(varargin,'colored')
   
@@ -43,19 +58,25 @@ if check_option(varargin,'colored')
       color = ind2color(i);      
     end
     h = [h,plot(cS.subSet(cS.N(i).symmetrise),'faceColor',color,'DisplayName',...
-      char(round(cS.N(i)),'LaTex'),varargin{:})]; %#ok<AGROW>
+      char(round(cS.N(i)),'LaTex'),'doNotDraw',varargin{:})]; %#ok<AGROW>
     hold on
   end
   
   hold off
-  legend({},'interpreter','LaTeX','location','eastoutside')
   
   if nargout == 0, clear h; end
+  
+  if isNew && ~check_option(varargin,'doNotDraw')
+    %drawNow(mtexFig,varargin{:});
+    view(3)
+    axis('equal','vis3d','off');  
+    fcw   
+  end
+
+  legend({},'interpreter','LaTeX','location','eastoutside')
+
   return
 end
-
-% create a new plot
-[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % get position if provided
 if isnumeric(cS)
@@ -107,7 +128,7 @@ if isNew, axis; end
 h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k',...
   'parent',get_option(varargin,'parent',mtexFig.gca)),varargin{:});
 
-if isNew
+if isNew && ~check_option(varargin,'doNotDraw')
   drawNow(mtexFig,varargin{:}); 
   axis('equal','vis3d','off');
   fcw
