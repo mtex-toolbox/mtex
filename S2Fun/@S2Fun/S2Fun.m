@@ -51,6 +51,28 @@ methods
     n = prod(size(sF)); %#ok<PSIZE>
   end
 
+  function sF = power(sF1,sF2)
+    %
+    % Syntax
+    %   sF = sF1.^a
+    %
+
+    if isnumeric(sF1)
+      
+      sF = S2FunHandle(@(v) sF1 .^ eval(sF2, v), sF2.s);
+  
+    elseif isnumeric(sF2)
+
+      sF = S2FunHandle(@(v) eval(sF1, v) .^ sF2, sF1.s);
+
+    else
+
+      sF = S2FunHandle(@(v) eval(sF1, v) .^ eval(sF2, v), sF2.s);
+
+    end
+
+  end
+
  end
 
 
