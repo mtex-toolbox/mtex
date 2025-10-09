@@ -12,18 +12,18 @@ function h = plotInnerFace(cS, N, varargin)
 %  h - handle to the graphics object
 %
 % Options
-%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+%  PatchProperty - <mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %
-% cS = crystalShape.olivine;
-% N  = Miller(1,0,1,'hkl',cS.CS);
+%   cS = crystalShape.olivine;
+%   N  = Miller(1,0,1,'hkl',cS.CS);
 %   
-% plot(cS,'faceAlpha',0.2,'colored')
-% hold on
-% plotInnerFace(cS,N,'faceColor','blue','DisplayName','(101)')
-% plotInnerFace(cS,Miller(0,1,1,cS.CS),'faceColor','red','DisplayName','(011)')
-% hold off
+%   plot(cS,'faceAlpha',0.2,'colored')
+%   hold on
+%   plotInnerFace(cS,N,'faceColor','blue','DisplayName','(101)')
+%   plotInnerFace(cS,Miller(0,1,1,cS.CS),'faceColor','red','DisplayName','(011)')
+%   hold off
 %
 
 % starting and end points of all vertices

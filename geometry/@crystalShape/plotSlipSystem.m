@@ -12,19 +12,23 @@ function h = plotSlipSystem(cS, sS, varargin)
 %  h - handle to the graphics object
 %
 % Options
-%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+%  PatchProperty - <mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %
-% cS = crystalShape.olivine;
-% N  = Miller(1,0,1,'hkl',cS.CS);
-%   
-% plot(cS,'faceAlpha',0.2,'colored')
-% hold on
-% plotInnerFace(cS,N,'faceColor','blue','DisplayName','(101)')
-% plotInnerFace(cS,Miller(0,1,1,cS.CS),'faceColor','red','DisplayName','(011)')
-% hold off
+%   cs = crystalSymmetry.load('Mg-Magnesium.cif');
+%   cS = crystalShape.hex(cs)
+%   sS = [slipSystem.pyramidal2CA(cs), ...
+%         slipSystem.pyramidalA(cs)];
 %
+%   plot(cS,'faceAlpha',0.2)
+%   hold on
+%   plot(cS,sS(2),'faceColor','blue')
+%   plot(cS,sS(1),'faceColor','red')
+%   hold off
+%
+% See also
+% CrystalShapes
 
 h = plotInnerFace(cS,sS.n,'faceAlpha',0.5,varargin{:});
 

@@ -2,7 +2,7 @@ function h = plotInnerDirection(cS, d, varargin)
 %
 % Syntax
 %   d = Miller(1,0,1,'uvw',cs)
-%   plotInnerDirection(cS,d,'faceColor','blue','faceAlpha',0.5,'edgeColor','k') 
+%   plotInnerDirection(cS,d,'faceColor','blue','DisplayName','(101)') 
 %
 % Input
 %  cS - @crystalShape
@@ -12,7 +12,7 @@ function h = plotInnerDirection(cS, d, varargin)
 %  h - handle to the graphics object
 %
 % Options
-%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+%  PatchProperty - <mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %
