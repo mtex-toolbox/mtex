@@ -69,9 +69,10 @@ for i = 1:length(vec)
   % plot as surface plot
   h(i) = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
     'facecolor','k','edgecolor','none'),varargin{:});
-
-  h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-
+  
+  if ~check_option(varargin,'DisplayName')
+    h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+  end
 end
 
 
@@ -80,7 +81,7 @@ end
 clim(ax,cax);
 
 % set axis to 3d
-axis(ax,'equal');
+if ~ishold, axis(ax,'equal');end
 
 % increase box limits if required
 %bounds = [-1 1] * max(max(norm(vec)));
