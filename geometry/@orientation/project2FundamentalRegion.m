@@ -5,6 +5,7 @@ function [ori,sym2,dSym1,dSym2] = project2FundamentalRegion(ori,varargin)
 %   ori = project2FundamentalRegion(ori,rot_ref)
 %
 %   % compute sym1, sym2 such that 
+%   % angle(inv(sym1) * mori * sym2, mori_ref) is minimum
 %   [sym1, sym2] = project2FundamentalRegion(mori,mori_ref)
 %
 % Input
@@ -13,7 +14,9 @@ function [ori,sym2,dSym1,dSym2] = project2FundamentalRegion(ori,varargin)
 %
 % Output
 %  ori     - @orientation
-%  omega   - rotational angle to reference rotation
+%  sym1, sym2 - @rotation
+%  
+%
 %
 
 if nargout >= 2
