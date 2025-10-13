@@ -89,7 +89,7 @@ if isa(SO3F2,'S2Fun')
   if numProper(SO3F1.SLeft) == 1 
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   elseif isa(SO3F2,'S2Fun')
-    ensureCompatibleSymmetries(SO3F1,SO3F2);    
+    ensureCompatibleSymmetries(SO3F1,SO3F2);
     SO3F = S2FunHarmonicSym(fhat,SO3F1.SRight);
   else
     warning(['There is no symmetry of the S2Fun given. But for convolution the ' ...

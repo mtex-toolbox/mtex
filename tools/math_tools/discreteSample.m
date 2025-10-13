@@ -25,7 +25,7 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 %
 % Output
 %  obj    - same as first input
-%  ind    - indeces of the selected subsamples
+%  ind    - indices of the selected subsamples
 
 
 if isa(obj,'function_handle')

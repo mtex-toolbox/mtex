@@ -12,7 +12,7 @@ function h = plotSlipSystem(cS, sS, varargin)
 %  h - handle to the graphics object
 %
 % Options
-%  PatchProperty - <mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
+%  PatchProperty - <https://mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %
@@ -29,6 +29,7 @@ function h = plotSlipSystem(cS, sS, varargin)
 %
 % See also
 % CrystalShapes
+%
 
 h = plotInnerFace(cS,sS.n,'faceAlpha',0.5,varargin{:});
 

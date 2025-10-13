@@ -11,9 +11,12 @@ function [h,mP] = plot(grains,varargin)
 %  grains  - @grain2d
 %  cS      - @crystalShape
 %
-%  PatchProperty - see documentation of patch objects for manipulating the apperance, e.g. 'EdgeColor'
+% Output
+%  h  - graphics handle
+%  mP - @mapPlot
 %                
 % Options
+%  PatchProperty - <https://mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %  noBoundary  - do not plot boundaries 
 %  displayName - name used in legend
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 

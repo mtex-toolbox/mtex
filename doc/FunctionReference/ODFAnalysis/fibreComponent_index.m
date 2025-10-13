@@ -1,1 +1,0 @@
-%% fibreComponent_index.m

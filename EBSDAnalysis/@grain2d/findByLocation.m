@@ -10,8 +10,11 @@ function id = findByLocation( grains, pos )
 %
 % Example
 %  
+%  mtexdata small silent
+%  grains = calcGrains(ebsd('indexed'))
 %  plot(grains)
-%  p = ginput(1)
+%
+%  p = [35000 5000] % for mouse selection use  p = ginput(1)
 %  id = findByLocation(grains,p);
 %  hold on, plot(grains(id).boundary,'linecolor','r','lineWidth',2), hold off
 %

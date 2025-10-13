@@ -16,7 +16,8 @@ classdef SO3FunCBF < SO3Fun
 %  SO3F - @SO3FunCBF
 %
 % Example
-%   
+%
+%   cs = crystalSymmetry.load("Mg-Magnesium.cif");
 %   fibre = fibre.beta(cs);
 %   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
 %

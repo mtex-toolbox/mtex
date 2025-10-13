@@ -1,7 +1,7 @@
 function out = isOuterBoundary(grains,varargin)
 % check which of the indexed grains border with the map/
 % domain boundary - use this function to find boundary grains 
-% if they were recosntructed using alphaShapes
+% if they were reconstructed using alphaShapes
 %
 % Syntax
 %
@@ -15,17 +15,17 @@ function out = isOuterBoundary(grains,varargin)
 %  out    - logical
 %
 % Options
-%  'delta'  - double (default 0.95; 0 = convex hull,
-%                                 1 = envelop touching all points)
+%  delta  - double (default 0.95; 0 = convex hull, 1 = envelop touching all points)
 %
-% see also isBoundary
+% See also 
+% grain2d/isBoundary
 
 % take all vertices
 V = grains.V;
 x = V.x;  y = V.y;      
 
 % how tight should the boundary stick to the map?
-% 0 = convex hull 1 = envelop touchign all outer points
+% 0 = convex hull 1 = envelop touching all outer points
 delta = get_option(varargin,'delta',0.95);
 
 % indices belonging to the domain boundary

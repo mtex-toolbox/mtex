@@ -3,13 +3,13 @@ classdef orientationPlot < handle
 %
 % Example
 %
-%   cs = crystalSymmetry('mmm')
-%   oS = axisAngleSections(cs,cs)
+%   cs = crystalSymmetry('mmm');
+%   oS = axisAngleSections(cs,cs);
 %   ori = oS.makeGrid('resolution',2*degree);
-%   oM = PatalaColorKey(cs,cs)
+%   oM = PatalaColorKey(cs,cs);
 %   rgb = oM.orientation2color(ori);
 %   plot(oS,rgb,'surf')
-%
+%   %
 %   hold on
 %   ori = orientation.rand(100,cs,cs)
 %   plot(oS,ori)

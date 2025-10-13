@@ -1,5 +1,6 @@
 function f = example(varargin)
-% Construct a FibreODF as example for an SO3FunCBF.
+% example of and FibreODF
+%
 
 cs = crystalSymmetry.load('Ti-Titanium-alpha.cif');
 

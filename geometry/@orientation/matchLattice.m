@@ -3,7 +3,7 @@ function [n1,n2,d1,d2] = matchLattice(mori,varargin)
 %
 % Description
 %
-% Given a misorientation mori find all face normals n1, n2 and crystal
+% Given a misorientation mori find *all* face normals n1, n2 and crystal
 % directions d1, d2, such that mori * n1 = n2 and mori * d1 = d2.
 %
 % Syntax
@@ -23,13 +23,13 @@ function [n1,n2,d1,d2] = matchLattice(mori,varargin)
 %
 % Example
 %   % revert sigma3 misorientation relationship
-%   [n1,n2,d1,d2] = round2Miller(CSL(3,crystalSymmetry('432')))
+%   [n1,n2,d1,d2] = matchLattice(CSL(3,crystalSymmetry('432')))
 %
 %   % revert back Bain misorientation ship
 %   cs_alpha = crystalSymmetry('m-3m', [2.866 2.866 2.866], 'mineral', 'Ferrite');
 %   cs_gamma = crystalSymmetry('m-3m', [3.66 3.66 3.66], 'mineral', 'Austenite');
 %   mori = orientation.Bain(cs_alpha,cs_gamma)
-%   [n_gamma,n_alpha,d_gamma,d_alpha] = round2Miller(mori)
+%   [n_gamma,n_alpha,d_gamma,d_alpha] = matchLattice(mori)
 %
 % See also
 % round2Miller

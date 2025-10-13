@@ -23,13 +23,17 @@ function h = plot(cS,varargin)
 %  xy  - nx2 or nx3 coordinate matrix
 %  sS  - @slipSystem
 %
-%  PatchProperty - see documentation of patch objects for manipulating the appearance, e.g. 'EdgeColor'
+% Output
+%  h - graphics handle
+%
+% Options
+%  PatchProperty - <https://mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %   % define and plot a crystal shape
 %   cS = crystalShape.olivine;
 %   plot(cS,'faceAlpha',0.2,'colored')
-%   
+%   %
 %   % define and plot a crystal plane and a crystal direction
 %   d = Miller(1,0,1,'uvw',cS.CS); 
 %   n = Miller(1,0,-1,'hkl',cS.CS); 

@@ -12,13 +12,13 @@ function h = plotInnerFace(cS, N, varargin)
 %  h - handle to the graphics object
 %
 % Options
-%  PatchProperty - <mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
+%  PatchProperty - <https://mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
 %
 % Example
 %
 %   cS = crystalShape.olivine;
 %   N  = Miller(1,0,1,'hkl',cS.CS);
-%   
+%
 %   plot(cS,'faceAlpha',0.2,'colored')
 %   hold on
 %   plotInnerFace(cS,N,'faceColor','blue','DisplayName','(101)')
