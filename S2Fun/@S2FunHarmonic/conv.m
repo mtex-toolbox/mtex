@@ -28,7 +28,6 @@ function sF = conv(sF, psi, varargin)
 %                    inv(4*pi*conv(sF1,conj(sF2))).
 %
 
-
 if isnumeric(sF)
   sF = conv(psi,sF,varargin{:});
   return
@@ -49,14 +48,10 @@ if isa(psi,'S2Fun')
   fhat = [];
   for l = 0:bw
     A = sF.fhat(l^2+1:(l+1)^2) * sF2.fhat((l+1)^2:-1:l^2+1).' /(4*pi)/sqrt(2*l+1);
-    fhat = [fhat;A(:)];
+    fhat = [fhat;A(:)]; %#ok<AGROW>
   end
   
-  % extract symmetries if possible
-  CS1 = crystalSymmetry; CS2 = specimenSymmetry;
-  try CS1 = sF.s; end; try CS2 = sF2.s; end
-    
-  sF = SO3FunHarmonic(fhat,CS1,CS2,varargin{:});
+  sF = SO3FunHarmonic(fhat,sF.s,sF2.s,varargin{:});
     
   return
 end
