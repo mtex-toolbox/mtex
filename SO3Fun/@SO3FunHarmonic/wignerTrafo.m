@@ -2,7 +2,7 @@ function ghat = wignerTrafo(SO3F,varargin)
 % The Wigner transform transfers a given harmonic series
 % $$ \sum_{n=0}^N\sum_{k,l=-n}^n \hat{f}_n^{k,l} D_n^{k,l}(R(\alpha,\beta,\gamma))$$
 % into a trivariate Fourier series
-% $$ \sum_{k,j,l=-N}^N \hat{g}_{k,j,l} e^{i \, (k\alpha+j\beta+l\gamma)}.$$
+% $$ \sum_{k,j,l=-N}^N \hat{g}_{k,j,l} e^{-i \, (k\alpha+j\beta+l\gamma)}.$$
 % Therefore we just transform the harmonic coefficients
 % $\hat{f}_n^{k,l}$ into Fourier coefficients $\hat{g}_{k,j,l}$ by the
 % linear operator
