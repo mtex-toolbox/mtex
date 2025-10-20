@@ -1,4 +1,4 @@
-function [vals, conds] = eval_range(sF, v)
+function [vals, conds] = eval_range(sF, v, varargin)
 
 % get parameters
 dimensions = size(v);
@@ -39,8 +39,21 @@ J = ~I;
 v = v.subSet(J);
 N = sum(J);
 [ind, dist] = sF.nodes.find(v, sF.delta);
+% if optimal subsampling is set to true, we can now fall back to the eval_knn case 
+%   where all neighborhoods have the same size (the dim of the ansatz space) 
+if (sF.subsample == true)
+  ind = sF.find_optimal_subset(ind, v, varargin{:});
+end
+
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
+
+
+if (sF.subsample == true)
+  dist = angle(v.subSet(v_id), sF.nodes.subSet(grid_id));
+  dist = sparse(v_id, grid_id, dist, N, numel(sF.nodes));
+end
+
 
 % the index vector col_id helps to construct the (sF.dim x N) matrix G, which
 % holds the values of the basis functions at all neighbors of all centers from v

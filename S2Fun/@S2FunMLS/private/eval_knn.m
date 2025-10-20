@@ -1,4 +1,4 @@
-function [vals, conds] = eval_knn(sF, v)
+function [vals, conds] = eval_knn(sF, v, varargin)
 
 % get parameters
 dimensions = size(v);
@@ -15,12 +15,22 @@ if (sF.nn < sF.dim)
     'nn has been set to 2 * dim.']));
 end
 
-% find neighbors
+% find neighbors and perform subsampling if the flag is set, compute distances
 [ind, dist] = sF.nodes.find(v, nn); 
+if (sF.subsample == true)
+  ind = sF.find_optimal_subset(ind, v, varargin{:});
+  nn_total = N * sF.dim;
+  nn = sF.dim;
+end
+
 % id of the neighbors (in the grid of sF)
 grid_id = reshape(ind', nn_total, 1);
 % id of entry of v (where we want to eval sF)
 v_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
+if (sF.subsample == true)
+  dist = angle(v.subSet(v_id), sF.nodes.subSet(grid_id));
+  dist = reshape(dist, sF.dim, N)';
+end
 
 
 % evaluate the basis functions on the nodes

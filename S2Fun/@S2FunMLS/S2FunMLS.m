@@ -12,7 +12,7 @@ classdef S2FunMLS < S2Fun
     monomials   = true;    % use monomials instead of sph. harm. if true
     centered    = false;   % only evaluate the basis near the pole if true
     tangent     = false;   % use polynomials on the tangent space
-    s           = crystalSymmetry('1');   % TODO: symmetry
+    s           = crystalSymmetry();   % TODO: symmetry
     subsample   = false;   % perform optimal subsampling, or not
   end
 
@@ -41,7 +41,7 @@ classdef S2FunMLS < S2Fun
       S2F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
       % get symmetry, degree, number of neighbors
-      S2F.s = get_option(varargin, 'symmetry', crystalSymmetry('1'), 'crystalSymmetry');
+      S2F.s = get_option(varargin, 'symmetry', crystalSymmetry(), 'crystalSymmetry');
       S2F.degree = get_option(varargin, 'degree', 3, 'double');
       S2F.nn = get_option(varargin, 'neighbors', 2*S2F.dim, 'double');
       if (S2F.nn < S2F.dim)
@@ -56,7 +56,7 @@ classdef S2FunMLS < S2Fun
       S2F.monomials = get_option(varargin, 'monomials', true, 'logical');
       S2F.centered = get_option(varargin, 'centered', false, 'logical');
       S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
-      S2F.subsample = get_option(varargin, 'subsampling', 'false', 'logical');
+      S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, 'false', 'logical');
 
 
       % if tanget is set to true, we must use monomials
@@ -129,6 +129,8 @@ classdef S2FunMLS < S2Fun
         nn = max(sum(ind,2));
       end
     end
+
+    monomial_coefficients = get_monomial_coefficients(degs);
 
   end
 
