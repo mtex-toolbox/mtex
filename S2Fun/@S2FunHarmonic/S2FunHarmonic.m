@@ -131,6 +131,7 @@ methods (Static = true)
   sF = approximate(f, varargin);
   sF = quadrature(f, varargin);
   sF = adjoint(vec,values,varargin);
+  sF = adjointNFSFT(vec,values,varargin);
   sF = interpolate(v, y, varargin);
   sF = regularize(nodes,y,lambda,varargin);
 end
