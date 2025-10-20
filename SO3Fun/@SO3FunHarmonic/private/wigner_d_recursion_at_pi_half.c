@@ -62,7 +62,7 @@ static void wigner_d_recursion_at_pi_half(int N, int L,mxDouble *d_min2,mxDouble
     // ...
     // Therefore we start with 1 and every new entry needs a multiplication
     // with next factor.
-    double sqrt_binom = 1;
+    double log_sqrt_binom = 0;
     const double multi = pow(0.5,L);
     const double col_len = 2.0*L+1;
     
@@ -85,9 +85,10 @@ static void wigner_d_recursion_at_pi_half(int N, int L,mxDouble *d_min2,mxDouble
     
     for (row= -L+1; row<=0; row++)
     {
-      sqrt_binom = sqrt_binom * sqrt((col_len-iter)/iter);
+      log_sqrt_binom += 0.5 * log((col_len-iter)/iter);
       
-      value = sqrt_binom*multi;
+      value = exp(log_sqrt_binom - L * M_LN2);
+      if (isnan(value) || isinf(value)) value = 0.0;
       
       // Set value in lower triangular matrix of A
       *d = value;
@@ -153,6 +154,7 @@ static void wigner_d_recursion_at_pi_half(int N, int L,mxDouble *d_min2,mxDouble
         
         // get the value of inner part
         value = v*(*d_min1) + w*(*d_min2);
+        // if (isnan(value) || isinf(value)) value = 0.0;
         
         // Set this value at every symmetric point where it occurs (4 times).
         // Pay attention to different signs.
