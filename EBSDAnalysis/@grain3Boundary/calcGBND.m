@@ -68,7 +68,9 @@ if ~isempty(moriRef) && ~isempty(grains)
   end
 
   gbnd = calcDensity(N,'weights',weights,varargin{:},'noSymmetry','antipodal');
-  gbnd = symmetrise(gbnd,csRed);
+  if ~check_option(varargin,'noSymmetry')
+    gbnd = symmetrise(gbnd,csRed);
+  end
   gbnd.CS = moriRef.CS;
 
   
