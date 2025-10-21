@@ -70,6 +70,7 @@ classdef S2Kernel
     function plot(S2K,varargin)      
 
       if isappdata(gcf,'mtexFig'), clf; end
+      rmallappdata(gcf)
 
       if check_option(varargin,{'3d','surf'})
         plot(S2FunHarmonic(S2K),varargin{:});
