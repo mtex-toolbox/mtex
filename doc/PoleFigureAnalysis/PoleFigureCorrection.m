@@ -7,7 +7,7 @@
 
 mtexdata geesthacht
 
-% plot imported polefigure
+% plot imported pole figure
 plot(pf)
 
 

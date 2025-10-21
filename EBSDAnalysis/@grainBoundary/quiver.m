@@ -4,11 +4,18 @@ function h = quiver(gB,dir,varargin)
 % Syntax
 %   quiver(gB,gB.direction,'linecolor','r')
 %
+% Input
+%  gB  - @grainBoundary
+%  dir - @vector3d
+%
 % Example
-%   mtexdata fo
-%   grains = calcGrains(ebsd('indexed'))
-%   quiver(grains(1437).boundary,grains(1437).boundary.calcMeanDirection,'color','r')
-
+%  mtexdata forsterite silent
+%  grains = calcGrains(ebsd('indexed'));
+%  plot(grains(1437))
+%  hold on
+%  quiver(grains(1437).boundary,grains(1437).boundary.calcMeanDirection,'color','r')
+%  hold off
+%
 
 varargin = [{'MaxHeadSize',0,'linewidth',2,'autoScaleFactor',0.15},varargin];
 

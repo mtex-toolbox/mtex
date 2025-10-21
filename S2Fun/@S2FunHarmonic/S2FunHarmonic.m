@@ -80,7 +80,7 @@ methods
     sF = reshape(sF,numel(sF));
     sF = truncate(sF);
     normF = sum(abs(sF.fhat-sF.even.fhat).^2);
-    out = all(sqrt(normF) < 1e-5*norm(sF));
+    out = all(all(sqrt(normF) < 1e-5*norm(sF)));
   end
   
   function sF = set.antipodal(sF,value)
@@ -111,7 +111,7 @@ methods
       ind(l^2+1:(l+1)^2) = (l+1)^2:-1:l^2+1;
     end
     sF.fhat = 0.5*(sF.fhat+conj(sF.fhat(ind,:)));
-    sF=reshape(sF,sz);
+    sF = reshape(sF,sz);
   end
 
   function d = size(sF, varargin)
@@ -119,10 +119,6 @@ methods
     d = d(2:end);
     if isscalar(d), d = [d 1]; end
     if nargin > 1, d = d(varargin{1}); end
-  end
-
-  function n = numel(sF)
-    n = prod(size(sF)); %#ok<PSIZE>
   end
 
 end
@@ -134,6 +130,16 @@ methods (Static = true)
   sF = adjointNFSFT(vec,values,varargin);
   sF = interpolate(v, y, varargin);
   sF = regularize(nodes,y,lambda,varargin);
+
+  function sF = loadobj(sF)
+    % called by Matlab when an object is loaded from an .mat file
+    % this overloaded method ensures compatibility with older MTEX
+    % versions
+
+    if isempty(sF.s), sF.s = specimenSymmetry; end
+                  
+  end
+
 end
 
 end

@@ -20,8 +20,8 @@ function value = mean(SO3F, varargin)
 % |mean(SO3F)| returns a 3x3 matrix with the mean values of each function 
 % |mean(SO3F, 1)| returns a 1x3 SO3Fun which contains the pointwise mean values along the first dimension
 %
-% Example 
-%   %generate SO3Funs
+% Example
+%   % generate SO3Funs
 %   SO3F1 = SO3Fun.dubna
 %   SO3F2 = SO3FunHandle(@(rot) SO3F1.eval(rot))
 %   A = ones(2,3);

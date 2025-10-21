@@ -1,1 +1,0 @@
-%% FourierComponent_index.m

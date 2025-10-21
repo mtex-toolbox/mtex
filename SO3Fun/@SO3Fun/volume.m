@@ -1,4 +1,4 @@
-function v = volume(SO3F,center,radius,varargin)
+function [v, S3G] = volume(SO3F,center,radius,varargin)
 % Integrates an SO3Fun on the region of all orientations that are close to  
 % a specified orientation (center) by a tolerance (radius), i.e.
 %

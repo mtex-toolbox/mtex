@@ -8,22 +8,9 @@ classdef eareaProjection < sphericalProjection
     end
     
     function [x,y] = project(sP,v,varargin)
-      % compute polar angles
-  
-      % map such that projection is towards xy plane
-      % and compute there spherical coordinates
-      v(~sP.sR.checkInside(v,varargin{:})) = NaN;
-      v = v.rmOption('theta','rho');
-      [theta,rho] = polar(inv(sP.pC.rot) * v);
-      
-      % map to upper hemisphere
-      ind = theta > pi/2+10^(-10);
-      theta(ind)  = pi - theta(ind);
 
-      % turn around antipodal vectors
-      sP.sR.antipodal = false; v.antipodal = false;
-      ind = ~sP.sR.checkInside(v);
-      rho(ind) = rho(ind) + pi;
+      % compute polar angles
+      [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
       
       % formula for equal area projection
       r =  sqrt(2*(1-cos(theta)));

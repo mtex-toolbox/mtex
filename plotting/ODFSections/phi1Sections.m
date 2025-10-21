@@ -43,7 +43,7 @@ classdef phi1Sections < ODFSections
     function ori = makeGrid(oS,varargin)
       % generate a grid for plotting smooth functions
 
-      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.plotGrid = plotS2Grid(oS.sR,'plain',varargin{:});
       oS.gridSize = (0:numel(oS.phi1)) * length(oS.plotGrid);
       phi2 = repmat(oS.plotGrid.rho,[1,1,numel(oS.phi1)]);
       Phi = repmat(oS.plotGrid.theta,[1,1,numel(oS.phi1)]);

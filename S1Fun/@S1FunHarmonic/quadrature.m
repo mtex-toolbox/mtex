@@ -42,12 +42,12 @@ if isempty(S1G)
   S1G = 2*pi/N*(0:N-1).';
   weights = 1/N;
   varargin = [varargin,'Gaussian'];
-elseif isempty(w)
+elseif isempty(weights)
   % use Voronoi volumes as weights
   S1G = sort(S1G);
   dist = (S1G(2:end)-S1G(1:end-1)); 
   distEnd = 2*pi+S1G(1)-S1G(end);
-  weights = 0.5*([distEnd;dist]+[dist;distEnd]);
+  weights = 0.5*([distEnd;dist]+[dist;distEnd])/(2*pi);
 end
 
 values =  f.eval(S1G(:));

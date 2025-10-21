@@ -180,8 +180,7 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function V = get.V(gB)
-      error('implement this!')
-      %V = reshape(gB.triplePoints.allV(gB.F),length(gB),2);
+      V = reshape(gB.triplePoints.allV(gB.F),length(gB),2);
     end
     
     function N = get.N(gB)
@@ -303,14 +302,14 @@ classdef grainBoundary < phaseList & dynProp
     function gB = update(gB,grains)
       
       gB.phaseId = zeros(size(gB.F,1),2);
-      isBoundary = gB.grainId > 0;
-      gB.phaseId(isBoundary) = grains.phaseId(grains.id2ind(gB.grainId(isBoundary)));      
+      ind = grains.id2ind(gB.grainId);
+      gB.phaseId(ind>0) = grains.phaseId(ind(ind>0));
       
     end
   end
 
   methods (Static = true)
-      function gB = loadobj(gB)
+      function gB = loadobj(s)
       % called by MATLAB when an object is loaded from an .mat file
       % this overloaded method ensures compatibility with older MTEX
       % versions
@@ -318,6 +317,21 @@ classdef grainBoundary < phaseList & dynProp
       % maybe there is nothing to do
       %if isa(s,'grainBoundary'), gB = s; return; end
       
+      if isstruct(s)
+        gB = grainBoundary;
+        gB.triplePoints = s.triplePoints;
+        gB.F = s.F;
+        gB.grainId = s.grainId;
+        gB.ebsdId = s.ebsdId;
+        gB.misrotation = s.misrotation;
+        gB.phaseId = s.phaseId;
+        gB.CSList = s.CSList;
+        gB.phaseMap = s.phaseMap;
+        gB.prop = s.prop;
+      else
+        gB = s;
+      end
+
       if isfield(gB.prop,'V')
         gB.triplePoints.allV = gB.prop.V;
         gB.prop = rmfield(gB.prop,'V');

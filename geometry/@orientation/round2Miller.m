@@ -1,9 +1,9 @@
 function [n1,n2,d1,d2] = round2Miller(mori,varargin)
-% find lattice alignements for arbitrary orientations and misorientations
+% find lattice alignments for arbitrary orientations and misorientations
 %
 % Description
 %
-% Given an orienation ori find [hkl](uvw) such that ori * [hkl] = Z and ori
+% Given an orientation ori find [hkl](uvw) such that ori * [hkl] = Z and ori
 % * (uvw) = X.
 % 
 % Given a misorientation mori find corresponding face normals n1, n2 and
@@ -87,7 +87,7 @@ penalty = get_option(varargin,'penalty',0.002);
 maxIndex = get_option(varargin,{'maxIndex','maxHKL'},4);
 nextFit = get_option(varargin,'nextFit',1);
 
-% all plane normales
+% all plane normals
 [h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);

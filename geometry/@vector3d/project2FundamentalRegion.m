@@ -82,7 +82,6 @@ dist = dot_outer(v,symCenter,'noSymmetry');
 % Round distances so that if any of them are equal, the first rotated
 % center is chosen
 dist = round(dist, 12);
-
 [~,col] = max(dist,[],2);
 
 sym = reshape(inv(subSet(cs,col)),size(v));

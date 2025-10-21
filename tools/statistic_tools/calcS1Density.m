@@ -15,6 +15,7 @@ function S1F = calcS1Density(x,varargin)
 %  halfwidth - width of the kernel function
 %  antipodal - ensures f(x+pi) = f(x)
 %  even      - ensures f(x) = f(-x)
+%
 
 if ~check_option(varargin,{'sigma','halfwidth'})
   % automatic bandwidth selection
@@ -26,7 +27,7 @@ else
 end
 
 % compute bandwidth dependent from sigma
-N = round(4/sigma);
+N = get_option(varargin,'bandwidth',round(4/sigma));
 
 y = get_option(varargin,'weights',ones(size(x)));
 S1F = S1FunHarmonic.quadrature(x,y,'bandwidth',N,varargin{:});

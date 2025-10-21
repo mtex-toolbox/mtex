@@ -59,7 +59,7 @@ methods
     psi.C = beta(1.5,0.5)/beta(1.5,psi.kappa+0.5);
     
     % compute Chebyshev coefficients
-    psi.A = ones(1,L+1);
+    psi.A = ones(L+1,1);
     psi.A(2) = psi.kappa/(psi.kappa+2);
     
     for l=1:L-1

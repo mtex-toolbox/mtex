@@ -1,16 +1,3 @@
-c/bin/glnx86/*
-c/bin/glnxa64/*
-c/bin/win32/*
-c/bin/win64/*
-c/bin/maci/*
-c/bin/maci64/*
-c/mex/glnx86/*
-c/mex/glnxa64/*
-c/mex/win32/*
-c/mex/win64/*
-c/mex/maci64/*
-c/mex/maci/*
-data/cif/*
 doc/html
 *.mat
 *~
@@ -23,7 +10,6 @@ help/tmp/*
 !data/testgrains.mat
 /myToken.txt
 resources/*
-*.c
 *.asv
 myScripts
 /data/Neper/neper.log
@@ -35,3 +21,4 @@ myScripts
 /data/Neper/my100grains.tess
 .mailmap
 gitTricks.md
+/extern/chebfun

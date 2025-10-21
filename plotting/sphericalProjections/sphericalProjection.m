@@ -22,6 +22,13 @@ classdef sphericalProjection
     
     function [rho,theta] = project(sP,v,varargin)
       % compute polar angles
+
+      % compute polar angle without any respect to the region
+      if check_option(varargin,'ignoreFRBoundaries')
+        v = v.rmOption('theta','rho');
+        [theta,rho] = polar(inv(sP.pC.rot) * v);
+        return
+      end
       
       % map such that projection is towards xy plane
       % and compute there spherical coordinates

@@ -31,6 +31,7 @@ cS.V
 
 %%
 % Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
+% <crystalShape.plotInnerDirection.html |plotInnerDirection|>,
 % <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and <arrow3d.html
 % |arrow3d|> we may plot internal lattice planes, directions or slip
 % systems into the crystal shape
@@ -103,8 +104,8 @@ drawNow(gcm,'final')
 % with
 
 % plot a grain map
-%plot(grains,grains.meanOrientation,'figSize','large')
-plot(grains.boundary,'figSize','large','linewidth',4)
+plot(grains,grains.meanOrientation,'figSize','large','faceAlpha',0.5,'linewidth',2)
+%plot(grains.boundary,'figSize','large','linewidth',4)
 
 % and on top for each large grain a crystal shape colored according to the
 % grain orientation

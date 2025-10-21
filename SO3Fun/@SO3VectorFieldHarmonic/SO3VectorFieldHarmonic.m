@@ -7,7 +7,8 @@ properties
   SO3F
   SRight
   SLeft
-  tangentSpace = SO3TangentSpace.leftVector
+  % tangent space representation used for evaluation
+  tangentSpace = SO3TangentSpace.leftVector 
 end
 
 properties(Dependent = true)
@@ -19,6 +20,7 @@ properties(Dependent = true)
 end
 
 properties (Hidden = true)
+  % tangent space used for the internal representation
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
 end
 

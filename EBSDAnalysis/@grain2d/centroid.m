@@ -65,7 +65,7 @@ else % the same algorithm in 2d
     y(k) = sum(cy(ndx)) / 3 / a;
   end
 
-  c = inv(rot) .* vector3d(x,y,0);
+  c = inv(rot) .* vector3d(x,y,V.z(1));
 
 end
 

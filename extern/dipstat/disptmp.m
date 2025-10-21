@@ -2,6 +2,12 @@ function disptmp(s,varargin)
 
 global prevCharCnt;
 
+% \b doesn't work on logs, so turn diary off temporarily
+if strcmp(get(0,'Diary'),'on')
+    diary('off')
+    turn_diary_on_when_done = onCleanup(@() diary('on'));
+end
+
 if isempty(prevCharCnt) || ~isempty(lastwarn), prevCharCnt = 0; end
 lastwarn('');
 % Make safe for fprintf, replace control charachters

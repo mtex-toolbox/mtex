@@ -29,7 +29,7 @@ methods
     L = get_option(varargin,'bandwidth',1000);
     
     % compute Legendre coefficients
-    psi.A = ones(1,L+1);
+    psi.A = ones(L+1,1);
     for i=1:L, psi.A(i+1) = (2*i+1)*exp(-i*(i+1)*psi.kappa);end
     
     psi.A = psi.cutA;

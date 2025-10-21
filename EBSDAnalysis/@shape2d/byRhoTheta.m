@@ -1,5 +1,4 @@
 function  shape = byRhoTheta(rho,theta)
-
 % define shape2d by polar angles
 %
 % Syntax
@@ -12,13 +11,14 @@ function  shape = byRhoTheta(rho,theta)
 % Output
 %  shape - @shape2d
 %
-%
 % Example
+%  mtexdata forsterite silent
+%  grains = calcGrains(ebsd('indexed'));
 %  omega = [0:360]*degree;
-%  cumpf = surfor(grains.boundary('f','f'),omega)
+%  cumpf = surfor(grains.boundary('f','f'),omega);
 %  shape = shape2d.byRhoTheta(cumpf, omega)
+%  plot(shape)
 %
-
 rho = reshape(rho,[],1);
 theta = reshape(theta,[],1);
 

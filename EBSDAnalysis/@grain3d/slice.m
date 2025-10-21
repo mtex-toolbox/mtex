@@ -27,6 +27,8 @@ plane.d = plane.d + 0.001 * (-1)^(plane.d>0);
 % step 1: find intersected grains
 isInter = grains3.intersected(plane);
 
+if ~any(isInter), grains2 = grain2d; return, end
+
 I_GF = grains3.I_GF;
 FId = find(any(I_GF(isInter,:)));
 
@@ -111,7 +113,7 @@ poly = [poly; newPoly];
 end
 
 % new 2d grains
-grains2 = grain2d(VNew, poly, grains3.meanOrientation(oldId),...
+grains2 = grain2d(VNew, poly, grains3.prop.meanRotation(oldId),...
   grains3.CSList, grains3.phaseId(oldId), grains3.phaseMap, 'id', 1:length(poly));
 grains2.prop.Id3d = oldId;
 

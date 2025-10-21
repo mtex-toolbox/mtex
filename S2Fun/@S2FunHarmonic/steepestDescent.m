@@ -74,10 +74,13 @@ for k = 0:iterMax
   sumOmega = accumarray(I,sumOmega,[],@min);
 
   % consider only points that did not walked too far
-  f(sumOmega>maxTravel) = [];
-  v(sumOmega>maxTravel) = [];
-  id(sumOmega>maxTravel) = [];
-  sumOmega(sumOmega>maxTravel) = [];
+  ind = sumOmega > maxTravel;
+  if nnz(~ind)>=numLocal 
+    f(ind) = [];
+    v(ind) = [];
+    id(ind) = [];
+    sumOmega(ind) = [];
+  end
 
   % break if we have already numLocal points found
   if nnz(id==1)>= numLocal && ...

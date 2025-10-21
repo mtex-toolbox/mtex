@@ -24,12 +24,8 @@ function [rho,factor] = fitDislocationSystems(kappa,dS,varargin)
 %
 
 % ensure linprog is working
-try
-  linprog(0,0,0);
-catch
-  error('Optimization Toolbox not found. The function fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
-end
-
+assert(~isempty(which('linprog')),...
+  'Optimization Toolbox not found. The function fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
 
 % ensure we consider also negative line vector
 dS = [dS,-dS];

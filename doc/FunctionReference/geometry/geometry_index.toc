@@ -12,6 +12,7 @@ sphericalRegion_index        sphericalRegion
 fibre_index                  fibre
 slipSystem_index             slipSystem 
 dislocationSystem_index      dislocationSystem
+plane3d_index                plane3d
 quaternion_index             quaternion
 S1Grid_index                 S1Grid
 S2Grid_index                 S2Grid

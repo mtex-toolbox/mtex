@@ -1,9 +1,0 @@
-ODFOverview              Overview
-ODF_index                ODF
-uniformComponent_index   uniformComponent
-unimodalComponent_index  unimodalComponent
-fibreComponent_index     fibreComponent
-FourierComponent_index   FourierComponent
-BinghamComponent_index   BinghamComponent
-standardODFs_index       
-kernel_index             kernel

@@ -16,6 +16,7 @@ if nargin == 3, d = 1; end
 l = v2 - v1;
 
 % compute intersection point
+n.antipodal = false;
 lambda = (d - dot_outer(v1,n,'noSymmetry')) ./ dot(l,n,'noSymmetry');
 
 % verify intersection point is between v1 and v2

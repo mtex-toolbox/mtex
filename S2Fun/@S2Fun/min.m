@@ -39,13 +39,23 @@ if nargin > 1 && isa(varargin{1},'S2FunHarmonic'), varargin{1} = varargin{1}.tru
 % pointwise minimum of two spherical functions
 if ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
   f = @(v) min(sF.eval(v), varargin{1}.eval(v));
-  value = S2FunHarmonic.quadrature(f,sF.how2plot);
+  if sF.antipodal && varargin{1}.antipodal
+    value = S2FunHarmonic.quadrature(f,sF.how2plot,'antipodal');
+  else
+    value = S2FunHarmonic.quadrature(f,sF.how2plot);
+  end
+  value.CS = sF.CS;
 
 % pointwise minimum of spherical harmonics
 elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
 
   f = @(v) min(sF.eval(v), varargin{1});
-  value = S2FunHarmonic.quadrature(f,sF.how2plot);
+  if sF.antipodal
+    value = S2FunHarmonic.quadrature(f,sF.how2plot,'antipodal');
+  else
+    value = S2FunHarmonic.quadrature(f,sF.how2plot);
+  end
+  value.CS = sF.CS;
 
 elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
   
@@ -57,6 +67,7 @@ elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
   end
   f = @(v) min(reshape(sF.eval(v),[length(v),s]), [], d(1)+1);
   value = S2FunHarmonic.quadrature(f);
+  value.CS = sF.CS;
 
 else % detect local or global minima
 
@@ -117,6 +128,8 @@ else % detect local or global minima
     value = value(1);
   end
   pos = pos(I(1:n));
+
+  if isa(sF.CS,'crystalSymmetry'), pos = Miller(pos,sF.CS); end
 
 end
 

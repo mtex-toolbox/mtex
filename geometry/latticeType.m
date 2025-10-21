@@ -39,6 +39,14 @@ classdef latticeType < int32
         this == latticeType.tetragonal || this == latticeType.cubic;
       
     end
+
+    function out = hklForm(this)
+      if isTriHex(this)
+        out = 'hkil';
+      else
+        out = 'hkl';
+      end
+    end
     
   end
   

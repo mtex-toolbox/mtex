@@ -23,20 +23,19 @@ if any(isGrain)
 end
 subs = subs(~isGrain);
 
+if isempty(subs), return; end
+
 % other indexing
 if (length(subs)==2 && (subs{2} == "ind"))
   ind = subs{1};
   assert((isnumeric(ind) || islogical(ind))...
   , 'indexing only supported for numerical or logical values')
-elseif (isscalar(subs) || (length(subs)==2 && (subs{2} == "id")))
-  if isnumeric(subs{1})
-    id = subs{1};
-  elseif islogical(subs{1})
-    id = find(subs{1});
-  else
-    error 'indexing only supported for numerical or logical values'
-  end
-  ind = id2ind(gB,id);
+elseif islogical(subs{1})
+  ind = ind & subs{1};
+elseif length(subs)==2 && subs{2} == "id"
+  ind = id2ind(gB,subs{1});
+elseif isnumeric(subs{1})
+  ind = subs{1};  
 elseif isempty(subs)
 else
   error 'error'
