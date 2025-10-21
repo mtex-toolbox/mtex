@@ -180,8 +180,7 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function V = get.V(gB)
-      error('implement this!')
-      %V = reshape(gB.triplePoints.allV(gB.F),length(gB),2);
+      V = reshape(gB.triplePoints.allV(gB.F),length(gB),2);
     end
     
     function N = get.N(gB)
