@@ -28,6 +28,13 @@ end
 methods
   
   function SO3F = SO3FunHandle(fun,varargin)
+
+    if isa(fun,'SO3Fun')
+      SO3F.fun = @(rot) fun.eval(rot);
+      SO3F.SRight = fun.SRight;
+      SO3F.SLeft = fun.SLeft;
+      return
+    end
     
     SO3F.fun = fun;
 
@@ -35,6 +42,10 @@ methods
     SO3F.SRight = SRight;
     SO3F.SLeft = SLeft;
     
+  end
+
+  function n = numArgumentsFromSubscript(varargin)
+    n = 0;
   end
   
 end

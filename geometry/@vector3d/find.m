@@ -33,7 +33,9 @@ if (v.antipodal || w.antipodal)
   v = [v;-v];
 end
 
-if nargin==2, epsilon_or_k=1; end
+if (nargin == 2)
+  epsilon_or_k = 1; 
+end
 
 % k given ==> find k nearest neighbors
 if (floor(epsilon_or_k) == epsilon_or_k)
@@ -66,5 +68,3 @@ if (nargout == 2)
   % also convert d to sparse after computing it
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end
-
-

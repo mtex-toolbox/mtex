@@ -41,6 +41,10 @@ properties (Dependent = true)
   SRight
 end
 
+% In case of vector Valued SO3FunRBFs, we store c0 with the array size of
+% SO3F and the weights are stored in first dim with numel(center) and the
+% other dimensions are the size of the SO3FunRBF (similar as fhat in SO3FunHarmonic)
+
 methods
     
   function SO3F = SO3FunRBF(center,varargin)
@@ -231,18 +235,6 @@ methods
     
         SO3F =  builtin('subsasgn',SO3F,s,b);
     end
-  end
-
-  function S3F = reshape(S3F,varargin)
-    S3F.c0 = reshape(S3F.c0, varargin{:});
-  end
-
-  function S3F = transpose(S3F)
-    S3F.c0 = S3F.c0.';
-  end
-
-  function S3F = ctranspose(S3F)
-    S3F.c0 = S3F.c0';
   end
 
 end

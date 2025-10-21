@@ -127,6 +127,14 @@ maxit = get_option(varargin, 'maxit', 100);
 % xi.eval(nodes,'createPlan','nfsoft');
 % SO3FunHarmonic.adjoint(nodes,y,'createPlan','nfsoft','bandwidth',bw);
 
+% Preallocate Storage for LSQR outputs
+fhat = zeros(deg2dim(bw+1),size(y,2));
+flag = zeros(1,size(y,2));
+relres = zeros(1,size(y,2));
+iter = zeros(1,size(y,2));
+resvec = cell(1,size(y,2));
+lsvec = cell(1,size(y,2));
+
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:, index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
@@ -184,6 +192,7 @@ end
 
 % We have to decide which bandwidth we are using dependent from the
 % oversampling factor.
+% The same method is used in SO3FunMLS/calcFourier
 function bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
 
 bw = get_option(varargin,'bandwidth');

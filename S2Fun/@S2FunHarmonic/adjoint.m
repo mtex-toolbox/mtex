@@ -1,141 +1,226 @@
-function sF = adjoint(vec,values, varargin)
+function sF = adjoint(v,y, varargin)
 % Compute the adjoint S2-Fourier transform of given evaluations on a 
-% specific quadrature grid, by using the NFSFT-method 
-% (nonequispaced fast spherical fourier transform).
+% specific quadrature grid.
+% 
+% This method uses an adjoint bivariate nfft/fft and an adjoint coefficient 
+% transform which is based on a representation property of the Wigner-d 
+% functions.
+% Hence it do not use the NFSFT (which includes a fast polynom transform) 
+% as in the older method |S2FunHarmonic.adjointNFSFT|.
 %
 % Syntax
 %   sF = S2FunHarmonic.adjoint(vec,values)
 %   sF = S2FunHarmonic.adjoint(vec,values,'bandwidth',32,'weights',w)
-%   sF = S2FunHarmonic.adjoint(f)
 %
 % Input
-%  vec    - @vector3d
+%  vec    - @vector3d, @quadratureS2Grid,
 %  values - double
 %
 % Output
 %  sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - maximal harmonic degree (default: 128)
+%  bandwidth - maximal harmonic degree (default: 512)
 %  weights   - quadrature weights
 %
+% Flags
+%  'nfsft'             - use (mostly slower) NFSFT algorithm
+%  'directComputation' - direct evaluation of Fourier sums (no nfft)
+%
 % See also
-% S2FunHarmonic/quadrature S2FunHarmonic/approximate
-% S2FunHarmonic/interpolate
+% S2FunHarmonic/quadrature S2FunHarmonic/adjointNFSFT 
+% S2FunHarmonic/approximate S2FunHarmonic/interpolate
 
 
-persistent keepPlanNSFT;
+% Use NFSOT of nfft3 toolbox
+if check_option(varargin,'nfsft')
+  sF = S2FunHarmonic.adjointNFSFT(v,y,varargin{:});
+  return
+end
+
+persistent keepPlanNFFT;
 
 % kill plan
-if check_option(varargin,'killPlan')
-  nfsftmex('finalize',keepPlanNSFT);
-  keepPlanNSFT = [];
-  return
-end
-
-% Multivariate functions
-if length(vec)~=numel(values)
-  s = size(values); s = s(2:end);
-  values = reshape(values,length(vec),[]);
-  S2FunHarmonic.adjoint(vec,values(:,1),'createPlan',varargin{:});
+if check_option(varargin,'killPlan') 
+  if isempty(keepPlanNFFT), return, end
+  nfftmex('finalize',keepPlanNFFT);
+  keepPlanNFFT = [];
   sF=[];
-  for ind = 1:prod(size(values,2))
-    G = S2FunHarmonic.adjoint(vec,values(:,ind),'keepPlan',varargin{:});
-    sF = [sF,G];
-  end
-  S2FunHarmonic.adjoint(zvector,1,'killPlan');
-  sF = reshape(sF, s);
   return
 end
 
 
-% --------------- (1) get weights and values for quadrature ---------------
+% multivariate case
+y = reshape(y,length(v),[]);
+len = size(y,2);
+sz = size(y);
 
-if isa(vec,'quadratureS2Grid')
-  bw = vec.bandwidth;
-  nodes = vec(:);
-  W = vec.weights;
+
+% -------------- (1) get weights and values for quadrature ----------------
+
+if v.antipodal 
+  v.antipodal = 0; 
+  varargin{end+1} = 'antipodal'; 
+end
+
+if isa(v,'quadratureS2Grid')
+  N = v.bandwidth;
+  W = v.weights;
 else
-  bw = get_option(varargin,'bandwidth', 128);
-  nodes = vec(:);
+  N = get_option(varargin,'bandwidth', getMTEXpref('maxS2Bandwidth'));
+  v = v(:);
   nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
   W = get_option(varargin,'weights',1);
-  % if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)
-  %   % TODO: use a regular grid here and a faster search
-  %   n2 = equispacedS2Grid('resolution',0.5*degree);
-  %   id = find(n2,nodes);
-  %   values = accumarray(id,values,[length(n2),1]);
-  % 
-  %   id = values>0;
-  %   nodes = reshape(n2.subGrid(id),[],1);
-  %   values = values(id);
-  %   nodes.antipodal = f.antipodal;
-  % end
 end
+
 
 % check for Inf-values (quadrature fails)
-if any(isinf(values))
+if any(isinf(y))
   error('There are poles at some quadrature nodes.')
 end
-if any(isnan(values))
+if any(isnan(y))
   warning('There are Nan values in some nodes. They are set to 0.')
-  values(isnan(values)) = 0;
+  y(isnan(y)) = 0;
 end
 
-if isempty(nodes)
+if isempty(v)
   sF = S2FunHarmonic(0);
   return
 end
-if bw==0
-  sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
+if N==0
+  sF = S2FunHarmonic(mean(y)*sqrt(4*pi));
   return
 end
 
-% -------------------------- (2-4) Adjoint NFSFT --------------------------
+% -------------------- (2) Adjoint trivariate NFFT/FFT --------------------
 
 % create plan
 if check_option(varargin,'keepPlan')
-  plan = keepPlanNSFT;
+  plan = keepPlanNFFT;
 else
   plan = [];
 end
 
-% initialize nfsft
-if isempty(plan)
-  nfsftmex('precompute', bw, 1000, 1, 0);
-  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
-  nfsftmex('precompute_x', plan);
+% initialize nfft plan
+if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')
+
+  % nfft size
+    NN = 2*N+2;
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
+  %                         It is the default value
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
+  %                         measuring their execution time. This can take some time (often a few seconds).
+    fftw_flag = int8(64);
+    nfft_flag = int8(0);
+  % nfft_cutoff parameter
+    m = get_option(varargin,'cutoffParameter',4);
+  % oversampling factor
+    sigma = 3;
+    fftw_size = 2*ceil(sigma/2*NN);
+  % initialize nfft plan
+  plan = nfftmex('init_guru',{2,NN,NN,length(v),fftw_size,fftw_size,m,nfft_flag,fftw_flag});
+
+  % set vector3d as nodes in plan
+  [theta,rho] = polar(v(:));
+  tr = [theta,rho].'./(2*pi);
+  nfftmex('set_x',plan,tr);
+
+  % node-dependent precomputation
+  nfftmex('precompute_psi',plan);
+
+  if check_option(varargin,'createPlan')
+    keepPlanNFFT = plan;
+    sF=[];
+    return
+  end
+
+  ghat = zeros((2*N+2)^2,len);
+  for m=1:len
+    nfftmex('set_f', plan, W(:) .* y(:,m));
+    nfftmex('adjoint', plan);
+    % adjoint Fourier transform
+    ghat(:,m) = nfftmex('get_f_hat', plan);
+  end
+  ghat = reshape(ghat,2*N+2,2*N+2,len);
+  ghat = ghat(2:end,2:end,:);
+
 end
 
-if check_option(varargin,'createPlan')
-  keepPlanNSFT = plan;
-  sF=[];
-  return
+% use trivariate inverse equispaced fft in case of Clenshaw Curtis
+% quadrature grid and nfft otherwise 
+% TODO: Do FFT x NFFT x FFT in case of GaussLegendre-Quadrature
+if isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')
+
+  % Possibly use smaller input matrix by using the symmetries
+  if len==1
+    ghat = ifft2( W.* reshape(y,[size(W),1]) ,4*N,2*N+2);
+    ghat = ifftshift(ghat);
+  else % multivariate
+    ghat = ifft(ifft(W.*reshape(y,[size(W),len]),4*N,1),2*N+2,2);
+    ghat = ifftshift(ifftshift(ghat,1),2);
+  end
+
+  ghat = 4*N*(2*N+2) * ghat(N+1:3*N+1,2:end,:);
+  ghat = permute(ghat,[2,1,3]);
+
+elseif check_option(varargin,'directComputation')
+
+  % Do adjoint nsoft directly by evaluating the sum
+  ghat = zeros(2*N+1,2*N+1,len);
+
+  for m = 1:length(v)
+    ghat = ghat + W(m)*y(m)* exp(1i* ( (-N:N)'*v.rho(m) + (-N:N)*v.theta(m) ));
+  end
+
 end
 
-% adjoint nfsft
-nfsftmex('set_f', plan, W(:) .* values(:));
-nfsftmex('adjoint', plan);
-fhat = nfsftmex('get_f_hat_linear', plan);
+% shift grid
+z = (1i).^(-N:N).';
+ghat = z .* ghat;
+
+
+% --------------------- (3) adjoint Wigner transform ----------------------
+
+
+% set flags
+flags = [1,0,0,0,0]; % use L2-normalized Wigner-D functions
+
+% TODO: Probably use limit 1e-5 because this is precision m of nfft
+if isalmostreal(y,'precision',10,'norm',1)
+  flags(3) = 1; % f real valued
+end
+if v.antipodal || check_option(varargin,'antipodal')
+  flags(4) = 1;% f antipodal
+end
+
+% use adjoint Wigner transform
+fhat = zeros((N+1)^2,len);
+flagsMEX = bin2dec(sprintf('%d',flip(flags)));
+for m = 1:len
+  fhat(:,m) = sphericalHarmonicTrafoAdjointmex(N,ghat(:,:,m),flagsMEX,[1,1]);
+end
+
+if flags(3)
+  for n=2:N
+    ind = n^2+1 : (n+1)^2;
+    A = fhat(ind,:);
+    fhat(ind,:) = A + (A==0).*conj(flip(A,1)); 
+  end 
+end
+
 
 % kill plan
 if check_option(varargin,'keepPlan')
-  keepPlanNSFT = plan;
-else
-  nfsftmex('finalize', plan);
+  keepPlanNFFT = plan;
+elseif ~isempty(plan)
+  nfftmex('finalize', plan);
 end
 
-% -------------------- (5) Construct S2FunHarmonic ------------------------
+% ------------------- (4) Construct S2FunHarmonic ------------------------
 
-sF = S2FunHarmonic(fhat);
-sF.bandwidth = min([bw,sF.bandwidth]);
+sF = S2FunHarmonic(fhat,varargin{:});
+sF = reshape(sF,sz(2:end));
 
-% if antipodal consider only even coefficients
-if check_option(varargin,'antipodal') || nodes.antipodal 
-  sF = sF.even;
-end
-
-sF.how2plot = nodes.how2plot;
 
 end

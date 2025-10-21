@@ -1,4 +1,4 @@
-function [vals, conds] = eval(sF, v)
+function [vals, conds] = eval(sF, v, varargin)
 
 % evaluate sF on v via moving least squares (MLS) approximation
 % provide the possibility of also returning the condition numbers of the gram matrices
@@ -16,97 +16,76 @@ function [vals, conds] = eval(sF, v)
 %
 
 
-v = v(:);
-if sF.centered
-  if nargout == 1
-    vals = eval_centered(sF, v);
+<<<<<<< HEAD
+if ~isa(v, 'vector3d')
+  v = vector3d(v, sF.CS);
+end
+
+
+=======
+>>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
+dimensions = size(v);
+N = numel(v);
+vals = zeros(N, numel(sF));
+if (nargout == 2)
+  conds = zeros(N, 1);
+end
+
+
+% we perform the computation in batches of 1GB (2^30 Bytes) RAM
+nn = sF.nn;
+if (nn == 0)
+  nn = sF.guess_nn("max");
+end
+oF = nn / sF.dim;
+% byter_per_v is bytes_per_ori from SO3FunMLS, multiplied by 3/4 in order to
+% approximately correct for the number of variables
+bytes_per_v = sF.dim * (2*nn + 5*oF + sF.dim) * 8 * 3/4;
+batch_size = ceil(2 * 2^30 / bytes_per_v);
+
+current_batch = 0;
+start_idx = 1;
+end_idx = 0;
+
+while (end_idx < N)
+
+  current_batch = current_batch + 1;
+  end_idx = min(end_idx + batch_size, N);
+  I = (start_idx : end_idx)';
+  start_idx = end_idx + 1;
+
+  if (nargout == 1)
+    if (sF.nn >= sF.dim)
+<<<<<<< HEAD
+      vals(I,:) = eval_knn(sF, v.subSet(I), varargin{:});
+    else
+      vals(I,:) = eval_range(sF, v.subSet(I), varargin{:});
+=======
+      vals = eval_knn(sF, v);
+    else
+      vals = eval_range(sF, v);
+>>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
+    end
+
   else
-    [vals, conds] = eval_centered(sF, v);
+    if (sF.nn >= sF.dim)
+<<<<<<< HEAD
+      [vals(I,:), conds(I,:)] = eval_knn(sF, v.subSet(I), varargin{:});
+    else
+      [vals(I,:), conds(I,:)] = eval_range(sF, v.subSet(I), varargin{:});
+=======
+      [vals, conds] = eval_knn(sF, v);
+    else
+      [vals, conds] = eval_range(sF, v);
+>>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
+    end
   end
-  return;
+
 end
 
-% get the number of points in v
-s = size(v, 1);
-
-% get the neighbors and the distance to them
-if isa(sF.nodes, 'fibonacciS2Grid')
-  [g_id, t_id, nn, dist] = sF.nodes.find(v, sF.delta);
-else
-  ind = sF.nodes.find(v, sF.delta);
-  [g_id, t_id] = find(ind);
-  dist = acos(dot(sF.nodes.subSet(g_id), v.subSet(t_id)));
-  nn = sum(ind, 1);
-end
-
-% determine the dimension of the ansatz space
-if sF.all_degrees
-  dim = (sF.degree + 1)^2;
-else
-  dim = (sF.degree + 1) * (sF.degree + 2) / 2;
-end
-
-% create index vectors in order to use pagefuns
-nn_total = sum(nn);
-nn_max = max(nn);
-start_id = cumsum(nn(1:end-1)) + 1;
-B = ones(nn_total, 1);
-B(start_id) = 1 - nn(1:end-1);
-row_id = cumsum(B);
-col_id = (t_id-1) * nn_max + row_id;
-
-% evaluate the basis functions on the nodes
-% choose faster way between computing all values and reusing them or
-% computing values on fibgrid(g_id)
-B = zeros(dim, nn_max * s);
-if nn_total > numel(sF.nodes.x)
-  base_on_grid = eval_base_functions(sF);
-  B(:, col_id) = base_on_grid(g_id, :)';
-else
-  B(:, col_id) = eval_base_functions(sF, sF.nodes(g_id))';
-end
-B_book = reshape(B, dim, nn_max, s);
-
-% assemble the Gram matrix
-w = zeros(s * nn_max, 1);
-w(col_id) = sF.w(dist / sF.delta);
-BXw = B .* w';
-BXw_book = reshape(BXw, dim, nn_max, s);
-G_book = pagemtimes(BXw_book, pagetranspose(B_book));
-
-% assemble the right hand side of the Gram system
-fXw = zeros(nn_max * s, 1);
-fXw(col_id) = sF.values(g_id) .* w(col_id);
-fdotu = B .* fXw';
-fdotu_book = sum(reshape(fdotu, dim, nn_max, s), 2);
-
-% rescale the system before solving it
-% the row i and column i are rescaled by 1/sqrt(Gii), such that the absolute
-% values on the diagonal become 1
-pageidx = (1:dim+1:dim^2)';
-bookidx = (1:dim^2:s*dim^2)-1;
-idx = pageidx + bookidx;
-S = zeros(dim, dim, s);
-S(idx(:)) = 1 ./ sqrt(abs(G_book(idx(:))));
-G_book_scaled = pagemtimes(pagemtimes(S, G_book), S);
-fdotu_book = pagemtimes(S, fdotu_book);
-
-% solve the systems and evaluate the MLS approximation
-c_book = pagemldivide(G_book_scaled, fdotu_book);
-c_book = pagemtimes(S, c_book);
-c = reshape(c_book, dim, s);
-base_on_v = eval_base_functions(sF, v);
-vals = sum(c' .* base_on_v, 2);
-
-if isreal(sF.values)
-  vals = real(vals);
-end
-
-if nargout == 2
-  conds = zeros(s, 1);
-  for i = 1 : s
-    conds(i) = cond(G_book_scaled(:,:,i));
-  end
-end
+vals = reshape(vals, [dimensions, numel(sF)]);
+if (nargout == 2)
+  conds = reshape(conds, [dimensions numel(sF)]);
+end 
 
 end

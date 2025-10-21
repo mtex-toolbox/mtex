@@ -30,14 +30,17 @@ y = reshape(y, length(v), []);
 if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance'}) 
   varargin = [varargin,'harmonic'];
 else
-  % take the mean over duplicated nodes
-  [v,~,ind] = unique(v(:));
-  if isa(y,'vector3d')
-    y = nan2zero(y);
-  else
-    y(isnan(y)) = 0;
+  [v_unique,~,ind] = unique(v(:));
+
+  % check for duplicate nodes
+  if (numel(v) > numel(v_unique)) 
+    if isa(y,'vector3d')
+      y = nan2zero(y);
+    else
+      y(isnan(y)) = 0;
+    end
+    y = accumarray(ind,y,[],@mean);
   end
-  y = accumarray(ind,y,[],@mean);
 end
 
 % Decide Method
