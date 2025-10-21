@@ -107,8 +107,11 @@ end
 hostId = repelem(1:numGrains,numTwins);
 
 % define twinned orientations
-ori = rotation.rand(length(grains),1,'maxAngle',2*degree) .* ori(hostId);
+ori = ori(hostId);
 ori(2:2:end) = ori(2:2:end) .* mori;
+ori = rotation.rand(length(grains),1,'maxAngle',2*degree) .* ori;
+ori = ori .* reshape(discreteSample(ori.CS.rot,length(ori)),[],1);
+
 grains.meanOrientation =  ori;
 
 % update boundary misorientations
