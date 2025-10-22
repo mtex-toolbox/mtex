@@ -49,6 +49,8 @@ if check_option(varargin,'killPlan')
   return
 end
 
+% get plotting convention
+how2plot = getClass(varargin,'plottingConvention',v.how2plot);
 
 % multivariate case
 y = reshape(y,length(v),[]);
@@ -68,8 +70,7 @@ if isa(v,'quadratureS2Grid')
   W = v.weights;
 else
   N = get_option(varargin,'bandwidth', getMTEXpref('maxS2Bandwidth'));
-  v = v(:);
-  nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+  v = v(:);  
   W = get_option(varargin,'weights',1);
 end
 
@@ -85,10 +86,12 @@ end
 
 if isempty(v)
   sF = S2FunHarmonic(0);
+  sF.how2plot = how2plot;
   return
 end
 if N==0
   sF = S2FunHarmonic(mean(y)*sqrt(4*pi));
+  sF.how2plot = how2plot;
   return
 end
 
@@ -221,6 +224,6 @@ end
 
 sF = S2FunHarmonic(fhat,varargin{:});
 sF = reshape(sF,sz(2:end));
-
+sF.how2plot = how2plot;
 
 end
