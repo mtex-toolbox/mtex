@@ -65,7 +65,7 @@ v = v(:);
 M = length(v);
 
 if sF.bandwidth == 0
-  f = ones(size(v)) .* sF.fhat;
+  f = ones(size(v)) .* sF.fhat /sqrt(pi)/2;
   return;
 end
 
