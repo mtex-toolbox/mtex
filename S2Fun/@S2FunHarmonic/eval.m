@@ -61,13 +61,11 @@ end
 
 if isempty(v), f = []; return; end
 
-s = size(v);
 v = v(:);
 M = length(v);
 
 if sF.bandwidth == 0
   f = ones(size(v)) .* sF.fhat;
-  if isscalar(sF), f = reshape(f,s); end
   return;
 end
 
@@ -173,9 +171,6 @@ else
   nfftmex('finalize',plan);
 end
 
-% reshape output
-% if isscalar(sF), f = reshape(f,s); end
-
 end
 
 
@@ -183,7 +178,7 @@ end
 function f = directEval(sF,v,varargin)
 
 N = sF.bandwidth;
-[theta,rho] = polar(v);
+[theta,rho] = polar(v); %#ok<*POLAR>
 
 for k=1:length(sF)
   if sF.subset(k).isReal, flags = flags + 2^2; end
