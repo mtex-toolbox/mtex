@@ -61,13 +61,11 @@ end
 
 if isempty(v), f = []; return; end
 
-s = size(v);
 v = v(:);
 M = length(v);
 
 if sF.bandwidth == 0
-  f = ones(size(v)) .* sF.fhat;
-  if isscalar(sF), f = reshape(f,s); end
+  f = ones(size(v)) .* sF.fhat /sqrt(pi)/2;
   return;
 end
 
@@ -172,9 +170,6 @@ if check_option(varargin,'keepPlan')
 else
   nfftmex('finalize',plan);
 end
-
-% reshape output
-% if isscalar(sF), f = reshape(f,s); end
 
 end
 
