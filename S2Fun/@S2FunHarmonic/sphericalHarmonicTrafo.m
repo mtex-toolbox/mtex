@@ -26,7 +26,7 @@ function ghat = sphericalHarmonicTrafo(S2F,varargin)
 %   2^1 -> make size of output Fourier array (ghat) even in every dimension
 %   2^2 -> fhat are the Fourier coefficients of a real valued function
 %   2^3 -> fhat are the Fourier coefficients of a antipodal function 
-%   2^4 -> use symmetry property in case of S2FunHarmonicSym   (not implemented yet)
+%   2^4 -> use symmetry property (not implemented yet)
 % 
 % Syntax
 %   ghat = sphericalHarmonicTrafo(sF)

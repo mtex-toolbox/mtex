@@ -184,10 +184,11 @@ function f = directEval(sF,v,varargin)
 
 N = sF.bandwidth;
 [theta,rho] = polar(v);
+flags = 0;
 
 for k=1:length(sF)
-  if sF.subset(k).isReal, flags = flags + 2^2; end
-  if sF.subset(k).antipodal, flags = flags + 2^3; end
+  if sF.subSet(k).isReal, flags = flags + 2^2; end
+  if sF.subSet(k).antipodal, flags = flags + 2^3; end
   ghat = sphericalHarmonicTrafo(sF.subSet(k),2^0+flags,'bandwidth',N);
   for m=1:length(v)
     if sF.isReal
