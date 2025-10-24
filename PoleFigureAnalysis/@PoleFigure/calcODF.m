@@ -30,6 +30,7 @@ function [odf,alpha] = calcODF(varargin)
 %
 % Flags
 %  zeroRange         - apply zero range method (default = )
+%  quadratureWeights - use quadrature weights
 %  noGhostCorrection - omit ghost correction
 %  ensure_descent - stop iteration whenever no progress if observed
 %  force_iter_max - always go until ITER_MAX

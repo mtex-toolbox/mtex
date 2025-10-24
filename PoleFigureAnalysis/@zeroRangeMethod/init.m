@@ -2,7 +2,7 @@ function init(zrm,varargin)
 
 zrm.pf = getClass(varargin,'PoleFigure',zrm.pf);
 
-% if no pole figures are specified abbort
+% if no pole figures are specified abort
 if isempty(zrm.pf), return; end
 
 zrm.psi = getClass(varargin,'S2Kernel', S2DeLaValleePoussinKernel('halfwidth',...

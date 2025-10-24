@@ -18,7 +18,7 @@ classdef MLSSolver < pf2odfSolver
 %  psi     - @SO3Kernel describing the shape of the unimodal components
 %  S3G     - the centers of the unimodal components as @SO3Grid in orientation space
 %  c       - weighting coefficients to the unimodal components
-%  weights - 
+%  weights - quadrature weights
 %  zrm     - @zeroRangeMethod
 %  ghostCorrection - whether to use ghost correction
 %  iterMax - max number of iterations
