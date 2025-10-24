@@ -34,6 +34,7 @@ classdef S2FunTri < S2Fun
         nodes = symmetrise(nodes(:)',s);
         values = repmat(values(:)',size(nodes,1),1);
         nodes.antipodal = false;
+        [nodes,values] = uniqueData(nodes,values);
         sF.tri = S2Triangulation(nodes);
       end
       

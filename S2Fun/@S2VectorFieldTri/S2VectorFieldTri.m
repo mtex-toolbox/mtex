@@ -27,6 +27,7 @@ classdef S2VectorFieldTri < S2VectorField
       if isa(nodes,'S2Triangulation')
         sVF.tri = nodes;
       else
+        [nodes,values] = uniqueData(nodes,values);
         sVF.tri = S2Triangulation(nodes);
       end
       

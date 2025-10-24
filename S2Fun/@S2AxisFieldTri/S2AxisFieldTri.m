@@ -27,7 +27,10 @@ classdef S2AxisFieldTri < S2AxisField
       if isa(nodes,'S2Triangulation')
         sVF.tri = nodes;
       else
+
+        [nodes,values] = uniqueData(nodes,values);
         sVF.tri = S2Triangulation(nodes);
+        
       end
 
       sVF.values = values;
