@@ -24,16 +24,17 @@ function sF = adjointNFSFT(vec,values, varargin)
 % S2FunHarmonic/interpolate
 
 
-  persistent keepPlanNSFT;
+persistent keepPlanNSFT;
 
 % kill plan
 if check_option(varargin,'killPlan')
   nfsftmex('finalize',keepPlanNSFT);
   keepPlanNSFT = [];
+  sF = [];
   return
 end
 
-% Multivariate functions
+% multivariate functions
 if length(vec)~=numel(values)
   s = size(values); s = s(2:end);
   values = reshape(values,length(vec),[]);
@@ -51,7 +52,7 @@ end
 sz = size(values);
 len = prod(sz(2:end)); % multivariate case
 values = reshape(values, [], len);
-
+keepPlan = check_option(varargin,'keepPlan');
 
 % --------------- (1) get weights and values for quadrature ---------------
 
@@ -61,8 +62,13 @@ if isa(vec,'quadratureS2Grid')
   W = vec.weights;
 else
   bw = get_option(varargin,'bandwidth', 128);
+  
   nodes = vec(:);
-  nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+
+  if ~keepPlan
+    nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+  end
+
   W = get_option(varargin,'weights',1);
   % if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)
   %   % TODO: use a regular grid here and a faster search
@@ -98,7 +104,7 @@ end
 % -------------------------- (2-4) Adjoint NFSFT --------------------------
 
 % create plan
-if check_option(varargin,'keepPlan')
+if keepPlan
   plan = keepPlanNSFT;
 else
   plan = [];
@@ -124,7 +130,7 @@ nfsftmex('adjoint', plan);
 fhat = nfsftmex('get_f_hat_linear', plan);
 
 % kill plan
-if check_option(varargin,'keepPlan')
+if keepPlan
   keepPlanNSFT = plan;
 else
   nfsftmex('finalize', plan);
@@ -140,6 +146,6 @@ if check_option(varargin,'antipodal') || nodes.antipodal
   sF = sF.even;
 end
 
-sF.how2plot = nodes.how2plot;
+if ~keepPlan, sF.how2plot = nodes.how2plot; end
 
 end

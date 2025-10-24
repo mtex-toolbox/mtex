@@ -16,6 +16,7 @@ persistent keepPlan;
 if check_option(varargin,'killPlan')
   nfsftmex('finalize',keepPlan);
   keepPlan = [];
+  f = [];
   return
 end
 
