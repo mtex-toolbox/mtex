@@ -32,7 +32,7 @@ function sF = adjoint(v,y, varargin)
 % S2FunHarmonic/approximate S2FunHarmonic/interpolate
 
 
-% Use NFSOT of nfft3 toolbox
+% Use NFSFT of nfft3 toolbox
 if check_option(varargin,'nfsft')
   sF = S2FunHarmonic.adjointNFSFT(v,y,varargin{:});
   return
@@ -138,16 +138,6 @@ if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurt
     return
   end
 
-  ghat = zeros((2*N+2)^2,len);
-  for m=1:len
-    nfftmex('set_f', plan, W(:) .* y(:,m));
-    nfftmex('adjoint', plan);
-    % adjoint Fourier transform
-    ghat(:,m) = nfftmex('get_f_hat', plan);
-  end
-  ghat = reshape(ghat,2*N+2,2*N+2,len);
-  ghat = ghat(2:end,2:end,:);
-
 end
 
 % use trivariate inverse equispaced fft in case of Clenshaw Curtis
@@ -175,6 +165,18 @@ elseif check_option(varargin,'directComputation')
   for m = 1:length(v)
     ghat = ghat + W(m)*y(m)* exp(1i* ( (-N:N)'*v.rho(m) + (-N:N)*v.theta(m) ));
   end
+
+else
+
+  ghat = zeros((2*N+2)^2,len);
+  for m=1:len
+    nfftmex('set_f', plan, W(:) .* y(:,m));
+    nfftmex('adjoint', plan);
+    % adjoint Fourier transform
+    ghat(:,m) = nfftmex('get_f_hat', plan);
+  end
+  ghat = reshape(ghat,2*N+2,2*N+2,len);
+  ghat = ghat(2:end,2:end,:);
 
 end
 
