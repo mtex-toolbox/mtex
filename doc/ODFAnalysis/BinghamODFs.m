@@ -81,7 +81,7 @@ plotPDF(odf_est,h,'antipodal','silent')
 % The spherical test case failed to reject for some level of
 % significance, hence we would dismiss the hypothesis prolate and oblate.
 
-%df_spherical = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
+%df_spherical = BinghamODF(kappa,U,cs)
 
 %%
 %
@@ -164,7 +164,7 @@ plotPDF(odf,h,'antipodal')
 % the spherical and oblate case are clearly rejected, the prolate case
 % failed to reject for some level of significance
 
-odf_oblate = BinghamODF(kappa, U,crystalSymmetry,specimenSymmetry)
+odf_oblate = BinghamODF(kappa, U,cs)
 
 %%
 %

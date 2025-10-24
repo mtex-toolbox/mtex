@@ -5,8 +5,8 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
   
 properties
   fun
-  SLeft  = specimenSymmetry
-  SRight = specimenSymmetry
+  SLeft  = specimenSymmetry.default
+  SRight = specimenSymmetry.default
   bandwidth = getMTEXpref('maxSO3Bandwidth');
   tangentSpace = SO3TangentSpace.leftVector
 end

@@ -24,7 +24,7 @@ function sFs = quadrature(varargin)
 % S2FunHarmonic/quadrature
 
 % extract symmetry
-sym = getClass(varargin,'symmetry',specimenSymmetry);
+sym = getClass(varargin,'symmetry',specimenSymmetry.default);
 
 if sym.isLaue
   symX = sym.properSubGroup;

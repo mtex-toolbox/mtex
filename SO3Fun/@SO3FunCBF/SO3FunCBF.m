@@ -62,7 +62,7 @@ classdef SO3FunCBF < SO3Fun
 
       hw = get_option(varargin,'halfwidth',10*degree);
       SO3F.psi = getClass(varargin,'S2Kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
-      SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+      SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
                   
     end
     
@@ -82,7 +82,7 @@ classdef SO3FunCBF < SO3Fun
         try
           SRight = SO3F.h.opt.sym;
         catch
-          SRight = specimenSymmetry;
+          SRight = specimenSymmetry.default;
         end
       end
     end
@@ -103,7 +103,7 @@ classdef SO3FunCBF < SO3Fun
         try
           SLeft = SO3F.r.opt.sym;
         catch
-          SLeft = specimenSymmetry;
+          SLeft = specimenSymmetry.default;
         end
       end
     end

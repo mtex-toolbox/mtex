@@ -37,7 +37,7 @@ try
   %d = flipdim(d,1);
   d = flipdim(d,2);
   CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
-  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
   ori = orientation('matrix',CS,SS);
     
   

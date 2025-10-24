@@ -60,7 +60,7 @@ end
 if tS.isRight
   f.CS = crystalSymmetry;
 else
-  f.SS = specimenSymmetry;
+  f.SS = specimenSymmetry.default;
 end
 
 % ----------------- Do approximation on the components --------------------

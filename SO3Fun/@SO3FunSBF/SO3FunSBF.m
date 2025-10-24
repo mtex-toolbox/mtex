@@ -14,7 +14,7 @@ classdef SO3FunSBF < SO3Fun
     sS = slipSystem  % slip system
     E  = tensor      % strain tensor
     antipodal = false
-    SLeft = specimenSymmetry
+    SLeft = specimenSymmetry.default
   end
   
   properties (Dependent = true)

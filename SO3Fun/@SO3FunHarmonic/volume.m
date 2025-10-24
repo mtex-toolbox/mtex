@@ -38,13 +38,14 @@ cs = SO3F.CS;
 ss = SO3F.SS;
 if cs ~= crystalSymmetry
   minAngle = uniquetol(cs.rot.angle/2);
-elseif ss ~= specimenSymmetry
+elseif ss ~= specimenSymmetry.default
   minAngle = uniquetol(cs.rot.angle/2);
 else
   minAngle = pi;
 end
 minAngle = min(minAngle(minAngle>0.01));
-if (cs ~= crystalSymmetry && ss ~= specimenSymmetry) || radius>minAngle || SO3F.antipodal
+if (cs ~= crystalSymmetry && ss ~= specimenSymmetry.default) || ...
+    radius>minAngle || SO3F.antipodal
   v = volume@SO3Fun(SO3F,center,radius);
   return
 end

@@ -25,7 +25,7 @@ else
   ss = SO3VF.SS.rot;
   if length(ss)>2 && ~any(rot == ss(:))
     warning('Rotating an SO3VectorField with specimen symmetry will remove the specimen symmetry')
-    SO3VF.SS = specimenSymmetry;
+    SO3VF.SS = specimenSymmetry.default;
   end
 end
 

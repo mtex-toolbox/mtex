@@ -33,7 +33,7 @@ classdef ODFSections < handle
   
   methods
     function oS = ODFSections(CS1,varargin)
-      CS2 = getClass(varargin,'symmetry',specimenSymmetry);
+      CS2 = getClass(varargin,'symmetry',specimenSymmetry.default);
       if check_option(varargin,'pointGroup')
         oS.CS1 = CS1;
         oS.CS2 = CS2;

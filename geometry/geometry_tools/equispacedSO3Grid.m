@@ -28,10 +28,10 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 
 % extract specimen symmetry if provided
 if nargin == 1
-  SS = specimenSymmetry('1');
+  SS = specimenSymmetry.default;
 elseif ~isa(SS,'symmetry')
   varargin = [{SS},varargin];
-  SS = specimenSymmetry('1');
+  SS = specimenSymmetry.default;
 end
 
 % may be we should populate only a ball
@@ -113,7 +113,7 @@ res = 2 * maxGamma / ap2;
 
 % eliminate 3 fold symmetry axis of cubic symmetries
 % TODO: this should be done better!!
-ind = checkOutsideFR(ori,CS,specimenSymmetry);
+ind = checkOutsideFR(ori,CS,specimenSymmetry.default);
 
 if nnz(ind) ~= 0
   % eliminate those rotations

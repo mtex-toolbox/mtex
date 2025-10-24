@@ -85,7 +85,7 @@ classdef dislocationSystem
       if isa(sS.b,'Miller')
         CS = sS.b.CS;
       else
-        CS = specimenSymmetry;
+        CS = specimenSymmetry.default;
       end
     end
     

@@ -40,7 +40,7 @@ if SO3F.bandwidth == 0
     g = SO3TangentVector(vector3d.zeros(size(varargin{1})),varargin{:});
   else
     g = SO3VectorFieldHarmonic( SO3FunHarmonic([0,0,0],...
-      SO3F.CS,specimenSymmetry) , SO3F.CS, SO3F.SS , varargin{:});
+      SO3F.CS,specimenSymmetry.default) , SO3F.CS, SO3F.SS , varargin{:});
   end
   return; 
 end
@@ -81,7 +81,7 @@ if tS.isLeft
   end
 
   % no more specimen symmetry
-  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry,varargin{:}) ,...
+  g = SO3VectorFieldHarmonic( SO3FunHarmonic(fhat,SO3F.CS,specimenSymmetry.default,varargin{:}) ,...
     SO3F.CS,SO3F.SS,tS,'skipSymmetrise');
 
 else

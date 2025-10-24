@@ -203,7 +203,7 @@ classdef fibre
       % the theta fibre
       
       CS = getClass(varargin,'crystalSymmetry',crystalSymmetry('432'));
-      SS = getClass(varargin,'specimenSymmetry',specimenSymmetry('1'));
+      SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
       
       f = fibre(Miller(1,0,0,CS),vector3d.Z,SS);
       

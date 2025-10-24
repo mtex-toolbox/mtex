@@ -34,7 +34,7 @@ else
     SO3F.SS = rot.SS;
   elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = specimenSymmetry;
+    SO3F.SS = specimenSymmetry.default;
   end
 
   SO3F.fun = @(r) SO3F.fun((inv(rot) * r).');  %#ok<MINV>

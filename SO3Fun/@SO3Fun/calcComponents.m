@@ -125,7 +125,7 @@ function test
 % testing code
  
 cs = crystalSymmetry('432');
-cs2 = specimenSymmetry;
+cs2 = specimenSymmetry.default;
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',5*degree) %#ok<NOPRT
 ori = discreteSample(odf,2000);

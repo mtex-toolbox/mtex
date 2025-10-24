@@ -11,7 +11,7 @@ classdef orientationColorKey < handle
   
   properties
     CS1 = crystalSymmetry % crystal symmetry
-    CS2 = specimenSymmetry % crystal symmetry of a second phase for misorientations
+    CS2 = specimenSymmetry.default % crystal symmetry of a second phase for misorientations
     antipodal = false
   end
    

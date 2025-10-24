@@ -61,7 +61,7 @@ end
 if tS.isRight
   nodes.CS = crystalSymmetry;
 else
-  nodes.SS = specimenSymmetry;
+  nodes.SS = specimenSymmetry.default;
 end
 
 SO3F = SO3FunHarmonic.interpolate(nodes(:),values.xyz,varargin{:});

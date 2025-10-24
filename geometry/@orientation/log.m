@@ -40,12 +40,12 @@ if nargin >= 2
     ori = inv(ori_ref) .* ori;
     % we should not change the reference frame of the reference
     % orientation
-    ori.SS = specimenSymmetry;
+    ori.SS = specimenSymmetry.default;
   else    
     ori = ori .* inv(ori_ref);
     % we should not change the reference frame of the reference
     % orientation
-    ori.CS = specimenSymmetry;
+    ori.CS = specimenSymmetry.default;
   end
     
 end

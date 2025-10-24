@@ -42,7 +42,7 @@ if isa(f,'rotation')
   if tS.isRight
     v.CS = crystalSymmetry;
   else
-    v.SS = specimenSymmetry;
+    v.SS = specimenSymmetry.default;
   end
   SO3F = SO3FunHarmonic.quadrature(v, y, varargin{:});
   SO3VF = SO3VectorFieldHarmonic(SO3F,SRight,SLeft,tS);
@@ -94,7 +94,7 @@ end
 if tS.isRight
   f.CS = crystalSymmetry;
 else
-  f.SS = specimenSymmetry;
+  f.SS = specimenSymmetry.default;
 end
 
 % ---------------- (3) Do quadrature on the components --------------------

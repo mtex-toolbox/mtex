@@ -4,6 +4,8 @@ classdef sigmaSections < pfSections
     
     function oS = sigmaSections(CS1,CS2,varargin)
             
+      if nargin == 1, CS2 = specimenSymmetry.default; end
+
       oS = oS@pfSections(CS1,CS2);
                 
       oS.maxOmega = 2*pi / CS1.nfold(oS.h1);

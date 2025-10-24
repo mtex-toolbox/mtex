@@ -45,7 +45,7 @@ center = SO3F.center;
 qSS = unique(quaternion(SO3F.SS));
 % forget about second symmetry (this destroys the grid structure)
 % center = center(:);
-center.SS = specimenSymmetry;
+center.SS = specimenSymmetry.default;
 
 psi = SO3F.psi;
 epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));

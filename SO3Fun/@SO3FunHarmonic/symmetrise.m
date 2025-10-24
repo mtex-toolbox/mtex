@@ -35,7 +35,7 @@ if nargin>1 && isa(varargin{1},'rotation')
   
   % Forget about the symmetries
   SO3F.CS = crystalSymmetry;
-  SO3F.SS = specimenSymmetry;
+  SO3F.SS = specimenSymmetry.default;
   center = rotation(varargin{1});
 
   % rotate SO3F such that center -> rotation.id

@@ -87,7 +87,7 @@ try
 
   % set up ori variable
   CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
-  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
   ori = orientation(q,CS,SS);
 
   if isCheck, S = options; end

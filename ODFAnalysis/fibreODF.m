@@ -41,7 +41,7 @@ else
   if isa(r,'Miller')
     SS = r.CS;
   else
-    SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+    SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
   end
 end
 

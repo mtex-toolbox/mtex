@@ -3,7 +3,7 @@ classdef S2FunHarmonic < S2Fun
 
 properties
   fhat = []; % harmonic coefficients
-  s          % symmetry
+  s = specimenSymmetry % symmetry
 end
 
 properties (Dependent=true)
@@ -40,7 +40,7 @@ methods
       for l = 0:bw
         sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
       end
-      sF.s = getClass(varargin,'symmetry',specimenSymmetry);
+      sF.s = getClass(varargin,'symmetry',specimenSymmetry.default);
       return
     end
 
@@ -51,7 +51,7 @@ methods
     
     sF.antipodal = check_option(varargin,'antipodal');
     
-    sF.s = getClass(varargin,'symmetry',specimenSymmetry);
+    sF.s = getClass(varargin,'symmetry',sF.s);
 
     % truncate zeros
     %sF = sF.truncate;
@@ -136,7 +136,7 @@ methods (Static = true)
     % this overloaded method ensures compatibility with older MTEX
     % versions
 
-    if isempty(sF.s), sF.s = specimenSymmetry; end
+    if isempty(sF.s), sF.s = specimenSymmetry.default; end
                   
   end
 

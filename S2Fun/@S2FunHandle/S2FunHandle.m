@@ -13,7 +13,7 @@ methods
   function S2F = S2FunHandle(fun,sym)
     S2F.fun = fun;
     if nargin == 1
-      S2F.s = specimenSymmetry;
+      S2F.s = specimenSymmetry.default;
     else
       S2F.s = sym;
     end

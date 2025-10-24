@@ -35,7 +35,7 @@ else
     assert(rot.CS == SO3F.SS,'symmetry missmatch')    
   elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = specimenSymmetry;
+    SO3F.SS = specimenSymmetry.default;
   end
 
   SO3F.nodes = orientation(rot * SO3F.nodes);

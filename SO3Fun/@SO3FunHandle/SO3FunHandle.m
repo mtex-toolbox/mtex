@@ -20,8 +20,8 @@ properties
   fun
   % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
   antipodal = false
-  SLeft  = specimenSymmetry
-  SRight = specimenSymmetry
+  SLeft  = specimenSymmetry.default
+  SRight = specimenSymmetry.default
   bandwidth = getMTEXpref('maxSO3Bandwidth');
 end
 

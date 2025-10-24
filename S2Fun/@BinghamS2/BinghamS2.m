@@ -43,7 +43,7 @@ classdef BinghamS2 < S2Fun
       end
 
       if nargin <= 2
-        BS2.s = specimenSymmetry;
+        BS2.s = specimenSymmetry.default;
       else
         BS2.s = sym;
       end

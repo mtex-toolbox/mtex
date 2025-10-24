@@ -33,7 +33,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 properties
 
   CS = crystalSymmetry('1');   % crystal symmetry
-  SS = specimenSymmetry('1');  % specimen symmetry or crystal symmetry
+  SS = specimenSymmetry.default;  % specimen symmetry or crystal symmetry
   antipodal = false
 
 end

@@ -153,7 +153,7 @@ classdef SO3FunMLS < SO3Fun
       try
         S = SO3F.nodes.CS;
       catch
-        S = specimenSymmetry;
+        S = specimenSymmetry.default;
       end
     end
 
@@ -165,7 +165,7 @@ classdef SO3FunMLS < SO3Fun
       try
         S = SO3F.nodes.SS;
       catch
-        S = specimenSymmetry;
+        S = specimenSymmetry.default;
       end
     end
 
