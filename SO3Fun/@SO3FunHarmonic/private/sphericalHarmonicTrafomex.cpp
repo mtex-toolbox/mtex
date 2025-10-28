@@ -397,7 +397,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (bandwidth > 1023){
       // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
       calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,outFourierCoeff,(mwSize)nrows);
-      //mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:precisionLoss","Precision loss: using long double format since N > 1023.");
+      // mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:precisionLoss","Precision loss: using long double format since N > 1023.");
     }
     else{
       calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,outFourierCoeff,(mwSize)nrows);

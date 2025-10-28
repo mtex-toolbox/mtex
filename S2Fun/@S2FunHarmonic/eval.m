@@ -8,14 +8,14 @@ function f = eval(sF,v,varargin)
 % NFFT at the end.
 %
 % Syntax
-%   f = eval(SO3F,rot)
+%   f = eval(sF,v)
 %
 % Input
-%  SO3F - @S2FunHarmonic
-%  rot - @vector3d (evaluation nodes)
+%  sF - @S2FunHarmonic
+%  v - @vector3d (evaluation nodes)
 %
 % Output
-%  f - double [numrot x size(S2F)]
+%  f - double [numrot x size(sF)]
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process
