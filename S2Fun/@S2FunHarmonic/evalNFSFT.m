@@ -46,7 +46,6 @@ if isempty(plan)
   plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
   [theta,rho] = polar(v);
   nfsftmex('set_x', plan, [rho'; theta']); % set vertices
-  nfsftmex('precompute_x', plan);
 end
 if check_option(varargin,'createPlan')
   keepPlan = plan;

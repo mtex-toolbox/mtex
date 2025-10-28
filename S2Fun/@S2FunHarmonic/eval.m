@@ -101,9 +101,9 @@ if isempty(plan)
     fftw_flag = int8(64);
     nfft_flag = int8(0);
   % nfft_cutoff parameter 
-    m = get_option(varargin,'cutoffParameter',4);
+    m = get_option(varargin,'cutoffParameter',6);
   % oversampling factor
-    sigma = 3;
+    sigma = 2;
     fftw_size1 = 2*ceil(sigma/2*N1);
     fftw_size2 = 2*ceil(sigma/2*N2);
   % initialize nfft plan
@@ -142,7 +142,6 @@ for k = 1:length(sF)
 
   % coefficient transform
   ghat = sphericalHarmonicTrafo(sF.subSet(k),flags,'bandwidth',N); % ghat ist genau gleich
-
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,ghat(:));
 
