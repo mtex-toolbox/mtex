@@ -76,7 +76,7 @@
 template<typename T>
 static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
                             const int makeEven, const int isReal, const int isAntipodal, 
-                            mxDouble *sym_axis, mxComplexDouble *ghat, const mwSize nrows )
+                            mxDouble *sym_axis, std::complex<T> *ghat, const mwSize nrows )
 {
 
   // define usefull variables
@@ -95,8 +95,10 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
   // Be shure N>0. Otherwise return the trivial solution.
     if(N==0)
     {
-      ghat[0].real = fhat[0].real;
-      ghat[0].imag = fhat[0].imag;
+      // ghat[0].real = fhat[0].real;
+      // ghat[0].imag = fhat[0].imag;
+      ghat[0].real(fhat[0].real);
+      ghat[0].imag(fhat[0].imag);
       return;
     }
     
@@ -152,10 +154,12 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     // Create pointers for help. One saves the starting position of ghat
     // and the other one saves the starting position of fhat in current
     // iteration of harmonic degree n.
-    mxComplexDouble *start_ghat;
+    std::complex<T> *start_ghat;
+    // mxComplexDouble *start_ghat;
     start_ghat = ghat;
     mxComplexDouble *iter_fhat;
-    mxComplexDouble *ghat00;
+    std::complex<T> *ghat00;
+    // mxComplexDouble *ghat00;
     T* iter_wigd;
 
     // set pointer to ghat(0,0)
@@ -164,7 +168,8 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
 
   // Do recursion for n = 0.
     // Write first value of fhat in ghat(0,0) , since Wigner_d(0,pi/2)=1.
-    ghat00[0] = *fhat;
+    // ghat00[0] = *fhat;
+    ghat00[0] = std::complex<T>(fhat->real, fhat->imag);  
     // Set pointer fhat to next harmonic degree (to the 2nd value of fhat)
     fhat ++;
     
@@ -179,8 +184,9 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
       for (k= -1+isReal; k<=1; k++)
       {
         value = wigd_harmonicdegree1[j+1][-k+1] * wigd_harmonicdegree1[j+1][1];
-        ghat[k].real += fhat[-k+1].real* value;
-        ghat[k].imag += fhat[-k+1].imag* value;
+        ghat[k] += std::complex<T>(fhat[-k+1].real, fhat[-k+1].imag) * value;
+        // ghat[k].real += fhat[-k+1].real* value;
+        // ghat[k].imag += fhat[-k+1].imag* value;
       }
       // jump to next column
       ghat += col_len;
@@ -250,9 +256,9 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
             value = wigd[-k]*wigd[0];
 
             // set value
-            ghat[k].real += fhat[-k].real*value;
-            ghat[k].imag += fhat[-k].imag*value;
-
+            ghat[k] += std::complex<T>(fhat[-k].real, fhat[-k].imag) * value;
+            // ghat[k].real += fhat[-k].real*value;
+            // ghat[k].imag += fhat[-k].imag*value;
           }
         }
 
@@ -385,7 +391,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     // create a pointer to the data in the output array (outFourierCoeff)
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
     // set pointer to skip first index
-    outFourierCoeff += start_shift;
+    // outFourierCoeff += start_shift;
     
   
   // use L2-normalize Wigner-D functions by scaling the fourier coefficients
@@ -396,11 +402,22 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // call the computational routine
     if (bandwidth > 1023){
       // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
-      calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,outFourierCoeff,(mwSize)nrows);
+      std::vector<std::complex<long double>> ghat_tmp(dims[0]*dims[1]);
+      calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,ghat_tmp.data() + start_shift,(mwSize)nrows);
+      for (size_t i = 0; i < dims[0]*dims[1]; i++) {
+        outFourierCoeff[i].real = static_cast<double>(ghat_tmp[i].real());
+        outFourierCoeff[i].imag = static_cast<double>(ghat_tmp[i].imag());
+      }
       // mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:precisionLoss","Precision loss: using long double format since N > 1023.");
     }
     else{
-      calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,outFourierCoeff,(mwSize)nrows);
+      std::vector<std::complex<double>> ghat_tmp(dims[0]*dims[1]);
+      // std::complex<double> *g = ghat_tmp.data() + start_shift;
+      calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,ghat_tmp.data() + start_shift,(mwSize)nrows);
+      for (size_t i = 0; i < dims[0]*dims[1]; i++) {
+        outFourierCoeff[i].real = ghat_tmp[i].real();
+        outFourierCoeff[i].imag = ghat_tmp[i].imag();
+      }
     }
 
   // free the storage
