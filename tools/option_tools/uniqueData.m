@@ -3,14 +3,14 @@ function [nodes,values] = uniqueData(nodes,values)
 numNodes = numel(nodes);
 values =reshape(values,numNodes,[]);
 
-[nodes,indValues,ind] = unique(nodes(:));
+[nodes,indValues,ind] = unique(nodes(:),'stable');
 
 % check for duplicate nodes
 if numNodes > numel(nodes)
  
   %nodes(isnan(nodes)) = 0;
  
-  values = accumarray(ind,y,[],@mean);
+  values = accumarray(ind,values,[],@mean);
 
 else
 
