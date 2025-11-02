@@ -84,7 +84,7 @@ mtexColorbar
 %%
 % Display the crystallographic spin in sigma sections
 
-sP = sigmaSections(cs,specimenSymmetry);
+sP = sigmaSections(cs);
 plot(norm(W)./degree,'smooth',sP)
 mtexColorbar
 

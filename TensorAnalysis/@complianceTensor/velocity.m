@@ -16,9 +16,9 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,varargin)
 %  vp  - velocity of the p--wave (UNITS km/s)
 %  vs1 - velocity of the s1--wave (UNITS km/s)
 %  vs2 - velocity of the s2--wave (UNITS km/s)
-%  pp  - polarisation of the p--wave (particle movement, vibration direction)
-%  ps1 - polarisation of the s1--wave (particle movement, vibration direction)
-%  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
+%  pp  - polarization of the p--wave (particle movement, vibration direction)
+%  ps1 - polarization of the s1--wave (particle movement, vibration direction)
+%  ps2 - polarization of the s2--wave (particle movement, vibration direction)
 %
 
 if nargin >= 2 && isa(varargin{1},'vector3d')

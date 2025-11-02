@@ -4,14 +4,14 @@
 %
 % The orientation distribution function (ODF) is a function on the
 % orientation space that associates to each orientation $g$ the volume
-% percentage of crystals in a polycrystaline specimen that are in this
+% percentage of crystals in a polycrystalline specimen that are in this
 % specific orientation, i.e.,
 %
 % $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
 %
-% In MTEX an entirely random texure will have an ODF constant to one. In
+% In MTEX an entirely random texture will have an ODF constant to one. In
 % other word the values of ODFs in MTEX can be interpreted as multiples of
-% the random distribution (mrd). 
+% the random distribution (mrd).
 %
 %% Computing an ODF from Individual Orientations
 %
@@ -49,7 +49,7 @@ plot(odf)
 %% Computing an ODF from Pole Figure Data
 %
 % Pole figure data arises when textured materials are measured via x-ray,
-% neutron or syncrotron radiation. Generaly, for $3$ to $10$ diffraction
+% neutron or synchrotron radiation. Generally, for $3$ to $10$ diffraction
 % planes specified by Miller indices $(hk\ell)$ diffraction intensities are
 % measured at a spherical grid of specimen directions. In the example below
 % each dot corresponds to one diffraction intensity at the plane indicated
@@ -83,7 +83,7 @@ odf = calcODF(pf)
 plotPDF(odf,pf.h)
 
 
-%% ODF Modelling
+%% ODF Modeling
 %
 % Besides from experimental data MTEX allows also the definition of model
 % ODFS of different type. These include <RadialODFs.html#2 unimodal ODFs>,

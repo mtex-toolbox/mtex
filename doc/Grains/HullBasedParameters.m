@@ -2,7 +2,7 @@
 %
 %%
 % In this section we discuss geometric properties of grains that are
-% related to the convex hull of the grains. In the follwing we illustarte
+% related to the convex hull of the grains. In the following we illustrate
 % these properties with some artificial grain shapes
 
 % import the artificial grain shapes

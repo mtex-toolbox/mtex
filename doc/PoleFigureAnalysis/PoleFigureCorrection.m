@@ -64,7 +64,7 @@ plot(pf_normalized)
 % 
 % As pole figures are usually experimental data they may contain outliers. In
 % order to remove outliers from pole figure data one can use the function
-% <PoleFigure.isOutlier.html isOutlier>. Here a simple example:
+% <PoleFigure.isOutlier.html |isOutlier|>. Here a simple example:
 
 % Let us add 100 random outliers to the pole figure data
 % First we select 100 random positions within the pole figures
@@ -89,7 +89,7 @@ pf(condition) = [];
 plot(pf)
 
 %%
-% Sometimes applying the above correction is not suffcient. Then it can
+% Sometimes applying the above correction is not sufficient. Then it can
 % help to repeat the outlier detection ones again
 
 pf(pf.isOutlier) = [];
@@ -108,7 +108,6 @@ pf(condition).intensities = 500;
 
 plot(pf)
 
-
 %% Rotate pole figures
 % Sometimes it is necessary to rotate the pole figures. In order to do this
 % with MTEX one has first to define a rotation, e.e. by
@@ -117,11 +116,7 @@ plot(pf)
 rot = rotation.byAxisAngle(xvector,100*degree);
 
 %%
-% Second, the command <PoleFigure_rotate rotate> can be used to rotate the
+% Second, the command <PoleFigure_rotate |rotate|> can be used to rotate the
 % pole figure data.
 pf_rotated = rotate(pf,rot);
 plot(pf_rotated,'antipodal')
-
-
-
-
