@@ -1,4 +1,4 @@
-function [vals, conds] = eval(SO3F, ori)
+function [vals, conds] = eval(SO3F, ori,varargin)
 
 % evaluate sF on ori via moving least squares (MLS) approximation
 % provide the possibility of also returning the condition numbers of the gram matrices

@@ -61,7 +61,10 @@ classdef SO3FunMLS < SO3Fun
         SO3F = SO3FunMLS.approximate(nodes,values,varargin{:});
         return
       end
-    
+      
+      if isa(nodes,'rotation')
+        nodes = orientation(nodes);
+      end
       SO3F.nodes = nodes; % preserve grid structure
       sz = [size(values),1];
       SO3F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
