@@ -154,15 +154,15 @@ numIter = 100;
 % compute the Taylor factors and the orientation gradients
 [~,~,spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
 
-progress(0,numIter);
-for sas=1:numIter
+pC = progressCounter(numIter);
+for sas = 1:numIter
 
   % compute the Taylor factors and the orientation gradients
   W = spinTensor(spin.eval(ori).').';
 
   % rotate the individual orientations
   ori = ori .* orientation(-W);
-  progress(sas,numIter);
+  pC.show(sas);
 
 end
 

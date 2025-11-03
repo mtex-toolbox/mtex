@@ -99,12 +99,11 @@ odf = rotate(odf,rot);
 
   function v = initialSearch(v)
     
-    progress(0,length(v));
-
+    pC = progressCounter(length(v));
     val = zeros(size(v));
     for k=1:length(v)
-      progress(k,length(v));
       val(k) = f(v(k));
+      pC.show(k);
     end
 
     [fval,i] = min(val); v = v(i);

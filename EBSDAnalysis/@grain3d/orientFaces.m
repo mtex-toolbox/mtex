@@ -24,8 +24,9 @@ I_GF = grains.I_GF;
 F = grains.F;
 V = grains.V.xyz;
 
+pC = progressCounter(size(I_GF,1));
 for k = 1:size(I_GF,1)
-  progress(k,size(I_GF,1))
+  
   fk = find(I_GF(k,:));
   if numel(fk) < 1, continue; end
   Fk  = F(fk,:);
@@ -38,6 +39,8 @@ for k = 1:size(I_GF,1)
   sgn(~same) = -1;
 
   I_GF(k, fk) = sgn;
+
+  pC.show(k);
 
 end
 

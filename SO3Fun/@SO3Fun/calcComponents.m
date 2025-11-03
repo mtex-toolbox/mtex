@@ -58,8 +58,8 @@ G = SO3F.grad;
 
 v_max = SO3F.eval(modes);
 
+pC = progressCounter(maxIter,'caption',' finding ODF components: ',varargin{:});
 for k = 1:maxIter
-  progress(k,maxIter,' finding ODF components: ',varargin{:});
 
   % gradient
   g = normalize(G.eval(modes),1);
@@ -73,7 +73,7 @@ for k = 1:maxIter
   % take the maximum
   [v_max,id] = max(line_v,[],2);
     
-  % update orientions
+  % update orientations
   modes = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
 
   % update step size
@@ -93,6 +93,8 @@ for k = 1:maxIter
 
   centerId = id2(centerId);
   if maxAngle == inf, weights = accumarray(id2,weights); end
+
+  pC.show(k)
 
 end
 

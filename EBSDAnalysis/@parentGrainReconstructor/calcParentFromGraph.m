@@ -51,6 +51,7 @@ fit(~wasParentGrain & ~wasChildGrain ) = NaN;
 clusterSize = ones(size(parentOri));
 
 % compute parent grain orientation by looping through all merged grains
+pC = progressCounter(max(mergeId),'caption','computing parent grain orientations: ',varargin{:});
 for k = 1:max(mergeId) %#ok<*PROPLC>
   
   % check if only parent orientations
@@ -88,7 +89,7 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
 
   end
       
-  progress(k,max(mergeId),'computing parent grain orientations: ');
+  pC.show(k);
 end
     
 % set reconstructed parentorientations
