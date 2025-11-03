@@ -32,8 +32,8 @@ function sF = adjoint(v,y, varargin)
 % S2FunHarmonic/approximate S2FunHarmonic/interpolate
 
 
-% Use NFSFT of nfft3 toolbox
-if check_option(varargin,'nfsft')
+% Use NFSFT of nfft toolbox
+if ~check_option(varargin,'nfft')
   sF = S2FunHarmonic.adjointNFSFT(v,y,varargin{:});
   return
 end

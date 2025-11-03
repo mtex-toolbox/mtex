@@ -29,7 +29,7 @@ function f = eval(sF,v,varargin)
 
 % TODO: adjoint method and quadrature
 
-if check_option(varargin,'nfsft')
+if ~check_option(varargin,'nfft')
   f = evalNFSFT(sF,v,varargin{:});
   return
 end
