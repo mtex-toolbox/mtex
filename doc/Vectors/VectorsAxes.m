@@ -81,7 +81,7 @@ annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
 % However, in the case of pole figures calculated from an ODF antipodal
 % symmetry is in general not present.
 
-% some prefered orientation
+% some preferred orientation
 o = orientation.byEuler(20*degree,30*degree,0,'ZYZ',CS);
 
 % define an unimodal ODF
