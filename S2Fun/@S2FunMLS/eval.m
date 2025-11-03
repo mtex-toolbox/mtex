@@ -1,5 +1,4 @@
 function [vals, conds] = eval(sF, v, varargin)
-
 % evaluate sF on v via moving least squares (MLS) approximation
 % provide the possibility of also returning the condition numbers of the gram matrices
 %
@@ -15,22 +14,12 @@ function [vals, conds] = eval(sF, v, varargin)
 %  vals  - the values of sF on v
 %
 
-
-<<<<<<< HEAD
-if ~isa(v, 'vector3d')
-  v = vector3d(v, sF.CS);
-end
-
-
-=======
->>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
 dimensions = size(v);
 N = numel(v);
 vals = zeros(N, numel(sF));
 if (nargout == 2)
   conds = zeros(N, 1);
 end
-
 
 % we perform the computation in batches of 1GB (2^30 Bytes) RAM
 nn = sF.nn;
@@ -56,28 +45,16 @@ while (end_idx < N)
 
   if (nargout == 1)
     if (sF.nn >= sF.dim)
-<<<<<<< HEAD
       vals(I,:) = eval_knn(sF, v.subSet(I), varargin{:});
     else
       vals(I,:) = eval_range(sF, v.subSet(I), varargin{:});
-=======
-      vals = eval_knn(sF, v);
-    else
-      vals = eval_range(sF, v);
->>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
     end
 
   else
     if (sF.nn >= sF.dim)
-<<<<<<< HEAD
       [vals(I,:), conds(I,:)] = eval_knn(sF, v.subSet(I), varargin{:});
     else
       [vals(I,:), conds(I,:)] = eval_range(sF, v.subSet(I), varargin{:});
-=======
-      [vals, conds] = eval_knn(sF, v);
-    else
-      [vals, conds] = eval_range(sF, v);
->>>>>>> c96478d9841022d7c4a1f40b247f225f09721b2d
     end
   end
 
