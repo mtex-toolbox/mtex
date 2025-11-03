@@ -17,27 +17,32 @@ else
   disp(['  nodes: ',num2str(length(SO3F.nodes)), ' orientations']);
 end
 
-disp(['  weight function: ' char(SO3F.w)]);
-disp(['  polynomial degree: ' num2str(SO3F.degree)]);
-disp(['  support radius of the weight function: ' xnum2str(SO3F.delta/degree) mtexdegchar]); 
-disp(['  number of neighbors: ' num2str(SO3F.nn)])
 
-if SO3F.all_degrees, disp('  all_degrees: true'); end
-if SO3F.centered, disp('  centered: true'); end
-if SO3F.tangent, disp('  tangent: true'); end
-
+% Weight of the SO3Fun (this is 1 in case of density)
 if length(SO3F.nodes)<1e4 || length(SO3F)>3
   w = calcVoronoiVolume(SO3F.nodes); w = w./sum(w);
 else
   w = 1/length(SO3F.nodes);
 end
-
 if isscalar(SO3F)
   disp(['  weight: ' xnum2str(sum(SO3F.values.*w))]);
 elseif length(SO3F)<4
   disp(['  weights: [' xnum2str(sum(SO3F.values.*w)),']']);
 end
 
+
+% MLS Properites
+prop = ['    weight function: ', char(SO3F.w) , ...
+        '\n    polynomial degree: ', num2str(SO3F.degree), ...
+        '\n    dimension of the ansatz space: ', num2str(SO3F.dim), ...
+        '\n    support radius of the weight function: ', xnum2str(SO3F.delta/degree) mtexdegchar, ... 
+        '\n    number of neighbors: ', num2str(SO3F.nn)];
+if SO3F.centered, prop=[prop,'\n    centered: true']; end
+if SO3F.tangent, prop=[prop,'\n    tangent: true']; end
+
+disp(' ')
+s = setAllAppdata(0,'data2beDisplayed',[prop,'\n']);
+disp(['  <a href="matlab:fprintf(getappdata(0,''',s,'''))">show MLS-properties</a>'])
 disp(' ')
 
 end

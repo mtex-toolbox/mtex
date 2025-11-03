@@ -8,7 +8,7 @@ classdef S2FunMLS < S2Fun
     degree      = 3;       % the polynomial degree used for approximation
     delta       = 0;       % support radius of the weight function
     nn          = 0;       % specified number of neighbors to use 
-    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % wendland weight function
+    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     monomials   = true;    % use monomials instead of sph. harm. if true
     centered    = false;   % only evaluate the basis near the pole if true
     tangent     = false;   % use polynomials on the tangent space
@@ -41,7 +41,7 @@ classdef S2FunMLS < S2Fun
       S2F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
       % get symmetry, degree, number of neighbors
-      S2F.s = get_option(varargin, 'symmetry', crystalSymmetry(), 'crystalSymmetry');
+      S2F.s = get_option(varargin, 'symmetry', specimenSymmetry.default, 'crystalSymmetry');
       S2F.degree = get_option(varargin, 'degree', 3, 'double');
       S2F.nn = get_option(varargin, 'neighbors', 2*S2F.dim, 'double');
       if (S2F.nn < S2F.dim)
