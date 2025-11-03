@@ -60,10 +60,11 @@ elseif isa(y,'vector3d')
 
 end
 
-
 % Spherical Functions
 if isnumeric(y)
-  if check_option(varargin,'nearest')
+  if check_option(varargin,'MLS')
+    sF = S2FunMLS(v,y,varargin{:});
+  elseif check_option(varargin,'nearest')
     sF = S2FunHandle(@(v) nearest(v));
   elseif check_option(varargin,'harmonic')
     sF = S2FunHarmonic.interpolate(v, y, varargin{:});

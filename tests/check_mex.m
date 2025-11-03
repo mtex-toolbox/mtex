@@ -72,7 +72,11 @@ for k = 1:length(mexFiles)
 
       fprintf(" checking: " + mexFile + "." + mexext);
     catch
+
+      fprintf(2," <strong>download failed</strong>" + newline);
+
       isMissing = true;
+      continue
     end
   end
       
@@ -96,17 +100,35 @@ for k = 1:length(mexFiles)
 end
 
 if isMissing
-  wraptext(newline + "Some of the binaries are missing. The most likely " + ...
-    "reason is that your antivirus program has prevented the download. You may " + ...
-    "want to download the binaries manualy from " + ...
+  wraptext(newline + "Some of the binaries are missing and could not be downloaded. The most likely " + ...
+    "reason is that your antivirus program has prevented the download. " + ...
+    "You have two options:" + newline + newline + ...
+    " (a) Download the binaries manualy from" + newline + newline + ...
     "<a href=""https://github.com/mtex-toolbox/mtex/tree/develop/mex"">" + ...
-    "https://github.com/mtex-toolbox/mtex/tree/develop/mex</a>.")
-end
-if all(res)
+    "https://github.com/mtex-toolbox/mtex/tree/develop/mex</a>" + ...
+   newline + newline + ...
+   " and copy them to " + fullfile(mtex_path, "mex") + newline + newline + ...
+   " (b) complile the binaries yourself using the command " + newline + newline + ...
+   "  <a href=""matlab: mex_install('force')"">mex_install('force')</a>" + ...
+   newline);
+  
+  if ismac
+    disp("On a Mac this requires to install XCode first!" + newline)
+  elseif ispc
+    wraptext("This requires that you have installed: MATLAB Support for MinGW-w64 C/C++ Compiler," + ...
+      "which is an official and simple to install Matlab Addon" + newline);
+  end
+
+elseif all(res)
+
   disp(newline + "check succesful!" + newline)
+
 else
-  disp("Not all mex files are running. You might want to call" + newline + ...
-    "  <a href=""matlab: mex_install('force')"">mex_install('force')</a>" + newline + ...
+
+  wraptext("Not all mex files are running. You might want to call" + ...
+    newline + newline +...
+    "  <a href=""matlab: mex_install('force')"">mex_install('force')</a>" ...
+    + newline + newline + ...
     "to compile the mex files yourself.");
   if ismac
     disp("On a Mac this requires to install XCode first!" + newline)
@@ -114,6 +136,7 @@ else
     wraptext("This requires that you have installed: MATLAB Support for MinGW-w64 C/C++ Compiler," + ...
       "which is an official and simple to install Matlab Addon" + newline);
   end
+
 end
 
 
@@ -171,9 +194,9 @@ end
 function out = check_nfsftmex
 
 S2F = S2Fun.smiley('exact');
-S2FH = S2FunHarmonic(S2F);
+S2FH = S2FunHarmonic(S2F,'nfsft');
 S2G = equispacedS2Grid;
-out = norm(S2F.eval(S2G) - S2FH.eval(S2G)) < 0.01;
+out = norm(S2F.eval(S2G) - S2FH.eval(S2G,'nfsft')) < 0.01;
 
 end
 

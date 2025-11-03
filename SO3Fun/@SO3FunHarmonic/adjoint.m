@@ -225,9 +225,10 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
 end
 % use adjoint Wigner transform
 fhat = zeros(deg2dim(N+1),len);
+pC = progressCounter(len);
 for i=1:len
-  progress(i,len)
   fhat(:,i) = wignerTrafoAdjointmex(N,ghat(:,:,:,i),flags,sym);
+  pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
 

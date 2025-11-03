@@ -1,5 +1,5 @@
 function odf = doEulerStep(spin,odf,numIter)
-% numericaly solve the continuity equation with a given spin tensor
+% numerically solve the continuity equation with a given spin tensor
 %
 % Syntax
 %
@@ -23,11 +23,12 @@ function odf = doEulerStep(spin,odf,numIter)
 
 if nargin == 2, numIter = 1; end
 
+pC = progressCounter(numIter,'caption',"Euler steps: ",varargin{:});
 if isa(odf,'orientation')
 
-  progress(0,numIter);
+  
   for n = 1:numIter
-
+    
     % the local gradient
     if isa(spin,'SO3VectorField')
       tv = spin.eval(odf) ./ numIter;
@@ -42,14 +43,14 @@ if isa(odf,'orientation')
     % this coincides with the discrete taylor route
     %odf = odf .* orientation(-tv);
 
-    progress(n,numIter);
+    pC.show(n);
 
   end
 else
 
   for n = 1:numIter
-    progress(n,numIter)
     odf = odf - div(odf .* spin) ./ numIter;
+    pC.show(n);
   end
 
 end

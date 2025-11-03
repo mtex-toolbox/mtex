@@ -77,7 +77,6 @@ pos = pos(~isnan(grainIds) & grainIds >0);
 grainIds = grainIds(~isnan(grainIds) & grainIds >0).';
 phaseIds = ebsd.phaseId(pos).';
 %grainIds = grainIds(grainIds>0).';
-progress(0,length(grainIds));
 
 % find the largest grain
 [~,m] = max(accumarray(grainId(grainId>0),1));
@@ -89,10 +88,9 @@ if m>1
 end
 
 % loop through all grains or phases
+pC = progressCounter(length(grainIds),'caption',' denoising EBSD data: ');
 for id = 1:length(grainIds)
-
-  progress(id,length(grainIds),' denoising EBSD data: ');
-  
+ 
   % the values to be smoothed
   ind = grainId == grainIds(id); 
 
@@ -125,7 +123,9 @@ for id = 1:length(grainIds)
       
   % store as rotations
   rot(ind) = ori(indLocal);
-    
+
+  pC.show(id);
+
 end
 
 vdisp('',varargin{:});

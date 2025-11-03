@@ -1,15 +1,15 @@
-function sF = adjointNFSFT(vec,values, varargin)
+function sF = adjointNFSFT(nodes,values, varargin)
 % Compute the adjoint S2-Fourier transform of given evaluations on a 
 % specific quadrature grid, by using the NFSFT-method 
 % (nonequispaced fast spherical fourier transform).
 %
 % Syntax
-%   sF = S2FunHarmonic.adjoint(vec,values)
-%   sF = S2FunHarmonic.adjoint(vec,values,'bandwidth',32,'weights',w)
+%   sF = S2FunHarmonic.adjoint(nodes,values)
+%   sF = S2FunHarmonic.adjoint(nodes,values,'bandwidth',32,'weights',w)
 %   sF = S2FunHarmonic.adjoint(f)
 %
 % Input
-%  vec    - @vector3d
+%  nodes  - @vector3d
 %  values - double
 %
 % Output
@@ -35,19 +35,22 @@ if check_option(varargin,'killPlan')
 end
 
 % multivariate functions
-if length(vec)~=numel(values)
+if numel(nodes)~=numel(values)
   s = size(values); s = s(2:end);
-  values = reshape(values,length(vec),[]);
-  S2FunHarmonic.adjoint(vec,values(:,1),'createPlan',varargin{:});
+  values = reshape(values,numel(nodes),[]);
+  S2FunHarmonic.adjoint(nodes,values(:,1),'createPlan',varargin{:});
   sF=[];
   for ind = 1:prod(size(values, 2))
-    G = S2FunHarmonic.adjoint(vec,values(:,ind),'keepPlan',varargin{:});
+    G = S2FunHarmonic.adjoint(nodes,values(:,ind),'keepPlan',varargin{:});
     sF = [sF,G];
   end
   S2FunHarmonic.adjoint(zvector,1,'killPlan');
   sF = reshape(sF, s); 
   return
 end
+
+% get plotting convention
+how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
 
 sz = size(values);
 len = prod(sz(2:end)); % multivariate case
@@ -56,18 +59,11 @@ keepPlan = check_option(varargin,'keepPlan');
 
 % --------------- (1) get weights and values for quadrature ---------------
 
-if isa(vec,'quadratureS2Grid')
-  bw = vec.bandwidth;
-  nodes = vec(:);
-  W = vec.weights;
+if isa(nodes,'quadratureS2Grid')
+  bw = nodes.bandwidth;
+  W = nodes.weights;
 else
   bw = get_option(varargin,'bandwidth', 128);
-  
-  nodes = vec(:);
-
-  if ~keepPlan
-    nodes.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
-  end
 
   W = get_option(varargin,'weights',1);
   % if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)
@@ -94,10 +90,12 @@ end
 
 if isempty(nodes)
   sF = S2FunHarmonic(0);
+  sF.how2plot = how2plot;
   return
 end
 if bw==0
   sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
+  sF.how2plot = how2plot;
   return
 end
 
@@ -113,8 +111,9 @@ end
 % initialize nfsft
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
-  plan = nfsftmex('init_advanced', bw, length(nodes), 1);
-  nfsftmex('set_x', plan, [nodes.rho'; nodes.theta']); % set vertices
+  plan = nfsftmex('init_advanced', bw, numel(nodes), 1);
+  [theta,rho] = polar(nodes); %#ok<POLAR>
+  nfsftmex('set_x', plan, [rho(:).'; theta(:).']); % set vertices
   nfsftmex('precompute_x', plan);
 end
 
@@ -146,6 +145,6 @@ if check_option(varargin,'antipodal') || nodes.antipodal
   sF = sF.even;
 end
 
-if ~keepPlan, sF.how2plot = nodes.how2plot; end
+if ~keepPlan, sF.how2plot = how2plot; end
 
 end

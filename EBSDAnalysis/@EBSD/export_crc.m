@@ -205,6 +205,7 @@ data2Write = length(ebsdData{1})*length(classType);
 cprName = fullfile(filePath,[fileName '.cpr']);
 fid = fopen(cprName,'W');
 
+pC = progressCounter(length(headerNames));
 for ii=1:length(headerNames)
   % Upper case the first alphabet of first-level field names and convert
   % to a string
@@ -245,7 +246,7 @@ for ii=1:length(headerNames)
   % Write a carriage return for a new line into the file
   fwrite(fid,newline);
   
-  progress(ii,length(headerNames));
+  pC.show(ii);
 end
 % Close the *.cpr file
 fclose(fid);
@@ -255,6 +256,7 @@ crcName = fullfile(filePath,[fileName '.crc']);
 fid = fopen(crcName,'W');
 
 % Write individual data records to the *.crc file
+pC = progressCounter(length(ebsdData{1}));
 for ii=1:length(ebsdData{1})
   for jj = 1:length(classType)
     % Write data to file with the appropriate number of bits
@@ -262,7 +264,7 @@ for ii=1:length(ebsdData{1})
     
     % Update progress at intervals
     if mod(jj+((ii-1)*length(classType)),data2Write/20) == 0
-      progress(ii,length(ebsdData{1}));
+      pC.show(ii);
     end
   end
 end

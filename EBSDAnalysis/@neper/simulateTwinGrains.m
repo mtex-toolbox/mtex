@@ -84,9 +84,9 @@ Nxyz = grains.boundary.N.xyz;
 nAxyz = nA.xyz;
 I_GF = grains.I_GF;
 
+pC = progressCounter(numel(grains));
 while k <= numel(grains)  
-  progress(k,length(grains));
-
+  
   dk = min(dk,size(I_GF,1)-k+1);
   [Gid,Fid] = find(I_GF(k:k+dk-1,:));
   isPlane = abs(Nxyz(Fid,:) * nAxyz(l,:).') < cos(1e-3);
@@ -101,6 +101,8 @@ while k <= numel(grains)
     k = k + pos;
     l = l+1;    
   end
+  
+  pC.show(k);
 end
 
 % the parent ids

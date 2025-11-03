@@ -22,7 +22,7 @@ odf_d = calcFourierODF(ori,'weights',w,'kernel',SO3DirichletKernel(L),'silent');
 
 c = zeros(1,length(psi));
 
-progress(0,length(psi),'compute optimal kernel: ');
+pC = progressCounter(length(psi),'caption',' computing optimal kernel: ',varargin{:});
 
 for i = 1:length(psi)
   
@@ -38,13 +38,13 @@ for i = 1:length(psi)
     - 2/N * sum(1./(1-w) .* eval(eodf,ori)) ...
     + 2/N * psi{i}.eval(1) * sum(w./(1-w)); 
     
-  % compute something else ---> no sence
+  % compute something else ---> no sense
   %c(i) = sum(w.^2./(1-w).^2) * ...
   %  ( norm(Fourier(eodf,'l2-normalization'))^2 + norm(psi{i}) ) ...
   %  - sum(w.^2./(1-w).^2 .* eval(conv(eodf,psi{i}),o));
     
   %disp(c(i));
-  progress(i,length(psi),'  compute optimal kernel: ');
+  pC.show(i);
   
   if i>1 && c(i)>c(i-1), break;end
   

@@ -14,6 +14,7 @@ G = odf.grad(varargin{:});
 s = size(ori); 
 ori = ori(:);
 
+pC = progressCounter(maxIter);
 for k = 1:maxIter
 
   % gradient
@@ -47,7 +48,7 @@ for k = 1:maxIter
   end
 
   if all(id == 1), break; end
-  progress(k,maxIter)
+  pC.show(k)
   % fprintf(['Step size:',num2str(omega(max(id))/degree),'°\n'])
 end
 
