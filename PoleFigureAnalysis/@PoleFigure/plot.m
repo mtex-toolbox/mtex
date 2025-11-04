@@ -28,22 +28,34 @@ else
   data = pf.allI;
 end
 
+gList = gobjects(0,1);
 for i = 1:length(pf.allH)
   
   if isempty(pf.allI{i}), continue; end
   if i>1, mtexFig.nextAxis; end
   
-  pf.allR{i}.plot(data{i},...
+  [g,cax] = pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
   mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
   pfAnnotations('parent',mtexFig.gca);
   
+  set(cax,'tag','pdf');
+  setAllAppdata(cax,'SS',pf.SS,'h',pf.allH{i});
+
+  gList = [gList;g(:)]; %#ok<AGROW>  
+
+end
+
+% unify dynamic marker size
+gList = findall(gList,'tag','dynamicMarkerSize');
+try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
+
+if isNew || check_option(varargin,'figSize')
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 if isNew % finalize plot
-  setAllAppdata(gcf, 'h',pf.allH, 'SS',pf.SS,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
-  set(gcf,'Tag','pdf');  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   if check_option(varargin,'3d'), fcw(gcf,'-link'); end
 end
