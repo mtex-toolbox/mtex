@@ -46,7 +46,11 @@ methods
     s.how2plot = plottingConvention.default;
     
   end
-  
+
+  function makeDefault(ss)
+    specimenSymmetry.default(ss);
+  end
+
   function display(s)
     disp(' ');
     disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ' ' docmethods(inputname(1))]);
@@ -101,18 +105,17 @@ methods (Static = true)
     if isfield(s,'how2plot'), cs.how2plot = s.how2plot; end
             
   end
-    
-  function ss = default
-    persistent save;
-    
-    if isempty(save)
-      save = specimenSymmetry;
+
+
+  function ss = default(ss)
+      persistent save
+      if nargin == 1
+        save =  ss;
+      else
+        if isempty(save), save = specimenSymmetry; end
+        ss = save;
+      end
     end
-
-    ss = save;
-
-  end
-
     
 end
   

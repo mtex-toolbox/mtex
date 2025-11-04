@@ -197,6 +197,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
+
     function set.south(pC,v)
       try
         pC.rot = rotation.map(pC.north,-v,pC.lastSet,pC.lastSet) * pC.rot;
@@ -254,12 +255,14 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
     
     function pC = default(pC)
-      persistent pCdefault
-      if nargin == 1
-        pCdefault =  pC;
+      
+      if nargin == 1 % new default
+        ss = specimenSymmetry;
+        ss.how2plot = pC;
+        ss.makeDefault;
       else
-        if isempty(pCdefault), pCdefault = plottingConvention; end
-        pC = pCdefault;
+        ss = specimenSymmetry.default;
+        pC = ss.how2plot;
       end
     end
 
