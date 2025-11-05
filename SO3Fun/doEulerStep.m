@@ -1,4 +1,4 @@
-function odf = doEulerStep(spin,odf,numIter)
+function odf = doEulerStep(spin,odf,numIter,varargin)
 % numerically solve the continuity equation with a given spin tensor
 %
 % Syntax
