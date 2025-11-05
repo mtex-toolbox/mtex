@@ -1,19 +1,18 @@
 classdef S2FunMLS < S2Fun
-
   % a class representing a function on the sphere
 
   properties
-    nodes       = [];      % points where the function values are known
-    values      = [];      % the corresponding values
-    degree      = 3;       % the polynomial degree used for approximation
-    delta       = 0;       % support radius of the weight function
-    nn          = 0;       % specified number of neighbors to use 
-    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
-    monomials   = true;    % use monomials instead of sph. harm. if true
-    centered    = false;   % only evaluate the basis near the pole if true
-    tangent     = false;   % use polynomials on the tangent space
-    s           = crystalSymmetry();   % TODO: symmetry
-    subsample   = false;   % perform optimal subsampling, or not
+    nodes       = []      % points where the function values are known
+    values      = []      % the corresponding values
+    degree      = 3       % the polynomial degree used for approximation
+    delta       = 0       % support radius of the weight function
+    nn          = 0       % specified number of neighbors to use 
+    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)) % Wendland weight function
+    monomials   = true    % use monomials instead of sph. harm. if true
+    centered    = false   % only evaluate the basis near the pole if true
+    tangent     = false   % use polynomials on the tangent space
+    s           = specimenSymmetry.default   % TODO: symmetry
+    subsample   = false   % perform optimal subsampling, or not
   end
 
   properties (Dependent)
@@ -34,6 +33,8 @@ classdef S2FunMLS < S2Fun
         S2F = S2FunMLS.approximate(nodes,values,varargin{:});
         return
       end
+
+      [nodes,values] = unique(nodes,values);
 
       % preserve grid structure
       S2F.nodes = nodes;
@@ -59,7 +60,7 @@ classdef S2FunMLS < S2Fun
       S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, 'false', 'logical');
 
 
-      % if tanget is set to true, we must use monomials
+      % if tangent is set to true, we must use monomials
       if (S2F.tangent == true)
         S2F.monomials = true;
       end
@@ -84,6 +85,8 @@ classdef S2FunMLS < S2Fun
         S2F.delta = guess_delta(S2F);
       end
 
+      S2F.s.how2plot = nodes.how2plot;
+
     end
 
     % compute delta if none was specified
@@ -103,6 +106,10 @@ classdef S2FunMLS < S2Fun
       catch
         antipodal = false;
       end
+    end
+
+    function S2F = set.antipodal(S2F,value)
+      S2F.nodes.antipodal = value;
     end
 
     function S2F = set.degree(S2F, deg)
