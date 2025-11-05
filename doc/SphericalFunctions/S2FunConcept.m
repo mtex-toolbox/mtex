@@ -1,12 +1,12 @@
 %% Spherical Functions
 %
 %%
-% By a variable of type @S2Fun it is possible to represent an entire
+% By a variable of type |@S2Fun| it is possible to represent an entire
 % function on the two dimensional sphere. A typical example of such a
 % function is the pole density function of a given ODF with respect to a
 % fixed crystal direction.
 
-% the famouse Santa Fe orientation distribution function
+% the famous Santa Fe orientation distribution function
 odf = SantaFe;
 
 % the (100) pole density function
@@ -38,8 +38,6 @@ annotate(localMax)
 % A complete list of operations that can be performed with spherical
 % functions can be found in section <S2FunOperations.html Operations>.
 %
-
-
 %% Representation of Spherical Functions
 %
 % In MTEX there exist different ways for representing spherical functions
@@ -51,10 +49,10 @@ annotate(localMax)
 % || Bingham distribution || @BinghamS2 ||
 %
 % All representations allow for the same operations which are specified for
-% the abstact class @S2Fun. In particular it is possible
-% to calculate with spherical functions as with ordinary numbers, i.e., you
-% can add, multiply arbitrary functions, take the mean, integrate them or
-% compute gradients.
+% the abstract class |@S2Fun|. In particular it is possible to calculate
+% with spherical functions as with ordinary numbers, i.e., you can add,
+% multiply arbitrary functions, take the mean, integrate them or compute
+% gradients.
 %
 %% Generalizations of Spherical Functions
 %

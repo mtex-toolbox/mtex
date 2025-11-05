@@ -1,5 +1,8 @@
 %% Detection of Sample Symmetry
 %
+% Here we describe how to detect sample symmetry in an arbitrarily rotated
+% ODF. 
+%
 %% A synthetic example
 % We start by modeling a orthotropic ODF with cubic crystal symmetry.
 
@@ -28,7 +31,6 @@ plotPDF(odf,h,'antipodal','silent','complete')
 % the individual orientations.
 
 % define a sample rotation
-%rot = rotation.byEuler(0*degree,0*degree,1*degree);
 rot = rotation.byEuler(15*degree,12*degree,-5*degree);
 
 

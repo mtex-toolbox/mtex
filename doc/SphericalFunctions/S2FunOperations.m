@@ -1,7 +1,7 @@
 %% Operations on Spherical Functions
 %
 %%
-% The idea of variables of type @S2Fun is to calculate with spherical
+% The idea of variables of type |@S2Fun| is to calculate with spherical
 % functions similarly as Matlab does with vectors and matrices. In order to
 % illustrate this we consider the following two spherical functions
 
