@@ -5,10 +5,6 @@ classdef specimenSymmetry < symmetry
 % triclinic or orthorhombic
 %
 
-properties
-  axes = [xvector,yvector,zvector]; 
-end
-
 methods
     
   function s = specimenSymmetry(varargin)
@@ -17,33 +13,35 @@ methods
     % usually specimen symmetry is either triclinic or orthorhombic
     %
     
-    axes = getClass(varargin,'vector3d',[xvector,yvector,zvector]);
-    
-    if nargin == 0
+    if nargin == 0 || isa(varargin{1},'plottingConvention')
       
       id = 1;
       rot = rotation.id;
       
-    elseif isa(varargin{1},'quaternion') % define the symmetry just by rotations
-      
-      rot = varargin{1};
-      
-      if check_option(varargin,'pointId')
-        id = get_option(varargin,'pointId');
-      else
-        id = symmetry.rot2pointId(rot,axes);
-      end
-      
     else
       
-      id = symmetry.extractPointId(varargin{:});
-      rot = symmetry.calcQuat(id,axes);
+      if isa(varargin{1},'quaternion') % define the symmetry just by rotations
       
+        rot = varargin{1};
+      
+        if check_option(varargin,'pointId')
+          id = get_option(varargin,'pointId');
+        else
+          id = symmetry.rot2pointId(rot,varargin{:});
+        end
+      
+      else
+      
+        id = symmetry.extractPointId(varargin{:});
+        rot = symmetry.calcQuat(id,varargin{:});
+      
+      end
     end
     
-    s = s@symmetry(id,rot);
-    s.axes = axes;
-    s.how2plot = plottingConvention.default;
+    how2plot = getClass(varargin,'plottingConvention');
+    if isempty(how2plot), how2plot = plottingConvention.default; end
+
+    s = s@symmetry(id,rot,how2plot);
     
   end
 
@@ -112,7 +110,9 @@ methods (Static = true)
       if nargin == 1
         save =  ss;
       else
-        if isempty(save), save = specimenSymmetry; end
+        if isempty(save)
+          save = specimenSymmetry(plottingConvention); 
+        end
         ss = save;
       end
     end

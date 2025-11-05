@@ -257,8 +257,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     function pC = default(pC)
       
       if nargin == 1 % new default
-        ss = specimenSymmetry;
-        ss.how2plot = pC;
+        ss = specimenSymmetry(pC);
         ss.makeDefault;
       else
         ss = specimenSymmetry.default;
