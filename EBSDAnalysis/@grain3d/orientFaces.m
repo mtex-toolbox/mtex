@@ -10,15 +10,15 @@ function grains = orientFaces(grains)
 % https://de.mathworks.com/matlabcentral/fileexchange/49692-gptoolbox>
 % to be installed.
 
+addpath(strjoin(strcat('~/mtex/gptoolbox/',{'external','imageprocessing', 'images', 'matrix', 'mesh', 'mex', 'quat','utility','wrappers'}),':'))
+
 try
-  gptoolbox_version
+  gptoolbox_version;
 catch ME
   error(['For this function you need the have the free ' ...
     '<a href="https://de.mathworks.com/matlabcentral/fileexchange/49692-gptoolbox">' ...
     'GPTToolbox</a> to be installed'])
 end
-
-addpath(strjoin(strcat('~/mtex/gptoolbox/',{'external','imageprocessing', 'images', 'matrix', 'mesh', 'mex', 'quat','utility','wrappers'}),':'))
 
 I_GF = grains.I_GF;
 F = grains.F;
