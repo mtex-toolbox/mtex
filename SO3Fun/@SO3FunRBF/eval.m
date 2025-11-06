@@ -60,6 +60,7 @@ iter = 0; numiter = 1; ind = 1; %for first run
 c = reshape(SO3F.weights,[],numel(SO3F));
 
 % now iterate along the splitting
+pC = progressCounter(numiter,varargin{:});
 while iter <= numiter
   if iter > 0% split
     ind = 1 + (1+(iter-1)*diter:min(num-1,iter*diter));
@@ -88,8 +89,7 @@ while iter <= numiter
     diter = ceil(num / numiter);
   end
 
-  if numiter > 1 && ~check_option(varargin,'silent'), progress(iter,numiter); end
-
+  pC.show(iter);
   iter = iter + 1;
 end
 

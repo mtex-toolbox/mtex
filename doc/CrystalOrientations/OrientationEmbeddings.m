@@ -168,6 +168,7 @@ norm(embedding(orientation.rand(5,cs))).'
 
 % generate samples of orientations of different dispersion
 n = []; sigma = [];
+pC = progressCounter(40);
 for hw = logspace(-1,1.75,40)*degree
 
   psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
@@ -177,7 +178,7 @@ for hw = logspace(-1,1.75,40)*degree
   n(end+1) = norm(mean(embedding(ori)));
   
   sigma(end+1) = std(ori);
-  progress(length(sigma),40);
+  pC.show(length(sigma));
   
 end
 

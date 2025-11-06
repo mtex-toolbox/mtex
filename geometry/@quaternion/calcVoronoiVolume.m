@@ -27,12 +27,15 @@ Vk = Vk.xyz;
 w = zeros(size(rot));
 last = [0;find(diff(C.center));length(C.center)];
 % TODO: Speed up this loop
+
+cP = progressCounter(length(last)-1);
 for k=1:length(last)-1
+
   ndx = last(k)+1:last(k+1);
   [~,w(C.center(ndx(1)))] = convhull(Vk(ndx,:));
-  if ~check_option(varargin,'silent') && length(last)>5e4
-    progress(k,length(last)); 
-  end
+  
+  cP.show(k); 
+  
 end
 
 end

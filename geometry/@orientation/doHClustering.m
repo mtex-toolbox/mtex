@@ -115,7 +115,7 @@ d = full(abs(dot_outer(ori,ori,'epsilon',20*degree)));
 d(sub2ind(size(d),1:length(ori),1:length(ori))) = 0;
 center = orientation(ori);
 
-progress(0,length(ori),'do clustering: ',varargin{:});
+cP = progressCounter(length(ori),'caption',' do clustering: ',varargin{:});
 while 1
   
   if length(center) <= n, break; end
@@ -153,7 +153,7 @@ while 1
   center.d(j) = [];
   center.i(j) = [];
   
-  progress(length(ori)-length(center),length(ori),'do clustering: ',varargin{:});
+  cP.show(length(ori)-length(center));
 end
 
 progress(length(ori),length(ori),'do clustering: ',varargin{:});
