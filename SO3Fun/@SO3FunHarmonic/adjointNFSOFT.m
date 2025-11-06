@@ -102,11 +102,12 @@ if isempty(plan)
   % 2^2 -> nfsoft-use-DPT
   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
   nfsoft_flags = bitor(2^4,2^0)+2^2;
+  nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft cutoff - 4
   % fpt kappa - 1000
   % fftw_size -> 2*ceil(1.5*L)
   % initialize nfsoft plan
-  plan = nfsoftmex('init',N,length(nodes),nfsoft_flags,0,4,1000,2*ceil(1.5*N));
+  plan = nfsoftmex('init',N,length(nodes),nfsoft_flags,nfft_flags,4,1000,2*ceil(1.5*N));
   
   % set rotations in Euler angles (nodes)
   nfsoftmex('set_x',plan,Euler(nodes(:),'nfft').');

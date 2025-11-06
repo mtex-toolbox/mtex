@@ -98,8 +98,8 @@ if isempty(plan)
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-    fftw_flag = int8(64);
-    nfft_flag = int8(0);
+    fftw_flags = int8(64);
+    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft_cutoff parameter 
     m = get_option(varargin,'cutoffParameter',6);
   % oversampling factor
@@ -110,7 +110,7 @@ if isempty(plan)
   if check_option(varargin,'direct')
     plan = nfftmex('init_2d',N1,N2,M);
   else
-    plan = nfftmex('init_guru',{2,N1,N2,M,fftw_size1,fftw_size2,m,nfft_flag,fftw_flag});
+    plan = nfftmex('init_guru',{2,N1,N2,M,fftw_size1,fftw_size2,m,nfft_flags,fftw_flags});
   end
   
   % set rotations as nodes in plan

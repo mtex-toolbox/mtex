@@ -69,7 +69,7 @@ if isempty(plan)
   % 2^2 -> nfsoft-use-DPT instead of FPT
   % 2^0 -> use normalized Wigner-D functions and fourier coefficients
     nfsoft_flags = bitor(2^4,4)+1;
-    nfft_flags = 0;
+    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft_cutoff parameter 
     m = 4;
   % oversampling factor
