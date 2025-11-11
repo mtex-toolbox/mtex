@@ -8,7 +8,7 @@ function v = rotate(v,q,varargin)
 %
 % Description
 %  Either |v| or |rot| are single elements or both have the same size. The
-%  ouptut |v| will have the same size as the biger of both input arrays.
+%  output |v| will have the same size as the bigger of both input arrays.
 %
 % Input
 %  v - @vector3d
@@ -61,7 +61,12 @@ if isa(q,'orientation')
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
   else % convert to vector3d 
-    v = vector3d(v);
+
+    % convert to vector3d
+    if isa(v,"Miller"), v = vector3d(v); end
+
+    v.how2plot = q.SS.how2plot;
+
   end
 
 end
