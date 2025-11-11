@@ -175,12 +175,13 @@ fit = inf(size(parentOri));
 weights = grains('Iron bcc').numPixel;
 
 % loop through all parent grains
+pC = progressCounter(max(parentId));
 for k = 1:max(parentId)
   if nnz(parentId==k) > 1
     % compute the parent orientation from the child orientations
     [parentOri(k),fit(k)] = calcParent(childOri(parentId==k), fcc2bcc,'weights',weights((parentId==k)));
   end
-  progress(k,max(parentId));
+  pC.show(k);
 end
 
 % update mean orientation of the parent grains

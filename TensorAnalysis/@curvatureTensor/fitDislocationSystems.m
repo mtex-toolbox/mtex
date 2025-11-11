@@ -37,6 +37,7 @@ dT = curvature(dS.tensor);
 options = optimset('algorithm','interior-point-legacy','Display','off');
 
 rho = nan(size(dS));
+pC = progressCounter(length(kappa),'caption',' fitting: ');
 for i = 1:length(kappa)
 
   % try to find coefficients
@@ -51,13 +52,10 @@ for i = 1:length(kappa)
   % is minimal. This is equivalent to the requirement 
   %  rho>=0 and sum(u_jrho_j) -> min 
   % which is the linear programming problem solved below
-  try %#ok<TRYNC>
-    
-    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],options);
- 
-    progress(i,length(kappa),' fitting: ');
-
+  try %#ok<TRYNC>    
+    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],options); 
   end
+  pC.show(i);
       
 end
 

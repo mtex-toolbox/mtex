@@ -156,7 +156,7 @@ h = zeros(1,length(alpha));
 
 disp('---')
 disp('Calculating the earing...')
-progress(0,length(alpha));
+pC = progressCounter(length(alpha));
 for ii = 1:length(alpha)
   
   l1 = (l5 .* cos(alpha(ii))) - (l4 .* cos(alpha(ii)));
@@ -192,7 +192,7 @@ for ii = 1:length(alpha)
   epsilonP = epsilonS .* wt;
   epsilonP_wtSum(ii) = sum(epsilonP);
   
-  progress(ii,length(alpha));
+  pC.show(ii);
 end
 
 %% Calculate all deep drawing values
