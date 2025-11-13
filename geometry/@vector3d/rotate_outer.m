@@ -52,8 +52,13 @@ if isa(q,'orientation')
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
     
-  else % convert to vector3d 
-    v = vector3d(v);
+  else
+
+    % convert to vector3d
+    if isa(v,"Miller"), v = vector3d(v); end
+
+    v.how2plot = q.SS.how2plot;
+
   end
 
 end

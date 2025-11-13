@@ -100,10 +100,14 @@ else
 end
 
 % check for Inf-values (quadrature fails)
-if any(isinf(values))
-  error('There are poles at some quadrature nodes.')
+if any(isinf(values(:)))
+  ind = isinf(values);
+  m = max( abs(values(~ind)) ,[],'all')*1e+10;
+  values(ind) = sign(values(ind)) .* m;
+  warning(['There are poles at some quadrature nodes. They are set to +-',num2str(m,3),'.'])
+  % error('There are poles at some quadrature nodes.')
 end
-if any(isnan(values))
+if any(isnan(values(:)))
   warning('There are Nan values in some nodes. They are set to 0.')
   values(isnan(values)) = 0;
 end
