@@ -34,7 +34,7 @@ classdef S2FunMLS < S2Fun
         return
       end
 
-      [nodes,values] = unique(nodes,values);
+      [nodes,values] = uniqueData(nodes,values);
 
       % preserve grid structure
       S2F.nodes = nodes;
