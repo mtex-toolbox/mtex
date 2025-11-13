@@ -61,6 +61,8 @@ classdef SO3FunMLS < SO3Fun
         SO3F = SO3FunMLS.approximate(nodes,values,varargin{:});
         return
       end
+
+      % TODO: uniqueData
       
       if isa(nodes,'rotation'), nodes = orientation(nodes); end
       SO3F.nodes = nodes; % preserve grid structure
