@@ -25,6 +25,8 @@ if nargin == 2 || isempty(numIter)
   numIter = 1; 
 end
 
+% TODO: Routine to decide which one to use dependent on h and spin.
+
 pC = progressCounter(numIter,'caption',"Euler steps: ",varargin{:});
 if isa(odf,'orientation')
 
@@ -116,20 +118,20 @@ end
 
 function y = afun(transp_flag, x, h,spin,bw,cs,ss, varargin)
 
-if strcmp(transp_flag, 'transp')
+if strcmp(transp_flag, 'notransp')
 
   x = SO3FunHarmonic(x,cs,ss);
   D = div( x .* spin); % TODO: Compute product by setting bandwidth. Maybe prevent SO3FunHarmonic-Trafo of spin
-  y = x - h * D;
+  y = x + h * D;
   y.bandwidth = bw;
   y = y.fhat;
 
-elseif strcmp(transp_flag, 'notransp')
+elseif strcmp(transp_flag, 'transp')
 
   x = SO3FunHarmonic(x,cs,ss);
   G = grad(x,spin.tangentSpace);
   H = dot(G,spin); % TODO: Set bandwidth in computation of dot manually. Maybe prevent SO3FunHarmonic-Trafo of spin
-  y = x + h * H;
+  y = x - h * H;
   y.bandwidth = bw;
   y = y.fhat;
 
