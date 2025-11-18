@@ -1,5 +1,5 @@
 function strList = makeDisjoint(strList)
-% make string list disjoint by appending _1, _2 if required
+% make string list disjoint by appending -1, -2 if required
 %
 % Syntax
 %   strList = makeDisjoint(strList)
@@ -14,6 +14,6 @@ function strList = makeDisjoint(strList)
 strList = string(strList);
 strList = strList(:);
 A = sum(tril(strList == strList.'),2);
-strList(A>1) = strList(A>1) + "_" + A(A>1);
+strList(A>1) = strList(A>1) + "-" + A(A>1);
 
 end
