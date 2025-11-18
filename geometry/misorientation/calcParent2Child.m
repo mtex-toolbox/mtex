@@ -52,7 +52,7 @@ k = 1;
 while k <= maxIt
   
   % stop iteration if convergence
-  if k>1 && angle(p2c,p2cOld) < 0.1*degree, break; end
+  if k>1 && angle(p2c,p2cOld) < 0.01*degree, break; end
       
   % child to child misorientation variants
   c2c = p2c * inv(p2c.variants); %#ok<MINV>
