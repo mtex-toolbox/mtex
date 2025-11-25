@@ -22,18 +22,16 @@ SO3VF.tangentSpace = abs(SO3VF.tangentSpace);
 
 if SO3VF.internTangentSpace.isRight && check_option(varargin,'internTangentSpace')
 
-  % check for conservative vector field and compute gradient of antiderivative
-  c = SO3VF.curl;
-  n = sqrt(sum(norm(c.SO3F).^2));
-  if n<1e-3
-    SO3VF = SO3VF.antiderivative('conservative').grad(-SO3VF.internTangentSpace);
+  % do quadrature
+  if check_option(varargin,'check')
+    bw = get_option(varargin,'bandwidth',SO3VF.bandwidth+1);
+    SO3VF = SO3VectorFieldHandle(@(r) SO3VF.eval(r),SO3VF.hiddenCS,SO3VF.hiddenSS,SO3VF.tangentSpace);
+    SO3VF = SO3VectorFieldHarmonic(SO3VF,'bandwidth',bw,varargin{:});
     return
   end
 
-  % do quadrature
-  bw = get_option(varargin,'bandwidth',SO3VF.bandwidth+1);
-  f = SO3FunHandle(@(r) SO3VF.eval(r).xyz,SO3VF.CS);
-  SO3VF = SO3VectorFieldHarmonic(f,'bandwidth',bw,SO3VF.hiddenCS,SO3VF.hiddenSS,SO3VF.tangentSpace);
+  % TODO: compute directly on frequency domain
+  SO3VF = transformInternTangentSpace(SO3VF);
 
 end
 
