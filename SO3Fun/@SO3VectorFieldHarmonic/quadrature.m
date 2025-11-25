@@ -141,7 +141,7 @@ end
 if isa(f,'function_handle')
   
   % extract tangent space
-  v = f(rotation.id);
+  v = f(orientation.id(SRight,SLeft));
   if isa(v,'SO3TangentVector')
     tS = v.tangentSpace;
   end
