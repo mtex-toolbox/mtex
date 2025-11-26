@@ -1,21 +1,31 @@
 function [vals, conds] = eval(sF, v, varargin)
 % evaluate sF on v via moving least squares (MLS) approximation
-% provide the possibility of also returning the condition numbers of the gram matrices
+% can also return the condition numbers of the (weighted) design matrices 
 %
 % Syntax
 %   vals = sF.eval(v)
 %   vals = eval(sF,v)
 %
 % Input
-%  sF    - the function we want to approximate
+%  sF    - the mls function we want to evauate
 %  v     - the points where we want to evaluate the MLS approximation
 %
 % Output
-%  vals  - the values of sF on v
+%  vals  - the values of the mls approximation sF on v
 %
 
 dimensions = size(v);
 N = numel(v);
+
+% prevent dimension error in local least squares solver for N==1
+if (N == 1)
+  v = [v;v];
+  [vals, conds] = sF.eval(v, varargin{:});
+  vals = vals(1,:);
+  conds = conds(1);
+  return;
+end
+
 vals = zeros(N, numel(sF));
 if (nargout == 2)
   conds = zeros(N, 1);
@@ -28,7 +38,7 @@ if (nn == 0)
 end
 oF = nn / sF.dim;
 % byter_per_v is bytes_per_ori from SO3FunMLS, multiplied by 3/4 in order to
-% approximately correct for the number of variables
+% approximately correct for the different number of variables
 bytes_per_v = sF.dim * (2*nn + 5*oF + sF.dim) * 8 * 3/4;
 batch_size = ceil(2 * 2^30 / bytes_per_v);
 
@@ -43,6 +53,7 @@ while (end_idx < N)
   I = (start_idx : end_idx)';
   start_idx = end_idx + 1;
 
+  % just evaluate the mls approximation
   if (nargout == 1)
     if (sF.nn >= sF.dim)
       vals(I,:) = eval_knn(sF, v.subSet(I), varargin{:});
@@ -50,6 +61,7 @@ while (end_idx < N)
       vals(I,:) = eval_range(sF, v.subSet(I), varargin{:});
     end
 
+  % also compute condition numbers of the design matrices
   else
     if (sF.nn >= sF.dim)
       [vals(I,:), conds(I,:)] = eval_knn(sF, v.subSet(I), varargin{:});
@@ -60,9 +72,10 @@ while (end_idx < N)
 
 end
 
-vals = reshape(vals, [dimensions, numel(sF)]);
+% output as 2D array, where column(j) <=> sF(j) and row(i) <=> v(i)
+vals = reshape(vals, [numel(v), size(sF)]);
 if (nargout == 2)
-  conds = reshape(conds, [dimensions numel(sF)]);
+  conds = reshape(conds, dimensions);
 end 
 
 end

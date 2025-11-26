@@ -23,7 +23,6 @@ classdef S2FunMLS < S2Fun
   methods
     % initialize a spherical function
     function S2F = S2FunMLS(nodes, values, varargin)
-      % initialize a S2-valued function
 
       if nargin == 0, return; end
 
@@ -44,7 +43,7 @@ classdef S2FunMLS < S2Fun
       % get symmetry, degree, number of neighbors
       S2F.s = get_option(varargin, 'symmetry', specimenSymmetry.default, 'crystalSymmetry');
       S2F.degree = get_option(varargin, 'degree', 3, 'double');
-      S2F.nn = get_option(varargin, 'neighbors', 2*S2F.dim, 'double');
+      S2F.nn = round(get_option(varargin, 'neighbors', 2*S2F.dim, 'double'));
       if (S2F.nn < S2F.dim)
         S2F.nn = 2 * S2F.dim;
         warning(sprintf(...
@@ -57,8 +56,7 @@ classdef S2FunMLS < S2Fun
       S2F.monomials = get_option(varargin, 'monomials', true, 'logical');
       S2F.centered = get_option(varargin, 'centered', false, 'logical');
       S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
-      S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, 'false', 'logical');
-
+      S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, false, 'logical');
 
       % if tangent is set to true, we must use monomials
       if (S2F.tangent == true)
@@ -78,6 +76,7 @@ classdef S2FunMLS < S2Fun
           S2F.w = @(t)(t .* (t < 1));
         end
       else
+        % wendland weight - vanishes (too) fast
         S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
       end
 
@@ -87,6 +86,11 @@ classdef S2FunMLS < S2Fun
 
       S2F.s.how2plot = nodes.how2plot;
 
+    end
+
+    % important for subsref to function properly
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
     end
 
     % compute delta if none was specified
@@ -112,15 +116,25 @@ classdef S2FunMLS < S2Fun
       S2F.nodes.antipodal = value;
     end
 
+    % make sure nn is an integer value
+    function S2F = set.nn(S2F, value)
+      if (value > 0 && value < S2F.dim)
+        error('Invalid value! The number of neighbors must be an integer >= sF.dim.'); 
+      end
+      S2F.nn = round(value);
+    end
+
     function S2F = set.degree(S2F, deg)
       S2F.degree = deg;
       S2F.nn = 2 * S2F.dim;
     end
 
+    % choose delta such that 2-oversampling in expectation for uiid points
     function d = guess_delta(S2F)
       d = acos(1 - 4 * S2F.dim / numel(S2F.nodes));
     end
 
+    % compute expected number of neighbors with given sF.nodes and sF.delta
     function nn = guess_nn(S2F, varargin)
       v = vector3d.rand(10000, 1);
       ind = S2F.nodes.find(v, S2F.delta);
@@ -130,11 +144,23 @@ classdef S2FunMLS < S2Fun
         return;
       end
 
+      
       if (varargin{1} == "min")
+        % expected minimal number of neighbors
         nn = min(sum(ind,2));
       elseif (varargin{1} == "max")
+        % expected maximal number of neighbors
         nn = max(sum(ind,2));
       end
+    end
+
+    % return number of neighbors for given v (use for identifying 'bad regions')
+    function nns = count_neighbors(S2F, v)
+      if (S2F.delta == 0)
+        S2F.delta = S2F.compute_delta();
+      end
+      ind = S2F.nodes.find(v, S2F.delta);
+      nns = sum(ind, 2);
     end
 
     monomial_coefficients = get_monomial_coefficients(degs);

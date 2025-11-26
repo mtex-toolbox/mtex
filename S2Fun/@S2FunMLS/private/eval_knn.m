@@ -39,11 +39,11 @@ if (~sF.centered)
   % computing values on sF.nodes(grid_id)
   if nn_total > numel(sF.nodes.x)
     basis_on_grid = eval_basis_functions(sF); 
-    G = basis_on_grid(grid_id, :)';
+    G = basis_on_grid(grid_id, :).';
   else
-    G = eval_basis_functions(sF, sF.nodes(grid_id))';
+    G = eval_basis_functions(sF, sF.nodes(grid_id)).';
   end
-  g_book = reshape(eval_basis_functions(sF, v)', sF.dim, 1, N);
+  g_book = reshape(eval_basis_functions(sF, v).', sF.dim, 1, N);
 else
   % compute the rotations that shift each element of v into the north pole
   rot = rotation.map(v, vector3d.Z);
@@ -54,37 +54,38 @@ else
   basis_in_pole = eval_basis_functions(sF, vector3d.Z);
 
   g_book = repmat(basis_in_pole', 1, 1, N);
-  G = basis_on_grid';
+  G = basis_on_grid.';
 end 
-G_book = reshape(G, sF.dim, nn, N);
+G_book = pagetranspose(reshape(G, sF.dim, nn, N));
 
-% compute the weights, set delta slighlty larger than the farthest neighbor
-% TODO: choose an objectively good value for this
-deltas = 1.1 * max(dist, [], 2); 
+
+% dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
+% internally this uses QR and we end up with only cond(G), without the square!
+
+% compute distances and weights
+deltas = 1.1 * max(dist, [], 2);
 weights = sF.w(dist ./ deltas);
-W_book = reshape(weights', 1, nn, N);
+W_book = sqrt(reshape(weights', nn, 1, N));
 
-% compute rescaling parameters for bether condition of the gram matrix
-s = sqrt(sum(G_book.^2 .* W_book, 2));
-sT = pagetranspose(s);
+% compute scaling factors (norms of columns of G_times_W_book)
+B_book = G_book .* W_book;
+S_book = sqrt(sum(B_book.^2, 1));
 
-% start computing the (rescaled) Gram matrix (with 1s on main diag)
-W_times_G_book = pagetranspose(G_book .* W_book) ./ sT;
-Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
+% set up right hand side
+f_book = pagetranspose(reshape(sF.values(grid_id,:).', numel(sF), nn, N));
+fw_book = W_book .* f_book;
 
-% compute the generating functions
-g_book = g_book ./ s;
-genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
+% solve the rescaled system and evaluate MLS
+c_book = pagemldivide(B_book ./ S_book, fw_book) ./ pagetranspose(S_book);
+vals = sum(c_book .* g_book, 1);
 
-% assemble the right hand side of the Gram system
-% also rescale the right hand sides of the Gram systems
-f_book = reshape(sF.values(grid_id,:)', numel(sF), nn, N);
-vals = permute(pagemtimes(f_book, genfuns_book), [3, 1, 2]);
-vals = vals(:);
+% for the eval-function we need output of size (numel(v) x numel(sF))
 if isscalar(sF)
   vals = reshape(vals, dimensions);
 else 
-  vals = reshape(vals, [numel(v), size(sF)]);
+  % currently vals is (1 x numel(sF) x numel(v))
+  vals = permute(vals, [3, 2, 1]);
 end
 
 if isalmostreal(sF.values)
@@ -92,7 +93,7 @@ if isalmostreal(sF.values)
 end
 
 if nargout == 2
-  eigs = pagesvd(Gram_book);
+  eigs = pagesvd(B_book ./ S_book);
   conds = eigs(1,:,:) ./ eigs(sF.dim,:,:);
   conds = conds(:);
   conds = reshape(conds, dimensions);

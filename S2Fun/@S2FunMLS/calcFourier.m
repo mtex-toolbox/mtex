@@ -25,9 +25,9 @@ f_hat = S2F.fhat;
 
 end
 
-% We have to decide which bandwidth we are using dependent from the
-% oversampling factor.
-% The same method is used in S2FunHarmonic/interpolate
+
+% decide for bandwith depending on the oversampling factor
+%   (same as in S2FunHarmonic/interpolate)
 function bw = chooseBandwidth(nodes, y, s, varargin)
 
 bw = get_option(varargin,'bandwidth');
@@ -35,7 +35,7 @@ nSym = numSym(s.properGroup) * (isalmostreal(y)+1);
 
 % assume there is some bandwidth given
 if ~isempty(bw)
-  % degrees of freedom in frequency space 
+  % degrees of freedom in frequency space
   numFreq = (bw+1)^2 / nSym;
   % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
   oversamplingFactor = length(nodes)/numFreq;
@@ -46,7 +46,7 @@ if ~isempty(bw)
   return
 end
 
-% Choose an fixed oversampling factor of 2
+% Choose a fixed oversampling factor of 2
 oversamplingFactor = 2;
 bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
 

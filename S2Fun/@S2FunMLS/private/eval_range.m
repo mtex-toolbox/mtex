@@ -4,7 +4,7 @@ function [vals, conds] = eval_range(sF, v, varargin)
 dimensions = size(v);
 v = v(:);
 N = size(v, 1);
-vals = zeros(N, 1);
+vals = zeros(N, numel(sF));
 conds = zeros(N, 1);
  
 % get the neighbors 
@@ -12,29 +12,30 @@ ind = sF.nodes.find(v, sF.delta);
 nn = sum(ind, 2);
 
 % for points with too less neighbors, we instead choose the sF.dim nearest ones
-% TODO: choose more neighbors than only the sF.dim nearest ones, since the
+% NOTE: we choose more neighbors than only the sF.dim nearest ones, since the
 % expectation of the lebesgue constant is infinite in this setting
-% (interpolation)
 I = nn < sF.dim;
 if (sum(I) > 0)
   warning(sprintf( ...
     ['Some centers did not have sufficiently many neighbors. \n' ...
     '\t In this case the numer of neighbors was set to the dimension of the ansatz space.']));
   
+  % evaluate the critical nodes via knn-search instead of rangesearch
   nn_original = sF.nn;
   sF.nn = sF.dim;
   if (nargout == 2)
-    [vals(I), conds(I)] = sF.eval(v.subSet(I));
+    [vals(I,:), conds(I)] = sF.eval(v.subSet(I));
   else
-    vals(I) = sF.eval(v.subSet(I));
+    vals(I,:) = sF.eval(v.subSet(I));
   end
   sF.nn = nn_original;
+
   if (sum(I) == N)
     return;
   end
 end
 
-% now continue with the points that have sufficiently many neighbors
+% continue with the points that have sufficiently many neighbors
 J = ~I;
 v = v.subSet(J);
 N = sum(J);
@@ -47,7 +48,6 @@ end
 
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
-
 
 if (sF.subsample == true)
   dist = angle(v.subSet(v_id), sF.nodes.subSet(grid_id));
@@ -66,6 +66,9 @@ temp(start_id) = 1 - nn(1:N-1);
 temp = cumsum(temp);
 col_id = (v_id-1) * nn_max + temp;
 
+% TODO: nn_max might be much larger than mean(nn) at very few occations
+%   ==> compute in batches of similar nn for less ram usage
+
 % compute for every center from v the matrix of all basis functions evaluated at
 % all neighbors of this center 
 G = zeros(sF.dim, nn_max * N);
@@ -75,9 +78,9 @@ if (~sF.centered)
   % computing values on fibgrid(grid_id)
   if nn_total > numel(sF.nodes.x)
     basis_on_grid = eval_basis_functions(sF);
-    G(:, col_id) = basis_on_grid(grid_id, :)';
+    G(:, col_id) = basis_on_grid(grid_id, :).';
   else
-    G(:, col_id) = eval_basis_functions(sF, sF.nodes(grid_id))';
+    G(:, col_id) = eval_basis_functions(sF, sF.nodes(grid_id)).';
   end
   basis_in_v = eval_basis_functions(sF, v);
 else
@@ -91,39 +94,40 @@ else
   basis_in_pole = eval_basis_functions(sF, vector3d.Z);
   
   basis_in_v = repmat(basis_in_pole, N, 1);
-  G(:, col_id) = basis_on_grid';
+  G(:, col_id) = basis_on_grid.';
 end
-G_book = reshape(G, sF.dim, nn_max, N);
+
+% dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
+% internally this uses QR and we end up with only cond(G)
 
 % compute the weights
 weights = zeros(N * nn_max, 1);
-weights(col_id) = sF.w(nonzeros(dist) / sF.delta);
+% dist(find(ind)) instead of nonzeros(dist), since elements of v might be
+%   contained in sF.nodes ==> distance 0
+weights(col_id) = sF.w(dist(ind > 0) / sF.delta);
 
-% compute rescaling parameters for bether condition of the gram matrix
-s = sqrt(abs(sum(reshape(G.^2 .* weights', sF.dim, nn_max, N), 2)));
-sT = pagetranspose(s);
+B = G .* sqrt(weights');
+B_book = pagetranspose(reshape(B, sF.dim, nn_max, N)); 
 
-% start computing the pairwise discrete inner products (Gram matrix) 
-W_times_G_book = pagetranspose(reshape(G .* weights', sF.dim, nn_max, N)) ./ sT;
-Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
+% compute scaling factors (norms of columns of G_times_W_book)
+S_book = sqrt(sum(B_book.^2, 1));
+
+% set up right hand side
+f = zeros(N * nn_max, numel(sF));
+f(col_id,:) = sF.values(grid_id,:);
+fw_book = permute(reshape((sqrt(weights) .* f).', numel(sF), nn_max, N), [2 1 3]);
 
 % compute the generating functions
-g_book = reshape(basis_in_v', sF.dim, 1, N) ./ s;
-genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
+c_book = pagemldivide(B_book ./ S_book, fw_book) ./ pagetranspose(S_book);
+vals(J,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
-% compute the values of the MLS approximation
-f = zeros(N * nn_max, 1);
-f(col_id) = sF.values(grid_id);
-f_book = reshape(f, nn_max, 1, N);
-valsJ = sum(f_book .* genfuns_book, 1);
-vals(J) = valsJ(:);
-vals = reshape(vals, dimensions);
-if isreal(sF.values)
+if isalmostreal(sF.values)
   vals = real(vals); 
 end
 
 if nargout == 2
-  eigsJ = pagesvd(Gram_book);
+  eigsJ = pagesvd(B_book ./ S_book);
   condsJ = eigsJ(1,:,:) ./ eigsJ(sF.dim,:,:);
   conds(J) = condsJ(:);
   conds = reshape(conds, dimensions);

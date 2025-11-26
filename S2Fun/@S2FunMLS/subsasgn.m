@@ -20,13 +20,6 @@ switch s(1).type
     end
     
     ensureCompatibleSymmetries(S2F,b);
-
-    [bw, I] = max([S2F.bandwidth, b.bandwidth]);
-    if I == 1
-      b.bandwidth = bw;
-    else
-      S2F.bandwidth = bw;
-    end
         
     S2F.values = subsasgn(S2F.values,s(1),b.values);
         
