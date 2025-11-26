@@ -33,6 +33,7 @@ if check_option(varargin,'parent')
 else
   ax = gca;
 end
+ax.Clipping = false;
 
 % length of the arrows
 if all(norm(vec)==1), vec = 1.2.*vec;end
