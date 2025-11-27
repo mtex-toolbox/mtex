@@ -24,4 +24,8 @@ methods
   
 end
 
+methods(Static = true)
+  sVF = example(varargin)
+end
+
 end

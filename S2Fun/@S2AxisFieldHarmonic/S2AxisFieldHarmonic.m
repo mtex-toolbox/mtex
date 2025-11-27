@@ -60,6 +60,7 @@ methods(Static = true)
   sAF = quadrature(f, varargin)
   sAF = approximate(f, varargin)
   sAF = interpolate(v, y, varargin)
+  sAF = example(varargin)
   function sAF = normal
     sAF = S2AxisFieldHarmonic.quadrature(@(v) v(:),'bandwidth',2);
   end

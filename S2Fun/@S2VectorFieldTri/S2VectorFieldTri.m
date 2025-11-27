@@ -61,7 +61,11 @@ classdef S2VectorFieldTri < S2VectorField
       disp(' ');
 
     end
-    
-  end
 
+  end
+    
+  methods(Static = true)
+    sVF = example(varargin)
+  end
+    
 end

@@ -66,4 +66,8 @@ classdef S2AxisFieldTri < S2AxisField
     
   end
 
+  methods(Static = true)
+    sAF = example(varargin)
+  end
+
 end
