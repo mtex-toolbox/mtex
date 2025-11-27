@@ -4,13 +4,14 @@ classdef SO3FunHomochoric < SO3Fun
   properties
     S3G % homochoric orientation grid
     c   % coefficients
+    bandwidth = 64; % harmonic degree
   end
 
   properties (Dependent = true)
-    bandwidth % harmonic degree
     antipodal
     SLeft
     SRight
+    isReal
   end
   
   methods
@@ -61,13 +62,13 @@ classdef SO3FunHomochoric < SO3Fun
       end
     end
     
-    function L = get.bandwidth(SO3F)
-      % should depend on the number of grid points
-      L = 64;
+    function out = get.isReal(f)
+      out = isreal(f.c);
     end
-    
-    function SO3F = set.bandwidth(SO3F,L)
-      % this is not possible
+  
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.c = real(F.c);
     end
     
   end

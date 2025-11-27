@@ -33,6 +33,7 @@ properties (Dependent = true)
   SLeft
   SRight
   weights
+  isReal
 end
 
 methods
@@ -118,6 +119,19 @@ methods
   function out = get.bandwidth(S3F)
     out =  max(cellfun(@(x) x.bandwidth,S3F.components));
   end
+
+  function out = get.isReal(S3F)
+    % TODO: That is not clearly exact. The complex parts could cancel out
+    out = all(cellfun(@(x) x.isReal, S3F.components));
+  end
+
+  function S3F = set.isReal(S3F,value)
+    if ~value, return, end
+    for k=1:length(S3F.components)
+      S3F.components{k}.isReal = true;
+    end
+  end
+  
   
   function out = get.SLeft(S3F)
     out = S3F.components{1}.SLeft;

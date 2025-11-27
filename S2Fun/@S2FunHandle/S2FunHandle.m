@@ -8,6 +8,10 @@ properties
   bandwidth = getMTEXpref('maxS2Bandwidth')
 end
 
+properties (Dependent = true)
+  isReal
+end
+
 
 methods
   function S2F = S2FunHandle(fun,sym)
@@ -37,11 +41,22 @@ methods
     f = reshape(f,numel(v),[]);
 
   end
+
+  function out = get.isReal(f)
+    v = vector3d.rand(10);
+    out = isreal(f.eval(v));
+  end
+
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    F = S2FunHandle(@(v) real(F.eval(v)),F.s);
+  end
   
 end
 
 
 methods (Static = true)
+  sF = example(varargin);
   
   function S2F = Kachanov(lambda)
     

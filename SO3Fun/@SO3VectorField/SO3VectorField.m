@@ -9,6 +9,7 @@ properties (Abstract = true)
   SRight % symmetry that acts from the right
   SLeft % symmetry that acts from the left
   tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used
+  isReal
 end
 
 properties (Dependent = true)

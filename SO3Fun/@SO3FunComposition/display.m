@@ -4,6 +4,7 @@ function display(SO3F,varargin)
 displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});  
 
 % display symmtries and minerals
+if ~SO3F.isReal, disp('  isReal: false'); end
 if SO3F.antipodal, disp('  antipodal: true'); end
 
 % display components

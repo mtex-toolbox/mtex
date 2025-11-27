@@ -7,6 +7,7 @@ classdef S2Fun
 
 properties (Abstract = true)
   s % symmetry / reference system
+  isReal
 end
 
 properties (Dependent = true)  
@@ -20,11 +21,6 @@ methods (Abstract = true)
 end
 
 methods
-  
-  function out = isReal(~)
-    out = true;
-  end
-  
   
   function pC = get.how2plot(sF)
     pC = sF.s.how2plot;

@@ -12,6 +12,12 @@ function [h,ax] = plot(sF,varargin)
 % S2Fun/contour S2Fun/contourf S2Fun/pcolor S2Fun/plot3d
 %
 
+if ~sF.isReal
+  warning(['Imaginary part of complex valued S2Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  sF.isReal=1;
+end
+
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 

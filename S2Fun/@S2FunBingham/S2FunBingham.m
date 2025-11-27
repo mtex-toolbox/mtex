@@ -1,9 +1,10 @@
-classdef BinghamS2 < S2Fun
+classdef S2FunBingham < S2Fun
   
   properties
     a  % principle axes
     Z  % smoothing parameters
     s  % reference system
+    isReal = 1;
   end
   
   properties (SetAccess=protected)
@@ -14,7 +15,7 @@ classdef BinghamS2 < S2Fun
   
   
   methods
-    function BS2 = BinghamS2(Z,a,sym)
+    function BS2 = S2FunBingham(Z,a,sym)
       %
       % Description
       %  defines a spherical Bingham distribution with shape parameters |Z|
@@ -25,14 +26,14 @@ classdef BinghamS2 < S2Fun
       %
       % Syntax
       %
-      %   BS2 = BinghamS2(Z,a)
+      %   BS2 = S2FunBingham(Z,a)
       %
       % Input
       %  Z -  shape parameters
       %  a -  principle axes @vector3d
       %
       % Output
-      %  BS2 - @BinghamS2 spherical Bingham distribution
+      %  BS2 - @S2FunBingham (spherical Bingham distribution)
       
       BS2.Z = Z;
       
@@ -70,6 +71,7 @@ classdef BinghamS2 < S2Fun
   methods (Static = true)
     
     BS2 = fit(v,varargin)
+    BS2 = example(varargin)
     
   end
 end

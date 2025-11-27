@@ -49,6 +49,7 @@ methods(Static = true)
   sVF = quadrature(f, varargin)
   sVF = approximate(f, varargin)
   sVF = interpolate(v,y, varargin)
+  sVF = example(varargin)
   function sVF = normal
     sVF = S2VectorFieldHarmonic.quadrature(@(v) v,'bandwidth',2);
   end

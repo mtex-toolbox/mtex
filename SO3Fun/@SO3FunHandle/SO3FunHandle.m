@@ -25,6 +25,10 @@ properties
   bandwidth = getMTEXpref('maxSO3Bandwidth');
 end
 
+properties (Dependent = true)
+  isReal
+end
+
 methods
   
   function SO3F = SO3FunHandle(fun,varargin)
@@ -46,6 +50,16 @@ methods
 
   function n = numArgumentsFromSubscript(varargin)
     n = 0;
+  end
+
+  function out = get.isReal(f)
+    rot = rotation.rand(10);
+    out = isreal(f.eval(rot));
+  end
+
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    F = SO3FunHandle(@(rot) real(F.eval(rot)),F.CS,F.SS);
   end
   
 end

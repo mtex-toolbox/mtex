@@ -28,13 +28,14 @@ classdef SO3FunCBF < SO3Fun
     psi = S2DeLaValleePoussinKernel('halfwidth',10*degree);
     weights = 1;
     % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
-    antipodal = false
+    antipodal = false;
   end
 
   properties (Dependent = true)
     SLeft
     SRight
     bandwidth % harmonic degree
+    isReal
   end
   
   methods
@@ -115,7 +116,16 @@ classdef SO3FunCBF < SO3Fun
     function SO3F = set.bandwidth(SO3F,L)
       SO3F.psi.bandwidth = L;
     end
-        
+    
+    function out = get.isReal(f)
+      out = isreal(f.weights);
+    end
+  
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.weights = real(F.weights);
+    end
+
   end 
   
   methods (Static = true)

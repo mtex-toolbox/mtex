@@ -46,7 +46,7 @@ annotate(localMax)
 % || harmonic expansion || @S2FunHarmonic ||
 % || finite elements || @S2FunTri ||
 % || function handle || @S2FunHandle ||
-% || Bingham distribution || @BinghamS2 ||
+% || Bingham distribution || @S2FunBingham ||
 %
 % All representations allow for the same operations which are specified for
 % the abstract class |@S2Fun|. In particular it is possible to calculate
