@@ -4,6 +4,7 @@ classdef S2FunBingham < S2Fun
     a  % principle axes
     Z  % smoothing parameters
     s  % reference system
+    isReal = 1;
   end
   
   properties (SetAccess=protected)

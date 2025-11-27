@@ -36,6 +36,7 @@ end
 
 methods (Static = true)
   sF = quadrature(f, varargin);
+  sF = example(varargin);
 end
 
 end

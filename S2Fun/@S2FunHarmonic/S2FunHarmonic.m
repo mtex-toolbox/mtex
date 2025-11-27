@@ -130,6 +130,8 @@ methods (Static = true)
   sF = adjointNFSFT(vec,values,varargin);
   sF = interpolate(v, y, varargin);
   sF = regularize(nodes,y,lambda,varargin);
+  sF = example(varargin);
+  
 
   function sF = loadobj(sF)
     % called by Matlab when an object is loaded from an .mat file
