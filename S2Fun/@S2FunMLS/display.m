@@ -9,6 +9,7 @@ end
 
 if length(S2F) > 1, disp(['  size: ' size2str(S2F)]); end
 
+if ~S2F.isReal, disp('  isReal: false'); end
 if S2F.antipodal, disp('  antipodal: true'); end
 
 if isa(S2F.nodes,'S2Grid')

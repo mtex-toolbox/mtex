@@ -18,6 +18,7 @@ classdef S2FunMLS < S2Fun
   properties (Dependent)
     dim
     antipodal
+    isReal
   end
 
   methods
@@ -116,6 +117,15 @@ classdef S2FunMLS < S2Fun
       S2F.nodes.antipodal = value;
     end
 
+    function out = get.isReal(f)
+      out = isreal(f.values);
+    end
+
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.values = real(F.values);
+    end
+
     % make sure nn is an integer value
     function S2F = set.nn(S2F, value)
       if (value > 0 && value < S2F.dim)
@@ -170,6 +180,7 @@ classdef S2FunMLS < S2Fun
   methods (Static = true)
     S2F = interpolate(varargin);
     S2F = approximate(f, varargin);
+    S2F = example(varargin)
   end
 
 end
