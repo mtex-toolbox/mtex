@@ -6,6 +6,7 @@ classdef SO3Fun < dynOption
     SRight    % symmetry that acts from the right
     antipodal % grain exchange symmetry
     bandwidth % 
+    isReal
   end    
   
   properties (Dependent = true)

@@ -37,6 +37,7 @@ end
 properties (Dependent = true)
   bandwidth % harmonic degree
   antipodal
+  isReal
   SLeft
   SRight
 end
@@ -158,6 +159,16 @@ methods
   
   function SO3F = set.bandwidth(SO3F,L)
     SO3F.psi.bandwidth = L;
+  end
+
+  function out = get.isReal(f)
+    out = isreal(f.c0) & isreal(f.weights);
+  end
+  
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    F.c0 = real(F.c0);
+    F.weights = real(F.weights);
   end
     
   function s = size(SO3F,varargin)
