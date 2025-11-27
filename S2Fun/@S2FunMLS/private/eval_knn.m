@@ -43,6 +43,14 @@ if (~sF.centered)
   else
     G = eval_basis_functions(sF, sF.nodes(grid_id)).';
   end
+  
+  % odd basis functions may clash with antipodal option, since (-v) = -p(v)
+  % thus make sure to use the representer which is closer to the center
+  if (mod(sF.degree, 2) > 0)
+    I = sum(v.subSet(v_id).xyz .* sF.nodes.subSet(grid_id).xyz, 2) < 0;
+    G(:,I) = G(:,I) * (-1);
+  end
+
   g_book = reshape(eval_basis_functions(sF, v).', sF.dim, 1, N);
 else
   % compute the rotations that shift each element of v into the north pole
@@ -70,7 +78,7 @@ W_book = sqrt(reshape(weights', nn, 1, N));
 
 % compute scaling factors (norms of columns of G_times_W_book)
 B_book = G_book .* W_book;
-S_book = sqrt(sum(B_book.^2, 1));
+S_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 f_book = pagetranspose(reshape(sF.values(grid_id,:).', numel(sF), nn, N));

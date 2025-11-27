@@ -53,7 +53,7 @@ classdef S2FunMLS < S2Fun
       S2F.delta = get_option(varargin, 'delta', compute_delta(S2F), 'double');
 
       % apply boolean flag arguments
-      S2F.monomials = get_option(varargin, 'monomials', true, 'logical');
+      S2F.monomials = get_option(varargin, 'monomials', false, 'logical');
       S2F.centered = get_option(varargin, 'centered', false, 'logical');
       S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
       S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, false, 'logical');

@@ -35,7 +35,7 @@ classdef SO3FunMLS < SO3Fun
     degree      = 3     % the polynomial degree used for approximation
     delta       = 0     % support radius of the weight function
     nn          = 0     % specified number of neighbors to use 
-    w           = @(t)(max(1-t, 0).^4 .* (4*t+1));        % wendland weight function
+    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % wendland weight function
     centered    = false % only evaluate the basis near the pole if true
     tangent     = false % use polynomials on the tangent space
     bandwidth   = getMTEXpref('maxSO3Bandwidth');
@@ -72,23 +72,27 @@ classdef SO3FunMLS < SO3Fun
       % set optional arguments
       SO3F.degree = get_option(varargin,'degree',3);
       
-      % apply flags in the function arguments and remove them afterwards
-      SO3F.centered = check_option(varargin,'centered');
-      if check_option(varargin,'tangent')
+      % apply flags in the function arguments 
+      SO3F.centered = get_option(varargin,'centered', false, 'logical');
+      if get_option(varargin,'tangent', false, 'logical')
         SO3F.tangent = true;
         SO3F.centered = true;
       end
 
-      % get the weight function if one is specified
-      fun = getClass(varargin,'function_handle');
-      if ~isempty(fun)
-        SO3F.w = fun;
-      elseif check_option(varargin,'hat')
-        SO3F.w = @(t)(max(1-t, 0));
-      elseif check_option(varargin,'squared hat')
-        SO3F.w = @(t)(max(1-t, 0).^2);
-      elseif check_option(varargin,'indicator')
-        SO3F.w = @(t)(t .* (t < 1));
+      % set the weight function 
+      weightfun = get_option(varargin, 'weight', 'wendland', {'string','function_handle'});
+      if (class(weightfun) == 'function_handle')
+        SO3F.w = weightfun;
+      else
+        switch weightfun
+          case 'hat';         SO3F.w = @(t)(max(1-t, 0));
+          case 'squared hat'; SO3F.w = @(t)(max(1-t, 0).^2);
+          case 'indicator';   SO3F.w = @(t)(t .* (t <= 1));
+          case 'const';       SO3F.w = @(t)(t .* (t <= 1));
+          case 'cos';         SO3F.w = @(t)((1+cos(pi*t))/2);
+          case 'C1hat';       SO3F.w = @(t)((1-t.^2).^2);
+          otherwise;          SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+        end
       end
 
       % set delta or k if given
