@@ -41,4 +41,8 @@ methods
   
 end
 
+methods(Static = true)
+  SO3VF = example(varargin)
+end
+
 end

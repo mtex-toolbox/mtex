@@ -9,6 +9,7 @@ end
 
 if length(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
 
+if ~SO3F.isReal, disp('  isReal: false'); end
 if SO3F.antipodal, disp('  antipodal: true'); end
 
 if isa(SO3F.nodes,'SO3Grid')
