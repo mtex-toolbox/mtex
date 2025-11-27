@@ -37,7 +37,10 @@ properties (Hidden = true)
   hiddenCS symmetry = crystalSymmetry;
   hiddenSS symmetry = specimenSymmetry;
 end
-  
+properties (Dependent = true)
+  isReal
+end
+
 methods
   function SO3VF = SO3VectorFieldHandle(fun,varargin)
     
@@ -95,6 +98,15 @@ methods
     else
       ss = SO3VF.hiddenSS;
     end
+  end
+  function out = get.isReal(f)
+    rot = rotation.rand(10);
+    out = isreal(f.eval(rot));
+  end
+
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    F = SO3VectorFieldHandle(@(rot) real(F.eval(rot)),F.hiddenCS,F.hiddenSS,F.tangentSpace);
   end
 
   % -----------------------------------------------------------------------
