@@ -46,6 +46,7 @@ classdef SO3FunMLS < SO3Fun
     antipodal
     SLeft
     SRight
+    isReal
   end
 
   methods
@@ -183,6 +184,16 @@ classdef SO3FunMLS < SO3Fun
         antipodal = false;
       end
     end
+
+    function out = get.isReal(f)
+      out = isreal(f.values);
+    end
+  
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.values = real(F.values);
+    end
+
 
     function n = numArgumentsFromSubscript(varargin)
       n = 0;
