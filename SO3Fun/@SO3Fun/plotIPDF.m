@@ -16,6 +16,13 @@ function plotIPDF(SO3F,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+if ~SO3F.isReal
+  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  SO3F.isReal=1;
+end
+
+
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 

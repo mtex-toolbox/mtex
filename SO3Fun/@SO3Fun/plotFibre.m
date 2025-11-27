@@ -20,6 +20,12 @@ function [x,omega] = plotFibre(odf,f,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+if ~odf.isReal
+  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  odf.isReal=1;
+end
+
 % get axis
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 

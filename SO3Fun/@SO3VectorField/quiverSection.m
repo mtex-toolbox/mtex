@@ -38,13 +38,14 @@ function quiverSection(SO3VF,varargin)
 % See also
 % saveFigure Plotting
 
-oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
-
 % only plot the real part of SO3VF
-% TODO: Add isReal for SO3VectorField
-if isa(SO3VF,'SO3VectorFieldHarmonic')
-  SO3VF.isReal = 1;
+if ~SO3VF.isReal
+  warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  SO3VF.isReal=1;
 end
+
+oS = newODFSectionPlot(SO3VF.CS,SO3VF.SS,varargin{:});
 
 % TODO: Do FFT for evaluation on equispaced grid in case of
 % SO3VectorfieldHarmonics

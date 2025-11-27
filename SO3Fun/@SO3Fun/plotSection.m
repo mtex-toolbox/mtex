@@ -25,6 +25,13 @@ function plotSection(F,varargin)
 % See also
 % saveFigure Plotting
 
+if ~F.isReal
+  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  F.isReal=1;
+end
+
+
 if F.antipodal, ap = {'antipodal'}; else, ap = {}; end
 oS = newODFSectionPlot(F.CS,F.SS,ap{:},varargin{:});
 

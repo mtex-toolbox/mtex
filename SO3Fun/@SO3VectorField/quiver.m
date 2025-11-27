@@ -1,5 +1,5 @@
-function varargout = quiver(sVF,varargin)
-% quiver spherical vector field
+function varargout = quiver(SO3VF,varargin)
+% quiver rotational vector field
 %
 % Syntax
 %   quiver3(sVF)
@@ -14,6 +14,6 @@ function varargout = quiver(sVF,varargin)
 %
 
 % plot the function values
-[varargout{1:nargout}] = plot(sVF,varargin{:});
+[varargout{1:nargout}] = plot(SO3VF,varargin{:});
 
 end

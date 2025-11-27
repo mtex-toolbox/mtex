@@ -24,6 +24,13 @@ function plotPDF(SO3F,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+if ~SO3F.isReal
+  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  SO3F.isReal=1;
+end
+
+
 % superposition coefficients
 if check_option(varargin,'superposition')
   c = get_option(varargin,'superposition');
