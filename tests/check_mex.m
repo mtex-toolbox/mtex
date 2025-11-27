@@ -248,7 +248,7 @@ end
 function out = check_numericalSaddlepointWithDerivatives
 
 out = 1;
-S2F = BinghamS2([-1 0 1]);
+S2F = S2FunBingham([-1 0 1]);
 
 end
 

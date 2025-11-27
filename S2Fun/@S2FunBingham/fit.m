@@ -6,13 +6,13 @@ function BS2 = fit(v,varargin)
 % (1999) https://doi.org/10.1186/BF03351601
 %
 % Syntax
-%   BS2 = BinghamS2.fit(v)
+%   BS2 = S2FunBingham.fit(v)
 %
 % Input
 %  v - vector3d
 %
 % Output
-%  BS2 - @BinghamS2
+%  BS2 - @S2FunBingham
 %
 %
 % Options
@@ -28,7 +28,7 @@ function BS2 = fit(v,varargin)
 %     rotation.byAxisAngle(vector3d.X,rand(N,1)*2*pi) * vector3d.Y;
 %
 %   % fit a Bingham distribution
-%   S2F = BinghamS2.fit(v)
+%   S2F = S2FunBingham.fit(v)
 %
 %   % visualization
 %   plot(S2F)
@@ -41,7 +41,7 @@ function BS2 = fit(v,varargin)
 [a,kappa] = eig3(v*v);
 kappa = kappa./sum(kappa);
 Z =estimateZ(kappa);
-BS2 = BinghamS2(Z, a);
+BS2 = S2FunBingham(Z, a);
 BS2.N = BS2.normalizationConst;
 
 % add the estimate of confidence level, given as ellipse half
