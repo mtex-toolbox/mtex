@@ -52,8 +52,8 @@ classdef S2VectorFieldTri < S2VectorField
     function display(sF,varargin)
 
       %displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
-      displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
-
+      displayClass(sF,inputname(1),varargin{:});
+      
       if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
 
       disp(['  vertices: ' size2str(sF.vertices)]);
