@@ -1,9 +1,6 @@
 function odf = BinghamODF(kappa,varargin)
 % defines a Bingham distributed ODF
 %
-% Description
-% BinghamODF defines a Bingham distributed ODF with A and Lambda.
-%
 % Syntax
 %   odf = BinghamODF(kappa,ori)
 %   odf = BinghamODF(kappa,f)
@@ -19,7 +16,7 @@ function odf = BinghamODF(kappa,varargin)
 %  CS, SS - crystal, specimen @symmetry
 %
 % Output
-%  odf - @SO3Fun
+%  odf - @SO3FunBingham
 %
 % See also
 % FourierODF uniformODF unimodalODF fibreODF
@@ -52,7 +49,7 @@ elseif nargin > 1 && isa(varargin{1},'vector3d') && isa(varargin{2},'vector3d')
 elseif nargin > 1 && isa(varargin{1},'fibre')
   
   % if only one kappa was given extend in to the second one
-  if isscalar(kappa), kappa(2) = kappa;end
+  kappa(2) = kappa(1);
 
   A = fibre2A(varargin{1}.h,varargin{1}.r);  
 
