@@ -68,11 +68,11 @@ for i = 1:length(h)
   % plot the pole density function
   [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',varargin{:});
     
-    if ~check_option(varargin,'noTitle')
-  	mtexTitle(cax(1),char(h{i},'LaTeX'));
-    end
+  if ~check_option(varargin,'noTitle')
+    mtexTitle(cax(1),char(h{i},'LaTeX'));
+  end
   
-% plot annotations
+  % plot annotations
   pfAnnotations('parent',cax,'doNotDraw','add2all');
   [cax.Tag] = deal('pdf');
   setAllAppdata(cax,'h',h{i},'SS',SO3F.SS);

@@ -3,7 +3,7 @@ function l = legendre0(N,x)
 % matrix of the function values
 %       1st dimension -> degree
 %       2nd dimension -> x
-% Use the recurence formula
+% Use the recurrence formula
 %   (n+1)*P_{n+1} = (2n+1)*x*P_n - n*P_{n-1}
 %
 % Syntax
