@@ -36,6 +36,7 @@ methods
         rot = symmetry.calcQuat(id,varargin{:});
       
       end
+      
     end
     
     how2plot = getClass(varargin,'plottingConvention');
@@ -43,6 +44,11 @@ methods
 
     s = s@symmetry(id,rot,how2plot);
     
+    if s.id > 16
+      warning(s.pointGroup + " is not a suitable specimen symmetry!")
+    end
+
+
   end
 
   function makeDefault(ss)
