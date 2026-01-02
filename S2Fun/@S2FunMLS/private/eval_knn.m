@@ -67,7 +67,7 @@ end
 G_book = pagetranspose(reshape(G, sF.dim, nn, N));
 
 
-% dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
 % rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
 % internally this uses QR and we end up with only cond(G), without the square!
 

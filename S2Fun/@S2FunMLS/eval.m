@@ -7,8 +7,8 @@ function [vals, conds] = eval(sF, v, varargin)
 %   vals = eval(sF,v)
 %
 % Input
-%  sF    - the mls function we want to evauate
-%  v     - the points where we want to evaluate the MLS approximation
+%  sF - @S2FunMLS
+%  v  - @vector3d the evaluation directions
 %
 % Output
 %  vals  - the values of the mls approximation sF on v
