@@ -23,6 +23,7 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 % distance the right way
 v.antipodal = v.antipodal | check_option(varargin,'antipodal');
 
+distance = get_option(varargin, 'distance', 'euclidean', 'char');
 
 % if v or w is antipodal, we also search for neighbors on the opposite side
 % of the sphere later, we will have to 'project' the indices back down to
@@ -39,7 +40,7 @@ end
 
 % k given ==> find k nearest neighbors
 if (floor(epsilon_or_k) == epsilon_or_k)
-  ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k);
+  ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k, 'distance', distance);
   if (nargout == 2)
     d = angle(v.subSet(ind), w);
   end
@@ -64,7 +65,7 @@ col_idx = mod(col_idx-1, orig_size) + 1;
 ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), orig_size);
 
 if (nargout == 2)
-  d = angle(v.subSet(col_idx), w.subSet(row_idx));
+  d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
   % also convert d to sparse after computing it
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end

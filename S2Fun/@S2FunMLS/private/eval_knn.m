@@ -7,16 +7,16 @@ N = numel(v);
 nn = sF.nn;
 nn_total = nn * N;
 
-% if the oversampling factor is below 1, set it to 2
-if (sF.nn < sF.dim)
+% if the oversampling factor is <=1, set it to 2
+if (sF.nn <= sF.dim)
   sF.nn = 2 * sF.dim;
   warning(sprintf(...
     ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
     'nn has been set to 2 * dim.']));
 end
 
-% find neighbors and perform subsampling if the flag is set, compute distances
-[ind, dist] = sF.nodes.find(v, nn); 
+% Find neighbors and perform subsampling. If the flag is set, compute distances.
+[ind, dist] = sF.nodes.find(v, nn, varargin{:}); 
 if (sF.subsample == true)
   ind = sF.find_optimal_subset(ind, v, varargin{:});
   nn_total = N * sF.dim;
@@ -44,9 +44,11 @@ if (~sF.centered)
     G = eval_basis_functions(sF, sF.nodes(grid_id)).';
   end
   
-  % odd basis functions may clash with antipodal option, since (-v) = -p(v)
-  % thus make sure to use the representer which is closer to the center
-  if (mod(sF.degree, 2) > 0)
+  % odd basis functions may clash with antipodal option, since p(-v) = -p(v),
+  %   but v and -v are in the same equivalence class
+  % thus make sure to use the representer which is closer to the center 
+  %   (on the same hemisphere)
+  if (mod(sF.degree, 2) == 1)
     I = sum(v.subSet(v_id).xyz .* sF.nodes.subSet(grid_id).xyz, 2) < 0;
     G(:,I) = G(:,I) * (-1);
   end
@@ -74,6 +76,12 @@ G_book = pagetranspose(reshape(G, sF.dim, nn, N));
 % compute distances and weights
 deltas = 1.1 * max(dist, [], 2);
 weights = sF.w(dist ./ deltas);
+if (sF.detectOutliers == true)
+  oI = computeOutlierIndicators(sF);
+  oI = reshape(oI(grid_id), nn, N)';
+  weights = weights .* exp(-oI);
+end
+weights = weights ./ sum(weights, 2);
 W_book = sqrt(reshape(weights', nn, 1, N));
 
 % compute scaling factors (norms of columns of G_times_W_book)

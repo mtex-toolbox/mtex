@@ -22,6 +22,7 @@ if (N == 1)
   v = [v;v];
   [vals, conds] = sF.eval(v, varargin{:});
   vals = vals(1,:);
+  vals = reshape(vals, size(sF));
   conds = conds(1);
   return;
 end

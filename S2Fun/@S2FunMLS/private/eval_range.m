@@ -14,7 +14,7 @@ nn = sum(ind, 2);
 % for points with too less neighbors, we instead choose the sF.dim nearest ones
 % NOTE: we choose more neighbors than only the sF.dim nearest ones, since the
 % expectation of the lebesgue constant is infinite in this setting
-I = nn < sF.dim;
+I = nn <= sF.dim;
 if (sum(I) > 0)
   warning(sprintf( ...
     ['Some centers did not have sufficiently many neighbors. \n' ...
@@ -22,7 +22,8 @@ if (sum(I) > 0)
   
   % evaluate the critical nodes via knn-search instead of rangesearch
   nn_original = sF.nn;
-  sF.nn = sF.dim;
+  % for sF.nn = sF.dim, the expectation of the lebesgue constant is infinite
+  sF.nn = sF.dim + 1;
   if (nargout == 2)
     [vals(I,:), conds(I)] = sF.eval(v.subSet(I));
   else
@@ -39,7 +40,7 @@ end
 J = ~I;
 v = v.subSet(J);
 N = sum(J);
-[ind, dist] = sF.nodes.find(v, sF.delta);
+[ind, dist] = sF.nodes.find(v, sF.delta, varargin{:});
 % if optimal subsampling is set to true, we can now fall back to the eval_knn case 
 %   where all neighborhoods have the same size (the dim of the ansatz space) 
 if (sF.subsample == true)
@@ -113,7 +114,20 @@ end
 weights = zeros(N * nn_max, 1);
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
 %   contained in sF.nodes ==> distance 0
-weights(col_id) = sF.w(dist(ind > 0) / sF.delta);
+I = sub2ind(size(dist), v_id, grid_id);
+weights(col_id) = sF.w(dist(I) / sF.delta);
+
+if (sF.detectOutliers == true)
+  oI = computeOutlierIndicators(sF);
+  oI_factor = zeros(N * nn_max, 1);
+  oI_factor(col_id) = exp(-oI(grid_id));
+  weights = weights .* oI_factor;
+end
+
+% TODO: make this cleaner
+weights = reshape(weights, nn_max, N);
+weights = weights ./ max(weights, [], 1);
+weights = weights(:);
 
 B = G .* sqrt(weights');
 B_book = pagetranspose(reshape(B, sF.dim, nn_max, N)); 

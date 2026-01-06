@@ -13,12 +13,17 @@ classdef S2FunMLS < S2Fun
     tangent     = false   % use polynomials on the tangent space
     s           = specimenSymmetry.default   % TODO: symmetry
     subsample   = false   % perform optimal subsampling, or not
+    distance = 'euclidean';
+
+    detectOutliers = false;
+    outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
   end
 
   properties (Dependent)
     dim
     antipodal
     isReal
+    outlierIndicators
   end
 
   methods
@@ -34,7 +39,23 @@ classdef S2FunMLS < S2Fun
         return
       end
 
+      % properly extract the size of the S2FunMLS
+      % this is given by the size of the values-array for each node
+      % we obtain it by removing the entries of size(nodes) from size(values)
+      nodes_size = size(nodes);
+      nodes_dim = numel(nodes_size);
+      if (ismember(numel(nodes), nodes_size))
+        nodes_dim = 1;
+      end
+      values_size = size(values);
+      values_size = values_size(nodes_dim+1 : end);
+
+      % remove nodes that occur more than once, and also remove the
+      % corresponding values
       [nodes,values] = uniqueData(nodes,values);
+
+      values = reshape(values, [numel(nodes), values_size]);
+      
 
       % preserve grid structure
       S2F.nodes = nodes;
@@ -58,6 +79,15 @@ classdef S2FunMLS < S2Fun
       S2F.centered = get_option(varargin, 'centered', false, 'logical');
       S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
       S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, false, 'logical');
+      S2F.detectOutliers = get_option(varargin, ...
+        {'detect outliers', 'detectoutliers, detect_outliers'}, ...
+        false, 'logical');
+
+      S2F.outlierDetectionRange = get_option(varargin, ...
+        {'outlierdetectionrange', 'outlier detection range'}, 10, 'double');
+      S2F.outlierDetectionRange = round(S2F.outlierDetectionRange);
+
+      S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
 
       % if tangent is set to true, we must use monomials
       if (S2F.tangent == true)
@@ -117,6 +147,22 @@ classdef S2FunMLS < S2Fun
       S2F.nodes.antipodal = value;
     end
 
+    % subsampling needs monomial basis, since linprog need real sampling matrix
+    function S2F = set.subsample(S2F, value)
+      S2F.subsample = value;
+      if (value == true)
+        S2F.monomials = true;
+      end
+    end
+
+    % tangent need centered
+    function S2F = set.tangent(S2F, value)
+      S2F.tangent = value;
+      if (value == true)
+        S2F.centered = true;
+      end
+    end
+
     function out = get.isReal(f)
       out = isreal(f.values);
     end
@@ -174,6 +220,11 @@ classdef S2FunMLS < S2Fun
     end
 
     monomial_coefficients = get_monomial_coefficients(degs);
+
+    % outlierIndicators = computeOutlierIndicators(S2F, k);
+    function oI = get.outlierIndicators(S2F)
+      oI = computeOutlierIndicators(S2F);
+    end
 
   end
 

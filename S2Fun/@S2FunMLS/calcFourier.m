@@ -14,7 +14,7 @@ function f_hat = calcFourier(S2F,varargin)
 %
 
 % decide bandwidth
-bw = chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:});
+bw = max(chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:}), 64);
 
 if check_option(varargin,'ClenshawCurtis')
   S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw);

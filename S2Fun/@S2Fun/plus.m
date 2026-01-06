@@ -4,6 +4,9 @@ function sF = plus(sF1, sF2)
 if isa(sF2,'S2FunHarmonic')
   sF = sF2 + sF1;
   return
+elseif isa(sF2, 'S2FunMLS')
+  sF = sF2 + sF1;
+  return;
 end
 
 if isnumeric(sF1)
