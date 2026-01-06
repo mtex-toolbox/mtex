@@ -1,5 +1,43 @@
 classdef S2FunMLS < S2Fun
-  % a class representing a function on the sphere
+% a class representing a function on the rotation group
+% 
+% Syntax
+%   S2F = S2FunMLS(nodes,values)
+%   S2F = S2FunMLS(nodes,values, nn, __)
+%   S2F = S2FunMLS(nodes,values, delta, __)
+%   S2F = S2FunMLS(nodes,values, delta, w, @(t)(__))
+%   S2F = S2FunMLS(nodes,values, 'centered', 'detectOutliers', 'monomials', 'subsample', 'tangent')
+%
+% Input
+%  nodes  - @orientation,@rotation (interpolation points)
+%  values - array of function values
+%
+% Output
+%  SO3F - @SO3FunMLS
+%
+% Options
+%  degree  - the polynomial degree used for approximation
+%  delta   - support radius of the weight function
+%  nn      - specified number of neighbors used for local approximation
+%  outlierDetectionRange - specify how many neighbors are taken into account
+%                          when searching for outliers
+%  w       - @function_handle (weight function)
+%          - predefined weight function can be chosen via the following strings:
+%             'C1hat', 'const', 'cos', 'hat', 'indicator', 'squared hat', 
+%             'wendland' (default)
+% distance - specify which metric to use (default: 'euclidean')
+%          - run 'help rangesearch' for available options
+%
+% Flags
+%  centered       - only evaluate the basis near the pole if true
+%  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems 
+%                   depending on how bad they are
+%  monomials      - use monomial basis isntead of spherical harmonics
+%  subsample      - use a subset of the local nodes that minimizes the lebesgue
+%                   constant 
+%  tangent        - use polynomials on the tangent space
+%
+
 
   properties
     nodes       = []      % points where the function values are known
@@ -11,9 +49,10 @@ classdef S2FunMLS < S2Fun
     monomials   = true    % use monomials instead of sph. harm. if true
     centered    = false   % only evaluate the basis near the pole if true
     tangent     = false   % use polynomials on the tangent space
-    s           = specimenSymmetry.default   % TODO: symmetry
     subsample   = false   % perform optimal subsampling, or not
-    distance = 'euclidean';
+    distance    = 'euclidean';
+
+    s = crystalSymmetry(); % crystal symmetry
 
     detectOutliers = false;
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
@@ -52,63 +91,58 @@ classdef S2FunMLS < S2Fun
 
       % remove nodes that occur more than once, and also remove the
       % corresponding values
-      [nodes,values] = uniqueData(nodes,values);
-
+      [nodes, values] = uniqueData(nodes,values);
       values = reshape(values, [numel(nodes), values_size]);
-      
 
       % preserve grid structure
       S2F.nodes = nodes;
       sz = [size(values), 1];
       S2F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
 
-      % get symmetry, degree, number of neighbors
-      S2F.s = get_option(varargin, 'symmetry', specimenSymmetry.default, 'crystalSymmetry');
-      S2F.degree = get_option(varargin, 'degree', 3, 'double');
-      S2F.nn = round(get_option(varargin, 'neighbors', 2*S2F.dim, 'double'));
+      % set degree, number of neighbors, support radius delta,
+      %   outlierDetectionRange, weight function
+      S2F.degree = get_option(varargin, {'degree', 'deg'}, 3, 'double');
+      S2F.nn = round(get_option(varargin, {'neighbors', 'nn'}, 2*S2F.dim, 'double'));
       if (S2F.nn < S2F.dim)
         S2F.nn = 2 * S2F.dim;
         warning(sprintf(...
           ['The specified number of neighbors was less than the dimension ' ...
           'of the ansatz space.\n\t It has been set to 2 times the dimension.']));
       end
-      S2F.delta = get_option(varargin, 'delta', compute_delta(S2F), 'double');
-
-      % apply boolean flag arguments
-      S2F.monomials = get_option(varargin, 'monomials', false, 'logical');
-      S2F.centered = get_option(varargin, 'centered', false, 'logical');
-      S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
-      S2F.subsample = get_option(varargin, {'subsampling', 'subsample'}, false, 'logical');
-      S2F.detectOutliers = get_option(varargin, ...
-        {'detect outliers', 'detectoutliers, detect_outliers'}, ...
-        false, 'logical');
-
-      S2F.outlierDetectionRange = get_option(varargin, ...
-        {'outlierdetectionrange', 'outlier detection range'}, 10, 'double');
-      S2F.outlierDetectionRange = round(S2F.outlierDetectionRange);
+      S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, compute_delta(S2F), 'double');
+      S2F.outlierDetectionRange = roudn(get_option(varargin, ...
+        {'outlierdetectionrange', 'outlier detection range', 'odr'}, 10, 'double'));
+      S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, specimenSymmetry.default, 'crystalSymmetry');
+      
+      weightfun = get_option(varargin, 'weight', 'wendland', {'string','function_handle'});
+      if (isa(weightfun, 'function_handle'))
+        S2F.w = weightfun;
+      else
+        switch weightfun
+          case 'hat';         S2F.w = @(t)(max(1-t, 0));
+          case 'squared hat'; S2F.w = @(t)(max(1-t, 0).^2);
+          case 'indicator';   S2F.w = @(t)(t .* (t <= 1));
+          case 'const';       S2F.w = @(t)(t .* (t <= 1));
+          case 'cos';         S2F.w = @(t)((1+cos(pi*t))/2);
+          case 'C1hat';       S2F.w = @(t)((1-t.^2).^2);
+          case 'wendland';    S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+          otherwise;          S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+        end
+      end
 
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
+
+      % apply boolean flag arguments
+      S2F.monomials = check_option(varargin, 'monomials', 'logical');
+      S2F.centered = check_option(varargin, 'centered', 'logical');
+      S2F.tangent = check_option(varargin, 'tangent', 'logical');
+      S2F.subsample = check_option(varargin, {'subsampling', 'subsample'}, 'logical');
+      S2F.detectOutliers = check_option(varargin, ...
+        {'detect outliers', 'detectoutliers, detect_outliers'}, 'logical');
 
       % if tangent is set to true, we must use monomials
       if (S2F.tangent == true)
         S2F.monomials = true;
-      end
-
-      % set weight function
-      weight = get_option(varargin, 'weight');
-      if (isa(weight, 'function_handle'))
-        S2F.w = weight;
-      elseif (isa(weight, 'string'))
-        if strcmp(weight_arg, 'hat')
-          S2F.w = @(t)(max(1-t, 0));
-        elseif  strcmp(weight_arg, 'squared hat')
-          S2F.w = @(t)(max(1-t, 0).^2);
-        elseif strcmp(weight_arg, 'indicator')
-          S2F.w = @(t)(t .* (t < 1));
-        end
-      else
-        % wendland weight - vanishes (too) fast
-        S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
       end
 
       if (S2F.delta == 0)
@@ -199,7 +233,6 @@ classdef S2FunMLS < S2Fun
         nn = ceil(mean(sum(ind, 2)));
         return;
       end
-
       
       if (varargin{1} == "min")
         % expected minimal number of neighbors
