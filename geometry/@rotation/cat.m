@@ -14,7 +14,7 @@ function r = cat(dim,varargin)
 % See also
 % rotation/horzcat, rotation/vertcat
 
-% remove emtpy arguments
+% remove empty arguments
 varargin(cellfun('isempty',varargin)) = [];
 
 % ensure result is at least rotation

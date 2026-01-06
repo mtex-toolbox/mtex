@@ -88,9 +88,9 @@ for k=1:numel(hw)
     % c0 = c0./sum(c0);
 
     % better initial weights
-    warning('off','mlsq:itermax')
-    SO3F = SO3FunRBF.approximation(grid,odf.eval(grid),'kernel',psik,'mlsq','odf','nothinning');
-    warning('on','mlsq:itermax')
+    warning('off','lsqr:maxit')
+    SO3F = SO3FunRBF.interpolate(grid,odf.eval(grid),'kernel',psik,'mlsq','density','nothinning');
+    warning('on','lsqr:maxit')
 
     % adjust grid
     [grid,c0] = deal(SO3F.center,SO3F.weights);
@@ -109,7 +109,9 @@ for k=1:numel(hw)
 
     % or use MLSSolver directly?
     [odf,alpha] = calcODF(pf,grid,psik,'c0',c0(:),'silent');
-
+  
+    % TODO: The error is not comparable to the displayed errors in calcODF, 
+    % which are muted by the flag 'silent' in the above command
     if ~check_option(varargin,'silent') && ~getMTEXpref('generatingHelpMode')
         e = calcError(pf,odf,'silent'); % not silent :/
         fprintf(format,xnum2str(k,'fixedWidth',2), xnum2str(numel(grid),'fixedWidth',7),e);

@@ -126,7 +126,7 @@ plot(pf_measured,'silent');
 % the default odf estimation will distribute volume on nodes that do not
 % have corresponding data. 
 
-odf_recalc = calcODF(pf_measured,'zeroRange','halfwidth',2.5*degree);
+odf_recalc = calcODF(pf_measured,'zeroRange','resolution',2.5*degree);
 fprintf('  error true -- estimated odf   : %f\n', calcError(odf_true,odf_recalc)) 
 
 %% Compare with iterative odf estimation
