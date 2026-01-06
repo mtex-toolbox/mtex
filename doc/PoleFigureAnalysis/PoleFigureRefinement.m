@@ -1,8 +1,5 @@
-%% Succesive refinement Demo
-
-%% Open in Editor
+%% Successive Refinement Demo
 %
-
 %% Regular ODF estimation 
 % Please refer to |PoleFigure2ODF| tutorial first. The regular way of
 % estimating an ODF:
@@ -18,8 +15,8 @@ calcError(pf,odf_naive)
 odf_naive.plot(pf.allH)
 
 %%
-% anthor form to regularize the inversion problem is to iteratively
-% adjuste the kernel width during ODF estimation.
+% another form to regularize the inversion problem is to iteratively
+% adjust the kernel width during ODF estimation.
 
 odf_iter = calcODFIterative(pf,'nothinning');
 
@@ -54,7 +51,7 @@ q2 = rotation.byEuler(10*degree,30*degree,10*degree,'ABG');
 odf_true = .6*unimodalODF(q,cs,ss,'halfwidth',5*degree) + ...
             .4*unimodalODF(q2,cs,ss,'halfwidth',4*degree);
 
-%% Polefigures to measure 
+%% Pole Figures to measure 
 
 h = [ ...
   Miller(1,1,1,cs), ...
@@ -84,7 +81,7 @@ nsteps = 5;
 
 for k=1:nsteps
   
-  % perform for every PoleFigure a measurement
+  % perform for every Pole Figure a measurement
   pf_simulated = calcPoleFigure(odf_true,h,r,'silent');
     
   % merge the new measurements with old ones
@@ -95,10 +92,10 @@ for k=1:nsteps
   fprintf('- at resolution : %f\n', mean(cellfun(@(r) r.resolution, pf_measured.allR))/degree);  
   
   if k < nsteps
-    % odf modelling
+    % odf modeling
     odf_recalc = calcODF(pf_measured,'zeroRange','silent');
 
-    % in order to minimize the modelling error
+    % in order to minimize the modeling error
     pf_recalcerror  = calcErrorPF(pf_measured,odf_recalc,'l1','silent');
 
     % we could initialized initial weights with previous estimation
@@ -120,7 +117,7 @@ for k=1:nsteps
   end  
 end
 
-%% Measured Polefigure
+%% Measured Pole Figure
 
 pf_measured
 plot(pf_measured,'silent');
