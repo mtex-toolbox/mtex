@@ -268,6 +268,70 @@ classdef plottingConvention < matlab.mixin.Copyable
     function pC = default3D
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
     end
+   
+   function pC = image
+        % Map plotting conventions to match SEM image display and MATLAB 
+        % 'axis image' reference frames.
+        % Use with import flag "convertEuler2SpatialReferenceFrame" for
+        % most modern SEM systems.
+        % Useful for producing comparable map plots in MTEX, 
+        % MATLAB and SEM/EBSD software.
+        pC = plottingConvention(-vector3d.Z,vector3d.X);
+    end
+    
+    function pC = oxInst
+        % Map plotting conventions to match OxInst Euler reference frame
+        % X1/Y1/Z1 on most SEM systems.
+        % Use with import flag "convertSpatial2EulerReferenceFrame" on
+        % Oxford Instruments systems.
+        % Useful for producing comparable orientation plots in MTEX and Oxford
+        % Instruments software.
+      pC = plottingConvention(vector3d.Z,-vector3d.X);
+      warning("Using typical reference frames for Oxford Instruments EBSD on most modern SEMs." + ...
+          "You should verify this for your particular system (see AZtec EBSD Data Analysis User Guide, page 6).")
+    end
+
+    function pC = edax(setting)
+        % Map plotting conventions to match EDAX Euler reference frame
+        % A1/A2/A3.
+        % Use with import flag "convertSpatial2EulerReferenceFrame" on
+        % EDAX systems.
+        % Useful for producing comparable orientation plots in MTEX and EDAX software.
+        %
+        % Input:
+        %  setting = edax setting number (numeric) (default = 2)
+
+        if nargin<1
+            setting = 2;
+            warning("No EDAX reference frame setting specified. Defaulting to setting 2.")
+        end
+        switch setting
+            case 1
+                outOfScreen = vector3d.Z;
+                east = vector3d.Y;
+            case 2
+                outOfScreen = vector3d.Z;
+                east = -vector3d.Y;
+            case 3
+                outOfScreen = vector3d.Z;
+                east = vector3d.X;
+            case 4
+                outOfScreen = vector3d.Z;
+                east = -vector3d.X;
+        end
+        pC = plottingConvention(outOfScreen,east);
+    end
+
+    function pC = bruker
+        % Map plotting conventions to match Bruker Euler reference frame
+        % on most SEM systems.
+        % Use with import flag "convertSpatial2EulerReferenceFrame" on
+        % Bruker systems.
+        % Useful for producing comparable orientation plots in MTEX and Oxford
+        % Instruments software.
+        error("Method not implemented yet. " + ...
+            "Bruker plotting convention is unknown!")
+    end
 
   end
 
