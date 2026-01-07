@@ -59,11 +59,14 @@ catch
   % load from internet when required
   if isempty(dir(fName))
     
-    if strcmpi(name,'trueEbsdWCCo')
-      url = 'https://zenodo.org/records/13870131/files/trueEbsdWCCo.mat';
-    else
-      url = ['https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/data/' type '/' char(list(name,:).files)];
-    end
+  switch name
+        case 'trueEbsdWCCo'
+            url = 'https://zenodo.org/records/13870131/files/trueEbsdWCCo.mat';
+        case 'trueEbsdCopper'
+            url = 'https://zenodo.org/records/16902083/files/copper29.h5oina';
+        otherwise
+            url = ['https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/data/' type '/' char(list(name,:).files)];
+   end
 
     disp('  downloading data from ')
     disp(' ');
@@ -271,7 +274,17 @@ catch
         case 'trueebsdwcco'
           
           load(fName,'out');
-          
+        
+        case 'trueebsdcopper'
+             %supress coordinate system warning in loadEBSD_h5oina
+             orig_state = warning;
+             warning off;
+            out = gridify(rotate(...
+                EBSD.load(fName),...
+                        reflection(xvector),'keepEuler'));
+            warning(orig_state);
+            out.how2plot = plottingConvention(vector3d.Z,-vector3d.X);
+              
         case '3d'
           
           warning('TO BE IMPLEMENTED');
@@ -296,3 +309,4 @@ end
 warning(w);
 
 end
+
