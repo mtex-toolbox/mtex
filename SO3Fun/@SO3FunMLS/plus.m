@@ -25,6 +25,12 @@ if isnumeric(SO3F2)
 end
 
 ensureCompatibleSymmetries(SO3F1,SO3F2);
+
+if (isa(SO3F2, 'SO3FunHarmonic'))
+  SO3F = SO3F2 + SO3F1;
+  return;
+end
+
 if isa(SO3F1,'SO3FunMLS') && isa(SO3F2,'SO3FunMLS') && ...
     length(SO3F1.nodes) == length(SO3F2.nodes) && ...
     all(SO3F1.nodes(:) == SO3F2.nodes(:))

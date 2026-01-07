@@ -1,11 +1,10 @@
-function [vals, conds] = eval_range(SO3F, ori)
+function [vals, conds] = eval_range(SO3F, ori, varargin)
 
-dimensions = size(ori);
 ori = ori(:);
 N = size(ori, 1);
 vals = zeros(N, numel(SO3F));
 conds = zeros(N, 1);
-sz = size(SO3F); SO3F = SO3F.subSet(':');
+SO3F = SO3F.subSet(':');
  
 % get the neighbors and count them
 ind = SO3F.nodes.find(ori, SO3F.delta); 
@@ -36,8 +35,20 @@ J = ~I;
 ori = ori.subSet(J);
 N = sum(J);
 [ind, dist] = SO3F.nodes.find(ori, SO3F.delta);
+
+% if optimal subsampling is set to true, we can now fall back to the eval_knn case 
+%   where all neighborhoods have the same size (the dim of the ansatz space) 
+if (SO3F.subsample == true)
+  ind = SO3F.find_optimal_subset(logical(ind), ori, varargin{:});
+end
+
 [grid_id, ori_id] = find(ind');
 nn = sum(ind, 2);
+
+if (SO3F.subsample == true)
+  dist = angle(ori.subSet(ori_id), SO3F.nodes.subSet(grid_id));
+  dist = sparse(ori_id, grid_id, dist, N, numel(SO3F.nodes));
+end
 
 % the created vector col_id helps to create the (SO3F.dim x N) matrix G, which
 % holds the values of the basis functions at all neighbors of all centers from v
@@ -52,8 +63,11 @@ col_id = (ori_id-1) * nn_max + temp;
 
 % compute the weights
 weights = zeros(N * nn_max, 1);
-weights(col_id) = SO3F.w(nonzeros(dist) / SO3F.delta);
-clear dist;
+% dist(find(ind)) instead of nonzeros(dist), since elements of v might be
+%   contained in S2F.nodes ==> distance 0
+K = sub2ind(size(dist), ori_id, grid_id);
+weights(col_id) = SO3F.w(dist(K) / SO3F.delta);
+clear dist ind;
 % also get the needed values of SO3F on its grid
 f = zeros(N * nn_max, numel(SO3F));
 f(col_id,:) = SO3F.values(grid_id,:);
@@ -120,14 +134,9 @@ genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
 genfuns_book = permute(genfuns_book,[1,3,2]);
 clear W_times_G_book g_book;
 
-% compute the values of the MLS approximation
+% compute the values and reshape
 valsJ = sum(f_book .* genfuns_book, 1);
-vals(J,:) = reshape(valsJ,[numel(ori) numel(SO3F)]);
-if isscalar(SO3F)
-  vals = reshape(vals, dimensions);
-else
-  vals = reshape(vals, [prod(dimensions) sz]);
-end
+vals(J,:) = reshape(valsJ, [numel(ori), numel(SO3F)]);
 
 if isalmostreal(SO3F.values)
   vals = real(vals); 
@@ -137,7 +146,6 @@ if nargout == 2
   eigsJ = pagesvd(Gram_book);
   condsJ = eigsJ(1,:,:) ./ eigsJ(SO3F.dim,:,:);
   conds(J) = condsJ(:);
-  conds = reshape(conds, dimensions);
 end
 
 end

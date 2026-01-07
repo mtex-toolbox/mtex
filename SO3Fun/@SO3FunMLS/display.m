@@ -40,6 +40,11 @@ prop = ['    weight function: ', char(SO3F.w) , ...
         '\n    number of neighbors: ', num2str(SO3F.nn)];
 if SO3F.centered, prop=[prop,'\n    centered: true']; end
 if SO3F.tangent, prop=[prop,'\n    tangent: true']; end
+if SO3F.subsample, prop=[prop,'\n    perform optimal subsampling: true']; end
+if SO3F.detectOutliers
+  prop = [prop, '\n    detect outlier: true']; 
+  prop = [prop, '\n    OutlierDetectionRange: ', num2str(SO3F.outlierDetectionRange)]; 
+end
 
 disp(' ')
 s = setAllAppdata(0,'data2beDisplayed',[prop,'\n']);

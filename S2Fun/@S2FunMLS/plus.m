@@ -1,6 +1,6 @@
 function sF = plus(sF1, sF2)
 
-  % implements sF1 + sF2
+% implements sF1 + sF2
 %
 % Syntax
 %   sF = sF1 + sF2

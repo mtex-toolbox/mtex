@@ -66,9 +66,17 @@ while (end_idx < N)
 
 end
 
-vals = reshape(vals, [dimensions numel(SO3F)]);
+% at this point the vals have the shape (numel(ori) x numel(SO3F))
+% if SO3F has only 1 component, we want to respect the shape of ori
+% if SO3F has multiple components, we want to respect the shape of SO3F
+if (isscalar(SO3F))
+  vals = reshape(vals, dimensions);
+else
+  vals = reshape(vals, [N, size(SO3F)]);
+end
+
 if (nargout == 2)
-  conds = reshape(conds, [dimensions numel(SO3F)]);
+  conds = reshape(conds, dimensions);
 end
 
 end

@@ -42,25 +42,26 @@ classdef S2FunMLS < S2Fun
   properties
     nodes       = []      % points where the function values are known
     values      = []      % the corresponding values
+
     degree      = 3       % the polynomial degree used for approximation
     delta       = 0       % support radius of the weight function
+    distance    = 'euclidean'; % specify metric for neighbor search
     nn          = 0       % specified number of neighbors to use 
+    s = crystalSymmetry(); % crystal symmetry
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)) % Wendland weight function
+
     monomials   = true    % use monomials instead of sph. harm. if true
-    centered    = false   % only evaluate the basis near the pole if true
+    centered    = false   % only evaluate the basis near the pole (0,0,1) if true
     tangent     = false   % use polynomials on the tangent space
     subsample   = false   % perform optimal subsampling, or not
-    distance    = 'euclidean';
 
-    s = crystalSymmetry(); % crystal symmetry
-
-    detectOutliers = false;
+    detectOutliers = false; % specify if we should search for outliers, and recude their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
   end
 
   properties (Dependent)
-    dim
     antipodal
+    dim
     isReal
     outlierIndicators
   end
@@ -110,7 +111,7 @@ classdef S2FunMLS < S2Fun
           'of the ansatz space.\n\t It has been set to 2 times the dimension.']));
       end
       S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, compute_delta(S2F), 'double');
-      S2F.outlierDetectionRange = roudn(get_option(varargin, ...
+      S2F.outlierDetectionRange = round(get_option(varargin, ...
         {'outlierdetectionrange', 'outlier detection range', 'odr'}, 10, 'double'));
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, specimenSymmetry.default, 'crystalSymmetry');
       
@@ -133,12 +134,12 @@ classdef S2FunMLS < S2Fun
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
 
       % apply boolean flag arguments
-      S2F.monomials = check_option(varargin, 'monomials', 'logical');
-      S2F.centered = check_option(varargin, 'centered', 'logical');
-      S2F.tangent = check_option(varargin, 'tangent', 'logical');
-      S2F.subsample = check_option(varargin, {'subsampling', 'subsample'}, 'logical');
+      S2F.monomials = check_option(varargin, 'monomials');
+      S2F.centered = check_option(varargin, 'centered');
+      S2F.tangent = check_option(varargin, 'tangent');
+      S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       S2F.detectOutliers = check_option(varargin, ...
-        {'detect outliers', 'detectoutliers, detect_outliers'}, 'logical');
+        {'detect outliers', 'detectoutliers, detect_outliers'});
 
       % if tangent is set to true, we must use monomials
       if (S2F.tangent == true)
@@ -146,23 +147,16 @@ classdef S2FunMLS < S2Fun
       end
 
       if (S2F.delta == 0)
-        S2F.delta = guess_delta(S2F);
+        S2F.delta = compute_delta(S2F);
       end
 
       S2F.s.how2plot = nodes.how2plot;
 
     end
 
-    % important for subsref to function properly
-    function n = numArgumentsFromSubscript(varargin)
-      n = 0;
-    end
-
-    % compute delta if none was specified
-    function delta = compute_delta(S2F)
-      % compute the smallest delta such that 2.5*dim spherical caps with
-      % radius resolution/2 fit into one spherical cap with radius delta
-      delta = acos(max(1 - 2.5*S2F.dim*(1 - cos(S2F.nodes.resolution/2)), -1));
+    % choose delta such that we get can expect factor-2-oversampling for uiid points
+    function d = compute_delta(S2F)
+      d = acos(1 - 4 * S2F.dim / numel(S2F.nodes));
     end
 
     function dimension = get.dim(S2F)
@@ -189,7 +183,7 @@ classdef S2FunMLS < S2Fun
       end
     end
 
-    % tangent need centered
+    % tangent needs centered
     function S2F = set.tangent(S2F, value)
       S2F.tangent = value;
       if (value == true)
@@ -217,11 +211,6 @@ classdef S2FunMLS < S2Fun
     function S2F = set.degree(S2F, deg)
       S2F.degree = deg;
       S2F.nn = 2 * S2F.dim;
-    end
-
-    % choose delta such that 2-oversampling in expectation for uiid points
-    function d = guess_delta(S2F)
-      d = acos(1 - 4 * S2F.dim / numel(S2F.nodes));
     end
 
     % compute expected number of neighbors with given sF.nodes and sF.delta
@@ -254,9 +243,13 @@ classdef S2FunMLS < S2Fun
 
     monomial_coefficients = get_monomial_coefficients(degs);
 
-    % outlierIndicators = computeOutlierIndicators(S2F, k);
     function oI = get.outlierIndicators(S2F)
       oI = computeOutlierIndicators(S2F);
+    end
+
+    % important for subsref to function properly
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
     end
 
   end

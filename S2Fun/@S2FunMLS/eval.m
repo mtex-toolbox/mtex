@@ -1,17 +1,17 @@
-function [vals, conds] = eval(sF, v, varargin)
-% evaluate sF on v via moving least squares (MLS) approximation
+function [vals, conds] = eval(S2F, v, varargin)
+% evaluate S2F on v via moving least squares (MLS) approximation
 % can also return the condition numbers of the (weighted) design matrices 
 %
 % Syntax
-%   vals = sF.eval(v)
-%   vals = eval(sF,v)
+%   vals = S2F.eval(v)
+%   vals = eval(S2F,v)
 %
 % Input
-%  sF - @S2FunMLS
+%  S2F - @S2FunMLS
 %  v  - @vector3d the evaluation directions
 %
 % Output
-%  vals  - the values of the mls approximation sF on v
+%  vals  - the values of the mls approximation S2F on v
 %
 
 dimensions = size(v);
@@ -20,27 +20,27 @@ N = numel(v);
 % prevent dimension error in local least squares solver for N==1
 if (N == 1)
   v = [v;v];
-  [vals, conds] = sF.eval(v, varargin{:});
+  [vals, conds] = S2F.eval(v, varargin{:});
   vals = vals(1,:);
-  vals = reshape(vals, size(sF));
+  vals = reshape(vals, size(S2F));
   conds = conds(1);
   return;
 end
 
-vals = zeros(N, numel(sF));
+vals = zeros(N, numel(S2F));
 if (nargout == 2)
   conds = zeros(N, 1);
 end
 
 % we perform the computation in batches of 1GB (2^30 Bytes) RAM
-nn = sF.nn;
+nn = S2F.nn;
 if (nn == 0)
-  nn = sF.guess_nn("max");
+  nn = S2F.guess_nn("max");
 end
-oF = nn / sF.dim;
+oF = nn / S2F.dim;
 % byter_per_v is bytes_per_ori from SO3FunMLS, multiplied by 3/4 in order to
 % approximately correct for the different number of variables
-bytes_per_v = sF.dim * (2*nn + 5*oF + sF.dim) * 8 * 3/4;
+bytes_per_v = S2F.dim * (2*nn + 5*oF + S2F.dim) * 8 * 3/4;
 batch_size = ceil(2 * 2^30 / bytes_per_v);
 
 current_batch = 0;
@@ -56,25 +56,32 @@ while (end_idx < N)
 
   % just evaluate the mls approximation
   if (nargout == 1)
-    if (sF.nn >= sF.dim)
-      vals(I,:) = eval_knn(sF, v.subSet(I), varargin{:});
+    if (S2F.nn >= S2F.dim)
+      vals(I,:) = eval_knn(S2F, v.subSet(I), varargin{:});
     else
-      vals(I,:) = eval_range(sF, v.subSet(I), varargin{:});
+      vals(I,:) = eval_range(S2F, v.subSet(I), varargin{:});
     end
 
   % also compute condition numbers of the design matrices
   else
-    if (sF.nn >= sF.dim)
-      [vals(I,:), conds(I,:)] = eval_knn(sF, v.subSet(I), varargin{:});
+    if (S2F.nn >= S2F.dim)
+      [vals(I,:), conds(I,:)] = eval_knn(S2F, v.subSet(I), varargin{:});
     else
-      [vals(I,:), conds(I,:)] = eval_range(sF, v.subSet(I), varargin{:});
+      [vals(I,:), conds(I,:)] = eval_range(S2F, v.subSet(I), varargin{:});
     end
   end
 
 end
 
-% output as 2D array, where column(j) <=> sF(j) and row(i) <=> v(i)
-vals = reshape(vals, [numel(v), size(sF)]);
+% at this point the vals have the shape (numel(ori) x numel(SO3F))
+% if SO3F has only 1 component, we want to respect the shape of ori
+% if SO3F has multiple components, we want to respect the shape of SO3F
+if (isscalar(S2F))
+  vals = reshape(vals, dimensions);
+else
+  vals = reshape(vals, [N, size(S2F)]);
+end
+
 if (nargout == 2)
   conds = reshape(conds, dimensions);
 end 

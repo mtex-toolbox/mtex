@@ -5,12 +5,15 @@
 %   values on random nodes
 % at the same time this tests proper handling of arrays of S2FunMLS
 
+cs = crystalSymmetry('222');
+
 % test functions
-f(1) = S2Fun.smiley;
+f(1) = S2Fun.smiley; 
 f(2) = complex(0,1) * f(1) - f(1).^2;
 f(3) = S2FunHarmonic(2 * rand(64, 1, 1) - 1);
 f(4:6) = S2FunHarmonic(2 * rand(32, 1, 3) - 1);
 f = reshape(f, 3, 2);
+f = S2FunHarmonicSym.quadrature(f, cs);
 figure(1); plot(f); colorbar;
 
 % grid for the test function, values on the grid
@@ -62,29 +65,25 @@ f = S2FunHarmonic(2 * rand(40,1) - 1);
 f = @(v)(real(f.eval(v)));
 f = S2FunHarmonic(f);
 f_values = f.eval(v);
-sF = cell(16, 1);
-sF{1}  = S2FunMLS(v, f_values, 'centered', false, 'tangent', false, 'monomials', false, 'subsample', false);
-% sF{2}  = S2FunMLS(v, f_values, 'centered', false, 'tangent', false, 'monomials', false, 'subsample',  true);
-sF{3}  = S2FunMLS(v, f_values, 'centered', false, 'tangent', false, 'monomials',  true, 'subsample', false);
-sF{4}  = S2FunMLS(v, f_values, 'centered', false, 'tangent', false, 'monomials',  true, 'subsample',  true);
-sF{5}  = S2FunMLS(v, f_values, 'centered', false, 'tangent',  true, 'monomials', false, 'subsample', false);
-% sF{6}  = S2FunMLS(v, f_values, 'centered', false, 'tangent',  true, 'monomials', false, 'subsample',  true);
-sF{7}  = S2FunMLS(v, f_values, 'centered', false, 'tangent',  true, 'monomials',  true, 'subsample', false);
-sF{8}  = S2FunMLS(v, f_values, 'centered', false, 'tangent',  true, 'monomials',  true, 'subsample',  true);
-sF{9}  = S2FunMLS(v, f_values, 'centered',  true, 'tangent', false, 'monomials', false, 'subsample', false);
-% sF{10} = S2FunMLS(v, f_values, 'centered',  true, 'tangent', false, 'monomials', false, 'subsample',  true);
-sF{11} = S2FunMLS(v, f_values, 'centered',  true, 'tangent', false, 'monomials',  true, 'subsample', false);
-sF{12} = S2FunMLS(v, f_values, 'centered',  true, 'tangent', false, 'monomials',  true, 'subsample',  true);
-sF{13} = S2FunMLS(v, f_values, 'centered',  true, 'tangent',  true, 'monomials', false, 'subsample', false);
-% sF{14} = S2FunMLS(v, f_values, 'centered',  true, 'tangent',  true, 'monomials', false, 'subsample',  true);
-sF{15} = S2FunMLS(v, f_values, 'centered',  true, 'tangent',  true, 'monomials',  true, 'subsample', false);
-sF{16} = S2FunMLS(v, f_values, 'centered',  true, 'tangent',  true, 'monomials',  true, 'subsample',  true);
+
+flags = {'centered', 'monomials', 'subsample', 'tangent'};
+marker = logical(dec2bin((0:15)') - '0');
 
 mls_values = zeros(numel(w2), 16);
+
+clear sF;
 for i = 1 : 16
+  % tangent need monomials
   if (mod(i+2,4) == 0)
     continue;
   end
+
+  % 'bla' avoids empty applied_flags for i = 1
+  applied_flags = ['bla', flags(marker(i,:))];
+  numflags = sum(marker(i,:));
+  sF{i} = S2FunMLS(v, f_values, applied_flags{:});
+  sF{i}.nn = 0;
+  sF{i}.delta = sF{i}.compute_delta() * 2;
   mls_values(:,i) = sF{i}.eval(w2);
 end
 
@@ -107,7 +106,6 @@ figure(1); scatter(v, f_values); colorbar;
 sF = S2FunMLS(v, f_values);
 sF.antipodal = true;
 figure(2); plot(sF); colorbar;
-disp(max(abs(diff.eval(w))));
 
 %% test annoying data - identify and remove outliers 
 %   (technically they do not get removed, but their weight gets reduced to
@@ -115,8 +113,6 @@ disp(max(abs(diff.eval(w))));
 sF.detectOutliers = true;
 sF.outlierDetectionRange = 7;
 figure(2); plot(sF); colorbar;
-diff = f_values - sF.eval(v);
-disp(max(abs(diff)));
 
 %% same as before, but with range search instead
 sF.nn = 0;
@@ -147,8 +143,6 @@ sF2 = S2FunMLS(v, noisy_values);
 sF2.detectOutliers = true;
 sF2.outlierDetectionRange = 7;
 figure(3); plot(sF2); colorbar;
-diff = f_values - sF.eval(v);
-disp(max(abs(diff)));
 
 %% same as before, but now with range search on the regular grid
 

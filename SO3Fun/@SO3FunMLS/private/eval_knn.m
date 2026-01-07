@@ -1,4 +1,4 @@
-function [vals, conds] = eval_knn(SO3F, ori)
+function [vals, conds] = eval_knn(SO3F, ori, varargin)
 
 if (SO3F.nn < SO3F.dim)
   SO3F.nn = 2 * SO3F.dim;
@@ -7,7 +7,6 @@ if (SO3F.nn < SO3F.dim)
     'nn has been set to 2 * dim.']));
 end
 
-dimensions = size(ori);
 ori = ori(:);
 N = numel(ori);
 nn = SO3F.nn;
@@ -15,14 +14,31 @@ nn_total = nn * N;
  
 % find the neighbors, construct index vectors
 [ind, dist] = SO3F.nodes.find(ori, nn); 
+
+if (SO3F.subsample == true)
+  ind = SO3F.find_optimal_subset(ind, ori, varargin{:});
+  nn_total = N * SO3F.dim;
+  nn = SO3F.dim;
+end
+
 % grid_id = id of the neighbors (in the grid of SO3F)
 grid_id = reshape(ind', nn_total, 1);
 clear ind;
-% v_id = id of entry of v (where we want to eval SO3F)
+% ori_id = id of entry of ori (where we want to eval SO3F)
 ori_id = reshape(repmat((1:N), nn, 1), nn_total, 1);
+
+if (SO3F.subsample == true)
+  dist = angle(ori.subSet(ori_id), SO3F.nodes.subSet(grid_id));
+  dist = reshape(dist, SO3F.dim, N)';
+end
 
 % compute the weights, set delta slighlty larger than the farthest neighbor 
 W_book = SO3F.w(dist ./ (1.1 * max(dist, [], 2)));
+if (SO3F.detectOutliers == true)
+  oI = computeOutlierIndicators(SO3F);
+  oI = reshape(oI(grid_id), nn, N)';
+  W_book = W_book .* exp(-oI);
+end
 clear dist;
 W_book = reshape(W_book', 1, nn, N);
 % also get the needed values of SO3F on its grid
@@ -82,16 +98,13 @@ Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
 
 % compute the generating functions
 genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book ./ s));
-genfuns_book = permute(genfuns_book,[1,3,2]);
+genfuns_book = permute(genfuns_book, [1,3,2]);
 clear W_times_G_book g_book s;
 
-% assemble the right hand side of the Gram system
+% compute the values and reshape
 vals = sum(f_book .* genfuns_book, 1);
-if isscalar(SO3F)
-  vals = reshape(vals, dimensions);
-else
-  vals = reshape(vals, [numel(ori) size(SO3F)]);
-end
+clear genfuns_book f_book;
+vals = reshape(vals, [N, numel(SO3F)]);
 
 if isalmostreal(SO3F.values)
   vals = real(vals);
@@ -101,7 +114,6 @@ if nargout == 2
   eigs = pagesvd(Gram_book);
   conds = eigs(1,:,:) ./ eigs(SO3F.dim,:,:);
   conds = conds(:);
-  conds = reshape(conds, dimensions);
 end
 
 end

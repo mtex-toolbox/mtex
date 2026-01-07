@@ -34,8 +34,13 @@ prop = ['    weight function: ', char(S2F.w) , ...
         '\n    number of neighbors: ', nn_string, ...
         '\n    oversampling factor: ', num2str(S2F.nn / S2F.dim)];
 if S2F.centered, prop=[prop,'\n    centered: true']; end
-if S2F.tangent, prop=[prop,'\n    tangent: true']; end
+if S2F.tangent, prop = [prop,'\n    tangent: true']; end
 if S2F.subsample, prop=[prop,'\n    perform optimal subsampling: true']; end
+if S2F.detectOutliers
+  prop = [prop, '\n    detect outlier: true']; 
+  prop = [prop, '\n    OutlierDetectionRange: ', num2str(S2F.outlierDetectionRange)]; 
+end
+if S2F.monomials, prop = [prop, '\n    use monomial basis instead of spherical harmonics']; end
 
 disp(' ')
 s = setAllAppdata(0,'data2beDisplayed',[prop,'\n']);
