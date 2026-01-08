@@ -76,15 +76,19 @@ if (S2F.detectOutliers == true)
   oI = reshape(oI(grid_id), nn, N)';
   weights = weights .* exp(-oI);
 end
-weights = weights ./ sum(weights, 2);
+
+% normalize the maximum weight to be 1
+weights = weights ./ max(weights, [], 2);
 W_book = sqrt(reshape(weights', nn, 1, N));
 
 % don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
 % rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
 % internally this uses QR and we end up with only cond(G), without the square!
 
-% compute scaling factors (norms of columns of G_times_W_book)
+% B satisfies B' * B = G' * W * G
 B_book = G_book .* W_book;
+
+% compute scaling factors (norms of columns of G_times_W_book)
 s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side

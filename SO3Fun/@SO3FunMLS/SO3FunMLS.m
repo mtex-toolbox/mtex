@@ -9,7 +9,7 @@ classdef SO3FunMLS < SO3Fun
 %   SO3F = SO3FunMLS(nodes,values, 'centered', 'detectOutliers', 'subsample', 'tangent')
 %
 % Input
-%  nodes  - @orientation, @rotation (interpolation points)
+%  nodes  - @orientation, @rotation (data points)
 %  values - array of function values
 %
 % Output
@@ -173,13 +173,22 @@ classdef SO3FunMLS < SO3Fun
         nn = ceil(mean(sum(ind, 2)));
         return;
       end
-
       if (varargin{1} == "min")
         nn = floor(min(sum(ind, 2)));
       elseif (varargin{1} == "max")
         nn = ceil(max(sum(ind, 2)));
       end
     end
+
+    % return number of neighbors for given v (use for identifying 'bad regions')
+    function nns = count_neighbors(SO3F, ori)
+      if (SO3F.delta == 0)
+        SO3F.delta = SO3F.compute_delta();
+      end
+      ind = SO3F.nodes.find(ori, SO3F.delta);
+      nns = sum(ind, 2);
+    end
+
 
     function SO3F = set.SRight(SO3F,S)
       SO3F.nodes.CS = S;
@@ -205,7 +214,7 @@ classdef SO3FunMLS < SO3Fun
       end
     end
 
-    function SO3F = set.antipodal(SO3F,antipodal)
+    function SO3F = set.antipodal(SO3F, antipodal)
       SO3F.nodes.antipodal = antipodal;
     end
 
@@ -214,6 +223,16 @@ classdef SO3FunMLS < SO3Fun
         antipodal = SO3F.nodes.antipodal;
       catch
         antipodal = false;
+      end
+    end
+
+    function SO3F = set.detectOutliers(SO3F, value)
+      SO3F.detectOutliers = value;
+      if (value)
+        % set standard value of outlier detection range
+        % should be at least 4, since this is the dim of the basis which is used
+        % for computing the outlier indicators
+        SO3F.outlierDetectionRange = max(round(SO3F.dim * .7), 4);
       end
     end
 

@@ -33,16 +33,25 @@ if (SO3F.subsample == true)
 end
 
 % compute the weights, set delta slighlty larger than the farthest neighbor 
-W_book = SO3F.w(dist ./ (1.1 * max(dist, [], 2)));
-if (SO3F.detectOutliers == true)
-  oI = computeOutlierIndicators(SO3F);
-  oI = reshape(oI(grid_id), nn, N)';
-  W_book = W_book .* exp(-oI);
-end
+% take the root of the weights, see after large if-block for explanation
+weights = SO3F.w(dist ./ (1.1 * max(dist, [], 2)))';
 clear dist;
-W_book = reshape(W_book', 1, nn, N);
-% also get the needed values of SO3F on its grid
+
+% set up the right hand side
 f_book = reshape(SO3F.values(grid_id,:), nn, N, numel(SO3F));
+if (SO3F.detectOutliers == true)
+  oI = computeOutlierIndicators(SO3F); 
+  oI = reshape(oI(grid_id), nn, N);
+  weights = weights .* exp(-oI);
+  clear oI;
+end
+
+% normalize the maximum weight to 1
+% reason for the root is explained after the end of the following large if-block
+weights = sqrt(weights ./ max(weights, [], 1));
+fw_book = weights .* f_book;
+fw_book = permute(fw_book, [1, 3, 2]);
+clear f_book;
 
 % Compute G_book. Each page contains the values of the basis at all neighbors. 
 % if CS is trivial and SO3F.centered is disabled, we can speed up things
@@ -88,23 +97,25 @@ end
 G_book = reshape(G, SO3F.dim, nn, N);
 clear G grid_id;
 
-% compute rescaling parameters for bether condition of the gram matrix
-s = sqrt(sum(G_book.^2 .* W_book, 2));
+% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
+% internally this uses QR and we end up with only cond(G), without the square!
 
-% start computing the (rescaled) Gram matrix
-W_times_G_book = pagetranspose(G_book .* W_book ./ s);
-clear W_book;
-Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
+% B satisfies B' * B = G' * W * G
+B_book = G_book .* reshape(weights, [1, size(weights)]);
+clear G_book weights;
 
-% compute the generating functions
-genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book ./ s));
-genfuns_book = permute(genfuns_book, [1,3,2]);
-clear W_times_G_book g_book s;
+% compute scaling factors for preconditioning the grams systems
+s_book = sqrt(sum(abs(B_book).^2, 2));
 
-% compute the values and reshape
-vals = sum(f_book .* genfuns_book, 1);
-clear genfuns_book f_book;
-vals = reshape(vals, [N, numel(SO3F)]);
+% solve the rescaled systems and evaluate MLS
+c_book = pagemldivide(pagetranspose(B_book ./ s_book), fw_book) ./ s_book;
+clear B_book fw_book s_book;
+vals = sum(c_book .* g_book, 1);
+clear c_book g_book;
+
+% set correct output format
+vals = permute(vals, [3, 2, 1]);
 
 if isalmostreal(SO3F.values)
   vals = real(vals);

@@ -21,7 +21,6 @@ f = reshape(f, 3, 2);
 for i = 1 : numel(f)
   f(i) = SO3FunHarmonic(@(ori)(real(f(i).eval(ori))));
 end
-% f = reshape(f, 3, 2);
 figure(1); plot(f); colorbar;
 
 % grid for the test function, values on the grid
@@ -35,8 +34,8 @@ ori2 = orientation.rand(1e4);
 
 %% test with standard parameters only
 sF = SO3FunMLS(ori, f_values, cs, ss, 'antipodal');
-% sF.nn = 0;
-% sF.delta = sF.compute_delta() * 2;
+sF.detectOutliers = true;
+sF.outlierDetectionRange = 5;
 
 % for i = 1 : numel(f)
 %   figure(1); plot(f(i)); colorbar;
@@ -45,15 +44,16 @@ sF = SO3FunMLS(ori, f_values, cs, ss, 'antipodal');
 %   waitforbuttonpress();
 % end
 
-figure(1); plot(f); colorbar;
+figure(1); plot(f(2,1)); colorbar;
 
 diff = sF - f;
 disp(max(abs(diff.eval(ori2))));
-figure(2); plot(sF); colorbar;
+figure(2); plot(sF.subSet(2,1)); colorbar;
 
 %% same test, but with range search instead of knn search
 sF.nn = 0;
-sF.delta = sF.compute_delta() * 2;
+sF.delta = sF.compute_delta();
+figure(1); plot(f); colorbar;
 figure(2); plot(sF); colorbar;
 diff = sF - f;
 disp(max(abs(diff.eval(ori))));
@@ -103,12 +103,13 @@ noisy_values(I) = 100 * mean(abs(f_values)) * (2 * rand(num_outliers, 1) - 1);
 
 % MLS without outlier detection
 sF = SO3FunMLS(ori, noisy_values);
+figure(1); plot(f); colorbar;
 figure(2); plot(sF); colorbar;
 
 % MLS with outlier detection
 sF2 = SO3FunMLS(ori, noisy_values);
 sF2.detectOutliers = true;
-sF2.outlierDetectionRange = round(sF2.dim * .7);
+sF2.outlierDetectionRange = 25;
 figure(3); plot(sF2); colorbar;
 
 %% test outlier detection with range search
@@ -116,7 +117,9 @@ figure(3); plot(sF2); colorbar;
 % MLS without outlier detection
 sF = SO3FunMLS(ori, noisy_values);
 sF.nn = 0;
-sF.delta = sF.compute_delta() * 2;
+sF.delta = sF.compute_delta();
+
+figure(1); plot(f); colorbar;
 figure(2); plot(sF); colorbar;
 
 % MLS with outlier detection

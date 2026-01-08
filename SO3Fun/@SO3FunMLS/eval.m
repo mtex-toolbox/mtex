@@ -16,10 +16,30 @@ function [vals, conds] = eval(SO3F, ori,varargin)
 %
 
 
+% if outlier detection is enabled but SO3F is not scalar we have to be careful
+% with matrix dimensions in eval_knn and eval_range
+% easy workaround is to catch this case here and loop over the entries of SO3F
+if ((~isscalar(SO3F)) && SO3F.detectOutliers)
+  vals = zeros(numel(ori), numel(SO3F));
+  % extract condition number via the first component, if necessary
+  if (nargout == 1)
+    vals(:,1) = SO3F.subSet(1).eval(ori, varargin{:});
+  else
+    [vals(:,1), conds] = SO3F.subSet(1).eval(ori, varargin{:});
+  end
+
+  for i = 2 : numel(SO3F)
+    vals(:,i) = SO3F.subSet(i).eval(ori, varargin{:});
+  end
+  % reshape and return
+  vals = reshape(vals, [numel(ori), size(SO3F)]);
+  return;
+end
+
+
 if ~isa(ori,'orientation')
   ori = orientation(ori, SO3F.CS, SO3F.SS);
 end
-
 
 dimensions = size(ori);
 N = prod(dimensions);
@@ -28,14 +48,13 @@ if (nargout == 2)
   conds = zeros(N, 1);
 end
 
-
 % we perform the computation in batches of 1GB (2^30 Bytes) RAM 
 nn = SO3F.nn;
 if (nn == 0) 
   nn = SO3F.guess_nn("max"); 
 end
 oF = nn / SO3F.dim;
-bytes_per_ori = SO3F.dim * (2*nn + 5*oF + SO3F.dim) * 8;
+bytes_per_ori = SO3F.dim * (2*nn + 5*oF + SO3F.dim) * 8 * numel(SO3F);
 batch_size = ceil(2 * 2^30 / bytes_per_ori);
 
 current_batch = 0;

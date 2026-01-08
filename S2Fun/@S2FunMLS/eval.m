@@ -64,7 +64,7 @@ end
 oF = nn / S2F.dim;
 % byter_per_v is bytes_per_ori from SO3FunMLS, multiplied by 3/4 in order to
 % approximately correct for the different number of variables
-bytes_per_v = S2F.dim * (2*nn + 5*oF + S2F.dim) * 8 * 3/4;
+bytes_per_v = S2F.dim * (2*nn + 5*oF + S2F.dim) * 8 * 3/4 * numel(S2F);
 batch_size = ceil(2 * 2^30 / bytes_per_v);
 
 current_batch = 0;

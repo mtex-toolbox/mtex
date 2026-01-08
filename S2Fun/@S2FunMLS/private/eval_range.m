@@ -113,7 +113,7 @@ end
 % compute the weights
 weights = zeros(N * nn_max, 1);
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
-%   contained in S2F.nodes ==> distance 0
+%   contained in S2F.nodes ==> distance 0, but in neighborhood
 I = sub2ind(size(dist), v_id, grid_id);
 weights(col_id) = S2F.w(dist(I) / S2F.delta);
 
@@ -124,11 +124,12 @@ if (S2F.detectOutliers == true)
   weights = weights .* oI_factor;
 end
 
-% TODO: make this cleaner
+% for each center, normalize the maximum weight to be 1
 weights = reshape(weights, nn_max, N);
 weights = weights ./ max(weights, [], 1);
 weights = weights(:);
 
+% B satisfies B' * B = G' * W * G
 B = G .* sqrt(weights');
 B_book = pagetranspose(reshape(B, S2F.dim, nn_max, N)); 
 

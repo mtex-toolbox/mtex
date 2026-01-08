@@ -44,6 +44,7 @@ end
 
 [grid_id, ori_id] = find(ind');
 nn = sum(ind, 2);
+clear ind;
 
 if (SO3F.subsample == true)
   dist = angle(ori.subSet(ori_id), SO3F.nodes.subSet(grid_id));
@@ -60,18 +61,32 @@ temp = ones(nn_total, 1);
 temp(start_id) = 1 - nn(1:N-1);
 temp = cumsum(temp);
 col_id = (ori_id-1) * nn_max + temp;
+clear temp start_id;
+
+% TODO: nn_max might be much larger than mean(nn) at very few occations
+%   ==> compute in batches of similar nn for less ram usage
 
 % compute the weights
 weights = zeros(N * nn_max, 1);
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
-%   contained in S2F.nodes ==> distance 0
+%   contained in SO3F.nodes ==> distance 0, but in neighborhood
 K = sub2ind(size(dist), ori_id, grid_id);
 weights(col_id) = SO3F.w(dist(K) / SO3F.delta);
-clear dist ind;
-% also get the needed values of SO3F on its grid
-f = zeros(N * nn_max, numel(SO3F));
-f(col_id,:) = SO3F.values(grid_id,:);
-f_book = reshape(f, nn_max, N, numel(SO3F));
+clear dist K;
+
+% scale down weights of outliers, if enabled
+if (SO3F.detectOutliers == true)
+  oI = computeOutlierIndicators(SO3F);
+  oI_factor = zeros(N * nn_max, 1);
+  oI_factor(col_id) = exp(-oI(grid_id));
+  weights = weights .* oI_factor;
+  clear oI_factor;
+end
+
+% for each center, normalize the maximum weight to be 1
+weights = reshape(weights, nn_max, N);
+weights = weights ./ max(weights, [], 1);
+weights = sqrt(weights(:));
 
 G = zeros(SO3F.dim, nn_max * N); 
 % Compute G_book. Each page contains the values of the basis at all neighbors. 
@@ -106,7 +121,7 @@ else
   inv_oris = reshape(inv_oris(ori_id), size(SO3F.nodes(grid_id)));
   projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));
   rotneighbors = inv_oris .* projected;
-  clear inv_oris projected ori_id;
+  clear inv_oris projected;
 
   % evaluate the basis funcitons on the grid
   basis_on_grid = eval_basis_functions(SO3F, rotneighbors);
@@ -114,29 +129,36 @@ else
   basis_in_pole = eval_basis_functions(SO3F, orientation.id);
   
   basis_in_ori = repmat(basis_in_pole, N, 1);
+  clear basis_in_pole;
   G(:, col_id) = basis_on_grid';
+  clear basis_on_grid;
 end
-G_book = reshape(G, SO3F.dim, nn_max, N);
-clear grid_id;
 
-% compute rescaling parameters for better condition of the gram matrices
-s = sqrt(abs(sum(reshape(G.^2 .* weights', SO3F.dim, nn_max, N), 2)));
+clear ori_id;
 
-% start computing the pairwise discrete inner products (Gram matrix) 
-W_times_G_book = pagetranspose(reshape(G .* weights', SO3F.dim, nn_max, N) ./ s);
-clear weights G;
-Gram_book = pagemtimes(G_book, W_times_G_book) ./ s;
+% dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
+% internally this uses QR and we end up with only cond(G)
+
+B = G .* weights';
+B_book = pagetranspose(reshape(B, SO3F.dim, nn_max, N)); 
+clear B G;
+
+% compute scaling factors (norms of columns of G_times_W_book)
+s_book = sqrt(sum(abs(B_book).^2, 1));
+
+% set up right hand side
+f = zeros(N * nn_max, numel(SO3F));
+f(col_id,:) = SO3F.values(grid_id,:);
+clear col_id grid_id;
+fw_book = permute(reshape((weights .* f).', numel(SO3F), nn_max, N), [2 1 3]);
+clear f weights;
 
 % compute the generating functions
-g_book = reshape(basis_in_ori', SO3F.dim, 1, N) ./ s;
-clear s;
-genfuns_book = pagemtimes(W_times_G_book, pagemldivide(Gram_book, g_book));
-genfuns_book = permute(genfuns_book,[1,3,2]);
-clear W_times_G_book g_book;
-
-% compute the values and reshape
-valsJ = sum(f_book .* genfuns_book, 1);
-vals(J,:) = reshape(valsJ, [numel(ori), numel(SO3F)]);
+c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
+clear B_book fw_book s_book;
+vals(J,:) = permute(sum(basis_in_ori .* permute(c_book, [3 1 2]), 2), [1 3 2]);
+clear basis_in_ori c_book;
 
 if isalmostreal(SO3F.values)
   vals = real(vals); 
