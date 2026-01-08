@@ -14,6 +14,30 @@ function [vals, conds] = eval(S2F, v, varargin)
 %  vals  - the values of the mls approximation S2F on v
 %
 
+
+% if outlier detection is enabled but S2F is not scalar we have to be careful
+% with matrix dimensions in eval_knn and eval_range
+% easy workaround is to catch this case here and loop over the entries of S2F
+if ((~isscalar(S2F)) && S2F.detectOutliers)
+  v = v(:);
+  vals = zeros(numel(v), numel(S2F));
+  % extract condition number via the first component, if necessary
+  if (nargout == 1)
+    vals(:,1) = S2F.subSet(1).eval(v, varargin{:});
+  else
+    [vals(:,1), conds] = S2F.subSet(1).eval(v, varargin{:});
+  end
+
+  for i = 2 : numel(S2F)
+    vals(:,i) = S2F.subSet(i).eval(v, varargin{:});
+  end
+  
+  % reshape and return
+  vals = reshape(vals, [numel(v), size(S2F)]);
+  return;
+end
+
+
 dimensions = size(v);
 N = numel(v);
 

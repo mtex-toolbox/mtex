@@ -9,11 +9,11 @@ classdef S2FunMLS < S2Fun
 %   S2F = S2FunMLS(nodes,values, 'centered', 'detectOutliers', 'monomials', 'subsample', 'tangent')
 %
 % Input
-%  nodes  - @orientation,@rotation (interpolation points)
+%  nodes  - @vector3d (data points)
 %  values - array of function values
 %
 % Output
-%  SO3F - @SO3FunMLS
+%  S2F - @S2FunMLS
 %
 % Options
 %  degree  - the polynomial degree used for approximation
@@ -173,6 +173,16 @@ classdef S2FunMLS < S2Fun
 
     function S2F = set.antipodal(S2F,value)
       S2F.nodes.antipodal = value;
+    end
+
+    function S2F = set.detectOutliers(S2F, value)
+      S2F.detectOutliers = value;
+      if (value)
+        % set standard value of outlier detection range
+        % should be at least 3, since this is the dim of the basis which is used
+        % for computing the outlier indicators
+        S2F.outlierDetectionRange = max(round(S2F.dim * .7), 3);
+      end
     end
 
     % subsampling needs monomial basis, since linprog need real sampling matrix

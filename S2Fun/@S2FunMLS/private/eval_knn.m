@@ -68,11 +68,6 @@ else
 end 
 G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
 
-
-% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
-% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
-% internally this uses QR and we end up with only cond(G), without the square!
-
 % compute distances and weights
 deltas = 1.1 * max(dist, [], 2);
 weights = S2F.w(dist ./ deltas);
@@ -84,16 +79,20 @@ end
 weights = weights ./ sum(weights, 2);
 W_book = sqrt(reshape(weights', nn, 1, N));
 
+% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
+% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
+% internally this uses QR and we end up with only cond(G), without the square!
+
 % compute scaling factors (norms of columns of G_times_W_book)
 B_book = G_book .* W_book;
-S_book = sqrt(sum(abs(B_book).^2, 1));
+s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 f_book = pagetranspose(reshape(S2F.values(grid_id,:).', numel(S2F), nn, N));
 fw_book = W_book .* f_book;
 
 % solve the rescaled system and evaluate MLS
-c_book = pagemldivide(B_book ./ S_book, fw_book) ./ pagetranspose(S_book);
+c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
 vals = sum(c_book .* g_book, 1);
 
 vals = permute(vals, [3, 2, 1]);
@@ -103,7 +102,7 @@ if isalmostreal(S2F.values)
 end
 
 if nargout == 2
-  eigs = pagesvd(B_book ./ S_book);
+  eigs = pagesvd(B_book ./ s_book);
   conds = eigs(1,:,:) ./ eigs(S2F.dim,:,:);
   conds = conds(:);
 end
