@@ -137,7 +137,7 @@ lsvec = cell(1,size(y,2));
 
 % least squares solution
 for index = 1:size(y,2)
-  [fhat(:, index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
+  [fhat(:,index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
     = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin),...
     b(:, index), tol, maxit);
 end
@@ -169,6 +169,7 @@ if strcmp(transp_flag, 'transp')
   x = x .* W;
   %   F = SO3FunHarmonic.quadrature(nodes,x,'keepPlan','nfsoft','bandwidth',bw);
   F = SO3FunHarmonic.adjoint(nodes,x,'bandwidth',bw,'cutoffParameter',cutOff);
+  F.bandwidth = bw;
   y = F.fhat;
   if regularize
     y = y + u .* (sqrt(lambda)*sqrt(What));
