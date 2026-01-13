@@ -10,7 +10,7 @@ function oI = computeOutlierIndicators(SO3F)
 
 % find k nearest neighbors (returns N-by-k index array)
 k = SO3F.outlierDetectionRange;
-id = find(SO3F.nodes, SO3F.nodes, k);
+id = find(SO3F.nodes(:), SO3F.nodes(:), k);
 
 % gather neighbor values as N-by-k matrix
 vals = SO3F.values(id);
