@@ -1,5 +1,6 @@
 function oI = computeOutlierIndicators(SO3F)
-
+% Find outliers
+%
 % Input:
 %   nodes  - @orientation array of nodes
 %   values - array of same dimensions as nodes, containing the values

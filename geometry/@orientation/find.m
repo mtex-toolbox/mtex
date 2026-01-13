@@ -29,8 +29,32 @@ if nargin==2, epsilon_or_k=1; end
 %       --> symmetries w and search again for the symmetric values of
 %       w(ind), where ind = angle(w,fR) < min(d,2)
 
-if v.CS.numSym>1 && v.SS.numSym>1
-  error('The orientation.find method does not work if there is a left AND a right symmetry.')
+v.CS = v.CS.properGroup;
+v.SS = v.SS.properGroup;
+w.CS = w.CS.properGroup;
+w.SS = w.SS.properGroup;
+
+
+cs = v.CS; ss = v.SS;
+% Symmetrise w.r.t. lower symmetry, since only one symmetry can be used in find-method
+if cs.numSym>1 && ss.numSym>1
+  if length(cs.rot) >= length(ss.rot)
+    v = ss*v;
+    v.SS = specimenSymmetry.default;
+    w.SS = specimenSymmetry.default;
+    [ind,d] = find(v,w,epsilon_or_k,varargin{:});
+    % reindexing
+    ind = ceil(ind/numSym(ss));
+  else
+    % symmetrise SRight
+    v = v*cs;
+    v.CS = specimenSymmetry.default;
+    w.CS = specimenSymmetry.default;
+    [ind,d] = find(v,w,epsilon_or_k,varargin{:});
+    % reindexing
+    ind = mod(ind-1,numSym(cs))+1;
+  end  
+  return
 end
 
 % Check for matching symmetries

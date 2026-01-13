@@ -110,8 +110,8 @@ if ((SO3F.CS.id == 1) && (SO3F.centered == false) && (nn_total > numel(SO3F.node
 elseif (~SO3F.centered)
   % evaluate for every ori all basis function
   % NOTE: projecting to fR is very important, since later we treat all oris as 
-  %       points on the sphere S^3 and use monomialss at all neighbors ...
-  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));
+  %       points on the sphere S^3 and use monomials at all neighbors ...
+  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));  % In case of 2 symmetries, we have to symmetrise here w.r.t. lower symmetry (done in eval routine) 
   G(:, col_id) = eval_basis_functions(SO3F, projected)';
   clear projected;
   basis_in_ori = eval_basis_functions(SO3F, ori);
@@ -119,11 +119,11 @@ else
   % shift the local problems to be centered around orientation.id
   inv_oris = inv(ori);
   inv_oris = reshape(inv_oris(ori_id), size(SO3F.nodes(grid_id)));
-  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));
+  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));  % In case of 2 symmetries, we have to symmetrise here w.r.t. lower symmetry (done in eval routine) 
   rotneighbors = inv_oris .* projected;
   clear inv_oris projected;
 
-  % evaluate the basis funcitons on the grid
+  % evaluate the basis functions on the grid
   basis_on_grid = eval_basis_functions(SO3F, rotneighbors);
   clear rotneighbors;
   basis_in_pole = eval_basis_functions(SO3F, orientation.id);

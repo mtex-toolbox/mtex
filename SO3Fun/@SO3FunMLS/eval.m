@@ -66,8 +66,7 @@ SO3F.SS = SO3F.SS.properGroup;
 ori.CS = ori.CS.properGroup;
 ori.SS = ori.SS.properGroup;
 
-% Symmetrise w.r.t. lower symmetry, since only one symmetry can be used in
-% find-method
+% Symmetrise w.r.t. lower symmetry, since only one symmetry can be used in find-method
 cs = ori.CS; ss = ori.SS;
 if cs.id~=1 && ss.id~=1
   if length(cs.rot) >= length(ss.rot)

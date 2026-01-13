@@ -13,7 +13,7 @@ nn = SO3F.nn;
 nn_total = nn * N;
  
 % find the neighbors, construct index vectors
-[ind, dist] = SO3F.nodes.find(ori, nn); 
+[ind, dist] = SO3F.nodes.find(ori, nn);
 
 if (SO3F.subsample == true)
   ind = SO3F.find_optimal_subset(ind, ori, varargin{:});
@@ -73,7 +73,7 @@ elseif (~SO3F.centered)
   % evaluate for every ori all basis functions at all neighbors ...
   % NOTE: projecting to fR is very important, since later we treat all oris as 
   %       points on the sphere S^3 and use monomials
-  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id)); 
+  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));  % In case of 2 symmetries, we have to symmetrise here w.r.t. lower symmetry (done in eval routine) 
   G = eval_basis_functions(SO3F, projected)'; 
   clear projected;
   % ... and also in the oris themselves
@@ -83,7 +83,7 @@ else
   % this enhances the condition of the gram matrices dramatically
   inv_oris = inv(ori);
   inv_oris = reshape(inv_oris(ori_id), size(SO3F.nodes(grid_id)));
-  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));
+  projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));  % In case of 2 symmetries, we have to symmetrise here w.r.t. lower symmetry (done in eval routine) 
   rotneighbors = inv_oris .* projected;
   clear inv_oris projected ori_id;
 
