@@ -63,7 +63,7 @@ else % inverse pole figure
 
     % take the integral over the fibers
     pdf = mean(reshape(f,size(ori)),2);
-    S2F(k) = S2FunHarmonicSym.quadrature(S2G(:),pdf,'bandwidth',bw,'weights',S2G.weight(:),SO3F.CS); %#ok<AGROW>
+    S2F(k) = S2FunHarmonicSym.quadrature(S2G(:),pdf,'bandwidth',bw,'weights',S2G.weights(:),SO3F.CS); %#ok<AGROW>
 
   end
   
