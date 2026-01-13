@@ -1,5 +1,5 @@
 function [vals, conds] = eval(SO3F, ori,varargin)
-% evaluate sF on ori via moving least squares (MLS) approximation
+% evaluate SO3F in orientations via moving least squares (MLS) approximation
 % provide the possibility of also returning the condition numbers of the gram matrices
 %
 % Syntax
@@ -7,8 +7,8 @@ function [vals, conds] = eval(SO3F, ori,varargin)
 %   vals = eval(SO3F,ori)
 %
 % Input
-%  SO3F  - the function we want to approximate
-%  ori   - the points where we want to evaluate the MLS approximation
+%  SO3F  - @SO3FunMLS
+%  ori   - @orientation (the points where we want to evaluate the MLS-approximation)
 %
 % Output
 %  vals  - the values of SO3F on ori

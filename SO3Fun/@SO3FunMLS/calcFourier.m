@@ -33,24 +33,10 @@ function bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin)
 bw = get_option(varargin,'bandwidth');
 nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
 
-% assume there is some bandwidth given
-if ~isempty(bw)
-  % degrees of freedom in frequency space 
-  numFreq = deg2dim(bw+1)/nSym;
-  % TODO: Maybe this is not necessary
-  % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
-  oversamplingFactor = length(nodes)/numFreq;
-  if oversamplingFactor<1.9
-    warning(['The oversampling factor in the approximation process is ', ...
-      num2str(oversamplingFactor),'. This could lead to a bad approximation.'])
-  end
-  return
+% choose bandwidth such that   number of nodes = number of harmonic coefficients
+if isempty(bw)
+  bw = dim2deg(round( length(nodes)*nSym )); 
+  bw = min(bw,getMTEXpref('maxSO3Bandwidth'));
 end
-
-% Choose an fixed oversampling factor of 2
-oversamplingFactor = 2;
-bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
-
-bw = min(bw,getMTEXpref('maxSO3Bandwidth'));
 
 end
