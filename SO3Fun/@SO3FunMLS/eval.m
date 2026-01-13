@@ -43,6 +43,17 @@ end
 
 dimensions = size(ori);
 N = prod(dimensions);
+
+% prevent dimension error in local least squares solver for N==1
+if (N == 1)
+  ori = [ori; ori];
+  [vals, conds] = SO3F.eval(ori, varargin{:});
+  vals = vals(1,:);
+  vals = reshape(vals, size(SO3F));
+  conds = conds(1);
+  return;
+end
+
 vals = zeros(N, numel(SO3F));
 if (nargout == 2)
   conds = zeros(N, 1);

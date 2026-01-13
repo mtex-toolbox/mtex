@@ -110,7 +110,7 @@ s_book = sqrt(sum(abs(B_book).^2, 2));
 
 % solve the rescaled systems and evaluate MLS
 c_book = pagemldivide(pagetranspose(B_book ./ s_book), fw_book) ./ s_book;
-clear B_book fw_book s_book;
+clear fw_book s_book;
 vals = sum(c_book .* g_book, 1);
 clear c_book g_book;
 
@@ -122,7 +122,7 @@ if isalmostreal(SO3F.values)
 end
 
 if nargout == 2
-  eigs = pagesvd(Gram_book);
+  eigs = pagesvd(B_book);
   conds = eigs(1,:,:) ./ eigs(SO3F.dim,:,:);
   conds = conds(:);
 end

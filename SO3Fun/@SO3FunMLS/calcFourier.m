@@ -37,6 +37,7 @@ nSym = numSym(SRight.properGroup)*numSym(SLeft.properGroup)*(isalmostreal(y)+1);
 if ~isempty(bw)
   % degrees of freedom in frequency space 
   numFreq = deg2dim(bw+1)/nSym;
+  % TODO: Maybe this is not necessary
   % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
   oversamplingFactor = length(nodes)/numFreq;
   if oversamplingFactor<1.9
