@@ -60,12 +60,15 @@ row_idx = repelem((1:numel(w)), lens);
 col_idx = cell2mat(ind');
 
 % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
-% 'project' the indices down to the original grid v
+%   'project' the indices down to the original grid v
 col_idx = mod(col_idx-1, orig_size) + 1;
 ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), orig_size);
 
 if (nargout == 2)
-  d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
-  % also convert d to sparse after computing it
+  % if "d = angle(...)" yields wrong results, use the following
+  %   d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
+
+  d = angle(v.subSet(col_idx), w.subSet(row_idx));
+  % also convert d to sparse after computing itntipo
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end
