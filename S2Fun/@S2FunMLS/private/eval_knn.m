@@ -78,8 +78,9 @@ if (S2F.detectOutliers == true)
 end
 
 % normalize the maximum weight to be 1
-weights = weights ./ max(weights, [], 2);
-W_book = sqrt(reshape(weights', nn, 1, N));
+% weights = weights ./ max(weights, [], 2);
+weights = weights ./ mean(weights, 2);
+W_book = sqrt(permute(weights, [2, 3, 1]));
 
 % don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
 % rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
@@ -88,7 +89,7 @@ W_book = sqrt(reshape(weights', nn, 1, N));
 % B satisfies B' * B = G' * W * G
 B_book = G_book .* W_book;
 
-% compute scaling factors (norms of columns of G_times_W_book)
+% compute scaling factors (norms of columns B_book)
 s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side

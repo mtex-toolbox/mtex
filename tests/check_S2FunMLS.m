@@ -6,14 +6,15 @@
 % at the same time this tests proper handling of arrays of S2FunMLS
 
 cs = crystalSymmetry('222');
+% cs = crystalSymmetry('1');
 
 % test functions
-f(1) = S2Fun.smiley; 
+f(1) = S2Fun.smiley;
 f(2) = complex(0,1) * f(1) - f(1).^2;
 f(3) = S2FunHarmonic(2 * rand(64, 1, 1) - 1);
 f(4:6) = S2FunHarmonic(2 * rand(32, 1, 3) - 1);
 f = reshape(f, 3, 2);
-f = S2FunHarmonicSym.quadrature(f, cs);
+f = S2FunHarmonicSym.quadrature(f, cs); 
 figure(1); plot(f); colorbar;
 
 % grid for the test function, values on the grid
@@ -23,6 +24,7 @@ f_values = f.eval(v);
 
 % test nodes
 w = vector3d.rand(1e4);
+f_values_w = f.eval(w);
 
 
 %% test with standard parameters only
@@ -30,15 +32,21 @@ sF = S2FunMLS(v, f_values);
 % sF.detectOutliers = true;
 % sF.outlierDetectionRange = 3;
 figure(2); plot(sF); colorbar;
-diff = sF - f;
-disp(max(abs(diff.eval(w))));
+[vals, conds] = sF.eval(w);
+disp('maximal errors: ');
+disp(max(abs(vals - f_values_w)));
+disp('maximal condition numbers: ');
+disp(max(conds));
 
 %% same test, but with range search instead of knn search
 sF.nn = 0;
 sF.delta = sF.compute_delta() * 2;
 figure(2); plot(sF); colorbar;
-diff = sF - f;
-disp(max(abs(diff.eval(w))));
+[vals, conds] = sF.eval(w);
+disp('maximal errors: ');
+disp(max(abs(vals - f_values_w)));
+disp('maximal condition numbers: ');
+disp(max(conds));
 
 
 %% test with antipodal option 
@@ -50,16 +58,21 @@ f_values = f.eval(v);
 sF = S2FunMLS(v, f_values);
 sF.antipodal = f.antipodal;
 figure(2); plot(sF, '3d'); colorbar;
-diff = sF - f;
-disp(max(abs(diff.eval(w))));
+[vals, conds] = sF.eval(w);
+disp('maximal errors: ');
+disp(max(abs(vals - f_values_w)));
+disp('maximal condition numbers: ');
+disp(max(conds));
 
 %% test antipodal option with range search 
 sF.nn = 0;
 sF.degree = 3;
 sF.delta = sF.compute_delta * 1;
 figure(2); plot(sF, '3d'); colorbar;
-diff = sF - f;
-disp(max(abs(diff.eval(w))));
+disp('maximal errors: ');
+disp(max(abs(vals - f_values_w)));
+disp('maximal condition numbers: ');
+disp(max(conds));
 
 %% test various parameter settings for the same test function
 w2 = vector3d.rand(1e3);
@@ -72,6 +85,7 @@ flags = {'centered', 'monomials', 'subsample', 'tangent'};
 marker = logical(dec2bin((0:15)') - '0');
 
 mls_values = zeros(numel(w2), 16);
+mls_conds = zeros(numel(w2), 16);
 
 clear sF;
 for i = 1 : 16
@@ -86,12 +100,15 @@ for i = 1 : 16
   sF{i} = S2FunMLS(v, f_values, applied_flags{:});
   sF{i}.nn = 0;
   sF{i}.delta = sF{i}.compute_delta() * 2;
-  mls_values(:,i) = sF{i}.eval(w2);
+  [mls_values(:,i), mls_conds(:,i)] = sF{i}.eval(w2);
 end
 
 errors = abs(mls_values - f.eval(w2));
 errors(:, [2, 6, 10, 14]) = 0;
+disp('maximal errors: ');
 disp(max(errors, [], 1));
+disp('maximal condition numbers: ');
+disp(max(conds, [], 1));
 
 %% test annoying data - standard
 try 
@@ -112,9 +129,20 @@ figure(2); plot(sF); colorbar;
 %% test annoying data - identify and remove outliers 
 %   (technically they do not get removed, but their weight gets reduced to
 %    almost zero)
+
 sF.detectOutliers = true;
 sF.outlierDetectionRange = 7;
+
+% use these lines for maximum stability
+% sF.monomials = true;
+% sF.centered = true;
+
 figure(2); plot(sF); colorbar;
+
+% check condition numbers
+w = vector3d.rand(10000);
+[~, conds] = sF.eval(w);
+disp(max(conds));
 
 %% same as before, but with range search instead
 sF.nn = 0;
@@ -135,6 +163,10 @@ num_outliers = round(numel(v) * .01);
 I = randperm(numel(v), num_outliers);
 noisy_values = f_values;
 noisy_values(I) = 100 * mean(abs(f_values)) * (2 * rand(num_outliers, 1) - 1);
+
+% use these lines for maximum stability
+sF.monomials = true;
+sF.centered = true;
 
 % MLS without outlier detection
 sF = S2FunMLS(v, noisy_values);
