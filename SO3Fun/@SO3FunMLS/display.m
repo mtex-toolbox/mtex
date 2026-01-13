@@ -18,8 +18,8 @@ else
   disp(['  nodes: ',num2str(length(SO3F.nodes)), ' orientations']);
 end
 
-
 % Weight of the SO3Fun (this is 1 in case of density)
+warning off
 if length(SO3F.nodes)<1e4 || length(SO3F)>3
   w = calcVoronoiVolume(SO3F.nodes); w = w./sum(w);
 else
@@ -30,6 +30,7 @@ if isscalar(SO3F)
 elseif length(SO3F)<4
   disp(['  weights: [' xnum2str(sum(SO3F.values.*w)),']']);
 end
+warning on
 
 
 % MLS Properites

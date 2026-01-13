@@ -1,5 +1,4 @@
 function [vals, conds] = eval(SO3F, ori,varargin)
-
 % evaluate sF on ori via moving least squares (MLS) approximation
 % provide the possibility of also returning the condition numbers of the gram matrices
 %
@@ -13,8 +12,15 @@ function [vals, conds] = eval(SO3F, ori,varargin)
 %
 % Output
 %  vals  - the values of SO3F on ori
+%  conds - the condition numbers of the LSQR systems 
 %
 
+
+if isempty(ori)
+  vals = [];
+  conds = [];
+  return;
+end
 
 % if outlier detection is enabled but SO3F is not scalar we have to be careful
 % with matrix dimensions in eval_knn and eval_range
@@ -36,11 +42,6 @@ if ((~isscalar(SO3F)) && SO3F.detectOutliers)
   return;
 end
 
-
-if ~isa(ori,'orientation')
-  ori = orientation(ori, SO3F.CS, SO3F.SS);
-end
-
 dimensions = size(ori);
 N = prod(dimensions);
 
@@ -53,6 +54,37 @@ if (N == 1)
   conds = conds(1);
   return;
 end
+
+
+if ~isa(ori,'orientation')
+  ori = orientation(ori,SO3F.CS,SO3F.SS);
+end
+
+% Use proper groups
+SO3F.CS = SO3F.CS.properGroup;
+SO3F.SS = SO3F.SS.properGroup;
+ori.CS = ori.CS.properGroup;
+ori.SS = ori.SS.properGroup;
+
+% Symmetrise w.r.t. lower symmetry, since only one symmetry can be used in
+% find-method
+cs = ori.CS; ss = ori.SS;
+if cs.id~=1 && ss.id~=1
+  if length(cs.rot) >= length(ss.rot)
+    % symmetrise SLeft
+    SO3F.nodes = ss*SO3F.nodes;
+    SO3F.values = kron(SO3F.values, ones(numSym(ss),1));
+    SO3F.SS = specimenSymmetry.default;
+    ori.SS = specimenSymmetry.default;
+  else
+    % symmetrise SRight
+    SO3F.nodes = SO3F.nodes*cs;
+    SO3F.values = repmat(SO3F.values,numSym(cs), 1);
+    SO3F.CS = specimenSymmetry.default;
+    ori.CS = specimenSymmetry.default;
+  end
+end
+
 
 vals = zeros(N, numel(SO3F));
 if (nargout == 2)

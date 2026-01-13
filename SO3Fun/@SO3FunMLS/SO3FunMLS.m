@@ -32,7 +32,7 @@ classdef SO3FunMLS < SO3Fun
 %  centered       - only evaluate the basis near the north pole (1,0,0,0) if true
 %  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems 
 %                   depending on how bad they are
-%  subsample      - use a subset of the local nodes that minimizes the lebesgue
+%  subsample      - use a subset of the local nodes that minimizes the Lebesgue
 %                   constant 
 %  tangent        - use polynomials on the tangent space
 %
@@ -52,7 +52,7 @@ classdef SO3FunMLS < SO3Fun
     tangent     = false % use polynomials on the tangent space
     subsample   = false % perform optimal subsampling, or not
 
-    detectOutliers = false; % specify if we should search for outliers, and recude their weight
+    detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
 
     bandwidth   = getMTEXpref('maxSO3Bandwidth');
@@ -66,6 +66,10 @@ classdef SO3FunMLS < SO3Fun
     SLeft
     SRight
   end
+
+  % TODO: symmetrise w.r.t one symmetry.
+  % TODO: use properGroups
+  % TODO: use SO3Grid structure
 
   methods
     
@@ -81,7 +85,7 @@ classdef SO3FunMLS < SO3Fun
         return
       end
 
-      if isa(nodes,'rotation'), nodes = orientation(nodes); end
+      nodes = orientation(nodes);
 
       % properly extract the size of the SO3FunMLS
       % this is given by the size of the values-array for each node
@@ -97,7 +101,7 @@ classdef SO3FunMLS < SO3Fun
       % remove nodes that occur more than once, and also remove the
       % corresponding values
       [nodes, values] = uniqueData(nodes,values);
-
+      
       values = reshape(values, [numel(nodes), values_size]);
       
       % preserve grid structure
