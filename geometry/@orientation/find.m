@@ -111,7 +111,7 @@ if (floor(epsilon_or_k) == epsilon_or_k)
     else
       [ind2,d2] = find(v,w.subSet(nCC),epsilon_or_k,'worstCaseError');
     end
-    ind(nCC,:) = ind2;
+    ind(nCC,:) = id(ind2);
     d(nCC,:) = d2;
   end
 
