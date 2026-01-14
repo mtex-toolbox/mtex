@@ -105,14 +105,14 @@ if (floor(epsilon_or_k) == epsilon_or_k)
   % determine not correctly classified points and search again for them
   nCC = max(d,[],2) > min(pi-angle(wq,fR.N) + epsilon,[],2);
   if sum(nCC)>0
-    if nCC<100
-      d2 = angle(v,wq(nCC)).';
+    if sum(nCC)<100
+      d2 = angle(v(:),wq(nCC).').';
       [d2,ind2] = mink(d2,epsilon_or_k,2);
     else
       [ind2,d2] = find(v,w.subSet(nCC),epsilon_or_k,'worstCaseError');
     end
-    ind(nCC) = ind2;
-    d(nCC) = d2;
+    ind(nCC,:) = ind2;
+    d(nCC,:) = d2;
   end
 
 else
