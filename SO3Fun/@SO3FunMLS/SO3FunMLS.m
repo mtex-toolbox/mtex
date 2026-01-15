@@ -87,22 +87,15 @@ classdef SO3FunMLS < SO3Fun
 
       nodes = orientation(nodes);
 
-      % properly extract the size of the SO3FunMLS
-      % this is given by the size of the values-array for each node
-      % we obtain it by removing the entries of size(nodes) from size(values)
-      nodes_size = size(nodes);
-      nodes_dim = numel(nodes_size);
-      if (ismember(numel(nodes), nodes_size))
-        nodes_dim = 1;
-      end
+      % adapt the sizes of nodes and values to each other
       values_size = size(values);
-      values_size = values_size(nodes_dim+1 : end);
-
-      % remove nodes that occur more than once, and also remove the
-      % corresponding values
-      [nodes, values] = uniqueData(nodes,values);
-      
-      values = reshape(values, [numel(nodes), values_size]);
+      id = find(cumprod(size(values)) == numel(nodes), 1, 'first');
+      if (id < numel(size(values)))
+        remaining_sizes = values_size(id+1 : end);
+        values = reshape(values, size(nodes), remaining_sizes);
+      else
+        values = reshape(values, size(nodes));
+      end
       
       % preserve grid structure
       SO3F.nodes = nodes; 
