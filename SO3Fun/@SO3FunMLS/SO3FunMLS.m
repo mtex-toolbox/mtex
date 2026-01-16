@@ -90,17 +90,24 @@ classdef SO3FunMLS < SO3Fun
       % adapt the sizes of nodes and values to each other
       values_size = size(values);
       id = find(cumprod(size(values)) == numel(nodes), 1, 'first');
-      if (id < numel(size(values)))
+      if (id < numel(values_size))
         remaining_sizes = values_size(id+1 : end);
-        values = reshape(values, size(nodes), remaining_sizes);
+        values = reshape(values, [size(nodes), remaining_sizes]);
       else
         values = reshape(values, size(nodes));
       end
-      
-      % preserve grid structure
-      SO3F.nodes = nodes; 
-      sz = [size(values), 1];
-      SO3F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
+
+      % remove dimensions of size 1
+      nodes = squeeze(nodes);
+      % if nodes is 2D and the first dim is 1, transpose it 
+      if (size(nodes, 1) == 1), nodes = transpose(nodes); end
+      % assign
+      SO3F.nodes = nodes;
+
+      % same as for nodes
+      values = squeeze(values);
+      if (size(values, 1) == 1), values = values.'; end
+      SO3F.values = squeeze(values);
 
       % set degree, number of neighbors, support radius delta,
       %   outlierDetectionRange, weight function
