@@ -38,13 +38,13 @@ weights = SO3F.w(dist ./ (1.1 * max(dist, [], 2)))';
 clear dist;
 
 % set up the right hand side
-vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
-f_book = reshape(vals(grid_id,:), nn, N, numel(SO3F));
+grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
+f_book = reshape(grid_vals(grid_id,:), nn, N, numel(SO3F));
 if (SO3F.detectOutliers == true)
   oI = computeOutlierIndicators(SO3F); 
   oI = reshape(oI(grid_id), nn, N);
   weights = weights .* exp(-oI);
-  clear oI;
+  clear oI grid_vals;
 end
 
 % normalize the maximum weight to 1
@@ -114,7 +114,7 @@ c_book = pagemldivide(pagetranspose(B_book ./ s_book), fw_book) ./ s_book;
 
 
 
-clear fw_book s_book;
+clear fw_book;
 vals = sum(c_book .* g_book, 1);
 clear c_book g_book;
 
@@ -126,7 +126,7 @@ if isalmostreal(SO3F.values)
 end
 
 if nargout == 2
-  eigs = pagesvd(B_book);
+  eigs = pagesvd(B_book ./ s_book);
   conds = eigs(1,:,:) ./ eigs(SO3F.dim,:,:);
   conds = conds(:);
 end

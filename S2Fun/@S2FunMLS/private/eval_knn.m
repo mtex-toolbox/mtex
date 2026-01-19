@@ -71,16 +71,19 @@ G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
 % compute distances and weights
 deltas = 1.1 * max(dist, [], 2);
 weights = S2F.w(dist ./ deltas);
+clear dist;
 if (S2F.detectOutliers == true)
   oI = computeOutlierIndicators(S2F);
   oI = reshape(oI(grid_id), nn, N)';
   weights = weights .* exp(-oI);
+  clear oI;
 end
 
 % normalize the maximum weight to be 1
-% weights = weights ./ max(weights, [], 2);
-weights = weights ./ mean(weights, 2);
+% weights = weights ./ mean(weights, 2);
+weights = weights ./ max(weights, [], 2);
 W_book = sqrt(permute(weights, [2, 3, 1]));
+clear weights;
 
 % don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
 % rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
@@ -88,17 +91,21 @@ W_book = sqrt(permute(weights, [2, 3, 1]));
 
 % B satisfies B' * B = G' * W * G
 B_book = G_book .* W_book;
+clear G_book; 
 
 % compute scaling factors (norms of columns B_book)
 s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
-vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
-f_book = pagetranspose(reshape(vals(grid_id,:).', numel(S2F), nn, N));
+grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
+f_book = pagetranspose(reshape(grid_vals(grid_id,:).', numel(S2F), nn, N));
+clear grid_vals;
 fw_book = W_book .* f_book;
+clear W_book f_book;
 
 % solve the rescaled system and evaluate MLS
 c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
+clear fw_book;
 vals = sum(c_book .* g_book, 1);
 
 vals = permute(vals, [3, 2, 1]);

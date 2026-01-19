@@ -7,7 +7,7 @@ conds = zeros(N, 1);
 SO3F = SO3F.subSet(':');
  
 % get the neighbors and count them
-ind = SO3F.nodes.find(ori, SO3F.delta); 
+ind = SO3F.nodes.find(ori, SO3F.delta);
 nn = sum(ind, 2);
 
 % for points with too less neighbors, we instead choose the SO3F.dim nearest ones
@@ -126,10 +126,11 @@ else
   % evaluate the basis functions on the grid
   basis_on_grid = eval_basis_functions(SO3F, rotneighbors);
   clear rotneighbors;
+
   basis_in_pole = eval_basis_functions(SO3F, orientation.id);
-  
   basis_in_ori = repmat(basis_in_pole, N, 1);
   clear basis_in_pole;
+
   G(:, col_id) = basis_on_grid';
   clear basis_on_grid;
 end
@@ -149,15 +150,15 @@ s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 f = zeros(N * nn_max, numel(SO3F));
-vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
-f(col_id,:) = vals(grid_id,:);
-clear col_id grid_id;
+grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
+f(col_id,:) = grid_vals(grid_id,:);
+clear col_id grid_id grid_vals;
 fw_book = permute(reshape((weights .* f).', numel(SO3F), nn_max, N), [2 1 3]);
 clear f weights;
 
 % compute the generating functions
 c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
-clear B_book fw_book s_book;
+clear fw_book;
 vals(J,:) = permute(sum(basis_in_ori .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 clear basis_in_ori c_book;
 
@@ -166,7 +167,7 @@ if isalmostreal(SO3F.values)
 end
 
 if nargout == 2
-  eigsJ = pagesvd(Gram_book);
+  eigsJ = pagesvd(B_book ./ s_book);
   condsJ = eigsJ(1,:,:) ./ eigsJ(SO3F.dim,:,:);
   conds(J) = condsJ(:);
 end

@@ -21,6 +21,7 @@ figure(1); plot(f); colorbar;
 N = 1e4;
 v = vector3d.rand(1, N, 2);
 f_values = f.eval(v);
+f = squeeze(f);
 
 % test nodes
 w = vector3d.rand(1e4);
@@ -50,15 +51,19 @@ disp(max(conds));
 
 
 %% test with antipodal option 
-f = @(v)(sin(v.x).^2 .* cos(v.y) + tan(v.z.^2));
-f = S2FunHarmonic(f);
+% f = @(v)(sin(v.x).^2 .* cos(v.y) + tan(v.z.^2));
+f = S2FunHarmonic(rand(60,1),'antipodal');
 figure(1); plot(f, '3d'); colorbar;
 
 f_values = f.eval(v);
 sF = S2FunMLS(v, f_values);
+sF.degree = 3;
+sF.nn = 2 * sF.dim;
 sF.antipodal = f.antipodal;
 figure(2); plot(sF, '3d'); colorbar;
 [vals, conds] = sF.eval(w);
+f_values_w = f.eval(w);
+
 disp('maximal errors: ');
 disp(max(abs(vals - f_values_w)));
 disp('maximal condition numbers: ');
@@ -69,6 +74,9 @@ sF.nn = 0;
 sF.degree = 3;
 sF.delta = sF.compute_delta * 1;
 figure(2); plot(sF, '3d'); colorbar;
+[vals, conds] = sF.eval(w);
+f_values_w = f.eval(w);
+
 disp('maximal errors: ');
 disp(max(abs(vals - f_values_w)));
 disp('maximal condition numbers: ');

@@ -21,6 +21,10 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 
 % storing the option in v lets @vector3d.angle take care of computing the
 % distance the right way
+
+v = reshape(v, [], 1);
+w = reshape(w, [], 1);
+
 v.antipodal = v.antipodal | check_option(varargin,'antipodal');
 
 distance = get_option(varargin, 'distance', 'euclidean', 'char');
@@ -66,7 +70,7 @@ ind = sparse(row_idx, col_idx, true(sum(lens),1), numel(w), orig_size);
 
 if (nargout == 2)
   % if "d = angle(...)" yields wrong results, use the following
-  %   d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
+  % d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
 
   d = angle(v.subSet(col_idx), w.subSet(row_idx));
   % also convert d to sparse after computing itntipo
