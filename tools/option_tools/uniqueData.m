@@ -1,4 +1,4 @@
-function [nodes,values] = uniqueData(nodes,values)
+function [nodes,values] = uniqueData(nodes, values, varargin)
 
 numNodes = numel(nodes);
 values =reshape(values,numNodes,[]);

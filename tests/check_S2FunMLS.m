@@ -30,7 +30,7 @@ f_values_w = f.eval(w);
 
 %% test with standard parameters only
 sF = S2FunMLS(v, f_values);
-% sF.detectOutliers = true;
+sF.detectOutliers = true;
 % sF.outlierDetectionRange = 3;
 figure(2); plot(sF); colorbar;
 [vals, conds] = sF.eval(w);
