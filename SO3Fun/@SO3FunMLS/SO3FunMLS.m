@@ -87,6 +87,9 @@ classdef SO3FunMLS < SO3Fun
 
       nodes = orientation(nodes);
 
+      nodes = squeeze(nodes);
+      values = squeeze(values);
+
       % adapt the sizes of nodes and values to each other
       values_size = size(values);
       id = find(cumprod(size(values)) == numel(nodes), 1, 'first');

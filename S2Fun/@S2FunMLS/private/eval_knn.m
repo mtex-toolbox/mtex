@@ -93,7 +93,8 @@ B_book = G_book .* W_book;
 s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
-f_book = pagetranspose(reshape(S2F.values(grid_id,:).', numel(S2F), nn, N));
+vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
+f_book = pagetranspose(reshape(vals(grid_id,:).', numel(S2F), nn, N));
 fw_book = W_book .* f_book;
 
 % solve the rescaled system and evaluate MLS

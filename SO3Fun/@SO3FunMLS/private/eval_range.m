@@ -149,7 +149,8 @@ s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 f = zeros(N * nn_max, numel(SO3F));
-f(col_id,:) = SO3F.values(grid_id,:);
+vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
+f(col_id,:) = vals(grid_id,:);
 clear col_id grid_id;
 fw_book = permute(reshape((weights .* f).', numel(SO3F), nn_max, N), [2 1 3]);
 clear f weights;

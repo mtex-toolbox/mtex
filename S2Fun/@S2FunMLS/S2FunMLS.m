@@ -79,26 +79,30 @@ classdef S2FunMLS < S2Fun
         return
       end
 
-      % properly extract the size of the S2FunMLS
-      % this is given by the size of the values-array for each node
-      % we obtain it by removing the entries of size(nodes) from size(values)
-      nodes_size = size(nodes);
-      nodes_dim = numel(nodes_size);
-      if (ismember(numel(nodes), nodes_size))
-        nodes_dim = 1;
-      end
+      nodes = squeeze(nodes);
+      values = squeeze(values);
+
+      % adapt the sizes of nodes and values to each other
       values_size = size(values);
-      values_size = values_size(nodes_dim+1 : end);
+      id = find(cumprod(size(values)) == numel(nodes), 1, 'first');
+      if (id < numel(values_size))
+        remaining_sizes = values_size(id+1 : end);
+        values = reshape(values, [size(nodes), remaining_sizes]);
+      else
+        values = reshape(values, size(nodes));
+      end
 
-      % remove nodes that occur more than once, and also remove the
-      % corresponding values
-      [nodes, values] = uniqueData(nodes,values);
-      values = reshape(values, [numel(nodes), values_size]);
-
-      % preserve grid structure
+      % remove dimensions of size 1
+      nodes = squeeze(nodes);
+      % if nodes is 2D and the first dim is 1, transpose it 
+      if (size(nodes, 1) == 1), nodes = transpose(nodes); end
+      % assign
       S2F.nodes = nodes;
-      sz = [size(values), 1];
-      S2F.values = reshape(values(:) , [length(nodes) , sz(find(cumprod(sz)==length(nodes), 1)+1:end)] );
+
+      % same as for nodes
+      values = squeeze(values);
+      if (size(values, 1) == 1), values = values.'; end
+      S2F.values = squeeze(values);
 
       % set degree, number of neighbors, support radius delta,
       %   outlierDetectionRange, weight function

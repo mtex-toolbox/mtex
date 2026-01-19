@@ -38,7 +38,8 @@ weights = SO3F.w(dist ./ (1.1 * max(dist, [], 2)))';
 clear dist;
 
 % set up the right hand side
-f_book = reshape(SO3F.values(grid_id,:), nn, N, numel(SO3F));
+vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
+f_book = reshape(vals(grid_id,:), nn, N, numel(SO3F));
 if (SO3F.detectOutliers == true)
   oI = computeOutlierIndicators(SO3F); 
   oI = reshape(oI(grid_id), nn, N);
@@ -110,6 +111,9 @@ s_book = sqrt(sum(abs(B_book).^2, 2));
 
 % solve the rescaled systems and evaluate MLS
 c_book = pagemldivide(pagetranspose(B_book ./ s_book), fw_book) ./ s_book;
+
+
+
 clear fw_book s_book;
 vals = sum(c_book .* g_book, 1);
 clear c_book g_book;

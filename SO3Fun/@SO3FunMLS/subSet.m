@@ -1,16 +1,14 @@
 function SO3F = subSet(SO3F,varargin)
 % subindex SO3FunMLS
 
-num_dims_nodes = ndims(SO3F.nodes);
-
-% if nodes are 2d, then values is numel(nodes) x ...
-if (num_dims_nodes == 2)
+% if nodes are 1xN or Nx1 vector, then values is numel(nodes) x ...
+if (size(SO3F.nodes, 1) == 1 || size(SO3F.nodes, 2) == 1)
   SO3F.values = SO3F.values(:,varargin{:});
   return;
 end
 
-% if nodes are 2d, then values is size(nodes) x ...
-idx = [repmat({':'}, 1, num_dims_nodes), varargin{:}];
+% if nodes are not a vector, then values is size(nodes) x ...
+idx = [repmat({':'}, 1, ndims(SO3F.nodes)), varargin{:}];
 SO3F.values = SO3F.values(idx{:});
 
 end

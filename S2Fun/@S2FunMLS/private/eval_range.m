@@ -138,7 +138,8 @@ S_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 f = zeros(N * nn_max, numel(S2F));
-f(col_id,:) = S2F.values(grid_id,:);
+vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
+f(col_id,:) = vals(grid_id,:);
 fw_book = permute(reshape((sqrt(weights) .* f).', numel(S2F), nn_max, N), [2 1 3]);
 
 % compute the generating functions

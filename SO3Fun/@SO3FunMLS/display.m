@@ -25,10 +25,13 @@ if length(SO3F.nodes)<1e4 || length(SO3F)>3
 else
   w = 1/length(SO3F.nodes);
 end
+
+% display the 'weights'
 if isscalar(SO3F)
-  disp(['  weight: ' xnum2str(sum(SO3F.values.*w))]);
+  disp(['  weight: ' xnum2str(sum(SO3F.values.*w, 'all'))]);
 elseif length(SO3F)<4
-  disp(['  weights: [' xnum2str(sum(SO3F.values.*w)),']']);
+  vals = reshape(SO3F.values, numel(SO3F.nodes), numel(SO3F));
+  disp(['  weights: [' xnum2str(sum(vals .* w)),']']);
 end
 warning on
 

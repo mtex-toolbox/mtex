@@ -17,7 +17,7 @@ k = 6;
 % f(2) = complex(0,1) * f(1) - f(1).^2;
 % f(3) = SO3FunHarmonic(2 * rand(64, 1, 1) - 1, cs, ss);
 f(1:k) = SO3FunHarmonic(2 * rand(32, 1, k) - 1, cs, ss, 'antipodal');
-f = reshape(f, 3, 2);
+f = reshape(f, 3, 1, 2);
 for i = 1 : numel(f)
   f(i) = SO3FunHarmonic(@(ori)(real(f(i).eval(ori))));
 end
@@ -25,7 +25,7 @@ figure(1); plot(f); colorbar;
 
 % grid for the test function, values on the grid
 N = 1e4;
-ori = orientation.rand(N);
+ori = orientation.rand(1, N, 2);
 f_values = f.eval(ori);
 
 % test nodes
@@ -34,8 +34,8 @@ ori2 = orientation.rand(1e4);
 
 %% test with standard parameters only
 sF = SO3FunMLS(ori, f_values, cs, ss, 'antipodal');
-sF.detectOutliers = true;
-sF.outlierDetectionRange = 5;
+% sF.detectOutliers = true;
+% sF.outlierDetectionRange = 5;
 
 % for i = 1 : numel(f)
 %   figure(1); plot(f(i)); colorbar;
@@ -48,7 +48,7 @@ figure(1); plot(f(2,1)); colorbar;
 
 diff = sF - f;
 disp(max(abs(diff.eval(ori2))));
-figure(2); plot(sF.subSet(2,1)); colorbar;
+figure(2); plot(sF(2,1)); colorbar;
 
 %% same test, but with range search instead of knn search
 sF.nn = 0;

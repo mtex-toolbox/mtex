@@ -13,13 +13,13 @@ f(1) = S2Fun.smiley;
 f(2) = complex(0,1) * f(1) - f(1).^2;
 f(3) = S2FunHarmonic(2 * rand(64, 1, 1) - 1);
 f(4:6) = S2FunHarmonic(2 * rand(32, 1, 3) - 1);
-f = reshape(f, 3, 2);
 f = S2FunHarmonicSym.quadrature(f, cs); 
+f = reshape(f, 3, 1, 2);
 figure(1); plot(f); colorbar;
 
 % grid for the test function, values on the grid
 N = 1e4;
-v = vector3d.rand(N);
+v = vector3d.rand(1, N, 2);
 f_values = f.eval(v);
 
 % test nodes
