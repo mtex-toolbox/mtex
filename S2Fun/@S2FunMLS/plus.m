@@ -25,6 +25,11 @@ if (isa(sF2, 'S2FunHarmonic'))
   return;
 end
 
+if (isa(sF2, 'S2FunHandle'))
+  sF = sF2 + sF1;
+  return;
+end
+
 if (sF1.nodes ~= sF2.nodes)
   error('Addition of S2FunMLS only works if the grids are the same.');
 end

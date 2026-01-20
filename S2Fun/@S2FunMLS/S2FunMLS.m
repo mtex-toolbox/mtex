@@ -82,6 +82,13 @@ classdef S2FunMLS < S2Fun
       nodes = squeeze(nodes);
       values = squeeze(values);
 
+      % MLS needs unique nodes
+      if (numel(unique(nodes, 'stable')) < numel(nodes))
+        nodes = nodes(:);
+        values = reshape(values, numel(nodes), []);
+        [nodes, values] = uniqueData(nodes, values, 'median');
+      end
+
       % adapt the sizes of nodes and values to each other
       values_size = size(values);
       id = find(cumprod(size(values)) == numel(nodes), 1, 'first');
