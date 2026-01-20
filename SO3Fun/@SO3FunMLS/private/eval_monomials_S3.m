@@ -10,7 +10,9 @@ dim = nchoosek(deg+3, 3);
 
 % if the tangent parameter is true, we set the real part ori.a to 1
 if nargin == 3 && varargin{1} == true
-    ori.a = ones(size(ori.a));
+  I = ori.a >= 0;
+  ori.a(I)  =  1;
+  ori.a(~I) = -1;
 end
 
 % construct the exponents (in each coordinate) of the basis monomials 

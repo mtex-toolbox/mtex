@@ -46,6 +46,8 @@ sF = SO3FunMLS(ori, f_values, cs, ss, 'antipodal');
 
 figure(1); plot(f(2,1)); colorbar;
 
+f = squeeze(f);
+
 diff = sF - f;
 disp(max(abs(diff.eval(ori2))));
 figure(2); plot(sF(2,1)); colorbar;

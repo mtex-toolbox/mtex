@@ -49,6 +49,7 @@ end
 
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
+clear ind;
 
 if (S2F.subsample == true)
   dist = angle(v.subSet(v_id), S2F.nodes.subSet(grid_id));
@@ -66,6 +67,7 @@ temp = ones(nn_total, 1);
 temp(start_id) = 1 - nn(1:N-1);
 temp = cumsum(temp);
 col_id = (v_id-1) * nn_max + temp;
+clear temp start_id;
 
 % TODO: nn_max might be much larger than mean(nn) at very few occations
 %   ==> compute in batches of similar nn for less ram usage
@@ -89,6 +91,7 @@ if (~S2F.centered)
   if (mod(S2F.degree, 2) > 0)
     I = sum(v.subSet(v_id).xyz .* S2F.nodes.subSet(grid_id).xyz, 2) < 0;
     G(:,I) = G(:,I) * (-1);
+    clear I;
   end
 
   basis_in_v = eval_basis_functions(S2F, v);
@@ -100,10 +103,11 @@ else
 
   % determine which basis to use and evaluate it on the grid and on v
   basis_on_grid = eval_basis_functions(S2F, rotneighbors);
-  basis_in_pole = eval_basis_functions(S2F, vector3d.Z);
-  
-  basis_in_v = repmat(basis_in_pole, N, 1);
+  clear rotneighbors;
   G(:, col_id) = basis_on_grid.';
+
+  basis_in_pole = eval_basis_functions(S2F, vector3d.Z);
+  basis_in_v = repmat(basis_in_pole, N, 1);
 end
 
 % dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
@@ -116,42 +120,50 @@ weights = zeros(N * nn_max, 1);
 %   contained in S2F.nodes ==> distance 0, but in neighborhood
 I = sub2ind(size(dist), v_id, grid_id);
 weights(col_id) = S2F.w(dist(I) / S2F.delta);
+clear dist I;
 
 if (S2F.detectOutliers == true)
   oI = computeOutlierIndicators(S2F);
   oI_factor = zeros(N * nn_max, 1);
   oI_factor(col_id) = exp(-oI(grid_id));
   weights = weights .* oI_factor;
+  clear oI oI_factor;
 end
 
 % for each center, normalize the maximum weight to be 1
 weights = reshape(weights, nn_max, N);
-weights = weights ./ max(weights, [], 1);
+weights = weights ./ mean(weights, 1);
 weights = weights(:);
 
 % B satisfies B' * B = G' * W * G
 B = G .* sqrt(weights');
+clear G;
 B_book = pagetranspose(reshape(B, S2F.dim, nn_max, N)); 
-
-% compute scaling factors (norms of columns of G_times_W_book)
-S_book = sqrt(sum(abs(B_book).^2, 1));
+clear B;
 
 % set up right hand side
 f = zeros(N * nn_max, numel(S2F));
-vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
-f(col_id,:) = vals(grid_id,:);
+grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
+f(col_id,:) = grid_vals(grid_id,:);
+clear col_id grid_vals grid_id;
 fw_book = permute(reshape((sqrt(weights) .* f).', numel(S2F), nn_max, N), [2 1 3]);
+clear f weights;
+
+% compute scaling factors (norms of columns of G_times_W_book)
+s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % compute the generating functions
-c_book = pagemldivide(B_book ./ S_book, fw_book) ./ pagetranspose(S_book);
+c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
+clear fw_book;
 vals(J,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
+clear basis_in_v c_book;
 
 if isalmostreal(S2F.values)
   vals = real(vals); 
 end
 
 if nargout == 2
-  eigsJ = pagesvd(B_book ./ S_book);
+  eigsJ = pagesvd(B_book ./ s_book);
   condsJ = eigsJ(1,:,:) ./ eigsJ(S2F.dim,:,:);
   conds(J) = condsJ(:);
 end

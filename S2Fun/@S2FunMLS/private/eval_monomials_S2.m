@@ -13,7 +13,9 @@ dim = (deg + 1) * (deg + 2) / 2;
 % if tangent==true, then also centered==true (S2FunMLS-constructor),
 %   thus all nodes in v are close to north pole
 if nargin == 3 && varargin{1} == true
-    v.z = ones(N, 1);
+  I = v.z >= 0;
+  v.z(I)  =  1;
+  v.z(~I) = -1;
 end
 
 % compute the exponents (in each coordinate) of the basis monomials 

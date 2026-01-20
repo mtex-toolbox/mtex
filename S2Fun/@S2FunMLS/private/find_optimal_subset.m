@@ -47,8 +47,19 @@ end
 
 
 % set linprog options to suppress output
-options = optimset('linprog');
-options.Display = 'off';
+ver = version;
+ver = str2double(ver(1:2));
+% we want to use primal-dual simplex, since it is faster
+% but in matlab >= R2025a it throws the error "Unrecognized field name "optimstatus" 
+% due to some internal bug in linprog
+if (ver < 25)
+  options = optimoptions('linprog','Display','none');   % + weitere echte linprog-Optionen
+else
+  % very robust
+  options = optimoptions('linprog', 'Display','none', 'Algorithm','interior-point-legacy');
+  warning(['linprog was set to use interior-point-legacy instead of primal-dual-simplex, ' ...
+    'since the latter throws the error'])
+end
 
 c = S2F.eval_basis_functions(vector3d.Z);
 
@@ -72,8 +83,16 @@ if (num_threads == 1)
     [~, ~, ~, ~, lambda] = linprog(c, M, b, [], [], [], [], options);
 
     % get the optimal subset markers
+    % due to numerical instability, many lambdas are almost 0, but not precisely 0
+    % thus we choose the optimal subset to consist of the indice where the
+    %   lambdas are largest
+    % of course we have to keep in mind that 2 inequalities pair together to an
+    %   equality
     grid_idx = find(ind(i,:));
-    opt_sub_ind(i,:) = grid_idx(any(reshape(lambda.ineqlin, n, 2), 2));
+    lambdas = reshape(lambda.ineqlin, n, 2);
+    lambdas = max(abs(lambdas), [], 2);
+    [~, id] = sort(lambdas, 'descend');
+    opt_sub_ind(i,:) = grid_idx(id(1:S2F.dim));
   end
 
 else
@@ -89,9 +108,17 @@ else
     M = [halfM; -halfM];
     [~, ~, ~, ~, lambda] = linprog(c, M, b, [], [], [], [], options);
 
-    % get the optimal subset indice
+    % get the optimal subset markers
+    % due to numerical instability, many lambdas are almost 0, but not precisely 0
+    % thus we choose the optimal subset to consist of the indice where the
+    %   lambdas are largest
+    % of course we have to keep in mind that 2 inequalities pair together to an
+    %   equality
     grid_idx = find(ind(i,:));
-    opt_sub_ind(i,:) = grid_idx(any(reshape(lambda.ineqlin, n, 2), 2));
+    lambdas = reshape(lambda.ineqlin, n, 2);
+    lambdas = max(abs(lambdas), [], 2);
+    [~, id] = sort(lambdas, 'descend');
+    opt_sub_ind(i,:) = grid_idx(id(1:S2F.dim));
   end
 end
 
