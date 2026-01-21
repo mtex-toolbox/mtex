@@ -1,4 +1,6 @@
 # MATLAB container with MTEX installed.
+# Unless you know what you are doing, see docker-compose.yaml instead
+#
 # For additional toolboxes, see: https://github.com/mathworks-ref-arch/matlab-dockerfile/tree/main/alternates
 # To build and run the container, you need to provide a license server or license file:
 # build:
@@ -12,7 +14,8 @@
 ARG MATLAB_RELEASE=R2025a
 FROM mathworks/matlab:$MATLAB_RELEASE
 
-ARG MTEX_RELEASE=6.2.beta.3
+ARG MATLAB_RELEASE
+ARG MTEX_RELEASE=6.1.0
 ARG MLM_LICENSE_FILE
 
 # Install MTEX following https://mtex-toolbox.github.io/download#installation
@@ -21,9 +24,21 @@ RUN wget -q https://github.com/mtex-toolbox/mtex/releases/download/mtex-${MTEX_R
     && rm mtex-${MTEX_RELEASE}.zip
 
 WORKDIR /home/matlab/mtex-${MTEX_RELEASE}
-RUN matlab -batch "startup_mtex"
+RUN matlab -batch "install_mtex; mex_install; check_mex; startup_mtex;"
 
-# Not sure if this is necessary, got the warning:
-# "Not all mex files are running. You might want to call mex_install('force') to compile the mex files yourself."
-RUN matlab -batch 'mex_install("force")'
-RUN matlab -batch 'savepath'
+# Python environment (for pyenv integration)
+USER root
+RUN python3 -m venv /opt/venv
+# RUN /opt/venv/bin/pip3.12 install ...
+
+# Adding these to the matlabrc.m seems to be the only way to get consistent
+# behavior across users and ways of launching MATLAB (cli/-browser)
+RUN cat << EOF >> /opt/matlab/$MATLAB_RELEASE/toolbox/local/matlabrc.m
+addpath('/mtex-tools');
+addpath('/home/matlab/mtex-${MTEX_RELEASE}');
+pyenv(Version='/opt/venv/bin/python3.12');
+EOF
+
+USER matlab
+VOLUME /mtex-tools
+WORKDIR /mtex-tools
