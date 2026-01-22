@@ -18,11 +18,10 @@ classdef SO3FunHandle < SO3Fun
 %
 properties
   fun
-  % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
-  antipodal = false
   SLeft  = specimenSymmetry.default
   SRight = specimenSymmetry.default
   bandwidth = getMTEXpref('maxSO3Bandwidth');
+  antipodal = false
 end
 
 properties (Dependent = true)
@@ -45,6 +44,10 @@ methods
     [SRight,SLeft] = extractSym(varargin);
     SO3F.SRight = SRight;
     SO3F.SLeft = SLeft;
+
+    if check_option(varargin,'antipodal')
+      SO3F.antipodal = true;
+    end
     
   end
 
@@ -53,7 +56,7 @@ methods
   end
 
   function out = get.isReal(f)
-    rot = rotation.rand(10);
+    rot = rotation.rand(100);
     out = isreal(f.eval(rot));
   end
 
@@ -62,6 +65,21 @@ methods
     F = SO3FunHandle(@(rot) real(F.eval(rot)),F.CS,F.SS);
   end
   
+  % % Using antipodal as dependent property is not completely clean, since
+  % % the get-routine may be inexact for functions, that are zero nearly
+  % % everywhere. 
+  %
+  % function out = get.antipodal(f)
+  %   rot = rotation.rand(100);
+  %   out = norm(f.eval(rot)-f.eval(rot.inv))<1e-6;
+  % end
+  % 
+  % function F = set.antipodal(F,value)
+  %   if ~value, return; end
+  %   ensureCompatibleSymmetries(F,'antipodal');
+  %   F = SO3FunHandle(@(rot) 0.5*F.eval(rot) + 0.5*F.eval(rot.inv),F.CS,F.SS);
+  % end
+
 end
 
 
