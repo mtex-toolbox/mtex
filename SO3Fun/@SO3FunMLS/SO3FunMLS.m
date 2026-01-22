@@ -94,7 +94,7 @@ classdef SO3FunMLS < SO3Fun
       if (numel(unique(nodes, 'stable')) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values);
+        [nodes, values] = uniqueData(nodes, values, 'median');
       end
 
       % adapt the sizes of nodes and values to each other
