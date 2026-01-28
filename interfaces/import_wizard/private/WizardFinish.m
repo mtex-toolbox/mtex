@@ -196,7 +196,7 @@ end
       
     end
     
-    function openUntitled( str, fname )
+    function openUntitled( str )
       
       err = javachk('mwt','The MATLAB Editor');
       if ~isempty(err)
@@ -213,10 +213,10 @@ end
           end
         catch %#ok<CTCH>
           setMTEXpref('SaveToFile',true);
-          openUntitled( str, fname );
+          openUntitled( str );
         end
       else
-        [file, path] = uiputfile([fname '.m']);
+        [file, path] = uiputfile(['untitled.m']);
         if ischar(file)
           fname = fullfile(path,file);
           fid = fopen(fname,'w');
@@ -562,3 +562,4 @@ end
   end
 
 end
+
