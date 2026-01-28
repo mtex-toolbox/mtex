@@ -206,7 +206,9 @@ end
       if ~getMTEXpref('SaveToFile')
         try
           EditorServices = com.mathworks.mlservices.MLEditorServices;
-          if ~verLessThan('matlab','7.11')
+          if ~verLessThan('matlab','9.13')
+             matlab.desktop.editor.newDocument(str);
+          elseif ~verLessThan('matlab','7.11')
             EditorServices.getEditorApplication.newEditor(str);
           else
             EditorServices.newDocument(str,true);
@@ -562,3 +564,4 @@ end
   end
 
 end
+
