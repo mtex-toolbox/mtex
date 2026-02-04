@@ -111,8 +111,11 @@ try
   ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
     
-  % third estimate of the grid resolution
-  dxy2 = min(vecnorm(unitCell.',2));
+  % third estimate of the grid resolution - as [dx dy], in the same
+  % convention regularPoly uses for its d: for a cell it generated with
+  % d=1 this returns 1, whereas the distance to the closest vertex would
+  % come out short by sqrt(2) for a square and sqrt(3) for a hexagon
+  dxy2 = vecnorm(unitCell,2,1);
 catch
   unitCell = [];
 end
