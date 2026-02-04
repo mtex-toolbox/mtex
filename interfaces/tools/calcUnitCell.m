@@ -90,7 +90,7 @@ try
   unitCell(ignore,:) = [];
     
   % third estimate of the grid resolution
-  dxy2 = min(vecnorm(unitCell.',2));
+  dxy2 = vecnorm(unitCell,2,1);
 catch
   unitCell = [];
 end
@@ -175,3 +175,4 @@ while length(xy) > N
     xy(:,2)>yminmax(1) & xy(:,2)<yminmax(2),:);
   
 end
+
