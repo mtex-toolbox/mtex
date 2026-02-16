@@ -45,11 +45,11 @@ for ax = allAxes(:).'
   switch ax.Tag
     
     case 'pdf' % pole figure annotations
-        
+      error('PDF plot for vector fiels is not implemented yet.')
       [varargout{1:nargout}] = plotPDF(SO3VF,getappdata(ax,'h'),varargin{:},'parent',ax,'noTitle');
         
     case 'ipdf' % inverse pole figure annotations
-        
+      error('PDF plot for vector fiels is not implemented yet.')        
       [varargout{1:nargout}] = plotIPDF(SO3VF,getappdata(ax,'inversePoleFigureDirection'),varargin{:},'parent',ax,'noTitle');
         
   end

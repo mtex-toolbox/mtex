@@ -11,7 +11,7 @@
 % where $P_m^{|l|}\colon[-1,1]\to\mathbb R$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
 % associated Legendre-Polynomials defined by
 %
-% $$ P_m^l(x) = \sqrt{(m-l)!}{(m+l)!} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
+% $$ P_m^l(x) = \sqrt{\frac{(m-l)!}{(m+l)!}} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
 %
 % and $P_m\colon[-1,1]\to\mathbb R$ denotes the Legendre polynomials
 % given by their corresponding Rodrigues formula

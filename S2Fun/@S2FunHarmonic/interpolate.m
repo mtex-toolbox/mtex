@@ -66,7 +66,7 @@ regularize = lambda > 0;
 What = get_option(varargin,'fourier_weights');
 if isempty(What) && regularize 
   SobolevIndex = get_option(varargin,'SobolevIndex',2);
-  What = (2*(0:bw)+1).^(2*SobolevIndex);
+  What = (1+(0:bw).*((0:bw)+1)).^(SobolevIndex);
   What = repelem(What,1:2:(2*bw+1))';
 end
 
@@ -80,6 +80,7 @@ else
   W = W(ind);
 end
 W = sqrt(W(:));
+varargin = delete_option(varargin,'weights',1);
 
 b = W.*y;
 if regularize

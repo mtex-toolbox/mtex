@@ -92,12 +92,16 @@ bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
 
 % TODO: ad hoc method to decide for regularization parameter
 % regularization options
-lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},5e-7);
+lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},[]);
+if isempty(lambda)
+  lambda = 1e-8;
+  warning('The regularization parameter is set to 1e-8 by default. You should try different parameters and choose one, that yields a good result.')
+end
 regularize = lambda > 0;
 What = get_option(varargin,'fourier_weights');
 if isempty(What) && regularize 
   SobolevIndex = get_option(varargin,'SobolevIndex',2);
-  What = (2*(0:bw)+1).^(2*SobolevIndex);
+  What = (1+(0:bw).*((0:bw)+1)).^(SobolevIndex);
   What = repelem(What,(1:2:(2*bw+1)).^2)';
 end
 
