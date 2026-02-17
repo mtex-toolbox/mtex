@@ -98,6 +98,16 @@ while true
   end
 end
 
+
+% workaround for .tess files with only 1 grain not containing symmetry
+if ~exist('CS')
+    CS = '-1'; 
+    warning(['Due to neper behaviour, single grains are not assigned' newline ...
+        'a crystalSymmetry, hence it is set as ''1''. Please assign the' newline ...
+        'desired  symmetry yourself, for example:' newline ...
+        'grains.CS = crystalSymmetry(''m-3m'')'])
+end
+
 %% load vertices -> **vertex
 numV = str2double(fgetl(fid)); %#ok<NASGU>
 V = fscanf(fid,'%u %f %f %f %d ',[5 inf])';
