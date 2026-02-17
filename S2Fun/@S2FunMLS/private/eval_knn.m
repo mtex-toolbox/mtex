@@ -6,13 +6,9 @@ N = numel(v);
 nn = S2F.nn;
 nn_total = nn * N;
 
-% if the oversampling factor is <=1, set it to 2
-if (S2F.nn <= S2F.dim)
-  S2F.nn = 2 * S2F.dim;
-  warning(sprintf(...
-    ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
-    'nn has been set to 2 * dim.']));
-end
+% initialize the return values
+vals = zeros(N, numel(S2F));
+conds = zeros(N, 1);
 
 % Find neighbors and perform subsampling. If the flag is set, compute distances.
 [ind, dist] = S2F.nodes.find(v, nn, varargin{:}); 
@@ -20,6 +16,24 @@ if (S2F.subsample == true)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
   nn_total = N * S2F.dim;
   nn = S2F.dim;
+end
+
+% treat bad nodes separately, but only if the stablefind-option is true
+iscvx = S2F.checkConvexity(v, ind);
+if (S2F.stableFind && sum(iscvx) < N)
+  [valstmp, conds(~iscvx)] = eval_knn_stable(S2F, v(~iscvx), varargin{:}, ...
+    S2F.stableFindOptions{:});
+  vals(~iscvx,:) = reshape(valstmp, sum(~iscvx), numel(S2F));
+  clear valstmp;
+
+  % restrict varibales to their new domain (where iscvx is true)
+  N = sum(iscvx);
+  nn_total = nn * N;
+  v = v.subSet(iscvx);
+  ind = ind(iscvx, :);
+  dist = dist(iscvx, :);
+else
+  iscvx = true(N, 1);
 end
 
 % id of the neighbors (in the grid of S2F)
@@ -43,7 +57,7 @@ if (~S2F.centered)
   else
     G = eval_basis_functions(S2F, S2F.nodes(grid_id)).';
   end
-  
+
   % odd basis functions may clash with antipodal option, since p(-v) = -p(v),
   %   but v and -v are in the same equivalence class
   % thus make sure to use the representer which is closer to the center 
@@ -67,11 +81,12 @@ else
   G = basis_on_grid.';
 end 
 G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
+clear G v_id;
 
 % compute distances and weights
 deltas = 1.1 * max(dist, [], 2);
 weights = S2F.w(dist ./ deltas);
-clear dist;
+clear deltas dist;
 if (S2F.detectOutliers == true)
   oI = computeOutlierIndicators(S2F);
   oI = reshape(oI(grid_id), nn, N)';
@@ -80,44 +95,28 @@ if (S2F.detectOutliers == true)
 end
 
 % normalize the maximum weight to be 1
-% weights = weights ./ mean(weights, 2);
-weights = weights ./ max(weights, [], 2);
-W_book = sqrt(permute(weights, [2, 3, 1]));
+W_book = permute(weights, [2, 3, 1]);
 clear weights;
-
-% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
-% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
-% internally this uses QR and we end up with only cond(G), without the square!
-
-% B satisfies B' * B = G' * W * G
-B_book = G_book .* W_book;
-clear G_book; 
-
-% compute scaling factors (norms of columns B_book)
-s_book = sqrt(sum(abs(B_book).^2, 1));
 
 % set up right hand side
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 f_book = pagetranspose(reshape(grid_vals(grid_id,:).', numel(S2F), nn, N));
-clear grid_vals;
-fw_book = W_book .* f_book;
-clear W_book f_book;
+clear grid_id grid_vals;
 
-% solve the rescaled system and evaluate MLS
-c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
-clear fw_book;
-vals = sum(c_book .* g_book, 1);
+% solve the systems and evaluate
+if S2F.regularize
+  [c_book, conds(iscvx)] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+    'regularize', S2F.regularizationOptions{:}, varargin{:});
+else
+  [c_book, conds(iscvx)] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+    varargin{:});
+end
+clear f_book G_book W_book;
 
-vals = permute(vals, [3, 2, 1]);
+vals(iscvx, :) = permute(sum(c_book .* g_book, 1), [3, 2, 1]);
 
 if isalmostreal(S2F.values)
   vals = real(vals);
-end
-
-if nargout == 2
-  eigs = pagesvd(B_book ./ s_book);
-  conds = eigs(1,:,:) ./ eigs(S2F.dim,:,:);
-  conds = conds(:);
 end
 
 end

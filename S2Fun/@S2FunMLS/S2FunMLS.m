@@ -46,7 +46,7 @@ classdef S2FunMLS < S2Fun
     degree      = 3       % the polynomial degree used for approximation
     delta       = 0       % support radius of the weight function
     distance    = 'euclidean'; % specify metric for neighbor search
-    nn          = 0       % specified number of neighbors to use 
+    oF          = 2       % oversampling factor (nn / dim)
     s = crystalSymmetry(); % crystal symmetry
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)) % Wendland weight function
 
@@ -57,13 +57,26 @@ classdef S2FunMLS < S2Fun
 
     detectOutliers = false; % specify if we should search for outliers, and recude their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
+
+    % voronoi cells for stable version of neighbor search
+    voronoiCenters = [];  % centers of voronoi decomposition of nodes
+    voronoiCounts  = [];  % number of nodes per voronoi center
+    voronoiIndices  = []; % inidice of nodes per center as sparse logical array
+
+    % options and option lists
+    regularize = true;
+    regularizationOptions = {};
+    stableFind = true;
+    stableFindOptions = {};
   end
 
   properties (Dependent)
-    antipodal
-    dim
+    antipodal   
+    dim                   % dimension of the ansatz space
+    nn                    % number of neighbors to take into account
     isReal
-    outlierIndicators
+    outlierIndicators     % size as S2F.values, assigns to each node a number   
+                          %   that is bigger, if the value is an outlier
   end
 
   methods
@@ -114,14 +127,10 @@ classdef S2FunMLS < S2Fun
       % set degree, number of neighbors, support radius delta,
       %   outlierDetectionRange, weight function
       S2F.degree = get_option(varargin, {'degree', 'deg'}, 3, 'double');
-      S2F.nn = round(get_option(varargin, {'neighbors', 'nn'}, 2*S2F.dim, 'double'));
-      if (S2F.nn < S2F.dim)
-        S2F.nn = 2 * S2F.dim;
-        warning(sprintf(...
-          ['The specified number of neighbors was less than the dimension ' ...
-          'of the ansatz space.\n\t It has been set to 2 times the dimension.']));
-      end
-      S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, compute_delta(S2F), 'double');
+      S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
+        'oversampling_factor','oversampling factor'}, 2, 'double');
+
+      S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
       S2F.outlierDetectionRange = round(get_option(varargin, ...
         {'outlierdetectionrange', 'outlier detection range', 'odr'}, 10, 'double'));
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, specimenSymmetry.default, 'crystalSymmetry');
@@ -157,11 +166,37 @@ classdef S2FunMLS < S2Fun
         S2F.monomials = true;
       end
 
-      if (S2F.delta == 0)
-        S2F.delta = compute_delta(S2F);
+      S2F.s.how2plot = nodes.how2plot;
+
+      % create voronoi structure to help finding neighbors in sparse regions
+      S2F = calcVoronoi(S2F);
+
+      % set regularization and stability options
+      S2F.regularize = check_option(varargin, 'regularize');
+      % set standard values
+      S2F.regularizationOptions = ...
+        {'Qgood', 1, 'Qbad', 2.5, 'lambdamin', 1e-8, 'lambdamax', 1e-2, ...
+        'alphamin', 0, 'alphamax', 3, 'p', 2, 'q', 2, 'basis_weights', 'auto'};
+      % overwrite, if options are specified as options list after regularize-flag 
+      %   (last values in option list are the applied ones)
+      temp = get_option(varargin, 'regularize');
+      if isa(temp, 'cell')
+        S2F.regularizationOptions = [S2F.regularizationOptions, temp];
       end
 
-      S2F.s.how2plot = nodes.how2plot;
+      % compute basis weights, if auto was selected
+      if (strcmp(get_option(S2F.regularizationOptions, 'basis_weights'), 'auto'))
+        basis_weights = S2F.compute_basis_weights();
+        S2F.regularizationOptions = ...
+          set_option(S2F.regularizationOptions, 'basis_weights', basis_weights);
+      end
+
+      S2F.stableFind = check_option(varargin, {'stablefind','stable find', 'stable_find'});
+      S2F.stableFindOptions = {'nn_voronoi', 32, 'nn_min', S2F.dim, 'nn_max', S2F.nn};
+      temp = get_option(varargin, 'stbablefind');
+      if isa(temp, 'cell')
+        S2F.stableFindOptions = [S2F.stableFindOptions, temp];
+      end
 
     end
 
@@ -221,17 +256,31 @@ classdef S2FunMLS < S2Fun
       F.values = real(F.values);
     end
 
-    % make sure nn is an integer value
-    function S2F = set.nn(S2F, value)
-      if (value > 0 && value < S2F.dim)
-        error('Invalid value! The number of neighbors must be an integer >= sF.dim.'); 
+    function S2F = set.oF(S2F, value)
+      if (value < 1)
+        warning('Oversampling factor was too small and has been set to 2.');
+        value = 2;
       end
-      S2F.nn = round(value);
+      S2F.oF = value;
+    end
+
+    % make sure nn is an integer value
+    function nn = get.nn(S2F)
+      nn = ceil(S2F.dim * S2F.oF);
     end
 
     function S2F = set.degree(S2F, deg)
       S2F.degree = deg;
-      S2F.nn = 2 * S2F.dim;
+    end
+
+    % compute weights for basis functions for regularization of lsq systems
+    %   (punish higher degrees, see tools/mathtools/solve_lsq_book_constsize.m)
+    function basis_weights = compute_basis_weights(S2F)
+      is_odd = logical(mod(S2F.degree, 2));
+      degrees = (is_odd : 2 : S2F.degree)';
+      dimensions = 2 * degrees + 1;
+      basis_weights = repelem(1 + degrees.^2, dimensions);
+      basis_weights = basis_weights / max(basis_weights);
     end
 
     % compute expected number of neighbors with given sF.nodes and sF.delta
@@ -273,6 +322,85 @@ classdef S2FunMLS < S2Fun
       n = 0;
     end
 
+    % compute voronoi structure for S2F.nodes
+    function S2F = calcVoronoi(S2F, varargin)
+      % numel(S2F.nodes) / N_voronoi is expected mean of nodes per voronoi cell
+      % actual number of nodes per cell deviates more from this expected mean as
+      %   S2F.nodes becomes non-uniformly distributed
+      if (nargin == 1)
+        N_voronoi = round(numel(S2F.nodes) / S2F.dim);
+      else 
+        N_voronoi = varargin{1};
+      end
+
+      % create initial set of voronoi centers
+      S2F.voronoiCenters = fibonacciS2Grid('points', N_voronoi);
+      N_voronoi = numel(S2F.voronoiCenters);
+      center_id = S2F.voronoiCenters.find(S2F.nodes);
+
+      % get the centers, compute numer of neighbors per center
+      N = numel(S2F.nodes);
+      S2F.voronoiCounts = accumarray(center_id, 1, [N_voronoi, 1]);
+
+      % remove unneeded voronoi centers
+      empty = S2F.voronoiCounts == 0;
+      N_voronoi = sum(~empty);
+      S2F.voronoiCounts(empty) = [];
+      S2F.voronoiCenters(empty) = [];
+
+      % remove unused centers
+      empty = S2F.voronoiCounts == 0;
+      S2F.voronoiIndices(empty, :) = [];
+      S2F.voronoiCounts(empty) = [];
+      S2F.voronoiCenters(empty) = [];
+
+      % create sparse matrix where each column represents a voronoi cell and
+      %   contains the indices of the nodes from S2F.nodes in this cell
+      [~, idx] = sort(center_id);
+      [row_idx, col_idx] = sizes2sub(S2F.voronoiCounts);
+      maxcount = max(S2F.voronoiCounts);
+      S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
+        maxcount, N_voronoi, sum(S2F.voronoiCounts));
+
+      % perform lloyd centering 
+      S2F = lloydVoronoiCentering(S2F, 3);
+    end
+
+    % actually center the voronoiCenters within their Voronoi cell (via lloyd)
+    function S2F = lloydVoronoiCentering(S2F, maxIter)
+      N_voronoi = numel(S2F.voronoiCenters);
+      center_id = S2F.voronoiCenters.find(S2F.nodes);
+      for i = 1 : maxIter
+        % 1 - choose mean of nodes of same voronoi cell as new voronoi center
+        S2F.voronoiCenters = accumarray(center_id, S2F.nodes(:), [N_voronoi, 1], @sum);
+        S2F.voronoiCenters = S2F.voronoiCenters.normalize;
+
+        % 2 - assign each point to nearest center (Voronoi on S2)
+        center_id = S2F.voronoiCenters.find(S2F.nodes);
+
+        % 3 - remove unndeeded voronoi centers
+        S2F.voronoiCounts = accumarray(center_id, 1, [N_voronoi, 1]);
+        S2F.voronoiCenters(S2F.voronoiCounts == 0) = [];
+        N_voronoi = numel(S2F.voronoiCenters);
+
+        % 4 - re-normalize
+        S2F.voronoiCenters = S2F.voronoiCenters.normalize;
+
+        % X - re-seed empty voronoi centers to dense regions (probabilistic)
+        % if any(empty)
+        %   ridx = randi(N_voronoi, nnz(empty), 1);
+        %   centers_new.subSet(empty) = S2F.nodes.subSet(ridx);
+        % end
+      end
+      % create sparse matrix where each column represents a voronoi cell and
+      %   contains the indices of the nodes from S2F.nodes in this cell
+      [~, idx] = sort(center_id);
+      [row_idx, col_idx] = sizes2sub(S2F.voronoiCounts);
+      maxcount = max(S2F.voronoiCounts);
+      S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
+        maxcount, N_voronoi, sum(S2F.voronoiCounts));
+    end
+    
   end
 
   methods (Static = true)

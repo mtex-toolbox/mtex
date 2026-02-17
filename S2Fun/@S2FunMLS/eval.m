@@ -80,7 +80,7 @@ while (end_idx < N)
 
   % just evaluate the mls approximation
   if (nargout == 1)
-    if (S2F.nn >= S2F.dim)
+    if (S2F.delta == 0)
       vals(I,:) = eval_knn(S2F, v.subSet(I), varargin{:});
     else
       vals(I,:) = eval_range(S2F, v.subSet(I), varargin{:});
@@ -88,10 +88,10 @@ while (end_idx < N)
 
   % also compute condition numbers of the design matrices
   else
-    if (S2F.nn >= S2F.dim)
-      [vals(I,:), conds(I,:)] = eval_knn(S2F, v.subSet(I), varargin{:});
+    if (S2F.delta == 0)
+      [vals(I,:), conds(I)] = eval_knn(S2F, v.subSet(I), varargin{:});
     else
-      [vals(I,:), conds(I,:)] = eval_range(S2F, v.subSet(I), varargin{:});
+      [vals(I,:), conds(I)] = eval_range(S2F, v.subSet(I), varargin{:});
     end
   end
 

@@ -10,7 +10,7 @@ cs = crystalSymmetry('222');
 
 % test functions
 f(1) = S2Fun.smiley;
-f(2) = complex(0,1) * f(1) - f(1).^2;
+f(2) = complex(0,1) * f(1) - f(1) .* f(1);
 f(3) = S2FunHarmonic(2 * rand(64, 1, 1) - 1);
 f(4:6) = S2FunHarmonic(2 * rand(32, 1, 3) - 1);
 f = S2FunHarmonicSym.quadrature(f, cs); 
@@ -30,9 +30,10 @@ f_values_w = f.eval(w);
 
 %% test with standard parameters only
 sF = S2FunMLS(v, f_values);
-sF.detectOutliers = true;
+% sF.detectOutliers = true;
 % sF.outlierDetectionRange = 3;
 figure(2); plot(sF); colorbar;
+
 [vals, conds] = sF.eval(w);
 disp('maximal errors: ');
 disp(max(abs(vals - f_values_w)));
@@ -40,7 +41,6 @@ disp('maximal condition numbers: ');
 disp(max(conds));
 
 %% same test, but with range search instead of knn search
-sF.nn = 0;
 sF.delta = sF.compute_delta() * 2;
 figure(2); plot(sF); colorbar;
 [vals, conds] = sF.eval(w);
@@ -48,6 +48,7 @@ disp('maximal errors: ');
 disp(max(abs(vals - f_values_w)));
 disp('maximal condition numbers: ');
 disp(max(conds));
+sF.delta = 0;
 
 
 %% test with antipodal option 
@@ -58,7 +59,6 @@ figure(1); plot(f, '3d'); colorbar;
 f_values = f.eval(v);
 sF = S2FunMLS(v, f_values);
 sF.degree = 3;
-sF.nn = 2 * sF.dim;
 sF.antipodal = f.antipodal;
 figure(2); plot(sF, '3d'); colorbar;
 [vals, conds] = sF.eval(w);
@@ -70,12 +70,12 @@ disp('maximal condition numbers: ');
 disp(max(conds));
 
 %% test antipodal option with range search 
-sF.nn = 0;
 sF.degree = 3;
 sF.delta = sF.compute_delta * 1;
 figure(2); plot(sF, '3d'); colorbar;
 [vals, conds] = sF.eval(w);
 f_values_w = f.eval(w);
+sF.delta = 0;
 
 disp('maximal errors: ');
 disp(max(abs(vals - f_values_w)));
@@ -96,6 +96,7 @@ mls_values = zeros(numel(w2), 16);
 mls_conds = zeros(numel(w2), 16);
 
 clear sF;
+sF = cell(16,1);
 for i = 1 : 16
   % tangent need monomials
   if (mod(i+2,4) == 0)
@@ -106,8 +107,8 @@ for i = 1 : 16
   applied_flags = ['bla', flags(marker(i,:))];
   numflags = sum(marker(i,:));
   sF{i} = S2FunMLS(v, f_values, applied_flags{:});
-  sF{i}.nn = 0;
-  sF{i}.delta = sF{i}.compute_delta() * 2;
+  % sF{i}.delta = 0;
+  % sF{i}.delta = sF{i}.compute_delta() * 2;
   [mls_values(:,i), mls_conds(:,i)] = sF{i}.eval(w2);
 end
 
@@ -137,9 +138,14 @@ figure(2); plot(sF); colorbar;
 %% test annoying data - identify and remove outliers 
 %   (technically they do not get removed, but their weight gets reduced to
 %    almost zero)
-
+sF = S2FunMLS(v, f_values, 'monomials', 'centered', 'degree', 3);
+sF.antipodal = true;
 sF.detectOutliers = true;
 sF.outlierDetectionRange = 7;
+% sF.stableFind = true; 
+sF.regularize = true;
+% sF.regularizationOptions = [sF.regularizationOptions, 'Qgood', 1, 'Qbad', 2, 'p', 3, 'q', 3, 'lambda_min', 1e-4,'lambda_max',1e-2];
+sF.regularizationOptions = [sF.regularizationOptions, 'Qgood', 0, 'Qbad', 5, 'lambda_max', 1e-2, 'lambda_min', 1e-18, 'basis_weights', sF.compute_basis_weights.^4];
 
 % use these lines for maximum stability
 % sF.monomials = true;
@@ -153,9 +159,9 @@ w = vector3d.rand(10000);
 disp(max(conds));
 
 %% same as before, but with range search instead
-sF.nn = 0;
 sF.delta = sF.compute_delta();
 figure(2); plot(sF); colorbar;
+sF.delta = 0;
 % diff = f_values - sF.eval(v);
 % disp(max(abs(diff)));
 
@@ -189,12 +195,10 @@ figure(3); plot(sF2); colorbar;
 %% same as before, but now with range search on the regular grid
 
 % MLS without outlier detection
-sF.nn = 0;
 sF.delta = sF.compute_delta();
 figure(2); plot(sF); colorbar;
 
 % MLS with outlier detection
-sF2.nn = 0;
 sF2.delta = sF2.compute_delta();
 figure(3); plot(sF2); colorbar;
 

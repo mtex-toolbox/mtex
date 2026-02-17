@@ -20,15 +20,19 @@ if (sum(I) > 0)
     '\t In this case the numer of neighbors was set to the dimension of the ansatz space.']));
   
   % evaluate the critical nodes via knn-search instead of rangesearch
-  nn_original = S2F.nn;
+  delta_original = S2F.delta;
+  oF_original = S2F.oF;
   % for S2F.nn = S2F.dim, the expectation of the lebesgue constant is infinite
-  S2F.nn = S2F.dim + 1;
+  S2F.delta = 0;
+  S2F.oF = 2;
   if (nargout == 2)
-    [vals(I,:), conds(I)] = S2F.eval(v.subSet(I));
+    [temp, conds(I)] = S2F.eval(v.subSet(I), varargin{:});
   else
-    vals(I,:) = S2F.eval(v.subSet(I));
+    temp = S2F.eval(v.subSet(I), varargin{:});
   end
-  S2F.nn = nn_original;
+  vals(I,:) = reshape(temp, sum(I), numel(S2F));
+  S2F.delta = delta_original;
+  S2F.oF = oF_original;
 
   if (sum(I) == N)
     return;
@@ -49,6 +53,7 @@ end
 
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
+nn_total = sum(nn);
 clear ind;
 
 if (S2F.subsample == true)
@@ -57,33 +62,17 @@ if (S2F.subsample == true)
 end
 
 
-% the index vector col_id helps to construct the (S2F.dim x N) matrix G, which
-% holds the values of the basis functions at all neighbors of all centers from v
-% col_id skips entries, whenever a center has not nn_max many neighbors 
-nn_total = sum(nn);
-nn_max = max(nn);
-start_id = cumsum(nn(1:N-1)) + 1;
-temp = ones(nn_total, 1);
-temp(start_id) = 1 - nn(1:N-1);
-temp = cumsum(temp);
-col_id = (v_id-1) * nn_max + temp;
-clear temp start_id;
-
-% TODO: nn_max might be much larger than mean(nn) at very few occations
-%   ==> compute in batches of similar nn for less ram usage
-
 % compute for every center from v the matrix of all basis functions evaluated at
-% all neighbors of this center 
-G = zeros(S2F.dim, nn_max * N);
+%   all neighbors of this center 
 % evaluate the basis functions on the nodes
 if (~S2F.centered)
   % choose faster way between computing all values and reusing them or
   % computing values on fibgrid(grid_id)
   if nn_total > numel(S2F.nodes.x)
     basis_on_grid = eval_basis_functions(S2F);
-    G(:, col_id) = basis_on_grid(grid_id, :).';
+    G = basis_on_grid(grid_id, :).';
   else
-    G(:, col_id) = eval_basis_functions(S2F, S2F.nodes(grid_id)).';
+    G = eval_basis_functions(S2F, S2F.nodes(grid_id)).';
   end
 
   % odd basis functions may clash with antipodal option, since (-v) = -p(v)
@@ -104,68 +93,46 @@ else
   % determine which basis to use and evaluate it on the grid and on v
   basis_on_grid = eval_basis_functions(S2F, rotneighbors);
   clear rotneighbors;
-  G(:, col_id) = basis_on_grid.';
+  G = basis_on_grid.';
 
   basis_in_pole = eval_basis_functions(S2F, vector3d.Z);
   basis_in_v = repmat(basis_in_pole, N, 1);
 end
+G = G.';
 
 % dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
 % rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
 % internally this uses QR and we end up with only cond(G)
 
 % compute the weights
-weights = zeros(N * nn_max, 1);
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
 %   contained in S2F.nodes ==> distance 0, but in neighborhood
 I = sub2ind(size(dist), v_id, grid_id);
-weights(col_id) = S2F.w(dist(I) / S2F.delta);
+weights = S2F.w(dist(I) / S2F.delta);
 clear dist I;
 
 if (S2F.detectOutliers == true)
   oI = computeOutlierIndicators(S2F);
-  oI_factor = zeros(N * nn_max, 1);
-  oI_factor(col_id) = exp(-oI(grid_id));
+  oI_factor = exp(-oI(grid_id));
   weights = weights .* oI_factor;
   clear oI oI_factor;
 end
 
-% for each center, normalize the maximum weight to be 1
-weights = reshape(weights, nn_max, N);
-weights = weights ./ mean(weights, 1);
-weights = weights(:);
-
-% B satisfies B' * B = G' * W * G
-B = G .* sqrt(weights');
-clear G;
-B_book = pagetranspose(reshape(B, S2F.dim, nn_max, N)); 
-clear B;
-
 % set up right hand side
-f = zeros(N * nn_max, numel(S2F));
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
-f(col_id,:) = grid_vals(grid_id,:);
-clear col_id grid_vals grid_id;
-fw_book = permute(reshape((sqrt(weights) .* f).', numel(S2F), nn_max, N), [2 1 3]);
-clear f weights;
+f = grid_vals(grid_id,:);
 
-% compute scaling factors (norms of columns of G_times_W_book)
-s_book = sqrt(sum(abs(B_book).^2, 1));
+if S2F.regularize
+  [c_book, conds(J)]  = solve_lsq_book_varsize(weights, G, f, nn, ...
+    'regularize', S2F.regularizationOptions{:}, varargin{:});
+else
+  [c_book, conds(J)]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
+end
 
-% compute the generating functions
-c_book = pagemldivide(B_book ./ s_book, fw_book) ./ pagetranspose(s_book);
-clear fw_book;
 vals(J,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
-clear basis_in_v c_book;
 
 if isalmostreal(S2F.values)
   vals = real(vals); 
-end
-
-if nargout == 2
-  eigsJ = pagesvd(B_book ./ s_book);
-  condsJ = eigsJ(1,:,:) ./ eigsJ(S2F.dim,:,:);
-  conds(J) = condsJ(:);
 end
 
 end

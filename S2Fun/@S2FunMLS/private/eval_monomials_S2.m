@@ -30,7 +30,7 @@ for k = 0 : deg
 end
 
 exponents = reshape(exponents', 1, 3, dim);
-vals = prod([v.x(:) v.y(:) v.z(:)] .^ exponents, 2);
+vals = prod(v.xyz .^ exponents, 2);
 vals = reshape(vals, N, dim);
 
 end 
