@@ -2,11 +2,13 @@ classdef S2FunMLS < S2Fun
 % a class representing a function on the rotation group
 % 
 % Syntax
-%   S2F = S2FunMLS(nodes,values)
-%   S2F = S2FunMLS(nodes,values, nn, __)
-%   S2F = S2FunMLS(nodes,values, delta, __)
-%   S2F = S2FunMLS(nodes,values, delta, w, @(t)(__))
-%   S2F = S2FunMLS(nodes,values, 'centered', 'detectOutliers', 'monomials', 'subsample', 'tangent')
+%   S2F = S2FunMLS(nodes,values);
+%   S2F = S2FunMLS(nodes,values, oF, 2);
+%   S2F = S2FunMLS(nodes,values, delta, __);
+%   S2F = S2FunMLS(nodes,values, delta, w, @(t)(__));
+%   S2F = S2FunMLS(nodes,values, 'centered', 'monomials', 'subsample', 'tangent');
+%   S2F = S2FunMLS(nodes, values, 'degree', 3);
+%   S2F = S2FunMLS(nodes, values, 'regularize', 'stablefind', 'detectOutliers');
 %
 % Input
 %  nodes  - @vector3d (data points)
@@ -18,7 +20,8 @@ classdef S2FunMLS < S2Fun
 % Options
 %  degree  - the polynomial degree used for approximation
 %  delta   - support radius of the weight function
-%  nn      - specified number of neighbors used for local approximation
+%  oF      - oversampling Factor. the number of neighbors nn (dependent) is the
+%              dimension of the ansatz space, times this factor
 %  outlierDetectionRange - specify how many neighbors are taken into account
 %                          when searching for outliers
 %  w       - @function_handle (weight function)
@@ -27,12 +30,21 @@ classdef S2FunMLS < S2Fun
 %             'wendland' (default)
 % distance - specify which metric to use (default: 'euclidean')
 %          - run 'help rangesearch' for available options
+% regularizationOptions - parameters for regularization of the lsq-systems
+%                           (see /tools/math_tools/solve_lsq_book_constsize.m
+%                            for more details)
+% stableFindOptions     - parameters for a more stable version of find, that can
+%                           deal better with highly non-uniform data
+%                           (see private/find_stable.m for more details)
+% 
 %
 % Flags
 %  centered       - only evaluate the basis near the pole if true
 %  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems 
 %                   depending on how bad they are
 %  monomials      - use monomial basis isntead of spherical harmonics
+%  regularize     - use regularization for solving the lsq-systems
+%  stableFind     - perform stable variant of find (good for non-uniform data)
 %  subsample      - use a subset of the local nodes that minimizes the lebesgue
 %                   constant 
 %  tangent        - use polynomials on the tangent space
@@ -176,7 +188,7 @@ classdef S2FunMLS < S2Fun
       % set standard values
       S2F.regularizationOptions = ...
         {'Qgood', 1, 'Qbad', 2.5, 'lambdamin', 1e-8, 'lambdamax', 1e-2, ...
-        'alphamin', 0, 'alphamax', 3, 'p', 2, 'q', 2, 'basis_weights', 'auto'};
+        'alphamin', 1, 'alphamax', 4, 'p', 2, 'q', 2, 'basis_weights', 'auto'};
       % overwrite, if options are specified as options list after regularize-flag 
       %   (last values in option list are the applied ones)
       temp = get_option(varargin, 'regularize');
@@ -279,8 +291,8 @@ classdef S2FunMLS < S2Fun
       is_odd = logical(mod(S2F.degree, 2));
       degrees = (is_odd : 2 : S2F.degree)';
       dimensions = 2 * degrees + 1;
-      basis_weights = repelem(1 + degrees.^2, dimensions);
-      basis_weights = basis_weights / max(basis_weights);
+      basis_weights = repelem(degrees, dimensions);
+      basis_weights = 1 + basis_weights / max([basis_weights; 1]);
     end
 
     % compute expected number of neighbors with given sF.nodes and sF.delta
@@ -348,12 +360,6 @@ classdef S2FunMLS < S2Fun
       S2F.voronoiCounts(empty) = [];
       S2F.voronoiCenters(empty) = [];
 
-      % remove unused centers
-      empty = S2F.voronoiCounts == 0;
-      S2F.voronoiIndices(empty, :) = [];
-      S2F.voronoiCounts(empty) = [];
-      S2F.voronoiCenters(empty) = [];
-
       % create sparse matrix where each column represents a voronoi cell and
       %   contains the indices of the nodes from S2F.nodes in this cell
       [~, idx] = sort(center_id);
@@ -369,22 +375,20 @@ classdef S2FunMLS < S2Fun
     % actually center the voronoiCenters within their Voronoi cell (via lloyd)
     function S2F = lloydVoronoiCentering(S2F, maxIter)
       N_voronoi = numel(S2F.voronoiCenters);
-      center_id = S2F.voronoiCenters.find(S2F.nodes);
       for i = 1 : maxIter
+
+        % 0 - assign each point to nearest center (Voronoi cell on S2)
+        center_id = S2F.voronoiCenters.find(S2F.nodes);
+
         % 1 - choose mean of nodes of same voronoi cell as new voronoi center
         S2F.voronoiCenters = accumarray(center_id, S2F.nodes(:), [N_voronoi, 1], @sum);
         S2F.voronoiCenters = S2F.voronoiCenters.normalize;
 
-        % 2 - assign each point to nearest center (Voronoi on S2)
-        center_id = S2F.voronoiCenters.find(S2F.nodes);
-
         % 3 - remove unndeeded voronoi centers
         S2F.voronoiCounts = accumarray(center_id, 1, [N_voronoi, 1]);
         S2F.voronoiCenters(S2F.voronoiCounts == 0) = [];
+        S2F.voronoiCounts(S2F.voronoiCounts == 0) = [];
         N_voronoi = numel(S2F.voronoiCenters);
-
-        % 4 - re-normalize
-        S2F.voronoiCenters = S2F.voronoiCenters.normalize;
 
         % X - re-seed empty voronoi centers to dense regions (probabilistic)
         % if any(empty)
@@ -394,6 +398,7 @@ classdef S2FunMLS < S2Fun
       end
       % create sparse matrix where each column represents a voronoi cell and
       %   contains the indices of the nodes from S2F.nodes in this cell
+      center_id = S2F.voronoiCenters.find(S2F.nodes);
       [~, idx] = sort(center_id);
       [row_idx, col_idx] = sizes2sub(S2F.voronoiCounts);
       maxcount = max(S2F.voronoiCounts);

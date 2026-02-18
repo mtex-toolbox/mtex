@@ -12,7 +12,7 @@ conds = zeros(N, 1);
 
 % Find neighbors and perform subsampling. If the flag is set, compute distances.
 [ind, dist] = S2F.nodes.find(v, nn, varargin{:}); 
-if (S2F.subsample == true)
+if (S2F.subsample == true && S2F.stableFind == false)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
   nn_total = N * S2F.dim;
   nn = S2F.dim;
@@ -21,7 +21,7 @@ end
 % treat bad nodes separately, but only if the stablefind-option is true
 iscvx = S2F.checkConvexity(v, ind);
 if (S2F.stableFind && sum(iscvx) < N)
-  [valstmp, conds(~iscvx)] = eval_knn_stable(S2F, v(~iscvx), varargin{:}, ...
+  [valstmp, conds(~iscvx)] = eval_stable(S2F, v(~iscvx), varargin{:}, ...
     S2F.stableFindOptions{:});
   vals(~iscvx,:) = reshape(valstmp, sum(~iscvx), numel(S2F));
   clear valstmp;

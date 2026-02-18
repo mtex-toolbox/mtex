@@ -1,4 +1,4 @@
-function [vals, conds] = eval_knn_stable(S2F, v, varargin)
+function [vals, conds] = eval_stable(S2F, v, varargin)
 
 % deal with the v where the canonical neighbors are not sufficiently nicely
 %   spread around v 

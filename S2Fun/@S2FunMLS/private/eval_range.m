@@ -1,5 +1,7 @@
 function [vals, conds] = eval_range(S2F, v, varargin)
 
+% TODO: make this cleaner, throw away points after some threshold number 
+
 % get parameters
 v = v(:);
 N = size(v, 1);
@@ -24,7 +26,7 @@ if (sum(I) > 0)
   oF_original = S2F.oF;
   % for S2F.nn = S2F.dim, the expectation of the lebesgue constant is infinite
   S2F.delta = 0;
-  S2F.oF = 2;
+  S2F.oF = 1;
   if (nargout == 2)
     [temp, conds(I)] = S2F.eval(v.subSet(I), varargin{:});
   else
@@ -41,22 +43,42 @@ end
 
 % continue with the points that have sufficiently many neighbors
 J = ~I;
+J_idx = find(J);
 v = v.subSet(J);
 N = sum(J);
 [ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:});
 
 % if optimal subsampling is set to true, we can now fall back to the eval_knn case 
 %   where all neighborhoods have the same size (the dim of the ansatz space) 
-if (S2F.subsample == true)
+if (S2F.subsample == true && S2F.stableFind == false)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
 end
+
+
+% treat bad nodes separately, but only if the stablefind-option is true
+iscvx = S2F.checkConvexity(v, ind);
+if (S2F.stableFind && sum(iscvx) < N)
+  [valstmp, conds(J_idx(~iscvx))] = eval_stable(S2F, v.subSet(~iscvx), ...
+    varargin{:}, S2F.stableFindOptions{:});
+  vals(J_idx(~iscvx),:) = reshape(valstmp, sum(~iscvx), numel(S2F));
+  clear valstmp;
+
+  % restrict varibales to their new domain (where iscvx is true)
+  N = sum(iscvx);
+  v = v.subSet(iscvx);
+  ind = ind(iscvx, :);
+  dist = dist(iscvx, :);
+else
+  iscvx = true(N, 1);
+end
+
 
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 nn_total = sum(nn);
 clear ind;
 
-if (S2F.subsample == true)
+if (S2F.subsample == true && S2F.stableFind == false)
   dist = angle(v.subSet(v_id), S2F.nodes.subSet(grid_id));
   dist = sparse(v_id, grid_id, dist, N, numel(S2F.nodes));
 end
@@ -123,13 +145,13 @@ grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 f = grid_vals(grid_id,:);
 
 if S2F.regularize
-  [c_book, conds(J)]  = solve_lsq_book_varsize(weights, G, f, nn, ...
+  [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, ...
     'regularize', S2F.regularizationOptions{:}, varargin{:});
 else
-  [c_book, conds(J)]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
+  [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
 end
 
-vals(J,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
+vals(J_idx(iscvx),:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
 if isalmostreal(S2F.values)
   vals = real(vals); 
