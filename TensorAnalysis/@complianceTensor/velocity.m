@@ -71,12 +71,12 @@ if generateFun == 1
   ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W,'antipodal');
 elseif generateFun == 2
   vp  = S2FunTri(x,vp);
-  vs1 = S2FunTri(vp.tri,vs1);
-  vs2 = S2FunTri(vp.tri,vs2);
+  vs1 = S2FunTri(vp.tri,vs1.');
+  vs2 = S2FunTri(vp.tri,vs2.');
   
-  pp = S2AxisFieldTri(vp.tri,pp);
-  ps1 = S2AxisFieldTri(vp.tri,ps1);
-  ps2 = S2AxisFieldTri(vp.tri,ps2);  
+  pp = S2AxisFieldTri(vp.tri,pp.');
+  ps1 = S2AxisFieldTri(vp.tri,ps1.');
+  ps2 = S2AxisFieldTri(vp.tri,ps2.');  
 end
 
 end
