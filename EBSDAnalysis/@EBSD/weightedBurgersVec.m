@@ -61,6 +61,8 @@ else % use the integral method
 
   % the filters
   fY = repmat([-1 zeros(1,2*wS-1) 1],1+2*wS,1);
+  fY([1 end],1) = -0.5; 
+  fY([1 end],end) = 0.5;
   fX = -fY.';
 
   W = Miller.nan(size(ebsd),ebsd.CS);
@@ -74,6 +76,10 @@ else % use the integral method
     (ordfilt2(ebsd.grainId,1,ones(sq,sq)) ~= ordfilt2(ebsd.grainId,(sq+2)^2,ones(sq+2,sq+2)))) = NaN;
 
   W = ebsd.orientations .* W;
+  
+  %normalize to area
+  d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)))
+  W = W/(4 * wS^2 * d);
 
 end
 
