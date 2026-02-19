@@ -12,6 +12,8 @@ properties
   prevCharCnt = 0   % number of characters that needs to be erased
   percentDisplayed  % 
   diaryOn = false
+  minUpdateInterval = 0.2 % seconds 
+  tLastUpdate = []        % tic handle
 end
 
 methods
@@ -20,6 +22,8 @@ methods
     
     this.caption = get_option(varargin,'caption',this.caption);
     this.numTotal = n;
+    this.percentDisplayed = -1;
+    this.tLastUpdate = tic;
 
     if n<=1 || check_option(varargin,'silent') || ...
         getMTEXpref("generatingHelpMode") || progressCounter.active
@@ -41,7 +45,11 @@ methods
 
   function delete(this)
 
-    if this.numTotal == 0 || this.prevCharCnt == 0 || ~isempty(lastwarn)
+    if this.numTotal == 0, return; end
+
+    progressCounter.active(false);
+
+    if this.prevCharCnt == 0 || ~isempty(lastwarn)
       return; 
     end
 
@@ -49,8 +57,6 @@ methods
     if this.diaryOn, diary('off'); end    
     fprintf([repmat('\b',1, this.prevCharCnt + strlength(this.caption)+1) '\n']);    
     if this.diaryOn, diary('on'); end
-
-    progressCounter.active(false);
 
   end
   
@@ -65,11 +71,13 @@ methods
       return
     elseif np < this.percentDisplayed
       this.prevCharCnt = 0;
-    elseif np == this.percentDisplayed
+    elseif np == this.percentDisplayed || ... % nothing has changed
+        toc(this.tLastUpdate) < this.minUpdateInterval % or too quick anyway 
       return;
     end
   
     this.percentDisplayed = np;
+    this.tLastUpdate = tic;
 
     s = [int2str(np) '%%\n'];
         
@@ -87,8 +95,6 @@ methods
 
     end
 
-    
-    
     fprintf([repmat('\b',1, this.prevCharCnt) s]);
     
     this.prevCharCnt = length(s) - 2; %
@@ -96,7 +102,6 @@ methods
     if this.diaryOn, diary('on'); end
 
   end
-
 
 end
 
@@ -136,6 +141,17 @@ methods (Static=true)
 
     end
   end
+
+  function test2
+
+    pC = progressCounter(81);
+    for k = 1:81
+      pause(0.0001)
+      pC.show(k)
+
+    end
+  end
+
 
 end
 end
