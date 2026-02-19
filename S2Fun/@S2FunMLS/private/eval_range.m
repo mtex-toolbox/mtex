@@ -42,7 +42,6 @@ if (sum(too_few_neighbors) > 0)
   end
 end
 
-
 % for points with too many neighbors, we choose only the S2F.dim * S2F.oF_max nearest ones
 too_many_neighbors = nn > S2F.dim * S2F.oF;
 if (sum(too_many_neighbors) > 0)

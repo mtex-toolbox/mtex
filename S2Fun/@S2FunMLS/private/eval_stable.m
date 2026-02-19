@@ -88,7 +88,6 @@ clear col_id grid_vals grid_id;
 % ======================
 [c_book, conds] = solve_lsq_book_varsize(weights, G.', f, nn, ...
   'regularize', S2F.regularizationOptions{:}, varargin{:});
-
 vals = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
 if isalmostreal(S2F.values)

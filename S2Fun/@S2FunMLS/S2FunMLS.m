@@ -296,7 +296,7 @@ classdef S2FunMLS < S2Fun
       degrees = (is_odd : 2 : S2F.degree)';
       dimensions = 2 * degrees + 1;
       basis_weights = repelem(1 + degrees, dimensions, 1);
-      % basis_weights = basis_weights / max([basis_weights; 1]);
+      basis_weights = basis_weights / max([basis_weights; 1]);
     end
 
     % compute expected number of neighbors with given sF.nodes and sF.delta
