@@ -183,11 +183,11 @@ sF.monomials = true;
 sF.centered = true;
 
 % MLS without outlier detection
-sF = S2FunMLS(v, noisy_values);
+sF = S2FunMLS(v, noisy_values, 'centered', 'monomials');
 figure(2); plot(sF); colorbar;
 
 % MLS with outlier detection
-sF2 = S2FunMLS(v, noisy_values);
+sF2 = S2FunMLS(v, noisy_values, 'centered', 'monomials');
 sF2.detectOutliers = true;
 sF2.outlierDetectionRange = 7;
 figure(3); plot(sF2); colorbar;
