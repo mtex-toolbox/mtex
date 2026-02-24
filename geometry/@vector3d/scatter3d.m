@@ -8,7 +8,6 @@ function [h,ax] = scatter3d(v,varargin)
 %  v - @vector3d
 %
 
-
 % where to plot
 if check_option(varargin,'parent')
   ax = get_option(varargin,'parent');
@@ -17,7 +16,10 @@ else
 end
 
 % plot a inner sphere that is not translucent
-plotEmptySphere(ax);
+if ~ishold(ax) || isempty(ax.Children)
+  cla(ax)
+  plotEmptySphere(ax);
+end
 
 % normalize vectors
 v = reshape(v,[],1);
