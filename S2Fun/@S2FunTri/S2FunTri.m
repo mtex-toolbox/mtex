@@ -38,8 +38,8 @@ classdef S2FunTri < S2Fun
         sF.tri = S2Triangulation(nodes);
       end
       
-      sF.values = values;
-
+      sF.values = reshape(values,numel(sF.vertices),[]);
+      
       sF.s.how2plot = nodes.how2plot;
 
     end
