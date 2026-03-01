@@ -323,7 +323,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
       
       % ensure pos is set correctly
-      if isfield(ebsd.prop,'x')
+      if isfield(ebsd.prop,'x') && isempty(ebsd.pos)
         ebsd.pos = vector3d(s.prop.x,s.prop.y,0);
         ebsd.prop = rmfield(ebsd.prop,{'x','y'});
       end
