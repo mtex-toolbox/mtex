@@ -18,7 +18,7 @@ function S2G = equispacedS2Grid(varargin)
 % Flags
 %  antipodal  - include <VectorsAxes.html antipodal symmetry>
 %  restrict2MinMax - restrict margins to min / max
-%  no_center  - ommit point at center
+%  no_center  - omit point at center
 %
 % See also
 % regularS2Grid plotS2Grid

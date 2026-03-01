@@ -251,7 +251,7 @@ classdef embedding
       
       id = embedding.id(cs);
       
-      % the scew symmetric matrices
+      % the skew symmetric matrices
       S = spinTensor([xvector;yvector;zvector]);
      
       u = cell(length(id.u),1);
@@ -291,8 +291,8 @@ classdef embedding
       % * make it more compact, e.g. one may use CS.nfold to get the order 
       % of the highest symmetry axis or cs.multiplicityPerpZ 
       % * show that these definitions are indeed symmetry invariant
-      % * what is the connection betweem dot(obj1,obj2) and the usual dot
-      % on S3 moduluo symmetry
+      % * what is the connection between dot(obj1,obj2) and the usual dot
+      % on S3 modulo symmetry
       
       %       l = [vector3d.X, vector3d.Y, vector3d.Z];
       %       alpha = [1,1,1];
@@ -418,7 +418,7 @@ classdef embedding
         localSample = sample((i-1)*100+(1:100));
         T = embedding(localSample);
         Tmean = mean(T);
-        mSample = project(Tmean); %#ok<PRJET>
+        mSample = project(Tmean);
               
         mSample2 = mean(localSample);
         h(i) = angle(mSample,mSample2) ./ degree; %#ok<AGROW>
@@ -500,12 +500,12 @@ classdef embedding
       
         n = r - sum(dot(repmat(r,1,3),t) .* t,2);
       
-        % check orthogonolity of the normal vector
+        % check orthogonality of the normal vector
         % dot(n(1),t(1,:))
       
         e = embedding(ori) + 0.01 * n;
                 
-        [oriRec, ~, numIter] = project(e); %#ok<PRJET>
+        [oriRec, ~, numIter] = project(e);
       
         if max(angle(ori,oriRec)./degree)<1e-5
           disp([cs.LaueName, ' ..... passed, iterations: ' int2str(numIter)]);

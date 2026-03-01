@@ -20,7 +20,7 @@ if isa(v,'tensor')
   
   % form the gradient vector
   v = vector3d(v{3,2},-v{3,1},v{2,1});
-  v =  reshape(v,size(ori));
+  v = reshape(v,size(ori));
 end
 
 % compute the orientation
