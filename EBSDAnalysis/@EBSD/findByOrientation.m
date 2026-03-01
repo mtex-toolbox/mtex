@@ -27,6 +27,6 @@ if isa(ori,'orientation') || isa(ori,'fibre')
   ebsd = subSet(ebsd,ismember(ebsd.phaseId,find(phaseId)));
 end
 
-ind  = find(ebsd.orientations,ori,epsilon);
+ind  = find(ebsd.orientations,ori,epsilon).';
 
 ebsd = subSet(ebsd,any(ind,2));
