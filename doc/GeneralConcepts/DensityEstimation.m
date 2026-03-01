@@ -22,7 +22,6 @@
 
 % Define the true density function, in this case made by combining two
 % Gaussians
-
 f = @(x) (Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x))/2;
 
 % generate 1000 points linearly spaced between 0 and 1
@@ -157,7 +156,9 @@ yN = discreteSample(f,N);
 % plot the random sample as red circles
 scatter(xN,yN,'o','LineWidth',2,'MarkerEdgeColor','r')
 axis equal tight
-%xlabel('x');ylabel('f(x)')
+xlim([0,1])
+ylim([0,1])
+box on
 
 %%
 % Similarly to the one dimensional example we need to specify the range of

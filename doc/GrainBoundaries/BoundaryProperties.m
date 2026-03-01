@@ -136,13 +136,13 @@ sum(gB_Mg.segLength)
 % 
 % TODO: explain this in more detail
 
-components = unique(gB.componentId);
-for cId = components.'
-  plot(gB(gB.componentId == cId),'lineColor',ind2color(cId),...
-    'micronbar','off','lineWidth',4,'displayName',num2str(cId))
-  hold on
-end
-hold off
+%components = unique(gB.componentId);
+%for cId = components.'
+%  plot(gB(gB.componentId == cId),'lineColor',ind2color(cId),...
+%    'micronbar','off','lineWidth',4,'displayName',num2str(cId))
+%  hold on
+%end
+%hold off
 
 
 
