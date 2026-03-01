@@ -8,7 +8,7 @@ function r = mtimes(a,b,takeRight)
 %
 % Input
 %  o - @orientation
-%  h - @Miller indice
+%  h - @Miller indices
 %  r - @vector3d
 %
 % See also
@@ -20,26 +20,22 @@ if nargin == 3
   return
 end
 
-% special case multiplication with +-1
+% orientation times object
 if isnumeric(a) || isnumeric(b)
+  % special case multiplication with +-1
   r = mtimes@rotation(a,b);
   return
-end
-
-% orientation times symmetry
-if isa(b,'symmetry') 
+elseif isa(b,'symmetry') 
+  % orientation times symmetry
   r = mtimes@quaternion(a,b.rot,0);
   return
+elseif ~isa(b,'quaternion') 
+  r = rotate_outer(b,a);
+  return 
 end
 
 % ensure inner symmetries coincide
 [a, left, right] = ensureSym(a,b);
-
-% orientation times object
-if ~isa(b,'quaternion') 
-  r = rotate_outer(b,a);
-  return 
-end
 
 % rotation multiplication
 r = mtimes@quaternion(a,b,isa(b,'orientation'));

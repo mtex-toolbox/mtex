@@ -42,7 +42,7 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
-    how2plot
+    how2plot = plottingConvention.default
   end
     
   properties (Dependent = true)
@@ -156,7 +156,8 @@ classdef vector3d < dynOption
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
        
-       v.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
+       %v.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
+       v.how2plot = plottingConvention.default;
 
       end
     end
@@ -223,6 +224,13 @@ classdef vector3d < dynOption
       v = v.setOption('resolution',res);
       
     end
+
+    function v = setXYZ(v,x,y,z)
+      v.x = x;
+      v.y = y;
+      v.z = z;
+    end
+
     
     function b = isnan(v)
       b = isnan(v.x) | isnan(v.y) | isnan(v.z);
