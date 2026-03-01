@@ -90,8 +90,14 @@ classdef Miller < vector3d
       % extract disp style
       if m.lattice.isTriHex, m.dispStyle = 'hkil'; end
       m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
-            
-      if ischar(varargin{1})
+
+      if isa(varargin{1},'symmetry')
+
+        m.x = varargin{2};
+        m.y = varargin{3};
+        m.z = varargin{4};
+      
+      elseif ischar(varargin{1})
         
         m = s2v(varargin{1},m);
               
@@ -101,7 +107,7 @@ classdef Miller < vector3d
         m.opt = varargin{1}.opt;
         m.antipodal = varargin{1}.antipodal;
         
-      elseif iscell(varargin{1}) % list of Miller indices
+      elseif iscell(varargin{1}) && ~isempty(varargin{1}) % list of Miller indices
         
         ind = find(cellfun(@iscell,varargin));
         m = Miller(varargin{ind(1)}{:},varargin{:});
@@ -110,7 +116,7 @@ classdef Miller < vector3d
           m =  [m,mm];
         end
         
-      elseif isa(varargin{1},'double') % hkl and uvw
+      elseif isa(varargin{1},'double') && ~isempty(varargin{1}) % hkl and uvw
         
         % get hkls and uvw from input
         nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
@@ -166,7 +172,7 @@ classdef Miller < vector3d
     
     function m = set.CS(m,cs)             
       % recompute representation in cartesian coordinates
-      if m.CSprivate ~= cs
+      if ~isempty(m.CSprivate) && m.CSprivate ~= cs
 
         coord = m.coordinates;
         m.CSprivate = cs;
