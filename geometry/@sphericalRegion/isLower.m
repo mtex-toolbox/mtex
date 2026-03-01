@@ -1,4 +1,5 @@
 function out = isLower(sR,ref)
+% lower hemisphere is relative to plotting convention!
 
 if nargin==1
   ref = sR.how2plot.outOfScreen;
