@@ -99,7 +99,7 @@ setCamera(how2plot)
 N = [vector3d(0,0,1),vector3d(1,-1,0),vector3d(2,2,4)];
 
 % make all slices passing through this point
-A = vector3d(2,2,1);
+A = grains.midPoint;
 
 grains001 = grains.slice(N(1),A);
 grains1_10= grains.slice(N(2),A);
