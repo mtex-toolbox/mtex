@@ -31,7 +31,7 @@ tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},tooltipForma
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 
-    S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
+S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
