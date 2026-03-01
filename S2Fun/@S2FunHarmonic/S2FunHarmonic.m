@@ -3,7 +3,7 @@ classdef S2FunHarmonic < S2Fun
 
 properties
   fhat = []; % harmonic coefficients
-  s = specimenSymmetry % symmetry
+  s = specimenSymmetry.default % symmetry
 end
 
 properties (Dependent=true)
