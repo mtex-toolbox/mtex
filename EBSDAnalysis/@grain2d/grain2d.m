@@ -161,14 +161,17 @@ classdef grain2d < phaseList & dynProp
       end
 
       % determine a normal direction such that the area is positive
-      grains.N = perp(grains.allV - grains.allV(1));
-      grains.N.antipodal = false;
-      if sum(grains.area) < 0, grains.N = -grains.N; end
-
-      % check for 3d plane
-      d=dot(grains.allV(1),grains.N);
-      assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
-        || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
+      if all(grains.allV.z==grains.allV.z(1))
+        grains.N = zvector;
+      else
+        grains.N = perp(discreteSample(grains.allV,100) - grains.allV(1));
+        grains.N.antipodal = false;
+        % check for 3d plane
+        d=dot(grains.allV(1),grains.N);
+        assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
+          || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
+        if sum(grains.area) < 0, grains.N = -grains.N; end
+      end
 
     end
     
