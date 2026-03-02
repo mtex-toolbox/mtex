@@ -159,13 +159,12 @@ mtexTitle(['WBV direction / box =' num2str(2*ws+1)])
 end
 mtexColorbar
 
-% Here we see that there is barely a difference between the noisy and the
-% denoised data in a 3-by-3 neighborhood, the latter being already
-% sufficiently large to filter the noise. For larger window sizes, we see 
-% that there is of course a loss of detail and a decrease in the norm 
+% Here we see that there is some difference between the noisy and the
+% denoised data in a 3-by-3 and larger neighborhoods. For larger window sizes, we see 
+% that there is of course a loss of detail (and empty spaces appear around unfilled points) and a decrease in the norm 
 % of WBV, since high orientation gradients are spread by the larger window 
-% size. At the other hand, the distribution of the WBV becomes sharper, 
-% because there is less scatter in the WBV.
+% size. At the other hand, the distribution of the WBV in the polefigures becomes sharper, 
+% because there is less scatter in the WBV over larger areas.
 
 %%
 close
