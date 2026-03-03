@@ -93,9 +93,11 @@ classdef Miller < vector3d
 
       if isa(varargin{1},'symmetry')
 
-        m.x = varargin{2};
-        m.y = varargin{3};
-        m.z = varargin{4};
+        if nargin > 1
+          m.x = varargin{2};
+          m.y = varargin{3};
+          m.z = varargin{4};
+        end
       
       elseif ischar(varargin{1})
         
