@@ -82,6 +82,9 @@ elseif check_option(varargin,'zero2white')
     if c(2)<0, c(2)=1; end
     set(mtexFig.children(i),'CLim',c);
     if ~isempty(mtexFig.cBarAxis)
+      if isscalar(mtexFig.cBarAxis)
+        i=1;
+      end
       try
         set(mtexFig.cBarAxis(i),'Limits',c);
       catch
