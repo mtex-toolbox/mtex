@@ -73,6 +73,24 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
     
   limits = varargin{1};
   
+elseif check_option(varargin,'zero2white')
+ 
+  for i = 1:length(mtexFig.children)
+
+    c = clim(mtexFig.children(i));
+    c(1) = 0;
+    if c(2)<0, c(2)=1; end
+    set(mtexFig.children(i),'CLim',c);
+    if ~isempty(mtexFig.cBarAxis)
+      try
+        set(mtexFig.cBarAxis(i),'Limits',c);
+      catch
+        set(mtexFig.cBarAxis(i),'CLim',c);
+      end
+    end
+  end
+  return
+  
 else
   
   %error('First argument must either be the color range or the flag ''equal''');  
