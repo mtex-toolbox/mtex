@@ -26,7 +26,7 @@ end
 
 % --- Untere Zone: sanfter Übergang Magenta -> jet-Blau
 nLow = n-nHigh;
-lowStart = [1 0 1];           % magenta
+lowStart = [1 0.7 1];           % magenta
 lowEnd   = highMap(1,:);      % Beginn jet
 
 lowMap = [linspace(lowStart(1),lowEnd(1),nLow)' ...
