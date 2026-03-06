@@ -1,8 +1,8 @@
 function [M,b,spin] = calcTaylorAll(eps,sS,varargin)
 % compute the Taylor factor and the simplex of all feasible solutions of 
-% the linear program (Taylor model).
+% the linear program (Taylor model). --> Taylor ambiguity
 %
-% Afterwards we compute the Burgers vector and strain dependent orientation 
+% Afterwards we can compute the Burgers vector and strain dependent orientation 
 % spin as mean vector of the simplex or by inverse distancing.
 %
 % Syntax

@@ -8,3 +8,4 @@ GND
 VPSCImport
 TextureEvolution
 TaylorHex
+TaylorAmbiguity
