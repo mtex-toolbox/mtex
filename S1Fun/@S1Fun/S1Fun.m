@@ -8,6 +8,10 @@ classdef S1Fun
     antipodal 
     bandwidth % 
   end 
+
+  properties 
+    how2plot = plottingConvention.default
+  end
   
   methods (Abstract = true)
     

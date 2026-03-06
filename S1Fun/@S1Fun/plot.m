@@ -29,5 +29,9 @@ d = real(sF.eval(omega));
 
 h = polarplot(omega,d,varargin{:});
 
+% set plotting convention such that the plot coincides with a map
+how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
+how2plot.setView(h.Parent);
+
 if nargout == 0, clear h; end
 
