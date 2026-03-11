@@ -70,7 +70,7 @@ if nargin>1 && isa(varargin{1},'orientation')
   
   if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,'inversePoleFigureDirection')
     disp('  I''m going to colorize the orientation data with the ');
-    disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp('  standard MTEX ipf-Z colorkey. To view the colorkey do:');
     disp(' ');
     disp('  colorKey = ipfColorKey(ori_variable_name)')
     disp('  plot(colorKey)')

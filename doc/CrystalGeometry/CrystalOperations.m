@@ -8,10 +8,10 @@
 data = load([mtexDataPath filesep 'quartzPattern.mat']);
 pattern = data.pattern;
 
-[~,ax1] = plot(pattern,'resolution',0.25*degree,'complete','upper',"uvw");
+[~,ax1] = plot(pattern,'resolution',0.25*degree,'complete','upper',"UVTW");
 mtexColorMap black2white
 nextAxis
-[~,ax2] = plot(pattern.radon,'resolution',0.25*degree,'complete','upper','hkl');
+[~,ax2] = plot(pattern.radon,'resolution',0.25*degree,'complete','upper','hkil');
 mtexColorMap black2white
 
 %%
