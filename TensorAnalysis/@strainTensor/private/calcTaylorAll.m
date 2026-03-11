@@ -6,26 +6,24 @@ function [M,b,spin] = calcTaylorAll(eps,sS,varargin)
 % spin as mean vector of the simplex or by inverse distancing.
 %
 % Syntax
-%   [~,NoE] = calcTaylor(eps,sS,'numberOfEdges');
-%   [M,b,W] = calcTaylor(eps,sS)
-%   [M,b,W] = calcTaylor(eps,sS,'inverseDistance',0.01,'uniqueTol',1e-9)
+%   [M,b,W] = calcTaylorAmbiguity(eps,sS)
+%   [M,b,W] = calcTaylorAmbiguity(eps,sS,'inverseDistance',0.01)
+%   [M,b,W] = calcTaylorAmbiguity(eps,sS,'mean')
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
 %  sS  - @slipSystem list in crystal coordinates
 %
 % Output
-%  NoE - Number of edges of the simplex that describes the optimal set
-%  M - taylor factor
-%  b - vector of slip rates for all slip systems 
+%  M - Taylor factor
+%  b - vector of slip rates for all slip systems
 %  W - @spinTensor
 %
 % Options
-%  inverseDistance - edges are optimal if there corresponding minimal value <= (1+tol)*M. Moreover b is the inverse-distance weighted mean of the simplex.
+%  'mean' - choose b and W as mean of all edge of the simplex of solutions (Taylor ambiguity)
+%  'inverseDistance' - edges are optimal if there corresponding minimal value <= (1+tol)*M. Moreover b is the inverse-distance weighted mean of the simplex.
+%  'min2norm' - choose the edge with minimal Euclidean-norm
 %  tolerance - obtain all edges, which taylor factor is minimal w.r.t. this tolerance
-%
-% Flags
-%  'numberOfEdges' - Obtain the number of edges of the optimal set (simplex)
 %
 
 sSys = sS.ensureSymmetrised;
@@ -84,12 +82,8 @@ M = min(TF,[],3)'./norm(eps);
 % maybe there is nothing more to do
 if nargout<=1, return; end
 
-% Compute Burgers vector and spin tensors:
-%     - Mean: uTol = tol = 1e-9
-%     - Inverse Distance: uTol=-1; tol = ...
-
 % find edges with minimal Taylor factor
-tol = get_option(varargin,'inverseDistance',max(get_option(varargin,'tolerance',1e-9),0));
+tol = get_option(varargin,'inverseDistance',get_option(varargin,'tolerance',1e-9));
 
 id = find(TF<=(1+tol)*M');
 [Rot_id,LS_id]=ind2sub(size(TF,[2,3]),id);
@@ -111,14 +105,6 @@ if ~check_option(varargin,'inverseDistance')
   G = G(:,2:end)';
 end
 
-% if number of edges of the simplex is observed
-if check_option(varargin,'numberOfEdges')
-  b = histc(Rot_id,1:max(Rot_id));
-  TF(TF<=(1+tol)*M') = Inf;
-  spin = min(TF,[],3)'-(1+tol)*M;
-  return
-end
-
 % Cluster Solutions into cell array
 b = accumarray(Rot_id, (1:length(Rot_id))', [], @(x) {G(:,x)'})';
 
@@ -130,8 +116,10 @@ if check_option(varargin,'inverseDistance')
   w = arrayfun(@(i) 1 - (TF(Rot_id == i)-M(i))/(M(i)*tol) , 1:max(Rot_id), 'UniformOutput', false);
   b = cell2mat(cellfun(@(bi,wi) sum(wi.*bi,1)'/sum(wi)  ,b,w,'UniformOutput',false))';
 elseif check_option(varargin,'mean')
-  % unstetig an Stellen, wo sich Anzahl der Ecken des Simplex ändert
+  % Discontinuous at points where the number of vertices of the simplex changes.
   b = cell2mat(cellfun(@(bi) mean(bi,1)',b,'UniformOutput',false))';
+elseif check_option(varargin,'min2norm')
+  b = cell2mat(cellfun(@(bi) bi(argmin(vecnorm(bi,2,1)),:)' ,b,'UniformOutput',false))';
 end
 
 
@@ -155,4 +143,7 @@ function r = pagerank(A)
   s = pagesvd(A);
   tol = size(s,1) * eps(max(s, [], 1));
   r = sum(s>tol);
+end
+function i = argmin(A)
+  [~,i] = min(A);
 end

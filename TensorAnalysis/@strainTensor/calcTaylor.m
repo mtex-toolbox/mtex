@@ -2,19 +2,26 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % compute Taylor factor and strain dependent orientation gradient
 %
 % Syntax
+%   [MFun,~,spinFun] = calcTaylor(eps,sS)
+%   [MFun,~,spinFun] = calcTaylor(eps,sS,'noharmonic')
 %   [MFun,~,spinFun] = calcTaylor(eps,sS,'bandwidth',32)
-%   [M,b,W] = calcTaylor(eps,sS)
+%   [M,b,W] = calcTaylor(epsC,sS)
+%   [M,b,W] = calcTaylor(epsC,sS,'regularize',1e-6)
 %
 % Input
-%  eps - @strainTensor list in crystal coordinates
+%  eps - @strainTensor list in specimen coordinates
 %  sS  - @slipSystem list in crystal coordinates
+%  epsC - @strainTensor list in crystal coordinates%
 %
 % Output
 %  Mfun    - @SO3FunHarmonic (orientation dependent Taylor factor)
-%  spinFun - @SO3VectorFieldHarmonic
-%  M - taylor factor
+%  spinFun - @SO3VectorFieldHarmonic (orientation dependent @spinTensor)
+%  M - Taylor factor
 %  b - vector of slip rates for all slip systems 
 %  W - @spinTensor
+%
+% Options
+%  'regularize' - solve Taylor problem regularized with l2-norm to prevent Taylor ambiguity
 %
 % Example
 %   
@@ -36,46 +43,59 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 %
 %
 %   % compute the Taylor factor and spin Tensor w.r.t. any orientation
-%   [M,~,W] = calcTaylor(eps,sS.symmetrise)
+%   [Mfun,~,spinFun] = calcTaylor(eps,sS.symmetrise)
 %
 
+%% Compute Taylor factor and spin tensor, if input given in crystal coordinates
 
-% Compute the Taylor factor and strain dependent gradient independent of 
-% the orientation, i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
-if sS.CS.Laue ~= eps.CS.Laue
-  bw = get_option(varargin,'bandwidth',32);
-  numOut = nargout;
-  for k = 1:length(eps)
-    progress(k,length(eps));
-    epsLocal = strainTensor(eps.M(:,:,k));
-    F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
-    
-    % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
-    SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre','regularization',0);
-    M(k) = SO3F(1); %#ok<AGROW>
-    if nargout>1
-      b = [];
-      spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
-      % to be comparable set output to rightspintensor      
-      spin.tangentSpace  = SO3TangentSpace.leftSpinTensor;
-    end
+if sS.CS.Laue == eps.CS.Laue
+  if nargout<=1
+    M = calcTaylor1(eps,sS,varargin{:});
+  elseif nargout==2
+    [M,b,~] = calcTaylor1(eps,sS,varargin{:});
+  else
+    [M,b,spin] = calcTaylor1(eps,sS,varargin{:});
   end
-  
-  % for some reason we need some smoothing of the vector field
-  % if nargout>1
-  %   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
-  %   spin.SO3F = spin.SO3F.conv(psi);
-  % end
   return
 end
 
-if nargout<=1
-  M = calcTaylor1(eps,sS,varargin{:});
-elseif nargout==2
-  [M,b,~] = calcTaylor1(eps,sS,varargin{:});
-else
-  [M,b,spin] = calcTaylor1(eps,sS,varargin{:});
+
+%% Compute orientation dependent functions
+
+% not-harmonic framework
+if check_option(varargin,{'check','noharmonic'})
+  M = SO3FunHandle(@(rot) calcTaylorFactor(rot,strainTensor(eps.M),sS,varargin{:}),sS.CS,eps.CS);
+  b = [];
+  spin = SO3VectorFieldHandle(@(rot) calcTaylorSpin(rot,strainTensor(eps.M),sS,varargin{:}),SO3TangentSpace.leftSpinTensor);
+  spin.tangentSpace  = SO3TangentSpace.leftSpinTensor;
+  return
 end
+
+
+% harmonic framework
+bw = get_option(varargin,'bandwidth',32);
+for k = 1:length(eps)
+  progress(k,length(eps));
+  epsLocal = strainTensor(eps.M(:,:,k));
+  numOut = nargout;
+  F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
+    
+  % Use Gauss-Legendre quadrature, since the evaluation process is very expansive
+  SO3F = SO3FunHarmonic(F,'bandwidth',bw,'GaussLegendre');
+  M(k) = SO3F(1); %#ok<AGROW>
+  if nargout>1
+    b = [];
+    spin(k) = SO3VectorFieldHarmonic(SO3F(2:4),SO3TangentSpace.leftVector); %#ok<AGROW>
+    % to be comparable set output to rightSpinTensor      
+    spin.tangentSpace  = SO3TangentSpace.leftSpinTensor;
+  end
+end
+  
+% for some reason we need some smoothing of the vector field
+% if nargout>1
+%   psi = SO3DeLaValleePoussinKernel('halfwidth',5*degree);
+%   spin.SO3F = spin.SO3F.conv(psi);
+% end
 
 end
 
@@ -89,8 +109,14 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   end
 end
 
-
-
+function spin = calcTaylorSpin(rot,eps,sS,varargin)
+  ori = orientation(rot,sS.CS,eps.CS);
+  [~,~,spin] = calcTaylor1(inv(ori)*eps,sS,varargin{:});
+end
+function M = calcTaylorFactor(rot,eps,sS,varargin)
+  ori = orientation(rot,sS.CS,eps.CS);
+  M = calcTaylor1(inv(ori)*eps,sS,varargin{:});
+end
 
 
 

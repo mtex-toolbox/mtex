@@ -2,7 +2,21 @@ function [M,b,spin] = calcTaylor1(eps,sS,varargin)
 % compute the Taylor factor, Burgers vector and strain dependent 
 % orientation spin by computing exactly one feasible solution of the linear
 % program (Taylor model) with interior-point-method or the simplex algorithm.
-
+%
+% This ignores the Taylor ambiguity and yields just one solution.
+%
+% Syntax
+%   [M,b,W] = calcTaylor(eps,sS)
+%
+% Input
+%  eps - @strainTensor list in crystal coordinates
+%  sS  - @slipSystem list in crystal coordinates
+%
+% Output
+%  M - Taylor factor
+%  b - vector of slip rates for all slip systems
+%  W - @spinTensor
+%
 
 % ensure slip systems are symmetrised including +- of each slipSystem
 sS = sS.ensureSymmetrised;
@@ -51,7 +65,11 @@ for i = 1:size(y,2)
   % b_j| is minimal. This is equivalent to the requirement b>=0 and CRSS*b
   % -> min which is the linear programming problem solved below
   try
-    if getMTEXpref('mosek',false)
+    if check_option(varargin,'regularize')
+      lambda = get_option(varargin,'regularize',1e-6);
+      options = optimoptions('quadprog','Display','none');
+      b(i,:) = quadprog(2*lambda*eye(24),CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
+    elseif getMTEXpref('mosek',false)
       res = msklpopt(CRSS,A,y(:,i),y(:,i),zeros(size(A,2),1),inf(size(A,2),1),...
         param,'minimize echo(0)');
       b(i,:) = res.sol.itr.xx;

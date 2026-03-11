@@ -109,60 +109,166 @@ P = P(ind,:)
 % of which only 384 have full rank 5.
 
 % edges of the polyhedron of all minimizer
-[~,gamma,spin] = calcTaylorNew(ori.inv*epsilon,sS);
+[~,gamma,spin] = calcTaylorAmbiguity(ori.inv*epsilon,sS);
 gamma = gamma{1}'
 
 %%
 % According to the Taylor model, it is not clear which point within the
-% convex hull corresponds to the desired spin tensor.
+% convex hull corresponds to the desired spin tensor. Possible choices are,
+% for instance, the mean or an inverse-distance weighted mean.
 
-% use the mean spin tensor
-[~,gamma,spin] = calcTaylorNew(ori.inv*epsilon,sS,'mean')
+% compute the mean spin tensor
+[~,gamma,spin] = calcTaylorAmbiguity(ori.inv*epsilon,sS,'mean')
+
+% compute the inverse-distance weighted spin tensor
+[~,gamma,spin] = calcTaylorAmbiguity(ori.inv*epsilon,sS,'inverseDistance')
 
 %%
 % Note that the feasibility of this computational approach strongly depends
-% on the chosen slip system. For large slip-system sets, for instance
-% body-centered cubic (bcc) with the cubic symmetry above, we obtain 96 
-% slip systems and thus $\binom{48}{5} \approx 1.7$ million linear systems.
+% on the chosen slip-system set. For large sets, for instance body-centered 
+% cubic (bcc) with the cubic symmetry above, we obtain 96 slip systems and 
+% thus $\binom{48}{5} \approx 1.7$ million linear systems. 
+% Therefore, analyzing all of these systems for every orientation
+% becomes computationally expensive.
 %
 %
-
-
-%% Compute 
+%% Orientation dependent Taylor factor and spin tensor
 % We can compute a unique solution by taking the mean point of the convex
-% polyeder as spin tensor.
-% Therefore the Taylor factor and spin tensor look like:
+% polyhedron as spin tensor. This provides a simple and robust way to
+% resolve the Taylor ambiguity. In this case, the resulting spin tensor
+% represents the average lattice rotation over all admissible solutions.
 %
+% We plot this spin tensor orientation dependent together with the Taylor
+% factor.
 
 % Taylor model
-[M,b,W] = calcTaylorNew(epsilon,sS,'mean')
+[M,b,W] = calcTaylorAmbiguity(epsilon,sS,'mean')
 
 % for plotting
 ipfSec = ipfSections(cs,'sections',1);
 ipfSec.r1 = yvector; ipfSec.r2 = zvector;
 
+% plot Taylor factor and spin tensor
 plotSection(M,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
 mtexColorbar
 hold on
-% plot(W,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
 plot(W,'add2all','linewidth',1,'color','k','arrowSize',1,'resolution',1.5*degree)
 hold off
 
 %%
-% We can also compute a function which gives us the number of edges of the
-% corresponding solution simplex.
-% 
+% The spin tensor obtained in this way is generally not continuous.
+% Discontinuities occur at orientations where the set of active slip
+% systems changes, i.e., where a different vertex of the solution simplex
+% becomes optimal.
+
+plotSection(norm(W),ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('norm of spin tensor')
+nextAxis
+X = SO3FunHandle(@(r) W.eval(r).x,cs);
+plotSection(X,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('x-component of spin tensor')
+nextAxis
+Y = SO3FunHandle(@(r) W.eval(r).y,cs);
+plotSection(Y,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('y-component of spin tensor')
+nextAxis
+Z = SO3FunHandle(@(r) W.eval(r).z,cs);
+plotSection(Z,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('z-component of spin tensor')
+setColorRange tight
+
+%% Compute the spin tensor by a regularized Taylor model
+% Instead of computing all solutions (i.e., resolving the ambiguity
+% explicitly), we can modify the objective functional of the Taylor model
+% by adding a quadratic regularization term with parameter $\lambda > 0$:
+%
+% $$ \min_{\dot\gamma_{1},\dots,\dot\gamma_{n}} \sum_{s=1}^{n} \tau_{s} \cdot \abs{\dot\gamma_{s}} + \lambda \dot\gamma_s^2 \qquad \text{s.t.} ~ \sum_{s=1}^{n}\dot\gamma_{s} \cdot P_{s} = \mat R^{-1}\boldsymbol{\varepsilon} $$ 
+%
+% The quadratic regularization term makes the objective strictly convex.
+% Hence, the optimization problem admits a unique solution even though the
+% linear constraints define an affine subspace of admissible shear rates.
+
+% Do not compute the harmonic expansion to examine the continuity of the spin tensor
+[M,~,W] = calcTaylorAmbiguity(epsilon,sS,'regularize',1e-6,'noharmonic')
+
+% plot Taylor factor and spin tensor
+plotSection(M,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexColorbar
+hold on
+plot(W,'add2all','linewidth',1,'color','k','arrowSize',1,'resolution',1.5*degree)
+hold off
 
 
-[~,b,~] = calcTaylorNew(epsilon,sS);
+%%
+% Plot the spin tensor and its individual components. 
+
+plotSection(norm(W),ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('norm of spin tensor')
+nextAxis
+X = SO3FunHandle(@(r) W.eval(r).x,cs);
+plotSection(X,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('x-component of spin tensor')
+nextAxis
+Y = SO3FunHandle(@(r) W.eval(r).y,cs);
+plotSection(Y,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('y-component of spin tensor')
+nextAxis
+Z = SO3FunHandle(@(r) W.eval(r).z,cs);
+plotSection(Z,ipfSec,'projection','stereo','resolution',0.2*degree,'noGrid')
+mtexTitle('z-component of spin tensor')
+setColorRange tight
+
+
+%% Taylor Ambiguity – The Solution Polyhedron
+% We can also compute an orientation-dependent function that gives the
+% number of vertices of the corresponding solution polyhedron.
+%
+% Additionally, we plot the spin tensors associated with all vertices of
+% this polyhedron. The set of admissible spin tensors is given by all convex
+% combinations of these vertex solutions.
+%
+% The arrows therefore represent the spin tensors of the extremal
+% solutions, while the color map indicates how many such vertices exist
+% for the corresponding orientation.
+
+[~,b,~] = calcTaylorAmbiguity(epsilon,sS);
 NoE = SO3FunHandle(@(rot) cellfun(@(x) size(x,1), b(rot)));
 
 plotSection(NoE,ipfSec,'projection','stereo','resolution',0.15*degree,'noGrid')
 mtexColorbar
+hold on
+plotTaylorSpinVectors( epsilon,sS.symmetrise, ipfSec,'projection','stereo','resolution',5*degree,'color','black','arrowSize',3)
+hold off
+mtexTitle('Plot the spin tensors of all solutions onto the number of active vertices.')
+
+
+
 
 
 %%
 %
 %
 %
-%
+
+function plotTaylorSpinVectors(epsilon,sS,varargin)
+
+sS = sS.ensureSymmetrised;
+[~,~,W_All] = calcTaylorAmbiguity(epsilon,sS);
+
+oS = newODFSectionPlot(sS.CS,epsilon.CS,varargin{:});
+S3G0 = oS.quiverGrid('resolution',15*degree,varargin{:});
+W = W_All(S3G0);
+
+v = cat(1,W{:});
+ori0 = repelem(S3G0, cellfun(@length, W)).';
+
+if check_option(varargin,'normalize')
+  v = normalize(v);
+else
+  v = v ./ max(norm(v(:)));
+end
+
+ori1 = exp(ori0,v/10000,SO3TangentSpace.leftSpinTensor);
+oS.quiver(ori0, ori1,'noSymmetry',varargin{:},'all');
+
+end

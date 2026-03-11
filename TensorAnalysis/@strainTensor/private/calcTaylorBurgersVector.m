@@ -1,31 +1,16 @@
-function b = calcTaylorBurgersV(eps,sS,spin,varargin)
-% compute the Taylor factor and the simplex of all feasible solutions of 
-% the linear program (Taylor model).
-%
-% Afterwards we compute the Burgers vector and strain dependent orientation 
-% spin as mean vector of the simplex or by inverse distancing.
+function b = calcTaylorBurgersVector(eps,sS,spin,varargin)
+% Compute the burgers vector with the Taylor model, if the spin is given.
 %
 % Syntax
-%   [~,NoE] = calcTaylor(eps,sS,'numberOfEdges');
-%   [M,b,W] = calcTaylor(eps,sS)
-%   [M,b,W] = calcTaylor(eps,sS,'inverseDistance',0.01,'uniqueTol',1e-9)
+%   b = calcTaylorBurgersV(eps,sS,spin)
 %
 % Input
-%  eps - @strainTensor list in crystal coordinates
-%  sS  - @slipSystem list in crystal coordinates
+%  eps  - @strainTensor list in crystal coordinates
+%  sS   - @slipSystem list in crystal coordinates
+%  spin - @spinTensor
 %
 % Output
-%  NoE - Number of edges of the simplex that describes the optimal set
-%  M - taylor factor
 %  b - vector of slip rates for all slip systems 
-%  W - @spinTensor
-%
-% Options
-%  inverseDistance - edges are optimal if there corresponding minimal value <= (1+tol)*M. Moreover b is the inverse-distance weighted mean of the simplex.
-%  tolerance - obtain all edges, which taylor factor is minimal w.r.t. this tolerance
-%
-% Flags
-%  'numberOfEdges' - Obtain the number of edges of the optimal set (simplex)
 %
 
 sSys = sS.ensureSymmetrised;
