@@ -28,7 +28,7 @@ function sF = conv(sF, psi, varargin)
 %                    inv(4*pi*conv(sF1,conj(sF2))).
 %
 
-if isnumeric(sF)
+if isnumeric(sF) || isa(psi,'SO3Fun')
   sF = conv(psi,sF,varargin{:});
   return
 end

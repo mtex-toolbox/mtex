@@ -106,7 +106,7 @@ mean(c2.eval(v))
 %% Convolution of a rotational function with a spherical function
 %
 % We consider a |SO3Fun|  $f: {}_{S_h} \backslash SO(3) /_{S_R}
-% \to \mathbb{C}$ with left symmetry $S_h$ and right symmetry $S_R$ and a
+% \to \mathbb{C}$ with left symmetry $S_h$ and right symmetry $S_R$, and a
 % |S2Fun| $h \colon \mathbb S^2 /_{S_h} \to \mathbb C$ with symmetry group 
 % $S_h$.
 
@@ -128,17 +128,20 @@ c.eval(v)
 mean(SO3FunHandle(@(q) f.eval(q).*h.eval(q*v),c.CS))
 
 %%
-% If you want to compute the convolution of $f: {}_{'1'} \backslash SO(3) /_{S_R}
-% \to \mathbb{C}$ and $h \colon \mathbb S^2 /_{S_R} \to \mathbb C$ which
-% yields $f*h \colon \mathbb S^2/_{'1'} \to \mathbb C$ and is defined as
+% Alternatively, we may consider the convolution of 
+% $f: {}_{'1'} \backslash SO(3) /_{S_R} \to \mathbb{C}$and 
+% $h \colon \mathbb S^2 /_{S_R} \to \mathbb C$, which yields the spherical
+% function $f*h \colon \mathbb S^2/_{'1'} \to \mathbb C$ defined by
 %
-% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq. $$
+% $$ (f * h)(\xi) =  \frac1{8\pi^2} \int_{SO(3)} f(q) \cdot h(q^{-1}\,\xi) \, dq, $$
 %
+% In MTEX this variant can be computed by adding the flag |'inv'|, or
+% equivalently by evaluating |conv(inv(f),h)|.
 
 f = SO3FunHarmonic.example
 h = S2FunHarmonicSym(S2Fun.smiley,f.CS)
 
-c = conv(inv(f),h)
+c = conv(f,h,'inv')
 
 % Test
 v = vector3d.rand;
