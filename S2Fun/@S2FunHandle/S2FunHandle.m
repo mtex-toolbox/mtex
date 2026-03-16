@@ -30,7 +30,10 @@ methods
     v = S2F.fun(xvector);
     
     d = size(v);
-    d = d(2:end);
+
+    % bugfix? - only remove first entry, if it is 1
+    if (d(1) == 1), d = d(2:end); end
+
     if isscalar(d), d = [d 1]; end
     if nargin > 1, d = d(varargin{1}); end
 
