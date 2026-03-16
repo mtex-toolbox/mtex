@@ -31,7 +31,7 @@ delta = get_option(varargin,'delta',0.95);
 % indices belonging to the domain boundary
 k = boundary(x,y,delta);
    
-out = checkInside(grains,[x(k),y(k)],'includeBoundary');
+out = any(checkInside(grains,[x(k),y(k)],'includeBoundary')).';
 
 end
 
