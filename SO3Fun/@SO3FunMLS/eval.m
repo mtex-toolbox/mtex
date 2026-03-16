@@ -22,9 +22,22 @@ if isempty(ori)
   return;
 end
 
+dimensions = size(ori);
+N = prod(dimensions);
+
+% prevent dimension error in local least squares solver for N==1
+if (N == 1)
+  ori = [ori; ori];
+  [vals, conds] = SO3F.eval(ori, varargin{:});
+  vals = vals(1,:);
+  vals = reshape(vals, size(SO3F));
+  conds = conds(1);
+  return;
+end
+
 % if outlier detection is enabled but SO3F is not scalar we have to be careful
-% with matrix dimensions in eval_knn and eval_range
-% easy workaround is to catch this case here and loop over the entries of SO3F
+%   with matrix dimensions in eval_knn and eval_range
+%   easy workaround is to catch this case here and loop over the entries of SO3F
 if ((~isscalar(SO3F)) && SO3F.detectOutliers)
   vals = zeros(numel(ori), numel(SO3F));
   % extract condition number via the first component, if necessary
@@ -41,20 +54,6 @@ if ((~isscalar(SO3F)) && SO3F.detectOutliers)
   vals = reshape(vals, [numel(ori), size(SO3F)]);
   return;
 end
-
-dimensions = size(ori);
-N = prod(dimensions);
-
-% prevent dimension error in local least squares solver for N==1
-if (N == 1)
-  ori = [ori; ori];
-  [vals, conds] = SO3F.eval(ori, varargin{:});
-  vals = vals(1,:);
-  vals = reshape(vals, size(SO3F));
-  conds = conds(1);
-  return;
-end
-
 
 if ~isa(ori,'orientation')
   ori = orientation(ori,SO3F.CS,SO3F.SS);
@@ -84,24 +83,25 @@ if cs.id~=1 && ss.id~=1
   end
 end
 
-
 vals = zeros(N, numel(SO3F));
-if (nargout == 2)
-  conds = zeros(N, 1);
-end
+conds = zeros(N, 1);
 
 % we perform the computation in batches of 1GB (2^30 Bytes) RAM 
-nn = SO3F.nn;
-if (nn == 0) 
-  nn = SO3F.guess_nn("max"); 
+if (SO3F.delta == 0)
+  nn = SO3F.nn;
+else
+  nn = SO3F.guess_nn("max");
 end
-oF = nn / SO3F.dim;
-bytes_per_ori = SO3F.dim * (2*nn + 5*oF + SO3F.dim) * 8 * numel(SO3F);
+bytes_per_ori = SO3F.dim * (2*nn + 5*SO3F.oF + SO3F.dim) * 8 * numel(SO3F);
 batch_size = ceil(2 * 2^30 / bytes_per_ori);
 
 current_batch = 0;
 start_idx = 1;
 end_idx = 0;
+
+% initialize warning-switches (avoid printing the same warning for every batch)
+warning_too_few_neighbors = false;
+warning_too_many_neighbors = false;
 
 while (end_idx < N)
 
@@ -110,21 +110,25 @@ while (end_idx < N)
   I = (start_idx : end_idx)';
   start_idx = end_idx + 1;
 
-  if (nargout == 1)
-    if (SO3F.nn >= SO3F.dim)
-      vals(I,:) = eval_knn(SO3F, ori.subSet(I));
-    else
-      vals(I,:) = eval_range(SO3F, ori.subSet(I));
-    end
-
+  if (SO3F.delta == 0)
+    [vals(I,:), conds(I,:)] = eval_knn(SO3F, ori.subSet(I));
   else
-    if (SO3F.nn >= SO3F.dim)
-      [vals(I,:), conds(I,:)] = eval_knn(SO3F, ori.subSet(I));
-    else
-      [vals(I,:), conds(I,:)] = eval_range(SO3F, ori.subSet(I));
-    end
+    [vals(I,:), conds(I,:), warn_tfn, warn_tmn] = eval_range(SO3F, ori.subSet(I));
+    warning_too_few_neighbors = warning_too_few_neighbors | warn_tfn;
+    warning_too_many_neighbors = warning_too_many_neighbors | warn_tmn;
   end
 
+end
+
+% print warnings, if any occured
+if (warning_too_few_neighbors)
+  warning(['Some centers did not have sufficiently many neighbors. ' ...
+    'In this case the numer of neighbors was set to the dimension of the ansatz space (%d).'], SO3F.dim);
+end
+if (warning_too_many_neighbors)
+  warning(['Some centers did have too many neighbors. ' ...
+    'In this case only the %d nearest neighbors have been used.'], ...
+    SO3F.dim * SO3F.oF_max);
 end
 
 % at this point the vals have the shape (numel(ori) x numel(SO3F))
