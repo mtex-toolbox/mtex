@@ -3,8 +3,8 @@ function S2F = approximate(f, varargin)
 %
 % Syntax
 %   S2F = S2FunMLS.approximate(f)
-%   S2F = S2FunMLS.approximate(f,S2G)
-%   S2F = S2FunMLS.approximate(f,'resolution',*degree)
+%   S2F = S2FunMLS.approximate(f, S2G)
+%   S2F = S2FunMLS.approximate(f, 'resolution', 5*degree)
 %
 % Input
 %  f     - @S2Fun, @function_handle
@@ -25,16 +25,16 @@ if isa(f,'function_handle')
 end
 
 % get grid
-S2G = getClass(varargin,'vector3d');
+S2G = getClass(varargin, 'vector3d');
 if isempty(S2G)
-  res = get_option(varargin,'resolution',5*degree);
-  S2G = vector3d(equispacedS2Grid(f.CS,f.SS,'resolution',res));
+  res = get_option(varargin, 'resolution', 5*degree);
+  S2G = vector3d(equispacedS2Grid(f.CS, f.SS, 'resolution', res));
 end
 
 % compute values
 v = f.eval(S2G);
 
 % construct MLS
-S2F = S2FunMLS(S2G,v,varargin{:});
+S2F = S2FunMLS(S2G, v, varargin{:});
 
 end
