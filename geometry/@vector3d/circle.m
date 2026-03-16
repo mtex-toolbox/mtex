@@ -32,6 +32,11 @@ for i = 1:length(normals)
   
   % generate circles
   c = axis2quat(n,(0:1:360)*degree) * axis2quat(orth(n),omega(i))*n;
+
+  % prevent multiple entries in the legend
+  if i == 2
+   varargin = delete_option(varargin,'Displayname',1);
+  end
   
   % plot circles
   h = [h,line(c,varargin{:},'hold','doNotDraw')]; %#ok<AGROW>
