@@ -25,7 +25,7 @@ if ~isnumeric(R), R = matrix(R); end
 T = reshape(T,1,[]);
 R = reshape(R,3,3,[]);
 
-% mulitply the tensor with respect to every dimension with the rotation
+% multiply the tensor with respect to every dimension with the rotation
 % matrix
 for d = 1:T.rank
   
