@@ -128,7 +128,7 @@ classdef SO3FunMLS < SO3Fun
         remaining_sizes = values_size(id+1 : end);
         values = reshape(values, [numel(nodes), remaining_sizes]);
       else
-        values = reshape(values, size(nodes));
+        values = reshape(values, [numel(nodes), 1]);
       end
       SO3F.values = values;
 

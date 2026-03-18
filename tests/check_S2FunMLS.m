@@ -135,7 +135,7 @@ errors(:, [2, 6, 10, 14]) = 0;
 disp('maximal errors: ');
 disp(max(errors, [], 1));
 disp('maximal condition numbers: ');
-disp(max(conds, [], 1));
+disp(max(mls_conds, [], 1));
 
 %% test annoying data - standard
 try 

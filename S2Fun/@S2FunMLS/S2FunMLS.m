@@ -139,7 +139,7 @@ classdef S2FunMLS < S2Fun
         remaining_sizes = values_size(id+1 : end);
         values = reshape(values, [numel(nodes), remaining_sizes]);
       else
-        values = reshape(values, size(nodes));
+        values = reshape(values, [numel(nodes), 1]);
       end
       S2F.values = values;
 
