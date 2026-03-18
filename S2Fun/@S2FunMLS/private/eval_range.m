@@ -10,6 +10,8 @@ conds = zeros(N, 1);
 ind = S2F.nodes.find(v, S2F.delta); 
 nn = sum(ind, 2);
 
+warn_smallnn = false;
+warn_bignn = false;
 
 % for points with too few neighbors, we instead choose the S2F.dim nearest ones
 % NOTE: the expectation of the lebesgue constant is infinite in this setting
