@@ -23,11 +23,14 @@ classdef directionColorKey < handle
         try
           dM.sym = sym.CS;
         catch
-          error('No symmetry specified!')
+          dM.sym = specimenSymmetry.default;
+          try
+            dM.sym.how2plot = sym.how2plot;
+          end
+          %error('No symmetry specified!')
         end
       end
-      
-      
+            
       if check_option(varargin,'antipodal'), dM.sym = dM.sym.Laue; end
       
       dM.sR = dM.sym.fundamentalSector;
