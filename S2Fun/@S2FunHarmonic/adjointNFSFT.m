@@ -116,7 +116,7 @@ end
 if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
   plan = nfsftmex('init_advanced', bw, numel(nodes), 1);
-  [theta,rho] = polar(nodes); %#ok<POLAR>
+  [theta,rho] = polar(nodes(:)); %#ok<POLAR>
   nfsftmex('set_x', plan, [rho(:).'; theta(:).']); % set vertices
 end
 
