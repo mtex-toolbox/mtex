@@ -1,4 +1,4 @@
-function [c,hD,vD,hDi,vDi,mvD,modeD,b]=stripstAr(g,bins,varargin)
+function [c,hD,vD,hDi,vDi,mvD,modeD,b] = stripStar(g,bins,varargin)
 % This function determines a distribution of 3D sphere diameters
 % from a list of 2d grain diameters, based on stripstar, by Renee Heilbronner
 % and astrip by Ondrej Lexa.
