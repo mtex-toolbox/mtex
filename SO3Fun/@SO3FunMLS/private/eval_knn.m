@@ -1,18 +1,11 @@
 function [vals, conds] = eval_knn(SO3F, ori, varargin)
 
-if (SO3F.nn < SO3F.dim)
-  SO3F.nn = 2 * SO3F.dim;
-  warning(sprintf(...
-    ['The specified number of neighbors nn was less than the dimension dim.\n\t ' ...
-    'nn has been set to 2 * dim.']));
-end
-
 ori = ori(:);
 N = numel(ori);
 nn = SO3F.nn;
 nn_total = nn * N;
  
-% find the neighbors, construct index vectors
+% Find neighbors and perform subsampling. If the flag is set, compute distances.
 [ind, dist] = SO3F.nodes.find(ori, nn);
 
 if (SO3F.subsample == true)
@@ -39,20 +32,15 @@ clear dist;
 
 % set up the right hand side
 grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
-f_book = reshape(grid_vals(grid_id,:), nn, N, numel(SO3F));
+f_book = permute(reshape(grid_vals(grid_id,:), nn, N, numel(SO3F)), [1, 3, 2]);
 if (SO3F.detectOutliers == true)
   oI = computeOutlierIndicators(SO3F); 
   oI = reshape(oI(grid_id), nn, N);
   weights = weights .* exp(-oI);
   clear oI grid_vals;
 end
-
-% normalize the maximum weight to 1
-% reason for the root is explained after the end of the following large if-block
-weights = sqrt(weights ./ max(weights, [], 1));
-fw_book = weights .* f_book;
-fw_book = permute(fw_book, [1, 3, 2]);
-clear f_book;
+W_book = permute(weights, [1, 3, 2]);
+clear weights;
 
 % Compute G_book. Each page contains the values of the basis at all neighbors. 
 % if CS is trivial and SO3F.centered is disabled, we can speed up things
@@ -86,49 +74,39 @@ else
   inv_oris = reshape(inv_oris(ori_id), size(SO3F.nodes(grid_id)));
   projected = project2FundamentalRegion(SO3F.nodes(grid_id), ori(ori_id));  % In case of 2 symmetries, we have to symmetrise here w.r.t. lower symmetry (done in eval routine) 
   rotneighbors = inv_oris .* projected;
-  clear inv_oris projected ori_id;
+  clear inv_oris projected;
 
   % evaluate for every ori all basis functions at all neighbors ...
   G = eval_basis_functions(SO3F, rotneighbors)';
   clear rotneighbors;
+
+  if (SO3F.antipodal && (mod(SO3F.degree, 2) == 1))
+    I = sum(ori.subSet(ori_id).abcd .* SO3F.nodes.subSet(grid_id).abcd, 2) < 0;
+    G(:,I) = G(:,I) * (-1);
+  end
+  clear ori_id;
+
   basis_in_pole = eval_basis_functions(SO3F, orientation.id);
-  % ... and also in the oris themselves
   g_book = repmat(basis_in_pole', 1, 1, N);
 end 
-G_book = reshape(G, SO3F.dim, nn, N);
+G_book = pagetranspose(reshape(G, SO3F.dim, nn, N));
 clear G grid_id;
 
-% don't solve the normal equations G'WGc = G'Wf (like cond(G)^2)
-% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
-% internally this uses QR and we end up with only cond(G), without the square!
+% solve the systems and evaluate
+if SO3F.regularize
+  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+    'regularize', 'maxcond', SO3F.maxcond, 'mincond', SO3F.mincond, ...
+    'basis_weights', SO3F.basis_weights, varargin{:});
+else
+  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+    varargin{:});
+end
+clear f_book G_book W_book;
 
-% B satisfies B' * B = G' * W * G
-B_book = G_book .* reshape(weights, [1, size(weights)]);
-clear G_book weights;
-
-% compute scaling factors for preconditioning the grams systems
-s_book = sqrt(sum(abs(B_book).^2, 2));
-
-% solve the rescaled systems and evaluate MLS
-c_book = pagemldivide(pagetranspose(B_book ./ s_book), fw_book) ./ s_book;
-
-
-
-clear fw_book;
-vals = sum(c_book .* g_book, 1);
-clear c_book g_book;
-
-% set correct output format
-vals = permute(vals, [3, 2, 1]);
+vals = permute(sum(c_book .* g_book, 1), [3, 2, 1]);
 
 if isalmostreal(SO3F.values)
   vals = real(vals);
-end
-
-if nargout == 2
-  eigs = pagesvd(B_book ./ s_book);
-  conds = eigs(1,:,:) ./ eigs(SO3F.dim,:,:);
-  conds = conds(:);
 end
 
 end

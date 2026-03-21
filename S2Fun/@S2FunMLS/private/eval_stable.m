@@ -6,7 +6,7 @@ function [vals, conds] = eval_stable(S2F, v, varargin)
 N = numel(v);
 
 % get nearest neighbors of each v in the subNodes
-ind = find_stable(S2F, v, S2F.stableFindOptions{:}, varargin{:});
+ind = find_stable(S2F, v, varargin{:});
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 nn_total = sum(nn);
@@ -87,7 +87,8 @@ clear col_id grid_vals grid_id;
 % 4 - solve and evaluate
 % ======================
 [c_book, conds] = solve_lsq_book_varsize(weights, G.', f, nn, ...
-  'regularize', S2F.regularizationOptions{:}, varargin{:});
+  'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
+  'basis_weights', S2F.basis_weights, varargin{:});
 vals = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
 if isalmostreal(S2F.values)

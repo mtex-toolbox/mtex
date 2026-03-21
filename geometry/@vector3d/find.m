@@ -63,6 +63,10 @@ lens = cellfun(@numel, ind);
 row_idx = repelem((1:numel(w)), lens);
 col_idx = cell2mat(ind');
 
+% if w has only 1 vector, then the index vectors are rows, which would cause
+%   angle to return a matrix with all cross-distances
+if (isscalar(w)), row_idx = row_idx(:); col_idx = col_idx(:); end 
+
 % if v or w was antipodal, we 'doubled' the grid to [v;-v] and must now
 %   'project' the indices down to the original grid v
 col_idx = mod(col_idx-1, orig_size) + 1;
@@ -73,6 +77,5 @@ if (nargout == 2)
   % d = real(acos(dot(v.subSet(col_idx), w.subSet(row_idx))));
 
   d = angle(v.subSet(col_idx), w.subSet(row_idx));
-  % also convert d to sparse after computing itntipo
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end

@@ -1,4 +1,4 @@
-function [grainsMerged,parentId] = merge(grains,varargin)
+function [grainsMerged,parentId,newInd] = merge(grains,varargin)
 % merge grains along special grain boundaries
 %
 % Whenever two grains share a grain boundary that is in the list |gB| both
@@ -77,7 +77,7 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
   elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) 
-    % adjecency matrix
+    % adjacency matrix
     
     % this supindexing is required as varargin{k} is only maxId x maxId
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
@@ -237,6 +237,10 @@ if check_option(varargin,'calcMeanOrientation')
 
   updateOriFun = get_option(varargin,'calcMeanOrientation');
     
+  if ischar(updateOriFun) && updateOriFun == "maxArea"
+    area = grains.area; 
+  end
+
   for i = newInd
     
     % compute new mean orientation
@@ -255,7 +259,18 @@ if check_option(varargin,'calcMeanOrientation')
       cs = grains.CSList{grains.phaseId(ind)};
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
       
-    else % compute the mean between the merged orientationss
+    elseif ischar(updateOriFun) && strcmpi(updateOriFun,'maxArea')
+
+      ind = find(parentId == i);
+      [~,hInd] = max(area(ind));
+      ind = ind(hInd);
+      
+      % take the host orientation for the merged grain
+      cs = grains.CSList{grains.phaseId(ind)};
+      oriNew = orientation(grains.prop.meanRotation(ind),cs);
+
+
+    else % compute the mean between the merged orientations
       
       ind = parentId == i;
       cs = grains.CSList{max(grains.phaseId(ind))};

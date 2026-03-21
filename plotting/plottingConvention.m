@@ -268,6 +268,50 @@ classdef plottingConvention < matlab.mixin.Copyable
     function pC = default3D
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
     end
+   
+   function pC = ij
+        % Map plotting conventions to match SEM image display and MATLAB 
+        % 'axis ij' reference frames.
+        % Use with import flag "convertEuler2SpatialReferenceFrame" for
+        % most modern SEM systems.
+        % Useful for producing comparable map plots in MTEX, 
+        % MATLAB and SEM/EBSD software.
+        %
+        % pC = plottingConvention.ij;
+        %
+        pC = plottingConvention(-vector3d.Z,vector3d.X);
+    end
+
+    function pC = edax(setting)
+        % Map plotting conventions to match EDAX Euler reference frame
+        % A1/A2/A3.
+        % Use with import flag "convertSpatial2EulerReferenceFrame" on
+        % EDAX systems.
+        % Useful for producing comparable orientation plots in MTEX and EDAX software.
+        %
+        % Input:
+        %  setting = edax setting number (numeric) (default = 2)
+
+        if nargin<1
+            setting = 2;
+            warning("No EDAX reference frame setting specified. Defaulting to setting 2.")
+        end
+        switch setting
+            case 1
+                outOfScreen = vector3d.Z;
+                east = vector3d.Y;
+            case 2
+                outOfScreen = vector3d.Z;
+                east = -vector3d.Y;
+            case 3
+                outOfScreen = vector3d.Z;
+                east = vector3d.X;
+            case 4
+                outOfScreen = vector3d.Z;
+                east = -vector3d.X;
+        end
+        pC = plottingConvention(outOfScreen,east);
+    end
 
   end
 

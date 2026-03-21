@@ -1,6 +1,4 @@
-function [vals, conds] = eval_range(S2F, v, varargin)
-
-% TODO: make this cleaner, throw away points after some threshold number 
+function [vals, conds, warn_smallnn, warn_bignn] = eval_range(S2F, v, varargin)
 
 % get parameters
 v = v(:);
@@ -12,15 +10,15 @@ conds = zeros(N, 1);
 ind = S2F.nodes.find(v, S2F.delta); 
 nn = sum(ind, 2);
 
+warn_smallnn = false;
+warn_bignn = false;
 
-% for points with too less neighbors, we instead choose the S2F.dim nearest ones
-% NOTE: we choose more neighbors than only the S2F.dim nearest ones, since the
-% expectation of the lebesgue constant is infinite in this setting
+% for points with too few neighbors, we instead choose the S2F.dim nearest ones
+% NOTE: the expectation of the lebesgue constant is infinite in this setting
 too_few_neighbors = nn <= S2F.dim;
 if (sum(too_few_neighbors) > 0)
-  warning(['Some centers did not have sufficiently many neighbors. ' ...
-    'In this case the numer of neighbors was set to the dimension of the ansatz space (%d).'], S2F.dim);
-  
+  warn_smallnn = true;
+
   % evaluate the critical nodes via knn-search instead of rangesearch
   delta_original = S2F.delta;
   oF_original = S2F.oF;
@@ -34,8 +32,8 @@ if (sum(too_few_neighbors) > 0)
   end
   vals(too_few_neighbors,:) = reshape(temp, sum(too_few_neighbors), numel(S2F));
 
-  S2F.delta = delta_original;
   S2F.oF = oF_original;
+  S2F.delta = delta_original;
 
   if (sum(too_few_neighbors) == N)
     return;
@@ -43,11 +41,9 @@ if (sum(too_few_neighbors) > 0)
 end
 
 % for points with too many neighbors, we choose only the S2F.dim * S2F.oF_max nearest ones
-too_many_neighbors = nn > S2F.dim * S2F.oF;
+too_many_neighbors = nn > S2F.dim * S2F.oF_max;
 if (sum(too_many_neighbors) > 0)
-  warning(['Some centers did have too many neighbors. ' ...
-    'In this case only the %d nearest neighbors have been used.'], ...
-        S2F.dim * S2F.oF_max);
+  warn_bignn = true;
 
   % evaluate the critical nodes via knn-search instead of rangesearch
   delta_original = S2F.delta;
@@ -62,8 +58,8 @@ if (sum(too_many_neighbors) > 0)
   end
   vals(too_many_neighbors,:) = reshape(temp, sum(too_many_neighbors), numel(S2F));
 
-  S2F.delta = delta_original;
   S2F.oF = oF_original;
+  S2F.delta = delta_original;
 
   if (sum(too_many_neighbors | too_few_neighbors) == N)
     return;
@@ -103,7 +99,6 @@ else
   iscvx = true(N, 1);
 end
 
-
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 nn_total = sum(nn);
@@ -114,7 +109,6 @@ if (S2F.subsample == true && S2F.stableFind == false)
   dist = angle(v.subSet(v_id), S2F.nodes.subSet(grid_id));
   dist = sparse(v_id, grid_id, dist, N, numel(S2F.nodes));
 end
-
 
 % compute for every center from v the matrix of all basis functions evaluated at
 %   all neighbors of this center 
@@ -142,21 +136,26 @@ else
   % compute the rotations that shift each element of v into the north pole
   rot = rotation.map(v, vector3d.Z);
   rot = rot(v_id);
+  % TODO: project to fundamental region?
   rotneighbors = rot .* S2F.nodes(grid_id);
+  clear rot;
 
   % determine which basis to use and evaluate it on the grid and on v
   basis_on_grid = eval_basis_functions(S2F, rotneighbors);
   clear rotneighbors;
   G = basis_on_grid.';
+  clear basis_on_grid;
+
+  % ensure correct representer for antipodal S2F with odd degree (same as above)
+  if (S2F.antipodal && (mod(S2F.degree, 2) == 1))
+    I = sum(v.subSet(v_id).xyz .* S2F.nodes.subSet(grid_id).xyz, 2) < 0;
+    G(:,I) = G(:,I) * (-1);
+  end
 
   basis_in_pole = eval_basis_functions(S2F, vector3d.Z);
   basis_in_v = repmat(basis_in_pole, N, 1);
 end
 G = G.';
-
-% dont solve the normal equations G'WGc = G'Wf (like cond(G)^2)
-% rather let matlab directly find min norm solution of sqrt(W) * (Gc-f)
-% internally this uses QR and we end up with only cond(G)
 
 % compute the weights
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
@@ -178,7 +177,8 @@ f = grid_vals(grid_id,:);
 
 if S2F.regularize
   [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, ...
-    'regularize', S2F.regularizationOptions{:}, varargin{:});
+    'regularize', 'maxcond', S2F.maxcond, 'mindond', S2F.mincond, ...
+    'basis_weights', S2F.basis_weights, varargin{:});
 else
   [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
 end

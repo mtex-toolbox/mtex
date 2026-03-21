@@ -4,12 +4,12 @@ function ind = find_stable(S2F, v, varargin)
 %   one neighbor in each quadrant with respect to this center
 
 % get parameters
-% number of voronoi neighbors we begin with
-nn_voronoi = get_option(varargin, {'nn_voronoi','nnvoronoi','nn voronoi'}, 64);
+% number of voronoi neighbors we begin with (32 ==> 8 centers per quadrant)
+nn_voronoi = get_option(varargin, {'nn_voronoi','nnvoronoi','nn voronoi'}, 32, 'double');
 % minimal number of neighbors we want per quadrant
-nn_min = get_option(varargin, {'nn_min','nnmin','nn min'}, S2F.dim);
+nn_min = get_option(varargin, {'nn_min','nnmin','nn min'}, S2F.dim, 'double');
 % use at most nn_max neighbors per quadrant
-nn_max = get_option(varargin, {'nn_max','nnmax','nn max'}, 2 * S2F.dim);
+nn_max = get_option(varargin, {'nn_max','nnmax','nn max'}, 2 * S2F.dim, 'double');
 
 N = numel(v);
 

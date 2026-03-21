@@ -47,10 +47,11 @@ if isa(f,'function_handle')
   f = S2FunHandle(f,sym);
 end
 
-if f.antipodal
-  f.antipodal = 0;
-  varargin{end+1} = 'antipodal';
-end
+% commented out - seems to be obsolete and leads to misbehaviour for S2FunMLS
+% if f.antipodal
+  % f.antipodal = 0;
+  % varargin{end+1} = 'antipodal';
+% end
 
 bw = get_option(varargin,'bandwidth', 128);
 
@@ -59,9 +60,6 @@ if check_option(varargin,'S2Grid')
 else
   S2G = quadratureS2Grid(bw,varargin{:});
 end
-
-% reshape grid into vector if f is S2FunMLS 
-if (isa(f, 'S2FunMLS')), S2G = reshape(S2G, [], 1); end
 
 % evaluate on S2Grid
 values = f.eval(S2G);

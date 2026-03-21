@@ -58,7 +58,7 @@ else
   % very robust
   options = optimoptions('linprog', 'Display','none', 'Algorithm','interior-point-legacy');
   warning(['linprog was set to use interior-point-legacy instead of primal-dual-simplex, ' ...
-    'since the latter throws the error'])
+    'since the latter throws an error.']);
 end
 
 c = S2F.eval_basis_functions(vector3d.Z);
@@ -72,7 +72,11 @@ rots = rotation.map(v, vector3d.Z);
 if (num_threads == 1)
   for i = 1 : N
     n = ns(i); 
-    b = ones(2*n, 1);
+    % b = ones(2*n, 1);
+    dists = angle(S2F.nodes.subSet(ind(i,:)), v.subSet(i));
+    maxdist = max(dists);
+    weights = S2F.w(dists ./ (maxdist * 1.1));
+    b = repmat(1 ./ weights, 2, 1);
 
     % now the vandermonde matrix
     rotneighbors = rots(i) * S2F.nodes.subSet(ind(i,:));
@@ -98,7 +102,11 @@ if (num_threads == 1)
 else
   parfor(i = 1 : N, num_threads)
     n = ns(i);
-    b = ones(2*n, 1);
+    % b = ones(2*n, 1);
+    dists = angle(S2F.nodes.subSet(ind(i,:)), v.subSet(i));
+    maxdist = max(dists);
+    weights = S2F.w(dists ./ (maxdist * 1.1));
+    b = repmat(1 ./ weights, 2, 1);
 
     % now the vandermonde matrix
     rotneighbors = rots(i) * S2F.nodes.subSet(ind(i,:));
