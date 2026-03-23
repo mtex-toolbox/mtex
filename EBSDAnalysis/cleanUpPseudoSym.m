@@ -1,5 +1,8 @@
 function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
-% cleanUpPseudoSym Corrects pseudo-symmetry artifacts using tortuosity.
+% cleanUpPseudoSym Corrects pseudo-symmetry artifacts in a single phase using tortuosity.
+% 
+% To clean up pseudo-symmetries in multiple phases, run this function
+% for each phase individually.
 %
 % Syntax
 %   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori, varargin)
@@ -7,7 +10,7 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 % Input
 %   ebsd   - @EBSD object
 %   grains - @grain2d object
-%   mori   - @orientation (can be an array of pseudo-symmetries)
+%   mori   - @rotation or @orientation (array of pseudo-symmetries, same CS and SS)
 %
 % Options
 %   'delta'     - Tolerance for boundary misorientation angle to match pseudo-symmetry (default: 2*degree)
@@ -18,11 +21,27 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 %   grainsM    - merged @grain2d object
 %   numChanged - number of pixels that changed orientation
 
+% 0. Validate Inputs
+if mori.CS ~= mori.SS
+    error('cleanUpPseudoSym:PhaseMismatch', ...
+          'Pseudo-symmetry misorientation must have identical crystal and specimen symmetry (mori.CS == mori.SS).');
+end
+
 % initialize output counter
 numChanged = 0;
 
+% Identify which phase ID we are correcting
+isTargetCS = cellfun(@(x) isa(x, 'symmetry') && x == mori.CS, ebsd.CSList);
+pseudoSym_phase_id = find(isTargetCS);
+
+if isempty(pseudoSym_phase_id)
+    warning('cleanUpPseudoSym:PhaseNotFound', 'The pseudo-symmetry phase was not found in the EBSD data.');
+    grainsM = grains;
+    return;
+end
+
 % select grain boundaries with the correct symmetry
-gB = grains.boundary(mori(1).CS, mori(1).CS);
+gB = grains.boundary(mori.CS, mori.CS);
 
 % select grain boundaries with the mori
 tol = get_option(varargin,'delta',2*degree);
@@ -55,20 +74,24 @@ ind = ebsd.grainId > 0;
 ebsd.grainId(ind) = parentId(grains.id2ind(ebsd.grainId(ind)));
 
 % array of all possible operators: [identity, mori_1, mori_2, ...]
-id_op = orientation.id(mori(1).CS,mori(1).CS); 
+id_op = orientation.id(mori.CS,mori.CS); 
 all_ops = [id_op, transpose(mori(:))];
 
-% identify ebsd points belonging to the newly merged grains
+% identify ebsd points belonging to the newly merged grains AND the target phase
 updated_grain_ids = grainsM.id(newInd);
 is_merged_pt = ismember(ebsd.grainId, updated_grain_ids);
-merged_pts = find(is_merged_pt);
+is_target_phase = (ebsd.phaseId == pseudoSym_phase_id);
 
-if ~isempty(merged_pts)
+% Combine conditions to get the exact pixels to evaluate
+valid_pts_mask = is_merged_pt & is_target_phase;
+valid_pts = find(valid_pts_mask);
+
+if ~isempty(valid_pts)
   % extract orientations of merged points and their new grain mean orientations
-  ori = ebsd.orientations(merged_pts);
+  ori = ebsd(valid_pts).orientations;
   
-  grain_inds = grainsM.id2ind(ebsd.grainId(merged_pts));
-  mean_oris = grainsM.meanOrientation(grain_inds);
+  grain_inds = grainsM.id2ind(ebsd.grainId(valid_pts));
+  mean_oris = grainsM(grain_inds).meanOrientation;
   
   % calculate distances for all operators simultaneously
   dists = angle(ori .* all_ops, mean_oris);
@@ -88,6 +111,6 @@ if ~isempty(merged_pts)
   end
   
   % update EBSD orientations
-  ebsd.orientations(merged_pts) = ori;
+  ebsd(valid_pts).orientations = ori;
 end
 end
