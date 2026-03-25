@@ -67,10 +67,14 @@ while true
   alpha = (alpha < 0)+(alpha >= 0).*alpha;
 % step length by linesearch{{{
   f0 = sF.eval(v);
-  vd = diag(cos(normd))*v+diag(sin(normd)./normd)*d;
+  sn = sin(normd)./normd;
+  sn(normd==0) = 1;
+  vd = v .* cos(normd) + d .* sn;
   g = dot(G.eval(vd), d);
   for kLS = 1:kmaxLS
-    valphad = diag(cos(alpha.*normd))*v+diag(sin(alpha.*normd)./normd)*d;
+    san = sin(alpha.*normd)./normd;
+    san(normd==0) = alpha(normd==0);
+    valphad = v .* cos(alpha.*normd) + d .* san;
     f = sF.eval(valphad);
     allgood = true;
     for ii = 1:length(v)
@@ -99,7 +103,7 @@ while true
   H(1, :, :) = [DV(:, 3) DV(:, 4)-DV(:, 2).*cot(v.theta)]';
   H(2, :, :) = [DV(:, 4)-DV(:, 2).*cot(v.theta) DV(:, 5)+DV(:, 1).*sin(v.theta).*cos(v.theta)]';
 
-  dtilde = diag(-sin(alpha.*normd).*normd)*vold+diag(cos(alpha.*normd))*d;
+  dtilde = vold .* (-sin(alpha.*normd).*normd) + d .* cos(alpha.*normd);
 
   if mod(k, 2) ~= 0
     betan = []; betad = [];
@@ -107,8 +111,12 @@ while true
       betan(ii) = [g(ii).theta g(ii).rho]*H(:, :, ii)*[dtilde(ii).theta; dtilde(ii).rho];
       betad(ii) = [dtilde(ii).theta dtilde(ii).rho]*H(:, :, ii)*[dtilde(ii).theta; dtilde(ii).rho];
     end
-    d = -g+diag((abs(betad) > 0).*betan./betad)*dtilde;
-    d = diag(double(dot(g, d) >= 0))*(-g)+diag(double(dot(g, d) < 0))*d; % enforce descent direction
+    beta = zeros(size(betad));
+    id = abs(betad) > 0;
+    beta(id) = betan(id)./betad(id);
+    d = -g + dtilde .* beta;
+    m = double(dot(g, d) >= 0);
+    d = (-g) .* m + d .* (1-m); % enforce descent direction
   else
     d = -g;
   end
