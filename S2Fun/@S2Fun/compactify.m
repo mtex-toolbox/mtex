@@ -1,4 +1,4 @@
-function v = compactify(f,varargin)
+function [v,c] = compactify(f,varargin)
 % compute the compactification of an given function on the Sphere.
 % That means, we try to find a in some sense optimal set of orientations,
 % that describes the given density function reasonable well.
@@ -33,12 +33,15 @@ function v = compactify(f,varargin)
 %  bandwidth - harmonic degree to approximate (default = 128)
 %  maxIter - for gradient descent (default = 5000)
 %  tol - for gradient descent (default = 5e-4)
+%  weights - weights of points
 %
 %
 
+
+% polynomials should be integrated exactly until this bandwidth
+bw = get_option(varargin,'bandwidth',128);
 
 % load density function
-bw = get_option(varargin,'bandwidth',128);
 f = S2FunHarmonic(f,'bandwidth',bw);
 f.bandwidth = bw;
 
@@ -56,10 +59,15 @@ v = v(:);
 maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',5e-4);
 
-% Restricted Distance Kernel
-n=(0:bw+1);
+% Define Restricted Distance Kernel
+n = (0:bw+1);
+% In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); is the same as S2KernelHandle(@(x) -2*sin(acos(x)/2)) in MTEX other normalization of coeffs 
 psi = S2Kernel(16*pi./((2*n+1).*(2*n-1).*(2*n+3)));
-lambda = sum(f)/M;
+
+% Get integral (mean) weight lambda and the weights-vector for the points
+lambda = sum(f);
+c = get_option(varargin,'weights',ones(M,1)/M);
+
 
 
 % initialize NFSFT
@@ -68,11 +76,11 @@ plan1 = nfsftmex('init_advanced',bw,M,1);
 plan2 = nfsftmex('init_advanced',bw+1,M,1);
 
 % gradient method
-resOld = J(v,f,psi,lambda,plan1);
+resOld = J(v,c,f,psi,lambda,plan1);
 for i = 1:maxIter
 
   % compute gradient of the functional
-  g = grad_J(v,f,psi,lambda,plan1,plan2);
+  g = grad_J(v,c,f,psi,lambda,plan1,plan2);
   gNorm = sqrt(sum(norm(g).^2));
 
   % line search with Armijo
@@ -80,7 +88,7 @@ for i = 1:maxIter
   while true
     vNew = cos(stepSize)*v - sin(stepSize)*g; % TODO: check gradient step
     
-    resNew = J(vNew,f,psi,lambda,plan1);
+    resNew = J(vNew,c,f,psi,lambda,plan1);
 
     if resNew <= resOld - 1e-4*stepSize*gNorm.^2 % Armijo Condition
       break;
@@ -112,13 +120,13 @@ nfsftmex('finalize', plan2);
 end
 
 
-function res = J(v,f,psi,lambda,plan1)
+function res = J(v,c,f,psi,lambda,plan1)
     [theta,rho] = polar(v(:)); %#ok<POLAR>
 
     % adjoint NFSFT
     nfsftmex('set_x', plan1, [rho(:).'; theta(:).']);
     nfsftmex('precompute_x',plan1);
-    nfsftmex('set_f',plan1,ones(length(v),1));
+    nfsftmex('set_f',plan1,c);
     nfsftmex('adjoint',plan1);
     chat = nfsftmex('get_f_hat_linear',plan1);
     C = lambda*S2FunHarmonic(chat);
@@ -133,13 +141,13 @@ end
 
 
 
-function tanV = grad_J(v,f,psi,lambda,plan1,plan2)
+function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
     [theta,rho] = polar(v(:)); %#ok<POLAR>    
     
     % adjoint NFSFT 
     nfsftmex('set_x',plan1,[rho(:).'; theta(:).']);
     nfsftmex('precompute_x',plan1);
-    nfsftmex('set_f',plan1,ones(length(v),1));
+    nfsftmex('set_f',plan1,c);
     nfsftmex('adjoint',plan1)
     chat = nfsftmex('get_f_hat_linear',plan1);
     C = lambda*S2FunHarmonic(chat);
@@ -161,9 +169,10 @@ function tanV = grad_J(v,f,psi,lambda,plan1,plan2)
         tanV(:,i) = nfsftmex('get_f',plan2);
     end
 
-    tanV = 2*lambda*real(vector3d(tanV).');
+    tanV = 2*lambda*real(vector3d(tanV).').*c;
 
 end
+
 
 
 
