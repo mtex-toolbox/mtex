@@ -48,6 +48,8 @@ f.bandwidth = bw;
 M = get_option(varargin,'points',1000);
 if isa(M,'vector3d')
   v = M;
+elseif f.antipodal
+  v = equispacedS2Grid('points',M,'antipodal')';
 else
   v = equispacedS2Grid('points',M)';
   %v = discreteSample(f,M);
@@ -57,7 +59,7 @@ v = v(:);
   
 % specify parameters for gradient method
 maxIter = get_option(varargin,'maxIter',1000);
-tol = get_option(varargin,'tol',5e-6);
+tol = get_option(varargin,'tol',5e-4);
 
 % Define Restricted Distance Kernel
 n = (0:bw+1);
