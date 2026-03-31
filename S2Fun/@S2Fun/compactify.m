@@ -62,10 +62,9 @@ maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',5e-4);
 
 % Define Restricted Distance Kernel
-n = (0:bw+1);
 % In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); 
 % is the same as S2KernelHandle(@(x) -2*sin(acos(x)/2)) in MTEX other normalization of coeffs 
-psi = S2Kernel(16*pi./((2*n+1).*(2*n-1).*(2*n+3)));
+psi = S2RestrictedDistanceKernel(bw+1);
 if f.antipodal, psi.A(2:2:end) = 0; end
 
 
@@ -138,7 +137,7 @@ function res = J(v,c,f,psi,lambda,plan1)
     C = lambda*S2FunHarmonic(chat);
 
     % convolute with Distance kernel
-    psi = S2Kernel( (2*(0:psi.bandwidth)+1).*sqrt(psi.A) );
+    psi = S2Kernel( sqrt(4*pi*(2*(0:psi.bandwidth)+1)).*sqrt(psi.A) );
     C = conv(C-f,psi);
     
     % l2-norm
@@ -159,7 +158,7 @@ function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
     C = lambda*S2FunHarmonic(chat);
 
     % convolute with Distance kernel
-    psi = S2Kernel( (2*(0:psi.bandwidth)+1).*psi.A );
+    psi = 4*pi*psi;
     C = conv(C-f,psi);
        
     % compute spherical gradient
