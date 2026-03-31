@@ -6,7 +6,7 @@ classdef S2RestrictedDistanceKernel < S2Kernel
 % for $t\in[0,1]$. 
 % This kernel is negative and describes the distance between two given
 % vector3d's, by K.eval(dot(v_1,v_2)).
-% It is used in the compactify method o ensure that the points repel each 
+% It is used in the compactify method to ensure that the points repel each 
 % other and do not overlap.
 %
 % Syntax

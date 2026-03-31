@@ -130,7 +130,7 @@ function res = J(v,c,f,psi,lambda,plan1)
 
     % adjoint NFSFT
     nfsftmex('set_x', plan1, [rho(:).'; theta(:).']);
-    nfsftmex('precompute_x',plan1);
+    % nfsftmex('precompute_x',plan1);
     nfsftmex('set_f',plan1,c);
     nfsftmex('adjoint',plan1);
     chat = nfsftmex('get_f_hat_linear',plan1);
@@ -151,7 +151,7 @@ function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
     
     % adjoint NFSFT 
     nfsftmex('set_x',plan1,[rho(:).'; theta(:).']);
-    nfsftmex('precompute_x',plan1);
+    % nfsftmex('precompute_x',plan1);
     nfsftmex('set_f',plan1,c);
     nfsftmex('adjoint',plan1)
     chat = nfsftmex('get_f_hat_linear',plan1);
@@ -167,7 +167,7 @@ function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
     % compute NFSFT componentwise
     tanV = zeros(length(v),3);
     nfsftmex('set_x',plan2,[rho(:).'; theta(:).']);
-    nfsftmex('precompute_x',plan2);
+    % nfsftmex('precompute_x',plan2);
     for i = 1:3
         nfsftmex('set_f_hat_linear',plan2,g.sF.fhat(:,i));
         nfsftmex('trafo',plan2);
