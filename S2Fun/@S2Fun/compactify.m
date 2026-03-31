@@ -1,13 +1,13 @@
 function [v,c] = compactify(f,varargin)
-% compute the compactification of an given function on the Sphere.
-% That means, we try to find a in some sense optimal set of orientations,
-% that describes the given density function reasonable well.
-% This is similar to the so called halftoning problem.
+% compute the compactification of an given function on the Sphere. That
+% means, we try to find a in some sense optimal set of orientations, that
+% describes the given density function reasonable well. This is similar to
+% the so called halftoning problem.
 %
-% Therefore, we solve a minimization problem by gradient descent method to 
-% find a set of orientations, such that the corresponding worst case 
-% quadrature error with respect to all spherical polynomials up to some 
-% specified bandwidth is minimal. 
+% Therefore, we solve a minimization problem by gradient descent method to
+% find a set of orientations, such that the corresponding worst case
+% quadrature error with respect to all spherical polynomials up to some
+% specified bandwidth is minimal.
 %
 % For more details, see 
 % 
@@ -37,7 +37,6 @@ function [v,c] = compactify(f,varargin)
 %
 %
 
-
 % polynomials should be integrated exactly until this bandwidth
 bw = get_option(varargin,'bandwidth',128);
 
@@ -51,24 +50,26 @@ if isa(M,'vector3d')
   v = M;
 else
   v = equispacedS2Grid('points',M)';
+  %v = discreteSample(f,M);
 end
 M = numel(v);
 v = v(:);
   
 % specify parameters for gradient method
 maxIter = get_option(varargin,'maxIter',1000);
-tol = get_option(varargin,'tol',5e-4);
+tol = get_option(varargin,'tol',5e-6);
 
 % Define Restricted Distance Kernel
 n = (0:bw+1);
-% In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); is the same as S2KernelHandle(@(x) -2*sin(acos(x)/2)) in MTEX other normalization of coeffs 
+% In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); 
+% is the same as S2KernelHandle(@(x) -2*sin(acos(x)/2)) in MTEX other normalization of coeffs 
 psi = S2Kernel(16*pi./((2*n+1).*(2*n-1).*(2*n+3)));
+if f.antipodal, psi.A(2:2:end) = 0; end
 
-% Get integral (mean) weight lambda and the weights-vector for the points
+
+% get integral (mean) weight lambda and the weights-vector for the points
 lambda = sum(f);
 c = get_option(varargin,'weights',ones(M,1)/M);
-
-
 
 % initialize NFSFT
 nfsftmex('precompute', bw+1, 1000, 1, 0);
@@ -77,8 +78,9 @@ plan2 = nfsftmex('init_advanced',bw+1,M,1);
 
 % gradient method
 resOld = J(v,c,f,psi,lambda,plan1);
-for i = 1:maxIter
 
+pC = progressCounter(maxIter);
+for i = 1:maxIter
   % compute gradient of the functional
   g = grad_J(v,c,f,psi,lambda,plan1,plan2);
   gNorm = sqrt(sum(norm(g).^2));
@@ -111,6 +113,8 @@ for i = 1:maxIter
   % update
   v = vNew;
   resOld = resNew;
+
+  pC.show(i)
 
 end
 
@@ -172,33 +176,6 @@ function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
     tanV = 2*lambda*real(vector3d(tanV).').*c;
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
