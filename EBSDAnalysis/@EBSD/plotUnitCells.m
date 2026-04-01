@@ -2,6 +2,23 @@ function h = plotUnitCells(ebsd,d,varargin)
 % low level plotting routine for EBSD maps
 %
 
+if check_option(varargin,'imagesc')
+  [gPos,d] = quickSquarify(ebsd,d,varargin{:});
+  h = plotImagesc(gPos,d,varargin{:});
+  return
+elseif numel(ebsd.unitCell)==4 && ~check_option(varargin,'unitCell')
+  
+  [mesh,ind] = calcMesh(ebsd.pos,ebsd.unitCell,varargin{:});
+
+  % transform data to mesh
+  dMesh = nan([numel(mesh),size(d,2)]);
+  dMesh(ind,:) = d;
+  dMesh = reshape(dMesh,[size(mesh),size(d,2)]);
+
+  h = plotSurf(mesh,dMesh,ebsd.unitCell,varargin{:});
+  return
+end
+
 unitCell = ebsd.unitCell;
 
 pos = ebsd.pos;
