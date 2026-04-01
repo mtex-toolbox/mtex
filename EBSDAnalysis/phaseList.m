@@ -286,7 +286,16 @@ classdef phaseList
     end
     
     function out = numel(pL)
-      out = size(pL.phaseId,1);
+      %st = dbstack('-completenames');
+      st = dbstack(1);
+      %assignin("base","st",st);
+      if ~isempty(st) && (strcmp(st(1).name,'resolveVariableSize') || ...
+          strcmp(st(1).name,'VEDataAttributes.VEDataAttributes'))
+        out = 1;
+      else        
+        out = size(pL.phaseId,1);
+        %out = 1;
+      end
     end
 
     function out = length(pL)
