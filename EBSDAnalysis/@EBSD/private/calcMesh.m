@@ -3,7 +3,7 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 %
 % Input
 %  pos - @vector3d
-%  uC  - unitCell  
+%  uC  - unitCell  @vector3d
 %
 % Output
 %  mesh - @vector3d

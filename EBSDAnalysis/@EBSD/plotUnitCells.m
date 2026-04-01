@@ -2,26 +2,10 @@ function h = plotUnitCells(ebsd,d,varargin)
 % low level plotting routine for EBSD maps
 %
 
-if check_option(varargin,'imagesc')
-  [gPos,d] = quickSquarify(ebsd,d,varargin{:});
-  h = plotImagesc(gPos,d,varargin{:});
-  return
-elseif numel(ebsd.unitCell)==4 && ~check_option(varargin,'unitCell')
-  
-  [mesh,ind] = calcMesh(ebsd.pos,ebsd.unitCell,varargin{:});
-
-  % transform data to mesh
-  dMesh = nan([numel(mesh),size(d,2)]);
-  dMesh(ind,:) = d;
-  dMesh = reshape(dMesh,[size(mesh),size(d,2)]);
-
-  h = plotSurf(mesh,dMesh,ebsd.unitCell,varargin{:});
-  return
-end
-
 unitCell = ebsd.unitCell;
-
 pos = ebsd.pos;
+alpha = get_option(varargin,'faceAlpha');
+
 if check_option(varargin,'region')
   
   reg = get_option(varargin,'region');
@@ -33,8 +17,37 @@ if check_option(varargin,'region')
   if numel(d) == numel(ind) || numel(ind) == size(d,1)
     d = d(ind,:);
   end
-    
+  
+  if numel(alpha) == numel(ind)
+    alpha = alpha(ind);
+  end
 end
+
+if numel(unitCell)==4 && ~check_option(varargin,'unitCell')
+  
+  [mesh,ind] = calcMesh(pos,unitCell,varargin{:});
+
+  % transform data to mesh
+  dMesh = nan([numel(mesh),size(d,2)]);
+  if size(d,1) == 1
+    dMesh(ind,:) = repmat(d,nnz(ind),1);
+  else
+    dMesh(ind,:) = d;
+  end
+  
+  dMesh = reshape(dMesh,[size(mesh),size(d,2)]);
+
+  % transform alpha to mesh  
+  if numel(alpha) > 1
+    meshAlpha = ones(size(mesh));
+    meshAlpha(ind) = alpha;
+    varargin = set_option(varargin,'faceAlpha',meshAlpha);  
+  end
+
+  h = plotSurf(mesh,dMesh,ebsd.unitCell,varargin{:});
+  return
+end
+
 
 ax = get_option(varargin,'parent',gca);
 
@@ -52,15 +65,14 @@ if numel(d) == length(pos) || numel(d) == 3*length(pos)
 
   obj.FaceVertexCData = reshape(d,length(pos),[]);
   
-  if check_option(varargin,{'transparent','translucent','faceAlpha'})
-  
-    s = get_option(varargin,{'transparent','translucent','faceAlpha'},1,'double');
+  if numel(alpha) == numel(pos)
+    
     varargin = delete_option(varargin,'faceAlpha');
   
     if size(d,2) == 3 % rgb
-      obj.FaceVertexAlphaData = s.*(1-min(d,[],2));
+      obj.FaceVertexAlphaData = alpha.*(1-min(d,[],2));
     else
-      obj.FaceVertexAlphaData = s.*d./max(d);
+      obj.FaceVertexAlphaData = alpha.*d./max(d);
     end
     obj.AlphaDataMapping = 'none';
     obj.FaceAlpha = 'flat';  

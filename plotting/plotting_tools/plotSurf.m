@@ -17,17 +17,27 @@ if check_option(varargin,'region')
 
 end
 
-alpha = get_option(varargin,'FaceAlpha',~isnan(d(:,:,1)));
-
 % for surf we have to extend the positions
 posExt = [pos,pos(:,end) + uC(4) - uC(1)];
 posExt = [posExt;posExt(end,:) + uC(2) - uC(1)];
 posExt = posExt + uC(1);
 
+% extent data
 dExt = [d,d(:,end,:)]; dExt = [dExt;dExt(end,:,:)];
 
+% extent alpha
+alpha = get_option(varargin,'faceAlpha');
+if numel(alpha) == numel(pos)
+  alpha = [alpha,alpha(:,end)]; alpha = [alpha;alpha(end,:)];
+  opt = {'alphaData',alpha,'FaceAlpha','flat'};
+  varargin = delete_option(varargin,'faceAlpha',1);
+else
+  opt = {};
+end
+
 hold on
-h = surf(posExt.x,posExt.y,posExt.z,dExt,'parent',ax,'alphaData',alpha,'EdgeColor','none');
+h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt,'parent',ax,...
+  'EdgeColor','none',opt{:}),varargin{:});
 hold off
 
 end
