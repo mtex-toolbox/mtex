@@ -29,7 +29,7 @@ if strcmp(s(1).type,'()') && ...
     length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'orientations')
   
   ind = subsind(ebsd,s(1).subs);
-  phaseId = checkSinglePhase(ebsd,ebsd.phaseId(ind));
+  phaseId = checkSinglePhase(ebsd,ebsd.phaseId(ind(:)));
 
   ori = orientation(ebsd.rotations(ind),ebsd.CSList{phaseId});
 
