@@ -257,7 +257,7 @@ classdef phaseList
 
       ind = pL.indexedPhasesId;
       for k = pL.indexedPhasesId
-        color = pL.CSList{ind}.color;
+        color = pL.CSList{ind}.color; %#ok<*PROP>
         if isempty(color), color = colors{ind}; end
         if ischar(color), color = str2rgb(color); end
         cList(ind,:) = color;
@@ -328,7 +328,7 @@ classdef phaseList
       if nargin == 1, phaseId = pL.phaseId; end
 
       % ignore nan
-      phaseId = phaseId(~any(isnan(phaseId),2),:);
+      phaseId = phaseId(all(phaseId>0,2),:);
       
       % ignore not indexed
       notIndexed = find(cellfun('isclass',pL.CSList,'char'));
