@@ -277,7 +277,8 @@ plot(ebsd('olivine'), rgb)
 
 colorKey.polarizer = vector3d.X; 
 figure
-plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori),'micronbar','off');
+plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori),...
+  'micronbar','off','unitCell');
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
