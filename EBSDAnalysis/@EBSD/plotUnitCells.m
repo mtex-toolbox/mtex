@@ -25,6 +25,17 @@ end
 
 if numel(unitCell)==4 && ~check_option(varargin,'unitCell')
   
+  % convert string to color if required
+  d = get_option(varargin,'FaceColor',d);
+  varargin = delete_option(varargin,'FaceColor',1);
+  if ischar(d) || isstring(d)
+    if d == "none"
+      d = nan(1,3);
+    else
+      d = str2rgb(d);
+    end
+  end
+
   [mesh,ind] = calcMesh(pos,unitCell,varargin{:});
 
   % transform data to mesh
