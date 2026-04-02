@@ -35,9 +35,10 @@ else
   opt = {};
 end
 
-hold on
-h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt,'parent',ax,...
+holdState = ishold(ax);
+hold(ax,"on")
+h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt(:,:,:),'parent',ax,...
   'EdgeColor','none',opt{:}),varargin{:});
-hold off
+if ~holdState, hold(ax,"off"); end
 
 end
