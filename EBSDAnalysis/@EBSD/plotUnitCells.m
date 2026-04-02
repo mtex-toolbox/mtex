@@ -39,6 +39,7 @@ if numel(unitCell)==4 && ~check_option(varargin,'unitCell')
   [mesh,ind] = calcMesh(pos,unitCell,varargin{:});
 
   % transform data to mesh
+  d = reshape(d,size(d,1),[]);
   dMesh = nan([numel(mesh),size(d,2)]);
   if size(d,1) == 1
     dMesh(ind,:) = repmat(d,nnz(ind),1);
