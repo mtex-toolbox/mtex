@@ -31,7 +31,7 @@ nd = sparse(length(ebsd),size(xy,1));
 for k=1:size(xy,1)
   
   candit = find(all(x_Dm <= xy(k,:) & x_Dp >= xy(k,:),2));
-  dist = sqrt(sum(x_D(candit,:) - xy(k,:).^2,2));
+  dist = sqrt(sum((x_D(candit,:) - xy(k,:)).^2,2));
   [~, i] = min(dist);
   nd(candit(i),k) = 1;
   
