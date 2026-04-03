@@ -12,6 +12,13 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 %
 % Options
 
+
+% the unit cell should be like this in y↓→x
+% uC(1) -> uC(4)
+%   |       |
+% uC(2) <- uC(3)
+%
+
 u = uC(2) - uC(1);
 v = uC(4) - uC(1);
 
@@ -35,15 +42,16 @@ ind = sub2ind([nI,nJ],I+1,J+1);
 idealMesh = p0 + (ii-1) * u + (jj-1)*v;
 
 % maybe the ideal grid is sufficiently good
-if mean(norm(idealMesh(ind) - pos)) / mean(norm(uC)) < 1e-2
+if mean(norm(reshape(idealMesh(ind),[],1) - pos)) / mean(norm(uC)) < 1e-2
   mesh = idealMesh;
+  mesh(ind) = pos;
   return
 end
 
 % otherwise we interpolate the deformation
 
 % observed matrices
-mesh = vector3d.nan(size(idealMesh));
+mesh = vector3d.nan(size(idealMesh),pos.how2plot);
 mesh(ind) = pos;
 
 known = ~isnan(mesh);
