@@ -56,7 +56,7 @@ hold off
 
 ebsd = ebsd.gridify;
 
-plot(ebsd,ebsd.orientations,'micronbar','off')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black')
 
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
 str = arrayfun(@(a,b) ['(' int2str(a) ',' int2str(b) ')'],i,j,'UniformOutput',false);
@@ -76,7 +76,7 @@ hold off
 % measurements. They are now sorted such that rows runs first and columns
 % second, as this is the default convention how Matlab indexes matrices.
 
-plot(ebsd,ebsd.orientations,'micronbar','off')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black')
 text(ebsd,1:length(ebsd))
 
 
@@ -88,7 +88,6 @@ text(ebsd,1:length(ebsd))
 mtexdata titanium silent
 
 ebsd = ebsd.gridify
-
 
 %%
 % This rearranges the measurements in a matrix form which can be indexed
