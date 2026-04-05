@@ -39,6 +39,8 @@ set(ax,'XDir','rev','YDir','rev',...
   'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
 view(3);
 
+ax.ColorOrderIndex = 1;
+
 if nargout == 0, clear h;end
 
 end

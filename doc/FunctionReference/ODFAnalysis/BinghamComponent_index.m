@@ -1,1 +1,0 @@
-%% BinghamComponent_index.m

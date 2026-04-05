@@ -16,7 +16,8 @@ classdef SO3FunCBF < SO3Fun
 %  SO3F - @SO3FunCBF
 %
 % Example
-%   
+%
+%   cs = crystalSymmetry.load("Mg-Magnesium.cif");
 %   fibre = fibre.beta(cs);
 %   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
 %
@@ -27,13 +28,14 @@ classdef SO3FunCBF < SO3Fun
     psi = S2DeLaValleePoussinKernel('halfwidth',10*degree);
     weights = 1;
     % TODO: antipodal wird weder erkannt noch gesetzt/verwendet
-    antipodal = false
+    antipodal = false;
   end
 
   properties (Dependent = true)
     SLeft
     SRight
     bandwidth % harmonic degree
+    isReal
   end
   
   methods
@@ -61,7 +63,7 @@ classdef SO3FunCBF < SO3Fun
 
       hw = get_option(varargin,'halfwidth',10*degree);
       SO3F.psi = getClass(varargin,'S2Kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
-      SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+      SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
                   
     end
     
@@ -81,7 +83,7 @@ classdef SO3FunCBF < SO3Fun
         try
           SRight = SO3F.h.opt.sym;
         catch
-          SRight = specimenSymmetry;
+          SRight = specimenSymmetry.default;
         end
       end
     end
@@ -102,7 +104,7 @@ classdef SO3FunCBF < SO3Fun
         try
           SLeft = SO3F.r.opt.sym;
         catch
-          SLeft = specimenSymmetry;
+          SLeft = specimenSymmetry.default;
         end
       end
     end
@@ -114,7 +116,16 @@ classdef SO3FunCBF < SO3Fun
     function SO3F = set.bandwidth(SO3F,L)
       SO3F.psi.bandwidth = L;
     end
-        
+    
+    function out = get.isReal(f)
+      out = isreal(f.weights);
+    end
+  
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.weights = real(F.weights);
+    end
+
   end 
   
   methods (Static = true)

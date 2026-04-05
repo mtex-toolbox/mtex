@@ -68,7 +68,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % relationship.
 
 close all
-histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+histogram(job.calcGBFit./degree,'BinMethod','sqrt','EdgeColor','auto')
 xlabel('disorientation angle')
 
 job.calcParent2Child
@@ -86,7 +86,7 @@ job.calcParent2Child
 % grain to grain misorientations.
 
 hold on
-histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+histogram(job.calcGBFit./degree,'BinMethod','sqrt','EdgeColor','auto')
 hold off
 
 %%
@@ -126,7 +126,7 @@ hold off
 % at which the probability is exactly 50 percent and the standard deviation
 % |'tolerance'|.
 
-job.calcVariantGraph('threshold',3.5*degree,'tolerance',2.5*degree)
+job.calcVariantGraph('threshold',3.5*degree,'tolerance',3.5*degree,'tortuosity')
 
 %%
 % For large maps it can be useful to perform the segmentation in a two step
@@ -165,7 +165,8 @@ mtexColorbar
 % Lets reconstruct all parent orientations where the probability is above
 % 50 percent.
 
-job.calcParentFromVote('minProb',0.5)
+%job.calcParentFromVote('minProb',0.5)
+job.calcParentFromVote
 
 % plot the result
 plot(job.parentGrains,job.parentGrains.meanOrientation)
@@ -188,7 +189,7 @@ job.selectInteractive
 % from the surrounding already reconstructed parent grains. 
 
 % compute the votes
-job.calcGBVotes('p2c','reconsiderAll','threshold',3*degree,'tolerance',1.5*degree)
+job.calcGBVotes('p2c','reconsiderAll','threshold',4*degree,'tolerance',1.5*degree,'tortuosity')
 
 % assign parent orientations according to the votes
 job.calcParentFromVote

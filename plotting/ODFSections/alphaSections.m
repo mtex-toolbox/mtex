@@ -41,7 +41,7 @@ classdef alphaSections < ODFSections
 
     function ori = makeGrid(oS,varargin)
 
-      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.plotGrid = plotS2Grid(oS.sR,'plain',varargin{:});
       oS.gridSize = (0:numel(oS.alpha)) * length(oS.plotGrid);
       gamma = repmat(oS.plotGrid.rho,[1,1,numel(oS.alpha)]);
       beta = repmat(oS.plotGrid.theta,[1,1,numel(oS.alpha)]);

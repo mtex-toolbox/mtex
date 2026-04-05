@@ -25,6 +25,13 @@ if ischar(name)
       error('unknown colormap name');      
     end
   end
+  if strcmp(name,'zero2whiteColorMap')
+    for i = 1:length(ax)
+      map = feval(name,ax(i).CLim);
+      colormap(ax(i),map); 
+    end
+    return
+  end
   try
     map = feval(name);
   catch

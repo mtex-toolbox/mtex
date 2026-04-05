@@ -1,0 +1,77 @@
+classdef S2FunBingham < S2Fun
+  
+  properties
+    a  % principle axes
+    Z  % smoothing parameters
+    s  % reference system
+    isReal = 1;
+  end
+  
+  properties (SetAccess=protected)
+    N = 1   % normalization constant
+    antipodal = 1
+    cEllipse = []
+  end
+  
+  
+  methods
+    function BS2 = S2FunBingham(Z,a,sym)
+      %
+      % Description
+      %  defines a spherical Bingham distribution with shape parameters |Z|
+      %  and principal axes |a|. 
+      %  Z(1)>=Z(2)>=Z(3), Z(3)<0
+      %  Z(1)=Z(2)  rotationally symmetric unimodal distribution
+      %  Z(1)<<Z(2) partial girdle distribution
+      %
+      % Syntax
+      %
+      %   BS2 = S2FunBingham(Z,a)
+      %
+      % Input
+      %  Z -  shape parameters
+      %  a -  principle axes @vector3d
+      %
+      % Output
+      %  BS2 - @S2FunBingham (spherical Bingham distribution)
+      
+      BS2.Z = Z;
+      
+      if nargin == 1
+        BS2.a = [vector3d.X;vector3d.Y;vector3d.Z];
+      else
+        BS2.a = a.normalize;
+      end
+
+      if nargin <= 2
+        BS2.s = specimenSymmetry.default;
+      else
+        BS2.s = sym;
+      end
+      
+      % compute normalization constant
+      BS2.N = 4*pi./BS2.normalizationConst;
+    end
+    
+    
+    function value = eval(BS2,v)
+      % evaluate spherical Bingham distribution
+      value = BS2.N * exp(dot_outer(v.normalize,BS2.a).^2 * BS2.Z(:));
+    end
+    
+    
+    function N = normalizationConst(BS2)   % needs external mex
+      %   calc normalization parameter
+      N = numericalSaddlepointWithDerivatives(sort(-BS2.Z(:))+1)*exp(1);
+      N = N(3);
+    end
+    
+  end
+  
+  methods (Static = true)
+    
+    BS2 = fit(v,varargin)
+    BS2 = example(varargin)
+    
+  end
+end

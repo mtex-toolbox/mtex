@@ -20,7 +20,7 @@ function plotSection(SO3F,varargin)
 %  contour3, surf3, slice3 - 3d volume plot
 %
 % Example
-% % Section plots at specific angles
+% % section plots at specific angles
 % plotSection(SO3Fun.dubna,'phi2',[15,23,36]*degree)
 %
 % See also
@@ -32,7 +32,7 @@ if numel(SO3F)>1
   SO3F = SO3F.subSet(1);
 end
 if ~SO3F.isReal
-  warning(['Imaginary part of complex valued SO3FunHarmonic is ignored. ' ...
+  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
     'In the following only the real part is plotted.'])
   SO3F.isReal=1;
 end

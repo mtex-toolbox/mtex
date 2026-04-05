@@ -150,8 +150,8 @@ plot(SO3F,'sigma')
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-    SO3Fhw = interp(ori,val,'halfwidth',hw(k)*degree,'density');
-    err(k) = norm(SO3Fhw.eval(ori) - S.values) / norm(S.values);
+  SO3Fhw = interp(ori,val,'halfwidth',hw(k)*degree,'density');
+  err(k) = norm(SO3Fhw.eval(ori) - S.values) / norm(S.values);
 end
 
 close all

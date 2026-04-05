@@ -17,7 +17,7 @@ function SO3F = rotate(SO3F,rot,varargin)
 ss = SO3F.SS.rot;
 if length(ss)>2 && ~any(rot == ss(:))
   warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-  SO3F.SS = specimenSymmetry;
+  SO3F.SS = specimenSymmetry.default;
 end
 
 

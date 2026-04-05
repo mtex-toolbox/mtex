@@ -54,7 +54,7 @@ if nargin < 2, v0 = xvector; end
 delta = get_option(varargin,'delta',45*degree);
 
 % the ODF should not yet have a specimen symmetry
-odf.SS = specimenSymmetry;
+odf.SS = specimenSymmetry.default;
 
 % two different algorithms
 useFourier = check_option(varargin,'Fourier') || isa(odf,'SO3FunHarmonic');
@@ -99,12 +99,11 @@ odf = rotate(odf,rot);
 
   function v = initialSearch(v)
     
-    progress(0,length(v));
-
+    pC = progressCounter(length(v));
     val = zeros(size(v));
     for k=1:length(v)
-      progress(k,length(v));
       val(k) = f(v(k));
+      pC.show(k);
     end
 
     [fval,i] = min(val); v = v(i);

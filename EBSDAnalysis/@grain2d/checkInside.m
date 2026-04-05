@@ -25,9 +25,13 @@ function isInside = checkInside(grains, xy, varargin)
 % inside the grain. Pixels at the boundary may belong to no grain.
 %
 % Example
-%  mtexdata small
-%  grains = calcGrains(ebsd('indexed'))
-%  plot(grains(grains(75).checkInside(grains)))
+%
+%  mtexdata small silent
+%  grains = calcGrains(ebsd('indexed'));
+%  plot(grains(75))
+%  hold on
+%  plot(grains(grains(75).checkInside(grains)),'facecolor','red')
+%  hold off
 %
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
@@ -76,6 +80,9 @@ Vx = grains.allV.x;
 Vy = grains.allV.y;
 incl = grains.inclusionId;
 
+% make sure xy is vector3d
+if ~isa(xy,'vector3d'), xy = vector3d([xy zeros(size(xy,1),1)]); end
+
 % use internal or external inpolygon engine?
 inpolyEngine = getMTEXpref('insidepoly');
 
@@ -101,3 +108,5 @@ for i = 1:length(poly)
   end
   
 end
+
+

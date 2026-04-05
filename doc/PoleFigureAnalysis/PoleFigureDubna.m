@@ -6,7 +6,6 @@
 
 % specify crystal and specimen symmetry
 CS = crystalSymmetry('-3m',[4.9 4.9 5.4]);
-SS = specimenSymmetry;
 
 % specify file names
 fname = {...
@@ -23,7 +22,7 @@ h = {Miller(1,0,-1,0,CS),...
 c = {1,[0.52 ,1.23],1};
 
 % import data
-pf = PoleFigure.load(fname,h,CS,SS,'interface','dubna','superposition',c);
+pf = PoleFigure.load(fname,h,CS,'interface','dubna','superposition',c);
 
 plot(pf)
 mtexColorbar

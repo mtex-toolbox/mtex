@@ -37,9 +37,14 @@ end
 properties (Dependent = true)
   bandwidth % harmonic degree
   antipodal
+  isReal
   SLeft
   SRight
 end
+
+% In case of vector Valued SO3FunRBFs, we store c0 with the array size of
+% SO3F and the weights are stored in first dim with numel(center) and the
+% other dimensions are the size of the SO3FunRBF (similar as fhat in SO3FunHarmonic)
 
 methods
     
@@ -117,7 +122,7 @@ methods
     try
       S = SO3F.center.CS;
     catch
-      S = specimenSymmetry;
+      S = specimenSymmetry.default;
     end
   end
     
@@ -129,7 +134,7 @@ methods
     try
       S = SO3F.center.SS;
     catch
-      S = specimenSymmetry;
+      S = specimenSymmetry.default;
     end
   end
     
@@ -155,6 +160,16 @@ methods
   
   function SO3F = set.bandwidth(SO3F,L)
     SO3F.psi.bandwidth = L;
+  end
+
+  function out = get.isReal(f)
+    out = isreal(f.c0) & isreal(f.weights);
+  end
+  
+  function F = set.isReal(F,value)
+    if ~value, return; end
+    F.c0 = real(F.c0);
+    F.weights = real(F.weights);
   end
     
   function s = size(SO3F,varargin)
@@ -234,24 +249,17 @@ methods
     end
   end
 
-  function S3F = reshape(S3F,varargin)
-    S3F.c0 = reshape(S3F.c0, varargin{:});
-  end
-
-  function S3F = transpose(S3F)
-    S3F.c0 = S3F.c0.';
-  end
-
-  function S3F = ctranspose(S3F)
-    S3F.c0 = S3F.c0';
-  end
-
 end
   
 methods (Static = true)
   [SO3F,iter] = approximate(f, varargin);
   [SO3F,iter] = interpolate(v, y, varargin); 
   SO3F = example(varargin)
+
+  function SO3F = loadobj(SO3F)
+    SO3F.weights = reshape(SO3F.weights,numel(SO3F.center),[]);
+  end
+
 end
   
 end

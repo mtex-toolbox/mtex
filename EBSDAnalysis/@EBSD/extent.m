@@ -1,4 +1,4 @@
-function [xmin, xmax, ymin, ymax] = extent(ebsd)
+function [xmin, xmax, ymin, ymax] = extent(ebsd,ind)
 % spatial bounds of an EBSD map
 %
 % Syntax
@@ -22,5 +22,5 @@ ymax = max(ebsd.pos.y(:));
 zmin = min(ebsd.pos.z(:));
 zmax = max(ebsd.pos.z(:));
 
-
 if nargout <= 1, xmin = [xmin, xmax, ymin, ymax, zmin, zmax]; end
+if nargin == 2, xmin = xmin(ind); end

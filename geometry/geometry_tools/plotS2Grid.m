@@ -23,10 +23,16 @@ function v = plotS2Grid(varargin)
 sR = extractSphericalRegion(varargin{:});
 
 % get plotting convention
-pC = getClass(varargin,'plottingConvention',sR.how2plot);
+if check_option(varargin,'plain')
+  rot = rotation.id;
+else
+  
+  pC = getClass(varargin,'plottingConvention',sR.how2plot);
 
-% rotate sR it such that pC.outOfPlane points to z
-rot = rotation.map(pC.outOfScreen,zvector);
+  % rotate sR it such that pC.outOfPlane points to z
+  rot = rotation.map(pC.outOfScreen,zvector);  
+end
+
 sRRot = rot*sR;
 
 % get resolution

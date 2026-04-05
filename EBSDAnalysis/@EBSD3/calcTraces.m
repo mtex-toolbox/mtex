@@ -55,10 +55,9 @@ method = get_flag(varargin,{'Radon','Fourier'},'Radon');
 J = get_option(varargin,'cutOff',6);
 
 % loop over all clusters
+pC = progressCounter(length(ic));
 for i = 1:length(ic)
   
-  progress(i,length(ic));
-
   % generate a cropped black white image of the cluster
   [sub{1:length(prop)}]  = ind2sub(sz,ic(i));
   X = prop{1} == sub{1};
@@ -112,6 +111,7 @@ for i = 1:length(ic)
       rel(ic(i)) = (lambda(2) - lambda(1))./lambda(2);
 
   end
+  pC.show(i);
 
 end
 

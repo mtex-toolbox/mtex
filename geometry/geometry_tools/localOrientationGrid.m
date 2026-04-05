@@ -41,7 +41,7 @@ center = get_option(varargin,'center',orientation.id(CS,SS));
 ori = mtimes(qId,center,1);
 
 % ensure we respect the fundamental region
-if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && isscalar(center)
+if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && isscalar(center) && ~check_option(varargin,'doNotRespectFR')
   
   % in order to avoid centers that are exactly at the boundary of the
   % fundamental region we distort the center slightly
@@ -52,7 +52,7 @@ if numSym(CS.properGroup) > 1 && numSym(SS.properGroup) > 1 && isscalar(center)
   delta = angle(sym_center(1),sym_center,'noSymmetry');
   sym_center = sym_center(delta < 2*maxAngle);
 
-  % take only those orientations that are closest to center
+  % % take only those orientations that are closest to center
   [~,ind] = min(angle_outer(ori,sym_center,'noSymmetry'),[],2);
   ori = ori(ind == 1);
 

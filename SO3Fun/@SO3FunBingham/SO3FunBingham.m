@@ -32,6 +32,7 @@ classdef SO3FunBingham < SO3Fun
     bandwidth % harmonic degree
     SLeft
     SRight
+    isReal
   end
   
   properties (Hidden = true)
@@ -88,6 +89,15 @@ classdef SO3FunBingham < SO3Fun
     end
     
     function SO3F = set.bandwidth(SO3F,~)      
+    end
+
+    function out = get.isReal(f)
+      out = isreal(f.weight);
+    end
+  
+    function F = set.isReal(F,value)
+      if ~value, return; end
+      F.weight = real(F.weight);
     end
 
   end

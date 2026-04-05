@@ -9,11 +9,12 @@ function h = surf(sF,varargin)
 %  sF - @S2Fun
 %
 % Options
+%  noScaling  - ovoid rescaling for better visualization
 %  resolution - resolution of the plotting grid in degree
 %
 
 % rescale the function to be with 0.5 and 2
-if isscalar(sF) && sF.isReal
+if isscalar(sF) && sF.isReal && ~check_option(varargin,'noScaling')
   
   a = min(sF);
   b = max(sF);

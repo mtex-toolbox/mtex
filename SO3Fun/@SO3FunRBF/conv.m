@@ -50,7 +50,7 @@ if ~isa(SO3F2,'SO3FunRBF') || ...
     'For big center sizes this yields an SO3FunRBF with lots of centers, which is ' ...
     'not manageable anymore. If you still want to generate an SO3FunRBF use ''noFourier''.']);
   end
-  SO3F = conv@SO3Fun(SO3F1,SO3F2,varargin{:});
+  SO3F = conv(SO3FunHarmonic(SO3F1),SO3F2,varargin{:});
   return
 
 end

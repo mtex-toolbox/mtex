@@ -7,7 +7,7 @@ function ebsd = fill(ebsd,varargin)
 %
 % Input
 %  ebsd - @EBSD
-%  grains - @grain2d
+%  grains - @grain2d if provided pixels at the boundary between grains are not filled
 %
 % Options
 %  extrapolate - extrapolate up the the outer boundaries

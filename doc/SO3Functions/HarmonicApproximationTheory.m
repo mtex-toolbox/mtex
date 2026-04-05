@@ -153,7 +153,7 @@ legend('Bandwidth 17','Bandwidth 32')
 % $\|.\|_{H^s}$ of an |@SO3FunHarmonic| $f$ with Fourier coefficients 
 % $\hat{f}$ reads as
 %
-% $$\|f\|^2_{H^s} = \sum_{n=0}^N (2n+1)^{2s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
+% $$\|f\|^2_{H^s} = \sum_{n=0}^N (1+n(n+1))^{s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
 %
 % The Sobolev index $s$ describes how smooth our approximation $f$ should 
 % be, because the larger $s$ is, the faster the Fourier coefficients 
@@ -164,7 +164,10 @@ legend('Bandwidth 17','Bandwidth 32')
 % The command <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|> 
 % of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> applies
 % regularization by default. The default regularization parameter is 
-% $\lambda = 5\cdot 10^{-7}$ and the default Sobolev index $s=2$;
+% $\lambda = 5\cdot 10^{-7}$ and the default Sobolev index $s=2$.
+% Note that you have to decide for a regularization parameter dependent on
+% your data. There is no predefined one. You may have to try different
+% parameters and look on the result.
 
 SO3F3 = interp(ori, val,'harmonic','bandwidth',32)
 % SO3F3 = SO3FunHarmonic.interpolate(ori,val,'bandwidth',32)
@@ -249,6 +252,9 @@ plot(SO3F5,'sigma')
 %
 % Thus we are able to control the precision of the result and computational 
 % time of the lsqr-method in the approximation process.
+%
+% Note, that the usage of a to small maximum number of iterations could 
+% also yields to a regularization effect.
 %
 % Moreover we obtain the |lsqr| parameters in a second output argument in the
 % <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|>-command.

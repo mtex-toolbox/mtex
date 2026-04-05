@@ -145,7 +145,10 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
 
-    function v = get.outOfScreen(pC), v = pC.rot * vector3d.Z; end
+    function v = get.outOfScreen(pC)
+      v = pC.rot * vector3d.Z; 
+      v.how2plot = pC;
+    end
     function set.outOfScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -155,7 +158,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = n;
     end
 
-    function v = get.intoScreen(pC), v = -pC.rot * vector3d.Z; end
+    function v = get.intoScreen(pC)
+      v = -pC.rot * vector3d.Z;
+      v.how2plot = pC;
+    end
     function set.intoScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,-n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -166,7 +172,10 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
 
-    function v = get.east(pC), v = pC.rot * vector3d.X; end
+    function v = get.east(pC) 
+      v = pC.rot * vector3d.X;
+      v.how2plot = pC;
+    end
     function set.east(pC,e)
       try
         pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot; 
@@ -176,7 +185,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = e;
     end
 
-    function v = get.west(pC), v = -pC.rot * vector3d.X; end
+    function v = get.west(pC)
+      v = -pC.rot * vector3d.X; 
+      v.how2plot = pC;
+    end
     function set.west(pC,w)
       try
         pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot; 
@@ -186,7 +198,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = w;
     end
 
-    function v = get.north(pC), v = pC.rot * vector3d.Y; end
+    function v = get.north(pC)
+      v = pC.rot * vector3d.Y; 
+      v.how2plot = pC;
+    end
     function set.north(pC,v)
       try
         pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot; 
@@ -197,6 +212,7 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
+
     function set.south(pC,v)
       try
         pC.rot = rotation.map(pC.north,-v,pC.lastSet,pC.lastSet) * pC.rot;
@@ -254,17 +270,62 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
     
     function pC = default(pC)
-      persistent pCdefault
-      if nargin == 1
-        pCdefault =  pC;
+      
+      if nargin == 1 % new default
+        ss = specimenSymmetry(pC);
+        ss.makeDefault;
       else
-        if isempty(pCdefault), pCdefault = plottingConvention; end
-        pC = pCdefault;
+        ss = specimenSymmetry.default;
+        pC = ss.how2plot;
       end
     end
 
     function pC = default3D
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
+    end
+   
+   function pC = ij
+        % Map plotting conventions to match SEM image display and MATLAB 
+        % 'axis ij' reference frames.
+        % Use with import flag "convertEuler2SpatialReferenceFrame" for
+        % most modern SEM systems.
+        % Useful for producing comparable map plots in MTEX, 
+        % MATLAB and SEM/EBSD software.
+        %
+        % pC = plottingConvention.ij;
+        %
+        pC = plottingConvention(-vector3d.Z,vector3d.X);
+    end
+
+    function pC = edax(setting)
+        % Map plotting conventions to match EDAX Euler reference frame
+        % A1/A2/A3.
+        % Use with import flag "convertSpatial2EulerReferenceFrame" on
+        % EDAX systems.
+        % Useful for producing comparable orientation plots in MTEX and EDAX software.
+        %
+        % Input:
+        %  setting = edax setting number (numeric) (default = 2)
+
+        if nargin<1
+            setting = 2;
+            warning("No EDAX reference frame setting specified. Defaulting to setting 2.")
+        end
+        switch setting
+            case 1
+                outOfScreen = vector3d.Z;
+                east = vector3d.Y;
+            case 2
+                outOfScreen = vector3d.Z;
+                east = -vector3d.Y;
+            case 3
+                outOfScreen = vector3d.Z;
+                east = vector3d.X;
+            case 4
+                outOfScreen = vector3d.Z;
+                east = -vector3d.X;
+        end
+        pC = plottingConvention(outOfScreen,east);
     end
 
   end

@@ -12,45 +12,44 @@
 
 plot([2 2],'LineWidth',2)
 
-hold all
+hold on
 
 plot([1 3],'LineWidth',2)
 
 hold off
 
 %% Combine Different EBSD Data
-% First, we want to show up two different EBSD data sets in one plot
+% First, we want to show up two different orientation data sets in one plot
 
-%%
-% let's simulate some EBSD data
+% let's simulate some orientation data
 cs = crystalSymmetry('-3m');
 odf = unimodalODF(orientation.byEuler(0,0,0,cs));
 ori = discreteSample(odf,100);
 ori_rotated = discreteSample(rotate(odf,rotation.byEuler(60*degree,60*degree,0*degree)),100);
 
 %%
-% plot them as a scatter plot in axis / angle parametrized orientation
-% space
+% plot them as a scatter plot in axis/angle space
 
-scatter(ori)
-hold all
+scatter(ori,'axisAngle')
+hold on % keep plot
 scatter(ori_rotated);
-hold off
-
-
-%%
-% a second way would be to superpose the pole figures of both EBSD data sets.
-
-h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotPDF(ori,h,'antipodal','MarkerSize',4)
-hold all % keep plot
-plotPDF(ori_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
 
 
-%% Combine countoured pole figures (smooth ODF plots) with EBSD Data Scatter Plots
-% You can also combine a contour plot of a model ODF with a scatter plot of single
+%%
+% a second way would be to superpose the pole figures of both sets of
 % orientations.
+
+h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
+plotPDF(ori,h,'antipodal','MarkerSize',4)
+hold on 
+plotPDF(ori_rotated,h,'MarkerSize',4);
+hold off 
+
+
+%% Overlaying contour and scatter plots
+% A more robust way to overlay multiple plots is to use the options
+% |'add2all'| instead of |'hold on'|. This works for pole figure plots
 
 plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
@@ -64,7 +63,7 @@ plot(ori_rotated,'DisplayName','EBSD 2',...
 legend('show','location','northeast')
 
 %%
-% and, of course, you can do the same with ODF plots:
+% as well as with ODF section
 
 plot(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
@@ -78,13 +77,12 @@ plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k','add2all
 plotIPDF(odf,xvector,'noLabel');
 mtexColorMap white2black
 
-hold all % keep plot
+hold on % keep plot
 plot(Miller(0,0,0,1,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(1,1,-2,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')
 hold off % next plot command deletes all plots
-
 
 
 %% Combining different plots in one figure
@@ -99,7 +97,7 @@ mtexdata dubna
 odf = calcODF(pf)
 
 %%
-% now we want to plot the original data alongsite with the recalculated
+% now we want to plot the original data alongside with the recalculated
 % pole figures and with a difference plot
 figure('position',[50 50 1200 500])
 

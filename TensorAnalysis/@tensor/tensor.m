@@ -3,7 +3,7 @@ classdef tensor < dynOption
   properties
     M = []        % the tensor coefficients
     rank = 0      % tensor rank
-    CS = specimenSymmetry % crystal symmetry
+    CS = specimenSymmetry.default % reference system an crystal symmetry
     doubleConvention = false %
   end
 

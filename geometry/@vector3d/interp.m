@@ -26,29 +26,19 @@ function sF = interp(v,y,varargin)
 %
 
 y = reshape(y, length(v), []);
+
 % set harmonic approximation default for symmetric data 
-if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance'}) 
+if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance','noSymmetry'}) 
   varargin = [varargin,'harmonic'];
-else
-  % take the mean over duplicated nodes
-  [v,~,ind] = unique(v(:));
-  if isa(y,'vector3d')
-    y = nan2zero(y);
-  else
-    y(isnan(y)) = 0;
-  end
-  y = accumarray(ind,y,[],@mean);
 end
 
-% Decide Method
+% decide method
 if nargin>2 && isa(varargin{1},'vector3d') && ~check_option(varargin,'linear')
   varargin = [varargin,'spline'];
 end
 
-
-%% Spherical Vector Fields
-
-if isa(y,'vector3d') && check_option(varargin,'AxisField')
+% Spherical Vector Fields
+if isa(y,'vector3d') && y.antipodal
 
   if  check_option(varargin,'harmonic')
     sF = S2AxisFieldHarmonic.interpolate(v, y, varargin{:});
@@ -70,11 +60,11 @@ elseif isa(y,'vector3d')
 
 end
 
-
-%% Spherical Functions
-
+% Spherical Functions
 if isnumeric(y)
-  if check_option(varargin,'nearest')
+  if check_option(varargin,'MLS')
+    sF = S2FunMLS(v,y,varargin{:});
+  elseif check_option(varargin,'nearest')
     sF = S2FunHandle(@(v) nearest(v));
   elseif check_option(varargin,'harmonic')
     sF = S2FunHarmonic.interpolate(v, y, varargin{:});
@@ -85,13 +75,10 @@ if isnumeric(y)
   end
 end
 
-%% Evaluations
-
+% Evaluations
 if nargin>2 && isa(varargin{1},'vector3d')
   sF = sF.eval(varargin{1});
 end
-
-
 
 
 %% Functions
@@ -113,7 +100,7 @@ function yi = spline(vi)
   res = v.resolution;
   psi = S2DeLaValleePoussinKernel('halfwidth',res/2);
  
-  % take the 4 closest neighbours for each point
+  % take the 4 closest neighbors for each point
   % TODO: this can be done better
   omega = angle_outer(vi,v,varargin{:});
   [so,j] = sort(omega,2);

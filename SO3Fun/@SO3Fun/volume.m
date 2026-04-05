@@ -1,4 +1,4 @@
-function v = volume(SO3F,center,radius,varargin)
+function [v, S3G] = volume(SO3F,center,radius,varargin)
 % Integrates an SO3Fun on the region of all orientations that are close to  
 % a specified orientation (center) by a tolerance (radius), i.e.
 %
@@ -46,7 +46,7 @@ if SO3F.antipodal
   S3G = S3G(checkInside(oR,S3G));
   points = length(S3G);
   % cut to ball
-  center = orientation(center,cs,cs,'antipodal');
+  center = orientation(center,center.CS,center.SS,'antipodal');
   ind = min(angle(S3G,center.symmetrise.'),[],2) < radius;
   S3G = S3G(ind);
   S3G.antipodal = 1;

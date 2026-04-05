@@ -21,6 +21,4 @@ if length(rot)>1 && size(cS.V,2)==1
 end
 
 % rotate all the vertices
-for k = 1:size(cS.V,1)
-  cS.V(k,:) = rot .* cS.V(k,:);
-end
+cS.V = rotate(cS.V,rot);

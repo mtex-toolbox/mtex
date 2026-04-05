@@ -3,3 +3,5 @@ function l = length(SO3F)
 
 s = size(SO3F.fhat);
 l = prod(s(2:end));
+
+end

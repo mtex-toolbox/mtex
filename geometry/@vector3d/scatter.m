@@ -88,7 +88,8 @@ for i = 1:numel(sP)
   % ------------- color-coding according to the first argument ----------------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
-    h(i) = plot(x,y,varargin{1}.diameter,varargin{1},'parent', sP(i).ax,varargin{2:end});
+    h(i) = plot(x,y,varargin{1}.diameter,sP(i).proj.pC.rot*varargin{1}, ...
+      'parent', sP(i).ax,varargin{2:end});
     %sP(i).updateBounds(0.1);
   
   elseif check_option(varargin,'arrow')
@@ -159,8 +160,11 @@ for i = 1:numel(sP)
     % draw patches
     if numel(MarkerSize) > 1
       
+      holdState = sP(i).ax.NextPlot;
+      sP(i).ax.NextPlot = "add";
       h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).ax,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:});
+      sP(i).ax.NextPlot = holdState;
     
     else
        

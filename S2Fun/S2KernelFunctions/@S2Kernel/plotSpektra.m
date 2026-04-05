@@ -1,7 +1,7 @@
 function plotSpektra(psi,varargin)
 % plot the Legendre coefficients of the kernel function
   
-bw = get_option(varargin,'bandwidth',32);
+bw = get_option(varargin,'bandwidth',psi.bandwidth);
 n = 0:bw;
 A = zeros(1,bw+1);
 

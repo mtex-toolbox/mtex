@@ -1,5 +1,5 @@
 function [h,ax] = plot(sF,varargin)
-% plot spherical Function
+% plot spherical function
 %
 % Syntax
 %   plot(sF)
@@ -9,13 +9,24 @@ function [h,ax] = plot(sF,varargin)
 %  contour  - sF as contours
 %
 % See also
-%   S2Fun/contour S2Fun/contourf S2Fun/pcolor S2Fun/plot3d
+% S2Fun/contour S2Fun/contourf S2Fun/pcolor S2Fun/plot3d
 %
+
+if ~sF.isReal
+  warning(['Imaginary part of complex valued S2Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  sF.isReal=1;
+end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},'xyz');
+if isa(sF.CS,'crystalSymmetry')
+  tooltipFormat = sF.CS.lattice.hklForm;
+else
+  tooltipFormat = 'xyz';
+end
+tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},tooltipFormat);
 
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end

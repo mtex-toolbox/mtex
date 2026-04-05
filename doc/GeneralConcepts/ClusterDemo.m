@@ -8,14 +8,13 @@ cs  = crystalSymmetry('432');
 
 % define an ODF with two radial peaks
 ori = orientation.byEuler([10 40]*degree,[30 50]*degree,[50 70]*degree,cs)
-odf = unimodalODF(ori,'halfwidth',5*degree);
-
+odf = unimodalODF(ori,'halfwidth',7.5*degree);
 
 % view the odf 
 plotPDF(odf,Miller(1,0,0,odf.CS),'contour','linewidth',2);
 
 % generate 10k orientations from this randomly defined ODF function
-ori = odf.discreteSample(10000);
+ori = odf.discreteSample(1000);
 
 % convert the orientations to vector3d
 r = ori * Miller(1,0,0,odf.CS);
@@ -47,6 +46,7 @@ r.antipodal = true;
 % plot the vectors.  Note that we no longer get an upper and lower
 % hemisphere plot; the antipodal symmetry tells MTEX they are equivalent
 % and so one sufficient to represent the data.
+
 plot(r,ind2color(cId))
 
 % annotate the cluster centers.
@@ -55,6 +55,7 @@ annotate(center,'add2all')
 %%
 % pick a vector3d, and use that to convert the 10k random orientations
 % previously generated into crystal directions.
+
 h = ori \ vector3d(1,1,0);
 
 % assign the crystal directions to two clusters
@@ -69,15 +70,18 @@ annotate(center,'add2all')
 %%
 % just as we calculated clusters for vectors and crystal directions, we're
 % now going to do so for orientations
+
 [cId,center] = calcCluster(ori,'numCluster',2,'method','hierarchical');
 
 % create a pole figure of the orientations colored by the cluster they
 % belong to.
-plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all')
+plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all','MarkerSize',5,'MarkerAlpha',0.5)
 
 %%
 % If you have the statistics toolbox, you can make some calculations about
 % the spread of points assigned to each cluster.
+
+r = discreteSample(r,2000)
 
 % compute the full distance matrix between all combinations of vectors
 d = angle_outer(r,r);

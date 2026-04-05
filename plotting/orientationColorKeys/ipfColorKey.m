@@ -51,7 +51,13 @@ classdef ipfColorKey < orientationColorKey
       end
 
     end
-        
+
+    function precompute(oM,varargin)
+      
+      fun = S2FunGrid(@(v) oM.dirMap.direction2color(v));
+      oM.dirMap.dir2color = @(v) fun.eval(v);
+    end
+
     function rgb = orientation2color(oM,ori)
     
       if ~(ori.CS.properSubGroup <= oM.CS1)

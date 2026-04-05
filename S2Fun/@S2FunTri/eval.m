@@ -14,8 +14,8 @@ function f =  eval(sF,v)
 
 bario = calcBario(sF.tri,v(~v.isnan));
 
-f = nan(size(v));
+f = nan(numel(v),numel(sF));
 
-f(~v.isnan) = bario * sF.values(:);
+f(~v.isnan,:) = bario * sF.values;
 
 end

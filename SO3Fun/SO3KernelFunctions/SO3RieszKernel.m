@@ -25,14 +25,14 @@ methods
     
   function psi = SO3RieszKernel(s,varargin)
 
-    if nargin == 1, psi.s = s; end
+    if nargin >= 1, psi.s = s; end
     
     % extract bandwidth
     L = get_option(varargin,'bandwidth',1000);
 
     acc = getMTEXpref('FFTAccuracy');
     setMTEXpref('FFTAccuracy',1e-10)
-    psi.A = calcFourier(psi,1000);
+    psi.A = calcFourier(psi,L);
     setMTEXpref('FFTAccuracy',acc)
 
   end

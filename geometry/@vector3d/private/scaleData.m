@@ -24,6 +24,17 @@ if minData == maxData
   end
 end
 
+
+% 
+if check_option(varargin,'zero2white')
+  if maxData<=0
+    c = [0,1]; 
+  else
+    c = [0,maxData];
+  end
+  varargin = set_option(varargin,'colorRange',c);
+end
+
 % from options
 if check_option(varargin,{'contourf'},'double')
   

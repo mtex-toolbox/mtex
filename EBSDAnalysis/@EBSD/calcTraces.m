@@ -59,10 +59,9 @@ method = get_flag(varargin,{'Radon','Fourier'},'Radon');
 J = get_option(varargin,'cutOff',6);
 
 % loop over all clusters
+pC = progressCounter(length(ic));
 for i = 1:length(ic)
   
-  progress(i,length(ic));
-
   % generate a cropped black white image of the cluster
   [sub{1:length(prop)}]  = ind2sub(sz,ic(i));
   X = prop{1} == sub{1};
@@ -86,7 +85,7 @@ for i = 1:length(ic)
       Z = sum(Y(1:floor(end/2)-J,:));
 
       % take the maximum of the radon transform along the centerline
-      % which correspondes to the lines passing through the center
+      % which corresponds to the lines passing through the center
       %[m,id] = max(smoothdata(Z,'gaussian',30));
       [m,id] = max(Z);
 
@@ -116,6 +115,8 @@ for i = 1:length(ic)
       rel(ic(i)) = (lambda(2) - lambda(1))./lambda(2);
 
   end
+
+  pC.show(i);
 
 end
 

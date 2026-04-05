@@ -2,6 +2,7 @@ PoleFigureImport        Import
 PoleFigurePlot          Plot
 PoleFigureCorrection    Modify
 PoleFigure2ODF          ODF Reconstruction
+PoleFigureRefinement    Iterative ODF Reconstruction
 PoleFigureSimulation    Simulation
 PoleFigure2ODFAmbiguity The Gost Effect
 PoleFigure2ODFGhostCorrection Ghost Correction

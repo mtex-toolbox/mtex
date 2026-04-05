@@ -16,9 +16,9 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(S,varargin)
 %  vp  - velocity of the p--wave (UNITS km/s)
 %  vs1 - velocity of the s1--wave (UNITS km/s)
 %  vs2 - velocity of the s2--wave (UNITS km/s)
-%  pp  - polarisation of the p--wave (particle movement, vibration direction)
-%  ps1 - polarisation of the s1--wave (particle movement, vibration direction)
-%  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
+%  pp  - polarization of the p--wave (particle movement, vibration direction)
+%  ps1 - polarization of the s1--wave (particle movement, vibration direction)
+%  ps2 - polarization of the s2--wave (particle movement, vibration direction)
 %
 
 if nargin >= 2 && isa(varargin{1},'vector3d')
@@ -71,12 +71,12 @@ if generateFun == 1
   ps2 = S2AxisFieldHarmonic.quadrature(x,ps2,'bandwidth',M,'weights',W,'antipodal');
 elseif generateFun == 2
   vp  = S2FunTri(x,vp);
-  vs1 = S2FunTri(vp.tri,vs1);
-  vs2 = S2FunTri(vp.tri,vs2);
+  vs1 = S2FunTri(vp.tri,vs1.');
+  vs2 = S2FunTri(vp.tri,vs2.');
   
-  pp = S2AxisFieldTri(vp.tri,pp);
-  ps1 = S2AxisFieldTri(vp.tri,ps1);
-  ps2 = S2AxisFieldTri(vp.tri,ps2);  
+  pp = S2AxisFieldTri(vp.tri,pp.');
+  ps1 = S2AxisFieldTri(vp.tri,ps1.');
+  ps2 = S2AxisFieldTri(vp.tri,ps2.');  
 end
 
 end

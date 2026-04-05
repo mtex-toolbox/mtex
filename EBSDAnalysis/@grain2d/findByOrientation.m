@@ -24,6 +24,6 @@ if isa(ori,'orientation')
 end
 
 % find grains by their mean orientation
-ind = find(grains.meanOrientation,ori,epsilon);
+ind = find(grains.meanOrientation,ori,epsilon).';
 
 grains = subSet(grains,any(ind,2));

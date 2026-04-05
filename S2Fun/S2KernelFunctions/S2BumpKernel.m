@@ -32,11 +32,11 @@ classdef S2BumpKernel < S2Kernel
       end
       
       % extract bandwidth
-      L = get_option(varargin,'bandwidth',2000);
+      L = get_option(varargin,'bandwidth',1000);
             
       % compute Legendre coefficients
       % TODO: calcFourier does not work for Bump kernel
-      warning('The Fourier coefficients are to less')
+      % warning('The Fourier coefficients are to less')
       psi.A = calcFourier(psi,L,psi.halfwidth);
       %psi.A = nan(1,L+1);
       

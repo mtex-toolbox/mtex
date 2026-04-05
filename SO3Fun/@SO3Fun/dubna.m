@@ -1,5 +1,5 @@
 function f = dubna(varargin)
-% Construct the odf from the dubna data set as example for an SO3Fun.
+% construct the odf from the dubna data set as example for an SO3Fun
 
 f = mtexdata('dubnaODF');
 f.CS.color = 'lightblue';

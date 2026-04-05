@@ -42,7 +42,7 @@ if ~check_option(varargin,'noSurface')
   q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
   
   [x,y,z] = oP.project(q,'noBoundaryCheck');  
-  h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');
+  h3 = surf(x,y,z,'CData',[],'faceColor',color,'facealpha',0.1,'edgecolor','none');
 else
   h3 = [];
 end

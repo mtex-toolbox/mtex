@@ -145,7 +145,7 @@ mtexColorbar
 
 %%
 % Indeed the error between the numerical solution and the theoretical
-% solution is neglectable small. We may quantify the difference by
+% solution is negligible small. We may quantify the difference by
 
 mean(abs(odf - odf2))
 

@@ -58,8 +58,8 @@ G = SO3F.grad;
 
 v_max = SO3F.eval(modes);
 
+pC = progressCounter(maxIter,'caption',' finding ODF components: ',varargin{:});
 for k = 1:maxIter
-  progress(k,maxIter,' finding ODF components: ',varargin{:});
 
   % gradient
   g = normalize(G.eval(modes),1);
@@ -94,6 +94,8 @@ for k = 1:maxIter
   centerId = id2(centerId);
   if maxAngle == inf, weights = accumarray(id2,weights); end
 
+  pC.show(k)
+
 end
 
 % accumulate only weights that are sufficiently close to the centers
@@ -125,7 +127,7 @@ function test
 % testing code
  
 cs = crystalSymmetry('432');
-cs2 = specimenSymmetry;
+cs2 = specimenSymmetry.default;
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',5*degree) %#ok<NOPRT
 ori = discreteSample(odf,2000);

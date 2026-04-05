@@ -8,7 +8,7 @@ function pf = loadPoleFigure_dubna(fname,varargin)
 %  fname - file name
 %
 % Options
-%  STANDARD_GRID - use reguar 5 degree grid
+%  STANDARD_GRID - use regular 5 degree grid
 %  DUBNA_GRID    - use original rotated Dubna grid
 %
 % Output
@@ -30,7 +30,7 @@ catch
   interfaceError(fname);
 end
 
-% ensure sufficients data
+% ensure sufficient data
 if ~isa(d,'double') || mod(numel(d),72)~=0 ||...
     numel(d)<3*72 || numel(d)>40*72
   interfaceError(fname);

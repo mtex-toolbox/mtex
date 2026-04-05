@@ -98,8 +98,8 @@ if isempty(plan)
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-    fftw_flag = int8(64);
-    nfft_flag = int8(0);
+    fftw_flags = int8(64);
+    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft_cutoff parameter 
     m = get_option(varargin,'cutoffParameter',4);
   % oversampling factor
@@ -110,7 +110,7 @@ if isempty(plan)
   if check_option(varargin,'direct')
     plan = nfftmex('init_3d',N2,NN,NN,M);
   else
-    plan = nfftmex('init_guru',{3,N2,NN,NN,M,fftw_size2,fftw_size,fftw_size,m,nfft_flag,fftw_flag});
+    plan = nfftmex('init_guru',{3,N2,NN,NN,M,fftw_size2,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
   end
   
   % set rotations as nodes in plan
@@ -182,16 +182,16 @@ abg = Euler(rot,'Matthies')';
 if SO3F.isReal
   for k=1:length(SO3F)
     ghat = wignerTrafo(SO3F.subSet(k),2^0+2^2+2^4,'bandwidth',N);
-    for i=1:length(rot)
-      f(i,k) = sum(ghat.*exp(-1i*abg(2,i)*(-N:N)-1i*abg(3,i)*(-N:N)'-1i*abg(1,i)*reshape(0:N,1,1,[])),"all");
+    for m=1:length(rot)
+      f(m,k) = sum(ghat.*exp(-1i*abg(2,m)*(-N:N)-1i*abg(3,m)*(-N:N)'-1i*abg(1,m)*reshape(0:N,1,1,[])),"all");
     end
   end
   f = 2*real(f);
 else
   for k=1:length(SO3F)
     ghat = wignerTrafo(SO3F.subSet(k),2^0+2^4,'bandwidth',N);
-    for i=1:length(rot)
-      f(i,k) = sum(ghat.*exp(-1i*abg(2,i)*(-N:N)-1i*abg(3,i)*(-N:N)'-1i*abg(1,i)*reshape(-N:N,1,1,[])),"all");
+    for m=1:length(rot)
+      f(m,k) = sum(ghat.*exp(-1i*abg(2,m)*(-N:N)-1i*abg(3,m)*(-N:N)'-1i*abg(1,m)*reshape(-N:N,1,1,[])),"all");
     end
   end
 end

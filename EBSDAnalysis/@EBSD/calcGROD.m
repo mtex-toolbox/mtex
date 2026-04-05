@@ -4,7 +4,7 @@ function GROD = calcGROD(ebsd,grains,rotRef)
 % Syntax
 %
 %   % reconstruct grains
-%   [grains, ebsd,grainId] = calcGrains(ebsd('indexed'))
+%   [grains, ebsd.grainId] = calcGrains(ebsd('indexed'))
 %
 %   % compute grain reference orientation deviation
 %   GROD = calcGROD(ebsd,grains)
@@ -51,3 +51,4 @@ for phId = grains.indexedPhasesId
 end
 
 if ebsd.isSinglePhase, GROD = orientation(GROD,ebsd.CS,ebsd.CS); end
+

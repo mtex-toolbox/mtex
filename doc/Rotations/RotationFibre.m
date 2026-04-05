@@ -3,7 +3,7 @@
 %%
 % A fibre in orientation space is the equivalent of straight lines in
 % Euclidean space, it is the shortest path between any two orientations. In
-% MTEX it is defined by the command @fibre.
+% MTEX it is defined by the command |@fibre|.
 
 % consider cubic symmetry
 cs = crystalSymmetry('432');
@@ -40,7 +40,7 @@ plot(f,'lineWidth',3,'lineColor','red')
 hold off
 
 %%
-% The strange multiple line in the above pictures are all from the same
+% The strange multiple lines in the above pictures are all from the same
 % circle that has been projected into the fundamental zone by crystal
 % symmetry. If we dismiss crystal symmetry and visualize the complete
 % rotation space we observe that |f| is indeed a circle.

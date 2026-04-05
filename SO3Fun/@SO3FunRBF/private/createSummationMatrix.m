@@ -39,6 +39,7 @@ iter = 0; numiter = 1; ind = 1; %for first run
 M = sparse(abs(lg1),abs(lg2));
 
 % now iterate along the splitting
+pC = progressCounter(numiter,'caption',' setting up matrix: ');
 while iter <= numiter
   if iter > 0% split
     ind = 1 + (1+(iter-1)*diter:min(num-1,iter*diter));
@@ -61,7 +62,7 @@ while iter <= numiter
     diter = ceil(num / numiter);
   end
 
-  if numiter > 1 && ~check_option(varargin,'silent'), progress(iter,numiter); end
+  pC.show(iter);
 
   iter = iter + 1;
 end

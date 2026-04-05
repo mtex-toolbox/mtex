@@ -13,7 +13,7 @@ classdef symmetry < matlab.mixin.Copyable
   end
   
   properties
-    multiplicityPerpZ
+    multiplicityPerpZ = 1
   end
   
   properties
@@ -43,12 +43,17 @@ classdef symmetry < matlab.mixin.Copyable
   
   methods
        
-    function s = symmetry(id,rot)
+    function s = symmetry(id,rot,pC)
       % constructor
       
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
       
+      if nargin < 3, pC = plottingConvention; end
+      s.how2plot = pC;
+
+      if s.id == 1, return; end
+        
       isPerpZ = isnull(dot(rot.axis,zvector),1e-4) & ~isnull(rot.angle,1e-4);
 
       if any(isPerpZ(:))
@@ -56,8 +61,6 @@ classdef symmetry < matlab.mixin.Copyable
       else
         s.multiplicityPerpZ = 1;
       end
-
-      s.how2plot = plottingConvention;
 
     end
     
@@ -79,22 +82,22 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     function out = le(cs1,cs2)
-      % check wheter cs1 is a sub group of cs2
+      % check whether cs1 is a sub group of cs2
       out = all(any(abs(dot_outer(cs1.rot,cs2.rot))>1-1e-6,2));
     end
     
     function out = ge(cs1,cs2)
-      % check wheter cs2 is a sub group of cs1
+      % check whether cs2 is a sub group of cs1
       out = le(cs2,cs1);
     end
         
     function out = lt(cs1,cs2)
-      % check wheter cs1 is a true sub group of cs2
+      % check whether cs1 is a true sub group of cs2
       out = le(cs1,cs2) & ~le(cs2,cs1);
     end
     
     function out = gt(cs1,cs2)
-      % check wheter cs2 is a true sub group of cs1
+      % check whether cs2 is a true sub group of cs1
       out = lt(cs2,cs1);
     end
 
@@ -163,10 +166,11 @@ classdef symmetry < matlab.mixin.Copyable
     end
 
     
-    function id = rot2pointId(rot,axes)
+    function id = rot2pointId(rot,varargin)
       % find a symmetry that exactly contains s
       
-      if nargin == 1, axes = [xvector,yvector,zvector]; end
+      axes = getClass(varargin,'vector3d');
+      if isempty(axes), axes = [xvector,yvector,zvector]; end
       
       for id=1:45 % check all point groups
         rotId = symmetry.calcQuat(id,axes);
@@ -178,8 +182,11 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
-    function rot = calcQuat(id,axes)
+    function rot = calcQuat(id,varargin)
       % calculate symmetry elements
+
+      axes = getClass(varargin,'vector3d');
+      if isempty(axes), axes = [xvector,yvector,zvector]; end
 
       a = axes(1); b = axes(2); c = axes(3);
 

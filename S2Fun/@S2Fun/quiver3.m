@@ -19,6 +19,12 @@ function h = quiver3(sF,sVF,varargin)
 % See also
 % S2Fun/surf S2VectorField/quiver3 vector3d/quiver3
 
+if ~sF.isReal
+  warning(['Imaginary part of complex valued S2Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  sF.isReal=1;
+end
+
 % generate a grid where the function will be plotted
 plotNodes = equispacedS2Grid('resolution',10*degree,'no_center',varargin{:}).';
   

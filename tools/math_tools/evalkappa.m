@@ -1,10 +1,10 @@
 function kappa = evalkappa(lambda,varargin)
-% eigenvalues of orientation tensor to bingham distribution parameters
+% eigenvalues of orientation tensor to Bingham distribution parameters
 %
 % Options
 %  approximated - approximated solution of kappas
-%  precision    - precision of solvus
-%  iteration    - number of newton interations
+%  precision    - precision
+%  iteration    - number of newton iterations
 %
 % See also
 % orientation/mean EBSD/mean BinghamODF
@@ -15,10 +15,10 @@ function kappa = evalkappa(lambda,varargin)
 % diffraction data from within individual crystalline grains, Journal of
 % applied Crystallogrpahy, 2010, 34, eq. 38.
 
-lambda = sort(lambda);
+%lambda = sort(lambda);
 kappa = -1./(2.*lambda);
-kappa(4) = 0;
-kappa = kappa - kappa(1);
+%kappa(4) = 0;
+kappa = kappa - min(kappa);
 
 % kappa = sort(1./((2.*lambda-1).*lambda));
 % kappa = (kappa-min(kappa))/2;

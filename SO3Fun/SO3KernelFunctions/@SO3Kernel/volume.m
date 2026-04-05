@@ -1,4 +1,20 @@
 function [vol,dist] = volume(psi,radius,dist)
+% volume of a ball with center respect to kernel function psi
+%
+% Syntax
+%
+%   [vol,dist] = volume(psi,radius,dist)
+%
+% Input
+%  psi    - @SO3Kernel
+%  radius - radius of the ball
+%  dist   - 
+%  
+% Output
+%  vol  - volume of ball with 
+%  dist - 
+%
+%
 
 if nargin < 3
   N = 60;

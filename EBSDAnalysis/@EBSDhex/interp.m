@@ -17,6 +17,8 @@ function ebsdNew = interp(ebsd,pos,varargin)
 % See also
 %  
 
+if ~isa(pos,'vector3d'), pos = vector3d(pos,varargin{1},0); end
+
 % ensure column vectors
 pos = pos(:);
 
@@ -49,9 +51,6 @@ for fn = fieldnames(ebsd.prop).'
   prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
 end
 
-ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop);
-ebsdNew.phaseMap = ebsd.phaseMap;
-ebsdNew.phaseId = phaseId(:);
-ebsdNew.CSList = ebsd.CSList;
+ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop,'phaseMap',ebsd.phaseMap);
 
 end

@@ -20,7 +20,7 @@ classdef fibreVonMisesFisherKernel < SO3Kernel
       L = get_option(varargin,'bandwidth',1000);
                  
       % compute Legendre coefficients
-      psi.A = ones(1,L+1);
+      psi.A = ones(L+1,1);
       for i=1:L
         psi.A(i+1) = (2*i+1)*sqrt(pi*psi.kappa/2) *...
           besseli(i+0.5,psi.kappa)/sinh(psi.kappa);

@@ -1,5 +1,5 @@
 function [id,dist] = find(S3G,ori,varargin)
-% return indece and distance of all nodes within a eps neighborhood
+% return indice and distance of all nodes within a eps neighborhood
 %
 % Syntax
 %   % find the closes point

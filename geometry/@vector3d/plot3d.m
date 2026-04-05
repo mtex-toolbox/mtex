@@ -25,8 +25,8 @@ v = v + get_option(varargin,'shift',0);
 
 % plot
 %v = v .* reshape(data,size(v));
-h = surf(v.x,v.y,v.z,reshape(double(data),size(v,1),size(v,2),[]),'parent',ax,...
-  'edgeColor','none');
+h = surf(v.x,v.y,v.z,reshape(double(data),size(v,1),size(v,2),[]),...
+  'parent',ax,'FaceColor','interp','edgeColor','none');
 
 % colormap
 if numel(v) == numel(data), mtexColorMap(ax,getMTEXpref('defaultColorMap')); end

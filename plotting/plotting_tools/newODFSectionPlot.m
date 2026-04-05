@@ -20,7 +20,7 @@ if nargin > 1 && isa(varargin{1},'symmetry')
   SS = varargin{1};
   varargin(1) = [];
 else
-  SS = specimenSymmetry;
+  SS = specimenSymmetry.default;
 end
 
 if nargin > 0 && (isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry'))

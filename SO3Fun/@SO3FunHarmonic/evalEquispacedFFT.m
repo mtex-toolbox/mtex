@@ -50,7 +50,7 @@ if length(SO3F)>1
   f = zeros([length(rot) size(SO3F)]);
   for k=1:length(SO3F)
     F = SO3F.subSet(k);
-    g = F.evalEquispacedFFT(rot);
+    g = F.evalEquispacedFFT(rot,varargin{:});
     f(:,k) = g(:);
   end
   return

@@ -44,8 +44,10 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 if sS.CS.Laue ~= eps.CS.Laue
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
+
+  pC = progressCounter(length(eps),varargin{:});
   for k = 1:length(eps)
-    progress(k,length(eps));
+    
     epsLocal = strainTensor(eps.M(:,:,k));
     F = SO3FunHandle(@(rot) calcTaylorFun(rot,epsLocal,sS,numOut,varargin{:}),sS.CS,eps.CS);
   
@@ -58,6 +60,9 @@ if sS.CS.Laue ~= eps.CS.Laue
       % to be comparable set output to rightSpinTensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
+
+    pC.show(k);
+
   end
   
   % for some reason we need some smoothing of the vector field
@@ -84,7 +89,7 @@ b = zeros(length(eps),length(sS));
 % by now assumed to be identical - might also be stored in sS
 CRSS = sS.CRSS(:);%ones(length(sS),1);
 
-% decompose eps into sum of disclocation tensors, that is we look for
+% decompose eps into sum of dislocation tensors, that is we look for
 % coefficients b such that sSepsSym * b = eps
 
 % since the strain tensor is symmetric we require only 5 entries out of it
@@ -105,16 +110,14 @@ else
   options = optimoptions('linprog','Algorithm','interior-point-legacy','Display','none');
 end
 
-% shall we display what we are doing?
-isSilent = check_option(varargin,'silent');
-
 % for all strain tensors do
+pC = progressCounter(size(y,2),varargin{:},'caption',' computing Taylor factor: ');
 for i = 1:size(y,2)
   
   % determine coefficients b with A * b = y and such that sum |CRSS_j *
   % b_j| is minimal. This is equivalent to the requirement b>=0 and CRSS*b
   % -> min which is the linear programming problem solved below
-  try
+  try %#ok<TRYNC>
     if getMTEXpref('mosek',false)
       res = msklpopt(CRSS,A,y(:,i),y(:,i),zeros(size(A,2),1),inf(size(A,2),1),...
         param,'minimize echo(0)');
@@ -124,11 +127,11 @@ for i = 1:size(y,2)
     end    
   end
   
-  % display what we are doing
-  if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
+  pC.show(i);
+  
 end
 
-% the Taylor factor is simply the sum of the coefficents
+% the Taylor factor is simply the sum of the coefficients
 M = reshape(sum(b,2),size(eps)) ./ norm(eps);
 
 % maybe there is nothing more to do
@@ -142,7 +145,7 @@ end
 
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
-  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:});
+  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
   Out(:,1) = Taylor(:);
   if numOut>1
     v = ori .* vector3d(spin);
@@ -171,7 +174,7 @@ epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]));
 ori0 = orientation.rand(cs);
 ori0 = ori0.symmetrise;
 
-[~,~,Wori] = calcTaylor(inv(ori0)*epsCold,sScold);
+[~,~,Wori] = calcTaylor(inv(ori0)*epsCold,sScold); %#ok<MINV>
 % this should give all the same vectors
 ori0 .* vector3d(Wori) %#ok<NOPRT>
 

@@ -1,4 +1,4 @@
-function ori = orientation(obj)
+function ori = orientation(obj, varargin)
 % translate an embedding back into an orientation
 % 
 % Description
@@ -15,6 +15,6 @@ function ori = orientation(obj)
 %  ori - @orientation
 %
 
-ori = project(obj);
+ori = project(obj, [], varargin{:});
 
 end

@@ -37,7 +37,7 @@ if isa(obj,'symmetry')
   if nargin > 1 && isa(varargin{1},'symmetry')
     cs2 = varargin{1};
   else
-    cs2 = specimenSymmetry;
+    cs2 = specimenSymmetry.default;
   end
 elseif isa(obj,'orientation')
 

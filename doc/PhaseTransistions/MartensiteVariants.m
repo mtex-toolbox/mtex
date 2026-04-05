@@ -306,3 +306,6 @@ drawNow(gcm)
 % different child Bain groups in the EBSD map.
 
 plot(grains('Fe'),color)
+
+%%
+%#ok<*MINV>

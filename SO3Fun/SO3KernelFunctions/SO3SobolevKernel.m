@@ -26,7 +26,7 @@ classdef SO3SobolevKernel < SO3Kernel
       % extract bandwidth
       L = get_option(varargin,'bandwidth',1000);
        
-      psi.A = (2*(0:L)+1) .* (0:L).^psi.s .* (1:L+1).^psi.s;
+      psi.A = (2*(0:L)'+1) .* (0:L)'.^psi.s .* (1:L+1)'.^psi.s;
 
       
       psi.A = psi.cutA;

@@ -15,7 +15,7 @@ classdef directionColorKey < handle
     
     function dM = directionColorKey(sym,varargin)
       
-      if nargin == 0, sym = specimenSymmetry; end
+      if nargin == 0, sym = specimenSymmetry.default; end
       
       if isa(sym,'symmetry')
         dM.sym = sym;
@@ -23,11 +23,14 @@ classdef directionColorKey < handle
         try
           dM.sym = sym.CS;
         catch
-          error('No symmetry specified!')
+          dM.sym = specimenSymmetry.default;
+          try
+            dM.sym.how2plot = sym.how2plot;
+          end
+          %error('No symmetry specified!')
         end
       end
-      
-      
+            
       if check_option(varargin,'antipodal'), dM.sym = dM.sym.Laue; end
       
       dM.sR = dM.sym.fundamentalSector;

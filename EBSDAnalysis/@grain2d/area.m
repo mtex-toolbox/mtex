@@ -12,13 +12,19 @@ function A = area(grains,varargin)
 %  A  - list of areas (in measurement units)
 %
 
-if nargin == 1 % 3d algorithm without loop
+if nargin == 1 || isnumeric(varargin{1}) % 3d algorithm without loop
 
   allV = grains.allV.xyz;
 
-  allV = allV([grains.poly{:}].',:);
-  grainStart =  cumsum([1;cellfun(@numel,grains.poly)]);
-
+  if nargin == 2
+    ind = varargin{1};
+    allV = allV([grains.poly{ind}].',:);
+    grainStart =  cumsum([1;cellfun(@numel,grains.poly(ind))]);
+  else
+    allV = allV([grains.poly{:}].',:);
+    grainStart =  cumsum([1;cellfun(@numel,grains.poly)]);
+  end
+  
   N = grains.N.xyz;
 
   A = polySgnArea3(allV,N,grainStart);

@@ -14,6 +14,11 @@ function h = quiverSection(sF,sVF,sec,varargin)
 %  normalized - normalize vectors before plotting
 %
 
+if ~sF.isReal
+  warning(['Imaginary part of complex valued S2Fun''s is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  sF.isReal=1;
+end
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 pC = getClass(varargin,'plottingConvention',sF.how2plot);

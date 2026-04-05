@@ -12,6 +12,15 @@ function v = discreteSample(S2F,n,varargin)
 %  v -  @vector3d
 %    -  @Miller in case of S2Fun is of type @S2FunHarmonicSym
 %
+% Options
+%  compact - generate almost perfectly aligned sampling points
+%
+
+if check_option(varargin,'compact')
+  v = compactify(S2F,'points',n,varargin{:});
+  return
+end
+
 
 res = get_option(varargin,'resolution',0.5*degree);
 
@@ -27,7 +36,7 @@ v = S2G(discretesample(d,n));
 v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
 
 % if there is a symmetry, return a Miller
-if isa(S2F,'S2FunHarmonicSym')
+if isa(S2F,'S2FunHarmonicSym') && isa(S2F.CS,'crystalSymmetry')
   v = Miller(v,S2F.CS);
 else
   v.how2plot = S2F.how2plot;

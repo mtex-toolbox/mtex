@@ -24,12 +24,8 @@ function [rho,factor] = fitDislocationSystems(kappa,dS,varargin)
 %
 
 % ensure linprog is working
-try
-  linprog(0,0,0);
-catch
-  error('Optimization Toolbox not found. The function fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
-end
-
+assert(~isempty(which('linprog')),...
+  'Optimization Toolbox not found. The function fitDislocationSystems depends on the Matlab Optimzation Toolbox or, more specifically, on the function linprog.')
 
 % ensure we consider also negative line vector
 dS = [dS,-dS];
@@ -41,6 +37,7 @@ dT = curvature(dS.tensor);
 options = optimset('algorithm','interior-point-legacy','Display','off');
 
 rho = nan(size(dS));
+pC = progressCounter(length(kappa),'caption',' fitting: ');
 for i = 1:length(kappa)
 
   % try to find coefficients
@@ -55,13 +52,10 @@ for i = 1:length(kappa)
   % is minimal. This is equivalent to the requirement 
   %  rho>=0 and sum(u_jrho_j) -> min 
   % which is the linear programming problem solved below
-  try %#ok<TRYNC>
-    
-    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],options);
- 
-    progress(i,length(kappa),' fitting: ');
-
+  try %#ok<TRYNC>    
+    rho(i,:) = linprog(u,[],[],A,y,zeros(size(A,2),1),[],options); 
   end
+  pC.show(i);
       
 end
 

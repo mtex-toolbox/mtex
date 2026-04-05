@@ -30,7 +30,7 @@ for i = 1:length(subs)
     
     sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
-    ind = ind & reshape(sub,size(ind));
+    if ~isempty(ind), ind = ind & reshape(sub,size(ind)); end
     
   elseif isnumeric(subs{i})
     

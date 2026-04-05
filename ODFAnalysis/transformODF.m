@@ -28,6 +28,8 @@ function odfC = transformODF(odfP,p2c,varargin)
 % 
 % 
 
+% maybe this can be better using convolution with a dirichlet kernel
+
 odfC = SO3FunHarmonic.quadrature( ...
   @(ori) localEval(ori,odfP,p2c,varargin{:}), p2c.SS,'bandwidth',odfP.bandwidth);
 

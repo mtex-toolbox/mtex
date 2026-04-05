@@ -51,6 +51,7 @@ recOri = orientation.nan(max(mergeId),1,job.csParent);
 fit = inf(size(recOri));
 
 % compute parent grain orientation by looping through all merged grains
+pC = progressCounter(max(mergeId),'caption','computing parent grain orientations: ',varargin{:});
 for k = 1:max(mergeId) %#ok<*PROPLC>
   
   % check if empty or single grain
@@ -86,7 +87,7 @@ for k = 1:max(mergeId) %#ok<*PROPLC>
     
   end
       
-  progress(k,max(mergeId),'computing parent grain orientations: ');
+  pC.show(k);
 end
     
 % only merge those grains where the parent grain 

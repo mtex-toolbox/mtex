@@ -235,8 +235,10 @@ classdef EBSD < phaseList & dynProp & dynOption
 
       % phaseId should be the same within one grain 
       ind = ebsd.grainId>0;
+      if nnz(ind)
       grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
       ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
+      end
       
     end
       
@@ -315,13 +317,29 @@ classdef EBSD < phaseList & dynProp & dynOption
       if isa(s,'EBSD')
         ebsd = s; 
       else
-        ebsd = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
+        if width(s.id) == 1
+          ebsd = EBSD;
+        elseif length(s.unitCell) == 6
+          ebsd = EBSDhex;
+          ebsd.isRowAlignment = s.isRowAlignment;
+          ebsd.dHex = s.dHex;
+        else
+          ebsd = EBSDsquare;
+        end
+        
         ebsd.opt = s.opt;
+        ebsd.id = s.id;
+        ebsd.rotations = s.rotations;
+        ebsd.phaseId = s.phaseId;
+        ebsd.CSList = s.CSList;
+        ebsd.prop = s.prop;      
         ebsd.scanUnit = s.scanUnit;
+        ebsd.phaseMap = s.phaseMap;
+        ebsd.unitCell = s.unitCell;
       end
       
       % ensure pos is set correctly
-      if isfield(ebsd.prop,'x')
+      if isfield(ebsd.prop,'x') && isempty(ebsd.pos)
         ebsd.pos = vector3d(s.prop.x,s.prop.y,0);
         ebsd.prop = rmfield(ebsd.prop,{'x','y'});
       end

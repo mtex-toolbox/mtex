@@ -33,6 +33,7 @@ if check_option(varargin,'parent')
 else
   ax = gca;
 end
+ax.Clipping = false;
 
 % length of the arrows
 if all(norm(vec)==1), vec = 1.2.*vec;end
@@ -50,6 +51,10 @@ end
 % do not change caxis
 cax = clim(ax);
 
+origin = get_option(varargin,'anchor',0);
+
+if isscalar(origin), origin = repmat(origin,size(vec)); end
+
 for i = 1:length(vec)
   
   v = vec.subSet(i);
@@ -64,14 +69,15 @@ for i = 1:length(vec)
   n = rotate(v.orth,rotation.byAxisAngle(v,linspace(0,2*pi,50)));
 
   % the hull of the arrow
-  hull = repmat(c,length(n),1) + reshape(n,[],1) * r;
-
+  hull = origin(i) + repmat(c,length(n),1) + reshape(n,[],1) * r;
+ 
   % plot as surface plot
   h(i) = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
     'facecolor','k','edgecolor','none'),varargin{:});
-
-  h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-
+  
+  if ~check_option(varargin,'DisplayName')
+    h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+  end
 end
 
 
@@ -80,7 +86,7 @@ end
 clim(ax,cax);
 
 % set axis to 3d
-axis(ax,'equal');
+if ~ishold, axis(ax,'equal');end
 
 % increase box limits if required
 %bounds = [-1 1] * max(max(norm(vec)));

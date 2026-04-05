@@ -1,5 +1,5 @@
 function [obj,ind] = discreteSample(obj,points,varargin)
-% take a diskrete sample from a list of vectors, orientations, grains, EBSD
+% take a discrete sample from a list of vectors, orientations, grains, EBSD
 %
 % Syntax
 %
@@ -25,7 +25,7 @@ function [obj,ind] = discreteSample(obj,points,varargin)
 %
 % Output
 %  obj    - same as first input
-%  ind    - indeces of the selected subsamples
+%  ind    - indices of the selected subsamples
 
 
 if isa(obj,'function_handle')

@@ -23,11 +23,24 @@ opt = delete_option(varargin,...
 ipfSec = newODFSectionPlot(ori.CS,ori.SS,varargin{:});
 
 % Plot ipfSection
-plotSection(orientation.nan,opt{:});
+plotSection(orientation.id,'MarkerSize',0.0001,opt{:});
+
+
+% The Symmetry has to be properGroup to prevent mirroring on Boundaries of the Fundamental Region
+% But we want the orientation-line-segment to start in the section.
+% Hence, we may have to use the mirroring orientations instead.
+if ~ori.CS.isProper
+  o = ori.subSet(1).symmetrise;
+  id = find( ipfSec.sR.checkInside( o .\ ipfSec.r1 ) );
+    
+  ori.CS = ori.CS.properGroup;
+  if all((o.subSet(id).i)~=0)
+    ori.i = 1;
+  end  
+end
 
 % Find the path of vectors
 v = ori .\ ipfSec.r1;
-v.CS=v.CS.properGroup;
 [v(1),sym] = project2FundamentalRegion(v(1));
 for i=2:length(v)
   [v(i),sym(i)] = project2FundamentalRegion(v(i),v(i-1));

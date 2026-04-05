@@ -13,6 +13,12 @@ function h = quiver3(SO3VF,varargin)
 % SO3VectorField/plot
 %
 
+% only plot the real part of SO3VF
+if ~SO3VF.isReal
+  warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
+    'In the following only the real part is plotted.'])
+  SO3VF.isReal=1;
+end
 
 % generate a new 3d projection of the orientation space
 oP = newOrientationPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,'project2FundamentalRegion',...

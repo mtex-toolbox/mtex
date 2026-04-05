@@ -74,6 +74,7 @@ classdef dynOption
     
     % --------------------------------------------
     function dOpt = rmOption(dOpt,varargin)
+      if isempty(fieldnames(dOpt.opt)), return; end
       for i = 1:numel(varargin)
         if isfield(dOpt.opt,varargin{i})
           dOpt.opt = rmfield(dOpt.opt,varargin{i});

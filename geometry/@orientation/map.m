@@ -49,10 +49,19 @@ if isa(varargin{1},'Miller')
   ori.CS = varargin{1}.CS; 
   if ~isempty(sym), ori.SS = sym{1}; end
 else
-  if ~isempty(sym), ori.CS = sym{1}; end
+  if ~isempty(sym)
+    ori.CS = sym{1};
+  else
+    ori.CS = specimenSymmetry.default;
+    ori.CS.how2plot = varargin{1}.how2plot;
+  end
 end
 
-if isa(varargin{2},'Miller'), ori.SS = varargin{2}.CS; end
+if isa(varargin{2},'Miller')
+  ori.SS = varargin{2}.CS; 
+else
+  ori.SS.how2plot = varargin{2}.how2plot;
+end
 
 if length(sym) == 2
   ori.CS = sym{1};

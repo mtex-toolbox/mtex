@@ -16,6 +16,7 @@ properties(Dependent = true)
   x
   y
   z
+  isReal
 end
 
 % The SO3TangentField objects have a inner tangent space representation.
@@ -155,6 +156,9 @@ methods
   function bw = get.bandwidth(SO3VF), bw = SO3VF.SO3F.bandwidth; end
   function SO3VF = set.bandwidth(SO3VF,bw), SO3VF.SO3F.bandwidth = bw; end
   
+  function r = get.isReal(SO3VF), r = SO3VF.SO3F.isReal; end  
+  function SO3VF = set.isReal(SO3VF,r), SO3VF.SO3F.isReal = r; end
+
   function x = get.x(SO3VF), x = SO3VF.SO3F(1); end
   function y = get.y(SO3VF), y = SO3VF.SO3F(2); end
   function z = get.z(SO3VF), z = SO3VF.SO3F(3); end
@@ -167,6 +171,7 @@ end
 methods(Static = true)
   SO3VF = approximate(f, varargin)
   SO3VF = interpolate(nodes, values, varargin)
+  SO3VF = example(varargin)
 end
 
 end

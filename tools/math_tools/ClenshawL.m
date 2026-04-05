@@ -1,5 +1,5 @@
 function s = ClenshawL(c,x)
-% Clenshaw algorithmus for evaluating Legendre series
+% Clenshaw algorithm for evaluating Legendre series
 %
 % Description
 %
@@ -19,7 +19,7 @@ dn = zeros(size(x));
 d1 = zeros(size(x));
 d2 = zeros(size(x));
 
-% use backward tree term recurence
+% use backward tree term recurrence
 for l = length(c)-2:-1:1
   
   d1 = d2 + (2*l+1)/(l+1) * x .* dn;

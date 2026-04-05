@@ -1,1 +1,0 @@
-%% uniformComponent_index.m

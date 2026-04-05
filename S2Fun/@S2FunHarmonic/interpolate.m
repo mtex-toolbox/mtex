@@ -1,4 +1,4 @@
-function sF = interpolate(nodes, y, varargin)
+function [sF,lsqrParameters] = interpolate(nodes, y, varargin)
 % Interpolate an S2FunHarmonic by given function values at given points on
 % the sphere.
 %
@@ -12,6 +12,9 @@ function sF = interpolate(nodes, y, varargin)
 % Syntax
 %   sF = S2FunHarmonic.interpolate(nodes, val)
 %   sF = S2FunHarmonic.interpolate(nodes, val, 'bandwidth', bandwidth, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
+%   sF = S2FunHarmonic.interpolate(nodes,val,'regularization',0) % no regularization
+%   sF = S2FunHarmonic.interpolate(nodes,val,'regularization',1e-4,'SobolevIndex',2)
+%   [sF,lsqrParameters] = S2FunHarmonic.interpolate(___)
 %
 % Input
 %  nodes - @vector3d (grid on sphere)
@@ -66,7 +69,7 @@ regularize = lambda > 0;
 What = get_option(varargin,'fourier_weights');
 if isempty(What) && regularize 
   SobolevIndex = get_option(varargin,'SobolevIndex',2);
-  What = (2*(0:bw)+1).^(2*SobolevIndex);
+  What = (1+(0:bw).*((0:bw)+1)).^(SobolevIndex);
   What = repelem(What,1:2:(2*bw+1))';
 end
 
@@ -80,6 +83,7 @@ else
   W = W(ind);
 end
 W = sqrt(W(:));
+varargin = delete_option(varargin,'weights',1);
 
 b = W.*y;
 if regularize
@@ -92,23 +96,32 @@ maxit = get_option(varargin, 'maxit', 40);
 
 % create plan
 xi = S2FunHarmonic(0); xi.bandwidth=bw;
-xi.eval(nodes,'createPlan');
-S2FunHarmonic.adjoint(nodes,y(:,1),'createPlan','bandwidth',bw);
+xi.eval(nodes,'createPlan',varargin{:});
+S2FunHarmonic.adjoint(nodes,y(:,1),'createPlan','bandwidth',bw,varargin{:});
+
+% Preallocate Storage for LSQR outputs
+fhat = zeros((bw+1)^2,size(y,2));
+flag = zeros(1,size(y,2));
+relres = zeros(1,size(y,2));
+iter = zeros(1,size(y,2));
+resvec = cell(1,size(y,2));
+lsvec = cell(1,size(y,2));
 
 % least squares solution
 for index = 1:size(y,2)
-  [fhat(:, index), flag(index)] = lsqr(...
-    @(x, transp_flag) afun(transp_flag, x, nodes, W, bw, mask, regularize, lambda, What, varargin), ...
+  [fhat(:, index), flag(index),relres(index),iter(index),resvec{index},lsvec{index}] = lsqr(...
+    @(x, transp_flag) afun(transp_flag, x, nodes, W, bw, mask, regularize, lambda, What, varargin{:}), ...
     b(:, index), tol, maxit);
   fhat(:, index) = mask*fhat(:, index);
 end
 if any(flag == 1)
   warning('lsqr:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
 end
+lsqrParameters = {flag,relres,iter,resvec,lsvec};
 
 % kill plan
-S2FunHarmonic.adjoint(1,1,'killPlan');
-S2FunHarmonic(1).eval(1,'killPlan');
+S2FunHarmonic.adjoint(1,1,'killPlan',varargin{:});
+S2FunHarmonic(1).eval(1,'killPlan',varargin{:});
 
 sF = S2FunHarmonic(fhat);
 sF.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
@@ -130,7 +143,7 @@ if strcmp(transp_flag, 'transp')
   end
   x = x .* W;
   % F = S2FunHarmonic.adjoint(nodes,x,'bandwidth',bw);
-  F = S2FunHarmonic.adjoint(nodes,x,'keepPlan','bandwidth',bw);
+  F = S2FunHarmonic.adjoint(nodes,x,'keepPlan','bandwidth',bw,varargin{:});
   y = mask * F.fhat;
   if regularize
     y = y + u .* (sqrt(lambda)*sqrt(What));
@@ -140,7 +153,7 @@ elseif strcmp(transp_flag, 'notransp')
 
   F = S2FunHarmonic(mask * x);
   F.bandwidth = bw;
-  y = F.eval(nodes,'keepPlan');
+  y = F.eval(nodes,'keepPlan',varargin{:});
   y = y .* W;
   if regularize
     y = [y;F.fhat .* (sqrt(lambda)*sqrt(What))];

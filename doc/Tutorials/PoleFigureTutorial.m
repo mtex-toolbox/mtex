@@ -1,7 +1,7 @@
 %% Pole Figure Tutorial
 %
 %%
-% This tutorial explains the basic concepts for ananyzing x-ray, synchrotron
+% This tutorial explains the basic concepts for analyzing x-ray, synchrotron
 % and neutron diffraction pole figure data.
 %
 %% Import pole figure diffraction data
@@ -122,7 +122,7 @@ odf = calcODF(pf,'silent')
 % To check how well your reconstructed ODF fits the measured pole figure
 % data use
 
-figure;plotPDF(odf,pf.h)
+plotPDF(odf,pf.h)
 
 %%
 % Compare the recalculated pole figures with the measured data. 

@@ -3,6 +3,7 @@ function display(SO3F,varargin)
 
 if ~check_option(varargin,'skipHeader')
   displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
+  if ~SO3F.isReal, disp('  isReal: false'); end
   if SO3F.antipodal, disp('  antipodal: true'); end
   if numel(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
   disp(' ');

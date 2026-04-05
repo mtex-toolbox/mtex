@@ -21,39 +21,52 @@ if isnumeric(q), q = axis2quat(zvector,q);end
 [x,y,z] = double(v); x = x(:).'; y = y(:).'; z = z(:).';
 
 %rotation
-v.x = (a.^2+b.^2-c.^2-d.^2)*x + 2*( (a.*c+b.*d)*z + (b.*c-a.*d)*y );
-v.y = (a.^2-b.^2+c.^2-d.^2)*y + 2*( (a.*d+b.*c)*x + (c.*d-a.*b)*z );
-v.z = (a.^2-b.^2-c.^2+d.^2)*z + 2*( (a.*b+c.*d)*y + (b.*d-a.*c)*x );
+xx = (a.^2+b.^2-c.^2-d.^2)*x + 2*( (a.*c+b.*d)*z + (b.*c-a.*d)*y );
+yy = (a.^2-b.^2+c.^2-d.^2)*y + 2*( (a.*d+b.*c)*x + (c.*d-a.*b)*z );
+zz = (a.^2-b.^2-c.^2+d.^2)*z + 2*( (a.*b+c.*d)*y + (b.*d-a.*c)*x );
 
 % apply inversion if needed
 if isa(q,'rotation')
   ind = isImproper(q);
-  v.x(ind,:) = -v.x(ind,:);
-  v.y(ind,:) = -v.y(ind,:);
-  v.z(ind,:) = -v.z(ind,:);
+  if any(ind(:))
+    xx(ind,:) = -xx(ind,:);
+    yy(ind,:) = -yy(ind,:);
+    zz(ind,:) = -zz(ind,:);
+  end
 end
 
-% normal result is length(q) x length(v)
-% special cases are when length(q) == 1 or length(v)==1
-if isscalar(v)
-  v = reshape(v,size(q));
-elseif isscalar(q)
-  v = reshape(v,size(v));
-end
+v = setXYZ(v,xx,yy,zz);
+%v = vector3d(xx,yy,zz);
 
 % remove any stored theta / rho angles
-v = rmOption(v,'theta','rho');
+if ~isempty(fieldnames(v.opt)), v = rmOption(v,'theta','rho'); end
 
-% if output has symmetry set it to Miller
+% if q is orientation change reference frame / plottingConvention
 if isa(q,'orientation')
   
+  % if output has symmetry convert to Miller
   if isa(q.SS,'crystalSymmetry')
     v = Miller(v,q.SS);
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
     
-  else % convert to vector3d 
-    v = vector3d(v);
+  else
+
+    % convert to vector3d
+    if isa(v,"Miller"), v = vector3d(v); end
+
+    v.how2plot = q.SS.how2plot;
+
   end
 
 end
+
+% normal result is length(q) x length(v)
+% special cases are when length(q) == 1 or length(v)==1
+if isscalar(x) && ~isscalar(a)
+  v = reshape(v,size(a));
+elseif isscalar(a) && ~isscalar(x)
+  v = reshape(v,size(x));
+end
+
+

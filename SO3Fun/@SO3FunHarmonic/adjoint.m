@@ -104,10 +104,14 @@ else
 end
 
 % check for Inf-values (quadrature fails)
-if any(isinf(values))
-  error('There are poles at some quadrature nodes.')
+if any(isinf(values(:)))
+  ind = isinf(values);
+  m = max( abs(values(~ind)) ,[],'all')*1e+10;
+  values(ind) = sign(values(ind)) .* m;
+  warning(['There are poles at some quadrature nodes. They are set to +-',num2str(m,3),'.'])
+  % error('There are poles at some quadrature nodes.')
 end
-if any(isnan(values))
+if any(isnan(values(:)))
   warning('There are Nan values in some nodes. They are set to 0.')
   values(isnan(values)) = 0;
 end
@@ -136,15 +140,15 @@ if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'Clensha
   %                         It is the default value
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
-    fftw_flag = int8(64);
-    nfft_flag = int8(0);
+    fftw_flags = int8(64);
+    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft_cutoff parameter
     m = get_option(varargin,'cutoffParameter',4);
   % oversampling factor
     sigma = 3;
     fftw_size = 2*ceil(sigma/2*NN);
   % initialize nfft plan
-  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flag,fftw_flag});
+  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,(Euler(rot(:),'nfft').')/(2*pi));
@@ -229,9 +233,10 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
 end
 % use adjoint Wigner transform
 fhat = zeros(deg2dim(N+1),len);
+pC = progressCounter(len);
 for i=1:len
-  progress(i,len)
   fhat(:,i) = wignerTrafoAdjointmex(N,ghat(:,:,:,i),flags,sym);
+  pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
 

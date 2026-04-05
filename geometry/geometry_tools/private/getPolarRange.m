@@ -14,7 +14,10 @@ bounds.FR = {0,pi,0,2*pi};
 bounds.VR{3} = get_option(varargin,'minRho',bounds.FR{3});
 bounds.VR{4} = get_option(varargin,'maxRho',bounds.FR{4});
 
-if check_option(varargin,'lower')
+sR = getClass(varargin,'sphericalRegion');
+
+if ~isempty(sR)
+elseif check_option(varargin,'lower')
   bounds.FR(1:2) = {pi/2,pi};  
 else
   bounds.FR{1} = 0;
@@ -43,7 +46,7 @@ end
 bounds.dtheta = bounds.VR{2} - bounds.VR{1};
 bounds.drho = bounds.VR{4} - bounds.VR{3};
 
-% resrict theta and rho range
+% restrict theta and rho range
 if check_option(varargin,'restrict2MinMax'), bounds.FR = bounds.VR; end
 
 % number of points and resolution

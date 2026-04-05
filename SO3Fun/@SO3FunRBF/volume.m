@@ -29,7 +29,7 @@ end
 
 % for large angles or specimen symmetry take the quadrature based algorithm
 if radius > pi / SO3F.CS.multiplicityZ || ...
-    length(SO3F(1).SS) > 1
+    numSym(SO3F(1).SS) > 1
   
   [v,varargout{1:nargout-1}] = volume@SO3Fun(SO3F,center,radius,varargin{:});
   

@@ -9,9 +9,8 @@ function h = plot(grains,varargin)
 %   plot(grains,property,'LineStyle','none')  % adapt LineStyle
 %
 % Input
-%  grains  - @grain3d
-%  property- n x 1 numeric or orientation
-%
+%  grains   - @grain3d
+%  property - n x 1 numeric or orientation
 %
 % See also
 % grain2d/plot grain3Boundary/plot
@@ -21,7 +20,7 @@ function h = plot(grains,varargin)
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit','um','parent',mtexFig.gca,...
-  varargin{:}, grains.how2plot);
+  'micronbar','off',varargin{:}, grains.how2plot);
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -53,9 +52,12 @@ if nargin>1 && isa(varargin{1},'orientation')
 
   faceColor = 0.5 .* ones(size(F,1),3);
 
-  isouter = sum(grains.I_GF ,1)';
-  faceColor(isouter==1,:) = grainColor(id2ind(grains,gB.grainId(isouter==1,1)),:);
-  faceColor(isouter==-1,:) = grainColor(id2ind(grains,gB.grainId(isouter==-1,2)),:);
+  % determine which is the outer face
+  isouter = full(sum(grains.I_GF ,1)).' ~=0;
+  [grainId,~] = find(grains.I_GF(:,isouter));
+
+  % use the corresponding color
+  faceColor(isouter,:) = grainColor(grainId,:);
 
 elseif nargin>1 && isnumeric(varargin{1})
   % color by property
@@ -68,10 +70,13 @@ elseif nargin>1 && isnumeric(varargin{1})
 
   faceColor = NaN(size(F,1),size(grainColor,2));
 
-  isouter = sum(grains.I_GF ,1)';
-  faceColor(isouter==1,:) = grainColor(gB.grainId(isouter==1,1),:);
-  faceColor(isouter==-1,:) = grainColor(gB.grainId(isouter==-1,2),:);
-  
+  % determine which is the outer face
+  isouter = full(sum(grains.I_GF ,1)).' ~=0;
+  [grainId,~] = find(grains.I_GF(:,isouter));
+
+  % use the corresponding color
+  faceColor(isouter,:) = grainColor(grainId,:);
+
 elseif check_option(varargin,'FaceColor')
 
   faceColor = str2rgb(get_option(varargin, 'FaceColor'));
@@ -80,12 +85,15 @@ elseif check_option(varargin,'FaceColor')
 else
   % color by phase
 
-  grainColor = [1,1,1 ; grains.color];
+  grainColor = grains.colorList;
   faceColor = 0.5 .* ones(size(F,1),3);
 
-  isouter = sum(grains.I_GF ,1)';
-  faceColor(isouter==1,:) = grainColor(gB.phaseId(isouter==1,1),:);
-  faceColor(isouter==-1,:) = grainColor(gB.phaseId(isouter==-1,2),:);
+  % determine which is the outer face
+  isouter = full(sum(grains.I_GF ,1)).' ~=0;
+  [grainId,~] = find(grains.I_GF(:,isouter));
+
+  % use the corresponding color
+  faceColor(isouter,:) = grainColor(grains.phaseId(grainId),:);
 
 end
 

@@ -23,24 +23,17 @@ function [c,center] = doHClustering(obj,varargin)
 %   ori = odf.discreteSample(3000);
 %
 %   % find the clusters and its centers
-%   tic; [c,centerRec] = calcCluster(ori,'method','hierarchical','numCluster',5); toc
+%   [c,centerRec] = calcCluster(ori,'method','hierarchical','numCluster',5);
 %
 %   % visualize result
-%   oR = fundamentalRegion(cs)
-%   plot(oR)
-% 
-%   hold on
-%   plot(ori,ind2color(c))
-%   caxis([1,5])
-%   plot(center,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
-%   plot(centerRec,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
-%   hold off 
+%   plot(ori,ind2color(c),'axisAngle')
 %
 %   %check the accuracy of the recomputed centers
 %   min(angle_outer(center,centerRec)./degree)
 %
+%   % alternative approach to compute the cluster centers
 %   odfRec = calcDensity(ori)
-%   [~,centerRec2] = max(odfRec,5)
+%   [~,centerRec2] = max(odfRec,'numLocal',5);
 %   min(angle_outer(center,centerRec2)./degree)
 %
 

@@ -28,13 +28,20 @@ if check_option(varargin,'right')
     SO3F.CS = crystalSymmetry;
   end
 
-  SO3F.h = inv(rot) * SO3F.h;  %#ok<MINV>
+  for k = 1:length(SO3F)
+    newH{k} = unique(inv(rot) .* SO3F.h.symmetrise('unique'));
+  end
+  numH(k) = cellfun(@numel,newH);
+  SO3F.h = vertcat(newH{:});
+  SO3F.r = repelem(SO3F.r,numH,1);  
+  SO3F.weights = repelem(SO3F.weights ./ numH,numH,1);
+ 
 else
   if isa(rot,'orientation')
     assert(rot.CS == SO3F.SS,'symmetry missmatch')    
   elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = specimenSymmetry;
+    SO3F.SS = specimenSymmetry.default;
   end
 
   SO3F.r = rot * SO3F.r;

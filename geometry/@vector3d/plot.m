@@ -15,7 +15,7 @@ function varargout = plot(v,varargin)
 %   rgb - [r g b] list of colors
 %
 % Options
-%  Marker           - 'square', 'triangle', 'o','diamond' 
+%  Marker           - e.g. 'square', 'triangle', 'o','diamond' ,'x', 'p',..
 %  MarkerSize       -
 %  MarkerFaceColor  -
 %  MarkerEdgeColor  -

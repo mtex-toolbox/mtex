@@ -11,7 +11,7 @@
 % where $P_m^{|l|}\colon[-1,1]\to\mathbb R$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
 % associated Legendre-Polynomials defined by
 %
-% $$ P_m^l(x) = \sqrt{(m-l)!}{(m+l)!} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
+% $$ P_m^l(x) = \sqrt{\frac{(m-l)!}{(m+l)!}} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
 %
 % and $P_m\colon[-1,1]\to\mathbb R$ denotes the Legendre polynomials
 % given by their corresponding Rodrigues formula
@@ -31,7 +31,7 @@ sphericalY(1,v)
 % The spherical harmonics form an orthonormal basis in $L_2(\mathbb S^2)$.
 % Hence we describe functions on the 2-sphere by there harmonic
 % representation using the class <S2FunHarmonicRepresentation.html
-% S2FunHarmonic>.
+% |S2FunHarmonic|>.
 %
 % With that we define the spherical harmonic $Y_1^1$ by
 
@@ -39,7 +39,7 @@ Y = S2FunHarmonic([0;0;0;1])
 Y.eval(v)
 
 %%
-% Various normalizations for the sperical harmonics are common in the
+% Various normalization for the spherical harmonics are common in the
 % literature.
 %
 % Here we define the $L_2$-norm by
@@ -57,7 +57,7 @@ Y.eval(v)
 norm(Y)
 
 %%
-% To concluse this section we plot the first ten spherical harmonics
+% To conclude this section we plot the first ten spherical harmonics
 
 surf(S2FunHarmonic(eye(10)))
 

@@ -13,11 +13,11 @@ function inside = checkInside(oR,q,varargin)
 %  id - @logical
 %
 % Options
-%  'tolerance' - tolerance on the Grain Boundary (1e-3)
+%  'tolerance' - tolerance at the region boundary (default: 1e-3)
 %
 
 % get tolerance
-tol = get_option(varargin,'tolerance',1e-3);
+tol = 0.5*get_option(varargin,'tolerance',2e-3);
 
 % avoid q beeing orientation
 q = quaternion(q);
@@ -27,7 +27,7 @@ if isempty(q), inside = false(size(q)); return; end
 
 if oR.CS1 == crystalSymmetry & oR.CS2 == crystalSymmetry & oR.antipodal
   d = dot_outer(oR.N,q);
-  inside = all(d>tol,1);
+  inside = all(d>=tol,1);
   return
 end
 
@@ -35,7 +35,7 @@ end
 d = dot_outer(oR.N,q);
 
 % either q or -q needs to satisfy the condition
-inside = reshape(all(d<tol,1) | all(d>-tol,1),size(q));
+inside = reshape(all(d<=tol,1) | all(d>=-tol,1),size(q));
  
 end
  

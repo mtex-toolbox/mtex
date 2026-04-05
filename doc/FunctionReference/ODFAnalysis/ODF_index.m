@@ -1,4 +1,0 @@
-%% Orientation Density Functions
-%
-%%
-%

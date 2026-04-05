@@ -4,7 +4,7 @@
 %
 % In MTEX it is possible to consider three dimensional vectors either as
 % directions or as axes. The key option to distinguish between both
-% interpretations is *antipodal*.
+% interpretations is |'antipodal'|.
 %
 % Consider a pair of vectors
 
@@ -19,18 +19,18 @@ plot([v1,v2],'label',{'v_1','v_2'})
 %%
 % These vectors will appear either on the upper or on the lower hemisphere.
 % In order to treat these vectors as axes, i.e. in order to assume
-% antipodal symmetry - one has to use the keyword *antipodal*.
+% antipodal symmetry - one has to use the keyword |'antipodal'|.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
-% Now the direction *v_2* is identified with the direction *-v_2* which
-% plots at the upper hemisphere.
-
+% Now the direction |v2| is identified with the direction |-v2| which plots
+% at the upper hemisphere.
+%
 %% The Angle between Directions and Axes
 %
-% As a consequence the angle between two axes *v1*, *v2* will always be the
-% smallest angle between the directions *v1*, *v2* and *v1*, *-v2*, i.e. it
+% As a consequence the angle between two axes |v1|, |v2| will always be the
+% smallest angle between the directions |v1|, |v2| and |v1|, |-v2|, i.e. it
 % will always be smaller than 90 degree. In the absence of antipodal
 % symmetry we obtain
 
@@ -73,7 +73,7 @@ CS = pf.CS;
 % plot the first pole figure
 plot(pf({1}))
 
-% annotate a axis on the souther hemisphere
+% annotate a axis on the southern hemisphere
 annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
 
 %% Antipodal Symmetry in Recalculated Pole Figures
@@ -81,7 +81,7 @@ annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
 % However, in the case of pole figures calculated from an ODF antipodal
 % symmetry is in general not present.
 
-% some prefered orientation
+% some preferred orientation
 o = orientation.byEuler(20*degree,30*degree,0,'ZYZ',CS);
 
 % define an unimodal ODF

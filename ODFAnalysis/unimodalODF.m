@@ -52,19 +52,31 @@ if isempty(psi)
 end
 
 % get weights
-weights = get_option(varargin,'weights',ones(size(center))./length(center)./psi.A(1));
-assert(numel(weights) == length(center),...
-    'Number of orientations and weights must be equal!');
+weights = get_option(varargin,'weights',ones(numel(center),1)./length(center)./psi.A(1));
+if numel(center) == numel(weights)
+  weights = weights(:);
+end
+assert(size(weights,1) == numel(center),...
+    'Number of orientations and weights must be matching!');
+
 
 % remove to small values
 if ~check_option(varargin,{'nothinning','-nothinning','exact'})
-    id = weights./sum(weights(:)) > 1e-2 / psi.eval(1) / numel(weights);
-    try
-        center = center.subGrid(id);
-    catch
-        center = center(id);
+  sz = size(weights);
+  weights = weights(:,:);
+  id = weights./sum(weights,1) > 1e-2 / psi.eval(1) / numel(center);
+  id = any(id,2);
+  try
+    center = center.subGrid(id);
+  catch
+    if ~all(id)
+      center = center(id);
     end
-    weights = weights(id);
+  end
+  ind = id.*(1:length(weights))';
+  ind = ind(ind~=0);
+  weights = weights(ind,:);
+  weights = reshape(weights,[sum(id) sz(2:end)]);
 end
 
 odf = SO3FunRBF(center, psi, weights);

@@ -47,10 +47,11 @@ if isa(f,'function_handle')
   f = S2FunHandle(f,sym);
 end
 
-if f.antipodal
-  f.antipodal = 0;
-  varargin{end+1} = 'antipodal';
-end
+% commented out - seems to be obsolete and leads to misbehaviour for S2FunMLS
+% if f.antipodal
+  % f.antipodal = 0;
+  % varargin{end+1} = 'antipodal';
+% end
 
 bw = get_option(varargin,'bandwidth', 128);
 
@@ -62,6 +63,7 @@ end
 
 % evaluate on S2Grid
 values = f.eval(S2G);
+
 S2G.how2plot = getClass(varargin,'plottingConvention',S2G.how2plot);
 
 % ----------------------- (3) Do adjoint NSOFT ----------------------------

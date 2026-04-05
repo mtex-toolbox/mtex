@@ -33,7 +33,7 @@ odf = BinghamODF(kappa,U,cs)
 %%
 % Lets visualize the ODF as pole figures
 
-h = [Miller(0,0,1,cs) Miller(1,0,0,cs) Miller(1,1,1,cs)];
+h = Miller({0,0,1},{1,0,0},{1,1,1},cs);
 plotPDF(odf,h,'antipodal','silent','layout',[1 3]);
 
 %%
@@ -41,28 +41,83 @@ plotPDF(odf,h,'antipodal','silent','layout',[1 3]);
 
 plot(odf,'sections',6)
 
-%% The bipolar case and unimodal distribution
-% First, we define some unimodal odf
+%% Estimating the parameters of a Bingham distribution
+%
+% The importance of the Bingham distribution is that it is a quite low
+% dimensional model for an orientation distribution function that still is
+% flexible enough to represent different kinds of textures like fibers and
+% unimodal distributions. Furthermore, we may estimate Bingham distribution
+% from a set of individual orientations, coming e.g. from an EBSD
+% measurement or a plasticity simulation. In contrast to
+% <DensityEstimation.html kernel density estimation> estimating the
+% parameters of the Bingham distributions requires much less data. Lets
+% demonstrate the process of fitting a Bingham ODF to experimental data. To
+% this end we start with a randomly aligned fibre ODF
 
-odf_spherical = unimodalODF(orientation.rand(cs),'halfwidth',20*degree)
+odfTrue = fibreODF(fibre.rand(cs));
 
-plotPDF(odf_spherical,h,'antipodal','silent')
+plotPDF(odfTrue,h,'antipodal','silent')
 
 %%
-% Next, we simulate individual orientations from this odf, in a scattered
-% axis/angle plot in which the simulated data looks like a sphere
+% Next we use this fibre ODF to simulate only 2000 random orientations
+% using the command <SO3Fun.discreteSample.html |discreteSample|>
 
-ori_spherical = discreteSample(odf_spherical,10000);
-close all
-scatter(ori_spherical,'axisAngle')
+ori = discreteSample(odfTrue,2000);
+plot(ori,'add2all','MarkerEdgeColor','k',...
+  'MarkerSize',5,'MarkerFaceColor','none','MarkerEdgeAlpha',0.2)
 
 %%
-% From this simulated EBSD data, we can estimate the parameters of the
-% Bingham distribution,
+% To those simulated orientation data we can now fit a Bingham distribution
+% using the command <orientation.calcBinghamODF.html |calcBinghamODF|>
 
-odf_est = calcBinghamODF(ori_spherical)
+odf = calcBinghamODF(ori)
 
-plotPDF(odf_est,h,'antipodal','silent')
+plotPDF(odf,h,'antipodal','silent')
+
+%%
+% We observe an almost perfect fit between the original fibre ODF and the
+% Bingham distribution estimated from only 2000 randomly drawn
+% orientations.
+%
+%% Specific Bingham distributions
+%
+% In the following we present the three corner cases of the Bingham
+% distribution: the unimodal distribution, the fibre distribution, and the
+% spherical distribution.
+%
+% *The unimodal case*
+% A unimodal Bingham distribution with reference orientation |oriRef| and
+% |kappa=40| is constructed by
+
+% a modal orientation
+cs = crystalSymmetry('321');
+oriRef = orientation.byEuler(45*degree,0*degree,0*degree,cs);
+
+% the corresponding Bingham ODF
+odf = BinghamODF(20,oriRef)
+
+plot(odf,'sections',6,'silent','contourf','sigma')
+
+%%
+% *The fibre case*
+% For a fibre symmetric Bingham distribution we simply specify the fibre
+% and the first kappa parameter. The first two kappa parameters are allways
+% equal while the third and fourth are zero.
+
+f = fibre.rand(cs);
+odf = BinghamODF(20,f)
+
+plot(odf,'sections',6,'silent','sigma')
+
+%%
+% *The spherical case*
+% The spherical case is characterized by the fact that we have 3 equal non
+% zero kappa coefficients.
+
+odf = BinghamODF([10,10,10],quaternion(eye(4)),cs)
+
+plot(odf,'sections',6,'silent','sigma');
+
 
 %% TODO
 % 
@@ -81,7 +136,7 @@ plotPDF(odf_est,h,'antipodal','silent')
 % The spherical test case failed to reject for some level of
 % significance, hence we would dismiss the hypothesis prolate and oblate.
 
-%df_spherical = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
+%df_spherical = BinghamODF(kappa,U,cs)
 
 %%
 %
@@ -91,24 +146,24 @@ plotPDF(odf_est,h,'antipodal','silent')
 %% Prolate case and fiber distribution
 % The prolate case corresponds to a fiber.
 
-odf_prolate = fibreODF(fibre.rand(cs),'halfwidth',20*degree)
+%odf_prolate = fibreODF(fibre.rand(cs),'halfwidth',20*degree)
 
-plotPDF(odf_prolate,h,'upper','silent')
+%plotPDF(odf_prolate,h,'upper','silent')
 
 %%
 % As before, we generate some random orientations from a model odf. The
 % shape in an axis/angle scatter plot reminds of a cigar
 
-ori_prolate = discreteSample(odf_prolate,10000);
+%ori_prolate = discreteSample(odf_prolate,10000);
 
-plot(ori_prolate,'axisAngle')
+%plot(ori_prolate,'axisAngle')
 
 %%
 % We estimate the parameters of the Bingham distribution
 
-odf = calcBinghamODF(ori_prolate)
+%odf = calcBinghamODF(ori_prolate)
 
-plotPDF(odf,h,'upper','silent')
+%plotPDF(odf,h,'upper','silent')
 
 
 %%
@@ -125,31 +180,31 @@ plotPDF(odf,h,'upper','silent')
 % prolate. We construct the Bingham distribution from the parameters, it
 % might show some skewness
 
-odf_prolate = BinghamODF(kappa,U,cs)
+%odf_prolate = BinghamODF(kappa,U,cs)
 
-plotPDF(odf_prolate,h,'antipodal','silent')
+%plotPDF(odf_prolate,h,'antipodal','silent')
 
 %% Oblate case
 % The oblate case of the Bingham distribution has no direct counterpart in
 % terms of texture components, thus we can construct it straightforward
 
-odf_oblate = BinghamODF([50 50 50 0],eye(4),cs)
+%odf_oblate = BinghamODF([50 50 50 0],eye(4),cs)
 
-plotPDF(odf_oblate,h,'antipodal','silent')
+%plotPDF(odf_oblate,h,'antipodal','silent')
 
   %%
 % The oblate cases in axis/angle space remind on a disk 
 
-ori_oblate = discreteSample(odf_oblate,10000);
-close all
-scatter(ori_oblate,'axisAngle')
+%ori_oblate = discreteSample(odf_oblate,10000);
+%close all
+%scatter(ori_oblate,'axisAngle')
 
 %%
 % We estimate the parameters again
 
-odf = calcBinghamODF(ori_oblate)
+%odf = calcBinghamODF(ori_oblate)
 
-plotPDF(odf,h,'antipodal')
+%plotPDF(odf,h,'antipodal')
 
 %%
 % and do the tests
@@ -164,37 +219,11 @@ plotPDF(odf,h,'antipodal')
 % the spherical and oblate case are clearly rejected, the prolate case
 % failed to reject for some level of significance
 
-odf_oblate = BinghamODF(kappa, U,crystalSymmetry,specimenSymmetry)
+%odf_oblate = BinghamODF(kappa, U,cs)
 
 %%
 %
 
-plotPDF(odf_oblate,h,'antipodal','silent')
+%plotPDF(odf_oblate,h,'antipodal','silent')
 
 
-%%
-% *Bingham unimodal ODF*
-
-% a modal orientation
-cs = crystalSymmetry('-3m');
-mod = orientation.byEuler(45*degree,0*degree,0*degree,cs);
-
-% the corresponding Bingham ODF
-odf = BinghamODF(20,mod)
-
-plot(odf,'sections',6,'silent','contourf','sigma')
-
-%%
-% *Bingham fibre ODF*
-
-odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs)
-
-plot(odf,'sections',6,'silent','sigma')
-
-%%
-% *Bingham spherical ODF*
-
-
-odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs)
-
-plot(odf,'sections',6,'silent','sigma');

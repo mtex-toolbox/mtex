@@ -45,7 +45,7 @@ function [values,modes] = max(SO3F,varargin)
 % SO3Fun/min SO3Fun/max SO3Fun/calcComponents
 
 if isa(SO3F,'SO3FunHarmonic') && ~SO3F.isReal
-  SO3F = SO3F.isReal;
+  SO3F.isReal = 1;
   warning('By taking the maxima of SO3Funs, the functions should be real valued.')
 end
 if nargin>1 && isa(varargin{1},'SO3FunHarmonic') && ~varargin{1}.isReal
@@ -94,6 +94,7 @@ for k=1:numel(SO3F)
 end
 
 end
+
 
 
 

@@ -24,8 +24,7 @@ cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
 iN = zeros(1,cN);
-progress(0,cN,' estimate optimal kernel halfwidth: ');
-
+cP = progressCounter(cN,'caption',' estimate optimal kernel halfwidth: ');
 for i = 1:cN
   
   iN(i) = min(length(ori),i*pN);
@@ -48,8 +47,7 @@ for i = 1:cN
   
   %[cm,ci] = max(sum(c));
   %fprintf('%d ',ci);
-  progress(i,cN,' estimate optimal kernel halfwidth: ');
-  
+  cP.show(i);
   
 end
 %fprintf('\n');

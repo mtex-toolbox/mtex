@@ -6,8 +6,8 @@ function c = KLCV(ori,psi,varargin)
 %  psi - @SO3Kernel
 %
 % Options
-%  SamplingSize - number of samples
-%  PartitionSize - 
+%  samplingSize - number of samples
+%  partitionSize - 
 %
 % Output
 %  c - 
@@ -22,10 +22,8 @@ cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
 iN = zeros(1,cN);
-if ~check_option(varargin,'silent')
-  progress(0,cN,' estimating optimal kernel halfwidth: ');
-end
 
+pC = progressCounter(cN*length(psi),'caption',' estimating optimal kernel halfwidth: ',varargin{:});
 for i = 1:cN
   
   iN(i) = min(length(ori),i*pN);
@@ -43,10 +41,9 @@ for i = 1:cN
     
     % sum up
     c(i,k) = sum(log(sum(f,2)));
-  
-    if ~check_option(varargin,'silent')
-      progress((i-1)*length(psi)+k,cN*length(psi),' estimate optimal kernel halfwidth: ');
-    end
+     
+    pC.show((i-1)*length(psi)+k);
+
   end
   
   %[cm,ci] = max(sum(c));

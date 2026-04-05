@@ -22,18 +22,18 @@ function varargout = calcTaylor(eps,sS,varargin)
 %   L = logm(F)
 %
 %   % define a crystal orientation
-%   cs = crystalSymmetry('cubic')
-%   ori = orientation.byEuler(0,30*degree,15*degree,cs)
+%   cs = crystalSymmetry('cubic');
+%   ori = orientation.byEuler(0,30*degree,15*degree,cs);
 %
 %   % define a slip system
 %   sS = slipSystem.fcc(cs)
 %
 %   % compute the Taylor factor
-%   [M,b,spin] = calcTaylor(inv(ori)*L,sS.symmetrise)
+%   [M,b,W] = calcTaylor(inv(ori)*L,sS.symmetrise);
 %
 %   % update orientation
 %   oriNew = ori .* orientation(-W)
-
+%
 
 % the antisymmetry part of the strainRateTensor is directly the spin increment
 % spin = eps.antiSym;

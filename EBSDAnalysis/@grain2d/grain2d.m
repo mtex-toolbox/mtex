@@ -44,7 +44,7 @@ classdef grain2d < phaseList & dynProp
   end
   
   properties (Hidden = true)
-    inclusionId = []; % number of elements in poly that model inclusions    
+    inclusionId = []; % number of elements in poly that model inclusions
   end
   
   % general properties
@@ -161,14 +161,17 @@ classdef grain2d < phaseList & dynProp
       end
 
       % determine a normal direction such that the area is positive
-      grains.N = perp(grains.allV - grains.allV(1));
-      grains.N.antipodal = false;
-      if sum(grains.area) < 0, grains.N = -grains.N; end
-
-      % check for 3d plane
-      d=dot(grains.allV(1),grains.N);
-      assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
-        || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
+      if all(grains.allV.z==grains.allV.z(1))
+        grains.N = zvector;
+      else
+        grains.N = perp(discreteSample(grains.allV,100) - grains.allV(1));
+        grains.N.antipodal = false;
+        % check for 3d plane
+        d=dot(grains.allV(1),grains.N);
+        assert(max(abs(dot(grains.allV,grains.N)-d))<abs(d)*1e-5 ...
+          || max(abs(dot(grains.allV,grains.N)-d))<1e-11,'grains are not within one plane');
+        if sum(grains.area) < 0, grains.N = -grains.N; end
+      end
 
     end
     
@@ -315,12 +318,26 @@ classdef grain2d < phaseList & dynProp
       if isa(s,'grain2d')
         grains = s; 
       else
-        grains = EBSD(vector3d,s.rot,s.phaseId,s.CSList,s.prop);
-        grains.opt = s.opt;
-        grains.scanUnit = s.scanUnit;
+
+        grains = grain2d;
+        grains.poly = s.poly;
+        grains.id = s.id;
+        if isfield(s,'numPixel')
+          grains.numPixel = s.numPixel;
+        else
+          grains.numPixel = s.grainSize;
+        end
+        grains.inclusionId = s.inclusionId;
+        grains.boundary = s.boundary;
+        grains.innerBoundary = s.innerBoundary;
+        grains.phaseId = s.phaseId;
+        grains.CSList = s.CSList;
+        grains.phaseMap = s.phaseMap;
+        grains.prop = s.prop;
+
       end
       
-      % ensure V is vector3d
+      % ensure allV is vector3d
       if isa(grains.allV,'double')
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end

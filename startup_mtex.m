@@ -148,7 +148,8 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-exclPath = {'data','makeDoc','templates','nfft','ODF_Components_old','kernelFunctions','deprecated'};
+exclPath = {'data','makeDoc','templates','nfft','ODF_Components_old',...
+  'kernelFunctions','deprecated'};
 
 % exclude compatibility directories according to MATLAB version
 dirs = dir([local_path filesep 'compatibility' filesep 'less*']);
