@@ -126,6 +126,11 @@ end
 
 
 function res = J(v,c,f,psi,lambda,plan1)
+    % C = lambda*S2FunHarmonic.adjointNFSFT(v,c,'bandwidth',bw);
+    % psi = S2Kernel( sqrt(4*pi*(2*(0:psi.bandwidth)+1)).*sqrt(psi.A) );    % TODO: lambda_0 < 0 !!!
+    % C = conv(C-f,psi);
+    % res = norm(C).^2;
+
     [theta,rho] = polar(v(:)); %#ok<POLAR>
 
     % adjoint NFSFT
@@ -147,6 +152,10 @@ end
 
 
 function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
+    % C = lambda*S2FunHarmonic.adjointNFSFT(v,c,'bandwidth',bw);
+    % C = 4*pi*conv(C-f,psi);
+    % tanV = 2*lambda*real(C.grad(v)).*c;
+
     [theta,rho] = polar(v(:)); %#ok<POLAR>    
     
     % adjoint NFSFT 
