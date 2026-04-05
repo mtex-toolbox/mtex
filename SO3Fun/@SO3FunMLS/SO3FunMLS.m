@@ -51,7 +51,7 @@ classdef SO3FunMLS < SO3Fun
 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
-    s = crystalSymmetry;  % crystal symmetry
+    s = crystalSymmetry.default;  % crystal symmetry
 
     monomials   = true;   % use monomial basis? (much more stable than harmonic)
     centered    = true;   % center the basis function evaluation around the north pole?

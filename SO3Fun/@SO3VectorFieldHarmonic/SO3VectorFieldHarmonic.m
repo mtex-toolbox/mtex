@@ -39,8 +39,8 @@ end
 
 properties (Hidden = true)
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
-  hiddenCS symmetry = crystalSymmetry;
-  hiddenSS symmetry = specimenSymmetry;
+  hiddenCS symmetry = crystalSymmetry.default;
+  hiddenSS symmetry = specimenSymmetry.default;
 end
 
 methods

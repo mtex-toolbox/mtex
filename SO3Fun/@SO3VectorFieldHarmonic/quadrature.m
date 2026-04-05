@@ -98,9 +98,9 @@ if exist('rot','var')
     end    
   else
     if tS.isRight
-      rot.CS = crystalSymmetry;
+      rot.CS = crystalSymmetry.default;
     else
-      rot.SS = specimenSymmetry;
+      rot.SS = specimenSymmetry.default;
     end
   end
   

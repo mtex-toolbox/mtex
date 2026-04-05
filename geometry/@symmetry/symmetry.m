@@ -103,7 +103,7 @@ classdef symmetry < matlab.mixin.Copyable
 
     function out = ID1(sym)
       if isa(sym,'crystalSymmetry')
-        out = crystalSymmetry;
+        out = crystalSymmetry.default;
       elseif isa(sym,'specimenSymmetry')
         out = specimenSymmetry.default;
       end

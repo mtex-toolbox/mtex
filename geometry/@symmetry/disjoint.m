@@ -26,7 +26,7 @@ if isscalar(is1)
   if isa(s1,'specimenSymmetry') || isa(s2,'specimenSymmetry')
     s1 = specimenSymmetry.default;
   else
-    s1 = crystalSymmetry;
+    s1 = crystalSymmetry.default;
   end
   return; 
 end

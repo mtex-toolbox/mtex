@@ -51,7 +51,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
     % Subsequently, the surplus evaluations could be omitted, as we only 
     % have to evaluate on a sub-grid.
     fullG = quadratureSO3Grid(rot,crystalSymmetry,specimenSymmetry);
-    fun = SO3VF.SO3F; fun.CS = crystalSymmetry; fun.SS = specimenSymmetry;
+    fun = SO3VF.SO3F; fun.CS = crystalSymmetry.default; fun.SS = specimenSymmetry.default;
     xyz = evalEquispacedFFT(fun,fullG,varargin{:});
     xyz = reshape(xyz,[size(fullG.fullGrid) 3]);
     s = size(rot.fullGrid);

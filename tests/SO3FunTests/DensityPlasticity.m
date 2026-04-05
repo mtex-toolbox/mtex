@@ -35,7 +35,7 @@ plot(f3)
 clear
 
 f = SO3FunHarmonic(SantaFe); 
-f.CS = crystalSymmetry; f.SS = specimenSymmetry.default; f.antipodal = false;
+f.CS = crystalSymmetry.default; f.SS = specimenSymmetry.default; f.antipodal = false;
 % mean(f)
 
 phi = @(r) rotation.byEuler((Euler(r,'nfft')/2/pi).^[1,1,1.1]*2*pi);

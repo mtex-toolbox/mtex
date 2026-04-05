@@ -19,7 +19,7 @@ if check_option(varargin,'right')
   cs = SO3F.CS.rot;
   if length(cs)>2 && ~all(any(rot(:).' == cs(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = crystalSymmetry;
+    SO3F.CS = crystalSymmetry.default;
   end
 else
   ss = SO3F.SS.rot;

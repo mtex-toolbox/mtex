@@ -24,7 +24,7 @@ try
   gz = length(r);
   numpf = length(data)/gz;
   
-  cs = crystalSymmetry;
+  cs = crystalSymmetry.default;
   h = { Miller(1,0,0,cs), Miller(1,1,0,cs),  Miller(1,0,2,cs),  Miller(2,0,0,cs),...
     Miller(2,0,1,cs), Miller(1,1,2,cs),  Miller(2,1,1,cs),  Miller(1,1,3,cs)};
   if numpf > length(h), h(length(h)+1:numpf) = Miller(1,0,0); end
