@@ -248,12 +248,16 @@ classdef vector3d < dynOption
       b = isreal(v.x) & isreal(v.y) & isreal(v.z);
     end
 
-    function v = real(v)
-      v = vector3d(real(v.x),real(v.y),real(v.z));
+   function v = real(v)
+      v.x = real(v.x);
+      v.y = real(v.y);
+      v.z = real(v.z);
     end
 
     function v = imag(v)
-      v = vector3d(imag(v.x),imag(v.y),imag(v.z));
+      v.x = imag(v.x);
+      v.y = imag(v.y);
+      v.z = imag(v.z);
     end
     
   end
