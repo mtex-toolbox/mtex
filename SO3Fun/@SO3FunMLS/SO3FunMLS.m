@@ -111,6 +111,7 @@ classdef SO3FunMLS < SO3Fun
         [nodes, values] = uniqueData(nodes, values, 'median');
         warning(['Some duplicate Nodes have been removed. ' ...
           'The remaining nodes have been reshaped into a vector.']); 
+        % TODO: To much nodes are deleted.!!!!
       end
 
       % goal of reshaping:

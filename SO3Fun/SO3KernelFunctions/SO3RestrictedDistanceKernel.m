@@ -27,7 +27,7 @@ classdef SO3RestrictedDistanceKernel < SO3Kernel
   methods
     
     
-    function psi = S2RestrictedDistanceKernel(bw)
+    function psi = SO3RestrictedDistanceKernel(bw)
     
       % extract parameter and halfwidth
       if nargin == 0 
@@ -40,14 +40,14 @@ classdef SO3RestrictedDistanceKernel < SO3Kernel
      end
     
     
-    function value = eval(psi,t)
-      % evaluate the kernel function at nodes x
-
-      if isa(t,'vector3d'), t = dot(t,zvector); end
-
-      value  = -sqrt(8)*sin(acos(t)) ;
-      
-    end
+    % function value = eval(psi,t)
+    %   % evaluate the kernel function at nodes x
+    % 
+    %   if isa(t,'rotation'), t = cos(angle(t)); end
+    % 
+    %   value  = -sqrt(8)*sin(acos(t)) ;
+    % 
+    % end
 
     
     

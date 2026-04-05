@@ -40,14 +40,14 @@ classdef S2RestrictedDistanceKernel < S2Kernel
      end
     
     
-    function value = eval(psi,t)
-      % evaluate the kernel function at nodes x
-
-      if isa(t,'vector3d'), t = dot(t,zvector); end
-
-      value  = -2*sin(acos(t)/2);
-      
-    end
+    % function value = eval(psi,t)
+    %   % evaluate the kernel function at nodes x
+    % 
+    %   if isa(t,'vector3d'), t = dot(t,zvector); end
+    % 
+    %   value  = -2*sin(acos(t)/2);
+    % 
+    % end
 
     
     
