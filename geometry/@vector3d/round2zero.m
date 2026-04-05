@@ -1,7 +1,7 @@
 function v = round2zero(v,varargin)
 % set very small x,y,z values to zero
 
-wasNormalized = v.isNormalized || all(norm(v)==1);
+wasNormalized = v.isNormalized || all(all(norm(v)==1));
 s = size(v);
 
 if all(abs(v.x)<1e-6), v.x = zeros(s); end

@@ -40,15 +40,12 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
 
-  % remove any grid
-  if isa(ebsd,'EBSDHex'), ebsd = EBSD(ebsd); end
-
   % the center of rotation
   center = get_option(varargin,'center',vector3d(0,0,0));
   if ~isa(center,'vector3d'), center = vector3d(center(1),center(2),0); end
 
   % rotate positions
-  ebsd.pos = reshape(center + rot * (ebsd.pos - center),[],1);
+  ebsd.pos = center + rot .* (ebsd.pos - center);
 
   % rotate normal direction
   ebsd.N = rot * ebsd.N;
@@ -58,7 +55,6 @@ if ~check_option(varargin,'keepXY')
 
   % remove numerical errors
   ebsd.N = ebsd.N.round2zero;
-
   ebsd.pos = ebsd.pos.round2zero;
   ebsd.unitCell = ebsd.unitCell.round2zero;
   

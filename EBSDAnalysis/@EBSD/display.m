@@ -12,49 +12,54 @@ end
 disp(' ')
 
 % ebsd.phaseMap
-matrix = cell(numel(ebsd.phaseMap),5);
+matrix = cell(0,5);
+
 for ip = 1:numel(ebsd.phaseMap)
 
+  numPhase = nnz(ebsd.phaseId == ip);
+
+  if numPhase == 0, continue; end
+
   % phase
-  matrix{ip,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
+  matrix{end+1,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
 
   % orientations
-  numPhase = nnz(ebsd.phaseId == ip);
-  matrix{ip,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./numel(ebsd.phase)) '%)'];
+  matrix{end,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./numel(ebsd)) '%)'];
   
-    % mineral
+  % mineral
   CS = ebsd.CSList{ip};
   % abort in special cases
   if isempty(CS)
     continue
   elseif ischar(CS)
-    matrix{ip,3} = CS;  
+    matrix{end,3} = CS;  
     continue
   else
-    matrix{ip,3} = char(CS.mineral);
+    matrix{end,3} = char(CS.mineral);
   end
 
   % color
-  matrix{ip,4} = rgb2str(CS.color);
+  matrix{end,4} = rgb2str(CS.color);
   
   % symmetry
-  matrix{ip,5} = CS.pointGroup;
+  matrix{end,5} = CS.pointGroup;
 
   % reference frame
-  matrix{ip,6} = option2str(CS.alignment);
+  matrix{end,6} = option2str(CS.alignment);
 
 end
-
-% remove empty rows
-matrix(accumarray(ebsd.phaseId(ebsd.phaseId>0),1,[size(matrix,1) 1])==0,:) = [];
 
 cprintf(matrix,'-L',' ','-Lc',...
   {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
   '-d','  ','-ic',true);
 
 disp(' ');
-disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',reshape(ebsd.phase,size(ebsd)),...
-  'orientation',ebsd.rotations));
+if numel(ebsd)<=20
+  disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',reshape(ebsd.phase,size(ebsd)),...
+    'orientation',ebsd.rotations));
+else
+  disp(char(dynProp(ebsd.prop)));
+end
 disp(strong(" Scan unit") + " : " + ebsd.scanUnit);
 ext = ebsd.extent;
 disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',', ') + "] x [" + ...

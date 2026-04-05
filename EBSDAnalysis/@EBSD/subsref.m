@@ -25,6 +25,24 @@ if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
   end
 end
 
+if strcmp(s(1).type,'()') && ...
+    length(s)>1 && strcmp(s(2).type,'.') && strcmp(s(2).subs,'orientations')
+  
+  ind = subsind(ebsd,s(1).subs);
+  phaseId = checkSinglePhase(ebsd,ebsd.phaseId(ind(:)));
+
+  ori = orientation(ebsd.rotations(ind),ebsd.CSList{phaseId});
+
+  if numel(s)>2
+    [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));
+  else
+    varargout{1} = ori;
+  end
+  return
+  
+end
+
+
 % now the general case
 if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   
