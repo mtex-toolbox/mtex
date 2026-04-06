@@ -150,6 +150,21 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Test
   
 
@@ -181,6 +196,11 @@ for i = 1:10
   plot(rot)
   pause(1)
 end
+hold off
+
+plot3d(f,'AxisAngle')
+hold on
+plot(rot)
 hold off
 
 end
