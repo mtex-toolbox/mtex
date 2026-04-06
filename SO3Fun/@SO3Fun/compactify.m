@@ -123,11 +123,11 @@ end
 function res = J(ori,c,f,psi,lambda,bw)
 
   % adjoint NFSOFT
-  C = lambda*SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+  C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
 
   % convolute with Distance kernel
-  psi = SO3Kernel( sqrt(8)*pi*sqrt(2*(0:psi.bandwidth)+1).*sqrt(psi.A) );   % TODO: lambda_0 < 0 !!!!
-  C = conv(C-f*sqrt(8)*pi,psi);
+  psi = (sqrt(8)*pi) * SO3Kernel( sqrt(2*(0:psi.bandwidth)+1).*sqrt(psi.A) );   % TODO: lambda_0 < 0 !!!!
+  C = conv(C - (sqrt(8)*pi)*f,psi);
     
   % l2-norm
   res = norm(C).^2;
@@ -138,13 +138,13 @@ end
 function tanV = grad_J(ori,c,f,psi,lambda,bw)
 
   % adjoint NFSOFT
-  C = lambda*SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+  C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
 
   % convolute with Distance kernel
-  C = 8*pi^2*conv(C-f*sqrt(8)*pi,psi);
+  C = conv( C - (sqrt(8)*pi)*f , (8*pi^2) * psi);
 
   % evaluate rotational gradient on ori
-  tanV = 2*lambda*real(C.grad(ori)).*c;
+  tanV = 2*lambda*real( 1/(sqrt(8)*pi) * C.grad(ori) ).*c;
 
 end
 
@@ -169,13 +169,6 @@ f = SO3FunHarmonic(f);
 rot0 = equispacedSO3Grid(crystalSymmetry,'points',1000);
 rot0 = rot0(:);
 % rot0 = discreteSample(f,1000);
-% rot0 = rotation.byEuler(120*degree,60*degree,90*degree,'ZXZ');
-
-M = length(rot0);
-
-% psi = SO3DirichletKernel(51);
-% n=(0:51); psi = SO3Kernel(16*sqrt(2)/pi./((2*n-1).*(2*n+3)));
-psi = SO3RestrictedDistanceKernel(51); % psi = SO3Kernel(1/16*psi.A);
 
 hold off
 plot(f,'phi2',207*degree)
@@ -184,7 +177,7 @@ rot = rot0*rotation.byAxisAngle(vector3d(1,1,1),0.001*degree);
 plot(rot)
 pause(1)
 for i = 1:10
-  rot = compactify(f,'bandwidth',50,'points',rot,'maxIter',10,'kernel',psi,'weights',1/(sqrt(8)*pi)^1*ones(M,1)/M);
+  rot = compactify(f,'bandwidth',50,'points',rot,'maxIter',10);
   plot(rot)
   pause(1)
 end
