@@ -62,10 +62,6 @@ end
 
 dim = size(G_book, 2);
 
-if (dim == 1)
-
-end
-
 % we solve the regularized systems (G' * W * G + lambda * I) *c = G' * W * f
 % the regularization parameter depends on the condition of G' * W * G
 
@@ -73,12 +69,24 @@ end
 % a good choice is dependent on the degree of S2F, the density of the data, ...
 mincond = get_option(varargin, {'min_cond','mincond','min cond'}, 1e2);
 maxcond  = get_option(varargin, {'maxcond', 'max cond', 'max_cond' }, 1e5);
-alpha_min = 1;
-alpha_max = 1;
+alpha_min = 0;
+alpha_max = 2;
 exponent_p = get_option(varargin, 'p', 2);
 exponent_q = get_option(varargin, 'q', 2);
 basis_weights = get_option(varargin, ...
   {'basisweights','basis_weights','basis weights'}, ones(dim, 1), 'double');
+
+% adapt weights 
+% W_book = W_book ./ max(W_book, [], 1);
+% nn = size(G_book, 1);
+% k = round(nn * 1/2);
+% k = min(max(k, 1), nn);
+% wk = W_book(k,:,:);
+% % exponent is solution of wk^exponent = 1/x, where x is the argument of the first log 
+% exponent = -log(4) ./ log(wk); 
+% W_book = W_book .^ reshape(exponent, 1, 1, []);
+% W_book = W_book - min(W_book, [], 1);
+% W_book = W_book ./ max(W_book, [], 1);
 
 % create the gram matrices, scaled to have row- and column-norms equal to 1
 B_book = sqrt(W_book) .* G_book;
@@ -128,7 +136,9 @@ clear diag_in_page;
 
 % squeeze is needed to avoid dimension mismatch when dim = 1
 Gram_book(diag_idx) = squeeze(Gram_book(diag_idx)) + diag_offsets(:);
-c_book = pagemldivide(Gram_book, rhs_book) ./ pagetranspose(s_book);
+s2_book = sum(abs(Gram_book).^2, 1);
+% s2_book = ones(size(s_book));
+c_book = pagemldivide(Gram_book ./ s2_book, rhs_book) ./ pagetranspose(s_book .* s2_book);
 clear diag_idx diag_offsets rhs_book s_book;
 
 if (nargout > 1)

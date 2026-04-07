@@ -63,6 +63,8 @@ classdef S2FunMLS < S2Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -131,6 +133,8 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
+
+      S2F.searcher = createns(nodes.xyz);
 
       % reshape values accordingly
       values_size = size(values);

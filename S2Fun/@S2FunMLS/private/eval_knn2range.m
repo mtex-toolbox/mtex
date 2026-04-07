@@ -1,4 +1,6 @@
-function [vals, conds, warn_smallnn, warn_bignn] = eval_range(S2F, v, varargin)
+function [vals, conds, warn_smallnn, warn_bignn] = eval_knn2range(S2F, v, varargin)
+
+% idea: set delta to .99 times the distance to the (nn+1)-th neighbor
 
 % get parameters
 v = v(:);
@@ -7,87 +9,14 @@ vals = zeros(N, numel(S2F));
 conds = zeros(N, 1);
  
 % get the neighbors 
-ind = S2F.nodes.find(v, S2F.delta, 'searcher', S2F.searcher);
-nn = full(sum(ind, 2));
-
-warn_smallnn = false;
-warn_bignn = false;
-
-% for points with too few neighbors, we instead choose the S2F.dim nearest ones
-% NOTE: the expectation of the lebesgue constant is infinite in this setting
-too_few_neighbors = nn <= S2F.dim;
-if (sum(too_few_neighbors) > 0)
-  warn_smallnn = true;
-
-  % evaluate the critical nodes via knn-search instead of rangesearch
-  delta_original = S2F.delta;
-  oF_original = S2F.oF;
-  % for S2F.nn = S2F.dim, the expectation of the lebesgue constant is infinite
-  S2F.delta = 0;
-  S2F.oF = 1;
-  if (nargout == 2)
-    [temp, conds(too_few_neighbors)] = S2F.eval(v.subSet(too_few_neighbors), varargin{:});
-  else
-    temp = S2F.eval(v.subSet(too_few_neighbors), varargin{:});
-  end
-  vals(too_few_neighbors,:) = reshape(temp, sum(too_few_neighbors), numel(S2F));
-
-  S2F.oF = oF_original;
-  S2F.delta = delta_original;
-
-  if (sum(too_few_neighbors) == N)
-    return;
-  end
-end
-
-% for points with too many neighbors, we choose only the S2F.dim * S2F.oF_max nearest ones
-too_many_neighbors = nn > S2F.dim * S2F.oF_max;
-if (sum(too_many_neighbors) > 0)
-  warn_bignn = true;
-
-  % evaluate the critical nodes via knn-search instead of rangesearch
-  delta_original = S2F.delta;
-  oF_original = S2F.oF;
-  % for S2F.nn = S2F.dim, the expectation of the lebesgue constant is infinite
-  S2F.delta = 0;
-  S2F.oF = S2F.oF_max;
-  if (nargout == 2)
-    [temp, conds(too_many_neighbors)] = S2F.eval(v.subSet(too_many_neighbors), varargin{:});
-  else
-    temp = S2F.eval(v.subSet(too_many_neighbors), varargin{:});
-  end
-  vals(too_many_neighbors,:) = reshape(temp, sum(too_many_neighbors), numel(S2F));
-
-  S2F.oF = oF_original;
-  S2F.delta = delta_original;
-
-  if (sum(too_many_neighbors | too_few_neighbors) == N)
-    return;
-  end
-end
-
-
-% continue with the points that have neither too few nor many neighbors
-J = ~(too_few_neighbors | too_many_neighbors);
-J_idx = find(J);
-v = v.subSet(J);
-N = sum(J);
-[ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:});
-
-
-% if optimal subsampling is set to true, we can now fall back to the eval_knn case 
-%   where all neighborhoods have the same size (the dim of the ansatz space) 
-if (S2F.subsample == true && S2F.stableFind == false)
-  ind = S2F.find_optimal_subset(ind, v, varargin{:});
-end
-
+[ind, dist] = S2F.nodes.find(v, S2F.nn + 1, varargin{:}, 'searcher', S2F.searcher);
 
 % treat bad nodes separately, but only if the stablefind-option is true
 iscvx = S2F.checkConvexity(v, ind);
 if (S2F.stableFind && sum(iscvx) < N)
-  [valstmp, conds(J_idx(~iscvx))] = eval_stable(S2F, v.subSet(~iscvx), ...
+  [valstmp, conds(~iscvx)] = eval_stable(S2F, v.subSet(~iscvx), ...
     varargin{:}, S2F.stableFindOptions{:});
-  vals(J_idx(~iscvx),:) = reshape(valstmp, sum(~iscvx), numel(S2F));
+  vals(~iscvx,:) = reshape(valstmp, sum(~iscvx), numel(S2F));
   clear valstmp;
 
   % restrict varibales to their new domain (where iscvx is true)
@@ -99,11 +28,20 @@ else
   iscvx = true(N, 1);
 end
 
-[grid_id, v_id] = find(ind');
-nn = sum(ind, 2);
+% set delta to 99% of distance of (nn+1)-th neighbor
+% throw away points that are outside this delta-range
+% create index vectors, since neighborhoods now have different sizes
+delta = dist(:, end) * .99;
+inrange = (dist < delta)';
+nn = sum(inrange, 1)';
 nn_total = sum(nn);
-clear ind;
+v_id = repelem((1:N)', nn);
 
+ind = ind';
+grid_id = ind(inrange);
+clear ind;
+dist = dist';
+dist = dist(inrange);
 
 if (S2F.subsample == true && S2F.stableFind == false)
   dist = angle(v.subSet(v_id), S2F.nodes.subSet(grid_id));
@@ -160,8 +98,7 @@ G = G.';
 % compute the weights
 % dist(find(ind)) instead of nonzeros(dist), since elements of v might be
 %   contained in S2F.nodes ==> distance 0, but in neighborhood
-I = sub2ind(size(dist), v_id, grid_id);
-weights = S2F.w(dist(I) / S2F.delta);
+weights = S2F.w(dist ./ repelem(delta, nn, 1));
 clear dist I;
 
 if (S2F.detectOutliers == true)
@@ -176,14 +113,14 @@ grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 f = grid_vals(grid_id,:);
 
 if S2F.regularize
-  [c_book, conds(J_idx(iscvx))] = solve_lsq_book_varsize(weights, G, f, nn, ...
+  [c_book, conds(iscvx)] = solve_lsq_book_varsize(weights, G, f, nn, ...
     'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
     'basis_weights', S2F.basis_weights, varargin{:});
 else
-  [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
+  [c_book, conds(iscvx)]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
 end
 
-vals(J_idx(iscvx),:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
+vals(iscvx,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
 if isalmostreal(S2F.values)
   vals = real(vals); 
