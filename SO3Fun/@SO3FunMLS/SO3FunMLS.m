@@ -82,6 +82,10 @@ classdef SO3FunMLS < SO3Fun
                           %   number that is bigger, if the value is an outlier
     SLeft
     SRight
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   % TODO: symmetrise w.r.t one symmetry.
@@ -377,6 +381,18 @@ classdef SO3FunMLS < SO3Fun
 
     function oI = get.outlierIndicators(SO3F)
       oI = computeOutlierIndicators(SO3F);
+    end
+
+    function fd = get.fill_distance(SO3F)
+      eg = equispacedSO3Grid(crystalSymmetry(), 'resolution', 3*degree);
+      [~, d] = knnsearch(SO3F.searcher, eg.abcd, 'K', 1);
+      fd = max(d);
+    end
+
+    function sd = get.separation_distance(SO3F)
+      [~, d] = knnsearch(SO3F.searcher, SO3F.nodes.abcd, 'K', 2);
+      d = d(:,2);
+      sd = min(d);
     end
 
   end
