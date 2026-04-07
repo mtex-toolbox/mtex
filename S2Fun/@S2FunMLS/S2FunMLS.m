@@ -104,6 +104,10 @@ classdef S2FunMLS < S2Fun
     isReal                % = isReal(S2F.values)
     outlierIndicators     % same size as S2F.values, contains for each node a
     %   number that is bigger, if the value is an outlier
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   methods
@@ -458,6 +462,18 @@ classdef S2FunMLS < S2Fun
     maxcount = max(S2F.voronoiCounts);
     S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
       maxcount, N_voronoi, sum(S2F.voronoiCounts));
+  end
+
+  function fd = get.fill_distance(S2F)
+    fg = fibonacciS2Grid('points', 1e6);
+    [~, d] = knnsearch(S2F.searcher, fg.xyz, 'K', 1);
+    fd = max(d);
+  end
+
+  function sd = get.separation_distance(S2F)
+    [~, d] = knnsearch(S2F.searcher, S2F.nodes.xyz, 'K', 2);
+    d = d(:,2);
+    sd = min(d);
   end
 
 end
