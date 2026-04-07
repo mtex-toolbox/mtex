@@ -47,6 +47,7 @@ if check_option(varargin,'antipodal') || v.antipodal
   end
     
   varargin = delete_option(varargin,'weights',1);
+  varargin = delete_option(varargin,'noSymmetry');
   
   xx = mean(v.x.^2,  varargin{:});
   xy = mean(v.x.*v.y,varargin{:});

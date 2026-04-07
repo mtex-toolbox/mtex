@@ -165,8 +165,7 @@ classdef phaseList
     
     function pL = set.CS(pL,cs)
           
-      
-      if isa(cs,'symmetry')      
+      if isa(cs,'symmetry')
         
         id = cs2phaseId(pL,cs);
         
@@ -179,8 +178,12 @@ classdef phaseList
           pL.phaseMap(end+1) = max(pL.phaseMap)+1;
           
         else
+          
           pL.CSList{id} = cs;
           pL.phaseId = id * ones(size(pL.phaseId));
+
+          return
+
         end
 
       elseif iscell(cs)    
@@ -254,7 +257,7 @@ classdef phaseList
 
       ind = pL.indexedPhasesId;
       for k = pL.indexedPhasesId
-        color = pL.CSList{ind}.color;
+        color = pL.CSList{ind}.color; %#ok<*PROP>
         if isempty(color), color = colors{ind}; end
         if ischar(color), color = str2rgb(color); end
         cList(ind,:) = color;
@@ -283,7 +286,16 @@ classdef phaseList
     end
     
     function out = numel(pL)
-      out = size(pL.phaseId,1);
+      %st = dbstack('-completenames');
+      st = dbstack(1);
+      %assignin("base","st",st);
+      if ~isempty(st) && (strcmp(st(1).name,'resolveVariableSize') || ...
+          strcmp(st(1).name,'VEDataAttributes.VEDataAttributes'))
+        out = 1;
+      else        
+        out = size(pL.phaseId,1);
+        %out = 1;
+      end
     end
 
     function out = length(pL)
@@ -310,40 +322,45 @@ classdef phaseList
       
     end
     
-    function id = checkSinglePhase(pL)
+    function id = checkSinglePhase(pL,phaseId)
       % ensure single phase
       
-      phaseId = pL.phaseId; %#ok<*PROP>
-      phaseId = phaseId(~any(isnan(pL.phaseId),2),:);
-      id = unique(phaseId,'rows');
-                           
-      if numel(id)>size(pL.phaseId,2)     
-              
-        % second try with only indexed data
-        phaseId = pL.phaseId(pL.isIndexed,:);
-        id = unique(phaseId,'rows');
-        
-        if numel(id)>size(pL.phaseId,2)     
-          
-          mtexError([...
-            '----------------------------------------------------------------\n'...
-            ' Your variable contains the phases: ' ...
-            pL.mineralList{id(1)} ', ' pL.mineralList{id(2)} '\n\n' ...
-            ' However, you are executing a command that is only permitted for a single phase!\n\n' ...
-            ' Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
-            ' for how to restrict EBSD data or grains to a single phase.\n' ...
-            '----------------------------------------------------------------\n']);
+      if nargin == 1, phaseId = pL.phaseId; end
 
-        end
-      elseif isempty(id) || ~all(any(bsxfun(@eq,id,pL.indexedPhasesId(:)),1))
+      % ignore nan
+      phaseId = phaseId(all(phaseId>0,2),:);
+      
+      % ignore not indexed
+      notIndexed = find(cellfun('isclass',pL.CSList,'char'));
+      for k = 1:length(notIndexed)
+        phaseId(any(phaseId==notIndexed(k),2),:) = [];
+      end
+
+      if isempty(phaseId)
         mtexError([...
           '----------------------------------------------------------------\n'...
           ' There are no indexed data in this variable!\n' ...
           ' Maybe you misspelled a phase name?\n' ...
           '----------------------------------------------------------------\n']);
         error('MTEX:NoPhase','');
-      end
       
+      elseif ~all(all(phaseId == phaseId(1,:)))
+
+        id2 = find(~all(phaseId == phaseId(1,:),2),1);
+
+        mtexError([...
+          '----------------------------------------------------------------\n'...
+          ' Your variable contains the phases: ' ...
+          pL.mineralList{phaseId(1,1)} ', ' pL.mineralList{phaseId(id2,1)} '\n\n' ...
+          ' However, you are executing a command that is only permitted for a single phase!\n\n' ...
+          ' Please read the chapter ' doclink('EBSDSelect','"select EBSD data"')  ...
+          ' for how to restrict EBSD data or grains to a single phase.\n' ...
+          '----------------------------------------------------------------\n']);
+
+      end
+
+      id = phaseId(1,:);
+             
     end
     
   end

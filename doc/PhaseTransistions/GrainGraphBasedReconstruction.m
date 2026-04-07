@@ -71,7 +71,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent, job.csChild)
 % relationship.
 
 close all
-histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+histogram(job.calcGBFit./degree,'BinMethod','sqrt','EdgeColor','auto')
 xlabel('disorientation angle')
 
 job.calcParent2Child
@@ -89,7 +89,7 @@ job.calcParent2Child
 % grain to grain misorientations.
 
 hold on
-histogram(job.calcGBFit./degree,'BinMethod','sqrt')
+histogram(job.calcGBFit./degree,'BinMethod','sqrt','EdgeColor','auto')
 hold off
 
 %%

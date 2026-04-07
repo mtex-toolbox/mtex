@@ -1,4 +1,7 @@
-function l = numel(q)
+function out = numel(q)
 % overloads numel
 
-l = numel(q.a);
+out = numel(q.a);
+  
+end
+

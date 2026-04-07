@@ -40,6 +40,11 @@ classdef HSVDirectionKey < directionColorKey
 
     function rgb = direction2color(dM,h,varargin)
       
+      if ~isempty(dM.dir2color)        
+        rgb = dM.dir2color(h);
+        return
+      end
+
       h = vector3d(h);
       h.antipodal = false;
       h = h.project2FundamentalRegion(dM.sym);
