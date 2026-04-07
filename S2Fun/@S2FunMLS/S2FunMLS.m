@@ -127,7 +127,11 @@ classdef S2FunMLS < S2Fun
       if (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median');
+        [nodes, values] = uniqueData(nodes, values, 'median','tolerance', .001 * degree);
+        if ~getMTEXpref('generatingHelpMode')
+          warning(['Some duplicate Nodes have been removed. ' ...
+            'The remaining nodes have been reshaped into a vector.']); 
+        end
       end
 
       % goal of reshaping:
