@@ -107,13 +107,12 @@ classdef SO3FunMLS < SO3Fun
       end
 
       % MLS needs unique nodes
-      if (numel(unique(nodes, 'stable', 'tolerance', .01 * degree)) < numel(nodes))
+      if (numel(unique(nodes, 'stable', 'tolerance', 1e-6 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
         [nodes, values] = uniqueData(nodes, values, 'median');
         warning(['Some duplicate Nodes have been removed. ' ...
           'The remaining nodes have been reshaped into a vector.']); 
-        % TODO: To much nodes are deleted.!!!!
       end
 
       % goal of reshaping:
