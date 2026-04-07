@@ -7,7 +7,7 @@ conds = zeros(N, 1);
 SO3F = SO3F.subSet(':');
  
 % get the neighbors and count them
-ind = SO3F.nodes.find(ori, SO3F.delta);
+ind = SO3F.nodes.find(ori, SO3F.delta, 'searcher', SO3F.searcher);
 nn = sum(ind, 2);
 
 warn_smallnn = false;
@@ -70,7 +70,7 @@ J = ~(too_few_neighbors | too_many_neighbors);
 J_idx = find(J);
 ori = ori.subSet(J);
 N = sum(J);
-[ind, dist] = SO3F.nodes.find(ori, SO3F.delta, varargin{:});
+[ind, dist] = SO3F.nodes.find(ori, SO3F.delta, varargin{:}, 'searcher', SO3F.searcher);
 
 % if optimal subsampling is set to true, we can now fall back to the eval_knn case 
 %   where all neighborhoods have the same size (the dim of the ansatz space) 

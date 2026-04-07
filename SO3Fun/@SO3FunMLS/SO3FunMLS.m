@@ -44,6 +44,8 @@ classdef SO3FunMLS < SO3Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -121,6 +123,8 @@ classdef SO3FunMLS < SO3Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       SO3F.nodes = nodes;
+      
+      SO3F.searcher = createns(nodes.abcd);
 
       % reshape values accordingly 
       values_size = size(values);
