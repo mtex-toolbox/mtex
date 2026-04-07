@@ -6,7 +6,7 @@ function [ori,c] = compactify(f,varargin)
 %
 % Therefore, we solve a minimization problem by gradient descent method to
 % find a set of orientations, such that the corresponding worst case
-% quadrature error with respect to all spherical polynomials up to some
+% quadrature error with respect to all rotational polynomials (SO3FunHarmonics) up to some
 % specified bandwidth is minimal.
 %
 % For more details, see 
@@ -17,22 +17,21 @@ function [ori,c] = compactify(f,varargin)
 %
 % Syntax
 %   v = compactify(f)
-%   v = compactify(f,'points',v,'bandwidth',128)
-%   v = compactify(f,'points',500,'itermax',1000,'tol',1e-4)
+%   v = compactify(f,'points',v,'bandwidth',32)
+%   v = compactify(f,'points',5000,'maxIter',1000,'tol',0.05*degree)
 % 
 % Input
 %  f - @SO3Fun
 %  ori - @rotation (starting nodes)
-%  psi - @SO3Kernel (Disposition-kernel)
 %
 % Output
 %  ori - @rotation
 %
 % Options
-%  points - specify number of output points (default = 1000)
+%  points - specify number of output points (default = 100)
 %  bandwidth - harmonic degree to approximate (default = 32)
 %  maxIter - for gradient descent (default = 100)
-%  tol - for gradient descent (default = 5e-4)
+%  tol - for gradient descent (default = 0.01*degree)
 %  weights - weights of points
 %
 %
@@ -49,7 +48,7 @@ f = SO3FunHarmonic(f,'bandwidth',bw);
 f.bandwidth = bw;
 
 % get starting points
-M = get_option(varargin,'points',1000);
+M = get_option(varargin,'points',5000);
 if isa(M,'rotation')
   ori = M;
 else
@@ -61,10 +60,10 @@ ori = ori(:);
   
 % specify parameters for gradient method
 maxIter = get_option(varargin,'maxIter',100);
-tol = get_option(varargin,'tol',5e-4);
+tol = get_option(varargin,'tol',0.01*degree);
 
 % Define Restricted Distance Kernel
-psi = get_option(varargin,'kernel',SO3RestrictedDistanceKernel(bw+1));
+psi = SO3RestrictedDistanceKernel(bw+1);
 
 
 % get integral (mean) weight lambda and the weights-vector for the points
@@ -103,6 +102,7 @@ for i = 1:maxIter
   end
 
   % --- Global Termination ---
+  % fprintf(['The biggest shift is ',num2str(max(angle(ori,oriNew))/degree),'°. In this iteration the Error changes by ',num2str(resOld - resNew),'\n'])
   if max(angle(ori,oriNew)) < tol
     ori = oriNew;
     break;
