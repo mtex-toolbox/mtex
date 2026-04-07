@@ -72,7 +72,7 @@ J = ~(too_few_neighbors | too_many_neighbors);
 J_idx = find(J);
 v = v.subSet(J);
 N = sum(J);
-[ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:});
+[ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:}, 'searcher', S2F.searcher);
 
 
 % if optimal subsampling is set to true, we can now fall back to the eval_knn case 
