@@ -92,20 +92,53 @@ setColorRange([1 5])
 % direction.
 
 % consider only elongated grains
-alongated_grains = grains(grains.aspectRatio > 1.2);
+elongated_grains = grains(grains.aspectRatio > 1.2);
 
 % angle of the long axis to (1 0 0)
 %omega = angle(alongated_grains.longAxis, vector3d.X, grains.N);
-omega = mod(alongated_grains.longAxis.rho, pi);
+omega = mod(elongated_grains.longAxis.rho, pi);
 
 % plot the direction
-plot(alongated_grains,omega ./ degree,'micronbar','off')
+plot(elongated_grains,omega ./ degree,'micronbar','off')
 
 % change the default colormap to a circular one
-mtexColorMap HSV
+mtexColorMap(colorcet('C2'))
 
 % display the colormap
 mtexColorbar
+
+%% Colorizing two scalar properties
+% Above we plotted the long axis of grains admitting that for low aspect
+% ratio grains, also the long axis is poorly defined. Another way to
+% overcome this situation is to desaturate the color as a function of
+% aspect ratio.
+
+% In order to do so, we define a planar colorkey.
+pK = planarColorKey(colorcet('C2'))
+
+% Since we want to plot the grain long axis direction, we tell the
+% colorkley that hue-encoded value is periodic. Also we can set ranges for
+% the individual values.
+pK.periode  = pi; 
+pK.range2 = [1 3];
+
+% Now we can derive color from the colorkey.
+prop1 = mod(grains.longAxis.rho, pi);
+prop2 = grains.aspectRatio;
+
+colors = pK.property2color(prop1, prop2);
+plot(grains,colors)
+
+
+% In order to get a nice colorkey, we can set labels and plot the key.
+pK.label1 = 'long axis'
+pK.label2 = 'aspect ratio'
+
+figure
+plot(pK,prop1/degree,prop2)
+
+% Similarly we can colorcode any combination of two scalar grain
+% properties.
 
 %% Plotting the orientation within a grain
 % In order to plot the orientations of EBSD data within certain grains one

@@ -44,6 +44,8 @@ classdef SO3FunMLS < SO3Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -80,6 +82,10 @@ classdef SO3FunMLS < SO3Fun
                           %   number that is bigger, if the value is an outlier
     SLeft
     SRight
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   % TODO: symmetrise w.r.t one symmetry.
@@ -105,13 +111,14 @@ classdef SO3FunMLS < SO3Fun
       end
 
       % MLS needs unique nodes
-      if (numel(unique(nodes, 'stable', 'tolerance', .01 * degree)) < numel(nodes))
+      if (numel(unique(nodes, 'stable', 'tolerance', 0.01 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median');
-        warning(['Some duplicate Nodes have been removed. ' ...
-          'The remaining nodes have been reshaped into a vector.']); 
-        % TODO: To much nodes are deleted.!!!!
+        [nodes, values] = uniqueData(nodes, values, 'median','tolerance',0.01*degree);
+        if ~getMTEXpref('generatingHelpMode')
+          warning(['Some duplicate Nodes have been removed. ' ...
+            'The remaining nodes have been reshaped into a vector.']); 
+        end
       end
 
       % goal of reshaping:
@@ -121,6 +128,8 @@ classdef SO3FunMLS < SO3Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       SO3F.nodes = nodes;
+      
+      SO3F.searcher = createns(nodes.abcd);
 
       % reshape values accordingly 
       values_size = size(values);
@@ -374,6 +383,18 @@ classdef SO3FunMLS < SO3Fun
 
     function oI = get.outlierIndicators(SO3F)
       oI = computeOutlierIndicators(SO3F);
+    end
+
+    function fd = get.fill_distance(SO3F)
+      eg = equispacedSO3Grid(crystalSymmetry(), 'resolution', 3*degree);
+      [~, d] = knnsearch(SO3F.searcher, eg.abcd, 'K', 1);
+      fd = max(d);
+    end
+
+    function sd = get.separation_distance(SO3F)
+      [~, d] = knnsearch(SO3F.searcher, SO3F.nodes.abcd, 'K', 2);
+      d = d(:,2);
+      sd = min(d);
     end
 
   end

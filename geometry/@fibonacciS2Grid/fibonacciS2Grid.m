@@ -81,10 +81,10 @@ classdef fibonacciS2Grid < vector3d
       [~, dist] = fibgrid.find(fibgrid, 2);
       if check_option(varargin, 'mean')
         sepdist = mean(dist(:,2));
-      elseif check_option(varargin, 'min')
-        sepdist = min(dist(:,2));
-      else
+      elseif check_option(varargin, 'max')
         sepdist = max(dist(:,2));
+      else
+        sepdist = min(dist(:,2));
       end
     end
 

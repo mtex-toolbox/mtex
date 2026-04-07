@@ -63,6 +63,8 @@ classdef S2FunMLS < S2Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -102,6 +104,10 @@ classdef S2FunMLS < S2Fun
     isReal                % = isReal(S2F.values)
     outlierIndicators     % same size as S2F.values, contains for each node a
     %   number that is bigger, if the value is an outlier
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   methods
@@ -121,7 +127,11 @@ classdef S2FunMLS < S2Fun
       if (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median');
+        [nodes, values] = uniqueData(nodes, values, 'median','tolerance', .001 * degree);
+        if ~getMTEXpref('generatingHelpMode')
+          warning(['Some duplicate Nodes have been removed. ' ...
+            'The remaining nodes have been reshaped into a vector.']); 
+        end
       end
 
       % goal of reshaping:
@@ -131,6 +141,8 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
+
+      S2F.searcher = createns(nodes.xyz);
 
       % reshape values accordingly
       values_size = size(values);
@@ -454,6 +466,18 @@ classdef S2FunMLS < S2Fun
     maxcount = max(S2F.voronoiCounts);
     S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
       maxcount, N_voronoi, sum(S2F.voronoiCounts));
+  end
+
+  function fd = get.fill_distance(S2F)
+    fg = fibonacciS2Grid('points', 1e6);
+    [~, d] = knnsearch(S2F.searcher, fg.xyz, 'K', 1);
+    fd = max(d);
+  end
+
+  function sd = get.separation_distance(S2F)
+    [~, d] = knnsearch(S2F.searcher, S2F.nodes.xyz, 'K', 2);
+    d = d(:,2);
+    sd = min(d);
   end
 
 end
