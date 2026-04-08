@@ -24,7 +24,7 @@ function plotPDF(SO3F,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-if numel(SO3F)>1
+if numel(SO3F)>1 && ~getMTEXpref('generatingHelpMode')
   warning(['You try to plot a vector valued function. Plot the desired components ' ...
     'manually. In the following the first component is plotted.'])
 end
