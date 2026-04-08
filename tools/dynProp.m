@@ -162,7 +162,7 @@ classdef dynProp
         return;
       end
 
-      numdP = length(dp.prop.(fn{1}));
+      numdP = numel(dp.prop.(fn{1}));
 
       if ~isempty(fn) && numdP<=20
       
@@ -172,11 +172,11 @@ classdef dynProp
         d = cell(numdP,length(fn));
         
         for i = 1:numCustom
-          d(:,i) = prop2List(varargin{2*i});
+          d(:,i) = prop2List(varargin{2*i}(:));
         end
         
         for j = numCustom+1 : numel(fn)
-          d(:,j) = prop2List(dp.prop.(fn{j}));
+          d(:,j) = prop2List(dp.prop.(fn{j})(:));
         end
               
         c  = cprintf(full(d),'-Lc',fn,'-L',' ','-d','   ','-ic',true);
