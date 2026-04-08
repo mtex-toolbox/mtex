@@ -43,7 +43,7 @@ if cs.numSym>1 && ss.numSym>1
     v.SS = specimenSymmetry.default;
     w.SS = specimenSymmetry.default;
     [ind,d] = find(v,w,epsilon_or_k,varargin{:});
-    % reindexing
+    % re-indexing
     ind = ceil(ind/numSym(ss));
   else
     % symmetrise SRight
@@ -51,7 +51,7 @@ if cs.numSym>1 && ss.numSym>1
     v.CS = specimenSymmetry.default;
     w.CS = specimenSymmetry.default;
     [ind,d] = find(v,w,epsilon_or_k,varargin{:});
-    % reindexing
+    % re-indexing
     ind = mod(ind-1,numSym(cs))+1;
   end  
   return

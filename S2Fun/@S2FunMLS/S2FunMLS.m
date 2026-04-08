@@ -466,12 +466,12 @@ classdef S2FunMLS < S2Fun
 
   function fd = get.fill_distance(S2F)
     fg = fibonacciS2Grid('points', 1e6);
-    [~, d] = knnsearch(S2F.searcher, fg.xyz, 'K', 1);
+    [~, d] = S2F.nodes.find(fg(:), 1, 'searcher', S2F.searcher);
     fd = max(d);
   end
 
   function sd = get.separation_distance(S2F)
-    [~, d] = knnsearch(S2F.searcher, S2F.nodes.xyz, 'K', 2);
+    [~, d] = S2F.nodes.find(S2F.nodes, 2, 'searcher', S2F.searcher);
     d = d(:,2);
     sd = min(d);
   end

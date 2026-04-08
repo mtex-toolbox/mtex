@@ -384,13 +384,13 @@ classdef SO3FunMLS < SO3Fun
     end
 
     function fd = get.fill_distance(SO3F)
-      eg = equispacedSO3Grid(crystalSymmetry(), 'resolution', 3*degree);
-      [~, d] = knnsearch(SO3F.searcher, eg.abcd, 'K', 1);
+      eg = equispacedSO3Grid(SO3F.nodes.CS, SO3F.nodes.SS, 'resolution', 3*degree);
+      [~, d] = SO3F.nodes.find(eg(:), 1, 'searcher', SO3F.searcher);
       fd = max(d);
     end
 
     function sd = get.separation_distance(SO3F)
-      [~, d] = knnsearch(SO3F.searcher, SO3F.nodes.abcd, 'K', 2);
+      [~, d] = SO3F.nodes.find(SO3F.nodes, 2, 'searcher', SO3F.searcher);
       d = d(:,2);
       sd = min(d);
     end
