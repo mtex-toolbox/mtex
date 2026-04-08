@@ -121,7 +121,7 @@ rot = exp(v1)
 % The logarithm map does the reverse: It takes two rotations and computes 
 % the tangent vector in the tangent space of one rotation that points 
 % towards the other rotation.
-% % It is performed onto the rotations with the command
+% It is performed onto the rotations with the command
 % <quaternion.log.html |log|>.
 
 log(rot,R)

@@ -54,8 +54,8 @@ hold off
 %
 % Internally MTEX represents |@SO3VectorFields| in different ways:
 %
-% || a vector valued <SO3FunHarmonicRepresentation.html SO3FunHarmonic> (3 components) || <@SO3VectorFieldHarmonic> ||
-% || a vector valued <RadialODFs.html SO3FunRBF> (3 components)  || <@SO3VectorFieldRBF> ||
+% || a vector valued <SO3FunHarmonicRepresentation.html SO3FunHarmonic> (3 components) || @SO3VectorFieldHarmonic ||
+% || a vector valued <RadialODFs.html SO3FunRBF> (3 components)  || @SO3VectorFieldRBF ||
 % || explicitly given by a formula || @SO3VectorFieldHandle ||
 %
 % All representations allow the same operations, similar as for

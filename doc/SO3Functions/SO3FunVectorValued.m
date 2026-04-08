@@ -1,5 +1,5 @@
 %% Vector Valued Orientation Dependent Functions
-%G
+%
 %% Structural conventions of the input and output of vector valued SO3FunHarmonics
 %
 % In this part we deal with vector valued functions of the form
@@ -89,7 +89,7 @@ SO3F3 = SO3FunHarmonic.quadrature(f, 'bandwidth', 50,SO3F1.CS)
 SO3F4 = SO3FunHarmonic(eye(10))
 
 %%
-% * This command stores the ten first <WignerFunctions.html Wigner-D functions> in |SO3F4|
+% This command stores the ten first <WignerFunctions.html Wigner-D functions> in |SO3F4|
 
 
 %% Operations which differ from an univariate SO3FunHarmonic
@@ -118,7 +118,7 @@ size(SO3F3)
 SO3F4 = reshape(SO3F4, 2, [])
 
 %%
-% *|sum| and |mean|*
+% *sum and mean*
 %
 % If we do not specify further options to |sum| or |mean| they give we the 
 % integral or the mean value back for each function.
