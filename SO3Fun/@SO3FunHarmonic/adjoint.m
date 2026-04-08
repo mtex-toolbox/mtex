@@ -22,10 +22,14 @@ function SO3F = adjoint(rot,values, varargin)
 % Options
 %  bandwidth - maximal harmonic degree (default: 64)
 %  weights   - quadrature weights
+%  cutOffParameter - set parameter precision parameter m for nfft
 %
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
 %  'directComputation' - direct evaluation of Fourier sums (no nfft)
+%  'createPlan'        - NFFT3-Flags
+%  'keepPlan'          - NFFT3-Flags
+%  'deletePlan'        - NFFT3-Flags
 %
 % See also
 % SO3FunHarmonic/quadrature SO3FunHarmonic/adjointNFSOFT
@@ -51,7 +55,7 @@ if check_option(varargin,'killPlan')
 end
 
 
-% Multivariate functions
+% vector valued functions
 % if length(rot)~=numel(values)
 %   s = size(values); s = s(2:end);
 %   values = reshape(values,length(rot),[]);
@@ -69,7 +73,7 @@ end
 % -------------- (1) get weights and values for quadrature ----------------
 
 sz = size(values);
-len = prod(sz(2:end)); % multivariate case
+len = prod(sz(2:end)); % vector valued case
 values = reshape(values,[],len);
 
 if isa(rot,'orientation')

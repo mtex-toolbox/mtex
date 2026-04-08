@@ -8,7 +8,7 @@
 % occurrence within a specimen. Other examples are the Schmidt or the Taylor
 % factor as a function of the crystal orientation.
 %
-%% Definition of a orientation dependent function
+%% Definition of an Orientation Dependent Function
 %
 % Within MTEX a rotational function is represented by a variable of type
 % <SO3Fun.SO3Fun.html |SO3Fun|>. Let us consider as an example the function
@@ -39,7 +39,7 @@ SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
 ori = orientation.rand(cs)
 SO3F.eval(ori)
 
-%% Plotting an orientation Dependent Function
+%% Plotting an Orientation Dependent Function
 % 
 % Orientation dependent functions are most often visualized by sections
 % according to the third Euler angle $\varphi_2$.
@@ -62,7 +62,7 @@ mtexColorMap parula
 % Many more methods for visualizing orientation dependent functions are
 % discussed <SO3FunVisualization.html here>. 
 % 
-%% Computing with orientation dependent functions
+%% Computing with Orientation Dependent Functions
 %
 % The power of representing an orientation dependent functions as a
 % variables of type @SO3Fun is that we may apply to it a

@@ -2,7 +2,7 @@ function varargout = quiver(SO3VF,varargin)
 % quiver rotational vector field
 %
 % Syntax
-%   quiver3(sVF)
+%   quiver(SO3VF)
 %
 % Options
 %  normalized - normalize vectors
@@ -10,7 +10,7 @@ function varargout = quiver(SO3VF,varargin)
 %  maxHeadSize - head size
 
 % See also
-%   S2VectorField/plot
+% SO3VectorField/plot
 %
 
 % plot the function values

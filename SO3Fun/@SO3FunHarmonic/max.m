@@ -10,12 +10,12 @@ function [values,modes] = max(SO3F,varargin)
 %   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions
 %   SO3F = max(SO3F1, SO3F2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % compute the maximum of a multivariate function along dim
+%   % compute the maximum of a vector valued function along dim
 %   SO3F = max(SO3Fmulti,[],dim)
 %
 % Input
 %  SO3F, SO3F1, SO3F2 - @SO3Fun
-%  SO3Fmulti          - a multivariate @SO3Fun
+%  SO3Fmulti          - a vector valued @SO3Fun
 %  c                  - double
 %
 % Output
@@ -60,7 +60,38 @@ if check_option(varargin,'gradDescent')
 end
 
 
-[values,modes] = max@SO3Fun(SO3F,varargin{:});
+if isscalar(SO3F)
+  [values,modes] = max@SO3Fun(SO3F,varargin{:});
+  return
+end
+
+% vector valued functions
+s = size(SO3F);
+
+if nargin>1 && (isa(varargin{1},'SO3FunHarmonic') || isnumeric(varargin{1}))
+  t = size(varargin{1});
+  SO3F1 = SO3F.*ones(t);
+  SO3F2 = varargin{1}.*ones(s);
+  values = [];
+  for k=1:numel(SO3F1)
+    if isa(SO3F2,'SO3FunHarmonic')
+      A = max@SO3Fun(SO3F1.subSet(k),SO3F2.subSet(k),varargin{:});
+    else
+      A = max@SO3Fun(SO3F1.subSet(k),SO3F2(k),varargin{:});
+    end
+    values = [values,A];
+  end
+  values = reshape(values,size(SO3F1));
+  return
+end
+
+len = get_option(varargin,'numLocal',1);
+values = zeros(len,prod(s)); 
+modes = rotation.id(len,prod(s));
+for k=1:numel(SO3F)
+  [v,m] = max@SO3Fun(SO3F.subSet(k),varargin{:});
+  values(:,k)=v; modes(:,k)=m;
+end
 
 end
 

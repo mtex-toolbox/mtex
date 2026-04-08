@@ -8,9 +8,33 @@ classdef SO3VectorField
 properties (Abstract = true)
   SRight % symmetry that acts from the right
   SLeft % symmetry that acts from the left
-  tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used
-  isReal
+  tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is asumed in evaluation
 end
+
+% The SO3VectorField objects have a inner tangent space representation.
+% Hence they are constructed and stored with respect to this.
+% Nevertheless, we can use the (ordinary) tangentSpace property to
+% determine which representation we want the evaluations to have. Hence if
+% we evaluate a SO3VectorField in some rotation, we obtain a tangent vector
+% w.r.t. the inner tangent space representation. Afterwards MTEX converts
+% this tangent vector to the desired representation, which is described by 
+% the property tangentSpace.
+% 
+% Since for vector fields one of the symmetries disappear (dependent on 
+% the tangent space representation), we introduce 2 hidden symmetry 
+% properties for the initial symmetries, to describe the symmetries of the 
+% SO3VectorFields properly.
+% Note that the symmetries of the inner SO3Fun depends on the inner tangent
+% space representation, while the symmetries of the vector field depends on
+% the outer tangent space representation.
+%
+
+properties (Abstract = true,Hidden = true)
+  internTangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used by definition of the object
+  hiddenCS symmetry
+  hiddenSS symmetry
+end
+
 
 properties (Dependent = true)
   CS
@@ -34,7 +58,7 @@ methods
   function SO3VF = set.SS(SO3VF,SS)
     SO3VF.SLeft = SS;
   end
-  
+ 
 end
 
 methods (Hidden = true)

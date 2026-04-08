@@ -28,7 +28,7 @@ function SO3F = adjointNFSOFT(rot,values, varargin)
 
 persistent keepPlanNSOFT;
 
-% Multivariate functions
+% vector valued functions
 if length(rot)~=numel(values)
   s = size(values); s = s(2:end);
   values = reshape(values,length(rot),[]);

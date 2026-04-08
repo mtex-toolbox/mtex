@@ -19,7 +19,7 @@ classdef SO3SquareSingularityKernel < SO3Kernel
 %
 
   properties
-    kappa = 90;
+    kappa = 0.9;
     C = [];
   end
       

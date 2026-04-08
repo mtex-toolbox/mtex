@@ -10,12 +10,12 @@ function [value,pos] = min(sF, varargin)
 %   sF = min(sF1, sF2) % minimum of two spherical functions
 %   sF = min(sF1, sF2, 'bandwidth', bw) % specify the new bandwidth
 %
-%   % compute the minimum of a multivariate function along dim
+%   % compute the minimum of a vector valued function along dim
 %   sF = min(sFmulti,[],dim)
 %
 % Input
 %  sF, sF1, sF2 - @S2Fun
-%  sFmulti - a multivariate @S2Fun
+%  sFmulti - a vector valued @S2Fun
 %  c       - double
 %
 % Output

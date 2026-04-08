@@ -41,8 +41,8 @@ sVF2 = S2VectorFieldHarmonic(@(v) f(v))
 %%
 % *Definition via <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>*
 %
-% If we directly call the constructor with a multivariate
-% <S2FunHarmonic_multi.S2FunHarmonic_multi |S2FunHarmonic|> with two or
+% If we directly call the constructor with a 
+% <S2FunVectorValued.html vector valued |S2FunHarmonic|> with two or
 % three entries it will create a |S2VectorFieldHarmonic| with |sF(1)| the
 % polar angle and |sF(2)| the azimuth or |sF(1)|, |sF(2)|, and |sF(3)| the
 % $x$, $y$, and $z$ component.

@@ -59,7 +59,7 @@ v = v(:);
   
 % specify parameters for gradient method
 maxIter = get_option(varargin,'maxIter',1000);
-tol = get_option(varargin,'tol',5e-4);
+tol = get_option(varargin,'tol',0.01*degree);
 
 % Define Restricted Distance Kernel
 % In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); 

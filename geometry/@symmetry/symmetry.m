@@ -100,6 +100,14 @@ classdef symmetry < matlab.mixin.Copyable
       % check whether cs2 is a true sub group of cs1
       out = lt(cs2,cs1);
     end
+
+    function out = ID1(sym)
+      if isa(sym,'crystalSymmetry')
+        out = crystalSymmetry.default;
+      elseif isa(sym,'specimenSymmetry')
+        out = specimenSymmetry.default;
+      end
+    end
     
   end
 

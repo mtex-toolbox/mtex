@@ -16,8 +16,8 @@ v2 = log(o2,o1,'left');
 assert(max(abs(angle(o2,exp(o1,v2,'left'))))<1e-5)
 
 % check gradient
-o1 = orientation.rand(cs,1);
-o2 = orientation.rand(cs,10000);
+o1 = orientation.rand(1,cs);
+o2 = orientation.rand(10000,cs);
 id = find(angle(o1,o2)<10*degree,1);
 o2 = o2(id);
 
@@ -40,7 +40,7 @@ hold off
 
 %%
 
-vv = -odf.grad(ori,'left');
+vv = -odf.grad(o1,'left');
 
 
 %%
@@ -81,7 +81,7 @@ function test
   ori1 = orientation.rand(cs);
   ori2 = orientation.rand(cs);
 
-  v = log(ori2,ori1);
+  v = log(ori2,ori1,'right');
 
   % this should be the same
   [norm(v),angle(ori1,ori2)] ./ degree

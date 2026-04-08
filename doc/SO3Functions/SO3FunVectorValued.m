@@ -1,8 +1,8 @@
-%% Multivariate Orientation Dependent Functions
+%% Vector Valued Orientation Dependent Functions
+%G
+%% Structural conventions of the input and output of vector valued SO3FunHarmonics
 %
-%% Structural conventions of the input and output of multivariate SO3FunHarmonics
-%
-% In this part we deal with multivariate functions of the form
+% In this part we deal with vector valued functions of the form
 %
 % $$ f\colon \mathcal{SO}(3) \to \mathbb R^n. $$
 %
@@ -34,7 +34,7 @@
 % \quad\mathrm{and}\quad 
 % \hat F(:, :, 2) = \pmatrix{\bf{\hat f}_4 & \bf{\hat f}_5 & \bf{\hat f}_6}. $$
 %
-%% Defining a multivariate SO3FunHarmonic
+%% Defining a vector valued SO3FunHarmonic
 %
 %%
 % *Definition via function values*
@@ -104,7 +104,7 @@ SO3F5(2:4)
 
 %%
 % You can conjugate the Fourier-coefficients and transpose/ctranspose the 
-% multivariate <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
+% vector valued <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
 
 conj(SO3F1);
 SO3F1.';
@@ -123,7 +123,7 @@ SO3F4 = reshape(SO3F4, 2, [])
 % If we do not specify further options to |sum| or |mean| they give we the 
 % integral or the mean value back for each function.
 % You could also calculate the conventional sum or the meanvalue over a 
-% dimension of a multivariate |SO3FunHarmonic|.
+% dimension of a vector valued |SO3FunHarmonic|.
 
 sum(SO3F1, 1)
 mean(SO3F4, 2)
@@ -131,7 +131,7 @@ mean(SO3F4, 2)
 %%
 % *min/max*
 %
-% If the |min| or |max| command gets a multivariate |SO3FunHarmonic| the 
+% If the |min| or |max| command gets a vector valued |SO3FunHarmonic| the 
 % pointwise minimum or maximum is calculated along the first non-singelton 
 % dimension if not specified otherwise.
 % 
@@ -148,16 +148,16 @@ SO3F1.CS=specimenSymmetry;
 
 SO3F1 .* SO3F4
 
-%% Visualization of multivariate SO3FunHarmonic
+%% Visualization of vector valued SO3FunHarmonic
 %
 % Similarly to the univariate case we also can look at the Fourier
-% coefficients of multivariate functions.
+% coefficients of vector valued functions.
 
 plotSpektra(SO3F3)
 
 %%
 % The section plot and the 3d plot are performed only for the first
-% component of a multivariate function
+% component of a vector valued function
 
 plot(SO3F3)
 

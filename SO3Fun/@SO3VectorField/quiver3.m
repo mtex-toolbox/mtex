@@ -21,7 +21,7 @@ if ~SO3VF.isReal
 end
 
 % generate a new 3d projection of the orientation space
-oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,'project2FundamentalRegion',...
+oP = newOrientationPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,'project2FundamentalRegion',...
   varargin{:});
 
 % generate the plotting grid
@@ -40,7 +40,7 @@ else
 end
 
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,vec/10000,SO3VF.tangentSpace));
+[x2,y2,z2] = oP.project(exp(vec/10000,S3G,SO3VF.tangentSpace));
 
 wasHold = ishold(gca); hold(gca,'on');
 

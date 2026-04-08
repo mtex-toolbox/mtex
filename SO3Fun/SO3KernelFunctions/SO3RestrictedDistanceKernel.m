@@ -43,7 +43,7 @@ classdef SO3RestrictedDistanceKernel < SO3Kernel
     % function value = eval(psi,t)
     %   % evaluate the kernel function at nodes x
     % 
-    %   if isa(t,'rotation'), t = cos(angle(t)); end
+    %   if isa(t,'rotation'), t = cos(angle(t)/2); end
     % 
     %   value  = -sqrt(8)*sin(acos(t)) ;
     % 

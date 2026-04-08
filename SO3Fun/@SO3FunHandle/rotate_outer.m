@@ -24,7 +24,7 @@ if check_option(varargin,'right')
     SO3F.CS = rot.CS;
   elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = crystalSymmetry;
+    SO3F.CS = crystalSymmetry.default;
   end
 
   SO3F.fun = @(r) SO3F.fun(r * inv(rot)); %#ok<MINV>

@@ -1,8 +1,8 @@
-%% Multivariate S2Fun
+%% Vector Valued S2Fun
 %
-%% Structural conventions of the input and output of multivariate S2FunHarmonic
+%% Structural conventions of the input and output of vector valued S2FunHarmonic
 %
-% In this part we deal with multivariate functions of the form
+% In this part we deal with vector valued functions of the form
 %
 % $$ f\colon \bf{S}^2\to \bf{R}^n $$.
 %
@@ -34,7 +34,7 @@
 % \quad\mathrm{and}\quad 
 % \hat F(:, :, 2) = \pmatrix{\bf{\hat f}_4 & \bf{\hat f}_5 & \bf{\hat f}_6}. $$
 %
-%% Defining a multivariate S2FunHarmonic
+%% Defining a vector valued S2FunHarmonic
 %
 %%
 % *Definition via function values*
@@ -94,7 +94,7 @@ sF4(2:3);
 
 %%
 % You can conjugate the Fourier-coefficients and transpose/ctranspose the 
-% multivariate <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
+% vector valued <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
 
 conj(sF1);
 sF1.';
@@ -113,7 +113,7 @@ sF3 = reshape(sF3, 3, []);
 % If we do not specify further options to |sum| or |mean| they give we the 
 % integral or the mean value back for each function.
 % You could also calculate the conventional sum or the mean value over a 
-% dimension of a multivariate |S2FunHarmonic|.
+% dimension of a vector valued |S2FunHarmonic|.
 
 sum(sF1, 1);
 sum(sF3, 2);
@@ -121,7 +121,7 @@ sum(sF3, 2);
 %%
 % *min/max*
 %
-% If the |min| or |max| command gets a multivariate |S2FunHarmonic| the
+% If the |min| or |max| command gets a vector valued |S2FunHarmonic| the
 % pointwise minimum or maximum can calculated along the dimension specified 
 % as third argument.
 
@@ -134,10 +134,10 @@ min(sF3,[],1);
 % At this point the matrix product is implemented per element and not as 
 % the usual matrix product.
 
-%% Visualization of multivariate S2FunHarmonic
+%% Visualization of vector valued S2FunHarmonic
 %
 % The same plot commands as for univariate |S2FunHarmonic| work on
-% multivariate as well. The difference is that, now, each component is
+% vector valued as well. The difference is that, now, each component is
 % plotted next to one another.
 
 %#ok<*VUNUS>

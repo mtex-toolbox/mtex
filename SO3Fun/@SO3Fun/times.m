@@ -39,9 +39,7 @@ if isnumeric(SO3F2)
 end
 
 ensureCompatibleSymmetries(SO3F1,SO3F2);
-if isa(SO3F2,'SO3VectorField')
-  SO3F = SO3VectorFieldHandle(@(rot) SO3F1.eval(rot) .* SO3F2.eval(rot),SO3F1.SRight,SO3F1.SLeft);
-elseif isscalar(SO3F1) && isscalar(SO3F2)
+if isscalar(SO3F1) && isscalar(SO3F2)
   SO3F = SO3FunHandle(@(rot) SO3F1.eval(rot) .* SO3F2.eval(rot),SO3F1.SRight,SO3F1.SLeft);
 else
   SO3F = SO3FunHandle(@(rot) reshape(SO3F1.eval(rot),[numel(rot) size(SO3F1)]) .* reshape(SO3F2.eval(rot),[numel(rot) size(SO3F2)]),SO3F1.SRight,SO3F1.SLeft);

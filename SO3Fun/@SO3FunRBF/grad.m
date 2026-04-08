@@ -6,7 +6,7 @@ function g = grad(SO3F,varargin)
 %   g = SO3F.grad(rot) % evaluate the gradient in rot
 %
 %   % go 5 degree in direction of the gradient
-%   ori_new = exp(rot,5*degree*normalize(g)) 
+%   ori_new = exp(5*degree*normalize(g),rot) 
 %
 % Input
 %  SO3F - @SO3FunRBF
@@ -14,7 +14,7 @@ function g = grad(SO3F,varargin)
 %
 % Output
 %  G - @SO3VectorField
-%  g - @vector3d
+%  g - @SO3TangentField
 %
 % Description
 % general formula:
@@ -35,7 +35,7 @@ tS = SO3TangentSpace.extract(varargin{:});
 rot = varargin{1}; varargin(1) = [];
 
 if isempty(SO3F.center)
-  g = vector3d.zeros(size(rot));
+  g = SO3TangentVector( vector3d.zeros(size(rot)) , rot , SO3F.CS, SO3F.SS);
   return
 end
 
@@ -54,18 +54,22 @@ epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
 g = vector3d.zeros(size(rot));
 
 % compute the distance matrix and evaluate the kernel
-for issq = 1:length(qSS)
+for issq = length(qSS):-1:1
 
-  d = abs(dot_outer( SO3F.center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
+  d = abs(dot_outer( center, inv(qSS(issq)) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
   % make matrix sparse
   %   d(d<=cos(epsilon/2)) = 0;   % array size gets to big
   [i,j] = find(d>cos(epsilon/2));
   d = d(d>cos(epsilon/2));
+  d = d(:);
     
   % the normalized logarithm
-  v = log(reshape(qSS(issq) * center(i),[],1),reshape(q2(j),[],1),tS);
+  r1 = reshape(qSS(issq) * center(i),[],1);
+  r2 = reshape(q2(j),[],1);
+
+  v = r2 .* Miller(log(r1,r2,SO3TangentSpace.rightVector),r1.CS);
   v = v.normalize;
   
   % set up vector3d matrix - a tangential vector for any pair of
@@ -78,7 +82,8 @@ for issq = 1:length(qSS)
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
-g = SO3TangentVector(g,tS);
+g = SO3TangentVector(g,rot,SO3TangentSpace.leftVector,SO3F.CS,SO3F.SS);
+g = transformTangentSpace(g,tS);
 
 % TODO: consider antipodal
 if SO3F.antipodal
