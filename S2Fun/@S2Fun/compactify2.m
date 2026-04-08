@@ -42,15 +42,16 @@ WeightedFhat = g.fhat;
 
 % Compute alternately optimal quadrature nodes and optimal quadrature weights
 kMax = 100;
+pC = progressCounter(kMax);
 for k=1:kMax
 
   vNew = compactify(f,'points',v,'weights',c,varargin{:});
 
   % weights least squares problem  F^H * c = fhat  with  c>=0
   tol = 1e-13;
-  maxit = 1000;
+  maxit = 10000;
   [c,iter] = mlsq(@(x, transp_flag) afun(transp_flag, x, vNew, bw, lambda,psi),WeightedFhat, c, maxit, tol);
-  if iter==maxit
+  if iter==maxit && ~getMTEXpref('generatingHelpMode')
     warning('mlsq:itermax','Maximum number of iterations reached, result may not have converged to the optimum yet.');
   end
 
@@ -61,6 +62,8 @@ for k=1:kMax
 
   % update
   v = vNew;
+
+  pC.show(k)
 
 end
 k
