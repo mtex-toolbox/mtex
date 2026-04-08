@@ -34,12 +34,17 @@ p0 = pos(1) + min(I) * u + min(J)*v;
 I = I - min(I);
 J = J - min(J);
 
-nI = max(I)+1; nJ = max(J)+1;
-ind = sub2ind([nI,nJ],I+1,J+1);
-
 % ideal grid
+nI = max(I)+1; nJ = max(J)+1;
 [ii,jj] = ndgrid(1:nI,1:nJ);
 idealMesh = p0 + (ii-1) * u + (jj-1)*v;
+
+if nargout == 1
+  mesh = idealMesh;
+  return; 
+end
+
+ind = sub2ind([nI,nJ],I+1,J+1);
 
 % maybe the ideal grid is sufficiently good
 if mean(norm(reshape(idealMesh(ind),[],1) - pos)) / mean(norm(uC)) < 1e-2

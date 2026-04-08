@@ -6,24 +6,21 @@ function ebsdNew = interp(ebsd,pos,varargin)
 %
 % Input
 %  ebsd - @EBSDhex
-%  xNew, yNew - new x,y coordinates
+%  pos  - new pixel centers
 %
 % Output
 %  ebsdNew - @EBSD with coordinates (xNew,yNew)
 %
 % Options
-%  nearest - neares neighbor interpolation
+%  nearest - nearest neighbor interpolation
 %
 % See also
 %  
 
 if ~isa(pos,'vector3d'), pos = vector3d(pos,varargin{1},0); end
 
-% ensure column vectors
-pos = pos(:);
-
 % find nearest neighbor first
-idNearest = ebsd.pos2ind(pos.x,pos.y);
+idNearest = ebsd.pos2ind(pos.x(:),pos.y(:));
 
 % check nearest is inside the box
 isIndexed = ~isnan(idNearest);
@@ -51,6 +48,10 @@ for fn = fieldnames(ebsd.prop).'
   prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
 end
 
-ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop,'phaseMap',ebsd.phaseMap);
+if ismatrix(pos)  
+  ebsdNew = EBSDsquare(pos,rot,phaseId,ebsd.phaseMap,ebsd.CSList,'prop',prop);
+else
+  ebsdNew = EBSD(pos,rot,phaseId,ebsd.CSList,prop,'phaseMap',ebsd.phaseMap);
+end
 
 end

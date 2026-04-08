@@ -1,9 +1,18 @@
 function [ebsdGrid,ind] = squarify(ebsd,varargin)
 
-uC = ebsd.unitCell;
-omega = angle(uC,vector3d(-1,-1,0),zvector);
-[~,a] = sort(omega);
-uC = uC(a);
+uC = get_option(varargin,'unitCell',ebsd.unitCell);
+
+% put unitcell in right order 
+ omega = angle(uC,vector3d(-1,-1,0),zvector);
+ [~,a] = sort(omega);
+ uC = uC(a);
+
+% if it is a custom unit cell -> interpolate
+if check_option(varargin,'unitCell')
+  mesh = calcMesh(ebsd.pos,uC);
+  ebsdGrid = ebsd.interp(mesh);  
+  return
+end
 
 [pos,ind] = calcMesh(ebsd.pos,uC,varargin{:});
 

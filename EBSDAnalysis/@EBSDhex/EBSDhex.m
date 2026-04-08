@@ -267,9 +267,8 @@ classdef EBSDhex < EBSD
     function [row,col] = pos2ind(ebsd,x,y)
       % nearest neighbor search
       
-      x = x-ebsd.pos.x(1);
-      y = y-ebsd.pos.y(1);
-      
+      x = x - ebsd.pos.x(1);
+      y = y - ebsd.pos.y(1);
       
       % convert to axial coordinates
       if ebsd.isRowAlignment        
