@@ -48,42 +48,38 @@ angle(e1.orientations,e2.orientations)./degree
 % map on a different grid, which might have higher or lower resolution or
 % might even be rotated. Lets demonstrate this 
 
-% define a rotated coarse grid
-omega = 5*degree;
-[xmin, xmax, ymin, ymax] = ebsd.extent;
-x = linspace(xmin-cos(omega)*ymax,xmax,100);
-y = linspace(ymin-sin(omega)*xmax,ymax,50);
-[x,y] = meshgrid(x,y);
-
-xy = [cos(omega) -sin(omega); sin(omega) cos(omega) ] * [x(:),y(:)].';
+% unit cell of twice the size, rotated by 45 degree
+uC = rotate(2*ebsd.unitCell,45*degree);
 
 % define the EBSD data set on this new grid
-ebsdNewGrid = interp(ebsd,xy(1,:),xy(2,:))
+ebsdNewGrid = gridify(ebsd,'unitCell',uC)
 
 % plot the regridded EBSD data set
 plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
-
+xlim([0,50]); ylim([0,40])
 %%
 % Note, that we have not rotated the EBSD data but only the grid. All
 % orientations as well as the position of all grains remains unchanged.
 %
+%%
 % Another example is the change from a square to an hexagonal grid or vice
 % versa. In this case the command <EBSD.interp.html |interp|> is
 % implicitly called by the command <EBSD.gridify.html |gridify|>. In order
 % to demonstrate this functionality we start by EBSD data on a hex grid
 
 mtexdata ferrite silent
-
-plot(ebsd,ebsd.orientations)
+ebsd = ebsd.gridify;
+plot(ebsd(1:50,1:100),ebsd(1:50,1:100).orientations)
 
 %%
 % and resample the data on a square grid. To do so we first define a
 % smaller square unit cell corresponding to the hexagonal unit cell
 
 % define a square unit cell
-squnitCell = ebsd.dPos / 4 * vector3d([1 1 -1 -1],[1 -1 -1 1],0).';
+squnitCell = ebsd.dPos / 4 * vector3d([-1 -1 1 1],[-1 1 1 -1],0).';
 
 % use the square unit cell for gridify
-ebsd = ebsd.gridify('unitCell',squnitCell);
 
-plot(ebsd,ebsd.orientations)
+ebsdS = ebsd.gridify('unitCell',squnitCell);
+
+plot(ebsdS(1:150,1:350),ebsdS(1:150,1:350).orientations)
