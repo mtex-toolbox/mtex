@@ -8,7 +8,7 @@ cs  = crystalSymmetry('432');
 
 % define an ODF with two radial peaks
 ori = orientation.byEuler([10 40]*degree,[30 50]*degree,[50 70]*degree,cs)
-odf = unimodalODF(ori,'halfwidth',7.5*degree);
+odf = unimodalODF(ori,'halfwidth',5*degree);
 
 % view the odf 
 plotPDF(odf,Miller(1,0,0,odf.CS),'contour','linewidth',2);
@@ -17,7 +17,7 @@ plotPDF(odf,Miller(1,0,0,odf.CS),'contour','linewidth',2);
 ori = odf.discreteSample(1000);
 
 % convert the orientations to vector3d
-r = ori * Miller(1,0,0,odf.CS);
+r = ori.symmetrise * Miller(1,0,0,odf.CS);
 
 %%
 % assign each vector to one of twelve clusters and calculate the center
@@ -25,7 +25,7 @@ r = ori * Miller(1,0,0,odf.CS);
 [cId,center] = calcCluster(r,'numCluster',12);
 
 % plot the clusters, sorted by color
-plot(r,ind2color(cId))
+plot(r,ind2color(cId),'MarkerSize',4,'MarkerAlpha',0.02)
 
 % annotate all the cluster centers, on all figures.
 annotate(center,'add2all');
@@ -47,7 +47,7 @@ r.antipodal = true;
 % hemisphere plot; the antipodal symmetry tells MTEX they are equivalent
 % and so one sufficient to represent the data.
 
-plot(r,ind2color(cId))
+plot(r,ind2color(cId),'MarkerSize',4,'MarkerAlpha',0.01)
 
 % annotate the cluster centers.
 annotate(center,'add2all')
@@ -62,7 +62,8 @@ h = ori \ vector3d(1,1,0);
 [cId,center] = calcCluster(h,'numCluster',2);
 
 % plot the crystal symmetry data on appropriate fundamental sector
-plot(h.project2FundamentalRegion,ind2color(cId),'fundamentalSector')
+plot(h.project2FundamentalRegion,ind2color(cId),'fundamentalSector',...
+  'MarkerSize',4,'MarkerAlpha',0.5)
 
 % annotate the cluster centers
 annotate(center,'add2all')
@@ -75,7 +76,8 @@ annotate(center,'add2all')
 
 % create a pole figure of the orientations colored by the cluster they
 % belong to.
-plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all','MarkerSize',5,'MarkerAlpha',0.5)
+plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all','MarkerSize',5,...
+  'MarkerAlpha',0.01)
 
 %%
 % If you have the statistics toolbox, you can make some calculations about
@@ -97,7 +99,7 @@ try
   %cId = cluster(z,'cutoff',30*degree);
   cId = cluster(z,'maxclust',6);
 
-  plotCluster(r,cId)
+  plotCluster(r,cId,'MarkerSize',4,'MarkerAlpha',0.1)
 catch
   warning('Statistics Toolbox not installed!')
 end

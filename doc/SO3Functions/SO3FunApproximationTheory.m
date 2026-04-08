@@ -70,8 +70,8 @@ norm(SO3F.eval(ori) - S.values) / norm(S.values)
 
 %%
 % The reason for this difference is that MTEX by default applies
-% regularization. The default regularization parameter is $\lambda = 5\cdot
-% 10^{-7}$. We can switch off regularization by setting this value to $0$.
+% regularization. The default regularization parameter is $\lambda =
+% 10^{-8}$. We can switch off regularization by setting this value to $0$.
 
 SO3F = interp(ori,S.values,'harmonic','regularization',0)
 

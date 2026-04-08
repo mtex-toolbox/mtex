@@ -20,6 +20,12 @@ rot = orientation.map(xvector,d);
 F = deformationGradientTensor(diag([rate,1./sqrt(rate),1./sqrt(rate)]));
 
 F = rotate(F,inv(rot));
+if isa(d,'Miller')
+  F.CS = d.CS;
+else
+  F.CS = specimenSymmetry.default;
+  F.CS.how2plot = d.how2plot;
+end
 
 end
 
