@@ -386,9 +386,15 @@ classdef SO3FunMLS < SO3Fun
     end
 
     function fd = get.fill_distance(SO3F)
-      eg = equispacedSO3Grid(SO3F.nodes.CS, SO3F.nodes.SS, 'resolution', 3*degree);
-      [~, d] = SO3F.nodes.find(eg(:), 1, 'searcher', SO3F.searcher);
+      % eg = equispacedSO3Grid(SO3F.nodes.CS, SO3F.nodes.SS, 'resolution', 3*degree);
+      % [~, d] = SO3F.nodes.find(eg(:), 1, 'searcher', SO3F.searcher);
+      % fd = max(d);
+      
+      f = SO3FunHandle(@(r) funDist(r,SO3F));
+      acc = 0.25*degree;
+      d = max(f,'accuracy',acc,'numLocal',20,'resolution',3*degree);
       fd = max(d);
+
     end
 
     function sd = get.separation_distance(SO3F)
@@ -405,4 +411,15 @@ classdef SO3FunMLS < SO3Fun
     SO3F = example(varargin)
   end
   
+end
+
+
+
+
+
+
+%% Additional Functions
+function d = funDist(modes,mls)
+  [~, d] = mls.nodes.find(modes(:), 1, 'searcher', mls.searcher);
+  d = reshape(d,size(modes));
 end

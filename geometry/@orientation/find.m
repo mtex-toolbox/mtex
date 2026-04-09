@@ -7,13 +7,13 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %   ind = find(v,w,k)       % find k nearest points out of v to w
 %
 % Input
-%  v, w         - @vector3d
+%  v, w         - @orientation
 %  epsilon_or_k - epsilon or k (see below), depending on what the user wants
 %  epsilon      - double
 %  k            - int32
 %
 % Options
-%  antipodal    - include <VectorsAxes.html antipodal symmetry>
+%  antipodal    - include
 %
 % Output
 %  ind          - int32 array for k nearest neighbors,
@@ -23,6 +23,10 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %
 
 if nargin==2, epsilon_or_k=1; end
+
+if ~isa(w,'orientation')
+  w = orientation(w);
+end
 
 % TODO: This does not work in case of 2 symmetries, where the space has corners.
 %       Implement 2nd version the find method.
