@@ -6,18 +6,17 @@
 % A vector field maps rotations to tangent vectors, i.e., when evaluated 
 % at a rotation $R$, it returns a |@SO3TangentVector|.
 %
-% For background on the structure of the tangent space on SO(3) and the 
-% definition of |@SO3TangentVectors| in MTEX, see the documentation page 
+% For background on the structure of the tangent space on SO(3) and the
+% definition of |@SO3TangentVectors| in MTEX, see the documentation page
 % <RotationTangentSpace.html SO(3) Tangent Space>.
 %
-%%
 % Vector fields in orientation space model orientation dependent spin as it
 % occurs for instance in the Taylor or Sachs model. Another typical example
 % are gradients of orientation distribution functions.
 %
 %%
-% Lets consider the following ODF of a quartz specimen
-% Then its gradient is computed by the command <SO3Fun.grad.html |odf.grad|>
+% Lets consider the following ODF of a quartz specimen Then its gradient is
+% computed by the command <SO3Fun.grad.html |odf.grad|>
 
 odf = SO3Fun.dubna;
 G = odf.grad
@@ -168,7 +167,6 @@ mtexColorbar
 % From mathematics we know that the curl of a gradient field is zero
 
 plot(G.curl,'sigma')
-
 
 %% 
 % *Antiderivative of a Gradient Field*

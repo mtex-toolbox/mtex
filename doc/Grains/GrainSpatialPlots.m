@@ -95,8 +95,7 @@ setColorRange([1 5])
 elongated_grains = grains(grains.aspectRatio > 1.2);
 
 % angle of the long axis to (1 0 0)
-%omega = angle(alongated_grains.longAxis, vector3d.X, grains.N);
-omega = mod(elongated_grains.longAxis.rho, pi);
+omega = angle(vector3d.X, elongated_grains.longAxis, grains.N);
 
 % plot the direction
 plot(elongated_grains,omega ./ degree,'micronbar','off')
@@ -112,34 +111,41 @@ mtexColorbar
 % ratio grains, also the long axis is poorly defined. Another way to
 % overcome this situation is to desaturate the color as a function of
 % aspect ratio.
+%
+% In order to do so, we first define a planar colorkey. Since we want to
+% plot the grain long axis direction, we tell the colorkey that hue-encoded
+% value is periodic. Also we can set ranges for the individual values.
 
-% In order to do so, we define a planar colorkey.
-pK = planarColorKey(colorcet('C2'))
+% set up the color key
+pK = planarColorKey(colorcet('C2'));
 
-% Since we want to plot the grain long axis direction, we tell the
-% colorkley that hue-encoded value is periodic. Also we can set ranges for
-% the individual values.
+% make it periodic in the first argument
 pK.periode  = pi; 
+
+% specify range for the second argument
 pK.range2 = [1 3];
 
-% Now we can derive color from the colorkey.
-prop1 = mod(grains.longAxis.rho, pi);
+% now we can derive color from the colorkey.
+prop1 = angle(vector3d.X, grains.longAxis, grains.N);
 prop2 = grains.aspectRatio;
 
 colors = pK.property2color(prop1, prop2);
 plot(grains,colors)
 
+%%
+% Lets visualize our colorkey.
 
-% In order to get a nice colorkey, we can set labels and plot the key.
-pK.label1 = 'long axis'
-pK.label2 = 'aspect ratio'
+% define axes labels
+pK.label1 = 'long axis';
+pK.label2 = 'aspect ratio';
 
 figure
 plot(pK,prop1/degree,prop2)
 
-% Similarly we can colorcode any combination of two scalar grain
+%%
+% Similarly we can color code any combination of two scalar grain
 % properties.
-
+%
 %% Plotting the orientation within a grain
 % In order to plot the orientations of EBSD data within certain grains one
 % first has to extract the EBSD data that belong to the specific grains.
@@ -148,7 +154,7 @@ plot(pK,prop1/degree,prop2)
 [~,id] = max(grains.area)
 
 % and select the corresponding EBSD data
-ebsd_maxGrain = ebsd(ebsd.grainId == id)
+ebsd_maxGrain = ebsd(ebsd.grainId == id);
 
 % the previous command is equivalent to the more simpler 
 ebsd_maxGrain = ebsd(grains(id));
