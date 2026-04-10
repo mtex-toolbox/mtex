@@ -1,4 +1,4 @@
-function [v,c] = compactify(f,varargin)
+function v = compactify(f,varargin)
 % compute the compactification of an given function on the Sphere. That
 % means, we try to find a in some sense optimal set of orientations, that
 % describes the given density function reasonable well. This is similar to
@@ -38,6 +38,7 @@ function [v,c] = compactify(f,varargin)
 %
 
 % TODO: compactification with weights does not work as assumed to
+% function [v,c] = compactify(f,varargin)
 
 % polynomials should be integrated exactly until this bandwidth
 bw = get_option(varargin,'bandwidth',128);
