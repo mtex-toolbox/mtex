@@ -52,7 +52,7 @@ M = get_option(varargin,'points',5000);
 if isa(M,'rotation')
   ori = M;
 else
-  ori = equispacedSO3Grid(crystalSymmetry,'points',M)';
+  ori = equispacedSO3Grid(f.CS,f.SS,'points',M);
   %ori = discreteSample(f,M);
 end
 M = numel(ori);
@@ -166,11 +166,9 @@ end
 
 
 function Test
-  
-
+ 
 clear
 setMTEXpref('EulerAngleConvention','Bunge')
-
 
 % Example 1
 f = SO3FunRBF(rotation.byEuler(pi,pi/2,90*degree,'ZXZ'),SO3DeLaValleePoussinKernel(3));
@@ -178,29 +176,14 @@ f = f/mean(f);
 
 % Example 2
 f = SO3Fun.dubna;
-f.CS =crystalSymmetry.default;
 f = SO3FunHarmonic(f);
 
-rot0 = equispacedSO3Grid(crystalSymmetry,'points',1000);
-rot0 = rot0(:);
-% rot0 = discreteSample(f,1000);
+ori = compactify(f,'bandwidth',32,'points',100);
 
-hold off
-plot(f,'phi2',207*degree)
+plot3d(f,'AxisAngle','complete')
 hold on
-rot = rot0*rotation.byAxisAngle(vector3d(1,1,1),0.001*degree);
-plot(rot)
-pause(1)
-for i = 1:10
-  rot = compactify(f,'bandwidth',50,'points',rot,'maxIter',10);
-  plot(rot)
-  pause(1)
-end
+plot(ori,'AxisAngle','all')
 hold off
 
-plot3d(f,'AxisAngle')
-hold on
-plot(rot)
-hold off
 
 end

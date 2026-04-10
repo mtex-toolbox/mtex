@@ -37,6 +37,7 @@ function [v,c] = compactify(f,varargin)
 %
 %
 
+% TODO: compactification with weights does not work as assumed to
 
 % polynomials should be integrated exactly until this bandwidth
 bw = get_option(varargin,'bandwidth',128);
