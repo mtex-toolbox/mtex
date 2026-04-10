@@ -37,6 +37,7 @@ function [v,c] = compactify(f,varargin)
 %
 %
 
+
 % polynomials should be integrated exactly until this bandwidth
 bw = get_option(varargin,'bandwidth',128);
 
@@ -62,15 +63,15 @@ maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',0.01*degree);
 
 % Define Restricted Distance Kernel
-% In the paper: psi = S2Kernel( 4./(2*n-1)./(2*n+3) ); 
-% is the same as S2KernelHandle(@(x) -2*sin(acos(x)/2)) in MTEX other normalization of coeffs 
 psi = S2RestrictedDistanceKernel(bw+1);
+
 if f.antipodal, psi.A(2:2:end) = 0; end
 
 
 % get integral (mean) weight lambda and the weights-vector for the points
 lambda = sum(f);
 c = get_option(varargin,'weights',ones(M,1)/M);
+
 
 % initialize NFSFT
 nfsftmex('precompute', bw+1, 1000, 1, 0);
@@ -83,36 +84,43 @@ resOld = J(v,c,f,psi,lambda,plan1);
 pC = progressCounter(maxIter);
 for i = 1:maxIter
   % compute gradient of the functional
-  g = grad_J(v,c,f,psi,lambda,plan1,plan2);
-  gNorm = sqrt(sum(norm(g).^2));
+  if nargout==2
+    [gV,gC] = grad_J(v,c,f,psi,lambda,plan1,plan2);
+  else
+    gV = grad_J(v,c,f,psi,lambda,plan1,plan2);
+    gC = 0;
+  end
+  gNorm = sqrt(sum(norm(gV).^2));
 
   % line search with Armijo
   stepSize = 1;
   while true
-    vNew = cos(stepSize)*v - sin(stepSize)*g; % TODO: check gradient step
-    
-    resNew = J(vNew,c,f,psi,lambda,plan1);
+    vNew = cos(stepSize)*v - sin(stepSize)*gV; % TODO: check gradient step
+    cNew = max(0,c - stepSize * gC);  % projiziertes Gradientenverfahren
+    resNew = J(vNew,cNew,f,psi,lambda,plan1);
 
-    if resNew <= resOld - 1e-4*stepSize*gNorm.^2 % Armijo Condition
+    if resNew <= resOld - 1e-4*stepSize*(gNorm.^2+norm(gC)^2) % Armijo Condition
       break;
     end
     
     stepSize = 0.5*stepSize;
     
     % --- Local Termination ---
-    if stepSize < 1e-10
+    if stepSize < 1e-16
       error('Armijo failed.')
     end
   end
 
   % --- Global Termination ---
-  if max(angle(v,vNew)) < tol
+  if max(angle(v,vNew)) < tol && norm(c-cNew,'Inf')<tol
     v = vNew;
+    c = cNew;
     break;
   end
 
   % update
   v = vNew;
+  c = cNew;
   resOld = resNew;
 
   pC.show(i)
@@ -121,6 +129,8 @@ end
 
 nfsftmex('finalize', plan1);
 nfsftmex('finalize', plan2);
+
+
 
 end
 
@@ -142,7 +152,7 @@ function res = J(v,c,f,psi,lambda,plan1)
     C = lambda*S2FunHarmonic(chat);
 
     % convolute with Distance kernel
-    psi = S2Kernel( sqrt(4*pi*(2*(0:psi.bandwidth)+1)).*sqrt(psi.A) );
+    psi = S2Kernel( sqrt(4*pi*(2*(0:psi.bandwidth)'+1)).*sqrt(psi.A) );
     C = conv(C-f,psi);
     
     % l2-norm
@@ -151,7 +161,7 @@ end
 
 
 
-function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
+function [tanV,tanC] = grad_J(v,c,f,psi,lambda,plan1,plan2)
     % C = lambda*S2FunHarmonic.adjointNFSFT(v,c,'bandwidth',bw);
     % C = 4*pi*conv(C-f,psi);
     % tanV = 2*lambda*real(C.grad(v)).*c;
@@ -185,7 +195,46 @@ function tanV = grad_J(v,c,f,psi,lambda,plan1,plan2)
 
     tanV = 2*lambda*real(vector3d(tanV).').*c;
 
+    if nargout==2
+      tanC = 2*lambda*real( C.eval(v) );
+    end
+
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
