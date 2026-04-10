@@ -34,7 +34,7 @@ classdef SO3RestrictedDistanceKernel < SO3Kernel
         bw = getMTEXpref('maxSO3Bandwidth');
       end
 
-      n = (0:bw);
+      n = (0:bw).';
       psi.A = 16*sqrt(2)/pi./((2*n-1).*(2*n+1).*(2*n+3));
            
      end

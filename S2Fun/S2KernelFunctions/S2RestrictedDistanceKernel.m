@@ -34,7 +34,7 @@ classdef S2RestrictedDistanceKernel < S2Kernel
         bw = getMTEXpref('maxS2Bandwidth');
       end
 
-      n = (0:bw);
+      n = (0:bw).';
       psi.A = 4./((2*n-1).*(2*n+3));
            
      end

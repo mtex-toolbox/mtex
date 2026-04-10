@@ -16,7 +16,7 @@ function psi = rdivide(psi1, psi2)
 
 
 if isnumeric(psi1)
-  psi = SO3KernelHandle(@(co2) psi1 ./ psi2.eval(co2));
+  psi = S2KernelHandle(@(co2) psi1 ./ psi2.eval(co2));
   return
 end
 if isnumeric(psi2)
@@ -24,7 +24,7 @@ if isnumeric(psi2)
   return
 end
 
-psi = SO3KernelHandle(@(co2) psi1.eval(co2)./ psi2.eval(co2));
+psi = S2KernelHandle(@(co2) psi1.eval(co2)./ psi2.eval(co2));
 
 end
 

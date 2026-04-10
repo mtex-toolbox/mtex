@@ -16,7 +16,7 @@ function psi = plus(psi1,psi2)
 
 
 if isnumeric(psi1) 
-  psi = SO3Kernel(psi2);
+  psi = S2Kernel(psi2);
   psi.A(1) = psi2.A(1)+psi1;
   return
 end
@@ -32,7 +32,7 @@ else
   psi1.bandwidth = psi2.bandwidth;
 end
 
-psi = SO3Kernel(psi1.A + psi2.A);
+psi = S2Kernel(psi1.A + psi2.A);
 
 
 end
