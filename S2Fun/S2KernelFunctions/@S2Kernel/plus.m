@@ -32,7 +32,7 @@ else
   psi1.bandwidth = psi2.bandwidth;
 end
 
-psi = S2Kernel(psi1.A + psi2.A);
+psi = S2Kernel(psi1.A(:) + psi2.A(:));
 
 
 end

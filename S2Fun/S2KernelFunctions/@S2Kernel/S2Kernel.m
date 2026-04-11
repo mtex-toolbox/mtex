@@ -25,9 +25,10 @@ classdef S2Kernel
       if nargin == 0, return; end
       
       if isa(A,'S2Kernel')
-        S2K.A = A.A;
+        S2K.A = A.A(:);
       else
-        S2K.A = A(1:min(end,2048));
+        A = A(1:min(end,2048));
+        S2K.A = A(:);
       end
       
       if check_option(varargin,'normalized')
@@ -58,13 +59,6 @@ classdef S2Kernel
       else
         v = S2K.evalFun(x);
       end
-    end
-
-    function S2K = mtimes(a,S2K)
-      if isa(S2K,"numeric"), [a,S2K] = deal(S2K,a); end
-
-      S2K = S2KernelHandle(@(t) a * S2K.eval(t),a * S2K.A);
-
     end
 
     function plot(S2K,varargin)      
@@ -104,13 +98,22 @@ classdef S2Kernel
       end
       disp(' ');
     end
+    
+    function n = norm(psi)
+      % L2-norm (suitable to S2FunHarmonic.norm)
+      n = sqrt(4*pi)*norm(psi.A(:)./sqrt(2*(0:psi.bandwidth)'+1));
+    end
 
     function L = get.bandwidth(psi)
       L = length(psi.A)-1;
     end
     
     function psi = set.bandwidth(psi,L)
-      psi.A = psi.A(1:min(L+1,end));        
+      if L>psi.bandwidth
+        psi.A = [psi.A(:);zeros(L-psi.bandwidth,1)];
+      else
+        psi.A = psi.A(1:L+1);        
+      end
     end
 
     function c = char(psi)
@@ -179,6 +182,7 @@ classdef S2Kernel
         
         if small == 10, break;end
       end
+      A = A(:);
     end
   end
 end
