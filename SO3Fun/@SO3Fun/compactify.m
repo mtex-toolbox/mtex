@@ -124,6 +124,7 @@ function res = J(ori,c,f,psi,lambda,bw)
 
   % adjoint NFSOFT
   C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
 
   % convolute with Distance kernel
   psi = (sqrt(8)*pi) * SO3Kernel( sqrt(2*(0:psi.bandwidth)+1).*sqrt(psi.A) );   % TODO: lambda_0 < 0 !!!!
@@ -139,12 +140,15 @@ function tanV = grad_J(ori,c,f,psi,lambda,bw)
 
   % adjoint NFSOFT
   C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
 
   % convolute with Distance kernel
   C = conv( C - (sqrt(8)*pi)*f , (8*pi^2) * psi);
 
   % evaluate rotational gradient on ori
   tanV = 2*lambda*real( 1/(sqrt(8)*pi) * C.grad(ori) ).*c;
+  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
+  % The handling with the symmetries is slightly more difficult for the SO3VectorField-objects. 
 
 end
 
