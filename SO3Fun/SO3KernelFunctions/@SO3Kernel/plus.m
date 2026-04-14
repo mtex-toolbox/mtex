@@ -32,7 +32,7 @@ else
   psi1.bandwidth = psi2.bandwidth;
 end
 
-psi = SO3Kernel(psi1.A + psi2.A);
+psi = SO3Kernel(psi1.A(:) + psi2.A(:));
 
 
 end

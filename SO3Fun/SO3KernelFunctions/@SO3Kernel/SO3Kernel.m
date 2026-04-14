@@ -62,12 +62,16 @@ classdef SO3Kernel
     end
     
     function psi = set.bandwidth(psi,L)
-      psi.A = psi.A(1:min(L+1,end));        
+      if L>psi.bandwidth
+        psi.A = [psi.A(:);zeros(L-psi.bandwidth,1)];
+      else
+        psi.A = psi.A(1:L+1);        
+      end
     end
     
     function n = norm(psi)
       % L2 norm
-      n = norm(psi.A.^2);
+      n = norm(psi.A);
     end
          
     function c = char(psi)
@@ -130,30 +134,6 @@ classdef SO3Kernel
       A = A ./ ((1:length(A)).^2).';
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
       A = psi.A(1:min([ind+1,length(A)]));
-    end
-    
-    function A = calcFourier(psi,L,maxAngle)
-      
-      if nargin == 2, maxAngle = pi;end      
-      epsilon = getMTEXpref('FFTAccuracy',1E-2);  % SO3Riesz.A --> This Error bound may be not good enough
-      small = 0;      
-      warning off; %#ok<*WNOFF>
-      
-      % TODO: Do this quadrature without loop 
-      % (Bump.grad)
-      % (SO3SobolevKernel.grad) ()
-      for l = 0:L
-        fun = @(omega) psi.eval(cos(omega/2)).*sin((2*l+1)*omega./2).*sin(omega./2);
-        A(l+1) = 2/pi*quadgk(fun ,0,maxAngle,'MaxIntervalCount',2000); %#ok<AGROW>
-        
-        if abs(A(l+1)) < epsilon
-          small = small + 1;
-        else
-          small = 0;
-        end
-        
-        if small == 10, break;end
-      end
     end
     
   end

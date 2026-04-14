@@ -99,7 +99,7 @@ A = 1/sqrt(2*M) * real(-1i* exp(-pi*1i*(1:M)'/(2*M)) .* yhat(1:M));
 
 % Omit every second coefficient, since we only need the Chebyshev 
 % coefficients with even degrees (the others are 0 for symmetry reasons).
-A = A(1:2:end);
+A = A(1:2:end); A = A(:);
 
 end
 
@@ -128,5 +128,7 @@ for l = 0:L
 
   if small == 10, break;end
 end
+
+A = A(:);
 
 end
