@@ -4,8 +4,12 @@ function h = quiver3(tV,varargin)
 % Syntax
 %   quiver3(tV)
 %
+% Input
+%  tV - @SOTangentVector
+%
 % Options
 %  normalized - normalize vectors
+%  linewidth  - with of the arrow
 %  arrowSize  - arrow size
 %  maxHeadSize - head size
 %
