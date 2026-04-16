@@ -50,7 +50,7 @@ function [SO3F,lsqrParameters] = interpolate(nodes, y, varargin)
 % rotation/interp SO3VectorFieldHarmonic/interpolate SO3FunRBF/interpolate
 
 
-% Directly do quadrature in case of quadratureSchemes
+% directly do quadrature in case of quadratureSchemes
 if isa(nodes,'quadratureSO3Grid')
   SO3F = SO3FunHarmonic.quadrature(nodes,y,varargin{:});
   return
@@ -95,7 +95,9 @@ bw = chooseBandwidth(nodes,y,SRight,SLeft,varargin{:});
 lambda = get_option(varargin,{'regularization','regularisation','regularize','regularise'},[]);
 if isempty(lambda)
   lambda = 1e-8;
-  warning('The regularization parameter is set to 1e-8 by default. You should try different parameters and choose one, that yields a good result.')
+  if ~getMTEXpref('generatingHelpMode')
+    warning('The regularization parameter is set to 1e-8 by default. You should try different parameters and choose one, that yields a good result.')
+  end
 end
 regularize = lambda > 0;
 What = get_option(varargin,'fourier_weights');
