@@ -125,7 +125,7 @@ if isa(f,'SO3VectorFieldHarmonic')
   tS = SO3TangentSpace.extract(varargin{:},f.tangentSpace);
   if f.internTangentSpace == tS
     SO3VF = f;
-    f.tangentSpace = tS;
+    SO3VF.tangentSpace = tS;
     return
   end
 end

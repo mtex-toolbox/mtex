@@ -30,7 +30,7 @@ end
 ensureCompatibleSymmetries(SO3VF1,SO3VF2)
 
 
-% make compatible tangent spaces 
+% make compatible tangent spaces
 SO3VF2.tangentSpace = SO3VF1.tangentSpace;
 
 % standard fallback

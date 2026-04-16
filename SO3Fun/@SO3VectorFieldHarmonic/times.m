@@ -35,7 +35,18 @@ end
 
 % Note that for SO3VF.SO3F = SO3VF1 .* SO3VF2.SO3F the tangentSpace and
 % internTangentSpace of SO3VF2 have to be the same
+tS = SO3VF2.tangentSpace;
+SO3VF2.tangentSpace = SO3VF2.internTangentSpace;
+% Furthermore, dependent on the tangent space representation, we have to ignore one of the symmetries of SO3FunHarmonic 
+if sign(SO3VF2.tangentSpace)==1
+  SO3VF1.SS = ID1(SO3VF1.SS);
+else
+  SO3VF1.CS = ID1(SO3VF1.CS);
+end
+
+% quadrature
 SO3VF = times@SO3VectorField(SO3VF1,SO3VF2);
 SO3VF = SO3VectorFieldHarmonic(SO3VF,'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),SO3VF1.bandwidth + SO3VF2.bandwidth));
+SO3VF.tangentSpace = tS;
 
 end

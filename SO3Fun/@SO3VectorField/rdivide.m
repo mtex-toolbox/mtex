@@ -25,6 +25,6 @@ if ~isa(SO3VF2,'SO3Fun') || ~isscalar(SO3VF2)
 end
 
 fun = @(rot) SO3VF1.eval(rot) ./ SO3VF2.eval(rot);
-SO3VF = SO3VectorFieldHandle(fun,SO3VF2.hiddenCS,SO3VF2.hiddenSS,SO3VF2.tangentSpace);
+SO3VF = SO3VectorFieldHandle(fun,SO3VF1.hiddenCS,SO3VF1.hiddenSS,SO3VF1.tangentSpace);
 
 end

@@ -14,9 +14,14 @@ function SO3VF = cross(SO3VF1, SO3VF2, varargin)
 % Note that for SO3VF.SO3F = cross(SO3VF1.SO3F,SO3VF2.SO3F) the tangentSpaces 
 % and internTangentSpaces have to be the same and we need to now that both
 % are harmonic vector fields
+tS = SO3VF1.tangentSpace;
+tS_I = SO3VF1.internTangentSpace;
+SO3VF1 = SO3VectorFieldHarmonic(SO3VF1,tS_I);
+SO3VF2 = SO3VectorFieldHarmonic(SO3VF2,tS_I);
+
 SO3VF = cross@SO3VectorField(SO3VF1,SO3VF2);
 
 bw = min(getMTEXpref('maxSO3Bandwidth'),SO3VF1.bandwidth + SO3VF2.bandwidth);
 SO3VF = SO3VectorFieldHarmonic(SO3VF,'bandwidth', bw, varargin{:});
-
+SO3VF.tangentSpace = tS;
 end
