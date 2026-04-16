@@ -36,9 +36,19 @@ function [ori,c] = compactify(f,varargin)
 %
 %
 
-
 % TODO: Symmetries and input is orientation
 % TODO: antipodal
+
+% get starting points
+M = get_option(varargin,'points',5000);
+if isa(M,'rotation')
+  ori = M;
+else
+  %ori = equispacedSO3Grid(f.CS,f.SS,'points',M);
+  ori = discreteSample(f,M);
+end
+M = numel(ori);
+ori = ori(:);
 
 % polynomials should be integrated exactly until this bandwidth
 bw = get_option(varargin,'bandwidth',32);
@@ -47,20 +57,9 @@ bw = get_option(varargin,'bandwidth',32);
 f = SO3FunHarmonic(f,'bandwidth',bw);
 f.bandwidth = bw;
 
-% get starting points
-M = get_option(varargin,'points',5000);
-if isa(M,'rotation')
-  ori = M;
-else
-  ori = equispacedSO3Grid(f.CS,f.SS,'points',M);
-  %ori = discreteSample(f,M);
-end
-M = numel(ori);
-ori = ori(:);
-  
 % specify parameters for gradient method
 maxIter = get_option(varargin,'maxIter',100);
-tol = get_option(varargin,'tol',0.01*degree);
+tol = get_option(varargin,'tol',0.1*degree);
 
 % Define Restricted Distance Kernel
 psi = SO3RestrictedDistanceKernel(bw+1);
@@ -100,6 +99,10 @@ for i = 1:maxIter
       error('Armijo failed.')
     end
   end
+  % verbose output
+  %disp(i + " stepsize: " + stepSize + "  gradient: " + stepSize*max(norm(g)) / degree + ...
+  %  " error: " + resNew);
+
 
   % --- Global Termination ---
   % fprintf(['The biggest shift is ',num2str(max(angle(ori,oriNew))/degree),'°. In this iteration the Error changes by ',num2str(resOld - resNew),'\n'])
