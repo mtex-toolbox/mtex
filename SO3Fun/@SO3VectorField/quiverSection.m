@@ -41,8 +41,7 @@ function quiverSection(SO3VF,varargin)
 oS = newODFSectionPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,varargin{:});
 
 % only plot the real part of SO3VF
-% TODO: Add isReal for SO3VectorField
-if isa(SO3VF,'SO3VectorFieldHarmonic') && ~getMTEXpref('generatingHelpMode')
+if ~SO3VF.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
     'In the following only the real part is plotted.'])
   SO3VF.isReal = 1;
