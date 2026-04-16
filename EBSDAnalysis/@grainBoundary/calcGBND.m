@@ -66,7 +66,7 @@ if ~isempty(moriRef) % GBCD
 
   else
 
-    takeBoth = true;
+    takeBoth = ~check_option(varargin,'oneSide');
     
   end
 
