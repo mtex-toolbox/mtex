@@ -5,6 +5,10 @@ if ischar(rgb)
 
   str = rgb;
 
+elseif isstring(rgb)
+
+  str = char(rgb);
+
 else
   
   str = char(colornames(getMTEXpref('colorPalette','CSS'),rgb));

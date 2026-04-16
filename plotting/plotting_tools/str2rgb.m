@@ -1,6 +1,8 @@
 function rgb = str2rgb(str)
 % convert str to rgb values
 
+if isstring(str), str = char(str); end
+
 if nargin == 0
   rgb = ['none';'flat';colornames(getMTEXpref('colorPalette','CSS'))];
   return;

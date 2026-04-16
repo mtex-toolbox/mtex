@@ -144,8 +144,17 @@ for i = 1:length(h)
     opt = [opt,'upper']; %#ok<AGROW>
   end
 
-  [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-    ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+  if isa(data,'orientation')
+    d = repmat(data,[1 numSym(ori.SS)*length(sh) 1]) .* sh(:).';
+    [g,cax] = quiver(r, d(:)-r, ...
+      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+  elseif isa(data,'vector3d')
+    [g,cax] = quiver(r,repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
+      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+  else
+    [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
+      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+  end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
 
