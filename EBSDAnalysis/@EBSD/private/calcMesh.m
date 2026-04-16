@@ -14,9 +14,9 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 
 
 % the unit cell should be like this in y↓→x
-% uC(1) -> uC(4)
+% uC(1) <- uC(4)
 %   |       |
-% uC(2) <- uC(3)
+% uC(2) -> uC(3)
 %
 
 u = uC(2) - uC(1);
