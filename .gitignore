@@ -19,6 +19,8 @@ myScripts
 /data/Neper/my100grains.ori
 /data/Neper/my100grains.stpoly
 /data/Neper/my100grains.tess
+/data/HDF5/
+
 .mailmap
 gitTricks.md
 /extern/chebfun
