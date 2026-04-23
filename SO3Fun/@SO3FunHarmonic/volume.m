@@ -36,10 +36,10 @@ end
 % series only works for a small radius
 cs = SO3F.CS;
 ss = SO3F.SS;
-if cs ~= crystalSymmetry
+if numSym(cs.properGroup) > 1
   minAngle = uniquetol(cs.rot.angle/2);
-elseif ss ~= specimenSymmetry.default
-  minAngle = uniquetol(cs.rot.angle/2);
+elseif numSym(ss.properGroup) > 1
+  minAngle = uniquetol(ss.rot.angle/2);
 else
   minAngle = pi;
 end
