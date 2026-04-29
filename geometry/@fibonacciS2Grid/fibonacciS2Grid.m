@@ -35,7 +35,7 @@ classdef fibonacciS2Grid < vector3d
       else
         res = get_option(varargin,'resolution',5*degree);        
         % this comes from fitting the grid sizes to the resolutions
-        numPoints = exp(2.512) / res^2;        
+        numPoints = exp(2.512) / res^2;
       end
 
       n = round((numPoints - 1) / 2);
@@ -82,6 +82,7 @@ classdef fibonacciS2Grid < vector3d
       else
         sepdist = min(dist(:,2));
       end
+      sepdist = sepdist / 2;
     end
 
   end
