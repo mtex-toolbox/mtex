@@ -14,7 +14,7 @@ function f_hat = calcFourier(S2F,varargin)
 %
 
 % decide bandwidth
-bw = max(chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:}), 64);
+bw = chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:});
 
 if check_option(varargin,'ClenshawCurtis')
   S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw);
@@ -33,23 +33,10 @@ function bw = chooseBandwidth(nodes, y, s, varargin)
 bw = get_option(varargin,'bandwidth');
 nSym = numSym(s.properGroup) * (isalmostreal(y)+1);
 
-% assume there is some bandwidth given
-if ~isempty(bw)
-  % degrees of freedom in frequency space
-  numFreq = (bw+1)^2 / nSym;
-  % TODO: False oversampling factor, see corrosion data example in paper (cubic symmetry)
-  oversamplingFactor = length(nodes)/numFreq;
-  if oversamplingFactor<1.9
-    warning(['The oversampling factor in the approximation process is ', ...
-      num2str(oversamplingFactor),'. This could lead to a bad approximation.'])
-  end
-  return
-end
-
 % Choose a fixed oversampling factor of 2
-oversamplingFactor = 2;
-bw = dim2deg(round( length(nodes)*nSym/oversamplingFactor ));
-
-bw = min(bw,getMTEXpref('maxS2Bandwidth'));
+if isempty(bw)
+  bw = round(sqrt( length(nodes)*nSym/2 ));
+  bw = min(bw,getMTEXpref('maxS2Bandwidth'));
+end
 
 end

@@ -64,7 +64,7 @@ end
 % evaluate on S2Grid
 values = f.eval(S2G);
 
-S2G.how2plot = getClass(varargin,'plottingConvention',S2G.how2plot);
+S2G.how2plot = getClass(varargin,'plottingConvention',f.how2plot);
 
 % ----------------------- (3) Do adjoint NSOFT ----------------------------
 
