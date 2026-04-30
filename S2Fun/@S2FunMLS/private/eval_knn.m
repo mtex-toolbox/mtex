@@ -89,7 +89,7 @@ G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
 clear G v_id;
 
 % compute distances and weights
-deltas = 1.01 * max(dist, [], 2);
+deltas = 1.00 * max(dist, [], 2);
 weights = S2F.w(dist ./ deltas);
 clear deltas dist;
 if (S2F.detectOutliers == true)
