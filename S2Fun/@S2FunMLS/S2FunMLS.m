@@ -73,7 +73,7 @@ classdef S2FunMLS < S2Fun
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
 
-    s = specimenSymmetry;  % symmetry
+    s = specimenSymmetry.default;  % symmetry
 
     monomials   = true;   % use monomial basis? (much more stable than harmonic)
     centered    = true;   % center the basis function evaluation around the north pole?
