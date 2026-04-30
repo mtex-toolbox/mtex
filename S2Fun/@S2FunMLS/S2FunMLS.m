@@ -73,7 +73,7 @@ classdef S2FunMLS < S2Fun
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
 
-    s = specimenSymmetry;  % symmetry
+    s = specimenSymmetry.default;  % symmetry
 
     monomials   = true;   % use monomial basis? (much more stable than harmonic)
     centered    = true;   % center the basis function evaluation around the north pole?
@@ -469,9 +469,14 @@ classdef S2FunMLS < S2Fun
   end
 
   function fd = get.fill_distance(S2F)
-    fg = fibonacciS2Grid('points', 1e6);
-    [~, d] = S2F.nodes.find(fg(:), 1, 'searcher', S2F.searcher);
+    % fg = fibonacciS2Grid('points', 1e6);
+    % [~, d] = S2F.nodes.find(fg(:), 1, 'searcher', S2F.searcher);
+    % fd = max(d);
+
+    f = S2FunHandle(@(r) funDist(r,S2F));
+    d = max(f,'numLocal',20,'maxStepSize',1*degree);
     fd = max(d);
+
   end
 
   function sd = get.separation_distance(S2F)
@@ -488,4 +493,13 @@ methods (Static = true)
   S2F = example(varargin)
 end
 
+end
+
+
+
+
+%% Additional Functions
+function d = funDist(modes,mls)
+  [~, d] = mls.nodes.find(modes(:), 1, 'searcher', mls.searcher);
+  d = reshape(d,size(modes));
 end
