@@ -35,7 +35,7 @@ nSym = numSym(s.properGroup) * (isalmostreal(y)+1);
 
 % Choose a fixed oversampling factor of 2
 if isempty(bw)
-  bw = round(sqrt( length(nodes)*nSym/2 ));
+  bw = round(sqrt( length(nodes)*nSym )-1);
   bw = min(bw,getMTEXpref('maxS2Bandwidth'));
 end
 
