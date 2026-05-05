@@ -101,7 +101,7 @@ for i = 1:length(ebsd_paths)
 
     elseif strcmpi(rot_field, "euler")
         eulerData = EBSDdata.(rot_field)'; 
-        rot = rotation.byEuler(eulerData);
+        rot = rotation.byEuler(eulerData,'Bunge');
         
         % safety check if matrix is correctly rotated
         if size(rot, 2) > 1
