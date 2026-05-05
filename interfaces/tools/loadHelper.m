@@ -84,7 +84,12 @@ methods
     rotData = table2array(loader.data(:,cols));
     if type <=6
       flag = extract_option([convNames{type} loader.opts],convNames);     
-      rot = rotation.byEuler(rotData * loader.unit, flag{:});
+      
+      if max(rotData(~isnan(rotData))) > 15
+        rotData = rotData * pi/180;
+      end
+
+      rot = rotation.byEuler(rotData, flag{:});
     else
       rot = rotation(quaternion(rotData));
     end
