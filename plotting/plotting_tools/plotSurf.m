@@ -1,7 +1,8 @@
 function h = plotSurf(pos,d,uC,varargin)
 % plot EBSD map through surf
 
-ax = get_option(varargin,'parent',gca);
+ax = get_option(varargin,'parent');
+if isempty(ax), ax=gca; end
 
 d = reshape(d,size(pos,1),size(pos,2),[]);
 
