@@ -49,7 +49,7 @@ classdef mapPlot < handle
       grid(ax,'off');
       
       mP.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
-      mP.how2plot.setView;
+      mP.how2plot.setView(mP.ax);
       setappdata(ax,'mapPlot',mP);
       
       % set zoom function

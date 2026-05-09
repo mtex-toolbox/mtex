@@ -147,7 +147,9 @@ else % phase plot
   
   
   
-  set(gcf,'name','phase plot');
+  if ~check_option(varargin,'parent')
+    set(gcf,'name','phase plot');
+  end
   
 end
   
