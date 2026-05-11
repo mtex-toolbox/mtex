@@ -58,7 +58,7 @@ classdef EBSDsquare < EBSD
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = 0.5 * (ebsd.d1 * [1;1;-1;-1] + ebsd.d2 * [1;-1;-1;1]);
+        ebsd.unitCell = 0.5 * (ebsd.d1 * [-1;1;1;-1] + ebsd.d2 * [-1;-1;1;1]);
       end
            
     end
@@ -67,9 +67,14 @@ classdef EBSDsquare < EBSD
       [x,y] = ind2sub(size(ebsd),ind);
     end
 
-    function [ebsd,newId] = gridify(ebsd,varargin)
+    function [varargout] = gridify(ebsd,varargin)
       % nothing to do :)
-      newId = (1:length(ebsd)).';
+      if ~check_option(varargin,'unitCell')
+        varargout{1} = ebsd;
+        varargout{2} = (1:length(ebsd)).';
+      else
+        [varargout{1:nargout}] = gridify@EBSD(ebsd,varargin{:});
+      end
     end
            
     function e = end(ebsd,i,n)

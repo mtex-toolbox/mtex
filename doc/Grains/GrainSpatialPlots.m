@@ -92,21 +92,60 @@ setColorRange([1 5])
 % direction.
 
 % consider only elongated grains
-alongated_grains = grains(grains.aspectRatio > 1.2);
+elongated_grains = grains(grains.aspectRatio > 1.2);
 
 % angle of the long axis to (1 0 0)
-%omega = angle(alongated_grains.longAxis, vector3d.X, grains.N);
-omega = mod(alongated_grains.longAxis.rho, pi);
+omega = angle(vector3d.X, elongated_grains.longAxis, grains.N);
 
 % plot the direction
-plot(alongated_grains,omega ./ degree,'micronbar','off')
+plot(elongated_grains,omega ./ degree,'micronbar','off')
 
 % change the default colormap to a circular one
-mtexColorMap HSV
+mtexColorMap(colorcet('C2'))
 
 % display the colormap
 mtexColorbar
 
+%% Colorizing two scalar properties
+% Above we plotted the long axis of grains admitting that for low aspect
+% ratio grains, also the long axis is poorly defined. Another way to
+% overcome this situation is to desaturate the color as a function of
+% aspect ratio.
+%
+% In order to do so, we first define a planar colorkey. Since we want to
+% plot the grain long axis direction, we tell the colorkey that hue-encoded
+% value is periodic. Also we can set ranges for the individual values.
+
+% set up the color key
+pK = planarColorKey(colorcet('C2'));
+
+% make it periodic in the first argument
+pK.periode  = pi; 
+
+% specify range for the second argument
+pK.range2 = [1 3];
+
+% now we can derive color from the colorkey.
+prop1 = angle(vector3d.X, grains.longAxis, grains.N);
+prop2 = grains.aspectRatio;
+
+colors = pK.property2color(prop1, prop2);
+plot(grains,colors)
+
+%%
+% Lets visualize our colorkey.
+
+% define axes labels
+pK.label1 = 'long axis';
+pK.label2 = 'aspect ratio';
+
+figure
+plot(pK,prop1/degree,prop2)
+
+%%
+% Similarly we can color code any combination of two scalar grain
+% properties.
+%
 %% Plotting the orientation within a grain
 % In order to plot the orientations of EBSD data within certain grains one
 % first has to extract the EBSD data that belong to the specific grains.
@@ -115,7 +154,7 @@ mtexColorbar
 [~,id] = max(grains.area)
 
 % and select the corresponding EBSD data
-ebsd_maxGrain = ebsd(ebsd.grainId == id)
+ebsd_maxGrain = ebsd(ebsd.grainId == id);
 
 % the previous command is equivalent to the more simpler 
 ebsd_maxGrain = ebsd(grains(id));

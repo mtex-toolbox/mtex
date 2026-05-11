@@ -10,6 +10,7 @@ mtexdata sharp
 ipfKey = ipfColorKey(ebsd);
 
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 %%
 % and have a look into the 101 inverse pole figure.
@@ -44,6 +45,7 @@ colormap(cmap)
 
 % plot the data with the customized color
 plot(ebsd,color)
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 % set scaling of the angles to 110 - 120 degree
 setColorRange([-25 -15]);
@@ -67,6 +69,7 @@ ipfKey.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * ipfKey.wh
 
 close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 %% 
 % We observe that the orientation map is almost completely gray, except for
@@ -75,6 +78,7 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 
 ipfKey.maxAngle = 7.5*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 %%
 % You may play around with the option |'maxAngle'| to obtain better
@@ -115,6 +119,7 @@ ipfKey = axisAngleColorKey(ebsd);
 ipfKey.oriRef = grains.meanOrientation(ebsd('indexed').grainId);
 
 plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations))
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 hold on
 plot(grains.boundary,'lineWidth',4)

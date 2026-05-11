@@ -12,7 +12,7 @@ calcError(pf,odf_naive)
 %%
 % visual inspection
 
-odf_naive.plot(pf.allH)
+odf_naive.plot(pf.allH,'sigma')
 
 %%
 % another form to regularize the inversion problem is to iteratively

@@ -165,6 +165,23 @@ classdef tensor < dynOption
       T.CS.how2plot = pC;
     end
 
+    function x = x(t)
+      v = vector3d(t);
+      x = v.x;
+    end
+    function y = y(t)
+      v = vector3d(t);
+      y = v.y;
+    end
+    function z = z(t)
+      v = vector3d(t);
+      z = v.z;
+    end
+    function xyz = xyz(v)
+      v = v.subSet(':');
+      xyz = [v.x,v.y,v.z];      
+    end
+    
   end
   
   methods (Static = true)

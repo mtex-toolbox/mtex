@@ -6,7 +6,7 @@ nn = SO3F.nn;
 nn_total = nn * N;
  
 % Find neighbors and perform subsampling. If the flag is set, compute distances.
-[ind, dist] = SO3F.nodes.find(ori, nn);
+[ind, dist] = SO3F.nodes.find(ori, nn, 'searcher', SO3F.searcher);
 
 if (SO3F.subsample == true)
   ind = SO3F.find_optimal_subset(ind, ori, varargin{:});
@@ -27,7 +27,7 @@ end
 
 % compute the weights, set delta slighlty larger than the farthest neighbor 
 % take the root of the weights, see after large if-block for explanation
-weights = SO3F.w(dist ./ (1.1 * max(dist, [], 2)))';
+weights = SO3F.w(dist ./ (1.00 * max(dist, [], 2)))';
 clear dist;
 
 % set up the right hand side

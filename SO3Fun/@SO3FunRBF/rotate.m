@@ -26,7 +26,7 @@ if check_option(varargin,'right')
     assert(rot.SS == SO3F.CS,'symmetry missmatch')    
   elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = crystalSymmetry;
+    SO3F.CS = crystalSymmetry.default;
   end
 
   SO3F.center = orientation(SO3F.center * rot);

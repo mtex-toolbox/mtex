@@ -145,7 +145,10 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
 
-    function v = get.outOfScreen(pC), v = pC.rot * vector3d.Z; end
+    function v = get.outOfScreen(pC)
+      v = pC.rot * vector3d.Z; 
+      v.how2plot = pC;
+    end
     function set.outOfScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -155,7 +158,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = n;
     end
 
-    function v = get.intoScreen(pC), v = -pC.rot * vector3d.Z; end
+    function v = get.intoScreen(pC)
+      v = -pC.rot * vector3d.Z;
+      v.how2plot = pC;
+    end
     function set.intoScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,-n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -166,7 +172,10 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
 
-    function v = get.east(pC), v = pC.rot * vector3d.X; end
+    function v = get.east(pC) 
+      v = pC.rot * vector3d.X;
+      v.how2plot = pC;
+    end
     function set.east(pC,e)
       try
         pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot; 
@@ -176,7 +185,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = e;
     end
 
-    function v = get.west(pC), v = -pC.rot * vector3d.X; end
+    function v = get.west(pC)
+      v = -pC.rot * vector3d.X; 
+      v.how2plot = pC;
+    end
     function set.west(pC,w)
       try
         pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot; 
@@ -186,7 +198,10 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC.lastSet = w;
     end
 
-    function v = get.north(pC), v = pC.rot * vector3d.Y; end
+    function v = get.north(pC)
+      v = pC.rot * vector3d.Y; 
+      v.how2plot = pC;
+    end
     function set.north(pC,v)
       try
         pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot; 

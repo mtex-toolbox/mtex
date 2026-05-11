@@ -62,12 +62,16 @@ classdef SO3Kernel
     end
     
     function psi = set.bandwidth(psi,L)
-      psi.A = psi.A(1:min(L+1,end));        
+      if L>psi.bandwidth
+        psi.A = [psi.A(:);zeros(L-psi.bandwidth,1)];
+      else
+        psi.A = psi.A(1:L+1);        
+      end
     end
     
     function n = norm(psi)
       % L2 norm
-      n = norm(psi.A.^2);
+      n = norm(psi.A);
     end
          
     function c = char(psi)
@@ -131,7 +135,7 @@ classdef SO3Kernel
       ind = find(A(2:end)<=max(min([A(2:end);10*epsilon]),epsilon),1,'first');
       A = psi.A(1:min([ind+1,length(A)]));
     end
-       
+    
   end
 end
 

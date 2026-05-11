@@ -11,6 +11,14 @@ function [mtexFig,newFigure] = newMtexFigure(varargin)
 %  layout  - [numberRows, numberColumns]
 %
 
+if check_option(varargin,'parent')
+    newFigure = false;
+    mtexFig = struct;
+    mtexFig.gca = get_option(varargin,'parent');
+    mtexFig.parent = mtexFig.gca;
+    return
+end
+
 mtexFig = gcm;
 
 % check hold state

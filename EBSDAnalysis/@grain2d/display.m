@@ -22,22 +22,27 @@ for ip = 1:numel(grains.phaseMap)
   % grains
   matrix{ip,3} = int2str(sum(grains.numPixel(ind)));
   
+  CS = grains.CSList{ip};
+
   % abort in special cases
-  if isempty(grains.CSList{ip})
+  if isempty(CS)
     continue
   elseif ischar(grains.CSList{ip})
-    matrix{ip,4} = grains.CSList{ip};
+    matrix{ip,4} = CS;
     continue
   else
     % mineral
-    matrix{ip,4} = char(grains.CSList{ip}.mineral);
+    matrix{ip,4} = char(CS.mineral);
   end
   
   % symmetry
-  matrix{ip,5} = grains.CSList{ip}.pointGroup;
-  
+  matrix{ip,5} = CS.pointGroup;
+
+  % color
+  matrix{ip,6} = rgb2str(CS.color);
+
   % reference frame
-  matrix{ip,6} = option2str(grains.CSList{ip}.alignment);
+  %matrix{ip,6} = option2str(grains.CSList{ip}.alignment);
   
 end
 
@@ -46,7 +51,7 @@ matrix(accumarray(full(grains.phaseId),1,[size(matrix,1) 1])==0,:) = [];
 
 if ~isempty(grains)
   cprintf(matrix,'-L',' ','-Lc',...
-    {'Phase' 'Grains' 'Pixels' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
+    {'Phase' 'Grains' 'Pixels' 'Mineral'  'Symmetry' 'Color'},...
     '-d','  ','-ic',true);
 else
   disp('  no grains here!')

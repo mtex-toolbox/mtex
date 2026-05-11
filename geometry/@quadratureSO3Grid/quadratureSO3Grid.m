@@ -61,6 +61,48 @@ methods
   
     persistent keepSO3G;
 
+    % ---------------------------------------------------------------------
+    % Construct new quadratureSO3Grid from some given grid by adjusting
+    % properties like the bandwidth, symmetries or scheme
+    if nargin>0 && isa(varargin{1},'quadratureSO3Grid')
+      g = varargin{1};
+      
+      % extract symmetry
+      isSym = cellfun(@(x) isa(x,'symmetry'),varargin,'UniformOutput',true);
+      if any(isSym)
+        CS = varargin{find(isSym,1)};
+        isSym(find(isSym,1)) = 0;
+      else
+        CS = g.CS;
+      end
+      if any(isSym)
+        SS = varargin{find(isSym,1)};
+      else
+        SS = g.SS;
+      end
+
+      % extract scheme
+      if check_option(varargin,'GaussLegendre')
+        scheme = 'GaussLegendre';
+      elseif check_option(varargin,'ClenshawCurtis')
+        scheme = 'ClenshawCurtis';
+      else
+        scheme = g.scheme;
+      end
+      
+      % extract bandwidth
+      N = get_option(varargin,'bandwidth');
+      if ~isempty(N)
+        quadratureSO3Grid.check_bandwidth(N,CS,SS,scheme);
+      else
+        [~,N] = quadratureSO3Grid.adjust_bandwidth(g.bandwidth,CS,SS);      
+      end
+
+      SO3G = quadratureSO3Grid(N,CS,SS,scheme);
+      return
+    end
+
+    % ---------------------------------------------------------------------
     % get bandwidth
     if nargin>0 && isnumeric(varargin{1}) && isscalar(varargin{1})
       N = varargin{1};
@@ -132,6 +174,7 @@ methods
     keepSO3G = SO3G; % remember grid for future usage
 
   end
+
 
   function N = get.bandwidth(SO3G)
     s = size(SO3G.iuniqueGrid);

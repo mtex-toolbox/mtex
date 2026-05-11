@@ -85,7 +85,7 @@ methods
         CS = components{find(~isConstant & ~isUniform,1)}.CS;
         SS = components{find(~isConstant & ~isUniform,1)}.SS;        
       else
-        CS = crystalSymmetry;
+        CS = crystalSymmetry.default;
         SS = specimenSymmetry.default;
       end
       SO3F.components = {c * uniformODF(CS,SS)}; 

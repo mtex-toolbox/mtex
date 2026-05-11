@@ -134,7 +134,8 @@ for i = 1:numel(sP)
         'markerfacecolor','flat',...
         'markeredgecolor','flat'),varargin{2:end});
       h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-      
+
+      addTransparency2Patch(h(i),varargin{:});
     end
       
   else % --------- colorcoding according to nextStyle -----------------
@@ -160,8 +161,11 @@ for i = 1:numel(sP)
     % draw patches
     if numel(MarkerSize) > 1
       
+      holdState = sP(i).ax.NextPlot;
+      sP(i).ax.NextPlot = "add";
       h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).ax,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:});
+      sP(i).ax.NextPlot = holdState;
     
     else
        
@@ -173,28 +177,7 @@ for i = 1:numel(sP)
       
       h(i).Annotation.LegendInformation.IconDisplayStyle = "off";      
 
-      % add transparency if required
-      if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
-        
-        faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
-        edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
-        
-        % we have to wait until the markers have been drawn
-        mh = [];
-        while isempty(mh)
-          pause(0.01);
-          mh = [h(i).MarkerHandle];
-        end
-                
-        for j = 1:length(mh)
-          mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
-          mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
-          
-          mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
-          mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
-        end
-         
-      end
+      addTransparency2Patch(h(i),varargin{:});
       
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend
@@ -338,4 +321,30 @@ for it = 1:length(t)
   
 end
 
+end
+
+function addTransparency2Patch(h,varargin)
+
+% add transparency if required
+if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+  
+  faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
+  edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
+  
+  % we have to wait until the markers have been drawn
+  mh = [];
+  while isempty(mh)
+    pause(0.01);
+    mh = [h.MarkerHandle];
+  end
+  
+  for j = 1:length(mh)
+    mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
+    mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
+    
+    mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
+    mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
+  end
+  
+end
 end

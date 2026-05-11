@@ -44,6 +44,8 @@ classdef SO3FunMLS < SO3Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -51,7 +53,7 @@ classdef SO3FunMLS < SO3Fun
 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
-    s = crystalSymmetry;  % crystal symmetry
+    s = crystalSymmetry.default;  % crystal symmetry
 
     monomials   = true;   % use monomial basis? (much more stable than harmonic)
     centered    = true;   % center the basis function evaluation around the north pole?
@@ -80,6 +82,10 @@ classdef SO3FunMLS < SO3Fun
                           %   number that is bigger, if the value is an outlier
     SLeft
     SRight
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   % TODO: symmetrise w.r.t one symmetry.
@@ -105,12 +111,14 @@ classdef SO3FunMLS < SO3Fun
       end
 
       % MLS needs unique nodes
-      if (numel(unique(nodes, 'stable', 'tolerance', .01 * degree)) < numel(nodes))
+      if (numel(unique(nodes, 'stable', 'tolerance', 0.01 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median');
-        warning(['Some duplicate Nodes have been removed. ' ...
-          'The remaining nodes have been reshaped into a vector.']); 
+        [nodes, values] = uniqueData(nodes, values, 'median','tolerance',0.01*degree);
+        if ~getMTEXpref('generatingHelpMode')
+          warning(['Some duplicate Nodes have been removed. ' ...
+            'The remaining nodes have been reshaped into a vector.']); 
+        end
       end
 
       % goal of reshaping:
@@ -120,6 +128,8 @@ classdef SO3FunMLS < SO3Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       SO3F.nodes = nodes;
+      
+      SO3F.searcher = createns(nodes.abcd);
 
       % reshape values accordingly 
       values_size = size(values);
@@ -375,6 +385,24 @@ classdef SO3FunMLS < SO3Fun
       oI = computeOutlierIndicators(SO3F);
     end
 
+    function fd = get.fill_distance(SO3F)
+      % eg = equispacedSO3Grid(SO3F.nodes.CS, SO3F.nodes.SS, 'resolution', 3*degree);
+      % [~, d] = SO3F.nodes.find(eg(:), 1, 'searcher', SO3F.searcher);
+      % fd = max(d);
+      
+      f = SO3FunHandle(@(r) funDist(r,SO3F));
+      acc = 0.25*degree;
+      d = max(f,'accuracy',acc,'numLocal',20,'resolution',3*degree);
+      fd = max(d);
+
+    end
+
+    function sd = get.separation_distance(SO3F)
+      [~, d] = SO3F.nodes.find(SO3F.nodes, 2, 'searcher', SO3F.searcher);
+      d = d(:,2);
+      sd = min(d);
+    end
+
   end
 
   methods (Static = true)
@@ -383,4 +411,15 @@ classdef SO3FunMLS < SO3Fun
     SO3F = example(varargin)
   end
   
+end
+
+
+
+
+
+
+%% Additional Functions
+function d = funDist(modes,mls)
+  [~, d] = mls.nodes.find(modes(:), 1, 'searcher', mls.searcher);
+  d = reshape(d,size(modes));
 end

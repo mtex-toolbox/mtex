@@ -70,7 +70,7 @@ mean(SO3FunHandle(@(q) f.eval(q).*g.eval(r.*inv(q)),c.CS))
 
 %%
 % The convolution of matrices of SO3FunHarmonic's with matrices of SO3
-% Functions works elementwise, see at <SO3FunMultivariate.html multivariate
+% Functions works elementwise, see at <SO3FunVectorValued.html vector valued
 % SO3Fun's> for there definition.
 %
 

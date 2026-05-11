@@ -117,7 +117,7 @@ else
 end
 
 % normalize odf
-if ~isempty(m)
+if ~isempty(m) && all(chat>=0,"all")
   sz = size(SO3F);
   SO3F.weights = reshape(m,[1,sz]) .* SO3F.weights ./ sum(SO3F.weights,1) .* (1-reshape(SO3F.c0,[1,sz])) /psi.A(1);
 end

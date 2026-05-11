@@ -7,8 +7,8 @@ vals = zeros(N, numel(S2F));
 conds = zeros(N, 1);
  
 % get the neighbors 
-ind = S2F.nodes.find(v, S2F.delta); 
-nn = sum(ind, 2);
+ind = S2F.nodes.find(v, S2F.delta, 'searcher', S2F.searcher);
+nn = full(sum(ind, 2));
 
 warn_smallnn = false;
 warn_bignn = false;
@@ -72,7 +72,7 @@ J = ~(too_few_neighbors | too_many_neighbors);
 J_idx = find(J);
 v = v.subSet(J);
 N = sum(J);
-[ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:});
+[ind, dist] = S2F.nodes.find(v, S2F.delta, varargin{:}, 'searcher', S2F.searcher);
 
 
 % if optimal subsampling is set to true, we can now fall back to the eval_knn case 
@@ -176,8 +176,8 @@ grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 f = grid_vals(grid_id,:);
 
 if S2F.regularize
-  [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, ...
-    'regularize', 'maxcond', S2F.maxcond, 'mindond', S2F.mincond, ...
+  [c_book, conds(J_idx(iscvx))] = solve_lsq_book_varsize(weights, G, f, nn, ...
+    'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
     'basis_weights', S2F.basis_weights, varargin{:});
 else
   [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});

@@ -267,9 +267,8 @@ classdef EBSDhex < EBSD
     function [row,col] = pos2ind(ebsd,x,y)
       % nearest neighbor search
       
-      x = x-ebsd.pos.x(1);
-      y = y-ebsd.pos.y(1);
-      
+      x = x - ebsd.pos.x(1);
+      y = y - ebsd.pos.y(1);
       
       % convert to axial coordinates
       if ebsd.isRowAlignment        
@@ -335,7 +334,6 @@ classdef EBSDhex < EBSD
   methods (Static = true)
     
     function checkCube2Hex
-      
       [r,c] = ndgrid(1:10,1:10);
       
       ebsd = EBSDhex;
@@ -344,10 +342,7 @@ classdef EBSDhex < EBSD
       [r2,c2] = ebsd.cube2hex(x,y,z);
       
       max((r-r2).^2 + (c-c2).^2)
-      
     end
     
   end
-  
-      
 end

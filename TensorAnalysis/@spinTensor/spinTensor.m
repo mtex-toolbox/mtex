@@ -69,15 +69,17 @@ classdef spinTensor < velocityGradientTensor
         end
         v = reshape(v,size(Omega));
       end
+      
     end
     
-    function v = SO3TangentVector(Omega,varargin)
+    function v = SO3TangentVector(Omega,rot,varargin)
       
       if isa(Omega.CS,'crystalSymmetry')
-        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',varargin{:});
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'right',rot,varargin{:});
       else
-        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',varargin{:});
+        v = SO3TangentVector(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:),'left',rot,varargin{:});
       end
+
     end
     
     function rot = rotation(Omega)
@@ -97,6 +99,21 @@ classdef spinTensor < velocityGradientTensor
     end
     
     function rot = exp(Omega,ori_ref,tS)
+      % tangent vector to rotation
+      %
+      % Syntax
+      %   mori = exp(v) % misorientation in specimen coordinates
+      %   ori = exp(v,ori_ref) % orientation update
+      %   ori = exp(v,ori_ref,tS) % orientation update
+      %
+      % Input
+      %  v       - @vector3d, @SO3TangentVector
+      %  ori_ref - @orientation, @rotation
+      %  tS      - @SO3TangentSpace
+      %
+      % Output
+      %  mori - @rotation
+      %  ori  - @orientation
       
       rot = orientation(Omega);
       if nargin > 1

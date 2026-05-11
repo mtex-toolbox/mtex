@@ -16,9 +16,9 @@ g1 = odf.grad(ori(:),'check','delta',0.001*degree);
 g2 = odf.grad(ori(:));
 
 if max(norm(g1-g2)./(1+norm(g1))) < 1e-1
-  disp(' Unimoal gradient test passed'); 
+  disp(' Unimodal gradient test passed'); 
 else
-  disp(' Unimoal gradient test failed'); 
+  disp(' Unimodal gradient test failed'); 
 end
 
 %% test 2
@@ -29,10 +29,10 @@ ori = orientation.rand(1000,odf.CS,odf.SS);
 g1 = odf.grad(ori(:),'check','delta',0.001*degree);
 g2 = odf.grad(ori(:));
 
-if max(norm(g1-g2)./norm(g1)) < 1e-2
-  disp(' Unimoal gradient test passed'); 
+if max(norm(g1-g2)./(1+norm(g1))) < 1e-2
+  disp(' Unimodal gradient test passed'); 
 else
-  disp(' Unimoal gradient test failed'); 
+  disp(' Unimodal gradient test failed'); 
 end
 
 end

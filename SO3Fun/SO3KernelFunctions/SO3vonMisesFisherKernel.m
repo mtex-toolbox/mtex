@@ -80,13 +80,12 @@ methods
   
   function value = grad(psi,co2)
     % the derivative of the kernel function
-    % DK(omega) = - kappa * C * sin(omega/2)*cos(omega/2)^(2kappa-1)
+    % DK(omega) = - kappa * C * sin(omega) * exp( kappa * cos(omega) )
     
     if nargin == 2
-      %value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
-      value = -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1);
+      value = -psi.C * psi.kappa * sin(acos(co2)*2) .* exp(psi.kappa*cos(acos(co2)*2));
     else      
-      value = SO3KernelHandle(@(co2) -psi.C * psi.kappa * sqrt(1-co2.^2) .* co2.^(2*psi.kappa-1));
+      value = SO3KernelHandle(@(co2) -psi.C * psi.kappa * sin(acos(co2)*2) .* exp(psi.kappa*cos(acos(co2)*2)) );
     end
     
   end

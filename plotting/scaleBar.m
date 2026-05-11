@@ -112,7 +112,10 @@ methods
   end
 
   function setOnTop(sB)
-    uistack(sB.hgt,'top')
+    c = sB.hgt.Parent.Children;
+    if ~isempty(c) && c(1) ~= sB.hgt
+      uistack(sB.hgt,'top')
+    end
   end
   
   

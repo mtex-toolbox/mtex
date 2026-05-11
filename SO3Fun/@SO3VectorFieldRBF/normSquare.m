@@ -11,7 +11,7 @@ function SO3F = normSquare(SO3VF)
 %  SO3F - @SO3FunRBF
 %
 
-f = SO3VectorFieldHandle(@(r) norm(SO3VF.eval(r)).^2,SO3VF.CS,SO3VF.SS);
-SO3F = SO3FunRBF.approximate(f,SO3VF.CS,SO3VF.SS);
+SO3F = SO3FunRBF.approximate(@(rot) norm(SO3VF.eval(rot)).^2,...
+  SO3VF.hiddenCS,SO3VF.hiddenSS);
 
 end

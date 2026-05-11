@@ -10,10 +10,10 @@ mtexdata twins silent
 ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 
 % detect grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree,'minPixel',3);
 
 % smooth them
-grains = grains.smooth;
+grains = grains.smooth(5);
 
 % visualize the grains
 plot(grains,grains.meanOrientation)
@@ -25,7 +25,6 @@ hold on
 plot(gB,'LineWidth',2)
 hold off
 
-
 %% Property overview
 %
 % A variable of type <grainBoundary.grainBoundary.html grainBoundary>
@@ -35,7 +34,7 @@ hold off
 % || |grainId|        || neighboring grain ids || |F| || vertices ids of the segments ||
 % || <grainBoundary.segLength.html |segLength|> || length of each segment || |direction| || direction of each segment ||
 % || |midPoint|       || mid point of the segment || <grainBoundary.curvature.html |curvature|> || curvature of each segment ||
-% || |misorientation| || between |ebsdId(:,1)| and  |ebsdId(:,2)| || || ||
+% || |misorientation| || between |ebsdId(:,1)| and  |ebsdId(:,2)| || |triplePoints| || list of all triple points ||
 % || |componentId|    || connected component id || |componentSize| || connected component size ||
 %
 % The first three properties refer to $N \times 2$ matrices where $N$ is
@@ -44,32 +43,32 @@ hold off
 % grain boundary. To illustrate this consider the grain boundary of one
 % specific grain
 
-gB8 = grains(8).boundary
+gB4 = grains(4).boundary
 
 %%
-% This boundary consists of 6 segments and hence ebsdId forms a 8x2 matrix
+% This boundary consists of 8 segments and hence ebsdId forms a 8x2 matrix
 
-gB8.ebsdId
+gB4.ebsdId
 
 %%
 % It is important to understand that the *id* is not necessarily the same
 % as the index in the list. In order to index an variable of type EBSD by
 % id and not by index the following syntax has to be used
 
-ebsd('id',gB8.ebsdId)
+ebsd('id',gB4.ebsdId)
 
 %%
 % Similarly
 
-gB8.grainId
+gB4.grainId
 
 %%
-% results in 9x2 matrix indicating that grain 8 is an inclusion of grain
-% 21.
+% results in 8x2 matrix indicating that grain 4 is a tiny inclusion of
+% grain 15.
 
-plot(grains(8),'FaceColor','DarkBlue','micronbar','off')
+plot(grains(4),'FaceColor','DarkBlue','micronbar','off')
 hold on
-plot(grains(21),'FaceColor','LightCoral')
+plot(grains(15),'FaceColor','LightCoral')
 hold off
 
 %% Grain boundary misorientations
@@ -78,9 +77,9 @@ hold off
 % the orientations corresponding to ids in first and second column of
 % ebsdId, i.e. following two commands should give the same result
 
-gB8(1).misorientation
+gB4(1).misorientation
 
-inv(ebsd('id',gB8.ebsdId(1,2)).orientations) .* ebsd('id',gB8.ebsdId(1,1)).orientations
+inv(ebsd('id',gB4.ebsdId(1,2)).orientations) .* ebsd('id',gB4.ebsdId(1,1)).orientations
 
 %%
 % Note that in the first result the antipodal flag is true while it is
@@ -134,16 +133,47 @@ sum(gB_Mg.segLength)
 
 %% Connected components
 % 
-% TODO: explain this in more detail
+% When analyzing the topology of boundary networks connected components of
+% certain subsets of boundaries are of interest. Using the
+% commands|gB.componentId| and |gB.componentSize| we are able to
+% separate the boundary network into groups of connected components and
+% analyze them separately. We do so below at the example of twin boundaries
+% which we first colorize according to length.
 
-%components = unique(gB.componentId);
-%for cId = components.'
-%  plot(gB(gB.componentId == cId),'lineColor',ind2color(cId),...
-%    'micronbar','off','lineWidth',4,'displayName',num2str(cId))
-%  hold on
-%end
-%hold off
+CS = ebsd.CS;
+twinning = orientation.map(Miller(1,-1,0,1,CS),Miller(1,0,-1,-1,CS),...
+  Miller(0,1,-1,1,CS,'uvw'),Miller(1,-1,0,1,CS,'uvw'))
 
+gBTwin = gB(gB.isTwinning(twinning));
 
+plot(grains,grains.meanOrientation,'faceAlpha',0.25)
 
+hold on
+plot(gBTwin,gBTwin.componentSize,'lineWidth',4)
+hold off
+mtexColorbar
 
+%%
+% Next we compute how curvy each twin boundary component is, by dividing it
+% spatial extension by its total length. This measure has proven to be
+% useful to tell apart misindexing due to pseudosymmetries and true twin
+% boundaries.
+
+numComponents = max(gBTwin.componentId);
+xmax = accumarray(gBTwin.componentId,gBTwin.midPoint.x,[numComponents,1],@max);
+ymax = accumarray(gBTwin.componentId,gBTwin.midPoint.y,[numComponents,1],@max);
+xmin = accumarray(gBTwin.componentId,gBTwin.midPoint.x,[numComponents,1],@min);
+ymin = accumarray(gBTwin.componentId,gBTwin.midPoint.y,[numComponents,1],@min);
+
+ext = sqrt((xmax-xmin).^2+(ymax-ymin).^2);
+len = accumarray(gBTwin.componentId,gBTwin.segLength,[numComponents,1],@sum);
+value = ext ./ len;
+
+plot(grains,grains.meanOrientation,'faceAlpha',0.25)
+hold on
+plot(gBTwin,value(gBTwin.componentId),'lineWidth',4)
+hold off
+mtexColorbar
+mtexColorMap blue2red
+
+%%

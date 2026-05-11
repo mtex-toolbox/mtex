@@ -69,10 +69,13 @@ try
   % no options given -> ask
   if ~check_option(varargin,'ColumnNames')
 
-    options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
-    if isempty(options), ebsd = []; return; end
+    if any(strcmpi(c,'x')) && any(strcmpi(c,'y'))
+      options = {'ColumnNames',c,'Bunge'};
+    else
+      options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
+      if isempty(options), ebsd = []; return; end
+    end
     varargin = [options,varargin];
-
   end
 
   loader = loadHelper(d,varargin{:});

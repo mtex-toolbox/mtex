@@ -57,7 +57,7 @@ classdef vector3d < dynOption
     function v = vector3d(varargin)
       % constructor of the class vector3d
       
-      if nargin >=3 && isnumeric(varargin{1})
+      if nargin >=3 && isnumeric(varargin{1}) && isnumeric(varargin{2}) && isnumeric(varargin{3})
         
         v.x = varargin{1};
         v.y = varargin{2};
@@ -67,7 +67,27 @@ classdef vector3d < dynOption
 
         v.how2plot = plottingConvention.default;
 
-      elseif nargin <= 2
+      elseif ischar(varargin{1})
+        
+        if strcmp(varargin{1},'polar')
+          
+          sy = sin(varargin{2});
+          v.x = sy .* cos(varargin{3});
+          v.y = sy .* sin(varargin{3});
+          v.z = cos(varargin{2});
+          
+        else
+          
+          theta = get_option(varargin,{'theta','azimuth'});
+          rho = get_option(varargin,{'rho','polar'});
+          
+          v.x = sin(theta).*cos(rho);
+          v.y = sin(theta).*sin(rho);
+          v.z = cos(theta);
+          
+        end
+
+      else
         if isa(varargin{1},'vector3d') % copy-constructor
           
           v.x = varargin{1}.x;
@@ -96,26 +116,7 @@ classdef vector3d < dynOption
         else
           error('wrong type of argument');
         end       
-      elseif ischar(varargin{1})
-        
-        if strcmp(varargin{1},'polar')
-          
-          sy = sin(varargin{2});
-          v.x = sy .* cos(varargin{3});
-          v.y = sy .* sin(varargin{3});
-          v.z = cos(varargin{2});
-          
-        else
-          
-          theta = get_option(varargin,{'theta','azimuth'});
-          rho = get_option(varargin,{'rho','polar'});
-          
-          v.x = sin(theta).*cos(rho);
-          v.y = sin(theta).*sin(rho);
-          v.z = cos(theta);
-          
-        end
-                
+               
       end
 
       % ----------- check for equal size ------------------------
@@ -248,12 +249,16 @@ classdef vector3d < dynOption
       b = isreal(v.x) & isreal(v.y) & isreal(v.z);
     end
 
-    function v = real(v)
-      v = vector3d(real(v.x),real(v.y),real(v.z));
+   function v = real(v)
+      v.x = real(v.x);
+      v.y = real(v.y);
+      v.z = real(v.z);
     end
 
     function v = imag(v)
-      v = vector3d(imag(v.x),imag(v.y),imag(v.z));
+      v.x = imag(v.x);
+      v.y = imag(v.y);
+      v.z = imag(v.z);
     end
     
   end

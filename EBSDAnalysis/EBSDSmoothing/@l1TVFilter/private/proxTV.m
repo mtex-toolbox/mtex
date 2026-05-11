@@ -10,8 +10,6 @@ if 0
   t(mu>10*degree*sqrt(2)/(2*lambda))=0;
 end
 
-% xOut = geodesic(xIn,yIn,t,varargin{:});
-% yOut = geodesic(xIn,yIn,1-t,varargin{:});
 if 1
   l = log(yIn,xIn);
   xOut = exp(t .* l,xIn);

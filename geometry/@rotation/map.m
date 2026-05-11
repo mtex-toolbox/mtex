@@ -30,7 +30,7 @@ if nargin == 4
   u2 = normalize(u2);
   v2 = normalize(v2);
 
-  % ckeck whether points have the same angle relative to each other
+  % check whether points have the same angle relative to each other
   delta = abs(angle(u1,u2,'noSymmetry') - angle(v1,v2,'noSymmetry'));
   assert(all(delta(:) < 1E-3),...
     ['Inconsitent pairs of vectors! The angle between u1, u2 and v1, v2 needs ' ....

@@ -14,7 +14,7 @@ function varargout = plot(SO3VF,varargin)
 %  
 
 % only plot the real part of SO3VF
-if ~SO3VF.isReal
+if ~SO3VF.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
     'In the following only the real part is plotted.'])
   SO3VF.isReal=1;

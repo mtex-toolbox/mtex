@@ -188,12 +188,13 @@ dS(dS.isEdge).u = 1;
 % energy of the screw dislocations
 dS(dS.isScrew).u = 1 - 0.3;
 
-% Question to verybody: what is the best way to set the enegry? I found
-% different formulae
+%%
+% Question to everybody: what is the best way to set the energy? I found
+% different formulas
 %
 % E = 1 - poisson ratio
 % E = c * G * |b|^2,  - G - Schubmodul / Shear Modulus Energy per (unit length)^2
-
+%
 %%
 % A single dislocation causes a deformation that can be represented by
 % the rank one tensor

@@ -64,8 +64,8 @@ for k = 1:maxIter
   % gradient
   g = normalize(G.eval(modes),1);
   
-  % prepare for linesearch
-  line_ori = exp(repmat(modes,1,size(omega,2)),g .* omega);
+  % prepare for line search
+  line_ori = exp(repmat(modes,1,size(omega,2)),g .* omega,G.tangentSpace);
   
   % evaluate along lines
   line_v = [v_max,SO3F.eval(line_ori(:,2:end))];

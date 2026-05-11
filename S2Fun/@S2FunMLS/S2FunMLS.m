@@ -63,6 +63,8 @@ classdef S2FunMLS < S2Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
@@ -71,7 +73,7 @@ classdef S2FunMLS < S2Fun
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
 
-    s = specimenSymmetry;  % symmetry
+    s = specimenSymmetry.default;  % symmetry
 
     monomials   = true;   % use monomial basis? (much more stable than harmonic)
     centered    = true;   % center the basis function evaluation around the north pole?
@@ -102,6 +104,10 @@ classdef S2FunMLS < S2Fun
     isReal                % = isReal(S2F.values)
     outlierIndicators     % same size as S2F.values, contains for each node a
     %   number that is bigger, if the value is an outlier
+
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   methods
@@ -121,7 +127,11 @@ classdef S2FunMLS < S2Fun
       if (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median');
+        [nodes, values] = uniqueData(nodes, values, 'median','tolerance', .001 * degree);
+        if ~getMTEXpref('generatingHelpMode')
+          warning(['Some duplicate Nodes have been removed. ' ...
+            'The remaining nodes have been reshaped into a vector.']); 
+        end
       end
 
       % goal of reshaping:
@@ -131,6 +141,8 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
+
+      S2F.searcher = createns(nodes.xyz);
 
       % reshape values accordingly
       values_size = size(values);
@@ -456,6 +468,23 @@ classdef S2FunMLS < S2Fun
       maxcount, N_voronoi, sum(S2F.voronoiCounts));
   end
 
+  function fd = get.fill_distance(S2F)
+    % fg = fibonacciS2Grid('points', 1e6);
+    % [~, d] = S2F.nodes.find(fg(:), 1, 'searcher', S2F.searcher);
+    % fd = max(d);
+
+    f = S2FunHandle(@(r) funDist(r,S2F));
+    d = max(f,'numLocal',20,'maxStepSize',1*degree);
+    fd = max(d);
+
+  end
+
+  function sd = get.separation_distance(S2F)
+    [~, d] = S2F.nodes.find(S2F.nodes, 2, 'searcher', S2F.searcher);
+    d = d(:,2);
+    sd = min(d);
+  end
+
 end
 
 methods (Static = true)
@@ -464,4 +493,13 @@ methods (Static = true)
   S2F = example(varargin)
 end
 
+end
+
+
+
+
+%% Additional Functions
+function d = funDist(modes,mls)
+  [~, d] = mls.nodes.find(modes(:), 1, 'searcher', mls.searcher);
+  d = reshape(d,size(modes));
 end

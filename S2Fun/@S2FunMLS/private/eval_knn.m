@@ -4,7 +4,6 @@ function [vals, conds] = eval_knn(S2F, v, varargin)
 v = v(:);
 N = numel(v);
 nn = S2F.nn;
-% nn = S2F.nn * 2; % use twice as many neighbors first, throw away many of them later
 nn_total = nn * N;
 
 % initialize the return values
@@ -12,7 +11,7 @@ vals = zeros(N, numel(S2F));
 conds = zeros(N, 1);
 
 % Find neighbors and perform subsampling. If the flag is set, compute distances.
-[ind, dist] = S2F.nodes.find(v, nn, varargin{:});
+[ind, dist] = S2F.nodes.find(v, nn, varargin{:}, 'searcher', S2F.searcher);
 if (S2F.subsample == true && S2F.stableFind == false)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
   nn_total = N * S2F.dim;
@@ -89,17 +88,8 @@ end
 G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
 clear G v_id;
 
-
-% r = round(S2F.nn / 1) - 1;
-% ridx = (S2F.nn - r) : (S2F.nn + r);
-% % n_weights = 1 ./ (1 + abs(ridx - r));
-% n_weights = ones(size(ridx));
-% n_weights = n_weights / sum(n_weights);
-% deltas = sum(dist(:, ridx) .* n_weights, 2) * .95;
-% deltas = 1.05 * min(deltas, dist(:, S2F.nn));
-
 % compute distances and weights
-deltas = 1.1 * max(dist, [], 2);
+deltas = 1.00 * max(dist, [], 2);
 weights = S2F.w(dist ./ deltas);
 clear deltas dist;
 if (S2F.detectOutliers == true)

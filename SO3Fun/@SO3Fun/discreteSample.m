@@ -11,6 +11,14 @@ function rot = discreteSample(SO3F,n,varargin)
 % Output
 %  v -  @rotation / @orientation
 %
+% Options
+%  compact - generate almost perfectly aligned sampling points
+%
+
+if check_option(varargin,{'compact','compactify'})
+  rot = compactify(SO3F,'points',n,varargin{:});
+  return
+end
 
 res = get_option(varargin,'resolution',1.5*degree);
 

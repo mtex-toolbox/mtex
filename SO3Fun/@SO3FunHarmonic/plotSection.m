@@ -26,12 +26,12 @@ function plotSection(SO3F,varargin)
 % See also
 % saveFigure Plotting
 
-if numel(SO3F)>1
-  warning(['You try to plot an multivariate function. Plot the desired components ' ...
+if numel(SO3F)>1 && ~getMTEXpref('generatingHelpMode')
+  warning(['You try to plot a vector valued function. Plot the desired components ' ...
     'manually. In the following the first component is plotted.'])
   SO3F = SO3F.subSet(1);
 end
-if ~SO3F.isReal
+if ~SO3F.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
     'In the following only the real part is plotted.'])
   SO3F.isReal=1;

@@ -87,11 +87,7 @@ plot(ebsd,ebsd.orientations)
 %%
 % Indexing works here similarly as for square grids
 
-plot(ebsd(1:10,:),ebsd(1:10,:).orientations,'micronbar','off')
-
-%%
-
-plot(ebsd(:,1:10),ebsd(:,1:10).orientations,'micronbar','off')
+plot(ebsd(1:20,1:40),ebsd(1:20,1:40).orientations,'micronbar','off','edgeColor','black')
 
 %% Switching from Hexagonal to Square Grid
 %
@@ -118,12 +114,12 @@ plot(ebsdS, ebsdS.orientations)
 % significantly smaller then the hexagonal unit cell.
 
 % a smaller unit cell
-unitCell = vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
+unitCell = 0.5*vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 
 % use the small square unit cell for gridify
 ebsdS = ebsd.gridify('unitCell',unitCell)
 
-plot(ebsdS,ebsdS.orientations)
+plot(ebsdS,ebsdS.orientations,'parent',nextAxis(2))
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off

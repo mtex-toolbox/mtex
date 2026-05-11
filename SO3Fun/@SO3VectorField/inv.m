@@ -12,8 +12,10 @@ function SO3VF = inv(SO3VF)
 %  SO3F - @SO3VectorFieldHarmonic
 %  
 
-
+tS = SO3VF.tangentSpace;
+SO3VF.tangentSpace = SO3VF.internTangentSpace;
 SO3VF = SO3VectorFieldHandle(@(r) ...
-  SO3VF.eval(inv(r)), SO3VF.SS, SO3VF.CS, -SO3VF.tangentSpace);
+  SO3VF.eval(inv(r)), SO3VF.hiddenSS, SO3VF.hiddenCS, -SO3VF.tangentSpace);
+SO3VF.tangentSpace = tS;
 
 end

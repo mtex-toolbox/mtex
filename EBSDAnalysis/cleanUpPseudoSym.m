@@ -73,6 +73,24 @@ cond = tortuosity > maxT & gB.componentSize > 4;
 ind = ebsd.grainId > 0;
 ebsd.grainId(ind) = parentId(grains.id2ind(ebsd.grainId(ind)));
 
+% update EBSD orientations
+if check_option(varargin,'check')
+  
+  for k = newInd
+  
+    ind = find(ebsd.grainId == grainsM.id(k));
+    
+    ori = orientation(ebsd.rotations(ind),mori.CS);
+
+    swap = angle(ori,grainsM.meanOrientation(k) * inv(mori)) ...
+      < angle(ori,grainsM.meanOrientation(k));
+  
+    ori(swap) = ori(swap) * mori;
+    ebsd.rotations(ind) = ori;
+  end
+  return
+end
+
 % array of all possible operators: [identity, mori_1, mori_2, ...]
 id_op = orientation.id(mori.CS,mori.CS); 
 all_ops = [id_op, transpose(mori(:))];
@@ -83,7 +101,7 @@ is_merged_pt = ismember(ebsd.grainId, updated_grain_ids);
 is_target_phase = (ebsd.phaseId == pseudoSym_phase_id);
 
 % Combine conditions to get the exact pixels to evaluate
-valid_pts_mask = is_merged_pt & is_target_phase;
+valid_pts_mask = is_merged_pt(:) & is_target_phase;
 valid_pts = find(valid_pts_mask);
 
 if ~isempty(valid_pts)

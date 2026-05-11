@@ -286,6 +286,18 @@ classdef crystalSymmetry < symmetry
       if isfield(s,'opt') || isprop(s,'opt'), cs.opt = s.opt; end
             
     end
+
+    function cs = default(cs)
+      persistent save
+      if nargin == 1
+        save =  cs;
+      else
+        if isempty(save)
+          save = crystalSymmetry; 
+        end
+        cs = save;
+      end
+    end
     
     
   end

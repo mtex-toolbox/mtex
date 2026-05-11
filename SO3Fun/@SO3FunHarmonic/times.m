@@ -2,9 +2,9 @@ function SO3F = times(SO3F1,SO3F2)
 % overloads |SO3F1 .* SO3F2|
 %
 % Syntax
-%   sF = SO3F1 .* SO3F2
-%   sF = a .* SO3F2
-%   sF = SO3F1 .* a
+%   SO3F = SO3F1 .* SO3F2
+%   SO3F = a .* SO3F2
+%   SO3F = SO3F1 .* a
 %
 % Input
 %  SO3F1, SO3F2 - @SO3FunHarmonic

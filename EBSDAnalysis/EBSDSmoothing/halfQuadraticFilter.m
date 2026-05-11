@@ -69,7 +69,7 @@ classdef halfQuadraticFilter < EBSDFilter
         w0(isnan(w0)) = 0;
 
         % the gradient
-        g = w0 .* log(q,u) + sum(w .* log(n,uu),3,'omitnan');
+        g = w0 .* logRight(q,u) + sum(w .* logRight(n,uu),3,'omitnan');
           
         % update step length
         lambda = w0 + sum(w,3);
@@ -79,7 +79,7 @@ classdef halfQuadraticFilter < EBSDFilter
         g = g ./ lambda;
         
         % update u
-        u = expquat(g,u);
+        u = expRight(g,u);
                 
         iter = iter + 1;
       end

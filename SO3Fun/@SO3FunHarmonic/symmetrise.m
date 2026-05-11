@@ -34,7 +34,7 @@ L = SO3F.bandwidth;
 if nargin>1 && isa(varargin{1},'rotation')
   
   % Forget about the symmetries
-  SO3F.CS = crystalSymmetry;
+  SO3F.CS = crystalSymmetry.default;
   SO3F.SS = specimenSymmetry.default;
   center = rotation(varargin{1});
 

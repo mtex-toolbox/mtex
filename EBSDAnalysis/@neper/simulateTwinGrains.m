@@ -13,7 +13,10 @@ function grains = simulateTwinGrains(numGrains, mori, odf, bndA, varargin)
 %  mori - twinning orientation relationship
 %  odf  - @SO3Fun
 %  bndA - @S2Fun crystal boundary normal distribution
+%
+% Options
 %  'silent' - print log file, no console output
+%  'width'  - width of the lamella (default  (prod(cubeSize) / numGrains)^(1/3)/4)
 % 
 % Output
 %  grains - @grain3d

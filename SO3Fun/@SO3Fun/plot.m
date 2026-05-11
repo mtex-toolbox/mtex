@@ -24,7 +24,7 @@ function varargout = plot(odf,varargin)
 % See also
 % SO3Fun/plotSection SO3Fun/plot3d SO3Fun/plotFibre
 
-if ~odf.isReal
+if ~odf.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
     'In the following only the real part is plotted.'])
   odf.isReal=1;

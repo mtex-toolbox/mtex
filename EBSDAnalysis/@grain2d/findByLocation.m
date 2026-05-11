@@ -29,6 +29,11 @@ iV = unique([poly{:}]);
 % project to plane
 V = xyz(grains.rot2Plane * grains.allV); V = V(:,1:2);
 
+% if pos is just [x(:) y(:)]
+if ~isa(pos,'vector3d') & size(pos,2)==2
+    pos = vector3d(pos(:,1),pos(:,2),0);
+end
+
 pos = xyz(grains.rot2Plane * vector3d(pos));
 pos = pos(:,1:2);
 

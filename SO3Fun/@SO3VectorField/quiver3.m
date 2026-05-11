@@ -14,14 +14,14 @@ function h = quiver3(SO3VF,varargin)
 %
 
 % only plot the real part of SO3VF
-if ~SO3VF.isReal
+if ~SO3VF.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
     'In the following only the real part is plotted.'])
   SO3VF.isReal=1;
 end
 
 % generate a new 3d projection of the orientation space
-oP = newOrientationPlot(SO3VF.SRight,SO3VF.SLeft,'project2FundamentalRegion',...
+oP = newOrientationPlot(SO3VF.hiddenCS,SO3VF.hiddenSS,'project2FundamentalRegion',...
   varargin{:});
 
 % generate the plotting grid
@@ -40,7 +40,7 @@ else
 end
 
 % project tangential vectors to 3d space
-[x2,y2,z2] = oP.project(exp(S3G,vec/10000,SO3VF.tangentSpace));
+[x2,y2,z2] = oP.project(exp(vec/10000,S3G,SO3VF.tangentSpace));
 
 wasHold = ishold(gca); hold(gca,'on');
 

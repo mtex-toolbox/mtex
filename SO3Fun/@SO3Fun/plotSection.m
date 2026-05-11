@@ -25,7 +25,7 @@ function plotSection(F,varargin)
 % See also
 % saveFigure Plotting
 
-if ~F.isReal
+if ~F.isReal && ~getMTEXpref('generatingHelpMode')
   warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
     'In the following only the real part is plotted.'])
   F.isReal=1;

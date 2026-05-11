@@ -1,4 +1,4 @@
-function h = quiver(v, d, varargin )
+function [h,ax] = quiver(v, d, varargin )
 %
 % Description
 % plots the tangential part of a vector field
@@ -92,4 +92,8 @@ if any(strcmpi(holdState,{'replaceChildren','replace'})) && isappdata(sP(1).pare
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-if nargout == 0, clear('h'); end
+if nargout == 0
+  clear h;
+else
+  ax = [sP.ax];
+end

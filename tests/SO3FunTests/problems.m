@@ -15,7 +15,7 @@ H.eval(r)
 
 % example 2
 F=SO3FunRBF.example;
-F.CS = crystalSymmetry;
+F.CS = crystalSymmetry('1');
 F.SS = SO3Fun.dubna.CS
 H=F; H.CS = H.SS.properGroup
 F.eval(r)

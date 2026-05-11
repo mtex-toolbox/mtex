@@ -29,6 +29,10 @@ classdef SO3TangentSpace < int32
     function tS = uminus(tS)
       tS = SO3TangentSpace(-double(tS));
     end
+
+    function tS = abs(tS)
+      tS = SO3TangentSpace(abs(double(tS)));
+    end
         
   end
 

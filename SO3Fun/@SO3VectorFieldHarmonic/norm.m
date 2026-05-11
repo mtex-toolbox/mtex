@@ -12,11 +12,12 @@ function SO3F = norm(SO3VF)
 %
 
 if SO3VF.bandwidth == 0
-  SO3F = SO3FunHarmonic(0,SO3VF.CS,SO3VF.SS);
+  SO3F = SO3FunHarmonic(0,SO3VF.hiddenCS,SO3VF.hiddenSS);
   return
 end
 
-SO3F = SO3FunHarmonic.quadrature(...
-  @(rot) norm(SO3VF.eval(rot)),SO3VF.CS,SO3VF.SS,'bandwidth',SO3VF.bandwidth);
+% do quadrature
+fun = @(rot) reshape( norm(vector3d(SO3VF.SO3F.eval(rot))) , size(rot));
+SO3F = SO3FunHarmonic.quadrature(fun,SO3VF.hiddenCS,SO3VF.hiddenSS,'bandwidth',SO3VF.bandwidth);
 
 end
