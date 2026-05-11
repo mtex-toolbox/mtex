@@ -40,16 +40,16 @@ ind = ebsd.grainId > 0;
 ebsd.grainId(ind) = parentId(grains.id2ind(ebsd.grainId(ind)));
 
 % update EBSD orientations
-for k=newInd
+for k = newInd
   
   ind = find(ebsd.grainId == grainsM.id(k));
   
-  ori = ebsd.orientations(ind);
+  ori = orientation(ebsd.rotations(ind),mori.CS);
 
   swap = angle(ori,grainsM.meanOrientation(k) * inv(mori)) ...
     < angle(ori,grainsM.meanOrientation(k));
   
   ori(swap) = ori(swap) * mori;
-  ebsd.orientations(ind) = ori;
+  ebsd.rotations(ind) = ori;
 
 end
