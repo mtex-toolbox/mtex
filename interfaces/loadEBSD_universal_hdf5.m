@@ -1,6 +1,6 @@
 function [ebsd] = loadEBSD_universal_hdf5(fname, opt_file, varargin)
 
-% How it is working: todo
+% How it is working:
 %   - You load your file of hdf5 format
 %   - The programm will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
 %   - One can modify the search codes 
@@ -9,21 +9,17 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, opt_file, varargin)
 
 
 %--------Setting Options---------------------------------------------------
-
-% Config struct mit Standartwerten füllen und dann nur die Werte ersetzten
-% die explizit gesetzt wurden im json config file
-
-
 if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
+if ~exist(opt_file, 'file'), error('Json %s nicht gefunden.', fname); end
 
 % read json config
 jsonText = fileread(opt_file);
 Conf = jsondecode(jsonText);
 
-summary = structfun(@size, Conf.rotation.euler, 'UniformOutput', false);
+summary = structfun(@size, Conf, 'UniformOutput', false);
 disp(summary);
 
-%---------Search for data and get paths------------------------------------
+%---------Search for data folders and get paths----------------------------
 
 if isfield(Conf.settings, "ebsd_key")
   
@@ -52,85 +48,10 @@ for i = 1:length(categories)
     continue;
   end
 
-  [data.(cat), Conf.(cat)] = readConf(fname, Conf.(cat), ebsd_paths, cat);
+  [data.(cat), Conf.(cat)] = readConf(fname, Conf.(cat), ebsd_paths, cat, false);
 
   disp("Completed: " + cat);
 end
-
-%   % skip if in exclude or no type field is found
-%   if ismember(cat, exclude) || ~isfield(Conf.(cat), 'type')
-%     continue;
-%   end 
-% 
-%   type = Conf.(cat).type;
-% 
-%   if ~isfield(Conf.(cat), type)
-%     error('You have definded a type in %s but no data was found', type);
-%   end 
-% 
-%   % preparing to go over each item in current categorie, collect raw data  
-%   fields = fieldnames(Conf.(cat).(type));
-%   raw_data = struct();
-% 
-%   % check if a subfolder earch key is set, works the same as with the ebsd
-%   % key --> look for subfolder and then only navigate within 
-%   key_path = "";
-%   if isfield(Conf.(cat), 'key')
-%     key_path = "/" + (get_hdf5_path(fname, Conf.(cat).key, "mode", "groups"));
-%   end
-% 
-%   for j = 1:length(fields)
-%     field_name = fields{j};
-% 
-%     % if there is no mode set in the field skip
-%     if ~isfield(Conf.(cat).(type).(field_name), "mode")
-%       continue;
-%     end
-% 
-%     foundPath = get_hdf5_path(fname, Conf.(cat).(type).(field_name), "root", ebsd_paths + key_path);
-%     Conf.(cat).(type).(field_name).path = foundPath;
-% 
-%     if ~isempty(foundPath)
-%       fprintf('Lade %s von %s...\n', field_name, foundPath);
-% 
-%       raw_data.(field_name) = h5read(fname, foundPath);
-% 
-%       if isfield(Conf.(cat).(type).(field_name), 'formate')
-% 
-%         sub_formatter_name = sprintf('%s_%s_%s', cat, type, field_name);
-% 
-%         try
-%           sub_formatter = str2func(sub_formatter_name);
-%           raw_data.(field_name) = sub_formatter(raw_data.(field_name));
-%         catch
-%           error("Kein passender Sub_Formatierer gefunden!")
-%         end
-% 
-%       end 
-% 
-%     else, warning("Konnte Pfad nicht finden!")
-%     end 
-%   end  
-% 
-%   % all the data from one categorie is collected and will be handed over
-%   % check if the type is simple, if this is the case use raw data (no formatter needed)
-%   if type=="simple"
-%     data.(cat) = raw_data;
-% 
-%   % if not construct a formatter name and look if one exists, if yes use it 
-%   else
-% 
-%     formatter_name = sprintf('%s_%s', cat, type);
-% 
-%     try
-%       formatter = str2func(formatter_name);
-%       data.(cat) = formatter(raw_data);
-%     catch
-%       error("Kein passender Formatierer gefunden!")
-%     end
-%   end
-%   disp("abgeschlossen: " + cat)
-% end 
 
 %jsonText = jsonencode(Conf, 'PrettyPrint', true);
 %disp(jsonText);
@@ -138,7 +59,32 @@ end
 summary = structfun(@size, data, 'UniformOutput', false);
 disp(summary);
 
+% Construct prop-----------------------------------------------------------
+
 prop = struct();
+
+if isfield(Conf, 'additions')
+
+  if Conf.additions.type == "auto"
+
+    prop_path = get_hdf5_path(fname, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
+    raw_fields_names = h5info(fname, prop_path);
+    data_size = size(data.position);
+    for i = 1:length(raw_fields_names.Datasets)
+      if raw_fields_names.Datasets(i).Dataspace.Size == data_size(1)
+        raw_name = raw_fields_names.Datasets(i).Name;
+        clean_name = clean_string(raw_name);
+        prop.(clean_name) = h5read(fname, prop_path + "/" + raw_name);
+      end
+    end
+  else
+
+  end
+end
+
+numPos = size(data.position, 1);
+numOri = size(data.rotation, 1);
+fprintf('Positionen: %d, Orientierungen: %d\n', numPos, numOri);
 
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
 
@@ -155,17 +101,19 @@ function out = position_direct(raw_data)
   
 end 
 
-% function out = position_indirect(raw_data)
-% 
-%   if ~isfield(raw_data, 'step_size') || ~isfield(raw_data, 'grid_size')
-%     error('Position data has type indirect but not the needed fields step_size and grid_size')
-%   end
-% 
-%   [h, w] = size(raw_data.grid_size);
-% 
-%   [x, y] = meshgrid(0; raw_data.);
-% 
-% end 
+function out = position_indirect(raw_data)
+
+  if ~isfield(raw_data.indirect, 'step_size') || ~isfield(raw_data.indirect, 'grid_size')
+    error('Position data has type indirect but not the needed fields step_size and grid_size')
+  end
+
+  stepSize = double(raw_data.indirect.step_size);
+  [ny, nx] = size(raw_data.indirect.grid_size);
+
+  [x, y] = meshgrid(0:stepSize:(nx-1)*stepSize, 0:stepSize:(ny-1)*stepSize);
+
+  out = vector3d(x(:), y(:), 0); 
+end 
 
 function out = rotation_euler(raw_data)
   fields = fieldnames(raw_data.euler);
@@ -190,7 +138,31 @@ function out = rotation_euler(raw_data)
   end
 end 
 
+function out = rotation_euler_stack(raw_data)
+
+  disp(size(raw_data.euler_stack.phi))
+
+  phi1_2D = raw_data.euler_stack.phi(1,:,:); 
+  Phi_2D  = raw_data.euler_stack.phi(2,:,:);
+  phi2_2D = raw_data.euler_stack.phi(3,:,:);
+
+  % 2. In 310x1 Vektoren umwandeln und das rotation-Objekt bauen
+  % Der (:) Operator wandelt die 10x31 Matrix in eine 310x1 Spalte um
+  
+  if max(Phi_2D, [], 'all') > 2*pi
+    out = rotation.byEuler(phi1_2D(:)*degree, Phi_2D(:)*degree, phi2_2D(:)*degree);
+  else 
+    out = rotation.byEuler(phi1_2D(:), Phi_2D(:), phi2_2D(:));
+  end
+
+  disp(length(out))
+
+end
+
 function out = cs_default(raw_data)
+
+  summary = structfun(@size, raw_data.default, 'UniformOutput', false);
+  disp(summary);
 
   out = crystalSymmetry( ...
     raw_data.default.group, ...
@@ -209,7 +181,6 @@ function out = group_space(raw_data)
 
   else 
     clean = clean_string(raw_data);
-    disp(clean)
     cs = crystalSymmetry(clean);
   end 
  
@@ -227,18 +198,6 @@ function out = lattice_all_together(raw_data)
   out.dim = dimension;
   out.angle = angles;
   
-end
-
-function out = angle_all_together(raw_data)
-
-  out = raw_data;
-
-end
-
-function out = dim_all_together(raw_data)
-
-  out = raw_data;
-
 end
 
 function out = angle_seperate(raw_data)
@@ -261,23 +220,39 @@ function out = dim_seperate(raw_data)
 
 end 
 
+function out = phase_stack(raw_data)
+
+  out = raw_data(:);
+
+end
+
 
 %-----------Functions------------------------------------------------------
-function cleanName = clean_string(rawName)
+function cleanName = clean_string(rawName, option)
+arguments
+  rawName 
+  option = "full"
+end
     rules = {
         '[ ,\-:|%~#]', '';     
-        'sub', '';
-        'ovl', '';
+        'sub', '/';
+        'ovl', '-';
     };
 
     cleanName = rawName;
 
-    for r = 1:size(rules, 1)
+    if option == "full"
+      len = size(rules, 1);
+    elseif option == "simple"
+      len = 1;
+    end 
+
+    for r = 1:len
         cleanName = regexprep(cleanName, rules{r, 1}, rules{r, 2}, 'ignorecase');    
     end
 end
 
-function [data, config_item] = readConf(fname, config_item, root, name)
+function [data, config_item] = readConf(fname, config_item, root, name, multiple)
 
   data = [];
   raw_data = struct();
@@ -292,13 +267,16 @@ function [data, config_item] = readConf(fname, config_item, root, name)
     root = (get_hdf5_path(fname, config_item.key, "mode", "groups", "root", root));
   end
 
-  if ismember('value', fields)
+  if ismember('multiple', fields)
+    multiple = strcmpi(config_item.multiple, "true");
+    disp("New multi: " + multiple)
+  end
 
-    path = get_hdf5_path(fname, config_item, "root", root);
+  if ismember('value', fields)
+    path = get_hdf5_path(fname, config_item, "root", root, "multiple", multiple);
     config_item.path = path;
-    fprintf('Lade %s von %s...\n', name, path);
-    raw_data = h5read(fname, path);
-    
+    disp("Lade " + string(name) + " von " + string(path) + "...");    
+    raw_data = readData(fname, path);
   else
 
     for i = 1:length(fields)
@@ -308,13 +286,32 @@ function [data, config_item] = readConf(fname, config_item, root, name)
         continue;
       end
 
-      [data_out, config_item.(currentfield)] = readConf(fname, config_item.(currentfield), root, currentfield);
+      [data_out, config_item.(currentfield)] = readConf(fname, config_item.(currentfield), root, currentfield, multiple);
 
       if ~isempty(data_out)
-        fprintf('Saving to %s...\n', currentfield);
-        raw_data.(currentfield) = data_out;
+        if iscell(data_out)
+          % FALL A: Wir haben mehrere Datensätze (z.B. Phasen)
+          % Falls raw_data noch ein einfaches Struct ist, wandle es in eine Cell-Liste um
+          if ~iscell(raw_data)
+            raw_data = cell(size(data_out));
+            for k = 1:length(raw_data), raw_data{k} = struct(); end
+          end
+          
+          % Mergen: Füge das Feld zu jedem existierenden Phasen-Struct hinzu
+          for j = 1:length(data_out)
+            % WICHTIG: Nutze j (Index der Daten/Phase), nicht i (Index des Feldes)!
+            raw_data{j}.(currentfield) = data_out{j};
+          end       
+        else
+          % FALL B: Einzelner Datensatz
+          if iscell(raw_data)
+            % Wenn wir schon Phasen-Zellen haben, kopiere den Einzelwert in alle
+            for j = 1:length(raw_data), raw_data{j}.(currentfield) = data_out; end
+          else
+            raw_data.(currentfield) = data_out;
+          end
+        end
       end
-
     end
   end
    
@@ -324,7 +321,14 @@ function [data, config_item] = readConf(fname, config_item, root, name)
     disp("Formatter: " + formatter_name);
     try
       formatter = str2func(formatter_name);
-      data = formatter(raw_data);
+      if iscell(raw_data)
+        data = cell(1, length(raw_data));
+        for i = 1:length(raw_data)
+          data{i} = formatter(raw_data{i});
+        end
+      else
+        data = formatter(raw_data);
+      end
     catch MS
       errorMsg = getReport(MS);
       disp(errorMsg);
@@ -334,33 +338,45 @@ function [data, config_item] = readConf(fname, config_item, root, name)
   end
 end
 
+function data = readData(fname, paths)
+
+  if iscell(paths)
+    data = cell(1, length(paths));
+    for i = 1:length(paths)
+      data{i} = h5read(fname, paths{i});
+    end
+    disp(data)
+  else 
+    data = h5read(fname, paths);
+  end
+end 
+
 function final_path = get_hdf5_path(fname, config_item, options)
 arguments
   fname string
   config_item struct
   options.root string = "/"
   options.mode string = "fields"
-  options.multiple bool = false
+  options.multiple = false
 end
+  switch lower(config_item.mode)
+      case 'absolute'
+          final_path = config_item.value; 
+          
+      case 'regex'
+          results = search_for_key(fname, config_item.value, options.mode, options.root);
+          if isempty(results)
+              error('Kein Feld für Suchbegriff "%s" gefunden!', config_item.value);
+          end
 
-    switch lower(config_item.mode)
-        case 'absolute'
-            final_path = config_item.value; 
-            
-        case 'regex'
-            results = search_for_key(fname, config_item.value, options.mode, options.root);
-            if isempty(results)
-                error('Kein Feld für Suchbegriff "%s" gefunden!', config_item.value);
-            end
-
-            if options.multiple == true
-              final_path = results;
-            else 
-              final_path = results{1};
-            end
-        otherwise
-            error('Unbekannter Modus: %s', config_item.mode);
-    end
+          if options.multiple == true
+            final_path = results;
+          else 
+            final_path = results{1};
+          end
+      otherwise
+          error('Unbekannter Modus: %s', config_item.mode);
+  end
 end
 
 function [paths] = search_for_key(fname, key, opt, startPath)
@@ -437,22 +453,4 @@ function [paths] = search_recursive_fields(node, key, paths)
     end
   end 
 
-end 
-
-function default = mergeConf(default, user)
-
-  if isempty(user)
-    return
-  end 
-
-  fields = fieldnames(user);
-
-  for i = 1:length(fields)
-    f = fields{i};
-    if isfield(default, f) && isstruct(default.(f)) && isstruct(user.(f))
-      default.(f) = mergeConf(default.(f), user.(f));
-    else 
-      default.(f) = user.(f);
-    end
-  end
 end 
