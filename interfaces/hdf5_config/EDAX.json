@@ -9,22 +9,21 @@
       "y": { "mode": "regex", "value": "^Y Position$" }
     }
   },
-  "phase": {"mode": "regex", "value": "Phase"},
+  "phase": {"mode": "regex", "value": "Phase", "type": "default"},
   "rotation": {
     "type": "euler",
+    "correct_id": {},
+    "correct_data": [225, 180, 135],
     "euler": {
       "phi1": { "mode": "regex", "value": "^Phi1$" },
       "Phi":  { "mode": "regex", "value": "^Phi$" },
-      "phi2": { "mode": "regex", "value": "^Phi2$" },
-      "correct_id": {},
-      "correct_data": [225, 180, 135]
+      "phi2": { "mode": "regex", "value": "^Phi2$" }
     }
   },
   "cs": {
     "type": "default",
     "key": { "mode": "regex", "value": "Phase" },
     "default": {
-      "axes_aligment": { "mode": "regex", "value": "Crystal Axes Alignment", "type": "axes"},
       "group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "space" },
       "name": { "mode": "regex", "value": "MaterialName"},
       "lattice": {
