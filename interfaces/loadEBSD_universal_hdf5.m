@@ -7,15 +7,20 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
 
+% Setting Options and choosing right type----------------------------------
 
-% Setting Options----------------------------------------------------------
+if check_option(varargin, 'debug')
+  isDebug(get_option(varargin, 'debug'));
+else
+  isDebug(false);
+end
+
 if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
-
 
 manufacturer_types = ["EDAX", "Bruker", "Oxford", "ThermoFisher"]; 
 
-if check_option(varargin,'type')
-  manufacturer = get_option(varargin,'type');
+if check_option(varargin, 'type')
+  manufacturer = get_option(varargin, 'type');
 else
   try
     manufacturer = string(h5read(fname, "/Manufacturer"));
@@ -29,56 +34,62 @@ manufacturer_path = "";
 
 for i = 1:length(manufacturer_types)
     if contains(manufacturer, manufacturer_types(i), 'IgnoreCase', true)
+
         manufacturer_path = manufacturer_types(i);
-        disp(['Manufacturer detected: %s', manufacturer_path]);
+        disp("Manufacturer detected: " + manufacturer_path);
         break;
+        
     end
 end
 
 if manufacturer_path == ""
+
   allowed_str = strjoin(manufacturer_types, ", ");
   error("No Manufacturer config found for: """ + manufacturer + """. Only [" + allowed_str + "] allowed!");
-end
 
+end
 opt_file = fullfile("/hdf5_config/" + manufacturer_path + ".json");
 
-% read json config
+% read json config --> safe to file
 jsonText = fileread(opt_file);
 Conf = jsondecode(jsonText);
 
 % Search for data folders and get paths------------------------------------
+
 if isfield(Conf.settings, "ebsd_key")
   
   ebsd_paths = get_hdf5_path(fname, Conf.settings.ebsd_key, "mode", "groups");
-  disp(ebsd_paths)
+  vprintf(isDebug(), '\n%s\n', repmat('=', 85, 1));
+  vprintf(isDebug(), 'START LOADING EBSD DATA FROM: %s\n', string(ebsd_paths));
+  vprintf(isDebug(), '%s\n', repmat('=', 85, 1));
+
   if isempty(ebsd_paths)
       error("There was no EBSD Dataset found!");
   end 
-
 end 
 
 % Get absolute paths and load data-----------------------------------------
+
 exclude = {'settings', 'additions'};
 data = struct();
 
 categories = fieldnames(Conf);
 for i = 1:length(categories)
+
   cat = categories{i};
-
   if ismember(cat, exclude), continue; end
+  
+  vprintf(isDebug(), '\n[%s]\n', upper(string(cat)));
 
-  [data.(cat), Conf.(cat)] = readConf(fname, Conf.(cat), ebsd_paths, cat, false);
+  [data.(cat), Conf.(cat)] = readConf(fname, Conf.(cat), ebsd_paths, cat, false, 1);
+  
+  vprintf(isDebug(), '  [OK] %-18s successfully initialized\n', string(cat));
+  vprintf(isDebug(), '  %s\n', repmat('-', 85, 1));
 
-  disp("Completed: " + cat);
 end
 
-%jsonText = jsonencode(Conf, 'PrettyPrint', true);
-%disp(jsonText);
-
-summary = structfun(@size, data, 'UniformOutput', false);
-disp(summary);
-
 % Construct prop-----------------------------------------------------------
+
 prop = struct();
 
 if isfield(Conf, 'additions')
@@ -105,7 +116,6 @@ end
 % Building ebsd object-----------------------------------------------------
 
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
-
 end
 
 % Formating functions------------------------------------------------------
@@ -279,7 +289,8 @@ arguments
 end
   rules = {
     '[ ,\-:|%~#]', '';     
-    'sub', '/';
+    'sub(?=\d)', '';
+    'sub(?=[a-zA-Z])', '/';
     'ovl', '-';
   };
   
@@ -296,8 +307,9 @@ end
   end
 end
 
-function [data, config_item] = readConf(fname, config_item, root, name, multiple)
+function [data, config_item] = readConf(fname, config_item, root, name, multiple, level)
 
+  if nargin < 6, level = 1; end
   data = [];
   raw_data = struct();
 
@@ -307,6 +319,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
   end
 
   fields = fieldnames(config_item);
+  indent = repmat('  ', 1, level);
 
   % set a new root if key field is set --> root for all following iterations
   if ismember('key', fields)
@@ -324,38 +337,58 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
     % generate absolute path and read data on this path
     path = get_hdf5_path(fname, config_item, "root", root, "multiple", multiple);
     config_item.path = path;
-    disp("Lade " + string(name) + " von " + string(path) + "...");    
+    
+    % if more than one path loop display
+    if iscell(path)
+        for pIdx = 1:length(path)
+            currentPath = string(path{pIdx});
+
+            displayPath = currentPath;
+            if strlength(displayPath) > 60
+                displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-57);
+            end
+            
+            label = sprintf('%s (%d)', name, pIdx);
+            vprintf(isDebug(), '%s • %-15s | %s\n', indent, label, displayPath);
+        end
+    else
+        displayPath = string(path);
+        if strlength(displayPath) > 60
+            displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-57);
+        end
+        vprintf(isDebug(), '%s • %-15s | %s\n', indent, string(name), displayPath);
+    end
+    
     raw_data = readData(fname, path);
 
   else
-
     for i = 1:length(fields)
+
       currentfield = fields{i};
 
-      if currentfield=="key"
+      if currentfield=="key" || currentfield=="type" || currentfield=="multiple"
         continue;
       end
 
-      [data_out, config_item.(currentfield)] = readConf(fname, config_item.(currentfield), root, currentfield, multiple);
-
+      [data_out, config_item.(currentfield)] = readConf(fname, ...
+        config_item.(currentfield), root, currentfield, multiple, level + 1);
+      
       if ~isempty(data_out)
         if iscell(data_out)
-          % FALL A: Wir haben mehrere Datensätze (z.B. Phasen)
-          % Falls raw_data noch ein einfaches Struct ist, wandle es in eine Cell-Liste um
+
+          % we have more than one data point --> if struct convert to cell
           if ~iscell(raw_data)
             raw_data = cell(size(data_out));
             for k = 1:length(raw_data), raw_data{k} = struct(); end
           end
           
-          % Mergen: Füge das Feld zu jedem existierenden Phasen-Struct hinzu
           for j = 1:length(data_out)
-            % WICHTIG: Nutze j (Index der Daten/Phase), nicht i (Index des Feldes)!
             raw_data{j}.(currentfield) = data_out{j};
           end       
         else
-          % FALL B: Einzelner Datensatz
+
+          % we only have one datapoint
           if iscell(raw_data)
-            % Wenn wir schon Phasen-Zellen haben, kopiere den Einzelwert in alle
             for j = 1:length(raw_data), raw_data{j}.(currentfield) = data_out; end
           else
             raw_data.(currentfield) = data_out;
@@ -365,10 +398,12 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
     end
   end
    
+  % if type field is set --> search for formatter and use
   if ismember('type', fields)
 
     formatter_name = sprintf('%s_%s', name, config_item.type);
-    disp("Formatter: " + formatter_name);
+    vprintf(isDebug(), '%s   > Formatter: %s\n', indent, string(formatter_name));
+
     try
       formatter = str2func(formatter_name);
       if iscell(raw_data)
@@ -380,8 +415,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
         data = formatter(raw_data);
       end
     catch MS
-      errorMsg = getReport(MS);
-      disp(errorMsg);
+      vprintf(isDebug(), '%s   [!] Formatter Error: %s\n', indent, formatter_name);
     end
   else
     data = raw_data;
@@ -498,3 +532,17 @@ function [paths] = search_recursive_fields(node, key, paths)
     end
   end 
 end 
+
+function vprintf(opt, varargin)
+    if opt
+        fprintf(varargin{:});
+    end
+end
+
+function val = isDebug(setVal)
+    persistent debugState;
+    if nargin > 0
+        debugState = setVal; % Setzt den Wert
+    end
+    val = debugState; % Gibt den Wert zurück
+end
