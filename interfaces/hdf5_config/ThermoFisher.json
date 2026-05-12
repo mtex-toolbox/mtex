@@ -1,0 +1,36 @@
+{
+  "settings": {
+    "ebsd_key": {"mode": "absolute", "value": "/Site/EBSD" }
+  },
+  "position": {
+    "type": "indirect",
+    "indirect": {
+      "step_size": { "mode": "absolute", "value": "/Site/Acquisition/StepSize" },
+      "grid_size": { "mode": "regex", "value": "Phase" }
+    }
+  },
+  "phase": {"mode": "regex", "value": "Phase", "type": "stack"},
+  "rotation": {
+    "type": "euler_stack",
+    "euler_stack": {
+      "phi": { "mode": "regex", "value": "EulerAngles" }
+    }
+  },
+  "cs": {
+    "type": "default",
+    "multiple": "true",
+    "key": { "mode": "regex", "value": "Phase" },
+    "default": {
+      "group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "space" },
+      "name": { "mode": "regex", "value": "Name"},
+      "lattice": {
+        "angle": { "mode": "regex", "value": "LatticeAngles"},
+        "dim": { "mode": "regex", "value": "LatticeParameters"}
+      }
+    }
+  },
+  "additions": {
+    "type": "auto",
+    "key": { "mode": "regex", "value": "MapData"}
+  }
+}

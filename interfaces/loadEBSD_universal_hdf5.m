@@ -134,6 +134,9 @@ function out = rotation_euler(raw_data)
   else
     out = rotation.byEuler(phi);
   end
+  
+  out = correct * out
+
 end 
 
 function out = rotation_euler_stack(raw_data)
