@@ -1,4 +1,4 @@
-function [ebsd] = loadEBSD_universal_hdf5(fname, opt_file, varargin)
+function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 
 % How it is working:
 %   - You load your file of hdf5 format
@@ -10,7 +10,37 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, opt_file, varargin)
 
 % Setting Options----------------------------------------------------------
 if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
-if ~exist(opt_file, 'file'), error('Json %s nicht gefunden.', fname); end
+
+
+manufacturer_types = ["EDAX", "Bruker", "Oxford", "ThermoFisher"]; 
+
+if check_option(varargin,'type')
+  manufacturer = get_option(varargin,'type');
+else
+  try
+    manufacturer = string(h5read(fname, "/Manufacturer"));
+  catch
+    error("There was no readable manufacturer! " + ...
+    "Try to specify which type of file you have. Use EBSD.load(yourdata, ""type"", ""yourType"")")
+  end
+end
+
+manufacturer_path = "";
+
+for i = 1:length(manufacturer_types)
+    if contains(manufacturer, manufacturer_types(i), 'IgnoreCase', true)
+        manufacturer_path = manufacturer_types(i);
+        disp(['Manufacturer detected: %s', manufacturer_path]);
+        break;
+    end
+end
+
+if manufacturer_path == ""
+  allowed_str = strjoin(manufacturer_types, ", ");
+  error("No Manufacturer config found for: """ + manufacturer + """. Only [" + allowed_str + "] allowed!");
+end
+
+opt_file = fullfile("/hdf5_config/" + manufacturer_path + ".json");
 
 % read json config
 jsonText = fileread(opt_file);
@@ -134,9 +164,6 @@ function out = rotation_euler(raw_data)
   else
     out = rotation.byEuler(phi);
   end
-  
-  out = correct * out
-
 end 
 
 function out = rotation_euler_stack(raw_data)
@@ -204,7 +231,7 @@ end
 
 function out = angle_seperate(raw_data)
 
-  if ~isfield(raw_data.default, 'lattice_alpha') || ~isfield(raw_data.default, 'lattice_beta') || ~isfield(raw_data.default, 'lattice_gamma')
+  if ~isfield(raw_data, 'lattice_alpha') || ~isfield(raw_data, 'lattice_beta') || ~isfield(raw_data, 'lattice_gamma')
     error(['Cs angle data has type seperate but not the correct fields were given. ' ...
       'Make sure you have a lattice_alpha, lattice_beta and lattice_gamma!'])
   end
@@ -218,7 +245,7 @@ end
 
 function out = dim_seperate(raw_data)
 
-  if ~isfield(raw_data.default, 'lattice_a') || ~isfield(raw_data.default, 'lattice_b') || ~isfield(raw_data.default, 'lattice_c')
+  if ~isfield(raw_data, 'lattice_a') || ~isfield(raw_data, 'lattice_b') || ~isfield(raw_data, 'lattice_c')
     error(['Cs angle data has type seperate but not the correct fields were given. ' ...
       'Make sure you have a lattice_a, lattice_b and lattice_c!'])
   end
@@ -232,9 +259,15 @@ end
 
 function out = phase_stack(raw_data)
 
-  out = raw_data(:);
+  out = double(raw_data(:));
 
 end
+
+function out = phase_default(raw_data)
+
+  out = double(raw_data);
+
+end 
 
 
 % Functions----------------------------------------------------------------
