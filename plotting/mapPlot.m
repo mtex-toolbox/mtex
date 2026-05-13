@@ -25,7 +25,7 @@ classdef mapPlot < handle
         return
       end
         
-      if ax.Type == "polaraxes", 
+      if ax.Type == "polaraxes"
         delete(ax);
         ax = axes;
       end
@@ -49,7 +49,7 @@ classdef mapPlot < handle
       grid(ax,'off');
       
       mP.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
-      mP.how2plot.setView;
+      %mP.how2plot.setView(mP.ax); % not required yet
       setappdata(ax,'mapPlot',mP);
       
       % set zoom function

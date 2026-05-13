@@ -47,7 +47,6 @@ if any([alpha(:);beta(:);gamma(:)] > 9)
 end
 
 % transform to right convention
-
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
 

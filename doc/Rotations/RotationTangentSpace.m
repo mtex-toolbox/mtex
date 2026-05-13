@@ -1,18 +1,17 @@
 %% The Tangent Space on the Rotation Group
 % 
-% Tangent vectors on the rotation group can be thought of as directions in 
-% which a rotation can be varied. 
-% Since these directions depend on the specific rotation you start from,
-% they are not global but local objects. 
-% The set of all tangent vectors at a given rotation forms the tangent 
-% space, which describes the local geometry of the rotation group in the 
+% Tangent vectors on the rotation group can be thought of as directions in
+% which a rotation can be varied. Since these directions depend on the
+% specific rotation you start from, they are not global but local objects.
+% The set of all tangent vectors at a given rotation forms the tangent
+% space, which describes the local geometry of the rotation group in the
 % neighborhood of that point.
 %
 %% Definition of Tangent Spaces and Tangent Vectors on the Rotation Group
 %
 % First we start with a (slightly technical) mathematical description of
 % the tangent space by |@spinTensor's|, which are used to describe small
-% rotational changes. For more information take a look 
+% rotational changes. For more information take a look
 % <RotationSpinTensor.html here> in the documentation.
 %
 % The tangent space of the rotation group at some rotation $R$ has two
@@ -29,6 +28,7 @@
 
 R = rotation.byAxisAngle(xvector,20*degree);
 S1 = spinTensor(vector3d(0,0,1))
+
 % left tangent vector at some Rotation R
 TV = matrix(S1) * matrix(R)
 
@@ -37,8 +37,8 @@ TV = matrix(S1) * matrix(R)
 %
 % $$ T_R SO(3) = \{ R \cdot S | S=-S^T  \} = R \cdot \mathfrak{so}(3). $$
 %
-% Again, skew-symmetric matrices describe all possible infinitesimal 
-% rotations, but now applied on the right side of R. 
+% Again, skew-symmetric matrices describe all possible infinitesimal
+% rotations, but now applied on the right side of R.
 
 S2 = spinTensor(vector3d(0,sin(20*degree),cos(20*degree)))
 % right tangent vector at some rotation R
@@ -53,13 +53,24 @@ TV = matrix(R)*matrix(S2)
 %
 %% Description of Rotational Tangent Vectors in MTEX
 % 
-% In MTEX, tangent vectors are represented as objects of the class 
-% |@SO3TangentVector|. Therefore the three distinguish entries of the 
+% In MTEX, tangent vectors are represented as objects of the class
+% |@SO3TangentVector|. Therefore the three distinguish entries of the
 % |@spinTensor| $S$ are stored as |@vector3d|, in the following way:
 %
-
 S = spinTensor(0.2*vector3d(1,2,3))
 v1 = SO3TangentVector(S,R)
+
+%%
+% We may visualize such a @SO3TangentVector by
+
+% plot the base point
+plot(R,'axisAngle','MarkerColor','red')
+axis off
+
+% plot the tangent vector
+hold on
+h = quiver3(v1,'LineWidth',3,'maxHeadSize',4)
+hold off
 
 %% 
 % A |@SO3TangentVector| in MTEX has three important properties:
@@ -69,7 +80,7 @@ v1 = SO3TangentVector(S,R)
 % * underling symmetries (relevant for orientations)
 %
 %%
-% By default, the tangent space representation is left. A right tangent 
+% By default, the tangent space representation is left. A right tangent
 % vector can be constructed as follows:
 
 v2 = SO3TangentVector(vector3d(1,2,3),R,SO3TangentSpace.rightVector)
@@ -86,7 +97,7 @@ v1_left = left(v1_right)
 
 %%
 % Note that MTEX cares about the tangent space representation. Hence if we
-% try to compute with |@SO3TangentVectors| MTEX automatically transform 
+% try to compute with |@SO3TangentVectors| MTEX automatically transform
 % them into the same representation and applies the operation afterwards.
 %
 
@@ -110,25 +121,24 @@ v1 + v1_right
 % logarithm maps provide the link between tangent vectors and rotations.
 %
 %%
-% The exponential map takes a tangent vector (an infinitesimal rotation) 
-% and returns the corresponding finite rotation in SO(3).
-% It is performed onto the tangent vector |v1| with the command 
-% <SO3TangentVector.exp.html |exp|>.
+% The exponential map takes a tangent vector (an infinitesimal rotation)
+% and returns the corresponding finite rotation in SO(3). It is performed
+% onto the tangent vector |v1| with the command <SO3TangentVector.exp.html
+% |exp|>.
 
 rot = exp(v1)
 
 %%
-% The logarithm map does the reverse: It takes two rotations and computes 
-% the tangent vector in the tangent space of one rotation that points 
-% towards the other rotation.
-% It is performed onto the rotations with the command
-% <quaternion.log.html |log|>.
+% The logarithm map does the reverse: It takes two rotations and computes
+% the tangent vector in the tangent space of one rotation that points
+% towards the other rotation. It is performed onto the rotations with the
+% command <quaternion.log.html |log|>.
 
 log(rot,R)
 
 %%
-% Together, these maps allow switching between the curved geometry of SO(3) 
-% and the linear structure of its tangent spaces, which is essential for 
+% Together, these maps allow switching between the curved geometry of SO(3)
+% and the linear structure of its tangent spaces, which is essential for
 % interpolation, averaging, and optimization on rotations.
 %
 %
