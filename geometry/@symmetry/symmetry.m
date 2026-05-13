@@ -200,7 +200,7 @@ classdef symmetry < matlab.mixin.Copyable
       % compute rotations
       switch pg.LaueId
         case 2 % 1
-          rot = {rotation.byEuler(0,0,0)};
+          rot = {rotation.id};
         case 5 % 211
           rot = {symAxis(a,2)};
         case 8 % 121
