@@ -48,7 +48,8 @@ if manufacturer_path == ""
   error("No Manufacturer config found for: """ + manufacturer + """. Only [" + allowed_str + "] allowed!");
 
 end
-opt_file = fullfile("/hdf5_config/" + manufacturer_path + ".json");
+
+opt_file = fullfile(mtex_path,'interfaces', 'hdf5_config' , manufacturer_path + ".json");
 
 % read json config --> safe to file
 jsonText = fileread(opt_file);
