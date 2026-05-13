@@ -102,8 +102,6 @@ if isfield(Conf, 'additions')
     
     [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
 
-    disp(exclude_fields)
-
     raw_fields_names = h5info(fname, prop_path);
 
     data_size = size(data.position);
@@ -293,6 +291,24 @@ function out = phase_default(raw_data)
 
 end 
 
+function out = rotation_correctById(raw_data)
+
+  if ~isfield(raw_data.correctById, 'correct_id') || ~isfield(raw_data.correctById, 'correct_data') || ~isfield(raw_data.correctById, 'rotation')
+    error(['Rotation data has type correctById but not the correct fields were given. ' ...
+      'Make sure you have a correct_id, correct_data and rotation!'])
+  end
+
+  id = double(raw_data.correctById.correct_id);
+  data = double(raw_data.correctById.correct_data);
+  rot = raw_data.correctById.rotation;
+
+  vec = vector3d(data(id,:));
+  n_rot = rotation.map(zvector, vec);
+
+  out = rot * n_rot;
+
+end
+
 
 % Functions----------------------------------------------------------------
 
@@ -375,6 +391,12 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
     
     raw_data = readData(fname, path);
 
+  % if data concrete data is given --> read and safe
+  elseif ismember('data', fields)
+
+    vprintf(isDebug(), '%s • %-15s | ...read out of config\n', indent, string(name));
+    raw_data = config_item.data;
+
   else
     for i = 1:length(fields)
 
@@ -430,6 +452,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
       end
     catch MS
       vprintf(isDebug(), '%s   [!] Formatter Error: %s\n', indent, formatter_name);
+      disp(MS.getReport())
     end
   else
     data = raw_data;
@@ -556,9 +579,9 @@ end
 function val = isDebug(setVal)
     persistent debugState;
     if nargin > 0
-        debugState = setVal; % Setzt den Wert
+        debugState = setVal;
     end
-    val = debugState; % Gibt den Wert zurück
+    val = debugState;
 end
 
 function data = search_Conf(config_item, value, filterDir, data)
