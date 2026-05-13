@@ -97,13 +97,26 @@ if isfield(Conf, 'additions')
   if Conf.additions.type == "auto"
 
     prop_path = get_hdf5_path(fname, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
+
+    paths_allready_used = search_Conf(Conf, 'path', prop_path);
+    
+    [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
+
+    disp(exclude_fields)
+
     raw_fields_names = h5info(fname, prop_path);
+
     data_size = size(data.position);
 
     for i = 1:length(raw_fields_names.Datasets)
       if raw_fields_names.Datasets(i).Dataspace.Size == data_size(1)
 
         raw_name = raw_fields_names.Datasets(i).Name;
+
+        if ismember(raw_name, exclude_fields)
+          continue;
+        end
+
         clean_name = clean_string(raw_name);
         prop.(clean_name) = h5read(fname, prop_path + "/" + raw_name);
 
@@ -546,4 +559,21 @@ function val = isDebug(setVal)
         debugState = setVal; % Setzt den Wert
     end
     val = debugState; % Gibt den Wert zurück
+end
+
+function data = search_Conf(config_item, value, filterDir, data)
+  if nargin < 4, data = {}; end
+  if ~isstruct(config_item), return; end
+  
+  fields = fieldnames(config_item);
+  
+  if ismember(value, fields)
+    if startsWith(config_item.path, filterDir)
+        data{end+1} = config_item.(value); 
+    end
+  else 
+    for i = 1:length(fields)
+      data = search_Conf(config_item.(fields{i}), value, filterDir, data);
+    end
+  end
 end

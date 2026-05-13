@@ -9,7 +9,7 @@
       "y": { "mode": "regex", "value": "^Y Beam$" }
     }
   },
-  "phase": {"mode": "regex", "value": "Phase"},
+  "phase": {"mode": "regex", "value": "^Phase"},
   "rotation": {
     "type": "euler",
     "euler": {
