@@ -24,7 +24,7 @@
     "type": "default",
     "key": { "mode": "regex", "value": "Phase" },
     "default": {
-      "group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "space" },
+      "group": { "mode": "regex", "value": "SpaceGroupNumber|Point Group", "type": "space" },
       "name": { "mode": "regex", "value": "MaterialName"},
       "lattice": {
         "angle": {
