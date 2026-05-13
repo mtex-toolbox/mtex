@@ -11,9 +11,15 @@
   },
   "phase": {"mode": "regex", "value": "Phase", "type": "default"},
   "rotation": {
-    "type": "euler",
-    "euler": {
-      "phi": { "mode": "regex", "value": "Euler"}
+    "type": "correctByAngle",
+    "correctByAngle": {
+      "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
+      "rotation": {
+        "type": "euler",
+        "euler": {
+          "phi": { "mode": "regex", "value": "Euler"}
+        }
+      }
     }
   },
   "cs": {

@@ -303,9 +303,25 @@ function out = rotation_correctById(raw_data)
   rot = raw_data.correctById.rotation;
 
   vec = vector3d(data(id,:));
-  n_rot = rotation.map(zvector, vec);
+  correct_rot = rotation.map(zvector, vec);
 
-  out = rot * n_rot;
+  out = rot * correct_rot;
+
+end
+
+function out = rotation_correctByAngle(raw_data)
+
+  if ~isfield(raw_data.correctByAngle, 'angle') || ~isfield(raw_data.correctByAngle, 'rotation')
+    error(['Rotation data has type correctByAngle but not the correct fields were given. ' ...
+      'Make sure you have a angle and rotation!'])
+  end
+
+  angle = double(raw_data.correctByAngle.angle);
+  rot = raw_data.correctByAngle.rotation;
+
+  correct_rot = rotation.byAxisAngle(zvector, angle);
+
+  out = rot * correct_rot;
 
 end
 
