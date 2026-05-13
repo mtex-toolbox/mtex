@@ -64,6 +64,10 @@ else
   ind = discretesample(arg1,points);
 end
 
-obj = subSet(obj,ind);
+try
+  obj = subSet(obj,ind);
+catch
+  obj = obj(ind);
+end
 
 end
