@@ -9,11 +9,32 @@ id = [];
 for i = numel(sl):-1:1
   if any(strcmp(name,[{sl(i).Schoen,sl(i).Inter,char(sl(i).lattice)},sl(i).altNames]))
     id = i;
-    break;
+    return
   end
 end
 
-% if nothing found convert space to point group
-if isempty(id)
-  id = findsymmetry(hms2point(name));
+% try to convert space to point group
+try %#ok<TRYNC>
+  id = findsymmetry(hms2point(name)); 
+  assert(~isempty(id));
+  return
 end
+
+% search for substrings international as substring
+for i = numel(sl):-1:1
+  if any(contains(name,[{sl(i).Inter},sl(i).altNames]))
+    id = i;
+    return
+  end
+end
+
+% search for lattice as substring
+for i = numel(sl):-1:1
+  if any(contains(name,char(sl(i).lattice)))
+    id = i;
+    return
+  end
+end
+end
+
+
