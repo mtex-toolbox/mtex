@@ -2,7 +2,7 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 
 % How it is working:
 %   - You load your file of hdf5 format
-%   - The programm will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
+%   - The program will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
 %   - One can modify the search codes 
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
@@ -128,6 +128,7 @@ end
 % Building ebsd object-----------------------------------------------------
 
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
+
 end
 
 % Formating functions------------------------------------------------------
@@ -292,6 +293,8 @@ function out = phase_default(raw_data)
 end 
 
 function out = rotation_correctById(raw_data)
+% correct Euler angles such that the Euler angle reference frame coincides
+% with the map reference frame
 
   if ~isfield(raw_data.correctById, 'correct_id') || ~isfield(raw_data.correctById, 'correct_data') || ~isfield(raw_data.correctById, 'rotation')
     error(['Rotation data has type correctById but not the correct fields were given. ' ...
@@ -302,10 +305,10 @@ function out = rotation_correctById(raw_data)
   data = double(raw_data.correctById.correct_data);
   rot = raw_data.correctById.rotation;
 
-  vec = vector3d(data(id,:));
-  correct_rot = rotation.map(zvector, vec);
+  correction = rotation.byEuler(data(id,:)*degree);
 
-  out = rot * correct_rot;
+  out = correction .* rot;
+  out.opt.correction = correction;
 
 end
 
@@ -319,9 +322,10 @@ function out = rotation_correctByAngle(raw_data)
   angle = double(raw_data.correctByAngle.angle);
   rot = raw_data.correctByAngle.rotation;
 
-  correct_rot = rotation.byAxisAngle(zvector, angle);
+  correction = rotation.byAxisAngle(zvector, angle);
 
-  out = rot * correct_rot;
+  out = correction .* rot;
+  out.opt.correction = correction;
 
 end
 
