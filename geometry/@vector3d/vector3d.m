@@ -67,26 +67,6 @@ classdef vector3d < dynOption
 
         v.how2plot = plottingConvention.default;
 
-      elseif ischar(varargin{1})
-        
-        if strcmp(varargin{1},'polar')
-          
-          sy = sin(varargin{2});
-          v.x = sy .* cos(varargin{3});
-          v.y = sy .* sin(varargin{3});
-          v.z = cos(varargin{2});
-          
-        else
-          
-          theta = get_option(varargin,{'theta','azimuth'});
-          rho = get_option(varargin,{'rho','polar'});
-          
-          v.x = sin(theta).*cos(rho);
-          v.y = sin(theta).*sin(rho);
-          v.z = cos(theta);
-          
-        end
-
       else
         if isa(varargin{1},'vector3d') % copy-constructor
           
