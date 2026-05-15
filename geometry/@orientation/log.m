@@ -27,7 +27,10 @@ function v = log(ori,varargin)
 %
 % Example
 %   % compute misorientation vector in crystal coordinates
-%   v = Miller(log(mori,SO3TangentSpace.rightVector),mori.CS)
+%   cs = crystalSymmetry('432');
+%   mori = orientation.KurdjumovSachs(cs,cs)
+%   v = log(mori,SO3TangentSpace.rightVector)
+%   round(Miller(v,mori.CS))
 %
 % See also
 % orientation/logm quaternion/log vector3d/exp Miller/exp

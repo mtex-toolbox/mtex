@@ -34,7 +34,7 @@ function BS2 = fit(v,varargin)
 %   plot(S2F)
 %   mtexColorMap LaboTeX
 %   hold on
-%   plot(t,'Markercolor','k','MarkerSize',3)
+%   plot(v,'Markercolor','k','MarkerSize',3)
 %   hold off
 %
 
