@@ -21,13 +21,14 @@ if check_option(varargin,'parent')
     parent = parent.Parent;
     if isa(parent,'matlab.ui.Figure') && isappdata(parent,'mtexFig')
       mtexFig = getappdata(parent,'mtexFig');
+      mtexFig.currentAxes = ax;
       return
     end
   end
 
   mtexFig = struct;
   mtexFig.gca = ax;
-  mtexFig.currentAxis = ax;
+  mtexFig.currentAxes = ax;
   mtexFig.parent = ax.Parent;
   return
 end
@@ -79,33 +80,19 @@ end
 
 % set up a new figure
 if newFigure
-
-  if check_option(varargin,'parent')
+ 
+  mtexFig = mtexFigure(varargin{:});
   
-    fig = get_option(varargin,'parent');
-    mtexFig.gca = fig;
-    while ~isempty(fig) && ~strcmp('figure', get(fig,'type'))
-      fig = get(fig,'parent');
-    end
-    mtexFig.parent = fig;
-    newFigure = false;
-    
-  else
-    
-    mtexFig = mtexFigure(varargin{:});
-  
-    % set tag
-    if check_option(varargin,'ensureTag','char')
-      set(gcf,'tag',get_option(varargin,'ensureTag'));
-    end
-
-    % set appdata
-    if check_option(varargin,'ensureAppdata')
-      for i = 1:length(ad)
-        setappdata(gcf,ad{i}{1},ad{i}{2})
-      end
-    end
+  % set tag
+  if check_option(varargin,'ensureTag','char')
+    set(gcf,'tag',get_option(varargin,'ensureTag'));
   end
+
+  % set appdata
+  if check_option(varargin,'ensureAppdata')
+    for i = 1:length(ad), setappdata(gcf,ad{i}{1},ad{i}{2}); end
+  end
+
 else % use an existing figure
   
   % get existing mtexFigure
