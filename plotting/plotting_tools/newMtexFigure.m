@@ -12,11 +12,24 @@ function [mtexFig,newFigure] = newMtexFigure(varargin)
 %
 
 if check_option(varargin,'parent')
-    newFigure = false;
-    mtexFig = struct;
-    mtexFig.gca = get_option(varargin,'parent');
-    mtexFig.parent = mtexFig.gca;
-    return
+
+  newFigure = false;
+
+  ax = get_option(varargin,'parent');
+  parent = ax;
+  while ~isempty(parent)
+    parent = parent.Parent;
+    if isa(parent,'matlab.ui.Figure') && isappdata(parent,'mtexFig')
+      mtexFig = getappdata(parent,'mtexFig');
+      return
+    end
+  end
+
+  mtexFig = struct;
+  mtexFig.gca = ax;
+  mtexFig.currentAxis = ax;
+  mtexFig.parent = ax.Parent;
+  return
 end
 
 mtexFig = gcm;
