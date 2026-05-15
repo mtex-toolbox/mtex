@@ -56,7 +56,7 @@ classdef rotation < quaternion & dynOption
 
           rot = varargin{1};
 
-        case {'orienation','quaternion'}
+        case {'orientation','quaternion'}
 
           [rot.a,rot.b,rot.c,rot.d, rot.i] = double(varargin{1});
 
