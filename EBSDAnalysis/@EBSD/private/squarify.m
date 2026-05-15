@@ -44,7 +44,7 @@ end
 prop.oldId = nan(sGrid);
 prop.oldId(ind) = ebsd.id;
 
-ebsdGrid = EBSDsquare(pos,rotation(quaternion(a,b,c,d)),phaseId(:),...
+ebsdGrid = EBSDsquare(pos,rotation(a,b,c,d),phaseId(:),...
   ebsd.phaseMap,ebsd.CSList,'prop',prop,'opt',ebsd.opt,'unitCell',uC);
 
 end

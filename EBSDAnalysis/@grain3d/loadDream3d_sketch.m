@@ -15,7 +15,7 @@ crysmPath = '/DataStructure/DataContainer/CellEnsembleData/CrystalStructures';
 activeGrains = logical(h5read(fname, activePath))';
 
 abcd = h5read(fname, QuatsPath)';
-q = quaternion(abcd(activeGrains,:)').';
+q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),abcd(activeGrains,3),abcd(activeGrains,4));
 
 crysm = h5read(fname,crysmPath);      % not helpful
 csList = {'notIndexed',crystalSymmetry("432")};

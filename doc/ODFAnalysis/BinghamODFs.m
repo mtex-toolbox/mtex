@@ -26,9 +26,9 @@
 cs = crystalSymmetry('1');
 
 kappa = [100 90 80 0];   % shape parameters
-U     = eye(4);          % orthogonal matrix
+U     = orientation.eye(cs);  % principle axes as orthogonal orientations
 
-odf = BinghamODF(kappa,U,cs)
+odf = BinghamODF(kappa,U)
 
 %%
 % Lets visualize the ODF as pole figures
@@ -114,7 +114,7 @@ plot(odf,'sections',6,'silent','sigma')
 % The spherical case is characterized by the fact that we have 3 equal non
 % zero kappa coefficients.
 
-odf = BinghamODF([10,10,10],quaternion(eye(4)),cs)
+odf = BinghamODF([10,10,10],quaternion.eye,cs)
 
 plot(odf,'sections',6,'silent','sigma');
 
@@ -188,7 +188,7 @@ plot(odf,'sections',6,'silent','sigma');
 % The oblate case of the Bingham distribution has no direct counterpart in
 % terms of texture components, thus we can construct it straightforward
 
-%odf_oblate = BinghamODF([50 50 50 0],eye(4),cs)
+%odf_oblate = BinghamODF([50 50 50 0],quaternion.eye,cs)
 
 %plotPDF(odf_oblate,h,'antipodal','silent')
 

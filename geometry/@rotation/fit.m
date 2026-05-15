@@ -52,8 +52,9 @@ switch lower(get_option(varargin,'method','horn'))
     
     [V,d] = eig(N,'vector');
     [~, ind] = sort(d);
-    
-    rot = rotation(V(:,ind(4)).');
+    V = V(:,ind(4));
+
+    rot = rotation(V(1),V(2),V(3),V(4));
     
   case 'kabsch' % Kabsch algorithm
     

@@ -15,13 +15,14 @@ classdef rotation < quaternion & dynOption
   %   rot = reflection(n)
   %   rot = rotation.byRodrigues(v)
   %   rot = rotation(fibre(u1,v1),'resolution',5*degree)
-  %   rot = rotation(quaternion(a,b,c,d))
+  %   rot = rotation(a,b,c,d)
   %
   % Input
   %  phi1, Phi, phi2 - Euler angles
   %  u1, u2          - @vector3d
   %  v, v1, v2       - @vector3d
   %  n               - @vector3d
+  %  a,b,c,d         - quaternion components
   %
   % Output
   %  rot - @rotation
@@ -47,84 +48,21 @@ classdef rotation < quaternion & dynOption
 
   methods
     function rot = rotation(varargin)
+    
+      if nargin == 0
 
-      if nargin == 0, return; end
+      elseif isnumeric(varargin{1})
         
-      switch class(varargin{1})
-        
-        case 'rotation'
+        rot.a = varargin{1};
+        rot.b = varargin{2};
+        rot.c = varargin{3};
+        rot.d = varargin{4};
+        rot.i = false(size(varargin{1}));
 
-          rot = varargin{1};
+      elseif isa(varargin{1},'quaternion')
 
-        case {'orientation','quaternion'}
-
-          [rot.a,rot.b,rot.c,rot.d, rot.i] = double(varargin{1});
-
-        case 'double'
+        [rot.a,rot.b,rot.c,rot.d, rot.i] = double(varargin{1});
      
-          if nargin == 1
-            
-            rot.a = varargin{1}(:,1);
-            rot.b = varargin{1}(:,2);
-            rot.c = varargin{1}(:,3);
-            rot.d = varargin{1}(:,4);
-            rot.i = false(size(varargin{1},1),1);
-            
-          else
-            rot.a = varargin{1};
-            rot.b = varargin{2};
-            rot.c = varargin{3};
-            rot.d = varargin{4};
-            
-            if nargin == 4
-              rot.i = false(size(rot.a));
-            else
-              rot.i = varargin{5};
-            end
-          end
-
-        case 'char'
-
-          switch lower(varargin{1})
-
-            case 'axis' % orientation by axis / angle
-              
-              locRot = rotation.byAxisAngle(get_option(varargin,'axis'),get_option(varargin,'angle'));
-              
-            case 'euler' % orientation by Euler angles
-              
-              locRot = rotation.byEuler(varargin{2:end});
-
-            case 'map'
-
-              locRot = rotation.map(varargin{2:end});
-              
-            case 'quaternion'
-
-              locRot = rotation(quaternion(varargin{2:end}));
-
-            case 'rodrigues'
-
-              locRot = rotation.byRodrigues(varargin{2});
-
-            case 'matrix'
-
-              locRot = rotation.byMatrix(varargin{2:end});              
-
-            case {'mirroring','reflection'}
-
-              locRot = reflection(varargin{:});
-              
-            otherwise
-
-              error('Wrong rotation syntax!')
-          end
-          
-          rot.a = locRot.a; rot.b = locRot.b; 
-          rot.c = locRot.c; rot.d = locRot.d; rot.i = locRot.i;
-          
-        otherwise
-          error('Type mismatch in rotation!')
       end
       
     end
