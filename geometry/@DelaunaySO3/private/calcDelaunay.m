@@ -28,7 +28,7 @@ for ib = 1:length(bounds)
   boundaryOriInd{ib} = 1:length(R);
   
   % apply symmetry operation
-  s = rotation('Rodrigues',bounds(ib))^2;
+  s = rotation.byRodrigues(bounds(ib))^2;
   boundaryOri{ib} = orientation(...
     ori.subSet(boundaryOriInd{ib}) * inv(s),ori.CS,ori.SS); %#ok<MINV>
     

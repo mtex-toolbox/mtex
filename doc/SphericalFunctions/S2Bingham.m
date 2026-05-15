@@ -19,7 +19,7 @@
 
 % A simple example:
 Z = [-10 -4 0];
-a = rotation.rand(1).*vector3d([xvector yvector zvector]);
+a = rotation.rand(1) .* vector3d([xvector yvector zvector]);
 bs2 = S2FunBingham(Z,a);
 plot(bs2)
 
