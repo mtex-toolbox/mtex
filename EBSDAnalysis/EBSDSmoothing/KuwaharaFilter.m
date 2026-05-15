@@ -27,7 +27,8 @@ classdef KuwaharaFilter < EBSDFilter
       
       % map to mean
       [qmean,q] = mean(ori);
-      q = reshape(inv(qmean)*q,size(ori)); %#ok<MINV>
+      qmean = quaternion(qmean); q = quaternion(q);
+      q = reshape(inv(qmean) * q,size(ori)); %#ok<MINV>
             
       % prepare the result
       tqMean = nan(length(q),3);

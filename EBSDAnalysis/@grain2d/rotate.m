@@ -31,7 +31,7 @@ if isa(rot,'double'), rot = rotation.byAxisAngle(vector3d.Z,rot); end
 
 % rotate the orientations
 if ~check_option(varargin,'keepEuler')
-  grains.prop.meanRotation = quaternion(rot .* grains.prop.meanRotation);
+  grains.prop.meanRotation = rot .* grains.prop.meanRotation;
 end
 
 % rotate the spatial data

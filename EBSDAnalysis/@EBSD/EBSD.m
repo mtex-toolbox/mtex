@@ -116,7 +116,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
       ebsd.pos = pos;
 
-      ebsd.rotations = rotation(rot);
+      if class(rot) ~= "rotation", rot = rotation(rot); end
+      ebsd.rotations = rot;
       if check_option(varargin,'phaseMap')
         ebsd.phaseId = phases;
         ebsd.CSList = CSList;
