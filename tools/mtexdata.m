@@ -197,11 +197,11 @@ catch
         case 'twins'
           
           pC = plottingConvention;
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'correction',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot = pC;
 
         case 'copper'
-
+          
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
 
           out.how2plot.east = xvector;
@@ -231,21 +231,22 @@ catch
 
         case 'ferrite'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame','setting 2');
+          out = EBSD.load(fName,'setting',2);
 
         case 'epidote'
 
-          out = EBSD.load(fName,'ignorePhase',[0 3 4],'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName,'ignorePhase',[0 3 4],...
+            'correction',rotation.byAxisAngle(xvector,180*degree));
           
         case 'forsterite'
 
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'correction',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 
         case 'small'
 
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'correction',rotation.byAxisAngle(xvector,180*degree));
           out = out(out.inpolygon([33 4.5 3 3]*10^3));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
@@ -258,13 +259,13 @@ catch
 
         case 'martensite'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName);
           out('Iron bcc').CS = out('Iron bcc').CS.properGroup;
           out('Iron bcc').CSList{3} = out('Iron bcc').CSList{3}.properGroup;
 
         case 'emsland'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName,'correction',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 
