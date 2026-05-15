@@ -6,8 +6,8 @@ classdef SO3FunBingham < SO3Fun
 %
 % Input
 %  kappa - vector (shape parameter)
-%  A     - orthogonal 4x4 matrix
-%  cs    - @Symmetry
+%  ori     - 4 orthogonal @orientation -> principle axes
+%  cs    - @crystalSymmetry
 %
 % Output
 %  SO3F - @SO3FunBingham
@@ -16,8 +16,8 @@ classdef SO3FunBingham < SO3Fun
 %   
 %   cs = crystalSymmetry('1');
 %   kappa = [100 90 80 0];
-%   U     = eye(4);
-%   f = BinghamODF(kappa,U,cs)
+%   ori   = orientation.eye(cs);
+%   f = BinghamODF(kappa,ori)
 %
 
   properties
@@ -41,24 +41,21 @@ classdef SO3FunBingham < SO3Fun
   
   methods
     
-    function SO3F = SO3FunBingham(kappa,A,cs,varargin)
+    function SO3F = SO3FunBingham(kappa,A,varargin)
 
       % convert arbitrary SO3Fun to SO3FunBingham
       if isa(kappa,'function_handle') || isa(kappa,'SO3Fun')
-        if nargin>=3, varargin = {cs,varargin{:}}; end
-        if nargin>=2, varargin = {A,varargin{:}}; end
+        if nargin>=2, varargin = [A,varargin]; end
         SO3F = SO3FunBingham.approximate(kappa,varargin{:});
         return
       end
         
       if nargin == 0, return;end
       
-      if isnumeric(A), A = orientation(quaternion(A)); end
-
-      if nargin == 3, A.CS = cs; end
-
+      assert(isa(A,"orientation") && numel(A)==4);
+      
       SO3F.kappa = kappa(:);
-      SO3F.A = A;
+      SO3F.A = A(:);
 
     end
     
