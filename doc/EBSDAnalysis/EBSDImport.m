@@ -80,7 +80,7 @@ fname = [pname filesep 'twins.ctf'];
 
 % create an EBSD variable containing the data
 ebsd = EBSD.load(fname,CS,'interface','ctf',...
-  'convertEuler2SpatialReferenceFrame');
+  'EulerCorrection',rotation.byAxisAngle(zvector,180*degree));
 
 %%
 % Running this script imports the data into a variable named
