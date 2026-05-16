@@ -9,6 +9,7 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %  fname - file name
 %
 % Options
+%  EulerCorrection - 
 %  setting - see https://mtex-toolbox.github.io/EBSDReferenceFrame.html
 %
 
@@ -172,18 +173,20 @@ else
 end
 corSetting = get_option(varargin,'setting',corSetting);
 
-if corSetting > 0
+if corSetting > 0 || check_option(varargin,'EulerCorrection')
 
   % change reference frame
-  rotCorrection = [...
+  rotCorrection = [rotation.id,...
     rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
     rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
     rotation.byAxisAngle(xvector,180*degree),...         % setting 3
     rotation.byAxisAngle(yvector,180*degree)];           % setting 4
 
+  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
+
   % correct rotations
-  ebsd.rotations = rotCorrection(corSetting) .* ebsd.rotations;
-  ebsd.rotations.prop.correction = rotCorrection(corSetting);
+  ebsd.rotations = rot .* ebsd.rotations;
+  ebsd.rotations.opt.correction = rot;
 
 else
   

@@ -8,7 +8,7 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 % Input
 %  fname - file name
 %
-% Option
+% Options
 %  EulerCorrection - @rotation that is used to correct the Euler angles 
 %
 
@@ -80,6 +80,6 @@ if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard')
 end
 
 ebsd.rotations = correction .* ebsd.rotations;
-ebsd.rotations.opt.correction = correction;
+ebsd.rotations.opt.EulerCorrection = correction;
 
 end
