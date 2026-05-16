@@ -9,6 +9,9 @@ elseif check_option(varargin,'latex')
 elseif check_option(varargin,'compact')  
   if ~isempty(s.mineral)
     c = s.mineral; 
+  elseif getMTEXpref("UTF8Output")
+    ov = char(hex2dec('0305'));   % U+0305 COMBINING OVERLINE
+    c = regexprep(s.pointGroup, '-([A-Za-z0-9])', ['$1' ov]);
   else
     c = s.pointGroup;
   end
