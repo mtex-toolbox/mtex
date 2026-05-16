@@ -29,7 +29,7 @@ hold off
 % 
 % Grain reconstruction is guided in MTEX by a variable of type
 % <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor| >. During the reconstruction process this class
+% |parentGrainReconstructor|>. During the reconstruction process this class
 % keeps track about the relationship between the measured child grains and
 % the recovered parent grains.
 
