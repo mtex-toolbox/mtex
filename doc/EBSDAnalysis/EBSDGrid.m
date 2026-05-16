@@ -118,8 +118,8 @@ unitCell = 0.5*vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 
 % use the small square unit cell for gridify
 ebsdS = ebsd.gridify('unitCell',unitCell)
-
-plot(ebsdS,ebsdS.orientations,'parent',nextAxis(2))
+nextAxis
+plot(ebsdS,ebsdS.orientations)
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off

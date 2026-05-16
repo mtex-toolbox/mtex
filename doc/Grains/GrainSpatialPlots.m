@@ -21,7 +21,7 @@ plot(grains)
 % Accordingly, changing the color stored in the crystal symmetry changes the
 % color in the map
 
-grains('Fo').CS.color = str2rgb('salmon')
+grains('Fo').CS.color = "salmon";
 plot(grains)
 
 %%

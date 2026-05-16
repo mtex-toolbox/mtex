@@ -14,9 +14,9 @@ import_wizard
 %%
 % or by the command <EBSD.load.html EBSD.load>
 
-%load some test data packaged with your MTEX installation
+% load some test data packaged with your MTEX installation
 fileName = [mtexDataPath filesep 'EBSD' filesep 'Forsterite.ctf'];
-ebsd = EBSD.load(fileName)
+ebsd = EBSD.load(fileName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree))
 
 %%
 % This command outputs ebsd data stored in a single variable, called

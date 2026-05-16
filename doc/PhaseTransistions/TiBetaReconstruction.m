@@ -29,7 +29,7 @@ beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 % 
 % Grain reconstruction is guided in MTEX by a variable of type
 % <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|>. During the reconstruction process this class
+% |parentGrainReconstructor| >. During the reconstruction process this class
 % keeps track about the relationship between the measured child grains and
 % the recovered parent grains. In order to set this variable up we first
 % need to compute the initial child grains from out EBSD data set.
@@ -70,7 +70,7 @@ job.p2c = beta2alpha
 % parent grain
 %
 % Additionally, the <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|> class provides the following operations for
+% |parentGrainReconstructor| > class provides the following operations for
 % parent grain reconstruction. These operators can be applied multiple
 % times and in any order to achieve the best possible reconstruction.
 %
@@ -86,14 +86,14 @@ job.p2c = beta2alpha
 %%
 % The main line of the variant graph based reconstruction algorithm is as
 % follows. First we compute the variant graph using the command
-% <parentGrainReconstructor.calcVariantGraph |job.calcVariantGraph|>
+% <parentGrainReconstructor.calcVariantGraph |job.calcVariantGraph| >
 
 job.calcVariantGraph('threshold',1.5*degree)
 
 %%
 % In a second step we cluster the variant graph and at the same time
 % compute probabilities for potential parent orientations using the command
-% <parentGrainReconstructor.clusterVariantGraph |job.clusterVariantGraph|>
+% <parentGrainReconstructor.clusterVariantGraph |job.clusterVariantGraph| >
 
 job.clusterVariantGraph('numIter',3)
 
@@ -102,7 +102,7 @@ job.clusterVariantGraph('numIter',3)
 % variant ids in |job.votes.parentId|. In order to use the parent
 % orientation with the highest probability for the reconstruction we use
 % the command <parentGrainReconstructor.calcParentFromVote
-% |job.calcParentFromVote|>
+% |job.calcParentFromVote| >
 
 job.calcParentFromVote
 
@@ -123,7 +123,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % After the previous steps we are left with many very similar parent
 % grains. In order to merge all similarly oriented grains into large parent
 % grains one can use the command
-% <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|>. It takes as
+% <parentGrainReconstructor.mergeSimilar.html |mergeSimilar| >. It takes as
 % an option the threshold below which two parent grains should be
 % considered a a single grain.
 
@@ -138,7 +138,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % We may be still a bit unsatisfied with the result as the large parent
 % grains contain a lot of poorly indexed inclusions where we failed to
 % assign a parent orientation. We use the command
-% <parentGrainReconstructor.mergeInclusions.html |mergeInclusions|> to
+% <parentGrainReconstructor.mergeInclusions.html |mergeInclusions| > to
 % merge all inclusions that have fever pixels then a certain threshold into
 % the surrounding parent grains.
 

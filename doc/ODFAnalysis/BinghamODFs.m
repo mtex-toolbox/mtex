@@ -101,10 +101,10 @@ plot(odf,'sections',6,'silent','contourf','sigma')
 %%
 % *The fibre case*
 % For a fibre symmetric Bingham distribution we simply specify the fibre
-% and the first kappa parameter. The first two kappa parameters are allways
+% and the first kappa parameter. The first two kappa parameters are always
 % equal while the third and fourth are zero.
 
-f = fibre.rand(cs);
+f = fibre(Miller(0,0,1,cs),vector3d(1,2,3));
 odf = BinghamODF(20,f)
 
 plot(odf,'sections',6,'silent','sigma')
