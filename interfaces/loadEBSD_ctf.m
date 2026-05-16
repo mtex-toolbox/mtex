@@ -45,8 +45,14 @@ for K = 1:nphase
   mineral = mpara{3};
     
   % Laue group (class) number
-  laue = Laue{sscanf(mpara{4},'%u')};
-  cs{K+1} = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
+  try % some ctf files might be broken
+    laue = Laue{sscanf(mpara{4},'%u')};
+    cs{K+1} = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral);
+  catch
+    spaceId = sscanf(mpara{5},'%u'); % try spaceid
+    cs{K+1} = crystalSymmetry('SpaceId',spaceId,',abc(:)',abg(:)','mineral',mineral);     
+  end
+
 end
   
 try
