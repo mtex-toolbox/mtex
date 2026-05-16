@@ -237,8 +237,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       % phaseId should be the same within one grain 
       ind = ebsd.grainId>0;
       if nnz(ind)
-      grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
-      ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
+        grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
+        ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
       end
       
     end
