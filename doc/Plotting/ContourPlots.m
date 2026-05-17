@@ -11,7 +11,6 @@
 sF = 0.01 + 10*S2Fun.smiley
 
 % and plot it as a smooth function
-plotx2north
 plot(sF,'upper')
 mtexColorMap blue2red
 mtexColorbar
@@ -29,7 +28,7 @@ levels = -4:5;
 % plot the contours
 h = plot(sF,'contour',levels,'linewidth',2,'linecolor','k')
 
-% diable on top plotting
+% disable on top plotting
 hold off
 
 %%

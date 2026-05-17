@@ -35,36 +35,38 @@ ebsd = EBSD.load(fileName,'EulerCorrection',rotation.byAxisAngle(xvector,180*deg
 plot(ebsd,'coordinates','on')
 
 %% 
-% When importing EBSD data it is critically important to align it correctly
-% to a fixed reference frame. This issue is exhaustively discussed in the
-% topic <EBSDReferenceFrame.html Reference Frame Alignment>.
+% When importing EBSD data it is important to check the alignment of the
+% map coordinate system and the Euler angle coordinate system. This issue
+% is exhaustively discussed in the topic <EBSDReferenceFrame.html Reference
+% Frame Alignment>.
 %
 %% Orientation Plots
 %
-% Analyzing orientations of an EBSD map can be done only for each phase
-% separately. The key syntax to restrict the data to a single phase is 
+% Analyzing orientations of an EBSD map has to be done for each phase
+% separately. The key syntax to restrict the data to a single phase is
 
 ebsd('Forsterite')
 
 %%
-% Now we may restrict the variable to Forsterite orientations by
+% which allows us the access orientations of all Forsterite pixels with
 
 ebsd('Forsterite').orientations
 
 %%
-% and may use this syntax to plot an ipf map of all Forsterite orientations
+% This syntax can be used to plot an ipf map of all Forsterite orientations
 
 plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 
 %%
-% In this standard form a default color coding of the orientations is
-% chosen. A more complete discussion about how to colorize orientations
-% can be found in the topic <EBSDIPFMap.html IPF Maps>.
+% Here the all Forsterite orientations a colored according to their
+% alignment in a z inverse pole figure. A more complete discussion about
+% how to colorize orientations can be found in the topic <EBSDIPFMap.html
+% IPF Maps>.
 
 %% Grain reconstruction
 %
-% MTEX contains a sophisticated algorithm for reconstructing the grain
-% structure from EBSD data as described in the paper
+% MTEX contains sophisticated algorithms for reconstructing grains from
+% EBSD data as described in the paper
 % <https://www.researchgate.net/publication/51806709_Grain_detection_from_2d_and_3d_EBSD_data-Specification_of_the_MTEX_algorithm
 % Grain detection from 2d and 3d EBSD data> and the topic
 % <GrainReconstruction.html Grain Reconstruction>. The syntax is
@@ -109,7 +111,8 @@ hold off
 % 
 % One of the most important tools for analyzing the orientations in an EBSD
 % map are <OrientationPoleFigure.html pole figure plots>. Those answer the
-% question of how selected crystal directions, here |h|, are aligned with respect to specimen directions
+% question of how selected crystal directions, here |h|, are aligned with
+% respect to specimen directions
 
 % the selected crystal directions
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS);

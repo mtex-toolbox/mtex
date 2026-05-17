@@ -69,7 +69,7 @@ axis off
 
 % plot the tangent vector
 hold on
-h = quiver3(v1,'LineWidth',3,'maxHeadSize',4)
+h = quiver3(v1,'LineWidth',3,'maxHeadSize',4);
 hold off
 
 %% 

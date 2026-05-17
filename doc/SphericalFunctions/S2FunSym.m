@@ -1,7 +1,10 @@
-%% S2FunHarmonicSym
+%% Symmetric Spherical Functions
 %
-% The class |S2FunHarmonicSym| is an extension of the class
-% |@S2FunHarmonic| representing symmetric spherical functions.
+% In several applications spherical functions are symmetric with respect to
+% some symmetry group. Typically examples are inverse pole figures or
+% properties of single crystals. In MTEX one can ensure symmetry properties
+% of spherical functions by defining them as variables of type
+% |@S2FunHarmonicSym|. 
 %
 %% Defining a S2FunHarmonic
 %
@@ -11,22 +14,27 @@
 % The simplest way to define a symmetric spherical function is through the
 % symmetrisation of an ordinary |@S2FunHarmonic|.
 
-sF = S2Fun.smiley
-ss = specimenSymmetry('222');
+% the original function 
+sF = S2Fun.smiley;
 
-sFs1 = symmetrise(sF, ss);
+% the symmetry
+ss = specimenSymmetry('222',sF.how2plot);
+
+% attach the symmetry to the function
+sFs1 = S2FunHarmonicSym(sF, ss);
+
+% and enforce it
+sFs1 = sFs1.symmetrise
+
+plot(sFs1)
 
 %%
-% * this symmetrises the function and gives back the result with the
-% symmetry attached
+% Note that symmetry function are by default only plotted within their
+% representative sector, as it is typical for inverse pole figures. In
+% order to visualize the full sphere we have to use the option
+% |'complete'|.
 
-plotx2north
 plot(sFs1,'complete','upper')
-
-%%
-% * Note that only the important part with respect to the symmetry is
-% plotted
-% * you can plot the full sphere using the argument |'complete'|
 
 %%
 % *Definition via function handle*
@@ -45,14 +53,5 @@ cs = crystalSymmetry('6/m');
 
 sFs2 = S2FunHarmonicSym.quadrature(f, cs)
 
-%% Visualization
-% The plot commands for a |S2FunHarmonicSym| by default plot the function
-% only on the fundamental Sector of the symmetry. E.g. the default
-% |plot|-command look as follows
-
-plot(sFs1);
-
-%%
-% Another Example is the contour plot
-
-contour(sFs2);
+contour(sFs2,'linewidth',2);
+mtexColorMap parula

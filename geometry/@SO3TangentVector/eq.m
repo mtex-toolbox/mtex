@@ -1,4 +1,5 @@
 function b = eq(v1,v2,varargin)
+%
 
 if ~isa(v1,'SO3TangentVector') ||  ~isa(v2,'SO3TangentVector')
   error('Trying to compare tangent vectors with other objects.')

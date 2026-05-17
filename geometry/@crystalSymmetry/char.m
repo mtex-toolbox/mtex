@@ -1,5 +1,5 @@
 function c = char(s,varargin)
-% object -> string
+% symmetry -> string
 
 if check_option(varargin,'verbose')  
   c = option2str([{s.pointGroup},s.alignment]);
