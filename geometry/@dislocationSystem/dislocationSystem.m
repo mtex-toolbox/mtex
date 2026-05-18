@@ -120,7 +120,7 @@ classdef dislocationSystem
         end
       end
       
-      toChar = @(x) char(round(x),'spaceSep');
+      toChar = @(x) char(round(x),'spaceSep','noUTF8');
       
       if any(dS.isEdge(:))
         
