@@ -5,7 +5,8 @@
 % In the most simplest case import can be done by the command
 % <EBSD.load.html |EBSD.load|>
 
-ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'],'convertEuler2SpatialReferenceFrame')
+ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'],...
+  'EulerCorrection',rotation.byAxisAngle(xvector,180*degree))
 
 %%
 % This command automatically detects the file format and generates a
@@ -79,7 +80,7 @@ fname = [pname filesep 'twins.ctf'];
 
 % create an EBSD variable containing the data
 ebsd = EBSD.load(fname,CS,'interface','ctf',...
-  'convertEuler2SpatialReferenceFrame');
+  'EulerCorrection',rotation.byAxisAngle(zvector,180*degree));
 
 %%
 % Running this script imports the data into a variable named

@@ -24,6 +24,13 @@ if nargin < 1
   end
   return
 
+elseif strcmpi(name,'all')
+
+  for k = 1:height(list)
+    disp(list.shortName{k})
+    out = mtexdata(list.shortName{k});
+  end
+
 elseif strcmpi(name,'clear')
 
   files = dir(fullfile(mtexDataPath,'*.mat'));
@@ -178,8 +185,8 @@ catch
           out.how2plot.outOfScreen = zvector;
 
         case 'olivine'
-          
-          out = EBSD.load(fName);
+
+          out = EBSD.load(fName,'EulerCorrection',rotation.id);
 
           % correct data to fit the reference frame
           rot = rotation.byEuler(90*degree,180*degree,180*degree);
@@ -191,17 +198,14 @@ catch
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
           
-          % rotate only the spatial data about the y-axis
-          % ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-          
         case 'twins'
           
           pC = plottingConvention;
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot = pC;
 
         case 'copper'
-
+          
           out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
 
           out.how2plot.east = xvector;
@@ -231,40 +235,41 @@ catch
 
         case 'ferrite'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame','setting 2');
+          out = EBSD.load(fName,'setting',2);
 
         case 'epidote'
 
-          out = EBSD.load(fName,'ignorePhase',[0 3 4],'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName,'ignorePhase',[0 3 4],...
+            'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           
         case 'forsterite'
 
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 
         case 'small'
 
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out = out(out.inpolygon([33 4.5 3 3]*10^3));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 
         case lower('alphaBetaTitanium')
 
-          out = EBSD.load(fName,'convertSpatial2EulerReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out('Ti (alpha)').CS = out('Ti (alpha)').CS.properGroup;
           out('Ti (beta)').CS = out('Ti (beta)').CS.properGroup;
 
         case 'martensite'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out('Iron bcc').CS = out('Iron bcc').CS.properGroup;
           out('Iron bcc').CSList{3} = out('Iron bcc').CSList{3}.properGroup;
 
         case 'emsland'
 
-          out = EBSD.load(fName,'convertEuler2SpatialReferenceFrame');
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 

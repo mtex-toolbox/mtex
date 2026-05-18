@@ -24,7 +24,7 @@ classdef plainProjection < sphericalProjection
     end
     
     function v = iproject(sP,x,y)
-      v = vector3d('theta',y*degree,'rho',x*degree);
+      v = vector3d.byPolar(y*degree, x*degree);
     end
     
   end

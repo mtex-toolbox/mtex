@@ -27,6 +27,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 %  cs - @crystalSymmetry or cell array of @crystalSymmetry
 %
 % Options
+%  EulerCorrection   - rotation that is applied to the Euler angles to align Euler and map reference system
 %  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - positions of the columns to be imported
 %  radians           - treat input in radiand
@@ -68,6 +69,8 @@ fname = char(fname);
 [~,~,interface] = fileparts(fname);
 interface = get_option(varargin,'interface',interface);
 interface = strrep(interface,'.','');
+
+options = {};
 
 switch char(interface)
   case {'h5','h5oina','oh5','hdf5','dream3d'}

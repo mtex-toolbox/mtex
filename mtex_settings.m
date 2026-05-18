@@ -24,6 +24,10 @@ set(0,'DefaultAxesFontSize',fontSize);
 set(0,'DefaultLegendFontSize',fontSize);
 try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC> 
 
+% whether to use 2̅ instead of -2
+% requires a compatible font, e.g. julia monospace
+setMTEXpref('UTF8Output',true)
+
 % default plotting of specimen coordinates
 pC = plottingConvention(zvector,xvector);
 pC.makeDefault;

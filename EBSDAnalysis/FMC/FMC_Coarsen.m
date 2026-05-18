@@ -180,7 +180,7 @@ P = sparse(i,j,p,fmc.sizeW,fmc.sizeWnext) + ...
 % P(sub2ind(size(P),i,j)) = p; % slow for large
 
 fmc.Qvar = Qvar;
-fmc.O = quaternion(Oc.');
+fmc.O = quaternion(Oc(:,1),Oc(:,2),Oc(:,3),Oc(:,4));
 fmc.P = P;
 
 end

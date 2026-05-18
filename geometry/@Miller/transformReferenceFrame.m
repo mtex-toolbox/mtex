@@ -4,7 +4,7 @@ function m = transformReferenceFrame(m,cs)
 if m.CSprivate ~= cs
     
   M = transformationMatrix(m.CS,cs);
-  m = rotate(m,rotation('matrix',M),1);
+  m = rotate(m,rotation.byMatrix(M),1);
 
   m.CSprivate = cs;
   

@@ -12,6 +12,7 @@ function q = cube2quat(XYZ)
 %  q - @quaternion
 
 xyz = cube2ball(XYZ);
-q = quaternion(InvLambert(xyz).');
+abcd = InvLambert(xyz);
+q = quaternion(abcd(:,1),abcd(:,2),abcd(:,3),abcd(:,4));
 
 end

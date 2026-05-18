@@ -33,7 +33,7 @@ bw = psi.bandwidth;
 l = 0:bw; l = 1+l.^2+l;
 
 f_hat = zeros((2*bw+1)^2,1);
-f_hat(l) = psi.A ./ sqrt(2*l+1);
+f_hat(l) = psi.A ./ reshape(sqrt(2*l+1),size(psi.A));
 
 sF = S2FunHarmonic(f_hat);
 

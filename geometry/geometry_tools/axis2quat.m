@@ -37,7 +37,8 @@ elseif isa(x,'vector3d')
   end
   
   x = x ./norm(x);
-  q = quaternion(cos(y/2),sin(y/2).* x);
+  sy = sin(y/2);
+  q = quaternion(cos(y/2) .* ones(size(x)),sy .* x.x,sy .* x.y,sy .* x.z);
 else
   error('first argument should be vector3d and second the angle');
 end

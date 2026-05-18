@@ -1,13 +1,10 @@
 function ebsd = loadEBSD_osc(fname,varargin)
 %
 
-ebsd = EBSD;
 
 assertExtension(fname,'.osc');
 
 CS = get_option(varargin,'CS',oscHeader(fname));
-
-if check_option(varargin,'check'),return; end
 
 [data,Xstep,Ystep] = oscData( fname );
 
@@ -52,46 +49,43 @@ rot = loader.getRotations;
 phase = loader.getColumnData('phase');
 ebsd = EBSD(pos,rot,phase,CS,loader.getOptions, 'unitCell',unitCell);
 
-% change reference frame, same as for .ang files
-rot = [...
-  rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-  rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-  rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-  rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-% get the correction setting
-corSettings = {'notSet','setting 1','setting 2','setting 3','setting 4'};
-corSetting = get_flag(varargin,corSettings,'notSet');
-corSetting = find(strcmpi(corSetting,corSettings))-1;
-
-if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  flag = 'keepEuler';
-  opt = 'convertSpatial2EulerReferenceFrame';
-elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
-  flag = 'keepXY';
-  opt = 'convertEuler2SpatialReferenceFrame';
+if check_option(varargin,'wizard')
+  corSetting = 2; 
 else
-  if ~check_option(varargin,'wizard')
-    warning(['.ang files have usualy inconsistent conventions for spatial ' ...
-      'coordinates and Euler angles. You may want to use one of the options ' ...
-      '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
-  end
-  return
+  corSetting = 0; 
+end
+corSetting = get_option(varargin,'setting',corSetting);
+
+if corSetting > 0 || check_option(varargin,'EulerCorrection')
+
+  % change reference frame
+  rotCorrection = [rotation.id,...
+    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
+    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
+    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
+    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
+
+  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
+
+  % correct rotations
+  ebsd.rotations = rot .* ebsd.rotations;
+  ebsd.rotations.opt.correction = rot;
+
+else
+  
+  fprintf(2,wraptext(['\nWarning: .osc files usually come with different coordinate systems for the Euler angles ' ...
+    'and the spatial coordinates. The relative alignment of these coordinate ' ...
+    'systems files can be specified when exporting the data from your EBSD maschine ' ...
+    'and are labeled as setting 1 to setting 4. Please specifiy this setting ' ...
+    'when importing the data using the syntax\n\n' ...
+    'ebsd = EBSD.load(fileName,''setting'', 2)' ...
+    '\n\n' ...
+    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
+    '\n']))
+
 end
 
-if corSetting == 0
-  warning('%s\n\n ebsd = EBSD.load(fileName,''%s'',''setting 2'')',...
-    ['You have choosen to correct your EBSD data for differently aligned '...
-    'reference frames for the Euler angles and the map coordinates. '...
-    'However, you have not specified which reference system setting has been used on your Edax system . ' ...
-    'I''m going to assume "setting 1". '...
-    'Be careful, the default setting of EDAX is "setting 2". '...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    'Please make sure you have chosen the correct setting and specify it explicitely using the syntax'],...
-    opt)
-  corSetting = 1;
-end
-ebsd = rotate(ebsd,rot(corSetting),flag);
+
 
 
 % taken from ANYSTITCH

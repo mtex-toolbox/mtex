@@ -36,8 +36,9 @@ end
       
 % get A
 if nargin > 1 && isa(varargin{1},'double')
-        
-  A = quaternion(varargin{1});
+
+  A  = varargin{1};
+  A = quaternion(A(:,1),A(:,2),A(:,3),A(:,4));
         
 elseif nargin > 1 && isa(varargin{1},'vector3d') && isa(varargin{2},'vector3d')
         
@@ -59,16 +60,15 @@ elseif nargin > 1 && isa(varargin{1},'quaternion')
   
 else
   
-  A = quaternion(eye(4));
+  A = quaternion.eye;
                         
 end
-      
+
 % if only one orientation was given -> extend to matrix
-if isscalar(A), A = quaternion(eye(4)) * A; end
+if isscalar(A), A = quaternion.eye .* A; end
       
 A = orientation(A,CS,SS);
-      
-    
+          
 %orthogonality check
 assert(isappr(abs(det(squeeze(double(A)))),1),'Center must be orthogonal');
                   
@@ -82,8 +82,8 @@ function A = fibre2A(h,r)
 h = normalize(h);
 r = normalize(r);
 
-qr = quaternion(0,r);
-qh = quaternion(0,h);
+qr = quaternion(0,r.x,r.y,r.z);
+qh = quaternion(0,h.x,h.y,h.z);
 
 q1 = quaternion.id - qr*qh;
 q2 = qr+qh;
@@ -91,8 +91,8 @@ q2 = qr+qh;
 if isnull(norm(h-r))
   v1 = orth(h);
   v2 = cross(h,v1);
-  q3 = quaternion(0,v1);
-  q4 = quaternion(0,v2);
+  q3 = quaternion(0,v1.x,v1.y,v1.z);
+  q4 = quaternion(0,v2.x,v2.y,v2.z);
 else
   q3 = quaternion.id + qr*qh;
   q4 = qr-qh;

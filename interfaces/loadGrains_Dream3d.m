@@ -46,7 +46,8 @@ catch ME
   activeGrains = true(size(abcd,1));
 end
 
-q = quaternion(abcd(activeGrains,:)').';
+q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
+  abcd(activeGrains,3),abcd(activeGrains,4));
 
 % import crystal symmetry - can we get some more information here?
 dream3dCS = {'622','432','6','23','1','121','222','4','422','3','322','1'};

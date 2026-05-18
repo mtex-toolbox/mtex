@@ -19,7 +19,7 @@ end
 
 if sF.bandwidth ~= 0
   f = @(v) sF.eval(rotate(v, inv(rot)));
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth, sF.s);
 end
 
 if isa(rot,"orientation"), sF.s = rot.SS; end

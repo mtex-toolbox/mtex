@@ -34,7 +34,7 @@ function BS2 = fit(v,varargin)
 %   plot(S2F)
 %   mtexColorMap LaboTeX
 %   hold on
-%   plot(t,'Markercolor','k','MarkerSize',3)
+%   plot(v,'Markercolor','k','MarkerSize',3)
 %   hold off
 %
 
@@ -47,7 +47,7 @@ BS2.N = BS2.normalizationConst;
 % add the estimate of confidence level, given as ellipse half
 % axes e.g.
 % plot(v)
-% ellipse(rotation('matrix',BS2.a.xyz'),BS2.cEllipse(1),BS2.cEllipse(2))
+% ellipse(rotation.byMatrix(BS2.a.xyz'),BS2.cEllipse(1),BS2.cEllipse(2))
 p = get_option(varargin,'ConfElli',0.95);
 J = sqrt(chi2inv(p,2))/2;
 BS2.cEllipse = [J/(-Z(2)*(kappa(3)-kappa(2))), ...

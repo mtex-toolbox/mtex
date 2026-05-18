@@ -116,7 +116,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
       ebsd.pos = pos;
 
-      ebsd.rotations = rotation(rot);
+      if class(rot) ~= "rotation", rot = rotation(rot); end
+      ebsd.rotations = rot;
       if check_option(varargin,'phaseMap')
         ebsd.phaseId = phases;
         ebsd.CSList = CSList;
@@ -236,8 +237,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       % phaseId should be the same within one grain 
       ind = ebsd.grainId>0;
       if nnz(ind)
-      grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
-      ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
+        grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
+        ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
       end
       
     end

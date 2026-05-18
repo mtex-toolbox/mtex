@@ -57,7 +57,7 @@ elseif check_option(varargin,{'noSymmetry','local'}) || ori.CS.numProper==1
   
   [~,~,lambda,eigv] = mean(ori,varargin{:});
   
-  ori12 = orientation(quaternion(eigv(:,4:-1:3)),ori.CS,ori.SS);
+  ori12 = orientation(eigv(4:-1:3),ori.CS,ori.SS);
   f = fibre(ori12(1),ori12(2),'full',varargin{:});
   
   if nargout == 3

@@ -2,7 +2,7 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 
 % How it is working:
 %   - You load your file of hdf5 format
-%   - The programm will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
+%   - The program will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
 %   - One can modify the search codes 
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
@@ -97,13 +97,24 @@ if isfield(Conf, 'additions')
   if Conf.additions.type == "auto"
 
     prop_path = get_hdf5_path(fname, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
+
+    paths_allready_used = search_Conf(Conf, 'path', prop_path);
+    
+    [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
+
     raw_fields_names = h5info(fname, prop_path);
+
     data_size = size(data.position);
 
     for i = 1:length(raw_fields_names.Datasets)
       if raw_fields_names.Datasets(i).Dataspace.Size == data_size(1)
 
         raw_name = raw_fields_names.Datasets(i).Name;
+
+        if ismember(raw_name, exclude_fields)
+          continue;
+        end
+
         clean_name = clean_string(raw_name);
         prop.(clean_name) = h5read(fname, prop_path + "/" + raw_name);
 
@@ -117,6 +128,7 @@ end
 % Building ebsd object-----------------------------------------------------
 
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
+
 end
 
 % Formating functions------------------------------------------------------
@@ -280,6 +292,43 @@ function out = phase_default(raw_data)
 
 end 
 
+function out = rotation_correctById(raw_data)
+% correct Euler angles such that the Euler angle reference frame coincides
+% with the map reference frame
+
+  if ~isfield(raw_data.correctById, 'correct_id') || ~isfield(raw_data.correctById, 'correct_data') || ~isfield(raw_data.correctById, 'rotation')
+    error(['Rotation data has type correctById but not the correct fields were given. ' ...
+      'Make sure you have a correct_id, correct_data and rotation!'])
+  end
+
+  id = double(raw_data.correctById.correct_id);
+  data = double(raw_data.correctById.correct_data);
+  rot = raw_data.correctById.rotation;
+
+  correction = rotation.byEuler(data(id,:)*degree);
+
+  out = correction .* rot;
+  out.opt.correction = correction;
+
+end
+
+function out = rotation_correctByAngle(raw_data)
+
+  if ~isfield(raw_data.correctByAngle, 'angle') || ~isfield(raw_data.correctByAngle, 'rotation')
+    error(['Rotation data has type correctByAngle but not the correct fields were given. ' ...
+      'Make sure you have a angle and rotation!'])
+  end
+
+  angle = double(raw_data.correctByAngle.angle);
+  rot = raw_data.correctByAngle.rotation;
+
+  correction = rotation.byAxisAngle(zvector, angle);
+
+  out = correction .* rot;
+  out.opt.correction = correction;
+
+end
+
 
 % Functions----------------------------------------------------------------
 
@@ -362,6 +411,12 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
     
     raw_data = readData(fname, path);
 
+  % if data concrete data is given --> read and safe
+  elseif ismember('data', fields)
+
+    vprintf(isDebug(), '%s • %-15s | ...read out of config\n', indent, string(name));
+    raw_data = config_item.data;
+
   else
     for i = 1:length(fields)
 
@@ -417,6 +472,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
       end
     catch MS
       vprintf(isDebug(), '%s   [!] Formatter Error: %s\n', indent, formatter_name);
+      disp(MS.getReport())
     end
   else
     data = raw_data;
@@ -543,7 +599,24 @@ end
 function val = isDebug(setVal)
     persistent debugState;
     if nargin > 0
-        debugState = setVal; % Setzt den Wert
+        debugState = setVal;
     end
-    val = debugState; % Gibt den Wert zurück
+    val = debugState;
+end
+
+function data = search_Conf(config_item, value, filterDir, data)
+  if nargin < 4, data = {}; end
+  if ~isstruct(config_item), return; end
+  
+  fields = fieldnames(config_item);
+  
+  if ismember(value, fields)
+    if startsWith(config_item.path, filterDir)
+        data{end+1} = config_item.(value); 
+    end
+  else 
+    for i = 1:length(fields)
+      data = search_Conf(config_item.(fields{i}), value, filterDir, data);
+    end
+  end
 end

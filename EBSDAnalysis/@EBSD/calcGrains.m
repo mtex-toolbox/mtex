@@ -208,7 +208,7 @@ if 0
     abcd(k,:) = [mq.a mq.b mq.c mq.d];
     GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
   end
-  meanRotation(doMeanCalc)=reshape(quaternion(abcd'),[],1);
+  meanRotation(doMeanCalc) = quaternion(abcd(:,1),abcd(:,2),abcd(:,3),abcd(:,4));
 else
   %[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
   [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));

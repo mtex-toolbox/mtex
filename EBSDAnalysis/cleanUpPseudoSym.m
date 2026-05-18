@@ -35,9 +35,9 @@ isTargetCS = cellfun(@(x) isa(x, 'symmetry') && x == mori.CS, ebsd.CSList);
 pseudoSym_phase_id = find(isTargetCS);
 
 if isempty(pseudoSym_phase_id)
-    warning('cleanUpPseudoSym:PhaseNotFound', 'The pseudo-symmetry phase was not found in the EBSD data.');
-    grainsM = grains;
-    return;
+  warning('cleanUpPseudoSym:PhaseNotFound', 'The pseudo-symmetry phase was not found in the EBSD data.');
+  grainsM = grains;
+  return;
 end
 
 % select grain boundaries with the correct symmetry

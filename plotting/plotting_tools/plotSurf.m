@@ -40,6 +40,11 @@ holdState = ishold(ax);
 hold(ax,"on")
 h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt(:,:,:),'parent',ax,...
   'EdgeColor','none',opt{:}),varargin{:});
+
 if ~holdState, hold(ax,"off"); end
+
+if ~check_option(varargin,'DisplayName')
+  h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+end
 
 end

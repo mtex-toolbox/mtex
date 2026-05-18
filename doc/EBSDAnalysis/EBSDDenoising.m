@@ -40,7 +40,7 @@ hold off
 
 %%
 % At the first glance, the orientation data look not noisy at all. However,
-% if we look at orientation changes within the grains the noise we become
+% if we look at orientation changes within the grains the noise becomes
 % clearly visible. To do so we colorize the orientation data with respect
 % to their misorientation to the grain mean orientation
 
@@ -58,7 +58,9 @@ hold off
 
 %%
 % We clearly observe some deformation gradients withing the grains which
-% are superposed by random noise.
+% are superposed by random noise. In the following we discuss several
+% methods for noise removal. The by far best  method is the total variation
+% filter discussed further down the list.
 %
 %% The Mean Filter
 %
@@ -182,7 +184,7 @@ hold off
 % the smoothing parameter determined during smoothing is
 F.alpha
 
-%% The Halfquadratic Filter
+%% The Total Variation Filter
 %
 % In the default setting the @halfQuadraticFilter uses definition of
 % smoothness the <https://en.wikipedia.org/wiki/Total_variation_denoising

@@ -35,7 +35,7 @@ plot(SO3F,'sigma')
 % independent from the rest of variables of the function. So one can change
 % them very easy and only effects the function values.
 
-SO3F.SLeft = specimenSymmetry('432')
+SO3F.SLeft = crystalSymmetry('432')
 
 %%
 % The class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> describes an

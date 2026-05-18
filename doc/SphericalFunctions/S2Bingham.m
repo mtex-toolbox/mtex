@@ -19,7 +19,7 @@
 
 % A simple example:
 Z = [-10 -4 0];
-a = rotation.rand(1).*vector3d([xvector yvector zvector]);
+a = rotation.rand(1) .* vector3d([xvector yvector zvector]);
 bs2 = S2FunBingham(Z,a);
 plot(bs2)
 
@@ -32,7 +32,7 @@ mtexFig = newMtexFigure('layout',[length(kappa) length(kappa)]);
 for k2 = kappa
   for k1 = kappa
     if k1 >= k2
-      bs=S2FunBingham([-k1 -k2 0]);
+      bs = S2FunBingham([-k1 -k2 0]);
       plot(bs,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
 %       mtexTitle(['$\kappa_1 :$' num2str(k1)  '  ' '$\kappa_2 :$' num2str(k2)],'FontSize',14)
       nextAxis
@@ -85,6 +85,5 @@ annotate(bs.a(3),'MarkerFaceColor','red','MarkerSize',10)
 mtexColorMap white2black
 
 % annotate the ellipse
-ellipse(rotation('matrix',bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...
+ellipse(rotation.byMatrix(bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...
     'linewidth',2,'lineColor','r','linestyle','-.')
-
