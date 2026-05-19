@@ -64,7 +64,7 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
   end
 
 else
-  xyz = SO3VF.SO3F.eval(rot,varargin{:});
+  xyz = eval(SO3VF.SO3F,rot,varargin{:});
 end
 
 % generate tangent space vector

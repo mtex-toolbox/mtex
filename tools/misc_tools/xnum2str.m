@@ -23,11 +23,11 @@ else
 end
 m = get_option(varargin,'precision',pre);
 
-% handle arrays componentwise
+% handle arrays component wise
 if length(n) > 1
  
   del = get_option(varargin,'delimiter',' ');
-  s = arrayfun(@(v) xnum2str(v,varargin{:}),n,'UniformOutput',false);
+  s = arrayfun(@(v) xnum2str(v,'precision',max(abs(n)),varargin{:}),n,'UniformOutput',false);
   
   if ~check_option(varargin,'cell')
     s = [s(:).';repcell(del,1,length(s))];
@@ -39,7 +39,7 @@ elseif isempty(n)
   n = 0;
 end
 
-% seperate real and imaginary part
+% separate real and imaginary part
 if isnan(n)
   s = 'NaN';
   return
@@ -87,7 +87,7 @@ else
   s = num2str(n,'%7.2g');
 end
 
-% eliminate ending point and meaningles minus
+% eliminate ending point and meaningless minus
 if s(end) == '.', s = s(1:end-1);end
 if strcmp(s,'-0'), s = '0';end
 

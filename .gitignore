@@ -20,6 +20,7 @@ myScripts
 /data/Neper/my100grains.stpoly
 /data/Neper/my100grains.tess
 /data/HDF5/
+/data/h5data/
 
 .mailmap
 gitTricks.md
