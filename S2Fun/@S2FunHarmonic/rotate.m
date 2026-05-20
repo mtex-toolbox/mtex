@@ -24,5 +24,4 @@ end
 
 if isa(rot,"orientation"), sF.s = rot.SS; end
 
-
 end

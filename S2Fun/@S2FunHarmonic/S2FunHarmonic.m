@@ -21,19 +21,23 @@ methods
 
     % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic 
     if isa(fhat,'S2FunHarmonic')
+
       sF.fhat = fhat.fhat;
       sF.s = fhat.s;
-      sF = truncate(sF);
-      return
+      sF = truncate(sF);     
+
     elseif isa(fhat, 'S2FunMLS') 
+
       f_hat = calcFourier(fhat, varargin{:});
       sF.fhat = f_hat;
       sF.s = fhat.s;
-      return
+
     elseif isa(fhat,'S2Fun') || isa(fhat,'function_handle') 
-      sF = S2FunHarmonic.quadrature(fhat, varargin{:});
-      return
+
+      sF = S2FunHarmonic.quadrature(fhat, varargin{:});      
+
     elseif isa(fhat,'S2Kernel')
+
       psi = fhat;
       bw = psi.bandwidth;
       sF.fhat = zeros((bw+1)^2,1);
@@ -41,21 +45,20 @@ methods
         sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
       end
       sF.s = getClass(varargin,'symmetry',specimenSymmetry.default);
-      return
+
+    else % construct S2FunHarmonic from Fourier coefficients
+    
+      s = size(fhat);
+      bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
+      sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
+    
+      sF.antipodal = check_option(varargin,'antipodal');
+    
+      sF.s = getClass(varargin,'symmetry',sF.s);
+
+      % truncate zeros
+      %sF = sF.truncate;
     end
-
-    % construct S2FunHarmonic from Fourier coefficients
-    s = size(fhat);
-    bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree 
-    sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
-    
-    sF.antipodal = check_option(varargin,'antipodal');
-    
-    sF.s = getClass(varargin,'symmetry',sF.s);
-
-    % truncate zeros
-    %sF = sF.truncate;
-
   end
   
   function n = numArgumentsFromSubscript(varargin)

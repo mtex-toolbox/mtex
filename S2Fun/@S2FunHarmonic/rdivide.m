@@ -15,12 +15,12 @@ function sF = rdivide(sF1, sF2)
 
 if isnumeric(sF1)
   f = @(v) sF1./sF2.eval(v);
-  sF = S2FunHarmonic.quadrature(f);
+  sF = S2FunHarmonic.quadrature(f,sF2.s);
 elseif isnumeric(sF2)
   sF = sF1.*(1./sF2);
 else
   f = @(v) sF1.eval(v)./sF2.eval(v);
-  sF = S2FunHarmonic.quadrature(f);
+  sF = S2FunHarmonic.quadrature(f,sF2.s);
 end
 
 end

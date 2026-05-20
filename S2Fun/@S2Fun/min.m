@@ -35,14 +35,13 @@ function [value,pos] = min(sF, varargin)
 if isa(sF,'S2FunHarmonic'), sF = sF.truncate; end
 if nargin > 1 && isa(varargin{1},'S2FunHarmonic'), varargin{1} = varargin{1}.truncate; end
 
-
 % pointwise minimum of two spherical functions
 if ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
   f = @(v) min(sF.eval(v), varargin{1}.eval(v));
   if sF.antipodal && varargin{1}.antipodal
-    value = S2FunHarmonic.quadrature(f,sF.how2plot,'antipodal');
+    value = S2FunHarmonic.quadrature(f,'antipodal');
   else
-    value = S2FunHarmonic.quadrature(f,sF.how2plot);
+    value = S2FunHarmonic.quadrature(f);
   end
   value.CS = sF.CS;
 
@@ -51,9 +50,9 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
 
   f = @(v) min(sF.eval(v), varargin{1});
   if sF.antipodal
-    value = S2FunHarmonic.quadrature(f,sF.how2plot,'antipodal');
+    value = S2FunHarmonic.quadrature(f,'antipodal');
   else
-    value = S2FunHarmonic.quadrature(f,sF.how2plot);
+    value = S2FunHarmonic.quadrature(f);
   end
   value.CS = sF.CS;
 
@@ -66,9 +65,8 @@ elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
     d = varargin{2};
   end
   f = @(v) min(reshape(sF.eval(v),[length(v),s]), [], d(1)+1);
-  value = S2FunHarmonic.quadrature(f);
-  value.CS = sF.CS;
-
+  value = S2FunHarmonic.quadrature(f, sF.CS);
+  
 else % detect local or global minima
 
   % set  up initial search grid

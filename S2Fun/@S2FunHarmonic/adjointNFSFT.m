@@ -49,13 +49,26 @@ if numel(nodes)~=numel(values)
   return
 end
 
-% get plotting convention
-how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+keepPlan = check_option(varargin,'keepPlan');
+
+% set up S2FunHarmonic
+if keepPlan
+  sF = S2FunHarmonic(0);
+else
+  sF = S2FunHarmonic(0,varargin{:});
+
+  % get plotting convention
+  how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+  if sF.s.how2plot ~= how2plot && isempty(getClass(varargin,'symmetry'))
+    sF.s = specimenSymmetry;
+    sF.s.how2plot = how2plot;
+  end
+end
 
 sz = size(values);
 len = prod(sz(2:end)); % multivariate case
 values = reshape(values, [], len);
-keepPlan = check_option(varargin,'keepPlan');
+
 
 % --------------- (1) get weights and values for quadrature ---------------
 
@@ -93,13 +106,9 @@ if any(isnan(values(:)))
 end
 
 if isempty(nodes)
-  sF = S2FunHarmonic(0);
-  sF.how2plot = how2plot;
   return
-end
-if bw==0
-  sF = S2FunHarmonic(mean(values)*sqrt(4*pi));
-  sF.how2plot = how2plot;
+elseif bw==0
+  sF.fhat  = mean(values)*sqrt(4*pi);  
   return
 end
 
@@ -129,7 +138,8 @@ end
 % adjoint nfsft
 nfsftmex('set_f', plan, W(:) .* values(:));
 nfsftmex('adjoint', plan);
-fhat = nfsftmex('get_f_hat_linear', plan);
+sF.fhat = nfsftmex('get_f_hat_linear', plan);
+sF.bandwidth = min([bw,sF.bandwidth]);
 
 % kill plan
 if keepPlan
@@ -140,14 +150,9 @@ end
 
 % -------------------- (5) Construct S2FunHarmonic ------------------------
 
-sF = S2FunHarmonic(fhat);
-sF.bandwidth = min([bw,sF.bandwidth]);
-
 % if antipodal consider only even coefficients
 if check_option(varargin,'antipodal') || nodes.antipodal 
   sF = sF.even;
 end
-
-if ~keepPlan, sF.how2plot = how2plot; end
 
 end

@@ -14,6 +14,6 @@ function sF = cos(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = sF.quadrature(@(v) cos(sF.eval(v)),varargin{:});
+sF = sF.quadrature(@(v) cos(sF.eval(v)),varargin{:},sF.s);
 
 end
