@@ -55,7 +55,9 @@ secData = {};
 
 %
 if exist('ori','var') || isempty(oS.plotGrid)
-  
+
+  gList = [];
+
   % subsample to reduce size
   if (~check_option(varargin,'all') && numData > 2000 && ...
       ~check_option(varargin,{'smooth','contourf','contour','pcolor'})) || ...
@@ -98,16 +100,25 @@ if exist('ori','var') || isempty(oS.plotGrid)
       if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
     end
       
-    plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    g = plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    gList = [gList,g]; %#ok<AGROW>
     
     % maybe there is also a lower hemisphere
     if oS.upperAndLower && add2all
       mtexFig.nextAxis;
-      plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+      g = plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+      gList = [gList,g]; %#ok<AGROW>
     end
     
   end
+
+  % unify dynamic marker size
+  gList = findall(gList,'tag','dynamicMarkerSize');
+  try [gList.MarkerSize] = deal(median(min([gList.MarkerSize]))); end  %#ok<TRYNC>
+  try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
   
+
+
 else
   
   for s = 1:oS.numSections
@@ -126,10 +137,9 @@ else
       secS2Grid = oS.plotGrid;
     end
     
-    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,'pcolor',varargin{:});
+    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,'pcolor',varargin{:});    
     
   end
-      
 end
 
 setColorRange(mtexFig,'equal');
