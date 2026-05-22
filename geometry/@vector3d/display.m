@@ -5,7 +5,7 @@ if check_option(varargin,'onlyShowVectors')
   d = [v.x(:),v.y(:),v.z(:)];
   d(abs(d) < 1e-10) = 0;
   
-  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'},'-n','%.3g');
   return
 end
 
