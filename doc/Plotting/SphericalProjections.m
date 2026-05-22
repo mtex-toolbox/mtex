@@ -51,8 +51,8 @@ mtexColorbar
 % screen or east, north, west or south.
 
 how2plot = plottingConvention;
-how2plot.north = zvector
-how2plot.outOfScreen = xvector
+how2plot.north = zvector;
+how2plot.outOfScreen = xvector;
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal',how2plot)
 
