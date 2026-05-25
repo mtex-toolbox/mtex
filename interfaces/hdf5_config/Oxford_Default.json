@@ -1,19 +1,21 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+    "ebsd_key": {"mode": "regex", "value": "Data Processing" }
   },
   "position": {
-    "type": "direct",
-    "direct": {
-      "x": { "mode": "regex", "value": "^X$" },
-      "y": { "mode": "regex", "value": "^Y$" }
+    "type": "indirect",
+    "indirect": {
+      "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
+      "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
+      "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
+      "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"}
     }
   },
-  "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+  "phase": {"mode": "absolute", "value": "/1/Data Processing/Data/Phase", "type": "default"},
   "rotation": {
     "type": "correctByAngle",
     "correctByAngle": {
-      "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
+      "angle": { "mode": "absolute", "value": "/1/EBSD/Header/Scanning Rotation Angle"},
       "rotation": {
         "type": "euler",
         "euler": {
@@ -37,6 +39,6 @@
   },
   "additions": {
     "type": "auto",
-    "key": { "mode": "regex", "value": "Data"}
+    "key": { "mode": "absolute", "value": "/1/Data Processing/Data"}
   }
 }

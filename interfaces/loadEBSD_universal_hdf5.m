@@ -137,7 +137,7 @@ if isfield(Conf, 'additions')
       end
     end
   else
-    error("Still to do when additions is not auto...")
+    warning("Still to do when additions is not auto...")
   end
 end
 
@@ -161,14 +161,18 @@ end
 
 function out = position_indirect(raw_data)
 
-  if ~isfield(raw_data.indirect, 'step_size') || ~isfield(raw_data.indirect, 'grid_size')
-    error('Position data has type indirect but not the needed fields step_size and grid_size')
+  if ~isfield(raw_data.indirect, 'step_size_x') || ~isfield(raw_data.indirect, 'grid_size_x') ||... 
+    ~isfield(raw_data.indirect, 'step_size_y') || ~isfield(raw_data.indirect, 'grid_size_y')
+
+    error('Position data has type indirect but not the needed fields step_size_x, step_size_y, grid_size_x and grid_size_y')
   end
 
-  stepSize = double(raw_data.indirect.step_size);
-  [ny, nx] = size(raw_data.indirect.grid_size);
+  step_x = double(raw_data.indirect.step_size_x);
+  step_y = double(raw_data.indirect.step_size_y);
+  cells_x = double(raw_data.indirect.grid_size_x);
+  cells_y = double(raw_data.indirect.grid_size_y);
 
-  [x, y] = meshgrid(0:stepSize:(nx-1)*stepSize, 0:stepSize:(ny-1)*stepSize);
+  [x, y] = meshgrid(0:step_x:(cells_x-1)*step_x, 0:step_y:(cells_y-1)*step_y);
 
   out = vector3d(x(:), y(:), 0); 
 end 
