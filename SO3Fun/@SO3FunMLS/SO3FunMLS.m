@@ -390,7 +390,7 @@ classdef SO3FunMLS < SO3Fun
       % [~, d] = SO3F.nodes.find(eg(:), 1, 'searcher', SO3F.searcher);
       % fd = max(d);
       
-      f = SO3FunHandle(@(r) funDist(r,SO3F));
+      f = SO3FunHandle(@(r) funDist(r,SO3F),SO3F.CS,SO3F.SS);
       acc = 0.25*degree;
       d = max(f,'accuracy',acc,'numLocal',20,'resolution',3*degree);
       fd = max(d);

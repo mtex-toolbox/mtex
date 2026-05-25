@@ -25,7 +25,7 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 if nargin==2, epsilon_or_k=1; end
 
 if ~isa(w,'orientation')
-  w = orientation(w);
+  w = orientation(w,v.CS,v.SS);
 end
 
 % TODO: This does not work in case of 2 symmetries, where the space has corners.
