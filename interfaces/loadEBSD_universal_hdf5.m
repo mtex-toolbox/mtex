@@ -22,11 +22,15 @@ if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 manufacturer_types = struct();
 
 manufacturer_types.EDAX = struct('keys', ["EDAX"], 'path', "EDAX", 'info', "-");
+
 manufacturer_types.Bruker = struct('keys', ["Bruker", "Bruker Nano"], 'path', "Bruker", 'info', "-");
+
 manufacturer_types.Oxford_Default = struct('keys', ["Oxford", "Oxford Instruments"], 'path', "Oxford_Default", ...
   'info', "The Data was read from the DataProcessing field as default." + ...
   " If you want to read from the EBSD field use 'type', ""Oxford_EBSD""! ");
+
 manufacturer_types.ThermoFisher = struct('keys', ["ThermoFisher"], 'path', "ThermoFisher", 'info', "-");
+
 manufacturer_types.Oxford_EBSD = struct('keys', ["Oxford_EBSD"], 'path', "Oxford_EBSD", ...
   'info', "Reading Data from EBSD field!");
 
@@ -40,11 +44,6 @@ else
     "Try to specify which type of file you have. Use EBSD.load(yourdata, ""type"", ""yourType"")")
   end
 end
-
-manufacturer = char(manufacturer);
-manufacturer = manufacturer(double(manufacturer) > 31 & double(manufacturer) < 127);
-manufacturer = string(manufacturer);
-manufacturer = strip(manufacturer);
 
 manu_fields = fieldnames(manufacturer_types);
 match = manu_fields(cellfun(@(f) any(strcmpi(string(manufacturer_types.(f).keys), manufacturer)), manu_fields));
