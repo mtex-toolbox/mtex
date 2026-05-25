@@ -132,7 +132,7 @@ if isfield(Conf, 'additions')
         end
 
         clean_name = clean_string(raw_name);
-        prop.(clean_name) = h5read(fname, prop_path + "/" + raw_name);
+        prop.(clean_name) = double(h5read(fname, prop_path + "/" + raw_name));
 
       end
     end
