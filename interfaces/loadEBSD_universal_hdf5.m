@@ -71,7 +71,7 @@ end
 fprintf('%s\n', repmat('-', 1, 60));
 fprintf('  • Detected manufacturer : %s\n', found_manu);
 fprintf('  • Additional info   : %s\n', manufacturer_types.(found_manu).info);
-fprintf('%s\n\n', repmat('-', 1, 60)); % Trennlinie
+fprintf('%s\n\n', repmat('-', 1, 60));
 
 % Search for data folders and get paths------------------------------------
 
@@ -541,89 +541,90 @@ arguments
   options.multiple = false
 end
   switch lower(config_item.mode)
-      case 'absolute'
-          final_path = config_item.value; 
+    case 'absolute'
+      final_path = config_item.value; 
           
-      case 'regex'
-          results = search_for_key(info_struct, config_item.value, options.mode, options.root);
-          if isempty(results)
-              error('No field found for key "%s"!', config_item.value);
-          end
-
-          if options.multiple == true
-            final_path = results;
-          else 
-            final_path = results{1};
-          end
-      otherwise
-          error('Unbekannter Modus: %s', config_item.mode);
+    case 'regex'
+      results = search_for_key(info_struct, config_item.value, options.mode, options.root);
+      if isempty(results)
+        error('No field found for key "%s"!', config_item.value);
+      end
+    
+      if options.multiple == true
+        final_path = results;
+      else 
+        final_path = results{1};
+      end
+    otherwise
+      error('Unkown mode: %s. Only use regex or absolute', config_item.mode);
   end
 end
 
 function [paths] = search_for_key(info_struct, key, opt, startPath)
-    arguments
-        info_struct struct
-        key string
-        opt string
-        startPath string = "/"
-    end
-
-    target_node = locate_subtree(info_struct, startPath);
-    
-    if isempty(target_node)
-        warning('Pfad %s wurde in den Metadaten nicht gefunden.', startPath);
-        paths = {}; 
-        return;
-    end
-
-    if opt=="groups"
-      paths = search_recursive_groups(target_node, key, {});
-
-    elseif opt=="fields"
-      paths = search_recursive_fields(target_node, key, {});
-    else 
-      error("Unkown opt in search_for_key")
-    end
+  arguments
+    info_struct struct
+    key string
+    opt string
+    startPath string = "/"
+  end
+  
+  target_node = locate_subtree(info_struct, startPath);
+  
+  if isempty(target_node)
+    warning('Path %s not found in meta data.', startPath);
+    paths = {}; 
+    return;
+  end
+  
+  if opt=="groups"
+    paths = search_recursive_groups(target_node, key, {});
+  
+  elseif opt=="fields"
+    paths = search_recursive_fields(target_node, key, {});
+  else 
+    error("Unkown opt in search_for_key")
+  end
 end
 
 function matchNode = locate_subtree(node, targetPath)
-    % Bereinige die Pfade und zerlege sie in einzelne Ordnernamen
-    tokensNode   = split(regexprep(node.Name, '^/+|/+$', ''), '/');
-    tokensTarget = split(regexprep(targetPath, '^/+|/+$', ''), '/');
-    
-    % Falls einer der Pfade leer war (z.B. bei der Root "/"), leere Zellen entfernen
-    tokensNode(cellfun(@isempty, tokensNode)) = [];
-    tokensTarget(cellfun(@isempty, tokensTarget)) = [];
+% searches in a h5info struct to find a given path - returns the struct
+% of the path
 
-    % 1. Exakter Match auf Knotenebene
-    if isequal(tokensNode, tokensTarget)
-        matchNode = node;
-        return;
-    end
-    
-    matchNode = [];
-    if ~isempty(node.Groups)
-        for i = 1:length(node.Groups)
-            groupName = node.Groups(i).Name;
-            tokensGroup = split(regexprep(groupName, '^/+|/+$', ''), '/');
-            tokensGroup(cellfun(@isempty, tokensGroup)) = [];
-            
-            lenGroup = length(tokensGroup);
-            lenTarget = length(tokensTarget);
-            
-            % Prüfen, ob der Pfad dieser Gruppe exakt mit dem Anfang des Zielpfads übereinstimmt
-            if lenGroup <= lenTarget && isequal(tokensGroup, tokensTarget(1:lenGroup))
-                % Rekursiv tiefer in diesen Ast gehen
-                matchNode = locate_subtree(node.Groups(i), targetPath);
-                if ~isempty(matchNode)
-                    return;
-                end
-            end
+  tokensNode   = split(regexprep(node.Name, '^/+|/+$', ''), '/');
+  tokensTarget = split(regexprep(targetPath, '^/+|/+$', ''), '/');
+  
+  tokensNode(cellfun(@isempty, tokensNode)) = [];
+  tokensTarget(cellfun(@isempty, tokensTarget)) = [];
+  
+  if isequal(tokensNode, tokensTarget)
+    matchNode = node;
+    return;
+  end
+  
+  matchNode = [];
+  if ~isempty(node.Groups)
+    for i = 1:length(node.Groups)
+      groupName = node.Groups(i).Name;
+      tokensGroup = split(regexprep(groupName, '^/+|/+$', ''), '/');
+      tokensGroup(cellfun(@isempty, tokensGroup)) = [];
+      
+      lenGroup = length(tokensGroup);
+      lenTarget = length(tokensTarget);
+      
+      if lenGroup <= lenTarget && isequal(tokensGroup, tokensTarget(1:lenGroup))
+        matchNode = locate_subtree(node.Groups(i), targetPath);
+        if ~isempty(matchNode)
+          return;
         end
+      end
     end
+  end
 end
 
 function [paths] = search_recursive_groups(node, key, paths)
+% searches in a h5info structs groups for a given key word - returns the
+% path to the key
+
     if ~isempty(paths)
         return;
     end
@@ -645,6 +646,8 @@ function [paths] = search_recursive_groups(node, key, paths)
 end
 
 function [paths] = search_recursive_fields(node, key, paths)
+% searches in a h5info structs fields for a given key word - returns the
+% path to the key
 
   % check if parent itself has a field with key
   if ~isempty(node.Datasets)
@@ -671,12 +674,16 @@ function [paths] = search_recursive_fields(node, key, paths)
 end 
 
 function vprintf(opt, varargin)
+% helper function to only print when debug state is set true
+
     if opt
         fprintf(varargin{:});
     end
 end
 
 function val = isDebug(setVal)
+% helper funktion to set debug state
+
     persistent debugState;
     if nargin > 0
         debugState = setVal;
@@ -685,6 +692,8 @@ function val = isDebug(setVal)
 end
 
 function data = search_Conf(config_item, value, filterDir, data)
+% selects all nodes with value field from conf with a specific 'path' field
+
   if nargin < 4, data = {}; end
   if ~isstruct(config_item), return; end
   
