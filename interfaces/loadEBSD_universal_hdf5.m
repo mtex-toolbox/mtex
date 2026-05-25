@@ -9,6 +9,8 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 
 % Setting Options and choosing right type----------------------------------
 
+info_struct = h5info(fname);
+
 if check_option(varargin, 'debug')
   isDebug(get_option(varargin, 'debug'));
 else
@@ -75,7 +77,7 @@ fprintf('%s\n\n', repmat('-', 1, 60)); % Trennlinie
 
 if isfield(Conf.settings, "ebsd_key")
   
-  ebsd_paths = get_hdf5_path(fname, Conf.settings.ebsd_key, "mode", "groups");
+  ebsd_paths = get_hdf5_path(info_struct, Conf.settings.ebsd_key, "mode", "groups");
   vprintf(isDebug(), '\n%s\n', repmat('=', 85, 1));
   vprintf(isDebug(), 'START LOADING EBSD DATA FROM: %s\n', string(ebsd_paths));
   vprintf(isDebug(), '%s\n', repmat('=', 85, 1));
@@ -98,7 +100,7 @@ for i = 1:length(categories)
   
   vprintf(isDebug(), '\n[%s]\n', upper(string(cat)));
 
-  [data.(cat), Conf.(cat)] = readConf(fname, Conf.(cat), ebsd_paths, cat, false, 1);
+  [data.(cat), Conf.(cat)] = readConf(info_struct, Conf.(cat), ebsd_paths, cat, false, 1);
   
   vprintf(isDebug(), '  [OK] %-18s successfully initialized\n', string(cat));
   vprintf(isDebug(), '  %s\n', repmat('-', 85, 1));
@@ -112,20 +114,20 @@ prop = struct();
 if isfield(Conf, 'additions')
   if Conf.additions.type == "auto"
 
-    prop_path = get_hdf5_path(fname, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
+    prop_path = get_hdf5_path(info_struct, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
 
     paths_allready_used = search_Conf(Conf, 'path', prop_path);
     
     [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
 
-    raw_fields_names = h5info(fname, prop_path);
+    prop_node = locate_subtree(info_struct, prop_path);
 
     data_size = size(data.position);
 
-    for i = 1:length(raw_fields_names.Datasets)
-      if raw_fields_names.Datasets(i).Dataspace.Size == data_size(1)
+    for i = 1:length(prop_node.Datasets)
+      if prop_node.Datasets(i).Dataspace.Size == data_size(1)
 
-        raw_name = raw_fields_names.Datasets(i).Name;
+        raw_name = prop_node.Datasets(i).Name;
 
         if ismember(raw_name, exclude_fields)
           continue;
@@ -396,7 +398,7 @@ end
   end
 end
 
-function [data, config_item] = readConf(fname, config_item, root, name, multiple, level)
+function [data, config_item] = readConf(info_struct, config_item, root, name, multiple, level)
 
   if nargin < 6, level = 1; end
   data = [];
@@ -412,7 +414,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
 
   % set a new root if key field is set --> root for all following iterations
   if ismember('key', fields)
-    root = (get_hdf5_path(fname, config_item.key, "mode", "groups", "root", root));
+    root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", root));
   end
 
   % possibility to find multible --> important if more than one phase
@@ -424,7 +426,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
   if ismember('value', fields)
 
     % generate absolute path and read data on this path
-    path = get_hdf5_path(fname, config_item, "root", root, "multiple", multiple);
+    path = get_hdf5_path(info_struct, config_item, "root", root, "multiple", multiple);
     config_item.path = path;
     
     % if more than one path loop display
@@ -448,7 +450,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
         vprintf(isDebug(), '%s • %-15s | %s\n', indent, string(name), displayPath);
     end
     
-    raw_data = readData(fname, path);
+    raw_data = readData(info_struct.Filename, path);
 
   % if data concrete data is given --> read and safe
   elseif ismember('data', fields)
@@ -465,7 +467,7 @@ function [data, config_item] = readConf(fname, config_item, root, name, multiple
         continue;
       end
 
-      [data_out, config_item.(currentfield)] = readConf(fname, ...
+      [data_out, config_item.(currentfield)] = readConf(info_struct, ...
         config_item.(currentfield), root, currentfield, multiple, level + 1);
       
       if ~isempty(data_out)
@@ -530,9 +532,9 @@ function data = readData(fname, paths)
   end
 end 
 
-function final_path = get_hdf5_path(fname, config_item, options)
+function final_path = get_hdf5_path(info_struct, config_item, options)
 arguments
-  fname string
+  info_struct struct
   config_item struct
   options.root string = "/"
   options.mode string = "fields"
@@ -543,7 +545,7 @@ end
           final_path = config_item.value; 
           
       case 'regex'
-          results = search_for_key(fname, config_item.value, options.mode, options.root);
+          results = search_for_key(info_struct, config_item.value, options.mode, options.root);
           if isempty(results)
               error('No field found for key "%s"!', config_item.value);
           end
@@ -558,27 +560,66 @@ end
   end
 end
 
-function [paths] = search_for_key(fname, key, opt, startPath)
+function [paths] = search_for_key(info_struct, key, opt, startPath)
     arguments
-        fname string
+        info_struct struct
         key string
         opt string
         startPath string = "/"
     end
+
+    target_node = locate_subtree(info_struct, startPath);
     
-    try
-        root = h5info(fname, startPath);
-    catch
-        warning('Pfad %s nicht gefunden.', startPath);
-        paths = {}; return;
+    if isempty(target_node)
+        warning('Pfad %s wurde in den Metadaten nicht gefunden.', startPath);
+        paths = {}; 
+        return;
     end
+
     if opt=="groups"
-      paths = search_recursive_groups(root, key, {});
+      paths = search_recursive_groups(target_node, key, {});
 
     elseif opt=="fields"
-      paths = search_recursive_fields(root, key, {});
+      paths = search_recursive_fields(target_node, key, {});
     else 
       error("Unkown opt in search_for_key")
+    end
+end
+
+function matchNode = locate_subtree(node, targetPath)
+    % Bereinige die Pfade und zerlege sie in einzelne Ordnernamen
+    tokensNode   = split(regexprep(node.Name, '^/+|/+$', ''), '/');
+    tokensTarget = split(regexprep(targetPath, '^/+|/+$', ''), '/');
+    
+    % Falls einer der Pfade leer war (z.B. bei der Root "/"), leere Zellen entfernen
+    tokensNode(cellfun(@isempty, tokensNode)) = [];
+    tokensTarget(cellfun(@isempty, tokensTarget)) = [];
+
+    % 1. Exakter Match auf Knotenebene
+    if isequal(tokensNode, tokensTarget)
+        matchNode = node;
+        return;
+    end
+    
+    matchNode = [];
+    if ~isempty(node.Groups)
+        for i = 1:length(node.Groups)
+            groupName = node.Groups(i).Name;
+            tokensGroup = split(regexprep(groupName, '^/+|/+$', ''), '/');
+            tokensGroup(cellfun(@isempty, tokensGroup)) = [];
+            
+            lenGroup = length(tokensGroup);
+            lenTarget = length(tokensTarget);
+            
+            % Prüfen, ob der Pfad dieser Gruppe exakt mit dem Anfang des Zielpfads übereinstimmt
+            if lenGroup <= lenTarget && isequal(tokensGroup, tokensTarget(1:lenGroup))
+                % Rekursiv tiefer in diesen Ast gehen
+                matchNode = locate_subtree(node.Groups(i), targetPath);
+                if ~isempty(matchNode)
+                    return;
+                end
+            end
+        end
     end
 end
 
