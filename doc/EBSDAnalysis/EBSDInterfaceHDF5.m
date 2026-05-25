@@ -43,7 +43,7 @@
 %
 
 %%
-% *📍 Spatial Coordinates (position)*
+% * Spatial Coordinates (position)*
 %
 % * *|type: "direct"|* : Used when the HDF5 file stores explicit coordinate arrays 
 %   for each individual measurement pixel.
@@ -54,7 +54,7 @@
 %
 
 %%
-% *🔄 Spatial Orientations (rotation)*
+% * Spatial Orientations (rotation)*
 %
 % * *|type: "euler"|* : Handles classic three-angle orientation inputs.
 %   _Required subfields:_ |formate| (must resolve to |"degree"| or |"radiante"|) 
@@ -68,7 +68,7 @@
 %
 
 %%
-% *💎 Crystal Symmetry (cs)*
+% * Crystal Symmetry (cs)*
 %
 % The parser dynamically accommodates multi-phase materials by tracking and creating 
 % independent cell array entries for each validated mineral phase group.
