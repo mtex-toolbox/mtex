@@ -13,6 +13,7 @@
   "rotation": {
     "type": "euler",
     "euler": {
+      "formate": {"data": "degree"},
       "phi1": { "mode": "regex", "value": "^phi1$" },
       "Phi":  { "mode": "regex", "value": "^PHI$" },
       "phi2": { "mode": "regex", "value": "^phi2$" }

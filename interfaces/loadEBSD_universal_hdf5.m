@@ -185,14 +185,22 @@ function out = rotation_euler(raw_data)
 
   fields = fieldnames(raw_data.euler);
   
-  if isempty(fields) || length(fields) > 3
+  if isempty(fields) || length(fields) > 4 || ~ismember('formate', fields)
     error(['Rotation data has type euler but not enough fields or too many' ...
-      'field. You need to give 1-3 Fields.'])
+      'field. You need to give 1-3 Fields and one named formate for degree or radiant formate.'])
   end
+
+  formate = string(raw_data.euler.formate);
 
   % Collect all fields and stick them together in one matrix
   matrix = cell(1, length(fields));
   for i = 1:length(fields)
+
+    field_name = fields{i};
+
+    if field_name == "formate"
+      continue;
+    end
 
     [h, w] = size(raw_data.euler.(fields{i}));
 
@@ -206,28 +214,35 @@ function out = rotation_euler(raw_data)
   phi = horzcat(matrix{:});
 
   % Check if degree or radiant
-  if max(phi, [], 'all') > 2*pi
+  if formate == "degree"
     out = rotation.byEuler(phi * degree);
-  else
+  elseif formate == "radiante"
     out = rotation.byEuler(phi);
+  else 
+    error('Wrong format for Rotation: "%s". Use "degree" or "radiante".', formate);  
   end
 end 
 
 function out = rotation_euler_stack(raw_data)
 
-  if isempty(fieldnames(raw_data.euler_stack))
-    error('Rotation data has type euler_stack but no fields was given.')
+  if ~isfield(raw_data.euler_stack, 'phi') || ~isfield(raw_data.euler_stack, 'formate')
+    error(['Rotation data has type euler_stack but not the correct fields where given!' ...
+      ' Make sure you have phi and formate field.'])
   end
+
+  formate = string(raw_data.euler_stack.formate);
 
   phi1_2D = raw_data.euler_stack.phi(1,:,:); 
   Phi_2D  = raw_data.euler_stack.phi(2,:,:);
   phi2_2D = raw_data.euler_stack.phi(3,:,:);
 
-  % Check if degree or radiant  
-  if max(Phi_2D, [], 'all') > 2*pi
+  % Check if degree or radiant
+  if formate == "degree"
     out = rotation.byEuler(phi1_2D(:)*degree, Phi_2D(:)*degree, phi2_2D(:)*degree);
-  else 
+  elseif formate == "radiante"
     out = rotation.byEuler(phi1_2D(:), Phi_2D(:), phi2_2D(:));
+  else 
+    error('Wrong format for Rotation: "%s". Use "degree" or "radiante".', formate);  
   end
 end
 

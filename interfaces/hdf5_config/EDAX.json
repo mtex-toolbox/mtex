@@ -18,6 +18,7 @@
       "rotation": {
         "type": "euler",
         "euler": {
+          "formate": { "data": "radiante"},
           "phi1": { "mode": "regex", "value": "^Phi1$" },
           "Phi":  { "mode": "regex", "value": "^Phi$" },
           "phi2": { "mode": "regex", "value": "^Phi2$" }

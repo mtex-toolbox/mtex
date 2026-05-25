@@ -15,6 +15,7 @@
   "rotation": {
     "type": "euler_stack",
     "euler_stack": {
+      "formate": { "data": "degree"},
       "phi": { "mode": "regex", "value": "EulerAngles" }
     }
   },
