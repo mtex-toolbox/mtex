@@ -10,6 +10,7 @@
 % <matlab:doc('hold') hold off>. Let's demonstrate this using a simple
 % example.
 
+close all
 plot([2 2],'LineWidth',2)
 
 hold on
@@ -35,7 +36,6 @@ hold on % keep plot
 scatter(ori_rotated);
 hold off % next plot command deletes all plots
 
-
 %%
 % a second way would be to superpose the pole figures of both sets of
 % orientations.
@@ -43,7 +43,7 @@ hold off % next plot command deletes all plots
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
 plotPDF(ori,h,'antipodal','MarkerSize',4)
 hold on 
-plotPDF(ori_rotated,h,'MarkerSize',4);
+plotPDF(ori_rotated,'MarkerSize',4);
 hold off 
 
 

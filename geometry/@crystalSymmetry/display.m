@@ -21,7 +21,11 @@ end
 % add symmetry
 props{end+1} = 'symmetry'; 
 if cs.id>0
-  propV{end+1} = [symmetry.pointGroups(cs.id).Inter];
+  propV{end+1} = symmetry.pointGroups(cs.id).Inter;
+  if getMTEXpref("UTF8Output")
+    ov = char(hex2dec('0305'));   % U+0305 COMBINING OVERLINE
+    propV{end} = regexprep(propV{end}, '-([A-Za-z0-9])', ['$1' ov]);
+  end
 else
   propV{end+1} = 'unkwown';
 end

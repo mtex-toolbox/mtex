@@ -22,7 +22,7 @@ annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcol
 % convention, which can be easily changed without changing the coordinates,
 % e.g., by setting
 
-plotx2north
+v.how2plot.outOfScreen = xvector;
 plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 

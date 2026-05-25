@@ -36,7 +36,7 @@ classdef TSLDirectionKey < directionColorKey
       radius = 0.5+radius./2;
 
       % compute the color vector on the sphere
-      v = vector3d('rho',rho,'theta',radius.*pi);
+      v = vector3d.byPolar(radius * pi,rho);
 
       % post processing of the color vector
       % by default we have white at the z, black at the -z, red

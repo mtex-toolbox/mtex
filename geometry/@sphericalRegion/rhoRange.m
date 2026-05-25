@@ -16,13 +16,13 @@ sR.antipodal = false;
 omega = linspace(0,2*pi,361);
 
 % start with equator
-v = vector3d('theta',pi/2,'rho',omega);
+v = vector3d.byPolar(pi/2,omega);
 rho = v.rho(sR.checkInside(v));
 
 % cycle through boundary
 for i = 1:length(sR.N)
   
-  b = vector3d('theta',acos(sR.alpha(i)),'rho',omega);
+  b = vector3d.byPolar(acos(sR.alpha(i)),omega);
   
   rot = rotation.map(zvector,sR.N(i));
   

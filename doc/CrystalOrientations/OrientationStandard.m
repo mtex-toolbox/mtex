@@ -17,6 +17,9 @@
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('orthorhombic');
 
+% set plotting convention 
+plotzOutOfPlane; plotx2east
+
 %%
 % and select a subset of the above predefined orientations
 
@@ -74,7 +77,6 @@ legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'Fo
 % In the major pole figures the predefined orientations appear at the
 % following spots
 
-plotx2north 
 h = Miller({1,0,0},{1,1,0},{1,1,1},{3,1,1},cs);
 
 close all

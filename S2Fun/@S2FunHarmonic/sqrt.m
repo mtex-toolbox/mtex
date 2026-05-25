@@ -15,7 +15,7 @@ function sF = sqrt(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = sF.quadrature(@(v) sqrt(sF.eval(v)),varargin{:});
+sF = sF.quadrature(@(v) sqrt(sF.eval(v)),varargin{:},sF.s);
 sF.isReal = true;
 
 end

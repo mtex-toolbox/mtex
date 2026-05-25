@@ -84,7 +84,7 @@ classdef sphericalRegion
       maxRho = get_option(varargin,'maxRho',2*pi);
                 
       if maxRho - minRho < 2*pi - 1e-5
-        sR.N = [sR.N,vector3d('theta',90*degree,'rho',[90*degree+minRho,maxRho-90*degree])];
+        sR.N = [sR.N,vector3d.byPolar(90*degree,[90*degree+minRho,maxRho-90*degree])];
         sR.alpha = [sR.alpha,0,0];
       end
       

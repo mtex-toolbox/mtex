@@ -1,7 +1,8 @@
 function h = plotSurf(pos,d,uC,varargin)
 % plot EBSD map through surf
 
-ax = get_option(varargin,'parent',gca);
+ax = get_option(varargin,'parent');
+if isempty(ax), ax=gca; end
 
 d = reshape(d,size(pos,1),size(pos,2),[]);
 
@@ -39,6 +40,11 @@ holdState = ishold(ax);
 hold(ax,"on")
 h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt(:,:,:),'parent',ax,...
   'EdgeColor','none',opt{:}),varargin{:});
+
 if ~holdState, hold(ax,"off"); end
+
+if ~check_option(varargin,'DisplayName')
+  h.Annotation.LegendInformation.IconDisplayStyle = 'off';
+end
 
 end

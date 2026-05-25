@@ -16,7 +16,7 @@ function [m, o, lambda, eigv]  = mean(o,varargin)
 %  m      - mean @orientation
 %  o      - crystallographic equivalent @orientation projected to fundamental region
 %  lambda - principle moments of inertia
-%  V      - principle axes of inertia (@orientation)
+%  V      - principle axes of inertia (@quaternion)
 %
 % See also
 % BinghamODF
@@ -25,12 +25,12 @@ if isempty(o)
   m = o;
   m.a = NaN; m.b = NaN; m.c = NaN; m.d = NaN; m.i = false;
   if nargout > 2, lambda = zeros(1,4); end
-  if nargout > 3, eigv = eye(4); end
+  if nargout > 3, eigv = quaternion.eye; end
   return  
 elseif isscalar(o) 
   m = o;
   if nargout > 1
-    eigv = eye(4);
+    eigv = quaternion.eye;
     lambda = [1,0,0,0];
   end
   return;
@@ -61,6 +61,6 @@ else
   end
 
   if nargout > 1, o = reshape(project2FundamentalRegion(o,m),s); end
- 
+  
 end
 m.i = false;

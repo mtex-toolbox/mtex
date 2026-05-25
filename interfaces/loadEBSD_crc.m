@@ -1,47 +1,50 @@
 function ebsd = loadEBSD_crc(fname,varargin)
 % interface for Oxford Channel-5 crc and cpr EBSD data files
 % 
+%
+% Options
+%  EulerCorrection - 
 
-try
-  assertExt(fname,{'.cpr','.crc'})
+assertExt(fname,{'.cpr','.crc'})
   
-  [path,file] = fileparts(fname);
-  cprFile = fullfile(path,[file '.cpr']);
-  crcFile = fullfile(path,[file '.crc']);
+[path,file] = fileparts(fname);
+cprFile = fullfile(path,[file '.cpr']);
+crcFile = fullfile(path,[file '.crc']);
   
-  cpr = localCPRParser(cprFile);
+cpr = localCPRParser(cprFile);
   
-  CS  = get_option(varargin,'CS',getCS(cpr));
-  param = getJobParam(cpr);
+CS  = get_option(varargin,'CS',getCS(cpr));
+param = getJobParam(cpr);
   
-  if check_option(varargin,'check')
-    ebsd = EBSD;
-    return
-  end
-
-  loader  = localCRCLoader(crcFile,param);
+loader = localCRCLoader(crcFile,param);
   
-  rot       = loader.getRotations();
-  pos = vector3d(loader.getColumnData('x'),loader.getColumnData('y'),0);
-  phases  = loader.getColumnData('phase');
-  options = loader.getOptions('ignoreColumns',{'phase','x','y'});
+rot = loader.getRotations();
+pos = vector3d(loader.getColumnData('x'),loader.getColumnData('y'),0);
+phases  = loader.getColumnData('phase');
+options = loader.getOptions('ignoreColumns',{'phase','x','y'});
   
-  ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
-  ebsd.opt.cprInfo = cpr;
-catch %#ok<CTCH>
-  interfaceError(fname);
-end
+ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
+ebsd.opt.cprInfo = cpr;
 
 % change reference frame
-if check_option(varargin,'convertSpatial2EulerReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,180*degree),'keepEuler');
-elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
-  ebsd = rotate(ebsd,rotation.byAxisAngle(xvector,180*degree),'keepXY');
-elseif ~check_option(varargin,'wizard')
-  warning(['.crc and .cpr files have usualy inconsistent conventions for spatial ' ...
-    'coordinates and Euler angles. You may want to use one of the options ' ...
-    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);
+correction = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
+
+if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard') 
+
+  fprintf(2,wraptext(['\nWarning: .cpr files usually come with different ' ...
+    'coordinate systems for the Euler angles and the spatial coordinates. ' ...
+    'I assumed the relative alignment of these coordinate systems to be a ' ...
+    'rotation about the z-axis by 180 degree. You may want to verify this ' ...
+    'and specify the correct alignment explicitely by\n\n' ...
+    'ebsd = EBSD.load(fileName,''EulerCorrection'', rotation.byAxisAngle(zvector,180*degree))' ...
+    '\n\n' ...
+    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
+    '\n']))
+
 end
+
+ebsd.rotations = correction .* ebsd.rotations;
+ebsd.rotations.opt.EulerCorrection = correction;
 
 end
 

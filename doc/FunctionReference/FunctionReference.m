@@ -23,7 +23,7 @@
 % commands
 
 fileName = [mtexEBSDPath filesep 'Forsterite.ctf'];
-ebsd = EBSD.load(fileName,'convertEuler2SpatialReferenceFrame')
+ebsd = EBSD.load(fileName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree))
 
 %%
 % imports data from the file |fileName.ctf| and stores them in the variable

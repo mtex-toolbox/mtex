@@ -63,7 +63,7 @@ try
     I(:,k-1) = I(:,k-1) - bg;
     
     % specimen direction
-    r(:,k-1) = vector3d('theta',po*degree,'rho',az*degree);
+    r(:,k-1) = vector3d.byPolar(po*degree,az*degree);
     
   end
   

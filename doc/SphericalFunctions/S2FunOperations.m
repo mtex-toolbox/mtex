@@ -1,14 +1,15 @@
 %% Operations on Spherical Functions
 %
 %%
-% The idea of variables of type |@S2Fun| is to calculate with spherical
-% functions similarly as Matlab does with vectors and matrices. In order to
-% illustrate this we consider the following two spherical functions
+% Spherical functions offers a wide range of analysis methods. You can
+% perform almost arbitrary computations with them: add, multiply, detect
+% local extrema, integrate and much more. Here we give a basic overview
+% about what is possible. We start by defining the following two spherical
+% functions
 
 sF1 = S2Fun.smiley;
-sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree)
+sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree,sF1.how2plot)
 
-plotx2north
 plot(sF1,'upper')
 nextAxis
 plot(sF2,'upper')
@@ -22,7 +23,7 @@ plot(sF2,'upper')
 plot(15 * sF1 + sF2,'upper')
 
 %%
-% Accordingly, one can use all basic operations like |-|, |*|, |^|, |/|,
+% Accordingly, one can use all basic operations like |-|, |*|, |.^|, |/|,
 % <S2Fun.min.html |min|>, <S2Fun.max.html |max|>, <S2Fun.abs.html |abs|>,
 % <S2FunHarmonic.sqrt.html |sqrt|> to calculate with variables of type
 % @S2Fun.
@@ -49,7 +50,6 @@ plot(min(15*sF1,sF2),'upper');
 % minimum of the function is returned
 % * if additionally the option 'numLocal' is provided the certain number of
 % local minima / maxima is computed
-
 
 plot(15 * sF1 + sF2,'upper')
 
@@ -140,5 +140,5 @@ sFs = symmetrise(sF1, cs)
 plot(sFs,'upper','complete')
 
 %%
-% The resulting function is of type @S2FunHarmonicSym and knows about its
+% The resulting function is of type |S2FunHarmonicSym| and knows about its
 % symmetry.

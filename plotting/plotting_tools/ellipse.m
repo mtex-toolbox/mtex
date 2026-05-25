@@ -14,7 +14,7 @@ for i = 1:length(r)
     theta= a(i)*b(i)./(sqrt((a(i)*cos(rho)).^2 + (b(i)*sin(rho)).^2));
 
     % generate vectors
-    c  = vector3d('theta',theta,'rho',rho);
+    c  = vector3d.byPolar(theta,rho);
 
     % rotate c around to final position
      c=rotate(c,r(i));

@@ -23,6 +23,8 @@ if check_option(varargin,'region')
   end
 end
 
+
+
 if numel(unitCell)==4 && ~check_option(varargin,'unitCell')
   
   % convert string to color if required
@@ -61,7 +63,8 @@ if numel(unitCell)==4 && ~check_option(varargin,'unitCell')
 end
 
 
-ax = get_option(varargin,'parent',gca);
+ax = get_option(varargin,'parent');
+if isempty(ax), ax=gca; end
 
 if ~isempty(unitCell)
   

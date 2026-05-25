@@ -3,7 +3,8 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 % The class *orientation* represents orientations and misorientations.
 %
 % Syntax
-%   ori = orientation(rot)
+%   ori = orientation(a,b,c,d,cs,ss)
+%   ori = orientation(rot,cs,ss)
 %   ori = orientation.byEuler(phi1,Phi,phi2,cs,ss)
 %   ori = orientation.byEuler(alpha,beta,gamma,'ZYZ',cs,ss)
 %   ori = orientation.byMiller([h k l],[u v w],cs,ss)
@@ -43,58 +44,39 @@ methods
   function o = orientation(varargin)    
 
     % find and remove symmetries
-    args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
-    sym = varargin(args);
+    args  = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
+
+    % set crystal symmetries
+    if ~isempty(args), o.CS = varargin{args(1)}; end
+    if length(args) > 1, o.SS = varargin{args(2)}; end
+    
     varargin(args) = [];
 
-    % call rotation constructor
-    o = o@rotation(varargin{:});
+    if numel(varargin) == 0
 
-    if nargin == 0, return;end
+    elseif isa(varargin{1},'orientation')
 
-    % set symmetry
-    if ~isempty(varargin) && isa(varargin{1},'orientation')
-      o.CS = varargin{1}.CS;
-      o.SS = varargin{1}.SS;
+      [o.a, o.b, o.c, o.d, o.i] = double(varargin{1});
       o.antipodal = varargin{1}.antipodal;
-    elseif ~isempty(varargin) && ischar(varargin{1}) && strcmpi(varargin{1},'map')
-      if isa(varargin{2},'Miller'), o.CS = varargin{2}.CS; end
-      if isa(varargin{3},'Miller'), o.SS = varargin{3}.CS; end
-    else
-      try %#ok<TRYNC>
-        a = get_option(varargin,'axis');
-        o.CS = a.CS;
-        o.SS = a.CS;
-      end
+      if isempty(args), o.CS = varargin{1}.CS; end
+      if length(args) < 2, o.SS = varargin{1}.SS; end
+
+    elseif isa(varargin{1},'quaternion')
+    
+      [o.a, o.b, o.c, o.d, o.i] = double(varargin{1});
+
+    elseif isnumeric(varargin{1})
+
+      o.a = varargin{1};
+      o.b = varargin{2};
+      o.c = varargin{3};
+      o.d = varargin{4};
+      o.i = false(size(varargin{1}));
+
     end
-    if ~isempty(sym), o.CS = sym{1};end
-    if length(sym) > 1, o.SS = sym{2};end
 
-    % empty constructor -> done
-    if isempty(varargin), return; end
-
-    % copy constructor
-    switch class(varargin{1})
-
-      case 'char'
-
-        switch lower(varargin{1})
-
-          case 'miller'
-
-            o = orientation.byMiller(varargin{:});
-
-          otherwise
-
-            if exist([varargin{1},'Orientation'],'file')
-              
-              % there is a file defining this specific orientation
-              o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
-              
-            end
-        end
-    end
-    o.antipodal = o.antipodal | check_option(varargin,'antipodal');
+    o.antipodal = o.antipodal || check_option(varargin,'antipodal');
+   
     if o.antipodal && o.CS ~= o.SS
       warning('antipodal symmetry is only meaningfull for misorientations between the same phase.')
     end
@@ -110,13 +92,17 @@ methods (Static = true)
   end
 
   function ori = id(varargin)
-    id = find(~cellfun(@isnumeric,varargin),1)-1;
+    id = find(~cellfun(@isnumeric,varargin),1)-1;    
     q = quaternion.id(varargin{1:id});
     if nargin>0 && isa(varargin{1},'orientation')
       varargin{end+1} = varargin{1}.CS;
       varargin{end+1} = varargin{1}.SS;
     end
     ori = orientation(q,varargin{id+1:end});
+  end
+
+  function ori = eye(varargin)
+    ori = orientation([1;0;0;0],[0;1;0;0],[0;0;1;0],[0;0;0;1],varargin{:});
   end
 
   function ori = rand(varargin)

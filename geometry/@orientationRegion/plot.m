@@ -20,7 +20,7 @@ rho = linspace(0,2*pi,720);
 theta = linspace(0,pi,13);
 [rho,theta] = meshgrid(rho,theta);
 
-r = vector3d('theta',theta.','rho',rho.');
+r = vector3d.byPolar(theta.',rho.');
 r(~sR.checkInside(r)) = nan;
 q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
 h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);
@@ -29,7 +29,7 @@ rho = linspace(0,2*pi,25);
 theta = linspace(0,pi,360);
 [rho,theta] = meshgrid(rho,theta);
 
-r = vector3d('theta',theta,'rho',rho);
+r = vector3d.byPolar(theta,rho);
 r(~sR.checkInside(r)) = nan;
 q = orientation.byAxisAngle(r,oR.maxAngle(r),oP.CS1,oP.CS2);
 h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck','linewidth',lwMinor);

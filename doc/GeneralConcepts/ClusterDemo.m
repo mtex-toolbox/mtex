@@ -1,6 +1,8 @@
 %% Cluster demo 
-% This code demonstrates how the clustering algorithm can be used to assign
-% vector3d and crystal directions to groups by proximity.
+%
+% This code demonstrates how clustering algorithms can be used to separate
+% sets of vectors, crystal directions or orientations into groups by
+% proximity.
 %
 %%
 % define a cubic crystal symmetry

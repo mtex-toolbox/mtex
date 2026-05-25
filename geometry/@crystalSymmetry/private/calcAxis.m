@@ -37,7 +37,7 @@ if ~check_option(varargin,'force')
     case 'triclinic'
     case 'monoclinic'
       notRot = 1:3; notRot(floor(id/3))=[];
-      assert(all(isappr(angle(notRot),pi/2)),'For monoclinic lattices the angles with the symmetry axis have to be 90 degree');
+      assert(all(isappr(angle(notRot),pi/2,1e-5)),'For monoclinic lattices the angles with the symmetry axis have to be 90 degree');
     case 'orthothombic'
     case 'trigonal'
       assert(axisLength(1)== axisLength(2),'For trigonal lattices a and b must be equal!');

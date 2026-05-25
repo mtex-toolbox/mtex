@@ -30,9 +30,20 @@ classdef quaternion
   methods
     function q = quaternion(varargin)
       
-      if nargin == 0, return;end
-      
-      if isa(varargin{1},'quaternion')   % copy constructor
+      if nargin == 0
+
+      elseif isnumeric(varargin{1})
+        
+        q.a = varargin{1};
+        q.b = varargin{2};
+        q.c = varargin{3};
+        q.d = varargin{4};
+
+      elseif class(varargin) == "quaternion" && nargin == 1
+
+        q = varargin{1};
+
+      elseif isa(varargin{1},'quaternion')   % copy constructor
               
         if nargin == 1
           q.a = varargin{1}.a;
@@ -45,44 +56,12 @@ classdef quaternion
           q.c = varargin{1}.c(varargin{2:end});
           q.d = varargin{1}.d(varargin{2:end});
         end
+
       elseif isa(varargin{1},'vector3d')
           
         q.a = zeros(size(varargin{1}));
         [q.b,q.c,q.d] = double(varargin{1});
-          
-      elseif isnumeric(varargin{1})
-          
-        switch nargin
-            
-          case 1
-              
-            D = varargin{1};
-              
-            q.a = D(1,:); q.b = D(2,:); q.c = D(3,:); q.d = D(4,:);
-
-            s = size(D);
-            s = [s(2:end) 1];
-            
-            q = reshape(q,s);
-              
-          case 2
-              
-            if length(varargin{1}) ~= 1
-              q.a = varargin{1};
-            else
-              q.a = repmat(varargin{1},size(varargin{2}));
-            end
-            
-            [q.b,q.c,q.d] = double(varargin{2});
-            
-          case 4
-            
-            q.a = varargin{1};
-            q.b = varargin{2};
-            q.c = varargin{3};
-            q.d = varargin{4};
-
-        end
+      
       end
       
     end
@@ -157,7 +136,10 @@ classdef quaternion
         q = euler2quat(alpha,beta,gamma,varargin{:});
       end
     end
-    
+
+    function q = eye
+      q = quaternion([1 0 0 0],[0 1 0 0],[0 0 1 0],[0 0 0 1]);
+    end    
   end
   
 end

@@ -56,7 +56,15 @@ classdef dislocationSystem
         dS.l = -cross(sS.n,sS.b);
         
         % define screw dislocations
-        b = 0.5*unique(sS.b,'antipodal','noSymmetry');
+        if sS.CS.lattice == 'hexagonal' %#ok<BDSCA>
+          b = 1/3*unique(sS.b,'antipodal','noSymmetry');
+        elseif sS.CS.lattice == 'cubic' %#ok<BDSCA>
+          b = 1/2*unique(sS.b,'antipodal','noSymmetry');
+        else
+          b = unique(sS.b,'antipodal','noSymmetry');
+          warning('I could not determine the correct length of the Burgers vector. Please adjust it manually.')
+        end
+
         dS.b = [dS.b(:);b(:)];
         dS.l = [dS.l(:);b(:)];
         
@@ -112,7 +120,7 @@ classdef dislocationSystem
         end
       end
       
-      toChar = @(x) char(round(x),'spaceSep');
+      toChar = @(x) char(round(x),'spaceSep','noUTF8');
       
       if any(dS.isEdge(:))
         

@@ -27,7 +27,7 @@ end
 
 % compute the weights, set delta slighlty larger than the farthest neighbor 
 % take the root of the weights, see after large if-block for explanation
-weights = SO3F.w(dist ./ (1.1 * max(dist, [], 2)))';
+weights = SO3F.w(dist ./ (1.00 * max(dist, [], 2)))';
 clear dist;
 
 % set up the right hand side

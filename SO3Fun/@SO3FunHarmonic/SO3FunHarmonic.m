@@ -50,8 +50,10 @@ methods
     if isa(fhat,'function_handle')
       [SRight,SLeft] = extractSym(varargin);
       fhat = SO3FunHandle(fhat,SRight,SLeft);
-    end
-    if isa(fhat,'SO3Fun')
+    elseif isa(fhat,'SO3FunHarmonic')
+      SO3F = fhat;
+      return
+    elseif isa(fhat,'SO3Fun')
       f_hat = calcFourier(fhat,varargin{:});
       SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
       return

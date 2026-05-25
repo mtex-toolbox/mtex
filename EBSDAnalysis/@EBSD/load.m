@@ -27,6 +27,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 %  cs - @crystalSymmetry or cell array of @crystalSymmetry
 %
 % Options
+%  EulerCorrection   - rotation that is applied to the Euler angles to align Euler and map reference system
 %  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - positions of the columns to be imported
 %  radians           - treat input in radiand
@@ -52,91 +53,47 @@ function [ebsd,interface,options] = load(fname,varargin)
 % See also
 % EBSDImport EBSD/EBSD
 
-
 % extract file names
 fname = getFileNames(fname);
 
-if nargin > 1 && (isa(varargin{1},'crystalSymmetry') || ...(
-    iscell(varargin{1}))
-  varargin = [{'CS'},varargin];
-end
-
-% determine interface 
-if check_option(varargin,'interface')
-  interface = get_option(varargin,'interface');
-  options = delete_option(varargin,'interface',1);
-elseif check_option(varargin,'columnNames')
-  interface = 'generic';
-  options = varargin;
-else
-  [interface,options] = check_interfaces(fname{1},'EBSD',varargin{:});
-  if isempty(interface), return; end
-end
-
-% show waitbar for 3d
-is3d = check_option(varargin,'3d');
-if is3d
-  hw = waitbar(0,'Loading data files.');
-  Z = get_option(varargin,'3d',1:numel(fname),'double');
-end
-  
-for k = 1:numel(fname)
-
-  % load the data
-  ebsd{k} = feval(['loadEBSD_',char(interface)],...
-    fname{k},options{:},'InfoLevel',~is3d,varargin{:});   %#ok<AGROW>
-  
-  % assign Z - value
-  if is3d
-    [~,fn,ext] = fileparts(fname{k});
-    waitbar(k/numel(fname),hw,['Loaded data file ',[fn ext]]);
-    ebsd{k}.z = repmat(Z(k),length(ebsd{k}),1); %#ok<AGROW>
-  end  
-end
-
-% combine multiple inputs
-ebsd = [ebsd{:}];
-
-% ensure unique phases
-[C, IC] = uniqueCS(ebsd.CSList);
-
-ebsd.CSList = ebsd.CSList(C);
-ebsd.phaseMap = ebsd.phaseMap(C);
-ebsd.phaseId = IC(ebsd.phaseId);
-
-% compute unit cell for 3d data
-if check_option(varargin,'3d')    
-  ebsd.unitCell = calcUnitCell([ebsd.x(:),ebsd.y(:),ebsd.z(:)],varargin{:});
-  close(hw)
-end
-
-% should we automatically gridify?
-%ebsd = ebsd.gridify;
-
-end
-
-function [C,IC] = uniqueCS(csList)
-
-
-IC = zeros(length(csList),1); IC(1) = 1;
-C = 1;
-
-for k = 2:length(csList)
-  
-  % look for old elements
-  for l = 1:k-1     
-    if (ischar(csList{k}) && ischar(csList{l}) && strcmpi(csList{k},csList{l})) || ...
-        (eq(csList{k},csList{l}) && strcmpi(csList{k}.mineral,csList{l}.mineral))
-      
-      IC(k) = l;
-      break
-    end
+% iterate for multiple files
+if numel(fname) > 1
+  ebsd = cell(numel(fname),1);
+  for k = 1:numel(fname)
+    ebsd{k} = EBSD.load(fname{k},varargin{:});
   end
-  
-  % new element
-  if IC(k) == 0,  C = [C,k]; IC(k) = length(C); end %#ok<AGROW>
-  
-end
-   
+  return
 end
 
+fname = char(fname);
+[~,~,interface] = fileparts(fname);
+interface = get_option(varargin,'interface',interface);
+interface = strrep(interface,'.','');
+
+options = {};
+
+switch char(interface)
+  case {'h5','h5oina','oh5','hdf5','dream3d'}
+    ebsd = loadEBSD_universal_hdf5(fname,varargin{:});
+  case 'ang'
+    ebsd = loadEBSD_ang(fname,varargin{:});
+  case 'ctf'
+    ebsd = loadEBSD_ctf(fname,varargin{:});
+  case {'cpr','crc'}
+    ebsd = loadEBSD_crc(fname,varargin{:});
+  case {'osc'}
+    ebsd = loadEBSD_osc(fname,varargin{:});
+  case 'mat'
+    obj = load(fname);
+    fn = fieldnames(obj);
+    for k = 1:length(fn)
+      if isa(obj.(fn{k}),'EBSD')
+        ebsd = obj.(fn{k});
+        return;
+      end
+    end    
+  otherwise
+    ebsd = loadEBSD_generic(fname,varargin{:});
+end
+
+end

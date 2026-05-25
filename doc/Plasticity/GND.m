@@ -11,12 +11,9 @@
 % Lets start by importing orientation data from 2 percent uniaxial deformed
 % steel DC06 and visualize those data in an ipf map.
 
-% set up the plotting convention
-plotx2north
-
 % import the EBSD data
-ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang']);
-%ebsd = EBSD.load('DC06_2biax.ang');
+ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang'],'setting',2);
+ebsd.how2plot = plottingConvention(zvector,-yvector);
 
 % define the color key
 ipfKey = ipfHSVKey(ebsd);

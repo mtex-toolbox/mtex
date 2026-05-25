@@ -47,9 +47,11 @@ T = qq(q,varargin{:});
 lambda = diag(lambda).';
 [~,pos] = max(lambda);
 
-VV = V(:,pos);
-qm.a = VV(1); qm.b = VV(2); qm.c = VV(3); qm.d = VV(4);
+qm.a = V(1,pos); qm.b = V(2,pos); qm.c = V(3,pos); qm.d = V(4,pos);
 if isa(qm,'rotation'), qm.i = false; end
+if nargout == 3
+  V = quaternion(V(1,:),V(2,:),V(3,:),V(4,:));
+end
 
 if isRobust && length(q)>4
   omega = angle(qm,q,'noSymmetry');

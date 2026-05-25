@@ -3,7 +3,7 @@
 %
 %% Basic Settings
 % display pole figure plots with RD on top and ND west
-plotx2north
+plotzOutOfPlane, plotx2north
 
 % store old annotation style
 storepfA = getMTEXpref('pfAnnotations');
@@ -180,6 +180,7 @@ mtexColorbar
 
 %% restore MTEX preferences
 
+close all
 setMTEXpref('pfAnnotations',storepfA);
 
 %#ok<*ASGLU>

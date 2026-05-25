@@ -35,7 +35,7 @@ if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01 || ...
 end
 
 if det(M)>10*eps
-  ori = times(ori, rotation('matrix',M^-1), 0);
+  ori = times(ori, rotation.byMatrix(M^-1), 0);
   ori.CS = cs1;
 end
 

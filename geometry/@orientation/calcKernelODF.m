@@ -37,10 +37,8 @@ function odf = calcKernelODF(ori,varargin)
 % See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
 
-
-
 % maybe there is nothing to do
-if isempty(ori), odf = ODF; return, end
+if isempty(ori), odf = ODF(ori.CS,ori.SS); return, end
 
 % extract weights
 if check_option(varargin,'weights')

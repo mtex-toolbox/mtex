@@ -6,7 +6,9 @@ function ind = isTwinning(gB, mori, threshold )
 %   ind = gB.isTwinning(CSL(3),2*degree)
 %
 % Input
-%  
+%  mori - twinning misorientation
+%  threshold - 
+%
 
 if nargin == 2, threshold = 5*degree; end
 

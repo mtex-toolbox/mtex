@@ -1,0 +1,35 @@
+{
+  "settings": {
+    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+  },
+  "position": {
+    "type": "direct",
+    "direct": {
+      "x": { "mode": "regex", "value": "^X Beam$" },
+      "y": { "mode": "regex", "value": "^Y Beam$" }
+    }
+  },
+  "phase": {"mode": "regex", "value": "^Phase"},
+  "rotation": {
+    "type": "euler",
+    "euler": {
+      "phi1": { "mode": "regex", "value": "^phi1$" },
+      "Phi":  { "mode": "regex", "value": "^PHI$" },
+      "phi2": { "mode": "regex", "value": "^phi2$" }
+    }
+  },
+  "cs": {
+    "type": "default",
+    "multiple": "true",
+    "key": { "mode": "regex", "value": "Phases" },
+    "default": {
+      "group": { "mode": "regex", "value": "SpaceGroup", "type": "space" },
+      "name": { "mode": "regex", "value": "Name"},
+      "lattice": { "mode": "regex", "value": "LatticeConstants", "type": "all_together"}
+    }
+  },
+  "additions": {
+    "type": "auto",
+    "key": { "mode": "regex", "value": "Data"}
+  }
+}

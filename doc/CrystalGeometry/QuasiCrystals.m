@@ -51,7 +51,7 @@ hold off
 % parallel to z
 
 rot5 = rotation.byAxisAngle(zvector,72*degree);
-rot3 = rotation.byAxisAngle(vector3d('polar',37.377*degree,0) ,120*degree);
+rot3 = rotation.byAxisAngle(vector3d.byPolar(37.377*degree,0) ,120*degree);
 
 cs = crystalSymmetry.byElements([rot5,rot3])
 

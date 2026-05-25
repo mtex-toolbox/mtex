@@ -18,7 +18,7 @@ classdef orthographicProjection < sphericalProjection
     end
     
     function v = iproject(sP,x,y)
-      v = vector3d('theta',x*degree,'rho',y*degree);
+      v = vector3d.byPolar(x*degree,y*degree);
     end
     
   end

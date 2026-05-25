@@ -12,9 +12,6 @@ function sF = rotate_outer(sF, rot)
 %  sF - @S2FunHarmonic
 %
 
-if sF.bandwidth ~= 0
-  f = @(v) sF.eval(rotate(v, inv(rot)));
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth);
-end
+sF = rotate(sF, rot);
 
 end

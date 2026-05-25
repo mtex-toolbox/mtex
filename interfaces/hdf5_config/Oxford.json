@@ -1,0 +1,42 @@
+{
+  "settings": {
+    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+  },
+  "position": {
+    "type": "direct",
+    "direct": {
+      "x": { "mode": "regex", "value": "^X$" },
+      "y": { "mode": "regex", "value": "^Y$" }
+    }
+  },
+  "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+  "rotation": {
+    "type": "correctByAngle",
+    "correctByAngle": {
+      "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
+      "rotation": {
+        "type": "euler",
+        "euler": {
+          "phi": { "mode": "regex", "value": "Euler"}
+        }
+      }
+    }
+  },
+  "cs": {
+    "type": "default",
+    "key": { "mode": "regex", "value": "Phases" },
+    "multiple": "true",
+    "default": {
+      "group": { "mode": "regex", "value": "Space Group", "type": "space" },
+      "name": { "mode": "regex", "value": "Phase Name"},
+      "lattice": {
+        "angle": { "mode": "regex", "value": "Lattice Angles"},
+        "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+      }
+    }
+  },
+  "additions": {
+    "type": "auto",
+    "key": { "mode": "regex", "value": "Data"}
+  }
+}

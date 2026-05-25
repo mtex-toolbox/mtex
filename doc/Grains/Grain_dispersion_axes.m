@@ -4,15 +4,8 @@
 % We will prepare some data to evaluate grain dispersion axes.
 
 mtexdata forsterite
-[grains,ebsd.grainId] = ebsd.calcGrains;
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
 
-% just use the larger grains of forsterite
-ebsd(grains(grains.numPixel< 100))='notIndexed';
-ebsd({'e' 'd'})='notIndexed';
-
-% lets also ignore inclusions for a nicer plotting experience
-ebsd(grains(grains.isInclusion))=[];
-[grains,ebsd.grainId, ebsd.mis2mean] = ebsd.calcGrains;
 
 %%
 % We colorize axes of the misorientation to the grain mean orientation
@@ -21,11 +14,12 @@ ebsd(grains(grains.isInclusion))=[];
 ck = axisAngleColorKey(ebsd('f').CS);
 ck.oriRef=grains('id',ebsd('f').grainId).meanOrientation;
 plot(ebsd('f'), ck.orientation2color(ebsd('f').orientations))
-hold on
-plot(grains.boundary)
 
 hold on
-plot(grains,'FaceAlpha',0.3)
+plot(grains.boundary,'lineWidth',2)
+
+hold on
+plot(grains({'En','Di'}),'FaceAlpha',0.7)
 hold off
 
 %% Visualizing dispersion of orientations via directions
@@ -33,7 +27,7 @@ hold off
 % First, we will inspect a selected grain
 grain_selected = grains(5095, 7803);
 hold on
-plot(grain_selected.boundary,'linewidth',3,'linecolor','b')
+plot(grain_selected.boundary,'linewidth',3,'linecolor','w')
 hold off
 
 %%
@@ -64,7 +58,7 @@ mtexColorbar('title','avergage pole dispersion')
 
 
 % and we can ask which grid point is the one with the smallest dispersion
-[~,id_min]=min(vd);
+[~,id_min] = min(vd);
 disp_ax_grid = grain_selected.meanOrientation .* s2G(id_min);
 annotate(disp_ax_grid)
 annotate(disp_ax_grid,'plane','linestyle','--','linewidth',2)

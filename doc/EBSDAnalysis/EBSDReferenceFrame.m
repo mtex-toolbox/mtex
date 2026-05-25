@@ -38,25 +38,20 @@
 % alignments. For that reason MTEX strongly recommends to transform the data
 % such that both map coordinates and Euler angles refer to the same
 % coordinate system. 
-%
-% Doing this we have two choices:
-%
-% # transform everything to the reference system $x$, $y$ using the option
-% |'convertEuler2SpatialReferenceFrame'|. This will keep the map
-% coordinates while changing the Euler angles
-% # transform everything to the reference system $A_1$, $A_2$, $A_3$ using
-% the option |'convertSpatial2EulerReferenceFrame'|. This will keep the
-% Euler angles while changing the map coordinates.
 % 
-% In the case of EDAX data imported from an |*.ang| file we still need to
-% specify the export option used by the EDAX software. This is done by the
-% options |'setting 1'|, |'setting 2'|, |'setting 3'| or |'setting 4'|.
-%
-% Since setting 2 is default for most EDAX exports a typical command for
-% importing data from an ang file would look like this
+% The best way to do this is to rotate the Euler angles such that the Euler
+% angle reference frame and the map reference frame coincide. For general
+% formats this is done by the options |'EulerCorrection'| followed by the
+% rotation that aligns the Euler reference frame with the map reference
+% frame. 
+% 
+% In EDAX software one can choose between several alignments between those
+% coordinate system. They are numbered 1 to 4, with setting 2 being the
+% most used. This setting can be specified directly when importing data
+% from EDAX software. Hence a typical command for importing data from an
+% .ang file would look like
 
-ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],...
-  'convertEuler2SpatialReferenceFrame','setting 2')
+ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 
 plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 

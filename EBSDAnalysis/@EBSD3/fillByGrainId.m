@@ -30,7 +30,7 @@ a(ind) = ebsd.rotations.a;
 b(ind) = ebsd.rotations.b;
 c(ind) = ebsd.rotations.c;
 d(ind) = ebsd.rotations.d;
-ebsd.rotations = reshape(rotation(quaternion(a,b,c,d)),[],1);
+ebsd.rotations = reshape(rotation(a,b,c,d),[],1);
 clear a b c d
 
 for fn = fieldnames(ebsd.prop).'

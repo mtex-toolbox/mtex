@@ -35,7 +35,7 @@ end
 theta = acos(2*(rand(N,1)-0.5));
 rho   = 2*pi*rand(N,1);
 
-v = vector3d('theta',theta,'rho',rho);
+v = vector3d.byPolar(theta,rho);
 
 ind = find(sR.checkInside(v));
 ind = ind(1:n);

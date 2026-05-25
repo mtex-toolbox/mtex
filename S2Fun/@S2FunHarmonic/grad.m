@@ -15,8 +15,7 @@ function sVF = grad(sF, varargin)
 %
 
 if check_option(varargin,'lazy')
-  sF = [sF.drho; sF.dthetasin];
-  sVF = S2VectorFieldHandle(@(v) localGrad(sF,v));
+  sVF = S2VectorFieldHandle(@(v) localGrad([sF.drho; sF.dthetasin],v),sF.s);
   return
 end
 

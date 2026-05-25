@@ -48,6 +48,10 @@ s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
     s = [s,'\bar{',xnum2str(-i(j),'precision',1),'}']; %#ok<AGROW>
+  elseif i(j) < 0 && getMTEXpref('UTF8Output')  && ~check_option(varargin,'noUTF8')
+    ss = xnum2str(-i(j),'precision',1);
+    ss = regexprep(ss, '(.)', ['$1' char(hex2dec('0305'))]);
+    s = [s,ss]; %#ok<AGROW>
   else
     s = [s,xnum2str(i(j),'precision',1)]; %#ok<AGROW>
   end

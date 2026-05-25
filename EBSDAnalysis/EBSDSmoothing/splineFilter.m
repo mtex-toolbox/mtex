@@ -50,7 +50,7 @@ classdef splineFilter < EBSDFilter
 
         % project to tangential space
         [qmean,q] = mean(ori);
-        tq = log(quaternion(q),quaternion(qmean));
+        tq = logRight(quaternion(q),quaternion(qmean));
 
         % perform smoothing
         [tq,F.alpha] = smoothn({tq.x,tq.y,tq.z},F.alpha,rob{:});

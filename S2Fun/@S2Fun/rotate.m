@@ -12,6 +12,13 @@ function sF = rotate(sF, rot)
 %  sF - @S2Fun
 %
 
-sF = S2FunHandle(@(v) sF.eval(inv(rot).*v),sF.s);
+% check for matching reference frames
+if isa(rot,"orientation") && sF.s ~= rot.CS
+  warning('possible symmetry mismatch');
+end
+
+sF = S2FunHandle(@(v) sF.eval(inv(rot).*v), sF.s);
+
+if isa(rot,"orientation"), sF.s = rot.SS; end
 
 end

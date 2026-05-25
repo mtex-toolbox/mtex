@@ -1,5 +1,28 @@
 %% MTEX Changelog
 %
+%% MTEX 6.2 xx/2026
+%
+% *Boundary Characteristic Distribution*
+%
+% *Much Better EBSD Import*
+%
+% * new import wizard for EBSD data
+% * improved interface for h5 data
+% * faster import
+%
+% *Much Faster Plotting of EBSD Maps*
+%
+% *Optimal Sampling*
+%
+% *Clustering*
+%
+% *Minor*
+% 
+% * pseudosymmetry cleanup
+% * planar color key
+% * use UTF8 to display (11̅0) instead of (1-10). Requires a suitable font
+% like Julia Monospace.
+%
 %% MTEX 6.1 10/2025
 %
 % MTEX 6.1 does not come with major new features but with tons of speed ups

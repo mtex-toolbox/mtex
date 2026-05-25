@@ -36,7 +36,7 @@ if check_option(varargin,'interface')
   interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);
   if isempty(interface), return; end
-elseif check_option(varargin,'columnames')
+elseif check_option(varargin,'columnnames')
   interface = 'generic';
   options = varargin;
 else

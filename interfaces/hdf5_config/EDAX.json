@@ -1,0 +1,54 @@
+{
+  "settings": {
+    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+  },
+  "position": {
+    "type": "direct",
+    "direct": {
+      "x": { "mode": "regex", "value": "^X Position$" },
+      "y": { "mode": "regex", "value": "^Y Position$" }
+    }
+  },
+  "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+  "rotation": {
+    "type": "correctById",
+    "correctById": {
+      "correct_id": {"key": {"mode": "regex", "value": "Coordinate System"}, "mode": "regex", "value": "ID"},
+      "correct_data": { "data": [[45, 180, 315], [315, 180, 45], [0, 180, 0], [90, 180, 270]]},
+      "rotation": {
+        "type": "euler",
+        "euler": {
+          "phi1": { "mode": "regex", "value": "^Phi1$" },
+          "Phi":  { "mode": "regex", "value": "^Phi$" },
+          "phi2": { "mode": "regex", "value": "^Phi2$" }
+        }
+      }
+    }
+  },
+  "cs": {
+    "type": "default",
+    "key": { "mode": "regex", "value": "Phase" },
+    "default": {
+      "group": { "mode": "regex", "value": "SpaceGroupNumber|Point Group", "type": "space" },
+      "name": { "mode": "regex", "value": "MaterialName"},
+      "lattice": {
+        "angle": {
+          "type": "seperate",
+          "lattice_alpha": { "mode": "regex", "value": "Lattice Constant alpha"},
+          "lattice_beta": { "mode": "regex", "value": "Lattice Constant beta"},
+          "lattice_gamma": { "mode": "regex", "value": "Lattice Constant gamma"}
+        },
+        "dim": {
+          "type": "seperate",
+          "lattice_a": { "mode": "regex", "value": "Lattice Constant a"},
+          "lattice_b": { "mode": "regex", "value": "Lattice Constant b"},
+          "lattice_c": { "mode": "regex", "value": "Lattice Constant c"}
+        }
+      }
+    }
+  },
+  "additions": {
+    "type": "auto",
+    "key": { "mode": "regex", "value": "Data"}
+  }
+}
