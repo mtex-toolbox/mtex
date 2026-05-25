@@ -20,7 +20,7 @@ if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 manufacturer_types = struct();
 
 manufacturer_types.EDAX = struct('keys', ["EDAX"], 'path', "EDAX", 'info', "-");
-manufacturer_types.Bruker = struct('keys', ["Bruker"], 'path', "Bruker", 'info', "-");
+manufacturer_types.Bruker = struct('keys', ["Bruker", "Bruker Nano"], 'path', "Bruker", 'info', "-");
 manufacturer_types.Oxford_Default = struct('keys', ["Oxford", "Oxford Instruments"], 'path', "Oxford_Default", ...
   'info', "The Data was read from the DataProcessing field as default." + ...
   " If you want to read from the EBSD field use 'type', ""Oxford_EBSD""! ");
