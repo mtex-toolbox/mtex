@@ -17,7 +17,16 @@ end
 
 if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 
-manufacturer_types = ["EDAX", "Bruker", "Oxford", "ThermoFisher"]; 
+manufacturer_types = struct();
+
+manufacturer_types.EDAX = struct('keys', ["EDAX"], 'path', "EDAX", 'info', "-");
+manufacturer_types.Bruker = struct('keys', ["Bruker"], 'path', "Bruker", 'info', "-");
+manufacturer_types.Oxford_Default = struct('keys', ["Oxford", "Oxford Instruments"], 'path', "Oxford_Default", ...
+  'info', "The Data was read from the DataProcessing field as default." + ...
+  " If you want to read from the EBSD field use 'type', ""Oxford_EBSD""! ");
+manufacturer_types.ThermoFisher = struct('keys', ["ThermoFisher"], 'path', "ThermoFisher", 'info', "-");
+manufacturer_types.Oxford_EBSD = struct('keys', ["Oxford_EBSD"], 'path', "Oxford_EBSD", ...
+  'info', "Reading Data from EBSD field!");
 
 if check_option(varargin, 'type')
   manufacturer = get_option(varargin, 'type');
@@ -30,30 +39,37 @@ else
   end
 end
 
-manufacturer_path = "";
+manufacturer = char(manufacturer);
+manufacturer = manufacturer(double(manufacturer) > 31 & double(manufacturer) < 127);
+manufacturer = string(manufacturer);
+manufacturer = strip(manufacturer);
 
-for i = 1:length(manufacturer_types)
-    if contains(manufacturer, manufacturer_types(i), 'IgnoreCase', true)
+manu_fields = fieldnames(manufacturer_types);
+match = manu_fields(cellfun(@(f) any(strcmpi(string(manufacturer_types.(f).keys), manufacturer)), manu_fields));
 
-        manufacturer_path = manufacturer_types(i);
-        disp("Manufacturer detected: " + manufacturer_path);
-        break;
-        
-    end
-end
+if isempty(match)
 
-if manufacturer_path == ""
-
-  allowed_str = strjoin(manufacturer_types, ", ");
+  allowed_str = strjoin(manu_fields, ", ");
   error("No Manufacturer config found for: """ + manufacturer + """. Only [" + allowed_str + "] allowed!");
 
 end
 
-opt_file = fullfile(mtex_path,'interfaces', 'hdf5_config' , manufacturer_path + ".json");
+found_manu = match{1};
+opt_file = fullfile(mtex_path,'interfaces', 'hdf5_config' , manufacturer_types.(found_manu).path + ".json");
 
 % read json config --> safe to file
-jsonText = fileread(opt_file);
-Conf = jsondecode(jsonText);
+try
+  jsonText = fileread(opt_file);
+  Conf = jsondecode(jsonText);
+catch ME
+  error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
+        opt_file, ME.message);
+end
+
+fprintf('%s\n', repmat('-', 1, 60));
+fprintf('  • Detected manufacturer : %s\n', found_manu);
+fprintf('  • Additional info   : %s\n', manufacturer_types.(found_manu).info);
+fprintf('%s\n\n', repmat('-', 1, 60)); % Trennlinie
 
 % Search for data folders and get paths------------------------------------
 
@@ -216,8 +232,8 @@ function out = cs_default(raw_data)
 
   out = crystalSymmetry( ...
     raw_data.default.group, ...
-    double(raw_data.default.lattice.dim), ...
-    double(raw_data.default.lattice.angle), ...
+    raw_data.default.lattice.dim, ...
+    raw_data.default.lattice.angle, ...
     'Mineral', ...
     raw_data.default.name);
 end
