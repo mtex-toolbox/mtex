@@ -545,7 +545,7 @@ end
       case 'regex'
           results = search_for_key(fname, config_item.value, options.mode, options.root);
           if isempty(results)
-              error('Kein Feld für Suchbegriff "%s" gefunden!', config_item.value);
+              error('No field found for key "%s"!', config_item.value);
           end
 
           if options.multiple == true
