@@ -143,6 +143,10 @@ end
 
 % Building ebsd object-----------------------------------------------------
 
+if ~isequal(numel(data.position), numel(data.rotation), numel(data.phase))
+  error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
+        numel(data.position), numel(data.rotation), numel(data.phase));
+end
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
 
 end
