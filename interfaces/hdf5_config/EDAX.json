@@ -1,6 +1,9 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+    "name": "EDAX",
+    "ebsd_key": {"mode": "regex", "value": "EBSD" },
+    "ebsd_header": {"mode": "regex", "value": "Header"},
+    "manufacturer_keys": {"data": "EDAX"}
   },
   "position": {
     "type": "direct",

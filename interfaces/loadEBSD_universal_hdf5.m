@@ -19,21 +19,6 @@ end
 
 if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 
-manufacturer_types = struct();
-
-manufacturer_types.EDAX = struct('keys', ["EDAX"], 'path', "EDAX", 'info', "-");
-
-manufacturer_types.Bruker = struct('keys', ["Bruker", "Bruker Nano"], 'path', "Bruker", 'info', "-");
-
-manufacturer_types.Oxford_Default = struct('keys', ["Oxford", "Oxford Instruments"], 'path', "Oxford_Default", ...
-  'info', "The Data was read from the DataProcessing field as default." + ...
-  " If you want to read from the EBSD field use 'type', ""Oxford_EBSD""! ");
-
-manufacturer_types.ThermoFisher = struct('keys', ["ThermoFisher"], 'path', "ThermoFisher", 'info', "-");
-
-manufacturer_types.Oxford_EBSD = struct('keys', ["Oxford_EBSD"], 'path', "Oxford_EBSD", ...
-  'info', "Reading Data from EBSD field!");
-
 if check_option(varargin, 'type')
   manufacturer = get_option(varargin, 'type');
 else
@@ -45,31 +30,57 @@ else
   end
 end
 
-manu_fields = fieldnames(manufacturer_types);
-match = manu_fields(cellfun(@(f) any(strcmpi(string(manufacturer_types.(f).keys), manufacturer)), manu_fields));
+manufacturer = strrep(char(manufacturer), char(0), '');
+folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
 
-if isempty(match)
+filePattern = fullfile(folderPath, '*.json');
+fileList = dir(filePattern);
 
-  allowed_str = strjoin(manu_fields, ", ");
-  error("No Manufacturer config found for: """ + manufacturer + """. Only [" + allowed_str + "] allowed!");
+chosenjson = '';
+for i = 1:length(fileList)
+
+  if fileList(i).isdir
+    continue;
+  end
+  
+  baseFileName = fileList(i).name;
+  fullFileName = fullfile(fileList(i).folder, baseFileName);
+
+  jsonText = fileread(fullFileName);
+  cur_Conf = jsondecode(jsonText);
+
+  cur_manu = cur_Conf.settings.manufacturer_keys.data;
+
+  if any(strcmpi(manufacturer, cur_manu))  
+
+    chosenjson = fullFileName;
+    break;
+
+  end
 
 end
 
-found_manu = match{1};
-opt_file = fullfile(mtex_path,'interfaces', 'hdf5_config' , manufacturer_types.(found_manu).path + ".json");
+if isempty(chosenjson)
+
+  error("No Manufacturer config found for: " + manufacturer);
+
+end
 
 % read json config --> safe to file
 try
-  jsonText = fileread(opt_file);
+  jsonText = fileread(chosenjson);
   Conf = jsondecode(jsonText);
 catch ME
   error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
-        opt_file, ME.message);
+        chosenjson, ME.message);
 end
 
+% generate user info
 fprintf('%s\n', repmat('-', 1, 60));
-fprintf('  • Detected manufacturer : %s\n', found_manu);
-fprintf('  • Additional info   : %s\n', manufacturer_types.(found_manu).info);
+fprintf('  • Detected manufacturer : %s\n', Conf.settings.name);
+if isfield(Conf.settings, 'manufacturer_info')
+  fprintf('  • Additional info   : %s\n', Conf.settings.manufacturer_info.data);
+end
 fprintf('%s\n\n', repmat('-', 1, 60));
 
 % Search for data folders and get paths------------------------------------
@@ -105,6 +116,27 @@ for i = 1:length(categories)
   vprintf(isDebug(), '  %s\n', repmat('-', 85, 1));
 
 end
+
+% Construct header---------------------------------------------------------
+
+header = struct();
+
+if isfield(Conf.settings, 'ebsd_header')
+  header_path = get_hdf5_path(info_struct, Conf.settings.ebsd_header, "mode", "groups", "root", ebsd_paths);
+
+  header_node = locate_subtree(info_struct, header_path);
+
+  for i = 1:length(header_node.Datasets)
+    
+    raw_name = string(header_node.Datasets(i).Name);
+
+    clean_name = clean_string(raw_name);
+
+    header.(clean_name) = double(h5read(fname, header_path + "/" + raw_name));
+
+  end
+
+end 
 
 % Construct prop-----------------------------------------------------------
 
@@ -149,6 +181,8 @@ if ~isequal(numel(data.position), numel(data.rotation), numel(data.phase))
         numel(data.position), numel(data.rotation), numel(data.phase));
 end
 ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
+
+ebsd.opt.Header = header;
 
 end
 
@@ -378,7 +412,7 @@ arguments
   option = "full"
 end
   rules = {
-    '[ ,\-:|%~#]', '';     
+    '[ ,\-:|%~#\[\]()]', '';     
     'sub(?=\d)', '';
     'sub(?=[a-zA-Z])', '/';
     'ovl', '-';

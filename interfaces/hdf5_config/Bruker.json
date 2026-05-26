@@ -1,6 +1,9 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+    "name": "Bruker",
+    "ebsd_key": {"mode": "regex", "value": "EBSD" },
+    "ebsd_header": {"mode": "regex", "value": "Header"},
+    "manufacturer_keys": {"data": ["Bruker", "Bruker Nano"]}
   },
   "position": {
     "type": "direct",

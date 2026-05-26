@@ -1,6 +1,8 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "absolute", "value": "/Site/EBSD" }
+    "name": "ThermoFisher",
+    "ebsd_key": {"mode": "absolute", "value": "/Site/EBSD" },
+    "manufacturer_keys": {"data": "ThermoFisher"}
   },
   "position": {
     "type": "indirect",

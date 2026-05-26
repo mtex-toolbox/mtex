@@ -1,6 +1,10 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "regex", "value": "Data Processing" }
+    "name": "Oxford_Default",
+    "ebsd_key": {"mode": "regex", "value": "Data Processing" },
+    "ebsd_header": {"mode": "absolute", "value": "/1/Data Processing/Header"},
+    "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
+    "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default. If you want to read from the EBSD field use 'type', 'Oxford_EBSD'! "} 
   },
   "position": {
     "type": "indirect",
@@ -24,7 +28,7 @@
         }
       }
     }
-  },
+  }, 
   "cs": {
     "type": "default",
     "key": { "mode": "regex", "value": "Phases" },

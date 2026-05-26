@@ -1,6 +1,10 @@
 {
   "settings": {
-    "ebsd_key": {"mode": "regex", "value": "EBSD" }
+    "name": "Oxford_EBSD",
+    "ebsd_key": {"mode": "regex", "value": "EBSD" },
+    "ebsd_header": {"mode": "regex", "value": "Header"},
+    "manufacturer_keys": {"data": "Oxford_EBSD"},
+    "manufacturer_info": {"data": "Reading Data from EBSD field!"} 
   },
   "position": {
     "type": "direct",
