@@ -1,45 +1,50 @@
 {
   "settings": {
     "name": "Oxford_Default",
-    "ebsd_key": {"mode": "regex", "value": "Data Processing" },
-    "ebsd_header": {"mode": "absolute", "value": "/1/Data Processing/Header"},
     "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
     "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default. If you want to read from the EBSD field use 'type', 'Oxford_EBSD'! "} 
   },
-  "position": {
-    "type": "indirect",
-    "indirect": {
-      "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
-      "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
-      "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
-      "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"}
-    }
-  },
-  "phase": {"mode": "absolute", "value": "/1/Data Processing/Data/Phase", "type": "default"},
-  "rotation": {
-    "type": "correctByAngle",
-    "correctByAngle": {
-      "angle": { "mode": "absolute", "value": "/1/EBSD/Header/Scanning Rotation Angle"},
-      "rotation": {
-        "type": "euler",
-        "euler": {
-          "formate": { "data": "radiante"},
-          "phi": { "mode": "regex", "value": "Euler"}
+  "ebsd": {
+    "type": "default",
+    "key": {"mode": "regex", "value":"Data Processing"},
+    "position": {
+      "type": "indirect",
+      "indirect": {
+        "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
+        "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
+        "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
+        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"}
+      }
+    },
+    "phase": {"mode": "absolute", "value": "/1/Data Processing/Data/Phase", "type": "default"},
+    "rotation": {
+      "type": "correctByAngle",
+      "correctByAngle": {
+        "angle": { "mode": "absolute", "value": "/1/EBSD/Header/Scanning Rotation Angle"},
+        "rotation": {
+          "type": "euler",
+          "euler": {
+            "formate": { "data": "radiante"},
+            "phi": { "mode": "regex", "value": "Euler"}
+          }
         }
       }
-    }
-  }, 
-  "cs": {
-    "type": "default",
-    "key": { "mode": "regex", "value": "Phases" },
-    "multiple": "true",
-    "default": {
-      "group": { "mode": "regex", "value": "Space Group", "type": "space" },
-      "name": { "mode": "regex", "value": "Phase Name"},
-      "lattice": {
-        "angle": { "mode": "regex", "value": "Lattice Angles"},
-        "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+    }, 
+    "cs": {
+      "type": "default",
+      "key": { "mode": "regex", "value": "Phases" },
+      "multiple": "true",
+      "default": {
+        "space_group": { "mode": "regex", "value": "Space Group", "type": "default" },
+        "name": { "mode": "regex", "value": "Phase Name"},
+        "lattice": {
+          "angle": { "mode": "regex", "value": "Lattice Angles"},
+          "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+        }
       }
+    },
+    "header": {
+      "group": {"mode": "absolute", "value": "/1/Data Processing/Header"}
     }
   },
   "additions": {

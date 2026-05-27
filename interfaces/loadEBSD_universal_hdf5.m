@@ -7,8 +7,9 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
 
-% Setting Options and choosing right type----------------------------------
+% Selecting right config and load------------------------------------------
 
+if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 info_struct = h5info(fname);
 
 if check_option(varargin, 'debug')
@@ -16,8 +17,6 @@ if check_option(varargin, 'debug')
 else
   isDebug(false);
 end
-
-if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
 
 if check_option(varargin, 'type')
   manufacturer = get_option(varargin, 'type');
@@ -30,6 +29,7 @@ else
   end
 end
 
+% check all configs and select where manufacturer match
 manufacturer = strrep(char(manufacturer), char(0), '');
 folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
 
@@ -61,9 +61,7 @@ for i = 1:length(fileList)
 end
 
 if isempty(chosenjson)
-
   error("No Manufacturer config found for: " + manufacturer);
-
 end
 
 % read json config --> safe to file
@@ -85,21 +83,21 @@ fprintf('%s\n\n', repmat('-', 1, 60));
 
 % Search for data folders and get paths------------------------------------
 
-if isfield(Conf.settings, "ebsd_key")
-  
-  ebsd_paths = get_hdf5_path(info_struct, Conf.settings.ebsd_key, "mode", "groups");
-  vprintf(isDebug(), '\n%s\n', repmat('=', 85, 1));
-  vprintf(isDebug(), 'START LOADING EBSD DATA FROM: %s\n', string(ebsd_paths));
-  vprintf(isDebug(), '%s\n', repmat('=', 85, 1));
-
-  if isempty(ebsd_paths)
-      error("There was no EBSD Dataset found!");
-  end 
-end 
+% if isfield(Conf.settings, "ebsd_key")
+% 
+%   ebsd_paths = get_hdf5_path(info_struct, Conf.settings.ebsd_key, "mode", "groups");
+%   vprintf(isDebug(), '\n%s\n', repmat('=', 85, 1));
+%   vprintf(isDebug(), 'START LOADING EBSD DATA FROM: %s\n', string(ebsd_paths));
+%   vprintf(isDebug(), '%s\n', repmat('=', 85, 1));
+% 
+%   if isempty(ebsd_paths)
+%       error("There was no EBSD Dataset found!");
+%   end 
+% end 
 
 % Get absolute paths and load data-----------------------------------------
 
-exclude = {'settings', 'additions'};
+exclude = ["settings", "additions"];
 data = struct();
 
 categories = fieldnames(Conf);
@@ -110,33 +108,12 @@ for i = 1:length(categories)
   
   vprintf(isDebug(), '\n[%s]\n', upper(string(cat)));
 
-  [data.(cat), Conf.(cat)] = readConf(info_struct, Conf.(cat), ebsd_paths, cat, false, 1);
+  [data.(cat), Conf.(cat)] = readConf(info_struct, Conf.(cat), "", cat, false, 1);
   
   vprintf(isDebug(), '  [OK] %-18s successfully initialized\n', string(cat));
   vprintf(isDebug(), '  %s\n', repmat('-', 85, 1));
 
 end
-
-% Construct header---------------------------------------------------------
-
-header = struct();
-
-if isfield(Conf.settings, 'ebsd_header')
-  header_path = get_hdf5_path(info_struct, Conf.settings.ebsd_header, "mode", "groups", "root", ebsd_paths);
-
-  header_node = locate_subtree(info_struct, header_path);
-
-  for i = 1:length(header_node.Datasets)
-    
-    raw_name = string(header_node.Datasets(i).Name);
-
-    clean_name = clean_string(raw_name);
-
-    header.(clean_name) = double(h5read(fname, header_path + "/" + raw_name));
-
-  end
-
-end 
 
 % Construct prop-----------------------------------------------------------
 
@@ -145,7 +122,7 @@ prop = struct();
 if isfield(Conf, 'additions')
   if Conf.additions.type == "auto"
 
-    prop_path = get_hdf5_path(info_struct, Conf.additions.key, "mode", "groups", "root", ebsd_paths);
+    prop_path = get_hdf5_path(info_struct, Conf.additions.key, "mode", "groups");
 
     paths_allready_used = search_Conf(Conf, 'path', prop_path);
     
@@ -153,7 +130,7 @@ if isfield(Conf, 'additions')
 
     prop_node = locate_subtree(info_struct, prop_path);
 
-    data_size = size(data.position);
+    data_size = size(data.ebsd.pos);
 
     for i = 1:length(prop_node.Datasets)
       if prop_node.Datasets(i).Dataspace.Size == data_size(1)
@@ -174,15 +151,9 @@ if isfield(Conf, 'additions')
   end
 end
 
-% Building ebsd object-----------------------------------------------------
+data.ebsd.prop = prop;
 
-if ~isequal(numel(data.position), numel(data.rotation), numel(data.phase))
-  error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
-        numel(data.position), numel(data.rotation), numel(data.phase));
-end
-ebsd = EBSD(data.position, data.rotation, data.phase, data.cs, prop);
-
-ebsd.opt.Header = header;
+ebsd = data.ebsd;
 
 end
 
@@ -190,26 +161,26 @@ end
 
 function out = position_direct(raw_data)
 
-  if ~isfield(raw_data.direct, 'x') || ~isfield(raw_data.direct, 'y')
+  if ~isfield(raw_data, 'x') || ~isfield(raw_data, 'y')
     error('Position data has type direct but not the needed fields x and y')
   end
 
-  out = vector3d(double(raw_data.direct.x), double(raw_data.direct.y), 0); 
+  out = vector3d(double(raw_data.x), double(raw_data.y), 0); 
   
 end 
 
 function out = position_indirect(raw_data)
 
-  if ~isfield(raw_data.indirect, 'step_size_x') || ~isfield(raw_data.indirect, 'grid_size_x') ||... 
-    ~isfield(raw_data.indirect, 'step_size_y') || ~isfield(raw_data.indirect, 'grid_size_y')
+  if ~isfield(raw_data, 'step_size_x') || ~isfield(raw_data, 'grid_size_x') ||... 
+    ~isfield(raw_data, 'step_size_y') || ~isfield(raw_data, 'grid_size_y')
 
     error('Position data has type indirect but not the needed fields step_size_x, step_size_y, grid_size_x and grid_size_y')
   end
 
-  step_x = double(raw_data.indirect.step_size_x);
-  step_y = double(raw_data.indirect.step_size_y);
-  cells_x = double(raw_data.indirect.grid_size_x);
-  cells_y = double(raw_data.indirect.grid_size_y);
+  step_x = double(raw_data.step_size_x);
+  step_y = double(raw_data.step_size_y);
+  cells_x = double(raw_data.grid_size_x);
+  cells_y = double(raw_data.grid_size_y);
 
   [x, y] = meshgrid(0:step_x:(cells_x-1)*step_x, 0:step_y:(cells_y-1)*step_y);
 
@@ -218,14 +189,14 @@ end
 
 function out = rotation_euler(raw_data)
 
-  fields = fieldnames(raw_data.euler);
+  fields = fieldnames(raw_data);
   
   if isempty(fields) || length(fields) > 4 || ~ismember('formate', fields)
     error(['Rotation data has type euler but not enough fields or too many' ...
       'field. You need to give 1-3 Fields and one named formate for degree or radiant formate.'])
   end
 
-  formate = string(raw_data.euler.formate);
+  formate = string(raw_data.formate);
 
   % Collect all fields and stick them together in one matrix
   matrix = cell(1, length(fields));
@@ -237,12 +208,12 @@ function out = rotation_euler(raw_data)
       continue;
     end
 
-    [h, w] = size(raw_data.euler.(fields{i}));
+    [h, w] = size(raw_data.(fields{i}));
 
     if h > w
-      matrix{i} = double(raw_data.euler.(fields{i}));
+      matrix{i} = double(raw_data.(fields{i}));
     else
-      matrix{i} = double((raw_data.euler.(fields{i}))');
+      matrix{i} = double((raw_data.(fields{i}))');
     end
   end 
 
@@ -260,16 +231,16 @@ end
 
 function out = rotation_euler_stack(raw_data)
 
-  if ~isfield(raw_data.euler_stack, 'phi') || ~isfield(raw_data.euler_stack, 'formate')
+  if ~isfield(raw_data, 'phi') || ~isfield(raw_data, 'formate')
     error(['Rotation data has type euler_stack but not the correct fields where given!' ...
       ' Make sure you have phi and formate field.'])
   end
 
-  formate = string(raw_data.euler_stack.formate);
+  formate = string(raw_data.formate);
 
-  phi1_2D = raw_data.euler_stack.phi(1,:,:); 
-  Phi_2D  = raw_data.euler_stack.phi(2,:,:);
-  phi2_2D = raw_data.euler_stack.phi(3,:,:);
+  phi1_2D = raw_data.phi(1,:,:); 
+  Phi_2D  = raw_data.phi(2,:,:);
+  phi2_2D = raw_data.phi(3,:,:);
 
   % Check if degree or radiant
   if formate == "degree"
@@ -283,20 +254,22 @@ end
 
 function out = cs_default(raw_data)
 
-  if ~isfield(raw_data.default, 'group') || ~isfield(raw_data.default, 'lattice') || ~isfield(raw_data.default, 'name')
+  disp(raw_data)
+
+  if ~isfield(raw_data, 'space_group') || ~isfield(raw_data, 'lattice') || ~isfield(raw_data, 'name')
     error(['Cs data has type default but not the correct fields were given. ' ...
       'Make sure you have a group, lattice and name field!'])
   end
 
   out = crystalSymmetry( ...
-    raw_data.default.group, ...
-    raw_data.default.lattice.dim, ...
-    raw_data.default.lattice.angle, ...
+    raw_data.space_group, ...
+    raw_data.lattice.dim, ...
+    raw_data.lattice.angle, ...
     'Mineral', ...
-    raw_data.default.name);
+    raw_data.name);
 end
 
-function out = group_space(raw_data)
+function out = space_group_default(raw_data)
 
   if isnumeric(raw_data)
     clean = double(raw_data);
@@ -370,14 +343,14 @@ function out = rotation_correctById(raw_data)
 % correct Euler angles such that the Euler angle reference frame coincides
 % with the map reference frame
 
-  if ~isfield(raw_data.correctById, 'correct_id') || ~isfield(raw_data.correctById, 'correct_data') || ~isfield(raw_data.correctById, 'rotation')
+  if ~isfield(raw_data, 'correct_id') || ~isfield(raw_data, 'correct_data') || ~isfield(raw_data, 'rotation')
     error(['Rotation data has type correctById but not the correct fields were given. ' ...
       'Make sure you have a correct_id, correct_data and rotation!'])
   end
 
-  id = double(raw_data.correctById.correct_id);
-  data = double(raw_data.correctById.correct_data);
-  rot = raw_data.correctById.rotation;
+  id = double(raw_data.correct_id);
+  data = double(raw_data.correct_data);
+  rot = raw_data.rotation;
 
   correction = rotation.byEuler(data(id,:)*degree);
 
@@ -388,13 +361,13 @@ end
 
 function out = rotation_correctByAngle(raw_data)
 
-  if ~isfield(raw_data.correctByAngle, 'angle') || ~isfield(raw_data.correctByAngle, 'rotation')
+  if ~isfield(raw_data, 'angle') || ~isfield(raw_data, 'rotation')
     error(['Rotation data has type correctByAngle but not the correct fields were given. ' ...
       'Make sure you have a angle and rotation!'])
   end
 
-  angle = double(raw_data.correctByAngle.angle);
-  rot = raw_data.correctByAngle.rotation;
+  angle = double(raw_data.angle);
+  rot = raw_data.rotation;
 
   correction = rotation.byAxisAngle(zvector, angle);
 
@@ -403,6 +376,32 @@ function out = rotation_correctByAngle(raw_data)
 
 end
 
+function out = ebsd_default(raw_data)
+
+  disp(raw_data)
+
+  if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation') || ~isfield(raw_data, 'cs') 
+    error(['EBSD data has not the correct fields! ' ...
+      'Make sure you have a position, rotation, phase and cs field!'])
+  end
+
+  if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase))
+    error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
+          numel(data.position), numel(data.rotation), numel(data.phase));
+  end
+  
+  prop = struct();
+
+  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop);
+  
+  % if a header was created add
+  if isfield(raw_data, 'header')
+    ebsd.opt.Header = raw_data.header;
+  end
+
+  out = ebsd;
+
+end
 
 % Functions----------------------------------------------------------------
 
@@ -455,7 +454,7 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
     multiple = strcmpi(config_item.multiple, "true");
   end
 
-  % if an field with a value field is reached --> read this data
+  % the data is in a field to read from
   if ismember('value', fields)
 
     % generate absolute path and read data on this path
@@ -485,12 +484,29 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
     
     raw_data = readData(info_struct.Filename, path);
 
-  % if data concrete data is given --> read and safe
+  % the data was given directly in json
   elseif ismember('data', fields)
 
     vprintf(isDebug(), '%s • %-15s | ...read out of config\n', indent, string(name));
     raw_data = config_item.data;
 
+  % the data is a whole group
+  elseif any(strcmp('group', fields))
+
+    group_path = get_hdf5_path(info_struct, config_item.group, "root", root);
+    group = locate_subtree(info_struct, group_path);
+
+    for i = 1:length(group.Datasets)
+      
+      raw_name = string(group.Datasets(i).Name);
+  
+      clean_name = clean_string(raw_name);
+  
+      raw_data.(clean_name) = double(h5read(info_struct.Filename, group_path + "/" + raw_name));
+  
+    end
+
+  % the data is in a subfield
   else
     for i = 1:length(fields)
 
@@ -504,31 +520,26 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
         config_item.(currentfield), root, currentfield, multiple, level + 1);
       
       if ~isempty(data_out)
-        if iscell(data_out)
 
-          % we have more than one data point --> if struct convert to cell
-          if ~iscell(raw_data)
-            raw_data = cell(size(data_out));
-            for k = 1:length(raw_data), raw_data{k} = struct(); end
+        if multiple==true
+
+          c = cell(size(data_out));
+          for j = 1:numel(data_out)
+            s = struct();
+            s.(currentfield) = data_out{j};
+            c{j} = s;
           end
-          
-          for j = 1:length(data_out)
-            raw_data{j}.(currentfield) = data_out{j};
-          end       
+
+          raw_data = appendAndAlignCell(raw_data,c);
+
         else
-
-          % we only have one datapoint
-          if iscell(raw_data)
-            for j = 1:length(raw_data), raw_data{j}.(currentfield) = data_out; end
-          else
-            raw_data.(currentfield) = data_out;
-          end
+          raw_data.(currentfield) = data_out;
         end
       end
     end
   end
    
-  % if type field is set --> search for formatter and use
+  % there is a type field use a formatter on collected data
   if ismember('type', fields)
 
     formatter_name = sprintf('%s_%s', name, config_item.type);
@@ -536,18 +547,30 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
 
     try
       formatter = str2func(formatter_name);
-      if iscell(raw_data)
-        data = cell(1, length(raw_data));
-        for i = 1:length(raw_data)
-          data{i} = formatter(raw_data{i});
-        end
+      if multiple==true
+
+          data = cell(1, length(raw_data));
+          for i = 1:length(raw_data)
+            if isfield(raw_data{i}, config_item.type)
+              data{i} = formatter(raw_data{i}.(config_item.type));
+            else
+              data{i} = formatter(raw_data{i});
+            end
+          end
       else
-        data = formatter(raw_data);
+
+        if isfield(raw_data, config_item.type)
+          data = formatter(raw_data.(config_item.type));
+        else 
+          data = formatter(raw_data);
+        end
       end
+
     catch MS
       vprintf(isDebug(), '%s   [!] Formatter Error: %s\n', indent, formatter_name);
       disp(MS.getReport())
     end
+
   else
     data = raw_data;
   end
@@ -617,6 +640,104 @@ function [paths] = search_for_key(info_struct, key, opt, startPath)
   else 
     error("Unkown opt in search_for_key")
   end
+end
+
+function outCell = appendAndAlignCell(oldCell, newInput)
+    % 1. Input standardisieren (muss ein Cell-Array sein)
+    if ~iscell(newInput)
+        newInput = {newInput};
+    end
+    newInput = newInput(:)'; % Zwingen in eine Zeile (1 x N)
+    newLen = numel(newInput);
+
+    % 2. Wenn das alte Cell-Array leer ist, nehmen wir den neuen Input direkt
+    if isempty(oldCell) || isstruct(oldCell)
+        outCell = newInput;
+        return;
+    end
+
+    currentLen = numel(oldCell);
+
+    % 3. Broadcasting (Dimensionen horizontal angleichen)
+    if newLen > currentLen
+        if currentLen == 1
+            oldCell = repmat(oldCell, 1, newLen);
+            currentLen = newLen;
+        else
+            error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
+        end
+    elseif newLen < currentLen
+        if newLen == 1
+            newInput = repmat(newInput, 1, currentLen);
+        else
+            error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
+        end
+    end
+
+    % 4. Struktur-Merge: Felder in dieselbe Zelle zusammenführen
+    outCell = oldCell; 
+    for i = 1:currentLen
+        itemOld = oldCell{i};
+        itemNew = newInput{i};
+        
+        if isstruct(itemOld) && isstruct(itemNew)
+            % Wenn beide Elemente Structs sind, fusionieren wir ihre Felder!
+            fields = fieldnames(itemNew);
+            for f = 1:numel(fields)
+                itemOld.(fields{f}) = itemNew.(fields{f});
+            end
+            outCell{i} = itemOld;
+        else
+            % Fallback, falls ein Element (noch) kein Struct ist
+            outCell{i} = itemNew; 
+        end
+    end
+end
+
+function outStruct = addFieldAligned(outStruct, fieldName, inputVal)
+    % 1. Input radikal in ein Cell-Array zwingen (falls es keins ist)
+    if ~iscell(inputVal)
+        inputVal = {inputVal};
+    end
+    
+    % Sicherstellen, dass es ein Zeilenvektor ist (für einheitliche Dimension)
+    inputVal = inputVal(:)'; 
+    newLen = numel(inputVal);
+
+    % 2. Prüfen, ob das Struct überhaupt schon Felder hat
+    fields = fieldnames(outStruct);
+    if isempty(fields)
+        % Erstes Feld im Struct -> Einfach direkt reinschreiben
+        outStruct.(fieldName) = inputVal;
+        return;
+    end
+
+    % Aktuelle Länge der existierenden Cell-Arrays ermitteln
+    currentLen = numel(outStruct.(fields{1}));
+
+    % 3. Dimensionen abgleichen und ggf. expandieren (Broadcasting)
+    if newLen > currentLen
+        % FALL A: Der neue Input ist größer -> Alle alten Felder erweitern!
+        if currentLen == 1
+            for f = 1:numel(fields)
+                % Inhalt kopieren mittels repmat
+                outStruct.(fields{f}) = repmat(outStruct.(fields{f}), 1, newLen);
+            end
+        else
+            error('Dimensionen passen nicht zusammen und können nicht erweitert werden!');
+        end
+        
+    elseif newLen < currentLen
+        % FALL B: Der neue Input ist kleiner -> Den neuen Input erweitern!
+        if newLen == 1
+            inputVal = repmat(inputVal, 1, currentLen);
+        else
+            error('Dimensionen passen nicht zusammen und können nicht erweitert werden!');
+        end
+    end
+
+    % 4. Den bereinigten und skalierten Wert eintragen
+    outStruct.(fieldName) = inputVal;
 end
 
 function matchNode = locate_subtree(node, targetPath)
