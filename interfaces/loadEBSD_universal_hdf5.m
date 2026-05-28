@@ -77,9 +77,9 @@ end
 
 % generate user info
 fprintf('%s\n', repmat('-', 1, 60));
-fprintf('  • Detected manufacturer : %s\n', Conf.settings.name);
+fprintf('• Detected manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
-  fprintf('  • Additional info   : %s\n', Conf.settings.manufacturer_info.data);
+  wraptext(sprintf('• Additional info   : %s\n', Conf.settings.manufacturer_info.data));
 end
 fprintf('%s\n\n', repmat('-', 1, 60));
 
@@ -132,7 +132,7 @@ if isfield(Conf.settings, 'ebsd_header')
 
     clean_name = clean_string(raw_name);
 
-    header.(clean_name) = double(h5read(fname, header_path + "/" + raw_name));
+    header.(clean_name) = h5read(fname, header_path + "/" + raw_name);
 
   end
 
