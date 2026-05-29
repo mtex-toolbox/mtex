@@ -1,35 +1,40 @@
 {
   "settings": {
     "name": "Bruker",
-    "ebsd_key": {"mode": "regex", "value": "EBSD" },
-    "ebsd_header": {"mode": "regex", "value": "Header"},
     "manufacturer_keys": {"data": ["Bruker", "Bruker Nano"]}
   },
-  "position": {
-    "type": "direct",
-    "direct": {
-      "x": { "mode": "regex", "value": "^X Beam$" },
-      "y": { "mode": "regex", "value": "^Y Beam$" }
-    }
-  },
-  "phase": {"mode": "regex", "value": "^Phase"},
-  "rotation": {
-    "type": "euler",
-    "euler": {
-      "formate": {"data": "degree"},
-      "phi1": { "mode": "regex", "value": "^phi1$" },
-      "Phi":  { "mode": "regex", "value": "^PHI$" },
-      "phi2": { "mode": "regex", "value": "^phi2$" }
-    }
-  },
-  "cs": {
+  "ebsd": {
     "type": "default",
-    "multiple": "true",
-    "key": { "mode": "regex", "value": "Phases" },
-    "default": {
-      "group": { "mode": "regex", "value": "SpaceGroup", "type": "space" },
-      "name": { "mode": "regex", "value": "Name"},
-      "lattice": { "mode": "regex", "value": "LatticeConstants", "type": "all_together"}
+    "key": {"mode": "regex", "value": "EBSD"},
+    "position": {
+      "type": "direct",
+      "direct": {
+        "x": { "mode": "regex", "value": "^X Beam$" },
+        "y": { "mode": "regex", "value": "^Y Beam$" }
+      }
+    },
+    "phase": {"mode": "regex", "value": "^Phase"},
+    "rotation": {
+      "type": "euler",
+      "euler": {
+        "formate": {"data": "degree"},
+        "phi1": { "mode": "regex", "value": "^phi1$" },
+        "Phi":  { "mode": "regex", "value": "^PHI$" },
+        "phi2": { "mode": "regex", "value": "^phi2$" }
+      }
+    },
+    "cs": {
+      "type": "default",
+      "multiple": "true",
+      "key": { "mode": "regex", "value": "Phases" },
+      "default": {
+        "space_group": { "mode": "regex", "value": "SpaceGroup", "type": "default" },
+        "name": { "mode": "regex", "value": "Name"},
+        "lattice": { "mode": "regex", "value": "LatticeConstants", "type": "all_together"}
+      }
+    },
+    "header": {
+      "group": {"mode": "regex", "value": "Header"}
     }
   },
   "additions": {

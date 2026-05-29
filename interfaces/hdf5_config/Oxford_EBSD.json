@@ -1,43 +1,48 @@
 {
   "settings": {
     "name": "Oxford_EBSD",
-    "ebsd_key": {"mode": "regex", "value": "EBSD" },
-    "ebsd_header": {"mode": "regex", "value": "Header"},
     "manufacturer_keys": {"data": "Oxford_EBSD"},
     "manufacturer_info": {"data": "Reading Data from EBSD field!"} 
   },
-  "position": {
-    "type": "direct",
-    "direct": {
-      "x": { "mode": "regex", "value": "^X$" },
-      "y": { "mode": "regex", "value": "^Y$" }
-    }
-  },
-  "phase": {"mode": "regex", "value": "Phase", "type": "default"},
-  "rotation": {
-    "type": "correctByAngle",
-    "correctByAngle": {
-      "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
-      "rotation": {
-        "type": "euler",
-        "euler": {
-          "formate": { "data": "radiante"},
-          "phi": { "mode": "regex", "value": "Euler"}
+  "ebsd": {
+    "type": "default",
+    "key": {"mode": "regex", "value": "EBSD"},
+    "position": {
+      "type": "direct",
+      "direct": {
+        "x": { "mode": "regex", "value": "^X$" },
+        "y": { "mode": "regex", "value": "^Y$" }
+      }
+    },
+    "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+    "rotation": {
+      "type": "correctByAngle",
+      "correctByAngle": {
+        "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
+        "rotation": {
+          "type": "euler",
+          "euler": {
+            "formate": { "data": "radiante"},
+            "phi": { "mode": "regex", "value": "Euler"}
+          }
         }
       }
-    }
-  },
-  "cs": {
-    "type": "default",
-    "key": { "mode": "regex", "value": "Phases" },
-    "multiple": "true",
-    "default": {
-      "group": { "mode": "regex", "value": "Space Group", "type": "space" },
-      "name": { "mode": "regex", "value": "Phase Name"},
-      "lattice": {
-        "angle": { "mode": "regex", "value": "Lattice Angles"},
-        "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+    },
+    "cs": {
+      "type": "default",
+      "key": { "mode": "regex", "value": "Phases" },
+      "multiple": "true",
+      "default": {
+        "space_group": { "mode": "regex", "value": "Space Group", "type": "default" },
+        "name": { "mode": "regex", "value": "Phase Name"},
+        "lattice": {
+          "angle": { "mode": "regex", "value": "Lattice Angles"},
+          "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+        }
       }
+    },
+    "header": {
+      "group": {"mode": "regex", "value": "Header"}
     }
   },
   "additions": {

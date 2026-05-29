@@ -74,26 +74,13 @@ catch ME
 end
 
 % generate user info
-fprintf('%s\n', repmat('-', 1, 60));
-fprintf('  • Detected manufacturer : %s\n', Conf.settings.name);
+fprintf('\n%s\n', repmat('═', 1, 80));
+fprintf('HDF5 CONFIGURATION LOADED\n');
+fprintf('    ├── Manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
-  fprintf('  • Additional info   : %s\n', Conf.settings.manufacturer_info.data);
+  fprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data);
 end
-fprintf('%s\n\n', repmat('-', 1, 60));
-
-% Search for data folders and get paths------------------------------------
-
-% if isfield(Conf.settings, "ebsd_key")
-% 
-%   ebsd_paths = get_hdf5_path(info_struct, Conf.settings.ebsd_key, "mode", "groups");
-%   vprintf(isDebug(), '\n%s\n', repmat('=', 85, 1));
-%   vprintf(isDebug(), 'START LOADING EBSD DATA FROM: %s\n', string(ebsd_paths));
-%   vprintf(isDebug(), '%s\n', repmat('=', 85, 1));
-% 
-%   if isempty(ebsd_paths)
-%       error("There was no EBSD Dataset found!");
-%   end 
-% end 
+fprintf('%s\n', repmat('═', 1, 80));
 
 % Get absolute paths and load data-----------------------------------------
 
@@ -106,12 +93,13 @@ for i = 1:length(categories)
   cat = categories{i};
   if ismember(cat, exclude), continue; end
   
-  vprintf(isDebug(), '\n[%s]\n', upper(string(cat)));
-
+  vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
+  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+  
   [data.(cat), Conf.(cat)] = readConf(info_struct, Conf.(cat), "", cat, false, 1);
   
-  vprintf(isDebug(), '  [OK] %-18s successfully initialized\n', string(cat));
-  vprintf(isDebug(), '  %s\n', repmat('-', 85, 1));
+  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+  vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
 
 end
 
@@ -150,6 +138,8 @@ if isfield(Conf, 'additions')
     warning("Still to do when additions is not auto...")
   end
 end
+
+% Building output data-----------------------------------------------------
 
 data.ebsd.prop = prop;
 
@@ -253,8 +243,6 @@ function out = rotation_euler_stack(raw_data)
 end
 
 function out = cs_default(raw_data)
-
-  disp(raw_data)
 
   if ~isfield(raw_data, 'space_group') || ~isfield(raw_data, 'lattice') || ~isfield(raw_data, 'name')
     error(['Cs data has type default but not the correct fields were given. ' ...
@@ -378,8 +366,6 @@ end
 
 function out = ebsd_default(raw_data)
 
-  disp(raw_data)
-
   if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation') || ~isfield(raw_data, 'cs') 
     error(['EBSD data has not the correct fields! ' ...
       'Make sure you have a position, rotation, phase and cs field!'])
@@ -442,7 +428,8 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
   end
 
   fields = fieldnames(config_item);
-  indent = repmat('  ', 1, level);
+  indent = repmat('   ', 1, level - 1); 
+  targetWidth = 45;
 
   % set a new root if key field is set --> root for all following iterations
   if ismember('key', fields)
@@ -463,23 +450,27 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
     
     % if more than one path loop display
     if iscell(path)
-        for pIdx = 1:length(path)
-            currentPath = string(path{pIdx});
-
-            displayPath = currentPath;
-            if strlength(displayPath) > 60
-                displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-57);
-            end
-            
-            label = sprintf('%s (%d)', name, pIdx);
-            vprintf(isDebug(), '%s • %-15s | %s\n', indent, label, displayPath);
+      for pIdx = 1:length(path)
+        currentPath = string(path{pIdx});
+        displayPath = currentPath;
+        if strlength(displayPath) > 55
+          displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-52);
         end
+        
+        label = sprintf('├── %s (%d)', name, pIdx);
+        fullLabel = string(indent) + string(label);
+        fullLabel = pad(fullLabel, targetWidth, 'right'); % Sicherer Pad
+        vprintf(isDebug(), '%s │ %s\n', fullLabel, displayPath);
+      end
     else
-        displayPath = string(path);
-        if strlength(displayPath) > 60
-            displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-57);
-        end
-        vprintf(isDebug(), '%s • %-15s | %s\n', indent, string(name), displayPath);
+      displayPath = string(path);
+      if strlength(displayPath) > 55
+        displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-52);
+      end
+      label = sprintf('├── %s', name);
+      fullLabel = string(indent) + string(label);
+      fullLabel = pad(fullLabel, targetWidth, 'right'); % Sicherer Pad
+      vprintf(isDebug(), '%s │ %s\n', fullLabel, displayPath);
     end
     
     raw_data = readData(info_struct.Filename, path);
@@ -487,27 +478,40 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
   % the data was given directly in json
   elseif ismember('data', fields)
 
-    vprintf(isDebug(), '%s • %-15s | ...read out of config\n', indent, string(name));
+    label = sprintf('├── %s', name);
+    fullLabel = string(indent) + string(label);
+    fullLabel = pad(fullLabel, targetWidth, 'right');
+    vprintf(isDebug(), '%s │ [Internal Config Data]\n', fullLabel);
+
     raw_data = config_item.data;
 
   % the data is a whole group
   elseif any(strcmp('group', fields))
 
-    group_path = get_hdf5_path(info_struct, config_item.group, "root", root);
+    group_path = get_hdf5_path(info_struct, config_item.group, "root", root, "mode", "groups");
     group = locate_subtree(info_struct, group_path);
+
+    label = sprintf('├── %s/', name);
+    fullLabel = string(indent) + string(label);
+    fullLabel = pad(fullLabel, targetWidth, 'right');
+    vprintf(isDebug(), '%s │ [Group: %d Datasets]\n', fullLabel, length(group.Datasets));
 
     for i = 1:length(group.Datasets)
       
       raw_name = string(group.Datasets(i).Name);
-  
       clean_name = clean_string(raw_name);
-  
       raw_data.(clean_name) = double(h5read(info_struct.Filename, group_path + "/" + raw_name));
   
     end
 
   % the data is in a subfield
   else
+
+    label = sprintf('├── %s/', name);
+    fullLabel = string(indent) + string(label);
+    fullLabel = pad(fullLabel, targetWidth, 'right');
+    vprintf(isDebug(), '%s │\n', fullLabel);
+
     for i = 1:length(fields)
 
       currentfield = fields{i};
@@ -543,7 +547,9 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
   if ismember('type', fields)
 
     formatter_name = sprintf('%s_%s', name, config_item.type);
-    vprintf(isDebug(), '%s   > Formatter: %s\n', indent, string(formatter_name));
+    fmtLabel = string(indent) + "   └── formatter: " + string(config_item.type);
+    fmtLabel = pad(fmtLabel, targetWidth, 'right'); 
+    vprintf(isDebug(), '%s │\n', fmtLabel);
 
     try
       formatter = str2func(formatter_name);
@@ -779,24 +785,24 @@ function [paths] = search_recursive_groups(node, key, paths)
 % searches in a h5info structs groups for a given key word - returns the
 % path to the key
 
-    if ~isempty(paths)
-        return;
-    end
+  if ~isempty(paths)
+    return;
+  end
 
-    if contains(node.Name, key, 'IgnoreCase', true)
-        paths{end+1} = node.Name; 
-        return;
-    end
+  if contains(node.Name, key, 'IgnoreCase', true)
+    paths{end+1} = node.Name; 
+    return;
+  end
 
-    if ~isempty(node.Groups)
-        for i = 1:length(node.Groups)
-            paths = search_recursive_groups(node.Groups(i), key, paths);
-            
-            if ~isempty(paths)
-                return; 
-            end
-        end
+  if ~isempty(node.Groups)
+    for i = 1:length(node.Groups)
+      paths = search_recursive_groups(node.Groups(i), key, paths);
+      
+      if ~isempty(paths)
+        return; 
+      end
     end
+  end
 end
 
 function [paths] = search_recursive_fields(node, key, paths)

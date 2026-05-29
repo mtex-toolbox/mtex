@@ -1,36 +1,39 @@
 {
   "settings": {
     "name": "ThermoFisher",
-    "ebsd_key": {"mode": "absolute", "value": "/Site/EBSD" },
     "manufacturer_keys": {"data": "ThermoFisher"}
   },
-  "position": {
-    "type": "indirect",
-    "indirect": {
-      "step_size_x": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
-      "step_size_y": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
-      "grid_size_x": { "mode": "absolute", "value": "/Site/Acquisition/MapHeight"},
-      "grid_size_y": { "mode": "absolute", "value": "/Site/Acquisition/MapWidth"}
-    }
-  },
-  "phase": {"mode": "regex", "value": "Phase", "type": "stack"},
-  "rotation": {
-    "type": "euler_stack",
-    "euler_stack": {
-      "formate": { "data": "degree"},
-      "phi": { "mode": "regex", "value": "EulerAngles" }
-    }
-  },
-  "cs": {
+  "ebsd": {
     "type": "default",
-    "multiple": "true",
-    "key": { "mode": "regex", "value": "Phase" },
-    "default": {
-      "group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "space" },
-      "name": { "mode": "regex", "value": "Name"},
-      "lattice": {
-        "angle": { "mode": "regex", "value": "LatticeAngles"},
-        "dim": { "mode": "regex", "value": "LatticeParameters"}
+    "key": {"mode": "absolute", "value": "/Site/EBSD"},
+    "position": {
+      "type": "indirect",
+      "indirect": {
+        "step_size_x": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
+        "step_size_y": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
+        "grid_size_x": { "mode": "absolute", "value": "/Site/Acquisition/MapHeight"},
+        "grid_size_y": { "mode": "absolute", "value": "/Site/Acquisition/MapWidth"}
+      }
+    },
+    "phase": {"mode": "regex", "value": "Phase", "type": "stack"},
+    "rotation": {
+      "type": "euler_stack",
+      "euler_stack": {
+        "formate": { "data": "degree"},
+        "phi": { "mode": "regex", "value": "EulerAngles" }
+      }
+    },
+    "cs": {
+      "type": "default",
+      "multiple": "true",
+      "key": { "mode": "regex", "value": "Phase" },
+      "default": {
+        "space_group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "default" },
+        "name": { "mode": "regex", "value": "Name"},
+        "lattice": {
+          "angle": { "mode": "regex", "value": "LatticeAngles"},
+          "dim": { "mode": "regex", "value": "LatticeParameters"}
+        }
       }
     }
   },
