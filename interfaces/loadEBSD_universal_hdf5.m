@@ -74,18 +74,12 @@ catch ME
 end
 
 % generate user info
-<<<<<<< HEAD
 fprintf('\n%s\n', repmat('═', 1, 80));
 fprintf('HDF5 CONFIGURATION LOADED\n');
 fprintf('    ├── Manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
-  fprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data);
-=======
-fprintf('%s\n', repmat('-', 1, 60));
-fprintf('• Detected manufacturer : %s\n', Conf.settings.name);
-if isfield(Conf.settings, 'manufacturer_info')
-  wraptext(sprintf('• Additional info   : %s\n', Conf.settings.manufacturer_info.data));
->>>>>>> ace007f9e07677b1c9a8922e55a08ed0b4f83be1
+  wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
+
 end
 fprintf('%s\n', repmat('═', 1, 80));
 
