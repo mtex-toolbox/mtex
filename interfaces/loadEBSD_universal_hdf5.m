@@ -76,7 +76,7 @@ end
 % generate user info
 fprintf('\n%s\n', repmat('═', 1, 80));
 fprintf('HDF5 CONFIGURATION LOADED\n');
-fprintf('    ├── Manufacturer : %s\n', Conf.settings.name);
+fprintf('├── Manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
   wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
 
