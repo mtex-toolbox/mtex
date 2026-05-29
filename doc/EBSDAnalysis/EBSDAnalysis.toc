@@ -19,4 +19,5 @@ EBSDKAM               KAM
 EBSDGROD              Mis2Mean / GROD
 EBSDProfile           Profiles
 EBSDSimulation        Simulation
+EBSDInterfaceHDF5     HDF5 Interface
 EBSDExport            Export

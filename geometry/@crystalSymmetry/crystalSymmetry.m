@@ -14,6 +14,12 @@ classdef crystalSymmetry < symmetry
 %  axes  - [a,b,c] - length of the crystallographic axes
 %  angle - [alpha,beta,gamma] - angle between the axes
 %
+% Options
+%  X||a*, Z||c - default alignment of the cartesian coordinate system to the crystal coordinate system
+%  X||a, Z||c* - other alignments
+%  X||b*, Z||c - 
+%  X||b, Z||c* - 
+%
 % Class Properties 
 %  id                           - point group id
 %  pointGroup                   - international notation of the point group

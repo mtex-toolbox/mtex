@@ -104,7 +104,7 @@ for im = 1:length(m)
   % plot the lattice planes of grains 52 with respect to the
   % reference frame of grain 43
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
-    'DisplayName',char(m(im)),'figSize','large','noLabel','upper','textBelowMarker')
+    'DisplayName',char(m(im),'LaTex'),'figSize','large','noLabel','upper','textBelowMarker')
   hold on
 end
 hold off
@@ -114,7 +114,7 @@ mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
 annotate(mm,'labeled','MarkerSize',5,'figSize','large','textBelowMarker')
 
 % show legend
-legend({},'location','SouthEast','FontSize',13);
+legend({},'location','SouthEast','FontSize',13,'Interpreter','latex');
 
 %%
 % we observe an almost perfect match for the lattice planes
@@ -153,7 +153,7 @@ for im = 1:length(m)
   % plot the lattice planes of grains 52 with respect to the
   % reference frame of grain 43
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
-    'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
+    'DisplayName',char(m(im),'Latex'),'figSize','large','noLabel','upper')
   hold on
 end
 hold off
@@ -163,7 +163,7 @@ mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
 annotate(mm,'labeled','MarkerSize',5,'figSize','large')
 
 % show legend
-legend({},'location','NorthWest','FontSize',13);
+legend({},'location','NorthWest','FontSize',13,'Interpreter','LaTex');
 
 
 %% Highlight twinning boundaries

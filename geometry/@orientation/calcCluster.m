@@ -52,6 +52,31 @@ end
 method = get_option(varargin,'method','odf');
 
 switch method
+  case 'classix'
+
+    data = double(embedding(ori));
+    radius = get_option(varargin,'radius');
+
+    % try to estimate a reasonable radius parameter
+    if isempty(radius)
+      
+      k = 10;
+      [~, dist] = knnsearch(data, data, "K", k+1);
+      radius = 0.5 * median(dist(:,end)) / max(std(data));
+
+    end
+      
+    minPts = get_option(varargin,'minPoints',numel(ori)/100) ;
+    opts.merge_scale = 1.5;
+    opts.merge_tiny_groups = 1;
+    opts.use_mex = 0;
+
+    c = classix(data, radius, minPts, opts);
+  
+    if nargout == 2
+      center = accumarray(c,ori);
+    end
+
   case 'odf'
     % extract weights
     weights = get_option(varargin,'weights',ones(size(ori)));

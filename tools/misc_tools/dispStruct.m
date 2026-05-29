@@ -5,7 +5,7 @@ for fn = fieldnames(s).'
   
   value = s.(char(fn));
   switch class(value)
-    case 'double'
+    case {'double','single','int32','uint8','uint16','uint32'}
       if numel(value) < 20
         out = xnum2str(value);
       else
@@ -25,7 +25,9 @@ for fn = fieldnames(s).'
       else
         continue
       end
-      
+    case 'string'
+      out = char(join(value));
+
     otherwise
       try
         out = char(value,varargin{:});

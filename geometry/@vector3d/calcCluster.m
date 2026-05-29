@@ -1,4 +1,4 @@
-function [cId,center] = calcCluster(vec,varargin)
+function [cId,center] = calcCluster(v,varargin)
 % seperate directions into clusters
 %
 % Syntax
@@ -10,6 +10,9 @@ function [cId,center] = calcCluster(vec,varargin)
 %  vec - @vector3d
 %  n   - number of clusters
 %  omega - maximum angle 
+%
+% Options
+%  method - classix (default) | hierarchical | matlab
 %
 % Output
 %  cId    - list of clusters ids
@@ -35,17 +38,47 @@ function [cId,center] = calcCluster(vec,varargin)
 %   min(angle_outer(center,vin)./degree)
 %
 
-method = get_option(varargin,'method','hierarchical');
+method = get_option(varargin,'method','classix');
 
 switch method
+
+  case 'classix'
     
+    if v.antipodal
+      data = [v.x.^2,v.y.^2,v.z.^2,v.x.*v.y,v.x.*v.z,v.y.*v.z];
+    else
+      data = v.xyz;
+    end
+      
+    radius = get_option(varargin,'radius');
+
+    % try to estimate a reasonable radius parameter
+    if isempty(radius)
+      
+      k = 10;
+      [~, dist] = knnsearch(data, data, "K", k+1);
+      radius = 2*median(dist(:,end));
+
+    end
+      
+    minPts = get_option(varargin,'minPoints',numel(v)/100) ;
+    opts.merge_scale = 1.5;
+    opts.merge_tiny_groups = 1;
+    opts.use_mex = 0;
+
+    cId = classix(data, radius, minPts, opts);
   
+    if nargout == 2
+      center = accumarray(cId,v);
+    end
+
+
   case 'matlab'
     
     varargin = delete_option(varargin,'method',1);
     
     % compute the full distance matrix 
-    d = angle_outer(vec,vec);
+    d = angle_outer(v,v);
     d = d(triu(true(size(d)),1));
     
     % use the statistic toolbox
@@ -58,7 +91,7 @@ switch method
     
     %dist = @(a,b) angle(a,b);
     %[cId,center] = doHClustering(vec,dist,varargin{:});
-    [cId,center] = doHClustering(vec,varargin{:});
+    [cId,center] = doHClustering(v,varargin{:});
     
 end
 end

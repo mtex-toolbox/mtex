@@ -206,7 +206,7 @@ catch
 
         case 'copper'
           
-          out = EBSD.load(fName,'convertEuler2spatialReferenceFrame');
+          out = EBSD.load(fName,'setting',1);
 
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
@@ -235,7 +235,7 @@ catch
 
         case 'ferrite'
 
-          out = EBSD.load(fName,'setting',2);
+          out = EBSD.load(fName,'setting',1);
 
         case 'epidote'
 

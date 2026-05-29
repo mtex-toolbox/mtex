@@ -74,11 +74,18 @@ catch ME
 end
 
 % generate user info
+<<<<<<< HEAD
 fprintf('\n%s\n', repmat('═', 1, 80));
 fprintf('HDF5 CONFIGURATION LOADED\n');
 fprintf('    ├── Manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
   fprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data);
+=======
+fprintf('%s\n', repmat('-', 1, 60));
+fprintf('• Detected manufacturer : %s\n', Conf.settings.name);
+if isfield(Conf.settings, 'manufacturer_info')
+  wraptext(sprintf('• Additional info   : %s\n', Conf.settings.manufacturer_info.data));
+>>>>>>> ace007f9e07677b1c9a8922e55a08ed0b4f83be1
 end
 fprintf('%s\n', repmat('═', 1, 80));
 
@@ -500,7 +507,7 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
       
       raw_name = string(group.Datasets(i).Name);
       clean_name = clean_string(raw_name);
-      raw_data.(clean_name) = double(h5read(info_struct.Filename, group_path + "/" + raw_name));
+      raw_data.(clean_name) = h5read(info_struct.Filename, group_path + "/" + raw_name);
   
     end
 
