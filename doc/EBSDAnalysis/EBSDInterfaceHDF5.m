@@ -5,7 +5,6 @@
 % The |.json| configuration file acts as a precise roadmap, instructing 
 % the script where to look for metadata and how to format the extracted arrays.
 %
-
 %% 1. The Core Concept: Dynamic Tree Searching
 %
 % The script processes the configuration file completely *recursively* % via the |readConf| function. It traverses the JSON layout while 
@@ -19,7 +18,6 @@
 %   MATLAB formatting function named |[category]_[type]| (e.g., |position_direct| 
 %   or |rotation_euler|) to convert the raw data into MTEX-compatible objects.
 %
-
 %% 2. The Three Search Modes (mode)
 %
 % Any field responsible for fetching or defining data must explicitly state 
@@ -35,13 +33,11 @@
 %   straight from the JSON layout. Perfect for fixed units, formatting definitions, or static matrices.
 %   _Example:_ |"value": "degree"|
 %
-
 %% 3. Main Category Specifications
 %
 % The JSON configuration file must directly mirror the structure expected by the 
 % core MTEX |EBSD| constructor. The following formatters are natively supported:
 %
-
 %%
 % * Spatial Coordinates (position)*
 %
@@ -52,7 +48,6 @@
 %   generation (|meshgrid|) calculated from header metrics (step sizes and map dimensions).
 %   _Required subfields:_ |step_size_x|, |step_size_y|, |grid_size_x|, |grid_size_y|.
 %
-
 %%
 % * Spatial Orientations (rotation)*
 %
@@ -66,7 +61,6 @@
 % * *|type: "correctById"| / |type: "correctByAngle"|* : Applies custom mathematical 
 %   transformations or rotations to align the physical detector coordinate frame with the mapping system.
 %
-
 %%
 % * Crystal Symmetry (cs)*
 %
@@ -81,7 +75,6 @@
 %   Lattice properties can be parsed collectively as a compact 6-element array (|type: "all_together"|) 
 %   or completely decoupled using |type: "seperate"|.
 %
-
 %% 4. Advanced Navigation: "key" & "multiple"
 %
 % Two structural JSON properties drive the core automation behaviors of the parser:
@@ -94,7 +87,6 @@
 %   but to accumulate all matching nodes into a cell array. This forms the operational backbone for 
 %   seamlessly indexing an arbitrary number of mineral phases.
 %
-
 %% 5. Minimal Integration Template
 %
 % When extending support to a new vendor format, use this clean layout as your baseline 
