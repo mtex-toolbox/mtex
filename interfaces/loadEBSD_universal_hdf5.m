@@ -73,7 +73,7 @@ catch ME
         chosenjson, ME.message);
 end
 
-% generate user info
+% generate config info text
 fprintf('\n%s\n', repmat('═', 1, 80));
 fprintf('HDF5 CONFIGURATION LOADED\n');
 fprintf('├── Manufacturer : %s\n', Conf.settings.name);
@@ -97,7 +97,10 @@ for i = 1:length(categories)
   vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
   vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
   
-  [data.(cat), Conf.(cat)] = readConf(info_struct, Conf.(cat), "", cat, false, 1);
+  [data.(cat), Conf.(cat)] = readConf( ...
+    info_struct, ...
+    Conf.(cat), ...
+    "name", cat);
   
   vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
   vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
@@ -165,7 +168,8 @@ function out = position_indirect(raw_data)
   if ~isfield(raw_data, 'step_size_x') || ~isfield(raw_data, 'grid_size_x') ||... 
     ~isfield(raw_data, 'step_size_y') || ~isfield(raw_data, 'grid_size_y')
 
-    error('Position data has type indirect but not the needed fields step_size_x, step_size_y, grid_size_x and grid_size_y')
+    error(['Position data has type indirect but not the needed fields ' ...
+      'step_size_x, step_size_y, grid_size_x and grid_size_y'])
   end
 
   step_x = double(raw_data.step_size_x);
@@ -417,9 +421,17 @@ end
   end
 end
 
-function [data, config_item] = readConf(info_struct, config_item, root, name, multiple, level)
+function [data, config_item] = readConf(info_struct, config_item, options)
 
-  if nargin < 6, level = 1; end
+arguments
+  info_struct struct
+  config_item struct
+  options.root string = ""
+  options.name string = ""
+  options.multiple logical = false
+  options.level int8 = 1
+end
+
   data = [];
   raw_data = struct();
 
@@ -429,90 +441,76 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
   end
 
   fields = fieldnames(config_item);
-  indent = repmat('   ', 1, level - 1); 
-  targetWidth = 45;
 
   % set a new root if key field is set --> root for all following iterations
   if ismember('key', fields)
-    root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", root));
+    options.root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", options.root));
   end
 
   % possibility to find multible --> important if more than one phase
   if ismember('multiple', fields)
-    multiple = strcmpi(config_item.multiple, "true");
+    options.multiple = strcmpi(config_item.multiple, "true");
   end
 
   % the data is in a field to read from
   if ismember('value', fields)
 
     % generate absolute path and read data on this path
-    path = get_hdf5_path(info_struct, config_item, "root", root, "multiple", multiple);
+    path = get_hdf5_path(info_struct, config_item, "root", options.root, "multiple", options.multiple);
     config_item.path = path;
     
-    % if more than one path loop display
+    % debug logic
     if iscell(path)
       for pIdx = 1:length(path)
         currentPath = string(path{pIdx});
-        displayPath = currentPath;
-        if strlength(displayPath) > 55
-          displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-52);
-        end
-        
-        label = sprintf('├── %s (%d)', name, pIdx);
-        fullLabel = string(indent) + string(label);
-        fullLabel = pad(fullLabel, targetWidth, 'right'); % Sicherer Pad
-        vprintf(isDebug(), '%s │ %s\n', fullLabel, displayPath);
+        label = sprintf('├── %s (%d)', options.name, pIdx);
+        print_debug(label, currentPath, options.level)
       end
     else
-      displayPath = string(path);
-      if strlength(displayPath) > 55
-        displayPath = "..." + extractAfter(displayPath, strlength(displayPath)-52);
-      end
-      label = sprintf('├── %s', name);
-      fullLabel = string(indent) + string(label);
-      fullLabel = pad(fullLabel, targetWidth, 'right'); % Sicherer Pad
-      vprintf(isDebug(), '%s │ %s\n', fullLabel, displayPath);
+      label = sprintf('├── %s', options.name);
+      print_debug(label, path, options.level)
     end
     
+    % reading data 
     raw_data = readData(info_struct.Filename, path);
 
   % the data was given directly in json
   elseif ismember('data', fields)
 
-    label = sprintf('├── %s', name);
-    fullLabel = string(indent) + string(label);
-    fullLabel = pad(fullLabel, targetWidth, 'right');
-    vprintf(isDebug(), '%s │ [Internal Config Data]\n', fullLabel);
+    % debug logic
+    label = sprintf('├── %s', options.name);
+    print_debug(label, '[Internal Config Data]', options.level)
 
+    % reading data
     raw_data = config_item.data;
 
   % the data is a whole group
   elseif any(strcmp('group', fields))
 
-    group_path = get_hdf5_path(info_struct, config_item.group, "root", root, "mode", "groups");
+    % locate group in file
+    group_path = get_hdf5_path(info_struct, config_item.group, "root", options.root, "mode", "groups");
     group = locate_subtree(info_struct, group_path);
 
-    label = sprintf('├── %s/', name);
-    fullLabel = string(indent) + string(label);
-    fullLabel = pad(fullLabel, targetWidth, 'right');
-    vprintf(isDebug(), '%s │ [Group: %d Datasets]\n', fullLabel, length(group.Datasets));
+    % debug logic
+    label = sprintf('├── %s/', options.name);
+    path = sprintf('[Collect: %d Datasets] from %s', length(group.Datasets), group_path);
+    print_debug(label, path, options.level);
 
+    % reading whole group data
     for i = 1:length(group.Datasets)
-      
       raw_name = string(group.Datasets(i).Name);
       clean_name = clean_string(raw_name);
       raw_data.(clean_name) = h5read(info_struct.Filename, group_path + "/" + raw_name);
-  
     end
 
   % the data is in a subfield
   else
 
-    label = sprintf('├── %s/', name);
-    fullLabel = string(indent) + string(label);
-    fullLabel = pad(fullLabel, targetWidth, 'right');
-    vprintf(isDebug(), '%s │\n', fullLabel);
+    % debug logic
+    label = sprintf('├── %s/', options.name);
+    print_debug(label, '', options.level)
 
+    % search all subfields for data
     for i = 1:length(fields)
 
       currentfield = fields{i};
@@ -521,12 +519,17 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
         continue;
       end
 
-      [data_out, config_item.(currentfield)] = readConf(info_struct, ...
-        config_item.(currentfield), root, currentfield, multiple, level + 1);
+      [data_out, config_item.(currentfield)] = readConf( ...
+        info_struct, ...
+        config_item.(currentfield), ...
+        "root", options.root, ...
+        "name", currentfield, ...
+        "multiple", options.multiple, ...
+        "level", options.level + 1);
       
       if ~isempty(data_out)
 
-        if multiple==true
+        if options.multiple==true
 
           c = cell(size(data_out));
           for j = 1:numel(data_out)
@@ -547,14 +550,18 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
   % there is a type field use a formatter on collected data
   if ismember('type', fields)
 
-    formatter_name = sprintf('%s_%s', name, config_item.type);
-    fmtLabel = string(indent) + "   └── formatter: " + string(config_item.type);
-    fmtLabel = pad(fmtLabel, targetWidth, 'right'); 
-    vprintf(isDebug(), '%s │\n', fmtLabel);
+    formatter_name = sprintf('%s_%s', options.name, config_item.type);
 
+    % debug logic
+    label = sprintf('└── formatter: %s/', config_item.type);
+    print_debug(label, '', options.level)
+
+    % call the formater with the data 
     try
       formatter = str2func(formatter_name);
-      if multiple==true
+
+      % if there are multiple data points call the formatter for each one
+      if options.multiple==true
 
           data = cell(1, length(raw_data));
           for i = 1:length(raw_data)
@@ -564,8 +571,8 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
               data{i} = formatter(raw_data{i});
             end
           end
-      else
 
+      else
         if isfield(raw_data, config_item.type)
           data = formatter(raw_data.(config_item.type));
         else 
@@ -584,6 +591,7 @@ function [data, config_item] = readConf(info_struct, config_item, root, name, mu
 end
 
 function data = readData(fname, paths)
+% small helper function to read data no matter if it is in a cell
 
   if iscell(paths)
     data = cell(1, length(paths));
@@ -595,7 +603,27 @@ function data = readData(fname, paths)
   end
 end 
 
+function print_debug(label, path, level)
+% helper function to handle the debug printing
+
+  indent = repmat('   ', 1, level - 1); 
+  targetWidth = 45;
+  max_length = 55;
+
+  if strlength(path) > max_length
+    path = "..." + extractAfter(path, strlength(path)-52);
+  end
+
+  fullLabel = string(indent) + string(label);
+  fullLabel = pad(fullLabel, targetWidth, 'right');
+
+  vprintf(isDebug(), '%s │ %s\n', fullLabel, path);
+  
+end
+
 function final_path = get_hdf5_path(info_struct, config_item, options)
+% this function handles to find a path for a struct element with a value
+% field 
 arguments
   info_struct struct
   config_item struct
@@ -624,6 +652,8 @@ end
 end
 
 function [paths] = search_for_key(info_struct, key, opt, startPath)
+% searches for a given key in the hdf5 file, depending on the opt it
+% searches for groups or fields with a start path
   arguments
     info_struct struct
     key string
@@ -650,101 +680,52 @@ function [paths] = search_for_key(info_struct, key, opt, startPath)
 end
 
 function outCell = appendAndAlignCell(oldCell, newInput)
-    % 1. Input standardisieren (muss ein Cell-Array sein)
-    if ~iscell(newInput)
-        newInput = {newInput};
-    end
-    newInput = newInput(:)'; % Zwingen in eine Zeile (1 x N)
-    newLen = numel(newInput);
+% a helping function to merge two cells together a certain way
 
-    % 2. Wenn das alte Cell-Array leer ist, nehmen wir den neuen Input direkt
-    if isempty(oldCell) || isstruct(oldCell)
-        outCell = newInput;
-        return;
-    end
+  if ~iscell(newInput)
+    newInput = {newInput};
+  end
 
-    currentLen = numel(oldCell);
+  newInput = newInput(:)';
+  newLen = numel(newInput);
 
-    % 3. Broadcasting (Dimensionen horizontal angleichen)
-    if newLen > currentLen
-        if currentLen == 1
-            oldCell = repmat(oldCell, 1, newLen);
-            currentLen = newLen;
-        else
-            error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
-        end
-    elseif newLen < currentLen
-        if newLen == 1
-            newInput = repmat(newInput, 1, currentLen);
-        else
-            error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
-        end
-    end
+  if isempty(oldCell) || isstruct(oldCell)
+    outCell = newInput;
+    return;
+  end
 
-    % 4. Struktur-Merge: Felder in dieselbe Zelle zusammenführen
-    outCell = oldCell; 
-    for i = 1:currentLen
-        itemOld = oldCell{i};
-        itemNew = newInput{i};
-        
-        if isstruct(itemOld) && isstruct(itemNew)
-            % Wenn beide Elemente Structs sind, fusionieren wir ihre Felder!
-            fields = fieldnames(itemNew);
-            for f = 1:numel(fields)
-                itemOld.(fields{f}) = itemNew.(fields{f});
-            end
-            outCell{i} = itemOld;
-        else
-            % Fallback, falls ein Element (noch) kein Struct ist
-            outCell{i} = itemNew; 
-        end
-    end
-end
+  currentLen = numel(oldCell);
 
-function outStruct = addFieldAligned(outStruct, fieldName, inputVal)
-    % 1. Input radikal in ein Cell-Array zwingen (falls es keins ist)
-    if ~iscell(inputVal)
-        inputVal = {inputVal};
+  if newLen > currentLen
+    if currentLen == 1
+      oldCell = repmat(oldCell, 1, newLen);
+      currentLen = newLen;
+    else
+      error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
     end
+  elseif newLen < currentLen
+    if newLen == 1
+      newInput = repmat(newInput, 1, currentLen);
+    else
+      error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
+    end
+  end
+
+  outCell = oldCell; 
+  for i = 1:currentLen
+    itemOld = oldCell{i};
+    itemNew = newInput{i};
     
-    % Sicherstellen, dass es ein Zeilenvektor ist (für einheitliche Dimension)
-    inputVal = inputVal(:)'; 
-    newLen = numel(inputVal);
-
-    % 2. Prüfen, ob das Struct überhaupt schon Felder hat
-    fields = fieldnames(outStruct);
-    if isempty(fields)
-        % Erstes Feld im Struct -> Einfach direkt reinschreiben
-        outStruct.(fieldName) = inputVal;
-        return;
+    if isstruct(itemOld) && isstruct(itemNew)
+      fields = fieldnames(itemNew);
+      for f = 1:numel(fields)
+        itemOld.(fields{f}) = itemNew.(fields{f});
+      end
+      outCell{i} = itemOld;
+    else
+      outCell{i} = itemNew; 
     end
-
-    % Aktuelle Länge der existierenden Cell-Arrays ermitteln
-    currentLen = numel(outStruct.(fields{1}));
-
-    % 3. Dimensionen abgleichen und ggf. expandieren (Broadcasting)
-    if newLen > currentLen
-        % FALL A: Der neue Input ist größer -> Alle alten Felder erweitern!
-        if currentLen == 1
-            for f = 1:numel(fields)
-                % Inhalt kopieren mittels repmat
-                outStruct.(fields{f}) = repmat(outStruct.(fields{f}), 1, newLen);
-            end
-        else
-            error('Dimensionen passen nicht zusammen und können nicht erweitert werden!');
-        end
-        
-    elseif newLen < currentLen
-        % FALL B: Der neue Input ist kleiner -> Den neuen Input erweitern!
-        if newLen == 1
-            inputVal = repmat(inputVal, 1, currentLen);
-        else
-            error('Dimensionen passen nicht zusammen und können nicht erweitert werden!');
-        end
-    end
-
-    % 4. Den bereinigten und skalierten Wert eintragen
-    outStruct.(fieldName) = inputVal;
+  end
 end
 
 function matchNode = locate_subtree(node, targetPath)
