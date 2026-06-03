@@ -147,6 +147,16 @@ end
 
 data.ebsd.prop = prop;
 
+fields = fieldnames(data);
+for i = 1:length(fields)
+
+  field = fields{i};
+  if field == "ebsd", continue; end
+
+  data.ebsd.opt.(field) = data.(field);
+
+end
+
 ebsd = data.ebsd;
 
 end
@@ -394,6 +404,52 @@ function out = ebsd_default(raw_data)
 
 end
 
+function out = image_data_default(raw_data)
+
+  if ~isfield(raw_data, 'FSE') || ~isfield(raw_data, 'SE') || ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size') 
+    error(['image_data default has not the correct fields! ' ...
+      'Make sure you have a FSE, SE, x_size and y_size field!'])
+  end
+  
+  out = struct;
+
+  x_size = double(raw_data.x_size);
+  y_size = double(raw_data.y_size);
+
+  FSE = raw_data.FSE;
+  SE = raw_data.SE;
+
+  names = fieldnames(FSE);
+  for i = 1:length(names)
+
+    name = names{i};
+    out.(name) = double(permute(reshape(FSE.(name)(:), [x_size, y_size]), [2 1]));
+
+  end
+
+  names = fieldnames(SE);
+  for i = 1:length(names)
+
+    name = names{i};
+    out.(name) = double(permute(reshape(SE.(name)(:), [x_size, y_size]), [2 1]));
+
+  end
+
+end 
+
+function out = electron_image_default(raw_data)
+
+  if ~isfield(raw_data, 'image_data') || ~isfield(raw_data, 'header')
+    error(['electron_image default has not the correct fields! ' ...
+      'Make sure you have a image_data and header field!'])
+  end
+  
+  out = raw_data.image_data;
+
+  out.Header = raw_data.header;
+
+end 
+
 % Functions----------------------------------------------------------------
 
 function cleanName = clean_string(rawName, option)
@@ -430,21 +486,30 @@ arguments
   options.name string = ""
   options.multiple logical = false
   options.level int8 = 1
+  options.optional logical = false
 end
 
   data = [];
   raw_data = struct();
 
-  % return if and endpoint is reached
-  if ~isstruct(config_item)
-    return;
-  end
-
   fields = fieldnames(config_item);
+
+  if ismember('optional', fields)
+    options.optional = config_item.optional;
+  end
 
   % set a new root if key field is set --> root for all following iterations
   if ismember('key', fields)
-    options.root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", options.root));
+    try
+      options.root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", options.root));
+    catch ME
+      if options.optional
+        warning('Could not load optional: %s', options.name)
+        return;
+      else
+        ME.message
+      end
+    end
   end
 
   % possibility to find multible --> important if more than one phase
@@ -515,7 +580,7 @@ end
 
       currentfield = fields{i};
 
-      if currentfield=="key" || currentfield=="type" || currentfield=="multiple"
+      if currentfield=="key" || currentfield=="type" || currentfield=="multiple" || currentfield=="optional"
         continue;
       end
 
@@ -581,7 +646,7 @@ end
       end
 
     catch MS
-      vprintf(isDebug(), '%s   [!] Formatter Error: %s\n', indent, formatter_name);
+      vprintf(isDebug(), '[!] Formatter Error: %s\n', formatter_name);
       disp(MS.getReport())
     end
 
@@ -771,7 +836,7 @@ function [paths] = search_recursive_groups(node, key, paths)
     return;
   end
 
-  if contains(node.Name, key, 'IgnoreCase', true)
+  if ~isempty(regexpi(node.Name, key, 'once'))
     paths{end+1} = node.Name; 
     return;
   end

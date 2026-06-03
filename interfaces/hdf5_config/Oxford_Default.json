@@ -50,5 +50,21 @@
   "additions": {
     "type": "auto",
     "key": { "mode": "absolute", "value": "/1/Data Processing/Data"}
+  },
+  "electron_image": {
+    "key" : { "mode": "regex", "value": "Electron Image" },
+    "type": "default",
+    "image_data": {
+      "type": "default",
+      "default": {
+        "FSE": { "group": {"mode": "regex", "value": "FSE"}},
+        "SE": { "group": {"mode": "regex", "value": "^.*/SE"}},
+        "x_size": {"mode": "regex", "value": "X Cells"},
+        "y_size": {"mode": "regex", "value": "Y Cells"}
+      }
+    },
+    "header": {
+      "group": {"mode": "regex", "value": "Header"}
+    }
   }
 }
