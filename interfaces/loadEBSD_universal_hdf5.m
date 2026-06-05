@@ -9,7 +9,7 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 
 % Selecting right config and load------------------------------------------
 
-if ~exist(fname, 'file'), error('Datei %s nicht gefunden.', fname); end
+if ~exist(fname, 'file'), error('File %s not found.', fname); end
 info_struct = h5info(fname);
 
 if check_option(varargin, 'debug')
@@ -36,7 +36,7 @@ folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
 filePattern = fullfile(folderPath, '*.json');
 fileList = dir(filePattern);
 
-chosenjson = '';
+Conf = struct();
 for i = 1:length(fileList)
 
   if fileList(i).isdir
@@ -46,31 +46,27 @@ for i = 1:length(fileList)
   baseFileName = fileList(i).name;
   fullFileName = fullfile(fileList(i).folder, baseFileName);
 
-  jsonText = fileread(fullFileName);
-  cur_Conf = jsondecode(jsonText);
+  % read json config and safe to read manufacturer 
+  try
+    jsonText = fileread(fullFileName);
+    cur_Conf = jsondecode(jsonText);
+  catch ME
+    error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
+          chosenjson, ME.message);
+  end
 
   cur_manu = cur_Conf.settings.manufacturer_keys.data;
 
   if any(strcmpi(manufacturer, cur_manu))  
 
-    chosenjson = fullFileName;
-    break;
+    Conf = cur_Conf; break;
 
   end
 
 end
 
-if isempty(chosenjson)
+if isempty(Conf)
   error("No Manufacturer config found for: " + manufacturer);
-end
-
-% read json config --> safe to file
-try
-  jsonText = fileread(chosenjson);
-  Conf = jsondecode(jsonText);
-catch ME
-  error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
-        chosenjson, ME.message);
 end
 
 % generate config info text
@@ -152,7 +148,7 @@ for i = 1:length(fields)
 
   field = fields{i};
   if field == "ebsd", continue; end
-
+    
   data.ebsd.opt.(field) = data.(field);
 
 end
@@ -161,7 +157,8 @@ ebsd = data.ebsd;
 
 end
 
-% Formating functions------------------------------------------------------
+
+%% Formating functions
 
 function out = position_direct(raw_data)
 
@@ -196,12 +193,12 @@ function out = rotation_euler(raw_data)
 
   fields = fieldnames(raw_data);
   
-  if isempty(fields) || length(fields) > 4 || ~ismember('formate', fields)
+  if isempty(fields) || length(fields) > 4 || ~ismember('format', fields)
     error(['Rotation data has type euler but not enough fields or too many' ...
-      'field. You need to give 1-3 Fields and one named formate for degree or radiant formate.'])
+      'field. You need to give 1-3 Fields and one named format for degree or radiant format.'])
   end
 
-  formate = string(raw_data.formate);
+  format = string(raw_data.format);
 
   % Collect all fields and stick them together in one matrix
   matrix = cell(1, length(fields));
@@ -209,7 +206,7 @@ function out = rotation_euler(raw_data)
 
     field_name = fields{i};
 
-    if field_name == "formate"
+    if field_name == "format"
       continue;
     end
 
@@ -225,35 +222,35 @@ function out = rotation_euler(raw_data)
   phi = horzcat(matrix{:});
 
   % Check if degree or radiant
-  if formate == "degree"
+  if format == "degree"
     out = rotation.byEuler(phi * degree);
-  elseif formate == "radiante"
+  elseif format == "radian"
     out = rotation.byEuler(phi);
   else 
-    error('Wrong format for Rotation: "%s". Use "degree" or "radiante".', formate);  
+    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);  
   end
 end 
 
 function out = rotation_euler_stack(raw_data)
 
-  if ~isfield(raw_data, 'phi') || ~isfield(raw_data, 'formate')
+  if ~isfield(raw_data, 'phi') || ~isfield(raw_data, 'format')
     error(['Rotation data has type euler_stack but not the correct fields where given!' ...
-      ' Make sure you have phi and formate field.'])
+      ' Make sure you have phi and format field.'])
   end
 
-  formate = string(raw_data.formate);
+  format = string(raw_data.format);
 
   phi1_2D = raw_data.phi(1,:,:); 
   Phi_2D  = raw_data.phi(2,:,:);
   phi2_2D = raw_data.phi(3,:,:);
 
   % Check if degree or radiant
-  if formate == "degree"
+  if format == "degree"
     out = rotation.byEuler(phi1_2D(:)*degree, Phi_2D(:)*degree, phi2_2D(:)*degree);
-  elseif formate == "radiante"
+  elseif format == "radian"
     out = rotation.byEuler(phi1_2D(:), Phi_2D(:), phi2_2D(:));
   else 
-    error('Wrong format for Rotation: "%s". Use "degree" or "radiante".', formate);  
+    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);  
   end
 end
 
@@ -302,10 +299,10 @@ function out = lattice_all_together(raw_data)
 
 end
 
-function out = angle_seperate(raw_data)
+function out = angle_separate(raw_data)
 
   if ~isfield(raw_data, 'lattice_alpha') || ~isfield(raw_data, 'lattice_beta') || ~isfield(raw_data, 'lattice_gamma')
-    error(['Cs angle data has type seperate but not the correct fields were given. ' ...
+    error(['Cs angle data has type separate but not the correct fields were given. ' ...
       'Make sure you have a lattice_alpha, lattice_beta and lattice_gamma!'])
   end
 
@@ -316,10 +313,10 @@ function out = angle_seperate(raw_data)
   out = [alpha, beta, gamma];
 end 
 
-function out = dim_seperate(raw_data)
+function out = dim_separate(raw_data)
 
   if ~isfield(raw_data, 'lattice_a') || ~isfield(raw_data, 'lattice_b') || ~isfield(raw_data, 'lattice_c')
-    error(['Cs angle data has type seperate but not the correct fields were given. ' ...
+    error(['Cs angle data has type separate but not the correct fields were given. ' ...
       'Make sure you have a lattice_a, lattice_b and lattice_c!'])
   end
 
@@ -388,10 +385,15 @@ function out = ebsd_default(raw_data)
 
   if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase))
     error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
-          numel(data.position), numel(data.rotation), numel(data.phase));
+          numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase));
   end
   
   prop = struct();
+
+  if isfield(raw_data, 'map_correction')
+    map_correct = raw_data.map_correction; 
+    raw_data.rotation = map_correct .* raw_data.rotation;
+  end
 
   ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop);
   
@@ -419,22 +421,14 @@ function out = image_data_default(raw_data)
   FSE = raw_data.FSE;
   SE = raw_data.SE;
 
-  names = fieldnames(FSE);
-  for i = 1:length(names)
-
-    name = names{i};
-    out.(name) = double(permute(reshape(FSE.(name)(:), [x_size, y_size]), [2 1]));
-
+  function dst = copy_reshaped(src, dst, x, y)
+    for n = fieldnames(src)'
+      dst.(n{1}) = double(permute(reshape(src.(n{1})(:),[x,y]),[2 1]));
+    end
   end
 
-  names = fieldnames(SE);
-  for i = 1:length(names)
-
-    name = names{i};
-    out.(name) = double(permute(reshape(SE.(name)(:), [x_size, y_size]), [2 1]));
-
-  end
-
+  out = copy_reshaped(FSE, out, x_size, y_size);
+  out = copy_reshaped(SE,  out, x_size, y_size);
 end 
 
 function out = electron_image_default(raw_data)
@@ -450,7 +444,26 @@ function out = electron_image_default(raw_data)
 
 end 
 
-% Functions----------------------------------------------------------------
+function out = map_correction_default(raw_data)
+
+  if ~isfield(raw_data, 'id') || ~isfield(raw_data, 'correct_data')
+    error(['electron_image default has not the correct fields! ' ...
+      'Make sure you have a id and correct_data field!'])
+  end
+
+  id = int8(raw_data.id);
+  data = raw_data.correct_data;
+  
+  out = rotation.byEuler(data(id,:)*degree);
+
+  if id == 1 || id == 2
+    out.opt.how2plot = {'x->south', 'y->east'};
+  elseif id == 3 || id == 4
+    out.opt.how2plot = {'x->east', 'y->south'};
+  end
+end
+
+%% Helper Functions
 
 function cleanName = clean_string(rawName, option)
 arguments
@@ -474,184 +487,6 @@ end
   
   for r = 1:len
     cleanName = regexprep(cleanName, rules{r, 1}, rules{r, 2}, 'ignorecase');    
-  end
-end
-
-function [data, config_item] = readConf(info_struct, config_item, options)
-
-arguments
-  info_struct struct
-  config_item struct
-  options.root string = ""
-  options.name string = ""
-  options.multiple logical = false
-  options.level int8 = 1
-  options.optional logical = false
-end
-
-  data = [];
-  raw_data = struct();
-
-  fields = fieldnames(config_item);
-
-  if ismember('optional', fields)
-    options.optional = config_item.optional;
-  end
-
-  % set a new root if key field is set --> root for all following iterations
-  if ismember('key', fields)
-    try
-      options.root = (get_hdf5_path(info_struct, config_item.key, "mode", "groups", "root", options.root));
-    catch ME
-      if options.optional
-        warning('Could not load optional: %s', options.name)
-        return;
-      else
-        ME.message
-      end
-    end
-  end
-
-  % possibility to find multible --> important if more than one phase
-  if ismember('multiple', fields)
-    options.multiple = strcmpi(config_item.multiple, "true");
-  end
-
-  % the data is in a field to read from
-  if ismember('value', fields)
-
-    % generate absolute path and read data on this path
-    path = get_hdf5_path(info_struct, config_item, "root", options.root, "multiple", options.multiple);
-    config_item.path = path;
-    
-    % debug logic
-    if iscell(path)
-      for pIdx = 1:length(path)
-        currentPath = string(path{pIdx});
-        label = sprintf('├── %s (%d)', options.name, pIdx);
-        print_debug(label, currentPath, options.level)
-      end
-    else
-      label = sprintf('├── %s', options.name);
-      print_debug(label, path, options.level)
-    end
-    
-    % reading data 
-    raw_data = readData(info_struct.Filename, path);
-
-  % the data was given directly in json
-  elseif ismember('data', fields)
-
-    % debug logic
-    label = sprintf('├── %s', options.name);
-    print_debug(label, '[Internal Config Data]', options.level)
-
-    % reading data
-    raw_data = config_item.data;
-
-  % the data is a whole group
-  elseif any(strcmp('group', fields))
-
-    % locate group in file
-    group_path = get_hdf5_path(info_struct, config_item.group, "root", options.root, "mode", "groups");
-    group = locate_subtree(info_struct, group_path);
-
-    % debug logic
-    label = sprintf('├── %s/', options.name);
-    path = sprintf('[Collect: %d Datasets] from %s', length(group.Datasets), group_path);
-    print_debug(label, path, options.level);
-
-    % reading whole group data
-    for i = 1:length(group.Datasets)
-      raw_name = string(group.Datasets(i).Name);
-      clean_name = clean_string(raw_name);
-      raw_data.(clean_name) = h5read(info_struct.Filename, group_path + "/" + raw_name);
-    end
-
-  % the data is in a subfield
-  else
-
-    % debug logic
-    label = sprintf('├── %s/', options.name);
-    print_debug(label, '', options.level)
-
-    % search all subfields for data
-    for i = 1:length(fields)
-
-      currentfield = fields{i};
-
-      if currentfield=="key" || currentfield=="type" || currentfield=="multiple" || currentfield=="optional"
-        continue;
-      end
-
-      [data_out, config_item.(currentfield)] = readConf( ...
-        info_struct, ...
-        config_item.(currentfield), ...
-        "root", options.root, ...
-        "name", currentfield, ...
-        "multiple", options.multiple, ...
-        "level", options.level + 1);
-      
-      if ~isempty(data_out)
-
-        if options.multiple==true
-
-          c = cell(size(data_out));
-          for j = 1:numel(data_out)
-            s = struct();
-            s.(currentfield) = data_out{j};
-            c{j} = s;
-          end
-
-          raw_data = appendAndAlignCell(raw_data,c);
-
-        else
-          raw_data.(currentfield) = data_out;
-        end
-      end
-    end
-  end
-   
-  % there is a type field use a formatter on collected data
-  if ismember('type', fields)
-
-    formatter_name = sprintf('%s_%s', options.name, config_item.type);
-
-    % debug logic
-    label = sprintf('└── formatter: %s/', config_item.type);
-    print_debug(label, '', options.level)
-
-    % call the formater with the data 
-    try
-      formatter = str2func(formatter_name);
-
-      % if there are multiple data points call the formatter for each one
-      if options.multiple==true
-
-          data = cell(1, length(raw_data));
-          for i = 1:length(raw_data)
-            if isfield(raw_data{i}, config_item.type)
-              data{i} = formatter(raw_data{i}.(config_item.type));
-            else
-              data{i} = formatter(raw_data{i});
-            end
-          end
-
-      else
-        if isfield(raw_data, config_item.type)
-          data = formatter(raw_data.(config_item.type));
-        else 
-          data = formatter(raw_data);
-        end
-      end
-
-    catch MS
-      vprintf(isDebug(), '[!] Formatter Error: %s\n', formatter_name);
-      disp(MS.getReport())
-    end
-
-  else
-    data = raw_data;
   end
 end
 
@@ -695,21 +530,36 @@ arguments
   options.root string = "/"
   options.mode string = "fields"
   options.multiple = false
+  options.optional = false
 end
   switch lower(config_item.mode)
     case 'absolute'
+
       final_path = config_item.value; 
+      % verify if the given absolute path exists 
+      if isempty(locate_subtree(info_struct, final_path))
+        if options.optional 
+          final_path = "";
+        else
+          error('loadEBSD_universal_hdf5:badPath', ...
+                'Absolute path "%s" declared in config does not exist.', final_path);
+        end
+      end
           
     case 'regex'
       results = search_for_key(info_struct, config_item.value, options.mode, options.root);
       if isempty(results)
-        error('No field found for key "%s"!', config_item.value);
-      end
-    
-      if options.multiple == true
-        final_path = results;
-      else 
-        final_path = results{1};
+        if options.optional
+          final_path = "";
+        else
+          error('No field found for key "%s"!', config_item.value);
+        end
+      else
+        if options.multiple == true
+          final_path = results;
+        else 
+          final_path = results{1};
+        end
       end
     otherwise
       error('Unkown mode: %s. Only use regex or absolute', config_item.mode);
@@ -766,13 +616,13 @@ function outCell = appendAndAlignCell(oldCell, newInput)
       oldCell = repmat(oldCell, 1, newLen);
       currentLen = newLen;
     else
-      error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
+      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
     end
   elseif newLen < currentLen
     if newLen == 1
       newInput = repmat(newInput, 1, currentLen);
     else
-      error('Dimensionen passen nicht: Alt hat %d Elemente, Neu hat %d.', currentLen, newLen);
+      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
     end
   end
 
@@ -797,32 +647,45 @@ function matchNode = locate_subtree(node, targetPath)
 % searches in a h5info struct to find a given path - returns the struct
 % of the path
 
-  tokensNode   = split(regexprep(node.Name, '^/+|/+$', ''), '/');
+  tokensNode   = split(regexprep(node.Name,   '^/+|/+$', ''), '/');
   tokensTarget = split(regexprep(targetPath, '^/+|/+$', ''), '/');
-  
-  tokensNode(cellfun(@isempty, tokensNode)) = [];
+
+  tokensNode(  cellfun(@isempty, tokensNode))   = [];
   tokensTarget(cellfun(@isempty, tokensTarget)) = [];
-  
+
+  % Direct match on the current node (covers both groups and datasets)
   if isequal(tokensNode, tokensTarget)
     matchNode = node;
     return;
   end
-  
+
   matchNode = [];
+  % scan datasets in the current group
+  if ~isempty(node.Datasets)
+    for i = 1:length(node.Datasets)
+      ds = node.Datasets(i);
+      tokensDS = split(regexprep(ds.Name, '^/+|/+$', ''), '/');
+      tokensDS(cellfun(@isempty, tokensDS)) = [];
+      if ismember(tokensDS, tokensTarget)
+        matchNode = ds;
+        return;
+      end
+    end
+  end
+
+  % recurse into subgroups
   if ~isempty(node.Groups)
     for i = 1:length(node.Groups)
       groupName = node.Groups(i).Name;
       tokensGroup = split(regexprep(groupName, '^/+|/+$', ''), '/');
       tokensGroup(cellfun(@isempty, tokensGroup)) = [];
-      
-      lenGroup = length(tokensGroup);
+
+      lenGroup  = length(tokensGroup);
       lenTarget = length(tokensTarget);
-      
+
       if lenGroup <= lenTarget && isequal(tokensGroup, tokensTarget(1:lenGroup))
         matchNode = locate_subtree(node.Groups(i), targetPath);
-        if ~isempty(matchNode)
-          return;
-        end
+        if ~isempty(matchNode), return; end
       end
     end
   end
@@ -913,6 +776,240 @@ function data = search_Conf(config_item, value, filterDir, data)
   else 
     for i = 1:length(fields)
       data = search_Conf(config_item.(fields{i}), value, filterDir, data);
+    end
+  end
+end
+
+%% Main functions
+
+function [data, config_item] = readConf(info_struct, config_item, options)
+% This function is the recursive engine behind loadEBSD_universal_hdf5.
+% It walks a config_item struct and turns it into either:
+%   - a struct of raw HDF5 data, or
+%   - the result of running a "name_type" formatter on that struct.
+
+  arguments
+    info_struct  struct
+    config_item  struct
+    options.root     string  = ""
+    options.name     string  = ""
+    options.multiple logical = false
+    options.level    int8    = 1
+    options.optional logical = false
+  end
+
+  data = [];
+
+  % Phase 1 -- pull option overrides out of the config itself
+  options = apply_config_overrides(options, config_item);
+
+  % Phase 2 -- anchor the search to a "key" group if one is declared
+  [options, skip] = resolve_root_path(info_struct, config_item, options);
+  if skip
+    return;
+  end
+
+  % Phase 3 -- read raw data from whichever source the config declares
+  [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options);
+
+  % Phase 4 -- run a type-formatter if one is configured
+  if isfield(config_item, 'type')
+    data = apply_type_formatter(raw_data, config_item, options);
+  else
+    data = raw_data;
+  end
+end
+
+function options = apply_config_overrides(options, config_item)
+  fields = fieldnames(config_item);
+  if ismember('optional', fields), options.optional = config_item.optional; end
+  if ismember('multiple', fields), options.multiple = config_item.multiple; end
+end
+
+function [options, skip] = resolve_root_path(info_struct, config_item, options)
+% If the config carries a 'key', locate the matching group in the HDF5
+% file and make it the new root for every subsequent read in this branch.
+  skip = false;
+  if ~isfield(config_item, 'key'), return; end
+
+  options.root = get_hdf5_path(info_struct, config_item.key, ...
+    "mode", "groups", ...
+    "root", options.root, ...
+    "optional", options.optional);
+
+  if options.root == ""
+    vprintf(isDebug(), '   ⤴ skip optional "%s" (key resolved to empty)\n', options.name);
+    skip = true;
+  end
+end
+
+function [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options)
+% The data source is implied by which top-level field the config item
+% carries. Dispatch is exclusive: at most one of these can be present.
+  if isfield(config_item, 'value')
+    [raw_data, config_item] = fetch_from_path(info_struct, config_item, options);
+  elseif isfield(config_item, 'data')
+    raw_data = fetch_from_inline_data(config_item, options);
+  elseif isfield(config_item, 'group')
+    raw_data = fetch_from_group(info_struct, config_item, options);
+  else
+    [raw_data, config_item] = fetch_from_subfields(info_struct, config_item, options);
+  end
+end
+
+function [raw_data, config_item] = fetch_from_path(info_struct, config_item, options)
+% The config points at one (or several) absolute / regex paths in the
+% HDF5 file. The resolved path is stashed back on the config so that
+% downstream code (e.g. the additions auto-discovery) can introspect it.
+  path = get_hdf5_path(info_struct, config_item, ...
+    "root", options.root, ...
+    "multiple", options.multiple, ...
+    "optional", options.optional);            % <-- now passes optional
+  config_item.path = path;
+
+  if path == ""
+    label = sprintf('├── %s/', options.name);
+    pathLabel = sprintf('⤴ skip optional "%s" (path not found)\n', options.name);
+    print_debug(label, pathLabel, options.level);
+    raw_data = struct();
+    return;
+  end
+
+  if iscell(path)
+    for pIdx = 1:length(path)
+      label = sprintf('├── %s (%d)', options.name, pIdx);
+      print_debug(label, string(path{pIdx}), options.level);
+    end
+  else
+    label = sprintf('├── %s', options.name);
+    print_debug(label, path, options.level);
+  end
+
+  raw_data = readData(info_struct.Filename, path);
+end
+
+function raw_data = fetch_from_inline_data(config_item, options)
+% The data is shipped inside the JSON itself
+  label = sprintf('├── %s', options.name);
+  print_debug(label, '[Internal Config Data]', options.level);
+
+  raw_data = config_item.data;
+end
+
+function raw_data = fetch_from_group(info_struct, config_item, options)
+% Reads every dataset under a matched group at once, using the cleaned
+% dataset name as the field name. Useful for header blobs and image
+% bundles (FSE/SE).
+  raw_data = struct();
+
+  group_path = get_hdf5_path(info_struct, config_item.group, ...
+    "root", options.root, ...
+    "mode", "groups", ...
+    "optional", options.optional);
+  config_item.path = group_path;
+
+  if group_path == ""
+    label = sprintf('├── %s/', options.name);
+    pathLabel = sprintf('⤴ skip optional "%s" (group not found)\n', options.name);
+    print_debug(label, pathLabel, options.level);
+    return;
+  end
+
+  group = locate_subtree(info_struct, group_path);
+
+  label = sprintf('├── %s/', options.name);
+  pathLabel = sprintf('[Collect: %d Datasets] from %s', ...
+    length(group.Datasets), group_path);
+  print_debug(label, pathLabel, options.level);
+
+  for i = 1:length(group.Datasets)
+    raw_name  = string(group.Datasets(i).Name);
+    cleanName = clean_string(raw_name);
+    raw_data.(cleanName) = h5read(info_struct.Filename, group_path + "/" + raw_name);
+  end
+end
+
+function [raw_data, config_item] = fetch_from_subfields(info_struct, config_item, options)
+% Each non-meta child is read recursively and merged back into a struct. 
+  label = sprintf('├── %s/', options.name);
+  print_debug(label, '', options.level);
+
+  raw_data = struct();
+  fields = fieldnames(config_item);
+  for i = 1:length(fields)
+    currentfield = fields{i};
+    if ismember(currentfield, ["key","type","multiple","optional"]), continue; end
+
+    [data_out, config_item.(currentfield)] = readConf( ...
+      info_struct, config_item.(currentfield), ...
+      "root",     options.root, ...
+      "name",     currentfield, ...
+      "multiple", options.multiple, ...
+      "level",    options.level + 1);
+
+    if ~(isstruct(data_out) && isempty(fieldnames(data_out)))
+      if options.multiple == true
+        c = cell(size(data_out));
+        for j = 1:numel(data_out)
+          s = struct();
+          s.(currentfield) = data_out{j};
+          c{j} = s;
+        end
+        raw_data = appendAndAlignCell(raw_data, c);
+      else
+        raw_data.(currentfield) = data_out;
+      end
+    end
+  end
+end
+
+function data = apply_type_formatter(raw_data, config_item, options)
+% Convention: the formatter function must be named <options.name>_<type>.
+% Errors during formatting are reported (and swallowed) so a single
+% broken formatter does not abort the entire load. Optional fields get
+% an additional soft-fail gate: if the raw data is empty (because the
+% upstream path was optional and missing), the formatter is not called
+% at all.
+  formatter_name = sprintf('%s_%s', options.name, config_item.type);
+  label = sprintf('└── formatter: %s/', config_item.type);
+  print_debug(label, '', options.level);
+
+  data = struct();
+
+  try
+    formatter = str2func(formatter_name);
+    if options.multiple == true
+      data = format_multiple_results(formatter, raw_data, config_item);
+    else
+      data = format_single_result(formatter, raw_data, config_item);
+    end
+  catch ME
+      vprintf(isDebug(), '[!] Formatter Error: %s\n', formatter_name);
+      disp(ME.getReport())
+  end
+end
+
+function data = format_single_result(formatter, raw_data, config_item)
+% If the subfields branch produced a struct that *also* has a field
+% named after the type (e.g. the "direct" subfield of a position:direct
+% config), hand the formatter just that subfield. Otherwise hand it
+% the whole struct.
+  if isfield(raw_data, config_item.type)
+    data = formatter(raw_data.(config_item.type));
+  else
+    data = formatter(raw_data);
+  end
+end
+
+function data = format_multiple_results(formatter, raw_data, config_item)
+% Same dispatch rule, applied per cell element. This is what makes the
+% "cs" / "phase" / "default" sub-configs work for multi-phase files.
+  data = cell(1, length(raw_data));
+  for i = 1:length(raw_data)
+    if isfield(raw_data{i}, config_item.type)
+      data{i} = formatter(raw_data{i}.(config_item.type));
+    else
+      data{i} = formatter(raw_data{i});
     end
   end
 end
