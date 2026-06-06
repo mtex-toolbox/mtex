@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<style>
+:root {
+    --image-width: 50px;
+    --image-height: 25px;
+
+    --padding: 5px;
+    --border-width: 1px;
+    --radius: 6px;
+    --gap: 5px;
+
+    --box-width: calc(var(--image-width) + 2 * var(--padding));
+    --box-height: calc(var(--image-height) + 2 * var(--padding));
+    --options-top: calc(var(--box-height) + var(--gap));
+}
+
+body {
+    margin: 0;
+    background: white;
+}
+
+.dropdown {
+    position: relative;
+    width: var(--box-width);
+    user-select: none;
+}
+
+.selected {
+    width: var(--box-width);
+    height: var(--box-height);
+    border: var(--border-width) solid #999;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: white;
+    box-sizing: border-box;
+}
+
+.selected img {
+    width: var(--image-width);
+    height: var(--image-height);
+    object-fit: contain;
+}
+
+.options {
+    display: none;
+    position: absolute;
+    top: var(--options-top);
+    left: 0;
+    width: var(--box-width);
+    border: var(--border-width) solid #999;
+    border-radius: var(--radius);
+    background: white;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+}
+
+.option {
+    width: 100%;
+    height: var(--box-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.option:hover {
+    background: #eeeeee;
+}
+
+.option img {
+    width: var(--image-width);
+    height: var(--image-height);
+    object-fit: contain;
+}
+</style>
+
+<script>
+function setup(htmlComponent) {
+
+    const items = [
+        {value: "1xyz",   img: "1xyz.png"},
+        {value: "2xyz", img: "2xyz.png"},
+        {value: "3xyz", img: "3xyz.png"},
+        {value: "4xyz",   img: "4xyz.png"},
+        {value: "1yxz",   img: "1yxz.png"},
+        {value: "2yxz", img: "2yxz.png"},
+        {value: "3yxz", img: "3yxz.png"},
+        {value: "4yxz",   img: "4yxz.png"},
+    ];
+
+    const selected = document.getElementById("selected");
+    const selectedImg = document.getElementById("selectedImg");
+    const options = document.getElementById("options");
+
+    function selectItem(item) {
+        selectedImg.src = item.img;
+        options.style.display = "none";
+
+        htmlComponent.Data = {
+            value: item.value,
+            image: item.img
+        };
+    }
+
+    selected.addEventListener("click", function() {
+        options.style.display =
+            options.style.display === "block" ? "none" : "block";
+    });
+
+    items.forEach(function(item) {
+        const div = document.createElement("div");
+        div.className = "option";
+
+        const img = document.createElement("img");
+        img.src = item.img;
+
+        div.appendChild(img);
+
+        div.addEventListener("click", function() {
+            selectItem(item);
+        });
+
+        options.appendChild(div);
+    });
+
+    selectItem(items[0]);
+}
+</script>
+</head>
+
+<body>
+    <div class="dropdown">
+        <div id="selected" class="selected">
+            <img id="selectedImg" src="icons/cube.png">
+        </div>
+
+        <div id="options" class="options"></div>
+    </div>
+</body>
+</html>
