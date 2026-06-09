@@ -66,18 +66,20 @@ classdef EBSD < phaseList & dynProp & dynOption
   properties
     scanUnit = 'um'       % unit of the x,y coordinates
     unitCell = vector3d   % cell associated to a measurement
-    N = zvector           % normal direction of the measurement plane
+    N = zvector           % normal direction of the measurement plane    
   end
    
   properties (Dependent = true)
     dPos       % spacing of the positions
     rot2Plane  % rotation to xy plane
-    how2plot   % plotting convention    
-    plottingConvention % plotting convention    
+    how2plot   % plotting convention
+    plottingConvention % plotting convention
+    EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
   end
 
   properties (Access = protected)
     A_D = []        % adjacency matrix of the measurement points
+    Euler2Map = rotation.id  % EulerXYZ -> mapXYZ
   end
   
   methods
@@ -301,6 +303,15 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.how2plot(ebsd,pC)
       ebsd.pos.how2plot = pC;
+    end
+
+    function rot = get.EulerCorrection(ebsd)
+      rot = ebsd.Euler2Map;
+    end
+
+    function ebsd = set.EulerCorrection(ebsd,rot)
+      ebsd.rotations = rot * inv(ebsd.Euler2Map) * ebsd.rotations; %#ok<MINV>
+      ebsd.Euler2Map = rot;
     end
     
   end

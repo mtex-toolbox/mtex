@@ -68,9 +68,8 @@ if corSetting > 0 || check_option(varargin,'EulerCorrection')
   rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
 
   % correct rotations
-  ebsd.rotations = rot .* ebsd.rotations;
-  ebsd.rotations.opt.correction = rot;
-
+  ebsd.EulerCorrection = rot;
+  
 else
   
   fprintf(2,wraptext(['\nWarning: .osc files usually come with different coordinate systems for the Euler angles ' ...
