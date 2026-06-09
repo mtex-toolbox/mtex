@@ -4,6 +4,19 @@ classdef MApp_exported < matlab.apps.AppBase
   properties (Access = public)
     UIFigure                       matlab.ui.Figure
     EBSDDataAnalysisPanel          matlab.ui.container.Panel
+    Tree                           matlab.ui.container.CheckBoxTree
+    OrientationMapNode             matlab.ui.container.TreeNode
+    IPFZNode                       matlab.ui.container.TreeNode
+    IPFYNode                       matlab.ui.container.TreeNode
+    IPFXNode                       matlab.ui.container.TreeNode
+    PhaseMaptNode                  matlab.ui.container.TreeNode
+    PropertyMapNode                matlab.ui.container.TreeNode
+    MADNode                        matlab.ui.container.TreeNode
+    BCNode                         matlab.ui.container.TreeNode
+    PoleFiguresNode                matlab.ui.container.TreeNode
+    Node_2                         matlab.ui.container.TreeNode
+    Node                           matlab.ui.container.TreeNode
+    Node_3                         matlab.ui.container.TreeNode
     EulerImage                     matlab.ui.control.Image
     MapImage                       matlab.ui.control.Image
     EulerCoordinatesDropDown       matlab.ui.control.DropDown
@@ -405,6 +418,61 @@ classdef MApp_exported < matlab.apps.AppBase
       % Create EulerImage
       app.EulerImage = uiimage(app.EBSDDataAnalysisPanel);
       app.EulerImage.Position = [179 362 100 100];
+
+      % Create Tree
+      app.Tree = uitree(app.EBSDDataAnalysisPanel, 'checkbox');
+      app.Tree.Position = [87 74 150 257];
+
+      % Create OrientationMapNode
+      app.OrientationMapNode = uitreenode(app.Tree);
+      app.OrientationMapNode.Text = 'Orientation Map';
+
+      % Create IPFXNode
+      app.IPFXNode = uitreenode(app.OrientationMapNode);
+      app.IPFXNode.Text = 'IPFX';
+
+      % Create IPFYNode
+      app.IPFYNode = uitreenode(app.OrientationMapNode);
+      app.IPFYNode.Text = 'IPFY';
+
+      % Create IPFZNode
+      app.IPFZNode = uitreenode(app.OrientationMapNode);
+      app.IPFZNode.Text = 'IPFZ';
+
+      % Create PhaseMaptNode
+      app.PhaseMaptNode = uitreenode(app.Tree);
+      app.PhaseMaptNode.Text = 'Phase Mapt';
+
+      % Create PropertyMapNode
+      app.PropertyMapNode = uitreenode(app.Tree);
+      app.PropertyMapNode.Text = 'Property Map';
+
+      % Create MADNode
+      app.MADNode = uitreenode(app.PropertyMapNode);
+      app.MADNode.Text = 'MAD';
+
+      % Create BCNode
+      app.BCNode = uitreenode(app.PropertyMapNode);
+      app.BCNode.Text = 'BC';
+
+      % Create PoleFiguresNode
+      app.PoleFiguresNode = uitreenode(app.Tree);
+      app.PoleFiguresNode.Text = 'Pole Figures';
+
+      % Create Node_2
+      app.Node_2 = uitreenode(app.PoleFiguresNode);
+      app.Node_2.Text = '(100)';
+
+      % Create Node
+      app.Node = uitreenode(app.PoleFiguresNode);
+      app.Node.Text = '(010)';
+
+      % Create Node_3
+      app.Node_3 = uitreenode(app.PoleFiguresNode);
+      app.Node_3.Text = '(001)';
+
+      % Assign Checked Nodes
+      app.Tree.CheckedNodes = [app.PhaseMaptNode];
 
       % Show the figure after all components are created
       app.UIFigure.Visible = 'on';
