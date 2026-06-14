@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="2xy: Z oben links, Y rechts, X unten links">
+  <title>2xy: Z oben links, Y rechts, X unten links</title>
+  <g id="axes" shape-rendering="geometricPrecision">
+    <path d="M 330 665 L 330 320 L 665 320" fill="none" stroke="#000" stroke-width="46" stroke-linecap="butt" stroke-linejoin="round"/>
+    <polygon points="330,770 272,665 388,665" fill="#000"/>
+    <polygon points="770,320 665,262 665,378" fill="#000"/>
+  </g>
+  <g id="labels">
+    <path d="M 115.446 100.113 L 224.526 100.113 L 224.526 120.361 L 154.912 204.605 L 226.529 204.605 L 226.529 229.887 L 113.471 229.887 L 113.471 209.639 L 183.086 125.423 L 115.446 125.423 L 115.446 100.113 Z" fill="#000"/>
+    <path d="M 190.136 858.665 L 235.137 924.887 L 200.288 924.887 L 169.972 880.553 L 139.879 924.887 L 104.863 924.887 L 149.892 858.665 L 106.588 795.113 L 141.548 795.113 L 169.972 836.916 L 198.285 795.113 L 233.412 795.113 L 190.136 858.665 Z" fill="#000"/>
+    <path d="M 803.806 175.113 L 840.408 175.113 L 869.972 221.366 L 899.509 175.113 L 936.194 175.113 L 886.743 250.207 L 886.743 304.887 L 853.285 304.887 L 853.285 250.207 L 803.806 175.113 Z" fill="#000"/>
+  </g>
+</svg>
