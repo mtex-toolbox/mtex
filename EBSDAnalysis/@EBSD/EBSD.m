@@ -310,7 +310,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
 
     function ebsd = set.EulerCorrection(ebsd,rot)
-      ebsd.rotations = rot * inv(ebsd.Euler2Map) * ebsd.rotations; %#ok<MINV>
+      ebsd.rotations = rot .* inv(ebsd.Euler2Map) .* ebsd.rotations;
       ebsd.Euler2Map = rot;
     end
     
