@@ -43,8 +43,7 @@ if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard')
 
 end
 
-ebsd.rotations = correction .* ebsd.rotations;
-ebsd.rotations.opt.EulerCorrection = correction;
+ebsd.EulerCorrection = correction;
 
 end
 
