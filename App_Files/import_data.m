@@ -29,7 +29,7 @@ function [data, fileName] = import_data()
 
     % try to load EBSD data for chosen path
     try
-        data = EBSD.load(fullPath);
+        data = EBSD.load(fullPath,'wizard');
     catch ME
         errordlg(['Error while MTEX-Data-Import: ' ME.message]);
         data = [];
