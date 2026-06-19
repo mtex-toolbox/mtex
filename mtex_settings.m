@@ -84,7 +84,7 @@ setMTEXpref('poleFigureExtensions',...
   '.xrdml','.gpf','.plf','.nja','.ptx','.rpf','.pwd','.slc'});
 
 setMTEXpref('EBSDExtensions',...
-  {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.crc'});
+  [".osc",".ctf",".ang",".hkl",".tsl",".sor",".crc",".h5",".hdf5",".h5oina",".oh5",".dream3d"]);
 
 % set default colors
 colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
