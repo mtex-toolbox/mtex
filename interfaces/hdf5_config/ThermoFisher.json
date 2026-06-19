@@ -19,15 +19,16 @@
     "rotation": {
       "type": "euler_stack",
       "euler_stack": {
-        "formate": { "data": "degree"},
+        "format": { "data": "degree"},
         "phi": { "mode": "regex", "value": "EulerAngles" }
       }
     },
     "cs": {
       "type": "default",
-      "multiple": "true",
+      "multiple": true,
       "key": { "mode": "regex", "value": "Phase" },
       "default": {
+        "reference_frame": { "data": "X||a*, Z||c"},
         "space_group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "default" },
         "name": { "mode": "regex", "value": "Name"},
         "lattice": {

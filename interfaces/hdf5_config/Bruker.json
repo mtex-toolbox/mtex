@@ -17,7 +17,7 @@
     "rotation": {
       "type": "euler",
       "euler": {
-        "formate": {"data": "degree"},
+        "format": {"data": "degree"},
         "phi1": { "mode": "regex", "value": "^phi1$" },
         "Phi":  { "mode": "regex", "value": "^PHI$" },
         "phi2": { "mode": "regex", "value": "^phi2$" }
@@ -25,7 +25,7 @@
     },
     "cs": {
       "type": "default",
-      "multiple": "true",
+      "multiple": true,
       "key": { "mode": "regex", "value": "Phases" },
       "default": {
         "space_group": { "mode": "regex", "value": "SpaceGroup", "type": "default" },

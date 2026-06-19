@@ -3,7 +3,7 @@ function [ebsd] = loadEBSD_universal_hdf5(fname, varargin)
 % How it is working:
 %   - You load your file of hdf5 format
 %   - The program will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
-%   - One can modify the search codes 
+%   - One can modify the search codes
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
 
@@ -42,22 +42,22 @@ for i = 1:length(fileList)
   if fileList(i).isdir
     continue;
   end
-  
+
   baseFileName = fileList(i).name;
   fullFileName = fullfile(fileList(i).folder, baseFileName);
 
-  % read json config and safe to read manufacturer 
+  % read json config and safe to read manufacturer
   try
     jsonText = fileread(fullFileName);
     cur_Conf = jsondecode(jsonText);
   catch ME
     error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
-          chosenjson, ME.message);
+          fullFileName, ME.message);
   end
 
   cur_manu = cur_Conf.settings.manufacturer_keys.data;
 
-  if any(strcmpi(manufacturer, cur_manu))  
+  if any(strcmpi(manufacturer, cur_manu))
 
     Conf = cur_Conf; break;
 
@@ -75,7 +75,6 @@ fprintf('HDF5 CONFIGURATION LOADED\n');
 fprintf('├── Manufacturer : %s\n', Conf.settings.name);
 if isfield(Conf.settings, 'manufacturer_info')
   wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
-
 end
 fprintf('%s\n', repmat('═', 1, 80));
 
@@ -89,15 +88,15 @@ for i = 1:length(categories)
 
   cat = categories{i};
   if ismember(cat, exclude), continue; end
-  
+
   vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
   vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
-  
+
   [data.(cat), Conf.(cat)] = readConf( ...
     info_struct, ...
     Conf.(cat), ...
     "name", cat);
-  
+
   vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
   vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
 
@@ -107,48 +106,44 @@ end
 
 prop = struct();
 
-if isfield(Conf, 'additions')
-  if Conf.additions.type == "auto"
+try
 
-    prop_path = get_hdf5_path(info_struct, Conf.additions.key, "mode", "groups");
-
-    paths_allready_used = search_Conf(Conf, 'path', prop_path);
+  if isfield(Conf, 'additions')
+    if Conf.additions.type == "auto"
+  
+      opt_prop = struct("root", "/", "optional", true, "name", "prop", "level", 1);
+  
+      prop_data = fetch_from_group(info_struct, Conf.additions, opt_prop);
+  
+      h = get_hdf5_path(info_struct, Conf.additions.group);
     
-    [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
-
-    prop_node = locate_subtree(info_struct, prop_path);
-
-    data_size = size(data.ebsd.pos);
-
-    for i = 1:length(prop_node.Datasets)
-      if prop_node.Datasets(i).Dataspace.Size == data_size(1)
-
-        raw_name = prop_node.Datasets(i).Name;
-
-        if ismember(raw_name, exclude_fields)
-          continue;
+      paths_allready_used = search_Conf(Conf, 'path', h);
+  
+      [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
+  
+      len = length(prop_data);
+      for i = 1:len
+        if ismember(prop_data{i}, exclude_fields)
+          prop_data = rmfield(prop_data);
         end
-
-        clean_name = clean_string(raw_name);
-        prop.(clean_name) = double(h5read(fname, prop_path + "/" + raw_name));
-
       end
+    else
+      warning("Still to do when additions is not auto...")
     end
-  else
-    warning("Still to do when additions is not auto...")
   end
+catch 
+  disp("Error building prop struct")
 end
-
 % Building output data-----------------------------------------------------
 
-data.ebsd.prop = prop;
+data.ebsd.prop = prop_data;
 
 fields = fieldnames(data);
 for i = 1:length(fields)
 
   field = fields{i};
   if field == "ebsd", continue; end
-    
+
   data.ebsd.opt.(field) = data.(field);
 
 end
@@ -166,13 +161,13 @@ function out = position_direct(raw_data)
     error('Position data has type direct but not the needed fields x and y')
   end
 
-  out = vector3d(double(raw_data.x), double(raw_data.y), 0); 
-  
-end 
+  out = vector3d(double(raw_data.x), double(raw_data.y), 0);
+
+end
 
 function out = position_indirect(raw_data)
 
-  if ~isfield(raw_data, 'step_size_x') || ~isfield(raw_data, 'grid_size_x') ||... 
+  if ~isfield(raw_data, 'step_size_x') || ~isfield(raw_data, 'grid_size_x') ||...
     ~isfield(raw_data, 'step_size_y') || ~isfield(raw_data, 'grid_size_y')
 
     error(['Position data has type indirect but not the needed fields ' ...
@@ -186,13 +181,13 @@ function out = position_indirect(raw_data)
 
   [x, y] = meshgrid(0:step_x:(cells_x-1)*step_x, 0:step_y:(cells_y-1)*step_y);
 
-  out = vector3d(x(:), y(:), 0); 
-end 
+  out = vector3d(x(:), y(:), 0);
+end
 
 function out = rotation_euler(raw_data)
 
   fields = fieldnames(raw_data);
-  
+
   if isempty(fields) || length(fields) > 4 || ~ismember('format', fields)
     error(['Rotation data has type euler but not enough fields or too many' ...
       'field. You need to give 1-3 Fields and one named format for degree or radiant format.'])
@@ -217,7 +212,7 @@ function out = rotation_euler(raw_data)
     else
       matrix{i} = double((raw_data.(fields{i}))');
     end
-  end 
+  end
 
   phi = horzcat(matrix{:});
 
@@ -226,10 +221,10 @@ function out = rotation_euler(raw_data)
     out = rotation.byEuler(phi * degree);
   elseif format == "radian"
     out = rotation.byEuler(phi);
-  else 
-    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);  
+  else
+    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);
   end
-end 
+end
 
 function out = rotation_euler_stack(raw_data)
 
@@ -240,7 +235,7 @@ function out = rotation_euler_stack(raw_data)
 
   format = string(raw_data.format);
 
-  phi1_2D = raw_data.phi(1,:,:); 
+  phi1_2D = raw_data.phi(1,:,:);
   Phi_2D  = raw_data.phi(2,:,:);
   phi2_2D = raw_data.phi(3,:,:);
 
@@ -249,8 +244,8 @@ function out = rotation_euler_stack(raw_data)
     out = rotation.byEuler(phi1_2D(:)*degree, Phi_2D(:)*degree, phi2_2D(:)*degree);
   elseif format == "radian"
     out = rotation.byEuler(phi1_2D(:), Phi_2D(:), phi2_2D(:));
-  else 
-    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);  
+  else
+    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);
   end
 end
 
@@ -265,6 +260,7 @@ function out = cs_default(raw_data)
     raw_data.space_group, ...
     raw_data.lattice.dim, ...
     raw_data.lattice.angle, ...
+    raw_data.reference_frame,...
     'Mineral', ...
     raw_data.name);
 end
@@ -274,11 +270,11 @@ function out = space_group_default(raw_data)
   if isnumeric(raw_data)
     clean = double(raw_data);
     cs = crystalSymmetry('spaceId', clean);
-  else 
+  else
     clean = clean_string(raw_data);
     cs = crystalSymmetry(clean);
-  end 
- 
+  end
+
   out = cs.pointGroup;
 
 end
@@ -295,7 +291,7 @@ function out = lattice_all_together(raw_data)
 
   out = struct();
   out.dim = dimension;
-  out.angle = angles; 
+  out.angle = angles;
 
 end
 
@@ -311,7 +307,7 @@ function out = angle_separate(raw_data)
   gamma = double(raw_data.lattice_gamma)*degree;
 
   out = [alpha, beta, gamma];
-end 
+end
 
 function out = dim_separate(raw_data)
 
@@ -325,7 +321,7 @@ function out = dim_separate(raw_data)
   c = double(raw_data.lattice_c);
 
   out = [a, b, c];
-end 
+end
 
 function out = phase_stack(raw_data)
 
@@ -337,7 +333,7 @@ function out = phase_default(raw_data)
 
   out = double(raw_data);
 
-end 
+end
 
 function out = rotation_correctById(raw_data)
 % correct Euler angles such that the Euler angle reference frame coincides
@@ -378,7 +374,7 @@ end
 
 function out = ebsd_default(raw_data)
 
-  if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation') || ~isfield(raw_data, 'cs') 
+  if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation') || ~isfield(raw_data, 'cs')
     error(['EBSD data has not the correct fields! ' ...
       'Make sure you have a position, rotation, phase and cs field!'])
   end
@@ -387,16 +383,16 @@ function out = ebsd_default(raw_data)
     error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
           numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase));
   end
-  
+
   prop = struct();
 
+  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop);
+
+  % if a correction is set add
   if isfield(raw_data, 'map_correction')
-    map_correct = raw_data.map_correction; 
-    raw_data.rotation = map_correct .* raw_data.rotation;
+    ebsd.EulerCorrection = raw_data.map_correction;
   end
 
-  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop);
-  
   % if a header was created add
   if isfield(raw_data, 'header')
     ebsd.opt.Header = raw_data.header;
@@ -408,11 +404,11 @@ end
 
 function out = image_data_default(raw_data)
 
-  if ~isfield(raw_data, 'FSE') || ~isfield(raw_data, 'SE') || ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size') 
+  if ~isfield(raw_data, 'FSE') || ~isfield(raw_data, 'SE') || ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size')
     error(['image_data default has not the correct fields! ' ...
       'Make sure you have a FSE, SE, x_size and y_size field!'])
   end
-  
+
   out = struct;
 
   x_size = double(raw_data.x_size);
@@ -429,7 +425,7 @@ function out = image_data_default(raw_data)
 
   out = copy_reshaped(FSE, out, x_size, y_size);
   out = copy_reshaped(SE,  out, x_size, y_size);
-end 
+end
 
 function out = electron_image_default(raw_data)
 
@@ -437,12 +433,12 @@ function out = electron_image_default(raw_data)
     error(['electron_image default has not the correct fields! ' ...
       'Make sure you have a image_data and header field!'])
   end
-  
+
   out = raw_data.image_data;
 
   out.Header = raw_data.header;
 
-end 
+end
 
 function out = map_correction_default(raw_data)
 
@@ -453,7 +449,7 @@ function out = map_correction_default(raw_data)
 
   id = int8(raw_data.id);
   data = raw_data.correct_data;
-  
+
   out = rotation.byEuler(data(id,:)*degree);
 
   if id == 1 || id == 2
@@ -467,46 +463,45 @@ end
 
 function cleanName = clean_string(rawName, option)
 arguments
-  rawName 
+  rawName
   option = "full"
 end
   rules = {
-    '[ ,\-:|%~#\[\]()]', '';     
-    'sub(?=\d)', '';
-    'sub(?=[a-zA-Z])', '/';
-    'ovl', '-';
+    '[ ,\-:|%~#\[\]()]',     '';
+    'sub(?=\d)',             '';
+    'sub(?=[a-zA-Z])',       '/';
+    'ovl',                   '-';
   };
-  
+
   cleanName = rawName;
-  
+
   if option == "full"
     len = size(rules, 1);
   elseif option == "simple"
     len = 1;
-  end 
-  
+  end
+
   for r = 1:len
-    cleanName = regexprep(cleanName, rules{r, 1}, rules{r, 2}, 'ignorecase');    
+    cleanName = regexprep(cleanName, rules{r, 1}, rules{r, 2}, 'ignorecase');
   end
 end
 
 function data = readData(fname, paths)
 % small helper function to read data no matter if it is in a cell
-
   if iscell(paths)
     data = cell(1, length(paths));
     for i = 1:length(paths)
       data{i} = h5read(fname, paths{i});
     end
-  else 
+  else
     data = h5read(fname, paths);
   end
-end 
+end
 
 function print_debug(label, path, level)
 % helper function to handle the debug printing
 
-  indent = repmat('   ', 1, level - 1); 
+  indent = repmat('   ', 1, level - 1);
   targetWidth = 45;
   max_length = 55;
 
@@ -518,230 +513,8 @@ function print_debug(label, path, level)
   fullLabel = pad(fullLabel, targetWidth, 'right');
 
   vprintf(isDebug(), '%s │ %s\n', fullLabel, path);
-  
+
 end
-
-function final_path = get_hdf5_path(info_struct, config_item, options)
-% this function handles to find a path for a struct element with a value
-% field 
-arguments
-  info_struct struct
-  config_item struct
-  options.root string = "/"
-  options.mode string = "fields"
-  options.multiple = false
-  options.optional = false
-end
-  switch lower(config_item.mode)
-    case 'absolute'
-
-      final_path = config_item.value; 
-      % verify if the given absolute path exists 
-      if isempty(locate_subtree(info_struct, final_path))
-        if options.optional 
-          final_path = "";
-        else
-          error('loadEBSD_universal_hdf5:badPath', ...
-                'Absolute path "%s" declared in config does not exist.', final_path);
-        end
-      end
-          
-    case 'regex'
-      results = search_for_key(info_struct, config_item.value, options.mode, options.root);
-      if isempty(results)
-        if options.optional
-          final_path = "";
-        else
-          error('No field found for key "%s"!', config_item.value);
-        end
-      else
-        if options.multiple == true
-          final_path = results;
-        else 
-          final_path = results{1};
-        end
-      end
-    otherwise
-      error('Unkown mode: %s. Only use regex or absolute', config_item.mode);
-  end
-end
-
-function [paths] = search_for_key(info_struct, key, opt, startPath)
-% searches for a given key in the hdf5 file, depending on the opt it
-% searches for groups or fields with a start path
-  arguments
-    info_struct struct
-    key string
-    opt string
-    startPath string = "/"
-  end
-  
-  target_node = locate_subtree(info_struct, startPath);
-  
-  if isempty(target_node)
-    warning('Path %s not found in meta data.', startPath);
-    paths = {}; 
-    return;
-  end
-  
-  if opt=="groups"
-    paths = search_recursive_groups(target_node, key, {});
-  
-  elseif opt=="fields"
-    paths = search_recursive_fields(target_node, key, {});
-  else 
-    error("Unkown opt in search_for_key")
-  end
-end
-
-function outCell = appendAndAlignCell(oldCell, newInput)
-% a helping function to merge two cells together a certain way
-
-  if ~iscell(newInput)
-    newInput = {newInput};
-  end
-
-  newInput = newInput(:)';
-  newLen = numel(newInput);
-
-  if isempty(oldCell) || isstruct(oldCell)
-    outCell = newInput;
-    return;
-  end
-
-  currentLen = numel(oldCell);
-
-  if newLen > currentLen
-    if currentLen == 1
-      oldCell = repmat(oldCell, 1, newLen);
-      currentLen = newLen;
-    else
-      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
-    end
-  elseif newLen < currentLen
-    if newLen == 1
-      newInput = repmat(newInput, 1, currentLen);
-    else
-      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
-    end
-  end
-
-  outCell = oldCell; 
-  for i = 1:currentLen
-    itemOld = oldCell{i};
-    itemNew = newInput{i};
-    
-    if isstruct(itemOld) && isstruct(itemNew)
-      fields = fieldnames(itemNew);
-      for f = 1:numel(fields)
-        itemOld.(fields{f}) = itemNew.(fields{f});
-      end
-      outCell{i} = itemOld;
-    else
-      outCell{i} = itemNew; 
-    end
-  end
-end
-
-function matchNode = locate_subtree(node, targetPath)
-% searches in a h5info struct to find a given path - returns the struct
-% of the path
-
-  tokensNode   = split(regexprep(node.Name,   '^/+|/+$', ''), '/');
-  tokensTarget = split(regexprep(targetPath, '^/+|/+$', ''), '/');
-
-  tokensNode(  cellfun(@isempty, tokensNode))   = [];
-  tokensTarget(cellfun(@isempty, tokensTarget)) = [];
-
-  % Direct match on the current node (covers both groups and datasets)
-  if isequal(tokensNode, tokensTarget)
-    matchNode = node;
-    return;
-  end
-
-  matchNode = [];
-  % scan datasets in the current group
-  if ~isempty(node.Datasets)
-    for i = 1:length(node.Datasets)
-      ds = node.Datasets(i);
-      tokensDS = split(regexprep(ds.Name, '^/+|/+$', ''), '/');
-      tokensDS(cellfun(@isempty, tokensDS)) = [];
-      if ismember(tokensDS, tokensTarget)
-        matchNode = ds;
-        return;
-      end
-    end
-  end
-
-  % recurse into subgroups
-  if ~isempty(node.Groups)
-    for i = 1:length(node.Groups)
-      groupName = node.Groups(i).Name;
-      tokensGroup = split(regexprep(groupName, '^/+|/+$', ''), '/');
-      tokensGroup(cellfun(@isempty, tokensGroup)) = [];
-
-      lenGroup  = length(tokensGroup);
-      lenTarget = length(tokensTarget);
-
-      if lenGroup <= lenTarget && isequal(tokensGroup, tokensTarget(1:lenGroup))
-        matchNode = locate_subtree(node.Groups(i), targetPath);
-        if ~isempty(matchNode), return; end
-      end
-    end
-  end
-end
-
-function [paths] = search_recursive_groups(node, key, paths)
-% searches in a h5info structs groups for a given key word - returns the
-% path to the key
-
-  if ~isempty(paths)
-    return;
-  end
-
-  if ~isempty(regexpi(node.Name, key, 'once'))
-    paths{end+1} = node.Name; 
-    return;
-  end
-
-  if ~isempty(node.Groups)
-    for i = 1:length(node.Groups)
-      paths = search_recursive_groups(node.Groups(i), key, paths);
-      
-      if ~isempty(paths)
-        return; 
-      end
-    end
-  end
-end
-
-function [paths] = search_recursive_fields(node, key, paths)
-% searches in a h5info structs fields for a given key word - returns the
-% path to the key
-
-  % check if parent itself has a field with key
-  if ~isempty(node.Datasets)
-    for i = 1:length(node.Datasets)
-   
-      if ~isempty(regexpi(node.Datasets(i).Name, key, 'once'))
-
-        if strcmp(node.Name, '/')
-          fullPath = ['/' node.Datasets(i).Name];
-        else
-          fullPath = [node.Name '/' node.Datasets(i).Name];
-        end
-        paths{end+1} = fullPath;
-      end
-    end
-  end
-
-  % search fields of subgroups
-  if ~isempty(node.Groups)
-    for j = 1:length(node.Groups)
-      paths = search_recursive_fields(node.Groups(j), key, paths);
-    end
-  end 
-end 
 
 function vprintf(opt, varargin)
 % helper function to only print when debug state is set true
@@ -761,22 +534,260 @@ function val = isDebug(setVal)
     val = debugState;
 end
 
-function data = search_Conf(config_item, value, filterDir, data)
-% selects all nodes with value field from conf with a specific 'path' field
+%% Path resolution --------------------------------------------------------
+%
+% The functions in this section are the "config -> HDF5 path" bridge.
+% - get_hdf5_path : resolve a config item to one (or many) absolute HDF5
+%                   paths, dispatching on config_item.mode.
+% - flattenH5     : walk an h5info tree once and emit a flat item list.
+% - locate_subtree: fetch the h5info sub-tree at a given path (used by
+%                   the group-based readers and the additions branch).
+% - search_Conf   : walk the JSON config tree and collect path values
+%                   already used by explicit config entries.
 
-  if nargin < 4, data = {}; end
-  if ~isstruct(config_item), return; end
-  
-  fields = fieldnames(config_item);
-  
-  if ismember(value, fields)
-    if startsWith(config_item.path, filterDir)
-        data{end+1} = config_item.(value); 
+function final_path = get_hdf5_path(info_struct, config_item, options)
+%GET_HDF5_PATH  Resolve a config item to an HDF5 path (or cell of paths).
+%
+%   The dispatch is driven by config_item.mode:
+%       "absolute"    : literal match of the full path
+%       "search_root" : regex over paths under options.root
+%       "search_free" : regex over all paths in the file
+%
+%   The h5info tree is flattened once per file and cached in a persistent
+%   variable. Subsequent calls in the same session hit the cache and
+%   return in O(N) over the flat list, not O(N^2) over the tree.
+%
+%   Options (name-value, all optional):
+%       root     : string,  default "/"   - search root for "search_root"
+%       multiple : logical, default false - if true, return all matches
+%                                          as a cell; otherwise the first
+%       optional : logical, default false - if true, return "" on no
+%                                          match; otherwise throw
+%
+%   See also: flattenH5, readConf, search_Conf
+
+  arguments
+    info_struct struct
+    config_item struct
+    options.root     string  = "/"
+    options.multiple logical = false
+    options.optional logical = false
+  end
+
+  if ~isfield(config_item, 'value') || ~isfield(config_item, 'mode')
+    error('get_hdf5_path:badConfig', ...
+          'config_item must have "value" and "mode" fields.');
+  end
+
+  % Single-slot cache keyed on the filename. New file -> rebuild.
+  persistent cache_file cache_items
+  fname = info_struct.Filename;
+  if isempty(cache_file) || ~strcmp(cache_file, fname)
+    cache_file  = fname;
+    cache_items = flattenH5(info_struct);
+  end
+  items = cache_items;
+
+  search_val = string(config_item.value);
+  mode       = lower(string(config_item.mode));
+
+  switch mode
+    case 'absolute'
+      matches = find_absolute(items, search_val);
+    case 'search_root'
+      matches = find_in_root(items, search_val, normalize_root(options.root));
+    case 'search_free'
+      matches = find_free(items, search_val);
+    otherwise
+      error('get_hdf5_path:badMode', ...
+            'Unknown mode "%s". Use "absolute", "search_root", or "search_free".', mode);
+  end
+
+  if isempty(matches)
+    if options.optional
+      final_path = "";
+    else
+      error('get_hdf5_path:notFound', ...
+            'No match for value "%s" (mode "%s").', search_val, mode);
     end
-  else 
-    for i = 1:length(fields)
-      data = search_Conf(config_item.(fields{i}), value, filterDir, data);
+  else
+    if options.multiple
+      final_path = cellfun(@(x) string(x.FullPath), matches, 'UniformOutput', false);
+    else
+      if length(matches) > 1
+        vprintf(isDebug(), ...
+                '   ⚠ %d matches for "%s" (mode "%s"); returning first.\n', ...
+                length(matches), search_val, mode);
+      end
+      final_path = string(matches{1}.FullPath);
     end
+  end
+end
+
+function matches = find_absolute(items, search_val)
+% Literal, case-sensitive path match.
+  target = normalize_path(search_val);
+  matches = {};
+  for i = 1:length(items)
+    if strcmp(items{i}.FullPath, target)
+      matches = items(i);
+      return
+    end
+  end
+end
+
+function matches = find_in_root(items, pattern, root_val)
+% Regex match over paths that start with root_val (segment-aware).
+  matches = {};
+  for i = 1:length(items)
+    p = items{i}.FullPath;
+    if ~path_starts_with(p, root_val), continue; end
+    if ~isempty(regexpi(p, pattern, 'once'))
+      matches{end+1} = items{i};
+    end
+  end
+end
+
+function matches = find_free(items, pattern)
+% Regex match over the whole tree.
+  matches = {};
+  for i = 1:length(items)
+    if ~isempty(regexpi(items{i}.FullPath, pattern, 'once'))
+      matches{end+1} = items{i};
+    end
+  end
+end
+
+function p = normalize_path(s)
+% Strip leading/trailing slashes, then force exactly one leading slash.
+  p = char(s);
+  p = regexprep(p, '^/+', '');
+  p = regexprep(p, '/+$', '');
+  p = ['/' p];
+  if length(p) > 1
+    p = regexprep(p, '/{2,}', '/');
+  end
+  if strcmp(p, '//'), p = '/'; end
+end
+
+function r = normalize_root(s)
+% Normalize a search_root: always absolute, no trailing slash.
+  r = char(s);
+  if isempty(r), r = '/'; return; end
+  if r(1) ~= '/', r = ['/' r]; end
+  r = regexprep(r, '/+$', '');
+  if isempty(r), r = '/'; end
+end
+
+function tf = path_starts_with(p, root)
+% Segment-aware prefix check: "/EBSD" matches "/EBSD/Phase1" but not "/EBSDx".
+  if strcmp(root, '/'), tf = true; return; end
+  n = length(root);
+  tf = length(p) >= n && strncmp(p, root, n) && ...
+       (length(p) == n || p(n+1) == '/');
+end
+
+function items = flattenH5(rootNode)
+%FLATTENH5  Flatten an h5info tree into a cell array of items.
+%
+%   Each emitted item is augmented with a FullPath string starting with
+%   '/'. Datasets and attributes are leaves; groups are emitted as nodes
+%   and also recursed into. The walker is the only thing that builds
+%   FullPath, so it is the single source of truth for path consistency.
+%
+%   See also: get_hdf5_path
+
+  items = walk_s(rootNode, '/');
+end
+
+function items = walk_s(node, curPath)
+  items = {};
+
+  % Datasets
+  if isfield(node, 'Datasets') && ~isempty(node.Datasets)
+    for i = 1:length(node.Datasets)
+      ds = node.Datasets(i);
+      ds.FullPath = join_path(curPath, ds.Name);
+      items{end+1} = ds;
+    end
+  end
+
+  % Attributes
+  if isfield(node, 'Attributes') && ~isempty(node.Attributes)
+    for i = 1:length(node.Attributes)
+      attr = node.Attributes(i);
+      attr.FullPath = join_path(curPath, ['@' attr.Name]);
+      items{end+1} = attr;
+    end
+  end
+
+  % Groups (emit node, then recurse with the accumulated full path)
+  if isfield(node, 'Groups') && ~isempty(node.Groups)
+    for i = 1:length(node.Groups)
+      g = node.Groups(i);
+      gPath = g.Name;
+      g.FullPath = gPath;
+      items{end+1} = g;
+      items = [items, walk_s(g, gPath)];
+    end
+  end
+end
+
+function p = join_path(base, name)
+  if strcmp(base, '/')
+    p = ['/' name];
+  else
+    p = [base '/' name];
+  end
+end
+
+function node = locate_subtree(info_struct, target_path)
+%LOCATE_SUBTREE  Return the h5info sub-tree at the given absolute path.
+%
+%   Uses h5info's own path resolution so we do not have to walk the
+%   in-memory tree. target_path must be absolute (leading '/') or empty.
+
+  target = normalize_path(target_path);
+  if strcmp(target, '/')
+    node = info_struct;
+    return;
+  end
+
+  try
+    node = h5info(info_struct.Filename, target);
+  catch ME
+    error('locate_subtree:notFound', ...
+          'Could not locate subtree at "%s": %s', target, ME.message);
+  end
+end
+
+function values = search_Conf(config_item, fieldName, filterDir)
+%SEARCH_CONF  Collect every value of a named field under filterDir.
+%
+%   values = search_Conf(config_item, fieldName, filterDir) walks the
+%   config struct tree and collects every value of config_item.(fieldName)
+%   whose config_item.path starts with filterDir.
+%
+%   Used by the additions auto-discovery to skip prop fields that are
+%   already consumed by explicit config paths.
+
+  values = walk(config_item, fieldName, filterDir, {});
+end
+
+function out = walk(node, fieldName, filterDir, out)
+  if ~isstruct(node) || isempty(fieldnames(node))
+    return;
+  end
+
+  if isfield(node, fieldName) && isfield(node, 'path') && ...
+     startsWith(node.path, filterDir)
+    out{end+1} = node.(fieldName);
+  end
+
+  % Always recurse: matching a 'path' on this node does not mean its
+  % children are not also matches.
+  for f = fieldnames(node)'
+    out = walk(node.(f{1}), fieldName, filterDir, out);
   end
 end
 
@@ -833,7 +844,6 @@ function [options, skip] = resolve_root_path(info_struct, config_item, options)
   if ~isfield(config_item, 'key'), return; end
 
   options.root = get_hdf5_path(info_struct, config_item.key, ...
-    "mode", "groups", ...
     "root", options.root, ...
     "optional", options.optional);
 
@@ -864,10 +874,10 @@ function [raw_data, config_item] = fetch_from_path(info_struct, config_item, opt
   path = get_hdf5_path(info_struct, config_item, ...
     "root", options.root, ...
     "multiple", options.multiple, ...
-    "optional", options.optional);            % <-- now passes optional
+    "optional", options.optional);
   config_item.path = path;
 
-  if path == ""
+  if isempty(path)
     label = sprintf('├── %s/', options.name);
     pathLabel = sprintf('⤴ skip optional "%s" (path not found)\n', options.name);
     print_debug(label, pathLabel, options.level);
@@ -904,7 +914,6 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
 
   group_path = get_hdf5_path(info_struct, config_item.group, ...
     "root", options.root, ...
-    "mode", "groups", ...
     "optional", options.optional);
   config_item.path = group_path;
 
@@ -930,15 +939,16 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
 end
 
 function [raw_data, config_item] = fetch_from_subfields(info_struct, config_item, options)
-% Each non-meta child is read recursively and merged back into a struct. 
+% Each non-meta child is read recursively and merged back into a struct.
   label = sprintf('├── %s/', options.name);
   print_debug(label, '', options.level);
 
   raw_data = struct();
+  meta_fields = ["key","type","multiple","optional"];
   fields = fieldnames(config_item);
   for i = 1:length(fields)
     currentfield = fields{i};
-    if ismember(currentfield, ["key","type","multiple","optional"]), continue; end
+    if ismember(currentfield, meta_fields), continue; end
 
     [data_out, config_item.(currentfield)] = readConf( ...
       info_struct, config_item.(currentfield), ...
@@ -947,8 +957,14 @@ function [raw_data, config_item] = fetch_from_subfields(info_struct, config_item
       "multiple", options.multiple, ...
       "level",    options.level + 1);
 
-    if ~(isstruct(data_out) && isempty(fieldnames(data_out)))
-      if options.multiple == true
+    if isstruct(data_out) && isempty(fieldnames(data_out))
+      % Empty -> nothing to merge, the optional read below silently
+      % produced an empty struct.
+      continue;
+    end
+
+    if options.multiple == true
+      if iscell(data_out)
         c = cell(size(data_out));
         for j = 1:numel(data_out)
           s = struct();
@@ -957,19 +973,22 @@ function [raw_data, config_item] = fetch_from_subfields(info_struct, config_item
         end
         raw_data = appendAndAlignCell(raw_data, c);
       else
-        raw_data.(currentfield) = data_out;
+        s = struct();
+        s.(currentfield) = data_out;
+        raw_data = appendAndAlignCell(raw_data, s);
       end
+    else
+      raw_data.(currentfield) = data_out;
     end
   end
 end
 
 function data = apply_type_formatter(raw_data, config_item, options)
 % Convention: the formatter function must be named <options.name>_<type>.
-% Errors during formatting are reported (and swallowed) so a single
-% broken formatter does not abort the entire load. Optional fields get
-% an additional soft-fail gate: if the raw data is empty (because the
-% upstream path was optional and missing), the formatter is not called
-% at all.
+% Errors during formatting are reported so a single broken formatter
+% does not abort the entire load. Optional fields get an additional
+% soft-fail gate: if the raw data is empty (because the upstream path
+% was optional and missing), the formatter is not called at all.
   formatter_name = sprintf('%s_%s', options.name, config_item.type);
   label = sprintf('└── formatter: %s/', config_item.type);
   print_debug(label, '', options.level);
@@ -984,8 +1003,9 @@ function data = apply_type_formatter(raw_data, config_item, options)
       data = format_single_result(formatter, raw_data, config_item);
     end
   catch ME
-      vprintf(isDebug(), '[!] Formatter Error: %s\n', formatter_name);
-      disp(ME.getReport())
+    warning('loadEBSD_universal_hdf5:formatterError', ...
+            'Formatter "%s" failed: %s', formatter_name, ME.message);
+    vprintf(isDebug(), '%s\n', ME.getReport());
   end
 end
 
@@ -1010,6 +1030,55 @@ function data = format_multiple_results(formatter, raw_data, config_item)
       data{i} = formatter(raw_data{i}.(config_item.type));
     else
       data{i} = formatter(raw_data{i});
+    end
+  end
+end
+
+function outCell = appendAndAlignCell(oldCell, newInput)
+% a helping function to merge two cells together a certain way
+
+  if ~iscell(newInput)
+    newInput = {newInput};
+  end
+
+  newInput = newInput(:)';
+  newLen = numel(newInput);
+
+  if isempty(oldCell) || isstruct(oldCell)
+    outCell = newInput;
+    return;
+  end
+
+  currentLen = numel(oldCell);
+
+  if newLen > currentLen
+    if currentLen == 1
+      oldCell = repmat(oldCell, 1, newLen);
+      currentLen = newLen;
+    else
+      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
+    end
+  elseif newLen < currentLen
+    if newLen == 1
+      newInput = repmat(newInput, 1, currentLen);
+    else
+      error('Dimensions do not match: old %d elements, new %d elements.', currentLen, newLen);
+    end
+  end
+
+  outCell = oldCell;
+  for i = 1:currentLen
+    itemOld = oldCell{i};
+    itemNew = newInput{i};
+
+    if isstruct(itemOld) && isstruct(itemNew)
+      fields = fieldnames(itemNew);
+      for f = 1:numel(fields)
+        itemOld.(fields{f}) = itemNew.(fields{f});
+      end
+      outCell{i} = itemOld;
+    else
+      outCell{i} = itemNew;
     end
   end
 end

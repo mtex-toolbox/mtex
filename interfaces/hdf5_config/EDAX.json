@@ -5,59 +5,67 @@
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "regex", "value": "EBSD"},
+    "key": {"mode": "search_root", "value": "EBSD"},
     "position": {
       "type": "direct",
       "direct": {
-        "x": { "mode": "regex", "value": "^X Position$" },
-        "y": { "mode": "regex", "value": "^Y Position$" }
+        "x": { "mode": "search_root", "value": "X Position" },
+        "y": { "mode": "search_root", "value": "Y Position" }
       }
     },
-    "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+    "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
     "rotation": {
       "type": "correctById",
       "correctById": {
-        "correct_id": {"key": {"mode": "regex", "value": "Coordinate System"}, "mode": "regex", "value": "ID"},
+        "correct_id": {"key": {"mode": "search_root", "value": "Coordinate System"}, "mode": "search_root", "value": "ID"},
         "correct_data": { "data": [[45, 180, 315], [315, 180, 45], [0, 180, 0], [90, 180, 270]]},
         "rotation": {
           "type": "euler",
           "euler": {
-            "formate": { "data": "radiante"},
-            "phi1": { "mode": "regex", "value": "^Phi1$" },
-            "Phi":  { "mode": "regex", "value": "^Phi$" },
-            "phi2": { "mode": "regex", "value": "^Phi2$" }
+            "format": { "data": "radian"},
+            "phi1": { "mode": "search_root", "value": "Phi1" },
+            "Phi":  { "mode": "search_root", "value": "Phi" },
+            "phi2": { "mode": "search_root", "value": "Phi2" }
           }
         }
       }
     },
+    "map_correction": {
+      "key": {"mode": "search_root", "value": "Coordinate System"},
+      "type": "default",
+      "id" : {"mode": "search_root", "value": "ID"},
+      "correct_data": { "data": [[225, 180, 135], [135, 180, 225], [270, 180, 90], [180, 180, 180]]}
+    },
     "cs": {
       "type": "default",
-      "key": { "mode": "regex", "value": "Phase" },
+      "key": { "mode": "search_root", "value": "Header/Phase" },
+      "multiple": true,
       "default": {
-        "space_group": { "mode": "regex", "value": "SpaceGroupNumber|Point Group", "type": "default" },
-        "name": { "mode": "regex", "value": "MaterialName"},
+        "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment"},
+        "space_group": { "mode": "search_free", "value": "SpaceGroupNumber|Point Group", "type": "default" },
+        "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
           "angle": {
-            "type": "seperate",
-            "lattice_alpha": { "mode": "regex", "value": "Lattice Constant alpha"},
-            "lattice_beta": { "mode": "regex", "value": "Lattice Constant beta"},
-            "lattice_gamma": { "mode": "regex", "value": "Lattice Constant gamma"}
+            "type": "separate",
+            "lattice_alpha": { "mode": "search_root", "value": "Lattice Constant alpha"},
+            "lattice_beta": { "mode": "search_root", "value": "Lattice Constant beta"},
+            "lattice_gamma": { "mode": "search_root", "value": "Lattice Constant gamma"}
           },
           "dim": {
-            "type": "seperate",
-            "lattice_a": { "mode": "regex", "value": "Lattice Constant a"},
-            "lattice_b": { "mode": "regex", "value": "Lattice Constant b"},
-            "lattice_c": { "mode": "regex", "value": "Lattice Constant c"}
+            "type": "separate",
+            "lattice_a": { "mode": "search_root", "value": "Lattice Constant a$"},
+            "lattice_b": { "mode": "search_root", "value": "Lattice Constant b$"},
+            "lattice_c": { "mode": "search_root", "value": "Lattice Constant c$"}
           }
         }
       }
     },
     "header": {
-      "group": {"mode": "regex", "value": "Header", "type": "default"}
+      "group": {"mode": "search_root", "value": "Header", "type": "default"}
     }
   },
   "additions": {
     "type": "auto",
-    "key": { "mode": "regex", "value": "Data"}
+    "group": { "mode": "search_root", "value": "Data"}
   }
 }

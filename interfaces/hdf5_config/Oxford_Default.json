@@ -24,7 +24,7 @@
         "rotation": {
           "type": "euler",
           "euler": {
-            "formate": { "data": "radiante"},
+            "format": { "data": "radian"},
             "phi": { "mode": "regex", "value": "Euler"}
           }
         }
@@ -33,8 +33,9 @@
     "cs": {
       "type": "default",
       "key": { "mode": "regex", "value": "Phases" },
-      "multiple": "true",
+      "multiple": true,
       "default": {
+        "reference_frame": { "data": "X||a*, Z||c"},
         "space_group": { "mode": "regex", "value": "Space Group", "type": "default" },
         "name": { "mode": "regex", "value": "Phase Name"},
         "lattice": {
@@ -54,6 +55,7 @@
   "electron_image": {
     "key" : { "mode": "regex", "value": "Electron Image" },
     "type": "default",
+    "optional": true,
     "image_data": {
       "type": "default",
       "default": {
