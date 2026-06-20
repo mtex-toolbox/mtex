@@ -177,12 +177,25 @@ function out = position_indirect(raw_data)
     error('Position data has type ''indirect'', but ''step_size_x'', ''step_size_y'', ''grid_size_x'' or ''grid_size_y'' is missing!');
   end
 
+  % set which variable comes first --> default x first
+  first = 'x';
+  if isfield(raw_data, 'first')
+    first = raw_data.first;
+  end
+
   step_x = double(raw_data.step_size_x);
   step_y = double(raw_data.step_size_y);
   cells_x = double(raw_data.grid_size_x);
   cells_y = double(raw_data.grid_size_y);
 
-  [x, y] = meshgrid(0:step_x:(cells_x-1)*step_x, 0:step_y:(cells_y-1)*step_y);
+  v_x = 0:step_x:(cells_x-1)*step_x;
+  v_y = 0:step_y:(cells_y-1)*step_y;
+  
+  if first == 'x'
+    [x, y] = meshgrid(v_x, v_y);
+  elseif first == 'y'
+    [x, y] = meshgrid(v_y, v_x);
+  end
 
   out = vector3d(x(:), y(:), 0);
 end

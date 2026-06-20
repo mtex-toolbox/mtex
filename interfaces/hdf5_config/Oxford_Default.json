@@ -13,7 +13,8 @@
         "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
         "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
         "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
-        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"}
+        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"},
+        "first": {"data": "y"}
       }
     },
     "phase": {"mode": "search_root", "value": "/Data/Phase", "type": "default"},
