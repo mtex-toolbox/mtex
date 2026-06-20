@@ -91,7 +91,7 @@ nextFit = get_option(varargin,'nextFit',1);
 [h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
-rn2 = round(n2);
+rn2 = round(n2,'maxHKL0,maxIndex);
 hkl2 = rn2.hkl;
 
 % fit of planes
@@ -109,7 +109,7 @@ end
 
 d2 = reshape(mori * d1,[],1);
 if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
-rd2 = round(d2);
+rd2 = round(d2,'maxHKL',maxIndex);
 uvw2 = rd2.uvw;
 
 % fit of directions
