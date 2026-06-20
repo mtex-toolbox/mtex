@@ -368,6 +368,11 @@ function out = ebsd_default(raw_data)
     ebsd.opt.Header = raw_data.header;
   end
 
+  % if a how2plot is set add
+  if isfield(raw_data, 'how2plot')
+    ebsd.how2plot = raw_data.how2plot;
+  end
+
   out = ebsd;
 
 end
@@ -464,7 +469,50 @@ function out = reference_frame_default(raw_data)
   out = regexprep(out, '\s*,\s*', ', ');
 end
 
+function out = how2plot_by_id(raw_data)
+
+  if ~all(isfield(raw_data, {'how2plot_data', 'id'}))
+    error('how2plot data has type ''by_id'', but ''id'' or ''how2plot_data'' field is missing!');
+  end
+  
+  data = raw_data.how2plot_data;
+  id = int8(raw_data.id);
+
+  out = sethow2plot(data{id});
+end
+
+function out = how2plot_default(raw_data)
+
+  out = sethow2plot(raw_data);
+
+end
+
 %% Helper Functions
+
+function how2plot = sethow2plot(input)
+
+  how2plot = plottingConvention();
+
+  axis = split(input, ',');
+  for i = 1:length(axis)
+    elements = split(axis{i}, '-');
+    coordinate = elements{1};
+    direction = elements{2};
+
+    switch lower(coordinate)
+      case 'x'
+        vecObj = xvector;
+      case 'y'
+        vecObj = yvector;
+      case 'z'
+        vecObj = zvector;
+      otherwise
+        error('Unkown Coordinate: "%s". Use x, y or z', coordinate);
+    end
+
+    how2plot.(direction) = vecObj;
+  end
+end
 
 function format = determineformate(raw_data)
   format = 1;
@@ -832,6 +880,12 @@ function [data, config_item] = readConf(info_struct, config_item, options)
     options.optional logical = false
   end
 
+  % init struct cache keyed on the start of this function
+  persistent cache_struct
+  if options.level == 1
+    cache_struct = struct();
+  end
+
   data = [];
 
   % Phase 1 -- pull option overrides out of the config itself
@@ -844,7 +898,12 @@ function [data, config_item] = readConf(info_struct, config_item, options)
   end
 
   % Phase 3 -- read raw data from whichever source the config declares
-  [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options);
+  [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options, cache_struct);
+
+  % Phase 3.5 -- check if safe is set -> safe to cache
+  if isfield(config_item, 'safe')
+    cache_struct.(options.name) = raw_data;
+  end
 
   % Phase 4 -- run a type-formatter if one is configured
   if isfield(config_item, 'type')
@@ -876,7 +935,7 @@ function [options, skip] = resolve_root_path(info_struct, config_item, options)
   end
 end
 
-function [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options)
+function [raw_data, config_item] = fetch_raw_data(info_struct, config_item, options, cach)
 % The data source is implied by which top-level field the config item
 % carries. Dispatch is exclusive: at most one of these can be present.
   if isfield(config_item, 'value')
@@ -885,9 +944,23 @@ function [raw_data, config_item] = fetch_raw_data(info_struct, config_item, opti
     raw_data = fetch_from_inline_data(config_item, options);
   elseif isfield(config_item, 'group')
     raw_data = fetch_from_group(info_struct, config_item, options);
+  elseif isfield(config_item, 'load')
+    raw_data = fetch_from_cache(config_item, cach, options);
   else
     [raw_data, config_item] = fetch_from_subfields(info_struct, config_item, options);
   end
+end
+
+function [raw_data, config_item] = fetch_from_cache(config_item, cache, options)
+% The data was read elsewhere before and stored in the cache
+
+  label = sprintf('├── %s', options.name);
+  pathLabel = sprintf('[Load from cache field: "%s"]', options.name);
+  print_debug(label, pathLabel, options.level);
+  
+  name = config_item.load.value;
+  raw_data = cache.(name);
+
 end
 
 function [raw_data, config_item] = fetch_from_path(info_struct, config_item, options)

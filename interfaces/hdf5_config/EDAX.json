@@ -25,10 +25,15 @@
     },
     "map_correction": {
       "type": "by_id",
-      "id" : {"mode": "search_root", "value": "/Coordinate System/ID"},
+      "id" : {"mode": "search_root", "value": "/Coordinate System/ID", "safe": true},
       "correct_data": { "data": [[225, 180, 135], [135, 180, 225], [270, 180, 90], [180, 180, 180]]},
       "format": { "data": "degree"}
     },
+    "how2plot": {
+      "type": "by_id", 
+      "id": { "load": {"value": "id"}},
+      "how2plot_data": {"data": [["x-south,y-east"],["x-south,y-east"],["x-east,y-south"],["x-east,y-south"]]}
+      },
     "cs": {
       "type": "default",
       "key": { "mode": "search_root", "value": "Header/Phase" },
@@ -54,7 +59,7 @@
       }
     },
     "header": {
-      "group": {"mode": "search_root", "value": "Header", "type": "default"}
+      "group": {"mode": "search_root", "value": "Header"}
     }
   },
   "additions": {

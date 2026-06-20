@@ -29,6 +29,7 @@
       "correct_data": { "data": [0, 0, 0, 0, 180]},
       "format": { "data": "degree"}
     },
+    "how2plot": { "data": "x-east,y-south", "type": "default"},
     "cs": {
       "type": "default",
       "multiple": true,
