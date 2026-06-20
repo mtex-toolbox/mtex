@@ -6,65 +6,59 @@
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "regex", "value": "EBSD"},
+    "key": {"mode": "search_root", "value": "EBSD"},
     "position": {
       "type": "direct",
       "direct": {
-        "x": { "mode": "regex", "value": "^X$" },
-        "y": { "mode": "regex", "value": "^Y$" }
+        "x": { "mode": "search_root", "value": "/X$" },
+        "y": { "mode": "search_root", "value": "/Y$" }
       }
     },
-    "phase": {"mode": "regex", "value": "Phase", "type": "default"},
+    "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
     "rotation": {
-      "type": "correctByAngle",
-      "correctByAngle": {
-        "angle": { "mode": "regex", "value": "Scanning Rotation Angle"},
-        "rotation": {
-          "type": "euler",
-          "euler": {
-            "format": { "data": "radian"},
-            "phi": { "mode": "regex", "value": "Euler"}
-          }
-        }
+      "type": "euler",
+      "euler": {
+        "format": { "data": "radian"},
+        "phi": { "mode": "search_root", "value": "Euler"}
       }
     },
     "cs": {
       "type": "default",
-      "key": { "mode": "regex", "value": "Phases" },
+      "key": { "mode": "search_root", "value": "Phases" },
       "multiple": true,
       "default": {
         "reference_frame": { "data": "X||a*, Z||c"},
-        "space_group": { "mode": "regex", "value": "Space Group", "type": "default" },
-        "name": { "mode": "regex", "value": "Phase Name"},
+        "space_group": { "mode": "search_root", "value": "Space Group", "type": "default" },
+        "name": { "mode": "search_root", "value": "Phase Name"},
         "lattice": {
-          "angle": { "mode": "regex", "value": "Lattice Angles"},
-          "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+          "angle": { "mode": "search_root", "value": "Lattice Angles"},
+          "dim": { "mode": "search_root", "value": "Lattice Dimensions"}
         }
       }
     },
     "header": {
-      "group": {"mode": "regex", "value": "Header"}
+      "group": {"mode": "search_root", "value": "Header"}
     }
   },
   "additions": {
     "type": "auto",
-    "key": { "mode": "regex", "value": "Data"}
+    "group": { "mode": "search_root", "value": "/1/EBSD/Data"}
   },
   "electron_image": {
     "optional": true,
-    "key" : { "mode": "regex", "value": "Electron Image" },
+    "key" : { "mode": "search_root", "value": "Electron Image" },
     "type": "default",
     "image_data": {
       "type": "default",
       "default": {
-        "FSE": { "group": {"mode": "regex", "value": "FSE"}},
-        "SE": { "group": {"mode": "regex", "value": "^.*/SE"}},
-        "x_size": {"mode": "regex", "value": "X Cells"},
-        "y_size": {"mode": "regex", "value": "Y Cells"}
+        "FSE": { "group": {"mode": "search_root", "value": "FSE"}},
+        "SE": { "group": {"mode": "search_root", "value": "^.*/SE"}},
+        "x_size": {"mode": "search_root", "value": "X Cells"},
+        "y_size": {"mode": "search_root", "value": "Y Cells"}
       }
     },
     "header": {
-      "group": {"mode": "regex", "value": "Header"}
+      "group": {"mode": "search_root", "value": "Header"}
     }
   }
 }

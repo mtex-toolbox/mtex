@@ -15,26 +15,19 @@
     },
     "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
     "rotation": {
-      "type": "correctById",
-      "correctById": {
-        "correct_id": {"key": {"mode": "search_root", "value": "Coordinate System"}, "mode": "search_root", "value": "ID"},
-        "correct_data": { "data": [[45, 180, 315], [315, 180, 45], [0, 180, 0], [90, 180, 270]]},
-        "rotation": {
-          "type": "euler",
-          "euler": {
-            "format": { "data": "radian"},
-            "phi1": { "mode": "search_root", "value": "Phi1" },
-            "Phi":  { "mode": "search_root", "value": "Phi" },
-            "phi2": { "mode": "search_root", "value": "Phi2" }
-          }
-        }
+      "type": "euler",
+      "euler": {
+        "format": { "data": "radian"},
+        "phi1": { "mode": "search_root", "value": "Phi1" },
+        "Phi":  { "mode": "search_root", "value": "Phi" },
+        "phi2": { "mode": "search_root", "value": "Phi2" }
       }
     },
     "map_correction": {
-      "key": {"mode": "search_root", "value": "Coordinate System"},
-      "type": "default",
-      "id" : {"mode": "search_root", "value": "ID"},
-      "correct_data": { "data": [[225, 180, 135], [135, 180, 225], [270, 180, 90], [180, 180, 180]]}
+      "type": "by_id",
+      "id" : {"mode": "search_root", "value": "/Coordinate System/ID"},
+      "correct_data": { "data": [[225, 180, 135], [135, 180, 225], [270, 180, 90], [180, 180, 180]]},
+      "format": { "data": "degree"}
     },
     "cs": {
       "type": "default",

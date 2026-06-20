@@ -104,7 +104,7 @@ end
 
 % Construct prop-----------------------------------------------------------
 
-prop = struct();
+prop_data = struct();
 
 try
 
@@ -120,19 +120,26 @@ try
       paths_allready_used = search_Conf(Conf, 'path', h);
   
       [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
-  
-      len = length(prop_data);
-      for i = 1:len
-        if ismember(prop_data{i}, exclude_fields)
-          prop_data = rmfield(prop_data);
+
+      for i = 1:length(exclude_fields)
+        exclude_fields{i} = clean_string(exclude_fields{i});
+      end
+
+      prop_fields = fieldnames(prop_data);
+
+      for i = 1:length(prop_fields)
+        cur_field = prop_fields{i};
+        if ismember(cur_field, exclude_fields)
+          prop_data = rmfield(prop_data, cur_field);
         end
       end
     else
       warning("Still to do when additions is not auto...")
     end
   end
-catch 
+catch ME 
   disp("Error building prop struct")
+  disp(ME.getReport)
 end
 % Building output data-----------------------------------------------------
 
@@ -193,7 +200,12 @@ function out = rotation_euler(raw_data)
       'field. You need to give 1-3 Fields and one named format for degree or radiant format.'])
   end
 
-  format = string(raw_data.format);
+  % Determine format if set
+  try
+    format = determineformate(raw_data);
+  catch ME
+    error("map_correction_default: " + ME.message);      
+  end
 
   % Collect all fields and stick them together in one matrix
   matrix = cell(1, length(fields));
@@ -215,15 +227,7 @@ function out = rotation_euler(raw_data)
   end
 
   phi = horzcat(matrix{:});
-
-  % Check if degree or radiant
-  if format == "degree"
-    out = rotation.byEuler(phi * degree);
-  elseif format == "radian"
-    out = rotation.byEuler(phi);
-  else
-    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);
-  end
+  out = rotation.byEuler(phi * format);
 end
 
 function out = rotation_euler_stack(raw_data)
@@ -233,20 +237,18 @@ function out = rotation_euler_stack(raw_data)
       ' Make sure you have phi and format field.'])
   end
 
-  format = string(raw_data.format);
+  % Determine format if set
+  try
+    format = determineformate(raw_data);
+  catch ME
+    error("map_correction_default: " + ME.message);      
+  end
 
   phi1_2D = raw_data.phi(1,:,:);
   Phi_2D  = raw_data.phi(2,:,:);
   phi2_2D = raw_data.phi(3,:,:);
 
-  % Check if degree or radiant
-  if format == "degree"
-    out = rotation.byEuler(phi1_2D(:)*degree, Phi_2D(:)*degree, phi2_2D(:)*degree);
-  elseif format == "radian"
-    out = rotation.byEuler(phi1_2D(:), Phi_2D(:), phi2_2D(:));
-  else
-    error('Wrong format for Rotation: "%s". Use "degree" or "radian".', format);
-  end
+  out = rotation.byEuler(phi1_2D(:)*format, Phi_2D(:)*format, phi2_2D(:)*format);
 end
 
 function out = cs_default(raw_data)
@@ -256,13 +258,24 @@ function out = cs_default(raw_data)
       'Make sure you have a group, lattice and name field!'])
   end
 
-  out = crystalSymmetry( ...
-    raw_data.space_group, ...
-    raw_data.lattice.dim, ...
-    raw_data.lattice.angle, ...
-    raw_data.reference_frame,...
-    'Mineral', ...
-    raw_data.name);
+  % create depending if reference frame is there
+  if isfield(raw_data, 'reference_frame')
+    out = crystalSymmetry( ...
+      raw_data.space_group, ...
+      raw_data.lattice.dim, ...
+      raw_data.lattice.angle, ...
+      raw_data.reference_frame,...
+      'Mineral', ...
+      raw_data.name);
+  else
+    out = crystalSymmetry( ...
+      raw_data.space_group, ...
+      raw_data.lattice.dim, ...
+      raw_data.lattice.angle, ...
+      'Mineral', ...
+      raw_data.name);
+  end
+
 end
 
 function out = space_group_default(raw_data)
@@ -442,24 +455,63 @@ end
 
 function out = map_correction_default(raw_data)
 
+  try
+    format = determineformate(raw_data);
+  catch ME
+    error("map_correction_default: " + ME.message);      
+  end
+
+  data = double(raw_data);
+
+  if length(data) > 1
+    data = data';
+  end
+
+  out = rotation.byEuler(data*format);
+
+end
+
+function out = map_correction_by_id(raw_data)
+
   if ~isfield(raw_data, 'id') || ~isfield(raw_data, 'correct_data')
-    error(['electron_image default has not the correct fields! ' ...
+    error(['map_correction__by_id default has not the correct fields! ' ...
       'Make sure you have a id and correct_data field!'])
+  end
+
+  try
+    format = determineformate(raw_data);
+  catch ME
+    error("map_correction_default: " + ME.message);      
   end
 
   id = int8(raw_data.id);
   data = raw_data.correct_data;
 
-  out = rotation.byEuler(data(id,:)*degree);
-
-  if id == 1 || id == 2
-    out.opt.how2plot = {'x->south', 'y->east'};
-  elseif id == 3 || id == 4
-    out.opt.how2plot = {'x->east', 'y->south'};
+  if length(data(id)) > 1
+    out = rotation.byEuler(data(id,:)*format);
+  else
+    out = rotation.byAxisAngle(yvector, data(id)*format);
   end
 end
 
 %% Helper Functions
+
+function format = determineformate(raw_data)
+  format = 1;
+
+  if ~isstruct(raw_data) || ~isfield(raw_data, 'format')
+    return
+  end
+
+  if raw_data.format == "degree"
+    format = degree;
+    return;
+  elseif raw_data.format == "radian"
+    return;
+  else
+    error("Unknown format set!")
+  end
+end
 
 function cleanName = clean_string(rawName, option)
 arguments
@@ -771,7 +823,7 @@ function values = search_Conf(config_item, fieldName, filterDir)
 %   Used by the additions auto-discovery to skip prop fields that are
 %   already consumed by explicit config paths.
 
-  values = walk(config_item, fieldName, filterDir, {});
+  values = walk(config_item, fieldName, filterDir, []);
 end
 
 function out = walk(node, fieldName, filterDir, out)
@@ -779,9 +831,18 @@ function out = walk(node, fieldName, filterDir, out)
     return;
   end
 
-  if isfield(node, fieldName) && isfield(node, 'path') && ...
-     startsWith(node.path, filterDir)
-    out{end+1} = node.(fieldName);
+  if isfield(node, fieldName) && isfield(node, 'path')
+    if iscell(node.path)
+      for i = 1:length(node.path)
+        if startsWith(node.path{i}, filterDir)
+          out{end+1} = char(node.(fieldName));
+        end
+      end
+    else
+      if startsWith(node.path, filterDir)
+        out{end+1} = char(node.(fieldName));
+      end
+    end
   end
 
   % Always recurse: matching a 'path' on this node does not mean its
