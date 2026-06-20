@@ -18,51 +18,41 @@ else
   isDebug(false);
 end
 
-if check_option(varargin, 'type')
-  manufacturer = get_option(varargin, 'type');
-else
-  try
-    manufacturer = string(h5read(fname, "/Manufacturer"));
-  catch
-    error("There was no readable manufacturer! " + ...
-    "Try to specify which type of file you have. Use EBSD.load(yourdata, ""type"", ""yourType"")")
-  end
+% check all configs and select where manufacturer match
+hasTypeOption = check_option(varargin, 'type');
+if hasTypeOption
+  targetManufacturer = get_option(varargin, 'type');
 end
 
-% check all configs and select where manufacturer match
-manufacturer = strrep(char(manufacturer), char(0), '');
 folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
-
-filePattern = fullfile(folderPath, '*.json');
-fileList = dir(filePattern);
-
+fileList = dir(fullfile(folderPath, '*.json'));
 Conf = struct();
+
 for i = 1:length(fileList)
-
-  if fileList(i).isdir
-    continue;
-  end
-
-  baseFileName = fileList(i).name;
-  fullFileName = fullfile(fileList(i).folder, baseFileName);
-
-  % read json config and safe to read manufacturer
+  if fileList(i).isdir, continue; end
+  
+  fullFileName = fullfile(folderPath, fileList(i).name);
+  
   try
-    jsonText = fileread(fullFileName);
-    cur_Conf = jsondecode(jsonText);
+    cur_Conf = jsondecode(fileread(fullFileName));
   catch ME
-    error('Failed to load configuration: The file "%s" does not exist or contains invalid JSON. (Details: %s)', ...
-          fullFileName, ME.message);
+    error('Error loading json "%s": %s', fullFileName, ME.message);
+  end
+  
+  if hasTypeOption
+    manufacturer = targetManufacturer;
+  else
+    try
+      [manufacturer, ~] = readConf(info_struct, cur_Conf.settings.key_path, "name", "Manufacturer");    
+    catch
+      continue;
+    end
   end
 
-  cur_manu = cur_Conf.settings.manufacturer_keys.data;
-
-  if any(strcmpi(manufacturer, cur_manu))
-
-    Conf = cur_Conf; break;
-
+  if any(contains(manufacturer, cur_Conf.settings.manufacturer_keys.data))
+    Conf = cur_Conf; 
+    break;
   end
-
 end
 
 if isempty(Conf)
@@ -141,6 +131,7 @@ catch ME
   disp("Error building prop struct")
   disp(ME.getReport)
 end
+
 % Building output data-----------------------------------------------------
 
 data.ebsd.prop = prop_data;

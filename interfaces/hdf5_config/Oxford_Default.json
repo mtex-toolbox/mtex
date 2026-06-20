@@ -1,6 +1,7 @@
 {
   "settings": {
     "name": "Oxford_Default",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
     "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default. If you want to read from the EBSD field use 'type', 'Oxford_EBSD'! "} 
   },

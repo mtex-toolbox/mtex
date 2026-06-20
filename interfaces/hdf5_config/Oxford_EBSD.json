@@ -1,6 +1,7 @@
 {
   "settings": {
     "name": "Oxford_EBSD",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": "Oxford_EBSD"},
     "manufacturer_info": {"data": "Reading Data from EBSD field!"} 
   },

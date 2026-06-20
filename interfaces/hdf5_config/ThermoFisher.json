@@ -1,7 +1,8 @@
 {
   "settings": {
     "name": "ThermoFisher",
-    "manufacturer_keys": {"data": "ThermoFisher"}
+    "key_path": { "mode": "absolute", "value": "/Info/SoftwareVersion"},
+    "manufacturer_keys": {"data": "xTalView"}
   },
   "ebsd": {
     "type": "default",
