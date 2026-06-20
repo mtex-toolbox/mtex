@@ -451,6 +451,19 @@ function out = map_correction_by_id(raw_data)
   end
 end
 
+function out = reference_frame_default(raw_data)
+
+  id = string(raw_data);
+
+  % 'kristall || probe' -> 'PROBE||kristall'
+  out = regexprep(id, '(\S+)\s*\|\|\s*([xyzXYZ])', '${upper($2)}||$1');
+  
+  % 'probe || kristall' -> 'PROBE||kristall'
+  out = regexprep(out, '([xyzXYZ])\s*\|\|\s*(\S+)', '${upper($1)}||$2');
+  
+  out = regexprep(out, '\s*,\s*', ', ');
+end
+
 %% Helper Functions
 
 function format = determineformate(raw_data)
