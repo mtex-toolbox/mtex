@@ -159,7 +159,6 @@ ebsd = data.ebsd;
 
 end
 
-
 %% Formating functions
 
 function out = position_direct(raw_data)
@@ -174,11 +173,8 @@ end
 
 function out = position_indirect(raw_data)
 
-  if ~isfield(raw_data, 'step_size_x') || ~isfield(raw_data, 'grid_size_x') ||...
-    ~isfield(raw_data, 'step_size_y') || ~isfield(raw_data, 'grid_size_y')
-
-    error(['Position data has type indirect but not the needed fields ' ...
-      'step_size_x, step_size_y, grid_size_x and grid_size_y'])
+  if ~all(isfield(raw_data, {'step_size_x', 'step_size_y', 'grid_size_x', 'grid_size_y'}))
+    error('Position data has type ''indirect'', but ''step_size_x'', ''step_size_y'', ''grid_size_x'' or ''grid_size_y'' is missing!');
   end
 
   step_x = double(raw_data.step_size_x);
@@ -232,9 +228,9 @@ end
 
 function out = rotation_euler_stack(raw_data)
 
-  if ~isfield(raw_data, 'phi') || ~isfield(raw_data, 'format')
+  if ~isfield(raw_data, 'phi')
     error(['Rotation data has type euler_stack but not the correct fields where given!' ...
-      ' Make sure you have phi and format field.'])
+      ' Make sure you have phi field.'])
   end
 
   % Determine format if set
@@ -253,9 +249,8 @@ end
 
 function out = cs_default(raw_data)
 
-  if ~isfield(raw_data, 'space_group') || ~isfield(raw_data, 'lattice') || ~isfield(raw_data, 'name')
-    error(['Cs data has type default but not the correct fields were given. ' ...
-      'Make sure you have a group, lattice and name field!'])
+  if ~all(isfield(raw_data, {'space_group', 'lattice', 'name'}))
+    error('Cs data has type ''default'', but ''space_group'', ''lattice'' or ''name'' is missing!');
   end
 
   % create depending if reference frame is there
@@ -310,9 +305,8 @@ end
 
 function out = angle_separate(raw_data)
 
-  if ~isfield(raw_data, 'lattice_alpha') || ~isfield(raw_data, 'lattice_beta') || ~isfield(raw_data, 'lattice_gamma')
-    error(['Cs angle data has type separate but not the correct fields were given. ' ...
-      'Make sure you have a lattice_alpha, lattice_beta and lattice_gamma!'])
+  if ~all(isfield(raw_data, {'lattice_alpha', 'lattice_beta', 'lattice_gamma'}))
+    error('Angle data has type ''separate'', but ''lattice_alpha'', ''lattice_beta'' or ''lattice_gamma'' is missing!');
   end
 
   alpha = double(raw_data.lattice_alpha)*degree;
@@ -345,43 +339,6 @@ end
 function out = phase_default(raw_data)
 
   out = double(raw_data);
-
-end
-
-function out = rotation_correctById(raw_data)
-% correct Euler angles such that the Euler angle reference frame coincides
-% with the map reference frame
-
-  if ~isfield(raw_data, 'correct_id') || ~isfield(raw_data, 'correct_data') || ~isfield(raw_data, 'rotation')
-    error(['Rotation data has type correctById but not the correct fields were given. ' ...
-      'Make sure you have a correct_id, correct_data and rotation!'])
-  end
-
-  id = double(raw_data.correct_id);
-  data = double(raw_data.correct_data);
-  rot = raw_data.rotation;
-
-  correction = rotation.byEuler(data(id,:)*degree);
-
-  out = correction .* rot;
-  out.opt.correction = correction;
-
-end
-
-function out = rotation_correctByAngle(raw_data)
-
-  if ~isfield(raw_data, 'angle') || ~isfield(raw_data, 'rotation')
-    error(['Rotation data has type correctByAngle but not the correct fields were given. ' ...
-      'Make sure you have a angle and rotation!'])
-  end
-
-  angle = double(raw_data.angle);
-  rot = raw_data.rotation;
-
-  correction = rotation.byAxisAngle(zvector, angle);
-
-  out = correction .* rot;
-  out.opt.correction = correction;
 
 end
 
@@ -606,17 +563,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
 %       "search_free" : regex over all paths in the file
 %
 %   The h5info tree is flattened once per file and cached in a persistent
-%   variable. Subsequent calls in the same session hit the cache and
-%   return in O(N) over the flat list, not O(N^2) over the tree.
-%
-%   Options (name-value, all optional):
-%       root     : string,  default "/"   - search root for "search_root"
-%       multiple : logical, default false - if true, return all matches
-%                                          as a cell; otherwise the first
-%       optional : logical, default false - if true, return "" on no
-%                                          match; otherwise throw
-%
-%   See also: flattenH5, readConf, search_Conf
+%   variable. Subsequent calls in the same session hit the cache
 
   arguments
     info_struct struct
@@ -635,14 +582,15 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
   persistent cache_file cache_items
   fname = info_struct.Filename;
   if isempty(cache_file) || ~strcmp(cache_file, fname)
-    cache_file  = fname;
+    cache_file = fname;
     cache_items = flattenH5(info_struct);
   end
   items = cache_items;
 
   search_val = string(config_item.value);
-  mode       = lower(string(config_item.mode));
+  mode = string(config_item.mode);
 
+  % select mode and get matches
   switch mode
     case 'absolute'
       matches = find_absolute(items, search_val);
@@ -655,6 +603,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
             'Unknown mode "%s". Use "absolute", "search_root", or "search_free".', mode);
   end
 
+  % evaluate matches --> build output final_path
   if isempty(matches)
     if options.optional
       final_path = "";
