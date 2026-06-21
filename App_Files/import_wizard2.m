@@ -11,7 +11,11 @@ classdef import_wizard2 < matlab.apps.AppBase
     RightPanel                     matlab.ui.container.Panel
     RightLayout                    matlab.ui.container.GridLayout
 
-    ImportEBSDDataButton           matlab.ui.control.Button
+    FileBrowserPanel               matlab.ui.container.Panel
+    FileBrowserLayout              matlab.ui.container.GridLayout
+    UpFolderButton                 matlab.ui.control.Button
+    CurrentPathLabel                matlab.ui.control.Label
+    FileTree                       matlab.ui.container.Tree
     CurrentData                    matlab.ui.control.TextArea
     DataTable                      matlab.ui.control.Table
     UIAxes                         matlab.ui.control.UIAxes
@@ -28,6 +32,7 @@ classdef import_wizard2 < matlab.apps.AppBase
     PF100Node                      matlab.ui.container.TreeNode
     PF010Node                      matlab.ui.container.TreeNode
     PF001Node                      matlab.ui.container.TreeNode
+    ImagesNode                     matlab.ui.container.TreeNode
 
     CoordinatePanel                matlab.ui.container.Panel
     CoordinateLayout               matlab.ui.container.GridLayout
@@ -47,6 +52,7 @@ classdef import_wizard2 < matlab.apps.AppBase
     AnalysisUICreated logical = false
     LastPlotSignature string = ""
     FontSize double = 14
+    CurrentFolder string = ""
   end
 
   properties (Constant, Access = private)
@@ -70,6 +76,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
       app.UIFigure = uifigure('Visible', 'off');
       app.UIFigure.Position = [100 100 1300 700];
+      app.UIFigure.WindowState = 'maximized';
       app.UIFigure.Name = 'EBSD Data Analysis';
       try
         app.UIFigure.Theme = 'light';
@@ -80,7 +87,8 @@ classdef import_wizard2 < matlab.apps.AppBase
         'Title', 'EBSD Data Analysis', ...
         'FontWeight', 'bold', ...
         'FontSize', 18, ...
-        'Position', [1 1 1300 700]);
+        'Units', 'normalized', ...
+        'Position', [0 0 1 1]);
 
       app.MainLayout = uigridlayout(app.EBSDDataAnalysisPanel, ...
         'ColumnWidth', {leftWidth, '1x'}, ...
@@ -94,16 +102,11 @@ classdef import_wizard2 < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {40, 95, '1x', 250, 40}, ...
+        'RowHeight', {270, 95, '1x', 250, 40}, ...
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
-      app.ImportEBSDDataButton = uibutton(app.LeftLayout, 'push', ...
-        'ButtonPushedFcn', createCallbackFcn(app, @ImportEBSDDataButtonPushed, true), ...
-        'FontWeight', 'bold', ...
-        'FontSize', app.FontSize, ...
-        'Text', 'Import EBSD-Data');
-      app.ImportEBSDDataButton.Layout.Row = 1;
+      createFileBrowser(app)
 
       app.CurrentData = uitextarea(app.LeftLayout, ...
         'Editable', 'off', ...
@@ -116,6 +119,47 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.RightPanel.Layout.Column = 2;
 
       app.UIFigure.Visible = 'on';
+    end
+
+    function createFileBrowser(app)
+      % Compact inline file browser (top-left): a uitree showing folders
+      % and EBSD files of the current directory, plus a back button and
+      % path label for navigation. Double-clicking a file imports it;
+      % single-clicking (selecting) a folder navigates into it.
+      app.FileBrowserPanel = uipanel(app.LeftLayout, 'BorderType', 'line');
+      app.FileBrowserPanel.Layout.Row = 1;
+
+      app.FileBrowserLayout = uigridlayout(app.FileBrowserPanel, ...
+        'ColumnWidth', {30, '1x'}, ...
+        'RowHeight', {24, '1x'}, ...
+        'ColumnSpacing', 4, ...
+        'RowSpacing', 2, ...
+        'Padding', [4 4 4 4]);
+
+      app.UpFolderButton = uibutton(app.FileBrowserLayout, 'push', ...
+        'Text', char(8593), ... % "↑"
+        'Tooltip', 'Up one folder', ...
+        'FontWeight', 'bold', ...
+        'ButtonPushedFcn', createCallbackFcn(app, @UpFolderButtonPushed, true));
+      app.UpFolderButton.Layout.Row = 1;
+      app.UpFolderButton.Layout.Column = 1;
+
+      app.CurrentPathLabel = uilabel(app.FileBrowserLayout, ...
+        'Text', '', ...
+        'FontSize', app.FontSize - 2, ...
+        'Interpreter', 'none');
+      app.CurrentPathLabel.Layout.Row = 1;
+      app.CurrentPathLabel.Layout.Column = 2;
+
+      app.FileTree = uitree(app.FileBrowserLayout, ...
+        'FontSize', app.FontSize - 1, ...
+        'SelectionChangedFcn', createCallbackFcn(app, @FileTreeSelectionChanged, true), ...
+        'NodeExpandedFcn', createCallbackFcn(app, @FileTreeNodeExpanded, true), ...
+        'DoubleClickedFcn', createCallbackFcn(app, @FileTreeDoubleClicked, true));
+      app.FileTree.Layout.Row = 2;
+      app.FileTree.Layout.Column = [1 2];
+
+      navigateToFolder(app, pwd)
     end
 
     function ensureAnalysisUI(app)
@@ -170,6 +214,10 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.PF001Node = uitreenode(app.PoleFiguresNode, ...
         'Text', '(001)', ...
         'NodeData', struct('Type', 'PoleFigure', 'Miller', '(001)'));
+
+      app.ImagesNode = uitreenode(app.Tree, ...
+        'Text', 'Images', ...
+        'NodeData', struct('Type', 'Group'));
 
       app.Tree.CheckedNodes = app.PhaseMapNode;
       expand(app.Tree)
@@ -233,7 +281,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         'ButtonPushedFcn', createCallbackFcn(app, @ExportButtonPushed, true), ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize, ...
-        'Text', 'Export');
+        'Text', 'Import to workspace');
       app.ExportButton.Layout.Row = 5;
     end
 
@@ -262,27 +310,97 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.UIAxes.Layout.Row = 2;
     end
 
-    function importEBSDData(app)
-      [ebsdData, fileName] = import_data();
+    function navigateToFolder(app, folderPath)
+      % Set folderPath as the new browser root and populate its children.
+      if ~isfolder(folderPath)
+        return
+      end
+
+      app.CurrentFolder = string(folderPath);
+      app.CurrentPathLabel.Text = char(app.CurrentFolder);
+
+      delete(app.FileTree.Children)
+      populateFolderNode(app, app.FileTree, app.CurrentFolder)
+    end
+
+    function populateFolderNode(app, parentNode, folderPath)
+      % Add one tree node per subfolder and per matching EBSD file inside
+      % folderPath, directly under parentNode. Subfolders get a dummy
+      % child so they show an expand arrow and are populated lazily.
+      delete(parentNode.Children)
+
+      listing = dir(folderPath);
+      names = {listing.name};
+      isHidden = startsWith(names, '.');
+      listing = listing(~isHidden);
+      [~, order] = sort(lower(string({listing.name})));
+      listing = listing(order);
+
+      for k = 1:numel(listing)
+        entry = listing(k);
+        fullPath = fullfile(folderPath, entry.name);
+
+        if entry.isdir
+          folderNode = uitreenode(parentNode, ...
+            'Text', entry.name, ...
+            'NodeData', struct('Type', 'Folder', 'Path', fullPath));
+          % Dummy child so the node is expandable; replaced on expand.
+          uitreenode(folderNode, 'Text', 'Loading...');
+        elseif isEBSDFile(app, entry.name)
+          uitreenode(parentNode, ...
+            'Text', entry.name, ...
+            'NodeData', struct('Type', 'File', 'Path', fullPath));
+        end
+      end
+    end
+
+    function tf = isEBSDFile(~, fileName)
+      [~, ~, ext] = fileparts(fileName);
+      ext = erase(ext, '.');
+
+      extensions = getMTEXpref('EBSDExtensions');
+      extensions = erase(cellstr(extensions), '.');
+
+      tf = any(strcmpi(ext, extensions));
+    end
+
+    function importEBSDData(app, filePath)
+      filePath = char(filePath); % normalize string -> char so fileparts
+                                  % and [fileName fileExt] behave predictably
+      try
+        ebsdData = EBSD.load(filePath, 'wizard');
+      catch ME
+        uialert(app.UIFigure, ME.message, 'Could not load EBSD data')
+        return
+      end
+
       if isempty(ebsdData)
         return
       end
+
+      [~, fileName, fileExt] = fileparts(filePath);
+      fileName = [fileName fileExt];
 
       ensureAnalysisUI(app)
 
       app.ebsd = ebsdData;
       updateCurrentDataInfo(app, fileName)
-      app.ExportButton.Text = 'Export';
+      app.ExportButton.Text = 'Import to workspace';
       app.LastPlotSignature = "";
 
       syncCoordinateControls(app)
       populatePropertyNodes(app)
       fillPhaseTable(app)
+
+      app.Tree.CheckedNodes = app.IPFZNode;
+      app.Tree.SelectedNodes = app.IPFZNode;
+
       updatePlot(app, true)
     end
 
     function populatePropertyNodes(app)
       delete(app.PropertyMapNode.Children)
+      delete(app.ImagesNode.Children)
 
       names = getPropertyNames(app);
       for k = 1:numel(names)
@@ -292,8 +410,69 @@ classdef import_wizard2 < matlab.apps.AppBase
           'NodeData', struct('Type', 'Property', 'PropertyName', name));
       end
 
-      if ~isempty(names)
+      hasImages = false;
+      try
+        hasImages = addImageNodes(app, app.ImagesNode, app.ebsd.opt, {});
+      catch
+      end
+
+      if ~isempty(names) || hasImages
         expand(app.Tree)
+      end
+    end
+
+    function found = addImageNodes(app, parentNode, s, pathSoFar)
+      % Recursively walk struct s (e.g. ebsd.opt), adding one tree node
+      % per numeric matrix of at least 100x100 ("image"), and one group
+      % node per nested struct that contains such matrices (directly or
+      % in deeper nesting). pathSoFar accumulates the field-name chain
+      % needed to re-access the matrix later (NodeData.Path).
+      found = false;
+
+      if ~isstruct(s) || ~isscalar(s)
+        return
+      end
+
+      fields = fieldnames(s);
+      for k = 1:numel(fields)
+        field = fields{k};
+        value = s.(field);
+        fieldPath = [pathSoFar, {field}];
+
+        if isnumeric(value) && ismatrix(value) && ...
+            size(value, 1) >= 100 && size(value, 2) >= 100
+          uitreenode(parentNode, ...
+            'Text', field, ...
+            'NodeData', struct('Type', 'OptImage', 'Path', {fieldPath}));
+          found = true;
+
+        elseif isstruct(value) && isscalar(value)
+          childGroupNode = uitreenode(parentNode, ...
+            'Text', field, ...
+            'NodeData', struct('Type', 'Group'));
+          childFound = addImageNodes(app, childGroupNode, value, fieldPath);
+          if childFound
+            found = true;
+          else
+            delete(childGroupNode)
+          end
+        end
+      end
+    end
+
+    function image = resolveOptImage(app, fieldPath)
+      % Walk app.ebsd.opt along the stored field-name chain to retrieve
+      % the matrix that a 'OptImage' tree node refers to.
+      image = [];
+      try
+        value = app.ebsd.opt;
+        for k = 1:numel(fieldPath)
+          value = value.(fieldPath{k});
+        end
+        if isnumeric(value) && ismatrix(value)
+          image = value;
+        end
+      catch
       end
     end
 
@@ -307,6 +486,7 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.Color = cell(n, 1);
       app.CSIndexByRow = zeros(n, 1);
       colorable = false(n, 1);
+      pixelCounts = zeros(n, 1);
 
       for row = 1:n
         phaseId = app.PhaseIds(row);
@@ -316,7 +496,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         cs = app.ebsd.CSList{csIndex};
 
         app.CSIndexByRow(row) = csIndex;
-        pixels = nnz(phaseMask);
+        pixelCounts(row) = nnz(phaseMask);
 
         if isNotIndexed(app, cs)
           mineral = 'NotIndexed';
@@ -334,7 +514,17 @@ classdef import_wizard2 < matlab.apps.AppBase
           colorable(row) = true;
         end
 
-        tableData(row, :) = {true, phaseId, mineral, pixels, symmetry, a, b, c, ''};
+        tableData(row, :) = {true, phaseId, mineral, pixelCounts(row), symmetry, a, b, c, ''};
+      end
+
+      totalPixels = sum(pixelCounts);
+      for row = 1:n
+        if totalPixels > 0
+          percent = 100 * pixelCounts(row) / totalPixels;
+        else
+          percent = 0;
+        end
+        tableData{row, 4} = sprintf('%d (%.0f%%)', pixelCounts(row), percent);
       end
 
       app.DataTable.Data = tableData;
@@ -342,6 +532,13 @@ classdef import_wizard2 < matlab.apps.AppBase
         addStyle(app.DataTable, ...
           uistyle('BackgroundColor', app.Color{row}), ...
           'cell', [row 9])
+      end
+
+      if n > 0
+        [~, largestRow] = max(pixelCounts);
+        for row = 1:n
+          app.DataTable.Data{row, 1} = (row == largestRow);
+        end
       end
     end
 
@@ -383,15 +580,36 @@ classdef import_wizard2 < matlab.apps.AppBase
           plot(ebsd, 'parent', app.UIAxes)
 
         case 'IPF'
-          ipfKey = ipfColorKey(ebsd);
-          ipfKey.inversePoleFigureDirection = directionVector(app, plotSpec.Direction);
-          colors = ipfKey.orientation2color(ebsd.orientations);
-          plot(ebsd, colors, 'parent', app.UIAxes)
+          direction = directionVector(app, plotSpec.Direction);
+          hold(app.UIAxes, 'on')
+          for phaseId = enabledPhaseIds(:)'
+            ebsdPhase = ebsd(ebsd.phaseId == phaseId);
+            if isempty(ebsdPhase)
+              continue
+            end
+            ipfKey = ipfColorKey(ebsdPhase);
+            ipfKey.inversePoleFigureDirection = direction;
+            colors = ipfKey.orientation2color(ebsdPhase.orientations);
+            plot(ebsdPhase, colors, 'parent', app.UIAxes)
+          end
+          hold(app.UIAxes, 'off')
 
         case 'Property'
           plot(ebsd, ebsd.(plotSpec.PropertyName), 'parent', app.UIAxes)
           mtexColorMap(app.UIAxes,'white2black');
           colorbar(app.UIAxes)
+
+        case 'OptImage'
+          image = resolveOptImage(app, plotSpec.Path);
+          if isempty(image)
+            title(app.UIAxes, 'Image not found')
+            return
+          end
+          imagesc(image, 'parent', app.UIAxes)
+          colormap(app.UIAxes, 'gray')
+          axis(app.UIAxes, 'image')
+          colorbar(app.UIAxes)
+
         case 'PoleFigure'
 
           cla(app.UIAxes,'reset');
@@ -455,6 +673,9 @@ classdef import_wizard2 < matlab.apps.AppBase
       end
       if isfield(spec, 'Miller')
         parts(end + 1) = "miller=" + string(spec.Miller);
+      end
+      if isfield(spec, 'Path')
+        parts(end + 1) = "path=" + strjoin(string(spec.Path), '.');
       end
 
       signature = strjoin(parts, '|');
@@ -656,8 +877,47 @@ classdef import_wizard2 < matlab.apps.AppBase
   end
 
   methods (Access = private)
-    function ImportEBSDDataButtonPushed(app, ~)
-      importEBSDData(app)
+    function FileTreeSelectionChanged(app, event)
+      node = event.SelectedNodes;
+      if isempty(node) || isempty(node.NodeData)
+        return
+      end
+
+      data = node.NodeData;
+      if strcmp(data.Type, 'Folder')
+        navigateToFolder(app, data.Path)
+      end
+    end
+
+    function FileTreeDoubleClicked(app, event)
+      node = event.InteractionInformation.Node;
+      if isempty(node) || isempty(node.NodeData)
+        return
+      end
+
+      data = node.NodeData;
+      switch data.Type
+        case 'File'
+          importEBSDData(app, data.Path)
+        case 'Folder'
+          navigateToFolder(app, data.Path)
+      end
+    end
+
+    function FileTreeNodeExpanded(app, event)
+      node = event.Node;
+      if isempty(node.NodeData) || ~strcmp(node.NodeData.Type, 'Folder')
+        return
+      end
+      populateFolderNode(app, node, node.NodeData.Path)
+    end
+
+    function UpFolderButtonPushed(app, ~)
+      parentFolder = fileparts(char(app.CurrentFolder));
+      if isempty(parentFolder)
+        return
+      end
+      navigateToFolder(app, parentFolder)
     end
 
     function TreeCheckedNodesChanged(app, ~)
@@ -754,7 +1014,27 @@ classdef import_wizard2 < matlab.apps.AppBase
       if isempty(app.ebsd)
         return
       end
-      app.ExportButton.Text = 'Exported!';
+
+      answer = inputdlg( ...
+        'Variable name:', ...
+        'Import to workspace', ...
+        [1 50], ...
+        {'ebsd'});
+
+      if isempty(answer)
+        return % user cancelled
+      end
+
+      varName = strtrim(answer{1});
+      if isempty(varName) || ~isvarname(varName)
+        uialert(app.UIFigure, ...
+          sprintf('"%s" is not a valid MATLAB variable name.', varName), ...
+          'Invalid variable name')
+        return
+      end
+
+      assignin('base', varName, app.ebsd)
+      app.ExportButton.Text = ['Imported as ' varName '!'];
     end
   end
 
