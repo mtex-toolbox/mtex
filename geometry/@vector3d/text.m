@@ -18,7 +18,7 @@ function h = text(v,varargin)
 %
 % See also
 
-if check_option(varargin,'add2all')
+if check_option(varargin,'add2all') && ~check_option(varargin,'parent')
   mtexFig = gcm;
   if isempty(gcm)
     ax = gca;

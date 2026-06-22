@@ -615,10 +615,11 @@ classdef import_wizard2 < matlab.apps.AppBase
           cla(app.UIAxes,'reset');
           rmallappdata(app.UIAxes)
           h = string2Miller(plotSpec.Miller,ebsd.CS);
-          plotPDF(ebsd.orientations,h, 'parent', app.UIAxes,'contourf')
+          odf = calcDensity(ebsd.orientations);
+          plotPDF(odf,h, 'parent', app.UIAxes,'contourf')
           pfAnnotations = getMTEXpref('pfAnnotations');
           pfAnnotations('parent', app.UIAxes,'fontSize',20)
-          mtexColorbar(app.UIAxes,'white2black')
+          colorbar(app.UIAxes)
       end
     end
 
