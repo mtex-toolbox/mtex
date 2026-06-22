@@ -191,9 +191,9 @@ classdef MApp_exported < matlab.apps.AppBase
       
       
       
-      PhaseId_array = unique(app.ebsd.phaseId);
+      PhaseId_array = unique(app.ebsd.phaseMap);
       % new way of filling out DataTable
-      for i = 1:1:length(unique(app.ebsd.phaseId))
+      for i = 1:1:length(unique(app.ebsd.phaseMap))
                 
         PhaseId = PhaseId_array(i);
         cs = app.ebsd.CSList{i};
