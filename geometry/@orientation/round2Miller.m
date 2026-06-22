@@ -91,7 +91,7 @@ nextFit = get_option(varargin,'nextFit',1);
 [h,k,l] = allHKL(maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
 n2 = reshape(mori * n1,[],1);
-rn2 = round(n2,'maxHKL0,maxIndex);
+rn2 = round(n2,'maxHKL0',maxIndex);
 hkl2 = rn2.hkl;
 
 % fit of planes
