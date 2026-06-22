@@ -480,7 +480,7 @@ classdef import_wizard2 < matlab.apps.AppBase
       removeStyle(app.DataTable)
       addStyle(app.DataTable, uistyle('HorizontalAlignment', 'left'))
 
-      app.PhaseIds = sort(unique(app.ebsd.phaseId(:)));
+      app.PhaseIds = sort(unique(app.ebsd.phaseMap(:)));
       n = numel(app.PhaseIds);
       tableData = cell(n, 9);
       app.Color = cell(n, 1);
@@ -1016,7 +1016,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         return
       end
 
-      answer = inputdlg( ...
+      answer = inputdlg( ...    
         'Variable name:', ...
         'Import to workspace', ...
         [1 50], ...
