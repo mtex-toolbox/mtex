@@ -46,8 +46,6 @@ classdef import_wizard2 < matlab.apps.AppBase
 
   properties (Access = private)
     ebsd
-    PhaseIds double = []
-    CSIndexByRow double = []
     Color cell = {}
     AnalysisUICreated logical = false
     LastPlotSignature string = ""
@@ -293,9 +291,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         'Padding', [0 0 0 0]);
 
       app.DataTable = uitable(app.RightLayout, ...
-        'ColumnName', {'Plot'; 'Phase'; 'Mineral'; 'Pixel'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'}, ...
         'ColumnEditable', [true false true false false false false false false], ...
-        'ColumnFormat', {'logical', [], [], [], [], [], [], [], []}, ...
         'RowName', {}, ...
         'CellEditCallback', createCallbackFcn(app, @DataTableCellEdit, true), ...
         'CellSelectionCallback', createCallbackFcn(app, @DataTableCellSelection, true), ...
@@ -480,66 +476,47 @@ classdef import_wizard2 < matlab.apps.AppBase
       removeStyle(app.DataTable)
       addStyle(app.DataTable, uistyle('HorizontalAlignment', 'left'))
 
-      app.PhaseIds = sort(unique(app.ebsd.phaseMap(:)));
-      n = numel(app.PhaseIds);
-      tableData = cell(n, 9);
-      app.Color = cell(n, 1);
-      app.CSIndexByRow = zeros(n, 1);
-      colorable = false(n, 1);
-      pixelCounts = zeros(n, 1);
+      csList = app.ebsd.CSList;
+      numPhases = accumarray(app.ebsd.phaseId,1);
+            
+      phaseTable = table('size',[0 9],...
+        'VariableTypes',{'logical','uint8','string','string','string','double','double','double','string'},...
+        'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixel'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'});
 
-      for row = 1:n
-        phaseId = app.PhaseIds(row);
-        phaseMask = app.ebsd.phaseId == phaseId;
-        phaseData = app.ebsd(phaseMask);
-        csIndex = csIndexForPhase(app, phaseId, row);
-        cs = app.ebsd.CSList{csIndex};
-
-        app.CSIndexByRow(row) = csIndex;
-        pixelCounts(row) = nnz(phaseMask);
-
-        if isNotIndexed(app, cs)
-          mineral = 'NotIndexed';
-          symmetry = 'None';
-          a = 0; b = 0; c = 0;
-          app.Color{row} = [0.8 0.8 0.8];
-        else
-          cs = phaseData.CS;
+      for pId = 1:length(numPhases)
+        
+        cs = csList{pId};
+        if isa(cs,'symmetry')          
           mineral = asChar(app, cs.mineral);
           symmetry = asChar(app, cs.pointGroup);
           a = norm(cs.aAxis);
           b = norm(cs.bAxis);
           c = norm(cs.cAxis);
-          app.Color{row} = cs.color;
-          colorable(row) = true;
-        end
-
-        tableData(row, :) = {true, phaseId, mineral, pixelCounts(row), symmetry, a, b, c, ''};
-      end
-
-      totalPixels = sum(pixelCounts);
-      for row = 1:n
-        if totalPixels > 0
-          percent = 100 * pixelCounts(row) / totalPixels;
+          app.Color{pId} = cs.color;
         else
-          percent = 0;
+          mineral = 'NotIndexed';
+          symmetry = 'None';
+          a = 0; b = 0; c = 0;
+          app.Color{pId} = [0.8 0.8 0.8];
         end
-        tableData{row, 4} = sprintf('%d (%.0f%%)', pixelCounts(row), percent);
+                
+        phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
+           [int2str(numPhases(pId)),' (' xnum2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
+           symmetry, a, b, c, ''};     
       end
 
-      app.DataTable.Data = tableData;
-      for row = find(colorable)'
+      % pre select indexed phase with the most pixels
+      numPhases(cellfun('isclass',csList,'char')) = 0;
+      [~,maxPhase] = max(numPhases);
+      phaseTable.Plot(maxPhase) = true;
+
+      % colorize color column
+      app.DataTable.Data = phaseTable;
+      for row = 1:length(csList)
         addStyle(app.DataTable, ...
-          uistyle('BackgroundColor', app.Color{row}), ...
-          'cell', [row 9])
+          uistyle('BackgroundColor', app.Color{row}), 'cell', [row 9])
       end
-
-      if n > 0
-        [~, largestRow] = max(pixelCounts);
-        for row = 1:n
-          app.DataTable.Data{row, 1} = (row == largestRow);
-        end
-      end
+      
     end
 
     function updatePlot(app, force)
@@ -559,7 +536,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         return
       end
 
-      enabledPhaseIds = currentEnabledPhaseIds(app);
+      enabledPhaseIds = find(app.DataTable.Data.Plot);
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
       applyCurrentCoordinateState(app)
 
@@ -640,15 +617,6 @@ classdef import_wizard2 < matlab.apps.AppBase
       spec = node.NodeData;
     end
 
-    function phaseIds = currentEnabledPhaseIds(app)
-      if isempty(app.DataTable.Data)
-        phaseIds = app.PhaseIds;
-        return
-      end
-
-      enabled = logical(cell2mat(app.DataTable.Data(:, 1)));
-      phaseIds = app.PhaseIds(enabled);
-    end
 
     function applyCurrentCoordinateState(app)
       idx = app.MapCoordinatesDropDown.ValueIndex;
@@ -830,44 +798,15 @@ classdef import_wizard2 < matlab.apps.AppBase
     end
 
     function updateMineralName(app, row, value)
-      if row < 1 || row > numel(app.CSIndexByRow)
-        return
+      
+      app.DataTable.Data.Mineral(row) = value;
+      cs = app.ebsd.CSList{row};
+      if ~isa(cs,'symmetry')
+        app.ebsd.CSList{row} = value;
+      else
+        app.ebsd.CSList{row}.mineral = value;
       end
 
-      csIndex = app.CSIndexByRow(row);
-      cs = app.ebsd.CSList{csIndex};
-      if isNotIndexed(app, cs)
-        app.DataTable.Data{row, 3} = 'NotIndexed';
-        return
-      end
-
-      mineral = strtrim(app.asChar(value));
-      if isempty(mineral)
-        mineral = mineralNameForCS(app, cs);
-        app.DataTable.Data{row, 3} = mineral;
-        return
-      end
-
-      try
-        app.ebsd.CSList{csIndex}.mineral = mineral;
-        app.DataTable.Data{row, 3} = mineral;
-      catch ME
-        app.DataTable.Data{row, 3} = mineralNameForCS(app, cs);
-        uialert(app.UIFigure, ME.message, 'Could not update mineral name')
-      end
-    end
-
-    function mineral = mineralNameForCS(app, cs)
-      if isNotIndexed(app, cs)
-        mineral = 'NotIndexed';
-        return
-      end
-
-      try
-        mineral = app.asChar(cs.mineral);
-      catch
-        mineral = '';
-      end
     end
 
     function width = leftPanelWidth(app)
@@ -973,8 +912,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         return
       end
 
-      csIndex = app.CSIndexByRow(row);
-      app.ebsd.CSList{csIndex}.color = newColor;
+      app.ebsd.CSList{row}.color = newColor;
       app.Color{row} = newColor;
 
       addStyle(app.DataTable, uistyle('BackgroundColor', newColor), 'cell', [row 9])
