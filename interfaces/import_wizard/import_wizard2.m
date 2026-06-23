@@ -17,9 +17,10 @@ classdef import_wizard2 < matlab.apps.AppBase
     CurrentPathLabel                matlab.ui.control.Label
     FileTree                       matlab.ui.container.Tree
     CurrentData                    matlab.ui.control.TextArea
-    DataTable                      matlab.ui.control.Table
+    PhaseTable                      matlab.ui.control.Table
     UIAxes                         matlab.ui.control.UIAxes
     ExportButton                   matlab.ui.control.Button
+    ExportScriptButton             matlab.ui.control.Button % Button for generating an MTEX script
 
     Tree                           matlab.ui.container.CheckBoxTree
     PhaseMapNode                   matlab.ui.container.TreeNode
@@ -51,6 +52,7 @@ classdef import_wizard2 < matlab.apps.AppBase
     LastPlotSignature string = ""
     FontSize double = 14
     CurrentFolder string = ""
+    LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
   end
 
   properties (Constant, Access = private)
@@ -167,7 +169,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
       createPlotTree(app)
       createCoordinateControls(app)
-      createExportButton(app)
+      createExportButtonsPanel(app) % Combined layout setup for both buttons
       createRightPanel(app)
 
       app.AnalysisUICreated = true;
@@ -274,13 +276,30 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.EulerImage.Layout.Column = 2;
     end
 
-    function createExportButton(app)
-      app.ExportButton = uibutton(app.LeftLayout, 'push', ...
+    % Replaces the single button setup with a 2-column grid layout for both actions
+    function createExportButtonsPanel(app)
+      buttonGrid = uigridlayout(app.LeftLayout, ...
+        'ColumnWidth', {'1x', '1x'}, ...
+        'RowHeight', {'1x'}, ...
+        'Padding', [0 0 0 0], ...
+        'ColumnSpacing', 10);
+      buttonGrid.Layout.Row = 5;
+
+      app.ExportButton = uibutton(buttonGrid, 'push', ...
         'ButtonPushedFcn', createCallbackFcn(app, @ExportButtonPushed, true), ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize, ...
         'Text', 'Import to workspace');
-      app.ExportButton.Layout.Row = 5;
+      app.ExportButton.Layout.Row = 1;
+      app.ExportButton.Layout.Column = 1;
+
+      app.ExportScriptButton = uibutton(buttonGrid, 'push', ...
+        'ButtonPushedFcn', createCallbackFcn(app, @ExportScriptButtonPushed, true), ...
+        'FontWeight', 'bold', ...
+        'FontSize', app.FontSize, ...
+        'Text', 'Export to Script');
+      app.ExportScriptButton.Layout.Row = 1;
+      app.ExportScriptButton.Layout.Column = 2;
     end
 
     function createRightPanel(app)
@@ -290,13 +309,13 @@ classdef import_wizard2 < matlab.apps.AppBase
         'RowSpacing', 8, ...
         'Padding', [0 0 0 0]);
 
-      app.DataTable = uitable(app.RightLayout, ...
+      app.PhaseTable = uitable(app.RightLayout, ...
         'ColumnEditable', [true false true false false false false false false], ...
         'RowName', {}, ...
         'CellEditCallback', createCallbackFcn(app, @DataTableCellEdit, true), ...
         'CellSelectionCallback', createCallbackFcn(app, @DataTableCellSelection, true), ...
         'FontSize', app.FontSize - 1);
-      app.DataTable.Layout.Row = 1;
+      app.PhaseTable.Layout.Row = 1;
 
       app.UIAxes = uiaxes(app.RightLayout);
       title(app.UIAxes, '')
@@ -380,6 +399,7 @@ classdef import_wizard2 < matlab.apps.AppBase
       ensureAnalysisUI(app)
 
       app.ebsd = ebsdData;
+      app.LoadedFilePath = string(filePath); % Store file path for the script exporter
       updateCurrentDataInfo(app, fileName)
       app.ExportButton.Text = 'Import to workspace';
       app.LastPlotSignature = "";
@@ -473,8 +493,8 @@ classdef import_wizard2 < matlab.apps.AppBase
     end
 
     function fillPhaseTable(app)
-      removeStyle(app.DataTable)
-      addStyle(app.DataTable, uistyle('HorizontalAlignment', 'left'))
+      removeStyle(app.PhaseTable)
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'left'))
 
       csList = app.ebsd.CSList;
       numPhases = accumarray(app.ebsd.phaseId,1);
@@ -501,7 +521,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         end
                 
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
-           [int2str(numPhases(pId)),' (' xnum2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
+           [int2str(numPhases(pId)),' (' num2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
            symmetry, a, b, c, ''};     
       end
 
@@ -511,9 +531,10 @@ classdef import_wizard2 < matlab.apps.AppBase
       phaseTable.Plot(maxPhase) = true;
 
       % colorize color column
-      app.DataTable.Data = phaseTable;
-      for row = 1:length(csList)
-        addStyle(app.DataTable, ...
+      app.PhaseTable.Data = phaseTable;
+      
+      for row = 1:length(numPhases)
+        addStyle(app.PhaseTable, ...
           uistyle('BackgroundColor', app.Color{row}), 'cell', [row 9])
       end
       
@@ -536,7 +557,7 @@ classdef import_wizard2 < matlab.apps.AppBase
         return
       end
 
-      enabledPhaseIds = find(app.DataTable.Data.Plot);
+      enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
       applyCurrentCoordinateState(app)
 
@@ -799,7 +820,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
     function updateMineralName(app, row, value)
       
-      app.DataTable.Data.Mineral(row) = value;
+      app.PhaseTable.Data.Mineral(row) = value;
       cs = app.ebsd.CSList{row};
       if ~isa(cs,'symmetry')
         app.ebsd.CSList{row} = value;
@@ -903,19 +924,18 @@ classdef import_wizard2 < matlab.apps.AppBase
       end
 
       row = event.Indices(1);
-      if strcmp(app.DataTable.Data{row, 3}, 'NotIndexed')
-        return
-      end
 
       newColor = uisetcolor(app.Color{row}, 'Select phase color');
       if isequal(newColor, 0)
         return
       end
 
-      app.ebsd.CSList{row}.color = newColor;
       app.Color{row} = newColor;
+      if isa(app.ebsd.CSList{row}, 'symmetry')
+          app.ebsd.CSList{row}.color = newColor;
+      end
 
-      addStyle(app.DataTable, uistyle('BackgroundColor', newColor), 'cell', [row 9])
+      addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor), 'cell', [row 9])
       updatePlot(app, true)
     end
 
@@ -975,8 +995,75 @@ classdef import_wizard2 < matlab.apps.AppBase
       assignin('base', varName, app.ebsd)
       app.ExportButton.Text = ['Imported as ' varName '!'];
     end
-  end
 
+    % Generates a clean MTEX script string and opens it directly inside the Editor
+    function ExportScriptButtonPushed(app, ~)
+      if isempty(app.ebsd) || app.LoadedFilePath == ""
+        return
+      end
+
+      [~, baseName] = fileparts(app.LoadedFilePath);
+      safeName = matlab.lang.makeValidName(string(baseName));
+      scriptFileName = char(safeName + ".m");
+      safePath = strrep(app.LoadedFilePath, "'", "''");
+      
+      mapIdx = app.MapCoordinatesDropDown.ValueIndex;
+      mapObj = app.CoordinateSystems.how2plot(mapIdx);
+      
+      eulerIdx = app.EulerCoordinatesDropDown.ValueIndex;
+      eulerObj = app.CoordinateSystems.how2plot(eulerIdx);
+
+      scriptLines = { ...
+        '%% MTEX Script generated by import_wizard2'; ...
+        ''; ...
+        '%% Specify Crystal Symmetries'; ...
+        'CS = { ...'; ...
+      };
+
+      for k = 1:numel(app.ebsd.CSList)
+        cs = app.ebsd.CSList{k};
+        if ischar(cs) && strcmpi(cs, 'notIndexed')
+          scriptLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
+        else
+          pg = char(cs.pointGroup);
+          abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
+          ang = [cs.alpha, cs.beta, cs.gamma] / degree;
+          minName = char(cs.mineral);
+          
+          csStr = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s''), ...', ...
+            pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName);
+          scriptLines{end+1} = csStr; %#ok<AGROW>
+        end
+      end
+      
+      scriptLines{end+1} = '};';
+      scriptLines{end+1} = '';
+      scriptLines{end+1} = '%% Load EBSD Data';
+      scriptLines{end+1} = sprintf('fname = ''%s'';', safePath);
+      scriptLines{end+1} = 'ebsd = EBSD.load(fname, CS, ''interface'', ''wizard'');';
+      scriptLines{end+1} = '';
+      scriptLines{end+1} = '%% Apply Coordinate Conversions';
+      scriptLines{end+1} = sprintf('ebsd.how2plot = plottingConvention(vector3d(%s), vector3d(%s));', ...
+        mat2str(double(mapObj.outOfScreen)), mat2str(double(mapObj.east)));
+      scriptLines{end+1} = sprintf('eulerRot = rotation.byMatrix(%s);', mat2str(eulerObj.rot.matrix));
+      scriptLines{end+1} = sprintf('mapRot = rotation.byMatrix(%s);', mat2str(mapObj.rot.matrix));
+      scriptLines{end+1} = 'ebsd.EulerCorrection = inv(eulerRot) * mapRot;';
+      scriptLines{end+1} = '';
+      scriptLines{end+1} = '%% Plot Data';
+      scriptLines{end+1} = 'plot(ebsd);';
+
+      textString = strjoin(scriptLines, newline);
+      
+      fid = fopen(scriptFileName, 'wt');
+      if fid ~= -1
+        fprintf(fid, '%s', textString);
+        fclose(fid);
+        matlab.desktop.editor.openDocument(fullfile(pwd, scriptFileName));
+      else
+        matlab.desktop.editor.newDocument(textString);
+      end
+    end
+  end
   methods (Access = public)
     function app = import_wizard2
       runningApp = getRunningApp(app);
