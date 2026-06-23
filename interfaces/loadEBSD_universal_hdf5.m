@@ -18,16 +18,17 @@ else
   isDebug(false);
 end
 
-% check all configs and select where manufacturer match
-hasTypeOption = check_option(varargin, 'type');
-if hasTypeOption
-  targetManufacturer = get_option(varargin, 'type');
-end
-
 folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
 fileList = dir(fullfile(folderPath, '*.json'));
 Conf = struct();
 
+% Check if a type is set --> if so use this type
+isManualType = check_option(varargin, 'type');
+if isManualType
+    targetType = get_option(varargin, 'type'); % z.B. 'Oxford_EBSD'
+end
+
+% Check all available configs for match
 for i = 1:length(fileList)
   if fileList(i).isdir, continue; end
   
@@ -36,26 +37,31 @@ for i = 1:length(fileList)
   try
     cur_Conf = jsondecode(fileread(fullFileName));
   catch ME
-    error('Error loading json "%s": %s', fullFileName, ME.message);
+    error('Error when loading "%s": %s', fullFileName, ME.message);
   end
   
-  if hasTypeOption
-    manufacturer = targetManufacturer;
+  config_keys = cur_Conf.settings.manufacturer_keys.data;
+    
+  if isManualType
+    if any(strcmpi(targetType, config_keys))
+      Conf = cur_Conf;
+      break;
+    end
   else
     try
       [manufacturer, ~] = readConf(info_struct, cur_Conf.settings.key_path, "name", "Manufacturer");    
     catch
-      continue;
+      continue; 
     end
-  end
-
-  if any(contains(manufacturer, cur_Conf.settings.manufacturer_keys.data))
-    Conf = cur_Conf; 
-    break;
+  
+    if any(contains(manufacturer, config_keys, 'IgnoreCase', true))
+      Conf = cur_Conf;
+      break;
+    end
   end
 end
 
-if isempty(Conf)
+if isempty(fieldnames(Conf))
   error("No Manufacturer config found for: " + manufacturer);
 end
 
@@ -74,22 +80,41 @@ exclude = ["settings", "additions"];
 data = struct();
 
 categories = fieldnames(Conf);
-for i = 1:length(categories)
+try
+  for i = 1:length(categories)
+  
+    cat = categories{i};
+    if ismember(cat, exclude), continue; end
+  
+    vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
+    vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+  
+    [data.(cat), Conf.(cat)] = readConf( ...
+      info_struct, ...
+      Conf.(cat), ...
+      "name", cat);
+  
+    vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+    vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
+  
+  end
+catch ME
+  % Check which type is currently loaded
+  current_type = '';
+  if check_option(varargin, 'type')
+    current_type = get_option(varargin, 'type');
+  end
 
-  cat = categories{i};
-  if ismember(cat, exclude), continue; end
-
-  vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
-  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
-
-  [data.(cat), Conf.(cat)] = readConf( ...
-    info_struct, ...
-    Conf.(cat), ...
-    "name", cat);
-
-  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
-  vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
-
+  % Only try fallback if one exists and is different from the current 
+  if isfield(Conf.settings, 'fallback') && ~strcmpi(current_type, Conf.settings.fallback)
+    warning("Someting went wrong! Trying fallback: '%s'", Conf.settings.fallback);
+    
+    % Restart with fallback version
+    ebsd = loadEBSD_universal_hdf5(fname, 'type', Conf.settings.fallback);
+    return; 
+  else 
+    error('loadEBSD_universal_hdf5 failed. No more Fallbacks available.\nError code: %s', ME.message);
+  end
 end
 
 % Construct prop-----------------------------------------------------------
