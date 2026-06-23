@@ -107,7 +107,7 @@ catch ME
 
   % Only try fallback if one exists and is different from the current 
   if isfield(Conf.settings, 'fallback') && ~strcmpi(current_type, Conf.settings.fallback)
-    warning("Someting went wrong! Trying fallback: '%s'", Conf.settings.fallback);
+    warning("Someting went wrong! Trying fallback: '%s'. The Error was: '%s'", Conf.settings.fallback, ME.message);
     
     % Restart with fallback version
     ebsd = loadEBSD_universal_hdf5(fname, 'type', Conf.settings.fallback);
