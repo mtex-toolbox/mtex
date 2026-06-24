@@ -110,7 +110,7 @@ catch ME
     warning("Someting went wrong! Trying fallback: '%s'. The Error was: '%s'", Conf.settings.fallback, ME.message);
     
     % Restart with fallback version
-    ebsd = loadEBSD_universal_hdf5(fname, 'type', Conf.settings.fallback);
+    ebsd = loadEBSD_universal_hdf5(fname, 'type', Conf.settings.fallback, 'debug', isDebug());
     return; 
   else 
     error('loadEBSD_universal_hdf5 failed. No more Fallbacks available.\nError code: %s', ME.message);
