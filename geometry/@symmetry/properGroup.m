@@ -9,7 +9,7 @@ if ~isempty(s.properRef)
 elseif s.isProper
   
   sP = s; 
-  s.properRef = s; 
+  s.properRef = s;
   
 else
 
@@ -44,6 +44,8 @@ else
     sP.how2plot = s.how2plot; % copy plotting convention
   end
   
+  sP.LaueRef = s.Laue;
   s.properRef = sP;
+  
   
 end
