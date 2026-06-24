@@ -166,7 +166,7 @@ for i = 1:length(fields)
 
   field = fields{i};
   if field == "ebsd", continue; end
-
+  if isempty(data.(field)), continue; end
   data.ebsd.opt.(field) = data.(field);
 
 end
