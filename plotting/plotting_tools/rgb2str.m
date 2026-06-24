@@ -9,6 +9,10 @@ elseif isstring(rgb)
 
   str = char(rgb);
 
+elseif any(isnan(rgb))
+
+  str = 'none';
+
 else
   
   str = char(colornames(getMTEXpref('colorPalette','CSS'),rgb));
