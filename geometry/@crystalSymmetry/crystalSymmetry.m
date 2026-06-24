@@ -1,4 +1,4 @@
-classdef crystalSymmetry < symmetry
+classdef crystalSymmetry < symmetry & phaseItem
 %
 % Syntax
 %   crystalSymmetry('cubic')
@@ -93,8 +93,8 @@ classdef crystalSymmetry < symmetry
 
   properties
     axes = [xvector,yvector,zvector]; % coordinate system
-    mineral = ''                      % mineral name
-    color = ''                        % color used for EBSD / grain plotting
+    %mineral = ''                      % mineral name
+    %color = ''                        % color used for EBSD / grain plotting
   end
 
   properties (Dependent = true)
@@ -264,6 +264,14 @@ classdef crystalSymmetry < symmetry
           end
         end
         cs = s;
+
+        if isempty(cs.color)
+          color = getMTEXpref('colors');
+          cs.color = color(1,:);
+        elseif ischar(cs.color)
+          cs.color = str2rgb(cs.color);
+        end
+
         if isa(s.how2plot,'plottingConvention'), return; end        
       end
       

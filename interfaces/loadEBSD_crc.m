@@ -234,13 +234,13 @@ for p=1:cpr.phases.count
     Laue = LaueGroups(phase.lauegroup);
   end
       
-  CS{p} = crystalSymmetry(Laue{:},...
+  CS(p) = crystalSymmetry(Laue{:},...
     [phase.a phase.b phase.c],...
     [phase.alpha phase.beta phase.gamma]*degree,...
     'mineral',phase.structurename); %#ok<AGROW>
 end
 
-CS = ['notIndexed',CS];
+CS = [notIndexed,CS];
 
 end
 

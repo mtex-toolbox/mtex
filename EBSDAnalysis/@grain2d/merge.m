@@ -121,7 +121,7 @@ for k = 1:length(varargin)
       ind = all(grains.phaseId(indPairs)==phId,2);
       
       % extract the meanorientations
-      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList{phId});
+      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList(phId));
       oriPairs = reshape(oriPairs,[],2);
       
       % check mean orientation difference is below a threshold
@@ -256,7 +256,7 @@ if check_option(varargin,'calcMeanOrientation')
       ind = ind(hInd);
       
       % take the host orientation for the merged grain
-      cs = grains.CSList{grains.phaseId(ind)};
+      cs = grains.CSList(grains.phaseId(ind));
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
       
     elseif ischar(updateOriFun) && strcmpi(updateOriFun,'maxArea')
@@ -266,14 +266,14 @@ if check_option(varargin,'calcMeanOrientation')
       ind = ind(hInd);
       
       % take the host orientation for the merged grain
-      cs = grains.CSList{grains.phaseId(ind)};
+      cs = grains.CSList(grains.phaseId(ind));
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
 
 
     else % compute the mean between the merged orientations
       
       ind = parentId == i;
-      cs = grains.CSList{max(grains.phaseId(ind))};
+      cs = grains.CSList(max(grains.phaseId(ind)));
       oriNew = mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.numPixel(ind));
             
     end
@@ -285,7 +285,7 @@ if check_option(varargin,'calcMeanOrientation')
     if exist('cs','var') && ischar(cs) 
       grainsMerged.phaseId(i) = 1;
     else
-      newPhase = cellfun(@(x) isa(x,'symmetry') && x==oriNew.CS,grains.CSList);
+      newPhase = grains.CSList == oriNew.CS;
       grainsMerged.phaseId(i) = find(newPhase);
     end
   end

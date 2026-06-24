@@ -57,8 +57,8 @@ for p=1:numel(ebsd.phaseMap)
   currentPhase = phaseId == p;
   if any(currentPhase)
     
-    o_Dl = orientation(ebsd.rotations(Dl(currentPhase)),ebsd.CSList{p});
-    o_Dr = orientation(ebsd.rotations(Dr(currentPhase)),ebsd.CSList{p});
+    o_Dl = orientation(ebsd.rotations(Dl(currentPhase)),ebsd.CSList(p));
+    o_Dr = orientation(ebsd.rotations(Dr(currentPhase)),ebsd.CSList(p));
     omega(currentPhase) = angle(o_Dl,o_Dr);
     
   end

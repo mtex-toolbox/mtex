@@ -104,9 +104,9 @@ classdef grain2d < phaseList & dynProp
       end
 
       if length(varargin)>=2
-        grains.CSList = ensurecell(varargin{2});
+        grains.CSList = varargin{2};
       else
-        grains.CSList = {'notIndexed'};
+        grains.CSList = notIndexed;
       end
 
       if length(varargin)>=3
@@ -337,6 +337,8 @@ classdef grain2d < phaseList & dynProp
 
       end
       
+      grains.CSList = ensureCSArray(grains.CSList);
+
       % ensure allV is vector3d
       if isa(grains.allV,'double')
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);

@@ -61,7 +61,7 @@ binWidth = 1 + 0.5*size(cumArea,2)>1;
 b = bar(binCenter,100*cumArea,'BarWidth',binWidth,'FaceColor','flat');
 
 for id = 1:numel(idList)
-  b(id).CData = str2rgb(grains.CSList{idList(id)}.color);
+  b(id).CData = str2rgb(grains.CSList(idList(id)).color);
 end
 
 b.CData

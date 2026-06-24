@@ -16,7 +16,7 @@ function ebsd = loadEBSD_ang(fname,varargin)
 assertExtension(fname,'.ang');
 
 % maybe we need to introduce a notIndexed phase
-cs{1} = 'notIndexed';
+cs = notIndexed;
 
 % read file header - lines staring with #
 nh = 1000;
@@ -66,7 +66,7 @@ for i = 1:length(phasePos)
         options = {'X||a'};
       end
   end
-  cs{phase+1} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+  cs(phase+1) = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
   
 end
    
@@ -77,7 +77,7 @@ isnum = cellfun(@(x) ~isempty(str2num(x)),parts);
   
 if any(~isnum) % if there are any strings
   % try to replace mineral names by numbers
-  ReplaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
+  ReplaceExpr = arrayfun(@(i) {cs(i).mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
   ReplaceExpr = {'ReplaceExpr',ReplaceExpr};
 else
   ReplaceExpr = {};

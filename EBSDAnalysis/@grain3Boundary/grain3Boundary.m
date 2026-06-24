@@ -119,7 +119,8 @@ methods
   
   function mori = get.misorientation(gB3)
     
-    mori = orientation(gB3.misrotation,gB3.CS{:});
+    CS = gB3.CS;
+    mori = orientation(gB3.misrotation,CS(1),CS(2)); 
     mori.antipodal = equal(checkSinglePhase(gB3),2);
     
     % set not indexed orientations to nan
@@ -189,7 +190,7 @@ methods
       out = any(gB.phaseId == phaseId,2);
       
       % not indexed phase should include outer border as well
-      if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | ...
+      if phaseId > 0 && ischar(gB.CSList(phaseId)), out = out | ...
           any(gB.phaseId == 0,2); end
       
     elseif isempty(phaseId2)
@@ -209,6 +210,24 @@ methods
     
   end
   
+end
+
+methods (Static = true)
+  
+  function gB = loadobj(gB)
+    % called by Matlab when an object is loaded from an .mat file
+    % this overloaded method ensures compatibility with older MTEX
+    % versions
+    
+    % ensure CSList is vector
+    CSList = gB.CSList;
+    if iscell(CSList)
+      ind = cellfun(@ischar,CSList);
+      CSList(ind) = repcell(notIndexed,1,nnz(ind));
+      gB.CSList = [CSList{:}];
+    end
+
+  end
 end
 
 end

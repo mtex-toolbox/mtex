@@ -265,7 +265,7 @@ catch
 
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out('Iron bcc').CS = out('Iron bcc').CS.properGroup;
-          out('Iron bcc').CSList{3} = out('Iron bcc').CSList{3}.properGroup;
+          out('Iron bcc').CSList(3) = out('Iron bcc').CSList(3).properGroup;
 
         case 'emsland'
 

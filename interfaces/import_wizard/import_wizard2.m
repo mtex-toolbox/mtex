@@ -312,8 +312,8 @@ classdef import_wizard2 < matlab.apps.AppBase
       app.PhaseTable = uitable(app.RightLayout, ...
         'ColumnEditable', [true false true false false false false false false], ...
         'RowName', {}, ...
-        'CellEditCallback', createCallbackFcn(app, @DataTableCellEdit, true), ...
-        'CellSelectionCallback', createCallbackFcn(app, @DataTableCellSelection, true), ...
+        'CellEditCallback', createCallbackFcn(app, @PhaseTableCellEdit, true), ...
+        'CellSelectionCallback', createCallbackFcn(app, @PhaseTableCellSelection, true), ...
         'FontSize', app.FontSize - 1);
       app.PhaseTable.Layout.Row = 1;
 
@@ -505,7 +505,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
       for pId = 1:length(numPhases)
         
-        cs = csList{pId};
+        cs = csList(pId);
         if isa(cs,'symmetry')          
           mineral = asChar(app, cs.mineral);
           symmetry = asChar(app, cs.pointGroup);
@@ -526,14 +526,13 @@ classdef import_wizard2 < matlab.apps.AppBase
       end
 
       % pre select indexed phase with the most pixels
-      numPhases(cellfun('isclass',csList,'char')) = 0;
+      numPhases(~[csList.isIndexed]) = 0;
       [~,maxPhase] = max(numPhases);
       phaseTable.Plot(maxPhase) = true;
 
       % colorize color column
       app.PhaseTable.Data = phaseTable;
-      
-      for row = 1:length(numPhases)
+      for row = 1:length(csList)
         addStyle(app.PhaseTable, ...
           uistyle('BackgroundColor', app.Color{row}), 'cell', [row 9])
       end
@@ -575,7 +574,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
       switch plotSpec.Type
         case 'PhaseMap'
-          plot(ebsd, 'parent', app.UIAxes)
+          plot(ebsd, 'parent', app.UIAxes,'wizard')
 
         case 'IPF'
           direction = directionVector(app, plotSpec.Direction);
@@ -820,14 +819,9 @@ classdef import_wizard2 < matlab.apps.AppBase
 
     function updateMineralName(app, row, value)
       
-      app.PhaseTable.Data.Mineral(row) = value;
-      cs = app.ebsd.CSList{row};
-      if ~isa(cs,'symmetry')
-        app.ebsd.CSList{row} = value;
-      else
-        app.ebsd.CSList{row}.mineral = value;
-      end
-
+      app.phaseTable.Data.Mineral(row) = value;
+      app.ebsd.CSList(row).mineral = value;
+      
     end
 
     function width = leftPanelWidth(app)
@@ -900,7 +894,7 @@ classdef import_wizard2 < matlab.apps.AppBase
       updatePlot(app)
     end
 
-    function DataTableCellEdit(app, event)
+    function PhaseTableCellEdit(app, event)
       if isempty(event.Indices)
         return
       end
@@ -918,22 +912,18 @@ classdef import_wizard2 < matlab.apps.AppBase
       end
     end
 
-    function DataTableCellSelection(app, event)
+    function PhaseTableCellSelection(app, event)
       if isempty(event.Indices) || event.Indices(2) ~= 9
         return
       end
 
       row = event.Indices(1);
-
+      
       newColor = uisetcolor(app.Color{row}, 'Select phase color');
-      if isequal(newColor, 0)
-        return
-      end
+      if isequal(newColor, 0), return, end
 
+      app.ebsd.CSList(row).color = newColor;
       app.Color{row} = newColor;
-      if isa(app.ebsd.CSList{row}, 'symmetry')
-          app.ebsd.CSList{row}.color = newColor;
-      end
 
       addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor), 'cell', [row 9])
       updatePlot(app, true)
@@ -1021,7 +1011,7 @@ classdef import_wizard2 < matlab.apps.AppBase
       };
 
       for k = 1:numel(app.ebsd.CSList)
-        cs = app.ebsd.CSList{k};
+        cs = app.ebsd.CSList(k);
         if ischar(cs) && strcmpi(cs, 'notIndexed')
           scriptLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
         else

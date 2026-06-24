@@ -61,7 +61,7 @@ for k = 1:numel(grains.indexedPhasesId)
   h(k) = optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
     'FaceColor',grains.colorList(id,:)),varargin{:});
   if h(k).DisplayStyle == "stairs"
-    h(k).EdgeColor = grains.CSList{id}.color;
+    h(k).EdgeColor = grains.CSList(id).color;
   end
   hold on
   

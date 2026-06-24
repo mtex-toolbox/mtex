@@ -38,7 +38,7 @@ classdef EBSDsquare < EBSD
       ebsd.rotations = rotation(rot);
       ebsd.phaseId = phaseId(:);
       ebsd.phaseMap = phaseMap;
-      ebsd.CSList = CSList;
+      ebsd.CSList = ensureCSArray(CSList);
       ebsd.id = 1:prod(sGrid);
       
       % extract additional properties

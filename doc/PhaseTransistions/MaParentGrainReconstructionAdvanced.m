@@ -13,8 +13,8 @@
 mtexdata martensite 
 
 % extract fcc and bcc symmetries
-csBCC = ebsd.CSList{2}; % austenite bcc:
-csFCC = ebsd.CSList{3}; % martensite fcc:
+csBCC = ebsd.CSList(2); % austenite bcc:
+csFCC = ebsd.CSList(3); % martensite fcc:
 
 % grain reconstruction
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',3*degree,'minPixel',5);

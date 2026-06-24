@@ -15,11 +15,16 @@ if strcmp(s(1).type,'()')
 
   subs = s(1).subs;
   
-  % turn phaseNames into crystalSymmetry
-  isCS = cellfun(@(x) ischar(x) | isstring(x) | isa(x,'crystalSymmetry'),subs);  
-  phId = cellfun(@gB.name2id,subs(isCS));
-  isCS(isCS) = phId>0; phId(phId==0) = [];
-  subs(isCS) = gB.CSList(phId);
+  % turn phaseNames into crystalSymmetry and determine first phaseId
+  phId = 0;
+  for k = length(subs):-1:1
+    if ischar(subs{k}) || isstring(subs{k})
+      phId = gB.name2id(subs{k});
+      if phId > 0, subs{k} = gB.CSList(phId); end
+    elseif isa(subs{k},'phaseItem')
+      phId = find(gB.CSList == subs{k});
+    end
+  end
   
   % restrict to subset
   ind = subsind(gB,subs);

@@ -43,9 +43,9 @@ classdef grain3d < phaseList & dynProp
       end
 
       if nargin>=5
-        grains.CSList = ensurecell(CSList);
+        grains.CSList = ensureCSArray(CSList);
       else
-        grains.CSList = {'notIndexed'};
+        grains.CSList = notIndexed;
       end
 
       if nargin>=6
@@ -174,6 +174,22 @@ classdef grain3d < phaseList & dynProp
 
   methods (Static = true)
     grain3d = load(fname,varargin)
-  end
+
+    function grains = loadobj(grains)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+      
+      
+      % ensure CSList is vector
+      CSList = grains.CSList;
+      if iscell(CSList)       
+        ind = cellfun(@ischar,CSList);
+        CSList(ind) = repcell(notIndexed,1,nnz(ind));
+        grains.CSList = [CSList{:}];
+      end
+
+    end
+end
 end
 

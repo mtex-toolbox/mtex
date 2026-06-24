@@ -94,7 +94,8 @@ for radius = 1:order
         
         % if we had no grains ebsd.project2fundamentalRegion had no effect
         % and we have to consider crystal symmetry explicitly
-        omega = min(angle_outer(inv(rot(doInclude)) .* rot(indN(doInclude)),ebsd.CSList{idPhase}.properGroup.rot),[],2).';
+        omega = min(angle_outer(inv(rot(doInclude)) .* ...
+          rot(indN(doInclude)),ebsd.CSList(idPhase).properGroup.rot),[],2).';
                 
       end      
       

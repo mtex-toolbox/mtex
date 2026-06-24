@@ -82,7 +82,7 @@ for id = ebsd.indexedPhasesId
   % extract orientations and make them a bit larger
   rot = ebsd.rotations;
   rot(ebsd.phaseId ~= id) = NaN;
-  ori = orientation.nan(size(ebsd)+2*order,ebsd.CSList{id});
+  ori = orientation.nan(size(ebsd)+2*order,ebsd.CSList(id));
   ori(order+1:end-order,order+1:end-order) = rot;
   
   % take the mean

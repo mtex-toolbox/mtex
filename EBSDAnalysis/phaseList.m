@@ -3,7 +3,7 @@ classdef phaseList
 
   properties
     phaseId = []    % index to a phase map - 1,2,3,4,....    
-    CSList = {}     % list of crystal symmetries
+    CSList = []     % list of crystal symmetries
     phaseMap = []   % phase numbers as used in the data - 0,5,10,11,...
   end
   
@@ -34,7 +34,7 @@ classdef phaseList
               
       pL.phaseMap(isnan(pL.phaseMap)) = 0;
       
-      pL.CSList = ensurecell(CSList);
+      pL.CSList = CSList;
       
       % check number of symmetries and phases coincides
       if numel(pL.phaseMap)>1 && isscalar(pL.CSList)
@@ -43,41 +43,41 @@ classdef phaseList
         % apply this symmetry to all phases except a zero phase
         pL.CSList = repmat(pL.CSList,numel(pL.phaseMap),1);
           
-        if pL.phaseMap(1) <= 0, pL.CSList{1} = 'notIndexed'; end
+        if pL.phaseMap(1) <= 0, pL.CSList(1) = notIndexed; end
 
       elseif numel(pL.phaseMap) > length(pL.CSList)
         
         % if to few symmetries have been specified
         % prepend as many  not indexed phases as required
-        pL.CSList = [repcell('notIndexed',1,numel(pL.phaseMap)-length(pL.CSList)),pL.CSList];
+        pL.CSList = [repmat(notIndexed,1,numel(pL.phaseMap)-length(pL.CSList)),pL.CSList];
         
       elseif numel(pL.phaseMap) < length(pL.CSList) 
         
         % if more symmetries have been specified then phases are present in
         % the data 
         
-        first = isa(pL.CSList{1},'symmetry');
+        firstIndexed = pL.CSList(1).isIndexed;
       
         % if everything is indexed but phase is 0
-        if (max(pL.phaseMap) == 0) && ~first
+        if (max(pL.phaseMap) == 0) && ~firstIndexed
           
           pL.phaseMap = [-1;pL.phaseMap(:)];
           pL.phaseId = 1 + pL.phaseId;
           
         % the normal case: there are simply some phases missing
         % all we have to do is to extend the phaseMap
-        elseif ~first + max(pL.phaseMap) <= numel(pL.CSList)
+        elseif ~firstIndexed + max(pL.phaseMap) <= numel(pL.CSList)
           
           % 
-          pL.phaseId = ~first + pL.phaseMap(pL.phaseId);
+          pL.phaseId = ~firstIndexed + pL.phaseMap(pL.phaseId);
           
           % extend phaseMap
-          pL.phaseMap = first + (0:numel(pL.CSList)-1);
+          pL.phaseMap = firstIndexed + (0:numel(pL.CSList)-1);
           
         else
         
           % no zero phase - maybe everything was indexed
-          if pL.phaseMap(1) > 0 && isa(pL.CSList{1},'symmetry')
+          if pL.phaseMap(1) > 0 && pL.CSList(1).isIndexed
             pL.phaseId = pL.phaseId + 1;
             pL.phaseMap = [0;pL.phaseMap];
           end
@@ -90,8 +90,8 @@ classdef phaseList
       % ensure that there is at least one notIndexed phase
       % by prepending it !! TODO
       % this probably requires to specify phaseMap as an option    
-      if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
-        pL.CSList = [{'notIndexed'};pL.CSList(:)];
+      if all([pL.CSList.isIndexed])
+        pL.CSList = [notIndexed, pL.CSList];
         pL.phaseId = pL.phaseId + 1;
         if  ismember(0,pL.phaseMap)
           pL.phaseMap = [-1;pL.phaseMap(:)];
@@ -106,8 +106,8 @@ classdef phaseList
       c = 1;
       
       for ph = 1:numel(pL.phaseMap)
-        if isa(pL.CSList{ph},'symmetry') && isempty(pL.CSList{ph}.color)
-          pL.CSList{ph}.color = str2rgb(colorOrder{mod(c-1,nc)+1});
+        if pL.CSList(ph).isIndexed && isempty(pL.CSList(ph).color)
+          pL.CSList(ph).color = str2rgb(colorOrder{mod(c-1,nc)+1});
           c = c+1;
         end
       end
@@ -141,9 +141,7 @@ classdef phaseList
 
     function id = get.indexedPhasesId(pL)
       
-      id = intersect(...
-        find(~cellfun('isclass',pL.CSList,'char')),...
-        unique(pL.phaseId));
+      id = intersect(find([pL.CSList.isIndexed]), unique(pL.phaseId));
     
       id = id(:).';
       
@@ -153,13 +151,8 @@ classdef phaseList
       
       % ensure single phase
       id = checkSinglePhase(pL);
-                          
-      if numel(id) > 1
-        cs = pL.CSList(id);
-      else
-        cs = pL.CSList{id};
-      end
-                
+      cs = pL.CSList(id);
+
     end
       
     
@@ -171,7 +164,7 @@ classdef phaseList
         
         % if not yet in CSlist append
         if id == 0
-          pL.CSList{end+1} = cs;
+          pL.CSList(end+1) = cs;
           
           pL.phaseId = length(pL.CSList) * ones(size(pL.phaseId));          
           
@@ -179,7 +172,7 @@ classdef phaseList
           
         else
           
-          pL.CSList{id} = cs;
+          pL.CSList(id) = cs;
           pL.phaseId = id * ones(size(pL.phaseId));
 
           return
@@ -190,7 +183,7 @@ classdef phaseList
         if length(cs) == numel(pL.phaseMap)
           pL.CSList = cs;
         elseif length(cs) == numel(pL.indexedPhasesId)
-          pL.CSList = repcell('notIndexed',1,numel(pL.phaseMap));
+          pL.CSList = repmat(notIndexed,1,numel(pL.phaseMap));
           pL.CSList(pL.indexedPhasesId) = cs;
         else
           error('The number of symmetries specified is less than the largest phase id.')
@@ -232,7 +225,7 @@ classdef phaseList
     function rgb = get.color(pL)
       
       % notindexed phase should be white by default
-      if ~any(pL.isIndexed), rgb = ones(1,3); return; end
+      if ~any(pL.isIndexed), rgb = nan(1,3); return; end
       
       % ensure single phase and extract symmetry
       cs = pL.CS;
@@ -251,28 +244,16 @@ classdef phaseList
     end
     
     function cList = get.colorList(pL)
-
-      colors = getMTEXpref('PhaseColorOrder');
-      cList = zeros(numel(pL.CSList),3);
-
-      ind = pL.indexedPhasesId;
-      for k = pL.indexedPhasesId
-        color = pL.CSList{ind}.color; %#ok<*PROP>
-        if isempty(color), color = colors{ind}; end
-        if ischar(color), color = str2rgb(color); end
-        cList(ind,:) = color;
-      end
+      cList = cat(1,pL.CSList.color);
     end
 
 
     function minerals = get.mineralList(pL)
-      isCS = cellfun('isclass',pL.CSList,'crystalSymmetry');
-      minerals(isCS) = cellfun(@(x) x.mineral,pL.CSList(isCS),'uniformoutput',false);
-      minerals(~isCS) = pL.CSList(~isCS);
+      minerals = {pL.CSList.mineral};
     end
 
     function isInd = get.isIndexed(pL)
-      notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
+      notIndexedPhase = [0,find(~[pL.CSList.isIndexed])];
       isInd = ~any(isnan(pL.phaseId) | ismember(pL.phaseId,notIndexedPhase),2);
       isInd = reshape(isInd, size(pL));
     end
@@ -331,9 +312,9 @@ classdef phaseList
       phaseId = phaseId(all(phaseId>0,2),:);
       
       % ignore not indexed
-      notIndexed = find(cellfun('isclass',pL.CSList,'char'));
+      notIndexed = find(~[pL.CSList.isIndexed]);
       for k = 1:length(notIndexed)
-        phaseId(any(phaseId==notIndexed(k),2),:) = [];
+        phaseId(any(phaseId == notIndexed(k),2),:) = [];
       end
 
       if isempty(phaseId)
@@ -370,7 +351,8 @@ classdef phaseList
     
     function id = cs2phaseId(pL,cs)
       
-      if (ischar(cs) || isstring(cs))  && strcmpi(cs,'notIndexed')
+      if ((ischar(cs) || isstring(cs)) && strcmpi(cs,'notIndexed')) || ...
+          isa(cs,'notIndexed')
         id = 1;
         return;
       elseif ~isa(cs,'crystalSymmetry')
@@ -379,9 +361,8 @@ classdef phaseList
       end
       
       for id = 1:length(pL.CSList)
-        if isa(pL.CSList{id},'symmetry') && (...
-            (isempty(cs.mineral) && pL.CSList{id} == cs) || ...
-            (~isempty(cs.mineral) && strcmp(pL.CSList{id}.mineral,cs.mineral)))
+        if pL.CSList(id) == cs || (~isempty(cs.mineral) && ...
+            strcmp(pL.CSList(id).mineral,cs.mineral))
           return
         end
       end
@@ -414,8 +395,8 @@ classdef phaseList
               " Please provide the full phase name.");
         end
         
-      elseif isa(phName,'symmetry')
-        phId = find(cellfun(@(cs) cs==phName,pL.CSList));
+      elseif isa(phName,'phaseItem')
+        phId = find(pL.CSList == phName); % TODO!!
       else
         phId = find(phName == pL.phaseMap);
       end

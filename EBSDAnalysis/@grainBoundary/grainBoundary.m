@@ -147,8 +147,9 @@ classdef grainBoundary < phaseList & dynProp
     
     
     function mori = get.misorientation(gB)
-            
-      mori = orientation(gB.misrotation,gB.CS{:});
+      
+      CS = gB.CS;
+      mori = orientation(gB.misrotation,CS(1),CS(2));
       mori.antipodal = equal(checkSinglePhase(gB),2);
       
       % set not indexed orientations to nan
@@ -265,7 +266,9 @@ classdef grainBoundary < phaseList & dynProp
         out = any(gB.phaseId == phaseId,2);
       
         % not indexed phase should include outer border as well
-        if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
+        if phaseId > 0 && ~gB.CSList(phaseId).isIndexed
+          out = out | any(gB.phaseId == 0,2); 
+        end
                
       elseif isempty(phaseId2)
         

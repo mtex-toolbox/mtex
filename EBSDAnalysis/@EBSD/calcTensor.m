@@ -40,11 +40,11 @@ density = nan(size(ebsd));
 for p = ebsd.indexedPhasesId
   
   % search for a fitting tensor
-  Tind = cellfun(@(t) isa(t,'tensor') && t.CS.Laue ==  ebsd.CSList{p}.Laue,varargin);
+  Tind = cellfun(@(t) isa(t,'tensor') && t.CS.Laue ==  ebsd.CSList(p).Laue,varargin);
   if any(Tind)
     T = varargin{find(Tind,1)};
   else
-    error('\nMissing tensor for phase: %s\n',ebsd.CSList{p}.mineral);
+    error('\nMissing tensor for phase: %s\n',ebsd.CSList(p).mineral);
   end
   
   % extract density
@@ -52,7 +52,7 @@ for p = ebsd.indexedPhasesId
 
   % rotate tensors
   TRot(ebsd.phaseId == p) = ...
-    orientation(ebsd.rotations(ebsd.phaseId == p),ebsd.CSList{p}) * T; %#ok<AGROW>
+    orientation(ebsd.rotations(ebsd.phaseId == p),ebsd.CSList(p)) * T; %#ok<AGROW>
  
 end
 

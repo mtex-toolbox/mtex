@@ -22,27 +22,22 @@ for ip = 1:numel(grains.phaseMap)
   % grains
   matrix{ip,3} = int2str(sum(grains.numPixel(ind)));
   
-  CS = grains.CSList{ip};
+  CS = grains.CSList(ip);
 
   % abort in special cases
-  if isempty(CS)
-    continue
-  elseif ischar(grains.CSList{ip})
-    matrix{ip,4} = CS;
-    continue
-  else
-    % mineral
-    matrix{ip,4} = char(CS.mineral);
-  end
+  if isempty(CS), continue; end
   
-  % symmetry
-  matrix{ip,5} = CS.pointGroup;
-
+  % mineral
+  matrix{ip,4} = char(CS.mineral);
+  
   % color
   matrix{ip,6} = rgb2str(CS.color);
+  
+  % symmetry
+  if isa(CS,'symmetry'), matrix{ip,5} = CS.pointGroup; end
 
   % reference frame
-  %matrix{ip,6} = option2str(grains.CSList{ip}.alignment);
+  %matrix{ip,6} = option2str(CS.alignment);
   
 end
 

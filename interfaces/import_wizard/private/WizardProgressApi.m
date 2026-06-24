@@ -110,12 +110,12 @@ api.Progress.enableFinish(false);
       ind = data.phaseId == (1+maxPhaseId);
       ori = data(ind).orientations;
       plot(data(ind),ori);
-      set(gcf,'name',['IPF Z map of phase ' data.CSList{maxPhaseId+1}.mineral])
+      set(gcf,'name',['IPF Z map of phase ' data.CSList(maxPhaseId+1).mineral])
       
       figure
       h = ori.CS.basicHKL;
       plotPDF(ori,h(1:3),'contourf','antipodal');
-      set(gcf,'name',['pole figures of phase ' data.CSList{maxPhaseId+1}.mineral])
+      set(gcf,'name',['pole figures of phase ' data.CSList(maxPhaseId+1).mineral])
       
     else
       

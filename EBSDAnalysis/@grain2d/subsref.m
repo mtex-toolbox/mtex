@@ -40,7 +40,7 @@ if strcmp(s(1).type,'()') && ...
   if isempty(ind)
     ori = orientation;
   else
-    ori = orientation(grains.prop.meanRotation(ind),grains.CSList{phId});
+    ori = orientation(grains.prop.meanRotation(ind),grains.CSList(phId));
   end
     
   if numel(s)>2

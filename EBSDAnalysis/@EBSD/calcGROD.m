@@ -45,7 +45,7 @@ for phId = grains.indexedPhasesId
 
   end
   
-  oriRef = project2FundamentalRegion(oriRef, ebsd.CSList{phId}, ebsd.rotations(thisPhase));
+  oriRef = project2FundamentalRegion(oriRef, ebsd.CSList(phId), ebsd.rotations(thisPhase));
   GROD(thisPhase) = inv(oriRef) .* ebsd.rotations(thisPhase);
     
 end

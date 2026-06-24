@@ -25,7 +25,7 @@ CSList = ebsd.CSList;
 phaseMap = ebsd.phaseMap;
 
 for k=1:numel(CSList)
-  CS = CSList{k};
+  CS = CSList(k);
   
   cm = phaseMap(k);
   

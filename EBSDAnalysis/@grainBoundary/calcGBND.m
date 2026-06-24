@@ -74,7 +74,7 @@ if ~isempty(moriRef) % GBCD
 
 else
 
-  cs = gB.CS{1};
+  cs = gB.CS(1);
 
 end
 

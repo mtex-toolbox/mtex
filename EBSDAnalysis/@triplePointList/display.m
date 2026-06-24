@@ -29,23 +29,10 @@ for ip = 1:size(triple,1)
   matrix{ip,1} = int2str(num(ip));
   
   % phases
-  if ischar(tP.CSList{triple(ip,1)})
-    matrix{ip,2} = tP.CSList{triple(ip,1)};
-  else
-    matrix{ip,2} = tP.CSList{triple(ip,1)}.mineral;
-  end
-  if ischar(tP.CSList{triple(ip,2)})
-    matrix{ip,3} = tP.CSList{triple(ip,2)};
-  else
-    matrix{ip,3} = tP.CSList{triple(ip,2)}.mineral;
-  end
+  matrix{ip,2} = tP.CSList(triple(ip,1)).mineral;
+  matrix{ip,3} = tP.CSList(triple(ip,2)).mineral;
+  matrix{ip,4} = tP.CSList(triple(ip,3)).mineral;
   
-  if ischar(tP.CSList{triple(ip,3)})
-    matrix{ip,4} = tP.CSList{triple(ip,3)};
-  else
-    matrix{ip,4} = tP.CSList{triple(ip,3)}.mineral;
-  end
-
 end
 matrix(num==0,:) = [];
 
