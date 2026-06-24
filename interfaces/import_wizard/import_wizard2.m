@@ -597,6 +597,7 @@ classdef import_wizard2 < matlab.apps.AppBase
           colorbar(app.UIAxes)
 
         case 'OptImage'
+          cla(app.UIAxes,'reset');
           image = resolveOptImage(app, plotSpec.Path);
           if isempty(image)
             title(app.UIAxes, 'Image not found')
@@ -613,7 +614,8 @@ classdef import_wizard2 < matlab.apps.AppBase
           rmallappdata(app.UIAxes)
           h = string2Miller(plotSpec.Miller,ebsd.CS);
           odf = calcDensity(ebsd.orientations);
-          plotPDF(odf,h, 'parent', app.UIAxes,'contourf')
+          plotPDF(odf,h, 'parent', app.UIAxes,'contourf','notitle')
+          mtexTitle(app.UIAxes,char(h,'LaTeX'),'FontSize',20);
           pfAnnotations = getMTEXpref('pfAnnotations');
           pfAnnotations('parent', app.UIAxes,'fontSize',20)
           colorbar(app.UIAxes)
@@ -731,24 +733,6 @@ classdef import_wizard2 < matlab.apps.AppBase
       end
     end
 
-    function idx = csIndexForPhase(app, phaseId, fallbackIdx)
-      n = numel(app.ebsd.CSList);
-      idx = min(max(fallbackIdx, 1), n);
-
-      if isnumeric(phaseId) && isscalar(phaseId)
-        candidate = double(phaseId);
-        if isfinite(candidate) && candidate == round(candidate) && ...
-            candidate >= 1 && candidate <= n
-          idx = candidate;
-        end
-      end
-    end
-
-    function tf = isNotIndexed(~, cs)
-      tf = (ischar(cs) && strcmpi(cs, 'notIndexed')) || ...
-        (isstring(cs) && isscalar(cs) && strcmpi(cs, "notIndexed"));
-    end
-
     function txt = asChar(~, value)
       try
         txt = char(string(value));
@@ -819,7 +803,7 @@ classdef import_wizard2 < matlab.apps.AppBase
 
     function updateMineralName(app, row, value)
       
-      app.phaseTable.Data.Mineral(row) = value;
+      app.PhaseTable.Data.Mineral(row) = value;
       app.ebsd.CSList(row).mineral = value;
       
     end
