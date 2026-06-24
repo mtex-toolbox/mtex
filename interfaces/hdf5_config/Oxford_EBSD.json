@@ -27,6 +27,7 @@
       "type": "default",
       "key": { "mode": "search_root", "value": "Phases" },
       "multiple": true,
+      "optional": true,
       "default": {
         "reference_frame": { "data": "X||a*, Z||c"},
         "space_group": { "mode": "search_root", "value": "Space Group", "type": "default" },

@@ -373,14 +373,19 @@ end
 
 function out = ebsd_default(raw_data)
 
-  if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation') || ~isfield(raw_data, 'cs')
+  if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation')
     error(['EBSD data has not the correct fields! ' ...
-      'Make sure you have a position, rotation, phase and cs field!'])
+      'Make sure you have a position, rotation, phase and field!'])
   end
 
   if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase))
     error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
           numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase));
+  end
+
+  % Check if cs is set --> if not create simple
+  if ~isfield(raw_data, 'cs')
+    raw_data.cs = ('notIndexed');
   end
 
   prop = struct();
