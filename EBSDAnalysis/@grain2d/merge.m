@@ -40,6 +40,8 @@ function [grainsMerged,parentId,newInd] = merge(grains,varargin)
 %
 % Options
 %  threshold - maximum misorientation angle to be merged as similar
+%  maxArea   -
+%  maxPixel  - 
 %  maxSize   - maximum number of pixels to be merged as an inclusion 
 %
 % Example:
@@ -237,8 +239,12 @@ if check_option(varargin,'calcMeanOrientation')
 
   updateOriFun = get_option(varargin,'calcMeanOrientation');
     
-  if ischar(updateOriFun) && updateOriFun == "maxArea"
-    area = grains.area; 
+  if ischar(updateOriFun)
+    if updateOriFun == "maxArea"
+      maxProp = grains.area;
+    elseif updateOriFun == "maxPixel"
+      maxProp = grains.numPixel;
+    end
   end
 
   for i = newInd
@@ -259,10 +265,10 @@ if check_option(varargin,'calcMeanOrientation')
       cs = grains.CSList(grains.phaseId(ind));
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
       
-    elseif ischar(updateOriFun) && strcmpi(updateOriFun,'maxArea')
+    elseif ischar(updateOriFun) && any(strcmpi(updateOriFun,{'maxArea','maxPixel'}))
 
       ind = find(parentId == i);
-      [~,hInd] = max(area(ind));
+      [~,hInd] = max(maxProp(ind));
       ind = ind(hInd);
       
       % take the host orientation for the merged grain
