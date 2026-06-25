@@ -1077,7 +1077,13 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
 
       assignin('base', varName, app.ebsd)
+      [~,fname,ext] =  fileparts(app.LoadedFilePath);
+      disp(" ");
+      disp("EBSD data from " + fname + ext + " imported to variable " + varName)
+      disp(" ");
+      evalin("base",varName);
       app.ExportButton.Text = ['Imported as ' varName '!'];
+      commandwindow
     end
 
     % Generates a clean MTEX script string and opens it directly inside the Editor

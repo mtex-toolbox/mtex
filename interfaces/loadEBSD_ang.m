@@ -115,11 +115,11 @@ data = txt2mat(fname,'RowRange',[1 10000],ReplaceExpr{:},'infoLevel',0);
 version = readByToken(hl,'# VERSION','x');
 switch version
   case {'2', '3', '4', '5', '6'}
-    ColumnNames = {'phi1', 'PHI', 'phi2', 'x', 'y', 'iq', 'ci', 'phase', 'sem', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip', 'Custom_Value','unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+    ColumnNames = {'phi1', 'PHI', 'phi2', 'x', 'y', 'IQ', 'CI', 'phase', 'SEM', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip', 'Custom_Value','unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
   case '7'
-    ColumnNames = {'phi1' 'PHI' 'phi2' 'x' 'y' 'iq' 'ci' 'phase' 'sem' 'fit_PRIAS' 'Custom' 'EDS' 'CM' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6' 'unknown7' 'unknown8' 'unknown9' 'unknown10'};
+    ColumnNames = {'phi1' 'PHI' 'phi2' 'x' 'y' 'IQ' 'CI' 'phase' 'SEM' 'fit_PRIAS' 'Custom' 'EDS' 'CM' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6' 'unknown7' 'unknown8' 'unknown9' 'unknown10'};
   otherwise
-    ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
+    ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
 
     % if there was text then it describes the phase
     if any(~isnum)
