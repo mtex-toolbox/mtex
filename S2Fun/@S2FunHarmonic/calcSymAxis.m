@@ -20,3 +20,4 @@ end
 
 [~,id] = min(err);
 v = v2(id);
+v.how2plot = S2F.how2plot;
