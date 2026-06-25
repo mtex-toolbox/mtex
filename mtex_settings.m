@@ -29,7 +29,7 @@ try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC>
 setMTEXpref('UTF8Output',true)
 
 % default plotting of specimen coordinates
-pC = plottingConvention(zvector,xvector);
+pC = plottingConvention.ij;
 pC.makeDefault;
 
 % default figure size, possible values are a factor between 0 and 1 or
