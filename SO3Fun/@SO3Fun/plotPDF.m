@@ -73,7 +73,7 @@ for i = 1:length(h)
   end
   
   % plot annotations
-  pfAnnotations('parent',cax,'doNotDraw','add2all');
+  pfAnnotations('parent',cax,'doNotDraw','add2all','noAntipodal',varargin{:});
   [cax.Tag] = deal('pdf');
   setAllAppdata(cax,'h',h{i},'SS',SO3F.SS);
 

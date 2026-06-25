@@ -24,15 +24,22 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
         d{k,1} = obj(k).mineral;
         d{k,2} = rgb2str(obj(k).color);
         
-        if isa(obj(k),'symmetry')
+        if obj(k).isIndexed
           d{k,3} = obj(k).pointGroup;
+          
+          d{k,4} = option2str(vec2cell(norm(obj(k).axes)));
+
+          if ~obj(k).lattice.isEucledean  
+            d{k,5} = option2str(obj(k).alignment);
+          end
+
         else
-          d{k,3} = '';
+          [d{k,3:5}] = deal('');
         end
-        
+
       end
       cprintf(d,'-L',' ','-Lc',...
-          {'mineral' 'color'},...
+          {'mineral' 'color','symmetry','a, b, c','reference frame'},...
           '-d','  ','-ic',true);
         % 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'
     end

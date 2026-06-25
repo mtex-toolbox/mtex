@@ -144,10 +144,10 @@ classdef sphericalPlot < handle
         set([sP.TR sP.BR],'HorizontalAlignment','right');
 
       else
-        if ~isempty(t.TL), sP.TL.String = t.TL; end
-        if ~isempty(t.BL), sP.BL.String = t.BL; end
-        if ~isempty(t.TR), sP.TR.String = t.TR; end
-        if ~isempty(t.BR), sP.BR.String = t.BR; end        
+        if ~isempty(t.TL), sP.TL.String = t.TL; sP.TL.Visible = "on"; end
+        if ~isempty(t.BL), sP.BL.String = t.BL; sP.BL.Visible = "on"; end
+        if ~isempty(t.TR), sP.TR.String = t.TR; sP.TR.Visible = "on"; end
+        if ~isempty(t.BR), sP.BR.String = t.BR; sP.BR.Visible = "on"; end        
       end
       
 
