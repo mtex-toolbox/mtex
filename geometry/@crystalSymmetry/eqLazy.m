@@ -1,4 +1,4 @@
-function out = eq(S1,S2,varargin)
+function out = eqLazy(S1,S2,varargin)
 % check S1 == S2
 
 if length(S1) ~= length(S2)
