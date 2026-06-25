@@ -385,7 +385,7 @@ function out = ebsd_default(raw_data)
 
   % Check if cs is set --> if not create simple
   if ~isfield(raw_data, 'cs')
-    raw_data.cs = ('notIndexed');
+    raw_data.cs = notIndexed;
   end
 
   prop = struct();
