@@ -23,6 +23,10 @@ elseif check_option(varargin,'FaceColor')
   faceColor = str2rgb(get_option(varargin, 'FaceColor'));
   varargin = delete_option(varargin, 'FaceColor',1);
 
+else
+
+  faceColor = str2rgb('lightblue');
+
 end
 
 pObj.Vertices = V.xyz;
