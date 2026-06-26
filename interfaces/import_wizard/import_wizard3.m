@@ -521,18 +521,18 @@ classdef import_wizard3 < matlab.apps.AppBase
       for pId = 1:length(numPhases)
         
         cs = csList(pId);
+        app.Color{pId} = cs.color;
+        if isnan(app.Color{pId}), app.Color{pId} = [1 1 1]; end
+        mineral = asChar(app, cs.mineral);
         if isa(cs,'symmetry')          
-          mineral = asChar(app, cs.mineral);
           symmetry = asChar(app, cs.pointGroup);
           a = norm(cs.aAxis);
           b = norm(cs.bAxis);
           c = norm(cs.cAxis);
-          app.Color{pId} = cs.color;
         else
           mineral = 'NotIndexed';
           symmetry = 'None';
           a = 0; b = 0; c = 0;
-          app.Color{pId} = [0.8 0.8 0.8];
         end
                 
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
