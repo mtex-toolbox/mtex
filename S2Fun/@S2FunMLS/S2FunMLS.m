@@ -54,8 +54,9 @@ classdef S2FunMLS < S2Fun
   % Flags
   %  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems
   %                   depending on how bad they are
-  %  stableFind     - perform stable variant of find (can help with non-uniform data)
   %  subsample      - use subset of neighbors that minimizes the lebesgue constant
+  %  use_smooth_delta - make the support radius delta(x) a smooth function with
+  %                     close to S2F.nn neighbors at each center
   %
 
 
@@ -63,12 +64,18 @@ classdef S2FunMLS < S2Fun
     nodes       = [];     % points where the function values are known
     values      = [];     % the corresponding values
 
+    vor_weights = [];     % voronoi weights for the weight function, 
+                          %   as described in 'stable MLS' by Lipman
+    use_vor_weights = false; 
+
     searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
 
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
     delta       = 0;      % support radius of the weight function
+
+    use_smooth_delta = false; % delta(x) is smooth, with close to S2F.nn neighbors everywhere
 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
@@ -89,12 +96,6 @@ classdef S2FunMLS < S2Fun
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
 
     subsample   = false;  % perform optimal subsampling?
-
-    stableFind = false;   % use stable find algorithm?
-    % voronoi cells for stable version of neighbor search
-    voronoiCenters = [];  % centers of voronoi decomposition of nodes
-    voronoiCounts  = [];  % number of nodes per voronoi center
-    voronoiIndices = [];  % inidice of nodes per center as sparse logical array
   end
 
   properties (Dependent)
@@ -141,10 +142,17 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
-
       S2F.searcher = createns(nodes.xyz);
 
-      % reshape values accordingly
+      % set voronoi weights
+      S2F.use_vor_weights = check_option(varargin, 'use_vor_weights');
+      if S2F.use_vor_weights
+        S2F.vor_weights = nodes.calcVoronoiArea;
+      else
+        S2F.vor_weights = ones(size(nodes));
+      end
+
+      % reshape values according to nodes
       values_size = size(values);
       id = find(cumprod(values_size) == numel(nodes), 1, 'first');
       if (id < numel(values_size))
@@ -160,7 +168,7 @@ classdef S2FunMLS < S2Fun
       S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
         'oversampling_factor','oversampling factor'}, 3, 'double');
       S2F.oF_max = get_option(varargin, {'ofmax','of max', 'max of', 'maxof', ...
-        'maximal oversampling factor', 'max oversampling factor'}, 5, 'double');
+        'maximal oversampling factor', 'max oversampling factor'}, 2 * S2F.oF, 'double');
       S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
 
       % weight function, distance, symmetry
@@ -197,15 +205,8 @@ classdef S2FunMLS < S2Fun
       S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if S2F.subsample, S2F.centered = true; end
 
-      % stable find stuff
-      S2F.stableFind = get_option(varargin, {'stablefind', 'stable find', 'stable_find'}, ...
-        false, 'logical');
-      % create voronoi structure to help finding neighbors in sparse regions
-
-      % calcVoronoi may take some time, only do it if necessary
-      if (S2F.stableFind)
-        S2F = calcVoronoi(S2F);
-      end
+      S2F.use_smooth_delta = check_option(varargin, {'use_smooth_delta', ...
+        'use smooth delta', 'smooth_delta', 'smooth delta'});
 
       S2F.s.how2plot = nodes.how2plot;
 
@@ -292,6 +293,7 @@ classdef S2FunMLS < S2Fun
       warning('The support radius delta has been adopted to the new oversampling Factor');
       S2F.delta = S2F.compute_delta;
     end
+    S2F.oF_max = 2 * S2F.oF;
   end
 
   % make sure nn is an integer value
@@ -382,90 +384,6 @@ classdef S2FunMLS < S2Fun
   % important for subsref to function properly
   function n = numArgumentsFromSubscript(varargin)
     n = 0;
-  end
-
-  % if stableFind option is set to true after construction, we have to construct
-  %   the necessary voronoi structure for it
-  function S2F = set.stableFind(S2F, value)
-    if value
-      S2F.stableFind = true;
-      S2F.calcVoronoi;
-    end
-  end
-
-  % compute voronoi structure for S2F.nodes
-  function S2F = calcVoronoi(S2F, varargin)
-    % numel(S2F.nodes) / N_voronoi is expected mean of nodes per voronoi cell
-    % actual number of nodes per cell deviates more from this expected mean as
-    %   S2F.nodes becomes non-uniformly distributed
-    if (nargin == 1)
-      N_voronoi = round(numel(S2F.nodes) / S2F.dim);
-    else
-      N_voronoi = varargin{1};
-    end
-
-    % create initial set of voronoi centers
-    S2F.voronoiCenters = fibonacciS2Grid('points', N_voronoi);
-    N_voronoi = numel(S2F.voronoiCenters);
-    center_id = S2F.voronoiCenters.find(S2F.nodes);
-
-    % get the centers, compute numer of neighbors per center
-    N = numel(S2F.nodes);
-    S2F.voronoiCounts = accumarray(center_id, 1, [N_voronoi, 1]);
-
-    % remove unneeded voronoi centers
-    empty = S2F.voronoiCounts == 0;
-    N_voronoi = sum(~empty);
-    S2F.voronoiCounts(empty) = [];
-    S2F.voronoiCenters(empty) = [];
-
-    % create sparse matrix where each column represents a voronoi cell and
-    %   contains the indices of the nodes from S2F.nodes in this cell
-    [~, idx] = sort(center_id);
-    [row_idx, col_idx] = sizes2sub(S2F.voronoiCounts);
-    maxcount = max(S2F.voronoiCounts);
-    S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
-      maxcount, N_voronoi, sum(S2F.voronoiCounts));
-
-    % perform lloyd centering
-    S2F = lloydVoronoiCentering(S2F, 3);
-  end
-
-  % actually center the voronoiCenters within their Voronoi cell (via lloyd)
-  function S2F = lloydVoronoiCentering(S2F, maxIter)
-    N_voronoi = numel(S2F.voronoiCenters);
-    for i = 1 : maxIter
-
-      % 0 - assign each point to nearest center (Voronoi cell on S2)
-      center_id = S2F.voronoiCenters.find(S2F.nodes);
-
-      % 1 - choose mean of nodes of same voronoi cell as new voronoi center
-      v = vector3d.zeros(N_voronoi, 1);
-      v.x = accumarray(center_id, S2F.nodes.x(:), [N_voronoi, 1], @sum, 0);
-      v.y = accumarray(center_id, S2F.nodes.y(:), [N_voronoi, 1], @sum, 0);
-      v.z = accumarray(center_id, S2F.nodes.z(:), [N_voronoi, 1], @sum, 0);
-      S2F.voronoiCenters = v.normalize;
-
-      % 3 - remove unndeeded voronoi centers
-      S2F.voronoiCounts = accumarray(center_id, 1, [N_voronoi, 1]);
-      S2F.voronoiCenters(S2F.voronoiCounts == 0) = [];
-      S2F.voronoiCounts(S2F.voronoiCounts == 0) = [];
-      N_voronoi = numel(S2F.voronoiCenters);
-
-      % X - re-seed empty voronoi centers to dense regions (probabilistic)
-      % if any(empty)
-      %   ridx = randi(N_voronoi, nnz(empty), 1);
-      %   centers_new.subSet(empty) = S2F.nodes.subSet(ridx);
-      % end
-    end
-    % create sparse matrix where each column represents a voronoi cell and
-    %   contains the indices of the nodes from S2F.nodes in this cell
-    center_id = S2F.voronoiCenters.find(S2F.nodes);
-    [~, idx] = sort(center_id);
-    [row_idx, col_idx] = sizes2sub(S2F.voronoiCounts);
-    maxcount = max(S2F.voronoiCounts);
-    S2F.voronoiIndices = sparse(row_idx, col_idx, idx, ...
-      maxcount, N_voronoi, sum(S2F.voronoiCounts));
   end
 
   function fd = get.fill_distance(S2F)

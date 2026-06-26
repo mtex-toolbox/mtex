@@ -81,24 +81,6 @@ if (S2F.subsample == true && S2F.stableFind == false)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
 end
 
-
-% treat bad nodes separately, but only if the stablefind-option is true
-iscvx = S2F.checkConvexity(v, ind);
-if (S2F.stableFind && sum(iscvx) < N)
-  [valstmp, conds(J_idx(~iscvx))] = eval_stable(S2F, v.subSet(~iscvx), ...
-    varargin{:}, S2F.stableFindOptions{:});
-  vals(J_idx(~iscvx),:) = reshape(valstmp, sum(~iscvx), numel(S2F));
-  clear valstmp;
-
-  % restrict varibales to their new domain (where iscvx is true)
-  N = sum(iscvx);
-  v = v.subSet(iscvx);
-  ind = ind(iscvx, :);
-  dist = dist(iscvx, :);
-else
-  iscvx = true(N, 1);
-end
-
 [grid_id, v_id] = find(ind');
 nn = sum(ind, 2);
 nn_total = sum(nn);
@@ -176,14 +158,14 @@ grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 f = grid_vals(grid_id,:);
 
 if S2F.regularize
-  [c_book, conds(J_idx(iscvx))] = solve_lsq_book_varsize(weights, G, f, nn, ...
+  [c_book, conds(J_idx)] = solve_lsq_book_varsize(weights, G, f, nn, ...
     'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
     'basis_weights', S2F.basis_weights, varargin{:});
 else
-  [c_book, conds(J_idx(iscvx))]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
+  [c_book, conds(J_idx)]  = solve_lsq_book_varsize(weights, G, f, nn, varargin{:});
 end
 
-vals(J_idx(iscvx),:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
+vals(J_idx,:) = permute(sum(basis_in_v .* permute(c_book, [3 1 2]), 2), [1 3 2]);
 
 if isalmostreal(S2F.values)
   vals = real(vals); 

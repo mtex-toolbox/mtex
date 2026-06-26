@@ -3,12 +3,8 @@ function [vals, conds] = eval_knn(S2F, v, varargin)
 % get parameters
 v = v(:);
 N = numel(v);
-nn = S2F.nn;
+nn = S2F.nn * 2;
 nn_total = nn * N;
-
-% initialize the return values
-vals = zeros(N, numel(S2F));
-conds = zeros(N, 1);
 
 % Find neighbors and perform subsampling. If the flag is set, compute distances.
 [ind, dist] = S2F.nodes.find(v, nn, varargin{:}, 'searcher', S2F.searcher);
@@ -16,24 +12,6 @@ if (S2F.subsample == true && S2F.stableFind == false)
   ind = S2F.find_optimal_subset(ind, v, varargin{:});
   nn_total = N * S2F.dim;
   nn = S2F.dim;
-end
-
-% treat bad nodes separately, but only if the stablefind-option is true
-iscvx = true(N, 1);
-if S2F.stableFind
-  iscvx = S2F.checkConvexity(v, ind);
-  if (sum(iscvx) < N)
-    [valstmp, conds(~iscvx)] = eval_stable(S2F, v(~iscvx), varargin{:});
-    vals(~iscvx,:) = reshape(valstmp, sum(~iscvx), numel(S2F));
-    clear valstmp;
-
-    % restrict varibales to their new domain (where iscvx is true)
-    N = sum(iscvx);
-    nn_total = nn * N;
-    v = v.subSet(iscvx);
-    ind = ind(iscvx, :);
-    dist = dist(iscvx, :);
-  end
 end
 
 % id of the neighbors (in the grid of S2F)
@@ -89,9 +67,21 @@ G_book = pagetranspose(reshape(G, S2F.dim, nn, N));
 clear G v_id;
 
 % compute distances and weights
-deltas = 1.00 * max(dist, [], 2);
+if S2F.use_smooth_delta
+  [deltas, nn_smooth] = getSmoothDelta(S2F.nodes, v, S2F.nn);
+  if (min(nn_smooth) < S2F.dim)
+    warning('Some nodes did not have sufficiently many neighbors.');
+  end
+else
+  deltas = 1.05 * max(dist, [], 2);
+end
+
 weights = S2F.w(dist ./ deltas);
-clear deltas dist;
+vor_weights = S2F.vor_weights(grid_id);
+vor_weights = reshape(vor_weights, size(weights'))';
+% normalization at the end keeps mean of weights at 1
+weights = weights .* vor_weights * 4*pi / numel(S2F.nodes);
+clear deltas dist vor_weights;
 if (S2F.detectOutliers == true)
   oI = computeOutlierIndicators(S2F);
   oI = reshape(oI(grid_id), nn, N)';
@@ -110,19 +100,43 @@ clear grid_id grid_vals;
 
 % solve the systems and evaluate
 if S2F.regularize
-  [c_book, conds(iscvx)] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
     'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
     'basis_weights', S2F.basis_weights, varargin{:});
 else
-  [c_book, conds(iscvx)] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
+  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
     varargin{:});
 end
 clear f_book G_book W_book;
 
-vals(iscvx, :) = permute(sum(c_book .* g_book, 1), [3, 2, 1]);
+vals = permute(sum(c_book .* g_book, 1), [3, 2, 1]);
 
 if isalmostreal(S2F.values)
   vals = real(vals);
 end
 
 end
+
+
+function [delta, nn] = getSmoothDelta(v, w, n)
+
+  n2 = ceil(1.5 * n);
+
+  fg = fibonacciS2Grid(10000);
+  [~, dn] = v.find(fg, n2);
+  dn = dn(:,end);
+
+  mls = S2FunMLS(fg, dn, 'regularize', false);
+  mls.degree = 1;
+  mls.oF = 2;
+  mls.w = @(t)(mls.w(t).^4);
+  mls.delta = mls.compute_delta;
+
+  delta = mls.eval(w);
+
+  if (nargout > 1)
+    [~, dist] = v.find(w, 2*n);
+    isin = dist < delta;
+    nn = sum(isin, 2);
+  end
+end 
