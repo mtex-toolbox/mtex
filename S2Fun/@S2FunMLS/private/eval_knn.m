@@ -104,8 +104,7 @@ if S2F.regularize
     'regularize', 'maxcond', S2F.maxcond, 'mincond', S2F.mincond, ...
     'basis_weights', S2F.basis_weights, varargin{:});
 else
-  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, ...
-    varargin{:});
+  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});
 end
 clear f_book G_book W_book;
 
