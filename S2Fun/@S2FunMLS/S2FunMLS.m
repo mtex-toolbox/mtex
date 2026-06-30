@@ -87,12 +87,12 @@ classdef S2FunMLS < S2Fun
     tangent     = false;  % if monomials, use monomials on the tangent space?
 
     regularize = true;    % regularize?
-    maxcond = 1e5;        % condition threshold of Gram matrix that triggers maximal regularization
+    maxcond = 2e3;        % condition threshold of Gram matrix that triggers maximal regularization
     mincond = 1e2;        % start regularizing threshold of condition of the gram matrix
     basis_weights;        % regularization weights of basis coefficients,
                           %   should punish higher degrees (Sobolev-like)
 
-    detectOutliers = false; % specify if we should search for outliers, and recude their weight
+    detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
 
     subsample   = false;  % perform optimal subsampling?
@@ -186,8 +186,8 @@ classdef S2FunMLS < S2Fun
 
       % regularization
       S2F.regularize = get_option(varargin, 'regularize', true, 'logical');
-      S2F.maxcond = get_option(varargin, {'maxcond', 'max cond'}, 10^(S2F.degree * 6/5), 'double');
-      S2F.mincond = get_option(varargin, {'mincond', 'min cond'}, 10^(S2F.degree * 1/2), 'double');
+      S2F.maxcond = get_option(varargin, {'maxcond', 'max cond'}, 10^(S2F.degree * 4/5 + 1/2), 'double');
+      S2F.mincond = get_option(varargin, {'mincond', 'min cond'}, 10^(S2F.degree * 1/3 + 1/2), 'double');
       if (S2F.degree == 0)
         S2F.maxcond = 10;
         S2F.mincond = 1;
