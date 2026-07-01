@@ -5,9 +5,6 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %   [ind,d] = find(v,w)         % find closest point out of v to w
 %   [I,d]   = find(v,w,epsilon) % find all points out of v in an epsilon neighborhood of w
 %   [ind,d] = find(v,w,k)       % find k nearest points out of v to w
-
-% also specify the KDTreeSearcher of the nodes, so it does not have to be created
-%   [ind,d] = find(v, w, k, 'searcher', kdTreeSearcher) 
 %
 % Input
 %  v, w      - @vector3d
@@ -21,6 +18,9 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %  ind       - int32 array for k nearest neighbors,
 %  I         - sparse logical incidence matrix for region search
 %  d         - distance to the found neighbors, same size as ind or I
+% 
+% NOTE: if v.opt contains a KDTreeSearcher (in field 'searcher'), it is used
+
 
 % storing the option in v lets @vector3d.angle take care of computing the
 % distance the right way
@@ -49,9 +49,8 @@ end
 if (floor(epsilon_or_k) == epsilon_or_k)
   % check if there is already a KDTreeSearcher underlying v
   % this is especially for MLS, where the object might be created multiple times
-  if check_option(varargin, 'searcher', 'KDTreeSearcher')
-    searcher = get_option(varargin, 'searcher');
-    ind = knnsearch(searcher, w.xyz, 'K', epsilon_or_k, 'distance', distance);
+  if isfield(v.opt, 'searcher')
+    ind = knnsearch(v.opt.searcher, w.xyz, 'K', epsilon_or_k, 'distance', distance);
   else
     ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k, 'distance', distance);
   end
@@ -68,9 +67,8 @@ end
 
 % scale spherical region to euclidean region before starting rangesearch
 % as for knn-search, check if there is already a kdtreesearcher object for v
-if check_option(varargin, 'searcher', 'KDTreeSearcher')
-  searcher = get_option(varargin, 'searcher');
-  ind = rangesearch(searcher, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
+if isfield(v.opt, 'searcher')
+  ind = rangesearch(v.opt.searcher, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
 else
   ind = rangesearch(v.xyz, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
 end
