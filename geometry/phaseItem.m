@@ -6,6 +6,12 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
     isIndexed = true
   end  
 
+   methods (Static,Sealed,Access=protected)
+      function obj = getDefaultScalarElement
+         obj = notIndexed;
+      end
+   end
+
   methods (Sealed = true)
 
     function out = eq(obj1,obj2,varargin)

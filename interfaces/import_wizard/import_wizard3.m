@@ -80,7 +80,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.UIFigure = uifigure('Visible', 'off');
       app.UIFigure.Position = [100 100 1300 700];
       app.UIFigure.WindowState = 'maximized';
-      app.UIFigure.Name = 'EBSD Data Analysis';
+      app.UIFigure.Name = 'MTEX Import Wizard';
       try
         app.UIFigure.Theme = 'light';
       catch
@@ -536,7 +536,7 @@ classdef import_wizard3 < matlab.apps.AppBase
         end
                 
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
-           [int2str(numPhases(pId)),' (' num2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
+           [int2str(numPhases(pId)),' (' xnum2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
            symmetry, a, b, c, ''};     
       end
 
@@ -622,8 +622,9 @@ classdef import_wizard3 < matlab.apps.AppBase
       for phaseId = enabledPhaseIds(:)'
         ebsdPhase = ebsd(ebsd.phaseId == phaseId);
         if isempty(ebsdPhase), continue; end
-        ipfKey = ipfColorKey(ebsdPhase);
+        ipfKey = ipfColorKey(ebsd.CSList(phaseId));
         ipfKey.inversePoleFigureDirection = direction;
+        ipfKey.precompute;
         colors = ipfKey.orientation2color(ebsdPhase.orientations);
         plot(ebsdPhase, colors, 'parent', ax)
       end
