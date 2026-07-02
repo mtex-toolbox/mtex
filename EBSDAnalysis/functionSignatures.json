@@ -3,11 +3,10 @@
 {
     "inputs":
     [
-      {"name":"filename1", "kind":"required",   "type":"filepath"},
+      {"name":"filename1", "kind":"required", "type": "file=*.ctf,*.ang,*.h5oina,*.h5,*.crc,*.osc,*.hdf5,*.oh5"},
       {"name":"columnNames", "kind":"namevalue", "type":"cell"},
       {"name":"columns", "kind":"namevalue", "type":"double"},
-      {"name":"interface", "kind":"namevalue", "type":"double"},
-      {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+      {"name":"interface", "kind":"namevalue", "type":"double"}
     ]
 },
 
