@@ -1,17 +1,12 @@
 classdef S2FunMLS < S2Fun
-  % a class representing a function on the rotation group
-  %
-  % TODO: - also regulrize when nodes are almost on zero set of ansatz function
-  %       - locally adapt delta via density estimation and integration on balls or
-  %           via shepard on the distance of the k-th nearest neighbor
+  % A class representing a function on the 2-sphere S^2.
   %
   % Syntax
   %   S2F = S2FunMLS(nodes, values);
-  %   S2F = S2FunMLS(nodes, values, 'degree', 3, 'oF', 2);
-  %   S2F = S2FunMLS(nodes, values, 'delta', 5*degree);
-  %   S2F = S2FunMLS(nodes, values, 'delta', 5*degree, w, @(t)(__));
+  %   S2F = S2FunMLS(nodes, values, 'degree', 3, 'oF', 4);
+  %   S2F = S2FunMLS(nodes, values, 'delta', 5*degree, 'weight', @(t)(...));
   %   S2F = S2FunMLS(nodes, values, 'centered', true, 'monomials', true, 'subsample', 'tangent', true);
-  %   S2F = S2FunMLS(nodes, values, 'regularize', false, 'stablefind', true, 'detectOutliers');
+  %   S2F = S2FunMLS(nodes, values, 'detectOutliers', 'use_vor_weights', 'use_smooth_delta');
   %
   % Input
   %  nodes  - @vector3d (data points)
@@ -39,6 +34,11 @@ classdef S2FunMLS < S2Fun
   %          - predefined weight function can be chosen via the following strings:
   %             'C1hat', 'const', 'cos', 'hat', 'indicator', 'squared hat',
   %             'wendland' (default)
+  %  use_smooth_delta - make the support radius delta(x) a smooth function with
+  %                     close to S2F.nn neighbors at each center
+  %  use_vor_weights -  additionally multiply w(x,x_i) by the Voronoi Volumne of
+  %                     x_i, as in 'Stable Moving Least Squares Approximation'
+  % 
   %  distance- specify which metric to use (default: 'euclidean')
   %          - run 'help rangesearch' for available options
   %  s       - symmetry of the nodes
@@ -48,6 +48,8 @@ classdef S2FunMLS < S2Fun
   %  mincond       - start regularizing threshold of condition of the gram matrix
   %  basis_weights -  regularization weights of basis coefficients,
   %                    should punish higher degrees (Sobolev-like)
+  %  basis_weights_scale - application strength of basis_weights
+  %  lambda_geom_rel - relative application strength of geometrical regularization
   %
   %  outlierDetectionRange - specify how many neighbors are taken into account
   %
@@ -55,8 +57,6 @@ classdef S2FunMLS < S2Fun
   %  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems
   %                   depending on how bad they are
   %  subsample      - use subset of neighbors that minimizes the lebesgue constant
-  %  use_smooth_delta - make the support radius delta(x) a smooth function with
-  %                     close to S2F.nn neighbors at each center
   %
 
 
@@ -66,16 +66,14 @@ classdef S2FunMLS < S2Fun
 
     vor_weights = [];     % voronoi weights for the weight function, 
                           %   as described in 'stable MLS' by Lipman
-    use_vor_weights = false; 
-
-    searcher    = [];     % kdTreeSearcher object for neighbor search on nodes
+    use_vor_weights = true; 
 
     degree      = 3;      % the polynomial degree used for approximation
     oF          = 4;      % oversampling factor (nn / dim)
     oF_max      = 5;      % upper bound for oF when using rangesearch
     delta       = 0;      % support radius of the weight function
 
-    use_smooth_delta = false; % delta(x) is smooth, with close to S2F.nn neighbors everywhere
+    use_smooth_delta = true; % delta(x) is smooth, with close to S2F.nn neighbors everywhere
 
     w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
@@ -86,16 +84,22 @@ classdef S2FunMLS < S2Fun
     centered    = true;   % center the basis function evaluation around the north pole?
     tangent     = false;  % if monomials, use monomials on the tangent space?
 
-    regularize = true;    % regularize?
-    maxcond = 2e3;        % condition threshold of Gram matrix that triggers maximal regularization
-    mincond = 1e2;        % start regularizing threshold of condition of the gram matrix
-    basis_weights;        % regularization weights of basis coefficients,
+    regularize;           % regularize?
+    maxcond = [];         % condition threshold of Gram matrix that triggers maximal regularization
+    mincond = [];         % start regularizing threshold of condition of the gram matrix
+    basis_weights = [];   % regularization weights of basis coefficients,
                           %   should punish higher degrees (Sobolev-like)
+    basis_weights_scale = []; % basis_weights are in [0,1]. The solver applies 
+                              %   1 + basis_weights_scale * basis_weights
+    lambda_geom_rel = []; % geometrical regularization strength relative to the
+                          %   local Gram scale after column normalization
 
     detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
 
     subsample   = false;  % perform optimal subsampling?
+
+    auxgrid = [];         % auxiallary grid for evaluation-related computations
   end
 
   properties (Dependent)
@@ -124,11 +128,12 @@ classdef S2FunMLS < S2Fun
         return
       end
 
-      % MLS needs unique nodes
-      if (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
+      % MLS needs unique nodes (nothing to do if nodes are a fibonacciS2Grid)
+      if (~isa(nodes, 'fibonacciS2Grid')) && ...
+          (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
         nodes = nodes(:);
         values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'median','tolerance', .001 * degree);
+        [nodes, values] = uniqueData(nodes, values, 'mean','tolerance', .001 * degree);
         if ~getMTEXpref('generatingHelpMode')
           warning(['Some duplicate Nodes have been removed. ' ...
             'The remaining nodes have been reshaped into a vector.']); 
@@ -142,10 +147,12 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
-      S2F.searcher = createns(nodes.xyz);
+      if ~isfield(nodes.opt, 'searcher')
+        S2F.nodes.opt.searcher = createns(nodes.xyz);
+      end
 
       % set voronoi weights
-      S2F.use_vor_weights = check_option(varargin, 'use_vor_weights');
+      S2F.use_vor_weights = get_option(varargin, 'use_vor_weights', true);
       if S2F.use_vor_weights
         S2F.vor_weights = nodes.calcVoronoiArea;
       else
@@ -164,15 +171,20 @@ classdef S2FunMLS < S2Fun
       S2F.values = values;
 
       % set degree, (maximal) oversampling factor, support radius delta
-      S2F.degree = get_option(varargin, {'degree', 'deg'}, 3, 'double');
+      S2F.regularize = get_option(varargin, {'regularize','regularization'}, true, 'logical');
+      S2F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
       S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
-        'oversampling_factor','oversampling factor'}, 3, 'double');
+        'oversampling_factor','oversampling factor'}, 4, 'double');
+      % half of the sphere should already contain sufficiently many nodes
+      if (S2F.nn > numel(S2F.nodes) / 2)
+        error('Too few data points for the specified degree and oversampling factor.');
+      end
       S2F.oF_max = get_option(varargin, {'ofmax','of max', 'max of', 'maxof', ...
         'maximal oversampling factor', 'max oversampling factor'}, 2 * S2F.oF, 'double');
       S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
 
       % weight function, distance, symmetry
-      S2F.w = get_option(varargin, 'weight', 'wendland', {'string','function_handle','char'});
+      S2F.w = get_option(varargin, 'weight', 'wendlandC6squared', {'string','function_handle','char'});
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
         specimenSymmetry.default, 'crystalSymmetry');
@@ -184,32 +196,38 @@ classdef S2FunMLS < S2Fun
       if S2F.tangent, S2F.centered = true; end
       if S2F.centered, S2F.monomials = true; end
 
-      % regularization
-      S2F.regularize = get_option(varargin, 'regularize', true, 'logical');
-      S2F.maxcond = get_option(varargin, {'maxcond', 'max cond'}, 10^(S2F.degree * 4/5 + 1/2), 'double');
-      S2F.mincond = get_option(varargin, {'mincond', 'min cond'}, 10^(S2F.degree * 1/3 + 1/2), 'double');
-      if (S2F.degree == 0)
-        S2F.maxcond = 10;
-        S2F.mincond = 1;
-      end
-      S2F.basis_weights = get_option(varargin, {'basis_weights', 'basisweights', ...
-        'basis weights'}, S2F.compute_basis_weights, 'double');
-
       % outlier detection
       S2F.detectOutliers = check_option(varargin, ...
-        {'detect outliers', 'detectoutliers, detect_outliers'});
+        {'detect outliers', 'detectoutliers', 'detect_outliers'});
       S2F.outlierDetectionRange = round(get_option(varargin, ...
-        {'outlierdetectionrange', 'outlier detection range', 'odr'}, 10, 'double'));
+        {'outlierdetectionrange', 'outlier detection range', 'odr'}, ...
+        S2F.outlierDetectionRange, 'double'));
 
       % optimal subsampling (minimizes Lebesgue constant)
       S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if S2F.subsample, S2F.centered = true; end
 
-      S2F.use_smooth_delta = check_option(varargin, {'use_smooth_delta', ...
-        'use smooth delta', 'smooth_delta', 'smooth delta'});
+      S2F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
+        'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
+
+      % regularization parameters
+      S2F.basis_weights = get_option(varargin, {'basis_weights', 'basisweights', ...
+        'basis weights'}, S2F.compute_basis_weights, 'double');
+
+      % create auxilliary grid if it is needed
+      needs_auto_regularization = S2F.regularize && ...
+        (isempty(S2F.mincond) || isempty(S2F.maxcond) || ...
+         isempty(S2F.basis_weights_scale) || isempty(S2F.lambda_geom_rel));
+      if S2F.use_smooth_delta || needs_auto_regularization
+        S2F = S2F.init_auxgrid;
+      end
+
+      % initialize missing regularization parameters from auxilliary grid
+      if needs_auto_regularization
+        S2F = S2F.init_reg_params;
+      end
 
       S2F.s.how2plot = nodes.how2plot;
-
     end
 
     function S2F = set.w(S2F, weightfun)
@@ -224,7 +242,10 @@ classdef S2FunMLS < S2Fun
           case 'cos';         S2F.w = @(t)((1+cos(pi*t))/2);
           case 'C1hat';       S2F.w = @(t)((1-t.^2).^2);
           case 'wendland';    S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
-          otherwise;          S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+          case 'wendlandC6';  S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
+          case 'wendlandsquared';   S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
+          case 'wendlandC6squared'; S2F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
+          otherwise;          S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1).^2);
         end
       end
     end
@@ -303,7 +324,9 @@ classdef S2FunMLS < S2Fun
 
   function S2F = set.degree(S2F, deg)
     S2F.degree = deg;
-    S2F.basis_weights = S2F.compute_basis_weights;
+    if S2F.regularize
+      S2F.basis_weights = S2F.compute_basis_weights;
+    end
   end
 
   % compute weights for basis functions for regularization of lsq systems
@@ -313,7 +336,14 @@ classdef S2FunMLS < S2Fun
   function basis_weights = compute_basis_weights(S2F)
     degrees = (0 : S2F.degree)';
     basis_weights = repelem(degrees.^2, degrees+1, 1);
-    basis_weights = basis_weights / max([basis_weights; 1]) / 10;
+
+    % avoid division by empty mean for degree zero
+    m = mean(nonzeros(basis_weights));
+    if isempty(m) || ~isfinite(m) || (m == 0)
+      basis_weights = zeros(size(basis_weights));
+    else
+      basis_weights = basis_weights / m;
+    end
   end
 
   function S2F = set.basis_weights(S2F, value)
@@ -322,12 +352,32 @@ classdef S2FunMLS < S2Fun
         'the dimension of the ansatz space.']);
     end
     value = value(:);
-    % if ~(min(value) == 0 && max(value) == 1)
-    % warning('The basis_weights have been shifted and scaled to [0,1]');
-    % value = value - min(value);
-    % value = value / max(value);
-    % end
+    value = max(real(value), 0);
+    pos = value > 0;
+    value(pos) = value(pos) / mean(value(pos));
     S2F.basis_weights = value;
+  end
+
+  % print reg parameters and diagnostic if desired
+  function reg_params = show_reg_params(S2F)
+    reg_params = struct;
+    reg_params.mincond = S2F.mincond;
+    reg_params.maxcond = S2F.maxcond;
+    reg_params.lambda_geom_rel = S2F.lambda_geom_rel;
+    reg_params.basis_weights_scale = S2F.basis_weights_scale;
+    reg_params.basis_weights = S2F.basis_weights;
+  end
+
+
+  % create auxilliary grid and precompute distance to n-th neighbor
+  function S2F = init_auxgrid(S2F)
+    S2F.auxgrid = fibonacciS2Grid(10001);
+    S2F.auxgrid.opt.searcher = createns(S2F.auxgrid.xyz);
+
+    % slight overshoot later ensures that mostly n neighbors are found
+    nfind = max(round(1.3*S2F.nn), S2F.nn+10);
+    [~, dn] = S2F.nodes.find(S2F.auxgrid, nfind);
+    S2F.auxgrid.opt.dn = dn(:,end);
   end
 
   % compute expected number of neighbors with given sF.nodes and sF.delta
@@ -342,21 +392,24 @@ classdef S2FunMLS < S2Fun
 
     v = vector3d.rand(1e4, 1);
     ind = S2F.nodes.find(v, S2F.delta);
+    nns = full(sum(ind, 2));
 
     if (numel(varargin) == 0)
-      nn = full(ceil(mean(sum(ind, 2))));
+      nn = ceil(mean(nns));
       return;
     end
 
-    if (varargin{1} == "min")
-      % expected minimal number of neighbors
-      nn = full(min(sum(ind,2)));
-    elseif (varargin{1} == "max")
-      % expected maximal number of neighbors
-      nn = full(max(sum(ind,2)));
-    else
-      nn = full(ceil(mean(sum(ind, 2))));
+    switch lower(string(varargin{1}))
+      case "min"
+        % expected minimal number of neighbors
+        nn = min(nns);
+      case "max"
+        % expected maximal number of neighbors
+        nn = max(nns);
+      otherwise
+        nn = ceil(mean(nns));
     end
+
     nn = full(nn);
   end
 
@@ -370,9 +423,6 @@ classdef S2FunMLS < S2Fun
       return;
     end
 
-    if (S2F.delta == 0)
-      S2F.delta = S2F.compute_delta();
-    end
     ind = S2F.nodes.find(v, S2F.delta);
     nns = full(sum(ind, 2));
   end
@@ -387,22 +437,16 @@ classdef S2FunMLS < S2Fun
   end
 
   function fd = get.fill_distance(S2F)
-    % fg = fibonacciS2Grid('points', 1e6);
-    % [~, d] = S2F.nodes.find(fg(:), 1, 'searcher', S2F.searcher);
-    % fd = max(d);
-
     f = S2FunHandle(@(r) funDist(r,S2F));
     d = max(f,'numLocal',20,'maxStepSize',1*degree);
     fd = max(d);
-
   end
 
   function sd = get.separation_distance(S2F)
-    [~, d] = S2F.nodes.find(S2F.nodes, 2, 'searcher', S2F.searcher);
+    [~, d] = S2F.nodes.find(S2F.nodes, 2);
     d = d(:,2);
     sd = min(d);
   end
-
 end
 
 methods (Static = true)
@@ -414,10 +458,8 @@ end
 end
 
 
-
-
-%% Additional Functions
-function d = funDist(modes,mls)
-  [~, d] = mls.nodes.find(modes(:), 1, 'searcher', mls.searcher);
+% Additional Functions
+function d = funDist(modes, mls)
+  [~, d] = mls.nodes.find(modes(:), 1);
   d = reshape(d,size(modes));
 end
