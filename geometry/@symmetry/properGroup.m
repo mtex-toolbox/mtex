@@ -13,6 +13,14 @@ elseif s.isProper
   
 else
 
+  sP = s.copy;
+
+  % new id
+  if s.id > 0
+    pG = symmetry.pointGroups;
+    sP.id = pG(pG(s.id).LaueId).properId;
+  end
+
   % compute symmetry elements
   rot = s.rot;
   if s.isLaue
@@ -20,32 +28,9 @@ else
   else
     rot.i = zeros(size(rot));   % make all rotations proper
   end
-
-  % set up the new symmetry
-  if s.id > 0
-  
-    pG = symmetry.pointGroups;
-    id = pG(pG(s.id).LaueId).properId;
-  
-    if isa(s,'crystalSymmetry')
-      sP = crystalSymmetry('pointId',id,rot);
-    else
-      sP = specimenSymmetry('pointId',id,rot);
-    end
-  
-  else
-    sP = crystalSymmetry(rot);
-  end
-  
-  try %#ok<TRYNC>
-    sP.axes = s.axes;       % coordinate system
-    sP.mineral = s.mineral; % mineral name
-    sP.color  = s.color;    % color used for EBSD / grain plotting
-    sP.how2plot = s.how2plot; % copy plotting convention
-  end
-  
+  sP.rot = rot;
   sP.LaueRef = s.Laue;
+  sP.properRef = sP;
   s.properRef = sP;
-  
-  
+ 
 end

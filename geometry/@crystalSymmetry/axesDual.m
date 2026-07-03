@@ -1,11 +1,4 @@
-function vec = axesDual(cs)
+function abcStar = axesDual(cs)
 % return dual coordinate axes
 
-a = cs.axes.subSet(1);
-b = cs.axes.subSet(2);
-c = cs.axes.subSet(3);
-bc = cross(b,c);
-V  = dot(a,bc);
-vec(1) = bc ./ V;
-vec(2) = cross(c,a) ./ V;
-vec(3) = cross(a,b) ./ V;
+abcStar = cross(cs.axes([2 3 1]),cs.axes([3 1 2])) ./ det(cs.axes);

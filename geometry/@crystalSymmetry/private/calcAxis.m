@@ -6,6 +6,9 @@ function abc  = calcAxis(id,axisLength,angle,varargin)
 %  axisLength - [a,b,c]
 %  angle - [alpha,beta,gamma]
 %
+% Options
+%  X||a, X||a*, Z||c - alignment of the cartesian coordinate system to the crystal coordinate system
+%
 % Output
 %  abc - @vector3d
 %
@@ -38,7 +41,7 @@ if ~check_option(varargin,'force')
     case 'monoclinic'
       notRot = 1:3; notRot(floor(id/3))=[];
       assert(all(isappr(angle(notRot),pi/2,1e-5)),'For monoclinic lattices the angles with the symmetry axis have to be 90 degree');
-    case 'orthothombic'
+    case 'orthorhombic'
     case 'trigonal'
       assert(axisLength(1)== axisLength(2),'For trigonal lattices a and b must be equal!');
     case 'hexagonal'
@@ -56,22 +59,44 @@ end
 % which uses the convention
 % * X || a
 % * Z || c*
-a = xvector;
-b = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
-c = cos(angle(2)) * xvector + ...
-  (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
-  sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
+switch pg.lattice
+  case {'trigonal','hexagonal'}
+    abc = axisLength(:).' .* vector3d([1 -0.5 0],[0 sqrt(0.75) 0],[0 0 1]);
 
-% compute a* b* c*
+  case {'orthorhombic','cubic'}
+    abc = axisLength(:) .* vector3d.byXYZ(eye(3));
+    
+  otherwise
 
-astar = normalize(cross(b,c));
-bstar = normalize(cross(c,a));
-cstar = normalize(cross(a,b));
-
+    cangle = cos(angle);
+    sangle = sin(angle(3));
+    abc = axisLength(:).' .* vector3d(...
+      [1,cangle(3),cangle(2)],...
+      [0,sangle,(cangle(1) - cangle(2) * cangle(3))/sangle],...
+      [0,0,sqrt(1+2*prod(cangle) - sum(cangle.^2))/sangle]);
+    
+end
 
 % extract alignment options
 % restrict to strings
 alignOpt = varargin(cellfun(@(s) ischar(s),varargin));
+
+if isempty(alignOpt), return; end
+
+% compute a* b* c*
+switch pg.lattice
+  case {'trigonal','hexagonal'}
+    abcStar = vector3d([sqrt(0.75) 0 0],[0.5 1 0],[0 0 1]);
+
+  case {'orthorhombic','cubic'}
+    abcStar = abc;
+    
+  otherwise
+
+    abcStar = cross(abc([2 3 1]),abc([3 1 2]));
+
+end
+
 
 % which arguments should be flipped
 flipthem = ~cellfun('isempty',regexpi(alignOpt,'\|\|[xyz]'));
@@ -111,33 +136,33 @@ for ia = 1:3
   switch lower(alignment{ia})
  
     case 'a'
-      xyzNew(ia) = a;
+      xyzNew(ia) = abc(1);
       if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
-        xyzNew(4-ia) = cstar;
+        xyzNew(4-ia) = abcStar(3);
       end
     case 'b'
-      xyzNew(ia) = b;
+      xyzNew(ia) = abc(2);
     case 'c'
-      xyzNew(ia) = c;
+      xyzNew(ia) = abc(3);
       if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
-        xyzNew(4-ia) = astar;
+        xyzNew(4-ia) = abcStar(1);
       end
     case 'a*'
-      xyzNew(ia) = astar;
+      xyzNew(ia) = abcStar(1);
       if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
-        xyzNew(4-ia) = c;
+        xyzNew(4-ia) = abc(3);
       end
     case 'b*'
-      xyzNew(ia) = bstar;
+      xyzNew(ia) = abcStar(2);
     case 'c*'
-      xyzNew(ia) = cstar;
+      xyzNew(ia) = abcStar(3);
       if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
-        xyzNew(4-ia) = a;
+        xyzNew(4-ia) = abc(1);
       end
     case 'm'
-      xyzNew(ia) = a+b;
+      xyzNew(ia) = sum(abc(1:2));
     case 'd'
-      xyzNew(ia) = a+b+c;
+      xyzNew(ia) = sum(abc);
   end
 end
   
@@ -159,7 +184,7 @@ end
 if det(M) < 0, M(2,:) = -M(2,:);end
 
 % now compute the new a, b, c axes
-abc = vector3d(M * double([a,b,c])) .* axisLength(:).';
+abc = vector3d(M * double(abc));
 
 if check_option(varargin,'rotAxes')
   abc = get_option(varargin,'rotAxes') * abc;

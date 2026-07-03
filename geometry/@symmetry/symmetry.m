@@ -7,7 +7,7 @@ classdef symmetry < matlab.mixin.Copyable
 %  @specimenSymmetry - 
 %
 
-  properties (SetAccess = immutable)
+  properties %(SetAccess = immutable)
     id = 1;               % point group id, compare to symList    
     rot = rotation.id     % the symmetry elements
   end
@@ -111,7 +111,7 @@ classdef symmetry < matlab.mixin.Copyable
     
   end
 
-  methods (Access = protected, Static = true)
+  methods (Hidden = true, Static = true)
     
     
     function [id, varargin] = extractPointId(varargin)
