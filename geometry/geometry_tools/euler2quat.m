@@ -42,7 +42,7 @@ if nargin == 1 || (size(alpha,2)==3 && (~isnumeric(beta) || ~all(size(alpha)==si
 end
 
 % may forgotten * degree
-if any([alpha(:);beta(:);gamma(:)] > 9)
+if any(alpha(:)>9) || any(beta(:)>9) || any(gamma(:) > 9)
   warning('Some Euler angles appears to be quite large. Maybe you forgot ''* degree'' to switch from degree to radians.');
 end
 
@@ -75,10 +75,19 @@ end
 
 % construct quaternion
 
-zero = zeros(size(alpha));
+%zero = zeros(size(alpha));
+%qalpha = quaternion(cos(alpha/2),zero,zero,sin(alpha/2));
+%qbeta  = quaternion(cos(beta/2),zero,sin(beta/2),zero);
+%qgamma = quaternion(cos(gamma/2),zero,zero,sin(gamma/2));
 
-qalpha = quaternion(cos(alpha/2),zero,zero,sin(alpha/2));
-qbeta  = quaternion(cos(beta/2),zero,sin(beta/2),zero);
-qgamma = quaternion(cos(gamma/2),zero,zero,sin(gamma/2));
+%q = qalpha .* qbeta .* qgamma;
 
-q = qalpha .* qbeta .* qgamma;
+hP = 0.5 * beta;
+hp = 0.5 * (alpha + gamma);
+hm = 0.5 * (alpha - gamma);
+
+cP = cos(hP);
+sP = sin(hP);
+
+q = quaternion(cP .* cos(hp), -sP .* sin(hm), ...
+  sP .* cos(hm), cP .* sin(hp));
