@@ -74,5 +74,4 @@ if isscalar(grains) && ~check_option(varargin,'keepOrder')
   
   grains.boundary = grains.boundary(inverseorder);
   
-  
 end

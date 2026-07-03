@@ -34,7 +34,7 @@ classdef ipfColorKey < orientationColorKey
       mtexFig = gcm;
       
       %mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
-      mtexTitle(oM.CS1.pointGroup,varargin{:},'global');
+      mtexTitle(caxes(1),char(oM.CS1,'latex'),varargin{:});
       
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end

@@ -1,54 +1,70 @@
 {
   "settings": {
     "name": "Oxford_Default",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
-    "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default. If you want to read from the EBSD field use 'type', 'Oxford_EBSD'! "} 
+    "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default."},
+    "fallback": "Oxford_EBSD" 
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "regex", "value":"Data Processing"},
+    "key": {"mode": "search_root", "value":"Data Processing"},
     "position": {
       "type": "indirect",
       "indirect": {
         "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
         "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
         "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
-        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"}
+        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"},
+        "first": {"data": "y"}
       }
     },
-    "phase": {"mode": "absolute", "value": "/1/Data Processing/Data/Phase", "type": "default"},
+    "phase": {"mode": "search_root", "value": "/Data/Phase", "type": "default"},
     "rotation": {
-      "type": "correctByAngle",
-      "correctByAngle": {
-        "angle": { "mode": "absolute", "value": "/1/EBSD/Header/Scanning Rotation Angle"},
-        "rotation": {
-          "type": "euler",
-          "euler": {
-            "formate": { "data": "radiante"},
-            "phi": { "mode": "regex", "value": "Euler"}
-          }
-        }
+      "type": "euler",
+      "euler": {
+        "format": { "data": "radian"},
+        "phi": { "mode": "search_root", "value": "Euler"}
       }
-    }, 
+    },
+    "map_correction": {"type": "default", "mode": "search_root", "value": "/Specimen Orientation Euler"}, 
     "cs": {
       "type": "default",
-      "key": { "mode": "regex", "value": "Phases" },
-      "multiple": "true",
+      "key": { "mode": "search_root", "value": "Phases" },
+      "multiple": true,
       "default": {
-        "space_group": { "mode": "regex", "value": "Space Group", "type": "default" },
-        "name": { "mode": "regex", "value": "Phase Name"},
+        "reference_frame": { "data": "X||a*, Z||c"},
+        "space_group": { "mode": "search_root", "value": "Space Group", "type": "default" },
+        "name": { "mode": "search_root", "value": "Phase Name"},
         "lattice": {
-          "angle": { "mode": "regex", "value": "Lattice Angles"},
-          "dim": { "mode": "regex", "value": "Lattice Dimensions"}
+          "angle": { "mode": "search_root", "value": "Lattice Angles"},
+          "dim": { "mode": "search_root", "value": "Lattice Dimensions"}
         }
       }
     },
     "header": {
-      "group": {"mode": "absolute", "value": "/1/Data Processing/Header"}
+      "group": {"mode": "search_root", "value": "/Header"}
     }
   },
   "additions": {
     "type": "auto",
-    "key": { "mode": "absolute", "value": "/1/Data Processing/Data"}
+    "group": { "mode": "absolute", "value": "/1/Data Processing/Data"}
+  },
+  "electron_image": {
+    "key" : { "mode": "search_root", "value": "Electron Image" },
+    "type": "default",
+    "optional": true,
+    "image_data": {
+      "type": "default",
+      "default": {
+        "FSE": { "group": {"mode": "search_root", "value": "/FSE"}},
+        "SE": { "group": {"mode": "search_root", "value": "/SE"}},
+        "x_size": {"mode": "search_root", "value": "X Cells"},
+        "y_size": {"mode": "search_root", "value": "Y Cells"}
+      }
+    },
+    "header": {
+      "group": {"mode": "search_root", "value": "Header"}
+    }
   }
 }

@@ -30,7 +30,7 @@ end
 % Schmid factor with respect to a tension direction
 if nargin == 1 || (isnumeric(sigma) && isempty(sigma))
   
-  SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),'bandwidth',4);
+  SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),'bandwidth',4,sS.CS);
     
 elseif isa(sigma,'vector3d')
   

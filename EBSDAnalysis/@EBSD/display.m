@@ -27,25 +27,21 @@ for ip = 1:numel(ebsd.phaseMap)
   matrix{end,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./numel(ebsd)) '%)'];
   
   % mineral
-  CS = ebsd.CSList{ip};
+  CS = ebsd.CSList(ip);
   % abort in special cases
-  if isempty(CS)
-    continue
-  elseif ischar(CS)
-    matrix{end,3} = CS;  
-    continue
-  else
-    matrix{end,3} = char(CS.mineral);
-  end
+  if isempty(CS), continue, end
 
+  % mineral
+  matrix{end,3} = char(CS.mineral);
+  
   % color
   matrix{end,4} = rgb2str(CS.color);
-  
-  % symmetry
-  matrix{end,5} = CS.pointGroup;
 
-  % reference frame
-  matrix{end,6} = option2str(CS.alignment);
+  % symmetry & reference frame
+  if CS.isIndexed 
+    matrix{end,5} = CS.pointGroup;
+    matrix{end,6} = option2str(CS.alignment);
+  end
 
 end
 

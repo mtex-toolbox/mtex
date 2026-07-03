@@ -11,7 +11,8 @@ function proj = makeSphericalProjection(varargin)
 %  complete, lower, upper - decide on the spherical part
 %  
 
-ax = get_option(varargin,'parent',gca);
+ax = get_option(varargin,'parent');
+if isempty(ax), ax = gca; end
 if ishold(ax) && isappdata(ax,'sphericalPlot')
   sP = getappdata(ax,'sphericalPlot');
   proj = sP.proj;

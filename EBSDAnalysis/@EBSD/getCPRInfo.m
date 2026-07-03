@@ -75,22 +75,22 @@ list = spaceGroups;
 for ii = 2:length(ebsd.CSList)
     
     fieldName = sprintf('Phase%d',ii-1);
-    [ro,~] = find(strcmp(list,ebsd.CSList{ii}.pointGroup));
+    [ro,~] = find(strcmp(list,ebsd.CSList(ii).pointGroup));
     spaceId = list{ro,1};
     
-    cprInfo.(fieldName).StructureName = ebsd.CSList{ii}.mineral;
+    cprInfo.(fieldName).StructureName = ebsd.CSList(ii).mineral;
     cprInfo.(fieldName).Reference = '';
     cprInfo.(fieldName).Enabled = 'True';
 
-    cprInfo.(fieldName).a = ebsd.CSList{ii}.axes.x(1);
-    cprInfo.(fieldName).b = ebsd.CSList{ii}.axes.y(2);
-    cprInfo.(fieldName).c = ebsd.CSList{ii}.axes.z(3);
+    cprInfo.(fieldName).a = ebsd.CSList(ii).axes.x(1);
+    cprInfo.(fieldName).b = ebsd.CSList(ii).axes.y(2);
+    cprInfo.(fieldName).c = ebsd.CSList(ii).axes.z(3);
     
-    cprInfo.(fieldName).alpha = ebsd.CSList{ii}.alpha/degree;
-    cprInfo.(fieldName).beta = ebsd.CSList{ii}.beta/degree;
-    cprInfo.(fieldName).gamma = ebsd.CSList{ii}.gamma/degree;
+    cprInfo.(fieldName).alpha = ebsd.CSList(ii).alpha/degree;
+    cprInfo.(fieldName).beta = ebsd.CSList(ii).beta/degree;
+    cprInfo.(fieldName).gamma = ebsd.CSList(ii).gamma/degree;
 
-%     cprInfo.(fieldName).LaueGroup = symmetry.pointGroups(ebsd.CSList{ii}.id).LaueId;
+    % cprInfo.(fieldName).LaueGroup = symmetry.pointGroups(ebsd.CSList(ii).id).LaueId;
     cprInfo.(fieldName).LaueGroup = [];
     cprInfo.(fieldName).SpaceGroup = spaceId;
     cprInfo.(fieldName).ID1 = [];

@@ -118,6 +118,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       end
       ebsd.pos = pos;
 
+      CSList = ensureCSArray(CSList);
+      
       if class(rot) ~= "rotation", rot = rotation(rot); end
       ebsd.rotations = rot;
       if check_option(varargin,'phaseMap')
@@ -361,6 +363,9 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = vector3d(ebsd.unitCell(:,1),ebsd.unitCell(:,2),0);
       end
 
+      % ensure CSList is vector
+      ebsd.CSList = ensureCSArray(ebsd.CSList);
+      
     end
 
   end

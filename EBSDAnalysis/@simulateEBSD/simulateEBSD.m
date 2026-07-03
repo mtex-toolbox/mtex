@@ -119,8 +119,8 @@ methods
     % set phases
     phases = ones(sizeX*sizeY,1);
     
-    % set a cslist
-    CSList = {'notIndexed' job.CS};
+    % set a CSList
+    CSList = [notIndexed, job.CS];
     prop.emptyProp = ones(sizeX*sizeY,1); % one never knows
     
     % assemble ESBD

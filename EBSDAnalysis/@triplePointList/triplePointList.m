@@ -126,7 +126,7 @@ classdef triplePointList < phaseList & dynProp
         tmp = tP.phaseId == ids(i);
         
         % not indexed phase should include outer border as well          
-        if ids(i) > 0 && ischar(tP.CSList{ids(i)})
+        if ids(i) > 0 && ~tP.CSList(ids(i)).isIndexed
           tmp = tmp | tP.phaseId == 0;
         end
         

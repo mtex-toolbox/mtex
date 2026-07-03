@@ -345,7 +345,7 @@ if nPhase==0
     end
   end
 end
-CS = cell(nPhase,1); %if nPhase is zero then interface catches the error
+CS = repmat(notIndexed,1,nPhase); %if nPhase is zero then interface catches the error
 
 for k = 1:nPhase
 
@@ -385,6 +385,6 @@ for k = 1:nPhase
       end
   end
 
-  CS{k} = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},options{:});
+  CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},options{:});
 
 end

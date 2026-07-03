@@ -111,7 +111,7 @@ for id = 1:length(grainIds)
   end
     
   % generate orientation grid
-  ori = orientation.nan(nRow,nCol,CSList{phaseIds(id)});
+  ori = orientation.nan(nRow,nCol,CSList(phaseIds(id)));
   ori(indLocal) = rot(ind);
   
   % extract quality

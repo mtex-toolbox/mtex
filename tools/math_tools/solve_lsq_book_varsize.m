@@ -1,4 +1,5 @@
-function [c_book, conds] = solve_lsq_book_varsize(weights, basis_values, f_values, sizes,  varargin)
+function [c_book, conds, info] = ...
+    solve_lsq_book_varsize(weights, basis_values, f_values, sizes,  varargin)
 
 % same as solve_lsq_book_constsize, but G does now have varibale size
 % overall we get N = numel(sizes) many least squares problem
@@ -24,9 +25,11 @@ function [c_book, conds] = solve_lsq_book_varsize(weights, basis_values, f_value
 %                    size: (dim x numf x N)
 %   conds        - array of condition number of each system
 %                    size: (N x 1)
+%   info         - struct containing additional regularization data
 
 
 % get input array sizes
+sizes = sizes(:);
 dim = size(basis_values, 2);
 numf = size(f_values, 2);
 N = numel(sizes);
@@ -65,7 +68,13 @@ if (similarSize == true)
   f_book(col_id,:) = f_values;
   f_book = pagetranspose(reshape(f_book.', numf, max_size, N));
 
-  [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});
+  if nargout <= 1
+    c_book = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});
+  elseif nargout == 2
+    [c_book, conds] = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});
+  else
+    [c_book, conds, info] = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});
+  end
 
   return;
 end
@@ -86,7 +95,12 @@ clear col_id row_id start_id system_id;
 
 % initialize return values
 c_book = zeros(dim, numf, N);
-conds = zeros(N, 1);
+if nargout > 1
+  conds = zeros(N, 1);
+end
+if nargout > 2
+  info = initRegInfo(N);
+end
 
 current_max_size = 2 * min_size;
 % group in batches of similar size and call solver
@@ -97,8 +111,64 @@ while min_size <= max_size
 
   % get the row_indice of the subproblems marked by I, and call solver
   J = nonzeros(auxmat(:,I));
-  [c_book(:,:,I), conds(I)] = solve_lsq_book_varsize( ...
-    weights(J,:), basis_values(J,:), f_values(J,:), sizes(I), varargin{:});
+  varargin_batch = sliceGeometryScore(varargin, I);
+
+  if nargout <= 1
+    c_book(:,:,I) = solve_lsq_book_varsize(weights(J,:), basis_values(J,:), ...
+      f_values(J,:), sizes(I), varargin_batch{:});
+  elseif nargout == 2
+    [c_book(:,:,I), conds(I)] = solve_lsq_book_varsize(weights(J,:), ...
+      basis_values(J,:), f_values(J,:), sizes(I), varargin_batch{:});
+  else
+    [c_book(:,:,I), conds(I), info_batch] = solve_lsq_book_varsize(weights(J,:), ...
+      basis_values(J,:), f_values(J,:), sizes(I), varargin_batch{:});
+    info = insertRegInfo(info, I, info_batch);
+  end
 end
 
+end
+
+
+% ======================
+% Local helper functions
+% ======================
+
+% initialize struct for additional regularization information
+function info = initRegInfo(N)
+  info = struct;
+  info.conds_reg = NaN(N, 1);
+  info.conds_unreg = NaN(N, 1);
+  info.geometryScore = NaN(N, 1);
+  info.maxeig = NaN(N, 1);
+  info.mineig = NaN(N, 1);
+  info.meanEig = NaN(N, 1);
+  info.conds_geom = NaN(N, 1);
+  info.lambdaGeom = NaN(N, 1);
+  info.lambdaCond = NaN(N, 1);
+end
+
+% insert regularization info of one batch into the full info struct
+function info = insertRegInfo(info, I, info_batch)
+  names = fieldnames(info_batch);
+  for k = 1 : numel(names)
+    name = names{k};
+    if isfield(info, name)
+      info.(name)(I,:) = info_batch.(name);
+    end
+  end
+end
+
+% restrict pagewise geometryScore to the current batch, if it is given
+function varargin = sliceGeometryScore(varargin, I)
+  for k = 1 : numel(varargin)-1
+    if ischar(varargin{k}) || isstring(varargin{k})
+      name = lower(char(varargin{k}));
+      if strcmp(name, 'geometryscore') || strcmp(name, 'geometry_score')
+        value = varargin{k+1};
+        if numel(value) == numel(I)
+          varargin{k+1} = value(I);
+        end
+      end
+    end
+  end
 end

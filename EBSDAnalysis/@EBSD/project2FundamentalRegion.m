@@ -24,7 +24,7 @@ CS = ebsd.CSList;
 for idPhase = ebsd.indexedPhasesId
   
   thisPhase = ebsd.phaseId == idPhase;
-  rot(thisPhase) = project2FundamentalRegion(rot(thisPhase),CS{idPhase},...
+  rot(thisPhase) = project2FundamentalRegion(rot(thisPhase),CS(idPhase),...
     refRot(grainId(thisPhase)));
   
 end

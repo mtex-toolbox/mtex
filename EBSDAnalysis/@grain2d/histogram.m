@@ -59,9 +59,9 @@ for k = 1:numel(grains.indexedPhasesId)
   cumArea = accumarray(binId(binId>0),areaPhase(binId>0),[length(bins)-1 1]) ./ sum(area);
   
   h(k) = optiondraw( histogram('BinEdges',bins,'BinCounts',cumArea,...
-    'FaceColor',str2rgb(grains.CSList{id}.color)),varargin{:});
+    'FaceColor',str2rgb(grains.CSList(id).color)),varargin{:});
   if h(k).DisplayStyle == "stairs"
-    h(k).EdgeColor = grains.CSList{id}.color;
+    h(k).EdgeColor = grains.CSList(id).color;
   end
   hold on
   

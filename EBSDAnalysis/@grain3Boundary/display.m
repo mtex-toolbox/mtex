@@ -39,12 +39,12 @@ for ip = 1:numel(ph2)
   if ph1(ip) == 0
     matrix{ip,2} = 'notIndexed';
   else
-    matrix{ip,2} = gB.CSList{ph1(ip)}.mineral;
+    matrix{ip,2} = gB.CSList(ph1(ip)).mineral;
   end
   if ph2(ip)==0
     matrix{ip,3} = 'notIndexed';
   else
-    matrix{ip,3} = gB.CSList{ph2(ip)}.mineral;
+    matrix{ip,3} = gB.CSList(ph2(ip)).mineral;
   end
 
   % store area

@@ -1,6 +1,6 @@
 function ishold = getHoldState(varargin)
 
-if nargin > 0 && ~ishandle(varargin{1})
+if nargin > 0 && ishandle(varargin{1})
   ax = varargin{1};
 else
   ax = gca;

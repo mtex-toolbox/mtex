@@ -1,7 +1,8 @@
 {
   "settings": {
     "name": "ThermoFisher",
-    "manufacturer_keys": {"data": "ThermoFisher"}
+    "key_path": { "mode": "absolute", "value": "/Info/SoftwareVersion"},
+    "manufacturer_keys": {"data": "xTalView"}
   },
   "ebsd": {
     "type": "default",
@@ -15,30 +16,27 @@
         "grid_size_y": { "mode": "absolute", "value": "/Site/Acquisition/MapWidth"}
       }
     },
-    "phase": {"mode": "regex", "value": "Phase", "type": "stack"},
+    "phase": {"mode": "search_root", "value": "Phase", "type": "stack"},
     "rotation": {
       "type": "euler_stack",
       "euler_stack": {
-        "formate": { "data": "degree"},
-        "phi": { "mode": "regex", "value": "EulerAngles" }
+        "format": { "data": "degree"},
+        "phi": { "mode": "search_root", "value": "EulerAngles" }
       }
     },
     "cs": {
       "type": "default",
-      "multiple": "true",
-      "key": { "mode": "regex", "value": "Phase" },
+      "multiple": true,
+      "key": { "mode": "search_root", "value": "/EBSD/Phase" },
       "default": {
-        "space_group": { "mode": "regex", "value": "SpaceGroupNumber", "type": "default" },
-        "name": { "mode": "regex", "value": "Name"},
+        "reference_frame": { "data": "X||a*, Z||c"},
+        "space_group": { "mode": "search_root", "value": "SpaceGroupNumber", "type": "default" },
+        "name": { "mode": "search_root", "value": "Name"},
         "lattice": {
-          "angle": { "mode": "regex", "value": "LatticeAngles"},
-          "dim": { "mode": "regex", "value": "LatticeParameters"}
+          "angle": { "mode": "search_root", "value": "LatticeAngles"},
+          "dim": { "mode": "search_root", "value": "LatticeParameters"}
         }
       }
     }
-  },
-  "additions": {
-    "type": "auto",
-    "key": { "mode": "regex", "value": "MapData"}
   }
 }

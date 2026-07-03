@@ -15,7 +15,7 @@ if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
   id = ebsd.name2id(s(1).subs{1});
   if id ~= 0
     
-    CS = ebsd.CSList{id}; 
+    CS = ebsd.CSList(id); 
     if numel(s)>2
       [varargout{1:nargout}] = builtin('subsref',CS,s(3:end));
     else
@@ -31,7 +31,7 @@ if strcmp(s(1).type,'()') && ...
   ind = subsind(ebsd,s(1).subs);
   phaseId = checkSinglePhase(ebsd,ebsd.phaseId(ind(:)));
 
-  ori = orientation(ebsd.rotations(ind),ebsd.CSList{phaseId});
+  ori = orientation(ebsd.rotations(ind),ebsd.CSList(phaseId));
 
   if numel(s)>2
     [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));

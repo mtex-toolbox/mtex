@@ -7,7 +7,12 @@ id = 5 --> rotation Y, 180
 
 
 Crystal vs. Cartesian Coordinate systeme:
-/EBSD/Header/Phases/1/Setting   ? 
+c||z, x||a*
+b in yz ebene -> x⟂b -> 
+
+/EBSD/Header/Phases/1/Setting  intern numeration of space group
+
+
 
 
 how2plot:

@@ -18,6 +18,11 @@ function ind = inpolygon(ebsd,xy)
 % See also
 % inpolygon
 
+
+if isa(xy,'vector3d')
+  xy = [xy.x xy.y];
+end
+
 % shortcut for simple rectangles
 if numel(xy)==4
   

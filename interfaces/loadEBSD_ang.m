@@ -16,7 +16,7 @@ function ebsd = loadEBSD_ang(fname,varargin)
 assertExtension(fname,'.ang');
 
 % maybe we need to introduce a notIndexed phase
-cs{1} = 'notIndexed';
+cs = notIndexed;
 
 % read file header - lines staring with #
 nh = 1000;
@@ -66,7 +66,7 @@ for i = 1:length(phasePos)
         options = {'X||a'};
       end
   end
-  cs{phase+1} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+  cs(phase+1) = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
   
 end
    
@@ -77,7 +77,7 @@ isnum = cellfun(@(x) ~isempty(str2num(x)),parts);
   
 if any(~isnum) % if there are any strings
   % try to replace mineral names by numbers
-  ReplaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
+  ReplaceExpr = arrayfun(@(i) {cs(i).mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
   ReplaceExpr = {'ReplaceExpr',ReplaceExpr};
 else
   ReplaceExpr = {};
@@ -115,11 +115,11 @@ data = txt2mat(fname,'RowRange',[1 10000],ReplaceExpr{:},'infoLevel',0);
 version = readByToken(hl,'# VERSION','x');
 switch version
   case {'2', '3', '4', '5', '6'}
-    ColumnNames = {'phi1', 'PHI', 'phi2', 'x', 'y', 'iq', 'ci', 'phase', 'sem', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip', 'Custom_Value','unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+    ColumnNames = {'phi1', 'PHI', 'phi2', 'x', 'y', 'IQ', 'CI', 'phase', 'SEM', 'fit', 'PRIAS_Bottom_Strip', 'PRIAS_Center_Square', 'PRIAS_Top_Strip', 'Custom_Value','unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
   case '7'
-    ColumnNames = {'phi1' 'PHI' 'phi2' 'x' 'y' 'iq' 'ci' 'phase' 'sem' 'fit_PRIAS' 'Custom' 'EDS' 'CM' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6' 'unknown7' 'unknown8' 'unknown9' 'unknown10'};
+    ColumnNames = {'phi1' 'PHI' 'phi2' 'x' 'y' 'IQ' 'CI' 'phase' 'SEM' 'fit_PRIAS' 'Custom' 'EDS' 'CM' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6' 'unknown7' 'unknown8' 'unknown9' 'unknown10'};
   otherwise
-    ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
+    ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
 
     % if there was text then it describes the phase
     if any(~isnum)

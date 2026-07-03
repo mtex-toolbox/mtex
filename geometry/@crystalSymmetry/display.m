@@ -3,6 +3,11 @@ function display(cs,varargin)
 
 displayClass(cs,inputname(1),varargin{:});
 
+if ~isscalar(cs)
+  disp(cs);
+  return
+end
+
 disp(' ');
 
 props = {}; propV = {};

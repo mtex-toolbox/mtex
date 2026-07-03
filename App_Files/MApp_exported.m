@@ -8,9 +8,9 @@ classdef MApp_exported < matlab.apps.AppBase
         PhaseMapNode                   matlab.ui.container.TreeNode
         PropertyMapNode                matlab.ui.container.TreeNode
         OrientationMapNode             matlab.ui.container.TreeNode
-        IPFZNode                       matlab.ui.container.TreeNode
-        IPFYNode                       matlab.ui.container.TreeNode
         IPFXNode                       matlab.ui.container.TreeNode
+        IPFYNode                       matlab.ui.container.TreeNode
+        IPFZNode                       matlab.ui.container.TreeNode
         PoleFiguresNode                matlab.ui.container.TreeNode
         Node_2                         matlab.ui.container.TreeNode
         Node                           matlab.ui.container.TreeNode
@@ -22,9 +22,9 @@ classdef MApp_exported < matlab.apps.AppBase
         MapCoordinatesDropDown         matlab.ui.control.DropDown
         MapCoordinatesDropDownLabel    matlab.ui.control.Label
         ExportButton                   matlab.ui.control.Button
-        Label                          matlab.ui.control.Label
         CurrentData                    matlab.ui.control.EditField
         Panel                          matlab.ui.container.Panel
+        GridLayout                     matlab.ui.container.GridLayout
         DataTable                      matlab.ui.control.Table
         UIAxes                         matlab.ui.control.UIAxes
         ImportEBSDDataButton           matlab.ui.control.Button
@@ -191,9 +191,9 @@ classdef MApp_exported < matlab.apps.AppBase
       
       
       
-      PhaseId_array = unique(app.ebsd.phaseId);
+      PhaseId_array = unique(app.ebsd.phaseMap);
       % new way of filling out DataTable
-      for i = 1:1:length(unique(app.ebsd.phaseId))
+      for i = 1:1:length(unique(app.ebsd.phaseMap))
                 
         PhaseId = PhaseId_array(i);
         cs = app.ebsd.CSList{i};
@@ -265,7 +265,7 @@ classdef MApp_exported < matlab.apps.AppBase
       % type of plot still matters for the enables phases -> leads to
       % problems 
       % TODO
-      if strcmp(app.Tree.CheckedNodes,'Phase Map')
+      if strcmp(app.Tree.CheckedNodes.Text,'Phase Map')
           updatePlot(app,app.DataToPlot, 'PhaseMap');
       else
           return
@@ -331,7 +331,7 @@ classdef MApp_exported < matlab.apps.AppBase
             app.ExportButton.Text = 'Exported !';
         end
 
-        % Callback function: not associated with a component
+        % Callback function
         function TypeofPlotDropDownValueChanged(app, event)
       value = app.TypeofPlotDropDown.Value;
       if strcmp(value,'EBSD')
@@ -439,52 +439,55 @@ classdef MApp_exported < matlab.apps.AppBase
             app.ImportEBSDDataButton = uibutton(app.EBSDDataAnalysisPanel, 'push');
             app.ImportEBSDDataButton.ButtonPushedFcn = createCallbackFcn(app, @ImportEBSDDataButtonPushed, true);
             app.ImportEBSDDataButton.FontWeight = 'bold';
-            app.ImportEBSDDataButton.Position = [20 620 120 40];
+            app.ImportEBSDDataButton.Position = [20 615 250 40];
             app.ImportEBSDDataButton.Text = 'Import EBSD-Data';
 
             % Create Panel
             app.Panel = uipanel(app.EBSDDataAnalysisPanel);
-            app.Panel.Position = [300 1 1000 673];
+            app.Panel.Position = [299 1 1000 673];
+
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.Panel);
+            app.GridLayout.ColumnWidth = {'1x'};
+            app.GridLayout.RowHeight = {230, '1x'};
+            app.GridLayout.RowSpacing = 0;
+            app.GridLayout.Padding = [0 0 0 0];
 
             % Create UIAxes
-            app.UIAxes = uiaxes(app.Panel);
+            app.UIAxes = uiaxes(app.GridLayout);
             title(app.UIAxes, 'Title')
             xlabel(app.UIAxes, 'X')
             ylabel(app.UIAxes, 'Y')
             zlabel(app.UIAxes, 'Z')
-            app.UIAxes.Position = [1 0 1000 444];
+            app.UIAxes.Layout.Row = 2;
+            app.UIAxes.Layout.Column = 1;
 
             % Create DataTable
-            app.DataTable = uitable(app.Panel);
+            app.DataTable = uitable(app.GridLayout);
             app.DataTable.ColumnName = {'Plot'; 'Phase'; 'Mineral'; 'Pixel'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'};
-            app.DataTable.ColumnWidth = {60, 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'};
             app.DataTable.RowName = {};
             app.DataTable.ColumnEditable = [true false false true false true true true true];
             app.DataTable.CellEditCallback = createCallbackFcn(app, @DataTableCellEdit, true);
             app.DataTable.CellSelectionCallback = createCallbackFcn(app, @DataTableCellSelection, true);
-            app.DataTable.Position = [1 443 1000 230];
+            app.DataTable.Layout.Row = 1;
+            app.DataTable.Layout.Column = 1;
 
             % Create CurrentData
             app.CurrentData = uieditfield(app.EBSDDataAnalysisPanel, 'text');
             app.CurrentData.Editable = 'off';
-            app.CurrentData.Position = [150 628 130 25];
-
-            % Create Label
-            app.Label = uilabel(app.EBSDDataAnalysisPanel);
-            app.Label.Position = [150 74 34 22];
+            app.CurrentData.Position = [20 580 250 25];
 
             % Create ExportButton
             app.ExportButton = uibutton(app.EBSDDataAnalysisPanel, 'push');
             app.ExportButton.ButtonPushedFcn = createCallbackFcn(app, @ExportButtonPushed, true);
             app.ExportButton.FontWeight = 'bold';
-            app.ExportButton.Position = [50 26 200 35];
+            app.ExportButton.Position = [20 25 250 40];
             app.ExportButton.Text = 'Export';
 
             % Create MapCoordinatesDropDownLabel
             app.MapCoordinatesDropDownLabel = uilabel(app.EBSDDataAnalysisPanel);
-            app.MapCoordinatesDropDownLabel.HorizontalAlignment = 'right';
             app.MapCoordinatesDropDownLabel.FontWeight = 'bold';
-            app.MapCoordinatesDropDownLabel.Position = [26 498 102 22];
+            app.MapCoordinatesDropDownLabel.Position = [20 295 120 22];
             app.MapCoordinatesDropDownLabel.Text = 'Map Coordinates';
 
             % Create MapCoordinatesDropDown
@@ -492,14 +495,14 @@ classdef MApp_exported < matlab.apps.AppBase
             app.MapCoordinatesDropDown.Items = {'y↑→x', 'y↓→x', 'x↑→y', 'x↓→y'};
             app.MapCoordinatesDropDown.ValueChangedFcn = createCallbackFcn(app, @setMapCoordinates, true);
             app.MapCoordinatesDropDown.FontSize = 16;
-            app.MapCoordinatesDropDown.Position = [20 469 130 30];
+            app.MapCoordinatesDropDown.Position = [20 265 120 30];
             app.MapCoordinatesDropDown.Value = 'y↑→x';
 
             % Create EulerCoordinatesDropDownLabel
             app.EulerCoordinatesDropDownLabel = uilabel(app.EBSDDataAnalysisPanel);
             app.EulerCoordinatesDropDownLabel.HorizontalAlignment = 'right';
             app.EulerCoordinatesDropDownLabel.FontWeight = 'bold';
-            app.EulerCoordinatesDropDownLabel.Position = [171 498 108 22];
+            app.EulerCoordinatesDropDownLabel.Position = [150 295 120 22];
             app.EulerCoordinatesDropDownLabel.Text = 'Euler Coordinates';
 
             % Create EulerCoordinatesDropDown
@@ -507,20 +510,20 @@ classdef MApp_exported < matlab.apps.AppBase
             app.EulerCoordinatesDropDown.Items = {'y↑→x', 'y↓→x', 'x↑→y', 'x↓→y', ''};
             app.EulerCoordinatesDropDown.ValueChangedFcn = createCallbackFcn(app, @setEulerCoordinate, true);
             app.EulerCoordinatesDropDown.FontSize = 16;
-            app.EulerCoordinatesDropDown.Position = [164 469 130 30];
+            app.EulerCoordinatesDropDown.Position = [150 265 120 30];
             app.EulerCoordinatesDropDown.Value = 'y↑→x';
 
             % Create MapImage
             app.MapImage = uiimage(app.EBSDDataAnalysisPanel);
-            app.MapImage.Position = [35 362 100 100];
+            app.MapImage.Position = [35 160 90 90];
 
             % Create EulerImage
             app.EulerImage = uiimage(app.EBSDDataAnalysisPanel);
-            app.EulerImage.Position = [179 362 100 100];
+            app.EulerImage.Position = [165 160 90 90];
 
             % Create Tree
             app.Tree = uitree(app.EBSDDataAnalysisPanel, 'checkbox');
-            app.Tree.Position = [87 74 150 257];
+            app.Tree.Position = [20 330 250 230];
 
             % Create PhaseMapNode
             app.PhaseMapNode = uitreenode(app.Tree);

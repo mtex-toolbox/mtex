@@ -137,8 +137,8 @@ classdef vector3d < dynOption
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
        
-       %v.how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
-       v.how2plot = plottingConvention.default;
+       v.how2plot = getClass(varargin,'plottingConvention');
+       if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
 
       end
     end

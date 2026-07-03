@@ -1,36 +1,48 @@
-function [vals, conds] = eval(S2F, v, varargin)
+function [vals, conds, info] = eval(S2F, v, varargin)
 % evaluate S2F on v via moving least squares (MLS) approximation
-% can also return the condition numbers of the (weighted) design matrices 
+% also returns the condition of the (regularized) local least squares problems
 %
 % Syntax
 %   vals = S2F.eval(v)
 %   vals = eval(S2F,v)
 %
 % Input
-%  S2F - @S2FunMLS
-%  v  - @vector3d the evaluation directions
+%   S2F - @S2FunMLS
+%   v   - @vector3d the evaluation directions
 %
 % Output
-%  vals  - the values of the mls approximation S2F on v
-%
+%   vals  - values of the MLS approximation S2F on v
+%   conds - condition of the solved local least squares problems
+%   info  - struct with additional regularization data
 
 
 if isempty(v)
   vals = [];
   conds = [];
+  info = initRegInfo(0);
   return;
 end
 
 dimensions = size(v);
 N = numel(v);
+want_info = nargout > 2;
 
 % prevent dimension error in local least squares solver for N==1
 if (N == 1)
   v = [v;v];
-  [vals, conds] = S2F.eval(v, varargin{:});
+  if want_info
+    [vals, conds, info] = S2F.eval(v, varargin{:});
+    info = sliceRegInfo(info, 1);
+  elseif nargout >= 2
+    [vals, conds] = S2F.eval(v, varargin{:});
+  else
+    vals = S2F.eval(v, varargin{:});
+  end
   vals = vals(1,:);
   vals = reshape(vals, size(S2F));
-  conds = conds(1);
+  if nargout >= 2
+    conds = conds(1);
+  end
   return;
 end
 
@@ -40,11 +52,14 @@ end
 if ((~isscalar(S2F)) && S2F.detectOutliers)
   v = v(:);
   vals = zeros(numel(v), numel(S2F));
+
   % extract condition number via the first component, if necessary
-  if (nargout == 1)
-    vals(:,1) = S2F.subSet(1).eval(v, varargin{:});
-  else
+  if want_info
+    [vals(:,1), conds, info] = S2F.subSet(1).eval(v, varargin{:});
+  elseif nargout >= 2
     [vals(:,1), conds] = S2F.subSet(1).eval(v, varargin{:});
+  else
+    vals(:,1) = S2F.subSet(1).eval(v, varargin{:});
   end
 
   for i = 2 : numel(S2F)
@@ -53,24 +68,39 @@ if ((~isscalar(S2F)) && S2F.detectOutliers)
   
   % reshape and return
   vals = reshape(vals, [numel(v), size(S2F)]);
+  if (nargout >= 2)
+    conds = reshape(conds, dimensions);
+  end
+  if want_info
+    info = reshapeRegInfo(info, dimensions);
+  end
   return;
 end
 
 vals = zeros(N, numel(S2F));
-if (nargout == 2)
+if (nargout >= 2)
   conds = zeros(N, 1);
 end
+if want_info
+  info = initRegInfo(N);
+end
 
-% we perform the computation in batches of 1GB (2^30 Bytes) RAM
+smoothDelta = [];
 if (S2F.delta == 0)
   nn = S2F.nn;
+  % precompute values for smooth version of delta once for all batches
+  % otherwise we repeatedly perform stuff like creating the corresponding mls and so on
+  if S2F.use_smooth_delta
+    smoothDelta = getSmoothDelta(S2F, v);
+  end
 else
   nn = S2F.guess_nn("max");
 end
-% byter_per_v is bytes_per_ori from SO3FunMLS, multiplied by 3/4 in order to
-% approximately correct for the different number of variables
-bytes_per_v = S2F.dim * (2*nn + 5*S2F.oF + S2F.dim) * 8 * 3/4 * numel(S2F);
-batch_size = ceil(2 * 2^30 / bytes_per_v);
+
+% We perform the computation in batches of 1GB (2^30 Bytes) RAM. 
+% This is not super precise, but close to what eval_knn demands per v. 
+bytes_per_v = S2F.dim * (nn*2 + 9*S2F.oF + S2F.dim) * 8 * numel(S2F);
+batch_size = ceil(1 * 2^30 / bytes_per_v); % go for approx 1 GB RAM
 
 current_batch = 0;
 start_idx = 1;
@@ -81,20 +111,41 @@ warning_too_few_neighbors = false;
 warning_too_many_neighbors = false;
 
 while (end_idx < N)
-
   current_batch = current_batch + 1;
   end_idx = min(end_idx + batch_size, N);
   I = (start_idx : end_idx)';
   start_idx = end_idx + 1;
-  
+
+  varargin_batch = varargin;
   if (S2F.delta == 0)
-    [vals(I,:), conds(I)] = eval_knn(S2F, v.subSet(I), varargin{:});
+    if S2F.use_smooth_delta
+      varargin_batch = [varargin_batch(:)', {'smoothDelta'}, {smoothDelta(I)}];
+    end
+
+    if want_info
+      [vals(I,:), conds(I), info_batch] = eval_knn(S2F, v.subSet(I), varargin_batch{:});
+      info = insertRegInfo(info, I, info_batch);
+    elseif nargout >= 2
+      [vals(I,:), conds(I)] = eval_knn(S2F, v.subSet(I), varargin_batch{:});
+    else
+      vals(I,:) = eval_knn(S2F, v.subSet(I), varargin_batch{:});
+    end
   else
-    [vals(I,:), conds(I), warn_tfn, warn_tmn] = eval_range(S2F, v.subSet(I), varargin{:});
+    if want_info
+      [vals(I,:), conds(I), warn_tfn, warn_tmn, info_batch] ...
+        = eval_range(S2F, v.subSet(I), varargin_batch{:});
+      info = insertRegInfo(info, I, info_batch);
+    elseif nargout >= 2
+      [vals(I,:), conds(I), warn_tfn, warn_tmn] ...
+        = eval_range(S2F, v.subSet(I), varargin_batch{:});
+    else
+      [vals(I,:), ~, warn_tfn, warn_tmn] ...
+        = eval_range(S2F, v.subSet(I), varargin_batch{:});
+    end
+
     warning_too_few_neighbors = warning_too_few_neighbors | warn_tfn;
     warning_too_many_neighbors = warning_too_many_neighbors | warn_tmn;
   end
-
 end
 
 % print warnings, if any occured
@@ -116,8 +167,74 @@ else
   vals = reshape(vals, [N, size(S2F)]);
 end
 
-if (nargout == 2)
+if (nargout >= 2)
   conds = reshape(conds, dimensions);
 end 
+if want_info
+  info = reshapeRegInfo(info, dimensions);
+end
 
+end
+
+
+% compute smoothed version of delta via MLS on fiboannciGrid with d_n(x)
+%   (distance of n-th nearest neighbor to x) as data 
+% n2 oversamples by factor 1.5. this tries to avoid ending up with centers where
+%   delta(x) is too small to provide sufficiently many neighbors
+function [delta, nn] = getSmoothDelta(S2F, v)
+  dn = S2F.auxgrid.opt.dn;
+  mls = S2FunMLS(S2F.auxgrid, dn, 'regularize', false, 'degree', 0, 'oF', 5);
+  mls.delta = mls.compute_delta;
+  delta = mls.eval(v);
+
+  if (nargout > 1)
+    [~, dist] = S2F.nodes.find(v, 2*S2F.nn);
+    isin = dist < delta;
+    nn = sum(isin, 2);
+  end
+end
+
+% initialize struct for additional regularization information
+function info = initRegInfo(N)
+  info = struct;
+  info.conds_reg = NaN(N, 1);
+  info.conds_unreg = NaN(N, 1);
+  info.geometryScore = NaN(N, 1);
+  info.maxeig = NaN(N, 1);
+  info.mineig = NaN(N, 1);
+  info.meanEig = NaN(N, 1);
+  info.conds_geom = NaN(N, 1);
+  info.lambdaGeom = NaN(N, 1);
+  info.lambdaCond = NaN(N, 1);
+end
+
+% insert regularization info of one batch into the full info struct
+function info = insertRegInfo(info, I, info_batch)
+  names = fieldnames(info_batch);
+  for k = 1 : numel(names)
+    name = names{k};
+    if isfield(info, name)
+      info.(name)(I,:) = info_batch.(name);
+    end
+  end
+end
+
+% return only the selected entries of the info struct
+function info = sliceRegInfo(info, I)
+  names = fieldnames(info);
+  for k = 1 : numel(names)
+    name = names{k};
+    info.(name) = info.(name)(I,:);
+  end
+end
+
+% reshape all fields of the info struct according to the evaluation grid
+function info = reshapeRegInfo(info, dimensions)
+  names = fieldnames(info);
+  for k = 1 : numel(names)
+    name = names{k};
+    if isvector(info.(name))
+      info.(name) = reshape(info.(name), dimensions);
+    end
+  end
 end

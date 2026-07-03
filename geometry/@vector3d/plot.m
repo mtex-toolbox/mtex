@@ -47,8 +47,11 @@ if check_option(varargin,'add2all')
   if nargout >=2, varargout{2} = ax; end
   
   return
+elseif check_option(varargin,'parent')
+  ax = get_option(varargin,'parent');
+else
+  ax = gca;
 end
-
 
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
@@ -96,7 +99,7 @@ switch lower(plotType)
   
   case 'scatter'
   
-    if ishold && isappdata(gca,'mapPlot') 
+    if ishold(ax) && isappdata(ax,'mapPlot') 
       [varargout{1:nargout}] = v.mapScatter(varargin{:});
     else
       [varargout{1:nargout}] = v.scatter(varargin{:});

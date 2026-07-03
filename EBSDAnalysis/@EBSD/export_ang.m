@@ -64,7 +64,7 @@ fprintf(filePh,'#\n');
 
 % Write phase info
 for phaseId = fliplr(ebsd.indexedPhasesId)
-  cs = ebsd.CSList{phaseId};
+  cs = ebsd.CSList(phaseId);
   fprintf(filePh,'# %s %.0f\n','Phase',ebsd.phaseMap(phaseId));
   fprintf(filePh,'# %s  \t%s\n','MaterialName',cs.mineral);
   fprintf(filePh,'# %s     \t%s\n','Formula','');

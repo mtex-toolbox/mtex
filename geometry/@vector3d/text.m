@@ -18,14 +18,17 @@ function h = text(v,varargin)
 %
 % See also
 
-if check_option(varargin,'add2all')
-  mtexFig = gcm;
-  if isempty(gcm)
-    ax = gca;
-  else
-    ax = mtexFig.children;
+if check_option(varargin,'add2all') 
+  
+  ax = get_option(varargin,'parent');
+  if isempty(ax)
+    mtexFig = gcm;
+    if isempty(gcm)
+      ax = gca;
+    else
+      ax = mtexFig.children;
+    end
   end
-  ax = get_option(varargin,'parent',ax);
   varargin = delete_option(varargin,'parent',1);
   varargin = delete_option(varargin,'add2all');
   

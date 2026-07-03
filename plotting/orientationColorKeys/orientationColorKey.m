@@ -26,9 +26,10 @@ classdef orientationColorKey < handle
         oCK.CS2 = ebsd.SS;
         oCK.antipodal = ebsd.antipodal;
       elseif isa(ebsd,'grainBoundary')
-        [oCK.CS1,oCK.CS2] = deal(ebsd.CS{:});
-        oCK.CS1 = oCK.CS1;
-        oCK.CS2 = oCK.CS2;
+        cs = ebsd.CS;
+        oCK.CS1 = cs(1);
+        oCK.CS2 = cs(2);
+        
         oCK.antipodal = all(diff(ebsd.phaseId,[],2)==0);
       elseif isa(ebsd,'symmetry')
         oCK.CS1 = ebsd;

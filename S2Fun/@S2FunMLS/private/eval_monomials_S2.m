@@ -3,34 +3,55 @@ function vals = eval_monomials_S2(v, deg, varargin)
 % evaluate the monomials of degree deg, deg-2, ..., mod(deg,2) on v
 % leave out a few since v consists of spherical vectors, thus x^2+y^2+z^2 = 1,
 %   hence we dont need <x^2 , y^2, z^2 AND 1> in our basis
+x = v.x(:);
+y = v.y(:);
+z = v.z(:);
 
-v = v(:);
-N = numel(v.x);
+N = numel(x);
 dim = (deg + 1) * (deg + 2) / 2;
 
 % if the tangent parameter is true, we set the z coordinate to 1 
 % NOTE:
-% if tangent==true, then also centered==true (S2FunMLS-constructor),
+% if tangent == true, then also centered == true (S2FunMLS-constructor),
 %   thus all nodes in v are close to north pole
 if nargin == 3 && varargin{1} == true
-  I = v.z >= 0;
-  v.z(I)  =  1;
-  v.z(~I) = -1;
+  I = z >= 0;
+  z( I) =  1;
+  z(~I) = -1;
 end
 
-% compute the exponents (in each coordinate) of the basis monomials 
+% precompute powers of x and y
+xpow = ones(N, deg + 1);
+ypow = ones(N, deg + 1);
+for k = 1 : deg
+  xpow(:, k+1) = xpow(:, k) .* x;
+  ypow(:, k+1) = ypow(:, k) .* y;
+end
+
+% allocate output
+vals = zeros(N, dim);
+
+% r determines whether we use even or odd total degrees
 r = mod(deg, 2);
-exponents = zeros(dim, 3);
+
+% build the basis block by block:
+% for each k = 0,...,deg, the x/y-part is
+%   y^k, x*y^(k-1), ..., x^k
+% and then we multiply the whole block by z or not
 idx = 1;
 for k = 0 : deg
-  l = k + 1;
-  temp = [zeros(l,1), nchoosek((1:l)',1), ones(l,1)*(l+1)];
-  exponents(idx:idx+k,:) = [diff(temp,1,2) - 1, zeros(l,1)+mod(r+k,2)];
-  idx = idx + l;
+  cols = idx : idx + k;
+
+  % compute all monomials of current x/y-degree k
+  block = xpow(:, 1:k+1) .* ypow(:, k+1:-1:1);
+
+  % decide whether this block gets multiplied by z
+  if mod(r + k, 2) == 1
+    block = block .* z;
+  end
+
+  vals(:, cols) = block;
+  idx = idx + k + 1;
 end
 
-exponents = reshape(exponents', 1, 3, dim);
-vals = prod(v.xyz .^ exponents, 2);
-vals = reshape(vals, N, dim);
-
-end 
+end

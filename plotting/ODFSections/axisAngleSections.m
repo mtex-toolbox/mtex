@@ -117,8 +117,9 @@ classdef axisAngleSections < ODFSections
       v.opt.region = oS.axesSectors{sec};
       
       % plot data into all axes
-      for ax = cax(:).'
-        h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw');
+      h = gobjects(1,length(cax));
+      for k = 1:length(cax)
+        h(k) = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
       end
 
     end

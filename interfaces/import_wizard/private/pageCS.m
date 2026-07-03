@@ -57,7 +57,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       nPhases = numel(data.CSList);
       
-      CS = data.CSList{currentPhase};
+      CS = data.CSList(currentPhase);
             
       api.setWizardTitle(['Crystal Reference Frame for Phase '  ...
         num2str(data.phaseMap(currentPhase))]);
@@ -184,7 +184,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       if isa(data{k},'EBSD')
         
-        data{k}.CSList{currentPhase} = CS;
+        data{k}.CSList(currentPhase) = CS;
                 
       else
         

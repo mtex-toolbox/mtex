@@ -1,44 +1,52 @@
 {
   "settings": {
     "name": "Bruker",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": ["Bruker", "Bruker Nano"]}
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "regex", "value": "EBSD"},
+    "key": {"mode": "search_root", "value": "EBSD"},
     "position": {
       "type": "direct",
       "direct": {
-        "x": { "mode": "regex", "value": "^X Beam$" },
-        "y": { "mode": "regex", "value": "^Y Beam$" }
+        "x": { "mode": "search_root", "value": "/X Beam$" },
+        "y": { "mode": "search_root", "value": "/Y Beam$" }
       }
     },
-    "phase": {"mode": "regex", "value": "^Phase"},
+    "phase": {"mode": "search_root", "value": "/Phase"},
     "rotation": {
       "type": "euler",
       "euler": {
-        "formate": {"data": "degree"},
-        "phi1": { "mode": "regex", "value": "^phi1$" },
-        "Phi":  { "mode": "regex", "value": "^PHI$" },
-        "phi2": { "mode": "regex", "value": "^phi2$" }
+        "format": {"data": "degree"},
+        "phi1": { "mode": "search_root", "value": "/phi1$" },
+        "Phi":  { "mode": "search_root", "value": "/PHI$" },
+        "phi2": { "mode": "search_root", "value": "/phi2$" }
       }
     },
+    "map_correction": {
+      "type": "by_id",
+      "id" : {"mode": "search_root", "value": "/Coordinate Systems/ID"},
+      "correct_data": { "data": [0, 0, 0, 0, 180]},
+      "format": { "data": "degree"}
+    },
+    "how2plot": { "data": "x-east,y-south", "type": "default"},
     "cs": {
       "type": "default",
-      "multiple": "true",
-      "key": { "mode": "regex", "value": "Phases" },
+      "multiple": true,
+      "key": { "mode": "search_root", "value": "Phases" },
       "default": {
-        "space_group": { "mode": "regex", "value": "SpaceGroup", "type": "default" },
-        "name": { "mode": "regex", "value": "Name"},
-        "lattice": { "mode": "regex", "value": "LatticeConstants", "type": "all_together"}
+        "space_group": { "mode": "search_root", "value": "SpaceGroup", "type": "default" },
+        "name": { "mode": "search_root", "value": "Name"},
+        "lattice": { "mode": "search_root", "value": "LatticeConstants", "type": "all_together"}
       }
     },
     "header": {
-      "group": {"mode": "regex", "value": "Header"}
+      "group": {"mode": "search_root", "value": "Header"}
     }
   },
   "additions": {
     "type": "auto",
-    "key": { "mode": "regex", "value": "Data"}
+    "group": { "mode": "search_root", "value": "Data"}
   }
 }

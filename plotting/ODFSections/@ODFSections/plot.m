@@ -113,11 +113,9 @@ if exist('ori','var') || isempty(oS.plotGrid)
   end
 
   % unify dynamic marker size
-  gList = findall(gList,'tag','dynamicMarkerSize');
   try [gList.MarkerSize] = deal(median(min([gList.MarkerSize]))); end  %#ok<TRYNC>
+  gList = findall(gList,'tag','dynamicMarkerSize');  
   try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
-  
-
 
 else
   

@@ -29,9 +29,9 @@ if strcmp(s(1).type,'()') && ischar(s(1).subs{1}) && ...
 
   if id>0
     if numel(s)>2
-      ebsd.CSList{id} = subsasgn(ebsd.CSList{id},s(3:end),b);
+      ebsd.CSList(id) = subsasgn(ebsd.CSList(id),s(3:end),b);
     else
-      ebsd.CSList{id} = b;
+      ebsd.CSList(id) = b;
     end
     return
   end

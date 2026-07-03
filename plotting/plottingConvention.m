@@ -71,18 +71,18 @@ classdef plottingConvention < matlab.mixin.Copyable
 
       arrows = '←→↑↓'; xyz = 'xyz';
 
-      [ud,north] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]);
-      c = [xyz(north) arrows(ud+2)];
+      [ud,north] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
+      c = [xyz(north) arrows(ud+2)]; %#ok<PROPLC>
 
       
-      [lr,east] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]);
+      [lr,east] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
 
       if isempty(ud) || isempty(lr)
         c = 'xyz';
       elseif lr == 1
-        c = [c,arrows(2),xyz(east)];
+        c = [c,arrows(2),xyz(east)]; %#ok<PROPLC>
       else
-        c = [xyz(east),arrows(1),fliplr(c)]; 
+        c = [xyz(east),arrows(1),fliplr(c)]; %#ok<PROPLC>
       end
 
     end
@@ -123,10 +123,20 @@ classdef plottingConvention < matlab.mixin.Copyable
         %ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
         %ax.CameraUpVector = pC.north.xyz;
         
+        target = mean([ax.XLim; ax.YLim; ax.ZLim],2).';   % or your own target
+        d = norm(ax.CameraPosition - ax.CameraTarget);    % preserve current distance
+
+        ax.CameraTarget = target;
+        ax.CameraPosition = target + d * pC.outOfScreen.xyz;
         ax.CameraUpVector = pC.north.xyz;
-        view(ax,pC.outOfScreen.xyz);
-        ax.CameraUpVector = pC.north.xyz;
-        ax.CameraViewAngleMode = 'auto';
+        ax.CameraViewAngleMode = 'auto';   % usually faster and visually stable
+
+
+        %ax.CameraUpVector = pC.north.xyz;
+        %view(ax,pC.outOfScreen.xyz);
+        %ax.CameraUpVector = pC.north.xyz;
+        %ax.CameraViewAngleMode = 'auto';
+      
       else % map plot
 
         %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
@@ -199,8 +209,8 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
     function v = get.north(pC)
-      v = pC.rot * vector3d.Y; 
-      v.how2plot = pC;
+      v = pC.rot * vector3d.Y(pC); 
+      %v.how2plot = pC;
     end
     function set.north(pC,v)
       try
@@ -228,7 +238,8 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     function plot(pC, varargin)
 
-      ax = get_option(varargin,'parent',gca);
+      ax = get_option(varargin,'parent');
+      if isempty(ax), ax = gca; end
 
       delta(1) = diff(ax.XLim);
       delta(2) = diff(ax.YLim);
@@ -279,53 +290,96 @@ classdef plottingConvention < matlab.mixin.Copyable
         pC = ss.how2plot;
       end
     end
-
+    
     function pC = default3D
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
     end
    
-   function pC = ij
-        % Map plotting conventions to match SEM image display and MATLAB 
-        % 'axis ij' reference frames.
-        % Use with import flag "convertEuler2SpatialReferenceFrame" for
-        % most modern SEM systems.
-        % Useful for producing comparable map plots in MTEX, 
-        % MATLAB and SEM/EBSD software.
-        %
-        % pC = plottingConvention.ij;
-        %
-        pC = plottingConvention(-vector3d.Z,vector3d.X);
+
+    function pC = getView(ax)
+      % reconstruct the plottingConvention from the current camera state
+      %
+      % This is the inverse operation to <plottingConvention.setView>: it
+      % reads back the orientation that is currently applied to an axis.
+      % Together they allow other graphics objects (e.g. the scale bar) to
+      % stay in sync with the axis no matter whether the same convention was
+      % modified in place or a different one was applied via setView.
+      %
+      % Syntax
+      %   pC = plottingConvention.getView(ax)
+      %   pC = plottingConvention.getView      % uses gca
+      %
+      % Input
+      %  ax - axes handle (default: gca)
+      %
+      % Output
+      %  pC - @plottingConvention
+      %
+      % See also
+      % plottingConvention/setView
+
+      if nargin == 0, ax = gca; end
+
+      % In both the map and the 3d branch of setView the camera ends up with
+      %   CameraPosition - CameraTarget  parallel to  outOfScreen
+      %   CameraUpVector                 equal to     north
+      % so we can simply read those two directions back.
+      camDir = ax.CameraPosition - ax.CameraTarget;   % points towards viewer
+      up     = ax.CameraUpVector;
+
+      outOfScreen = normalize(vector3d(camDir(1),camDir(2),camDir(3)));
+      north       = normalize(vector3d(up(1),up(2),up(3)));
+
+      % rebuild the rotation consistent with the getters
+      %   outOfScreen = rot * Z,  north = rot * Y
+      pC = plottingConvention;
+      pC.rot = rotation.map(vector3d.Z,outOfScreen,vector3d.Y,north);
     end
 
-    function pC = edax(setting)
-        % Map plotting conventions to match EDAX Euler reference frame
-        % A1/A2/A3.
-        % Use with import flag "convertSpatial2EulerReferenceFrame" on
-        % EDAX systems.
-        % Useful for producing comparable orientation plots in MTEX and EDAX software.
-        %
-        % Input:
-        %  setting = edax setting number (numeric) (default = 2)
 
-        if nargin<1
-            setting = 2;
-            warning("No EDAX reference frame setting specified. Defaulting to setting 2.")
-        end
-        switch setting
-            case 1
-                outOfScreen = vector3d.Z;
-                east = vector3d.Y;
-            case 2
-                outOfScreen = vector3d.Z;
-                east = -vector3d.Y;
-            case 3
-                outOfScreen = vector3d.Z;
-                east = vector3d.X;
-            case 4
-                outOfScreen = vector3d.Z;
-                east = -vector3d.X;
-        end
-        pC = plottingConvention(outOfScreen,east);
+
+    function pC = ij
+      % Map plotting conventions to match SEM image display and MATLAB
+      % 'axis ij' reference frames.
+      % Use with import flag "convertEuler2SpatialReferenceFrame" for
+      % most modern SEM systems.
+      % Useful for producing comparable map plots in MTEX,
+      % MATLAB and SEM/EBSD software.
+      %
+      % pC = plottingConvention.ij;
+      %
+      pC = plottingConvention(-vector3d.Z,vector3d.X);
+    end
+    
+    function pC = edax(setting)
+      % Map plotting conventions to match EDAX Euler reference frame
+      % A1/A2/A3.
+      % Use with import flag "convertSpatial2EulerReferenceFrame" on
+      % EDAX systems.
+      % Useful for producing comparable orientation plots in MTEX and EDAX software.
+      %
+      % Input:
+      %  setting = edax setting number (numeric) (default = 2)
+      
+      if nargin<1
+        setting = 2;
+        warning("No EDAX reference frame setting specified. Defaulting to setting 2.")
+      end
+      switch setting
+        case 1
+          outOfScreen = vector3d.Z;
+          east = vector3d.Y;
+        case 2
+          outOfScreen = vector3d.Z;
+          east = -vector3d.Y;
+        case 3
+          outOfScreen = vector3d.Z;
+          east = vector3d.X;
+        case 4
+          outOfScreen = vector3d.Z;
+          east = -vector3d.X;
+      end
+      pC = plottingConvention(outOfScreen,east);
     end
 
   end

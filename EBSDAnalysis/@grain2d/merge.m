@@ -40,6 +40,8 @@ function [grainsMerged,parentId,newInd] = merge(grains,varargin)
 %
 % Options
 %  threshold - maximum misorientation angle to be merged as similar
+%  maxArea   -
+%  maxPixel  - 
 %  maxSize   - maximum number of pixels to be merged as an inclusion 
 %
 % Example:
@@ -121,7 +123,7 @@ for k = 1:length(varargin)
       ind = all(grains.phaseId(indPairs)==phId,2);
       
       % extract the meanorientations
-      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList{phId});
+      oriPairs = orientation(grains.prop.meanRotation(indPairs(ind,:)),grains.CSList(phId));
       oriPairs = reshape(oriPairs,[],2);
       
       % check mean orientation difference is below a threshold
@@ -237,8 +239,12 @@ if check_option(varargin,'calcMeanOrientation')
 
   updateOriFun = get_option(varargin,'calcMeanOrientation');
     
-  if ischar(updateOriFun) && updateOriFun == "maxArea"
-    area = grains.area; 
+  if ischar(updateOriFun)
+    if updateOriFun == "maxArea"
+      maxProp = grains.area;
+    elseif updateOriFun == "maxPixel"
+      maxProp = grains.numPixel;
+    end
   end
 
   for i = newInd
@@ -256,24 +262,24 @@ if check_option(varargin,'calcMeanOrientation')
       ind = ind(hInd);
       
       % take the host orientation for the merged grain
-      cs = grains.CSList{grains.phaseId(ind)};
+      cs = grains.CSList(grains.phaseId(ind));
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
       
-    elseif ischar(updateOriFun) && strcmpi(updateOriFun,'maxArea')
+    elseif ischar(updateOriFun) && any(strcmpi(updateOriFun,{'maxArea','maxPixel'}))
 
       ind = find(parentId == i);
-      [~,hInd] = max(area(ind));
+      [~,hInd] = max(maxProp(ind));
       ind = ind(hInd);
       
       % take the host orientation for the merged grain
-      cs = grains.CSList{grains.phaseId(ind)};
+      cs = grains.CSList(grains.phaseId(ind));
       oriNew = orientation(grains.prop.meanRotation(ind),cs);
 
 
     else % compute the mean between the merged orientations
       
       ind = parentId == i;
-      cs = grains.CSList{max(grains.phaseId(ind))};
+      cs = grains.CSList(max(grains.phaseId(ind)));
       oriNew = mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.numPixel(ind));
             
     end
@@ -285,7 +291,7 @@ if check_option(varargin,'calcMeanOrientation')
     if exist('cs','var') && ischar(cs) 
       grainsMerged.phaseId(i) = 1;
     else
-      newPhase = cellfun(@(x) isa(x,'symmetry') && x==oriNew.CS,grains.CSList);
+      newPhase = grains.CSList == oriNew.CS;
       grainsMerged.phaseId(i) = find(newPhase);
     end
   end

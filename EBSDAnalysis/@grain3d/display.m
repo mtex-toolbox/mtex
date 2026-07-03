@@ -25,22 +25,17 @@ for ip = 1:numel(grains.phaseMap)
   matrix{ip,3} = xnum2str(sum(allVolume(ind)));
   
   % abort in special cases
-  if isempty(grains.CSList{ip})
-    continue
-  elseif ischar(grains.CSList{ip})
-    matrix{ip,4} = grains.CSList{ip};
-    continue
-  else
-    % mineral
-    matrix{ip,4} = char(grains.CSList{ip}.mineral);
+  if isempty(grains.CSList(ip)), continue, end
+  
+
+  % mineral
+  matrix{ip,4} = char(grains.CSList(ip).mineral);
+
+  % symmetry & reference frame
+  if grains.CSList(ip).isIndexed
+    matrix{ip,5} = grains.CSList(ip).pointGroup;
+    matrix{ip,6} = option2str(grains.CSList(ip).alignment);
   end
-  
-  % symmetry
-  matrix{ip,5} = grains.CSList{ip}.pointGroup;
-  
-  % reference frame
-  matrix{ip,6} = option2str(grains.CSList{ip}.alignment);
-  
 end
 
 % remove empty rows

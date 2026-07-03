@@ -194,7 +194,7 @@ meanRotation  = q(firstD);
 for pId = grains.indexedPhasesId
   ndx = phaseId(d) == pId;
   if ~any(ndx), continue; end
-  q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{pId},meanRotation(g(ndx)));
+  q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList(pId),meanRotation(g(ndx)));
 end
 
 % compute mean orientation and GOS
@@ -270,9 +270,9 @@ end
       end
      
       % now check for the grain boundary criterion
-      if any(ndx) && isa(ebsd.CSList{p},'symmetry')    
+      if any(ndx) && isa(ebsd.CSList(p),'symmetry')    
         connect(ndx) = feval("gbc_" + lower(gbc),...
-          ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
+          ebsd.rotations,ebsd.CSList(p),Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
       else
         connect(ndx) = 1;
       end

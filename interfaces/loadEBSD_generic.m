@@ -52,64 +52,60 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 
 max_num_phases = 40;
 
-try
-  % load data
-  if ~isnumeric(fname)
-    [d,options,header,c] = load_generic(char(fname),varargin{:});
-    varargin = options;
-  else
-    d = fname;
-  end
-
-  % no data found
-  if size(d,1) < 1 || size(d,2) < 3
-    error('Generic interface could not detect any numeric data in %s',fname);
-  end
-
-  % no options given -> ask
-  if ~check_option(varargin,'ColumnNames')
-
-    if any(strcmpi(c,'x')) && any(strcmpi(c,'y'))
-      options = {'ColumnNames',c,'Bunge'};
-    else
-      options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
-      if isempty(options), ebsd = []; return; end
-    end
-    varargin = [options,varargin];
-  end
-
-  loader = loadHelper(d,varargin{:});
-
-  % extract rotations
-  rot = loader.getRotations;
-
-  % extract positions
-  pos = loader.getPos;
-
-  % assign phases
-  if loader.hasColumns('Phase')
-    phase = loader.getColumnData('phase');
-  else
-    phase = ones(length(rot),1);
-  end
-
-  if max(phase)>max_num_phases
-    warning('MTEX:toomanyphases', ...
-      ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
-    phase = ones(size(d,1),1);
-  end
-
-  % return varargin as options
-  opt = loader.getOptions('ignoreColumns','Phase');
-
-  % set up EBSD variable
-  CSList{1} = 'notIndexed';
-  for k = 1:max(1,length(unique(phase))-1)
-    CSList{k+1} = crystalSymmetry('432','mineral',['unknown' int2str(k)]);
-  end
-  CSList = get_option(varargin,'CS',CSList);
-  ebsd = EBSD(pos,rot,phase,CSList,opt,varargin{:});
-
-catch
-  interfaceError(fname)
+% load data
+if ~isnumeric(fname)
+  [d,options,header,c] = load_generic(char(fname),varargin{:});
+  varargin = options;
+else
+  d = fname;
 end
+
+% no data found
+if size(d,1) < 1 || size(d,2) < 3
+  error('Generic interface could not detect any numeric data in %s',fname);
+end
+
+% no options given -> ask
+if ~check_option(varargin,'ColumnNames')
+
+  if any(strcmpi(c,'x')) && any(strcmpi(c,'y'))
+    options = {'ColumnNames',c,'Bunge'};
+  else
+    options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
+    if isempty(options), ebsd = []; return; end
+  end
+  varargin = [options,varargin];
+end
+
+loader = loadHelper(d,varargin{:});
+
+% extract rotations
+rot = loader.getRotations;
+
+% extract positions
+pos = loader.getPos;
+
+% assign phases
+if loader.hasColumns('Phase')
+  phase = loader.getColumnData('phase');
+else
+  phase = ones(length(rot),1);
+end
+
+if max(phase)>max_num_phases
+  warning('MTEX:toomanyphases', ...
+    ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
+  phase = ones(size(d,1),1);
+end
+
+% return varargin as options
+opt = loader.getOptions('ignoreColumns','Phase');
+
+% set up EBSD variable
+CSList(1) = notIndexed;
+for k = 1:max(1,length(unique(phase))-1)
+  CSList(k+1) = crystalSymmetry('432','mineral',['unknown' int2str(k)]);
+end
+CSList = get_option(varargin,'CS',CSList);
+ebsd = EBSD(pos,rot,phase,CSList,opt,varargin{:});
+

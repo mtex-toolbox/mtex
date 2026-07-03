@@ -104,11 +104,13 @@ else % phase plot
     str = inputname(1);
     if isempty(str), str = "ebsd"; end
     
-    warning("You asked me to make a phase plot of single phase map. " + ...
-      "This might not what you are looking for. " + ...
-      "In order to colorize the map according to the orientations you should do" + ...
-      newline + newline + ...
-      strong("plot(" + str + "," + str + ".orientations)") + newline);
+    if ~check_option(varargin,'wizard')
+      warning("You asked me to make a phase plot of single phase map. " + ...
+        "This might not what you are looking for. " + ...
+        "In order to colorize the map according to the orientations you should do" + ...
+        newline + newline + ...
+        strong("plot(" + str + "," + str + ".orientations)") + newline);
+    end
   end
 
   warning('off','MATLAB:legend:PlotEmpty');
@@ -125,13 +127,9 @@ else % phase plot
       color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
     elseif check_option(varargin,{'color','faceColor'})
       color = 'none';
-    elseif ~isa(ebsd.CSList{k},'symmetry') 
-      % do not plot notIndexed phase if no color is given
-      continue;
-    elseif ~isempty(ebsd.CSList{k}.color)
-      color = ebsd.CSList{k}.color;
     else
-      color = ebsd.subSet(ind).color;
+      color = ebsd.CSList(k).color;
+      if isnan(color), continue; end    
     end
     
     if any(strcmp(ebsd.mineralList{k},l.String))

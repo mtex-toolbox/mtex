@@ -125,15 +125,15 @@ classdef parentGrainReconstructor < handle
                 
         % try to guess parent and child phase
         numPhase = accumarray(ebsd.phaseId,1,[length(ebsd.CSList),1]);
-        indexedPhasesId = find(~cellfun(@ischar,ebsd.CSList));
-        numPhase = numPhase(indexedPhasesId );
+        CSList = ebsd.CSList; indexedPhasesId = find([CSList.isIndexed]);
+        numPhase = numPhase(indexedPhasesId);
         
         [~,maxPhase] = max(numPhase);
-        job.csChild = ebsd.CSList{indexedPhasesId(maxPhase)};
+        job.csChild = ebsd.CSList(indexedPhasesId(maxPhase));
         
         [~,minPhase] = min(numPhase);
         if minPhase ~= maxPhase
-          job.csParent = ebsd.CSList{indexedPhasesId(minPhase)};
+          job.csParent = ebsd.CSList(indexedPhasesId(minPhase));
         else
           job.csParent = struct("mineral",'undefined',"pointGroup",'');
         end      

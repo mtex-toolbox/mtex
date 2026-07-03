@@ -39,8 +39,8 @@ function grains = load(filepath,varargin)
       phaseList = 2*ones(size(I_GF,1),1);
 
       CSList = get_option(varargin,'CS',crystalSymmetry(crysym));
-      CSList = ensurecell(CSList);
-      if ~ischar(CSList{1}), CSList = ['notIndexed',CSList]; end
+      
+      if CSList(1).isIndexed, CSList = [notIndexed,CSList]; end
       
       grains = grain3d(V, F, I_GF, ori, CSList, phaseList);
 
