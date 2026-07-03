@@ -52,37 +52,39 @@ end
 function loader = localCRCLoader(crcFile,params)
 % reads the binary crc file into a matrix
 
-fid = fopen(crcFile,'rb');
+fid  = fopen(crcFile,'rb');
 data = fread(fid,'*uint8');
 fclose(fid);
 
-% make a table
+type = params.ColumnType;
 if isempty(params.n)
-  n = numel(data)./params.m;
+  n = numel(data) / params.m;
 else
   n = params.n;
 end
-
-data = reshape(data,[],n);
-type = params.ColumnType;
+data = reshape(data,[],n);          % m × n uint8
 ndx  = cumsum([0 type]);
 
-% type conversion to double
-d(type==4,:) = reshape(double(typecast(...
-  reshape(data(bsxfun(@plus,ndx(type==4),(1:4)'),:),[],1),'single')),[],n);
-d(type~=4,:) = double(data(1+ndx(type~=4),:));
+nf = numel(type);
+d  = zeros(n, nf + 2*params.cells, 'single');   
 
-if params.cells
-  % append implicit coordinates
-  
-  d(end+1,:) = params.x;
-  d(end+1,:) = params.y;
-  
-  params.ColumnNames = [params.ColumnNames 'x','y'];
-  
+for j = 1:nf
+  off = ndx(j);
+  if type(j) == 4
+    b = data(off+1:off+4, :);            % 4 × n, kleines Temporary
+    d(:,j) = typecast(b(:), 'single');   % zusammenhängender Spaltenschreib
+  else
+    d(:,j) = single(data(off+1, :));
+  end
 end
 
-loader = loadHelper(d.','ColumnNames',params.ColumnNames,'Radians');
+if params.cells % append implicit coordinates 
+  d(:,nf+1) = params.x;
+  d(:,nf+2) = params.y;  
+  params.ColumnNames = [params.ColumnNames 'x','y'];  
+end
+
+loader = loadHelper(d,'ColumnNames',params.ColumnNames,'Radians');
 
 end
 
