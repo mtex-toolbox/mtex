@@ -60,7 +60,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal',how2plot)
 %
 % Equal area projection is defined by the characteristic that it preserves
 % the spherical area. Since pole figures are defined as relative frequency
-% by area equal area projection is the default projection in MTEX. In can
+% by area, equal area projection is the default projection in MTEX. It can
 % be set explicitly by the options |'earea'| or |'schmidt'|.
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal','projection','earea')
@@ -70,14 +70,15 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','projection','earea')
 % The equal distance projection differs from the equal area projection by
 % the characteristic that it preserves the distances of points to the
 % origin. Hence it might be a more intuitive projection if you look at
-% crystal directions. % Another famous spherical projection is the
+% crystal directions. 
+% Another famous spherical projection is the
 % stereographic projection which preserves the angle between arbitrary
 % great circles. It can be chosen by setting the option |'stereo'| or
 % |'eangle'|.
 
 cs = crystalSymmetry('m-3m');
 plotHKL(cs,'projection','earea','upper','grid_res',15*degree,'BackGroundColor','w')
-mtexTitle('equal angle')
+mtexTitle('equal area')
 nextAxis
 plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','w')
 mtexTitle('equal distance')

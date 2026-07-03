@@ -245,6 +245,7 @@ function Test
   % Example Manuel paper
   q = [xvector,yvector,zvector];
   f = S2FunHandle(@(x) real(exp(-5*acos(dot(x,q(1))).^2) + exp(-5*acos(dot(x,q(2))).^2) + exp(-5*acos(dot(x,q(3))).^2)) );
+  f2 = abs(S2Fun.smiley);
 
   v = equispacedS2Grid('points',5000); v=v(:);
   v = compactify(f,'bandwidth',400,'points',v,'maxIter',1000);
