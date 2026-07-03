@@ -780,7 +780,19 @@ classdef import_wizard3 < matlab.apps.AppBase
       if isempty(imageHandle) || idx < 1 || idx > height(app.CoordinateSystems)
         return
       end
-      imageHandle.ImageSource = char(app.CoordinateSystems.Key(idx) + ".png");
+      
+      % create prefix for map- and euler-images
+      if imageHandle == app.MapImage
+        prefix = '';   
+      elseif imageHandle == app.EulerImage
+        prefix = 'euler_'; 
+      else
+        prefix = '';
+      end
+      
+      % build filename
+      filename = char(prefix + app.CoordinateSystems.Key(idx) + ".png");
+      imageHandle.ImageSource = filename;
     end
 
     function idx = closestCoordinateIndex(app, rot)
