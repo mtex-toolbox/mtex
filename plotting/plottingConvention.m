@@ -41,9 +41,16 @@ classdef plottingConvention < matlab.mixin.Copyable
 
   methods
 
-    function pC = plottingConvention(outOfScreen,east)      
-      if nargin >= 1, pC.outOfScreen = outOfScreen; end
-      if nargin >= 2, pC.east = east; end      
+    function pC = plottingConvention(outOfScreen,east)
+
+      if nargin == 1
+        pC.rot = rotation.map(zvector,outOfScreen);
+      elseif nargin == 2
+        pC.rot = rotation.map(zvector,outOfScreen,xvector,east);
+      end
+
+      %if nargin >= 1, pC.outOfScreen = outOfScreen; end
+      %if nargin >= 2, pC.east = east; end      
     end
         
     function display(pC,varargin)
@@ -159,11 +166,14 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = pC.rot * vector3d.Z; 
       v.how2plot = pC;
     end
+
     function set.outOfScreen(pC,n)
-      try
-        pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
-      catch
-        pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot;
+      if angle(pC.rot * vector3d.Z,n) > 0.1*degree
+        try
+          pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
+        catch
+          pC.rot = rotation.map(pC.outOfScreen,n) * pC.rot;
+        end
       end
       pC.lastSet = n;
     end
@@ -187,10 +197,12 @@ classdef plottingConvention < matlab.mixin.Copyable
       v.how2plot = pC;
     end
     function set.east(pC,e)
-      try
-        pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot; 
-      catch ME
-        pC.rot = rotation.map(pC.east,e) * pC.rot;
+      if angle(pC.rot * vector3d.X,e) > 0.1*degree
+        try
+          pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot;
+        catch ME
+          pC.rot = rotation.map(pC.east,e) * pC.rot;
+        end
       end
       pC.lastSet = e;
     end
