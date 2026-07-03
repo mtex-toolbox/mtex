@@ -168,9 +168,9 @@ classdef crystalSymmetry < symmetry & phaseItem
         if isempty(rot), rot = symmetry.calcQuat(id,axes); end
          
       end
-     
+
       % define the symmetry
-      s = s@symmetry(id,rot);
+      s = s@symmetry(id,rot,[]);
       
       % set axes, mineral name and color
       s.axes = axes;
@@ -182,13 +182,13 @@ classdef crystalSymmetry < symmetry & phaseItem
         s.opt.density = get_option(varargin,'density','');
       end
 
-      % some defaults for the plotting convention
-      s.how2plot.outOfScreen = s.cAxisRec;
+      % the plotting convention     
       if id > 11 || id==0
-        s.how2plot.east = s.aAxis;
+        pC = plottingConvention(s.cAxisRec,s.aAxis);
       else
-        s.how2plot.east = s.bAxis;
+        pC = plottingConvention(s.cAxisRec,s.bAxis);
       end
+      s.how2plot = pC;
 
     end
     
@@ -221,11 +221,13 @@ classdef crystalSymmetry < symmetry & phaseItem
     end
 
     function b = get.bAxisRec(cs)
-      b = Miller(0,1,0,cs);
+      b = cs.axesDual;
+      b = Miller(b(2),cs);
     end
 
     function c = get.cAxisRec(cs)
-      c = Miller(0,0,1,cs);
+      c = cs.axesDual;
+      c = Miller(c(3),cs);
     end
 
     function alpha = get.alpha(cs)
