@@ -304,15 +304,15 @@ end
 
 function out = space_group_default(raw_data)
 
+
   if isnumeric(raw_data)
-    clean = double(raw_data);
-    cs = crystalSymmetry('spaceId', clean);
+    clean = double(raw_data);    
+    id = symmetry.extractPointId('spaceId', clean);
   else
     clean = clean_string(raw_data);
-    cs = crystalSymmetry(clean);
+    id = symmetry.extractPointId(clean);
   end
-
-  out = cs.pointGroup;
+  out = symmetry.pointGroups(id).Inter;
 
 end
 
