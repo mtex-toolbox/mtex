@@ -29,11 +29,27 @@ classdef phaseList
     % --------------------------------------------------------------
     
     function pL = init(pL,phases,CSList)
-      % extract phases
-      [pL.phaseMap,~,pL.phaseId] =  unique(phases);
-              
-      pL.phaseMap(isnan(pL.phaseMap)) = 0;
-      
+
+      phases = phases(:);
+      phases(isnan(phases)) = 0;
+
+      if isempty(phases)
+        pL.phaseMap = zeros(0,1);
+        pL.phaseId  = zeros(0,1);
+      else
+        mn = min(phases);  mx = max(phases);
+        
+        shift   = 1 - mn;
+        present = false(mx - mn + 1, 1);
+        present(phases + shift) = true;
+        phaseMap = find(present) - shift;      % sorted unique values (column)
+        lut = zeros(mx - mn + 1, 1);
+        lut(phaseMap + shift) = 1:numel(phaseMap);
+        pL.phaseMap = phaseMap;
+        pL.phaseId  = lut(phases + shift);
+  
+      end
+
       pL.CSList = CSList;
       
       % check number of symmetries and phases coincides
