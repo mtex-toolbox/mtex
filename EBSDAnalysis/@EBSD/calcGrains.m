@@ -236,47 +236,13 @@ end
     %  A_Do - adjacency matrix inside grain connections
 
     % extract segmentation method
-    grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
-    grainBoundaryCiterions = {grainBoundaryCiterions.name};
-    gbcFlags = regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1');
-
-    gbc      = get_flag(varargin,gbcFlags,'angle');
-    gbcValue = ensurecell(get_option(varargin,{gbc,'threshold','delta'},15*degree,{'double','cell'}));
-
-    if isscalar(gbcValue) && length(ebsd.CSList) > 1
-      gbcValue = repmat(gbcValue,size(ebsd.CSList));
-    end
-
+    gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+    
     % get pairs of neighboring cells {D_l,D_r} in A_D
     A_D = I_FD'*I_FD==1;
     [Dl,Dr] = find(triu(A_D,1));
 
-    if check_option(varargin,'maxDist')
-      maxDist = get_option(varargin,'maxDist',3*ebsd.dPos);
-    else
-      maxDist = 0;
-    end
-
-    connect = zeros(size(Dl));
-
-    for p = 1:numel(ebsd.phaseMap)
-  
-      % neighbored cells Dl and Dr have the same phase
-      ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
-
-      % do not connect points to far away from each other
-      if maxDist > 0
-        ndx = ndx & norm(ebsd.pos(Dl) - ebsd.pos(Dr)) < maxDist; 
-      end
-     
-      % now check for the grain boundary criterion
-      if any(ndx) && isa(ebsd.CSList(p),'symmetry')    
-        connect(ndx) = feval("gbc_" + lower(gbc),...
-          ebsd.rotations,ebsd.CSList(p),Dl(ndx),Dr(ndx),gbcValue{p},varargin{:});
-      else
-        connect(ndx) = 1;
-      end
-    end
+    connect = gbc.eval(ebsd,Dl,Dr);
 
     % adjacency of cells that have no common boundary
     ind = connect>0;
