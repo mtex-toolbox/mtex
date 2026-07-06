@@ -1,4 +1,4 @@
-function [grains,grainId] = calcGrains2(ebsd,varargin)
+function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
@@ -63,25 +63,75 @@ function [grains,grainId] = calcGrains2(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
-gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
-out = spatialDecompositionGrid(ebsd,gbc,varargin{:});
+% minimum number of pixels per grain
+minPixel = get_option(varargin,'minPixel',1);
 
-V = out.V;
-F = out.F;
-has = ~isnan(out.site2id);         % sites that correspond to an ebsd pixel
-I_FD = sparse(size(F,1), length(ebsd));
-I_FD(:, out.site2id(has)) = out.I_FD(:, has);
+pos = ebsd.rot2Plane .* ebsd.pos(:);
 
+% next we switch algorithm depending on how sparse the indexed points are
+ext = ebsd.extent;
+uniArea = prod(norm(ebsd.unitCell([2,4])-ebsd.unitCell([1,3])));
+isSparse = nnz(ebsd.isIndexed) < 0.9 * prod(ext([2,4])-ext([1,3])) / uniArea;
 
-% toRemove 
+if minPixel > 1
 
+  if 1 || isSparse
+
+    % if we are later going to use the alphaShape algorithm we should 
+    % temporarily remove not indexed pixels here
+    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')      
+      toRemove = ~ebsd.isIndexed(:);
+    else
+      toRemove = false(numel(pos),1);
+    end
+    [~,~,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],...
+      ebsd.unitCell,'quick',varargin{:});
+    if any(toRemove)
+      [f,d] = find(I_FD);
+      allD = 1:length(toRemove);
+      allD(toRemove) = [];
+      d = allD(d);
+      I_FD = sparse(f,d,1,max(f),length(ebsd));
+    end
+  else
+    [~,~,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
+  end
+  [~,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+
+  % number of pixels of each grain
+  numPixel = full(sum(I_DG,1));
+
+  % now we set pixels to not indexed that belong to too small grains
+  toRemove = ~(I_DG * (numPixel >= minPixel).');
+  ebsd.phaseId(toRemove) = 1;
+  pos(toRemove) = [];
+else
+  toRemove = false;
+end
+
+% subdivide the domain into cells according to the measurement locations,
+% i.e. by Voronoi tessellation or unit cell
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+
+  % we have to enlarge I_FD such that it fits the original EBSD set
+  if any(toRemove)
+    [f,d] = find(I_FD);
+    allD = 1:length(toRemove);
+    allD(toRemove) = [];
+    d = allD(d);    
+    I_FD = sparse(f,d,1,size(F,1),length(ebsd));    
+  end
+end
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
@@ -183,7 +233,7 @@ end
 %grainId(ind) = grains.findByLocation(ebsd.pos(ind));
 
 
-  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
+  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
     % segmentation
     %
     %
@@ -191,7 +241,9 @@ end
     %  A_Db - adjacency matrix of grain boundaries
     %  A_Do - adjacency matrix inside grain connections
 
-       
+    % extract segmentation method
+    gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+    
     % get pairs of neighboring cells {D_l,D_r} in A_D
     A_D = I_FD'*I_FD==1;
     [Dl,Dr] = find(triu(A_D,1));
@@ -416,6 +468,7 @@ end
     % update grain ids
     [grainId,~] = find(I_DG.');
   end
+
 
 end
 

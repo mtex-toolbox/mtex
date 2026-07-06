@@ -1,4 +1,4 @@
-function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
+function [grains,grainId] = calcGrains2(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
@@ -9,15 +9,6 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   lagb = 2*degree;
 %   hagb = 10*degree;
 %   grains = calcGrains(ebsd,'angle',[hagb lagb])
-%
-%   % allow grains to grow into not indexed regions
-%   grains = calcGrains(ebsd('indexed'),'angle',10*degree) 
-%
-%   % do not allow grains to grow into not indexed regions
-%   grains = calcGrains(ebsd,'unitCell')
-%
-%   % follow non convex outer boundary
-%   grains = calcGrains(ebsd,'boundary','tight')
 %
 %   % specify phase dependent thresholds
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
@@ -63,75 +54,54 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
-% minimum number of pixels per grain
+gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+
+% ---- minPixel: first pass to size grains ----------------------------------
+% The alpha closing connects grain pixels across bridged gaps and diagonals
+% (Voronoi face adjacency), which a local neighbour graph cannot see. Two
+% methods to size grains for the minPixel filter:
+%   'voronoi' (default) - run the full decomposition + segmentation once
+%       without culling, so grain sizes match the final grains exactly. Costs
+%       a second Voronoi pass but never over-culls.
+%   'grid' - lazy route: connected components on the grid neighbourhood
+%       (stencil + diagonals) only. Much cheaper, but may over-cull grains
+%       that are only connected through bridged gaps.
 minPixel = get_option(varargin,'minPixel',1);
-
-pos = ebsd.rot2Plane .* ebsd.pos(:);
-
-% next we switch algorithm depending on how sparse the indexed points are
-ext = ebsd.extent;
-uniArea = prod(norm(ebsd.unitCell([2,4])-ebsd.unitCell([1,3])));
-isSparse = nnz(ebsd.isIndexed) < 0.9 * prod(ext([2,4])-ext([1,3])) / uniArea;
-
+minPixelMethod = get_option(varargin,'minPixelMethod','voronoi');
 if minPixel > 1
-
-  if 1 || isSparse
-
-    % if we are later going to use the alphaShape algorithm we should 
-    % temporarily remove not indexed pixels here
-    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')      
-      toRemove = ~ebsd.isIndexed(:);
-    else
-      toRemove = false(numel(pos),1);
-    end
-    [~,~,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],...
-      ebsd.unitCell,'quick',varargin{:});
-    if any(toRemove)
-      [f,d] = find(I_FD);
-      allD = 1:length(toRemove);
-      allD(toRemove) = [];
-      d = allD(d);
-      I_FD = sparse(f,d,1,max(f),length(ebsd));
-    end
+  if strcmpi(minPixelMethod,'grid')
+    gid0 = gridComponents(ebsd,gbc,varargin{:});  % grain id per pixel, 0 = none
   else
-    [~,~,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
+    out0  = spatialDecompositionGrid(ebsd,varargin{:});
+    I_FD0 = remapIFD(out0,ebsd);
+    [~,I_DG0] = doSegmentation(I_FD0,ebsd,gbc,varargin{:});
+    gid0 = full(I_DG0 * (1:size(I_DG0,2)).');     % grain id per pixel (0 = none)
   end
-  [~,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 
-  % number of pixels of each grain
-  numPixel = full(sum(I_DG,1));
-
-  % now we set pixels to not indexed that belong to too small grains
-  toRemove = ~(I_DG * (numPixel >= minPixel).');
-  ebsd.phaseId(toRemove) = 1;
-  pos(toRemove) = [];
-else
-  toRemove = false;
+  np0 = accumarray(gid0(gid0>0), 1, [max(gid0) 1]);  % pixels per grain
+  sz  = zeros(length(ebsd),1);
+  sz(gid0>0) = np0(gid0(gid0>0));                 % grain size seen by each pixel
+  removed = ebsd.isIndexed(:) & sz < minPixel;    % undersized indexed pixels
+  ebsd.phaseId(removed) = 1;                      % mark them notIndexed
 end
 
-% subdivide the domain into cells according to the measurement locations,
-% i.e. by Voronoi tessellation or unit cell
-if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
-  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
-else
-  [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+% ---- second pass: the actual decomposition --------------------------------
+out = spatialDecompositionGrid(ebsd,varargin{:});
 
-  % we have to enlarge I_FD such that it fits the original EBSD set
-  if any(toRemove)
-    [f,d] = find(I_FD);
-    allD = 1:length(toRemove);
-    allD(toRemove) = [];
-    d = allD(d);    
-    I_FD = sparse(f,d,1,size(F,1),length(ebsd));    
-  end
-end
+V = out.V;
+F = out.F;
+I_FD = remapIFD(out,ebsd);
+
+
+% toRemove 
+
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
@@ -227,7 +197,13 @@ if check_option(varargin,'variants')
   grains.prop.parentId = variantId(firstD,2);
 end
 
-  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
+% some of the pixel may have grainId 0 but are within grains -> we assign
+% to them also the right grainId
+%ind = grainId == 0;
+%grainId(ind) = grains.findByLocation(ebsd.pos(ind));
+
+
+  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
     % segmentation
     %
     %
@@ -235,9 +211,7 @@ end
     %  A_Db - adjacency matrix of grain boundaries
     %  A_Do - adjacency matrix inside grain connections
 
-    % extract segmentation method
-    gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
-    
+       
     % get pairs of neighboring cells {D_l,D_r} in A_D
     A_D = I_FD'*I_FD==1;
     [Dl,Dr] = find(triu(A_D,1));
@@ -463,7 +437,56 @@ end
     [grainId,~] = find(I_DG.');
   end
 
+end
 
+function gid = gridComponents(ebsd,gbc,varargin)
+% lazy grain sizing: connected components of the grid neighbourhood
+% (stencil + diagonals), masked by the boundary criterion. Returns a grain id
+% per ebsd pixel (0 for none). Cheaper than a full decomposition but blind to
+% adjacencies that only exist across alpha-bridged gaps, so it may over-cull.
+[A,stencil,~] = latticeBasis(ebsd.unitCell);
+pos    = [ebsd.pos.x(:), ebsd.pos.y(:)];
+origin = min(pos,[],1);
+ij     = round((pos - origin) / A');
+nE     = size(pos,1);
+isIndexed = ebsd.isIndexed(:);
+
+ijmin = min(ij,[],1);
+ijsz  = max(ij,[],1) - ijmin + 1;
+ij2slot = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
+ij2ebsd = zeros(prod(ijsz),1);
+ij2ebsd(ij2slot(ij)) = 1:nE;
+
+% neighbourhood = stencil plus the diagonals between consecutive axis steps
+% (for a 4-stencil this is the 8-neighbourhood; for hex, the 6 axial
+% neighbours already cover the close-packed ring, diagonals add the rest)
+diagsq = [1 1; 1 -1; -1 1; -1 -1];
+nb = unique([stencil; diagsq],'rows');
+
+P = []; Q = [];
+for s = 1:size(nb,1)
+  nbIJ  = ij + nb(s,:);
+  inside = all(nbIJ >= ijmin & nbIJ <= ijmin+ijsz-1, 2);
+  src = find(inside & isIndexed);
+  dst = ij2ebsd(ij2slot(nbIJ(src,:)));
+  ok  = dst > 0 & isIndexed(max(dst,1)) & dst > src;
+  P = [P; src(ok)]; Q = [Q; dst(ok)]; %#ok<AGROW>
+end
+
+% merge where the criterion says same grain, split otherwise. This matches
+% doSegmentation, which builds the intra-grain adjacency A_Do from connect>0.
+connect = gbc.eval(ebsd,P,Q) > 0;
+gid = conncomp(graph(P(connect),Q(connect),[],nE)).';
+gid(~isIndexed) = 0;                              % only size indexed pixels
+end
+
+function I_FD = remapIFD(out,ebsd)
+% remap the site-indexed I_FD from the decomposition onto ebsd columns:
+% each site that corresponds to an ebsd pixel keeps its column, the rest
+% (empty-cell notIndexed sites) are dropped, leaving zero columns.
+has  = ~isnan(out.site2id);
+I_FD = sparse(size(out.F,1), length(ebsd));
+I_FD(:, out.site2id(has)) = out.I_FD(:, has);
 end
 
 function poly = calcPolygons(I_FG,F,V)
