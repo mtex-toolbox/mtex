@@ -1,9 +1,9 @@
-function [grains,grainId] = calcGrains(ebsd,varargin)
+function [grains,ebsd] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
 %
-%   [grains, ebsd.grainId] = calcGrains(ebsd,'angle',10*degree)
+%   [grains, ebsd] = calcGrains(ebsd, 'angle', 10*degree, 'minPixel', 2, 'alpha', 3.7)
 %
 %   % reconstruction low and high angle grain boundaries
 %   lagb = 2*degree;
@@ -24,14 +24,13 @@ function [grains,grainId] = calcGrains(ebsd,varargin)
 %  ebsd   - @EBSD
 %
 % Output
-%  grains       - @grain2d
-%  ebsd.grainId - grainId of each pixel
+%  grains - @grain2d
+%  ebsd   - @EBSD with additional property grainId
 %
 % Options
-%  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
-%  minPixel         - minimum number of pixels that form a grain
-%  boundary         - bounds the spatial domain ('convexhull', 'tight')
-%  maxDist          - maximum distance to for two pixels to be in one grain (default inf)
+%  angle    - misorientation angle that indicates a grain boundary
+%  minPixel - minimum number of pixels that form a grain
+%  alpha    - fill distances into not indexed regions
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
 %  custom    - use a custom property for grain separation
@@ -56,36 +55,13 @@ function [grains,grainId] = calcGrains(ebsd,varargin)
 
 gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 
-% ---- minPixel: first pass to size grains ----------------------------------
-% The alpha closing connects grain pixels across bridged gaps and diagonals
-% (Voronoi face adjacency), which a local neighbour graph cannot see. Two
-% methods to size grains for the minPixel filter:
-%   'voronoi' (default) - run the full decomposition + segmentation once
-%       without culling, so grain sizes match the final grains exactly. Costs
-%       a second Voronoi pass but never over-culls.
-%   'grid' - lazy route: connected components on the grid neighbourhood
-%       (stencil + diagonals) only. Much cheaper, but may over-cull grains
-%       that are only connected through bridged gaps.
-minPixel = get_option(varargin,'minPixel',1);
-minPixelMethod = get_option(varargin,'minPixelMethod','voronoi');
-if minPixel > 1
-  if strcmpi(minPixelMethod,'grid')
-    gid0 = gridComponents(ebsd,gbc,varargin{:});  % grain id per pixel, 0 = none
-  else
-    out0  = spatialDecompositionGrid(ebsd,varargin{:});
-    I_FD0 = remapIFD(out0,ebsd);
-    [~,I_DG0] = doSegmentation(I_FD0,ebsd,gbc,varargin{:});
-    gid0 = full(I_DG0 * (1:size(I_DG0,2)).');     % grain id per pixel (0 = none)
-  end
+% first pass:
+% mark pixels that would become grains smaller than minPixel as notIndexed
+removed = minPixelMask(ebsd,gbc,varargin{:});
+ebsd.phaseId(removed) = 1;    
 
-  np0 = accumarray(gid0(gid0>0), 1, [max(gid0) 1]);  % pixels per grain
-  sz  = zeros(length(ebsd),1);
-  sz(gid0>0) = np0(gid0(gid0>0));                 % grain size seen by each pixel
-  removed = ebsd.isIndexed(:) & sz < minPixel;    % undersized indexed pixels
-  ebsd.phaseId(removed) = 1;                      % mark them notIndexed
-end
 
-% -- second pass: the actual decomposition --
+% second pass -> Voronoi decomposition
 out = spatialDecompositionGrid(ebsd,varargin{:});
 
 V = out.V;
@@ -107,7 +83,6 @@ notEmpty = full(any(I_FD * I_DG,1)).';
 I_DG = I_DG(:,notEmpty);
 
 % compute grain ids
-%[grainId,~] = find(I_DG.');
 grainId = full(I_DG * (1:size(I_DG,2)).');
 
 % phaseId of each grain
@@ -165,21 +140,8 @@ for pId = grains.indexedPhasesId
 end
 
 % compute mean orientation and GOS
-if 0
-  GOS = zeros(length(grains),1); %#ok<UNRCH>
-  doMeanCalc = find(grains.numPixel>1 & grains.isIndexed);
-  abcd = zeros(length(doMeanCalc),4);
-  for k = 1:numel(doMeanCalc)
-    qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
-    mq = mean(qind,'robust');
-    abcd(k,:) = [mq.a mq.b mq.c mq.d];
-    GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
-  end
-  meanRotation(doMeanCalc) = quaternion(abcd(:,1),abcd(:,2),abcd(:,3),abcd(:,4));
-else
-  %[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
-  [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));
-end
+[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));
+
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
@@ -191,71 +153,20 @@ if check_option(varargin,'variants')
   grains.prop.parentId = variantId(firstD,2);
 end
 
-% Assign a grainId to pixels currently at 0 that lie entirely within one
-% grain; 0 stays reserved for pixels a grain boundary passes through. Done in
-% two steps (see the local functions below):
-%   1) floodCandidates - propose a candidate grain for each zero pixel cheaply,
-%      by flooding grain labels outward over the grid (a fjord's deep pixels
-%      get the flanking grain; medial-axis pixels get no candidate).
-%   2) footprintInside - verify each candidate geometrically: the pixel's whole
-%      unit-cell footprint (corners nudged slightly inward for stability) must
-%      lie inside the candidate grain. A pixel a boundary crosses fails and
-%      stays 0. This gates out the flood's boundary-subdivided assignments.
-ind0 = find(grainId == 0);
-if ~isempty(ind0) && nargout > 1
-  cand = floodCandidates(ebsd,grainId);      % candidate grain per pixel (0 = none)
-  c0   = cand(ind0);
-  sel  = c0 > 0;
-  rows = ind0(sel);  gCand = c0(sel);
-  inside = footprintInside(grains,ebsd,rows,gCand);
-  grainId(rows(inside)) = gCand(inside);
-end
+% assign a grainId to pixels that ended up entirely within a grain;
+% grainId=0 stays reserved for pixels a grain boundary passes through (see
+% private/absorbInteriorPixels)
+if nargout > 1
+  wasNotIndexed = ~ebsd.isIndexed(:);
+  ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId);
 
-
-  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
-    % segmentation
-    %
-    %
-    % Output
-    %  A_Db - adjacency matrix of grain boundaries
-    %  A_Do - adjacency matrix inside grain connections
-
-       
-    % get pairs of neighboring cells {D_l,D_r} in A_D
-    A_D = I_FD'*I_FD==1;
-    [Dl,Dr] = find(triu(A_D,1));
-
-    connect = gbc.eval(ebsd,Dl,Dr);
-
-    % adjacency of cells that have no common boundary
-    ind = connect>0;
-    A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
-    if check_option(varargin,'mcl')
-      
-      param = get_option(varargin,'mcl');
-      if isempty(param), param = 1.4; end
-      if isscalar(param), param = [param,4]; end
-  
-      A_Do = mclComponents(A_Do,param(1),param(2));
-      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
-      A_Db(A_Do~=0) = false;
-  
-    else
-  
-      A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
-        length(ebsd),length(ebsd));
-  
-    end
-    A_Do = A_Do | A_Do.';
-
-    % adjacency of cells that have a common boundary
-    A_Db = A_Db | A_Db.';
-
-    % compute I_DG connected components of A_Do
-    % I_DG - incidence matrix cells to grains
-    I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
-
+  absorbed = wasNotIndexed & ebsd.grainId > 0;
+  if any(absorbed)
+    ebsd.phaseId(absorbed)   = grains.phaseId(ebsd.grainId(absorbed));
+    ebsd.rotations(absorbed) = nan;
   end
+end
+% ------------------------------------------------------------------------  
 
   function [I_FDext, I_FDint, Fext, Fint] = calcBoundary
     % distinguish between interior and exterior grain boundaries
@@ -446,175 +357,5 @@ end
     [grainId,~] = find(I_DG.');
   end
 
-end
-
-function gid = gridComponents(ebsd,gbc,varargin)
-% lazy grain sizing: connected components of the grid neighbourhood
-% (stencil + diagonals), masked by the boundary criterion. Returns a grain id
-% per ebsd pixel (0 for none). Cheaper than a full decomposition but blind to
-% adjacencies that only exist across alpha-bridged gaps, so it may over-cull.
-[A,stencil,~] = latticeBasis(ebsd.unitCell);
-pos    = [ebsd.pos.x(:), ebsd.pos.y(:)];
-origin = min(pos,[],1);
-ij     = round((pos - origin) / A');
-nE     = size(pos,1);
-isIndexed = ebsd.isIndexed(:);
-
-ijmin = min(ij,[],1);
-ijsz  = max(ij,[],1) - ijmin + 1;
-ij2slot = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-ij2ebsd = zeros(prod(ijsz),1);
-ij2ebsd(ij2slot(ij)) = 1:nE;
-
-% neighbourhood = stencil plus the diagonals between consecutive axis steps
-% (for a 4-stencil this is the 8-neighbourhood; for hex, the 6 axial
-% neighbours already cover the close-packed ring, diagonals add the rest)
-diagsq = [1 1; 1 -1; -1 1; -1 -1];
-nb = unique([stencil; diagsq],'rows');
-
-P = []; Q = [];
-for s = 1:size(nb,1)
-  nbIJ  = ij + nb(s,:);
-  inside = all(nbIJ >= ijmin & nbIJ <= ijmin+ijsz-1, 2);
-  src = find(inside & isIndexed);
-  dst = ij2ebsd(ij2slot(nbIJ(src,:)));
-  ok  = dst > 0 & isIndexed(max(dst,1)) & dst > src;
-  P = [P; src(ok)]; Q = [Q; dst(ok)]; %#ok<AGROW>
-end
-
-% merge where the criterion says same grain, split otherwise. This matches
-% doSegmentation, which builds the intra-grain adjacency A_Do from connect>0.
-connect = gbc.eval(ebsd,P,Q) > 0;
-gid = conncomp(graph(P(connect),Q(connect),[],nE)).';
-gid(~isIndexed) = 0;                              % only size indexed pixels
-end
-
-function I_FD = remapIFD(out,ebsd)
-% remap the site-indexed I_FD from the decomposition onto ebsd columns:
-% each site that corresponds to an ebsd pixel keeps its column, the rest
-% (empty-cell notIndexed sites) are dropped, leaving zero columns.
-has  = ~isnan(out.site2id);
-I_FD = sparse(size(out.F,1), length(ebsd));
-I_FD(:, out.site2id(has)) = out.I_FD(:, has);
-end
-
-function poly = calcPolygons(I_FG,F,V)
-%
-% Input:
-%  I_FG - incidence matrix faces to grains
-%  F    - list of faces
-%  V    - list of vertices
-
-poly = cell(size(I_FG,2),1);
-
-if isempty(I_FG), return; end
-
-% for all grains
-for k=1:size(I_FG,2)
-    
-  % inner and outer boundaries are circles in the face graph
-  EC = EulerCycles(F(I_FG(:,k)>0,:));
-          
-  % first circle should be positive and all others negatively oriented
-  for c = 1:numel(EC)
-    if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
-      EC{c} = fliplr(EC{c});
-    end
-  end
-    
-  % this is needed
-  for c=2:numel(EC), EC{c} = [EC{c} EC{1}(1)]; end
-  
-  poly{k} = [EC{:}];
-  
-end
-
-end
-
-function cand = floodCandidates(ebsd,grainId)
-% Propose a candidate grain for every grainId==0 pixel by flooding the grain
-% labels outward over the grid from all grain-bearing pixels (multi-source
-% layered BFS). Each unassigned pixel is proposed the grain that reaches it
-% first (shortest grid distance through the unassigned region); a pixel reached
-% by two different grains at the same distance is on the medial axis and gets
-% NO proposal (stays 0). This is only a candidate - footprintInside verifies it
-% geometrically. Already grain-bearing pixels keep their id. Phase-agnostic:
-% indexed and notIndexed grains flood alike.
-[Agrid,stencil] = latticeBasis(ebsd.unitCell);
-posE = [ebsd.pos.x(:), ebsd.pos.y(:)];
-ijE  = round((posE - min(posE,[],1)) / Agrid');
-nEb  = size(posE,1);
-ijmin = min(ijE,[],1);  ijsz = max(ijE,[],1) - ijmin + 1;
-slot  = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-cell2e = zeros(prod(ijsz),1); cell2e(slot(ijE)) = 1:nEb;
-
-% grid neighbour edges; the stencil is symmetric so both directions appear
-P = []; Q = [];
-for s = 1:size(stencil,1)
-  nbIJ = ijE + stencil(s,:);
-  inRange = all(nbIJ >= ijmin & nbIJ <= ijmin+ijsz-1, 2);
-  src = find(inRange);  dst = cell2e(slot(nbIJ(src,:)));
-  ok = dst > 0;
-  P = [P; src(ok)]; Q = [Q; dst(ok)]; %#ok<AGROW>
-end
-
-cand    = grainId;                              % 0 = unassigned
-visited = grainId > 0;
-frontier = find(visited);
-while ~isempty(frontier)
-  isF = false(nEb,1); isF(frontier) = true;
-  msk = isF(P) & ~visited(Q);                   % frontier -> unvisited neighbour
-  qc = Q(msk);  prop = cand(P(msk));
-  if isempty(qc), break; end
-  gmin = accumarray(qc, prop, [nEb 1], @min, 0);
-  gmax = accumarray(qc, prop, [nEb 1], @max, 0);
-  newv = find(gmin > 0);
-  single = gmin(newv) == gmax(newv);            % reached by exactly one grain
-  cand(newv(single)) = gmin(newv(single));
-  visited(newv) = true;                         % tie pixels visited, stay 0
-  frontier = newv(single);                      % only proposed pixels propagate
-end
-end
-
-function inside = footprintInside(grains,ebsd,rows,gCand)
-% Verify, for each pixel in `rows` with candidate grain id gCand, that its whole
-% unit-cell footprint lies inside that candidate grain. Corners are pulled
-% slightly inward toward the pixel centre so they are not sitting exactly on the
-% shared lattice boundary lines (where several grains meet), which makes the
-% point-in-polygon test stable. Returns a logical per row: true iff every nudged
-% corner is inside the candidate grain (holes excluded); pixels a grain boundary
-% crosses fail and stay 0.
-%
-% Speed: the grain polygon coordinates are pulled out of grains.V / grains.poly
-% ONCE and fed to insidepoly as plain numeric arrays. There is no per-grain
-% subscripting of the grain object (grains(...) / checkInside), which was the
-% dominant cost. poly{k} is a single index loop into V that stitches any holes
-% back to the outer ring (keyhole form), so insidepoly reports points in holes
-% as outside automatically.
-Vx = grains.allV.x;  Vy = grains.allV.y;
-poly = grains.poly;                             % cell, one index loop per grain
-gid  = grains.id(:);                            % grain id per poly cell
-
-% map candidate grain id -> poly cell index
-id2pos = zeros(max(gid),1); id2pos(gid) = 1:numel(gid);
-
-nudge = 0.95;  % 1 = exact corner, <1 = inward
-ucx = ebsd.unitCell.x(:);  ucy = ebsd.unitCell.y(:);
-px  = ebsd.pos.x(:);       py  = ebsd.pos.y(:);
-cx  = px(rows);            cy  = py(rows);
-
-inside = false(numel(rows),1);
-for gg = unique(gCand(:)).'
-  sel = find(gCand == gg);
-  pk  = poly{id2pos(gg)};                        % vertex-index loop of this grain
-  Px  = Vx(pk);  Py = Vy(pk);
-  allin = true(numel(sel),1);
-  for k = 1:numel(ucx)
-    qx = cx(sel) + nudge*ucx(k);                 % nudged corner k for these pixels
-    qy = cy(sel) + nudge*ucy(k);
-    allin = allin & insidepoly(qx, qy, Px, Py);
-  end
-  inside(sel) = allin;
-end
 end
 

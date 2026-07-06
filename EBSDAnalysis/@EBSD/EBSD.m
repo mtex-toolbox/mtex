@@ -239,11 +239,15 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.phaseId(ebsd.grainId == 0) = 1;
 
       % phaseId should be the same within one grain 
-      ind = ebsd.grainId>0;
-      if nnz(ind)
-        grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
-        ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
-      end
+      %ind = ebsd.grainId>0;
+      %if nnz(ind)
+      %  grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
+      %  newPhaseId = grain2phaseId(ebsd.grainId(ind));
+      %  hasChanged = false(numel(ebsd),1);
+      %  hasChanged(ind) = ebsd.phaseId(ind) ~= newPhaseId;
+      %  ebsd.phaseId(ind) = newPhaseId;
+      %  ebsd.rotations(hasChanged) = NaN;
+      %end
       
     end
       
