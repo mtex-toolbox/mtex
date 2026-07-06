@@ -136,7 +136,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = prop;
 
       % remove nan positions
-      ebsd = ebsd.subSet(~isnan(ebsd.pos));
+      if any(isnan(ebsd.pos)), ebsd = ebsd.subSet(~isnan(ebsd.pos)); end
 
       % get unit cell
       ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'));
