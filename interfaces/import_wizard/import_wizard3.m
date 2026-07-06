@@ -282,36 +282,43 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.TabGroup = uitabgroup(app.RightLayout, ...
         'SelectionChangedFcn', createCallbackFcn(app, @TabSelectionChanged, true));
       app.TabGroup.Layout.Row = 2;
-
+      
       % --- Maps tab: phase map + property maps via a dropdown -------------
       app.MapsTab = uitab(app.TabGroup, 'Title', 'Maps');
+      % 3 rows: label (22), dropdown (30), empty space (1x) to prevent stretching
       gMaps = uigridlayout(app.MapsTab, ...
-        'ColumnWidth', {'fit', '1x'}, 'RowHeight', {30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 6);
-      lblM = uilabel(gMaps, 'Text', 'Map:', 'HorizontalAlignment', 'right', ...
+        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
+        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
+      
+      lblM = uilabel(gMaps, 'Text', 'Map:', 'HorizontalAlignment', 'left', ...
         'FontSize', app.FontSize);
       lblM.Layout.Row = 1; lblM.Layout.Column = 1;
+      
       app.MapsDropDown = uidropdown(gMaps, 'Items', {'Phase Map'}, ...
         'FontSize', app.FontSize, ...
         'ValueChangedFcn', createCallbackFcn(app, @MapsViewChanged, true));
-      app.MapsDropDown.Layout.Row = 1; app.MapsDropDown.Layout.Column = 2;
+      app.MapsDropDown.Layout.Row = 2; app.MapsDropDown.Layout.Column = 1;
+      
       app.MapsAxes = uiaxes(gMaps);
-      app.MapsAxes.Layout.Row = 2; app.MapsAxes.Layout.Column = [1 2];
+      app.MapsAxes.Layout.Row = [1 3]; app.MapsAxes.Layout.Column = 2; % Uses full height
 
       % --- IPF tab: X/Y/Z direction via a dropdown ------------------------
       app.IPFTab = uitab(app.TabGroup, 'Title', 'IPF');
       gIPF = uigridlayout(app.IPFTab, ...
-        'ColumnWidth', {'fit', '1x'}, 'RowHeight', {30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 6);
-      lblI = uilabel(gIPF, 'Text', 'Direction:', 'HorizontalAlignment', 'right', ...
+        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
+        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
+      
+      lblI = uilabel(gIPF, 'Text', 'Direction:', 'HorizontalAlignment', 'left', ...
         'FontSize', app.FontSize);
       lblI.Layout.Row = 1; lblI.Layout.Column = 1;
+      
       app.IPFDirectionDropDown = uidropdown(gIPF, 'Items', {'X','Y','Z'}, ...
         'Value', 'Z', 'FontSize', app.FontSize, ...
         'ValueChangedFcn', createCallbackFcn(app, @IPFViewChanged, true));
-      app.IPFDirectionDropDown.Layout.Row = 1; app.IPFDirectionDropDown.Layout.Column = 2;
+      app.IPFDirectionDropDown.Layout.Row = 2; app.IPFDirectionDropDown.Layout.Column = 1;
+      
       app.IPFAxes = uiaxes(gIPF);
-      app.IPFAxes.Layout.Row = 2; app.IPFAxes.Layout.Column = [1 2];
+      app.IPFAxes.Layout.Row = [1 3]; app.IPFAxes.Layout.Column = 2;
 
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures');
@@ -328,22 +335,25 @@ classdef import_wizard3 < matlab.apps.AppBase
         app.PFAxes(i) = uiaxes(gPF);
         app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
       end
-
+      
       % --- Images tab: opt-images via a dropdown --------------------------
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images');
       gImg = uigridlayout(app.ImagesTab, ...
-        'ColumnWidth', {'fit', '1x'}, 'RowHeight', {30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 6);
-      lblImg = uilabel(gImg, 'Text', 'Image:', 'HorizontalAlignment', 'right', ...
+        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
+        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
+      
+      lblImg = uilabel(gImg, 'Text', 'Image:', 'HorizontalAlignment', 'left', ...
         'FontSize', app.FontSize);
       lblImg.Layout.Row = 1; lblImg.Layout.Column = 1;
+      
       app.ImagesDropDown = uidropdown(gImg, 'Items', {'(none)'}, ...
         'FontSize', app.FontSize, ...
         'ValueChangedFcn', createCallbackFcn(app, @ImagesViewChanged, true));
-      app.ImagesDropDown.Layout.Row = 1; app.ImagesDropDown.Layout.Column = 2;
+      app.ImagesDropDown.Layout.Row = 2; app.ImagesDropDown.Layout.Column = 1;
+      
       app.ImagesAxes = uiaxes(gImg);
-      app.ImagesAxes.Layout.Row = 2; app.ImagesAxes.Layout.Column = [1 2];
-    end
+      app.ImagesAxes.Layout.Row = [1 3]; app.ImagesAxes.Layout.Column = 2;
+end
 
     function navigateToFolder(app, folderPath)
       % Set folderPath as the new browser root and populate its children.
@@ -1099,71 +1109,131 @@ classdef import_wizard3 < matlab.apps.AppBase
       commandwindow
     end
 
-    % Generates a clean MTEX script string and opens it directly inside the Editor
+    % Dynamically loads and populates MTEX import templates
+    % Dynamically loads and populates MTEX import templates safely
     function ExportScriptButtonPushed(app, ~)
       if isempty(app.ebsd) || app.LoadedFilePath == ""
         return
       end
 
-      [~, baseName] = fileparts(app.LoadedFilePath);
-      safeName = matlab.lang.makeValidName(string(baseName));
-      scriptFileName = char(safeName + ".m");
-      safePath = strrep(app.LoadedFilePath, "'", "''");
+      % 1. Determine the export type
+      % TODO let the user pick the type
+      exportType = 'EBSD'; 
       
-      mapIdx = app.MapCoordinatesDropDown.ValueIndex;
-      mapObj = app.CoordinateSystems.how2plot(mapIdx);
-      
-      eulerIdx = app.EulerCoordinatesDropDown.ValueIndex;
-      eulerObj = app.CoordinateSystems.how2plot(eulerIdx);
-
-      scriptLines = { ...
-        '%% MTEX Script generated by import_wizard2'; ...
-        ''; ...
-        '%% Specify Crystal Symmetries'; ...
-        'CS = { ...'; ...
-      };
-
-      for k = 1:numel(app.ebsd.CSList)
-        cs = app.ebsd.CSList(k);
-        if ischar(cs) && strcmpi(cs, 'notIndexed')
-          scriptLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
-        else
-          pg = char(cs.pointGroup);
-          abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
-          ang = [cs.alpha, cs.beta, cs.gamma] / degree;
-          minName = char(cs.mineral);
-          
-          csStr = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s''), ...', ...
-            pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName);
-          scriptLines{end+1} = csStr; %#ok<AGROW>
-        end
+      % 2. Read the template file from the MTEX directory safely
+      templatePath = fullfile('D:\Matlab\mtex\templates\import', ['load' exportType 'template.m']);
+      if ~exist(templatePath, 'file')
+        uialert(app.UIFigure, ['Template file not found: ' templatePath], 'Export Error');
+        return;
       end
       
-      scriptLines{end+1} = '};';
-      scriptLines{end+1} = '';
-      scriptLines{end+1} = '%% Load EBSD Data';
-      scriptLines{end+1} = sprintf('fname = ''%s'';', safePath);
-      scriptLines{end+1} = 'ebsd = EBSD.load(fname, CS, ''interface'', ''wizard'');';
-      scriptLines{end+1} = '';
-      scriptLines{end+1} = '%% Apply Coordinate Conversions';
-      scriptLines{end+1} = sprintf('ebsd.how2plot = plottingConvention(vector3d(%s), vector3d(%s));', ...
-        mat2str(double(mapObj.outOfScreen)), mat2str(double(mapObj.east)));
-      scriptLines{end+1} = sprintf('eulerRot = rotation.byMatrix(%s);', mat2str(eulerObj.rot.matrix));
-      scriptLines{end+1} = sprintf('mapRot = rotation.byMatrix(%s);', mat2str(mapObj.rot.matrix));
-      scriptLines{end+1} = 'ebsd.EulerCorrection = inv(eulerRot) * mapRot;';
-      scriptLines{end+1} = '';
-      scriptLines{end+1} = '%% Plot Data';
-      scriptLines{end+1} = 'plot(ebsd);';
+      try
+        % fileread loads the whole text file into a string character vector safely
+        str = fileread(templatePath);
+      catch ME
+        uialert(app.UIFigure, ['Could not read template file: ' ME.message], 'Export Error');
+        return;
+      end
 
-      textString = strjoin(scriptLines, newline);
+      % File and path preparations
+      [pathStr, baseName, extStr] = fileparts(char(app.LoadedFilePath));
+      safeName = matlab.lang.makeValidName(string(baseName));
+      scriptFileName = char(safeName + ".m");
+
+      %% --- Helper: MTEX-like markup replacement function ---
+      function replaceMarkup(token, repVal, delLineMarkup)
+        if contains(str, token)
+          if ~isempty(repVal)
+            str = strrep(str, token, repVal);
+          elseif nargin > 2 && ~isempty(delLineMarkup)
+            str = strrep(str, delLineMarkup, '');
+          else
+            str = strrep(str, token, '');
+          end
+        end
+      end
+
+      %% 3. Dynamic Replacements based on App Data
       
-      fid = fopen(scriptFileName, 'wt');
+      % Crystal Symmetry
+      csLines = {'...'};
+      for k = 1:numel(app.ebsd.CSList)
+        cs = app.ebsd.CSList(k);
+        
+        % Check if the phase is "notIndexed" (can be a char, a special object, or have the mineral name 'notIndexed')
+        isNotIndexed = ischar(cs) || ...
+                       (isprop(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed')) || ...
+                       (isfield(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed'));
+                   
+        if isNotIndexed
+          csLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
+        else
+          % Safe extraction with fallbacks to avoid crashes
+          try
+            pg = char(cs.pointGroup);
+            abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
+            ang = [cs.alpha, cs.beta, cs.gamma] / degree;
+            minName = char(cs.mineral);
+            
+            csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s''), ...', ...
+              pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName); %#ok<AGROW>
+          catch
+            % Fallback if it's an unrecognized or empty phase structure
+            csLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
+          end
+        end
+      end
+      csLines{end+1} = '  ';
+      str = strrep(str, '{crystal symmetry}', strjoin(csLines, [char(10) '']));
+
+      % Specimen Symmetry
+      replaceMarkup('{specimen symmetry}', 'specimenSymmetry(''1'')');
+
+      % Plotting Convention
+      mapIdx = app.MapCoordinatesDropDown.ValueIndex;
+      mapObj = app.CoordinateSystems.how2plot(mapIdx);
+      replaceMarkup('{zAxisDirection}', sprintf('vector3d(%s)', mat2str(double(mapObj.outOfScreen))));
+      replaceMarkup('{xAxisDirection}', sprintf('vector3d(%s)', mat2str(double(mapObj.east))));
+
+      % File Paths & Names
+      safePath = strrep(pathStr, "'", "''");
+      safeFile = strrep([baseName extStr], "'", "''");
+      replaceMarkup('{path to files}', sprintf('''%s''', safePath));
+      replaceMarkup('{file names}', sprintf('[pname filesep ''%s'']', safeFile));
+
+      % Interface and Options
+      replaceMarkup('{interface}', '''wizard''', ',{interface}');
+      replaceMarkup('{options}', '', ',{options}');
+
+      % Z-Values
+      replaceMarkup('{Z-values}', '[]', 'Z = {Z-values};');
+      replaceMarkup('{Z}', '', ',{Z}');
+
+      % Euler Corrections (phi1, Phi, phi2)
+      try
+        [p1, p2, p3] = Euler(app.ebsd.EulerCorrection, 'ZXZ');
+        replaceMarkup('{phi1}', sprintf('%.4f*degree', p1/degree));
+        replaceMarkup('{Phi}',  sprintf('%.4f*degree', p2/degree));
+        replaceMarkup('{phi2}', sprintf('%.4f*degree', p3/degree));
+      catch
+        replaceMarkup('{phi1}', '0*degree');
+        replaceMarkup('{Phi}',  '0*degree');
+        replaceMarkup('{phi2}', '0*degree');
+      end
+      replaceMarkup('{rotationOption}', '', ',{rotationOption}');
+      
+      % Corrections / Coefficients
+      replaceMarkup('{corrections}', '', '{corrections}');
+      replaceMarkup('c = {structural coefficients}', '', 'c = {structural coefficients}');
+
+      %% 4. Save and open script
+      fid = fopen(scriptFileName, 'wt'); % 'wt' explicitly opens in text mode for correct line endings
       if fid ~= -1
-        fprintf(fid, '%s', textString);
+        fprintf(fid, '%s', str);
         fclose(fid);
         matlab.desktop.editor.openDocument(fullfile(pwd, scriptFileName));
       else
-        matlab.desktop.editor.newDocument(textString);
+        matlab.desktop.editor.newDocument(str);
       end
     end
   end
