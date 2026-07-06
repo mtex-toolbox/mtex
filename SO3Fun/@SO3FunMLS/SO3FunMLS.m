@@ -3,11 +3,10 @@ classdef SO3FunMLS < SO3Fun
 % 
 % Syntax
 %   SO3F = SO3FunMLS(nodes, values);
-%   SO3F = SO3FunMLS(nodes, values, 'degree', 3, 'oF', 2);
-%   SO3F = SO3FunMLS(nodes, values, 'delta', 5*degree);
-%   SO3F = SO3FunMLS(nodes, values, 'delta', 5*degree, 'w', @(t)(__));
+%   SO3F = SO3FunMLS(nodes, values, 'degree', 3, 'oF', 4);
+%   SO3F = SO3FunMLS(nodes, values, 'delta', 5*degree, 'weight', @(t)(...));
 %   SO3F = SO3FunMLS(nodes, values, 'centered', true, 'monomials', true, 'subsample', 'tangent', true);
-%   SO3F = SO3FunMLS(nodes, values, 'regularize', false, 'stablefind', true, 'detectOutliers');
+%   SO3F = SO3FunMLS(nodes, values, 'detectOutliers', 'use_vor_weights', 'use_smooth_delta');
 %
 % Input
 %  nodes  - @orientation, @rotation (data points)
@@ -18,25 +17,48 @@ classdef SO3FunMLS < SO3Fun
 %
 % Options
 %  degree  - the polynomial degree used for approximation
+%  oF      - oversampling Factor. the number of neighbors nn (dependent) is the
+%              dimension of the ansatz space, times this factor
+%  oF_max  - maximum oversampling factor in case of range search. At most the
+%              closest SO3F.dim * SO3F.oF_max neighbors will be used.
 %  delta   - support radius of the weight function
-%  nn      - specified number of neighbors used for local approximation
-%  outlierDetectionRange - specify how many neighbors are taken into account
-%                          when searching for outliers
+%              when searching for outliers
+%
+%  monomials- use monomial basis if true, otherwise use spherical harmonics
+%  centered - evaluate the basis functions only around the north pole, if true
+%  tangent  - use monomials on the tangent space (only if centered == true)
+%              (in this case the z-coordinate of the neighbors is ignored)
+%    (NOTE: 'centered' and 'tangent' trigger the monomial-option to be true)
+%
 %  w       - @function_handle (weight function)
 %          - predefined weight function can be chosen via the following strings:
-%             'C1hat', 'const', 'cos', 'hat', 'indicator', 'squared hat', 
+%             'C1hat', 'const', 'cos', 'hat', 'indicator', 'squared hat',
 %             'wendland' (default)
-% distance - specify which metric to use (default: 'euclidean')
+%  use_smooth_delta - make the support radius delta(x) a smooth function with
+%                     close to SO3F.nn neighbors at each center
+%  use_vor_weights -  additionally multiply w(x,x_i) by the Voronoi Volumne of
+%                     x_i, as in 'Stable Moving Least Squares Approximation'
+%
+%  distance- specify which metric to use (default: 'euclidean')
 %          - run 'help rangesearch' for available options
+%  s       - symmetry of the nodes
+%
+%  regularize    - use regularization for solving the lsq-systems
+%  maxcond       - max regularization threshold of condition of the gram matrix
+%  mincond       - start regularizing threshold of condition of the gram matrix
+%  basis_weights -  regularization weights of basis coefficients,
+%                    should punish higher degrees (Sobolev-like)
+%  basis_weights_scale - application strength of basis_weights
+%  lambda_geom_rel - relative application strength of geometrical regularization
+%
+%  outlierDetectionRange - specify how many neighbors are taken into account
 %
 % Flags
-%  centered       - only evaluate the basis near the north pole (1,0,0,0) if true
-%  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems 
+%  detectOutliers - find outliers in the data and reduce their weight in the local least squares problems
 %                   depending on how bad they are
-%  subsample      - use a subset of the local nodes that minimizes the Lebesgue
-%                   constant 
-%  tangent        - use polynomials on the tangent space
+%  subsample      - use subset of neighbors that minimizes the lebesgue constant
 %
+
 
 % TODO: transform into local interpolation-class where SO3FunMLS is a specific subclass
 
