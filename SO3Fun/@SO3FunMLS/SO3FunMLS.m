@@ -173,7 +173,7 @@ classdef SO3FunMLS < SO3Fun
       SO3F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
       
       % weight function, distance, symmetry
-      SO3F.w = get_option(varargin, 'weight', 'wendland', {'string','function_handle','char'});
+      SO3F.w = get_option(varargin, 'weight', 'wendlandC6', {'string','function_handle','char'});
       SO3F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       SO3F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ... 
         specimenSymmetry.default, 'crystalSymmetry');
@@ -218,7 +218,10 @@ classdef SO3FunMLS < SO3Fun
           case 'cos';         SO3F.w = @(t)((1+cos(pi*t))/2);
           case 'C1hat';       SO3F.w = @(t)((1-t.^2).^2);
           case 'wendland';    SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
-          otherwise;          SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+          case 'wendlandC6';  SO3F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
+          case 'wendlandsquared';   SO3F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
+          case 'wendlandC6squared'; SO3F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
+          otherwise;          SO3F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1).^2);
         end
       end
     end
