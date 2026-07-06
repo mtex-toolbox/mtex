@@ -604,9 +604,10 @@ end
 %% Detect line termination character
 
 if infolvl >= 1
-    hw = waitbar(0,'detect line termination character ...');
-    set(hw,'Name',[mfilename ' - ' ffn_short]);
-    hasWaitbar = true;
+    %hw = waitbar(0,'detect line termination character ...');
+    %set(hw,'Name',[mfilename ' - ' ffn_short]);
+    %hasWaitbar = true;
+    hasWaitbar = false;
 else
     hasWaitbar = false;
 end
@@ -1004,7 +1005,7 @@ if any([num_sr,num_er,num_rr] > 0 )
             end % for
         end
         
-        if hasWaitbar && ~mod(sdx,10)
+        if hasWaitbar && ~mod(sdx,1000)
             waitbar(0.20+0.25*((sdx-1)/(numSectionLb-1)),hw)
         end
         
@@ -1156,7 +1157,7 @@ if strcmpi(readmode,'block')
                 ARepeat = [];
             end
             
-            if hasWaitbar && ~mod(sdx,10)
+            if hasWaitbar && ~mod(sdx,1000)
                 waitbar(0.5+0.5*((sdx-1)/(numSectionLb-1)),hw)
             end
             
@@ -1245,7 +1246,7 @@ if strcmpi(readmode,'auto') || strcmpi(readmode,'matrix')
             Atmp = reshape(Atmp,numColonMatrix,num_lines_loop)';
             A(startRow:endRow,:) = Atmp;
             
-            if hasWaitbar && ~mod(sdx,10)
+            if hasWaitbar && ~mod(sdx,1000)
                 waitbar(0.5+0.5*((sdx-1)/(numSectionLb-1)),hw)
             end
 
@@ -1365,8 +1366,8 @@ if strcmpi(readmode,'line') || ~isempty(errmsg)
         A(ldx,1:min(num_data_per_row(ldx),width_A)) = a(1:min(num_data_per_row(ldx),width_A));
         
         % display waitbar:
-        if hasWaitbar && ~mod(ldx,100)
-                waitbar(0.5+0.5*(ldx./(num_lf-1)),hw)
+        if hasWaitbar && ~mod(ldx,1000)
+          waitbar(0.5+0.5*(ldx./(num_lf-1)),hw)
         end % if
 	end % for
     
@@ -1403,9 +1404,7 @@ if strcmpi(readmode,'line') || ~isempty(errmsg)
     
 end % if
 
-if infolvl >= 1
-    close(hw)
-end
+if hasWaitbar, close(hw); end
 
 
 %% : : : : : subfunction ANATXT : : : : : 
