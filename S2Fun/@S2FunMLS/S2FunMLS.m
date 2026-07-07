@@ -337,6 +337,12 @@ classdef S2FunMLS < S2Fun
     degrees = (0 : S2F.degree)';
     basis_weights = repelem(degrees.^2, degrees+1, 1);
 
+    % if the degree is odd and regularize, the 'constant part' (z-coordinate) 
+    %   should also be regularized, because it is not truly constant 
+    if mod(S2F.degree, 2) == 1 && ~S2F.tangent
+      basis_weights(1) = 0.05 * mean(basis_weights(basis_weights > 0));
+    end
+
     % avoid division by empty mean for degree zero
     m = mean(nonzeros(basis_weights));
     if isempty(m) || ~isfinite(m) || (m == 0)
