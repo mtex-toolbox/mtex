@@ -224,7 +224,12 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
     
     function ebsd = set.grainId(ebsd,grainId)
-      if numel(grainId) == length(ebsd)
+
+      if isa(grainId,'EBSD')
+        error("The syntax \n\n  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n" + ...
+          "has been replaced by the syntax\n\n" + ...
+          "[grains,ebsd] = calcGrains(ebsd)\n\n ",1);
+      elseif numel(grainId) == length(ebsd)
         ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(size(ebsd));
