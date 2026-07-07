@@ -1,14 +1,23 @@
-function [grains,ebsd] = calcGrains(ebsd,varargin)
+function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax
 %
-%   [grains, ebsd] = calcGrains(ebsd, 'angle', 10*degree, 'minPixel', 2, 'alpha', 3.7)
+%   [grains, ebsd.grainId] = calcGrains(ebsd,'angle',10*degree)
 %
 %   % reconstruction low and high angle grain boundaries
 %   lagb = 2*degree;
 %   hagb = 10*degree;
 %   grains = calcGrains(ebsd,'angle',[hagb lagb])
+%
+%   % allow grains to grow into not indexed regions
+%   grains = calcGrains(ebsd('indexed'),'angle',10*degree) 
+%
+%   % do not allow grains to grow into not indexed regions
+%   grains = calcGrains(ebsd,'unitCell')
+%
+%   % follow non convex outer boundary
+%   grains = calcGrains(ebsd,'boundary','tight')
 %
 %   % specify phase dependent thresholds
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
@@ -24,13 +33,14 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  ebsd   - @EBSD
 %
 % Output
-%  grains - @grain2d
-%  ebsd   - @EBSD with additional property grainId
+%  grains       - @grain2d
+%  ebsd.grainId - grainId of each pixel
 %
 % Options
-%  angle    - misorientation angle that indicates a grain boundary
-%  minPixel - minimum number of pixels that form a grain
-%  alpha    - fill distances into not indexed regions
+%  threshold, angle - array of threshold angles per phase of mis/disorientation in radians
+%  minPixel         - minimum number of pixels that form a grain
+%  boundary         - bounds the spatial domain ('convexhull', 'tight')
+%  maxDist          - maximum distance to for two pixels to be in one grain (default inf)
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
 %  custom    - use a custom property for grain separation
@@ -53,28 +63,75 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
-gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+% minimum number of pixels per grain
+minPixel = get_option(varargin,'minPixel',1);
 
-% first pass:
-% mark pixels that would become grains smaller than minPixel as notIndexed
-removed = minPixelMask(ebsd,gbc,varargin{:});
-ebsd.phaseId(removed) = 1;    
+pos = ebsd.rot2Plane .* ebsd.pos(:);
 
+% next we switch algorithm depending on how sparse the indexed points are
+ext = ebsd.extent;
+uniArea = prod(norm(ebsd.unitCell([2,4])-ebsd.unitCell([1,3])));
+isSparse = nnz(ebsd.isIndexed) < 0.9 * prod(ext([2,4])-ext([1,3])) / uniArea;
 
-% second pass -> Voronoi decomposition
-out = spatialDecompositionGrid(ebsd,varargin{:});
+if minPixel > 1
 
-V = out.V;
-F = out.F;
-I_FD = remapIFD(out,ebsd);
+  if 1 || isSparse
 
+    % if we are later going to use the alphaShape algorithm we should 
+    % temporarily remove not indexed pixels here
+    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')      
+      toRemove = ~ebsd.isIndexed(:);
+    else
+      toRemove = false(numel(pos),1);
+    end
+    [~,~,I_FD] = spatialDecomposition([pos.x(~toRemove), pos.y(~toRemove)],...
+      ebsd.unitCell,'quick',varargin{:});
+    if any(toRemove)
+      [f,d] = find(I_FD);
+      allD = 1:length(toRemove);
+      allD(toRemove) = [];
+      d = allD(d);
+      I_FD = sparse(f,d,1,max(f),length(ebsd));
+    end
+  else
+    [~,~,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,'unitcell',varargin{:});
+  end
+  [~,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
+
+  % number of pixels of each grain
+  numPixel = full(sum(I_DG,1));
+
+  % now we set pixels to not indexed that belong to too small grains
+  toRemove = ~(I_DG * (numPixel >= minPixel).');
+  ebsd.phaseId(toRemove) = 1;
+  pos(toRemove) = [];
+else
+  toRemove = false;
+end
+
+% subdivide the domain into cells according to the measurement locations,
+% i.e. by Voronoi tessellation or unit cell
+if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+  [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});
+
+  % we have to enlarge I_FD such that it fits the original EBSD set
+  if any(toRemove)
+    [f,d] = find(I_FD);
+    allD = 1:length(toRemove);
+    allD(toRemove) = [];
+    d = allD(d);    
+    I_FD = sparse(f,d,1,size(F,1),length(ebsd));    
+  end
+end
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
 
 % determine which cells to connect
-[A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
@@ -83,6 +140,7 @@ notEmpty = full(any(I_FD * I_DG,1)).';
 I_DG = I_DG(:,notEmpty);
 
 % compute grain ids
+%[grainId,~] = find(I_DG.');
 grainId = full(I_DG * (1:size(I_DG,2)).');
 
 % phaseId of each grain
@@ -140,11 +198,27 @@ for pId = grains.indexedPhasesId
 end
 
 % compute mean orientation and GOS
-[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));
-
+if 0
+  GOS = zeros(length(grains),1); %#ok<UNRCH>
+  doMeanCalc = find(grains.numPixel>1 & grains.isIndexed);
+  abcd = zeros(length(doMeanCalc),4);
+  for k = 1:numel(doMeanCalc)
+    qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
+    mq = mean(qind,'robust');
+    abcd(k,:) = [mq.a mq.b mq.c mq.d];
+    GOS(doMeanCalc(k)) = mean(angle(mq,qind)); 
+  end
+  meanRotation(doMeanCalc) = quaternion(abcd(:,1),abcd(:,2),abcd(:,3),abcd(:,4));
+else
+  %[meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0),'robust');
+  [meanRotation, GOS] = accumarray(grainId(grainId>0),q(grainId>0));
+end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = reshape(meanRotation,[],1);
+%mis2mean = rotation.nan(size(ebsd));
+%mis2mean(grainId>0) = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
+mis2mean = inv(rotation(q(grainId>0))) .* grains.prop.meanRotation(grainId(grainId>0));
 
 % assign variant and parent Ids for variant-based grain computation
 if check_option(varargin,'variants')
@@ -153,20 +227,58 @@ if check_option(varargin,'variants')
   grains.prop.parentId = variantId(firstD,2);
 end
 
-% assign a grainId to pixels that ended up entirely within a grain;
-% grainId=0 stays reserved for pixels a grain boundary passes through (see
-% private/absorbInteriorPixels)
-if nargout > 1
-  wasNotIndexed = ~ebsd.isIndexed(:);
-  ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId);
+% some of the pixel may have grainId 0 but are within grains -> we assign
+% to them also the right grainId
+%ind = grainId == 0;
+%grainId(ind) = grains.findByLocation(ebsd.pos(ind));
 
-  absorbed = wasNotIndexed & ebsd.grainId > 0;
-  if any(absorbed)
-    ebsd.phaseId(absorbed)   = grains.phaseId(ebsd.grainId(absorbed));
-    ebsd.rotations(absorbed) = nan;
+
+  function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,varargin)
+    % segmentation
+    %
+    %
+    % Output
+    %  A_Db - adjacency matrix of grain boundaries
+    %  A_Do - adjacency matrix inside grain connections
+
+    % extract segmentation method
+    gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+    
+    % get pairs of neighboring cells {D_l,D_r} in A_D
+    A_D = I_FD'*I_FD==1;
+    [Dl,Dr] = find(triu(A_D,1));
+
+    connect = gbc.eval(ebsd,Dl,Dr);
+
+    % adjacency of cells that have no common boundary
+    ind = connect>0;
+    A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+    if check_option(varargin,'mcl')
+      
+      param = get_option(varargin,'mcl');
+      if isempty(param), param = 1.4; end
+      if isscalar(param), param = [param,4]; end
+  
+      A_Do = mclComponents(A_Do,param(1),param(2));
+      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
+      A_Db(A_Do~=0) = false;
+  
+    else
+  
+      A_Db = sparse(double(Dl(connect<1)),double(Dr(connect<1)),true,...
+        length(ebsd),length(ebsd));
+  
+    end
+    A_Do = A_Do | A_Do.';
+
+    % adjacency of cells that have a common boundary
+    A_Db = A_Db | A_Db.';
+
+    % compute I_DG connected components of A_Do
+    % I_DG - incidence matrix cells to grains
+    I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
   end
-end
-% ------------------------------------------------------------------------  
 
   function [I_FDext, I_FDint, Fext, Fint] = calcBoundary
     % distinguish between interior and exterior grain boundaries
@@ -357,5 +469,38 @@ end
     [grainId,~] = find(I_DG.');
   end
 
+
 end
 
+function poly = calcPolygons(I_FG,F,V)
+%
+% Input:
+%  I_FG - incidence matrix faces to grains
+%  F    - list of faces
+%  V    - list of vertices
+
+poly = cell(size(I_FG,2),1);
+
+if isempty(I_FG), return; end
+
+% for all grains
+for k=1:size(I_FG,2)
+    
+  % inner and outer boundaries are circles in the face graph
+  EC = EulerCycles(F(I_FG(:,k)>0,:));
+          
+  % first circle should be positive and all others negatively oriented
+  for c = 1:numel(EC)
+    if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
+      EC{c} = fliplr(EC{c});
+    end
+  end
+    
+  % this is needed
+  for c=2:numel(EC), EC{c} = [EC{c} EC{1}(1)]; end
+  
+  poly{k} = [EC{:}];
+  
+end
+
+end
