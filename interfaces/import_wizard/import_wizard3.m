@@ -19,7 +19,9 @@ classdef import_wizard3 < matlab.apps.AppBase
     CurrentData                    matlab.ui.control.TextArea
     PhaseTable                     matlab.ui.control.Table
     ExportButton                   matlab.ui.control.Button
+    ExportScriptTypeDropDown       matlab.ui.control.DropDown
     ExportScriptButton             matlab.ui.control.Button % Button for generating an MTEX script
+
 
     TabGroup                       matlab.ui.container.TabGroup
     MapsTab                        matlab.ui.container.Tab
@@ -105,7 +107,7 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {270, 95, '1x', 250, 40}, ...
+        'RowHeight', {270, 95, '1x', 210, 80}, ... 
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
@@ -234,8 +236,9 @@ classdef import_wizard3 < matlab.apps.AppBase
     function createExportButtonsPanel(app)
       buttonGrid = uigridlayout(app.LeftLayout, ...
         'ColumnWidth', {'1x', '1x'}, ...
-        'RowHeight', {'1x'}, ...
+        'RowHeight', {35, 35}, ...
         'Padding', [0 0 0 0], ...
+        'RowSpacing', 8,...
         'ColumnSpacing', 10);
       buttonGrid.Layout.Row = 5;
 
@@ -245,15 +248,23 @@ classdef import_wizard3 < matlab.apps.AppBase
         'FontSize', app.FontSize, ...
         'Text', 'Import to workspace');
       app.ExportButton.Layout.Row = 1;
-      app.ExportButton.Layout.Column = 1;
+      app.ExportButton.Layout.Column = [1 2];
+
+      app.ExportScriptTypeDropDown = uidropdown(buttonGrid, ...
+        'Items', ["EBSD", "ODF", "PoleFigure", "tensor"], ...
+        'FontWeight', 'bold', ...
+        'FontSize', app.FontSize);
+      app.ExportScriptTypeDropDown.Layout.Row = 2;
+      app.ExportScriptTypeDropDown.Layout.Column = 1;
 
       app.ExportScriptButton = uibutton(buttonGrid, 'push', ...
         'ButtonPushedFcn', createCallbackFcn(app, @ExportScriptButtonPushed, true), ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize, ...
         'Text', 'Export to Script');
-      app.ExportScriptButton.Layout.Row = 1;
+      app.ExportScriptButton.Layout.Row = 2;
       app.ExportScriptButton.Layout.Column = 2;
+
     end
 
     function createRightPanel(app)
@@ -1118,7 +1129,7 @@ end
 
       % 1. Determine the export type
       % TODO let the user pick the type
-      exportType = 'EBSD'; 
+      exportType = app.ExportScriptTypeDropDown.Value; 
       
       % 2. Read the template file from the MTEX directory safely
       templatePath = fullfile('D:\Matlab\mtex\templates\import', ['load' exportType 'template.m']);

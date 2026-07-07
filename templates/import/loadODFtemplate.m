@@ -27,11 +27,10 @@ fname = {file names};
 %% Import the Data
 
 % specify kernel
-psi = {kernel name}('halfwidth',{halfwidth});
+psi = deLaValleePoussinKernel('halfwidth', 10*degree);
 
 % load the ODF into the variable odf
-odf = ODF.load(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
-  'interface',{interface},{options});
+odf = ODF.load(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},'interface',{interface},{options});
 
 %% Correct Data
 
