@@ -136,7 +136,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = prop;
 
       % remove nan positions
-      ebsd = ebsd.subSet(~isnan(ebsd.pos));
+      if any(isnan(ebsd.pos)), ebsd = ebsd.subSet(~isnan(ebsd.pos)); end
 
       % get unit cell
       ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'));
@@ -224,7 +224,12 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
     
     function ebsd = set.grainId(ebsd,grainId)
-      if numel(grainId) == length(ebsd)
+
+      if isa(grainId,'EBSD')
+        error("The syntax \n\n  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n" + ...
+          "has been replaced by the syntax\n\n" + ...
+          "[grains,ebsd] = calcGrains(ebsd)\n\n ",1);
+      elseif numel(grainId) == length(ebsd)
         ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(size(ebsd));
@@ -239,11 +244,15 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.phaseId(ebsd.grainId == 0) = 1;
 
       % phaseId should be the same within one grain 
-      ind = ebsd.grainId>0;
-      if nnz(ind)
-        grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
-        ebsd.phaseId(ind) = grain2phaseId(ebsd.grainId(ind));
-      end
+      %ind = ebsd.grainId>0;
+      %if nnz(ind)
+      %  grain2phaseId = majorityVote(ebsd.grainId(ind),ebsd.phaseId(ind));
+      %  newPhaseId = grain2phaseId(ebsd.grainId(ind));
+      %  hasChanged = false(numel(ebsd),1);
+      %  hasChanged(ind) = ebsd.phaseId(ind) ~= newPhaseId;
+      %  ebsd.phaseId(ind) = newPhaseId;
+      %  ebsd.rotations(hasChanged) = NaN;
+      %end
       
     end
       
