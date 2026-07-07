@@ -245,11 +245,13 @@ classdef S2FunMLS < S2Fun
           case 'wendlandC6';  S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
           case 'wendlandsquared';   S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
           case 'wendlandC6squared'; S2F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
-          otherwise
-            alpha = max(1, 2 - (S2F.degree - 1) / 3);
-            beta  = 1 + max(S2F.degree - 2, 0) / 3;
-            S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
-            S2F.w = @(t)(S2F.w(t .^ alpha) .^ beta);
+          otherwise % adapted version w(t .^ alpha) .^ beta of wendlandC6
+            alpha = sym(max(1, 2 - (S2F.degree - 1) / 3));
+            beta  = sym(1 + max(S2F.degree - 2, 0) / 3);
+            wstr = sprintf(['@(t)(max(1-t.^(%s),0).^8 .* ' ... 
+              '(32*t.^(%s) + 25*t.^(%s) + 8*t.^(%s) + 1)).^(%s)'], ...
+              char(alpha), char(3*alpha), char(2*alpha), char(alpha), char(beta));
+            S2F.w = str2func(wstr);
         end
       end
     end
