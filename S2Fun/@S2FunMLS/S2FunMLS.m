@@ -246,8 +246,8 @@ classdef S2FunMLS < S2Fun
           case 'wendlandsquared';   S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
           case 'wendlandC6squared'; S2F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
           otherwise
-            alpha = max(1, 2 - (S2F.deg - 1) / 3);
-            beta  = 1 + max(S2F.deg - 2, 0) / 3;
+            alpha = max(1, 2 - (S2F.degree - 1) / 3);
+            beta  = 1 + max(S2F.degree - 2, 0) / 3;
             S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
             S2F.w = @(t)(S2F.w(t .^ alpha) .^ beta);
         end
