@@ -170,8 +170,14 @@ classdef S2FunMLS < S2Fun
       end
       S2F.values = values;
 
-      % set degree, (maximal) oversampling factor, support radius delta
+      % regularization flag and parameters
       S2F.regularize = get_option(varargin, {'regularize','regularization'}, true, 'logical');
+      S2F.mincond = get_option(varargin, {'mincond', 'min cond', 'min_cond'}, []);
+      S2F.maxcond = get_option(varargin, {'maxcond', 'max cond', 'max_cond'}, []);
+      S2F.lambda_geom_rel = get_option(varargin, {'lambda_geom_rel', 'lambda geom rel'}, []);
+      S2F.basis_weights_scale = get_option(varargin, {'basis_weights_scale', 'basis weights scale'}, []);
+
+      % set degree, (maximal) oversampling factor, support radius delta
       S2F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
       S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
         'oversampling_factor','oversampling factor'}, 4, 'double');
@@ -224,7 +230,7 @@ classdef S2FunMLS < S2Fun
 
       % initialize missing regularization parameters from auxilliary grid
       if needs_auto_regularization
-        S2F = S2F.init_reg_params;
+        S2F = S2F.init_reg_params();
       end
 
       S2F.s.how2plot = nodes.how2plot;
@@ -333,6 +339,7 @@ classdef S2FunMLS < S2Fun
     if S2F.regularize
       S2F.basis_weights = S2F.compute_basis_weights;
     end
+    S2F.w = 'auto';
   end
 
   % compute weights for basis functions for regularization of lsq systems

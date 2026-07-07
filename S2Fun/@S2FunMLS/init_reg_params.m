@@ -1,14 +1,18 @@
-function [S2F, auto] = init_reg_params(S2F, info, varargin)
+function S2F = init_reg_params(S2F, varargin)
   % initialize regularization parameters from diagnostics on auxilliary grid
 
-  if nargin < 2 || isempty(info)
-    % make sure that the auxilliary grid corresponds to the current setup
+  % make sure that the auxgrid exists
+  if isempty(S2F.auxgrid)
     S2F = S2F.init_auxgrid;
+  end
 
-    mls = S2F;
-    % make evaluation of the diagnostics as easy as possible
-    mls.regularize = false;
-    [~, ~, info] = mls.eval(S2F.auxgrid);
+  % regularization will be turned on again at the very end of the function
+  S2F.regularize = false;
+
+  if check_option(varargin, 'info')
+    reg_info = get_option(varargin, 'info');
+  else
+    [~, ~, reg_info] = S2F.eval(S2F.auxgrid);
   end
 
   % if force is true, also overwrite manually set parameters
@@ -29,8 +33,8 @@ function [S2F, auto] = init_reg_params(S2F, info, varargin)
   basisScaleCeil  = 10;
 
   % diagnostic data
-  conds_unreg = getField(info, 'conds_unreg');
-  geometryScore = getField(info, 'geometryScore', zeros(size(conds_unreg)));
+  conds_unreg = getField(reg_info, 'conds_unreg');
+  geometryScore = getField(reg_info, 'geometryScore', zeros(size(conds_unreg)));
   
   % reshape and make sure the values are in the expected range
   conds_unreg = real(conds_unreg(:));
@@ -145,6 +149,9 @@ function [S2F, auto] = init_reg_params(S2F, info, varargin)
   if isempty(S2F.basis_weights_scale) || force
     S2F.basis_weights_scale = basis_weights_scale_auto;
   end
+
+  % if we compute the reg params, actually enable regularization
+  S2F.regularize = true;
 end
 
 
