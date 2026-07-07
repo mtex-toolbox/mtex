@@ -1,5 +1,7 @@
 function vals = eval_monomials_S2(v, deg, varargin)
 
+tangent = varargin{1} == true;
+
 % evaluate the monomials of degree deg, deg-2, ..., mod(deg,2) on v
 % leave out a few since v consists of spherical vectors, thus x^2+y^2+z^2 = 1,
 %   hence we dont need <x^2 , y^2, z^2 AND 1> in our basis
@@ -14,7 +16,7 @@ dim = (deg + 1) * (deg + 2) / 2;
 % NOTE:
 % if tangent == true, then also centered == true (S2FunMLS-constructor),
 %   thus all nodes in v are close to north pole
-if nargin == 3 && varargin{1} == true
+if nargin == 3 && tangent
   I = z >= 0;
   z( I) =  1;
   z(~I) = -1;
