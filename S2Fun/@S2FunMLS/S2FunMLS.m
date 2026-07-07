@@ -184,7 +184,7 @@ classdef S2FunMLS < S2Fun
       S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
 
       % weight function, distance, symmetry
-      S2F.w = get_option(varargin, 'weight', 'wendlandC6squared', {'string','function_handle','char'});
+      S2F.w = get_option(varargin, 'weight', 'auto', {'string','function_handle','char'});
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
         specimenSymmetry.default, 'crystalSymmetry');
@@ -245,7 +245,11 @@ classdef S2FunMLS < S2Fun
           case 'wendlandC6';  S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
           case 'wendlandsquared';   S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
           case 'wendlandC6squared'; S2F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
-          otherwise;          S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1).^2);
+          otherwise
+            alpha = max(1, 2 - (S2F.deg - 1) / 3);
+            beta  = 1 + max(S2F.deg - 2, 0) / 3;
+            S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
+            S2F.w = @(t)(S2F.w(t .^ alpha) .^ beta);
         end
       end
     end
