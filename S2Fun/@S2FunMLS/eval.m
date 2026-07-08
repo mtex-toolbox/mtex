@@ -183,7 +183,8 @@ end
 %   delta(x) is too small to provide sufficiently many neighbors
 function [delta, nn] = getSmoothDelta(S2F, v)
   dn = S2F.auxgrid.opt.dn;
-  mls = S2FunMLS(S2F.auxgrid, dn, 'regularize', false, 'degree', 0, 'oF', 5);
+  mls = S2FunMLS(S2F.auxgrid, dn, 'degree', 0, 'oF', 5, ...
+    'regularize', false, 'use_vor_weights', false, 'use_smooth_delta', false);
   mls.delta = mls.compute_delta;
   delta = mls.eval(v);
 

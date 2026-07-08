@@ -170,8 +170,14 @@ classdef S2FunMLS < S2Fun
       end
       S2F.values = values;
 
-      % set degree, (maximal) oversampling factor, support radius delta
+      % regularization flag and parameters
       S2F.regularize = get_option(varargin, {'regularize','regularization'}, true, 'logical');
+      S2F.mincond = get_option(varargin, {'mincond', 'min cond', 'min_cond'}, []);
+      S2F.maxcond = get_option(varargin, {'maxcond', 'max cond', 'max_cond'}, []);
+      S2F.lambda_geom_rel = get_option(varargin, {'lambda_geom_rel', 'lambda geom rel'}, []);
+      S2F.basis_weights_scale = get_option(varargin, {'basis_weights_scale', 'basis weights scale'}, []);
+
+      % set degree, (maximal) oversampling factor, support radius delta
       S2F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
       S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
         'oversampling_factor','oversampling factor'}, 4, 'double');
@@ -184,7 +190,7 @@ classdef S2FunMLS < S2Fun
       S2F.delta = get_option(varargin, {'delta', 'range', 'support radius'}, 0, 'double');
 
       % weight function, distance, symmetry
-      S2F.w = get_option(varargin, 'weight', 'wendlandC6squared', {'string','function_handle','char'});
+      S2F.w = get_option(varargin, 'weight', 'auto', {'string','function_handle','char'});
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
         specimenSymmetry.default, 'crystalSymmetry');
@@ -224,7 +230,7 @@ classdef S2FunMLS < S2Fun
 
       % initialize missing regularization parameters from auxilliary grid
       if needs_auto_regularization
-        S2F = S2F.init_reg_params;
+        S2F = S2F.init_reg_params();
       end
 
       S2F.s.how2plot = nodes.how2plot;
@@ -245,7 +251,13 @@ classdef S2FunMLS < S2Fun
           case 'wendlandC6';  S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
           case 'wendlandsquared';   S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
           case 'wendlandC6squared'; S2F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
-          otherwise;          S2F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1).^2);
+          otherwise % adapted version w(t .^ alpha) .^ beta of wendlandC6
+            alpha = sym(max(1, 2 - (S2F.degree - 1) / 3));
+            beta  = sym(1 + max(S2F.degree - 2, 0) / 3);
+            wstr = sprintf(['@(t)(max(1-t.^(%s),0).^8 .* ' ... 
+              '(32*t.^(%s) + 25*t.^(%s) + 8*t.^(%s) + 1)).^(%s)'], ...
+              char(alpha), char(3*alpha), char(2*alpha), char(alpha), char(beta));
+            S2F.w = str2func(wstr);
         end
       end
     end
@@ -327,6 +339,7 @@ classdef S2FunMLS < S2Fun
     if S2F.regularize
       S2F.basis_weights = S2F.compute_basis_weights;
     end
+    S2F.w = 'auto';
   end
 
   % compute weights for basis functions for regularization of lsq systems
@@ -336,6 +349,12 @@ classdef S2FunMLS < S2Fun
   function basis_weights = compute_basis_weights(S2F)
     degrees = (0 : S2F.degree)';
     basis_weights = repelem(degrees.^2, degrees+1, 1);
+
+    % if the degree is odd and regularize, the 'constant part' (z-coordinate) 
+    %   should also be regularized, because it is not truly constant 
+    if mod(S2F.degree, 2) == 1 && ~S2F.tangent
+      basis_weights(1) = 0.05 * mean(basis_weights(basis_weights > 0));
+    end
 
     % avoid division by empty mean for degree zero
     m = mean(nonzeros(basis_weights));

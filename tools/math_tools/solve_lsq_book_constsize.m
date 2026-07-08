@@ -142,7 +142,7 @@ else
 end
 basis_weights = 1 + basis_weights_scale .* basis_weights;
 
-% Preserve constants: the first basis function is assumed to be constant.
+% Preserve constants: the first basis function is assumed to be constant
 basis_weights(1) = 0;
 bw_pos = basis_weights > 0;
 if any(bw_pos)

@@ -1,5 +1,7 @@
 function vals = eval_monomials_S2(v, deg, varargin)
 
+tangent = varargin{1} == true;
+
 % evaluate the monomials of degree deg, deg-2, ..., mod(deg,2) on v
 % leave out a few since v consists of spherical vectors, thus x^2+y^2+z^2 = 1,
 %   hence we dont need <x^2 , y^2, z^2 AND 1> in our basis
@@ -14,7 +16,7 @@ dim = (deg + 1) * (deg + 2) / 2;
 % NOTE:
 % if tangent == true, then also centered == true (S2FunMLS-constructor),
 %   thus all nodes in v are close to north pole
-if nargin == 3 && varargin{1} == true
+if nargin == 3 && tangent
   I = z >= 0;
   z( I) =  1;
   z(~I) = -1;
@@ -52,6 +54,23 @@ for k = 0 : deg
 
   vals(:, cols) = block;
   idx = idx + k + 1;
+end
+
+% improve constant surrogate for odd-degree non-tangent ansatz spaces
+%   (use best approximation of the constant function in the ansatz space)
+%   (main idea: z = sqrt(1 - x^2 - y^2) = 1 - (x^2 + y^2) / 2 + O(r^4))
+if mod(deg,2) == 1 && ~tangent
+  m = (deg - 1) / 2;
+  r2 = x.^2 + y.^2;
+  p0 = ones(N,1);
+  term = ones(N,1);
+  for j = 1:m
+    term = term .* r2;
+    % coefficient of (1-r2)^(-1/2)
+    cj = nchoosek(2*j,j) / 4^j;
+    p0 = p0 + cj .* term;
+  end
+  vals(:,1) = z .* p0;
 end
 
 end
