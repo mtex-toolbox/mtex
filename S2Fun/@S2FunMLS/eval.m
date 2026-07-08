@@ -27,6 +27,31 @@ dimensions = size(v);
 N = numel(v);
 want_info = nargout > 2;
 
+% constant degree does not need batches and will not regularize
+if (S2F.degree == 0)
+  % provide smooth delta values, if the option flag is true
+  if S2F.use_smooth_delta
+    smoothDelta = getSmoothDelta(S2F, v);
+    varargin = set_option(varargin, 'smoothDelta', smoothDelta);
+  end
+  vals = S2F.eval_const(v, varargin{:});
+  if isscalar(S2F)
+    vals = reshape(vals, dimensions);
+  else
+    vals = reshape(vals, [N, size(S2F)]);
+  end
+  conds = [];
+  info = initRegInfo(0);
+  return;
+elseif (S2F.degree == 1)
+  if (~S2F.tangent && S2F.regularize)
+    warning(['Regularization prevents reproduction of constants, if the ' ...
+      'degree is 1 and tangent is set to false. It is probably best to set ' ...
+      'the tangent option to true and re-initialize the regularization ' ...
+      'parameters via S2F = S2F.init_reg_params("force")']); 
+  end
+end
+
 % prevent dimension error in local least squares solver for N==1
 if (N == 1)
   v = [v;v];
@@ -183,7 +208,7 @@ end
 %   delta(x) is too small to provide sufficiently many neighbors
 function [delta, nn] = getSmoothDelta(S2F, v)
   dn = S2F.auxgrid.opt.dn;
-  mls = S2FunMLS(S2F.auxgrid, dn, 'degree', 0, 'oF', 5, ...
+  mls = S2FunMLS(S2F.auxgrid, dn, 'degree', 0, 'oF', 5, 'centered', false, ...
     'regularize', false, 'use_vor_weights', false, 'use_smooth_delta', false);
   mls.delta = mls.compute_delta;
   delta = mls.eval(v);

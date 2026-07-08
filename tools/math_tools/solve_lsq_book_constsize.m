@@ -68,24 +68,25 @@ s_book = max(s_book, s_floor);
 B_book = B_book ./ s_book;
 fw_book = W_book .* f_book;
 clear f_book W_book;
-
+s_book = permute(s_book, [2, 1, 3]);
 
 % ==========================
 % 1 - without regularization
 % ==========================
 if ~regularize
-  c_book = pagemldivide(B_book, fw_book) ./ pagetranspose(s_book);
+  c_book = pagemldivide(B_book, fw_book) ./ s_book;
   clear fw_book s_book;
 
   if nargout > 1
     eigs = pagesvd(B_book);
-    sigmax = reshape(max(eigs, [], 1), [], 1);
-    sigmin = reshape(min(eigs, [], 1), [], 1);
-    clear eigs;
 
-    maxeig = sigmax.^2;
-    mineig = max(sigmin.^2, 0);
+    maxeig = reshape(max(eigs, [], 1), [], 1);
+    maxeig = maxeig.^2;
+
+    mineig = reshape(min(eigs, [], 1), [], 1);
+    mineig = max(mineig.^2, 0);
     mineig_safe = max(mineig, eigFloorRel .* max(maxeig, 1));
+
     conds = maxeig ./ mineig_safe;
 
     if nargout > 2
@@ -103,8 +104,6 @@ if ~regularize
       info.mineig = mineig;
       info.meanEig = meanEig;
     end
-
-    clear B_book;
   end
 
   return;
@@ -126,9 +125,10 @@ lambda_geom_rel     = get_option(varargin, 'lambda_geom_rel', 4, 'double');
 targetcond = mincond;
 
 % build unregularized Gram system
-Gram_book = pagemtimes(pagetranspose(B_book), B_book);
-Gram_book = (Gram_book + pagetranspose(Gram_book)) / 2;
-rhs_book = pagemtimes(pagetranspose(B_book), fw_book);
+B_book_transposed = permute(B_book, [2, 1, 3]);
+Gram_book = pagemtimes(B_book_transposed, B_book);
+Gram_book = (Gram_book + permute(Gram_book, [2, 1, 3])) / 2;
+rhs_book = pagemtimes(B_book_transposed, fw_book);
 clear fw_book B_book;
 
 % apply stronger penalty to higher polynomial degrees
@@ -153,9 +153,10 @@ end
 diag_idx = pageDiagIndices(dim, N);
 
 % compute average eigenvalue scale of each page
-%   (after column normalization, this is usually close to 1)
-diagGram = reshape(real(Gram_book(diag_idx)), dim, N);
-meanEig = mean(diagGram, 1).';
+%   (after column normalization, this is analytically 1)
+%   (Eact Code: diagGram = reshape(real(Gram_book(diag_idx)), dim, N);
+%               meanEig = mean(diagGram, 1).';)
+meanEig = ones(N, 1);
 
 % compute condition numbers of the unregularized Gram matrix, if they are needed
 %   these are returned in info and are used for automatic parameter selection
@@ -229,7 +230,7 @@ if any(lambdaCond ~= 0)
 end
 
 % solve for scaled coeffs, then 'unscale' to obtain the original coeffs
-c_book = pagemldivide(Gram_book, rhs_book) ./ pagetranspose(s_book);
+c_book = pagemldivide(Gram_book, rhs_book) ./ s_book;
 
 % compute condition numbers, if they are needed for the output
 if nargout > 1

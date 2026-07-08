@@ -156,36 +156,32 @@ if (~S2F.centered)
 else
 
   % compute the rotations that shift each element of v into the north pole
-  rot = rotation.map(v, vector3d.Z);
-  rot = rot(v_id);
+  [xloc, yloc, zloc] = local_coordinates_S2(v, v_id, S2F.nodes, grid_id);
 
   % TODO: project to fundamental region?
-  rotneighbors = rot .* S2F.nodes(grid_id);
-  clear rot;
-
+  
   % determine which basis to use and evaluate it on the grid and on v
-  G = eval_basis_functions(S2F, rotneighbors);
+  G = eval_basis_functions(S2F, vector3d(xloc, yloc, zloc));
 
   % ensure correct representer for antipodal S2F with odd degree (same as above)
   % since rot maps the center to the north pole, this can be checked by z < 0
   if (S2F.antipodal && (mod(S2F.degree, 2) == 1))
-    I = rotneighbors.z < 0;
+    I = zloc < 0;
     G(I,:) = -G(I,:);
     clear I;
   end
 
-  % store local tangent coordinates if they are needed for geometry regularization
+  % keep local tangent coordinates if they are needed for geometry regularization
   if computeGeometryScore
-    xloc = rotneighbors.x;
-    yloc = rotneighbors.y;
+    clear zloc;
+  else
+    clear xloc yloc zloc;
   end
-  clear rotneighbors;
 
   % the evaluation point is always the north pole in local coordinates
   % no need to replicate this over all rows
   basis_in_pole = eval_basis_functions(S2F, vector3d.Z);
   basis_in_v = basis_in_pole;
-
 end
 
 
@@ -202,14 +198,14 @@ weights = weights .* vor_weights * 4*pi / numel(S2F.nodes);
 clear dist I vor_weights;
 
 if (S2F.detectOutliers == true)
-  oI = computeOutlierIndicators(S2F);
-  weights = weights .* exp(-oI(grid_id));
+  oI = S2F.outlierIndicators(grid_id);
+  weights = weights .* exp(-oI);
   clear oI;
 end
 
 % compute geometry scores, if they are needed for the regularization or info
 if computeGeometryScore
-  geometryScore = localGeometryScore(xloc, yloc, weights, nn);
+  geometryScore = local_geometry_score(xloc, yloc, weights, nn);
   clear xloc yloc;
 end
 
@@ -265,59 +261,6 @@ end
 % ======================
 % Local helper functions
 % ======================
-
-% local geometric badness of the weighted tangent node cloud
-% all inputs are expected to be ordered according to sizes
-% xloc and yloc are essentialy the coordinates w.r.t. the local tangent space
-function geometryScore = localGeometryScore(xloc, yloc, weights, sizes)
-  beta = 2;
-
-  N = numel(sizes);
-  system_id = repelem((1:N)', sizes);
-
-  % compute 'total weight' of each neighborhood
-  Wsum = accumarray(system_id, weights, [N, 1], @sum, 0);
-  Wsum = max(Wsum, realmin);
-
-  % normalize weights in each neighborhood
-  omega = weights ./ Wsum(system_id);
-
-  % weight local tangent coordinates once and reuse them
-  wx = omega .* xloc;
-  wy = omega .* yloc;
-
-  % compute weighted center 
-  mux = accumarray(system_id, wx, [N, 1], @sum, 0);
-  muy = accumarray(system_id, wy, [N, 1], @sum, 0);
-
-  % compute weighted second moments 
-  M11 = accumarray(system_id, wx .* xloc, [N, 1], @sum, 0);
-  M12 = accumarray(system_id, wx .* yloc, [N, 1], @sum, 0);
-  M22 = accumarray(system_id, wy .* yloc, [N, 1], @sum, 0);
-
-  % compute trace and determinant of the local moment matrix M 
-  trM  = M11 + M22;
-  detM = M11 .* M22 - M12.^2;
-
-  % measure how two-dimensional the local neighborhood is
-  % iso is close to 1 for isotropic neighborhoods and close to 0 for line-like ones
-  iso = 4 .* detM ./ max(trM.^2, realmin);
-  iso = min(max(real(iso), 0), 1);
-
-  % measure how much the local neighborhood is shifted away from the center
-  % balance is small for centered neighborhoods and large for one-sided ones
-  balance = sqrt(mux.^2 + muy.^2) ./ sqrt(max(trM, realmin));
-
-  % combine isotropy and balance into one local geometry quality
-  % quality is close to 1 for good neighborhoods and close to 0 for bad ones
-  quality = iso .* exp(-beta .* balance.^2);
-  quality = min(max(real(quality), 0), 1);
-
-  % convert quality into a score
-  % geometryScore is close to 0 for good neighborhoods and close to 1 for bad ones
-  geometryScore = (1 - quality).^2;
-  geometryScore = geometryScore(:);
-end
 
 % initialize struct for additional regularization information
 function info = initRegInfo(N)

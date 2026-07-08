@@ -62,11 +62,11 @@ if (similarSize == true)
 
   G_book = zeros(max_size * N, dim);
   G_book(col_id,:) = basis_values;
-  G_book = pagetranspose(reshape(G_book.', dim, max_size, N));
+  G_book = permute(reshape(G_book.', dim, max_size, N), [2, 1, 3]);
 
   f_book = zeros(max_size * N, numf);
   f_book(col_id,:) = f_values;
-  f_book = pagetranspose(reshape(f_book.', numf, max_size, N));
+  f_book = permute(reshape(f_book.', numf, max_size, N), [2, 1, 3]);
 
   if nargout <= 1
     c_book = solve_lsq_book_constsize(W_book, G_book, f_book, varargin{:});

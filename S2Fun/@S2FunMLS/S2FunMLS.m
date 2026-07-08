@@ -68,14 +68,14 @@ classdef S2FunMLS < S2Fun
                           %   as described in 'stable MLS' by Lipman
     use_vor_weights = true; 
 
-    degree      = 3;      % the polynomial degree used for approximation
-    oF          = 4;      % oversampling factor (nn / dim)
-    oF_max      = 5;      % upper bound for oF when using rangesearch
-    delta       = 0;      % support radius of the weight function
+    degree      = [];      % the polynomial degree used for approximation
+    oF          = [];      % oversampling factor (nn / dim)
+    oF_max      = [];      % upper bound for oF when using rangesearch
+    delta       = [];      % support radius of the weight function
 
     use_smooth_delta = true; % delta(x) is smooth, with close to S2F.nn neighbors everywhere
 
-    w           = @(t)(max(1-t, 0).^4 .* (4*t+1)); % Wendland weight function
+    w           = [];     % e.g. Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
 
     s = specimenSymmetry.default;  % symmetry
@@ -96,6 +96,7 @@ classdef S2FunMLS < S2Fun
 
     detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
+    outlierIndicators = []; % bigger numbers (one per node) indicate outliers
 
     subsample   = false;  % perform optimal subsampling?
 
@@ -107,8 +108,6 @@ classdef S2FunMLS < S2Fun
     nn                    % number of neighbors to take into account
     antipodal             % inherited from the nodes
     isReal                % = isReal(S2F.values)
-    outlierIndicators     % same size as S2F.values, contains for each node a
-    %   number that is bigger, if the value is an outlier
 
     % properties of the underlying nodes
     fill_distance         % fill distance
@@ -208,6 +207,9 @@ classdef S2FunMLS < S2Fun
       S2F.outlierDetectionRange = round(get_option(varargin, ...
         {'outlierdetectionrange', 'outlier detection range', 'odr'}, ...
         S2F.outlierDetectionRange, 'double'));
+      if S2F.detectOutliers
+        S2F.oI = S2F.compute_outlier_indicators;
+      end
 
       % optimal subsampling (minimizes Lebesgue constant)
       S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
@@ -317,6 +319,7 @@ classdef S2FunMLS < S2Fun
   end
 
   function S2F = set.oF(S2F, value)
+    first_call = isempty(S2F.oF);
     if (value < 1)
       warning('Oversampling factor was too small and has been set to 2.');
       value = 2;
@@ -327,6 +330,9 @@ classdef S2FunMLS < S2Fun
       S2F.delta = S2F.compute_delta;
     end
     S2F.oF_max = 2 * S2F.oF;
+    if ~first_call
+      S2F = S2F.update_auxgrid_dn;
+    end
   end
 
   % make sure nn is an integer value
@@ -335,11 +341,18 @@ classdef S2FunMLS < S2Fun
   end
 
   function S2F = set.degree(S2F, deg)
+    first_call = isempty(S2F.degree);
     S2F.degree = deg;
+    if (S2F.degree == 0)
+      S2F.regularize = false; 
+    end
     if S2F.regularize
       S2F.basis_weights = S2F.compute_basis_weights;
     end
     S2F.w = 'auto';
+    if ~first_call
+      S2F = S2F.update_auxgrid_dn;
+    end
   end
 
   % compute weights for basis functions for regularization of lsq systems
@@ -392,9 +405,12 @@ classdef S2FunMLS < S2Fun
   function S2F = init_auxgrid(S2F)
     S2F.auxgrid = fibonacciS2Grid(10001);
     S2F.auxgrid.opt.searcher = createns(S2F.auxgrid.xyz);
+    S2F = S2F.update_auxgrid_dn;
+  end
 
+  function S2F = update_auxgrid_dn(S2F)
     % slight overshoot later ensures that mostly n neighbors are found
-    nfind = max(round(1.3*S2F.nn), S2F.nn+10);
+    nfind = max(round(1.3 * S2F.nn), S2F.nn + 10);
     [~, dn] = S2F.nodes.find(S2F.auxgrid, nfind);
     S2F.auxgrid.opt.dn = dn(:,end);
   end
@@ -444,10 +460,6 @@ classdef S2FunMLS < S2Fun
 
     ind = S2F.nodes.find(v, S2F.delta);
     nns = full(sum(ind, 2));
-  end
-
-  function oI = get.outlierIndicators(S2F)
-    oI = computeOutlierIndicators(S2F);
   end
 
   % important for subsref to function properly

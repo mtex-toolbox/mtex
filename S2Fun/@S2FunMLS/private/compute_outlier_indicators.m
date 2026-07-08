@@ -1,4 +1,4 @@
-function oI = computeOutlierIndicators(S2F)
+function oI = compute_outlier_indicators(S2F)
 
 % Input:
 %   nodes  - @vector3d array of nodes
