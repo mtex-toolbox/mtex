@@ -1,0 +1,62 @@
+{
+  "settings": {
+    "name": "EMSphInx",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
+    "manufacturer_keys": {"data": "EMSphInx"}
+  },
+  "ebsd": {
+    "type": "default",
+    "key": {"mode": "search_root", "value": "EBSD"},
+    "position": {
+      "type": "indirect",
+      "indirect": {
+        "step_size_x": { "mode": "search_root", "value": "Step X"},
+        "step_size_y": { "mode": "search_root", "value": "Step Y"},
+        "grid_size_x": { "mode": "search_root", "value": "nColumns"},
+        "grid_size_y": { "mode": "search_root", "value": "nRows"},
+        "first": {"data": "y"}
+      }
+    },
+    "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
+    "rotation": {
+      "type": "euler",
+      "euler": {
+        "format": { "data": "radian"},
+        "phi1": { "mode": "search_root", "value": "Phi1" },
+        "Phi":  { "mode": "search_root", "value": "Phi" },
+        "phi2": { "mode": "search_root", "value": "Phi2" }
+      }
+    },
+    "cs": {
+      "type": "default",
+      "key": { "mode": "search_root", "value": "Header/Phase" },
+      "multiple": true,
+      "default": {
+        "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment", "type": "default"},
+        "space_group": { "mode": "search_free", "value": "Symmetry", "type": "default" },
+        "name": { "mode": "search_root", "value": "MaterialName"},
+        "lattice": {
+          "angle": {
+            "type": "separate",
+            "lattice_alpha": { "mode": "search_root", "value": "Lattice Constant alpha"},
+            "lattice_beta": { "mode": "search_root", "value": "Lattice Constant beta"},
+            "lattice_gamma": { "mode": "search_root", "value": "Lattice Constant gamma"}
+          },
+          "dim": {
+            "type": "separate",
+            "lattice_a": { "mode": "search_root", "value": "Lattice Constant a$"},
+            "lattice_b": { "mode": "search_root", "value": "Lattice Constant b$"},
+            "lattice_c": { "mode": "search_root", "value": "Lattice Constant c$"}
+          }
+        }
+      }
+    },
+    "header": {
+      "group": {"mode": "search_root", "value": "Header"}
+    }
+  },
+  "additions": {
+    "type": "auto",
+    "group": { "mode": "search_root", "value": "Data"}
+  }
+}
