@@ -35,7 +35,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 ebsd = ebsd('indexed');
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 
 % smooth them
 grains = smooth(grains,5);
@@ -168,7 +168,7 @@ mtexColorbar('title','paris')
 mtexdata forsterite silent
 
 % reconstruct grains
-grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd);
 
 % smooth them
 grains = smooth(grains,5);

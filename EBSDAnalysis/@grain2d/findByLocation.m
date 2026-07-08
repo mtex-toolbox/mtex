@@ -11,7 +11,7 @@ function id = findByLocation( grains, pos )
 % Example
 %  
 %  mtexdata small silent
-%  grains = calcGrains(ebsd('indexed'))
+%  grains = calcGrains(ebsd)
 %  plot(grains)
 %
 %  p = [35000 5000] % for mouse selection use  p = ginput(1)
@@ -31,7 +31,7 @@ V = xyz(grains.rot2Plane * grains.allV); V = V(:,1:2);
 
 % if pos is just [x(:) y(:)]
 if ~isa(pos,'vector3d') & size(pos,2)==2
-    pos = vector3d(pos(:,1),pos(:,2),0);
+  pos = vector3d(pos(:,1),pos(:,2),0);
 end
 
 pos = xyz(grains.rot2Plane * vector3d(pos));

@@ -56,7 +56,7 @@ plot(ebsd)
 % <EBSD.calcGrains.html |calcGrains|> which takes as input an EBSD data set
 % and returns a list of grain.
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'alpha',2.2,'angle',10*degree,'minPixel',5);
 grains
 
 %%
@@ -97,7 +97,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 ebsd = ebsd.gridify;
 
-[grains, ebsd.grainId] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',3);
+[grains, ebsd] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',3);
 grains = smooth(grains,5);
 
 % plot the boundary of all grains

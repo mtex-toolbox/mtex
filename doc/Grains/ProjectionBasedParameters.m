@@ -13,7 +13,7 @@
 mtexdata forsterite silent
 
 % reconstruct grains, discard boundary grains and smooth them
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 grains(grains.isBoundary) = [];
 grains = smooth(grains('indexed'),10,'moveTriplePoints');
 

@@ -4,7 +4,7 @@ function GROD = calcGROD(ebsd,grains,rotRef)
 % Syntax
 %
 %   % reconstruct grains
-%   [grains, ebsd.grainId] = calcGrains(ebsd('indexed'))
+%   [grains, ebsd] = calcGrains(ebsd)
 %
 %   % compute grain reference orientation deviation
 %   GROD = calcGROD(ebsd,grains)

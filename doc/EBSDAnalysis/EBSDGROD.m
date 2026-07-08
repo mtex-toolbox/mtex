@@ -19,8 +19,7 @@
 
 mtexdata ferrite silent
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),...
-  'threshold',[1*degree, 10*degree],'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',3);
 
 % smooth grain boundaries
 grains = smooth(grains,5);

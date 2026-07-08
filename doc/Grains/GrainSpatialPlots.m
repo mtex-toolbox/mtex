@@ -7,7 +7,7 @@
 mtexdata forsterite silent
 
 % perform grain segmentation
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 %% Phase maps
 % When using the <grain2d.plot.html |plot|> command without additional
@@ -181,7 +181,7 @@ hold off
 mtexdata csl
 
 % compute and plot grains
-[grains,ebsd.grainId] = calcGrains(ebsd,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 grains = smooth(grains,5);
 plot(grains,grains.meanOrientation,'micronbar','off','figSize','large','region',[50 300 100 250])
 

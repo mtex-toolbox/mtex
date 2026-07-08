@@ -23,8 +23,7 @@ mtexdata ferrite silent
 % boundaries whereas the second is used for the high-angle grain
 % boundaries.
 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),...
-  'threshold',[1*degree, 10*degree],'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',5);
 
 % lets smooth the grain boundaries a bit
 grains = smooth(grains,5)

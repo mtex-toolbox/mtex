@@ -92,7 +92,7 @@ ori =  ebsd('Fo').orientations.project2FundamentalRegion
 % orientation of a grain.
 
 % segment data into grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd);
 
 % take the orientations of the largest on
 [~,id] = max(grains.area);

@@ -95,11 +95,11 @@ hold off
 % equivalently, computing the grains only from the indexed measurements
 
 % compute the grains from the indexed measurements only
-grains = calcGrains(ebsd('indexed'))
+grains = calcGrains(ebsd)
 
 plot(ebsd)
 
-% start overide mode
+% start override mode
 hold on
 
 % plot the boundary of all grains
@@ -132,7 +132,7 @@ plot(grains,'linewidth',2)
 % also separates the not indexed regions into "grains" and we can standard
 % grain functions like area or perimeter to analyze these regions.
 
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
+[grains,ebsd] = calcGrains(ebsd);
 notIndexed = grains('notIndexed')
 
 %%

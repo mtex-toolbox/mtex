@@ -10,7 +10,7 @@ mtexdata twins silent
 ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 
 % detect grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree,'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3);
 
 % smooth them
 grains = grains.smooth(5);

@@ -15,7 +15,7 @@
 mtexdata forsterite silent
 
 % reconstruct grains and smooth them 
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',10);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',10);
 
 grains(grains.isBoundary) = [];
 
@@ -29,7 +29,7 @@ plot(grains,'micronbar','off','lineWidth',2)
 % The basic command for fitting ellipses is <grain2d.fitEllipse
 % |fitEllipse|>
 
-[c,a,b] = grains.fitEllipse;
+[c,a,b] = grains(grains.numPixel>200).fitEllipse;
 
 plotEllipse(c,a,b,'lineColor','w','linewidth',2)
 

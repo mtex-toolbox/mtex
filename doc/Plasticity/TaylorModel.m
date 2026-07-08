@@ -94,7 +94,7 @@ mtexColorbar
 mtexdata csl
 
 % compute grains
-grains = calcGrains(ebsd('indexed'),'minPixel',3);
+grains = calcGrains(ebsd,'minPixel',3);
 grains = smooth(grains,5);
 
 %%
@@ -175,7 +175,7 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'RD','TD','
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 setMTEXpref('pfAnnotations',pfAnnotations);
 
-plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
+plotPDF(ori,Miller({0,0,1},{1,1,1},grains.CS),'contourf')
 mtexColorbar
 
 %% restore MTEX preferences

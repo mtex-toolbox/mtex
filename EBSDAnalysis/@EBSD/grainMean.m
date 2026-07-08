@@ -4,7 +4,7 @@ function meanProp = grainMean(ebsd, prop, varargin)
 % Syntax
 %
 %   % recover grains and store grainId 
-%   [grains,ebsd.grainId] = calcGrains(ebsd)
+%   [grains,ebsd] = calcGrains(ebsd)
 %
 %   % compute average grain property
 %   meanPropG = grainMean(ebsd, ebsd.ci, grains);
@@ -37,7 +37,7 @@ function meanProp = grainMean(ebsd, prop, varargin)
 if isempty(ebsd.grainId)
   mtexError(' No grainId stored in the EBSD variable. \n%s\n\n%s\n',...
           ' Use the following command to store grainIds within EBSD data',...
-          ' [grains,ebsd.grainId] = calcGrains(ebsd)')  
+          ' [grains,ebsd] = calcGrains(ebsd)')  
 end
 
 % some limits

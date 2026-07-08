@@ -27,7 +27,7 @@ function isInside = checkInside(grains, xy, varargin)
 % Example
 %
 %  mtexdata small silent
-%  grains = calcGrains(ebsd('indexed'));
+%  grains = calcGrains(ebsd);
 %  plot(grains(75))
 %  hold on
 %  plot(grains(grains(75).checkInside(grains)),'facecolor','red')

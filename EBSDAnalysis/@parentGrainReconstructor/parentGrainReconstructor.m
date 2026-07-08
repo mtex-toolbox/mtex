@@ -108,8 +108,8 @@ classdef parentGrainReconstructor < handle
       job.grainsPrior = job.grains;
       
       if isempty(job.grains)
-        [job.grains, job.ebsdPrior.grainId] = ...
-          calcGrains(ebsd('indexed'),'threshold',3*degree,varargin);
+        [job.grains, job.ebsdPrior] = ...
+          calcGrains(ebsd,'threshold',3*degree,varargin);
       end
 
       % project EBSD orientations close the grain mean orientations

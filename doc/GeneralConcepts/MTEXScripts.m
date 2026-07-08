@@ -37,7 +37,7 @@ plot(ebsd)
 %%
 % The grain structure is reconstructed by the command 
 
-grains = calcGrains(ebsd('indexed'),'minPixel',3)
+grains = calcGrains(ebsd,'minPixel',3)
 
 %%
 % which returns a new variable of type <grain2d.grain2d.html |grain2d|>,

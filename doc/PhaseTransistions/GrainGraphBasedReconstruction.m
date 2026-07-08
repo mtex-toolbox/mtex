@@ -18,7 +18,7 @@
 mtexdata martensite 
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree,'minPixel',2);
+[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries

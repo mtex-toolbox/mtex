@@ -22,7 +22,7 @@ cs_bcc = ebsd('Fe').CS;
 cs_aus = ebsd('Aus').CS;
 
 % recover grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',2);
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',2);
 grains = smooth(grains,4);
 
 %%

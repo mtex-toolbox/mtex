@@ -41,8 +41,7 @@ beta2alpha = orientation.Burgers(ebsd(betaName).CS,ebsd(alphaName).CS)
 % into the same alpha grain.
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree,...
-  'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
 grains = smooth(grains,1,'moveTriplePoints');
 
 % plot all alpha pixels
@@ -311,7 +310,7 @@ plot(parentEBSD(betaName),ipfKey.orientation2color(parentEBSD(betaName).orientat
 % reconstruct grains from the parent orientations and throw away all small
 % grains
 
-[parentGrains,parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',5*degree,'minPixel',15);
+[parentGrains,parentEBSD] = calcGrains(parentEBSD,'angle',5*degree,'minPixel',15);
 
 % smooth the grains a bit
 parentGrains = smooth(parentGrains,5);

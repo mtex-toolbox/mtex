@@ -17,11 +17,8 @@
 % import the data
 mtexdata ferrite 
 
-% consider only indexed data
-ebsd = ebsd('indexed');
-
 % reconstruct the grain structure
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',2);
 
 % smooth grain boundaries
 grains = smooth(grains,5);
@@ -39,7 +36,9 @@ hold off
 % Although the data set has already some not indexed pixels we artificially
 % make the situation more worse by throwing away 75 percent of all data.
 
-ebsdSub = ebsd(discretesample(length(ebsd),round(length(ebsd)*25/100)));
+ebsdSub = ebsd;
+ind = discretesample(length(ebsd),round(length(ebsd)*75/100));
+ebsdSub(ind).phaseId = 1
 
 % plot the reduced data
 plot(ebsdSub,ebsdSub.orientations)
@@ -49,7 +48,7 @@ plot(ebsdSub,ebsdSub.orientations)
 % reconstruct the grain structure from the remaining 25 percent of pixels.
 
 % reconstruct the grain structure
-[grainsSub,ebsdSub.grainId] = calcGrains(ebsdSub('indexed'),'angle',10*degree,'minPixel',2);
+[grainsSub,ebsdSub] = calcGrains(ebsdSub,'angle',10*degree,'minPixel',2,'alpha',5);
 
 grainsSub = smooth(grainsSub,5);
 
@@ -64,7 +63,7 @@ hold off
 % |grainsSub| as an additional argument to the |fill| function. In this
 % case the nearest neighbors are chosen within the grains.
 
-ebsdSub_filled = fill(ebsdSub('indexed'),grainsSub);
+ebsdSub_filled = fill(ebsdSub,grainsSub);
 
 plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
@@ -80,7 +79,7 @@ F = halfQuadraticFilter;
 F.alpha = 0.25;
 
 % interpolate the missing data 
-ebsdSub_filled = smooth(ebsdSub('indexed'),F,'fill',grainsSub);
+ebsdSub_filled = smooth(ebsdSub,F,'fill',grainsSub);
 
 plot(ebsdSub_filled('indexed'),ebsdSub_filled('indexed').orientations);
 
@@ -104,7 +103,7 @@ plot(ebsd('En'),ebsd('En').orientations)
 plot(ebsd('Di'),ebsd('Di').orientations)
 
 % compute and smooth grains 
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree,'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3,'alpha',3);
 grains = smooth(grains,5);
 
 % plot the boundary of all grains
@@ -121,7 +120,7 @@ hold off
 F = halfQuadraticFilter;
 F.alpha = 10;
 
-ebsdS = smooth(ebsd('indexed'),F,'fill',grains);
+ebsdS = smooth(ebsd,F,'fill',grains);
 
 plot(ebsdS('Fo'),ebsdS('Fo').orientations)
 hold on

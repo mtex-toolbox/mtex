@@ -4,7 +4,7 @@
 % We will prepare some data to evaluate grain dispersion axes.
 
 mtexdata forsterite
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 
 %%

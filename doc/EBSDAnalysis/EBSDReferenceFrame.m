@@ -74,7 +74,7 @@ plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 % on top of the orientation map. To do this we proceed as follows
 
 % reconstruct grains
-grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd);
 
 % chose the correct crystal shape (cubic, hex are generic forms)
 cS = crystalShape.olivine;

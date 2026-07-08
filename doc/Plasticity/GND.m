@@ -27,7 +27,7 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize
 % 5 pixels and smooth the grain boundaries.
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
+[grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
 % smooth grain boundaries
 grains = smooth(grains,5);

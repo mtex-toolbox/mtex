@@ -11,7 +11,7 @@ close all
 mtexdata forsterite silent
 
 % reconstruct grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5,'angle',15*degree);
 
 % find the grain with maximum grain orientation spread
 [~,id] = max(grains.GOS);
@@ -50,7 +50,7 @@ plot(ebsd_line.y,...
   angle(ebsd_line(1).orientations,ebsd_line.orientations)/degree)
 
 % misorientation gradient
-hold all
+hold on
 plot(0.5*(ebsd_line.y(1:end-1)+ebsd_line.y(2:end)),...
   angle(ebsd_line(1:end-1).orientations,ebsd_line(2:end).orientations)/degree)
 hold off

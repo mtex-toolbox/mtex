@@ -10,7 +10,7 @@ function h = quiver(gB,dir,varargin)
 %
 % Example
 %  mtexdata forsterite silent
-%  grains = calcGrains(ebsd('indexed'));
+%  grains = calcGrains(ebsd);
 %  plot(grains(1437))
 %  hold on
 %  quiver(grains(1437).boundary,grains(1437).boundary.calcMeanDirection,'color','r')

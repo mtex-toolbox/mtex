@@ -13,7 +13,7 @@ function  shape = byRhoTheta(rho,theta)
 %
 % Example
 %  mtexdata forsterite silent
-%  grains = calcGrains(ebsd('indexed'));
+%  grains = calcGrains(ebsd);
 %  omega = [0:360]*degree;
 %  cumpf = surfor(grains.boundary('f','f'),omega);
 %  shape = shape2d.byRhoTheta(cumpf, omega)

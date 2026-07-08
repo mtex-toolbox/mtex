@@ -16,7 +16,7 @@
 % illustrate the different options.
  
 mtexdata csl
-[grains, ebsd.grainId] = ebsd.calcGrains('minPixel',3);
+[grains, ebsd] = ebsd.calcGrains('minPixel',3);
  
 % the data was acquired on a regular grid;
 plot(ebsd,ebsd.orientations,'micronbar','off')

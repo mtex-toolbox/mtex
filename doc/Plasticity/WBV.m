@@ -42,7 +42,7 @@ ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'single_grain_aluminum.txt
 % We reconstruct grains because later on, we do not want to compute the WBV
 % across grain boundaries
 
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
+[grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
 % denoise the data
 % we will use the noisy data later on

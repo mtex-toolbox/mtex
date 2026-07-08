@@ -24,8 +24,7 @@
 mtexdata forsterite silent
 
 % compute subgrain boundaries with 1 degree threshold angle
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),...
-  'threshold',[1*degree, 15*degree],'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 15*degree],'minPixel',5);
 
 % lets smooth the grain boundaries a bit
 grains = smooth(grains,5);

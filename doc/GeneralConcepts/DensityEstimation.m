@@ -193,7 +193,7 @@ hold off
 mtexdata forsterite silent
 
 % reconstruct grains
-grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd);
 
 % extract Forsterite to Enstatite grain boundaries
 gB = grains.boundary('Forsterite','Enstatite');

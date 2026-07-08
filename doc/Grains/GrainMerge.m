@@ -10,10 +10,11 @@
 mtexdata twins silent
 
 % segment grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
 
 % smooth them
 grains = grains.smooth(5);
+grains = grains('indexed');
 
 % visualize the grains
 plot(grains,grains.meanOrientation)

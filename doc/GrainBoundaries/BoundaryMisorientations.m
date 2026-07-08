@@ -40,8 +40,7 @@ seg_angle = 10;
 min_points = 10;
 
 % restrict to indexed only points
-[grains,ebsd.grainId,ebsd.mis2mean] = ...
-  calcGrains(ebsd('indexed'),'angle',seg_angle*degree,'minPixel',min_points);
+[grains,ebsd] = calcGrains(ebsd,'angle',seg_angle*degree,'minPixel',min_points);
 
 % smooth grains
 grains = smooth(grains,4);

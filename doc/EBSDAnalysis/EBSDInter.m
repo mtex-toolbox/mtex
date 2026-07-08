@@ -11,7 +11,7 @@
 
 mtexdata twins;
 
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains, ebsd] = calcGrains(ebsd);
 
 % this command here is important :)
 ebsd = ebsd.project2FundamentalRegion(grains);

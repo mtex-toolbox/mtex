@@ -8,7 +8,7 @@
 mtexdata csl
 
 % grain segmentation
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd);
 
 % grain smoothing
 grains = smooth(grains,5);
