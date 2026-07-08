@@ -10,7 +10,7 @@
 mtexdata twins
 
 % detect grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'))
+[grains,ebsd] = calcGrains(ebsd)
 
 % smooth them
 grains = grains.smooth

@@ -21,7 +21,7 @@ function [c,a,b] = fitEllipse(grains,varargin)
 % Example
 %
 % mtexdata csl
-% grains = calcGrains(ebsd('indexed'))
+% grains = calcGrains(ebsd)
 % grains = smooth(grains,10)
 % plot(ebsd('indexed'),ebsd('indexed').orientations,'micronbar','off')
 % hold on

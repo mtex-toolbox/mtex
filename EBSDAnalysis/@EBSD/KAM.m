@@ -10,10 +10,10 @@ function kam = KAM(ebsd,varargin)
 %   plot(ebsd,kam./degree)
 %
 %   % ignore grain boundary misorientations
-%   [grains, ebsd.grainId] = calcGrains(ebsd)
+%   [grains, ebsd] = calcGrains(ebsd)
 %   plot(ebsd, ebsd.KAM./degree)
 %
-%   % consider also second order neigbors
+%   % consider also second order neighbors
 %   kam = KAM(ebsd,'order',2);
 %   plot(ebsd,kam./degree)
 %

@@ -61,7 +61,7 @@ drawNow(gcm,'figSize',getMTEXpref('figSize'))
 
 % import data and reconstruct grains
 mtexdata titanium silent
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd);
 grains = smooth(grains,5);
 
 % plot an ipf map

@@ -14,7 +14,7 @@ mtexdata forsterite
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 % smooth the grains a bit
 grains = smooth(grains,4);
@@ -181,7 +181,7 @@ plot(gB_Fo.misorientation,...
 mtexdata csl
 
 % grain segmentation and smoothing
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd);
 grains = smooth(grains,2);
 gB = grains.boundary('iron','iron');
 

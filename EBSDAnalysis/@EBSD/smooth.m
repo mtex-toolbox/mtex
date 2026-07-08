@@ -22,7 +22,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   mtexdata forsterite;
 %   ebsd = ebsd('indexed');
 %   % segment grains
-%   [grains,ebsd.grainId] = calcGrains(ebsd,'minPixel',4);
+%   [grains,ebsd] = calcGrains(ebsd,'minPixel',4);
 %
 %   % find largest grains
 %   largeGrains = grains(grains.numPixel>800);

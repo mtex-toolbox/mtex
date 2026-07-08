@@ -82,7 +82,7 @@ h = [Miller(1,0,0,odf.CS),Miller(1,1,0,odf.CS),Miller(1,1,1,odf.CS)];
 
 %%
 % simulate pole figure data
-pf_SantaFe = calcPoleFigure(SantaFe,h,r);
+pf_SantaFe = calcPoleFigure(odf,h,r);
 
 %%
 % estimate an ODF with ghost correction
@@ -112,8 +112,8 @@ plotDiff(pf_SantaFe,rec)
 %%
 % *ODF error*
 
-calcError(SantaFe,rec)
-calcError(SantaFe,rec_ng)
+calcError(odf,rec)
+calcError(odf,rec_ng)
 
 %% Exercises
 %

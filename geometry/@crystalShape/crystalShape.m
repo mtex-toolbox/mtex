@@ -192,7 +192,7 @@ classdef crystalShape
         'x' 'y' 'grainId'});
 
       % compute grains
-      grains = calcGrains(ebsd('indexed'));
+      grains = calcGrains(ebsd);
       grains = smooth(grains,4);
 
       % plot the grain boundary

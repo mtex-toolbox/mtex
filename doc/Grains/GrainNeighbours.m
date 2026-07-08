@@ -10,10 +10,10 @@
 
 % load sample EBSD data set
 mtexdata twins silent
-CS = ebsd('indexed').CS;
+CS = ebsd.CS;
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',5*degree);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree);
 
 grains = smooth(grains,5);
 
@@ -27,7 +27,7 @@ plot(grains,grains.meanOrientation)
 % neighboring grains. In the following lines choose the row number 170 and
 % outline the corresponding grains
 
-pairs = grains.neighbors;
+pairs = grains('indexed').neighbors;
 
 hold on
 plot(grains(pairs(170,:)).boundary,'LineWidth',4,'linecolor','b')

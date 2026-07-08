@@ -25,7 +25,7 @@ plot(cS,'colored')
 % rotated crystal. This is done by the following commands
 
 % 1. reconstruct the grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 % 2. smooth the grain boundaries a bit
 grains = smooth(grains,10);

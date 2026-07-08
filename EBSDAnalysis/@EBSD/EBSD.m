@@ -219,7 +219,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       catch
         mtexError(' No grainId stored in the EBSD variable. \n%s\n\n%s\n',...
           ' Use the following command to store grainIds within EBSD data',...
-          ' [grains,ebsd.grainId] = calcGrains(ebsd)')
+          ' [grains,ebsd] = calcGrains(ebsd)')
       end
     end
     

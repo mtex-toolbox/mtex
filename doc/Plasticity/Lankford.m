@@ -140,7 +140,7 @@ mtexdata titanium
 CS = ebsd.CS;
 
 % reconstruct the grains
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',6);
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',6);
 
 % plot the orientations
 plot(ebsd,ebsd.orientations);

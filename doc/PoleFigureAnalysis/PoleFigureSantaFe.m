@@ -5,16 +5,16 @@
 %
 %% Simulate pole figures
 
-CS = crystalSymmetry('m-3m');
+odf = SantaFe;
 
 % crystal directions
-h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS),Miller(2,1,1,CS)];
+h = Miller({1,0,0},{1,1,0},{1,1,1},{2,1,1},odf.CS);
 
 % specimen directions
 r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % pole figures
-pf = calcPoleFigure(SantaFe,h,r);
+pf = calcPoleFigure(odf,h,r);
 
 % add some noise
 pf = noisepf(pf,100);
@@ -33,7 +33,7 @@ rec2 = calcODF(pf,'NoGhostCorrection')
 %% Error analysis
 
 % calculate RP error
-calcError(rec,SantaFe)
+calcError(rec,odf)
 
 % difference plot between meassured and recalculated pole figures
 plotDiff(pf,rec)

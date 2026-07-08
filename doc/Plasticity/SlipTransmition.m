@@ -9,7 +9,7 @@
 mtexdata titanium
 
 % compute grains
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains, ebsd] = calcGrains(ebsd);
 
 % make them a bit nicer
 grains = smooth(grains);

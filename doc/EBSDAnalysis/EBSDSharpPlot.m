@@ -105,7 +105,7 @@ hold off
 % grains is the |@axisAngleColorKey|. In order to demonstrate this color
 % key let us first separate the EBSD into grains.
 
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
 grains = smooth(grains,5);
 
 %%
@@ -137,6 +137,7 @@ ebsdS = smooth(ebsd,F,'fill',grains);
 ipfKey.oriRef = grains.meanOrientation(ebsdS('indexed').grainId);
 
 plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
+xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 hold on
 plot(grains.boundary,'lineWidth',4)
@@ -149,7 +150,7 @@ hold off
 mtexdata forsterite silent
 
 % segment grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
+[grains,ebsd] = calcGrains(ebsd);
 
 % find largest grains
 largeGrains = grains(grains.numPixel > 800);

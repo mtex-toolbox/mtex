@@ -1,4 +1,4 @@
-function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
+function [grains,ebsd] = calcGrains(ebsd,varargin)
 % grains reconstruction from 2d EBSD data
 %
 % Syntax

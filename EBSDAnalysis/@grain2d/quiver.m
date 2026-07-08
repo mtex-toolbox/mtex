@@ -5,7 +5,7 @@ function h = quiver(grains,dir,varargin)
 %   quiver(grains,dir,'color','r')
 %
 %   mtexdata forsterite
-%   grains = calcGrains(ebsd('indexed'))
+%   grains = calcGrains(ebsd)
 %   quiver(grains,grains.meanRotation.axis,'color','r')
 %
 % Input

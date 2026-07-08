@@ -11,11 +11,9 @@ mtexdata forsterite silent
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-% remove all not indexed pixels
-ebsd = ebsd('indexed');
 
 % reconstruct grains
-[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 
 % smooth them
 grains = smooth(grains,5);
@@ -25,6 +23,8 @@ plot(ebsd('fo'),ebsd('fo').orientations)
 
 % plot the grain boundary on top of it
 hold on
+plot(ebsd('En'),'FaceColor','lightgray')
+plot(ebsd('Di'),'FaceColor','darkgray')
 plot(grains.boundary,'lineWidth',2)
 hold off
 
@@ -58,7 +58,7 @@ hold on
 plot(grains(x,y).boundary,'linewidth',4,'linecolor','blue')
 
 plot(x,y,'marker','s','markerfacecolor','k',...
-  'markersize',10,'markeredgecolor','w')
+  'markersize',10,'markeredgecolor','w','DisplayName','A')
 hold off
 
 %%

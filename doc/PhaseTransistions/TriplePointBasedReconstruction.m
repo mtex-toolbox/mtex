@@ -19,7 +19,7 @@ plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 
 %%
-% that alligns (110) plane of the beta phase with the (0001) plane of the
+% that aligns (110) plane of the beta phase with the (0001) plane of the
 % alpha phase and the [1-11] direction of the beta phase with the [2110]
 % direction of the alpha phase.
 %
@@ -33,11 +33,10 @@ beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 % |parentGrainReconstructor|>. During the reconstruction process this class
 % keeps track about the relationship between the measured child grains and
 % the recovered parent grains. In order to set this variable up we first
-% need to compute the initital child grains from out EBSD data set.
+% need to compute the initial child grains from out EBSD data set.
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',1.5*degree,...
-  'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
 
 %%
 % As our reconstruction will be based on triple junctions we compute the

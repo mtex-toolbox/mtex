@@ -16,7 +16,7 @@
 mtexdata martensite
 
 % grain reconstruction
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'), 'angle', 3*degree, 'minPixel',2);
+[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
@@ -333,13 +333,13 @@ hold off
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
+[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
 
 % remove very small grains
 parentEBSD(parentGrains(parentGrains.numPixel<10)) = [];
 
 % redo grain reconstruction
-[parentGrains, parentEBSD.grainId] = calcGrains(parentEBSD('indexed'),'angle',3*degree);
+[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
 parentGrains = smooth(parentGrains,10);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')

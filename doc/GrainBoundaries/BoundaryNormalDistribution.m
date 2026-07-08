@@ -19,7 +19,7 @@
 
 mtexdata csl
 
-[grains,ebsd.grainId] = calcGrains(ebsd);
+[grains,ebsd] = calcGrains(ebsd);
 
 grains = smooth(grains,10)
 

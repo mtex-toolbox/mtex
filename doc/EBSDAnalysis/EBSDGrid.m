@@ -79,7 +79,7 @@ setColorRange([0,4*degree])
 
 mtexdata copper silent
 
-[grains, ebsd.grainId] = calcGrains(ebsd);
+[grains, ebsd] = calcGrains(ebsd);
 ebsd = ebsd.gridify
 
 plot(ebsd,ebsd.orientations)

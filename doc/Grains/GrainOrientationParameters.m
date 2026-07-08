@@ -9,13 +9,11 @@
 %
 % As usual, we start by importing some EBSD data and computing grains
 
-close all
-
 % import the data
 mtexdata ferrite silent
 
 % compute grains
-[grains, ebsd.grainId] = calcGrains(ebsd('indexed'),'threshold',7.5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'threshold',7.5*degree,'minPixel',5);
 ebsd = ebsd.project2FundamentalRegion;
 grains = smooth(grains,5);
 
@@ -178,7 +176,7 @@ fit./degree
 %%
 % Lets perform the above analysis for all large grains
 
-grainsLarge = grains(grains.numPixel > 50);
+grainsLarge = grains(grains.isIndexed & grains.numPixel > 50);
 lambda = nan(length(grainsLarge),4);
 
 % loop through all grains

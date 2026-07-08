@@ -12,7 +12,7 @@
 mtexdata olivine
 
 % reconstruct grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 % some data denoising
 grains = smooth(grains,5);

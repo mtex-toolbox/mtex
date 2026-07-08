@@ -34,7 +34,7 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd x 2 axial indices (debug)
 
-alpha = get_option(varargin,'alpha',1.5);
+alpha = get_option(varargin,'alpha',3.1);
 
 % transform positions to ij grid
 [A,stencil,dxy] = latticeBasis(ebsd.unitCell);
