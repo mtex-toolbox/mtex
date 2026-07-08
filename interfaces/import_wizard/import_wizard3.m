@@ -884,11 +884,11 @@ end
     function updateCurrentDataInfo(app, fileName)
       app.CurrentData.Value = { ...
         ['File: ' asChar(app, fileName)]; ...
-        ['Step size: ' ebsdValueText(app, 'dxy')]; ...
+        ['Step size: ' 'x=' num2str(norm(app.ebsd.unitCell.x)) '  y=' num2str(norm(app.ebsd.unitCell.y))]; ...
         ['Grid: ' gridTypeLabel(app)]; ...
         ['Extent: ' ebsdValueText(app, 'extent')]};
     end
-
+    
     function text = ebsdValueText(app, propertyName)
       try
         text = formatDisplayValue(app, app.ebsd.(propertyName));
@@ -896,6 +896,7 @@ end
         text = '<unavailable>';
       end
     end
+    
 
     function text = gridTypeLabel(app)
       text = 'unknown';
