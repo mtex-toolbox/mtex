@@ -17,7 +17,7 @@ classdef gbcAngle < grainBoundaryCriterion
 %
 
 properties
-  threshold = 10*degree
+  threshold = 15*degree
 end
 
 methods

@@ -12,7 +12,7 @@ function odf = calcKernelODF(ori,varargin)
 % If the halfwidth is large the estimated ODF is smooth whereas a small
 % halfwidth results in a sharp ODF. It depends on your prior information
 % about the ODF to choose this parameter right. Look at this
-% <EBSD2ODF.html description> for an exhausive discussion.
+% <EBSD2ODF.html description> for an exhaustive discussion.
 %
 % Syntax
 %   odf = calcKernelODF(ori)

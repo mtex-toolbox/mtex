@@ -19,7 +19,7 @@ function ebsd = fill(ebsd,varargin)
 if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
 
 % the values to be filled
-nanId = isnan(ebsd.phaseId);
+nanId = isnan(ebsd.rotations);
 
 if check_option(varargin,'extrapolate')
   opt = 'nearest';

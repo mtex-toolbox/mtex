@@ -1,7 +1,6 @@
 function a = noverk(n, k)
-
 % same as nchoosek, but works for vector-valued inputs
-
+%
 % Syntax:
 % a = noverk(n, k);
 % 

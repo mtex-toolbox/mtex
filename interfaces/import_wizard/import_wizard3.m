@@ -533,7 +533,7 @@ end
       addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'left'))
 
       csList = app.ebsd.CSList;
-      numPhases = accumarray(app.ebsd.phaseId,1);
+      numPhases = accumarray(app.ebsd.phaseId,1,[length(csList),1]);
             
       phaseTable = table('size',[0 9],...
         'VariableTypes',{'logical','uint8','string','string','string','double','double','double','string'},...
@@ -639,7 +639,7 @@ end
       end
 
       direction = directionVector(app, dir);
-      hold(ax, 'on')
+      
       for phaseId = enabledPhaseIds(:)'
         ebsdPhase = ebsd(ebsd.phaseId == phaseId);
         if isempty(ebsdPhase), continue; end
@@ -648,6 +648,7 @@ end
         ipfKey.precompute;
         colors = ipfKey.orientation2color(ebsdPhase.orientations);
         plot(ebsdPhase, colors, 'parent', ax)
+        hold(ax, 'on')
       end
       hold(ax, 'off')
       setView(app.ebsd.how2plot, ax)

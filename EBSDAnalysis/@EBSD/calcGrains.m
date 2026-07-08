@@ -53,6 +53,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % See also
 % GrainReconstruction GrainReconstructionAdvanced
 
+% TODO: we have to rotate everything to xy plane to do the reconstruction
+
+% extract grain boundary criterion
 gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 
 % first pass:
@@ -60,18 +63,15 @@ gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 removed = minPixelMask(ebsd,gbc,varargin{:});
 ebsd.phaseId(removed) = 1;    
 
-
-% second pass -> Voronoi decomposition
-out = spatialDecompositionGrid(ebsd,varargin{:});
-
-V = out.V;
-F = out.F;
-I_FD = remapIFD(out,ebsd);
-
+% second pass: Voronoi decomposition
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
+out = spatialDecompositionGrid(ebsd,varargin{:});
+V = out.V;
+F = out.F;
+I_FD = remapIFD(out,ebsd);
 
 % determine which cells to connect
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
@@ -160,7 +160,7 @@ if nargout > 1
   wasNotIndexed = ~ebsd.isIndexed(:);
   ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId);
 
-  absorbed = wasNotIndexed & ebsd.grainId > 0;
+  absorbed = wasNotIndexed & ebsd.grainId(:) > 0;
   if any(absorbed)
     ebsd.phaseId(absorbed)   = grains.phaseId(ebsd.grainId(absorbed));
     ebsd.rotations(absorbed) = nan;
