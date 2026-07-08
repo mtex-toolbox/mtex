@@ -30,6 +30,7 @@ function [h,mP] = plot(ebsd,varargin)
 %
 % Options
 %  micronbar   - 'on'/'off'
+%  backend     - surf, patch, imagesc
 %  DisplayName - add a legend entry
 %  region      - [xmin, xmax, ymin, ymax] plotting region
 %  
@@ -142,8 +143,6 @@ else % phase plot
       'parent', mP.ax,entry{:},varargin{:}); %#ok<AGROW>
   
   end
-  
-  
   
   if ~check_option(varargin,'parent')
     set(gcf,'name','phase plot');
