@@ -12,9 +12,9 @@ classdef (Abstract) grainBoundaryCriterion
 %
 % The output out must have the same size as i and j. The convention is:
 %
-%   out = 0    no grain boundary
+%   out = 1    no grain boundary
 %   out = 0.5  low-angle grain boundary
-%   out = 1    high-angle grain boundary
+%   out = 0    high-angle grain boundary
 %
 % Subclasses implement the protected method doEvaluate.
 
