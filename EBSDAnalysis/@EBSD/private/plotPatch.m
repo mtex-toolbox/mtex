@@ -11,9 +11,9 @@ else
   type = 'points';
 end
 
-if numel(d) == length(pos) || numel(d) == 3*length(pos)
+if numel(d) == numel(pos) || numel(d) == 3*numel(pos)
 
-  obj.FaceVertexCData = reshape(d,length(pos),[]);
+  obj.FaceVertexCData = reshape(d,numel(pos),[]);
 
   if numel(alpha) == numel(pos)
     varargin = delete_option(varargin,'faceAlpha');
@@ -34,10 +34,36 @@ obj.EdgeColor = 'none';
 
 switch lower(type)
   case 'unitcell'
+    % welding (shared corners) is only needed when edges are drawn or faces are
+    % partly transparent; otherwise skip it for speed. Edges are on if the
+    % caller overrides the default EdgeColor='none' via varargin; transparency
+    % is on if a per-face alpha was set above.
+    edgeColor = get_option(varargin,'EdgeColor','none');
+    hasEdges  = ~(ischar(edgeColor) || isstring(edgeColor)) || ~strcmpi(edgeColor,'none');
+    hasAlpha  = isfield(obj,'FaceVertexAlphaData');
+    if ~hasEdges && ~hasAlpha
+      varargin = [varargin,{'noWeld'}];
+    end
     [obj.Vertices, obj.Faces] = generateUnitCells(pos,unitCell,varargin{:});
+
+    % generateUnitCells may return triangulated faces (noWeld fast path):
+    % N*nT triangle rows instead of N polygon rows. Per-face flat colour and
+    % alpha are given per cell (N rows), so replicate them to match the face
+    % count. The triangle layout is block-wise ([all cells tri1; tri2; ...]),
+    % so repmat(...,nT,1) lines up row-for-row.
+    nF = size(obj.Faces,1);
+    if isfield(obj,'FaceVertexCData') && strcmpi(obj.FaceColor,'flat') ...
+        && size(obj.FaceVertexCData,1) == numel(pos) ...
+        && nF > numel(pos) && mod(nF,numel(pos)) == 0
+      nT = nF / numel(pos);
+      obj.FaceVertexCData = repmat(obj.FaceVertexCData, nT, 1);
+      if isfield(obj,'FaceVertexAlphaData')
+        obj.FaceVertexAlphaData = repmat(obj.FaceVertexAlphaData, nT, 1);
+      end
+    end
   case {'points','measurements'}
     obj.Vertices = [pos.x(:),pos.y(:),pos.z(:)];
-    obj.Faces    = (1:length(pos))';
+    obj.Faces    = (1:numel(pos))';
     obj.FaceColor = 'none';
     obj.EdgeColor = 'flat';
     obj.Marker = '.';

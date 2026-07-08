@@ -7,7 +7,7 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 %
 % Output
 %  v     - list of vertices (nV x 3)
-%  faces - list of faces (length(pos) x length(unitCell))
+%  faces - list of faces (numel(pos) x length(unitCell))
 %
 % Shared corners between neighbouring cells are welded so that patch draws
 % each cell once with no doubled edges. Welding is topological: each corner is
@@ -19,13 +19,39 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 % vertex is placed at the mean of the corners merged into it, so adjacent
 % patches meet without gaps.
 
-nC = length(unitCell);
-N  = length(pos);
+nC = numel(unitCell);
+N  = numel(pos);
 
 % corner positions (deformed positions are used only for coordinates)
 cx = pos.x(:) + unitCell.x(:).';       % N x nC
 cy = pos.y(:) + unitCell.y(:).';
 cz = pos.z(:) + unitCell.z(:).';
+
+% Fast path: skip welding AND pre-triangulate. Shared corners are only needed
+% to avoid doubled edges (patch with EdgeColor other than 'none'), to avoid
+% double blending under per-face transparency, and to close gaps on deformed
+% grids. When none of those apply (opaque, edgeless map - the common case) each
+% cell keeps its own corners.
+%
+% Crucially we also return TRIANGLE faces rather than nC-gon faces: MATLAB's
+% patch tessellates every polygon face with a general (concave-capable)
+% tessellator on the CPU, which for a million hexagons costs tens of seconds at
+% draw time. A convex cell fans into nC-2 triangles from corner 1 (2 for a
+% square, 4 for a hex); handing patch triangles skips the tessellator and lets
+% the GPU draw the map in a fraction of the time. Triangulation is only valid
+% here because there are no edges to draw (fan diagonals would show otherwise).
+if check_option(varargin,'noWeld')
+  v = [cx(:), cy(:), cz(:)];                  % all corners, no merge
+
+  % column c of the corner arrays occupies rows (c-1)*N+(1:N) in v
+  col = @(c) ((c-1)*N + (1:N)).';             % vertex ids of corner c, N x 1
+  nT  = nC - 2;                               % triangles per cell (fan)
+  faces = zeros(N*nT, 3);
+  for t = 1:nT
+    faces((t-1)*N + (1:N), :) = [col(1), col(t+1), col(t+2)];
+  end
+  return
+end
 
 % --- grid indexing (topological) --------------------------------------------
 % basis and integer (i,j) index of each pixel, computed on demand
