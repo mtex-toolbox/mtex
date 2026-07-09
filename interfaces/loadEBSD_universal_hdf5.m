@@ -65,6 +65,19 @@ if isempty(fieldnames(Conf))
   error("No Manufacturer config found for: " + manufacturer);
 end
 
+% Check if user wants to use a different ebsd_key
+if check_option(varargin, 'ebsd_key')
+  try
+    Conf.ebsd.key.value = get_option(varargin, 'ebsd_key');
+    warning([ ...
+        'You have manually overridden the ebsd_key! ' ...
+        'Make sure that your specified key ' ...
+        'exists and is unique, otherwise an error occurs!']);  
+  catch ME
+        error('Error when setting ebsd_key option: %s', ME.message);    
+  end
+end
+
 % generate config info text
 fprintf('\n%s\n', repmat('═', 1, 80));
 fprintf('HDF5 CONFIGURATION LOADED\n');
@@ -99,6 +112,7 @@ try
   
   end
 catch ME
+  disp(ME.getReport)
   % Check which type is currently loaded
   current_type = '';
   if check_option(varargin, 'type')
@@ -714,6 +728,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
         vprintf(isDebug(), ...
                 '   ⚠ %d matches for "%s" (mode "%s"); returning first.\n', ...
                 length(matches), search_val, mode);
+        vprintf(isDebug(), string(matches{1}.FullPath))
       end
       final_path = string(matches{1}.FullPath);
     end

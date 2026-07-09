@@ -6,7 +6,7 @@
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "search_root", "value": "EBSD"},
+    "key": {"mode": "search_root", "value": "/Scan 1"},
     "position": {
       "type": "indirect",
       "indirect": {
@@ -32,8 +32,7 @@
       "key": { "mode": "search_root", "value": "Header/Phase" },
       "multiple": true,
       "default": {
-        "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment", "type": "default"},
-        "space_group": { "mode": "search_free", "value": "Symmetry", "type": "default" },
+        "space_group": { "mode": "search_root", "value": "Symmetry", "type": "default" },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
           "angle": {
@@ -57,6 +56,6 @@
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "search_root", "value": "Data"}
+    "group": { "mode": "search_root", "value": "/EBSD/Data"}
   }
 }
