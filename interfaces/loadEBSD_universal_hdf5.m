@@ -222,9 +222,9 @@ function out = position_indirect(raw_data)
   v_y = 0:step_y:(cells_y-1)*step_y;
   
   if first == 'x'
-    [x, y] = meshgrid(v_x, v_y);
+    [x, y] = ndgrid(v_x, v_y);
   elseif first == 'y'
-    [x, y] = meshgrid(v_y, v_x);
+    [x, y] = meshgrid(v_x, v_y);
   end
 
   out = vector3d(x(:), y(:), 0);
@@ -503,12 +503,9 @@ function out = map_correction_default(raw_data)
   end
 
   data = double(raw_data);
+  if any(data > 10), format = degree; end
 
-  if length(data) > 1
-    data = data';
-  end
-
-  out = rotation.byEuler(data*format);
+  out = rotation.byEuler(data(:).'*format);
 
 end
 

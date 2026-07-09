@@ -12,8 +12,9 @@
       "indirect": {
         "step_size_x": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
         "step_size_y": { "mode": "absolute", "value": "/Site/Acquisition/StepSize"},
-        "grid_size_x": { "mode": "absolute", "value": "/Site/Acquisition/MapHeight"},
-        "grid_size_y": { "mode": "absolute", "value": "/Site/Acquisition/MapWidth"}
+        "grid_size_y": { "mode": "absolute", "value": "/Site/Acquisition/MapHeight"},
+        "grid_size_x": { "mode": "absolute", "value": "/Site/Acquisition/MapWidth"},
+        "first": {"data": "x"}	  
       }
     },
     "phase": {"mode": "search_root", "value": "Phase", "type": "stack"},
