@@ -43,7 +43,7 @@ plot(ebsd('indexed'),ebsd('indexed').orientations,'faceAlpha',0.5,'figSize','lar
 % init override mode
 hold on
 
-% plot grain boundares
+% plot grain boundaries
 plot(grains.boundary,'linewidth',2)
 
 % compute transparency from misorientation angle

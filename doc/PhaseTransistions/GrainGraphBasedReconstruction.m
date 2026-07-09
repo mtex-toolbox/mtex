@@ -1,4 +1,4 @@
-%% Grain Graph Based Parent Grain Reconstrution
+%% Grain Graph Based Parent Grain Reconstruction
 %
 %% 
 % This script demonstrates the grain graph approach to parent phase
@@ -274,10 +274,10 @@ hold off
 % initial grain the |id| of the corresponding parent grain. Combining these
 % two information we do
 
-% identify childs of the selected parent grain
+% identify children of the selected parent grain
 childGrains = job.grainsPrior(job.mergeId == grainSelected.id);
 
-% plot these childs 
+% plot these children 
 plot(childGrains,childGrains.meanOrientation)
 
 % and top the parent grain boundary 

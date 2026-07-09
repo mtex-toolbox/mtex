@@ -117,7 +117,7 @@ mtexTitle('direction of the WBV in crystal coordinates')
 % plot the color key
 plot(cKC)
 
-% overlayed with the 
+% overlaid with the 
 hold on
 plot(wbvC(notNan),'weights',wbvC(notNan).norm,'contour', ...
     'contours',0.5:0.25:2,'linecolor','k','ShowText','on', ...

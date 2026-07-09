@@ -42,7 +42,7 @@ u = u ./ norm(u)
 % lists> on how to manipulate lists in Matlab.
 %
 % Using the brackets |v = [v1,v2]| two lists of vectors can be joined to a
-% single list. Now each single vector is accesable via |v(1)| and |v(2)|.
+% single list. Now each single vector is accessible via |v(1)| and |v(2)|.
 
 w = [v,u];
 w(1)

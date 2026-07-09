@@ -73,7 +73,7 @@ plot(mergedGrains.boundary,'linecolor','w','linewidth',3)
 hold off
 
 %%
-% Finaly, we check for all other types of CSL boundaries and overlay them
+% Finally, we check for all other types of CSL boundaries and overlay them
 % with our plot.
 
 delta = 5*degree;

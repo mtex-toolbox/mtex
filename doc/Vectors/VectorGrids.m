@@ -1,11 +1,11 @@
 %% Spherical Grids
 %
 %%
-% MTEX supports a wide varity of spherical grids. Those include the
+% MTEX supports a wide variety of spherical grids. Those include the
 % <regularS2Grid.html |regularS2Grid|>, the <equispacedS2Grid.html MTEX
 % equispaced grid>, the <HEALPixS2Grid.html HealPix grid> and the
 % <fibonacciS2Grid.html Fibonacci grid>. Lets define them with an
-% resulution of 7 degrees
+% resolution of 7 degrees
 
 % the regular grid
 grid{1} = regularS2Grid('resolution',7*degree);

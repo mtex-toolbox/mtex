@@ -4,7 +4,7 @@
 % In order display a legend to your MTEX plots you need to add the option
 % |DisplayName| followed by the text that you would like to be displayed in
 % the legend. Objects that are plotted without this option are not
-% displayed in the legend. Eventually the legend is displayd by the command
+% displayed in the legend. Eventually the legend is displayed by the command
 % <https://mathworks.com/help/matlab/ref/legend.html |legend|>
 
 % this is a point
@@ -23,6 +23,6 @@ legend
 
 %%
 % The <https://mathworks.com/help/matlab/ref/legend.html |legend|> command
-% suport a wide varity of
+% support a wide variety of
 % <https://mathworks.com/help/matlab/ref/matlab.graphics.illustration.legend-properties.html
-% porperties> to adjust the position and appearance of the legend.
+% properties> to adjust the position and appearance of the legend.

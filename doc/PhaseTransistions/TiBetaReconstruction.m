@@ -60,7 +60,7 @@ job.p2c = beta2alpha
 % |job.grainsIn| and the current grains |job.grains|, i.e.,
 % |job.grainsIn(ind)| goes into the merged grain
 % |job.grains(job.mergeId(ind))|
-% * |job.numChilds| - number of childs of each current parent grain
+% * |job.numChilds| - number of children of each current parent grain
 % * |job.parenGrains| - the current parent grains
 % * |job.childGrains| - the current child grains
 % * |job.isTransformed| - which of the |grainsMeasured| have a computed

@@ -2,7 +2,7 @@
 %
 % Documenting a project like MTEX is a challenging and ongoing task for the
 % entire community. Therefore we are extremely happy about any spelling
-% fixes, examples, theoretical explainations, special use cases, etc. As a
+% fixes, examples, theoretical explanations, special use cases, etc. As a
 % bonus everybody who contributed to MTEX will automatically appear at the
 % <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors
 % page>.
@@ -30,7 +30,7 @@
 %
 %   edit hepPageName
 %
-% This allows you to run through all the commands and investiage the effect
+% This allows you to run through all the commands and investigate the effect
 % of different parameters or different input files or add further analysis
 % steps.
 %

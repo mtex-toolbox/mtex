@@ -22,7 +22,7 @@ eS.xdim = 200;
 eS.CS = crystalSymmetry('mmm','Mineral','Kryptonite');
 eS.ori0 = orientation.byEuler([0,pi/4,0]*degree,eS.CS);
 
-% next we want to create map from the inital input which can be accessed
+% next we want to create map from the initial input which can be accessed
 % from '.EBSDSim
 
 eS.makeMap;
@@ -40,7 +40,7 @@ plot(eS.EBSDsim, eS.EBSDsim.orientations)
 eS.noiseFun = 'logn';
 eS.noiseMax = 2*degree;
 
-% update the orientiation 
+% update the orientation 
 eS.addnoise
 
 plot(eS.EBSDsim,angle(eS.ori0,eS.EBSDsim.orientations)/degree)

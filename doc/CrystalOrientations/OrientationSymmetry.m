@@ -1,9 +1,9 @@
-%% Symmetricaly Equivalent Orientations
+%% Symmetrically Equivalent Orientations
 %
 %%
 % A crystal orientation always appears as a class of symmetrically
 % equivalent rotations which all transform the crystal reference frame into
-% the specimen reference frame and are physicaly not distinguishable. 
+% the specimen reference frame and are physically not distinguishable. 
 %
 % Lets start by defining some random orientation
 
@@ -57,14 +57,14 @@ symmetrise(orientation.id(cs,ss),'unique')
 % Note that all operation on orientations are preformed taking all
 % symmetrically equivalent orientations into account. As an example
 % consider the angle between a random orientation and all orientations
-% symmetricall equivalent to the goss orientation
+% symmetrically equivalent to the goss orientation
 
 ori = orientation.rand(cs);
 angle(ori,symmetrise(orientation.goss(cs))) ./ degree
 
 %%
 % The value is the same for all orientations and equal to the smallest
-% angle to one of the symmetrally equivalent orientations. This can be
+% angle to one of the symmetrically equivalent orientations. This can be
 % verified by computing the rotational angle ignoring symmetry.
 
 angle(ori,symmetrise(orientation.goss(cs)),'noSymmetry') ./ degree

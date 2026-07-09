@@ -111,7 +111,7 @@ dS(dS.isEdge).u = 1;
 % energy of the screw dislocations
 dS(dS.isScrew).u = 1 - 0.3;
 
-% Question to verybody: what is the best way to set the enegry? I found
+% Question to everybody: what is the best way to set the energy? I found
 % different formulae
 %
 % E = 1 - poisson ratio

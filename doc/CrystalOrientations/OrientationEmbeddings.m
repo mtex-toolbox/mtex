@@ -195,7 +195,7 @@ ylabel('$\sqrt{1-n}$','Interpreter','latex')
 % <BinghamODFs.html Bingham distributions>. Lets repeat the experiment for
 % this family.
 
-% genrate ODF of different halfwidth
+% generate ODF of different halfwidth
 n = []; sigma = [];
 for k = 1:2:600
 

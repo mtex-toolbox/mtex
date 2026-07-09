@@ -4,7 +4,7 @@
 % Single crystal tensor are imported using the command <tensor.load.html
 % tensor.load>. This function automatically detect the file format and
 % imports the data. In dependency of the specific format it might be
-% necessary to specify the crystal symmetry seperately
+% necessary to specify the crystal symmetry separately
 
 % define crystal symmetry
 CS = crystalSymmetry('32', [4.916 4.916 5.4054],...

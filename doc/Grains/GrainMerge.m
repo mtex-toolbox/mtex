@@ -64,7 +64,7 @@ hold off
 mergedGrains(16).id
 
 %%
-% Hence, we can find all childs of grain 16 by 
+% Hence, we can find all children of grain 16 by 
 
 childs = grains(parentId == mergedGrains(16).id)
 
@@ -133,7 +133,7 @@ setColorRange([0,1.5])
 
 %%
 % The above result is a bit unrealistic since the averages are computed
-% between the childs ignoring their relative areas. A better approach is to
+% between the children ignoring their relative areas. A better approach is to
 % compute a weighted average by the following lines.
 
 % extract GOS and area

@@ -5,7 +5,7 @@
 % transformation using an example EBSD data set of a Plessite
 % microstructure from the Emsland iron meteorite. Plessite, from the Greek
 % word "plythos" meaning "filling" iron, comprises an intimate mixed
-% intergrowth of parent Taenite (austentic fcc) and child Kamacite (bcc).
+% intergrowth of parent Taenite (austenitic fcc) and child Kamacite (bcc).
 % Plessite develops at low temperatures from retained Taenite and fills the
 % spaces between Widmanstatten patterns. It occurs as the volumes remaining
 % between already transformed Kamacite surrounded by very thin Taenite

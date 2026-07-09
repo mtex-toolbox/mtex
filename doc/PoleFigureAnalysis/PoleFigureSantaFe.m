@@ -1,7 +1,7 @@
 %% The SantaFe example
 %
 % Simulate a set of pole figures for the SantaFe standard ODF, estimate
-% an ODF and compare it to the inital SantaFe ODF.
+% an ODF and compare it to the initial SantaFe ODF.
 %
 %% Simulate pole figures
 
@@ -35,7 +35,7 @@ rec2 = calcODF(pf,'NoGhostCorrection')
 % calculate RP error
 calcError(rec,odf)
 
-% difference plot between meassured and recalculated pole figures
+% difference plot between measured and recalculated pole figures
 plotDiff(pf,rec)
  
 %% Plot estimated pole figures

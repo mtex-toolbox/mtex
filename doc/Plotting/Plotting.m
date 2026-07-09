@@ -20,7 +20,7 @@
 %
 % * contour plots
 % * filled contour plots
-% * smoots plots
+% * smooths plots
 % * scatter plots
 % * line plots
 %

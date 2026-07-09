@@ -47,7 +47,7 @@ ori_Bunge * r
 %
 % Due to the above explained inverse relationship of orientations defined 
 % in MTEX and in Bunge convention, a matrix generated from an orientation 
-% in MTEX is the inverse, or equivallently, the transpose of the matrix in 
+% in MTEX is the inverse, or equivalently, the transpose of the matrix in 
 % Bunge notation.
 
 ori.matrix

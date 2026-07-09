@@ -132,7 +132,7 @@ mean(SO3F4, 2)
 % *min/max*
 %
 % If the |min| or |max| command gets a vector valued |SO3FunHarmonic| the 
-% pointwise minimum or maximum is calculated along the first non-singelton 
+% pointwise minimum or maximum is calculated along the first non-singleton 
 % dimension if not specified otherwise.
 % 
 % Therefore the function has to be real valued

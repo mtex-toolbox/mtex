@@ -1,7 +1,7 @@
 %% Configuration
 %
 %%
-% MTEX is higly customizable. On a local level this can be done by passing
+% MTEX is highly customizable. On a local level this can be done by passing
 % <GeneralConceptsOptions options> to MTEX functions. On a global level
 % this is achieved by editing the file <matlab:edit('mtex_settings.m')
 % mtex_settings.m> via the command

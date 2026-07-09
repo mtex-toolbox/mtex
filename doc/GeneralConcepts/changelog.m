@@ -239,7 +239,7 @@
 % stress, strain and elasticity tensors.
 % * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
 % method for data cleaning in EBSD maps.
-% * Pseudesymmetries like 532 are now natively supported using the syntax
+% * Pseudosymmetries like 532 are now natively supported using the syntax
 % |crystalSymmetry('532')|
 % * |symmetrise(t,'iso')| return the isotropic portion of a tensor
 % * <tensor.symmetricDecomposition.html |symmetricDecomposition|> computes
@@ -376,7 +376,7 @@
 % * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
 % * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
 % * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
-% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clusteres
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clustered
 % * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
 % * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
 % * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
@@ -539,7 +539,7 @@
 % * Other Changes*
 %
 % * <vector3d.mean.html vector3d/mean> now returns not normalized vectors
-% * new flag |noAntipodal| to supress antipodal symmetry in calculations
+% * new flag |noAntipodal| to suppress antipodal symmetry in calculations
 %
 %% MTEX 5.3.0 4/2020
 %
@@ -606,7 +606,7 @@
 % efficiently
 %
 % * <str2rgb.html |str2rgb|> convert color str to RGB color
-% * <ind2color.html |ind2color|> convert index to distrinct RGB colors,
+% * <ind2color.html |ind2color|> convert index to distinct RGB colors,
 % good for loops
 %
 % *Improved Import Wizard*
@@ -709,10 +709,10 @@
 % More information how to calculate with dislocation systems can be found
 % <dislocationSystem.dislocationSystem.html here>.
 %
-% *Geometrically neccesary dislocations*
+% *Geometrically necessary dislocations*
 %
 % The newly introduced dislocation systems play an important role when
-% computing geometrically neccesary dislocations from EBSD data. The
+% computing geometrically necessary dislocations from EBSD data. The
 % workflow is illustrate the script <GND.html GND> and consists
 % of the following steps:
 %
@@ -744,10 +744,10 @@
 % In MTEX 5.1 the color keys used for coloring EBSD have been a bit
 % reorganised.
 %
-% * seperate classes for directional color keys. So far these classes are
+% * separate classes for directional color keys. So far these classes are
 % <HSVDirectionKey.html |HSVDirectionKey|>, <HKLDirectionKey.html
 % |HKLDirectionKey|>, <TSLDirectionKey.html |TSLDirectionKey|>. This has
-% become neccesary as some orientation color keys depend directional color
+% become necessary as some orientation color keys depend directional color
 % keys with different symmetry.
 %
 % * new color key <axisAngleColorKey.html |axisAngleColorKey|> that
@@ -771,7 +771,7 @@
 %
 % *Misc*
 %
-% * new fuction <grain2d.fitEllipse.html |fitEllipse|> to assign ellipses
+% * new function <grain2d.fitEllipse.html |fitEllipse|> to assign ellipses
 % to grains
 % * the functions <tensor.symmetrise.html |symmetrise(tensor)|> and
 % <S2FunHarmonic.symmetrise.html |symmetrise(S2F)|> do support
@@ -785,7 +785,7 @@
 % * new option |logarithmic|
 % * new function <SO3Fun.grad.html |grad|> to compute the gradient of and ODF
 % at a certain orientation
-% * explicitely set the number of rows and columns in a MTEXFigure plot
+% * explicitly set the number of rows and columns in a MTEXFigure plot
 % with
 % * EBSD hdf5 interface works now for Bruker data as well
 %
@@ -819,7 +819,7 @@
 %
 % returns for a list of specimen directions |r| the corresponding list of
 % pole figure intensities |pfi| for the ODF |odf|. Starting with MTEX 5.0 it
-% is possible to ommit the list of specimen directions |r| or replace it by
+% is possible to omit the list of specimen directions |r| or replace it by
 % an empty list |[]|. In this case the command
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
@@ -836,7 +836,7 @@
 %
 %   % compute with spherical functions as with ordinary numbers
 %   pdf3 = 5 * pdf1 + 3 * pdf2
-%   pdf = max(pdf,0) % repace of negative entries by 0
+%   pdf = max(pdf,0) % replace of negative entries by 0
 %   pdf = abs(pdf) % take the absolute value
 %   sum(pdf) % the integral of the pole figure
 %   sum(pdf.^2) % the integral of the pole figure squares - also called pole figure index
@@ -900,7 +900,7 @@
 % Any scalar or vectorial property of a tensor is not returned as a
 % spherical function or spherical vector field. Examples are the velocity
 % properties mentioned above, Youngs modulus, shear modulus, Poisson ration
-% etc. In particular, plotting those directional dependend quantities is as
+% etc. In particular, plotting those directional dependent quantities is as
 % simple as
 %
 %   plot(C.YoungsModulus)
@@ -922,14 +922,14 @@
 %
 %   % define the faces of the crystal
 %   m = Miller({1,0,-1,0},cs);  % hexagonal prism
-%   r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usally bigger then z
+%   r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usually bigger then z
 %   z = Miller({0,1,-1,1},cs);  % negative rhomboedron
 %   s2 = Miller({1,1,-2,1},cs); % right tridiagonal bipyramid
 %   x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
 %   N = [m,r,z,s2,x2];
 %
 %   % define the crystal shape
-%   habitus = 1.2; % determines the overal shape
+%   habitus = 1.2; % determines the overall shape
 %   extension = [1,1.2,1]; % determines the extension of the crystal in x,y,z direction
 %   cS = crystalShape(N,habitus,extension);
 %
@@ -946,7 +946,7 @@
 %
 %   [mods,weights] = calcComponents(odf)
 %
-% returns a list of modal orientaions |mods| and a list of weights which
+% returns a list of modal orientations |mods| and a list of weights which
 % sum up to one. A more advanced call is
 %
 %   [modes, weights,centerId] = calcComponents(odf,'seed',oriList)
@@ -964,8 +964,8 @@
 %   [center,~,centerId] = calcComponents(odf,'seed',ori)
 %
 % Then |center| are the clusters center and |centerId| gives for each
-% orientation to which cluster it belongs. Substantional in this method is
-% the choise of the kernel halfwidth used for ODF computation. This can be
+% orientation to which cluster it belongs. Substantial in this method is
+% the choice of the kernel halfwidth used for ODF computation. This can be
 % adjusted by
 %
 %   [c,center] = calcCluster(ori,'halfwidth',2.5*degree)
@@ -985,7 +985,7 @@
 % advantage is that tensor specific behaviour and functions can now better
 % be implemented and documented, e.g., that the inverse of the compliance
 % tensor is the stiffness tensor and vice versa. For user the important
-% change is that e.g. the stiffness tenssor is now defined by
+% change is that e.g. the stiffness tensor is now defined by
 %
 %   C = stiffnessTensor(M,cs)
 %
@@ -1006,7 +1006,7 @@
 %
 % As a consequence the behaviour of MTEX figures have changed slightly. By
 % default MTEX now always plots into the last axis. In order to annotate
-% orintations or directions to all axes in a figure use the new option
+% orientations or directions to all axes in a figure use the new option
 % |add2all|.
 %
 %  plotIPDF(SantaFe,[xvector,yvector+zvector])
@@ -1015,8 +1015,8 @@
 %
 % We also introduced two new functions <S2Fun.plotSection.html plotSection>
 % and <S2Fun.quiverSection.html quiverSection> to visualize spherical
-% functions restricted to a plane. As an exaple one can now plot the
-% slowness surfaceses of wave velocities in the plane perpendicular to Y
+% functions restricted to a plane. As an example one can now plot the
+% slowness surfaces of wave velocities in the plane perpendicular to Y
 % with
 %
 %   plotSection(1./vp,vector3d.Y)
@@ -1036,7 +1036,7 @@
 %
 % This is mainly a bug fix release
 %
-% * some more functions get tab completetion for input arguments
+% * some more functions get tab completion for input arguments
 % * the option 'MarkerSize' can also be a vector to allow for varying Markersize
 % * new option 'noSymmetry' for plotPDF and plotSection
 %
@@ -1047,7 +1047,7 @@
 % * new predefined orientation relation ship
 %
 %   gT = GreningerTrojano(csAlpha,csGamma)
-%   ori_childs = ori_parent * inv(gT.variants)
+%   ori_children = ori_parent * inv(gT.variants)
 %   ori_parents = ori_child * gT.parents
 %
 %
@@ -1055,7 +1055,7 @@
 %
 % This is mainly a bug fix release
 %
-% * some functions get tab completetion for input arguments
+% * some functions get tab completion for input arguments
 % * allow different colormaps in one figure
 % * updated interfaces
 % * added Levi Civita permutation tensor
@@ -1078,10 +1078,10 @@
 %
 % * MTEX introduces <orientation.round2Miller.html round2Miller> which
 % determines to an arbitrary misorientation |mori| two pairs of lower order
-% Miller indeces such that which are aligned by |mori|
+% Miller indices such that which are aligned by |mori|
 %
 % * MTEX includes now some of the important misorientation
-% relationsships like
+% relationships like
 %
 %   orientation.Bain(cs)
 %   orientation.KurdjumovSachs(cs)
@@ -1106,7 +1106,7 @@
 % *EBSD*
 %
 % Rotating, flipping of EBSD data is now done with respect to the center of
-% the map. Previously all these opertions where done relatively to the
+% the map. Previously all these operations where done relatively to the
 % point (0,0). Use
 %
 %   rotate(ebsd,180*degree,'center',[0,0])
@@ -1131,7 +1131,7 @@
 %
 %   sSFCC = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'));
 %
-% Slip systems are instrumental for computating the following properties
+% Slip systems are instrumental for computing the following properties
 %
 % * <slipSystem.SchmidFactor.html Schmid factor>
 % * <TaylorModel.html Taylor factor>
@@ -1286,7 +1286,7 @@
 %
 %   ebsd.calcGND
 %
-% *Auxilary new functionality*
+% *Auxiliary new functionality*
 %
 % * grain2d.calcParis - Percentile Average Relative Indented Surface
 % * tensor.diag
@@ -1588,7 +1588,7 @@
 %
 %   plot(pf,'minmax')
 %
-% * 3d plots of pole figures can now be simultanously rotated
+% * 3d plots of pole figures can now be simultaneously rotated
 % * you can now restrict an EBSD data set to a line to plot profiles
 %
 %   ebsd_prof = ebsd.spatialProfile(ebsd,some_line)
@@ -1667,7 +1667,7 @@
 %   grains.boundary
 %
 %   % select boundary by phase transition
-%   gB = grains.boundary('Forstarite','Enstatite')
+%   gB = grains.boundary('Forsterite','Enstatite')
 %
 %   % select boundary by misorientation angle
 %   gB(gB.misorientation.angle>100*degree)
@@ -1784,7 +1784,7 @@
 % is an index to all pole figure data with a polar angle smaller than 80
 % degree. To restrict the pole figure variable |pf| to the data write
 %
-%   pf_restrcited = pf(condition)
+%   pf_restricted = pf(condition)
 %
 % In the same manner, we can also remove all negative intensities
 %
@@ -1920,7 +1920,7 @@
 %
 % * fixed some inverse pole figure color codings
 % * option south is working again in pole figure plots
-% * geometric mean in tensor averagin, thanks to Julian Mecklenburgh
+% * geometric mean in tensor averaging, thanks to Julian Mecklenburgh
 % * improved support of osc EBSD format
 % * tensor symmetry check error can be turned of and has a more detailed
 % error message
@@ -2037,7 +2037,7 @@
 %
 % * faster, more stable tensor implementation
 % * new syntax in tensor indexing to be compatible with other MTEX classes.
-% For a 4 rank thensor |C|, we have now
+% For a 4 rank tensor |C|, we have now
 %
 %   % extract entry 1,1,1,1 in tensor notation
 %   C{1,1,1,1}
@@ -2067,7 +2067,7 @@
 %
 % *General*
 %
-% * improved instalation / uninstalation
+% * improved installation / uninstallation
 % * new setting system
 %
 %   setpref('mtex','propertyName','propertyValue')
@@ -2099,7 +2099,7 @@
 %
 % * fix: single/double convention get sometimes wrong with tensors
 % * fix: tensor checks did not respect rounding errors
-% * fix: ingorePhase default is now none
+% * fix: ignorePhase default is now none
 % * fix: calcAngleDistribution works with ODF option
 % * fix: respect rounding errors when importing pole figures and ODFs
 %
@@ -2143,7 +2143,7 @@
 %
 % *Other*
 %
-% * the comand |set_mtex_option| is obsolete. Use the matlab command
+% * the command |set_mtex_option| is obsolete. Use the matlab command
 % |setMTEXpref(...)| instead. Additionally, one can now see all options
 % by the command |getpref('mtex')|
 %
@@ -2225,7 +2225,7 @@
 %  calcODF(ebsd('Fe'))
 %
 %
-% *Other Enhangments*
+% *Other Enhancements*
 %
 % * better import and export of pole figures, odfs and EBSD data
 % * automatic centering of a specimen with respect to its specimen symmetry
@@ -2298,7 +2298,7 @@
 % relationships. Main features are:
 %
 % * Grains statistics (area, diameter, mean orientation, ...)
-% * Missorientation analysis
+% * Misorientation analysis
 % * Interactive selection of grains by various criteria
 % * ODF-calculations for any subset of grains
 % * A large palette of plotting possibilities.
@@ -2359,7 +2359,7 @@
 %
 %% MTEX 1.1 - 12/2008
 %
-% *Improved Import Wizzard*
+% *Improved Import Wizard*
 %
 % * Load CIF files to specify crystal geometry
 % * Import EBSD data with coordinates
@@ -2491,7 +2491,7 @@
 %% MTEX 0.3 - 10/2007
 %
 % * new function |fourier| to calculate the
-% Fourier coefficents of an arbitrary ODF
+% Fourier coefficients of an arbitrary ODF
 % * new option |ghost correction| in function
 % <PoleFigure.calcODF.html calcODF>
 % * new option |zero range| in function <PoleFigure.calcODF.html calcODF>

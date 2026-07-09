@@ -170,7 +170,7 @@ hold off
 figure(2)
 plot(colorKey,'layout',[3,4])
 
-% and plot the misorienations on top
+% and plot the misorientations on top
 plot(gB_Fo.misorientation,...
   'MarkerFacecolor','none','add2all','MarkerSize',4)
 

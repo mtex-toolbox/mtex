@@ -39,7 +39,7 @@ mtexColorbar
 plot(pf,'colorRange','equal')
 mtexColorbar
 
-%% Setting an Explicite Colorrange
+%% Setting an Explicit Colorrange
 %
 % If you want to have a unified colorcoding for several figures you can set
 % the colorrange directly in the <SO3Fun.plotPDF.html plot command>

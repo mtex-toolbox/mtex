@@ -71,7 +71,7 @@ plot(v,'MarkerFaceColor','Black')
 hold off
 
 %%
-% Under the assumption of sufficiently many and sufficently concetrated
+% Under the assumption of sufficiently many and sufficiently concentrated
 % data we may also estimate a confidence ellipse for the mean direction
 % (default p = 0.95). The center of the ellipse is given by the largest
 % principle vector stored in |bs.a(3)|

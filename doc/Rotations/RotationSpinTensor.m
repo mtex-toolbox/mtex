@@ -66,7 +66,7 @@ inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
 % matrix logarithm <quaternion.log.html |log|> provides the correct way
 % to translate rotational changes into skew symmetric matrices
 
-% define a large pertubation with rotational angle 1 radiant
+% define a large perturbation with rotational angle 1 radiant
 delta = 1; 
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1);
 

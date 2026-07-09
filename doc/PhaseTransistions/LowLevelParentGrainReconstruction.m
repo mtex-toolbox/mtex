@@ -149,7 +149,7 @@ plot(parentGrains(betaName), ...
 % As an additional consistency check we verify that each parent grain has
 % been reconstructed from at least 2 child grains. To this end we first
 % make a test run the merge operation and then revert all parent grains that
-% that have less then two childs. This step may not necessary in many case.
+% that have less then two children. This step may not necessary in many case.
 
 % test run of the merge operation
 [~,parentId] = merge(parentGrains,'threshold',2.5*degree,'testRun');

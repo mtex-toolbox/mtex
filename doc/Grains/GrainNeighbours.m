@@ -34,7 +34,7 @@ plot(grains(pairs(170,:)).boundary,'LineWidth',4,'linecolor','b')
 hold off
 
 %%
-% In order to compute the misorentation between these two grains we can do
+% In order to compute the misorientation between these two grains we can do
 
 mori = inv(grains(pairs(170,1)).meanOrientation) * grains(pairs(170,2)).meanOrientation
 

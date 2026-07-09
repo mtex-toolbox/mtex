@@ -4,7 +4,7 @@
 % The orientation distribution function (ODF), sometimes also called
 % orientation density function, is a function on the orientation space that
 % associates to each orientation $g$ the volume percentage of crystals in a
-% polycrystaline specimen that are in this specific orientation. Formaly,
+% polycrystalline specimen that are in this specific orientation. Formally,
 % this is often expressed by the formula
 %
 % $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
@@ -18,7 +18,7 @@
 % import the data
 mtexdata titanium
 
-% define the habitus of titanium as a somple hexagonal prism
+% define the habitus of titanium as a sample hexagonal prism
 cS = crystalShape.hex(ebsd.CS);
 
 % plot colored orientations
@@ -49,7 +49,7 @@ plot(ebsd.orientations,'Euler')
 odf = calcDensity(ebsd.orientations)
 
 %%
-% More detais about the computation of a density function from discrete
+% More details about the computation of a density function from discrete
 % measurements can be found in the section <DensityEstimation.html Density
 % Estimation>.
 %

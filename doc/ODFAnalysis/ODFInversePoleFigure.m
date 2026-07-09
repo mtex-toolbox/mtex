@@ -38,7 +38,7 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 plotIPDF(odf,[xvector,zvector])
 
 %%
-% Imposing antipodal symmetry to the inverse pole figures halfes the
+% Imposing antipodal symmetry to the inverse pole figures halves the
 % fundamental region
 
 plotIPDF(odf,[xvector,zvector],'antipodal')

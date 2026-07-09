@@ -130,5 +130,5 @@ mtexColorbar('title', 'distance from fibre')
 %plot(fib_axCC,opts{:},'fundamentalRegion')
 %mtexColorbar
 
-% Now we can start to wonder whether the distrubtion of fibre axes relates
+% Now we can start to wonder whether the distribution of fibre axes relates
 % to e.g. the kinematic during deformation of the sample.

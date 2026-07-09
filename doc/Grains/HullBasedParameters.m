@@ -37,7 +37,7 @@ hold off
 %%
 % One major difference is that grains may now overlap but their convex
 % hulls usually do. Accordingly, the boundaries of the convex hull grains
-% are not a boundaries between adjecent grains and, therefore, the second
+% are not a boundaries between adjacent grains and, therefore, the second
 % phase in all convex hull boundary segments is set to |'notIndexed'|.
 %
 %% Deviation from fully convex shapes
@@ -49,7 +49,7 @@ hold off
 % measures might be more appropriate over others.
 %
 % One measure is the relative difference between the grain perimeter and
-% the perimeter of the convex hull. It most strongly discriminizes grains
+% the perimeter of the convex hull. It most strongly discriminates grains
 % with thin, narrow indenting parts, e.g. fracture which not entirely
 % dissect a grain.
 

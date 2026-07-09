@@ -155,7 +155,7 @@ a = norm(ebsd.CS.aAxis);
 
 %% The Energy of Dislocations
 % The energy of each dislocation system can be stored in the property |u|.
-% By default this value it set to 1 but should be changed accoring to the
+% By default this value it set to 1 but should be changed according to the
 % specific model and the specific material.
 %
 % According to Hull & Bacon the energy U of edge and screw dislocations is

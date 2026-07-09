@@ -9,7 +9,7 @@
 %
 % The pole density function $P_{\vec h}(\vec r)$ evaluated at a specimen
 % direction $\vec r$ can be interpreted as the volume percentage of
-% crystals with the crystal lattice planes $\vec h$ beeing normal to the
+% crystals with the crystal lattice planes $\vec h$ being normal to the
 % specimen direction $\vec r$. 
 % 
 % In order to illustrate the concept of pole figures at an example lets us

@@ -37,7 +37,7 @@ hold off
 % Here we use as the initial guess the Kurdjumov Sachs orientation
 % relationship
 
-% initial gues is Kurdjumov Sachs
+% initial guess is Kurdjumov Sachs
 KS = orientation.KurdjumovSachs(csFCC,csBCC);
 
 %%
@@ -162,7 +162,7 @@ hold off
 
 %% Compute parent grain orientations
 % In the next step we compute for each parent grain its parent austenite
-% orientation. This can be done usig the command <calcParent.html
+% orientation. This can be done using the command <calcParent.html
 % |calcParent|>. Note, that we ensure that at least two child grains have
 % been merged and that the misfit is smaller than 5 degree.
 
@@ -267,7 +267,7 @@ mtexColorMap LaboTeX
 mtexColorbar
 
 %% Denoise the parent map
-% Finaly we may apply filtering to the parent map to fill non indexed or
+% Finally we may apply filtering to the parent map to fill non indexed or
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
@@ -304,14 +304,14 @@ hold off
 % the reconstruction
 %
 % * threshold for initial grain segmentation (3 degree)
-% * theshold (2 degree), tolerance (1.5 degree) and inflation power (p =
+% * threshold (2 degree), tolerance (1.5 degree) and inflation power (p =
 % 1.6) of the Markovian clustering algorithm
 % * maximum misfit within a parent grain (5 degree)
 % * minimum number of merged child grains
 %
 %% Triple Point Based Analysis
 %
-% A problem of the boundary based reconstuction algorithm is that often
+% A problem of the boundary based reconstruction algorithm is that often
 % child variants of different grains have a misorientation that is close to
 % the theoretical child to child misorientation. One idea to overcome this
 % problem is to analyze triple junctions. Now all three child orientations

@@ -81,7 +81,7 @@ plot(psi)
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
 % 
 % for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
-% Poussin kernel additionaly has the unique property that for
+% Poussin kernel additionally has the unique property that for
 % a given halfwidth it can be described exactly by a finite number of 
 % Fourier coefficients. This kernel is recommended for Texture analysis as 
 % it is always positive in orientation space and there is no truncation 
@@ -260,7 +260,7 @@ legend('halfwidth = 15°','halfwidth = 20°')
 % $$ \psi_s(t) = \sum\limits_{n=0}^{\infty} (2n+1)\, (n(n+1))^s \, \mathcal
 % U_{2n}(t). $$
 %
-% Lets construct two of them by the parameter $s$ and banwidth 15.
+% Lets construct two of them by the parameter $s$ and bandwidth 15.
 
 psi1 = SO3SobolevKernel(1,'bandwidth',15)
 psi2 = SO3SobolevKernel(1.2,'bandwidth',15)
@@ -305,7 +305,7 @@ plotSpektra(psi)
 % $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} \hat{f}_n(\kappa)
 % \, \mathcal U_{2n}(t). $$
 %
-% where the chebychev coefficients follows a 3-term recurrsion
+% where the chebychev coefficients follows a 3-term recursion
 %
 % $\hat{f}_0 = 1$
 %
@@ -339,7 +339,7 @@ legend('\kappa = 0.2','\kappa = 0.3')
 % The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
 % L^2(\mathcal{SO}(3))$ is a radial symmetric kernel function depending on
 % a parameter $r\in (0,\pi)$. The function value is 0, if the angle is
-% greater then the halfwidth $r$. Otherwise it is has a contstant value,
+% greater then the halfwidth $r$. Otherwise it is has a constant value,
 % such that the mean of $\psi_r$ on $\mathcal{SO}(3)$ is 1. Hence we use
 % the open set
 %

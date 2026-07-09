@@ -4,7 +4,7 @@
 %
 %% Data import
 %
-% MTEX allows you to import EBSD from all big vendors of EBSD systems. Prefered
+% MTEX allows you to import EBSD from all big vendors of EBSD systems. Preferred
 % data formats are text based data files like |.ang|, |.ctf| or open binary
 % formats like |.osc| or |.h5|. Most conveniently, EBSD data may be imported
 % using the import wizard, by typing

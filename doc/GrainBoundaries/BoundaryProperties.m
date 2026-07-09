@@ -87,7 +87,7 @@ inv(ebsd('id',gB4.ebsdId(1,2)).orientations) .* ebsd('id',gB4.ebsdId(1,1)).orien
 %
 % Obviously, misorientations of a list of grain boundaries can only be
 % extracted if all of them have the same type of phase transition. Let us
-% consider only Magnesium to Magnesium grain boundaries, i.e., ommit all
+% consider only Magnesium to Magnesium grain boundaries, i.e., omit all
 % grain boundaries to an not indexed region. 
 
 gB_Mg = gB('Magnesium','Magnesium')

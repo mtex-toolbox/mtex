@@ -70,7 +70,7 @@ export(model_odf,fname,S3G,'Bunge','generic')
 
 %% Export an ODF to an MTEX ASCII File
 % Using the options *MTEX* the ODF is exported to an ASCII file which contains
-% descriptions of all components of the ODF in a human readable fassion.
+% descriptions of all components of the ODF in a human readable fashion.
 % This format can be imported by MTEX without loss.
 
 % the filename

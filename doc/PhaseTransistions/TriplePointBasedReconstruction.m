@@ -12,7 +12,7 @@ plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
 
 %%
 % The data set contains 99.8 percent alpha titanium and 0.2 percent beta
-% titanium. Our goal is to reconstuct the original beta phase. The
+% titanium. Our goal is to reconstruct the original beta phase. The
 % original grain structure appears almost visible for human eyes.
 % Our computations will be based on the Burgers orientation relationship
 
@@ -69,7 +69,7 @@ job.calcTPVotes('minFit',2.5*degree,'maxFit',5*degree)
 
 %%
 % The above command does not only compute the best fitting but also the
-% second best fitting parent orientation. This allows us to ignore ambigues
+% second best fitting parent orientation. This allows us to ignore ambiguous
 % triple points which may vote equally well for different parent
 % orientations. In the above command we did this by the option |'maxFit'|
 % which tells MTEX to ignore all triple points where the fit to the second
@@ -114,7 +114,7 @@ plot(job.parentGrains, color, 'figSize', 'large')
 % <parentGrainReconstructor.calcParentFromVote.html |calcParentFromVote|>
 % to recover parent orientations from the votes. As threshold for the
 % growing the parent grains into the child grains we use 2.5 degree, 5
-% degree and 7.5 degree. This can be easily accomblished by the following
+% degree and 7.5 degree. This can be easily accomplished by the following
 % small loop.
 
 for k = 1:3
@@ -173,7 +173,7 @@ plot(parentEBSD('Ti (Beta)'),color,'figSize','large')
 
 %%
 % The recovered EBSD variable |parentEBSD| contains a measure
-% |parentEBSD.fit| for the corespondence between the beta orientation
+% |parentEBSD.fit| for the correspondence between the beta orientation
 % reconstructed for a single pixel and the beta orientation of the grain.
 % Lets visualize this
 

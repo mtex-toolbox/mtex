@@ -1,10 +1,10 @@
 %% Texture evolution in rolled magnesium during uniaxial tension
 %
 % This examples models the texture evolution of rolled magnesium under
-% unixaxial tension using the Taylor model. The undeformed material is
+% uniaxial tension using the Taylor model. The undeformed material is
 % assumed to have a basal fibre texture perpendicular to tension direction.
 % Then tension experiment has been performed twice: at room temperature and
-% at 250 degree Celcius. The strain at fracture was approx. 30 percent and
+% at 250 degree Celsius. The strain at fracture was approx. 30 percent and
 % 70 percent, respectively.
 
 %% Setting up hexagonal crystal symmetry
@@ -51,7 +51,7 @@ sScold = [slipSystem.basal(cs,1),...
   slipSystem.pyramidalCA(cs,80),...
   slipSystem.twinC1(cs,100)];
 
-% consider all symmetrically equivlent slip systems
+% consider all symmetrically equivalent slip systems
 [sScold,slipId] = sScold.symmetrise;
 
 %%
@@ -63,7 +63,7 @@ sSwarm = [slipSystem.basal(cs,1),...
   slipSystem.pyramidalCA(cs,10),...
   slipSystem.twinC1(cs,100)];
 
-% consider all symmetrically equivlent slip systems
+% consider all symmetrically equivalent slip systems
 sSwarm = sSwarm.symmetrise;
 
 %% Defining strain tensors
@@ -77,7 +77,7 @@ epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
 
 %% Calculate texture evolution
 % The Tayor calculation is used to get the resulting spin of each vector as
-% well as the coeffeicients for each slip system for cold and hot state
+% well as the coefficients for each slip system for cold and hot state
 
 % simulated an initial orientation distribution of 10000 grains
 ori = odf.discreteSample(100000);
