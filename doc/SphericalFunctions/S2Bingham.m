@@ -47,7 +47,7 @@ mtexFig.drawNow;
 %% Drawing a random sample of the Bingham distribution
 
 close
-v = bs2.discreteSample(500)
+v = bs2.discreteSample(50)
 plot(bs2)
 hold on
 plot(v,'MarkerFaceColor','k')
@@ -60,7 +60,7 @@ hold off
 % best fitting Bingham distribution by
 
 % estimate a Bingham distribution
-bs = S2FunBingham.fit(v,'confElli',0.9)
+bs = S2FunBingham.fit(v,'confElli',0.95)
 
 %%
 % Lets plot the fitted distribution with the data
@@ -85,5 +85,5 @@ annotate(bs.a(3),'MarkerFaceColor','red','MarkerSize',10)
 mtexColorMap white2black
 
 % annotate the ellipse
-ellipse(rotation.byMatrix(bs.a.xyz'),bs.cEllipse(1),bs.cEllipse(2), ...
+ellipse(bs.cEllipseRot,bs.cEllipse(1),bs.cEllipse(2), ...
     'linewidth',2,'lineColor','r','linestyle','-.')
