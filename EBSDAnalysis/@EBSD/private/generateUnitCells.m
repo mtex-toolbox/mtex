@@ -63,13 +63,20 @@ ij   = round(ij).';                    % N x 2 integer grid index (deformation-f
 
 % corner offset in lattice units, scaled to integers: square -> m=2 (half
 % steps), hex -> m=3 (third steps). m is the smallest integer making all
-% corner offsets integral.
+% corner offsets integral. The tolerance is relative and generous: real unit
+% cells store rounded decimals (e.g. 3.46 for 2*sqrt(3)) so the exact rational
+% is only approximate - a tight tolerance would miss m=3 for hex and fall back
+% to m=2, which collapses each hexagon's 6 corners onto 4 nodes (parallelograms).
 off = Ainv * [unitCell.x(:).'; unitCell.y(:).'];   % 2 x nC
 m = 1;
-while m <= 12 && ~all(abs(m*off(:) - round(m*off(:))) < 1e-6)
+while m <= 12 && ~all(abs(m*off(:) - round(m*off(:))) < tol)
   m = m + 1;
 end
-if m > 12, m = 2; end
+if m > 12
+  warning('generateUnitCells:latticeScale',...
+    'could not find an integer corner scaling; falling back to m=3 (hex) / m=2 (square)');
+  m = 2 + (nC == 6);      % 3 for hex, 2 for square
+end
 coff = round(m * off).';               % nC x 2 integer corner signs
 
 % --- topological key of every corner: m*index + cornerSign ------------------
