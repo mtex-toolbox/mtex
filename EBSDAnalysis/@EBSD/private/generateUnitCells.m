@@ -40,7 +40,7 @@ cz = pos.z(:) + unitCell.z(:).';
 % square, 4 for a hex); handing patch triangles skips the tessellator and lets
 % the GPU draw the map in a fraction of the time. Triangulation is only valid
 % here because there are no edges to draw (fan diagonals would show otherwise).
-if check_option(varargin,'noWeld')
+if check_option(varargin,'noWeld') && ~check_option(varargin,'unitCell')
   v = [cx(:), cy(:), cz(:)];                  % all corners, no merge
 
   % column c of the corner arrays occupies rows (c-1)*N+(1:N) in v
