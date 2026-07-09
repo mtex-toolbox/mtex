@@ -68,6 +68,7 @@ ij   = round(ij).';                    % N x 2 integer grid index (deformation-f
 % is only approximate - a tight tolerance would miss m=3 for hex and fall back
 % to m=2, which collapses each hexagon's 6 corners onto 4 nodes (parallelograms).
 off = Ainv * [unitCell.x(:).'; unitCell.y(:).'];   % 2 x nC
+tol = 1e-2;                                         % lattice units (~1% of a step)
 m = 1;
 while m <= 12 && ~all(abs(m*off(:) - round(m*off(:))) < tol)
   m = m + 1;
