@@ -24,6 +24,9 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 
 if nargin==2, epsilon_or_k=1; end
 
+v = reshape(v, [], 1);
+w = reshape(w, [], 1);
+
 if ~isa(w,'orientation')
   w = orientation(w,v.CS,v.SS);
 end
