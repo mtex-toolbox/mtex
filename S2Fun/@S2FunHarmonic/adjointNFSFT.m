@@ -38,11 +38,10 @@ end
 if numel(nodes)~=numel(values)
   s = size(values); s = s(2:end);
   values = reshape(values,numel(nodes),[]);
-  S2FunHarmonic.adjoint(nodes,values(:,1),'createPlan',varargin{:});
-  sF=[];
+  sF = S2FunHarmonic.adjoint(nodes,values(:,1),'createPlan',varargin{:});
   for ind = 1:prod(size(values, 2))
     G = S2FunHarmonic.adjoint(nodes,values(:,ind),'keepPlan',varargin{:});
-    sF = [sF,G];
+    sF = [sF;G];
   end
   S2FunHarmonic.adjoint(zvector,1,'killPlan');
   sF = reshape(sF, s); 
@@ -53,9 +52,9 @@ keepPlan = check_option(varargin,'keepPlan');
 
 % set up S2FunHarmonic
 if keepPlan
-  sF = S2FunHarmonic(0);
+  sF = S2FunHarmonic([]);
 else
-  sF = S2FunHarmonic(0,varargin{:});
+  sF = S2FunHarmonic([],varargin{:});
 
   % get plotting convention
   how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
@@ -106,6 +105,7 @@ if any(isnan(values(:)))
 end
 
 if isempty(nodes)
+  sF.fhat  = 0;
   return
 elseif bw==0
   sF.fhat  = mean(values)*sqrt(4*pi);  
@@ -131,7 +131,6 @@ end
 
 if check_option(varargin,'createPlan')
   keepPlanNSFT = plan;
-  sF=[];
   return
 end
 

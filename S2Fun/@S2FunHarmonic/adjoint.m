@@ -231,6 +231,5 @@ end
 sF = S2FunHarmonic(fhat,varargin{:});
 sF = reshape(sF,sz(2:end));
 sF.how2plot = how2plot;
-sF.s = getClass(varargin,'symmetry',sF.s);
 
 end
