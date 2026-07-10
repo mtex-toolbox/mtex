@@ -20,6 +20,8 @@ function v = rotate(v,q,varargin)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
+wasNormalized = v.isNormalized;
+
 if ~isa(q,'rotation')
   [a,b,c,d] = double(q);
   i = [];
@@ -56,7 +58,7 @@ v = rmOption(v,'theta','rho');
 
 if isa(q,'orientation')
   
-  if isa(q.SS,'crystalSymmetry')
+  if isa(q.SS,'crystalSymmetry')    
     v = Miller(v,q.SS);
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
@@ -70,3 +72,5 @@ if isa(q,'orientation')
   end
 
 end
+
+v.isNormalized = wasNormalized ;

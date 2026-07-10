@@ -66,7 +66,7 @@ classdef ipfColorKey < orientationColorKey
       
       % compute crystal directions
       ori.CS = oM.CS1;
-      h = inv(ori) .* oM.inversePoleFigureDirection;
+      h = inv(ori) .* normalize(oM.inversePoleFigureDirection);
       
       % colorize fundamental region
       rgb = oM.Miller2Color(h);
