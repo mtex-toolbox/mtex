@@ -494,6 +494,13 @@ function out = electron_image_default(raw_data)
 
 end
 
+function out = map_correction_rotation(raw_data)
+
+  out = rotation.byEuler(double(raw_data(:).')*degree);
+
+end
+
+
 function out = map_correction_default(raw_data)
 
   try
