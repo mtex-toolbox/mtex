@@ -99,9 +99,7 @@ methods
     sB.location        = get_option(varargin,'Location',sB.location);
 
     % redraw whenever the axes is resized, zoomed/panned or reoriented
-    % (e.g. through plottingConvention.setView) - reuses the same appdata
-    % slot as mapPlot.m so a repeated plot into the same axes replaces the
-    % old listeners instead of accumulating them. Position alone is not a
+    % (e.g. through plottingConvention.setView). Position alone is not a
     % reliable proxy for a changed map width (e.g. 'axis equal' can keep
     % Position fixed across a zoom, or change it without XLim/YLim
     % changing), so XLim/YLim are watched explicitly.
@@ -111,7 +109,20 @@ methods
     hListener(3) = addlistener(hax,'CameraUpVector','PostSet', @(~,~) sB.update);
     hListener(4) = addlistener(hax,'XLim',          'PostSet', @(~,~) sB.update);
     hListener(5) = addlistener(hax,'YLim',          'PostSet', @(~,~) sB.update);
-    setappdata(hax,'updatePos',hListener);
+
+    % Tie these axes-level listeners' lifetime directly to this scale
+    % bar's own graphics, rather than to garbage collection of the
+    % variable above: mapPlot.m clears the axes' appdata (via
+    % rmallappdata) *before* constructing the next scale bar, so a
+    % listener stored only in appdata can never be found and deleted by
+    % the following scale bar's constructor. An app that repeatedly
+    % cla's/replots the same axes (e.g. the import wizard) can then fire a
+    % CameraPosition/CameraUpVector change while the old, now-unreferenced
+    % listener is still alive (garbage collection is not immediate), which
+    % calls back into the already-deleted old scale bar and errors.
+    % Deleting the listeners the moment sB.hgt itself is destroyed (e.g.
+    % by cla) is immediate and needs no appdata bookkeeping at all.
+    addlistener(sB.hgt, 'ObjectBeingDestroyed', @(~,~) delete(hListener(isvalid(hListener))));
 
     addlistener(sB,'length',          'PostSet', @(~,~) sB.update);
     addlistener(sB,'scanUnit',        'PostSet', @(~,~) sB.update);
@@ -152,6 +163,13 @@ methods
   end
 
   function update(sB)
+
+    % belt-and-braces: a listener attached to the axes can outlive the
+    % scale bar it belonged to (see the constructor), so bail out rather
+    % than error if this instance's own graphics were already deleted
+    if isempty(sB.hgt) || ~isvalid(sB.hgt)
+      return
+    end
 
     % the plotting convention currently active on the map - read back from
     % the axes camera itself (not from a cached plottingConvention
@@ -202,6 +220,13 @@ methods
     % about to be shown, not the one left over from the previous redraw
     labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
     set(sB.txt,'string',labelStr,'position',[dx(1),dy(1)])
+
+    % force pending layout/rendering to be flushed before measuring the
+    % text: right after an axes is first created (e.g. a uiaxes inside an
+    % App Designer grid layout that has not been sized yet), its pixel
+    % geometry may not be finalized, which throws off the pixel-to-data
+    % conversion behind Extent and can make the box come out far too tall
+    drawnow
     extent = get(sB.txt, 'Extent');
 
     % Extent(3:4) are the text's footprint along data-x/data-y - which one
@@ -212,8 +237,21 @@ methods
     else
       textWidth = extent(3); textHeight = extent(4) * sign(diff(dy));
     end
-    if isnan(textHeight) || isnan(textWidth)
-      textWidth = 0; textHeight = (5+sB.txt.FontSize) *sign(diff(dy));
+
+    % Fall back to a size proportional to the map's own current extent -
+    % rather than a fixed font-size-based guess, which would only look
+    % right at whatever zoom level its absolute size happens to match -
+    % whenever Extent could not be measured (NaN) or is implausible
+    % (larger than a generous fraction of the map itself). The latter can
+    % happen even after the drawnow above: e.g. a uiaxes inside a freshly
+    % built App Designer layout (as in the import wizard) is not always
+    % guaranteed to have settled on its final pixel geometry yet, which
+    % throws off the pixel-to-data scale behind Extent.
+    bogus = isnan(textHeight) || isnan(textWidth) || ...
+      abs(textHeight) > 0.4*abs(diff(dy)) || abs(textWidth) > 0.9*abs(diff(dx));
+    if bogus
+      textWidth = 0;
+      textHeight = 0.05 * abs(diff(dy)) * sign(diff(dy));
     end
     gapY = textHeight/3;
     gapX = abs(gapY) * sign(diff(dx));
