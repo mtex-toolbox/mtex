@@ -42,3 +42,11 @@ else
   a = real(acos(a));
 
 end
+
+% somehow we can not speed up the acos :(
+% f1 = @() real(acos(a)));
+% f2 = @() acos(max(-1,min(1,a)));
+% timeit(f1)
+% timeit(f2)
+
+
