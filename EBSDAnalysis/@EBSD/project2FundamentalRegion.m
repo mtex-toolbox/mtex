@@ -7,7 +7,7 @@ function ebsd = project2FundamentalRegion(ebsd,grains)
 % was used to construct it
 if nargin == 2 % either as mean grain orientation
 
-  refRot = rotation.nan(max(grains.id));
+  refRot = rotation.nan(max(grains.id),1);
   refRot(grains.id) = grains.meanRotation;
 
 else % or as the last orientation in a grain
