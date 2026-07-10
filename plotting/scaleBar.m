@@ -2,28 +2,37 @@ classdef scaleBar < handle
 % Inserts a scale bar on the current ebsd or grain map.
 %
 % Syntax
-%   hg = scaleBar(ebsd, scanunits)
+%   sB = scaleBar(mP, scanUnit)
+%   sB = scaleBar(mP, scanUnit, 'BackgroundColor', 'k', 'LineColor', 'w', ...
+%     'BackgroundAlpha', 0.6, 'Location', 'nw')
 %
 % Input
-%  ebsd      - an mtex ebsd or grain object
-%  scanunits - units of the xy coordinates of the ebsd scan (e.g., 'um')
-%
-% Output
-%  oval  - output value 
-%  ounit - output unit
+%  mP        - the @mapPlot the scale bar is attached to
+%  scanUnit  - units of the xy coordinates of the ebsd scan (e.g., 'um')
 %
 % Options
-%  BACKGROUNDCOLOR - background color (ColorSpec)
-%  BACKGROUNDALPHA - background transparency (scalar 0<=a<=1)
-
+%  BackgroundColor - background color (ColorSpec)
+%  BackgroundAlpha - background transparency (scalar 0<=a<=1)
+%  LineColor       - border and text color (ColorSpec)
+%  Length          - fixed scale bar length (in scanUnit units)
+%  Location        - corner of the map the bar is drawn in:
+%                     'sw' (default), 'se', 'nw', 'ne'
 %
 % Example
 %  Use a scale bar on the aachen mtexdata.
 %
 %   mtexdata aachen
-%   plot(ebsd)
-%   scaleBar(ebsd,'um','BackgroundColor','k','LineColor','w', ...
-%                 'Border','off','BackgroundAlpha',0.6,'Location','nw')
+%   plot(ebsd,'BackgroundColor','k','LineColor','w', ...
+%                 'BackgroundAlpha',0.6,'Location','nw')
+%
+% Note
+%  The scale bar reads the plotting convention back from the axes camera
+%  via <plottingConvention.getView.html plottingConvention.getView> and
+%  realigns itself whenever the map is reoriented, e.g. via
+%  <plottingConvention.setView.html plottingConvention.setView> or one of
+%  <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
+%  etc. - this works no matter which @plottingConvention object was used to
+%  apply the view, since it never relies on a cached reference to it.
 %
 % Bugs/Issues
 %  [1] Using the hardware OpenGL renderer can sometimes cause the text not
@@ -39,14 +48,10 @@ classdef scaleBar < handle
 %
 % Authors
 %  Eric Payton, eric.payton@bam.de
-%  Philippe Pinard, pinard@gfe.rwth-aachen.de 
-%
-% Revision History
-%  2012.07.17 EJP - First version submitted for mtex commit. 
-%  2012.07.27 EJP - Added option for specifying scale bar lengths.
+%  Philippe Pinard, pinard@gfe.rwth-aachen.de
 
 properties (Hidden = true)
-  hgt %
+  hgt      % handle of the hgtransform grouping the scale bar graphics
 end
 
 properties
@@ -60,55 +65,53 @@ properties (SetObservable)
   backgroundAlpha = 0.6    % background transparency (scalar 0<=a<=1)
   scanUnit        = 'um'   % units of the xy coordinates of the ebsd scan (e.g., 'um')
   lineColor       = 'w'    % border color and text color (ColorSpec)
-  length          = NaN    % desired scale bar length 
-  % border          = 'off ' % controls whether the box has a border ('on', 'off')
-  % borderWidth     = 2      % width of border (scalar)
-  % location        = 'sw'   % location of the scale bar ('nw,'ne','sw','se', or [x,y] coordinate vector (len(vector)==2)
+  length          = NaN    % desired scale bar length
 end
 
+properties (SetObservable)
+  location = 'sw'          % corner of the map: 'sw', 'se', 'nw', 'ne'
+end
 
 properties (Dependent = true)
   visible
 end
 
-  
+
 methods
 
   function sB = scaleBar(mP,scanUnit,varargin)
-    
+
     sB.scanUnit = scanUnit;
     sB.hgt = hgtransform('parent',mP.ax);
-    sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
+    sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN],'EdgeColor','none');
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
       'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
-    
-    % set resize function
-    hax = handle(mP.ax);
-    try      
-      hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
-        'PropertyPostSet',@(a,b) sB.update);
-      % save listener, otherwise  callback may die
-      setappdata(hax, 'updatePos', hListener);
-    catch
-      if ~isappdata(hax, 'updatePos')
-        hListener = addlistener(hax,'Position','PostSet',...
-          @(obj,events) sB.update);
-        setappdata(hax, 'updatePos', hListener);
-      end
-    end  
 
-    try
-      addlistener(sB,'length','PostSet', @(x,y) sB.update);
-      addlistener(sB,'scanUnit','PostSet', @(x,y) sB.update);
-      addlistener(sB,'lineColor','PostSet', @(x,y) sB.update);
-      addlistener(sB,'backgroundColor','PostSet', @(x,y) sB.update);
-      addlistener(sB,'backgroundAlpha','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'location','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'borderWidth','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'border','PostSet', @(x,y) sB.update);
-    end
-    
+    % apply user options
+    sB.backgroundColor = get_option(varargin,'BackgroundColor',sB.backgroundColor);
+    sB.backgroundAlpha = get_option(varargin,'BackgroundAlpha',sB.backgroundAlpha);
+    sB.lineColor       = get_option(varargin,'LineColor',sB.lineColor);
+    sB.length          = get_option(varargin,'Length',sB.length);
+    sB.location        = get_option(varargin,'Location',sB.location);
+
+    % redraw whenever the axes is resized or reoriented (e.g. through
+    % plottingConvention.setView) - reuses the same appdata slot as
+    % mapPlot.m so a repeated plot into the same axes replaces the old
+    % listeners instead of accumulating them
+    hax = mP.ax;
+    hListener(1) = addlistener(hax,'Position',      'PostSet', @(~,~) sB.update);
+    hListener(2) = addlistener(hax,'CameraPosition','PostSet', @(~,~) sB.update);
+    hListener(3) = addlistener(hax,'CameraUpVector','PostSet', @(~,~) sB.update);
+    setappdata(hax,'updatePos',hListener);
+
+    addlistener(sB,'length',          'PostSet', @(~,~) sB.update);
+    addlistener(sB,'scanUnit',        'PostSet', @(~,~) sB.update);
+    addlistener(sB,'lineColor',       'PostSet', @(~,~) sB.update);
+    addlistener(sB,'backgroundColor', 'PostSet', @(~,~) sB.update);
+    addlistener(sB,'backgroundAlpha', 'PostSet', @(~,~) sB.update);
+    addlistener(sB,'location',        'PostSet', @(~,~) sB.update);
+
   end
 
   function setOnTop(sB)
@@ -119,36 +122,57 @@ methods
       end
     end
   end
-  
-  
+
+
   function set.visible(sB,value)
     sB.hgt.Visible = value;
   end
-  
+
   function value = get.visible(sB)
     value = sB.hgt.Visible;
   end
-  
+
+  function set.location(sB,loc)
+    aliases = struct('sw','sw','se','se','nw','nw','ne','ne',...
+      'southwest','sw','southeast','se','northwest','nw','northeast','ne');
+    loc = lower(loc);
+    if ~isfield(aliases,loc)
+      error('mtex:scaleBar:location',...
+        'Unknown scale bar location "%s". Use one of sw, se, nw, ne.',loc);
+    end
+    sB.location = aliases.(loc);
+  end
+
   function update(sB)
-    
-    % get axes orientation
-    ax = get(sB.hgt,'parent');
-    [el,az] = view(ax);
-    xDir = mod((-1)^(az<0) * round(el / 90),4); % E-S-W-N is 0 1 2 3
-    yDir = mod(xDir - round(az / 90),4); % E-S-W-N is 0 1 2 3
-    
+
+    % the plotting convention currently active on the map - read back from
+    % the axes camera itself (not from a cached plottingConvention
+    % reference) so this stays correct even if setView was applied through
+    % a plottingConvention object other than the one the map was
+    % originally created with
+    ax = get(sB.hgt,'Parent');
+    pC = plottingConvention.getView(ax);
+
+    % determine which compass direction (E-S-W-N is 0-1-2-3) the data x-
+    % and y-axis are currently pointing to on screen - cheaper and more
+    % direct than the previous round trip through view(ax)'s azimuth /
+    % elevation, and it is always consistent with pC since it is derived
+    % from pC itself
+    xDir = compassDirection(vector3d.X,pC);
+    yDir = compassDirection(vector3d.Y,pC);
+
     % get extent
     dx = xlim(ax); dy = ylim(ax);
     if any(xDir == [1,2]), dx= fliplr(dx); end
     if any(yDir == [1,2]), dy= fliplr(dy); end
     if mod(xDir,2), [dx,dy] = deal(dy,dx); end
-        
+
     % Find the range in meters for later determination of magnitude
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
     [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
     if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
-    
+
     % we would like to have SBlength beeing a nice number
     if isnan(sB.length)
       goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
@@ -165,22 +189,35 @@ methods
     gapY = textHeight/3;
     gapX = abs(gapY) * sign(diff(dx));
 
-    % Box position
-    boxWidth = rulerLength + 2.0 * gapX;
-    boxx = dx(1) + gapX;
-    boxy = dy(1) + gapY;
-    
+    % Box position - dx(1)/dy(1) is the screen bottom-left corner of the
+    % map, dx(2)/dy(2) the top-right corner, so the requested location
+    % just picks which edge(s) the box is anchored to
+    boxWidth  = rulerLength + 2.0 * gapX;
+    boxHeight = 3*gapY + textHeight;
+
+    if any(strcmp(sB.location,{'sw','nw'}))
+      boxx = dx(1) + gapX;
+    else
+      boxx = dx(2) - gapX - boxWidth;
+    end
+
+    if any(strcmp(sB.location,{'sw','se'}))
+      boxy = dy(1) + gapY;
+    else
+      boxy = dy(2) - gapY - boxHeight;
+    end
+
     % Make bounding box. The z-coordinate is used to put the box under the
     % line.
     verts = [boxx, boxy;
-      boxx, boxy +  3*gapY + textHeight;
-      boxx + boxWidth, boxy + 3*gapY + textHeight;
+      boxx, boxy + boxHeight;
+      boxx + boxWidth, boxy + boxHeight;
       boxx + boxWidth, boxy];
     set(sB.shadow,'Vertices', cP(verts), ...
       'Faces', [1 2 3 4], ...
       'FaceColor', sB.backgroundColor , 'EdgeColor', 'none', ...
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
-    
+
     % update text
     set(sB.txt,'string',['\rm{\textbf{' num2str(sB.length) ' ' sBUnit '}}'],...
       'HorizontalAlignment', 'Center',...
@@ -194,17 +231,32 @@ methods
       boxx + gapX + rulerLength, boxy + 2*gapY; ...
       boxx + gapX + rulerLength, boxy + gapY]), ...
       'Faces',[1 2 3 4], 'FaceColor',sB.lineColor, 'FaceAlpha',1);
-        
+
     sB.setOnTop;
-    
+
     function pos = cP(pos)
       % interchange x and y if needed
-      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end      
+      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end
     end
-    
+
   end
-     
-end
-  
+
 end
 
+end
+
+function d = compassDirection(v,pC)
+% which compass direction a data direction v currently points to on
+% screen, given the plotting convention pC - E-S-W-N is 0-1-2-3
+
+if dot(v,pC.east) > 0.5
+  d = 0; % East
+elseif dot(v,pC.east) < -0.5
+  d = 2; % West
+elseif dot(v,pC.north) > 0.5
+  d = 3; % North
+else
+  d = 1; % South
+end
+
+end
