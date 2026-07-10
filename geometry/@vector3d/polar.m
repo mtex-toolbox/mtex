@@ -13,17 +13,26 @@ function [theta,rho,r] = polar(v)
 %  rho    - azimuthal angle 
 %  r      - radius
 
-r = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
+if v.isNormalized
+  r = 1;
+else
+  r = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
+end
+
 if isfield(v.opt,'theta')
   theta = v.opt.theta;
-  rho = v.opt.rho;  
+  rho = v.opt.rho;
 else
   %rho = mod(atan2(v.y,v.x),2*pi);
   % the next two lines do exactly the same but are a bit faster
   rho = atan2(v.y,v.x);
   rho = rho + (rho<0)*2*pi;
-  
-  theta = acos(v.z./r);
+
+  if v.isNormalized
+    theta = acos(v.z);
+  else
+    theta = acos(v.z./r);
+  end
 end
 
 if nargout == 0
