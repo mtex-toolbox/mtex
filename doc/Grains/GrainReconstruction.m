@@ -22,9 +22,6 @@ mtexdata forsterite
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-% gridify the data
-ebsd = ebsd.gridify;
-
 % make a phase plot
 plot(ebsd)
 
@@ -95,13 +92,30 @@ hold off
 % reload the data
 mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-ebsd = ebsd.gridify;
 
-[grains, ebsd] = calcGrains(ebsd,'alpha',10,'angle',10*degree,'minPixel',3);
-grains = smooth(grains,5);
+[grains, ebsd] = calcGrains(ebsd,'alpha',4,'angle',10*degree,'minPixel',3);
+grains = smooth(grains,3);
 
 % plot the boundary of all grains
 plot(ebsd)
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
+
+%%
+% On the other setting |alpha = 0| the grains consists exactly of the
+% measurement pixels
+
+% reload the data
+mtexdata forsterite silent
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+
+[grains, ebsd] = calcGrains(ebsd,'alpha',0,'angle',10*degree);
+
+% plot the boundary of all grains
+plot(ebsd)
+hold on
+plot(grains.boundary,'linewidth',1.5)
+hold off
+
+

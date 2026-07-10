@@ -13,7 +13,7 @@ mtexdata twins
 poly = [44 0 4 2];
 ebsd = ebsd(inpolygon(ebsd,poly));
 
-plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k','backend','patch')
 
 %%
 % In the above plot each square corresponds to one entry in the variable
@@ -25,7 +25,7 @@ text(ebsd,1:length(ebsd))
 % We may easily select specific pixels by specifying their indices
 
 hold on
-plot(ebsd(16:18),'edgeColor','red','facecolor','none','linewidth',4)
+plot(ebsd(16:18),'edgeColor','red','facecolor','none','linewidth',4,'backend','patch')
 legend off
 hold off
 
@@ -36,7 +36,7 @@ hold off
 % does not coincide with the indices of the imported data anymore. However,
 % the original indices are still stored in |ebsd.id|. Lets visualize those
 
-plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k','backend','patch')
 text(ebsd,ebsd.id)
 
 %%
@@ -44,7 +44,7 @@ text(ebsd,ebsd.id)
 % option |'id'|, i.e.,
 
 hold on
-plot(ebsd('id',316:318),'edgeColor','red','facecolor','none','linewidth',4)
+plot(ebsd('id',316:318),'edgeColor','red','facecolor','none','linewidth',4,'backend','patch')
 legend off
 hold off
 
@@ -56,7 +56,7 @@ hold off
 
 ebsd = ebsd.gridify;
 
-plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black','backend','patch')
 
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
 str = arrayfun(@(a,b) ['(' int2str(a) ',' int2str(b) ')'],i,j,'UniformOutput',false);
@@ -67,7 +67,7 @@ text(ebsd,str)
 % grid, e.g., by
 
 hold on
-plot(ebsd(2,2:4),'edgeColor','red','facecolor','none','linewidth',4)
+plot(ebsd(2,2:4),'edgeColor','red','facecolor','none','linewidth',4,'backend','patch')
 legend off
 hold off
 
@@ -76,7 +76,7 @@ hold off
 % measurements. They are now sorted such that rows runs first and columns
 % second, as this is the default convention how Matlab indexes matrices.
 
-plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black')
+plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black','backend','patch')
 text(ebsd,1:length(ebsd))
 
 
@@ -98,7 +98,7 @@ ebsd = ebsd(10:16,68:79);
 %%
 % Lets visualize the matrix coordinates for the hexagonal grid
 
-plot(ebsd,ebsd.orientations,'edgeColor','k','micronbar','off')
+plot(ebsd,ebsd.orientations,'edgeColor','k','micronbar','off','unitcell')
 axis off
 
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
@@ -112,13 +112,10 @@ text(ebsd,str)
 % |cube2hex|>. Much more details on indexing hex grids can be found at
 % <https://www.redblobgames.com/grids/hexagons/ here>.
 
-plot(ebsd,ebsd.orientations,'edgeColor','k','micronbar','off')
+plot(ebsd,ebsd.orientations,'edgeColor','k','micronbar','off','unitcell')
 axis off
 
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
 [x,y,z] = ebsd.hex2cube(i,j);
 str = arrayfun(@(a,b,c) ['(' int2str(a) ',' int2str(b) ',' int2str(c) ')'],x,y,z,'UniformOutput',false);
 text(ebsd,str)
-
-
-

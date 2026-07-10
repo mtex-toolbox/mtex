@@ -18,7 +18,7 @@
 mtexdata ferrite 
 
 % reconstruct the grain structure
-[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',2);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
 grains = smooth(grains,5);
