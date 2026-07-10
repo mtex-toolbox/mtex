@@ -566,8 +566,17 @@ end
       [~,maxPhase] = max(numPhases);
       phaseTable.Plot(maxPhase) = true;
 
-      % colorize color column
       app.PhaseTable.Data = phaseTable;
+
+      % mark editable columns in the header so users don't have to
+      % double-click every cell to find out what can be changed
+      colNames = phaseTable.Properties.VariableNames;
+      editableCols = find(app.PhaseTable.ColumnEditable);
+      colNames(editableCols) = cellfun(@(s) [s ' ' char(9998)], ...
+        colNames(editableCols), 'UniformOutput', false);
+      app.PhaseTable.ColumnName = colNames;
+
+      % colorize color column
       for row = 1:length(csList)
         addStyle(app.PhaseTable, ...
           uistyle('BackgroundColor', app.Color{row}), 'cell', [row 9])
