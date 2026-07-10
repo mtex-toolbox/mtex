@@ -208,10 +208,16 @@ end
 %   delta(x) is too small to provide sufficiently many neighbors
 function [delta, nn] = getSmoothDelta(S2F, v)
   dn = S2F.auxgrid.opt.dn;
-  mls = S2FunMLS(S2F.auxgrid, dn, 'degree', 0, 'oF', 5, 'centered', false, ...
+  dnArea = 1 - cos(dn);
+  % smooth the local support area instead of the neighbor distance itself
+  %   on S^2, this area scales locally like d_n^2 and is approximately
+  %   proportional to the inverse node density; after the MLS approximation,
+  %   taking the square root recovers the corresponding smooth support radius
+  mls = S2FunMLS(S2F.auxgrid, dnArea, 'degree', 0, 'oF', 5, 'centered', false, ...
     'regularize', false, 'use_vor_weights', false, 'use_smooth_delta', false);
   mls.delta = mls.compute_delta;
-  delta = mls.eval(v);
+  deltaArea = mls.eval(v);
+  delta = acos(1 - deltaArea);
 
   if (nargout > 1)
     [~, dist] = S2F.nodes.find(v, 2*S2F.nn);
