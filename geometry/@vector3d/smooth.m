@@ -105,6 +105,13 @@ for j = 1:numel(sP)
   % colormap
   if ~strcmpi(get_option(varargin,'fill'),'off')
     mtexColorMap(sP(j).ax,getMTEXpref('defaultColorMap'));
+    if size(sP(j).ax.Colormap,1) < length(contours)
+      oldMap = sP(j).ax.Colormap;
+      xOld = linspace(0,1,size(oldMap,1));
+      xNew = linspace(0,1,length(contours));
+      newMap = interp1(xOld,oldMap,xNew,'linear');
+      mtexColorMap(newMap)
+    end
   end
 
   % bring grid in front
